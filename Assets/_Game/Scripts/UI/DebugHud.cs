@@ -76,6 +76,8 @@ namespace CindarsHope.UI
             GUILayout.Label("E: interagir");
             GUILayout.Label("Tab: avancar dia");
             GUILayout.Label("H: consumir comida");
+            GUILayout.Label("F5: salvar");
+            GUILayout.Label("F9: carregar");
         }
     }
 }

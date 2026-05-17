@@ -1,6 +1,7 @@
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
 using CindarsHope.Player.Data;
+using CindarsHope.Save;
 using UnityEngine;
 
 namespace CindarsHope.Player
@@ -89,6 +90,44 @@ namespace CindarsHope.Player
             }
 
             SetGold(CurrentGold + amount);
+        }
+
+        public PlayerSaveData CaptureSaveData(int currentHunger, int maxHunger, Vector2 playerPosition)
+        {
+            return new PlayerSaveData
+            {
+                CurrentHP = CurrentHP,
+                MaxHP = MaxHP,
+                Gold = CurrentGold,
+                CurrentHunger = currentHunger,
+                MaxHunger = maxHunger,
+                PlayerPosition = playerPosition
+            };
+        }
+
+        public void RestoreFromSaveData(PlayerSaveData saveData)
+        {
+            if (saveData == null)
+            {
+                Debug.LogWarning("PlayerManager cannot restore from null PlayerSaveData.", this);
+                return;
+            }
+
+            var previousGold = CurrentGold;
+            var previousHp = CurrentHP;
+
+            MaxHP = Mathf.Max(1, saveData.MaxHP);
+            CurrentHP = Mathf.Clamp(saveData.CurrentHP, 0, MaxHP);
+            CurrentGold = Mathf.Max(0, saveData.Gold);
+
+            var goldDelta = CurrentGold - previousGold;
+            if (goldDelta != 0)
+            {
+                GameEventBus.Publish(new GoldChangedEvent(goldDelta, CurrentGold));
+            }
+
+            var hpDelta = CurrentHP - previousHp;
+            GameEventBus.Publish(new HPChangedEvent(hpDelta, CurrentHP, MaxHP));
         }
     }
 }

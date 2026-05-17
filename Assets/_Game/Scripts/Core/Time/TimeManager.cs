@@ -32,6 +32,12 @@ namespace CindarsHope.Core.Time
             Debug.Log($"Day advanced to {CurrentDay}.", this);
         }
 
+        public void SetCurrentDay(int day)
+        {
+            CurrentDay = Mathf.Max(1, day);
+            Debug.Log($"Day restored to {CurrentDay}.", this);
+        }
+
         public void Shutdown()
         {
             if (!IsInitialized)

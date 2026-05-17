@@ -87,7 +87,8 @@ Modelo de entrada:
 | PR-012 | Implementado; pendente validação Unity e merge |
 | PR-013 a PR-017 | Implementados nesta wave; pendentes validação Unity e merge |
 | PR-018 a PR-024 | Implementados nesta wave; pendentes validação Unity e merge |
-| Próximo PR runtime | Save/load ou pesca/árvores, conforme validação |
+| PR-025 a PR-030 | Implementados nesta wave; pendentes validação Unity e merge |
+| Próximo PR runtime | Pesca/árvores ou hardening de save/load após validação |
 
 ### PR-001
 
@@ -1097,3 +1098,54 @@ PR-002 sÃ³ deve comeÃ§ar se:
 ### Próximo passo recomendado
 - Validar a wave no Unity.
 - Depois decidir entre save/load ou pesca/árvores conforme resultado da validação.
+
+---
+
+## 2026-05-17 — WAVE Fase 8 Save/Load PR-025 a PR-030
+
+**Responsável:** Codex/ChatGPT
+**Branch:** `wave/fase8-save-load-025-030`
+**Escopo:** save/load JSON mínimo do MVP para dia, player, fome, inventário, plots e posição do player.
+
+### Alterações
+- PR-025: criados contratos `GameSaveData`, `PlayerSaveData`, `InventorySaveData`, `InventoryItemSaveData`, `FarmSaveData` e `FarmPlotSaveData` com `SchemaVersion`.
+- PR-026: adicionados export/import runtime em `InventoryManager`, `PlayerManager`, `HungerManager`, `TimeManager` e `FarmPlot`.
+- PR-027: `SaveManager` agora salva/carrega JSON em `Application.persistentDataPath/saves/slot_1.json`, cria diretório `saves` e publica `GameSavedEvent` ao salvar.
+- PR-028: criado `SaveInput` com F5 para salvar e F9 para carregar.
+- PR-029: criado `FarmPlotRegistry` e integrado ao `CreateMvpFarmScene`; `SaveManager` recebe managers, registry e `Player.transform` por referência serializada.
+- PR-030: `DebugHud` mostra comandos F5/F9 e `PROJECT_LOG.md` registra a wave.
+
+### Arquivos alterados
+- `Assets/_Game/Scripts/Save/SaveData.cs`
+- `Assets/_Game/Scripts/Save/SaveManager.cs`
+- `Assets/_Game/Scripts/Save/SaveInput.cs`
+- `Assets/_Game/Scripts/Farm/FarmPlot.cs`
+- `Assets/_Game/Scripts/Farm/FarmPlotSaveData.cs`
+- `Assets/_Game/Scripts/Farm/FarmPlotRegistry.cs`
+- `Assets/_Game/Scripts/Inventory/InventoryManager.cs`
+- `Assets/_Game/Scripts/Player/PlayerManager.cs`
+- `Assets/_Game/Scripts/Player/HungerManager.cs`
+- `Assets/_Game/Scripts/Core/Time/TimeManager.cs`
+- `Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpFarmScene.cs`
+- `Assets/_Game/Scripts/UI/DebugHud.cs`
+- `PROJECT_LOG.md`
+
+### Fora de escopo preservado
+- Não houve alteração em dados, eventos, GameEventBus, PlayerController, packages ou ProjectSettings.
+- Não houve pesca, árvore, craft, Cinemachine, Input System package ou UI final complexa.
+- Save usa IDs e tipos simples; referências Unity são usadas apenas como referências runtime/scene no `SaveManager`, não serializadas no JSON.
+
+### Testes
+- [x] Revisão estática dos arquivos alterados.
+- [x] Busca estática por `GameObject.Find`, `FindObjectOfType`, `FindObjectsByType` e `StreamingAssets` nos arquivos alterados sem ocorrências.
+- [x] Busca estática nos contratos de save por `ScriptableObject`, `GameObject`, `Transform` e `MonoBehaviour` sem ocorrências.
+- [ ] Unity não executado neste terminal; validar compilação, recriação da cena e Play Mode no editor.
+
+### Pendências / riscos
+- Validar se `JsonUtility` serializa/restaura `Vector2 PlayerPosition` corretamente no projeto Unity atual.
+- Validar F5/F9 em Play Mode após plantar, colher, vender, andar e consumir comida.
+- Validar que restore de plots não publica eventos agrícolas e não avança crescimento ao carregar.
+
+### Próximo passo recomendado
+- Validar save/load completo no Unity.
+- Depois decidir entre pesca/árvores ou hardening de save/load após validação.
