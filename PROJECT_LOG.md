@@ -334,3 +334,101 @@ PR-002 só deve começar se:
 ### Proximo passo recomendado
 - Executar smoke test no Unity: criar um `ItemDataSO`, um `SeedDataSO`, um `PlayerDataSO`, `ItemDatabaseSO` e `SeedDatabaseSO`; preencher IDs validos; confirmar Console sem erro.
 - Depois seguir para PR-003 - Bootstrap managers vazios.
+
+## 2026-05-17 - PR-003 Assets de dados MVP
+
+**Responsavel:** Codex
+**Branch:** feature/fase8-pr-003-mvp-data-assets
+**Escopo:** criar assets ScriptableObject reais do MVP Fazenda para itens, sementes, PlayerData e registries usando os contratos do PR-002.
+
+### Alteracoes
+- Criadas pastas de dados `Items`, `Seeds`, `Config` e `Registries` em `Assets/_Game/Data/`.
+- Criados 6 assets `ItemDataSO` do MVP: sementes de trigo/cenoura, trigo, cenoura, peixe comum e madeira.
+- Criados 2 assets `SeedDataSO`: trigo e cenoura, com referencias para seed item, harvest item e amounts.
+- Criado `PlayerData.asset` com velocidade, HP, ouro inicial e sementes iniciais.
+- Criados `ItemDatabase.asset` e `SeedDatabase.asset` com referencias aos assets do MVP.
+- Nenhum script C#, cena, prefab, UI, inventario, plantio ou save/load foi alterado/implementado.
+
+### Arquivos alterados
+- `Assets/_Game/Data/Items.meta`
+- `Assets/_Game/Data/Items/Item_Semente_Trigo.asset`
+- `Assets/_Game/Data/Items/Item_Semente_Trigo.asset.meta`
+- `Assets/_Game/Data/Items/Item_Semente_Cenoura.asset`
+- `Assets/_Game/Data/Items/Item_Semente_Cenoura.asset.meta`
+- `Assets/_Game/Data/Items/Item_Trigo.asset`
+- `Assets/_Game/Data/Items/Item_Trigo.asset.meta`
+- `Assets/_Game/Data/Items/Item_Cenoura.asset`
+- `Assets/_Game/Data/Items/Item_Cenoura.asset.meta`
+- `Assets/_Game/Data/Items/Item_Fish_Common.asset`
+- `Assets/_Game/Data/Items/Item_Fish_Common.asset.meta`
+- `Assets/_Game/Data/Items/Item_Wood.asset`
+- `Assets/_Game/Data/Items/Item_Wood.asset.meta`
+- `Assets/_Game/Data/Seeds.meta`
+- `Assets/_Game/Data/Seeds/Seed_Trigo.asset`
+- `Assets/_Game/Data/Seeds/Seed_Trigo.asset.meta`
+- `Assets/_Game/Data/Seeds/Seed_Cenoura.asset`
+- `Assets/_Game/Data/Seeds/Seed_Cenoura.asset.meta`
+- `Assets/_Game/Data/Config.meta`
+- `Assets/_Game/Data/Config/PlayerData.asset`
+- `Assets/_Game/Data/Config/PlayerData.asset.meta`
+- `Assets/_Game/Data/Registries.meta`
+- `Assets/_Game/Data/Registries/ItemDatabase.asset`
+- `Assets/_Game/Data/Registries/ItemDatabase.asset.meta`
+- `Assets/_Game/Data/Registries/SeedDatabase.asset`
+- `Assets/_Game/Data/Registries/SeedDatabase.asset.meta`
+- `PROJECT_LOG.md`
+
+### Testes
+- [x] Verificada a branch esperada via `.git/HEAD`.
+- [x] Verificada existencia dos assets e metas em `Assets/_Game/Data`.
+- [x] Verificadas referencias por GUID entre PlayerData, seeds, itens e registries.
+- [x] Verificado que `ItemDatabase.asset` referencia 6 itens e `SeedDatabase.asset` referencia 2 sementes.
+- [ ] Unity nao executado nesta sessao.
+- [ ] Compilacao C# local nao executada: ferramentas `git`, `dotnet`, `csc` e `msbuild` seguem indisponiveis no PATH do terminal.
+
+### Pendencias / riscos
+- Abrir Unity para reimportar os assets e confirmar que nao ha missing scripts nem referencias quebradas no Inspector.
+- Confirmar no Console se os registries nao acusam ID vazio/duplicado. Os IDs de item de semente e SeedData usam o mesmo valor por design do prompt (`seed_wheat`, `seed_carrot`) em databases separados.
+- Se Unity regenerar metas automaticamente, revisar se os GUIDs foram preservados.
+
+### Proximo passo recomendado
+- Executar smoke test no Unity: selecionar `PlayerData`, `ItemDatabase`, `SeedDatabase`, `Seed_Trigo` e `Seed_Cenoura` e validar campos/referencias no Inspector; Console sem erro.
+- Depois seguir para o proximo PR de codigo planejado, mantendo escopo pequeno e sem alterar estes assets fora de necessidade explicita.
+
+## 2026-05-17 - PR-003 ajuste Cana Basica
+
+**Responsavel:** Codex
+**Branch:** feature/fase8-pr-003-mvp-data-assets
+**Escopo:** ajustar os assets de dados do PR-003 para incluir a ferramenta inicial obrigatoria do MVP.
+
+### Alteracoes
+- Criado `Assets/_Game/Data/Items/Item_Cana_Basica.asset`.
+- `PR-003` agora inclui 7 itens, incluindo `Cana Basica`.
+- `PlayerData.asset` agora inclui `Cana Basica x1` junto com `Semente de Trigo x5` e `Semente de Cenoura x3`.
+- `ItemDatabase.asset` agora referencia 7 itens.
+- `SeedDatabase.asset` continua referenciando 2 seeds.
+- Removidos `Assets/Resources/BillingMode.json` e `Assets/Resources/BillingMode.json.meta`, que estavam fora do escopo do PR-003.
+- Nenhum script C#, gameplay, cena, prefab ou UI foi alterado.
+
+### Arquivos alterados
+- `Assets/_Game/Data/Items/Item_Cana_Basica.asset`
+- `Assets/_Game/Data/Items/Item_Cana_Basica.asset.meta`
+- `Assets/_Game/Data/Registries/ItemDatabase.asset`
+- `Assets/_Game/Data/Config/PlayerData.asset`
+- `Assets/Resources/BillingMode.json` removido
+- `Assets/Resources/BillingMode.json.meta` removido
+- `PROJECT_LOG.md`
+
+### Testes
+- [x] `ItemDatabase.asset` referencia 7 itens.
+- [x] `PlayerData.asset` referencia 3 `StartingItems`.
+- [x] `SeedDatabase.asset` continua com 2 seeds.
+- [x] `Assets/Resources/BillingMode.json` e `.meta` nao existem mais.
+- [x] Nenhum script C# foi editado nesta etapa.
+- [ ] Unity nao executado nesta sessao.
+
+### Pendencias / riscos
+- Abrir Unity para validar o asset `Item_Cana_Basica` no Inspector e confirmar Console sem missing reference.
+
+### Proximo passo recomendado
+- Reimportar assets no Unity e validar `PlayerData`, `ItemDatabase` e `SeedDatabase` antes de seguir para o proximo PR.
