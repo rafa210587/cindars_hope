@@ -9,8 +9,20 @@ namespace CindarsHope.Interaction
         [SerializeField] private Collider2D _interactionTrigger;
         [SerializeField] private KeyCode _interactKey = KeyCode.E;
 
-        private readonly List<IInteractable> _nearbyInteractables = new List<IInteractable>();
+        private readonly List<InteractionCandidate> _candidates = new List<InteractionCandidate>();
         private bool _missingTriggerWarningLogged;
+
+        private readonly struct InteractionCandidate
+        {
+            public readonly IInteractable Interactable;
+            public readonly Collider2D Collider;
+
+            public InteractionCandidate(IInteractable interactable, Collider2D collider)
+            {
+                Interactable = interactable;
+                Collider = collider;
+            }
+        }
 
         private void Awake()
         {
@@ -49,46 +61,56 @@ namespace CindarsHope.Interaction
         private void OnTriggerEnter2D(Collider2D other)
         {
             var interactable = GetInteractable(other);
-            if (interactable == null || _nearbyInteractables.Contains(interactable))
+            if (interactable == null || ContainsCandidate(interactable))
             {
                 return;
             }
 
-            _nearbyInteractables.Add(interactable);
+            _candidates.Add(new InteractionCandidate(interactable, other));
         }
 
         private void OnTriggerExit2D(Collider2D other)
         {
             var interactable = GetInteractable(other);
-            if (interactable == null)
+            if (interactable == null && other == null)
             {
                 return;
             }
 
-            _nearbyInteractables.Remove(interactable);
+            RemoveCandidate(interactable, other);
         }
 
         private IInteractable GetBestCandidate()
         {
-            for (var i = _nearbyInteractables.Count - 1; i >= 0; i--)
+            CleanInvalidCandidates();
+
+            var origin = _interactionTrigger != null
+                ? (Vector2)_interactionTrigger.bounds.center
+                : (Vector2)transform.position;
+
+            IInteractable bestInteractable = null;
+            var bestSqrDistance = float.PositiveInfinity;
+
+            for (var i = 0; i < _candidates.Count; i++)
             {
-                if (_nearbyInteractables[i] == null)
+                var candidate = _candidates[i];
+                var interactable = candidate.Interactable;
+                if (interactable == null || !interactable.CanInteract(gameObject))
                 {
-                    _nearbyInteractables.RemoveAt(i);
+                    continue;
+                }
+
+                var targetPosition = GetCandidatePosition(candidate, origin);
+                var sqrDistance = (targetPosition - origin).sqrMagnitude;
+
+                if (sqrDistance < bestSqrDistance)
+                {
+                    bestInteractable = interactable;
+                    bestSqrDistance = sqrDistance;
                 }
             }
 
-            for (var i = 0; i < _nearbyInteractables.Count; i++)
-            {
-                var interactable = _nearbyInteractables[i];
-
-                if (interactable.CanInteract(gameObject))
-                {
-                    return interactable;
-                }
-            }
-
-            return null;
+            return bestInteractable;
         }
 
         private static IInteractable GetInteractable(Collider2D source)
@@ -100,6 +122,58 @@ namespace CindarsHope.Interaction
 
             var interactable = source.GetComponent<IInteractable>();
             return interactable ?? source.GetComponentInParent<IInteractable>();
+        }
+
+        private static Vector2 GetCandidatePosition(InteractionCandidate candidate, Vector2 origin)
+        {
+            if (candidate.Collider != null)
+            {
+                return candidate.Collider.ClosestPoint(origin);
+            }
+
+            if (candidate.Interactable is Component component)
+            {
+                return component.transform.position;
+            }
+
+            return origin;
+        }
+
+        private bool ContainsCandidate(IInteractable interactable)
+        {
+            for (var i = 0; i < _candidates.Count; i++)
+            {
+                if (_candidates[i].Interactable == interactable)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private void RemoveCandidate(IInteractable interactable, Collider2D source)
+        {
+            for (var i = _candidates.Count - 1; i >= 0; i--)
+            {
+                var candidate = _candidates[i];
+                if (candidate.Interactable == interactable || candidate.Collider == source)
+                {
+                    _candidates.RemoveAt(i);
+                }
+            }
+        }
+
+        private void CleanInvalidCandidates()
+        {
+            for (var i = _candidates.Count - 1; i >= 0; i--)
+            {
+                var candidate = _candidates[i];
+                if (candidate.Interactable == null || candidate.Collider == null)
+                {
+                    _candidates.RemoveAt(i);
+                }
+            }
         }
 
         private void EnsureInteractionTrigger()

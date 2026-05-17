@@ -1059,6 +1059,7 @@ PR-002 sÃ³ deve comeÃ§ar se:
 - PR-022: criado `FoodConsumer` com tecla H para consumir automaticamente cenoura, trigo ou peixe comum usando `ItemDataSO.HungerRestore`.
 - PR-023: HUD integrado com ouro, HP, fome, inventário e comandos E/Tab/H.
 - PR-024: `CreateMvpFarmScene` agora configura `_Bootstrap` com `HungerManager` e `FoodConsumer`, cria `SellPoint` e cria `DebugHud` com referências serializadas.
+- Correção pós-teste Unity: `InteractionSystem` escolhia o primeiro interagível da lista, por ordem de entrada no trigger, causando plantio/interação no canteiro errado quando vários `FarmPlot` estavam próximos. Agora `GetBestCandidate` escolhe o candidato mais próximo do centro do trigger/player.
 
 ### Arquivos alterados
 - `Assets/_Game/Scripts/UI/DebugHud.cs`
@@ -1090,6 +1091,7 @@ PR-002 sÃ³ deve comeÃ§ar se:
 - Validar no Unity se o HUD OnGUI aparece e atualiza ouro, fome e inventário em Play Mode.
 - Validar venda no `SellPoint` depois de colher itens.
 - Validar redução de fome ao andar e consumo com H.
+- Revalidar interação com múltiplos `FarmPlot` dentro do trigger para confirmar que E atua no canteiro visualmente mais próximo.
 - `DebugHud` é HUD temporário de debug, não UI final.
 
 ### Próximo passo recomendado
