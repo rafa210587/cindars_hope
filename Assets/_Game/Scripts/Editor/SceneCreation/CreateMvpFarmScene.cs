@@ -2,6 +2,7 @@ using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Data;
 using CindarsHope.Core.Time;
 using CindarsHope.Inventory;
+using CindarsHope.Interaction;
 using CindarsHope.Player;
 using CindarsHope.Player.Data;
 using CindarsHope.Save;
@@ -34,6 +35,7 @@ namespace CindarsHope.Editor.SceneCreation
 
             var bootstrap = CreateBootstrap();
             CreatePlayer();
+            CreateDebugInteractable();
             CreateGround();
             CreateBounds();
             CreateMainCamera();
@@ -125,6 +127,25 @@ namespace CindarsHope.Editor.SceneCreation
 
             var playerController = player.AddComponent<PlayerController>();
             ConfigurePlayerController(playerController, rigidbody);
+
+            var interactionTrigger = CreateInteractionTrigger(player.transform);
+            var interactionSystem = player.AddComponent<InteractionSystem>();
+            ConfigureInteractionSystem(interactionSystem, interactionTrigger);
+        }
+
+        private static CircleCollider2D CreateInteractionTrigger(Transform parent)
+        {
+            var triggerObject = new GameObject("InteractionTrigger");
+            triggerObject.transform.SetParent(parent);
+            triggerObject.transform.localPosition = Vector3.zero;
+            triggerObject.transform.localRotation = Quaternion.identity;
+            triggerObject.transform.localScale = Vector3.one;
+
+            var trigger = triggerObject.AddComponent<CircleCollider2D>();
+            trigger.isTrigger = true;
+            trigger.radius = 1.25f;
+
+            return trigger;
         }
 
         private static void ConfigurePlayerController(PlayerController playerController, Rigidbody2D rigidbody)
@@ -144,6 +165,38 @@ namespace CindarsHope.Editor.SceneCreation
 
             serializedController.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(playerController);
+        }
+
+        private static void ConfigureInteractionSystem(InteractionSystem interactionSystem, Collider2D interactionTrigger)
+        {
+            var serializedInteraction = new SerializedObject(interactionSystem);
+            SetReference(serializedInteraction, "_interactionTrigger", interactionTrigger);
+            serializedInteraction.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(interactionSystem);
+        }
+
+        private static void CreateDebugInteractable()
+        {
+            var debugInteractableObject = new GameObject("DebugInteractable");
+            debugInteractableObject.transform.position = new Vector3(2f, 0f, 0f);
+            debugInteractableObject.transform.localScale = new Vector3(0.75f, 0.75f, 1f);
+
+            var spriteRenderer = debugInteractableObject.AddComponent<SpriteRenderer>();
+            spriteRenderer.sprite = GetBuiltinSprite();
+            spriteRenderer.color = new Color(0.95f, 0.82f, 0.22f);
+            spriteRenderer.sortingOrder = 2;
+            SetSortingLayerIfExists(spriteRenderer, "Items");
+
+            if (spriteRenderer.sprite == null)
+            {
+                Debug.LogWarning("DebugInteractable placeholder SpriteRenderer was created without a sprite. Replace it with a future placeholder sprite if needed.");
+            }
+
+            var collider = debugInteractableObject.AddComponent<BoxCollider2D>();
+            collider.isTrigger = true;
+            collider.size = Vector2.one;
+
+            debugInteractableObject.AddComponent<DebugInteractable>();
         }
 
         private static void CreateGround()
