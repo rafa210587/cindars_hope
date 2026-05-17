@@ -294,3 +294,43 @@ PR-002 só deve começar se:
 - Abrir Unity e executar smoke test da seção 4.
 - Se Unity estiver limpo, descartar o stash de backup com `git stash drop stash@{0}`.
 - Depois criar `feature/fase8-pr-002-data-contracts-registries`.
+
+## 2026-05-17 - PR-002 Data contracts e registries
+
+**Responsavel:** Codex
+**Branch:** feature/fase8-pr-002-data-contracts-registries
+**Escopo:** criar contratos de dados identificaveis, registries ScriptableObject por ID e dados minimos de Item, Seed e Player para o MVP Fazenda.
+
+### Alteracoes
+- Criados contratos `IIdentifiedData` e `IDataRegistry<T>`.
+- Criado `DataRegistrySO<T>` com indice por ID, validacao de item nulo, ID vazio e ID duplicado.
+- Criados registries `ItemDatabaseSO` e `SeedDatabaseSO`.
+- Criados dados `ItemDataSO`, `SeedDataSO`, `PlayerDataSO` e enum `ItemCategory`.
+- Nenhum sistema de gameplay, UI, cena, prefab, save/load ou inventario funcional foi implementado.
+
+### Arquivos alterados
+- `Assets/_Game/Scripts/Core/Data/IIdentifiedData.cs`
+- `Assets/_Game/Scripts/Core/Data/IDataRegistry.cs`
+- `Assets/_Game/Scripts/Core/Data/DataRegistrySO.cs`
+- `Assets/_Game/Scripts/Core/Data/ItemDatabaseSO.cs`
+- `Assets/_Game/Scripts/Core/Data/SeedDatabaseSO.cs`
+- `Assets/_Game/Scripts/Farm/Data/SeedDataSO.cs`
+- `Assets/_Game/Scripts/Inventory/Data/ItemDataSO.cs`
+- `Assets/_Game/Scripts/Inventory/Data/ItemCategory.cs`
+- `Assets/_Game/Scripts/Player/Data/PlayerDataSO.cs`
+- `PROJECT_LOG.md`
+
+### Testes
+- [x] Verificada a branch esperada via `.git/HEAD`.
+- [x] Busca estatica nos arquivos novos por `GameObject.Find`, `FindObjectOfType`, `FindObjectsByType` e `StreamingAssets` sem ocorrencias.
+- [ ] Unity nao executado nesta sessao.
+- [ ] Compilacao C# local nao executada: `dotnet`, `csc`, `msbuild` e `git` nao estavam disponiveis no PATH do terminal.
+
+### Pendencias / riscos
+- Abrir Unity e confirmar que os menus `CindarsHope/Data/*` e `CindarsHope/Database/*` aparecem no Create Asset Menu.
+- Criar manualmente assets de teste de Item, Seed, Player e databases para validar campos no Inspector.
+- Unity pode gerar `.meta` para as novas pastas e scripts ao abrir o projeto.
+
+### Proximo passo recomendado
+- Executar smoke test no Unity: criar um `ItemDataSO`, um `SeedDataSO`, um `PlayerDataSO`, `ItemDatabaseSO` e `SeedDatabaseSO`; preencher IDs validos; confirmar Console sem erro.
+- Depois seguir para PR-003 - Bootstrap managers vazios.
