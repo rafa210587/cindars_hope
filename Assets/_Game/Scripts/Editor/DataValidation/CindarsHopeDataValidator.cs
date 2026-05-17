@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using CindarsHope.Craft.Data;
 using CindarsHope.Core.Data;
 using CindarsHope.Farm.Data;
 using CindarsHope.Inventory.Data;
@@ -22,7 +23,8 @@ namespace CindarsHope.Editor.DataValidation
             "item_crop_carrot",
             "item_fish_common",
             "item_wood",
-            "item_tool_fishing_rod_basic"
+            "item_tool_fishing_rod_basic",
+            "item_material_processed_wood"
         };
 
         private static readonly string[] RequiredSeedIds =
@@ -36,6 +38,16 @@ namespace CindarsHope.Editor.DataValidation
             "tree_basic"
         };
 
+        private static readonly string[] RequiredRecipeIds =
+        {
+            "recipe_processed_wood"
+        };
+
+        private static readonly string[] RequiredWorkshopIds =
+        {
+            "workshop_carpentry_basic"
+        };
+
         [MenuItem("CindarsHope/Validate/Validate MVP Data")]
         public static void ValidateMvpData()
         {
@@ -45,6 +57,8 @@ namespace CindarsHope.Editor.DataValidation
             var seedDatabase = FindRequiredAsset<SeedDatabaseSO>(errors, nameof(SeedDatabaseSO));
             var playerData = FindRequiredAsset<PlayerDataSO>(errors, nameof(PlayerDataSO));
             var treeDatabase = FindRequiredAsset<TreeDatabaseSO>(errors, nameof(TreeDatabaseSO));
+            var recipeDatabase = FindRequiredAsset<RecipeDatabaseSO>(errors, nameof(RecipeDatabaseSO));
+            var workshopDatabase = FindRequiredAsset<WorkshopDatabaseSO>(errors, nameof(WorkshopDatabaseSO));
             var items = new List<ItemDataSO>();
 
             if (itemDatabase != null)
@@ -70,6 +84,20 @@ namespace CindarsHope.Editor.DataValidation
                 var trees = LoadRegistryItems<TreeDatabaseSO, TreeDataSO>(treeDatabase, errors, nameof(TreeDatabaseSO));
                 ValidateIdentifiedData(trees, RequiredTreeIds, errors, "TreeDatabase");
                 ValidateTrees(trees, items, errors);
+            }
+
+            if (recipeDatabase != null)
+            {
+                var recipes = LoadRegistryItems<RecipeDatabaseSO, RecipeDataSO>(recipeDatabase, errors, nameof(RecipeDatabaseSO));
+                ValidateIdentifiedData(recipes, RequiredRecipeIds, errors, "RecipeDatabase");
+                ValidateRecipes(recipes, items, errors);
+            }
+
+            if (workshopDatabase != null)
+            {
+                var workshops = LoadRegistryItems<WorkshopDatabaseSO, WorkshopDataSO>(workshopDatabase, errors, nameof(WorkshopDatabaseSO));
+                ValidateIdentifiedData(workshops, RequiredWorkshopIds, errors, "WorkshopDatabase");
+                ValidateWorkshops(workshops, errors);
             }
 
             if (errors.Count > 0)
@@ -313,6 +341,105 @@ namespace CindarsHope.Editor.DataValidation
                     errors.Add($"{tree.name} WoodAmount must be >= 1.");
                 }
             }
+        }
+
+        private static void ValidateRecipes(
+            IEnumerable<RecipeDataSO> recipes,
+            IEnumerable<ItemDataSO> items,
+            ICollection<string> errors)
+        {
+            var itemIds = BuildItemIdSet(items);
+
+            foreach (var recipe in recipes)
+            {
+                if (recipe == null)
+                {
+                    continue;
+                }
+
+                if (recipe.RequiredWorkshopLevel < 1)
+                {
+                    errors.Add($"{recipe.name} RequiredWorkshopLevel must be >= 1.");
+                }
+
+                if (recipe.Ingredients == null || recipe.Ingredients.Length == 0)
+                {
+                    errors.Add($"{recipe.name} must have at least one ingredient.");
+                }
+                else
+                {
+                    for (var index = 0; index < recipe.Ingredients.Length; index++)
+                    {
+                        var ingredient = recipe.Ingredients[index];
+                        if (string.IsNullOrWhiteSpace(ingredient.ItemId))
+                        {
+                            errors.Add($"{recipe.name} ingredient at index {index} has empty ItemId.");
+                            continue;
+                        }
+
+                        if (!itemIds.Contains(ingredient.ItemId))
+                        {
+                            errors.Add($"{recipe.name} ingredient ItemId '{ingredient.ItemId}' is not known by ItemDatabase.");
+                        }
+
+                        if (ingredient.Amount < 1)
+                        {
+                            errors.Add($"{recipe.name} ingredient '{ingredient.ItemId}' Amount must be >= 1.");
+                        }
+                    }
+                }
+
+                if (string.IsNullOrWhiteSpace(recipe.OutputItemId))
+                {
+                    errors.Add($"{recipe.name} OutputItemId must not be empty.");
+                }
+                else if (!itemIds.Contains(recipe.OutputItemId))
+                {
+                    errors.Add($"{recipe.name} OutputItemId '{recipe.OutputItemId}' is not known by ItemDatabase.");
+                }
+
+                if (recipe.OutputAmount < 1)
+                {
+                    errors.Add($"{recipe.name} OutputAmount must be >= 1.");
+                }
+            }
+        }
+
+        private static void ValidateWorkshops(IEnumerable<WorkshopDataSO> workshops, ICollection<string> errors)
+        {
+            foreach (var workshop in workshops)
+            {
+                if (workshop == null)
+                {
+                    continue;
+                }
+
+                if (string.IsNullOrWhiteSpace(workshop.Id))
+                {
+                    errors.Add($"{workshop.name} Id must not be empty.");
+                }
+
+                if (workshop.Level < 1)
+                {
+                    errors.Add($"{workshop.name} Level must be >= 1.");
+                }
+            }
+        }
+
+        private static HashSet<string> BuildItemIdSet(IEnumerable<ItemDataSO> items)
+        {
+            var itemIds = new HashSet<string>();
+            foreach (var item in items)
+            {
+                if (item == null || string.IsNullOrWhiteSpace(item.Id))
+                {
+                    continue;
+                }
+
+                itemIds.Add(item.Id);
+            }
+
+            return itemIds;
         }
 
         private static void ValidateStartingItemAmount(

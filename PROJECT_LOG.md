@@ -1389,3 +1389,37 @@ PR-002 sÃ³ deve comeÃ§ar se:
 
 ### Próximo passo recomendado
 - PR-048 — criar `ItemCraftedEvent`, `CraftingManager` mínimo e expandir o validator para receitas/workshops.
+
+---
+
+## 2026-05-17 — PR-048 CraftingManager e evento de craft
+
+**Responsável:** Codex/ChatGPT
+**Branch:** `feature/fase9a-crafting-mvp-package`
+**Escopo:** runtime mínimo de crafting por ID e validação de dados de crafting.
+
+### Alterações
+- Criado `ItemCraftedEvent` com `RecipeId`, `ItemId` e `Amount`.
+- Criado `CraftingManager` com `Initialize`, `Shutdown`, `CanCraft`, `TryCraft` e `GetMissingIngredients`.
+- `TryCraft` resolve receita por `RecipeDatabaseSO`, valida ingredientes, verifica capacidade de output sem alterar `InventoryManager`, consome ingredientes, adiciona output e publica `ItemCraftedEvent`.
+- `CindarsHopeDataValidator` agora valida `RecipeDatabaseSO`, `WorkshopDatabaseSO`, `recipe_processed_wood`, `workshop_carpentry_basic`, ingredientes e output contra `ItemDatabase`.
+- Não houve UI, cena, `CraftingPoint`, save/load ou novos assets nesta wave.
+
+### Arquivos alterados
+- `Assets/_Game/Scripts/Craft/CraftingManager.cs`
+- `Assets/_Game/Scripts/Core/Events/ItemCraftedEvent.cs`
+- `Assets/_Game/Scripts/Editor/DataValidation/CindarsHopeDataValidator.cs`
+- `.meta` correspondentes
+- `PROJECT_LOG.md`
+
+### Testes
+- [x] Revisão estática dos arquivos alterados.
+- [x] Busca por `GameObject.Find`, `FindObjectOfType`, `FindObjectsByType` e `StreamingAssets` nos arquivos tocados sem ocorrências.
+- [ ] Unity não executado neste terminal; validar compilação e `CindarsHope/Validate/Validate MVP Data` no editor.
+
+### Pendências / riscos
+- `CraftingManager` ainda não está integrado na cena; isso entra no PR-051.
+- `CraftingPoint` interagível entra no PR-049.
+
+### Próximo passo recomendado
+- PR-049 — criar `CraftingPoint` interagível para executar `recipe_processed_wood`.
