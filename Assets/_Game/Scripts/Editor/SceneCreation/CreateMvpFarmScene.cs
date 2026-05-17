@@ -50,7 +50,7 @@ namespace CindarsHope.Editor.SceneCreation
             CreateGround();
             var farmPlotRegistry = CreateFarmPlots(inventoryManager);
             var treeRegistry = CreateTrees(inventoryManager);
-            CreateDebugWoodPickup(inventoryManager);
+            var itemPickupRegistry = CreateItemPickups(inventoryManager);
             CreateSellPoint(inventoryManager, playerManager);
             CreateSeedShopPoint(inventoryManager, playerManager);
             CreateFishingSpot(inventoryManager);
@@ -64,7 +64,7 @@ namespace CindarsHope.Editor.SceneCreation
             CreateBounds();
             CreateMainCamera();
 
-            ConfigureBootstrap(bootstrap, playerTransform, farmPlotRegistry, treeRegistry);
+            ConfigureBootstrap(bootstrap, playerTransform, farmPlotRegistry, treeRegistry, itemPickupRegistry);
 
             EditorSceneManager.MarkSceneDirty(scene);
             EditorSceneManager.SaveScene(scene, ScenePath);
@@ -97,7 +97,8 @@ namespace CindarsHope.Editor.SceneCreation
             GameBootstrap bootstrap,
             Transform playerTransform,
             FarmPlotRegistry farmPlotRegistry,
-            TreeRegistry treeRegistry)
+            TreeRegistry treeRegistry,
+            ItemPickupRegistry itemPickupRegistry)
         {
             var bootstrapObject = bootstrap.gameObject;
             var serializedBootstrap = new SerializedObject(bootstrap);
@@ -116,6 +117,7 @@ namespace CindarsHope.Editor.SceneCreation
                 bootstrapObject.GetComponent<TimeManager>(),
                 farmPlotRegistry,
                 treeRegistry,
+                itemPickupRegistry,
                 playerTransform);
             ConfigureSaveInput(bootstrapObject.GetComponent<SaveInput>(), bootstrapObject.GetComponent<SaveManager>());
 
@@ -153,6 +155,7 @@ namespace CindarsHope.Editor.SceneCreation
             TimeManager timeManager,
             FarmPlotRegistry farmPlotRegistry,
             TreeRegistry treeRegistry,
+            ItemPickupRegistry itemPickupRegistry,
             Transform playerTransform)
         {
             var serializedSave = new SerializedObject(saveManager);
@@ -162,6 +165,7 @@ namespace CindarsHope.Editor.SceneCreation
             SetReference(serializedSave, "_timeManager", timeManager);
             SetReference(serializedSave, "_farmPlotRegistry", farmPlotRegistry);
             SetReference(serializedSave, "_treeRegistry", treeRegistry);
+            SetReference(serializedSave, "_itemPickupRegistry", itemPickupRegistry);
             SetReference(serializedSave, "_playerTransform", playerTransform);
             serializedSave.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(saveManager);
@@ -390,21 +394,41 @@ namespace CindarsHope.Editor.SceneCreation
             EditorUtility.SetDirty(fishingSpot);
         }
 
-        private static void CreateDebugWoodPickup(InventoryManager inventoryManager)
+        private static ItemPickupRegistry CreateItemPickups(InventoryManager inventoryManager)
         {
-            var pickupObject = new GameObject("DebugWoodPickup");
-            pickupObject.transform.position = new Vector3(3.75f, -1.5f, 0f);
+            var parent = new GameObject("ItemPickups");
+            parent.transform.position = Vector3.zero;
+            var registry = parent.AddComponent<ItemPickupRegistry>();
+
+            var pickups = new ItemPickup[1];
+            pickups[0] = CreateItemPickup(parent.transform, 0, "seed_carrot", 1, new Vector3(3.75f, -1.5f, 0f), inventoryManager);
+            registry.Configure(pickups);
+            EditorUtility.SetDirty(registry);
+            return registry;
+        }
+
+        private static ItemPickup CreateItemPickup(
+            Transform parent,
+            int pickupIndex,
+            string itemId,
+            int amount,
+            Vector3 position,
+            InventoryManager inventoryManager)
+        {
+            var pickupObject = new GameObject("DebugCarrotSeedPickup");
+            pickupObject.transform.SetParent(parent);
+            pickupObject.transform.position = position;
             pickupObject.transform.localScale = new Vector3(0.65f, 0.65f, 1f);
 
             var spriteRenderer = pickupObject.AddComponent<SpriteRenderer>();
             spriteRenderer.sprite = GetBuiltinSprite();
-            spriteRenderer.color = new Color(0.72f, 0.45f, 0.2f);
+            spriteRenderer.color = new Color(0.95f, 0.5f, 0.22f);
             spriteRenderer.sortingOrder = 2;
             SetSortingLayerIfExists(spriteRenderer, "Items");
 
             if (spriteRenderer.sprite == null)
             {
-                Debug.LogWarning("DebugWoodPickup placeholder SpriteRenderer was created without a sprite. Replace it with item art in a future art PR.");
+                Debug.LogWarning("DebugCarrotSeedPickup placeholder SpriteRenderer was created without a sprite. Replace it with item art in a future art PR.");
             }
 
             var collider = pickupObject.AddComponent<BoxCollider2D>();
@@ -413,11 +437,17 @@ namespace CindarsHope.Editor.SceneCreation
 
             var pickup = pickupObject.AddComponent<ItemPickup>();
             var serializedPickup = new SerializedObject(pickup);
-            serializedPickup.FindProperty("_itemId").stringValue = "item_wood";
-            serializedPickup.FindProperty("_amount").intValue = 1;
+            serializedPickup.FindProperty("_pickupIndex").intValue = pickupIndex;
+            serializedPickup.FindProperty("_itemId").stringValue = itemId;
+            serializedPickup.FindProperty("_amount").intValue = amount;
             SetReference(serializedPickup, "_inventoryManager", inventoryManager);
+            SetReference(serializedPickup, "_spriteRenderer", spriteRenderer);
+            SetReference(serializedPickup, "_collider", collider);
             serializedPickup.ApplyModifiedPropertiesWithoutUndo();
+
+            pickup.Configure(pickupIndex, itemId, amount, inventoryManager);
             EditorUtility.SetDirty(pickup);
+            return pickup;
         }
 
         private static void CreateDebugHud(

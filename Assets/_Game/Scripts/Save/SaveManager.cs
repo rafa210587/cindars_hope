@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
@@ -25,6 +26,7 @@ namespace CindarsHope.Save
         [SerializeField] private TimeManager _timeManager;
         [SerializeField] private FarmPlotRegistry _farmPlotRegistry;
         [SerializeField] private TreeRegistry _treeRegistry;
+        [SerializeField] private ItemPickupRegistry _itemPickupRegistry;
         [SerializeField] private Transform _playerTransform;
 
         public bool IsInitialized { get; private set; }
@@ -54,14 +56,7 @@ namespace CindarsHope.Save
                     Debug.LogWarning("SaveManager saved without FarmPlotRegistry. Farm plots were omitted.", this);
                 }
 
-                if (_treeRegistry != null)
-                {
-                    farmSaveData.Trees = _treeRegistry.CaptureSaveData();
-                }
-                else
-                {
-                    Debug.LogWarning("SaveManager saved without TreeRegistry. Trees were omitted.", this);
-                }
+                var worldSaveData = CaptureWorldSaveData();
 
                 var saveData = new GameSaveData
                 {
@@ -69,7 +64,8 @@ namespace CindarsHope.Save
                     CurrentDay = CaptureCurrentDay(),
                     Player = CapturePlayerSaveData(),
                     Inventory = CaptureInventorySaveData(),
-                    Farm = farmSaveData
+                    Farm = farmSaveData,
+                    World = worldSaveData
                 };
 
                 var savePath = SaveFilePath;
@@ -164,6 +160,15 @@ namespace CindarsHope.Save
                     Debug.LogWarning("SaveManager skipped inventory restore because InventoryManager is missing.", this);
                 }
 
+                if (_itemPickupRegistry != null)
+                {
+                    _itemPickupRegistry.RestoreFromSaveData(saveData.World != null ? saveData.World.Pickups : null);
+                }
+                else
+                {
+                    Debug.LogWarning("SaveManager skipped item pickup restore because ItemPickupRegistry is missing.", this);
+                }
+
                 if (_farmPlotRegistry != null)
                 {
                     _farmPlotRegistry.RestoreFromSaveData(saveData.Farm);
@@ -175,7 +180,11 @@ namespace CindarsHope.Save
 
                 if (_treeRegistry != null)
                 {
-                    _treeRegistry.RestoreFromSaveData(saveData.Farm);
+                    var treeFarmSaveData = new FarmSaveData
+                    {
+                        Trees = GetSavedTrees(saveData)
+                    };
+                    _treeRegistry.RestoreFromSaveData(treeFarmSaveData);
                 }
                 else
                 {
@@ -246,6 +255,43 @@ namespace CindarsHope.Save
 
             Debug.LogWarning("SaveManager saved without InventoryManager. Inventory section is empty.", this);
             return new InventorySaveData();
+        }
+
+        private WorldSaveData CaptureWorldSaveData()
+        {
+            var worldSaveData = new WorldSaveData();
+
+            if (_itemPickupRegistry != null)
+            {
+                worldSaveData.Pickups = _itemPickupRegistry.CaptureSaveData();
+            }
+            else
+            {
+                Debug.LogWarning("SaveManager saved without ItemPickupRegistry. Pickups were omitted.", this);
+            }
+
+            if (_treeRegistry != null)
+            {
+                worldSaveData.Trees = _treeRegistry.CaptureSaveData();
+            }
+            else
+            {
+                Debug.LogWarning("SaveManager saved without TreeRegistry. Trees were omitted.", this);
+            }
+
+            return worldSaveData;
+        }
+
+        private static List<TreeSaveData> GetSavedTrees(GameSaveData saveData)
+        {
+            if (saveData.World != null && saveData.World.Trees != null)
+            {
+                return saveData.World.Trees;
+            }
+
+            return saveData.Farm != null && saveData.Farm.Trees != null
+                ? saveData.Farm.Trees
+                : new List<TreeSaveData>();
         }
 
         private void PublishSaveResult(bool wasSuccessful, string message)

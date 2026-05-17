@@ -1216,3 +1216,46 @@ PR-002 sÃ³ deve comeÃ§ar se:
 ### Próximo passo recomendado
 - Rodar `CindarsHope/Scenes/Create MVP FarmScene`, `CindarsHope/Validate/Validate MVP Data` e smoke test completo no Unity.
 - Depois decidir entre hardening de save/load pós-validação ou próxima atividade MVP.
+
+---
+
+## 2026-05-17 — Fix pickups persistentes no save/load da wave PR-031 a PR-045
+
+**Responsável:** Codex/ChatGPT
+**Branch:** `wave/fase8-world-activities-shop-hardening-031-045`
+**Escopo:** corrigir persistência de pickups do mundo e bloquear duplicação/exploit ao carregar saves.
+
+### Alterações
+- `ItemPickup` agora é persistente e não destrói mais o `GameObject` ao coletar.
+- `IsCollected` passa a ser a fonte de verdade para interação, visual e collider.
+- Pickups coletados desabilitam `SpriteRenderer` e `Collider2D`, retornam `false` em `CanInteract` e ignoram `Interact`.
+- `SetCollected(true)` só é chamado após `InventoryManager.AddItem` retornar sucesso.
+- Criados `ItemPickupSaveData` e `ItemPickupRegistry`.
+- Save agora registra `PickupIndex`, `ItemId`, `Amount`, `Position` e `IsCollected` em `WorldSaveData.Pickups`.
+- Load restaura posição, item, quantidade e estado coletado; saves antigos sem seção `World` são ignorados com segurança para pickups.
+- `CreateMvpFarmScene` cria parent `ItemPickups`, `ItemPickupRegistry` e `DebugCarrotSeedPickup` (`seed_carrot` x1).
+- `SaveManager` recebe `ItemPickupRegistry` e restaura pickups depois do inventário.
+- Isso corrige o bug em que salvar com pickup no chão, coletar e carregar removia o item do inventário mas não devolvia o pickup ao chão.
+
+### Arquivos alterados
+- `Assets/_Game/Scripts/World/ItemPickup.cs`
+- `Assets/_Game/Scripts/World/ItemPickupRegistry.cs`
+- `Assets/_Game/Scripts/World/ItemPickupSaveData.cs`
+- `Assets/_Game/Scripts/Save/SaveData.cs`
+- `Assets/_Game/Scripts/Save/SaveManager.cs`
+- `Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpFarmScene.cs`
+- `PROJECT_LOG.md`
+- `.meta` dos novos scripts
+
+### Testes
+- [x] Revisão estática dos arquivos alterados.
+- [x] Busca por `Destroy(`, `GameObject.Find`, `FindObjectOfType`, `FindObjectsByType` e `StreamingAssets` nos arquivos tocados não encontrou ocorrências.
+- [ ] Unity não executado neste terminal; validar o fluxo F5/F9 no editor.
+
+### Pendências / riscos
+- `Assets/_Game/Scenes/FarmScene.unity` já estava modificado antes deste ajuste; não foi incluído manualmente neste fix.
+- Recriar a cena pelo menu para garantir `ItemPickupRegistry` e `DebugCarrotSeedPickup` na hierarquia antes do teste.
+
+### Próximo passo recomendado
+- Rodar `CindarsHope/Scenes/Create MVP FarmScene`.
+- Testar salvar com `DebugCarrotSeedPickup` no chão, coletar, carregar, confirmar retorno ao chão, coletar novamente, salvar coletado e carregar confirmando que permanece sumido.
