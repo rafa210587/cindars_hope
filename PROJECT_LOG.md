@@ -334,3 +334,34 @@ PR-002 só deve começar se:
 ### Proximo passo recomendado
 - Executar smoke test no Unity: criar um `ItemDataSO`, um `SeedDataSO`, um `PlayerDataSO`, `ItemDatabaseSO` e `SeedDatabaseSO`; preencher IDs validos; confirmar Console sem erro.
 - Depois seguir para PR-003 - Bootstrap managers vazios.
+
+## 2026-05-17 — Sincronização da Fase 8 após decisão de PR-003 assets
+
+**Responsável:** ChatGPT
+**Branch:** docs/sync-fase8-pr003-assets
+**Escopo:** atualizar fontes operacionais do projeto sem interferir na branch local do Codex.
+
+### Alterações
+- Atualizado `docs/FASE8_EXECUTION_PLAN_CODEX_v1.0.md` no conteúdo para v1.1, mantendo o nome do arquivo para evitar quebra de referências.
+- Criado `docs/FASE8_SYNC_PR003_ASSETS_v1.0.md` como documento de alinhamento entre plano, arquitetura, histórias e specs.
+- Consolidado que `PR-003` passa a ser **Assets de dados MVP**.
+- Adicionado `Item_Cana_Basica.asset` como dado obrigatório do MVP.
+- Adicionado `PR-004 — Editor data validator` antes dos managers.
+- Deslocados os PRs de managers/gameplay para preservar execução em fatias pequenas.
+- Registrada regra de fallback para `GrowthStageSprites` vazio/nulo.
+
+### Testes
+- [x] Branch documental separada criada a partir de `dev`.
+- [x] Arquivos documentais atualizados via GitHub.
+- [ ] Nenhuma validação Unity necessária, pois não houve alteração em código/assets runtime.
+
+### Pendências / riscos
+- A branch local do Codex pode estar em `feature/fase8-pr-003-mvp-data-assets`; não misturar manualmente com esta branch documental sem pull/merge controlado.
+- Após o Codex finalizar PR-003, incorporar estas mudanças documentais em `dev` antes de iniciar PR-004.
+- Revisar `PROJECT_LOG.md` caso o PR-003 local já tenha atualizado a entrada com a ordem antiga.
+
+### Próximo passo recomendado
+- Concluir PR-003 incluindo `Item_Cana_Basica.asset` e removendo qualquer arquivo fora de escopo.
+- Mergear PR-003 em `dev` após teste Unity.
+- Mergear `docs/sync-fase8-pr003-assets` em `dev`.
+- Iniciar `PR-004 — Editor data validator`.
