@@ -1,12 +1,14 @@
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Data;
 using CindarsHope.Core.Time;
+using CindarsHope.Economy;
 using CindarsHope.Farm;
 using CindarsHope.Inventory;
 using CindarsHope.Interaction;
 using CindarsHope.Player;
 using CindarsHope.Player.Data;
 using CindarsHope.Save;
+using CindarsHope.UI;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -40,6 +42,8 @@ namespace CindarsHope.Editor.SceneCreation
             CreateDebugInteractable();
             CreateGround();
             CreateFarmPlots(bootstrap.GetComponent<InventoryManager>());
+            CreateSellPoint(bootstrap.GetComponent<InventoryManager>(), bootstrap.GetComponent<PlayerManager>());
+            CreateDebugHud(bootstrap.GetComponent<PlayerManager>(), bootstrap.GetComponent<InventoryManager>(), bootstrap.GetComponent<HungerManager>());
             CreateBounds();
             CreateMainCamera();
 
@@ -65,6 +69,8 @@ namespace CindarsHope.Editor.SceneCreation
             bootstrapObject.AddComponent<TimeManager>();
             bootstrapObject.AddComponent<SaveManager>();
             bootstrapObject.AddComponent<DayAdvanceInput>();
+            bootstrapObject.AddComponent<HungerManager>();
+            bootstrapObject.AddComponent<FoodConsumer>();
 
             return bootstrap;
         }
@@ -79,15 +85,18 @@ namespace CindarsHope.Editor.SceneCreation
             SetReference(serializedBootstrap, "_timeManager", bootstrapObject.GetComponent<TimeManager>());
             SetReference(serializedBootstrap, "_saveManager", bootstrapObject.GetComponent<SaveManager>());
             ConfigureDayAdvanceInput(bootstrapObject.GetComponent<DayAdvanceInput>(), bootstrapObject.GetComponent<TimeManager>());
+            ConfigureFoodConsumer(bootstrapObject.GetComponent<FoodConsumer>(), bootstrapObject.GetComponent<InventoryManager>(), bootstrapObject.GetComponent<HungerManager>());
 
             var playerData = AssetDatabase.LoadAssetAtPath<PlayerDataSO>(PlayerDataPath);
             if (playerData != null)
             {
                 SetReference(serializedBootstrap, "_playerData", playerData);
+                ConfigureHungerManager(bootstrapObject.GetComponent<HungerManager>(), playerData);
             }
             else
             {
                 Debug.LogWarning($"PlayerDataSO not found at {PlayerDataPath}. Assign it manually on GameBootstrap.");
+                ConfigureHungerManager(bootstrapObject.GetComponent<HungerManager>(), null);
             }
 
             var itemDatabase = AssetDatabase.LoadAssetAtPath<ItemDatabaseSO>(ItemDatabasePath);
@@ -102,6 +111,23 @@ namespace CindarsHope.Editor.SceneCreation
 
             serializedBootstrap.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(bootstrap);
+        }
+
+        private static void ConfigureHungerManager(HungerManager hungerManager, PlayerDataSO playerData)
+        {
+            var serializedHunger = new SerializedObject(hungerManager);
+            SetReference(serializedHunger, "_playerData", playerData);
+            serializedHunger.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(hungerManager);
+        }
+
+        private static void ConfigureFoodConsumer(FoodConsumer foodConsumer, InventoryManager inventoryManager, HungerManager hungerManager)
+        {
+            var serializedConsumer = new SerializedObject(foodConsumer);
+            SetReference(serializedConsumer, "_inventoryManager", inventoryManager);
+            SetReference(serializedConsumer, "_hungerManager", hungerManager);
+            serializedConsumer.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(foodConsumer);
         }
 
         private static void ConfigureDayAdvanceInput(DayAdvanceInput dayAdvanceInput, TimeManager timeManager)
@@ -210,6 +236,47 @@ namespace CindarsHope.Editor.SceneCreation
             collider.size = Vector2.one;
 
             debugInteractableObject.AddComponent<DebugInteractable>();
+        }
+
+        private static void CreateSellPoint(InventoryManager inventoryManager, PlayerManager playerManager)
+        {
+            var sellPointObject = new GameObject("SellPoint");
+            sellPointObject.transform.position = new Vector3(-3f, 0f, 0f);
+            sellPointObject.transform.localScale = new Vector3(0.9f, 0.9f, 1f);
+
+            var spriteRenderer = sellPointObject.AddComponent<SpriteRenderer>();
+            spriteRenderer.sprite = GetBuiltinSprite();
+            spriteRenderer.color = new Color(0.25f, 0.75f, 0.85f);
+            spriteRenderer.sortingOrder = 2;
+            SetSortingLayerIfExists(spriteRenderer, "Items");
+
+            if (spriteRenderer.sprite == null)
+            {
+                Debug.LogWarning("SellPoint placeholder SpriteRenderer was created without a sprite. Replace it with economy art in a future art PR.");
+            }
+
+            var collider = sellPointObject.AddComponent<BoxCollider2D>();
+            collider.isTrigger = true;
+            collider.size = Vector2.one;
+
+            var sellPoint = sellPointObject.AddComponent<SellPoint>();
+            var serializedSellPoint = new SerializedObject(sellPoint);
+            SetReference(serializedSellPoint, "_inventoryManager", inventoryManager);
+            SetReference(serializedSellPoint, "_playerManager", playerManager);
+            serializedSellPoint.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(sellPoint);
+        }
+
+        private static void CreateDebugHud(PlayerManager playerManager, InventoryManager inventoryManager, HungerManager hungerManager)
+        {
+            var hudObject = new GameObject("DebugHud");
+            var debugHud = hudObject.AddComponent<DebugHud>();
+            var serializedHud = new SerializedObject(debugHud);
+            SetReference(serializedHud, "_playerManager", playerManager);
+            SetReference(serializedHud, "_inventoryManager", inventoryManager);
+            SetReference(serializedHud, "_hungerManager", hungerManager);
+            serializedHud.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(debugHud);
         }
 
         private static void CreateFarmPlots(InventoryManager inventoryManager)

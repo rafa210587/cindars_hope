@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using CindarsHope.Core;
 using CindarsHope.Core.Data;
 using CindarsHope.Core.Events;
+using CindarsHope.Inventory.Data;
 using CindarsHope.Player.Data;
 using UnityEngine;
 
@@ -127,6 +128,15 @@ namespace CindarsHope.Inventory
             return !string.IsNullOrWhiteSpace(itemId)
                 && _itemDatabase != null
                 && _itemDatabase.TryGetById(itemId, out _);
+        }
+
+        public bool TryGetItemData(string itemId, out ItemDataSO itemData)
+        {
+            itemData = null;
+            return !string.IsNullOrWhiteSpace(itemId)
+                && _itemDatabase != null
+                && _itemDatabase.TryGetById(itemId, out itemData)
+                && itemData != null;
         }
 
         public bool AddItem(string itemId, int amount)
