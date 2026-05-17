@@ -265,3 +265,32 @@ PR-002 só deve começar se:
 - Atualizar `AGENTS.md` e `CLAUDE.md` com regra de leitura/atualização do log.
 - Rodar o smoke test Unity.
 - Criar `feature/fase8-pr-002-data-contracts-registries`.
+
+## 2026-05-16 — Versionamento dos metas Unity do core
+
+**Responsável:** Humano orientado por ChatGPT
+**Branch:** dev
+**Escopo:** limpar arquivos locais indevidos após sincronização e versionar `.meta` Unity necessários para PR-001.
+
+### Alterações
+- Removidos localmente do working tree: `.vscode/`, `Assets/MobileDependencyResolver/`, `Assets/Resources/` e `cindars_hope.slnx`.
+- Adicionados e enviados para `origin/dev` os `.meta` de `Assets/_Game/Scripts/Core` e `Assets/_Game/Scripts/Core/Events`.
+- Adicionado `ProjectSettings/PackageManagerSettings.asset`.
+- Commit local enviado: `7238f66 chore: adicionar metas unity do core`.
+
+### Testes
+- [x] `git pull origin dev` executou com fast-forward.
+- [x] `git commit` criou 15 arquivos Unity/meta.
+- [x] `git push origin dev` concluiu com sucesso.
+- [ ] Unity ainda precisa ser aberto e validado localmente após este push.
+
+### Pendências / riscos
+- Stash de backup ainda pode existir localmente; não aplicar `git stash pop` novamente.
+- Descartar o stash somente após o Unity abrir sem erros.
+- Validar se `ProjectSettings/PackageManagerSettings.asset` é compatível com a versão local do Unity.
+
+### Próximo passo recomendado
+- Rodar `git status --short`.
+- Abrir Unity e executar smoke test da seção 4.
+- Se Unity estiver limpo, descartar o stash de backup com `git stash drop stash@{0}`.
+- Depois criar `feature/fase8-pr-002-data-contracts-registries`.
