@@ -1,55 +1,74 @@
-﻿# Cindar's Hope Ã¢â‚¬â€ Project Log
+﻿# Cindar's Hope — Project Log
 
 > Fonte operacional de continuidade do projeto.
-> Todo agente humano ou IA deve ler este arquivo antes de executar mudanÃ§as e atualizÃ¡-lo ao final de qualquer tarefa relevante.
+> Todo agente humano ou IA deve ler este arquivo antes de executar mudanças e atualizá-lo ao final de qualquer tarefa relevante.
 
 ---
 
-## 1. Protocolo obrigatÃ³rio para ChatGPT, Codex, Claude e agentes
+## Handoff atual para próxima LLM
+
+### Estado atual
+
+- A `dev` contém loop agrícola, economia/fome/HUD, save/load, árvores, pesca básica, loja de sementes, item pickup persistente, HUD com prompt e validação expandida.
+- A próxima LLM deve começar lendo `PROJECT_LOG.md`, `AGENTS.md`, `CLAUDE.md` e docs principais.
+- A próxima LLM deve validar o estado real do GitHub antes de planejar.
+- O próximo passo recomendado é hardening/QA pós PR-045, não feature nova imediata.
+
+### Checklist de validação pendente
+
+- [ ] Rodar `CindarsHope/Validate/Validate MVP Data`.
+- [ ] Rodar `CindarsHope/Scenes/Create MVP FarmScene`.
+- [ ] Testar Play Mode completo.
+- [ ] Testar save/load com plots, árvores, pickups persistentes, inventário, ouro, fome, HP, dia e posição do player.
+- [ ] Confirmar Console sem erro vermelho.
+
+---
+
+## 1. Protocolo obrigatório para ChatGPT, Codex, Claude e agentes
 
 Antes de qualquer tarefa:
 
 1. Ler `PROJECT_LOG.md`.
 2. Ler `AGENTS.md` e/ou `CLAUDE.md`.
-3. Ler os documentos de referÃªncia citados no PR/tarefa.
+3. Ler os documentos de referência citados no PR/tarefa.
 4. Confirmar branch atual e escopo permitido.
-5. NÃ£o iniciar implementaÃ§Ã£o se houver divergÃªncia entre branch, docs e estado real do projeto.
+5. Não iniciar implementação se houver divergência entre branch, docs e estado real do projeto.
 
 Durante a tarefa:
 
 1. Manter escopo pequeno.
-2. NÃ£o implementar V2/FULL quando o PR Ã© MVP.
-3. NÃ£o alterar docs de design sem pedido explÃ­cito.
-4. NÃ£o mexer em arquivos fora da lista permitida do PR.
-5. Registrar dÃºvidas ou desvios em vez de decidir silenciosamente.
+2. Não implementar V2/FULL quando o PR é MVP.
+3. Não alterar docs de design sem pedido explícito.
+4. Não mexer em arquivos fora da lista permitida do PR.
+5. Registrar dúvidas ou desvios em vez de decidir silenciosamente.
 
 Ao final da tarefa:
 
 1. Atualizar este log com uma nova entrada.
 2. Informar arquivos alterados.
-3. Informar testes executados ou nÃ£o executados.
-4. Informar pendÃªncias, riscos e prÃ³ximo passo recomendado.
-5. Nunca apagar histÃ³rico anterior; este arquivo Ã© append-only, salvo correÃ§Ã£o factual explÃ­cita.
+3. Informar testes executados ou não executados.
+4. Informar pendências, riscos e próximo passo recomendado.
+5. Nunca apagar histórico anterior; este arquivo é append-only, salvo correção factual explícita.
 
 Modelo de entrada:
 
 ```md
-## YYYY-MM-DD Ã¢â‚¬â€ TÃ­tulo curto
+## YYYY-MM-DD — Título curto
 
-**ResponsÃ¡vel:** Humano / ChatGPT / Codex / Claude
+**Responsável:** Humano / ChatGPT / Codex / Claude
 **Branch:** nome-da-branch
 **Escopo:** resumo curto
 
-### AlteraÃ§Ãµes
+### Alterações
 - ...
 
 ### Testes
 - [ ] ...
 
-### PendÃªncias / riscos
+### Pendências / riscos
 - ...
 
-### PrÃ³ximo passo recomendado
+### Próximo passo recomendado
 - ...
 ```
 
@@ -59,15 +78,15 @@ Modelo de entrada:
 
 ### Repo
 
-- RepositÃ³rio: `rafa210587/cindars_hope`
-- Branch base estÃ¡vel: `main`
+- Repositório: `rafa210587/cindars_hope`
+- Branch base estável: `main`
 - Branch de desenvolvimento: `dev`
-- Fluxo recomendado: `main` Ã¢â€ â€™ `dev` Ã¢â€ â€™ `feature/fase8-pr-XXX-*`
+- Fluxo recomendado: `main` → `dev` → `feature/fase8-pr-XXX-*`
 
 ### Fase atual
 
-- Fase 8 Ã¢â‚¬â€ implementaÃ§Ã£o do MVP Fazenda.
-- Objetivo do MVP: `BootScene Ã¢â€ â€™ FarmScene Ã¢â€ â€™ inventÃ¡rio inicial Ã¢â€ â€™ plantar Ã¢â€ â€™ avanÃ§ar dias Ã¢â€ â€™ colher Ã¢â€ â€™ vender Ã¢â€ â€™ salvar Ã¢â€ â€™ fechar Ã¢â€ â€™ reabrir Ã¢â€ â€™ estado restaurado`.
+- Fase 8 — implementação do MVP Fazenda.
+- Objetivo do MVP: `BootScene → FarmScene → inventário inicial → plantar → avançar dias → colher → vender → salvar → fechar → reabrir → estado restaurado`.
 
 ### Status dos PRs da Fase 8
 
@@ -81,14 +100,18 @@ Modelo de entrada:
 | PR-006 | Mergeado em `dev` |
 | PR-007 | Mergeado em `dev` |
 | PR-008 | Mergeado em `dev` |
-| PR-009 | Mergeado em `dev`, documental pÃ³s PR-008 |
-| PR-010 | Mergeado em `dev`, movimento/input mÃ­nimo |
-| PR-011 | Mergeado em `dev`, runtime state hardening |
-| PR-012 | Implementado; pendente validação Unity e merge |
-| PR-013 a PR-017 | Implementados nesta wave; pendentes validação Unity e merge |
-| PR-018 a PR-024 | Implementados nesta wave; pendentes validação Unity e merge |
-| PR-025 a PR-030 | Implementados nesta wave; pendentes validação Unity e merge |
-| Próximo PR runtime | Pesca/árvores ou hardening de save/load após validação |
+| PR-009 | Mergeado em `dev` |
+| PR-010 | Mergeado em `dev` |
+| PR-011 | Mergeado em `dev` |
+| PR-012 | Mergeado em `dev` |
+| PR-013 a PR-017 | Mergeados em `dev`; Farm Loop MVP |
+| PR-018 a PR-024 | Mergeados em `dev`; Economy + Hunger + HUD |
+| PR-025 a PR-030 | Mergeados em `dev`; Save/Load MVP |
+| PR-031 a PR-045 | Mergeados em `dev`; World Activities + Shop + Hardening |
+| Fix pickups persistentes | Mergeado em `dev` |
+| Próximo recomendado | Hardening pós PR-045 + nova sessão de handoff |
+
+---
 
 ### PR-001
 
@@ -1259,3 +1282,34 @@ PR-002 sÃ³ deve comeÃ§ar se:
 ### Próximo passo recomendado
 - Rodar `CindarsHope/Scenes/Create MVP FarmScene`.
 - Testar salvar com `DebugCarrotSeedPickup` no chão, coletar, carregar, confirmar retorno ao chão, coletar novamente, salvar coletado e carregar confirmando que permanece sumido.
+
+---
+
+## 2026-05-17 — Handoff pós PR-045
+
+**Responsável:** Codex/ChatGPT
+**Branch:** `docs/fase8-handoff-pos-pr045`
+**Escopo:** sincronização documental de handoff após Fase 8 até PR-045.
+
+### Alterações
+- Topo do `PROJECT_LOG.md` sincronizado para o estado pós PR-045.
+- Status das waves PR-013 a PR-045 atualizado como mergeado em `dev`.
+- Fix de pickups persistentes registrado como mergeado em `dev`.
+- Próximo passo recomendado definido como hardening/QA pós PR-045 e nova sessão de handoff.
+- Adicionada seção `Handoff atual para próxima LLM` com checklist de validação pendente.
+- Corrigido mojibake óbvio no topo do log.
+
+### Arquivos alterados
+- `PROJECT_LOG.md`
+
+### Testes
+- [x] Revisão textual do topo atualizado.
+- [x] Verificado que o escopo ficou restrito a documentação operacional.
+- [ ] Unity não executado; alteração é documental.
+
+### Pendências / riscos
+- Próxima sessão deve validar o estado real do GitHub antes de planejar novas mudanças.
+- Hardening/QA pós PR-045 deve vir antes de feature nova imediata.
+
+### Próximo passo recomendado
+- Rodar validação Unity completa pós PR-045 e registrar resultados antes de abrir nova feature.
