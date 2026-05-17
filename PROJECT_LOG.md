@@ -786,3 +786,54 @@ PR-002 só deve começar se:
 
 ### Proximo passo recomendado
 - Iniciar o proximo PR runtime de movimento/input com `PlayerInputActions.inputactions` sob dono explicito do proprio PR.
+
+## 2026-05-17 - PR-010 PlayerInputActions e PlayerController minimo
+
+**Responsavel:** Codex
+**Branch:** feature/fase8-pr-010-player-input-movement
+**Escopo:** criar input e movimento minimo do jogador na FarmScene, usando `PlayerDataSO.MoveSpeed` e publicando `PlayerStepEvent`, sem gameplay adicional.
+
+### Alteracoes
+- Criada pasta `Assets/_Game/Input`.
+- Criado `PlayerInputActions.inputactions` com Action Map `Player` e actions `Move`, `Interact`, `Inventory` e `Sleep`.
+- `PlayerController` criado em `CindarsHope.Player`, com movimento por `Rigidbody2D.MovePosition`.
+- `PlayerController` usa `PlayerDataSO.MoveSpeed` como fonte de velocidade, com fallback seguro de 5 quando o asset nao estiver atribuido.
+- Diagonal e normalizada para evitar aceleracao.
+- `PlayerStepEvent` e publicado a cada 1 unidade aproximada percorrida.
+- `CreateMvpFarmScene` agora cria `Player` com `Rigidbody2D`, `BoxCollider2D` e `PlayerController`.
+- `CreateMvpFarmScene` atribui `PlayerData.asset` e o `Rigidbody2D` ao `PlayerController` quando o asset e encontrado.
+- Apenas `Move` e usado neste PR; `Interact`, `Inventory` e `Sleep` ficaram definidos para PRs futuros.
+- Nao houve interacao, plantio, colheita, pesca, venda, UI, prefab, save/load, alteracao de eventos ou alteracao de `GameEventBus`.
+
+### Observacao sobre Input System
+- `Packages/manifest.json` nao contem `com.unity.inputsystem`.
+- `Packages` nao foi alterado neste PR.
+- Para manter compilacao possivel no estado atual, `PlayerController` usa Input System apenas quando `ENABLE_INPUT_SYSTEM` existir e mantem fallback por teclado legado.
+- Instalar/ativar `com.unity.inputsystem` deve ser ajuste separado antes de validar o fluxo final com New Input System.
+
+### Arquivos alterados
+- `Assets/_Game/Input.meta`
+- `Assets/_Game/Input/PlayerInputActions.inputactions`
+- `Assets/_Game/Input/PlayerInputActions.inputactions.meta`
+- `Assets/_Game/Scripts/Player/PlayerController.cs`
+- `Assets/_Game/Scripts/Player/PlayerController.cs.meta`
+- `Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpFarmScene.cs`
+- `PROJECT_LOG.md`
+
+### Testes
+- [x] Verificada a branch esperada via `.git/HEAD`.
+- [x] Confirmado que `com.unity.inputsystem` nao existe em `Packages/manifest.json`.
+- [x] Busca estatica nos arquivos do PR por `GameObject.Find`, `FindObjectOfType`, `FindObjectsByType`, `StreamingAssets`, `JsonUtility`, `File.`, `Directory.`, `InteractionSystem`, `IInteractable`, `Canvas`, `UnityEngine.UI`, `TextMeshPro`, `Cinemachine`, `Save(` e `Load(` sem ocorrencias.
+- [x] Conferido que `CreateMvpFarmScene` adiciona `Rigidbody2D`, `BoxCollider2D` e `PlayerController` ao `Player`.
+- [x] Conferido que `PlayerController` publica `PlayerStepEvent`.
+- [ ] Unity nao executado nesta sessao.
+- [ ] Compilacao C# local nao executada: ferramentas `git`, `dotnet`, `csc` e `msbuild` nao estao disponiveis no PATH do terminal.
+
+### Pendencias / riscos
+- Instalar/ativar `com.unity.inputsystem` em PR separado ou etapa propria antes de depender do New Input System.
+- Rodar `CindarsHope/Scenes/Create MVP FarmScene` no Unity para recriar a cena.
+- Entrar em Play Mode e validar WASD/setas, diagonal normalizada e Console sem erro vermelho.
+- Revisar o `.meta` de `PlayerInputActions.inputactions` apos instalar o Input System, pois o pacote pode atualizar o importer.
+
+### Proximo passo recomendado
+- Validar PR-010 no Unity. Depois, seguir para interacao generica somente apos confirmar o pacote de input e o movimento basico.

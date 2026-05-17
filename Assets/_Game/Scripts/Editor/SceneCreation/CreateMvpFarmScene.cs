@@ -113,6 +113,37 @@ namespace CindarsHope.Editor.SceneCreation
             {
                 Debug.LogWarning("Player placeholder SpriteRenderer was created without a sprite. Replace it with the final placeholder sprite in a future art PR.");
             }
+
+            var rigidbody = player.AddComponent<Rigidbody2D>();
+            rigidbody.bodyType = RigidbodyType2D.Dynamic;
+            rigidbody.gravityScale = 0f;
+            rigidbody.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+            rigidbody.constraints = RigidbodyConstraints2D.FreezeRotation;
+
+            var collider = player.AddComponent<BoxCollider2D>();
+            collider.size = new Vector2(0.85f, 0.85f);
+
+            var playerController = player.AddComponent<PlayerController>();
+            ConfigurePlayerController(playerController, rigidbody);
+        }
+
+        private static void ConfigurePlayerController(PlayerController playerController, Rigidbody2D rigidbody)
+        {
+            var serializedController = new SerializedObject(playerController);
+            SetReference(serializedController, "_rigidbody", rigidbody);
+
+            var playerData = AssetDatabase.LoadAssetAtPath<PlayerDataSO>(PlayerDataPath);
+            if (playerData != null)
+            {
+                SetReference(serializedController, "_playerData", playerData);
+            }
+            else
+            {
+                Debug.LogWarning($"PlayerDataSO not found at {PlayerDataPath}. Assign it manually on PlayerController.");
+            }
+
+            serializedController.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(playerController);
         }
 
         private static void CreateGround()
@@ -171,7 +202,7 @@ namespace CindarsHope.Editor.SceneCreation
             var property = serializedObject.FindProperty(propertyName);
             if (property == null)
             {
-                Debug.LogWarning($"GameBootstrap serialized field '{propertyName}' was not found.");
+                Debug.LogWarning($"Serialized field '{propertyName}' was not found on '{serializedObject.targetObject.name}'.");
                 return;
             }
 
