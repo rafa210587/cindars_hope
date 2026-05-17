@@ -84,7 +84,8 @@ Modelo de entrada:
 | PR-009 | Mergeado em `dev`, documental pós PR-008 |
 | PR-010 | Mergeado em `dev`, movimento/input mínimo |
 | PR-011 | Mergeado em `dev`, runtime state hardening |
-| Próximo PR runtime | PR-012 Interaction System mínimo |
+| PR-012 | Implementado nesta branch; pendente validação Unity e merge |
+| Próximo PR runtime | Canteiros/plots ou preparação de farm plot |
 
 ### PR-001
 
@@ -951,3 +952,39 @@ PR-002 só deve começar se:
 
 ### Próximo passo recomendado
 - Executar `PR-012 — Interaction System mínimo` após validação local no Unity.
+
+---
+
+## 2026-05-17 — PR-012 Interaction System mínimo
+
+**Responsável:** Codex/ChatGPT
+**Branch:** `feature/fase8-pr-012-interaction-system`
+**Escopo:** base runtime genérica de interação por tecla E e trigger, sem gameplay específico.
+
+### Alterações
+- Criada interface `IInteractable` em `CindarsHope.Interaction`.
+- Criado `InteractionSystem` com detecção de interagíveis próximos por trigger 2D e interação via `Input.GetKeyDown(KeyCode.E)`.
+- Criado `DebugInteractable` apenas para teste manual de interação.
+- Atualizado `CreateMvpFarmScene` para criar `InteractionTrigger` filho do Player, adicionar `InteractionSystem` ao Player e criar `DebugInteractable` próximo ao início da cena.
+- Atualizado o status consolidado para registrar o PR-012 nesta branch.
+
+### Arquivos alterados
+- `Assets/_Game/Scripts/Interaction/IInteractable.cs`
+- `Assets/_Game/Scripts/Interaction/InteractionSystem.cs`
+- `Assets/_Game/Scripts/Interaction/DebugInteractable.cs`
+- `Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpFarmScene.cs`
+- `PROJECT_LOG.md`
+
+### Testes
+- [x] Revisão estática dos arquivos alterados.
+- [x] Verificado que o PR não altera PlayerController, PlayerInputActions, GameEventBus, dados, prefabs, UI, save/load ou sistemas de gameplay específicos.
+- [ ] Unity não executado neste terminal; validar compilação e Play Mode no editor.
+
+### Pendências / riscos
+- Confirmar no Unity que eventos de trigger 2D chegam ao `InteractionSystem` no Player usando o collider filho `InteractionTrigger`.
+- O `DebugInteractable` é somente objeto de teste criado pelo Editor script; não representa plantio, pesca, venda ou árvore.
+- Input segue por fallback legacy `Input.GetKeyDown` até um PR futuro instalar/configurar o Input System.
+
+### Próximo passo recomendado
+- Rodar `CindarsHope/Scenes/Create MVP FarmScene`, entrar em Play Mode, aproximar do `DebugInteractable` e apertar E.
+- Próximo PR recomendado: canteiros/plots ou preparação de farm plot, conforme validação do PR-012.
