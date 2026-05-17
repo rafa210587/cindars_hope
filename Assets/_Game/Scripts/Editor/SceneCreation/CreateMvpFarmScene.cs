@@ -38,16 +38,16 @@ namespace CindarsHope.Editor.SceneCreation
             scene.name = "FarmScene";
 
             var bootstrap = CreateBootstrap();
-            CreatePlayer();
+            var playerTransform = CreatePlayer();
             CreateDebugInteractable();
             CreateGround();
-            CreateFarmPlots(bootstrap.GetComponent<InventoryManager>());
+            var farmPlotRegistry = CreateFarmPlots(bootstrap.GetComponent<InventoryManager>());
             CreateSellPoint(bootstrap.GetComponent<InventoryManager>(), bootstrap.GetComponent<PlayerManager>());
             CreateDebugHud(bootstrap.GetComponent<PlayerManager>(), bootstrap.GetComponent<InventoryManager>(), bootstrap.GetComponent<HungerManager>());
             CreateBounds();
             CreateMainCamera();
 
-            ConfigureBootstrap(bootstrap);
+            ConfigureBootstrap(bootstrap, playerTransform, farmPlotRegistry);
 
             EditorSceneManager.MarkSceneDirty(scene);
             EditorSceneManager.SaveScene(scene, ScenePath);
@@ -71,11 +71,12 @@ namespace CindarsHope.Editor.SceneCreation
             bootstrapObject.AddComponent<DayAdvanceInput>();
             bootstrapObject.AddComponent<HungerManager>();
             bootstrapObject.AddComponent<FoodConsumer>();
+            bootstrapObject.AddComponent<SaveInput>();
 
             return bootstrap;
         }
 
-        private static void ConfigureBootstrap(GameBootstrap bootstrap)
+        private static void ConfigureBootstrap(GameBootstrap bootstrap, Transform playerTransform, FarmPlotRegistry farmPlotRegistry)
         {
             var bootstrapObject = bootstrap.gameObject;
             var serializedBootstrap = new SerializedObject(bootstrap);
@@ -86,6 +87,15 @@ namespace CindarsHope.Editor.SceneCreation
             SetReference(serializedBootstrap, "_saveManager", bootstrapObject.GetComponent<SaveManager>());
             ConfigureDayAdvanceInput(bootstrapObject.GetComponent<DayAdvanceInput>(), bootstrapObject.GetComponent<TimeManager>());
             ConfigureFoodConsumer(bootstrapObject.GetComponent<FoodConsumer>(), bootstrapObject.GetComponent<InventoryManager>(), bootstrapObject.GetComponent<HungerManager>());
+            ConfigureSaveManager(
+                bootstrapObject.GetComponent<SaveManager>(),
+                bootstrapObject.GetComponent<PlayerManager>(),
+                bootstrapObject.GetComponent<InventoryManager>(),
+                bootstrapObject.GetComponent<HungerManager>(),
+                bootstrapObject.GetComponent<TimeManager>(),
+                farmPlotRegistry,
+                playerTransform);
+            ConfigureSaveInput(bootstrapObject.GetComponent<SaveInput>(), bootstrapObject.GetComponent<SaveManager>());
 
             var playerData = AssetDatabase.LoadAssetAtPath<PlayerDataSO>(PlayerDataPath);
             if (playerData != null)
@@ -113,6 +123,34 @@ namespace CindarsHope.Editor.SceneCreation
             EditorUtility.SetDirty(bootstrap);
         }
 
+        private static void ConfigureSaveManager(
+            SaveManager saveManager,
+            PlayerManager playerManager,
+            InventoryManager inventoryManager,
+            HungerManager hungerManager,
+            TimeManager timeManager,
+            FarmPlotRegistry farmPlotRegistry,
+            Transform playerTransform)
+        {
+            var serializedSave = new SerializedObject(saveManager);
+            SetReference(serializedSave, "_playerManager", playerManager);
+            SetReference(serializedSave, "_inventoryManager", inventoryManager);
+            SetReference(serializedSave, "_hungerManager", hungerManager);
+            SetReference(serializedSave, "_timeManager", timeManager);
+            SetReference(serializedSave, "_farmPlotRegistry", farmPlotRegistry);
+            SetReference(serializedSave, "_playerTransform", playerTransform);
+            serializedSave.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(saveManager);
+        }
+
+        private static void ConfigureSaveInput(SaveInput saveInput, SaveManager saveManager)
+        {
+            var serializedInput = new SerializedObject(saveInput);
+            SetReference(serializedInput, "_saveManager", saveManager);
+            serializedInput.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(saveInput);
+        }
+
         private static void ConfigureHungerManager(HungerManager hungerManager, PlayerDataSO playerData)
         {
             var serializedHunger = new SerializedObject(hungerManager);
@@ -138,7 +176,7 @@ namespace CindarsHope.Editor.SceneCreation
             EditorUtility.SetDirty(dayAdvanceInput);
         }
 
-        private static void CreatePlayer()
+        private static Transform CreatePlayer()
         {
             var player = new GameObject("Player");
             player.transform.position = Vector3.zero;
@@ -170,6 +208,8 @@ namespace CindarsHope.Editor.SceneCreation
             var interactionTrigger = CreateInteractionTrigger(player.transform);
             var interactionSystem = player.AddComponent<InteractionSystem>();
             ConfigureInteractionSystem(interactionSystem, interactionTrigger);
+
+            return player.transform;
         }
 
         private static CircleCollider2D CreateInteractionTrigger(Transform parent)
@@ -279,7 +319,7 @@ namespace CindarsHope.Editor.SceneCreation
             EditorUtility.SetDirty(debugHud);
         }
 
-        private static void CreateFarmPlots(InventoryManager inventoryManager)
+        private static FarmPlotRegistry CreateFarmPlots(InventoryManager inventoryManager)
         {
             var seedDatabase = AssetDatabase.LoadAssetAtPath<SeedDatabaseSO>(SeedDatabasePath);
             if (seedDatabase == null)
@@ -289,22 +329,28 @@ namespace CindarsHope.Editor.SceneCreation
 
             var parent = new GameObject("FarmPlots");
             parent.transform.position = Vector3.zero;
+            var registry = parent.AddComponent<FarmPlotRegistry>();
 
             const int gridSize = 3;
             const float spacing = 1.35f;
             var startPosition = new Vector3(-spacing, 2.25f, 0f);
+            var plots = new FarmPlot[gridSize * gridSize];
 
             for (var y = 0; y < gridSize; y++)
             {
                 for (var x = 0; x < gridSize; x++)
                 {
                     var plotIndex = y * gridSize + x;
-                    CreateFarmPlot(parent.transform, plotIndex, startPosition + new Vector3(x * spacing, -y * spacing, 0f), inventoryManager, seedDatabase);
+                    plots[plotIndex] = CreateFarmPlot(parent.transform, plotIndex, startPosition + new Vector3(x * spacing, -y * spacing, 0f), inventoryManager, seedDatabase);
                 }
             }
+
+            registry.Configure(plots);
+            EditorUtility.SetDirty(registry);
+            return registry;
         }
 
-        private static void CreateFarmPlot(Transform parent, int plotIndex, Vector3 position, InventoryManager inventoryManager, SeedDatabaseSO seedDatabase)
+        private static FarmPlot CreateFarmPlot(Transform parent, int plotIndex, Vector3 position, InventoryManager inventoryManager, SeedDatabaseSO seedDatabase)
         {
             var plotObject = new GameObject($"FarmPlot_{plotIndex:00}");
             plotObject.transform.SetParent(parent);
@@ -335,6 +381,7 @@ namespace CindarsHope.Editor.SceneCreation
             farmPlot.Configure(plotIndex, inventoryManager, seedDatabase);
             farmPlot.ResetPlot();
             EditorUtility.SetDirty(farmPlot);
+            return farmPlot;
         }
 
         private static void CreateGround()

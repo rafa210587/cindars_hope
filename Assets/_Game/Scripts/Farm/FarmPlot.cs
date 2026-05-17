@@ -70,6 +70,44 @@ namespace CindarsHope.Farm
             SetState(FarmPlotState.Empty);
         }
 
+        public FarmPlotSaveData CaptureSaveData()
+        {
+            return new FarmPlotSaveData
+            {
+                PlotIndex = _plotIndex,
+                State = State.ToString(),
+                PlantedSeedId = PlantedSeedId,
+                DaysGrown = DaysGrown
+            };
+        }
+
+        public void RestoreFromSaveData(FarmPlotSaveData saveData)
+        {
+            if (saveData == null)
+            {
+                Debug.LogWarning($"FarmPlot {_plotIndex} cannot restore from null save data.", this);
+                return;
+            }
+
+            if (!System.Enum.TryParse(saveData.State, out FarmPlotState restoredState))
+            {
+                Debug.LogWarning($"FarmPlot {_plotIndex} received invalid saved state '{saveData.State}'. Resetting plot.", this);
+                ResetPlot();
+                return;
+            }
+
+            PlantedSeedId = string.IsNullOrWhiteSpace(saveData.PlantedSeedId) ? string.Empty : saveData.PlantedSeedId;
+            DaysGrown = Mathf.Max(0, saveData.DaysGrown);
+
+            if (restoredState == FarmPlotState.Empty)
+            {
+                PlantedSeedId = string.Empty;
+                DaysGrown = 0;
+            }
+
+            SetState(restoredState);
+        }
+
         public bool CanInteract(GameObject interactor)
         {
             return true;

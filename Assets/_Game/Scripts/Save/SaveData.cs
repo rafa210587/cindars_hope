@@ -1,0 +1,47 @@
+using System;
+using System.Collections.Generic;
+using CindarsHope.Farm;
+using UnityEngine;
+
+namespace CindarsHope.Save
+{
+    [Serializable]
+    public class GameSaveData
+    {
+        public int SchemaVersion;
+        public int CurrentDay;
+        public PlayerSaveData Player;
+        public InventorySaveData Inventory;
+        public FarmSaveData Farm;
+    }
+
+    [Serializable]
+    public class PlayerSaveData
+    {
+        public int CurrentHP;
+        public int MaxHP;
+        public int Gold;
+        public int CurrentHunger;
+        public int MaxHunger;
+        public Vector2 PlayerPosition;
+    }
+
+    [Serializable]
+    public class InventorySaveData
+    {
+        public List<InventoryItemSaveData> Items = new List<InventoryItemSaveData>();
+    }
+
+    [Serializable]
+    public class InventoryItemSaveData
+    {
+        public string ItemId;
+        public int Amount;
+    }
+
+    [Serializable]
+    public class FarmSaveData
+    {
+        public List<FarmPlotSaveData> Plots = new List<FarmPlotSaveData>();
+    }
+}

@@ -4,6 +4,7 @@ using CindarsHope.Core.Data;
 using CindarsHope.Core.Events;
 using CindarsHope.Inventory.Data;
 using CindarsHope.Player.Data;
+using CindarsHope.Save;
 using UnityEngine;
 
 namespace CindarsHope.Inventory
@@ -137,6 +138,56 @@ namespace CindarsHope.Inventory
                 && _itemDatabase != null
                 && _itemDatabase.TryGetById(itemId, out itemData)
                 && itemData != null;
+        }
+
+        public InventorySaveData CaptureSaveData()
+        {
+            var saveData = new InventorySaveData();
+            foreach (var item in _items)
+            {
+                if (string.IsNullOrWhiteSpace(item.Key) || item.Value <= 0)
+                {
+                    continue;
+                }
+
+                saveData.Items.Add(new InventoryItemSaveData
+                {
+                    ItemId = item.Key,
+                    Amount = item.Value
+                });
+            }
+
+            return saveData;
+        }
+
+        public void RestoreFromSaveData(InventorySaveData saveData)
+        {
+            Clear();
+
+            if (saveData == null || saveData.Items == null)
+            {
+                return;
+            }
+
+            foreach (var item in saveData.Items)
+            {
+                if (item == null || string.IsNullOrWhiteSpace(item.ItemId) || item.Amount <= 0)
+                {
+                    Debug.LogWarning("InventoryManager skipped invalid saved inventory item.", this);
+                    continue;
+                }
+
+                if (!IsKnownItem(item.ItemId))
+                {
+                    Debug.LogWarning($"InventoryManager skipped unknown saved item id '{item.ItemId}'.", this);
+                    continue;
+                }
+
+                if (!AddItem(item.ItemId, item.Amount))
+                {
+                    Debug.LogWarning($"InventoryManager could not restore item '{item.ItemId}' x{item.Amount}.", this);
+                }
+            }
         }
 
         public bool AddItem(string itemId, int amount)

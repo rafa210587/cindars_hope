@@ -74,6 +74,18 @@ namespace CindarsHope.Player
             GameEventBus.Publish(new HungerChangedEvent(delta, CurrentHunger, MaxHunger));
         }
 
+        public void RestoreFromSaveData(int currentHunger, int maxHunger)
+        {
+            var previousHunger = CurrentHunger;
+            MaxHunger = Mathf.Max(1, maxHunger);
+            CurrentHunger = Mathf.Clamp(currentHunger, 0, MaxHunger);
+            _distanceAccumulator = 0f;
+            _criticalEventPublished = IsCritical;
+            _emptyEventPublished = IsEmpty;
+
+            GameEventBus.Publish(new HungerChangedEvent(CurrentHunger - previousHunger, CurrentHunger, MaxHunger));
+        }
+
         private void Awake()
         {
             Initialize(_playerData);
