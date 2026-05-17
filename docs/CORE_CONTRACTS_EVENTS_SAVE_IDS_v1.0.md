@@ -218,6 +218,20 @@ public readonly struct CropHarvestedEvent
 }
 ```
 
+### 6.3 Eventos adicionais do MVP criados no PR-008
+
+Os contratos abaixo já existem em `Assets/_Game/Scripts/Core/Events` desde o PR-008:
+
+- `CropReadyEvent`
+- `PlayerStepEvent`
+- `HungerCriticalEvent`
+- `HungerEmptyEvent`
+- `ItemPickedUpEvent`
+- `PlayerRespawnedEvent`
+- `HPChangedEvent`
+
+`HPChangedEvent` substitui qualquer orientação antiga de UI escutar `PlayerManager.OnHPChanged` diretamente. HUD/UI devem consumir evento, mantendo a comunicação entre sistemas orientada ao `GameEventBus`.
+
 ---
 
 ## 7. Save path
@@ -299,6 +313,29 @@ public class TreeSaveData
     public bool IsActive;
 }
 ```
+
+### 8.1 PlayerSaveData canônico
+
+Para o MVP, usar a definição de `PlayerSaveData` deste documento como fonte canônica. A definição resumida em `FASE7_SPEC_MVP_FARM_v2.2.md` está desatualizada.
+
+`PlayerSaveData` deve incluir:
+
+- `CurrentHP`
+- `MaxHP`
+- `Gold`
+- `CurrentHunger`
+- `PlayerPosition`
+
+### 8.2 Decisões de persistência MVP
+
+- `FishingSpot` não é persistido no MVP.
+- Spots de pesca reiniciam ao carregar.
+- Rever em V2 se houver cooldown ou estado de pesca persistente.
+
+### 8.3 Árvores
+
+- `TreeDataSO` e `TreeDatabaseSO` devem ser definidos antes do PR de árvores.
+- Não criar código de árvore antes desse PR específico.
 
 ---
 

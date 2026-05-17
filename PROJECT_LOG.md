@@ -69,6 +69,21 @@ Modelo de entrada:
 - Fase 8 — implementação do MVP Fazenda.
 - Objetivo do MVP: `BootScene → FarmScene → inventário inicial → plantar → avançar dias → colher → vender → salvar → fechar → reabrir → estado restaurado`.
 
+### Status dos PRs da Fase 8
+
+| PR | Status |
+|---|---|
+| PR-001 | Mergeado em `dev` |
+| PR-002 | Mergeado em `dev` |
+| PR-003 | Mergeado em `dev` |
+| PR-004 | Mergeado em `dev` |
+| PR-005 | Mergeado em `dev` |
+| PR-006 | Mergeado em `dev` |
+| PR-007 | Mergeado em `dev`; validaÃ§Ã£o Unity local recomendada |
+| PR-008 | Mergeado em `dev` |
+| PR-009 | Documental atual |
+| PrÃ³ximo PR runtime | Movimento/input |
+
 ### PR-001
 
 Status: aplicado no repositório.
@@ -119,27 +134,15 @@ Motivo: Unity Package Manager pode falhar com `EPERM` ao renomear pacotes em `Li
 
 ## 3. Próximo passo recomendado
 
-Antes de iniciar PR-002:
+Antes do próximo PR runtime:
 
-1. Sincronizar local:
-
-```bash
-git fetch origin
-git checkout dev
-git pull origin dev
-git lfs install
-git lfs pull
-```
-
-2. Abrir Unity pelo caminho fora do OneDrive.
-3. Validar checklist Unity da seção 4.
-4. Se Unity estiver sem erro, criar branch:
-
-```bash
-git checkout -b feature/fase8-pr-002-data-contracts-registries
-```
-
-5. Executar PR-002 com Codex.
+1. Validar Unity com PR-007/PR-008 aplicados.
+2. Confirmar pacotes:
+   - `com.unity.inputsystem`
+   - `com.unity.cinemachine`, se usado no PR de câmera/movimento
+3. Confirmar que `CindarsHope/Validate/Validate MVP Data` continua passando.
+4. O próximo PR runtime será movimento/input.
+5. `PlayerInputActions.inputactions` deve ter dono explícito no PR de movimento/input.
 
 ---
 
@@ -236,6 +239,17 @@ PR-002 só deve começar se:
 - [ ] Console não tem erro vermelho.
 - [ ] `git status` está limpo ou apenas com mudanças intencionais.
 - [ ] Branch local está em `dev` atualizada.
+
+### 4.9 Validação pós-PR-007/PR-008
+
+- [ ] Menu `CindarsHope/Scenes/Create MVP FarmScene` executa sem erro.
+- [ ] `FarmScene.unity` abre.
+- [ ] Hierarquia contém `_Bootstrap`, `Player`, `Ground`, `Bounds` e `Main Camera`.
+- [ ] `_Bootstrap` tem `GameBootstrap`, `PlayerManager`, `InventoryManager`, `TimeManager` e `SaveManager`.
+- [ ] `GameBootstrap` referencia `PlayerData.asset` e `ItemDatabase.asset`.
+- [ ] Console sem erro vermelho.
+- [ ] Eventos do PR-008 existem em `Assets/_Game/Scripts/Core/Events`.
+- [ ] Menu `CindarsHope/Validate/Validate MVP Data` continua passando.
 
 ---
 
@@ -680,7 +694,8 @@ PR-002 só deve começar se:
 ## 2026-05-17 - PR-008 Core contracts hardening
 
 **Responsavel:** Codex
-**Branch:** feature/fase8-pr-008-core-contracts-hardening
+**Branch atual:** dev
+**Branch esperada:** feature/fase8-pr-008-core-contracts-hardening
 **Escopo:** adicionar contratos de eventos core exigidos por PRs futuros, sem implementar sistemas, gameplay, input, UI, cena ou save/load.
 
 ### Alteracoes
@@ -722,7 +737,7 @@ PR-002 só deve começar se:
 - `PROJECT_LOG.md`
 
 ### Testes
-- [x] Verificada a branch esperada via `.git/HEAD`.
+- [x] Verificado via `.git/HEAD` que o workspace esta em `dev`; a branch esperada do PR e `feature/fase8-pr-008-core-contracts-hardening`.
 - [x] Busca estatica nos novos eventos por `GameObject`, `ScriptableObject`, `MonoBehaviour`, `Transform`, `FindObject`, `Publish`, `Subscribe`, `JsonUtility`, `File.`, `Directory.`, `Input`, `Canvas` e `PlayerController` sem ocorrencias.
 - [x] Conferido que os novos eventos usam namespace `CindarsHope.Core.Events`.
 - [x] Conferido que os novos eventos sao `readonly struct` com tipos simples ou Unity structs leves (`Vector2`, `Vector2Int`).
@@ -730,8 +745,44 @@ PR-002 só deve começar se:
 - [ ] Compilacao C# local nao executada: ferramentas `git`, `dotnet`, `csc` e `msbuild` nao estao disponiveis no PATH do terminal.
 
 ### Pendencias / riscos
+- Antes do merge, garantir que as alteracoes estejam na branch `feature/fase8-pr-008-core-contracts-hardening`.
 - Abrir Unity e confirmar Console sem erro vermelho.
 - Antes de cada PR futuro, confirmar se o evento novo e suficiente para a spec correspondente sem ampliar payload indevidamente.
 
 ### Proximo passo recomendado
 - Validar PR-008 no Unity e, depois, seguir para a fatia de movimento/input com dono claro para `PlayerInputActions.inputactions` e pacotes Unity confirmados.
+
+## 2026-05-17 - PR-009 Docs sync pos PR-008
+
+**Responsavel:** Codex
+**Branch:** docs/fase8-pr-009-sync-pos-pr008
+**Escopo:** sincronizar documentos operacionais apos PR-001 a PR-008, sem alterar codigo, assets, cenas, prefabs ou gameplay.
+
+### Alteracoes
+- Atualizado o estado atual consolidado com tabela de PR-001 a PR-009 e proximo PR runtime.
+- Atualizado o proximo passo recomendado para validar Unity com PR-007/PR-008, confirmar pacotes de input/camera e definir dono de `PlayerInputActions.inputactions`.
+- Adicionada validacao pos-PR-007/PR-008 no smoke test do `PROJECT_LOG.md`.
+- `CORE_CONTRACTS_EVENTS_SAVE_IDS_v1.0.md` agora registra os eventos criados no PR-008.
+- `CORE_CONTRACTS_EVENTS_SAVE_IDS_v1.0.md` marca `PlayerSaveData` deste documento como canonico para o MVP.
+- Registradas decisoes de que `FishingSpot` nao e persistido no MVP e que `TreeDataSO`/`TreeDatabaseSO` serao definidos antes do PR de arvores.
+- `FASE8_EXECUTION_PLAN_CODEX_v1.0.md` recebeu prerequisitos para movimento/input e politica de VFX.
+- PR documental: nenhum runtime, asset, cena, prefab, UI ou gameplay foi alterado.
+
+### Arquivos alterados
+- `PROJECT_LOG.md`
+- `docs/CORE_CONTRACTS_EVENTS_SAVE_IDS_v1.0.md`
+- `docs/FASE8_EXECUTION_PLAN_CODEX_v1.0.md`
+
+### Testes
+- [x] Verificada a branch esperada via `.git/HEAD`.
+- [x] As edicoes desta tarefa foram aplicadas apenas nos tres Markdown permitidos.
+- [ ] `Assets` contem arquivos alterados recentemente de PR anterior; sem `git status`, nao foi possivel validar o diff final por arquivo.
+- [ ] Unity nao executado nesta sessao; PR-009 nao altera runtime.
+- [ ] `git status` nao executado: `git` nao esta disponivel no PATH do terminal.
+
+### Pendencias / riscos
+- Rodar validacao Unity pos-PR-007/PR-008 antes do proximo PR runtime.
+- Confirmar `com.unity.inputsystem` e `com.unity.cinemachine`, se Cinemachine for usado.
+
+### Proximo passo recomendado
+- Iniciar o proximo PR runtime de movimento/input com `PlayerInputActions.inputactions` sob dono explicito do proprio PR.
