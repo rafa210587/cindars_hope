@@ -14,6 +14,7 @@ namespace CindarsHope.Inventory
         private ItemDatabaseSO _itemDatabase;
 
         public bool IsInitialized { get; private set; }
+        public bool HasItemDatabase => _itemDatabase != null;
         public IReadOnlyDictionary<string, int> Items => _items;
 
         public void Initialize()
@@ -26,9 +27,22 @@ namespace CindarsHope.Inventory
             IsInitialized = true;
         }
 
-        public void InitializeFromStartingItems(PlayerDataSO playerData, ItemDatabaseSO itemDatabase)
+        public void Initialize(ItemDatabaseSO itemDatabase)
         {
             Initialize();
+
+            if (itemDatabase == null)
+            {
+                Debug.LogWarning("InventoryManager initialized without ItemDatabaseSO. Item operations will reject unknown ids until a database is assigned.", this);
+                return;
+            }
+
+            _itemDatabase = itemDatabase;
+        }
+
+        public void InitializeFromStartingItems(PlayerDataSO playerData, ItemDatabaseSO itemDatabase)
+        {
+            Initialize(itemDatabase);
             Clear();
 
             if (playerData == null)
@@ -42,8 +56,6 @@ namespace CindarsHope.Inventory
                 Debug.LogWarning("InventoryManager cannot initialize starting items because ItemDatabaseSO is missing.", this);
                 return;
             }
-
-            _itemDatabase = itemDatabase;
 
             if (playerData.StartingItems == null)
             {
@@ -108,6 +120,13 @@ namespace CindarsHope.Inventory
             }
 
             return GetAmount(itemId) >= amount;
+        }
+
+        public bool IsKnownItem(string itemId)
+        {
+            return !string.IsNullOrWhiteSpace(itemId)
+                && _itemDatabase != null
+                && _itemDatabase.TryGetById(itemId, out _);
         }
 
         public bool AddItem(string itemId, int amount)
