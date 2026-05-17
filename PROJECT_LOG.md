@@ -1514,3 +1514,67 @@ PR-002 sÃ³ deve comeÃ§ar se:
 
 ### Próximo passo recomendado
 - PR-052 — registrar handoff do Crafting MVP.
+
+---
+
+## 2026-05-17 — PR-052 Handoff pós Crafting MVP
+
+**Responsável:** Codex/ChatGPT
+**Branch:** `feature/fase9a-crafting-mvp-package`
+**Escopo:** handoff documental do pacote FASE 9A-1 — Crafting MVP na fazenda.
+
+### Resumo do pacote
+- Executados PR-046 a PR-051 do pacote FASE 9A-1 — Crafting MVP.
+- O pacote adiciona contratos de crafting, assets mínimos, runtime por ID, evento de craft, ponto interagível e integração reproduzível no gerador da FarmScene.
+- Loop esperado: cortar árvore para obter `item_wood`, interagir com `CraftingPoint_Carpentry`, consumir madeira e receber `item_material_processed_wood`.
+
+### Arquivos principais criados
+- `Assets/_Game/Scripts/Craft/Data/RecipeDataSO.cs`
+- `Assets/_Game/Scripts/Craft/Data/RecipeIngredient.cs`
+- `Assets/_Game/Scripts/Craft/Data/RecipeDatabaseSO.cs`
+- `Assets/_Game/Scripts/Craft/Data/WorkshopType.cs`
+- `Assets/_Game/Scripts/Craft/Data/WorkshopDataSO.cs`
+- `Assets/_Game/Scripts/Craft/Data/WorkshopDatabaseSO.cs`
+- `Assets/_Game/Scripts/Craft/CraftingManager.cs`
+- `Assets/_Game/Scripts/Craft/CraftingPoint.cs`
+- `Assets/_Game/Scripts/Core/Events/ItemCraftedEvent.cs`
+- `Assets/_Game/Data/Items/Item_Processed_Wood.asset`
+- `Assets/_Game/Data/Recipes/Recipe_Processed_Wood.asset`
+- `Assets/_Game/Data/Workshops/Workshop_Carpentry_Basic.asset`
+- `Assets/_Game/Data/Registries/RecipeDatabase.asset`
+- `Assets/_Game/Data/Registries/WorkshopDatabase.asset`
+
+### Como testar
+1. Abrir Unity.
+2. Rodar `CindarsHope/Validate/Validate MVP Data`.
+3. Rodar `CindarsHope/Scenes/Create MVP FarmScene`.
+4. Entrar em Play Mode.
+5. Cortar árvore até obter `item_wood`.
+6. Interagir com `CraftingPoint_Carpentry`.
+7. Confirmar que `item_wood` reduziu.
+8. Confirmar que `item_material_processed_wood` foi adicionado.
+9. Confirmar HUD/debug/log mostrando o resultado via inventário e Console.
+
+### Fora de escopo preservado
+- Cidade.
+- Caverna.
+- Combate.
+- Companions.
+- UI final.
+- Animação.
+- VFX.
+- Fila/tempo de crafting.
+- Múltiplos workshops completos.
+- Múltiplos slots de save.
+- Build/package/release.
+
+### Pendências
+- UI final de crafting.
+- Múltiplas receitas.
+- Tempo/fila de crafting.
+- Workshops completos.
+- Balanceamento de receitas.
+- Validar Unity, cena recriada e Play Mode localmente.
+
+### Próximo pacote recomendado
+- FASE 9A-2 — TownScene mínima com portal Farm ↔ Town e NPC/ShopPoint básico.
