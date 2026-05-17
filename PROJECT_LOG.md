@@ -837,3 +837,32 @@ PR-002 só deve começar se:
 
 ### Proximo passo recomendado
 - Validar PR-010 no Unity. Depois, seguir para interacao generica somente apos confirmar o pacote de input e o movimento basico.
+
+## 2026-05-17 - PR-010 ajuste documental Input System
+
+**Responsavel:** Codex
+**Branch:** feature/fase8-pr-010-player-input-movement
+**Escopo:** registrar explicitamente a decisao de fallback legacy no `PlayerController`, sem alterar comportamento de movimento nem instalar pacote.
+
+### Alteracoes
+- Adicionado comentario em `PlayerController.cs` explicando que o PR-010 mantem fallback legacy para permitir movimento sem alterar `Packages`/`ProjectSettings`.
+- Registrado que `PlayerInputActions.inputactions` ja existe como contrato para PR futuro de migracao/pacote de input.
+- Movimento continua igual: `Move` atual funciona via fallback legacy quando `ENABLE_INPUT_SYSTEM` nao esta ativo.
+- Instalar/configurar `com.unity.inputsystem` fica para PR futuro especifico.
+- Nenhum `Packages`, `ProjectSettings`, data asset, UI, plantio, interacao, save/load ou gameplay adicional foi alterado.
+
+### Arquivos alterados
+- `Assets/_Game/Scripts/Player/PlayerController.cs`
+- `PROJECT_LOG.md`
+
+### Testes
+- [x] Ajuste restrito aos arquivos permitidos.
+- [x] Confirmado que o comportamento de movimento nao foi alterado, apenas comentario/documentacao.
+- [ ] Unity nao executado nesta sessao.
+- [ ] `git status` nao executado: `git` nao esta disponivel no PATH do terminal.
+
+### Pendencias / riscos
+- Instalar/ativar `com.unity.inputsystem` em PR futuro dedicado antes de remover o fallback legacy.
+
+### Proximo passo recomendado
+- Validar movimento em Play Mode com o fallback atual e planejar PR especifico para configurar o Input System.

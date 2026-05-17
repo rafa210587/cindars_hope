@@ -2,6 +2,9 @@ using CindarsHope.Core;
 using CindarsHope.Core.Events;
 using CindarsHope.Player.Data;
 using UnityEngine;
+// PR-010 keeps the legacy keyboard fallback so movement works without changing
+// Packages/ProjectSettings. PlayerInputActions.inputactions is the contract for
+// a future PR that installs/enables the Input System package and migrates input.
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 #endif
