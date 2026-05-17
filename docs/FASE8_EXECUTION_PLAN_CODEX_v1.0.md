@@ -23,6 +23,28 @@ Esta versão substitui a ordem prática da seção 6. Se houver conflito entre e
 
 ---
 
+## 0.2 Nota de sincronização pós PR-008
+
+PR-001 a PR-008 já foram executados e sincronizados em `dev`. O PR-009 é documental e não altera runtime, assets, cenas, prefabs ou gameplay.
+
+O próximo PR runtime será movimento/input. Antes dele:
+
+- Confirmar New Input System instalado/ativo (`com.unity.inputsystem`).
+- Confirmar Cinemachine instalado se o PR usar Cinemachine (`com.unity.cinemachine`).
+- Criar `PlayerInputActions.inputactions` no PR de movimento/input, com Action Map `Player`:
+  - `Move`
+  - `Interact`
+  - `Inventory`
+  - `Sleep`
+
+Política de VFX:
+
+- VFX não é dependência obrigatória dos sistemas MVP.
+- Sistemas de gameplay não devem depender de prefabs VFX inexistentes.
+- Feedbacks visuais podem ficar para PR dedicado de polish/feedback.
+
+---
+
 ## 1. Princípio central
 
 O Codex deve implementar **fatias pequenas**, não “o jogo inteiro”.
@@ -432,6 +454,14 @@ PROJECT_LOG.md
 ---
 
 ### PR-008 — Movimento e colisão
+
+> Nota pós PR-009 documental: esta entrada representa o próximo PR runtime de movimento/input na sequência operacional atual. A numeração histórica deste plano não deve ser renumerada destrutivamente.
+
+**Pré-requisitos:**
+
+- Confirmar New Input System instalado/ativo (`com.unity.inputsystem`).
+- Confirmar Cinemachine instalado se o PR usar Cinemachine (`com.unity.cinemachine`).
+- Criar `PlayerInputActions.inputactions` neste PR, com Action Map `Player`: `Move`, `Interact`, `Inventory`, `Sleep`.
 
 **Objetivo:** player se move com WASD/setas, câmera segue e bordas bloqueiam.
 
