@@ -1,6 +1,8 @@
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Data;
 using CindarsHope.Core.Time;
+using CindarsHope.Craft;
+using CindarsHope.Craft.Data;
 using CindarsHope.Economy;
 using CindarsHope.Farm;
 using CindarsHope.Inventory;
@@ -24,6 +26,7 @@ namespace CindarsHope.Editor.SceneCreation
         private const string PlayerDataPath = "Assets/_Game/Data/Config/PlayerData.asset";
         private const string ItemDatabasePath = "Assets/_Game/Data/Registries/ItemDatabase.asset";
         private const string SeedDatabasePath = "Assets/_Game/Data/Registries/SeedDatabase.asset";
+        private const string RecipeDatabasePath = "Assets/_Game/Data/Registries/RecipeDatabase.asset";
         private const string TreeDataPath = "Assets/_Game/Data/World/Trees/Tree_Basic.asset";
         private const string BuiltinSpritePath = "UI/Skin/UISprite.psd";
 
@@ -46,6 +49,7 @@ namespace CindarsHope.Editor.SceneCreation
             var timeManager = bootstrap.GetComponent<TimeManager>();
             var hungerManager = bootstrap.GetComponent<HungerManager>();
             var saveManager = bootstrap.GetComponent<SaveManager>();
+            var craftingManager = bootstrap.GetComponent<CraftingManager>();
             var playerTransform = CreatePlayer();
             CreateGround();
             var farmPlotRegistry = CreateFarmPlots(inventoryManager);
@@ -53,6 +57,7 @@ namespace CindarsHope.Editor.SceneCreation
             var itemPickupRegistry = CreateItemPickups(inventoryManager);
             CreateSellPoint(inventoryManager, playerManager);
             CreateSeedShopPoint(inventoryManager, playerManager);
+            CreateCraftingPoint(craftingManager);
             CreateFishingSpot(inventoryManager);
             CreateDebugHud(
                 playerManager,
@@ -89,6 +94,7 @@ namespace CindarsHope.Editor.SceneCreation
             bootstrapObject.AddComponent<HungerManager>();
             bootstrapObject.AddComponent<FoodConsumer>();
             bootstrapObject.AddComponent<SaveInput>();
+            bootstrapObject.AddComponent<CraftingManager>();
 
             return bootstrap;
         }
@@ -120,6 +126,7 @@ namespace CindarsHope.Editor.SceneCreation
                 itemPickupRegistry,
                 playerTransform);
             ConfigureSaveInput(bootstrapObject.GetComponent<SaveInput>(), bootstrapObject.GetComponent<SaveManager>());
+            ConfigureCraftingManager(bootstrapObject.GetComponent<CraftingManager>(), bootstrapObject.GetComponent<InventoryManager>());
 
             var playerData = AssetDatabase.LoadAssetAtPath<PlayerDataSO>(PlayerDataPath);
             if (playerData != null)
@@ -204,6 +211,25 @@ namespace CindarsHope.Editor.SceneCreation
             SetReference(serializedInput, "_timeManager", timeManager);
             serializedInput.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(dayAdvanceInput);
+        }
+
+        private static void ConfigureCraftingManager(CraftingManager craftingManager, InventoryManager inventoryManager)
+        {
+            var serializedCrafting = new SerializedObject(craftingManager);
+            SetReference(serializedCrafting, "_inventoryManager", inventoryManager);
+
+            var recipeDatabase = AssetDatabase.LoadAssetAtPath<RecipeDatabaseSO>(RecipeDatabasePath);
+            if (recipeDatabase != null)
+            {
+                SetReference(serializedCrafting, "_recipeDatabase", recipeDatabase);
+            }
+            else
+            {
+                Debug.LogWarning($"RecipeDatabaseSO not found at {RecipeDatabasePath}. Assign it manually on CraftingManager.");
+            }
+
+            serializedCrafting.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(craftingManager);
         }
 
         private static Transform CreatePlayer()
@@ -364,6 +390,37 @@ namespace CindarsHope.Editor.SceneCreation
             SetReference(serializedShop, "_playerManager", playerManager);
             serializedShop.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(seedShopPoint);
+        }
+
+        private static void CreateCraftingPoint(CraftingManager craftingManager)
+        {
+            var craftingObject = new GameObject("CraftingPoint_Carpentry");
+            craftingObject.transform.position = new Vector3(-3.25f, -4.6f, 0f);
+            craftingObject.transform.localScale = new Vector3(0.95f, 0.95f, 1f);
+
+            var spriteRenderer = craftingObject.AddComponent<SpriteRenderer>();
+            spriteRenderer.sprite = GetBuiltinSprite();
+            spriteRenderer.color = new Color(0.58f, 0.36f, 0.18f);
+            spriteRenderer.sortingOrder = 2;
+            SetSortingLayerIfExists(spriteRenderer, "Items");
+
+            if (spriteRenderer.sprite == null)
+            {
+                Debug.LogWarning("CraftingPoint_Carpentry placeholder SpriteRenderer was created without a sprite. Replace it with workshop art in a future art PR.");
+            }
+
+            var collider = craftingObject.AddComponent<BoxCollider2D>();
+            collider.isTrigger = true;
+            collider.size = Vector2.one;
+
+            var craftingPoint = craftingObject.AddComponent<CraftingPoint>();
+            var serializedPoint = new SerializedObject(craftingPoint);
+            SetReference(serializedPoint, "_craftingManager", craftingManager);
+            serializedPoint.FindProperty("_recipeId").stringValue = "recipe_processed_wood";
+            SetReference(serializedPoint, "_spriteRenderer", spriteRenderer);
+            SetReference(serializedPoint, "_collider", collider);
+            serializedPoint.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(craftingPoint);
         }
 
         private static void CreateFishingSpot(InventoryManager inventoryManager)

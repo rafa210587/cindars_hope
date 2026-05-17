@@ -1483,3 +1483,34 @@ PR-002 sÃ³ deve comeÃ§ar se:
 
 ### Próximo passo recomendado
 - PR-051 — integrar `CraftingManager` e `CraftingPoint_Carpentry` no gerador da FarmScene.
+
+---
+
+## 2026-05-17 — PR-051 Integrar CraftingManager e CraftingPoint na FarmScene
+
+**Responsável:** Codex/ChatGPT
+**Branch:** `feature/fase9a-crafting-mvp-package`
+**Escopo:** integrar crafting no gerador reproduzível da FarmScene.
+
+### Alterações
+- `CreateMvpFarmScene` agora adiciona `CraftingManager` ao `_Bootstrap`.
+- `CraftingManager` é configurado com `InventoryManager` e `RecipeDatabase.asset` via `AssetDatabase`.
+- Criado `CraftingPoint_Carpentry` pelo gerador da cena, com sprite placeholder, collider trigger, receita `recipe_processed_wood` e referência para `CraftingManager`.
+- O ponto foi posicionado próximo aos pontos de interação, sem sobrepor `SellPoint` e `SeedShopPoint`.
+- Não houve UI final, save/load, packages, ProjectSettings ou cena nova.
+
+### Arquivos alterados
+- `Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpFarmScene.cs`
+- `PROJECT_LOG.md`
+
+### Testes
+- [x] Revisão estática do editor script.
+- [x] Busca por `GameObject.Find`, `FindObjectOfType`, `FindObjectsByType` e `StreamingAssets` no arquivo alterado sem ocorrências.
+- [ ] Unity não executado neste terminal; `Assets/_Game/Scenes/FarmScene.unity` não foi recriada/salva localmente.
+
+### Pendências / riscos
+- Rodar `CindarsHope/Scenes/Create MVP FarmScene` no Unity para gerar `CraftingPoint_Carpentry` na cena.
+- Confirmar em Play Mode que o ponto é alcançável e executa a receita.
+
+### Próximo passo recomendado
+- PR-052 — registrar handoff do Crafting MVP.
