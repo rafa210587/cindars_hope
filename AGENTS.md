@@ -8,7 +8,27 @@ IA de arte: ChatGPT/DALL-E para conceito e ícones simples; PixelLab/Scenario op
 Geração de código: Codex (VS Code) + Claude.
 Spec: GitHub SpecKit com fluxo Specify → Plan → Tasks → Implement.
 
+## Regra operacional de continuidade
+
+Antes de qualquer tarefa, ler obrigatoriamente:
+
+1. `PROJECT_LOG.md` — estado operacional, decisões recentes, pendências e smoke tests.
+2. `AGENTS.md` e/ou `CLAUDE.md` — regras permanentes de agente.
+3. Documentos de referência do PR/tarefa.
+
+Ao final de qualquer tarefa relevante, atualizar `PROJECT_LOG.md` com:
+
+- branch usada;
+- escopo executado;
+- arquivos alterados;
+- testes executados ou não executados;
+- pendências/riscos;
+- próximo passo recomendado.
+
+`PROJECT_LOG.md` é append-only por padrão: não apagar histórico anterior salvo correção factual explícita.
+
 ## Documentos de referência (ler antes de qualquer tarefa)
+- PROJECT_LOG.md             — log operacional e continuidade entre agentes
 - docs/GDD_v2.6.md           — design completo do jogo
 - docs/ARCH_fase4_v2.2.md    — arquitetura técnica, padrões, eventos
 - docs/FASE5_ambiente_v1.2.md — setup micro do ambiente
@@ -35,6 +55,7 @@ claude-sonnet-4-6
 9. NUNCA implementar feature sem spec aprovada (Fase 7+)
 10. Sprites: SEMPRE importar com Filter Mode Point + Compression None
 11. Direção visual: cozy farm pixel art inspirado por Harvest Moon/Stardew Valley, mas com identidade própria; não copiar assets, personagens, UI ou paleta proprietária
+12. SEMPRE atualizar `PROJECT_LOG.md` ao final de tarefa relevante
 
 ## Convenções de nomenclatura
 
@@ -149,9 +170,11 @@ Retângulos coloridos em Assets/_Game/Sprites/Placeholders/:
 8. Não usar `FindObjectsByType` em runtime para montar sistemas; preferir `[SerializeField]`, installer de cena ou Editor script.
 9. Se a tarefa exigir configuração manual pesada no Unity, criar Editor script reproduzível.
 10. Se houver dúvida entre MVP e V2/FULL, escolher MVP e registrar pendência.
+11. Ao terminar o PR/tarefa, atualizar `PROJECT_LOG.md` com resultado, testes e pendências.
 
 ## Documentos operacionais adicionais
 
+- `PROJECT_LOG.md` — log operacional e continuidade obrigatória entre agentes.
 - `docs/FASE8_EXECUTION_PLAN_CODEX_v1.0.md` — plano de execução por PR.
 - `docs/CORE_CONTRACTS_EVENTS_SAVE_IDS_v1.0.md` — contratos de eventos, IDs, registries e save.
 - `docs/SPRITE_PIPELINE_AI_ASEPRITE_v1.0.md` — pipeline de arte com IA + Aseprite.
