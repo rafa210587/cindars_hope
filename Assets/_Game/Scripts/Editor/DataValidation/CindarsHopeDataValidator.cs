@@ -4,6 +4,7 @@ using CindarsHope.Core.Data;
 using CindarsHope.Farm.Data;
 using CindarsHope.Inventory.Data;
 using CindarsHope.Player.Data;
+using CindarsHope.World.Data;
 using UnityEditor;
 using UnityEngine;
 
@@ -30,6 +31,11 @@ namespace CindarsHope.Editor.DataValidation
             "seed_carrot"
         };
 
+        private static readonly string[] RequiredTreeIds =
+        {
+            "tree_basic"
+        };
+
         [MenuItem("CindarsHope/Validate/Validate MVP Data")]
         public static void ValidateMvpData()
         {
@@ -38,10 +44,12 @@ namespace CindarsHope.Editor.DataValidation
             var itemDatabase = FindRequiredAsset<ItemDatabaseSO>(errors, nameof(ItemDatabaseSO));
             var seedDatabase = FindRequiredAsset<SeedDatabaseSO>(errors, nameof(SeedDatabaseSO));
             var playerData = FindRequiredAsset<PlayerDataSO>(errors, nameof(PlayerDataSO));
+            var treeDatabase = FindRequiredAsset<TreeDatabaseSO>(errors, nameof(TreeDatabaseSO));
+            var items = new List<ItemDataSO>();
 
             if (itemDatabase != null)
             {
-                var items = LoadRegistryItems<ItemDatabaseSO, ItemDataSO>(itemDatabase, errors, nameof(ItemDatabaseSO));
+                items = LoadRegistryItems<ItemDatabaseSO, ItemDataSO>(itemDatabase, errors, nameof(ItemDatabaseSO));
                 ValidateIdentifiedData(items, RequiredItemIds, errors, "ItemDatabase");
             }
 
@@ -55,6 +63,13 @@ namespace CindarsHope.Editor.DataValidation
             if (playerData != null)
             {
                 ValidatePlayerData(playerData, errors);
+            }
+
+            if (treeDatabase != null)
+            {
+                var trees = LoadRegistryItems<TreeDatabaseSO, TreeDataSO>(treeDatabase, errors, nameof(TreeDatabaseSO));
+                ValidateIdentifiedData(trees, RequiredTreeIds, errors, "TreeDatabase");
+                ValidateTrees(trees, items, errors);
             }
 
             if (errors.Count > 0)
@@ -249,6 +264,55 @@ namespace CindarsHope.Editor.DataValidation
             ValidateStartingItemAmount(startingAmountsById, "seed_wheat", 5, errors);
             ValidateStartingItemAmount(startingAmountsById, "seed_carrot", 3, errors);
             ValidateStartingItemAmount(startingAmountsById, "item_tool_fishing_rod_basic", 1, errors);
+        }
+
+        private static void ValidateTrees(
+            IEnumerable<TreeDataSO> trees,
+            IEnumerable<ItemDataSO> items,
+            ICollection<string> errors)
+        {
+            var itemIds = new HashSet<string>();
+            foreach (var item in items)
+            {
+                if (item == null || string.IsNullOrWhiteSpace(item.Id))
+                {
+                    continue;
+                }
+
+                itemIds.Add(item.Id);
+            }
+
+            foreach (var tree in trees)
+            {
+                if (tree == null)
+                {
+                    continue;
+                }
+
+                if (string.IsNullOrWhiteSpace(tree.Id))
+                {
+                    errors.Add($"{tree.name} Id must not be empty.");
+                }
+
+                if (string.IsNullOrWhiteSpace(tree.WoodItemId))
+                {
+                    errors.Add($"{tree.name} WoodItemId must not be empty.");
+                }
+                else if (!itemIds.Contains(tree.WoodItemId))
+                {
+                    errors.Add($"{tree.name} WoodItemId '{tree.WoodItemId}' is not known by ItemDatabase.");
+                }
+
+                if (tree.RequiredHits < 1)
+                {
+                    errors.Add($"{tree.name} RequiredHits must be >= 1.");
+                }
+
+                if (tree.WoodAmount < 1)
+                {
+                    errors.Add($"{tree.name} WoodAmount must be >= 1.");
+                }
+            }
         }
 
         private static void ValidateStartingItemAmount(

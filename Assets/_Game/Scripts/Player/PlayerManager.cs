@@ -92,6 +92,40 @@ namespace CindarsHope.Player
             SetGold(CurrentGold + amount);
         }
 
+        public void SetHP(int newHP)
+        {
+            MaxHP = Mathf.Max(1, MaxHP);
+            newHP = Mathf.Clamp(newHP, 0, MaxHP);
+            if (CurrentHP == newHP)
+            {
+                return;
+            }
+
+            var delta = newHP - CurrentHP;
+            CurrentHP = newHP;
+            GameEventBus.Publish(new HPChangedEvent(delta, CurrentHP, MaxHP));
+        }
+
+        public void DamageHP(int amount)
+        {
+            if (amount <= 0)
+            {
+                return;
+            }
+
+            SetHP(CurrentHP - amount);
+        }
+
+        public void RestoreHP(int amount)
+        {
+            if (amount <= 0)
+            {
+                return;
+            }
+
+            SetHP(CurrentHP + amount);
+        }
+
         public PlayerSaveData CaptureSaveData(int currentHunger, int maxHunger, Vector2 playerPosition)
         {
             return new PlayerSaveData

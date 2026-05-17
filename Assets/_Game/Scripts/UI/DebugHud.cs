@@ -1,5 +1,8 @@
 using CindarsHope.Inventory;
+using CindarsHope.Interaction;
 using CindarsHope.Player;
+using CindarsHope.Core.Time;
+using CindarsHope.Save;
 using UnityEngine;
 
 namespace CindarsHope.UI
@@ -10,6 +13,9 @@ namespace CindarsHope.UI
         [SerializeField] private PlayerManager _playerManager;
         [SerializeField] private InventoryManager _inventoryManager;
         [SerializeField] private HungerManager _hungerManager;
+        [SerializeField] private InteractionSystem _interactionSystem;
+        [SerializeField] private TimeManager _timeManager;
+        [SerializeField] private SaveManager _saveManager;
 
         private void OnGUI()
         {
@@ -17,9 +23,35 @@ namespace CindarsHope.UI
             GUILayout.Label("Cindar's Hope - Debug HUD");
             DrawPlayerState();
             DrawHungerState();
+            DrawWorldState();
+            DrawInteractionState();
             DrawInventory();
             DrawCommands();
             GUILayout.EndArea();
+        }
+
+        private void DrawWorldState()
+        {
+            if (_timeManager == null)
+            {
+                GUILayout.Label("Day: not assigned");
+                return;
+            }
+
+            GUILayout.Label($"Day: {_timeManager.CurrentDay}");
+        }
+
+        private void DrawInteractionState()
+        {
+            if (_interactionSystem == null)
+            {
+                GUILayout.Label("Interacao: not assigned");
+                return;
+            }
+
+            GUILayout.Label(_interactionSystem.HasCandidate
+                ? $"Interacao: {_interactionSystem.CurrentPrompt}"
+                : "Interacao: nenhum alvo");
         }
 
         private void DrawPlayerState()
@@ -68,7 +100,7 @@ namespace CindarsHope.UI
             }
         }
 
-        private static void DrawCommands()
+        private void DrawCommands()
         {
             GUILayout.Space(8f);
             GUILayout.Label("Commands:");
@@ -76,8 +108,16 @@ namespace CindarsHope.UI
             GUILayout.Label("E: interagir");
             GUILayout.Label("Tab: avancar dia");
             GUILayout.Label("H: consumir comida");
+            GUILayout.Label("Loja: E compra trigo x3 por 5g");
+            GUILayout.Label("Pesca: E no lago com cana");
+            GUILayout.Label("Arvore: E para cortar");
             GUILayout.Label("F5: salvar");
             GUILayout.Label("F9: carregar");
+
+            if (_saveManager != null)
+            {
+                GUILayout.Label($"Save: {_saveManager.SaveFilePath}");
+            }
         }
     }
 }
