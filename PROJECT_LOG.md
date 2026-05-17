@@ -1313,3 +1313,41 @@ PR-002 sÃ³ deve comeÃ§ar se:
 
 ### Próximo passo recomendado
 - Rodar validação Unity completa pós PR-045 e registrar resultados antes de abrir nova feature.
+
+---
+
+## 2026-05-17 — PR-046 Craft data contracts
+
+**Responsável:** Codex/ChatGPT
+**Branch:** `feature/fase9a-crafting-mvp-package`
+**Escopo:** contratos de dados ScriptableObject para receitas e workshops do Crafting MVP.
+
+### Alterações
+- Criado `WorkshopType` com `Forge`, `Alchemy`, `Carpentry` e `Sewing`.
+- Criado `RecipeIngredient` serializável com `ItemId` e `Amount`.
+- Criado `RecipeDataSO` identificável por ID, com workshop, nível requerido, ingredientes por ID e output por ID.
+- Criado `RecipeDatabaseSO` baseado em `DataRegistrySO<RecipeDataSO>`.
+- Criado `WorkshopDataSO` identificável por ID.
+- Criado `WorkshopDatabaseSO` baseado em `DataRegistrySO<WorkshopDataSO>`.
+- Não houve `CraftingManager`, UI, cena, assets de receita ou gameplay nesta wave.
+
+### Arquivos alterados
+- `Assets/_Game/Scripts/Craft/Data/RecipeDataSO.cs`
+- `Assets/_Game/Scripts/Craft/Data/RecipeIngredient.cs`
+- `Assets/_Game/Scripts/Craft/Data/RecipeDatabaseSO.cs`
+- `Assets/_Game/Scripts/Craft/Data/WorkshopType.cs`
+- `Assets/_Game/Scripts/Craft/Data/WorkshopDataSO.cs`
+- `Assets/_Game/Scripts/Craft/Data/WorkshopDatabaseSO.cs`
+- `.meta` correspondentes
+- `PROJECT_LOG.md`
+
+### Testes
+- [x] Revisão estática dos contratos criados.
+- [ ] Unity não executado neste terminal; validar compilação no editor.
+
+### Pendências / riscos
+- Criar assets reais de receita/workshop no PR-047.
+- Validar no Unity se os novos ScriptableObjects aparecem nos menus `CreateAssetMenu`.
+
+### Próximo passo recomendado
+- PR-047 — criar item de madeira processada, receita, workshop e registries de crafting.
