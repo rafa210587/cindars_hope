@@ -86,7 +86,8 @@ Modelo de entrada:
 | PR-011 | Mergeado em `dev`, runtime state hardening |
 | PR-012 | Implementado; pendente validação Unity e merge |
 | PR-013 a PR-017 | Implementados nesta wave; pendentes validação Unity e merge |
-| Próximo PR runtime | UI textual mínima de inventário/HUD ou venda |
+| PR-018 a PR-024 | Implementados nesta wave; pendentes validação Unity e merge |
+| Próximo PR runtime | Save/load ou pesca/árvores, conforme validação |
 
 ### PR-001
 
@@ -1041,3 +1042,56 @@ PR-002 sÃ³ deve comeÃ§ar se:
 ### Próximo passo recomendado
 - Validar o loop agrícola no Unity.
 - Depois decidir entre UI textual mínima de inventário/HUD ou venda.
+
+---
+
+## 2026-05-17 — WAVE Fase 8 Economy + Hunger + HUD PR-018 a PR-024
+
+**Responsável:** Codex/ChatGPT
+**Branch:** `wave/fase8-economy-hunger-hud-018-024`
+**Escopo:** camada jogável mínima acima do loop agrícola: HUD debug, venda, fome por movimento e consumo de comida.
+
+### Alterações
+- PR-018: criado `DebugHud` com OnGUI para mostrar ouro, HP, fome, inventário e comandos básicos.
+- PR-019: criado `SellPoint` interagível para ponto de venda simples.
+- PR-020: adicionada venda automática de `item_crop_wheat`, `item_crop_carrot`, `item_fish_common` e `item_wood`, usando `ItemDataSO.BaseValue` via `InventoryManager.TryGetItemData`.
+- PR-021: criado `HungerManager`, inicializado por `PlayerDataSO`, assinando `PlayerStepEvent` e publicando `HungerChangedEvent`, `HungerCriticalEvent` e `HungerEmptyEvent`.
+- PR-022: criado `FoodConsumer` com tecla H para consumir automaticamente cenoura, trigo ou peixe comum usando `ItemDataSO.HungerRestore`.
+- PR-023: HUD integrado com ouro, HP, fome, inventário e comandos E/Tab/H.
+- PR-024: `CreateMvpFarmScene` agora configura `_Bootstrap` com `HungerManager` e `FoodConsumer`, cria `SellPoint` e cria `DebugHud` com referências serializadas.
+
+### Arquivos alterados
+- `Assets/_Game/Scripts/UI/DebugHud.cs`
+- `Assets/_Game/Scripts/Economy/SellPoint.cs`
+- `Assets/_Game/Scripts/Economy/SellableItemPolicy.cs`
+- `Assets/_Game/Scripts/Player/HungerManager.cs`
+- `Assets/_Game/Scripts/Player/FoodConsumer.cs`
+- `Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpFarmScene.cs`
+- `Assets/_Game/Scripts/Inventory/InventoryManager.cs`
+- `PROJECT_LOG.md`
+
+### Fora de escopo preservado
+- Não houve save/load.
+- Não houve pesca.
+- Não houve árvore.
+- Não houve craft.
+- Não houve UI final complexa, Canvas, TextMeshPro ou UnityEngine.UI.
+- Não houve instalação/configuração de Input System ou Cinemachine.
+- Não houve alteração em dados, PlayerController, eventos, GameEventBus, packages ou ProjectSettings.
+
+### Testes
+- [x] Revisão estática dos arquivos alterados.
+- [x] Verificado que os arquivos tocados ficam dentro do escopo permitido da wave.
+- [x] Verificado que não há `GameObject.Find`, `FindObjectOfType`, `FindObjectsByType` ou `StreamingAssets` nos arquivos alterados.
+- [x] `git status --short` via `C:\Program Files\Git\cmd\git.exe` mostrou somente arquivos permitidos desta wave.
+- [ ] Unity não executado neste terminal; validar compilação, cena e Play Mode no editor.
+
+### Pendências / riscos
+- Validar no Unity se o HUD OnGUI aparece e atualiza ouro, fome e inventário em Play Mode.
+- Validar venda no `SellPoint` depois de colher itens.
+- Validar redução de fome ao andar e consumo com H.
+- `DebugHud` é HUD temporário de debug, não UI final.
+
+### Próximo passo recomendado
+- Validar a wave no Unity.
+- Depois decidir entre save/load ou pesca/árvores conforme resultado da validação.
