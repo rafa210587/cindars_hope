@@ -1,6 +1,8 @@
+using CindarsHope.Core.Data;
 using CindarsHope.Core.Time;
 using CindarsHope.Inventory;
 using CindarsHope.Player;
+using CindarsHope.Player.Data;
 using CindarsHope.Save;
 using UnityEngine;
 
@@ -15,6 +17,8 @@ namespace CindarsHope.Core.Bootstrap
         [SerializeField] private InventoryManager _inventoryManager;
         [SerializeField] private TimeManager _timeManager;
         [SerializeField] private SaveManager _saveManager;
+        [SerializeField] private PlayerDataSO _playerData;
+        [SerializeField] private ItemDatabaseSO _itemDatabase;
 
         private void Awake()
         {
@@ -44,7 +48,15 @@ namespace CindarsHope.Core.Bootstrap
         {
             if (_playerManager != null)
             {
-                _playerManager.Initialize();
+                if (_playerData != null)
+                {
+                    _playerManager.Initialize(_playerData);
+                }
+                else
+                {
+                    Debug.LogWarning("GameBootstrap is missing a PlayerDataSO reference. PlayerManager will initialize without starting state.", this);
+                    _playerManager.Initialize();
+                }
             }
             else
             {
@@ -53,7 +65,15 @@ namespace CindarsHope.Core.Bootstrap
 
             if (_inventoryManager != null)
             {
-                _inventoryManager.Initialize();
+                if (_playerData != null && _itemDatabase != null)
+                {
+                    _inventoryManager.InitializeFromStartingItems(_playerData, _itemDatabase);
+                }
+                else
+                {
+                    Debug.LogWarning("GameBootstrap is missing PlayerDataSO or ItemDatabaseSO. InventoryManager will initialize without starting items.", this);
+                    _inventoryManager.Initialize();
+                }
             }
             else
             {
