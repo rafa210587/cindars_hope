@@ -557,3 +557,47 @@ PR-002 só deve começar se:
 
 ### Proximo passo recomendado
 - Validar PR-006 no Unity antes de iniciar PR-007/FarmScene minima ou a proxima fatia definida no plano.
+
+## 2026-05-17 - PR-007 FarmScene minima
+
+**Responsavel:** Codex
+**Branch:** feature/fase8-pr-007-farmscene-minima
+**Escopo:** criar uma FarmScene minima e reproduzivel via Editor script, com bootstrap, managers, player placeholder, camera e limites basicos, sem gameplay.
+
+### Alteracoes
+- Criado Editor script `CreateMvpFarmScene.cs` em `Assets/_Game/Scripts/Editor/SceneCreation/`.
+- Adicionado menu `CindarsHope/Scenes/Create MVP FarmScene`.
+- O Editor script cria uma cena vazia, adiciona `_Bootstrap`, `Player`, `Ground`, `Bounds` e `Main Camera`.
+- `_Bootstrap` recebe `GameBootstrap`, `PlayerManager`, `InventoryManager`, `TimeManager` e `SaveManager`.
+- O Editor script configura referencias serializadas do `GameBootstrap` para os managers criados.
+- O Editor script tenta carregar `PlayerData.asset` e `ItemDatabase.asset`; se nao encontrar, loga warning claro.
+- Criada `Assets/_Game/Scenes/FarmScene.unity` com hierarquia minima e referencias principais.
+- Player e Ground usam `SpriteRenderer` placeholder sem sprite asset final; a substituicao por arte/tilemap fica pendente para PR futuro.
+- Nao houve gameplay, movimento, input, interacao, plantio, UI, prefab ou save/load JSON.
+
+### Arquivos alterados
+- `Assets/_Game/Scenes.meta`
+- `Assets/_Game/Scenes/FarmScene.unity`
+- `Assets/_Game/Scenes/FarmScene.unity.meta`
+- `Assets/_Game/Scripts/Editor/SceneCreation.meta`
+- `Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpFarmScene.cs`
+- `Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpFarmScene.cs.meta`
+- `PROJECT_LOG.md`
+
+### Testes
+- [x] Verificada a branch esperada via `.git/HEAD`.
+- [x] Busca estatica em `CreateMvpFarmScene.cs` e `FarmScene.unity` por `GameObject.Find`, `FindObjectOfType`, `FindObjectsByType`, `PlayerController`, `JsonUtility`, `StreamingAssets`, `Canvas`, `TextMeshPro`, `UnityEngine.UI` e APIs de input sem ocorrencias.
+- [x] Verificada presenca estatica de `_Bootstrap`, `Player`, `Ground`, `Bounds`, `Top`, `Bottom`, `Left`, `Right` e `Main Camera` na cena.
+- [x] Verificadas referencias serializadas de `GameBootstrap` para managers, `PlayerData.asset` e `ItemDatabase.asset` no arquivo de cena.
+- [ ] Unity nao conseguiu executar o menu em batchmode porque ja havia outra instancia do Unity com este projeto aberta.
+- [ ] Validacao visual/Play Mode ainda precisa ser executada manualmente no Editor.
+- [ ] `git status` nao executado: `git` nao esta disponivel no PATH do terminal.
+
+### Pendencias / riscos
+- Rodar manualmente `CindarsHope/Scenes/Create MVP FarmScene` no Unity aberto para deixar a cena serializada diretamente pelo Editor local.
+- Confirmar se Sorting Layers `Ground` e `Characters` existem; se nao existirem, o Editor script usa default e loga warning.
+- Substituir placeholders sem sprite por sprites/tilemap reais em PR futuro de arte/cena.
+- Nao salvar prefab nem adicionar UI neste PR.
+
+### Proximo passo recomendado
+- Abrir Unity, rodar o menu `CindarsHope/Scenes/Create MVP FarmScene`, abrir `Assets/_Game/Scenes/FarmScene.unity`, entrar em Play Mode e confirmar Console sem erro vermelho antes do PR-008.
