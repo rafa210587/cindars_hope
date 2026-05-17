@@ -1,6 +1,7 @@
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Data;
 using CindarsHope.Core.Time;
+using CindarsHope.Farm;
 using CindarsHope.Inventory;
 using CindarsHope.Interaction;
 using CindarsHope.Player;
@@ -18,6 +19,7 @@ namespace CindarsHope.Editor.SceneCreation
         private const string ScenePath = "Assets/_Game/Scenes/FarmScene.unity";
         private const string PlayerDataPath = "Assets/_Game/Data/Config/PlayerData.asset";
         private const string ItemDatabasePath = "Assets/_Game/Data/Registries/ItemDatabase.asset";
+        private const string SeedDatabasePath = "Assets/_Game/Data/Registries/SeedDatabase.asset";
         private const string BuiltinSpritePath = "UI/Skin/UISprite.psd";
 
         [MenuItem("CindarsHope/Scenes/Create MVP FarmScene")]
@@ -37,6 +39,7 @@ namespace CindarsHope.Editor.SceneCreation
             CreatePlayer();
             CreateDebugInteractable();
             CreateGround();
+            CreateFarmPlots(bootstrap.GetComponent<InventoryManager>());
             CreateBounds();
             CreateMainCamera();
 
@@ -61,6 +64,7 @@ namespace CindarsHope.Editor.SceneCreation
             bootstrapObject.AddComponent<InventoryManager>();
             bootstrapObject.AddComponent<TimeManager>();
             bootstrapObject.AddComponent<SaveManager>();
+            bootstrapObject.AddComponent<DayAdvanceInput>();
 
             return bootstrap;
         }
@@ -74,6 +78,7 @@ namespace CindarsHope.Editor.SceneCreation
             SetReference(serializedBootstrap, "_inventoryManager", bootstrapObject.GetComponent<InventoryManager>());
             SetReference(serializedBootstrap, "_timeManager", bootstrapObject.GetComponent<TimeManager>());
             SetReference(serializedBootstrap, "_saveManager", bootstrapObject.GetComponent<SaveManager>());
+            ConfigureDayAdvanceInput(bootstrapObject.GetComponent<DayAdvanceInput>(), bootstrapObject.GetComponent<TimeManager>());
 
             var playerData = AssetDatabase.LoadAssetAtPath<PlayerDataSO>(PlayerDataPath);
             if (playerData != null)
@@ -97,6 +102,14 @@ namespace CindarsHope.Editor.SceneCreation
 
             serializedBootstrap.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(bootstrap);
+        }
+
+        private static void ConfigureDayAdvanceInput(DayAdvanceInput dayAdvanceInput, TimeManager timeManager)
+        {
+            var serializedInput = new SerializedObject(dayAdvanceInput);
+            SetReference(serializedInput, "_timeManager", timeManager);
+            serializedInput.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(dayAdvanceInput);
         }
 
         private static void CreatePlayer()
@@ -197,6 +210,64 @@ namespace CindarsHope.Editor.SceneCreation
             collider.size = Vector2.one;
 
             debugInteractableObject.AddComponent<DebugInteractable>();
+        }
+
+        private static void CreateFarmPlots(InventoryManager inventoryManager)
+        {
+            var seedDatabase = AssetDatabase.LoadAssetAtPath<SeedDatabaseSO>(SeedDatabasePath);
+            if (seedDatabase == null)
+            {
+                Debug.LogWarning($"SeedDatabaseSO not found at {SeedDatabasePath}. Assign it manually on FarmPlot objects.");
+            }
+
+            var parent = new GameObject("FarmPlots");
+            parent.transform.position = Vector3.zero;
+
+            const int gridSize = 3;
+            const float spacing = 1.35f;
+            var startPosition = new Vector3(-spacing, 2.25f, 0f);
+
+            for (var y = 0; y < gridSize; y++)
+            {
+                for (var x = 0; x < gridSize; x++)
+                {
+                    var plotIndex = y * gridSize + x;
+                    CreateFarmPlot(parent.transform, plotIndex, startPosition + new Vector3(x * spacing, -y * spacing, 0f), inventoryManager, seedDatabase);
+                }
+            }
+        }
+
+        private static void CreateFarmPlot(Transform parent, int plotIndex, Vector3 position, InventoryManager inventoryManager, SeedDatabaseSO seedDatabase)
+        {
+            var plotObject = new GameObject($"FarmPlot_{plotIndex:00}");
+            plotObject.transform.SetParent(parent);
+            plotObject.transform.position = position;
+            plotObject.transform.localScale = new Vector3(1.1f, 1.1f, 1f);
+
+            var spriteRenderer = plotObject.AddComponent<SpriteRenderer>();
+            spriteRenderer.sprite = GetBuiltinSprite();
+            spriteRenderer.sortingOrder = 1;
+            SetSortingLayerIfExists(spriteRenderer, "Ground");
+
+            if (spriteRenderer.sprite == null)
+            {
+                Debug.LogWarning($"{plotObject.name} placeholder SpriteRenderer was created without a sprite. Replace it with plot art in a future art PR.");
+            }
+
+            var collider = plotObject.AddComponent<BoxCollider2D>();
+            collider.isTrigger = true;
+            collider.size = Vector2.one;
+
+            var farmPlot = plotObject.AddComponent<FarmPlot>();
+            var serializedPlot = new SerializedObject(farmPlot);
+            SetReference(serializedPlot, "_spriteRenderer", spriteRenderer);
+            SetReference(serializedPlot, "_inventoryManager", inventoryManager);
+            SetReference(serializedPlot, "_seedDatabase", seedDatabase);
+            serializedPlot.ApplyModifiedPropertiesWithoutUndo();
+
+            farmPlot.Configure(plotIndex, inventoryManager, seedDatabase);
+            farmPlot.ResetPlot();
+            EditorUtility.SetDirty(farmPlot);
         }
 
         private static void CreateGround()

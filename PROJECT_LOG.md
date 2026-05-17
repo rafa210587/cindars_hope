@@ -1,55 +1,55 @@
-# Cindar's Hope â€” Project Log
+﻿# Cindar's Hope Ã¢â‚¬â€ Project Log
 
 > Fonte operacional de continuidade do projeto.
-> Todo agente humano ou IA deve ler este arquivo antes de executar mudanças e atualizá-lo ao final de qualquer tarefa relevante.
+> Todo agente humano ou IA deve ler este arquivo antes de executar mudanÃ§as e atualizÃ¡-lo ao final de qualquer tarefa relevante.
 
 ---
 
-## 1. Protocolo obrigatório para ChatGPT, Codex, Claude e agentes
+## 1. Protocolo obrigatÃ³rio para ChatGPT, Codex, Claude e agentes
 
 Antes de qualquer tarefa:
 
 1. Ler `PROJECT_LOG.md`.
 2. Ler `AGENTS.md` e/ou `CLAUDE.md`.
-3. Ler os documentos de referência citados no PR/tarefa.
+3. Ler os documentos de referÃªncia citados no PR/tarefa.
 4. Confirmar branch atual e escopo permitido.
-5. Não iniciar implementação se houver divergência entre branch, docs e estado real do projeto.
+5. NÃ£o iniciar implementaÃ§Ã£o se houver divergÃªncia entre branch, docs e estado real do projeto.
 
 Durante a tarefa:
 
 1. Manter escopo pequeno.
-2. Não implementar V2/FULL quando o PR é MVP.
-3. Não alterar docs de design sem pedido explícito.
-4. Não mexer em arquivos fora da lista permitida do PR.
-5. Registrar dúvidas ou desvios em vez de decidir silenciosamente.
+2. NÃ£o implementar V2/FULL quando o PR Ã© MVP.
+3. NÃ£o alterar docs de design sem pedido explÃ­cito.
+4. NÃ£o mexer em arquivos fora da lista permitida do PR.
+5. Registrar dÃºvidas ou desvios em vez de decidir silenciosamente.
 
 Ao final da tarefa:
 
 1. Atualizar este log com uma nova entrada.
 2. Informar arquivos alterados.
-3. Informar testes executados ou não executados.
-4. Informar pendências, riscos e próximo passo recomendado.
-5. Nunca apagar histórico anterior; este arquivo é append-only, salvo correção factual explícita.
+3. Informar testes executados ou nÃ£o executados.
+4. Informar pendÃªncias, riscos e prÃ³ximo passo recomendado.
+5. Nunca apagar histÃ³rico anterior; este arquivo Ã© append-only, salvo correÃ§Ã£o factual explÃ­cita.
 
 Modelo de entrada:
 
 ```md
-## YYYY-MM-DD â€” Título curto
+## YYYY-MM-DD Ã¢â‚¬â€ TÃ­tulo curto
 
-**Responsável:** Humano / ChatGPT / Codex / Claude
+**ResponsÃ¡vel:** Humano / ChatGPT / Codex / Claude
 **Branch:** nome-da-branch
 **Escopo:** resumo curto
 
-### Alterações
+### AlteraÃ§Ãµes
 - ...
 
 ### Testes
 - [ ] ...
 
-### Pendências / riscos
+### PendÃªncias / riscos
 - ...
 
-### Próximo passo recomendado
+### PrÃ³ximo passo recomendado
 - ...
 ```
 
@@ -59,15 +59,15 @@ Modelo de entrada:
 
 ### Repo
 
-- Repositório: `rafa210587/cindars_hope`
-- Branch base estável: `main`
+- RepositÃ³rio: `rafa210587/cindars_hope`
+- Branch base estÃ¡vel: `main`
 - Branch de desenvolvimento: `dev`
-- Fluxo recomendado: `main` â†’ `dev` â†’ `feature/fase8-pr-XXX-*`
+- Fluxo recomendado: `main` Ã¢â€ â€™ `dev` Ã¢â€ â€™ `feature/fase8-pr-XXX-*`
 
 ### Fase atual
 
-- Fase 8 â€” implementação do MVP Fazenda.
-- Objetivo do MVP: `BootScene â†’ FarmScene â†’ inventário inicial â†’ plantar â†’ avançar dias â†’ colher â†’ vender â†’ salvar â†’ fechar â†’ reabrir â†’ estado restaurado`.
+- Fase 8 Ã¢â‚¬â€ implementaÃ§Ã£o do MVP Fazenda.
+- Objetivo do MVP: `BootScene Ã¢â€ â€™ FarmScene Ã¢â€ â€™ inventÃ¡rio inicial Ã¢â€ â€™ plantar Ã¢â€ â€™ avanÃ§ar dias Ã¢â€ â€™ colher Ã¢â€ â€™ vender Ã¢â€ â€™ salvar Ã¢â€ â€™ fechar Ã¢â€ â€™ reabrir Ã¢â€ â€™ estado restaurado`.
 
 ### Status dos PRs da Fase 8
 
@@ -81,15 +81,16 @@ Modelo de entrada:
 | PR-006 | Mergeado em `dev` |
 | PR-007 | Mergeado em `dev` |
 | PR-008 | Mergeado em `dev` |
-| PR-009 | Mergeado em `dev`, documental pós PR-008 |
-| PR-010 | Mergeado em `dev`, movimento/input mínimo |
+| PR-009 | Mergeado em `dev`, documental pÃ³s PR-008 |
+| PR-010 | Mergeado em `dev`, movimento/input mÃ­nimo |
 | PR-011 | Mergeado em `dev`, runtime state hardening |
-| PR-012 | Implementado nesta branch; pendente validação Unity e merge |
-| Próximo PR runtime | Canteiros/plots ou preparação de farm plot |
+| PR-012 | Implementado; pendente validação Unity e merge |
+| PR-013 a PR-017 | Implementados nesta wave; pendentes validação Unity e merge |
+| Próximo PR runtime | UI textual mínima de inventário/HUD ou venda |
 
 ### PR-001
 
-Status: aplicado no repositório.
+Status: aplicado no repositÃ³rio.
 
 Arquivos esperados:
 
@@ -106,7 +107,7 @@ Assets/_Game/Scripts/Core/Events/HungerChangedEvent.cs
 Assets/_Game/Scripts/Core/Events/GameSavedEvent.cs
 ```
 
-Observação: alguns eventos têm campos extras em relação ao contrato mínimo. Por enquanto isso foi aceito como não bloqueante porque os campos continuam sendo tipos simples/IDs, sem referências Unity pesadas.
+ObservaÃ§Ã£o: alguns eventos tÃªm campos extras em relaÃ§Ã£o ao contrato mÃ­nimo. Por enquanto isso foi aceito como nÃ£o bloqueante porque os campos continuam sendo tipos simples/IDs, sem referÃªncias Unity pesadas.
 
 ### Higiene Git
 
@@ -120,24 +121,24 @@ Arquivos adicionados:
 ```
 
 `.gitignore` ignora pastas geradas pelo Unity, IDEs e outputs locais.
-`.gitattributes` configura Git LFS para assets Unity, imagens, áudio, cenas, prefabs e arte Aseprite.
+`.gitattributes` configura Git LFS para assets Unity, imagens, Ã¡udio, cenas, prefabs e arte Aseprite.
 
 ### Ambiente local
 
-Decisão: o projeto não deve ficar dentro de OneDrive/Dropbox/Google Drive.
+DecisÃ£o: o projeto nÃ£o deve ficar dentro de OneDrive/Dropbox/Google Drive.
 Caminho recomendado:
 
 ```text
 C:\dev\cindars_hope
 ```
 
-Motivo: Unity Package Manager pode falhar com `EPERM` ao renomear pacotes em `Library/PackageCache` quando OneDrive/antivírus segura lock.
+Motivo: Unity Package Manager pode falhar com `EPERM` ao renomear pacotes em `Library/PackageCache` quando OneDrive/antivÃ­rus segura lock.
 
 ---
 
-## 3. Próximo passo recomendado
+## 3. PrÃ³ximo passo recomendado
 
-Validar Unity após PR-011:
+Validar Unity apÃ³s PR-011:
 
 1. Console sem erro vermelho.
 2. `CindarsHope/Validate/Validate MVP Data` passa.
@@ -145,30 +146,30 @@ Validar Unity após PR-011:
 4. Play Mode entra sem erro.
 5. Player ainda move com WASD/setas.
 
-Próximo PR runtime:
+PrÃ³ximo PR runtime:
 
-- PR-012 — Interaction System mínimo.
-- Não implementar plantio ainda no PR-012.
-- Não implementar UI final ainda no PR-012.
-- Não implementar save/load ainda.
+- PR-012 â€” Interaction System mÃ­nimo.
+- NÃ£o implementar plantio ainda no PR-012.
+- NÃ£o implementar UI final ainda no PR-012.
+- NÃ£o implementar save/load ainda.
 
-Nota: o plano histórico em `docs/FASE8_EXECUTION_PLAN_CODEX_v1.0.md` tem numeração antiga preservada para contexto. A fonte operacional de sequência passa a ser o topo atualizado do `PROJECT_LOG.md`.
+Nota: o plano histÃ³rico em `docs/FASE8_EXECUTION_PLAN_CODEX_v1.0.md` tem numeraÃ§Ã£o antiga preservada para contexto. A fonte operacional de sequÃªncia passa a ser o topo atualizado do `PROJECT_LOG.md`.
 
 ---
 
-## 4. Guia de teste no Unity â€” Smoke Test atual
+## 4. Guia de teste no Unity Ã¢â‚¬â€ Smoke Test atual
 
-Este checklist valida se o projeto está pronto para continuar a Fase 8.
+Este checklist valida se o projeto estÃ¡ pronto para continuar a Fase 8.
 
 ### 4.1 Abertura do projeto
 
 - [ ] Unity abre o projeto sem erro modal.
-- [ ] Projeto está fora de OneDrive/Dropbox/Google Drive.
+- [ ] Projeto estÃ¡ fora de OneDrive/Dropbox/Google Drive.
 - [ ] Package Manager termina de resolver pacotes.
-- [ ] Console não mostra erro vermelho de package resolution.
-- [ ] Console não mostra erro vermelho de compilação C#.
+- [ ] Console nÃ£o mostra erro vermelho de package resolution.
+- [ ] Console nÃ£o mostra erro vermelho de compilaÃ§Ã£o C#.
 
-### 4.2 Estrutura mínima no Project
+### 4.2 Estrutura mÃ­nima no Project
 
 Verificar no painel Project:
 
@@ -176,38 +177,38 @@ Verificar no painel Project:
 - [ ] `Assets/_Game/Scripts/Core/GameEventBus.cs` existe.
 - [ ] `Assets/_Game/Scripts/Core/Events/` existe.
 - [ ] Os 9 eventos do PR-001 existem.
-- [ ] Nenhum script aparece com ícone quebrado/erro de importação.
+- [ ] Nenhum script aparece com Ã­cone quebrado/erro de importaÃ§Ã£o.
 
-### 4.3 Compilação
+### 4.3 CompilaÃ§Ã£o
 
 - [ ] Unity recompila scripts automaticamente.
-- [ ] Console não mostra erro `CS...`.
-- [ ] Console não mostra erro de namespace ausente.
-- [ ] Console não mostra erro de tipo duplicado.
-- [ ] Console não mostra erro de pacote ausente.
+- [ ] Console nÃ£o mostra erro `CS...`.
+- [ ] Console nÃ£o mostra erro de namespace ausente.
+- [ ] Console nÃ£o mostra erro de tipo duplicado.
+- [ ] Console nÃ£o mostra erro de pacote ausente.
 
 ### 4.4 Package Manager
 
-Abrir `Window â†’ Package Manager` e validar:
+Abrir `Window Ã¢â€ â€™ Package Manager` e validar:
 
-- [ ] `2D Sprite` ou pacote 2D equivalente está resolvido.
-- [ ] `Visual Studio Editor` ou IDE package está resolvido.
-- [ ] Não há pacote preso em instalação.
-- [ ] Não há erro `EPERM` em `Library/PackageCache`.
+- [ ] `2D Sprite` ou pacote 2D equivalente estÃ¡ resolvido.
+- [ ] `Visual Studio Editor` ou IDE package estÃ¡ resolvido.
+- [ ] NÃ£o hÃ¡ pacote preso em instalaÃ§Ã£o.
+- [ ] NÃ£o hÃ¡ erro `EPERM` em `Library/PackageCache`.
 
-### 4.5 Configurações Unity recomendadas
+### 4.5 ConfiguraÃ§Ãµes Unity recomendadas
 
-Verificar em `Edit â†’ Project Settings`:
+Verificar em `Edit Ã¢â€ â€™ Project Settings`:
 
-- [ ] Editor â†’ Asset Serialization = `Force Text`.
-- [ ] Editor â†’ Version Control Mode = `Visible Meta Files`.
-- [ ] Player â†’ Product Name = `Cindar's Hope` ou equivalente.
-- [ ] Player â†’ Default Screen Width = `1280`.
-- [ ] Player â†’ Default Screen Height = `720`.
+- [ ] Editor Ã¢â€ â€™ Asset Serialization = `Force Text`.
+- [ ] Editor Ã¢â€ â€™ Version Control Mode = `Visible Meta Files`.
+- [ ] Player Ã¢â€ â€™ Product Name = `Cindar's Hope` ou equivalente.
+- [ ] Player Ã¢â€ â€™ Default Screen Width = `1280`.
+- [ ] Player Ã¢â€ â€™ Default Screen Height = `720`.
 
 ### 4.6 Sorting Layers
 
-Verificar em `Project Settings â†’ Tags and Layers â†’ Sorting Layers`.
+Verificar em `Project Settings Ã¢â€ â€™ Tags and Layers Ã¢â€ â€™ Sorting Layers`.
 
 Camadas esperadas:
 
@@ -222,7 +223,7 @@ UI_World
 UI
 ```
 
-Se ainda não existirem, registrar como pendência. Não é bloqueante para PR-002, mas será necessário para cenas/arte.
+Se ainda nÃ£o existirem, registrar como pendÃªncia. NÃ£o Ã© bloqueante para PR-002, mas serÃ¡ necessÃ¡rio para cenas/arte.
 
 ### 4.7 Git dentro do Unity
 
@@ -234,27 +235,27 @@ git status
 
 Resultado esperado:
 
-- [ ] Não aparecer `Library/`.
-- [ ] Não aparecer `Temp/`.
-- [ ] Não aparecer `Obj/`.
-- [ ] Não aparecer `.csproj`/`.sln` como arquivos para commit.
-- [ ] Só aparecerem mudanças reais de projeto, se houver.
+- [ ] NÃ£o aparecer `Library/`.
+- [ ] NÃ£o aparecer `Temp/`.
+- [ ] NÃ£o aparecer `Obj/`.
+- [ ] NÃ£o aparecer `.csproj`/`.sln` como arquivos para commit.
+- [ ] SÃ³ aparecerem mudanÃ§as reais de projeto, se houver.
 
-### 4.8 Critério de liberação para PR-002
+### 4.8 CritÃ©rio de liberaÃ§Ã£o para PR-002
 
-PR-002 só deve começar se:
+PR-002 sÃ³ deve comeÃ§ar se:
 
 - [ ] Unity abre.
 - [ ] Package Manager resolve pacotes.
-- [ ] Console não tem erro vermelho.
-- [ ] `git status` está limpo ou apenas com mudanças intencionais.
-- [ ] Branch local está em `dev` atualizada.
+- [ ] Console nÃ£o tem erro vermelho.
+- [ ] `git status` estÃ¡ limpo ou apenas com mudanÃ§as intencionais.
+- [ ] Branch local estÃ¡ em `dev` atualizada.
 
-### 4.9 Validação pós-PR-007/PR-008
+### 4.9 ValidaÃ§Ã£o pÃ³s-PR-007/PR-008
 
 - [ ] Menu `CindarsHope/Scenes/Create MVP FarmScene` executa sem erro.
 - [ ] `FarmScene.unity` abre.
-- [ ] Hierarquia contém `_Bootstrap`, `Player`, `Ground`, `Bounds` e `Main Camera`.
+- [ ] Hierarquia contÃ©m `_Bootstrap`, `Player`, `Ground`, `Bounds` e `Main Camera`.
 - [ ] `_Bootstrap` tem `GameBootstrap`, `PlayerManager`, `InventoryManager`, `TimeManager` e `SaveManager`.
 - [ ] `GameBootstrap` referencia `PlayerData.asset` e `ItemDatabase.asset`.
 - [ ] Console sem erro vermelho.
@@ -265,38 +266,38 @@ PR-002 só deve começar se:
 
 ## 5. Log de atividades
 
-## 2026-05-16 â€” Criação do protocolo de log operacional
+## 2026-05-16 Ã¢â‚¬â€ CriaÃ§Ã£o do protocolo de log operacional
 
-**Responsável:** ChatGPT
+**ResponsÃ¡vel:** ChatGPT
 **Branch:** dev
 **Escopo:** criar log raiz e orientar continuidade entre ChatGPT, Codex e Claude.
 
-### Alterações
+### AlteraÃ§Ãµes
 - Criado `PROJECT_LOG.md` na raiz.
-- Registrado protocolo obrigatório para agentes.
+- Registrado protocolo obrigatÃ³rio para agentes.
 - Registrado estado atual do repo, PR-001 e higiene Git.
 - Adicionado guia de smoke test Unity.
 
 ### Testes
 - [x] Arquivo criado no GitHub na branch `dev`.
-- [ ] Unity não testado pelo ChatGPT; precisa validação local.
+- [ ] Unity nÃ£o testado pelo ChatGPT; precisa validaÃ§Ã£o local.
 
-### Pendências / riscos
+### PendÃªncias / riscos
 - Atualizar `AGENTS.md` e `CLAUDE.md` para apontar explicitamente para `PROJECT_LOG.md`.
 - Validar Unity localmente antes do PR-002.
 
-### Próximo passo recomendado
-- Atualizar `AGENTS.md` e `CLAUDE.md` com regra de leitura/atualização do log.
+### PrÃ³ximo passo recomendado
+- Atualizar `AGENTS.md` e `CLAUDE.md` com regra de leitura/atualizaÃ§Ã£o do log.
 - Rodar o smoke test Unity.
 - Criar `feature/fase8-pr-002-data-contracts-registries`.
 
-## 2026-05-16 â€” Versionamento dos metas Unity do core
+## 2026-05-16 Ã¢â‚¬â€ Versionamento dos metas Unity do core
 
-**Responsável:** Humano orientado por ChatGPT
+**ResponsÃ¡vel:** Humano orientado por ChatGPT
 **Branch:** dev
-**Escopo:** limpar arquivos locais indevidos após sincronização e versionar `.meta` Unity necessários para PR-001.
+**Escopo:** limpar arquivos locais indevidos apÃ³s sincronizaÃ§Ã£o e versionar `.meta` Unity necessÃ¡rios para PR-001.
 
-### Alterações
+### AlteraÃ§Ãµes
 - Removidos localmente do working tree: `.vscode/`, `Assets/MobileDependencyResolver/`, `Assets/Resources/` e `cindars_hope.slnx`.
 - Adicionados e enviados para `origin/dev` os `.meta` de `Assets/_Game/Scripts/Core` e `Assets/_Game/Scripts/Core/Events`.
 - Adicionado `ProjectSettings/PackageManagerSettings.asset`.
@@ -306,16 +307,16 @@ PR-002 só deve começar se:
 - [x] `git pull origin dev` executou com fast-forward.
 - [x] `git commit` criou 15 arquivos Unity/meta.
 - [x] `git push origin dev` concluiu com sucesso.
-- [ ] Unity ainda precisa ser aberto e validado localmente após este push.
+- [ ] Unity ainda precisa ser aberto e validado localmente apÃ³s este push.
 
-### Pendências / riscos
-- Stash de backup ainda pode existir localmente; não aplicar `git stash pop` novamente.
-- Descartar o stash somente após o Unity abrir sem erros.
-- Validar se `ProjectSettings/PackageManagerSettings.asset` é compatível com a versão local do Unity.
+### PendÃªncias / riscos
+- Stash de backup ainda pode existir localmente; nÃ£o aplicar `git stash pop` novamente.
+- Descartar o stash somente apÃ³s o Unity abrir sem erros.
+- Validar se `ProjectSettings/PackageManagerSettings.asset` Ã© compatÃ­vel com a versÃ£o local do Unity.
 
-### Próximo passo recomendado
+### PrÃ³ximo passo recomendado
 - Rodar `git status --short`.
-- Abrir Unity e executar smoke test da seção 4.
+- Abrir Unity e executar smoke test da seÃ§Ã£o 4.
 - Se Unity estiver limpo, descartar o stash de backup com `git stash drop stash@{0}`.
 - Depois criar `feature/fase8-pr-002-data-contracts-registries`.
 
@@ -659,28 +660,28 @@ PR-002 só deve começar se:
 ### Proximo passo recomendado
 - Abrir Unity, rodar o menu de recriacao da FarmScene e confirmar visualmente Player e Ground.
 
-## 2026-05-17 â€” Revisão pós-PR-007 e gaps futuros
+## 2026-05-17 Ã¢â‚¬â€ RevisÃ£o pÃ³s-PR-007 e gaps futuros
 
-**Responsável:** Codex/ChatGPT
+**ResponsÃ¡vel:** Codex/ChatGPT
 **Branch:** feature/fase8-pr-007-farmscene-minima
-**Escopo:** limpar PR-007, corrigir placeholder visual e registrar decisões sobre gaps futuros.
+**Escopo:** limpar PR-007, corrigir placeholder visual e registrar decisÃµes sobre gaps futuros.
 
-### Alterações
-- PR-001 a PR-006 não precisam ser refeitos.
+### AlteraÃ§Ãµes
+- PR-001 a PR-006 nÃ£o precisam ser refeitos.
 - PR-007 precisa remover arquivos fora de escopo antes do merge.
-- `GetBuiltinSprite()` deixava Player/Ground invisíveis quando retornava `null`; foi corrigido para tentar carregar `AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd")`.
-- Se o sprite builtin não for encontrado, o Editor script mantém warning claro.
+- `GetBuiltinSprite()` deixava Player/Ground invisÃ­veis quando retornava `null`; foi corrigido para tentar carregar `AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd")`.
+- Se o sprite builtin nÃ£o for encontrado, o Editor script mantÃ©m warning claro.
 - Nenhum asset novo de sprite foi criado.
 - Nenhum tilemap, `PlayerController`, movimento, input, gameplay, UI, prefab, dado runtime ou doc de design foi alterado.
 
-### Decisões sobre gaps futuros
-- Eventos ausentes não bloqueiam PR-007, mas devem ser tratados antes dos PRs que dependem deles.
-- Antes de movimento/input: definir dono de `PlayerInputActions.inputactions` e validar pacotes Input System/Cinemachine/2D Extras se aplicável.
+### DecisÃµes sobre gaps futuros
+- Eventos ausentes nÃ£o bloqueiam PR-007, mas devem ser tratados antes dos PRs que dependem deles.
+- Antes de movimento/input: definir dono de `PlayerInputActions.inputactions` e validar pacotes Input System/Cinemachine/2D Extras se aplicÃ¡vel.
 - Antes de fome: adicionar `PlayerStepEvent`, `HungerCriticalEvent`, `HungerEmptyEvent` e `HPChangedEvent`.
-- Antes de save/load: alinhar `PlayerSaveData` canÃ´nico entre `CORE_CONTRACTS` e `FASE7`.
-- Antes de árvores: decidir `TreeDataSO`/`TreeDatabaseSO`.
-- VFX não deve ser dependência obrigatória dos sistemas MVP; feedbacks podem ficar para PR dedicado.
-- `FishingSpot` não precisa ser salvo no MVP; registrar como decisão quando chegar em pesca/save.
+- Antes de save/load: alinhar `PlayerSaveData` canÃƒÂ´nico entre `CORE_CONTRACTS` e `FASE7`.
+- Antes de Ã¡rvores: decidir `TreeDataSO`/`TreeDatabaseSO`.
+- VFX nÃ£o deve ser dependÃªncia obrigatÃ³ria dos sistemas MVP; feedbacks podem ficar para PR dedicado.
+- `FishingSpot` nÃ£o precisa ser salvo no MVP; registrar como decisÃ£o quando chegar em pesca/save.
 
 ### Arquivos alterados
 - `Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpFarmScene.cs`
@@ -689,16 +690,16 @@ PR-002 só deve começar se:
 ### Testes
 - [x] Verificada a branch esperada via `.git/HEAD`.
 - [x] Verificado que `GetBuiltinSprite()` tenta carregar `UI/Skin/UISprite.psd`.
-- [x] Confirmado que `casesensitivetest` não existe no workspace.
-- [ ] `.claude/**` e `cindars_hope.slnx` existem localmente; não foram alterados nesta tarefa e devem ser mantidos fora do PR/diff antes do merge.
-- [ ] Unity não executado nesta sessão.
-- [ ] `git status` não executado: `git` não está disponível no PATH do terminal.
+- [x] Confirmado que `casesensitivetest` nÃ£o existe no workspace.
+- [ ] `.claude/**` e `cindars_hope.slnx` existem localmente; nÃ£o foram alterados nesta tarefa e devem ser mantidos fora do PR/diff antes do merge.
+- [ ] Unity nÃ£o executado nesta sessÃ£o.
+- [ ] `git status` nÃ£o executado: `git` nÃ£o estÃ¡ disponÃ­vel no PATH do terminal.
 
-### Pendências / riscos
-- Rodar manualmente `CindarsHope/Scenes/Create MVP FarmScene` no Unity aberto para confirmar Player e Ground visíveis.
-- Antes do merge, revisar o diff em um ambiente com `git` disponível e garantir que só entrem FarmScene, `CreateMvpFarmScene`, metas correspondentes e `PROJECT_LOG.md`.
+### PendÃªncias / riscos
+- Rodar manualmente `CindarsHope/Scenes/Create MVP FarmScene` no Unity aberto para confirmar Player e Ground visÃ­veis.
+- Antes do merge, revisar o diff em um ambiente com `git` disponÃ­vel e garantir que sÃ³ entrem FarmScene, `CreateMvpFarmScene`, metas correspondentes e `PROJECT_LOG.md`.
 
-### Próximo passo recomendado
+### PrÃ³ximo passo recomendado
 - Validar PR-007 no Unity com Console sem erro vermelho antes de seguir para movimento/input.
 
 ## 2026-05-17 - PR-008 Core contracts hardening
@@ -924,48 +925,48 @@ PR-002 só deve começar se:
 
 ---
 
-## 2026-05-17 — DOC Sync pós PR-011
+## 2026-05-17 â€” DOC Sync pÃ³s PR-011
 
-**Responsável:** Codex/ChatGPT
+**ResponsÃ¡vel:** Codex/ChatGPT
 **Branch:** `docs/fase8-sync-pos-pr011`
-**Escopo:** sincronização documental operacional após PR-011, sem alterar runtime, assets, cenas, prefabs ou gameplay.
+**Escopo:** sincronizaÃ§Ã£o documental operacional apÃ³s PR-011, sem alterar runtime, assets, cenas, prefabs ou gameplay.
 
-### Alterações
+### AlteraÃ§Ãµes
 - Atualizado o topo do `PROJECT_LOG.md` para registrar PR-001 a PR-011 como mergeados em `dev`.
-- Registrado `PR-012 — Interaction System mínimo` como próximo PR runtime.
-- Registrado que o plano histórico em `docs/FASE8_EXECUTION_PLAN_CODEX_v1.0.md` preserva numeração antiga e que a fonte operacional atual é o topo do `PROJECT_LOG.md`.
-- Atualizado `docs/FASE8_EXECUTION_PLAN_CODEX_v1.0.md` com nota pós PR-011.
-- Corrigidos caracteres quebrados óbvios nos blocos operacionais atualizados do `PROJECT_LOG.md`.
+- Registrado `PR-012 â€” Interaction System mÃ­nimo` como prÃ³ximo PR runtime.
+- Registrado que o plano histÃ³rico em `docs/FASE8_EXECUTION_PLAN_CODEX_v1.0.md` preserva numeraÃ§Ã£o antiga e que a fonte operacional atual Ã© o topo do `PROJECT_LOG.md`.
+- Atualizado `docs/FASE8_EXECUTION_PLAN_CODEX_v1.0.md` com nota pÃ³s PR-011.
+- Corrigidos caracteres quebrados Ã³bvios nos blocos operacionais atualizados do `PROJECT_LOG.md`.
 
 ### Arquivos alterados
 - `PROJECT_LOG.md`
 - `docs/FASE8_EXECUTION_PLAN_CODEX_v1.0.md`
 
 ### Testes
-- [x] Revisão textual dos blocos atualizados.
+- [x] RevisÃ£o textual dos blocos atualizados.
 - [x] Verificado que o escopo ficou restrito aos documentos permitidos.
-- [ ] Unity não executado; alteração é documental.
+- [ ] Unity nÃ£o executado; alteraÃ§Ã£o Ã© documental.
 
-### Pendências / riscos
-- Validar Unity após PR-011 antes de iniciar o PR-012.
-- O PR-012 não deve implementar plantio, UI final ou save/load.
+### PendÃªncias / riscos
+- Validar Unity apÃ³s PR-011 antes de iniciar o PR-012.
+- O PR-012 nÃ£o deve implementar plantio, UI final ou save/load.
 
-### Próximo passo recomendado
-- Executar `PR-012 — Interaction System mínimo` após validação local no Unity.
+### PrÃ³ximo passo recomendado
+- Executar `PR-012 â€” Interaction System mÃ­nimo` apÃ³s validaÃ§Ã£o local no Unity.
 
 ---
 
-## 2026-05-17 — PR-012 Interaction System mínimo
+## 2026-05-17 â€” PR-012 Interaction System mÃ­nimo
 
-**Responsável:** Codex/ChatGPT
+**ResponsÃ¡vel:** Codex/ChatGPT
 **Branch:** `feature/fase8-pr-012-interaction-system`
-**Escopo:** base runtime genérica de interação por tecla E e trigger, sem gameplay específico.
+**Escopo:** base runtime genÃ©rica de interaÃ§Ã£o por tecla E e trigger, sem gameplay especÃ­fico.
 
-### Alterações
+### AlteraÃ§Ãµes
 - Criada interface `IInteractable` em `CindarsHope.Interaction`.
-- Criado `InteractionSystem` com detecção de interagíveis próximos por trigger 2D e interação via `Input.GetKeyDown(KeyCode.E)`.
-- Criado `DebugInteractable` apenas para teste manual de interação.
-- Atualizado `CreateMvpFarmScene` para criar `InteractionTrigger` filho do Player, adicionar `InteractionSystem` ao Player e criar `DebugInteractable` próximo ao início da cena.
+- Criado `InteractionSystem` com detecÃ§Ã£o de interagÃ­veis prÃ³ximos por trigger 2D e interaÃ§Ã£o via `Input.GetKeyDown(KeyCode.E)`.
+- Criado `DebugInteractable` apenas para teste manual de interaÃ§Ã£o.
+- Atualizado `CreateMvpFarmScene` para criar `InteractionTrigger` filho do Player, adicionar `InteractionSystem` ao Player e criar `DebugInteractable` prÃ³ximo ao inÃ­cio da cena.
 - Atualizado o status consolidado para registrar o PR-012 nesta branch.
 
 ### Arquivos alterados
@@ -976,15 +977,67 @@ PR-002 só deve começar se:
 - `PROJECT_LOG.md`
 
 ### Testes
+- [x] RevisÃ£o estÃ¡tica dos arquivos alterados.
+- [x] Verificado que o PR nÃ£o altera PlayerController, PlayerInputActions, GameEventBus, dados, prefabs, UI, save/load ou sistemas de gameplay especÃ­ficos.
+- [ ] Unity nÃ£o executado neste terminal; validar compilaÃ§Ã£o e Play Mode no editor.
+
+### PendÃªncias / riscos
+- Confirmar no Unity que eventos de trigger 2D chegam ao `InteractionSystem` no Player usando o collider filho `InteractionTrigger`.
+- O `DebugInteractable` Ã© somente objeto de teste criado pelo Editor script; nÃ£o representa plantio, pesca, venda ou Ã¡rvore.
+- Input segue por fallback legacy `Input.GetKeyDown` atÃ© um PR futuro instalar/configurar o Input System.
+
+### PrÃ³ximo passo recomendado
+- Rodar `CindarsHope/Scenes/Create MVP FarmScene`, entrar em Play Mode, aproximar do `DebugInteractable` e apertar E.
+- PrÃ³ximo PR recomendado: canteiros/plots ou preparaÃ§Ã£o de farm plot, conforme validaÃ§Ã£o do PR-012.
+
+---
+
+## 2026-05-17 — WAVE Fase 8 Farm Loop PR-013 a PR-017
+
+**Responsável:** Codex/ChatGPT
+**Branch:** `wave/fase8-farm-loop-013-017`
+**Escopo:** primeiro loop agrícola jogável mínimo: plantar, avançar dias, crescer e colher via interação.
+
+### Alterações
+- PR-013: criado skeleton de canteiros com `FarmPlotState` e `FarmPlot`, além de 9 `FarmPlot` gerados pelo `CreateMvpFarmScene`.
+- PR-014: adicionado plantio básico por interação, com seleção automática `seed_wheat` antes de `seed_carrot`, removendo 1 semente do `InventoryManager` e publicando `SeedPlantedEvent`.
+- PR-015: adicionado avanço mínimo de dia com `TimeManager.AdvanceDay()` e `DayAdvanceInput` usando Tab, publicando `DayStartedEvent`.
+- PR-016: adicionado crescimento por `DayStartedEvent`; crops em crescimento incrementam `DaysGrown`, ficam `Ready` ao atingir `GrowthDays` e publicam `CropReadyEvent`.
+- PR-017: adicionado harvest básico; crops `Ready` adicionam itens de colheita no `InventoryManager`, publicam `CropHarvestedEvent` e resetam o canteiro.
+- `CreateMvpFarmScene` configura `SeedDatabaseSO`, `InventoryManager`, `DayAdvanceInput` e cria os canteiros em grid 3x3.
+
+### Arquivos alterados
+- `Assets/_Game/Scripts/Farm/FarmPlot.cs`
+- `Assets/_Game/Scripts/Farm/FarmPlotState.cs`
+- `Assets/_Game/Scripts/Core/Time/TimeManager.cs`
+- `Assets/_Game/Scripts/Core/Time/DayAdvanceInput.cs`
+- `Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpFarmScene.cs`
+- `PROJECT_LOG.md`
+
+### Fora de escopo preservado
+- Não houve UI final.
+- Não houve save/load.
+- Não houve venda.
+- Não houve pesca.
+- Não houve árvore.
+- Não houve alteração em dados, input, PlayerController, InventoryManager, eventos, GameEventBus, packages ou ProjectSettings.
+
+### Testes
 - [x] Revisão estática dos arquivos alterados.
-- [x] Verificado que o PR não altera PlayerController, PlayerInputActions, GameEventBus, dados, prefabs, UI, save/load ou sistemas de gameplay específicos.
-- [ ] Unity não executado neste terminal; validar compilação e Play Mode no editor.
+- [x] Verificado que os arquivos tocados ficam dentro do escopo permitido da wave.
+- [x] Verificado que não há `GameObject.Find`, `FindObjectOfType`, `FindObjectsByType` ou `StreamingAssets` nos arquivos alterados.
+- [!] Checagem por timestamp encontrou arquivos fora do escopo com escrita recente (`Assembly-CSharp.csproj`, `Assets/_Game/Scenes/FarmScene.unity`, `ProjectSettings/SceneTemplateSettings.json`, `Temp/...` e arquivos do PR-012). Eles não foram editados por ferramenta nesta onda, mas exigem revisão com `git status` antes de commit/PR.
+- [x] `git status --short` via `C:\Program Files\Git\cmd\git.exe` mostrou somente arquivos permitidos da wave.
+- [ ] Unity não executado neste terminal; validar compilação, cena e Play Mode no editor.
+- [ ] Commits por etapa não criados: `git` não estava no PATH durante a execução sequencial e não criei commits artificiais depois de localizar `git.exe` por caminho absoluto.
 
 ### Pendências / riscos
-- Confirmar no Unity que eventos de trigger 2D chegam ao `InteractionSystem` no Player usando o collider filho `InteractionTrigger`.
-- O `DebugInteractable` é somente objeto de teste criado pelo Editor script; não representa plantio, pesca, venda ou árvore.
-- Input segue por fallback legacy `Input.GetKeyDown` até um PR futuro instalar/configurar o Input System.
+- Validar no Unity se o `InteractionSystem` do Player detecta os `FarmPlot` criados pelo editor script.
+- Validar o loop completo: E para plantar, Tab para avançar dias, E para colher.
+- Revisar novamente `git status` antes do PR para garantir que arquivos fora do escopo não entrem.
+- A seleção de semente ainda é placeholder automática; UI/lista de escolha fica para PR futuro.
+- Se o inventário estiver cheio para o item colhido, o plot permanece `Ready` e registra warning.
 
 ### Próximo passo recomendado
-- Rodar `CindarsHope/Scenes/Create MVP FarmScene`, entrar em Play Mode, aproximar do `DebugInteractable` e apertar E.
-- Próximo PR recomendado: canteiros/plots ou preparação de farm plot, conforme validação do PR-012.
+- Validar o loop agrícola no Unity.
+- Depois decidir entre UI textual mínima de inventário/HUD ou venda.
