@@ -676,3 +676,62 @@ PR-002 só deve começar se:
 
 ### Próximo passo recomendado
 - Validar PR-007 no Unity com Console sem erro vermelho antes de seguir para movimento/input.
+
+## 2026-05-17 - PR-008 Core contracts hardening
+
+**Responsavel:** Codex
+**Branch:** feature/fase8-pr-008-core-contracts-hardening
+**Escopo:** adicionar contratos de eventos core exigidos por PRs futuros, sem implementar sistemas, gameplay, input, UI, cena ou save/load.
+
+### Alteracoes
+- PR-008 adiciona contratos de eventos para PRs futuros.
+- Criado `CropReadyEvent` com `SeedId`, `TilePosition` e `DaysGrown`.
+- Criado `PlayerStepEvent` com `Position` e `DistanceSinceLastStep`.
+- Criados `HungerCriticalEvent` e `HungerEmptyEvent` com `CurrentHunger` e `MaxHunger`.
+- Criado `ItemPickedUpEvent` com `ItemId` e `Amount`.
+- Criado `PlayerRespawnedEvent` com `Position`, `CurrentHP` e `GoldLost`.
+- Criado `HPChangedEvent` com `Delta`, `CurrentHP` e `MaxHP`.
+- PR-001 a PR-007 nao foram refeitos.
+- Nenhum runtime system novo foi criado.
+- Nenhum gameplay, input, movimento, UI, cena, prefab, data asset ou save/load foi implementado.
+- `GameEventBus` nao foi alterado.
+
+### Decisoes operacionais
+- `PlayerInputActions.inputactions` sera dono do PR de movimento/input.
+- Antes de movimento/input, validar pacotes Unity necessarios: Input System e, se usado, Cinemachine.
+- `PlayerSaveData` canonico sera decidido antes do PR de save/load.
+- VFX nao sera dependencia obrigatoria dos sistemas MVP; feedbacks visuais podem ficar para PR dedicado.
+- `FishingSpot` nao precisa ser salvo no MVP.
+- `TreeDataSO`/`TreeDatabaseSO` sera decidido antes do PR de arvores.
+
+### Arquivos alterados
+- `Assets/_Game/Scripts/Core/Events/CropReadyEvent.cs`
+- `Assets/_Game/Scripts/Core/Events/CropReadyEvent.cs.meta`
+- `Assets/_Game/Scripts/Core/Events/PlayerStepEvent.cs`
+- `Assets/_Game/Scripts/Core/Events/PlayerStepEvent.cs.meta`
+- `Assets/_Game/Scripts/Core/Events/HungerCriticalEvent.cs`
+- `Assets/_Game/Scripts/Core/Events/HungerCriticalEvent.cs.meta`
+- `Assets/_Game/Scripts/Core/Events/HungerEmptyEvent.cs`
+- `Assets/_Game/Scripts/Core/Events/HungerEmptyEvent.cs.meta`
+- `Assets/_Game/Scripts/Core/Events/ItemPickedUpEvent.cs`
+- `Assets/_Game/Scripts/Core/Events/ItemPickedUpEvent.cs.meta`
+- `Assets/_Game/Scripts/Core/Events/PlayerRespawnedEvent.cs`
+- `Assets/_Game/Scripts/Core/Events/PlayerRespawnedEvent.cs.meta`
+- `Assets/_Game/Scripts/Core/Events/HPChangedEvent.cs`
+- `Assets/_Game/Scripts/Core/Events/HPChangedEvent.cs.meta`
+- `PROJECT_LOG.md`
+
+### Testes
+- [x] Verificada a branch esperada via `.git/HEAD`.
+- [x] Busca estatica nos novos eventos por `GameObject`, `ScriptableObject`, `MonoBehaviour`, `Transform`, `FindObject`, `Publish`, `Subscribe`, `JsonUtility`, `File.`, `Directory.`, `Input`, `Canvas` e `PlayerController` sem ocorrencias.
+- [x] Conferido que os novos eventos usam namespace `CindarsHope.Core.Events`.
+- [x] Conferido que os novos eventos sao `readonly struct` com tipos simples ou Unity structs leves (`Vector2`, `Vector2Int`).
+- [ ] Unity nao executado nesta sessao.
+- [ ] Compilacao C# local nao executada: ferramentas `git`, `dotnet`, `csc` e `msbuild` nao estao disponiveis no PATH do terminal.
+
+### Pendencias / riscos
+- Abrir Unity e confirmar Console sem erro vermelho.
+- Antes de cada PR futuro, confirmar se o evento novo e suficiente para a spec correspondente sem ampliar payload indevidamente.
+
+### Proximo passo recomendado
+- Validar PR-008 no Unity e, depois, seguir para a fatia de movimento/input com dono claro para `PlayerInputActions.inputactions` e pacotes Unity confirmados.
