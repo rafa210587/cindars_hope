@@ -471,3 +471,48 @@ PR-002 só deve começar se:
 
 ### Proximo passo recomendado
 - Validar PR-004 no Unity antes de iniciar o proximo PR de managers/bootstrap.
+
+## 2026-05-17 - PR-005 Bootstrap managers vazios
+
+**Responsavel:** Codex
+**Branch:** feature/fase8-pr-005-bootstrap-managers
+**Escopo:** criar a estrutura minima de bootstrap e managers runtime, sem implementar gameplay, inventario funcional, tempo funcional ou save/load real.
+
+### Alteracoes
+- Criado `GameBootstrap` com singleton simples apenas para o bootstrap.
+- `GameBootstrap` inicializa managers referenciados por `[SerializeField]` e loga warning quando alguma referencia estiver ausente.
+- Criados `PlayerManager`, `InventoryManager`, `TimeManager` e `SaveManager` com `IsInitialized`, `Initialize()` e `Shutdown()`.
+- Nenhum manager implementa movimento, inventario funcional, ciclo de tempo, save/load, plantio, colheita, UI, cena ou prefab.
+- Nao foram usadas buscas globais em runtime (`GameObject.Find`, `FindObjectOfType`, `FindObjectsByType`).
+
+### Arquivos alterados
+- `Assets/_Game/Scripts/Core/Bootstrap.meta`
+- `Assets/_Game/Scripts/Core/Bootstrap/GameBootstrap.cs`
+- `Assets/_Game/Scripts/Core/Bootstrap/GameBootstrap.cs.meta`
+- `Assets/_Game/Scripts/Core/Time.meta`
+- `Assets/_Game/Scripts/Core/Time/TimeManager.cs`
+- `Assets/_Game/Scripts/Core/Time/TimeManager.cs.meta`
+- `Assets/_Game/Scripts/Inventory/InventoryManager.cs`
+- `Assets/_Game/Scripts/Inventory/InventoryManager.cs.meta`
+- `Assets/_Game/Scripts/Player/PlayerManager.cs`
+- `Assets/_Game/Scripts/Player/PlayerManager.cs.meta`
+- `Assets/_Game/Scripts/Save.meta`
+- `Assets/_Game/Scripts/Save/SaveManager.cs`
+- `Assets/_Game/Scripts/Save/SaveManager.cs.meta`
+- `PROJECT_LOG.md`
+
+### Testes
+- [x] Verificada a branch esperada via `.git/HEAD`.
+- [x] Criados apenas arquivos dentro da lista permitida, alem de `.meta` dos novos assets/pastas.
+- [x] Busca estatica nos arquivos do PR por `GameObject.Find`, `FindObjectOfType`, `FindObjectsByType` e `StreamingAssets` sem ocorrencias.
+- [x] Busca estatica confirmou ausencia de metodos funcionais de inventario/save/tempo como `AddItem`, `RemoveItem`, `AdvanceDay`, `Save(` e `Load(` nos novos managers.
+- [ ] Unity nao executado nesta sessao.
+- [ ] Compilacao C# local nao executada: ferramentas `git`, `dotnet`, `csc` e `msbuild` nao estao disponiveis no PATH do terminal.
+
+### Pendencias / riscos
+- Abrir Unity e confirmar Console sem erro vermelho.
+- Teste manual: criar temporariamente um GameObject em uma cena de teste, adicionar `GameBootstrap` e os quatro managers no Inspector, entrar em Play Mode e confirmar que nao ha erro.
+- Nao salvar cena/prefab neste PR.
+
+### Proximo passo recomendado
+- Validar PR-005 no Unity e depois seguir para PR-006, onde o estado de novo jogo e o inventario inicial devem consumir `PlayerDataSO` sem hardcode de dados em manager.
