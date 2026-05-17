@@ -1351,3 +1351,41 @@ PR-002 sÃ³ deve comeÃ§ar se:
 
 ### Próximo passo recomendado
 - PR-047 — criar item de madeira processada, receita, workshop e registries de crafting.
+
+---
+
+## 2026-05-17 — PR-047 Assets de receitas e workshop MVP
+
+**Responsável:** Codex/ChatGPT
+**Branch:** `feature/fase9a-crafting-mvp-package`
+**Escopo:** assets reais mínimos do Crafting MVP, sem scripts runtime ou cena.
+
+### Alterações
+- Criado `Item_Processed_Wood.asset` com ID `item_material_processed_wood`.
+- Criada receita `Recipe_Processed_Wood.asset` para converter `item_wood` x5 em `item_material_processed_wood` x1.
+- Criado workshop `Workshop_Carpentry_Basic.asset` com ID `workshop_carpentry_basic`.
+- Criados `RecipeDatabase.asset` e `WorkshopDatabase.asset`.
+- Atualizado `ItemDatabase.asset` para incluir `Item_Processed_Wood.asset` sem remover itens existentes.
+
+### Arquivos alterados
+- `Assets/_Game/Data/Items/Item_Processed_Wood.asset`
+- `Assets/_Game/Data/Items/Item_Processed_Wood.asset.meta`
+- `Assets/_Game/Data/Recipes/**`
+- `Assets/_Game/Data/Workshops/**`
+- `Assets/_Game/Data/Registries/ItemDatabase.asset`
+- `Assets/_Game/Data/Registries/RecipeDatabase.asset`
+- `Assets/_Game/Data/Registries/RecipeDatabase.asset.meta`
+- `Assets/_Game/Data/Registries/WorkshopDatabase.asset`
+- `Assets/_Game/Data/Registries/WorkshopDatabase.asset.meta`
+- `PROJECT_LOG.md`
+
+### Testes
+- [x] Revisão estática dos YAMLs criados e referências por GUID.
+- [ ] Unity não executado neste terminal; validar import dos assets no editor.
+
+### Pendências / riscos
+- Validar no Unity se `RecipeDatabase` e `WorkshopDatabase` carregam os assets corretamente.
+- Craft runtime entra no PR-048.
+
+### Próximo passo recomendado
+- PR-048 — criar `ItemCraftedEvent`, `CraftingManager` mínimo e expandir o validator para receitas/workshops.
