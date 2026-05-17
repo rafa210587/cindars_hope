@@ -634,3 +634,45 @@ PR-002 só deve começar se:
 
 ### Proximo passo recomendado
 - Abrir Unity, rodar o menu de recriacao da FarmScene e confirmar visualmente Player e Ground.
+
+## 2026-05-17 — Revisão pós-PR-007 e gaps futuros
+
+**Responsável:** Codex/ChatGPT
+**Branch:** feature/fase8-pr-007-farmscene-minima
+**Escopo:** limpar PR-007, corrigir placeholder visual e registrar decisões sobre gaps futuros.
+
+### Alterações
+- PR-001 a PR-006 não precisam ser refeitos.
+- PR-007 precisa remover arquivos fora de escopo antes do merge.
+- `GetBuiltinSprite()` deixava Player/Ground invisíveis quando retornava `null`; foi corrigido para tentar carregar `AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd")`.
+- Se o sprite builtin não for encontrado, o Editor script mantém warning claro.
+- Nenhum asset novo de sprite foi criado.
+- Nenhum tilemap, `PlayerController`, movimento, input, gameplay, UI, prefab, dado runtime ou doc de design foi alterado.
+
+### Decisões sobre gaps futuros
+- Eventos ausentes não bloqueiam PR-007, mas devem ser tratados antes dos PRs que dependem deles.
+- Antes de movimento/input: definir dono de `PlayerInputActions.inputactions` e validar pacotes Input System/Cinemachine/2D Extras se aplicável.
+- Antes de fome: adicionar `PlayerStepEvent`, `HungerCriticalEvent`, `HungerEmptyEvent` e `HPChangedEvent`.
+- Antes de save/load: alinhar `PlayerSaveData` canônico entre `CORE_CONTRACTS` e `FASE7`.
+- Antes de árvores: decidir `TreeDataSO`/`TreeDatabaseSO`.
+- VFX não deve ser dependência obrigatória dos sistemas MVP; feedbacks podem ficar para PR dedicado.
+- `FishingSpot` não precisa ser salvo no MVP; registrar como decisão quando chegar em pesca/save.
+
+### Arquivos alterados
+- `Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpFarmScene.cs`
+- `PROJECT_LOG.md`
+
+### Testes
+- [x] Verificada a branch esperada via `.git/HEAD`.
+- [x] Verificado que `GetBuiltinSprite()` tenta carregar `UI/Skin/UISprite.psd`.
+- [x] Confirmado que `casesensitivetest` não existe no workspace.
+- [ ] `.claude/**` e `cindars_hope.slnx` existem localmente; não foram alterados nesta tarefa e devem ser mantidos fora do PR/diff antes do merge.
+- [ ] Unity não executado nesta sessão.
+- [ ] `git status` não executado: `git` não está disponível no PATH do terminal.
+
+### Pendências / riscos
+- Rodar manualmente `CindarsHope/Scenes/Create MVP FarmScene` no Unity aberto para confirmar Player e Ground visíveis.
+- Antes do merge, revisar o diff em um ambiente com `git` disponível e garantir que só entrem FarmScene, `CreateMvpFarmScene`, metas correspondentes e `PROJECT_LOG.md`.
+
+### Próximo passo recomendado
+- Validar PR-007 no Unity com Console sem erro vermelho antes de seguir para movimento/input.
