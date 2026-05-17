@@ -601,3 +601,36 @@ PR-002 só deve começar se:
 
 ### Proximo passo recomendado
 - Abrir Unity, rodar o menu `CindarsHope/Scenes/Create MVP FarmScene`, abrir `Assets/_Game/Scenes/FarmScene.unity`, entrar em Play Mode e confirmar Console sem erro vermelho antes do PR-008.
+
+## 2026-05-17 - PR-007 ajuste sprite builtin placeholder
+
+**Responsavel:** Codex
+**Branch:** feature/fase8-pr-007-farmscene-minima
+**Escopo:** corrigir o Editor script da FarmScene minima para que Player e Ground usem sprite builtin visivel quando disponivel.
+
+### Alteracoes
+- `GetBuiltinSprite()` agora tenta carregar `AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd")`.
+- Se o sprite builtin nao for encontrado, o Editor script mantem warning claro.
+- Player e Ground continuam usando `SpriteRenderer` com cores placeholder e ficam visiveis quando o sprite builtin existir.
+- Nenhum asset novo de sprite foi criado.
+- Nenhum runtime, dado, cena manual, prefab, UI, movimento, input ou gameplay foi alterado.
+
+### Arquivos alterados
+- `Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpFarmScene.cs`
+- `PROJECT_LOG.md`
+
+### Testes
+- [x] Verificada a branch esperada via `.git/HEAD`.
+- [x] Busca estatica confirmou uso de `AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd")`.
+- [x] Busca estatica no Editor script por `GameObject.Find`, `FindObjectOfType`, `FindObjectsByType`, `PlayerController`, `JsonUtility`, `StreamingAssets`, `Canvas`, `TextMeshPro`, `UnityEngine.UI` e APIs de input sem ocorrencias.
+- [x] Confirmado que `casesensitivetest` nao existe no workspace.
+- [ ] `.claude` e `cindars_hope.slnx` existem localmente, mas nao foram alterados nesta tarefa.
+- [ ] Unity nao executado nesta sessao.
+- [ ] `git status` nao executado: `git` nao esta disponivel no PATH do terminal.
+
+### Pendencias / riscos
+- Rodar manualmente `CindarsHope/Scenes/Create MVP FarmScene` no Unity aberto para recriar a cena com sprite builtin visivel.
+- Revisar antes de commit para garantir que `.claude/**` e `cindars_hope.slnx` nao entrem no PR.
+
+### Proximo passo recomendado
+- Abrir Unity, rodar o menu de recriacao da FarmScene e confirmar visualmente Player e Ground.

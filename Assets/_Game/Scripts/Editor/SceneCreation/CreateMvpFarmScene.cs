@@ -17,6 +17,7 @@ namespace CindarsHope.Editor.SceneCreation
         private const string ScenePath = "Assets/_Game/Scenes/FarmScene.unity";
         private const string PlayerDataPath = "Assets/_Game/Data/Config/PlayerData.asset";
         private const string ItemDatabasePath = "Assets/_Game/Data/Registries/ItemDatabase.asset";
+        private const string BuiltinSpritePath = "UI/Skin/UISprite.psd";
 
         [MenuItem("CindarsHope/Scenes/Create MVP FarmScene")]
         public static void CreateSceneFromMenu()
@@ -179,7 +180,13 @@ namespace CindarsHope.Editor.SceneCreation
 
         private static Sprite GetBuiltinSprite()
         {
-            return null;
+            var sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>(BuiltinSpritePath);
+            if (sprite == null)
+            {
+                Debug.LogWarning($"Builtin placeholder sprite not found at '{BuiltinSpritePath}'. Player and Ground will need a sprite assigned manually or by a future art PR.");
+            }
+
+            return sprite;
         }
 
         private static void SetSortingLayerIfExists(SpriteRenderer spriteRenderer, string sortingLayerName)
