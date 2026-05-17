@@ -13,6 +13,7 @@ namespace CindarsHope.Player.Data
         public int StartingHunger = 100;
         public int StepsPerHungerTick = 10;
         public int HungerLossPerTick = 1;
+        public int HungerLossPerDay = 10;
         public StartingItem[] StartingItems;
 
         private void OnValidate()
@@ -24,6 +25,7 @@ namespace CindarsHope.Player.Data
             StartingHunger = Mathf.Clamp(StartingHunger, 0, MaxHunger);
             StepsPerHungerTick = Mathf.Max(1, StepsPerHungerTick);
             HungerLossPerTick = Mathf.Max(1, HungerLossPerTick);
+            HungerLossPerDay = Mathf.Max(0, HungerLossPerDay);
 
             if (StartingItems == null)
             {

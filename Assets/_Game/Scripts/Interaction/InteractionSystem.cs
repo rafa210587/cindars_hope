@@ -12,6 +12,17 @@ namespace CindarsHope.Interaction
         private readonly List<InteractionCandidate> _candidates = new List<InteractionCandidate>();
         private bool _missingTriggerWarningLogged;
 
+        public string CurrentPrompt
+        {
+            get
+            {
+                var candidate = GetBestCandidate();
+                return candidate != null ? candidate.InteractionPrompt : string.Empty;
+            }
+        }
+
+        public bool HasCandidate => GetBestCandidate() != null;
+
         private readonly struct InteractionCandidate
         {
             public readonly IInteractable Interactable;

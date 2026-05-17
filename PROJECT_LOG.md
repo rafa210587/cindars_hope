@@ -1149,3 +1149,70 @@ PR-002 sÃ³ deve comeÃ§ar se:
 ### Próximo passo recomendado
 - Validar save/load completo no Unity.
 - Depois decidir entre pesca/árvores ou hardening de save/load após validação.
+
+---
+
+## 2026-05-17 — WAVE Fase 8 World Activities + Shop + Hardening PR-031 a PR-045
+
+**Responsável:** Codex/ChatGPT
+**Branch:** `wave/fase8-world-activities-shop-hardening-031-045`
+**Escopo:** expansão MVP/debug após save/load com fome por dia, consequência de fome vazia, pickup, árvores, pesca, compra de sementes, HUD/prompt e hardening operacional.
+
+### Alterações
+- PR-031: avançar dia agora consome fome via `HungerManager` assinando `DayStartedEvent` e usando `PlayerDataSO.HungerLossPerDay`.
+- PR-032: fome vazia aplica consequência mínima de HP via `PlayerManager`; se HP chega a 0, restaura HP/fome mínima, reposiciona no spawn e publica `PlayerRespawnedEvent`.
+- PR-033: criado `ItemPickup` interagível para adicionar item por ID ao inventário e publicar `ItemPickedUpEvent`.
+- PR-034: criados `TreeDataSO`, `TreeDatabaseSO`, `Tree_Basic.asset` e `TreeDatabase.asset`.
+- PR-035: criado `TreeNode` cortável, adicionando madeira ao inventário e publicando `TreeChoppedEvent`.
+- PR-036: criados `TreeSaveData` e `TreeRegistry`; save/load agora inclui árvores em `FarmSaveData.Trees`.
+- PR-037: criado `FishingSpot` básico, sem persistência, adicionando `item_fish_common` quando o player tem a cana.
+- PR-038: criado `SeedShopPoint` básico para comprar `seed_wheat` x3 por 5 ouro.
+- PR-039: `InteractionSystem` expõe `HasCandidate` e `CurrentPrompt`; `DebugHud` mostra prompt do melhor interagível.
+- PR-040: HUD debug expandido com dia atual, comandos de save/load, loja, pesca e árvore.
+- PR-041: `CindarsHopeDataValidator` valida `TreeDatabase.asset`, `Tree_Basic.asset`, `WoodItemId`, `RequiredHits` e `WoodAmount`.
+- PR-042: `SaveManager` salva o restante mesmo sem `FarmPlotRegistry` ou `TreeRegistry` e faz restore tolerante por seção, com warnings claros.
+- PR-043: `CreateMvpFarmScene` integra pickup, árvores, pesca, loja de sementes, HUD expandido e layout com menos sobreposição; `DebugInteractable` deixou de ser criado porque os interagíveis reais/debug já cobrem o teste de interação.
+
+### Arquivos alterados
+- `Assets/_Game/Scripts/Player/PlayerManager.cs`
+- `Assets/_Game/Scripts/Player/HungerManager.cs`
+- `Assets/_Game/Scripts/Player/Data/PlayerDataSO.cs`
+- `Assets/_Game/Data/Config/PlayerData.asset`
+- `Assets/_Game/Scripts/Interaction/InteractionSystem.cs`
+- `Assets/_Game/Scripts/UI/DebugHud.cs`
+- `Assets/_Game/Scripts/Economy/SeedShopPoint.cs`
+- `Assets/_Game/Scripts/World/ItemPickup.cs`
+- `Assets/_Game/Scripts/World/Data/TreeDataSO.cs`
+- `Assets/_Game/Scripts/World/Data/TreeDatabaseSO.cs`
+- `Assets/_Game/Scripts/World/TreeNode.cs`
+- `Assets/_Game/Scripts/World/TreeRegistry.cs`
+- `Assets/_Game/Scripts/World/TreeSaveData.cs`
+- `Assets/_Game/Scripts/World/FishingSpot.cs`
+- `Assets/_Game/Scripts/Save/SaveData.cs`
+- `Assets/_Game/Scripts/Save/SaveManager.cs`
+- `Assets/_Game/Scripts/Editor/DataValidation/CindarsHopeDataValidator.cs`
+- `Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpFarmScene.cs`
+- `Assets/_Game/Data/World/**`
+- `.meta` dos arquivos/pastas criados
+- `PROJECT_LOG.md`
+
+### Fora de escopo preservado
+- Não houve alteração em `Core/Events`, `GameEventBus`, `Input`, `PlayerController`, `Packages`, `ProjectSettings`, prefabs ou docs.
+- Não houve Input System package, Cinemachine, UI final complexa, craft, NPC ou quests.
+- Save continua usando `Application.persistentDataPath` e dados persistíveis por IDs/tipos simples.
+
+### Testes
+- [x] Revisão estática dos arquivos alterados.
+- [x] Busca por `GameObject.Find`, `FindObjectOfType`, `FindObjectsByType` e `StreamingAssets` nos scripts tocados não encontrou ocorrências.
+- [x] `git status --short` confirmou alterações dentro do escopo permitido da wave.
+- [ ] Unity não executado neste terminal; validar compilação, validator, recriação da cena e Play Mode no editor.
+
+### Pendências / riscos
+- Validar no Unity se os `.asset`/`.meta` criados manualmente para `Tree_Basic` e `TreeDatabase` importam corretamente.
+- Validar `CindarsHope/Validate/Validate MVP Data`.
+- Validar loop completo: mover, plantar/colher, vender, comprar sementes, cortar árvore, pescar com cana, pickup, fome por dia/passos e F5/F9 com árvores.
+- FishingSpot não é persistido no MVP por decisão operacional.
+
+### Próximo passo recomendado
+- Rodar `CindarsHope/Scenes/Create MVP FarmScene`, `CindarsHope/Validate/Validate MVP Data` e smoke test completo no Unity.
+- Depois decidir entre hardening de save/load pós-validação ou próxima atividade MVP.

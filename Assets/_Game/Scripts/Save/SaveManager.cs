@@ -6,6 +6,7 @@ using CindarsHope.Core.Time;
 using CindarsHope.Farm;
 using CindarsHope.Inventory;
 using CindarsHope.Player;
+using CindarsHope.World;
 using UnityEngine;
 
 namespace CindarsHope.Save
@@ -23,6 +24,7 @@ namespace CindarsHope.Save
         [SerializeField] private HungerManager _hungerManager;
         [SerializeField] private TimeManager _timeManager;
         [SerializeField] private FarmPlotRegistry _farmPlotRegistry;
+        [SerializeField] private TreeRegistry _treeRegistry;
         [SerializeField] private Transform _playerTransform;
 
         public bool IsInitialized { get; private set; }
@@ -40,21 +42,34 @@ namespace CindarsHope.Save
 
         public bool SaveGame()
         {
-            if (!ValidateReferences())
-            {
-                PublishSaveResult(false, "Save failed: missing required references.");
-                return false;
-            }
-
             try
             {
+                var farmSaveData = new FarmSaveData();
+                if (_farmPlotRegistry != null)
+                {
+                    farmSaveData = _farmPlotRegistry.CaptureSaveData();
+                }
+                else
+                {
+                    Debug.LogWarning("SaveManager saved without FarmPlotRegistry. Farm plots were omitted.", this);
+                }
+
+                if (_treeRegistry != null)
+                {
+                    farmSaveData.Trees = _treeRegistry.CaptureSaveData();
+                }
+                else
+                {
+                    Debug.LogWarning("SaveManager saved without TreeRegistry. Trees were omitted.", this);
+                }
+
                 var saveData = new GameSaveData
                 {
                     SchemaVersion = CurrentSchemaVersion,
-                    CurrentDay = _timeManager.CurrentDay,
-                    Player = _playerManager.CaptureSaveData(_hungerManager.CurrentHunger, _hungerManager.MaxHunger, _playerTransform.position),
-                    Inventory = _inventoryManager.CaptureSaveData(),
-                    Farm = _farmPlotRegistry.CaptureSaveData()
+                    CurrentDay = CaptureCurrentDay(),
+                    Player = CapturePlayerSaveData(),
+                    Inventory = CaptureInventorySaveData(),
+                    Farm = farmSaveData
                 };
 
                 var savePath = SaveFilePath;
@@ -88,12 +103,6 @@ namespace CindarsHope.Save
                 return false;
             }
 
-            if (!ValidateReferences())
-            {
-                Debug.LogWarning("SaveManager cannot load because required references are missing.", this);
-                return false;
-            }
-
             try
             {
                 var json = File.ReadAllText(savePath);
@@ -110,17 +119,68 @@ namespace CindarsHope.Save
                     return false;
                 }
 
-                _timeManager.SetCurrentDay(saveData.CurrentDay);
-                _playerManager.RestoreFromSaveData(saveData.Player);
-
-                if (saveData.Player != null)
+                if (_timeManager != null)
                 {
-                    _hungerManager.RestoreFromSaveData(saveData.Player.CurrentHunger, saveData.Player.MaxHunger);
-                    _playerTransform.position = saveData.Player.PlayerPosition;
+                    _timeManager.SetCurrentDay(saveData.CurrentDay);
+                }
+                else
+                {
+                    Debug.LogWarning("SaveManager skipped day restore because TimeManager is missing.", this);
                 }
 
-                _inventoryManager.RestoreFromSaveData(saveData.Inventory);
-                _farmPlotRegistry.RestoreFromSaveData(saveData.Farm);
+                if (_playerManager != null)
+                {
+                    _playerManager.RestoreFromSaveData(saveData.Player);
+                }
+                else
+                {
+                    Debug.LogWarning("SaveManager skipped player restore because PlayerManager is missing.", this);
+                }
+
+                if (saveData.Player != null && _hungerManager != null)
+                {
+                    _hungerManager.RestoreFromSaveData(saveData.Player.CurrentHunger, saveData.Player.MaxHunger);
+                }
+                else
+                {
+                    Debug.LogWarning("SaveManager skipped hunger restore because save data or HungerManager is missing.", this);
+                }
+
+                if (saveData.Player != null && _playerTransform != null)
+                {
+                    _playerTransform.position = saveData.Player.PlayerPosition;
+                }
+                else
+                {
+                    Debug.LogWarning("SaveManager skipped player position restore because save data or player Transform is missing.", this);
+                }
+
+                if (_inventoryManager != null)
+                {
+                    _inventoryManager.RestoreFromSaveData(saveData.Inventory);
+                }
+                else
+                {
+                    Debug.LogWarning("SaveManager skipped inventory restore because InventoryManager is missing.", this);
+                }
+
+                if (_farmPlotRegistry != null)
+                {
+                    _farmPlotRegistry.RestoreFromSaveData(saveData.Farm);
+                }
+                else
+                {
+                    Debug.LogWarning("SaveManager skipped farm plot restore because FarmPlotRegistry is missing.", this);
+                }
+
+                if (_treeRegistry != null)
+                {
+                    _treeRegistry.RestoreFromSaveData(saveData.Farm);
+                }
+                else
+                {
+                    Debug.LogWarning("SaveManager skipped tree restore because TreeRegistry is missing.", this);
+                }
 
                 Debug.Log($"Game loaded from {savePath}.", this);
                 return true;
@@ -142,47 +202,50 @@ namespace CindarsHope.Save
             IsInitialized = false;
         }
 
-        private bool ValidateReferences()
+        private int CaptureCurrentDay()
         {
-            var valid = true;
+            if (_timeManager != null)
+            {
+                return _timeManager.CurrentDay;
+            }
 
+            Debug.LogWarning("SaveManager saved without TimeManager. CurrentDay fallback is 1.", this);
+            return 1;
+        }
+
+        private PlayerSaveData CapturePlayerSaveData()
+        {
             if (_playerManager == null)
             {
-                Debug.LogWarning("SaveManager missing PlayerManager reference.", this);
-                valid = false;
+                Debug.LogWarning("SaveManager saved without PlayerManager. Player section was omitted.", this);
+                return null;
             }
 
-            if (_inventoryManager == null)
-            {
-                Debug.LogWarning("SaveManager missing InventoryManager reference.", this);
-                valid = false;
-            }
-
+            var currentHunger = _hungerManager != null ? _hungerManager.CurrentHunger : 0;
+            var maxHunger = _hungerManager != null ? _hungerManager.MaxHunger : 1;
             if (_hungerManager == null)
             {
-                Debug.LogWarning("SaveManager missing HungerManager reference.", this);
-                valid = false;
+                Debug.LogWarning("SaveManager saved without HungerManager. Hunger values used safe fallbacks.", this);
             }
 
-            if (_timeManager == null)
-            {
-                Debug.LogWarning("SaveManager missing TimeManager reference.", this);
-                valid = false;
-            }
-
-            if (_farmPlotRegistry == null)
-            {
-                Debug.LogWarning("SaveManager missing FarmPlotRegistry reference.", this);
-                valid = false;
-            }
-
+            var playerPosition = _playerTransform != null ? (Vector2)_playerTransform.position : Vector2.zero;
             if (_playerTransform == null)
             {
-                Debug.LogWarning("SaveManager missing Player Transform reference.", this);
-                valid = false;
+                Debug.LogWarning("SaveManager saved without Player Transform. PlayerPosition fallback is zero.", this);
             }
 
-            return valid;
+            return _playerManager.CaptureSaveData(currentHunger, maxHunger, playerPosition);
+        }
+
+        private InventorySaveData CaptureInventorySaveData()
+        {
+            if (_inventoryManager != null)
+            {
+                return _inventoryManager.CaptureSaveData();
+            }
+
+            Debug.LogWarning("SaveManager saved without InventoryManager. Inventory section is empty.", this);
+            return new InventorySaveData();
         }
 
         private void PublishSaveResult(bool wasSuccessful, string message)

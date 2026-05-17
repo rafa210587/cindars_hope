@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using CindarsHope.Farm;
+using CindarsHope.World;
 using UnityEngine;
 
 namespace CindarsHope.Save
@@ -43,5 +44,6 @@ namespace CindarsHope.Save
     public class FarmSaveData
     {
         public List<FarmPlotSaveData> Plots = new List<FarmPlotSaveData>();
+        public List<TreeSaveData> Trees = new List<TreeSaveData>();
     }
 }
