@@ -516,3 +516,44 @@ PR-002 só deve começar se:
 
 ### Proximo passo recomendado
 - Validar PR-005 no Unity e depois seguir para PR-006, onde o estado de novo jogo e o inventario inicial devem consumir `PlayerDataSO` sem hardcode de dados em manager.
+
+## 2026-05-17 - PR-006 NewGameState e inventario inicial
+
+**Responsavel:** Codex
+**Branch:** feature/fase8-pr-006-new-game-state-inventory
+**Escopo:** criar estado inicial runtime usando `PlayerDataSO`, `ItemDatabaseSO`, `PlayerManager` e `InventoryManager`, sem UI, cena, prefab, save/load ou gameplay de plantio.
+
+### Alteracoes
+- Criado `InventoryStack` imutavel com `ItemId` e `Amount`, validando ID vazio e quantidade negativa.
+- `InventoryManager` agora mantem inventario interno em `Dictionary<string, int>` usando IDs estaveis.
+- `InventoryManager.InitializeFromStartingItems` inicializa itens iniciais a partir de `PlayerDataSO.StartingItems` e valida IDs pelo `ItemDatabaseSO`.
+- `InventoryManager.AddItem` e `RemoveItem` validam entrada, respeitam `MaxStack` do `ItemDataSO` e publicam `InventoryChangedEvent`.
+- `PlayerManager` inicializa `CurrentGold` e `CurrentHP` a partir de `PlayerDataSO`.
+- `PlayerManager` publica `GoldChangedEvent` ao inicializar ouro e ao mudar ouro por `SetGold`, `AddGold` ou `TrySpendGold`.
+- `GameBootstrap` recebeu referencias serializadas para `PlayerDataSO` e `ItemDatabaseSO` e usa essas referencias para inicializar o estado inicial.
+- Nao houve UI, cena, prefab, save/load JSON, movimento, plantio, colheita, pesca ou venda.
+
+### Arquivos alterados
+- `Assets/_Game/Scripts/Core/Bootstrap/GameBootstrap.cs`
+- `Assets/_Game/Scripts/Player/PlayerManager.cs`
+- `Assets/_Game/Scripts/Inventory/InventoryManager.cs`
+- `Assets/_Game/Scripts/Inventory/InventoryStack.cs`
+- `Assets/_Game/Scripts/Inventory/InventoryStack.cs.meta`
+- `PROJECT_LOG.md`
+
+### Testes
+- [x] Verificada a branch esperada via `.git/HEAD`.
+- [x] Busca estatica nos arquivos do PR por `GameObject.Find`, `FindObjectOfType`, `FindObjectsByType`, `StreamingAssets`, `JsonUtility`, `File.` e `Directory.` sem ocorrencias.
+- [x] Conferida publicacao de `InventoryChangedEvent(itemId, delta, newAmount)` e `GoldChangedEvent(delta, newTotal)` conforme eventos existentes.
+- [x] Conferido que os arquivos alterados ficam dentro do escopo permitido do PR-006.
+- [ ] Unity nao executado nesta sessao.
+- [ ] Compilacao C# local nao executada: ferramentas `git`, `dotnet`, `csc` e `msbuild` nao estao disponiveis no PATH do terminal.
+
+### Pendencias / riscos
+- Abrir Unity e confirmar Console sem erro vermelho.
+- Teste manual: em uma cena temporaria nao salva, criar `GameBootstrap` e managers, arrastar `PlayerData.asset` e `ItemDatabase.asset`, entrar em Play Mode e confirmar managers inicializados.
+- Como o inventario interno e um dicionario por ID, o `MaxStack` atual limita a quantidade total por item neste PR; expansao para multiplos slots/stacks fica para PR futuro se necessario.
+- Nao salvar cena/prefab neste PR.
+
+### Proximo passo recomendado
+- Validar PR-006 no Unity antes de iniciar PR-007/FarmScene minima ou a proxima fatia definida no plano.
