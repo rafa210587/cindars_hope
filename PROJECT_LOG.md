@@ -1423,3 +1423,35 @@ PR-002 sÃ³ deve comeÃ§ar se:
 
 ### Próximo passo recomendado
 - PR-049 — criar `CraftingPoint` interagível para executar `recipe_processed_wood`.
+
+---
+
+## 2026-05-17 — PR-049 CraftingPoint interagível
+
+**Responsável:** Codex/ChatGPT
+**Branch:** `feature/fase9a-crafting-mvp-package`
+**Escopo:** ponto runtime interagível para disparar uma receita de crafting.
+
+### Alterações
+- Criado `CraftingPoint` implementando `IInteractable`.
+- `InteractionPrompt` retorna `Craftar`.
+- `CanInteract` exige `CraftingManager` configurado e `recipeId` preenchido.
+- `Interact` chama `CraftingManager.TryCraft("recipe_processed_wood")` por padrão e registra sucesso/falha no Console.
+- Não houve alteração em `InteractionSystem`, `InventoryManager`, `SaveManager`, FarmScene, assets ou UI.
+
+### Arquivos alterados
+- `Assets/_Game/Scripts/Craft/CraftingPoint.cs`
+- `Assets/_Game/Scripts/Craft/CraftingPoint.cs.meta`
+- `PROJECT_LOG.md`
+
+### Testes
+- [x] Revisão estática do script criado.
+- [x] Busca por `GameObject.Find`, `FindObjectOfType`, `FindObjectsByType` e `StreamingAssets` no arquivo criado sem ocorrências.
+- [ ] Unity não executado neste terminal; validar compilação no editor.
+
+### Pendências / riscos
+- Integrar `CraftingPoint` no gerador da FarmScene no PR-051.
+- Logs detalhados de falha dependem do `CraftingManager` e podem ser refinados no PR-050 se necessário.
+
+### Próximo passo recomendado
+- PR-050 — avaliar HUD/debug para crafting e melhorar logs se necessário.
