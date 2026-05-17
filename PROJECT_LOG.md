@@ -432,3 +432,42 @@ PR-002 só deve começar se:
 
 ### Proximo passo recomendado
 - Reimportar assets no Unity e validar `PlayerData`, `ItemDatabase` e `SeedDatabase` antes de seguir para o proximo PR.
+
+## 2026-05-17 - PR-004 Editor Data Validator
+
+**Responsavel:** Codex
+**Branch:** feature/fase8-pr-004-editor-data-validator
+**Escopo:** criar uma ferramenta Editor-only para validar os assets de dados MVP antes de iniciar managers e gameplay.
+
+### Alteracoes
+- Criado `CindarsHopeDataValidator.cs` em `Assets/_Game/Scripts/Editor/DataValidation/`.
+- Adicionado menu `CindarsHope/Validate/Validate MVP Data`.
+- O validator localiza `ItemDatabaseSO`, `SeedDatabaseSO` e `PlayerDataSO` via `AssetDatabase`.
+- O validator verifica IDs obrigatorios, nulos, IDs vazios, IDs duplicados, dados de seeds e itens iniciais do `PlayerData`.
+- Em sucesso, loga `Cindar's Hope MVP data validation passed.`.
+- Em falha, loga cada erro com `Debug.LogError` e lanca excecao ao final.
+- Nenhum script runtime, gameplay, cena, prefab, UI ou asset de dados foi alterado.
+
+### Arquivos alterados
+- `Assets/_Game/Scripts/Editor.meta`
+- `Assets/_Game/Scripts/Editor/DataValidation.meta`
+- `Assets/_Game/Scripts/Editor/DataValidation/CindarsHopeDataValidator.cs`
+- `Assets/_Game/Scripts/Editor/DataValidation/CindarsHopeDataValidator.cs.meta`
+- `PROJECT_LOG.md`
+
+### Testes
+- [x] Verificada a branch esperada via `.git/HEAD`.
+- [x] Busca estatica no validator por `GameObject.Find`, `FindObjectOfType` e `FindObjectsByType` sem ocorrencias.
+- [x] Verificacao estatica dos assets atuais: `ItemDatabase.asset` referencia 7 itens.
+- [x] Verificacao estatica dos assets atuais: `SeedDatabase.asset` referencia 2 seeds.
+- [x] Verificacao estatica dos assets atuais: `PlayerData.asset` referencia 3 `StartingItems`.
+- [ ] Unity nao executado nesta sessao; menu ainda precisa ser rodado manualmente no Editor.
+- [ ] Compilacao C# local nao executada: ferramentas `git`, `dotnet`, `csc` e `msbuild` nao estao disponiveis no PATH do terminal.
+
+### Pendencias / riscos
+- Abrir Unity e confirmar que o menu `CindarsHope/Validate/Validate MVP Data` aparece.
+- Rodar o menu com os assets atuais e confirmar sucesso no Console.
+- Testar falha manual removendo uma referencia obrigatoria e confirmar `Debug.LogError` + excecao.
+
+### Proximo passo recomendado
+- Validar PR-004 no Unity antes de iniciar o proximo PR de managers/bootstrap.
