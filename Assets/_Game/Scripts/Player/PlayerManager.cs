@@ -11,6 +11,7 @@ namespace CindarsHope.Player
         public bool IsInitialized { get; private set; }
         public int CurrentGold { get; private set; }
         public int CurrentHP { get; private set; }
+        public int MaxHP { get; private set; }
 
         public void Initialize()
         {
@@ -34,13 +35,16 @@ namespace CindarsHope.Player
 
             var previousGold = CurrentGold;
             CurrentGold = Mathf.Max(0, playerData.StartingGold);
-            CurrentHP = Mathf.Max(1, playerData.BaseHP);
+            MaxHP = Mathf.Max(1, playerData.BaseHP);
+            CurrentHP = MaxHP;
 
             var delta = CurrentGold - previousGold;
             if (delta != 0 || CurrentGold != 0)
             {
                 GameEventBus.Publish(new GoldChangedEvent(delta == 0 ? CurrentGold : delta, CurrentGold));
             }
+
+            GameEventBus.Publish(new HPChangedEvent(CurrentHP, CurrentHP, MaxHP));
         }
 
         public void Shutdown()

@@ -866,3 +866,48 @@ PR-002 só deve começar se:
 
 ### Proximo passo recomendado
 - Validar movimento em Play Mode com o fallback atual e planejar PR especifico para configurar o Input System.
+
+## 2026-05-17 - PR-011 Runtime State Hardening
+
+**Responsavel:** Codex
+**Branch:** feature/fase8-pr-011-runtime-state-hardening
+**Escopo:** preparar `InventoryManager`, `PlayerManager` e `PlayerDataSO` para proximos PRs de load, fome e sistemas runtime, sem gameplay novo.
+
+### Alteracoes
+- `InventoryManager` agora pode receber `ItemDatabaseSO` sem depender de `PlayerDataSO`, via `Initialize(ItemDatabaseSO itemDatabase)`.
+- `InventoryManager` agora expoe `HasItemDatabase`.
+- `InventoryManager` agora expoe `IsKnownItem(string itemId)`.
+- `InventoryManager.InitializeFromStartingItems` passa a chamar `Initialize(itemDatabase)`, depois `Clear()`, e entao processar `StartingItems`.
+- `PlayerManager` agora expoe `MaxHP`.
+- `PlayerManager.Initialize(PlayerDataSO)` define `MaxHP = Mathf.Max(1, playerData.BaseHP)` e `CurrentHP = MaxHP`.
+- `PlayerManager.Initialize(PlayerDataSO)` publica `HPChangedEvent` no boot com `delta = CurrentHP`, `CurrentHP` e `MaxHP`.
+- `PlayerDataSO` agora possui configuracoes de fome para PR futuro: `MaxHunger`, `StartingHunger`, `StepsPerHungerTick` e `HungerLossPerTick`.
+- `PlayerDataSO.OnValidate` valida os campos de fome: `MaxHunger >= 1`, `StartingHunger` entre `0` e `MaxHunger`, `StepsPerHungerTick >= 1` e `HungerLossPerTick >= 1`.
+- `PlayerData.asset` atualizado com `MaxHunger = 100`, `StartingHunger = 100`, `StepsPerHungerTick = 10` e `HungerLossPerTick = 1`.
+- Convencao de sementes registrada: `ItemDataSO` de semente e `SeedDataSO` compartilham o mesmo Id, por exemplo `seed_wheat`; isso permite resolver plantio por ID do item no inventario usando `SeedDatabaseSO`.
+- `TreeDataSO`/`TreeDatabaseSO` fica para PR de arvores.
+- Testes unitarios ficam para PR futuro de hardening/testes.
+- Nao houve gameplay novo, UI, plantio, interacao, fome funcional ou save/load.
+
+### Arquivos alterados
+- `Assets/_Game/Scripts/Inventory/InventoryManager.cs`
+- `Assets/_Game/Scripts/Player/PlayerManager.cs`
+- `Assets/_Game/Scripts/Player/Data/PlayerDataSO.cs`
+- `Assets/_Game/Data/Config/PlayerData.asset`
+- `PROJECT_LOG.md`
+
+### Testes
+- [x] Verificada a branch esperada via `.git/HEAD`.
+- [x] Conferida assinatura de `HPChangedEvent(int delta, int currentHP, int maxHP)`.
+- [x] Busca estatica nos arquivos alterados por `GameObject.Find`, `FindObjectOfType`, `FindObjectsByType`, `StreamingAssets`, `JsonUtility`, `File.`, `Directory.`, `LoadFromSave`, `TakeDamage`, `Heal`, `Respawn`, `IInteractable`, `InteractionSystem`, `Canvas`, `UnityEngine.UI` e `TextMeshPro` sem ocorrencias.
+- [x] Conferidos campos de fome no `PlayerData.asset`.
+- [ ] Unity nao executado nesta sessao.
+- [ ] Compilacao C# local nao executada: ferramentas `git`, `dotnet`, `csc` e `msbuild` nao estao disponiveis no PATH do terminal.
+
+### Pendencias / riscos
+- Abrir Unity para reimportar `PlayerDataSO` e confirmar `PlayerData.asset` sem perda de referencias.
+- Rodar `CindarsHope/Validate/Validate MVP Data` apos reimport.
+- Testes unitarios de inventario/player ficam para PR futuro.
+
+### Proximo passo recomendado
+- Validar PR-011 no Unity; depois seguir para o proximo PR runtime mantendo fome funcional, save/load e arvores em fatias separadas.
