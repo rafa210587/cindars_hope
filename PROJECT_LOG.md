@@ -1,4 +1,4 @@
-# Cindar's Hope — Project Log
+# Cindar's Hope â€” Project Log
 
 > Fonte operacional de continuidade do projeto.
 > Todo agente humano ou IA deve ler este arquivo antes de executar mudanças e atualizá-lo ao final de qualquer tarefa relevante.
@@ -34,7 +34,7 @@ Ao final da tarefa:
 Modelo de entrada:
 
 ```md
-## YYYY-MM-DD — Título curto
+## YYYY-MM-DD â€” Título curto
 
 **Responsável:** Humano / ChatGPT / Codex / Claude
 **Branch:** nome-da-branch
@@ -62,12 +62,12 @@ Modelo de entrada:
 - Repositório: `rafa210587/cindars_hope`
 - Branch base estável: `main`
 - Branch de desenvolvimento: `dev`
-- Fluxo recomendado: `main` → `dev` → `feature/fase8-pr-XXX-*`
+- Fluxo recomendado: `main` â†’ `dev` â†’ `feature/fase8-pr-XXX-*`
 
 ### Fase atual
 
-- Fase 8 — implementação do MVP Fazenda.
-- Objetivo do MVP: `BootScene → FarmScene → inventário inicial → plantar → avançar dias → colher → vender → salvar → fechar → reabrir → estado restaurado`.
+- Fase 8 â€” implementação do MVP Fazenda.
+- Objetivo do MVP: `BootScene â†’ FarmScene â†’ inventário inicial â†’ plantar â†’ avançar dias â†’ colher â†’ vender â†’ salvar â†’ fechar â†’ reabrir â†’ estado restaurado`.
 
 ### Status dos PRs da Fase 8
 
@@ -79,10 +79,12 @@ Modelo de entrada:
 | PR-004 | Mergeado em `dev` |
 | PR-005 | Mergeado em `dev` |
 | PR-006 | Mergeado em `dev` |
-| PR-007 | Mergeado em `dev`; validaÃ§Ã£o Unity local recomendada |
+| PR-007 | Mergeado em `dev` |
 | PR-008 | Mergeado em `dev` |
-| PR-009 | Documental atual |
-| PrÃ³ximo PR runtime | Movimento/input |
+| PR-009 | Mergeado em `dev`, documental pós PR-008 |
+| PR-010 | Mergeado em `dev`, movimento/input mínimo |
+| PR-011 | Mergeado em `dev`, runtime state hardening |
+| Próximo PR runtime | PR-012 Interaction System mínimo |
 
 ### PR-001
 
@@ -134,19 +136,26 @@ Motivo: Unity Package Manager pode falhar com `EPERM` ao renomear pacotes em `Li
 
 ## 3. Próximo passo recomendado
 
-Antes do próximo PR runtime:
+Validar Unity após PR-011:
 
-1. Validar Unity com PR-007/PR-008 aplicados.
-2. Confirmar pacotes:
-   - `com.unity.inputsystem`
-   - `com.unity.cinemachine`, se usado no PR de câmera/movimento
-3. Confirmar que `CindarsHope/Validate/Validate MVP Data` continua passando.
-4. O próximo PR runtime será movimento/input.
-5. `PlayerInputActions.inputactions` deve ter dono explícito no PR de movimento/input.
+1. Console sem erro vermelho.
+2. `CindarsHope/Validate/Validate MVP Data` passa.
+3. `CindarsHope/Scenes/Create MVP FarmScene` executa.
+4. Play Mode entra sem erro.
+5. Player ainda move com WASD/setas.
+
+Próximo PR runtime:
+
+- PR-012 — Interaction System mínimo.
+- Não implementar plantio ainda no PR-012.
+- Não implementar UI final ainda no PR-012.
+- Não implementar save/load ainda.
+
+Nota: o plano histórico em `docs/FASE8_EXECUTION_PLAN_CODEX_v1.0.md` tem numeração antiga preservada para contexto. A fonte operacional de sequência passa a ser o topo atualizado do `PROJECT_LOG.md`.
 
 ---
 
-## 4. Guia de teste no Unity — Smoke Test atual
+## 4. Guia de teste no Unity â€” Smoke Test atual
 
 Este checklist valida se o projeto está pronto para continuar a Fase 8.
 
@@ -178,7 +187,7 @@ Verificar no painel Project:
 
 ### 4.4 Package Manager
 
-Abrir `Window → Package Manager` e validar:
+Abrir `Window â†’ Package Manager` e validar:
 
 - [ ] `2D Sprite` ou pacote 2D equivalente está resolvido.
 - [ ] `Visual Studio Editor` ou IDE package está resolvido.
@@ -187,17 +196,17 @@ Abrir `Window → Package Manager` e validar:
 
 ### 4.5 Configurações Unity recomendadas
 
-Verificar em `Edit → Project Settings`:
+Verificar em `Edit â†’ Project Settings`:
 
-- [ ] Editor → Asset Serialization = `Force Text`.
-- [ ] Editor → Version Control Mode = `Visible Meta Files`.
-- [ ] Player → Product Name = `Cindar's Hope` ou equivalente.
-- [ ] Player → Default Screen Width = `1280`.
-- [ ] Player → Default Screen Height = `720`.
+- [ ] Editor â†’ Asset Serialization = `Force Text`.
+- [ ] Editor â†’ Version Control Mode = `Visible Meta Files`.
+- [ ] Player â†’ Product Name = `Cindar's Hope` ou equivalente.
+- [ ] Player â†’ Default Screen Width = `1280`.
+- [ ] Player â†’ Default Screen Height = `720`.
 
 ### 4.6 Sorting Layers
 
-Verificar em `Project Settings → Tags and Layers → Sorting Layers`.
+Verificar em `Project Settings â†’ Tags and Layers â†’ Sorting Layers`.
 
 Camadas esperadas:
 
@@ -255,7 +264,7 @@ PR-002 só deve começar se:
 
 ## 5. Log de atividades
 
-## 2026-05-16 — Criação do protocolo de log operacional
+## 2026-05-16 â€” Criação do protocolo de log operacional
 
 **Responsável:** ChatGPT
 **Branch:** dev
@@ -280,7 +289,7 @@ PR-002 só deve começar se:
 - Rodar o smoke test Unity.
 - Criar `feature/fase8-pr-002-data-contracts-registries`.
 
-## 2026-05-16 — Versionamento dos metas Unity do core
+## 2026-05-16 â€” Versionamento dos metas Unity do core
 
 **Responsável:** Humano orientado por ChatGPT
 **Branch:** dev
@@ -649,7 +658,7 @@ PR-002 só deve começar se:
 ### Proximo passo recomendado
 - Abrir Unity, rodar o menu de recriacao da FarmScene e confirmar visualmente Player e Ground.
 
-## 2026-05-17 — Revisão pós-PR-007 e gaps futuros
+## 2026-05-17 â€” Revisão pós-PR-007 e gaps futuros
 
 **Responsável:** Codex/ChatGPT
 **Branch:** feature/fase8-pr-007-farmscene-minima
@@ -667,7 +676,7 @@ PR-002 só deve começar se:
 - Eventos ausentes não bloqueiam PR-007, mas devem ser tratados antes dos PRs que dependem deles.
 - Antes de movimento/input: definir dono de `PlayerInputActions.inputactions` e validar pacotes Input System/Cinemachine/2D Extras se aplicável.
 - Antes de fome: adicionar `PlayerStepEvent`, `HungerCriticalEvent`, `HungerEmptyEvent` e `HPChangedEvent`.
-- Antes de save/load: alinhar `PlayerSaveData` canônico entre `CORE_CONTRACTS` e `FASE7`.
+- Antes de save/load: alinhar `PlayerSaveData` canÃ´nico entre `CORE_CONTRACTS` e `FASE7`.
 - Antes de árvores: decidir `TreeDataSO`/`TreeDatabaseSO`.
 - VFX não deve ser dependência obrigatória dos sistemas MVP; feedbacks podem ficar para PR dedicado.
 - `FishingSpot` não precisa ser salvo no MVP; registrar como decisão quando chegar em pesca/save.
@@ -911,3 +920,34 @@ PR-002 só deve começar se:
 
 ### Proximo passo recomendado
 - Validar PR-011 no Unity; depois seguir para o proximo PR runtime mantendo fome funcional, save/load e arvores em fatias separadas.
+
+---
+
+## 2026-05-17 — DOC Sync pós PR-011
+
+**Responsável:** Codex/ChatGPT
+**Branch:** `docs/fase8-sync-pos-pr011`
+**Escopo:** sincronização documental operacional após PR-011, sem alterar runtime, assets, cenas, prefabs ou gameplay.
+
+### Alterações
+- Atualizado o topo do `PROJECT_LOG.md` para registrar PR-001 a PR-011 como mergeados em `dev`.
+- Registrado `PR-012 — Interaction System mínimo` como próximo PR runtime.
+- Registrado que o plano histórico em `docs/FASE8_EXECUTION_PLAN_CODEX_v1.0.md` preserva numeração antiga e que a fonte operacional atual é o topo do `PROJECT_LOG.md`.
+- Atualizado `docs/FASE8_EXECUTION_PLAN_CODEX_v1.0.md` com nota pós PR-011.
+- Corrigidos caracteres quebrados óbvios nos blocos operacionais atualizados do `PROJECT_LOG.md`.
+
+### Arquivos alterados
+- `PROJECT_LOG.md`
+- `docs/FASE8_EXECUTION_PLAN_CODEX_v1.0.md`
+
+### Testes
+- [x] Revisão textual dos blocos atualizados.
+- [x] Verificado que o escopo ficou restrito aos documentos permitidos.
+- [ ] Unity não executado; alteração é documental.
+
+### Pendências / riscos
+- Validar Unity após PR-011 antes de iniciar o PR-012.
+- O PR-012 não deve implementar plantio, UI final ou save/load.
+
+### Próximo passo recomendado
+- Executar `PR-012 — Interaction System mínimo` após validação local no Unity.
