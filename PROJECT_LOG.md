@@ -1455,3 +1455,31 @@ PR-002 sÃ³ deve comeÃ§ar se:
 
 ### Próximo passo recomendado
 - PR-050 — avaliar HUD/debug para crafting e melhorar logs se necessário.
+
+---
+
+## 2026-05-17 — PR-050 Debug/HUD mínimo para crafting
+
+**Responsável:** Codex/ChatGPT
+**Branch:** `feature/fase9a-crafting-mvp-package`
+**Escopo:** avaliar testabilidade do crafting via HUD/debug/log sem criar UI final.
+
+### Alterações
+- Confirmado por revisão estática que `DebugHud` já lista o inventário genericamente por ID e quantidade.
+- `item_wood` e `item_material_processed_wood` aparecerão no HUD automaticamente quando existirem no inventário.
+- `CraftingManager` e `CraftingPoint` já registram sucesso e falhas comuns no Console.
+- Nenhuma alteração de código foi necessária nesta wave.
+
+### Arquivos alterados
+- `PROJECT_LOG.md`
+
+### Testes
+- [x] Revisão estática de `DebugHud`, `CraftingManager` e `CraftingPoint`.
+- [ ] Unity não executado neste terminal; validar HUD e logs em Play Mode após integração da cena.
+
+### Pendências / riscos
+- A testabilidade real depende da integração do `CraftingManager` e do `CraftingPoint` na FarmScene no PR-051.
+- UI final de crafting segue fora de escopo.
+
+### Próximo passo recomendado
+- PR-051 — integrar `CraftingManager` e `CraftingPoint_Carpentry` no gerador da FarmScene.
