@@ -43,6 +43,16 @@ Política de VFX:
 - Sistemas de gameplay não devem depender de prefabs VFX inexistentes.
 - Feedbacks visuais podem ficar para PR dedicado de polish/feedback.
 
+Nota de sincronização pós PR-011:
+
+- PR-009, PR-010 e PR-011 já foram executados após a nota anterior.
+- Sequência operacional atual:
+  - PR-009 — Docs sync pós PR-008
+  - PR-010 — PlayerInputActions + PlayerController mínimo
+  - PR-011 — Runtime State Hardening
+  - PR-012 — Interaction System mínimo
+- As seções antigas de PR-008 em diante são histórico/plano base e não devem ser usadas cegamente sem consultar `PROJECT_LOG.md`.
+
 ---
 
 ## 1. Princípio central
