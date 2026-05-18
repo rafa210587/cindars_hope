@@ -6,33 +6,57 @@ namespace CindarsHope.Combat
     public class PlayerAttackController : MonoBehaviour
     {
         [SerializeField] private KeyCode _attackKey = KeyCode.J;
-        [SerializeField] private Collider2D _attackCollider;
-        [SerializeField] private float _attackDamage = 3f;
-        [SerializeField] private float _attackRange = 1.5f;
+        [SerializeField] private int _punchDamage = 1;
+        [SerializeField] private float _punchRange = 0.8f;
+        [SerializeField] private float _attackCooldownSeconds = 0.4f;
+
+        private float _lastAttackTime;
 
         private void Update()
         {
             if (Input.GetKeyDown(_attackKey))
             {
-                Attack();
+                Punch();
             }
         }
 
-        private void Attack()
+        private void Punch()
         {
-            var hitColliders = Physics2D.OverlapCircleAll(transform.position, _attackRange);
+            if (Time.time < _lastAttackTime + _attackCooldownSeconds)
+            {
+                return;
+            }
+
+            var hitColliders = Physics2D.OverlapCircleAll(transform.position, _punchRange);
+            bool hitAny = false;
 
             foreach (var collider in hitColliders)
             {
-                if (collider.CompareTag("Enemy"))
+                if (collider.gameObject == gameObject)
                 {
-                    var enemyHealth = collider.GetComponent<EnemyHealth>();
-                    if (enemyHealth != null)
-                    {
-                        enemyHealth.TakeDamage((int)_attackDamage);
-                    }
+                    continue;
+                }
+
+                var enemyHealth = collider.GetComponentInParent<EnemyHealth>();
+                if (enemyHealth == null)
+                {
+                    enemyHealth = collider.GetComponent<EnemyHealth>();
+                }
+
+                if (enemyHealth != null)
+                {
+                    enemyHealth.TakeDamage(_punchDamage);
+                    Debug.Log($"PlayerAttackController: punch hit enemy {enemyHealth.gameObject.name} for {_punchDamage} damage.");
+                    hitAny = true;
                 }
             }
+
+            if (!hitAny)
+            {
+                Debug.Log("PlayerAttackController: punch missed.");
+            }
+
+            _lastAttackTime = Time.time;
         }
     }
 }

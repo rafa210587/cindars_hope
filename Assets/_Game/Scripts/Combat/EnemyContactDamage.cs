@@ -1,3 +1,4 @@
+using CindarsHope.Core.Bootstrap;
 using CindarsHope.Player;
 using UnityEngine;
 
@@ -27,16 +28,37 @@ namespace CindarsHope.Combat
                 return;
             }
 
-            if (_playerManager == null && collision.CompareTag("Player"))
+            if (_playerManager == null)
             {
-                _playerManager = collision.GetComponent<PlayerManager>();
+                var playerController = collision.GetComponentInParent<PlayerController>();
+                if (playerController == null)
+                {
+                    playerController = collision.GetComponent<PlayerController>();
+                }
+
+                if (playerController != null)
+                {
+                    if (GameBootstrap.Instance != null && GameBootstrap.Instance.PlayerManager != null)
+                    {
+                        _playerManager = GameBootstrap.Instance.PlayerManager;
+                    }
+                    else
+                    {
+                        _playerManager = collision.GetComponentInParent<PlayerManager>();
+                        if (_playerManager == null)
+                        {
+                            _playerManager = collision.GetComponent<PlayerManager>();
+                        }
+                    }
+                }
             }
 
-            if (_playerManager != null && collision.CompareTag("Player"))
+            if (_playerManager != null)
             {
                 if (Time.time >= _lastDamageTime + _enemyData.contactDamageCooldownSeconds)
                 {
                     _playerManager.DamageHP(_enemyData.contactDamage);
+                    Debug.Log($"EnemyContactDamage: dealt {_enemyData.contactDamage} damage to player. HP should update through PlayerManager.");
                     _lastDamageTime = Time.time;
                 }
             }
@@ -44,7 +66,13 @@ namespace CindarsHope.Combat
 
         private void OnTriggerExit2D(Collider2D collision)
         {
-            if (collision.CompareTag("Player"))
+            var playerController = collision.GetComponentInParent<PlayerController>();
+            if (playerController == null)
+            {
+                playerController = collision.GetComponent<PlayerController>();
+            }
+
+            if (playerController != null)
             {
                 _playerManager = null;
             }

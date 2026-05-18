@@ -881,7 +881,6 @@ namespace CindarsHope.Editor.SceneCreation
             var serializedInstaller = new SerializedObject(installer);
 
             var farmPlots = Object.FindObjectsByType<FarmPlot>(FindObjectsSortMode.None);
-            SetReference(serializedInstaller, "_farmPlots", null);
             var farmPlotsProperty = serializedInstaller.FindProperty("_farmPlots");
             if (farmPlotsProperty != null)
             {

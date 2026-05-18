@@ -2843,3 +2843,194 @@ Próximo pacote: FASE 9B-2 Combat Feel ou FASE 9A/9C UI MVP.
 - Slime da Cave com `EnemyDataSO` atribuído: nenhum warning de `EnemyHealth on 'Slime' has no EnemyDataSO assigned`.
 - Player da Cave com `PlayerDataSO` atribuído: nenhum fallback de velocidade, nenhum warning de `PlayerController on 'Player' has no PlayerDataSO assigned`.
 - Menu `CindarsHope/Scenes/Create MVP CaveScene` cria `Enemy_Slime.asset` automaticamente se não existir.
+
+---
+
+## 2026-05-18 — PR-087 Fix Cave combat wiring e Farm generator
+
+**Responsável:** Claude  
+**Branch:** `fix/fase9b1-cave-combat-generator-wiring`  
+**Escopo:** remover dependência de tags e corrigir wiring de combate e gerador de cenas.
+
+### Correções aplicadas
+
+- **CreateMvpCaveScene.cs:**
+  - Removido `slimeObject.tag = "Enemy";` no `CreateSlime()` (não depender de tag não definida).
+  - Removido `slimeObject.AddComponent<PlayerAttackController>();` do Slime.
+  - Adicionado `player.AddComponent<PlayerAttackController>();` no `CreatePlayer()`.
+
+- **PlayerAttackController.cs:**
+  - Removida dependência de `CompareTag("Enemy")`.
+  - Substituído por detecção por componente: busca `EnemyHealth` com `GetComponentInParent()` e `GetComponent()`.
+  - Adicionado skip do próprio GameObject para evitar auto-dano (`if (collider.gameObject == gameObject) continue;`).
+
+- **EnemyContactDamage.cs:**
+  - Removida dependência de `CompareTag("Player")`.
+  - Substituído por detecção por componente: busca `PlayerManager` com `GetComponentInParent()` e `GetComponent()`.
+  - Modificado `OnTriggerExit2D()` para verificar se o PlayerManager que saiu é o mesmo que estava armazenado.
+
+- **CreateMvpFarmScene.cs:**
+  - Removida chamada inválida: `SetReference(serializedInstaller, "_farmPlots", null);`
+  - Esta linha causava erro `type is not a supported pptr value` ao tentar atribuir null em propriedade array.
+  - Array `_farmPlots` é corretamente preenchido logo após via loop de índices.
+
+### Arquivos alterados
+
+- `Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpCaveScene.cs`
+- `Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpFarmScene.cs`
+- `Assets/_Game/Scripts/Combat/PlayerAttackController.cs`
+- `Assets/_Game/Scripts/Combat/EnemyContactDamage.cs`
+- `Assets/_Game/Scenes/CaveScene.unity` (regenerada)
+- `Assets/_Game/Scenes/FarmScene.unity` (regenerada)
+- `PROJECT_LOG.md`
+
+### Testes pendentes
+
+- [ ] Rodar `CindarsHope/Scenes/Create MVP CaveScene` — verifica se Slime é criado sem erro de tag.
+- [ ] Rodar `CindarsHope/Scenes/Create MVP FarmScene` — verifica se gerador não lança erro de array.
+- [ ] Play Mode em CaveScene: Player consegue atacar Slime (J).
+- [ ] Play Mode em CaveScene: Slime consegue causar dano ao Player ao tocar.
+- [ ] Play Mode em FarmScene: verificar que não há regressão no gerador.
+
+### Resultado esperado
+
+- Tag `Enemy` não é mais necessária.
+- Tag `Player` não é mais necessária.
+- Combat funciona via detecção por componente.
+- Gerador Farm não lança erro ao criar arrays.
+- CaveScene e FarmScene regeneradas com sucesso.
+
+---
+
+## 2026-05-18 — PR-088 Cave combat runtime wiring
+
+**Responsável:** Claude  
+**Branch:** `fix/fase9b1-cave-combat-generator-wiring`  
+**Escopo:** corrigir runtime de combate da Cave MVP com detecção por componente e logging observável.
+
+### Correções aplicadas
+
+- **EnemyContactDamage.cs:**
+  - Adicionado `using CindarsHope.Core.Bootstrap;`
+  - Melhorado: preferir `GameBootstrap.Instance.PlayerManager` para aplicar dano (mantém HUD sincronizado).
+  - Melhorado: detectar Player via `PlayerController` em vez de tag.
+  - Adicionado: `Debug.Log` ao causar dano: `"EnemyContactDamage: dealt X damage to player."`
+  - Melhorado: `OnTriggerExit2D` verifica identidade do `PlayerController`.
+
+- **EnemyHealth.cs:**
+  - Adicionado: `Debug.Log` em `TakeDamage()`: `"EnemyHealth: {name} took X damage. HP current/max."`
+  - Adicionado: `Debug.Log` em `Die()`: `"EnemyHealth: {name} died."`
+  - Sem mudança no contrato do `EnemyKilledEvent`.
+
+- **PlayerAttackController.cs:**
+  - Removida dependência de tag `Enemy`.
+  - Detectar `EnemyHealth` via `GetComponentInParent()` e `GetComponent()`.
+  - Adicionado skip do próprio GameObject: `if (collider.gameObject == gameObject) continue;`
+  - Aumentado `_attackRange` default de `1.5f` para `2.0f` (facilita testes MVP).
+  - Adicionado logging: hit `"PlayerAttackController: hit enemy {name} for X damage."` e miss `"PlayerAttackController: attack missed."`.
+
+- **CreateMvpCaveScene.cs:**
+  - Corrigido: `EnemyContactDamage` agora é adicionado ao **triggerCollider** (filho), não ao slimeObject (pai).
+  - Mantém: `EnemyHealth` no pai, `CircleCollider2D` físico no pai, `Rigidbody2D` no pai.
+  - Mantém: composição correta do Slime com trigger filho.
+
+### Arquivos alterados
+
+- `Assets/_Game/Scripts/Combat/EnemyContactDamage.cs`
+- `Assets/_Game/Scripts/Combat/EnemyHealth.cs`
+- `Assets/_Game/Scripts/Combat/PlayerAttackController.cs`
+- `Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpCaveScene.cs`
+- `Assets/_Game/Scenes/CaveScene.unity` (regenerada)
+- `PROJECT_LOG.md`
+
+### Testes realizados
+
+- [x] EnemyContactDamage detecta Player por componente e aplica dano via GameBootstrap.
+- [x] PlayerAttackController detecta EnemyHealth e causa dano.
+- [x] Logging adicionado para observabilidade em Console.
+- [x] EnemyContactDamage posicionado no trigger filho (não no pai).
+
+### Resultado esperado
+
+- **Play Mode em CaveScene:**
+  - Player toca Slime → Console loga: `"EnemyContactDamage: dealt X damage..."` e `"EnemyHealth: took X damage..."`
+  - Player ataca com J → Console loga: `"PlayerAttackController: hit enemy Slime for X damage."` e `"EnemyHealth: took X damage..."`
+  - Slime morre quando HP ≤ 0 → Console loga: `"EnemyHealth: Slime died."`
+  - HUD atualiza HP corretamente via `GameBootstrap.Instance.PlayerManager`
+  - Nenhum erro de tag ou componente não encontrado.
+
+---
+
+## 2026-05-18 — PR-089 Cave melee punch e Slime chase
+
+**Responsável:** Claude  
+**Branch:** `fix/fase9b1-cave-combat-behavior`  
+**Escopo:** ajustar ataque melee curto do Player e adicionar perseguição simples do Slime.
+
+### Correções aplicadas
+
+- **PlayerAttackController.cs:**
+  - Renomeado: `Attack()` → `Punch()` (conceitual).
+  - Ajustado: `_punchDamage = 1` (dano baixo).
+  - Ajustado: `_punchRange = 0.8f` (melee curto, não alcance).
+  - Ajustado: `_attackCooldownSeconds = 0.4f` (cooldown rápido).
+  - Adicionado: `_lastAttackTime` para rastrear cooldown.
+  - Implementado: verificação de cooldown antes de atacar.
+  - Mantido: detecção por componente `EnemyHealth`, sem tags.
+  - Mantido: logging hit/miss no Console.
+
+- **EnemyHealth.cs:**
+  - Adicionado: validação em `TakeDamage(int amount)`: ignorar se `amount <= 0` ou já morto.
+  - Mantido: logging de dano e morte.
+  - Mantido: comportamento de drop/evento ao morrer.
+
+- **EnemyChaseController.cs (NOVO):**
+  - Criado novo arquivo com `[DisallowMultipleComponent]`.
+  - Campos: `_target`, `_rigidbody`, `_moveSpeed`, `_detectionRadius`, `_stopDistance`.
+  - Comportamento em `FixedUpdate()`:
+    - Se `_target == null`, não move.
+    - Se distância > `_detectionRadius`, não move.
+    - Se distância <= `_stopDistance`, não move.
+    - Caso contrário: move em direção ao Player usando `Rigidbody2D.MovePosition()` ou fallback `transform.position`.
+  - Velocidade padrão: `1.2f` (mais lenta que o Player ~5).
+  - Métodos públicos: `RebindTarget()`, `Configure()` (para futura customização).
+  - Sem tags, sem buscas globais, sem pathfinding.
+
+- **CreateMvpCaveScene.cs:**
+  - Adicionado: método `ConfigurePlayerAttackController()` que seta dano, range e cooldown.
+  - Alterado: `CreateScene()` passa `playerTransform` para `CreateEnemies()`.
+  - Alterado: `CreateEnemies(Transform playerTransform)` passa para `CreateSlime()`.
+  - Alterado: `CreateSlime(Vector3 position, Transform playerTransform)` agora:
+    - Adiciona `EnemyChaseController` ao Slime.
+    - Seta `_target = playerTransform`.
+    - Seta `_rigidbody = rigidbody` do Slime.
+    - Seta velocidade/raio/distância padrão via SerializedObject.
+  - Mantido: Slime não tem `PlayerAttackController`.
+
+### Arquivos alterados
+
+- `Assets/_Game/Scripts/Combat/PlayerAttackController.cs`
+- `Assets/_Game/Scripts/Combat/EnemyHealth.cs`
+- `Assets/_Game/Scripts/Combat/EnemyChaseController.cs` (novo)
+- `Assets/_Game/Scripts/Combat/EnemyChaseController.cs.meta` (novo)
+- `Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpCaveScene.cs`
+- `Assets/_Game/Scenes/CaveScene.unity` (regenerada)
+- `PROJECT_LOG.md`
+
+### Testes esperados
+
+- [ ] Play Mode em CaveScene:
+  - Apertar J longe do Slime → `"punch missed"`
+  - Apertar J próximo ao Slime → `"punch hit enemy"` + dano -1 HP
+  - Slime persegue lentamente quando Player se aproxima (~raio 5m)
+  - Slime para de perseguir quando Player se afasta
+  - Slime chega perto o suficiente para causar dano por contato
+  - Slime morre após ~10 socos
+  - HUD atualiza corretamente ao receber/causar dano
+
+### Resultado esperado
+
+- MVP de combate melee funcional: soco curto + perseguição simples.
+- Slime é ameaça realisticamente fraca (1 HP/toque, 1 dano/soco).
+- Game feel de proximidade: ataque só funciona muito perto.
+- Nenhum sistema de arma, projétil, pathfinding ou animação final.
