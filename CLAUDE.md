@@ -187,3 +187,21 @@ Retângulos coloridos em Assets/_Game/Sprites/Placeholders/:
 4. Aseprite é a etapa final obrigatória para limpar pixels, paleta, outline e export.
 5. Todo sprite aprovado deve ter `.aseprite/.ase` fonte quando houver edição manual relevante.
 6. PNG final entra em `Assets/_Game/Sprites/...` com import `Point`, `Compression None`, `Generate Mip Maps false`.
+
+## Fluxo de agentes — Git e entrega
+
+### Agentes preparam, humanos entregam
+- Agentes (Claude) criam commits locais em português.
+- Agentes **NÃO** executam `git push`.
+- Agentes **NÃO** abrem PR/MR.
+- Agentes **NÃO** deletam branches locais/remotas.
+- Push, PR/MR, merge e deleção de branches são responsabilidade **exclusiva** do humano.
+
+### Ao final de cada PR/pacote, agente entrega
+- Commits locais criados (listados por SHA e mensagem).
+- Arquivos alterados por PR.
+- Testes executados (✓) e testes pendentes (✗).
+- Instruções reproduzíveis para validação local.
+- Sugestões de comandos para o humano (mas sem executá-los).
+
+Veja [AGENTS.md](AGENTS.md) para detalhes completos do fluxo de trabalho.

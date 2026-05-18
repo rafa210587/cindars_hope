@@ -23,6 +23,7 @@ namespace CindarsHope.UI
 
         private bool _hasInteractionCandidate;
         private string _currentInteractionPrompt = string.Empty;
+        private string _lastEconomyTransaction = "nenhuma transacao";
 
         private void Awake()
         {
@@ -39,11 +40,13 @@ namespace CindarsHope.UI
         private void OnEnable()
         {
             GameEventBus.Subscribe<InteractionPromptChangedEvent>(OnInteractionPromptChanged);
+            GameEventBus.Subscribe<EconomyTransactionCompletedEvent>(OnEconomyTransactionCompleted);
         }
 
         private void OnDisable()
         {
             GameEventBus.Unsubscribe<InteractionPromptChangedEvent>(OnInteractionPromptChanged);
+            GameEventBus.Unsubscribe<EconomyTransactionCompletedEvent>(OnEconomyTransactionCompleted);
         }
 
         private void OnDestroy()
@@ -62,6 +65,7 @@ namespace CindarsHope.UI
             DrawHungerState();
             DrawWorldState();
             DrawInteractionState();
+            DrawEconomyState();
             DrawInventory();
             DrawCommands();
             GUILayout.EndArea();
@@ -93,6 +97,11 @@ namespace CindarsHope.UI
             }
 
             GUILayout.Label("Interacao: nenhum alvo");
+        }
+
+        private void DrawEconomyState()
+        {
+            GUILayout.Label($"Economia: {_lastEconomyTransaction}");
         }
 
         private void DrawPlayerState()
@@ -165,6 +174,11 @@ namespace CindarsHope.UI
         {
             _hasInteractionCandidate = evt.HasCandidate;
             _currentInteractionPrompt = evt.Prompt ?? string.Empty;
+        }
+
+        private void OnEconomyTransactionCompleted(EconomyTransactionCompletedEvent evt)
+        {
+            _lastEconomyTransaction = evt.Message;
         }
     }
 }

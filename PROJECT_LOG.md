@@ -1904,3 +1904,133 @@ PR-002 sÃ³ deve comeÃ§ar se:
 
 ### Próximo passo recomendado
 - PR-062 — exibir transações de economia no HUD debug.
+
+---
+
+## 2026-05-17 — PR-062 HUD/logs de economia
+
+**Responsável:** Codex
+**Branch:** `feature/fase9a-town-commerce-mvp-package`
+**Escopo:** melhorar visibilidade do comércio adicionando exibição de transações no DebugHud.
+
+### Alterações
+- `DebugHud` agora assina `EconomyTransactionCompletedEvent` via `GameEventBus`.
+- Adicionada variável `_lastEconomyTransaction` para armazenar a última mensagem de transação.
+- Adicionado método `DrawEconomyState()` que exibe "Economia: <mensagem>" com fallback "Economia: nenhuma transacao".
+- Método `DrawEconomyState()` chamado em `OnGUI()` junto com outros states.
+- Comportamento existente (`InteractionPromptChangedEvent`) mantido intacto.
+- Unsubscribe realizado corretamente em `OnDisable()`.
+- `EconomyManager` — mensagens revisadas, estão claras e não precisam alteração.
+
+### Arquivos alterados
+- `Assets/_Game/Scripts/UI/DebugHud.cs`
+- `PROJECT_LOG.md`
+
+### Testes
+- [x] Revisão estática dos scripts.
+- [x] Confirmado que evento carrega apenas tipos simples.
+- [x] Confirmado que não há quebra de comportamento existente.
+- [ ] Unity não executado neste terminal.
+
+### Pendências / riscos
+- Abrir Unity para validar que transações aparecem no DebugHud após compras/vendas.
+- Confirmar que o HUD mantém legibilidade com a nova linha.
+
+### Próximo passo recomendado
+- PR-063 — registrar handoff do Town Commerce MVP.
+
+---
+
+## 2026-05-17 — PR-063 Handoff pós Town Commerce MVP
+
+**Responsável:** Codex
+**Branch:** `feature/fase9a-town-commerce-mvp-package`
+**Escopo:** fechar o pacote FASE 9A-3 — Town Commerce MVP com documentação e instruções de teste.
+
+### Resumo do pacote FASE 9A-3 — Town Commerce MVP
+- **PRs executadas:** PR-059 a PR-062.
+- **Objetivo:** implementar comércio básico (compra/venda) acessível via pontos interagíveis em TownScene.
+- **Arquitetura:** eventos imutáveis (`ItemPurchaseRequestedEvent`, `SellAllRequestedEvent`, `EconomyTransactionCompletedEvent`), `EconomyManager` persistente, pontos interagíveis sem referências diretas a managers.
+
+### Arquivos principais criados
+- `Assets/_Game/Scripts/Core/Events/ItemPurchaseRequestedEvent.cs` — evento de compra
+- `Assets/_Game/Scripts/Core/Events/SellAllRequestedEvent.cs` — evento de venda
+- `Assets/_Game/Scripts/Core/Events/EconomyTransactionCompletedEvent.cs` — evento de resultado
+- `Assets/_Game/Scripts/Economy/EconomyManager.cs` — gerenciador de transações persistente
+- `Assets/_Game/Scripts/Economy/BuyItemPoint.cs` — ponto de compra interagível
+- `Assets/_Game/Scripts/Economy/SellAllPoint.cs` — ponto de venda interagível
+- Alterações em `CreateMvpFarmScene.cs` e `CreateMvpTownScene.cs` para integração
+- Alterações em `DebugHud.cs` para exibição de transações
+
+### Como testar
+1. Abrir Unity.
+2. Rodar `CindarsHope/Scenes/Create MVP FarmScene` (menu).
+3. Rodar `CindarsHope/Scenes/Create MVP TownScene` (menu).
+4. Abrir `FarmScene`.
+5. Entrar em Play Mode.
+6. Ir para `TownScene` pelo portal no meio do mapa.
+7. Comprar trigo no ponto de trigo (BuyItemPoint — 3x seed_wheat por 5g).
+8. Confirmar ouro reduzido de 100 → 95.
+9. Confirmar `seed_wheat` aumentado no inventário (Debug HUD).
+10. Comprar cenoura no ponto de cenoura (BuyItemPoint — 2x seed_carrot por 6g).
+11. Confirmar ouro reduzido de 95 → 89.
+12. Confirmar `seed_carrot` aumentado no inventário.
+13. Vender itens no SellBox (SellAllPoint).
+14. Confirmar ouro aumentado e itens vendáveis removidos.
+15. Confirmar HUD exibe mensagem de transação após cada ação.
+16. Voltar para `FarmScene` pelo portal e confirmar HUD e inventário continuam coerentes.
+
+### Arquivos alterados
+- `PROJECT_LOG.md`
+
+### Testes
+- [x] Documentação PR-059 a PR-062 revisada.
+- [x] Instruções de teste compiladas.
+- [ ] Unity não executado neste terminal; teste deve ser feito localmente.
+
+### Pendências / riscos
+- **UI final de loja:** não implementada; usar Debug HUD para validar funcionamento.
+- **Menu de seleção:** não implementado; usar portais do mapa.
+- **NPC comerciante real:** não implementado; pontos genéricos por enquanto.
+- **Balanceamento de preços:** preços hard-coded, revisar na próxima phase.
+- **Mover/remover pontos debug da Farm:** considerar no próximo pacote se não servirem mais.
+- **Lojas por ScriptableObject:** versão futura para permitir reuse e balanceamento centralizado.
+
+### Próximo passo recomendado
+- Após teste local bem-sucedido, escolher entre:
+  - **FASE 9B-1 — Cave vertical slice mínimo** (exploração/combat básico).
+  - **FASE 9A-4 — Town polish/shop UI** (melhorar loja, adicionar UI final, NPC real).
+- Recomendação: FASE 9B-1 para diversificar gameplay; FASE 9A-4 para polir Town antes de expandir.
+
+---
+
+## 2026-05-17 — PR-064 Sync operacional da regra sem push/MR por agente
+
+**Responsável:** Codex
+**Branch:** `feature/fase9a-town-commerce-mvp-package`
+**Escopo:** atualizar documentos operacionais para refletir a regra de trabalho: agentes preparam commits locais, humanos fazem push/PR/merge.
+
+### Alterações
+- **AGENTS.md:** criado novo arquivo com regras operacionais de agentes (branch, leitura obrigatória, commits, git operations proibidas, entrega ao humano, atualização de PROJECT_LOG.md).
+- **CLAUDE.md:** adicionada seção "Fluxo de agentes — Git e entrega" explicando que agentes NÃO fazem push/PR/merge.
+- **docs/FASE8_EXECUTION_PLAN_CODEX_v1.0.md:** adicionada seção "7.4 Entrega de commits pelo agente" com procedimento de entrega e restrição sobre push/PR.
+- **PROJECT_LOG.md:** esta entrada.
+
+### Arquivos alterados
+- `AGENTS.md`
+- `CLAUDE.md`
+- `docs/FASE8_EXECUTION_PLAN_CODEX_v1.0.md`
+- `PROJECT_LOG.md`
+
+### Testes
+- [x] Revisão estática dos documentos.
+- [x] Confirmado que regras estão claras e consistentes entre arquivos.
+- [ ] Teste prático durante próxima execução de PR.
+
+### Pendências / riscos
+- Documentação pode precisar revisão/refinamento após primeiro uso prático.
+- Todos os agentes futuros devem ler AGENTS.md antes de qualquer PR.
+
+### Próximo passo recomendado
+- Próximo pacote pode começar; agentes devem ler AGENTS.md + CLAUDE.md obrigatoriamente antes de alterar código.
+- Sync bem-sucedido; fluxo de commits locais + entrega humana documentado.
