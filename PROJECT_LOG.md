@@ -1675,3 +1675,33 @@ PR-002 sÃ³ deve comeÃ§ar se:
 
 ### Próximo passo recomendado
 - PR-056 — adicionar NPC básico Pip Miudinho à TownScene.
+
+---
+
+## 2026-05-17 — PR-056 NPC básico Pip Miudinho
+
+**Responsável:** Codex/ChatGPT
+**Branch:** `feature/fase9a-townscene-mvp-package`
+**Escopo:** NPC placeholder interagível na TownScene, sem diálogo completo ou UI final.
+
+### Alterações
+- Criado `NpcTalkPoint` como `IInteractable` simples para conversa via log no Console.
+- `CreateMvpTownScene` agora gera parent `NPCs` e o objeto `NPC_Pip_Miudinho`.
+- Pip recebe placeholder visual, collider trigger e linha de diálogo mínima.
+
+### Arquivos alterados
+- `Assets/_Game/Scripts/NPC/NpcTalkPoint.cs`
+- `Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpTownScene.cs`
+- `PROJECT_LOG.md`
+
+### Testes
+- [x] Revisão estática do script runtime e do gerador.
+- [x] Confirmado que `NpcTalkPoint` só usa `GetComponent` local em `Reset/OnValidate`.
+- [ ] Unity não executado neste terminal; TownScene deve ser recriada pelo menu para materializar o NPC.
+
+### Pendências / riscos
+- Validar em Play Mode que `NPC_Pip_Miudinho` responde ao `InteractionSystem` com a tecla E.
+- UI final de diálogo, quests, lojas e NPCs reais seguem fora de escopo.
+
+### Próximo passo recomendado
+- PR-057 — registrar handoff pós TownScene MVP.

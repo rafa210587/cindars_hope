@@ -1,4 +1,5 @@
 using CindarsHope.Interaction;
+using CindarsHope.NPC;
 using CindarsHope.Player;
 using CindarsHope.Player.Data;
 using CindarsHope.SceneManagement;
@@ -35,6 +36,7 @@ namespace CindarsHope.Editor.SceneCreation
             CreateMainCamera();
             CreateSpawnPoints(playerTransform);
             CreatePortals();
+            CreateNpcs();
             CreateTownDecorations();
 
             EditorSceneManager.MarkSceneDirty(scene);
@@ -272,6 +274,42 @@ namespace CindarsHope.Editor.SceneCreation
             CreateDecoration(decorations.transform, "TownWell_Placeholder", new Vector3(-3.5f, 1f, 0f), new Vector3(1.2f, 1.2f, 1f), new Color(0.32f, 0.38f, 0.44f));
             CreateDecoration(decorations.transform, "TownHouse_Placeholder", new Vector3(4f, 2f, 0f), new Vector3(2.2f, 1.6f, 1f), new Color(0.36f, 0.28f, 0.22f));
             CreateDecoration(decorations.transform, "TownLamp_Placeholder", new Vector3(-5f, -2.5f, 0f), new Vector3(0.45f, 1.3f, 1f), new Color(0.83f, 0.66f, 0.31f));
+        }
+
+        private static void CreateNpcs()
+        {
+            var parent = new GameObject("NPCs");
+            parent.transform.position = Vector3.zero;
+
+            var npcObject = new GameObject("NPC_Pip_Miudinho");
+            npcObject.transform.SetParent(parent.transform);
+            npcObject.transform.position = new Vector3(-2f, -0.75f, 0f);
+            npcObject.transform.localScale = new Vector3(1f, 1.5f, 1f);
+
+            var spriteRenderer = npcObject.AddComponent<SpriteRenderer>();
+            spriteRenderer.sprite = GetBuiltinSprite();
+            spriteRenderer.color = new Color(0.92f, 0.88f, 0.75f);
+            spriteRenderer.sortingOrder = 2;
+            SetSortingLayerIfExists(spriteRenderer, "Characters");
+
+            if (spriteRenderer.sprite == null)
+            {
+                Debug.LogWarning("NPC_Pip_Miudinho placeholder SpriteRenderer was created without a sprite. Replace it with NPC art in a future art PR.");
+            }
+
+            var collider = npcObject.AddComponent<BoxCollider2D>();
+            collider.isTrigger = true;
+            collider.size = Vector2.one;
+
+            var talkPoint = npcObject.AddComponent<NpcTalkPoint>();
+            var serializedNpc = new SerializedObject(talkPoint);
+            serializedNpc.FindProperty("_npcId").stringValue = "npc_pip_miudinho";
+            serializedNpc.FindProperty("_displayName").stringValue = "Pip Miudinho";
+            serializedNpc.FindProperty("_dialogueLine").stringValue = "Bem-vindo a Cindar's Hope. Ainda estamos abrindo a cidade.";
+            SetReference(serializedNpc, "_spriteRenderer", spriteRenderer);
+            SetReference(serializedNpc, "_collider", collider);
+            serializedNpc.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(talkPoint);
         }
 
         private static void CreateDecoration(Transform parent, string name, Vector3 position, Vector3 scale, Color color)
