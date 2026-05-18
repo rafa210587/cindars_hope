@@ -340,13 +340,15 @@ namespace CindarsHope.Editor.SceneCreation
 
             var defaultSpawn = CreateSceneSpawnPoint(parent.transform, "farm_default", Vector3.zero);
             var fromTownSpawn = CreateSceneSpawnPoint(parent.transform, "farm_from_town", new Vector3(7.25f, -4.75f, 0f));
+            var fromCaveSpawn = CreateSceneSpawnPoint(parent.transform, "farm_from_cave", new Vector3(-5f, 0f, 0f));
 
             var installer = parent.AddComponent<SceneSpawnInstaller>();
             var serializedInstaller = new SerializedObject(installer);
             SetReference(serializedInstaller, "_playerTransform", playerTransform);
-            serializedInstaller.FindProperty("_spawnPoints").arraySize = 2;
+            serializedInstaller.FindProperty("_spawnPoints").arraySize = 3;
             serializedInstaller.FindProperty("_spawnPoints").GetArrayElementAtIndex(0).objectReferenceValue = defaultSpawn;
             serializedInstaller.FindProperty("_spawnPoints").GetArrayElementAtIndex(1).objectReferenceValue = fromTownSpawn;
+            serializedInstaller.FindProperty("_spawnPoints").GetArrayElementAtIndex(2).objectReferenceValue = fromCaveSpawn;
             serializedInstaller.FindProperty("_defaultSpawnId").stringValue = "farm_default";
             serializedInstaller.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(installer);
@@ -380,6 +382,16 @@ namespace CindarsHope.Editor.SceneCreation
                 "Assets/_Game/Scenes/TownScene.unity",
                 "town_from_farm",
                 "Ir para Cindar's Hope");
+
+            CreateScenePortal(
+                portals.transform,
+                "Portal_Farm_To_Cave",
+                new Vector3(-5.5f, 0f, 0f),
+                new Color(0.5f, 0.25f, 0.6f),
+                "CaveScene",
+                "Assets/_Game/Scenes/CaveScene.unity",
+                "cave_from_farm",
+                "Entrar na Caverna");
         }
 
         private static void CreateScenePortal(

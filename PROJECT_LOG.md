@@ -2551,3 +2551,258 @@ git commit -m "docs: registrar handoff fase 9a farm town save"
 - MvpSceneValidator compila sem erros.
 - Menu `CindarsHope/Validate/Validate Farm Town MVP` funcional.
 - Validator consegue acessar propriedades de ScenePortal para validação.
+
+---
+
+## 2026-05-18 — PR-075 CaveScene MVP
+
+**Responsável:** Claude  
+**Branch:** `feature/fase9b1-cave-mvp`  
+**Escopo:** criar CaveScene mínima gerável por editor script.
+
+### Implementação
+
+Novo menu: `CindarsHope/Scenes/Create MVP CaveScene`
+
+**Arquivos criados:**
+- `Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpCaveScene.cs` — gerador de cena.
+- `Assets/_Game/Scripts/SceneManagement/CaveSceneRuntimeReferenceInstaller.cs` — rebind de refs em runtime.
+
+**Estrutura da CaveScene:**
+- _Bootstrap com GameBootstrap (PlayerManager, InventoryManager, TimeManager, SaveManager, HungerManager, EconomyManager).
+- Player com PlayerController, InteractionSystem.
+- Ground escuro placeholder.
+- Bounds.
+- SpawnPoints: `cave_default`, `cave_from_farm`.
+- Portal_Cave_To_Farm com entrada em FarmScene.
+- CaveSceneRuntimeReferenceInstaller para rebind.
+- DebugHud.
+- Main Camera.
+
+### Comportamento esperado
+
+- Rodar menu cria CaveScene.unity.
+- Abrir CaveScene direto em Play Mode funciona com HUD.
+- Player aparece em spawn padrão.
+- Portal para Farm aparece visível.
+
+### Arquivos alterados
+
+- `Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpCaveScene.cs` (novo)
+- `Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpCaveScene.cs.meta` (novo)
+- `Assets/_Game/Scripts/SceneManagement/CaveSceneRuntimeReferenceInstaller.cs` (novo)
+- `Assets/_Game/Scripts/SceneManagement/CaveSceneRuntimeReferenceInstaller.cs.meta` (novo)
+- `PROJECT_LOG.md`
+
+### Testes pendentes
+
+- [ ] Rodar `CindarsHope/Scenes/Create MVP CaveScene`.
+- [ ] Abrir CaveScene direto em Play Mode.
+- [ ] Verificar HUD aparece.
+- [ ] Verificar Portal funciona.
+- [ ] Console sem erro vermelho.
+
+---
+
+## 2026-05-18 — PR-076 Portal Farm Cave
+
+**Responsável:** Claude  
+**Branch:** `feature/fase9b1-cave-mvp`  
+**Escopo:** adicionar entrada de caverna na FarmScene e retorno para a Farm.
+
+### Alterações
+
+**CreateMvpFarmScene.cs:**
+- Adicionado spawn `farm_from_cave` em CreateFarmSpawnPoints (posição: -5, 0).
+- Adicionado `Portal_Farm_To_Cave` em CreateFarmPortals (posição: -5.5, 0, cor roxa).
+- SceneSpawnInstaller agora gerencia 3 spawns (default, from_town, from_cave).
+
+**CreateMvpCaveScene.cs:**
+- Já cria spawn `cave_from_farm` em CreateCaveSpawnPoints (posição: -3, 0).
+- Portal_Cave_To_Farm já configurado.
+
+### Comportamento esperado
+
+- Farm → Cave: interagir com Portal_Farm_To_Cave leva player para CaveScene (spawn cave_from_farm).
+- Cave → Farm: interagir com Portal_Cave_To_Farm leva player de volta para FarmScene (spawn farm_from_cave).
+- HUD não duplica.
+- Managers persistentes não resetam.
+
+### Arquivos alterados
+
+- `Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpFarmScene.cs`
+- `PROJECT_LOG.md`
+
+### Testes pendentes
+
+- [ ] Rodar `CindarsHope/Scenes/Create MVP FarmScene` (atualiza com novo spawn/portal).
+- [ ] Farm → Cave → Farm deve restaurar posição correta.
+- [ ] HUD permanece durante transições.
+
+---
+
+## 2026-05-18 — PR-077 Combat base Cave
+
+**Responsável:** Claude  
+**Branch:** `feature/fase9b1-cave-mvp`  
+**Escopo:** adicionar combate mínimo na Cave.
+
+### Implementação
+
+**Novos arquivos:**
+- `Assets/_Game/Scripts/Combat/EnemyDataSO.cs` — dados inimigo (maxHp, dano, loot).
+- `Assets/_Game/Scripts/Combat/EnemyHealth.cs` — HP, TakeDamage, morte com evento.
+- `Assets/_Game/Scripts/Combat/EnemyContactDamage.cs` — dano por contato com cooldown.
+- `Assets/_Game/Scripts/Combat/PlayerAttackController.cs` — ataque com tecla J, overlap círculo.
+- `Assets/_Game/Scripts/Core/Events/EnemyKilledEvent.cs` — evento ao inimigo morrer.
+
+**CreateMvpCaveScene.cs atualizado:**
+- CreateEnemies() cria Slime placeholder (vermelho, tag "Enemy").
+- Slime com EnemyHealth, EnemyContactDamage.
+- EnemyDataSO carregado automaticamente ou criado manualmente.
+
+### Comportamento esperado
+
+- Player pressiona J para atacar.
+- Attack usa OverlapCircleAll em raio 1.5.
+- Slime toma dano e ativa deathAnimation (SetActive false).
+- Slime causa 1 dano por segundo ao tocar Player.
+- Console sem erro vermelho.
+
+### Testes pendentes
+
+- [ ] Rodar `CindarsHope/Scenes/Create MVP CaveScene`.
+- [ ] Entrar na Cave.
+- [ ] Atacar Slime (tecla J).
+- [ ] Slime desaparece ao morrer.
+- [ ] Player toma dano ao tocar Slime.
+- [ ] EnemyKilledEvent publicado.
+
+---
+
+## 2026-05-18 — PR-078 Drops inimigos Cave
+
+**Escopo:** EnemyDropSpawner integra drops ao inventário.
+
+**Novos arquivos:** `Assets/_Game/Scripts/Combat/EnemyDropSpawner.cs`
+
+Comportamento: Assina EnemyKilledEvent, cria ItemPickup ou adiciona direto ao InventoryManager.
+
+---
+
+## 2026-05-18 — PR-079 ResourceNode Cave
+
+**Escopo:** Node minerável criado na Cave.
+
+**Novos arquivos:**
+- `Assets/_Game/Scripts/World/ResourceNode.cs` — IInteractable, coleta item.
+- `Assets/_Game/Scripts/World/ResourceNodeRegistry.cs` — captura/restaura estado.
+
+Integrado em CreateMvpCaveScene.
+
+---
+
+## 2026-05-18 — PR-080 Save/load Cave
+
+**Escopo:** Salvar/carregar corretamente quando estiver na CaveScene.
+
+**Arquivos modificados:**
+- SaveData.cs: Adicionar CaveSaveData (opcional MVP).
+- SaveManager.cs: Suportar CurrentSceneName = "CaveScene".
+- CaveSceneRuntimeReferenceInstaller: Já criada em PR-075.
+
+Comportamento: Salvar na Cave volta para Cave ao carregar.
+
+---
+
+## 2026-05-18 — PR-081 Validator Cave MVP
+
+**Escopo:** Expandir MvpSceneValidator para CaveScene.
+
+**Arquivo modificado:** MvpSceneValidator.cs
+
+Valida: GameBootstrap, DebugHud, Player, CaveSceneRuntimeReferenceInstaller, Portal, Enemy (EnemyHealth), ResourceNode.
+
+---
+
+## 2026-05-18 — PR-082 Regenerar cenas
+
+**Escopo:** Gerar cenas atuais.
+
+Tarefas Unity:
+- `CindarsHope/Scenes/Create MVP FarmScene`
+- `CindarsHope/Scenes/Create MVP TownScene`
+- `CindarsHope/Scenes/Create MVP CaveScene`
+- `CindarsHope/Validate/Validate Farm Town MVP`
+
+---
+
+## 2026-05-18 — PR-083 Handoff FASE 9B-1 Cave MVP
+
+**Escopo:** Documentar estado final e checklist da Cave.
+
+Checklist validação: 20 itens (Farm → Town → Cave, combate, drops, save/load, console sem erro).
+
+Próximo pacote: FASE 9B-2 Combat Feel ou FASE 9A/9C UI MVP.
+
+---
+
+## 2026-05-18 — PR-084 Fix compile Combat Cave
+
+**Responsável:** Claude  
+**Branch:** `feature/fase9b1-cave-mvp`  
+**Escopo:** corrigir erros de compilação do sistema de combate da Cave.
+
+### Correções aplicadas
+
+- **EnemyHealth.cs:**
+  - Adicionado import: `using CindarsHope.Core;` (necessário para `GameEventBus`).
+  - Manter publish de `EnemyKilledEvent` via `GameEventBus.Publish()`.
+
+- **EnemyContactDamage.cs:**
+  - Substituído: `_playerManager.TakeDamage(...)` → `_playerManager.DamageHP(...)`.
+  - Dano e cooldown mantidos idênticos.
+
+### Arquivos alterados
+
+- `Assets/_Game/Scripts/Combat/EnemyHealth.cs`
+- `Assets/_Game/Scripts/Combat/EnemyContactDamage.cs`
+- `PROJECT_LOG.md`
+
+### Resultado esperado
+
+- EnemyHealth compila sem erros.
+- EnemyContactDamage compila sem erros.
+- Combat funciona ao atacar Slime na Cave.
+- Player recebe dano ao tocar Slime.
+
+---
+
+## 2026-05-18 — PR-085 Fix compile Validator Cave
+
+**Responsável:** Claude  
+**Branch:** `feature/fase9b1-cave-mvp`  
+**Escopo:** corrigir erros de compilação do validator e CreateMvpCaveScene.
+
+### Correções aplicadas
+
+- **MvpSceneValidator.cs:**
+  - Adicionado import: `using CindarsHope.SceneManagement;` (necessário para `ScenePortal`, `CaveSceneRuntimeReferenceInstaller`).
+  - Adicionado import: `using CindarsHope.UI;` (necessário para `DebugHud`).
+
+- **CreateMvpCaveScene.cs:**
+  - Removido parâmetro inválido `this` de `Debug.LogWarning()` no método estático `CreateSlime()` (linha 361).
+  - Métodos estáticos não podem usar `this`; chamada corrigida para apenas a mensagem.
+
+### Arquivos alterados
+
+- `Assets/_Game/Scripts/Editor/Validation/MvpSceneValidator.cs`
+- `Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpCaveScene.cs`
+- `PROJECT_LOG.md`
+
+### Resultado esperado
+
+- MvpSceneValidator compila sem erros.
+- CreateMvpCaveScene compila sem erros.
+- Menu `CindarsHope/Validate/Validate Cave MVP` funcional.
+- Menu `CindarsHope/Scenes/Create MVP CaveScene` funcional.
