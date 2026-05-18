@@ -3034,3 +3034,49 @@ Próximo pacote: FASE 9B-2 Combat Feel ou FASE 9A/9C UI MVP.
 - Slime é ameaça realisticamente fraca (1 HP/toque, 1 dano/soco).
 - Game feel de proximidade: ataque só funciona muito perto.
 - Nenhum sistema de arma, projétil, pathfinding ou animação final.
+
+---
+
+## 2026-05-18 — PR-DOC Sincronizar documentação pós FASE 9B-1
+
+**Responsável:** Claude  
+**Branch:** `docs/sync-pos-fase9b1-cave-combat`  
+**Escopo:** sincronizar TODAS as documentações principais com o estado real atual (Farm+Town+Cave+Combat MVP).
+
+### Arquivos atualizados
+
+- `README.md` — reescrito completamente, estado atual, menus, próximas waves
+- `PROJECT_LOG.md` — entrada de conclusão desta PR
+
+### Arquivos criados
+
+- `docs/FASE9A_HANDOFF_FARM_TOWN_SAVE_v1.0.md` — entrega de FASE 9A
+- `docs/FASE9B_CAVE_COMBAT_MVP_v1.0.md` — entrega de FASE 9B-1
+- `docs/NEXT_WAVES_ROADMAP_v1.0.md` — roadmap de próximas waves (PR-092 a visual slice)
+
+### Arquivos a atualizar (pendente)
+
+- `AGENTS.md` — adicionar regras aprendidas (sem tags, component detection, geradores)
+- `CLAUDE.md` — adicionar regras aprendidas
+- `docs/ARCH_fase4_v2.2.md` — adicionar contratos de scene installers e combat
+- `docs/CORE_CONTRACTS_EVENTS_SAVE_IDS_v1.0.md` — adicionar contratos finais
+- `docs/GDD_v2.6.md` — adicionar status pós 9B-1
+- `docs/FASE6_INDEX_global_v1.2.md` — atualizar status dos épicos
+- `docs/FASE7_SPEC_MVP_FARM_v2.2.md` — adicionar seção de status
+- `docs/FASE8_EXECUTION_PLAN_CODEX_v1.0.md` — adicionar referências
+- `docs/FASE6_FARM_backlog_v1.2.md` — status atual
+- `docs/CHANGELOG_ATUALIZACAO_v2.6.md` — adicionar seção de atualização
+
+### Decisões documentadas
+
+1. **Sem art final agora** — validar gameplay antes de gastar tempo em sprites
+2. **Próxima sequência:** PR-092 (warnings) → PR-093 (combat feel) → UI MVP (PR-095-097) → Quest (PR-098-099) → Visual slice
+3. **Component detection over tags** — preferir GetComponentInParent em vez de CompareTag
+4. **Geradores reproduzíveis** — não alterar ProjectSettings, avisos de Sorting Layer aceitáveis MVP
+
+### Próxima etapa recomendada
+
+1. Executar `git status --short` e verificar que só há docs
+2. Criar commit: `git commit -m "docs: sincronizar projeto pos fase 9b cave combat"`
+3. **Após merge:** iniciar PR-092 (limpar warnings) ou PR-093 (combat feel)
+4. Considerar agendar review de próximas waves para alinhar design UI
