@@ -2004,6 +2004,89 @@ PR-002 sÃ³ deve comeÃ§ar se:
 
 ---
 
+## 2026-05-17 — PR-065 Rebind + cache transitório da FarmScene
+
+**Responsável:** Codex
+**Branch:** `feature/fase9a-town-commerce-mvp-package`
+**Escopo:** corrigir perda de estado e referências quebradas da FarmScene após transição Farm ↔ Town, sem resetar managers persistentes.
+
+### Problema identificado
+- Ao transitar FarmScene → TownScene → FarmScene, a cena recarrega via `LoadSceneMode.Single`.
+- Plots plantados desaparecem (estado não cacheado).
+- Ao tentar plantar, erro: "FarmPlot 3 cannot plant because InventoryManager is missing."
+- Causa: objetos de cena apontavam para bootstrap duplicado/destruído.
+
+### Solução implementada
+1. **GameBootstrap**: expõe managers persistentes via propriedades públicas.
+   - `Instance` singleton acessível.
+   - `PlayerManager`, `InventoryManager`, `TimeManager`, `SaveManager`, `HungerManager`, `CraftingManager`, `EconomyManager`.
+   - Inicializa novos managers sem resetar se já estiverem inicializados.
+
+2. **FarmSceneRuntimeStateCache** (novo):
+   - Static cache em memória para estado transitório entre cenas.
+   - `Capture()` salva plots, árvores e pickups antes de sair da FarmScene.
+   - `TryRestore()` restaura estado após recarregar FarmScene.
+   - Não salva em disco; não afeta inventário/ouro/fome/dia.
+
+3. **FarmSceneRuntimeReferenceInstaller** (novo MonoBehaviour):
+   - Assina `SceneTransitionStartedEvent` para capturar estado ao sair da FarmScene.
+   - No `Start()`, faz rebind de todas as referências de cena aos managers persistentes.
+   - Restaura cache transitório após rebind.
+   - Inclui arrays de FarmPlots, TreeNodes, etc. preenchidos pelo gerador.
+
+4. **Métodos Rebind** adicionados:
+   - `FarmPlot.RebindInventoryManager()`
+   - `TreeNode.RebindInventoryManager()`
+   - `FishingSpot.RebindInventoryManager()`
+   - `SeedShopPoint.RebindRuntimeManagers(InventoryManager, PlayerManager)`
+   - `SellPoint.RebindRuntimeManagers(InventoryManager, PlayerManager)`
+   - `CraftingManager.RebindInventoryManager()`
+   - `CraftingPoint.RebindCraftingManager()`
+   - `SaveManager.RebindSceneReferences()` e `RebindRuntimeManagers()`
+
+5. **CreateMvpFarmScene**:
+   - Cria objeto `SceneRuntimeReferences` com `FarmSceneRuntimeReferenceInstaller`.
+   - Preenche todos os arrays e referências de cena.
+   - Configura GameBootstrap com todos os managers incluindo HungerManager, CraftingManager, EconomyManager.
+
+### Arquivos alterados
+- `Assets/_Game/Scripts/Core/Bootstrap/GameBootstrap.cs`
+- `Assets/_Game/Scripts/SceneManagement/FarmSceneRuntimeStateCache.cs` [NOVO]
+- `Assets/_Game/Scripts/SceneManagement/FarmSceneRuntimeReferenceInstaller.cs` [NOVO]
+- `Assets/_Game/Scripts/Farm/FarmPlot.cs`
+- `Assets/_Game/Scripts/World/TreeNode.cs`
+- `Assets/_Game/Scripts/World/FishingSpot.cs`
+- `Assets/_Game/Scripts/Economy/SeedShopPoint.cs`
+- `Assets/_Game/Scripts/Economy/SellPoint.cs`
+- `Assets/_Game/Scripts/Craft/CraftingManager.cs`
+- `Assets/_Game/Scripts/Craft/CraftingPoint.cs`
+- `Assets/_Game/Scripts/Save/SaveManager.cs`
+- `Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpFarmScene.cs`
+- `Assets/_Game/Scenes/FarmScene.unity` [recriada pelo gerador]
+- `PROJECT_LOG.md`
+
+### Testes
+- [x] Revisão estática de toda a solução.
+- [x] Confirmado que nenhuma API proibida foi usada.
+- [x] Confirmado que eventos carregam tipos simples.
+- [x] Unsubscribe implementado corretamente em OnDisable.
+- [ ] Unity não executado neste terminal.
+
+### Pendências / riscos
+- Testes manuais obrigatórios no Unity para validar:
+  - Plantio persiste após Farm → Town → Farm.
+  - Árvores/pickups persistem.
+  - HUD continua sem duplicar.
+  - Salvamento/carregamento funciona.
+  - Nenhum erro de referência quebrada.
+
+### Próximo passo recomendado
+- Abrir Unity, rodar `CindarsHope/Scenes/Create MVP FarmScene`, executar smoke test de 20 itens (ver critérios de aceite na instrução).
+- Depois fazer merge se testes passarem.
+- Próximo pacote: FASE 9B-1 (Cave) ou FASE 9A-4 (Town UI), conforme teste.
+
+---
+
 ## 2026-05-17 — PR-064 Sync operacional da regra sem push/MR por agente
 
 **Responsável:** Codex
@@ -2034,3 +2117,33 @@ PR-002 sÃ³ deve comeÃ§ar se:
 ### Próximo passo recomendado
 - Próximo pacote pode começar; agentes devem ler AGENTS.md + CLAUDE.md obrigatoriamente antes de alterar código.
 - Sync bem-sucedido; fluxo de commits locais + entrega humana documentado.
+
+---
+
+## 2026-05-17 — PR-065 Correção de compilação (Safe Mode)
+
+**Responsável:** Claude
+**Branch:** `feature/fase9a-town-commerce-mvp-package`
+**Escopo:** corrigir erros de compilação do PR-065 que colocaram o Unity em Safe Mode.
+
+### Correções aplicadas
+
+- **GameBootstrap.cs:** removido `_hungerManager.Initialize()` sem argumento (não existe na API real); substituído por log de warning. Removido bloco `_hungerManager.IsInitialized` / `_hungerManager.Shutdown()` inexistentes em `ShutdownManagers`.
+- **FarmSceneRuntimeStateCache.cs:** reescrito para usar APIs reais dos registries. Substituídos métodos inexistentes `GetAllPlots`, `GetAllTrees`, `GetAllPickups`, `SaveState`, `RestoreState` pelas APIs reais: `CaptureSaveData()` e `RestoreFromSaveData()`. Adicionado `using System.Collections.Generic`.
+- **FarmSceneRuntimeReferenceInstaller.cs:** adicionado `using CindarsHope.Core.Bootstrap` para resolver `GameBootstrap`. Removida chamada `_sellAllPoint.RebindRuntimeManagers()` inexistente — `SellAllPoint` é event-driven e não expõe esse método.
+
+### Arquivos alterados
+- `Assets/_Game/Scripts/Core/Bootstrap/GameBootstrap.cs`
+- `Assets/_Game/Scripts/SceneManagement/FarmSceneRuntimeStateCache.cs`
+- `Assets/_Game/Scripts/SceneManagement/FarmSceneRuntimeReferenceInstaller.cs`
+- `PROJECT_LOG.md`
+
+### Testes
+- [x] Revisão estática das APIs reais (`HungerManager`, `FarmPlotRegistry`, `TreeRegistry`, `ItemPickupRegistry`, `SellAllPoint`).
+- [x] Confirmado que nenhum arquivo fora da lista permitida foi alterado.
+- [ ] Unity não executado; compilação deve ser validada abrindo o projeto.
+
+### Pendências / riscos
+- Abrir Unity e confirmar que o Safe Mode não reaparece.
+- Executar smoke test completo: plantar, transitar Farm → Town → Farm, confirmar que o estado persiste.
+- Confirmar Console sem erro vermelho após recompilação.

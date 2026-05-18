@@ -1,5 +1,7 @@
 using CindarsHope.Core.Data;
 using CindarsHope.Core.Time;
+using CindarsHope.Craft;
+using CindarsHope.Economy;
 using CindarsHope.Inventory;
 using CindarsHope.Player;
 using CindarsHope.Player.Data;
@@ -17,8 +19,21 @@ namespace CindarsHope.Core.Bootstrap
         [SerializeField] private InventoryManager _inventoryManager;
         [SerializeField] private TimeManager _timeManager;
         [SerializeField] private SaveManager _saveManager;
+        [SerializeField] private HungerManager _hungerManager;
+        [SerializeField] private CraftingManager _craftingManager;
+        [SerializeField] private EconomyManager _economyManager;
         [SerializeField] private PlayerDataSO _playerData;
         [SerializeField] private ItemDatabaseSO _itemDatabase;
+
+        public static GameBootstrap Instance => _instance;
+
+        public PlayerManager PlayerManager => _playerManager;
+        public InventoryManager InventoryManager => _inventoryManager;
+        public TimeManager TimeManager => _timeManager;
+        public SaveManager SaveManager => _saveManager;
+        public HungerManager HungerManager => _hungerManager;
+        public CraftingManager CraftingManager => _craftingManager;
+        public EconomyManager EconomyManager => _economyManager;
 
         private void Awake()
         {
@@ -97,6 +112,28 @@ namespace CindarsHope.Core.Bootstrap
             {
                 Debug.LogWarning("GameBootstrap is missing a SaveManager reference.", this);
             }
+
+            if (_hungerManager != null)
+            {
+                if (_playerData != null)
+                {
+                    _hungerManager.Initialize(_playerData);
+                }
+                else
+                {
+                    Debug.LogWarning("GameBootstrap: PlayerDataSO ausente. HungerManager não será inicializado pelo Bootstrap.", this);
+                }
+            }
+
+            if (_craftingManager != null)
+            {
+                _craftingManager.Initialize();
+            }
+
+            if (_economyManager != null)
+            {
+                _economyManager.Initialize();
+            }
         }
 
         private void ShutdownManagers()
@@ -119,6 +156,16 @@ namespace CindarsHope.Core.Bootstrap
             if (_playerManager != null)
             {
                 _playerManager.Shutdown();
+            }
+
+            if (_craftingManager != null && _craftingManager.IsInitialized)
+            {
+                _craftingManager.Shutdown();
+            }
+
+            if (_economyManager != null && _economyManager.IsInitialized)
+            {
+                _economyManager.Shutdown();
             }
         }
     }
