@@ -1313,3 +1313,268 @@ PR-002 sÃ³ deve comeÃ§ar se:
 
 ### Próximo passo recomendado
 - Rodar validação Unity completa pós PR-045 e registrar resultados antes de abrir nova feature.
+
+---
+
+## 2026-05-17 — PR-046 Craft data contracts
+
+**Responsável:** Codex/ChatGPT
+**Branch:** `feature/fase9a-crafting-mvp-package`
+**Escopo:** contratos de dados ScriptableObject para receitas e workshops do Crafting MVP.
+
+### Alterações
+- Criado `WorkshopType` com `Forge`, `Alchemy`, `Carpentry` e `Sewing`.
+- Criado `RecipeIngredient` serializável com `ItemId` e `Amount`.
+- Criado `RecipeDataSO` identificável por ID, com workshop, nível requerido, ingredientes por ID e output por ID.
+- Criado `RecipeDatabaseSO` baseado em `DataRegistrySO<RecipeDataSO>`.
+- Criado `WorkshopDataSO` identificável por ID.
+- Criado `WorkshopDatabaseSO` baseado em `DataRegistrySO<WorkshopDataSO>`.
+- Não houve `CraftingManager`, UI, cena, assets de receita ou gameplay nesta wave.
+
+### Arquivos alterados
+- `Assets/_Game/Scripts/Craft/Data/RecipeDataSO.cs`
+- `Assets/_Game/Scripts/Craft/Data/RecipeIngredient.cs`
+- `Assets/_Game/Scripts/Craft/Data/RecipeDatabaseSO.cs`
+- `Assets/_Game/Scripts/Craft/Data/WorkshopType.cs`
+- `Assets/_Game/Scripts/Craft/Data/WorkshopDataSO.cs`
+- `Assets/_Game/Scripts/Craft/Data/WorkshopDatabaseSO.cs`
+- `.meta` correspondentes
+- `PROJECT_LOG.md`
+
+### Testes
+- [x] Revisão estática dos contratos criados.
+- [ ] Unity não executado neste terminal; validar compilação no editor.
+
+### Pendências / riscos
+- Criar assets reais de receita/workshop no PR-047.
+- Validar no Unity se os novos ScriptableObjects aparecem nos menus `CreateAssetMenu`.
+
+### Próximo passo recomendado
+- PR-047 — criar item de madeira processada, receita, workshop e registries de crafting.
+
+---
+
+## 2026-05-17 — PR-047 Assets de receitas e workshop MVP
+
+**Responsável:** Codex/ChatGPT
+**Branch:** `feature/fase9a-crafting-mvp-package`
+**Escopo:** assets reais mínimos do Crafting MVP, sem scripts runtime ou cena.
+
+### Alterações
+- Criado `Item_Processed_Wood.asset` com ID `item_material_processed_wood`.
+- Criada receita `Recipe_Processed_Wood.asset` para converter `item_wood` x5 em `item_material_processed_wood` x1.
+- Criado workshop `Workshop_Carpentry_Basic.asset` com ID `workshop_carpentry_basic`.
+- Criados `RecipeDatabase.asset` e `WorkshopDatabase.asset`.
+- Atualizado `ItemDatabase.asset` para incluir `Item_Processed_Wood.asset` sem remover itens existentes.
+
+### Arquivos alterados
+- `Assets/_Game/Data/Items/Item_Processed_Wood.asset`
+- `Assets/_Game/Data/Items/Item_Processed_Wood.asset.meta`
+- `Assets/_Game/Data/Recipes/**`
+- `Assets/_Game/Data/Workshops/**`
+- `Assets/_Game/Data/Registries/ItemDatabase.asset`
+- `Assets/_Game/Data/Registries/RecipeDatabase.asset`
+- `Assets/_Game/Data/Registries/RecipeDatabase.asset.meta`
+- `Assets/_Game/Data/Registries/WorkshopDatabase.asset`
+- `Assets/_Game/Data/Registries/WorkshopDatabase.asset.meta`
+- `PROJECT_LOG.md`
+
+### Testes
+- [x] Revisão estática dos YAMLs criados e referências por GUID.
+- [ ] Unity não executado neste terminal; validar import dos assets no editor.
+
+### Pendências / riscos
+- Validar no Unity se `RecipeDatabase` e `WorkshopDatabase` carregam os assets corretamente.
+- Craft runtime entra no PR-048.
+
+### Próximo passo recomendado
+- PR-048 — criar `ItemCraftedEvent`, `CraftingManager` mínimo e expandir o validator para receitas/workshops.
+
+---
+
+## 2026-05-17 — PR-048 CraftingManager e evento de craft
+
+**Responsável:** Codex/ChatGPT
+**Branch:** `feature/fase9a-crafting-mvp-package`
+**Escopo:** runtime mínimo de crafting por ID e validação de dados de crafting.
+
+### Alterações
+- Criado `ItemCraftedEvent` com `RecipeId`, `ItemId` e `Amount`.
+- Criado `CraftingManager` com `Initialize`, `Shutdown`, `CanCraft`, `TryCraft` e `GetMissingIngredients`.
+- `TryCraft` resolve receita por `RecipeDatabaseSO`, valida ingredientes, verifica capacidade de output sem alterar `InventoryManager`, consome ingredientes, adiciona output e publica `ItemCraftedEvent`.
+- `CindarsHopeDataValidator` agora valida `RecipeDatabaseSO`, `WorkshopDatabaseSO`, `recipe_processed_wood`, `workshop_carpentry_basic`, ingredientes e output contra `ItemDatabase`.
+- Não houve UI, cena, `CraftingPoint`, save/load ou novos assets nesta wave.
+
+### Arquivos alterados
+- `Assets/_Game/Scripts/Craft/CraftingManager.cs`
+- `Assets/_Game/Scripts/Core/Events/ItemCraftedEvent.cs`
+- `Assets/_Game/Scripts/Editor/DataValidation/CindarsHopeDataValidator.cs`
+- `.meta` correspondentes
+- `PROJECT_LOG.md`
+
+### Testes
+- [x] Revisão estática dos arquivos alterados.
+- [x] Busca por `GameObject.Find`, `FindObjectOfType`, `FindObjectsByType` e `StreamingAssets` nos arquivos tocados sem ocorrências.
+- [ ] Unity não executado neste terminal; validar compilação e `CindarsHope/Validate/Validate MVP Data` no editor.
+
+### Pendências / riscos
+- `CraftingManager` ainda não está integrado na cena; isso entra no PR-051.
+- `CraftingPoint` interagível entra no PR-049.
+
+### Próximo passo recomendado
+- PR-049 — criar `CraftingPoint` interagível para executar `recipe_processed_wood`.
+
+---
+
+## 2026-05-17 — PR-049 CraftingPoint interagível
+
+**Responsável:** Codex/ChatGPT
+**Branch:** `feature/fase9a-crafting-mvp-package`
+**Escopo:** ponto runtime interagível para disparar uma receita de crafting.
+
+### Alterações
+- Criado `CraftingPoint` implementando `IInteractable`.
+- `InteractionPrompt` retorna `Craftar`.
+- `CanInteract` exige `CraftingManager` configurado e `recipeId` preenchido.
+- `Interact` chama `CraftingManager.TryCraft("recipe_processed_wood")` por padrão e registra sucesso/falha no Console.
+- Não houve alteração em `InteractionSystem`, `InventoryManager`, `SaveManager`, FarmScene, assets ou UI.
+
+### Arquivos alterados
+- `Assets/_Game/Scripts/Craft/CraftingPoint.cs`
+- `Assets/_Game/Scripts/Craft/CraftingPoint.cs.meta`
+- `PROJECT_LOG.md`
+
+### Testes
+- [x] Revisão estática do script criado.
+- [x] Busca por `GameObject.Find`, `FindObjectOfType`, `FindObjectsByType` e `StreamingAssets` no arquivo criado sem ocorrências.
+- [ ] Unity não executado neste terminal; validar compilação no editor.
+
+### Pendências / riscos
+- Integrar `CraftingPoint` no gerador da FarmScene no PR-051.
+- Logs detalhados de falha dependem do `CraftingManager` e podem ser refinados no PR-050 se necessário.
+
+### Próximo passo recomendado
+- PR-050 — avaliar HUD/debug para crafting e melhorar logs se necessário.
+
+---
+
+## 2026-05-17 — PR-050 Debug/HUD mínimo para crafting
+
+**Responsável:** Codex/ChatGPT
+**Branch:** `feature/fase9a-crafting-mvp-package`
+**Escopo:** avaliar testabilidade do crafting via HUD/debug/log sem criar UI final.
+
+### Alterações
+- Confirmado por revisão estática que `DebugHud` já lista o inventário genericamente por ID e quantidade.
+- `item_wood` e `item_material_processed_wood` aparecerão no HUD automaticamente quando existirem no inventário.
+- `CraftingManager` e `CraftingPoint` já registram sucesso e falhas comuns no Console.
+- Nenhuma alteração de código foi necessária nesta wave.
+
+### Arquivos alterados
+- `PROJECT_LOG.md`
+
+### Testes
+- [x] Revisão estática de `DebugHud`, `CraftingManager` e `CraftingPoint`.
+- [ ] Unity não executado neste terminal; validar HUD e logs em Play Mode após integração da cena.
+
+### Pendências / riscos
+- A testabilidade real depende da integração do `CraftingManager` e do `CraftingPoint` na FarmScene no PR-051.
+- UI final de crafting segue fora de escopo.
+
+### Próximo passo recomendado
+- PR-051 — integrar `CraftingManager` e `CraftingPoint_Carpentry` no gerador da FarmScene.
+
+---
+
+## 2026-05-17 — PR-051 Integrar CraftingManager e CraftingPoint na FarmScene
+
+**Responsável:** Codex/ChatGPT
+**Branch:** `feature/fase9a-crafting-mvp-package`
+**Escopo:** integrar crafting no gerador reproduzível da FarmScene.
+
+### Alterações
+- `CreateMvpFarmScene` agora adiciona `CraftingManager` ao `_Bootstrap`.
+- `CraftingManager` é configurado com `InventoryManager` e `RecipeDatabase.asset` via `AssetDatabase`.
+- Criado `CraftingPoint_Carpentry` pelo gerador da cena, com sprite placeholder, collider trigger, receita `recipe_processed_wood` e referência para `CraftingManager`.
+- O ponto foi posicionado próximo aos pontos de interação, sem sobrepor `SellPoint` e `SeedShopPoint`.
+- Não houve UI final, save/load, packages, ProjectSettings ou cena nova.
+
+### Arquivos alterados
+- `Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpFarmScene.cs`
+- `PROJECT_LOG.md`
+
+### Testes
+- [x] Revisão estática do editor script.
+- [x] Busca por `GameObject.Find`, `FindObjectOfType`, `FindObjectsByType` e `StreamingAssets` no arquivo alterado sem ocorrências.
+- [ ] Unity não executado neste terminal; `Assets/_Game/Scenes/FarmScene.unity` não foi recriada/salva localmente.
+
+### Pendências / riscos
+- Rodar `CindarsHope/Scenes/Create MVP FarmScene` no Unity para gerar `CraftingPoint_Carpentry` na cena.
+- Confirmar em Play Mode que o ponto é alcançável e executa a receita.
+
+### Próximo passo recomendado
+- PR-052 — registrar handoff do Crafting MVP.
+
+---
+
+## 2026-05-17 — PR-052 Handoff pós Crafting MVP
+
+**Responsável:** Codex/ChatGPT
+**Branch:** `feature/fase9a-crafting-mvp-package`
+**Escopo:** handoff documental do pacote FASE 9A-1 — Crafting MVP na fazenda.
+
+### Resumo do pacote
+- Executados PR-046 a PR-051 do pacote FASE 9A-1 — Crafting MVP.
+- O pacote adiciona contratos de crafting, assets mínimos, runtime por ID, evento de craft, ponto interagível e integração reproduzível no gerador da FarmScene.
+- Loop esperado: cortar árvore para obter `item_wood`, interagir com `CraftingPoint_Carpentry`, consumir madeira e receber `item_material_processed_wood`.
+
+### Arquivos principais criados
+- `Assets/_Game/Scripts/Craft/Data/RecipeDataSO.cs`
+- `Assets/_Game/Scripts/Craft/Data/RecipeIngredient.cs`
+- `Assets/_Game/Scripts/Craft/Data/RecipeDatabaseSO.cs`
+- `Assets/_Game/Scripts/Craft/Data/WorkshopType.cs`
+- `Assets/_Game/Scripts/Craft/Data/WorkshopDataSO.cs`
+- `Assets/_Game/Scripts/Craft/Data/WorkshopDatabaseSO.cs`
+- `Assets/_Game/Scripts/Craft/CraftingManager.cs`
+- `Assets/_Game/Scripts/Craft/CraftingPoint.cs`
+- `Assets/_Game/Scripts/Core/Events/ItemCraftedEvent.cs`
+- `Assets/_Game/Data/Items/Item_Processed_Wood.asset`
+- `Assets/_Game/Data/Recipes/Recipe_Processed_Wood.asset`
+- `Assets/_Game/Data/Workshops/Workshop_Carpentry_Basic.asset`
+- `Assets/_Game/Data/Registries/RecipeDatabase.asset`
+- `Assets/_Game/Data/Registries/WorkshopDatabase.asset`
+
+### Como testar
+1. Abrir Unity.
+2. Rodar `CindarsHope/Validate/Validate MVP Data`.
+3. Rodar `CindarsHope/Scenes/Create MVP FarmScene`.
+4. Entrar em Play Mode.
+5. Cortar árvore até obter `item_wood`.
+6. Interagir com `CraftingPoint_Carpentry`.
+7. Confirmar que `item_wood` reduziu.
+8. Confirmar que `item_material_processed_wood` foi adicionado.
+9. Confirmar HUD/debug/log mostrando o resultado via inventário e Console.
+
+### Fora de escopo preservado
+- Cidade.
+- Caverna.
+- Combate.
+- Companions.
+- UI final.
+- Animação.
+- VFX.
+- Fila/tempo de crafting.
+- Múltiplos workshops completos.
+- Múltiplos slots de save.
+- Build/package/release.
+
+### Pendências
+- UI final de crafting.
+- Múltiplas receitas.
+- Tempo/fila de crafting.
+- Workshops completos.
+- Balanceamento de receitas.
+- Validar Unity, cena recriada e Play Mode localmente.
+
+### Próximo pacote recomendado
+- FASE 9A-2 — TownScene mínima com portal Farm ↔ Town e NPC/ShopPoint básico.
