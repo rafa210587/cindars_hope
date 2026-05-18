@@ -59,6 +59,28 @@ namespace CindarsHope.Combat
                 {
                     _playerManager.DamageHP(_enemyData.contactDamage);
                     Debug.Log($"EnemyContactDamage: dealt {_enemyData.contactDamage} damage to player. HP should update through PlayerManager.");
+
+                    var playerHitFlash = collision.GetComponentInParent<HitFlashController>();
+                    if (playerHitFlash == null)
+                    {
+                        playerHitFlash = collision.GetComponent<HitFlashController>();
+                    }
+                    if (playerHitFlash != null)
+                    {
+                        playerHitFlash.Flash();
+                    }
+
+                    var playerKnockback = collision.GetComponentInParent<KnockbackController>();
+                    if (playerKnockback == null)
+                    {
+                        playerKnockback = collision.GetComponent<KnockbackController>();
+                    }
+                    if (playerKnockback != null)
+                    {
+                        Vector2 direction = (collision.transform.position - transform.position).normalized;
+                        playerKnockback.ApplyKnockback(direction, 2.0f);
+                    }
+
                     _lastDamageTime = Time.time;
                 }
             }

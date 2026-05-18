@@ -18,6 +18,12 @@ namespace CindarsHope.Combat
                 return;
             }
 
+            var knockback = GetComponent<KnockbackController>();
+            if (knockback != null && knockback.IsKnockingBack)
+            {
+                return;
+            }
+
             float distanceToTarget = Vector2.Distance(transform.position, _target.position);
 
             if (distanceToTarget > _detectionRadius || distanceToTarget <= _stopDistance)

@@ -47,6 +47,14 @@ namespace CindarsHope.Combat
                 {
                     enemyHealth.TakeDamage(_punchDamage);
                     Debug.Log($"PlayerAttackController: punch hit enemy {enemyHealth.gameObject.name} for {_punchDamage} damage.");
+
+                    var knockback = enemyHealth.GetComponent<KnockbackController>();
+                    if (knockback != null)
+                    {
+                        Vector2 direction = (enemyHealth.transform.position - transform.position).normalized;
+                        knockback.ApplyKnockback(direction, 2.5f);
+                    }
+
                     hitAny = true;
                 }
             }

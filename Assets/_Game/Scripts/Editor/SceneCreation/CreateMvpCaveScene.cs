@@ -54,6 +54,7 @@ namespace CindarsHope.Editor.SceneCreation
             CreateBounds();
             CreateCavePortals();
             CreateEnemies(playerTransform);
+            CreateEnemyDropSpawner(inventoryManager);
             CreateDebugHud(playerManager, inventoryManager, hungerManager, playerTransform.GetComponent<InteractionSystem>(), timeManager, saveManager);
             CreateSceneRuntimeInstaller(playerTransform);
             CreateMainCamera();
@@ -206,6 +207,25 @@ namespace CindarsHope.Editor.SceneCreation
             EditorUtility.SetDirty(playerAttackController);
         }
 
+        private static void ConfigureHitFlashController(HitFlashController hitFlash, SpriteRenderer spriteRenderer, Color flashColor)
+        {
+            var serializedFlash = new SerializedObject(hitFlash);
+            SetReference(serializedFlash, "_spriteRenderer", spriteRenderer);
+            serializedFlash.FindProperty("_flashColor").colorValue = flashColor;
+            serializedFlash.FindProperty("_flashDuration").floatValue = 0.12f;
+            serializedFlash.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(hitFlash);
+        }
+
+        private static void ConfigureKnockbackController(KnockbackController knockback, Rigidbody2D rigidbody)
+        {
+            var serializedKnockback = new SerializedObject(knockback);
+            SetReference(serializedKnockback, "_rigidbody", rigidbody);
+            serializedKnockback.FindProperty("_duration").floatValue = 0.15f;
+            serializedKnockback.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(knockback);
+        }
+
         private static Transform CreatePlayer()
         {
             var player = new GameObject("Player");
@@ -216,7 +236,7 @@ namespace CindarsHope.Editor.SceneCreation
             spriteRenderer.sprite = GetBuiltinSprite();
             spriteRenderer.color = new Color(0.23f, 0.48f, 0.84f);
             spriteRenderer.sortingOrder = 0;
-            SetSortingLayerIfExists(spriteRenderer, "Player");
+            TrySetSortingLayer(spriteRenderer, "Player", spriteRenderer.sortingOrder);
 
             if (spriteRenderer.sprite == null)
             {
@@ -234,9 +254,13 @@ namespace CindarsHope.Editor.SceneCreation
             player.AddComponent<PlayerManager>();
             player.AddComponent<InteractionSystem>();
             var playerAttackController = player.AddComponent<PlayerAttackController>();
+            var hitFlash = player.AddComponent<HitFlashController>();
+            var knockback = player.AddComponent<KnockbackController>();
 
             ConfigurePlayerController(playerController);
             ConfigurePlayerAttackController(playerAttackController);
+            ConfigureHitFlashController(hitFlash, spriteRenderer, new Color(1f, 1f, 0f));
+            ConfigureKnockbackController(knockback, rigidbody);
 
             return player.transform;
         }
@@ -267,7 +291,7 @@ namespace CindarsHope.Editor.SceneCreation
             spriteRenderer.sprite = GetBuiltinSprite();
             spriteRenderer.color = new Color(0.15f, 0.15f, 0.15f);
             spriteRenderer.sortingOrder = -1;
-            SetSortingLayerIfExists(spriteRenderer, "Ground");
+            TrySetSortingLayer(spriteRenderer, "Ground", spriteRenderer.sortingOrder);
 
             var collider = ground.AddComponent<BoxCollider2D>();
             collider.size = new Vector2(20f, 15f);
@@ -316,7 +340,7 @@ namespace CindarsHope.Editor.SceneCreation
             spriteRenderer.sprite = GetBuiltinSprite();
             spriteRenderer.color = color;
             spriteRenderer.sortingOrder = 2;
-            SetSortingLayerIfExists(spriteRenderer, "Items");
+            TrySetSortingLayer(spriteRenderer, "Items", spriteRenderer.sortingOrder);
 
             if (spriteRenderer.sprite == null)
             {
@@ -385,7 +409,7 @@ namespace CindarsHope.Editor.SceneCreation
             spriteRenderer.sprite = GetBuiltinSprite();
             spriteRenderer.color = new Color(0.85f, 0.23f, 0.23f);
             spriteRenderer.sortingOrder = 0;
-            SetSortingLayerIfExists(spriteRenderer, "Enemies");
+            TrySetSortingLayer(spriteRenderer, "Enemies", spriteRenderer.sortingOrder);
 
             var collider = slimeObject.AddComponent<CircleCollider2D>();
             collider.radius = 0.4f;
@@ -436,6 +460,24 @@ namespace CindarsHope.Editor.SceneCreation
             serializedChase.FindProperty("_stopDistance").floatValue = 0.55f;
             serializedChase.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(chaseController);
+
+            var slimeHitFlash = slimeObject.AddComponent<HitFlashController>();
+            ConfigureHitFlashController(slimeHitFlash, spriteRenderer, new Color(1f, 0.5f, 0f));
+
+            var slimeKnockback = slimeObject.AddComponent<KnockbackController>();
+            ConfigureKnockbackController(slimeKnockback, rigidbody);
+        }
+
+        private static void CreateEnemyDropSpawner(InventoryManager inventoryManager)
+        {
+            var dropSpawnerObject = new GameObject("EnemyDropSpawner");
+            dropSpawnerObject.transform.position = Vector3.zero;
+
+            var dropSpawner = dropSpawnerObject.AddComponent<EnemyDropSpawner>();
+            var serializedDropSpawner = new SerializedObject(dropSpawner);
+            SetReference(serializedDropSpawner, "_inventoryManager", inventoryManager);
+            serializedDropSpawner.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(dropSpawner);
         }
 
         private static void CreateSceneRuntimeInstaller(Transform playerTransform)
@@ -490,20 +532,18 @@ namespace CindarsHope.Editor.SceneCreation
             return sprite;
         }
 
-        private static void SetSortingLayerIfExists(SpriteRenderer spriteRenderer, string sortingLayerName)
+        private static void TrySetSortingLayer(SpriteRenderer renderer, string layerName, int fallbackOrder)
         {
             foreach (var layer in SortingLayer.layers)
             {
-                if (layer.name != sortingLayerName)
+                if (layer.name == layerName)
                 {
-                    continue;
+                    renderer.sortingLayerName = layerName;
+                    return;
                 }
-
-                spriteRenderer.sortingLayerName = sortingLayerName;
-                return;
             }
 
-            Debug.LogWarning($"Sorting Layer '{sortingLayerName}' was not found. '{spriteRenderer.gameObject.name}' will use the default sorting layer.");
+            renderer.sortingOrder = fallbackOrder;
         }
 
         private static void EnsureFolder(string parentFolder, string childFolder)
