@@ -1873,3 +1873,34 @@ PR-002 sÃ³ deve comeÃ§ar se:
 
 ### Próximo passo recomendado
 - PR-061 — integrar comércio na TownScene.
+
+---
+
+## 2026-05-17 — PR-061 Integrar comércio na TownScene
+
+**Responsável:** Codex/ChatGPT
+**Branch:** `feature/fase9a-town-commerce-mvp-package`
+**Escopo:** adicionar pontos de comércio por evento ao gerador reproduzível da `TownScene`.
+
+### Alterações
+- `CreateMvpTownScene` agora cria parent `TownCommerce`.
+- Criado `Shop_Buy_WheatSeeds` com `BuyItemPoint` para comprar `seed_wheat` x3 por 5g.
+- Criado `Shop_Buy_CarrotSeeds` com `BuyItemPoint` para comprar `seed_carrot` x2 por 6g.
+- Criado `Shop_SellBox` com `SellAllPoint` para vender itens vendáveis.
+- Criado `GeneralStorePlaceholder` apenas como decoração visual simples.
+
+### Arquivos alterados
+- `Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpTownScene.cs`
+- `PROJECT_LOG.md`
+
+### Testes
+- [x] Revisão estática do gerador.
+- [x] Busca por APIs proibidas no arquivo alterado sem ocorrências.
+- [ ] Unity não executado neste terminal; `TownScene.unity` deve ser recriada pelo menu.
+
+### Pendências / riscos
+- Rodar `CindarsHope/Scenes/Create MVP TownScene` para materializar os pontos de comércio.
+- Validar no Unity que os pontos publicam eventos recebidos pelo `EconomyManager` persistente.
+
+### Próximo passo recomendado
+- PR-062 — exibir transações de economia no HUD debug.
