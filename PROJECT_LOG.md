@@ -2806,3 +2806,40 @@ Próximo pacote: FASE 9B-2 Combat Feel ou FASE 9A/9C UI MVP.
 - CreateMvpCaveScene compila sem erros.
 - Menu `CindarsHope/Validate/Validate Cave MVP` funcional.
 - Menu `CindarsHope/Scenes/Create MVP CaveScene` funcional.
+
+---
+
+## 2026-05-18 — PR-086 Cave data wiring
+
+**Responsável:** Claude  
+**Branch:** `feature/fase9b1-cave-mvp`  
+**Escopo:** corrigir wiring de dados da Cave MVP (PlayerDataSO no Player, EnemyDataSO no Slime).
+
+### Correções aplicadas
+
+- **CreateMvpCaveScene.cs:**
+  - Adicionada constante `EnemySlimeDataPath = "Assets/_Game/Data/Combat/Enemy_Slime.asset"`.
+  - Adicionada criação de pastas `Assets/_Game/Data` e `Assets/_Game/Data/Combat` no início de `CreateScene()`.
+  - Adicionado método `EnsureEnemySlimeData()` que cria `Enemy_Slime.asset` se não existir, com valores:
+    - `enemyId = "enemy_slime"`
+    - `maxHp = 10`
+    - `contactDamage = 1`
+    - `contactDamageCooldownSeconds = 1f`
+    - `dropItemId = "item_wood"`
+    - `dropAmount = 1`
+  - Adicionado método `ConfigurePlayerController()` que carrega `PlayerDataSO` e atribui ao `PlayerController._playerData`.
+  - Modificado `CreatePlayer()` para chamar `ConfigurePlayerController()` após criar `PlayerController`.
+  - Modificado `CreateEnemies()` para chamar `EnsureEnemySlimeData()` antes de `CreateSlime()`.
+  - Modificado `CreateSlime()` para usar constante `EnemySlimeDataPath` e garantir atribuição de `EnemyDataSO`.
+
+### Arquivos alterados
+
+- `Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpCaveScene.cs`
+- `Assets/_Game/Data/Combat/Enemy_Slime.asset` (criado pelo gerador)
+- `PROJECT_LOG.md`
+
+### Resultado esperado
+
+- Slime da Cave com `EnemyDataSO` atribuído: nenhum warning de `EnemyHealth on 'Slime' has no EnemyDataSO assigned`.
+- Player da Cave com `PlayerDataSO` atribuído: nenhum fallback de velocidade, nenhum warning de `PlayerController on 'Player' has no PlayerDataSO assigned`.
+- Menu `CindarsHope/Scenes/Create MVP CaveScene` cria `Enemy_Slime.asset` automaticamente se não existir.

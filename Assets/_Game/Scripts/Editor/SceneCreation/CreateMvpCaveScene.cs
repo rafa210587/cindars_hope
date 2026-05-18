@@ -22,6 +22,7 @@ namespace CindarsHope.Editor.SceneCreation
         private const string ScenePath = "Assets/_Game/Scenes/CaveScene.unity";
         private const string PlayerDataPath = "Assets/_Game/Data/Config/PlayerData.asset";
         private const string ItemDatabasePath = "Assets/_Game/Data/Registries/ItemDatabase.asset";
+        private const string EnemySlimeDataPath = "Assets/_Game/Data/Combat/Enemy_Slime.asset";
         private const string BuiltinSpritePath = "UI/Skin/UISprite.psd";
 
         [MenuItem("CindarsHope/Scenes/Create MVP CaveScene")]
@@ -32,6 +33,8 @@ namespace CindarsHope.Editor.SceneCreation
 
         public static void CreateScene()
         {
+            EnsureFolder("Assets/_Game", "Data");
+            EnsureFolder("Assets/_Game/Data", "Combat");
             EnsureFolder("Assets/_Game", "Scenes");
 
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
@@ -177,6 +180,22 @@ namespace CindarsHope.Editor.SceneCreation
             EditorUtility.SetDirty(foodConsumer);
         }
 
+        private static void ConfigurePlayerController(PlayerController playerController)
+        {
+            var playerData = AssetDatabase.LoadAssetAtPath<PlayerDataSO>(PlayerDataPath);
+            if (playerData != null)
+            {
+                var serializedController = new SerializedObject(playerController);
+                SetReference(serializedController, "_playerData", playerData);
+                serializedController.ApplyModifiedPropertiesWithoutUndo();
+                EditorUtility.SetDirty(playerController);
+            }
+            else
+            {
+                Debug.LogWarning($"PlayerDataSO not found at {PlayerDataPath}. Assign it manually on CaveScene Player PlayerController.");
+            }
+        }
+
         private static Transform CreatePlayer()
         {
             var player = new GameObject("Player");
@@ -201,9 +220,11 @@ namespace CindarsHope.Editor.SceneCreation
             rigidbody.isKinematic = true;
             rigidbody.constraints = RigidbodyConstraints2D.FreezeRotation;
 
-            player.AddComponent<PlayerController>();
+            var playerController = player.AddComponent<PlayerController>();
             player.AddComponent<PlayerManager>();
             player.AddComponent<InteractionSystem>();
+
+            ConfigurePlayerController(playerController);
 
             return player.transform;
         }
@@ -318,7 +339,29 @@ namespace CindarsHope.Editor.SceneCreation
 
         private static void CreateEnemies()
         {
+            EnsureEnemySlimeData();
             CreateSlime(new Vector3(2f, 0f, 0f));
+        }
+
+        private static void EnsureEnemySlimeData()
+        {
+            var existingData = AssetDatabase.LoadAssetAtPath<EnemyDataSO>(EnemySlimeDataPath);
+            if (existingData != null)
+            {
+                return;
+            }
+
+            var slimeData = ScriptableObject.CreateInstance<EnemyDataSO>();
+            slimeData.enemyId = "enemy_slime";
+            slimeData.maxHp = 10;
+            slimeData.contactDamage = 1;
+            slimeData.contactDamageCooldownSeconds = 1f;
+            slimeData.dropItemId = "item_wood";
+            slimeData.dropAmount = 1;
+
+            AssetDatabase.CreateAsset(slimeData, EnemySlimeDataPath);
+            AssetDatabase.SaveAssets();
+            Debug.Log($"Created EnemyDataSO at {EnemySlimeDataPath}.");
         }
 
         private static void CreateSlime(Vector3 position)
@@ -351,14 +394,14 @@ namespace CindarsHope.Editor.SceneCreation
             var healthComponent = slimeObject.AddComponent<EnemyHealth>();
             var serializedHealth = new SerializedObject(healthComponent);
 
-            var enemyData = AssetDatabase.LoadAssetAtPath<EnemyDataSO>("Assets/_Game/Data/Combat/Enemy_Slime.asset");
+            var enemyData = AssetDatabase.LoadAssetAtPath<EnemyDataSO>(EnemySlimeDataPath);
             if (enemyData != null)
             {
                 SetReference(serializedHealth, "_enemyData", enemyData);
             }
             else
             {
-                Debug.LogWarning("EnemyDataSO 'Enemy_Slime' not found. Create it manually or adjust CreateMvpCaveScene.");
+                Debug.LogWarning($"EnemyDataSO not found at {EnemySlimeDataPath}. Assign it manually on Slime EnemyHealth.");
             }
             serializedHealth.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(healthComponent);
