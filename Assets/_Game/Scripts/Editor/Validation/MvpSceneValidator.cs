@@ -8,6 +8,8 @@ using CindarsHope.Interaction;
 using CindarsHope.NPC;
 using CindarsHope.Player;
 using CindarsHope.Save;
+using CindarsHope.SceneManagement;
+using CindarsHope.UI;
 using CindarsHope.World;
 using UnityEditor;
 using UnityEditor.SceneManagement;
