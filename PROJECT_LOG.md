@@ -2147,3 +2147,62 @@ PR-002 sÃ³ deve comeÃ§ar se:
 - Abrir Unity e confirmar que o Safe Mode não reaparece.
 - Executar smoke test completo: plantar, transitar Farm → Town → Farm, confirmar que o estado persiste.
 - Confirmar Console sem erro vermelho após recompilação.
+
+---
+
+## 2026-05-17 — PR-067 Save/load preserva cena atual
+
+**Responsável:** Claude  
+**Branch:** `feature/fase9a-town-commerce-mvp-package`  
+**Escopo:** fix save/load para preservar a cena atual e evitar que o player retorne para FarmScene ao fazer load de uma save feita na TownScene.
+
+### Bug identificado
+
+- Jogador salva na TownScene e faz load → volta para FarmScene ou fica inconsistente.
+- SaveManager não armazenava a cena ativa no save.
+- SaveManager podia continuar com referências (playerTransform) da FarmScene ao estar na TownScene.
+- Salvar fora da Farm podia sobrescrever dados de Farm/World com vazio.
+
+### Solução implementada
+
+- **SaveData.cs:** adicionados campos `CurrentSceneName` e `CurrentScenePath` em `GameSaveData` para armazenar a cena ativa no save.
+- **SaveManager.cs:** 
+  - Adicionados imports: `System.Collections`, `UnityEngine.SceneManagement`, `UnityEditor.SceneManagement` (condicional).
+  - Adicionadas constantes: `FarmSceneName`, `TownSceneName`, `FarmScenePath`, `TownScenePath`.
+  - `SaveGame()`: captura cena ativa e preserva Farm/World quando salva fora da Farm.
+  - `LoadGame()`: carrega a cena salva se diferente da cena ativa.
+  - Novo método `TryReadExistingValidSave()`: lê save existente sem exceção.
+  - Novo método `CaptureFarmSaveData()`: captura farm real só se na FarmScene, preserva dados antigos senão.
+  - Novo método `CaptureWorldSaveData()`: captura world real só se na FarmScene, preserva dados antigos senão.
+  - Nova coroutine `LoadSceneAndApplySaveData()`: carrega cena e depois aplica save em 2 frames.
+  - Novo método `ApplySaveData()`: extrai a lógica de restore do `LoadGame()` original.
+  - Novo método `RebindPlayerTransform()`: permite rebindar playerTransform sem alterar outros campos.
+- **TownSceneRuntimeReferenceInstaller.cs:** novo arquivo que rebinda SaveManager para o player da TownScene no Start.
+  - Campo `_playerTransform`.
+  - No `Start`: obtém `GameBootstrap.Instance`, rebinda `SaveManager.RebindPlayerTransform(_playerTransform)` e `SaveManager.RebindRuntimeManagers()`.
+- **CreateMvpTownScene.cs:** adicionado método `CreateSceneRuntimeInstaller()` que cria GameObject "SceneRuntimeReferences" com componente `TownSceneRuntimeReferenceInstaller`.
+
+### Arquivos alterados
+
+- `Assets/_Game/Scripts/Save/SaveData.cs`
+- `Assets/_Game/Scripts/Save/SaveManager.cs`
+- `Assets/_Game/Scripts/SceneManagement/TownSceneRuntimeReferenceInstaller.cs` (novo)
+- `Assets/_Game/Scripts/SceneManagement/TownSceneRuntimeReferenceInstaller.cs.meta` (novo)
+- `Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpTownScene.cs`
+- `Assets/_Game/Scenes/TownScene.unity` (será regenerado)
+- `PROJECT_LOG.md`
+
+### Testes pendentes
+
+- [ ] Regenerar TownScene: `CindarsHope/Scenes/Create MVP TownScene`
+- [ ] Salvar na FarmScene, load deve permanecer na FarmScene
+- [ ] Salvar na TownScene, load deve permanecer na TownScene
+- [ ] Farm → Town → salvar → load não deve voltar para Farm
+- [ ] TownScene direto → salvar → load mantém HUD e posição
+- [ ] Console sem erro vermelho
+
+### Pendências / riscos
+
+- O TownScene.unity será regenerado quando o gerador rodar; confirmar que nenhum detalhe foi perdido.
+- Testar integração com todos os managers persistentes após transition.
+- Smoke test completo de save/load em ambas as cenas.

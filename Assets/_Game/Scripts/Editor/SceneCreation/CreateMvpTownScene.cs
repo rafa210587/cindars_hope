@@ -62,6 +62,7 @@ namespace CindarsHope.Editor.SceneCreation
             CreateTownCommerce();
             CreateTownDecorations();
             CreateDebugHud(playerManager, inventoryManager, hungerManager, interactionSystem, timeManager, saveManager);
+            CreateSceneRuntimeInstaller(playerTransform);
 
             ConfigureBootstrap(
                 bootstrap,
@@ -680,6 +681,18 @@ namespace CindarsHope.Editor.SceneCreation
             }
 
             Debug.LogWarning($"Sorting Layer '{sortingLayerName}' was not found. '{spriteRenderer.gameObject.name}' will use the default sorting layer.");
+        }
+
+        private static void CreateSceneRuntimeInstaller(Transform playerTransform)
+        {
+            var runtimeRefObject = new GameObject("SceneRuntimeReferences");
+            runtimeRefObject.transform.position = Vector3.zero;
+
+            var installer = runtimeRefObject.AddComponent<TownSceneRuntimeReferenceInstaller>();
+            var serializedInstaller = new SerializedObject(installer);
+            SetReference(serializedInstaller, "_playerTransform", playerTransform);
+            serializedInstaller.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(installer);
         }
 
         private static void EnsureFolder(string parentFolder, string childFolder)
