@@ -1,3 +1,5 @@
+using CindarsHope.Core;
+using CindarsHope.Core.Events;
 using CindarsHope.Inventory;
 using CindarsHope.Interaction;
 using CindarsHope.Player;
@@ -10,12 +12,47 @@ namespace CindarsHope.UI
     [DisallowMultipleComponent]
     public class DebugHud : MonoBehaviour
     {
+        private static DebugHud _instance;
+
         [SerializeField] private PlayerManager _playerManager;
         [SerializeField] private InventoryManager _inventoryManager;
         [SerializeField] private HungerManager _hungerManager;
         [SerializeField] private InteractionSystem _interactionSystem;
         [SerializeField] private TimeManager _timeManager;
         [SerializeField] private SaveManager _saveManager;
+
+        private bool _hasInteractionCandidate;
+        private string _currentInteractionPrompt = string.Empty;
+
+        private void Awake()
+        {
+            if (_instance != null && _instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            _instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+
+        private void OnEnable()
+        {
+            GameEventBus.Subscribe<InteractionPromptChangedEvent>(OnInteractionPromptChanged);
+        }
+
+        private void OnDisable()
+        {
+            GameEventBus.Unsubscribe<InteractionPromptChangedEvent>(OnInteractionPromptChanged);
+        }
+
+        private void OnDestroy()
+        {
+            if (_instance == this)
+            {
+                _instance = null;
+            }
+        }
 
         private void OnGUI()
         {
@@ -43,15 +80,19 @@ namespace CindarsHope.UI
 
         private void DrawInteractionState()
         {
-            if (_interactionSystem == null)
+            if (_hasInteractionCandidate)
             {
-                GUILayout.Label("Interacao: not assigned");
+                GUILayout.Label($"Interacao: {_currentInteractionPrompt}");
                 return;
             }
 
-            GUILayout.Label(_interactionSystem.HasCandidate
-                ? $"Interacao: {_interactionSystem.CurrentPrompt}"
-                : "Interacao: nenhum alvo");
+            if (_interactionSystem != null && _interactionSystem.HasCandidate)
+            {
+                GUILayout.Label($"Interacao: {_interactionSystem.CurrentPrompt}");
+                return;
+            }
+
+            GUILayout.Label("Interacao: nenhum alvo");
         }
 
         private void DrawPlayerState()
@@ -118,6 +159,12 @@ namespace CindarsHope.UI
             {
                 GUILayout.Label($"Save: {_saveManager.SaveFilePath}");
             }
+        }
+
+        private void OnInteractionPromptChanged(InteractionPromptChangedEvent evt)
+        {
+            _hasInteractionCandidate = evt.HasCandidate;
+            _currentInteractionPrompt = evt.Prompt ?? string.Empty;
         }
     }
 }

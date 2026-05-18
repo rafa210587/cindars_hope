@@ -1578,3 +1578,231 @@ PR-002 sÃ³ deve comeÃ§ar se:
 
 ### Próximo pacote recomendado
 - FASE 9A-2 — TownScene mínima com portal Farm ↔ Town e NPC/ShopPoint básico.
+
+---
+
+## 2026-05-17 — PR-053 Scene transition foundation
+
+**Responsável:** Codex/ChatGPT
+**Branch:** `feature/fase9a-townscene-mvp-package`
+**Escopo:** fundação mínima para transição entre cenas sem alterar Build Settings ou ProjectSettings.
+
+### Alterações
+- Criado `SceneTransitionState` para guardar `PendingSpawnId` transitório entre cenas, sem persistência.
+- Criados `SceneSpawnPoint` e `SceneSpawnInstaller` para posicionar o player por spawn serializado.
+- Criado `ScenePortal` interagível com suporte a `EditorSceneManager.LoadSceneInPlayMode` no Editor e fallback por nome fora do Editor.
+- Criados eventos leves `SceneTransitionStartedEvent` e `SceneTransitionCompletedEvent`.
+
+### Arquivos alterados
+- `Assets/_Game/Scripts/SceneManagement/SceneTransitionState.cs`
+- `Assets/_Game/Scripts/SceneManagement/ScenePortal.cs`
+- `Assets/_Game/Scripts/SceneManagement/SceneSpawnPoint.cs`
+- `Assets/_Game/Scripts/SceneManagement/SceneSpawnInstaller.cs`
+- `Assets/_Game/Scripts/Core/Events/SceneTransitionStartedEvent.cs`
+- `Assets/_Game/Scripts/Core/Events/SceneTransitionCompletedEvent.cs`
+- `PROJECT_LOG.md`
+
+### Testes
+- [x] Revisão estática dos scripts criados.
+- [x] Confirmado que não há uso de `GameObject.Find`, `FindObjectOfType`, `FindObjectsByType` ou `StreamingAssets` nos scripts novos.
+- [ ] Unity não executado neste terminal.
+
+### Pendências / riscos
+- Integrar os componentes nos geradores de cena nas próximas waves.
+- Validar no Unity a troca Farm ↔ Town depois que as cenas forem geradas.
+
+### Próximo passo recomendado
+- PR-054 — criar gerador reproduzível da TownScene mínima.
+
+---
+
+## 2026-05-17 — PR-054 TownScene generator mínimo
+
+**Responsável:** Codex/ChatGPT
+**Branch:** `feature/fase9a-townscene-mvp-package`
+**Escopo:** criação do Editor script reproduzível para montar a `TownScene` mínima.
+
+### Alterações
+- Criado menu `CindarsHope/Scenes/Create MVP TownScene`.
+- O gerador cria `Player`, `Ground`, `Bounds`, `Main Camera`, `SpawnPoints`, `Portals` e `TownDecorations`.
+- O player da cidade recebe `PlayerController`, `Rigidbody2D`, `BoxCollider2D`, `InteractionSystem` e child `InteractionTrigger`.
+- `SceneSpawnInstaller` é configurado com os spawns `town_default` e `town_from_farm`.
+- A `TownScene` não cria `_Bootstrap`; o fluxo esperado continua sendo FarmScene → TownScene com bootstrap persistente.
+
+### Arquivos alterados
+- `Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpTownScene.cs`
+- `PROJECT_LOG.md`
+
+### Testes
+- [x] Revisão estática do Editor script.
+- [x] Confirmado que o script usa apenas referências serializadas/locais, sem busca global runtime.
+- [ ] Unity não executado neste terminal; `Assets/_Game/Scenes/TownScene.unity` deve ser gerada ao rodar o menu no Editor.
+
+### Pendências / riscos
+- Rodar `CindarsHope/Scenes/Create MVP TownScene` no Unity para salvar `Assets/_Game/Scenes/TownScene.unity`.
+- Integrar portais Farm ↔ Town na próxima wave.
+
+### Próximo passo recomendado
+- PR-055 — integrar portais entre FarmScene e TownScene nos geradores.
+
+---
+
+## 2026-05-17 — PR-055 Portais Farm ↔ Town
+
+**Responsável:** Codex/ChatGPT
+**Branch:** `feature/fase9a-townscene-mvp-package`
+**Escopo:** integração de portais e spawn points nos geradores reproduzíveis de FarmScene e TownScene.
+
+### Alterações
+- `CreateMvpFarmScene` agora gera `SpawnPoints` com `farm_default` e `farm_from_town`.
+- `CreateMvpFarmScene` agora gera `Portal_Farm_To_Town` apontando para `TownScene` e spawn `town_from_farm`.
+- `CreateMvpTownScene` agora gera `Portal_Town_To_Farm` apontando para `FarmScene` e spawn `farm_from_town`.
+- Os portais usam `ScenePortal` e permanecem compatíveis com Play Mode no Editor sem alterar Build Settings.
+
+### Arquivos alterados
+- `Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpFarmScene.cs`
+- `Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpTownScene.cs`
+- `PROJECT_LOG.md`
+
+### Testes
+- [x] Revisão estática dos geradores.
+- [x] Confirmado que não houve alteração em `ProjectSettings` ou Build Settings.
+- [ ] Unity não executado neste terminal; cenas devem ser recriadas pelos menus no Editor.
+
+### Pendências / riscos
+- Rodar os menus `CindarsHope/Scenes/Create MVP FarmScene` e `CindarsHope/Scenes/Create MVP TownScene`.
+- Validar em Play Mode que a troca de cena respeita `town_from_farm` e `farm_from_town`.
+
+### Próximo passo recomendado
+- PR-056 — adicionar NPC básico Pip Miudinho à TownScene.
+
+---
+
+## 2026-05-17 — PR-056 NPC básico Pip Miudinho
+
+**Responsável:** Codex/ChatGPT
+**Branch:** `feature/fase9a-townscene-mvp-package`
+**Escopo:** NPC placeholder interagível na TownScene, sem diálogo completo ou UI final.
+
+### Alterações
+- Criado `NpcTalkPoint` como `IInteractable` simples para conversa via log no Console.
+- `CreateMvpTownScene` agora gera parent `NPCs` e o objeto `NPC_Pip_Miudinho`.
+- Pip recebe placeholder visual, collider trigger e linha de diálogo mínima.
+
+### Arquivos alterados
+- `Assets/_Game/Scripts/NPC/NpcTalkPoint.cs`
+- `Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpTownScene.cs`
+- `PROJECT_LOG.md`
+
+### Testes
+- [x] Revisão estática do script runtime e do gerador.
+- [x] Confirmado que `NpcTalkPoint` só usa `GetComponent` local em `Reset/OnValidate`.
+- [ ] Unity não executado neste terminal; TownScene deve ser recriada pelo menu para materializar o NPC.
+
+### Pendências / riscos
+- Validar em Play Mode que `NPC_Pip_Miudinho` responde ao `InteractionSystem` com a tecla E.
+- UI final de diálogo, quests, lojas e NPCs reais seguem fora de escopo.
+
+### Próximo passo recomendado
+- PR-057 — registrar handoff pós TownScene MVP.
+
+---
+
+## 2026-05-17 — PR-057 Handoff pós TownScene MVP
+
+**Responsável:** Codex/ChatGPT
+**Branch:** `feature/fase9a-townscene-mvp-package`
+**Escopo:** handoff documental do pacote FASE 9A-2 — TownScene mínima com portal Farm ↔ Town e NPC básico.
+
+### Resumo do pacote
+- Executados PR-053 a PR-056 do pacote FASE 9A-2.
+- O pacote adiciona fundação de transição entre cenas, gerador reproduzível da TownScene, portais Farm ↔ Town e NPC placeholder interagível.
+- O fluxo principal esperado continua sendo iniciar na FarmScene, manter o `GameBootstrap` persistente e acessar a TownScene pelos portais.
+
+### Arquivos principais criados
+- `Assets/_Game/Scripts/SceneManagement/SceneTransitionState.cs`
+- `Assets/_Game/Scripts/SceneManagement/ScenePortal.cs`
+- `Assets/_Game/Scripts/SceneManagement/SceneSpawnPoint.cs`
+- `Assets/_Game/Scripts/SceneManagement/SceneSpawnInstaller.cs`
+- `Assets/_Game/Scripts/Core/Events/SceneTransitionStartedEvent.cs`
+- `Assets/_Game/Scripts/Core/Events/SceneTransitionCompletedEvent.cs`
+- `Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpTownScene.cs`
+- `Assets/_Game/Scripts/NPC/NpcTalkPoint.cs`
+
+### Como testar
+1. Abrir Unity.
+2. Rodar `CindarsHope/Scenes/Create MVP FarmScene`.
+3. Rodar `CindarsHope/Scenes/Create MVP TownScene`.
+4. Abrir `Assets/_Game/Scenes/FarmScene.unity`.
+5. Entrar em Play Mode.
+6. Ir até `Portal_Farm_To_Town`.
+7. Interagir com E.
+8. Confirmar carregamento da `TownScene`.
+9. Confirmar spawn em `town_from_farm`.
+10. Falar com `NPC_Pip_Miudinho`.
+11. Usar `Portal_Town_To_Farm`.
+12. Confirmar retorno à `FarmScene` em `farm_from_town`.
+
+### Pendências
+- Build Settings/release flow.
+- UI final de diálogo.
+- NPCs reais.
+- Lojas na cidade.
+- Mapa visual final.
+- Persistência específica de cidade, se necessária.
+- Gerar/salvar `FarmScene.unity` e `TownScene.unity` localmente pelo Unity; este terminal não executou o Editor.
+
+### Fora de escopo preservado
+- Cidade completa.
+- Lojas reais.
+- Quests.
+- UI final de diálogo.
+- Pathfinding.
+- NPC andando.
+- Save/load específico de cidade.
+- Build Settings.
+- ProjectSettings.
+- Caverna.
+- Combate.
+- Companions.
+- Arte final.
+
+### Próximo pacote recomendado
+- FASE 9A-3 — Shop/NPC de cidade ou FASE 9B-1 — Cave vertical slice, decidir após teste local.
+
+---
+
+## 2026-05-17 — PR-058 Corrigir HUD persistente entre FarmScene e TownScene
+
+**Responsável:** Codex/ChatGPT
+**Branch:** `feature/fase9a-townscene-mvp-package`
+**Escopo:** manter `DebugHud` visível após transição FarmScene ↔ TownScene.
+
+### Alterações
+- Criado `InteractionPromptChangedEvent` com `HasCandidate` e `Prompt`.
+- `InteractionSystem` agora publica o prompt ativo quando ele muda.
+- `DebugHud` agora é persistente com `DontDestroyOnLoad`.
+- `DebugHud` evita duplicatas ao voltar para a FarmScene.
+- `DebugHud` usa evento para exibir o prompt da cena atual, sem depender da referência antiga ao `InteractionSystem` da FarmScene.
+
+### Arquivos alterados
+- `Assets/_Game/Scripts/Core/Events/InteractionPromptChangedEvent.cs`
+- `Assets/_Game/Scripts/Interaction/InteractionSystem.cs`
+- `Assets/_Game/Scripts/UI/DebugHud.cs`
+- `PROJECT_LOG.md`
+
+### Testes
+- [x] Revisão estática dos arquivos alterados.
+- [x] Confirmado que não houve uso de `GameObject.Find`, `FindObjectOfType`, `FindObjectsByType` ou `StreamingAssets`.
+- [ ] Unity precisa validar: FarmScene mostra HUD.
+- [ ] Unity precisa validar: `Portal_Farm_To_Town` mantém HUD.
+- [ ] Unity precisa validar: prompt aparece em NPC/portal na TownScene.
+- [ ] Unity precisa validar: `Portal_Town_To_Farm` mantém HUD.
+- [ ] Unity precisa validar: HUD não duplica ao voltar para FarmScene.
+
+### Pendências / riscos
+- UI final segue fora de escopo.
+- Há alterações locais de cena geradas pelo teste Unity (`FarmScene.unity` e `TownScene.unity`) que não fazem parte deste commit.
+
+### Próximo passo recomendado
+- Validar no Unity e depois seguir com o handoff/PR da TownScene MVP.
