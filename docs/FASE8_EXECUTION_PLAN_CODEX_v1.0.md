@@ -268,39 +268,347 @@ PROJECT_LOG.md
 
 **Motivo da posição:** managers e inventário inicial devem depender de dados concretos, não de dados hardcoded.
 
-**Arquivos pe$��m��mo�L�D��;�%g�?w��ŷ���ovH0��a�5��*�ؒ��l͛�S�iy�r�O7����%L]��%���hk ����>v1�HB������d\�(eoIx�>3�6BS%���(
-��f$�h�����eԎ���H���`ݶf{�Fo�Y���@00uMb�z-��XI$&�gf���7Ӵ�u|'K.�oP
-P���F�.��o��9B<~. ����[����<٭�$�����{1�A��.�bKx�L������'�u8n5���e ,]�H����V��Ww�$�C�el��|zys��K�i-�q�ݬbk,wnG��;�� ~�e�r͒���~'1`V⦫�-*[��L�K�'2@����仪��n���2�N� �ƶ�G���i/U��'E�@�`H��;J�������+J�n#���6ڴ�ĹG���N�G�'�Z!�����Wi��NJ�@���A��Z|�[��$q}i�ҷ�QbtTEC$��m��mo�L�D��;�%g�?w��ŷ���ovH0��a�5��*�ؒ��l͛�S�iy�r�O7����%L]��%���hk ����>v1�HB������d\�(eoIx�>3�6BS%���(
-��f$�h�����eԎ���H���`ݶf{�Fo�Y���@00uMb�z-��XI$&�gf���7Ӵ�u|'K.�oP
-P���F�.��o��9B<~. ����[����<٭�$�����{1�A��.�bKx�L������'�u8n5���e ,]�H����V��Ww�$�C�el��|zys��K�i-�q�ݬbk,wnG��;�� ~�e�r͒���~'1`V⦫�-*[��L�K�'2@����仪��n���2�N� �ƶ�G���i/U��'E�@�`H��;J�������+J�n#���6ڴ�ĹG���N�G�'�Z!�����Wi��NJ�@���A��Z|�[��$q}i�ҷ�QbtTEC$��m��mo�L�D��;�%g�?w��ŷ���ovH0��a�5��*�ؒ��l͛�S�iy�r�O7����%L]��%���hk ����>v1�HB������d\�(eoIx�>3�6BS%���(
-��f$�h�����eԎ���H���`ݶf{�Fo�Y���@00uMb�z-��XI$&�gf���7Ӵ�u|'K.�oP
-P���F�.��o��9B<~. ����[����<٭�$�����{1�A��.�bKx�L������'�u8n5���e ,]�H����V��Ww�$�C�el��|zys��K�i-�q�ݬbk,wnG��;�� ~�e�r͒���~'1`V⦫�-*[��L�K�'2@����仪��n���2�N� �ƶ�G���i/U��'E�@�`H��;J�������+J�n#���6ڴ�ĹG���N�G�'�Z!�����Wi��NJ�@���A��Z|�[��$q}i�ҷ�QbtTEC$��m��mo�L�D��;�%g�?w��ŷ���ovH0��a�5��*�ؒ��l͛�S�iy�r�O7����%L]��%���hk ����>v1�HB������d\�(eoIx�>3�6BS%���(
-��f$�h�����eԎ���H���`ݶf{�Fo�Y���@00uMb�z-��XI$&�gf���7Ӵ�u|'K.�oP
-P���F�.��o��9B<~. ����[����<٭�$�����{1�A��.�bKx�L������'�u8n5���e ,]�H����V��Ww�$�C�el��|zys��K�i-�q�ݬbk,wnG��;�� ~�e�r͒���~'1`V⦫�-*[��L�K�'2@����仪��n���2�N� �ƶ�G���i/U��'E�@�`H��;J�������+J�n#���6ڴ�ĹG���N�G�'�Z!�����Wi��NJ�@���A��Z|�[��$q}i�ҷ�QbtTEC$��m��mo�L�D��;�%g�?w��ŷ���ovH0��a�5��*�ؒ��l͛�S�iy�r�O7����%L]��%���hk ����>v1�HB������d\�(eoIx�>3�6BS%���(
-��f$�h�����eԎ���H���`ݶf{�Fo�Y���@00uMb�z-��XI$&�gf���7Ӵ�u|'K.�oP
-P���F�.��o��9B<~. ����[����<٭�$�����{1�A��.�bKx�L������'�u8n5���e ,]�H����V��Ww�$�C�el��|zys��K�i-�q�ݬbk,wnG��;�� ~�e�r͒���~'1`V⦫�-*[��L�K�'2@����仪��n���2�N� �ƶ�G���i/U��'E�@�`H��;J�������+J�n#���6ڴ�ĹG���N�G�'�Z!�����Wi��NJ�@���A��Z|�[��$q}i�ҷ�QbtTEC$��m��mo�L�D��;�%g�?w��ŷ���ovH0��a�5��*�ؒ��l͛�S�iy�r�O7����%L]��%���hk ����>v1�HB������d\�(eoIx�>3�6BS%���(
-��f$�h�����eԎ���H���`ݶf{�Fo�Y���@00uMb�z-��XI$&�gf���7Ӵ�u|'K.�oP
-P���F�.��o��9B<~. ����[����<٭�$�����{1�A��.�bKx�L������'�u8n5���e ,]�H����V��Ww�$�C�el��|zys��K�i-�q�ݬbk,wnG��;�� ~�e�r͒���~'1`V⦫�-*[��L�K�'2@����仪��n���2�N� �ƶ�G���i/U��'E�@�`H��;J�������+J�n#���6ڴ�ĹG���N�G�'�Z!�����Wi��NJ�@���A��Z|�[��$q}i�ҷ�QbtTEC$��m��mo�L�D��;�%g�?w��ŷ���ovH0��a�5��*�ؒ��l͛�S�iy�r�O7����%L]��%���hk ����>v1�HB������d\�(eoIx�>3�6BS%���(
-��f$�h�����eԎ���H���`ݶf{�Fo�Y���@00uMb�z-��XI$&�gf���7Ӵ�u|'K.�oP
-P���F�.��o��9B<~. ����[����<٭�$�����{1�A��.�bKx�L������'�u8n5���e ,]�H����V��Ww�$�C�el��|zys��K�i-�q�ݬbk,wnG��;�� ~�e�r͒���~'1`V⦫�-*[��L�K�'2@����仪��n���2�N� �ƶ�G���i/U��'E�@�`H��;J�������+J�n#���6ڴ�ĹG���N�G�'�Z!�����Wi��NJ�@���A��Z|�[��$q}i�ҷ�QbtTEC$��m��mo�L�D��;�%g�?w��ŷ���ovH0��a�5��*�ؒ��l͛�S�iy�r�O7����%L]��%���hk ����>v1�HB������d\�(eoIx�>3�6BS%���(
-��f$�h�����eԎ���H���`ݶf{�Fo�Y���@00uMb�z-��XI$&�gf���7Ӵ�u|'K.�oP
-P���F�.��o��9B<~. ����[����<٭�$�����{1�A��.�bKx�L������'�u8n5���e ,]�H����V��Ww�$�C�el��|zys��K�i-�q�ݬbk,wnG��;�� ~�e�r͒���~'1`V⦫�-*[��L�K�'2@����仪��n���2�N� �ƶ�G���i/U��'E�@�`H��;J�������+J�n#���6ڴ�ĹG���N�G�'�Z!�����Wi��NJ�@���A��Z|�[��$q}i�ҷ�QbtTEC$��m��mo�L�D��;�%g�?w��ŷ���ovH0��a�5��*�ؒ��l͛�S�iy�r�O7����%L]��%���hk ����>v1�HB������d\�(eoIx�>3�6BS%���(
-��f$�h�����eԎ���H���`ݶf{�Fo�Y���@00uMb�z-��XI$&�gf���7Ӵ�u|'K.�oP
-P���F�.��o��9B<~. ����[����<٭�$�����{1�A��.�bKx�L������'�u8n5���e ,]�H����V��Ww�$�C�el��|zys��K�i-�q�ݬbk,wnG��;�� ~�e�r͒���~'1`V⦫�-*[��L�K�'2@����仪��n���2�N� �ƶ�G���i/U��'E�@�`H��;J�������+J�n#���6ڴ�ĹG���N�G�'�Z!�����Wi��NJ�@���A��Z|�[��$q}i�ҷ�QbtTEC$��m��mo�L�D��;�%g�?w��ŷ���ovH0��a�5��*�ؒ��l͛�S�iy�r�O7����%L]��%���hk ����>v1�HB������d\�(eoIx�>3�6BS%���(
-��f$�h�����eԎ���H���`ݶf{�Fo�Y���@00uMb�z-��XI$&�gf���7Ӵ�u|'K.�oP
-P���F�.��o��9B<~. ����[����<٭�$�����{1�A��.�bKx�L������'�u8n5���e ,]�H����V��Ww�$�C�el��|zys��K�i-�q�ݬbk,wnG��;�� ~�e�r͒���~'1`V⦫�-*[��L�K�'2@����仪��n���2�N� �ƶ�G���i/U��'E�@�`H��;J�������+J�n#���6ڴ�ĹG���N�G�'�Z!�����Wi��NJ�@���A��Z|�[��$q}i�ҷ�QbtTEC$��m��mo�L�D��;�%g�?w��ŷ���ovH0��a�5��*�ؒ��l͛�S�iy�r�O7����%L]��%���hk ����>v1�HB������d\�(eoIx�>3�6BS%���(
-��f$�h�����eԎ���H���`ݶf{�Fo�Y���@00uMb�z-��XI$&�gf���7Ӵ�u|'K.�oP
-P���F�.��o��9B<~. ����[����<٭�$�����{1�A��.�bKx�L������'�u8n5���e ,]�H����V��Ww�$�C�el��|zys��K�i-�q�ݬbk,wnG��;�� ~�e�r͒���~'1`V⦫�-*[��L�K�'2@����仪��n���2�N� �ƶ�G���i/U��'E�@�`H��;J�������+J�n#���6ڴ�ĹG���N�G�'�Z!�����Wi��NJ�@���A��Z|�[��$q}i�ҷ�QbtTEC$��m��mo�L�D��;�%g�?w��ŷ���ovH0��a�5��*�ؒ��l͛�S�iy�r�O7����%L]��%���hk ����>v1�HB������d\�(eoIx�>3�6BS%���(
-��f$�h�����eԎ���H���`ݶf{�Fo�Y���@00uMb�z-��XI$&�gf���7Ӵ�u|'K.�oP
-P���F�.��o��9B<~. ����[����<٭�$�����{1�A��.�bKx�L������'�u8n5���e ,]�H����V��Ww�$�C�el��|zys��K�i-�q�ݬbk,wnG��;�� ~�e�r͒���~'1`V⦫�-*[��L�K�'2@����仪��n���2�N� �ƶ�G���i/U��'E�@�`H��;J�������+J�n#���6ڴ�ĹG���N�G�'�Z!�����Wi��NJ�@���A��Z|�[��$q}i�ҷ�QbtTEC$��m��mo�L�D��;�%g�?w��ŷ���ovH0��a�5��*�ؒ��l͛�S�iy�r�O7����%L]��%���hk ����>v1�HB������d\�(eoIx�>3�6BS%���(
-��f$�h�����eԎ���H���`ݶf{�Fo�Y���@00uMb�z-��XI$&�gf���7Ӵ�u|'K.�oP
-P���F�.��o��9B<~. ����[����<٭�$�����{1�A��.�bKx�L������'�u8n5���e ,]�H����V��Ww�$�C�el��|zys��K�i-�q�ݬbk,wnG��;�� ~�e�r͒���~'1`V⦫�-*[��L�K�'2@����仪��n���2�N� �ƶ�G���i/U��'E�@�`H��;J�������+J�n#���6ڴ�ĹG���N�G�'�Z!�����Wi��NJ�@���A��Z|�[��$q}i�ҷ�QbtTEC$��m��mo�L�D��;�%g�?w��ŷ���ovH0��a�5��*�ؒ��l͛�S�iy�r�O7����%L]��%���hk ����>v1�HB������d\�(eoIx�>3�6BS%���(
-��f$�h�����eԎ���H���`ݶf{�Fo�Y���@00uMb�z-��XI$&�gf���7Ӵ�u|'K.�oP
-P���F�.��o��9B<~. ����[����<٭�$�����{1�A��.�bKx�L������'�u8n5���e ,]�H����V��Ww�$�C�el��|zys��K�i-�q�ݬbk,wnG��;�� ~�e�r͒���~'1`V⦫�-*[��L�K�'2@����仪��n���2�N� �ƶ�G���i/U��'E�@�`H��;J�������+J�n#���6ڴ�ĹG���N�G�'�Z!�����Wi��NJ�@���A��Z|�[��$q}i�ҷ�QbtTEC$��m��mo�L�D��;�%g�?w��ŷ���ovH0��a�5��*�ؒ��l͛�S�iy�r�O7����%L]��%���hk ����>v1�HB������d\�(eoIx�>3�6BS%���(
-��f$�h�����eԎ���H���`ݶf{�Fo�Y���@00uMb�z-��XI$&�gf���7Ӵ�u|'K.�oP
-P���F�.��o��9B<~. ����[����<٭�$�����{1�A��.�bKx�L������'�u8n5���e ,]�H����V��Ww�$�C�el��|zys��K�i-�q�ݬbk,wnG��;�� ~�e�r͒���~'1`V⦫�-*[��L�K�'2@����仪��n���2�N� �ƶ�G���i/U��'E�@�`H��;J�������+J�n#���6ڴ�ĹG���N�G�'�Z!�����Wi��NJ�@���A��Z|�[��$q}i�ҷ�QbtTEC$��m��mo�L�D��;�%g�?w��ŷ���ovH0��a�5��*�ؒ��l͛�S�iy�r�O7����%L]��%���hk ����>v1�HB������d\�(eoIx�>3�6BS%���(
-��f$�h�����eԎ���H���`ݶf{�Fo�Y���@00uMb�z-��XI$&�gf���7Ӵ�u|'K.�oP
-P���F�.��o��9B<~. ����[����<٭�$�����{1�A��.�bKx�L������'�u8n5���e ,]�H����V��Ww�$�C�el��|zys��K�i-�q�ݬbk,wnG��;�� ~�e�r͒���~'1`V⦫�-*[��L�K�'2@����仪��n���2�N� �ƶ�G���i/U��'E�@�`H��;J�������+J�n#���6ڴ�ĹG���N�G�'�Z!�����Wi��NJ�@���A��Z|�[��$q}i�ҷ�QbtTEC→ dormir 3x → colher → vender → salvar → fechar → reabrir → dia/ouro/inventário/canteiros restaurados
+**Arquivos permitidos:**
+
+```text
+Assets/_Game/Data/Items/Item_Semente_Trigo.asset
+Assets/_Game/Data/Items/Item_Semente_Cenoura.asset
+Assets/_Game/Data/Items/Item_Trigo.asset
+Assets/_Game/Data/Items/Item_Cenoura.asset
+Assets/_Game/Data/Items/Item_Fish_Common.asset
+Assets/_Game/Data/Items/Item_Wood.asset
+Assets/_Game/Data/Items/Item_Cana_Basica.asset
+Assets/_Game/Data/Seeds/Seed_Trigo.asset
+Assets/_Game/Data/Seeds/Seed_Cenoura.asset
+Assets/_Game/Data/Config/PlayerData.asset
+Assets/_Game/Data/Registries/ItemDatabase.asset
+Assets/_Game/Data/Registries/SeedDatabase.asset
+Assets/_Game/Data/**.meta
+PROJECT_LOG.md
+```
+
+**Dados obrigatórios:**
+
+```text
+Item_Semente_Trigo
+Id: seed_wheat
+Category: Seed
+MaxStack: 20
+BaseValue: 2
+
+Item_Semente_Cenoura
+Id: seed_carrot
+Category: Seed
+MaxStack: 20
+BaseValue: 3
+
+Item_Trigo
+Id: item_crop_wheat
+Category: Crop
+MaxStack: 99
+BaseValue: 5
+HungerRestore: 20
+
+Item_Cenoura
+Id: item_crop_carrot
+Category: Crop
+MaxStack: 99
+BaseValue: 8
+HungerRestore: 25
+
+Item_Fish_Common
+Id: item_fish_common
+Category: Fish
+MaxStack: 20
+BaseValue: 10
+HungerRestore: 15
+
+Item_Wood
+Id: item_wood
+Category: Material
+MaxStack: 99
+BaseValue: 1
+
+Item_Cana_Basica
+Id: item_tool_fishing_rod_basic
+Category: Tool
+MaxStack: 1
+BaseValue: 0
+IsEquippable: true
+```
+
+**PlayerData obrigatório:**
+
+```text
+MoveSpeed: 5
+BaseHP: 100
+StartingGold: 50
+StartingItems:
+- Item_Semente_Trigo x5
+- Item_Semente_Cenoura x3
+- Item_Cana_Basica x1
+```
+
+**SeedData obrigatório:**
+
+```text
+Seed_Trigo
+Id: seed_wheat
+SeedItem: Item_Semente_Trigo
+HarvestItems: [Item_Trigo]
+HarvestAmounts: [3]
+GrowthDays: 3
+Period: Both
+MinYield: 3
+MaxYield: 3
+FertilizerYieldMultiplier: 1
+
+Seed_Cenoura
+Id: seed_carrot
+SeedItem: Item_Semente_Cenoura
+HarvestItems: [Item_Cenoura]
+HarvestAmounts: [2]
+GrowthDays: 4
+Period: Both
+MinYield: 2
+MaxYield: 2
+FertilizerYieldMultiplier: 1
+```
+
+**Regra sobre sprites:** `GrowthStageSprites` pode ficar vazio neste PR. Todo código futuro de `CropTile` deve tratar vazio/nulo com fallback visual.
+
+**Não fazer:** scripts C#, gameplay, cena, UI, prefabs, sprites finais.
+
+**Teste manual:** abrir assets no Inspector, validar IDs, referências e registries; Console sem erro.
+
+---
+
+### PR-004 — Editor data validator
+
+**Objetivo:** criar ferramenta editor-only para validar dados MVP antes de gameplay.
+
+**Arquivos permitidos:**
+
+```text
+Assets/_Game/Scripts/Editor/DataValidation/CindarsHopeDataValidator.cs
+PROJECT_LOG.md
+```
+
+**Menu esperado:**
+
+```text
+CindarsHope/Validate/Validate MVP Data
+```
+
+**Validações mínimas:**
+
+- IDs vazios.
+- IDs duplicados por registry.
+- `ItemDatabase` contém os itens esperados do MVP.
+- `SeedDatabase` contém as seeds esperadas do MVP.
+- `SeedDataSO.SeedItem` preenchido.
+- `SeedDataSO.HarvestItems` preenchido.
+- `SeedDataSO.HarvestAmounts` com mesmo tamanho de `HarvestItems`.
+- `PlayerData.StartingItems` sem item nulo.
+- `PlayerData.StartingItems` contém trigo x5, cenoura x3 e cana básica x1.
+
+**Não fazer:** runtime gameplay, managers, cenas.
+
+**Teste manual:** rodar menu de validação e confirmar relatório sem erros para os assets do PR-003.
+
+---
+
+### PR-005 — Bootstrap managers vazios
+
+**Objetivo:** criar managers persistentes mínimos sem gameplay completo.
+
+**Arquivos permitidos:**
+
+```text
+Assets/_Game/Scripts/Core/Bootstrap/GameBootstrap.cs
+Assets/_Game/Scripts/Player/PlayerManager.cs
+Assets/_Game/Scripts/Inventory/InventoryManager.cs
+Assets/_Game/Scripts/Core/Time/TimeManager.cs
+Assets/_Game/Scripts/Save/SaveManager.cs
+PROJECT_LOG.md
+```
+
+**Regras:** managers podem compilar com métodos mínimos/stubs, mas não devem fingir feature completa.
+
+**Teste manual:** objeto bootstrap inicializa managers uma vez; não duplica em reload.
+
+---
+
+### PR-006 — NewGameState e inventário inicial
+
+**Objetivo:** iniciar estado novo com ouro, HP e itens iniciais a partir de `PlayerDataSO`.
+
+**Specs relacionadas:** FARM-021.
+
+**Entregável:** inventário interno com stack, sem UI ainda.
+
+**Teste manual:** Debug/Inspector mostra Semente Trigo x5, Semente Cenoura x3, Cana Básica x1, ouro inicial.
+
+---
+
+### PR-007 — FarmScene mínima
+
+**Objetivo:** criar cena mínima com tilemap, player placeholder e câmera.
+
+**Specs relacionadas:** FARM-001, FARM-003.
+
+**Preferência:** criar Editor script `CreateMvpFarmScene.cs` para reproduzir a cena.
+
+**Teste manual:** abrir FarmScene e ver jogador, chão e bordas.
+
+---
+
+### PR-008 — Movimento e colisão
+
+> Nota pós PR-009 documental: esta entrada representa o próximo PR runtime de movimento/input na sequência operacional atual. A numeração histórica deste plano não deve ser renumerada destrutivamente.
+
+**Pré-requisitos:**
+
+- Confirmar New Input System instalado/ativo (`com.unity.inputsystem`).
+- Confirmar Cinemachine instalado se o PR usar Cinemachine (`com.unity.cinemachine`).
+- Criar `PlayerInputActions.inputactions` neste PR, com Action Map `Player`: `Move`, `Interact`, `Inventory`, `Sleep`.
+
+**Objetivo:** player se move com WASD/setas, câmera segue e bordas bloqueiam.
+
+**Specs relacionadas:** FARM-002.
+
+**Teste manual:** mover nas 4 direções; diagonal não acelera; jogador não atravessa borda.
+
+---
+
+### PR-009 — Interação genérica
+
+**Objetivo:** implementar `IInteractable`, `InteractionSystem` e hint textual simples.
+
+**Specs relacionadas:** FARM-014.
+
+**Teste manual:** objeto fake interagível mostra hint e responde ao E.
+
+---
+
+### PR-010 — Canteiros e plantio
+
+**Objetivo:** 9 canteiros, menu textual e plantio de sementes.
+
+**Specs relacionadas:** FARM-012, FARM-016.
+
+**Regra de sprite fallback:** se `GrowthStageSprites` estiver vazio/nulo, usar placeholder seguro e não lançar exceção.
+
+**Teste manual:** aproximar do canteiro, pressionar E, escolher trigo, semente reduz, canteiro muda visual.
+
+---
+
+### PR-011 — Crescimento por dia
+
+**Objetivo:** TAB avança dia, publica `DayStartedEvent`, plantas crescem.
+
+**Specs relacionadas:** FARM-013, FARM-031, FARM-032.
+
+**Teste manual:** plantar trigo, avançar 3 dias, canteiro fica pronto.
+
+---
+
+### PR-012 — Colheita e inventário visual
+
+**Objetivo:** colher planta pronta e ver item no inventário textual.
+
+**Specs relacionadas:** FARM-015, FARM-021, FARM-022.
+
+**Teste manual:** colher trigo, inventário mostra quantidade correta, canteiro volta vazio.
+
+---
+
+### PR-013 — Fome e consumo
+
+**Objetivo:** HungerSystem, HUD simples e consumo de comida.
+
+**Specs relacionadas:** FARM-061, FARM-062.
+
+**Teste manual:** fome diminui por passos; usar trigo/peixe restaura fome.
+
+---
+
+### PR-014 — Árvores
+
+**Objetivo:** cortar árvore e receber madeira.
+
+**Specs relacionadas:** FARM-041, FARM-042.
+
+**Teste manual:** E na árvore adiciona madeira e muda nível visual.
+
+---
+
+### PR-015 — Lago e pesca
+
+**Objetivo:** pescar Peixe Comum no lago com cana básica.
+
+**Specs relacionadas:** FARM-051, FARM-052.
+
+**Dependência:** `Item_Cana_Basica.asset` e `PlayerData.StartingItems` com cana básica x1.
+
+**Teste manual:** E no FishingSpot espera 3s e adiciona peixe.
+
+---
+
+### PR-016 — Venda
+
+**Objetivo:** SellPoint e SellMenu textual para vender colheitas/peixe/madeira.
+
+**Specs relacionadas:** FARM-SELL, FARM-032.
+
+**Teste manual:** vender trigo aumenta ouro e remove item.
+
+---
+
+### PR-017 — Save
+
+**Objetivo:** salvar estado em JSON.
+
+**Specs relacionadas:** FARM-071.
+
+**Regras específicas:**
+
+- Path: `Application.persistentDataPath/saves/slot_1.json`.
+- Serializar IDs e tipos simples.
+- Incluir `SchemaVersion`.
+
+**Teste manual:** TAB/dormir gera `slot_1.json` com dia, ouro, fome, inventário e plots.
+
+---
+
+### PR-018 — Load e Boot
+
+**Objetivo:** carregar save existente e restaurar estado.
+
+**Specs relacionadas:** FARM-072.
+
+**Teste manual:** plantar, avançar dias, colher/vender, salvar, fechar, abrir, estado restaurado.
+
+---
+
+### PR-019 — Feedbacks mínimos
+
+**Objetivo:** popups/fade/VFX mínimos sem alterar regras de gameplay.
+
+**Specs relacionadas:** FARM-015, FARM-031, FARM-042, FARM-052.
+
+**Teste manual:** feedback visual aparece e desaparece sem travar input.
+
+---
+
+### PR-020 — Hardening MVP
+
+**Objetivo:** corrigir bugs, remover logs temporários, validar loop vertical.
+
+**Teste final:**
+
+```text
+Novo jogo → plantar trigo → dormir 3x → colher → vender → salvar → fechar → reabrir → dia/ouro/inventário/canteiros restaurados
 ```
 
 ---
@@ -332,26 +640,6 @@ Se aparecer em código runtime, revisar ou rejeitar.
 - Managers se chamando diretamente sem evento.
 - Código compila, mas cena depende de configuração manual não documentada.
 - `PROJECT_LOG.md` não atualizado.
-
----
-
-## 7.4 Entrega de commits pelo agente
-
-Ao final de cada PR, o agente **não** faz `git push` nem abre PR/MR. Em vez disso:
-
-1. **Cria commits locais** com mensagens em português.
-2. **Lista commits criados** para o humano revisar:
-   ```bash
-   git log --oneline -N
-   ```
-3. **Entrega ao humano:**
-   - SHA + mensagem de cada commit.
-   - Arquivos alterados (via `git diff --stat`).
-   - Testes executados/pendentes.
-   - Riscos/pendências documentadas em `PROJECT_LOG.md`.
-4. **O humano faz push/PR/merge** usando os comandos sugeridos.
-
-Nunca executar `git push` ou abrir PR automaticamente. Agente prepara; humano entrega.
 
 ---
 
