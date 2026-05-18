@@ -1842,3 +1842,34 @@ PR-002 sÃ³ deve comeÃ§ar se:
 
 ### Próximo passo recomendado
 - PR-060 — pontos interagíveis de compra/venda por evento.
+
+---
+
+## 2026-05-17 — PR-060 Pontos interagíveis de compra/venda por evento
+
+**Responsável:** Codex/ChatGPT
+**Branch:** `feature/fase9a-town-commerce-mvp-package`
+**Escopo:** criar interagíveis de comércio que publicam eventos sem depender de referências diretas aos managers.
+
+### Alterações
+- Criado `BuyItemPoint`, que publica `ItemPurchaseRequestedEvent`.
+- Criado `SellAllPoint`, que publica `SellAllRequestedEvent`.
+- Ambos implementam `IInteractable`, usam apenas dados simples serializados e não acessam `InventoryManager` ou `PlayerManager`.
+- `Reset/OnValidate` apenas preenche componentes locais via `GetComponent`.
+
+### Arquivos alterados
+- `Assets/_Game/Scripts/Economy/BuyItemPoint.cs`
+- `Assets/_Game/Scripts/Economy/SellAllPoint.cs`
+- `PROJECT_LOG.md`
+
+### Testes
+- [x] Revisão estática dos scripts.
+- [x] Busca por APIs proibidas nos arquivos novos sem ocorrências.
+- [ ] Unity não executado neste terminal.
+
+### Pendências / riscos
+- Integrar os pontos na TownScene pelo gerador.
+- Validar que o `EconomyManager` persistente recebe os eventos em Play Mode.
+
+### Próximo passo recomendado
+- PR-061 — integrar comércio na TownScene.
