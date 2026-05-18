@@ -2206,3 +2206,315 @@ PR-002 sÃ³ deve comeÃ§ar se:
 - O TownScene.unity será regenerado quando o gerador rodar; confirmar que nenhum detalhe foi perdido.
 - Testar integração com todos os managers persistentes após transition.
 - Smoke test completo de save/load em ambas as cenas.
+
+---
+
+## 2026-05-18 — PR-069 Hardening SaveData/SaveManager cross-scene
+
+**Responsável:** Claude  
+**Branch:** `feature/fase9a4-hardening-farm-town-save`  
+**Escopo:** consolidar save/load entre FarmScene e TownScene, corrigindo inconsistências de estilo, logs e fallback.
+
+### Ajustes aplicados
+
+- **SaveData.cs:**
+  - Corrigido indentação de `GameSaveData` (abertura de chave estava desalinhada).
+  - Mantidos campos: `SchemaVersion`, `CurrentDay`, `CurrentSceneName`, `CurrentScenePath`, `Player`, `Inventory`, `Farm`, `World`.
+
+- **SaveManager.cs:**
+  - Removidas constantes não usadas: `TownSceneName`, `FarmScenePath`, `TownScenePath`.
+  - Mantida constante `FarmSceneName` (usada em `CaptureFarmSaveData` e `CaptureWorldSaveData`).
+  - `SaveGame()`: Adicionado comentário explicativo sobre preservação de Farm/World quando salva fora da FarmScene.
+  - `LoadGame()`: Valida `CurrentSceneName` antes de carregar cena; se vazio ou igual à cena ativa, aplica direto.
+  - `LoadSceneAndApplySaveData()`: Aguarda 2 frames (`yield return null; yield return null;`) suficiente para installers rodarem.
+  - `ApplySaveData()`: Restaura registries apenas se existem (sem warnings agressivos para Farm registries na TownScene).
+  - `TryReadExistingValidSave()`: Retorna `null` em arquivo inválido/inexistente; não lança exceção.
+
+### Validações
+
+- [x] Constantes de cena: removidas as não usadas.
+- [x] Comportamento cross-scene: FarmScene captura Farm/World reais; TownScene preserva Farm/World antigos.
+- [x] Compatibilidade com saves antigos: `CurrentSceneName` e `CurrentScenePath` podem ser vazios; nesse caso, aplica save na cena ativa.
+- [x] Registries opcionais: ignorados sem warning se não existem.
+- [x] Testes ainda pendentes: Play Mode, regeneração de cenas.
+
+### Arquivos alterados
+
+- `Assets/_Game/Scripts/Save/SaveData.cs`
+- `Assets/_Game/Scripts/Save/SaveManager.cs`
+- `PROJECT_LOG.md`
+
+### Pendências / riscos
+
+- Aguardando regeneração de cenas no PR-072 para validar comportamento em Play Mode.
+- Smoke test completo: salvar Farm, carregar na Town, voltar para Farm (dados devem persistir).
+
+---
+
+## 2026-05-18 — PR-070 Hardening runtime reference installers
+
+**Responsável:** Claude  
+**Branch:** `feature/fase9a4-hardening-farm-town-save`  
+**Escopo:** consolidar os installers de FarmScene e TownScene para reduzir bugs de referência após troca de cena.
+
+### Validações realizadas
+
+- **FarmSceneRuntimeReferenceInstaller:**
+  - ✓ Rebind acontece em `Start()` antes de restore de estado.
+  - ✓ Captura estado ao sair da FarmScene via `SceneTransitionStartedEvent`.
+  - ✓ Não captura quando `SourceSceneName` não é "FarmScene".
+  - ✓ Não usa `GameObject.Find`, `FindObjectOfType` ou `FindObjectsByType`.
+  - ✓ Rebind cobre: FarmPlot[], TreeNode[], FishingSpot, SeedShopPoint, SellPoint, CraftingPoint, SaveManager.
+  - ✓ Log final melhorado: mostra quantidade de plots/trees e status de restore.
+  - ✓ Campos opcionais podem ser null sem quebrar Play Mode.
+
+- **FarmSceneRuntimeStateCache:**
+  - ✓ `Capture()` usa `CaptureSaveData()` dos registries reais.
+  - ✓ `TryRestore()` usa `RestoreFromSaveData()` dos registries reais.
+  - ✓ Não limpa cache automaticamente (usuário decide quando limpar).
+  - ✓ Não guarda inventário/ouro/fome/dia (apenas Farm/World).
+  - ✓ Logs úteis e não verbosos.
+
+- **TownSceneRuntimeReferenceInstaller:**
+  - ✓ Rebinda `SaveManager.RebindPlayerTransform(_playerTransform)`.
+  - ✓ Rebinda `SaveManager.RebindRuntimeManagers()` quando managers existem.
+  - ✓ Não usa APIs proibidas.
+  - ✓ Log claro; não depende de Farm registries.
+  - ✓ Melhorado: validação de `GameBootstrap.Instance` e `SaveManager` separadas com warnings específicos.
+
+- **GameBootstrap:**
+  - ✓ `Instance` pública (propriedade readonly).
+  - ✓ Managers persistentes expostos por propriedades readonly.
+  - ✓ Duplicata de scene é destruída sem reinicializar estado.
+  - ✓ Não chama métodos inexistentes de `HungerManager`.
+  - ✓ Não reseta inventário/ouro/fome no `Awake` de duplicata.
+
+### Ajustes aplicados
+
+- **FarmSceneRuntimeReferenceInstaller.cs:** Log final agora mostra quantidade de plots/trees e status de cache restore.
+- **TownSceneRuntimeReferenceInstaller.cs:** Já estava bem estruturado com validações independentes.
+
+### Arquivos alterados
+
+- `Assets/_Game/Scripts/SceneManagement/FarmSceneRuntimeReferenceInstaller.cs`
+- `Assets/_Game/Scripts/SceneManagement/FarmSceneRuntimeStateCache.cs` (nenhuma alteração necessária)
+- `Assets/_Game/Scripts/SceneManagement/TownSceneRuntimeReferenceInstaller.cs` (nenhuma alteração necessária)
+- `Assets/_Game/Scripts/Core/Bootstrap/GameBootstrap.cs` (nenhuma alteração necessária)
+- `PROJECT_LOG.md`
+
+### Pendências / riscos
+
+- Aguardando regeneração de cenas e Play Mode para validar rebind completo.
+
+---
+
+## 2026-05-18 — PR-071 Validator Farm/Town MVP
+
+**Responsável:** Claude  
+**Branch:** `feature/fase9a4-hardening-farm-town-save`  
+**Escopo:** criar validações editoriais reproduzíveis para detectar cenas quebradas antes de Play Mode.
+
+### Implementação
+
+Novo menu: `CindarsHope/Validate/Validate Farm Town MVP`
+
+Comportamento:
+- Valida cena ativa (FarmScene ou TownScene).
+- Não modifica ou salva cenas.
+- Gera logs claros no Console.
+- Falha na validação registra `LogError` com componente faltante.
+
+**Validações FarmScene:**
+- GameBootstrap com todos os managers (PlayerManager, InventoryManager, TimeManager, SaveManager, HungerManager, CraftingManager, EconomyManager).
+- DebugHud presente.
+- Player (PlayerController) presente.
+- FarmSceneRuntimeReferenceInstaller presente.
+- FarmPlotRegistry presente.
+- TreeRegistry presente.
+- ItemPickupRegistry presente.
+- Pelo menos 1 FarmPlot.
+- Pelo menos 1 TreeNode.
+- FishingSpot presente.
+- SeedShopPoint presente.
+- SellPoint presente.
+- CraftingPoint presente.
+- Portal para TownScene presente.
+
+**Validações TownScene:**
+- GameBootstrap com EconomyManager.
+- DebugHud presente.
+- Player (PlayerController) presente.
+- TownSceneRuntimeReferenceInstaller presente.
+- SceneSpawnInstaller presente.
+- Portal para FarmScene presente.
+- NPC (NpcController) presente.
+- Pelo menos 2 BuyItemPoint (seeds).
+- SellAllPoint presente.
+
+### Arquivos criados
+
+- `Assets/_Game/Scripts/Editor/Validation/MvpSceneValidator.cs`
+- `Assets/_Game/Scripts/Editor/Validation/MvpSceneValidator.cs.meta`
+- `PROJECT_LOG.md`
+
+### Resultado esperado
+
+- Menu item "CindarsHope/Validate/Validate Farm Town MVP" funcional.
+- Quando clicado: valida cena ativa.
+- Se tudo ok: log "Validate Farm Town MVP passed."
+- Se falhar: logs de erro com componentes faltantes + log "Validate Farm Town MVP failed."
+
+### Pendências / riscos
+
+- Aguardando PR-072 (regeneração de cenas) para validar com cenas atualizadas.
+
+---
+
+## 2026-05-18 — PR-072 Regeneração Farm/Town pós-hardening
+
+**Responsável:** Humano (Claude providenciará instruções)  
+**Branch:** `feature/fase9a4-hardening-farm-town-save`  
+**Escopo:** garantir que FarmScene e TownScene geradas reflitam os geradores atuais.
+
+### Tarefas para executar em Unity
+
+1. Abrir Unity.
+2. Executar menu:
+   - `CindarsHope/Scenes/Create MVP FarmScene`
+   - `CindarsHope/Scenes/Create MVP TownScene`
+3. Executar validador:
+   - `CindarsHope/Validate/Validate Farm Town MVP`
+4. Confirmar Console sem erro vermelho.
+5. Fechar Unity.
+6. Executar: `git diff --stat`
+7. Se cenas mudaram:
+   ```bash
+   git add Assets/_Game/Scenes/FarmScene.unity
+   git add Assets/_Game/Scenes/TownScene.unity
+   git add PROJECT_LOG.md
+   git commit -m "chore: regenerar cenas farm town apos hardening"
+   ```
+8. Se cenas não mudaram:
+   ```bash
+   git add PROJECT_LOG.md
+   git commit -m "docs: registrar validacao de cenas farm town"
+   ```
+
+### Arquivos que podem ser modificados
+
+- `Assets/_Game/Scenes/FarmScene.unity` (se gerador mudou)
+- `Assets/_Game/Scenes/TownScene.unity` (se gerador mudou)
+- `PROJECT_LOG.md` (sempre)
+
+### Resultado esperado
+
+- Validator passa em FarmScene e TownScene.
+- Console sem erro vermelho.
+- Cenas sincronizadas com geradores.
+
+### Pendências / riscos
+
+- Se validator falhar, registrar erros e consertar antes de prosseguir.
+- Se cenas mudarem significativamente, revisar se nenhum detalhe foi perdido.
+
+---
+
+## 2026-05-18 — PR-073 Handoff FASE 9A Farm/Town/Save
+
+**Responsável:** Claude  
+**Branch:** `feature/fase9a4-hardening-farm-town-save`  
+**Escopo:** documentar checklist completo do MVP Farm/Town/Save e preparar handoff para Cave.
+
+### Estado atual consolidado
+
+**Farm Loop Funcional:**
+- Plantar/colher em plots.
+- Árvores com colheita.
+- Pesca em FishingSpot.
+- Crafting em workshop.
+- Venda de itens em SellPoint.
+- Inventário com stack limit.
+- Fome com consumo.
+- Dia/noite com avanço temporal.
+- Save/load persistente com Farm state.
+
+**Town Funcional:**
+- Transição Farm ↔ Town via Portals.
+- HUD persistente entre cenas.
+- Compra de sementes em SeedShopPoint.
+- Venda em SellAllPoint.
+- NPC básico (Pip Miudinho).
+- Save/load preserva cena atual.
+- Rebind automático de refs ao mudar cena.
+
+**Save/Load Robusto:**
+- Captura cena ativa (FarmScene/TownScene).
+- Load carrega cena correta.
+- Preserva Farm/World ao salvar fora da Farm.
+- Suporta saves antigos (backwards compatible).
+- Cache transitório para Farm state.
+- Rebind de refs automático pós-carregamento.
+
+### Checklist de validação obrigatória
+
+Executar em sequência, confirmar cada item:
+
+1. [ ] Abrir FarmScene direto. HUD aparece.
+2. [ ] Plantar em um plot. Seed consume inventário.
+3. [ ] Aguardar dias. Planta cresce (visual).
+4. [ ] Colher planta. Item retorna ao inventário.
+5. [ ] Cortar árvore. Madeira retorna ao inventário.
+6. [ ] Pescar em FishingSpot. Peixe retorna.
+7. [ ] Craftar processado (madeira → processado). Inventário atualiza.
+8. [ ] Vender item em SellPoint da Farm. Ouro aumenta.
+9. [ ] Ir para TownScene (portal). HUD permanece.
+10. [ ] Comprar Trigo em SeedShopPoint. Ouro diminui.
+11. [ ] Comprar Cenoura em SeedShopPoint. Ouro diminui.
+12. [ ] Vender no SellBox da Town. Ouro aumenta.
+13. [ ] Voltar para Farm (portal). Plantio permanece.
+14. [ ] Plantar sem InventoryManager missing error.
+15. [ ] Salvar na Farm. Load retorna a Farm.
+16. [ ] Salvar na Town. Load retorna a Town.
+17. [ ] Abrir TownScene direto. HUD aparece direto.
+18. [ ] Salvar/load na Town mantém posição/HUD.
+19. [ ] Farm → Town → salvar → load não volta para Farm.
+20. [ ] Console sem erro vermelho em todas as operações.
+
+### Riscos conhecidos e limitações MVP
+
+- **Cache transitório:** Solução em memória; persiste apenas entre scene loads. Não sobrevive a restart.
+- **Save/load inicial:** Sem menu/screen inicial. Primeira abertura de FarmScene presume bootstrap limpo.
+- **UI loja:** Debug/interação direta via prefab. Sem UI final de shopping/inventory.
+- **Sem testes automatizados:** Só Play Mode manual.
+- **Crop visual:** Placeholder colorido (não sprite final).
+- **NPC:** Só Pip (movimento fijo, sem diálogo).
+
+### Próximo pacote recomendado
+
+**FASE 9B-1 — Cave Vertical Slice MVP**
+
+Escopo:
+- Criação de Cave Scene mínima.
+- Inimigos básicos (Slime, Bat).
+- Sistema de Combat (dano, HP, knockback).
+- Transição Farm → Cave.
+- Loot e drops de inimigos.
+- Save/load dentro de Cave.
+- Smoke test: plantar Farm, lutar em Cave, voltar, plantio permanece.
+
+### Arquivos alterados
+
+- `PROJECT_LOG.md` (consolidação final)
+
+### Commit
+
+```bash
+git add PROJECT_LOG.md
+git commit -m "docs: registrar handoff fase 9a farm town save"
+```
+
+### Transição para próxima fase
+
+- Merge de `feature/fase9a4-hardening-farm-town-save` para `dev` (responsabilidade humana).
+- Branch `feature/fase9b1-cave-mvp` será criada a partir de `dev` atualizada.
+- Próximo agente deve ler documentação de Cave e ARCH_fase4_v2.2.md antes de iniciar.
