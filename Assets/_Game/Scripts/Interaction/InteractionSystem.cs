@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using CindarsHope.Core;
+using CindarsHope.Core.Events;
 using UnityEngine;
 
 namespace CindarsHope.Interaction
@@ -11,6 +13,8 @@ namespace CindarsHope.Interaction
 
         private readonly List<InteractionCandidate> _candidates = new List<InteractionCandidate>();
         private bool _missingTriggerWarningLogged;
+        private bool _lastPublishedHasCandidate;
+        private string _lastPublishedPrompt = string.Empty;
 
         public string CurrentPrompt
         {
@@ -40,6 +44,16 @@ namespace CindarsHope.Interaction
             EnsureInteractionTrigger();
         }
 
+        private void OnEnable()
+        {
+            PublishPrompt(false, string.Empty, true);
+        }
+
+        private void OnDisable()
+        {
+            PublishPrompt(false, string.Empty, true);
+        }
+
         private void Reset()
         {
             _interactionTrigger = GetComponent<Collider2D>();
@@ -55,6 +69,8 @@ namespace CindarsHope.Interaction
 
         private void Update()
         {
+            PublishPromptIfChanged();
+
             if (!Input.GetKeyDown(_interactKey))
             {
                 return;
@@ -67,6 +83,7 @@ namespace CindarsHope.Interaction
             }
 
             interactable.Interact(gameObject);
+            PublishPromptIfChanged();
         }
 
         private void OnTriggerEnter2D(Collider2D other)
@@ -78,6 +95,7 @@ namespace CindarsHope.Interaction
             }
 
             _candidates.Add(new InteractionCandidate(interactable, other));
+            PublishPromptIfChanged();
         }
 
         private void OnTriggerExit2D(Collider2D other)
@@ -89,6 +107,32 @@ namespace CindarsHope.Interaction
             }
 
             RemoveCandidate(interactable, other);
+            PublishPromptIfChanged();
+        }
+
+        private void PublishPromptIfChanged()
+        {
+            var candidate = GetBestCandidate();
+            var hasCandidate = candidate != null;
+            var prompt = hasCandidate ? candidate.InteractionPrompt : string.Empty;
+            PublishPrompt(hasCandidate, prompt, false);
+        }
+
+        private void PublishPrompt(bool hasCandidate, string prompt, bool force)
+        {
+            if (prompt == null)
+            {
+                prompt = string.Empty;
+            }
+
+            if (!force && _lastPublishedHasCandidate == hasCandidate && _lastPublishedPrompt == prompt)
+            {
+                return;
+            }
+
+            _lastPublishedHasCandidate = hasCandidate;
+            _lastPublishedPrompt = prompt;
+            GameEventBus.Publish(new InteractionPromptChangedEvent(hasCandidate, prompt));
         }
 
         private IInteractable GetBestCandidate()

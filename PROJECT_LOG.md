@@ -1769,3 +1769,40 @@ PR-002 sÃ³ deve comeÃ§ar se:
 
 ### Próximo pacote recomendado
 - FASE 9A-3 — Shop/NPC de cidade ou FASE 9B-1 — Cave vertical slice, decidir após teste local.
+
+---
+
+## 2026-05-17 — PR-058 Corrigir HUD persistente entre FarmScene e TownScene
+
+**Responsável:** Codex/ChatGPT
+**Branch:** `feature/fase9a-townscene-mvp-package`
+**Escopo:** manter `DebugHud` visível após transição FarmScene ↔ TownScene.
+
+### Alterações
+- Criado `InteractionPromptChangedEvent` com `HasCandidate` e `Prompt`.
+- `InteractionSystem` agora publica o prompt ativo quando ele muda.
+- `DebugHud` agora é persistente com `DontDestroyOnLoad`.
+- `DebugHud` evita duplicatas ao voltar para a FarmScene.
+- `DebugHud` usa evento para exibir o prompt da cena atual, sem depender da referência antiga ao `InteractionSystem` da FarmScene.
+
+### Arquivos alterados
+- `Assets/_Game/Scripts/Core/Events/InteractionPromptChangedEvent.cs`
+- `Assets/_Game/Scripts/Interaction/InteractionSystem.cs`
+- `Assets/_Game/Scripts/UI/DebugHud.cs`
+- `PROJECT_LOG.md`
+
+### Testes
+- [x] Revisão estática dos arquivos alterados.
+- [x] Confirmado que não houve uso de `GameObject.Find`, `FindObjectOfType`, `FindObjectsByType` ou `StreamingAssets`.
+- [ ] Unity precisa validar: FarmScene mostra HUD.
+- [ ] Unity precisa validar: `Portal_Farm_To_Town` mantém HUD.
+- [ ] Unity precisa validar: prompt aparece em NPC/portal na TownScene.
+- [ ] Unity precisa validar: `Portal_Town_To_Farm` mantém HUD.
+- [ ] Unity precisa validar: HUD não duplica ao voltar para FarmScene.
+
+### Pendências / riscos
+- UI final segue fora de escopo.
+- Há alterações locais de cena geradas pelo teste Unity (`FarmScene.unity` e `TownScene.unity`) que não fazem parte deste commit.
+
+### Próximo passo recomendado
+- Validar no Unity e depois seguir com o handoff/PR da TownScene MVP.
