@@ -25,9 +25,6 @@ namespace CindarsHope.Save
         private const string SaveDirectoryName = "saves";
         private const string SaveFileName = "slot_1.json";
         private const string FarmSceneName = "FarmScene";
-        private const string TownSceneName = "TownScene";
-        private const string FarmScenePath = "Assets/_Game/Scenes/FarmScene.unity";
-        private const string TownScenePath = "Assets/_Game/Scenes/TownScene.unity";
 
         [SerializeField] private PlayerManager _playerManager;
         [SerializeField] private InventoryManager _inventoryManager;
@@ -58,6 +55,7 @@ namespace CindarsHope.Save
                 var existingSaveData = TryReadExistingValidSave();
                 var activeScene = SceneManager.GetActiveScene();
 
+                // Capture farm and world only if in FarmScene; otherwise preserve existing data to avoid loss when saving from TownScene.
                 var farmSaveData = CaptureFarmSaveData(existingSaveData);
                 var worldSaveData = CaptureWorldSaveData(existingSaveData);
 

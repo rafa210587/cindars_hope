@@ -118,7 +118,9 @@ namespace CindarsHope.SceneManagement
             }
 
             var restored = FarmSceneRuntimeStateCache.TryRestore(_farmPlotRegistry, _treeRegistry, _itemPickupRegistry);
-            Debug.Log($"FarmSceneRuntimeReferenceInstaller rebound runtime refs and restored cached farm state: restored={restored}");
+            var plotCount = _farmPlotRegistry?.Plots?.Count ?? 0;
+            var treeCount = _treeRegistry?.Trees?.Count ?? 0;
+            Debug.Log($"FarmSceneRuntimeReferenceInstaller: rebound {plotCount} plots, {treeCount} trees. State cache restored: {restored}.");
         }
     }
 }
