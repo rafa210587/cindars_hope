@@ -1705,3 +1705,67 @@ PR-002 sÃ³ deve comeÃ§ar se:
 
 ### Próximo passo recomendado
 - PR-057 — registrar handoff pós TownScene MVP.
+
+---
+
+## 2026-05-17 — PR-057 Handoff pós TownScene MVP
+
+**Responsável:** Codex/ChatGPT
+**Branch:** `feature/fase9a-townscene-mvp-package`
+**Escopo:** handoff documental do pacote FASE 9A-2 — TownScene mínima com portal Farm ↔ Town e NPC básico.
+
+### Resumo do pacote
+- Executados PR-053 a PR-056 do pacote FASE 9A-2.
+- O pacote adiciona fundação de transição entre cenas, gerador reproduzível da TownScene, portais Farm ↔ Town e NPC placeholder interagível.
+- O fluxo principal esperado continua sendo iniciar na FarmScene, manter o `GameBootstrap` persistente e acessar a TownScene pelos portais.
+
+### Arquivos principais criados
+- `Assets/_Game/Scripts/SceneManagement/SceneTransitionState.cs`
+- `Assets/_Game/Scripts/SceneManagement/ScenePortal.cs`
+- `Assets/_Game/Scripts/SceneManagement/SceneSpawnPoint.cs`
+- `Assets/_Game/Scripts/SceneManagement/SceneSpawnInstaller.cs`
+- `Assets/_Game/Scripts/Core/Events/SceneTransitionStartedEvent.cs`
+- `Assets/_Game/Scripts/Core/Events/SceneTransitionCompletedEvent.cs`
+- `Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpTownScene.cs`
+- `Assets/_Game/Scripts/NPC/NpcTalkPoint.cs`
+
+### Como testar
+1. Abrir Unity.
+2. Rodar `CindarsHope/Scenes/Create MVP FarmScene`.
+3. Rodar `CindarsHope/Scenes/Create MVP TownScene`.
+4. Abrir `Assets/_Game/Scenes/FarmScene.unity`.
+5. Entrar em Play Mode.
+6. Ir até `Portal_Farm_To_Town`.
+7. Interagir com E.
+8. Confirmar carregamento da `TownScene`.
+9. Confirmar spawn em `town_from_farm`.
+10. Falar com `NPC_Pip_Miudinho`.
+11. Usar `Portal_Town_To_Farm`.
+12. Confirmar retorno à `FarmScene` em `farm_from_town`.
+
+### Pendências
+- Build Settings/release flow.
+- UI final de diálogo.
+- NPCs reais.
+- Lojas na cidade.
+- Mapa visual final.
+- Persistência específica de cidade, se necessária.
+- Gerar/salvar `FarmScene.unity` e `TownScene.unity` localmente pelo Unity; este terminal não executou o Editor.
+
+### Fora de escopo preservado
+- Cidade completa.
+- Lojas reais.
+- Quests.
+- UI final de diálogo.
+- Pathfinding.
+- NPC andando.
+- Save/load específico de cidade.
+- Build Settings.
+- ProjectSettings.
+- Caverna.
+- Combate.
+- Companions.
+- Arte final.
+
+### Próximo pacote recomendado
+- FASE 9A-3 — Shop/NPC de cidade ou FASE 9B-1 — Cave vertical slice, decidir após teste local.
