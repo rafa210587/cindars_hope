@@ -211,6 +211,68 @@ namespace CindarsHope.Save
             IsInitialized = false;
         }
 
+        public void RebindSceneReferences(FarmPlotRegistry farmPlotRegistry, TreeRegistry treeRegistry, ItemPickupRegistry itemPickupRegistry, Transform playerTransform)
+        {
+            if (farmPlotRegistry != null)
+            {
+                _farmPlotRegistry = farmPlotRegistry;
+            }
+
+            if (treeRegistry != null)
+            {
+                _treeRegistry = treeRegistry;
+            }
+
+            if (itemPickupRegistry != null)
+            {
+                _itemPickupRegistry = itemPickupRegistry;
+            }
+
+            if (playerTransform != null)
+            {
+                _playerTransform = playerTransform;
+            }
+        }
+
+        public void RebindRuntimeManagers(PlayerManager playerManager, InventoryManager inventoryManager, HungerManager hungerManager, TimeManager timeManager)
+        {
+            if (playerManager != null)
+            {
+                _playerManager = playerManager;
+            }
+            else
+            {
+                Debug.LogWarning("SaveManager.RebindRuntimeManagers received null PlayerManager.", this);
+            }
+
+            if (inventoryManager != null)
+            {
+                _inventoryManager = inventoryManager;
+            }
+            else
+            {
+                Debug.LogWarning("SaveManager.RebindRuntimeManagers received null InventoryManager.", this);
+            }
+
+            if (hungerManager != null)
+            {
+                _hungerManager = hungerManager;
+            }
+            else
+            {
+                Debug.LogWarning("SaveManager.RebindRuntimeManagers received null HungerManager.", this);
+            }
+
+            if (timeManager != null)
+            {
+                _timeManager = timeManager;
+            }
+            else
+            {
+                Debug.LogWarning("SaveManager.RebindRuntimeManagers received null TimeManager.", this);
+            }
+        }
+
         private int CaptureCurrentDay()
         {
             if (_timeManager != null)

@@ -45,6 +45,17 @@ namespace CindarsHope.World
             Debug.Log($"FishingSpot caught '{_fishItemId}' x{_fishAmount}.", this);
         }
 
+        public void RebindInventoryManager(InventoryManager inventoryManager)
+        {
+            if (inventoryManager == null)
+            {
+                Debug.LogWarning("FishingSpot received null InventoryManager for rebind.", this);
+                return;
+            }
+
+            _inventoryManager = inventoryManager;
+        }
+
         private void OnValidate()
         {
             _fishAmount = Mathf.Max(1, _fishAmount);

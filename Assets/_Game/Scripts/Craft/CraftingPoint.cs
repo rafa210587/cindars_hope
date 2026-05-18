@@ -35,6 +35,17 @@ namespace CindarsHope.Craft
             Debug.Log($"{nameof(CraftingPoint)} could not craft recipe '{_recipeId}'. Check ingredients, output capacity, and recipe data.", this);
         }
 
+        public void RebindCraftingManager(CraftingManager craftingManager)
+        {
+            if (craftingManager == null)
+            {
+                Debug.LogWarning($"{nameof(CraftingPoint)} received null CraftingManager for rebind.", this);
+                return;
+            }
+
+            _craftingManager = craftingManager;
+        }
+
         private void Reset()
         {
             EnsureComponents();

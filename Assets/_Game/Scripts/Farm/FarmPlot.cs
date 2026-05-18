@@ -108,6 +108,17 @@ namespace CindarsHope.Farm
             SetState(restoredState);
         }
 
+        public void RebindInventoryManager(InventoryManager inventoryManager)
+        {
+            if (inventoryManager == null)
+            {
+                Debug.LogWarning($"FarmPlot {_plotIndex} received null InventoryManager for rebind.", this);
+                return;
+            }
+
+            _inventoryManager = inventoryManager;
+        }
+
         public bool CanInteract(GameObject interactor)
         {
             return true;
