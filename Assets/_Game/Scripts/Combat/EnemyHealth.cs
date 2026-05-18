@@ -43,6 +43,12 @@ namespace CindarsHope.Combat
             _currentHp = Mathf.Max(0, _currentHp);
             Debug.Log($"EnemyHealth: {name} took {amount} damage. HP {_currentHp}/{_enemyData.maxHp}.");
 
+            var hitFlash = GetComponentInChildren<HitFlashController>();
+            if (hitFlash != null)
+            {
+                hitFlash.Flash();
+            }
+
             if (_currentHp <= 0)
             {
                 Die();
@@ -52,6 +58,7 @@ namespace CindarsHope.Combat
         private void Die()
         {
             Debug.Log($"EnemyHealth: {name} died.");
+            Debug.Log($"EnemyHealth: publishing EnemyKilledEvent enemy={_enemyData.enemyId}, drop={_enemyData.dropItemId} x{_enemyData.dropAmount}.");
             GameEventBus.Publish(new EnemyKilledEvent(
                 _enemyData.enemyId,
                 _enemyData.dropItemId,

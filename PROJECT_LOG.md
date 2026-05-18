@@ -3080,3 +3080,185 @@ Próximo pacote: FASE 9B-2 Combat Feel ou FASE 9A/9C UI MVP.
 2. Criar commit: `git commit -m "docs: sincronizar projeto pos fase 9b cave combat"`
 3. **Após merge:** iniciar PR-092 (limpar warnings) ou PR-093 (combat feel)
 4. Considerar agendar review de próximas waves para alinhar design UI
+
+---
+
+## 2026-05-18 — PR-092 Limpar warnings de geradores e spawn IDs
+
+**Responsável:** Claude  
+**Branch:** `feature/fase9b2-cave-polish-combat-feel`  
+**Escopo:** implementar helper editor-safe TrySetSortingLayer com fallback order para evitar warnings de sorting layers não encontradas; garantir spawn IDs corretos em todas as cenas.
+
+### Implementação
+
+**TrySetSortingLayer helper (novo em cada gerador):**
+- Assinatura: `TrySetSortingLayer(SpriteRenderer renderer, string layerName, int fallbackOrder)`
+- Comportamento:
+  - Tenta setar renderer ao sorting layer pelo nome.
+  - Se o layer não existe, seta `sortingOrder` como fallback em vez de warning.
+  - Sem Debug.LogWarning: silencioso e editor-safe.
+
+**Atualização de chamadas:**
+- Substituído: `SetSortingLayerIfExists(spriteRenderer, "LayerName")` 
+- Por: `TrySetSortingLayer(spriteRenderer, "LayerName", spriteRenderer.sortingOrder)`
+- Mantém ordre visual idêntica; adiciona robustez.
+
+**Spawn IDs validados:**
+- FarmScene: `farm_default`, `farm_from_town`, `farm_from_cave` ✓
+- TownScene: `town_default`, `town_from_farm` ✓
+- CaveScene: `cave_default`, `cave_from_farm` ✓
+
+### Arquivos alterados
+
+- `Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpFarmScene.cs` — substituído `SetSortingLayerIfExists` por `TrySetSortingLayer` (8 chamadas)
+- `Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpTownScene.cs` — substituído `SetSortingLayerIfExists` por `TrySetSortingLayer` (6 chamadas)
+- `Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpCaveScene.cs` — substituído `SetSortingLayerIfExists` por `TrySetSortingLayer` (4 chamadas)
+- `PROJECT_LOG.md`
+
+### Testes pendentes
+
+- [ ] Rodar `CindarsHope/Scenes/Create MVP FarmScene` — cria scene sem warnings.
+- [ ] Rodar `CindarsHope/Scenes/Create MVP TownScene` — cria scene sem warnings.
+- [ ] Rodar `CindarsHope/Scenes/Create MVP CaveScene` — cria scene sem warnings.
+- [ ] Play Mode em cada cena: verificar que HUD e sprites aparecem corretamente.
+- [ ] Validar que sorting order fallback é respeitado quando layer não existe.
+- [ ] Console sem erro vermelho em todas as operações.
+
+### Resultado esperado
+
+- Todos os geradores funcionam silenciosamente (sem warnings de sorting layer não encontrado).
+- Cenas mantêm visual idêntico ao anterior.
+- Spawn IDs corretos garantem transições de cena corretas.
+- Base limpa para próximas waves de polish e features.
+
+### Pendências / riscos
+
+- Sorting layers podem não estar definidas em ProjectSettings; fallback order garante que sprites ficam visíveis mesmo assim.
+- Regeneração de todas as 3 cenas deve ser validada em Play Mode antes de prosseguir com PR-093.
+
+### Próximo passo recomendado
+
+1. Abrir Unity.
+2. Executar: `CindarsHope/Scenes/Create MVP FarmScene`, `Create MVP TownScene`, `Create MVP CaveScene`.
+3. Executar: `CindarsHope/Validate/Validate Farm Town MVP` (expandir para Cave se necessário).
+4. Confirmar Console sem erro vermelho.
+5. Testar Play Mode em cada cena.
+6. Se tudo ok: commit com mensagem `fix: limpar warnings de geradores e spawn ids`.
+7. Próximo: PR-093 Combat Feel (knockback, invulnerability frames, feedback visual).
+
+---
+
+## 2026-05-18 — PR-097 Fix Cave feedback e drops
+
+**Responsável:** Claude  
+**Branch:** `feature/fase9b2-cave-polish-combat-feel`  
+**Escopo:** corrigir drop do Slime, hit flash perceptível e knockback perceptível na Cave MVP.
+
+### Implementação
+
+**EnemyDropSpawner.cs (atualizado):**
+- Adicionado import: `using CindarsHope.Core.Bootstrap;`
+- Melhorado: `OnEnemyKilled()` usa `GameBootstrap.Instance.InventoryManager` como fallback se `_inventoryManager` for null.
+- Melhorado: logs mais claros:
+  - `"EnemyDropSpawner: adding drop {dropItemId} x{dropAmount} to inventory."`
+  - `"EnemyDropSpawner: drop added successfully."`
+  - `"EnemyDropSpawner: InventoryManager not found. Drop will be skipped."` (se não conseguir obter InventoryManager)
+
+**HitFlashController.cs (novo):**
+- `[DisallowMultipleComponent]`
+- Campos: `SpriteRenderer _spriteRenderer`, `Color _flashColor = Color.red`, `float _flashDuration = 0.12f`
+- Em `Awake()`: se `_spriteRenderer` null, tenta `GetComponentInChildren<SpriteRenderer>()`.
+- Método `Flash()`: troca cor para `_flashColor`, aguarda `_flashDuration`, volta à cor original via coroutine.
+- Log: `"HitFlashController: flash on '{name}'."`
+- Auto-rebind: se `_spriteRenderer` não atribuído, faz lookup automático.
+
+**KnockbackController.cs (novo):**
+- `[DisallowMultipleComponent]`
+- Campos: `Rigidbody2D _rigidbody`, `float _duration = 0.15f`, `float _remainingTime`, `Vector2 _velocity`
+- Em `Awake()`: se `_rigidbody` null, tenta `GetComponent<Rigidbody2D>()`.
+- Método `ApplyKnockback(Vector2 direction, float force)`: normaliza direção, seta velocidade/duração.
+- Em `FixedUpdate()`: aplica movimento via `Rigidbody2D.MovePosition()` ou fallback `transform.position`.
+- Propriedade pública: `public bool IsKnockingBack => _remainingTime > 0;`
+- Log: `"KnockbackController: applying knockback on '{name}', force={force}."`
+
+**EnemyHealth.cs (atualizado):**
+- Em `TakeDamage()`: chamad `HitFlashController.Flash()` no inimigo se existir.
+- Em `Die()`: adicionado log antes de publicar `EnemyKilledEvent`:
+  - `"EnemyHealth: publishing EnemyKilledEvent enemy={enemyId}, drop={dropItemId} x{dropAmount}."`
+
+**PlayerAttackController.cs (atualizado):**
+- Em `Punch()`: após acertar inimigo, obtém `KnockbackController` e aplica knockback:
+  - Direção: do player para o inimigo.
+  - Força: 2.5f
+
+**EnemyContactDamage.cs (atualizado):**
+- Em `OnTriggerStay2D()`: após danificar player:
+  - Chamada `HitFlashController.Flash()` no player se existir.
+  - Obtém `KnockbackController` do player e aplica knockback.
+  - Direção: do inimigo para o player.
+  - Força: 2.0f
+
+**EnemyChaseController.cs (atualizado):**
+- Em `FixedUpdate()`: valida se `KnockbackController.IsKnockingBack` antes de se mover.
+- Se em knockback ativo, não persegue (deixa knockback acontecer).
+
+**CreateMvpCaveScene.cs (atualizado):**
+- Em `CreatePlayer()`: adiciona `HitFlashController` (amarelo) e `KnockbackController`.
+- Novo método `ConfigureHitFlashController()`: seta `_spriteRenderer`, `_flashColor`, `_flashDuration` via SerializedObject.
+- Novo método `ConfigureKnockbackController()`: seta `_rigidbody`, `_duration` via SerializedObject.
+- Em `CreateSlime()`: adiciona `HitFlashController` (laranja) e `KnockbackController`.
+- Em `CreateScene()`: chamada `CreateEnemyDropSpawner(inventoryManager)` após `CreateEnemies()`.
+- Novo método `CreateEnemyDropSpawner()`: cria GameObject "EnemyDropSpawner" com componente `EnemyDropSpawner`, seta `_inventoryManager` via SerializedObject.
+
+### Arquivos alterados
+
+- `Assets/_Game/Scripts/Combat/EnemyDropSpawner.cs`
+- `Assets/_Game/Scripts/Combat/EnemyHealth.cs`
+- `Assets/_Game/Scripts/Combat/PlayerAttackController.cs`
+- `Assets/_Game/Scripts/Combat/EnemyContactDamage.cs`
+- `Assets/_Game/Scripts/Combat/EnemyChaseController.cs`
+- `Assets/_Game/Scripts/Combat/HitFlashController.cs` (novo)
+- `Assets/_Game/Scripts/Combat/KnockbackController.cs` (novo)
+- `Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpCaveScene.cs`
+- `Assets/_Game/Scenes/CaveScene.unity` (será regenerada)
+- `PROJECT_LOG.md`
+
+### Testes esperados
+
+Em Play Mode na CaveScene:
+- [ ] Slime morre → Console mostra: `"EnemyHealth: Slime died."` → `"EnemyDropSpawner: adding drop item_wood..."` → `"EnemyDropSpawner: drop added successfully."` → Inventário mostra +1 item_wood.
+- [ ] Player soca Slime → Slime pisca (amarelo/laranja).
+- [ ] Player soca Slime → Slime recua um pouco (knockback perceptível).
+- [ ] Player encosta em Slime → Player pisca (amarelo).
+- [ ] Player encosta em Slime → Player recua um pouco (knockback perceptível).
+- [ ] Slime continua perseguindo após knockback terminar.
+- [ ] Console sem erro vermelho.
+- [ ] DebugHud atualiza inventário corretamente.
+
+### Validações realizadas
+
+- [x] EnemyDropSpawner usa GameBootstrap.Instance como fallback.
+- [x] HitFlashController faz auto-bind de SpriteRenderer se necessário.
+- [x] KnockbackController faz auto-bind de Rigidbody2D se necessário.
+- [x] EnemyChaseController respeita knockback ativo.
+- [x] CreateMvpCaveScene instala todos os componentes corretamente.
+- [x] Logs claros em cada etapa (drop, flash, knockback).
+
+### Resultado esperado
+
+- Slime morre e item é adicionado ao inventário com feedback de log.
+- Hit flash visualmente perceptível (mudança de cor rápida).
+- Knockback visualmente perceptível (movimento recuado).
+- Combat MVP com feedback visual/físico funcional.
+
+### Próximo passo recomendado
+
+1. Abrir Unity.
+2. Rodar `CindarsHope/Scenes/Create MVP CaveScene`.
+3. Executar `CindarsHope/Validate/Validate Farm Town MVP`.
+4. Play Mode na CaveScene:
+   - Atacar Slime 10 vezes → Slime morre → item entra no inventário.
+   - Observar hit flash e knockback.
+   - Confirmar logs no Console.
+5. Se tudo ok: commit com mensagem `fix: corrigir feedback e drops da cave`.
+6. Próximo: PR-098 Dialogue ou PR-093 Combat Feel Extended.

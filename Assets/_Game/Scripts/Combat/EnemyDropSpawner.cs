@@ -1,4 +1,5 @@
 using CindarsHope.Core;
+using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
 using CindarsHope.Inventory;
 using UnityEngine;
@@ -22,14 +23,22 @@ namespace CindarsHope.Combat
 
         private void OnEnemyKilled(EnemyKilledEvent evt)
         {
-            if (_inventoryManager == null)
+            var inventoryManager = _inventoryManager;
+
+            if (inventoryManager == null && GameBootstrap.Instance != null)
             {
-                Debug.LogWarning("EnemyDropSpawner: InventoryManager is null. Drop will be skipped.", this);
+                inventoryManager = GameBootstrap.Instance.InventoryManager;
+            }
+
+            if (inventoryManager == null)
+            {
+                Debug.LogWarning("EnemyDropSpawner: InventoryManager not found. Drop will be skipped.");
                 return;
             }
 
-            _inventoryManager.AddItem(evt.DropItemId, evt.DropAmount);
-            Debug.Log($"EnemyDropSpawner: Added {evt.DropAmount}x {evt.DropItemId} to inventory from enemy '{evt.EnemyId}'.", this);
+            Debug.Log($"EnemyDropSpawner: adding drop {evt.DropItemId} x{evt.DropAmount} to inventory.");
+            inventoryManager.AddItem(evt.DropItemId, evt.DropAmount);
+            Debug.Log("EnemyDropSpawner: drop added successfully.");
         }
 
         public void RebindInventoryManager(InventoryManager inventoryManager)
@@ -40,7 +49,7 @@ namespace CindarsHope.Combat
             }
             else
             {
-                Debug.LogWarning("EnemyDropSpawner.RebindInventoryManager received null InventoryManager.", this);
+                Debug.LogWarning("EnemyDropSpawner.RebindInventoryManager received null InventoryManager.");
             }
         }
     }

@@ -265,7 +265,7 @@ namespace CindarsHope.Editor.SceneCreation
             spriteRenderer.sprite = GetBuiltinSprite();
             spriteRenderer.color = new Color(0.23f, 0.48f, 0.84f);
             spriteRenderer.sortingOrder = 0;
-            SetSortingLayerIfExists(spriteRenderer, "Characters");
+            TrySetSortingLayer(spriteRenderer, "Characters", 0);
 
             if (spriteRenderer.sprite == null)
             {
@@ -413,7 +413,7 @@ namespace CindarsHope.Editor.SceneCreation
             spriteRenderer.sprite = GetBuiltinSprite();
             spriteRenderer.color = color;
             spriteRenderer.sortingOrder = 2;
-            SetSortingLayerIfExists(spriteRenderer, "Items");
+            TrySetSortingLayer(spriteRenderer, "Items", spriteRenderer.sortingOrder);
 
             if (spriteRenderer.sprite == null)
             {
@@ -444,7 +444,7 @@ namespace CindarsHope.Editor.SceneCreation
             spriteRenderer.sprite = GetBuiltinSprite();
             spriteRenderer.color = new Color(0.95f, 0.82f, 0.22f);
             spriteRenderer.sortingOrder = 2;
-            SetSortingLayerIfExists(spriteRenderer, "Items");
+            TrySetSortingLayer(spriteRenderer, "Items", spriteRenderer.sortingOrder);
 
             if (spriteRenderer.sprite == null)
             {
@@ -468,7 +468,7 @@ namespace CindarsHope.Editor.SceneCreation
             spriteRenderer.sprite = GetBuiltinSprite();
             spriteRenderer.color = new Color(0.25f, 0.75f, 0.85f);
             spriteRenderer.sortingOrder = 2;
-            SetSortingLayerIfExists(spriteRenderer, "Items");
+            TrySetSortingLayer(spriteRenderer, "Items", spriteRenderer.sortingOrder);
 
             if (spriteRenderer.sprite == null)
             {
@@ -497,7 +497,7 @@ namespace CindarsHope.Editor.SceneCreation
             spriteRenderer.sprite = GetBuiltinSprite();
             spriteRenderer.color = new Color(0.78f, 0.48f, 0.18f);
             spriteRenderer.sortingOrder = 2;
-            SetSortingLayerIfExists(spriteRenderer, "Items");
+            TrySetSortingLayer(spriteRenderer, "Items", spriteRenderer.sortingOrder);
 
             if (spriteRenderer.sprite == null)
             {
@@ -526,7 +526,7 @@ namespace CindarsHope.Editor.SceneCreation
             spriteRenderer.sprite = GetBuiltinSprite();
             spriteRenderer.color = new Color(0.58f, 0.36f, 0.18f);
             spriteRenderer.sortingOrder = 2;
-            SetSortingLayerIfExists(spriteRenderer, "Items");
+            TrySetSortingLayer(spriteRenderer, "Items", spriteRenderer.sortingOrder);
 
             if (spriteRenderer.sprite == null)
             {
@@ -557,7 +557,7 @@ namespace CindarsHope.Editor.SceneCreation
             spriteRenderer.sprite = GetBuiltinSprite();
             spriteRenderer.color = new Color(0.18f, 0.42f, 0.85f);
             spriteRenderer.sortingOrder = 1;
-            SetSortingLayerIfExists(spriteRenderer, "Items");
+            TrySetSortingLayer(spriteRenderer, "Items", spriteRenderer.sortingOrder);
 
             if (spriteRenderer.sprite == null)
             {
@@ -605,7 +605,7 @@ namespace CindarsHope.Editor.SceneCreation
             spriteRenderer.sprite = GetBuiltinSprite();
             spriteRenderer.color = new Color(0.95f, 0.5f, 0.22f);
             spriteRenderer.sortingOrder = 2;
-            SetSortingLayerIfExists(spriteRenderer, "Items");
+            TrySetSortingLayer(spriteRenderer, "Items", spriteRenderer.sortingOrder);
 
             if (spriteRenderer.sprite == null)
             {
@@ -693,7 +693,7 @@ namespace CindarsHope.Editor.SceneCreation
             var spriteRenderer = plotObject.AddComponent<SpriteRenderer>();
             spriteRenderer.sprite = GetBuiltinSprite();
             spriteRenderer.sortingOrder = 1;
-            SetSortingLayerIfExists(spriteRenderer, "Ground");
+            TrySetSortingLayer(spriteRenderer, "Ground", spriteRenderer.sortingOrder);
 
             if (spriteRenderer.sprite == null)
             {
@@ -755,7 +755,7 @@ namespace CindarsHope.Editor.SceneCreation
             spriteRenderer.sprite = GetBuiltinSprite();
             spriteRenderer.color = new Color(0.24f, 0.48f, 0.22f);
             spriteRenderer.sortingOrder = 2;
-            SetSortingLayerIfExists(spriteRenderer, "Items");
+            TrySetSortingLayer(spriteRenderer, "Items", spriteRenderer.sortingOrder);
 
             if (spriteRenderer.sprite == null)
             {
@@ -788,7 +788,7 @@ namespace CindarsHope.Editor.SceneCreation
             spriteRenderer.sprite = GetBuiltinSprite();
             spriteRenderer.color = new Color(0.78f, 0.64f, 0.39f);
             spriteRenderer.sortingOrder = -10;
-            SetSortingLayerIfExists(spriteRenderer, "Ground");
+            TrySetSortingLayer(spriteRenderer, "Ground", spriteRenderer.sortingOrder);
 
             if (spriteRenderer.sprite == null)
             {
@@ -852,20 +852,18 @@ namespace CindarsHope.Editor.SceneCreation
             return sprite;
         }
 
-        private static void SetSortingLayerIfExists(SpriteRenderer spriteRenderer, string sortingLayerName)
+        private static void TrySetSortingLayer(SpriteRenderer renderer, string layerName, int fallbackOrder)
         {
             foreach (var layer in SortingLayer.layers)
             {
-                if (layer.name != sortingLayerName)
+                if (layer.name == layerName)
                 {
-                    continue;
+                    renderer.sortingLayerName = layerName;
+                    return;
                 }
-
-                spriteRenderer.sortingLayerName = sortingLayerName;
-                return;
             }
 
-            Debug.LogWarning($"Sorting Layer '{sortingLayerName}' was not found. '{spriteRenderer.gameObject.name}' will use the default sorting layer.");
+            renderer.sortingOrder = fallbackOrder;
         }
 
         private static void CreateSceneRuntimeInstaller(
