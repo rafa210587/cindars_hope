@@ -24,27 +24,45 @@ namespace CindarsHope.UI
         private bool _hasInteractionCandidate;
         private string _currentInteractionPrompt = string.Empty;
         private string _lastEconomyTransaction = "nenhuma transacao";
+        private bool _isPrimaryInstance;
+
+        public static DebugHud Instance => _instance;
 
         private void Awake()
         {
             if (_instance != null && _instance != this)
             {
+                _isPrimaryInstance = false;
+                enabled = false;
+                gameObject.SetActive(false);
                 Destroy(gameObject);
                 return;
             }
 
             _instance = this;
+            _isPrimaryInstance = true;
             DontDestroyOnLoad(gameObject);
+            Debug.Log("DebugHud: initialized as primary instance.");
         }
 
         private void OnEnable()
         {
+            if (!_isPrimaryInstance || _instance != this)
+            {
+                return;
+            }
+
             GameEventBus.Subscribe<InteractionPromptChangedEvent>(OnInteractionPromptChanged);
             GameEventBus.Subscribe<EconomyTransactionCompletedEvent>(OnEconomyTransactionCompleted);
         }
 
         private void OnDisable()
         {
+            if (!_isPrimaryInstance || _instance != this)
+            {
+                return;
+            }
+
             GameEventBus.Unsubscribe<InteractionPromptChangedEvent>(OnInteractionPromptChanged);
             GameEventBus.Unsubscribe<EconomyTransactionCompletedEvent>(OnEconomyTransactionCompleted);
         }
@@ -54,11 +72,17 @@ namespace CindarsHope.UI
             if (_instance == this)
             {
                 _instance = null;
+                _isPrimaryInstance = false;
             }
         }
 
         private void OnGUI()
         {
+            if (!_isPrimaryInstance || _instance != this)
+            {
+                return;
+            }
+
             GUILayout.BeginArea(new Rect(12f, 12f, 360f, Screen.height - 24f), GUI.skin.box);
             GUILayout.Label("Cindar's Hope - Debug HUD");
             DrawPlayerState();
@@ -179,6 +203,61 @@ namespace CindarsHope.UI
         private void OnEconomyTransactionCompleted(EconomyTransactionCompletedEvent evt)
         {
             _lastEconomyTransaction = evt.Message;
+        }
+
+        public void RebindRuntimeReferences(
+            PlayerManager playerManager,
+            InventoryManager inventoryManager,
+            HungerManager hungerManager,
+            InteractionSystem interactionSystem,
+            TimeManager timeManager,
+            SaveManager saveManager)
+        {
+            if (playerManager != null)
+            {
+                _playerManager = playerManager;
+            }
+
+            if (inventoryManager != null)
+            {
+                _inventoryManager = inventoryManager;
+            }
+
+            if (hungerManager != null)
+            {
+                _hungerManager = hungerManager;
+            }
+
+            if (interactionSystem != null)
+            {
+                _interactionSystem = interactionSystem;
+            }
+
+            if (timeManager != null)
+            {
+                _timeManager = timeManager;
+            }
+
+            if (saveManager != null)
+            {
+                _saveManager = saveManager;
+            }
+
+            Debug.Log("DebugHud: runtime references rebound.");
+        }
+
+        public static void RebindExisting(
+            PlayerManager playerManager,
+            InventoryManager inventoryManager,
+            HungerManager hungerManager,
+            InteractionSystem interactionSystem,
+            TimeManager timeManager,
+            SaveManager saveManager)
+        {
+            if (_instance != null)
+            {
+                _instance.RebindRuntimeReferences(playerManager, inventoryManager, hungerManager, interactionSystem, timeManager, saveManager);
+            }
         }
     }
 }

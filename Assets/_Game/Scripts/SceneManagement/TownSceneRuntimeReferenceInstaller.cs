@@ -1,4 +1,6 @@
 using CindarsHope.Core.Bootstrap;
+using CindarsHope.Interaction;
+using CindarsHope.UI;
 using UnityEngine;
 
 namespace CindarsHope.SceneManagement
@@ -39,6 +41,9 @@ namespace CindarsHope.SceneManagement
             {
                 Debug.LogWarning("TownSceneRuntimeReferenceInstaller: one or more runtime managers are missing during SaveManager rebind.", this);
             }
+
+            var interactionSystem = _playerTransform != null ? _playerTransform.GetComponent<InteractionSystem>() : null;
+            DebugHud.RebindExisting(playerManager, inventoryManager, hungerManager, interactionSystem, timeManager, saveManager);
 
             Debug.Log("TownSceneRuntimeReferenceInstaller rebound runtime refs.", this);
         }

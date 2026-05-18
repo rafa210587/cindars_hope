@@ -3262,3 +3262,111 @@ Em Play Mode na CaveScene:
    - Confirmar logs no Console.
 5. Se tudo ok: commit com mensagem `fix: corrigir feedback e drops da cave`.
 6. Próximo: PR-098 Dialogue ou PR-093 Combat Feel Extended.
+
+---
+
+## 2026-05-18 — PR-098 Single DebugHud cross-scene
+
+**Responsável:** Claude  
+**Branch:** `fix/fase9b2-single-debug-hud`  
+**Escopo:** corrigir duplicação/sobreposição da Debug HUD ao trocar entre Farm/Town/Cave.
+
+### Implementação
+
+**DebugHud.cs (refatorada):**
+- Adicionado campo: `private bool _isPrimaryInstance;`
+- Adicionada propriedade pública: `public static DebugHud Instance => _instance;`
+- Melhorado `Awake()`:
+  - Se já existe `_instance` diferente, desabilita e destroi a duplicata imediatamente.
+  - Seta `_isPrimaryInstance = true` apenas para a instância primária.
+  - Log: `"DebugHud: initialized as primary instance."`
+- Melhorado `OnEnable()` e `OnDisable()`:
+  - Verifica `if (!_isPrimaryInstance || _instance != this) return;` antes de assinar eventos.
+  - Apenas a instância primária assina/desassina.
+- Melhorado `OnGUI()`:
+  - Primeira linha: `if (!_isPrimaryInstance || _instance != this) return;`
+  - Só a instância primária renderiza.
+- Novo método público: `RebindRuntimeReferences(...)` - atualiza referências aos managers (PlayerManager, InventoryManager, HungerManager, InteractionSystem, TimeManager, SaveManager).
+- Novo método público estático: `RebindExisting(...)` - chama `RebindRuntimeReferences` se Instance != null.
+- Melhorado `OnDestroy()`: limpa `_instance` se `_instance == this`.
+
+Comportamento:
+- Primeira DebugHud criada torna-se singleton primário e persiste com DontDestroyOnLoad.
+- Qualquer DebugHud posterior (duplicata de cena) é destroída imediatamente em Awake.
+- Mesmo que uma duplicata exista por um frame, é desabilitada/destruída antes de OnGUI.
+- Referências são atualizadas a cada troca de cena via RebindRuntimeReferences.
+
+**FarmSceneRuntimeReferenceInstaller.cs (atualizada):**
+- Adicionados imports: `using CindarsHope.Interaction;` e `using CindarsHope.UI;`
+- Ao final de `RebindAllReferences()`:
+  - Obtém InteractionSystem do player: `var interactionSystem = _playerTransform?.GetComponent<InteractionSystem>();`
+  - Chamada: `DebugHud.RebindExisting(playerManager, inventoryManager, hungerManager, interactionSystem, timeManager, saveManager);`
+
+**TownSceneRuntimeReferenceInstaller.cs (atualizada):**
+- Adicionados imports: `using CindarsHope.Interaction;` e `using CindarsHope.UI;`
+- Ao final de `Start()`:
+  - Obtém InteractionSystem do player.
+  - Chamada: `DebugHud.RebindExisting(playerManager, inventoryManager, hungerManager, interactionSystem, timeManager, saveManager);`
+
+**CaveSceneRuntimeReferenceInstaller.cs (atualizada):**
+- Adicionados imports: `using CindarsHope.Interaction;` e `using CindarsHope.UI;`
+- Ao final de `Start()`:
+  - Obtém InteractionSystem do player.
+  - Chamada: `DebugHud.RebindExisting(playerManager, inventoryManager, hungerManager, interactionSystem, timeManager, saveManager);`
+
+**Geradores (verificados):**
+- CreateMvpFarmScene.cs: cria uma DebugHud local.
+- CreateMvpTownScene.cs: cria uma DebugHud local.
+- CreateMvpCaveScene.cs: cria uma DebugHud local.
+- Todos os geradores criam exatamente uma DebugHud por cena para permitir abrir qualquer cena direto em Play Mode.
+
+### Arquivos alterados
+
+- `Assets/_Game/Scripts/UI/DebugHud.cs`
+- `Assets/_Game/Scripts/SceneManagement/FarmSceneRuntimeReferenceInstaller.cs`
+- `Assets/_Game/Scripts/SceneManagement/TownSceneRuntimeReferenceInstaller.cs`
+- `Assets/_Game/Scripts/SceneManagement/CaveSceneRuntimeReferenceInstaller.cs`
+- `Assets/_Game/Scenes/FarmScene.unity` (será regenerada)
+- `Assets/_Game/Scenes/TownScene.unity` (será regenerada)
+- `Assets/_Game/Scenes/CaveScene.unity` (será regenerada)
+- `PROJECT_LOG.md`
+
+### Testes esperados
+
+Em Play Mode:
+- [ ] Abrir Farm → HUD aparece com dados corretos.
+- [ ] Farm → Town → HUD persiste, dados atualizados.
+- [ ] Town → Farm → HUD persiste, dados atualizados, prompt de interação funciona.
+- [ ] Farm → Cave → HUD persiste, dados atualizados.
+- [ ] Cave → Farm → HUD persiste, dados atualizados.
+- [ ] Console mostra logs de rebind: `"DebugHud: runtime references rebound."`
+- [ ] Console mostra log de inicialização: `"DebugHud: initialized as primary instance."`
+- [ ] Nenhum log de "SetActive(false)" no Console (não deve aparecer pois duplicata é destruída em Awake).
+- [ ] HUD nunca aparece sobreposta ou em duplicata visível.
+
+### Validações realizadas
+
+- [x] DebugHud bloqueia OnGUI em duplicatas.
+- [x] DebugHud expõe RebindRuntimeReferences para atualizações.
+- [x] Installers rebindam HUD a cada cena.
+- [x] Geradores criam apenas uma HUD por cena.
+- [x] Todos os imports necessários adicionados.
+
+### Resultado esperado
+
+- HUD singleton funcional e persistente.
+- Nenhuma duplicação/sobreposição ao trocar cenas.
+- Prompt de interação sempre aponta para InteractionSystem da cena atual.
+- Console sem erros.
+
+### Próximo passo recomendado
+
+1. Abrir Unity.
+2. Rodar:
+   - `CindarsHope/Scenes/Create MVP FarmScene`
+   - `CindarsHope/Scenes/Create MVP TownScene`
+   - `CindarsHope/Scenes/Create MVP CaveScene`
+3. Play Mode: Farm → Town → Cave → Farm, observar HUD nunca sobrepor.
+4. Confirmar logs de rebind no Console.
+5. Se tudo ok: commit com mensagem `fix: manter debug hud unica entre cenas`.
+6. Próximo: PR-099 (Quest MVP) ou review de próximas waves.
