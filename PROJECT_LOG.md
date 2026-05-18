@@ -1613,3 +1613,34 @@ PR-002 sÃ³ deve comeÃ§ar se:
 
 ### Próximo passo recomendado
 - PR-054 — criar gerador reproduzível da TownScene mínima.
+
+---
+
+## 2026-05-17 — PR-054 TownScene generator mínimo
+
+**Responsável:** Codex/ChatGPT
+**Branch:** `feature/fase9a-townscene-mvp-package`
+**Escopo:** criação do Editor script reproduzível para montar a `TownScene` mínima.
+
+### Alterações
+- Criado menu `CindarsHope/Scenes/Create MVP TownScene`.
+- O gerador cria `Player`, `Ground`, `Bounds`, `Main Camera`, `SpawnPoints`, `Portals` e `TownDecorations`.
+- O player da cidade recebe `PlayerController`, `Rigidbody2D`, `BoxCollider2D`, `InteractionSystem` e child `InteractionTrigger`.
+- `SceneSpawnInstaller` é configurado com os spawns `town_default` e `town_from_farm`.
+- A `TownScene` não cria `_Bootstrap`; o fluxo esperado continua sendo FarmScene → TownScene com bootstrap persistente.
+
+### Arquivos alterados
+- `Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpTownScene.cs`
+- `PROJECT_LOG.md`
+
+### Testes
+- [x] Revisão estática do Editor script.
+- [x] Confirmado que o script usa apenas referências serializadas/locais, sem busca global runtime.
+- [ ] Unity não executado neste terminal; `Assets/_Game/Scenes/TownScene.unity` deve ser gerada ao rodar o menu no Editor.
+
+### Pendências / riscos
+- Rodar `CindarsHope/Scenes/Create MVP TownScene` no Unity para salvar `Assets/_Game/Scenes/TownScene.unity`.
+- Integrar portais Farm ↔ Town na próxima wave.
+
+### Próximo passo recomendado
+- PR-055 — integrar portais entre FarmScene e TownScene nos geradores.
