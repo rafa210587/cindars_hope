@@ -4,6 +4,8 @@ using CindarsHope.Core.Events;
 using CindarsHope.Craft;
 using CindarsHope.Economy;
 using CindarsHope.Farm;
+using CindarsHope.Interaction;
+using CindarsHope.UI;
 using CindarsHope.World;
 using UnityEngine;
 
@@ -116,6 +118,9 @@ namespace CindarsHope.SceneManagement
                     saveManager.RebindRuntimeManagers(playerManager, inventoryManager, hungerManager, timeManager);
                 }
             }
+
+            var interactionSystem = _playerTransform != null ? _playerTransform.GetComponent<InteractionSystem>() : null;
+            DebugHud.RebindExisting(playerManager, inventoryManager, hungerManager, interactionSystem, timeManager, saveManager);
 
             var restored = FarmSceneRuntimeStateCache.TryRestore(_farmPlotRegistry, _treeRegistry, _itemPickupRegistry);
             var plotCount = _farmPlotRegistry?.Plots?.Count ?? 0;
