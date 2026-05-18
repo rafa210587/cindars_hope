@@ -10,6 +10,7 @@ using CindarsHope.Player;
 using CindarsHope.Save;
 using CindarsHope.World;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 
 namespace CindarsHope.Editor.Validation
@@ -157,7 +158,7 @@ namespace CindarsHope.Editor.Validation
             if (portalToFarm == null)
                 { Debug.LogError("MvpSceneValidator: Portal to FarmScene not found in TownScene."); passed = false; }
 
-            if (FindComponent<NpcController>(rootObjects) == null)
+            if (FindComponent<NpcTalkPoint>(rootObjects) == null)
                 { Debug.LogError("MvpSceneValidator: NPC not found in TownScene."); passed = false; }
 
             var buyPoints = Object.FindObjectsByType<BuyItemPoint>(FindObjectsSortMode.None);

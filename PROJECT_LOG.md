@@ -2518,3 +2518,36 @@ git commit -m "docs: registrar handoff fase 9a farm town save"
 - Merge de `feature/fase9a4-hardening-farm-town-save` para `dev` (responsabilidade humana).
 - Branch `feature/fase9b1-cave-mvp` será criada a partir de `dev` atualizada.
 - Próximo agente deve ler documentação de Cave e ARCH_fase4_v2.2.md antes de iniciar.
+
+---
+
+## 2026-05-18 — PR-074 Fix validator compile
+
+**Responsável:** Claude  
+**Branch:** `feature/fase9a4-hardening-farm-town-save`  
+**Escopo:** corrigir erros de compilação encontrados no MvpSceneValidator.
+
+### Correções aplicadas
+
+- **MvpSceneValidator.cs:**
+  - Adicionado import: `using UnityEditor.SceneManagement;` (necessário para `EditorSceneManager`).
+  - Trocar validação: `FindComponent<NpcController>` → `FindComponent<NpcTalkPoint>` (NPC atual no MVP).
+
+- **ScenePortal.cs:**
+  - Adicionadas propriedades públicas readonly:
+    - `public string TargetSceneName => _targetSceneName;`
+    - `public string TargetScenePath => _targetScenePath;`
+    - `public string TargetSpawnId => _targetSpawnId;`
+  - Comportamento de `Interact` e `LoadTargetScene` mantido idêntico.
+
+### Arquivos alterados
+
+- `Assets/_Game/Scripts/Editor/Validation/MvpSceneValidator.cs`
+- `Assets/_Game/Scripts/SceneManagement/ScenePortal.cs`
+- `PROJECT_LOG.md`
+
+### Resultado esperado
+
+- MvpSceneValidator compila sem erros.
+- Menu `CindarsHope/Validate/Validate Farm Town MVP` funcional.
+- Validator consegue acessar propriedades de ScenePortal para validação.

@@ -18,6 +18,9 @@ namespace CindarsHope.SceneManagement
         [SerializeField] private string _interactionPrompt = "Entrar";
 
         public string InteractionPrompt => _interactionPrompt;
+        public string TargetSceneName => _targetSceneName;
+        public string TargetScenePath => _targetScenePath;
+        public string TargetSpawnId => _targetSpawnId;
 
         public bool CanInteract(GameObject interactor)
         {
