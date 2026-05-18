@@ -98,6 +98,7 @@ namespace CindarsHope.Editor.SceneCreation
             bootstrapObject.AddComponent<FoodConsumer>();
             bootstrapObject.AddComponent<SaveInput>();
             bootstrapObject.AddComponent<CraftingManager>();
+            bootstrapObject.AddComponent<EconomyManager>();
 
             return bootstrap;
         }
@@ -130,6 +131,7 @@ namespace CindarsHope.Editor.SceneCreation
                 playerTransform);
             ConfigureSaveInput(bootstrapObject.GetComponent<SaveInput>(), bootstrapObject.GetComponent<SaveManager>());
             ConfigureCraftingManager(bootstrapObject.GetComponent<CraftingManager>(), bootstrapObject.GetComponent<InventoryManager>());
+            ConfigureEconomyManager(bootstrapObject.GetComponent<EconomyManager>(), bootstrapObject.GetComponent<InventoryManager>(), bootstrapObject.GetComponent<PlayerManager>());
 
             var playerData = AssetDatabase.LoadAssetAtPath<PlayerDataSO>(PlayerDataPath);
             if (playerData != null)
@@ -233,6 +235,15 @@ namespace CindarsHope.Editor.SceneCreation
 
             serializedCrafting.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(craftingManager);
+        }
+
+        private static void ConfigureEconomyManager(EconomyManager economyManager, InventoryManager inventoryManager, PlayerManager playerManager)
+        {
+            var serializedEconomy = new SerializedObject(economyManager);
+            SetReference(serializedEconomy, "_inventoryManager", inventoryManager);
+            SetReference(serializedEconomy, "_playerManager", playerManager);
+            serializedEconomy.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(economyManager);
         }
 
         private static Transform CreatePlayer()

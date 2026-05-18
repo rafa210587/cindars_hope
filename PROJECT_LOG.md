@@ -1806,3 +1806,39 @@ PR-002 sÃ³ deve comeÃ§ar se:
 
 ### Próximo passo recomendado
 - Validar no Unity e depois seguir com o handoff/PR da TownScene MVP.
+
+---
+
+## 2026-05-17 — PR-059 Economy events e EconomyManager persistente
+
+**Responsável:** Codex/ChatGPT
+**Branch:** `feature/fase9a-town-commerce-mvp-package`
+**Escopo:** criar eventos de economia e um `EconomyManager` persistente no `_Bootstrap` gerado pela FarmScene.
+
+### Alterações
+- Criados `ItemPurchaseRequestedEvent`, `SellAllRequestedEvent` e `EconomyTransactionCompletedEvent`.
+- Criado `EconomyManager` que assina eventos de compra/venda e executa transações usando `InventoryManager` e `PlayerManager`.
+- Compra valida item, quantidade, custo e ouro; se `AddItem` falhar, reembolsa o ouro.
+- Venda usa `SellableItemPolicy`, `InventoryManager.TryGetItemData` e soma `BaseValue * amount`.
+- `CreateMvpFarmScene` agora adiciona e configura `EconomyManager` no `_Bootstrap`.
+
+### Arquivos alterados
+- `Assets/_Game/Scripts/Core/Events/ItemPurchaseRequestedEvent.cs`
+- `Assets/_Game/Scripts/Core/Events/SellAllRequestedEvent.cs`
+- `Assets/_Game/Scripts/Core/Events/EconomyTransactionCompletedEvent.cs`
+- `Assets/_Game/Scripts/Economy/EconomyManager.cs`
+- `Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpFarmScene.cs`
+- `PROJECT_LOG.md`
+
+### Testes
+- [x] Revisão estática dos scripts.
+- [x] Confirmado que eventos carregam apenas tipos simples.
+- [x] Busca por APIs proibidas nos arquivos alterados sem ocorrências.
+- [ ] Unity não executado neste terminal.
+
+### Pendências / riscos
+- Rodar `CindarsHope/Scenes/Create MVP FarmScene` para materializar `EconomyManager` no `_Bootstrap`.
+- Criar os pontos interagíveis por evento na próxima wave.
+
+### Próximo passo recomendado
+- PR-060 — pontos interagíveis de compra/venda por evento.
