@@ -1644,3 +1644,34 @@ PR-002 sÃ³ deve comeÃ§ar se:
 
 ### Próximo passo recomendado
 - PR-055 — integrar portais entre FarmScene e TownScene nos geradores.
+
+---
+
+## 2026-05-17 — PR-055 Portais Farm ↔ Town
+
+**Responsável:** Codex/ChatGPT
+**Branch:** `feature/fase9a-townscene-mvp-package`
+**Escopo:** integração de portais e spawn points nos geradores reproduzíveis de FarmScene e TownScene.
+
+### Alterações
+- `CreateMvpFarmScene` agora gera `SpawnPoints` com `farm_default` e `farm_from_town`.
+- `CreateMvpFarmScene` agora gera `Portal_Farm_To_Town` apontando para `TownScene` e spawn `town_from_farm`.
+- `CreateMvpTownScene` agora gera `Portal_Town_To_Farm` apontando para `FarmScene` e spawn `farm_from_town`.
+- Os portais usam `ScenePortal` e permanecem compatíveis com Play Mode no Editor sem alterar Build Settings.
+
+### Arquivos alterados
+- `Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpFarmScene.cs`
+- `Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpTownScene.cs`
+- `PROJECT_LOG.md`
+
+### Testes
+- [x] Revisão estática dos geradores.
+- [x] Confirmado que não houve alteração em `ProjectSettings` ou Build Settings.
+- [ ] Unity não executado neste terminal; cenas devem ser recriadas pelos menus no Editor.
+
+### Pendências / riscos
+- Rodar os menus `CindarsHope/Scenes/Create MVP FarmScene` e `CindarsHope/Scenes/Create MVP TownScene`.
+- Validar em Play Mode que a troca de cena respeita `town_from_farm` e `farm_from_town`.
+
+### Próximo passo recomendado
+- PR-056 — adicionar NPC básico Pip Miudinho à TownScene.

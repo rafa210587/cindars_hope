@@ -12,6 +12,7 @@ namespace CindarsHope.Editor.SceneCreation
     public static class CreateMvpTownScene
     {
         private const string ScenePath = "Assets/_Game/Scenes/TownScene.unity";
+        private const string FarmScenePath = "Assets/_Game/Scenes/FarmScene.unity";
         private const string PlayerDataPath = "Assets/_Game/Data/Config/PlayerData.asset";
         private const string BuiltinSpritePath = "UI/Skin/UISprite.psd";
 
@@ -211,6 +212,56 @@ namespace CindarsHope.Editor.SceneCreation
         {
             var portals = new GameObject("Portals");
             portals.transform.position = Vector3.zero;
+
+            CreateScenePortal(
+                portals.transform,
+                "Portal_Town_To_Farm",
+                new Vector3(0f, -6f, 0f),
+                new Color(0.78f, 0.62f, 0.24f),
+                "FarmScene",
+                FarmScenePath,
+                "farm_from_town",
+                "Voltar para a Fazenda");
+        }
+
+        private static void CreateScenePortal(
+            Transform parent,
+            string name,
+            Vector3 position,
+            Color color,
+            string targetSceneName,
+            string targetScenePath,
+            string targetSpawnId,
+            string interactionPrompt)
+        {
+            var portalObject = new GameObject(name);
+            portalObject.transform.SetParent(parent);
+            portalObject.transform.position = position;
+            portalObject.transform.localScale = new Vector3(1f, 1.35f, 1f);
+
+            var spriteRenderer = portalObject.AddComponent<SpriteRenderer>();
+            spriteRenderer.sprite = GetBuiltinSprite();
+            spriteRenderer.color = color;
+            spriteRenderer.sortingOrder = 2;
+            SetSortingLayerIfExists(spriteRenderer, "Items");
+
+            if (spriteRenderer.sprite == null)
+            {
+                Debug.LogWarning($"{name} placeholder SpriteRenderer was created without a sprite. Replace it with portal art in a future art PR.");
+            }
+
+            var collider = portalObject.AddComponent<BoxCollider2D>();
+            collider.isTrigger = true;
+            collider.size = Vector2.one;
+
+            var portal = portalObject.AddComponent<ScenePortal>();
+            var serializedPortal = new SerializedObject(portal);
+            serializedPortal.FindProperty("_targetSceneName").stringValue = targetSceneName;
+            serializedPortal.FindProperty("_targetScenePath").stringValue = targetScenePath;
+            serializedPortal.FindProperty("_targetSpawnId").stringValue = targetSpawnId;
+            serializedPortal.FindProperty("_interactionPrompt").stringValue = interactionPrompt;
+            serializedPortal.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(portal);
         }
 
         private static void CreateTownDecorations()

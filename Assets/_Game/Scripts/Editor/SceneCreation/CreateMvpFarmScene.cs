@@ -10,6 +10,7 @@ using CindarsHope.Interaction;
 using CindarsHope.Player;
 using CindarsHope.Player.Data;
 using CindarsHope.Save;
+using CindarsHope.SceneManagement;
 using CindarsHope.UI;
 using CindarsHope.World;
 using CindarsHope.World.Data;
@@ -51,6 +52,7 @@ namespace CindarsHope.Editor.SceneCreation
             var saveManager = bootstrap.GetComponent<SaveManager>();
             var craftingManager = bootstrap.GetComponent<CraftingManager>();
             var playerTransform = CreatePlayer();
+            CreateFarmSpawnPoints(playerTransform);
             CreateGround();
             var farmPlotRegistry = CreateFarmPlots(inventoryManager);
             var treeRegistry = CreateTrees(inventoryManager);
@@ -58,6 +60,7 @@ namespace CindarsHope.Editor.SceneCreation
             CreateSellPoint(inventoryManager, playerManager);
             CreateSeedShopPoint(inventoryManager, playerManager);
             CreateCraftingPoint(craftingManager);
+            CreateFarmPortals();
             CreateFishingSpot(inventoryManager);
             CreateDebugHud(
                 playerManager,
@@ -308,6 +311,95 @@ namespace CindarsHope.Editor.SceneCreation
             SetReference(serializedInteraction, "_interactionTrigger", interactionTrigger);
             serializedInteraction.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(interactionSystem);
+        }
+
+        private static void CreateFarmSpawnPoints(Transform playerTransform)
+        {
+            var parent = new GameObject("SpawnPoints");
+            parent.transform.position = Vector3.zero;
+
+            var defaultSpawn = CreateSceneSpawnPoint(parent.transform, "farm_default", Vector3.zero);
+            var fromTownSpawn = CreateSceneSpawnPoint(parent.transform, "farm_from_town", new Vector3(7.25f, -4.75f, 0f));
+
+            var installer = parent.AddComponent<SceneSpawnInstaller>();
+            var serializedInstaller = new SerializedObject(installer);
+            SetReference(serializedInstaller, "_playerTransform", playerTransform);
+            serializedInstaller.FindProperty("_spawnPoints").arraySize = 2;
+            serializedInstaller.FindProperty("_spawnPoints").GetArrayElementAtIndex(0).objectReferenceValue = defaultSpawn;
+            serializedInstaller.FindProperty("_spawnPoints").GetArrayElementAtIndex(1).objectReferenceValue = fromTownSpawn;
+            serializedInstaller.FindProperty("_defaultSpawnId").stringValue = "farm_default";
+            serializedInstaller.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(installer);
+        }
+
+        private static SceneSpawnPoint CreateSceneSpawnPoint(Transform parent, string spawnId, Vector3 position)
+        {
+            var spawnObject = new GameObject($"Spawn_{spawnId}");
+            spawnObject.transform.SetParent(parent);
+            spawnObject.transform.position = position;
+
+            var spawnPoint = spawnObject.AddComponent<SceneSpawnPoint>();
+            var serializedSpawn = new SerializedObject(spawnPoint);
+            serializedSpawn.FindProperty("_spawnId").stringValue = spawnId;
+            serializedSpawn.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(spawnPoint);
+            return spawnPoint;
+        }
+
+        private static void CreateFarmPortals()
+        {
+            var portals = new GameObject("Portals");
+            portals.transform.position = Vector3.zero;
+
+            CreateScenePortal(
+                portals.transform,
+                "Portal_Farm_To_Town",
+                new Vector3(8.25f, -4.75f, 0f),
+                new Color(0.29f, 0.43f, 0.67f),
+                "TownScene",
+                "Assets/_Game/Scenes/TownScene.unity",
+                "town_from_farm",
+                "Ir para Cindar's Hope");
+        }
+
+        private static void CreateScenePortal(
+            Transform parent,
+            string name,
+            Vector3 position,
+            Color color,
+            string targetSceneName,
+            string targetScenePath,
+            string targetSpawnId,
+            string interactionPrompt)
+        {
+            var portalObject = new GameObject(name);
+            portalObject.transform.SetParent(parent);
+            portalObject.transform.position = position;
+            portalObject.transform.localScale = new Vector3(1f, 1.35f, 1f);
+
+            var spriteRenderer = portalObject.AddComponent<SpriteRenderer>();
+            spriteRenderer.sprite = GetBuiltinSprite();
+            spriteRenderer.color = color;
+            spriteRenderer.sortingOrder = 2;
+            SetSortingLayerIfExists(spriteRenderer, "Items");
+
+            if (spriteRenderer.sprite == null)
+            {
+                Debug.LogWarning($"{name} placeholder SpriteRenderer was created without a sprite. Replace it with portal art in a future art PR.");
+            }
+
+            var collider = portalObject.AddComponent<BoxCollider2D>();
+            collider.isTrigger = true;
+            collider.size = Vector2.one;
+
+            var portal = portalObject.AddComponent<ScenePortal>();
+            var serializedPortal = new SerializedObject(portal);
+            serializedPortal.FindProperty("_targetSceneName").stringValue = targetSceneName;
+            serializedPortal.FindProperty("_targetScenePath").stringValue = targetScenePath;
+            serializedPortal.FindProperty("_targetSpawnId").stringValue = targetSpawnId;
+            serializedPortal.FindProperty("_interactionPrompt").stringValue = interactionPrompt;
+            serializedPortal.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(portal);
         }
 
         private static void CreateDebugInteractable()
