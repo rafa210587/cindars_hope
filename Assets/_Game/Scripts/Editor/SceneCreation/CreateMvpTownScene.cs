@@ -1,3 +1,4 @@
+using CindarsHope.Economy;
 using CindarsHope.Interaction;
 using CindarsHope.NPC;
 using CindarsHope.Player;
@@ -37,6 +38,7 @@ namespace CindarsHope.Editor.SceneCreation
             CreateSpawnPoints(playerTransform);
             CreatePortals();
             CreateNpcs();
+            CreateTownCommerce();
             CreateTownDecorations();
 
             EditorSceneManager.MarkSceneDirty(scene);
@@ -310,6 +312,113 @@ namespace CindarsHope.Editor.SceneCreation
             SetReference(serializedNpc, "_collider", collider);
             serializedNpc.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(talkPoint);
+        }
+
+        private static void CreateTownCommerce()
+        {
+            var parent = new GameObject("TownCommerce");
+            parent.transform.position = Vector3.zero;
+
+            CreateBuyItemPoint(
+                parent.transform,
+                "Shop_Buy_WheatSeeds",
+                new Vector3(1.5f, -0.75f, 0f),
+                new Color(0.78f, 0.55f, 0.25f),
+                "shop_town_seed_wheat",
+                "seed_wheat",
+                3,
+                5,
+                "Comprar trigo x3 por 5g");
+
+            CreateBuyItemPoint(
+                parent.transform,
+                "Shop_Buy_CarrotSeeds",
+                new Vector3(3f, -0.75f, 0f),
+                new Color(0.9f, 0.45f, 0.18f),
+                "shop_town_seed_carrot",
+                "seed_carrot",
+                2,
+                6,
+                "Comprar cenoura x2 por 6g");
+
+            CreateSellAllPoint(
+                parent.transform,
+                "Shop_SellBox",
+                new Vector3(4.5f, -0.75f, 0f),
+                new Color(0.28f, 0.65f, 0.68f),
+                "shop_town_sell_box",
+                "Vender itens");
+
+            CreateDecoration(parent.transform, "GeneralStorePlaceholder", new Vector3(3f, 0.75f, 0f), new Vector3(3.75f, 1.1f, 1f), new Color(0.42f, 0.31f, 0.24f));
+        }
+
+        private static void CreateBuyItemPoint(
+            Transform parent,
+            string name,
+            Vector3 position,
+            Color color,
+            string sourceId,
+            string itemId,
+            int amount,
+            int totalCost,
+            string interactionPrompt)
+        {
+            var pointObject = CreateCommerceObject(parent, name, position, color);
+            var point = pointObject.AddComponent<BuyItemPoint>();
+            var serializedPoint = new SerializedObject(point);
+            serializedPoint.FindProperty("_sourceId").stringValue = sourceId;
+            serializedPoint.FindProperty("_itemId").stringValue = itemId;
+            serializedPoint.FindProperty("_amount").intValue = amount;
+            serializedPoint.FindProperty("_totalCost").intValue = totalCost;
+            serializedPoint.FindProperty("_interactionPrompt").stringValue = interactionPrompt;
+            SetReference(serializedPoint, "_spriteRenderer", pointObject.GetComponent<SpriteRenderer>());
+            SetReference(serializedPoint, "_collider", pointObject.GetComponent<Collider2D>());
+            serializedPoint.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(point);
+        }
+
+        private static void CreateSellAllPoint(
+            Transform parent,
+            string name,
+            Vector3 position,
+            Color color,
+            string sourceId,
+            string interactionPrompt)
+        {
+            var pointObject = CreateCommerceObject(parent, name, position, color);
+            var point = pointObject.AddComponent<SellAllPoint>();
+            var serializedPoint = new SerializedObject(point);
+            serializedPoint.FindProperty("_sourceId").stringValue = sourceId;
+            serializedPoint.FindProperty("_interactionPrompt").stringValue = interactionPrompt;
+            SetReference(serializedPoint, "_spriteRenderer", pointObject.GetComponent<SpriteRenderer>());
+            SetReference(serializedPoint, "_collider", pointObject.GetComponent<Collider2D>());
+            serializedPoint.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(point);
+        }
+
+        private static GameObject CreateCommerceObject(Transform parent, string name, Vector3 position, Color color)
+        {
+            var pointObject = new GameObject(name);
+            pointObject.transform.SetParent(parent);
+            pointObject.transform.position = position;
+            pointObject.transform.localScale = new Vector3(0.9f, 0.9f, 1f);
+
+            var spriteRenderer = pointObject.AddComponent<SpriteRenderer>();
+            spriteRenderer.sprite = GetBuiltinSprite();
+            spriteRenderer.color = color;
+            spriteRenderer.sortingOrder = 2;
+            SetSortingLayerIfExists(spriteRenderer, "Items");
+
+            if (spriteRenderer.sprite == null)
+            {
+                Debug.LogWarning($"{name} placeholder SpriteRenderer was created without a sprite. Replace it with shop art in a future art PR.");
+            }
+
+            var collider = pointObject.AddComponent<BoxCollider2D>();
+            collider.isTrigger = true;
+            collider.size = Vector2.one;
+
+            return pointObject;
         }
 
         private static void CreateDecoration(Transform parent, string name, Vector3 position, Vector3 scale, Color color)
