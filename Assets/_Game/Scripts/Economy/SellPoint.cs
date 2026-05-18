@@ -71,5 +71,26 @@ namespace CindarsHope.Economy
             _playerManager.AddGold(totalGold);
             Debug.Log($"SellPoint sale complete. Earned {totalGold} gold.", this);
         }
+
+        public void RebindRuntimeManagers(InventoryManager inventoryManager, PlayerManager playerManager)
+        {
+            if (inventoryManager == null)
+            {
+                Debug.LogWarning("SellPoint received null InventoryManager for rebind.", this);
+            }
+            else
+            {
+                _inventoryManager = inventoryManager;
+            }
+
+            if (playerManager == null)
+            {
+                Debug.LogWarning("SellPoint received null PlayerManager for rebind.", this);
+            }
+            else
+            {
+                _playerManager = playerManager;
+            }
+        }
     }
 }

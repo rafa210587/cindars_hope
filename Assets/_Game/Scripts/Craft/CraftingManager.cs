@@ -35,6 +35,17 @@ namespace CindarsHope.Craft
             IsInitialized = false;
         }
 
+        public void RebindInventoryManager(InventoryManager inventoryManager)
+        {
+            if (inventoryManager == null)
+            {
+                Debug.LogWarning("CraftingManager received null InventoryManager for rebind.", this);
+                return;
+            }
+
+            _inventoryManager = inventoryManager;
+        }
+
         public bool CanCraft(string recipeId)
         {
             return TryGetRecipe(recipeId, out var recipe)

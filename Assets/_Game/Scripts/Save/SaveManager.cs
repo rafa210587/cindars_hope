@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using CindarsHope.Core;
@@ -9,6 +10,10 @@ using CindarsHope.Inventory;
 using CindarsHope.Player;
 using CindarsHope.World;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+#if UNITY_EDITOR
+using UnityEditor.SceneManagement;
+#endif
 
 namespace CindarsHope.Save
 {
@@ -19,6 +24,10 @@ namespace CindarsHope.Save
         private const int Slot = 1;
         private const string SaveDirectoryName = "saves";
         private const string SaveFileName = "slot_1.json";
+        private const string FarmSceneName = "FarmScene";
+        private const string TownSceneName = "TownScene";
+        private const string FarmScenePath = "Assets/_Game/Scenes/FarmScene.unity";
+        private const string TownScenePath = "Assets/_Game/Scenes/TownScene.unity";
 
         [SerializeField] private PlayerManager _playerManager;
         [SerializeField] private InventoryManager _inventoryManager;
@@ -46,22 +55,18 @@ namespace CindarsHope.Save
         {
             try
             {
-                var farmSaveData = new FarmSaveData();
-                if (_farmPlotRegistry != null)
-                {
-                    farmSaveData = _farmPlotRegistry.CaptureSaveData();
-                }
-                else
-                {
-                    Debug.LogWarning("SaveManager saved without FarmPlotRegistry. Farm plots were omitted.", this);
-                }
+                var existingSaveData = TryReadExistingValidSave();
+                var activeScene = SceneManager.GetActiveScene();
 
-                var worldSaveData = CaptureWorldSaveData();
+                var farmSaveData = CaptureFarmSaveData(existingSaveData);
+                var worldSaveData = CaptureWorldSaveData(existingSaveData);
 
                 var saveData = new GameSaveData
                 {
                     SchemaVersion = CurrentSchemaVersion,
                     CurrentDay = CaptureCurrentDay(),
+                    CurrentSceneName = activeScene.name,
+                    CurrentScenePath = activeScene.path,
                     Player = CapturePlayerSaveData(),
                     Inventory = CaptureInventorySaveData(),
                     Farm = farmSaveData,
@@ -115,82 +120,14 @@ namespace CindarsHope.Save
                     return false;
                 }
 
-                if (_timeManager != null)
+                var activeScene = SceneManager.GetActiveScene();
+                if (!string.IsNullOrEmpty(saveData.CurrentSceneName) && saveData.CurrentSceneName != activeScene.name)
                 {
-                    _timeManager.SetCurrentDay(saveData.CurrentDay);
-                }
-                else
-                {
-                    Debug.LogWarning("SaveManager skipped day restore because TimeManager is missing.", this);
+                    StartCoroutine(LoadSceneAndApplySaveData(saveData));
+                    return true;
                 }
 
-                if (_playerManager != null)
-                {
-                    _playerManager.RestoreFromSaveData(saveData.Player);
-                }
-                else
-                {
-                    Debug.LogWarning("SaveManager skipped player restore because PlayerManager is missing.", this);
-                }
-
-                if (saveData.Player != null && _hungerManager != null)
-                {
-                    _hungerManager.RestoreFromSaveData(saveData.Player.CurrentHunger, saveData.Player.MaxHunger);
-                }
-                else
-                {
-                    Debug.LogWarning("SaveManager skipped hunger restore because save data or HungerManager is missing.", this);
-                }
-
-                if (saveData.Player != null && _playerTransform != null)
-                {
-                    _playerTransform.position = saveData.Player.PlayerPosition;
-                }
-                else
-                {
-                    Debug.LogWarning("SaveManager skipped player position restore because save data or player Transform is missing.", this);
-                }
-
-                if (_inventoryManager != null)
-                {
-                    _inventoryManager.RestoreFromSaveData(saveData.Inventory);
-                }
-                else
-                {
-                    Debug.LogWarning("SaveManager skipped inventory restore because InventoryManager is missing.", this);
-                }
-
-                if (_itemPickupRegistry != null)
-                {
-                    _itemPickupRegistry.RestoreFromSaveData(saveData.World != null ? saveData.World.Pickups : null);
-                }
-                else
-                {
-                    Debug.LogWarning("SaveManager skipped item pickup restore because ItemPickupRegistry is missing.", this);
-                }
-
-                if (_farmPlotRegistry != null)
-                {
-                    _farmPlotRegistry.RestoreFromSaveData(saveData.Farm);
-                }
-                else
-                {
-                    Debug.LogWarning("SaveManager skipped farm plot restore because FarmPlotRegistry is missing.", this);
-                }
-
-                if (_treeRegistry != null)
-                {
-                    var treeFarmSaveData = new FarmSaveData
-                    {
-                        Trees = GetSavedTrees(saveData)
-                    };
-                    _treeRegistry.RestoreFromSaveData(treeFarmSaveData);
-                }
-                else
-                {
-                    Debug.LogWarning("SaveManager skipped tree restore because TreeRegistry is missing.", this);
-                }
-
+                ApplySaveData(saveData);
                 Debug.Log($"Game loaded from {savePath}.", this);
                 return true;
             }
@@ -209,6 +146,80 @@ namespace CindarsHope.Save
             }
 
             IsInitialized = false;
+        }
+
+        public void RebindSceneReferences(FarmPlotRegistry farmPlotRegistry, TreeRegistry treeRegistry, ItemPickupRegistry itemPickupRegistry, Transform playerTransform)
+        {
+            if (farmPlotRegistry != null)
+            {
+                _farmPlotRegistry = farmPlotRegistry;
+            }
+
+            if (treeRegistry != null)
+            {
+                _treeRegistry = treeRegistry;
+            }
+
+            if (itemPickupRegistry != null)
+            {
+                _itemPickupRegistry = itemPickupRegistry;
+            }
+
+            if (playerTransform != null)
+            {
+                _playerTransform = playerTransform;
+            }
+        }
+
+        public void RebindRuntimeManagers(PlayerManager playerManager, InventoryManager inventoryManager, HungerManager hungerManager, TimeManager timeManager)
+        {
+            if (playerManager != null)
+            {
+                _playerManager = playerManager;
+            }
+            else
+            {
+                Debug.LogWarning("SaveManager.RebindRuntimeManagers received null PlayerManager.", this);
+            }
+
+            if (inventoryManager != null)
+            {
+                _inventoryManager = inventoryManager;
+            }
+            else
+            {
+                Debug.LogWarning("SaveManager.RebindRuntimeManagers received null InventoryManager.", this);
+            }
+
+            if (hungerManager != null)
+            {
+                _hungerManager = hungerManager;
+            }
+            else
+            {
+                Debug.LogWarning("SaveManager.RebindRuntimeManagers received null HungerManager.", this);
+            }
+
+            if (timeManager != null)
+            {
+                _timeManager = timeManager;
+            }
+            else
+            {
+                Debug.LogWarning("SaveManager.RebindRuntimeManagers received null TimeManager.", this);
+            }
+        }
+
+        public void RebindPlayerTransform(Transform playerTransform)
+        {
+            if (playerTransform != null)
+            {
+                _playerTransform = playerTransform;
+            }
+            else
+            {
+                Debug.LogWarning("SaveManager.RebindPlayerTransform received null Transform.", this);
+            }
         }
 
         private int CaptureCurrentDay()
@@ -292,6 +303,179 @@ namespace CindarsHope.Save
             return saveData.Farm != null && saveData.Farm.Trees != null
                 ? saveData.Farm.Trees
                 : new List<TreeSaveData>();
+        }
+
+        private GameSaveData TryReadExistingValidSave()
+        {
+            var savePath = SaveFilePath;
+            if (!File.Exists(savePath))
+            {
+                return null;
+            }
+
+            try
+            {
+                var json = File.ReadAllText(savePath);
+                var saveData = JsonUtility.FromJson<GameSaveData>(json);
+                if (saveData == null)
+                {
+                    Debug.LogWarning($"Existing save file could not be parsed.", this);
+                    return null;
+                }
+
+                if (saveData.SchemaVersion != CurrentSchemaVersion)
+                {
+                    Debug.LogWarning($"Existing save has unsupported schema version {saveData.SchemaVersion}.", this);
+                    return null;
+                }
+
+                return saveData;
+            }
+            catch (Exception exception)
+            {
+                Debug.LogWarning($"Error reading existing save: {exception.Message}", this);
+                return null;
+            }
+        }
+
+        private FarmSaveData CaptureFarmSaveData(GameSaveData existingSaveData)
+        {
+            var activeScene = SceneManager.GetActiveScene();
+            if (activeScene.name == FarmSceneName && _farmPlotRegistry != null)
+            {
+                return _farmPlotRegistry.CaptureSaveData();
+            }
+
+            if (existingSaveData?.Farm != null)
+            {
+                return existingSaveData.Farm;
+            }
+
+            return new FarmSaveData();
+        }
+
+        private WorldSaveData CaptureWorldSaveData(GameSaveData existingSaveData)
+        {
+            var worldSaveData = new WorldSaveData();
+            var activeScene = SceneManager.GetActiveScene();
+
+            if (activeScene.name == FarmSceneName)
+            {
+                if (_itemPickupRegistry != null)
+                {
+                    worldSaveData.Pickups = _itemPickupRegistry.CaptureSaveData();
+                }
+                else if (existingSaveData?.World?.Pickups != null)
+                {
+                    worldSaveData.Pickups = existingSaveData.World.Pickups;
+                }
+
+                if (_treeRegistry != null)
+                {
+                    worldSaveData.Trees = _treeRegistry.CaptureSaveData();
+                }
+                else if (existingSaveData?.World?.Trees != null)
+                {
+                    worldSaveData.Trees = existingSaveData.World.Trees;
+                }
+            }
+            else
+            {
+                if (existingSaveData?.World != null)
+                {
+                    worldSaveData.Pickups = existingSaveData.World.Pickups;
+                    worldSaveData.Trees = existingSaveData.World.Trees;
+                }
+            }
+
+            return worldSaveData;
+        }
+
+        private IEnumerator LoadSceneAndApplySaveData(GameSaveData saveData)
+        {
+#if UNITY_EDITOR
+            if (!string.IsNullOrEmpty(saveData.CurrentScenePath))
+            {
+                EditorSceneManager.LoadSceneInPlayMode(saveData.CurrentScenePath, new LoadSceneParameters(LoadSceneMode.Single));
+            }
+            else
+            {
+                SceneManager.LoadScene(saveData.CurrentSceneName);
+            }
+#else
+            SceneManager.LoadScene(saveData.CurrentSceneName);
+#endif
+            yield return null;
+            yield return null;
+
+            ApplySaveData(saveData);
+        }
+
+        private void ApplySaveData(GameSaveData saveData)
+        {
+            if (_timeManager != null)
+            {
+                _timeManager.SetCurrentDay(saveData.CurrentDay);
+            }
+            else
+            {
+                Debug.LogWarning("SaveManager skipped day restore because TimeManager is missing.", this);
+            }
+
+            if (_playerManager != null)
+            {
+                _playerManager.RestoreFromSaveData(saveData.Player);
+            }
+            else
+            {
+                Debug.LogWarning("SaveManager skipped player restore because PlayerManager is missing.", this);
+            }
+
+            if (saveData.Player != null && _hungerManager != null)
+            {
+                _hungerManager.RestoreFromSaveData(saveData.Player.CurrentHunger, saveData.Player.MaxHunger);
+            }
+            else
+            {
+                Debug.LogWarning("SaveManager skipped hunger restore because save data or HungerManager is missing.", this);
+            }
+
+            if (saveData.Player != null && _playerTransform != null)
+            {
+                _playerTransform.position = saveData.Player.PlayerPosition;
+            }
+            else
+            {
+                Debug.LogWarning("SaveManager skipped player position restore because save data or player Transform is missing.", this);
+            }
+
+            if (_inventoryManager != null)
+            {
+                _inventoryManager.RestoreFromSaveData(saveData.Inventory);
+            }
+            else
+            {
+                Debug.LogWarning("SaveManager skipped inventory restore because InventoryManager is missing.", this);
+            }
+
+            if (_itemPickupRegistry != null && saveData.World != null)
+            {
+                _itemPickupRegistry.RestoreFromSaveData(saveData.World.Pickups);
+            }
+
+            if (_farmPlotRegistry != null && saveData.Farm != null)
+            {
+                _farmPlotRegistry.RestoreFromSaveData(saveData.Farm);
+            }
+
+            if (_treeRegistry != null && saveData.World != null)
+            {
+                var treeFarmSaveData = new FarmSaveData
+                {
+                    Trees = saveData.World.Trees ?? new List<TreeSaveData>()
+                };
+                _treeRegistry.RestoreFromSaveData(treeFarmSaveData);
+            }
         }
 
         private void PublishSaveResult(bool wasSuccessful, string message)

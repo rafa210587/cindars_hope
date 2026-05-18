@@ -1,8 +1,17 @@
+using CindarsHope.Core.Bootstrap;
+using CindarsHope.Core.Data;
+using CindarsHope.Core.Time;
+using CindarsHope.Craft;
+using CindarsHope.Craft.Data;
+using CindarsHope.Economy;
+using CindarsHope.Inventory;
 using CindarsHope.Interaction;
 using CindarsHope.NPC;
 using CindarsHope.Player;
 using CindarsHope.Player.Data;
+using CindarsHope.Save;
 using CindarsHope.SceneManagement;
+using CindarsHope.UI;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -15,6 +24,8 @@ namespace CindarsHope.Editor.SceneCreation
         private const string ScenePath = "Assets/_Game/Scenes/TownScene.unity";
         private const string FarmScenePath = "Assets/_Game/Scenes/FarmScene.unity";
         private const string PlayerDataPath = "Assets/_Game/Data/Config/PlayerData.asset";
+        private const string ItemDatabasePath = "Assets/_Game/Data/Registries/ItemDatabase.asset";
+        private const string RecipeDatabasePath = "Assets/_Game/Data/Registries/RecipeDatabase.asset";
         private const string BuiltinSpritePath = "UI/Skin/UISprite.psd";
 
         [MenuItem("CindarsHope/Scenes/Create MVP TownScene")]
@@ -30,14 +41,39 @@ namespace CindarsHope.Editor.SceneCreation
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             scene.name = "TownScene";
 
+            var bootstrap = CreateBootstrap();
+            var playerManager = bootstrap.GetComponent<PlayerManager>();
+            var inventoryManager = bootstrap.GetComponent<InventoryManager>();
+            var timeManager = bootstrap.GetComponent<TimeManager>();
+            var saveManager = bootstrap.GetComponent<SaveManager>();
+            var hungerManager = bootstrap.GetComponent<HungerManager>();
+            var craftingManager = bootstrap.GetComponent<CraftingManager>();
+            var economyManager = bootstrap.GetComponent<EconomyManager>();
+
             var playerTransform = CreatePlayer();
+            var interactionSystem = playerTransform.GetComponent<InteractionSystem>();
+
             CreateGround();
             CreateBounds();
             CreateMainCamera();
             CreateSpawnPoints(playerTransform);
             CreatePortals();
             CreateNpcs();
+            CreateTownCommerce();
             CreateTownDecorations();
+            CreateDebugHud(playerManager, inventoryManager, hungerManager, interactionSystem, timeManager, saveManager);
+            CreateSceneRuntimeInstaller(playerTransform);
+
+            ConfigureBootstrap(
+                bootstrap,
+                playerTransform,
+                playerManager,
+                inventoryManager,
+                timeManager,
+                saveManager,
+                hungerManager,
+                craftingManager,
+                economyManager);
 
             EditorSceneManager.MarkSceneDirty(scene);
             EditorSceneManager.SaveScene(scene, ScenePath);
@@ -46,6 +82,160 @@ namespace CindarsHope.Editor.SceneCreation
             var sceneAsset = AssetDatabase.LoadAssetAtPath<SceneAsset>(ScenePath);
             Selection.activeObject = sceneAsset;
             Debug.Log($"MVP TownScene created at {ScenePath}.");
+        }
+
+        private static GameBootstrap CreateBootstrap()
+        {
+            var bootstrapObject = new GameObject("_Bootstrap");
+            bootstrapObject.transform.position = Vector3.zero;
+
+            var bootstrap = bootstrapObject.AddComponent<GameBootstrap>();
+            bootstrapObject.AddComponent<PlayerManager>();
+            bootstrapObject.AddComponent<InventoryManager>();
+            bootstrapObject.AddComponent<TimeManager>();
+            bootstrapObject.AddComponent<SaveManager>();
+            bootstrapObject.AddComponent<DayAdvanceInput>();
+            bootstrapObject.AddComponent<HungerManager>();
+            bootstrapObject.AddComponent<FoodConsumer>();
+            bootstrapObject.AddComponent<SaveInput>();
+            bootstrapObject.AddComponent<CraftingManager>();
+            bootstrapObject.AddComponent<EconomyManager>();
+
+            return bootstrap;
+        }
+
+        private static void ConfigureBootstrap(
+            GameBootstrap bootstrap,
+            Transform playerTransform,
+            PlayerManager playerManager,
+            InventoryManager inventoryManager,
+            TimeManager timeManager,
+            SaveManager saveManager,
+            HungerManager hungerManager,
+            CraftingManager craftingManager,
+            EconomyManager economyManager)
+        {
+            var serializedBootstrap = new SerializedObject(bootstrap);
+            SetReference(serializedBootstrap, "_playerManager", playerManager);
+            SetReference(serializedBootstrap, "_inventoryManager", inventoryManager);
+            SetReference(serializedBootstrap, "_timeManager", timeManager);
+            SetReference(serializedBootstrap, "_saveManager", saveManager);
+            SetReference(serializedBootstrap, "_hungerManager", hungerManager);
+            SetReference(serializedBootstrap, "_craftingManager", craftingManager);
+            SetReference(serializedBootstrap, "_economyManager", economyManager);
+
+            ConfigureDayAdvanceInput(bootstrap.GetComponent<DayAdvanceInput>(), timeManager);
+            ConfigureFoodConsumer(bootstrap.GetComponent<FoodConsumer>(), inventoryManager, hungerManager);
+            ConfigureSaveInput(bootstrap.GetComponent<SaveInput>(), saveManager);
+            ConfigureSaveManager(saveManager, playerManager, inventoryManager, hungerManager, timeManager, playerTransform);
+            ConfigureCraftingManager(craftingManager, inventoryManager);
+            ConfigureEconomyManager(economyManager, inventoryManager, playerManager);
+
+            var playerData = AssetDatabase.LoadAssetAtPath<PlayerDataSO>(PlayerDataPath);
+            if (playerData != null)
+            {
+                SetReference(serializedBootstrap, "_playerData", playerData);
+                ConfigureHungerManager(hungerManager, playerData, playerManager, playerTransform);
+            }
+            else
+            {
+                Debug.LogWarning($"PlayerDataSO not found at {PlayerDataPath}. Assign it manually on TownScene GameBootstrap.");
+                ConfigureHungerManager(hungerManager, null, playerManager, playerTransform);
+            }
+
+            var itemDatabase = AssetDatabase.LoadAssetAtPath<ItemDatabaseSO>(ItemDatabasePath);
+            if (itemDatabase != null)
+            {
+                SetReference(serializedBootstrap, "_itemDatabase", itemDatabase);
+            }
+            else
+            {
+                Debug.LogWarning($"ItemDatabaseSO not found at {ItemDatabasePath}. Assign it manually on TownScene GameBootstrap.");
+            }
+
+            serializedBootstrap.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(bootstrap);
+        }
+
+        private static void ConfigureSaveManager(
+            SaveManager saveManager,
+            PlayerManager playerManager,
+            InventoryManager inventoryManager,
+            HungerManager hungerManager,
+            TimeManager timeManager,
+            Transform playerTransform)
+        {
+            var serializedSave = new SerializedObject(saveManager);
+            SetReference(serializedSave, "_playerManager", playerManager);
+            SetReference(serializedSave, "_inventoryManager", inventoryManager);
+            SetReference(serializedSave, "_hungerManager", hungerManager);
+            SetReference(serializedSave, "_timeManager", timeManager);
+            SetReference(serializedSave, "_playerTransform", playerTransform);
+            serializedSave.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(saveManager);
+        }
+
+        private static void ConfigureSaveInput(SaveInput saveInput, SaveManager saveManager)
+        {
+            var serializedInput = new SerializedObject(saveInput);
+            SetReference(serializedInput, "_saveManager", saveManager);
+            serializedInput.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(saveInput);
+        }
+
+        private static void ConfigureHungerManager(HungerManager hungerManager, PlayerDataSO playerData, PlayerManager playerManager, Transform playerTransform)
+        {
+            var serializedHunger = new SerializedObject(hungerManager);
+            SetReference(serializedHunger, "_playerData", playerData);
+            SetReference(serializedHunger, "_playerManager", playerManager);
+            SetReference(serializedHunger, "_playerTransform", playerTransform);
+            serializedHunger.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(hungerManager);
+        }
+
+        private static void ConfigureFoodConsumer(FoodConsumer foodConsumer, InventoryManager inventoryManager, HungerManager hungerManager)
+        {
+            var serializedConsumer = new SerializedObject(foodConsumer);
+            SetReference(serializedConsumer, "_inventoryManager", inventoryManager);
+            SetReference(serializedConsumer, "_hungerManager", hungerManager);
+            serializedConsumer.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(foodConsumer);
+        }
+
+        private static void ConfigureDayAdvanceInput(DayAdvanceInput dayAdvanceInput, TimeManager timeManager)
+        {
+            var serializedInput = new SerializedObject(dayAdvanceInput);
+            SetReference(serializedInput, "_timeManager", timeManager);
+            serializedInput.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(dayAdvanceInput);
+        }
+
+        private static void ConfigureCraftingManager(CraftingManager craftingManager, InventoryManager inventoryManager)
+        {
+            var serializedCrafting = new SerializedObject(craftingManager);
+            SetReference(serializedCrafting, "_inventoryManager", inventoryManager);
+
+            var recipeDatabase = AssetDatabase.LoadAssetAtPath<RecipeDatabaseSO>(RecipeDatabasePath);
+            if (recipeDatabase != null)
+            {
+                SetReference(serializedCrafting, "_recipeDatabase", recipeDatabase);
+            }
+            else
+            {
+                Debug.LogWarning($"RecipeDatabaseSO not found at {RecipeDatabasePath}. Assign it manually on TownScene CraftingManager.");
+            }
+
+            serializedCrafting.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(craftingManager);
+        }
+
+        private static void ConfigureEconomyManager(EconomyManager economyManager, InventoryManager inventoryManager, PlayerManager playerManager)
+        {
+            var serializedEconomy = new SerializedObject(economyManager);
+            SetReference(serializedEconomy, "_inventoryManager", inventoryManager);
+            SetReference(serializedEconomy, "_playerManager", playerManager);
+            serializedEconomy.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(economyManager);
         }
 
         private static Transform CreatePlayer()
@@ -124,6 +314,27 @@ namespace CindarsHope.Editor.SceneCreation
             SetReference(serializedInteraction, "_interactionTrigger", interactionTrigger);
             serializedInteraction.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(interactionSystem);
+        }
+
+        private static void CreateDebugHud(
+            PlayerManager playerManager,
+            InventoryManager inventoryManager,
+            HungerManager hungerManager,
+            InteractionSystem interactionSystem,
+            TimeManager timeManager,
+            SaveManager saveManager)
+        {
+            var hudObject = new GameObject("DebugHud");
+            var debugHud = hudObject.AddComponent<DebugHud>();
+            var serializedHud = new SerializedObject(debugHud);
+            SetReference(serializedHud, "_playerManager", playerManager);
+            SetReference(serializedHud, "_inventoryManager", inventoryManager);
+            SetReference(serializedHud, "_hungerManager", hungerManager);
+            SetReference(serializedHud, "_interactionSystem", interactionSystem);
+            SetReference(serializedHud, "_timeManager", timeManager);
+            SetReference(serializedHud, "_saveManager", saveManager);
+            serializedHud.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(debugHud);
         }
 
         private static void CreateGround()
@@ -312,6 +523,113 @@ namespace CindarsHope.Editor.SceneCreation
             EditorUtility.SetDirty(talkPoint);
         }
 
+        private static void CreateTownCommerce()
+        {
+            var parent = new GameObject("TownCommerce");
+            parent.transform.position = Vector3.zero;
+
+            CreateBuyItemPoint(
+                parent.transform,
+                "Shop_Buy_WheatSeeds",
+                new Vector3(1.5f, -0.75f, 0f),
+                new Color(0.78f, 0.55f, 0.25f),
+                "shop_town_seed_wheat",
+                "seed_wheat",
+                3,
+                5,
+                "Comprar trigo x3 por 5g");
+
+            CreateBuyItemPoint(
+                parent.transform,
+                "Shop_Buy_CarrotSeeds",
+                new Vector3(3f, -0.75f, 0f),
+                new Color(0.9f, 0.45f, 0.18f),
+                "shop_town_seed_carrot",
+                "seed_carrot",
+                2,
+                6,
+                "Comprar cenoura x2 por 6g");
+
+            CreateSellAllPoint(
+                parent.transform,
+                "Shop_SellBox",
+                new Vector3(4.5f, -0.75f, 0f),
+                new Color(0.28f, 0.65f, 0.68f),
+                "shop_town_sell_box",
+                "Vender itens");
+
+            CreateDecoration(parent.transform, "GeneralStorePlaceholder", new Vector3(3f, 0.75f, 0f), new Vector3(3.75f, 1.1f, 1f), new Color(0.42f, 0.31f, 0.24f));
+        }
+
+        private static void CreateBuyItemPoint(
+            Transform parent,
+            string name,
+            Vector3 position,
+            Color color,
+            string sourceId,
+            string itemId,
+            int amount,
+            int totalCost,
+            string interactionPrompt)
+        {
+            var pointObject = CreateCommerceObject(parent, name, position, color);
+            var point = pointObject.AddComponent<BuyItemPoint>();
+            var serializedPoint = new SerializedObject(point);
+            serializedPoint.FindProperty("_sourceId").stringValue = sourceId;
+            serializedPoint.FindProperty("_itemId").stringValue = itemId;
+            serializedPoint.FindProperty("_amount").intValue = amount;
+            serializedPoint.FindProperty("_totalCost").intValue = totalCost;
+            serializedPoint.FindProperty("_interactionPrompt").stringValue = interactionPrompt;
+            SetReference(serializedPoint, "_spriteRenderer", pointObject.GetComponent<SpriteRenderer>());
+            SetReference(serializedPoint, "_collider", pointObject.GetComponent<Collider2D>());
+            serializedPoint.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(point);
+        }
+
+        private static void CreateSellAllPoint(
+            Transform parent,
+            string name,
+            Vector3 position,
+            Color color,
+            string sourceId,
+            string interactionPrompt)
+        {
+            var pointObject = CreateCommerceObject(parent, name, position, color);
+            var point = pointObject.AddComponent<SellAllPoint>();
+            var serializedPoint = new SerializedObject(point);
+            serializedPoint.FindProperty("_sourceId").stringValue = sourceId;
+            serializedPoint.FindProperty("_interactionPrompt").stringValue = interactionPrompt;
+            SetReference(serializedPoint, "_spriteRenderer", pointObject.GetComponent<SpriteRenderer>());
+            SetReference(serializedPoint, "_collider", pointObject.GetComponent<Collider2D>());
+            serializedPoint.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(point);
+        }
+
+        private static GameObject CreateCommerceObject(Transform parent, string name, Vector3 position, Color color)
+        {
+            var pointObject = new GameObject(name);
+            pointObject.transform.SetParent(parent);
+            pointObject.transform.position = position;
+            pointObject.transform.localScale = new Vector3(0.9f, 0.9f, 1f);
+
+            var spriteRenderer = pointObject.AddComponent<SpriteRenderer>();
+            spriteRenderer.sprite = GetBuiltinSprite();
+            spriteRenderer.color = color;
+            spriteRenderer.sortingOrder = 2;
+            SetSortingLayerIfExists(spriteRenderer, "Items");
+
+            if (spriteRenderer.sprite == null)
+            {
+                Debug.LogWarning($"{name} placeholder SpriteRenderer was created without a sprite. Replace it with shop art in a future art PR.");
+            }
+
+            var collider = pointObject.AddComponent<BoxCollider2D>();
+            collider.isTrigger = true;
+            collider.size = Vector2.one;
+
+            return pointObject;
+        }
+
         private static void CreateDecoration(Transform parent, string name, Vector3 position, Vector3 scale, Color color)
         {
             var decoration = new GameObject(name);
@@ -363,6 +681,18 @@ namespace CindarsHope.Editor.SceneCreation
             }
 
             Debug.LogWarning($"Sorting Layer '{sortingLayerName}' was not found. '{spriteRenderer.gameObject.name}' will use the default sorting layer.");
+        }
+
+        private static void CreateSceneRuntimeInstaller(Transform playerTransform)
+        {
+            var runtimeRefObject = new GameObject("SceneRuntimeReferences");
+            runtimeRefObject.transform.position = Vector3.zero;
+
+            var installer = runtimeRefObject.AddComponent<TownSceneRuntimeReferenceInstaller>();
+            var serializedInstaller = new SerializedObject(installer);
+            SetReference(serializedInstaller, "_playerTransform", playerTransform);
+            serializedInstaller.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(installer);
         }
 
         private static void EnsureFolder(string parentFolder, string childFolder)

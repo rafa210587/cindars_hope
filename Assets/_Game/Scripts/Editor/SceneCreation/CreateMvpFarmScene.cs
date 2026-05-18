@@ -71,6 +71,12 @@ namespace CindarsHope.Editor.SceneCreation
                 saveManager);
             CreateBounds();
             CreateMainCamera();
+            CreateSceneRuntimeInstaller(
+                farmPlotRegistry,
+                treeRegistry,
+                itemPickupRegistry,
+                playerTransform,
+                bootstrap);
 
             ConfigureBootstrap(bootstrap, playerTransform, farmPlotRegistry, treeRegistry, itemPickupRegistry);
 
@@ -98,6 +104,7 @@ namespace CindarsHope.Editor.SceneCreation
             bootstrapObject.AddComponent<FoodConsumer>();
             bootstrapObject.AddComponent<SaveInput>();
             bootstrapObject.AddComponent<CraftingManager>();
+            bootstrapObject.AddComponent<EconomyManager>();
 
             return bootstrap;
         }
@@ -116,6 +123,9 @@ namespace CindarsHope.Editor.SceneCreation
             SetReference(serializedBootstrap, "_inventoryManager", bootstrapObject.GetComponent<InventoryManager>());
             SetReference(serializedBootstrap, "_timeManager", bootstrapObject.GetComponent<TimeManager>());
             SetReference(serializedBootstrap, "_saveManager", bootstrapObject.GetComponent<SaveManager>());
+            SetReference(serializedBootstrap, "_hungerManager", bootstrapObject.GetComponent<HungerManager>());
+            SetReference(serializedBootstrap, "_craftingManager", bootstrapObject.GetComponent<CraftingManager>());
+            SetReference(serializedBootstrap, "_economyManager", bootstrapObject.GetComponent<EconomyManager>());
             ConfigureDayAdvanceInput(bootstrapObject.GetComponent<DayAdvanceInput>(), bootstrapObject.GetComponent<TimeManager>());
             ConfigureFoodConsumer(bootstrapObject.GetComponent<FoodConsumer>(), bootstrapObject.GetComponent<InventoryManager>(), bootstrapObject.GetComponent<HungerManager>());
             ConfigureSaveManager(
@@ -130,6 +140,7 @@ namespace CindarsHope.Editor.SceneCreation
                 playerTransform);
             ConfigureSaveInput(bootstrapObject.GetComponent<SaveInput>(), bootstrapObject.GetComponent<SaveManager>());
             ConfigureCraftingManager(bootstrapObject.GetComponent<CraftingManager>(), bootstrapObject.GetComponent<InventoryManager>());
+            ConfigureEconomyManager(bootstrapObject.GetComponent<EconomyManager>(), bootstrapObject.GetComponent<InventoryManager>(), bootstrapObject.GetComponent<PlayerManager>());
 
             var playerData = AssetDatabase.LoadAssetAtPath<PlayerDataSO>(PlayerDataPath);
             if (playerData != null)
@@ -233,6 +244,15 @@ namespace CindarsHope.Editor.SceneCreation
 
             serializedCrafting.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(craftingManager);
+        }
+
+        private static void ConfigureEconomyManager(EconomyManager economyManager, InventoryManager inventoryManager, PlayerManager playerManager)
+        {
+            var serializedEconomy = new SerializedObject(economyManager);
+            SetReference(serializedEconomy, "_inventoryManager", inventoryManager);
+            SetReference(serializedEconomy, "_playerManager", playerManager);
+            serializedEconomy.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(economyManager);
         }
 
         private static Transform CreatePlayer()
@@ -834,6 +854,66 @@ namespace CindarsHope.Editor.SceneCreation
             }
 
             Debug.LogWarning($"Sorting Layer '{sortingLayerName}' was not found. '{spriteRenderer.gameObject.name}' will use the default sorting layer.");
+        }
+
+        private static void CreateSceneRuntimeInstaller(
+            FarmPlotRegistry farmPlotRegistry,
+            TreeRegistry treeRegistry,
+            ItemPickupRegistry itemPickupRegistry,
+            Transform playerTransform,
+            GameBootstrap bootstrap)
+        {
+            var installerObject = new GameObject("SceneRuntimeReferences");
+            var installer = installerObject.AddComponent<FarmSceneRuntimeReferenceInstaller>();
+
+            var serializedInstaller = new SerializedObject(installer);
+
+            var farmPlots = Object.FindObjectsByType<FarmPlot>(FindObjectsSortMode.None);
+            SetReference(serializedInstaller, "_farmPlots", null);
+            var farmPlotsProperty = serializedInstaller.FindProperty("_farmPlots");
+            if (farmPlotsProperty != null)
+            {
+                farmPlotsProperty.arraySize = farmPlots.Length;
+                for (int i = 0; i < farmPlots.Length; i++)
+                {
+                    farmPlotsProperty.GetArrayElementAtIndex(i).objectReferenceValue = farmPlots[i];
+                }
+            }
+
+            var treeNodes = Object.FindObjectsByType<TreeNode>(FindObjectsSortMode.None);
+            var treeNodesProperty = serializedInstaller.FindProperty("_treeNodes");
+            if (treeNodesProperty != null)
+            {
+                treeNodesProperty.arraySize = treeNodes.Length;
+                for (int i = 0; i < treeNodes.Length; i++)
+                {
+                    treeNodesProperty.GetArrayElementAtIndex(i).objectReferenceValue = treeNodes[i];
+                }
+            }
+
+            var fishingSpots = Object.FindObjectsByType<FishingSpot>(FindObjectsSortMode.None);
+            var fishingSpot = fishingSpots.Length > 0 ? fishingSpots[0] : null;
+            SetReference(serializedInstaller, "_fishingSpot", fishingSpot);
+
+            var seedShopPoints = Object.FindObjectsByType<SeedShopPoint>(FindObjectsSortMode.None);
+            var seedShopPoint = seedShopPoints.Length > 0 ? seedShopPoints[0] : null;
+            SetReference(serializedInstaller, "_seedShopPoint", seedShopPoint);
+
+            var sellPoints = Object.FindObjectsByType<SellPoint>(FindObjectsSortMode.None);
+            var sellPoint = sellPoints.Length > 0 ? sellPoints[0] : null;
+            SetReference(serializedInstaller, "_sellAllPoint", sellPoint);
+
+            var craftingPoints = Object.FindObjectsByType<CraftingPoint>(FindObjectsSortMode.None);
+            var craftingPoint = craftingPoints.Length > 0 ? craftingPoints[0] : null;
+            SetReference(serializedInstaller, "_craftingPoint", craftingPoint);
+
+            SetReference(serializedInstaller, "_farmPlotRegistry", farmPlotRegistry);
+            SetReference(serializedInstaller, "_treeRegistry", treeRegistry);
+            SetReference(serializedInstaller, "_itemPickupRegistry", itemPickupRegistry);
+            SetReference(serializedInstaller, "_playerTransform", playerTransform);
+
+            serializedInstaller.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(installer);
         }
 
         private static void EnsureFolder(string parentFolder, string childFolder)

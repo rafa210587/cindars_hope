@@ -87,6 +87,17 @@ namespace CindarsHope.World
             UpdateVisual();
         }
 
+        public void RebindInventoryManager(InventoryManager inventoryManager)
+        {
+            if (inventoryManager == null)
+            {
+                Debug.LogWarning($"TreeNode {_treeIndex} received null InventoryManager for rebind.", this);
+                return;
+            }
+
+            _inventoryManager = inventoryManager;
+        }
+
         private void Reset()
         {
             _spriteRenderer = GetComponent<SpriteRenderer>();
