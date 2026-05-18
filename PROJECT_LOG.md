@@ -1578,3 +1578,38 @@ PR-002 sÃ³ deve comeÃ§ar se:
 
 ### Próximo pacote recomendado
 - FASE 9A-2 — TownScene mínima com portal Farm ↔ Town e NPC/ShopPoint básico.
+
+---
+
+## 2026-05-17 — PR-053 Scene transition foundation
+
+**Responsável:** Codex/ChatGPT
+**Branch:** `feature/fase9a-townscene-mvp-package`
+**Escopo:** fundação mínima para transição entre cenas sem alterar Build Settings ou ProjectSettings.
+
+### Alterações
+- Criado `SceneTransitionState` para guardar `PendingSpawnId` transitório entre cenas, sem persistência.
+- Criados `SceneSpawnPoint` e `SceneSpawnInstaller` para posicionar o player por spawn serializado.
+- Criado `ScenePortal` interagível com suporte a `EditorSceneManager.LoadSceneInPlayMode` no Editor e fallback por nome fora do Editor.
+- Criados eventos leves `SceneTransitionStartedEvent` e `SceneTransitionCompletedEvent`.
+
+### Arquivos alterados
+- `Assets/_Game/Scripts/SceneManagement/SceneTransitionState.cs`
+- `Assets/_Game/Scripts/SceneManagement/ScenePortal.cs`
+- `Assets/_Game/Scripts/SceneManagement/SceneSpawnPoint.cs`
+- `Assets/_Game/Scripts/SceneManagement/SceneSpawnInstaller.cs`
+- `Assets/_Game/Scripts/Core/Events/SceneTransitionStartedEvent.cs`
+- `Assets/_Game/Scripts/Core/Events/SceneTransitionCompletedEvent.cs`
+- `PROJECT_LOG.md`
+
+### Testes
+- [x] Revisão estática dos scripts criados.
+- [x] Confirmado que não há uso de `GameObject.Find`, `FindObjectOfType`, `FindObjectsByType` ou `StreamingAssets` nos scripts novos.
+- [ ] Unity não executado neste terminal.
+
+### Pendências / riscos
+- Integrar os componentes nos geradores de cena nas próximas waves.
+- Validar no Unity a troca Farm ↔ Town depois que as cenas forem geradas.
+
+### Próximo passo recomendado
+- PR-054 — criar gerador reproduzível da TownScene mínima.
