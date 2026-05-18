@@ -27,6 +27,29 @@ Ao final de qualquer tarefa relevante, atualizar `PROJECT_LOG.md` com:
 
 `PROJECT_LOG.md` é append-only por padrão: não apagar histórico anterior salvo correção factual explícita.
 
+## Regra operacional de Git para agentes
+
+Agentes podem preparar commits locais, mas não devem executar operações remotas ou destrutivas.
+
+Permitido ao agente:
+- criar ou usar branch local indicada pelo humano;
+- alterar somente arquivos explicitamente permitidos no escopo da tarefa;
+- criar commits locais em português;
+- atualizar `PROJECT_LOG.md` ao final de tarefa relevante;
+- entregar ao humano a lista de commits, arquivos alterados, testes executados e testes pendentes.
+
+Proibido ao agente:
+- executar `git push`;
+- abrir PR/MR;
+- fazer merge;
+- deletar branches locais ou remotas;
+- executar `git stash` sem autorização explícita;
+- executar `git clean`;
+- executar `git reset --hard`;
+- commitar arquivos fora do escopo permitido.
+
+Push, PR/MR, merge e limpeza de branches são responsabilidade humana.
+
 ## Documentos de referência (ler antes de qualquer tarefa)
 - PROJECT_LOG.md             — log operacional e continuidade entre agentes
 - docs/GDD_v2.6.md           — design completo do jogo
