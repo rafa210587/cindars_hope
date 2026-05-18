@@ -53,7 +53,7 @@ namespace CindarsHope.Editor.SceneCreation
             CreateGround();
             CreateBounds();
             CreateCavePortals();
-            CreateEnemies();
+            CreateEnemies(playerTransform);
             CreateDebugHud(playerManager, inventoryManager, hungerManager, playerTransform.GetComponent<InteractionSystem>(), timeManager, saveManager);
             CreateSceneRuntimeInstaller(playerTransform);
             CreateMainCamera();
@@ -196,6 +196,16 @@ namespace CindarsHope.Editor.SceneCreation
             }
         }
 
+        private static void ConfigurePlayerAttackController(PlayerAttackController playerAttackController)
+        {
+            var serializedAttack = new SerializedObject(playerAttackController);
+            serializedAttack.FindProperty("_punchDamage").intValue = 1;
+            serializedAttack.FindProperty("_punchRange").floatValue = 0.8f;
+            serializedAttack.FindProperty("_attackCooldownSeconds").floatValue = 0.4f;
+            serializedAttack.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(playerAttackController);
+        }
+
         private static Transform CreatePlayer()
         {
             var player = new GameObject("Player");
@@ -223,8 +233,10 @@ namespace CindarsHope.Editor.SceneCreation
             var playerController = player.AddComponent<PlayerController>();
             player.AddComponent<PlayerManager>();
             player.AddComponent<InteractionSystem>();
+            var playerAttackController = player.AddComponent<PlayerAttackController>();
 
             ConfigurePlayerController(playerController);
+            ConfigurePlayerAttackController(playerAttackController);
 
             return player.transform;
         }
@@ -337,10 +349,10 @@ namespace CindarsHope.Editor.SceneCreation
             camera.backgroundColor = new Color(0.08f, 0.08f, 0.12f);
         }
 
-        private static void CreateEnemies()
+        private static void CreateEnemies(Transform playerTransform)
         {
             EnsureEnemySlimeData();
-            CreateSlime(new Vector3(2f, 0f, 0f));
+            CreateSlime(new Vector3(2f, 0f, 0f), playerTransform);
         }
 
         private static void EnsureEnemySlimeData()
@@ -364,11 +376,10 @@ namespace CindarsHope.Editor.SceneCreation
             Debug.Log($"Created EnemyDataSO at {EnemySlimeDataPath}.");
         }
 
-        private static void CreateSlime(Vector3 position)
+        private static void CreateSlime(Vector3 position, Transform playerTransform)
         {
             var slimeObject = new GameObject("Slime");
             slimeObject.transform.position = position;
-            slimeObject.tag = "Enemy";
 
             var spriteRenderer = slimeObject.AddComponent<SpriteRenderer>();
             spriteRenderer.sprite = GetBuiltinSprite();
@@ -406,7 +417,7 @@ namespace CindarsHope.Editor.SceneCreation
             serializedHealth.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(healthComponent);
 
-            var contactDamage = slimeObject.AddComponent<EnemyContactDamage>();
+            var contactDamage = triggerCollider.AddComponent<EnemyContactDamage>();
             var serializedDamage = new SerializedObject(contactDamage);
             SetReference(serializedDamage, "_collider", triggerCollider2D);
             if (enemyData != null)
@@ -416,7 +427,15 @@ namespace CindarsHope.Editor.SceneCreation
             serializedDamage.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(contactDamage);
 
-            slimeObject.AddComponent<PlayerAttackController>();
+            var chaseController = slimeObject.AddComponent<EnemyChaseController>();
+            var serializedChase = new SerializedObject(chaseController);
+            SetReference(serializedChase, "_target", playerTransform);
+            SetReference(serializedChase, "_rigidbody", rigidbody);
+            serializedChase.FindProperty("_moveSpeed").floatValue = 1.2f;
+            serializedChase.FindProperty("_detectionRadius").floatValue = 5f;
+            serializedChase.FindProperty("_stopDistance").floatValue = 0.55f;
+            serializedChase.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(chaseController);
         }
 
         private static void CreateSceneRuntimeInstaller(Transform playerTransform)

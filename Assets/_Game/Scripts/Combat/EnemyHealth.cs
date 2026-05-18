@@ -29,8 +29,19 @@ namespace CindarsHope.Combat
                 return;
             }
 
+            if (amount <= 0)
+            {
+                return;
+            }
+
+            if (_currentHp <= 0)
+            {
+                return;
+            }
+
             _currentHp -= amount;
             _currentHp = Mathf.Max(0, _currentHp);
+            Debug.Log($"EnemyHealth: {name} took {amount} damage. HP {_currentHp}/{_enemyData.maxHp}.");
 
             if (_currentHp <= 0)
             {
@@ -40,6 +51,7 @@ namespace CindarsHope.Combat
 
         private void Die()
         {
+            Debug.Log($"EnemyHealth: {name} died.");
             GameEventBus.Publish(new EnemyKilledEvent(
                 _enemyData.enemyId,
                 _enemyData.dropItemId,
