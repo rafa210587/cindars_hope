@@ -8,16 +8,16 @@ namespace CindarsHope.Save
 {
     [Serializable]
     public class GameSaveData
-{
-    public int SchemaVersion;
-    public int CurrentDay;
-    public string CurrentSceneName;
-    public string CurrentScenePath;
-    public PlayerSaveData Player;
-    public InventorySaveData Inventory;
-    public FarmSaveData Farm;
-    public WorldSaveData World;
-}
+    {
+        public int SchemaVersion;
+        public int CurrentDay;
+        public string CurrentSceneName;
+        public string CurrentScenePath;
+        public PlayerSaveData Player;
+        public InventorySaveData Inventory;
+        public FarmSaveData Farm;
+        public WorldSaveData World;
+    }
 
     [Serializable]
     public class PlayerSaveData
