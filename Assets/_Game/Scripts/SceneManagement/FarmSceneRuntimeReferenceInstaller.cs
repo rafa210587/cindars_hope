@@ -16,7 +16,11 @@ namespace CindarsHope.SceneManagement
         [SerializeField] private TreeNode[] _treeNodes;
         [SerializeField] private FishingSpot _fishingSpot;
         [SerializeField] private SeedShopPoint _seedShopPoint;
-        [SerializeField] private SellAllPoint _sellAllPoint;
+
+        // Campo legado mantido com o nome serializado atual da FarmScene/gerador.
+        // Apesar do nome, este slot referencia o SellPoint antigo da FarmScene, não o SellAllPoint event-driven da TownScene.
+        [SerializeField] private SellPoint _sellAllPoint;
+
         [SerializeField] private CraftingPoint _craftingPoint;
         [SerializeField] private FarmPlotRegistry _farmPlotRegistry;
         [SerializeField] private TreeRegistry _treeRegistry;
@@ -61,7 +65,6 @@ namespace CindarsHope.SceneManagement
             var timeManager = bootstrap.TimeManager;
             var saveManager = bootstrap.SaveManager;
             var craftingManager = bootstrap.CraftingManager;
-            var economyManager = bootstrap.EconomyManager;
 
             if (inventoryManager != null && _farmPlots != null)
             {
@@ -95,6 +98,11 @@ namespace CindarsHope.SceneManagement
                 _seedShopPoint.RebindRuntimeManagers(inventoryManager, playerManager);
             }
 
+            if (inventoryManager != null && playerManager != null && _sellAllPoint != null)
+            {
+                _sellAllPoint.RebindRuntimeManagers(inventoryManager, playerManager);
+            }
+
             if (craftingManager != null && _craftingPoint != null)
             {
                 _craftingPoint.RebindCraftingManager(craftingManager);
@@ -109,7 +117,7 @@ namespace CindarsHope.SceneManagement
                 }
             }
 
-            bool restored = FarmSceneRuntimeStateCache.TryRestore(_farmPlotRegistry, _treeRegistry, _itemPickupRegistry);
+            var restored = FarmSceneRuntimeStateCache.TryRestore(_farmPlotRegistry, _treeRegistry, _itemPickupRegistry);
             Debug.Log($"FarmSceneRuntimeReferenceInstaller rebound runtime refs and restored cached farm state: restored={restored}");
         }
     }
