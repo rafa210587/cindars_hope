@@ -70,15 +70,18 @@ namespace CindarsHope.Combat
                         playerHitFlash.Flash();
                     }
 
-                    var playerKnockback = collision.GetComponentInParent<KnockbackController>();
-                    if (playerKnockback == null)
+                    if (_enemyData.contactKnockbackForce > 0f)
                     {
-                        playerKnockback = collision.GetComponent<KnockbackController>();
-                    }
-                    if (playerKnockback != null)
-                    {
-                        Vector2 direction = (collision.transform.position - transform.position).normalized;
-                        playerKnockback.ApplyKnockback(direction, 2.0f);
+                        var playerKnockback = collision.GetComponentInParent<KnockbackController>();
+                        if (playerKnockback == null)
+                        {
+                            playerKnockback = collision.GetComponent<KnockbackController>();
+                        }
+                        if (playerKnockback != null)
+                        {
+                            Vector2 direction = (collision.transform.position - transform.position).normalized;
+                            playerKnockback.ApplyKnockback(direction, _enemyData.contactKnockbackForce);
+                        }
                     }
 
                     _lastDamageTime = Time.time;

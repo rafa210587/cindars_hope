@@ -3370,3 +3370,133 @@ Em Play Mode:
 4. Confirmar logs de rebind no Console.
 5. Se tudo ok: commit com mensagem `fix: manter debug hud unica entre cenas`.
 6. Próximo: PR-099 (Quest MVP) ou review de próximas waves.
+
+---
+
+## 2026-05-18 — PR-099 Enemy stats data-driven
+
+**Responsável:** Claude  
+**Branch:** `feature/fase9b3-enemy-data-driven-stats`  
+**Escopo:** refatorar inimigos para stats data-driven via EnemyDataSO, criar contratos simples de combate.
+
+### Implementação
+
+**EnemyDataSO.cs (expandida):**
+- Headers organizadores para clareza.
+- Adicionados campos Combat:
+  - `float contactKnockbackForce = 0f` — força de knockback que inimigo causa ao danificar player.
+  - `float receivedKnockbackResistance = 0f` — resistência conceitual (não usada em MVP ainda).
+  - `float receivedKnockbackMultiplier = 1f` — multiplicador final de knockback recebido.
+- Adicionados campos Movement:
+  - `float moveSpeed = 1.2f`
+  - `float detectionRadius = 5f`
+  - `float stopDistance = 0.55f`
+- Adicionados campos Feedback:
+  - `Color hitFlashColor = Color.red`
+  - `float hitFlashDuration = 0.12f`
+- Headers separados por categoria de atributo.
+
+**DamageRequest.cs (novo):**
+- Struct readonly com campos: Amount, SourcePosition, KnockbackForce.
+- Contrato simples para passar dano + knockback em uma única call.
+
+**KnockbackRequest.cs (novo):**
+- Struct readonly com campos: Direction, Force.
+- Contrato para futuro uso (já é parametrizável em KnockbackController).
+
+**EnemyHealth.cs (refatorada):**
+- Mantido método `TakeDamage(int amount)` para compatibilidade, chama overload com DamageRequest.
+- Novo método `TakeDamage(DamageRequest request)`:
+  - valida request.Amount > 0.
+  - reduz HP.
+  - chama HitFlashController.Flash().
+  - se request.KnockbackForce > 0:
+    - obtém KnockbackController.
+    - calcula direção = enemy.position - source.
+    - força final = knockbackForce * enemyData.receivedKnockbackMultiplier.
+    - aplica knockback.
+  - loga: `"EnemyHealth: {name} knockback applied. Force: {finalForce}."`
+- Morte segue igual, publica EnemyKilledEvent.
+
+**PlayerAttackController.cs (refatorada):**
+- Adicionado campo: `_punchKnockbackForce = 2.5f`.
+- `Punch()` agora passa `DamageRequest(_punchDamage, transform.position, _punchKnockbackForce)` para `EnemyHealth.TakeDamage()`.
+- Removida aplicação duplicada de knockback (agora responsabilidade de EnemyHealth).
+
+**EnemyContactDamage.cs (refatorada):**
+- Knockback agora usa `_enemyData.contactKnockbackForce` em vez de hardcoded 2.0f.
+- Se contactKnockbackForce <= 0: não aplica knockback.
+- Se > 0: aplica knockback normal.
+
+**EnemyChaseController.cs (expandida):**
+- Mantido método `Configure(moveSpeed, detectionRadius, stopDistance)`.
+- Novo método `ConfigureFromData(EnemyDataSO enemyData)`:
+  - se enemyData != null, aplica moveSpeed, detectionRadius, stopDistance do asset.
+
+**KnockbackController.cs (expandida):**
+- `ApplyKnockback(Vector2 direction, float force)` agora retorna silenciosamente se force <= 0.
+- Novo overload `ApplyKnockback(KnockbackRequest request)`.
+
+**CreateMvpCaveScene.cs (atualizada):**
+- `CreateSlime()` agora:
+  - carrega enemyData uma vez.
+  - usa `enemyData.moveSpeed`, `detectionRadius`, `stopDistance` para configurar chase.
+  - usa `enemyData.hitFlashColor` para configurar hit flash (em vez de hardcoded laranja).
+  - fallback: se enemyData for null, mantém valores anteriores.
+
+### Arquivos alterados
+
+- `Assets/_Game/Scripts/Combat/EnemyDataSO.cs`
+- `Assets/_Game/Scripts/Combat/DamageRequest.cs` (novo)
+- `Assets/_Game/Scripts/Combat/KnockbackRequest.cs` (novo)
+- `Assets/_Game/Scripts/Combat/EnemyHealth.cs`
+- `Assets/_Game/Scripts/Combat/PlayerAttackController.cs`
+- `Assets/_Game/Scripts/Combat/EnemyContactDamage.cs`
+- `Assets/_Game/Scripts/Combat/EnemyChaseController.cs`
+- `Assets/_Game/Scripts/Combat/KnockbackController.cs`
+- `Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpCaveScene.cs`
+- `Assets/_Game/Data/Combat/Enemy_Slime.asset` (será atualizado pelo gerador)
+- `Assets/_Game/Scenes/CaveScene.unity` (será regenerada)
+- `PROJECT_LOG.md`
+
+### Testes esperados
+
+Em Play Mode na CaveScene:
+- [ ] Slime persegue com velocidade e raio do asset.
+- [ ] Slime causa dano como antes.
+- [ ] Slime NÃO empurra player se contactKnockbackForce = 0.
+- [ ] Player soca Slime.
+- [ ] Slime recebe knockback com multiplicador do asset (1.0 = full knockback).
+- [ ] Hit flash usa cor do asset.
+- [ ] Slime morre e dropa item.
+- [ ] Console mostra logs de knockback aplicado com força final.
+- [ ] Console sem erro vermelho.
+
+### Validações realizadas
+
+- [x] DamageRequest e KnockbackRequest criados como contratos simples.
+- [x] EnemyHealth suporta ambos int e DamageRequest.
+- [x] PlayerAttackController passa knockback via DamageRequest.
+- [x] EnemyContactDamage usa força do asset.
+- [x] EnemyChaseController tem método ConfigureFromData.
+- [x] KnockbackController ignora força zero.
+- [x] CreateMvpCaveScene usa dados do asset para configurar Slime.
+
+### Resultado esperado
+
+- Inimigos agora possuem atributos definidos em EnemyDataSO.
+- Fácil criar novos inimigos (ex: Lobo) alterando um asset, não subclasse.
+- Knockback é resistível via receivedKnockbackMultiplier.
+- Arquitetura preparada para próximos inimigos sem sobrecarga.
+
+### Próximo passo recomendado
+
+1. Abrir Unity.
+2. Rodar `CindarsHope/Scenes/Create MVP CaveScene`.
+3. Play Mode na CaveScene:
+   - Atacar Slime: deve receber knockback normal (multiplicador 1.0).
+   - Slime encosta player: não deve empurrar (contactKnockbackForce 0).
+   - Slime morre: item droppa.
+4. Confirmar logs no Console.
+5. Se tudo ok: commit com mensagem `refactor: tornar atributos de inimigos data driven`.
+6. Próximo: PR-100 (Diálogo/NPC) ou preparar para novos inimigos.

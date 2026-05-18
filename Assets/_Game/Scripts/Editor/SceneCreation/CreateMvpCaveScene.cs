@@ -455,14 +455,30 @@ namespace CindarsHope.Editor.SceneCreation
             var serializedChase = new SerializedObject(chaseController);
             SetReference(serializedChase, "_target", playerTransform);
             SetReference(serializedChase, "_rigidbody", rigidbody);
-            serializedChase.FindProperty("_moveSpeed").floatValue = 1.2f;
-            serializedChase.FindProperty("_detectionRadius").floatValue = 5f;
-            serializedChase.FindProperty("_stopDistance").floatValue = 0.55f;
+            if (enemyData != null)
+            {
+                serializedChase.FindProperty("_moveSpeed").floatValue = enemyData.moveSpeed;
+                serializedChase.FindProperty("_detectionRadius").floatValue = enemyData.detectionRadius;
+                serializedChase.FindProperty("_stopDistance").floatValue = enemyData.stopDistance;
+            }
+            else
+            {
+                serializedChase.FindProperty("_moveSpeed").floatValue = 1.2f;
+                serializedChase.FindProperty("_detectionRadius").floatValue = 5f;
+                serializedChase.FindProperty("_stopDistance").floatValue = 0.55f;
+            }
             serializedChase.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(chaseController);
 
             var slimeHitFlash = slimeObject.AddComponent<HitFlashController>();
-            ConfigureHitFlashController(slimeHitFlash, spriteRenderer, new Color(1f, 0.5f, 0f));
+            if (enemyData != null)
+            {
+                ConfigureHitFlashController(slimeHitFlash, spriteRenderer, enemyData.hitFlashColor);
+            }
+            else
+            {
+                ConfigureHitFlashController(slimeHitFlash, spriteRenderer, new Color(1f, 0.5f, 0f));
+            }
 
             var slimeKnockback = slimeObject.AddComponent<KnockbackController>();
             ConfigureKnockbackController(slimeKnockback, rigidbody);

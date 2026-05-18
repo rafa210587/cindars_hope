@@ -9,6 +9,7 @@ namespace CindarsHope.Combat
         [SerializeField] private int _punchDamage = 1;
         [SerializeField] private float _punchRange = 0.8f;
         [SerializeField] private float _attackCooldownSeconds = 0.4f;
+        [SerializeField] private float _punchKnockbackForce = 2.5f;
 
         private float _lastAttackTime;
 
@@ -45,16 +46,9 @@ namespace CindarsHope.Combat
 
                 if (enemyHealth != null)
                 {
-                    enemyHealth.TakeDamage(_punchDamage);
+                    var damageRequest = new DamageRequest(_punchDamage, transform.position, _punchKnockbackForce);
+                    enemyHealth.TakeDamage(damageRequest);
                     Debug.Log($"PlayerAttackController: punch hit enemy {enemyHealth.gameObject.name} for {_punchDamage} damage.");
-
-                    var knockback = enemyHealth.GetComponent<KnockbackController>();
-                    if (knockback != null)
-                    {
-                        Vector2 direction = (enemyHealth.transform.position - transform.position).normalized;
-                        knockback.ApplyKnockback(direction, 2.5f);
-                    }
-
                     hitAny = true;
                 }
             }

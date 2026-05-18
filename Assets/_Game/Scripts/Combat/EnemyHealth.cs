@@ -24,12 +24,17 @@ namespace CindarsHope.Combat
 
         public void TakeDamage(int amount)
         {
+            TakeDamage(new DamageRequest(amount, transform.position, 0f));
+        }
+
+        public void TakeDamage(DamageRequest request)
+        {
             if (_enemyData == null)
             {
                 return;
             }
 
-            if (amount <= 0)
+            if (request.Amount <= 0)
             {
                 return;
             }
@@ -39,14 +44,26 @@ namespace CindarsHope.Combat
                 return;
             }
 
-            _currentHp -= amount;
+            _currentHp -= request.Amount;
             _currentHp = Mathf.Max(0, _currentHp);
-            Debug.Log($"EnemyHealth: {name} took {amount} damage. HP {_currentHp}/{_enemyData.maxHp}.");
+            Debug.Log($"EnemyHealth: {name} took {request.Amount} damage. HP {_currentHp}/{_enemyData.maxHp}.");
 
             var hitFlash = GetComponentInChildren<HitFlashController>();
             if (hitFlash != null)
             {
                 hitFlash.Flash();
+            }
+
+            if (request.KnockbackForce > 0f)
+            {
+                var knockback = GetComponent<KnockbackController>();
+                if (knockback != null)
+                {
+                    Vector2 direction = (transform.position - request.SourcePosition).normalized;
+                    float finalForce = request.KnockbackForce * _enemyData.receivedKnockbackMultiplier;
+                    knockback.ApplyKnockback(direction, finalForce);
+                    Debug.Log($"EnemyHealth: {name} knockback applied. Force: {finalForce}.");
+                }
             }
 
             if (_currentHp <= 0)

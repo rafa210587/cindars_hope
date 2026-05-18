@@ -40,10 +40,20 @@ namespace CindarsHope.Combat
 
         public void ApplyKnockback(Vector2 direction, float force)
         {
+            if (force <= 0f)
+            {
+                return;
+            }
+
             direction.Normalize();
             _velocity = direction * force;
             _remainingTime = _duration;
             Debug.Log($"KnockbackController: applying knockback on '{name}', force={force}.");
+        }
+
+        public void ApplyKnockback(KnockbackRequest request)
+        {
+            ApplyKnockback(request.Direction, request.Force);
         }
 
         public bool IsKnockingBack => _remainingTime > 0;

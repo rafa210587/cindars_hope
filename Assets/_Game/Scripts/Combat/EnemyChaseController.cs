@@ -54,5 +54,15 @@ namespace CindarsHope.Combat
             _detectionRadius = detectionRadius;
             _stopDistance = stopDistance;
         }
+
+        public void ConfigureFromData(EnemyDataSO enemyData)
+        {
+            if (enemyData != null)
+            {
+                _moveSpeed = enemyData.moveSpeed;
+                _detectionRadius = enemyData.detectionRadius;
+                _stopDistance = enemyData.stopDistance;
+            }
+        }
     }
 }
