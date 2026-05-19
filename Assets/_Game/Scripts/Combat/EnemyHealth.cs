@@ -59,8 +59,8 @@ namespace CindarsHope.Combat
                 var knockback = GetComponent<KnockbackController>();
                 if (knockback != null)
                 {
-                    Vector2 direction = (transform.position - request.SourcePosition).normalized;
-                    float finalForce = request.KnockbackForce * _enemyData.receivedKnockbackMultiplier;
+                    Vector2 currentPosition = transform.position;
+                    Vector2 direction = (currentPosition - request.SourcePosition).normalized;                    float finalForce = request.KnockbackForce * _enemyData.receivedKnockbackMultiplier;
                     knockback.ApplyKnockback(direction, finalForce);
                     Debug.Log($"EnemyHealth: {name} knockback applied. Force: {finalForce}.");
                 }
