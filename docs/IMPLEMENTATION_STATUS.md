@@ -286,6 +286,7 @@ Evidencia incremental:
 - PR-149: `ResourceNodeRules` e resultados puros de interacao/tool check criados.
 - PR-150: `ResourceNode` runtime MVP interagivel com ferramenta/tier/fallback e deplecao.
 - PR-151: `CreateMvpCaveScene` materializa ResourceNodes debug e cria dados/itens minimos ao regenerar a CaveScene.
+- PR-152: `GameSaveData`/`SaveManager` persistem `CaveSaveData` quando `CaveRunManager` esta rebundado.
 
 Pendencias reais:
 - Unity ainda precisa compilar/validar.

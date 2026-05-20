@@ -5,6 +5,7 @@ using System.IO;
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
 using CindarsHope.Core.Time;
+using CindarsHope.Cave.Runtime;
 using CindarsHope.Equipment;
 using CindarsHope.Farm;
 using CindarsHope.Inventory;
@@ -39,6 +40,7 @@ namespace CindarsHope.Save
         [SerializeField] private Transform _playerTransform;
         [SerializeField] private EquipmentManager _equipmentManager;
         [SerializeField] private PlayerProgressionManager _progressionManager;
+        [SerializeField] private CaveRunManager _caveRunManager;
 
         private readonly HotbarState _hotbarState = new HotbarState();
 
@@ -73,6 +75,7 @@ namespace CindarsHope.Save
                 // Capture farm and world only if in FarmScene; otherwise preserve existing data to avoid loss when saving from TownScene.
                 var farmSaveData = CaptureFarmSaveData(existingSaveData);
                 var worldSaveData = CaptureWorldSaveData(existingSaveData);
+                var caveSaveData = CaptureCaveSaveData(existingSaveData);
 
                 var saveData = new GameSaveData
                 {
@@ -86,7 +89,8 @@ namespace CindarsHope.Save
                     Hotbar = _hotbarState.CaptureSaveData(),
                     Progression = CaptureProgressionSaveData(),
                     Farm = farmSaveData,
-                    World = worldSaveData
+                    World = worldSaveData,
+                    Cave = caveSaveData
                 };
 
                 var savePath = SaveFilePath;
@@ -239,6 +243,14 @@ namespace CindarsHope.Save
             }
         }
 
+        public void RebindCaveRuntime(CaveRunManager caveRunManager)
+        {
+            if (caveRunManager != null)
+            {
+                _caveRunManager = caveRunManager;
+            }
+        }
+
         public void RebindPlayerTransform(Transform playerTransform)
         {
             if (playerTransform != null)
@@ -305,6 +317,16 @@ namespace CindarsHope.Save
         private PlayerProgressionSaveData CaptureProgressionSaveData()
         {
             return _progressionManager != null ? _progressionManager.CaptureSaveData() : new PlayerProgressionSaveData();
+        }
+
+        private CaveSaveData CaptureCaveSaveData(GameSaveData existingSaveData)
+        {
+            if (_caveRunManager != null)
+            {
+                return _caveRunManager.CaptureSaveData();
+            }
+
+            return existingSaveData?.Cave ?? new CaveSaveData();
         }
 
         private WorldSaveData CaptureWorldSaveData()
@@ -507,6 +529,11 @@ namespace CindarsHope.Save
             if (_progressionManager != null)
             {
                 _progressionManager.RestoreFromSaveData(saveData.Progression);
+            }
+
+            if (_caveRunManager != null)
+            {
+                _caveRunManager.RestoreFromSaveData(saveData.Cave);
             }
 
             if (_itemPickupRegistry != null && saveData.World != null)

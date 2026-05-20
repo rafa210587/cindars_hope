@@ -31,6 +31,7 @@ namespace CindarsHope.SceneManagement
             }
 
             saveManager.RebindPlayerTransform(_playerTransform);
+            saveManager.RebindCaveRuntime(_caveRunManager);
 
             var playerManager = bootstrap.PlayerManager;
             var inventoryManager = bootstrap.InventoryManager;

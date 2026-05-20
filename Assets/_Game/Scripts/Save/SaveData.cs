@@ -23,6 +23,7 @@ namespace CindarsHope.Save
         public PlayerProgressionSaveData Progression;
         public FarmSaveData Farm;
         public WorldSaveData World;
+        public CaveSaveData Cave;
     }
 
     [Serializable]

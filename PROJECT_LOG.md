@@ -620,3 +620,9 @@ Esse arquivo preserva o log operacional anterior inteiro antes da redução do l
 - `CreateMvpCaveScene` cria nodes debug Stone, Copper e CaveRootTree ao regenerar a cena.
 - O gerador editorial cria assets `ResourceNode_Stone`, `ResourceNode_Copper`, `ResourceNode_CaveRootTree` e itens mínimos `item_material_stone`/`ore_copper` quando necessário.
 - A cena `.unity` e os `.asset` físicos dependem de executar o menu no Unity.
+
+### Marco PR-152 - Cave save/load procedural MVP
+
+- `GameSaveData` agora possui `CaveSaveData`.
+- `SaveManager` captura/restaura `CaveRunManager` quando rebundado.
+- `CaveSceneRuntimeReferenceInstaller` rebinda o runtime da cave no `SaveManager`.
