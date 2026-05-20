@@ -162,10 +162,24 @@ namespace CindarsHope.UI
             {
                 GUILayout.Label($"Tool: {equipmentManager.EquippedToolId} ({equipmentManager.EquippedToolType}/{equipmentManager.EquippedToolTier})");
             }
+            else
+            {
+                GUILayout.Label("Tool: not assigned");
+            }
 
             if (_saveManager != null && _saveManager.HotbarState != null)
             {
-                GUILayout.Label($"Hotbar: slot {_saveManager.HotbarState.SelectedSlotIndex + 1} {_saveManager.HotbarState.SelectedItemId}");
+                var selectedItem = _saveManager.HotbarState.SelectedItemId;
+                if (string.IsNullOrWhiteSpace(selectedItem))
+                {
+                    selectedItem = "empty";
+                }
+
+                GUILayout.Label($"Hotbar: slot {_saveManager.HotbarState.SelectedSlotIndex + 1} [{selectedItem}]");
+            }
+            else
+            {
+                GUILayout.Label("Hotbar: not assigned");
             }
         }
 

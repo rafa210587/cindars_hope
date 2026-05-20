@@ -30,6 +30,12 @@ namespace CindarsHope.Editor.SceneCreation
         [MenuItem("CindarsHope/Scenes/Create MVP CaveScene")]
         public static void CreateSceneFromMenu()
         {
+            if (EditorApplication.isPlayingOrWillChangePlaymode)
+            {
+                Debug.LogWarning("Cannot create MVP CaveScene during Play Mode. Exit Play Mode and run this menu again.");
+                return;
+            }
+
             CreateScene();
         }
 
@@ -288,7 +294,7 @@ namespace CindarsHope.Editor.SceneCreation
 
             var trigger = triggerObject.AddComponent<CircleCollider2D>();
             trigger.isTrigger = true;
-            trigger.radius = 0.65f;
+            trigger.radius = 0.45f;
 
             var relay = triggerObject.AddComponent<InteractionTriggerRelay>();
             relay.Configure(interactionSystem);

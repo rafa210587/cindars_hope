@@ -11,7 +11,7 @@ namespace CindarsHope.Interaction
         [SerializeField] private Collider2D _interactionTrigger;
         [SerializeField] private KeyCode _interactKey = KeyCode.E;
 
-        [SerializeField] private float _maxInteractionDistance = 0.85f;
+        [SerializeField] private float _maxInteractionDistance = 0.45f;
         private readonly List<InteractionCandidate> _candidates = new List<InteractionCandidate>();
         private bool _missingTriggerWarningLogged;
         private bool _lastPublishedHasCandidate;
@@ -189,14 +189,14 @@ namespace CindarsHope.Interaction
 
         private static Vector2 GetCandidatePosition(InteractionCandidate candidate, Vector2 origin)
         {
-            if (candidate.Collider != null)
-            {
-                return candidate.Collider.ClosestPoint(origin);
-            }
-
             if (candidate.Interactable is Component component)
             {
                 return component.transform.position;
+            }
+
+            if (candidate.Collider != null)
+            {
+                return candidate.Collider.bounds.center;
             }
 
             return origin;
