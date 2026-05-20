@@ -1,5 +1,6 @@
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
+using CindarsHope.Player.Progression;
 using UnityEngine;
 
 namespace CindarsHope.Combat
@@ -44,9 +45,15 @@ namespace CindarsHope.Combat
                 return;
             }
 
-            _currentHp -= request.Amount;
+            var damageResult = DamageCalculator.CalculateDirectDamage(request.Amount);
+            if (damageResult.FinalDamage <= 0)
+            {
+                return;
+            }
+
+            _currentHp -= damageResult.FinalDamage;
             _currentHp = Mathf.Max(0, _currentHp);
-            Debug.Log($"EnemyHealth: {name} took {request.Amount} damage. HP {_currentHp}/{_enemyData.maxHp}.");
+            Debug.Log($"EnemyHealth: {name} took {damageResult.FinalDamage} damage. HP {_currentHp}/{_enemyData.maxHp}.");
 
             var hitFlash = GetComponentInChildren<HitFlashController>();
             if (hitFlash != null)
@@ -60,7 +67,8 @@ namespace CindarsHope.Combat
                 if (knockback != null)
                 {
                     Vector2 currentPosition = transform.position;
-                    Vector2 direction = (currentPosition - request.SourcePosition).normalized;                    float finalForce = request.KnockbackForce * _enemyData.receivedKnockbackMultiplier;
+                    Vector2 direction = (currentPosition - request.SourcePosition).normalized;
+                    float finalForce = request.KnockbackForce * _enemyData.receivedKnockbackMultiplier;
                     knockback.ApplyKnockback(direction, finalForce);
                     Debug.Log($"EnemyHealth: {name} knockback applied. Force: {finalForce}.");
                 }
@@ -80,7 +88,11 @@ namespace CindarsHope.Combat
                 _enemyData.enemyId,
                 _enemyData.dropItemId,
                 _enemyData.dropAmount,
-                transform.position));
+                transform.position,
+                PlayerProgressionRules.CalculateEnemyXpReward(
+                    _enemyData.enemyLevel,
+                    _enemyData.baseDifficulty,
+                    _enemyData.xpRewardOverride)));
 
             gameObject.SetActive(false);
         }

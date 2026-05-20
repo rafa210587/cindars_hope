@@ -45,6 +45,11 @@ namespace CindarsHope.Combat
                 return;
             }
 
+            if (direction.sqrMagnitude <= 0.0001f)
+            {
+                return;
+            }
+
             direction.Normalize();
             _velocity = direction * force;
             _remainingTime = _duration;

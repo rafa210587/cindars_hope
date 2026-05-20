@@ -220,3 +220,26 @@ Regras para agentes:
 - Responsável: Codex/ChatGPT
 - Branch: `feature/pr-100-audit-pos-pr099`
 - Tipo: auditoria documental/estatica PR-100
+# Atualizacao 2026-05-20 - PR-101 a PR-130 consolidado
+
+Status: Implementado parcial em branch `feature/pr-101-reconciliar-branches-pr099`.
+
+Evidencia no repo:
+- `docs/audits/PR101_PR099_BRANCH_RECONCILIATION.md`
+- `docs/audits/PR116_ITEM_ID_AUDIT.md`
+- `docs/audits/PR130_RECONCILIACAO_HANDOFF.md`
+- `docs/validation/SMOKE_TEST_FARM_TOWN_CAVE_MVP.md`
+- hardening em `Assets/_Game/Scripts/Combat/**`
+- contratos em `Assets/_Game/Scripts/Tools/**`, `Assets/_Game/Scripts/Equipment/**`, `Assets/_Game/Scripts/UI/Hotbar/**`
+- progresso MVP em `Assets/_Game/Scripts/Player/Progression/**`
+- save parcial em `Assets/_Game/Scripts/Save/SaveData.cs` e `Assets/_Game/Scripts/Save/SaveManager.cs`
+
+Pendencias reais:
+- Unity ainda precisa compilar/validar.
+- Cenas nao foram regeneradas nesta sessao.
+- `item_material_stone` e `ore_copper` seguem pendentes para Cave Resources.
+- Cave Procedural deve voltar como PR-131+ apos validacao.
+
+Proximo bloco pendente: validacao Unity do consolidado e depois Cave Procedural Foundation PR-131+.
+
+---

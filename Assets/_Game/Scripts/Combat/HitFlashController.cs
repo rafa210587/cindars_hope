@@ -26,6 +26,20 @@ namespace CindarsHope.Combat
             }
         }
 
+        private void OnDisable()
+        {
+            if (_flashCoroutine != null)
+            {
+                StopCoroutine(_flashCoroutine);
+                _flashCoroutine = null;
+            }
+
+            if (_spriteRenderer != null)
+            {
+                _spriteRenderer.color = _originalColor;
+            }
+        }
+
         public void Flash()
         {
             if (_spriteRenderer == null)

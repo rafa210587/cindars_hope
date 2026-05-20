@@ -11,6 +11,13 @@ namespace CindarsHope.Combat
         [SerializeField] private float _detectionRadius = 5f;
         [SerializeField] private float _stopDistance = 0.55f;
 
+        private KnockbackController _knockbackController;
+
+        private void Awake()
+        {
+            _knockbackController = GetComponent<KnockbackController>();
+        }
+
         private void FixedUpdate()
         {
             if (_target == null)
@@ -18,8 +25,7 @@ namespace CindarsHope.Combat
                 return;
             }
 
-            var knockback = GetComponent<KnockbackController>();
-            if (knockback != null && knockback.IsKnockingBack)
+            if (_knockbackController != null && _knockbackController.IsKnockingBack)
             {
                 return;
             }

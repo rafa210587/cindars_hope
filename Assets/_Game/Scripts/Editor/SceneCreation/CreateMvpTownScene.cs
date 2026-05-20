@@ -284,7 +284,7 @@ namespace CindarsHope.Editor.SceneCreation
 
             var trigger = triggerObject.AddComponent<CircleCollider2D>();
             trigger.isTrigger = true;
-            trigger.radius = 1.25f;
+            trigger.radius = 0.0005f;
 
             return trigger;
         }

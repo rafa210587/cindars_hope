@@ -1,3 +1,4 @@
+using CindarsHope.Combat;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Time;
 using CindarsHope.Craft;
@@ -48,6 +49,48 @@ namespace CindarsHope.Editor.Validation
             else
             {
                 Debug.LogError("Validate Farm Town MVP failed. See errors above.");
+            }
+        }
+
+        [MenuItem("CindarsHope/Validate/Validate Cave MVP")]
+        public static void ValidateCaveSceneFromMenu()
+        {
+            var sceneName = EditorSceneManager.GetActiveScene().name;
+            if (sceneName != "CaveScene")
+            {
+                Debug.LogError($"MvpSceneValidator: Active scene '{sceneName}' is not CaveScene.");
+                return;
+            }
+
+            if (ValidateCaveScene())
+            {
+                Debug.Log("Validate Cave MVP passed.");
+            }
+            else
+            {
+                Debug.LogError("Validate Cave MVP failed. See errors above.");
+            }
+        }
+
+        [MenuItem("CindarsHope/Validate/Validate All MVP Scenes")]
+        public static void ValidateAllMvpScenes()
+        {
+            var sceneName = EditorSceneManager.GetActiveScene().name;
+            bool passed = sceneName switch
+            {
+                "FarmScene" => ValidateFarmScene(),
+                "TownScene" => ValidateTownScene(),
+                "CaveScene" => ValidateCaveScene(),
+                _ => false
+            };
+
+            if (passed)
+            {
+                Debug.Log($"Validate All MVP Scenes passed for active scene '{sceneName}'.");
+            }
+            else
+            {
+                Debug.LogError($"Validate All MVP Scenes failed for active scene '{sceneName}'.");
             }
         }
 
@@ -169,6 +212,51 @@ namespace CindarsHope.Editor.Validation
 
             if (FindComponent<SellAllPoint>(rootObjects) == null)
                 { Debug.LogError("MvpSceneValidator: SellAllPoint not found in TownScene."); passed = false; }
+
+            return passed;
+        }
+
+        private static bool ValidateCaveScene()
+        {
+            var rootObjects = EditorSceneManager.GetActiveScene().GetRootGameObjects();
+            var passed = true;
+
+            var bootstrap = FindComponent<GameBootstrap>(rootObjects);
+            if (bootstrap == null)
+                { Debug.LogError("MvpSceneValidator: GameBootstrap not found in CaveScene."); passed = false; }
+
+            if (FindComponent<PlayerController>(rootObjects) == null)
+                { Debug.LogError("MvpSceneValidator: PlayerController not found in CaveScene."); passed = false; }
+
+            if (FindComponent<PlayerAttackController>(rootObjects) == null)
+                { Debug.LogError("MvpSceneValidator: PlayerAttackController not found in CaveScene."); passed = false; }
+
+            if (FindComponent<InteractionSystem>(rootObjects) == null)
+                { Debug.LogError("MvpSceneValidator: InteractionSystem not found in CaveScene."); passed = false; }
+
+            if (FindComponent<DebugHud>(rootObjects) == null)
+                { Debug.LogError("MvpSceneValidator: DebugHud not found in CaveScene."); passed = false; }
+
+            if (FindComponent<CaveSceneRuntimeReferenceInstaller>(rootObjects) == null)
+                { Debug.LogError("MvpSceneValidator: CaveSceneRuntimeReferenceInstaller not found in CaveScene."); passed = false; }
+
+            if (FindComponent<SaveInput>(rootObjects) == null)
+                { Debug.LogError("MvpSceneValidator: SaveInput not found in CaveScene."); passed = false; }
+
+            if (FindPortalTo(rootObjects, "FarmScene") == null)
+                { Debug.LogError("MvpSceneValidator: Portal to FarmScene not found in CaveScene."); passed = false; }
+
+            if (FindComponent<EnemyHealth>(rootObjects) == null)
+                { Debug.LogError("MvpSceneValidator: EnemyHealth not found in CaveScene."); passed = false; }
+
+            if (FindComponent<EnemyChaseController>(rootObjects) == null)
+                { Debug.LogError("MvpSceneValidator: EnemyChaseController not found in CaveScene."); passed = false; }
+
+            if (FindComponent<EnemyContactDamage>(rootObjects) == null)
+                { Debug.LogError("MvpSceneValidator: EnemyContactDamage not found in CaveScene."); passed = false; }
+
+            if (FindComponent<EnemyDropSpawner>(rootObjects) == null)
+                { Debug.LogError("MvpSceneValidator: EnemyDropSpawner not found in CaveScene."); passed = false; }
 
             return passed;
         }

@@ -5,9 +5,12 @@ using System.IO;
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
 using CindarsHope.Core.Time;
+using CindarsHope.Equipment;
 using CindarsHope.Farm;
 using CindarsHope.Inventory;
 using CindarsHope.Player;
+using CindarsHope.Player.Progression;
+using CindarsHope.UI.Hotbar;
 using CindarsHope.World;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -34,9 +37,14 @@ namespace CindarsHope.Save
         [SerializeField] private TreeRegistry _treeRegistry;
         [SerializeField] private ItemPickupRegistry _itemPickupRegistry;
         [SerializeField] private Transform _playerTransform;
+        [SerializeField] private EquipmentManager _equipmentManager;
+        [SerializeField] private PlayerProgressionManager _progressionManager;
+
+        private readonly HotbarState _hotbarState = new HotbarState();
 
         public bool IsInitialized { get; private set; }
         public string SaveFilePath => Path.Combine(Application.persistentDataPath, SaveDirectoryName, SaveFileName);
+        public HotbarState HotbarState => _hotbarState;
 
         public void Initialize()
         {
@@ -67,6 +75,9 @@ namespace CindarsHope.Save
                     CurrentScenePath = activeScene.path,
                     Player = CapturePlayerSaveData(),
                     Inventory = CaptureInventorySaveData(),
+                    Equipment = CaptureEquipmentSaveData(),
+                    Hotbar = _hotbarState.CaptureSaveData(),
+                    Progression = CaptureProgressionSaveData(),
                     Farm = farmSaveData,
                     World = worldSaveData
                 };
@@ -208,6 +219,19 @@ namespace CindarsHope.Save
             }
         }
 
+        public void RebindOptionalRuntimeManagers(EquipmentManager equipmentManager, PlayerProgressionManager progressionManager)
+        {
+            if (equipmentManager != null)
+            {
+                _equipmentManager = equipmentManager;
+            }
+
+            if (progressionManager != null)
+            {
+                _progressionManager = progressionManager;
+            }
+        }
+
         public void RebindPlayerTransform(Transform playerTransform)
         {
             if (playerTransform != null)
@@ -264,6 +288,16 @@ namespace CindarsHope.Save
 
             Debug.LogWarning("SaveManager saved without InventoryManager. Inventory section is empty.", this);
             return new InventorySaveData();
+        }
+
+        private EquipmentSaveData CaptureEquipmentSaveData()
+        {
+            return _equipmentManager != null ? _equipmentManager.CaptureSaveData() : new EquipmentSaveData();
+        }
+
+        private PlayerProgressionSaveData CaptureProgressionSaveData()
+        {
+            return _progressionManager != null ? _progressionManager.CaptureSaveData() : new PlayerProgressionSaveData();
         }
 
         private WorldSaveData CaptureWorldSaveData()
@@ -454,6 +488,18 @@ namespace CindarsHope.Save
             else
             {
                 Debug.LogWarning("SaveManager skipped inventory restore because InventoryManager is missing.", this);
+            }
+
+            if (_equipmentManager != null)
+            {
+                _equipmentManager.RestoreFromSaveData(saveData.Equipment);
+            }
+
+            _hotbarState.RestoreFromSaveData(saveData.Hotbar);
+
+            if (_progressionManager != null)
+            {
+                _progressionManager.RestoreFromSaveData(saveData.Progression);
             }
 
             if (_itemPickupRegistry != null && saveData.World != null)

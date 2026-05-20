@@ -4,11 +4,13 @@ using CindarsHope.Core.Time;
 using CindarsHope.Craft;
 using CindarsHope.Craft.Data;
 using CindarsHope.Economy;
+using CindarsHope.Equipment;
 using CindarsHope.Farm;
 using CindarsHope.Inventory;
 using CindarsHope.Interaction;
 using CindarsHope.Player;
 using CindarsHope.Player.Data;
+using CindarsHope.Player.Progression;
 using CindarsHope.Save;
 using CindarsHope.SceneManagement;
 using CindarsHope.UI;
@@ -105,6 +107,8 @@ namespace CindarsHope.Editor.SceneCreation
             bootstrapObject.AddComponent<SaveInput>();
             bootstrapObject.AddComponent<CraftingManager>();
             bootstrapObject.AddComponent<EconomyManager>();
+            bootstrapObject.AddComponent<EquipmentManager>();
+            bootstrapObject.AddComponent<PlayerProgressionManager>();
 
             return bootstrap;
         }
@@ -126,6 +130,8 @@ namespace CindarsHope.Editor.SceneCreation
             SetReference(serializedBootstrap, "_hungerManager", bootstrapObject.GetComponent<HungerManager>());
             SetReference(serializedBootstrap, "_craftingManager", bootstrapObject.GetComponent<CraftingManager>());
             SetReference(serializedBootstrap, "_economyManager", bootstrapObject.GetComponent<EconomyManager>());
+            SetReference(serializedBootstrap, "_equipmentManager", bootstrapObject.GetComponent<EquipmentManager>());
+            SetReference(serializedBootstrap, "_progressionManager", bootstrapObject.GetComponent<PlayerProgressionManager>());
             ConfigureDayAdvanceInput(bootstrapObject.GetComponent<DayAdvanceInput>(), bootstrapObject.GetComponent<TimeManager>());
             ConfigureFoodConsumer(bootstrapObject.GetComponent<FoodConsumer>(), bootstrapObject.GetComponent<InventoryManager>(), bootstrapObject.GetComponent<HungerManager>());
             ConfigureSaveManager(
@@ -137,7 +143,12 @@ namespace CindarsHope.Editor.SceneCreation
                 farmPlotRegistry,
                 treeRegistry,
                 itemPickupRegistry,
-                playerTransform);
+                playerTransform,
+                bootstrapObject.GetComponent<EquipmentManager>(),
+                bootstrapObject.GetComponent<PlayerProgressionManager>());
+            bootstrapObject.GetComponent<SaveManager>().RebindOptionalRuntimeManagers(
+                bootstrapObject.GetComponent<EquipmentManager>(),
+                bootstrapObject.GetComponent<PlayerProgressionManager>());
             ConfigureSaveInput(bootstrapObject.GetComponent<SaveInput>(), bootstrapObject.GetComponent<SaveManager>());
             ConfigureCraftingManager(bootstrapObject.GetComponent<CraftingManager>(), bootstrapObject.GetComponent<InventoryManager>());
             ConfigureEconomyManager(bootstrapObject.GetComponent<EconomyManager>(), bootstrapObject.GetComponent<InventoryManager>(), bootstrapObject.GetComponent<PlayerManager>());
@@ -177,7 +188,9 @@ namespace CindarsHope.Editor.SceneCreation
             FarmPlotRegistry farmPlotRegistry,
             TreeRegistry treeRegistry,
             ItemPickupRegistry itemPickupRegistry,
-            Transform playerTransform)
+            Transform playerTransform,
+            EquipmentManager equipmentManager,
+            PlayerProgressionManager progressionManager)
         {
             var serializedSave = new SerializedObject(saveManager);
             SetReference(serializedSave, "_playerManager", playerManager);
@@ -188,6 +201,8 @@ namespace CindarsHope.Editor.SceneCreation
             SetReference(serializedSave, "_treeRegistry", treeRegistry);
             SetReference(serializedSave, "_itemPickupRegistry", itemPickupRegistry);
             SetReference(serializedSave, "_playerTransform", playerTransform);
+            SetReference(serializedSave, "_equipmentManager", equipmentManager);
+            SetReference(serializedSave, "_progressionManager", progressionManager);
             serializedSave.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(saveManager);
         }
@@ -301,7 +316,7 @@ namespace CindarsHope.Editor.SceneCreation
 
             var trigger = triggerObject.AddComponent<CircleCollider2D>();
             trigger.isTrigger = true;
-            trigger.radius = 1.25f;
+            trigger.radius = 0.0005f;
 
             return trigger;
         }

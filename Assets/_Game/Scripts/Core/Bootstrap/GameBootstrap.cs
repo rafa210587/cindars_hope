@@ -2,9 +2,11 @@ using CindarsHope.Core.Data;
 using CindarsHope.Core.Time;
 using CindarsHope.Craft;
 using CindarsHope.Economy;
+using CindarsHope.Equipment;
 using CindarsHope.Inventory;
 using CindarsHope.Player;
 using CindarsHope.Player.Data;
+using CindarsHope.Player.Progression;
 using CindarsHope.Save;
 using UnityEngine;
 
@@ -22,6 +24,8 @@ namespace CindarsHope.Core.Bootstrap
         [SerializeField] private HungerManager _hungerManager;
         [SerializeField] private CraftingManager _craftingManager;
         [SerializeField] private EconomyManager _economyManager;
+        [SerializeField] private EquipmentManager _equipmentManager;
+        [SerializeField] private PlayerProgressionManager _progressionManager;
         [SerializeField] private PlayerDataSO _playerData;
         [SerializeField] private ItemDatabaseSO _itemDatabase;
 
@@ -34,6 +38,8 @@ namespace CindarsHope.Core.Bootstrap
         public HungerManager HungerManager => _hungerManager;
         public CraftingManager CraftingManager => _craftingManager;
         public EconomyManager EconomyManager => _economyManager;
+        public EquipmentManager EquipmentManager => _equipmentManager;
+        public PlayerProgressionManager PlayerProgressionManager => _progressionManager;
 
         private void Awake()
         {
@@ -133,6 +139,11 @@ namespace CindarsHope.Core.Bootstrap
             if (_economyManager != null)
             {
                 _economyManager.Initialize();
+            }
+
+            if (_saveManager != null)
+            {
+                _saveManager.RebindOptionalRuntimeManagers(_equipmentManager, _progressionManager);
             }
         }
 

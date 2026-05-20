@@ -11,6 +11,7 @@ namespace CindarsHope.Interaction
         [SerializeField] private Collider2D _interactionTrigger;
         [SerializeField] private KeyCode _interactKey = KeyCode.E;
 
+        [SerializeField] private float _maxInteractionDistance = 0.15f;
         private readonly List<InteractionCandidate> _candidates = new List<InteractionCandidate>();
         private bool _missingTriggerWarningLogged;
         private bool _lastPublishedHasCandidate;
@@ -21,6 +22,7 @@ namespace CindarsHope.Interaction
             get
             {
                 var candidate = GetBestCandidate();
+                
                 return candidate != null ? candidate.InteractionPrompt : string.Empty;
             }
         }
@@ -145,11 +147,13 @@ namespace CindarsHope.Interaction
 
             IInteractable bestInteractable = null;
             var bestSqrDistance = float.PositiveInfinity;
+            var maxSqrDistance = _maxInteractionDistance * _maxInteractionDistance;
 
             for (var i = 0; i < _candidates.Count; i++)
             {
                 var candidate = _candidates[i];
                 var interactable = candidate.Interactable;
+
                 if (interactable == null || !interactable.CanInteract(gameObject))
                 {
                     continue;
@@ -157,6 +161,11 @@ namespace CindarsHope.Interaction
 
                 var targetPosition = GetCandidatePosition(candidate, origin);
                 var sqrDistance = (targetPosition - origin).sqrMagnitude;
+
+                if (sqrDistance > maxSqrDistance)
+                {
+                    continue;
+                }
 
                 if (sqrDistance < bestSqrDistance)
                 {

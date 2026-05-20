@@ -376,3 +376,38 @@ Esse arquivo preserva o log operacional anterior inteiro antes da redução do l
 ### Próximo passo recomendado
 
 - Iniciar PR-170 — Cave procedural contracts.
+---
+
+## 2026-05-20 - PR-101 a PR-130 reconciliacao consolidada pos PR-099
+
+**Responsavel:** Codex/ChatGPT
+**Branch:** `feature/pr-101-reconciliar-branches-pr099`
+**Escopo:** executar em um unico commit, por decisao humana explicita, a reconciliacao PR-101 a PR-130 antes de retomar Cave Procedural.
+
+### Alteracoes
+
+- Criada auditoria `docs/audits/PR101_PR099_BRANCH_RECONCILIATION.md`.
+- Criados docs `docs/audits/PR116_ITEM_ID_AUDIT.md`, `docs/audits/PR130_RECONCILIACAO_HANDOFF.md` e `docs/validation/SMOKE_TEST_FARM_TOWN_CAVE_MVP.md`.
+- Aplicado hardening estatico em Combat: `EnemyHealth`, `EnemyContactDamage`, `EnemyChaseController`, `HitFlashController`, `KnockbackController`, `EnemyDropSpawner` e `EnemyDataSO`.
+- Adicionados contratos MVP de dano, ferramentas, equipamento, hotbar e progressao.
+- Integrado save/load simples para Equipment, Hotbar e PlayerProgression.
+- Atualizados Bootstrap, geradores/instaladores de cena, DebugHud e validators para reconhecer o estado consolidado.
+
+### Testes
+
+- [x] Revisao estatica de escopo e arquivos alterados.
+- [x] Metas Unity adicionadas para scripts/pastas novos.
+- [ ] Unity nao executado nesta sessao.
+- [ ] Regeneracao de cenas nao executada nesta sessao.
+
+### Pendencias / riscos
+
+- Validar compilacao no Unity.
+- Validar smoke test Farm/Town/Cave.
+- `item_material_stone` e `ore_copper` seguem pendentes como assets/IDs futuros de Cave Resources.
+- As cenas locais e `Assets/MobileDependencyResolver/**` permaneceram ignorados por instrucao humana.
+
+### Proximo passo recomendado
+
+- Validar este commit no Unity.
+- Depois de aprovado/mergeado, retomar Cave Procedural Foundation como PR-131+.

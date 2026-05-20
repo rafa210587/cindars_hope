@@ -28,27 +28,29 @@ namespace CindarsHope.Combat
                 return;
             }
 
+            var playerController = collision.GetComponentInParent<PlayerController>();
+            if (playerController == null)
+            {
+                playerController = collision.GetComponent<PlayerController>();
+            }
+
+            if (playerController == null)
+            {
+                return;
+            }
+
             if (_playerManager == null)
             {
-                var playerController = collision.GetComponentInParent<PlayerController>();
-                if (playerController == null)
+                if (GameBootstrap.Instance != null && GameBootstrap.Instance.PlayerManager != null)
                 {
-                    playerController = collision.GetComponent<PlayerController>();
+                    _playerManager = GameBootstrap.Instance.PlayerManager;
                 }
-
-                if (playerController != null)
+                else
                 {
-                    if (GameBootstrap.Instance != null && GameBootstrap.Instance.PlayerManager != null)
+                    _playerManager = collision.GetComponentInParent<PlayerManager>();
+                    if (_playerManager == null)
                     {
-                        _playerManager = GameBootstrap.Instance.PlayerManager;
-                    }
-                    else
-                    {
-                        _playerManager = collision.GetComponentInParent<PlayerManager>();
-                        if (_playerManager == null)
-                        {
-                            _playerManager = collision.GetComponent<PlayerManager>();
-                        }
+                        _playerManager = collision.GetComponent<PlayerManager>();
                     }
                 }
             }

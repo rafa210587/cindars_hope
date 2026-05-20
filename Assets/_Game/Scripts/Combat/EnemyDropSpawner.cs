@@ -23,6 +23,12 @@ namespace CindarsHope.Combat
 
         private void OnEnemyKilled(EnemyKilledEvent evt)
         {
+            if (string.IsNullOrWhiteSpace(evt.DropItemId) || evt.DropAmount <= 0)
+            {
+                Debug.Log($"EnemyDropSpawner: enemy {evt.EnemyId} has no valid drop configured.");
+                return;
+            }
+
             var inventoryManager = _inventoryManager;
 
             if (inventoryManager == null && GameBootstrap.Instance != null)
@@ -37,8 +43,14 @@ namespace CindarsHope.Combat
             }
 
             Debug.Log($"EnemyDropSpawner: adding drop {evt.DropItemId} x{evt.DropAmount} to inventory.");
-            inventoryManager.AddItem(evt.DropItemId, evt.DropAmount);
-            Debug.Log("EnemyDropSpawner: drop added successfully.");
+            if (inventoryManager.AddItem(evt.DropItemId, evt.DropAmount))
+            {
+                Debug.Log("EnemyDropSpawner: drop added successfully.");
+            }
+            else
+            {
+                Debug.LogWarning($"EnemyDropSpawner: inventory rejected drop {evt.DropItemId} x{evt.DropAmount}.");
+            }
         }
 
         public void RebindInventoryManager(InventoryManager inventoryManager)

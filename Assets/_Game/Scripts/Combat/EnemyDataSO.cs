@@ -29,7 +29,38 @@ namespace CindarsHope.Combat
         public float hitFlashDuration = 0.12f;
 
         [Header("Drops")]
-        public string dropItemId = "ore_copper";
+        public string dropItemId = "item_wood";
         public int dropAmount = 1;
+
+        [Header("Progression")]
+        public int enemyLevel = 1;
+        public EnemyDifficulty baseDifficulty = EnemyDifficulty.Easy;
+        public int xpRewardOverride;
+
+        private void OnValidate()
+        {
+            maxHp = Mathf.Max(1, maxHp);
+            contactDamage = Mathf.Max(0, contactDamage);
+            contactDamageCooldownSeconds = Mathf.Max(0.01f, contactDamageCooldownSeconds);
+            receivedKnockbackMultiplier = Mathf.Max(0f, receivedKnockbackMultiplier);
+            moveSpeed = Mathf.Max(0f, moveSpeed);
+            detectionRadius = Mathf.Max(0f, detectionRadius);
+            stopDistance = Mathf.Max(0f, stopDistance);
+            hitFlashDuration = Mathf.Max(0.01f, hitFlashDuration);
+            dropAmount = Mathf.Max(0, dropAmount);
+            enemyLevel = Mathf.Max(1, enemyLevel);
+            xpRewardOverride = Mathf.Max(0, xpRewardOverride);
+        }
+    }
+
+    public enum EnemyDifficulty
+    {
+        VeryEasy,
+        Easy,
+        Normal,
+        Hard,
+        Elite,
+        MiniBoss,
+        Boss
     }
 }

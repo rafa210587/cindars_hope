@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using CindarsHope.Combat;
 using CindarsHope.Craft.Data;
 using CindarsHope.Core.Data;
 using CindarsHope.Farm.Data;
@@ -59,6 +60,7 @@ namespace CindarsHope.Editor.DataValidation
             var treeDatabase = FindRequiredAsset<TreeDatabaseSO>(errors, nameof(TreeDatabaseSO));
             var recipeDatabase = FindRequiredAsset<RecipeDatabaseSO>(errors, nameof(RecipeDatabaseSO));
             var workshopDatabase = FindRequiredAsset<WorkshopDatabaseSO>(errors, nameof(WorkshopDatabaseSO));
+            var enemyData = FindOptionalAsset<EnemyDataSO>();
             var items = new List<ItemDataSO>();
 
             if (itemDatabase != null)
@@ -100,6 +102,11 @@ namespace CindarsHope.Editor.DataValidation
                 ValidateWorkshops(workshops, errors);
             }
 
+            if (enemyData != null)
+            {
+                ValidateEnemyData(enemyData, items, errors);
+            }
+
             if (errors.Count > 0)
             {
                 foreach (var error in errors)
@@ -131,6 +138,19 @@ namespace CindarsHope.Editor.DataValidation
             }
 
             return asset;
+        }
+
+        private static T FindOptionalAsset<T>()
+            where T : ScriptableObject
+        {
+            var guids = AssetDatabase.FindAssets($"t:{typeof(T).Name}");
+            if (guids == null || guids.Length == 0)
+            {
+                return null;
+            }
+
+            var path = AssetDatabase.GUIDToAssetPath(guids[0]);
+            return AssetDatabase.LoadAssetAtPath<T>(path);
         }
 
         private static List<TItem> LoadRegistryItems<TRegistry, TItem>(
@@ -424,6 +444,30 @@ namespace CindarsHope.Editor.DataValidation
                     errors.Add($"{workshop.name} Level must be >= 1.");
                 }
             }
+        }
+
+        private static void ValidateEnemyData(EnemyDataSO enemyData, IEnumerable<ItemDataSO> items, ICollection<string> errors)
+        {
+            var itemIds = BuildItemIdSet(items);
+
+            if (enemyData.maxHp <= 0)
+                { errors.Add($"{enemyData.name} maxHp must be > 0."); }
+            if (enemyData.contactDamage < 0)
+                { errors.Add($"{enemyData.name} contactDamage must be >= 0."); }
+            if (enemyData.contactDamageCooldownSeconds <= 0f)
+                { errors.Add($"{enemyData.name} contactDamageCooldownSeconds must be > 0."); }
+            if (enemyData.moveSpeed < 0f)
+                { errors.Add($"{enemyData.name} moveSpeed must be >= 0."); }
+            if (enemyData.detectionRadius < 0f)
+                { errors.Add($"{enemyData.name} detectionRadius must be >= 0."); }
+            if (enemyData.hitFlashDuration <= 0f)
+                { errors.Add($"{enemyData.name} hitFlashDuration must be > 0."); }
+            if (enemyData.dropAmount < 0)
+                { errors.Add($"{enemyData.name} dropAmount must be >= 0."); }
+            if (enemyData.dropAmount > 0 && string.IsNullOrWhiteSpace(enemyData.dropItemId))
+                { errors.Add($"{enemyData.name} dropItemId must not be empty when dropAmount > 0."); }
+            if (!string.IsNullOrWhiteSpace(enemyData.dropItemId) && !itemIds.Contains(enemyData.dropItemId))
+                { errors.Add($"{enemyData.name} dropItemId '{enemyData.dropItemId}' is not known by ItemDatabase."); }
         }
 
         private static HashSet<string> BuildItemIdSet(IEnumerable<ItemDataSO> items)

@@ -3,10 +3,12 @@ using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Data;
 using CindarsHope.Core.Time;
 using CindarsHope.Economy;
+using CindarsHope.Equipment;
 using CindarsHope.Inventory;
 using CindarsHope.Interaction;
 using CindarsHope.Player;
 using CindarsHope.Player.Data;
+using CindarsHope.Player.Progression;
 using CindarsHope.Save;
 using CindarsHope.SceneManagement;
 using CindarsHope.UI;
@@ -84,6 +86,8 @@ namespace CindarsHope.Editor.SceneCreation
             bootstrapObject.AddComponent<FoodConsumer>();
             bootstrapObject.AddComponent<SaveInput>();
             bootstrapObject.AddComponent<EconomyManager>();
+            bootstrapObject.AddComponent<EquipmentManager>();
+            bootstrapObject.AddComponent<PlayerProgressionManager>();
 
             return bootstrap;
         }
@@ -99,6 +103,8 @@ namespace CindarsHope.Editor.SceneCreation
             SetReference(serializedBootstrap, "_saveManager", bootstrapObject.GetComponent<SaveManager>());
             SetReference(serializedBootstrap, "_hungerManager", bootstrapObject.GetComponent<HungerManager>());
             SetReference(serializedBootstrap, "_economyManager", bootstrapObject.GetComponent<EconomyManager>());
+            SetReference(serializedBootstrap, "_equipmentManager", bootstrapObject.GetComponent<EquipmentManager>());
+            SetReference(serializedBootstrap, "_progressionManager", bootstrapObject.GetComponent<PlayerProgressionManager>());
 
             ConfigureSaveManager(
                 bootstrapObject.GetComponent<SaveManager>(),
@@ -109,6 +115,9 @@ namespace CindarsHope.Editor.SceneCreation
                 playerTransform);
             ConfigureSaveInput(bootstrapObject.GetComponent<SaveInput>(), bootstrapObject.GetComponent<SaveManager>());
             ConfigureFoodConsumer(bootstrapObject.GetComponent<FoodConsumer>(), bootstrapObject.GetComponent<InventoryManager>(), bootstrapObject.GetComponent<HungerManager>());
+            bootstrapObject.GetComponent<SaveManager>().RebindOptionalRuntimeManagers(
+                bootstrapObject.GetComponent<EquipmentManager>(),
+                bootstrapObject.GetComponent<PlayerProgressionManager>());
 
             var playerData = AssetDatabase.LoadAssetAtPath<PlayerDataSO>(PlayerDataPath);
             if (playerData != null)

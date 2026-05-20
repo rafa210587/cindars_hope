@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
+using CindarsHope.Equipment;
 using CindarsHope.Farm;
+using CindarsHope.Player.Progression;
+using CindarsHope.UI.Hotbar;
 using CindarsHope.World;
 using UnityEngine;
 
@@ -15,6 +18,9 @@ namespace CindarsHope.Save
         public string CurrentScenePath;
         public PlayerSaveData Player;
         public InventorySaveData Inventory;
+        public EquipmentSaveData Equipment;
+        public HotbarSaveData Hotbar;
+        public PlayerProgressionSaveData Progression;
         public FarmSaveData Farm;
         public WorldSaveData World;
     }

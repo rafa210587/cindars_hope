@@ -1,11 +1,14 @@
 using CindarsHope.Core;
+using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
+using CindarsHope.Equipment;
 using CindarsHope.Inventory;
 using CindarsHope.Interaction;
 using CindarsHope.Player;
 using CindarsHope.Core.Time;
 using CindarsHope.Save;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace CindarsHope.UI
 {
@@ -20,10 +23,12 @@ namespace CindarsHope.UI
         [SerializeField] private InteractionSystem _interactionSystem;
         [SerializeField] private TimeManager _timeManager;
         [SerializeField] private SaveManager _saveManager;
+        [SerializeField] private EquipmentManager _equipmentManager;
 
         private bool _hasInteractionCandidate;
         private string _currentInteractionPrompt = string.Empty;
         private string _lastEconomyTransaction = "nenhuma transacao";
+        private string _lastProgressionMessage = string.Empty;
         private bool _isPrimaryInstance;
 
         public static DebugHud Instance => _instance;
@@ -54,6 +59,8 @@ namespace CindarsHope.UI
 
             GameEventBus.Subscribe<InteractionPromptChangedEvent>(OnInteractionPromptChanged);
             GameEventBus.Subscribe<EconomyTransactionCompletedEvent>(OnEconomyTransactionCompleted);
+            GameEventBus.Subscribe<PlayerXpChangedEvent>(OnPlayerXpChanged);
+            GameEventBus.Subscribe<PlayerLevelChangedEvent>(OnPlayerLevelChanged);
         }
 
         private void OnDisable()
@@ -65,6 +72,8 @@ namespace CindarsHope.UI
 
             GameEventBus.Unsubscribe<InteractionPromptChangedEvent>(OnInteractionPromptChanged);
             GameEventBus.Unsubscribe<EconomyTransactionCompletedEvent>(OnEconomyTransactionCompleted);
+            GameEventBus.Unsubscribe<PlayerXpChangedEvent>(OnPlayerXpChanged);
+            GameEventBus.Unsubscribe<PlayerLevelChangedEvent>(OnPlayerLevelChanged);
         }
 
         private void OnDestroy()
@@ -90,6 +99,8 @@ namespace CindarsHope.UI
             DrawWorldState();
             DrawInteractionState();
             DrawEconomyState();
+            DrawProgressionState();
+            DrawEquipmentState();
             DrawInventory();
             DrawCommands();
             GUILayout.EndArea();
@@ -100,10 +111,13 @@ namespace CindarsHope.UI
             if (_timeManager == null)
             {
                 GUILayout.Label("Day: not assigned");
-                return;
+            }
+            else
+            {
+                GUILayout.Label($"Day: {_timeManager.CurrentDay}");
             }
 
-            GUILayout.Label($"Day: {_timeManager.CurrentDay}");
+            GUILayout.Label($"Scene: {SceneManager.GetActiveScene().name}");
         }
 
         private void DrawInteractionState()
@@ -126,6 +140,33 @@ namespace CindarsHope.UI
         private void DrawEconomyState()
         {
             GUILayout.Label($"Economia: {_lastEconomyTransaction}");
+        }
+
+        private void DrawProgressionState()
+        {
+            if (!string.IsNullOrWhiteSpace(_lastProgressionMessage))
+            {
+                GUILayout.Label($"Progressao: {_lastProgressionMessage}");
+            }
+        }
+
+        private void DrawEquipmentState()
+        {
+            var equipmentManager = _equipmentManager;
+            if (equipmentManager == null && GameBootstrap.Instance != null)
+            {
+                equipmentManager = GameBootstrap.Instance.EquipmentManager;
+            }
+
+            if (equipmentManager != null)
+            {
+                GUILayout.Label($"Tool: {equipmentManager.EquippedToolId} ({equipmentManager.EquippedToolType}/{equipmentManager.EquippedToolTier})");
+            }
+
+            if (_saveManager != null && _saveManager.HotbarState != null)
+            {
+                GUILayout.Label($"Hotbar: slot {_saveManager.HotbarState.SelectedSlotIndex + 1} {_saveManager.HotbarState.SelectedItemId}");
+            }
         }
 
         private void DrawPlayerState()
@@ -182,6 +223,7 @@ namespace CindarsHope.UI
             GUILayout.Label("E: interagir");
             GUILayout.Label("Tab: avancar dia");
             GUILayout.Label("H: consumir comida");
+            GUILayout.Label("T: alternar ferramenta debug");
             GUILayout.Label("Loja: E compra trigo x3 por 5g");
             GUILayout.Label("Pesca: E no lago com cana");
             GUILayout.Label("Arvore: E para cortar");
@@ -203,6 +245,16 @@ namespace CindarsHope.UI
         private void OnEconomyTransactionCompleted(EconomyTransactionCompletedEvent evt)
         {
             _lastEconomyTransaction = evt.Message;
+        }
+
+        private void OnPlayerXpChanged(PlayerXpChangedEvent evt)
+        {
+            _lastProgressionMessage = $"XP {evt.CurrentXp}/{evt.XpToNextLevel} (Lv {evt.Level})";
+        }
+
+        private void OnPlayerLevelChanged(PlayerLevelChangedEvent evt)
+        {
+            _lastProgressionMessage = $"Level {evt.OldLevel} -> {evt.NewLevel}";
         }
 
         public void RebindRuntimeReferences(
@@ -241,6 +293,11 @@ namespace CindarsHope.UI
             if (saveManager != null)
             {
                 _saveManager = saveManager;
+            }
+
+            if (GameBootstrap.Instance != null && GameBootstrap.Instance.EquipmentManager != null)
+            {
+                _equipmentManager = GameBootstrap.Instance.EquipmentManager;
             }
 
             Debug.Log("DebugHud: runtime references rebound.");
