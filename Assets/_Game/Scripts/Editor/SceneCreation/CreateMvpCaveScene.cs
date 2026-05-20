@@ -588,16 +588,16 @@ namespace CindarsHope.Editor.SceneCreation
             EditorUtility.SetDirty(materializer);
 
             var enemyDatabase = EnsureEnemyDatabase();
-            var slimeData = AssetDatabase.LoadAssetAtPath<EnemyDataSO>(EnemySlimeDataPath);
+            var fallbackSlimeData = EnsureEnemySlimeData();
 
             var serializedSpawner = new SerializedObject(enemySpawner);
             if (enemyDatabase != null)
             {
                 SetReference(serializedSpawner, "_enemyDatabase", enemyDatabase);
             }
-            if (slimeData != null)
+            if (fallbackSlimeData != null)
             {
-                SetReference(serializedSpawner, "_fallbackEnemyData", slimeData);
+                SetReference(serializedSpawner, "_fallbackEnemyData", fallbackSlimeData);
             }
             SetReference(serializedSpawner, "_caveRunManager", runManager);
             serializedSpawner.ApplyModifiedPropertiesWithoutUndo();
@@ -729,7 +729,7 @@ namespace CindarsHope.Editor.SceneCreation
             }
 
             // Ensure enemy slime data exists
-            EnsureEnemySlimeData();
+            var slimeData = EnsureEnemySlimeData();
 
             var database = existing ?? ScriptableObject.CreateInstance<EnemyDatabaseSO>();
             if (database == null)
@@ -738,9 +738,6 @@ namespace CindarsHope.Editor.SceneCreation
                 return null;
             }
             database.name = "EnemyDatabase";
-
-            // Load slime data
-            var slimeData = AssetDatabase.LoadAssetAtPath<EnemyDataSO>(EnemySlimeDataPath);
 
             if (slimeData != null)
             {
@@ -790,12 +787,12 @@ namespace CindarsHope.Editor.SceneCreation
             return false;
         }
 
-        private static void EnsureEnemySlimeData()
+        private static EnemyDataSO EnsureEnemySlimeData()
         {
             var existing = AssetDatabase.LoadAssetAtPath<EnemyDataSO>(EnemySlimeDataPath);
             if (existing != null)
             {
-                return;
+                return existing;
             }
 
             var slimeData = ScriptableObject.CreateInstance<EnemyDataSO>();
@@ -817,6 +814,7 @@ namespace CindarsHope.Editor.SceneCreation
             AssetDatabase.CreateAsset(slimeData, EnemySlimeDataPath);
             AssetDatabase.SaveAssets();
             Debug.Log($"Created default Slime enemy data at {EnemySlimeDataPath}");
+            return slimeData;
         }
 
         private static void CreateResourceNodes(InventoryManager inventoryManager, EquipmentManager equipmentManager, CaveRunManager runManager)

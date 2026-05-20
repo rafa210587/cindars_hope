@@ -62,10 +62,10 @@ namespace CindarsHope.Cave.Runtime
             MaterializeEntranceAndExit(generatedLevel);
             MaterializeResourceNodes(generatedLevel);
 
-            // Spawn player at entrance
+            // Spawn player at entrance (converted to world space)
             if (_playerTransform != null)
             {
-                _playerTransform.position = new Vector3(generatedLevel.Entrance.x, generatedLevel.Entrance.y, 0);
+                _playerTransform.position = GridToWorld(generatedLevel.Entrance, generatedLevel);
             }
 
             Debug.Log(
@@ -73,6 +73,13 @@ namespace CindarsHope.Cave.Runtime
                 this);
 
             GameEventBus.Publish(new CaveRuntimeMaterializationCompleteEvent(generatedLevel));
+        }
+
+        private static Vector3 GridToWorld(Vector2Int gridPosition, CaveGeneratedLevel level)
+        {
+            var offsetX = level.Width * 0.5f;
+            var offsetY = level.Height * 0.5f;
+            return new Vector3(gridPosition.x - offsetX, gridPosition.y - offsetY, 0f);
         }
 
         private void MaterializeFloor(CaveGeneratedLevel generatedLevel)
@@ -83,7 +90,7 @@ namespace CindarsHope.Cave.Runtime
 
             foreach (var tilePos in generatedLevel.WalkableTiles)
             {
-                var worldPos = new Vector3(tilePos.x, tilePos.y, 0);
+                var worldPos = GridToWorld(tilePos, generatedLevel);
                 GameObject floorTile;
 
                 if (_floorTilePrefab != null)
@@ -127,7 +134,7 @@ namespace CindarsHope.Cave.Runtime
 
             foreach (var tilePos in generatedLevel.WallTiles)
             {
-                var worldPos = new Vector3(tilePos.x, tilePos.y, 0);
+                var worldPos = GridToWorld(tilePos, generatedLevel);
                 GameObject wallTile;
 
                 if (_wallTilePrefab != null)
@@ -165,7 +172,7 @@ namespace CindarsHope.Cave.Runtime
             portalsParent.transform.localPosition = Vector3.zero;
 
             // BackExit at entrance position
-            var backExitPos = new Vector3(generatedLevel.Entrance.x, generatedLevel.Entrance.y, 0);
+            var backExitPos = GridToWorld(generatedLevel.Entrance, generatedLevel);
             if (_exitPortalPrefab != null)
             {
                 _backExitPortal = Instantiate(_exitPortalPrefab, backExitPos, Quaternion.identity, portalsParent.transform);
@@ -204,7 +211,7 @@ namespace CindarsHope.Cave.Runtime
             }
 
             // ForwardExit at exit position
-            var forwardExitPos = new Vector3(generatedLevel.Exit.x, generatedLevel.Exit.y, 0);
+            var forwardExitPos = GridToWorld(generatedLevel.Exit, generatedLevel);
             if (_exitPortalPrefab != null)
             {
                 _forwardExitPortal = Instantiate(_exitPortalPrefab, forwardExitPos, Quaternion.identity, portalsParent.transform);
@@ -253,7 +260,7 @@ namespace CindarsHope.Cave.Runtime
 
             foreach (var spawnPoint in generatedLevel.ResourceSpawnPoints)
             {
-                var worldPos = new Vector3(spawnPoint.Position.x, spawnPoint.Position.y, 0);
+                var worldPos = GridToWorld(spawnPoint.Position, generatedLevel);
                 ResourceNode resourceNode;
 
                 if (_resourceNodePrefab != null)

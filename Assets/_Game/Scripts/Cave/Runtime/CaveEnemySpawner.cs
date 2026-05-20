@@ -58,20 +58,22 @@ namespace CindarsHope.Cave.Runtime
             foreach (var spawnPoint in generatedLevel.EnemySpawnPoints)
             {
                 var selectedEnemy = availableEnemies[deterministicRandom.Next(0, availableEnemies.Count)];
-                SpawnEnemyAtPoint(selectedEnemy, spawnPoint.Position);
+                SpawnEnemyAtPoint(selectedEnemy, spawnPoint.Position, generatedLevel);
             }
 
             Debug.Log($"CaveEnemySpawner: Spawned {_spawnedEnemies.Count} enemies for level {generatedLevel.CaveLevel}.", this);
         }
 
-        private void SpawnEnemyAtPoint(EnemyDataSO enemyData, Vector2Int worldPosition)
+        private void SpawnEnemyAtPoint(EnemyDataSO enemyData, Vector2Int gridPosition, CaveGeneratedLevel generatedLevel)
         {
             if (enemyData == null)
             {
                 return;
             }
 
-            var spawnPos = new Vector3(worldPosition.x, worldPosition.y, 0);
+            var offsetX = generatedLevel.Width * 0.5f;
+            var offsetY = generatedLevel.Height * 0.5f;
+            var spawnPos = new Vector3(gridPosition.x - offsetX, gridPosition.y - offsetY, 0);
             var enemyGO = new GameObject($"Enemy_{enemyData.DisplayName}");
             enemyGO.transform.position = spawnPos;
             enemyGO.transform.parent = _generatedEnemiesRoot.transform;

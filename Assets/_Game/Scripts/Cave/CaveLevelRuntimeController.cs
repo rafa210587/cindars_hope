@@ -107,6 +107,7 @@ namespace CindarsHope.Cave
             if (_materializeAfterGeneration && _materializer != null)
             {
                 _materializer.Materialize(CurrentGeneratedLevel);
+                RepositionCamera();
             }
 
             GameEventBus.Publish(new CaveLevelEnteredEvent(
@@ -136,6 +137,23 @@ namespace CindarsHope.Cave
             if (_enemySpawner != null)
             {
                 _enemySpawner.CleanupSpawns();
+            }
+        }
+
+        private void RepositionCamera()
+        {
+            if (_playerTransform == null)
+            {
+                return;
+            }
+
+            var mainCamera = Camera.main;
+            if (mainCamera != null)
+            {
+                mainCamera.transform.position = new Vector3(
+                    _playerTransform.position.x,
+                    _playerTransform.position.y,
+                    mainCamera.transform.position.z);
             }
         }
 
