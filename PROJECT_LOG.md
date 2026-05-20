@@ -1,7 +1,8 @@
 # Cindar's Hope — Project Log
 
 > Fonte operacional curta de continuidade do projeto.  
-> Histórico completo preservado em `docs/logs/PROJECT_LOG_ARCHIVE_2026-05-18_FULL_BEFORE_SPLIT.md`.
+> Histórico completo preservado em `docs/logs/PROJECT_LOG_ARCHIVE_2026-05-18_FULL_BEFORE_SPLIT.md`.  
+> Status curto de capacidades/specs preservado em `docs/IMPLEMENTATION_STATUS.md`.
 
 ---
 
@@ -15,6 +16,7 @@
 - A `dev` contém MVPs de Farm, Town, Crafting, Save/Load, Cave/Combat básico, HUD debug, transições Farm/Town/Cave e docs/specs da FASE9E/FASE9F.
 - `PROJECT_LOG.md` foi reduzido para handoff operacional curto.
 - O histórico completo anterior foi arquivado sem perda intencional em `docs/logs/PROJECT_LOG_ARCHIVE_2026-05-18_FULL_BEFORE_SPLIT.md`.
+- Tracking curto de capacidades/specs implementadas criado em `docs/IMPLEMENTATION_STATUS.md`.
 - Política de evolução de specs registrada em `docs/SPEC_EVOLUTION_POLICY_v1.0.md`.
 
 ### Specs recentes aprovadas
@@ -32,7 +34,7 @@
 
 ### Próximo passo recomendado
 
-Começar **FASE9F — Cave procedural/resources** com PRs pequenos:
+Começar **FASE9F-A — Cave Procedural Foundation** com PRs pequenos:
 
 1. PR-170 — Cave procedural contracts.
 2. PR-171 — Cave procedural generator MVP.
@@ -49,11 +51,12 @@ Em paralelo, este chat pode continuar refinando novas specs. Specs aprovadas ant
 Antes de qualquer tarefa:
 
 1. Ler `PROJECT_LOG.md`.
-2. Ler `AGENTS.md` e/ou `CLAUDE.md`.
-3. Ler os documentos de referência do PR/tarefa.
-4. Confirmar branch atual e escopo permitido.
-5. Validar estado real no GitHub/repo antes de planejar.
-6. Se o trabalho tocar specs, ler `docs/SPEC_EVOLUTION_POLICY_v1.0.md`.
+2. Ler `docs/IMPLEMENTATION_STATUS.md`.
+3. Ler `AGENTS.md` e/ou `CLAUDE.md`.
+4. Ler os documentos de referência do PR/tarefa.
+5. Confirmar branch atual e escopo permitido.
+6. Validar estado real no GitHub/repo antes de planejar.
+7. Se o trabalho tocar specs, ler `docs/SPEC_EVOLUTION_POLICY_v1.0.md`.
 
 Durante a tarefa:
 
@@ -67,10 +70,11 @@ Durante a tarefa:
 Ao final de tarefa relevante:
 
 1. Atualizar `PROJECT_LOG.md` com nova entrada curta.
-2. Informar arquivos alterados.
-3. Informar testes executados ou não executados.
-4. Informar pendências, riscos e próximo passo recomendado.
-5. Se a entrada ficar grande demais, criar novo archive em `docs/logs/` e manter este arquivo curto.
+2. Atualizar `docs/IMPLEMENTATION_STATUS.md` com status curto de capacidades/specs.
+3. Informar arquivos alterados.
+4. Informar testes executados ou não executados.
+5. Informar pendências, riscos e próximo passo recomendado.
+6. Se a entrada ficar grande demais, criar novo archive em `docs/logs/` e manter este arquivo curto.
 
 ---
 
@@ -98,6 +102,8 @@ Regras:
 ---
 
 ## 4. Estado consolidado curto
+
+Fonte curta e atualizável: `docs/IMPLEMENTATION_STATUS.md`.
 
 ### Implementado no repo
 
@@ -184,6 +190,36 @@ Esse arquivo preserva o log operacional anterior inteiro antes da redução do l
 ---
 
 ## 8. Log de atividades recente
+
+## 2026-05-20 — Tracking de implementação
+
+**Responsável:** ChatGPT  
+**Branch:** dev  
+**Escopo:** criar tracking curto de capacidades/specs implementadas e pendentes, separado do log operacional.
+
+### Alterações
+
+- Criado `docs/IMPLEMENTATION_STATUS.md`.
+- Atualizado `PROJECT_LOG.md` para apontar o tracking como leitura obrigatória de agentes.
+- Formalizado que todo PR futuro deve atualizar `PROJECT_LOG.md` e `docs/IMPLEMENTATION_STATUS.md`.
+- Mantido `PROJECT_LOG.md` como log operacional/histórico curto.
+
+### Testes
+
+- [x] Documento criado diretamente na `dev`.
+- [x] `PROJECT_LOG.md` atualizado com link e regra de manutenção.
+- [ ] Unity não executado; alteração é documental.
+
+### Pendências / riscos
+
+- Opcional: reforçar a regra também em `AGENTS.md` e `CLAUDE.md`.
+- O status de Cave/Combat básico foi mantido conforme `PROJECT_LOG.md`; validar código/Unity antes de marcar qualquer avanço além de MVP básico.
+
+### Próximo passo recomendado
+
+- Iniciar FASE9F-A — Cave Procedural Foundation, começando pelo PR-170.
+
+---
 
 ## 2026-05-20 — Política de evolução de specs
 
