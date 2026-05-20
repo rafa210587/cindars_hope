@@ -282,6 +282,7 @@ Evidencia incremental:
 - PR-145: `DebugHud` exibe status procedural quando o installer rebinda `CaveRunManager` e `CaveLevelRuntimeController`.
 - PR-146: `CaveLevelRuntimeController` regenera a run com `Shift+R` na CaveScene.
 - PR-147: `CaveCheckpointService` implementa checkpoints oficiais e usa `CaveRuntimeState`.
+- PR-148: `ResourceNodeDataSO`, `ResourceNodeDatabaseSO` e `ResourceNodeDepletedEvent` criados.
 
 Pendencias reais:
 - Unity ainda precisa compilar/validar.

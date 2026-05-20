@@ -596,3 +596,9 @@ Esse arquivo preserva o log operacional anterior inteiro antes da redução do l
 - Criado `CaveCheckpointService` com checkpoints oficiais `1, 15, 30, 45, 60, 75, 90`.
 - Level 1 fica sempre liberado e checkpoints liberados usam o `CaveRuntimeState`.
 - `CreateMvpCaveScene` adiciona o service ao `CaveRuntime`.
+
+### Marco PR-148 - ResourceNode contracts
+
+- Criados `ResourceNodeDataSO` e `ResourceNodeDatabaseSO`.
+- Criado `ResourceNodeDepletedEvent`.
+- Contrato usa `ToolType`, `ToolTier`, stamina, hits, drop principal e fallback.
