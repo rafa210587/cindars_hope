@@ -21,6 +21,12 @@ namespace CindarsHope.Combat
             }
         }
 
+        public void Configure(EnemyDataSO enemyData, Collider2D collider)
+        {
+            _enemyData = enemyData;
+            _collider = collider;
+        }
+
         private void OnTriggerStay2D(Collider2D collision)
         {
             if (_enemyData == null)

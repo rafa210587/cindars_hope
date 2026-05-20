@@ -345,6 +345,13 @@ namespace CindarsHope.UI
             GUILayout.Label($"Rooms: {_caveLevelRuntimeController.RoomCount}");
             GUILayout.Label($"EnemyPoints: {_caveLevelRuntimeController.EnemyPointCount}");
             GUILayout.Label($"ResourcePoints: {_caveLevelRuntimeController.ResourcePointCount}");
+
+            var currentLevel = _caveLevelRuntimeController.CurrentGeneratedLevel;
+            if (currentLevel != null)
+            {
+                GUILayout.Label($"Entrance: ({currentLevel.Entrance.x}, {currentLevel.Entrance.y})");
+                GUILayout.Label($"Exit: ({currentLevel.Exit.x}, {currentLevel.Exit.y})");
+            }
         }
 
         private void OnInteractionPromptChanged(InteractionPromptChangedEvent evt)

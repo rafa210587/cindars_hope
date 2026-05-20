@@ -25,7 +25,7 @@
 | Equipment/Hotbar | Implementado parcial | Tool/hotbar existem e persistem parcialmente; PR-132-FIX aplica gating em arvore/pesca e plantio por hotbar; integracoes finais pendentes. |
 | Progression/LevelUp | Implementado parcial | XP/level/pontos existem; distribuição debug de atributos ainda pendente. |
 | Damage Formula MVP | Implementado parcial | `DamageCalculator`, `DamageResult` e integracao melee MVP; status/elementos completos pendentes. |
-| Cave Procedural/Resources | Implementado parcial | PR-140 criou contratos base; generator/runtime/resources/save integrados ainda pendentes. |
+| Cave Procedural/Resources | Implementado parcial | PR-140 criou contratos base; marcos 1-7 materializador/spawning/hierarchical implementados; marcos 8-11 HUD/logging/docs parciais; validators/smoke test pendentes. |
 | Cave Bestiary/Faction Locks | Especificado | FASE9G pronta; depende da base FASE9F para implementação real. |
 | Reconciliação pós PR-099 | Implementado parcial | PR-100 auditado; PR-101 a PR-130 consolidados na `dev`; Unity ainda pendente. |
 

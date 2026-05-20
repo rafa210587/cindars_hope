@@ -23,8 +23,16 @@ namespace CindarsHope.Cave.Runtime
         [SerializeField] private InventoryManager _inventoryManager;
         [SerializeField] private EquipmentManager _equipmentManager;
         [SerializeField] private ResourceNodeDatabaseSO _resourceNodeDatabase;
+        [SerializeField] private Transform _playerTransform;
 
+        private GameObject _generatedRuntimeRoot;
+        private CaveExitPortal _backExitPortal;
+        private CaveExitPortal _forwardExitPortal;
         private List<GameObject> _materializedObjects = new List<GameObject>();
+
+        public CaveExitPortal BackExitPortal => _backExitPortal;
+        public CaveExitPortal ForwardExitPortal => _forwardExitPortal;
+        public GameObject GeneratedRuntimeRoot => _generatedRuntimeRoot;
 
         public void Materialize(CaveGeneratedLevel generatedLevel)
         {
@@ -36,13 +44,23 @@ namespace CindarsHope.Cave.Runtime
 
             CleanupPreviousMaterialization();
 
+            // Create root hierarchy
+            _generatedRuntimeRoot = new GameObject("CaveGeneratedRuntime");
+            _generatedRuntimeRoot.transform.position = Vector3.zero;
+
             MaterializeFloor(generatedLevel);
             MaterializeWalls(generatedLevel);
             MaterializeEntranceAndExit(generatedLevel);
             MaterializeResourceNodes(generatedLevel);
 
+            // Spawn player at entrance
+            if (_playerTransform != null)
+            {
+                _playerTransform.position = new Vector3(generatedLevel.Entrance.x, generatedLevel.Entrance.y, 0);
+            }
+
             Debug.Log(
-                $"CaveRuntimeMaterializer: Materialized level {generatedLevel.CaveLevel}. Floor tiles: {generatedLevel.WalkableTiles.Count}, Walls: {generatedLevel.WallTiles.Count}, Resources: {generatedLevel.ResourceSpawnPoints.Count}, Enemies: {generatedLevel.EnemySpawnPoints.Count}.",
+                $"CaveRuntimeMaterializer: Materialized level {generatedLevel.CaveLevel}. Floor: {generatedLevel.WalkableTiles.Count}, Walls: {generatedLevel.WallTiles.Count}, Resources: {generatedLevel.ResourceSpawnPoints.Count}, Enemies: {generatedLevel.EnemySpawnPoints.Count}. BackExit: ({generatedLevel.Entrance.x},{generatedLevel.Entrance.y}), ForwardExit: ({generatedLevel.Exit.x},{generatedLevel.Exit.y})",
                 this);
 
             GameEventBus.Publish(new CaveRuntimeMaterializationCompleteEvent(generatedLevel));
@@ -56,10 +74,14 @@ namespace CindarsHope.Cave.Runtime
                 return;
             }
 
+            var floorParent = new GameObject("GeneratedFloor");
+            floorParent.transform.SetParent(_generatedRuntimeRoot.transform);
+            floorParent.transform.localPosition = Vector3.zero;
+
             foreach (var tilePos in generatedLevel.WalkableTiles)
             {
                 var worldPos = new Vector3(tilePos.x, tilePos.y, 0);
-                var floorTile = Instantiate(_floorTilePrefab, worldPos, Quaternion.identity, transform);
+                var floorTile = Instantiate(_floorTilePrefab, worldPos, Quaternion.identity, floorParent.transform);
                 floorTile.gameObject.name = $"FloorTile_{tilePos.x}_{tilePos.y}";
                 floorTile.sortingOrder = 0;
                 _materializedObjects.Add(floorTile.gameObject);
@@ -74,10 +96,14 @@ namespace CindarsHope.Cave.Runtime
                 return;
             }
 
+            var wallParent = new GameObject("GeneratedWalls");
+            wallParent.transform.SetParent(_generatedRuntimeRoot.transform);
+            wallParent.transform.localPosition = Vector3.zero;
+
             foreach (var tilePos in generatedLevel.WallTiles)
             {
                 var worldPos = new Vector3(tilePos.x, tilePos.y, 0);
-                var wallTile = Instantiate(_wallTilePrefab, worldPos, Quaternion.identity, transform);
+                var wallTile = Instantiate(_wallTilePrefab, worldPos, Quaternion.identity, wallParent.transform);
                 wallTile.gameObject.name = $"WallTile_{tilePos.x}_{tilePos.y}";
                 wallTile.sortingOrder = 0;
 
@@ -90,51 +116,55 @@ namespace CindarsHope.Cave.Runtime
 
         private void MaterializeEntranceAndExit(CaveGeneratedLevel generatedLevel)
         {
-            var entranceWorldPos = new Vector3(generatedLevel.Entrance.x, generatedLevel.Entrance.y, 0);
+            var portalsParent = new GameObject("GeneratedExits");
+            portalsParent.transform.SetParent(_generatedRuntimeRoot.transform);
+            portalsParent.transform.localPosition = Vector3.zero;
 
-            if (_entrancePrefab != null)
-            {
-                var entrancePortal = Instantiate(_entrancePrefab, entranceWorldPos, Quaternion.identity, transform);
-                entrancePortal.gameObject.name = "CaveEntrance";
-
-                var entranceCollider = entrancePortal.GetComponent<BoxCollider2D>();
-                if (entranceCollider == null)
-                {
-                    entranceCollider = entrancePortal.gameObject.AddComponent<BoxCollider2D>();
-                }
-                entranceCollider.size = Vector2.one;
-                entranceCollider.isTrigger = true;
-
-                _materializedObjects.Add(entrancePortal.gameObject);
-            }
-            else
-            {
-                Debug.LogWarning("CaveRuntimeMaterializer: Entrance portal prefab not assigned. Skipping entrance.", this);
-            }
-
-            var exitWorldPos = new Vector3(generatedLevel.Exit.x, generatedLevel.Exit.y, 0);
-
+            // BackExit at entrance position
+            var backExitPos = new Vector3(generatedLevel.Entrance.x, generatedLevel.Entrance.y, 0);
             if (_exitPortalPrefab != null)
             {
-                var exitPortal = Instantiate(_exitPortalPrefab, exitWorldPos, Quaternion.identity, transform);
-                exitPortal.gameObject.name = "CaveExit";
+                _backExitPortal = Instantiate(_exitPortalPrefab, backExitPos, Quaternion.identity, portalsParent.transform);
+                _backExitPortal.gameObject.name = "GeneratedBackExit";
 
-                var exitCollider = exitPortal.GetComponent<BoxCollider2D>();
-                if (exitCollider == null)
+                var collider = _backExitPortal.GetComponent<BoxCollider2D>();
+                if (collider == null)
                 {
-                    exitCollider = exitPortal.gameObject.AddComponent<BoxCollider2D>();
+                    collider = _backExitPortal.gameObject.AddComponent<BoxCollider2D>();
                 }
-                exitCollider.size = Vector2.one;
-                exitCollider.isTrigger = true;
+                collider.size = Vector2.one;
+                collider.isTrigger = true;
 
-                _materializedObjects.Add(exitPortal.gameObject);
+                _materializedObjects.Add(_backExitPortal.gameObject);
             }
             else
             {
-                Debug.LogWarning("CaveRuntimeMaterializer: Exit portal prefab not assigned. Skipping exit.", this);
+                Debug.LogWarning("CaveRuntimeMaterializer: Exit portal prefab not assigned. BackExit skipped.", this);
             }
 
-            Debug.Log($"CaveRuntimeMaterializer: Entrance at ({generatedLevel.Entrance.x}, {generatedLevel.Entrance.y}), Exit at ({generatedLevel.Exit.x}, {generatedLevel.Exit.y}).", this);
+            // ForwardExit at exit position
+            var forwardExitPos = new Vector3(generatedLevel.Exit.x, generatedLevel.Exit.y, 0);
+            if (_exitPortalPrefab != null)
+            {
+                _forwardExitPortal = Instantiate(_exitPortalPrefab, forwardExitPos, Quaternion.identity, portalsParent.transform);
+                _forwardExitPortal.gameObject.name = "GeneratedForwardExit";
+
+                var collider = _forwardExitPortal.GetComponent<BoxCollider2D>();
+                if (collider == null)
+                {
+                    collider = _forwardExitPortal.gameObject.AddComponent<BoxCollider2D>();
+                }
+                collider.size = Vector2.one;
+                collider.isTrigger = true;
+
+                _materializedObjects.Add(_forwardExitPortal.gameObject);
+            }
+            else
+            {
+                Debug.LogWarning("CaveRuntimeMaterializer: Exit portal prefab not assigned. ForwardExit skipped.", this);
+            }
+
+            Debug.Log($"CaveRuntimeMaterializer: BackExit at ({generatedLevel.Entrance.x}, {generatedLevel.Entrance.y}), ForwardExit at ({generatedLevel.Exit.x}, {generatedLevel.Exit.y}).", this);
         }
 
         private void MaterializeResourceNodes(CaveGeneratedLevel generatedLevel)
@@ -145,10 +175,14 @@ namespace CindarsHope.Cave.Runtime
                 return;
             }
 
+            var resourceNodesParent = new GameObject("GeneratedResourceNodes");
+            resourceNodesParent.transform.SetParent(_generatedRuntimeRoot.transform);
+            resourceNodesParent.transform.localPosition = Vector3.zero;
+
             foreach (var spawnPoint in generatedLevel.ResourceSpawnPoints)
             {
                 var worldPos = new Vector3(spawnPoint.Position.x, spawnPoint.Position.y, 0);
-                var resourceNode = Instantiate(_resourceNodePrefab, worldPos, Quaternion.identity, transform);
+                var resourceNode = Instantiate(_resourceNodePrefab, worldPos, Quaternion.identity, resourceNodesParent.transform);
                 resourceNode.gameObject.name = $"ResourceNode_{spawnPoint.Position.x}_{spawnPoint.Position.y}";
 
                 var nodeInstanceId = $"node_{generatedLevel.CaveLevel}_{spawnPoint.Position.x}_{spawnPoint.Position.y}_{generatedLevel.BiomeId}";
@@ -203,8 +237,11 @@ namespace CindarsHope.Cave.Runtime
                 return null;
             }
 
+            // Deterministic selection based on seeds
+            var seedString = $"{_caveRunManager.CaveWorldSeed}_{_caveRunManager.CaveRunSeed}_{generatedLevel.CaveLevel}_resources";
+            var deterministicRandom = new System.Random(seedString.GetHashCode());
             var nodeList = new List<ResourceNodeDataSO>(allNodes);
-            return nodeList[Random.Range(0, nodeList.Count)];
+            return nodeList[deterministicRandom.Next(0, nodeList.Count)];
         }
 
         public void CleanupMaterialization()

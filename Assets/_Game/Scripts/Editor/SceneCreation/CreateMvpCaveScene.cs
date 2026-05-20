@@ -71,12 +71,14 @@ namespace CindarsHope.Editor.SceneCreation
 
             var playerTransform = CreatePlayer();
             CreateCaveSpawnPoints(playerTransform);
-            CreateGround();
-            CreateBounds();
-            CreateCavePortals();
-            var caveRuntime = CreateCaveRuntime();
-            CreateResourceNodes(inventoryManager, bootstrap.GetComponent<EquipmentManager>(), caveRuntime.runManager);
-            CreateEnemies(playerTransform);
+            // FIXED: Removing static cave elements to enable procedural generation
+            // CreateGround();
+            // CreateBounds();
+            // CreateCavePortals();
+            var equipmentManager = bootstrap.GetComponent<EquipmentManager>();
+            var caveRuntime = CreateCaveRuntime(playerTransform, inventoryManager, equipmentManager);
+            // CreateResourceNodes(inventoryManager, equipmentManager, caveRuntime.runManager);
+            // CreateEnemies(playerTransform);
             CreateEnemyDropSpawner(inventoryManager);
             CreateDebugHud(playerManager, inventoryManager, hungerManager, playerTransform.GetComponent<InteractionSystem>(), timeManager, saveManager);
             CreateSceneRuntimeInstaller(playerTransform, caveRuntime.runManager, caveRuntime.controller);
@@ -568,13 +570,18 @@ namespace CindarsHope.Editor.SceneCreation
             EditorUtility.SetDirty(dropSpawner);
         }
 
-        private static (CaveRunManager runManager, CaveLevelRuntimeController controller) CreateCaveRuntime()
+        private static (CaveRunManager runManager, CaveLevelRuntimeController controller) CreateCaveRuntime(
+            Transform playerTransform,
+            InventoryManager inventoryManager,
+            EquipmentManager equipmentManager)
         {
             var runtimeObject = new GameObject("CaveRuntime");
             runtimeObject.transform.position = Vector3.zero;
 
             var runManager = runtimeObject.AddComponent<CaveRunManager>();
             var checkpointService = runtimeObject.AddComponent<CaveCheckpointService>();
+            var materializer = runtimeObject.AddComponent<CaveRuntimeMaterializer>();
+            var enemySpawner = runtimeObject.AddComponent<CaveEnemySpawner>();
             var controller = runtimeObject.AddComponent<CaveLevelRuntimeController>();
             var config = EnsureCaveGenerationConfig();
 
@@ -590,11 +597,35 @@ namespace CindarsHope.Editor.SceneCreation
             serializedCheckpointService.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(checkpointService);
 
+            var resourceNodeDatabase = EnsureResourceNodeDatabase();
+            var serializedMaterializer = new SerializedObject(materializer);
+            SetReference(serializedMaterializer, "_caveRunManager", runManager);
+            SetReference(serializedMaterializer, "_inventoryManager", inventoryManager);
+            SetReference(serializedMaterializer, "_equipmentManager", equipmentManager);
+            SetReference(serializedMaterializer, "_resourceNodeDatabase", resourceNodeDatabase);
+            SetReference(serializedMaterializer, "_playerTransform", playerTransform);
+            serializedMaterializer.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(materializer);
+
+            var enemyDatabase = EnsureEnemyDatabase();
+            var serializedSpawner = new SerializedObject(enemySpawner);
+            if (enemyDatabase != null)
+            {
+                SetReference(serializedSpawner, "_enemyDatabase", enemyDatabase);
+            }
+            SetReference(serializedSpawner, "_caveRunManager", runManager);
+            serializedSpawner.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(enemySpawner);
+
             var serializedController = new SerializedObject(controller);
             SetReference(serializedController, "_runManager", runManager);
+            SetReference(serializedController, "_materializer", materializer);
+            SetReference(serializedController, "_enemySpawner", enemySpawner);
             SetReference(serializedController, "_generationConfig", config);
+            SetReference(serializedController, "_playerTransform", playerTransform);
             serializedController.FindProperty("_defaultBiomeId").stringValue = "biome_cave_earth";
             serializedController.FindProperty("_logGeneratedLayout").boolValue = true;
+            serializedController.FindProperty("_materializeAfterGeneration").boolValue = true;
             serializedController.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(controller);
 
@@ -627,6 +658,37 @@ namespace CindarsHope.Editor.SceneCreation
             AssetDatabase.SaveAssets();
             Debug.Log($"Created CaveGenerationConfigSO at {CaveGenerationConfigPath}.");
             return config;
+        }
+
+        private static ResourceNodeDatabaseSO EnsureResourceNodeDatabase()
+        {
+            const string databasePath = "Assets/_Game/Data/Cave/ResourceNodeDatabase.asset";
+            var existing = AssetDatabase.LoadAssetAtPath<ResourceNodeDatabaseSO>(databasePath);
+            if (existing != null)
+            {
+                return existing;
+            }
+
+            var database = ScriptableObject.CreateInstance<ResourceNodeDatabaseSO>();
+            database.name = "ResourceNodeDatabase";
+            AssetDatabase.CreateAsset(database, databasePath);
+            AssetDatabase.SaveAssets();
+            Debug.Log($"Created ResourceNodeDatabaseSO at {databasePath}");
+            return database;
+        }
+
+        private static DataRegistrySO<EnemyDataSO> EnsureEnemyDatabase()
+        {
+            const string databasePath = "Assets/_Game/Data/Combat/EnemyDatabase.asset";
+            var existing = AssetDatabase.LoadAssetAtPath<DataRegistrySO<EnemyDataSO>>(databasePath);
+            if (existing != null)
+            {
+                return existing;
+            }
+
+            // For now, return null - admin needs to create enemy database asset manually
+            Debug.LogWarning($"EnemyDatabase not found at {databasePath}. Cave enemy spawning will not work until this asset is created.");
+            return null;
         }
 
         private static void CreateResourceNodes(InventoryManager inventoryManager, EquipmentManager equipmentManager, CaveRunManager runManager)

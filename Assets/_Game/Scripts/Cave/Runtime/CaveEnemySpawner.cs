@@ -9,10 +9,13 @@ namespace CindarsHope.Cave.Runtime
     public sealed class CaveEnemySpawner : MonoBehaviour
     {
         [SerializeField] private DataRegistrySO<EnemyDataSO> _enemyDatabase;
+        [SerializeField] private CaveRunManager _caveRunManager;
 
         private List<GameObject> _spawnedEnemies = new List<GameObject>();
+        private GameObject _generatedEnemiesRoot;
+        private Transform _playerTarget;
 
-        public void SpawnEnemiesForLevel(CaveGeneratedLevel generatedLevel)
+        public void SpawnEnemiesForLevel(CaveGeneratedLevel generatedLevel, GameObject generatedRuntimeRoot, Transform playerTarget = null)
         {
             if (generatedLevel == null)
             {
@@ -28,10 +31,23 @@ namespace CindarsHope.Cave.Runtime
                 return;
             }
 
+            // Create GeneratedEnemies parent
+            _generatedEnemiesRoot = new GameObject("GeneratedEnemies");
+            _generatedEnemiesRoot.transform.SetParent(generatedRuntimeRoot.transform);
+            _generatedEnemiesRoot.transform.localPosition = Vector3.zero;
+
+            _playerTarget = playerTarget;
+
+            // Deterministic enemy selection using world + run + level seeds
+            var seedString = _caveRunManager != null
+                ? $"{_caveRunManager.CaveWorldSeed}_{_caveRunManager.CaveRunSeed}_{generatedLevel.CaveLevel}_enemies"
+                : $"{generatedLevel.CaveLevel}_enemies";
+            var deterministicRandom = new System.Random(seedString.GetHashCode());
+            var availableEnemies = new List<EnemyDataSO>(_enemyDatabase.All);
+
             foreach (var spawnPoint in generatedLevel.EnemySpawnPoints)
             {
-                var availableEnemies = new List<EnemyDataSO>(_enemyDatabase.All);
-                var selectedEnemy = availableEnemies[Random.Range(0, availableEnemies.Count)];
+                var selectedEnemy = availableEnemies[deterministicRandom.Next(0, availableEnemies.Count)];
                 SpawnEnemyAtPoint(selectedEnemy, spawnPoint.Position);
             }
 
@@ -48,7 +64,7 @@ namespace CindarsHope.Cave.Runtime
             var spawnPos = new Vector3(worldPosition.x, worldPosition.y, 0);
             var enemyGO = new GameObject($"Enemy_{enemyData.DisplayName}");
             enemyGO.transform.position = spawnPos;
-            enemyGO.transform.parent = transform;
+            enemyGO.transform.parent = _generatedEnemiesRoot.transform;
 
             var spriteRenderer = enemyGO.AddComponent<SpriteRenderer>();
             if (enemyData.Icon != null)
@@ -69,6 +85,25 @@ namespace CindarsHope.Cave.Runtime
 
             var knockback = enemyGO.AddComponent<KnockbackController>();
             var hitFlash = enemyGO.AddComponent<HitFlashController>();
+
+            var chaseController = enemyGO.AddComponent<EnemyChaseController>();
+            chaseController.ConfigureFromData(enemyData);
+            if (_playerTarget != null)
+            {
+                chaseController.RebindTarget(_playerTarget);
+            }
+
+            // Create trigger child for contact damage
+            var triggerChild = new GameObject("ContactDamageTrigger");
+            triggerChild.transform.SetParent(enemyGO.transform);
+            triggerChild.transform.localPosition = Vector3.zero;
+
+            var triggerCollider = triggerChild.AddComponent<CircleCollider2D>();
+            triggerCollider.radius = 0.5f;
+            triggerCollider.isTrigger = true;
+
+            var contactDamage = triggerChild.AddComponent<EnemyContactDamage>();
+            contactDamage.Configure(enemyData, triggerCollider);
 
             _spawnedEnemies.Add(enemyGO);
 

@@ -15,6 +15,7 @@ namespace CindarsHope.Cave
         [SerializeField] private CaveRuntimeMaterializer _materializer;
         [SerializeField] private CaveEnemySpawner _enemySpawner;
         [SerializeField] private CaveGenerationConfigSO _generationConfig;
+        [SerializeField] private Transform _playerTransform;
         [SerializeField] private string _defaultBiomeId = "biome_cave_earth";
         [SerializeField] private bool _logGeneratedLayout = true;
         [SerializeField] private bool _materializeAfterGeneration = true;
@@ -57,9 +58,9 @@ namespace CindarsHope.Cave
 
         private void OnMaterializationComplete(CaveRuntimeMaterializationCompleteEvent e)
         {
-            if (_enemySpawner != null)
+            if (_enemySpawner != null && _materializer != null && _materializer.GeneratedRuntimeRoot != null)
             {
-                _enemySpawner.SpawnEnemiesForLevel(e.GeneratedLevel);
+                _enemySpawner.SpawnEnemiesForLevel(e.GeneratedLevel, _materializer.GeneratedRuntimeRoot, _playerTransform);
             }
         }
 
@@ -117,9 +118,11 @@ namespace CindarsHope.Cave
         {
             EnsureRuntimeReferences();
             CleanupBeforeRegeneration();
+            var oldRunSeed = _runManager.CaveRunSeed;
             _runManager.GenerateNewRunSeed("debug_regeneration");
+            var newRunSeed = _runManager.CaveRunSeed;
             GenerateCurrentLevel();
-            Debug.Log("Cave regenerated via debug (Shift+R).", this);
+            Debug.Log($"Cave regenerated via debug (Shift+R). RunSeed: {oldRunSeed} -> {newRunSeed}.", this);
         }
 
         private void CleanupBeforeRegeneration()

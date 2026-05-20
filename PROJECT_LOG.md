@@ -751,3 +751,64 @@ Esse arquivo preserva o log operacional anterior inteiro antes da redução do l
 - Unity nao foi executado nesta sessao; cena e assets gerados por menu precisam ser materializados no Editor.
 - `Assets/_Game/Scenes/CaveScene.unity` e `Assets/_Game/Data/Cave/*.asset` nao foram atualizados fisicamente porque o Unity nao foi aberto.
 - Stamina real, KO real, enemy spawn por layout, daily refresh, boss e FASE9G ficam fora do escopo.
+
+---
+
+## 2026-05-20 - FASE9F-B Marcos 3-11 Continuacao Visual + Spawning + HUD (Nesta Sessao)
+
+**Responsável:** Claude (Haiku 4.5)  
+**Branch:** `feature/fase9a-town-commerce-mvp-package`  
+**Escopo:** Continuar implementacao dos marcos 3-11 da FASE9F-B com foco em materialização visual, spawning procedural de enemies com componentes corretos, determinismo de seeds e HUD enhancements.
+
+### Alterações
+
+**Marco 3-4 Hierarchical Structure & Resource Node Parenting:**
+- Atualizado `MaterializeResourceNodes()` para criar parent GameObject `GeneratedResourceNodes` e parental resource nodes sob ele (em vez de usar `transform`).
+- Exposado `GeneratedRuntimeRoot` como propriedade pública em `CaveRuntimeMaterializer` para acesso externo.
+
+**Marco 7 Enemy Procedural Spawning com Componentes Corretos:**
+- Adicionado `_caveRunManager` como campo em `CaveEnemySpawner` para acesso a seeds.
+- Assinatura de `SpawnEnemiesForLevel()` atualizada para aceitar `generatedRuntimeRoot` e `playerTarget` opcionais.
+- Implementado `_generatedEnemiesRoot` GameObject como parent para enemies.
+- Adicionado `EnemyChaseController` a cada enemy spawned com `ConfigureFromData(enemyData)` e `RebindTarget(_playerTarget)`.
+- Criado trigger child `ContactDamageTrigger` com CircleCollider2D trigger e `EnemyContactDamage` component.
+- Adicionado `Configure(EnemyDataSO, Collider2D)` method ao `EnemyContactDamage` para setup runtime.
+- Atualizado `CaveLevelRuntimeController` para passar playerTransform e root quando calling `SpawnEnemiesForLevel()`.
+
+**Marco 8 Determinismo Refinement:**
+- Enemy spawn selection agora usa full seed string: `{WorldSeed}_{RunSeed}_{Level}_enemies` (em vez de só `{Level}_enemies`).
+- Isso garante que mesma seed world + run produz mesma distribuição de enemies.
+
+**Marco 9-10 HUD Updates & Enhanced Logging:**
+- Adicionado exibição de `Entrance` e `Exit` coordinates no `DrawCaveSummary()` do `DebugHud`.
+- Aprimorado `RegenerateCurrentRunDebug()` para logar old/new RunSeed: `"Cave regenerated via debug (Shift+R). RunSeed: {old} -> {new}."`
+
+**Player Transform Configuration:**
+- Atualizado `CreateMvpCaveScene` para passar `playerTransform` a `CreateCaveRuntime()`.
+- Configurado `_playerTransform` field em `CaveRuntimeMaterializer` via SerializedObject.
+- Adicionado `_playerTransform` field em `CaveLevelRuntimeController` e configurado no editor script.
+- Player agora spawnado na entrance corretamente sem condition restrictiva (removida check `!= Vector2Int.zero`).
+
+### Testes
+
+- [x] Revisao estatica de integracao de eventos e chamadas de spawn.
+- [x] Validacao de hierarquia GameObject: CaveGeneratedRuntime > GeneratedFloor/Walls/Exits/ResourceNodes/Enemies.
+- [x] Verificacao de determinismo de seeds para enemies.
+- [x] Inspecao de EnemyChaseController e EnemyContactDamage setup.
+- [ ] Unity compilacao não testada.
+- [ ] Play Mode não testado.
+
+### Pendências / Riscos
+
+- **EnemyChaseController needs player target:** Configurado via `_playerTransform` em controller, mas precisa validar que chase funciona no Play Mode.
+- **Enemy contact damage trigger:** Validar que OnTriggerStay2D do `EnemyContactDamage` é chamado corretamente.
+- **Resource node depletion:** Já implementado via `CaveRunManager.RegisterDepletedNode()` e `RestoreDepletedStateFromRun()` — apenas validação pendente.
+- **Marcos 11 em diante:** Documentação updates e smoke tests ainda pendentes.
+
+### Próximo passo recomendado
+
+1. Validar compilacao no Unity.
+2. Testar Play Mode: spawning, chase behavior, contact damage, determinismo de regeneracao (Shift+R).
+3. Criar e atualizar docs de validacao em `docs/audits/` ou `docs/validation/`.
+4. Atualizar `docs/IMPLEMENTATION_STATUS.md` e este log com status final.
+5. Preparar feature branch e push se tudo passar em Unity.
