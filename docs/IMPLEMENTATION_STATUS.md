@@ -284,6 +284,7 @@ Evidencia incremental:
 - PR-147: `CaveCheckpointService` implementa checkpoints oficiais e usa `CaveRuntimeState`.
 - PR-148: `ResourceNodeDataSO`, `ResourceNodeDatabaseSO` e `ResourceNodeDepletedEvent` criados.
 - PR-149: `ResourceNodeRules` e resultados puros de interacao/tool check criados.
+- PR-150: `ResourceNode` runtime MVP interagivel com ferramenta/tier/fallback e deplecao.
 
 Pendencias reais:
 - Unity ainda precisa compilar/validar.

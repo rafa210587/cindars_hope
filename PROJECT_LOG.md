@@ -608,3 +608,9 @@ Esse arquivo preserva o log operacional anterior inteiro antes da redução do l
 - Criadas regras puras `ResourceNodeRules`.
 - Criados resultados `ResourceNodeToolCheckResult` e `ResourceNodeInteractionResult`.
 - Regras separam drop principal, fallback e mensagem de ferramenta/tier insuficiente.
+
+### Marco PR-150 - ResourceNode runtime MVP
+
+- Criado `ResourceNode` interagivel por `IInteractable`.
+- Node consulta `EquipmentManager`, entrega drop principal/fallback e publica `ResourceNodeDepletedEvent`.
+- Node registra deplecao no `CaveRunManager` quando o resultado deve depletar.
