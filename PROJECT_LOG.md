@@ -561,3 +561,9 @@ Esse arquivo preserva o log operacional anterior inteiro antes da redução do l
 
 - [x] Revisao estatica de namespaces e tipos.
 - [ ] Unity nao executado nesta sessao.
+
+### Marco PR-142 - CaveRunManager e seeds
+
+- Criado `CaveRunManager` com `CaveWorldSeed`, `CaveRunSeed`, `CurrentCaveLevel` e `DeepestLayerReached`.
+- Adicionados `InitializeIfNeeded`, `EnterLevel`, `GenerateNewRunSeed`, `CaptureSaveData` e `RestoreFromSaveData`.
+- `GenerateNewRunSeed` publica `CaveRunRegeneratedEvent`.
