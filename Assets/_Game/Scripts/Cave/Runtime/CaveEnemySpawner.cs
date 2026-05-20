@@ -119,7 +119,9 @@ namespace CindarsHope.Cave.Runtime
 
             _spawnedEnemies.Add(enemyGO);
 
-            Debug.Log($"CaveEnemySpawner: Spawned {enemyData.DisplayName} at ({worldPosition.x}, {worldPosition.y}).", this);
+            Debug.Log(
+                $"CaveEnemySpawner: Spawned {enemyData.DisplayName} at grid ({gridPosition.x}, {gridPosition.y}) world ({spawnPos.x}, {spawnPos.y}).",
+                this);
         }
 
         public void CleanupSpawns()
