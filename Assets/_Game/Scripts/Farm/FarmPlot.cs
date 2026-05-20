@@ -1,4 +1,5 @@
 using CindarsHope.Core;
+using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Data;
 using CindarsHope.Core.Events;
 using CindarsHope.Farm.Data;
@@ -11,9 +12,6 @@ namespace CindarsHope.Farm
     [DisallowMultipleComponent]
     public class FarmPlot : MonoBehaviour, IInteractable
     {
-        private const string WheatSeedId = "seed_wheat";
-        private const string CarrotSeedId = "seed_carrot";
-
         [SerializeField] private int _plotIndex;
         [SerializeField] private SpriteRenderer _spriteRenderer;
         [SerializeField] private InventoryManager _inventoryManager;
@@ -239,16 +237,22 @@ namespace CindarsHope.Farm
                 return;
             }
 
-            var seedId = GetFirstAvailableSeedId();
+            var seedId = GetSelectedHotbarSeedId();
             if (string.IsNullOrEmpty(seedId))
             {
-                Debug.Log($"FarmPlot {_plotIndex} has no available seeds to plant.", this);
                 return;
             }
 
             if (!_seedDatabase.TryGetById(seedId, out var seedData) || seedData == null)
             {
                 Debug.LogWarning($"FarmPlot {_plotIndex} could not resolve seed id '{seedId}' in SeedDatabaseSO.", this);
+                return;
+            }
+
+            if (!_inventoryManager.HasItem(seedId))
+            {
+                GameEventBus.Publish(new PlayerActionFeedbackEvent("Selected seed is not in inventory."));
+                Debug.Log($"FarmPlot {_plotIndex} blocked planting because selected seed '{seedId}' is not in inventory.", this);
                 return;
             }
 
@@ -266,14 +270,33 @@ namespace CindarsHope.Farm
             Debug.Log($"FarmPlot {_plotIndex} planted seed '{seedId}'.", this);
         }
 
-        private string GetFirstAvailableSeedId()
+        private string GetSelectedHotbarSeedId()
         {
-            if (_inventoryManager.HasItem(WheatSeedId))
+            var saveManager = GameBootstrap.Instance != null ? GameBootstrap.Instance.SaveManager : null;
+            var hotbarState = saveManager != null ? saveManager.HotbarState : null;
+            if (hotbarState == null)
             {
-                return WheatSeedId;
+                GameEventBus.Publish(new PlayerActionFeedbackEvent("Select a seed in hotbar."));
+                Debug.Log($"FarmPlot {_plotIndex} blocked planting because HotbarState is missing.", this);
+                return string.Empty;
             }
 
-            return _inventoryManager.HasItem(CarrotSeedId) ? CarrotSeedId : string.Empty;
+            var selectedItemId = hotbarState.SelectedItemId;
+            if (string.IsNullOrWhiteSpace(selectedItemId))
+            {
+                GameEventBus.Publish(new PlayerActionFeedbackEvent("Select a seed in hotbar."));
+                Debug.Log($"FarmPlot {_plotIndex} blocked planting because selected hotbar slot is empty.", this);
+                return string.Empty;
+            }
+
+            if (!selectedItemId.StartsWith("seed_", System.StringComparison.Ordinal))
+            {
+                GameEventBus.Publish(new PlayerActionFeedbackEvent("Selected hotbar item is not a seed."));
+                Debug.Log($"FarmPlot {_plotIndex} blocked planting because selected hotbar item '{selectedItemId}' is not a seed.", this);
+                return string.Empty;
+            }
+
+            return selectedItemId;
         }
 
         private Vector2Int GetTilePosition()

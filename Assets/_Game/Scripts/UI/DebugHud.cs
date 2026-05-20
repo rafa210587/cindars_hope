@@ -5,6 +5,7 @@ using CindarsHope.Equipment;
 using CindarsHope.Inventory;
 using CindarsHope.Interaction;
 using CindarsHope.Player;
+using CindarsHope.Player.Progression;
 using CindarsHope.Core.Time;
 using CindarsHope.Save;
 using UnityEngine;
@@ -29,6 +30,8 @@ namespace CindarsHope.UI
         private string _currentInteractionPrompt = string.Empty;
         private string _lastEconomyTransaction = "nenhuma transacao";
         private string _lastProgressionMessage = string.Empty;
+        private string _currentActionFeedback = string.Empty;
+        private float _actionFeedbackUntil;
         private bool _isPrimaryInstance;
 
         public static DebugHud Instance => _instance;
@@ -61,6 +64,7 @@ namespace CindarsHope.UI
             GameEventBus.Subscribe<EconomyTransactionCompletedEvent>(OnEconomyTransactionCompleted);
             GameEventBus.Subscribe<PlayerXpChangedEvent>(OnPlayerXpChanged);
             GameEventBus.Subscribe<PlayerLevelChangedEvent>(OnPlayerLevelChanged);
+            GameEventBus.Subscribe<PlayerActionFeedbackEvent>(OnPlayerActionFeedback);
         }
 
         private void OnDisable()
@@ -74,6 +78,7 @@ namespace CindarsHope.UI
             GameEventBus.Unsubscribe<EconomyTransactionCompletedEvent>(OnEconomyTransactionCompleted);
             GameEventBus.Unsubscribe<PlayerXpChangedEvent>(OnPlayerXpChanged);
             GameEventBus.Unsubscribe<PlayerLevelChangedEvent>(OnPlayerLevelChanged);
+            GameEventBus.Unsubscribe<PlayerActionFeedbackEvent>(OnPlayerActionFeedback);
         }
 
         private void OnDestroy()
@@ -92,17 +97,33 @@ namespace CindarsHope.UI
                 return;
             }
 
-            GUILayout.BeginArea(new Rect(12f, 12f, 360f, Screen.height - 24f), GUI.skin.box);
-            GUILayout.Label("Cindar's Hope - Debug HUD");
+            DrawActionsPanel();
+            DrawInfoPanel();
+        }
+
+        private void DrawActionsPanel()
+        {
+            GUILayout.BeginArea(new Rect(12f, 12f, 360f, 330f), GUI.skin.box);
+            GUILayout.Label("Actions");
+            DrawInteractionState();
+            DrawActionFeedback();
+            DrawCommands();
+            GUILayout.EndArea();
+        }
+
+        private void DrawInfoPanel()
+        {
+            var width = 390f;
+            GUILayout.BeginArea(new Rect(Screen.width - width - 12f, 12f, width, Screen.height - 24f), GUI.skin.box);
+            GUILayout.Label("Cindar's Hope - Debug Info");
+            DrawWorldState();
             DrawPlayerState();
             DrawHungerState();
-            DrawWorldState();
-            DrawInteractionState();
             DrawEconomyState();
             DrawProgressionState();
             DrawEquipmentState();
+            DrawCaveSummary();
             DrawInventory();
-            DrawCommands();
             GUILayout.EndArea();
         }
 
@@ -144,10 +165,26 @@ namespace CindarsHope.UI
 
         private void DrawProgressionState()
         {
-            if (!string.IsNullOrWhiteSpace(_lastProgressionMessage))
+            var progressionManager = GetProgressionManager();
+            if (progressionManager != null)
             {
-                GUILayout.Label($"Progressao: {_lastProgressionMessage}");
+                GUILayout.Label($"Level: {progressionManager.Level}");
+                GUILayout.Label($"XP: {progressionManager.CurrentXp} / {progressionManager.XpToNextLevel}");
+                GUILayout.Label($"Attr points: {progressionManager.UnspentAttributePoints}");
+                GUILayout.Label($"Skill points: {progressionManager.UnspentSkillPoints}");
+                GUILayout.Label($"STR/DEX/INT/WIL/CON/BRE: {progressionManager.Strength}/{progressionManager.Dexterity}/{progressionManager.Intelligence}/{progressionManager.Willpower}/{progressionManager.Constitution}/{progressionManager.Breath}");
+
+                if (!string.IsNullOrWhiteSpace(_lastProgressionMessage))
+                {
+                    GUILayout.Label($"Progressao: {_lastProgressionMessage}");
+                }
+
+                return;
             }
+
+            GUILayout.Label(string.IsNullOrWhiteSpace(_lastProgressionMessage)
+                ? "Progressao: not assigned"
+                : $"Progressao: {_lastProgressionMessage}");
         }
 
         private void DrawEquipmentState()
@@ -233,22 +270,37 @@ namespace CindarsHope.UI
         {
             GUILayout.Space(8f);
             GUILayout.Label("Commands:");
-            GUILayout.Label("WASD/arrows: mover");
-            GUILayout.Label("E: interagir");
-            GUILayout.Label("Tab: avancar dia");
-            GUILayout.Label("H: consumir comida");
-            GUILayout.Label("T: alternar ferramenta debug");
-            GUILayout.Label("Loja: E compra trigo x3 por 5g");
-            GUILayout.Label("Pesca: E no lago com cana");
-            GUILayout.Label("Arvore: E para cortar");
-            GUILayout.Label("F5: salvar");
-            GUILayout.Label("F9: carregar");
-            GUILayout.Label("1-6: selecionar slot da hotbar");
+            GUILayout.Label("E: interact");
+            GUILayout.Label("J: attack");
+            GUILayout.Label("T: cycle tool");
+            GUILayout.Label("1-6: select hotbar slot");
+            GUILayout.Label("Tab: advance day");
+            GUILayout.Label("H: consume food");
+            GUILayout.Label("F5: save");
+            GUILayout.Label("F9: load");
 
             if (_saveManager != null)
             {
                 GUILayout.Label($"Save: {_saveManager.SaveFilePath}");
             }
+        }
+
+        private void DrawActionFeedback()
+        {
+            if (string.IsNullOrWhiteSpace(_currentActionFeedback) || Time.time > _actionFeedbackUntil)
+            {
+                return;
+            }
+
+            GUILayout.Space(6f);
+            GUILayout.Label($"Feedback: {_currentActionFeedback}");
+        }
+
+        private static void DrawCaveSummary()
+        {
+            GUILayout.Space(8f);
+            GUILayout.Label("Cave: fixed MVP");
+            GUILayout.Label("Seed: unavailable");
         }
 
         private void OnInteractionPromptChanged(InteractionPromptChangedEvent evt)
@@ -270,6 +322,17 @@ namespace CindarsHope.UI
         private void OnPlayerLevelChanged(PlayerLevelChangedEvent evt)
         {
             _lastProgressionMessage = $"Level {evt.OldLevel} -> {evt.NewLevel}";
+        }
+
+        private void OnPlayerActionFeedback(PlayerActionFeedbackEvent evt)
+        {
+            _currentActionFeedback = evt.Message ?? string.Empty;
+            _actionFeedbackUntil = Time.time + evt.DurationSeconds;
+        }
+
+        private static PlayerProgressionManager GetProgressionManager()
+        {
+            return GameBootstrap.Instance != null ? GameBootstrap.Instance.PlayerProgressionManager : null;
         }
 
         public void RebindRuntimeReferences(

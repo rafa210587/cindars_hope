@@ -476,3 +476,38 @@ Esse arquivo preserva o log operacional anterior inteiro antes da redução do l
 ### Proximo passo recomendado
 
 - PR-132 - DebugHud layout v2.
+
+---
+
+## 2026-05-20 - PR-132-FIX HUD split + tool/hotbar gating
+
+**Responsavel:** Codex/ChatGPT
+**Branch:** `feature/pr-132-fix-hud-tool-hotbar-gating`
+**Escopo:** corrigir implementacao parcial anterior de HUD debug, feedback de acoes, gating por ferramenta equipada e plantio por hotbar.
+
+### Alteracoes
+
+- Criado `PlayerActionFeedbackEvent` para mensagens temporarias de acoes bloqueadas.
+- Reorganizado `DebugHud` em painel esquerdo de acoes e painel direito de informacoes.
+- Adicionado status fixo da cave no HUD: `Cave: fixed MVP` e `Seed: unavailable`.
+- Adicionados contratos `HasTool` e mensagem de ferramenta ausente em `EquipmentManager`.
+- `TreeNode` agora exige `Axe/Basic` equipado antes de contabilizar hit.
+- `FishingSpot` agora exige `FishingRod/Basic` equipado antes de adicionar peixe.
+- `FarmPlot` agora usa o item selecionado na hotbar para plantar e bloqueia slot vazio/item nao-seed/seed ausente no inventario.
+
+### Testes
+
+- [x] Revisao estatica dos arquivos alterados.
+- [x] Busca estatica por `GameObject.Find`, `FindObjectOfType`, `FindObjectsByType`, `StreamingAssets` e dependencia nova de tag nos arquivos alterados.
+- [ ] Unity nao executado nesta sessao.
+
+### Pendencias / riscos
+
+- Validar no Unity se o HUD fica bem posicionado em 1280x720 e nao sobrepoe conteudo relevante.
+- Validar em Play Mode: ferramenta None/Axe/FishingRod, plantio por hotbar e mensagens temporarias.
+- Este PR nao implementa distribuicao debug de atributos nem Cave Procedural.
+
+### Proximo passo recomendado
+
+- Validar PR-132-FIX no Unity.
+- Depois seguir para distribuicao debug de atributos ou handoff FASE9E-D, conforme prioridade.

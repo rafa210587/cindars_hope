@@ -38,6 +38,36 @@ namespace CindarsHope.Equipment
             Debug.Log($"EquipmentManager: equipped weapon {_equippedWeaponId}.", this);
         }
 
+        public bool HasTool(ToolType requiredTool)
+        {
+            return HasTool(requiredTool, ToolTier.None);
+        }
+
+        public bool HasTool(ToolType requiredTool, ToolTier minimumTier)
+        {
+            if (requiredTool == ToolType.None)
+            {
+                return true;
+            }
+
+            return _equippedToolType == requiredTool && _equippedToolTier >= minimumTier;
+        }
+
+        public bool TryGetMissingToolMessage(ToolType requiredTool, ToolTier minimumTier, out string message)
+        {
+            message = string.Empty;
+
+            if (HasTool(requiredTool, minimumTier))
+            {
+                return false;
+            }
+
+            message = minimumTier > ToolTier.Basic
+                ? $"Requires {FormatToolTier(minimumTier)} {FormatToolType(requiredTool)} or better."
+                : $"Requires {FormatToolType(requiredTool)}.";
+            return true;
+        }
+
         public EquipmentSaveData CaptureSaveData()
         {
             return new EquipmentSaveData
@@ -109,6 +139,44 @@ namespace CindarsHope.Equipment
             {
                 _equippedToolType = ToolType.None;
                 _equippedToolTier = ToolTier.None;
+            }
+        }
+
+        private static string FormatToolType(ToolType toolType)
+        {
+            switch (toolType)
+            {
+                case ToolType.Axe:
+                    return "Axe";
+                case ToolType.Pickaxe:
+                    return "Pickaxe";
+                case ToolType.FishingRod:
+                    return "Fishing Rod";
+                case ToolType.Hoe:
+                    return "Hoe";
+                case ToolType.Sickle:
+                    return "Sickle";
+                default:
+                    return "Tool";
+            }
+        }
+
+        private static string FormatToolTier(ToolTier tier)
+        {
+            switch (tier)
+            {
+                case ToolTier.Copper:
+                    return "Copper";
+                case ToolTier.Iron:
+                    return "Iron";
+                case ToolTier.Gold:
+                    return "Gold";
+                case ToolTier.Diamond:
+                    return "Diamond";
+                case ToolTier.Basic:
+                    return "Basic";
+                default:
+                    return string.Empty;
             }
         }
     }

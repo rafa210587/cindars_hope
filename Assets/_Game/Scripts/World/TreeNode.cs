@@ -1,7 +1,10 @@
 using CindarsHope.Core;
+using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
+using CindarsHope.Equipment;
 using CindarsHope.Interaction;
 using CindarsHope.Inventory;
+using CindarsHope.Tools;
 using CindarsHope.World.Data;
 using UnityEngine;
 
@@ -38,6 +41,14 @@ namespace CindarsHope.World
             if (!CanInteract(interactor))
             {
                 Debug.Log($"TreeNode {_treeIndex} cannot be chopped now.", this);
+                return;
+            }
+
+            if (!HasRequiredTool())
+            {
+                const string message = "Requires Axe.";
+                GameEventBus.Publish(new PlayerActionFeedbackEvent(message));
+                Debug.Log($"TreeNode {_treeIndex} blocked chop. {message}", this);
                 return;
             }
 
@@ -128,6 +139,17 @@ namespace CindarsHope.World
                 ? 0f
                 : Mathf.Clamp01((float)HitsTaken / _treeData.RequiredHits);
             _spriteRenderer.color = Color.Lerp(new Color(0.24f, 0.48f, 0.22f), new Color(0.58f, 0.42f, 0.24f), hitRatio);
+        }
+
+        private static bool HasRequiredTool()
+        {
+            EquipmentManager equipmentManager = null;
+            if (GameBootstrap.Instance != null)
+            {
+                equipmentManager = GameBootstrap.Instance.EquipmentManager;
+            }
+
+            return equipmentManager != null && equipmentManager.HasTool(ToolType.Axe, ToolTier.Basic);
         }
 
         private Vector2Int GetTilePosition()

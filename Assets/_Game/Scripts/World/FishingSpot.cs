@@ -1,7 +1,10 @@
 using CindarsHope.Core;
+using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
+using CindarsHope.Equipment;
 using CindarsHope.Interaction;
 using CindarsHope.Inventory;
+using CindarsHope.Tools;
 using UnityEngine;
 
 namespace CindarsHope.World
@@ -18,7 +21,7 @@ namespace CindarsHope.World
 
         public bool CanInteract(GameObject interactor)
         {
-            return _inventoryManager != null && _inventoryManager.HasItem(_requiredToolId);
+            return _inventoryManager != null;
         }
 
         public void Interact(GameObject interactor)
@@ -29,9 +32,11 @@ namespace CindarsHope.World
                 return;
             }
 
-            if (!_inventoryManager.HasItem(_requiredToolId))
+            if (!HasRequiredTool())
             {
-                Debug.Log($"FishingSpot requires '{_requiredToolId}'.", this);
+                const string message = "Requires Fishing Rod.";
+                GameEventBus.Publish(new PlayerActionFeedbackEvent(message));
+                Debug.Log($"FishingSpot blocked fishing. {message} Expected tool id hint '{_requiredToolId}'.", this);
                 return;
             }
 
@@ -59,6 +64,17 @@ namespace CindarsHope.World
         private void OnValidate()
         {
             _fishAmount = Mathf.Max(1, _fishAmount);
+        }
+
+        private static bool HasRequiredTool()
+        {
+            EquipmentManager equipmentManager = null;
+            if (GameBootstrap.Instance != null)
+            {
+                equipmentManager = GameBootstrap.Instance.EquipmentManager;
+            }
+
+            return equipmentManager != null && equipmentManager.HasTool(ToolType.FishingRod, ToolTier.Basic);
         }
     }
 }

@@ -21,8 +21,8 @@
 | Town | Implementado MVP | Portal Farm/Town, TownScene gerável, NPC Pip placeholder e comércio básico. |
 | Cave | Implementado MVP básico | CaveScene/portal/combat básico conforme log; procedural progressivo pendente. |
 | Combat | Implementado MVP básico | Slime, melee/contact damage, drops e feedback básico conforme log. |
-| UI | Debug parcial | `DebugHud`/OnGUI existe; layout em painéis e feedback de ações pendentes. |
-| Equipment/Hotbar | Implementado parcial | Tool/hotbar existem e persistem parcialmente; ações ainda não fazem gating por ferramenta/hotbar. |
+| UI | Debug parcial | `DebugHud`/OnGUI existe; PR-132-FIX adicionou split em paineis e feedback temporario; UI final pendente. |
+| Equipment/Hotbar | Implementado parcial | Tool/hotbar existem e persistem parcialmente; PR-132-FIX aplica gating em arvore/pesca e plantio por hotbar; integracoes finais pendentes. |
 | Progression/LevelUp | Implementado parcial | XP/level/pontos existem; distribuição debug de atributos ainda pendente. |
 | Damage Formula MVP | Implementado parcial | `DamageCalculator`, `DamageResult` e integracao melee MVP; status/elementos completos pendentes. |
 | Cave Procedural/Resources | Pendente | FASE9F pronta; proximo bloco recomendado PR-132 a PR-145. |
@@ -104,9 +104,9 @@ Observação: várias capacidades ainda são MVP/debug, não versão final de UX
 ### 4.2 FASE9E parcial / pendente
 
 - UI/Hotbar/Inventory/Equipment: implementado parcial; UI final e integração completa pendentes.
-- HUD debug: precisa split em painel de ações e painel de informações.
-- Tool gating: tool existe, mas árvore/pesca ainda não bloqueiam por ferramenta equipada.
-- Hotbar seed gating: hotbar existe, mas `FarmPlot` ainda planta pela primeira seed disponível no inventário.
+- HUD debug: PR-132-FIX implementou split em painel de acoes e painel de informacoes via `DebugHud`; polimento final ainda pendente.
+- Tool gating: PR-132-FIX exige ferramenta equipada em `TreeNode` e `FishingSpot`.
+- Hotbar seed gating: PR-132-FIX faz `FarmPlot` usar o item selecionado na hotbar para plantio.
 - Attribute allocation: pontos existem, mas ainda não há input debug para gastar pontos.
 - Damage/Elementos/Status/Fórmula única: fórmula MVP implementada; elementos/status completos pendentes.
 - Item Taxonomy/IDs.
@@ -127,11 +127,7 @@ Observação: várias capacidades ainda são MVP/debug, não versão final de UX
 
 ### 4.5 FASE9E-D HUD/tools/progression debug pendente
 
-- PR-132 — DebugHud layout v2.
-- PR-133 — Action feedback event.
-- PR-134 — Tool gating contracts.
-- PR-135 — Tool gating para árvore e pesca.
-- PR-136 — Hotbar seed gating para FarmPlot.
+- PR-132-FIX — HUD split, feedback de acao, tool gating e hotbar seed gating implementados parcialmente.
 - PR-137 — Attribute allocation debug MVP.
 - PR-138 — DebugHud progression/tool/hotbar polish.
 - PR-139 — Handoff para Cave Procedural.
@@ -198,8 +194,8 @@ Regras para agentes:
 
 - Data: 2026-05-20
 - Responsável: Codex/ChatGPT
-- Branch: `feature/pr-131-sync-validacao-hud-tools-progression`
-- Tipo: sync documental PR-131 pos validação de HUD/tools/progressão
+- Branch: `feature/pr-132-fix-hud-tool-hotbar-gating`
+- Tipo: PR-132-FIX HUD split, feedback, tool gating e hotbar seed gating
 
 ---
 
@@ -226,3 +222,23 @@ Pendencias reais:
 Proximo bloco pendente: FASE9E-D HUD/tools/progressao debug PR-132 a PR-139; depois Cave Procedural.
 
 ---
+
+## 9. Atualizacao 2026-05-20 - PR-132-FIX HUD/tools/hotbar
+
+Status: Implementado parcial.
+
+Evidencia no repo:
+- `Assets/_Game/Scripts/UI/DebugHud.cs` com `DrawActionsPanel`, `DrawInfoPanel`, feedback temporario e cave fixed MVP.
+- `Assets/_Game/Scripts/Core/Events/PlayerActionFeedbackEvent.cs`.
+- `Assets/_Game/Scripts/Equipment/EquipmentManager.cs` com `HasTool` e mensagem de ferramenta ausente.
+- `Assets/_Game/Scripts/World/TreeNode.cs` exige Axe Basic.
+- `Assets/_Game/Scripts/World/FishingSpot.cs` exige FishingRod Basic.
+- `Assets/_Game/Scripts/Farm/FarmPlot.cs` planta pelo item selecionado na hotbar.
+
+Pendencias reais:
+- Unity ainda precisa compilar/validar.
+- Layout do HUD precisa verificacao visual em 1280x720.
+- Attribute allocation debug segue pendente.
+- Cave Procedural segue pendente.
+
+Proximo bloco pendente: validar PR-132-FIX no Unity; depois seguir para attribute allocation debug/handoff FASE9E-D.
