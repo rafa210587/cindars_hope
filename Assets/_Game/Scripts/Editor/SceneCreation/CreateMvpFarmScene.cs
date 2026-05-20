@@ -20,6 +20,7 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using CindarsHope.UI.Hotbar;
 
 namespace CindarsHope.Editor.SceneCreation
 {
@@ -114,7 +115,7 @@ namespace CindarsHope.Editor.SceneCreation
             bootstrapObject.AddComponent<EconomyManager>();
             bootstrapObject.AddComponent<EquipmentManager>();
             bootstrapObject.AddComponent<PlayerProgressionManager>();
-
+            bootstrapObject.AddComponent<HotbarDebugInput>();
             return bootstrap;
         }
 
@@ -155,6 +156,9 @@ namespace CindarsHope.Editor.SceneCreation
                 bootstrapObject.GetComponent<EquipmentManager>(),
                 bootstrapObject.GetComponent<PlayerProgressionManager>());
             ConfigureSaveInput(bootstrapObject.GetComponent<SaveInput>(), bootstrapObject.GetComponent<SaveManager>());
+            ConfigureHotbarDebugInput(
+                bootstrapObject.GetComponent<HotbarDebugInput>(),
+                bootstrapObject.GetComponent<SaveManager>());
             ConfigureCraftingManager(bootstrapObject.GetComponent<CraftingManager>(), bootstrapObject.GetComponent<InventoryManager>());
             ConfigureEconomyManager(bootstrapObject.GetComponent<EconomyManager>(), bootstrapObject.GetComponent<InventoryManager>(), bootstrapObject.GetComponent<PlayerManager>());
 
@@ -182,6 +186,13 @@ namespace CindarsHope.Editor.SceneCreation
 
             serializedBootstrap.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(bootstrap);
+        }
+        private static void ConfigureHotbarDebugInput(HotbarDebugInput hotbarDebugInput, SaveManager saveManager)
+        {
+            var serializedInput = new SerializedObject(hotbarDebugInput);
+            SetReference(serializedInput, "_saveManager", saveManager);
+            serializedInput.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(hotbarDebugInput);
         }
 
         private static void ConfigureSaveManager(

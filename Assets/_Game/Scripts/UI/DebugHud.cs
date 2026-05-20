@@ -243,6 +243,7 @@ namespace CindarsHope.UI
             GUILayout.Label("Arvore: E para cortar");
             GUILayout.Label("F5: salvar");
             GUILayout.Label("F9: carregar");
+            GUILayout.Label("1-6: selecionar slot da hotbar");
 
             if (_saveManager != null)
             {

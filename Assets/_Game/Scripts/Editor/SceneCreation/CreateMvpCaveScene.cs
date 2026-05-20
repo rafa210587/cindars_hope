@@ -16,6 +16,7 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using CindarsHope.UI.Hotbar;
 
 namespace CindarsHope.Editor.SceneCreation
 {
@@ -66,9 +67,11 @@ namespace CindarsHope.Editor.SceneCreation
             CreateDebugHud(playerManager, inventoryManager, hungerManager, playerTransform.GetComponent<InteractionSystem>(), timeManager, saveManager);
             CreateSceneRuntimeInstaller(playerTransform);
             CreateMainCamera();
-
             ConfigureBootstrap(bootstrap, playerTransform);
-
+            ConfigureSaveInput(bootstrapObject.GetComponent<SaveInput>(), bootstrapObject.GetComponent<SaveManager>());
+            ConfigureHotbarDebugInput(
+                bootstrapObject.GetComponent<HotbarDebugInput>(),
+                bootstrapObject.GetComponent<SaveManager>());   
             EditorSceneManager.MarkSceneDirty(scene);
             EditorSceneManager.SaveScene(scene, ScenePath);
             AssetDatabase.Refresh();
@@ -78,6 +81,13 @@ namespace CindarsHope.Editor.SceneCreation
             Debug.Log($"MVP CaveScene created at {ScenePath}.");
         }
 
+        private static void ConfigureHotbarDebugInput(HotbarDebugInput hotbarDebugInput, SaveManager saveManager)
+        {
+            var serializedInput = new SerializedObject(hotbarDebugInput);
+            SetReference(serializedInput, "_saveManager", saveManager);
+            serializedInput.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(hotbarDebugInput);
+        }
         private static GameBootstrap CreateBootstrap()
         {
             var bootstrapObject = new GameObject("_Bootstrap");
@@ -94,6 +104,7 @@ namespace CindarsHope.Editor.SceneCreation
             bootstrapObject.AddComponent<EconomyManager>();
             bootstrapObject.AddComponent<EquipmentManager>();
             bootstrapObject.AddComponent<PlayerProgressionManager>();
+            bootstrapObject.AddComponent<HotbarDebugInput>();
 
             return bootstrap;
         }
