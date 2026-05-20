@@ -12,6 +12,15 @@ namespace CindarsHope.Combat
 
         private int _currentHp;
 
+        public void Configure(EnemyDataSO enemyData)
+        {
+            _enemyData = enemyData;
+            if (_enemyData != null)
+            {
+                _currentHp = _enemyData.maxHp;
+            }
+        }
+
         private void Start()
         {
             if (_enemyData == null)

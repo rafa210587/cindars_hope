@@ -12,9 +12,12 @@ namespace CindarsHope.Cave
     public sealed class CaveLevelRuntimeController : MonoBehaviour
     {
         [SerializeField] private CaveRunManager _runManager;
+        [SerializeField] private CaveRuntimeMaterializer _materializer;
+        [SerializeField] private CaveEnemySpawner _enemySpawner;
         [SerializeField] private CaveGenerationConfigSO _generationConfig;
         [SerializeField] private string _defaultBiomeId = "biome_cave_earth";
         [SerializeField] private bool _logGeneratedLayout = true;
+        [SerializeField] private bool _materializeAfterGeneration = true;
 
         private readonly CaveProceduralGenerator _generator = new CaveProceduralGenerator();
 
@@ -29,6 +32,34 @@ namespace CindarsHope.Cave
             if (_runManager == null)
             {
                 _runManager = GetComponent<CaveRunManager>();
+            }
+
+            if (_materializer == null)
+            {
+                _materializer = GetComponent<CaveRuntimeMaterializer>();
+            }
+
+            if (_enemySpawner == null)
+            {
+                _enemySpawner = GetComponent<CaveEnemySpawner>();
+            }
+        }
+
+        private void OnEnable()
+        {
+            GameEventBus.Subscribe<CaveRuntimeMaterializationCompleteEvent>(OnMaterializationComplete);
+        }
+
+        private void OnDisable()
+        {
+            GameEventBus.Unsubscribe<CaveRuntimeMaterializationCompleteEvent>(OnMaterializationComplete);
+        }
+
+        private void OnMaterializationComplete(CaveRuntimeMaterializationCompleteEvent e)
+        {
+            if (_enemySpawner != null)
+            {
+                _enemySpawner.SpawnEnemiesForLevel(e.GeneratedLevel);
             }
         }
 
@@ -71,6 +102,11 @@ namespace CindarsHope.Cave
                 Debug.Log(CaveGenerationDebugPrinter.ToAscii(CurrentGeneratedLevel), this);
             }
 
+            if (_materializeAfterGeneration && _materializer != null)
+            {
+                _materializer.Materialize(CurrentGeneratedLevel);
+            }
+
             GameEventBus.Publish(new CaveLevelEnteredEvent(
                 _runManager.CurrentCaveLevel,
                 _defaultBiomeId,
@@ -80,8 +116,23 @@ namespace CindarsHope.Cave
         public void RegenerateCurrentRunDebug()
         {
             EnsureRuntimeReferences();
+            CleanupBeforeRegeneration();
             _runManager.GenerateNewRunSeed("debug_regeneration");
             GenerateCurrentLevel();
+            Debug.Log("Cave regenerated via debug (Shift+R).", this);
+        }
+
+        private void CleanupBeforeRegeneration()
+        {
+            if (_materializer != null)
+            {
+                _materializer.CleanupMaterialization();
+            }
+
+            if (_enemySpawner != null)
+            {
+                _enemySpawner.CleanupSpawns();
+            }
         }
 
         private void EnsureRuntimeReferences()

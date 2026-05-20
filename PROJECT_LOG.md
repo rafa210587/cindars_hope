@@ -507,10 +507,55 @@ Esse arquivo preserva o log operacional anterior inteiro antes da redução do l
 - Validar em Play Mode: ferramenta None/Axe/FishingRod, plantio por hotbar e mensagens temporarias.
 - Este PR nao implementa distribuicao debug de atributos nem Cave Procedural.
 
-### Proximo passo recomendado
+### Próximo passo recomendado
 
 - Validar PR-132-FIX no Unity.
-- Depois seguir para distribuicao debug de atributos ou handoff FASE9E-D, conforme prioridade.
+- Depois seguir para distribuição debug de atributos ou handoff FASE9E-D, conforme prioridade.
+
+---
+
+## 2026-05-20 - FASE9F-B Marco 0 e Marco 1 — Auditoria + CaveRuntimeMaterializer
+
+**Responsável:** Claude (Haiku 4.5)  
+**Branch esperada:** `feature/pr-154-170-cave-procedural-real-loop` (para ser criada)  
+**Escopo:** Marco 0 auditoria do estado procedural cave + Marco 1 implementação do CaveRuntimeMaterializer.
+
+### Alterações
+
+**Marco 0:**
+- Criado `docs/audits/MARCO0_FASE9F-B_CAVE_PROCEDURAL_REAL_LOOP_AUDIT.md` — Estado real vs gaps vs roadmap.
+- Registrado que infraestrutura de geração, runtime state, e contratos existem.
+- Identificado gap crítico: sem materialização de GameObjects a runtime.
+- Roadmap de 15 marcos listado com dependências.
+
+**Marco 1:**
+- Criado `Assets/_Game/Scripts/Cave/Runtime/CaveRuntimeMaterializer.cs` — Classe que converte `CaveGeneratedLevel` data em GameObjects.
+- Materializa: flooring, walls, entrance/exit, resource nodes.
+- Suporta cleanup de materialização anterior.
+- Criado `CaveRuntimeMaterializationCompleteEvent` para notificar conclusão.
+- Atualizado `CaveLevelRuntimeController` para chamar materializer após geração.
+- Adicionadas flags `_materializer` e `_materializeAfterGeneration` para controle.
+
+### Testes
+
+- [x] Revisão estática de código e estrutura.
+- [x] Validação de referências e dependências.
+- [ ] Unity não executado nesta sessão.
+- [ ] Regeneração de CaveScene não executada.
+- [ ] Smoke test procedural não executado.
+
+### Pendências / riscos
+
+- **Prefabs faltando:** Materializer esperà por floor tile prefab, wall tile prefab, entrance/exit portal prefab — todos precisam ser criados ou reutilizados.
+- **Seleção de resource node:** MVP usa seleção aleatória de todos os nodes; refinamento por nivel/bioma pendente (Marco 9).
+- **Enemies não são spawnadas:** Materializer coloca spawn points mas não materializa enemies — Marco 4.
+- **Validação Unity:** Compilação e cena procedural não testadas em Play Mode.
+
+### Próximo passo recomendado
+
+- **Criar feature branch** `feature/pr-154-170-cave-procedural-real-loop`.
+- **Marco 2:** Implementar entrance/exit portais funcionais (interactables de navegação).
+- **Validar cena** no Unity com prefabs criados.
 
 ---
 
@@ -631,6 +676,75 @@ Esse arquivo preserva o log operacional anterior inteiro antes da redução do l
 
 - `MvpSceneValidator` valida `CaveRunManager`, `CaveLevelRuntimeController` e ResourceNodes debug na CaveScene.
 - Criado `docs/audits/PR153_CAVE_PROCEDURAL_HANDOFF.md`.
+
+---
+
+## 2026-05-20 - FASE9F-B Marcos 1-7 Implementação Completa (Nesta Sessão)
+
+**Responsável:** Claude (Haiku 4.5)  
+**Branch esperada:** `feature/pr-154-170-cave-procedural-real-loop` (a ser criada)  
+**Escopo:** Implementação completa dos marcos 1-7 do procedural cave real loop com materialização, spawning, persistência e validação.
+
+### Alterações
+
+**Marco 1 - CaveRuntimeMaterializer:**
+- Criado `CaveRuntimeMaterializer.cs` — Converte `CaveGeneratedLevel` para GameObjects.
+- Materializa flooring (com verificação de prefab), walls (com collider), entrada/saída, e resource nodes.
+- Publica `CaveRuntimeMaterializationCompleteEvent` ao terminar.
+- Integrado em `CaveLevelRuntimeController` para materializar após gerar layout procedural.
+
+**Marco 2 - Entrance/Exit Portals:**
+- Criado `CaveExitPortal.cs` — Portal especializado para transição da cave.
+- Materializer diferencia entrance (ScenePortal reutilizável) e exit (CaveExitPortal).
+- Colliders trigger criados automaticamente no materializer.
+
+**Marco 3-4 - Resource e Enemy Procedural Spawning:**
+- ResourceNodes materializadas pelo materializer com seleção aleatória de tipo.
+- Criado `CaveEnemySpawner.cs` — Spawna enemies dos spawn points com configuração pós-instanciação.
+- `CaveLevelRuntimeController` inscreve ao evento de materialização e chama spawner automaticamente.
+- Adicionado método `Configure(EnemyDataSO)` em `EnemyHealth` para setup de inimigos instanciados.
+- Enemies spawned com: SpriteRenderer, CircleCollider2D, Rigidbody2D, EnemyHealth, KnockbackController, HitFlashController.
+
+**Marco 5 - Debug Visualization:**
+- Criado `CaveDebugVisualizer.cs` — Gizmo drawing para layout em Play Mode.
+- Visualiza: walkable tiles (verde), walls (cinza), rooms (azul), enemy spawn (vermelho), resource spawn (amarelo), entrada/saída (cyan/magenta).
+- Toggles em inspector para controlar cada camada visual.
+
+**Marco 6 - Regeneration Hardening:**
+- Métodos públicos `CleanupMaterialization()` e `CleanupSpawns()` adicionados.
+- `CaveLevelRuntimeController.CleanupBeforeRegeneration()` chama ambos antes de re-seed.
+- Shift+R agora executa cleanup robusto → novo seed → regeneração completa.
+
+**Marco 7 - Save/Load Coherence:**
+- Save/load já integrado em `SaveManager` via `CaveRunManager.CaptureSaveData()` / `RestoreFromSaveData()`.
+- `CaveSaveData` persiste: CurrentCaveLevel, DeepestLayerReached, CaveWorldSeed, CaveRunSeed, UnlockedCheckpoints, DepletedNodeIds.
+- Coerência procedural garantida pela persistência de seeds.
+
+### Testes
+
+- [x] Revisão estática de código.
+- [x] Validação de integração de eventos GameEventBus.
+- [x] Verificação de referências e dependências.
+- [ ] Unity compilação não testada.
+- [ ] Play Mode não testado.
+- [ ] Smoke test completo não executado.
+
+### Pendências / Riscos
+
+- **Prefabs faltando:** Floor tile, wall tile, entrance, exit — precisam ser criados ou reutilizados de assets existentes.
+- **EnemyDatabase:** Materializer esperaà por DataRegistry<EnemyDataSO> não estar vazio.
+- **ResourceNodeDatabase:** Seleção MVP aleatória; refinamento por nível/bioma (Marco 9) pendente.
+- **Marcos 8-15:** Não implementados nesta sessão (loot tables, level scaling, KO regen, checkpoint selection, daily refresh, boss gates, HUD v2, validators).
+- **Validação crítica:** Cena deve rodar sem erros de compilação; Play Mode deve gerar layout sem exceções.
+
+### Próximo passo recomendado
+
+1. Validar no Unity: compilação e Play Mode da CaveScene.
+2. Regenerar cena via `CindarsHope/Scenes/Create MVP CaveScene`.
+3. Atribuir prefabs aos campos do materializer (ou criar prefabs simples placeholder).
+4. Testar Shift+R para regeneração.
+5. Criar feature branch e push final com todos estes commits.
+6. Implementar marcos 8-15 conforme prioridade em próxima sessão ou paralelo.
 
 ### Pendencias / riscos do pacote
 

@@ -1,11 +1,16 @@
+using CindarsHope.Core.Data;
 using UnityEngine;
 
 namespace CindarsHope.Combat
 {
     [CreateAssetMenu(fileName = "Enemy_Slime", menuName = "CindarsHope/Combat/Enemy Data")]
-    public class EnemyDataSO : ScriptableObject
+    public class EnemyDataSO : ScriptableObject, IIdentifiedData
     {
         public string enemyId;
+        public string DisplayName;
+        public Sprite Icon;
+
+        string IIdentifiedData.Id => enemyId;
 
         [Header("Health")]
         public int maxHp = 10;
