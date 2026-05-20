@@ -15,6 +15,7 @@
 - A `dev` contém MVPs de Farm, Town, Crafting, Save/Load, Cave/Combat básico, HUD debug, transições Farm/Town/Cave e docs/specs da FASE9E/FASE9F.
 - `PROJECT_LOG.md` foi reduzido para handoff operacional curto.
 - O histórico completo anterior foi arquivado sem perda intencional em `docs/logs/PROJECT_LOG_ARCHIVE_2026-05-18_FULL_BEFORE_SPLIT.md`.
+- Política de evolução de specs registrada em `docs/SPEC_EVOLUTION_POLICY_v1.0.md`.
 
 ### Specs recentes aprovadas
 
@@ -27,6 +28,7 @@
 - `docs/FASE9E_PLAYER_LEVEL_UP_PROGRESSION_SPEC_v1.0.md`
 - `docs/FASE9F_CAVE_RESOURCES_ENCOUNTERS_SPEC_v1.0.md`
 - `specs/FASE9F_CAVE_RESOURCES_ENCOUNTERS/spec.md`
+- `docs/SPEC_EVOLUTION_POLICY_v1.0.md`
 
 ### Próximo passo recomendado
 
@@ -37,6 +39,8 @@ Começar **FASE9F — Cave procedural/resources** com PRs pequenos:
 3. PR-172 — Cave run regeneration on player defeat/KO.
 4. PR-173 — Cave checkpoints a cada 15 níveis.
 5. PR-174 — ResourceNode contracts com ferramenta/tier/stamina/fallback.
+
+Em paralelo, este chat pode continuar refinando novas specs. Specs aprovadas antigas não devem ser reescritas destrutivamente; correções entram como amendments/corrections.
 
 ---
 
@@ -49,6 +53,7 @@ Antes de qualquer tarefa:
 3. Ler os documentos de referência do PR/tarefa.
 4. Confirmar branch atual e escopo permitido.
 5. Validar estado real no GitHub/repo antes de planejar.
+6. Se o trabalho tocar specs, ler `docs/SPEC_EVOLUTION_POLICY_v1.0.md`.
 
 Durante a tarefa:
 
@@ -57,6 +62,7 @@ Durante a tarefa:
 3. Não alterar docs de design sem pedido explícito.
 4. Não mexer em arquivos fora da lista permitida do PR.
 5. Registrar dúvidas/desvios em vez de decidir silenciosamente.
+6. Não reescrever spec aprovada de forma destrutiva; usar nova spec, amendment, correction ou errata.
 
 Ao final de tarefa relevante:
 
@@ -68,7 +74,30 @@ Ao final de tarefa relevante:
 
 ---
 
-## 3. Estado consolidado curto
+## 3. Política de evolução de specs
+
+Fonte completa: `docs/SPEC_EVOLUTION_POLICY_v1.0.md`.
+
+Resumo operacional:
+
+```text
+Implementar specs aprovadas pode acontecer em paralelo ao refinamento de novas specs.
+Specs antigas aprovadas não devem ser reescritas destrutivamente.
+Mudanças futuras entram como nova spec, amendment, correction ou errata.
+PR iniciado segue a spec vigente no início, salvo bug crítico ou decisão humana explícita.
+```
+
+Regras:
+
+- Specs aprovadas são baseline de implementação.
+- Implementação pode continuar em outro chat usando a spec aprovada vigente.
+- Novas specs podem ser escritas em paralelo neste chat.
+- Correções em specs antigas devem indicar impacto em PRs futuros.
+- Amendments/corrections devem ficar preferencialmente em `docs/amendments/`.
+
+---
+
+## 4. Estado consolidado curto
 
 ### Implementado no repo
 
@@ -95,7 +124,7 @@ Ao final de tarefa relevante:
 
 ---
 
-## 4. Decisões FASE9F Cave
+## 5. Decisões FASE9F Cave
 
 - Primeira entrada começa em `CaveLevel = 1`.
 - Checkpoints permanentes a cada 15 níveis: `1, 15, 30, 45, 60, 75, 90`.
@@ -113,7 +142,7 @@ Ao final de tarefa relevante:
 
 ---
 
-## 5. Checklist pendente
+## 6. Checklist pendente
 
 ### Validação Unity geral
 
@@ -142,7 +171,7 @@ Ao final de tarefa relevante:
 
 ---
 
-## 6. Histórico arquivado
+## 7. Histórico arquivado
 
 O histórico completo antigo do `PROJECT_LOG.md` foi arquivado em:
 
@@ -154,7 +183,38 @@ Esse arquivo preserva o log operacional anterior inteiro antes da redução do l
 
 ---
 
-## 7. Log de atividades recente
+## 8. Log de atividades recente
+
+## 2026-05-20 — Política de evolução de specs
+
+**Responsável:** ChatGPT  
+**Branch:** dev  
+**Escopo:** registrar regra para permitir implementação paralela e refinamento de novas specs sem reescrever specs antigas.
+
+### Alterações
+
+- Criado `docs/SPEC_EVOLUTION_POLICY_v1.0.md`.
+- Atualizado `PROJECT_LOG.md` para apontar a política como leitura obrigatória quando o trabalho tocar specs.
+- Formalizado que specs aprovadas são baseline imutável.
+- Formalizado que mudanças futuras entram como nova spec, amendment, correction ou errata.
+- Formalizado que PR iniciado segue a spec vigente no início, salvo bug crítico ou decisão humana explícita.
+
+### Testes
+
+- [x] Política criada no repo.
+- [x] `PROJECT_LOG.md` atualizado com resumo e link.
+- [ ] Unity não executado; alteração é documental.
+
+### Pendências / riscos
+
+- Opcional: adicionar link explícito para esta política em `AGENTS.md` e `CLAUDE.md` em uma próxima sync documental.
+
+### Próximo passo recomendado
+
+- Implementação em outro chat pode seguir FASE9F.
+- Este chat pode continuar escrevendo a próxima spec.
+
+---
 
 ## 2026-05-20 — Split operacional do PROJECT_LOG
 
