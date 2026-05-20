@@ -25,6 +25,7 @@
 | Equipment/Hotbar | Especificado | FASE9E pendente de implementação. |
 | Progression/LevelUp | Especificado | FASE9E pendente de implementação. |
 | Cave Procedural/Resources | Especificado | FASE9F pronta; próximo bloco recomendado PR-170+. |
+| Cave Bestiary/Faction Locks | Especificado | FASE9G pronta; depende da base FASE9F para implementação real. |
 
 ---
 
@@ -44,6 +45,7 @@
 | Fase 9B Cave/Combat MVP | Log atual | Implementado MVP básico | CaveScene, portal, Slime/combat básico conforme `PROJECT_LOG.md` | Procedural/resources/checkpoints pendentes. |
 | Fase 9E Specs | Docs/specs | Especificado | UI/Hotbar, Damage/Status, Item Taxonomy, Save Migration, Level Up | Implementação pendente. |
 | Fase 9F Specs | Docs/specs | Especificado | Cave procedural/resources/encounters spec | Próximo bloco PR-170+. |
+| Fase 9G Specs | Docs/specs | Especificado | Cave bestiary/faction locks/portal ecology spec | Depende de FASE9F procedural foundation. |
 
 ---
 
@@ -119,6 +121,17 @@ Observação: várias capacidades ainda são MVP/debug, não versão final de UX
 - PR-181 — Biome boss MVP no CaveLevel 15.
 - PR-182 — Cave validator.
 
+### 4.4 FASE9G pendente
+
+- Cave encounter ecology contracts.
+- Faction locks por subfaixa de 3–5 níveis.
+- Enemy families por bioma/facção.
+- Incompatibility matrix.
+- Boss/miniboss candidates com 3 opções por marco.
+- Persistência de boss checkpoint por save.
+- Persistência de miniboss por run.
+- Debug de `EncounterEcologyId`, `FactionLockId`, `EnemyFamilyIds` e `BossCandidateId`.
+
 ---
 
 ## 5. Próximo bloco recomendado
@@ -138,6 +151,8 @@ Escopo recomendado do próximo bloco:
 | PR-174 | ResourceNode contracts | Criar contratos de node com tool/tier/stamina/fallback. |
 
 Não incluir neste bloco: boss, XP, loot tables completas, daily refresh, UI final, minimap, baús, arte final ou todos os 100 níveis completos.
+
+FASE9G deve ser usada quando a implementação chegar em enemy ecology, faction locks, boss/miniboss candidates e bestiário procedural.
 
 ---
 
@@ -166,7 +181,7 @@ Regras para agentes:
 
 ## 7. Última atualização
 
-- Data: 2026-05-19
+- Data: 2026-05-20
 - Responsável: ChatGPT
 - Branch: `dev`
 - Tipo: tracking documental direto em `dev`
