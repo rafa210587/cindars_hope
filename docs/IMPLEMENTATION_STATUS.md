@@ -281,6 +281,7 @@ Evidencia incremental:
 - PR-144: `CreateMvpCaveScene` cria `CaveRuntime` e configura `CaveGenerationConfig_Default` ao regenerar a cena no Unity.
 - PR-145: `DebugHud` exibe status procedural quando o installer rebinda `CaveRunManager` e `CaveLevelRuntimeController`.
 - PR-146: `CaveLevelRuntimeController` regenera a run com `Shift+R` na CaveScene.
+- PR-147: `CaveCheckpointService` implementa checkpoints oficiais e usa `CaveRuntimeState`.
 
 Pendencias reais:
 - Unity ainda precisa compilar/validar.

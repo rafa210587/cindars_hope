@@ -590,3 +590,9 @@ Esse arquivo preserva o log operacional anterior inteiro antes da redução do l
 
 - `CaveLevelRuntimeController` aceita `Shift+R` na `CaveScene` para gerar nova `CaveRunSeed`.
 - A regeneracao preserva `CaveWorldSeed` e `CurrentCaveLevel`, recalcula o layout e atualiza o HUD.
+
+### Marco PR-147 - Cave checkpoints service
+
+- Criado `CaveCheckpointService` com checkpoints oficiais `1, 15, 30, 45, 60, 75, 90`.
+- Level 1 fica sempre liberado e checkpoints liberados usam o `CaveRuntimeState`.
+- `CreateMvpCaveScene` adiciona o service ao `CaveRuntime`.

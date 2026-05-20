@@ -566,6 +566,7 @@ namespace CindarsHope.Editor.SceneCreation
             runtimeObject.transform.position = Vector3.zero;
 
             var runManager = runtimeObject.AddComponent<CaveRunManager>();
+            var checkpointService = runtimeObject.AddComponent<CaveCheckpointService>();
             var controller = runtimeObject.AddComponent<CaveLevelRuntimeController>();
             var config = EnsureCaveGenerationConfig();
 
@@ -575,6 +576,11 @@ namespace CindarsHope.Editor.SceneCreation
             serializedRunManager.FindProperty("_deepestLayerReached").intValue = 1;
             serializedRunManager.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(runManager);
+
+            var serializedCheckpointService = new SerializedObject(checkpointService);
+            SetReference(serializedCheckpointService, "_runManager", runManager);
+            serializedCheckpointService.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(checkpointService);
 
             var serializedController = new SerializedObject(controller);
             SetReference(serializedController, "_runManager", runManager);
