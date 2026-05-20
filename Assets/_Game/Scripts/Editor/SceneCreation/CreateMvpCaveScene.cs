@@ -1,4 +1,5 @@
 using CindarsHope.Combat;
+using CindarsHope.Combat.Data;
 using CindarsHope.Cave;
 using CindarsHope.Cave.Data;
 using CindarsHope.Cave.Resources;
@@ -291,7 +292,7 @@ namespace CindarsHope.Editor.SceneCreation
             collider.size = new Vector2(0.6f, 1f);
 
             var rigidbody = player.AddComponent<Rigidbody2D>();
-            rigidbody.isKinematic = true;
+            rigidbody.bodyType = RigidbodyType2D.Kinematic;
             rigidbody.constraints = RigidbodyConstraints2D.FreezeRotation;
 
             var playerController = player.AddComponent<PlayerController>();
@@ -453,27 +454,6 @@ namespace CindarsHope.Editor.SceneCreation
             CreateSlime(new Vector3(2f, 0f, 0f), playerTransform);
         }
 
-        private static void EnsureEnemySlimeData()
-        {
-            var existingData = AssetDatabase.LoadAssetAtPath<EnemyDataSO>(EnemySlimeDataPath);
-            if (existingData != null)
-            {
-                return;
-            }
-
-            var slimeData = ScriptableObject.CreateInstance<EnemyDataSO>();
-            slimeData.enemyId = "enemy_slime";
-            slimeData.maxHp = 10;
-            slimeData.contactDamage = 1;
-            slimeData.contactDamageCooldownSeconds = 1f;
-            slimeData.dropItemId = "item_wood";
-            slimeData.dropAmount = 1;
-
-            AssetDatabase.CreateAsset(slimeData, EnemySlimeDataPath);
-            AssetDatabase.SaveAssets();
-            Debug.Log($"Created EnemyDataSO at {EnemySlimeDataPath}.");
-        }
-
         private static void CreateSlime(Vector3 position, Transform playerTransform)
         {
             var slimeObject = new GameObject("Slime");
@@ -497,7 +477,7 @@ namespace CindarsHope.Editor.SceneCreation
             triggerCollider2D.isTrigger = true;
 
             var rigidbody = slimeObject.AddComponent<Rigidbody2D>();
-            rigidbody.isKinematic = true;
+            rigidbody.bodyType = RigidbodyType2D.Kinematic;
             rigidbody.constraints = RigidbodyConstraints2D.FreezeRotation;
 
             var healthComponent = slimeObject.AddComponent<EnemyHealth>();
@@ -608,10 +588,16 @@ namespace CindarsHope.Editor.SceneCreation
             EditorUtility.SetDirty(materializer);
 
             var enemyDatabase = EnsureEnemyDatabase();
+            var slimeData = AssetDatabase.LoadAssetAtPath<EnemyDataSO>(EnemySlimeDataPath);
+
             var serializedSpawner = new SerializedObject(enemySpawner);
             if (enemyDatabase != null)
             {
                 SetReference(serializedSpawner, "_enemyDatabase", enemyDatabase);
+            }
+            if (slimeData != null)
+            {
+                SetReference(serializedSpawner, "_fallbackEnemyData", slimeData);
             }
             SetReference(serializedSpawner, "_caveRunManager", runManager);
             serializedSpawner.ApplyModifiedPropertiesWithoutUndo();
@@ -664,31 +650,173 @@ namespace CindarsHope.Editor.SceneCreation
         {
             const string databasePath = "Assets/_Game/Data/Cave/ResourceNodeDatabase.asset";
             var existing = AssetDatabase.LoadAssetAtPath<ResourceNodeDatabaseSO>(databasePath);
-            if (existing != null)
+            if (existing != null && existing.All.Count > 0)
             {
                 return existing;
             }
 
-            var database = ScriptableObject.CreateInstance<ResourceNodeDatabaseSO>();
+            // Ensure resource node data exists
+            EnsureCaveResourceData();
+
+            var database = existing ?? ScriptableObject.CreateInstance<ResourceNodeDatabaseSO>();
             database.name = "ResourceNodeDatabase";
-            AssetDatabase.CreateAsset(database, databasePath);
+
+            // Load resource node data
+            var stoneNode = AssetDatabase.LoadAssetAtPath<ResourceNodeDataSO>(ResourceNodeStonePath);
+            var copperNode = AssetDatabase.LoadAssetAtPath<ResourceNodeDataSO>(ResourceNodeCopperPath);
+            var caveRootTreeNode = AssetDatabase.LoadAssetAtPath<ResourceNodeDataSO>(ResourceNodeCaveRootTreePath);
+
+            // Add to database if not already present
+            var serializedDatabase = new SerializedObject(database);
+            var nodesProperty = serializedDatabase.FindProperty("_items");
+
+            if (nodesProperty == null)
+            {
+                Debug.LogWarning("ResourceNodeDatabaseSO does not have an '_items' property. Skipping resource node population.");
+                return database;
+            }
+
+            if (stoneNode != null && !ContainsNode(nodesProperty, stoneNode))
+            {
+                nodesProperty.InsertArrayElementAtIndex(nodesProperty.arraySize);
+                nodesProperty.GetArrayElementAtIndex(nodesProperty.arraySize - 1).objectReferenceValue = stoneNode;
+            }
+
+            if (copperNode != null && !ContainsNode(nodesProperty, copperNode))
+            {
+                nodesProperty.InsertArrayElementAtIndex(nodesProperty.arraySize);
+                nodesProperty.GetArrayElementAtIndex(nodesProperty.arraySize - 1).objectReferenceValue = copperNode;
+            }
+
+            if (caveRootTreeNode != null && !ContainsNode(nodesProperty, caveRootTreeNode))
+            {
+                nodesProperty.InsertArrayElementAtIndex(nodesProperty.arraySize);
+                nodesProperty.GetArrayElementAtIndex(nodesProperty.arraySize - 1).objectReferenceValue = caveRootTreeNode;
+            }
+
+            serializedDatabase.ApplyModifiedPropertiesWithoutUndo();
+
+            if (existing == null)
+            {
+                AssetDatabase.CreateAsset(database, databasePath);
+            }
+
             AssetDatabase.SaveAssets();
-            Debug.Log($"Created ResourceNodeDatabaseSO at {databasePath}");
+            EditorUtility.SetDirty(database);
+            Debug.Log($"ResourceNodeDatabaseSO at {databasePath} now contains {nodesProperty.arraySize} nodes.");
             return database;
         }
 
-        private static DataRegistrySO<EnemyDataSO> EnsureEnemyDatabase()
+        private static bool ContainsNode(SerializedProperty nodesProperty, ResourceNodeDataSO node)
+        {
+            for (var i = 0; i < nodesProperty.arraySize; i++)
+            {
+                if (nodesProperty.GetArrayElementAtIndex(i).objectReferenceValue == node)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private static EnemyDatabaseSO EnsureEnemyDatabase()
         {
             const string databasePath = "Assets/_Game/Data/Combat/EnemyDatabase.asset";
-            var existing = AssetDatabase.LoadAssetAtPath<DataRegistrySO<EnemyDataSO>>(databasePath);
-            if (existing != null)
+            var existing = AssetDatabase.LoadAssetAtPath<EnemyDatabaseSO>(databasePath);
+            if (existing != null && existing.All.Count > 0)
             {
                 return existing;
             }
 
-            // For now, return null - admin needs to create enemy database asset manually
-            Debug.LogWarning($"EnemyDatabase not found at {databasePath}. Cave enemy spawning will not work until this asset is created.");
-            return null;
+            // Ensure enemy slime data exists
+            EnsureEnemySlimeData();
+
+            var database = existing ?? ScriptableObject.CreateInstance<EnemyDatabaseSO>();
+            if (database == null)
+            {
+                Debug.LogError("Failed to create or load EnemyDatabase.");
+                return null;
+            }
+            database.name = "EnemyDatabase";
+
+            // Load slime data
+            var slimeData = AssetDatabase.LoadAssetAtPath<EnemyDataSO>(EnemySlimeDataPath);
+
+            if (slimeData != null)
+            {
+                var serializedDatabase = new SerializedObject(database);
+                var enemiesProperty = serializedDatabase.FindProperty("_items");
+
+                if (enemiesProperty == null)
+                {
+                    Debug.LogWarning("EnemyDatabase does not have an '_items' property. Skipping enemy population.");
+                    return database;
+                }
+
+                if (!ContainsEnemy(enemiesProperty, slimeData))
+                {
+                    enemiesProperty.InsertArrayElementAtIndex(enemiesProperty.arraySize);
+                    enemiesProperty.GetArrayElementAtIndex(enemiesProperty.arraySize - 1).objectReferenceValue = slimeData;
+                }
+
+                serializedDatabase.ApplyModifiedPropertiesWithoutUndo();
+
+                if (existing == null)
+                {
+                    AssetDatabase.CreateAsset(database, databasePath);
+                }
+
+                AssetDatabase.SaveAssets();
+                EditorUtility.SetDirty(database);
+                Debug.Log($"EnemyDatabase at {databasePath} now contains {enemiesProperty.arraySize} enemies.");
+            }
+            else
+            {
+                Debug.LogWarning($"EnemyDatabase could not load Slime data. Cave enemy spawning may not work.");
+            }
+
+            return database;
+        }
+
+        private static bool ContainsEnemy(SerializedProperty enemiesProperty, EnemyDataSO enemy)
+        {
+            for (var i = 0; i < enemiesProperty.arraySize; i++)
+            {
+                if (enemiesProperty.GetArrayElementAtIndex(i).objectReferenceValue == enemy)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private static void EnsureEnemySlimeData()
+        {
+            var existing = AssetDatabase.LoadAssetAtPath<EnemyDataSO>(EnemySlimeDataPath);
+            if (existing != null)
+            {
+                return;
+            }
+
+            var slimeData = ScriptableObject.CreateInstance<EnemyDataSO>();
+            slimeData.enemyId = "enemy_slime_basic";
+            slimeData.DisplayName = "Slime";
+            slimeData.maxHp = 10;
+            slimeData.contactDamage = 1;
+            slimeData.contactDamageCooldownSeconds = 1f;
+            slimeData.moveSpeed = 1.2f;
+            slimeData.detectionRadius = 5f;
+            slimeData.stopDistance = 0.55f;
+            slimeData.hitFlashColor = Color.red;
+            slimeData.hitFlashDuration = 0.12f;
+            slimeData.dropItemId = "item_wood";
+            slimeData.dropAmount = 1;
+            slimeData.enemyLevel = 1;
+            slimeData.baseDifficulty = EnemyDifficulty.Easy;
+
+            AssetDatabase.CreateAsset(slimeData, EnemySlimeDataPath);
+            AssetDatabase.SaveAssets();
+            Debug.Log($"Created default Slime enemy data at {EnemySlimeDataPath}");
         }
 
         private static void CreateResourceNodes(InventoryManager inventoryManager, EquipmentManager equipmentManager, CaveRunManager runManager)

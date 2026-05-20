@@ -10,6 +10,7 @@ namespace CindarsHope.Cave.Runtime
     {
         [SerializeField] private DataRegistrySO<EnemyDataSO> _enemyDatabase;
         [SerializeField] private CaveRunManager _caveRunManager;
+        [SerializeField] private EnemyDataSO _fallbackEnemyData;
 
         private List<GameObject> _spawnedEnemies = new List<GameObject>();
         private GameObject _generatedEnemiesRoot;
@@ -25,9 +26,19 @@ namespace CindarsHope.Cave.Runtime
 
             CleanupPreviousSpawns();
 
-            if (_enemyDatabase == null || _enemyDatabase.All.Count == 0)
+            List<EnemyDataSO> availableEnemies;
+            if (_enemyDatabase != null && _enemyDatabase.All.Count > 0)
             {
-                Debug.LogWarning("CaveEnemySpawner: No enemies in database. Skipping enemy spawning.", this);
+                availableEnemies = new List<EnemyDataSO>(_enemyDatabase.All);
+            }
+            else if (_fallbackEnemyData != null)
+            {
+                availableEnemies = new List<EnemyDataSO> { _fallbackEnemyData };
+                Debug.LogWarning("CaveEnemySpawner: Using fallback enemy data (database empty).", this);
+            }
+            else
+            {
+                Debug.LogWarning("CaveEnemySpawner: No enemies in database and no fallback. Skipping enemy spawning.", this);
                 return;
             }
 
@@ -43,7 +54,6 @@ namespace CindarsHope.Cave.Runtime
                 ? $"{_caveRunManager.CaveWorldSeed}_{_caveRunManager.CaveRunSeed}_{generatedLevel.CaveLevel}_enemies"
                 : $"{generatedLevel.CaveLevel}_enemies";
             var deterministicRandom = new System.Random(seedString.GetHashCode());
-            var availableEnemies = new List<EnemyDataSO>(_enemyDatabase.All);
 
             foreach (var spawnPoint in generatedLevel.EnemySpawnPoints)
             {

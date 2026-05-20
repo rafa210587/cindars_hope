@@ -6,7 +6,6 @@ namespace CindarsHope.NPC
     [DisallowMultipleComponent]
     public sealed class NpcTalkPoint : MonoBehaviour, IInteractable
     {
-        [SerializeField] private string _npcId = "npc_pip_miudinho";
         [SerializeField] private string _displayName = "Pip Miudinho";
         [SerializeField] private string _dialogueLine = "Bem-vindo a Cindar's Hope. Ainda estamos abrindo a cidade.";
         [SerializeField] private SpriteRenderer _spriteRenderer;

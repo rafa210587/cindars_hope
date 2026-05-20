@@ -812,3 +812,80 @@ Esse arquivo preserva o log operacional anterior inteiro antes da redução do l
 3. Criar e atualizar docs de validacao em `docs/audits/` ou `docs/validation/`.
 4. Atualizar `docs/IMPLEMENTATION_STATUS.md` e este log com status final.
 5. Preparar feature branch e push se tudo passar em Unity.
+
+---
+
+## 2026-05-20 - FIX_CAVE_PROCEDURAL_VISUAL_RUNTIME_v1.0 Implementação Completa
+
+**Responsável:** Claude (Haiku 4.5)  
+**Branch:** `feature/fase9a-town-commerce-mvp-package`  
+**Escopo:** Implementação completa do FIX_CAVE_PROCEDURAL_VISUAL_RUNTIME_v1.0 — adicionar fallback visual e database population para materializar cave procedural visually.
+
+### Alterações
+
+**CaveRuntimeMaterializationResult.cs (criado):**
+- Nova classe de contratos para rastrear objetos realmente materializados.
+- Campos: `CreatedFloorTiles`, `CreatedWallTiles`, `CreatedResourceNodes`, `CreatedEnemies`, `BackExitPosition`, `ForwardExitPosition`.
+- Propósito: separar contagens de dados (WalkableTiles.Count) de contagens reais (objetos criados).
+
+**CaveRuntimeMaterializer.cs (completado):**
+- Adicionado `_lastMaterializationResult` field e `LastMaterializationResult` property pública.
+- Implementado `GetBuiltinSprite()` com compilação condicional `#if UNITY_EDITOR` para carregamento de sprite builtin.
+- `MaterializeFloor()`: Cria fallback GameObject com SpriteRenderer (cor terra #6B3A2A), sem collider. Incrementa `CreatedFloorTiles`.
+- `MaterializeWalls()`: Cria fallback com cor cinza, BoxCollider2D. Incrementa `CreatedWallTiles`.
+- `MaterializeEntranceAndExit()`: Cria fallback cyan (BackExit) e magenta (ForwardExit) portals com CaveExitPortal component. Registra posições em `BackExitPosition` e `ForwardExitPosition`.
+- `MaterializeResourceNodes()`: Cria fallback ResourceNode e incrementa `CreatedResourceNodes`.
+- `SelectAndConfigureResourceNode()`: Adiciona SpriteRenderer com cor brownish e CircleCollider2D trigger.
+
+**CaveExitPortal.cs (refatorado):**
+- Adicionado enum `CaveExitMode` (BackExit, ForwardExit).
+- Métodos `InitializeBackExit(CaveRunManager)` e `InitializeForwardExit(CaveRunManager)` para configuração de modo.
+- `HandleBackExit()`: Level 1 carrega FarmScene; Level > 1 faz EnterLevel(CurrentLevel - 1).
+- `HandleForwardExit()`: EnterLevel(CurrentLevel + 1).
+- Mantém compatibilidade com `HandleSceneTransition()` para transições baseadas em cena.
+
+**CaveEnemySpawner.cs (aprimorado):**
+- Adicionado field `_fallbackEnemyData` [SerializeField] para Slime default quando database vazio.
+- Método `SpawnEnemiesForLevel()` agora: usa database se populated, fallback para `_fallbackEnemyData`, skip se ambos null.
+- Determinismo preservado com seed string `{WorldSeed}_{RunSeed}_{Level}_enemies`.
+
+**CreateMvpCaveScene.cs (database population):**
+- `EnsureResourceNodeDatabase()`: Chama `EnsureCaveResourceData()` para garantir Stone/Copper/CaveRootTree assets. Popula database via SerializedObject manipulation. Retorna database com 3 nodes.
+- `EnsureEnemyDatabase()`: Chama `EnsureEnemySlimeData()` para garantir Enemy_Slime.asset. Popula database com Slime fallback.
+- `EnsureEnemySlimeData()`: Cria default Slime (id=enemy_slime_basic, maxHp=10, contactDamage=1, moveSpeed=1.2, etc).
+- `CreateCaveRuntime()`: Configura `_fallbackEnemyData` no spawner via SerializedObject.
+
+**DebugHud.cs (R11 - HUD com contadores reais):**
+- `DrawCaveSummary()` estendido para exibir materialized counts:
+  - `Materialized: Floors: {CreatedFloorTiles}`
+  - `Materialized: Walls: {CreatedWallTiles}`
+  - `Materialized: Resources: {CreatedResourceNodes}`
+  - `Materialized: Enemies: {CreatedEnemies}`
+- Acessa `_caveLevelRuntimeController.Materializer.LastMaterializationResult`.
+
+### Testes
+
+- [x] Revisão estática completa de todos os arquivos.
+- [x] Validação de integração de eventos GameEventBus.
+- [x] Verificação de referências Unity e dependências.
+- [x] Inspeção de fallback sprite conditional compilation.
+- [x] Validação de database population logic.
+- [ ] Unity compilação não testada.
+- [ ] Play Mode não testado.
+- [ ] Smoke test completo não executado.
+
+### Pendências / Riscos
+
+- **Validação crítica:** Código deve compilar sem erros. Play Mode deve gerar e visualizar cave procedural sem exceções.
+- **Prefabs:** Se prefabs forem atribuidos, materializer usa prefab; se null, usa fallback GameObject.
+- **Databases:** Editor script popula datasets com assets default; permanecer vazio é aceitável (usa fallback).
+- **EnemyChaseController:** Requer `_playerTransform` configurado em `CaveLevelRuntimeController` para funcionar.
+- **Resource nodes depletion tracking:** Já integrado em `CaveRunManager.RegisterDepletedNode()`.
+
+### Próximo passo recomendado
+
+1. Validar compilacao no Unity: abrir project, regenerar CaveScene via menu editor.
+2. Testar Play Mode: verificar materialization, contadores HUD, navigacao entre niveis (Shift+R para regeneracao).
+3. Criar smoke test validation doc se Play Mode passar.
+4. Atualizar `docs/IMPLEMENTATION_STATUS.md` para marcar Cave Procedural como `Implementado` (visual + procedural base).
+5. Preparar feature branch para push se tudo passar.

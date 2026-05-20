@@ -146,11 +146,11 @@ namespace CindarsHope.Editor.Validation
             if (FindComponent<ItemPickupRegistry>(rootObjects) == null)
                 { Debug.LogError("MvpSceneValidator: ItemPickupRegistry not found in FarmScene."); passed = false; }
 
-            var farmPlots = Object.FindObjectsByType<FarmPlot>(FindObjectsSortMode.None);
+            var farmPlots = Object.FindObjectsByType<FarmPlot>();
             if (farmPlots.Length == 0)
                 { Debug.LogError("MvpSceneValidator: No FarmPlot found in FarmScene."); passed = false; }
 
-            var treeNodes = Object.FindObjectsByType<TreeNode>(FindObjectsSortMode.None);
+            var treeNodes = Object.FindObjectsByType<TreeNode>();
             if (treeNodes.Length == 0)
                 { Debug.LogError("MvpSceneValidator: No TreeNode found in FarmScene."); passed = false; }
 
@@ -210,7 +210,7 @@ namespace CindarsHope.Editor.Validation
             if (FindComponent<NpcTalkPoint>(rootObjects) == null)
                 { Debug.LogError("MvpSceneValidator: NPC not found in TownScene."); passed = false; }
 
-            var buyPoints = Object.FindObjectsByType<BuyItemPoint>(FindObjectsSortMode.None);
+            var buyPoints = Object.FindObjectsByType<BuyItemPoint>();
             if (buyPoints.Length < 2)
                 { Debug.LogError("MvpSceneValidator: Less than 2 BuyItemPoint found in TownScene (expected at least seed_wheat and seed_carrot)."); passed = false; }
 
@@ -268,7 +268,7 @@ namespace CindarsHope.Editor.Validation
             if (FindComponent<CaveLevelRuntimeController>(rootObjects) == null)
                 { Debug.LogError("MvpSceneValidator: CaveLevelRuntimeController not found in CaveScene."); passed = false; }
 
-            var resourceNodes = Object.FindObjectsByType<CindarsHope.Cave.Resources.ResourceNode>(FindObjectsSortMode.None);
+            var resourceNodes = Object.FindObjectsByType<CindarsHope.Cave.Resources.ResourceNode>();
             if (resourceNodes.Length < 3)
                 { Debug.LogError("MvpSceneValidator: Less than 3 ResourceNode debug instances found in CaveScene."); passed = false; }
 

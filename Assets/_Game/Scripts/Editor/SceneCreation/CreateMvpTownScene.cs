@@ -445,8 +445,12 @@ namespace CindarsHope.Editor.SceneCreation
 
             var spawnPoint = spawnObject.AddComponent<SceneSpawnPoint>();
             var serializedSpawn = new SerializedObject(spawnPoint);
-            serializedSpawn.FindProperty("_spawnId").stringValue = spawnId;
-            serializedSpawn.ApplyModifiedPropertiesWithoutUndo();
+            var spawnIdProperty = serializedSpawn.FindProperty("_spawnId");
+            if (spawnIdProperty != null)
+            {
+                spawnIdProperty.stringValue = spawnId;
+                serializedSpawn.ApplyModifiedPropertiesWithoutUndo();
+            }
             EditorUtility.SetDirty(spawnPoint);
             return spawnPoint;
         }
@@ -544,7 +548,6 @@ namespace CindarsHope.Editor.SceneCreation
 
             var talkPoint = npcObject.AddComponent<NpcTalkPoint>();
             var serializedNpc = new SerializedObject(talkPoint);
-            serializedNpc.FindProperty("_npcId").stringValue = "npc_pip_miudinho";
             serializedNpc.FindProperty("_displayName").stringValue = "Pip Miudinho";
             serializedNpc.FindProperty("_dialogueLine").stringValue = "Bem-vindo a Cindar's Hope. Ainda estamos abrindo a cidade.";
             SetReference(serializedNpc, "_spriteRenderer", spriteRenderer);

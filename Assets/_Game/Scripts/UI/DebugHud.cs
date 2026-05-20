@@ -352,6 +352,17 @@ namespace CindarsHope.UI
                 GUILayout.Label($"Entrance: ({currentLevel.Entrance.x}, {currentLevel.Entrance.y})");
                 GUILayout.Label($"Exit: ({currentLevel.Exit.x}, {currentLevel.Exit.y})");
             }
+
+            var materializationResult = _caveLevelRuntimeController.Materializer.LastMaterializationResult;
+            if (materializationResult != null)
+            {
+                GUILayout.Space(4f);
+                GUILayout.Label("Materialized:");
+                GUILayout.Label($"  Floors: {materializationResult.CreatedFloorTiles}");
+                GUILayout.Label($"  Walls: {materializationResult.CreatedWallTiles}");
+                GUILayout.Label($"  Resources: {materializationResult.CreatedResourceNodes}");
+                GUILayout.Label($"  Enemies: {materializationResult.CreatedEnemies}");
+            }
         }
 
         private void OnInteractionPromptChanged(InteractionPromptChangedEvent evt)

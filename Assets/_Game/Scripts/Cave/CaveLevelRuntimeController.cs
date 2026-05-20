@@ -27,6 +27,7 @@ namespace CindarsHope.Cave
         public int EnemyPointCount => CurrentGeneratedLevel != null ? CurrentGeneratedLevel.EnemySpawnPoints.Count : 0;
         public int ResourcePointCount => CurrentGeneratedLevel != null ? CurrentGeneratedLevel.ResourceSpawnPoints.Count : 0;
         public CaveRunManager RunManager => _runManager;
+        public CaveRuntimeMaterializer Materializer => _materializer;
 
         private void Awake()
         {

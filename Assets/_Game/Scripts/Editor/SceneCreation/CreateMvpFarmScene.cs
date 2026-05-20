@@ -395,8 +395,12 @@ namespace CindarsHope.Editor.SceneCreation
 
             var spawnPoint = spawnObject.AddComponent<SceneSpawnPoint>();
             var serializedSpawn = new SerializedObject(spawnPoint);
-            serializedSpawn.FindProperty("_spawnId").stringValue = spawnId;
-            serializedSpawn.ApplyModifiedPropertiesWithoutUndo();
+            var spawnIdProperty = serializedSpawn.FindProperty("_spawnId");
+            if (spawnIdProperty != null)
+            {
+                spawnIdProperty.stringValue = spawnId;
+                serializedSpawn.ApplyModifiedPropertiesWithoutUndo();
+            }
             EditorUtility.SetDirty(spawnPoint);
             return spawnPoint;
         }
@@ -911,7 +915,7 @@ namespace CindarsHope.Editor.SceneCreation
 
             var serializedInstaller = new SerializedObject(installer);
 
-            var farmPlots = Object.FindObjectsByType<FarmPlot>(FindObjectsSortMode.None);
+            var farmPlots = Object.FindObjectsByType<FarmPlot>();
             var farmPlotsProperty = serializedInstaller.FindProperty("_farmPlots");
             if (farmPlotsProperty != null)
             {
@@ -922,7 +926,7 @@ namespace CindarsHope.Editor.SceneCreation
                 }
             }
 
-            var treeNodes = Object.FindObjectsByType<TreeNode>(FindObjectsSortMode.None);
+            var treeNodes = Object.FindObjectsByType<TreeNode>();
             var treeNodesProperty = serializedInstaller.FindProperty("_treeNodes");
             if (treeNodesProperty != null)
             {
@@ -933,19 +937,19 @@ namespace CindarsHope.Editor.SceneCreation
                 }
             }
 
-            var fishingSpots = Object.FindObjectsByType<FishingSpot>(FindObjectsSortMode.None);
+            var fishingSpots = Object.FindObjectsByType<FishingSpot>();
             var fishingSpot = fishingSpots.Length > 0 ? fishingSpots[0] : null;
             SetReference(serializedInstaller, "_fishingSpot", fishingSpot);
 
-            var seedShopPoints = Object.FindObjectsByType<SeedShopPoint>(FindObjectsSortMode.None);
+            var seedShopPoints = Object.FindObjectsByType<SeedShopPoint>();
             var seedShopPoint = seedShopPoints.Length > 0 ? seedShopPoints[0] : null;
             SetReference(serializedInstaller, "_seedShopPoint", seedShopPoint);
 
-            var sellPoints = Object.FindObjectsByType<SellPoint>(FindObjectsSortMode.None);
+            var sellPoints = Object.FindObjectsByType<SellPoint>();
             var sellPoint = sellPoints.Length > 0 ? sellPoints[0] : null;
             SetReference(serializedInstaller, "_sellAllPoint", sellPoint);
 
-            var craftingPoints = Object.FindObjectsByType<CraftingPoint>(FindObjectsSortMode.None);
+            var craftingPoints = Object.FindObjectsByType<CraftingPoint>();
             var craftingPoint = craftingPoints.Length > 0 ? craftingPoints[0] : null;
             SetReference(serializedInstaller, "_craftingPoint", craftingPoint);
 

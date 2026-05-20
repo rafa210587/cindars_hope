@@ -9,6 +9,9 @@ using CindarsHope.Interaction;
 using CindarsHope.Inventory;
 using CindarsHope.SceneManagement;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace CindarsHope.Cave.Runtime
 {
@@ -34,6 +37,10 @@ namespace CindarsHope.Cave.Runtime
         public CaveExitPortal ForwardExitPortal => _forwardExitPortal;
         public GameObject GeneratedRuntimeRoot => _generatedRuntimeRoot;
 
+        private CaveRuntimeMaterializationResult _lastMaterializationResult;
+
+        public CaveRuntimeMaterializationResult LastMaterializationResult => _lastMaterializationResult;
+
         public void Materialize(CaveGeneratedLevel generatedLevel)
         {
             if (generatedLevel == null)
@@ -43,6 +50,8 @@ namespace CindarsHope.Cave.Runtime
             }
 
             CleanupPreviousMaterialization();
+
+            _lastMaterializationResult = new CaveRuntimeMaterializationResult();
 
             // Create root hierarchy
             _generatedRuntimeRoot = new GameObject("CaveGeneratedRuntime");
@@ -60,7 +69,7 @@ namespace CindarsHope.Cave.Runtime
             }
 
             Debug.Log(
-                $"CaveRuntimeMaterializer: Materialized level {generatedLevel.CaveLevel}. Floor: {generatedLevel.WalkableTiles.Count}, Walls: {generatedLevel.WallTiles.Count}, Resources: {generatedLevel.ResourceSpawnPoints.Count}, Enemies: {generatedLevel.EnemySpawnPoints.Count}. BackExit: ({generatedLevel.Entrance.x},{generatedLevel.Entrance.y}), ForwardExit: ({generatedLevel.Exit.x},{generatedLevel.Exit.y})",
+                $"CaveRuntimeMaterializer: Materialized level {generatedLevel.CaveLevel}. Floor: {_lastMaterializationResult.CreatedFloorTiles}, Walls: {_lastMaterializationResult.CreatedWallTiles}, Resources: {_lastMaterializationResult.CreatedResourceNodes}, Enemies: {_lastMaterializationResult.CreatedEnemies}. BackExit: {_lastMaterializationResult.BackExitPosition}, ForwardExit: {_lastMaterializationResult.ForwardExitPosition}",
                 this);
 
             GameEventBus.Publish(new CaveRuntimeMaterializationCompleteEvent(generatedLevel));
@@ -68,12 +77,6 @@ namespace CindarsHope.Cave.Runtime
 
         private void MaterializeFloor(CaveGeneratedLevel generatedLevel)
         {
-            if (_floorTilePrefab == null)
-            {
-                Debug.LogWarning("CaveRuntimeMaterializer: Floor tile prefab not assigned. Skipping floor materialization.", this);
-                return;
-            }
-
             var floorParent = new GameObject("GeneratedFloor");
             floorParent.transform.SetParent(_generatedRuntimeRoot.transform);
             floorParent.transform.localPosition = Vector3.zero;
@@ -81,21 +84,43 @@ namespace CindarsHope.Cave.Runtime
             foreach (var tilePos in generatedLevel.WalkableTiles)
             {
                 var worldPos = new Vector3(tilePos.x, tilePos.y, 0);
-                var floorTile = Instantiate(_floorTilePrefab, worldPos, Quaternion.identity, floorParent.transform);
-                floorTile.gameObject.name = $"FloorTile_{tilePos.x}_{tilePos.y}";
-                floorTile.sortingOrder = 0;
-                _materializedObjects.Add(floorTile.gameObject);
+                GameObject floorTile;
+
+                if (_floorTilePrefab != null)
+                {
+                    var spriteRenderer = Instantiate(_floorTilePrefab, worldPos, Quaternion.identity, floorParent.transform);
+                    floorTile = spriteRenderer.gameObject;
+                    spriteRenderer.sortingOrder = 0;
+                }
+                else
+                {
+                    floorTile = new GameObject($"FloorTile_{tilePos.x}_{tilePos.y}");
+                    floorTile.transform.SetParent(floorParent.transform);
+                    floorTile.transform.position = worldPos;
+
+                    var spriteRenderer = floorTile.AddComponent<SpriteRenderer>();
+                    spriteRenderer.sprite = GetBuiltinSprite();
+                    spriteRenderer.color = new Color(0.4f, 0.35f, 0.3f);
+                    spriteRenderer.sortingOrder = 0;
+                }
+
+                floorTile.name = $"FloorTile_{tilePos.x}_{tilePos.y}";
+                _materializedObjects.Add(floorTile);
+                _lastMaterializationResult.CreatedFloorTiles++;
             }
+        }
+
+        private Sprite GetBuiltinSprite()
+        {
+#if UNITY_EDITOR
+            return AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd");
+#else
+            return null;
+#endif
         }
 
         private void MaterializeWalls(CaveGeneratedLevel generatedLevel)
         {
-            if (_wallTilePrefab == null)
-            {
-                Debug.LogWarning("CaveRuntimeMaterializer: Wall tile prefab not assigned. Skipping wall materialization.", this);
-                return;
-            }
-
             var wallParent = new GameObject("GeneratedWalls");
             wallParent.transform.SetParent(_generatedRuntimeRoot.transform);
             wallParent.transform.localPosition = Vector3.zero;
@@ -103,14 +128,33 @@ namespace CindarsHope.Cave.Runtime
             foreach (var tilePos in generatedLevel.WallTiles)
             {
                 var worldPos = new Vector3(tilePos.x, tilePos.y, 0);
-                var wallTile = Instantiate(_wallTilePrefab, worldPos, Quaternion.identity, wallParent.transform);
-                wallTile.gameObject.name = $"WallTile_{tilePos.x}_{tilePos.y}";
-                wallTile.sortingOrder = 0;
+                GameObject wallTile;
 
-                var collider = wallTile.gameObject.AddComponent<BoxCollider2D>();
+                if (_wallTilePrefab != null)
+                {
+                    var spriteRenderer = Instantiate(_wallTilePrefab, worldPos, Quaternion.identity, wallParent.transform);
+                    wallTile = spriteRenderer.gameObject;
+                    spriteRenderer.sortingOrder = 1;
+                }
+                else
+                {
+                    wallTile = new GameObject($"WallTile_{tilePos.x}_{tilePos.y}");
+                    wallTile.transform.SetParent(wallParent.transform);
+                    wallTile.transform.position = worldPos;
+
+                    var spriteRenderer = wallTile.AddComponent<SpriteRenderer>();
+                    spriteRenderer.sprite = GetBuiltinSprite();
+                    spriteRenderer.color = new Color(0.5f, 0.5f, 0.5f);
+                    spriteRenderer.sortingOrder = 1;
+                }
+
+                wallTile.name = $"WallTile_{tilePos.x}_{tilePos.y}";
+
+                var collider = wallTile.AddComponent<BoxCollider2D>();
                 collider.size = Vector2.one;
 
-                _materializedObjects.Add(wallTile.gameObject);
+                _materializedObjects.Add(wallTile);
+                _lastMaterializationResult.CreatedWallTiles++;
             }
         }
 
@@ -126,20 +170,37 @@ namespace CindarsHope.Cave.Runtime
             {
                 _backExitPortal = Instantiate(_exitPortalPrefab, backExitPos, Quaternion.identity, portalsParent.transform);
                 _backExitPortal.gameObject.name = "GeneratedBackExit";
+            }
+            else
+            {
+                var backExitGO = new GameObject("GeneratedBackExit");
+                backExitGO.transform.SetParent(portalsParent.transform);
+                backExitGO.transform.position = backExitPos;
 
+                var spriteRenderer = backExitGO.AddComponent<SpriteRenderer>();
+                spriteRenderer.sprite = GetBuiltinSprite();
+                spriteRenderer.color = new Color(0f, 1f, 1f, 0.7f);
+                spriteRenderer.sortingOrder = 2;
+
+                var collider = backExitGO.AddComponent<BoxCollider2D>();
+                collider.size = Vector2.one;
+                collider.isTrigger = true;
+
+                _backExitPortal = backExitGO.AddComponent<CaveExitPortal>();
+                _backExitPortal.InitializeBackExit(_caveRunManager);
+            }
+
+            if (_backExitPortal != null)
+            {
                 var collider = _backExitPortal.GetComponent<BoxCollider2D>();
                 if (collider == null)
                 {
                     collider = _backExitPortal.gameObject.AddComponent<BoxCollider2D>();
+                    collider.size = Vector2.one;
+                    collider.isTrigger = true;
                 }
-                collider.size = Vector2.one;
-                collider.isTrigger = true;
-
                 _materializedObjects.Add(_backExitPortal.gameObject);
-            }
-            else
-            {
-                Debug.LogWarning("CaveRuntimeMaterializer: Exit portal prefab not assigned. BackExit skipped.", this);
+                _lastMaterializationResult.BackExitPosition = backExitPos;
             }
 
             // ForwardExit at exit position
@@ -148,20 +209,37 @@ namespace CindarsHope.Cave.Runtime
             {
                 _forwardExitPortal = Instantiate(_exitPortalPrefab, forwardExitPos, Quaternion.identity, portalsParent.transform);
                 _forwardExitPortal.gameObject.name = "GeneratedForwardExit";
+            }
+            else
+            {
+                var forwardExitGO = new GameObject("GeneratedForwardExit");
+                forwardExitGO.transform.SetParent(portalsParent.transform);
+                forwardExitGO.transform.position = forwardExitPos;
 
+                var spriteRenderer = forwardExitGO.AddComponent<SpriteRenderer>();
+                spriteRenderer.sprite = GetBuiltinSprite();
+                spriteRenderer.color = new Color(1f, 0f, 1f, 0.7f);
+                spriteRenderer.sortingOrder = 2;
+
+                var collider = forwardExitGO.AddComponent<BoxCollider2D>();
+                collider.size = Vector2.one;
+                collider.isTrigger = true;
+
+                _forwardExitPortal = forwardExitGO.AddComponent<CaveExitPortal>();
+                _forwardExitPortal.InitializeForwardExit(_caveRunManager);
+            }
+
+            if (_forwardExitPortal != null)
+            {
                 var collider = _forwardExitPortal.GetComponent<BoxCollider2D>();
                 if (collider == null)
                 {
                     collider = _forwardExitPortal.gameObject.AddComponent<BoxCollider2D>();
+                    collider.size = Vector2.one;
+                    collider.isTrigger = true;
                 }
-                collider.size = Vector2.one;
-                collider.isTrigger = true;
-
                 _materializedObjects.Add(_forwardExitPortal.gameObject);
-            }
-            else
-            {
-                Debug.LogWarning("CaveRuntimeMaterializer: Exit portal prefab not assigned. ForwardExit skipped.", this);
+                _lastMaterializationResult.ForwardExitPosition = forwardExitPos;
             }
 
             Debug.Log($"CaveRuntimeMaterializer: BackExit at ({generatedLevel.Entrance.x}, {generatedLevel.Entrance.y}), ForwardExit at ({generatedLevel.Exit.x}, {generatedLevel.Exit.y}).", this);
@@ -169,12 +247,6 @@ namespace CindarsHope.Cave.Runtime
 
         private void MaterializeResourceNodes(CaveGeneratedLevel generatedLevel)
         {
-            if (_resourceNodePrefab == null)
-            {
-                Debug.LogWarning("CaveRuntimeMaterializer: ResourceNode prefab not assigned. Skipping resource node materialization.", this);
-                return;
-            }
-
             var resourceNodesParent = new GameObject("GeneratedResourceNodes");
             resourceNodesParent.transform.SetParent(_generatedRuntimeRoot.transform);
             resourceNodesParent.transform.localPosition = Vector3.zero;
@@ -182,7 +254,21 @@ namespace CindarsHope.Cave.Runtime
             foreach (var spawnPoint in generatedLevel.ResourceSpawnPoints)
             {
                 var worldPos = new Vector3(spawnPoint.Position.x, spawnPoint.Position.y, 0);
-                var resourceNode = Instantiate(_resourceNodePrefab, worldPos, Quaternion.identity, resourceNodesParent.transform);
+                ResourceNode resourceNode;
+
+                if (_resourceNodePrefab != null)
+                {
+                    resourceNode = Instantiate(_resourceNodePrefab, worldPos, Quaternion.identity, resourceNodesParent.transform);
+                }
+                else
+                {
+                    var nodeGO = new GameObject($"ResourceNode_{spawnPoint.Position.x}_{spawnPoint.Position.y}");
+                    nodeGO.transform.SetParent(resourceNodesParent.transform);
+                    nodeGO.transform.position = worldPos;
+
+                    resourceNode = nodeGO.AddComponent<ResourceNode>();
+                }
+
                 resourceNode.gameObject.name = $"ResourceNode_{spawnPoint.Position.x}_{spawnPoint.Position.y}";
 
                 var nodeInstanceId = $"node_{generatedLevel.CaveLevel}_{spawnPoint.Position.x}_{spawnPoint.Position.y}_{generatedLevel.BiomeId}";
@@ -190,6 +276,7 @@ namespace CindarsHope.Cave.Runtime
                 SelectAndConfigureResourceNode(resourceNode, generatedLevel, nodeInstanceId);
 
                 _materializedObjects.Add(resourceNode.gameObject);
+                _lastMaterializationResult.CreatedResourceNodes++;
             }
         }
 
@@ -211,6 +298,18 @@ namespace CindarsHope.Cave.Runtime
             if (spriteRenderer == null)
             {
                 spriteRenderer = nodeInstance.gameObject.AddComponent<SpriteRenderer>();
+            }
+
+            spriteRenderer.sprite = GetBuiltinSprite();
+            spriteRenderer.color = new Color(0.8f, 0.6f, 0.4f);
+            spriteRenderer.sortingOrder = 1;
+
+            var collider = nodeInstance.GetComponent<CircleCollider2D>();
+            if (collider == null)
+            {
+                collider = nodeInstance.gameObject.AddComponent<CircleCollider2D>();
+                collider.radius = 0.4f;
+                collider.isTrigger = true;
             }
 
             nodeInstance.Configure(
