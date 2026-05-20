@@ -13,7 +13,7 @@
 - Repositório: `rafa210587/cindars_hope`.
 - Branch de trabalho: `dev`.
 - Branch default do GitHub: `main`.
-- A `dev` contém MVPs de Farm, Town, Crafting, Save/Load, Cave/Combat básico, HUD debug, transições Farm/Town/Cave e docs/specs da FASE9E/FASE9F.
+- A `dev` contém MVPs de Farm, Town, Crafting, Save/Load, Cave/Combat básico, HUD debug, transições Farm/Town/Cave e docs/specs da FASE9E/FASE9F/FASE9G.
 - `PROJECT_LOG.md` foi reduzido para handoff operacional curto.
 - O histórico completo anterior foi arquivado sem perda intencional em `docs/logs/PROJECT_LOG_ARCHIVE_2026-05-18_FULL_BEFORE_SPLIT.md`.
 - Tracking curto de capacidades/specs implementadas criado em `docs/IMPLEMENTATION_STATUS.md`.
@@ -30,11 +30,13 @@
 - `docs/FASE9E_PLAYER_LEVEL_UP_PROGRESSION_SPEC_v1.0.md`
 - `docs/FASE9F_CAVE_RESOURCES_ENCOUNTERS_SPEC_v1.0.md`
 - `specs/FASE9F_CAVE_RESOURCES_ENCOUNTERS/spec.md`
+- `docs/FASE9G_CAVE_BESTIARY_FACTION_LOCKS_PORTAL_ECOLOGY_SPEC_v1.0.md`
+- `specs/FASE9G_CAVE_BESTIARY_FACTION_LOCKS_PORTAL_ECOLOGY/spec.md`
 - `docs/SPEC_EVOLUTION_POLICY_v1.0.md`
 
 ### Próximo passo recomendado
 
-Começar **FASE9F-A — Cave Procedural Foundation** com PRs pequenos:
+Começar **FASE9F-A — Cave Procedural Foundation** com PRs pequenos, mantendo FASE9G como baseline de design para bestiário/faction locks quando a implementação de cave procedural chegar em enemy ecology.
 
 1. PR-170 — Cave procedural contracts.
 2. PR-171 — Cave procedural generator MVP.
@@ -127,6 +129,7 @@ Fonte curta e atualizável: `docs/IMPLEMENTATION_STATUS.md`.
 - Save Schema/Migration.
 - Player Level Up/Progression.
 - Cave/Resources/Encounters/Procedural progression.
+- Cave Bestiary/Faction Locks/Portal Ecology.
 
 ---
 
@@ -148,7 +151,27 @@ Fonte curta e atualizável: `docs/IMPLEMENTATION_STATUS.md`.
 
 ---
 
-## 6. Checklist pendente
+## 6. Decisões FASE9G Cave Bestiary/Faction Locks
+
+- Geração procedural deve travar `FactionLock` por subfaixa de 3–5 níveis.
+- Cada CaveLevel tem um FactionLock principal.
+- Inimigos incompatíveis não aparecem no mesmo nível salvo exceções explícitas.
+- Exceções: `AmbientFauna`, `RareIntruder`, `BossOverride`, `ConflictEncounter`.
+- `ConflictEncounter` fica fora do MVP.
+- `RareIntruder` entra com chance baixa e limitado por bioma.
+- Boss e miniboss têm 3 opções procedurais por marco.
+- Boss checkpoint persiste por save.
+- Miniboss persiste por run.
+- Humanoides inimigos são facções/exilados/cultistas/corrompidos/guardiões, não raças malignas por natureza.
+- Beholder-like vira Observador/Olho de Elyndor.
+- Duergar-like vira Anão da Forja Sem Sol / Anão Profundo Exilado.
+- Drakes/wyverns antes do 90; dragão verdadeiro só late game/boss.
+- Level 100 tem três possíveis final bosses por save.
+- Luas modificam pesos, não quebram lock.
+
+---
+
+## 7. Checklist pendente
 
 ### Validação Unity geral
 
@@ -175,9 +198,18 @@ Fonte curta e atualizável: `docs/IMPLEMENTATION_STATUS.md`.
 - [ ] Slime especial tem cor diferente.
 - [ ] Boss de bioma bloqueia avanço.
 
+### Validação FASE9G futura
+
+- [ ] CaveLevel gerado possui `BiomeId`, `EncounterEcologyId`, `FactionLockId` e `EnemyFamilyIds`.
+- [ ] FactionLock impede mistura incoerente de inimigos.
+- [ ] Boss/miniboss é escolhido entre 3 candidatos compatíveis.
+- [ ] Boss checkpoint persiste por save.
+- [ ] Miniboss persiste por run.
+- [ ] DebugHud mostra ecology/faction/boss candidate quando implementado.
+
 ---
 
-## 7. Histórico arquivado
+## 8. Histórico arquivado
 
 O histórico completo antigo do `PROJECT_LOG.md` foi arquivado em:
 
@@ -189,7 +221,38 @@ Esse arquivo preserva o log operacional anterior inteiro antes da redução do l
 
 ---
 
-## 8. Log de atividades recente
+## 9. Log de atividades recente
+
+## 2026-05-20 — FASE9G Cave Bestiary/Faction Locks
+
+**Responsável:** ChatGPT  
+**Branch:** dev  
+**Escopo:** criar spec de bestiário, faction locks, ecologia procedural e boss/miniboss candidates para a cave.
+
+### Alterações
+
+- Criado `docs/FASE9G_CAVE_BESTIARY_FACTION_LOCKS_PORTAL_ECOLOGY_SPEC_v1.0.md`.
+- Criado `specs/FASE9G_CAVE_BESTIARY_FACTION_LOCKS_PORTAL_ECOLOGY/spec.md`.
+- Atualizado `PROJECT_LOG.md` com decisões FASE9G e checklist futuro.
+- Spec inclui uso do Guia de Raças de Vaalara, Vaalara/Daromir/Elyndor, faction locks por subfaixa, bestiário amplo e 3 opções procedurais de boss/miniboss por marco.
+
+### Testes
+
+- [x] Arquivos FASE9G criados no repo.
+- [x] Arquivos FASE9G lidos/validados no GitHub.
+- [ ] Unity não executado; alteração é documental.
+
+### Pendências / riscos
+
+- Atualizar `docs/IMPLEMENTATION_STATUS.md` para listar FASE9G como especificada.
+- FASE9G depende da base FASE9F para implementação real.
+
+### Próximo passo recomendado
+
+- Seguir com implementação FASE9F-A em outro chat.
+- Usar FASE9G quando a implementação chegar em enemy ecology/faction lock.
+
+---
 
 ## 2026-05-20 — Tracking de implementação
 
