@@ -1,4 +1,7 @@
 using CindarsHope.Combat;
+using CindarsHope.Cave;
+using CindarsHope.Cave.Resources;
+using CindarsHope.Cave.Runtime;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Time;
 using CindarsHope.Craft;
@@ -257,6 +260,16 @@ namespace CindarsHope.Editor.Validation
 
             if (FindComponent<EnemyDropSpawner>(rootObjects) == null)
                 { Debug.LogError("MvpSceneValidator: EnemyDropSpawner not found in CaveScene."); passed = false; }
+
+            if (FindComponent<CaveRunManager>(rootObjects) == null)
+                { Debug.LogError("MvpSceneValidator: CaveRunManager not found in CaveScene."); passed = false; }
+
+            if (FindComponent<CaveLevelRuntimeController>(rootObjects) == null)
+                { Debug.LogError("MvpSceneValidator: CaveLevelRuntimeController not found in CaveScene."); passed = false; }
+
+            var resourceNodes = Object.FindObjectsByType<ResourceNode>(FindObjectsSortMode.None);
+            if (resourceNodes.Length < 3)
+                { Debug.LogError("MvpSceneValidator: Less than 3 ResourceNode debug instances found in CaveScene."); passed = false; }
 
             return passed;
         }

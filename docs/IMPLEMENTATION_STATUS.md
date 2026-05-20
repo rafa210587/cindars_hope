@@ -287,7 +287,9 @@ Evidencia incremental:
 - PR-150: `ResourceNode` runtime MVP interagivel com ferramenta/tier/fallback e deplecao.
 - PR-151: `CreateMvpCaveScene` materializa ResourceNodes debug e cria dados/itens minimos ao regenerar a CaveScene.
 - PR-152: `GameSaveData`/`SaveManager` persistem `CaveSaveData` quando `CaveRunManager` esta rebundado.
+- PR-153: validator Cave MVP expandido e handoff criado em `docs/audits/PR153_CAVE_PROCEDURAL_HANDOFF.md`.
 
 Pendencias reais:
 - Unity ainda precisa compilar/validar.
-- Runtime controller, seeds, HUD, resources, save/load e validator seguem nos proximos commits desta branch.
+- Cena e assets de Cave precisam ser regenerados/materializados no Unity.
+- KO real, boss, biome progression, enemy spawn por layout, loot tables completas, daily refresh e FASE9G seguem pendentes.

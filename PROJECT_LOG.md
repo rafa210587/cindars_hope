@@ -626,3 +626,14 @@ Esse arquivo preserva o log operacional anterior inteiro antes da redução do l
 - `GameSaveData` agora possui `CaveSaveData`.
 - `SaveManager` captura/restaura `CaveRunManager` quando rebundado.
 - `CaveSceneRuntimeReferenceInstaller` rebinda o runtime da cave no `SaveManager`.
+
+### Marco PR-153 - Validator e handoff
+
+- `MvpSceneValidator` valida `CaveRunManager`, `CaveLevelRuntimeController` e ResourceNodes debug na CaveScene.
+- Criado `docs/audits/PR153_CAVE_PROCEDURAL_HANDOFF.md`.
+
+### Pendencias / riscos do pacote
+
+- Unity nao foi executado nesta sessao; cena e assets gerados por menu precisam ser materializados no Editor.
+- `Assets/_Game/Scenes/CaveScene.unity` e `Assets/_Game/Data/Cave/*.asset` nao foram atualizados fisicamente porque o Unity nao foi aberto.
+- Stamina real, KO real, enemy spawn por layout, daily refresh, boss e FASE9G ficam fora do escopo.
