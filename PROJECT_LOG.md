@@ -542,3 +542,22 @@ Esse arquivo preserva o log operacional anterior inteiro antes da redução do l
 ### Proximo passo recomendado
 
 - PR-141 - Cave procedural generator puro.
+
+---
+
+## 2026-05-20 - Pacote PR-141 a PR-153 Cave Procedural Runtime
+
+**Responsavel:** Codex/ChatGPT
+**Branch:** `feature/pr-141-153-cave-procedural-runtime`
+**Escopo:** pacote unico para runtime procedural da cave. A `dev` ainda nao continha PR-140 no inicio, entao o commit de contratos foi incorporado como base tecnica nesta branch.
+
+### Marco PR-141 - Cave procedural generator puro
+
+- Criados modelos `CaveRoom`, `CaveGeneratedLevel`, `CaveGenerationPoint` e `CaveGenerationPointType`.
+- Criado `CaveProceduralGenerator` deterministico por `CaveWorldSeed + CaveRunSeed + CaveLevel`.
+- Criado `CaveGenerationDebugPrinter` com ASCII usando `#`, `.`, `E`, `X`, `M` e `R`.
+
+### Testes do marco
+
+- [x] Revisao estatica de namespaces e tipos.
+- [ ] Unity nao executado nesta sessao.

@@ -267,3 +267,16 @@ Pendencias reais:
 - Generator procedural, `CaveRunManager`, checkpoints service e ResourceNode runtime seguem pendentes.
 
 Proximo bloco pendente: PR-141 Cave procedural generator puro.
+
+---
+
+## 11. Atualizacao 2026-05-20 - Pacote PR-141 a PR-153 Cave Procedural Runtime
+
+Status: Em implementacao nesta branch.
+
+Evidencia incremental:
+- PR-141: `Assets/_Game/Scripts/Cave/Generation/**` com generator puro e debug ASCII.
+
+Pendencias reais:
+- Unity ainda precisa compilar/validar.
+- Runtime controller, seeds, HUD, resources, save/load e validator seguem nos proximos commits desta branch.
