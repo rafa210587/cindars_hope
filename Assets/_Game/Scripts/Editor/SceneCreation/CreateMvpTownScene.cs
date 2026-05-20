@@ -17,6 +17,8 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using CindarsHope.UI.Hotbar;
+using CindarsHope.Equipment;
+using CindarsHope.Player.Progression;
 
 namespace CindarsHope.Editor.SceneCreation
 {

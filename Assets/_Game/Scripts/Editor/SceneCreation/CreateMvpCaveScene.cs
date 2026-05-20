@@ -68,10 +68,7 @@ namespace CindarsHope.Editor.SceneCreation
             CreateSceneRuntimeInstaller(playerTransform);
             CreateMainCamera();
             ConfigureBootstrap(bootstrap, playerTransform);
-            ConfigureSaveInput(bootstrapObject.GetComponent<SaveInput>(), bootstrapObject.GetComponent<SaveManager>());
-            ConfigureHotbarDebugInput(
-                bootstrapObject.GetComponent<HotbarDebugInput>(),
-                bootstrapObject.GetComponent<SaveManager>());   
+            
             EditorSceneManager.MarkSceneDirty(scene);
             EditorSceneManager.SaveScene(scene, ScenePath);
             AssetDatabase.Refresh();
@@ -106,6 +103,8 @@ namespace CindarsHope.Editor.SceneCreation
             bootstrapObject.AddComponent<PlayerProgressionManager>();
             bootstrapObject.AddComponent<HotbarDebugInput>();
 
+            
+
             return bootstrap;
         }
 
@@ -131,8 +130,11 @@ namespace CindarsHope.Editor.SceneCreation
                 bootstrapObject.GetComponent<TimeManager>(),
                 playerTransform);
             ConfigureSaveInput(bootstrapObject.GetComponent<SaveInput>(), bootstrapObject.GetComponent<SaveManager>());
+            ConfigureHotbarDebugInput(
+                bootstrapObject.GetComponent<HotbarDebugInput>(),
+                bootstrapObject.GetComponent<SaveManager>());
             ConfigureFoodConsumer(bootstrapObject.GetComponent<FoodConsumer>(), bootstrapObject.GetComponent<InventoryManager>(), bootstrapObject.GetComponent<HungerManager>());
-            bootstrapObject.GetComponent<SaveManager>().RebindOptionalRuntimeManagers(
+                bootstrapObject.GetComponent<SaveManager>().RebindOptionalRuntimeManagers(
                 bootstrapObject.GetComponent<EquipmentManager>(),
                 bootstrapObject.GetComponent<PlayerProgressionManager>());
 
