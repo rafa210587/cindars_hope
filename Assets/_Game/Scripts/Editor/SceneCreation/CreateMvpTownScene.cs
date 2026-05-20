@@ -412,7 +412,7 @@ namespace CindarsHope.Editor.SceneCreation
             cameraObject.tag = "MainCamera";
             cameraObject.transform.position = new Vector3(0f, 0f, -10f);
 
-            var camera = cameraObject.AddComponent<Camera>();
+            var camera = cameraObject.AddComponent<UnityEngine.Camera>();
             camera.orthographic = true;
             camera.orthographicSize = 7.5f;
             camera.backgroundColor = new Color(0.12f, 0.15f, 0.18f);
