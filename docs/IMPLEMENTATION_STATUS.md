@@ -277,6 +277,7 @@ Status: Em implementacao nesta branch.
 Evidencia incremental:
 - PR-141: `Assets/_Game/Scripts/Cave/Generation/**` com generator puro e debug ASCII.
 - PR-142: `Assets/_Game/Scripts/Cave/Runtime/CaveRunManager.cs` com seeds e captura/restauracao de `CaveSaveData`.
+- PR-143: `Assets/_Game/Scripts/Cave/CaveLevelRuntimeController.cs` gera cave no runtime e publica `CaveLevelEnteredEvent`.
 
 Pendencias reais:
 - Unity ainda precisa compilar/validar.

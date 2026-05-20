@@ -567,3 +567,9 @@ Esse arquivo preserva o log operacional anterior inteiro antes da redução do l
 - Criado `CaveRunManager` com `CaveWorldSeed`, `CaveRunSeed`, `CurrentCaveLevel` e `DeepestLayerReached`.
 - Adicionados `InitializeIfNeeded`, `EnterLevel`, `GenerateNewRunSeed`, `CaptureSaveData` e `RestoreFromSaveData`.
 - `GenerateNewRunSeed` publica `CaveRunRegeneratedEvent`.
+
+### Marco PR-143 - CaveLevelRuntimeController
+
+- Criado `CaveLevelRuntimeController`.
+- O controller gera o nivel atual no `Start`, loga seeds/contagens/layout ASCII e publica `CaveLevelEnteredEvent`.
+- Expostos contadores de rooms, enemy points e resource points para HUD/debug.
