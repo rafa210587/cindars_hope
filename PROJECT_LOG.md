@@ -511,3 +511,34 @@ Esse arquivo preserva o log operacional anterior inteiro antes da redução do l
 
 - Validar PR-132-FIX no Unity.
 - Depois seguir para distribuicao debug de atributos ou handoff FASE9E-D, conforme prioridade.
+
+---
+
+## 2026-05-20 - PR-140 Cave procedural contracts
+
+**Responsavel:** Codex/ChatGPT
+**Branch:** `feature/pr-140-cave-procedural-contracts`
+**Escopo:** criar contratos base da cave procedural sem generator, runtime gameplay, assets ou integracao de save completa.
+
+### Alteracoes
+
+- Criados `CaveGenerationConfigSO`, `CaveLevelConfigSO` e `CaveBiomeDataSO`.
+- Criado `CaveRuntimeState` como classe pura sem herdar de `MonoBehaviour`.
+- Criado `CaveSaveData` serializavel com tipos simples.
+- Criados eventos `CaveLevelEnteredEvent`, `CaveRunRegeneratedEvent` e `CaveCheckpointUnlockedEvent`.
+
+### Testes
+
+- [x] Revisao estatica dos arquivos alterados.
+- [x] Busca estatica por APIs proibidas e Unity refs em DTO de save nos arquivos do PR.
+- [ ] Unity nao executado nesta sessao.
+
+### Pendencias / riscos
+
+- Unity precisa validar compilacao e menus `CreateAssetMenu`.
+- `CaveSaveData` ainda nao foi integrado ao `GameSaveData`/`SaveManager`; isso fica para PR-152.
+- Generator procedural, run manager, checkpoints service e ResourceNode runtime ficam para PRs seguintes.
+
+### Proximo passo recomendado
+
+- PR-141 - Cave procedural generator puro.

@@ -25,7 +25,7 @@
 | Equipment/Hotbar | Implementado parcial | Tool/hotbar existem e persistem parcialmente; PR-132-FIX aplica gating em arvore/pesca e plantio por hotbar; integracoes finais pendentes. |
 | Progression/LevelUp | Implementado parcial | XP/level/pontos existem; distribuição debug de atributos ainda pendente. |
 | Damage Formula MVP | Implementado parcial | `DamageCalculator`, `DamageResult` e integracao melee MVP; status/elementos completos pendentes. |
-| Cave Procedural/Resources | Pendente | FASE9F pronta; proximo bloco recomendado PR-132 a PR-145. |
+| Cave Procedural/Resources | Implementado parcial | PR-140 criou contratos base; generator/runtime/resources/save integrados ainda pendentes. |
 | Cave Bestiary/Faction Locks | Especificado | FASE9G pronta; depende da base FASE9F para implementação real. |
 | Reconciliação pós PR-099 | Implementado parcial | PR-100 auditado; PR-101 a PR-130 consolidados na `dev`; Unity ainda pendente. |
 
@@ -51,6 +51,7 @@
 | PR-100 pós PR-099 | PR-100 | Implementado | `docs/audits/PR100_POST_PR099_REPO_AUDIT.md` | Reconciliação seguinte foi consolidada em PR-101 a PR-130. |
 | PR-101 a PR-130 pós PR-099 | Consolidado | Implementado parcial | `docs/audits/PR101_PR099_BRANCH_RECONCILIATION.md`, `docs/audits/PR130_RECONCILIACAO_HANDOFF.md`, Tools/Equipment/Hotbar/Progression/Damage MVP | Unity e cenas ainda precisam validação. |
 | PR-131 validação HUD/tools/progressão | PR-131 | Implementado | `docs/audits/PR131_VALIDACAO_HUD_TOOLS_PROGRESSION.md` | Seguir PR-132 a PR-139 antes da Cave Procedural. |
+| PR-140 Cave procedural contracts | PR-140 | Implementado parcial | `Assets/_Game/Scripts/Cave/Data/**`, `CaveRuntimeState`, `CaveSaveData`, eventos de cave | Generator, runtime manager, save integration e resources ainda pendentes. |
 
 ---
 
@@ -122,8 +123,9 @@ Observação: várias capacidades ainda são MVP/debug, não versão final de UX
 
 ### 4.4 FASE9F pendente
 
-- Cave procedural permanece pendente: cave atual e fixed MVP, sem seeds/run/generator.
-- Entrar em Cave Procedural depois do pacote FASE9E-D PR-132 a PR-139.
+- Cave procedural tem contratos base criados no PR-140.
+- Cave atual ainda e fixed MVP: sem generator, seeds runtime, HUD procedural, ResourceNode runtime ou save/load integrado.
+- Proximo passo FASE9F: PR-141 Cave procedural generator puro.
 
 ### 4.5 FASE9E-D HUD/tools/progression debug pendente
 
@@ -194,8 +196,8 @@ Regras para agentes:
 
 - Data: 2026-05-20
 - Responsável: Codex/ChatGPT
-- Branch: `feature/pr-132-fix-hud-tool-hotbar-gating`
-- Tipo: PR-132-FIX HUD split, feedback, tool gating e hotbar seed gating
+- Branch: `feature/pr-140-cave-procedural-contracts`
+- Tipo: PR-140 Cave procedural contracts
 
 ---
 
@@ -242,3 +244,26 @@ Pendencias reais:
 - Cave Procedural segue pendente.
 
 Proximo bloco pendente: validar PR-132-FIX no Unity; depois seguir para attribute allocation debug/handoff FASE9E-D.
+
+---
+
+## 10. Atualizacao 2026-05-20 - PR-140 Cave procedural contracts
+
+Status: Implementado parcial.
+
+Evidencia no repo:
+- `Assets/_Game/Scripts/Cave/Data/CaveGenerationConfigSO.cs`
+- `Assets/_Game/Scripts/Cave/Data/CaveLevelConfigSO.cs`
+- `Assets/_Game/Scripts/Cave/Data/CaveBiomeDataSO.cs`
+- `Assets/_Game/Scripts/Cave/Runtime/CaveRuntimeState.cs`
+- `Assets/_Game/Scripts/Save/CaveSaveData.cs`
+- `Assets/_Game/Scripts/Core/Events/CaveLevelEnteredEvent.cs`
+- `Assets/_Game/Scripts/Core/Events/CaveRunRegeneratedEvent.cs`
+- `Assets/_Game/Scripts/Core/Events/CaveCheckpointUnlockedEvent.cs`
+
+Pendencias reais:
+- Unity ainda precisa compilar/validar.
+- `CaveSaveData` ainda nao esta integrado ao `GameSaveData`/`SaveManager`.
+- Generator procedural, `CaveRunManager`, checkpoints service e ResourceNode runtime seguem pendentes.
+
+Proximo bloco pendente: PR-141 Cave procedural generator puro.
