@@ -7,7 +7,7 @@ namespace CindarsHope.Combat
     {
         [SerializeField] private KeyCode _attackKey = KeyCode.J;
         [SerializeField] private int _punchDamage = 1;
-        [SerializeField] private float _punchRange = 0.3f;
+        [SerializeField] private float _punchRange = 0.1f;
         [SerializeField] private float _attackCooldownSeconds = 0.4f;
         [SerializeField] private float _punchKnockbackForce = 2.5f;
 
