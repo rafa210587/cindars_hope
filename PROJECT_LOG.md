@@ -889,3 +889,73 @@ Esse arquivo preserva o log operacional anterior inteiro antes da redução do l
 3. Criar smoke test validation doc se Play Mode passar.
 4. Atualizar `docs/IMPLEMENTATION_STATUS.md` para marcar Cave Procedural como `Implementado` (visual + procedural base).
 5. Preparar feature branch para push se tudo passar.
+
+---
+
+## 2026-05-20 - FIX_CAVE_CAMERA_FOLLOW_AND_VISIBLE_ENEMIES_v1.0 Implementação Completa
+
+**Responsável:** Claude (Haiku 4.5)  
+**Branch:** `feature/fase9a-town-commerce-mvp-package`  
+**Escopo:** Implementação completa de câmera com smooth follow e inimigos visíveis com visuais e spawning ordenado por distância.
+
+### Alterações
+
+**CameraFollow2D.cs (criado):**
+- Nova classe para smooth camera following com damping.
+- Campos: `_target` (Transform), `_smoothTime` (0.08f), `_offset` (0, 0, -10), `_snapOnStart` (true).
+- `RebindTarget(Transform target)` — rebind do alvo dinamicamente.
+- `SnapToTarget()` — posicionamento imediato sem animação.
+- `LateUpdate()` — Vector3.SmoothDamp para seguimento suave.
+
+**CreateMvpCaveScene.cs (aprimorado):**
+- `CreateMainCamera()` agora aceita parâmetro `Transform playerTransform`.
+- Adicionado setup de `CameraFollow2D` via SerializedObject:
+  - `AddComponent<CameraFollow2D>()`.
+  - SetReference() para `_target = playerTransform`.
+  - `_snapOnStart = true`.
+  - `ApplyModifiedPropertiesWithoutUndo()`.
+
+**CaveRuntimeMaterializer.cs (aprimorado):**
+- Adicionado `RepositionCamera()` método que:
+  - Detecta `CameraFollow2D` no main camera.
+  - Se encontrado: chama `RebindTarget(_playerTransform)` + `SnapToTarget()`.
+  - Fallback: posiciona camera diretamente sobre player.
+- Chamado em `Materialize()` após posicionar player na entrance.
+
+**CaveEnemySpawner.cs (visual + ordering):**
+- Adicionado `GetBuiltinSprite()` helper com `#if UNITY_EDITOR` condicional (reutilizando pattern de CaveRuntimeMaterializer).
+- `SpawnEnemyAtPoint()` atualizado:
+  - Se `enemyData.Icon != null`: usa sprite com cor white.
+  - Else: usa builtin sprite com cor fallback `new Color(0.85f, 0.23f, 0.23f)` (vermelho escuro visível).
+  - `sortingOrder = 3` para visibilidade acima de floor/walls.
+  - `transform.localScale = Vector3.one` para sizing consistente.
+- `SpawnEnemiesForLevel()` atualizado:
+  - Adiciona `using System.Linq`.
+  - Ordena spawn points por distância à entrada: `.OrderBy(sp => Vector2.Distance(sp.Position, generatedLevel.Entrance))`.
+  - Itera sobre lista ordenada para spawning sequencial.
+
+### Testes
+
+- [x] Revisão estática de código e integração CameraFollow2D.
+- [x] Validação de referências Transform e SerializedObject setup.
+- [x] Verificação de visual fallback e sorting order.
+- [x] Inspeção de ordenação de spawn por distância.
+- [ ] Unity compilação não testada.
+- [ ] Play Mode não testado (camera follow, enemy visibilidade, order de spawn).
+
+### Pendências / Riscos
+
+- **Validação crítica:** Código deve compilar. Play Mode deve mostrar:
+  - Camera seguindo player suavemente após materialização.
+  - Inimigos visíveis com cor fallback (vermelho escuro) se sem sprite.
+  - Inimigos spawned em ordem de proximidade à entrada.
+- **Prefabs enemy:** Se prefab reutilizado, já terá sprite; fallback só ativa se null.
+- **Physics/Chase:** EnemyChaseController requer player target configurado (já feito em passos anteriores).
+
+### Próximo passo recomendado
+
+1. Validar compilação no Unity.
+2. Testar Play Mode: verificar smooth camera follow, enemy spawn order e visibilidade.
+3. Atualizar `docs/IMPLEMENTATION_STATUS.md` para marcar Cave Procedural como `Implementado parcial` com status de camera/visual confirmado.
+4. Executar smoke tests completos se Play Mode passar.
+5. Preparar commit e branch final.

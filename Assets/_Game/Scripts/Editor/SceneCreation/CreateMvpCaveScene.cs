@@ -83,7 +83,7 @@ namespace CindarsHope.Editor.SceneCreation
             CreateEnemyDropSpawner(inventoryManager);
             CreateDebugHud(playerManager, inventoryManager, hungerManager, playerTransform.GetComponent<InteractionSystem>(), timeManager, saveManager);
             CreateSceneRuntimeInstaller(playerTransform, caveRuntime.runManager, caveRuntime.controller);
-            CreateMainCamera();
+            CreateMainCamera(playerTransform);
             ConfigureBootstrap(bootstrap, playerTransform);
             
             EditorSceneManager.MarkSceneDirty(scene);
@@ -436,7 +436,7 @@ namespace CindarsHope.Editor.SceneCreation
             EditorUtility.SetDirty(portal);
         }
 
-        private static void CreateMainCamera()
+        private static void CreateMainCamera(Transform playerTransform)
         {
             var cameraObject = new GameObject("Main Camera");
             cameraObject.tag = "MainCamera";
@@ -446,6 +446,13 @@ namespace CindarsHope.Editor.SceneCreation
             camera.orthographic = true;
             camera.orthographicSize = 7.5f;
             camera.backgroundColor = new Color(0.08f, 0.08f, 0.12f);
+
+            var cameraFollow = cameraObject.AddComponent<CindarsHope.Camera.CameraFollow2D>();
+            var serializedFollow = new SerializedObject(cameraFollow);
+            SetReference(serializedFollow, "_target", playerTransform);
+            serializedFollow.FindProperty("_snapOnStart").boolValue = true;
+            serializedFollow.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(cameraFollow);
         }
 
         private static void CreateEnemies(Transform playerTransform)

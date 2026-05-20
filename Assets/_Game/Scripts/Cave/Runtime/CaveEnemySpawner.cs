@@ -1,8 +1,12 @@
 using System.Collections.Generic;
+using System.Linq;
 using CindarsHope.Combat;
 using CindarsHope.Cave.Generation;
 using CindarsHope.Core.Data;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace CindarsHope.Cave.Runtime
 {
@@ -55,7 +59,11 @@ namespace CindarsHope.Cave.Runtime
                 : $"{generatedLevel.CaveLevel}_enemies";
             var deterministicRandom = new System.Random(seedString.GetHashCode());
 
-            foreach (var spawnPoint in generatedLevel.EnemySpawnPoints)
+            var sortedSpawnPoints = generatedLevel.EnemySpawnPoints
+                .OrderBy(sp => Vector2.Distance(sp.Position, generatedLevel.Entrance))
+                .ToList();
+
+            foreach (var spawnPoint in sortedSpawnPoints)
             {
                 var selectedEnemy = availableEnemies[deterministicRandom.Next(0, availableEnemies.Count)];
                 SpawnEnemyAtPoint(selectedEnemy, spawnPoint.Position, generatedLevel);
@@ -82,8 +90,16 @@ namespace CindarsHope.Cave.Runtime
             if (enemyData.Icon != null)
             {
                 spriteRenderer.sprite = enemyData.Icon;
+                spriteRenderer.color = Color.white;
             }
-            spriteRenderer.sortingOrder = 1;
+            else
+            {
+                spriteRenderer.sprite = GetBuiltinSprite();
+                spriteRenderer.color = new Color(0.85f, 0.23f, 0.23f);
+            }
+            spriteRenderer.sortingOrder = 3;
+
+            enemyGO.transform.localScale = Vector3.one;
 
             var collider = enemyGO.AddComponent<CircleCollider2D>();
             collider.radius = 0.4f;
@@ -122,6 +138,15 @@ namespace CindarsHope.Cave.Runtime
             Debug.Log(
                 $"CaveEnemySpawner: Spawned {enemyData.DisplayName} at grid ({gridPosition.x}, {gridPosition.y}) world ({spawnPos.x}, {spawnPos.y}).",
                 this);
+        }
+
+        private Sprite GetBuiltinSprite()
+        {
+#if UNITY_EDITOR
+            return AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd");
+#else
+            return null;
+#endif
         }
 
         public void CleanupSpawns()

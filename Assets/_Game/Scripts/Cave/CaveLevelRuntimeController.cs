@@ -147,7 +147,7 @@ namespace CindarsHope.Cave
                 return;
             }
 
-            var mainCamera = Camera.main;
+            var mainCamera = UnityEngine.Camera.main;
             if (mainCamera != null)
             {
                 mainCamera.transform.position = new Vector3(

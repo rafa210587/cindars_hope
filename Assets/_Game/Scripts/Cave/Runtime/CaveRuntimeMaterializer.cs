@@ -66,6 +66,7 @@ namespace CindarsHope.Cave.Runtime
             if (_playerTransform != null)
             {
                 _playerTransform.position = GridToWorld(generatedLevel.Entrance, generatedLevel);
+                RepositionCamera();
             }
 
             Debug.Log(
@@ -80,6 +81,29 @@ namespace CindarsHope.Cave.Runtime
             var offsetX = level.Width * 0.5f;
             var offsetY = level.Height * 0.5f;
             return new Vector3(gridPosition.x - offsetX, gridPosition.y - offsetY, 0f);
+        }
+
+        private void RepositionCamera()
+        {
+            var mainCamera = UnityEngine.Camera.main;
+            if (mainCamera == null)
+            {
+                return;
+            }
+
+            var cameraFollow = mainCamera.GetComponent<CindarsHope.Camera.CameraFollow2D>();
+            if (cameraFollow != null)
+            {
+                cameraFollow.RebindTarget(_playerTransform);
+                cameraFollow.SnapToTarget();
+            }
+            else
+            {
+                mainCamera.transform.position = new Vector3(
+                    _playerTransform.position.x,
+                    _playerTransform.position.y,
+                    mainCamera.transform.position.z);
+            }
         }
 
         private void MaterializeFloor(CaveGeneratedLevel generatedLevel)

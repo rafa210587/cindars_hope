@@ -25,7 +25,7 @@
 | Equipment/Hotbar | Implementado parcial | Tool/hotbar existem e persistem parcialmente; PR-132-FIX aplica gating em arvore/pesca e plantio por hotbar; integracoes finais pendentes. |
 | Progression/LevelUp | Implementado parcial | XP/level/pontos existem; distribuição debug de atributos ainda pendente. |
 | Damage Formula MVP | Implementado parcial | `DamageCalculator`, `DamageResult` e integracao melee MVP; status/elementos completos pendentes. |
-| Cave Procedural/Resources | Implementado | PR-140 contratos base; marcos 1-7 materializador/spawning/procedural complete; marcos 8-11 HUD real counters/logging complete; FIX_CAVE_PROCEDURAL_VISUAL_RUNTIME v1.0 implementado com fallback visuals e database population. |
+| Cave Procedural/Resources | Implementado parcial | PR-140 contratos base; marcos 1-7 materializador/spawning/procedural complete; marcos 8-11 HUD real counters/logging complete; FIX_CAVE_PROCEDURAL_VISUAL_RUNTIME v1.0 com fallback visuals/database; FIX_CAVE_CAMERA_FOLLOW_AND_VISIBLE_ENEMIES v1.0 com smooth camera/enemy visuals/spawn order. Marcos 8+ (loot/scaling/KO/boss/checkpoints) pendentes. |
 | Cave Bestiary/Faction Locks | Especificado | FASE9G pronta; depende da base FASE9F para implementação real. |
 | Reconciliação pós PR-099 | Implementado parcial | PR-100 auditado; PR-101 a PR-130 consolidados na `dev`; Unity ainda pendente. |
 
@@ -326,3 +326,27 @@ Marcos futuros pendentes apos este fix:
 - Marco 13: HUD procedural v2 enhancements.
 - Marco 14: Validators e smoke tests completos.
 - Marco 15: FASE9G integration e faction locks.
+
+---
+
+## 13. Atualizacao 2026-05-20 - FIX_CAVE_CAMERA_FOLLOW_AND_VISIBLE_ENEMIES_v1.0
+
+Status: Implementado completo — Camera smooth follow e inimigos visíveis com fallback sprite e spawning ordenado.
+
+Evidencia no repo:
+- `Assets/_Game/Scripts/Camera/CameraFollow2D.cs` — novo componente para smooth camera follow com damping, RebindTarget e SnapToTarget.
+- `Assets/_Game/Editor/SceneCreation/CreateMvpCaveScene.cs` — CreateMainCamera atualizado para setup CameraFollow2D via SerializedObject.
+- `Assets/_Game/Scripts/Cave/Runtime/CaveRuntimeMaterializer.cs` — RepositionCamera() método detecta CameraFollow2D e chama RebindTarget + SnapToTarget na materialização.
+- `Assets/_Game/Scripts/Cave/Runtime/CaveEnemySpawner.cs`:
+  - GetBuiltinSprite() helper com conditional compilation `#if UNITY_EDITOR`.
+  - SpawnEnemyAtPoint() atualizado com fallback sprite color (vermelho escuro), sortingOrder=3, localScale=Vector3.one.
+  - SpawnEnemiesForLevel() ordena spawn points por distância à entrada com OrderBy.
+
+Pendencias reais:
+- Unity compilacao precisa validacao.
+- Play Mode camera follow suavidade e enemy spawn order precisam teste visual.
+- Enemy sprite fallback precisa verificacao de visibilidade em Play Mode.
+
+Proximo passo recomendado: validar compilacao no Unity, testar Play Mode (verificar smooth camera, enemy colors, spawn order), executar smoke test completo se Play Mode passar.
+
+Marcos futuros: Marco 8+ (loot tables, level scaling, KO, boss, checkpoints) conforme prioridade.
