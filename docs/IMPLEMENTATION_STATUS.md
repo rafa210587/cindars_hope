@@ -26,6 +26,7 @@
 | Progression/LevelUp | Especificado | FASE9E pendente de implementação. |
 | Cave Procedural/Resources | Especificado | FASE9F pronta; próximo bloco recomendado PR-170+. |
 | Cave Bestiary/Faction Locks | Especificado | FASE9G pronta; depende da base FASE9F para implementação real. |
+| Reconciliação pós PR-099 | Implementado parcial | PR-100 auditou estado real; PR-101+ pendentes. |
 
 ---
 
@@ -46,6 +47,7 @@
 | Fase 9E Specs | Docs/specs | Especificado | UI/Hotbar, Damage/Status, Item Taxonomy, Save Migration, Level Up | Implementação pendente. |
 | Fase 9F Specs | Docs/specs | Especificado | Cave procedural/resources/encounters spec | Próximo bloco PR-170+. |
 | Fase 9G Specs | Docs/specs | Especificado | Cave bestiary/faction locks/portal ecology spec | Depende de FASE9F procedural foundation. |
+| PR-100 pós PR-099 | PR-100 | Implementado | `docs/audits/PR100_POST_PR099_REPO_AUDIT.md` | PR-101 deve reconciliar branches/fixes sem merge automático. |
 
 ---
 
@@ -105,7 +107,40 @@ Observação: várias capacidades ainda são MVP/debug, não versão final de UX
 - Save Schema/Migration.
 - Player Level Up/Progression.
 
-### 4.3 FASE9F pendente
+### 4.3 Reconciliação pós PR-099 pendente
+
+- PR-101 — Reconciliar branches/fixes PR-099.
+- PR-102 — Corrigir compile/hardening do EnemyHealth.
+- PR-103 — Corrigir PlayerAttackController data-driven.
+- PR-104 — Corrigir EnemyContactDamage data-driven.
+- PR-105 — Corrigir EnemyChaseController data-driven.
+- PR-106 — Corrigir HitFlash e Knockback.
+- PR-107 — Corrigir EnemyDropSpawner.
+- PR-108 — Validar EnemyDataSO e asset do Slime.
+- PR-109 — Corrigir CreateMvpCaveScene combat wiring.
+- PR-110 — Corrigir CaveSceneRuntimeReferenceInstaller.
+- PR-111 — Corrigir DebugHud singleton cross-scene.
+- PR-112 — Corrigir SaveManager para CaveScene.
+- PR-113 — Consolidar validator Farm/Town/Cave.
+- PR-114 — Regenerar cenas Farm/Town/Cave.
+- PR-115 — Smoke test documentado Farm/Town/Cave.
+- PR-116 — Inventory/Item taxonomy audit.
+- PR-117 — Padronizar IDs cave/combat temporários.
+- PR-118 — Preparar Tool contracts mínimos.
+- PR-119 — EquipmentManager mínimo.
+- PR-120 — Seed/Tool selection debug mínimo.
+- PR-121 — Hotbar contracts sem UI final.
+- PR-122 — Inventory UI debug melhorado.
+- PR-123 — Damage formula MVP.
+- PR-124 — Integrar DamageCalculator ao melee.
+- PR-125 — Player progression contracts.
+- PR-126 — XP reward contracts para inimigos.
+- PR-127 — PlayerProgressionManager MVP.
+- PR-128 — Integrar XP por EnemyKilledEvent.
+- PR-129 — Save/load progression/equipment/hotbar.
+- PR-130 — Handoff pós reconciliação PR-099 → PR-129.
+
+### 4.4 FASE9F pendente
 
 - PR-170 — Cave procedural contracts.
 - PR-171 — Cave procedural generator MVP.
@@ -121,7 +156,7 @@ Observação: várias capacidades ainda são MVP/debug, não versão final de UX
 - PR-181 — Biome boss MVP no CaveLevel 15.
 - PR-182 — Cave validator.
 
-### 4.4 FASE9G pendente
+### 4.5 FASE9G pendente
 
 - Cave encounter ecology contracts.
 - Faction locks por subfaixa de 3–5 níveis.
@@ -137,20 +172,20 @@ Observação: várias capacidades ainda são MVP/debug, não versão final de UX
 ## 5. Próximo bloco recomendado
 
 ```text
-FASE9F-A — Cave Procedural Foundation
+FASE9B-4 / FASE9C-0 - Reconciliação pós PR-099
 ```
 
 Escopo recomendado do próximo bloco:
 
 | PR | Nome | Objetivo |
 |---:|---|---|
-| PR-170 | Cave procedural contracts | Criar configs, runtime state, save DTO e eventos. |
-| PR-171 | Cave procedural generator MVP | Gerar layout grande com salas, corredores, entrada, saída e pontos de spawn/resources. |
-| PR-172 | Cave run regeneration | Gerar nova `CaveRunSeed` em KO/derrota preservando checkpoints. |
-| PR-173 | Cave checkpoints | Liberar checkpoints 1/15/30... e permitir entrada por checkpoint. |
-| PR-174 | ResourceNode contracts | Criar contratos de node com tool/tier/stamina/fallback. |
+| PR-101 | Reconciliar branches/fixes PR-099 | Comparar branches citadas e listar ja esta na dev, falta, conflita ou deve virar PR proprio. |
+| PR-102 | Corrigir compile/hardening do EnemyHealth | Validar `EnemyHealth`, `DamageRequest` e `KnockbackRequest`. |
+| PR-103 | Corrigir PlayerAttackController data-driven | Consolidar ataque melee por componente e `DamageRequest`. |
+| PR-104 | Corrigir EnemyContactDamage data-driven | Consolidar dano por contato usando `EnemyDataSO`. |
+| PR-105 | Corrigir EnemyChaseController data-driven | Garantir chase configuravel por `EnemyDataSO`. |
 
-Não incluir neste bloco: boss, XP, loot tables completas, daily refresh, UI final, minimap, baús, arte final ou todos os 100 níveis completos.
+PR-170+ foi reclassificado como sequencia futura PR-131+ apos handoff PR-130. A branch local `feature/pr-170-cave-procedural-contracts` existe como codigo adiantado/candidato e deve ser reaproveitada depois, sem rollback destrutivo.
 
 FASE9G deve ser usada quando a implementação chegar em enemy ecology, faction locks, boss/miniboss candidates e bestiário procedural.
 
@@ -182,6 +217,6 @@ Regras para agentes:
 ## 7. Última atualização
 
 - Data: 2026-05-20
-- Responsável: ChatGPT
-- Branch: `dev`
-- Tipo: tracking documental direto em `dev`
+- Responsável: Codex/ChatGPT
+- Branch: `feature/pr-100-audit-pos-pr099`
+- Tipo: auditoria documental/estatica PR-100
