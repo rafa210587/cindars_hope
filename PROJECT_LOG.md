@@ -585,3 +585,8 @@ Esse arquivo preserva o log operacional anterior inteiro antes da redução do l
 - `DebugHud` agora exibe status procedural da cave quando recebe `CaveRunManager` e `CaveLevelRuntimeController`.
 - `CaveSceneRuntimeReferenceInstaller` faz rebind das referencias da cave no HUD.
 - Fallback permanece `Cave: fixed/unavailable` e `Seed: unavailable`.
+
+### Marco PR-146 - Cave run regeneration debug
+
+- `CaveLevelRuntimeController` aceita `Shift+R` na `CaveScene` para gerar nova `CaveRunSeed`.
+- A regeneracao preserva `CaveWorldSeed` e `CurrentCaveLevel`, recalcula o layout e atualiza o HUD.

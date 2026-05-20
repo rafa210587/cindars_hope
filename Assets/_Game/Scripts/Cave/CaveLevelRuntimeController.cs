@@ -4,6 +4,7 @@ using CindarsHope.Cave.Runtime;
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace CindarsHope.Cave
 {
@@ -34,6 +35,19 @@ namespace CindarsHope.Cave
         private void Start()
         {
             GenerateCurrentLevel();
+        }
+
+        private void Update()
+        {
+            if (SceneManager.GetActiveScene().name != "CaveScene")
+            {
+                return;
+            }
+
+            if (Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(KeyCode.R))
+            {
+                RegenerateCurrentRunDebug();
+            }
         }
 
         public void GenerateCurrentLevel()

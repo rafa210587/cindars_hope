@@ -282,6 +282,7 @@ namespace CindarsHope.UI
             GUILayout.Label("H: consume food");
             GUILayout.Label("F5: save");
             GUILayout.Label("F9: load");
+            GUILayout.Label("Shift+R: regenerate cave run");
 
             if (_saveManager != null)
             {
