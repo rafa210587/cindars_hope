@@ -36,22 +36,16 @@
 
 ### Próximo passo recomendado
 
-Começar **FASE9F-A — Cave Procedural Foundation** com PRs pequenos, mantendo FASE9G como baseline de design para bestiário/faction locks quando a implementação de cave procedural chegar em enemy ecology.
+Começar **FASE9E-D — HUD Debug v2 + Tool Gating + Attribute Allocation** antes de retomar Cave Procedural.
 
-1. PR-132 — Pre-flight Unity hardening antes da Cave Procedural.
-2. PR-133 — Cave procedural contracts.
-3. PR-134 — Cave procedural generator puro.
-4. PR-135 — Cave generated level model/debug.
-5. PR-136 — CaveLevelRuntimeController MVP.
-6. PR-137 — CaveScene generator/wiring procedural.
-7. PR-138 — CaveRunManager seeds.
-8. PR-139 — Regeneração da run após KO/derrota.
-9. PR-140 — Cave checkpoints service.
-10. PR-141 — Entrada por checkpoint debug/MVP.
-11. PR-142 — ResourceNode contracts.
-12. PR-143 — ResourceNode rules/fallback.
-13. PR-144 — ResourceNode runtime MVP.
-14. PR-145 — Cave save/load + validator + handoff.
+1. PR-132 — DebugHud layout v2.
+2. PR-133 — Action feedback event.
+3. PR-134 — Tool gating contracts.
+4. PR-135 — Tool gating para árvore e pesca.
+5. PR-136 — Hotbar seed gating para FarmPlot.
+6. PR-137 — Attribute allocation debug MVP.
+7. PR-138 — DebugHud progression/tool/hotbar polish.
+8. PR-139 — Handoff para Cave Procedural.
 
 Em paralelo, este chat pode continuar refinando novas specs. Specs aprovadas antigas não devem ser reescritas destrutivamente; correções entram como amendments/corrections.
 
@@ -450,3 +444,35 @@ Esse arquivo preserva o log operacional anterior inteiro antes da redução do l
 ### Proximo passo recomendado
 
 - PR-132 - Pre-flight Unity hardening antes da Cave Procedural.
+
+---
+
+## 2026-05-20 - PR-131 sync de validacao HUD/tools/progressao
+
+**Responsavel:** Codex/ChatGPT
+**Branch:** `feature/pr-131-sync-validacao-hud-tools-progression`
+**Escopo:** registrar estado real validado de HUD debug, hotbar, tools, progressao e cave fixed MVP antes de novas features.
+
+### Alteracoes
+
+- Criado `docs/audits/PR131_VALIDACAO_HUD_TOOLS_PROGRESSION.md`.
+- Atualizado `docs/IMPLEMENTATION_STATUS.md` para registrar lacunas reais:
+  - tool existe, mas ainda nao bloqueia arvore/pesca;
+  - hotbar existe, mas plantio ainda nao usa slot selecionado;
+  - XP/level/pontos existem, mas nao ha distribuicao debug de atributos;
+  - cave ainda e fixed MVP, sem seed/procedural.
+- Atualizado o proximo bloco recomendado para FASE9E-D PR-132 a PR-139 antes da Cave Procedural.
+
+### Testes
+
+- [x] Revisao estatica documental e inspeção dos arquivos relevantes.
+- [ ] Unity nao executado; PR documental.
+
+### Pendencias / riscos
+
+- Validar no Unity o estado relatado antes de mergear se houver divergencia local.
+- Cave Procedural deve aguardar o handoff PR-139.
+
+### Proximo passo recomendado
+
+- PR-132 - DebugHud layout v2.

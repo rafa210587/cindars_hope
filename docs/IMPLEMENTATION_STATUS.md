@@ -21,9 +21,9 @@
 | Town | Implementado MVP | Portal Farm/Town, TownScene gerável, NPC Pip placeholder e comércio básico. |
 | Cave | Implementado MVP básico | CaveScene/portal/combat básico conforme log; procedural progressivo pendente. |
 | Combat | Implementado MVP básico | Slime, melee/contact damage, drops e feedback básico conforme log. |
-| UI | Debug apenas | `DebugHud`/OnGUI para validação; UI final pendente. |
-| Equipment/Hotbar | Implementado parcial | Contratos, manager/debug e save parcial vindos do consolidado PR-101 a PR-130; UI final pendente. |
-| Progression/LevelUp | Implementado parcial | Contratos, XP/level MVP e save parcial vindos do consolidado PR-101 a PR-130; balanceamento final pendente. |
+| UI | Debug parcial | `DebugHud`/OnGUI existe; layout em painéis e feedback de ações pendentes. |
+| Equipment/Hotbar | Implementado parcial | Tool/hotbar existem e persistem parcialmente; ações ainda não fazem gating por ferramenta/hotbar. |
+| Progression/LevelUp | Implementado parcial | XP/level/pontos existem; distribuição debug de atributos ainda pendente. |
 | Damage Formula MVP | Implementado parcial | `DamageCalculator`, `DamageResult` e integracao melee MVP; status/elementos completos pendentes. |
 | Cave Procedural/Resources | Pendente | FASE9F pronta; proximo bloco recomendado PR-132 a PR-145. |
 | Cave Bestiary/Faction Locks | Especificado | FASE9G pronta; depende da base FASE9F para implementação real. |
@@ -50,6 +50,7 @@
 | Fase 9G Specs | Docs/specs | Especificado | Cave bestiary/faction locks/portal ecology spec | Depende de FASE9F procedural foundation. |
 | PR-100 pós PR-099 | PR-100 | Implementado | `docs/audits/PR100_POST_PR099_REPO_AUDIT.md` | Reconciliação seguinte foi consolidada em PR-101 a PR-130. |
 | PR-101 a PR-130 pós PR-099 | Consolidado | Implementado parcial | `docs/audits/PR101_PR099_BRANCH_RECONCILIATION.md`, `docs/audits/PR130_RECONCILIACAO_HANDOFF.md`, Tools/Equipment/Hotbar/Progression/Damage MVP | Unity e cenas ainda precisam validação. |
+| PR-131 validação HUD/tools/progressão | PR-131 | Implementado | `docs/audits/PR131_VALIDACAO_HUD_TOOLS_PROGRESSION.md` | Seguir PR-132 a PR-139 antes da Cave Procedural. |
 
 ---
 
@@ -103,6 +104,10 @@ Observação: várias capacidades ainda são MVP/debug, não versão final de UX
 ### 4.2 FASE9E parcial / pendente
 
 - UI/Hotbar/Inventory/Equipment: implementado parcial; UI final e integração completa pendentes.
+- HUD debug: precisa split em painel de ações e painel de informações.
+- Tool gating: tool existe, mas árvore/pesca ainda não bloqueiam por ferramenta equipada.
+- Hotbar seed gating: hotbar existe, mas `FarmPlot` ainda planta pela primeira seed disponível no inventário.
+- Attribute allocation: pontos existem, mas ainda não há input debug para gastar pontos.
 - Damage/Elementos/Status/Fórmula única: fórmula MVP implementada; elementos/status completos pendentes.
 - Item Taxonomy/IDs.
 - Item examples/variations.
@@ -117,22 +122,21 @@ Observação: várias capacidades ainda são MVP/debug, não versão final de UX
 
 ### 4.4 FASE9F pendente
 
-- PR-132 — Pre-flight Unity hardening antes da Cave Procedural.
-- PR-133 — Cave procedural contracts.
-- PR-134 — Cave procedural generator puro.
-- PR-135 — Cave generated level model/debug.
-- PR-136 — CaveLevelRuntimeController MVP.
-- PR-137 — CaveScene generator/wiring procedural.
-- PR-138 — CaveRunManager seeds.
-- PR-139 — Regeneração da run após KO/derrota.
-- PR-140 — Cave checkpoints service.
-- PR-141 — Entrada por checkpoint debug/MVP.
-- PR-142 — ResourceNode contracts.
-- PR-143 — ResourceNode rules/fallback.
-- PR-144 — ResourceNode runtime MVP.
-- PR-145 — Cave save/load + validator + handoff.
+- Cave procedural permanece pendente: cave atual e fixed MVP, sem seeds/run/generator.
+- Entrar em Cave Procedural depois do pacote FASE9E-D PR-132 a PR-139.
 
-### 4.5 FASE9G pendente
+### 4.5 FASE9E-D HUD/tools/progression debug pendente
+
+- PR-132 — DebugHud layout v2.
+- PR-133 — Action feedback event.
+- PR-134 — Tool gating contracts.
+- PR-135 — Tool gating para árvore e pesca.
+- PR-136 — Hotbar seed gating para FarmPlot.
+- PR-137 — Attribute allocation debug MVP.
+- PR-138 — DebugHud progression/tool/hotbar polish.
+- PR-139 — Handoff para Cave Procedural.
+
+### 4.6 FASE9G pendente
 
 - Cave encounter ecology contracts.
 - Faction locks por subfaixa de 3–5 níveis.
@@ -148,20 +152,20 @@ Observação: várias capacidades ainda são MVP/debug, não versão final de UX
 ## 5. Próximo bloco recomendado
 
 ```text
-FASE9F-A - Cave Procedural Foundation
+FASE9E-D - HUD Debug v2 + Tool Gating + Attribute Allocation
 ```
 
 Escopo recomendado do próximo bloco:
 
 | PR | Nome | Objetivo |
 |---:|---|---|
-| PR-132 | Pre-flight Unity hardening | Corrigir bloqueadores simples antes de cave procedural. |
-| PR-133 | Cave procedural contracts | Criar contratos base de cave procedural. |
-| PR-134 | Cave generator puro | Criar gerador determinístico por seeds e level. |
-| PR-135 | Cave generated level debug | Adicionar debug textual/ASCII do layout. |
-| PR-136 | CaveLevelRuntimeController MVP | Gerar CaveLevel 1 no runtime. |
+| PR-132 | DebugHud layout v2 | Separar ações/contexto de informações/status. |
+| PR-133 | Action feedback event | Criar feedback temporário para falhas de ação. |
+| PR-134 | Tool gating contracts | Permitir sistemas consultarem ferramenta equipada. |
+| PR-135 | Tool gating world actions | Exigir Axe para árvore e FishingRod para pesca. |
+| PR-136 | Hotbar seed gating | Usar seed selecionada na hotbar para plantio. |
 
-PR-170+ foi reclassificado como sequencia futura PR-131+ apos handoff PR-130, mas a numeração operacional vigente agora é PR-132 a PR-145. A branch local `feature/pr-170-cave-procedural-contracts`, se existir, deve ser tratada como codigo adiantado/candidato e reaproveitada depois sem rollback destrutivo.
+Cave Procedural deve ser retomada somente depois do handoff PR-139 deste pacote.
 
 FASE9G deve ser usada quando a implementação chegar em enemy ecology, faction locks, boss/miniboss candidates e bestiário procedural.
 
@@ -194,8 +198,8 @@ Regras para agentes:
 
 - Data: 2026-05-20
 - Responsável: Codex/ChatGPT
-- Branch: `feature/pr-131-sync-status-pos-reconciliacao`
-- Tipo: sync documental PR-131 pos reconciliacao PR-101 a PR-130
+- Branch: `feature/pr-131-sync-validacao-hud-tools-progression`
+- Tipo: sync documental PR-131 pos validação de HUD/tools/progressão
 
 ---
 
@@ -219,6 +223,6 @@ Pendencias reais:
 - `item_material_stone` e `ore_copper` seguem pendentes para Cave Resources.
 - Cave Procedural deve voltar como PR-131+ apos validacao.
 
-Proximo bloco pendente: validacao Unity do consolidado e depois Cave Procedural Foundation PR-131+.
+Proximo bloco pendente: FASE9E-D HUD/tools/progressao debug PR-132 a PR-139; depois Cave Procedural.
 
 ---
