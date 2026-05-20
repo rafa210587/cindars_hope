@@ -18,6 +18,7 @@ using CindarsHope.World;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using CaveResourceNode = CindarsHope.Cave.Resources.ResourceNode;
 
 namespace CindarsHope.Editor.Validation
 {
@@ -267,7 +268,7 @@ namespace CindarsHope.Editor.Validation
             if (FindComponent<CaveLevelRuntimeController>(rootObjects) == null)
                 { Debug.LogError("MvpSceneValidator: CaveLevelRuntimeController not found in CaveScene."); passed = false; }
 
-            var resourceNodes = Object.FindObjectsByType<ResourceNode>(FindObjectsSortMode.None);
+            var resourceNodes = Object.FindObjectsByType<CindarsHope.Cave.Resources.ResourceNode>(FindObjectsSortMode.None);
             if (resourceNodes.Length < 3)
                 { Debug.LogError("MvpSceneValidator: Less than 3 ResourceNode debug instances found in CaveScene."); passed = false; }
 

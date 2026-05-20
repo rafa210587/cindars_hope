@@ -37,6 +37,8 @@ namespace CindarsHope.UI
         private string _currentActionFeedback = string.Empty;
         private float _actionFeedbackUntil;
         private bool _isPrimaryInstance;
+        private Vector2 _actionsScrollPosition;
+        private Vector2 _infoScrollPosition;
 
         public static DebugHud Instance => _instance;
 
@@ -107,27 +109,51 @@ namespace CindarsHope.UI
 
         private void DrawActionsPanel()
         {
-            GUILayout.BeginArea(new Rect(12f, 12f, 360f, 330f), GUI.skin.box);
+            const float width = 360f;
+            var height = Screen.height - 24f;
+
+            GUILayout.BeginArea(new Rect(12f, 12f, width, height), GUI.skin.box);
+            _actionsScrollPosition = GUILayout.BeginScrollView(_actionsScrollPosition);
+
             GUILayout.Label("Actions");
             DrawInteractionState();
             DrawActionFeedback();
             DrawCommands();
+
+            GUILayout.EndScrollView();
             GUILayout.EndArea();
         }
 
         private void DrawInfoPanel()
         {
-            var width = 390f;
-            GUILayout.BeginArea(new Rect(Screen.width - width - 12f, 12f, width, Screen.height - 24f), GUI.skin.box);
+            const float width = 430f;
+            var height = Screen.height - 24f;
+
+            GUILayout.BeginArea(new Rect(Screen.width - width - 12f, 12f, width, height), GUI.skin.box);
+            _infoScrollPosition = GUILayout.BeginScrollView(_infoScrollPosition);
+
             GUILayout.Label("Cindar's Hope - Debug Info");
+
             DrawWorldState();
             DrawPlayerState();
             DrawHungerState();
-            DrawEconomyState();
-            DrawProgressionState();
+
+            GUILayout.Space(6f);
             DrawEquipmentState();
-            DrawCaveSummary();
+
+            GUILayout.Space(6f);
             DrawInventory();
+
+            GUILayout.Space(6f);
+            DrawProgressionState();
+
+            GUILayout.Space(6f);
+            DrawCaveSummary();
+
+            GUILayout.Space(6f);
+            DrawEconomyState();
+
+            GUILayout.EndScrollView();
             GUILayout.EndArea();
         }
 
@@ -286,7 +312,7 @@ namespace CindarsHope.UI
 
             if (_saveManager != null)
             {
-                GUILayout.Label($"Save: {_saveManager.SaveFilePath}");
+                GUILayout.Label($"Save: {ShortenMiddle(_saveManager.SaveFilePath, 48)}");
             }
         }
 
@@ -314,8 +340,8 @@ namespace CindarsHope.UI
             GUILayout.Label("Cave: procedural MVP");
             GUILayout.Label($"CaveLevel: {_caveRunManager.CurrentCaveLevel}");
             GUILayout.Label($"Deepest: {_caveRunManager.DeepestLayerReached}");
-            GUILayout.Label($"WorldSeed: {_caveRunManager.CaveWorldSeed}");
-            GUILayout.Label($"RunSeed: {_caveRunManager.CaveRunSeed}");
+            GUILayout.Label($"WorldSeed: {ShortenMiddle(_caveRunManager.CaveWorldSeed, 44)}");
+            GUILayout.Label($"RunSeed: {ShortenMiddle(_caveRunManager.CaveRunSeed, 44)}");
             GUILayout.Label($"Rooms: {_caveLevelRuntimeController.RoomCount}");
             GUILayout.Label($"EnemyPoints: {_caveLevelRuntimeController.EnemyPointCount}");
             GUILayout.Label($"ResourcePoints: {_caveLevelRuntimeController.ResourcePointCount}");
@@ -434,6 +460,17 @@ namespace CindarsHope.UI
             {
                 _instance.RebindCaveRuntime(caveRunManager, caveLevelRuntimeController);
             }
+        }
+
+        private static string ShortenMiddle(string value, int maxLength = 48)
+        {
+            if (string.IsNullOrWhiteSpace(value) || value.Length <= maxLength)
+            {
+                return value ?? string.Empty;
+            }
+
+            var keep = Mathf.Max(4, (maxLength - 3) / 2);
+            return $"{value.Substring(0, keep)}...{value.Substring(value.Length - keep)}";
         }
     }
 }

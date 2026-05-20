@@ -32,7 +32,7 @@ namespace CindarsHope.Cave.Resources
                 ? $"Requires {nodeData.RequiredToolTier} {nodeData.RequiredToolType} or better."
                 : $"Requires {nodeData.RequiredToolType}.";
 
-            return new ResourceNodeToolCheckResult(false, hasFallback, message);
+            return new ResourceNodeToolCheckResult(false, false, message);
         }
 
         public static ResourceNodeInteractionResult BuildPrimaryDrop(ResourceNodeDataSO nodeData)

@@ -79,8 +79,9 @@ namespace CindarsHope.Cave.Resources
 
             if (!toolResult.CanHarvest)
             {
-                var fallback = ResourceNodeRules.BuildFallback(_nodeData, toolResult.Message);
-                DeliverResult(fallback);
+                GameEventBus.Publish(new PlayerActionFeedbackEvent(toolResult.Message));
+                Debug.Log($"ResourceNode '{_nodeInstanceId}': {toolResult.Message}", this);
+                UpdateVisual();
                 return;
             }
 
