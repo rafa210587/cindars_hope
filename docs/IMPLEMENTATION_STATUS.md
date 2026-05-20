@@ -283,6 +283,7 @@ Evidencia incremental:
 - PR-146: `CaveLevelRuntimeController` regenera a run com `Shift+R` na CaveScene.
 - PR-147: `CaveCheckpointService` implementa checkpoints oficiais e usa `CaveRuntimeState`.
 - PR-148: `ResourceNodeDataSO`, `ResourceNodeDatabaseSO` e `ResourceNodeDepletedEvent` criados.
+- PR-149: `ResourceNodeRules` e resultados puros de interacao/tool check criados.
 
 Pendencias reais:
 - Unity ainda precisa compilar/validar.

@@ -602,3 +602,9 @@ Esse arquivo preserva o log operacional anterior inteiro antes da redução do l
 - Criados `ResourceNodeDataSO` e `ResourceNodeDatabaseSO`.
 - Criado `ResourceNodeDepletedEvent`.
 - Contrato usa `ToolType`, `ToolTier`, stamina, hits, drop principal e fallback.
+
+### Marco PR-149 - ResourceNode rules
+
+- Criadas regras puras `ResourceNodeRules`.
+- Criados resultados `ResourceNodeToolCheckResult` e `ResourceNodeInteractionResult`.
+- Regras separam drop principal, fallback e mensagem de ferramenta/tier insuficiente.
