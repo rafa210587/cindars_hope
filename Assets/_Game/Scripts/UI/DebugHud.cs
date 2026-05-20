@@ -1,6 +1,8 @@
 using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
+using CindarsHope.Cave;
+using CindarsHope.Cave.Runtime;
 using CindarsHope.Equipment;
 using CindarsHope.Inventory;
 using CindarsHope.Interaction;
@@ -25,6 +27,8 @@ namespace CindarsHope.UI
         [SerializeField] private TimeManager _timeManager;
         [SerializeField] private SaveManager _saveManager;
         [SerializeField] private EquipmentManager _equipmentManager;
+        [SerializeField] private CaveRunManager _caveRunManager;
+        [SerializeField] private CaveLevelRuntimeController _caveLevelRuntimeController;
 
         private bool _hasInteractionCandidate;
         private string _currentInteractionPrompt = string.Empty;
@@ -296,11 +300,24 @@ namespace CindarsHope.UI
             GUILayout.Label($"Feedback: {_currentActionFeedback}");
         }
 
-        private static void DrawCaveSummary()
+        private void DrawCaveSummary()
         {
             GUILayout.Space(8f);
-            GUILayout.Label("Cave: fixed MVP");
-            GUILayout.Label("Seed: unavailable");
+            if (_caveRunManager == null || _caveLevelRuntimeController == null)
+            {
+                GUILayout.Label("Cave: fixed/unavailable");
+                GUILayout.Label("Seed: unavailable");
+                return;
+            }
+
+            GUILayout.Label("Cave: procedural MVP");
+            GUILayout.Label($"CaveLevel: {_caveRunManager.CurrentCaveLevel}");
+            GUILayout.Label($"Deepest: {_caveRunManager.DeepestLayerReached}");
+            GUILayout.Label($"WorldSeed: {_caveRunManager.CaveWorldSeed}");
+            GUILayout.Label($"RunSeed: {_caveRunManager.CaveRunSeed}");
+            GUILayout.Label($"Rooms: {_caveLevelRuntimeController.RoomCount}");
+            GUILayout.Label($"EnemyPoints: {_caveLevelRuntimeController.EnemyPointCount}");
+            GUILayout.Label($"ResourcePoints: {_caveLevelRuntimeController.ResourcePointCount}");
         }
 
         private void OnInteractionPromptChanged(InteractionPromptChangedEvent evt)
@@ -381,6 +398,21 @@ namespace CindarsHope.UI
             Debug.Log("DebugHud: runtime references rebound.");
         }
 
+        public void RebindCaveRuntime(CaveRunManager caveRunManager, CaveLevelRuntimeController caveLevelRuntimeController)
+        {
+            if (caveRunManager != null)
+            {
+                _caveRunManager = caveRunManager;
+            }
+
+            if (caveLevelRuntimeController != null)
+            {
+                _caveLevelRuntimeController = caveLevelRuntimeController;
+            }
+
+            Debug.Log("DebugHud: cave runtime references rebound.");
+        }
+
         public static void RebindExisting(
             PlayerManager playerManager,
             InventoryManager inventoryManager,
@@ -392,6 +424,14 @@ namespace CindarsHope.UI
             if (_instance != null)
             {
                 _instance.RebindRuntimeReferences(playerManager, inventoryManager, hungerManager, interactionSystem, timeManager, saveManager);
+            }
+        }
+
+        public static void RebindExistingCaveRuntime(CaveRunManager caveRunManager, CaveLevelRuntimeController caveLevelRuntimeController)
+        {
+            if (_instance != null)
+            {
+                _instance.RebindCaveRuntime(caveRunManager, caveLevelRuntimeController);
             }
         }
     }

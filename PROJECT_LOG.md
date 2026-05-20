@@ -579,3 +579,9 @@ Esse arquivo preserva o log operacional anterior inteiro antes da redução do l
 - Atualizado `CreateMvpCaveScene` para criar `CaveRuntime` com `CaveRunManager` e `CaveLevelRuntimeController`.
 - O gerador editorial cria/usa `Assets/_Game/Data/Cave/CaveGenerationConfig_Default.asset` quando o menu for executado no Unity.
 - Cena e asset fisicos ainda dependem de executar o menu no Editor.
+
+### Marco PR-145 - DebugHud Cave status
+
+- `DebugHud` agora exibe status procedural da cave quando recebe `CaveRunManager` e `CaveLevelRuntimeController`.
+- `CaveSceneRuntimeReferenceInstaller` faz rebind das referencias da cave no HUD.
+- Fallback permanece `Cave: fixed/unavailable` e `Seed: unavailable`.

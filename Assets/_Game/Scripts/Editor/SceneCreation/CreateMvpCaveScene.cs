@@ -67,11 +67,11 @@ namespace CindarsHope.Editor.SceneCreation
             CreateGround();
             CreateBounds();
             CreateCavePortals();
-            CreateCaveRuntime();
+            var caveRuntime = CreateCaveRuntime();
             CreateEnemies(playerTransform);
             CreateEnemyDropSpawner(inventoryManager);
             CreateDebugHud(playerManager, inventoryManager, hungerManager, playerTransform.GetComponent<InteractionSystem>(), timeManager, saveManager);
-            CreateSceneRuntimeInstaller(playerTransform);
+            CreateSceneRuntimeInstaller(playerTransform, caveRuntime.runManager, caveRuntime.controller);
             CreateMainCamera();
             ConfigureBootstrap(bootstrap, playerTransform);
             
@@ -560,7 +560,7 @@ namespace CindarsHope.Editor.SceneCreation
             EditorUtility.SetDirty(dropSpawner);
         }
 
-        private static void CreateCaveRuntime()
+        private static (CaveRunManager runManager, CaveLevelRuntimeController controller) CreateCaveRuntime()
         {
             var runtimeObject = new GameObject("CaveRuntime");
             runtimeObject.transform.position = Vector3.zero;
@@ -583,6 +583,8 @@ namespace CindarsHope.Editor.SceneCreation
             serializedController.FindProperty("_logGeneratedLayout").boolValue = true;
             serializedController.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(controller);
+
+            return (runManager, controller);
         }
 
         private static CaveGenerationConfigSO EnsureCaveGenerationConfig()
@@ -613,7 +615,7 @@ namespace CindarsHope.Editor.SceneCreation
             return config;
         }
 
-        private static void CreateSceneRuntimeInstaller(Transform playerTransform)
+        private static void CreateSceneRuntimeInstaller(Transform playerTransform, CaveRunManager runManager, CaveLevelRuntimeController controller)
         {
             var runtimeRefObject = new GameObject("SceneRuntimeReferences");
             runtimeRefObject.transform.position = Vector3.zero;
@@ -621,6 +623,8 @@ namespace CindarsHope.Editor.SceneCreation
             var installer = runtimeRefObject.AddComponent<CaveSceneRuntimeReferenceInstaller>();
             var serializedInstaller = new SerializedObject(installer);
             SetReference(serializedInstaller, "_playerTransform", playerTransform);
+            SetReference(serializedInstaller, "_caveRunManager", runManager);
+            SetReference(serializedInstaller, "_caveLevelRuntimeController", controller);
             serializedInstaller.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(installer);
         }

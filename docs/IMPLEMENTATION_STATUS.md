@@ -279,6 +279,7 @@ Evidencia incremental:
 - PR-142: `Assets/_Game/Scripts/Cave/Runtime/CaveRunManager.cs` com seeds e captura/restauracao de `CaveSaveData`.
 - PR-143: `Assets/_Game/Scripts/Cave/CaveLevelRuntimeController.cs` gera cave no runtime e publica `CaveLevelEnteredEvent`.
 - PR-144: `CreateMvpCaveScene` cria `CaveRuntime` e configura `CaveGenerationConfig_Default` ao regenerar a cena no Unity.
+- PR-145: `DebugHud` exibe status procedural quando o installer rebinda `CaveRunManager` e `CaveLevelRuntimeController`.
 
 Pendencias reais:
 - Unity ainda precisa compilar/validar.
