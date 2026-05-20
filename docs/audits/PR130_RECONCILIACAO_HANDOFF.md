@@ -27,13 +27,22 @@ Escopo coberto:
 
 ## Proximo bloco recomendado
 
-Depois de validar Unity, replanejar Cave Procedural Foundation como PR-131+:
+Depois do PR-131 de sync documental, seguir Cave Procedural Foundation como PR-132 a PR-145:
 
-- PR-131 - Cave procedural contracts.
-- PR-132 - Cave procedural generator MVP.
-- PR-133 - Cave run regeneration.
-- PR-134 - Cave checkpoints.
-- PR-135 - ResourceNode contracts.
+- PR-132 - Pre-flight Unity hardening antes da Cave Procedural.
+- PR-133 - Cave procedural contracts.
+- PR-134 - Cave procedural generator puro.
+- PR-135 - Cave generated level model/debug.
+- PR-136 - CaveLevelRuntimeController MVP.
+- PR-137 - CaveScene generator/wiring procedural.
+- PR-138 - CaveRunManager seeds.
+- PR-139 - Regeneracao da run apos KO/derrota.
+- PR-140 - Cave checkpoints service.
+- PR-141 - Entrada por checkpoint debug/MVP.
+- PR-142 - ResourceNode contracts.
+- PR-143 - ResourceNode rules/fallback.
+- PR-144 - ResourceNode runtime MVP.
+- PR-145 - Cave save/load + validator + handoff.
 
 ## Riscos
 

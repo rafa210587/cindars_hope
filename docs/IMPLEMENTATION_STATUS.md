@@ -22,11 +22,12 @@
 | Cave | Implementado MVP básico | CaveScene/portal/combat básico conforme log; procedural progressivo pendente. |
 | Combat | Implementado MVP básico | Slime, melee/contact damage, drops e feedback básico conforme log. |
 | UI | Debug apenas | `DebugHud`/OnGUI para validação; UI final pendente. |
-| Equipment/Hotbar | Especificado | FASE9E pendente de implementação. |
-| Progression/LevelUp | Especificado | FASE9E pendente de implementação. |
-| Cave Procedural/Resources | Especificado | FASE9F pronta; próximo bloco recomendado PR-170+. |
+| Equipment/Hotbar | Implementado parcial | Contratos, manager/debug e save parcial vindos do consolidado PR-101 a PR-130; UI final pendente. |
+| Progression/LevelUp | Implementado parcial | Contratos, XP/level MVP e save parcial vindos do consolidado PR-101 a PR-130; balanceamento final pendente. |
+| Damage Formula MVP | Implementado parcial | `DamageCalculator`, `DamageResult` e integracao melee MVP; status/elementos completos pendentes. |
+| Cave Procedural/Resources | Pendente | FASE9F pronta; proximo bloco recomendado PR-132 a PR-145. |
 | Cave Bestiary/Faction Locks | Especificado | FASE9G pronta; depende da base FASE9F para implementação real. |
-| Reconciliação pós PR-099 | Implementado parcial | PR-100 auditou estado real; PR-101+ pendentes. |
+| Reconciliação pós PR-099 | Implementado parcial | PR-100 auditado; PR-101 a PR-130 consolidados na `dev`; Unity ainda pendente. |
 
 ---
 
@@ -44,10 +45,11 @@
 | Fase 9A Town | PR-053 a PR-063 | Implementado MVP | Scene portals, TownScene generator, Pip, shop points | UI final de loja/diálogo pendente. |
 | Fase 9A Save Cross-Scene Hardening | PR-065+ | Implementado parcial | rebind/cache/save scene | Smoke test cross-scene pendente. |
 | Fase 9B Cave/Combat MVP | Log atual | Implementado MVP básico | CaveScene, portal, Slime/combat básico conforme `PROJECT_LOG.md` | Procedural/resources/checkpoints pendentes. |
-| Fase 9E Specs | Docs/specs | Especificado | UI/Hotbar, Damage/Status, Item Taxonomy, Save Migration, Level Up | Implementação pendente. |
-| Fase 9F Specs | Docs/specs | Especificado | Cave procedural/resources/encounters spec | Próximo bloco PR-170+. |
+| Fase 9E Specs | Docs/specs + MVP parcial | Implementado parcial | UI/Hotbar, Damage/Status, Item Taxonomy, Save Migration, Level Up | Contratos/MVP parcial implementados; UI final, status completos e migration robusta pendentes. |
+| Fase 9F Specs | Docs/specs | Pendente | Cave procedural/resources/encounters spec | Próximo bloco PR-132 a PR-145. |
 | Fase 9G Specs | Docs/specs | Especificado | Cave bestiary/faction locks/portal ecology spec | Depende de FASE9F procedural foundation. |
-| PR-100 pós PR-099 | PR-100 | Implementado | `docs/audits/PR100_POST_PR099_REPO_AUDIT.md` | PR-101 deve reconciliar branches/fixes sem merge automático. |
+| PR-100 pós PR-099 | PR-100 | Implementado | `docs/audits/PR100_POST_PR099_REPO_AUDIT.md` | Reconciliação seguinte foi consolidada em PR-101 a PR-130. |
+| PR-101 a PR-130 pós PR-099 | Consolidado | Implementado parcial | `docs/audits/PR101_PR099_BRANCH_RECONCILIATION.md`, `docs/audits/PR130_RECONCILIACAO_HANDOFF.md`, Tools/Equipment/Hotbar/Progression/Damage MVP | Unity e cenas ainda precisam validação. |
 
 ---
 
@@ -98,63 +100,37 @@ Observação: várias capacidades ainda são MVP/debug, não versão final de UX
 - Confirmar HUD não duplica após transições.
 - Confirmar referências runtime são rebindadas após troca de cena.
 
-### 4.2 FASE9E pendente
+### 4.2 FASE9E parcial / pendente
 
-- UI/Hotbar/Inventory/Equipment.
-- Damage/Elementos/Status/Fórmula única.
+- UI/Hotbar/Inventory/Equipment: implementado parcial; UI final e integração completa pendentes.
+- Damage/Elementos/Status/Fórmula única: fórmula MVP implementada; elementos/status completos pendentes.
 - Item Taxonomy/IDs.
 - Item examples/variations.
-- Save Schema/Migration.
-- Player Level Up/Progression.
+- Save Schema/Migration: save parcial implementado; migration robusta pendente.
+- Player Level Up/Progression: implementado parcial; balanceamento/UX completos pendentes.
 
-### 4.3 Reconciliação pós PR-099 pendente
+### 4.3 Reconciliação pós PR-099 implementada parcial
 
-- PR-101 — Reconciliar branches/fixes PR-099.
-- PR-102 — Corrigir compile/hardening do EnemyHealth.
-- PR-103 — Corrigir PlayerAttackController data-driven.
-- PR-104 — Corrigir EnemyContactDamage data-driven.
-- PR-105 — Corrigir EnemyChaseController data-driven.
-- PR-106 — Corrigir HitFlash e Knockback.
-- PR-107 — Corrigir EnemyDropSpawner.
-- PR-108 — Validar EnemyDataSO e asset do Slime.
-- PR-109 — Corrigir CreateMvpCaveScene combat wiring.
-- PR-110 — Corrigir CaveSceneRuntimeReferenceInstaller.
-- PR-111 — Corrigir DebugHud singleton cross-scene.
-- PR-112 — Corrigir SaveManager para CaveScene.
-- PR-113 — Consolidar validator Farm/Town/Cave.
-- PR-114 — Regenerar cenas Farm/Town/Cave.
-- PR-115 — Smoke test documentado Farm/Town/Cave.
-- PR-116 — Inventory/Item taxonomy audit.
-- PR-117 — Padronizar IDs cave/combat temporários.
-- PR-118 — Preparar Tool contracts mínimos.
-- PR-119 — EquipmentManager mínimo.
-- PR-120 — Seed/Tool selection debug mínimo.
-- PR-121 — Hotbar contracts sem UI final.
-- PR-122 — Inventory UI debug melhorado.
-- PR-123 — Damage formula MVP.
-- PR-124 — Integrar DamageCalculator ao melee.
-- PR-125 — Player progression contracts.
-- PR-126 — XP reward contracts para inimigos.
-- PR-127 — PlayerProgressionManager MVP.
-- PR-128 — Integrar XP por EnemyKilledEvent.
-- PR-129 — Save/load progression/equipment/hotbar.
-- PR-130 — Handoff pós reconciliação PR-099 → PR-129.
+- PR-101 a PR-130 foram consolidados na `dev`.
+- Evidência: auditorias PR-101/PR-116/PR-130, smoke test documentado, hardening combat, Tools/Equipment/Hotbar/Progression/Damage MVP e save parcial.
+- Pendência: validar Unity, regenerar cenas quando necessário e executar smoke test Farm/Town/Cave.
 
 ### 4.4 FASE9F pendente
 
-- PR-170 — Cave procedural contracts.
-- PR-171 — Cave procedural generator MVP.
-- PR-172 — Cave run regeneration on player defeat/KO.
-- PR-173 — Cave checkpoints a cada 15 níveis.
-- PR-174 — ResourceNode contracts com ferramenta, tier, stamina e fallback.
-- PR-175 — ResourceNode runtime MVP: Stone, CopperOre, CaveRootTree.
-- PR-176 — Cave save/load: seeds, current layer, deepest layer, checkpoints, depleted nodes.
-- PR-177 — Enemy spawn by CaveLevel com Slime especial colorido.
-- PR-178 — Loot tables para inimigos e nodes.
-- PR-179 — XP integration com EnemyLevel × DifficultyMultiplier.
-- PR-180 — Daily cave refresh apenas para `RespawnsDaily = true`.
-- PR-181 — Biome boss MVP no CaveLevel 15.
-- PR-182 — Cave validator.
+- PR-132 — Pre-flight Unity hardening antes da Cave Procedural.
+- PR-133 — Cave procedural contracts.
+- PR-134 — Cave procedural generator puro.
+- PR-135 — Cave generated level model/debug.
+- PR-136 — CaveLevelRuntimeController MVP.
+- PR-137 — CaveScene generator/wiring procedural.
+- PR-138 — CaveRunManager seeds.
+- PR-139 — Regeneração da run após KO/derrota.
+- PR-140 — Cave checkpoints service.
+- PR-141 — Entrada por checkpoint debug/MVP.
+- PR-142 — ResourceNode contracts.
+- PR-143 — ResourceNode rules/fallback.
+- PR-144 — ResourceNode runtime MVP.
+- PR-145 — Cave save/load + validator + handoff.
 
 ### 4.5 FASE9G pendente
 
@@ -172,20 +148,20 @@ Observação: várias capacidades ainda são MVP/debug, não versão final de UX
 ## 5. Próximo bloco recomendado
 
 ```text
-FASE9B-4 / FASE9C-0 - Reconciliação pós PR-099
+FASE9F-A - Cave Procedural Foundation
 ```
 
 Escopo recomendado do próximo bloco:
 
 | PR | Nome | Objetivo |
 |---:|---|---|
-| PR-101 | Reconciliar branches/fixes PR-099 | Comparar branches citadas e listar ja esta na dev, falta, conflita ou deve virar PR proprio. |
-| PR-102 | Corrigir compile/hardening do EnemyHealth | Validar `EnemyHealth`, `DamageRequest` e `KnockbackRequest`. |
-| PR-103 | Corrigir PlayerAttackController data-driven | Consolidar ataque melee por componente e `DamageRequest`. |
-| PR-104 | Corrigir EnemyContactDamage data-driven | Consolidar dano por contato usando `EnemyDataSO`. |
-| PR-105 | Corrigir EnemyChaseController data-driven | Garantir chase configuravel por `EnemyDataSO`. |
+| PR-132 | Pre-flight Unity hardening | Corrigir bloqueadores simples antes de cave procedural. |
+| PR-133 | Cave procedural contracts | Criar contratos base de cave procedural. |
+| PR-134 | Cave generator puro | Criar gerador determinístico por seeds e level. |
+| PR-135 | Cave generated level debug | Adicionar debug textual/ASCII do layout. |
+| PR-136 | CaveLevelRuntimeController MVP | Gerar CaveLevel 1 no runtime. |
 
-PR-170+ foi reclassificado como sequencia futura PR-131+ apos handoff PR-130. A branch local `feature/pr-170-cave-procedural-contracts` existe como codigo adiantado/candidato e deve ser reaproveitada depois, sem rollback destrutivo.
+PR-170+ foi reclassificado como sequencia futura PR-131+ apos handoff PR-130, mas a numeração operacional vigente agora é PR-132 a PR-145. A branch local `feature/pr-170-cave-procedural-contracts`, se existir, deve ser tratada como codigo adiantado/candidato e reaproveitada depois sem rollback destrutivo.
 
 FASE9G deve ser usada quando a implementação chegar em enemy ecology, faction locks, boss/miniboss candidates e bestiário procedural.
 
@@ -218,11 +194,14 @@ Regras para agentes:
 
 - Data: 2026-05-20
 - Responsável: Codex/ChatGPT
-- Branch: `feature/pr-100-audit-pos-pr099`
-- Tipo: auditoria documental/estatica PR-100
-# Atualizacao 2026-05-20 - PR-101 a PR-130 consolidado
+- Branch: `feature/pr-131-sync-status-pos-reconciliacao`
+- Tipo: sync documental PR-131 pos reconciliacao PR-101 a PR-130
 
-Status: Implementado parcial em branch `feature/pr-101-reconciliar-branches-pr099`.
+---
+
+## 8. Atualizacao 2026-05-20 - PR-101 a PR-130 consolidado
+
+Status: Implementado parcial consolidado na `dev`.
 
 Evidencia no repo:
 - `docs/audits/PR101_PR099_BRANCH_RECONCILIATION.md`

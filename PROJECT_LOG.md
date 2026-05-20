@@ -38,11 +38,20 @@
 
 Começar **FASE9F-A — Cave Procedural Foundation** com PRs pequenos, mantendo FASE9G como baseline de design para bestiário/faction locks quando a implementação de cave procedural chegar em enemy ecology.
 
-1. PR-170 — Cave procedural contracts.
-2. PR-171 — Cave procedural generator MVP.
-3. PR-172 — Cave run regeneration on player defeat/KO.
-4. PR-173 — Cave checkpoints a cada 15 níveis.
-5. PR-174 — ResourceNode contracts com ferramenta/tier/stamina/fallback.
+1. PR-132 — Pre-flight Unity hardening antes da Cave Procedural.
+2. PR-133 — Cave procedural contracts.
+3. PR-134 — Cave procedural generator puro.
+4. PR-135 — Cave generated level model/debug.
+5. PR-136 — CaveLevelRuntimeController MVP.
+6. PR-137 — CaveScene generator/wiring procedural.
+7. PR-138 — CaveRunManager seeds.
+8. PR-139 — Regeneração da run após KO/derrota.
+9. PR-140 — Cave checkpoints service.
+10. PR-141 — Entrada por checkpoint debug/MVP.
+11. PR-142 — ResourceNode contracts.
+12. PR-143 — ResourceNode rules/fallback.
+13. PR-144 — ResourceNode runtime MVP.
+14. PR-145 — Cave save/load + validator + handoff.
 
 Em paralelo, este chat pode continuar refinando novas specs. Specs aprovadas antigas não devem ser reescritas destrutivamente; correções entram como amendments/corrections.
 
@@ -411,3 +420,33 @@ Esse arquivo preserva o log operacional anterior inteiro antes da redução do l
 
 - Validar este commit no Unity.
 - Depois de aprovado/mergeado, retomar Cave Procedural Foundation como PR-131+.
+
+---
+
+## 2026-05-20 - PR-131 sync de tracking pos reconciliacao
+
+**Responsavel:** Codex/ChatGPT
+**Branch:** `feature/pr-131-sync-status-pos-reconciliacao`
+**Escopo:** sincronizar tracking documental depois do consolidado PR-101 a PR-130 na `dev`.
+
+### Alteracoes
+
+- Atualizado `docs/IMPLEMENTATION_STATUS.md` para marcar PR-101 a PR-130 como implementado parcial.
+- Equipment/Hotbar, Progression/LevelUp e Damage Formula MVP passaram de `Especificado` para `Implementado parcial`.
+- Cave Procedural/Resources permaneceu como pendente.
+- Atualizado handoff PR-130 para apontar a sequencia vigente PR-132 a PR-145.
+- Atualizado este log com o proximo bloco recomendado da FASE9F-A.
+
+### Testes
+
+- [x] Revisao estatica documental.
+- [ ] Unity nao executado; PR documental.
+
+### Pendencias / riscos
+
+- Validar Unity antes de avancar em PRs de codigo se houver erro vermelho local.
+- Executar PR-132 antes de iniciar contratos procedurais.
+
+### Proximo passo recomendado
+
+- PR-132 - Pre-flight Unity hardening antes da Cave Procedural.
