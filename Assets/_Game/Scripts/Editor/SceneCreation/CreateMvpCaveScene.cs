@@ -1,4 +1,7 @@
 using CindarsHope.Combat;
+using CindarsHope.Cave;
+using CindarsHope.Cave.Data;
+using CindarsHope.Cave.Runtime;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Data;
 using CindarsHope.Core.Time;
@@ -26,6 +29,7 @@ namespace CindarsHope.Editor.SceneCreation
         private const string PlayerDataPath = "Assets/_Game/Data/Config/PlayerData.asset";
         private const string ItemDatabasePath = "Assets/_Game/Data/Registries/ItemDatabase.asset";
         private const string EnemySlimeDataPath = "Assets/_Game/Data/Combat/Enemy_Slime.asset";
+        private const string CaveGenerationConfigPath = "Assets/_Game/Data/Cave/CaveGenerationConfig_Default.asset";
         private const string BuiltinSpritePath = "UI/Skin/UISprite.psd";
 
         [MenuItem("CindarsHope/Scenes/Create MVP CaveScene")]
@@ -44,6 +48,7 @@ namespace CindarsHope.Editor.SceneCreation
         {
             EnsureFolder("Assets/_Game", "Data");
             EnsureFolder("Assets/_Game/Data", "Combat");
+            EnsureFolder("Assets/_Game/Data", "Cave");
             EnsureFolder("Assets/_Game", "Scenes");
 
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
@@ -62,6 +67,7 @@ namespace CindarsHope.Editor.SceneCreation
             CreateGround();
             CreateBounds();
             CreateCavePortals();
+            CreateCaveRuntime();
             CreateEnemies(playerTransform);
             CreateEnemyDropSpawner(inventoryManager);
             CreateDebugHud(playerManager, inventoryManager, hungerManager, playerTransform.GetComponent<InteractionSystem>(), timeManager, saveManager);
@@ -552,6 +558,59 @@ namespace CindarsHope.Editor.SceneCreation
             SetReference(serializedDropSpawner, "_inventoryManager", inventoryManager);
             serializedDropSpawner.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(dropSpawner);
+        }
+
+        private static void CreateCaveRuntime()
+        {
+            var runtimeObject = new GameObject("CaveRuntime");
+            runtimeObject.transform.position = Vector3.zero;
+
+            var runManager = runtimeObject.AddComponent<CaveRunManager>();
+            var controller = runtimeObject.AddComponent<CaveLevelRuntimeController>();
+            var config = EnsureCaveGenerationConfig();
+
+            var serializedRunManager = new SerializedObject(runManager);
+            serializedRunManager.FindProperty("_defaultWorldSeed").stringValue = "cindars_world_seed_001";
+            serializedRunManager.FindProperty("_currentCaveLevel").intValue = 1;
+            serializedRunManager.FindProperty("_deepestLayerReached").intValue = 1;
+            serializedRunManager.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(runManager);
+
+            var serializedController = new SerializedObject(controller);
+            SetReference(serializedController, "_runManager", runManager);
+            SetReference(serializedController, "_generationConfig", config);
+            serializedController.FindProperty("_defaultBiomeId").stringValue = "biome_cave_earth";
+            serializedController.FindProperty("_logGeneratedLayout").boolValue = true;
+            serializedController.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(controller);
+        }
+
+        private static CaveGenerationConfigSO EnsureCaveGenerationConfig()
+        {
+            var existingConfig = AssetDatabase.LoadAssetAtPath<CaveGenerationConfigSO>(CaveGenerationConfigPath);
+            if (existingConfig != null)
+            {
+                return existingConfig;
+            }
+
+            var config = ScriptableObject.CreateInstance<CaveGenerationConfigSO>();
+            config.Id = "cave_generation_default";
+            config.TargetWidth = 80;
+            config.TargetHeight = 48;
+            config.MinRooms = 8;
+            config.MaxRooms = 14;
+            config.MinRoomWidth = 6;
+            config.MaxRoomWidth = 14;
+            config.MinRoomHeight = 4;
+            config.MaxRoomHeight = 10;
+            config.ExtraConnectionChancePercent = 20;
+            config.EnemyPointCount = 6;
+            config.ResourcePointCount = 8;
+
+            AssetDatabase.CreateAsset(config, CaveGenerationConfigPath);
+            AssetDatabase.SaveAssets();
+            Debug.Log($"Created CaveGenerationConfigSO at {CaveGenerationConfigPath}.");
+            return config;
         }
 
         private static void CreateSceneRuntimeInstaller(Transform playerTransform)

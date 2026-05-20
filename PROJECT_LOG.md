@@ -573,3 +573,9 @@ Esse arquivo preserva o log operacional anterior inteiro antes da redução do l
 - Criado `CaveLevelRuntimeController`.
 - O controller gera o nivel atual no `Start`, loga seeds/contagens/layout ASCII e publica `CaveLevelEnteredEvent`.
 - Expostos contadores de rooms, enemy points e resource points para HUD/debug.
+
+### Marco PR-144 - Wiring na CaveScene
+
+- Atualizado `CreateMvpCaveScene` para criar `CaveRuntime` com `CaveRunManager` e `CaveLevelRuntimeController`.
+- O gerador editorial cria/usa `Assets/_Game/Data/Cave/CaveGenerationConfig_Default.asset` quando o menu for executado no Unity.
+- Cena e asset fisicos ainda dependem de executar o menu no Editor.
