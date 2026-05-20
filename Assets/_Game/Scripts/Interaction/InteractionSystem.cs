@@ -11,7 +11,7 @@ namespace CindarsHope.Interaction
         [SerializeField] private Collider2D _interactionTrigger;
         [SerializeField] private KeyCode _interactKey = KeyCode.E;
 
-        [SerializeField] private float _maxInteractionDistance = 0.15f;
+        [SerializeField] private float _maxInteractionDistance = 0.85f;
         private readonly List<InteractionCandidate> _candidates = new List<InteractionCandidate>();
         private bool _missingTriggerWarningLogged;
         private bool _lastPublishedHasCandidate;
@@ -88,7 +88,7 @@ namespace CindarsHope.Interaction
             PublishPromptIfChanged();
         }
 
-        private void OnTriggerEnter2D(Collider2D other)
+        public void RegisterCandidate(Collider2D other)
         {
             var interactable = GetInteractable(other);
             if (interactable == null || ContainsCandidate(interactable))
@@ -100,7 +100,7 @@ namespace CindarsHope.Interaction
             PublishPromptIfChanged();
         }
 
-        private void OnTriggerExit2D(Collider2D other)
+        public void UnregisterCandidate(Collider2D other)
         {
             var interactable = GetInteractable(other);
             if (interactable == null && other == null)
@@ -111,7 +111,6 @@ namespace CindarsHope.Interaction
             RemoveCandidate(interactable, other);
             PublishPromptIfChanged();
         }
-
         private void PublishPromptIfChanged()
         {
             var candidate = GetBestCandidate();

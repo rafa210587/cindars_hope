@@ -261,7 +261,11 @@ namespace CindarsHope.Editor.SceneCreation
 
             var playerController = player.AddComponent<PlayerController>();
             player.AddComponent<PlayerManager>();
-            player.AddComponent<InteractionSystem>();
+
+            var interactionSystem = player.AddComponent<InteractionSystem>();
+            var interactionTrigger = CreateInteractionTrigger(player.transform, interactionSystem);
+            ConfigureInteractionSystem(interactionSystem, interactionTrigger);
+
             var playerAttackController = player.AddComponent<PlayerAttackController>();
             var hitFlash = player.AddComponent<HitFlashController>();
             var knockback = player.AddComponent<KnockbackController>();
@@ -272,6 +276,32 @@ namespace CindarsHope.Editor.SceneCreation
             ConfigureKnockbackController(knockback, rigidbody);
 
             return player.transform;
+        }
+
+        private static CircleCollider2D CreateInteractionTrigger(Transform parent, InteractionSystem interactionSystem)
+        {
+            var triggerObject = new GameObject("InteractionTrigger");
+            triggerObject.transform.SetParent(parent);
+            triggerObject.transform.localPosition = Vector3.zero;
+            triggerObject.transform.localRotation = Quaternion.identity;
+            triggerObject.transform.localScale = Vector3.one;
+
+            var trigger = triggerObject.AddComponent<CircleCollider2D>();
+            trigger.isTrigger = true;
+            trigger.radius = 0.65f;
+
+            var relay = triggerObject.AddComponent<InteractionTriggerRelay>();
+            relay.Configure(interactionSystem);
+
+            return trigger;
+        }
+
+        private static void ConfigureInteractionSystem(InteractionSystem interactionSystem, Collider2D interactionTrigger)
+        {
+            var serializedInteraction = new SerializedObject(interactionSystem);
+            SetReference(serializedInteraction, "_interactionTrigger", interactionTrigger);
+            serializedInteraction.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(interactionSystem);
         }
 
         private static void CreateCaveSpawnPoints(Transform playerTransform)

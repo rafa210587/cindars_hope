@@ -267,14 +267,13 @@ namespace CindarsHope.Editor.SceneCreation
             var playerController = player.AddComponent<PlayerController>();
             ConfigurePlayerController(playerController, rigidbody);
 
-            var interactionTrigger = CreateInteractionTrigger(player.transform);
             var interactionSystem = player.AddComponent<InteractionSystem>();
+            var interactionTrigger = CreateInteractionTrigger(player.transform, interactionSystem);
             ConfigureInteractionSystem(interactionSystem, interactionTrigger);
-
             return player.transform;
         }
 
-        private static CircleCollider2D CreateInteractionTrigger(Transform parent)
+        private static CircleCollider2D CreateInteractionTrigger(Transform parent, InteractionSystem interactionSystem)
         {
             var triggerObject = new GameObject("InteractionTrigger");
             triggerObject.transform.SetParent(parent);
@@ -284,7 +283,10 @@ namespace CindarsHope.Editor.SceneCreation
 
             var trigger = triggerObject.AddComponent<CircleCollider2D>();
             trigger.isTrigger = true;
-            trigger.radius = 0.0005f;
+            trigger.radius = 0.65f;
+
+            var relay = triggerObject.AddComponent<InteractionTriggerRelay>();
+            relay.Configure(interactionSystem);
 
             return trigger;
         }
