@@ -285,6 +285,7 @@ Evidencia incremental:
 - PR-148: `ResourceNodeDataSO`, `ResourceNodeDatabaseSO` e `ResourceNodeDepletedEvent` criados.
 - PR-149: `ResourceNodeRules` e resultados puros de interacao/tool check criados.
 - PR-150: `ResourceNode` runtime MVP interagivel com ferramenta/tier/fallback e deplecao.
+- PR-151: `CreateMvpCaveScene` materializa ResourceNodes debug e cria dados/itens minimos ao regenerar a CaveScene.
 
 Pendencias reais:
 - Unity ainda precisa compilar/validar.

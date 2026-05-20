@@ -1,6 +1,7 @@
 using CindarsHope.Combat;
 using CindarsHope.Cave;
 using CindarsHope.Cave.Data;
+using CindarsHope.Cave.Resources;
 using CindarsHope.Cave.Runtime;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Data;
@@ -8,6 +9,7 @@ using CindarsHope.Core.Time;
 using CindarsHope.Economy;
 using CindarsHope.Equipment;
 using CindarsHope.Inventory;
+using CindarsHope.Inventory.Data;
 using CindarsHope.Interaction;
 using CindarsHope.Player;
 using CindarsHope.Player.Data;
@@ -30,6 +32,11 @@ namespace CindarsHope.Editor.SceneCreation
         private const string ItemDatabasePath = "Assets/_Game/Data/Registries/ItemDatabase.asset";
         private const string EnemySlimeDataPath = "Assets/_Game/Data/Combat/Enemy_Slime.asset";
         private const string CaveGenerationConfigPath = "Assets/_Game/Data/Cave/CaveGenerationConfig_Default.asset";
+        private const string ResourceNodeStonePath = "Assets/_Game/Data/Cave/ResourceNode_Stone.asset";
+        private const string ResourceNodeCopperPath = "Assets/_Game/Data/Cave/ResourceNode_Copper.asset";
+        private const string ResourceNodeCaveRootTreePath = "Assets/_Game/Data/Cave/ResourceNode_CaveRootTree.asset";
+        private const string ItemStonePath = "Assets/_Game/Data/Items/Item_Material_Stone.asset";
+        private const string ItemCopperOrePath = "Assets/_Game/Data/Items/Item_Ore_Copper.asset";
         private const string BuiltinSpritePath = "UI/Skin/UISprite.psd";
 
         [MenuItem("CindarsHope/Scenes/Create MVP CaveScene")]
@@ -68,6 +75,7 @@ namespace CindarsHope.Editor.SceneCreation
             CreateBounds();
             CreateCavePortals();
             var caveRuntime = CreateCaveRuntime();
+            CreateResourceNodes(inventoryManager, bootstrap.GetComponent<EquipmentManager>(), caveRuntime.runManager);
             CreateEnemies(playerTransform);
             CreateEnemyDropSpawner(inventoryManager);
             CreateDebugHud(playerManager, inventoryManager, hungerManager, playerTransform.GetComponent<InteractionSystem>(), timeManager, saveManager);
@@ -619,6 +627,144 @@ namespace CindarsHope.Editor.SceneCreation
             AssetDatabase.SaveAssets();
             Debug.Log($"Created CaveGenerationConfigSO at {CaveGenerationConfigPath}.");
             return config;
+        }
+
+        private static void CreateResourceNodes(InventoryManager inventoryManager, EquipmentManager equipmentManager, CaveRunManager runManager)
+        {
+            EnsureCaveResourceData();
+
+            var parent = new GameObject("ResourceNodes");
+            parent.transform.position = Vector3.zero;
+
+            CreateResourceNode(parent.transform, "StoneNode_00", new Vector3(-4f, 1f, 0f), ResourceNodeStonePath, new Color(0.45f, 0.45f, 0.5f), inventoryManager, equipmentManager, runManager);
+            CreateResourceNode(parent.transform, "StoneNode_01", new Vector3(-5.5f, -1f, 0f), ResourceNodeStonePath, new Color(0.45f, 0.45f, 0.5f), inventoryManager, equipmentManager, runManager);
+            CreateResourceNode(parent.transform, "CopperNode_00", new Vector3(-2.5f, -2f, 0f), ResourceNodeCopperPath, new Color(0.72f, 0.38f, 0.18f), inventoryManager, equipmentManager, runManager);
+            CreateResourceNode(parent.transform, "CaveRootTree_00", new Vector3(5f, 1.5f, 0f), ResourceNodeCaveRootTreePath, new Color(0.36f, 0.25f, 0.15f), inventoryManager, equipmentManager, runManager);
+        }
+
+        private static void CreateResourceNode(
+            Transform parent,
+            string name,
+            Vector3 position,
+            string nodeDataPath,
+            Color color,
+            InventoryManager inventoryManager,
+            EquipmentManager equipmentManager,
+            CaveRunManager runManager)
+        {
+            var nodeObject = new GameObject(name);
+            nodeObject.transform.SetParent(parent);
+            nodeObject.transform.position = position;
+
+            var spriteRenderer = nodeObject.AddComponent<SpriteRenderer>();
+            spriteRenderer.sprite = GetBuiltinSprite();
+            spriteRenderer.color = color;
+            spriteRenderer.sortingOrder = 1;
+            TrySetSortingLayer(spriteRenderer, "Items", spriteRenderer.sortingOrder);
+
+            var collider = nodeObject.AddComponent<BoxCollider2D>();
+            collider.isTrigger = true;
+            collider.size = Vector2.one;
+
+            var node = nodeObject.AddComponent<ResourceNode>();
+            var nodeData = AssetDatabase.LoadAssetAtPath<ResourceNodeDataSO>(nodeDataPath);
+            node.Configure(name, nodeData, inventoryManager, equipmentManager, runManager, spriteRenderer);
+            EditorUtility.SetDirty(node);
+        }
+
+        private static void EnsureCaveResourceData()
+        {
+            var stoneItem = EnsureItemData(ItemStonePath, "item_material_stone", "Stone", ItemCategory.Material, 99);
+            var copperItem = EnsureItemData(ItemCopperOrePath, "ore_copper", "Copper Ore", ItemCategory.Material, 99);
+            var itemDatabase = AssetDatabase.LoadAssetAtPath<ItemDatabaseSO>(ItemDatabasePath);
+            if (itemDatabase != null)
+            {
+                EnsureItemInDatabase(itemDatabase, stoneItem);
+                EnsureItemInDatabase(itemDatabase, copperItem);
+            }
+
+            EnsureResourceNodeData(ResourceNodeStonePath, "resource_stone", "Stone", Tools.ToolType.Pickaxe, Tools.ToolTier.Basic, "item_material_stone", 1, "item_material_stone", 1, false);
+            EnsureResourceNodeData(ResourceNodeCopperPath, "resource_copper_ore", "Copper Ore", Tools.ToolType.Pickaxe, Tools.ToolTier.Basic, "ore_copper", 1, "item_material_stone", 1, false);
+            EnsureResourceNodeData(ResourceNodeCaveRootTreePath, "resource_cave_root_tree", "Cave Root Tree", Tools.ToolType.Axe, Tools.ToolTier.Basic, "item_wood", 1, string.Empty, 0, false);
+        }
+
+        private static ItemDataSO EnsureItemData(string path, string id, string displayName, ItemCategory category, int maxStack)
+        {
+            var existingItem = AssetDatabase.LoadAssetAtPath<ItemDataSO>(path);
+            if (existingItem != null)
+            {
+                return existingItem;
+            }
+
+            var item = ScriptableObject.CreateInstance<ItemDataSO>();
+            item.Id = id;
+            item.DisplayName = displayName;
+            item.Description = $"{displayName} cave debug item.";
+            item.Category = category;
+            item.MaxStack = maxStack;
+            item.BaseValue = 1;
+            AssetDatabase.CreateAsset(item, path);
+            AssetDatabase.SaveAssets();
+            return item;
+        }
+
+        private static void EnsureItemInDatabase(ItemDatabaseSO itemDatabase, ItemDataSO item)
+        {
+            if (itemDatabase == null || item == null)
+            {
+                return;
+            }
+
+            var serializedDatabase = new SerializedObject(itemDatabase);
+            var itemsProperty = serializedDatabase.FindProperty("_items");
+            for (var i = 0; i < itemsProperty.arraySize; i++)
+            {
+                if (itemsProperty.GetArrayElementAtIndex(i).objectReferenceValue == item)
+                {
+                    return;
+                }
+            }
+
+            itemsProperty.InsertArrayElementAtIndex(itemsProperty.arraySize);
+            itemsProperty.GetArrayElementAtIndex(itemsProperty.arraySize - 1).objectReferenceValue = item;
+            serializedDatabase.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(itemDatabase);
+            AssetDatabase.SaveAssets();
+        }
+
+        private static void EnsureResourceNodeData(
+            string path,
+            string id,
+            string displayName,
+            Tools.ToolType requiredTool,
+            Tools.ToolTier requiredTier,
+            string primaryDropItemId,
+            int primaryDropAmount,
+            string fallbackItemId,
+            int fallbackAmount,
+            bool fallbackDepletesNode)
+        {
+            var existingNode = AssetDatabase.LoadAssetAtPath<ResourceNodeDataSO>(path);
+            if (existingNode != null)
+            {
+                return;
+            }
+
+            var node = ScriptableObject.CreateInstance<ResourceNodeDataSO>();
+            node.Id = id;
+            node.DisplayName = displayName;
+            node.RequiredToolType = requiredTool;
+            node.RequiredToolTier = requiredTier;
+            node.StaminaCost = 1;
+            node.HitsRequired = 2;
+            node.PrimaryDropItemId = primaryDropItemId;
+            node.PrimaryDropAmount = primaryDropAmount;
+            node.RespawnsDaily = false;
+            node.FallbackItemId = fallbackItemId;
+            node.FallbackAmount = fallbackAmount;
+            node.FallbackDepletesNode = fallbackDepletesNode;
+            AssetDatabase.CreateAsset(node, path);
+            AssetDatabase.SaveAssets();
         }
 
         private static void CreateSceneRuntimeInstaller(Transform playerTransform, CaveRunManager runManager, CaveLevelRuntimeController controller)

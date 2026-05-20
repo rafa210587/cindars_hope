@@ -614,3 +614,9 @@ Esse arquivo preserva o log operacional anterior inteiro antes da redução do l
 - Criado `ResourceNode` interagivel por `IInteractable`.
 - Node consulta `EquipmentManager`, entrega drop principal/fallback e publica `ResourceNodeDepletedEvent`.
 - Node registra deplecao no `CaveRunManager` quando o resultado deve depletar.
+
+### Marco PR-151 - ResourceNodes debug na CaveScene
+
+- `CreateMvpCaveScene` cria nodes debug Stone, Copper e CaveRootTree ao regenerar a cena.
+- O gerador editorial cria assets `ResourceNode_Stone`, `ResourceNode_Copper`, `ResourceNode_CaveRootTree` e itens mínimos `item_material_stone`/`ore_copper` quando necessário.
+- A cena `.unity` e os `.asset` físicos dependem de executar o menu no Unity.
