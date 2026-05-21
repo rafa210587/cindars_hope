@@ -140,6 +140,28 @@ Ao criar nova spec aprovada:
 
 ---
 
+## Regra FASE9F — Cave Stable Run
+
+Antes de qualquer alteração em Cave procedural, agentes devem ler:
+
+- `docs/amendments/FASE9F_CAVE_STABLE_RUN_AND_REPLAY_AMENDMENT_v1.0.md`
+- `specs/FASE9F_CAVE_RESOURCES_ENCOUNTERS/amendments/stable_run_replay.md`
+- `docs/roadmap/FASE9F_CAVE_STABLE_RUN_ROADMAP_PR170_192.md`
+- `docs/audits/PR170_192_CAVE_STABLE_RUN_PRE_IMPLEMENTATION_AUDIT.md`
+
+Regra central:
+
+- `CaveLevel` já visitado dentro da mesma `CaveRunSeed` deve ser carregado por snapshot.
+- `ForwardExit` e `BackExit` não podem regenerar layout, composição de inimigos ou composição de resource nodes.
+- Procedural só muda em novo jogo, KO/morte/derrota do personagem ou comando debug explícito.
+- Enemy count por snapshot novo de level deve ficar entre `12` e `20`.
+- Resource node count por snapshot novo de level deve ficar entre `4` e `10`.
+- Revisitar level não pode rerollar inimigos, resource nodes, layout, entrada ou saída.
+- `SaveData` de cave deve persistir snapshots com tipos simples e sem Unity refs.
+- `UnityEngine.Camera` deve ser usado explicitamente quando o tipo for a câmera da Unity, para evitar colisão com `CindarsHope.Camera`.
+
+---
+
 ## Convenções de nomenclatura
 
 | Tipo | Convenção | Exemplo |
