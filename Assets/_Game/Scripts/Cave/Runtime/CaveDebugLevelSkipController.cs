@@ -2,7 +2,7 @@ using CindarsHope.Cave.Runtime;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace CindarsHope.Cave.Debug
+namespace CindarsHope.Cave.Runtime
 {
     [DisallowMultipleComponent]
     public sealed class CaveDebugLevelSkipController : MonoBehaviour
@@ -14,6 +14,11 @@ namespace CindarsHope.Cave.Debug
         [SerializeField] private bool _bypassBossGateForDebugSkip = true;
 
         private string _lastDebugAction = "none";
+
+        private void Start()
+        {
+            Debug.Log($"CaveDebugLevelSkipController: enabled={_enableDebugLevelSkip}, key={_nextLevelKey}, bypassBossGate={_bypassBossGateForDebugSkip}.", this);
+        }
 
         private void Update()
         {

@@ -178,6 +178,25 @@ Regra central:
 
 ---
 
+## Regra de namespace — Debug PROIBIDO
+
+**NUNCA** criar namespace chamado `Debug` dentro de `CindarsHope.*`.
+
+**Proibido**:
+- `namespace CindarsHope.Cave.Debug`
+- `namespace CindarsHope.Core.Debug`
+- `namespace CindarsHope.UI.Debug`
+
+**Motivo**: Colide com `UnityEngine.Debug` e quebra todas as chamadas `Debug.Log()`, `Debug.LogWarning()`, `Debug.LogError()` dentro do namespace pai e subnamespaces.
+
+**Usar nomes alternativos**:
+- `CindarsHope.Cave.Runtime` (para debug tools de runtime)
+- `CindarsHope.Cave.DebugTools` (alternativa explícita)
+- `CindarsHope.Cave.Diagnostics` (para validadores/auditors)
+- `CindarsHope.Cave.Editor` (para editor-only scripts)
+
+---
+
 ## Estrutura de pastas
 
 ```text

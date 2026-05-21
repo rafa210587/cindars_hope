@@ -78,11 +78,16 @@ namespace CindarsHope.Editor.SceneCreation
             // CreateCavePortals();
             var equipmentManager = bootstrap.GetComponent<EquipmentManager>();
             var caveRuntime = CreateCaveRuntime(playerTransform, inventoryManager, equipmentManager);
+            var debugSkipController = playerTransform.gameObject.GetComponent<CaveDebugLevelSkipController>();
+            if (debugSkipController == null)
+            {
+                debugSkipController = caveRuntime.controller.gameObject.GetComponent<CaveDebugLevelSkipController>();
+            }
             // CreateResourceNodes(inventoryManager, equipmentManager, caveRuntime.runManager);
             // CreateEnemies(playerTransform);
             CreateEnemyDropSpawner(inventoryManager);
             CreateDebugHud(playerManager, inventoryManager, hungerManager, playerTransform.GetComponent<InteractionSystem>(), timeManager, saveManager);
-            CreateSceneRuntimeInstaller(playerTransform, caveRuntime.runManager, caveRuntime.controller);
+            CreateSceneRuntimeInstaller(playerTransform, caveRuntime.runManager, caveRuntime.controller, debugSkipController);
             CreateMainCamera(playerTransform);
             ConfigureBootstrap(bootstrap, playerTransform);
             
@@ -626,6 +631,26 @@ namespace CindarsHope.Editor.SceneCreation
             serializedController.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(controller);
 
+            // Create Debug Level Skip Controller
+            var debugSkipController = runtimeObject.AddComponent<CaveDebugLevelSkipController>();
+            var serializedDebugSkip = new SerializedObject(debugSkipController);
+            SetReference(serializedDebugSkip, "_caveRunManager", runManager);
+            SetReference(serializedDebugSkip, "_levelController", controller);
+            serializedDebugSkip.FindProperty("_enableDebugLevelSkip").boolValue = true;
+            serializedDebugSkip.FindProperty("_nextLevelKey").enumValueIndex = (int)KeyCode.P;
+            serializedDebugSkip.FindProperty("_bypassBossGateForDebugSkip").boolValue = true;
+            serializedDebugSkip.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(debugSkipController);
+
+            // Create Player Path Confinement
+            var pathConfinement = playerTransform.gameObject.AddComponent<CavePlayerPathConfinement>();
+            var serializedConfinement = new SerializedObject(pathConfinement);
+            SetReference(serializedConfinement, "_playerTransform", playerTransform);
+            SetReference(serializedConfinement, "_levelController", controller);
+            serializedConfinement.FindProperty("_enableConfinement").boolValue = true;
+            serializedConfinement.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(pathConfinement);
+
             return (runManager, controller);
         }
 
@@ -966,7 +991,7 @@ namespace CindarsHope.Editor.SceneCreation
             AssetDatabase.SaveAssets();
         }
 
-        private static void CreateSceneRuntimeInstaller(Transform playerTransform, CaveRunManager runManager, CaveLevelRuntimeController controller)
+        private static void CreateSceneRuntimeInstaller(Transform playerTransform, CaveRunManager runManager, CaveLevelRuntimeController controller, CaveDebugLevelSkipController debugSkipController = null)
         {
             var runtimeRefObject = new GameObject("SceneRuntimeReferences");
             runtimeRefObject.transform.position = Vector3.zero;
@@ -976,6 +1001,10 @@ namespace CindarsHope.Editor.SceneCreation
             SetReference(serializedInstaller, "_playerTransform", playerTransform);
             SetReference(serializedInstaller, "_caveRunManager", runManager);
             SetReference(serializedInstaller, "_caveLevelRuntimeController", controller);
+            if (debugSkipController != null)
+            {
+                SetReference(serializedInstaller, "_caveDebugLevelSkipController", debugSkipController);
+            }
             serializedInstaller.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(installer);
         }

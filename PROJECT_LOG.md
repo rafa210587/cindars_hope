@@ -196,11 +196,17 @@ Após FASE9F merge:
 
 ## 18. Atualizacao 2026-05-21 - PR-193-202 FASE9F Correções: Boss Gate, Checkpoint, Confinement, Debug Skip
 
-Status: Implementado completo (código) — Validação Unity Play Mode pendente.
+Status: Implementado completo (código) — **Namespace collision corrigido** — Validação Unity Play Mode pendente.
 
 **Branch**: `feature/fix-pr193-202-boss-gate-checkpoint-confinement-debug-skip`
 
 **Escopo**: 7 correções críticas no pacote PR-193-202 para resolver integrações incompletas e adicionar debug utilities.
+
+**Hotfix de namespace collision (2026-05-21 pós-implementação)**:
+- **Problema**: Namespace `CindarsHope.Cave.Debug` colide com `UnityEngine.Debug`, quebrando todas as chamadas `Debug.Log()` na cave
+- **Solução**: Renomeado para `CindarsHope.Cave.Runtime`
+- **Arquivos afetados**: `CaveDebugLevelSkipController.cs`, `DebugHud.cs`, `CaveSceneRuntimeReferenceInstaller.cs`
+- **Regra adicionada em CLAUDE.md**: Namespace `Debug` nunca permitido dentro de `CindarsHope.*`
 
 **Correções implementadas**:
 

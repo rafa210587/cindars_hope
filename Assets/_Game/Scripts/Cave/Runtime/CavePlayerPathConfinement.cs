@@ -31,6 +31,7 @@ namespace CindarsHope.Cave.Runtime
             }
 
             _lastValidPosition = _playerTransform.position;
+            Debug.Log($"CavePlayerPathConfinement: enabled. Player={_playerTransform.name}, LevelController={_levelController.name}.", this);
         }
 
         private void LateUpdate()
