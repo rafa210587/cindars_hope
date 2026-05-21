@@ -1,4 +1,5 @@
 using CindarsHope.Combat;
+using CindarsHope.Core;
 using CindarsHope.Core.Events;
 using UnityEngine;
 
