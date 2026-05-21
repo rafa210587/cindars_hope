@@ -81,37 +81,66 @@ If refs are null in Inspector, attempts `GetComponent` on same GameObject.
 
 ---
 
-## Correction 2: Confinement with Tolerance
+## Correction 2: Confinement with Per-Axis Rollback
 
 ### File: `CavePlayerPathConfinement.cs`
 
 #### New Fields
 ```csharp
-[SerializeField] private float _playerHalfWidth = 0.15f;
-[SerializeField] private float _playerHalfHeight = 0.25f;
-[SerializeField] private float _wallContactTolerance = 0.10f;
+[SerializeField] private float _horizontalHalfWidth = 0.03f;
+[SerializeField] private float _verticalHalfHeight = 0.12f;
+[SerializeField] private bool _useDiagonalSamples = false;
+[SerializeField] private bool _logFailedSample = false;
 ```
 
-#### Start() — Enhanced Logging
+#### ResolveConstrainedPosition() — Per-Axis Correction Strategy
 ```csharp
-Debug.Log($"CavePlayerPathConfinement: enabled. Player={_playerTransform.name}, LevelController={_levelController.name}, halfWidth={_playerHalfWidth}, halfHeight={_playerHalfHeight}, tolerance={_wallContactTolerance}.", this);
+private Vector3 ResolveConstrainedPosition(Vector3 currentPosition, CaveGeneratedLevel level)
+{
+    if (IsWorldPositionAllowed(currentPosition, level))
+    {
+        _lastValidPosition = currentPosition;
+        return currentPosition;
+    }
+
+    var xRollback = new Vector3(_lastValidPosition.x, currentPosition.y, currentPosition.z);
+    if (IsWorldPositionAllowed(xRollback, level))
+    {
+        _lastValidPosition = xRollback;
+        return xRollback;
+    }
+
+    var yRollback = new Vector3(currentPosition.x, _lastValidPosition.y, currentPosition.z);
+    if (IsWorldPositionAllowed(yRollback, level))
+    {
+        _lastValidPosition = yRollback;
+        return yRollback;
+    }
+
+    return _lastValidPosition;
+}
 ```
 
-#### IsWorldPositionAllowed() — Multi-Point Sampling
+#### IsWorldPositionAllowed() — Multi-Point Sampling (No Diagonals by Default)
 ```csharp
 private bool IsWorldPositionAllowed(Vector3 worldPos, CaveGeneratedLevel level)
 {
-    var xOffset = Mathf.Max(0f, _playerHalfWidth - _wallContactTolerance);
-    var yOffset = Mathf.Max(0f, _playerHalfHeight - _wallContactTolerance);
-
-    var samples = new[]
+    var samples = new List<Vector3>
     {
-        worldPos,                              // Center
-        worldPos + Vector3.left * xOffset,     // Left
-        worldPos + Vector3.right * xOffset,    // Right
-        worldPos + Vector3.up * yOffset,       // Up
-        worldPos + Vector3.down * yOffset      // Down
+        worldPos,
+        worldPos + Vector3.left * _horizontalHalfWidth,
+        worldPos + Vector3.right * _horizontalHalfWidth,
+        worldPos + Vector3.up * _verticalHalfHeight,
+        worldPos + Vector3.down * _verticalHalfHeight
     };
+
+    if (_useDiagonalSamples)
+    {
+        samples.Add(worldPos + new Vector3(-_horizontalHalfWidth, _verticalHalfHeight, 0));
+        samples.Add(worldPos + new Vector3(_horizontalHalfWidth, _verticalHalfHeight, 0));
+        samples.Add(worldPos + new Vector3(-_horizontalHalfWidth, -_verticalHalfHeight, 0));
+        samples.Add(worldPos + new Vector3(_horizontalHalfWidth, -_verticalHalfHeight, 0));
+    }
 
     foreach (var sample in samples)
     {
@@ -126,32 +155,33 @@ private bool IsWorldPositionAllowed(Vector3 worldPos, CaveGeneratedLevel level)
 }
 ```
 
-#### LateUpdate() — Updated Check
+#### LateUpdate() — Resolution Flow
 ```csharp
-if (IsWorldPositionAllowed(playerWorldPos, generatedLevel))
-{
-    _lastValidPosition = playerWorldPos;
-    return;
-}
+var playerWorldPos = _playerTransform.position;
+var resolved = ResolveConstrainedPosition(playerWorldPos, generatedLevel);
 
-_playerTransform.position = _lastValidPosition;
-
-if (Time.time - _lastLogTime > LogRateLimitSeconds)
+if (resolved != playerWorldPos)
 {
-    var playerGridPos = WorldToGridPosition(playerWorldPos, generatedLevel);
-    Debug.Log($"CavePlayerPathConfinement: Confined player. Current={playerWorldPos}, LastValid={_lastValidPosition}, Grid={playerGridPos}, Reason=outside walkable samples.", this);
-    _lastLogTime = Time.time;
+    _playerTransform.position = resolved;
+    // ... logging if rate limit exceeded
 }
 ```
 
-#### Method Rename
-`IsPositionWalkable()` → `IsGridWalkable()` for clarity (works with grid, not world position)
+#### WorldToGridPosition() — Compatibility with Materializer
+Uses `Mathf.RoundToInt()` to match `GridToWorld()` formula:
+- GridToWorld: `world = new Vector3(grid.x - width * 0.5f, grid.y - height * 0.5f, 0)`
+- WorldToGrid: `gridX = Mathf.RoundToInt(world.x + width * 0.5f)`
 
 #### Rationale
-- **Multi-point sampling**: Instead of checking only player center, samples 5 points: center + 4 cardinal sides
-- **Tolerance buffer**: `_wallContactTolerance` lets player get closer to walls by reducing the sampled boundary
-- **Configurability**: Can adjust `_playerHalfWidth`, `_playerHalfHeight`, `_wallContactTolerance` per level if needed
-- **Better edge detection**: Catches walls at corners/edges that a single center point might miss
+- **Per-axis correction**: Instead of always rolling back fully to `_lastValidPosition`, tries:
+  1. Keep current Y, rollback X only
+  2. Keep current X, rollback Y only
+  3. Only if both fail, rollback both
+- **Allows sliding**: Player can slide along walls naturally instead of being pushed far back
+- **Smaller boundary**: `horizontalHalfWidth=0.03` (was 0.15) allows player closer to lateral walls
+- **Vertical reach**: `verticalHalfHeight=0.12` (was 0.25) allows approaching top/bottom walls
+- **No diagonals by default**: Simpler prediction, works well with grid-based cave layouts
+- **Debug mode**: `_logFailedSample` optional for diagnostics when tuning
 
 ---
 
@@ -169,15 +199,16 @@ serializedDebugSkip.FindProperty("_showDebugSkipButton").boolValue = true;
 
 #### CavePlayerPathConfinement Setup
 ```csharp
-serializedConfinement.FindProperty("_playerHalfWidth").floatValue = 0.15f;
-serializedConfinement.FindProperty("_playerHalfHeight").floatValue = 0.25f;
-serializedConfinement.FindProperty("_wallContactTolerance").floatValue = 0.10f;
+serializedConfinement.FindProperty("_horizontalHalfWidth").floatValue = 0.03f;
+serializedConfinement.FindProperty("_verticalHalfHeight").floatValue = 0.12f;
+serializedConfinement.FindProperty("_useDiagonalSamples").boolValue = false;
+serializedConfinement.FindProperty("_logFailedSample").boolValue = false;
 ```
 
 #### Logging
 ```csharp
 Debug.Log($"CreateMvpCaveScene: CaveDebugLevelSkipController configured on {runtimeObject.name}. Keys=P/F2, Button=enabled, enableDebugLevelSkip=true, bypassBossGate=true.");
-Debug.Log($"CreateMvpCaveScene: CavePlayerPathConfinement configured on {playerTransform.gameObject.name}. halfWidth=0.15, halfHeight=0.25, tolerance=0.10.");
+Debug.Log($"CreateMvpCaveScene: CavePlayerPathConfinement configured on {playerTransform.gameObject.name}. horizontalHalfWidth=0.03, verticalHalfHeight=0.12, useDiagonals=false.");
 ```
 
 ---
@@ -209,7 +240,7 @@ CreateMvpCaveScene: CavePlayerPathConfinement configured on Player. halfWidth=0.
 ### At Play Mode Start
 ```
 CaveDebugLevelSkipController: enabled=True, key=P, altKey=F2, bypassBossGate=True, hasRunManager=True, hasLevelController=True
-CavePlayerPathConfinement: enabled. Player=Player, LevelController=CaveLevelRuntimeController, halfWidth=0.15, halfHeight=0.25, tolerance=0.1.
+CavePlayerPathConfinement: enabled. Player=Player, LevelController=CaveLevelRuntimeController, horizontalHalfWidth=0.03, verticalHalfHeight=0.12, useDiagonalSamples=False.
 ```
 
 ### When P/F2 Pressed
@@ -228,8 +259,9 @@ CaveDebugLevelSkipController: DEBUG: Level skip 1 -> 2
 
 ### When Player Hits Wall
 ```
-CavePlayerPathConfinement: Confined player. Current=(1.2, 2.3, 0), LastValid=(1.0, 2.3, 0), Grid=(41, 50), Reason=outside walkable samples.
+CavePlayerPathConfinement: Confined player. Current=(1.2, 2.3, 0), Resolved=(1.0, 2.3, 0), Grid=(41, 50).
 ```
+(Resolved position may only fix X axis, only Y axis, or both, depending on which constraint fails first)
 
 ---
 
@@ -329,9 +361,9 @@ If tests don't pass perfectly, adjust in Inspector:
 - `_showDebugSkipButton`: true = exibe botão OnGUI
 
 ### CavePlayerPathConfinement
-- `_playerHalfWidth`: 0.15 (default) → 0.12 se atravessar parede, 0.20 se travar muito cedo
-- `_playerHalfHeight`: 0.25 (default) → 0.20 se atravessar, 0.30 se travar
-- `_wallContactTolerance`: 0.10 (default) → 0.05 se travar longe, 0.15 se deixar atravessar
+- `_horizontalHalfWidth`: 0.03 (default) → 0.01 se ainda estiver longe, 0.05 se deixar atravessar
+- `_verticalHalfHeight`: 0.12 (default) → 0.08 se ainda estiver longe, 0.16 se deixar atravessar
+- `_useDiagonalSamples`: false (default) → true se suspeitar de buracos em quinas
 
 ---
 

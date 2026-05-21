@@ -32,12 +32,15 @@ namespace CindarsHope.Editor.SceneCreation
         private const string PlayerDataPath = "Assets/_Game/Data/Config/PlayerData.asset";
         private const string ItemDatabasePath = "Assets/_Game/Data/Registries/ItemDatabase.asset";
         private const string EnemySlimeDataPath = "Assets/_Game/Data/Combat/Enemy_Slime.asset";
+        private const string EnemyMeteorOozeKingDataPath = "Assets/_Game/Data/Combat/Enemy_Meteor_Ooze_King.asset";
         private const string CaveGenerationConfigPath = "Assets/_Game/Data/Cave/CaveGenerationConfig_Default.asset";
         private const string ResourceNodeStonePath = "Assets/_Game/Data/Cave/ResourceNode_Stone.asset";
         private const string ResourceNodeCopperPath = "Assets/_Game/Data/Cave/ResourceNode_Copper.asset";
         private const string ResourceNodeCaveRootTreePath = "Assets/_Game/Data/Cave/ResourceNode_CaveRootTree.asset";
         private const string ItemStonePath = "Assets/_Game/Data/Items/Item_Material_Stone.asset";
         private const string ItemCopperOrePath = "Assets/_Game/Data/Items/Item_Ore_Copper.asset";
+        private const string CaveBossGateRegistryPath = "Assets/_Game/Data/Cave/CaveBossGateRegistry.asset";
+        private const string CaveBossGateLevel15Path = "Assets/_Game/Data/Cave/BossGate_Level15.asset";
         private const string BuiltinSpritePath = "UI/Skin/UISprite.psd";
 
         [MenuItem("CindarsHope/Scenes/Create MVP CaveScene")]
@@ -577,10 +580,17 @@ namespace CindarsHope.Editor.SceneCreation
             var controller = runtimeObject.AddComponent<CaveLevelRuntimeController>();
             var config = EnsureCaveGenerationConfig();
 
+            var bossGateRegistry = EnsureCaveBossGateRegistry();
+            var meteorOozeKingData = EnsureMeteorOozeKingEnemyData();
+
             var serializedRunManager = new SerializedObject(runManager);
             serializedRunManager.FindProperty("_defaultWorldSeed").stringValue = "cindars_world_seed_001";
             serializedRunManager.FindProperty("_currentCaveLevel").intValue = 1;
             serializedRunManager.FindProperty("_deepestLayerReached").intValue = 1;
+            if (bossGateRegistry != null)
+            {
+                SetReference(serializedRunManager, "_bossGateRegistry", bossGateRegistry);
+            }
             serializedRunManager.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(runManager);
 
@@ -619,10 +629,31 @@ namespace CindarsHope.Editor.SceneCreation
             serializedSpawner.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(enemySpawner);
 
+            // Create Boss Spawner
+            var bossSpawner = runtimeObject.AddComponent<CaveBossSpawner>();
+            var serializedBossSpawner = new SerializedObject(bossSpawner);
+            if (bossGateRegistry != null)
+            {
+                SetReference(serializedBossSpawner, "_bossGateRegistry", bossGateRegistry);
+            }
+            SetReference(serializedBossSpawner, "_caveRunManager", runManager);
+            if (enemyDatabase != null)
+            {
+                SetReference(serializedBossSpawner, "_enemyDatabase", enemyDatabase);
+            }
+            if (meteorOozeKingData != null)
+            {
+                SetReference(serializedBossSpawner, "_fallbackEnemyData", meteorOozeKingData);
+            }
+            serializedBossSpawner.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(bossSpawner);
+            Debug.Log($"CreateMvpCaveScene: CaveBossSpawner configured with registry, boss gate level 15, and enemy data.");
+
             var serializedController = new SerializedObject(controller);
             SetReference(serializedController, "_runManager", runManager);
             SetReference(serializedController, "_materializer", materializer);
             SetReference(serializedController, "_enemySpawner", enemySpawner);
+            SetReference(serializedController, "_bossSpawner", bossSpawner);
             SetReference(serializedController, "_generationConfig", config);
             SetReference(serializedController, "_playerTransform", playerTransform);
             serializedController.FindProperty("_defaultBiomeId").stringValue = "biome_cave_earth";
@@ -651,12 +682,13 @@ namespace CindarsHope.Editor.SceneCreation
             SetReference(serializedConfinement, "_playerTransform", playerTransform);
             SetReference(serializedConfinement, "_levelController", controller);
             serializedConfinement.FindProperty("_enableConfinement").boolValue = true;
-            serializedConfinement.FindProperty("_playerHalfWidth").floatValue = 0.15f;
-            serializedConfinement.FindProperty("_playerHalfHeight").floatValue = 0.25f;
-            serializedConfinement.FindProperty("_wallContactTolerance").floatValue = 0.10f;
+            serializedConfinement.FindProperty("_horizontalHalfWidth").floatValue = 0.03f;
+            serializedConfinement.FindProperty("_verticalHalfHeight").floatValue = 0.12f;
+            serializedConfinement.FindProperty("_useDiagonalSamples").boolValue = false;
+            serializedConfinement.FindProperty("_logFailedSample").boolValue = false;
             serializedConfinement.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(pathConfinement);
-            Debug.Log($"CreateMvpCaveScene: CavePlayerPathConfinement configured on {playerTransform.gameObject.name}. halfWidth=0.15, halfHeight=0.25, tolerance=0.10.");
+            Debug.Log($"CreateMvpCaveScene: CavePlayerPathConfinement configured on {playerTransform.gameObject.name}. horizontalHalfWidth=0.03, verticalHalfHeight=0.12, useDiagonals=false.");
 
             return (runManager, controller);
         }
@@ -1068,6 +1100,95 @@ namespace CindarsHope.Editor.SceneCreation
             }
 
             renderer.sortingOrder = fallbackOrder;
+        }
+
+        private static CaveBossGateRegistrySO EnsureCaveBossGateRegistry()
+        {
+            var existing = AssetDatabase.LoadAssetAtPath<CaveBossGateRegistrySO>(CaveBossGateRegistryPath);
+            if (existing != null && existing.Gates.Count > 0)
+            {
+                return existing;
+            }
+
+            var registry = ScriptableObject.CreateInstance<CaveBossGateRegistrySO>();
+            var level15Gate = EnsureCaveBossGateLevel15();
+
+            if (level15Gate != null)
+            {
+                var gatesProperty = new SerializedObject(registry).FindProperty("_gates");
+                if (gatesProperty != null)
+                {
+                    if (gatesProperty.arraySize == 0)
+                    {
+                        gatesProperty.InsertArrayElementAtIndex(0);
+                    }
+                    gatesProperty.GetArrayElementAtIndex(0).objectReferenceValue = level15Gate;
+                    new SerializedObject(registry).ApplyModifiedPropertiesWithoutUndo();
+                }
+            }
+
+            if (existing == null)
+            {
+                AssetDatabase.CreateAsset(registry, CaveBossGateRegistryPath);
+            }
+
+            AssetDatabase.SaveAssets();
+            EditorUtility.SetDirty(registry);
+            Debug.Log($"CaveBossGateRegistry ensured at {CaveBossGateRegistryPath}");
+            return registry;
+        }
+
+        private static CaveBossGateDataSO EnsureCaveBossGateLevel15()
+        {
+            var existing = AssetDatabase.LoadAssetAtPath<CaveBossGateDataSO>(CaveBossGateLevel15Path);
+            if (existing != null)
+            {
+                return existing;
+            }
+
+            var gate = ScriptableObject.CreateInstance<CaveBossGateDataSO>();
+            gate.Id = "boss_gate_level_15";
+            gate.CaveLevel = 15;
+            gate.BiomeId = "biome_cave_earth";
+            gate.BossEnemyId = "enemy_meteor_ooze_king";
+            gate.CheckpointUnlockedOnDefeat = 15;
+
+            AssetDatabase.CreateAsset(gate, CaveBossGateLevel15Path);
+            AssetDatabase.SaveAssets();
+            EditorUtility.SetDirty(gate);
+            Debug.Log($"CaveBossGateData ensured at {CaveBossGateLevel15Path}");
+            return gate;
+        }
+
+        private static EnemyDataSO EnsureMeteorOozeKingEnemyData()
+        {
+            var existing = AssetDatabase.LoadAssetAtPath<EnemyDataSO>(EnemyMeteorOozeKingDataPath);
+            if (existing != null)
+            {
+                return existing;
+            }
+
+            var bossData = ScriptableObject.CreateInstance<EnemyDataSO>();
+            bossData.enemyId = "enemy_meteor_ooze_king";
+            bossData.DisplayName = "Meteor Ooze King";
+            bossData.maxHp = 30;
+            bossData.contactDamage = 3;
+            bossData.contactDamageCooldownSeconds = 1f;
+            bossData.moveSpeed = 0.8f;
+            bossData.detectionRadius = 8f;
+            bossData.stopDistance = 1f;
+            bossData.hitFlashColor = new Color(1f, 0.5f, 0f);
+            bossData.hitFlashDuration = 0.15f;
+            bossData.dropItemId = "item_wood";
+            bossData.dropAmount = 3;
+            bossData.enemyLevel = 15;
+            bossData.baseDifficulty = EnemyDifficulty.Hard;
+
+            AssetDatabase.CreateAsset(bossData, EnemyMeteorOozeKingDataPath);
+            AssetDatabase.SaveAssets();
+            EditorUtility.SetDirty(bossData);
+            Debug.Log($"Created Meteor Ooze King enemy data at {EnemyMeteorOozeKingDataPath}");
+            return bossData;
         }
 
         private static void EnsureFolder(string parentFolder, string childFolder)

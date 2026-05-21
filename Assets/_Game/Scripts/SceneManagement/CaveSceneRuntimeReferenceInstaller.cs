@@ -1,5 +1,6 @@
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Cave;
+using CindarsHope.Cave.Data;
 using CindarsHope.Cave.Runtime;
 using CindarsHope.Interaction;
 using CindarsHope.UI;
@@ -14,6 +15,7 @@ namespace CindarsHope.SceneManagement
         [SerializeField] private CaveRunManager _caveRunManager;
         [SerializeField] private CaveLevelRuntimeController _caveLevelRuntimeController;
         [SerializeField] private CaveDebugLevelSkipController _caveDebugLevelSkipController;
+        [SerializeField] private CaveBossGateRegistrySO _bossGateRegistry;
 
         private void Start()
         {
@@ -53,6 +55,16 @@ namespace CindarsHope.SceneManagement
             if (_caveDebugLevelSkipController == null && _caveLevelRuntimeController != null)
             {
                 _caveDebugLevelSkipController = _caveLevelRuntimeController.GetComponent<CaveDebugLevelSkipController>();
+            }
+
+            // Try to rebind CaveBossGateRegistry if null
+            if (_bossGateRegistry == null)
+            {
+                _bossGateRegistry = Resources.Load<CaveBossGateRegistrySO>("CaveBossGateRegistry");
+                if (_bossGateRegistry == null)
+                {
+                    Debug.LogWarning("CaveSceneRuntimeReferenceInstaller: CaveBossGateRegistry not found in Resources or as Inspector reference.", this);
+                }
             }
 
             var interactionSystem = _playerTransform != null ? _playerTransform.GetComponent<InteractionSystem>() : null;
