@@ -366,6 +366,22 @@ namespace CindarsHope.UI
                 GUILayout.Label($"  BackExit: {materializationResult.BackExitPosition}");
                 GUILayout.Label($"  ForwardExit: {materializationResult.ForwardExitPosition}");
             }
+
+            GUILayout.Space(4f);
+            GUILayout.Label("Snapshots:");
+            if (_caveRunManager.State.VisitedLevelSnapshots.Count == 0)
+            {
+                GUILayout.Label("  None");
+            }
+            else
+            {
+                foreach (var kvp in _caveRunManager.State.VisitedLevelSnapshots)
+                {
+                    GUILayout.Label($"  Level {kvp.Key}: hash={ShortenMiddle(kvp.Value.LayoutHash, 12)}");
+                }
+            }
+
+            GUILayout.Label($"Checkpoints: {string.Join(",", _caveRunManager.State.UnlockedCheckpoints)}");
         }
 
         private void OnInteractionPromptChanged(InteractionPromptChangedEvent evt)

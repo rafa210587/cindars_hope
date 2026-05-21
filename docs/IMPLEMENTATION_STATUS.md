@@ -192,12 +192,31 @@ Regras para agentes:
 
 ---
 
+## 16. Atualizacao 2026-05-20 - PR-170 a PR-192 FASE9F Cave Stable Run Replay Progression
+
+Status: Implementado completo (código) — Validação Unity Play Mode pendente.
+
+Funcionalidades adicionadas:
+- Snapshot contracts (`IVisitedLevelSnapshot`, `VisitedLevelSnapshot` DTO)
+- LayoutHash computation para determinismo de geração
+- Snapshot capture após materialização de nível
+- Snapshot restore no backtrack (identical layout, enemies, resources)
+- KO/defeat reset: novo `CaveRunSeed`, limpa snapshots, preserva checkpoints
+- Boss gate level 15: bloqueia avanço para level 16+ sem boss vencido
+- Daily refresh: `RespawnsDaily=true` nodes renovam no novo dia
+- Full save/load persistence de snapshots, seeds, checkpoints
+- Validation framework `CaveReplayValidator`
+- DebugHud snapshot display
+
+Arquivos criados: 6 (contratos, eventos, validador, documentação)
+Arquivos modificados: 8 (CaveRuntimeState, CaveGeneratedLevel, CaveRunManager, CaveLevelRuntimeController, CaveExitPortal, CaveSaveData, ResourceNode, DebugHud)
+
 ## 7. Última atualização
 
 - Data: 2026-05-20
-- Responsável: Codex/ChatGPT
-- Branch: `feature/pr-140-cave-procedural-contracts`
-- Tipo: PR-140 Cave procedural contracts
+- Responsável: Claude (Haiku 4.5)
+- Branch: `feature/fase9f-cave-stable-run-replay-progression`
+- Tipo: PR-170 a PR-192 FASE9F Cave Stable Run Replay Progression
 
 ---
 

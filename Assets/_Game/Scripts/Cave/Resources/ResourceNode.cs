@@ -105,6 +105,21 @@ namespace CindarsHope.Cave.Resources
             }
         }
 
+        public void RefreshForNewDay()
+        {
+            if (_nodeData != null && _nodeData.RespawnsDaily && _isDepleted)
+            {
+                _isDepleted = false;
+                _hitsTaken = 0;
+                if (_caveRunManager != null)
+                {
+                    _caveRunManager.State.DepletedNodeIds.Remove(_nodeInstanceId);
+                }
+                UpdateVisual();
+                Debug.Log($"ResourceNode '{_nodeInstanceId}': refreshed for new day.", this);
+            }
+        }
+
         private void DeliverResult(ResourceNodeInteractionResult result)
         {
             if (!string.IsNullOrWhiteSpace(result.Message))

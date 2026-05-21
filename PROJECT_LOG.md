@@ -34,9 +34,72 @@
 - `specs/FASE9G_CAVE_BESTIARY_FACTION_LOCKS_PORTAL_ECOLOGY/spec.md`
 - `docs/SPEC_EVOLUTION_POLICY_v1.0.md`
 
+## 16. Atualizacao 2026-05-20 - PR-170 a PR-192 FASE9F Cave Stable Run Replay Progression
+
+Status: Implementado completo — Validação Unity e testes em Play Mode pendentes.
+
+Implementação realizada:
+- **PR-170 a PR-172**: Snapshot contracts, generator replayability, CaveRunSeed lifecycle
+- **PR-173 a PR-175**: Runtime storage, snapshot registry, save/load integration
+- **PR-176 a PR-178**: Replay on backtrack, snapshot restoration
+- **PR-179 a PR-181**: Boss gate at level 15, player defeat integration
+- **PR-182 a PR-184**: Daily refresh de `RespawnsDaily=true` nodes
+- **PR-185 a PR-192**: Validação, documentação, handoff
+
+Arquivos criados:
+- `Assets/_Game/Scripts/Cave/Runtime/IVisitedLevelSnapshot.cs`
+- `Assets/_Game/Scripts/Cave/Runtime/VisitedLevelSnapshot.cs`
+- `Assets/_Game/Scripts/Core/Events/CavePlayerDefeatedEvent.cs`
+- `Assets/_Game/Scripts/Cave/Validation/CaveReplayValidator.cs`
+- `docs/FASE9F_CAVE_REPLAY_CONTRACTS_v1.0.md`
+- `docs/FASE9F_CAVE_REPLAY_HANDOFF_PR170_192.md`
+
+Arquivos modificados:
+- `CaveRuntimeState.cs` (added VisitedLevelSnapshots)
+- `CaveGeneratedLevel.cs` (added LayoutHash, ComputeLayoutHash)
+- `CaveRunManager.cs` (added HandlePlayerDefeated, CheckBossGate, snapshot persistence)
+- `CaveLevelRuntimeController.cs` (added CaptureSnapshot, RestoreFromSnapshot, daily refresh)
+- `CaveExitPortal.cs` (updated HandleBackExit/HandleForwardExit)
+- `CaveSaveData.cs` (complete rewrite with snapshot serialization)
+- `ResourceNode.cs` (added RefreshForNewDay)
+- `DebugHud.cs` (added snapshot status display)
+
+Funcionalidades implementadas:
+1. ✅ Snapshot contracts e DTOs serializáveis
+2. ✅ Deterministic level generation com LayoutHash
+3. ✅ Capture snapshot após materialização
+4. ✅ Restore snapshot identicamente no backtrack
+5. ✅ KO reset: novo CaveRunSeed, limpa snapshots, preserva checkpoints
+6. ✅ Boss gate: bloqueia avanço além level 15 sem boss vencido
+7. ✅ Daily refresh: apenas `RespawnsDaily=true` nodes renovam
+8. ✅ Save/load persistence de snapshots e estado
+9. ✅ Validation framework com CaveReplayValidator
+10. ✅ DebugHud snapshot status display
+
+Testes realizados (código):
+- Validação de imports e sintaxe (sem rodada em Unity ainda)
+- Verificação de contratos de tipo (IVisitedLevelSnapshot, VisitedLevelSnapshot, etc.)
+- Verificação de persistência (CaveSaveData serialization)
+- Verificação de integrações de eventos (DayStartedEvent, CavePlayerDefeatedEvent)
+
+Próximo passo: Validação em Unity Play Mode, bug fixes se necessário, commit e merge.
+
 ### Próximo passo recomendado
 
-Começar **FASE9E-D — HUD Debug v2 + Tool Gating + Attribute Allocation** antes de retomar Cave Procedural.
+1. ✅ Clonar branch `feature/fase9f-cave-stable-run-replay-progression`
+2. 🔄 Abrir projeto em Unity
+3. 🔄 Compilação: Assets → Reimport All (ou aguardar auto-reimport)
+4. 🔄 Check Console para CS errors (validate imports, namespaces)
+5. 🔄 Test Play Mode: new run, backtrack, forward exit, KO, save/load, day refresh
+6. 🔄 Bug fix se necessário
+7. 🔄 Commit: `git commit -m "PR-170-192: Cave stable run replay progression"`
+8. 🔄 Push: `git push origin feature/fase9f-cave-stable-run-replay-progression`
+9. 🔄 Create PR on GitHub, merge to main após review
+
+Após FASE9F merge:
+- PR-193+: Boss defeat tracking e checkpoint selection UI
+- PR-19x: Enemy ecology, faction locks (FASE9G)
+- PR-20x: Bestiary, faction system (FASE9G)
 
 1. PR-132 — DebugHud layout v2.
 2. PR-133 — Action feedback event.

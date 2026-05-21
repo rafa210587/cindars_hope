@@ -112,9 +112,21 @@ namespace CindarsHope.Cave
                 Debug.Log($"CaveExitPortal: BackExit interacted. Level {currentLevel} -> {previousLevel}.", this);
 
                 _caveRunManager.EnterLevel(previousLevel);
-                _levelController.GenerateCurrentLevel();
 
-                Debug.Log($"CaveExitPortal: BackExit completed. CurrentLevel={_caveRunManager.CurrentCaveLevel}.", this);
+                var snapshot = _caveRunManager.State.VisitedLevelSnapshots.ContainsKey(previousLevel)
+                    ? _caveRunManager.State.VisitedLevelSnapshots[previousLevel]
+                    : null;
+
+                if (snapshot != null && snapshot.IsValid())
+                {
+                    _levelController.RestoreFromSnapshot(snapshot);
+                    Debug.Log($"CaveExitPortal: BackExit completed. Level {currentLevel} -> {previousLevel} restored from snapshot.", this);
+                }
+                else
+                {
+                    _levelController.GenerateCurrentLevel();
+                    Debug.Log($"CaveExitPortal: BackExit completed. Level {currentLevel} -> {previousLevel} generated fresh.", this);
+                }
             }
         }
 
@@ -134,6 +146,13 @@ namespace CindarsHope.Cave
 
             var currentLevel = _caveRunManager.CurrentCaveLevel;
             var nextLevel = currentLevel + 1;
+
+            if (!_caveRunManager.CheckBossGate(nextLevel))
+            {
+                GameEventBus.Publish(new PlayerActionFeedbackEvent("Boss bloqueando avanço!", 3f));
+                Debug.Log($"CaveExitPortal: ForwardExit blocked by boss gate at level 15.", this);
+                return;
+            }
 
             Debug.Log($"CaveExitPortal: ForwardExit interacted. Level {currentLevel} -> {nextLevel}.", this);
 

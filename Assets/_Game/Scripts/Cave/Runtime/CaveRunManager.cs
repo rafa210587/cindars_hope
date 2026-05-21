@@ -5,6 +5,8 @@ using CindarsHope.Core.Events;
 using CindarsHope.Save;
 using UnityEngine;
 
+using CavePlayerDefeatedEvent = CindarsHope.Core.Events.CavePlayerDefeatedEvent;
+
 namespace CindarsHope.Cave.Runtime
 {
     [DisallowMultipleComponent]
@@ -69,7 +71,7 @@ namespace CindarsHope.Cave.Runtime
         public CaveSaveData CaptureSaveData()
         {
             InitializeIfNeeded();
-            return new CaveSaveData
+            var saveData = new CaveSaveData
             {
                 CurrentCaveLevel = _state.CurrentCaveLevel,
                 DeepestLayerReached = _state.DeepestLayerReached,
@@ -78,6 +80,8 @@ namespace CindarsHope.Cave.Runtime
                 UnlockedCheckpoints = new List<int>(_state.UnlockedCheckpoints),
                 DepletedNodeIds = new List<string>(_state.DepletedNodeIds)
             };
+            saveData.PopulateSnapshots(_state.VisitedLevelSnapshots);
+            return saveData;
         }
 
         public void RestoreFromSaveData(CaveSaveData saveData)
@@ -117,6 +121,13 @@ namespace CindarsHope.Cave.Runtime
                 }
             }
 
+            _state.VisitedLevelSnapshots.Clear();
+            var restoredSnapshots = saveData.RestoreSnapshots();
+            foreach (var kvp in restoredSnapshots)
+            {
+                _state.VisitedLevelSnapshots[kvp.Key] = kvp.Value;
+            }
+
             SyncSerializedToState();
             EnsureCheckpointOne();
         }
@@ -131,6 +142,36 @@ namespace CindarsHope.Cave.Runtime
         {
             InitializeIfNeeded();
             return !string.IsNullOrWhiteSpace(nodeInstanceId) && _state.DepletedNodeIds.Contains(nodeInstanceId);
+        }
+
+        public void HandlePlayerDefeated()
+        {
+            InitializeIfNeeded();
+            GenerateNewRunSeed("PlayerDefeated");
+            _state.VisitedLevelSnapshots.Clear();
+            _state.DepletedNodeIds.Clear();
+            Debug.Log($"CaveRunManager: player defeated. Snapshots cleared, new run seed generated. Checkpoints remain: {string.Join(",", _state.UnlockedCheckpoints)}.", this);
+            GameEventBus.Publish(new CavePlayerDefeatedEvent(_state.CurrentCaveLevel));
+        }
+
+        public bool CheckBossGate(int targetLevel)
+        {
+            InitializeIfNeeded();
+            const int BOSS_GATE_LEVEL = 15;
+
+            if (targetLevel <= BOSS_GATE_LEVEL)
+            {
+                return true;
+            }
+
+            var currentLevel = _state.CurrentCaveLevel;
+            if (currentLevel < BOSS_GATE_LEVEL)
+            {
+                Debug.LogWarning($"CaveRunManager: cannot advance from level {currentLevel} to {targetLevel}. Boss gate at level {BOSS_GATE_LEVEL} not defeated.", this);
+                return false;
+            }
+
+            return true;
         }
 
         private void SyncSerializedToState()

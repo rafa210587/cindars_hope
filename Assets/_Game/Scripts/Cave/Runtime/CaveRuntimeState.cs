@@ -10,5 +10,6 @@ namespace CindarsHope.Cave.Runtime
         public string CaveRunSeed;
         public HashSet<int> UnlockedCheckpoints = new HashSet<int>();
         public HashSet<string> DepletedNodeIds = new HashSet<string>();
+        public Dictionary<int, VisitedLevelSnapshot> VisitedLevelSnapshots = new Dictionary<int, VisitedLevelSnapshot>();
     }
 }

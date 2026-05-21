@@ -1,5 +1,6 @@
 using CindarsHope.Cave.Data;
 using CindarsHope.Cave.Generation;
+using CindarsHope.Cave.Resources;
 using CindarsHope.Cave.Runtime;
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
@@ -50,11 +51,13 @@ namespace CindarsHope.Cave
         private void OnEnable()
         {
             GameEventBus.Subscribe<CaveRuntimeMaterializationCompleteEvent>(OnMaterializationComplete);
+            GameEventBus.Subscribe<DayStartedEvent>(OnDayStarted);
         }
 
         private void OnDisable()
         {
             GameEventBus.Unsubscribe<CaveRuntimeMaterializationCompleteEvent>(OnMaterializationComplete);
+            GameEventBus.Unsubscribe<DayStartedEvent>(OnDayStarted);
         }
 
         private void OnMaterializationComplete(CaveRuntimeMaterializationCompleteEvent e)
@@ -88,12 +91,25 @@ namespace CindarsHope.Cave
             EnsureRuntimeReferences();
             _runManager.InitializeIfNeeded();
 
+            var caveLevel = _runManager.CurrentCaveLevel;
+            var visitedSnapshot = _runManager.State.VisitedLevelSnapshots.ContainsKey(caveLevel)
+                ? _runManager.State.VisitedLevelSnapshots[caveLevel]
+                : null;
+
+            if (visitedSnapshot != null && visitedSnapshot.IsValid())
+            {
+                RestoreFromSnapshot(visitedSnapshot);
+                return;
+            }
+
             CurrentGeneratedLevel = _generator.Generate(
                 _generationConfig,
                 _runManager.CurrentCaveLevel,
                 _runManager.CaveWorldSeed,
                 _runManager.CaveRunSeed,
                 _defaultBiomeId);
+
+            CurrentGeneratedLevel.ComputeLayoutHash();
 
             Debug.Log(
                 $"Cave generated.\nLevel: {_runManager.CurrentCaveLevel}\nWorldSeed: {_runManager.CaveWorldSeed}\nRunSeed: {_runManager.CaveRunSeed}\nRooms: {RoomCount}\nEnemyPoints: {EnemyPointCount}\nResourcePoints: {ResourcePointCount}",
@@ -108,12 +124,82 @@ namespace CindarsHope.Cave
             {
                 _materializer.Materialize(CurrentGeneratedLevel);
                 RepositionCamera();
+                CaptureSnapshot();
             }
 
             GameEventBus.Publish(new CaveLevelEnteredEvent(
                 _runManager.CurrentCaveLevel,
                 _defaultBiomeId,
                 _runManager.CaveRunSeed));
+        }
+
+        public void CaptureSnapshot()
+        {
+            if (CurrentGeneratedLevel == null)
+            {
+                return;
+            }
+
+            var snapshot = new VisitedLevelSnapshot(
+                CurrentGeneratedLevel.CaveLevel,
+                CurrentGeneratedLevel.BiomeId,
+                CurrentGeneratedLevel.LayoutHash);
+
+            snapshot.SetEntranceAndExit(CurrentGeneratedLevel.Entrance, CurrentGeneratedLevel.Exit);
+
+            foreach (var point in CurrentGeneratedLevel.EnemySpawnPoints)
+            {
+                snapshot.AddEnemySpawn($"enemy_{point.X}_{point.Y}", new Vector2(point.X, point.Y), CurrentGeneratedLevel.CaveLevel);
+            }
+
+            foreach (var point in CurrentGeneratedLevel.ResourceSpawnPoints)
+            {
+                snapshot.AddResourceNode($"node_{point.X}_{point.Y}", new Vector2(point.X, point.Y), point.PointType.ToString());
+            }
+
+            foreach (var depletedId in _runManager.State.DepletedNodeIds)
+            {
+                snapshot.MarkResourceNodeDepleted(depletedId);
+            }
+
+            _runManager.State.VisitedLevelSnapshots[CurrentGeneratedLevel.CaveLevel] = snapshot;
+            Debug.Log($"CaveLevelRuntimeController: snapshot captured for level {CurrentGeneratedLevel.CaveLevel}.", this);
+        }
+
+        public void RestoreFromSnapshot(VisitedLevelSnapshot snapshot)
+        {
+            if (snapshot == null || !snapshot.IsValid())
+            {
+                Debug.LogWarning("CaveLevelRuntimeController: attempted to restore from invalid snapshot.", this);
+                return;
+            }
+
+            CurrentGeneratedLevel = new CaveGeneratedLevel
+            {
+                CaveLevel = snapshot.CaveLevel,
+                BiomeId = snapshot.BiomeId,
+                LayoutHash = snapshot.LayoutHash,
+                Entrance = Vector2Int.FloorToInt(snapshot.EntrancePosition),
+                Exit = Vector2Int.FloorToInt(snapshot.ExitPosition)
+            };
+
+            if (_logGeneratedLayout)
+            {
+                Debug.Log(CaveGenerationDebugPrinter.ToAscii(CurrentGeneratedLevel), this);
+            }
+
+            if (_materializeAfterGeneration && _materializer != null)
+            {
+                _materializer.Materialize(CurrentGeneratedLevel);
+                RepositionCamera();
+            }
+
+            GameEventBus.Publish(new CaveLevelEnteredEvent(
+                snapshot.CaveLevel,
+                snapshot.BiomeId,
+                _runManager.CaveRunSeed));
+
+            Debug.Log($"CaveLevelRuntimeController: level {snapshot.CaveLevel} restored from snapshot.", this);
         }
 
         public void RegenerateCurrentRunDebug()
@@ -154,6 +240,33 @@ namespace CindarsHope.Cave
                     _playerTransform.position.x,
                     _playerTransform.position.y,
                     mainCamera.transform.position.z);
+            }
+        }
+
+        private void OnDayStarted(DayStartedEvent _)
+        {
+            RefreshDailyResourceNodes();
+        }
+
+        private void RefreshDailyResourceNodes()
+        {
+            var allNodes = FindObjectsByType<ResourceNode>(FindObjectsSortMode.None);
+            var refreshedCount = 0;
+            foreach (var node in allNodes)
+            {
+                if (node.IsDepleted)
+                {
+                    node.RefreshForNewDay();
+                    if (!node.IsDepleted)
+                    {
+                        refreshedCount++;
+                    }
+                }
+            }
+
+            if (refreshedCount > 0)
+            {
+                Debug.Log($"CaveLevelRuntimeController: refreshed {refreshedCount} resource nodes for new day.", this);
             }
         }
 
