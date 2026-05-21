@@ -70,8 +70,8 @@ namespace CindarsHope.Cave.Runtime
             var offsetX = generatedLevel.Width * 0.5f;
             var offsetY = generatedLevel.Height * 0.5f;
 
-            var gridX = Mathf.RoundToInt(worldPos.x + offsetX);
-            var gridY = Mathf.RoundToInt(worldPos.y + offsetY);
+            var gridX = Mathf.FloorToInt(worldPos.x + offsetX);
+            var gridY = Mathf.FloorToInt(worldPos.y + offsetY);
 
             return new Vector2Int(gridX, gridY);
         }

@@ -637,10 +637,11 @@ namespace CindarsHope.Editor.SceneCreation
             SetReference(serializedDebugSkip, "_caveRunManager", runManager);
             SetReference(serializedDebugSkip, "_levelController", controller);
             serializedDebugSkip.FindProperty("_enableDebugLevelSkip").boolValue = true;
-            serializedDebugSkip.FindProperty("_nextLevelKey").enumValueIndex = (int)KeyCode.P;
+            serializedDebugSkip.FindProperty("_nextLevelKey").intValue = (int)KeyCode.P;
             serializedDebugSkip.FindProperty("_bypassBossGateForDebugSkip").boolValue = true;
             serializedDebugSkip.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(debugSkipController);
+            Debug.Log($"CreateMvpCaveScene: CaveDebugLevelSkipController configured on {runtimeObject.name}. Key={KeyCode.P}, enableDebugLevelSkip=true, bypassBossGate=true.");
 
             // Create Player Path Confinement
             var pathConfinement = playerTransform.gameObject.AddComponent<CavePlayerPathConfinement>();
@@ -650,6 +651,7 @@ namespace CindarsHope.Editor.SceneCreation
             serializedConfinement.FindProperty("_enableConfinement").boolValue = true;
             serializedConfinement.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(pathConfinement);
+            Debug.Log($"CreateMvpCaveScene: CavePlayerPathConfinement configured on {playerTransform.gameObject.name}. enableConfinement=true.");
 
             return (runManager, controller);
         }

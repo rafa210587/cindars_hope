@@ -14,30 +14,61 @@ namespace CindarsHope.Cave.Runtime
         [SerializeField] private bool _bypassBossGateForDebugSkip = true;
 
         private string _lastDebugAction = "none";
+        private bool _disabledLogged = false;
 
         private void Start()
         {
-            Debug.Log($"CaveDebugLevelSkipController: enabled={_enableDebugLevelSkip}, key={_nextLevelKey}, bypassBossGate={_bypassBossGateForDebugSkip}.", this);
+            var hasRunManager = _caveRunManager != null;
+            var hasLevelController = _levelController != null;
+            Debug.Log($"CaveDebugLevelSkipController: enabled={_enableDebugLevelSkip}, key={_nextLevelKey}, bypassBossGate={_bypassBossGateForDebugSkip}, hasRunManager={hasRunManager}, hasLevelController={hasLevelController}.", this);
         }
 
         private void Update()
         {
-            if (!_enableDebugLevelSkip || SceneManager.GetActiveScene().name != "CaveScene")
+            if (!_enableDebugLevelSkip)
+            {
+                if (!_disabledLogged)
+                {
+                    Debug.Log("CaveDebugLevelSkipController: disabled by toggle.", this);
+                    _disabledLogged = true;
+                }
+                return;
+            }
+
+            if (SceneManager.GetActiveScene().name != "CaveScene")
             {
                 return;
             }
 
             if (Input.GetKeyDown(_nextLevelKey))
             {
+                Debug.Log("CaveDebugLevelSkipController: P pressed.", this);
                 SkipToNextLevel();
             }
         }
 
+        private bool TryRebindLocalReferences()
+        {
+            if (_caveRunManager == null)
+            {
+                _caveRunManager = GetComponent<CaveRunManager>();
+            }
+
+            if (_levelController == null)
+            {
+                _levelController = GetComponent<CaveLevelRuntimeController>();
+            }
+
+            return _caveRunManager != null && _levelController != null;
+        }
+
         private void SkipToNextLevel()
         {
-            if (_caveRunManager == null || _levelController == null)
+            if (!TryRebindLocalReferences())
             {
-                Debug.LogError("CaveDebugLevelSkipController: CaveRunManager or LevelController not assigned.", this);
+                var hasRunManager = _caveRunManager != null;
+                var hasLevelController = _levelController != null;
+                Debug.LogError($"CaveDebugLevelSkipController: Failed to bind references. hasRunManager={hasRunManager}, hasLevelController={hasLevelController}.", this);
                 return;
             }
 
