@@ -1258,3 +1258,57 @@ Regenerar cena, testar Play Mode com logging completo, validar transições.
 6. Commit + PR.
 
 ---
+
+## 2026-05-20 - FIX_CAVE_SNAPSHOT_REPLAY_FULL_LAYOUT Implementação Completa
+
+**Responsável:** Claude (Haiku 4.5)  
+**Branch:** `feature/fix-cave-snapshot-replay-full-layout`  
+**Escopo:** Corrigir snapshot replay para salvar e restaurar layout completo (Width, Height, WalkableTiles, WallTiles, EnemySpawnPoints, ResourceSpawnPoints).
+
+### Alterações
+
+**VisitedLevelSnapshot.cs:**
+- Adicionados campos: Width, Height, WalkableTilesList, WallTilesList, EnemySpawnPointsList, ResourceSpawnPointsList
+- Nova classe SerializedCaveGenerationPoint com pointTypeValue e Position
+- IsValid() expandida: verifica Width > 0, Height > 0, WalkableTilesList.Count > 0
+- Novos métodos: SetLayoutDimensions(), AddWalkableTile(), AddWallTile(), AddEnemySpawnPoint(), AddResourceSpawnPoint()
+
+**CaveLevelRuntimeController.cs:**
+- CaptureSnapshot() agora captura layout completo (dimensions, tiles, spawn points)
+- Logging detalhado com counts: WalkableTiles, WallTiles, EnemySpawnPoints, ResourceSpawnPoints
+- RestoreFromSnapshot() agora reconstrói CaveGeneratedLevel completo
+- Reconstrói HashSets de tiles e Listas de spawn points a partir do snapshot
+- Logging expandido mostra counts restaurados
+
+**Documentação:**
+- Criado `docs/audits/FIX_CAVE_SNAPSHOT_REPLAY_FULL_LAYOUT.md` com detalhes técnicos
+
+### Efeito
+
+**Antes:**
+- Farm → Cave → Farm → Cave → cave vazia (layout não materializado)
+- Prompts apareciam mas floor/walls desapareciam
+
+**Depois:**
+- Farm → Cave → Farm → Cave → cave idêntica (layout completamente restaurado)
+- Floor, walls, resource/enemy spawn points aparecem
+- Snapshots antigos sem layout são invalidados e regenerados uma vez
+
+### Testes
+
+- [x] Revisão estática de código
+- [x] Validação de serialização (tipos simples, sem refs Unity)
+- [x] Verificação de IsValid() lógica
+- [x] Validação de reconstrução de CaveGeneratedLevel
+- [ ] Play Mode não testado
+- [ ] Unity compilação não testada
+
+### Próximo passo recomendado
+
+1. Validar compilação no Unity
+2. Play Mode: Farm → Cave (layout visível), Cave → Farm → Cave (layout restaurado, visível)
+3. Confirmar HUD mostra counts > 0
+4. Confirmar Console mostra logs detalhados
+5. Commit + PR
+
+---

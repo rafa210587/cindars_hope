@@ -25,7 +25,7 @@
 | Equipment/Hotbar | Implementado parcial | Tool/hotbar existem e persistem parcialmente; PR-132-FIX aplica gating em arvore/pesca e plantio por hotbar; integracoes finais pendentes. |
 | Progression/LevelUp | Implementado parcial | XP/level/pontos existem; distribuição debug de atributos ainda pendente. |
 | Damage Formula MVP | Implementado parcial | `DamageCalculator`, `DamageResult` e integracao melee MVP; status/elementos completos pendentes. |
-| Cave Procedural/Resources | Implementado parcial | PR-140 contratos base; marcos 1-7 materializador/spawning/procedural complete; marcos 8-11 HUD real counters/logging complete; FIX_CAVE_PROCEDURAL_VISUAL_RUNTIME v1.0 com fallback visuals/database; FIX_CAVE_CAMERA_FOLLOW_AND_VISIBLE_ENEMIES v1.0 com smooth camera/enemy visuals/spawn order; FIX_CAVE_SPAWN_ANCHOR_SAFE_POSITIONING com posicionamento seguro do player. Marcos 8+ (loot/scaling/KO/boss/checkpoints) pendentes. |
+| Cave Procedural/Resources | Implementado parcial | PR-140 contratos base; marcos 1-7 materializador/spawning/procedural complete; marcos 8-11 HUD real counters/logging complete; FIX_CAVE_PROCEDURAL_VISUAL_RUNTIME v1.0 com fallback visuals/database; FIX_CAVE_CAMERA_FOLLOW_AND_VISIBLE_ENEMIES v1.0 com smooth camera/enemy visuals/spawn order; FIX_CAVE_SPAWN_ANCHOR_SAFE_POSITIONING com posicionamento seguro do player; FIX_CAVE_SNAPSHOT_REPLAY_FULL_LAYOUT com layout completo em snapshots. Marcos 8+ (loot/scaling/KO/boss/checkpoints) pendentes. |
 | Cave Bestiary/Faction Locks | Especificado | FASE9G pronta; depende da base FASE9F para implementação real. |
 | Reconciliação pós PR-099 | Implementado parcial | PR-100 auditado; PR-101 a PR-130 consolidados na `dev`; Unity ainda pendente. |
 
@@ -46,6 +46,7 @@
 | Fase 9A Save Cross-Scene Hardening | PR-065+ | Implementado parcial | rebind/cache/save scene | Smoke test cross-scene pendente. |
 | Fase 9B Cave/Combat MVP | Log atual | Implementado MVP básico | CaveScene, portal, Slime/combat básico conforme `PROJECT_LOG.md` | Procedural/resources/checkpoints pendentes. |
 | FIX_CAVE_SPAWN_ANCHOR_SAFE_POSITIONING | current | Implementado | Safe tile lookup, ResolvePlayerSpawnGrid, CaveExitPortal integration, detailed logging | Unity compilação/Play Mode validation pendente. |
+| FIX_CAVE_SNAPSHOT_REPLAY_FULL_LAYOUT | current | Implementado | VisitedLevelSnapshot com layout completo, CaptureSnapshot/RestoreFromSnapshot reconstrução completa | Unity compilação/Play Mode validation pendente. |
 | Fase 9E Specs | Docs/specs + MVP parcial | Implementado parcial | UI/Hotbar, Damage/Status, Item Taxonomy, Save Migration, Level Up | Contratos/MVP parcial implementados; UI final, status completos e migration robusta pendentes. |
 | Fase 9F Specs | Docs/specs | Pendente | Cave procedural/resources/encounters spec | Próximo bloco PR-132 a PR-145. |
 | Fase 9G Specs | Docs/specs | Especificado | Cave bestiary/faction locks/portal ecology spec | Depende de FASE9F procedural foundation. |

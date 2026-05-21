@@ -198,14 +198,27 @@ namespace CindarsHope.Cave
                 CurrentGeneratedLevel.LayoutHash);
 
             snapshot.SetEntranceAndExit(CurrentGeneratedLevel.Entrance, CurrentGeneratedLevel.Exit);
+            snapshot.SetLayoutDimensions(CurrentGeneratedLevel.Width, CurrentGeneratedLevel.Height);
+
+            foreach (var walkableTile in CurrentGeneratedLevel.WalkableTiles)
+            {
+                snapshot.AddWalkableTile(walkableTile);
+            }
+
+            foreach (var wallTile in CurrentGeneratedLevel.WallTiles)
+            {
+                snapshot.AddWallTile(wallTile);
+            }
 
             foreach (var point in CurrentGeneratedLevel.EnemySpawnPoints)
             {
+                snapshot.AddEnemySpawnPoint((int)point.PointType, point.Position);
                 snapshot.AddEnemySpawn($"enemy_{point.Position.x}_{point.Position.y}", new Vector2(point.Position.x, point.Position.y), CurrentGeneratedLevel.CaveLevel);
             }
 
             foreach (var point in CurrentGeneratedLevel.ResourceSpawnPoints)
             {
+                snapshot.AddResourceSpawnPoint((int)point.PointType, point.Position);
                 snapshot.AddResourceNode($"node_{point.Position.x}_{point.Position.y}", new Vector2(point.Position.x, point.Position.y), point.PointType.ToString());
             }
 
@@ -215,7 +228,15 @@ namespace CindarsHope.Cave
             }
 
             _runManager.State.VisitedLevelSnapshots[CurrentGeneratedLevel.CaveLevel] = snapshot;
-            Debug.Log($"CaveLevelRuntimeController: snapshot captured for level {CurrentGeneratedLevel.CaveLevel}.", this);
+            Debug.Log(
+                $"CaveLevelRuntimeController: snapshot captured for level {CurrentGeneratedLevel.CaveLevel}.\n" +
+                $"  LayoutHash: {snapshot.LayoutHash}\n" +
+                $"  Dimensions: {snapshot.Width}x{snapshot.Height}\n" +
+                $"  WalkableTiles: {snapshot.WalkableTilesList.Count}\n" +
+                $"  WallTiles: {snapshot.WallTilesList.Count}\n" +
+                $"  EnemySpawnPoints: {snapshot.EnemySpawnPointsList.Count}\n" +
+                $"  ResourceSpawnPoints: {snapshot.ResourceSpawnPointsList.Count}",
+                this);
         }
 
         public void RestoreFromSnapshot(VisitedLevelSnapshot snapshot)
@@ -231,9 +252,33 @@ namespace CindarsHope.Cave
                 CaveLevel = snapshot.CaveLevel,
                 BiomeId = snapshot.BiomeId,
                 LayoutHash = snapshot.LayoutHash,
+                Width = snapshot.Width,
+                Height = snapshot.Height,
                 Entrance = Vector2Int.FloorToInt(snapshot.EntrancePosition),
                 Exit = Vector2Int.FloorToInt(snapshot.ExitPosition)
             };
+
+            foreach (var walkableTile in snapshot.WalkableTilesList)
+            {
+                CurrentGeneratedLevel.WalkableTiles.Add(walkableTile);
+            }
+
+            foreach (var wallTile in snapshot.WallTilesList)
+            {
+                CurrentGeneratedLevel.WallTiles.Add(wallTile);
+            }
+
+            foreach (var serializedPoint in snapshot.EnemySpawnPointsList)
+            {
+                CurrentGeneratedLevel.EnemySpawnPoints.Add(
+                    new CaveGenerationPoint((CaveGenerationPointType)serializedPoint.PointTypeValue, serializedPoint.Position));
+            }
+
+            foreach (var serializedPoint in snapshot.ResourceSpawnPointsList)
+            {
+                CurrentGeneratedLevel.ResourceSpawnPoints.Add(
+                    new CaveGenerationPoint((CaveGenerationPointType)serializedPoint.PointTypeValue, serializedPoint.Position));
+            }
 
             Debug.Log(
                 $"CaveLevelRuntimeController: Cave level restored from snapshot.\n" +
@@ -241,6 +286,11 @@ namespace CindarsHope.Cave
                 $"  SpawnAnchor: {_currentSpawnAnchor}\n" +
                 $"  RunSeed: {_runManager.CaveRunSeed}\n" +
                 $"  LayoutHash: {snapshot.LayoutHash}\n" +
+                $"  Dimensions: {snapshot.Width}x{snapshot.Height}\n" +
+                $"  WalkableTiles: {snapshot.WalkableTilesList.Count}\n" +
+                $"  WallTiles: {snapshot.WallTilesList.Count}\n" +
+                $"  EnemySpawnPoints: {snapshot.EnemySpawnPointsList.Count}\n" +
+                $"  ResourceSpawnPoints: {snapshot.ResourceSpawnPointsList.Count}\n" +
                 $"  UsedSnapshot: true\n" +
                 $"  GeneratedNewSnapshot: false",
                 this);
