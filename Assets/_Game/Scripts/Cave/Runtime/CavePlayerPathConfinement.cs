@@ -10,8 +10,10 @@ namespace CindarsHope.Cave.Runtime
         [SerializeField] private Transform _playerTransform;
         [SerializeField] private CaveLevelRuntimeController _levelController;
         [SerializeField] private bool _enableConfinement = true;
-        [SerializeField] private float _horizontalHalfWidth = 0.03f;
-        [SerializeField] private float _verticalHalfHeight = 0.12f;
+        [SerializeField] private float _horizontalHalfWidth = 0.005f;
+        [SerializeField] private float _verticalHalfHeight = 0.08f;
+        [SerializeField] private bool _useLateralSamples = false;
+        [SerializeField] private bool _useVerticalSamples = true;
         [SerializeField] private bool _useDiagonalSamples = false;
         [SerializeField] private bool _logFailedSample = false;
 
@@ -43,7 +45,7 @@ namespace CindarsHope.Cave.Runtime
             }
 
             _lastValidPosition = _playerTransform.position;
-            Debug.Log($"CavePlayerPathConfinement: enabled. Player={_playerTransform.name}, LevelController={_levelController.name}, horizontalHalfWidth={_horizontalHalfWidth}, verticalHalfHeight={_verticalHalfHeight}, useDiagonalSamples={_useDiagonalSamples}.", this);
+            Debug.Log($"CavePlayerPathConfinement: enabled. Player={_playerTransform.name}, LevelController={_levelController.name}, horizontalHalfWidth={_horizontalHalfWidth}, verticalHalfHeight={_verticalHalfHeight}, useLateralSamples={_useLateralSamples}, useVerticalSamples={_useVerticalSamples}, useDiagonalSamples={_useDiagonalSamples}.", this);
         }
 
         private void LateUpdate()
@@ -118,14 +120,19 @@ namespace CindarsHope.Cave.Runtime
 
         private bool IsWorldPositionAllowed(Vector3 worldPos, CaveGeneratedLevel level)
         {
-            var samples = new List<Vector3>
+            var samples = new List<Vector3> { worldPos };
+
+            if (_useLateralSamples)
             {
-                worldPos,
-                worldPos + Vector3.left * _horizontalHalfWidth,
-                worldPos + Vector3.right * _horizontalHalfWidth,
-                worldPos + Vector3.up * _verticalHalfHeight,
-                worldPos + Vector3.down * _verticalHalfHeight
-            };
+                samples.Add(worldPos + Vector3.left * _horizontalHalfWidth);
+                samples.Add(worldPos + Vector3.right * _horizontalHalfWidth);
+            }
+
+            if (_useVerticalSamples)
+            {
+                samples.Add(worldPos + Vector3.up * _verticalHalfHeight);
+                samples.Add(worldPos + Vector3.down * _verticalHalfHeight);
+            }
 
             if (_useDiagonalSamples)
             {

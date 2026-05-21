@@ -116,8 +116,15 @@ namespace CindarsHope.Cave.Runtime
                 bossGate.CheckpointUnlockedOnDefeat,
                 spawnPos);
 
+            var strategy = "Unknown";
+            var distToExit = Vector2Int.Distance(bossGridPos, generatedLevel.Exit);
+            if (distToExit <= 1.5f) strategy = "Adjacent";
+            else if (distToExit <= 2.5f) strategy = "Diagonal";
+            else if (distToExit <= 3f) strategy = "Radius";
+            else strategy = "Fallback";
+
             Debug.Log(
-                $"CaveBossSpawner: Boss spawn resolved near ForwardExit. GateGrid={generatedLevel.Exit}, BossGrid={bossGridPos}, DistanceToGate={distanceToGate}.",
+                $"CaveBossSpawner: Boss spawn resolved near ForwardExit. GateGrid={generatedLevel.Exit}, BossGrid={bossGridPos}, DistanceToGate={distanceToGate}, Strategy={strategy}.",
                 this);
 
             Debug.Log(
@@ -128,47 +135,98 @@ namespace CindarsHope.Cave.Runtime
         private Vector2Int ResolveBossSpawnNearGate(CaveGeneratedLevel level, Transform playerTarget)
         {
             var exit = level.Exit;
-            var best = default(Vector2Int);
-            var hasBest = false;
-            var bestScore = float.MaxValue;
+            var strategy = "Fallback";
 
+            // Strategy A: Try adjacent tiles (distance = 1)
+            var adjacentTiles = new[]
+            {
+                exit + Vector2Int.up,
+                exit + Vector2Int.down,
+                exit + Vector2Int.left,
+                exit + Vector2Int.right
+            };
+
+            foreach (var tile in adjacentTiles)
+            {
+                if (IsValidBossSpawnTile(tile, level, playerTarget, exit))
+                {
+                    strategy = "Adjacent";
+                    return tile;
+                }
+            }
+
+            // Strategy B: Try diagonal tiles (distance = sqrt(2) ≈ 1.4)
+            var diagonalTiles = new[]
+            {
+                exit + new Vector2Int(1, 1),
+                exit + new Vector2Int(1, -1),
+                exit + new Vector2Int(-1, 1),
+                exit + new Vector2Int(-1, -1)
+            };
+
+            foreach (var tile in diagonalTiles)
+            {
+                if (IsValidBossSpawnTile(tile, level, playerTarget, exit))
+                {
+                    strategy = "Diagonal";
+                    return tile;
+                }
+            }
+
+            // Strategy C: Try all walkable tiles within radius 3, sorted by distance
+            var candidatesInRadius = new List<(Vector2Int tile, float distance)>();
             foreach (var tile in level.WalkableTiles)
             {
-                if (tile == level.Exit || tile == level.Entrance)
+                var dist = Vector2Int.Distance(tile, exit);
+                if (dist > 0f && dist <= 3f && IsValidBossSpawnTile(tile, level, playerTarget, exit))
                 {
-                    continue;
-                }
-
-                var distanceToExit = Vector2Int.Distance(tile, exit);
-                if (distanceToExit < 2f || distanceToExit > 6f)
-                {
-                    continue;
-                }
-
-                if (playerTarget != null)
-                {
-                    var world = GridToWorld(tile, level);
-                    if (Vector3.Distance(world, playerTarget.position) < 3f)
-                    {
-                        continue;
-                    }
-                }
-
-                var score = Mathf.Abs(distanceToExit - 3f);
-                if (score < bestScore)
-                {
-                    bestScore = score;
-                    best = tile;
-                    hasBest = true;
+                    candidatesInRadius.Add((tile, dist));
                 }
             }
 
-            if (hasBest)
+            if (candidatesInRadius.Count > 0)
             {
-                return best;
+                candidatesInRadius.Sort((a, b) => a.distance.CompareTo(b.distance));
+                strategy = "Radius";
+                return candidatesInRadius[0].tile;
             }
 
+            // Strategy D: Fallback to closest enemy spawn point
+            strategy = "Fallback";
             return FindEnemySpawnPointClosestToExit(level);
+        }
+
+        private bool IsValidBossSpawnTile(Vector2Int tile, CaveGeneratedLevel level, Transform playerTarget, Vector2Int exit)
+        {
+            // Must be walkable
+            if (!level.WalkableTiles.Contains(tile))
+            {
+                return false;
+            }
+
+            // Cannot be exit or entrance
+            if (tile == exit || tile == level.Entrance)
+            {
+                return false;
+            }
+
+            // Cannot be out of bounds
+            if (tile.x < 0 || tile.x >= level.Width || tile.y < 0 || tile.y >= level.Height)
+            {
+                return false;
+            }
+
+            // Preferably not on top of player, but don't reject if it's the best option
+            if (playerTarget != null)
+            {
+                var world = GridToWorld(tile, level);
+                if (Vector3.Distance(world, playerTarget.position) < 2f)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         private Vector2Int FindEnemySpawnPointClosestToExit(CaveGeneratedLevel level)

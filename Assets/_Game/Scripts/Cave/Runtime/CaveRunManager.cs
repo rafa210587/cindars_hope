@@ -359,6 +359,39 @@ namespace CindarsHope.Cave.Runtime
             return checkpointLevel > 0 && _state.UnlockedCheckpoints.Contains(checkpointLevel);
         }
 
+        public bool TryGetBossGateForLevel(int caveLevel, out CaveBossGateDataSO gate)
+        {
+            gate = null;
+            InitializeIfNeeded();
+            if (_bossGateRegistry == null)
+            {
+                return false;
+            }
+
+            gate = _bossGateRegistry.GetGateByLevel(caveLevel);
+            return gate != null;
+        }
+
+        public bool IsCurrentLevelBossGate()
+        {
+            return TryGetBossGateForLevel(_state.CurrentCaveLevel, out _);
+        }
+
+        public string GetCurrentBossGateId()
+        {
+            return TryGetBossGateForLevel(_state.CurrentCaveLevel, out var gate) ? gate.Id : string.Empty;
+        }
+
+        public bool IsCurrentBossGateDefeated()
+        {
+            return TryGetBossGateForLevel(_state.CurrentCaveLevel, out var gate) && IsBossDefeated(gate.Id);
+        }
+
+        public bool CanAdvancePastCurrentBossGate()
+        {
+            return CanAdvanceToLevel(_state.CurrentCaveLevel, _state.CurrentCaveLevel + 1);
+        }
+
         private void SyncSerializedToState()
         {
             _state.CurrentCaveLevel = Mathf.Max(1, _currentCaveLevel);

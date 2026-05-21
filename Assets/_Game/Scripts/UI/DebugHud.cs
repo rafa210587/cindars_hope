@@ -387,7 +387,23 @@ namespace CindarsHope.UI
             GUILayout.Label($"Checkpoints: {string.Join(",", _caveRunManager.State.UnlockedCheckpoints)}");
 
             GUILayout.Space(4f);
-            GUILayout.Label("Boss Gates:");
+            GUILayout.Label("Current Level Boss Gate:");
+            if (_caveRunManager.IsCurrentLevelBossGate())
+            {
+                var gateId = _caveRunManager.GetCurrentBossGateId();
+                var isDefeated = _caveRunManager.IsCurrentBossGateDefeated();
+                var canAdvance = _caveRunManager.CanAdvancePastCurrentBossGate();
+                var status = isDefeated ? "defeated / open" : "active / blocked";
+                GUILayout.Label($"  {gateId}: {status}");
+                GUILayout.Label($"  Can advance: {canAdvance}");
+            }
+            else
+            {
+                GUILayout.Label("  No gate at this level");
+            }
+
+            GUILayout.Space(4f);
+            GUILayout.Label("Boss Gates History:");
             if (_caveRunManager.State.BossDefeatStates.Count == 0)
             {
                 GUILayout.Label("  None");

@@ -682,13 +682,15 @@ namespace CindarsHope.Editor.SceneCreation
             SetReference(serializedConfinement, "_playerTransform", playerTransform);
             SetReference(serializedConfinement, "_levelController", controller);
             serializedConfinement.FindProperty("_enableConfinement").boolValue = true;
-            serializedConfinement.FindProperty("_horizontalHalfWidth").floatValue = 0.03f;
-            serializedConfinement.FindProperty("_verticalHalfHeight").floatValue = 0.12f;
+            serializedConfinement.FindProperty("_horizontalHalfWidth").floatValue = 0.005f;
+            serializedConfinement.FindProperty("_verticalHalfHeight").floatValue = 0.08f;
+            serializedConfinement.FindProperty("_useLateralSamples").boolValue = false;
+            serializedConfinement.FindProperty("_useVerticalSamples").boolValue = true;
             serializedConfinement.FindProperty("_useDiagonalSamples").boolValue = false;
             serializedConfinement.FindProperty("_logFailedSample").boolValue = false;
             serializedConfinement.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(pathConfinement);
-            Debug.Log($"CreateMvpCaveScene: CavePlayerPathConfinement configured on {playerTransform.gameObject.name}. horizontalHalfWidth=0.03, verticalHalfHeight=0.12, useDiagonals=false.");
+            Debug.Log($"CreateMvpCaveScene: CavePlayerPathConfinement configured on {playerTransform.gameObject.name}. horizontalHalfWidth=0.005, verticalHalfHeight=0.08, useLateral=false, useVertical=true, useDiagonals=false.");
 
             return (runManager, controller);
         }
