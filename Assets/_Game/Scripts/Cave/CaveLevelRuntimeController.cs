@@ -15,6 +15,7 @@ namespace CindarsHope.Cave
         [SerializeField] private CaveRunManager _runManager;
         [SerializeField] private CaveRuntimeMaterializer _materializer;
         [SerializeField] private CaveEnemySpawner _enemySpawner;
+        [SerializeField] private CaveBossSpawner _bossSpawner;
         [SerializeField] private CaveGenerationConfigSO _generationConfig;
         [SerializeField] private Transform _playerTransform;
         [SerializeField] private string _defaultBiomeId = "biome_cave_earth";
@@ -104,7 +105,17 @@ namespace CindarsHope.Cave
 
         private void OnMaterializationComplete(CaveRuntimeMaterializationCompleteEvent e)
         {
-            if (_enemySpawner != null && _materializer != null && _materializer.GeneratedRuntimeRoot != null)
+            if (_materializer == null || _materializer.GeneratedRuntimeRoot == null)
+            {
+                return;
+            }
+
+            if (_bossSpawner != null)
+            {
+                _bossSpawner.SpawnBossForLevel(e.GeneratedLevel, _materializer.GeneratedRuntimeRoot, _playerTransform);
+            }
+
+            if (_enemySpawner != null)
             {
                 _enemySpawner.SpawnEnemiesForLevel(e.GeneratedLevel, _materializer.GeneratedRuntimeRoot, _playerTransform);
             }

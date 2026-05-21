@@ -84,6 +84,97 @@ Testes realizados (código):
 
 Próximo passo: Validação em Unity Play Mode, bug fixes se necessário, commit e merge.
 
+---
+
+## 17. Atualizacao 2026-05-21 - PR-193 a PR-202 FASE9F Cave Boss Gates, Checkpoints, Confinement
+
+Status: Implementado completo (código) — Validação Unity Play Mode pendente.
+
+**Escopo**: Extensão do pacote PR-170-192 com sistema de boss gates, seleção de checkpoints, persistência de derrota de boss e path confinement.
+
+**Arquivos criados** (PR-193-202):
+
+Data Structures & Events:
+- `Assets/_Game/Scripts/Cave/Data/CaveBossGateDataSO.cs` - ScriptableObject para configuração de porta de boss
+- `Assets/_Game/Scripts/Cave/Data/CaveBossGateRegistrySO.cs` - Registry com lookup de boss gates
+- `Assets/_Game/Scripts/Cave/Runtime/CaveBossDefeatState.cs` - Classe serializável para persistir estado de derrota
+
+Events:
+- `Assets/_Game/Scripts/Core/Events/CaveBossDefeatedEvent.cs`
+- `Assets/_Game/Scripts/Core/Events/CaveCheckpointSelectionRequestedEvent.cs`
+- `Assets/_Game/Scripts/Core/Events/CaveCheckpointSelectedEvent.cs`
+
+Runtime Components:
+- `Assets/_Game/Scripts/Cave/Runtime/CaveBossSpawner.cs` - Spawna boss com visual diferenciado (PR-195)
+- `Assets/_Game/Scripts/Cave/Runtime/CaveBossDefeatMonitor.cs` - Detecta derrota de boss e desbloqueia checkpoints (PR-196)
+- `Assets/_Game/Scripts/Cave/Runtime/CaveCheckpointSelectionUI.cs` - MVP debug UI para seleção de checkpoint (PR-199)
+- `Assets/_Game/Scripts/Cave/Runtime/CaveEntryController.cs` - Fluxo de entrada via checkpoint selecionado (PR-200)
+- `Assets/_Game/Scripts/Cave/Runtime/CavePlayerPathConfinement.cs` - Confina player aos tiles walkable (PR-202)
+
+Validation:
+- `Assets/_Game/Scripts/Cave/Validation/CaveBossGateValidator.cs` - Valida configuração de boss gates (PR-201)
+
+**Arquivos modificados** (PR-193-202):
+
+- `Assets/_Game/Scripts/Cave/Runtime/CaveRuntimeState.cs` - Added `BossDefeatStates` dictionary (PR-193/198)
+- `Assets/_Game/Scripts/Save/CaveSaveData.cs` - Added `BossDefeatStates` list, PopulateBossDefeatStates/RestoreBossDefeatStates (PR-193/198)
+- `Assets/_Game/Scripts/Cave/Runtime/CaveRunManager.cs`:
+  - Added `_bossGateRegistry` field (PR-194)
+  - Added `IsBossDefeated(string)` method (PR-196)
+  - Added `MarkBossAsDefeated(string, int)` method (PR-196)
+  - Updated `CheckBossGate(int)` to use registry instead of hardcode (PR-197)
+  - Updated `CaptureSaveData()` to include boss states (PR-198)
+  - Updated `RestoreFromSaveData()` to restore boss states (PR-198)
+  - Updated `RestoreCachedStateIfNeeded()` to include boss states (PR-198)
+- `Assets/_Game/Scripts/Cave/CaveLevelRuntimeController.cs` - Added `_bossSpawner` field, spawns boss in OnMaterializationComplete (PR-195)
+- `Assets/_Game/Scripts/UI/DebugHud.cs` - Expanded DrawCaveSummary() to show boss gates section (PR-201)
+
+**Funcionalidades implementadas** (PR-193-202):
+
+1. ✅ **PR-193**: CaveBossGateData contracts, CaveBossDefeatState, eventos de boss/checkpoint
+2. ✅ **PR-194**: CaveBossGateRegistry com query methods, integração com CaveRunManager
+3. ✅ **PR-195**: CaveBossSpawner com cor diferenciada (laranja 1.0, 0.5, 0.0)
+4. ✅ **PR-196**: CaveBossDefeatMonitor detecta morte de boss via EnemyKilledEvent, desbloqueia checkpoint
+5. ✅ **PR-197**: CheckBossGate atualizado para usar registry, bloqueia avanço 15→16
+6. ✅ **PR-198**: BossDefeatStates persistem em save/load via CaveSaveData
+7. ✅ **PR-199**: CaveCheckpointSelectionUI com arrow keys (↑↓) e Enter para confirmar
+8. ✅ **PR-200**: CaveEntryController aguarda CaveCheckpointSelectedEvent, entra em checkpoint
+9. ✅ **PR-201**: DebugHud mostra boss gates + CaveBossGateValidator para validação
+10. ✅ **PR-202**: CavePlayerPathConfinement confina player ao boundary de WalkableTiles
+
+**Testes realizados** (código):
+- Validação de imports e namespaces
+- Verificação de contratos de serialização (BossDefeatState, CaveSaveData)
+- Verificação de integrações de eventos (CaveBossDefeatedEvent, CaveCheckpointSelectedEvent)
+- Verificação de persistência save/load (boss defeat state roundtrip)
+
+**Pendências**:
+- Validação Unity: compilação, Play Mode Farm→Cave→Boss→Checkpoint
+- Teste de boss spawn visual no CaveLevel 15
+- Teste de derrota de boss desbloqueando checkpoint 15
+- Teste de gate check bloqueando avanço 15→16
+- Teste de seleção de checkpoint e entrada no checkpoint
+- Teste de path confinement mantendo player em bounds
+- Teste de save/load preservando boss defeat state
+
+**Próximo passo recomendado**:
+1. Validar compilação no Unity.
+2. Rodar `CindarsHope/Validate/Validate MVP Data`.
+3. Play Mode: Farm → Cave (confirmar spawn Entrance no nível 1).
+4. ForwardExit 1 → 2 (confirmar spawn Entrance no nível 2).
+5. ForwardExit até level 15 (confirmar boss spawn com cor laranja).
+6. Derrotar boss (confirmar CaveBossDefeatedEvent publicado, checkpoint 15 desbloqueado).
+7. Tentar ForwardExit 15 → 16 (confirmar avanço permitido).
+8. BackExit 16 → 15 (confirmar layout restaurado do snapshot).
+9. BackExit 15 → 14 (confirmar ForwardExit spawn anchor).
+10. Cave → Farm BackExit 1 (confirmar spawn farm_from_cave).
+11. Farm → Cave (confirmar opção de seleção de checkpoint 1 e 15).
+12. Selecionar checkpoint 15 (confirmar entrada no nível 15).
+13. Save/load (confirmar boss defeat state persistido).
+14. Confirmar player confinado ao WalkableTiles.
+15. Console: sem erro vermelho, logs mostram boss defeat, checkpoint unlock, path confinement.
+16. Commit + PR contra dev (sem auto-merge).
+
 ### Próximo passo recomendado
 
 1. ✅ Clonar branch `feature/fase9f-cave-stable-run-replay-progression`

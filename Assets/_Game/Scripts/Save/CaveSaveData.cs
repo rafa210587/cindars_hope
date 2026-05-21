@@ -15,6 +15,7 @@ namespace CindarsHope.Save
         public List<int> UnlockedCheckpoints = new List<int>();
         public List<string> DepletedNodeIds = new List<string>();
         public List<SerializedVisitedLevelSnapshot> VisitedLevelSnapshots = new List<SerializedVisitedLevelSnapshot>();
+        public List<CaveBossDefeatState> BossDefeatStates = new List<CaveBossDefeatState>();
 
         public void PopulateSnapshots(Dictionary<int, VisitedLevelSnapshot> snapshots)
         {
@@ -34,6 +35,28 @@ namespace CindarsHope.Save
                 if (snapshot != null && snapshot.IsValid())
                 {
                     result[snapshot.CaveLevel] = snapshot;
+                }
+            }
+            return result;
+        }
+
+        public void PopulateBossDefeatStates(Dictionary<string, CaveBossDefeatState> bossStates)
+        {
+            BossDefeatStates.Clear();
+            foreach (var kvp in bossStates)
+            {
+                BossDefeatStates.Add(kvp.Value);
+            }
+        }
+
+        public Dictionary<string, CaveBossDefeatState> RestoreBossDefeatStates()
+        {
+            var result = new Dictionary<string, CaveBossDefeatState>();
+            foreach (var state in BossDefeatStates)
+            {
+                if (state != null && !string.IsNullOrWhiteSpace(state.BossGateId))
+                {
+                    result[state.BossGateId] = state;
                 }
             }
             return result;

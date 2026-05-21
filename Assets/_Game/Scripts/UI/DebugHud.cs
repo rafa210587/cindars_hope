@@ -384,6 +384,21 @@ namespace CindarsHope.UI
             }
 
             GUILayout.Label($"Checkpoints: {string.Join(",", _caveRunManager.State.UnlockedCheckpoints)}");
+
+            GUILayout.Space(4f);
+            GUILayout.Label("Boss Gates:");
+            if (_caveRunManager.State.BossDefeatStates.Count == 0)
+            {
+                GUILayout.Label("  None");
+            }
+            else
+            {
+                foreach (var kvp in _caveRunManager.State.BossDefeatStates)
+                {
+                    var defeated = kvp.Value.IsDefeated ? "defeated" : "active";
+                    GUILayout.Label($"  {kvp.Key} (level {kvp.Value.CaveLevel}): {defeated}");
+                }
+            }
         }
 
         private void OnInteractionPromptChanged(InteractionPromptChangedEvent evt)

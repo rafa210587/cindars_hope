@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using CindarsHope.Cave.Data;
 using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
@@ -19,6 +20,7 @@ namespace CindarsHope.Cave.Runtime
         [SerializeField] private int _deepestLayerReached = 1;
         [SerializeField] private string _caveWorldSeed;
         [SerializeField] private string _caveRunSeed;
+        [SerializeField] private CaveBossGateRegistrySO _bossGateRegistry;
 
         private readonly CaveRuntimeState _state = new CaveRuntimeState();
 
@@ -82,6 +84,11 @@ namespace CindarsHope.Cave.Runtime
                 foreach (var kvp in cachedState.VisitedLevelSnapshots)
                 {
                     _state.VisitedLevelSnapshots[kvp.Key] = kvp.Value;
+                }
+                _state.BossDefeatStates.Clear();
+                foreach (var kvp in cachedState.BossDefeatStates)
+                {
+                    _state.BossDefeatStates[kvp.Key] = kvp.Value;
                 }
 
                 _currentCaveLevel = _state.CurrentCaveLevel;
@@ -154,6 +161,7 @@ namespace CindarsHope.Cave.Runtime
                 DepletedNodeIds = new List<string>(_state.DepletedNodeIds)
             };
             saveData.PopulateSnapshots(_state.VisitedLevelSnapshots);
+            saveData.PopulateBossDefeatStates(_state.BossDefeatStates);
             return saveData;
         }
 
@@ -201,6 +209,13 @@ namespace CindarsHope.Cave.Runtime
                 _state.VisitedLevelSnapshots[kvp.Key] = kvp.Value;
             }
 
+            _state.BossDefeatStates.Clear();
+            var restoredBossStates = saveData.RestoreBossDefeatStates();
+            foreach (var kvp in restoredBossStates)
+            {
+                _state.BossDefeatStates[kvp.Key] = kvp.Value;
+            }
+
             SyncSerializedToState();
             EnsureCheckpointOne();
         }
@@ -230,21 +245,64 @@ namespace CindarsHope.Cave.Runtime
         public bool CheckBossGate(int targetLevel)
         {
             InitializeIfNeeded();
-            const int BOSS_GATE_LEVEL = 15;
 
-            if (targetLevel <= BOSS_GATE_LEVEL)
+            if (_bossGateRegistry == null)
             {
                 return true;
             }
 
-            var currentLevel = _state.CurrentCaveLevel;
-            if (currentLevel < BOSS_GATE_LEVEL)
+            var gate = _bossGateRegistry.GetGateByLevel(_state.CurrentCaveLevel);
+            if (gate == null)
             {
-                Debug.LogWarning($"CaveRunManager: cannot advance from level {currentLevel} to {targetLevel}. Boss gate at level {BOSS_GATE_LEVEL} not defeated.", this);
+                return true;
+            }
+
+            if (targetLevel <= gate.CaveLevel)
+            {
+                return true;
+            }
+
+            var isDefeated = IsBossDefeated(gate.Id);
+            if (!isDefeated)
+            {
+                Debug.LogWarning($"CaveRunManager: cannot advance from level {_state.CurrentCaveLevel} to {targetLevel}. Boss gate '{gate.Id}' at level {gate.CaveLevel} not defeated.", this);
                 return false;
             }
 
             return true;
+        }
+
+        public bool IsBossDefeated(string bossGateId)
+        {
+            InitializeIfNeeded();
+            if (string.IsNullOrWhiteSpace(bossGateId))
+            {
+                return false;
+            }
+
+            if (_state.BossDefeatStates.TryGetValue(bossGateId, out var state))
+            {
+                return state.IsDefeated;
+            }
+
+            return false;
+        }
+
+        public void MarkBossAsDefeated(string bossGateId, int caveLevel)
+        {
+            InitializeIfNeeded();
+            if (string.IsNullOrWhiteSpace(bossGateId))
+            {
+                return;
+            }
+
+            if (!_state.BossDefeatStates.ContainsKey(bossGateId))
+            {
+                _state.BossDefeatStates[bossGateId] = new CaveBossDefeatState(bossGateId, caveLevel, false);
+            }
+
+            _state.BossDefeatStates[bossGateId].MarkAsDefeated();
+            Debug.Log($"CaveRunManager: boss '{bossGateId}' at level {caveLevel} marked as defeated.", this);
         }
 
         private void SyncSerializedToState()

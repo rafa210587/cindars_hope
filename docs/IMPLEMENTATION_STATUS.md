@@ -198,6 +198,48 @@ Regras para agentes:
 
 Status: Implementado completo (código) — Validação Unity Play Mode pendente.
 
+---
+
+## 17. Atualizacao 2026-05-21 - PR-193 a PR-202 FASE9F Cave Boss Gates, Checkpoints, Confinement
+
+**Status**: Implementado completo (código) — Validação Unity Play Mode pendente.
+
+**Capacidades implementadas (PR-193-202)**:
+
+1. **Boss Gate System** (PR-193-197):
+   - CaveBossGateDataSO + CaveBossGateRegistrySO para configuração e lookup
+   - CaveBossDefeatState serializável para persistência
+   - Eventos: CaveBossDefeatedEvent, CaveCheckpointSelectionRequestedEvent, CaveCheckpointSelectedEvent
+   - CaveBossSpawner spawna boss no level 15 com cor laranja diferenciada
+   - CaveBossDefeatMonitor detecta morte do boss e desbloqueia checkpoint 15
+   - CheckBossGate bloqueia avanço 15→16 até boss derrotado
+
+2. **Checkpoint Selection & Entry** (PR-199-200):
+   - CaveCheckpointSelectionUI com MVP debug UI (arrow keys + Enter)
+   - CaveEntryController aguarda seleção e entra no checkpoint escolhido
+   - Checkpoints persistem em UnlockedCheckpoints (permanente)
+
+3. **Save/Load Persistence** (PR-198):
+   - BossDefeatStates integrado em CaveSaveData serialization
+   - Boss defeat state persiste entre save/load
+   - Checkpoints desbloqueados permanecem após KO
+
+4. **HUD & Validation** (PR-201):
+   - DebugHud expandido com seção de Boss Gates mostrando (gate id, level, status)
+   - CaveBossGateValidator valida IDs únicos, references ao enemy database
+
+5. **Path Confinement** (PR-202):
+   - CavePlayerPathConfinement confina player aos WalkableTiles
+   - Testa cada frame se player está em posição válida
+   - Reverte player à última posição válida se sair do boundary
+
+**Pendências**:
+- Validação Unity Play Mode
+- Tests de todos os 29 acceptance criteria
+- Validação de assets/prefabs para boss visual
+
+**Proxima fase**: FASE9G (Cave Bestiary, Faction Locks) ou polish de FASE9F
+
 Funcionalidades adicionadas:
 - Snapshot contracts (`IVisitedLevelSnapshot`, `VisitedLevelSnapshot` DTO)
 - LayoutHash computation para determinismo de geração
