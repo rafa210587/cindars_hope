@@ -1014,3 +1014,77 @@ Esse arquivo preserva o log operacional anterior inteiro antes da redução do l
 3. Confirmar HUD não duplica após transições (Shift+F5 save/load test).
 4. Atualizar `docs/IMPLEMENTATION_STATUS.md`.
 5. Preparar commit com mudanças de editor scripts e docs.
+
+---
+
+## 2026-05-20 - FIX_CAVE_EXITS_AND_SPARSE_RESOURCES_v1.0 Implementação Completa
+
+**Responsável:** Claude (Haiku 4.5)  
+**Branch:** `feature/fix-cave-exits-sparse-resources`  
+**Escopo:** Corrigir o loop mínimo da cave procedural com exits funcionais e resource nodes esparsos.
+
+### Alterações
+
+**CaveExitPortal.cs (R1-R4):**
+- Adicionado `_targetScenePath` field para suportar caminhos de cena no Editor.
+- Adicionado `_levelController` field para acesso a CaveLevelRuntimeController.
+- `InitializeBackExit()` e `InitializeForwardExit()` agora aceitam `CaveLevelRuntimeController`.
+- BackExit level 1: carrega FarmScene com spawn id `farm_from_cave` (corrigido de `cave_from_farm`).
+- BackExit level > 1: chama `EnterLevel(level - 1)` + `GenerateCurrentLevel()`.
+- ForwardExit: chama `EnterLevel(level + 1)` + `GenerateCurrentLevel()`.
+- `LoadTargetScene()`: usa `_targetScenePath` se disponível (R2).
+
+**CaveRuntimeMaterializer.cs (R5, R7, R8, R9):**
+- Adicionado campos: `_levelController`, `_resourceSpawnChance` (0.28), `_minResourceNodes` (1), `_maxResourceNodes` (4).
+- `MaterializeEntranceAndExit()`: passa `_levelController` aos inicializadores de exits.
+- `MaterializeResourceNodes()`: implementa spawn chance determinística com randomness baseado em seeds.
+  - Itera sobre spawn points com roll de chance.
+  - Limita máximo em `_maxResourceNodes`.
+  - Garante pelo menos `_minResourceNodes` se houver candidatos.
+- `SelectAndConfigureResourceNode()`: agora aceita spawnIndex e spawnPosition.
+- `SelectResourceNodeData()`: usa seed por posição e índice para variedade.
+  - Implementa pesos simples: Stone 70%, Copper 20%, CaveRootTree 10% (R9).
+
+**CaveRuntimeMaterializationResult.cs (R3):**
+- Adicionado campo `ResourceCandidateCount` para rastrear candidatos esparsos.
+
+**CreateMvpCaveScene.cs (R5, R6):**
+- `CreateCaveRuntime()`: configura materializer com:
+  - `_levelController = controller`.
+  - `_resourceSpawnChance = 0.28`.
+  - `_minResourceNodes = 1`, `_maxResourceNodes = 4`.
+- `EnsureResourceNodeDatabase()`: já populava Stone/Copper/CaveRootTree (validado).
+
+**DebugHud.cs (R10):**
+- `DrawCaveSummary()`: exibe:
+  - ResourceCandidates (total de candidatos).
+  - Resources (criados, após aplicar chance).
+  - BackExitPosition, ForwardExitPosition.
+
+### Testes
+
+- [x] Revisão estática de CaveExitPortal, CaveRuntimeMaterializer, resultado, editor script e HUD.
+- [x] Validação de spawn chance logic e weighted selection.
+- [x] Verificação de calls a GenerateCurrentLevel em exits.
+- [ ] Unity compilação não testada.
+- [ ] Play Mode exitsdão e regeneração não testados.
+
+### Pendências / Riscos
+
+- **Validação crítica:** Código deve compilar. Play Mode deve:
+  - BackExit level 1 voltar para Farm com spawn farm_from_cave.
+  - BackExit level > 1 voltar para nível anterior e regenerar.
+  - ForwardExit avançar e regenerar.
+  - Nodes aparecer em quantidade esparsa (1-4, não 8).
+  - Nodes variar com seed por posição.
+- **Acceptance Criteria AC1-AC14:** Aguardando testes no Unity.
+
+### Próximo passo recomendado
+
+1. Validar compilação no Unity.
+2. Rodar Create MVP FarmScene, TownScene, CaveScene.
+3. Testar Play Mode: Cave entry → BackExit → Farm, Cave entry → ForwardExit → level 2 → BackExit → level 1 → BackExit → Farm.
+4. Verificar HUD CaveLevel, ResourceCandidates, Materialized resources.
+5. Confirmar nodes aparecem com frequência baixa (1-4 em vez de 8).
+6. Confirmar Shift+R muda nodes.
+7. Regressão: Farm/Town/Cave camera, hotbar, tools, plantio, árvore, pesca.

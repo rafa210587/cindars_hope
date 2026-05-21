@@ -21,25 +21,29 @@ namespace CindarsHope.Cave
     public sealed class CaveExitPortal : MonoBehaviour, IInteractable
     {
         [SerializeField] private string _targetSceneName = "FarmScene";
+        [SerializeField] private string _targetScenePath;
         [SerializeField] private string _targetSpawnId;
         [SerializeField] private string _interactionPrompt = "Sair da caverna";
 
         private CaveExitMode _mode;
         private CaveRunManager _caveRunManager;
+        private CaveLevelRuntimeController _levelController;
 
         public string InteractionPrompt => _interactionPrompt;
 
-        public void InitializeBackExit(CaveRunManager caveRunManager)
+        public void InitializeBackExit(CaveRunManager caveRunManager, CaveLevelRuntimeController levelController)
         {
             _mode = CaveExitMode.BackExit;
             _caveRunManager = caveRunManager;
+            _levelController = levelController;
             _interactionPrompt = "Voltar";
         }
 
-        public void InitializeForwardExit(CaveRunManager caveRunManager)
+        public void InitializeForwardExit(CaveRunManager caveRunManager, CaveLevelRuntimeController levelController)
         {
             _mode = CaveExitMode.ForwardExit;
             _caveRunManager = caveRunManager;
+            _levelController = levelController;
             _interactionPrompt = "Avançar";
         }
 
@@ -89,12 +93,20 @@ namespace CindarsHope.Cave
             if (_caveRunManager.CurrentCaveLevel == 1)
             {
                 _targetSceneName = "FarmScene";
-                _targetSpawnId = "cave_from_farm";
+                _targetScenePath = "Assets/_Game/Scenes/FarmScene.unity";
+                _targetSpawnId = "farm_from_cave";
                 HandleSceneTransition();
             }
             else
             {
+                if (_levelController == null)
+                {
+                    Debug.LogWarning("CaveExitPortal: CaveLevelRuntimeController not assigned for BackExit in level > 1.", this);
+                    return;
+                }
+
                 _caveRunManager.EnterLevel(_caveRunManager.CurrentCaveLevel - 1);
+                _levelController.GenerateCurrentLevel();
                 Debug.Log($"CaveExitPortal: Entered level {_caveRunManager.CurrentCaveLevel}.", this);
             }
         }
@@ -107,7 +119,14 @@ namespace CindarsHope.Cave
                 return;
             }
 
+            if (_levelController == null)
+            {
+                Debug.LogWarning("CaveExitPortal: CaveLevelRuntimeController not assigned for ForwardExit.", this);
+                return;
+            }
+
             _caveRunManager.EnterLevel(_caveRunManager.CurrentCaveLevel + 1);
+            _levelController.GenerateCurrentLevel();
             Debug.Log($"CaveExitPortal: Entered level {_caveRunManager.CurrentCaveLevel}.", this);
         }
 
@@ -124,6 +143,12 @@ namespace CindarsHope.Cave
         private void LoadTargetScene()
         {
 #if UNITY_EDITOR
+            if (!string.IsNullOrWhiteSpace(_targetScenePath))
+            {
+                EditorSceneManager.LoadSceneInPlayMode(_targetScenePath, new LoadSceneParameters(LoadSceneMode.Single));
+                return;
+            }
+
             EditorSceneManager.LoadSceneInPlayMode(_targetSceneName, new LoadSceneParameters(LoadSceneMode.Single));
 #else
             SceneManager.LoadScene(_targetSceneName);

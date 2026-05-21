@@ -360,8 +360,11 @@ namespace CindarsHope.UI
                 GUILayout.Label("Materialized:");
                 GUILayout.Label($"  Floors: {materializationResult.CreatedFloorTiles}");
                 GUILayout.Label($"  Walls: {materializationResult.CreatedWallTiles}");
+                GUILayout.Label($"  ResourceCandidates: {materializationResult.ResourceCandidateCount}");
                 GUILayout.Label($"  Resources: {materializationResult.CreatedResourceNodes}");
                 GUILayout.Label($"  Enemies: {materializationResult.CreatedEnemies}");
+                GUILayout.Label($"  BackExit: {materializationResult.BackExitPosition}");
+                GUILayout.Label($"  ForwardExit: {materializationResult.ForwardExitPosition}");
             }
         }
 

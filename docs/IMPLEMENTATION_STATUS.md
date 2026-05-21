@@ -373,3 +373,35 @@ Pendencias reais:
 - Smoke test transições Farm ↔ Town ↔ Cave pendente.
 
 Proximo passo recomendado: validar compilacao no Unity, regenerar 3 scenes, testar Play Mode com transições e HUD, depois smoke test completo.
+
+---
+
+## 15. Atualizacao 2026-05-20 - FIX_CAVE_EXITS_AND_SPARSE_RESOURCES_v1.0
+
+Status: Implementado completo — Exits funcionais e resource nodes esparsos com regeneração de nível.
+
+Evidencia no repo:
+- `Assets/_Game/Scripts/Cave/CaveExitPortal.cs`:
+  - _targetScenePath para caminhos de cena no Editor.
+  - _levelController para regeneração de nível.
+  - BackExit level 1 usa farm_from_cave (corrigido).
+  - BackExit/ForwardExit chamam GenerateCurrentLevel().
+- `Assets/_Game/Scripts/Cave/Runtime/CaveRuntimeMaterializer.cs`:
+  - Spawn chance determinística com min/max nodes.
+  - Seed por posição/índice para variedade de recursos.
+  - Pesos: Stone 70%, Copper 20%, CaveRootTree 10%.
+  - ResourceCandidateCount rastreado.
+- `Assets/_Game/Scripts/Cave/Runtime/CaveRuntimeMaterializationResult.cs`:
+  - ResourceCandidateCount field adicionado.
+- `Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpCaveScene.cs`:
+  - Materializer configurado com spawn chance e nivel controller.
+  - ResourceNodeDatabase populado com 3 nodes.
+- `Assets/_Game/Scripts/UI/DebugHud.cs`:
+  - HUD exibe ResourceCandidates, Resources, BackExit/ForwardExit positions.
+
+Pendencias reais:
+- Unity compilacao precisa validacao.
+- Play Mode exits e regeneracao precisam teste completo.
+- Node sparsidade precisa verificacao (esperado 1-4 em vez de 8 candidatos).
+
+Proximo passo recomendado: validar compilacao, regenerar cenas, testar Play Mode exits + regeneracao, verificar HUD e node spawning, depois AC1-AC14 completo.

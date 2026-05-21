@@ -6,6 +6,7 @@ namespace CindarsHope.Cave.Runtime
     {
         public int CreatedFloorTiles { get; set; }
         public int CreatedWallTiles { get; set; }
+        public int ResourceCandidateCount { get; set; }
         public int CreatedResourceNodes { get; set; }
         public int CreatedEnemies { get; set; }
         public Vector3 BackExitPosition { get; set; }
@@ -15,6 +16,7 @@ namespace CindarsHope.Cave.Runtime
         {
             CreatedFloorTiles = 0;
             CreatedWallTiles = 0;
+            ResourceCandidateCount = 0;
             CreatedResourceNodes = 0;
             CreatedEnemies = 0;
             BackExitPosition = Vector3.zero;

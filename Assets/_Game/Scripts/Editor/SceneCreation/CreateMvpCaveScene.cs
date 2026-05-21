@@ -591,6 +591,10 @@ namespace CindarsHope.Editor.SceneCreation
             SetReference(serializedMaterializer, "_equipmentManager", equipmentManager);
             SetReference(serializedMaterializer, "_resourceNodeDatabase", resourceNodeDatabase);
             SetReference(serializedMaterializer, "_playerTransform", playerTransform);
+            SetReference(serializedMaterializer, "_levelController", controller);
+            serializedMaterializer.FindProperty("_resourceSpawnChance").floatValue = 0.28f;
+            serializedMaterializer.FindProperty("_minResourceNodes").intValue = 1;
+            serializedMaterializer.FindProperty("_maxResourceNodes").intValue = 4;
             serializedMaterializer.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(materializer);
 

@@ -27,6 +27,10 @@ namespace CindarsHope.Cave.Runtime
         [SerializeField] private EquipmentManager _equipmentManager;
         [SerializeField] private ResourceNodeDatabaseSO _resourceNodeDatabase;
         [SerializeField] private Transform _playerTransform;
+        [SerializeField] private CaveLevelRuntimeController _levelController;
+        [SerializeField, Range(0f, 1f)] private float _resourceSpawnChance = 0.28f;
+        [SerializeField] private int _minResourceNodes = 1;
+        [SerializeField] private int _maxResourceNodes = 4;
 
         private GameObject _generatedRuntimeRoot;
         private CaveExitPortal _backExitPortal;
@@ -201,6 +205,7 @@ namespace CindarsHope.Cave.Runtime
             {
                 _backExitPortal = Instantiate(_exitPortalPrefab, backExitPos, Quaternion.identity, portalsParent.transform);
                 _backExitPortal.gameObject.name = "GeneratedBackExit";
+                _backExitPortal.InitializeBackExit(_caveRunManager, _levelController);
             }
             else
             {
@@ -218,7 +223,7 @@ namespace CindarsHope.Cave.Runtime
                 collider.isTrigger = true;
 
                 _backExitPortal = backExitGO.AddComponent<CaveExitPortal>();
-                _backExitPortal.InitializeBackExit(_caveRunManager);
+                _backExitPortal.InitializeBackExit(_caveRunManager, _levelController);
             }
 
             if (_backExitPortal != null)
@@ -240,6 +245,7 @@ namespace CindarsHope.Cave.Runtime
             {
                 _forwardExitPortal = Instantiate(_exitPortalPrefab, forwardExitPos, Quaternion.identity, portalsParent.transform);
                 _forwardExitPortal.gameObject.name = "GeneratedForwardExit";
+                _forwardExitPortal.InitializeForwardExit(_caveRunManager, _levelController);
             }
             else
             {
@@ -257,7 +263,7 @@ namespace CindarsHope.Cave.Runtime
                 collider.isTrigger = true;
 
                 _forwardExitPortal = forwardExitGO.AddComponent<CaveExitPortal>();
-                _forwardExitPortal.InitializeForwardExit(_caveRunManager);
+                _forwardExitPortal.InitializeForwardExit(_caveRunManager, _levelController);
             }
 
             if (_forwardExitPortal != null)
@@ -282,8 +288,26 @@ namespace CindarsHope.Cave.Runtime
             resourceNodesParent.transform.SetParent(_generatedRuntimeRoot.transform);
             resourceNodesParent.transform.localPosition = Vector3.zero;
 
-            foreach (var spawnPoint in generatedLevel.ResourceSpawnPoints)
+            _lastMaterializationResult.ResourceCandidateCount = generatedLevel.ResourceSpawnPoints.Count;
+
+            var spawnSeedString = $"{_caveRunManager.CaveWorldSeed}_{_caveRunManager.CaveRunSeed}_{generatedLevel.CaveLevel}_resource_spawn";
+            var spawnRandom = new System.Random(spawnSeedString.GetHashCode());
+
+            int createdCount = 0;
+            for (int i = 0; i < generatedLevel.ResourceSpawnPoints.Count; i++)
             {
+                if (createdCount >= _maxResourceNodes)
+                {
+                    break;
+                }
+
+                if (spawnRandom.NextDouble() > _resourceSpawnChance)
+                {
+                    continue;
+                }
+
+                createdCount++;
+                var spawnPoint = generatedLevel.ResourceSpawnPoints[i];
                 var worldPos = GridToWorld(spawnPoint.Position, generatedLevel);
                 ResourceNode resourceNode;
 
@@ -304,7 +328,36 @@ namespace CindarsHope.Cave.Runtime
 
                 var nodeInstanceId = $"node_{generatedLevel.CaveLevel}_{spawnPoint.Position.x}_{spawnPoint.Position.y}_{generatedLevel.BiomeId}";
 
-                SelectAndConfigureResourceNode(resourceNode, generatedLevel, nodeInstanceId);
+                SelectAndConfigureResourceNode(resourceNode, generatedLevel, nodeInstanceId, i, spawnPoint.Position);
+
+                _materializedObjects.Add(resourceNode.gameObject);
+                _lastMaterializationResult.CreatedResourceNodes++;
+            }
+
+            if (createdCount < _minResourceNodes && generatedLevel.ResourceSpawnPoints.Count > 0)
+            {
+                var firstSpawnPoint = generatedLevel.ResourceSpawnPoints[0];
+                var worldPos = GridToWorld(firstSpawnPoint.Position, generatedLevel);
+                ResourceNode resourceNode;
+
+                if (_resourceNodePrefab != null)
+                {
+                    resourceNode = Instantiate(_resourceNodePrefab, worldPos, Quaternion.identity, resourceNodesParent.transform);
+                }
+                else
+                {
+                    var nodeGO = new GameObject($"ResourceNode_{firstSpawnPoint.Position.x}_{firstSpawnPoint.Position.y}");
+                    nodeGO.transform.SetParent(resourceNodesParent.transform);
+                    nodeGO.transform.position = worldPos;
+
+                    resourceNode = nodeGO.AddComponent<ResourceNode>();
+                }
+
+                resourceNode.gameObject.name = $"ResourceNode_{firstSpawnPoint.Position.x}_{firstSpawnPoint.Position.y}";
+
+                var nodeInstanceId = $"node_{generatedLevel.CaveLevel}_{firstSpawnPoint.Position.x}_{firstSpawnPoint.Position.y}_{generatedLevel.BiomeId}";
+
+                SelectAndConfigureResourceNode(resourceNode, generatedLevel, nodeInstanceId, 0, firstSpawnPoint.Position);
 
                 _materializedObjects.Add(resourceNode.gameObject);
                 _lastMaterializationResult.CreatedResourceNodes++;
@@ -314,9 +367,11 @@ namespace CindarsHope.Cave.Runtime
         private void SelectAndConfigureResourceNode(
             ResourceNode nodeInstance,
             CaveGeneratedLevel generatedLevel,
-            string nodeInstanceId)
+            string nodeInstanceId,
+            int spawnIndex,
+            Vector2Int spawnPosition)
         {
-            ResourceNodeDataSO nodeData = SelectResourceNodeData(generatedLevel);
+            ResourceNodeDataSO nodeData = SelectResourceNodeData(generatedLevel, spawnIndex, spawnPosition);
 
             if (nodeData == null)
             {
@@ -352,7 +407,7 @@ namespace CindarsHope.Cave.Runtime
                 spriteRenderer);
         }
 
-        private ResourceNodeDataSO SelectResourceNodeData(CaveGeneratedLevel generatedLevel)
+        private ResourceNodeDataSO SelectResourceNodeData(CaveGeneratedLevel generatedLevel, int spawnIndex, Vector2Int spawnPosition)
         {
             if (_resourceNodeDatabase == null)
             {
@@ -367,11 +422,51 @@ namespace CindarsHope.Cave.Runtime
                 return null;
             }
 
-            // Deterministic selection based on seeds
-            var seedString = $"{_caveRunManager.CaveWorldSeed}_{_caveRunManager.CaveRunSeed}_{generatedLevel.CaveLevel}_resources";
+            var seedString = $"{_caveRunManager.CaveWorldSeed}_{_caveRunManager.CaveRunSeed}_{generatedLevel.CaveLevel}_resources_{spawnIndex}_{spawnPosition.x}_{spawnPosition.y}";
             var deterministicRandom = new System.Random(seedString.GetHashCode());
-            var nodeList = new List<ResourceNodeDataSO>(allNodes);
-            return nodeList[deterministicRandom.Next(0, nodeList.Count)];
+
+            var roll = deterministicRandom.NextDouble();
+            ResourceNodeDataSO selectedNode = null;
+
+            foreach (var node in allNodes)
+            {
+                if (node == null) continue;
+
+                if (node.Id.Contains("stone"))
+                {
+                    if (roll < 0.70f)
+                    {
+                        selectedNode = node;
+                        break;
+                    }
+                    roll -= 0.70f;
+                }
+                else if (node.Id.Contains("copper"))
+                {
+                    if (roll < 0.20f)
+                    {
+                        selectedNode = node;
+                        break;
+                    }
+                    roll -= 0.20f;
+                }
+                else
+                {
+                    if (roll < 0.10f)
+                    {
+                        selectedNode = node;
+                        break;
+                    }
+                    roll -= 0.10f;
+                }
+            }
+
+            if (selectedNode == null && allNodes.Count > 0)
+            {
+                selectedNode = allNodes[0];
+            }
+
+            return selectedNode;
         }
 
         public void CleanupMaterialization()
