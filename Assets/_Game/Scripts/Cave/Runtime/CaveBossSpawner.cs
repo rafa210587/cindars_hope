@@ -49,16 +49,9 @@ namespace CindarsHope.Cave.Runtime
 
             _playerTarget = playerTarget;
 
-            if (generatedLevel.EnemySpawnPoints.Count == 0)
-            {
-                Debug.LogWarning($"CaveBossSpawner: No spawn points available for boss at level {generatedLevel.CaveLevel}.", this);
-                return;
-            }
-
-            var bossSpawnPoint = generatedLevel.EnemySpawnPoints[0];
-            var offsetX = generatedLevel.Width * 0.5f;
-            var offsetY = generatedLevel.Height * 0.5f;
-            var spawnPos = new Vector3(bossSpawnPoint.Position.x - offsetX, bossSpawnPoint.Position.y - offsetY, 0);
+            var bossGridPos = ResolveBossSpawnNearGate(generatedLevel, playerTarget);
+            var spawnPos = GridToWorld(bossGridPos, generatedLevel);
+            var distanceToGate = Vector2Int.Distance(bossGridPos, generatedLevel.Exit);
 
             _spawnedBoss = new GameObject($"Boss_{bossEnemyData.DisplayName}");
             _spawnedBoss.transform.position = spawnPos;
@@ -113,15 +106,115 @@ namespace CindarsHope.Cave.Runtime
             // Tag boss for identification
             _spawnedBoss.tag = "BossEnemy";
 
+            // Add death reporter to track boss kill and unlock gate
+            var bossDeathReporter = _spawnedBoss.AddComponent<CaveBossDeathReporter>();
+            bossDeathReporter.Configure(
+                _caveRunManager,
+                bossGate.Id,
+                bossEnemyData.enemyId,
+                generatedLevel.CaveLevel,
+                bossGate.CheckpointUnlockedOnDefeat,
+                spawnPos);
+
+            Debug.Log(
+                $"CaveBossSpawner: Boss spawn resolved near ForwardExit. GateGrid={generatedLevel.Exit}, BossGrid={bossGridPos}, DistanceToGate={distanceToGate}.",
+                this);
+
             Debug.Log(
                 $"CaveBossSpawner: Spawned boss {bossEnemyData.DisplayName} (gate={bossGate.Id}) at level {generatedLevel.CaveLevel} world ({spawnPos.x}, {spawnPos.y}).",
                 this);
+        }
+
+        private Vector2Int ResolveBossSpawnNearGate(CaveGeneratedLevel level, Transform playerTarget)
+        {
+            var exit = level.Exit;
+            var best = default(Vector2Int);
+            var hasBest = false;
+            var bestScore = float.MaxValue;
+
+            foreach (var tile in level.WalkableTiles)
+            {
+                if (tile == level.Exit || tile == level.Entrance)
+                {
+                    continue;
+                }
+
+                var distanceToExit = Vector2Int.Distance(tile, exit);
+                if (distanceToExit < 2f || distanceToExit > 6f)
+                {
+                    continue;
+                }
+
+                if (playerTarget != null)
+                {
+                    var world = GridToWorld(tile, level);
+                    if (Vector3.Distance(world, playerTarget.position) < 3f)
+                    {
+                        continue;
+                    }
+                }
+
+                var score = Mathf.Abs(distanceToExit - 3f);
+                if (score < bestScore)
+                {
+                    bestScore = score;
+                    best = tile;
+                    hasBest = true;
+                }
+            }
+
+            if (hasBest)
+            {
+                return best;
+            }
+
+            return FindEnemySpawnPointClosestToExit(level);
+        }
+
+        private Vector2Int FindEnemySpawnPointClosestToExit(CaveGeneratedLevel level)
+        {
+            if (level.EnemySpawnPoints.Count == 0)
+            {
+                return level.Exit;
+            }
+
+            var exit = level.Exit;
+            var bestPoint = level.EnemySpawnPoints[0].Position;
+            var bestDist = Vector2Int.Distance(bestPoint, exit);
+
+            for (int i = 1; i < level.EnemySpawnPoints.Count; i++)
+            {
+                var point = level.EnemySpawnPoints[i].Position;
+                var dist = Vector2Int.Distance(point, exit);
+                if (dist < bestDist)
+                {
+                    bestDist = dist;
+                    bestPoint = point;
+                }
+            }
+
+            return bestPoint;
+        }
+
+        private Vector3 GridToWorld(Vector2Int gridPos, CaveGeneratedLevel level)
+        {
+            var offsetX = level.Width * 0.5f;
+            var offsetY = level.Height * 0.5f;
+            return new Vector3(gridPos.x - offsetX, gridPos.y - offsetY, 0);
         }
 
         private EnemyDataSO GetBossEnemyData(string bossEnemyId)
         {
             if (_enemyDatabase != null && _enemyDatabase.All.Count > 0)
             {
+                foreach (var enemy in _enemyDatabase.All)
+                {
+                    if (enemy != null && enemy.enemyId == bossEnemyId)
+                    {
+                        return enemy;
+                    }
+                }
+
                 foreach (var enemy in _enemyDatabase.All)
                 {
                     if (enemy != null && enemy.name == bossEnemyId)
@@ -133,6 +226,7 @@ namespace CindarsHope.Cave.Runtime
 
             if (_fallbackEnemyData != null)
             {
+                Debug.LogWarning($"CaveBossSpawner: BossEnemyId '{bossEnemyId}' not found. Using fallback enemy data. Boss death may not be uniquely trackable.", this);
                 return _fallbackEnemyData;
             }
 
