@@ -64,7 +64,7 @@ namespace CindarsHope.Editor.SceneCreation
 
             CreateGround();
             CreateBounds();
-            CreateMainCamera();
+            CreateMainCamera(playerTransform);
             CreateSpawnPoints(playerTransform);
             CreatePortals();
             CreateNpcs();
@@ -406,7 +406,7 @@ namespace CindarsHope.Editor.SceneCreation
             collider.size = size;
         }
 
-        private static void CreateMainCamera()
+        private static void CreateMainCamera(Transform playerTransform)
         {
             var cameraObject = new GameObject("Main Camera");
             cameraObject.tag = "MainCamera";
@@ -416,6 +416,13 @@ namespace CindarsHope.Editor.SceneCreation
             camera.orthographic = true;
             camera.orthographicSize = 7.5f;
             camera.backgroundColor = new Color(0.12f, 0.15f, 0.18f);
+
+            var cameraFollow = cameraObject.AddComponent<CindarsHope.Camera.CameraFollow2D>();
+            var serializedFollow = new SerializedObject(cameraFollow);
+            SetReference(serializedFollow, "_target", playerTransform);
+            serializedFollow.FindProperty("_snapOnStart").boolValue = true;
+            serializedFollow.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(cameraFollow);
         }
 
         private static void CreateSpawnPoints(Transform playerTransform)

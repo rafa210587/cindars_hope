@@ -78,7 +78,7 @@ namespace CindarsHope.Editor.SceneCreation
                 timeManager,
                 saveManager);
             CreateBounds();
-            CreateMainCamera();
+            CreateMainCamera(playerTransform);
             CreateSceneRuntimeInstaller(
                 farmPlotRegistry,
                 treeRegistry,
@@ -854,7 +854,7 @@ namespace CindarsHope.Editor.SceneCreation
             collider.size = size;
         }
 
-        private static void CreateMainCamera()
+        private static void CreateMainCamera(Transform playerTransform)
         {
             var cameraObject = new GameObject("Main Camera");
             cameraObject.tag = "MainCamera";
@@ -864,6 +864,13 @@ namespace CindarsHope.Editor.SceneCreation
             camera.orthographic = true;
             camera.orthographicSize = 8.5f;
             camera.backgroundColor = new Color(0.11f, 0.13f, 0.14f);
+
+            var cameraFollow = cameraObject.AddComponent<CindarsHope.Camera.CameraFollow2D>();
+            var serializedFollow = new SerializedObject(cameraFollow);
+            SetReference(serializedFollow, "_target", playerTransform);
+            serializedFollow.FindProperty("_snapOnStart").boolValue = true;
+            serializedFollow.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(cameraFollow);
         }
 
         private static void SetReference(SerializedObject serializedObject, string propertyName, Object value)

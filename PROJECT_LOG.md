@@ -959,3 +959,58 @@ Esse arquivo preserva o log operacional anterior inteiro antes da redução do l
 3. Atualizar `docs/IMPLEMENTATION_STATUS.md` para marcar Cave Procedural como `Implementado parcial` com status de camera/visual confirmado.
 4. Executar smoke tests completos se Play Mode passar.
 5. Preparar commit e branch final.
+
+---
+
+## 2026-05-20 - FIX_GLOBAL_CAMERA_FOLLOW_MVP_v1.0 Implementação Completa
+
+**Responsável:** Claude (Haiku 4.5)  
+**Branch:** `feature/fix-global-camera-follow-mvp`  
+**Escopo:** Padronizar câmera MVP em FarmScene, TownScene e CaveScene para seguir/centralizar no Player usando CameraFollow2D.
+
+### Alterações
+
+**CreateMvpFarmScene.cs (R1):**
+- Atualizado call de `CreateMainCamera()` para `CreateMainCamera(playerTransform)` na linha 81.
+- Assinatura do método `CreateMainCamera()` alterada para aceitar `Transform playerTransform`.
+- Adicionado setup de `CameraFollow2D` via SerializedObject:
+  - `AddComponent<CindarsHope.Camera.CameraFollow2D>()`.
+  - SetReference() para `_target = playerTransform`.
+  - `_snapOnStart = true`.
+  - `ApplyModifiedPropertiesWithoutUndo()` e `EditorUtility.SetDirty()`.
+
+**CreateMvpTownScene.cs (R2):**
+- Atualizado call de `CreateMainCamera()` para `CreateMainCamera(playerTransform)` na linha 67.
+- Assinatura do método `CreateMainCamera()` alterada para aceitar `Transform playerTransform`.
+- Adicionado setup de `CameraFollow2D` idêntico ao Farm, mantendo `orthographicSize = 7.5f`.
+
+**CreateMvpCaveScene.cs (R3):**
+- Verificado: já chama `CreateMainCamera(playerTransform)` corretamente.
+- Verificado: método já tem CameraFollow2D implementado e configurado.
+- Sem alterações necessárias.
+
+### Testes
+
+- [x] Revisão estática de código nos 3 arquivos.
+- [x] Validação de assinatura de método e chamadas.
+- [x] Verificação de CameraFollow2D setup idêntico entre Farm/Town.
+- [x] Confirmação de Cave já estar correto.
+- [ ] Unity compilação não testada.
+- [ ] Play Mode Farm/Town/Cave follow não testado.
+
+### Pendências / Riscos
+
+- **Validação crítica:** Código deve compilar. Play Mode deve mostrar:
+  - Farm: câmera segue player suavemente.
+  - Town: câmera segue player suavemente.
+  - Cave: câmera continua seguindo player (já funcionava).
+- **Transições:** Farm ↔ Town ↔ Cave devem funcionar sem erros.
+- **HUD:** Não deve duplicar em transições.
+
+### Próximo passo recomendado
+
+1. Validar compilação no Unity: regenerar FarmScene, TownScene, CaveScene via menus editor.
+2. Testar Play Mode: mover player em Farm → Town → Cave e voltar. Camera deve seguir em todas as cenas.
+3. Confirmar HUD não duplica após transições (Shift+F5 save/load test).
+4. Atualizar `docs/IMPLEMENTATION_STATUS.md`.
+5. Preparar commit com mudanças de editor scripts e docs.

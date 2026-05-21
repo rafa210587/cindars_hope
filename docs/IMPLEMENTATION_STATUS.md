@@ -350,3 +350,26 @@ Pendencias reais:
 Proximo passo recomendado: validar compilacao no Unity, testar Play Mode (verificar smooth camera, enemy colors, spawn order), executar smoke test completo se Play Mode passar.
 
 Marcos futuros: Marco 8+ (loot tables, level scaling, KO, boss, checkpoints) conforme prioridade.
+
+---
+
+## 14. Atualizacao 2026-05-20 - FIX_GLOBAL_CAMERA_FOLLOW_MVP_v1.0
+
+Status: Implementado completo — Farm/Town/Cave agora padronizadas com CameraFollow2D.
+
+Evidencia no repo:
+- `Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpFarmScene.cs`:
+  - CreateMainCamera() alterado para aceitar Transform playerTransform.
+  - CameraFollow2D setup via SerializedObject idêntico a Cave.
+- `Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpTownScene.cs`:
+  - CreateMainCamera() alterado para aceitar Transform playerTransform.
+  - CameraFollow2D setup via SerializedObject idêntico a Farm/Cave.
+- `Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpCaveScene.cs`:
+  - Verificado: já tem CreateMainCamera(playerTransform) e CameraFollow2D setup correto.
+
+Pendencias reais:
+- Unity compilacao de 3 editor scripts precisa validacao.
+- Play Mode Farm/Town/Cave follow precisa teste visual (mover player, transições, HUD não duplicar).
+- Smoke test transições Farm ↔ Town ↔ Cave pendente.
+
+Proximo passo recomendado: validar compilacao no Unity, regenerar 3 scenes, testar Play Mode com transições e HUD, depois smoke test completo.
