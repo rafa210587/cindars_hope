@@ -72,7 +72,7 @@ namespace CindarsHope.Cave
 
         private void OnSceneTransitionStarted(SceneTransitionStartedEvent evt)
         {
-            DetermineSpawnAnchorFromTransition(evt.SourceSceneName, evt.TargetSceneName, evt.SpawnId);
+            DetermineSpawnAnchorFromTransition(evt.SourceSceneName, evt.TargetSceneName, evt.TargetSpawnId);
         }
 
         private void DetermineSpawnAnchorFromTransition(string sourceScene, string targetScene, string spawnId)

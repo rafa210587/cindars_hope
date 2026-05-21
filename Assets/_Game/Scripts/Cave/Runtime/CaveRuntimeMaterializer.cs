@@ -505,34 +505,38 @@ namespace CindarsHope.Cave.Runtime
             };
         }
 
-        private Vector2Int ResolvePlayerSpawnGrid(Vector2Int anchorGridPos, CaveSpawnAnchor anchor, CaveGeneratedLevel generatedLevel)
+        private Vector2Int ResolvePlayerSpawnGrid(
+            Vector2Int anchorGridPos,
+            CaveSpawnAnchor anchor,
+            CaveGeneratedLevel generatedLevel)
         {
-            if (generatedLevel.WalkableTiles.Contains(anchorGridPos))
-            {
-                return anchorGridPos;
-            }
-
             var safeSpawn = FindSafeAdjacentWalkableTile(anchorGridPos, generatedLevel);
-            if (safeSpawn != Vector2Int.zero || generatedLevel.WalkableTiles.Contains(Vector2Int.zero))
+
+            if (safeSpawn.HasValue)
             {
-                return safeSpawn != Vector2Int.zero ? safeSpawn : Vector2Int.zero;
+                return safeSpawn.Value;
             }
 
             if (generatedLevel.WalkableTiles.Count > 0)
             {
                 Debug.LogWarning(
-                    $"CaveRuntimeMaterializer: No safe spawn found near anchor {anchor} at {anchorGridPos}. Using first walkable tile as fallback.",
+                    $"CaveRuntimeMaterializer: No safe adjacent spawn found near anchor {anchor} at {anchorGridPos}. Using first walkable tile as fallback.",
                     this);
-                return generatedLevel.WalkableTiles[0];
+
+                foreach (var tile in generatedLevel.WalkableTiles)
+                {
+                    return tile;
+                }
             }
 
             Debug.LogError(
                 $"CaveRuntimeMaterializer: No walkable tiles available in level {generatedLevel.CaveLevel}. Using anchor position as last resort.",
                 this);
+
             return anchorGridPos;
         }
 
-        private Vector2Int FindSafeAdjacentWalkableTile(Vector2Int centerPos, CaveGeneratedLevel generatedLevel)
+        private Vector2Int? FindSafeAdjacentWalkableTile(Vector2Int centerPos, CaveGeneratedLevel generatedLevel)
         {
             var directions = new Vector2Int[]
             {
@@ -543,19 +547,23 @@ namespace CindarsHope.Cave.Runtime
                 new Vector2Int(1, 1),
                 new Vector2Int(1, -1),
                 new Vector2Int(-1, 1),
-                new Vector2Int(-1, -1)
+                new Vector2Int(-1, -1),
+                new Vector2Int(2, 0),
+                new Vector2Int(-2, 0),
+                new Vector2Int(0, 2),
+                new Vector2Int(0, -2)
             };
 
-            foreach (var dir in directions)
+            foreach (var direction in directions)
             {
-                var candidatePos = centerPos + dir;
-                if (generatedLevel.WalkableTiles.Contains(candidatePos))
+                var candidate = centerPos + direction;
+                if (generatedLevel.WalkableTiles.Contains(candidate))
                 {
-                    return candidatePos;
+                    return candidate;
                 }
             }
 
-            return Vector2Int.zero;
+            return null;
         }
 
         public void CleanupMaterialization()
