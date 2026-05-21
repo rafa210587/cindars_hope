@@ -1088,3 +1088,41 @@ Esse arquivo preserva o log operacional anterior inteiro antes da redução do l
 5. Confirmar nodes aparecem com frequência baixa (1-4 em vez de 8).
 6. Confirmar Shift+R muda nodes.
 7. Regressão: Farm/Town/Cave camera, hotbar, tools, plantio, árvore, pesca.
+
+---
+
+## 2026-05-20 - FIX_CAVE_FORWARD_EXIT_LEVEL_ADVANCE_v1.0 Patch Completo
+
+**Responsável:** Claude (Haiku 4.5)  
+**Branch:** `feature/fix-cave-exits-sparse-resources`  
+**Escopo:** Reforçar avanço de nível, adicionar fallback GetComponent e melhorar logging/prompts.
+
+### Alterações
+
+**CaveRuntimeMaterializer.cs:**
+- Adicionado fallback GetComponent em Materialize() para _caveRunManager e _levelController.
+- Seguro porque CaveRuntime contém ambos os componentes no mesmo GameObject.
+
+**CaveExitPortal.cs:**
+- Prompts melhorados: "Voltar / Sair" (BackExit) e "Avançar para próximo nível" (ForwardExit).
+- HandleBackExit/HandleForwardExit: logging detalhado de transição de nível.
+- Mensagens de erro melhoradas para regeneração de cena.
+
+### Validação Rápida
+
+1. Regenerar CaveScene via Create MVP menu.
+2. Entrar na Cave pela Farm.
+3. Aproximar do ForwardExit (magenta) → HUD exibe "Avançar para próximo nível".
+4. Pressionar E → Console mostra transição Level 1 → 2.
+5. Layout regenera.
+6. BackExit volta para Level 1.
+7. BackExit volta para Farm.
+
+### Pendências
+
+- Unity compilação e Play Mode validation.
+- Verificar se prompts descritivos aparecem corretamente no HUD.
+
+### Próximo passo
+
+Regenerar cena, testar Play Mode com logging completo, validar transições.

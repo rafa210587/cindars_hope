@@ -36,7 +36,7 @@ namespace CindarsHope.Cave
             _mode = CaveExitMode.BackExit;
             _caveRunManager = caveRunManager;
             _levelController = levelController;
-            _interactionPrompt = "Voltar";
+            _interactionPrompt = "Voltar / Sair";
         }
 
         public void InitializeForwardExit(CaveRunManager caveRunManager, CaveLevelRuntimeController levelController)
@@ -44,7 +44,7 @@ namespace CindarsHope.Cave
             _mode = CaveExitMode.ForwardExit;
             _caveRunManager = caveRunManager;
             _levelController = levelController;
-            _interactionPrompt = "Avançar";
+            _interactionPrompt = "Avançar para próximo nível";
         }
 
         public bool CanInteract(GameObject interactor)
@@ -95,19 +95,26 @@ namespace CindarsHope.Cave
                 _targetSceneName = "FarmScene";
                 _targetScenePath = "Assets/_Game/Scenes/FarmScene.unity";
                 _targetSpawnId = "farm_from_cave";
+                Debug.Log($"CaveExitPortal: BackExit level 1. Loading FarmScene with spawn {_targetSpawnId}.", this);
                 HandleSceneTransition();
             }
             else
             {
                 if (_levelController == null)
                 {
-                    Debug.LogWarning("CaveExitPortal: CaveLevelRuntimeController not assigned for BackExit in level > 1.", this);
+                    Debug.LogError("CaveExitPortal: CaveLevelRuntimeController not assigned for BackExit in level > 1. Regenerate CaveScene.", this);
                     return;
                 }
 
-                _caveRunManager.EnterLevel(_caveRunManager.CurrentCaveLevel - 1);
+                var currentLevel = _caveRunManager.CurrentCaveLevel;
+                var previousLevel = currentLevel - 1;
+
+                Debug.Log($"CaveExitPortal: BackExit interacted. Level {currentLevel} -> {previousLevel}.", this);
+
+                _caveRunManager.EnterLevel(previousLevel);
                 _levelController.GenerateCurrentLevel();
-                Debug.Log($"CaveExitPortal: Entered level {_caveRunManager.CurrentCaveLevel}.", this);
+
+                Debug.Log($"CaveExitPortal: BackExit completed. CurrentLevel={_caveRunManager.CurrentCaveLevel}.", this);
             }
         }
 
@@ -121,13 +128,19 @@ namespace CindarsHope.Cave
 
             if (_levelController == null)
             {
-                Debug.LogWarning("CaveExitPortal: CaveLevelRuntimeController not assigned for ForwardExit.", this);
+                Debug.LogError("CaveExitPortal: CaveLevelRuntimeController not assigned for ForwardExit. Regenerate CaveScene.", this);
                 return;
             }
 
-            _caveRunManager.EnterLevel(_caveRunManager.CurrentCaveLevel + 1);
+            var currentLevel = _caveRunManager.CurrentCaveLevel;
+            var nextLevel = currentLevel + 1;
+
+            Debug.Log($"CaveExitPortal: ForwardExit interacted. Level {currentLevel} -> {nextLevel}.", this);
+
+            _caveRunManager.EnterLevel(nextLevel);
             _levelController.GenerateCurrentLevel();
-            Debug.Log($"CaveExitPortal: Entered level {_caveRunManager.CurrentCaveLevel}.", this);
+
+            Debug.Log($"CaveExitPortal: ForwardExit completed. CurrentLevel={_caveRunManager.CurrentCaveLevel}.", this);
         }
 
         private void HandleSceneTransition()

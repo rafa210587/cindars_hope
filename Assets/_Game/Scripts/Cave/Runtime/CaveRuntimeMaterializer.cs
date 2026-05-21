@@ -54,6 +54,16 @@ namespace CindarsHope.Cave.Runtime
                 return;
             }
 
+            if (_caveRunManager == null)
+            {
+                _caveRunManager = GetComponent<CaveRunManager>();
+            }
+
+            if (_levelController == null)
+            {
+                _levelController = GetComponent<CaveLevelRuntimeController>();
+            }
+
             CleanupPreviousMaterialization();
 
             _lastMaterializationResult = new CaveRuntimeMaterializationResult();
