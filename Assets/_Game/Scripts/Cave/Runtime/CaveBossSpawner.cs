@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using CindarsHope.Combat;
 using CindarsHope.Cave.Data;
 using CindarsHope.Cave.Generation;
@@ -135,7 +136,6 @@ namespace CindarsHope.Cave.Runtime
         private Vector2Int ResolveBossSpawnNearGate(CaveGeneratedLevel level, Transform playerTarget)
         {
             var exit = level.Exit;
-            var strategy = "Fallback";
 
             // Strategy A: Try adjacent tiles (distance = 1)
             var adjacentTiles = new[]
@@ -150,7 +150,6 @@ namespace CindarsHope.Cave.Runtime
             {
                 if (IsValidBossSpawnTile(tile, level, playerTarget, exit))
                 {
-                    strategy = "Adjacent";
                     return tile;
                 }
             }
@@ -168,7 +167,6 @@ namespace CindarsHope.Cave.Runtime
             {
                 if (IsValidBossSpawnTile(tile, level, playerTarget, exit))
                 {
-                    strategy = "Diagonal";
                     return tile;
                 }
             }
@@ -187,12 +185,10 @@ namespace CindarsHope.Cave.Runtime
             if (candidatesInRadius.Count > 0)
             {
                 candidatesInRadius.Sort((a, b) => a.distance.CompareTo(b.distance));
-                strategy = "Radius";
                 return candidatesInRadius[0].tile;
             }
 
             // Strategy D: Fallback to closest enemy spawn point
-            strategy = "Fallback";
             return FindEnemySpawnPointClosestToExit(level);
         }
 
