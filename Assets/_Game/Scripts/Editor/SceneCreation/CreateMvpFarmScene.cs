@@ -394,6 +394,7 @@ namespace CindarsHope.Editor.SceneCreation
             spawnObject.transform.position = position;
 
             var spawnPoint = spawnObject.AddComponent<SceneSpawnPoint>();
+
             var serializedSpawn = new SerializedObject(spawnPoint);
             var spawnIdProperty = serializedSpawn.FindProperty("_spawnId");
             if (spawnIdProperty != null)
@@ -401,6 +402,16 @@ namespace CindarsHope.Editor.SceneCreation
                 spawnIdProperty.stringValue = spawnId;
                 serializedSpawn.ApplyModifiedPropertiesWithoutUndo();
             }
+            else
+            {
+                Debug.LogWarning($"CreateSceneSpawnPoint: Could not find _spawnId property on {spawnPoint.GetType().Name}. Using reflection fallback.", spawnPoint);
+                var field = spawnPoint.GetType().GetField("_spawnId", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                if (field != null)
+                {
+                    field.SetValue(spawnPoint, spawnId);
+                }
+            }
+
             EditorUtility.SetDirty(spawnPoint);
             return spawnPoint;
         }

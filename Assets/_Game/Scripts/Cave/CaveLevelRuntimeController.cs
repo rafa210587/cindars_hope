@@ -149,12 +149,12 @@ namespace CindarsHope.Cave
 
             foreach (var point in CurrentGeneratedLevel.EnemySpawnPoints)
             {
-                snapshot.AddEnemySpawn($"enemy_{point.X}_{point.Y}", new Vector2(point.X, point.Y), CurrentGeneratedLevel.CaveLevel);
+                snapshot.AddEnemySpawn($"enemy_{point.Position.x}_{point.Position.y}", new Vector2(point.Position.x, point.Position.y), CurrentGeneratedLevel.CaveLevel);
             }
 
             foreach (var point in CurrentGeneratedLevel.ResourceSpawnPoints)
             {
-                snapshot.AddResourceNode($"node_{point.X}_{point.Y}", new Vector2(point.X, point.Y), point.PointType.ToString());
+                snapshot.AddResourceNode($"node_{point.Position.x}_{point.Position.y}", new Vector2(point.Position.x, point.Position.y), point.PointType.ToString());
             }
 
             foreach (var depletedId in _runManager.State.DepletedNodeIds)
@@ -250,7 +250,7 @@ namespace CindarsHope.Cave
 
         private void RefreshDailyResourceNodes()
         {
-            var allNodes = FindObjectsByType<ResourceNode>(FindObjectsSortMode.None);
+            var allNodes = FindObjectsByType<ResourceNode>();
             var refreshedCount = 0;
             foreach (var node in allNodes)
             {
