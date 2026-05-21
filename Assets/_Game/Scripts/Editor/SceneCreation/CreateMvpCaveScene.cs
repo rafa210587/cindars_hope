@@ -638,10 +638,12 @@ namespace CindarsHope.Editor.SceneCreation
             SetReference(serializedDebugSkip, "_levelController", controller);
             serializedDebugSkip.FindProperty("_enableDebugLevelSkip").boolValue = true;
             serializedDebugSkip.FindProperty("_nextLevelKey").intValue = (int)KeyCode.P;
+            serializedDebugSkip.FindProperty("_alternateNextLevelKey").intValue = (int)KeyCode.F2;
             serializedDebugSkip.FindProperty("_bypassBossGateForDebugSkip").boolValue = true;
+            serializedDebugSkip.FindProperty("_showDebugSkipButton").boolValue = true;
             serializedDebugSkip.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(debugSkipController);
-            Debug.Log($"CreateMvpCaveScene: CaveDebugLevelSkipController configured on {runtimeObject.name}. Key={KeyCode.P}, enableDebugLevelSkip=true, bypassBossGate=true.");
+            Debug.Log($"CreateMvpCaveScene: CaveDebugLevelSkipController configured on {runtimeObject.name}. Keys=P/F2, Button=enabled, enableDebugLevelSkip=true, bypassBossGate=true.");
 
             // Create Player Path Confinement
             var pathConfinement = playerTransform.gameObject.AddComponent<CavePlayerPathConfinement>();
@@ -649,9 +651,12 @@ namespace CindarsHope.Editor.SceneCreation
             SetReference(serializedConfinement, "_playerTransform", playerTransform);
             SetReference(serializedConfinement, "_levelController", controller);
             serializedConfinement.FindProperty("_enableConfinement").boolValue = true;
+            serializedConfinement.FindProperty("_playerHalfWidth").floatValue = 0.15f;
+            serializedConfinement.FindProperty("_playerHalfHeight").floatValue = 0.25f;
+            serializedConfinement.FindProperty("_wallContactTolerance").floatValue = 0.10f;
             serializedConfinement.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(pathConfinement);
-            Debug.Log($"CreateMvpCaveScene: CavePlayerPathConfinement configured on {playerTransform.gameObject.name}. enableConfinement=true.");
+            Debug.Log($"CreateMvpCaveScene: CavePlayerPathConfinement configured on {playerTransform.gameObject.name}. halfWidth=0.15, halfHeight=0.25, tolerance=0.10.");
 
             return (runManager, controller);
         }

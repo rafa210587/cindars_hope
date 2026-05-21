@@ -9,6 +9,9 @@ namespace CindarsHope.Cave.Runtime
         [SerializeField] private Transform _playerTransform;
         [SerializeField] private CaveLevelRuntimeController _levelController;
         [SerializeField] private bool _enableConfinement = true;
+        [SerializeField] private float _playerHalfWidth = 0.15f;
+        [SerializeField] private float _playerHalfHeight = 0.25f;
+        [SerializeField] private float _wallContactTolerance = 0.10f;
 
         private Vector3 _lastValidPosition;
         private float _lastLogTime;
@@ -31,7 +34,7 @@ namespace CindarsHope.Cave.Runtime
             }
 
             _lastValidPosition = _playerTransform.position;
-            Debug.Log($"CavePlayerPathConfinement: enabled. Player={_playerTransform.name}, LevelController={_levelController.name}.", this);
+            Debug.Log($"CavePlayerPathConfinement: enabled. Player={_playerTransform.name}, LevelController={_levelController.name}, halfWidth={_playerHalfWidth}, halfHeight={_playerHalfHeight}, tolerance={_wallContactTolerance}.", this);
         }
 
         private void LateUpdate()
@@ -48,9 +51,8 @@ namespace CindarsHope.Cave.Runtime
             }
 
             var playerWorldPos = _playerTransform.position;
-            var playerGridPos = WorldToGridPosition(playerWorldPos, generatedLevel);
 
-            if (IsPositionWalkable(playerGridPos, generatedLevel))
+            if (IsWorldPositionAllowed(playerWorldPos, generatedLevel))
             {
                 _lastValidPosition = playerWorldPos;
                 return;
@@ -60,9 +62,36 @@ namespace CindarsHope.Cave.Runtime
 
             if (Time.time - _lastLogTime > LogRateLimitSeconds)
             {
-                Debug.Log($"CavePlayerPathConfinement: Confined player to last valid position {_lastValidPosition}.", this);
+                var playerGridPos = WorldToGridPosition(playerWorldPos, generatedLevel);
+                Debug.Log($"CavePlayerPathConfinement: Confined player. Current={playerWorldPos}, LastValid={_lastValidPosition}, Grid={playerGridPos}, Reason=outside walkable samples.", this);
                 _lastLogTime = Time.time;
             }
+        }
+
+        private bool IsWorldPositionAllowed(Vector3 worldPos, CaveGeneratedLevel level)
+        {
+            var xOffset = Mathf.Max(0f, _playerHalfWidth - _wallContactTolerance);
+            var yOffset = Mathf.Max(0f, _playerHalfHeight - _wallContactTolerance);
+
+            var samples = new[]
+            {
+                worldPos,
+                worldPos + Vector3.left * xOffset,
+                worldPos + Vector3.right * xOffset,
+                worldPos + Vector3.up * yOffset,
+                worldPos + Vector3.down * yOffset
+            };
+
+            foreach (var sample in samples)
+            {
+                var grid = WorldToGridPosition(sample, level);
+                if (!IsGridWalkable(grid, level))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         private Vector2Int WorldToGridPosition(Vector3 worldPos, CaveGeneratedLevel generatedLevel)
@@ -76,7 +105,7 @@ namespace CindarsHope.Cave.Runtime
             return new Vector2Int(gridX, gridY);
         }
 
-        private bool IsPositionWalkable(Vector2Int gridPos, CaveGeneratedLevel generatedLevel)
+        private bool IsGridWalkable(Vector2Int gridPos, CaveGeneratedLevel generatedLevel)
         {
             if (gridPos.x < 0 || gridPos.x >= generatedLevel.Width ||
                 gridPos.y < 0 || gridPos.y >= generatedLevel.Height)

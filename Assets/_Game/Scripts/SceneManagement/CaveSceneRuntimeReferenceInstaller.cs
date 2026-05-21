@@ -49,6 +49,12 @@ namespace CindarsHope.SceneManagement
                 Debug.LogWarning("CaveSceneRuntimeReferenceInstaller: one or more runtime managers are missing during SaveManager rebind.", this);
             }
 
+            // Try to rebind CaveDebugLevelSkipController locally if null
+            if (_caveDebugLevelSkipController == null && _caveLevelRuntimeController != null)
+            {
+                _caveDebugLevelSkipController = _caveLevelRuntimeController.GetComponent<CaveDebugLevelSkipController>();
+            }
+
             var interactionSystem = _playerTransform != null ? _playerTransform.GetComponent<InteractionSystem>() : null;
             DebugHud.RebindExisting(playerManager, inventoryManager, hungerManager, interactionSystem, timeManager, saveManager);
             DebugHud.RebindExistingCaveRuntime(_caveRunManager, _caveLevelRuntimeController, _caveDebugLevelSkipController);

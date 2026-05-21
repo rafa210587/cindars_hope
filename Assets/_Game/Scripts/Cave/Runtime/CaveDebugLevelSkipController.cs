@@ -11,7 +11,9 @@ namespace CindarsHope.Cave.Runtime
         [SerializeField] private CaveLevelRuntimeController _levelController;
         [SerializeField] private bool _enableDebugLevelSkip = true;
         [SerializeField] private KeyCode _nextLevelKey = KeyCode.P;
+        [SerializeField] private KeyCode _alternateNextLevelKey = KeyCode.F2;
         [SerializeField] private bool _bypassBossGateForDebugSkip = true;
+        [SerializeField] private bool _showDebugSkipButton = true;
 
         private string _lastDebugAction = "none";
         private bool _disabledLogged = false;
@@ -20,7 +22,7 @@ namespace CindarsHope.Cave.Runtime
         {
             var hasRunManager = _caveRunManager != null;
             var hasLevelController = _levelController != null;
-            Debug.Log($"CaveDebugLevelSkipController: enabled={_enableDebugLevelSkip}, key={_nextLevelKey}, bypassBossGate={_bypassBossGateForDebugSkip}, hasRunManager={hasRunManager}, hasLevelController={hasLevelController}.", this);
+            Debug.Log($"CaveDebugLevelSkipController: enabled={_enableDebugLevelSkip}, key={_nextLevelKey}, altKey={_alternateNextLevelKey}, bypassBossGate={_bypassBossGateForDebugSkip}, hasRunManager={hasRunManager}, hasLevelController={hasLevelController}.", this);
         }
 
         private void Update()
@@ -42,7 +44,28 @@ namespace CindarsHope.Cave.Runtime
 
             if (Input.GetKeyDown(_nextLevelKey))
             {
-                Debug.Log("CaveDebugLevelSkipController: P pressed.", this);
+                Debug.Log($"CaveDebugLevelSkipController: debug skip key pressed. Key={_nextLevelKey}.", this);
+                SkipToNextLevel();
+            }
+
+            if (Input.GetKeyDown(_alternateNextLevelKey))
+            {
+                Debug.Log($"CaveDebugLevelSkipController: debug skip key pressed. Key={_alternateNextLevelKey}.", this);
+                SkipToNextLevel();
+            }
+        }
+
+        private void OnGUI()
+        {
+            if (!_enableDebugLevelSkip || !_showDebugSkipButton || SceneManager.GetActiveScene().name != "CaveScene")
+            {
+                return;
+            }
+
+            var rect = new Rect(20f, 20f, 220f, 32f);
+            if (GUI.Button(rect, "DEBUG: Next Cave Level (P/F2)"))
+            {
+                Debug.Log("CaveDebugLevelSkipController: debug skip button clicked.", this);
                 SkipToNextLevel();
             }
         }
