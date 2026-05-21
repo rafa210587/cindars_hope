@@ -9,6 +9,7 @@ namespace CindarsHope.Cave.Runtime
     public sealed class CaveBossSpawner : MonoBehaviour
     {
         [SerializeField] private CaveBossGateRegistrySO _bossGateRegistry;
+        [SerializeField] private CaveRunManager _caveRunManager;
         [SerializeField] private DataRegistrySO<EnemyDataSO> _enemyDatabase;
         [SerializeField] private EnemyDataSO _fallbackEnemyData;
 
@@ -27,12 +28,22 @@ namespace CindarsHope.Cave.Runtime
             var bossGate = _bossGateRegistry.GetGateByLevel(generatedLevel.CaveLevel);
             if (bossGate == null)
             {
+                Debug.Log($"CaveBossSpawner: No boss gate for level {generatedLevel.CaveLevel}. Skipping boss spawn.", this);
                 return;
             }
+
+            if (_caveRunManager != null && _caveRunManager.IsBossDefeated(bossGate.Id))
+            {
+                Debug.Log($"CaveBossSpawner: Boss gate '{bossGate.Id}' already defeated. Skipping boss spawn.", this);
+                return;
+            }
+
+            Debug.Log($"CaveBossSpawner: Boss gate found for level {generatedLevel.CaveLevel}: {bossGate.Id}.", this);
 
             var bossEnemyData = GetBossEnemyData(bossGate.BossEnemyId);
             if (bossEnemyData == null)
             {
+                Debug.LogWarning($"CaveBossSpawner: Boss enemy data not found for '{bossGate.BossEnemyId}'.", this);
                 return;
             }
 

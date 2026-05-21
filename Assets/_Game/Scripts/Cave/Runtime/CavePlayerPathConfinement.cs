@@ -11,6 +11,8 @@ namespace CindarsHope.Cave.Runtime
         [SerializeField] private bool _enableConfinement = true;
 
         private Vector3 _lastValidPosition;
+        private float _lastLogTime;
+        private const float LogRateLimitSeconds = 1f;
 
         private void Start()
         {
@@ -54,7 +56,12 @@ namespace CindarsHope.Cave.Runtime
             }
 
             _playerTransform.position = _lastValidPosition;
-            Debug.Log($"CavePlayerPathConfinement: Confined player to last valid position {_lastValidPosition}.", this);
+
+            if (Time.time - _lastLogTime > LogRateLimitSeconds)
+            {
+                Debug.Log($"CavePlayerPathConfinement: Confined player to last valid position {_lastValidPosition}.", this);
+                _lastLogTime = Time.time;
+            }
         }
 
         private Vector2Int WorldToGridPosition(Vector3 worldPos, CaveGeneratedLevel generatedLevel)

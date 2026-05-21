@@ -242,6 +242,39 @@ namespace CindarsHope.Cave.Runtime
             GameEventBus.Publish(new CavePlayerDefeatedEvent(_state.CurrentCaveLevel));
         }
 
+        public bool CanAdvanceToLevel(int currentLevel, int targetLevel)
+        {
+            InitializeIfNeeded();
+
+            if (currentLevel == 15 && targetLevel == 16)
+            {
+                if (_bossGateRegistry == null)
+                {
+                    Debug.LogError($"CaveRunManager: Cannot advance 15->16. CaveBossGateRegistry is null.", this);
+                    return false;
+                }
+
+                var gate = _bossGateRegistry.GetGateByLevel(15);
+                if (gate == null)
+                {
+                    Debug.LogError($"CaveRunManager: Cannot advance 15->16. No boss gate found for level 15.", this);
+                    return false;
+                }
+
+                var isDefeated = IsBossDefeated(gate.Id);
+                if (!isDefeated)
+                {
+                    Debug.LogWarning($"CaveRunManager: Cannot advance 15->16. Boss gate '{gate.Id}' not defeated.", this);
+                    return false;
+                }
+
+                Debug.Log($"CaveRunManager: Boss gate '{gate.Id}' defeated. Advancing 15->16 permitted.", this);
+                return true;
+            }
+
+            return true;
+        }
+
         public bool CheckBossGate(int targetLevel)
         {
             InitializeIfNeeded();
@@ -303,6 +336,27 @@ namespace CindarsHope.Cave.Runtime
 
             _state.BossDefeatStates[bossGateId].MarkAsDefeated();
             Debug.Log($"CaveRunManager: boss '{bossGateId}' at level {caveLevel} marked as defeated.", this);
+        }
+
+        public void UnlockCheckpoint(int checkpointLevel)
+        {
+            InitializeIfNeeded();
+            if (checkpointLevel <= 0)
+            {
+                return;
+            }
+
+            if (!_state.UnlockedCheckpoints.Contains(checkpointLevel))
+            {
+                _state.UnlockedCheckpoints.Add(checkpointLevel);
+                Debug.Log($"CaveRunManager: Checkpoint {checkpointLevel} unlocked.", this);
+            }
+        }
+
+        public bool IsCheckpointUnlocked(int checkpointLevel)
+        {
+            InitializeIfNeeded();
+            return checkpointLevel > 0 && _state.UnlockedCheckpoints.Contains(checkpointLevel);
         }
 
         private void SyncSerializedToState()

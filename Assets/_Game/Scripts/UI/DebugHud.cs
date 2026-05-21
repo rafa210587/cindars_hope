@@ -3,6 +3,7 @@ using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
 using CindarsHope.Cave;
 using CindarsHope.Cave.Runtime;
+using CindarsHope.Cave.Debug;
 using CindarsHope.Equipment;
 using CindarsHope.Inventory;
 using CindarsHope.Interaction;
@@ -29,6 +30,7 @@ namespace CindarsHope.UI
         [SerializeField] private EquipmentManager _equipmentManager;
         [SerializeField] private CaveRunManager _caveRunManager;
         [SerializeField] private CaveLevelRuntimeController _caveLevelRuntimeController;
+        [SerializeField] private CaveDebugLevelSkipController _caveDebugLevelSkipController;
 
         private bool _hasInteractionCandidate;
         private string _currentInteractionPrompt = string.Empty;
@@ -399,6 +401,27 @@ namespace CindarsHope.UI
                     GUILayout.Label($"  {kvp.Key} (level {kvp.Value.CaveLevel}): {defeated}");
                 }
             }
+
+            GUILayout.Space(4f);
+            DrawDebugLevelSkip();
+        }
+
+        private void DrawDebugLevelSkip()
+        {
+            if (_caveDebugLevelSkipController == null)
+            {
+                GUILayout.Label("Debug Level Skip: not assigned");
+                return;
+            }
+
+            var skipStatus = _caveDebugLevelSkipController.IsDebugSkipEnabled ? "enabled" : "disabled";
+            GUILayout.Label($"Debug Level Skip: {skipStatus} (Press P)");
+
+            if (!string.IsNullOrWhiteSpace(_caveDebugLevelSkipController.LastDebugAction) &&
+                _caveDebugLevelSkipController.LastDebugAction != "none")
+            {
+                GUILayout.Label($"Last: {_caveDebugLevelSkipController.LastDebugAction}");
+            }
         }
 
         private void OnInteractionPromptChanged(InteractionPromptChangedEvent evt)
@@ -479,7 +502,7 @@ namespace CindarsHope.UI
             Debug.Log("DebugHud: runtime references rebound.");
         }
 
-        public void RebindCaveRuntime(CaveRunManager caveRunManager, CaveLevelRuntimeController caveLevelRuntimeController)
+        public void RebindCaveRuntime(CaveRunManager caveRunManager, CaveLevelRuntimeController caveLevelRuntimeController, CaveDebugLevelSkipController caveDebugLevelSkipController = null)
         {
             if (caveRunManager != null)
             {
@@ -489,6 +512,11 @@ namespace CindarsHope.UI
             if (caveLevelRuntimeController != null)
             {
                 _caveLevelRuntimeController = caveLevelRuntimeController;
+            }
+
+            if (caveDebugLevelSkipController != null)
+            {
+                _caveDebugLevelSkipController = caveDebugLevelSkipController;
             }
 
             Debug.Log("DebugHud: cave runtime references rebound.");
@@ -508,11 +536,11 @@ namespace CindarsHope.UI
             }
         }
 
-        public static void RebindExistingCaveRuntime(CaveRunManager caveRunManager, CaveLevelRuntimeController caveLevelRuntimeController)
+        public static void RebindExistingCaveRuntime(CaveRunManager caveRunManager, CaveLevelRuntimeController caveLevelRuntimeController, CaveDebugLevelSkipController caveDebugLevelSkipController = null)
         {
             if (_instance != null)
             {
-                _instance.RebindCaveRuntime(caveRunManager, caveLevelRuntimeController);
+                _instance.RebindCaveRuntime(caveRunManager, caveLevelRuntimeController, caveDebugLevelSkipController);
             }
         }
 

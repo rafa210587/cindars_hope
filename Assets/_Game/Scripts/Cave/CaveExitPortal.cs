@@ -148,10 +148,10 @@ namespace CindarsHope.Cave
             var currentLevel = _caveRunManager.CurrentCaveLevel;
             var nextLevel = currentLevel + 1;
 
-            if (!_caveRunManager.CheckBossGate(nextLevel))
+            if (!_caveRunManager.CanAdvanceToLevel(currentLevel, nextLevel))
             {
-                GameEventBus.Publish(new PlayerActionFeedbackEvent("Boss bloqueando avanço!", 3f));
-                Debug.Log($"CaveExitPortal: ForwardExit blocked by boss gate at level 15.", this);
+                GameEventBus.Publish(new PlayerActionFeedbackEvent("Derrote o boss deste nível para avançar.", 3f));
+                Debug.Log($"CaveExitPortal: ForwardExit blocked by boss gate. Current level {currentLevel}, target {nextLevel}.", this);
                 return;
             }
 

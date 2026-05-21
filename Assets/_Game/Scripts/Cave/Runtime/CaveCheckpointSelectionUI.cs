@@ -3,6 +3,7 @@ using System.Linq;
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace CindarsHope.Cave.Runtime
 {
@@ -38,6 +39,14 @@ namespace CindarsHope.Cave.Runtime
                 _availableCheckpoints.Add(1);
             }
 
+            if (_availableCheckpoints.Count == 1)
+            {
+                var singleCheckpoint = _availableCheckpoints[0];
+                GameEventBus.Publish(new CaveCheckpointSelectedEvent(singleCheckpoint));
+                Debug.Log($"CaveCheckpointSelectionUI: Only checkpoint {singleCheckpoint} available. Auto-selected.", this);
+                return;
+            }
+
             _selectedIndex = 0;
             _isSelectionActive = true;
 
@@ -46,7 +55,7 @@ namespace CindarsHope.Cave.Runtime
 
         private void Update()
         {
-            if (!_isSelectionActive)
+            if (!_isSelectionActive || SceneManager.GetActiveScene().name != "CaveScene")
             {
                 return;
             }
@@ -72,6 +81,33 @@ namespace CindarsHope.Cave.Runtime
             {
                 CancelSelection();
             }
+        }
+
+        private void OnGUI()
+        {
+            if (!_isSelectionActive || SceneManager.GetActiveScene().name != "CaveScene")
+            {
+                return;
+            }
+
+            var width = 300f;
+            var height = 150f;
+            var x = (Screen.width - width) / 2f;
+            var y = (Screen.height - height) / 2f;
+
+            GUILayout.BeginArea(new Rect(x, y, width, height), GUI.skin.box);
+            GUILayout.Label("Cave Checkpoint Selection", GUI.skin.box);
+
+            for (int i = 0; i < _availableCheckpoints.Count; i++)
+            {
+                var cp = _availableCheckpoints[i];
+                var label = i == _selectedIndex ? $"[Selected] Level {cp}" : $"Level {cp}";
+                GUILayout.Label(label);
+            }
+
+            GUILayout.Label("↑↓ para navegar, Enter para confirmar");
+
+            GUILayout.EndArea();
         }
 
         private void ConfirmSelection()

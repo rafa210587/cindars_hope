@@ -192,6 +192,138 @@ Após FASE9F merge:
 - PR-19x: Enemy ecology, faction locks (FASE9G)
 - PR-20x: Bestiary, faction system (FASE9G)
 
+---
+
+## 18. Atualizacao 2026-05-21 - PR-193-202 FASE9F Correções: Boss Gate, Checkpoint, Confinement, Debug Skip
+
+Status: Implementado completo (código) — Validação Unity Play Mode pendente.
+
+**Branch**: `feature/fix-pr193-202-boss-gate-checkpoint-confinement-debug-skip`
+
+**Escopo**: 7 correções críticas no pacote PR-193-202 para resolver integrações incompletas e adicionar debug utilities.
+
+**Correções implementadas**:
+
+**Correção 1 — Robust Boss Gate (15→16)**
+- Adicionado método `CanAdvanceToLevel(int currentLevel, int targetLevel)` em `CaveRunManager.cs`
+- Bloqueia avanço 15→16 explicitamente se boss registry null ou gate inexistente
+- Logs de erro claro em vez de falha silenciosa
+- Arquivo: `CaveRunManager.cs:245-276`
+- Teste: `P hotkey respeita boss gate se _bypassBossGateForDebugSkip = false`
+
+**Correção 2 — Conditional Boss Spawn**
+- `CaveBossSpawner.SpawnBossForLevel()` agora valida se boss já foi derrotado
+- Se `IsBossDefeated(gate.Id)`, skip com log "Boss gate already defeated. Skipping boss spawn."
+- Arquivo: `CaveBossSpawner.cs:35-39`
+- Teste: `Level 15 doesn't spawn boss if defeated`
+
+**Correção 3 — Checkpoint Unlock Methods**
+- Adicionado `UnlockCheckpoint(int checkpointLevel)` e `IsCheckpointUnlocked(int checkpointLevel)` em `CaveRunManager.cs`
+- Complementa `CaveBossDefeatMonitor` que já chamava métodos de unlock
+- Arquivo: `CaveRunManager.cs:341-360`
+- Teste: `Boss defeat unlocks checkpoint 15`
+
+**Correção 4 — Checkpoint Selection UI**
+- Aprimorado `CaveCheckpointSelectionUI.cs` com OnGUI rendering centralizado
+- Auto-seleciona checkpoint único (nível 1 só)
+- Exibe lista navegável com ↑↓/W/S, confirm Enter/E, cancel Escape
+- Arquivo: `CaveCheckpointSelectionUI.cs:86-111` (OnGUI)
+- Teste: `Checkpoint selection shows multiple available` + `Checkpoint selection auto-selects when single`
+
+**Correção 5 — Debug Level Skip Hotkey P**
+- Criado novo namespace `CindarsHope.Cave.Debug` com classe `CaveDebugLevelSkipController.cs`
+- Hotkey P (customizável) avança level sem marcar boss derrotado
+- `_bypassBossGateForDebugSkip = true` default (bypass opcional)
+- Rastreamento de última ação em `_lastDebugAction` para HUD display
+- Arquivo: `CaveDebugLevelSkipController.cs:25-61` (SkipToNextLevel)
+- Teste: `P hotkey increments level without changing CaveRunSeed` + `P hotkey doesn't mark boss defeated` + `P hotkey doesn't unlock checkpoint`
+
+**Correção 6 — Path Confinement Rate-Limited**
+- `CavePlayerPathConfinement.cs` agora limita logs a máximo 1 por segundo
+- Adiciona `_lastLogTime` e constante `LogRateLimitSeconds = 1f`
+- Evita spam em console quando player toca repeats em WallTiles
+- Arquivo: `CavePlayerPathConfinement.cs:60-64`
+- Teste: `Player cannot traverse WallTiles` + `Player cannot exit dungeon bounds`
+
+**Correção 7 — Validators & HUD Display**
+- `CaveBossGateValidator.cs` valida:
+  - Registry null / empty
+  - Duplicate gate IDs
+  - Duplicate cave levels
+  - Invalid CaveLevel (< 1)
+  - Invalid CheckpointUnlockedOnDefeat
+  - Empty BossEnemyId
+- Adicionado `CaveDebugLevelSkipController` field em `DebugHud.cs`
+- Novo método `DrawDebugLevelSkip()` mostra status enabled/disabled, tecla P, última ação
+- Arquivo: `DebugHud.cs:404-425` (DrawDebugLevelSkip), `CaveSceneRuntimeReferenceInstaller.cs:53` (RebindExistingCaveRuntime pass)
+- Teste: `HUD shows debug skip status` + `Validators report all issues`
+
+**Arquivos modificados**:
+- `CaveRunManager.cs` — Métodos CanAdvanceToLevel, UnlockCheckpoint, IsCheckpointUnlocked
+- `CaveBossSpawner.cs` — Validação de boss já derrotado
+- `CaveCheckpointSelectionUI.cs` — OnGUI rendering e auto-select logic
+- `CavePlayerPathConfinement.cs` — Rate-limited logging
+- `DebugHud.cs` — Adicionado CaveDebugLevelSkipController field, DrawDebugLevelSkip method
+- `CaveSceneRuntimeReferenceInstaller.cs` — Pass CaveDebugLevelSkipController ao RebindExistingCaveRuntime
+
+**Novos arquivos**:
+- `CaveDebugLevelSkipController.cs` (namespace `CindarsHope.Cave.Debug`)
+
+**Testes código**:
+- Validação de imports e namespaces
+- Verificação de contratos de tipo (métodos públicos acessíveis)
+- Verificação de integrações de eventos (CaveBossDefeatedEvent, CaveCheckpointSelectedEvent)
+- Verificação de persistência (CaveBossDefeatState roundtrip)
+
+**Acceptance Criteria** (29+ testes a executar em Play Mode):
+1. ✅ Code: CanAdvanceToLevel bloqueia 15→16 se registry null
+2. ✅ Code: CanAdvanceToLevel bloqueia 15→16 se gate inexistente
+3. ✅ Code: CanAdvanceToLevel permite 15→16 se boss derrotado
+4. ✅ Code: CaveBossSpawner não spawna se boss derrotado
+5. ✅ Code: UnlockCheckpoint/IsCheckpointUnlocked presentes
+6. ✅ Code: CaveCheckpointSelectionUI tem OnGUI e auto-select
+7. ✅ Code: CaveDebugLevelSkipController existe com hotkey P
+8. ✅ Code: CavePlayerPathConfinement rate-limits logs
+9. ✅ Code: CaveBossGateValidator valida registry
+10. ✅ Code: DebugHud exibe debug skip status
+11. 🔄 Play: P hotkey increments level without changing CaveRunSeed
+12. 🔄 Play: P hotkey doesn't mark boss defeated
+13. 🔄 Play: P hotkey doesn't unlock checkpoint
+14. 🔄 Play: P hotkey respeita boss gate se _bypassBossGateForDebugSkip = false
+15. 🔄 Play: Level 15 spawns boss if not defeated
+16. 🔄 Play: Level 15 doesn't spawn boss if defeated
+17. 🔄 Play: ForwardExit 15→16 blocks before boss defeat com explicit error
+18. 🔄 Play: ForwardExit 15→16 allows after boss defeat
+19. 🔄 Play: KO doesn't relock 15→16
+20. 🔄 Play: Save/load preserves boss defeat
+21. 🔄 Play: Cave→Farm→Cave doesn't relock
+22. 🔄 Play: Checkpoint selection shows when multiple available
+23. 🔄 Play: Checkpoint selection auto-selects when single
+24. 🔄 Play: Player cannot traverse WallTiles
+25. 🔄 Play: Player cannot exit dungeon bounds
+26. 🔄 Play: HUD shows boss gate status
+27. 🔄 Play: HUD shows debug skip status
+28. 🔄 Play: Validators report all issues
+29. 🔄 Play: Console sem erro vermelho durante boss defeat, checkpoint unlock, path confinement
+
+**Pendências**:
+- Validação Unity Play Mode (29+ acceptance criteria acima)
+- Bug fixes se necessário durante testes
+- Commit + PR contra dev
+- Eventual merge após review
+
+**Próximo passo recomendado**:
+1. Abrir projeto em Unity
+2. Compilação: Assets → Reimport All
+3. Check Console para CS errors
+4. Test Play Mode: Farm → Cave L1 → L15 (spawn boss) → Defeat → Checkpoint 15 unlock → ForwardExit 15→16 allowed
+5. Test: P hotkey incrementa level, não marca boss derrotado
+6. Test: Save/load preserva boss defeat
+7. Test: Player confinado ao boundary
+8. Validator feedback se aplicável
+9. Commit + PR contra dev
+10. Merge após review
+
 1. PR-132 — DebugHud layout v2.
 2. PR-133 — Action feedback event.
 3. PR-134 — Tool gating contracts.

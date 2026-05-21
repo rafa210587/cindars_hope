@@ -468,3 +468,34 @@ Pendencias reais:
 - Node sparsidade precisa verificacao (esperado 1-4 em vez de 8 candidatos).
 
 Proximo passo recomendado: validar compilacao, regenerar cenas, testar Play Mode exits + regeneracao, verificar HUD e node spawning, depois AC1-AC14 completo.
+
+---
+
+## 18. Atualizacao 2026-05-21 - Correções PR-193-202 Boss Gate, Checkpoint, Confinement, Debug Skip
+
+**Status**: Implementado completo (código) — Validação Unity Play Mode pendente.
+
+**Branch**: `feature/fix-pr193-202-boss-gate-checkpoint-confinement-debug-skip`
+
+**Correções implementadas** (7 críticas):
+
+1. **Robust Boss Gate (15→16)** — `CaveRunManager.CanAdvanceToLevel()` com logs de erro explícito
+2. **Conditional Boss Spawn** — `CaveBossSpawner` valida se boss derrotado antes de spawnar
+3. **Checkpoint Unlock Methods** — `UnlockCheckpoint()` e `IsCheckpointUnlocked()` em `CaveRunManager`
+4. **Checkpoint Selection UI** — `CaveCheckpointSelectionUI` com OnGUI rendering e auto-select
+5. **Debug Level Skip Hotkey P** — `CaveDebugLevelSkipController` (novo, namespace `CindarsHope.Cave.Debug`)
+6. **Path Confinement Rate-Limited** — `CavePlayerPathConfinement` com `LogRateLimitSeconds = 1f`
+7. **Validators & HUD Display** — `CaveBossGateValidator` aprimorado + DebugHud display de debug skip
+
+**Arquivos modificados**: 6
+- `CaveRunManager.cs`
+- `CaveBossSpawner.cs`
+- `CaveCheckpointSelectionUI.cs`
+- `CavePlayerPathConfinement.cs`
+- `DebugHud.cs`
+- `CaveSceneRuntimeReferenceInstaller.cs`
+
+**Novos arquivos**: 1
+- `CaveDebugLevelSkipController.cs` (namespace `CindarsHope.Cave.Debug`)
+
+**Testes pendentes**: 29+ acceptance criteria em Play Mode (ver PROJECT_LOG.md § 18 para detalles)

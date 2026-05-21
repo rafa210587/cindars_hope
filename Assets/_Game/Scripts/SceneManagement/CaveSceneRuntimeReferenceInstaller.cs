@@ -1,6 +1,7 @@
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Cave;
 using CindarsHope.Cave.Runtime;
+using CindarsHope.Cave.Debug;
 using CindarsHope.Interaction;
 using CindarsHope.UI;
 using UnityEngine;
@@ -13,6 +14,7 @@ namespace CindarsHope.SceneManagement
         [SerializeField] private Transform _playerTransform;
         [SerializeField] private CaveRunManager _caveRunManager;
         [SerializeField] private CaveLevelRuntimeController _caveLevelRuntimeController;
+        [SerializeField] private CaveDebugLevelSkipController _caveDebugLevelSkipController;
 
         private void Start()
         {
@@ -50,7 +52,7 @@ namespace CindarsHope.SceneManagement
 
             var interactionSystem = _playerTransform != null ? _playerTransform.GetComponent<InteractionSystem>() : null;
             DebugHud.RebindExisting(playerManager, inventoryManager, hungerManager, interactionSystem, timeManager, saveManager);
-            DebugHud.RebindExistingCaveRuntime(_caveRunManager, _caveLevelRuntimeController);
+            DebugHud.RebindExistingCaveRuntime(_caveRunManager, _caveLevelRuntimeController, _caveDebugLevelSkipController);
 
             Debug.Log("CaveSceneRuntimeReferenceInstaller rebound runtime refs.", this);
         }
