@@ -22,13 +22,21 @@ namespace CindarsHope.Cave
         [SerializeField] private bool _materializeAfterGeneration = true;
 
         private readonly CaveProceduralGenerator _generator = new CaveProceduralGenerator();
+        private CaveSpawnAnchor _currentSpawnAnchor = CaveSpawnAnchor.Entrance;
 
         public CaveGeneratedLevel CurrentGeneratedLevel { get; private set; }
+        public CaveSpawnAnchor CurrentSpawnAnchor => _currentSpawnAnchor;
         public int RoomCount => CurrentGeneratedLevel != null ? CurrentGeneratedLevel.Rooms.Count : 0;
         public int EnemyPointCount => CurrentGeneratedLevel != null ? CurrentGeneratedLevel.EnemySpawnPoints.Count : 0;
         public int ResourcePointCount => CurrentGeneratedLevel != null ? CurrentGeneratedLevel.ResourceSpawnPoints.Count : 0;
         public CaveRunManager RunManager => _runManager;
         public CaveRuntimeMaterializer Materializer => _materializer;
+
+        public void SetSpawnAnchorForNextGeneration(CaveSpawnAnchor anchor)
+        {
+            _currentSpawnAnchor = anchor;
+            Debug.Log($"CaveLevelRuntimeController: spawn anchor set to {anchor} for next generation.", this);
+        }
 
         private void Awake()
         {
@@ -52,12 +60,46 @@ namespace CindarsHope.Cave
         {
             GameEventBus.Subscribe<CaveRuntimeMaterializationCompleteEvent>(OnMaterializationComplete);
             GameEventBus.Subscribe<DayStartedEvent>(OnDayStarted);
+            GameEventBus.Subscribe<SceneTransitionStartedEvent>(OnSceneTransitionStarted);
         }
 
         private void OnDisable()
         {
             GameEventBus.Unsubscribe<CaveRuntimeMaterializationCompleteEvent>(OnMaterializationComplete);
             GameEventBus.Unsubscribe<DayStartedEvent>(OnDayStarted);
+            GameEventBus.Unsubscribe<SceneTransitionStartedEvent>(OnSceneTransitionStarted);
+        }
+
+        private void OnSceneTransitionStarted(SceneTransitionStartedEvent evt)
+        {
+            DetermineSpawnAnchorFromTransition(evt.SourceSceneName, evt.TargetSceneName, evt.SpawnId);
+        }
+
+        private void DetermineSpawnAnchorFromTransition(string sourceScene, string targetScene, string spawnId)
+        {
+            if (sourceScene == "FarmScene" && targetScene == "CaveScene")
+            {
+                _currentSpawnAnchor = CaveSpawnAnchor.Entrance;
+                Debug.Log($"CaveLevelRuntimeController: spawn anchor set to Entrance (Farm -> Cave)", this);
+            }
+            else if (sourceScene == "CaveScene" && targetScene == "FarmScene")
+            {
+                _currentSpawnAnchor = CaveSpawnAnchor.BackExit;
+                Debug.Log($"CaveLevelRuntimeController: spawn anchor set to BackExit (Cave -> Farm)", this);
+            }
+            else if (sourceScene == "CaveScene" && targetScene == "CaveScene")
+            {
+                if (spawnId == "cave_forward_exit")
+                {
+                    _currentSpawnAnchor = CaveSpawnAnchor.Entrance;
+                    Debug.Log($"CaveLevelRuntimeController: spawn anchor set to Entrance (ForwardExit -> next level)", this);
+                }
+                else if (spawnId == "cave_back_exit")
+                {
+                    _currentSpawnAnchor = CaveSpawnAnchor.ForwardExit;
+                    Debug.Log($"CaveLevelRuntimeController: spawn anchor set to ForwardExit (BackExit -> prev level)", this);
+                }
+            }
         }
 
         private void OnMaterializationComplete(CaveRuntimeMaterializationCompleteEvent e)
@@ -112,7 +154,17 @@ namespace CindarsHope.Cave
             CurrentGeneratedLevel.ComputeLayoutHash();
 
             Debug.Log(
-                $"Cave generated.\nLevel: {_runManager.CurrentCaveLevel}\nWorldSeed: {_runManager.CaveWorldSeed}\nRunSeed: {_runManager.CaveRunSeed}\nRooms: {RoomCount}\nEnemyPoints: {EnemyPointCount}\nResourcePoints: {ResourcePointCount}",
+                $"CaveLevelRuntimeController: Cave level generated.\n" +
+                $"  Level: {_runManager.CurrentCaveLevel}\n" +
+                $"  SpawnAnchor: {_currentSpawnAnchor}\n" +
+                $"  WorldSeed: {_runManager.CaveWorldSeed}\n" +
+                $"  RunSeed: {_runManager.CaveRunSeed}\n" +
+                $"  LayoutHash: {CurrentGeneratedLevel.LayoutHash}\n" +
+                $"  Rooms: {RoomCount}\n" +
+                $"  EnemyPoints: {EnemyPointCount}\n" +
+                $"  ResourcePoints: {ResourcePointCount}\n" +
+                $"  UsedSnapshot: false\n" +
+                $"  GeneratedNewSnapshot: true",
                 this);
 
             if (_logGeneratedLayout)
@@ -122,7 +174,7 @@ namespace CindarsHope.Cave
 
             if (_materializeAfterGeneration && _materializer != null)
             {
-                _materializer.Materialize(CurrentGeneratedLevel);
+                _materializer.Materialize(CurrentGeneratedLevel, _currentSpawnAnchor);
                 RepositionCamera();
                 CaptureSnapshot();
             }
@@ -183,6 +235,16 @@ namespace CindarsHope.Cave
                 Exit = Vector2Int.FloorToInt(snapshot.ExitPosition)
             };
 
+            Debug.Log(
+                $"CaveLevelRuntimeController: Cave level restored from snapshot.\n" +
+                $"  Level: {snapshot.CaveLevel}\n" +
+                $"  SpawnAnchor: {_currentSpawnAnchor}\n" +
+                $"  RunSeed: {_runManager.CaveRunSeed}\n" +
+                $"  LayoutHash: {snapshot.LayoutHash}\n" +
+                $"  UsedSnapshot: true\n" +
+                $"  GeneratedNewSnapshot: false",
+                this);
+
             if (_logGeneratedLayout)
             {
                 Debug.Log(CaveGenerationDebugPrinter.ToAscii(CurrentGeneratedLevel), this);
@@ -190,7 +252,7 @@ namespace CindarsHope.Cave
 
             if (_materializeAfterGeneration && _materializer != null)
             {
-                _materializer.Materialize(CurrentGeneratedLevel);
+                _materializer.Materialize(CurrentGeneratedLevel, _currentSpawnAnchor);
                 RepositionCamera();
             }
 
@@ -198,8 +260,6 @@ namespace CindarsHope.Cave
                 snapshot.CaveLevel,
                 snapshot.BiomeId,
                 _runManager.CaveRunSeed));
-
-            Debug.Log($"CaveLevelRuntimeController: level {snapshot.CaveLevel} restored from snapshot.", this);
         }
 
         public void RegenerateCurrentRunDebug()

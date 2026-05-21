@@ -1,3 +1,4 @@
+using CindarsHope.Cave.Runtime;
 using CindarsHope.Core.Data;
 using CindarsHope.Core.Time;
 using CindarsHope.Craft;
@@ -29,6 +30,8 @@ namespace CindarsHope.Core.Bootstrap
         [SerializeField] private PlayerDataSO _playerData;
         [SerializeField] private ItemDatabaseSO _itemDatabase;
 
+        private CaveRuntimeState _cachedCaveRunState;
+
         public static GameBootstrap Instance => _instance;
 
         public PlayerManager PlayerManager => _playerManager;
@@ -40,6 +43,27 @@ namespace CindarsHope.Core.Bootstrap
         public EconomyManager EconomyManager => _economyManager;
         public EquipmentManager EquipmentManager => _equipmentManager;
         public PlayerProgressionManager PlayerProgressionManager => _progressionManager;
+        public CaveRuntimeState CachedCaveRunState => _cachedCaveRunState;
+
+        public void SetCachedCaveRunState(CaveRuntimeState state)
+        {
+            _cachedCaveRunState = state;
+            if (state != null)
+            {
+                Debug.Log($"GameBootstrap: cached CaveRunState. RunSeed={state.CaveRunSeed}, Level={state.CurrentCaveLevel}", this);
+            }
+        }
+
+        public CaveRuntimeState TakeCachedCaveRunState()
+        {
+            var state = _cachedCaveRunState;
+            _cachedCaveRunState = null;
+            if (state != null)
+            {
+                Debug.Log($"GameBootstrap: restored CaveRunState from cache. RunSeed={state.CaveRunSeed}, Level={state.CurrentCaveLevel}", this);
+            }
+            return state;
+        }
 
         private void Awake()
         {

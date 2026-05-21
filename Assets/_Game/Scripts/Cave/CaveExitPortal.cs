@@ -112,6 +112,7 @@ namespace CindarsHope.Cave
                 Debug.Log($"CaveExitPortal: BackExit interacted. Level {currentLevel} -> {previousLevel}.", this);
 
                 _caveRunManager.EnterLevel(previousLevel);
+                _levelController.SetSpawnAnchorForNextGeneration(CaveSpawnAnchor.ForwardExit);
 
                 var snapshot = _caveRunManager.State.VisitedLevelSnapshots.ContainsKey(previousLevel)
                     ? _caveRunManager.State.VisitedLevelSnapshots[previousLevel]
@@ -120,12 +121,12 @@ namespace CindarsHope.Cave
                 if (snapshot != null && snapshot.IsValid())
                 {
                     _levelController.RestoreFromSnapshot(snapshot);
-                    Debug.Log($"CaveExitPortal: BackExit completed. Level {currentLevel} -> {previousLevel} restored from snapshot.", this);
+                    Debug.Log($"CaveExitPortal: BackExit completed. Level {currentLevel} -> {previousLevel} restored from snapshot with ForwardExit spawn anchor.", this);
                 }
                 else
                 {
                     _levelController.GenerateCurrentLevel();
-                    Debug.Log($"CaveExitPortal: BackExit completed. Level {currentLevel} -> {previousLevel} generated fresh.", this);
+                    Debug.Log($"CaveExitPortal: BackExit completed. Level {currentLevel} -> {previousLevel} generated fresh with ForwardExit spawn anchor.", this);
                 }
             }
         }
@@ -157,6 +158,7 @@ namespace CindarsHope.Cave
             Debug.Log($"CaveExitPortal: ForwardExit interacted. Level {currentLevel} -> {nextLevel}.", this);
 
             _caveRunManager.EnterLevel(nextLevel);
+            _levelController.SetSpawnAnchorForNextGeneration(CaveSpawnAnchor.Entrance);
             _levelController.GenerateCurrentLevel();
 
             Debug.Log($"CaveExitPortal: ForwardExit completed. CurrentLevel={_caveRunManager.CurrentCaveLevel}.", this);

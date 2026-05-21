@@ -1189,3 +1189,72 @@ Esse arquivo preserva o log operacional anterior inteiro antes da redução do l
 ### Próximo passo
 
 Regenerar cena, testar Play Mode com logging completo, validar transições.
+
+---
+
+## 2026-05-20 - FIX_CAVE_SPAWN_ANCHOR_SAFE_POSITIONING Implementação Completa
+
+**Responsável:** Claude (Haiku 4.5)  
+**Branch:** `feature/fix-cave-spawn-anchor-safe-positioning`  
+**Escopo:** Corrigir posicionamento seguro do player usando CaveSpawnAnchor. Player nunca deve spawnar exatamente no portal, e deve aparecerperto da âncora correta (Entrance para novo nível, ForwardExit ao voltar).
+
+### Alterações
+
+**CaveRuntimeMaterializer.cs:**
+- Assinatura de `Materialize()` modificada para aceitar `CaveSpawnAnchor spawnAnchor = CaveSpawnAnchor.Entrance`
+- Novo método `ResolveAnchorPosition()` → retorna grid position da âncora (Entrance, ForwardExit, BackExit)
+- Novo método `ResolvePlayerSpawnGrid()` → encontra posição segura walkable próxima da âncora
+- Novo método `FindSafeAdjacentWalkableTile()` → lookup em 8 direções por tile walkable
+- Player posicionado via `GridToWorld(ResolvePlayerSpawnGrid(...))` em vez de sempre Entrance
+- Logging detalhado: anchor position, grid resolvida, world position
+
+**CaveLevelRuntimeController.cs:**
+- Novo método público `SetSpawnAnchorForNextGeneration(CaveSpawnAnchor anchor)` para CaveExitPortal definir âncora
+- `GenerateCurrentLevel()` passa `_currentSpawnAnchor` ao materializer
+- `RestoreFromSnapshot()` passa `_currentSpawnAnchor` ao materializer
+- `DetermineSpawnAnchorFromTransition()` expandida para detectar transições intracena (ForwardExit/BackExit)
+- Logging expandido: SpawnAnchor, RunSeed, LayoutHash, UsedSnapshot, GeneratedNewSnapshot
+
+**CaveExitPortal.cs:**
+- `HandleForwardExit()` chama `SetSpawnAnchorForNextGeneration(CaveSpawnAnchor.Entrance)` antes de gerar
+- `HandleBackExit()` chama `SetSpawnAnchorForNextGeneration(CaveSpawnAnchor.ForwardExit)` antes de restaurar/gerar
+- Logging detalhado de transições com spawn anchor
+
+**DebugHud.cs:**
+- `DrawCaveSummary()` exibe `SpawnAnchor: {valor}`
+- Exibe `LayoutHash: {shortened}` quando nível está carregado
+
+### Documentação
+
+- Criado `docs/audits/FIX_CAVE_SPAWN_ANCHOR_SAFE_POSITIONING.md` com detalhes técnicos, fluxo, critérios de aceite
+
+### Testes
+
+- [x] Revisão estática de código.
+- [x] Validação de lógica de determinação de anchor.
+- [x] Validação de safe tile lookup (adjacent search).
+- [x] Verificação de logging detalhado.
+- [ ] Unity compilação não testada.
+- [ ] Play Mode não testado.
+
+### Pendências / Riscos
+
+- **Validação crítica:** Código deve compilar. Play Mode deve:
+  - Player spawnar perto de Entrance para nível novo (ForwardExit)
+  - Player spawnar perto de ForwardExit ao voltar (BackExit)
+  - Player nunca spawnar exatamente no portal
+  - Apertar interact imediato não deve sair (deve estar afastado do portal)
+  - HUD exibe SpawnAnchor, LayoutHash, UsedSnapshot
+- **WalkableTiles:** Generator deve populardocumentedly para lookup funcionar
+- **Snapshot coherence:** Snapshots mantêm entrada/saída, coerência preservada
+
+### Próximo passo recomendado
+
+1. Validar compilação no Unity.
+2. Regenerar CaveScene.
+3. Play Mode: Farm → Cave (Entrance), Level 1 → 2 (Entrance), Level 2 → 1 (ForwardExit).
+4. Confirmar posição ≠ portal.
+5. Confirmar interact imediato não sai.
+6. Commit + PR.
+
+---

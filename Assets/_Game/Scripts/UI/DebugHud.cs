@@ -342,6 +342,7 @@ namespace CindarsHope.UI
             GUILayout.Label($"Deepest: {_caveRunManager.DeepestLayerReached}");
             GUILayout.Label($"WorldSeed: {ShortenMiddle(_caveRunManager.CaveWorldSeed, 44)}");
             GUILayout.Label($"RunSeed: {ShortenMiddle(_caveRunManager.CaveRunSeed, 44)}");
+            GUILayout.Label($"SpawnAnchor: {_caveLevelRuntimeController.CurrentSpawnAnchor}");
             GUILayout.Label($"Rooms: {_caveLevelRuntimeController.RoomCount}");
             GUILayout.Label($"EnemyPoints: {_caveLevelRuntimeController.EnemyPointCount}");
             GUILayout.Label($"ResourcePoints: {_caveLevelRuntimeController.ResourcePointCount}");
@@ -349,6 +350,7 @@ namespace CindarsHope.UI
             var currentLevel = _caveLevelRuntimeController.CurrentGeneratedLevel;
             if (currentLevel != null)
             {
+                GUILayout.Label($"LayoutHash: {ShortenMiddle(currentLevel.LayoutHash, 20)}");
                 GUILayout.Label($"Entrance: ({currentLevel.Entrance.x}, {currentLevel.Entrance.y})");
                 GUILayout.Label($"Exit: ({currentLevel.Exit.x}, {currentLevel.Exit.y})");
             }

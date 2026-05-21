@@ -46,7 +46,7 @@ namespace CindarsHope.Cave.Runtime
 
         public CaveRuntimeMaterializationResult LastMaterializationResult => _lastMaterializationResult;
 
-        public void Materialize(CaveGeneratedLevel generatedLevel)
+        public void Materialize(CaveGeneratedLevel generatedLevel, CaveSpawnAnchor spawnAnchor = CaveSpawnAnchor.Entrance)
         {
             if (generatedLevel == null)
             {
@@ -77,15 +77,22 @@ namespace CindarsHope.Cave.Runtime
             MaterializeEntranceAndExit(generatedLevel);
             MaterializeResourceNodes(generatedLevel);
 
-            // Spawn player at entrance (converted to world space)
+            // Resolve safe spawn position based on anchor
             if (_playerTransform != null)
             {
-                _playerTransform.position = GridToWorld(generatedLevel.Entrance, generatedLevel);
+                var anchorGridPos = ResolveAnchorPosition(spawnAnchor, generatedLevel);
+                var safeSpawnGrid = ResolvePlayerSpawnGrid(anchorGridPos, spawnAnchor, generatedLevel);
+                _playerTransform.position = GridToWorld(safeSpawnGrid, generatedLevel);
+
+                Debug.Log(
+                    $"CaveRuntimeMaterializer: Player spawned at anchor {spawnAnchor}. AnchorGrid: {anchorGridPos}, ResolvedGrid: {safeSpawnGrid}, WorldPos: {_playerTransform.position}",
+                    this);
+
                 RepositionCamera();
             }
 
             Debug.Log(
-                $"CaveRuntimeMaterializer: Materialized level {generatedLevel.CaveLevel}. Floor: {_lastMaterializationResult.CreatedFloorTiles}, Walls: {_lastMaterializationResult.CreatedWallTiles}, Resources: {_lastMaterializationResult.CreatedResourceNodes}, Enemies: {_lastMaterializationResult.CreatedEnemies}. BackExit: {_lastMaterializationResult.BackExitPosition}, ForwardExit: {_lastMaterializationResult.ForwardExitPosition}",
+                $"CaveRuntimeMaterializer: Materialized level {generatedLevel.CaveLevel}. Floor: {_lastMaterializationResult.CreatedFloorTiles}, Walls: {_lastMaterializationResult.CreatedWallTiles}, Resources: {_lastMaterializationResult.CreatedResourceNodes}, Enemies: {_lastMaterializationResult.CreatedEnemies}. BackExit: {_lastMaterializationResult.BackExitPosition}, ForwardExit: {_lastMaterializationResult.ForwardExitPosition}. SpawnAnchor: {spawnAnchor}",
                 this);
 
             GameEventBus.Publish(new CaveRuntimeMaterializationCompleteEvent(generatedLevel));
@@ -485,6 +492,70 @@ namespace CindarsHope.Cave.Runtime
             }
 
             return selectedNode;
+        }
+
+        private Vector2Int ResolveAnchorPosition(CaveSpawnAnchor anchor, CaveGeneratedLevel generatedLevel)
+        {
+            return anchor switch
+            {
+                CaveSpawnAnchor.Entrance => generatedLevel.Entrance,
+                CaveSpawnAnchor.ForwardExit => generatedLevel.Exit,
+                CaveSpawnAnchor.BackExit => generatedLevel.Entrance,
+                _ => generatedLevel.Entrance
+            };
+        }
+
+        private Vector2Int ResolvePlayerSpawnGrid(Vector2Int anchorGridPos, CaveSpawnAnchor anchor, CaveGeneratedLevel generatedLevel)
+        {
+            if (generatedLevel.WalkableTiles.Contains(anchorGridPos))
+            {
+                return anchorGridPos;
+            }
+
+            var safeSpawn = FindSafeAdjacentWalkableTile(anchorGridPos, generatedLevel);
+            if (safeSpawn != Vector2Int.zero || generatedLevel.WalkableTiles.Contains(Vector2Int.zero))
+            {
+                return safeSpawn != Vector2Int.zero ? safeSpawn : Vector2Int.zero;
+            }
+
+            if (generatedLevel.WalkableTiles.Count > 0)
+            {
+                Debug.LogWarning(
+                    $"CaveRuntimeMaterializer: No safe spawn found near anchor {anchor} at {anchorGridPos}. Using first walkable tile as fallback.",
+                    this);
+                return generatedLevel.WalkableTiles[0];
+            }
+
+            Debug.LogError(
+                $"CaveRuntimeMaterializer: No walkable tiles available in level {generatedLevel.CaveLevel}. Using anchor position as last resort.",
+                this);
+            return anchorGridPos;
+        }
+
+        private Vector2Int FindSafeAdjacentWalkableTile(Vector2Int centerPos, CaveGeneratedLevel generatedLevel)
+        {
+            var directions = new Vector2Int[]
+            {
+                Vector2Int.up,
+                Vector2Int.down,
+                Vector2Int.left,
+                Vector2Int.right,
+                new Vector2Int(1, 1),
+                new Vector2Int(1, -1),
+                new Vector2Int(-1, 1),
+                new Vector2Int(-1, -1)
+            };
+
+            foreach (var dir in directions)
+            {
+                var candidatePos = centerPos + dir;
+                if (generatedLevel.WalkableTiles.Contains(candidatePos))
+                {
+                    return candidatePos;
+                }
+            }
+
+            return Vector2Int.zero;
         }
 
         public void CleanupMaterialization()

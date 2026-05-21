@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using CindarsHope.Core;
+using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
 using CindarsHope.Save;
+using CindarsHope.SceneManagement;
 using UnityEngine;
 
 using CavePlayerDefeatedEvent = CindarsHope.Core.Events.CavePlayerDefeatedEvent;
@@ -28,7 +30,78 @@ namespace CindarsHope.Cave.Runtime
 
         private void Awake()
         {
+            RestoreCachedStateIfNeeded();
             InitializeIfNeeded();
+        }
+
+        private void OnEnable()
+        {
+            GameEventBus.Subscribe<SceneTransitionStartedEvent>(OnSceneTransitionStarted);
+        }
+
+        private void OnDisable()
+        {
+            GameEventBus.Unsubscribe<SceneTransitionStartedEvent>(OnSceneTransitionStarted);
+        }
+
+        private void OnSceneTransitionStarted(SceneTransitionStartedEvent evt)
+        {
+            if (evt.SourceSceneName == "CaveScene")
+            {
+                CacheCurrentStateInBootstrap();
+                Debug.Log($"CaveRunManager: saved state to bootstrap cache before leaving CaveScene. RunSeed={_state.CaveRunSeed}", this);
+            }
+        }
+
+        private void RestoreCachedStateIfNeeded()
+        {
+            var bootstrap = GameBootstrap.Instance;
+            if (bootstrap == null)
+            {
+                return;
+            }
+
+            var cachedState = bootstrap.TakeCachedCaveRunState();
+            if (cachedState != null)
+            {
+                _state.CurrentCaveLevel = cachedState.CurrentCaveLevel;
+                _state.DeepestLayerReached = cachedState.DeepestLayerReached;
+                _state.CaveWorldSeed = cachedState.CaveWorldSeed;
+                _state.CaveRunSeed = cachedState.CaveRunSeed;
+                _state.UnlockedCheckpoints.Clear();
+                foreach (var cp in cachedState.UnlockedCheckpoints)
+                {
+                    _state.UnlockedCheckpoints.Add(cp);
+                }
+                _state.DepletedNodeIds.Clear();
+                foreach (var nodeId in cachedState.DepletedNodeIds)
+                {
+                    _state.DepletedNodeIds.Add(nodeId);
+                }
+                _state.VisitedLevelSnapshots.Clear();
+                foreach (var kvp in cachedState.VisitedLevelSnapshots)
+                {
+                    _state.VisitedLevelSnapshots[kvp.Key] = kvp.Value;
+                }
+
+                _currentCaveLevel = _state.CurrentCaveLevel;
+                _deepestLayerReached = _state.DeepestLayerReached;
+                _caveWorldSeed = _state.CaveWorldSeed;
+                _caveRunSeed = _state.CaveRunSeed;
+
+                Debug.Log($"CaveRunManager: restored state from bootstrap cache. RunSeed={_state.CaveRunSeed}, Level={_state.CurrentCaveLevel}", this);
+            }
+        }
+
+        private void CacheCurrentStateInBootstrap()
+        {
+            var bootstrap = GameBootstrap.Instance;
+            if (bootstrap == null)
+            {
+                return;
+            }
+
+            bootstrap.SetCachedCaveRunState(_state);
         }
 
         public void InitializeIfNeeded()
