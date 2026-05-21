@@ -9,6 +9,7 @@ using CindarsHope.Interaction;
 using CindarsHope.Inventory;
 using CindarsHope.SceneManagement;
 using UnityEngine;
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -461,9 +462,16 @@ namespace CindarsHope.Cave.Runtime
                 }
             }
 
-            if (selectedNode == null && allNodes.Count > 0)
+            if (selectedNode == null)
             {
-                selectedNode = allNodes[0];
+                foreach (var node in allNodes)
+                {
+                    if (node != null)
+                    {
+                        selectedNode = node;
+                        break;
+                    }
+                }
             }
 
             return selectedNode;
