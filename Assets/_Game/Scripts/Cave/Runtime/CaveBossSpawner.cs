@@ -113,7 +113,7 @@ namespace CindarsHope.Cave.Runtime
             {
                 foreach (var enemy in _enemyDatabase.All)
                 {
-                    if (enemy.Id == bossEnemyId)
+                    if (enemy != null && enemy.name == bossEnemyId)
                     {
                         return enemy;
                     }
