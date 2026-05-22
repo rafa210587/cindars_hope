@@ -26,9 +26,20 @@
 
 - `docs_old/` preservado.
 - Documentos ativos copiados de `docs_old/` para `docs/design`, `docs/architecture`, `docs/operations` e `docs/roadmap`.
-- `spec/implementado` absorvido em `docs/refinements/implementados`.
-- `spec/preparado` absorvido em `docs/specs/a_implementar`.
+- `docs/refinements/implementados` absorvido em `docs/refinements/implementados`.
+- `docs/specs/a_implementar` absorvido em `docs/specs/a_implementar`.
 - FASE9H-K copiadas de `docs_old` para `docs/specs/a_implementar`.
 - FASE9L criada como placeholder controlado.
 - `spec/` removida.
 - `specs/` mantida como SpecKit operacional.
+
+
+## Terceira consolidação — preservação de refinamentos
+
+- Specs implementadas adicionais criadas para pickups persistentes, enemy data-driven stats, HUD/tools debug, cave visual runtime, spawn anchor, snapshot replay full layout e hardening de debug/confinement.
+- Refinements implementados absorvidos de docs_old/audits.
+- Refinements futuros individuais criados para FASE9C remaining, FASE9D, FASE9E, FASE9F, FASE9G amendment, FASE9H, FASE9I, FASE9J, FASE9K, FASE9L e future ideas.
+- docs/amendments, docs/validation e docs/backlog criados como camadas ativas.
+- docs/specs/SPEC_REGISTRY_IMPLEMENTED.md e docs/specs/SPEC_REGISTRY_TO_IMPLEMENT.md atualizados.
+- Nenhuma alteração de código.
+

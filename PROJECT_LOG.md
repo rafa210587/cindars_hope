@@ -1,4 +1,22 @@
-﻿## Atualização 2026-05-22 — Reorganização documental de specs
+﻿## Atualização 2026-05-22 — Terceira consolidação documental
+
+Status: Implementado em branch `docs/reorganizar-specs-implementadas`.
+
+Escopo:
+- Specs implementadas adicionais criadas para pickups persistentes, enemy data-driven stats, HUD/tools debug e hardening de cave.
+- Refinements implementados absorvidos de `docs_old/audits`.
+- Refinements futuros individuais criados para FASE9C remaining, FASE9D, FASE9E, FASE9F, FASE9G amendment, FASE9H, FASE9I, FASE9J, FASE9K, FASE9L e future ideas.
+- Camadas ativas `docs/amendments`, `docs/validation` e `docs/backlog` criadas.
+- Registries de specs implementadas e futuras atualizados.
+
+Testes:
+- Validações documentais por prefixo `spec_*.md` e `ref_*.md` planejadas nesta rodada.
+- Unity Play Mode não executado.
+
+Pendências:
+- Validar Unity em tarefa separada.
+- Enriquecer specs com evidência linha-a-linha se necessário.
+## Atualização 2026-05-22 — Reorganização documental de specs
 
 Status: Implementado em branch `docs/reorganizar-specs-implementadas`.
 
@@ -1569,4 +1587,5 @@ Regenerar cena, testar Play Mode com logging completo, validar transições.
 5. Commit + PR
 
 ---
+
 

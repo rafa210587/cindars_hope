@@ -2,7 +2,7 @@
 
 > Status: Implementado parcial
 > Camada: World
-> Fonte historica: `docs_old/FASE9C_TOOLS_FARM_COMBAT_REFINEMENT_v1.0.md; spec/implementado/SPEC_WORLD_SHOP_HARDENING_PR031_045.md`
+> Fonte historica: `docs_old/FASE9C_TOOLS_FARM_COMBAT_REFINEMENT_v1.0.md; docs/refinements/implementados/ref_world_shop_hardening_pr031_045.md`
 > Evidencia principal: `Assets/_Game/Scripts/World/**`
 
 ---
@@ -65,7 +65,7 @@ Quando ha persistencia, ela deve usar DTOs simples e IDs estaveis. Referencias U
 
 - `docs/refinements/implementados/ref_implementados_map.md`
 - `docs/refinements/a_implementar/ref_futuro_map.md`
-- `docs_old/FASE9C_TOOLS_FARM_COMBAT_REFINEMENT_v1.0.md; spec/implementado/SPEC_WORLD_SHOP_HARDENING_PR031_045.md`
+- `docs_old/FASE9C_TOOLS_FARM_COMBAT_REFINEMENT_v1.0.md; docs/refinements/implementados/ref_world_shop_hardening_pr031_045.md`
 
 ---
 
@@ -73,3 +73,4 @@ Quando ha persistencia, ela deve usar DTOs simples e IDs estaveis. Referencias U
 
 - Fishing final, stamina, loot tables e polish visual pendentes.
 - Se a implementacao for parcial, nao promover para final sem evidencia de Unity e sem atualizar esta spec ou criar amendment/correction.
+

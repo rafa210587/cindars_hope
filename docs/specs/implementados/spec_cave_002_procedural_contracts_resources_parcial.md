@@ -2,7 +2,7 @@
 
 > Status: Implementado parcial
 > Camada: Cave
-> Fonte historica: `docs_old/FASE9F_CAVE_RESOURCES_ENCOUNTERS_SPEC_v1.0.md; spec/implementado/SPEC_CAVE_PROCEDURAL_RUNTIME_PR141_153.md`
+> Fonte historica: `docs_old/FASE9F_CAVE_RESOURCES_ENCOUNTERS_SPEC_v1.0.md; docs/refinements/implementados/ref_cave_procedural_runtime_pr141_153.md`
 > Evidencia principal: `Assets/_Game/Scripts/Cave/Generation/**`
 
 ---
@@ -66,7 +66,7 @@ Quando ha persistencia, ela deve usar DTOs simples e IDs estaveis. Referencias U
 
 - $link`n- `docs/refinements/implementados/ref_implementados_map.md`
 - `docs/refinements/a_implementar/ref_futuro_map.md`
-- `docs_old/FASE9F_CAVE_RESOURCES_ENCOUNTERS_SPEC_v1.0.md; spec/implementado/SPEC_CAVE_PROCEDURAL_RUNTIME_PR141_153.md`
+- `docs_old/FASE9F_CAVE_RESOURCES_ENCOUNTERS_SPEC_v1.0.md; docs/refinements/implementados/ref_cave_procedural_runtime_pr141_153.md`
 
 ---
 
@@ -74,4 +74,5 @@ Quando ha persistencia, ela deve usar DTOs simples e IDs estaveis. Referencias U
 
 - Loot tables, bioma progressivo, enemy spawn final e validacao Unity pendentes.
 - Se a implementacao for parcial, nao promover para final sem evidencia de Unity e sem atualizar esta spec ou criar amendment/correction.
+
 

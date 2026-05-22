@@ -2,7 +2,7 @@
 
 > Status: Implementado parcial
 > Camada: Town
-> Fonte historica: `docs_old/FASE9A_HANDOFF_FARM_TOWN_SAVE_v1.0.md; spec/implementado/SPEC_TOWN_PR053_063.md`
+> Fonte historica: `docs_old/FASE9A_HANDOFF_FARM_TOWN_SAVE_v1.0.md; docs/refinements/implementados/ref_town_pr053_063.md`
 > Evidencia principal: `Assets/_Game/Scripts/SceneManagement/**`
 
 ---
@@ -66,7 +66,7 @@ Quando ha persistencia, ela deve usar DTOs simples e IDs estaveis. Referencias U
 
 - $link`n- `docs/refinements/implementados/ref_implementados_map.md`
 - `docs/refinements/a_implementar/ref_futuro_map.md`
-- `docs_old/FASE9A_HANDOFF_FARM_TOWN_SAVE_v1.0.md; spec/implementado/SPEC_TOWN_PR053_063.md`
+- `docs_old/FASE9A_HANDOFF_FARM_TOWN_SAVE_v1.0.md; docs/refinements/implementados/ref_town_pr053_063.md`
 
 ---
 
@@ -74,4 +74,5 @@ Quando ha persistencia, ela deve usar DTOs simples e IDs estaveis. Referencias U
 
 - Dialogo, agenda NPC e loja final pendentes.
 - Se a implementacao for parcial, nao promover para final sem evidencia de Unity e sem atualizar esta spec ou criar amendment/correction.
+
 

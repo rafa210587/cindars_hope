@@ -2,7 +2,7 @@
 
 > Status: Implementado parcial
 > Camada: Tools
-> Fonte historica: `docs_old/FASE9E_UI_HOTBAR_INVENTORY_EQUIPMENT_SPEC_v1.0.md; spec/implementado/SPEC_TOOLS_EQUIPMENT_HOTBAR_PROGRESSION_DAMAGE_PR101_130.md`
+> Fonte historica: `docs_old/FASE9E_UI_HOTBAR_INVENTORY_EQUIPMENT_SPEC_v1.0.md; docs/refinements/implementados/ref_tools_equipment_hotbar_progression_damage_pr101_130.md`
 > Evidencia principal: `Assets/_Game/Scripts/Tools/**`
 
 ---
@@ -66,7 +66,7 @@ Quando ha persistencia, ela deve usar DTOs simples e IDs estaveis. Referencias U
 
 - $link`n- `docs/refinements/implementados/ref_implementados_map.md`
 - `docs/refinements/a_implementar/ref_futuro_map.md`
-- `docs_old/FASE9E_UI_HOTBAR_INVENTORY_EQUIPMENT_SPEC_v1.0.md; spec/implementado/SPEC_TOOLS_EQUIPMENT_HOTBAR_PROGRESSION_DAMAGE_PR101_130.md`
+- `docs_old/FASE9E_UI_HOTBAR_INVENTORY_EQUIPMENT_SPEC_v1.0.md; docs/refinements/implementados/ref_tools_equipment_hotbar_progression_damage_pr101_130.md`
 
 ---
 
@@ -74,4 +74,5 @@ Quando ha persistencia, ela deve usar DTOs simples e IDs estaveis. Referencias U
 
 - Durabilidade, equipamento completo e UI final pendentes.
 - Se a implementacao for parcial, nao promover para final sem evidencia de Unity e sem atualizar esta spec ou criar amendment/correction.
+
 

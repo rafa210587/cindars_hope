@@ -2,7 +2,7 @@
 
 > Status: Implementado em codigo - validacao Unity pendente
 > Camada: Cave
-> Fonte historica: `docs_old/FASE9F_CAVE_REPLAY_CONTRACTS_v1.0.md; spec/implementado/SPEC_CAVE_STABLE_RUN_REPLAY_PR170_192.md`
+> Fonte historica: `docs_old/FASE9F_CAVE_REPLAY_CONTRACTS_v1.0.md; docs/refinements/implementados/ref_cave_stable_run_replay_pr170_192.md`
 > Evidencia principal: `Assets/_Game/Scripts/Cave/Runtime/VisitedLevelSnapshot.cs`
 
 ---
@@ -67,7 +67,7 @@ Quando ha persistencia, ela deve usar DTOs simples e IDs estaveis. Referencias U
 
 - $link`n- `docs/refinements/implementados/ref_implementados_map.md`
 - `docs/refinements/a_implementar/ref_futuro_map.md`
-- `docs_old/FASE9F_CAVE_REPLAY_CONTRACTS_v1.0.md; spec/implementado/SPEC_CAVE_STABLE_RUN_REPLAY_PR170_192.md`
+- `docs_old/FASE9F_CAVE_REPLAY_CONTRACTS_v1.0.md; docs/refinements/implementados/ref_cave_stable_run_replay_pr170_192.md`
 
 ---
 
@@ -75,4 +75,5 @@ Quando ha persistencia, ela deve usar DTOs simples e IDs estaveis. Referencias U
 
 - Validacao Unity Play Mode de snapshots/replay pendente.
 - Se a implementacao for parcial, nao promover para final sem evidencia de Unity e sem atualizar esta spec ou criar amendment/correction.
+
 
