@@ -1,8 +1,8 @@
-# SpecKit — FASE9D Enemy Architecture 40+ Monsters
+﻿# SpecKit â€” FASE9D Enemy Architecture 40+ Monsters
 
 > **Feature:** FASE9D_ENEMY_ARCHITECTURE_40_MONSTERS  
-> **Status:** especificação funcional aprovada para planejamento.  
-> **Fonte de design:** `docs/FASE9D_ENEMY_ARCHITECTURE_40_MONSTERS_v1.1.md`
+> **Status:** especificaÃ§Ã£o funcional aprovada para planejamento.  
+> **Fonte de design:** `docs_old/FASE9D_ENEMY_ARCHITECTURE_40_MONSTERS_v1.1.md`
 
 ---
 
@@ -14,33 +14,33 @@ Como designer/dev de Cindar's Hope, quero uma arquitetura de inimigos orientada 
 
 ## 2. Objetivos funcionais
 
-### O1 — Inimigos por composição
+### O1 â€” Inimigos por composiÃ§Ã£o
 
-Monstros devem ser montados por componentes e dados, não por classes gigantes específicas.
+Monstros devem ser montados por componentes e dados, nÃ£o por classes gigantes especÃ­ficas.
 
-### O2 — Movement profiles
+### O2 â€” Movement profiles
 
-Cada monstro deve poder perseguir, manter distância, fugir, patrulhar, orbitar ou ficar parado.
+Cada monstro deve poder perseguir, manter distÃ¢ncia, fugir, patrulhar, orbitar ou ficar parado.
 
-### O3 — Action profiles
+### O3 â€” Action profiles
 
-Cada monstro deve ter lista de ações: melee, leap, dash, ranged, magic, area, summon, support etc.
+Cada monstro deve ter lista de aÃ§Ãµes: melee, leap, dash, ranged, magic, area, summon, support etc.
 
-### O4 — Element profiles
+### O4 â€” Element profiles
 
-Cada monstro deve ter vulnerabilidades, resistências e imunidades elementais.
+Cada monstro deve ter vulnerabilidades, resistÃªncias e imunidades elementais.
 
-### O5 — Status effects
+### O5 â€” Status effects
 
 Monstros devem poder aplicar ou receber status negativos.
 
-### O6 — Vulnerability windows
+### O6 â€” Vulnerability windows
 
-Toda ação relevante deve poder abrir janela de vulnerabilidade com dano ampliado, default 1.5x.
+Toda aÃ§Ã£o relevante deve poder abrir janela de vulnerabilidade com dano ampliado, default 1.5x.
 
-### O7 — Escalabilidade
+### O7 â€” Escalabilidade
 
-Adicionar um novo monstro deve exigir principalmente novos assets, não novo controller específico.
+Adicionar um novo monstro deve exigir principalmente novos assets, nÃ£o novo controller especÃ­fico.
 
 ---
 
@@ -49,9 +49,9 @@ Adicionar um novo monstro deve exigir principalmente novos assets, não novo con
 Fora de escopo:
 
 - criar os 40 monstros agora;
-- pathfinding avançado;
-- árvore de comportamento completa;
-- animações finais;
+- pathfinding avanÃ§ado;
+- Ã¡rvore de comportamento completa;
+- animaÃ§Ãµes finais;
 - VFX finais;
 - balanceamento final;
 - procedural spawn;
@@ -59,35 +59,35 @@ Fora de escopo:
 
 ---
 
-## 4. Regras de negócio
+## 4. Regras de negÃ³cio
 
-### R1 — Não criar controller específico por monstro
+### R1 â€” NÃ£o criar controller especÃ­fico por monstro
 
-Evitar `SlimeController`, `BatController`, `GolemController` como lógica principal.
+Evitar `SlimeController`, `BatController`, `GolemController` como lÃ³gica principal.
 
-### R2 — Todo inimigo tem movimento explícito
+### R2 â€” Todo inimigo tem movimento explÃ­cito
 
 Todo `EnemyDataSO` deve apontar para `EnemyMovementProfileSO`.
 
-### R3 — Todo inimigo tem ao menos uma ação
+### R3 â€” Todo inimigo tem ao menos uma aÃ§Ã£o
 
 Todo `EnemyDataSO` deve ter ao menos uma `EnemyActionDataSO`.
 
-### R4 — Ação tem fases
+### R4 â€” AÃ§Ã£o tem fases
 
-Ação deve ter preparação, ativo, recovery e cooldown quando aplicável.
+AÃ§Ã£o deve ter preparaÃ§Ã£o, ativo, recovery e cooldown quando aplicÃ¡vel.
 
-### R5 — Vulnerabilidade é data-driven
+### R5 â€” Vulnerabilidade Ã© data-driven
 
-A janela vulnerável deve ser definida nos dados da ação ou perfil.
+A janela vulnerÃ¡vel deve ser definida nos dados da aÃ§Ã£o ou perfil.
 
-### R6 — Elementos modificam dano
+### R6 â€” Elementos modificam dano
 
 Dano final considera elemento + perfil elemental + vulnerabilidade.
 
-### R7 — Status não stacka infinitamente
+### R7 â€” Status nÃ£o stacka infinitamente
 
-Status negativos devem ter regra de duração/renovação clara.
+Status negativos devem ter regra de duraÃ§Ã£o/renovaÃ§Ã£o clara.
 
 ---
 
@@ -112,51 +112,51 @@ Status negativos devem ter regra de duração/renovação clara.
 
 ---
 
-## 6. Critérios de aceite
+## 6. CritÃ©rios de aceite
 
-### CA1 — Contracts
+### CA1 â€” Contracts
 
 Enums, interfaces e contextos existem e compilam.
 
-### CA2 — Profiles
+### CA2 â€” Profiles
 
 Movement, action, element e status profiles podem ser criados via CreateAssetMenu.
 
-### CA3 — Action controller
+### CA3 â€” Action controller
 
-EnemyActionController escolhe ação por range, prioridade e cooldown.
+EnemyActionController escolhe aÃ§Ã£o por range, prioridade e cooldown.
 
-### CA4 — Movement controller
+### CA4 â€” Movement controller
 
 EnemyMovementController executa ao menos ChaseTarget, KeepDistance, FleeFromTarget e Stationary.
 
-### CA5 — Vulnerability window
+### CA5 â€” Vulnerability window
 
 EnemyVulnerabilityController abre janela e aplica multiplicador 1.5x quando ativo.
 
-### CA6 — Element damage
+### CA6 â€” Element damage
 
 Dano recebido considera DamageElement e EnemyElementProfileSO.
 
-### CA7 — Status receiver
+### CA7 â€” Status receiver
 
 EnemyStatusReceiver suporta Slow, Poison, Burn e Stun curto no MVP.
 
-### CA8 — Slime migrado
+### CA8 â€” Slime migrado
 
 Slime usa EnemyActionController, MovementProfile, LeapAttack e VulnerabilityController.
 
-### CA9 — Segundo monstro
+### CA9 â€” Segundo monstro
 
-Um monstro de distância/kiter valida reutilização sem controller específico novo.
+Um monstro de distÃ¢ncia/kiter valida reutilizaÃ§Ã£o sem controller especÃ­fico novo.
 
-### CA10 — Validator
+### CA10 â€” Validator
 
-Validator detecta EnemyDataSO sem movement profile, sem action, com timings inválidos ou IDs duplicados.
+Validator detecta EnemyDataSO sem movement profile, sem action, com timings invÃ¡lidos ou IDs duplicados.
 
 ---
 
-## 7. Dependências
+## 7. DependÃªncias
 
 - `EnemyDataSO`
 - `EnemyHealth`
@@ -166,7 +166,7 @@ Validator detecta EnemyDataSO sem movement profile, sem action, com timings inv�
 - `PlayerManager`
 - `GameBootstrap`
 - `GameEventBus`
-- futura integração com `PlayerCombatController`
+- futura integraÃ§Ã£o com `PlayerCombatController`
 
 ---
 
@@ -174,9 +174,9 @@ Validator detecta EnemyDataSO sem movement profile, sem action, com timings inv�
 
 Logs/HUD debug devem permitir ver:
 
-- ação escolhida;
-- início/fim da ação;
-- janela vulnerável aberta/fechada;
+- aÃ§Ã£o escolhida;
+- inÃ­cio/fim da aÃ§Ã£o;
+- janela vulnerÃ¡vel aberta/fechada;
 - status aplicado;
 - elemento usado;
 - multiplicador final de dano.
@@ -186,5 +186,6 @@ Logs/HUD debug devem permitir ver:
 ## 9. Pronto para Plan quando
 
 - Esta spec estiver aprovada.
-- `docs/FASE9D_ENEMY_ARCHITECTURE_40_MONSTERS_v1.1.md` estiver lido.
+- `docs_old/FASE9D_ENEMY_ARCHITECTURE_40_MONSTERS_v1.1.md` estiver lido.
 - Estado real em `dev` tiver sido validado.
+

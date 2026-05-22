@@ -1,48 +1,48 @@
-# SpecKit — FASE9E Player Level Up, XP e Progressão
+﻿# SpecKit â€” FASE9E Player Level Up, XP e ProgressÃ£o
 
 > **Feature:** FASE9E_PLAYER_LEVEL_UP_PROGRESSION  
-> **Status:** especificação funcional aprovada para planejamento.  
-> **Fonte de design:** `docs/FASE9E_PLAYER_LEVEL_UP_PROGRESSION_SPEC_v1.0.md`
+> **Status:** especificaÃ§Ã£o funcional aprovada para planejamento.  
+> **Fonte de design:** `docs_old/FASE9E_PLAYER_LEVEL_UP_PROGRESSION_SPEC_v1.0.md`
 
 ---
 
 ## 1. User story
 
-Como jogador, quero ganhar XP ao realizar atividades importantes, subir de nível e melhorar meu personagem para sentir progressão real entre farm, exploração, combate e crafting.
+Como jogador, quero ganhar XP ao realizar atividades importantes, subir de nÃ­vel e melhorar meu personagem para sentir progressÃ£o real entre farm, exploraÃ§Ã£o, combate e crafting.
 
 ---
 
 ## 2. Objetivos funcionais
 
-### O1 — Level global
+### O1 â€” Level global
 
-Criar progressão global do personagem até MaxLevel 100.
+Criar progressÃ£o global do personagem atÃ© MaxLevel 100.
 
-### O2 — XP curve
+### O2 â€” XP curve
 
-Usar curva de XP com multiplicador que aumenta a cada bloco de 10 níveis.
+Usar curva de XP com multiplicador que aumenta a cada bloco de 10 nÃ­veis.
 
-### O3 — Attribute points
+### O3 â€” Attribute points
 
 Cada level concede +1 AttributePoint.
 
-### O4 — Skill points
+### O4 â€” Skill points
 
-A cada 3 níveis concede +1 SkillPoint.
+A cada 3 nÃ­veis concede +1 SkillPoint.
 
-### O5 — Atributos MVP
+### O5 â€” Atributos MVP
 
 Suportar Strength, Dexterity, Intelligence, Willpower, Constitution e Breath.
 
-### O6 — XP de criaturas
+### O6 â€” XP de criaturas
 
 Calcular XP por EnemyLevel e Difficulty final.
 
-### O7 — CaveLevel spawn
+### O7 â€” CaveLevel spawn
 
-Definir regra de spawn por CaveLevel com criaturas do nível base, +1 e rara +2.
+Definir regra de spawn por CaveLevel com criaturas do nÃ­vel base, +1 e rara +2.
 
-### O8 — Save/load
+### O8 â€” Save/load
 
 Persistir level, XP, pontos e atributos.
 
@@ -55,20 +55,20 @@ Fora de escopo:
 - skill tree completa;
 - respec;
 - UI final de level up;
-- animação/vfx de level up;
+- animaÃ§Ã£o/vfx de level up;
 - classes/subclasses;
 - perks complexos;
 - balanceamento final.
 
 ---
 
-## 4. Regras de negócio
+## 4. Regras de negÃ³cio
 
-### R1 — MaxLevel
+### R1 â€” MaxLevel
 
 MaxLevel = 100.
 
-### R2 — XP curve
+### R2 â€” XP curve
 
 ```text
 LevelBand = floor((Level - 1) / 10)
@@ -76,21 +76,21 @@ LevelMultiplier = 50 + (LevelBand * 10)
 XpToNextLevel = 100 + ((Level - 1) * LevelMultiplier)
 ```
 
-### R3 — Rewards
+### R3 â€” Rewards
 
 - +1 AttributePoint por level.
 - +1 SkillPoint quando `Level % 3 == 0`.
 
-### R4 — Atributos
+### R4 â€” Atributos
 
 - Strength soma em melee.
-- Dexterity soma em ranged físico.
+- Dexterity soma em ranged fÃ­sico.
 - Intelligence soma em magia.
 - Willpower aumenta MaxMana em +4 por ponto.
 - Constitution aumenta MaxHP em +5 por ponto.
 - Breath aumenta MaxStamina em +2 por ponto.
 
-### R5 — Bases
+### R5 â€” Bases
 
 ```text
 BaseMaxMana = 10
@@ -98,17 +98,17 @@ BaseMaxHP = 12
 BaseMaxStamina = 10
 ```
 
-### R6 — Creature XP
+### R6 â€” Creature XP
 
 ```text
-XpReward = EnemyLevel × DifficultyXpMultiplier
+XpReward = EnemyLevel Ã— DifficultyXpMultiplier
 ```
 
-### R7 — Cave spawn
+### R7 â€” Cave spawn
 
 ```text
-70%–80%: EnemyLevel = CaveLevel
-10%–20%: EnemyLevel = CaveLevel + 1
+70%â€“80%: EnemyLevel = CaveLevel
+10%â€“20%: EnemyLevel = CaveLevel + 1
 10% chance: special EnemyLevel = CaveLevel + 2
 ```
 
@@ -127,51 +127,51 @@ XpReward = EnemyLevel × DifficultyXpMultiplier
 
 ---
 
-## 6. Critérios de aceite
+## 6. CritÃ©rios de aceite
 
-### CA1 — XP ganho
+### CA1 â€” XP ganho
 
-Jogador ganha XP por evento válido.
+Jogador ganha XP por evento vÃ¡lido.
 
-### CA2 — Level up
+### CA2 â€” Level up
 
-Ao atingir XP necessário, jogador sobe de nível.
+Ao atingir XP necessÃ¡rio, jogador sobe de nÃ­vel.
 
-### CA3 — Multi-level
+### CA3 â€” Multi-level
 
 Multi-level up funciona.
 
-### CA4 — Pontos
+### CA4 â€” Pontos
 
-Level concede AttributePoint e, a cada 3 níveis, SkillPoint.
+Level concede AttributePoint e, a cada 3 nÃ­veis, SkillPoint.
 
-### CA5 — Atributos
+### CA5 â€” Atributos
 
 Jogador pode gastar AttributePoint nos 6 atributos MVP.
 
-### CA6 — Derivados
+### CA6 â€” Derivados
 
 MaxMana, MaxHP e MaxStamina refletem Willpower, Constitution e Breath.
 
-### CA7 — Enemy XP
+### CA7 â€” Enemy XP
 
 XP de inimigo usa EnemyLevel e Difficulty final.
 
-### CA8 — CaveLevel
+### CA8 â€” CaveLevel
 
-CaveLevel gera criaturas com variação de nível conforme regra MVP.
+CaveLevel gera criaturas com variaÃ§Ã£o de nÃ­vel conforme regra MVP.
 
-### CA9 — Save/load
+### CA9 â€” Save/load
 
-Progressão e atributos persistem.
+ProgressÃ£o e atributos persistem.
 
-### CA10 — HUD
+### CA10 â€” HUD
 
 Debug HUD mostra level, XP, pontos e atributos.
 
 ---
 
-## 7. Dependências
+## 7. DependÃªncias
 
 - `SaveData`
 - `PlayerManager`
@@ -190,5 +190,6 @@ Debug HUD mostra level, XP, pontos e atributos.
 ## 8. Pronto para Plan quando
 
 - Esta spec estiver aprovada.
-- `docs/FASE9E_PLAYER_LEVEL_UP_PROGRESSION_SPEC_v1.0.md` estiver lida.
+- `docs_old/FASE9E_PLAYER_LEVEL_UP_PROGRESSION_SPEC_v1.0.md` estiver lida.
 - Estado real em `dev` tiver sido validado.
+

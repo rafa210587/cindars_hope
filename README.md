@@ -1,4 +1,4 @@
-# Cindar's Hope — 2D Pixel Art RPG + Farm Sim
+﻿# Cindar's Hope — 2D Pixel Art RPG + Farm Sim
 
 Um jogo 2D em estilo pixel art combinando simulação de fazenda com exploração, combate, comércio, crafting e progressão por ferramentas.
 
@@ -159,13 +159,13 @@ A prioridade agora é **FASE 9C — Tools, Farm Actions e Combat Refinement**, a
 - **PROJECT_LOG.md** — histórico de PRs, decisões, estado
 - **AGENTS.md** — regras de agente e fluxo git
 - **CLAUDE.md** — regras de código, convenções e padrões
-- **docs/GDD_v2.6.md** — design do jogo completo
-- **docs/ARCH_fase4_v2.2.md** — arquitetura técnica detalhada
-- **docs/CORE_CONTRACTS_EVENTS_SAVE_IDS_v1.0.md** — contratos core, eventos, IDs e save
-- **docs/FASE9A_HANDOFF_FARM_TOWN_SAVE_v1.0.md** — entrega FASE 9A
-- **docs/FASE9B_CAVE_COMBAT_MVP_v1.0.md** — entrega FASE 9B-1
-- **docs/FASE9C_TOOLS_FARM_COMBAT_REFINEMENT_v1.0.md** — próxima fase de ferramentas/farm/combat
-- **docs/NEXT_WAVES_ROADMAP_v1.0.md** — roadmap pós 9B-1, agora apontando para 9C
+- **docs/design/GDD_v2.6.md** — design do jogo completo
+- **docs/architecture/ARCH_fase4_v2.2.md** — arquitetura técnica detalhada
+- **docs/architecture/CORE_CONTRACTS_EVENTS_SAVE_IDS_v1.0.md** — contratos core, eventos, IDs e save
+- **docs_old/FASE9A_HANDOFF_FARM_TOWN_SAVE_v1.0.md** — entrega FASE 9A
+- **docs_old/FASE9B_CAVE_COMBAT_MVP_v1.0.md** — entrega FASE 9B-1
+- **docs_old/FASE9C_TOOLS_FARM_COMBAT_REFINEMENT_v1.0.md** — próxima fase de ferramentas/farm/combat
+- **docs/roadmap/NEXT_WAVES_ROADMAP_v1.0.md** — roadmap pós 9B-1, agora apontando para 9C
 
 ## Contato / Issues
 

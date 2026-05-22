@@ -1,17 +1,20 @@
-﻿# Cindar's Hope - Documentacao reorganizada
+﻿# Cindar's Hope — Documentação ativa
 
-> Status: documentacao ativa reorganizada.
-> Historico preservado em `docs_old/`.
+## Camadas
 
-## Estrutura
-
-- `docs/specs/implementados/` - specs normalizadas do que ja existe no repo.
-- `docs/specs/a_implementar/` - specs futuras aprovadas ou em preparacao.
-- `docs/refinements/implementados/` - refinamentos associados a capacidades ja implementadas.
-- `docs/refinements/a_implementar/` - refinamentos de capacidades futuras.
-- `docs_old/` - documentacao historica preservada.
+- `docs/design/` — design ativo do jogo.
+- `docs/architecture/` — arquitetura ativa.
+- `docs/operations/` — operação, agentes, SpecKit, ambiente e pipeline.
+- `docs/roadmap/` — roadmap ativo.
+- `docs/specs/implementados/` — specs do que já existe.
+- `docs/specs/a_implementar/` — specs futuras.
+- `docs/refinements/implementados/` — refinamentos de features implementadas.
+- `docs/refinements/a_implementar/` — refinamentos futuros.
+- `docs_old/` — histórico preservado.
+- `specs/` — SpecKit operacional por feature.
 
 ## Regra
 
-Specs antigas nao sao apagadas nem reescritas destrutivamente.
-Mudancas futuras entram como nova spec, amendment, correction ou errata.
+Não usar `spec/`. Essa pasta foi absorvida e removida.
+
+Specs antigas não são apagadas nem reescritas destrutivamente. Mudanças futuras entram como nova spec, amendment, correction ou errata.

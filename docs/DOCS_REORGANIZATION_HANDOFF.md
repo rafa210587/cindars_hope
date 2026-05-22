@@ -21,3 +21,14 @@
 - Materializar FASE9H-I-J-K-L em `docs/specs/a_implementar/`.
 - Enriquecer specs com evidencia linha-a-linha se necessario.
 - Rodar validacao Unity em tarefa separada.
+
+## Consolidação pós-Codex
+
+- `docs_old/` preservado.
+- Documentos ativos copiados de `docs_old/` para `docs/design`, `docs/architecture`, `docs/operations` e `docs/roadmap`.
+- `spec/implementado` absorvido em `docs/refinements/implementados`.
+- `spec/preparado` absorvido em `docs/specs/a_implementar`.
+- FASE9H-K copiadas de `docs_old` para `docs/specs/a_implementar`.
+- FASE9L criada como placeholder controlado.
+- `spec/` removida.
+- `specs/` mantida como SpecKit operacional.

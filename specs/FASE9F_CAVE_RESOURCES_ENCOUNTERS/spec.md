@@ -1,72 +1,72 @@
-# SpecKit — FASE9F Cave, Resources, Encounters e Loot Progression
+﻿# SpecKit â€” FASE9F Cave, Resources, Encounters e Loot Progression
 
 > **Feature:** `FASE9F_CAVE_RESOURCES_ENCOUNTERS`  
-> **Status:** especificação funcional aprovada para planejamento.  
-> **Fonte de design:** `docs/FASE9F_CAVE_RESOURCES_ENCOUNTERS_SPEC_v1.0.md`
+> **Status:** especificaÃ§Ã£o funcional aprovada para planejamento.  
+> **Fonte de design:** `docs_old/FASE9F_CAVE_RESOURCES_ENCOUNTERS_SPEC_v1.0.md`
 
 ---
 
 ## 1. User story
 
-Como jogador, quero explorar níveis grandes e labirínticos da caverna, coletar recursos exclusivos, enfrentar criaturas e bosses, liberar checkpoints e obter materiais melhores para craftar equipamentos mais fortes e avançar cada vez mais fundo.
+Como jogador, quero explorar nÃ­veis grandes e labirÃ­nticos da caverna, coletar recursos exclusivos, enfrentar criaturas e bosses, liberar checkpoints e obter materiais melhores para craftar equipamentos mais fortes e avanÃ§ar cada vez mais fundo.
 
 ---
 
 ## 2. Objetivos funcionais
 
-### O1 — CaveLevel inicial
+### O1 â€” CaveLevel inicial
 
-A primeira entrada na caverna começa em `CaveLevel = 1`.
+A primeira entrada na caverna comeÃ§a em `CaveLevel = 1`.
 
-### O2 — Checkpoints
+### O2 â€” Checkpoints
 
-A cada 15 níveis, o jogador libera um checkpoint permanente. Ao entrar na caverna, pode escolher qualquer checkpoint liberado.
+A cada 15 nÃ­veis, o jogador libera um checkpoint permanente. Ao entrar na caverna, pode escolher qualquer checkpoint liberado.
 
-### O3 — Procedural por run
+### O3 â€” Procedural por run
 
-A cave usa `CaveWorldSeed` persistente e `CaveRunSeed` da run atual. Ao sofrer KO/derrota, a cave run é regenerada com nova `CaveRunSeed`; checkpoints permanecem.
+A cave usa `CaveWorldSeed` persistente e `CaveRunSeed` da run atual. Ao sofrer KO/derrota, a cave run Ã© regenerada com nova `CaveRunSeed`; checkpoints permanecem.
 
-### O4 — Níveis grandes e labirínticos
+### O4 â€” NÃ­veis grandes e labirÃ­nticos
 
-Cada nível deve ter múltiplas salas, corredores, becos sem saída, caminhos alternativos, áreas opcionais, clusters de recursos e entrada/saída distantes.
+Cada nÃ­vel deve ter mÃºltiplas salas, corredores, becos sem saÃ­da, caminhos alternativos, Ã¡reas opcionais, clusters de recursos e entrada/saÃ­da distantes.
 
-### O5 — Biomas e bosses
+### O5 â€” Biomas e bosses
 
-Cada faixa de 15 níveis tem um bioma e um boss poderoso no fim da faixa.
+Cada faixa de 15 nÃ­veis tem um bioma e um boss poderoso no fim da faixa.
 
-### O6 — ResourceNodes
+### O6 â€” ResourceNodes
 
-Nodes exigem ferramenta, tier mínimo, stamina e hits. Nodes podem representar minério, pedra, árvore subterrânea, cristal, fungo ou recurso especial.
+Nodes exigem ferramenta, tier mÃ­nimo, stamina e hits. Nodes podem representar minÃ©rio, pedra, Ã¡rvore subterrÃ¢nea, cristal, fungo ou recurso especial.
 
-### O7 — Fallback sem pickaxe/tier
+### O7 â€” Fallback sem pickaxe/tier
 
-Minério sem pickaxe/tier suficiente gera apenas `1x item_material_stone`, consome stamina, não entrega minério principal e não depleta o node principal.
+MinÃ©rio sem pickaxe/tier suficiente gera apenas `1x item_material_stone`, consome stamina, nÃ£o entrega minÃ©rio principal e nÃ£o depleta o node principal.
 
-### O8 — Recursos por faixa
+### O8 â€” Recursos por faixa
 
-Cada bioma/faixa possui recursos específicos, incluindo madeiras melhores que precisam ser refinadas para craftar itens de níveis melhores.
+Cada bioma/faixa possui recursos especÃ­ficos, incluindo madeiras melhores que precisam ser refinadas para craftar itens de nÃ­veis melhores.
 
-### O9 — Spawn por CaveLevel
+### O9 â€” Spawn por CaveLevel
 
 Spawn respeita:
 
 ```text
-70%–80%: EnemyLevel = CaveLevel
-10%–20%: EnemyLevel = CaveLevel + 1
+70%â€“80%: EnemyLevel = CaveLevel
+10%â€“20%: EnemyLevel = CaveLevel + 1
 10%: Special EnemyLevel = CaveLevel + 2
 ```
 
-### O10 — Slime especial visual
+### O10 â€” Slime especial visual
 
 Slime especial deve ter cor/sprite diferente, XP maior e drop melhor.
 
-### O11 — Loot tables
+### O11 â€” Loot tables
 
-Inimigos e nodes devem usar loot table por ID, não apenas drop fixo hardcoded.
+Inimigos e nodes devem usar loot table por ID, nÃ£o apenas drop fixo hardcoded.
 
-### O12 — Save/load
+### O12 â€” Save/load
 
-Save/load deve persistir seeds, nível atual, deepest layer, checkpoints, depleted nodes e bosses persistentes quando aplicável.
+Save/load deve persistir seeds, nÃ­vel atual, deepest layer, checkpoints, depleted nodes e bosses persistentes quando aplicÃ¡vel.
 
 ---
 
@@ -75,24 +75,24 @@ Save/load deve persistir seeds, nível atual, deepest layer, checkpoints, deplet
 Fora do primeiro pacote FASE9F:
 
 - arte final da cave;
-- todos os 100 níveis implementados manualmente;
-- boss final do nível 100;
+- todos os 100 nÃ­veis implementados manualmente;
+- boss final do nÃ­vel 100;
 - puzzles completos;
 - armadilhas complexas;
 - companion ativo na cave;
 - mercadores da Guilda das Estradas;
-- baús no primeiro slice;
+- baÃºs no primeiro slice;
 - minimap;
-- iluminação/fog final;
+- iluminaÃ§Ã£o/fog final;
 - ItemRarity;
 - balanceamento final;
-- animações finais dos bosses.
+- animaÃ§Ãµes finais dos bosses.
 
 ---
 
-## 4. Regras de negócio
+## 4. Regras de negÃ³cio
 
-### R1 — Checkpoints
+### R1 â€” Checkpoints
 
 Checkpoints oficiais:
 
@@ -100,41 +100,41 @@ Checkpoints oficiais:
 1, 15, 30, 45, 60, 75, 90
 ```
 
-Level 1 é sempre disponível.
+Level 1 Ã© sempre disponÃ­vel.
 
-### R2 — Boss bloqueia bioma seguinte
+### R2 â€” Boss bloqueia bioma seguinte
 
-Boss de fim de faixa bloqueia o avanço para o próximo bioma.
+Boss de fim de faixa bloqueia o avanÃ§o para o prÃ³ximo bioma.
 
-### R3 — KO/derrota regenera run
+### R3 â€” KO/derrota regenera run
 
 Ao sofrer KO/derrota:
 
 - gerar nova `CaveRunSeed`;
-- layout dos níveis muda;
-- conteúdo da run muda;
+- layout dos nÃ­veis muda;
+- conteÃºdo da run muda;
 - checkpoints liberados permanecem;
 - deepest layer permanece.
 
-### R4 — ResourceNode exige ferramenta e stamina
+### R4 â€” ResourceNode exige ferramenta e stamina
 
 Ferramenta correta + tier suficiente + stamina suficiente permitem coletar loot principal.
 
-### R5 — Fallback sem ferramenta correta
+### R5 â€” Fallback sem ferramenta correta
 
-Fallback existe para minério/pedra e deve ser explícito no `ResourceNodeDataSO`.
+Fallback existe para minÃ©rio/pedra e deve ser explÃ­cito no `ResourceNodeDataSO`.
 
-### R6 — Renovação diária
+### R6 â€” RenovaÃ§Ã£o diÃ¡ria
 
 Apenas nodes com `RespawnsDaily = true` renovam no `DayStartedEvent`.
 
-### R7 — Save sem Unity refs
+### R7 â€” Save sem Unity refs
 
-Save não pode carregar `GameObject`, `Transform`, `MonoBehaviour`, `ScriptableObject`, `Sprite`, `Collider` ou `Rigidbody`.
+Save nÃ£o pode carregar `GameObject`, `Transform`, `MonoBehaviour`, `ScriptableObject`, `Sprite`, `Collider` ou `Rigidbody`.
 
-### R8 — Sem busca global runtime
+### R8 â€” Sem busca global runtime
 
-Sistemas novos não podem usar `GameObject.Find`, `FindObjectOfType` ou `FindObjectsByType` em runtime.
+Sistemas novos nÃ£o podem usar `GameObject.Find`, `FindObjectOfType` ou `FindObjectsByType` em runtime.
 
 ---
 
@@ -156,75 +156,75 @@ Sistemas novos não podem usar `GameObject.Find`, `FindObjectOfType` ou `FindObj
 
 ---
 
-## 6. Critérios de aceite
+## 6. CritÃ©rios de aceite
 
-### CA1 — Entrada inicial
+### CA1 â€” Entrada inicial
 
 Novo jogo entra na cave em `CaveLevel = 1`.
 
-### CA2 — Checkpoint 15
+### CA2 â€” Checkpoint 15
 
-Após liberar checkpoint 15, ele aparece como opção de entrada.
+ApÃ³s liberar checkpoint 15, ele aparece como opÃ§Ã£o de entrada.
 
-### CA3 — Checkpoint persiste
+### CA3 â€” Checkpoint persiste
 
-Após KO/derrota, checkpoint liberado permanece disponível.
+ApÃ³s KO/derrota, checkpoint liberado permanece disponÃ­vel.
 
-### CA4 — Run muda layout
+### CA4 â€” Run muda layout
 
-Após KO/derrota, `CaveRunSeed` muda e o layout dos níveis muda.
+ApÃ³s KO/derrota, `CaveRunSeed` muda e o layout dos nÃ­veis muda.
 
-### CA5 — Save/load
+### CA5 â€” Save/load
 
 Save/load preserva `CaveWorldSeed`, `CaveRunSeed`, `CurrentLayer`, `DeepestLayerReached` e checkpoints.
 
-### CA6 — Level grande
+### CA6 â€” Level grande
 
-CaveLevel gerado tem múltiplas salas, corredores, entrada, saída e áreas opcionais.
+CaveLevel gerado tem mÃºltiplas salas, corredores, entrada, saÃ­da e Ã¡reas opcionais.
 
-### CA7 — Ferramenta/tier
+### CA7 â€” Ferramenta/tier
 
 ResourceNode valida ferramenta e tier antes de entregar loot principal.
 
-### CA8 — Stamina
+### CA8 â€” Stamina
 
-ResourceNode consome stamina por hit/ação.
+ResourceNode consome stamina por hit/aÃ§Ã£o.
 
-### CA9 — Fallback stone
+### CA9 â€” Fallback stone
 
-Minerar sem pickaxe/tier suficiente gera `1x item_material_stone`, não depleta node principal e não entrega minério.
+Minerar sem pickaxe/tier suficiente gera `1x item_material_stone`, nÃ£o depleta node principal e nÃ£o entrega minÃ©rio.
 
-### CA10 — Daily refresh
+### CA10 â€” Daily refresh
 
 Novo dia restaura somente nodes `RespawnsDaily = true`.
 
-### CA11 — Spawn rule
+### CA11 â€” Spawn rule
 
-Spawn respeita distribuição base/+1/especial +2.
+Spawn respeita distribuiÃ§Ã£o base/+1/especial +2.
 
-### CA12 — Slime especial
+### CA12 â€” Slime especial
 
 Slime especial tem cor/sprite diferente.
 
-### CA13 — Boss de bioma
+### CA13 â€” Boss de bioma
 
-Nível final da faixa possui boss difícil e bloqueia o próximo bioma.
+NÃ­vel final da faixa possui boss difÃ­cil e bloqueia o prÃ³ximo bioma.
 
-### CA14 — Loot table
+### CA14 â€” Loot table
 
 Inimigos e nodes usam loot table por ID.
 
-### CA15 — Save seguro
+### CA15 â€” Save seguro
 
-Save de cave contém apenas DTOs e tipos simples.
+Save de cave contÃ©m apenas DTOs e tipos simples.
 
-### CA16 — Sem busca global
+### CA16 â€” Sem busca global
 
 Nenhum sistema novo usa busca global runtime proibida.
 
 ---
 
-## 7. Dependências
+## 7. DependÃªncias
 
 - `SaveManager`
 - `SaveData`
@@ -248,15 +248,15 @@ Nenhum sistema novo usa busca global runtime proibida.
 | PR | Escopo |
 |---|---|
 | PR-170 | Cave procedural contracts: configs, runtime state e eventos |
-| PR-171 | Cave procedural generator MVP: rooms, corridors, entrada, saída, spawn/resource points |
+| PR-171 | Cave procedural generator MVP: rooms, corridors, entrada, saÃ­da, spawn/resource points |
 | PR-172 | Cave run regeneration on player defeat/KO |
-| PR-173 | Cave checkpoints a cada 15 níveis e entrada por checkpoint |
+| PR-173 | Cave checkpoints a cada 15 nÃ­veis e entrada por checkpoint |
 | PR-174 | ResourceNode contracts com ferramenta, tier, stamina e fallback |
 | PR-175 | ResourceNode runtime MVP: Stone, CopperOre, CaveRootTree |
 | PR-176 | Cave save/load: seeds, current layer, deepest layer, checkpoints, depleted nodes |
 | PR-177 | Enemy spawn by CaveLevel com Slime especial colorido |
 | PR-178 | Loot tables para inimigos e nodes |
-| PR-179 | XP integration com EnemyLevel × DifficultyMultiplier |
+| PR-179 | XP integration com EnemyLevel Ã— DifficultyMultiplier |
 | PR-180 | Daily cave refresh apenas para `RespawnsDaily = true` |
 | PR-181 | Biome boss MVP no CaveLevel 15 |
 | PR-182 | Cave validator |
@@ -265,6 +265,7 @@ Nenhum sistema novo usa busca global runtime proibida.
 
 ## 9. Pronto para Plan quando
 
-- `docs/FASE9F_CAVE_RESOURCES_ENCOUNTERS_SPEC_v1.0.md` estiver lido.
+- `docs_old/FASE9F_CAVE_RESOURCES_ENCOUNTERS_SPEC_v1.0.md` estiver lido.
 - Estado real em `dev` tiver sido validado.
 - FASE9E dependencies relevantes estiverem consideradas: Item Taxonomy, Save/Migration, Player Progression, Damage/Status e UI/Equipment.
+

@@ -1,41 +1,41 @@
-# SpecKit — FASE9E Item Taxonomy, IDs e Regras de Item
+﻿# SpecKit â€” FASE9E Item Taxonomy, IDs e Regras de Item
 
 > **Feature:** FASE9E_ITEM_TAXONOMY_IDS  
-> **Status:** especificação funcional aprovada para planejamento.  
-> **Fonte de design:** `docs/FASE9E_ITEM_TAXONOMY_IDS_SPEC_v1.0.md`  
-> **Exemplos:** `docs/FASE9E_ITEM_EXAMPLES_VARIATIONS_v1.0.md`
+> **Status:** especificaÃ§Ã£o funcional aprovada para planejamento.  
+> **Fonte de design:** `docs_old/FASE9E_ITEM_TAXONOMY_IDS_SPEC_v1.0.md`  
+> **Exemplos:** `docs_old/FASE9E_ITEM_EXAMPLES_VARIATIONS_v1.0.md`
 
 ---
 
 ## 1. User story
 
-Como dev/designer, quero uma convenção única para categorias, IDs, stack, venda, uso, equip e persistência de itens para criar conteúdo novo sem quebrar Inventory, Save/Load, Shop, Crafting, Hotbar e Equipment.
+Como dev/designer, quero uma convenÃ§Ã£o Ãºnica para categorias, IDs, stack, venda, uso, equip e persistÃªncia de itens para criar conteÃºdo novo sem quebrar Inventory, Save/Load, Shop, Crafting, Hotbar e Equipment.
 
 ---
 
 ## 2. Objetivos funcionais
 
-### O1 — Categorias oficiais
+### O1 â€” Categorias oficiais
 
-Definir categorias oficiais para todos os tipos de item do MVP e próximas fases.
+Definir categorias oficiais para todos os tipos de item do MVP e prÃ³ximas fases.
 
-### O2 — Prefixos oficiais
+### O2 â€” Prefixos oficiais
 
 Definir prefixos por categoria.
 
-### O3 — Flags de item
+### O3 â€” Flags de item
 
 Padronizar stack, economy, equip, use, drop, removable, quest, debug, hotbar e combat flags.
 
-### O4 — Stack/split/drop
+### O4 â€” Stack/split/drop
 
 Definir stack, split e drop com escolha de quantidade.
 
-### O5 — Equipment/hotbar compatibility
+### O5 â€” Equipment/hotbar compatibility
 
 Definir categorias permitidas por slot.
 
-### O6 — Exemplos iniciais
+### O6 â€” Exemplos iniciais
 
 Guardar exemplos de seeds, crops, foods, tools, weapons, ammo, magic items, materials, ores e drops.
 
@@ -51,46 +51,46 @@ Fora de escopo:
 - todos os itens finais do jogo;
 - ItemRarity implementado;
 - economia final;
-- ícones finais;
-- durabilidade/peso avançado.
+- Ã­cones finais;
+- durabilidade/peso avanÃ§ado.
 
 ---
 
-## 4. Regras de negócio
+## 4. Regras de negÃ³cio
 
-### R1 — IDs estáveis
+### R1 â€” IDs estÃ¡veis
 
-Save usa apenas IDs estáveis. ID publicado não deve mudar.
+Save usa apenas IDs estÃ¡veis. ID publicado nÃ£o deve mudar.
 
-### R2 — Consumable único
+### R2 â€” Consumable Ãºnico
 
 Food, Potion, Drink, BuffFood e Utility ficam em `ItemCategory.Consumable` com `ConsumableSubtype`.
 
-### R3 — Seeds equipáveis
+### R3 â€” Seeds equipÃ¡veis
 
-Seeds são equipáveis para escolher qual plantar.
+Seeds sÃ£o equipÃ¡veis para escolher qual plantar.
 
-### R4 — Crops para receita
+### R4 â€” Crops para receita
 
-Crops não são consumidos diretamente no MVP; são usados para receitas.
+Crops nÃ£o sÃ£o consumidos diretamente no MVP; sÃ£o usados para receitas.
 
-### R5 — Food em combate
+### R5 â€” Food em combate
 
 Consumables do subtipo Food podem ser equipados e usados em combate.
 
-### R6 — Drop com quantidade
+### R6 â€” Drop com quantidade
 
 Drop de stack deve permitir escolher quantidade.
 
-### R7 — Tools/Weapons básicas
+### R7 â€” Tools/Weapons bÃ¡sicas
 
-Ferramentas e armas básicas podem ser vendidas, dropadas e removidas se flags permitirem.
+Ferramentas e armas bÃ¡sicas podem ser vendidas, dropadas e removidas se flags permitirem.
 
-### R8 — Quest/Key protection
+### R8 â€” Quest/Key protection
 
-Quest/Key items não podem ser vendidos, dropados ou removidos por padrão sem override explícito.
+Quest/Key items nÃ£o podem ser vendidos, dropados ou removidos por padrÃ£o sem override explÃ­cito.
 
-### R9 — Materials/tier
+### R9 â€” Materials/tier
 
 Tools e weapons usam materiais: Wood, Bronze, Iron, Gold, Diamond.
 
@@ -107,47 +107,47 @@ Tools e weapons usam materiais: Wood, Bronze, Iron, Gold, Diamond.
 
 ---
 
-## 6. Critérios de aceite
+## 6. CritÃ©rios de aceite
 
-### CA1 — Categorias
+### CA1 â€” Categorias
 
-ItemCategory contém Seed, Crop, Consumable, Material, Tool, Weapon, Magic, Ammo, Fish, Ore, Gem, MonsterDrop, Quest, KeyItem, Furniture e Misc.
+ItemCategory contÃ©m Seed, Crop, Consumable, Material, Tool, Weapon, Magic, Ammo, Fish, Ore, Gem, MonsterDrop, Quest, KeyItem, Furniture e Misc.
 
-### CA2 — ConsumableSubtype
+### CA2 â€” ConsumableSubtype
 
-ConsumableSubtype contém Food, Potion, Drink, BuffFood e Utility.
+ConsumableSubtype contÃ©m Food, Potion, Drink, BuffFood e Utility.
 
-### CA3 — Prefixos
+### CA3 â€” Prefixos
 
-Todo item novo segue prefixo compatível com categoria.
+Todo item novo segue prefixo compatÃ­vel com categoria.
 
-### CA4 — Flags
+### CA4 â€” Flags
 
-ItemDataSO suporta flags necessárias.
+ItemDataSO suporta flags necessÃ¡rias.
 
-### CA5 — Stack
+### CA5 â€” Stack
 
-MaxStack e IsStackable são validados.
+MaxStack e IsStackable sÃ£o validados.
 
-### CA6 — Drop quantidade
+### CA6 â€” Drop quantidade
 
-Drop de stack permite escolher quantidade ou registra fallback temporário explícito.
+Drop de stack permite escolher quantidade ou registra fallback temporÃ¡rio explÃ­cito.
 
-### CA7 — Hotbar/slots
+### CA7 â€” Hotbar/slots
 
-Slot rules permitem Seed, Consumable, Tool, Magic, Ammo, Weapon e Quest usável conforme definido.
+Slot rules permitem Seed, Consumable, Tool, Magic, Ammo, Weapon e Quest usÃ¡vel conforme definido.
 
-### CA8 — Exemplos
+### CA8 â€” Exemplos
 
-Seeds, foods, tools, weapons, ammo e magic items iniciais estão documentados.
+Seeds, foods, tools, weapons, ammo e magic items iniciais estÃ£o documentados.
 
-### CA9 — Future TODO
+### CA9 â€” Future TODO
 
-ItemRarity fica registrado em `docs/FUTURE_IDEAS_TODO_v1.0.md`.
+ItemRarity fica registrado em `docs_old/FUTURE_IDEAS_TODO_v1.0.md`.
 
 ---
 
-## 7. Dependências
+## 7. DependÃªncias
 
 - `InventoryManager`
 - `ItemDataSO`
@@ -165,5 +165,6 @@ ItemRarity fica registrado em `docs/FUTURE_IDEAS_TODO_v1.0.md`.
 ## 8. Pronto para Plan quando
 
 - Esta spec estiver aprovada.
-- `docs/FASE9E_ITEM_TAXONOMY_IDS_SPEC_v1.0.md` estiver lida.
-- `docs/FASE9E_ITEM_EXAMPLES_VARIATIONS_v1.0.md` estiver lido.
+- `docs_old/FASE9E_ITEM_TAXONOMY_IDS_SPEC_v1.0.md` estiver lida.
+- `docs_old/FASE9E_ITEM_EXAMPLES_VARIATIONS_v1.0.md` estiver lido.
+

@@ -26,7 +26,7 @@
 
 ## Fonte auxiliar local preservada
 
-A pasta local nao rastreada `spec/` foi preservada sem alteracao e usada apenas como referencia manual de merge logico nesta reorganizacao. Ela contem specs implementadas e preparadas em formato SpecKit, incluindo blocos de Core, Farm, Save, Town, Cave procedural, stable run replay e boss gates.
+A antiga pasta raiz `spec/` foi absorvida na reorganizacao: `spec/implementado/` virou `docs/refinements/implementados/ref_*.md` e `spec/preparado/` virou `docs/specs/a_implementar/spec_*.md`. A pasta raiz `spec/` foi removida para evitar duplicidade com `specs/`.
 
 ## Regra de validacao contra perda
 
@@ -41,3 +41,4 @@ Uma nova spec em `docs/specs/implementados/` so e considerada valida quando cont
 ## Preservacao adicional
 
 - docs_old/README_LEGACY.md preserva o antigo docs/README.md movido por git mv.
+

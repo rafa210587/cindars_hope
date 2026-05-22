@@ -35,3 +35,10 @@
 - Este arquivo substitui o tracking curto anterior em `docs_old/IMPLEMENTATION_STATUS.md` sem apagar o historico.
 - Status `Implementado parcial` inclui MVP/debug ou codigo que ainda depende de validacao Unity.
 - Specs futuras FASE9H-I-J-K-L ainda devem ser materializadas em `docs/specs/a_implementar/`.
+
+## Specs futuras rastreadas
+
+Fonte: docs/specs/SPEC_REGISTRY_TO_IMPLEMENT.md.
+
+Este arquivo deve permanecer curto; detalhes ficam nos registries e nas specs.
+

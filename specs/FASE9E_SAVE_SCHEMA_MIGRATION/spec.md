@@ -1,48 +1,48 @@
-# SpecKit — FASE9E Save Schema, Migration e Persistência
+﻿# SpecKit â€” FASE9E Save Schema, Migration e PersistÃªncia
 
 > **Feature:** FASE9E_SAVE_SCHEMA_MIGRATION  
-> **Status:** especificação funcional aprovada para planejamento.  
-> **Fonte de design:** `docs/FASE9E_SAVE_SCHEMA_MIGRATION_SPEC_v1.0.md`
+> **Status:** especificaÃ§Ã£o funcional aprovada para planejamento.  
+> **Fonte de design:** `docs_old/FASE9E_SAVE_SCHEMA_MIGRATION_SPEC_v1.0.md`
 
 ---
 
 ## 1. User story
 
-Como jogador, quero que meu save continue carregando mesmo após novas versões do jogo. Como dev, quero evoluir o schema de save sem quebrar dados antigos nem salvar referências Unity inválidas.
+Como jogador, quero que meu save continue carregando mesmo apÃ³s novas versÃµes do jogo. Como dev, quero evoluir o schema de save sem quebrar dados antigos nem salvar referÃªncias Unity invÃ¡lidas.
 
 ---
 
 ## 2. Objetivos funcionais
 
-### O1 — SchemaVersion
+### O1 â€” SchemaVersion
 
-Todo save novo deve ter versão explícita.
+Todo save novo deve ter versÃ£o explÃ­cita.
 
-### O2 — Backwards compatibility
+### O2 â€” Backwards compatibility
 
 Saves antigos sem campos novos devem carregar com defaults seguros.
 
-### O3 — Migration pipeline
+### O3 â€” Migration pipeline
 
-Mudanças de schema devem migrar versão por versão.
+MudanÃ§as de schema devem migrar versÃ£o por versÃ£o.
 
-### O4 — IDs estáveis
+### O4 â€” IDs estÃ¡veis
 
-Save deve persistir IDs e tipos simples, nunca referências Unity.
+Save deve persistir IDs e tipos simples, nunca referÃªncias Unity.
 
-### O5 — Equipment/Hotbar
+### O5 â€” Equipment/Hotbar
 
-Persistir equipment, hotbar, mãos, active seed, ammo e consumível selecionado.
+Persistir equipment, hotbar, mÃ£os, active seed, ammo e consumÃ­vel selecionado.
 
-### O6 — Progression
+### O6 â€” Progression
 
 Persistir Level, CurrentXp, XpToNextLevel, UnspentAttributePoints e UnspentSkillPoints.
 
-### O7 — Status
+### O7 â€” Status
 
 Persistir status ativos do player e de entidades persistentes futuras.
 
-### O8 — Pickups/Farm/Cave
+### O8 â€” Pickups/Farm/Cave
 
 Persistir pickups, drops do jogador, farm state e cave state MVP.
 
@@ -54,47 +54,47 @@ Fora de escopo:
 
 - cloud save;
 - criptografia;
-- múltiplos slots avançados;
-- save binário;
+- mÃºltiplos slots avanÃ§ados;
+- save binÃ¡rio;
 - save incremental;
-- persistência total de todo objeto dinâmico;
+- persistÃªncia total de todo objeto dinÃ¢mico;
 - procedural cave completo.
 
 ---
 
-## 4. Regras de negócio
+## 4. Regras de negÃ³cio
 
-### R1 — Não salvar Unity refs
+### R1 â€” NÃ£o salvar Unity refs
 
-Não salvar GameObject, Transform, MonoBehaviour, ScriptableObject, Sprite, Collider ou Rigidbody.
+NÃ£o salvar GameObject, Transform, MonoBehaviour, ScriptableObject, Sprite, Collider ou Rigidbody.
 
-### R2 — Load tolerante
+### R2 â€” Load tolerante
 
 Campo ausente usa default seguro.
 
-### R3 — ID inválido
+### R3 â€” ID invÃ¡lido
 
-ID inválido limpa slot/entrada ou ignora item com warning. Load não quebra inteiro.
+ID invÃ¡lido limpa slot/entrada ou ignora item com warning. Load nÃ£o quebra inteiro.
 
-### R4 — Ammo vazio
+### R4 â€” Ammo vazio
 
-Ammo slot é limpo se item de ammo não existe ou quantidade chega a 0.
+Ammo slot Ã© limpo se item de ammo nÃ£o existe ou quantidade chega a 0.
 
-### R5 — Bow vence Magic
+### R5 â€” Bow vence Magic
 
-Se Bow e Magic forem salvos ao mesmo tempo, Bow vence e Magic é limpo.
+Se Bow e Magic forem salvos ao mesmo tempo, Bow vence e Magic Ã© limpo.
 
-### R6 — Cave mobs
+### R6 â€” Cave mobs
 
-Inimigos comuns da cave respawnam ao entrar novamente ou no novo dia. HP/status deles não salva no MVP.
+Inimigos comuns da cave respawnam ao entrar novamente ou no novo dia. HP/status deles nÃ£o salva no MVP.
 
-### R7 — Player status
+### R7 â€” Player status
 
-Status do player salva com duração restante.
+Status do player salva com duraÃ§Ã£o restante.
 
-### R8 — Progression default
+### R8 â€” Progression default
 
-Level = 1, CurrentXp = 0, XpToNextLevel = 100, pontos não gastos = 0.
+Level = 1, CurrentXp = 0, XpToNextLevel = 100, pontos nÃ£o gastos = 0.
 
 ---
 
@@ -114,51 +114,51 @@ Level = 1, CurrentXp = 0, XpToNextLevel = 100, pontos não gastos = 0.
 
 ---
 
-## 6. Critérios de aceite
+## 6. CritÃ©rios de aceite
 
-### CA1 — Versionamento
+### CA1 â€” Versionamento
 
 Todo save novo tem SchemaVersion atual.
 
-### CA2 — Save antigo
+### CA2 â€” Save antigo
 
 Save antigo sem Equipment/Hotbar/Status/Progression carrega.
 
-### CA3 — Migration
+### CA3 â€” Migration
 
-Migration roda versão por versão.
+Migration roda versÃ£o por versÃ£o.
 
-### CA4 — IDs inválidos
+### CA4 â€” IDs invÃ¡lidos
 
-IDs inválidos geram warning e não quebram load.
+IDs invÃ¡lidos geram warning e nÃ£o quebram load.
 
-### CA5 — Equipment/Hotbar
+### CA5 â€” Equipment/Hotbar
 
 Equipment, hotbar 6 slots, LeftHand, RightHand e ActiveSeed persistem.
 
-### CA6 — Progression
+### CA6 â€” Progression
 
 Level, XP e pontos persistem com defaults seguros.
 
-### CA7 — Status
+### CA7 â€” Status
 
-Player status salva/restaura duração restante.
+Player status salva/restaura duraÃ§Ã£o restante.
 
-### CA8 — Pickups
+### CA8 â€” Pickups
 
 Pickups e drops do jogador persistem.
 
-### CA9 — Farm
+### CA9 â€” Farm
 
 Plots, crops, watered/tilled state e trees persistem.
 
-### CA10 — Cave
+### CA10 â€” Cave
 
 Cave state MVP tem regra clara de respawn e listas persistentes futuras.
 
 ---
 
-## 7. Dependências
+## 7. DependÃªncias
 
 - `SaveManager`
 - `SaveData`
@@ -178,5 +178,6 @@ Cave state MVP tem regra clara de respawn e listas persistentes futuras.
 ## 8. Pronto para Plan quando
 
 - Esta spec estiver aprovada.
-- `docs/FASE9E_SAVE_SCHEMA_MIGRATION_SPEC_v1.0.md` estiver lida.
+- `docs_old/FASE9E_SAVE_SCHEMA_MIGRATION_SPEC_v1.0.md` estiver lida.
 - Estado real em `dev` tiver sido validado.
+
