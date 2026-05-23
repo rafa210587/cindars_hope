@@ -1,88 +1,110 @@
-﻿# Cindar's Hope — 2D Pixel Art RPG + Farm Sim
+# Cindar's Hope — 2D Pixel Art RPG + Farm Sim
 
-Um jogo 2D em estilo pixel art combinando simulação de fazenda com exploração, combate, comércio, crafting e progressão por ferramentas.
+Um jogo 2D em pixel art combinando simulação de fazenda com exploração, combate, comércio, crafting, cave runs e progressão RPG.
 
-## Estado Atual
+## Estado atual
 
-- **Fase implementada:** FASE 9B-1 Cave/Combat MVP ✅ concluída
-- **Próxima fase planejada:** FASE 9C — Tools, Farm Actions e Combat Refinement
-- **Branch principal:** `dev`
-- **Last Updated:** 2026-05-18
+- **Branch principal de desenvolvimento:** `dev`
+- **Estado documental:** reorganizado até FASE9L.
+- **Histórico antigo:** preservado em `docs_old/`.
+- **SpecKit operacional:** preservado em `specs/`.
+- **Specs implementadas/parciais:** `docs/specs/implementados/`.
+- **Specs futuras:** `docs/specs/a_implementar/`.
+- **Refinamentos implementados:** `docs/refinements/implementados/`.
+- **Refinamentos futuros:** `docs/refinements/a_implementar/`.
 
-### Sistemas Implementados
+## Estado implementado/parcial
 
-- ✅ **Core:** EventBus, TimeManager, SaveManager, BootstrapManager
-- ✅ **Farm MVP:** PlotSystem, TreeSystem, FishingSpot, ItemPickup, crescimento e colheita
-- ✅ **Town MVP:** NPC Pip, BuyItemPoint, SellAllPoint, PortalSystem
-- ✅ **Economy:** Gold, compra, venda e política de itens vendáveis
-- ✅ **Hunger:** HungerManager, FoodConsumer, perda de HP por fome vazia
-- ✅ **Crafting MVP:** CraftingManager, CraftingPoint, RecipeDatabase
-- ✅ **Save/Load:** JSON persistence, cross-scene restoration, CurrentScene tracking
-- ✅ **Cave MVP:** CaveScene, Portal Farm↔Cave, spawn points
-- ✅ **Combat MVP:** ataque melee simples, EnemyHealth, EnemyChaseController, EnemyContactDamage, drops, hit flash e knockback
-- ✅ **Scene Generators:** CreateMvpFarmScene, CreateMvpTownScene, CreateMvpCaveScene
-- ✅ **Validators:** MvpSceneValidator para Farm/Town/Cave
+Resumo curto; detalhes em `docs/IMPLEMENTATION_STATUS.md` e `docs/specs/SPEC_REGISTRY_IMPLEMENTED.md`.
 
-### Limitações atuais assumidas
+- Core/event bus/bootstrap: implementado/parcial.
+- Data/IDs/registries/ScriptableObjects: implementado.
+- Save/load JSON cross-scene: implementado parcial.
+- Inventory/itens/gold/stacks: implementado.
+- Farm loop: implementado parcial.
+- World pickups persistentes: implementado parcial.
+- Economy, hunger, crafting e town: implementado parcial/MVP.
+- Combat MVP, damage MVP e enemy data-driven stats: implementado parcial.
+- UI/debug, tools, hotbar e progression: implementado parcial.
+- Cave runtime/procedural/stable run/boss gates/visual fixes: implementado em código/parcial, com validação Unity pendente em várias partes.
+- Validation/process: implementado parcial.
 
-- Plantio ainda é simplificado; precisa sair de seleção automática de seed para seed ativa/UI/hotbar.
-- Árvores ainda precisam exigir machado para corte real.
-- Pesca já exige vara por ID, mas ainda não usa um sistema genérico de ferramentas.
-- Inventário já tem item equipável, mas ainda não há EquipmentManager.
-- Combate já tem base data-driven para inimigo, mas o ataque do player ainda precisa migrar para arma equipada.
-- Ainda não há dodge lateral/para trás.
-- Ainda não há arma à distância física nem magia à distância.
+## Specs futuras rastreadas
 
-### Menus Unity Disponíveis
+Detalhes em `docs/specs/SPEC_REGISTRY_TO_IMPLEMENT.md`.
+
+- FASE9C remaining: player equipment, items, combat, tools/farm/combat refinement.
+- FASE9D: enemy actions, AI, combat e arquitetura de 40+ monstros.
+- FASE9E: UI final, attribute allocation, damage/status/elements, item taxonomy, examples, save migration e progression refinada.
+- FASE9F: cave resources/encounters complete.
+- FASE9G: bestiary, faction locks, portal ecology e amendment de combat roles/AI/status.
+- FASE9H: loot, crafting, equipment, durability e environment.
+- FASE9I: player combat, weapons, magic e skill actions.
+- FASE9J: cave entry, loadout, HUD, death flow, Fonte de Anya e corpse recovery.
+- FASE9K: skill trees, nodes, active slots, capstones e respec.
+- FASE9L: UI/UX full gameplay — placeholder controlado; precisa virar spec completa antes de implementação.
+- Fishing/combat integration final.
+- UI/menu systems final.
+- Future ideas TODO.
+
+## Estrutura documental ativa
 
 ```text
-CindarsHope/
-├── Scenes/
-│   ├── Create MVP FarmScene        → gera Farm com plots/trees/shops
-│   ├── Create MVP TownScene        → gera Town com NPCs/buy/sell points
-│   └── Create MVP CaveScene        → gera Cave com portal/Slime/spawn points
-└── Validate/
-    ├── Validate MVP Data           → valida ScriptableObjects do jogo
-    ├── Validate Farm Town MVP      → valida estrutura de FarmScene e TownScene
-    └── Validate Cave MVP           → valida estrutura de CaveScene, quando disponível
+docs/
+├── design/                    # GDD, changelog e deltas de design
+├── architecture/              # arquitetura e contratos core
+├── operations/                # instruções de agentes, ambiente e política de specs
+├── roadmap/                   # roadmap ativo
+├── backlog/                   # backlog e ideias futuras
+├── amendments/                # amendments ativos
+├── validation/                # smoke tests e validações
+├── specs/
+│   ├── implementados/         # spec_*.md do que já existe no repo
+│   └── a_implementar/         # spec_*.md futuras/preparadas
+└── refinements/
+    ├── implementados/         # ref_*.md implementados/audits/handoffs
+    └── a_implementar/         # ref_*.md futuros
+
+docs_old/                      # histórico integral preservado
+specs/                         # SpecKit operacional por feature
 ```
 
-## Como Abrir no Unity
+A pasta raiz `spec/` foi absorvida e não deve ser recriada.
 
-1. Clone o repositório fora de OneDrive/Dropbox/Google Drive.
-2. Abra em Unity LTS.
-3. Regere as cenas pelos menus `CindarsHope/Scenes/*` se necessário.
-4. Abra FarmScene ou CaveScene.
-5. Play Mode: WASD move, E interage, Tab avança dia, J ataca.
-
-## Fluxo Operacional de Agentes
-
-### Regra de Continuidade
+## Fluxo operacional de agentes
 
 Antes de qualquer tarefa:
 
 1. Ler `PROJECT_LOG.md`.
-2. Ler `AGENTS.md` / `CLAUDE.md`.
-3. Ler documentos de referência da tarefa.
-4. Confirmar branch e escopo.
+2. Ler `docs/IMPLEMENTATION_STATUS.md`.
+3. Ler `AGENTS.md` / `CLAUDE.md`.
+4. Ler `docs/specs/SPEC_SOURCE_OF_TRUTH.md`.
+5. Ler `docs/specs/SPEC_REGISTRY_IMPLEMENTED.md`.
+6. Ler `docs/specs/SPEC_REGISTRY_TO_IMPLEMENT.md`.
+7. Ler `docs/DOCS_OLD_TO_ACTIVE_CROSSWALK.md`.
+8. Ler documentos específicos da tarefa.
 
-Ao final de tarefa relevante:
+Para implementar uma spec:
 
-- Atualizar `PROJECT_LOG.md` com branch, escopo, arquivos, testes e pendências.
-- Listar arquivos permitidos/proibidos.
-- Executar `git status --short` e `git diff --stat` antes do commit local.
+1. Ler a spec em `docs/specs/a_implementar/spec_*.md` ou `docs/specs/implementados/spec_*.md`.
+2. Ler o refinement correspondente em `docs/refinements/a_implementar/ref_*.md` ou `docs/refinements/implementados/ref_*.md`.
+3. Ler `specs/<FEATURE>/`, se existir.
+4. Validar dependências em `docs/specs/implementados/`.
+5. Implementar somente o escopo da spec/refinement.
+6. Ao finalizar, atualizar specs, refinements, registries, `docs/IMPLEMENTATION_STATUS.md` e `PROJECT_LOG.md`.
 
-### Git Policy para Agentes
+## Git policy para agentes
 
-**Permitido:**
+Permitido:
 
 - Criar/usar branch local indicada.
 - Alterar somente arquivos permitidos no escopo.
 - Criar commits locais em português.
 - Atualizar `PROJECT_LOG.md`.
+- Atualizar `docs/IMPLEMENTATION_STATUS.md` quando houver mudança de status.
 - Entregar lista de commits, arquivos e testes.
 
-**Proibido sem pedido humano explícito:**
+Proibido sem pedido humano explícito:
 
 - `git push`
 - abrir PR/MR
@@ -92,40 +114,29 @@ Ao final de tarefa relevante:
 - `git reset --hard`
 - commitar fora do escopo
 
-## Arquitetura Técnica
+## Arquitetura técnica resumida
 
-### Padrões
+- Comunicação de gameplay via `GameEventBus.Publish/Subscribe`.
+- Persistência com `GameBootstrap` singleton + managers persistentes entre cenas.
+- Dados de balanceamento/conteúdo via ScriptableObjects em `Assets/_Game/Data/`.
+- Save em JSON com IDs e tipos simples; nunca serializar referências Unity.
+- Scene installers e runtime reference installers para rebind cross-scene.
+- Não usar `GameObject.Find`, `FindObjectOfType` ou `FindObjectsByType`.
+- Nunca criar namespace `CindarsHope.*.Debug`; usar `Runtime`, `DebugTools`, `Diagnostics` ou `Editor`.
 
-- **EventBus:** comunicação via `GameEventBus.Publish/Subscribe`.
-- **Persistência:** `GameBootstrap` singleton + managers persistentes entre cenas.
-- **SceneInstallers:** `FarmSceneRuntimeReferenceInstaller`, `TownSceneRuntimeReferenceInstaller`, `CaveSceneRuntimeReferenceInstaller`.
-- **Serialização:** JSON via SaveData; nunca serializar `GameObject`, `Transform`, `MonoBehaviour` ou `ScriptableObject`.
-- **Dados:** stats, itens, inimigos, receitas, ferramentas e armas devem ser ScriptableObject.
-- **Detecção gameplay:** preferir componente a tag (`GetComponentInParent<T>()`), sem depender de ProjectSettings.
+## Como abrir no Unity
 
-### Contratos atuais importantes
+1. Clone o repositório fora de OneDrive/Dropbox/Google Drive.
+2. Abra em Unity LTS.
+3. Regere cenas pelos menus `CindarsHope/Scenes/*` se necessário.
+4. Abra FarmScene ou CaveScene.
+5. Play Mode: WASD move, E interage, Tab avança dia, J ataca.
 
-**Cross-Scene:**
+## Smoke tests principais
 
-- `GameBootstrap.Instance` persiste entre cenas.
-- `InventoryManager`, `PlayerManager`, `TimeManager`, `SaveManager`, `HungerManager`, `CraftingManager`, `EconomyManager` persistem.
-- Save guarda `CurrentSceneName`/`CurrentScenePath`.
+Consultar `docs/validation/`.
 
-**Combat MVP:**
-
-- `PlayerAttackController` detecta `EnemyHealth` por componente.
-- `EnemyContactDamage` detecta `PlayerManager` via `GameBootstrap.Instance` ou componente.
-- `EnemyChaseController` recebe target via gerador.
-- `EnemyDataSO` centraliza stats de inimigo.
-
-**FASE 9C planejada:**
-
-- `ToolDataSO`, `ToolTier`, `ToolRequirement`, `EquipmentManager`.
-- `WeaponDataSO`, `WeaponType`, `WeaponDatabaseSO`.
-- `PlayerCombatController` substituindo ataque hardcoded.
-- `PlayerDodgeController` para esquiva lateral/para trás.
-
-## Smoke Test Checklist atual
+Checklist mínimo:
 
 - [ ] Farm: plantar seed → passar dias → colher → vender → salvar/carregar.
 - [ ] Town: andar, falar com Pip, comprar seeds, voltar à Farm.
@@ -134,44 +145,24 @@ Ao final de tarefa relevante:
 - [ ] HUD: HP, Gold, Hunger, Inventory aparecem e atualizam.
 - [ ] Console: sem erro vermelho.
 
-## Próximas Waves Recomendadas
+## Documentação principal
 
-A prioridade agora é **FASE 9C — Tools, Farm Actions e Combat Refinement**, antes de UI final e antes de arte final.
+- `PROJECT_LOG.md` — log operacional e continuidade.
+- `AGENTS.md` — regras para agentes.
+- `CLAUDE.md` — regras equivalentes para Claude/Codex.
+- `docs/README.md` — mapa da documentação ativa.
+- `docs/IMPLEMENTATION_STATUS.md` — status curto de implementação.
+- `docs/DOCS_OLD_TO_ACTIVE_CROSSWALK.md` — rastreabilidade entre histórico e docs ativos.
+- `docs/specs/SPEC_SOURCE_OF_TRUTH.md` — fonte de verdade das specs.
+- `docs/specs/SPEC_REGISTRY_IMPLEMENTED.md` — registry de specs implementadas/parciais.
+- `docs/specs/SPEC_REGISTRY_TO_IMPLEMENT.md` — registry de specs futuras.
+- `docs/design/GDD_v2.6.md` — design do jogo.
+- `docs/architecture/ARCH_fase4_v2.2.md` — arquitetura técnica.
+- `docs/architecture/CORE_CONTRACTS_EVENTS_SAVE_IDS_v1.0.md` — contratos core, eventos, IDs e save.
+- `docs/operations/LLM_HANDOFF_INSTRUCTIONS.md` — protocolo operacional para agentes.
 
-1. **PR-100** — Tool contracts: `ToolType`, `ToolTier`, `ToolDataSO`, `ToolRequirement`, eventos.
-2. **PR-101** — Tool assets MVP: Hoe, Sickle, Axe, Pickaxe, FishingRod.
-3. **PR-102** — `EquipmentManager` mínimo + save/load de ferramenta/arma.
-4. **PR-103** — Plantio com ferramenta e seed explícita.
-5. **PR-104** — Colheita com ferramenta/yield/tier.
-6. **PR-105** — Árvores exigem Axe para corte real; fallback limitado sem ferramenta.
-7. **PR-106** — FishingSpot migra para `ToolRequirement`.
-8. **PR-107** — Weapon contracts: `WeaponType`, `WeaponDataSO`, `WeaponDatabaseSO`.
-9. **PR-108** — Weapon slot no `EquipmentManager`.
-10. **PR-109** — `PlayerCombatController` melee data-driven.
-11. **PR-110** — Dodge lateral/para trás.
-12. **PR-111** — Arma de distância física com projétil.
-13. **PR-112** — Magia à distância com projétil mágico.
-14. **Depois:** UI real MVP, primeira quest, visual slice e arte final.
+## Observações
 
-## Documentação Principal
-
-- **README.md** ← você está aqui
-- **PROJECT_LOG.md** — histórico de PRs, decisões, estado
-- **AGENTS.md** — regras de agente e fluxo git
-- **CLAUDE.md** — regras de código, convenções e padrões
-- **docs/design/GDD_v2.6.md** — design do jogo completo
-- **docs/architecture/ARCH_fase4_v2.2.md** — arquitetura técnica detalhada
-- **docs/architecture/CORE_CONTRACTS_EVENTS_SAVE_IDS_v1.0.md** — contratos core, eventos, IDs e save
-- **docs_old/FASE9A_HANDOFF_FARM_TOWN_SAVE_v1.0.md** — entrega FASE 9A
-- **docs_old/FASE9B_CAVE_COMBAT_MVP_v1.0.md** — entrega FASE 9B-1
-- **docs_old/FASE9C_TOOLS_FARM_COMBAT_REFINEMENT_v1.0.md** — próxima fase de ferramentas/farm/combat
-- **docs/roadmap/NEXT_WAVES_ROADMAP_v1.0.md** — roadmap pós 9B-1, agora apontando para 9C
-
-## Contato / Issues
-
-Reportar bugs ou sugestões em `PROJECT_LOG.md` com contexto, reprodução e cena afetada.
-
----
-
-**Branch:** `dev`  
-**Build Status:** ✅ MVP compila/roda conforme estado registrado; validação Unity local ainda deve ser feita após cada wave.
+- Unity Play Mode ainda precisa validar as partes marcadas como `Implementado em código — validação Unity pendente`.
+- FASE9L não deve ser implementada direto; precisa ser detalhada em spec completa antes de qualquer código.
+- `docs_old/` deve permanecer intacto.
