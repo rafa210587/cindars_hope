@@ -1,5 +1,5 @@
 #if UNITY_EDITOR
-using CindarsHope.Enemy;
+using CindarsHope.Combat;
 using CindarsHope.Enemy.AI;
 using UnityEditor;
 using UnityEngine;
@@ -38,7 +38,9 @@ namespace CindarsHope.Editor
                 AssetDatabase.CreateFolder("Assets/_Game/Data", "Enemy");
             }
             if (!AssetDatabase.IsValidFolder(enemyDir + "/AI"))
+            {
                 AssetDatabase.CreateFolder(enemyDir, "AI");
+            }
         }
 
         private static void CreateAIBehaviors()
@@ -60,15 +62,15 @@ namespace CindarsHope.Editor
         {
             var enemies = new[]
             {
-                ("enemy_slime_basic", "Basic Slime", 1, 20, 3, 0, 10, "ai_patrol_basic"),
-                ("enemy_goblin_scout", "Goblin Scout", 5, 30, 5, 1, 20, "ai_aggressive_melee"),
-                ("enemy_orc_warrior", "Orc Warrior", 10, 50, 10, 3, 40, "ai_aggressive_melee"),
-                ("enemy_spider_ice", "Ice Spider", 12, 35, 8, 2, 35, "ai_ranged_cautious"),
+                ("enemy_slime_basic", "Basic Slime", 1, 20, 3, 0, 10, EnemyDifficulty.Easy, "ai_patrol_basic"),
+                ("enemy_goblin_scout", "Goblin Scout", 5, 30, 5, 1, 20, EnemyDifficulty.Normal, "ai_aggressive_melee"),
+                ("enemy_orc_warrior", "Orc Warrior", 10, 50, 10, 3, 40, EnemyDifficulty.Hard, "ai_aggressive_melee"),
+                ("enemy_spider_ice", "Ice Spider", 12, 35, 8, 2, 35, EnemyDifficulty.Hard, "ai_ranged_cautious"),
             };
 
-            foreach (var (id, name, level, hp, dmg, def, xp, aiBehavior) in enemies)
+            foreach (var (id, name, level, hp, dmg, def, xp, difficulty, aiBehavior) in enemies)
             {
-                CreateEnemy(id, name, level, hp, dmg, def, xp, aiBehavior);
+                CreateEnemy(id, name, level, hp, dmg, def, xp, difficulty, aiBehavior);
             }
         }
 
@@ -76,7 +78,9 @@ namespace CindarsHope.Editor
         {
             var path = $"{AIPath}{id}.asset";
             if (AssetDatabase.LoadAssetAtPath<AIBehaviorSO>(path) != null)
+            {
                 return;
+            }
 
             var asset = ScriptableObject.CreateInstance<AIBehaviorSO>();
             asset.Id = id;
@@ -86,22 +90,35 @@ namespace CindarsHope.Editor
             AssetDatabase.CreateAsset(asset, path);
         }
 
-        private static void CreateEnemy(string id, string name, int level, int hp, int dmg, int def, int xp, string aiBehavior)
+        private static void CreateEnemy(
+            string id,
+            string name,
+            int level,
+            int hp,
+            int damage,
+            int defense,
+            int xpOverride,
+            EnemyDifficulty difficulty,
+            string aiBehavior)
         {
             var path = $"{EnemyPath}{id}.asset";
             if (AssetDatabase.LoadAssetAtPath<EnemyDataSO>(path) != null)
+            {
                 return;
+            }
 
             var asset = ScriptableObject.CreateInstance<EnemyDataSO>();
-            asset.Id = id;
+            asset.enemyId = id;
             asset.DisplayName = name;
             asset.Description = $"Enemy: {name}";
-            asset.Level = level;
-            asset.MaxHP = hp;
-            asset.Damage = dmg;
-            asset.Defense = def;
-            asset.XpReward = xp;
-            asset.AIBehaviorId = aiBehavior;
+            asset.enemyLevel = level;
+            asset.maxHp = hp;
+            asset.contactDamage = damage;
+            asset.defense = defense;
+            asset.xpRewardOverride = xpOverride;
+            asset.baseDifficulty = difficulty;
+            asset.aiBehaviorId = aiBehavior;
+            asset.lootTableId = string.Empty;
 
             AssetDatabase.CreateAsset(asset, path);
         }
