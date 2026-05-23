@@ -83,8 +83,8 @@ namespace CindarsHope.Cave.Runtime
             var enemyHealth = _spawnedBoss.AddComponent<EnemyHealth>();
             enemyHealth.Configure(bossEnemyData);
 
-            var knockback = _spawnedBoss.AddComponent<KnockbackController>();
-            var hitFlash = _spawnedBoss.AddComponent<HitFlashController>();
+            _spawnedBoss.AddComponent<KnockbackController>();
+            _spawnedBoss.AddComponent<HitFlashController>();
 
             var chaseController = _spawnedBoss.AddComponent<EnemyChaseController>();
             chaseController.ConfigureFromData(bossEnemyData);
@@ -104,10 +104,9 @@ namespace CindarsHope.Cave.Runtime
             var contactDamage = triggerChild.AddComponent<EnemyContactDamage>();
             contactDamage.Configure(bossEnemyData, triggerCollider);
 
-            // Tag boss for identification
-            _spawnedBoss.tag = "BossEnemy";
+            // Do not assign a custom Unity tag here. Tags must be predeclared in ProjectSettings/TagManager.asset;
+            // assigning an undeclared tag throws/logs errors in Play Mode. Boss identity is tracked by CaveBossDeathReporter.
 
-            // Add death reporter to track boss kill and unlock gate
             var bossDeathReporter = _spawnedBoss.AddComponent<CaveBossDeathReporter>();
             bossDeathReporter.Configure(
                 _caveRunManager,
@@ -129,15 +128,13 @@ namespace CindarsHope.Cave.Runtime
                 this);
 
             Debug.Log(
-                $"CaveBossSpawner: Spawned boss {bossEnemyData.DisplayName} (gate={bossGate.Id}) at level {generatedLevel.CaveLevel} world ({spawnPos.x}, {spawnPos.y}).",
+                $"CaveBossSpawner: Spawned boss {bossEnemyData.DisplayName} (enemyId={bossEnemyData.enemyId}, gate={bossGate.Id}, hp={bossEnemyData.maxHp}) at level {generatedLevel.CaveLevel} world ({spawnPos.x}, {spawnPos.y}).",
                 this);
         }
 
         private Vector2Int ResolveBossSpawnNearGate(CaveGeneratedLevel level, Transform playerTarget)
         {
             var exit = level.Exit;
-
-            // Strategy A: Try adjacent tiles (distance = 1)
             var adjacentTiles = new[]
             {
                 exit + Vector2Int.up,
@@ -154,7 +151,6 @@ namespace CindarsHope.Cave.Runtime
                 }
             }
 
-            // Strategy B: Try diagonal tiles (distance = sqrt(2) ≈ 1.4)
             var diagonalTiles = new[]
             {
                 exit + new Vector2Int(1, 1),
@@ -171,7 +167,6 @@ namespace CindarsHope.Cave.Runtime
                 }
             }
 
-            // Strategy C: Try all walkable tiles within radius 3, sorted by distance
             var candidatesInRadius = new List<(Vector2Int tile, float distance)>();
             foreach (var tile in level.WalkableTiles)
             {
@@ -188,31 +183,26 @@ namespace CindarsHope.Cave.Runtime
                 return candidatesInRadius[0].tile;
             }
 
-            // Strategy D: Fallback to closest enemy spawn point
             return FindEnemySpawnPointClosestToExit(level);
         }
 
         private bool IsValidBossSpawnTile(Vector2Int tile, CaveGeneratedLevel level, Transform playerTarget, Vector2Int exit)
         {
-            // Must be walkable
             if (!level.WalkableTiles.Contains(tile))
             {
                 return false;
             }
 
-            // Cannot be exit or entrance
             if (tile == exit || tile == level.Entrance)
             {
                 return false;
             }
 
-            // Cannot be out of bounds
             if (tile.x < 0 || tile.x >= level.Width || tile.y < 0 || tile.y >= level.Height)
             {
                 return false;
             }
 
-            // Preferably not on top of player, but don't reject if it's the best option
             if (playerTarget != null)
             {
                 var world = GridToWorld(tile, level);
@@ -280,7 +270,7 @@ namespace CindarsHope.Cave.Runtime
 
             if (_fallbackEnemyData != null)
             {
-                Debug.LogWarning($"CaveBossSpawner: BossEnemyId '{bossEnemyId}' not found. Using fallback enemy data. Boss death may not be uniquely trackable.", this);
+                Debug.LogWarning($"CaveBossSpawner: BossEnemyId '{bossEnemyId}' not found. Using fallback enemy data '{_fallbackEnemyData.DisplayName}' (enemyId={_fallbackEnemyData.enemyId}). Boss death will still be tracked by gate id.", this);
                 return _fallbackEnemyData;
             }
 
