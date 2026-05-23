@@ -11,7 +11,9 @@ namespace CindarsHope.Loot
         public string GetRandomLoot()
         {
             if (Entries == null || Entries.Length == 0)
+            {
                 return null;
+            }
 
             float totalWeight = 0;
             foreach (var entry in Entries)
@@ -19,12 +21,14 @@ namespace CindarsHope.Loot
                 totalWeight += entry.Weight;
             }
 
-            float roll = Random.value * totalWeight;
+            float roll = UnityEngine.Random.value * totalWeight;
             foreach (var entry in Entries)
             {
                 roll -= entry.Weight;
                 if (roll <= 0)
+                {
                     return entry.ItemId;
+                }
             }
 
             return Entries[Entries.Length - 1].ItemId;
