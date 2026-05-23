@@ -106,6 +106,13 @@ namespace CindarsHope.Combat
                 _enemyData.xpRewardOverride);
 
             Debug.Log($"CombatLog: Enemy defeated. {BuildEnemyLogPrefix()}, HP=0/{MaxHp}, Drop={_enemyData.dropItemId} x{_enemyData.dropAmount}, XP={xpReward}.", this);
+
+            var bossReporter = GetComponent<CaveBossDeathReporter>();
+            if (bossReporter != null)
+            {
+                bossReporter.ReportDefeatedFromOwner(transform.position);
+            }
+
             GameEventBus.Publish(new EnemyKilledEvent(
                 _enemyData.enemyId,
                 _enemyData.dropItemId,
