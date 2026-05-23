@@ -52,11 +52,12 @@ namespace CindarsHope.Player.Progression
                 int oldLevel = _state.Level;
                 _state.CurrentXp -= _state.XpToNextLevel;
                 _state.Level++;
-                _state.UnspentAttributePoints++;
-                int grantedSkillPoints = _state.Level % 3 == 0 ? 1 : 0;
+                int grantedAttributePoints = PlayerProgressionRules.CalculateAttributePointsGrantedOnLevelUp(_state.Level);
+                int grantedSkillPoints = PlayerProgressionRules.CalculateSkillPointsGrantedOnLevelUp(_state.Level);
+                _state.UnspentAttributePoints += grantedAttributePoints;
                 _state.UnspentSkillPoints += grantedSkillPoints;
                 _state.XpToNextLevel = PlayerProgressionRules.CalculateXpToNextLevel(_state.Level);
-                GameEventBus.Publish(new PlayerLevelChangedEvent(oldLevel, _state.Level, 1, grantedSkillPoints));
+                GameEventBus.Publish(new PlayerLevelChangedEvent(oldLevel, _state.Level, grantedAttributePoints, grantedSkillPoints));
             }
         }
 
