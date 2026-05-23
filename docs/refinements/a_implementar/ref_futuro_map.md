@@ -4,6 +4,7 @@
 
 | Refinement | Spec futura relacionada | Observação |
 |---|---|---|
+| [ref_stabilizacao_overnight_specs_20260523.md](ref_stabilizacao_overnight_specs_20260523.md) | `docs/specs/a_implementar/spec_stabilization_overnight_fase9c_to_fase9l_v1.md` | Estabilização pós-execução overnight: tracking, enums, SkillPoints, modelos paralelos e validação Unity. |
 | [ref_fase9c_player_equipment_items_combat_remaining.md](ref_fase9c_player_equipment_items_combat_remaining.md) | `docs/specs/a_implementar/spec_fase9c_player_equipment_items_combat_remaining.md` | Restante de equipment/items/combat. |
 | [ref_fase9c_tools_farm_combat_refinement_remaining.md](ref_fase9c_tools_farm_combat_refinement_remaining.md) | `docs/specs/a_implementar/spec_fase9c_tools_farm_combat_refinement_remaining.md` | Refinamentos restantes de tools/farm/combat. |
 | [ref_fase9d_enemy_actions_ai_combat.md](ref_fase9d_enemy_actions_ai_combat.md) | `docs/specs/a_implementar/spec_fase9d_enemy_actions_ai_combat.md` | Ações, IA e combate de inimigos. |
@@ -28,4 +29,3 @@
 ## Rastreabilidade documental
 
 Para rastreabilidade completa entre docs_old/ e a documentação ativa, ver docs/DOCS_OLD_TO_ACTIVE_CROSSWALK.md.
-
