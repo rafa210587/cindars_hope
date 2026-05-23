@@ -1,17 +1,23 @@
+using System;
 using CindarsHope.Core.Data;
 using UnityEngine;
 
 namespace CindarsHope.Enemy
 {
-    [CreateAssetMenu(fileName = "Enemy_", menuName = "CindarsHope/Enemy/EnemyData")]
-    public class EnemyDataSO : ScriptableObject, IIdentifiedData
+    /// <summary>
+    /// Legacy compatibility wrapper kept only to avoid breaking references during stabilization.
+    /// The official runtime enemy model is CindarsHope.Combat.EnemyDataSO.
+    /// Do not create new assets with this type.
+    /// </summary>
+    [Obsolete("Use CindarsHope.Combat.EnemyDataSO as the official enemy data model.")]
+    public class LegacyEnemyDataSO : ScriptableObject, IIdentifiedData
     {
         public string Id;
         public string DisplayName;
         [TextArea] public string Description;
         public Sprite Icon;
-        public int Level;
-        public int MaxHP;
+        public int Level = 1;
+        public int MaxHP = 1;
         public int Damage;
         public int Defense;
         public int XpReward;
@@ -34,6 +40,9 @@ namespace CindarsHope.Enemy
             XpReward = Mathf.Max(0, XpReward);
             MovementSpeed = Mathf.Max(0.5f, MovementSpeed);
             DetectionRange = Mathf.Max(1f, DetectionRange);
+            Strength = Mathf.Max(1, Strength);
+            Dexterity = Mathf.Max(1, Dexterity);
+            Constitution = Mathf.Max(1, Constitution);
         }
     }
 }
