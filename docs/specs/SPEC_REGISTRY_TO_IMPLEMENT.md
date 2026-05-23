@@ -2,6 +2,7 @@
 
 | Spec | Status | Origem | Dependência | Observação |
 |---|---|---|---|---|
+| spec_stabilization_overnight_fase9c_to_fase9l_v1.md | A implementar | revisão da execução overnight 2026-05-23 | branch wave/specs-overnight-07-ui-menu-minimal | Estabilização técnica: corrigir tracking, enums, SkillPoints, modelos paralelos e validação Unity antes de merge. |
 | spec_fase9c_player_equipment_items_combat_remaining.md | A implementar | docs_old/FASE9C_PLAYER_EQUIPMENT_ITEMS_COMBAT_SPEC_v1.0.md | spec_tools_001, spec_combat_001 | Restante de equipamentos, itens e combate nao coberto pelo MVP. |
 | spec_fase9c_tools_farm_combat_refinement_remaining.md | A implementar | docs_old/FASE9C_TOOLS_FARM_COMBAT_REFINEMENT_v1.0.md | spec_tools_001, spec_farm_003, spec_combat_001 | Refinamentos restantes de tools/farm/combat. |
 | spec_fase9d_enemy_actions_ai_combat.md | A implementar | docs_old/FASE9D_ENEMY_ACTIONS_AI_COMBAT_SPEC_v1.0.md | spec_combat_002 | Acoes, IA e combate de inimigos alem do Slime MVP. |
@@ -28,4 +29,3 @@
 ## Rastreabilidade documental
 
 Para rastreabilidade completa entre docs_old/ e a documentação ativa, ver docs/DOCS_OLD_TO_ACTIVE_CROSSWALK.md.
-

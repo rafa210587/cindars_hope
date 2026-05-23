@@ -11,6 +11,7 @@ namespace CindarsHope.Inventory.Data
         [TextArea] public string Description;
         public Sprite Icon;
         public ItemCategory Category;
+        public ConsumableSubtype ConsumableSubtype;
         public int MaxStack = 1;
         public int BaseValue;
         public int HungerRestore;

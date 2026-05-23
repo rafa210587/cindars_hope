@@ -8,6 +8,7 @@ namespace CindarsHope.Combat
     {
         public string enemyId;
         public string DisplayName;
+        [TextArea] public string Description;
         public Sprite Icon;
 
         string IIdentifiedData.Id => enemyId;
@@ -20,6 +21,9 @@ namespace CindarsHope.Combat
         public float contactDamageCooldownSeconds = 1f;
         public float contactKnockbackForce = 0f;
 
+        [Header("Defense")]
+        public int defense = 0;
+
         [Header("Knockback Resistance")]
         public float receivedKnockbackResistance = 0f;
         public float receivedKnockbackMultiplier = 1f;
@@ -29,6 +33,9 @@ namespace CindarsHope.Combat
         public float detectionRadius = 5f;
         public float stopDistance = 0.55f;
 
+        [Header("Behavior")]
+        public string aiBehaviorId;
+
         [Header("Feedback")]
         public Color hitFlashColor = Color.red;
         public float hitFlashDuration = 0.12f;
@@ -36,6 +43,7 @@ namespace CindarsHope.Combat
         [Header("Drops")]
         public string dropItemId = "item_wood";
         public int dropAmount = 1;
+        public string lootTableId;
 
         [Header("Progression")]
         public int enemyLevel = 1;
@@ -47,6 +55,7 @@ namespace CindarsHope.Combat
             maxHp = Mathf.Max(1, maxHp);
             contactDamage = Mathf.Max(0, contactDamage);
             contactDamageCooldownSeconds = Mathf.Max(0.01f, contactDamageCooldownSeconds);
+            defense = Mathf.Max(0, defense);
             receivedKnockbackMultiplier = Mathf.Max(0f, receivedKnockbackMultiplier);
             moveSpeed = Mathf.Max(0f, moveSpeed);
             detectionRadius = Mathf.Max(0f, detectionRadius);

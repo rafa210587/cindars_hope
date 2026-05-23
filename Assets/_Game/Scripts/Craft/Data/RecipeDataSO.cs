@@ -17,6 +17,11 @@ namespace CindarsHope.Craft.Data
         public string OutputItemId;
         public int OutputAmount = 1;
 
+        public void SetId(string id)
+        {
+            _id = id;
+        }
+
         private void OnValidate()
         {
             RequiredWorkshopLevel = Mathf.Max(1, RequiredWorkshopLevel);
