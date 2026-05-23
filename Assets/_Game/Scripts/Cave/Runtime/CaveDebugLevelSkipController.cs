@@ -1,4 +1,3 @@
-using CindarsHope.Cave.Runtime;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -10,9 +9,9 @@ namespace CindarsHope.Cave.Runtime
         [SerializeField] private CaveRunManager _caveRunManager;
         [SerializeField] private CaveLevelRuntimeController _levelController;
         [SerializeField] private bool _enableDebugLevelSkip = true;
-        [SerializeField] private KeyCode _nextLevelKey = KeyCode.P;
-        [SerializeField] private KeyCode _alternateNextLevelKey = KeyCode.F2;
-        [SerializeField] private bool _bypassBossGateForDebugSkip = true;
+        [SerializeField] private KeyCode _nextGateKey = KeyCode.P;
+        [SerializeField] private KeyCode _alternateNextGateKey = KeyCode.F2;
+        [SerializeField] private int _maxDebugGateSearchLevel = 100;
         [SerializeField] private bool _showDebugSkipButton = true;
 
         private string _lastDebugAction = "none";
@@ -22,7 +21,7 @@ namespace CindarsHope.Cave.Runtime
         {
             var hasRunManager = _caveRunManager != null;
             var hasLevelController = _levelController != null;
-            Debug.Log($"CaveDebugLevelSkipController: enabled={_enableDebugLevelSkip}, key={_nextLevelKey}, altKey={_alternateNextLevelKey}, bypassBossGate={_bypassBossGateForDebugSkip}, hasRunManager={hasRunManager}, hasLevelController={hasLevelController}.", this);
+            Debug.Log($"CaveDebugLevelSkipController: enabled={_enableDebugLevelSkip}, nextGateKey={_nextGateKey}, altKey={_alternateNextGateKey}, maxGateSearchLevel={_maxDebugGateSearchLevel}, hasRunManager={hasRunManager}, hasLevelController={hasLevelController}.", this);
         }
 
         private void Update()
@@ -42,16 +41,16 @@ namespace CindarsHope.Cave.Runtime
                 return;
             }
 
-            if (Input.GetKeyDown(_nextLevelKey))
+            if (Input.GetKeyDown(_nextGateKey))
             {
-                Debug.Log($"CaveDebugLevelSkipController: debug skip key pressed. Key={_nextLevelKey}.", this);
-                SkipToNextLevel();
+                Debug.Log($"CaveDebugLevelSkipController: debug next gate key pressed. Key={_nextGateKey}.", this);
+                SkipToNextBossGateLevel();
             }
 
-            if (Input.GetKeyDown(_alternateNextLevelKey))
+            if (Input.GetKeyDown(_alternateNextGateKey))
             {
-                Debug.Log($"CaveDebugLevelSkipController: debug skip key pressed. Key={_alternateNextLevelKey}.", this);
-                SkipToNextLevel();
+                Debug.Log($"CaveDebugLevelSkipController: debug next gate key pressed. Key={_alternateNextGateKey}.", this);
+                SkipToNextBossGateLevel();
             }
         }
 
@@ -62,11 +61,11 @@ namespace CindarsHope.Cave.Runtime
                 return;
             }
 
-            var rect = new Rect(20f, 20f, 220f, 32f);
-            if (GUI.Button(rect, "DEBUG: Next Cave Level (P/F2)"))
+            var rect = new Rect(20f, 20f, 260f, 32f);
+            if (GUI.Button(rect, "DEBUG: Next Boss Gate Level (P/F2)"))
             {
-                Debug.Log("CaveDebugLevelSkipController: debug skip button clicked.", this);
-                SkipToNextLevel();
+                Debug.Log("CaveDebugLevelSkipController: debug next gate button clicked.", this);
+                SkipToNextBossGateLevel();
             }
         }
 
@@ -85,7 +84,7 @@ namespace CindarsHope.Cave.Runtime
             return _caveRunManager != null && _levelController != null;
         }
 
-        private void SkipToNextLevel()
+        private void SkipToNextBossGateLevel()
         {
             if (!TryRebindLocalReferences())
             {
@@ -96,27 +95,40 @@ namespace CindarsHope.Cave.Runtime
             }
 
             var currentLevel = _caveRunManager.CurrentCaveLevel;
-            var nextLevel = currentLevel + 1;
-
-            if (_bypassBossGateForDebugSkip)
+            if (!TryFindNextBossGateLevel(currentLevel, out var nextGateLevel, out var gateId))
             {
-                Debug.LogWarning("DEBUG ONLY: bypassing boss gate for level skip.", this);
-            }
-            else
-            {
-                if (!_caveRunManager.CanAdvanceToLevel(currentLevel, nextLevel))
-                {
-                    Debug.LogWarning($"CaveDebugLevelSkipController: Cannot skip to level {nextLevel}. Boss gate blocks advancement.", this);
-                    return;
-                }
+                _lastDebugAction = $"DEBUG: No boss gate found after level {currentLevel} up to {_maxDebugGateSearchLevel}";
+                Debug.LogWarning($"CaveDebugLevelSkipController: {_lastDebugAction}. Check CaveBossGateRegistrySO data if more gates are expected.", this);
+                return;
             }
 
-            _caveRunManager.EnterLevel(nextLevel);
+            _caveRunManager.EnterLevel(nextGateLevel);
             _levelController.SetSpawnAnchorForNextGeneration(CaveSpawnAnchor.Entrance);
             _levelController.GenerateCurrentLevel();
 
-            _lastDebugAction = $"DEBUG: Level skip {currentLevel} -> {nextLevel}";
-            Debug.Log($"CaveDebugLevelSkipController: {_lastDebugAction}", this);
+            _lastDebugAction = $"DEBUG: Next gate skip {currentLevel} -> {nextGateLevel} ({gateId})";
+            Debug.Log($"CaveDebugLevelSkipController: {_lastDebugAction}.", this);
+            Debug.Log($"VALIDATION READ: DebugHud > Cave Summary > CaveLevel should be {nextGateLevel}; Current Level Boss Gate should show '{gateId}' as active/blocked until defeated; Can advance should be false before boss defeat and true after MarkBossAsDefeated/debug boss flow.", this);
+            Debug.Log($"VALIDATION ACTION: Try using the forward cave exit from level {nextGateLevel}. It should be blocked before the boss gate is defeated. Then mark/defeat the boss, retry forward exit, and confirm checkpoint unlock + boss defeat history in DebugHud.", this);
+        }
+
+        private bool TryFindNextBossGateLevel(int currentLevel, out int nextGateLevel, out string gateId)
+        {
+            nextGateLevel = 0;
+            gateId = string.Empty;
+            var maxLevel = Mathf.Max(currentLevel + 1, _maxDebugGateSearchLevel);
+
+            for (var level = currentLevel + 1; level <= maxLevel; level++)
+            {
+                if (_caveRunManager.TryGetBossGateForLevel(level, out var gate) && gate != null)
+                {
+                    nextGateLevel = gate.CaveLevel;
+                    gateId = gate.Id;
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public bool IsDebugSkipEnabled => _enableDebugLevelSkip;
