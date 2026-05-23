@@ -1,5 +1,5 @@
 #if UNITY_EDITOR
-using CindarsHope.Crafting;
+using CindarsHope.Craft.Data;
 using UnityEditor;
 using UnityEngine;
 
@@ -8,7 +8,7 @@ namespace CindarsHope.Editor
     [InitializeOnLoad]
     public class CraftingRecipeInitializer
     {
-        private const string RecipePath = "Assets/_Game/Data/Crafting/Recipes/";
+        private const string RecipePath = "Assets/_Game/Data/Craft/Recipes/";
         private const string InitKey = "CraftingRecipeInitialized";
 
         static CraftingRecipeInitializer()
@@ -22,12 +22,15 @@ namespace CindarsHope.Editor
 
         private static void GenerateDefaultRecipes()
         {
-            var recipeDir = "Assets/_Game/Data/Crafting/Recipes";
+            var recipeDir = "Assets/_Game/Data/Craft/Recipes";
             if (!AssetDatabase.IsValidFolder(recipeDir))
             {
-                if (!AssetDatabase.IsValidFolder("Assets/_Game/Data/Crafting"))
-                    AssetDatabase.CreateFolder("Assets/_Game/Data", "Crafting");
-                AssetDatabase.CreateFolder("Assets/_Game/Data/Crafting", "Recipes");
+                if (!AssetDatabase.IsValidFolder("Assets/_Game/Data/Craft"))
+                {
+                    AssetDatabase.CreateFolder("Assets/_Game/Data", "Craft");
+                }
+
+                AssetDatabase.CreateFolder("Assets/_Game/Data/Craft", "Recipes");
             }
 
             CreateFoodRecipes();
@@ -40,14 +43,14 @@ namespace CindarsHope.Editor
         {
             var recipes = new[]
             {
-                ("recipe_bread", "Bread", "item_consumable_food_bread", 1, 3, 1, new[] { ("item_crop_wheat", 2) }),
-                ("recipe_carrot_stew", "Carrot Stew", "item_consumable_food_carrot_stew", 1, 5, 2, new[] { ("item_crop_carrot", 3) }),
-                ("recipe_moonbean_soup", "Moonbean Soup", "item_consumable_food_moonbean_soup", 1, 8, 3, new[] { ("item_crop_moonbean", 2) }),
+                ("recipe_bread", "Bread", "item_consumable_food_bread", 1, 1, WorkshopType.Carpentry, new[] { ("item_crop_wheat", 2) }),
+                ("recipe_carrot_stew", "Carrot Stew", "item_consumable_food_carrot_stew", 1, 2, WorkshopType.Carpentry, new[] { ("item_crop_carrot", 3) }),
+                ("recipe_moonbean_soup", "Moonbean Soup", "item_consumable_food_moonbean_soup", 1, 3, WorkshopType.Alchemy, new[] { ("item_crop_moonbean", 2) }),
             };
 
-            foreach (var (id, name, output, qty, time, level, ingredients) in recipes)
+            foreach (var (id, name, output, qty, level, workshop, ingredients) in recipes)
             {
-                CreateRecipe(id, name, output, qty, time, level, ingredients);
+                CreateRecipe(id, name, output, qty, level, workshop, ingredients);
             }
         }
 
@@ -55,12 +58,12 @@ namespace CindarsHope.Editor
         {
             var recipes = new[]
             {
-                ("recipe_processed_wood", "Processed Wood", "item_processed_wood", 2, 5, 1, new[] { ("item_wood", 3) }),
+                ("recipe_processed_wood", "Processed Wood", "item_processed_wood", 2, 1, WorkshopType.Carpentry, new[] { ("item_wood", 3) }),
             };
 
-            foreach (var (id, name, output, qty, time, level, ingredients) in recipes)
+            foreach (var (id, name, output, qty, level, workshop, ingredients) in recipes)
             {
-                CreateRecipe(id, name, output, qty, time, level, ingredients);
+                CreateRecipe(id, name, output, qty, level, workshop, ingredients);
             }
         }
 
@@ -69,31 +72,30 @@ namespace CindarsHope.Editor
             string name,
             string outputItemId,
             int outputQty,
-            int craftingTime,
-            int requiredLevel,
+            int requiredWorkshopLevel,
+            WorkshopType workshopType,
             (string itemId, int quantity)[] ingredients)
         {
             var path = $"{RecipePath}{id}.asset";
-            var existing = AssetDatabase.LoadAssetAtPath<CraftingRecipeSO>(path);
+            var existing = AssetDatabase.LoadAssetAtPath<RecipeDataSO>(path);
             if (existing != null)
+            {
                 return;
+            }
 
-            var asset = ScriptableObject.CreateInstance<CraftingRecipeSO>();
-            asset.Id = id;
-            asset.RecipeName = name;
+            var asset = ScriptableObject.CreateInstance<RecipeDataSO>();
+            asset.SetId(id);
+            asset.DisplayName = name;
+            asset.Description = $"Recipe: {name}";
             asset.OutputItemId = outputItemId;
-            asset.OutputQuantity = outputQty;
-            asset.CraftingTimeSeconds = craftingTime;
-            asset.RequiredLevel = requiredLevel;
+            asset.OutputAmount = outputQty;
+            asset.RequiredWorkshopLevel = requiredWorkshopLevel;
+            asset.WorkshopType = workshopType;
 
-            asset.Ingredients = new CraftingIngredient[ingredients.Length];
+            asset.Ingredients = new RecipeIngredient[ingredients.Length];
             for (int i = 0; i < ingredients.Length; i++)
             {
-                asset.Ingredients[i] = new CraftingIngredient
-                {
-                    ItemId = ingredients[i].itemId,
-                    Quantity = ingredients[i].quantity
-                };
+                asset.Ingredients[i] = new RecipeIngredient(ingredients[i].itemId, ingredients[i].quantity);
             }
 
             AssetDatabase.CreateAsset(asset, path);
