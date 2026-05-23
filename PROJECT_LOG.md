@@ -1627,4 +1627,29 @@ Regenerar cena, testar Play Mode com logging completo, validar transições.
 
 
 
+## Atualização 2026-05-23 — Harness operacional de agentes
 
+Status: Documental em branch `docs/agent-execution-protocol`.
+
+Escopo:
+- Criado `docs/operations/AGENT_EXECUTION_PROTOCOL.md`.
+- Criado `docs/operations/READING_MATRIX.md`.
+- Criado `tools/docs/validate_docs.ps1`.
+- Criado `tools/docs/promote_spec.ps1`.
+- Criados templates para spec implementada, refinement implementado e project log.
+- `AGENTS.md`, `CLAUDE.md`, `README.md`, `docs/specs/README.md` e `SPEC_SOURCE_OF_TRUTH.md` atualizados para leitura por camadas.
+- Referências curtas a caminhos antigos corrigidas em spec/refinement FASE9C e refinement FASE9F-B para permitir validação documental.
+- Alterações Unity já existentes no worktree foram incluídas no escopo do commit por autorização humana nesta sessão.
+
+Testes:
+- `tools/docs/validate_docs.ps1` executado com sucesso antes do commit, validando estrutura documental, prefixos, placeholders e paths críticos.
+- `tools/docs/validate_docs.ps1` executado após o commit e reprovou apenas o guarda de mudanças em `Assets/`, porque as alterações Unity existentes foram incluídas por autorização humana.
+- Validação documental apenas.
+- Unity Play Mode não executado.
+
+Pendências:
+- Ajustar ou ampliar scripts conforme novos fluxos de implementação.
+- Validar no Unity as alterações de cenas/assets incluídas por autorização humana.
+
+Próximo passo recomendado:
+- Revisar o commit local e executar Unity Play Mode em tarefa separada antes de push/PR.

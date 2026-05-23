@@ -205,7 +205,7 @@ The materializer expects:
 ### Documentation
 1. Update `docs/IMPLEMENTATION_STATUS.md` with procedural status
 2. Create `docs/CAVE_PROCEDURAL_MVP_GUIDE.md` for future developers
-3. Archive this audit in `docs/audits/` with commit SHA
+3. Archive this audit in `docs/refinements/implementados/` with commit SHA
 
 ---
 
@@ -235,7 +235,6 @@ The materializer expects:
 Marcos 0-7 deliver a **fully functional procedural cave generation + materialization + enemy spawning + save/load system** that can be played end-to-end. The architecture is clean, event-driven, and ready for the remaining feature marcos (8-15) to be implemented in subsequent work.
 
 The system is **ready for validation in Unity** — once prefabs are assigned and compilation confirmed, the procedural cave will be fully playable for MVP testing.
-
 
 
 

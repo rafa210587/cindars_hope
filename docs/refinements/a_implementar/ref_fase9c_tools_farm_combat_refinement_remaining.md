@@ -768,12 +768,12 @@ Ao final:
 Documentos que devem referenciar esta fase:
 
 - `README.md`
-- `docs/NEXT_WAVES_ROADMAP_v1.0.md`
-- `docs/ARCH_fase4_v2.2.md`
-- `docs/CORE_CONTRACTS_EVENTS_SAVE_IDS_v1.0.md`
-- `docs/GDD_v2.6.md`
-- `docs/FASE6_INDEX_global_v1.2.md`
-- `docs/FASE9B_CAVE_COMBAT_MVP_v1.0.md`
+- `docs/roadmap/NEXT_WAVES_ROADMAP_v1.0.md`
+- `docs/architecture/ARCH_fase4_v2.2.md`
+- `docs/architecture/CORE_CONTRACTS_EVENTS_SAVE_IDS_v1.0.md`
+- `docs/design/GDD_v2.6.md`
+- `docs/roadmap/FASE6_INDEX_global_v1.2.md`
+- `docs/specs/implementados/spec_cave_001_cave_scene_portal_e_runtime_basico.md`
 - `AGENTS.md`
 - `CLAUDE.md`
 - `PROJECT_LOG.md`
@@ -794,7 +794,6 @@ A FASE 9C deve vir antes de UI real final e antes de arte final, porque altera r
 
 - Não tratar este refinement como autorização automática de implementação.
 - Não sobrescrever specs implementadas sem amendment/correction explícito.
-
 
 
 

@@ -25,13 +25,13 @@ Ver também: `docs/specs/SPEC_SOURCE_OF_TRUTH.md`.
 
 Antes de implementar:
 
-1. Ler `docs/specs/SPEC_SOURCE_OF_TRUTH.md`.
-2. Ler `docs/specs/SPEC_REGISTRY_IMPLEMENTED.md`.
-3. Ler `docs/specs/SPEC_REGISTRY_TO_IMPLEMENT.md`.
-4. Ler a spec futura em `docs/specs/a_implementar/spec_*.md`.
-5. Ler o refinement futuro em `docs/refinements/a_implementar/ref_*.md`.
+1. Ler `docs/operations/AGENT_EXECUTION_PROTOCOL.md`.
+2. Ler `docs/operations/READING_MATRIX.md`.
+3. Ler `docs/specs/SPEC_SOURCE_OF_TRUTH.md`.
+4. Ler a spec alvo em `docs/specs/a_implementar/spec_*.md` ou `docs/specs/implementados/spec_*.md`.
+5. Ler o refinement alvo em `docs/refinements/a_implementar/ref_*.md` ou `docs/refinements/implementados/ref_*.md`.
 6. Ler `specs/<FEATURE>/`, se existir.
-7. Validar dependências em `docs/specs/implementados/`.
+7. Ler registries, crosswalk e `docs_old/` somente quando o protocolo/matriz indicar.
 
 Ao finalizar:
 
@@ -41,5 +41,6 @@ Ao finalizar:
 4. Atualizar os dois maps de refinements.
 5. Atualizar `docs/IMPLEMENTATION_STATUS.md`.
 6. Atualizar `PROJECT_LOG.md`.
+7. Rodar `tools/docs/validate_docs.ps1`.
 
 Specs antigas continuam preservadas em `docs_old/` e rastreadas em `docs/DOCS_OLD_TO_ACTIVE_CROSSWALK.md`.

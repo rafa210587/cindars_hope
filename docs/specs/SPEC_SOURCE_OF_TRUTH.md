@@ -26,6 +26,20 @@ Para auditoria histórica, usar `docs_old/` e `docs/DOCS_OLD_TO_ACTIVE_CROSSWALK
 
 A pasta `spec/` da raiz não é fonte oficial e não deve ser recriada.
 
+## Economia de contexto
+
+O agente não deve ler todos os registries/crosswalk/docs_old por padrão.
+
+Fluxo padrão:
+
+1. Ler `docs/operations/AGENT_EXECUTION_PROTOCOL.md`.
+2. Ler spec alvo.
+3. Ler refinement alvo.
+4. Ler `specs/<FEATURE>/`, se existir.
+5. Ler registries/crosswalk/docs_old somente se necessário.
+
+A rastreabilidade continua preservada nos registries e crosswalk, mas eles não precisam entrar sempre no contexto da implementação.
+
 ## Fluxo obrigatório de uma spec futura para implementada
 
 Quando uma spec de `docs/specs/a_implementar/` for implementada:

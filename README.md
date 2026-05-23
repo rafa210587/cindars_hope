@@ -71,27 +71,16 @@ specs/                         # SpecKit operacional por feature
 
 A pasta raiz `spec/` foi absorvida e não deve ser recriada.
 
-## Fluxo operacional de agentes
+## Execução por agentes
 
-Antes de qualquer tarefa:
+Para reduzir custo de contexto, agentes devem seguir:
 
-1. Ler `PROJECT_LOG.md`.
-2. Ler `docs/IMPLEMENTATION_STATUS.md`.
-3. Ler `AGENTS.md` / `CLAUDE.md`.
-4. Ler `docs/specs/SPEC_SOURCE_OF_TRUTH.md`.
-5. Ler `docs/specs/SPEC_REGISTRY_IMPLEMENTED.md`.
-6. Ler `docs/specs/SPEC_REGISTRY_TO_IMPLEMENT.md`.
-7. Ler `docs/DOCS_OLD_TO_ACTIVE_CROSSWALK.md`.
-8. Ler documentos específicos da tarefa.
+- `docs/operations/AGENT_EXECUTION_PROTOCOL.md`
+- `docs/operations/READING_MATRIX.md`
 
-Para implementar uma spec:
+Não ler `docs_old/**`, crosswalk completo, GDD completo ou registries inteiros por padrão.
 
-1. Ler a spec em `docs/specs/a_implementar/spec_*.md` ou `docs/specs/implementados/spec_*.md`.
-2. Ler o refinement correspondente em `docs/refinements/a_implementar/ref_*.md` ou `docs/refinements/implementados/ref_*.md`.
-3. Ler `specs/<FEATURE>/`, se existir.
-4. Validar dependências em `docs/specs/implementados/`.
-5. Implementar somente o escopo da spec/refinement.
-6. Ao finalizar, atualizar specs, refinements, registries, `docs/IMPLEMENTATION_STATUS.md` e `PROJECT_LOG.md`.
+Para implementar uma spec, ler a spec alvo, o refinement alvo e `specs/<FEATURE>/` quando existir. Ao finalizar, atualizar specs, refinements, registries afetados, `docs/IMPLEMENTATION_STATUS.md` quando necessário e `PROJECT_LOG.md`.
 
 ## Git policy para agentes
 
@@ -156,6 +145,8 @@ Checklist mínimo:
 - `docs/specs/SPEC_SOURCE_OF_TRUTH.md` — fonte de verdade das specs.
 - `docs/specs/SPEC_REGISTRY_IMPLEMENTED.md` — registry de specs implementadas/parciais.
 - `docs/specs/SPEC_REGISTRY_TO_IMPLEMENT.md` — registry de specs futuras.
+- `docs/operations/AGENT_EXECUTION_PROTOCOL.md` — protocolo operacional enxuto para agentes.
+- `docs/operations/READING_MATRIX.md` — matriz de leitura por tipo de tarefa.
 - `docs/design/GDD_v2.6.md` — design do jogo.
 - `docs/architecture/ARCH_fase4_v2.2.md` — arquitetura técnica.
 - `docs/architecture/CORE_CONTRACTS_EVENTS_SAVE_IDS_v1.0.md` — contratos core, eventos, IDs e save.
