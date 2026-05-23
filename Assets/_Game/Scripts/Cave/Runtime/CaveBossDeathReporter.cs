@@ -16,6 +16,12 @@ namespace CindarsHope.Cave.Runtime
         private Vector3 _spawnPos;
         private bool _reported;
 
+        public string BossGateId => _bossGateId ?? string.Empty;
+        public string BossEnemyId => _bossEnemyId ?? string.Empty;
+        public int CaveLevel => _caveLevel;
+        public int CheckpointUnlockedOnDefeat => _checkpointUnlockedOnDefeat;
+        public bool HasReportedDefeat => _reported;
+
         public void Configure(CaveRunManager caveRunManager, string bossGateId, string bossEnemyId, int caveLevel, int checkpointUnlockedOnDefeat, Vector3 spawnPos)
         {
             _caveRunManager = caveRunManager;
