@@ -244,31 +244,53 @@ namespace CindarsHope.Cave.Runtime
 
         public bool CanAdvanceToLevel(int currentLevel, int targetLevel)
         {
+            return CanAdvanceToLevel(currentLevel, targetLevel, true);
+        }
+
+        public bool CanAdvanceToLevelSilent(int currentLevel, int targetLevel)
+        {
+            return CanAdvanceToLevel(currentLevel, targetLevel, false);
+        }
+
+        private bool CanAdvanceToLevel(int currentLevel, int targetLevel, bool logBlocked)
+        {
             InitializeIfNeeded();
 
             if (currentLevel == 15 && targetLevel == 16)
             {
                 if (_bossGateRegistry == null)
                 {
-                    Debug.LogError($"CaveRunManager: Cannot advance 15->16. CaveBossGateRegistry is null.", this);
+                    if (logBlocked)
+                    {
+                        Debug.LogError("CaveRunManager: Cannot advance 15->16. CaveBossGateRegistry is null.", this);
+                    }
                     return false;
                 }
 
                 var gate = _bossGateRegistry.GetGateByLevel(15);
                 if (gate == null)
                 {
-                    Debug.LogError($"CaveRunManager: Cannot advance 15->16. No boss gate found for level 15.", this);
+                    if (logBlocked)
+                    {
+                        Debug.LogError("CaveRunManager: Cannot advance 15->16. No boss gate found for level 15.", this);
+                    }
                     return false;
                 }
 
                 var isDefeated = IsBossDefeated(gate.Id);
                 if (!isDefeated)
                 {
-                    Debug.LogWarning($"CaveRunManager: Cannot advance 15->16. Boss gate '{gate.Id}' not defeated.", this);
+                    if (logBlocked)
+                    {
+                        Debug.LogWarning($"CaveRunManager: Cannot advance 15->16. Boss gate '{gate.Id}' not defeated.", this);
+                    }
                     return false;
                 }
 
-                Debug.Log($"CaveRunManager: Boss gate '{gate.Id}' defeated. Advancing 15->16 permitted.", this);
+                if (logBlocked)
+                {
+                    Debug.Log($"CaveRunManager: Boss gate '{gate.Id}' defeated. Advancing 15->16 permitted.", this);
+                }
                 return true;
             }
 
@@ -389,7 +411,7 @@ namespace CindarsHope.Cave.Runtime
 
         public bool CanAdvancePastCurrentBossGate()
         {
-            return CanAdvanceToLevel(_state.CurrentCaveLevel, _state.CurrentCaveLevel + 1);
+            return CanAdvanceToLevelSilent(_state.CurrentCaveLevel, _state.CurrentCaveLevel + 1);
         }
 
         private void SyncSerializedToState()
