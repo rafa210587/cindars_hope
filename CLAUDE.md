@@ -11,6 +11,28 @@ Spec: GitHub SpecKit com fluxo Specify → Plan → Tasks → Implement.
 
 ---
 
+## Estado documental atual
+
+A documentação foi reorganizada. Usar a nova estrutura ativa:
+
+- `docs/design/` — design ativo do jogo.
+- `docs/architecture/` — arquitetura ativa.
+- `docs/operations/` — instruções operacionais, ambiente, política de specs e handoff LLM.
+- `docs/roadmap/` — roadmap ativo.
+- `docs/backlog/` — backlog e ideias futuras.
+- `docs/amendments/` — amendments ativos.
+- `docs/validation/` — smoke tests e validações.
+- `docs/specs/implementados/` — specs consolidadas do que já existe no repo.
+- `docs/specs/a_implementar/` — specs futuras aprovadas ou preparadas.
+- `docs/refinements/implementados/` — refinamentos/audits/handoffs de coisas já implementadas.
+- `docs/refinements/a_implementar/` — refinamentos futuros ainda não implementados.
+- `specs/` — SpecKit operacional por feature.
+- `docs_old/` — histórico integral preservado; consultar para auditoria, não editar como fonte ativa.
+
+A pasta raiz `spec/` foi absorvida e não deve ser recriada.
+
+---
+
 ## Regra operacional de continuidade
 
 Antes de qualquer tarefa, ler obrigatoriamente:
@@ -18,8 +40,18 @@ Antes de qualquer tarefa, ler obrigatoriamente:
 1. `PROJECT_LOG.md` — log operacional, decisões recentes, pendências e próximo passo.
 2. `docs/IMPLEMENTATION_STATUS.md` — tracking curto de capacidades/specs implementadas e pendentes.
 3. `AGENTS.md` e/ou `CLAUDE.md` — regras permanentes de agente.
-4. Documentos de referência do PR/tarefa.
-5. Se o trabalho tocar specs, ler `docs/SPEC_EVOLUTION_POLICY_v1.0.md`.
+4. `docs/specs/SPEC_SOURCE_OF_TRUTH.md` — fonte de verdade das specs/refinements.
+5. `docs/specs/SPEC_REGISTRY_IMPLEMENTED.md` — specs já implementadas/parciais.
+6. `docs/specs/SPEC_REGISTRY_TO_IMPLEMENT.md` — specs futuras.
+7. `docs/DOCS_OLD_TO_ACTIVE_CROSSWALK.md` — rastreabilidade entre docs antigos e docs ativos.
+8. Documentos específicos da tarefa.
+
+Se o trabalho tocar specs, ler também:
+
+- `docs/operations/SPEC_EVOLUTION_POLICY_v1.0.md`
+- spec ativa em `docs/specs/a_implementar/spec_*.md` ou `docs/specs/implementados/spec_*.md`
+- refinement correspondente em `docs/refinements/a_implementar/ref_*.md` ou `docs/refinements/implementados/ref_*.md`
+- SpecKit operacional em `specs/<FEATURE>/`, se existir.
 
 Ao final de qualquer tarefa relevante, atualizar obrigatoriamente:
 
@@ -28,13 +60,53 @@ Ao final de qualquer tarefa relevante, atualizar obrigatoriamente:
 
 `PROJECT_LOG.md` é append-only por padrão: não apagar histórico anterior salvo correção factual explícita.
 
-`docs/IMPLEMENTATION_STATUS.md` deve ser curto: marcar `Implementado`, `Implementado parcial`, `Especificado` ou `Pendente`; se houver dúvida, marcar `Parcial` e registrar pendência.
+`docs/IMPLEMENTATION_STATUS.md` deve ser curto: marcar `Implementado`, `Implementado parcial`, `Implementado em código — validação Unity pendente`, `Especificado` ou `Pendente`. Se houver dúvida, marcar `Parcial` e registrar pendência.
+
+---
+
+## Fluxo obrigatório para implementar specs
+
+Antes de implementar:
+
+1. Confirmar branch e escopo com o humano ou com a tarefa recebida.
+2. Ler `PROJECT_LOG.md`.
+3. Ler `docs/IMPLEMENTATION_STATUS.md`.
+4. Ler `docs/specs/SPEC_SOURCE_OF_TRUTH.md`.
+5. Ler `docs/specs/SPEC_REGISTRY_IMPLEMENTED.md`.
+6. Ler `docs/specs/SPEC_REGISTRY_TO_IMPLEMENT.md`.
+7. Localizar a spec em `docs/specs/a_implementar/spec_*.md` ou a spec implementada/parcial em `docs/specs/implementados/spec_*.md`.
+8. Localizar o refinement correspondente em `docs/refinements/a_implementar/ref_*.md` ou `docs/refinements/implementados/ref_*.md`.
+9. Ler o SpecKit operacional em `specs/<FEATURE>/`, se existir.
+10. Validar dependências já implementadas em `docs/specs/implementados/`.
+11. Validar histórico em `docs/DOCS_OLD_TO_ACTIVE_CROSSWALK.md` quando houver dúvida.
+
+Durante a implementação:
+
+- Não implementar nada fora da spec/refinement.
+- Não misturar feature grande em PR único se a spec exigir PRs pequenos.
+- Se precisar mudar escopo aprovado, criar amendment/correction/errata conforme `docs/operations/SPEC_EVOLUTION_POLICY_v1.0.md` antes de implementar.
+- Não marcar nada como implementado sem evidência no repo.
+
+Ao finalizar uma implementação:
+
+1. Criar ou atualizar a spec implementada em `docs/specs/implementados/spec_*.md`.
+2. Criar ou atualizar o refinement implementado em `docs/refinements/implementados/ref_*.md`.
+3. Marcar a spec futura correspondente em `docs/specs/a_implementar/` como substituída/movida, ou removê-la apenas se o conteúdo tiver sido preservado na spec implementada.
+4. Marcar o refinement futuro correspondente em `docs/refinements/a_implementar/` como substituído/movido, ou removê-lo apenas se o conteúdo tiver sido preservado no refinement implementado.
+5. Atualizar `docs/specs/SPEC_REGISTRY_IMPLEMENTED.md`.
+6. Atualizar `docs/specs/SPEC_REGISTRY_TO_IMPLEMENT.md`.
+7. Atualizar `docs/refinements/implementados/ref_implementados_map.md`.
+8. Atualizar `docs/refinements/a_implementar/ref_futuro_map.md`.
+9. Atualizar `docs/IMPLEMENTATION_STATUS.md`.
+10. Atualizar `PROJECT_LOG.md`.
+11. Registrar testes executados e não executados.
+12. Se houver migração documental, atualizar `docs/DOCS_OLD_TO_ACTIVE_CROSSWALK.md`.
 
 ---
 
 ## Regra operacional de Git para agentes
 
-Agentes podem preparar commits locais, mas não devem executar operações remotas ou destrutivas, salvo pedido humano explícito nesta conversa.
+Agentes podem preparar commits locais, mas não devem executar operações remotas ou destrutivas, salvo pedido humano explícito na conversa.
 
 Permitido ao agente:
 
@@ -60,19 +132,23 @@ Push, PR/MR, merge e limpeza de branches são responsabilidade humana por padrã
 
 ---
 
-## Documentos de referência
+## Documentos de referência principais
 
-Ler antes de qualquer tarefa:
+Ler conforme a tarefa:
 
-- `PROJECT_LOG.md` — log operacional e continuidade entre agentes.
-- `docs/IMPLEMENTATION_STATUS.md` — tracking de capacidades/specs.
-- `docs/SPEC_EVOLUTION_POLICY_v1.0.md` — política para specs aprovadas, amendments e correções.
-- `docs/GDD_v2.6.md` — design do jogo completo.
-- `docs/ARCH_fase4_v2.2.md` — arquitetura técnica, padrões, eventos.
-- `docs/FASE5_ambiente_v1.2.md` — setup micro do ambiente.
-- `docs/FASE9F_CAVE_RESOURCES_ENCOUNTERS_SPEC_v1.0.md` — próxima fase recomendada: Cave procedural/resources.
-- `specs/FASE9F_CAVE_RESOURCES_ENCOUNTERS/spec.md` — SpecKit funcional da próxima fase.
-- `specs/` — specs por sistema.
+- `PROJECT_LOG.md`
+- `docs/IMPLEMENTATION_STATUS.md`
+- `docs/specs/SPEC_SOURCE_OF_TRUTH.md`
+- `docs/specs/SPEC_REGISTRY_IMPLEMENTED.md`
+- `docs/specs/SPEC_REGISTRY_TO_IMPLEMENT.md`
+- `docs/DOCS_OLD_TO_ACTIVE_CROSSWALK.md`
+- `docs/operations/SPEC_EVOLUTION_POLICY_v1.0.md`
+- `docs/design/GDD_v2.6.md`
+- `docs/architecture/ARCH_fase4_v2.2.md`
+- `docs/architecture/CORE_CONTRACTS_EVENTS_SAVE_IDS_v1.0.md`
+- `docs/operations/FASE5_ambiente_v1.2.md`
+- `docs/operations/LLM_HANDOFF_INSTRUCTIONS.md`
+- `specs/` — SpecKit operacional por feature.
 
 ---
 
@@ -85,14 +161,10 @@ claude-sonnet-4-6
 ## Regras INVIOLÁVEIS de código
 
 1. NUNCA usar `GameObject.Find()` ou `FindObjectOfType()`.
-   - Usar injeção via `[SerializeField]` no Inspector, installers de cena ou eventos.
-2. NUNCA criar comunicação direta entre sistemas quando a comunicação for de gameplay.
-   - Usar `GameEventBus.Publish()` e `Subscribe()`.
-3. NUNCA hardcodar dados de jogo em `MonoBehaviour` quando forem dados de balanceamento/conteúdo.
-   - Usar ScriptableObject em `Assets/_Game/Data/`.
+2. NUNCA criar comunicação direta entre sistemas quando a comunicação for de gameplay; usar `GameEventBus.Publish()` e `Subscribe()`.
+3. NUNCA hardcodar dados de jogo em `MonoBehaviour` quando forem dados de balanceamento/conteúdo; usar ScriptableObject em `Assets/_Game/Data/`.
 4. SEMPRE fazer unsubscribe em `OnDisable` ou `OnDestroy`.
-5. NUNCA escrever lógica de negócio pesada em `MonoBehaviour`.
-   - `MonoBehaviour` deve ser ponte Unity/runtime; lógica deve ser isolável quando possível.
+5. NUNCA escrever lógica de negócio pesada em `MonoBehaviour`; `MonoBehaviour` deve ser ponte Unity/runtime.
 6. SEMPRE prefixar ScriptableObjects: `ItemDataSO`, `SeedDataSO`, `ToolDataSO`, `WeaponDataSO`, etc.
 7. SEMPRE prefixar eventos: `DayStartedEvent`, `ItemCraftedEvent`, `ToolEquippedEvent`, etc.
 8. SEMPRE commits em português.
@@ -111,93 +183,45 @@ claude-sonnet-4-6
 
 Ao implementar uma spec:
 
-- mover o item correspondente de pendente/especificado para implementado ou implementado parcial;
+- mover/registrar o item correspondente de pendente/especificado para implementado ou implementado parcial;
 - registrar evidência curta no repo: arquivo principal, manager, asset, cena ou validator;
 - registrar pendências reais de validação ou polish;
-- não marcar como implementado sem evidência.
+- não marcar como implementado sem evidência;
+- manter `docs_old/` intacto.
 
 Ao criar nova spec aprovada:
 
+- adicionar em `docs/specs/a_implementar/spec_*.md`;
+- adicionar ou atualizar refinement em `docs/refinements/a_implementar/ref_*.md`;
 - adicionar no bloco de pendências de `docs/IMPLEMENTATION_STATUS.md`;
+- adicionar no `docs/specs/SPEC_REGISTRY_TO_IMPLEMENT.md`;
 - não apagar specs antigas aprovadas;
-- se uma spec antiga mudar, criar amendment/correction/errata conforme `docs/SPEC_EVOLUTION_POLICY_v1.0.md`.
-
----
-
-## Regras FASE9F — Cave Procedural/Resources
-
-1. Implementar PRs pequenos: contratos → generator → run regeneration → checkpoints → resource contracts → runtime nodes → save/load → spawn → loot → XP → refresh → boss → validator.
-2. Não misturar generator procedural, ResourceNode runtime, loot tables, XP e boss no mesmo PR.
-3. Cave usa `CaveWorldSeed` persistente e `CaveRunSeed` por run.
-4. KO/derrota gera nova `CaveRunSeed` e preserva checkpoints.
-5. Checkpoints oficiais: `1, 15, 30, 45, 60, 75, 90`.
-6. ResourceNode exige ferramenta, tier e stamina.
-7. Minério sem Pickaxe/tier suficiente gera apenas fallback `1x item_material_stone`, não entrega minério principal e não depleta o node.
-8. Nodes com `RespawnsDaily = true` renovam no novo dia; os demais permanecem depleted.
-9. Save de cave deve conter somente DTOs e tipos simples.
-10. Slime especial deve ter visual/cor diferente, não só stats maiores.
-11. Boss de mudança de bioma bloqueia avanço.
-
----
-
-## Regra FASE9F — Cave Stable Run
-
-Antes de qualquer alteração em Cave procedural, agentes devem ler:
-
-- `docs/amendments/FASE9F_CAVE_STABLE_RUN_AND_REPLAY_AMENDMENT_v1.0.md`
-- `specs/FASE9F_CAVE_RESOURCES_ENCOUNTERS/amendments/stable_run_replay.md`
-- `docs/roadmap/FASE9F_CAVE_STABLE_RUN_ROADMAP_PR170_192.md`
-- `docs/audits/PR170_192_CAVE_STABLE_RUN_PRE_IMPLEMENTATION_AUDIT.md`
-
-Regra central:
-
-- `CaveLevel` já visitado dentro da mesma `CaveRunSeed` deve ser carregado por snapshot.
-- `ForwardExit` e `BackExit` não podem regenerar layout, composição de inimigos ou composição de resource nodes.
-- Procedural só muda em novo jogo, KO/morte/derrota do personagem ou comando debug explícito.
-- Enemy count por snapshot novo de level deve ficar entre `12` e `20`.
-- Resource node count por snapshot novo de level deve ficar entre `4` e `10`.
-- Revisitar level não pode rerollar inimigos, resource nodes, layout, entrada ou saída.
-- `SaveData` de cave deve persistir snapshots com tipos simples e sem Unity refs.
-- `UnityEngine.Camera` deve ser usado explicitamente quando o tipo for a câmera da Unity, para evitar colisão com `CindarsHope.Camera`.
-
----
-
-## Convenções de nomenclatura
-
-| Tipo | Convenção | Exemplo |
-|---|---|---|
-| Classes | PascalCase | PlayerController, EquipmentManager |
-| Eventos | [Acao][Substantivo]Event | DayStartedEvent, ToolEquippedEvent |
-| ScriptableObjects | [Tipo]DataSO | ItemDataSO, ToolDataSO, WeaponDataSO |
-| Prefabs | [Categoria]_[Nome] | Creature_Slime, NPC_Brumdar |
-| Sprites | [Cat]_[Nome]_[Tamanho].png | Item_SwordIron_32x32.png |
-| Variáveis private | _camelCase | _currentHP, _isGrounded |
-| Variáveis public/[SerializeField] | PascalCase | MaxHP, MoveSpeed |
-| Constantes | UPPER_SNAKE | MAX_COMPANIONS, BASE_HUNGER_RATE |
-| Cenas | PascalCase | FarmScene, TownScene, CaveScene |
+- se uma spec antiga mudar, criar amendment/correction/errata conforme `docs/operations/SPEC_EVOLUTION_POLICY_v1.0.md`.
 
 ---
 
 ## Regra de namespace — Debug PROIBIDO
 
-**NUNCA** criar namespace chamado `Debug` dentro de `CindarsHope.*`.
+NUNCA criar namespace chamado `Debug` dentro de `CindarsHope.*`.
 
-**Proibido**:
+Proibido:
+
 - `namespace CindarsHope.Cave.Debug`
 - `namespace CindarsHope.Core.Debug`
 - `namespace CindarsHope.UI.Debug`
 
-**Motivo**: Colide com `UnityEngine.Debug` e quebra todas as chamadas `Debug.Log()`, `Debug.LogWarning()`, `Debug.LogError()` dentro do namespace pai e subnamespaces.
+Motivo: colide com `UnityEngine.Debug` e quebra chamadas `Debug.Log()`, `Debug.LogWarning()`, `Debug.LogError()`.
 
-**Usar nomes alternativos**:
-- `CindarsHope.Cave.Runtime` (para debug tools de runtime)
-- `CindarsHope.Cave.DebugTools` (alternativa explícita)
-- `CindarsHope.Cave.Diagnostics` (para validadores/auditors)
-- `CindarsHope.Cave.Editor` (para editor-only scripts)
+Usar alternativas:
+
+- `CindarsHope.Cave.Runtime`
+- `CindarsHope.Cave.DebugTools`
+- `CindarsHope.Cave.Diagnostics`
+- `CindarsHope.Cave.Editor`
 
 ---
 
-## Estrutura de pastas
+## Estrutura de código
 
 ```text
 Assets/_Game/
@@ -226,74 +250,22 @@ Assets/_Game/
 
 ---
 
-## Padrão de MonoBehaviour
+## Regra FASE9F — Cave Stable Run
 
-```csharp
-public class NomeDoSistema : MonoBehaviour
-{
-    [SerializeField] private NomeDataSO _data;
+Antes de qualquer alteração em Cave procedural/stable run, agentes devem ler:
 
-    void OnEnable() => GameEventBus.Subscribe<XEvent>(OnX);
-    void OnDisable() => GameEventBus.Unsubscribe<XEvent>(OnX);
+- `docs/amendments/FASE9F_CAVE_STABLE_RUN_AND_REPLAY_AMENDMENT_v1.0.md`
+- `specs/FASE9F_CAVE_RESOURCES_ENCOUNTERS/amendments/stable_run_replay.md`
+- `docs/roadmap/FASE9F_CAVE_STABLE_RUN_ROADMAP_PR170_192.md`
+- `docs/refinements/implementados/ref_pr170_192_cave_stable_run_pre_implementation_audit.md`
 
-    private void OnX(XEvent e)
-    {
-        // reagir ao evento
-    }
-}
-```
+Regra central:
 
----
-
-## Padrão de ScriptableObject
-
-```csharp
-[CreateAssetMenu(fileName = "X_NomeDoItem", menuName = "CindarsHope/Categoria/Tipo")]
-public class TipoDataSO : ScriptableObject
-{
-    public string Id;
-    public string DisplayName;
-    [TextArea] public string Description;
-    public Sprite Icon;
-}
-```
-
----
-
-## Paleta de cores
-
-| Ambiente | Cor | Hex |
-|---|---|---|
-| Fazenda | Laranja | #D4832A |
-| Fazenda | Bronze | #8B6914 |
-| Fazenda | Terra | #6B3A2A |
-| Fazenda | Verde musgo | #4A6741 |
-| Cidade | Azul ardósia | #4A5E7A |
-| Cidade | Pedra | #7A8A9A |
-| Cidade | Âmbar lanterna | #D4A850 |
-| Caverna | Cinza carvão | #2A2A2A |
-| Caverna | Roxo escuro | #3A1F4A |
-| Caverna | Cinza úmido | #4A4A5A |
-| Global | Outline personagens | #0A0A0A |
-
----
-
-## Documentos operacionais adicionais
-
-- `PROJECT_LOG.md` — log operacional e continuidade obrigatória entre agentes.
-- `docs/IMPLEMENTATION_STATUS.md` — status curto de capacidades/specs.
-- `docs/SPEC_EVOLUTION_POLICY_v1.0.md` — política de evolução de specs.
-- `docs/FASE9F_CAVE_RESOURCES_ENCOUNTERS_SPEC_v1.0.md` — spec aprovada para Cave procedural/resources.
-- `specs/FASE9F_CAVE_RESOURCES_ENCOUNTERS/spec.md` — SpecKit da FASE9F.
-- `docs/SPRITE_PIPELINE_AI_ASEPRITE_v1.0.md` — pipeline de arte com IA + Aseprite.
-
----
-
-## Regras de arte com IA
-
-1. Não copiar assets, paleta proprietária, UI, personagens ou sprites de Stardew Valley/Harvest Moon.
-2. Usar referências apenas como direção de gênero: legibilidade, câmera, conforto visual.
-3. IA pode gerar conceito, variações e rascunhos.
-4. Aseprite é a etapa final obrigatória para limpar pixels, paleta, outline e export.
-5. Todo sprite aprovado deve ter `.aseprite/.ase` fonte quando houver edição manual relevante.
-6. PNG final entra em `Assets/_Game/Sprites/...` com import `Point`, `Compression None`, `Generate Mip Maps false`.
+- `CaveLevel` já visitado dentro da mesma `CaveRunSeed` deve ser carregado por snapshot.
+- `ForwardExit` e `BackExit` não podem regenerar layout, composição de inimigos ou composição de resource nodes.
+- Procedural só muda em novo jogo, KO/morte/derrota do personagem ou comando debug explícito.
+- Enemy count por snapshot novo de level deve ficar entre `12` e `20`.
+- Resource node count por snapshot novo de level deve ficar entre `4` e `10`.
+- Revisitar level não pode rerollar inimigos, resource nodes, layout, entrada ou saída.
+- `SaveData` de cave deve persistir snapshots com tipos simples e sem Unity refs.
+- `UnityEngine.Camera` deve ser usado explicitamente quando o tipo for a câmera da Unity.
