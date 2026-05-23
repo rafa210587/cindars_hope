@@ -30,9 +30,9 @@ Portanto, as 13 specs não devem ser tratadas como fully implemented até haver 
 | Status effects | Implementado parcial | SOs e manager inicial; integração completa com damage pipeline ainda pendente. |
 | Equipment/durability/environment | Implementado parcial | SOs/managers iniciais; runtime completo pendente. |
 | Loot tables | Implementado parcial | Dados iniciais; integração com enemy/resource drops pendente. |
-| Crafting recipes | Implementado parcial estabilizado | Initializer passa a gerar `RecipeDataSO`; modelo paralelo preservado como legado/obsoleto. |
+| Crafting recipes | Implementado parcial estabilizado | Initializer passa a gerar `RecipeDataSO`; modelo paralelo `CraftingRecipeSO` foi removido. |
 | Weapons/spells/skill actions | Implementado parcial | Schemas iniciais; runtime de usar/equipar/cooldown/damage pendente. |
-| Enemy data/AI | Implementado parcial estabilizado | Initializer passa a gerar `Combat.EnemyDataSO`; modelo paralelo preservado como legado/obsoleto. |
+| Enemy data/AI | Implementado parcial estabilizado | Initializer passa a gerar `Combat.EnemyDataSO`; modelo paralelo `Enemy.EnemyDataSO` foi removido. |
 | Bestiary/faction locks | Implementado parcial | Dados iniciais; runtime event-driven e faction locks pendentes. |
 | Cave entry/death/corpse | Implementado parcial | Config SOs; fluxo runtime e save/load pendentes. |
 | Skill trees | Implementado parcial | Dados/manager mínimo; capstones, active slots reais, Fonte de Anya e save/load pendentes. |
@@ -76,7 +76,7 @@ Modelo oficial estabilizado:
 CindarsHope.Combat.EnemyDataSO
 ```
 
-O modelo paralelo em `CindarsHope.Enemy.EnemyDataSO` foi preservado apenas como legado/compatibilidade e marcado como obsoleto.
+O modelo paralelo em `CindarsHope.Enemy.EnemyDataSO` foi removido para eliminar ambiguidade e impedir criação de assets mortos.
 
 `EnemyDataInitializer` agora gera assets usando o modelo oficial de combate.
 
@@ -88,7 +88,7 @@ Modelo oficial estabilizado:
 CindarsHope.Craft.Data.RecipeDataSO
 ```
 
-O modelo paralelo em `CindarsHope.Crafting.CraftingRecipeSO` foi preservado apenas como legado/compatibilidade e marcado como obsoleto.
+O modelo paralelo em `CindarsHope.Crafting.CraftingRecipeSO` foi removido para eliminar ambiguidade e impedir criação de recipes fora do runtime real.
 
 `CraftingRecipeInitializer` agora gera assets usando `RecipeDataSO`.
 
