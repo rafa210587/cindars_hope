@@ -1,4 +1,4 @@
-# Tasks — FASE9D Enemy Architecture 40+ Monsters
+﻿# Tasks — FASE9D Enemy Architecture 40+ Monsters
 
 > **Feature:** FASE9D_ENEMY_ARCHITECTURE_40_MONSTERS  
 > **Spec:** `spec.md`  
@@ -188,3 +188,4 @@ Validar dados de inimigos.
 - [ ] Status funciona.
 - [ ] Save/load não quebra.
 - [ ] Console sem erro vermelho.
+

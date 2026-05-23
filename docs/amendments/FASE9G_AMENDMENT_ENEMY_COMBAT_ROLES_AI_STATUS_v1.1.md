@@ -219,7 +219,7 @@ MVP pode implementar subset, mas os IDs devem estar reservados.
 | `move_dash_line` | investida reta |
 | `move_dash_arc` | dash em arco |
 | `move_summoner_keepaway` | foge e invoca |
-| `move_stationary_turret` | quase parado, ataca Ã  distância |
+| `move_stationary_turret` | quase parado, ataca à distância |
 
 ---
 
@@ -301,10 +301,10 @@ EffectiveEnemyLevel = CaveLevel + EnemyLevelOffset
 Fórmulas alvo:
 
 ```text
-HP = BaseHP + EffectiveEnemyLevel Ã— HPGrowth Ã— RoleHpMultiplier
-Damage = BaseDamage + EffectiveEnemyLevel Ã— DamageGrowth Ã— RoleDamageMultiplier
+HP = BaseHP + EffectiveEnemyLevel × HPGrowth × RoleHpMultiplier
+Damage = BaseDamage + EffectiveEnemyLevel × DamageGrowth × RoleDamageMultiplier
 Defense = BaseDefense + floor(EffectiveEnemyLevel / 5)
-XP = EffectiveEnemyLevel Ã— DifficultyMultiplier
+XP = EffectiveEnemyLevel × DifficultyMultiplier
 ```
 
 Multiplicadores de HP:
@@ -868,4 +868,5 @@ Implementação futura deve tratar este amendment como fonte para:
 - boss/miniboss movesets;
 - weapon affix drops;
 - debug de combate.
+
 

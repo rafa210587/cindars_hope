@@ -1,6 +1,6 @@
 ﻿# SPEC FUTURA — FASE9G Enemy Combat Roles AI Status Amendment
 
-> Origem histórica: $Source
+> Origem histórica: `docs_old/amendments/FASE9G_AMENDMENT_ENEMY_COMBAT_ROLES_AI_STATUS_v1.1.md`
 > Status: A implementar / restante não implementado
 > Observação: conteúdo histórico preservado; não duplicar capacidades já consolidadas em specs implementadas.
 
@@ -229,7 +229,7 @@ MVP pode implementar subset, mas os IDs devem estar reservados.
 | `move_dash_line` | investida reta |
 | `move_dash_arc` | dash em arco |
 | `move_summoner_keepaway` | foge e invoca |
-| `move_stationary_turret` | quase parado, ataca Ã  distância |
+| `move_stationary_turret` | quase parado, ataca à distância |
 
 ---
 
@@ -311,10 +311,10 @@ EffectiveEnemyLevel = CaveLevel + EnemyLevelOffset
 Fórmulas alvo:
 
 ```text
-HP = BaseHP + EffectiveEnemyLevel Ã— HPGrowth Ã— RoleHpMultiplier
-Damage = BaseDamage + EffectiveEnemyLevel Ã— DamageGrowth Ã— RoleDamageMultiplier
+HP = BaseHP + EffectiveEnemyLevel × HPGrowth × RoleHpMultiplier
+Damage = BaseDamage + EffectiveEnemyLevel × DamageGrowth × RoleDamageMultiplier
 Defense = BaseDefense + floor(EffectiveEnemyLevel / 5)
-XP = EffectiveEnemyLevel Ã— DifficultyMultiplier
+XP = EffectiveEnemyLevel × DifficultyMultiplier
 ```
 
 Multiplicadores de HP:
@@ -883,5 +883,8 @@ Implementação futura deve tratar este amendment como fonte para:
 ## Regra de uso
 
 Antes de implementar, reconciliar este material com docs/specs/implementados/, docs/refinements/implementados/ e o estado real do código.
+
+
+
 
 

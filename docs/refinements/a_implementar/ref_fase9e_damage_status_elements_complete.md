@@ -1,6 +1,6 @@
 ﻿# REF FUTURO — FASE9E damage status elements complete
 
-> Origem histórica: $Source
+> Origem histórica: `docs_old/FASE9E_DAMAGE_STATUS_FORMULA_SPEC_v1.0.md`
 > Status: Refinamento futuro preservado
 > Spec futura relacionada: $Spec
 
@@ -78,7 +78,7 @@ Todo dano direto deve passar por uma fórmula comum.
 Dano do jogador deve somar atributo ofensivo conforme fonte:
 
 - Strength para soco e arma corpo a corpo;
-- Dexterity para arco/flecha e dano físico Ã  distância;
+- Dexterity para arco/flecha e dano físico à distância;
 - Intelligence para magia.
 
 ### O3 — Elementos
@@ -199,7 +199,7 @@ Uso no dano:
 | Soco / desarmado | Strength |
 | Arma corpo a corpo | Strength |
 | Arco/flecha | Dexterity |
-| Arma física Ã  distância não mágica | Dexterity |
+| Arma física à distância não mágica | Dexterity |
 | Magia | Intelligence |
 
 Regra MVP:
@@ -244,9 +244,9 @@ Regras:
 ```text
 scaledBase = BaseDamage + AttributeBonus
 finalDamage = scaledBase
-            Ã— ElementMultiplier
-            Ã— VulnerabilityMultiplier
-            Ã— StatusReceivedDamageMultiplier
+            × ElementMultiplier
+            × VulnerabilityMultiplier
+            × StatusReceivedDamageMultiplier
 ```
 
 Depois:
@@ -453,7 +453,7 @@ Aplicado por magia de terra, gelo, lama, peso ou efeitos de terreno.
 
 ```text
 Duration: 3s
-Effect: MoveSpeed Ã— 0.6
+Effect: MoveSpeed × 0.6
 Stack: reaplicar renova duração
 ```
 
@@ -735,7 +735,7 @@ ScaledBase: 4
 Element: Physical
 ElementMultiplier: 1.0
 VulnerabilityMultiplier: 1.5
-4 Ã— 1.5 = 6
+4 × 1.5 = 6
 RoundToInt = 6
 ```
 
@@ -748,7 +748,7 @@ ScaledBase: 2
 Element: Fire
 ElementMultiplier: 1.5
 VulnerabilityMultiplier: 1.0
-2 Ã— 1.5 = 3
+2 × 1.5 = 3
 Final: 3
 Burn aplicado por 3s
 ```
@@ -792,7 +792,7 @@ Dano mínimo 1 não se aplica porque é imunidade explícita.
 
 - Todo dano direto de player contra inimigo passa por `DamageCalculator`.
 - Strength soma em dano físico melee/desarmado.
-- Dexterity soma em arco/físico Ã  distância.
+- Dexterity soma em arco/físico à distância.
 - Intelligence soma em magia.
 - Jogador começa com Strength, Dexterity e Intelligence iguais a 1.
 - Inimigo com vulnerabilidade Fire recebe mais dano de Fire.
@@ -842,5 +842,8 @@ O combate deve usar uma única fórmula de dano e status. Atributos entram como 
 
 - Não tratar este refinement como autorização automática de implementação.
 - Não sobrescrever specs implementadas sem amendment/correction explícito.
+
+
+
 
 

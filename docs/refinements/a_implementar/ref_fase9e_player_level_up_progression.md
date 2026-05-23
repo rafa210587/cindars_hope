@@ -1,6 +1,6 @@
 ﻿# REF FUTURO — FASE9E player level up progression
 
-> Origem histórica: $Source
+> Origem histórica: `docs_old/FASE9E_PLAYER_LEVEL_UP_PROGRESSION_SPEC_v1.0.md`
 > Status: Refinamento futuro preservado
 > Spec futura relacionada: $Spec
 
@@ -60,7 +60,7 @@ public class PlayerStats
 | Atributo | Nome PT-BR | Função | Fórmula MVP |
 |---|---|---|---|
 | Strength | Força | dano físico corpo a corpo | `MeleeDamage = BaseDamage + Strength` |
-| Dexterity | Destreza | dano físico Ã  distância | `RangedDamage = BaseDamage + Dexterity` |
+| Dexterity | Destreza | dano físico à distância | `RangedDamage = BaseDamage + Dexterity` |
 | Intelligence | Inteligência | dano mágico | `MagicDamage = BaseDamage + Intelligence` |
 | Willpower | Vontade | mana para magias | `MaxMana = BaseMaxMana + (Willpower * 4)` |
 | Constitution | Constituição | vida máxima | `MaxHP = BaseMaxHP + (Constitution * 5)` |
@@ -189,7 +189,7 @@ Foco: elementos, poder mágico e suporte.
 
 ### 7.3 Dexterity
 
-Foco: mobilidade, precisão e ataques Ã  distância.
+Foco: mobilidade, precisão e ataques à distância.
 
 - aumentar dano ranged;
 - liberar chance de crítico;
@@ -218,7 +218,7 @@ A implementação detalhada de skill tree fica para outra spec.
 XP de combate vem do nível da criatura e da dificuldade relativa, não de cada hit.
 
 ```text
-XpReward = EnemyLevel Ã— DifficultyXpMultiplier
+XpReward = EnemyLevel × DifficultyXpMultiplier
 ```
 
 ### 8.1 Dificuldade relativa
@@ -492,5 +492,8 @@ O MVP terá progressão global até level 100, seis atributos base, pontos de at
 
 - Não tratar este refinement como autorização automática de implementação.
 - Não sobrescrever specs implementadas sem amendment/correction explícito.
+
+
+
 
 

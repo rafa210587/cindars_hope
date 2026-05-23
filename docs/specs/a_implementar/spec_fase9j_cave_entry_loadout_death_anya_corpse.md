@@ -1,6 +1,7 @@
 ﻿# SPEC FUTURA — FASE9J Cave Entry, Loadout, Death, Anya e Corpse
 
-> Origem histórica: $(docs_old/FASE9J_CAVE_RUN_ENTRY_LOADOUT_HUD_AND_FAILURE_FLOW_SPEC_v1.0.md spec_fase9j_cave_entry_loadout_death_anya_corpse.md FASE9J Cave Entry, Loadout, Death, Anya e Corpse[0])`n> Status: A implementar
+> Origem histórica: `docs_old/FASE9J_CAVE_RUN_ENTRY_LOADOUT_HUD_AND_FAILURE_FLOW_SPEC_v1.0.md`
+> Status: A implementar
 > Observação: conteúdo refinado preservado da documentação antiga.
 
 ---
@@ -727,6 +728,8 @@ Complementa:
 - `docs_old/FASE9I_PLAYER_COMBAT_WEAPONS_MAGIC_SKILL_TREES_SPEC_v1.0.md`
 
 Não altera specs antigas destrutivamente.
+
+
 
 
 

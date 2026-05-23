@@ -2,9 +2,9 @@
 
 > Status: Implementado parcial
 > Camada: Combat
-> Fonte histórica: $source
-> Refinamento relacionado: $ref
-> Evidência principal: $evidence
+> Fonte histórica: `docs_old/FASE9B3_ENEMY_DATA_DRIVEN_STATS_v1.0.md`
+> Refinamento relacionado: `docs/refinements/implementados/ref_pr130_reconciliacao_handoff.md`
+> Evidência principal: `Assets/_Game/Scripts/Combat/EnemyDataSO.cs`
 
 ---
 
@@ -53,12 +53,16 @@ Stats de inimigo são dados; estado runtime individual ainda depende do combate/
 
 | Tipo | Caminho | Observação |
 |---|---|---|
-| Código | $evidence | Evidência principal. |
-| Histórico | $source | Fonte histórica preservada. |
-| Refinamento | $ref | Refinamento ativo relacionado. |
+| Código | `Assets/_Game/Scripts/Combat/EnemyDataSO.cs` | Evidência principal. |
+| Histórico | `docs_old/FASE9B3_ENEMY_DATA_DRIVEN_STATS_v1.0.md` | Fonte histórica preservada. |
+| Refinamento | `docs/refinements/implementados/ref_pr130_reconciliacao_handoff.md` | Refinamento ativo relacionado. |
 
 ---
 
 ## 5. Pendências e riscos
 
 - Completar AI/actions/status por specs FASE9D/FASE9G futuras.
+
+
+
+

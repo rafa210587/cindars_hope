@@ -1,4 +1,4 @@
-# Plan — FASE9C Player Equipment, Item Use e Combat Loadout
+﻿# Plan — FASE9C Player Equipment, Item Use e Combat Loadout
 
 > **Feature:** FASE9C_PLAYER_EQUIPMENT_ITEMS_COMBAT  
 > **Spec:** `specs/FASE9C_PLAYER_EQUIPMENT_ITEMS_COMBAT/spec.md`
@@ -199,3 +199,4 @@ Aceite:
 - árvore de magia;
 - durabilidade;
 - balanceamento final.
+

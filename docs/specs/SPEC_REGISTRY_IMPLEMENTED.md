@@ -35,3 +35,8 @@
 | [spec_cave_008_debug_skip_confinement_wall_distance_hardening.md](implementados/spec_cave_008_debug_skip_confinement_wall_distance_hardening.md) | Implementado em codigo - validacao Unity pendente | `docs_old/audits/FIX_CAVE_DEBUG_SKIP_AND_CONFINEMENT_TOLERANCE.md` | `Assets/_Game/Scripts/Cave/Runtime/CavePlayerPathConfinement.cs` | `docs/refinements/implementados/ref_fix_cave_debug_skip_and_confinement_tolerance.md` | Validar debug skip, reset de confinamento e boss gates. |
 | [spec_repo_001_pr099_reconciliation_audit.md](implementados/spec_repo_001_pr099_reconciliation_audit.md) | Implementado documental | `docs_old/audits/PR100_POST_PR099_REPO_AUDIT.md` | `docs_old/audits/PR101_PR099_BRANCH_RECONCILIATION.md` | `docs/refinements/implementados/ref_pr100_post_pr099_repo_audit.md` | Continuar reconciliacoes futuras sem rollback destrutivo. |
 | [spec_validation_001_scene_generators_validators.md](implementados/spec_validation_001_scene_generators_validators.md) | Implementado parcial | `docs_old/FASE8_EXECUTION_PLAN_CODEX_v1.0.md` | `Assets/_Game/Scripts/Editor/**` | `docs/refinements/implementados/ref_pr153_cave_procedural_handoff.md` | Play Mode e validadores futuros FASE9H-L. |
+
+## Rastreabilidade documental
+
+Para rastreabilidade completa entre docs_old/ e a documentação ativa, ver docs/DOCS_OLD_TO_ACTIVE_CROSSWALK.md.
+

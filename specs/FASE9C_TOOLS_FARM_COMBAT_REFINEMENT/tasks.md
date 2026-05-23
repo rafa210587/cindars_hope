@@ -1,4 +1,4 @@
-# Tasks — FASE9C Tools, Farm Actions e Combat Refinement
+﻿# Tasks — FASE9C Tools, Farm Actions e Combat Refinement
 
 > **Feature:** FASE9C_TOOLS_FARM_COMBAT_REFINEMENT  
 > **Spec:** `spec.md`  
@@ -225,3 +225,4 @@ Adicionar projétil mágico.
 - [ ] Disparar ranged magic.
 - [ ] Salvar/carregar.
 - [ ] Console sem erro vermelho.
+

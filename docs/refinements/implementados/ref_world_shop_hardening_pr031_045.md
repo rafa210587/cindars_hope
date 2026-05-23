@@ -1,7 +1,9 @@
 ﻿# REF — WORLD SHOP HARDENING PR031 045
 
-> Origem: $src`n> Status: refinamento implementado absorvido.
-> Spec consolidada relacionada: docs/specs/implementados/spec_farm_003_arvores_pesca_pickups_world_activities.md`n
+> Origem histórica: conteúdo absorvido durante reorganização documental.
+> Status: refinamento implementado absorvido.
+> Spec consolidada relacionada: `docs/specs/implementados/spec_farm_003_arvores_pesca_pickups_world_activities.md`
+
 ---
 
 # SPEC: World, Shop & Hardening (PR-031 to PR-045)
@@ -77,5 +79,6 @@ World interactions (tree harvesting, fishing, seed shop), item pickups persisten
 ## Next Steps
 
 Continue to Crafting (PR-046 to PR-052).
+
 
 

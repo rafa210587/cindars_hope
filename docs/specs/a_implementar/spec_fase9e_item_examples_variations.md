@@ -1,6 +1,6 @@
 ﻿# SPEC FUTURA — FASE9E Item Examples Variations
 
-> Origem histórica: $Source
+> Origem histórica: `docs_old/FASE9E_ITEM_EXAMPLES_VARIATIONS_v1.0.md`
 > Status: A implementar / restante não implementado
 > Observação: conteúdo histórico preservado; não duplicar capacidades já consolidadas em specs implementadas.
 
@@ -183,5 +183,7 @@ item_drop_slime_gel
 ## Regra de uso
 
 Antes de implementar, reconciliar este material com docs/specs/implementados/, docs/refinements/implementados/ e o estado real do código.
+
+
 
 

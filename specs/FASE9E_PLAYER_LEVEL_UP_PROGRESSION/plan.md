@@ -1,4 +1,4 @@
-# Plan — FASE9E Player Level Up, XP e Progressão
+﻿# Plan — FASE9E Player Level Up, XP e Progressão
 
 > **Feature:** FASE9E_PLAYER_LEVEL_UP_PROGRESSION  
 > **Spec:** `spec.md`
@@ -141,3 +141,4 @@ XpReward = EnemyLevel × DifficultyXpMultiplier
 - balance final;
 - classes/subclasses;
 - perks complexos.
+

@@ -1,67 +1,67 @@
-﻿# SpecKit â€” FASE9G Cave Bestiary, Faction Locks & Portal Ecology
+﻿# SpecKit — FASE9G Cave Bestiary, Faction Locks & Portal Ecology
 
 > **Feature:** `FASE9G_CAVE_BESTIARY_FACTION_LOCKS_PORTAL_ECOLOGY`  
-> **Status:** especificaÃ§Ã£o funcional aprovada para planejamento.  
+> **Status:** especificação funcional aprovada para planejamento.  
 > **Fonte de design:** `docs_old/FASE9G_CAVE_BESTIARY_FACTION_LOCKS_PORTAL_ECOLOGY_SPEC_v1.0.md`
 
 ---
 
 ## 1. User story
 
-Como jogador, quero que cada nÃ­vel ou trecho da caverna tenha uma identidade coerente de criaturas, facÃ§Ãµes, bosses e ecologia, para que a exploraÃ§Ã£o procedural pareÃ§a parte viva de Vaalara, e nÃ£o apenas uma lista aleatÃ³ria de inimigos.
+Como jogador, quero que cada nível ou trecho da caverna tenha uma identidade coerente de criaturas, facções, bosses e ecologia, para que a exploração procedural pareça parte viva de Vaalara, e não apenas uma lista aleatória de inimigos.
 
 ---
 
 ## 2. Objetivos funcionais
 
-### O1 â€” Faction lock procedural
+### O1 — Faction lock procedural
 
-A geraÃ§Ã£o deve escolher um `FactionLockId` principal para cada CaveLevel ou subfaixa de 3â€“5 nÃ­veis.
+A geração deve escolher um `FactionLockId` principal para cada CaveLevel ou subfaixa de 3–5 níveis.
 
-### O2 â€” CoerÃªncia de inimigos
+### O2 — Coerência de inimigos
 
-Inimigos incompatÃ­veis nÃ£o devem aparecer no mesmo nÃ­vel como spawn comum.
+Inimigos incompatíveis não devem aparecer no mesmo nível como spawn comum.
 
-### O3 â€” BestiÃ¡rio de Vaalara
+### O3 — Bestiário de Vaalara
 
-O bestiÃ¡rio deve usar raÃ§as, facÃ§Ãµes, clÃ£s e criaturas de Vaalara, incluindo goblins, orcs, drows, anÃµes profundos, draconatos, tieflings, Ninrorin, gnomos, undeads, drakes, wyverns, observadores de Elyndor e bestas.
+O bestiário deve usar raças, facções, clãs e criaturas de Vaalara, incluindo goblins, orcs, drows, anões profundos, draconatos, tieflings, Ninrorin, gnomos, undeads, drakes, wyverns, observadores de Elyndor e bestas.
 
-### O4 â€” RaÃ§as nÃ£o sÃ£o malignas por natureza
+### O4 — Raças não são malignas por natureza
 
-Humanoides inimigos sÃ£o facÃ§Ãµes, exilados, cultistas, saqueadores, corrompidos, guardiÃµes ou expediÃ§Ãµes rivais.
+Humanoides inimigos são facções, exilados, cultistas, saqueadores, corrompidos, guardiões ou expedições rivais.
 
-### O5 â€” Bosses e minibosses procedurais
+### O5 — Bosses e minibosses procedurais
 
-Cada marco de miniboss/boss deve ter 3 candidatos compatÃ­veis com bioma, ecologia e faction lock.
+Cada marco de miniboss/boss deve ter 3 candidatos compatíveis com bioma, ecologia e faction lock.
 
-### O6 â€” Boss persistente por save
+### O6 — Boss persistente por save
 
-Boss checkpoint escolhido deve persistir no save e nÃ£o mudar apenas porque a CaveRunSeed mudou.
+Boss checkpoint escolhido deve persistir no save e não mudar apenas porque a CaveRunSeed mudou.
 
-### O7 â€” Miniboss persistente por run
+### O7 — Miniboss persistente por run
 
-Miniboss pode mudar quando a CaveRunSeed muda, mas deve ficar estÃ¡vel dentro da mesma run.
+Miniboss pode mudar quando a CaveRunSeed muda, mas deve ficar estável dentro da mesma run.
 
-### O8 â€” Debug
+### O8 — Debug
 
-DebugHud deve poder exibir `BiomeId`, `EncounterEcologyId`, `FactionLockId`, `EnemyFamilyIds` e `BossCandidateId` quando a implementaÃ§Ã£o da FASE9G entrar.
+DebugHud deve poder exibir `BiomeId`, `EncounterEcologyId`, `FactionLockId`, `EnemyFamilyIds` e `BossCandidateId` quando a implementação da FASE9G entrar.
 
 ---
 
-## 3. Regras de negÃ³cio
+## 3. Regras de negócio
 
-### R1 â€” Lock por subfaixa
+### R1 — Lock por subfaixa
 
-PadrÃ£o recomendado:
+Padrão recomendado:
 
 ```text
-FactionLock por subfaixa de 3â€“5 nÃ­veis.
+FactionLock por subfaixa de 3–5 níveis.
 Cada CaveLevel herda o lock dominante da subfaixa.
 ```
 
-### R2 â€” ExceÃ§Ãµes controladas
+### R2 — Exceções controladas
 
-Misturas incompatÃ­veis sÃ³ podem ocorrer como:
+Misturas incompatíveis só podem ocorrer como:
 
 ```text
 AmbientFauna
@@ -72,17 +72,17 @@ ConflictEncounter
 
 `ConflictEncounter` fica fora do MVP.
 
-### R3 â€” Rare intruder
+### R3 — Rare intruder
 
 Rare intruder deve ter chance baixa, ser limitado por bioma e aparecer no debug como rare.
 
-### R4 â€” Boss de checkpoint
+### R4 — Boss de checkpoint
 
-Boss de checkpoint pode variar entre 3 candidatos compatÃ­veis com o arco/ecologia dominante.
+Boss de checkpoint pode variar entre 3 candidatos compatíveis com o arco/ecologia dominante.
 
-### R5 â€” Final boss
+### R5 — Final boss
 
-Level 100 tem trÃªs possÃ­veis final bosses por save:
+Level 100 tem três possíveis final bosses por save:
 
 ```text
 The Portal-Bound Ancient
@@ -103,9 +103,9 @@ Meteor Lich of Elyndor
 
 ---
 
-## 5. CritÃ©rios de aceite
+## 5. Critérios de aceite
 
-### CA1 â€” CaveLevel com identidade
+### CA1 — CaveLevel com identidade
 
 Cada CaveLevel gerado possui:
 
@@ -114,38 +114,38 @@ BiomeId
 EncounterEcologyId
 FactionLockId
 EnemyFamilyIds
-BossCandidateId quando aplicÃ¡vel
+BossCandidateId quando aplicável
 ```
 
-### CA2 â€” Sem mistura incoerente
+### CA2 — Sem mistura incoerente
 
-Se `FactionLock = DeepForgeExiles`, o nÃ­vel nÃ£o gera `DrowFrostExpedition` como spawn comum.
+Se `FactionLock = DeepForgeExiles`, o nível não gera `DrowFrostExpedition` como spawn comum.
 
-### CA3 â€” ExceÃ§Ãµes explÃ­citas
+### CA3 — Exceções explícitas
 
-Mistura incompatÃ­vel sÃ³ ocorre se marcada como ambient fauna, rare intruder, boss override ou conflict encounter.
+Mistura incompatível só ocorre se marcada como ambient fauna, rare intruder, boss override ou conflict encounter.
 
-### CA4 â€” TrÃªs candidatos de miniboss
+### CA4 — Três candidatos de miniboss
 
-Cada marco de miniboss tem 3 opÃ§Ãµes compatÃ­veis.
+Cada marco de miniboss tem 3 opções compatíveis.
 
-### CA5 â€” TrÃªs candidatos de boss
+### CA5 — Três candidatos de boss
 
-Cada marco de boss/checkpoint tem 3 opÃ§Ãµes compatÃ­veis.
+Cada marco de boss/checkpoint tem 3 opções compatíveis.
 
-### CA6 â€” Boss persistente
+### CA6 — Boss persistente
 
 Boss checkpoint escolhido persiste no save.
 
-### CA7 â€” Miniboss por run
+### CA7 — Miniboss por run
 
-Miniboss permanece estÃ¡vel dentro da mesma run e pode mudar com nova CaveRunSeed.
+Miniboss permanece estável dentro da mesma run e pode mudar com nova CaveRunSeed.
 
-### CA8 â€” RaÃ§as de Vaalara respeitadas
+### CA8 — Raças de Vaalara respeitadas
 
-Humanoides inimigos sÃ£o facÃ§Ãµes ou casos narrativos especÃ­ficos, nÃ£o raÃ§as inteiras como inimigas.
+Humanoides inimigos são facções ou casos narrativos específicos, não raças inteiras como inimigas.
 
-### CA9 â€” Debug pronto
+### CA9 — Debug pronto
 
 Quando implementado, DebugHud consegue mostrar ecologia/faction lock/boss candidate.
 
@@ -157,12 +157,12 @@ Fora desta spec:
 
 - statblocks finais;
 - sprites finais;
-- balance numÃ©rico definitivo;
-- IA avanÃ§ada por facÃ§Ã£o;
-- quests completas de facÃ§Ã£o;
-- diÃ¡logos completos;
+- balance numérico definitivo;
+- IA avançada por facção;
+- quests completas de facção;
+- diálogos completos;
 - arte final de bosses;
-- sistema diplomÃ¡tico com facÃ§Ãµes;
+- sistema diplomático com facções;
 - captura/recrutamento de inimigos;
 - movesets finais de todos os bosses.
 
@@ -196,14 +196,14 @@ Fora desta spec:
 
 ---
 
-## 8. DependÃªncias
+## 8. Dependências
 
 - FASE9F Cave/Resources/Encounters.
 - Save schema/migration da FASE9E.
 - Item taxonomy da FASE9E.
 - Damage/status da FASE9E.
 - Player progression da FASE9E.
-- Guia de RaÃ§as de Vaalara.
+- Guia de Raças de Vaalara.
 - GDD v2.6.
 
 ---
@@ -211,6 +211,7 @@ Fora desta spec:
 ## 9. Pronto para Plan quando
 
 - FASE9F procedural contracts estiverem planejados ou implementados.
-- A implementaÃ§Ã£o puder criar SOs/DTOs de ecology/faction/enemy family.
-- O time aceitar que FASE9G Ã© design baseline, nÃ£o implementaÃ§Ã£o imediata obrigatÃ³ria completa.
+- A implementação puder criar SOs/DTOs de ecology/faction/enemy family.
+- O time aceitar que FASE9G é design baseline, não implementação imediata obrigatória completa.
+
 

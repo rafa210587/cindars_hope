@@ -2,9 +2,9 @@
 
 > Status: Implementado em código — validação Unity pendente
 > Camada: Cave
-> Fonte histórica: $source
-> Refinamento relacionado: $ref
-> Evidência principal: $evidence
+> Fonte histórica: `docs_old/audits/FIX_CAVE_DEBUG_SKIP_AND_CONFINEMENT_TOLERANCE.md`
+> Refinamento relacionado: `docs/refinements/implementados/ref_fix_cave_debug_skip_and_confinement_tolerance.md`
+> Evidência principal: `Assets/_Game/Scripts/Cave/Runtime/CavePlayerPathConfinement.cs`
 
 ---
 
@@ -53,12 +53,16 @@ Persistência se limita ao estado de cave/boss/checkpoints quando aplicável.
 
 | Tipo | Caminho | Observação |
 |---|---|---|
-| Código | $evidence | Evidência principal. |
-| Histórico | $source | Fonte histórica preservada. |
-| Refinamento | $ref | Refinamento ativo relacionado. |
+| Código | `Assets/_Game/Scripts/Cave/Runtime/CavePlayerPathConfinement.cs` | Evidência principal. |
+| Histórico | `docs_old/audits/FIX_CAVE_DEBUG_SKIP_AND_CONFINEMENT_TOLERANCE.md` | Fonte histórica preservada. |
+| Refinamento | `docs/refinements/implementados/ref_fix_cave_debug_skip_and_confinement_tolerance.md` | Refinamento ativo relacionado. |
 
 ---
 
 ## 5. Pendências e riscos
 
 - Validar debug skip, confinement e boss gates em Play Mode.
+
+
+
+

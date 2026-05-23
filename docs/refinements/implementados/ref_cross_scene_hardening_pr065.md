@@ -1,7 +1,9 @@
 ﻿# REF — CROSS SCENE HARDENING PR065
 
-> Origem: $src`n> Status: refinamento implementado absorvido.
-> Spec consolidada relacionada: docs/specs/implementados/spec_core_002_bootstrap_managers_e_runtime_references.md`n
+> Origem histórica: conteúdo absorvido durante reorganização documental.
+> Status: refinamento implementado absorvido.
+> Spec consolidada relacionada: `docs/specs/implementados/spec_core_002_bootstrap_managers_e_runtime_references.md`
+
 ---
 
 # SPEC: Cross-Scene Hardening (PR-065+)
@@ -77,5 +79,6 @@ Hardening of cross-scene state management, bootstrap caching, and component rebi
 ## Next Steps
 
 Continue to Tools/Equipment/Hotbar/Progression/Damage (PR-101 to PR-130).
+
 
 

@@ -2,9 +2,9 @@
 
 > Status: Implementado
 > Camada: Repo/Process
-> Fonte histórica: $source
-> Refinamento relacionado: $ref
-> Evidência principal: $evidence
+> Fonte histórica: `docs_old/audits/PR100_POST_PR099_REPO_AUDIT.md`
+> Refinamento relacionado: `docs/refinements/implementados/ref_pr100_post_pr099_repo_audit.md`
+> Evidência principal: `docs_old/audits/PR101_PR099_BRANCH_RECONCILIATION.md`
 
 ---
 
@@ -53,12 +53,16 @@ Não há persistência runtime; é documentação processual.
 
 | Tipo | Caminho | Observação |
 |---|---|---|
-| Código | $evidence | Evidência principal. |
-| Histórico | $source | Fonte histórica preservada. |
-| Refinamento | $ref | Refinamento ativo relacionado. |
+| Código | `docs_old/audits/PR101_PR099_BRANCH_RECONCILIATION.md` | Evidência principal. |
+| Histórico | `docs_old/audits/PR100_POST_PR099_REPO_AUDIT.md` | Fonte histórica preservada. |
+| Refinamento | `docs/refinements/implementados/ref_pr100_post_pr099_repo_audit.md` | Refinamento ativo relacionado. |
 
 ---
 
 ## 5. Pendências e riscos
 
 - Manter atualizado quando novas reconciliações forem feitas.
+
+
+
+

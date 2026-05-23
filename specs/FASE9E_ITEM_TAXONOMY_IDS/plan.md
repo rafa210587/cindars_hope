@@ -1,4 +1,4 @@
-# Plan — FASE9E Item Taxonomy, IDs e Regras de Item
+﻿# Plan — FASE9E Item Taxonomy, IDs e Regras de Item
 
 > **Feature:** FASE9E_ITEM_TAXONOMY_IDS  
 > **Spec:** `spec.md`
@@ -114,3 +114,4 @@ Deve detectar prefixo/categoria/flags inconsistentes.
 - receitas completas;
 - durabilidade/peso;
 - UI final de escolha de quantidade.
+

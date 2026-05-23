@@ -1,6 +1,6 @@
 ﻿# SPEC FUTURA — FASE9D Enemy Architecture 40 Monsters
 
-> Origem histórica: $Source
+> Origem histórica: `docs_old/FASE9D_ENEMY_ARCHITECTURE_40_MONSTERS_v1.1.md`
 > Status: A implementar / restante não implementado
 > Observação: conteúdo histórico preservado; não duplicar capacidades já consolidadas em specs implementadas.
 
@@ -43,14 +43,14 @@ Exemplo:
 
 ```text
 Slime
-â”œâ”€â”€ EnemyController
-â”œâ”€â”€ EnemyHealth
-â”œâ”€â”€ EnemyMovementController
-â”œâ”€â”€ EnemyActionController
-â”œâ”€â”€ EnemyVulnerabilityController
-â”œâ”€â”€ EnemyStatusReceiver
-â”œâ”€â”€ EnemyLeapAttackAction
-â””â”€â”€ EnemyContactAttackAction
+├── EnemyController
+├── EnemyHealth
+├── EnemyMovementController
+├── EnemyActionController
+├── EnemyVulnerabilityController
+├── EnemyStatusReceiver
+├── EnemyLeapAttackAction
+└── EnemyContactAttackAction
 ```
 
 A diferença entre 40 monstros deve vir principalmente dos assets de dados, não de 40 scripts diferentes.
@@ -170,7 +170,7 @@ public class EnemyMovementProfileSO : ScriptableObject, IIdentifiedData
 | PatrolArea | anda em pontos/área enquanto sem alvo |
 | GuardArea | persegue só dentro do leash |
 | OrbitTarget | circula alvo a uma distância |
-| Stationary | não anda; usa ações Ã  distância ou área |
+| Stationary | não anda; usa ações à distância ou área |
 
 ---
 
@@ -376,10 +376,10 @@ Ordem sugerida:
 
 ```text
 base damage
-Ã— element multiplier
-Ã— vulnerability window multiplier
-Ã— status modifiers
-Ã— difficulty modifiers futuros
+× element multiplier
+× vulnerability window multiplier
+× status modifiers
+× difficulty modifiers futuros
 = final damage
 ```
 
@@ -601,7 +601,7 @@ VulnerableDamageMultiplier: 1.5
 
 ---
 
-## 12. Exemplo: inimigo Ã  distância
+## 12. Exemplo: inimigo à distância
 
 ### Cave Spitter
 
@@ -731,7 +731,7 @@ Migrar Slime para:
 
 ### PR-121 — Segundo monstro para validar reutilização
 
-Adicionar um monstro Ã  distância ou kiter para provar que a arquitetura escala.
+Adicionar um monstro à distância ou kiter para provar que a arquitetura escala.
 
 Sugestão:
 
@@ -757,7 +757,7 @@ Validar:
 - Ambos usam movement profile.
 - Ambos usam action data.
 - Slime tem janela vulnerável no recovery do pulo.
-- Cave Spitter mantém distância e ataca Ã  distância.
+- Cave Spitter mantém distância e ataca à distância.
 - Dano elemental modifica dano recebido.
 - Status negativo pode ser aplicado ao player.
 - Console sem erro vermelho.
@@ -786,5 +786,8 @@ Isso permite escalar para 40+ monstros sem criar 40 árvores de herança e sem d
 ## Regra de uso
 
 Antes de implementar, reconciliar este material com docs/specs/implementados/, docs/refinements/implementados/ e o estado real do código.
+
+
+
 
 

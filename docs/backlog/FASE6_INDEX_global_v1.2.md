@@ -1,8 +1,8 @@
-﻿# Cindar's Hope — Fase 6: Índice de Ã‰picos e Backlog Global v1.2
+﻿# Cindar's Hope — Fase 6: Índice de Épicos e Backlog Global v1.2
 
 > **Fase:** 6 de 13
 > **Status:** ✅ Índice base — FARM detalhado e specs MVP geradas; demais épicos seguem em esboço
-> **Ãšltima atualização:** 2026-05-16
+> **Última atualização:** 2026-05-16
 
 ---
 
@@ -10,7 +10,7 @@
 
 ### Status dos épicos
 
-| Ã‰pico | Arquivo | Status |
+| Épico | Arquivo | Status |
 |---|---|---|
 | **FARM** — Fazenda completa | `FASE6_FARM_backlog_v1.2.md` | ✅ Stories escritas; specs MVP geradas na Fase 7 |
 | **CHAR** — Personagem, atributos, skill tree | FASE6_CHAR_backlog.md | â³ Esboço abaixo |
@@ -24,7 +24,7 @@
 
 ---
 
-## SEQUÃŠNCIA DE DESENVOLVIMENTO
+## SEQUÊNCIA DE DESENVOLVIMENTO
 
 ### Ponte para Fase 7 e Fase 8
 
@@ -40,7 +40,7 @@ FASE 8 — MVP FAZENDA
   SAVE-001 a SAVE-010 (save simples slot único)
   UI-001 a UI-020 (HUD básico: HP, fome, dia, inventário texto)
 
-FASE 9A — EXPANSÃƒO FAZENDA
+FASE 9A — EXPANSÃO FAZENDA
   FARM-V2 completo (tempo automático, animações, pesca variada)
   CITY-001 a CITY-040 (cidade básica, NPCs, venda)
   CRAFT-001 a CRAFT-030 (workshops nível 1, 3 receitas)
@@ -68,7 +68,7 @@ FASE 11–13 — TESTES, BUILD, LAUNCH
 
 ---
 
-## ESBOÃ‡O — Ã‰PICO CHAR (Personagem)
+## ESBOÇO — ÉPICO CHAR (Personagem)
 
 *Detalhamento completo em arquivo próprio após aprovação do FARM*
 
@@ -96,7 +96,7 @@ FASE 11–13 — TESTES, BUILD, LAUNCH
 
 ---
 
-## ESBOÃ‡O — Ã‰PICO CITY (Cidade)
+## ESBOÇO — ÉPICO CITY (Cidade)
 
 *Detalhamento completo em arquivo próprio após aprovação do FARM*
 
@@ -122,7 +122,7 @@ FASE 11–13 — TESTES, BUILD, LAUNCH
 
 ---
 
-## ESBOÃ‡O — Ã‰PICO CRAFT (Workshops)
+## ESBOÇO — ÉPICO CRAFT (Workshops)
 
 *Detalhamento completo em arquivo próprio após aprovação do FARM*
 
@@ -147,7 +147,7 @@ FASE 11–13 — TESTES, BUILD, LAUNCH
 
 ---
 
-## ESBOÃ‡O — Ã‰PICO CAVE (Caverna)
+## ESBOÇO — ÉPICO CAVE (Caverna)
 
 *Detalhamento completo em arquivo próprio após aprovação do FARM*
 
@@ -171,7 +171,7 @@ FASE 11–13 — TESTES, BUILD, LAUNCH
 
 ---
 
-## ESBOÃ‡O — Ã‰PICO COMBAT (Combate)
+## ESBOÇO — ÉPICO COMBAT (Combate)
 
 *Detalhamento completo em arquivo próprio após aprovação do FARM*
 
@@ -194,7 +194,7 @@ FASE 11–13 — TESTES, BUILD, LAUNCH
 
 ---
 
-## ESBOÃ‡O — Ã‰PICO COMP (Companions)
+## ESBOÇO — ÉPICO COMP (Companions)
 
 *Detalhamento completo em arquivo próprio após aprovação do FARM*
 
@@ -211,11 +211,11 @@ FASE 11–13 — TESTES, BUILD, LAUNCH
 - COMP-011: 7 tipos de job com eficiência baseada em archetype
 - COMP-012: Companion pode morrer; ressurreição na Fonte da Fazenda
 - COMP-013: Sistema de afinidade (deferido para versão futura)
-- COMP-014: Companion Explorador vai Ã  caverna autonomamente
+- COMP-014: Companion Explorador vai à caverna autonomamente
 
 ---
 
-## ESBOÃ‡O — Ã‰PICO UI (Interface)
+## ESBOÇO — ÉPICO UI (Interface)
 
 *Detalhamento completo em arquivo próprio após aprovação do FARM*
 
@@ -248,7 +248,7 @@ FASE 11–13 — TESTES, BUILD, LAUNCH
 
 ---
 
-## EXECUÃ‡ÃƒO DA FASE 8 — Plano por PRs pequenos
+## EXECUÇÃO DA FASE 8 — Plano por PRs pequenos
 
 A Fase 8 deve seguir `FASE8_EXECUTION_PLAN_CODEX_v1.0.md`. A ordem abaixo substitui a ideia de implementar uma spec inteira de uma vez.
 
@@ -265,7 +265,7 @@ A Fase 8 deve seguir `FASE8_EXECUTION_PLAN_CODEX_v1.0.md`. A ordem abaixo substi
 | PR-009 | Crescimento por dia | FARM-013, FARM-031, FARM-032 | TAB avança dia, planta cresce, HUD mostra dia |
 | PR-010 | Colheita e inventário | FARM-015, FARM-021, FARM-022 | Colher adiciona itens e inventário mostra stack |
 | PR-011 | Fome e consumo | FARM-061, FARM-062 | Fome diminui/restaura e HUD atualiza |
-| PR-012 | Ãrvores | FARM-041, FARM-042 | Cortar árvore gera madeira |
+| PR-012 | Árvores | FARM-041, FARM-042 | Cortar árvore gera madeira |
 | PR-013 | Lago e pesca | FARM-051, FARM-052 | Pescar gera peixe comum |
 | PR-014 | Venda | FARM-SELL, FARM-032 | Vender item gera ouro e HUD atualiza |
 | PR-015 | Save | FARM-071 | Save JSON em persistentDataPath |
@@ -292,5 +292,7 @@ A Fase 8 deve seguir `FASE8_EXECUTION_PLAN_CODEX_v1.0.md`. A ordem abaixo substi
 - [ ] Save, quando envolvido, usa `Application.persistentDataPath`.
 - [ ] Dados persistidos usam IDs, não referência Unity.
 - [ ] Commit em português feito.
+
+
 
 

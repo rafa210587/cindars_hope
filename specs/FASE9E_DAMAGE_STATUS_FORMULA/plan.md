@@ -1,4 +1,4 @@
-# Plan — FASE9E Damage, Elementos, Status e Fórmula de Combate
+﻿# Plan — FASE9E Damage, Elementos, Status e Fórmula de Combate
 
 > **Feature:** FASE9E_DAMAGE_STATUS_FORMULA  
 > **Spec:** `spec.md`
@@ -148,3 +148,4 @@ Regras:
 - peso/durabilidade/velocidade avançada de armas;
 - árvore de atributos;
 - status positivos complexos.
+

@@ -1,6 +1,6 @@
 ﻿# REF — Fix PR193-202 boss gate checkpoint confinement debug skip audit
 
-> Origem histórica: $Source
+> Origem histórica: `docs_old/audits/FIX_PR193_202_BOSS_GATE_CHECKPOINT_CONFINEMENT_DEBUG_SKIP_AUDIT.md`
 > Status: Refinamento implementado / handoff / audit preservado
 > Relacionado a:
 > - $_
@@ -515,6 +515,8 @@ DebugHud.RebindExistingCaveRuntime(_caveRunManager, _caveLevelRuntimeController,
 **Validation**: ðŸ”„ Play Mode testing pending
 
 All 7 corrections have been implemented and verified for code correctness. Acceptance criteria tests require Play Mode validation in Unity.
+
+
 
 
 

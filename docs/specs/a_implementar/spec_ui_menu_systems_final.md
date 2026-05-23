@@ -1,6 +1,7 @@
 ﻿# SPEC FUTURA — UI MENU SYSTEMS FINAL
 
-> Origem: $src`n> Status: A implementar
+> Origem histórica: conteúdo absorvido durante reorganização documental.
+> Status: A implementar
 > Tipo: Spec preparada / futura
 
 ---
@@ -59,4 +60,6 @@ Main menu, pause menu, settings, and in-game UI screens replacing debug OnGUI im
 ## Next Steps
 
 Implement after feature implementation wave (FASE9F complete).
+
+
 

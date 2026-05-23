@@ -1,6 +1,6 @@
 ﻿# REF — FASE9K skill trees full node unlock handoff
 
-> Origem histórica: $Source
+> Origem histórica: `docs_old/audits/FASE9K_SKILL_TREES_FULL_NODE_AND_UNLOCK_HANDOFF.md`
 > Status: Refinamento implementado / handoff / audit preservado
 > Relacionado a:
 > - $_
@@ -41,7 +41,7 @@
 
 ---
 
-## 3. Ãrvores registradas
+## 3. Árvores registradas
 
 - Combat: estilos marciais, shield, heavy weapons, two-handed, stagger, special attacks, heavy dual wield.
 - Dexterity: roll, dash, parry, bow, dagger, dual wield leve, charge shot, crit/mobilidade.
@@ -86,5 +86,8 @@ Usar FASE9K como baseline quando a implementação chegar em:
 - Debug/OnGUI de skill tree.
 
 MVP deve começar por subset de 5–8 nodes por árvore, não pela árvore completa gigante.
+
+
+
 
 

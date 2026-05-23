@@ -24,3 +24,8 @@
 | [ref_fase9k_skill_trees_nodes_active_slots_respec.md](ref_fase9k_skill_trees_nodes_active_slots_respec.md) | `docs/specs/a_implementar/spec_fase9k_skill_trees_nodes_active_slots_respec.md` | Skill trees, nodes, active slots, capstones, respec. |
 | [ref_fase9l_ui_ux_full_gameplay.md](ref_fase9l_ui_ux_full_gameplay.md) | `docs/specs/a_implementar/spec_fase9l_ui_ux_full_gameplay.md` | UI/UX full gameplay. |
 | [ref_future_ideas_todo.md](ref_future_ideas_todo.md) | `docs/specs/a_implementar/spec_future_ideas_todo.md` | Ideias futuras preservadas. |
+
+## Rastreabilidade documental
+
+Para rastreabilidade completa entre docs_old/ e a documentação ativa, ver docs/DOCS_OLD_TO_ACTIVE_CROSSWALK.md.
+

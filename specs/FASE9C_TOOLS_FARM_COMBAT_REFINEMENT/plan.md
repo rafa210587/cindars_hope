@@ -1,4 +1,4 @@
-# Plan — FASE9C Tools, Farm Actions e Combat Refinement
+﻿# Plan — FASE9C Tools, Farm Actions e Combat Refinement
 
 > **Feature:** FASE9C_TOOLS_FARM_COMBAT_REFINEMENT  
 > **Spec:** `spec.md`
@@ -111,3 +111,4 @@ PlayerAttackController deve ser preservado como fallback ou substituído por Pla
 - Skill tree.
 - Balanceamento final.
 - Animações finais.
+

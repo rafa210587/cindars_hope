@@ -1,7 +1,9 @@
 ﻿# REF — ECONOMY HUNGER HUD PR018 024
 
-> Origem: $src`n> Status: refinamento implementado absorvido.
-> Spec consolidada relacionada: docs/specs/implementados/spec_economy_001_compra_venda_gold_e_sellables.md`n
+> Origem histórica: conteúdo absorvido durante reorganização documental.
+> Status: refinamento implementado absorvido.
+> Spec consolidada relacionada: `docs/specs/implementados/spec_economy_001_compra_venda_gold_e_sellables.md`
+
 ---
 
 # SPEC: Economy, Hunger & HUD (PR-018 to PR-024)
@@ -75,5 +77,6 @@ Player economy (gold), hunger system with consumption/loss, sell/buy points, and
 ## Next Steps
 
 Continue to Save/Load (PR-025 to PR-030).
+
 
 

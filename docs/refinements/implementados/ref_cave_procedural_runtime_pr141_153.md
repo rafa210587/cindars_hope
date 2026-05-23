@@ -1,7 +1,9 @@
 ﻿# REF — CAVE PROCEDURAL RUNTIME PR141 153
 
-> Origem: $src`n> Status: refinamento implementado absorvido.
-> Spec consolidada relacionada: docs/specs/implementados/spec_cave_002_procedural_contracts_resources_parcial.md`n
+> Origem histórica: conteúdo absorvido durante reorganização documental.
+> Status: refinamento implementado absorvido.
+> Spec consolidada relacionada: `docs/specs/implementados/spec_cave_002_procedural_contracts_resources_parcial.md`
+
 ---
 
 # SPEC: Cave Procedural Runtime (PR-141 to PR-153)
@@ -97,5 +99,6 @@ Procedural cave generation engine, runtime materialization of floors/walls/exits
 ## Next Steps
 
 Refer to Cave fixes (FIX_CAVE_PROCEDURAL_VISUAL_RUNTIME) and boss gates (PR-193-202).
+
 
 

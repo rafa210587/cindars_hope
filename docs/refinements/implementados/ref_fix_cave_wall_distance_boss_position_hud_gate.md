@@ -1,6 +1,6 @@
 ﻿# REF — Fix cave wall distance boss position HUD gate
 
-> Origem histórica: $Source
+> Origem histórica: `docs_old/audits/FIX_CAVE_WALL_DISTANCE_BOSS_POSITION_HUD_GATE.md`
 > Status: Refinamento implementado / handoff / audit preservado
 > Relacionado a:
 > - $_
@@ -392,6 +392,8 @@ Current Level Boss Gate:
 3. ðŸ”„ Execute 10-test sequence above
 4. ðŸ”„ Commit: `Fix cave wall distance, boss position, and HUD gate status`
 5. ðŸ”„ Create PR against `dev`
+
+
 
 
 

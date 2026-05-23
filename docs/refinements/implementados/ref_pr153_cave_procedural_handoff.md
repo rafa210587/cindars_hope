@@ -1,6 +1,6 @@
 ﻿# REF — PR153 cave procedural handoff
 
-> Origem histórica: $Source
+> Origem histórica: `docs_old/audits/PR153_CAVE_PROCEDURAL_HANDOFF.md`
 > Status: Refinamento implementado / handoff / audit preservado
 > Relacionado a:
 > - $_
@@ -51,4 +51,6 @@ Status: implementado parcial em pacote unico PR-141 a PR-153.
 ## Proximo pacote recomendado
 
 Implementar KO real regenerando run, spawn de inimigos a partir do layout, ResourceNode stamina real, daily refresh e primeira camada de biome progression.
+
+
 

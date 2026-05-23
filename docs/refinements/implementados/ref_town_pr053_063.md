@@ -1,7 +1,9 @@
 ﻿# REF — TOWN PR053 063
 
-> Origem: $src`n> Status: refinamento implementado absorvido.
-> Spec consolidada relacionada: docs/specs/implementados/spec_town_001_town_scene_portais_npc_pip_comercio.md`n
+> Origem histórica: conteúdo absorvido durante reorganização documental.
+> Status: refinamento implementado absorvido.
+> Spec consolidada relacionada: `docs/specs/implementados/spec_town_001_town_scene_portais_npc_pip_comercio.md`
+
 ---
 
 # SPEC: Town (PR-053 to PR-063)
@@ -78,5 +80,6 @@ Town scene with portals, NPC interactions, and shop points. First multi-scene ex
 ## Next Steps
 
 Continue to Cross-Scene Hardening (PR-065+).
+
 
 

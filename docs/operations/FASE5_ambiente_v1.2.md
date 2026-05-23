@@ -333,7 +333,7 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
-function Write-Step { param($msg) Write-Host "`n==> $msg" -ForegroundColor Cyan }
+function Write-Step { param($msg) Write-Host "\n==> $msg" -ForegroundColor Cyan }
 function Write-Ok   { param($msg) Write-Host "    [OK] $msg" -ForegroundColor Green }
 function Write-Warn { param($msg) Write-Host "    [AVISO] $msg" -ForegroundColor Yellow }
 
@@ -548,7 +548,7 @@ if ($RepoUrl -ne "") {
     Write-Warn "  git push -u origin main"
 }
 
-Write-Host "`n========================================" -ForegroundColor Green
+Write-Host "\n========================================" -ForegroundColor Green
 Write-Host "  Setup concluído!" -ForegroundColor Green
 Write-Host "  Próximos passos:" -ForegroundColor Green
 Write-Host "  1. Criar projeto Unity (ver FASE5_ambiente_v1.2.md seção 3)" -ForegroundColor Green
@@ -1206,5 +1206,6 @@ Além do checklist anterior:
 - [ ] Aseprite exportou um PNG 32x32 com transparência.
 - [ ] Unity importou o PNG sem blur.
 - [ ] Git LFS rastreia `.png`, `.aseprite`, `.ase`, `.unity`, `.prefab`, `.asset`.
+
 
 

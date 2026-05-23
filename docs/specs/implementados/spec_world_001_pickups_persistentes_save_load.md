@@ -2,9 +2,9 @@
 
 > Status: Implementado parcial
 > Camada: World
-> Fonte histórica: $source
-> Refinamento relacionado: $ref
-> Evidência principal: $evidence
+> Fonte histórica: `docs_old/IMPLEMENTATION_STATUS.md`
+> Refinamento relacionado: `docs/refinements/implementados/ref_world_shop_hardening_pr031_045.md`
+> Evidência principal: `Assets/_Game/Scripts/World/ItemPickupRegistry.cs`
 
 ---
 
@@ -53,12 +53,16 @@ Persiste por DTOs simples em WorldSaveData/ItemPickupSaveData.
 
 | Tipo | Caminho | Observação |
 |---|---|---|
-| Código | $evidence | Evidência principal. |
-| Histórico | $source | Fonte histórica preservada. |
-| Refinamento | $ref | Refinamento ativo relacionado. |
+| Código | `Assets/_Game/Scripts/World/ItemPickupRegistry.cs` | Evidência principal. |
+| Histórico | `docs_old/IMPLEMENTATION_STATUS.md` | Fonte histórica preservada. |
+| Refinamento | `docs/refinements/implementados/ref_world_shop_hardening_pr031_045.md` | Refinamento ativo relacionado. |
 
 ---
 
 ## 5. Pendências e riscos
 
 - Validar F5/F9 e transições em Play Mode.
+
+
+
+

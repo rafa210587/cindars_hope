@@ -1,64 +1,64 @@
-﻿# SpecKit â€” FASE9J Cave Run Entry, Loadout, HUD & Failure Flow
+﻿# SpecKit — FASE9J Cave Run Entry, Loadout, HUD & Failure Flow
 
 > **Feature:** `FASE9J_CAVE_RUN_ENTRY_LOADOUT_HUD_AND_FAILURE_FLOW`  
-> **Status:** especificaÃ§Ã£o funcional aprovada para planejamento.  
+> **Status:** especificação funcional aprovada para planejamento.  
 > **Fonte de design:** `docs_old/FASE9J_CAVE_RUN_ENTRY_LOADOUT_HUD_AND_FAILURE_FLOW_SPEC_v1.0.md`
 
 ---
 
 ## 1. User story
 
-Como jogador, quero entrar na cave por checkpoints seguros, preparar meu loadout, entender os riscos, explorar, sair vivo com loot ou recuperar meu corpo apÃ³s morrer, para que a run da cave tenha tensÃ£o, consequÃªncia e progressÃ£o justa.
+Como jogador, quero entrar na cave por checkpoints seguros, preparar meu loadout, entender os riscos, explorar, sair vivo com loot ou recuperar meu corpo após morrer, para que a run da cave tenha tensão, consequência e progressão justa.
 
 ---
 
 ## 2. Objetivos funcionais
 
-### O1 â€” Cave entry menu
+### O1 — Cave entry menu
 
 Ao interagir com a entrada da cave, abrir menu com checkpoints liberados, loadout e warnings.
 
-### O2 â€” Checkpoint safe room
+### O2 — Checkpoint safe room
 
-Entrar por checkpoint comeÃ§a exatamente no CaveLevel do checkpoint, mas sempre em sala segura.
+Entrar por checkpoint começa exatamente no CaveLevel do checkpoint, mas sempre em sala segura.
 
-### O3 â€” Loadout validation
+### O3 — Loadout validation
 
 Menu deve mostrar arma, shield/offhand, armor, accessory, ammo, magic item, hotbar, consumables, tools, food e return item.
 
-### O4 â€” CaveRunHud
+### O4 — CaveRunHud
 
-Criar HUD OnGUI MVP prÃ³prio da cave, separado conceitualmente do DebugHud.
+Criar HUD OnGUI MVP próprio da cave, separado conceitualmente do DebugHud.
 
-### O5 â€” Controlled exit
+### O5 — Controlled exit
 
-Jogador sÃ³ pode sair por pontos de saÃ­da ou item de retorno.
+Jogador só pode sair por pontos de saída ou item de retorno.
 
-### O6 â€” Return item
+### O6 — Return item
 
-Item de retorno permite sair sem morte, preserva loot e nÃ£o troca CaveRunSeed.
+Item de retorno permite sair sem morte, preserva loot e não troca CaveRunSeed.
 
-### O7 â€” Failure flow
+### O7 — Failure flow
 
-Ao morrer na cave, jogador volta para a Fonte de Anya na Farm, perde itens/gold carregados para corpo recuperÃ¡vel e perde XP acumulado no nÃ­vel atual.
+Ao morrer na cave, jogador volta para a Fonte de Anya na Farm, perde itens/gold carregados para corpo recuperável e perde XP acumulado no nível atual.
 
-### O8 â€” Corpse recovery
+### O8 — Corpse recovery
 
-SÃ³ existe um corpo recuperÃ¡vel: o da Ãºltima morte. Nova morte substitui o corpo anterior.
+Só existe um corpo recuperável: o da última morte. Nova morte substitui o corpo anterior.
 
-### O9 â€” CaveRunSeed rules
+### O9 — CaveRunSeed rules
 
-Sair vivo nÃ£o muda CaveRunSeed. Morrer/KO muda CaveRunSeed. Novo jogo cria nova seed.
+Sair vivo não muda CaveRunSeed. Morrer/KO muda CaveRunSeed. Novo jogo cria nova seed.
 
-### O10 â€” Boss unlock
+### O10 — Boss unlock
 
-Boss derrotado libera checkpoint/avanÃ§o imediatamente e o unlock persiste apÃ³s morte.
+Boss derrotado libera checkpoint/avanço imediatamente e o unlock persiste após morte.
 
 ---
 
-## 3. Regras de negÃ³cio
+## 3. Regras de negócio
 
-### R1 â€” Death loss
+### R1 — Death loss
 
 Ao morrer na cave:
 
@@ -69,21 +69,21 @@ LostEquipmentItems
 LostAmmo
 ```
 
-vÃ£o para `PlayerCorpseRecoverySaveData`.
+vão para `PlayerCorpseRecoverySaveData`.
 
-### R2 â€” XP loss
+### R2 — XP loss
 
 Ao morrer:
 
 ```text
 XpInCurrentLevel = 0
 Level permanece igual
-Attribute/Skill points jÃ¡ ganhos/gastos permanecem
+Attribute/Skill points já ganhos/gastos permanecem
 ```
 
-### R3 â€” Progression protected
+### R3 — Progression protected
 
-Morte nÃ£o remove:
+Morte não remove:
 
 ```text
 unlocked checkpoints
@@ -94,17 +94,17 @@ quest flags
 skills learned
 ```
 
-### R4 â€” Corpse accessibility
+### R4 — Corpse accessibility
 
 Como morte troca CaveRunSeed, corpse deve aparecer em `CorpseRecoveryRoom` garantida no mesmo CaveLevel.
 
-### R5 â€” Broken items
+### R5 — Broken items
 
 Durability 0 impede uso.
 
-### R6 â€” Cave HUD
+### R6 — Cave HUD
 
-CaveRunHud deve mostrar dados jogÃ¡veis mÃ­nimos, nÃ£o apenas debug.
+CaveRunHud deve mostrar dados jogáveis mínimos, não apenas debug.
 
 ---
 
@@ -122,71 +122,71 @@ CaveRunHud deve mostrar dados jogÃ¡veis mÃ­nimos, nÃ£o apenas debug.
 
 ---
 
-## 5. CritÃ©rios de aceite
+## 5. Critérios de aceite
 
-### CA1 â€” Checkpoints
+### CA1 — Checkpoints
 
 CaveEntryMenu mostra checkpoints liberados.
 
-### CA2 â€” Safe room
+### CA2 — Safe room
 
 Checkpoint inicia no CaveLevel exato em sala segura.
 
-### CA3 â€” Loadout
+### CA3 — Loadout
 
 Loadout mostra arma, shield/offhand, armor, accessory, ammo, magic item, tools e consumables.
 
-### CA4 â€” Warnings
+### CA4 — Warnings
 
-CaveEntryMenu mostra warnings de resistÃªncia, tool tier, durability, ammo e retorno.
+CaveEntryMenu mostra warnings de resistência, tool tier, durability, ammo e retorno.
 
-### CA5 â€” HUD
+### CA5 — HUD
 
 CaveRunHud mostra HP, Mana, Stamina, Hunger, CaveLevel, Ammo, Durability e Status.
 
-### CA6 â€” Sair vivo
+### CA6 — Sair vivo
 
 Ao sair vivo, CaveRunSeed permanece.
 
-### CA7 â€” Morte
+### CA7 — Morte
 
 Ao morrer, player respawna na Fonte de Anya na Farm.
 
-### CA8 â€” Corpse
+### CA8 — Corpse
 
-Ao morrer, gold/inventory/equipment/ammo carregados vÃ£o para corpo recuperÃ¡vel.
+Ao morrer, gold/inventory/equipment/ammo carregados vão para corpo recuperável.
 
-### CA9 â€” XP
+### CA9 — XP
 
-Ao morrer, XP do nÃ­vel atual zera.
+Ao morrer, XP do nível atual zera.
 
-### CA10 â€” Seed
+### CA10 — Seed
 
 Ao morrer, CaveRunSeed muda.
 
-### CA11 â€” Progression persists
+### CA11 — Progression persists
 
-Checkpoints e boss defeated persistem apÃ³s morte.
+Checkpoints e boss defeated persistem após morte.
 
-### CA12 â€” Ãšltimo corpo
+### CA12 — Último corpo
 
-SÃ³ o Ãºltimo corpo pode ser recuperado.
+Só o último corpo pode ser recuperado.
 
-### CA13 â€” Corpo acessÃ­vel
+### CA13 — Corpo acessível
 
-Corpo Ã© acessÃ­vel no CaveLevel da morte mesmo apÃ³s regenerar run.
+Corpo é acessível no CaveLevel da morte mesmo após regenerar run.
 
-### CA14 â€” Return item
+### CA14 — Return item
 
 Item de retorno permite sair sem morte.
 
-### CA15 â€” Broken item
+### CA15 — Broken item
 
 Durabilidade 0 impede uso.
 
-### CA16 â€” Boss unlock
+### CA16 — Boss unlock
 
-Boss derrotado libera checkpoint/avanÃ§o imediatamente.
+Boss derrotado libera checkpoint/avanço imediatamente.
 
 ---
 
@@ -195,12 +195,12 @@ Boss derrotado libera checkpoint/avanÃ§o imediatamente.
 Fora desta spec:
 
 - UI final polida;
-- animaÃ§Ã£o final de morte;
+- animação final de morte;
 - cutscene da Fonte de Anya;
 - sistema completo de storage na safe room;
 - merchant da cave;
 - campfire/rest completo;
-- perda parcial configurÃ¡vel por dificuldade;
+- perda parcial configurável por dificuldade;
 - multiplayer/co-op corpse recovery;
 - snapshot completo de layout antigo para corpse.
 
@@ -211,15 +211,15 @@ Fora desta spec:
 1. CaveEntryMenu OnGUI simples com checkpoints e warnings.
 2. CaveRunHud OnGUI separado do DebugHud.
 3. Fonte de Anya como respawn point na Farm.
-4. Failure flow: morte â†’ corpse save â†’ XP current level zerado â†’ Farm/Fonte de Anya.
-5. CorpseRecoveryRoom no mesmo CaveLevel apÃ³s nova run seed.
+4. Failure flow: morte → corpse save → XP current level zerado → Farm/Fonte de Anya.
+5. CorpseRecoveryRoom no mesmo CaveLevel após nova run seed.
 6. Return item simples.
 7. Durability 0 bloqueia uso.
 8. Boss defeated libera checkpoint imediatamente.
 
 ---
 
-## 8. DependÃªncias
+## 8. Dependências
 
 - FASE9F Cave Resources/Encounters.
 - FASE9G Cave Bestiary/Faction Locks.
@@ -234,4 +234,5 @@ Fora desta spec:
 - Cave procedural foundation existir ou estiver planejada.
 - Save schema suportar cave state e player progression.
 - Equipment/inventory data estiver apto a representar itens carregados/equipados.
+
 

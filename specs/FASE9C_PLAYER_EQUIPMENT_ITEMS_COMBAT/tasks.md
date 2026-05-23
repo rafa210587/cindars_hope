@@ -1,4 +1,4 @@
-# Tasks — FASE9C Player Equipment, Item Use e Combat Loadout
+﻿# Tasks — FASE9C Player Equipment, Item Use e Combat Loadout
 
 > **Feature:** FASE9C_PLAYER_EQUIPMENT_ITEMS_COMBAT  
 > **Spec:** `spec.md`  
@@ -247,3 +247,4 @@ Validar dados e documentar entrega.
 - [ ] Salvar/carregar.
 - [ ] Confirmar loadout restaurado.
 - [ ] Console sem erro vermelho.
+

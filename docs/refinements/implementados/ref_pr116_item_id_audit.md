@@ -1,6 +1,6 @@
 ﻿# REF — PR116 item ID audit
 
-> Origem histórica: $Source
+> Origem histórica: `docs_old/audits/PR116_ITEM_ID_AUDIT.md`
 > Status: Refinamento implementado / handoff / audit preservado
 > Relacionado a:
 > - $_
@@ -32,4 +32,6 @@ Como este pacote consolida hardening antes da cave procedural, nao foram criados
 ## Pendencia
 
 Criar e registrar `item_material_stone` e `ore_copper` quando ResourceNode/cave resources entrar no fluxo PR-131+.
+
+
 

@@ -1,6 +1,6 @@
 ﻿# REF — PR131 validação HUD tools progression
 
-> Origem histórica: $Source
+> Origem histórica: `docs_old/audits/PR131_VALIDACAO_HUD_TOOLS_PROGRESSION.md`
 > Status: Refinamento implementado / handoff / audit preservado
 > Relacionado a:
 > - $_
@@ -63,4 +63,6 @@ Seguir FASE9E-D antes da Cave Procedural:
 6. PR-137 - Attribute allocation debug MVP.
 7. PR-138 - DebugHud progression/tool/hotbar polish.
 8. PR-139 - Handoff para Cave Procedural.
+
+
 

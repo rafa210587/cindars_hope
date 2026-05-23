@@ -1,6 +1,6 @@
 ﻿# REF FUTURO — FASE9G bestiary faction locks portal ecology
 
-> Origem histórica: $Source
+> Origem histórica: `docs_old/FASE9G_CAVE_BESTIARY_FACTION_LOCKS_PORTAL_ECOLOGY_SPEC_v1.0.md`
 > Status: Refinamento futuro preservado
 > Spec futura relacionada: $Spec
 
@@ -1498,6 +1498,8 @@ D14: Luas modificam pesos, não quebram lock.
 
 - Não tratar este refinement como autorização automática de implementação.
 - Não sobrescrever specs implementadas sem amendment/correction explícito.
+
+
 
 
 

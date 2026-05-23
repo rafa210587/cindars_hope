@@ -1,4 +1,4 @@
-# Tasks — FASE9E Player Level Up, XP e Progressão
+﻿# Tasks — FASE9E Player Level Up, XP e Progressão
 
 > **Feature:** FASE9E_PLAYER_LEVEL_UP_PROGRESSION  
 > **Spec:** `spec.md`  
@@ -178,3 +178,4 @@ Validar dados e documentar smoke test.
 - [ ] Derrotar inimigo e ganhar XP calculado.
 - [ ] Salvar/carregar progressão.
 - [ ] Console sem erro vermelho.
+

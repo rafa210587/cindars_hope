@@ -1,7 +1,9 @@
 ﻿# REF — CAVE VISUAL FIXES
 
-> Origem: $src`n> Status: refinamento implementado absorvido.
-> Spec consolidada relacionada: docs/specs/implementados/spec_cave_002_procedural_contracts_resources_parcial.md`n
+> Origem histórica: conteúdo absorvido durante reorganização documental.
+> Status: refinamento implementado absorvido.
+> Spec consolidada relacionada: `docs/specs/implementados/spec_cave_002_procedural_contracts_resources_parcial.md`
+
 ---
 
 # SPEC: Cave Visual Fixes (FIX_CAVE_PROCEDURAL_VISUAL_RUNTIME + FIX_CAMERA_FOLLOW)
@@ -85,5 +87,6 @@ Visual materialization of procedural caves, camera smooth follow, and enemy visi
 ## Next Steps
 
 Refer to Cave procedural runtime and boss gates.
+
 
 

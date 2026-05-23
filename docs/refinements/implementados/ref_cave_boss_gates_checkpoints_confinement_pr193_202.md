@@ -1,7 +1,9 @@
 ﻿# REF — CAVE BOSS GATES CHECKPOINTS CONFINEMENT PR193 202
 
-> Origem: $src`n> Status: refinamento implementado absorvido.
-> Spec consolidada relacionada: docs/specs/implementados/spec_cave_004_boss_gates_checkpoints_confinement_parcial.md`n
+> Origem histórica: conteúdo absorvido durante reorganização documental.
+> Status: refinamento implementado absorvido.
+> Spec consolidada relacionada: `docs/specs/implementados/spec_cave_004_boss_gates_checkpoints_confinement_parcial.md`
+
 ---
 
 # SPEC: Cave Boss Gates, Checkpoints & Confinement (PR-193 to PR-202)
@@ -114,5 +116,6 @@ Boss gate system blocking progression until boss defeated, checkpoint selection 
 ## Next Steps
 
 Validate in Play Mode. Refer to audit document for test procedure.
+
 
 

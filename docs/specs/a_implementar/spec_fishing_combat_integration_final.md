@@ -1,6 +1,7 @@
 ﻿# SPEC FUTURA — FISHING COMBAT INTEGRATION FINAL
 
-> Origem: $src`n> Status: A implementar
+> Origem histórica: conteúdo absorvido durante reorganização documental.
+> Status: A implementar
 > Tipo: Spec preparada / futura
 
 ---
@@ -57,4 +58,6 @@ Full combat integration with weapons, equipment visuals, and fishing/farm tool o
 ## Next Steps
 
 Implement after FASE9E validation.
+
+
 

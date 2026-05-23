@@ -1,4 +1,4 @@
-# SpecKit Amendment — FASE9F Cave Stable Run Replay
+﻿# SpecKit Amendment — FASE9F Cave Stable Run Replay
 
 > **Feature:** `FASE9F_CAVE_STABLE_RUN_REPLAY_AND_PROGRESSION`  
 > **Status:** aprovado para implementação.  
@@ -123,3 +123,4 @@ HUD exibe CaveLevel, RunSeed, HasSnapshot, UsedSnapshot, EnemyCount, ResourceNod
 ### AC-010
 
 Nenhum runtime novo usa `GameObject.Find`, `FindObjectOfType`, `FindObjectsByType` ou `StreamingAssets`.
+

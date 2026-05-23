@@ -1,6 +1,6 @@
 ﻿# REF FUTURO — FASE9H loot crafting equipment durability environment
 
-> Origem histórica: $Source
+> Origem histórica: `docs_old/FASE9H_CAVE_LOOT_CRAFTING_EQUIPMENT_PROGRESSION_SPEC_v1.0.md`
 > Status: Refinamento futuro preservado
 > Spec futura relacionada: $Spec
 
@@ -193,17 +193,17 @@ Crafting não é instantâneo. O jogador segura botão de craft/interação até
 ```text
 FinalCraftTime =
   BaseCraftTime
-  Ã— ItemPowerMultiplier
-  Ã— StationMultiplier
-  Ã— WeightComplexityMultiplier
-  Ã— max(0.35, 1 - LevelReduction - DexterityReduction)
+  × ItemPowerMultiplier
+  × StationMultiplier
+  × WeightComplexityMultiplier
+  × max(0.35, 1 - LevelReduction - DexterityReduction)
 ```
 
 ### 8.2 Reduções
 
 ```text
-LevelReduction = PlayerLevel Ã— 0.003
-DexterityReduction = Dexterity Ã— 0.004
+LevelReduction = PlayerLevel × 0.003
+DexterityReduction = Dexterity × 0.004
 ```
 
 Cap inicial:
@@ -494,7 +494,7 @@ RequiredColdResistance
 Se jogador não atinge:
 
 ```text
-EnvironmentalDamagePerTick = BaseDamage Ã— DeficitMultiplier
+EnvironmentalDamagePerTick = BaseDamage × DeficitMultiplier
 ```
 
 Exemplo:
@@ -511,7 +511,7 @@ Jogador toma dano ambiental periódico.
 ```text
 Ambiente deve avisar antes de causar dano pesado.
 Primeiras áreas devem causar dano leve.
-Ãreas críticas podem bloquear progressão se resistência for insuficiente.
+Áreas críticas podem bloquear progressão se resistência for insuficiente.
 Resistência ambiental pode vir de armor + accessory + food/potion futuro.
 ```
 
@@ -547,7 +547,7 @@ pontes improvisadas
 cristais de passagem
 portas de ruína
 áreas opcionais
-caminhos principais, se houver acesso prévio Ã  ferramenta/material
+caminhos principais, se houver acesso prévio à ferramenta/material
 ```
 
 Exemplo:
@@ -839,7 +839,7 @@ public class CraftingProgressState
 
 ## H1 — Sem hard lock injusto
 
-Se tool/equipamento bloqueia progressão principal, o jogador precisa ter acesso prévio Ã  receita e aos materiais.
+Se tool/equipamento bloqueia progressão principal, o jogador precisa ter acesso prévio à receita e aos materiais.
 
 ## H2 — Soft warning antes do dano ambiental
 
@@ -971,5 +971,8 @@ Não altera specs antigas destrutivamente.
 
 - Não tratar este refinement como autorização automática de implementação.
 - Não sobrescrever specs implementadas sem amendment/correction explícito.
+
+
+
 
 

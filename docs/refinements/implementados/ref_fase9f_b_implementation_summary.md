@@ -1,6 +1,6 @@
 ﻿# REF — FASE9F-B implementation summary
 
-> Origem histórica: $Source
+> Origem histórica: `docs_old/audits/FASE9F-B_IMPLEMENTATION_SUMMARY_v1.0.md`
 > Status: Refinamento implementado / handoff / audit preservado
 > Relacionado a:
 > - $_
@@ -73,8 +73,8 @@ CaveEnemySpawner.SpawnEnemiesForLevel(CaveGeneratedLevel)
 ```
 CaveLevelRuntimeController.RegenerateCurrentRunDebug() [Shift+R]
   → CleanupBeforeRegeneration()
-    â”œâ”€â”€ materializer.CleanupMaterialization() [destroys all materialized objects]
-    â””â”€â”€ enemySpawner.CleanupSpawns() [destroys all spawned enemies]
+    ├── materializer.CleanupMaterialization() [destroys all materialized objects]
+    └── enemySpawner.CleanupSpawns() [destroys all spawned enemies]
   → runManager.GenerateNewRunSeed("debug_regeneration")
   → GenerateCurrentLevel() [new layout generated with new seed]
   → Materializer + Spawner repeat cycle
@@ -223,7 +223,7 @@ The materializer expects:
 - No unnecessary allocations in main loops
 - Gizmo drawing guarded by Play Mode check
 
-âš ï¸ **Known debt (acceptable for MVP):**
+⚠️ **Known debt (acceptable for MVP):**
 - Enemy selection is random (not biome-aware) — will be refined in Marco 9
 - Resource selection is random (not level-aware) — will be refined in Marco 9
 - No loot variety system — will be added in Marco 8
@@ -235,6 +235,9 @@ The materializer expects:
 Marcos 0-7 deliver a **fully functional procedural cave generation + materialization + enemy spawning + save/load system** that can be played end-to-end. The architecture is clean, event-driven, and ready for the remaining feature marcos (8-15) to be implemented in subsequent work.
 
 The system is **ready for validation in Unity** — once prefabs are assigned and compilation confirmed, the procedural cave will be fully playable for MVP testing.
+
+
+
 
 
 

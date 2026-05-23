@@ -46,3 +46,8 @@
 | [ref_fase9i_player_combat_weapons_magic_skill_trees_handoff.md](ref_fase9i_player_combat_weapons_magic_skill_trees_handoff.md) | spec_fase9i |
 | [ref_fase9j_cave_run_entry_loadout_hud_failure_flow_handoff.md](ref_fase9j_cave_run_entry_loadout_hud_failure_flow_handoff.md) | spec_fase9j |
 | [ref_fase9k_skill_trees_full_node_unlock_handoff.md](ref_fase9k_skill_trees_full_node_unlock_handoff.md) | spec_fase9k |
+
+## Rastreabilidade documental
+
+Para rastreabilidade completa entre docs_old/ e a documentação ativa, ver docs/DOCS_OLD_TO_ACTIVE_CROSSWALK.md.
+

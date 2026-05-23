@@ -1,6 +1,7 @@
 ﻿# SPEC FUTURA — FASE9E DAMAGE STATUS ELEMENTS COMPLETE
 
-> Origem: $src`n> Status: A implementar
+> Origem histórica: conteúdo absorvido durante reorganização documental.
+> Status: A implementar
 > Tipo: Spec preparada / futura
 
 ---
@@ -63,4 +64,6 @@ Complete damage formula with status effects (poison, burn, bleed) and elemental 
 ## Next Steps
 
 Implement after cave procedural foundation (PR-141-153).
+
+
 

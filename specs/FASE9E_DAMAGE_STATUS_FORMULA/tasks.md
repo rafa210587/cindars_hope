@@ -1,4 +1,4 @@
-# Tasks — FASE9E Damage, Elementos, Status e Fórmula de Combate
+﻿# Tasks — FASE9E Damage, Elementos, Status e Fórmula de Combate
 
 > **Feature:** FASE9E_DAMAGE_STATUS_FORMULA  
 > **Spec:** `spec.md`  
@@ -212,3 +212,4 @@ Validar dados e documentar entrega.
 - [ ] Stun afeta inimigo e player.
 - [ ] Status salva/carrega com duração restante.
 - [ ] Console sem erro vermelho.
+

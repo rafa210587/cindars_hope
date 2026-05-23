@@ -1,6 +1,7 @@
 ﻿# SPEC FUTURA — FASE9I Player Combat, Weapons, Magic e Skill Actions
 
-> Origem histórica: $(docs_old/FASE9I_PLAYER_COMBAT_WEAPONS_MAGIC_SKILL_TREES_SPEC_v1.0.md spec_fase9i_player_combat_weapons_magic_skill_actions.md FASE9I Player Combat, Weapons, Magic e Skill Actions[0])`n> Status: A implementar
+> Origem histórica: `docs_old/FASE9I_PLAYER_COMBAT_WEAPONS_MAGIC_SKILL_TREES_SPEC_v1.0.md`
+> Status: A implementar
 > Observação: conteúdo refinado preservado da documentação antiga.
 
 ---
@@ -831,6 +832,8 @@ Complementa:
 - `docs/amendments/FASE9G_AMENDMENT_ENEMY_COMBAT_ROLES_AI_STATUS_v1.1.md`
 
 Não altera specs antigas destrutivamente.
+
+
 
 
 

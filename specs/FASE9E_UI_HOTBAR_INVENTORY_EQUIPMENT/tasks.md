@@ -1,4 +1,4 @@
-# Tasks — FASE9E UI, Hotbar, Inventory e Equipment
+﻿# Tasks — FASE9E UI, Hotbar, Inventory e Equipment
 
 > **Feature:** FASE9E_UI_HOTBAR_INVENTORY_EQUIPMENT  
 > **Spec:** `spec.md`  
@@ -192,3 +192,4 @@ Validar dados e documentar entrega.
 - [ ] Usar magia de fogo reta e lenta.
 - [ ] Salvar/carregar hotbar/mãos.
 - [ ] Console sem erro vermelho.
+

@@ -43,3 +43,21 @@
 - docs/specs/SPEC_REGISTRY_IMPLEMENTED.md e docs/specs/SPEC_REGISTRY_TO_IMPLEMENT.md atualizados.
 - Nenhuma alteração de código.
 
+## Rastreabilidade documental
+
+Para rastreabilidade completa entre docs_old/ e a documentação ativa, ver docs/DOCS_OLD_TO_ACTIVE_CROSSWALK.md.
+
+
+## Correção final pré-merge
+
+- Placeholders de template e literais de quebra de linha gerados incorretamente foram removidos.
+- Headers de specs/refinements corrigidos.
+- Mojibake corrigido nos arquivos ativos principais.
+- `docs/DOCS_OLD_TO_ACTIVE_CROSSWALK.md` criado.
+- Registries apontam para o crosswalk.
+- Specs futuras validadas para preservar monstros, IA, armas, ferramentas, skills, skill trees, progressão, UI/UX e cave run.
+- `docs_old/` preservado.
+- `specs/` preservado como SpecKit operacional.
+- `spec/` permanece removido.
+- Nenhum código alterado.
+

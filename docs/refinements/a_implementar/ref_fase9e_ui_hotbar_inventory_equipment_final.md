@@ -1,6 +1,6 @@
 ﻿# REF FUTURO — FASE9E UI hotbar inventory equipment final
 
-> Origem histórica: $Source
+> Origem histórica: `docs_old/FASE9E_UI_HOTBAR_INVENTORY_EQUIPMENT_SPEC_v1.0.md`
 > Status: Refinamento futuro preservado
 > Spec futura relacionada: $Spec
 
@@ -112,7 +112,7 @@ Jogador deve conseguir usar consumível único selecionado, como poção.
 Com inventário aberto:
 
 - WASD move seleção;
-- números `1–6` atribuem item selecionado Ã  hotbar;
+- números `1–6` atribuem item selecionado à hotbar;
 - E abre submenu do item selecionado;
 - inventário não pausa o jogo.
 
@@ -191,7 +191,7 @@ A hotbar tem 6 slots.
 Regras:
 
 - Números `1–6` selecionam hotbar.
-- Item da hotbar pode ser atribuído Ã  mão esquerda ou direita.
+- Item da hotbar pode ser atribuído à mão esquerda ou direita.
 - `Q` sempre tenta usar mão esquerda.
 - `E` prioriza interação de mundo quando houver interagível em foco.
 - Sem interagível, `E` usa mão direita.
@@ -200,8 +200,8 @@ Regras:
 
 Ao equipar arco:
 
-- arco fica associado Ã  mão esquerda/Q;
-- flecha fica associada Ã  mão direita/E;
+- arco fica associado à mão esquerda/Q;
+- flecha fica associada à mão direita/E;
 - disparo acontece com E;
 - cada disparo consome 1 flecha;
 - se não houver flecha, não dispara e mostra feedback;
@@ -444,5 +444,8 @@ Esta feature deve ser implementada antes da UI final. Ela define o contrato mín
 
 - Não tratar este refinement como autorização automática de implementação.
 - Não sobrescrever specs implementadas sem amendment/correction explícito.
+
+
+
 
 

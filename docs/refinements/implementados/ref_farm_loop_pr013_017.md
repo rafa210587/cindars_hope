@@ -1,7 +1,9 @@
 ﻿# REF — FARM LOOP PR013 017
 
-> Origem: $src`n> Status: refinamento implementado absorvido.
-> Spec consolidada relacionada: docs/specs/implementados/spec_farm_001_farm_scene_movimento_interacao.md`n
+> Origem histórica: conteúdo absorvido durante reorganização documental.
+> Status: refinamento implementado absorvido.
+> Spec consolidada relacionada: `docs/specs/implementados/spec_farm_001_farm_scene_movimento_interacao.md`
+
 ---
 
 # SPEC: Farm Loop (PR-013 to PR-017)
@@ -74,5 +76,6 @@ Core farm gameplay: plant seeds in plots, advance day, crops grow, harvest and c
 ## Next Steps
 
 Continue to Economy/Hunger (PR-018 to PR-024).
+
 
 

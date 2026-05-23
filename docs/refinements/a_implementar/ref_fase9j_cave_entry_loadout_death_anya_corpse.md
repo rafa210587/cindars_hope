@@ -1,6 +1,6 @@
 ﻿# REF FUTURO — FASE9J cave entry loadout death Anya corpse
 
-> Origem histórica: $Source
+> Origem histórica: `docs_old/FASE9J_CAVE_RUN_ENTRY_LOADOUT_HUD_AND_FAILURE_FLOW_SPEC_v1.0.md`
 > Status: Refinamento futuro preservado
 > Spec futura relacionada: $Spec
 
@@ -660,7 +660,7 @@ H10: CaveRunHud separado do DebugHud.
 H11: Entrada por checkpoint sempre em safe room.
 H12: Tool/environment warnings devem aparecer antes de entrada.
 H13: Return item não conta como morte.
-H14: Key progression unlocks sobrevivem Ã  morte.
+H14: Key progression unlocks sobrevivem à morte.
 H15: Corpo recuperável não deve depender de Unity refs no save.
 ```
 
@@ -745,5 +745,8 @@ Não altera specs antigas destrutivamente.
 
 - Não tratar este refinement como autorização automática de implementação.
 - Não sobrescrever specs implementadas sem amendment/correction explícito.
+
+
+
 
 

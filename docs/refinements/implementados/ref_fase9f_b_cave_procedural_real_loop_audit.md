@@ -1,6 +1,6 @@
 ﻿# REF — FASE9F-B cave procedural real loop audit
 
-> Origem histórica: $Source
+> Origem histórica: `docs_old/audits/MARCO0_FASE9F-B_CAVE_PROCEDURAL_REAL_LOOP_AUDIT.md`
 > Status: Refinamento implementado / handoff / audit preservado
 > Relacionado a:
 > - $_
@@ -240,6 +240,8 @@ CaveScene carregada (play mode ou transição)
 ---
 
 **Fim do Marco 0 Audit.**
+
+
 
 
 

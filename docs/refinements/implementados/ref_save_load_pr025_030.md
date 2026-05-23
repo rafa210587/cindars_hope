@@ -1,7 +1,9 @@
 ﻿# REF — SAVE LOAD PR025 030
 
-> Origem: $src`n> Status: refinamento implementado absorvido.
-> Spec consolidada relacionada: docs/specs/implementados/spec_save_001_json_save_load_cross_scene.md`n
+> Origem histórica: conteúdo absorvido durante reorganização documental.
+> Status: refinamento implementado absorvido.
+> Spec consolidada relacionada: `docs/specs/implementados/spec_save_001_json_save_load_cross_scene.md`
+
 ---
 
 # SPEC: Save/Load (PR-025 to PR-030)
@@ -87,5 +89,6 @@ GameSaveData {
 ## Next Steps
 
 Continue to World/Shop (PR-031 to PR-045).
+
 
 

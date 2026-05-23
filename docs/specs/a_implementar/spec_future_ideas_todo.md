@@ -1,6 +1,6 @@
 ﻿# SPEC FUTURA — Future Ideas TODO
 
-> Origem histórica: $Source
+> Origem histórica: `docs_old/FUTURE_IDEAS_TODO_v1.0.md`
 > Status: A implementar / restante não implementado
 > Observação: conteúdo histórico preservado; não duplicar capacidades já consolidadas em specs implementadas.
 
@@ -66,5 +66,7 @@ Avaliar em spec própria:
 ## Regra de uso
 
 Antes de implementar, reconciliar este material com docs/specs/implementados/, docs/refinements/implementados/ e o estado real do código.
+
+
 
 

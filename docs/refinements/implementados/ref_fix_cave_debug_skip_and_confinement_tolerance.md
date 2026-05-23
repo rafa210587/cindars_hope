@@ -1,6 +1,6 @@
 ﻿# REF — Fix cave debug skip and confinement tolerance
 
-> Origem histórica: $Source
+> Origem histórica: `docs_old/audits/FIX_CAVE_DEBUG_SKIP_AND_CONFINEMENT_TOLERANCE.md`
 > Status: Refinamento implementado / handoff / audit preservado
 > Relacionado a:
 > - $_
@@ -404,6 +404,8 @@ If tests don't pass perfectly, adjust in Inspector:
 3. ðŸ”„ Adjust tuning parameters if needed
 4. ðŸ”„ Commit: `Fix cave debug skip and confinement tolerance`
 5. ðŸ”„ Create PR against `dev`
+
+
 
 
 

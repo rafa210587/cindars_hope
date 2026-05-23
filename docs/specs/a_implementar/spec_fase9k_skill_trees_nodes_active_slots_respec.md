@@ -1,6 +1,7 @@
 ﻿# SPEC FUTURA — FASE9K Skill Trees, Nodes, Active Slots e Respec
 
-> Origem histórica: $(docs_old/FASE9K_SKILL_TREES_FULL_NODE_AND_UNLOCK_SPEC_v1.0.md spec_fase9k_skill_trees_nodes_active_slots_respec.md FASE9K Skill Trees, Nodes, Active Slots e Respec[0])`n> Status: A implementar
+> Origem histórica: `docs_old/FASE9K_SKILL_TREES_FULL_NODE_AND_UNLOCK_SPEC_v1.0.md`
+> Status: A implementar
 > Observação: conteúdo refinado preservado da documentação antiga.
 
 ---
@@ -913,5 +914,9 @@ Complementa:
 
 Não altera specs antigas destrutivamente; ajusta a economia final de SkillPoints em spec posterior.
 
+## Índice de preservação — skill trees e progressão
 
+Os termos abaixo foram adicionados como índice de preservação para garantir que o refinamento não perca decisões já discutidas:
+
+- 4 active slots
 

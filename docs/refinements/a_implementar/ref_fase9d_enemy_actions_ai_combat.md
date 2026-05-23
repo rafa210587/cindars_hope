@@ -1,6 +1,6 @@
 ﻿# REF FUTURO — FASE9D enemy actions AI combat
 
-> Origem histórica: $Source
+> Origem histórica: `docs_old/FASE9D_ENEMY_ACTIONS_AI_COMBAT_SPEC_v1.0.md`
 > Status: Refinamento futuro preservado
 > Spec futura relacionada: $Spec
 
@@ -16,7 +16,7 @@ Conteúdo histórico preservado abaixo para evitar perda operacional de decisõe
 
 > **Status:** spec futura para estruturar ações de monstros.  
 > **Base:** FASE 9B/9C — Cave Combat MVP + Tools/Farm/Combat Refinement.  
-> **Objetivo:** criar uma arquitetura extensível para monstros executarem ações como pulo, investida, ataque Ã  distância, fuga, patrulha e habilidades especiais.
+> **Objetivo:** criar uma arquitetura extensível para monstros executarem ações como pulo, investida, ataque à distância, fuga, patrulha e habilidades especiais.
 
 ---
 
@@ -33,12 +33,12 @@ Em Unity, evitar herança profunda. Preferir composição:
 
 ```text
 Enemy GameObject
-â”œâ”€â”€ EnemyHealth
-â”œâ”€â”€ EnemyChaseController
-â”œâ”€â”€ EnemyActionController
-â”œâ”€â”€ EnemyLeapAttackAction
-â”œâ”€â”€ EnemyContactAttackAction
-â””â”€â”€ EnemyRangedAttackAction opcional
+├── EnemyHealth
+├── EnemyChaseController
+├── EnemyActionController
+├── EnemyLeapAttackAction
+├── EnemyContactAttackAction
+└── EnemyRangedAttackAction opcional
 ```
 
 Cada ação é um componente independente que implementa uma interface comum.
@@ -73,7 +73,7 @@ A ação do monstro deve ser dividida em:
 5. **Recovery** — tempo vulnerável/retorno.
 6. **Cooldown** — impedir spam.
 
-Esse padrão vale para pulo do Slime, ataque Ã  distância, magia e ataques especiais.
+Esse padrão vale para pulo do Slime, ataque à distância, magia e ataques especiais.
 
 ---
 
@@ -211,7 +211,7 @@ O Slime deve:
 4. pular na direção do player;
 5. causar dano se tocar durante janela ativa;
 6. aterrissar;
-7. voltar ao chase ou retornar Ã  posição original, conforme configuração;
+7. voltar ao chase ou retornar à posição original, conforme configuração;
 8. entrar em cooldown.
 
 ### 7.2 Estados internos
@@ -439,5 +439,8 @@ Sim, o modelo deve seguir a ideia de interface com implementações, semelhante 
 
 - Não tratar este refinement como autorização automática de implementação.
 - Não sobrescrever specs implementadas sem amendment/correction explícito.
+
+
+
 
 

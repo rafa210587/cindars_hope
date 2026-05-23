@@ -24,3 +24,8 @@
 Não usar `spec/`. Essa pasta foi absorvida e removida.
 
 Specs antigas não são apagadas nem reescritas destrutivamente. Mudanças futuras entram como nova spec, amendment, correction ou errata.
+
+## Rastreabilidade documental
+
+Para rastreabilidade completa entre docs_old/ e a documentação ativa, ver docs/DOCS_OLD_TO_ACTIVE_CROSSWALK.md.
+

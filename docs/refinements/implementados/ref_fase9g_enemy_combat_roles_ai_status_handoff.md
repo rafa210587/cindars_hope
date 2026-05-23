@@ -1,6 +1,6 @@
 ﻿# REF — FASE9G enemy combat roles AI status handoff
 
-> Origem histórica: $Source
+> Origem histórica: `docs_old/audits/FASE9G_AMENDMENT_ENEMY_COMBAT_ROLES_AI_STATUS_HANDOFF.md`
 > Status: Refinamento implementado / handoff / audit preservado
 > Relacionado a:
 > - $_
@@ -86,5 +86,7 @@ Quando a implementação de FASE9G começar, usar os dois arquivos como baseline
 - boss/miniboss phase templates;
 - debug de perfil de combate;
 - balance futuro de status/cooldown/telegraph.
+
+
 
 

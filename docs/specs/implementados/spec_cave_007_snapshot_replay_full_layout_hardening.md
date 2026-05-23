@@ -2,9 +2,9 @@
 
 > Status: Implementado em código — validação Unity pendente
 > Camada: Cave
-> Fonte histórica: $source
-> Refinamento relacionado: $ref
-> Evidência principal: $evidence
+> Fonte histórica: `docs_old/audits/FIX_CAVE_SNAPSHOT_REPLAY_FULL_LAYOUT.md`
+> Refinamento relacionado: `docs/refinements/implementados/ref_fix_cave_snapshot_replay_full_layout.md`
+> Evidência principal: `Assets/_Game/Scripts/Cave/Runtime/VisitedLevelSnapshot.cs`
 
 ---
 
@@ -53,12 +53,16 @@ CaveSaveData persiste snapshots/estado por DTOs simples.
 
 | Tipo | Caminho | Observação |
 |---|---|---|
-| Código | $evidence | Evidência principal. |
-| Histórico | $source | Fonte histórica preservada. |
-| Refinamento | $ref | Refinamento ativo relacionado. |
+| Código | `Assets/_Game/Scripts/Cave/Runtime/VisitedLevelSnapshot.cs` | Evidência principal. |
+| Histórico | `docs_old/audits/FIX_CAVE_SNAPSHOT_REPLAY_FULL_LAYOUT.md` | Fonte histórica preservada. |
+| Refinamento | `docs/refinements/implementados/ref_fix_cave_snapshot_replay_full_layout.md` | Refinamento ativo relacionado. |
 
 ---
 
 ## 5. Pendências e riscos
 
 - Testar backtrack, save/load e nodes depletados no Unity.
+
+
+
+

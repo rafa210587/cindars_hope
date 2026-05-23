@@ -1,7 +1,9 @@
 ﻿# REF — TOOLS EQUIPMENT HOTBAR PROGRESSION DAMAGE PR101 130
 
-> Origem: $src`n> Status: refinamento implementado absorvido.
-> Spec consolidada relacionada: docs/specs/implementados/spec_tools_001_tools_equipment_hotbar_parcial.md`n
+> Origem histórica: conteúdo absorvido durante reorganização documental.
+> Status: refinamento implementado absorvido.
+> Spec consolidada relacionada: `docs/specs/implementados/spec_tools_001_tools_equipment_hotbar_parcial.md`
+
 ---
 
 # SPEC: Tools, Equipment, Hotbar, Progression & Damage (PR-101 to PR-130)
@@ -104,5 +106,6 @@ Comprehensive system overhaul: tools (axe, fishing rod) with tiers, equipment ho
 ## Next Steps
 
 Continue to Cave Procedural Runtime (PR-141 to PR-153).
+
 
 

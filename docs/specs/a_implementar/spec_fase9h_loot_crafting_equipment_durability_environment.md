@@ -1,6 +1,7 @@
 ﻿# SPEC FUTURA — FASE9H Loot, Crafting, Equipment, Durability e Environment
 
-> Origem histórica: $(docs_old/FASE9H_CAVE_LOOT_CRAFTING_EQUIPMENT_PROGRESSION_SPEC_v1.0.md spec_fase9h_loot_crafting_equipment_durability_environment.md FASE9H Loot, Crafting, Equipment, Durability e Environment[0])`n> Status: A implementar
+> Origem histórica: `docs_old/FASE9H_CAVE_LOOT_CRAFTING_EQUIPMENT_PROGRESSION_SPEC_v1.0.md`
+> Status: A implementar
 > Observação: conteúdo refinado preservado da documentação antiga.
 
 ---
@@ -953,6 +954,8 @@ Complementa:
 - `docs/amendments/FASE9G_AMENDMENT_ENEMY_COMBAT_ROLES_AI_STATUS_v1.1.md`
 
 Não altera specs antigas destrutivamente.
+
+
 
 
 

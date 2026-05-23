@@ -17,7 +17,7 @@ Este documento captura a validação de aceitação do FIX_CAVE_PROCEDURAL_VISUA
 
 - [ ] `MaterializeFloor()` cria GameObjects quando `_floorTilePrefab` é null.
 - [ ] Floor tiles possuem SpriteRenderer com builtin sprite (terra/brown).
-- [ ] Floor tiles NÃƒO possuem collider.
+- [ ] Floor tiles NÃO possuem collider.
 - [ ] Wall tiles possuem SpriteRenderer com builtin sprite (cinza).
 - [ ] Wall tiles possuem BoxCollider2D com `isTrigger=false` e `size=Vector2.one`.
 - [ ] Contagem `CreatedFloorTiles` é incrementada por cada floor tile criado.
@@ -224,4 +224,6 @@ Os seguintes marcos permanecem pendentes:
 **Criado:** 2026-05-20  
 **Responsável:** Claude (Haiku 4.5)  
 **Status:** Pronto para validação no Unity.
+
+
 

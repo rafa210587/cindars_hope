@@ -1,6 +1,7 @@
 ﻿# SPEC FUTURA — FASE9G CAVE BESTIARY FACTION LOCKS
 
-> Origem: $src`n> Status: A implementar
+> Origem histórica: conteúdo absorvido durante reorganização documental.
+> Status: A implementar
 > Tipo: Spec preparada / futura
 
 ---
@@ -69,5 +70,7 @@ Full specification: `docs_old/FASE9G_CAVE_BESTIARY_FACTION_LOCKS_PORTAL_ECOLOGY_
 ## Next Steps
 
 Implement after FASE9F complete (cave resources, encounters, scaling).
+
+
 
 

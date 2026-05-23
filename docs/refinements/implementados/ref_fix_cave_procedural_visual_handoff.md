@@ -1,6 +1,6 @@
 ﻿# REF — Fix cave procedural visual handoff
 
-> Origem histórica: $Source
+> Origem histórica: `docs_old/audits/FIX_CAVE_PROCEDURAL_VISUAL_HANDOFF.md`
 > Status: Refinamento implementado / handoff / audit preservado
 > Relacionado a:
 > - $_
@@ -81,7 +81,7 @@ Arquivo: `Assets/_Game/Scripts/Cave/Runtime/CaveRuntimeMaterializer.cs`
 
 - **`GetBuiltinSprite()`**: Carrega sprite builtin conditionally.
   - `#if UNITY_EDITOR`: Carrega `"UI/Skin/UISprite.psd"` via `AssetDatabase`.
-  - Fallback `null` em runtime build.
+  - Fallback null em runtime build.
 
 #### Integração:
 
@@ -303,7 +303,7 @@ private Sprite GetBuiltinSprite()
 ```
 
 - Editor: carrega builtin sprite para visualização rápida.
-- Runtime: `null` (ok para fallback; use prefab ou sprite assets para build final).
+- Runtime: null (ok para fallback; use prefab ou sprite assets para build final).
 
 ### Database Population Idempotente
 
@@ -363,6 +363,9 @@ Garante: **mesma cave world seed + run seed = mesma distribuição de enemies.**
 - [ ] Unity compilação validada (pendente).
 - [ ] Play Mode testado (pendente).
 - [ ] Feature branch criada e push executado (pendente).
+
+
+
 
 
 

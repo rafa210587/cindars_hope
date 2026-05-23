@@ -1,39 +1,39 @@
-﻿# SpecKit â€” FASE9E UI, Hotbar, Inventory e Equipment
+﻿# SpecKit — FASE9E UI, Hotbar, Inventory e Equipment
 
 > **Feature:** FASE9E_UI_HOTBAR_INVENTORY_EQUIPMENT  
-> **Status:** especificaÃ§Ã£o funcional aprovada para planejamento.  
+> **Status:** especificação funcional aprovada para planejamento.  
 > **Fonte de design:** `docs_old/FASE9E_UI_HOTBAR_INVENTORY_EQUIPMENT_SPEC_v1.0.md`
 
 ---
 
 ## 1. User story
 
-Como jogador, quero selecionar rapidamente ferramentas, seeds, armas, magia, flechas e consumÃ­veis para plantar, colher, lutar, usar poÃ§Ã£o e alternar aÃ§Ãµes sem depender de comandos debug escondidos.
+Como jogador, quero selecionar rapidamente ferramentas, seeds, armas, magia, flechas e consumíveis para plantar, colher, lutar, usar poção e alternar ações sem depender de comandos debug escondidos.
 
 ---
 
 ## 2. Objetivos funcionais
 
-### O1 â€” Hotbar de 6 slots
+### O1 — Hotbar de 6 slots
 
-Criar hotbar visÃ­vel com 6 slots selecionÃ¡veis por `1â€“6`.
+Criar hotbar visível com 6 slots selecionáveis por `1–6`.
 
-### O2 â€” MÃ£o esquerda e mÃ£o direita
+### O2 — Mão esquerda e mão direita
 
-Permitir item selecionado na mÃ£o esquerda e na mÃ£o direita.
+Permitir item selecionado na mão esquerda e na mão direita.
 
-- Q usa mÃ£o esquerda.
-- E interage com mundo; sem interaÃ§Ã£o, usa mÃ£o direita.
+- Q usa mão esquerda.
+- E interage com mundo; sem interação, usa mão direita.
 
-### O3 â€” Seed na hotbar
+### O3 — Seed na hotbar
 
 Seed ativa deve ficar na hotbar e ser usada por FarmPlot.
 
-### O4 â€” InventÃ¡rio OnGUI
+### O4 — Inventário OnGUI
 
-InventÃ¡rio MVP deve ser OnGUI, navegar com WASD, nÃ£o pausar o jogo e permitir aÃ§Ãµes por teclado.
+Inventário MVP deve ser OnGUI, navegar com WASD, não pausar o jogo e permitir ações por teclado.
 
-### O5 â€” Submenu de item
+### O5 — Submenu de item
 
 Com item selecionado, E abre submenu:
 
@@ -43,7 +43,7 @@ Com item selecionado, E abre submenu:
 - Destroy;
 - Cancel.
 
-### O6 â€” Arco e flecha
+### O6 — Arco e flecha
 
 Ao equipar arco:
 
@@ -52,12 +52,12 @@ Ao equipar arco:
 - E dispara flecha;
 - disparo consome 1 flecha;
 - jogador inicia com 30 flechas para teste;
-- flecha vai reta, rÃ¡pida e sem auto-target;
-- magia Ã© removida automaticamente.
+- flecha vai reta, rápida e sem auto-target;
+- magia é removida automaticamente.
 
-### O7 â€” Magia visual MVP
+### O7 — Magia visual MVP
 
-Magia de fogo deve usar projÃ©til visual simples mais lento que a flecha. Primeira magia tambÃ©m viaja em linha reta.
+Magia de fogo deve usar projétil visual simples mais lento que a flecha. Primeira magia também viaja em linha reta.
 
 ---
 
@@ -67,48 +67,48 @@ Fora de escopo:
 
 - UI final;
 - drag and drop;
-- animaÃ§Ã£o de UI;
+- animação de UI;
 - suporte a gamepad;
-- mÃºltiplas pÃ¡ginas de inventÃ¡rio;
+- múltiplas páginas de inventário;
 - tooltips ricos;
 - UI final de crafting/loja;
-- arte final de Ã­cones.
+- arte final de ícones.
 
 ---
 
-## 4. Regras de negÃ³cio
+## 4. Regras de negócio
 
-### R1 â€” Hotbar
+### R1 — Hotbar
 
-Hotbar tem 6 slots. NÃºmeros 1â€“6 atribuem ou selecionam slots conforme contexto.
+Hotbar tem 6 slots. Números 1–6 atribuem ou selecionam slots conforme contexto.
 
-### R2 â€” InventÃ¡rio
+### R2 — Inventário
 
-Com inventÃ¡rio aberto:
+Com inventário aberto:
 
-- WASD move seleÃ§Ã£o;
-- 1â€“6 atribui item selecionado ao slot correspondente da hotbar;
+- WASD move seleção;
+- 1–6 atribui item selecionado ao slot correspondente da hotbar;
 - E abre submenu;
-- I/Esc fecha inventÃ¡rio;
-- jogo nÃ£o pausa.
+- I/Esc fecha inventário;
+- jogo não pausa.
 
-### R3 â€” Use
+### R3 — Use
 
-Use aplica item diretamente do inventÃ¡rio se ele for usÃ¡vel. ConsumÃ­vel usado com sucesso remove 1 unidade.
+Use aplica item diretamente do inventário se ele for usável. Consumível usado com sucesso remove 1 unidade.
 
-### R4 â€” Drop
+### R4 — Drop
 
-Drop remove item do inventÃ¡rio e cria ItemPickup prÃ³ximo ao jogador.
+Drop remove item do inventário e cria ItemPickup próximo ao jogador.
 
-### R5 â€” Split
+### R5 — Split
 
 Split exige stack >= 2 e divide em duas pilhas iguais ou quase iguais.
 
-### R6 â€” Destroy
+### R6 — Destroy
 
-Destroy remove permanentemente o item apÃ³s confirmaÃ§Ã£o simples.
+Destroy remove permanentemente o item após confirmação simples.
 
-### R7 â€” Arco
+### R7 — Arco
 
 Arco remove magia automaticamente. Arco fica no Q; flecha fica no E. E dispara e consome flecha.
 
@@ -120,7 +120,7 @@ Arco remove magia automaticamente. Arco fica no Q; flecha fica no E. E dispara e
 - `HandSlotType`
 - `InventoryMvpOnGui`
 - `InventoryItemActionMenu`
-- `ActiveSelectionManager` ou expansÃ£o do `EquipmentManager`
+- `ActiveSelectionManager` ou expansão do `EquipmentManager`
 - `ProjectileController`
 - `ItemDropRequest`
 - `ItemSplitRequest`
@@ -128,71 +128,71 @@ Arco remove magia automaticamente. Arco fica no Q; flecha fica no E. E dispara e
 
 ---
 
-## 6. CritÃ©rios de aceite
+## 6. Critérios de aceite
 
-### CA1 â€” HUD
+### CA1 — HUD
 
-HUD mostra hotbar de 6 slots, mÃ£o esquerda, mÃ£o direita, seed, weapon, magic, ammo e consumible.
+HUD mostra hotbar de 6 slots, mão esquerda, mão direita, seed, weapon, magic, ammo e consumible.
 
-### CA2 â€” InventÃ¡rio OnGUI
+### CA2 — Inventário OnGUI
 
-Tecla I abre/fecha inventÃ¡rio OnGUI sem pausar.
+Tecla I abre/fecha inventário OnGUI sem pausar.
 
-### CA3 â€” WASD navega
+### CA3 — WASD navega
 
-Com inventÃ¡rio aberto, W/A/S/D movem seleÃ§Ã£o.
+Com inventário aberto, W/A/S/D movem seleção.
 
-### CA4 â€” NÃºmeros atribuem hotbar
+### CA4 — Números atribuem hotbar
 
-Com item selecionado no inventÃ¡rio, 1â€“6 atribui item Ã  hotbar.
+Com item selecionado no inventário, 1–6 atribui item à hotbar.
 
-### CA5 â€” E abre submenu
+### CA5 — E abre submenu
 
-Com item selecionado no inventÃ¡rio, E abre submenu contextual.
+Com item selecionado no inventário, E abre submenu contextual.
 
-### CA6 â€” Use
+### CA6 — Use
 
-Use aplica poÃ§Ã£o direto do inventÃ¡rio e consome 1 unidade quando bem-sucedido.
+Use aplica poção direto do inventário e consome 1 unidade quando bem-sucedido.
 
-### CA7 â€” Drop
+### CA7 — Drop
 
-Drop cria ItemPickup prÃ³ximo ao jogador e remove item do inventÃ¡rio.
+Drop cria ItemPickup próximo ao jogador e remove item do inventário.
 
-### CA8 â€” Split
+### CA8 — Split
 
 Split divide stack >= 2 em duas pilhas iguais ou quase iguais.
 
-### CA9 â€” Destroy
+### CA9 — Destroy
 
-Destroy remove item permanentemente apÃ³s confirmaÃ§Ã£o.
+Destroy remove item permanentemente após confirmação.
 
-### CA10 â€” Arco no Q e flecha no E
+### CA10 — Arco no Q e flecha no E
 
-Ao equipar arco, HUD mostra arco na mÃ£o esquerda/Q e flecha na mÃ£o direita/E.
+Ao equipar arco, HUD mostra arco na mão esquerda/Q e flecha na mão direita/E.
 
-### CA11 â€” E dispara flecha
+### CA11 — E dispara flecha
 
-Sem interaÃ§Ã£o contextual em foco, E dispara flecha em linha reta e consome 1 flecha.
+Sem interação contextual em foco, E dispara flecha em linha reta e consome 1 flecha.
 
-### CA12 â€” Flechas iniciais
+### CA12 — Flechas iniciais
 
 Jogador inicia com 30 flechas para teste.
 
-### CA13 â€” Flecha visual
+### CA13 — Flecha visual
 
-Flecha aparece como projÃ©til simples rÃ¡pido, reto e sem auto-target.
+Flecha aparece como projétil simples rápido, reto e sem auto-target.
 
-### CA14 â€” Magia visual
+### CA14 — Magia visual
 
-Magia de fogo aparece como projÃ©til simples mais lento e reto no primeiro MVP.
+Magia de fogo aparece como projétil simples mais lento e reto no primeiro MVP.
 
-### CA15 â€” Save/load
+### CA15 — Save/load
 
-Save/load preserva hotbar, mÃ£os, seed ativa, weapon, magic, ammo e consumible selecionado.
+Save/load preserva hotbar, mãos, seed ativa, weapon, magic, ammo e consumible selecionado.
 
 ---
 
-## 7. DependÃªncias
+## 7. Dependências
 
 - `InventoryManager`
 - `ItemPickup`
@@ -212,4 +212,5 @@ Save/load preserva hotbar, mÃ£os, seed ativa, weapon, magic, ammo e consumible
 - Esta spec estiver aprovada.
 - `docs_old/FASE9E_UI_HOTBAR_INVENTORY_EQUIPMENT_SPEC_v1.0.md` estiver lido.
 - Estado real em `dev` tiver sido validado.
+
 

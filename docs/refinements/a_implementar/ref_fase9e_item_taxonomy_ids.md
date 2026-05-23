@@ -1,6 +1,6 @@
 ﻿# REF FUTURO — FASE9E item taxonomy IDs
 
-> Origem histórica: $Source
+> Origem histórica: `docs_old/FASE9E_ITEM_TAXONOMY_IDS_SPEC_v1.0.md`
 > Status: Refinamento futuro preservado
 > Spec futura relacionada: $Spec
 
@@ -241,5 +241,7 @@ TODOs futuros estão em:
 
 - Não tratar este refinement como autorização automática de implementação.
 - Não sobrescrever specs implementadas sem amendment/correction explícito.
+
+
 
 

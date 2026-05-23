@@ -1,7 +1,9 @@
 ﻿# REF — CORE FOUNDATION PR001 012
 
-> Origem: $src`n> Status: refinamento implementado absorvido.
-> Spec consolidada relacionada: docs/specs/implementados/spec_core_001_event_bus_e_eventos_base.md`n
+> Origem histórica: conteúdo absorvido durante reorganização documental.
+> Status: refinamento implementado absorvido.
+> Spec consolidada relacionada: `docs/specs/implementados/spec_core_001_event_bus_e_eventos_base.md`
+
 ---
 
 # SPEC: Core Foundation (PR-001 to PR-012)
@@ -80,5 +82,6 @@ Foundational architecture for Cindar's Hope: event-driven system with GameEventB
 ## Next Steps
 
 Continue to Farm Loop (PR-013 to PR-017).
+
 
 

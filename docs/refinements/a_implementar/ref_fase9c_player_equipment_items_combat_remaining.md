@@ -1,6 +1,6 @@
 ﻿# REF FUTURO — FASE9C player equipment items combat remaining
 
-> Origem histórica: $Source
+> Origem histórica: `docs_old/FASE9C_PLAYER_EQUIPMENT_ITEMS_COMBAT_SPEC_v1.0.md`
 > Status: Refinamento futuro preservado
 > Spec futura relacionada: $Spec
 
@@ -752,7 +752,7 @@ Ao final do pacote:
 - jogador desequipa espada;
 - espada causa mais dano que soco;
 - jogador equipa arco;
-- arco dispara flecha Ã  distância;
+- arco dispara flecha à distância;
 - flecha consome ammo;
 - arco bloqueia magia no MVP;
 - jogador equipa espada + magia;
@@ -795,5 +795,8 @@ Não implementar UI final antes de validar loadout e regras de equip/desequip.
 
 - Não tratar este refinement como autorização automática de implementação.
 - Não sobrescrever specs implementadas sem amendment/correction explícito.
+
+
+
 
 

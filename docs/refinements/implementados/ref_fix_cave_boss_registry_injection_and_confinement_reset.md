@@ -1,6 +1,6 @@
 ﻿# REF — Fix cave boss registry injection and confinement reset
 
-> Origem histórica: $Source
+> Origem histórica: `docs_old/audits/FIX_CAVE_BOSS_REGISTRY_INJECTION_AND_CONFINEMENT_RESET.md`
 > Status: Refinamento implementado / handoff / audit preservado
 > Relacionado a:
 > - $_
@@ -371,6 +371,8 @@ If tests don't pass perfectly, adjust in Inspector:
 - `Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpCaveScene.cs` (added boss registry injection)
 - `Assets/_Game/Scripts/SceneManagement/CaveSceneRuntimeReferenceInstaller.cs` (added registry rebind)
 - `Assets/_Game/Scripts/Cave/Runtime/CavePlayerPathConfinement.cs` (fixed confinement, added level reset)
+
+
 
 
 

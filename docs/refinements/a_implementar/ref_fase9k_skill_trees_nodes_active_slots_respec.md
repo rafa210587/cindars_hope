@@ -1,6 +1,6 @@
 ﻿# REF FUTURO — FASE9K skill trees nodes active slots respec
 
-> Origem histórica: $Source
+> Origem histórica: `docs_old/FASE9K_SKILL_TREES_FULL_NODE_AND_UNLOCK_SPEC_v1.0.md`
 > Status: Refinamento futuro preservado
 > Spec futura relacionada: $Spec
 
@@ -107,7 +107,7 @@ Hardening:
 
 ```text
 Não permitir que o jogador compre tudo.
-Ãrvores devem ter nodes suficientes.
+Árvores devem ter nodes suficientes.
 Skills fortes custam 2–3.
 Capstones exigem investimento real.
 ```
@@ -374,8 +374,8 @@ Custa 100 gold por atributo ou skill resetado.
 |---|---:|
 | Resetar 1 AttributePoint aplicado | 100 gold |
 | Resetar 1 SkillNode aprendido | 100 gold |
-| Resetar árvore inteira | 100 Ã— número de skills daquela árvore |
-| Resetar todos atributos | 100 Ã— pontos redistribuídos |
+| Resetar árvore inteira | 100 × número de skills daquela árvore |
+| Resetar todos atributos | 100 × pontos redistribuídos |
 | Resetar tudo | soma de atributos + skills |
 
 ## 10.3 Hardening
@@ -739,7 +739,7 @@ tools
 | Master Gatherer | 3 | bônus forte em recursos raros |
 | Unbreakable Routine | 3 | reduz bastante perda de durabilidade |
 | Environmental Mastery | 3 | alta resistência a heat/cold |
-| Anya's Second Breath | 3 | efeito raro de sobrevivência/recuperação ligado Ã  Fonte de Anya, com cooldown alto |
+| Anya's Second Breath | 3 | efeito raro de sobrevivência/recuperação ligado à Fonte de Anya, com cooldown alto |
 
 ---
 
@@ -931,4 +931,9 @@ Não altera specs antigas destrutivamente; ajusta a economia final de SkillPoint
 - Não tratar este refinement como autorização automática de implementação.
 - Não sobrescrever specs implementadas sem amendment/correction explícito.
 
+## Índice de preservação — skill trees e progressão
+
+Os termos abaixo foram adicionados como índice de preservação para garantir que o refinamento não perca decisões já discutidas:
+
+- 4 active slots
 

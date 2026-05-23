@@ -1,6 +1,6 @@
 ﻿# SPEC FUTURA — FASE9C Tools Farm Combat Refinement Remaining
 
-> Origem histórica: $Source
+> Origem histórica: `docs_old/FASE9C_TOOLS_FARM_COMBAT_REFINEMENT_v1.0.md`
 > Status: A implementar / restante não implementado
 > Observação: conteúdo histórico preservado; não duplicar capacidades já consolidadas em specs implementadas.
 
@@ -23,12 +23,12 @@ Refinar os sistemas que hoje estão funcionais, mas ainda simplificados:
 
 1. **Plantio** — sair de plantio automático de seed para plantio controlado por ferramenta, seed ativa e regras claras.
 2. **Colheita** — diferenciar colheita manual, colheita com ferramenta e bônus por tier.
-3. **Ãrvores** — exigir machado para corte real e limitar fallback sem ferramenta.
+3. **Árvores** — exigir machado para corte real e limitar fallback sem ferramenta.
 4. **Pesca/mineração/coleta** — consolidar ações de mundo sob um modelo único de ferramenta.
 5. **Ferramentas** — introduzir `ToolDataSO`, `ToolTier`, `ToolRequirement`, `EquipmentManager` e save/load de equipamento.
 6. **Combate** — evoluir de soco hardcoded para armas equipáveis.
 7. **Esquiva** — adicionar dodge lateral/para trás com cooldown e janela curta de invulnerabilidade.
-8. **Armas** — suportar três tipos: corpo a corpo, distância física e magia Ã  distância.
+8. **Armas** — suportar três tipos: corpo a corpo, distância física e magia à distância.
 
 ---
 
@@ -56,7 +56,7 @@ O repo já possui:
 |---|---|
 | Plantio | Seed é escolhida automaticamente; sem ferramenta ativa; sem preparo de solo. |
 | Colheita | Não diferencia mão/ferramenta/tier; sem bônus de yield. |
-| Ãrvores | Não exige machado; qualquer interação progride corte. |
+| Árvores | Não exige machado; qualquer interação progride corte. |
 | Pesca | Exige item por string, mas não usa `ToolDataSO`. |
 | Equipamento | Não há `EquipmentManager`; ferramenta/arma não são slots persistidos. |
 | Combate | Ataque é soco hardcoded; não há arma equipada. |
@@ -307,7 +307,7 @@ public enum FarmPlotState
 | Hoe Basic | Planta normalmente. |
 | Hoe Copper | Reduz custo de fome ou pequena chance futura de preservar seed. |
 | Hoe Iron | Prepara/plantar múltiplos plots futuramente. |
-| Hoe Steel+ | Ãrea maior. |
+| Hoe Steel+ | Área maior. |
 
 #### Critério MVP
 
@@ -335,7 +335,7 @@ public enum FarmPlotState
 - `Sickle Basic` mantém comportamento atual.
 - `Sickle Copper+` adiciona bônus simples configurável.
 
-### 6.3 Ãrvores
+### 6.3 Árvores
 
 #### Ferramenta
 
@@ -784,5 +784,8 @@ A FASE 9C deve vir antes de UI real final e antes de arte final, porque altera r
 ## Regra de uso
 
 Antes de implementar, reconciliar este material com docs/specs/implementados/, docs/refinements/implementados/ e o estado real do código.
+
+
+
 
 

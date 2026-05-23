@@ -1,90 +1,90 @@
-﻿# SpecKit â€” FASE9I Player Combat, Weapons, Magic & Skill Trees
+﻿# SpecKit — FASE9I Player Combat, Weapons, Magic & Skill Trees
 
 > **Feature:** `FASE9I_PLAYER_COMBAT_WEAPONS_MAGIC_SKILL_TREES`  
-> **Status:** especificaÃ§Ã£o funcional aprovada para planejamento.  
+> **Status:** especificação funcional aprovada para planejamento.  
 > **Fonte de design:** `docs_old/FASE9I_PLAYER_COMBAT_WEAPONS_MAGIC_SKILL_TREES_SPEC_v1.0.md`
 
 ---
 
 ## 1. User story
 
-Como jogador, quero escolher builds diferentes de combate, magia, arco, dual wield, armas pesadas, escudo, mobilidade ou sobrevivÃªncia, para enfrentar a cave com estilos variados e evoluir meu personagem de acordo com meus atributos, equipamentos e skills.
+Como jogador, quero escolher builds diferentes de combate, magia, arco, dual wield, armas pesadas, escudo, mobilidade ou sobrevivência, para enfrentar a cave com estilos variados e evoluir meu personagem de acordo com meus atributos, equipamentos e skills.
 
 ---
 
 ## 2. Objetivos funcionais
 
-### O1 â€” Player action combat
+### O1 — Player action combat
 
-O jogador deve ter aÃ§Ãµes de combate action: Roll, Dash, Parry, Block, Sprint, Special Attack, Spell Cast e Bow Shot.
+O jogador deve ter ações de combate action: Roll, Dash, Parry, Block, Sprint, Special Attack, Spell Cast e Bow Shot.
 
-### O2 â€” Skill-gated actions
+### O2 — Skill-gated actions
 
 Roll, Dash, Parry, Block, Sprint e Charge Shot devem depender de skills.
 
-### O3 â€” Roll e Dash separados
+### O3 — Roll e Dash separados
 
-Roll Ã© dodge defensivo. Dash Ã© avanÃ§o ofensivo.
+Roll é dodge defensivo. Dash é avanço ofensivo.
 
-### O4 â€” Shield Block
+### O4 — Shield Block
 
-Block exige Shield e skill especÃ­fica.
+Block exige Shield e skill específica.
 
-### O5 â€” Parry limitado
+### O5 — Parry limitado
 
-Parry funciona contra Physical melee e projÃ©teis fÃ­sicos. NÃ£o funciona contra magia pura, AoE, breath, beams ou pools.
+Parry funciona contra Physical melee e projéteis físicos. Não funciona contra magia pura, AoE, breath, beams ou pools.
 
-### O6 â€” Magic item required
+### O6 — Magic item required
 
 Magia exige Staff, Wand, Focus ou Scroll.
 
-### O7 â€” Weapon special attacks
+### O7 — Weapon special attacks
 
 Toda arma deve ter Special Attack.
 
-### O8 â€” Dual wield
+### O8 — Dual wield
 
-Dual wield leve usa ataque alternado automÃ¡tico no MVP. Dual wield pesado fica como skill avanÃ§ada Combat/Strength.
+Dual wield leve usa ataque alternado automático no MVP. Dual wield pesado fica como skill avançada Combat/Strength.
 
-### O9 â€” Bow and elemental arrows
+### O9 — Bow and elemental arrows
 
-Bow shot padrÃ£o Ã© instantÃ¢neo, consome stamina + flecha, escala com Dexterity e suporta flechas elementais.
+Bow shot padrão é instantâneo, consome stamina + flecha, escala com Dexterity e suporta flechas elementais.
 
-### O10 â€” Elemental magic
+### O10 — Elemental magic
 
 Magias existem por elemento: Arcane, Fire, Ice, Poison/Nature, Shadow, Lightning/Thunder, Acid e Corruption.
 
-### O11 â€” Skill trees
+### O11 — Skill trees
 
 Skill trees iniciais: Combat, Dexterity, Magic, Survival/Breath.
 
 ---
 
-## 3. Regras de negÃ³cio
+## 3. Regras de negócio
 
-### R1 â€” Stamina
+### R1 — Stamina
 
-Stamina Ã© consumida por melee attack, special attack, bow shot, dash, roll/dodge, parry, block, sprint e tool usage.
+Stamina é consumida por melee attack, special attack, bow shot, dash, roll/dodge, parry, block, sprint e tool usage.
 
-### R2 â€” Mana
+### R2 — Mana
 
-Mana Ã© consumida por spells, magic focus attacks, weapon enchant, barriers e summons futuros.
+Mana é consumida por spells, magic focus attacks, weapon enchant, barriers e summons futuros.
 
-### R3 â€” Armor weight
+### R3 — Armor weight
 
 Armor weight afeta movimento, stamina cost, Roll, Dash e Sprint.
 
-### R4 â€” Crit
+### R4 — Crit
 
-Crit vem principalmente de skill/equipment, nÃ£o diretamente de Dexterity pura.
+Crit vem principalmente de skill/equipment, não diretamente de Dexterity pura.
 
-### R5 â€” Dexterity
+### R5 — Dexterity
 
 Dexterity aumenta dano ranged e velocidade levemente.
 
-### R6 â€” Durability
+### R6 — Durability
 
-Bow e armas usam durabilidade padrÃ£o definida na FASE9H.
+Bow e armas usam durabilidade padrão definida na FASE9H.
 
 ---
 
@@ -101,65 +101,65 @@ Bow e armas usam durabilidade padrÃ£o definida na FASE9H.
 
 ---
 
-## 5. CritÃ©rios de aceite
+## 5. Critérios de aceite
 
-### CA1 â€” Roll
+### CA1 — Roll
 
-Roll Ã© dodge defensivo desbloqueado por skill de Dexterity.
+Roll é dodge defensivo desbloqueado por skill de Dexterity.
 
-### CA2 â€” Dash
+### CA2 — Dash
 
-Dash Ã© avanÃ§o ofensivo desbloqueado por skill de Dexterity.
+Dash é avanço ofensivo desbloqueado por skill de Dexterity.
 
-### CA3 â€” Block
+### CA3 — Block
 
 Block exige Shield e skill.
 
-### CA4 â€” Parry
+### CA4 — Parry
 
-Parry sÃ³ funciona contra Physical melee e projÃ©teis fÃ­sicos.
+Parry só funciona contra Physical melee e projéteis físicos.
 
-### CA5 â€” Magic item
+### CA5 — Magic item
 
 Magia exige Staff, Wand, Focus ou Scroll.
 
-### CA6 â€” Dual wield
+### CA6 — Dual wield
 
-Dual wield leve usa ataque alternado automÃ¡tico.
+Dual wield leve usa ataque alternado automático.
 
-### CA7 â€” Heavy dual wield
+### CA7 — Heavy dual wield
 
-Dual wield pesado fica como skill avanÃ§ada Combat/Strength.
+Dual wield pesado fica como skill avançada Combat/Strength.
 
-### CA8 â€” Special attack
+### CA8 — Special attack
 
 Toda arma tem Special Attack.
 
-### CA9 â€” Resource costs
+### CA9 — Resource costs
 
 Special Attack consome stamina/mana conforme perfil.
 
-### CA10 â€” Bow
+### CA10 — Bow
 
-Bow shot padrÃ£o Ã© instantÃ¢neo.
+Bow shot padrão é instantâneo.
 
-### CA11 â€” Charge Shot
+### CA11 — Charge Shot
 
-Charge Shot Ã© skill.
+Charge Shot é skill.
 
-### CA12 â€” Elemental arrows
+### CA12 — Elemental arrows
 
 Existem flechas elementais.
 
-### CA13 â€” Elemental spells
+### CA13 — Elemental spells
 
 Magias existem por elemento.
 
-### CA14 â€” Skill trees
+### CA14 — Skill trees
 
 Skill trees iniciais existem: Combat, Dexterity, Magic, Survival/Breath.
 
-### CA15 â€” Armor weight
+### CA15 — Armor weight
 
 Armor weight afeta mobilidade/stamina.
 
@@ -170,12 +170,12 @@ Armor weight afeta mobilidade/stamina.
 Fora desta spec:
 
 - balance final de dano/stamina/mana;
-- animaÃ§Ãµes finais de combate;
-- hitbox/hurtbox avanÃ§ado;
+- animações finais de combate;
+- hitbox/hurtbox avançado;
 - dodge i-frames finais;
-- parry perfeito avanÃ§ado;
+- parry perfeito avançado;
 - shield bash final;
-- Ã¡rvores de skill completas com dezenas de nÃ³s;
+- árvores de skill completas com dezenas de nós;
 - UI final da skill tree;
 - VFX/SFX finais das magias;
 - PvP/co-op.
@@ -188,7 +188,7 @@ Fora desta spec:
 2. `WeaponCombatProfileSO` para Sword, Axe, Hammer, Spear, Dagger, Bow, Wand, Staff.
 3. `SpellDataSO` para Arcane Bolt, Fire Spark, Frost Shard.
 4. Skill unlock simples para Roll, Dash, Charge Shot, Shield Block e Arcane Bolt.
-5. Bow shot instantÃ¢neo com ammo/stamina/durability.
+5. Bow shot instantâneo com ammo/stamina/durability.
 6. Special Attack simples por arma.
 7. Stamina validation comum.
 8. Mana validation comum.
@@ -196,7 +196,7 @@ Fora desta spec:
 
 ---
 
-## 8. DependÃªncias
+## 8. Dependências
 
 - FASE9E UI/Hotbar/Inventory/Equipment.
 - FASE9E Player Level Up/Progression.
@@ -209,6 +209,7 @@ Fora desta spec:
 ## 9. Pronto para Plan quando
 
 - Equipment/hotbar estiver planejado ou implementado.
-- Stamina/Mana estiverem disponÃ­veis no player runtime.
-- Skill tree data contracts forem aceitos para implementaÃ§Ã£o.
+- Stamina/Mana estiverem disponíveis no player runtime.
+- Skill tree data contracts forem aceitos para implementação.
+
 

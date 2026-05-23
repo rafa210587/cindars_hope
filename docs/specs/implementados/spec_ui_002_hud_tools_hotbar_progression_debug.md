@@ -2,9 +2,9 @@
 
 > Status: Implementado parcial
 > Camada: UI
-> Fonte histórica: $source
-> Refinamento relacionado: $ref
-> Evidência principal: $evidence
+> Fonte histórica: `docs_old/audits/PR131_VALIDACAO_HUD_TOOLS_PROGRESSION.md`
+> Refinamento relacionado: `docs/refinements/implementados/ref_pr131_validacao_hud_tools_progression.md`
+> Evidência principal: `Assets/_Game/Scripts/UI/DebugHud.cs`
 
 ---
 
@@ -53,12 +53,16 @@ HUD não persiste; lê managers e DTOs persistidos por outros sistemas.
 
 | Tipo | Caminho | Observação |
 |---|---|---|
-| Código | $evidence | Evidência principal. |
-| Histórico | $source | Fonte histórica preservada. |
-| Refinamento | $ref | Refinamento ativo relacionado. |
+| Código | `Assets/_Game/Scripts/UI/DebugHud.cs` | Evidência principal. |
+| Histórico | `docs_old/audits/PR131_VALIDACAO_HUD_TOOLS_PROGRESSION.md` | Fonte histórica preservada. |
+| Refinamento | `docs/refinements/implementados/ref_pr131_validacao_hud_tools_progression.md` | Refinamento ativo relacionado. |
 
 ---
 
 ## 5. Pendências e riscos
 
 - Substituir por HUD real em FASE9L.
+
+
+
+

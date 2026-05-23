@@ -1,6 +1,6 @@
 ﻿# REF — Fix cave snapshot replay full layout
 
-> Origem histórica: $Source
+> Origem histórica: `docs_old/audits/FIX_CAVE_SNAPSHOT_REPLAY_FULL_LAYOUT.md`
 > Status: Refinamento implementado / handoff / audit preservado
 > Relacionado a:
 > - $_
@@ -227,6 +227,8 @@ Logging expandido mostra counts de layout restaurado:
 5. Console: logs mostram WalkableTiles.Count, WallTiles.Count > 0.
 6. HUD: LayoutHash, dimensões corretas.
 7. Commit + PR `feature/fix-cave-snapshot-replay-full-layout`.
+
+
 
 
 

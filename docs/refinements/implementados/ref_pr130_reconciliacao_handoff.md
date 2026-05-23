@@ -1,6 +1,6 @@
 ﻿# REF — PR130 reconciliação handoff
 
-> Origem histórica: $Source
+> Origem histórica: `docs_old/audits/PR130_RECONCILIACAO_HANDOFF.md`
 > Status: Refinamento implementado / handoff / audit preservado
 > Relacionado a:
 > - $_
@@ -58,4 +58,6 @@ Depois do PR-131 de sync documental, seguir Cave Procedural Foundation como PR-1
 - Unity nao foi executado nesta sessao.
 - As cenas locais estao modificadas no working tree e foram ignoradas por instrucao humana.
 - `item_material_stone` e `ore_copper` ainda nao existem como assets registrados.
+
+
 

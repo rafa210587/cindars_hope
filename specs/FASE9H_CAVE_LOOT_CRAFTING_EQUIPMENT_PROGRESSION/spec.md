@@ -1,76 +1,76 @@
-﻿# SpecKit â€” FASE9H Cave Loot, Crafting, Equipment & Gear Progression
+﻿# SpecKit — FASE9H Cave Loot, Crafting, Equipment & Gear Progression
 
 > **Feature:** `FASE9H_CAVE_LOOT_CRAFTING_EQUIPMENT_PROGRESSION`  
-> **Status:** especificaÃ§Ã£o funcional aprovada para planejamento.  
+> **Status:** especificação funcional aprovada para planejamento.  
 > **Fonte de design:** `docs_old/FASE9H_CAVE_LOOT_CRAFTING_EQUIPMENT_PROGRESSION_SPEC_v1.0.md`
 
 ---
 
 ## 1. User story
 
-Como jogador, quero explorar a cave, coletar materiais, derrotar criaturas e bosses, refinar recursos, reparar armas raras, craftar equipamentos e vencer bloqueios ambientais/ferramentais para avanÃ§ar cada vez mais fundo.
+Como jogador, quero explorar a cave, coletar materiais, derrotar criaturas e bosses, refinar recursos, reparar armas raras, craftar equipamentos e vencer bloqueios ambientais/ferramentais para avançar cada vez mais fundo.
 
 ---
 
 ## 2. Objetivos funcionais
 
-### O1 â€” ProgressÃ£o material da cave
+### O1 — Progressão material da cave
 
 Cada faixa da cave deve ter materiais brutos, refinados e usos claros para gear progression.
 
-### O2 â€” Drops por famÃ­lia
+### O2 — Drops por família
 
-Cada famÃ­lia de inimigos deve ter drops comuns e raros.
+Cada família de inimigos deve ter drops comuns e raros.
 
-### O3 â€” Boss progression drops
+### O3 — Boss progression drops
 
-Todo boss deve dropar pelo menos um `ProgressionDrop`. Boss tambÃ©m pode dropar material raro vendÃ¡vel.
+Todo boss deve dropar pelo menos um `ProgressionDrop`. Boss também pode dropar material raro vendável.
 
-### O4 â€” Refinamento por estaÃ§Ã£o
+### O4 — Refinamento por estação
 
-Materiais brutos viram materiais refinados em estaÃ§Ãµes adequadas.
+Materiais brutos viram materiais refinados em estações adequadas.
 
-### O5 â€” Crafting com tempo
+### O5 — Crafting com tempo
 
-Crafting exige segurar botÃ£o atÃ© completar a barra. Level e Dexterity reduzem tempo.
+Crafting exige segurar botão até completar a barra. Level e Dexterity reduzem tempo.
 
-### O6 â€” Durabilidade
+### O6 — Durabilidade
 
-Todo item equipÃ¡vel tem `DurabilityMax = 100`. A cada 3 usos relevantes, perde 1 durabilidade.
+Todo item equipável tem `DurabilityMax = 100`. A cada 3 usos relevantes, perde 1 durabilidade.
 
-### O7 â€” Equipamento RPG
+### O7 — Equipamento RPG
 
-Equipamentos devem permitir builds por tier: Strength, Dexterity, Intelligence, Willpower e hÃ­bridos.
+Equipamentos devem permitir builds por tier: Strength, Dexterity, Intelligence, Willpower e híbridos.
 
-### O8 â€” Armaduras MVP
+### O8 — Armaduras MVP
 
-Armor Ã© peÃ§a Ãºnica no MVP. Tipos: Cloth, Leather, Metal, Hybrid, Elemental.
+Armor é peça única no MVP. Tipos: Cloth, Leather, Metal, Hybrid, Elemental.
 
-### O9 â€” Accessory MVP
+### O9 — Accessory MVP
 
 MVP possui 1 slot de accessory.
 
-### O10 â€” ResistÃªncia ambiental
+### O10 — Resistência ambiental
 
 `HeatResistance` e `ColdResistance` existem separadas de `FireResistance` e `IceResistance`.
 
-### O11 â€” Environmental gates
+### O11 — Environmental gates
 
-Ambientes quentes/frios podem causar dano e/ou bloquear progressÃ£o se resistÃªncia for insuficiente.
+Ambientes quentes/frios podem causar dano e/ou bloquear progressão se resistência for insuficiente.
 
-### O12 â€” Tool gates
+### O12 — Tool gates
 
-Tool tier bloqueia nodes e pode bloquear caminho principal se ferramenta/material/receita forem acessÃ­veis antes.
+Tool tier bloqueia nodes e pode bloquear caminho principal se ferramenta/material/receita forem acessíveis antes.
 
-### O13 â€” Broken elemental weapons
+### O13 — Broken elemental weapons
 
 Humanoides podem dropar armas elementais quebradas que exigem reparo.
 
 ---
 
-## 3. Regras de negÃ³cio
+## 3. Regras de negócio
 
-### R1 â€” EquipÃ¡vel tem durabilidade
+### R1 — Equipável tem durabilidade
 
 ```text
 DurabilityMax = 100
@@ -78,7 +78,7 @@ DurabilityCurrent inicia em 100
 A cada 3 usos relevantes, perde 1 durability
 ```
 
-### R2 â€” AplicaÃ§Ã£o de durabilidade
+### R2 — Aplicação de durabilidade
 
 | Tipo | Uso relevante |
 |---|---|
@@ -89,25 +89,25 @@ A cada 3 usos relevantes, perde 1 durability
 | Armor | 3 hits recebidos |
 | Accessory | sem durabilidade no MVP, salvo especial |
 
-### R3 â€” Crafting hostil cancela
+### R3 — Crafting hostil cancela
 
-Crafting em Ã¡rea hostil cancela se o jogador tomar dano.
+Crafting em área hostil cancela se o jogador tomar dano.
 
-### R4 â€” Boss key item protegido
+### R4 — Boss key item protegido
 
-ProgressionDrop nÃ£o deve ser vendÃ¡vel por padrÃ£o.
+ProgressionDrop não deve ser vendável por padrão.
 
-### R5 â€” Heavy armor tem custo
+### R5 — Heavy armor tem custo
 
 Metal/Heavy armor deve reduzir movimento e/ou aumentar custo de stamina.
 
-### R6 â€” Cloth/Leather viÃ¡veis
+### R6 — Cloth/Leather viáveis
 
-Cloth favorece magia; Leather favorece dex/crit/mobilidade; Metal favorece defesa/resistÃªncia.
+Cloth favorece magia; Leather favorece dex/crit/mobilidade; Metal favorece defesa/resistência.
 
-### R7 â€” Sem softlock silencioso
+### R7 — Sem softlock silencioso
 
-Tool/environment gate em caminho principal exige receita/material/ferramenta disponÃ­veis antes e feedback claro.
+Tool/environment gate em caminho principal exige receita/material/ferramenta disponíveis antes e feedback claro.
 
 ---
 
@@ -127,71 +127,71 @@ Tool/environment gate em caminho principal exige receita/material/ferramenta dis
 
 ---
 
-## 5. CritÃ©rios de aceite
+## 5. Critérios de aceite
 
-### CA1 â€” Materiais por faixa
+### CA1 — Materiais por faixa
 
 Cada faixa da cave possui materiais brutos e refinados definidos.
 
-### CA2 â€” Drops por famÃ­lia
+### CA2 — Drops por família
 
-Cada famÃ­lia de inimigo possui drops comuns e raros.
+Cada família de inimigo possui drops comuns e raros.
 
-### CA3 â€” Boss progression drop
+### CA3 — Boss progression drop
 
 Cada boss possui pelo menos um progression drop.
 
-### CA4 â€” Armaduras
+### CA4 — Armaduras
 
-Armaduras possuem tipo, peso, bÃ´nus e penalidade.
+Armaduras possuem tipo, peso, bônus e penalidade.
 
-### CA5 â€” ResistÃªncia ambiental
+### CA5 — Resistência ambiental
 
 `HeatResistance` e `ColdResistance` existem separados de `FireResistance` e `IceResistance`.
 
-### CA6 â€” Dano ambiental
+### CA6 — Dano ambiental
 
-Ambientes podem exigir resistÃªncia ambiental.
+Ambientes podem exigir resistência ambiental.
 
-### CA7 â€” Crafting com tempo
+### CA7 — Crafting com tempo
 
-Crafting usa tempo segurando botÃ£o.
+Crafting usa tempo segurando botão.
 
-### CA8 â€” ReduÃ§Ã£o por Level/Dexterity
+### CA8 — Redução por Level/Dexterity
 
 Level e Dexterity reduzem tempo de crafting.
 
-### CA9 â€” EstaÃ§Ãµes
+### CA9 — Estações
 
-Refinamento usa estaÃ§Ãµes diferentes.
+Refinamento usa estações diferentes.
 
-### CA10 â€” Tool gates
+### CA10 — Tool gates
 
-Tool tier bloqueia nodes e Ã¡reas.
+Tool tier bloqueia nodes e áreas.
 
-### CA11 â€” Broken elemental weapons
+### CA11 — Broken elemental weapons
 
 Armas elementais quebradas podem ser reparadas.
 
-### CA12 â€” Key items
+### CA12 — Key items
 
-Key items de boss nÃ£o sÃ£o vendÃ¡veis por padrÃ£o.
+Key items de boss não são vendáveis por padrão.
 
-### CA13 â€” Durability
+### CA13 — Durability
 
-EquipÃ¡veis possuem `DurabilityMax = 100` e perdem 1 durabilidade a cada 3 usos relevantes.
+Equipáveis possuem `DurabilityMax = 100` e perdem 1 durabilidade a cada 3 usos relevantes.
 
-### CA14 â€” Armor/accessory MVP
+### CA14 — Armor/accessory MVP
 
-Armor Ã© peÃ§a Ãºnica e MVP possui 1 accessory slot.
+Armor é peça única e MVP possui 1 accessory slot.
 
-### CA15 â€” Crafting cancel
+### CA15 — Crafting cancel
 
-Crafting em Ã¡rea hostil cancela ao tomar dano.
+Crafting em área hostil cancela ao tomar dano.
 
-### CA16 â€” Gate principal seguro
+### CA16 — Gate principal seguro
 
-Tool gate pode bloquear caminho principal apenas com receita/material/ferramenta acessÃ­veis antes.
+Tool gate pode bloquear caminho principal apenas com receita/material/ferramenta acessíveis antes.
 
 ---
 
@@ -202,12 +202,12 @@ Fora desta spec:
 - balance final de todos os itens;
 - UI final de crafting/inventory/equipment;
 - durabilidade visual final;
-- animaÃ§Ãµes finais de crafting;
-- sistema completo de peÃ§as separadas de armadura;
-- 2+ acessÃ³rios no MVP;
+- animações finais de crafting;
+- sistema completo de peças separadas de armadura;
+- 2+ acessórios no MVP;
 - encantamento completo;
 - transmog/cosmetic gear;
-- sistema econÃ´mico final;
+- sistema econômico final;
 - crafting multiplayer/co-op.
 
 ---
@@ -218,7 +218,7 @@ Fora desta spec:
 2. `CraftingRecipeSO vNext` com craft time.
 3. `RepairBench` simples.
 4. Workbench + Forge.
-5. Armor Ãºnica com Cloth/Leather/Metal exemplos.
+5. Armor única com Cloth/Leather/Metal exemplos.
 6. `HeatResistance`/`ColdResistance` no equipment stats.
 7. `EnvironmentalGateSO` placeholder.
 8. Durability em Weapon/Tool/Armor.
@@ -226,7 +226,7 @@ Fora desta spec:
 
 ---
 
-## 8. DependÃªncias
+## 8. Dependências
 
 - FASE9E Item Taxonomy/IDs.
 - FASE9E Save Schema/Migration.
@@ -242,4 +242,5 @@ Fora desta spec:
 - FASE9E equipment/hotbar estiver planejado ou implementado.
 - FASE9F resource nodes/tool tier estiver planejado ou implementado.
 - O time decidir iniciar contracts de equipment/crafting/durability.
+
 

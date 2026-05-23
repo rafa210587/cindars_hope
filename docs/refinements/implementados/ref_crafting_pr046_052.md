@@ -1,7 +1,9 @@
 ﻿# REF — CRAFTING PR046 052
 
-> Origem: $src`n> Status: refinamento implementado absorvido.
-> Spec consolidada relacionada: docs/specs/implementados/spec_craft_001_crafting_mvp.md`n
+> Origem histórica: conteúdo absorvido durante reorganização documental.
+> Status: refinamento implementado absorvido.
+> Spec consolidada relacionada: `docs/specs/implementados/spec_craft_001_crafting_mvp.md`
+
 ---
 
 # SPEC: Crafting (PR-046 to PR-052)
@@ -79,5 +81,6 @@ Crafting system: recipes, ingredients, output, crafting manager, and interactive
 ## Next Steps
 
 Continue to Town (PR-053 to PR-063).
+
 
 

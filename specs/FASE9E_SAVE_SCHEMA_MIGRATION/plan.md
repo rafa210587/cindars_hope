@@ -1,4 +1,4 @@
-# Plan — FASE9E Save Schema, Migration e Persistência
+﻿# Plan — FASE9E Save Schema, Migration e Persistência
 
 > **Feature:** FASE9E_SAVE_SCHEMA_MIGRATION  
 > **Spec:** `spec.md`
@@ -117,3 +117,4 @@ Erros devem gerar warning e limpar/ignorar entrada, não quebrar load.
 - save incremental;
 - progression formula completa;
 - UI de level up.
+

@@ -1,4 +1,4 @@
-﻿# Tasks â€” FASE9E Item Taxonomy, IDs e Regras de Item
+﻿# Tasks — FASE9E Item Taxonomy, IDs e Regras de Item
 
 > **Feature:** FASE9E_ITEM_TAXONOMY_IDS  
 > **Spec:** `spec.md`  
@@ -6,42 +6,42 @@
 
 ---
 
-## PR-148 â€” Item taxonomy contracts
+## PR-148 — Item taxonomy contracts
 
 ### Escopo
 
-Criar/expandir categorias, subtipo de consumÃ­vel e flags de item.
+Criar/expandir categorias, subtipo de consumível e flags de item.
 
-### CritÃ©rios
+### Critérios
 
-- [ ] ItemCategory contÃ©m categorias oficiais.
+- [ ] ItemCategory contém categorias oficiais.
 - [ ] ConsumableSubtype existe.
 - [ ] ItemDataSO suporta flags novas.
-- [ ] Defaults nÃ£o quebram itens existentes.
+- [ ] Defaults não quebram itens existentes.
 
 ---
 
-## PR-148.1 â€” Future ideas TODO
+## PR-148.1 — Future ideas TODO
 
 ### Escopo
 
 Registrar ideias futuras fora do MVP.
 
-### CritÃ©rios
+### Critérios
 
 - [ ] ItemRarity registrado em `docs_old/FUTURE_IDEAS_TODO_v1.0.md`.
 - [ ] Weapon advanced properties registradas como futuro.
-- [ ] Food buffs avanÃ§ados registrados como futuro.
+- [ ] Food buffs avançados registrados como futuro.
 
 ---
 
-## PR-149 â€” ID prefix validation
+## PR-149 — ID prefix validation
 
 ### Escopo
 
-Adicionar validaÃ§Ã£o de prefixo por categoria.
+Adicionar validação de prefixo por categoria.
 
-### CritÃ©rios
+### Critérios
 
 - [ ] Prefixo Seed validado.
 - [ ] Prefixo Crop validado.
@@ -52,61 +52,61 @@ Adicionar validaÃ§Ã£o de prefixo por categoria.
 
 ---
 
-## PR-150 â€” Stack rules validation
+## PR-150 — Stack rules validation
 
 ### Escopo
 
 Validar stack/maxStack e preparar regras de split/drop.
 
-### CritÃ©rios
+### Critérios
 
-- [ ] MaxStack <= 0 Ã© erro.
-- [ ] IsStackable false com MaxStack > 1 Ã© warning/erro.
-- [ ] IsStackable true com MaxStack == 1 Ã© warning.
-- [ ] Drop com quantidade escolhida estÃ¡ previsto.
-- [ ] Split par/Ã­mpar documentado no handoff.
+- [ ] MaxStack <= 0 é erro.
+- [ ] IsStackable false com MaxStack > 1 é warning/erro.
+- [ ] IsStackable true com MaxStack == 1 é warning.
+- [ ] Drop com quantidade escolhida está previsto.
+- [ ] Split par/ímpar documentado no handoff.
 
 ---
 
-## PR-151 â€” Shop/crafting item rules
+## PR-151 — Shop/crafting item rules
 
 ### Escopo
 
 Validar regras de venda, compra e crafting.
 
-### CritÃ©rios
+### Critérios
 
-- [ ] Sellable sem preÃ§o detectado.
-- [ ] Buyable sem preÃ§o detectado.
+- [ ] Sellable sem preço detectado.
+- [ ] Buyable sem preço detectado.
 - [ ] Quest/Key sellable sem override detectado.
 - [ ] DebugOnly em shop/crafting/loot normal detectado.
 - [ ] Receita com item inexistente detectada.
 
 ---
 
-## PR-152 â€” Equipment/hotbar category rules
+## PR-152 — Equipment/hotbar category rules
 
 ### Escopo
 
 Validar categorias permitidas por slot.
 
-### CritÃ©rios
+### Critérios
 
 - [ ] Seed pode ir para hotbar.
 - [ ] Consumable pode ir para hotbar.
-- [ ] Quest usÃ¡vel pode ir para hotbar.
+- [ ] Quest usável pode ir para hotbar.
 - [ ] RightHand pode receber Weapon quando permitido.
-- [ ] Ammo sÃ³ vai para slot adequado.
+- [ ] Ammo só vai para slot adequado.
 
 ---
 
-## PR-153 â€” Item examples migration
+## PR-153 — Item examples migration
 
 ### Escopo
 
 Criar/migrar exemplos iniciais.
 
-### CritÃ©rios
+### Critérios
 
 - [ ] 6 seeds definidas.
 - [ ] 6 crops definidos.
@@ -118,13 +118,13 @@ Criar/migrar exemplos iniciais.
 
 ---
 
-## PR-154 â€” Item taxonomy handoff
+## PR-154 — Item taxonomy handoff
 
 ### Escopo
 
-Documentar checklist para criaÃ§Ã£o de novo item.
+Documentar checklist para criação de novo item.
 
-### CritÃ©rios
+### Critérios
 
 - [ ] Handoff explica categoria.
 - [ ] Handoff explica prefixo.
@@ -138,12 +138,13 @@ Documentar checklist para criaÃ§Ã£o de novo item.
 
 - [ ] Criar item de cada categoria.
 - [ ] Validar prefixos.
-- [ ] Stackar seed/ammo/consumable/fish atÃ© 99.
-- [ ] Splitar stack par e Ã­mpar.
+- [ ] Stackar seed/ammo/consumable/fish até 99.
+- [ ] Splitar stack par e ímpar.
 - [ ] Dropar quantidade escolhida.
 - [ ] Tentar vender Quest/Key item.
 - [ ] Equipar seed.
 - [ ] Equipar food/consumable.
 - [ ] Equipar weapon no RightHand quando permitido.
 - [ ] Console sem erro vermelho.
+
 

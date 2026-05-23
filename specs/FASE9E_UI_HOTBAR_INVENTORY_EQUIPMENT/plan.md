@@ -1,4 +1,4 @@
-# Plan — FASE9E UI, Hotbar, Inventory e Equipment
+﻿# Plan — FASE9E UI, Hotbar, Inventory e Equipment
 
 > **Feature:** FASE9E_UI_HOTBAR_INVENTORY_EQUIPMENT  
 > **Spec:** `spec.md`
@@ -125,3 +125,4 @@ Salvar/restaurar hotbar, mão esquerda, mão direita, seed ativa e consumível s
 - gamepad;
 - múltiplas páginas;
 - UI final de shop/crafting.
+

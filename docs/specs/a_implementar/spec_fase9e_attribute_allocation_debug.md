@@ -1,6 +1,7 @@
 ﻿# SPEC FUTURA — FASE9E ATTRIBUTE ALLOCATION DEBUG
 
-> Origem: $src`n> Status: A implementar
+> Origem histórica: conteúdo absorvido durante reorganização documental.
+> Status: A implementar
 > Tipo: Spec preparada / futura
 
 ---
@@ -50,4 +51,6 @@ Debug UI for allocating stat points to attributes (Strength, Vitality, Dexterity
 ## Next Steps
 
 Implement after FASE9E HUD validation (PR-132-FIX).
+
+
 

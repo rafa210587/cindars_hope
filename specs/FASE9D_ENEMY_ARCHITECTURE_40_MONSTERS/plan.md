@@ -1,4 +1,4 @@
-# Plan — FASE9D Enemy Architecture 40+ Monsters
+﻿# Plan — FASE9D Enemy Architecture 40+ Monsters
 
 > **Feature:** FASE9D_ENEMY_ARCHITECTURE_40_MONSTERS  
 > **Spec:** `spec.md`
@@ -111,3 +111,4 @@ Adicionar validação de enemy profiles e action data.
 - Animação final.
 - VFX final.
 - Balanceamento final.
+

@@ -1,6 +1,7 @@
 ﻿# SPEC FUTURA — FASE9F CAVE RESOURCES ENCOUNTERS COMPLETE
 
-> Origem: $src`n> Status: A implementar
+> Origem histórica: conteúdo absorvido durante reorganização documental.
+> Status: A implementar
 > Tipo: Spec preparada / futura
 
 ---
@@ -67,4 +68,6 @@ Complete cave resource node system with loot tables, XP rewards, encounter gener
 ## Next Steps
 
 Implement after cave boss gates and checkpoints (PR-193-202).
+
+
 

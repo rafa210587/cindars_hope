@@ -24,3 +24,8 @@
 | spec_fishing_combat_integration_final.md | A implementar | docs/specs/a_implementar | spec_farm_003, spec_combat_001 | Integracao fishing/combat final. |
 | spec_ui_menu_systems_final.md | A implementar | docs/specs/a_implementar | spec_ui_001 | Sistemas de menus finais. |
 | spec_future_ideas_todo.md | A implementar | docs_old/FUTURE_IDEAS_TODO_v1.0.md | backlog ativo | Ideias futuras preservadas sem virar compromisso imediato. |
+
+## Rastreabilidade documental
+
+Para rastreabilidade completa entre docs_old/ e a documentação ativa, ver docs/DOCS_OLD_TO_ACTIVE_CROSSWALK.md.
+

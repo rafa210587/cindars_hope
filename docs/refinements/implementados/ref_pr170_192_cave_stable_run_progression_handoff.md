@@ -1,6 +1,6 @@
 ﻿# REF — PR170-192 cave stable run progression handoff
 
-> Origem histórica: $Source
+> Origem histórica: `docs_old/audits/PR170_192_CAVE_STABLE_RUN_PROGRESSION_HANDOFF.md`
 > Status: Refinamento implementado / handoff / audit preservado
 > Relacionado a:
 > - $_
@@ -49,5 +49,7 @@ docs/roadmap/FASE9F_CAVE_STABLE_RUN_ROADMAP_PR170_192.md
 - Save/load preserva snapshots.
 - KO/morte regenera run.
 - Checkpoints persistem após KO/morte.
+
+
 
 

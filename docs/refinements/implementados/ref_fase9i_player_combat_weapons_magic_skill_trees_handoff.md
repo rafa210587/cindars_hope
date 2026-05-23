@@ -1,6 +1,6 @@
 ﻿# REF — FASE9I player combat weapons magic skill trees handoff
 
-> Origem histórica: $Source
+> Origem histórica: `docs_old/audits/FASE9I_PLAYER_COMBAT_WEAPONS_MAGIC_SKILL_TREES_HANDOFF.md`
 > Status: Refinamento implementado / handoff / audit preservado
 > Relacionado a:
 > - $_
@@ -84,5 +84,7 @@ Quando a implementação chegar nesta área, usar FASE9I como baseline para:
 - skill tree contracts.
 
 MVP deve começar por contratos e poucas ações, não pela árvore gigante completa.
+
+
 
 

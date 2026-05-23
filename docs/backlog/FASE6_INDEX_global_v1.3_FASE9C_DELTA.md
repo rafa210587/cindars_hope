@@ -4,7 +4,7 @@
 
 ## Status atualizado dos épicos
 
-| Ã‰pico | Status atual | Próximo foco |
+| Épico | Status atual | Próximo foco |
 |---|---|---|
 | FARM | MVP funcional | refinamento por ferramentas: Hoe/Sickle/Axe |
 | CHAR | Parcial | EquipmentManager, dodge e futuramente stamina/MP |
@@ -39,4 +39,5 @@ A FASE 9C deve ser executada antes de UI final/arte final porque altera regras c
 ## Fonte detalhada
 
 - `docs/FASE9C_TOOLS_FARM_COMBAT_REFINEMENT_v1.0.md`
+
 

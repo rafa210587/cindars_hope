@@ -1,6 +1,6 @@
 ﻿# SPEC FUTURA — FASE9E Save Schema Migration
 
-> Origem histórica: $Source
+> Origem histórica: `docs_old/FASE9E_SAVE_SCHEMA_MIGRATION_SPEC_v1.0.md`
 > Status: A implementar / restante não implementado
 > Observação: conteúdo histórico preservado; não duplicar capacidades já consolidadas em specs implementadas.
 
@@ -441,5 +441,7 @@ O save deve ser versionado agora para suportar as próximas fases sem retrabalho
 ## Regra de uso
 
 Antes de implementar, reconciliar este material com docs/specs/implementados/, docs/refinements/implementados/ e o estado real do código.
+
+
 
 

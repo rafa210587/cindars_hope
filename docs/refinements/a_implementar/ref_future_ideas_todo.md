@@ -1,6 +1,6 @@
 ﻿# REF FUTURO — Future ideas TODO
 
-> Origem histórica: $Source
+> Origem histórica: `docs_old/FUTURE_IDEAS_TODO_v1.0.md`
 > Status: Refinamento futuro preservado
 > Spec futura relacionada: $Spec
 
@@ -76,5 +76,7 @@ Avaliar em spec própria:
 
 - Não tratar este refinement como autorização automática de implementação.
 - Não sobrescrever specs implementadas sem amendment/correction explícito.
+
+
 
 

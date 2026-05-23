@@ -1,6 +1,6 @@
 ﻿# REF — PR170-192 cave stable run pre implementation audit
 
-> Origem histórica: $Source
+> Origem histórica: `docs_old/audits/PR170_192_CAVE_STABLE_RUN_PRE_IMPLEMENTATION_AUDIT.md`
 > Status: Refinamento implementado / handoff / audit preservado
 > Relacionado a:
 > - $_
@@ -69,5 +69,7 @@ feature/pr-170-192-cave-stable-run-progression
 ```
 
 Abrir PR único contra `dev` ao final.
+
+
 
 

@@ -1,6 +1,6 @@
 ﻿# SPEC FUTURA — FASE9C Player Equipment Items Combat Remaining
 
-> Origem histórica: $Source
+> Origem histórica: `docs_old/FASE9C_PLAYER_EQUIPMENT_ITEMS_COMBAT_SPEC_v1.0.md`
 > Status: A implementar / restante não implementado
 > Observação: conteúdo histórico preservado; não duplicar capacidades já consolidadas em specs implementadas.
 
@@ -748,7 +748,7 @@ Ao final do pacote:
 - jogador desequipa espada;
 - espada causa mais dano que soco;
 - jogador equipa arco;
-- arco dispara flecha Ã  distância;
+- arco dispara flecha à distância;
 - flecha consome ammo;
 - arco bloqueia magia no MVP;
 - jogador equipa espada + magia;
@@ -785,5 +785,8 @@ Não implementar UI final antes de validar loadout e regras de equip/desequip.
 ## Regra de uso
 
 Antes de implementar, reconciliar este material com docs/specs/implementados/, docs/refinements/implementados/ e o estado real do código.
+
+
+
 
 

@@ -1,4 +1,4 @@
-# SpecKit — FASE9G Enemy Combat Roles, AI, Status & Movesets
+﻿# SpecKit — FASE9G Enemy Combat Roles, AI, Status & Movesets
 
 > **Feature:** `FASE9G_ENEMY_COMBAT_ROLES_AI_STATUS`  
 > **Status:** amendment funcional aprovado para planejamento.  
@@ -168,3 +168,4 @@ Fora deste amendment:
 - FASE9F procedural foundation existir.
 - FASE9G enemy ecology/faction locks estiverem sendo implementados.
 - O time decidir implementar EnemyCombatProfileSO/data-driven combat profiles.
+

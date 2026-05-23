@@ -1,6 +1,6 @@
 ﻿# SPEC FUTURA — FASE9E Item Taxonomy IDs
 
-> Origem histórica: $Source
+> Origem histórica: `docs_old/FASE9E_ITEM_TAXONOMY_IDS_SPEC_v1.0.md`
 > Status: A implementar / restante não implementado
 > Observação: conteúdo histórico preservado; não duplicar capacidades já consolidadas em specs implementadas.
 
@@ -231,5 +231,7 @@ TODOs futuros estão em:
 ## Regra de uso
 
 Antes de implementar, reconciliar este material com docs/specs/implementados/, docs/refinements/implementados/ e o estado real do código.
+
+
 
 

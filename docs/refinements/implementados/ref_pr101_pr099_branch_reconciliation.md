@@ -1,6 +1,6 @@
 ﻿# REF — PR101 PR099 branch reconciliation
 
-> Origem histórica: $Source
+> Origem histórica: `docs_old/audits/PR101_PR099_BRANCH_RECONCILIATION.md`
 > Status: Refinamento implementado / handoff / audit preservado
 > Relacionado a:
 > - $_
@@ -39,4 +39,6 @@ Nao ha codigo dessas branches que deva ser mergeado diretamente neste pacote. O 
 ## Proximo passo
 
 Continuar com hardening consolidado de combat/cave/HUD/save/validators e preparar Tools/Equipment/Hotbar/Progression.
+
+
 

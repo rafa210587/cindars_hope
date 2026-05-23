@@ -1,4 +1,21 @@
-﻿## Atualização 2026-05-22 — Terceira consolidação documental
+﻿## Atualização 2026-05-22 — Correção final pré-merge documental
+
+Status: Implementado em branch `docs/reorganizar-specs-implementadas`.
+
+Escopo:
+- Placeholders de template removidos de specs e refinements ativos.
+- Headers quebrados corrigidos.
+- Mojibake real corrigido nos arquivos ativos principais.
+- `docs/DOCS_OLD_TO_ACTIVE_CROSSWALK.md` criado para rastrear preservação de `docs_old/`.
+- Registries e mapas passam a apontar para o crosswalk.
+
+Testes:
+- Validações documentais por prefixo, ausência de placeholders, ausência de `spec/` e escopo docs-only executadas nesta rodada.
+- Unity Play Mode não executado.
+
+Pendências:
+- Validação Unity continua fora de escopo.
+## Atualização 2026-05-22 — Terceira consolidação documental
 
 Status: Implementado em branch `docs/reorganizar-specs-implementadas`.
 
@@ -1264,7 +1281,7 @@ Esse arquivo preserva o log operacional anterior inteiro antes da redução do l
 - Adicionado `GetBuiltinSprite()` helper com `#if UNITY_EDITOR` condicional (reutilizando pattern de CaveRuntimeMaterializer).
 - `SpawnEnemyAtPoint()` atualizado:
   - Se `enemyData.Icon != null`: usa sprite com cor white.
-  - Else: usa builtin sprite com cor fallback `new Color(0.85f, 0.23f, 0.23f)` (vermelho escuro visível).
+  - Else: usa builtin sprite com cor fallback new Color(0.85f, 0.23f, 0.23f) (vermelho escuro visível).
   - `sortingOrder = 3` para visibilidade acima de floor/walls.
   - `transform.localScale = Vector3.one` para sizing consistente.
 - `SpawnEnemiesForLevel()` atualizado:
@@ -1587,5 +1604,7 @@ Regenerar cena, testar Play Mode com logging completo, validar transições.
 5. Commit + PR
 
 ---
+
+
 
 

@@ -1,6 +1,6 @@
 ﻿# REF FUTURO — FASE9F cave resources encounters complete
 
-> Origem histórica: $Source
+> Origem histórica: `docs_old/FASE9F_CAVE_RESOURCES_ENCOUNTERS_SPEC_v1.0.md`
 > Status: Refinamento futuro preservado
 > Spec futura relacionada: $Spec
 
@@ -53,7 +53,7 @@ Como jogador, quero explorar níveis grandes e labirínticos da caverna, coletar
 | Slime especial | Deve ter cor/visual diferente, não apenas stats maiores |
 | Tamanho dos níveis | Cada nível deve ser grande, labiríntico e explorável |
 | Recursos por faixa | Cada nível/faixa pode ter recursos e itens específicos |
-| Ãrvores subterrâneas | Alguns níveis têm árvores/nodes que geram madeiras melhores |
+| Árvores subterrâneas | Alguns níveis têm árvores/nodes que geram madeiras melhores |
 | Refinamento | Madeiras/minérios melhores podem exigir refinamento para craftar itens melhores |
 | Boss por bioma | Toda mudança de bioma tem boss poderoso e difícil |
 | ItemRarity | Continua fora do MVP; drop melhor usa tabela/quantidade/tier/chance |
@@ -159,7 +159,7 @@ Se o jogador não tiver pickaxe ou usar tier insuficiente em minério:
 - recebe feedback de ferramenta inadequada.
 ```
 
-### O9 — Ãrvores e madeiras subterrâneas
+### O9 — Árvores e madeiras subterrâneas
 
 | Node | Drop bruto | Refinado alvo | Uso |
 |---|---|---|---|
@@ -188,7 +188,7 @@ Criaturas especiais devem ter feedback visual: cor/sprite diferente, nome difere
 ### O12 — XP por inimigo
 
 ```text
-XpReward = EnemyLevel Ã— DifficultyXpMultiplier
+XpReward = EnemyLevel × DifficultyXpMultiplier
 ```
 
 | Dificuldade | Multiplicador XP |
@@ -457,7 +457,7 @@ public readonly struct CaveBossDefeatedEvent
 | PR-176 | Cave save/load: seeds, current layer, deepest layer, checkpoints, depleted nodes |
 | PR-177 | Enemy spawn by CaveLevel com Slime especial colorido |
 | PR-178 | Loot tables para inimigos e nodes |
-| PR-179 | XP integration com EnemyLevel Ã— DifficultyMultiplier |
+| PR-179 | XP integration com EnemyLevel × DifficultyMultiplier |
 | PR-180 | Daily cave refresh apenas para `RespawnsDaily = true` |
 | PR-181 | Biome boss MVP no CaveLevel 15 |
 | PR-182 | Cave validator |
@@ -490,5 +490,8 @@ Entrar CaveLevel 1
 
 - Não tratar este refinement como autorização automática de implementação.
 - Não sobrescrever specs implementadas sem amendment/correction explícito.
+
+
+
 
 

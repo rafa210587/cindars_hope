@@ -1,6 +1,6 @@
 ﻿# REF FUTURO — FASE9E save schema migration
 
-> Origem histórica: $Source
+> Origem histórica: `docs_old/FASE9E_SAVE_SCHEMA_MIGRATION_SPEC_v1.0.md`
 > Status: Refinamento futuro preservado
 > Spec futura relacionada: $Spec
 
@@ -451,5 +451,7 @@ O save deve ser versionado agora para suportar as próximas fases sem retrabalho
 
 - Não tratar este refinement como autorização automática de implementação.
 - Não sobrescrever specs implementadas sem amendment/correction explícito.
+
+
 
 

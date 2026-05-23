@@ -1,6 +1,6 @@
 ﻿# REF — PR100 Post PR099 repo audit
 
-> Origem histórica: $Source
+> Origem histórica: `docs_old/audits/PR100_POST_PR099_REPO_AUDIT.md`
 > Status: Refinamento implementado / handoff / audit preservado
 > Relacionado a:
 > - $_
@@ -189,4 +189,6 @@ Como este PR e documental:
 - Gerar/abrir FarmScene, TownScene e CaveScene.
 - Testar fluxo Farm -> Town -> Cave -> Farm.
 - Confirmar se as alteracoes locais de cenas e `MobileDependencyResolver` devem ser mantidas, descartadas manualmente ou virar PR especifico.
+
+
 

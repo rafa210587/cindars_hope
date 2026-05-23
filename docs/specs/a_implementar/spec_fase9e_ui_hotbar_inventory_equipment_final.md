@@ -1,6 +1,7 @@
 ﻿# SPEC FUTURA — FASE9E UI HOTBAR INVENTORY EQUIPMENT FINAL
 
-> Origem: $src`n> Status: A implementar
+> Origem histórica: conteúdo absorvido durante reorganização documental.
+> Status: A implementar
 > Tipo: Spec preparada / futura
 
 ---
@@ -57,4 +58,6 @@ Final UI implementation for hotbar, inventory, and equipment system with visual 
 ## Next Steps
 
 Implement after FASE9E HUD validation (PR-132-FIX).
+
+
 

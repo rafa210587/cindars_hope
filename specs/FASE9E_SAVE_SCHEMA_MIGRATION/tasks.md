@@ -1,4 +1,4 @@
-# Tasks — FASE9E Save Schema, Migration e Persistência
+﻿# Tasks — FASE9E Save Schema, Migration e Persistência
 
 > **Feature:** FASE9E_SAVE_SCHEMA_MIGRATION  
 > **Spec:** `spec.md`  
@@ -138,3 +138,4 @@ Documentar smoke tests e handoff.
 - [ ] Alterar farm plot e recarregar.
 - [ ] Entrar na cave e validar respawn de inimigos comuns.
 - [ ] Console sem erro vermelho.
+

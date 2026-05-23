@@ -1,6 +1,6 @@
 ﻿# REF — Fix cave spawn anchor safe positioning
 
-> Origem histórica: $Source
+> Origem histórica: `docs_old/audits/FIX_CAVE_SPAWN_ANCHOR_SAFE_POSITIONING.md`
 > Status: Refinamento implementado / handoff / audit preservado
 > Relacionado a:
 > - $_
@@ -119,7 +119,7 @@ Ao navegar entre níveis da caverna (ForwardExit, BackExit), o player era sempre
 - [ ] Level 1 → Level 2 (spawn Entrance do Level 2)
 - [ ] Level 2 → Level 1 (spawn ForwardExit do Level 1)
 - [ ] Confirmar posição do player â‰  portal exatamente
-- [ ] Confirmar interact imediato NÃƒO volta para Farm
+- [ ] Confirmar interact imediato NÃO volta para Farm
 - [ ] Level 1 → Farm (spawn farm_from_cave)
 - [ ] Confirmar Console sem erro vermelho
 
@@ -127,7 +127,7 @@ Ao navegar entre níveis da caverna (ForwardExit, BackExit), o player era sempre
 
 - Farm/Town/Cave camera follow
 - Hotbar, tools, plantio
-- Ãrvore, pesca
+- Árvore, pesca
 - Save/load
 
 ---
@@ -162,6 +162,10 @@ Ao navegar entre níveis da caverna (ForwardExit, BackExit), o player era sempre
 6. Commit + PR `feature/fix-cave-spawn-anchor-safe-positioning`.
 7. Merge para dev quando testes passarem.
 8. Próxima fase: KO reset, boss gates, daily refresh, completa validação FASE9F.
+
+
+
+
 
 
 

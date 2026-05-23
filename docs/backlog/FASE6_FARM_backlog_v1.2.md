@@ -1,14 +1,14 @@
 ﻿# Cindar's Hope — Fase 6: Backlog de Histórias v1.2
-# Ã‰pico: FARM (Fazenda)
+# Épico: FARM (Fazenda)
 
 > **Fase 6 FARM — v1.1. User stories preservadas; status alinhado com Fase 7 já gerada e Fase 8 como próxima execução.*
 > **Status:** ✅ FARM detalhado — specs MVP já geradas na Fase 7
-> **Ãšltima atualização:** 2026-05-16
+> **Última atualização:** 2026-05-16
 > **Próxima ação:** Implementar Fase 8 usando `FASE7_SPEC_MVP_FARM_v2.2.md`
 
 ---
 
-## NOTA DE SINCRONIZAÃ‡ÃƒO v1.1
+## NOTA DE SINCRONIZAÇÃO v1.1
 
 Este backlog continua válido como fonte das user stories FARM. A etapa de geração de specs já ocorreu em `FASE7_SPEC_MVP_FARM_v2.2.md`; portanto, este arquivo não deve mais dizer que aguarda revisão para gerar specs.
 
@@ -37,7 +37,7 @@ Cada story tem um label de camada:
 
 ---
 
-## Ã‰PICO FARM-000 — Setup Inicial da Fazenda
+## ÉPICO FARM-000 — Setup Inicial da Fazenda
 
 ### FARM-001 Â· Cena da Fazenda existe e o jogador aparece nela
 **Prioridade:** M — Must Have
@@ -53,7 +53,7 @@ para que eu possa começar a interagir com o mundo.
 - Então o personagem jogador aparece no centro da tela
 - E o chão da fazenda está visível (placeholder: tiles cinza-claro)
 - E a câmera segue o personagem ao se mover
-- E o personagem responde Ã s teclas WASD / setas
+- E o personagem responde às teclas WASD / setas
 
 **Notas técnicas:**
 - Placeholder: sprite azul 32x48 para o jogador
@@ -102,7 +102,7 @@ para que eu saiba onde plantar, onde ficam as árvores e onde fica o lago.
 
 ---
 
-## Ã‰PICO FARM-010 — Sistema de Plantio
+## ÉPICO FARM-010 — Sistema de Plantio
 
 ### FARM-011 Â· Jogador pode selecionar um canteiro vazio
 **Prioridade:** M
@@ -206,13 +206,13 @@ para que eu saiba o que precisa de atenção.
 **Camada:** V2
 
 Como jogador,
-quero que sementes noturnas só cresçam Ã  noite
+quero que sementes noturnas só cresçam à noite
 para que eu precise pensar sobre quando plantar.
 
 **Critérios de aceite:**
 - Dado que uma semente noturna está plantada
 - Quando o DayStartedEvent dispara durante o dia
-- Então o contador desta planta NÃƒO avança
+- Então o contador desta planta NÃO avança
 - Quando o NightStartedEvent dispara
 - Então o contador avança 1
 - E [FULL] durante lua Alihana, sementes noturnas têm yield +20%
@@ -237,7 +237,7 @@ para que eu precise planejar meu plantio por estação.
 
 ---
 
-## Ã‰PICO FARM-020 — Inventário
+## ÉPICO FARM-020 — Inventário
 
 ### FARM-021 Â· Jogador tem inventário básico
 **Prioridade:** M
@@ -292,7 +292,7 @@ para que eu possa plantar sementes ou consumir comida.
 
 ---
 
-## Ã‰PICO FARM-030 — Sistema de Tempo (MVP Simplificado)
+## ÉPICO FARM-030 — Sistema de Tempo (MVP Simplificado)
 
 ### FARM-031 Â· Dia avança com botão (MVP) ou automaticamente (V2+)
 **Prioridade:** M
@@ -340,7 +340,7 @@ para que eu possa planejar minhas ações.
 
 ---
 
-## Ã‰PICO FARM-040 — Ãrvores
+## ÉPICO FARM-040 — Árvores
 
 ### FARM-041 Â· Fazenda começa com 4 árvores
 **Prioridade:** S
@@ -378,7 +378,7 @@ para que eu receba madeira para craftar.
 
 ---
 
-### FARM-043 Â· Ãrvores crescem novamente após 5 dias
+### FARM-043 Â· Árvores crescem novamente após 5 dias
 **Prioridade:** S
 **Camada:** V2
 
@@ -411,7 +411,7 @@ para que eu possa ter mais recursos.
 
 ---
 
-## Ã‰PICO FARM-050 — Pesca
+## ÉPICO FARM-050 — Pesca
 
 ### FARM-051 Â· Lago existe na fazenda
 **Prioridade:** S
@@ -449,7 +449,7 @@ para que eu obtenha peixe para comida e poções.
 
 ---
 
-## Ã‰PICO FARM-060 — Fome
+## ÉPICO FARM-060 — Fome
 
 ### FARM-061 Â· Jogador tem barra de fome
 **Prioridade:** M
@@ -489,7 +489,7 @@ para que eu consiga continuar jogando.
 
 ---
 
-## Ã‰PICO FARM-070 — Save e Load
+## ÉPICO FARM-070 — Save e Load
 
 ### FARM-071 Â· Jogo salva ao pressionar "Dormir" (MVP)
 **Prioridade:** M
@@ -548,7 +548,7 @@ para que eu possa ter partidas diferentes ou recomeçar sem perder a anterior.
 
 ---
 
-## Ã‰PICO FARM-080 — Expansão da Fazenda
+## ÉPICO FARM-080 — Expansão da Fazenda
 
 ### FARM-081 Â· Fazenda começa com tamanho 1x
 **Prioridade:** M
@@ -586,7 +586,7 @@ para que eu tenha mais espaço para plantar e construir.
 
 ---
 
-## Ã‰PICO FARM-090 — Fertilizante e Vacas
+## ÉPICO FARM-090 — Fertilizante e Vacas
 
 ### FARM-091 Â· Fertilizante pode ser aplicado num canteiro
 **Prioridade:** C
@@ -621,59 +621,59 @@ para que eu tenha fonte renovável de fertilizante.
 
 ---
 
-## MAPA DE EVOLUÃ‡ÃƒO — FARM
+## MAPA DE EVOLUÇÃO — FARM
 
 ```
 MVP (Fase 8)
-â”œâ”€â”€ FARM-001 Cena existe, personagem aparece
-â”œâ”€â”€ FARM-002 Movimento WASD
-â”œâ”€â”€ FARM-003 Ãreas delimitadas (placeholder)
-â”œâ”€â”€ FARM-011 Selecionar canteiro
-â”œâ”€â”€ FARM-012 Plantar semente
-â”œâ”€â”€ FARM-013 Planta cresce (avança dia com TAB)
-â”œâ”€â”€ FARM-014 Colher planta
-â”œâ”€â”€ FARM-021 Inventário (lista de texto)
-â”œâ”€â”€ FARM-022 Stacking de itens
-â”œâ”€â”€ FARM-023 Usar item do inventário
-â”œâ”€â”€ FARM-031 Dia avança com TAB
-â”œâ”€â”€ FARM-032 UI: número do dia
-â”œâ”€â”€ FARM-041 4 árvores na fazenda
-â”œâ”€â”€ FARM-042 Cortar árvore = madeira
-â”œâ”€â”€ FARM-051 Lago existe
-â”œâ”€â”€ FARM-052 Pescar (básico, sem mini-game)
-â”œâ”€â”€ FARM-061 Barra de fome
-â”œâ”€â”€ FARM-062 Comer para restaurar fome
-â”œâ”€â”€ FARM-071 Save ao dormir (slot único)
-â””â”€â”€ FARM-072 Load ao iniciar
+├── FARM-001 Cena existe, personagem aparece
+├── FARM-002 Movimento WASD
+├── FARM-003 Áreas delimitadas (placeholder)
+├── FARM-011 Selecionar canteiro
+├── FARM-012 Plantar semente
+├── FARM-013 Planta cresce (avança dia com TAB)
+├── FARM-014 Colher planta
+├── FARM-021 Inventário (lista de texto)
+├── FARM-022 Stacking de itens
+├── FARM-023 Usar item do inventário
+├── FARM-031 Dia avança com TAB
+├── FARM-032 UI: número do dia
+├── FARM-041 4 árvores na fazenda
+├── FARM-042 Cortar árvore = madeira
+├── FARM-051 Lago existe
+├── FARM-052 Pescar (básico, sem mini-game)
+├── FARM-061 Barra de fome
+├── FARM-062 Comer para restaurar fome
+├── FARM-071 Save ao dormir (slot único)
+└── FARM-072 Load ao iniciar
 
 V2 (pós-MVP)
-â”œâ”€â”€ FARM-002 Animação walk + flip de sprite
-â”œâ”€â”€ FARM-015 Indicador visual de canteiros prontos
-â”œâ”€â”€ FARM-016 Período dia/noite afeta crescimento
-â”œâ”€â”€ FARM-031 Tempo automático (sem botão TAB)
-â”œâ”€â”€ FARM-032 UI: hora + ícone sol/lua
-â”œâ”€â”€ FARM-043 Ãrvores crescem de volta em 5 dias
-â”œâ”€â”€ FARM-044 Plantar novas árvores (até 14)
-â”œâ”€â”€ FARM-052 Variação de peixe por período/season
-â”œâ”€â”€ FARM-073 3 slots de save
-â”œâ”€â”€ FARM-082 Expansão fazenda 1x → 2x
-â”œâ”€â”€ FARM-091 Fertilizante em canteiros
-â””â”€â”€ FARM-092 Vacas produzem fertilizante
+├── FARM-002 Animação walk + flip de sprite
+├── FARM-015 Indicador visual de canteiros prontos
+├── FARM-016 Período dia/noite afeta crescimento
+├── FARM-031 Tempo automático (sem botão TAB)
+├── FARM-032 UI: hora + ícone sol/lua
+├── FARM-043 Árvores crescem de volta em 5 dias
+├── FARM-044 Plantar novas árvores (até 14)
+├── FARM-052 Variação de peixe por período/season
+├── FARM-073 3 slots de save
+├── FARM-082 Expansão fazenda 1x → 2x
+├── FARM-091 Fertilizante em canteiros
+└── FARM-092 Vacas produzem fertilizante
 
 FULL (versão completa)
-â”œâ”€â”€ FARM-002 Animação completa 4 direções
-â”œâ”€â”€ FARM-013 Múltiplos estágios visuais de crescimento
-â”œâ”€â”€ FARM-017 Sementes têm season válida
-â”œâ”€â”€ FARM-031 Ciclo completo: hora, mês, lua, season
-â”œâ”€â”€ FARM-052 Mini-game de pesca com timing
-â”œâ”€â”€ FARM-061 Fome 3x mais rápida em combate
-â”œâ”€â”€ FARM-071 Save automático por mudança de cena
-â””â”€â”€ FARM-082 Expansões até 4x + sub-expansão pasto
+├── FARM-002 Animação completa 4 direções
+├── FARM-013 Múltiplos estágios visuais de crescimento
+├── FARM-017 Sementes têm season válida
+├── FARM-031 Ciclo completo: hora, mês, lua, season
+├── FARM-052 Mini-game de pesca com timing
+├── FARM-061 Fome 3x mais rápida em combate
+├── FARM-071 Save automático por mudança de cena
+└── FARM-082 Expansões até 4x + sub-expansão pasto
 ```
 
 ---
 
-## DECISÃ•ES TOMADAS (aprovadas pelo Rafa)
+## DECISÕES TOMADAS (aprovadas pelo Rafa)
 
 | Decisão | Valor |
 |---|---|
@@ -752,7 +752,7 @@ Toda story que muda estado persistente precisa declarar o que entra no save.
 | FARM-014 Colheita | Inventário, plot vazio |
 | FARM-021 Inventário | ItemId + Amount por slot |
 | FARM-031 Dia | CurrentDay |
-| FARM-042 Ãrvore | ChopLevel por árvore |
+| FARM-042 Árvore | ChopLevel por árvore |
 | FARM-052 Pesca | Inventário após peixe |
 | FARM-061 Fome | CurrentHunger |
 | FARM-SELL Venda | Gold e inventário |
@@ -785,5 +785,7 @@ Para MVP vertical, considerar `FARM-015` como **S/V2 visual**, mas não bloquear
 - restaurar.
 
 O indicador visual bonito de todos os canteiros pode entrar depois do loop funcional, desde que o estado do canteiro esteja legível por placeholder.
+
+
 
 

@@ -1,6 +1,6 @@
 ﻿# REF FUTURO — FASE9I player combat weapons magic skill actions
 
-> Origem histórica: $Source
+> Origem histórica: `docs_old/FASE9I_PLAYER_COMBAT_WEAPONS_MAGIC_SKILL_TREES_SPEC_v1.0.md`
 > Status: Refinamento futuro preservado
 > Spec futura relacionada: $Spec
 
@@ -104,11 +104,11 @@ D28: Skill trees começam simples, mas serão grandes no futuro.
 
 ```text
 Roll é o dodge padrão.
-Ã‰ defensivo.
-Ã‰ skill da árvore Dexterity.
+É defensivo.
+É skill da árvore Dexterity.
 Consome stamina.
 Pode ter janela curta de invulnerabilidade ou evasão.
-Ã‰ afetado por armor weight.
+É afetado por armor weight.
 ```
 
 Skills relacionadas:
@@ -134,7 +134,7 @@ Roll não deve atravessar hazard permanente sem custo/risco.
 
 ```text
 Dash é avanço ofensivo.
-Ã‰ skill da árvore Dexterity.
+É skill da árvore Dexterity.
 Consome stamina.
 Serve para aproximar, reposicionar agressivamente ou iniciar combo.
 Não deve ter a mesma janela defensiva do Roll.
@@ -233,7 +233,7 @@ Riposte futuro
 Sprint é skill de Survival/Breath.
 Consome stamina continuamente.
 Serve para exploração e reposicionamento.
-Ã‰ afetado por armor weight.
+É afetado por armor weight.
 ```
 
 Skills relacionadas:
@@ -371,7 +371,7 @@ Arco usa durabilidade padrão: 100, perde 1 a cada 3 disparos.
 
 ```text
 Não é padrão.
-Ã‰ skill desbloqueável.
+É skill desbloqueável.
 Segurar botão carrega tiro.
 Quanto mais carrega, mais dano/stagger.
 Consome mais stamina.
@@ -849,5 +849,8 @@ Não altera specs antigas destrutivamente.
 
 - Não tratar este refinement como autorização automática de implementação.
 - Não sobrescrever specs implementadas sem amendment/correction explícito.
+
+
+
 
 

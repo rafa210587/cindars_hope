@@ -1,6 +1,6 @@
 ﻿# REF FUTURO — FASE9E item examples variations
 
-> Origem histórica: $Source
+> Origem histórica: `docs_old/FASE9E_ITEM_EXAMPLES_VARIATIONS_v1.0.md`
 > Status: Refinamento futuro preservado
 > Spec futura relacionada: $Spec
 
@@ -193,5 +193,7 @@ item_drop_slime_gel
 
 - Não tratar este refinement como autorização automática de implementação.
 - Não sobrescrever specs implementadas sem amendment/correction explícito.
+
+
 
 

@@ -63,7 +63,7 @@ Quando ha persistencia, ela deve usar DTOs simples e IDs estaveis. Referencias U
 
 ## 5. Refinamentos relacionados
 
-- $link`n- $link`n- `docs/refinements/implementados/ref_implementados_map.md`
+- `docs/refinements/implementados/ref_implementados_map.md`
 - `docs/refinements/a_implementar/ref_futuro_map.md`
 - `docs_old/ARCH_fase4_v2.2.md; docs_old/IMPLEMENTATION_STATUS.md`
 
@@ -73,4 +73,6 @@ Quando ha persistencia, ela deve usar DTOs simples e IDs estaveis. Referencias U
 
 - Validar cenas regeneradas no Unity e padronizar instaladores.
 - Se a implementacao for parcial, nao promover para final sem evidencia de Unity e sem atualizar esta spec ou criar amendment/correction.
+
+
 

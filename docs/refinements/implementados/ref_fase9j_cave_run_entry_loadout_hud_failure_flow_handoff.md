@@ -1,6 +1,6 @@
 ﻿# REF — FASE9J cave run entry loadout HUD failure flow handoff
 
-> Origem histórica: $Source
+> Origem histórica: `docs_old/audits/FASE9J_CAVE_RUN_ENTRY_LOADOUT_HUD_AND_FAILURE_FLOW_HANDOFF.md`
 > Status: Refinamento implementado / handoff / audit preservado
 > Relacionado a:
 > - $_
@@ -51,7 +51,7 @@
 - Safe room de checkpoint não tem inimigos nem dano ambiental imediato.
 - Warnings de loadout aparecem antes da entrada.
 - Return item não conta como morte e não troca CaveRunSeed.
-- Key progression unlocks sobrevivem Ã  morte.
+- Key progression unlocks sobrevivem à morte.
 
 ---
 
@@ -80,5 +80,8 @@ Usar FASE9J como baseline quando a implementação chegar em:
 - persistência de CaveRunSeed/corpse.
 
 MVP deve começar com OnGUI simples e save DTOs, não UI final polida.
+
+
+
 
 

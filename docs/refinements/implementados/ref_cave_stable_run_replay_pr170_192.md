@@ -1,7 +1,9 @@
 ﻿# REF — CAVE STABLE RUN REPLAY PR170 192
 
-> Origem: $src`n> Status: refinamento implementado absorvido.
-> Spec consolidada relacionada: docs/specs/implementados/spec_cave_003_stable_run_snapshots_replay_parcial.md`n
+> Origem histórica: conteúdo absorvido durante reorganização documental.
+> Status: refinamento implementado absorvido.
+> Spec consolidada relacionada: `docs/specs/implementados/spec_cave_003_stable_run_snapshots_replay_parcial.md`
+
 ---
 
 # SPEC: Cave Stable Run & Replay (PR-170 to PR-192)
@@ -90,5 +92,6 @@ Deterministic cave generation with snapshot replay: revisit levels within same r
 ## Next Steps
 
 Refer to Cave boss gates and checkpoints (PR-193-202).
+
 
 

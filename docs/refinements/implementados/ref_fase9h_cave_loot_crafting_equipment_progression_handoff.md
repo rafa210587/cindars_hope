@@ -1,6 +1,6 @@
 ﻿# REF — FASE9H cave loot crafting equipment progression handoff
 
-> Origem histórica: $Source
+> Origem histórica: `docs_old/audits/FASE9H_CAVE_LOOT_CRAFTING_EQUIPMENT_PROGRESSION_HANDOFF.md`
 > Status: Refinamento implementado / handoff / audit preservado
 > Relacionado a:
 > - $_
@@ -47,7 +47,7 @@
 
 ## 3. Hardening aplicado
 
-- Sem hard lock injusto: progressão principal só pode exigir ferramenta/equipamento se o jogador tiver acesso prévio Ã  receita e materiais.
+- Sem hard lock injusto: progressão principal só pode exigir ferramenta/equipamento se o jogador tiver acesso prévio à receita e materiais.
 - Aviso antes de dano ambiental pesado.
 - Armadura pesada não pode ser melhor em tudo.
 - Cloth/Leather precisam permanecer viáveis como builds.
@@ -82,5 +82,8 @@ Quando a implementação chegar nesta área, usar FASE9H como baseline para:
 - tool/environment gates.
 
 O MVP recomendado da spec começa por contracts e exemplos mínimos, não por todos os tiers completos.
+
+
+
 
 

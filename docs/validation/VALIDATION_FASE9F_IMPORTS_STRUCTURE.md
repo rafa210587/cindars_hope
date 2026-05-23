@@ -173,7 +173,7 @@
 
 ---
 
-### 6. CaveSaveData.cs âš ï¸ REWRITE
+### 6. CaveSaveData.cs ⚠️ REWRITE
 **Changes**:
 - Complete rewrite: Added snapshot persistence
 - Added: `VisitedLevelSnapshots` field
@@ -240,32 +240,32 @@
 
 ```
 CaveRunManager
-  â”œâ”€ CaveRuntimeState
-  â”‚   â””â”€ VisitedLevelSnapshot ← NEW
-  â”‚       â”œâ”€ SerializedEnemySpawn ← NEW
-  â”‚       â””â”€ SerializedResourceNode ← NEW (but exists in both files)
-  â”œâ”€ CavePlayerDefeatedEvent ← NEW
-  â”œâ”€ GameEventBus.Publish() ✓
-  â””â”€ CaveSaveData
-      â””â”€ SerializedVisitedLevelSnapshot ← NEW
+  ├─ CaveRuntimeState
+  │   └─ VisitedLevelSnapshot ← NEW
+  │       ├─ SerializedEnemySpawn ← NEW
+  │       └─ SerializedResourceNode ← NEW (but exists in both files)
+  ├─ CavePlayerDefeatedEvent ← NEW
+  ├─ GameEventBus.Publish() ✓
+  └─ CaveSaveData
+      └─ SerializedVisitedLevelSnapshot ← NEW
 
 CaveLevelRuntimeController
-  â”œâ”€ CaveRunManager ✓
-  â”œâ”€ VisitedLevelSnapshot ✓
-  â”œâ”€ DayStartedEvent ✓
-  â””â”€ ResourceNode
-      â””â”€ RefreshForNewDay() ← NEW
+  ├─ CaveRunManager ✓
+  ├─ VisitedLevelSnapshot ✓
+  ├─ DayStartedEvent ✓
+  └─ ResourceNode
+      └─ RefreshForNewDay() ← NEW
 
 CaveExitPortal
-  â”œâ”€ CaveRunManager ✓
-  â”œâ”€ CaveLevelRuntimeController ✓
-  â””â”€ PlayerActionFeedbackEvent ✓
+  ├─ CaveRunManager ✓
+  ├─ CaveLevelRuntimeController ✓
+  └─ PlayerActionFeedbackEvent ✓
 
 ResourceNode
-  â””â”€ CaveRunManager.State ✓
+  └─ CaveRunManager.State ✓
 
 DebugHud
-  â””â”€ CaveRunManager.State.VisitedLevelSnapshots ✓
+  └─ CaveRunManager.State.VisitedLevelSnapshots ✓
 ```
 
 **Status**: ✅ **No Circular Dependencies, No Missing Types**
@@ -338,5 +338,6 @@ Execute manual tests in Play Mode:
 6. New Day → `RespawnsDaily=true` nodes refreshed
 
 See `FASE9F_CAVE_REPLAY_HANDOFF_PR170_192.md` for complete test checklist.
+
 
 

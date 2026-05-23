@@ -2,9 +2,9 @@
 
 > Status: Implementado em código — validação Unity pendente
 > Camada: Cave
-> Fonte histórica: $source
-> Refinamento relacionado: $ref
-> Evidência principal: $evidence
+> Fonte histórica: `docs_old/audits/FIX_CAVE_PROCEDURAL_VISUAL_HANDOFF.md`
+> Refinamento relacionado: `docs/refinements/implementados/ref_fix_cave_procedural_visual_handoff.md`
+> Evidência principal: `Assets/_Game/Scripts/Cave/Runtime/CaveRuntimeMaterializer.cs`
 
 ---
 
@@ -53,12 +53,16 @@ Visual runtime não é save por si; estado persistido fica em CaveSaveData/snaps
 
 | Tipo | Caminho | Observação |
 |---|---|---|
-| Código | $evidence | Evidência principal. |
-| Histórico | $source | Fonte histórica preservada. |
-| Refinamento | $ref | Refinamento ativo relacionado. |
+| Código | `Assets/_Game/Scripts/Cave/Runtime/CaveRuntimeMaterializer.cs` | Evidência principal. |
+| Histórico | `docs_old/audits/FIX_CAVE_PROCEDURAL_VISUAL_HANDOFF.md` | Fonte histórica preservada. |
+| Refinamento | `docs/refinements/implementados/ref_fix_cave_procedural_visual_handoff.md` | Refinamento ativo relacionado. |
 
 ---
 
 ## 5. Pendências e riscos
 
 - Validar visualização e ausência de erro vermelho no Unity.
+
+
+
+
