@@ -2,12 +2,30 @@ namespace CindarsHope.Inventory.Data
 {
     public enum ItemCategory
     {
+        None,
         Seed,
         Crop,
-        Food,
+        Consumable,
         Material,
         Tool,
+        Weapon,
+        Magic,
+        Ammo,
         Fish,
+        Ore,
+        Gem,
+        MonsterDrop,
+        Quest,
+        KeyItem,
+        Furniture,
         Misc
+    }
+
+    public enum ConsumableSubtype
+    {
+        None,
+        Potion,
+        Food,
+        BuffFood
     }
 }
