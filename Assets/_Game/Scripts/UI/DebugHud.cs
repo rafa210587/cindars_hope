@@ -18,6 +18,8 @@ namespace CindarsHope.UI
     [DisallowMultipleComponent]
     public class DebugHud : MonoBehaviour
     {
+        private const int DebugXpGrantAmount = 99;
+
         private static DebugHud _instance;
 
         [SerializeField] private PlayerManager _playerManager;
@@ -94,6 +96,19 @@ namespace CindarsHope.UI
             {
                 _instance = null;
                 _isPrimaryInstance = false;
+            }
+        }
+
+        private void Update()
+        {
+            if (!_isPrimaryInstance || _instance != this)
+            {
+                return;
+            }
+
+            if (Input.GetKeyDown(KeyCode.O))
+            {
+                GrantDebugXp();
             }
         }
 
@@ -303,6 +318,7 @@ namespace CindarsHope.UI
             GUILayout.Label("Commands:");
             GUILayout.Label("E: interact");
             GUILayout.Label("J: attack");
+            GUILayout.Label("O: +99 XP debug");
             GUILayout.Label("T: cycle tool");
             GUILayout.Label("1-6: select hotbar slot");
             GUILayout.Label("Tab: advance day");
@@ -437,6 +453,25 @@ namespace CindarsHope.UI
             {
                 GUILayout.Label($"Last: {_caveDebugLevelSkipController.LastDebugAction}");
             }
+        }
+
+        private void GrantDebugXp()
+        {
+            var progressionManager = GetProgressionManager();
+            if (progressionManager == null)
+            {
+                _currentActionFeedback = "XP debug failed: progression manager not assigned";
+                _actionFeedbackUntil = Time.time + 2f;
+                Debug.LogWarning("DebugHud: cannot grant debug XP because PlayerProgressionManager is not assigned.", this);
+                return;
+            }
+
+            var oldLevel = progressionManager.Level;
+            var oldXp = progressionManager.CurrentXp;
+            progressionManager.AddXp(DebugXpGrantAmount);
+            _currentActionFeedback = $"+{DebugXpGrantAmount} XP debug";
+            _actionFeedbackUntil = Time.time + 2f;
+            Debug.Log($"DebugHud: granted +{DebugXpGrantAmount} XP via O key. Level {oldLevel}->{progressionManager.Level}, XP {oldXp}->{progressionManager.CurrentXp}/{progressionManager.XpToNextLevel}.", this);
         }
 
         private void OnInteractionPromptChanged(InteractionPromptChangedEvent evt)
