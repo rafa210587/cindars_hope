@@ -5,12 +5,12 @@ using UnityEngine;
 namespace CindarsHope.Enemy
 {
     /// <summary>
-    /// Legacy compatibility wrapper kept only to avoid breaking references during stabilization.
+    /// Legacy compatibility wrapper kept only to avoid breaking existing Unity asset references during stabilization.
     /// The official runtime enemy model is CindarsHope.Combat.EnemyDataSO.
     /// Do not create new assets with this type.
     /// </summary>
     [Obsolete("Use CindarsHope.Combat.EnemyDataSO as the official enemy data model.")]
-    public class LegacyEnemyDataSO : ScriptableObject, IIdentifiedData
+    public class EnemyDataSO : ScriptableObject, IIdentifiedData
     {
         public string Id;
         public string DisplayName;
