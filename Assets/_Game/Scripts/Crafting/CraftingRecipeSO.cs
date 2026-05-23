@@ -5,19 +5,19 @@ using UnityEngine;
 namespace CindarsHope.Crafting
 {
     /// <summary>
-    /// Legacy compatibility wrapper kept only to avoid breaking references during stabilization.
+    /// Legacy compatibility wrapper kept only to avoid breaking existing Unity asset references during stabilization.
     /// The official runtime recipe model is CindarsHope.Craft.Data.RecipeDataSO.
     /// Do not create new assets with this type.
     /// </summary>
     [Obsolete("Use CindarsHope.Craft.Data.RecipeDataSO as the official crafting recipe model.")]
-    public class LegacyCraftingRecipeSO : ScriptableObject, IIdentifiedData
+    public class CraftingRecipeSO : ScriptableObject, IIdentifiedData
     {
         public string Id;
         public string RecipeName;
         public string OutputItemId;
         public int OutputQuantity = 1;
         public int CraftingTimeSeconds = 5;
-        public LegacyCraftingIngredient[] Ingredients;
+        public CraftingIngredient[] Ingredients;
         public int RequiredLevel = 1;
 
         string IIdentifiedData.Id => Id;
@@ -31,7 +31,7 @@ namespace CindarsHope.Crafting
     }
 
     [Serializable]
-    public class LegacyCraftingIngredient
+    public class CraftingIngredient
     {
         public string ItemId;
         public int Quantity = 1;
