@@ -4,16 +4,21 @@ using UnityEngine;
 
 namespace CindarsHope.Crafting
 {
-    [CreateAssetMenu(fileName = "Recipe_", menuName = "CindarsHope/Crafting/CraftingRecipe")]
-    public class CraftingRecipeSO : ScriptableObject, IIdentifiedData
+    /// <summary>
+    /// Legacy compatibility wrapper kept only to avoid breaking references during stabilization.
+    /// The official runtime recipe model is CindarsHope.Craft.Data.RecipeDataSO.
+    /// Do not create new assets with this type.
+    /// </summary>
+    [Obsolete("Use CindarsHope.Craft.Data.RecipeDataSO as the official crafting recipe model.")]
+    public class LegacyCraftingRecipeSO : ScriptableObject, IIdentifiedData
     {
         public string Id;
         public string RecipeName;
         public string OutputItemId;
         public int OutputQuantity = 1;
         public int CraftingTimeSeconds = 5;
-        public CraftingIngredient[] Ingredients;
-        public int RequiredLevel;
+        public LegacyCraftingIngredient[] Ingredients;
+        public int RequiredLevel = 1;
 
         string IIdentifiedData.Id => Id;
 
@@ -26,7 +31,7 @@ namespace CindarsHope.Crafting
     }
 
     [Serializable]
-    public class CraftingIngredient
+    public class LegacyCraftingIngredient
     {
         public string ItemId;
         public int Quantity = 1;
