@@ -12,12 +12,18 @@ namespace CindarsHope.Combat
 
         private int _currentHp;
 
+        public int CurrentHp => _currentHp;
+        public int MaxHp => _enemyData != null ? _enemyData.maxHp : 0;
+        public string EnemyId => _enemyData != null ? _enemyData.enemyId : string.Empty;
+        public string DisplayName => _enemyData != null && !string.IsNullOrWhiteSpace(_enemyData.DisplayName) ? _enemyData.DisplayName : name;
+
         public void Configure(EnemyDataSO enemyData)
         {
             _enemyData = enemyData;
             if (_enemyData != null)
             {
                 _currentHp = _enemyData.maxHp;
+                Debug.Log($"CombatLog: Enemy configured. Name={DisplayName}, EnemyId={EnemyId}, HP={_currentHp}/{MaxHp}, Level={_enemyData.enemyLevel}, Difficulty={_enemyData.baseDifficulty}.", this);
             }
         }
 
@@ -30,6 +36,7 @@ namespace CindarsHope.Combat
             }
 
             _currentHp = _enemyData.maxHp;
+            Debug.Log($"CombatLog: Enemy spawned. Name={DisplayName}, EnemyId={EnemyId}, HP={_currentHp}/{MaxHp}, Level={_enemyData.enemyLevel}, Difficulty={_enemyData.baseDifficulty}.", this);
         }
 
         public void TakeDamage(int amount)
@@ -60,9 +67,10 @@ namespace CindarsHope.Combat
                 return;
             }
 
+            var hpBefore = _currentHp;
             _currentHp -= damageResult.FinalDamage;
             _currentHp = Mathf.Max(0, _currentHp);
-            Debug.Log($"EnemyHealth: {name} took {damageResult.FinalDamage} damage. HP {_currentHp}/{_enemyData.maxHp}.");
+            Debug.Log($"CombatLog: Hit enemy. Name={DisplayName}, EnemyId={EnemyId}, Damage={damageResult.FinalDamage}, HP={hpBefore}->{_currentHp}/{MaxHp}.", this);
 
             var hitFlash = GetComponentInChildren<HitFlashController>();
             if (hitFlash != null)
@@ -79,7 +87,7 @@ namespace CindarsHope.Combat
                     Vector2 direction = (currentPosition - request.SourcePosition).normalized;
                     float finalForce = request.KnockbackForce * _enemyData.receivedKnockbackMultiplier;
                     knockback.ApplyKnockback(direction, finalForce);
-                    Debug.Log($"EnemyHealth: {name} knockback applied. Force: {finalForce}.");
+                    Debug.Log($"CombatLog: Knockback enemy. Name={DisplayName}, EnemyId={EnemyId}, Force={finalForce}, HP={_currentHp}/{MaxHp}.", this);
                 }
             }
 
@@ -91,17 +99,18 @@ namespace CindarsHope.Combat
 
         private void Die()
         {
-            Debug.Log($"EnemyHealth: {name} died.");
-            Debug.Log($"EnemyHealth: publishing EnemyKilledEvent enemy={_enemyData.enemyId}, drop={_enemyData.dropItemId} x{_enemyData.dropAmount}.");
+            var xpReward = PlayerProgressionRules.CalculateEnemyXpReward(
+                _enemyData.enemyLevel,
+                _enemyData.baseDifficulty,
+                _enemyData.xpRewardOverride);
+
+            Debug.Log($"CombatLog: Enemy defeated. Name={DisplayName}, EnemyId={EnemyId}, HP=0/{MaxHp}, Drop={_enemyData.dropItemId} x{_enemyData.dropAmount}, XP={xpReward}.", this);
             GameEventBus.Publish(new EnemyKilledEvent(
                 _enemyData.enemyId,
                 _enemyData.dropItemId,
                 _enemyData.dropAmount,
                 transform.position,
-                PlayerProgressionRules.CalculateEnemyXpReward(
-                    _enemyData.enemyLevel,
-                    _enemyData.baseDifficulty,
-                    _enemyData.xpRewardOverride)));
+                xpReward));
 
             gameObject.SetActive(false);
         }
