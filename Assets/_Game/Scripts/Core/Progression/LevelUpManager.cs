@@ -4,36 +4,36 @@ namespace CindarsHope.Player.Progression
 {
     public static class LevelUpManager
     {
-        public const int MaxLevel = 100;
+        public const int MaxLevel = PlayerProgressionRules.MaxLevel;
         public const int StartingAttributeValue = 1;
         public const int AttributeMaxValue = 100;
-        public const int BaseXpForLevel2 = 100;
 
         public static int GetXpRequiredForLevel(int targetLevel)
         {
             if (targetLevel < 2 || targetLevel > MaxLevel)
+            {
                 return 0;
+            }
 
-            int levelBlock = (targetLevel - 1) / 10;
-            float multiplier = 1f + (levelBlock * 0.1f);
-            int xpNeeded = Mathf.RoundToInt(BaseXpForLevel2 * (targetLevel - 1) * multiplier);
-            return Mathf.Max(1, xpNeeded);
+            return PlayerProgressionRules.CalculateXpToNextLevel(targetLevel - 1);
         }
 
         public static int GetAttributePointsAtLevel(int level)
         {
-            return Mathf.Max(0, level - 1);
+            return PlayerProgressionRules.CalculateTotalAttributePointsAtLevel(level);
         }
 
         public static int GetSkillPointsAtLevel(int level)
         {
-            return (level - 1) / 3;
+            return PlayerProgressionRules.CalculateTotalSkillPointsAtLevel(level);
         }
 
         public static void ApplyAttributePoint(PlayerProgressionSaveData progression, PlayerAttribute attribute)
         {
-            if (progression.UnspentAttributePoints <= 0)
+            if (progression == null || progression.UnspentAttributePoints <= 0)
+            {
                 return;
+            }
 
             switch (attribute)
             {
