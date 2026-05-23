@@ -14,11 +14,23 @@ namespace CindarsHope.Cave.Runtime
         [SerializeField] private int _maxDebugGateSearchLevel = 100;
         [SerializeField] private bool _showDebugSkipButton = true;
 
+        // Backward-compatible serialized fields used by older scene generators.
+        // Keep these hidden to avoid breaking CreateMvpCaveScene while the generator is updated.
+        [SerializeField, HideInInspector] private KeyCode _nextLevelKey = KeyCode.P;
+        [SerializeField, HideInInspector] private KeyCode _alternateNextLevelKey = KeyCode.F2;
+        [SerializeField, HideInInspector] private bool _bypassBossGateForDebugSkip = true;
+
         private string _lastDebugAction = "none";
         private bool _disabledLogged = false;
 
+        private void OnValidate()
+        {
+            SyncLegacySerializedFields();
+        }
+
         private void Start()
         {
+            SyncLegacySerializedFields();
             var hasRunManager = _caveRunManager != null;
             var hasLevelController = _levelController != null;
             Debug.Log($"CaveDebugLevelSkipController: enabled={_enableDebugLevelSkip}, nextGateKey={_nextGateKey}, altKey={_alternateNextGateKey}, maxGateSearchLevel={_maxDebugGateSearchLevel}, hasRunManager={hasRunManager}, hasLevelController={hasLevelController}.", this);
@@ -26,6 +38,8 @@ namespace CindarsHope.Cave.Runtime
 
         private void Update()
         {
+            SyncLegacySerializedFields();
+
             if (!_enableDebugLevelSkip)
             {
                 if (!_disabledLogged)
@@ -66,6 +80,19 @@ namespace CindarsHope.Cave.Runtime
             {
                 Debug.Log("CaveDebugLevelSkipController: debug next gate button clicked.", this);
                 SkipToNextBossGateLevel();
+            }
+        }
+
+        private void SyncLegacySerializedFields()
+        {
+            if (_nextLevelKey != _nextGateKey)
+            {
+                _nextGateKey = _nextLevelKey;
+            }
+
+            if (_alternateNextLevelKey != _alternateNextGateKey)
+            {
+                _alternateNextGateKey = _alternateNextLevelKey;
             }
         }
 
