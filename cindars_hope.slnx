@@ -1,4 +1,6 @@
 ﻿<Solution>
+  <!-- Enable NuGet package restore for this solution -->
+  <RestorePackages>true</RestorePackages>
   <Project Path="Assembly-CSharp.csproj" />
   <Project Path="Assembly-CSharp-Editor.csproj" />
 </Solution>

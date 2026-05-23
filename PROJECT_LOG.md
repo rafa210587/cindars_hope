@@ -1,4 +1,24 @@
-﻿## Atualização 2026-05-22 — Correção final pré-merge documental
+﻿## Atualização 2026-05-22 — Atualização do fluxo operacional de agentes
+
+Status: Implementado em branch `docs/reorganizar-specs-implementadas`.
+
+Escopo:
+- `AGENTS.md` atualizado para a nova estrutura documental.
+- `CLAUDE.md` sincronizado com o novo fluxo operacional.
+- `docs/operations/LLM_HANDOFF_INSTRUCTIONS.md` reescrito para o estado pós-reorganização.
+- `README.md` atualizado para refletir specs implementadas/parciais e specs futuras até FASE9L.
+- `docs/specs/SPEC_SOURCE_OF_TRUTH.md` atualizado com o fluxo obrigatório de spec futura para spec implementada.
+- `docs/specs/README.md` atualizado com regras de leitura e encerramento de implementação.
+
+Testes:
+- Validação documental por leitura dos arquivos atualizados.
+- Busca por caminhos antigos críticos executada.
+- Compare contra `dev` revisado.
+- Unity Play Mode não executado.
+
+Pendências:
+- Validar Unity Play Mode em tarefa separada.
+## Atualização 2026-05-22 — Correção final pré-merge documental
 
 Status: Implementado em branch `docs/reorganizar-specs-implementadas`.
 
