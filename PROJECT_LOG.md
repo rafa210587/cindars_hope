@@ -1,4 +1,39 @@
-﻿## Atualização 2026-05-22 — Atualização do fluxo operacional de agentes
+﻿## Atualização 2026-05-23 — Wave 01: Data, Save, Progression, Damage Base (Specs Overnight)
+
+**Status:** Implementado em branch `wave/specs-overnight-01-data-save-progression`
+
+**Escopo:**
+- Expandir ItemCategory enum: adicionadas Consumable, Weapon, Magic, Ammo, Ore, Gem, MonsterDrop, Quest, KeyItem, Furniture
+- Adicionar ConsumableSubtype enum: Potion, Food, BuffFood
+- Expandir ItemDataSO com campo ConsumableSubtype
+- Criar LevelUpManager: XP curve, attribute allocation, skill points
+- Criar StatusEffectSO, StatusEffectManager, ActiveStatusEffect: poison, burn, bleed base
+- Criar 20 item examples (6 seeds, 6 crops, 7 consumables, 4 materials) via InitializeOnLoad
+
+**Specs implementadas:**
+- spec_fase9e_item_taxonomy_ids.md (parcial — enums e estruturas)
+- spec_fase9e_item_examples_variations.md (completo — 20 assets criados)
+- spec_fase9e_player_level_up_progression.md (backend)
+- spec_fase9e_damage_status_elements_complete.md (base estruturada)
+
+**Specs ainda a implementar:**
+- spec_fase9e_save_schema_migration.md (estrutura existe, migration lógica pendente)
+- spec_fase9e_ui_hotbar_inventory_equipment_final.md (Wave 07)
+
+**Commits:**
+- 6fa4eb9: wave01: expandir ItemCategory, adicionar StatusEffect base e LevelUpManager
+- fdafc55: wave01: criar 20 item examples (seeds, crops, consumables, materials)
+
+**Testes:**
+- Unity compile: PASSED
+- Assets gerados: 20 items + 2 editor scripts
+
+**Próximas etapas:**
+- Wave 02: Equipment, Tools, Loot, Crafting, Durability
+
+---
+
+## Atualização 2026-05-22 — Atualização do fluxo operacional de agentes
 
 Status: Implementado em branch `docs/reorganizar-specs-implementadas`.
 
