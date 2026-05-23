@@ -1,4 +1,27 @@
-﻿## Atualização 2026-05-23 — Wave 01: Data, Save, Progression, Damage Base (Specs Overnight)
+﻿## Atualização 2026-05-23 — Wave 02: Equipment, Loot, Crafting, Durability (Specs Overnight)
+
+**Status:** Implementado em branch `wave/specs-overnight-02-equipment-loot-crafting`
+
+**Escopo:**
+- Criar EquipmentDataSO: tipos (Helmet, Armor, Gloves, Boots, Accessory, Weapon, Shield), defesa, bônus atributos, resistências ambientais (heat/cold)
+- Criar LootTableSO: sistema de loot weighted com Min/MaxAmount
+- Criar CraftingRecipeSO: receitas com ingredientes e tempo de crafting
+- Criar DurabilityManager: durability max 100, -1 a cada 3 usos, repair logic
+- Criar EnvironmentalResistanceManager: heat/cold resistance calculation
+- Criar 10+ equipment examples (weapons, armor, accessories) via InitialiazerOnLoad
+- Criar 5+ crafting recipes (food, tools) via InitializeOnLoad
+
+**Specs implementadas:**
+- spec_fase9h_loot_crafting_equipment_durability_environment.md (backend structures)
+- spec_fase9c_player_equipment_items_combat_remaining.md (equipment types)
+
+**Commits:**
+- 924f6f0: wave02: criar EquipmentDataSO, LootTableSO, CraftingRecipeSO, DurabilityManager
+- db30f14: wave02: criar CraftingRecipeInitializer com receitas de food e tools
+
+---
+
+## Atualização 2026-05-23 — Wave 01: Data, Save, Progression, Damage Base (Specs Overnight)
 
 **Status:** Implementado em branch `wave/specs-overnight-01-data-save-progression`
 
