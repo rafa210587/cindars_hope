@@ -12,9 +12,9 @@ namespace CindarsHope.SceneManagement
 
         private void OnValidate()
         {
-            if (string.IsNullOrWhiteSpace(_spawnId))
+            if (!string.IsNullOrWhiteSpace(_spawnId))
             {
-                Debug.LogWarning($"{nameof(SceneSpawnPoint)} on '{name}' has no spawn id assigned.", this);
+                _spawnId = _spawnId.Trim();
             }
         }
     }
