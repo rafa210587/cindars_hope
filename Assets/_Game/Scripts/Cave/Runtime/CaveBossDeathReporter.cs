@@ -45,6 +45,11 @@ namespace CindarsHope.Cave.Runtime
             GameEventBus.Unsubscribe<EnemyKilledEvent>(OnEnemyKilled);
         }
 
+        public void ReportDefeatedFromOwner(Vector3 deathPosition)
+        {
+            ReportDefeated(deathPosition, requireSpawnDistanceCheck: false, source: "owner");
+        }
+
         private void OnEnemyKilled(EnemyKilledEvent e)
         {
             if (_reported || _caveRunManager == null)
@@ -57,16 +62,26 @@ namespace CindarsHope.Cave.Runtime
                 return;
             }
 
-            var distanceToSpawn = Vector3.Distance(e.DeathPosition, _spawnPos);
-            if (distanceToSpawn > 5f)
+            ReportDefeated(e.DeathPosition, requireSpawnDistanceCheck: true, source: "event-fallback");
+        }
+
+        private void ReportDefeated(Vector3 deathPosition, bool requireSpawnDistanceCheck, string source)
+        {
+            if (_reported || _caveRunManager == null)
             {
-                Debug.LogWarning($"CaveBossDeathReporter: Enemy {e.EnemyId} killed but distance to boss spawn ({distanceToSpawn:F2}) exceeds threshold. Ignoring.", this);
+                return;
+            }
+
+            var distanceToSpawn = Vector3.Distance(deathPosition, _spawnPos);
+            if (requireSpawnDistanceCheck && distanceToSpawn > 5f)
+            {
+                Debug.LogWarning($"CaveBossDeathReporter: Enemy {_bossEnemyId} killed but distance to boss spawn ({distanceToSpawn:F2}) exceeds threshold. Ignoring fallback event. Direct owner reporting should handle the real boss death.", this);
                 return;
             }
 
             _reported = true;
 
-            Debug.Log($"CaveBossDeathReporter: Boss {_bossEnemyId} defeated (gate={_bossGateId}).", this);
+            Debug.Log($"CaveBossDeathReporter: Boss {_bossEnemyId} defeated (gate={_bossGateId}, level={_caveLevel}, source={source}, distanceToSpawn={distanceToSpawn:F2}).", this);
 
             _caveRunManager.MarkBossAsDefeated(_bossGateId, _caveLevel);
 
