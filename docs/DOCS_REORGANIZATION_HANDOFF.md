@@ -1,63 +1,60 @@
-﻿# Handoff - Reorganizacao documental
+# Handoff — Reorganização documental
+
+> Branch: `docs/reorganizar-specs-implementadas`
+> Escopo: documentação apenas.
+> Base alvo: `dev`.
 
 ## Executado
 
 - `docs/` antigo movido para `docs_old/`.
-- Nova estrutura `docs/` criada.
+- Nova estrutura `docs/` criada para documentação ativa.
+- `docs_old/` preservado como histórico integral.
 - Specs implementadas normalizadas em `docs/specs/implementados/spec_*.md`.
-- Refinamentos separados em `docs/refinements/`.
-- Registry de specs criado.
-- Pasta local `spec/` preservada sem alteracao e usada como fonte auxiliar de merge logico quando havia sobreposicao clara.
+- Specs futuras normalizadas em `docs/specs/a_implementar/spec_*.md`.
+- Refinamentos implementados separados em `docs/refinements/implementados/ref_*.md`.
+- Refinamentos futuros separados em `docs/refinements/a_implementar/ref_*.md`.
+- Documentos ativos copiados para `docs/design`, `docs/architecture`, `docs/operations`, `docs/roadmap`, `docs/amendments`, `docs/validation` e `docs/backlog`.
+- `docs/DOCS_OLD_TO_ACTIVE_CROSSWALK.md` criado com rastreabilidade de `docs_old/` para a estrutura ativa.
+- Pasta raiz `spec/` absorvida e removida.
+- Pasta raiz `specs/` mantida como SpecKit operacional por feature.
 
-## Nao executado
+## Não executado
 
-- Nenhuma alteracao de codigo.
-- Nenhuma validacao Unity Play Mode.
-- Nenhum merge da branch antiga `feature/docs-fase9f-cave-stable-run-spec`.
-- Nenhum commit da pasta local nao rastreada `spec/`.
-
-## Proximos passos
-
-- Materializar FASE9H-I-J-K-L em `docs/specs/a_implementar/`.
-- Enriquecer specs com evidencia linha-a-linha se necessario.
-- Rodar validacao Unity em tarefa separada.
-
-## Consolidação pós-Codex
-
-- `docs_old/` preservado.
-- Documentos ativos copiados de `docs_old/` para `docs/design`, `docs/architecture`, `docs/operations` e `docs/roadmap`.
-- `docs/refinements/implementados` absorvido em `docs/refinements/implementados`.
-- `docs/specs/a_implementar` absorvido em `docs/specs/a_implementar`.
-- FASE9H-K copiadas de `docs_old` para `docs/specs/a_implementar`.
-- FASE9L criada como placeholder controlado.
-- `spec/` removida.
-- `specs/` mantida como SpecKit operacional.
-
-
-## Terceira consolidação — preservação de refinamentos
-
-- Specs implementadas adicionais criadas para pickups persistentes, enemy data-driven stats, HUD/tools debug, cave visual runtime, spawn anchor, snapshot replay full layout e hardening de debug/confinement.
-- Refinements implementados absorvidos de docs_old/audits.
-- Refinements futuros individuais criados para FASE9C remaining, FASE9D, FASE9E, FASE9F, FASE9G amendment, FASE9H, FASE9I, FASE9J, FASE9K, FASE9L e future ideas.
-- docs/amendments, docs/validation e docs/backlog criados como camadas ativas.
-- docs/specs/SPEC_REGISTRY_IMPLEMENTED.md e docs/specs/SPEC_REGISTRY_TO_IMPLEMENT.md atualizados.
 - Nenhuma alteração de código.
+- Nenhuma validação Unity Play Mode.
+- Nenhuma implementação de gameplay.
 
-## Rastreabilidade documental
+## Consolidação de refinamentos
 
-Para rastreabilidade completa entre docs_old/ e a documentação ativa, ver docs/DOCS_OLD_TO_ACTIVE_CROSSWALK.md.
-
+- FASE9H, FASE9I, FASE9J e FASE9K foram trazidas de `docs_old/` para specs futuras ativas.
+- FASE9L foi criada como placeholder controlado, pois veio de refinamento em conversa e ainda precisa virar spec completa antes de implementação.
+- Specs implementadas adicionais foram criadas para pickups persistentes, enemy data-driven stats, HUD/tools debug, cave visual runtime, spawn anchor, snapshot replay full layout e hardening de debug/confinement.
+- Refinements implementados foram absorvidos de `docs_old/audits`.
+- Refinements futuros individuais foram criados para FASE9C remaining, FASE9D, FASE9E, FASE9F, FASE9G amendment, FASE9H, FASE9I, FASE9J, FASE9K, FASE9L e future ideas.
 
 ## Correção final pré-merge
 
-- Placeholders de template e literais de quebra de linha gerados incorretamente foram removidos.
-- Headers de specs/refinements corrigidos.
-- Mojibake corrigido nos arquivos ativos principais.
-- `docs/DOCS_OLD_TO_ACTIVE_CROSSWALK.md` criado.
+- Placeholders de template conhecidos foram removidos dos arquivos ativos críticos.
+- Headers de specs/refinements críticos foram corrigidos.
+- `docs/DOCS_OLD_TO_ACTIVE_CROSSWALK.md` foi preenchido com caminhos reais.
 - Registries apontam para o crosswalk.
-- Specs futuras validadas para preservar monstros, IA, armas, ferramentas, skills, skill trees, progressão, UI/UX e cave run.
-- `docs_old/` preservado.
-- `specs/` preservado como SpecKit operacional.
+- Specs futuras preservam monstros, IA, armas, ferramentas, skills, skill trees, progressão, UI/UX e cave run.
+- `docs_old/` permanece preservado.
+- `specs/` permanece preservado como SpecKit operacional.
 - `spec/` permanece removido.
-- Nenhum código alterado.
 
+## Rastreabilidade documental
+
+Arquivos principais:
+
+- `docs/DOCS_OLD_TO_ACTIVE_CROSSWALK.md`
+- `docs/specs/SPEC_REGISTRY_IMPLEMENTED.md`
+- `docs/specs/SPEC_REGISTRY_TO_IMPLEMENT.md`
+- `docs/refinements/implementados/ref_implementados_map.md`
+- `docs/refinements/a_implementar/ref_futuro_map.md`
+
+## Próximos passos fora desta branch
+
+- Validar Unity Play Mode em tarefa separada.
+- Materializar FASE9L como spec completa antes de qualquer implementação de UI/UX final.
+- Implementar specs futuras em branches próprias.
