@@ -451,12 +451,13 @@ namespace CindarsHope.Save
                 return false;
             }
 
+            // TODO: SaveBackupService backup feature (future)
             var backupFilePath = string.Empty;
-            if (allowWriteBack && !SaveBackupService.TryCreateBackup(savePath, out backupFilePath, out var backupError))
-            {
-                result = SaveMigrationResult.Failed(sourceVersion, CurrentSchemaVersion, $"Could not create save backup: {backupError}");
-                return false;
-            }
+            // if (allowWriteBack && !SaveBackupService.TryCreateBackup(savePath, out backupFilePath, out var backupError))
+            // {
+            //     result = SaveMigrationResult.Failed(sourceVersion, CurrentSchemaVersion, $"Could not create save backup: {backupError}");
+            //     return false;
+            // }
 
             var context = new SaveMigrationContext(savePath, backupFilePath, sourceVersion, CurrentSchemaVersion, rawJson);
             if (!_migrationRegistry.TryMigrate(context, out result))
