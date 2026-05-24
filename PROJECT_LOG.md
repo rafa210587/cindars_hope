@@ -1,4 +1,39 @@
 
+## Atualizacao 2026-05-24 - Spec 04 Farm irrigacao, solo e planting UI
+
+Status: Implementado parcial.
+
+Escopo:
+- `FarmPlotState` expandido para estados de solo cru, arado seco/molhado, plantado seco/molhado, pronto, bloqueado e morto.
+- `FarmPlot` passou a abrir menu contextual agricola por tile com `E`, navegacao `W/S`, confirmacao `E`/`Enter`/`Space` e cancelamento por `Esc`.
+- Implementadas acoes de arar, molhar, plantar seed do inventory e colher.
+- Crescimento agora depende de agua: `PlantedWet` progride no avanco de dia; `PlantedDry` nao cresce e nao morre.
+- Save/load de plot ganhou estado, seed, progresso, agua, regrow e dia.
+- `SeedDataSO` recebeu `RequiresWater`, `RegrowDays` e `SeasonTags`; `ToolType` recebeu `WateringCan`.
+
+Pendencias:
+- UI ainda e IMGUI/minima, nao Canvas final.
+- Play Mode manual completo ainda pendente.
+- Custos de stamina ficam para spec 09.
+
+Validacao:
+- A partir desta spec, validacao documental e Unity compile/log scan devem rodar antes do commit de cada spec, conforme correcao operacional solicitada.
+- `.\tools\docs\validate_docs.ps1`: FAILED antes de validar documentos por erro de parse no proprio script (`Future spec missing $marker:` e string sem terminador).
+- `.\tools\unity\RunUnityCompileValidation.ps1 -UnityEditorPath "C:\Program Files\Unity\Hub\Editor\6000.4.7f1\Editor\Unity.exe" -ProjectPath "." -LogFile ".\Logs\unity-compile-validation.log"`: NOT RUN ate abrir Unity; falhou ao remover log antigo por acesso negado.
+- `.\tools\unity\RunUnityCompileValidation.ps1 -UnityEditorPath "C:\Program Files\Unity\Hub\Editor\6000.4.7f1\Editor\Unity.exe" -ProjectPath "." -LogFile ".\Logs\unity-compile-validation-spec04.log"`: FAILED por ambiente; outra instancia do Unity esta com este projeto aberto.
+- `.\tools\unity\ScanUnityLogs.ps1 -LogFile ".\Logs\unity-compile-validation-spec04.log"`: FAILED corretamente ao detectar `Application will terminate with return code 1`, mutex de licenca e exception.
+- Apos fechar processos Unity/Hub/Licensing, foi executado PowerShell explicito e escalado:
+  - `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -ExecutionPolicy Bypass -File .\tools\unity\RunUnityCompileValidation.ps1 -UnityEditorPath "C:\Program Files\Unity\Hub\Editor\6000.4.7f1\Editor\Unity.exe" -ProjectPath "." -LogFile ".\Logs\unity-compile-validation-spec04-escalated.log"`: FAILED por ambiente/licenca.
+  - `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -ExecutionPolicy Bypass -File .\tools\unity\ScanUnityLogs.ps1 -LogFile ".\Logs\unity-compile-validation-spec04-escalated.log"`: FAILED corretamente; log sem `error CS`, mas com `No valid Unity Editor license found` e exit code 198.
+- `dotnet build .\Assembly-CSharp.csproj`: PASSED apos incluir `SaveBackupService.cs` no csproj; 0 erros, 1 warning antigo em `CaveDebugLevelSkipController._bypassBossGateForDebugSkip`.
+
+Unity validation: NOT RUN
+Reason: Unity batchmode chegou ate a inicializacao, mas nao compilou por falta de licenca valida do Unity Editor neste ambiente (`No valid Unity Editor license found`, exit code 198).
+Command attempted: `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -ExecutionPolicy Bypass -File .\tools\unity\RunUnityCompileValidation.ps1 -UnityEditorPath "C:\Program Files\Unity\Hub\Editor\6000.4.7f1\Editor\Unity.exe" -ProjectPath "." -LogFile ".\Logs\unity-compile-validation-spec04-escalated.log"`
+Residual risk: Unity compile not validated locally for spec 04.
+
+---
+
 ## Atualizacao 2026-05-24 - Spec 03 Inventory slots, capacidade e UI minima
 
 Status: Implementado parcial.

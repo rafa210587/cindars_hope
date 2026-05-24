@@ -7,6 +7,7 @@ namespace CindarsHope.Tools
         Axe,
         Pickaxe,
         Sickle,
-        FishingRod
+        FishingRod,
+        WateringCan
     }
 }

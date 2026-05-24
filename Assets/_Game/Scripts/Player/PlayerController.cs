@@ -1,5 +1,6 @@
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
+using CindarsHope.Farm;
 using CindarsHope.Player.Data;
 using UnityEngine;
 // PR-010 keeps the legacy keyboard fallback so movement works without changing
@@ -102,6 +103,11 @@ namespace CindarsHope.Player
 
         private Vector2 ReadMoveInput()
         {
+            if (FarmPlot.IsAnyActionMenuOpen)
+            {
+                return Vector2.zero;
+            }
+
 #if ENABLE_INPUT_SYSTEM
             return _moveAction != null ? _moveAction.ReadValue<Vector2>() : Vector2.zero;
 #else

@@ -9,5 +9,9 @@ namespace CindarsHope.Farm
         public string State;
         public string PlantedSeedId;
         public int DaysGrown;
+        public int GrowthProgressDays;
+        public bool IsWatered;
+        public int RegrowRemainingDays;
+        public int LastUpdatedDay;
     }
 }

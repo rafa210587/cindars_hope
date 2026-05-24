@@ -1,8 +1,25 @@
-# refinamento_init_farm_irrigacao_solo_planting_ui
+# ref_farm_irrigacao_solo_planting_ui
 
-> Status: Refinamento inicial a implementar
-> Spec futura relacionada: `docs/specs/a_implementar/spec_farm_irrigacao_solo_planting_ui.md`
+> Status: Implementado parcial
+> Spec relacionada: `docs/specs/implementados/spec_farm_004_irrigacao_solo_planting_ui.md`
 > Objetivo: completar o loop de plantio/solo/irrigacao/UX agricola alem do MVP atual.
+
+## Resultado da implementacao 2026-05-24
+
+Entregue:
+
+- Estados de solo/plantio expandidos.
+- Menu contextual agricola no proprio `FarmPlot`.
+- Arar, molhar, plantar via inventory e colher.
+- Crescimento condicionado por agua.
+- Save/load dos novos campos de plot.
+- `WateringCan` integrado ao ciclo debug de tools.
+
+Pendencias:
+
+- UI final Canvas.
+- Play Mode manual completo.
+- Custos de stamina na spec 09.
 
 ---
 

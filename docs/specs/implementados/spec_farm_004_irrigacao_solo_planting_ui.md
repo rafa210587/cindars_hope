@@ -1,7 +1,7 @@
 # SPEC - Farm irrigacao, solo e planting UI
 
 > Spec ID: spec_farm_irrigacao_solo_planting_ui
-> Status: A implementar
+> Status: Implementado parcial
 > Ordem de execucao: 04
 > Depende de: 00, 01, 02, 03
 > Bloqueia: 05, 09, 17
@@ -9,6 +9,27 @@
 > Fonte: docs/specs/ como fonte unica; fontes absorvidas listadas abaixo.
 > Escopo: Completar estados de solo, irrigacao, hoe/watering can, crescimento condicionado por agua, save/load e menu contextual agricola por tile.
 > Fora de escopo: clima/chuva real, fertilizante, sazonalidade, stamina final, planting menu global, UI final completa do jogo, automacao/sprinklers, Packages, ProjectSettings e docs_old.
+> Evidencia: `Assets/_Game/Scripts/Farm/FarmPlot.cs`, `Assets/_Game/Scripts/Farm/FarmPlotState.cs`, `Assets/_Game/Scripts/Farm/FarmPlotSaveData.cs`, `Assets/_Game/Scripts/Farm/Data/SeedDataSO.cs`
+
+## Resultado da implementacao 2026-05-24
+
+Implementado parcial:
+
+- `FarmPlotState` agora cobre `Raw`, `TilledDry`, `TilledWet`, `PlantedDry`, `PlantedWet`, `ReadyToHarvest`, `Blocked` e `Dead`.
+- `FarmPlotSaveData` persiste estado, seed, progresso, agua, regrow e dia.
+- `SeedDataSO` recebeu `RequiresWater`, `RegrowDays` e `SeasonTags` como campos seguros/futuros.
+- `FarmPlot` abre menu contextual vertical por `E`, navega por `W/S`, confirma por `E`/`Enter`/`Space` e fecha por `Esc`.
+- Acoes implementadas: arar, molhar, plantar seed do inventory e colher.
+- Plantio revalida estado, seed e inventory; a seed so e consumida apos validacao de sucesso.
+- Crescimento so avanca em `PlantedWet`; agua reseta para seco no avanco de dia.
+- Colheita sem regrow retorna para `TilledDry`; com `RegrowDays > 0` retorna para `PlantedDry`.
+- Movimento e interacao sao ignorados enquanto o menu agricola esta aberto.
+
+Pendencias reais:
+
+- UI ainda e IMGUI/minima, nao Canvas final.
+- Play Mode manual completo e validacao visual ainda pendentes.
+- Stamina/custo de acao fica para spec 09.
 
 Fontes absorvidas:
 - specs/FASE9C_TOOLS_FARM_COMBAT_REFINEMENT/spec.md

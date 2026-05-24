@@ -1,10 +1,13 @@
+using System.Collections.Generic;
 using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Data;
 using CindarsHope.Core.Events;
+using CindarsHope.Equipment;
 using CindarsHope.Farm.Data;
 using CindarsHope.Interaction;
 using CindarsHope.Inventory;
+using CindarsHope.Tools;
 using UnityEngine;
 
 namespace CindarsHope.Farm
@@ -12,16 +15,50 @@ namespace CindarsHope.Farm
     [DisallowMultipleComponent]
     public class FarmPlot : MonoBehaviour, IInteractable
     {
+        private enum FarmMenuActionType
+        {
+            Till,
+            Water,
+            Plant,
+            Harvest,
+            Status
+        }
+
+        private readonly struct FarmMenuAction
+        {
+            public readonly FarmMenuActionType Type;
+            public readonly string Label;
+            public readonly string SeedId;
+
+            public FarmMenuAction(FarmMenuActionType type, string label, string seedId = "")
+            {
+                Type = type;
+                Label = label;
+                SeedId = seedId ?? string.Empty;
+            }
+        }
+
+        private static FarmPlot _activeMenuPlot;
+
         [SerializeField] private int _plotIndex;
         [SerializeField] private SpriteRenderer _spriteRenderer;
         [SerializeField] private InventoryManager _inventoryManager;
         [SerializeField] private SeedDatabaseSO _seedDatabase;
 
+        private readonly List<FarmMenuAction> _menuActions = new List<FarmMenuAction>();
+        private Sprite _baseSprite;
+        private int _selectedMenuIndex;
+        private int _currentDay = 1;
+        private int _menuOpenedFrame = -1;
+        private string _feedback = string.Empty;
+
+        public static bool IsAnyActionMenuOpen => _activeMenuPlot != null;
+
         public FarmPlotState State { get; private set; }
         public string PlantedSeedId { get; private set; }
         public int DaysGrown { get; private set; }
-
-        private int _currentDay = 1;
+        public bool IsWatered => State == FarmPlotState.TilledWet || State == FarmPlotState.PlantedWet;
+        public int RegrowRemainingDays { get; private set; }
 
         public string InteractionPrompt
         {
@@ -29,12 +66,19 @@ namespace CindarsHope.Farm
             {
                 switch (State)
                 {
-                    case FarmPlotState.Empty:
-                        return "Plantar";
-                    case FarmPlotState.Growing:
-                        return "Crescendo";
-                    case FarmPlotState.Ready:
+                    case FarmPlotState.Raw:
+                        return "Arar";
+                    case FarmPlotState.TilledDry:
+                    case FarmPlotState.TilledWet:
+                        return "Cultivar";
+                    case FarmPlotState.PlantedDry:
+                        return "Molhar";
+                    case FarmPlotState.PlantedWet:
+                        return "Irrigado";
+                    case FarmPlotState.ReadyToHarvest:
                         return "Colher";
+                    case FarmPlotState.Blocked:
+                        return "Bloqueado";
                     default:
                         return "Interagir";
                 }
@@ -46,18 +90,20 @@ namespace CindarsHope.Farm
             _plotIndex = plotIndex;
             _inventoryManager = inventoryManager;
             _seedDatabase = seedDatabase;
-
-            if (_spriteRenderer == null)
-            {
-                _spriteRenderer = GetComponent<SpriteRenderer>();
-            }
-
-            SetState(State);
+            EnsureRenderer();
+            SetState(State == FarmPlotState.Blocked ? FarmPlotState.Blocked : NormalizeState(State));
         }
 
         public void SetState(FarmPlotState state)
         {
-            State = state;
+            State = NormalizeState(state);
+            if (State == FarmPlotState.Raw || State == FarmPlotState.TilledDry || State == FarmPlotState.TilledWet || State == FarmPlotState.Blocked)
+            {
+                PlantedSeedId = string.Empty;
+                DaysGrown = 0;
+                RegrowRemainingDays = 0;
+            }
+
             UpdateVisual();
         }
 
@@ -65,7 +111,8 @@ namespace CindarsHope.Farm
         {
             PlantedSeedId = string.Empty;
             DaysGrown = 0;
-            SetState(FarmPlotState.Empty);
+            RegrowRemainingDays = 0;
+            SetState(FarmPlotState.TilledDry);
         }
 
         public FarmPlotSaveData CaptureSaveData()
@@ -75,7 +122,11 @@ namespace CindarsHope.Farm
                 PlotIndex = _plotIndex,
                 State = State.ToString(),
                 PlantedSeedId = PlantedSeedId,
-                DaysGrown = DaysGrown
+                DaysGrown = DaysGrown,
+                GrowthProgressDays = DaysGrown,
+                IsWatered = IsWatered,
+                RegrowRemainingDays = RegrowRemainingDays,
+                LastUpdatedDay = _currentDay
             };
         }
 
@@ -90,17 +141,29 @@ namespace CindarsHope.Farm
             if (!System.Enum.TryParse(saveData.State, out FarmPlotState restoredState))
             {
                 Debug.LogWarning($"FarmPlot {_plotIndex} received invalid saved state '{saveData.State}'. Resetting plot.", this);
-                ResetPlot();
+                SetState(FarmPlotState.Raw);
                 return;
             }
 
+            restoredState = NormalizeState(restoredState);
             PlantedSeedId = string.IsNullOrWhiteSpace(saveData.PlantedSeedId) ? string.Empty : saveData.PlantedSeedId;
-            DaysGrown = Mathf.Max(0, saveData.DaysGrown);
+            DaysGrown = Mathf.Max(0, saveData.GrowthProgressDays > 0 ? saveData.GrowthProgressDays : saveData.DaysGrown);
+            RegrowRemainingDays = Mathf.Max(0, saveData.RegrowRemainingDays);
+            _currentDay = Mathf.Max(1, saveData.LastUpdatedDay);
 
-            if (restoredState == FarmPlotState.Empty)
+            if (!IsPlantedState(restoredState) && restoredState != FarmPlotState.ReadyToHarvest)
             {
                 PlantedSeedId = string.Empty;
                 DaysGrown = 0;
+                RegrowRemainingDays = 0;
+            }
+            else if (!TryGetPlantedSeedData(out _))
+            {
+                Debug.LogWarning($"FarmPlot {_plotIndex} could not resolve saved seed '{PlantedSeedId}'. Resetting to tilled dry.", this);
+                PlantedSeedId = string.Empty;
+                DaysGrown = 0;
+                RegrowRemainingDays = 0;
+                restoredState = FarmPlotState.TilledDry;
             }
 
             SetState(restoredState);
@@ -119,28 +182,30 @@ namespace CindarsHope.Farm
 
         public bool CanInteract(GameObject interactor)
         {
-            return true;
+            return _activeMenuPlot == null || _activeMenuPlot == this;
         }
 
         public void Interact(GameObject interactor)
         {
-            switch (State)
+            if (_activeMenuPlot == this)
             {
-                case FarmPlotState.Empty:
-                    TryPlantAvailableSeed();
-                    break;
-                case FarmPlotState.Growing:
-                    Debug.Log($"FarmPlot {_plotIndex} is still growing. SeedId='{PlantedSeedId}', DaysGrown={DaysGrown}.", this);
-                    break;
-                case FarmPlotState.Ready:
-                    TryHarvest();
-                    break;
+                CloseMenu();
+                return;
             }
+
+            OpenMenu();
         }
 
         private void Reset()
         {
-            _spriteRenderer = GetComponent<SpriteRenderer>();
+            EnsureRenderer();
+        }
+
+        private void Awake()
+        {
+            EnsureRenderer();
+            State = NormalizeState(State);
+            UpdateVisual();
         }
 
         private void OnEnable()
@@ -151,55 +216,419 @@ namespace CindarsHope.Farm
         private void OnDisable()
         {
             GameEventBus.Unsubscribe<DayStartedEvent>(OnDayStarted);
+            if (_activeMenuPlot == this)
+            {
+                _activeMenuPlot = null;
+            }
         }
 
         private void OnValidate()
         {
-            if (_spriteRenderer == null)
-            {
-                _spriteRenderer = GetComponent<SpriteRenderer>();
-            }
-
+            EnsureRenderer();
             UpdateVisual();
         }
 
-        private void Awake()
+        private void Update()
         {
-            if (_spriteRenderer == null)
+            if (_activeMenuPlot != this)
             {
-                _spriteRenderer = GetComponent<SpriteRenderer>();
+                return;
             }
 
-            UpdateVisual();
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                CloseMenu();
+                return;
+            }
+
+            if (Input.GetKeyDown(KeyCode.W))
+            {
+                _selectedMenuIndex = Mathf.Max(0, _selectedMenuIndex - 1);
+            }
+            else if (Input.GetKeyDown(KeyCode.S))
+            {
+                _selectedMenuIndex = Mathf.Min(_menuActions.Count - 1, _selectedMenuIndex + 1);
+            }
+            else if (Time.frameCount != _menuOpenedFrame &&
+                     (Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space)))
+            {
+                ExecuteSelectedMenuAction();
+            }
+        }
+
+        private void OnGUI()
+        {
+            if (_activeMenuPlot != this)
+            {
+                return;
+            }
+
+            var screenPosition = GetMenuScreenPosition();
+            var width = 260f;
+            var height = Mathf.Clamp(70f + _menuActions.Count * 26f, 90f, 260f);
+            var rect = new Rect(screenPosition.x - width * 0.5f, screenPosition.y - height, width, height);
+            GUILayout.BeginArea(rect, GUI.skin.window);
+            GUILayout.Label($"Plot {_plotIndex}: {State}");
+
+            if (_menuActions.Count == 0)
+            {
+                GUILayout.Label(string.IsNullOrWhiteSpace(_feedback) ? "Sem acao disponivel." : _feedback);
+            }
+            else
+            {
+                for (var index = 0; index < _menuActions.Count; index++)
+                {
+                    GUILayout.Label(index == _selectedMenuIndex ? $"> {_menuActions[index].Label}" : $"  {_menuActions[index].Label}");
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(_feedback))
+            {
+                GUILayout.Space(4f);
+                GUILayout.Label(_feedback);
+            }
+
+            GUILayout.EndArea();
+        }
+
+        private void OpenMenu()
+        {
+            BuildMenuActions();
+            if (_menuActions.Count == 0)
+            {
+                PublishFeedback(string.IsNullOrWhiteSpace(_feedback) ? "No farm action available." : _feedback);
+                return;
+            }
+
+            _activeMenuPlot = this;
+            _selectedMenuIndex = 0;
+            _menuOpenedFrame = Time.frameCount;
+        }
+
+        private void CloseMenu()
+        {
+            if (_activeMenuPlot == this)
+            {
+                _activeMenuPlot = null;
+            }
+
+            _menuActions.Clear();
+            _selectedMenuIndex = 0;
+        }
+
+        private void BuildMenuActions()
+        {
+            _menuActions.Clear();
+            _feedback = string.Empty;
+
+            switch (State)
+            {
+                case FarmPlotState.Raw:
+                    if (HasRequiredTool(ToolType.Hoe))
+                    {
+                        _menuActions.Add(new FarmMenuAction(FarmMenuActionType.Till, "Arar solo"));
+                    }
+                    else
+                    {
+                        _feedback = "Hoe required.";
+                    }
+
+                    break;
+                case FarmPlotState.TilledDry:
+                    if (HasRequiredTool(ToolType.WateringCan))
+                    {
+                        _menuActions.Add(new FarmMenuAction(FarmMenuActionType.Water, "Molhar solo"));
+                    }
+
+                    AddPlantActions();
+                    break;
+                case FarmPlotState.TilledWet:
+                    AddPlantActions();
+                    break;
+                case FarmPlotState.PlantedDry:
+                    if (HasRequiredTool(ToolType.WateringCan))
+                    {
+                        _menuActions.Add(new FarmMenuAction(FarmMenuActionType.Water, "Molhar solo"));
+                    }
+                    else
+                    {
+                        _feedback = "Watering Can required.";
+                    }
+
+                    break;
+                case FarmPlotState.PlantedWet:
+                    _menuActions.Add(new FarmMenuAction(FarmMenuActionType.Status, "Ja irrigado"));
+                    break;
+                case FarmPlotState.ReadyToHarvest:
+                    _menuActions.Add(new FarmMenuAction(FarmMenuActionType.Harvest, "Colher"));
+                    break;
+                case FarmPlotState.Blocked:
+                    _feedback = "Plot blocked.";
+                    break;
+            }
+        }
+
+        private void AddPlantActions()
+        {
+            if (_inventoryManager == null || _seedDatabase == null)
+            {
+                _feedback = "Inventory or seed database missing.";
+                return;
+            }
+
+            foreach (var item in _inventoryManager.Items)
+            {
+                if (string.IsNullOrWhiteSpace(item.Key) || item.Value <= 0)
+                {
+                    continue;
+                }
+
+                if (!_seedDatabase.TryGetById(item.Key, out var seedData) || seedData == null)
+                {
+                    continue;
+                }
+
+                var label = seedData.SeedItem != null && !string.IsNullOrWhiteSpace(seedData.SeedItem.DisplayName)
+                    ? $"Plantar {seedData.SeedItem.DisplayName}"
+                    : $"Plantar {item.Key}";
+                _menuActions.Add(new FarmMenuAction(FarmMenuActionType.Plant, label, item.Key));
+            }
+
+            if (_menuActions.Count == 0)
+            {
+                _feedback = "No seeds in inventory.";
+            }
+        }
+
+        private void ExecuteSelectedMenuAction()
+        {
+            if (_selectedMenuIndex < 0 || _selectedMenuIndex >= _menuActions.Count)
+            {
+                return;
+            }
+
+            var action = _menuActions[_selectedMenuIndex];
+            var closeAfterAction = true;
+            switch (action.Type)
+            {
+                case FarmMenuActionType.Till:
+                    TryTill();
+                    break;
+                case FarmMenuActionType.Water:
+                    TryWater();
+                    break;
+                case FarmMenuActionType.Plant:
+                    TryPlantSeed(action.SeedId);
+                    break;
+                case FarmMenuActionType.Harvest:
+                    TryHarvest();
+                    break;
+                case FarmMenuActionType.Status:
+                    PublishFeedback("Plot already watered.");
+                    break;
+            }
+
+            if (closeAfterAction)
+            {
+                CloseMenu();
+            }
+        }
+
+        private bool TryTill()
+        {
+            if (State != FarmPlotState.Raw || !HasRequiredTool(ToolType.Hoe))
+            {
+                PublishFeedback("Cannot till this plot.");
+                return false;
+            }
+
+            SetState(FarmPlotState.TilledDry);
+            PublishFeedback("Soil tilled.");
+            return true;
+        }
+
+        private bool TryWater()
+        {
+            if (!HasRequiredTool(ToolType.WateringCan))
+            {
+                PublishFeedback("Watering Can required.");
+                return false;
+            }
+
+            if (State == FarmPlotState.TilledDry)
+            {
+                SetState(FarmPlotState.TilledWet);
+                PublishFeedback("Soil watered.");
+                return true;
+            }
+
+            if (State == FarmPlotState.PlantedDry)
+            {
+                SetState(FarmPlotState.PlantedWet);
+                PublishFeedback("Crop watered.");
+                return true;
+            }
+
+            PublishFeedback("Cannot water this plot.");
+            return false;
+        }
+
+        private bool TryPlantSeed(string seedId)
+        {
+            if (State != FarmPlotState.TilledDry && State != FarmPlotState.TilledWet)
+            {
+                PublishFeedback("Plot is not plantable.");
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(seedId) || _inventoryManager == null || _seedDatabase == null)
+            {
+                PublishFeedback("Seed data unavailable.");
+                return false;
+            }
+
+            if (!_seedDatabase.TryGetById(seedId, out var seedData) || seedData == null)
+            {
+                PublishFeedback("Seed not registered.");
+                return false;
+            }
+
+            if (!_inventoryManager.HasItem(seedId))
+            {
+                PublishFeedback("Seed not in inventory.");
+                return false;
+            }
+
+            if (!_inventoryManager.RemoveItem(seedId, 1))
+            {
+                PublishFeedback("Could not consume seed.");
+                return false;
+            }
+
+            PlantedSeedId = seedId;
+            DaysGrown = 0;
+            RegrowRemainingDays = 0;
+            SetState(State == FarmPlotState.TilledWet ? FarmPlotState.PlantedWet : FarmPlotState.PlantedDry);
+
+            GameEventBus.Publish(new SeedPlantedEvent(seedId, GetTilePosition(), _currentDay));
+            Debug.Log($"FarmPlot {_plotIndex} planted seed '{seedId}'.", this);
+            return true;
         }
 
         private void OnDayStarted(DayStartedEvent evt)
         {
             _currentDay = evt.DayNumber;
 
-            if (State != FarmPlotState.Growing)
+            if (State == FarmPlotState.PlantedWet)
             {
-                return;
+                AdvanceGrowth();
+                if (State == FarmPlotState.PlantedWet)
+                {
+                    SetState(FarmPlotState.PlantedDry);
+                }
             }
+            else if (State == FarmPlotState.TilledWet)
+            {
+                SetState(FarmPlotState.TilledDry);
+            }
+        }
 
-            DaysGrown++;
-
+        private void AdvanceGrowth()
+        {
             if (!TryGetPlantedSeedData(out var seedData))
             {
                 UpdateVisual();
                 return;
             }
 
+            DaysGrown++;
             if (DaysGrown >= seedData.GrowthDays)
             {
-                SetState(FarmPlotState.Ready);
+                SetState(FarmPlotState.ReadyToHarvest);
                 GameEventBus.Publish(new CropReadyEvent(PlantedSeedId, GetTilePosition(), DaysGrown));
-                Debug.Log($"FarmPlot {_plotIndex} crop '{PlantedSeedId}' is ready after {DaysGrown} day(s).", this);
+                Debug.Log($"FarmPlot {_plotIndex} crop '{PlantedSeedId}' is ready after {DaysGrown} watered day(s).", this);
                 return;
             }
 
             UpdateVisual();
-            Debug.Log($"FarmPlot {_plotIndex} crop '{PlantedSeedId}' grew to {DaysGrown}/{seedData.GrowthDays} day(s) on day {evt.DayNumber}.", this);
+            Debug.Log($"FarmPlot {_plotIndex} crop '{PlantedSeedId}' grew to {DaysGrown}/{seedData.GrowthDays} on day {DaysGrown}.", this);
+        }
+
+        private bool TryHarvest()
+        {
+            if (State != FarmPlotState.ReadyToHarvest)
+            {
+                PublishFeedback("Crop is not ready.");
+                return false;
+            }
+
+            if (_inventoryManager == null)
+            {
+                Debug.LogWarning($"FarmPlot {_plotIndex} cannot harvest because InventoryManager is missing.", this);
+                return false;
+            }
+
+            if (!TryGetPlantedSeedData(out var seedData))
+            {
+                return false;
+            }
+
+            if (seedData.HarvestItems == null || seedData.HarvestAmounts == null)
+            {
+                Debug.LogWarning($"FarmPlot {_plotIndex} cannot harvest seed '{PlantedSeedId}' because harvest data is missing.", this);
+                return false;
+            }
+
+            var pairCount = Mathf.Min(seedData.HarvestItems.Length, seedData.HarvestAmounts.Length);
+            if (pairCount == 0)
+            {
+                Debug.LogWarning($"FarmPlot {_plotIndex} cannot harvest seed '{PlantedSeedId}' because harvest data is empty.", this);
+                return false;
+            }
+
+            var harvestedAnyItem = false;
+            var harvestedSeedId = PlantedSeedId;
+            var tilePosition = GetTilePosition();
+
+            for (var i = 0; i < pairCount; i++)
+            {
+                var harvestItem = seedData.HarvestItems[i];
+                var amount = seedData.HarvestAmounts[i];
+
+                if (harvestItem == null || amount <= 0)
+                {
+                    continue;
+                }
+
+                if (!_inventoryManager.AddItem(harvestItem.Id, amount))
+                {
+                    Debug.LogWarning($"FarmPlot {_plotIndex} could not add harvest item '{harvestItem.Id}' x{amount} to inventory.", this);
+                    continue;
+                }
+
+                harvestedAnyItem = true;
+                GameEventBus.Publish(new CropHarvestedEvent(harvestedSeedId, harvestItem.Id, amount, tilePosition));
+                Debug.Log($"FarmPlot {_plotIndex} harvested '{harvestItem.Id}' x{amount} from seed '{harvestedSeedId}'.", this);
+            }
+
+            if (!harvestedAnyItem)
+            {
+                Debug.LogWarning($"FarmPlot {_plotIndex} harvest produced no items and plot will remain ready.", this);
+                return false;
+            }
+
+            if (seedData.RegrowDays > 0)
+            {
+                DaysGrown = Mathf.Max(0, seedData.GrowthDays - seedData.RegrowDays);
+                RegrowRemainingDays = seedData.RegrowDays;
+                SetState(FarmPlotState.PlantedDry);
+            }
+            else
+            {
+                ResetPlot();
+            }
+
+            return true;
         }
 
         private void UpdateVisual()
@@ -209,99 +638,54 @@ namespace CindarsHope.Farm
                 return;
             }
 
+            var stageSprite = GetCurrentStageSprite();
+            _spriteRenderer.sprite = stageSprite != null ? stageSprite : _baseSprite;
+
             switch (State)
             {
-                case FarmPlotState.Empty:
+                case FarmPlotState.Raw:
+                    _spriteRenderer.color = new Color(0.35f, 0.24f, 0.16f);
+                    break;
+                case FarmPlotState.TilledDry:
                     _spriteRenderer.color = new Color(0.42f, 0.25f, 0.15f);
                     break;
-                case FarmPlotState.Growing:
-                    _spriteRenderer.color = new Color(0.22f, 0.55f, 0.22f);
+                case FarmPlotState.TilledWet:
+                    _spriteRenderer.color = new Color(0.23f, 0.20f, 0.16f);
                     break;
-                case FarmPlotState.Ready:
-                    _spriteRenderer.color = new Color(0.9f, 0.7f, 0.18f);
+                case FarmPlotState.PlantedDry:
+                    _spriteRenderer.color = stageSprite != null ? Color.white : new Color(0.22f, 0.55f, 0.22f);
+                    break;
+                case FarmPlotState.PlantedWet:
+                    _spriteRenderer.color = stageSprite != null ? new Color(0.85f, 0.95f, 1f) : new Color(0.16f, 0.45f, 0.26f);
+                    break;
+                case FarmPlotState.ReadyToHarvest:
+                    _spriteRenderer.color = stageSprite != null ? Color.white : new Color(0.9f, 0.7f, 0.18f);
+                    break;
+                case FarmPlotState.Blocked:
+                    _spriteRenderer.color = Color.gray;
+                    break;
+                case FarmPlotState.Dead:
+                    _spriteRenderer.color = new Color(0.16f, 0.16f, 0.16f);
                     break;
             }
         }
 
-        private void TryPlantAvailableSeed()
+        private Sprite GetCurrentStageSprite()
         {
-            if (_inventoryManager == null)
+            if (!IsPlantedState(State) && State != FarmPlotState.ReadyToHarvest)
             {
-                Debug.LogWarning($"FarmPlot {_plotIndex} cannot plant because InventoryManager is missing.", this);
-                return;
+                return null;
             }
 
-            if (_seedDatabase == null)
+            if (!TryGetPlantedSeedData(out var seedData) || seedData.GrowthStageSprites == null || seedData.GrowthStageSprites.Length == 0)
             {
-                Debug.LogWarning($"FarmPlot {_plotIndex} cannot plant because SeedDatabaseSO is missing.", this);
-                return;
+                return null;
             }
 
-            var seedId = GetSelectedHotbarSeedId();
-            if (string.IsNullOrEmpty(seedId))
-            {
-                return;
-            }
-
-            if (!_seedDatabase.TryGetById(seedId, out var seedData) || seedData == null)
-            {
-                Debug.LogWarning($"FarmPlot {_plotIndex} could not resolve seed id '{seedId}' in SeedDatabaseSO.", this);
-                return;
-            }
-
-            if (!_inventoryManager.HasItem(seedId))
-            {
-                GameEventBus.Publish(new PlayerActionFeedbackEvent("Selected seed is not in inventory."));
-                Debug.Log($"FarmPlot {_plotIndex} blocked planting because selected seed '{seedId}' is not in inventory.", this);
-                return;
-            }
-
-            if (!_inventoryManager.RemoveItem(seedId, 1))
-            {
-                Debug.LogWarning($"FarmPlot {_plotIndex} could not remove seed '{seedId}' from inventory.", this);
-                return;
-            }
-
-            PlantedSeedId = seedId;
-            DaysGrown = 0;
-            SetState(FarmPlotState.Growing);
-
-            GameEventBus.Publish(new SeedPlantedEvent(seedId, GetTilePosition(), _currentDay));
-            Debug.Log($"FarmPlot {_plotIndex} planted seed '{seedId}'.", this);
-        }
-
-        private string GetSelectedHotbarSeedId()
-        {
-            var saveManager = GameBootstrap.Instance != null ? GameBootstrap.Instance.SaveManager : null;
-            var hotbarState = saveManager != null ? saveManager.HotbarState : null;
-            if (hotbarState == null)
-            {
-                GameEventBus.Publish(new PlayerActionFeedbackEvent("Select a seed in hotbar."));
-                Debug.Log($"FarmPlot {_plotIndex} blocked planting because HotbarState is missing.", this);
-                return string.Empty;
-            }
-
-            var selectedItemId = hotbarState.SelectedItemId;
-            if (string.IsNullOrWhiteSpace(selectedItemId))
-            {
-                GameEventBus.Publish(new PlayerActionFeedbackEvent("Select a seed in hotbar."));
-                Debug.Log($"FarmPlot {_plotIndex} blocked planting because selected hotbar slot is empty.", this);
-                return string.Empty;
-            }
-
-            if (!selectedItemId.StartsWith("seed_", System.StringComparison.Ordinal))
-            {
-                GameEventBus.Publish(new PlayerActionFeedbackEvent("Selected hotbar item is not a seed."));
-                Debug.Log($"FarmPlot {_plotIndex} blocked planting because selected hotbar item '{selectedItemId}' is not a seed.", this);
-                return string.Empty;
-            }
-
-            return selectedItemId;
-        }
-
-        private Vector2Int GetTilePosition()
-        {
-            return Vector2Int.RoundToInt(transform.position);
+            var index = State == FarmPlotState.ReadyToHarvest
+                ? seedData.GrowthStageSprites.Length - 1
+                : Mathf.Clamp(DaysGrown, 0, seedData.GrowthStageSprites.Length - 1);
+            return seedData.GrowthStageSprites[index];
         }
 
         private bool TryGetPlantedSeedData(out SeedDataSO seedData)
@@ -310,7 +694,6 @@ namespace CindarsHope.Farm
 
             if (string.IsNullOrWhiteSpace(PlantedSeedId))
             {
-                Debug.LogWarning($"FarmPlot {_plotIndex} is growing without a planted seed id.", this);
                 return false;
             }
 
@@ -329,76 +712,78 @@ namespace CindarsHope.Farm
             return true;
         }
 
-        private void TryHarvest()
+        private bool HasRequiredTool(ToolType toolType)
         {
-            if (_inventoryManager == null)
+            var equipmentManager = GameBootstrap.Instance != null ? GameBootstrap.Instance.EquipmentManager : null;
+            if (equipmentManager == null)
             {
-                Debug.LogWarning($"FarmPlot {_plotIndex} cannot harvest because InventoryManager is missing.", this);
-                return;
+                return false;
             }
 
-            if (!TryGetPlantedSeedData(out var seedData))
+            return equipmentManager.HasTool(toolType, ToolTier.Basic);
+        }
+
+        private void EnsureRenderer()
+        {
+            if (_spriteRenderer == null)
             {
-                return;
+                _spriteRenderer = GetComponent<SpriteRenderer>();
             }
 
-            if (seedData.HarvestItems == null || seedData.HarvestAmounts == null)
+            if (_spriteRenderer != null && _baseSprite == null)
             {
-                Debug.LogWarning($"FarmPlot {_plotIndex} cannot harvest seed '{PlantedSeedId}' because harvest data is missing.", this);
-                return;
+                _baseSprite = _spriteRenderer.sprite;
+            }
+        }
+
+        private Vector2Int GetTilePosition()
+        {
+            return Vector2Int.RoundToInt(transform.position);
+        }
+
+        private Vector2 GetMenuScreenPosition()
+        {
+            var worldPosition = transform.position + Vector3.up * 0.8f;
+            var mainCamera = UnityEngine.Camera.main;
+            if (mainCamera == null)
+            {
+                return new Vector2(Screen.width * 0.5f, Screen.height * 0.5f);
             }
 
-            var pairCount = Mathf.Min(seedData.HarvestItems.Length, seedData.HarvestAmounts.Length);
-            if (pairCount == 0)
+            var screenPosition = mainCamera.WorldToScreenPoint(worldPosition);
+            return new Vector2(screenPosition.x, Screen.height - screenPosition.y);
+        }
+
+        private void PublishFeedback(string message)
+        {
+            _feedback = message ?? string.Empty;
+            if (!string.IsNullOrWhiteSpace(_feedback))
             {
-                Debug.LogWarning($"FarmPlot {_plotIndex} cannot harvest seed '{PlantedSeedId}' because harvest data is empty.", this);
-                return;
+                GameEventBus.Publish(new PlayerActionFeedbackEvent(_feedback));
             }
+        }
 
-            if (seedData.HarvestItems.Length != seedData.HarvestAmounts.Length)
+        private static bool IsPlantedState(FarmPlotState state)
+        {
+            return state == FarmPlotState.PlantedDry || state == FarmPlotState.PlantedWet;
+        }
+
+        private static FarmPlotState NormalizeState(FarmPlotState state)
+        {
+            switch (state)
             {
-                Debug.LogWarning($"FarmPlot {_plotIndex} harvest data length mismatch for seed '{PlantedSeedId}'. Harvesting {pairCount} valid pair(s).", this);
+                case FarmPlotState.Blocked:
+                case FarmPlotState.Raw:
+                case FarmPlotState.TilledDry:
+                case FarmPlotState.TilledWet:
+                case FarmPlotState.PlantedDry:
+                case FarmPlotState.PlantedWet:
+                case FarmPlotState.ReadyToHarvest:
+                case FarmPlotState.Dead:
+                    return state;
+                default:
+                    return FarmPlotState.Raw;
             }
-
-            var harvestedAnyItem = false;
-            var harvestedSeedId = PlantedSeedId;
-            var tilePosition = GetTilePosition();
-
-            for (var i = 0; i < pairCount; i++)
-            {
-                var harvestItem = seedData.HarvestItems[i];
-                var amount = seedData.HarvestAmounts[i];
-
-                if (harvestItem == null)
-                {
-                    Debug.LogWarning($"FarmPlot {_plotIndex} skipped null harvest item at index {i} for seed '{harvestedSeedId}'.", this);
-                    continue;
-                }
-
-                if (amount <= 0)
-                {
-                    Debug.LogWarning($"FarmPlot {_plotIndex} skipped harvest item '{harvestItem.Id}' with invalid amount {amount}.", this);
-                    continue;
-                }
-
-                if (!_inventoryManager.AddItem(harvestItem.Id, amount))
-                {
-                    Debug.LogWarning($"FarmPlot {_plotIndex} could not add harvest item '{harvestItem.Id}' x{amount} to inventory.", this);
-                    continue;
-                }
-
-                harvestedAnyItem = true;
-                GameEventBus.Publish(new CropHarvestedEvent(harvestedSeedId, harvestItem.Id, amount, tilePosition));
-                Debug.Log($"FarmPlot {_plotIndex} harvested '{harvestItem.Id}' x{amount} from seed '{harvestedSeedId}'.", this);
-            }
-
-            if (!harvestedAnyItem)
-            {
-                Debug.LogWarning($"FarmPlot {_plotIndex} harvest produced no items and plot will remain ready.", this);
-                return;
-            }
-
-            ResetPlot();
         }
     }
 }

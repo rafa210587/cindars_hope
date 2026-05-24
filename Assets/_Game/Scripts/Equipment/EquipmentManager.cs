@@ -101,6 +101,9 @@ namespace CindarsHope.Equipment
                     EquipTool("item_tool_hoe_basic", ToolType.Hoe, ToolTier.Basic);
                     break;
                 case ToolType.Hoe:
+                    EquipTool("item_tool_watering_can_basic", ToolType.WateringCan, ToolTier.Basic);
+                    break;
+                case ToolType.WateringCan:
                     EquipTool("item_tool_axe_basic", ToolType.Axe, ToolTier.Basic);
                     break;
                 case ToolType.Axe:
@@ -135,6 +138,10 @@ namespace CindarsHope.Equipment
             {
                 _equippedToolType = ToolType.FishingRod;
             }
+            else if (_equippedToolId.Contains("watering_can"))
+            {
+                _equippedToolType = ToolType.WateringCan;
+            }
             else
             {
                 _equippedToolType = ToolType.None;
@@ -154,6 +161,8 @@ namespace CindarsHope.Equipment
                     return "Fishing Rod";
                 case ToolType.Hoe:
                     return "Hoe";
+                case ToolType.WateringCan:
+                    return "Watering Can";
                 case ToolType.Sickle:
                     return "Sickle";
                 default:

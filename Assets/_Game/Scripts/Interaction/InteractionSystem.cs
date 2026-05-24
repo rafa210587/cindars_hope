@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
+using CindarsHope.Farm;
 using UnityEngine;
 
 namespace CindarsHope.Interaction
@@ -71,6 +72,12 @@ namespace CindarsHope.Interaction
 
         private void Update()
         {
+            if (FarmPlot.IsAnyActionMenuOpen)
+            {
+                PublishPromptIfChanged();
+                return;
+            }
+
             PublishPromptIfChanged();
 
             if (!Input.GetKeyDown(_interactKey))
