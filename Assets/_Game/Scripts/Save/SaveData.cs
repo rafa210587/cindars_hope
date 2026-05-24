@@ -31,6 +31,7 @@ namespace CindarsHope.Save
         public CraftingRuntimeSaveData Crafting;
         public QuestManagerSaveData Quests;
         public StaminaSaveData Stamina;
+        public EquipmentDurabilitySaveData EquipmentDurability;
     }
 
     [Serializable]
@@ -109,5 +110,18 @@ namespace CindarsHope.Save
     {
         public int CurrentStamina;
         public int MaxStamina;
+    }
+
+    [Serializable]
+    public class EquipmentDurabilitySaveData
+    {
+        public Dictionary<string, DurabilityEntry> EquipmentDurabilities = new Dictionary<string, DurabilityEntry>();
+    }
+
+    [Serializable]
+    public class DurabilityEntry
+    {
+        public int CurrentDurability;
+        public int MaxDurability;
     }
 }
