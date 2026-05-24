@@ -5,6 +5,7 @@ using System.IO;
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
 using CindarsHope.Core.Time;
+using CindarsHope.Craft;
 using CindarsHope.Cave.Runtime;
 using CindarsHope.Economy;
 using CindarsHope.Equipment;
@@ -12,6 +13,7 @@ using CindarsHope.Farm;
 using CindarsHope.Inventory;
 using CindarsHope.Player;
 using CindarsHope.Player.Progression;
+using CindarsHope.Quest;
 using CindarsHope.Save.Migrations;
 using CindarsHope.UI.Hotbar;
 using CindarsHope.World;
@@ -35,6 +37,7 @@ namespace CindarsHope.Save
         [SerializeField] private PlayerManager _playerManager;
         [SerializeField] private InventoryManager _inventoryManager;
         [SerializeField] private HungerManager _hungerManager;
+        [SerializeField] private StaminaManager _staminaManager;
         [SerializeField] private TimeManager _timeManager;
         [SerializeField] private FarmPlotRegistry _farmPlotRegistry;
         [SerializeField] private TreeRegistry _treeRegistry;
@@ -44,6 +47,8 @@ namespace CindarsHope.Save
         [SerializeField] private PlayerProgressionManager _progressionManager;
         [SerializeField] private CaveRunManager _caveRunManager;
         [SerializeField] private ShopManager _shopManager;
+        [SerializeField] private CraftingRuntime _craftingRuntime;
+        [SerializeField] private QuestManager _questManager;
 
         private readonly HotbarState _hotbarState = new HotbarState();
         private readonly SaveMigrationRegistry _migrationRegistry = new SaveMigrationRegistry(new ISaveMigration[]
@@ -84,7 +89,9 @@ namespace CindarsHope.Save
                 var worldSaveData = CaptureWorldSaveData(existingSaveData);
                 var caveSaveData = CaptureCaveSaveData(existingSaveData);
                 var economySaveData = CaptureEconomySaveData(existingSaveData);
-                var craftingSaveData = CaptureCraftingSaveData(existingSaveData);
+                var craftingSaveData = CaptureCraftingSaveData();
+                var questsSaveData = CaptureQuestsSaveData();
+                var staminaSaveData = CaptureStaminaSaveData();
 
                 var saveData = new GameSaveData
                 {
@@ -101,7 +108,9 @@ namespace CindarsHope.Save
                     World = worldSaveData,
                     Cave = caveSaveData,
                     Economy = economySaveData,
-                    Crafting = craftingSaveData
+                    Crafting = craftingSaveData,
+                    Quests = questsSaveData,
+                    Stamina = staminaSaveData
                 };
 
                 var savePath = SaveFilePath;
@@ -794,36 +803,32 @@ namespace CindarsHope.Save
                 RestoreEconomySaveData(saveData.Economy);
             }
 
-            if (saveData.Crafting != null)
+            if (_craftingRuntime != null && saveData.Crafting != null)
             {
-                RestoreCraftingSaveData(saveData.Crafting);
+                _craftingRuntime.LoadFromSaveData(saveData.Crafting);
+            }
+
+            if (_questManager != null && saveData.Quests != null)
+            {
+                _questManager.LoadFromSaveData(saveData.Quests);
+            }
+
+            if (_staminaManager != null && saveData.Stamina != null)
+            {
+                _staminaManager.Initialize(saveData.Stamina.MaxStamina, saveData.Stamina.CurrentStamina);
             }
         }
 
         private EconomySaveData CaptureEconomySaveData(GameSaveData existingSaveData)
         {
-            var economyData = new EconomySaveData();
-
-            if (_shopManager != null)
+            if (_shopManager == null)
             {
-                // Capture shop stock from all active shops
-                // Note: This will require ShopManager to track all registered shops
-                // For now, shops register themselves during initialization
-                var existingEconomy = existingSaveData?.Economy;
-                if (existingEconomy?.Shops != null)
-                {
-                    foreach (var shopStock in existingEconomy.Shops)
-                    {
-                        var capturedStock = _shopManager.CaptureShopStock(shopStock.ShopId);
-                        if (capturedStock != null)
-                        {
-                            economyData.Shops.Add(capturedStock);
-                        }
-                    }
-                }
+                return existingSaveData?.Economy ?? new EconomySaveData();
             }
 
-            return economyData.Shops.Count > 0 ? economyData : (existingSaveData?.Economy ?? new EconomySaveData());
+            // For now, preserve existing economy data if ShopManager is not active
+            // Shops will be loaded from their respective ScriptableObjects
+            return existingSaveData?.Economy ?? new EconomySaveData();
         }
 
         private void RestoreEconomySaveData(EconomySaveData economyData)
@@ -844,27 +849,38 @@ namespace CindarsHope.Save
             }
         }
 
-        private CraftingSaveData CaptureCraftingSaveData(GameSaveData existingSaveData)
+        private CraftingRuntimeSaveData CaptureCraftingSaveData()
         {
-            var craftingData = new CraftingSaveData();
+            if (_craftingRuntime == null)
+            {
+                return new CraftingRuntimeSaveData();
+            }
 
-            // TODO: Capture crafting station data from CraftingManager when integrated
-            // For now, preserve existing crafting data
-            return existingSaveData?.Crafting ?? new CraftingSaveData();
+            return _craftingRuntime.CaptureSaveData();
         }
 
-        private void RestoreCraftingSaveData(CraftingSaveData craftingData)
+        private QuestManagerSaveData CaptureQuestsSaveData()
         {
-            if (craftingData == null || craftingData.Stations == null)
+            if (_questManager == null)
             {
-                return;
+                return new QuestManagerSaveData();
             }
 
-            // TODO: Restore crafting station data to CraftingManager when integrated
-            foreach (var stationData in craftingData.Stations)
+            return _questManager.CaptureSaveData();
+        }
+
+        private StaminaSaveData CaptureStaminaSaveData()
+        {
+            if (_staminaManager == null)
             {
-                // Will be restored by CraftingManager/CraftingStation
+                return new StaminaSaveData { CurrentStamina = 100, MaxStamina = 100 };
             }
+
+            return new StaminaSaveData
+            {
+                CurrentStamina = _staminaManager.CurrentStamina,
+                MaxStamina = _staminaManager.MaxStamina
+            };
         }
 
         private void PublishSaveResult(bool wasSuccessful, string message)

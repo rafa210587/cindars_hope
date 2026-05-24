@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
+using CindarsHope.Craft;
 using CindarsHope.Equipment;
 using CindarsHope.Farm;
+using CindarsHope.Player;
 using CindarsHope.Player.Progression;
+using CindarsHope.Quest;
 using CindarsHope.UI.Hotbar;
 using CindarsHope.World;
 using UnityEngine;
@@ -25,7 +28,10 @@ namespace CindarsHope.Save
         public WorldSaveData World;
         public CaveSaveData Cave;
         public EconomySaveData Economy;
-        public CraftingSaveData Crafting;
+        public CraftingRuntimeSaveData Crafting;
+        public QuestManagerSaveData Quests;
+        public StaminaSaveData Stamina;
+        public EquipmentDurabilitySaveData EquipmentDurability;
     }
 
     [Serializable]
@@ -100,29 +106,22 @@ namespace CindarsHope.Save
     }
 
     [Serializable]
-    public class CraftingSaveData
+    public class StaminaSaveData
     {
-        public List<CraftingStationSaveData> Stations = new List<CraftingStationSaveData>();
+        public int CurrentStamina;
+        public int MaxStamina;
     }
 
     [Serializable]
-    public class CraftingStationSaveData
+    public class EquipmentDurabilitySaveData
     {
-        public string StationInstanceId;
-        public int StationType;
-        public int StationLevel;
-        public string PendingOutputItemId;
-        public int PendingOutputAmount;
-        public CraftingJobSaveData ActiveJob;
+        public Dictionary<string, DurabilityEntry> EquipmentDurabilities = new Dictionary<string, DurabilityEntry>();
     }
 
     [Serializable]
-    public class CraftingJobSaveData
+    public class DurabilityEntry
     {
-        public string JobId;
-        public string StationInstanceId;
-        public string RecipeId;
-        public int Status;
-        public float RemainingSeconds;
+        public int CurrentDurability;
+        public int MaxDurability;
     }
 }
