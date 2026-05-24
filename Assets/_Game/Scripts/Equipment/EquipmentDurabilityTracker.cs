@@ -63,11 +63,12 @@ namespace CindarsHope.Equipment
             var data = new EquipmentDurabilitySaveData();
             foreach (var kvp in _equipmentDurabilities)
             {
-                data.EquipmentDurabilities[kvp.Key] = new DurabilityEntry
+                data.EquipmentDurabilities.Add(new DurabilityEntryData
                 {
+                    ItemInstanceId = kvp.Key,
                     CurrentDurability = kvp.Value.CurrentDurability,
                     MaxDurability = kvp.Value.MaxDurability
-                };
+                });
             }
             return data;
         }
@@ -79,11 +80,14 @@ namespace CindarsHope.Equipment
             if (saveData?.EquipmentDurabilities == null)
                 return;
 
-            foreach (var kvp in saveData.EquipmentDurabilities)
+            foreach (var entry in saveData.EquipmentDurabilities)
             {
-                var data = new DurabilityData(kvp.Value.MaxDurability);
-                data.CurrentDurability = kvp.Value.CurrentDurability;
-                _equipmentDurabilities[kvp.Key] = data;
+                if (entry == null || string.IsNullOrWhiteSpace(entry.ItemInstanceId))
+                    continue;
+
+                var data = new DurabilityData(entry.MaxDurability);
+                data.CurrentDurability = entry.CurrentDurability;
+                _equipmentDurabilities[entry.ItemInstanceId] = data;
             }
         }
     }

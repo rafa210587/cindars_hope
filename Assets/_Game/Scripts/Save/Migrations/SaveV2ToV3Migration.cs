@@ -65,27 +65,14 @@ namespace CindarsHope.Save.Migrations
             }
 
             var oldDurabilities = saveData.EquipmentDurability.EquipmentDurabilities;
-            var newDurabilities = new List<DurabilityEntryData>();
 
-            if (oldDurabilities != null && oldDurabilities.Count > 0)
+            // Se já for uma List, não precisa fazer nada (pode ser um old-style Dictionary serializado)
+            // Se for Dictionary (que não é possível em v2 atual pois JsonUtility não serializa), criar nova lista vazia
+            if (oldDurabilities == null || (oldDurabilities is List<DurabilityEntryData> && ((List<DurabilityEntryData>)oldDurabilities).Count == 0))
             {
-                var index = 0;
-                foreach (var kvp in oldDurabilities)
-                {
-                    if (kvp.Value != null)
-                    {
-                        newDurabilities.Add(new DurabilityEntryData
-                        {
-                            ItemInstanceId = kvp.Key ?? $"durability_{index}",
-                            CurrentDurability = kvp.Value.CurrentDurability,
-                            MaxDurability = kvp.Value.MaxDurability
-                        });
-                        index++;
-                    }
-                }
+                saveData.EquipmentDurability.EquipmentDurabilities = new List<DurabilityEntryData>();
             }
-
-            saveData.EquipmentDurability.EquipmentDurabilities = newDurabilities;
+            // Se chegou aqui como List, já está no formato correto de v3
         }
 
         private void InitializeGameTimeSaveData(GameSaveData saveData)
