@@ -1,11 +1,14 @@
-# SPEC 17A — Visual Scale, Map Size, Character & Creature Size Rebaseline
+# [ARQUIVO HISTORICO - PROPOSTA DESCARTADA - NAO USAR COMO SPEC]
 
-> **Projeto:** Cindar's Hope  
-> **Status:** Proposta de spec nova — executar antes da SPEC 17 UI/UX final  
-> **Ordem sugerida:** após SPEC 16 e antes da SPEC 17  
-> **Nome preservado:** `SPEC 17A`, porque a conversa anterior lembrava esse rótulo  
-> **Escopo:** rebaseline de escala visual, tamanho de mapas, personagem, NPCs, criaturas, colisores, câmera, navegação e validações  
-> **Fora de escopo:** arte final, UI final, criação de roster completo novo, balanceamento final de combate, minimap, novos biomas, novas quests
+**Proposta de spec 17A descartada. Não faz parte do backlog oficial de execução (SPECS 01-17).**
+
+SPEC 17A foi uma proposta de rebaseline visual que não foi integrada ao backlog executável.
+
+Se necessario reabrir, criar RFC formal.
+
+---
+
+Conteudo original (mantido por referencia historica):
 
 ---
 

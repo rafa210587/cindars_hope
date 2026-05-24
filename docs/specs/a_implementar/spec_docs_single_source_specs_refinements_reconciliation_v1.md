@@ -1,21 +1,15 @@
-# SPEC MIGRADA - Fonte unica documental de specs e refinements
+# [ARQUIVO HISTORICO - NAO USAR COMO SPEC]
 
-> Status: Reclassificada para implementado documental parcial
-> Nova spec ativa: `docs/specs/implementados/spec_docs_001_single_source_specs_refinements_reconciliation_parcial.md`
-> Motivo: a reconciliacao documental principal ja foi executada.
-
-Esta entrada foi mantida apenas como ponte historica porque a remocao direta de arquivo foi bloqueada pelo conector nesta rodada.
-
-Nao executar esta spec como item futuro.
-
-Acompanhar a versao ativa em:
+**Arquivo mantido por compatibilidade historica apenas. Consulte:**
 
 ```text
 docs/specs/implementados/spec_docs_001_single_source_specs_refinements_reconciliation_parcial.md
 ```
 
-Pendencias restantes foram reclassificadas como hardening documental:
+SPEC MIGRADA - Fonte unica documental de specs e refinements ja foi reclassificada para implementado documental parcial.
 
-- corrigir encoding dos pre-refinamentos quando forem refinados;
-- enriquecer specs futuras 01-17 usando seus pre-refinamentos;
-- mover/marcar cada pre-refinamento como absorvido conforme a spec relacionada for amadurecida.
+Nao execute este arquivo; ele e apenas um registro historico.
+
+---
+
+Ver version ativa em `docs/specs/implementados/spec_docs_001_single_source_specs_refinements_reconciliation_parcial.md`.
