@@ -2,6 +2,7 @@ using CindarsHope.Combat;
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
 using CindarsHope.Equipment;
+using CindarsHope.Player;
 using UnityEngine;
 
 namespace CindarsHope.Player

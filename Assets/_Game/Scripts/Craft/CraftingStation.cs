@@ -70,7 +70,7 @@ namespace CindarsHope.Craft
             return true;
         }
 
-        public bool TryStartCraft(RecipeDataSO recipe, InventoryManager inventory, StaminaManager staminaManager = null, out string failureReason)
+        public bool TryStartCraft(RecipeDataSO recipe, InventoryManager inventory, out string failureReason, StaminaManager staminaManager = null)
         {
             failureReason = string.Empty;
 

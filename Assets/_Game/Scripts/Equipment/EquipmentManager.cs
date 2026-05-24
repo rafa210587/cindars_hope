@@ -38,6 +38,11 @@ namespace CindarsHope.Equipment
             Debug.Log($"EquipmentManager: equipped weapon {_equippedWeaponId}.", this);
         }
 
+        public void RegisterEquipmentUsage()
+        {
+            // Durability tracking handled by EquipmentDurabilityTracker in combat systems
+        }
+
         public bool HasTool(ToolType requiredTool)
         {
             return HasTool(requiredTool, ToolTier.None);

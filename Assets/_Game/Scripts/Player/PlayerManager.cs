@@ -13,6 +13,7 @@ namespace CindarsHope.Player
         public int CurrentGold { get; private set; }
         public int CurrentHP { get; private set; }
         public int MaxHP { get; private set; }
+        public int Strength { get; set; } = 0;
 
         public void Initialize()
         {

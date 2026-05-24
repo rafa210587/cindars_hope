@@ -81,7 +81,7 @@ namespace CindarsHope.Combat
             if (_chaseController == null)
                 return false;
 
-            return _chaseController.IsActiveAndEnabled;
+            return _chaseController.isActiveAndEnabled;
         }
 
         public void SetPatrolDistance(float distance)
