@@ -570,6 +570,32 @@ Pause after current item:
 New-Item .\orquestrador\state\PAUSE -ItemType File -Force
 ```
 
+### Ask Mode - Send Questions Mid-Execution
+
+Send hints, corrections, or questions to Claude/Codex **WITHOUT stopping execution**:
+
+```powershell
+# Send a hint
+.\orquestrador\ask_agent.ps1 "Usa GameEventBus para comunicação entre sistemas"
+
+# Ask a question
+.\orquestrador\ask_agent.ps1 "O que falta para passar nas validações?"
+
+# Give a correction
+.\orquestrador\ask_agent.ps1 "Verifica se estás usando padrão _SO para ScriptableObjects"
+
+# Request trace
+.\orquestrador\ask_agent.ps1 "Diz [TRACE] dos próximos passos que vais fazer"
+```
+
+The agent will:
+1. Receive your message
+2. Log it as event
+3. Incorporate it in next checkpoint
+4. Continue WITHOUT stopping
+
+This is perfect for **guiding Claude mid-execution** - like a code review happening live!
+
 ### Log Files Generated
 
 Each item generates real-time logs at `orquestrador/logs/<timestamp>/<item_id>/`:
