@@ -7,7 +7,7 @@
 > Bloqueia: 15, 17
 > Tipo: Runtime/UI minima
 > Fonte: docs/specs/ como fonte unica; fontes absorvidas listadas abaixo.
-> Escopo: Completar cave runtime, 100 niveis macro, snapshots/replay, checkpoints com portal e menu lateral, boss gates, boss AI inicial, confinement, materializacao, camera bounds, enemy spawn plans estaveis e save/load.
+> Escopo: Completar cave runtime, 100 niveis macro, snapshots/replay, checkpoints com portal e menu lateral, boss gates, boss AI inicial, confinement, materializacao, camera bounds, enemy spawn plans estaveis, respawn de inimigos comuns, controle de drops de boss e save/load.
 > Fora de escopo: fluxo completo de morte/corpse recovery/Fonte de Anya, UI final da cave, boss fights finais/polish, arte final dos biomas, calendario completo de renovacao de recursos, multiplayer, Packages, ProjectSettings e docs_old.
 
 Fontes absorvidas:
@@ -97,6 +97,8 @@ Gaps atuais:
 - Boss gates precisam bloquear/liberar progresso com estado persistente.
 - Boss fights finais ainda nao existem, mas precisamos de boss AI inicial testavel.
 - Inimigos de uma run precisam permanecer consistentes, sem reroll injusto.
+- Inimigos comuns precisam regenerar depois de 2 dias in-game, sem trocar o conjunto planejado da run.
+- Bosses derrotados precisam manter gate/progresso e nao entregar os mesmos itens unicos novamente.
 - Em caso de morte do jogador, a run pode redistribuir inimigos, mas sem trocar o conjunto de inimigos da run.
 - Fishing spots/resources/enemy plans precisam entrar no snapshot.
 - Confinement precisa impedir spawn em parede/fora de area segura.
@@ -116,8 +118,10 @@ Completar cave runtime MVP com:
 - run seed e snapshots estaveis;
 - replay identico de nivel ja visitado;
 - enemy spawn plan estavel por run/nivel;
+- respawn de inimigos comuns derrotados apos 2 dias in-game;
 - redistribuicao permitida apos morte, sem trocar os inimigos da run;
 - boss gate runtime e boss AI inicial testavel;
+- boss rewards/drops unicos controlados para nao repetir o mesmo premio apos gate completo;
 - confinement de player, inimigos, resources, pickups e fishing spots;
 - save/load de run, snapshots, gates e checkpoints;
 - generation testavel por seed + layout hash.
@@ -145,7 +149,11 @@ Completar cave runtime MVP com:
 - Boss AI inicial entra agora para teste.
 - Boss AI final/polish fica futuro.
 - Dentro de uma run, os inimigos de um nivel/run nao mudam de identidade/conjunto.
+- Inimigos comuns derrotados voltam na mesma run apos 2 dias in-game.
+- O respawn de inimigos comuns reativa entradas planejadas do `EnemySpawnPlan`; nao rerolla EnemyIds/faction/roles.
 - Em caso de morte do jogador, os inimigos podem ser redistribuidos nas cavernas, mas nao rerollados/trocados.
+- Boss derrotado nao reabre o gate e nao concede novamente os mesmos itens unicos/recompensas de gate.
+- Boss pode ser reencenado/debugado somente com flag explicita, sem repetir recompensa unica por padrao.
 - Reentrar nivel visitado na mesma run usa snapshot, nao reroll.
 - Fishing spot procedural 10% por level e maximo 1 por level deve entrar no snapshot.
 - Resources nao renovam dentro da mesma run no MVP.
@@ -228,6 +236,8 @@ BossEnemyId opcional
 CheckpointLevelUnlocked
 IsDebugCompletable
 UnlocksCheckpointPortalDestination
+UniqueRewardIds[] opcional
+RepeatableLootTableId opcional
 ```
 
 Estados de gate:
@@ -246,6 +256,8 @@ Regras:
 - Gate completed desbloqueia checkpoint correspondente.
 - Checkpoint desbloqueado aparece habilitado no menu lateral do checkpoint portal.
 - Checkpoints bloqueados podem aparecer desabilitados com feedback simples.
+- `UniqueRewardIds[]` de boss/gate so podem ser concedidos uma vez por save/progresso permanente.
+- Loot repetivel de boss, se existir no futuro, deve usar tabela separada e nao repetir itens unicos.
 
 ## Checkpoint portal e menu lateral
 
@@ -346,7 +358,7 @@ Regras:
 - Toda run ativa possui `RunId` e `Seed` estaveis.
 - Save deve preservar run ativa.
 - Snapshot pertence a `RunId + LevelIndex`.
-- Nova run pode usar nova seed, mas nao deve apagar progresso permanente de checkpoints.
+- Nova run pode usar nova seed, mas nao deve apagar progresso permanente de checkpoints, boss gates completed ou boss unique rewards ja concedidos.
 
 ## Snapshot replay
 
@@ -377,6 +389,7 @@ ResourceNodeStates[]
 PickupStates[]
 EnemySpawnPlan[]
 EnemyRedistributionState opcional
+EnemyRespawnState opcional
 EnvironmentZoneStates[]
 ```
 
@@ -387,12 +400,14 @@ Regras:
 - Snapshot nao serializa referencias Unity.
 - Snapshot salva IDs/posicoes/dados simples.
 
-## Enemy spawn plan e redistribuicao por morte
+## Enemy spawn plan, respawn e redistribuicao por morte
 
 Dentro de uma run:
 
 - O conjunto/identidade dos inimigos sorteados para um nivel deve permanecer estavel.
 - `EnemySpawnPlan` nao deve trocar EnemyIds ao revisitar o nivel.
+- Inimigos comuns derrotados voltam depois de 2 dias in-game.
+- Respawn significa reativar a mesma entrada planejada de inimigo, nao gerar outro inimigo.
 - Se o jogador morrer, a cave pode redistribuir os inimigos ao retornar.
 - Redistribuicao significa escolher novos anchors/posicoes validas para os mesmos inimigos planejados, nao rerollar EnemyIds/faction/roles.
 
@@ -405,6 +420,10 @@ EnemySpawnPlanEntry
 - InitialAnchorId
 - CurrentAnchorId opcional
 - IsDefeated
+- DefeatedAtGameDay opcional
+- RespawnAvailableAtGameDay opcional
+- IsBoss
+- UniqueDropsClaimed opcional
 - RedistributionGroupId opcional
 ```
 
@@ -415,12 +434,23 @@ EnemyRedistributionState
 - RedistributionSeedOffset
 ```
 
+```text
+EnemyRespawnState
+- RespawnDelayGameDays default 2
+- LastRespawnEvaluationDay
+```
+
 Regras:
 
+- Inimigo comum derrotado fica indisponivel ate `RespawnAvailableAtGameDay`.
+- Ao passar 2 dias in-game, inimigo comum pode voltar na mesma run usando o mesmo `PlannedEnemyInstanceId` e `EnemyId`.
+- Respawn deve escolher anchor seguro e pode respeitar redistribuicao atual.
+- Respawn deve publicar evento e nao duplicar inimigo ja ativo.
+- Boss derrotado nao respawna como gate boss normal.
+- Boss derrotado pode permanecer em estado `Completed/Defeated` e nao deve conceder novamente seus itens unicos.
 - Redistribuicao so ocorre por evento explicito, por exemplo futura morte do jogador na spec 15.
 - Redistribuicao deve respeitar confinement e spawn anchors validos.
-- Inimigo derrotado nao deve voltar na mesma run, salvo regra futura explicita.
-- Se enemy runtime save/snapshot da spec 13 ainda nao estiver completo, salvar pelo menos `EnemyId`, planned id, anchor e defeated state.
+- Se enemy runtime save/snapshot da spec 13 ainda nao estiver completo, salvar pelo menos `EnemyId`, planned id, anchor, defeated state e respawn day.
 
 ## Boss AI inicial
 
@@ -460,6 +490,7 @@ Regras:
 - Boss possui vulnerability window apos ataque ou recover.
 - Boss death publica `CaveBossDefeatedEvent`.
 - `CaveBossDefeatedEvent` completa o gate associado e desbloqueia checkpoint.
+- Boss unique rewards/drops sao concedidos uma vez e marcados como claimed.
 - Boss AI final, fases complexas e arena final ficam futuro.
 
 ## Resources e fishing spot na cave
@@ -569,6 +600,7 @@ Regras:
 - `SkipToLevel` nao desbloqueia checkpoint permanente por si so.
 - `UnlockGateForDebug` exige flag explicita.
 - `CompleteBossForDebug` exige flag explicita e publica evento/log.
+- `CompleteBossForDebug` nao deve conceder unique rewards sem flag explicita separada.
 - Toda acao debug deve registrar `CaveDebugSkipUsedEvent`.
 - Debug skip nao pode corromper run state.
 
@@ -581,6 +613,7 @@ CaveSaveData
 - ActiveRun
 - UnlockedCheckpoints[]
 - BossGateStates[]
+- BossUniqueRewardsClaimed[]
 
 CaveRunSaveData
 - RunId
@@ -602,6 +635,7 @@ CaveLevelSnapshotSaveData
 - FishingSpotState
 - EnemySpawnPlan[]
 - EnemyRedistributionState
+- EnemyRespawnState
 - EnvironmentZoneStates[]
 
 CaveCheckpointSaveData
@@ -615,6 +649,7 @@ CaveBossGateSaveData
 - State
 - BossEnemyId
 - IsCompleted
+- UniqueRewardsClaimed[]
 ```
 
 Regras:
@@ -645,6 +680,9 @@ CaveBossGateUnlockedEvent
 CaveBossGateCompletedEvent
 CaveBossSpawnedEvent
 CaveBossDefeatedEvent
+CaveBossUniqueRewardClaimedEvent
+CaveEnemyRespawnScheduledEvent
+CaveEnemyRespawnedEvent
 CaveEnemiesRedistributedEvent
 CaveDebugSkipUsedEvent
 ```
@@ -676,8 +714,13 @@ Cenarios:
 - sair/reentrar nivel N;
 - comparar `LayoutHash`;
 - validar que fishing spot/resource/enemy plan nao rerollou;
+- matar inimigo comum;
+- avancar 2 dias in-game;
+- validar respawn do mesmo EnemyId/PlannedEnemyInstanceId;
 - simular morte/redistribuicao;
-- validar mesmos EnemyIds com anchors redistribuidos.
+- validar mesmos EnemyIds com anchors redistribuidos;
+- matar boss;
+- validar gate/checkpoint e reward unico sem repeticao.
 
 ## Invariantes anti-regressao
 
@@ -710,17 +753,19 @@ Se alguma dependencia ainda nao existir, registrar bloqueio claro em vez de cria
 - Gate bloqueia progresso enquanto locked.
 - Boss AI inicial testavel existe.
 - Derrotar boss inicial/test publica evento e libera gate/checkpoint.
+- Boss derrotado nao concede novamente os mesmos itens unicos/recompensas de gate.
 - Run possui RunId e Seed estaveis.
 - Nivel visitado usa snapshot ao revisitar, sem reroll.
 - LayoutHash se mantem igual no replay do snapshot.
 - Fishing spot procedural 10% e maximo 1 por level entram no snapshot.
 - Resources nao renovam dentro da mesma run no MVP.
 - EnemySpawnPlan mantem os mesmos inimigos da run/nivel.
+- Inimigos comuns derrotados voltam apos 2 dias in-game usando o mesmo EnemyId/PlannedEnemyInstanceId.
 - Apos morte do jogador/evento futuro, inimigos podem ser redistribuidos sem trocar EnemyIds.
 - Player/enemies/resources/pickups/fishing/portals respeitam confinement.
 - Camera fica confinada ao bounds materializado.
 - Debug skip respeita flags e nao gera progresso permanente acidental.
-- Save/load preserva run, snapshots, checkpoints e boss gates.
+- Save/load preserva run, snapshots, checkpoints, boss gates, respawn de inimigos e boss unique rewards claimed.
 - Nenhum item das invariantes anti-regressao e quebrado.
 - Validacao documental e Unity compile validation registradas.
 
@@ -756,13 +801,14 @@ Managers/bridges Unity devem ser finos. Generation, snapshot, boss gate, checkpo
 5. Consolidar CaveRunId/CaveSeed/RunStatus.
 6. Consolidar snapshot replay e LayoutHash.
 7. Integrar fishing spot/resource/enemy plan ao snapshot.
-8. Implementar enemy redistribution state sem reroll de EnemyIds.
-9. Implementar boss AI inicial e gate completion event.
-10. Implementar confinement/safe spawn validators.
-11. Implementar materialization e camera bounds.
-12. Implementar debug skip seguro.
-13. Implementar save/load.
-14. Validar anti-regressao e atualizar tracking.
+8. Implementar enemy respawn state com delay de 2 dias in-game.
+9. Implementar enemy redistribution state sem reroll de EnemyIds.
+10. Implementar boss AI inicial, gate completion event e unique reward claim tracking.
+11. Implementar confinement/safe spawn validators.
+12. Implementar materialization e camera bounds.
+13. Implementar debug skip seguro.
+14. Implementar save/load.
+15. Validar anti-regressao e atualizar tracking.
 
 ## Fluxos
 
@@ -797,13 +843,25 @@ Boss inicial/test e spawnado no gate level
 Boss derrotado publica CaveBossDefeatedEvent
 Gate marca Completed
 Checkpoint e desbloqueado
+Unique rewards sao marcados como claimed e nao repetem
+```
+
+### Respawn de inimigo comum
+
+```text
+Enemy comum derrotado
+Marcar IsDefeated=true e RespawnAvailableAtGameDay=CurrentGameDay+2
+Ao avaliar cave/day transition/reentrada
+Se CurrentGameDay >= RespawnAvailableAtGameDay
+Reativar mesmo PlannedEnemyInstanceId/EnemyId em safe anchor valido
+Publicar CaveEnemyRespawnedEvent
 ```
 
 ### Redistribuir inimigos apos morte
 
 ```text
 Receber evento futuro de morte/retorno da spec 15
-Para cada EnemySpawnPlanEntry nao derrotado
+Para cada EnemySpawnPlanEntry aplicavel
 Escolher novo safe anchor valido
 Atualizar CurrentAnchorId/RedistributionState
 Nao alterar EnemyId
@@ -816,6 +874,8 @@ Publicar CaveEnemiesRedistributedEvent
 - Checkpoint portal burlar gate locked.
 - Debug skip desbloquear progresso permanente sem flag.
 - Redistribuicao trocar inimigos e quebrar run fairness.
+- Respawn duplicar inimigo ativo.
+- Boss derrotado conceder recompensa unica repetida.
 - Snapshot serializar referencias Unity.
 - Boss AI duplicar sistema de enemy AI da spec 13.
 - Fishing spot procedural rerollar ao revisitar nivel.
@@ -826,7 +886,9 @@ Publicar CaveEnemiesRedistributedEvent
 - Snapshot chaveado por RunId + LevelIndex.
 - Teleporte valida checkpoint unlocked.
 - Debug flags explicitas.
-- EnemySpawnPlan com EnemyIds estaveis.
+- EnemySpawnPlan com EnemyIds estaveis e PlannedEnemyInstanceId.
+- Respawn por estado e dia, com validacao de instancia ativa.
+- Unique rewards claimed persistidos por GateId/RewardId.
 - DTOs simples.
 - Boss AI reaproveita EnemyDataSO/EnemyActionSO quando possivel.
 - FishingSpotState persistido no snapshot.
@@ -853,13 +915,15 @@ Publicar CaveEnemiesRedistributedEvent
 - [ ] Persistir fishing spot procedural no snapshot.
 - [ ] Persistir resources/pickups no snapshot.
 - [ ] Integrar `EnemySpawnPlan` da spec 13 ao snapshot.
+- [ ] Implementar respawn de inimigos comuns apos 2 dias in-game.
 - [ ] Implementar redistribuicao de inimigos sem reroll de EnemyIds.
 - [ ] Implementar boss AI inicial testavel.
 - [ ] Integrar boss death com gate/checkpoint unlock.
+- [ ] Persistir/validar boss unique rewards claimed.
 - [ ] Implementar confinement/safe spawn validators.
 - [ ] Implementar materialization e camera bounds.
 - [ ] Implementar debug skip seguro.
-- [ ] Implementar save/load de run, snapshots, gates e checkpoints.
+- [ ] Implementar save/load de run, snapshots, gates, checkpoints, enemy respawn e boss unique rewards.
 - [ ] Atualizar docs implementados/status/registries/refinements/log.
 
 ## Arquivos permitidos
@@ -894,9 +958,10 @@ ProjectSettings/**
 - Cave runtime completo para run/snapshot/checkpoint/gate MVP.
 - Checkpoint portal e menu lateral funcionam.
 - Boss AI inicial libera gate/checkpoint ao derrotar.
-- Snapshot replay e enemy plan estavel funcionam.
+- Boss unique rewards nao repetem.
+- Snapshot replay, enemy plan estavel e respawn de inimigos comuns funcionam.
 - Confinement/materialization/camera bounds validos.
-- Save/load preserva run/gates/checkpoints/snapshots.
+- Save/load preserva run/gates/checkpoints/snapshots/respawn/rewards.
 - Invariantes anti-regressao preservadas.
 - Validacao documental e Unity registrada.
 
@@ -921,12 +986,15 @@ Play Mode minimo:
 7. Validar fishing spot procedural salvo em snapshot sem reroll.
 8. Validar resources/pickups salvos em snapshot sem renovacao na mesma run.
 9. Validar EnemySpawnPlan estavel por nivel.
-10. Simular redistribuicao por morte e validar mesmos EnemyIds em novos anchors.
-11. Forcar boss gate locked e validar bloqueio de avanco.
-12. Spawnar boss AI inicial e validar telegraph/ataques basicos/vulnerability.
-13. Derrotar boss e validar `CaveBossDefeatedEvent`, gate completed e checkpoint unlocked.
-14. Usar checkpoint portal para teleportar ao checkpoint desbloqueado.
-15. Validar player/enemy/resource/fishing/portal safe spawn e confinement.
-16. Validar camera bounds no nivel materializado.
-17. Validar debug skip com flag off/on e logs.
-18. Salvar/carregar run, checkpoints, boss gates e snapshots.
+10. Matar inimigo comum e validar respawn agendado para CurrentGameDay+2.
+11. Avancar 2 dias in-game e validar respawn do mesmo EnemyId/PlannedEnemyInstanceId.
+12. Simular redistribuicao por morte e validar mesmos EnemyIds em novos anchors.
+13. Forcar boss gate locked e validar bloqueio de avanco.
+14. Spawnar boss AI inicial e validar telegraph/ataques basicos/vulnerability.
+15. Derrotar boss e validar `CaveBossDefeatedEvent`, gate completed, checkpoint unlocked e unique rewards claimed.
+16. Tentar repetir boss/reward e validar que mesmos itens unicos nao sao concedidos novamente.
+17. Usar checkpoint portal para teleportar ao checkpoint desbloqueado.
+18. Validar player/enemy/resource/fishing/portal safe spawn e confinement.
+19. Validar camera bounds no nivel materializado.
+20. Validar debug skip com flag off/on e logs.
+21. Salvar/carregar run, checkpoints, boss gates, snapshots, respawn e rewards claimed.
