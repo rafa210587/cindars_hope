@@ -33,13 +33,13 @@ namespace CindarsHope.UI.HUD
         {
             if (_hungerBar != null)
             {
-                float hungerPercent = evt.MaxHunger > 0 ? (float)evt.CurrentHunger / evt.MaxHunger : 0f;
+                float hungerPercent = evt.MaxValue > 0 ? (float)evt.CurrentValue / evt.MaxValue : 0f;
                 _hungerBar.fillAmount = Mathf.Clamp01(hungerPercent);
             }
 
             if (_hungerLabel != null)
             {
-                _hungerLabel.text = $"Hunger: {evt.CurrentHunger}/{evt.MaxHunger}";
+                _hungerLabel.text = $"Hunger: {evt.CurrentValue}/{evt.MaxValue}";
             }
         }
 
