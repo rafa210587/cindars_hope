@@ -12,18 +12,26 @@ namespace CindarsHope.Editor.Testing
     {
         private const string DataPath = "Assets/_Game/Data/Shops";
         private const string NpcDataPath = "Assets/_Game/Data/NPCs";
+        private static int _createdCount = 0;
 
-        [MenuItem("CindarsHope/Testing/Create Shop Test Assets")]
-        public static void CreateTestShops()
+        [MenuItem("CindarsHope/Testing/Create Shop Assets (Complete Spec 06)")]
+        public static void CreateCompleteShopAssets()
         {
+            _createdCount = 0;
             EnsureDirectories();
+
+            Debug.Log("═══════════════════════════════════════════════════════");
+            Debug.Log("        CREATING COMPLETE SPEC 06 SHOP ASSETS");
+            Debug.Log("═══════════════════════════════════════════════════════\n");
 
             CreateWeaponsArmorShop();
             CreateSeedsToolsShop();
             CreateNpcDialogueData();
 
             AssetDatabase.Refresh();
-            Debug.Log("✓ Shop test assets created successfully");
+            Debug.Log($"\n═══════════════════════════════════════════════════════");
+            Debug.Log($"  ✓ Created {_createdCount} assets successfully");
+            Debug.Log($"═══════════════════════════════════════════════════════");
         }
 
         private static void EnsureDirectories()
@@ -36,6 +44,12 @@ namespace CindarsHope.Editor.Testing
 
         private static void CreateWeaponsArmorShop()
         {
+            var path = $"{DataPath}/ShopData_WeaponsArmor.asset";
+
+            // Delete if exists to avoid duplicates
+            if (File.Exists(path))
+                AssetDatabase.DeleteAsset(path);
+
             var shopData = ScriptableObject.CreateInstance<ShopDataSO>();
             shopData.Id = "shop_weapons_armor";
             shopData.ShopKeeperId = "npc_shop_weapons_armor";
@@ -48,12 +62,18 @@ namespace CindarsHope.Editor.Testing
                 new ShopItemEntry { ItemId = "item_accessory_leather_gloves", MaxStock = 4 }
             };
 
-            AssetDatabase.CreateAsset(shopData, $"{DataPath}/ShopData_WeaponsArmor.asset");
-            Debug.Log($"Created shop asset: {shopData.Id}");
+            AssetDatabase.CreateAsset(shopData, path);
+            _createdCount++;
+            Debug.Log($"  ✓ Created: {shopData.Id}");
         }
 
         private static void CreateSeedsToolsShop()
         {
+            var path = $"{DataPath}/ShopData_SeedsTools.asset";
+
+            if (File.Exists(path))
+                AssetDatabase.DeleteAsset(path);
+
             var shopData = ScriptableObject.CreateInstance<ShopDataSO>();
             shopData.Id = "shop_seeds_tools";
             shopData.ShopKeeperId = "npc_shop_seeds_tools";
@@ -68,8 +88,9 @@ namespace CindarsHope.Editor.Testing
                 new ShopItemEntry { ItemId = "item_potion_health_basic", MaxStock = 5 }
             };
 
-            AssetDatabase.CreateAsset(shopData, $"{DataPath}/ShopData_SeedsTools.asset");
-            Debug.Log($"Created shop asset: {shopData.Id}");
+            AssetDatabase.CreateAsset(shopData, path);
+            _createdCount++;
+            Debug.Log($"  ✓ Created: {shopData.Id}");
         }
 
         private static void CreateNpcDialogueData()
@@ -86,14 +107,19 @@ namespace CindarsHope.Editor.Testing
 
         private static void CreateDialogueData(string npcId, string openingLine, string closingLine)
         {
+            var path = $"{NpcDataPath}/NpcDialogue_{npcId}.asset";
+
+            if (File.Exists(path))
+                AssetDatabase.DeleteAsset(path);
+
             var dialogueData = ScriptableObject.CreateInstance<NpcDialogueDataSO>();
             dialogueData.Id = npcId;
             dialogueData.OpeningLine = openingLine;
             dialogueData.ClosingLine = closingLine;
 
-            var fileName = npcId.Replace("npc_", "").Replace("_", " ");
-            AssetDatabase.CreateAsset(dialogueData, $"{NpcDataPath}/NpcDialogue_{npcId}.asset");
-            Debug.Log($"Created dialogue asset: {npcId}");
+            AssetDatabase.CreateAsset(dialogueData, path);
+            _createdCount++;
+            Debug.Log($"  ✓ Created: {npcId}");
         }
     }
 }
