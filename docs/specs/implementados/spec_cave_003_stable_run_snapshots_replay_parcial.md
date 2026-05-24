@@ -1,4 +1,4 @@
-﻿# SPEC CAVE-003 - Stable run, snapshots e replay parcial
+# SPEC CAVE-003 - Stable run, snapshots e replay parcial
 
 > Status: Implementado em codigo - validacao Unity pendente
 > Camada: Cave
@@ -11,6 +11,8 @@
 
 ### O que existe
 Stable run replay captura snapshots, layout hash e estado para revisita/backtrack.
+
+A regra central absorvida da branch historica `feature/docs-fase9f-cave-stable-run-spec` e: dentro de uma mesma `CaveRunSeed`, niveis ja visitados devem ser restaurados por snapshot, sem reroll de layout, recursos ou inimigos ao voltar/avancar entre niveis.
 
 ### Por que existe
 Esta capacidade sustenta o loop jogavel atual de Cindar's Hope e normaliza, em uma spec ativa, o que ja esta implementado ou parcialmente implementado no repositorio.
@@ -25,8 +27,15 @@ Nao tratar como implementado final qualquer item listado como pendente, qualquer
 ### Arquitetura real
 A arquitetura real e composta pelos arquivos listados na evidencia, pelos dados preservados em `docs_old/` e pelo status operacional registrado em `PROJECT_LOG.md`.
 
+Detalhamento absorvido da branch historica:
+
+- `VisitedLevelSnapshot` persiste layout e composicao do nivel.
+- `CaveLevelRuntimeController` captura e restaura snapshots.
+- `CaveSaveData` serializa snapshots com tipos simples.
+- `CaveRunManager` limpa snapshots quando o jogador e derrotado e gera nova run seed.
+
 ### Fluxo
-O fluxo operacional segue o MVP atual: sistemas runtime consultam managers/dados por IDs, publicam eventos simples quando aplicavel e expõem estado para HUD, save ou validadores conforme o sistema.
+O fluxo operacional segue o MVP atual: sistemas runtime consultam managers/dados por IDs, publicam eventos simples quando aplicavel e expoem estado para HUD, save ou validadores conforme o sistema.
 
 ### Persistencia
 Quando ha persistencia, ela deve usar DTOs simples e IDs estaveis. Referencias Unity permanecem fora dos DTOs. Quando nao ha persistencia propria, o estado e derivado de managers ou dados ScriptableObject.
@@ -39,6 +48,13 @@ Quando ha persistencia, ela deve usar DTOs simples e IDs estaveis. Referencias U
 - [x] Evidencia principal existe no repo.
 - [x] Estado foi registrado ou reconciliado em `PROJECT_LOG.md` e/ou `docs_old/IMPLEMENTATION_STATUS.md`.
 - [x] Conteudo historico antigo foi preservado em `docs_old/`.
+- [x] Contratos de snapshot.
+- [x] LayoutHash e replay deterministico.
+- [x] CaptureSnapshot apos materializacao.
+- [x] RestoreSnapshot no backtrack.
+- [x] Save/load de snapshots.
+- [x] Reset por derrota/KO com nova CaveRunSeed.
+- [x] Daily refresh de nodes respawnaveis.
 
 ### Implementado parcial
 - [ ] Validacao Unity Play Mode completa pode estar pendente conforme a area.
@@ -46,6 +62,9 @@ Quando ha persistencia, ela deve usar DTOs simples e IDs estaveis. Referencias U
 
 ### Pendente/futuro
 - [ ] Validacao Unity Play Mode de snapshots/replay pendente.
+- [ ] Teste de backtrack completo.
+- [ ] Teste de save/load restaurando snapshots.
+- [ ] Teste de KO limpando snapshots e preservando checkpoints.
 
 ---
 
@@ -75,7 +94,3 @@ Quando ha persistencia, ela deve usar DTOs simples e IDs estaveis. Referencias U
 
 - Validacao Unity Play Mode de snapshots/replay pendente.
 - Se a implementacao for parcial, nao promover para final sem evidencia de Unity e sem atualizar esta spec ou criar amendment/correction.
-
-
-
-
