@@ -2,7 +2,7 @@
 
 > Status: Refinamento inicial a implementar
 > Spec futura relacionada: `docs/specs/a_implementar/spec_economy_shop_stock_pricing_ui.md`
-> Objetivo: evoluir compra/venda MVP para lojas de cidade com NPCs, estoque finito, reposicao diaria, UI modal, falas simples de NPC e precos consistentes.
+> Objetivo: evoluir compra/venda MVP para lojas de cidade com NPCs, estoque finito, reposicao diaria, UI modal, dialogue modal de NPC e precos consistentes.
 
 ---
 
@@ -28,6 +28,7 @@ docs/specs/implementados/spec_economy_001_compra_venda_gold_e_sellables.md
 - Nao ha NPCs lojistas especializados.
 - Pip ainda pode estar sendo tratado como vendedor, mas deve virar recepcao da cidade.
 - NPCs ainda nao possuem contrato simples de fala de abertura e despedida.
+- Dialogos precisam usar modal proprio e nao podem ficar sobre outros modais.
 - Compra/venda da fazenda deve ser removida/deprecada como fluxo oficial.
 - Nao ha reposicao diaria de estoque.
 - Nao ha multiplicador de preco preparado para afinidade futura.
@@ -45,8 +46,10 @@ docs/specs/implementados/spec_economy_001_compra_venda_gold_e_sellables.md
 - Pip nao vende itens nesta spec.
 - Pip recebe o jogador na cidade: quando o jogador entra na cidade, Pip se move ate perto do jogador e depois para.
 - Todos os NPCs desta spec possuem uma frase de abertura e uma frase de despedida especifica.
-- Ao interagir com um NPC, a fala de abertura aparece antes do menu de opcoes.
-- Ao fechar a conversa por `Sair` ou `Esc`, a fala de despedida especifica do NPC aparece antes de encerrar o modal.
+- Dialogos de NPC usam `DialogueModal` ou equivalente, separado visualmente do shop menu.
+- `DialogueModal`, `ShopMenuModal`, `ShopBuyPanel` e `ShopSellPanel` devem respeitar uma unica pilha/camada de modal: nao pode haver dois modais ativos se sobrepondo.
+- Ao interagir com um NPC, a fala de abertura aparece em `DialogueModal` antes do menu de opcoes.
+- Ao fechar a conversa por `Sair` ou `Esc`, a fala de despedida especifica aparece em `DialogueModal` antes de encerrar o fluxo.
 - Ambos os vendedores, ao conversar, abrem menu modal vertical:
 
 ```text
@@ -83,8 +86,8 @@ Comportamento:
 
 - Quando jogador entra na cidade pela primeira vez na sessao/cena, Pip anda ate perto do jogador.
 - Ao chegar em distancia segura, Pip para.
-- Pip deve ter uma fala curta de abertura/boas-vindas.
-- Pip deve ter uma fala curta de despedida.
+- Pip deve ter uma fala curta de abertura/boas-vindas exibida em `DialogueModal`.
+- Pip deve ter uma fala curta de despedida exibida em `DialogueModal`.
 - Nao implementar agenda completa, quest ou loja para Pip nesta spec.
 
 ### Vendedor de armas e armaduras
@@ -231,27 +234,30 @@ Regras:
 
 ```text
 Jogador interage com NPC
-Mostrar OpeningLine especifica do NPC
-Se NPC for lojista, abrir menu modal Comprar / Vender / Sair
-Se jogador escolher Sair ou apertar Esc, mostrar ClosingLine especifica
+Abrir DialogueModal com OpeningLine especifica do NPC
+Fechar DialogueModal
+Se NPC for lojista, abrir ShopMenuModal Comprar / Vender / Sair
+Se jogador escolher Sair ou apertar Esc, fechar menu/painel atual
+Abrir DialogueModal com ClosingLine especifica
 Fechar conversa/modal
 Restaurar input do player
 ```
 
 Garantias:
 
-- Pip mostra falas, mas nao abre loja.
+- Pip mostra falas em `DialogueModal`, mas nao abre loja.
 - Lojistas mostram fala de abertura antes do menu.
 - Lojistas mostram despedida ao sair.
 - Despedida nao deve disparar transacao.
 - Fechar com `Esc` deve seguir o mesmo encerramento seguro de `Sair`.
+- `DialogueModal` nao fica sobre `ShopMenuModal`, `ShopBuyPanel`, `ShopSellPanel`, inventory panel ou HUD interativo.
 
 ### Comprar
 
 ```text
 Jogador interage com NPC lojista
-OpeningLine
-Menu modal: Comprar / Vender / Sair
+DialogueModal: OpeningLine
+ShopMenuModal: Comprar / Vender / Sair
 Escolhe Comprar
 Abre ShopBuyPanel com lista de itens, preco, estoque restante e quantidade
 Jogador seleciona item/quantidade
@@ -271,8 +277,8 @@ Garantias:
 
 ```text
 Jogador interage com NPC lojista
-OpeningLine
-Menu modal: Comprar / Vender / Sair
+DialogueModal: OpeningLine
+ShopMenuModal: Comprar / Vender / Sair
 Escolhe Vender
 Abre ShopSellPanel usando inventory do jogador
 Mostra itens vendaveis e preco de venda = 60% do BaseValue
@@ -289,7 +295,42 @@ Garantias:
 
 ---
 
-## 9. Save/load
+## 9. UI/modal
+
+### Modal manager / exclusividade
+
+Esta spec deve usar um mecanismo unico de controle de modal, existente ou novo, para garantir:
+
+- no maximo um modal interativo ativo por vez;
+- dialogo nao fica sobre loja;
+- loja nao fica sobre dialogo;
+- inventory/shop panels nao ficam sobre dialogue modal;
+- HUD principal pode permanecer visivel ao fundo, mas nao deve receber input enquanto modal estiver aberto;
+- ao fechar um modal, input normal volta somente se nao houver outro modal ativo.
+
+Se ainda nao existir um `ModalManager`, `UiModalStack` ou equivalente, criar o minimo necessario sem virar UI final global.
+
+### DialogueModal
+
+Usado para:
+
+```text
+OpeningLine
+ClosingLine
+Mensagens simples de NPC desta spec
+```
+
+Regras:
+
+- aparece antes do shop menu;
+- aparece ao sair antes de encerrar conversa;
+- bloqueia input do player;
+- fecha por `E`, `Enter`, `Space` ou `Esc`, conforme fluxo seguro;
+- nao fica aberto quando `ShopMenuModal`, `ShopBuyPanel` ou `ShopSellPanel` estiverem ativos.
+
+---
+
+## 10. Save/load
 
 Persistir usando IDs e tipos simples:
 
@@ -311,7 +352,7 @@ Regras:
 
 ---
 
-## 10. Invariantes anti-regressao
+## 11. Invariantes anti-regressao
 
 Esta spec nao pode quebrar:
 
@@ -328,7 +369,7 @@ Esta spec nao pode quebrar:
 
 ---
 
-## 11. Arquivos provaveis
+## 12. Arquivos provaveis
 
 ```text
 Assets/_Game/Scripts/Economy/EconomyManager.cs
@@ -340,6 +381,8 @@ Assets/_Game/Scripts/Economy/Data/PriceModifierRule.cs
 Assets/_Game/Scripts/UI/Shop/ShopMenuController.cs
 Assets/_Game/Scripts/UI/Shop/ShopBuyPanelController.cs
 Assets/_Game/Scripts/UI/Shop/ShopSellPanelController.cs
+Assets/_Game/Scripts/UI/Dialogue/DialogueModalController.cs
+Assets/_Game/Scripts/UI/Modal/UiModalStack.cs
 Assets/_Game/Scripts/NPC/**
 Assets/_Game/Scripts/Town/**
 Assets/_Game/Scripts/Save/SaveData.cs
@@ -347,15 +390,16 @@ Assets/_Game/Scripts/Save/SaveData.cs
 
 ---
 
-## 12. Definition of Done
+## 13. Definition of Done
 
 - [ ] Pip nao abre loja.
 - [ ] Pip se move ate o jogador ao entrar na cidade e para proximo dele.
-- [ ] Pip tem fala de abertura e despedida.
+- [ ] Pip tem fala de abertura e despedida em `DialogueModal`.
 - [ ] Existem dois NPCs lojistas: armas/armaduras e sementes/utensilios.
-- [ ] Cada lojista tem fala de abertura e despedida especifica.
+- [ ] Cada lojista tem fala de abertura e despedida especifica em `DialogueModal`.
 - [ ] Cada lojista abre menu modal vertical `Comprar / Vender / Sair` depois da fala de abertura.
-- [ ] Ao escolher `Sair` ou apertar `Esc`, o NPC mostra sua despedida antes de fechar.
+- [ ] Ao escolher `Sair` ou apertar `Esc`, o NPC mostra sua despedida em `DialogueModal` antes de fechar.
+- [ ] Dialogos nao ficam sobre shop menu, buy panel, sell panel, inventory panel ou outros modais.
 - [ ] Comprar abre HUD/lista de itens do vendedor.
 - [ ] Vender abre inventory do jogador em modo venda.
 - [ ] Estoque dos vendedores e finito.
@@ -372,21 +416,23 @@ Assets/_Game/Scripts/Save/SaveData.cs
 
 ---
 
-## 13. Validacao
+## 14. Validacao
 
 1. Entrar na cidade e validar Pip caminhando ate o jogador e parando.
 2. Confirmar que Pip nao abre loja.
-3. Validar fala de abertura e despedida do Pip.
-4. Interagir com vendedor de armas/armaduras e validar fala de abertura.
-5. Abrir menu Comprar/Vender/Sair.
-6. Comprar item com gold e espaco suficientes.
-7. Validar decremento de estoque.
-8. Tentar comprar sem gold.
-9. Tentar comprar sem espaco no inventory.
-10. Comprar ate estoque acabar.
-11. Vender item do inventory e validar ganho de 60% do BaseValue.
-12. Sair da conversa e validar despedida especifica do lojista.
-13. Salvar/carregar e validar estoque restante.
-14. Avancar dia e validar restock uma unica vez.
-15. Confirmar que compra/venda da fazenda nao esta mais ativa como fluxo oficial.
-16. Validar Unity compile validation e docs validation.
+3. Validar fala de abertura e despedida do Pip em `DialogueModal`.
+4. Interagir com vendedor de armas/armaduras e validar fala de abertura em `DialogueModal`.
+5. Validar que `DialogueModal` fecha antes de abrir Comprar/Vender/Sair.
+6. Abrir menu Comprar/Vender/Sair.
+7. Comprar item com gold e espaco suficientes.
+8. Validar decremento de estoque.
+9. Tentar comprar sem gold.
+10. Tentar comprar sem espaco no inventory.
+11. Comprar ate estoque acabar.
+12. Vender item do inventory e validar ganho de 60% do BaseValue.
+13. Sair da conversa e validar despedida especifica do lojista em `DialogueModal`.
+14. Validar que dialogo nao fica sobre shop menu, buy panel ou sell panel.
+15. Salvar/carregar e validar estoque restante.
+16. Avancar dia e validar restock uma unica vez.
+17. Confirmar que compra/venda da fazenda nao esta mais ativa como fluxo oficial.
+18. Validar Unity compile validation e docs validation.
