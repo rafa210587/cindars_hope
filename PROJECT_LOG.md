@@ -1,3 +1,56 @@
+## Atualizacao 2026-05-24 - Specs 01-16 Validacao e completamento
+
+Status: Validacao sequencial em progresso (SPEC 08 completa C#, compilacao sucesso).
+
+### SPEC 08 - Town NPC Dialogue Schedule Quests:
+**Implementado (C# completo):**
+- `NpcDataSO` com campos: NpcId, DisplayName, OpeningLine, ClosingLine, DialogueTree, ShopId, DefaultPosition, MovementMode, WanderData
+- `DialogueTreeSO` com Nodes[], StartNodeId, GetNodeById() método
+- `DialogueNode` com Text, Choices[], RandomLinePool para random lines
+- `DialogueChoice` com Label, NextNodeId, ActionType (None/OpenShop/CloseDialogue), ActionPayload
+- `NpcController` implementando IInteractable, gerenciando dialogue flow e choice selection
+- `NpcWanderer` para random movement com velocity/pausa
+- `NpcManager` coordenando múltiplos NPCs, registro/desregistro
+- `DialogueModal` com ShowWithChoices(), navegação W/S/E, Esc para fechar, highlight visual
+- SaveData integrado: NpcManagerSaveData, NpcSaveData
+
+**Avisos resolvidos:**
+- Depreciação Rigidbody2D.velocity → linearVelocity (NpcWanderer)
+- Duplicate using directives (CraftingStation) removido
+- GUIDs de scripts corrigidos nas refs de assets
+
+**Bloqueios pendentes:**
+- Assets YAML de teste (DialogueTree_*.asset, Npc_*.asset) têm formato inválido que causa import errors em Unity validation (não afeta compilação C#)
+- Assets devem ser criados via Unity Editor, não manualmente em YAML
+- Integração em TownScene e Play Mode test pendente
+
+**Compilação: ✓ Sucesso**
+- Assembly-CSharp.dll compilou sem erros
+- Build Tundra: success (1.04 segundos)
+- Warnings residuais em CaveDebugLevelSkipController (campo unused, não relacionado)
+
+### Status geral SPECS 01-16:
+- SPEC 01-05: Parcialmente implementado (base infra)
+- SPEC 06: Implementado (Economy shop)
+- SPEC 07: Implementado (Crafting queue/stations)
+- **SPEC 08: Implementado C# (NPC/dialogue logic COMPLETA)**
+- SPEC 09-12: Implementado parcial (Hunger, Equipment, Damage, Combat)
+- SPEC 13-16: Implementado parcial (Enemy AI, Cave runtime, Entry/death, Skill trees)
+
+Validação Unity pending para SPEC 13-16 após limpeza de assets de teste.
+
+Commits este período:
+- (implícito em edits de código)
+
+Próximos passos:
+1. Limpar/remover assets YAML problemáticos de teste
+2. Re-validar compilação
+3. Completar specs 09-12 se necessário
+4. Finalizar validação specs 13-16
+5. Integração Play Mode e cenas
+
+---
+
 ## Atualizacao 2026-05-24 - Spec 06 Economy shop stock pricing UI - Fundacao
 
 Status: Implementado fundacao.

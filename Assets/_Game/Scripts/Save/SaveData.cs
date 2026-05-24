@@ -32,6 +32,7 @@ namespace CindarsHope.Save
         public QuestManagerSaveData Quests;
         public StaminaSaveData Stamina;
         public EquipmentDurabilitySaveData EquipmentDurability;
+        public NpcManagerSaveData Npcs;
     }
 
     [Serializable]
@@ -123,5 +124,20 @@ namespace CindarsHope.Save
     {
         public int CurrentDurability;
         public int MaxDurability;
+    }
+
+    [Serializable]
+    public class NpcManagerSaveData
+    {
+        public List<NpcSaveData> Npcs = new List<NpcSaveData>();
+    }
+
+    [Serializable]
+    public class NpcSaveData
+    {
+        public string NpcId;
+        public string SceneId;
+        public Vector2 Position;
+        public bool HasMet;
     }
 }
