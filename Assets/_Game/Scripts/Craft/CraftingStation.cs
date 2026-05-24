@@ -1,5 +1,6 @@
 using System;
 using CindarsHope.Craft.Data;
+using CindarsHope.Core.Data;
 using CindarsHope.Inventory;
 using CindarsHope.Inventory.Data;
 using UnityEngine;
@@ -135,7 +136,7 @@ namespace CindarsHope.Craft
             {
                 foreach (var ingredient in recipe.Ingredients)
                 {
-                    if (ingredient != null)
+                    if (!string.IsNullOrWhiteSpace(ingredient.ItemId))
                         totalIngredients += ingredient.Amount;
                 }
             }
@@ -225,7 +226,7 @@ namespace CindarsHope.Craft
 
             foreach (var ingredient in recipe.Ingredients)
             {
-                if (ingredient == null || string.IsNullOrWhiteSpace(ingredient.ItemId))
+                if (string.IsNullOrWhiteSpace(ingredient.ItemId))
                     continue;
 
                 if (!inventory.HasItem(ingredient.ItemId, ingredient.Amount))
@@ -245,7 +246,7 @@ namespace CindarsHope.Craft
 
             foreach (var ingredient in recipe.Ingredients)
             {
-                if (ingredient != null && !string.IsNullOrWhiteSpace(ingredient.ItemId))
+                if (!string.IsNullOrWhiteSpace(ingredient.ItemId))
                 {
                     inventory.RemoveItem(ingredient.ItemId, ingredient.Amount);
                 }
@@ -259,7 +260,7 @@ namespace CindarsHope.Craft
 
             foreach (var ingredient in recipe.Ingredients)
             {
-                if (ingredient != null && !string.IsNullOrWhiteSpace(ingredient.ItemId))
+                if (!string.IsNullOrWhiteSpace(ingredient.ItemId))
                 {
                     inventory.AddItem(ingredient.ItemId, ingredient.Amount);
                 }
