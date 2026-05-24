@@ -1,5 +1,6 @@
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Inventory;
+using CindarsHope.World;
 using UnityEngine;
 
 namespace CindarsHope.UI
@@ -210,8 +211,7 @@ namespace CindarsHope.UI
             switch (_actions[_selectedActionIndex])
             {
                 case "Use":
-                    _message = "Use is reserved for item-specific handlers.";
-                    _mode = PanelMode.Slots;
+                    ExecuteUse();
                     break;
                 case "Equip":
                     _message = _inventoryManager.MarkSlotEquipped(_selectedSlotIndex, "manual")
@@ -220,8 +220,7 @@ namespace CindarsHope.UI
                     _mode = PanelMode.Slots;
                     break;
                 case "Drop":
-                    _message = "Drop needs a runtime pickup spawner; item was kept.";
-                    _mode = PanelMode.Slots;
+                    ExecuteDrop();
                     break;
                 case "Destroy":
                     _mode = PanelMode.DestroyConfirm;
@@ -236,6 +235,67 @@ namespace CindarsHope.UI
                     _mode = PanelMode.Slots;
                     break;
             }
+        }
+
+        private void ExecuteUse()
+        {
+            if (_inventoryManager == null || !_inventoryManager.TryGetSlot(_selectedSlotIndex, out var slot) || slot.IsEmpty)
+            {
+                _message = "Slot is empty.";
+                _mode = PanelMode.Slots;
+                return;
+            }
+
+            var useManager = ItemUseManager.Instance;
+            if (useManager == null)
+            {
+                _message = "Item use system not available.";
+                _mode = PanelMode.Slots;
+                return;
+            }
+
+            if (!useManager.CanUseItem(slot.ItemId))
+            {
+                _message = "This item cannot be used.";
+                _mode = PanelMode.Slots;
+                return;
+            }
+
+            var player = GameObject.FindWithTag("Player");
+            if (useManager.TryUseItem(slot.ItemId, player))
+            {
+                _message = $"Used {slot.ItemId}.";
+            }
+            else
+            {
+                _message = $"Failed to use {slot.ItemId}.";
+            }
+
+            _mode = PanelMode.Slots;
+        }
+
+        private void ExecuteDrop()
+        {
+            if (_inventoryManager == null || !_inventoryManager.TryGetSlot(_selectedSlotIndex, out var slot) || slot.IsEmpty)
+            {
+                _message = "Slot is empty.";
+                _mode = PanelMode.Slots;
+                return;
+            }
+
+            var player = GameObject.FindWithTag("Player");
+            var dropPosition = player != null ? player.transform.position + Vector3.right * 0.5f : Vector3.zero;
+
+            if (_inventoryManager.DropItem(_selectedSlotIndex, dropPosition))
+            {
+                _message = "Item dropped.";
+            }
+            else
+            {
+                _message = "Failed to drop item.";
+            }
+
+            _mode = PanelMode.Slots;
         }
 
         private void DrawSlots()

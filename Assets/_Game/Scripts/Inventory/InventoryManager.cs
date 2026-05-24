@@ -426,6 +426,36 @@ namespace CindarsHope.Inventory
             return true;
         }
 
+        public bool DropItem(int slotIndex, Vector3 dropPosition)
+        {
+            if (!TryGetSlot(slotIndex, out var slot) || slot.IsEmpty)
+            {
+                return false;
+            }
+
+            var spawner = World.ItemDropSpawner.Instance;
+            if (spawner == null)
+            {
+                Debug.LogWarning("InventoryManager: ItemDropSpawner not available.", this);
+                return false;
+            }
+
+            var itemId = slot.ItemId;
+            var amount = slot.Amount;
+
+            if (!spawner.TryDropItem(itemId, amount, dropPosition))
+            {
+                Debug.LogWarning($"InventoryManager: Failed to drop item '{itemId}' x{amount}.", this);
+                return false;
+            }
+
+            var previousAmount = GetAmount(itemId);
+            slot.Clear();
+            RebuildAggregate();
+            GameEventBus.Publish(new InventoryChangedEvent(itemId, -amount, previousAmount - amount));
+            return true;
+        }
+
         private void RestoreSlots(List<InventorySlotSaveData> savedSlots)
         {
             foreach (var savedSlot in savedSlots)

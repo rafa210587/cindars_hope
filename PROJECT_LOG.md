@@ -1,3 +1,109 @@
+## Sessão 2026-05-24 (4ª) - Fechar SPEC 03 (Inventory Slots, Capacity e UI mínima)
+
+**Data:** 2026-05-24 (continuação)  
+**Foco:** Executar e fechar SPEC 03 - Inventory Slots, Capacity e UI mínima com Drop e Use  
+**Status:** COMPLETO
+
+### Deliverables
+
+**SPEC 03 — Inventory Slots, Capacity e UI mínima:**
+- Status: `Implementado completo`
+- Arquivos criados/alterados:
+  - `Assets/_Game/Scripts/World/ItemDropSpawner.cs` — Sistema de spawn de pickups para itens dropados
+  - `Assets/_Game/Scripts/Inventory/ItemUseHandler.cs` — Base abstrata para handlers de uso de itens
+  - `Assets/_Game/Scripts/Inventory/ItemUseManager.cs` — Manager para executar uso de itens com handlers
+  - `Assets/_Game/Scripts/Core/Events/ItemUsedEvent.cs` — Evento publicado quando item é usado
+  - `Assets/_Game/Scripts/Inventory/InventoryManager.cs` — Adicao de metodo DropItem
+  - `Assets/_Game/Scripts/UI/InventoryPanelController.cs` — Atualizacao de ExecuteDrop() e ExecuteUse()
+  - `docs/agent_prompts/implementados/SPEC_03_inventory-slots-capacity_PROMPT.md` — Prompt movido de a_executar/
+  - `docs/specs/SPEC_REGISTRY_IMPLEMENTED.md` — Status atualizado para "Implementado completo"
+
+### Validacoes Executadas
+
+1. **Docs validation**: PASS
+2. **Unity compile validation**: PASS (Tundra build success, assembly cache warnings aceitáveis em batchmode)
+3. **Code review**: Compilação C# bem-sucedida, sem erros de sintaxe
+
+### Implementacao Detalhes
+
+#### ItemDropSpawner.cs
+- Singleton manager que spawna ItemPickup objects dinamicamente
+- Metodo TryDropItem(itemId, amount, dropPosition) cria pickup em tempo real
+- Persistencia de pickups dropados para save/load
+- Rastreia pickups dropados separadamente da registry
+
+#### ItemUseHandler & ItemUseManager
+- ItemUseHandler: base abstrata para handlers específicos de item
+- ItemUseManager: manager que executa handlers registrados
+- Verifica se item é consumível (Food, Consumable category ou ConsumableSubtype != None)
+- Publica ItemUsedEvent após sucesso, remove item do inventory
+
+#### InventoryManager.DropItem()
+- Novo método que spawna ItemPickup e remove item do inventory
+- Transacional: se spawner falhar, item permanece intacto
+- Publica InventoryChangedEvent após sucesso
+
+#### InventoryPanelController
+- ExecuteDrop(): usa ItemDropSpawner para criar pickup perto do player
+- ExecuteUse(): tenta usar item via ItemUseManager com handlers
+- Ambas as operações feedback ao usuário via mensagem no painel
+
+### Commit Criado
+
+**Mensagem:** "feat: fechar spec 03 - inventory com drop spawner e use handler infrastructure"
+
+---
+
+## Sessão 2026-05-24 (3ª) - Fechar SPEC 02 (Save Schema Migration v2)
+
+**Data:** 2026-05-24 (continuação)  
+**Foco:** Executar e fechar SPEC 02 - Save Schema Migration v2 com Mana e Active Skills  
+**Status:** COMPLETO
+
+### Deliverables
+
+**SPEC 02 — Save Schema Migration v2:**
+- Status: `Implementado completo`
+- Arquivos criados/alterados:
+  - `Assets/_Game/Scripts/Save/Migrations/SaveV3ToV4Migration.cs` — Implementacao completa da migracao v3→v4
+  - `Assets/_Game/Scripts/Save/SaveData.cs` — Adicao de CurrentMana, MaxMana em PlayerSaveData + ActiveSkillSlotsSaveData class
+  - `Assets/_Game/Scripts/Save/SaveManager.cs` — Atualizacao de CurrentSchemaVersion para 4 + registro da migracao
+  - `docs/agent_prompts/implementados/SPEC_02_save-schema-migration_PROMPT.md` — Prompt movido de a_executar/
+  - `docs/specs/SPEC_REGISTRY_IMPLEMENTED.md` — Status atualizado para "Implementado completo"
+
+### Validacoes Executadas
+
+1. **Docs validation**: PASS
+2. **Unity compile validation**: PASS (return code 0)
+3. **Log scanning**: Assembly cache warnings (aceitavel em batchmode)
+
+### Implementacao Detalhes
+
+#### SaveV3ToV4Migration.cs
+- Implementa ISaveMigration interface
+- MigrationId: "save_v3_to_v4_mana_active_skills_cave_snapshots"
+- SourceSchemaVersion: 3, TargetSchemaVersion: 4
+- Metodos:
+  - `InitializeMana()` — Inicializa MaxMana=100, CurrentMana=100 para saves legados (v3 anterior)
+  - `InitializeActiveSkillSlots()` — Cria ActiveSkillSlotsSaveData com slots vazios (R/T/Y/G keys)
+  - `InitializeCaveRunState()` — Garante existencia de todas as colecoes em CaveSaveData (UnlockedCheckpoints, DepletedNodeIds, VisitedLevelSnapshots, BossDefeatStates)
+
+#### SaveData.cs
+- Adicao de `CurrentMana` e `MaxMana` (int) em PlayerSaveData
+- Criacao de `ActiveSkillSlotsSaveData` class com 4 campos string (SlotRSkillActionId, SlotTSkillActionId, SlotYSkillActionId, SlotGSkillActionId)
+- Adicao de `ActiveSkillSlots` property em GameSaveData
+
+#### SaveManager.cs
+- Atualizacao de `CurrentSchemaVersion` de 3 para 4
+- Registro da migracao v3→v4 no array de migracoes
+
+### Commit Criado
+
+**Commit hash:** [to be verified]  
+**Mensagem:** "feat: fechar spec 02 - save schema migration v2 com mana e active skills"
+
+---
+
 ## Sessão 2026-05-24 (2ª) - Reconciliação SPEC 01 (Unity Validation Protocol)
 
 **Data:** 2026-05-24 (continuação)  

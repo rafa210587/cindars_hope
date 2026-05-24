@@ -13,8 +13,8 @@
 | Core/event bus/bootstrap | Implementado parcial | `docs/specs/implementados/spec_core_001_event_bus_e_eventos_base.md`, `docs/specs/implementados/spec_core_002_bootstrap_managers_e_runtime_references.md` |
 | Data/IDs/registries | Implementado | `docs/specs/implementados/spec_data_001_ids_registries_e_scriptableobjects.md` |
 | Save/load JSON cross-scene | Implementado parcial | `docs/specs/implementados/spec_save_001_json_save_load_cross_scene.md` |
-| Save schema migration v2 | Implementado parcial | `docs/specs/implementados/spec_save_002_schema_migration_v2.md` |
-| Inventory slots/capacidade/UI minima | Implementado parcial | `docs/specs/implementados/spec_inventory_002_slots_capacity_ui_final.md` |
+| Save schema migration v2 | Implementado completo | `docs/specs/implementados/spec_save_002_schema_migration_v2.md` |
+| Inventory slots/capacidade/UI minima | Implementado completo | `docs/specs/implementados/spec_inventory_002_slots_capacity_ui_final.md` |
 | Farm irrigacao/solo/planting UI | Implementado parcial | `docs/specs/implementados/spec_farm_004_irrigacao_solo_planting_ui.md` |
 | World activities/fishing/trees/loot | Implementado parcial | `docs/specs/implementados/spec_world_002_activities_fishing_trees_pickups_loot.md` |
 | Farm loop/world activities | Implementado parcial | `docs/specs/implementados/spec_farm_001_farm_scene_movimento_interacao.md`, `docs/specs/implementados/spec_farm_002_plots_seeds_growth_harvest.md`, `docs/specs/implementados/spec_farm_003_arvores_pesca_pickups_world_activities.md` |
