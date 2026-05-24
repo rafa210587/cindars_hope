@@ -247,7 +247,7 @@ namespace CindarsHope.Save
             }
         }
 
-        public void RebindOptionalRuntimeManagers(EquipmentManager equipmentManager, PlayerProgressionManager progressionManager)
+        public void RebindOptionalRuntimeManagers(EquipmentManager equipmentManager, PlayerProgressionManager progressionManager, Core.GameTimeManager gameTimeManager = null)
         {
             if (equipmentManager != null)
             {
@@ -257,6 +257,11 @@ namespace CindarsHope.Save
             if (progressionManager != null)
             {
                 _progressionManager = progressionManager;
+            }
+
+            if (gameTimeManager != null)
+            {
+                _gameTimeManager = gameTimeManager;
             }
         }
 

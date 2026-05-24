@@ -55,7 +55,9 @@ namespace CindarsHope.Combat
 
                 if (enemyHealth != null)
                 {
-                    var damageRequest = new DamageRequest(_punchDamage, transform.position, _punchKnockbackForce);
+                    var damageRequest = new DamageRequest(enemyHealth.EnemyId, _punchDamage);
+                    damageRequest.SourcePosition = transform.position;
+                    damageRequest.KnockbackForce = _punchKnockbackForce;
                     enemyHealth.TakeDamage(damageRequest);
                     Debug.Log($"PlayerAttackController: punch hit enemy {enemyHealth.gameObject.name} for {_punchDamage} damage.");
                     hitAny = true;

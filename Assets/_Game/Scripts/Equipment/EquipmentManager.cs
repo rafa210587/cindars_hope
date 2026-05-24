@@ -1,5 +1,8 @@
 using System.Collections.Generic;
+using CindarsHope.Core;
+using CindarsHope.Core.Data;
 using CindarsHope.Core.Events;
+using CindarsHope.Save;
 using CindarsHope.Tools;
 using UnityEngine;
 
@@ -8,13 +11,17 @@ namespace CindarsHope.Equipment
     [DisallowMultipleComponent]
     public class EquipmentManager : MonoBehaviour
     {
+        [SerializeField] private ItemDatabaseSO _itemDatabase;
+
+        // Legacy fields - kept for backward compat in save/load only
         [SerializeField] private string _equippedToolId = string.Empty;
         [SerializeField] private ToolType _equippedToolType = ToolType.None;
         [SerializeField] private ToolTier _equippedToolTier = ToolTier.None;
 
         private EquipmentDurabilityTracker _durabilityTracker;
-        private Dictionary<EquipmentSlot, string> _slots = new();
+        private Dictionary<EquipmentSlot, string> _slots = new(); // itemInstanceId per slot
 
+        // Legacy properties - deprecated, use GetEquippedItem() instead
         public string EquippedToolId => _equippedToolId;
         public ToolType EquippedToolType => _equippedToolType;
         public ToolTier EquippedToolTier => _equippedToolTier;
@@ -46,12 +53,14 @@ namespace CindarsHope.Equipment
             }
         }
 
+        // LEGACY - use EquipItem instead
         public void EquipTool(string toolId, ToolType toolType, ToolTier tier)
         {
             _equippedToolId = toolId ?? string.Empty;
             _equippedToolType = toolType;
             _equippedToolTier = tier;
-            Debug.Log($"EquipmentManager: equipped tool {_equippedToolId} ({_equippedToolType}/{_equippedToolTier}).", this);
+            EquipItem(EquipmentSlot.LeftHand, toolId);
+            Debug.Log($"EquipmentManager: equipped tool {_equippedToolId} ({_equippedToolType}/{_equippedToolTier}) to LeftHand via legacy EquipTool.", this);
         }
 
         public void EquipItem(EquipmentSlot slot, string itemInstanceId)
@@ -76,15 +85,60 @@ namespace CindarsHope.Equipment
 
         public void RegisterEquipmentUsage()
         {
-            // Generic registration without specific item - used by combat
+            RegisterEquipmentUsage(GetEquippedItem(EquipmentSlot.LeftHand) ?? string.Empty);
+            RegisterEquipmentUsage(GetEquippedItem(EquipmentSlot.RightHand) ?? string.Empty);
         }
 
         public void RegisterEquipmentUsage(string itemInstanceId)
         {
-            if (_durabilityTracker != null)
+            if (string.IsNullOrEmpty(itemInstanceId) || _durabilityTracker == null)
+                return;
+
+            _durabilityTracker.TryRegisterUsage(itemInstanceId);
+
+            // Check if broken - auto-unequip
+            var durData = _durabilityTracker.GetDurability(itemInstanceId);
+            if (durData != null && durData.IsBroken)
             {
-                _durabilityTracker.TryRegisterUsage(itemInstanceId);
+                AutoUnequipBrokenItem(itemInstanceId);
             }
+        }
+
+        private void AutoUnequipBrokenItem(string itemInstanceId)
+        {
+            var slotsToUnequip = new List<EquipmentSlot>();
+            foreach (var kvp in _slots)
+            {
+                if (kvp.Value == itemInstanceId)
+                {
+                    slotsToUnequip.Add(kvp.Key);
+                }
+            }
+
+            foreach (var slot in slotsToUnequip)
+            {
+                UnequipSlot(slot);
+                Debug.Log($"EquipmentManager: auto-unequipped broken item {itemInstanceId} from {slot}.", this);
+            }
+        }
+
+        public void RepairItem(string itemInstanceId, int restoreAmount)
+        {
+            if (_durabilityTracker == null)
+                return;
+
+            _durabilityTracker.RepairEquipment(itemInstanceId, restoreAmount);
+        }
+
+        public DurabilityData GetItemDurability(string itemInstanceId)
+        {
+            return _durabilityTracker?.GetDurability(itemInstanceId);
+        }
+
+        public bool IsItemBroken(string itemInstanceId)
+        {
+            var durData = _durabilityTracker?.GetDurability(itemInstanceId);
+            return durData?.IsBroken ?? false;
         }
 
         public bool HasTool(ToolType requiredTool)
@@ -99,6 +153,21 @@ namespace CindarsHope.Equipment
                 return true;
             }
 
+            // Check primary equipment slots (LeftHand/RightHand for tools)
+            var leftHand = GetEquippedItem(EquipmentSlot.LeftHand);
+            var rightHand = GetEquippedItem(EquipmentSlot.RightHand);
+
+            if (!string.IsNullOrEmpty(leftHand) && InferToolTypeFromId(leftHand) == requiredTool)
+            {
+                return true;
+            }
+
+            if (!string.IsNullOrEmpty(rightHand) && InferToolTypeFromId(rightHand) == requiredTool)
+            {
+                return true;
+            }
+
+            // Fallback to legacy system for backward compat
             return _equippedToolType == requiredTool && _equippedToolTier >= minimumTier;
         }
 
@@ -180,58 +249,57 @@ namespace CindarsHope.Equipment
 
         private void CycleDebugTool()
         {
-            switch (_equippedToolType)
+            string currentTool = GetEquippedItem(EquipmentSlot.LeftHand) ?? string.Empty;
+            ToolType currentType = InferToolTypeFromId(currentTool);
+
+            switch (currentType)
             {
                 case ToolType.None:
-                    EquipTool("item_tool_hoe_basic", ToolType.Hoe, ToolTier.Basic);
+                    EquipItem(EquipmentSlot.LeftHand, "item_tool_hoe_basic");
                     break;
                 case ToolType.Hoe:
-                    EquipTool("item_tool_watering_can_basic", ToolType.WateringCan, ToolTier.Basic);
+                    EquipItem(EquipmentSlot.LeftHand, "item_tool_watering_can_basic");
                     break;
                 case ToolType.WateringCan:
-                    EquipTool("item_tool_axe_basic", ToolType.Axe, ToolTier.Basic);
+                    EquipItem(EquipmentSlot.LeftHand, "item_tool_axe_basic");
                     break;
                 case ToolType.Axe:
-                    EquipTool("item_tool_pickaxe_basic", ToolType.Pickaxe, ToolTier.Basic);
+                    EquipItem(EquipmentSlot.LeftHand, "item_tool_pickaxe_basic");
                     break;
                 case ToolType.Pickaxe:
-                    EquipTool("item_tool_fishing_rod_basic", ToolType.FishingRod, ToolTier.Basic);
+                    EquipItem(EquipmentSlot.LeftHand, "item_tool_fishing_rod_basic");
                     break;
                 default:
-                    EquipTool(string.Empty, ToolType.None, ToolTier.None);
+                    UnequipSlot(EquipmentSlot.LeftHand);
                     break;
             }
         }
 
         private void InferEquippedToolFromId()
         {
+            _equippedToolType = InferToolTypeFromId(_equippedToolId);
             _equippedToolTier = string.IsNullOrWhiteSpace(_equippedToolId) ? ToolTier.None : ToolTier.Basic;
+        }
 
-            if (_equippedToolId.Contains("hoe"))
-            {
-                _equippedToolType = ToolType.Hoe;
-            }
-            else if (_equippedToolId.Contains("axe"))
-            {
-                _equippedToolType = ToolType.Axe;
-            }
-            else if (_equippedToolId.Contains("pickaxe"))
-            {
-                _equippedToolType = ToolType.Pickaxe;
-            }
-            else if (_equippedToolId.Contains("fishing_rod"))
-            {
-                _equippedToolType = ToolType.FishingRod;
-            }
-            else if (_equippedToolId.Contains("watering_can"))
-            {
-                _equippedToolType = ToolType.WateringCan;
-            }
-            else
-            {
-                _equippedToolType = ToolType.None;
-                _equippedToolTier = ToolTier.None;
-            }
+        private ToolType InferToolTypeFromId(string toolId)
+        {
+            if (string.IsNullOrWhiteSpace(toolId))
+                return ToolType.None;
+
+            if (toolId.Contains("hoe"))
+                return ToolType.Hoe;
+            if (toolId.Contains("axe"))
+                return ToolType.Axe;
+            if (toolId.Contains("pickaxe"))
+                return ToolType.Pickaxe;
+            if (toolId.Contains("fishing_rod"))
+                return ToolType.FishingRod;
+            if (toolId.Contains("watering_can"))
+                return ToolType.WateringCan;
+            if (toolId.Contains("sickle"))
+                return ToolType.Sickle;
+
+            return ToolType.None;
         }
 
         private static string FormatToolType(ToolType toolType)

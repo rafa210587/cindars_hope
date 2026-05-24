@@ -4,6 +4,7 @@ using CindarsHope.Cave;
 using CindarsHope.Cave.Data;
 using CindarsHope.Cave.Resources;
 using CindarsHope.Cave.Runtime;
+using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Data;
 using CindarsHope.Core.Time;
@@ -161,7 +162,8 @@ namespace CindarsHope.Editor.SceneCreation
             ConfigureFoodConsumer(bootstrapObject.GetComponent<FoodConsumer>(), bootstrapObject.GetComponent<InventoryManager>(), bootstrapObject.GetComponent<HungerManager>());
                 bootstrapObject.GetComponent<SaveManager>().RebindOptionalRuntimeManagers(
                 bootstrapObject.GetComponent<EquipmentManager>(),
-                bootstrapObject.GetComponent<PlayerProgressionManager>());
+                bootstrapObject.GetComponent<PlayerProgressionManager>(),
+                bootstrapObject.GetComponent<GameTimeManager>());
 
             var playerData = AssetDatabase.LoadAssetAtPath<PlayerDataSO>(PlayerDataPath);
             if (playerData != null)

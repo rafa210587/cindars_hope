@@ -1,3 +1,4 @@
+using CindarsHope.Core;
 using CindarsHope.Core.Events;
 using CindarsHope.Equipment;
 using UnityEngine;

@@ -20,6 +20,10 @@ namespace CindarsHope.Core
         private GamePhaseChangedEvent.GamePhase _currentPhase = GamePhaseChangedEvent.GamePhase.Day;
         private bool _isInitialized = false;
 
+        // Fallback values if GameTimeBalanceSO not assigned
+        private const float DefaultDayDurationSeconds = 600f; // 10 min
+        private const float DefaultNightDurationSeconds = 300f; // 5 min
+
         public GamePhaseChangedEvent.GamePhase CurrentPhase => _currentPhase;
         public float PhaseTimer => _phaseTimer;
         public bool IsInitialized => _isInitialized;
@@ -41,14 +45,12 @@ namespace CindarsHope.Core
 
             if (_timeBalance == null)
             {
-                Debug.LogWarning("GameTimeManager: GameTimeBalanceSO not assigned.");
-                return;
+                Debug.LogWarning("GameTimeManager: GameTimeBalanceSO not assigned. Using fallback defaults (10min day, 5min night).");
             }
 
             if (_timeManager == null)
             {
-                Debug.LogWarning("GameTimeManager: TimeManager not assigned.");
-                return;
+                Debug.LogWarning("GameTimeManager: TimeManager not assigned. GameTimeManager will not advance days.");
             }
 
             _phaseTimer = 0f;
@@ -91,9 +93,19 @@ namespace CindarsHope.Core
                 GameEventBus.Publish(new GameTimeTickEvent(_phaseTimer, _timeManager != null ? _timeManager.CurrentDay : 1));
             }
 
-            float phaseDuration = _currentPhase == GamePhaseChangedEvent.GamePhase.Day
-                ? _timeBalance.DayDurationSeconds
-                : _timeBalance.NightDurationSeconds;
+            float phaseDuration;
+            if (_timeBalance != null)
+            {
+                phaseDuration = _currentPhase == GamePhaseChangedEvent.GamePhase.Day
+                    ? _timeBalance.DayDurationSeconds
+                    : _timeBalance.NightDurationSeconds;
+            }
+            else
+            {
+                phaseDuration = _currentPhase == GamePhaseChangedEvent.GamePhase.Day
+                    ? DefaultDayDurationSeconds
+                    : DefaultNightDurationSeconds;
+            }
 
             if (_phaseTimer >= phaseDuration)
             {

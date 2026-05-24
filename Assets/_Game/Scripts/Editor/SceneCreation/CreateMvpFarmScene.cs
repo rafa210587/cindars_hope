@@ -1,3 +1,4 @@
+using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Data;
 using CindarsHope.Core.Time;
@@ -154,7 +155,8 @@ namespace CindarsHope.Editor.SceneCreation
                 bootstrapObject.GetComponent<PlayerProgressionManager>());
             bootstrapObject.GetComponent<SaveManager>().RebindOptionalRuntimeManagers(
                 bootstrapObject.GetComponent<EquipmentManager>(),
-                bootstrapObject.GetComponent<PlayerProgressionManager>());
+                bootstrapObject.GetComponent<PlayerProgressionManager>(),
+                bootstrapObject.GetComponent<GameTimeManager>());
             ConfigureSaveInput(bootstrapObject.GetComponent<SaveInput>(), bootstrapObject.GetComponent<SaveManager>());
             ConfigureHotbarDebugInput(
                 bootstrapObject.GetComponent<HotbarDebugInput>(),

@@ -13,13 +13,13 @@ namespace CindarsHope.Combat
         [SerializeField] private EnemyDataSO _enemyData;
 
         private int _currentHp;
-        private StatusEffectManager _statusEffects = new StatusEffectManager();
+        private CindarsHope.Combat.StatusEffect.StatusEffectManager _statusEffects = new CindarsHope.Combat.StatusEffect.StatusEffectManager();
 
         public int CurrentHp => _currentHp;
         public int MaxHp => _enemyData != null ? _enemyData.maxHp : 0;
         public string EnemyId => _enemyData != null ? _enemyData.enemyId : string.Empty;
         public string DisplayName => _enemyData != null && !string.IsNullOrWhiteSpace(_enemyData.DisplayName) ? _enemyData.DisplayName : name;
-        public StatusEffectManager StatusEffects => _statusEffects;
+        public CindarsHope.Combat.StatusEffect.StatusEffectManager StatusEffects => _statusEffects;
 
         public void Configure(EnemyDataSO enemyData)
         {
@@ -43,7 +43,7 @@ namespace CindarsHope.Combat
             Debug.Log($"CombatLog: Enemy spawned. {BuildEnemyLogPrefix()}, HP={_currentHp}/{MaxHp}, Level={_enemyData.enemyLevel}, Difficulty={_enemyData.baseDifficulty}.", this);
         }
 
-        public void ApplyStatusEffect(StatusEffectSO statusEffect)
+        public void ApplyStatusEffect(CindarsHope.Combat.StatusEffect.StatusEffectSO statusEffect)
         {
             if (statusEffect != null)
             {
@@ -54,7 +54,10 @@ namespace CindarsHope.Combat
 
         public void TakeDamage(int amount)
         {
-            TakeDamage(new DamageRequest(amount, transform.position, 0f));
+            var request = new DamageRequest(EnemyId, amount);
+            request.SourcePosition = transform.position;
+            request.KnockbackForce = 0f;
+            TakeDamage(request);
         }
 
         public void TakeDamage(DamageRequest request)
@@ -74,7 +77,7 @@ namespace CindarsHope.Combat
                 return;
             }
 
-            var damageResult = DamageCalculator.CalculateDirectDamage(request.Amount);
+            var damageResult = DamageCalculator.CalculateDirectDamage(request.BaseDamage);
             if (damageResult.FinalDamage <= 0)
             {
                 return;
@@ -84,6 +87,8 @@ namespace CindarsHope.Combat
             _currentHp -= damageResult.FinalDamage;
             _currentHp = Mathf.Max(0, _currentHp);
             Debug.Log($"CombatLog: Hit enemy. {BuildEnemyLogPrefix()}, Damage={damageResult.FinalDamage}, HP={hpBefore}->{_currentHp}/{MaxHp}.", this);
+
+            GameEventBus.Publish(new DamageAppliedEvent(damageResult));
 
             var hitFlash = GetComponentInChildren<HitFlashController>();
             if (hitFlash != null)
@@ -96,10 +101,10 @@ namespace CindarsHope.Combat
                 var knockback = GetComponent<KnockbackController>();
                 if (knockback != null)
                 {
-                    Vector2 currentPosition = transform.position;
-                    Vector2 direction = (currentPosition - request.SourcePosition).normalized;
+                    Vector3 currentPosition = transform.position;
+                    Vector3 direction = (currentPosition - request.SourcePosition).normalized;
                     float finalForce = request.KnockbackForce * _enemyData.receivedKnockbackMultiplier;
-                    knockback.ApplyKnockback(direction, finalForce);
+                    knockback.ApplyKnockback((Vector2)direction, finalForce);
                     Debug.Log($"CombatLog: Knockback enemy. {BuildEnemyLogPrefix()}, Force={finalForce}, HP={_currentHp}/{MaxHp}.", this);
                 }
             }

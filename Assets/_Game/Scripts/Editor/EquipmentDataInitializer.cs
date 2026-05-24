@@ -105,17 +105,11 @@ namespace CindarsHope.Editor
             asset.Id = id;
             asset.DisplayName = displayName;
             asset.Description = $"Equipment: {displayName}";
-            asset.Type = type;
             asset.BaseDefense = defense;
             asset.StrengthBonus = str;
-            asset.DexterityBonus = dex;
-            asset.IntelligenceBonus = intel;
-            asset.WillpowerBonus = will;
-            asset.ConstitutionBonus = const_;
             asset.BreathBonus = breath;
             asset.HeatResistance = heat;
             asset.ColdResistance = cold;
-            asset.Weight = weight;
             asset.BaseValue = value;
 
             AssetDatabase.CreateAsset(asset, path);

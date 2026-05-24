@@ -7,7 +7,7 @@ namespace CindarsHope.Combat
     [DisallowMultipleComponent]
     public class PlayerSpellCaster : MonoBehaviour
     {
-        [SerializeField] private Player.ManaManager _manaManager;
+        [SerializeField] private ManaManager _manaManager;
         [SerializeField] private float _spellCastCooldown = 1f;
 
         private float _lastSpellCastTime = float.MinValue;

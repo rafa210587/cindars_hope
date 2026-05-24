@@ -26,12 +26,30 @@ Para implementar qualquer feature, o agente deve usar:
 3. O pre-refinamento relacionado em `docs/refinements/a_implementar/pre_refinamentos/`, quando existir.
 4. Specs implementadas dependentes em `docs/specs/implementados/`, apenas quando citadas.
 
+## Padrões e Skills Reutilizáveis
+
+Antes de executar tarefas, consultar:
+
+- `memory/MEMORY.md` - índice de padrões provados
+- `memory/feedback_working_method.md` - método sequencial para SPECS com validação real-time
+- `memory/project_skills_available.md` - 8 skills reutilizáveis para tarefas comuns
+
+### Skills Disponíveis
+- **SPEC Validation Pattern**: Validar compilação após cada fase com triage de erros por categoria
+- **Namespace Consolidation**: Resolver conflitos de classes duplicadas
+- **Bootstrap Integration Pattern**: Wiring de novos managers em GameBootstrap
+- **Event Publishing Pattern**: Comunicação descentralizada via GameEventBus
+- **Using Directive Organization**: Ordem padrão de imports
+- **DamageRequest Construction**: Padrão para criar requisições de dano
+- **Save/Load Data Pattern**: Persistência correta (IDs simples, nunca refs Unity)
+
 ## Fluxo operacional
 
 Antes de qualquer tarefa, seguir:
 
 - `docs/operations/AGENT_EXECUTION_PROTOCOL.md`
 - `docs/operations/READING_MATRIX.md`
+- Consultar memory se tarefa é similar a anteriores
 
 Leitura minima:
 

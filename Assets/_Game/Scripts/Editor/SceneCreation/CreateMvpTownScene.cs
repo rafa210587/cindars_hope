@@ -1,3 +1,4 @@
+using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Data;
 using CindarsHope.Core.Time;
@@ -173,7 +174,8 @@ namespace CindarsHope.Editor.SceneCreation
             EditorUtility.SetDirty(bootstrap);
             saveManager.RebindOptionalRuntimeManagers(
                 bootstrap.GetComponent<EquipmentManager>(),
-                bootstrap.GetComponent<PlayerProgressionManager>());
+                bootstrap.GetComponent<PlayerProgressionManager>(),
+                bootstrap.GetComponent<GameTimeManager>());
         }
 
         private static void ConfigureHotbarDebugInput(HotbarDebugInput hotbarDebugInput, SaveManager saveManager)

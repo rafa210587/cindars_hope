@@ -19,11 +19,32 @@ Para implementar qualquer feature, usar:
 3. O pre-refinamento relacionado em `docs/refinements/a_implementar/pre_refinamentos/`, quando existir.
 4. Specs implementadas dependentes em `docs/specs/implementados/`, apenas quando citadas.
 
+## Padrões de Trabalho Provados
+
+**SEMPRE consultar antes de começar qualquer tarefa**:
+
+- `memory/MEMORY.md` - índice de padrões consolidados
+- `memory/feedback_working_method.md` - método sequencial (SPEC -> validação -> commit)
+- `memory/project_skills_available.md` - 7 skills reutilizáveis
+
+### Skills Disponíveis para Invocar
+
+1. **SPEC Validation Pattern** - Validar compilação após cada fase, triage por categoria de erro
+2. **Namespace Consolidation** - Resolver conflitos de classes duplicadas
+3. **Bootstrap Integration Pattern** - Wiring correto em GameBootstrap + cenas + editors
+4. **Event Publishing Pattern** - Comunicação via GameEventBus (não direct calls)
+5. **Using Directive Organization** - Ordem padrão de imports para consistência
+6. **DamageRequest Construction** - Padrão seguro para criar requisições de dano
+7. **Save/Load Data Pattern** - Persistência: IDs+tipos simples, nunca refs Unity
+
+**Exemplo de invocação**: Se tarefa é similar a SPEC anterior, usar padrão já documentado em memory ao invés de inventar novo.
+
 ## Leitura minima
 
 Antes de qualquer tarefa:
 
 - `AGENTS.md` ou `CLAUDE.md`.
+- `memory/MEMORY.md` (verificar se tarefa é similar a anteriores).
 - `PROJECT_LOG.md` - somente topo/entradas recentes.
 - `docs/IMPLEMENTATION_STATUS.md`.
 - `docs/operations/AGENT_EXECUTION_PROTOCOL.md`.

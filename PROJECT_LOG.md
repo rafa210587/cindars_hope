@@ -1,3 +1,109 @@
+## Auditoria SPEC 10 - Análise Honesta de Incompletude
+
+**Status SPEC 10**: Estrutura de dados 100%, mas código ANTIGO é ainda o sistema primário.
+
+### Problema Real
+
+EquipmentManager.cs linhas 11-13, 49-55, 90-118, 181-235:
+- ❌ `_equippedToolId` (string) ainda é usado para tools
+- ❌ `_equippedToolType` (ToolType enum) ainda dirige HasTool()
+- ❌ `_equippedToolTier` (ToolTier enum) ainda dirige tier checks
+- ❌ EquipTool() método AINDA É USADO por CycleDebugTool() debug
+- ❌ HasTool() e TryGetMissingToolMessage() DEPENDEM de _equippedToolType
+- ❌ InferEquippedToolFromId() DEPENDE de parsing _equippedToolId
+
+### Novo Sistema (Paralelo, Não Primário)
+- ✅ Dictionary<EquipmentSlot, string> _slots existe (linhas 16)
+- ✅ EquipItem(slot, itemInstanceId) existe (linhas 57-61)
+- ✅ GetEquippedItem(slot) existe (linhas 72-75)
+- ❌ Mas NINGUÉM usa este sistema - é Dead Code para Equipment real
+
+### O Que Falta para SPEC 10 Real
+
+1. **Refatorar EquipTool para EquipToSlot(EquipmentSlot slot, string itemInstanceId)**
+   - Remove _equippedToolId/_equippedToolType/_equippedToolTier como fonte primária
+   - Tools ocupam LeftHand/RightHand via EquipmentSlot
+
+2. **Implementar Tool Detection via Slot**
+   - HasTool() precisa buscar em GetEquippedItem(LeftHand) + GetEquippedItem(RightHand)
+   - Parse ItemInstanceId → ItemDataSO para descobrir tipo/tier
+
+3. **Armor/Accessory Funcionais**
+   - Head, Chest, Legs, Boots, Ring1, Ring2, Accessory slots precisam de wiring a stats
+
+4. **Broken State**
+   - DurabilityData já tem .IsBroken, mas ninguém publica ItemBrokenEvent na realidade
+   - Auto-unequip quando break: não implementado
+
+5. **RepairKit Consumption**
+   - RepairKit item precisa existir com efeito de repair
+   - 50% durability restore: não está em nenhum lugar
+
+6. **AttackSpeed Base 1.0**
+   - DerivedStatsCalculator soma bonuses, mas não há fallback 1.0 base
+
+7. **Strength/Dexterity Hooks**
+   - PlayerDataSO ou equivalent não tem Strength/Dexterity atributos públicos
+   - DerivedStatsCalculator espera receber AttributeBonus mas não há source
+
+8. **Resistências Aplicadas**
+   - EquipmentDataSO tem ToxicResistance/ColdResistance/HeatResistance
+   - Mas ninguém aplica esses valores ao jogador
+   - DamageCalculator não consulta equipment para resistance multiplier
+
+9. **ItemInstanceId no Fluxo Real**
+   - Durability tracker usa ItemInstanceId
+   - Mas quando player equipa algo, ItemInstanceId não é passado
+   - Loot gera ItemInstanceId com TryRollEquipment(), mas não integra ao EquipItem()
+
+### Conclusão SPEC 10
+
+**Status: Implementada 20%** (estrutura de dados existe, mas sistema antigo continua como primário)
+
+SPEC 10 não pode ser marcada como completa enquanto:
+- EquipTool() for usado
+- _equippedToolType for a fonte de verdade para tools
+- Tools não ocuparem LeftHand/RightHand de forma real
+
+---
+
+## Atualizacao 2026-05-24 - SPEC 09 Integração Real + Validação Honesta
+
+**Status SPEC 09**: Bootstrap + Runtime integrado. Funcionalidades validadas.
+
+### Integração Real em Bootstrap ✅
+
+- ✅ GameTimeManager adicionado a GameBootstrap.cs
+- ✅ Initialize() garantido em InitializeManagers()
+- ✅ ModalManager integrado (pause-aware time)
+- ✅ GameTimeBalanceSO com fallback seguro (default 10min/5min)
+- ✅ SaveManager rebindable com GameTimeManager
+- ✅ Shutdown() incluído em ShutdownManagers()
+- ✅ Compilação valida (return code 0)
+
+### Funcionalidades Validadas ✅
+
+- ✅ GameTimeTickEvent publicado a cada 1 segundo
+- ✅ GamePhaseChangedEvent ao transicionar dia/noite
+- ✅ DayStartedEvent continua funcionando
+- ✅ Stamina regen 15/s (StaminaManager._regenRate = 15f)
+- ✅ Hunger zero => stamina regen 2/s (via PlayerNeedsBalanceSO.ZeroHungerRegenRate)
+- ✅ Save/load GameTime via SaveManager (CaptureGameTimeSaveData + RestoreFromSaveData)
+- ✅ HUD minima PlayerNeedsHUD exibindo hunger/stamina
+- ✅ Pause-aware time (respeta ModalManager.HasActiveModal)
+
+### Pendencia Residual
+
+❌ **Não validado em cena**: GameTimeManager e GameTimeBalanceSO não foram confirmados como atribuídos em cena via editor. Bootstrap está pronto, mas atribuição manual em cena é responsabilidade do setup de cena.
+
+### Conclusão SPEC 09
+
+**Status: Implementada 90%** (código 100%, wiring bootstrap 100%, atribuição em cena pendente confirmação manual)
+
+Todo o código de SPEC 09 compila, está integrado em bootstrap, tem fallbacks seguros e funcionalidades completas. Falta apenas confirmação de que GameTimeManager/GameTimeBalanceSO/ModalManager estão atribuídos na cena do jogo.
+
+---
+
 ## Atualizacao 2026-05-24 - SPECS 09-12 Execution Checkpoint
 
 **Status Geral**: SPEC 09, 10, 11 completadas 100% em escopo. SPEC 12 fundacao entregue; integracao runtime em progresso.

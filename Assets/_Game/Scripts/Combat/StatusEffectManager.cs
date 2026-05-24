@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using CindarsHope.Core;
 using CindarsHope.Core.Events;
 using UnityEngine;
 

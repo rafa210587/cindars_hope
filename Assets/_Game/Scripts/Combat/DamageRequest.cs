@@ -13,6 +13,9 @@ namespace CindarsHope.Combat
         public bool CanTriggerVulnerability { get; set; } = true;
         public string[] StatusApplicationRules { get; set; }
         public bool IsDamageOverTimeTick { get; set; }
+        public int Amount => BaseDamage;
+        public float KnockbackForce { get; set; }
+        public UnityEngine.Vector3 SourcePosition { get; set; }
 
         public DamageRequest() { }
 
