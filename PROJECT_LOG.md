@@ -1,3 +1,38 @@
+## Sessão 2026-05-24 (7ª) - Criar Harness de Orquestração do Codex
+
+**Data:** 2026-05-24 (continuação)  
+**Foco:** Criar prompt e harness para automação de execução sistemática de SPECS pelo Codex  
+**Status:** COMPLETO
+
+### Deliverables
+
+**Harness de Orquestração:**
+- `docs/operations/CODEX_SPEC_EXECUTION_HARNESS.md` — 10 fases de execução, validações obrigatórias, árvore de decisão, tratamento de falhas
+- `docs/operations/CODEX_ORCHESTRATION_PROMPT.md` — Prompt executável direto ao Codex com checklists e regras imutáveis
+
+**Baseado em:**
+- Skill: `skill_spec_completion_checklist.md` (10 fases consolidadas)
+- Padrões de SPEC 02-05: validações Unity, Tundra build success, atualizações de registries
+- Regras imutáveis do CLAUDE.md
+
+**Quando usar:**
+- User diz "vamos para a próximo" → Codex lê CODEX_ORCHESTRATION_PROMPT.md
+- Codex identifica próxima SPEC em SPEC_EXECUTION_ORDER.md
+- Codex executa 10-phase skill do harness até completar spec
+- Repete para próxima spec
+
+### Validacoes
+
+✅ Docs validation: PASS  
+✅ Git commit: criado (a544602)
+
+### Proximas Specs Executáveis
+
+- SPEC_06: Economy/Shop/Stock/Pricing/UI
+- SPEC_07+: Seguindo SPEC_EXECUTION_ORDER.md
+
+---
+
 ## Sessão 2026-05-24 (6ª) - Fechar SPEC 05 (World Activities: Fishing, Trees, Pickups, Loot)
 
 **Data:** 2026-05-24 (continuação)  
