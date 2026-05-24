@@ -2,7 +2,7 @@
 
 > Status: Refinamento inicial a implementar
 > Spec futura relacionada: `docs/specs/a_implementar/spec_economy_shop_stock_pricing_ui.md`
-> Objetivo: evoluir compra/venda MVP para lojas de cidade com NPCs, estoque finito, reposicao diaria, UI modal e precos consistentes.
+> Objetivo: evoluir compra/venda MVP para lojas de cidade com NPCs, estoque finito, reposicao diaria, UI modal, falas simples de NPC e precos consistentes.
 
 ---
 
@@ -27,6 +27,7 @@ docs/specs/implementados/spec_economy_001_compra_venda_gold_e_sellables.md
 - Nao ha `ShopDataSO` por NPC/local.
 - Nao ha NPCs lojistas especializados.
 - Pip ainda pode estar sendo tratado como vendedor, mas deve virar recepcao da cidade.
+- NPCs ainda nao possuem contrato simples de fala de abertura e despedida.
 - Compra/venda da fazenda deve ser removida/deprecada como fluxo oficial.
 - Nao ha reposicao diaria de estoque.
 - Nao ha multiplicador de preco preparado para afinidade futura.
@@ -43,6 +44,9 @@ docs/specs/implementados/spec_economy_001_compra_venda_gold_e_sellables.md
   - vendedor de sementes e utensilios.
 - Pip nao vende itens nesta spec.
 - Pip recebe o jogador na cidade: quando o jogador entra na cidade, Pip se move ate perto do jogador e depois para.
+- Todos os NPCs desta spec possuem uma frase de abertura e uma frase de despedida especifica.
+- Ao interagir com um NPC, a fala de abertura aparece antes do menu de opcoes.
+- Ao fechar a conversa por `Sair` ou `Esc`, a fala de despedida especifica do NPC aparece antes de encerrar o modal.
 - Ambos os vendedores, ao conversar, abrem menu modal vertical:
 
 ```text
@@ -79,7 +83,8 @@ Comportamento:
 
 - Quando jogador entra na cidade pela primeira vez na sessao/cena, Pip anda ate perto do jogador.
 - Ao chegar em distancia segura, Pip para.
-- Pip pode exibir fala curta de recepcao se ja existir dialogo simples.
+- Pip deve ter uma fala curta de abertura/boas-vindas.
+- Pip deve ter uma fala curta de despedida.
 - Nao implementar agenda completa, quest ou loja para Pip nesta spec.
 
 ### Vendedor de armas e armaduras
@@ -100,6 +105,13 @@ Accessory opcional
 Shield opcional se existir
 ```
 
+Deve ter:
+
+```text
+OpeningLine
+ClosingLine
+```
+
 ### Vendedor de sementes e utensilios
 
 IDs sugeridos:
@@ -118,6 +130,13 @@ Utility
 Consumable opcional
 ```
 
+Deve ter:
+
+```text
+OpeningLine
+ClosingLine
+```
+
 ---
 
 ## 5. Dados esperados
@@ -131,6 +150,7 @@ ShopStockRule
 PriceModifierRule
 ShopSession
 ShopStockSaveData
+NpcShopInteractionData ou NpcDialogueLiteData
 ```
 
 Campos minimos de `ShopDataSO`:
@@ -155,6 +175,16 @@ CurrentStock runtime/save
 IsFiniteStock true
 BuyPriceOverride opcional
 RequiredUnlockTag opcional futuro
+```
+
+Campos minimos de dados simples do NPC nesta spec:
+
+```text
+NpcId
+DisplayName
+OpeningLine
+ClosingLine
+OptionalGreetingTriggerId
 ```
 
 ---
@@ -197,11 +227,31 @@ Regras:
 
 ## 8. Fluxos
 
+### Conversa
+
+```text
+Jogador interage com NPC
+Mostrar OpeningLine especifica do NPC
+Se NPC for lojista, abrir menu modal Comprar / Vender / Sair
+Se jogador escolher Sair ou apertar Esc, mostrar ClosingLine especifica
+Fechar conversa/modal
+Restaurar input do player
+```
+
+Garantias:
+
+- Pip mostra falas, mas nao abre loja.
+- Lojistas mostram fala de abertura antes do menu.
+- Lojistas mostram despedida ao sair.
+- Despedida nao deve disparar transacao.
+- Fechar com `Esc` deve seguir o mesmo encerramento seguro de `Sair`.
+
 ### Comprar
 
 ```text
 Jogador interage com NPC lojista
-Abre menu modal: Comprar / Vender / Sair
+OpeningLine
+Menu modal: Comprar / Vender / Sair
 Escolhe Comprar
 Abre ShopBuyPanel com lista de itens, preco, estoque restante e quantidade
 Jogador seleciona item/quantidade
@@ -221,7 +271,8 @@ Garantias:
 
 ```text
 Jogador interage com NPC lojista
-Abre menu modal: Comprar / Vender / Sair
+OpeningLine
+Menu modal: Comprar / Vender / Sair
 Escolhe Vender
 Abre ShopSellPanel usando inventory do jogador
 Mostra itens vendaveis e preco de venda = 60% do BaseValue
@@ -256,6 +307,7 @@ Regras:
 - Save/load deve restaurar estoque restante.
 - Restock diario deve ser idempotente por `ShopId` e dia.
 - Se `ShopId` ou `ItemId` nao existir ao carregar, logar erro e falhar de forma segura.
+- Falas de abertura/despedida sao conteudo, nao precisam persistir no save.
 
 ---
 
@@ -299,8 +351,11 @@ Assets/_Game/Scripts/Save/SaveData.cs
 
 - [ ] Pip nao abre loja.
 - [ ] Pip se move ate o jogador ao entrar na cidade e para proximo dele.
+- [ ] Pip tem fala de abertura e despedida.
 - [ ] Existem dois NPCs lojistas: armas/armaduras e sementes/utensilios.
-- [ ] Cada lojista abre menu modal vertical `Comprar / Vender / Sair`.
+- [ ] Cada lojista tem fala de abertura e despedida especifica.
+- [ ] Cada lojista abre menu modal vertical `Comprar / Vender / Sair` depois da fala de abertura.
+- [ ] Ao escolher `Sair` ou apertar `Esc`, o NPC mostra sua despedida antes de fechar.
 - [ ] Comprar abre HUD/lista de itens do vendedor.
 - [ ] Vender abre inventory do jogador em modo venda.
 - [ ] Estoque dos vendedores e finito.
@@ -321,15 +376,17 @@ Assets/_Game/Scripts/Save/SaveData.cs
 
 1. Entrar na cidade e validar Pip caminhando ate o jogador e parando.
 2. Confirmar que Pip nao abre loja.
-3. Interagir com vendedor de armas/armaduras e abrir menu Comprar/Vender/Sair.
-4. Interagir com vendedor de sementes/utensilios e abrir menu Comprar/Vender/Sair.
-5. Comprar item com gold e espaco suficientes.
-6. Validar decremento de estoque.
-7. Tentar comprar sem gold.
-8. Tentar comprar sem espaco no inventory.
-9. Comprar ate estoque acabar.
-10. Vender item do inventory e validar ganho de 60% do BaseValue.
-11. Salvar/carregar e validar estoque restante.
-12. Avancar dia e validar restock uma unica vez.
-13. Confirmar que compra/venda da fazenda nao esta mais ativa como fluxo oficial.
-14. Validar Unity compile validation e docs validation.
+3. Validar fala de abertura e despedida do Pip.
+4. Interagir com vendedor de armas/armaduras e validar fala de abertura.
+5. Abrir menu Comprar/Vender/Sair.
+6. Comprar item com gold e espaco suficientes.
+7. Validar decremento de estoque.
+8. Tentar comprar sem gold.
+9. Tentar comprar sem espaco no inventory.
+10. Comprar ate estoque acabar.
+11. Vender item do inventory e validar ganho de 60% do BaseValue.
+12. Sair da conversa e validar despedida especifica do lojista.
+13. Salvar/carregar e validar estoque restante.
+14. Avancar dia e validar restock uma unica vez.
+15. Confirmar que compra/venda da fazenda nao esta mais ativa como fluxo oficial.
+16. Validar Unity compile validation e docs validation.
