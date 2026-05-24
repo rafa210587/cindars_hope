@@ -1,4 +1,4 @@
-﻿# SPEC CAVE-004 - Boss gates, checkpoints e confinement parcial
+# SPEC CAVE-004 - Boss gates, checkpoints e confinement parcial
 
 > Status: Implementado em codigo - validacao Unity pendente
 > Camada: Cave
@@ -11,6 +11,8 @@
 
 ### O que existe
 Boss gates, checkpoints/debug UI e path confinement existem em codigo.
+
+A branch historica `feature/docs-fase9f-cave-stable-run-spec` reforcava a regra: a cave possui boss gate em marco de progressao, checkpoint desbloqueavel, selecao de checkpoint na entrada e confinamento do player ao caminho walkable.
 
 ### Por que existe
 Esta capacidade sustenta o loop jogavel atual de Cindar's Hope e normaliza, em uma spec ativa, o que ja esta implementado ou parcialmente implementado no repositorio.
@@ -25,8 +27,17 @@ Nao tratar como implementado final qualquer item listado como pendente, qualquer
 ### Arquitetura real
 A arquitetura real e composta pelos arquivos listados na evidencia, pelos dados preservados em `docs_old/` e pelo status operacional registrado em `PROJECT_LOG.md`.
 
+Detalhamento absorvido da branch historica:
+
+- `CaveBossGateDataSO` e registry configuram gates.
+- `CaveBossSpawner` cria boss em level de gate.
+- `CaveBossDefeatMonitor` detecta derrota e desbloqueia checkpoint.
+- `CaveCheckpointSelectionUI` permite selecionar checkpoint liberado.
+- `CaveEntryController` entra no checkpoint escolhido.
+- `CavePlayerPathConfinement` impede player sair de WalkableTiles.
+
 ### Fluxo
-O fluxo operacional segue o MVP atual: sistemas runtime consultam managers/dados por IDs, publicam eventos simples quando aplicavel e expõem estado para HUD, save ou validadores conforme o sistema.
+O fluxo operacional segue o MVP atual: sistemas runtime consultam managers/dados por IDs, publicam eventos simples quando aplicavel e expoem estado para HUD, save ou validadores conforme o sistema.
 
 ### Persistencia
 Quando ha persistencia, ela deve usar DTOs simples e IDs estaveis. Referencias Unity permanecem fora dos DTOs. Quando nao ha persistencia propria, o estado e derivado de managers ou dados ScriptableObject.
@@ -39,6 +50,14 @@ Quando ha persistencia, ela deve usar DTOs simples e IDs estaveis. Referencias U
 - [x] Evidencia principal existe no repo.
 - [x] Estado foi registrado ou reconciliado em `PROJECT_LOG.md` e/ou `docs_old/IMPLEMENTATION_STATUS.md`.
 - [x] Conteudo historico antigo foi preservado em `docs_old/`.
+- [x] BossGateData e registry.
+- [x] BossDefeatState em save/load.
+- [x] Boss spawn condicional.
+- [x] Boss defeat monitor.
+- [x] Checkpoint unlock e selecao MVP.
+- [x] Cave entry por checkpoint.
+- [x] Player path confinement.
+- [x] Validator e DebugHud parcial.
 
 ### Implementado parcial
 - [ ] Validacao Unity Play Mode completa pode estar pendente conforme a area.
@@ -46,6 +65,10 @@ Quando ha persistencia, ela deve usar DTOs simples e IDs estaveis. Referencias U
 
 ### Pendente/futuro
 - [ ] Boss completo, faction locks, bestiario procedural e validacao Unity pendentes.
+- [ ] Teste boss level 15.
+- [ ] Teste gate 15 -> 16.
+- [ ] Teste checkpoint apos boss.
+- [ ] Teste save/load preservando boss defeat.
 
 ---
 
@@ -76,7 +99,3 @@ Quando ha persistencia, ela deve usar DTOs simples e IDs estaveis. Referencias U
 
 - Boss completo, faction locks, bestiario procedural e validacao Unity pendentes.
 - Se a implementacao for parcial, nao promover para final sem evidencia de Unity e sem atualizar esta spec ou criar amendment/correction.
-
-
-
-
