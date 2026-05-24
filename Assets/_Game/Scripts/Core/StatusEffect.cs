@@ -27,7 +27,7 @@ namespace CindarsHope.Core
             if (!IsActive)
                 return;
 
-            _remainingSeconds -= Time.deltaTime;
+            _remainingSeconds -= UnityEngine.Time.deltaTime;
             if (_remainingSeconds <= 0)
             {
                 _remainingSeconds = 0;

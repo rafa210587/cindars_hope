@@ -67,7 +67,7 @@ namespace CindarsHope.Core
             if (_modalManager != null && _modalManager.HasActiveModal)
                 return;
 
-            _phaseTimer += Time.deltaTime;
+            _phaseTimer += UnityEngine.Time.deltaTime;
 
             float phaseDuration = _currentPhase == GamePhaseChangedEvent.GamePhase.Day
                 ? _timeBalance.DayDurationSeconds
