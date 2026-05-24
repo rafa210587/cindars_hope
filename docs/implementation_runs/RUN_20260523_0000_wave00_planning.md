@@ -1,8 +1,8 @@
-# RUN — Wave 00: Planning & Base Corrections
+# RUN Ã¢â‚¬â€ Wave 00: Planning & Base Corrections
 
-**Date:** 2026-05-23  
-**Branch:** wave/specs-overnight-00-plan  
-**Executor:** Claude Code  
+**Date:** 2026-05-23
+**Branch:** wave/specs-overnight-00-plan
+**Executor:** Claude Code
 **Status:** Planning phase
 
 ---
@@ -22,7 +22,7 @@ Map all future specs in `docs/specs/a_implementar/`, organize them into macro-wa
 
 ---
 
-## Specs Mapped — 22 Total
+## Specs Mapped Ã¢â‚¬â€ 22 Total
 
 ### FASE9E Group (Data, Save, Progression, Damage)
 
@@ -32,7 +32,7 @@ Map all future specs in `docs/specs/a_implementar/`, organize them into macro-wa
 | spec_fase9e_item_examples_variations.md | A implementar | spec_data_001, spec_inventory_001 | 6 seeds, 6 crops, 8+ consumables, 4 materials |
 | spec_fase9e_save_schema_migration.md | A implementar | spec_save_001 | Versioning, migration, Equipment/Hotbar/Status persistence |
 | spec_fase9e_player_level_up_progression.md | A implementar | spec_progression_001 | Level 1-100, XP curve, 6 attributes, skill points |
-| spec_fase9e_damage_status_elements_complete.md | A implementar | spec_damage_001 | Status effects (poison, burn, bleed), elemental interactions |
+| spec_fase9e_damage_status_elements_PARTIAL.md | A implementar | spec_damage_001 | Status effects (poison, burn, bleed), elemental interactions |
 | spec_fase9e_ui_hotbar_inventory_equipment_final.md | A implementar | spec_ui_001, spec_tools_001 | UI for hotbar, inventory, equipment |
 | spec_fase9e_attribute_allocation_debug.md | A implementar | spec_progression_001 | Attribute allocation, respec mechanics |
 
@@ -54,7 +54,7 @@ Map all future specs in `docs/specs/a_implementar/`, organize them into macro-wa
 
 | Spec | Status | Dependencies | Estimated Scope |
 |---|---|---|---|
-| spec_fase9f_cave_resources_encounters_complete.md | A implementar | spec_cave_002 | Resource nodes, encounter spawn rules |
+| spec_fase9f_cave_resources_encounters_PARTIAL.md | A implementar | spec_cave_002 | Resource nodes, encounter spawn rules |
 
 ### FASE9G Group (Cave Bestiary, Amendment)
 
@@ -114,49 +114,49 @@ Key refinements by wave (to be read before each wave):
 
 ## Proposed Macro-Wave Composition
 
-### Wave 00 (Current) — Planning & Base Corrections
+### Wave 00 (Current) Ã¢â‚¬â€ Planning & Base Corrections
 - **Goal:** Map specs, refine dependencies, validate baseline
 - **Commits:** Up to 2-3 for critical corrections only
-- **Scope:** 
-  - ✅ Map all 22 specs
-  - ✅ Identify dependencies
-  - ✅ Identify lacunas/contradictions
-  - ✅ Validate documentation
-  - ✅ Validate Unity baseline
-  - ⚠️ Correct CaveBossGateRegistry asset structure if needed
-  - ⚠️ Ensure no duplicate registries in Assets/Resources/ vs Assets/_Game/Data/
+- **Scope:**
+  - Ã¢Å“â€¦ Map all 22 specs
+  - Ã¢Å“â€¦ Identify dependencies
+  - Ã¢Å“â€¦ Identify lacunas/contradictions
+  - Ã¢Å“â€¦ Validate documentation
+  - Ã¢Å“â€¦ Validate Unity baseline
+  - Ã¢Å¡Â Ã¯Â¸Â Correct CaveBossGateRegistry asset structure if needed
+  - Ã¢Å¡Â Ã¯Â¸Â Ensure no duplicate registries in Assets/Resources/ vs Assets/_Game/Data/
 
-### Wave 01 — Data, Save, Progression, Damage Base
+### Wave 01 Ã¢â‚¬â€ Data, Save, Progression, Damage Base
 - **Specs:** FASE9E items, save, progression, damage
 - **Key files:** ItemDataSO, SaveData DTOs, PlayerStats, DamageCalculator
 - **Rules:** No UI; backend/data-driven first; stable IDs
 
-### Wave 02 — Equipment, Tools, Loot, Crafting, Durability
+### Wave 02 Ã¢â‚¬â€ Equipment, Tools, Loot, Crafting, Durability
 - **Specs:** FASE9C remaining, FASE9H loot/equipment
 - **Key files:** EquipmentDataSO, LootTableSO, CraftingRecipeSO
 - **Rules:** Data-driven; no UI final; durability system
 
-### Wave 03 — Player Combat, Weapons, Magic, Skill Actions
+### Wave 03 Ã¢â‚¬â€ Player Combat, Weapons, Magic, Skill Actions
 - **Specs:** FASE9I player combat, magic, weapons
 - **Key files:** PlayerCombatController, WeaponDataSO, SpellDataSO
 - **Rules:** Integrate with existing Slime basic combat; no Input System changes
 
-### Wave 04 — Enemies, AI, Status, Bestiary
+### Wave 04 Ã¢â‚¬â€ Enemies, AI, Status, Bestiary
 - **Specs:** FASE9D architecture, 40 monsters, Amendment
 - **Key files:** EnemyDataSO, AIBehaviorSO, StatusEffectSO
 - **Rules:** Data-driven before roster; fallback visuals; stable run safe
 
-### Wave 05 — Cave Entry, Loadout, Death, Recovery
+### Wave 05 Ã¢â‚¬â€ Cave Entry, Loadout, Death, Recovery
 - **Specs:** FASE9J cave entry, death, recovery
 - **Key files:** CaveEntryController, DeathHandler, CorpseRecovery
 - **Rules:** Integrate with cave save state; no stable run breakage; Fonte de Anya
 
-### Wave 06 — Skill Trees, Nodes, Respec
+### Wave 06 Ã¢â‚¬â€ Skill Trees, Nodes, Respec
 - **Specs:** FASE9K skill trees
 - **Key files:** SkillTreeDataSO, SkillNodeDataSO, SkillPoint system
 - **Rules:** Backend first; no UI final; save/load compatibility
 
-### Wave 07 — UI/Menu Systems Minimal
+### Wave 07 Ã¢â‚¬â€ UI/Menu Systems Minimal
 - **Specs:** UI menu systems (not full FASE9L)
 - **Key files:** Menu prefabs, UIManager
 - **Rules:** Minimal safe UI; avoid FASE9L complexity without spec clarity
@@ -166,7 +166,7 @@ Key refinements by wave (to be read before each wave):
 ## Known Issues Found in Wave 00
 
 ### Asset Structure Issue
-- **Duplicate CaveBossGateRegistry:** 
+- **Duplicate CaveBossGateRegistry:**
   - `Assets/Resources/CaveBossGateRegistry.asset` (OLD)
   - `Assets/_Game/Data/Cave/CaveBossGateRegistry.asset` (CORRECT)
   - **Action:** Delete old Assets/Resources/ version
@@ -203,7 +203,7 @@ Key refinements by wave (to be read before each wave):
 Some specs may not have corresponding refinement docs yet; these will be created as needed during each wave's execution.
 
 ### SpecKit Refinement Needed
-- **spec_fase9l_ui_ux_full_gameplay.md:** Currently a placeholder; needs SpecKit /specify → /plan → /tasks before implementation
+- **spec_fase9l_ui_ux_full_gameplay.md:** Currently a placeholder; needs SpecKit /specify Ã¢â€ â€™ /plan Ã¢â€ â€™ /tasks before implementation
 - **spec_future_ideas_todo.md:** Backlog; not in critical path
 - **spec_ui_menu_systems_final.md:** May need SpecKit refinement if too shallow
 
@@ -218,45 +218,45 @@ Some specs may not have corresponding refinement docs yet; these will be created
 ## Documentation & Tracking Files to Update After Wave 00
 
 If corrections are made:
-1. PROJECT_LOG.md — add entry for wave 00
-2. docs/IMPLEMENTATION_STATUS.md — update if any baseline specs change
-3. docs/specs/SPEC_REGISTRY_TO_IMPLEMENT.md — no change unless specs are removed
-4. docs/refinements/a_implementar/ref_futuro_map.md — no change at this stage
+1. PROJECT_LOG.md Ã¢â‚¬â€ add entry for wave 00
+2. docs/IMPLEMENTATION_STATUS.md Ã¢â‚¬â€ update if any baseline specs change
+3. docs/specs/SPEC_REGISTRY_TO_IMPLEMENT.md Ã¢â‚¬â€ no change unless specs are removed
+4. docs/refinements/a_implementar/ref_futuro_map.md Ã¢â‚¬â€ no change at this stage
 
 ---
 
 ## Next Steps (Upon Wave 00 Completion)
 
-1. ✅ Validate documental (validate_docs.ps1)
-2. ✅ Validate Unity (batchmode compile)
-3. ✅ Commit local (if corrections made)
-4. 🔄 Create Wave 01 branch from Wave 00 branch
-5. 🔄 Begin Wave 01 execution
+1. Ã¢Å“â€¦ Validate documental (validate_docs.ps1)
+2. Ã¢Å“â€¦ Validate Unity (batchmode compile)
+3. Ã¢Å“â€¦ Commit local (if corrections made)
+4. Ã°Å¸â€â€ž Create Wave 01 branch from Wave 00 branch
+5. Ã°Å¸â€â€ž Begin Wave 01 execution
 
 ---
 
 ## Progress Tracking
 
 - [x] Map all specs
-- [x] Validate docs — PASSED
-- [x] Validate Unity — PASSED (return code 0)
-- [x] Correct baseline issues — No critical issues found
-- [x] Commit corrections locally — Ready
-- [x] Generate final Wave 00 report — Complete
+- [x] Validate docs Ã¢â‚¬â€ PASSED
+- [x] Validate Unity Ã¢â‚¬â€ PASSED (return code 0)
+- [x] Correct baseline issues Ã¢â‚¬â€ No critical issues found
+- [x] Commit corrections locally Ã¢â‚¬â€ Ready
+- [x] Generate final Wave 00 report Ã¢â‚¬â€ PARTIAL
 
 ---
 
 ## Validation Results
 
 ### Documentation Validation
-- ✅ **Result:** PASSED
+- Ã¢Å“â€¦ **Result:** PASSED
 - Root folder structure correct
 - No template placeholders
 - No critical old path references
 - Specs and refinements use correct prefixes
 
 ### Unity Validation
-- ✅ **Result:** PASSED (return code 0)
+- Ã¢Å“â€¦ **Result:** PASSED (return code 0)
 - Script compilation: 0.899115s
 - Domain reload: 569ms
 - No compilation errors
@@ -265,11 +265,11 @@ If corrections are made:
 - All assemblies loaded successfully
 
 ### Baseline Analysis
-- ✅ CaveBossGateRegistry exists in correct location: Assets/_Game/Data/Cave/
-- ⚠️ Duplicate found in Assets/Resources/ (obsolete copy, lower priority)
-- ✅ BossGate_Level15.asset values are from recent PR (no rollback needed)
-- ✅ Registry contents empty as expected for future implementation
+- Ã¢Å“â€¦ CaveBossGateRegistry exists in correct location: Assets/_Game/Data/Cave/
+- Ã¢Å¡Â Ã¯Â¸Â Duplicate found in Assets/Resources/ (obsolete copy, lower priority)
+- Ã¢Å“â€¦ BossGate_Level15.asset values are from recent PR (no rollback needed)
+- Ã¢Å“â€¦ Registry contents empty as expected for future implementation
 
 ---
 
-**Status:** Wave 00 COMPLETE — All specs mapped, documented, and baseline validated. Ready to proceed with Wave 01.
+**Status:** Wave 00 PARTIAL Ã¢â‚¬â€ All specs mapped, documented, and baseline validated. Ready to proceed with Wave 01.

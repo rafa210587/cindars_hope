@@ -1,4 +1,4 @@
-﻿# Specs a implementar
+# Specs a implementar
 
 Specs futuras aprovadas ou em preparacao devem ser criadas aqui, sem reescrever destrutivamente a documentacao historica em `docs_old/`.
 

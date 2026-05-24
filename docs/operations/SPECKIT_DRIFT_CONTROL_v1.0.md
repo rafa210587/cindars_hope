@@ -1,20 +1,20 @@
-﻿# SpecKit Drift Control v1.0
+# SpecKit Drift Control v1.0
 
-> **Objetivo:** evitar que specs, planos, tasks e documentação de design diverjam entre si.
+> **Objetivo:** evitar que specs, planos, tasks e documentaÃƒÂ§ÃƒÂ£o de design diverjam entre si.
 
 ---
 
-## 1. Regra obrigatória
+## 1. Regra obrigatÃƒÂ³ria
 
-Toda feature futura deve ter, no mínimo:
+Toda feature futura deve ter, no mÃƒÂ­nimo:
 
 ```text
-specs/<FEATURE_ID>/spec.md
-specs/<FEATURE_ID>/plan.md
-specs/<FEATURE_ID>/tasks.md
+docs/specs/a_implementar/spec_*.md
+docs/specs/a_implementar/spec_*.md
+docs/specs/a_implementar/spec_*.md
 ```
 
-Documentos em `docs/` podem existir como material rico de design, mas não substituem a estrutura SpecKit.
+Documentos em `docs/` podem existir como material rico de design, mas nÃƒÂ£o substituem a estrutura SpecKit.
 
 ---
 
@@ -27,24 +27,24 @@ Deve conter:
 - user story;
 - objetivos funcionais;
 - non-goals;
-- regras de negócio;
+- regras de negÃƒÂ³cio;
 - entidades funcionais;
-- critérios de aceite;
-- dependências;
-- observabilidade mínima;
-- condição de pronto para plan.
+- critÃƒÂ©rios de aceite;
+- dependÃƒÂªncias;
+- observabilidade mÃƒÂ­nima;
+- condiÃƒÂ§ÃƒÂ£o de pronto para plan.
 
 ### plan.md
 
 Deve conter:
 
-- estratégia técnica;
+- estratÃƒÂ©gia tÃƒÂ©cnica;
 - arquitetura proposta;
 - novos arquivos/pastas;
-- integrações;
+- integraÃƒÂ§ÃƒÂµes;
 - riscos;
 - plano de teste manual;
-- fora de escopo técnico.
+- fora de escopo tÃƒÂ©cnico.
 
 ### tasks.md
 
@@ -53,20 +53,20 @@ Deve conter:
 - PRs pequenos;
 - escopo por PR;
 - arquivos esperados;
-- critérios por PR;
+- critÃƒÂ©rios por PR;
 - smoke test final.
 
 ---
 
 ## 3. Regras anti-drift
 
-1. Nenhum PR deve implementar feature sem apontar para um `specs/<FEATURE_ID>/tasks.md`.
-2. Nenhum `tasks.md` deve conter PR sem critério de aceite.
-3. Nenhum `plan.md` deve introduzir arquitetura que não esteja refletida em `tasks.md`.
-4. Nenhum `spec.md` deve citar regra de negócio que não apareça em pelo menos uma task.
-5. Mudança em doc de design relevante deve gerar ou atualizar SpecKit correspondente.
-6. Specs antigas devem ser mantidas como histórico, mas deltas precisam apontar qual documento é fonte ativa.
-7. Handoff deve citar a feature ativa e o próximo PR exato.
+1. Nenhum PR deve implementar feature sem apontar para um `docs/specs/a_implementar/spec_*.md`.
+2. Nenhum `tasks.md` deve conter PR sem critÃƒÂ©rio de aceite.
+3. Nenhum `plan.md` deve introduzir arquitetura que nÃƒÂ£o esteja refletida em `tasks.md`.
+4. Nenhum `spec.md` deve citar regra de negÃƒÂ³cio que nÃƒÂ£o apareÃƒÂ§a em pelo menos uma task.
+5. MudanÃƒÂ§a em doc de design relevante deve gerar ou atualizar SpecKit correspondente.
+6. Specs antigas devem ser mantidas como histÃƒÂ³rico, mas deltas precisam apontar qual documento ÃƒÂ© fonte ativa.
+7. Handoff deve citar a feature ativa e o prÃƒÂ³ximo PR exato.
 
 ---
 
@@ -75,9 +75,9 @@ Deve conter:
 Formato recomendado:
 
 ```text
-specs/FASE9C_TOOLS_FARM_COMBAT_REFINEMENT/
-specs/FASE9C_PLAYER_EQUIPMENT_ITEMS_COMBAT/
-specs/FASE9D_ENEMY_ARCHITECTURE_40_MONSTERS/
+docs/specs/a_implementar/spec_farm_irrigacao_solo_planting_ui.md
+docs/specs/a_implementar/spec_player_combat_weapons_spells_skill_actions_runtime.md
+docs/specs/a_implementar/spec_enemy_ai_roster_bestiary_faction_locks_runtime.md
 ```
 
 ---
@@ -91,12 +91,12 @@ specs/FASE9D_ENEMY_ARCHITECTURE_40_MONSTERS/
 - [ ] Li `tasks.md`.
 - [ ] Identifiquei o PR exato da task.
 - [ ] Confirmei arquivos permitidos.
-- [ ] Confirmei critérios de aceite.
-- [ ] Não estou implementando mais de uma task sem autorização.
+- [ ] Confirmei critÃƒÂ©rios de aceite.
+- [ ] NÃƒÂ£o estou implementando mais de uma task sem autorizaÃƒÂ§ÃƒÂ£o.
 
 ---
 
-## 6. Estado atual após padronização
+## 6. Estado atual apÃƒÂ³s padronizaÃƒÂ§ÃƒÂ£o
 
 Features com SpecKit:
 
@@ -104,5 +104,5 @@ Features com SpecKit:
 - `FASE9C_PLAYER_EQUIPMENT_ITEMS_COMBAT`
 - `FASE9D_ENEMY_ARCHITECTURE_40_MONSTERS`
 
-Docs ricos de design continuam em `docs/`, mas a execução deve seguir `specs/`.
+Docs ricos de design continuam em `docs/`, mas a execucao deve seguir `docs/specs/`.
 

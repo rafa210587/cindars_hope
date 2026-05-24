@@ -1,49 +1,49 @@
-# Implementation Delivery Report — Wave 00–07 Stabilized Summary
+# Implementation Delivery Report Ã¢â‚¬â€ Wave 00Ã¢â‚¬â€œ07 Stabilized Summary
 
-**Date:** 2026-05-23  
-**Status:** PARTIAL — backend/data skeleton estabilizado + hotfixes runtime pós-merge  
+**Date:** 2026-05-23
+**Status:** PARTIAL Ã¢â‚¬â€ backend/data skeleton estabilizado + hotfixes runtime pÃƒÂ³s-merge
 **Delivery Type:** Autonomous Overnight Specs Execution + Stabilization Review + Post-Merge Fixes
 **Branch atual:** `dev`
 
 ---
 
-## 1. Correção de status
+## 1. CorreÃƒÂ§ÃƒÂ£o de status
 
-Este documento substitui a declaração anterior de `COMPLETE`.
+Este documento substitui a declaraÃƒÂ§ÃƒÂ£o anterior de `PARTIAL`.
 
-A execução overnight gerou material útil, mas a validação posterior identificou que a entrega real é majoritariamente:
+A execuÃƒÂ§ÃƒÂ£o overnight gerou material ÃƒÂºtil, mas a validaÃƒÂ§ÃƒÂ£o posterior identificou que a entrega real ÃƒÂ© majoritariamente:
 
 ```text
-backend/data skeleton + initializers + documentação gerada + alguns fixes runtime/debug validados por Play Mode manual
+backend/data skeleton + initializers + documentaÃƒÂ§ÃƒÂ£o gerada + alguns fixes runtime/debug validados por Play Mode manual
 ```
 
-Portanto, as 13 specs da overnight não devem ser tratadas como fully implemented até haver integração runtime completa, save/load quando aplicável, UI final quando aplicável e Unity batchmode limpo.
+Portanto, as 13 specs da overnight nÃƒÂ£o devem ser tratadas como fully implemented atÃƒÂ© haver integraÃƒÂ§ÃƒÂ£o runtime completa, save/load quando aplicÃƒÂ¡vel, UI final quando aplicÃƒÂ¡vel e Unity batchmode limpo.
 
 ---
 
-## 2. Estado real por área
+## 2. Estado real por ÃƒÂ¡rea
 
-| Área | Estado real | Observação |
+| ÃƒÂrea | Estado real | ObservaÃƒÂ§ÃƒÂ£o |
 |---|---|---|
 | Item taxonomy | Implementado parcial estabilizado | `ItemCategory` foi estabilizado para preservar enum serialization. |
-| Item examples | Implementado parcial | Assets/initializers criados; integração e validação Unity ainda necessárias. |
-| Level-up progression | Implementado parcial estabilizado | SkillPoint corrigido para regra oficial de 1 ponto a cada 2 níveis; AttributePoint por level up existe; gasto final ainda parcial. |
-| Status effects | Implementado parcial | SOs e manager inicial; integração completa com damage pipeline ainda pendente. |
+| Item examples | Implementado parcial | Assets/initializers criados; integraÃƒÂ§ÃƒÂ£o e validaÃƒÂ§ÃƒÂ£o Unity ainda necessÃƒÂ¡rias. |
+| Level-up progression | Implementado parcial estabilizado | SkillPoint corrigido para regra oficial de 1 ponto a cada 2 nÃƒÂ­veis; AttributePoint por level up existe; gasto final ainda parcial. |
+| Status effects | Implementado parcial | SOs e manager inicial; integraÃƒÂ§ÃƒÂ£o completa com damage pipeline ainda pendente. |
 | Equipment/durability/environment | Implementado parcial | SOs/managers iniciais; runtime completo pendente. |
-| Loot tables | Implementado parcial estabilizado | `LootTableSO` compila com `UnityEngine.Random`; integração ampla com enemy/resource drops ainda pendente. |
+| Loot tables | Implementado parcial estabilizado | `LootTableSO` compila com `UnityEngine.Random`; integraÃƒÂ§ÃƒÂ£o ampla com enemy/resource drops ainda pendente. |
 | Crafting recipes | Implementado parcial estabilizado | Initializer passa a gerar `RecipeDataSO`; modelo paralelo `CraftingRecipeSO` foi removido. |
 | Weapons/spells/skill actions | Implementado parcial | Schemas iniciais; runtime de usar/equipar/cooldown/damage pendente. |
 | Enemy data/AI | Implementado parcial estabilizado | Initializer passa a gerar `Combat.EnemyDataSO`; modelo paralelo `Enemy.EnemyDataSO` foi removido. |
 | Bestiary/faction locks | Implementado parcial | Dados iniciais; runtime event-driven e faction locks pendentes. |
 | Cave entry/death/corpse | Implementado parcial | Config SOs; fluxo runtime e save/load pendentes. |
-| Skill trees | Implementado parcial | Dados/manager mínimo; capstones, active slots reais, Fonte de Anya e save/load pendentes. |
-| Cave boss gates/checkpoints | Implementado parcial estabilizado | Gates padrão 15/30/45/60/75/90 existem por fallback runtime; persistência em asset/registry ainda recomendada. |
-| Menu systems | Implementado parcial | Menu state básico; UI real pendente. |
-| Debug/validation | Implementado parcial | DebugHud ganhou logs de combate, IsBoss, P/F2 para gates e O para +99 XP; validação batchmode local ainda obrigatória. |
+| Skill trees | Implementado parcial | Dados/manager mÃƒÂ­nimo; capstones, active slots reais, Fonte de Anya e save/load pendentes. |
+| Cave boss gates/checkpoints | Implementado parcial estabilizado | Gates padrÃƒÂ£o 15/30/45/60/75/90 existem por fallback runtime; persistÃƒÂªncia em asset/registry ainda recomendada. |
+| Menu systems | Implementado parcial | Menu state bÃƒÂ¡sico; UI real pendente. |
+| Debug/validation | Implementado parcial | DebugHud ganhou logs de combate, IsBoss, P/F2 para gates e O para +99 XP; validaÃƒÂ§ÃƒÂ£o batchmode local ainda obrigatÃƒÂ³ria. |
 
 ---
 
-## 3. Correções de estabilização aplicadas
+## 3. CorreÃƒÂ§ÃƒÂµes de estabilizaÃƒÂ§ÃƒÂ£o aplicadas
 
 ### 3.1 ItemCategory
 
@@ -59,20 +59,20 @@ Fish = 5
 Misc = 6
 ```
 
-Novos valores foram movidos para faixa alta explícita (`100+`).
+Novos valores foram movidos para faixa alta explÃƒÂ­cita (`100+`).
 
 ### 3.2 SkillPoints / AttributePoints
 
 A regra oficial foi centralizada em `PlayerProgressionRules`:
 
 ```text
-+1 SkillPoint em níveis pares, começando no nível 2.
++1 SkillPoint em nÃƒÂ­veis pares, comeÃƒÂ§ando no nÃƒÂ­vel 2.
 +1 AttributePoint por level up.
 ```
 
 `PlayerProgressionManager` e `LevelUpManager` foram alinhados para usar essa regra.
 
-Gasto/distribuição final de atributos e skill tree ainda é parcial.
+Gasto/distribuiÃƒÂ§ÃƒÂ£o final de atributos e skill tree ainda ÃƒÂ© parcial.
 
 ### 3.3 EnemyDataSO
 
@@ -82,7 +82,7 @@ Modelo oficial estabilizado:
 CindarsHope.Combat.EnemyDataSO
 ```
 
-O modelo paralelo em `CindarsHope.Enemy.EnemyDataSO` foi removido para eliminar ambiguidade e impedir criação de assets mortos.
+O modelo paralelo em `CindarsHope.Enemy.EnemyDataSO` foi removido para eliminar ambiguidade e impedir criaÃƒÂ§ÃƒÂ£o de assets mortos.
 
 `EnemyDataInitializer` agora gera assets usando o modelo oficial de combate.
 
@@ -94,29 +94,29 @@ Modelo oficial estabilizado:
 CindarsHope.Craft.Data.RecipeDataSO
 ```
 
-O modelo paralelo em `CindarsHope.Crafting.CraftingRecipeSO` foi removido para eliminar ambiguidade e impedir criação de recipes fora do runtime real.
+O modelo paralelo em `CindarsHope.Crafting.CraftingRecipeSO` foi removido para eliminar ambiguidade e impedir criaÃƒÂ§ÃƒÂ£o de recipes fora do runtime real.
 
 `CraftingRecipeInitializer` agora gera assets usando `RecipeDataSO`.
 
-### 3.5 Cave/debug hotfixes pós-merge
+### 3.5 Cave/debug hotfixes pÃƒÂ³s-merge
 
-Foram aplicados hotfixes pós-merge diretamente na `dev`:
+Foram aplicados hotfixes pÃƒÂ³s-merge diretamente na `dev`:
 
 ```text
-- LootTableSO: qualificação de UnityEngine.Random.
-- SceneSpawnPoint: remoção de warning transitório no Create Scene.
-- CaveDebugLevelSkipController: P/F2 pula para próximo boss gate.
+- LootTableSO: qualificaÃƒÂ§ÃƒÂ£o de UnityEngine.Random.
+- SceneSpawnPoint: remoÃƒÂ§ÃƒÂ£o de warning transitÃƒÂ³rio no Create Scene.
+- CaveDebugLevelSkipController: P/F2 pula para prÃƒÂ³ximo boss gate.
 - CaveBossGateRegistrySO: fallback runtime para gates 15, 30, 45, 60, 75 e 90.
-- CaveRunManager: bloqueio de avanço por gate generalizado para qualquer gate level.
-- CaveBossSpawner: removida dependência de tag Unity BossEnemy.
-- DebugHud: tecla O concede +99 XP; checagem de gate no HUD é silenciosa.
+- CaveRunManager: bloqueio de avanÃƒÂ§o por gate generalizado para qualquer gate level.
+- CaveBossSpawner: removida dependÃƒÂªncia de tag Unity BossEnemy.
+- DebugHud: tecla O concede +99 XP; checagem de gate no HUD ÃƒÂ© silenciosa.
 - EnemyHealth: logs de combate com nome, enemyId, HP, XP, drop e IsBoss.
-- CaveBossDeathReporter: morte de boss reportada pelo próprio GameObject, sem depender de distância pós-knockback.
+- CaveBossDeathReporter: morte de boss reportada pelo prÃƒÂ³prio GameObject, sem depender de distÃƒÂ¢ncia pÃƒÂ³s-knockback.
 ```
 
 ---
 
-## 4. O que ainda não está completo
+## 4. O que ainda nÃƒÂ£o estÃƒÂ¡ completo
 
 As seguintes capacidades continuam pendentes ou parciais:
 
@@ -137,17 +137,17 @@ As seguintes capacidades continuam pendentes ou parciais:
 
 ---
 
-## 5. Validação
+## 5. ValidaÃƒÂ§ÃƒÂ£o
 
-Validação realizada nesta estabilização:
+ValidaÃƒÂ§ÃƒÂ£o realizada nesta estabilizaÃƒÂ§ÃƒÂ£o:
 
 ```text
-Análise estática de código e documentação via GitHub.
+AnÃƒÂ¡lise estÃƒÂ¡tica de cÃƒÂ³digo e documentaÃƒÂ§ÃƒÂ£o via GitHub.
 Merge da branch review/stabilize-overnight-specs para dev.
-Validação manual parcial em Play Mode reportada por logs do usuário para boss gate level 15, boss death, checkpoint unlock e avanço 15->16.
+ValidaÃƒÂ§ÃƒÂ£o manual parcial em Play Mode reportada por logs do usuÃƒÂ¡rio para boss gate level 15, boss death, checkpoint unlock e avanÃƒÂ§o 15->16.
 ```
 
-Validação ainda obrigatória localmente:
+ValidaÃƒÂ§ÃƒÂ£o ainda obrigatÃƒÂ³ria localmente:
 
 ```powershell
 .\tools\docs\validate_docs.ps1
@@ -164,11 +164,11 @@ Select-String -Path "Logs\unity-compile-dev-post-merge.log" -Pattern `
 
 ---
 
-## 6. Próxima decisão recomendada
+## 6. PrÃƒÂ³xima decisÃƒÂ£o recomendada
 
-A branch de estabilização já foi mergeada na `dev`.
+A branch de estabilizaÃƒÂ§ÃƒÂ£o jÃƒÂ¡ foi mergeada na `dev`.
 
-Recomendação atual:
+RecomendaÃƒÂ§ÃƒÂ£o atual:
 
 ```text
 1. Rodar Unity batchmode local na dev.

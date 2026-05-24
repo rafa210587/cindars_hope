@@ -1,17 +1,17 @@
-# Specs — Cindar's Hope
+# Specs Ã¢â‚¬â€ Cindar's Hope
 
-Ver também: `docs/specs/SPEC_SOURCE_OF_TRUTH.md`.
+Ver tambÃƒÂ©m: `docs/specs/SPEC_SOURCE_OF_TRUTH.md`.
 
 ## Estrutura
 
-- `docs/specs/implementados/`: specs consolidadas do que já existe no repo.
-- `docs/specs/a_implementar/`: specs futuras ou preparadas para implementação.
+- `docs/specs/implementados/`: specs consolidadas do que jÃƒÂ¡ existe no repo.
+- `docs/specs/a_implementar/`: specs futuras ou preparadas para implementaÃƒÂ§ÃƒÂ£o.
 - `docs/specs/SPEC_REGISTRY_IMPLEMENTED.md`: registry oficial das specs implementadas/parciais.
 - `docs/specs/SPEC_REGISTRY_TO_IMPLEMENT.md`: registry oficial das specs futuras.
-- `docs/refinements/implementados/`: refinamentos e PR waves já absorvidos.
-- `docs/refinements/a_implementar/`: refinamentos futuros ainda não implementados.
-- `specs/`: SpecKit operacional por feature.
-- `docs_old/`: histórico integral preservado.
+- `docs/refinements/implementados/`: refinamentos e PR waves jÃƒÂ¡ absorvidos.
+- `docs/refinements/a_implementar/`: refinamentos futuros ainda nÃƒÂ£o implementados.
+- `docs/specs/`: fonte unica oficial de specs.
+- `docs_old/`: histÃƒÂ³rico integral preservado.
 
 ## Regras de nomes
 
@@ -19,7 +19,7 @@ Ver também: `docs/specs/SPEC_SOURCE_OF_TRUTH.md`.
 - Toda spec futura deve ter prefixo `spec_`, exceto `README.md`.
 - Todo refinement implementado deve ter prefixo `ref_`.
 - Todo refinement futuro deve ter prefixo `ref_`.
-- A pasta raiz `spec/` foi absorvida e não deve ser recriada.
+- A pasta raiz `spec/` foi absorvida e nÃƒÂ£o deve ser recriada.
 
 ## Como implementar uma spec
 
@@ -30,7 +30,7 @@ Antes de implementar:
 3. Ler `docs/specs/SPEC_SOURCE_OF_TRUTH.md`.
 4. Ler a spec alvo em `docs/specs/a_implementar/spec_*.md` ou `docs/specs/implementados/spec_*.md`.
 5. Ler o refinement alvo em `docs/refinements/a_implementar/ref_*.md` ou `docs/refinements/implementados/ref_*.md`.
-6. Ler `specs/<FEATURE>/`, se existir.
+6. Conferir `docs/specs/SPEC_EXECUTION_ORDER.md`.
 7. Ler registries, crosswalk e `docs_old/` somente quando o protocolo/matriz indicar.
 
 Ao finalizar:

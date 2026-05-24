@@ -1,31 +1,27 @@
-﻿# Cindar's Hope — Documentação ativa
+# Cindar's Hope - Documentacao ativa
 
-> Status: documentação ativa reorganizada.
-> Histórico integral preservado em `docs_old/`.
+> Status: documentacao ativa reconciliada.
+> Historico integral preservado em `docs_old/`.
 
 ## Camadas
 
-- `docs/design/` — design ativo do jogo.
-- `docs/architecture/` — arquitetura ativa.
-- `docs/operations/` — operação, agentes, SpecKit, ambiente e pipeline.
-- `docs/roadmap/` — roadmap ativo.
-- `docs/amendments/` — amendments ativos copiados do histórico.
-- `docs/validation/` — smoke tests e validações ativas.
-- `docs/backlog/` — backlog ativo e ideias futuras preservadas.
-- `docs/specs/implementados/` — specs consolidadas do que já existe no repo.
-- `docs/specs/a_implementar/` — specs futuras aprovadas, preparadas ou preservadas para refinamento.
-- `docs/refinements/implementados/` — refinamentos, audits, handoffs e waves de capacidades implementadas.
-- `docs/refinements/a_implementar/` — refinamentos futuros.
-- `docs_old/` — histórico preservado.
-- `specs/` — SpecKit operacional por feature.
+- `docs/design/` - design ativo do jogo.
+- `docs/architecture/` - arquitetura ativa.
+- `docs/operations/` - operacao, agentes, SpecKit, ambiente e pipeline.
+- `docs/roadmap/` - roadmap ativo.
+- `docs/amendments/` - amendments ativos.
+- `docs/validation/` - smoke tests e validacoes ativas.
+- `docs/backlog/` - backlog ativo e ideias futuras preservadas.
+- `docs/specs/` - fonte unica oficial de specs.
+- `docs/specs/implementados/` - specs consolidadas do que ja existe no repo.
+- `docs/specs/a_implementar/` - specs futuras no padrao SpecKit.
+- `docs/specs/SPEC_EXECUTION_ORDER.md` - ordem oficial de execucao.
+- `docs/refinements/implementados/` - refinamentos, audits, handoffs e waves implementadas/parciais.
+- `docs/refinements/a_implementar/pre_refinamentos/` - pre-refinamentos vivos.
+- `docs_old/` - historico preservado; nao editar como fonte ativa.
 
 ## Regra
 
-Não usar `spec/`. Essa pasta foi absorvida e removida.
+A pasta raiz `specs/` foi removida e nao deve ser recriada. A pasta raiz `spec/` tambem nao deve ser recriada.
 
-Specs antigas não são apagadas nem reescritas destrutivamente. Mudanças futuras entram como nova spec, amendment, correction ou errata.
-
-## Rastreabilidade documental
-
-Para rastreabilidade completa entre docs_old/ e a documentação ativa, ver docs/DOCS_OLD_TO_ACTIVE_CROSSWALK.md.
-
+Specs antigas nao sao apagadas de `docs_old/`. Mudancas futuras entram como nova spec, amendment, correction ou errata.

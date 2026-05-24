@@ -1,9 +1,16 @@
-﻿# SPEC INVENTORY-001 - Inventario, itens, gold e stacks
+# SPEC INVENTORY-001 - Inventario, itens, gold e stacks
 
-> Status: Implementado
+> Status: Implementado parcial parcial
 > Camada: Inventory
 > Fonte historica: `docs_old/CORE_CONTRACTS_EVENTS_SAVE_IDS_v1.0.md`
 > Evidencia principal: `Assets/_Game/Scripts/Inventory/InventoryManager.cs`
+
+---
+
+## Correcao de tracking 2026-05-23
+
+O inventory atual usa Dictionary<string, int>, isto e, uma stack agregada por itemId.
+Ainda nao existem slots reais, multiplas stacks por item, capacidade final de mochila, drag/drop ou UI final.
 
 ---
 
@@ -26,7 +33,7 @@ Nao tratar como implementado final qualquer item listado como pendente, qualquer
 A arquitetura real e composta pelos arquivos listados na evidencia, pelos dados preservados em `docs_old/` e pelo status operacional registrado em `PROJECT_LOG.md`.
 
 ### Fluxo
-O fluxo operacional segue o MVP atual: sistemas runtime consultam managers/dados por IDs, publicam eventos simples quando aplicavel e expõem estado para HUD, save ou validadores conforme o sistema.
+O fluxo operacional segue o MVP atual: sistemas runtime consultam managers/dados por IDs, publicam eventos simples quando aplicavel e expÃƒÂµem estado para HUD, save ou validadores conforme o sistema.
 
 ### Persistencia
 Quando ha persistencia, ela deve usar DTOs simples e IDs estaveis. Referencias Unity permanecem fora dos DTOs. Quando nao ha persistencia propria, o estado e derivado de managers ou dados ScriptableObject.

@@ -1,31 +1,24 @@
-﻿# Registry de specs a implementar
+# Registry de specs a implementar
 
-| Spec | Status | Origem | Dependência | Observação |
+Fonte unica de specs futuras: `docs/specs/a_implementar/`. A pasta raiz `specs/` foi removida e nao deve ser recriada.
+
+| Ordem | Spec | Status | Dependencia | Observacao |
 |---|---|---|---|---|
-| spec_stabilization_overnight_fase9c_to_fase9l_v1.md | A implementar | revisão da execução overnight 2026-05-23 | branch wave/specs-overnight-07-ui-menu-minimal | Estabilização técnica: corrigir tracking, enums, SkillPoints, modelos paralelos e validação Unity antes de merge. |
-| spec_fase9c_player_equipment_items_combat_remaining.md | A implementar | docs_old/FASE9C_PLAYER_EQUIPMENT_ITEMS_COMBAT_SPEC_v1.0.md | spec_tools_001, spec_combat_001 | Restante de equipamentos, itens e combate nao coberto pelo MVP. |
-| spec_fase9c_tools_farm_combat_refinement_remaining.md | A implementar | docs_old/FASE9C_TOOLS_FARM_COMBAT_REFINEMENT_v1.0.md | spec_tools_001, spec_farm_003, spec_combat_001 | Refinamentos restantes de tools/farm/combat. |
-| spec_fase9d_enemy_actions_ai_combat.md | A implementar | docs_old/FASE9D_ENEMY_ACTIONS_AI_COMBAT_SPEC_v1.0.md | spec_combat_002 | Acoes, IA e combate de inimigos alem do Slime MVP. |
-| spec_fase9d_enemy_architecture_40_monsters.md | A implementar | docs_old/FASE9D_ENEMY_ARCHITECTURE_40_MONSTERS_v1.1.md | spec_combat_002 | Arquitetura de roster amplo de inimigos. |
-| spec_fase9e_ui_hotbar_inventory_equipment_final.md | A implementar | docs/specs/a_implementar | spec_tools_001, spec_ui_001 | UI final de hotbar/inventory/equipment. |
-| spec_fase9e_attribute_allocation_debug.md | A implementar | docs/specs/a_implementar | spec_progression_001 | Alocacao debug/futura de atributos. |
-| spec_fase9e_damage_status_elements_complete.md | A implementar | docs/specs/a_implementar | spec_damage_001 | Status, elementos e resistencias. |
-| spec_fase9e_item_taxonomy_ids.md | A implementar | docs_old/FASE9E_ITEM_TAXONOMY_IDS_SPEC_v1.0.md | spec_data_001 | Taxonomia e IDs futuros de itens. |
-| spec_fase9e_item_examples_variations.md | A implementar | docs_old/FASE9E_ITEM_EXAMPLES_VARIATIONS_v1.0.md | spec_data_001, spec_inventory_001 | Exemplos e variacoes de itens. |
-| spec_fase9e_save_schema_migration.md | A implementar | docs_old/FASE9E_SAVE_SCHEMA_MIGRATION_SPEC_v1.0.md | spec_save_001 | Migracoes robustas de save schema. |
-| spec_fase9e_player_level_up_progression.md | A implementar | docs_old/FASE9E_PLAYER_LEVEL_UP_PROGRESSION_SPEC_v1.0.md | spec_progression_001 | Progressao refinada alem do MVP parcial. |
-| spec_fase9f_cave_resources_encounters_complete.md | A implementar | docs/specs/a_implementar | spec_cave_002 | Resources/encounters completos. |
-| spec_fase9g_cave_bestiary_faction_locks.md | A implementar | docs/specs/a_implementar | spec_cave_004 | Bestiario, faction locks e ecologia. |
-| spec_fase9g_enemy_combat_roles_ai_status_amendment.md | A implementar | docs_old/amendments/FASE9G_AMENDMENT_ENEMY_COMBAT_ROLES_AI_STATUS_v1.1.md | spec_combat_002, spec_cave_004 | Amendment de roles/AI/status dos inimigos. |
-| spec_fase9h_loot_crafting_equipment_durability_environment.md | A implementar | docs_old/FASE9H | spec_tools_001, spec_craft_001, spec_cave_002 | Loot/equipment/durability/environment. |
-| spec_fase9i_player_combat_weapons_magic_skill_actions.md | A implementar | docs_old/FASE9I | spec_combat_001, spec_damage_001, spec_progression_001 | Combate do jogador, armas, magia e skills. |
-| spec_fase9j_cave_entry_loadout_death_anya_corpse.md | A implementar | docs_old/FASE9J | spec_cave_002, spec_cave_004, spec_ui_001 | Entrada da cave, morte e recovery. |
-| spec_fase9k_skill_trees_nodes_active_slots_respec.md | A implementar | docs_old/FASE9K | spec_progression_001 | Skill trees, nodes, active slots, respec. |
-| spec_fase9l_ui_ux_full_gameplay.md | A implementar | placeholder controlado | specs futuras UI | Materializar spec completa antes de implementar. |
-| spec_fishing_combat_integration_final.md | A implementar | docs/specs/a_implementar | spec_farm_003, spec_combat_001 | Integracao fishing/combat final. |
-| spec_ui_menu_systems_final.md | A implementar | docs/specs/a_implementar | spec_ui_001 | Sistemas de menus finais. |
-| spec_future_ideas_todo.md | A implementar | docs_old/FUTURE_IDEAS_TODO_v1.0.md | backlog ativo | Ideias futuras preservadas sem virar compromisso imediato. |
-
-## Rastreabilidade documental
-
-Para rastreabilidade completa entre docs_old/ e a documentação ativa, ver docs/DOCS_OLD_TO_ACTIVE_CROSSWALK.md.
+| 00 | [spec_docs_single_source_specs_refinements_reconciliation_v1.md](a_implementar/spec_docs_single_source_specs_refinements_reconciliation_v1.md) | A implementar | Nenhuma | Unificar docs/specs/ como fonte oficial, remover specs/ e limpar backlog documental. |
+| 01 | [spec_scene_unity_validation_missing_scripts_prefabs.md](a_implementar/spec_scene_unity_validation_missing_scripts_prefabs.md) | A implementar | 00 | Criar validacao local/batchmode para compile, missing scripts, prefabs, cenas e referencias criticas. |
+| 02 | [spec_save_schema_migration_v2.md](a_implementar/spec_save_schema_migration_v2.md) | A implementar | 00, 01 | Implementar migracao robusta de save com versao, backup e DTOs simples. |
+| 03 | [spec_inventory_slots_capacity_ui_final.md](a_implementar/spec_inventory_slots_capacity_ui_final.md) | A implementar | 00, 01, 02 | Evoluir Dictionary<string,int> para slots reais, multiplas stacks, capacidade, drag/drop e UI. |
+| 04 | [spec_farm_irrigacao_solo_planting_ui.md](a_implementar/spec_farm_irrigacao_solo_planting_ui.md) | A implementar | 00, 01, 02, 03 | Completar solo, irrigacao, hoe/watering can, planting UI e condicoes de crescimento. |
+| 05 | [spec_world_activities_fishing_trees_pickups_loot.md](a_implementar/spec_world_activities_fishing_trees_pickups_loot.md) | A implementar | 00-04 | Completar pesca, arvores, pickups persistentes e loot tables de atividades. |
+| 06 | [spec_economy_shop_stock_pricing_ui.md](a_implementar/spec_economy_shop_stock_pricing_ui.md) | A implementar | 00-05 | Evoluir lojas para estoque, precos, UI, NPC/local e save. |
+| 07 | [spec_crafting_queue_workstations_recipes_ui.md](a_implementar/spec_crafting_queue_workstations_recipes_ui.md) | A implementar | 00-06 | Completar crafting com bancadas, fila, tempo, recipes, ingredientes e UI. |
+| 08 | [spec_town_npc_dialogue_schedule_quests.md](a_implementar/spec_town_npc_dialogue_schedule_quests.md) | A implementar | 00-07 | Evoluir Town/Pip para NPCs com dialogo, agenda, lojas e quests leves. |
+| 09 | [spec_hunger_stamina_status_balance.md](a_implementar/spec_hunger_stamina_status_balance.md) | A implementar | 00-05 | Integrar fome com stamina, buffs/debuffs, status e balanceamento. |
+| 10 | [spec_equipment_durability_environment_loot_runtime.md](a_implementar/spec_equipment_durability_environment_loot_runtime.md) | A implementar | 00-09 | Completar equipment slots, durabilidade, resistencias ambientais e loot runtime. |
+| 11 | [spec_damage_status_elements_resistances_runtime.md](a_implementar/spec_damage_status_elements_resistances_runtime.md) | A implementar | 00-10 | Completar pipeline de dano, elementos, resistencias e status effects. |
+| 12 | [spec_player_combat_weapons_spells_skill_actions_runtime.md](a_implementar/spec_player_combat_weapons_spells_skill_actions_runtime.md) | A implementar | 00-11 | Substituir punch MVP por armas, magias, skill actions, mana/stamina e active slots. |
+| 13 | [spec_enemy_ai_roster_bestiary_faction_locks_runtime.md](a_implementar/spec_enemy_ai_roster_bestiary_faction_locks_runtime.md) | A implementar | 00-12 | Completar IA, roster 40+, bestiario, faction locks, ecologia e XP. |
+| 14 | [spec_cave_runtime_generation_checkpoints_boss_gates.md](a_implementar/spec_cave_runtime_generation_checkpoints_boss_gates.md) | A implementar | 00-13 | Completar cave runtime, snapshots, checkpoints, boss gates, confinement e materializacao. |
+| 15 | [spec_cave_entry_death_anya_corpse_recovery.md](a_implementar/spec_cave_entry_death_anya_corpse_recovery.md) | A implementar | 00-14 | Completar entrada cave, loadout, morte, Fonte de Anya, corpse recovery e penalidades. |
+| 16 | [spec_skill_trees_active_slots_respec_anya_runtime.md](a_implementar/spec_skill_trees_active_slots_respec_anya_runtime.md) | A implementar | 00-15 | Completar skill trees, active slots, capstones, save/load e respec na Fonte de Anya. |
+| 17 | [spec_ui_ux_full_gameplay_inventory_hotbar_menus.md](a_implementar/spec_ui_ux_full_gameplay_inventory_hotbar_menus.md) | A implementar | 00-16 | Completar HUD, hotbar, inventory, equipment, crafting, skills, shop, cave/death e menus. |

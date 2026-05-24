@@ -1,4 +1,4 @@
-﻿# SPEC PROGRESSION-001 - XP, level e atributos parcial
+# SPEC PROGRESSION-001 - XP, level e atributos parcial
 
 > Status: Implementado parcial
 > Camada: Progression
@@ -26,7 +26,7 @@ Nao tratar como implementado final qualquer item listado como pendente, qualquer
 A arquitetura real e composta pelos arquivos listados na evidencia, pelos dados preservados em `docs_old/` e pelo status operacional registrado em `PROJECT_LOG.md`.
 
 ### Fluxo
-O fluxo operacional segue o MVP atual: sistemas runtime consultam managers/dados por IDs, publicam eventos simples quando aplicavel e expõem estado para HUD, save ou validadores conforme o sistema.
+O fluxo operacional segue o MVP atual: sistemas runtime consultam managers/dados por IDs, publicam eventos simples quando aplicavel e expÃƒÂµem estado para HUD, save ou validadores conforme o sistema.
 
 ### Persistencia
 Quando ha persistencia, ela deve usar DTOs simples e IDs estaveis. Referencias Unity permanecem fora dos DTOs. Quando nao ha persistencia propria, o estado e derivado de managers ou dados ScriptableObject.
@@ -45,7 +45,7 @@ Quando ha persistencia, ela deve usar DTOs simples e IDs estaveis. Referencias U
 - [ ] UX final, arte final, balanceamento final ou cobertura completa so contam quando houver spec e validacao propria.
 
 ### Pendente/futuro
-- [ ] Regra refinada de skill point a cada 2 niveis, active slots, capstones e respec deve virar spec futura FASE9K.
+- [ ] SkillPoint a cada 2 niveis: implementado no codigo. Regra atual: +1 SkillPoint em niveis pares, comecando no level 2. AttributePoint: +1 por level up. Pendentes: gasto/distribuicao final de atributos, skill trees completas, active slots, capstones, respec Fonte de Anya e save/load completo.
 
 ---
 
@@ -72,7 +72,7 @@ Quando ha persistencia, ela deve usar DTOs simples e IDs estaveis. Referencias U
 
 ## 6. Pendencias e riscos
 
-- Regra refinada de skill point a cada 2 niveis, active slots, capstones e respec deve virar spec futura FASE9K.
+- SkillPoint a cada 2 niveis: implementado no codigo. Regra atual: +1 SkillPoint em niveis pares, comecando no level 2. AttributePoint: +1 por level up. Pendentes: gasto/distribuicao final de atributos, skill trees completas, active slots, capstones, respec Fonte de Anya e save/load completo.
 - Se a implementacao for parcial, nao promover para final sem evidencia de Unity e sem atualizar esta spec ou criar amendment/correction.
 
 

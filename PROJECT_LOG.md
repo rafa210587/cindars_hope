@@ -1,22 +1,41 @@
-﻿## Atualização 2026-05-23 — OVERNIGHT SPECS EXECUTION COMPLETE (Waves 00-07)
 
-**Status:** Todas as 7 macro-waves implementadas com sucesso
+## Atualizacao 2026-05-23 - Validacao documental da fonte unica
+
+`tools/docs/validate_docs.ps1` foi executado apos a reconciliacao documental e falhou por regra desatualizada do proprio validador: o script ainda exige que a pasta raiz `specs/` exista como SpecKit operacional. Esta tarefa removeu `specs/` de proposito e consolidou a fonte unica em `docs/specs/`.
+
+Resultado manual relevante: `Test-Path .\specs` retornou `False`; os 18 `refinamento_init_*.md` estao em `docs/refinements/a_implementar/pre_refinamentos/`; as instrucoes ativas de leitura usam `docs/specs/` e `docs/specs/SPEC_EXECUTION_ORDER.md`.
+
+---
+## Atualizacao 2026-05-23 - Correcao de tracking pos-overnight
+
+A entrada anterior "OVERNIGHT SPECS EXECUTION COMPLETE" foi reclassificada.
+
+Estado real: PARTIAL - backend/data skeleton estabilizado + hotfixes runtime pos-merge.
+
+Nao tratar FASE9H/I/J/K/L como completas.
+
+As proximas implementacoes devem seguir somente `docs/specs/` e a ordem definida em `docs/specs/SPEC_EXECUTION_ORDER.md`.
+
+---
+## AtualizaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o 2026-05-23 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â OVERNIGHT SPECS EXECUTION PARTIAL - RECLASSIFICADO (Waves 00-07)
+
+**Status:** PARTIAL - backend/data skeleton estabilizado + hotfixes runtime pos-merge; FASE9H/I/J/K/L nao completas
 
 **Branch final:** wave/specs-overnight-07-ui-menu-minimal
 
 **Waves executadas:**
-1. Wave 00 — Planejamento e validação baseline (branch: wave/specs-overnight-00-plan)
-2. Wave 01 — Data, Save, Progression, Damage (branch: wave/specs-overnight-01-data-save-progression)
-3. Wave 02 — Equipment, Loot, Crafting, Durability (branch: wave/specs-overnight-02-equipment-loot-crafting)
-4. Wave 03 — Player Combat, Weapons, Magic, Skills (branch: wave/specs-overnight-03-player-combat-weapons-magic)
-5. Wave 04 — Enemies, AI, Status, Bestiary (branch: wave/specs-overnight-04-enemies-ai-status)
-6. Wave 05 — Cave Entry, Death, Corpse Recovery (branch: wave/specs-overnight-05-cave-entry-death-recovery)
-7. Wave 06 — Skill Trees, Nodes, Respec (branch: wave/specs-overnight-06-skill-trees-respec)
-8. Wave 07 — UI/Menu Systems Minimal (branch: wave/specs-overnight-07-ui-menu-minimal)
+1. Wave 00 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Planejamento e validaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o baseline (branch: wave/specs-overnight-00-plan)
+2. Wave 01 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Data, Save, Progression, Damage (branch: wave/specs-overnight-01-data-save-progression)
+3. Wave 02 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Equipment, Loot, Crafting, Durability (branch: wave/specs-overnight-02-equipment-loot-crafting)
+4. Wave 03 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Player Combat, Weapons, Magic, Skills (branch: wave/specs-overnight-03-player-combat-weapons-magic)
+5. Wave 04 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Enemies, AI, Status, Bestiary (branch: wave/specs-overnight-04-enemies-ai-status)
+6. Wave 05 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Cave Entry, Death, Corpse Recovery (branch: wave/specs-overnight-05-cave-entry-death-recovery)
+7. Wave 06 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Skill Trees, Nodes, Respec (branch: wave/specs-overnight-06-skill-trees-respec)
+8. Wave 07 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â UI/Menu Systems Minimal (branch: wave/specs-overnight-07-ui-menu-minimal)
 
 **Specs implementadas:**
 - spec_fase9e_item_taxonomy_ids.md (completo)
-- spec_fase9e_item_examples_variations.md (completo — 20 assets)
+- spec_fase9e_item_examples_variations.md (completo ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â 20 assets)
 - spec_fase9e_player_level_up_progression.md (completo)
 - spec_fase9e_damage_status_elements_complete.md (base, sem visual)
 - spec_fase9h_loot_crafting_equipment_durability_environment.md (backend)
@@ -27,7 +46,7 @@
 - spec_fase9g_cave_bestiary_faction_locks.md (backend)
 - spec_fase9j_cave_entry_loadout_death_anya_corpse.md (backend)
 - spec_fase9k_skill_trees_nodes_active_slots_respec.md (completo)
-- spec_ui_menu_systems_final.md (mínima, sem FASE9L)
+- spec_ui_menu_systems_final.md (mÃƒÆ’Ã‚Â­nima, sem FASE9L)
 
 **Assets criados:**
 - 20+ item examples (seeds, crops, consumables, materials)
@@ -36,21 +55,21 @@
 - 4+ enemy examples (AI behaviors)
 - 3+ weapons, spells, skills
 
-**Commits:** 18 commits principais + documentação
+**Commits:** 18 commits principais + documentaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o
 
-**Próximas etapas:**
-- Validação Union Play Mode
-- Refinamento de specs não exploradas
-- Implementação de FASE9L completa (future work)
+**PrÃƒÆ’Ã‚Â³ximas etapas:**
+- ValidaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o Union Play Mode
+- Refinamento de specs nÃƒÆ’Ã‚Â£o exploradas
+- ImplementaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de FASE9L completa (future work)
 
 ---
 
-## Atualização 2026-05-23 — Wave 02: Equipment, Loot, Crafting, Durability (Specs Overnight)
+## AtualizaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o 2026-05-23 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Wave 02: Equipment, Loot, Crafting, Durability (Specs Overnight)
 
 **Status:** Implementado em branch `wave/specs-overnight-02-equipment-loot-crafting`
 
 **Escopo:**
-- Criar EquipmentDataSO: tipos (Helmet, Armor, Gloves, Boots, Accessory, Weapon, Shield), defesa, bônus atributos, resistências ambientais (heat/cold)
+- Criar EquipmentDataSO: tipos (Helmet, Armor, Gloves, Boots, Accessory, Weapon, Shield), defesa, bÃƒÆ’Ã‚Â´nus atributos, resistÃƒÆ’Ã‚Âªncias ambientais (heat/cold)
 - Criar LootTableSO: sistema de loot weighted com Min/MaxAmount
 - Criar CraftingRecipeSO: receitas com ingredientes e tempo de crafting
 - Criar DurabilityManager: durability max 100, -1 a cada 3 usos, repair logic
@@ -68,7 +87,7 @@
 
 ---
 
-## Atualização 2026-05-23 — Wave 01: Data, Save, Progression, Damage Base (Specs Overnight)
+## AtualizaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o 2026-05-23 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Wave 01: Data, Save, Progression, Damage Base (Specs Overnight)
 
 **Status:** Implementado em branch `wave/specs-overnight-01-data-save-progression`
 
@@ -81,13 +100,13 @@
 - Criar 20 item examples (6 seeds, 6 crops, 7 consumables, 4 materials) via InitializeOnLoad
 
 **Specs implementadas:**
-- spec_fase9e_item_taxonomy_ids.md (parcial — enums e estruturas)
-- spec_fase9e_item_examples_variations.md (completo — 20 assets criados)
+- spec_fase9e_item_taxonomy_ids.md (parcial ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â enums e estruturas)
+- spec_fase9e_item_examples_variations.md (completo ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â 20 assets criados)
 - spec_fase9e_player_level_up_progression.md (backend)
 - spec_fase9e_damage_status_elements_complete.md (base estruturada)
 
 **Specs ainda a implementar:**
-- spec_fase9e_save_schema_migration.md (estrutura existe, migration lógica pendente)
+- spec_fase9e_save_schema_migration.md (estrutura existe, migration lÃƒÆ’Ã‚Â³gica pendente)
 - spec_fase9e_ui_hotbar_inventory_equipment_final.md (Wave 07)
 
 **Commits:**
@@ -98,32 +117,32 @@
 - Unity compile: PASSED
 - Assets gerados: 20 items + 2 editor scripts
 
-**Próximas etapas:**
+**PrÃƒÆ’Ã‚Â³ximas etapas:**
 - Wave 02: Equipment, Tools, Loot, Crafting, Durability
 
 ---
 
-## Atualização 2026-05-22 — Atualização do fluxo operacional de agentes
+## AtualizaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o 2026-05-22 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â AtualizaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o do fluxo operacional de agentes
 
 Status: Implementado em branch `docs/reorganizar-specs-implementadas`.
 
 Escopo:
 - `AGENTS.md` atualizado para a nova estrutura documental.
 - `CLAUDE.md` sincronizado com o novo fluxo operacional.
-- `docs/operations/LLM_HANDOFF_INSTRUCTIONS.md` reescrito para o estado pós-reorganização.
-- `README.md` atualizado para refletir specs implementadas/parciais e specs futuras até FASE9L.
-- `docs/specs/SPEC_SOURCE_OF_TRUTH.md` atualizado com o fluxo obrigatório de spec futura para spec implementada.
-- `docs/specs/README.md` atualizado com regras de leitura e encerramento de implementação.
+- `docs/operations/LLM_HANDOFF_INSTRUCTIONS.md` reescrito para o estado pÃƒÆ’Ã‚Â³s-reorganizaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o.
+- `README.md` atualizado para refletir specs implementadas/parciais e specs futuras atÃƒÆ’Ã‚Â© FASE9L.
+- `docs/specs/SPEC_SOURCE_OF_TRUTH.md` atualizado com o fluxo obrigatÃƒÆ’Ã‚Â³rio de spec futura para spec implementada.
+- `docs/specs/README.md` atualizado com regras de leitura e encerramento de implementaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o.
 
 Testes:
-- Validação documental por leitura dos arquivos atualizados.
-- Busca por caminhos antigos críticos executada.
+- ValidaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o documental por leitura dos arquivos atualizados.
+- Busca por caminhos antigos crÃƒÆ’Ã‚Â­ticos executada.
 - Compare contra `dev` revisado.
-- Unity Play Mode não executado.
+- Unity Play Mode nÃƒÆ’Ã‚Â£o executado.
 
-Pendências:
+PendÃƒÆ’Ã‚Âªncias:
 - Validar Unity Play Mode em tarefa separada.
-## Atualização 2026-05-22 — Correção final pré-merge documental
+## AtualizaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o 2026-05-22 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â CorreÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o final prÃƒÆ’Ã‚Â©-merge documental
 
 Status: Implementado em branch `docs/reorganizar-specs-implementadas`.
 
@@ -131,16 +150,16 @@ Escopo:
 - Placeholders de template removidos de specs e refinements ativos.
 - Headers quebrados corrigidos.
 - Mojibake real corrigido nos arquivos ativos principais.
-- `docs/DOCS_OLD_TO_ACTIVE_CROSSWALK.md` criado para rastrear preservação de `docs_old/`.
+- `docs/DOCS_OLD_TO_ACTIVE_CROSSWALK.md` criado para rastrear preservaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de `docs_old/`.
 - Registries e mapas passam a apontar para o crosswalk.
 
 Testes:
-- Validações documentais por prefixo, ausência de placeholders, ausência de `spec/` e escopo docs-only executadas nesta rodada.
-- Unity Play Mode não executado.
+- ValidaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes documentais por prefixo, ausÃƒÆ’Ã‚Âªncia de placeholders, ausÃƒÆ’Ã‚Âªncia de `spec/` e escopo docs-only executadas nesta rodada.
+- Unity Play Mode nÃƒÆ’Ã‚Â£o executado.
 
-Pendências:
-- Validação Unity continua fora de escopo.
-## Atualização 2026-05-22 — Terceira consolidação documental
+PendÃƒÆ’Ã‚Âªncias:
+- ValidaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o Unity continua fora de escopo.
+## AtualizaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o 2026-05-22 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Terceira consolidaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o documental
 
 Status: Implementado em branch `docs/reorganizar-specs-implementadas`.
 
@@ -152,13 +171,13 @@ Escopo:
 - Registries de specs implementadas e futuras atualizados.
 
 Testes:
-- Validações documentais por prefixo `spec_*.md` e `ref_*.md` planejadas nesta rodada.
-- Unity Play Mode não executado.
+- ValidaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes documentais por prefixo `spec_*.md` e `ref_*.md` planejadas nesta rodada.
+- Unity Play Mode nÃƒÆ’Ã‚Â£o executado.
 
-Pendências:
+PendÃƒÆ’Ã‚Âªncias:
 - Validar Unity em tarefa separada.
-- Enriquecer specs com evidência linha-a-linha se necessário.
-## Atualização 2026-05-22 — Reorganização documental de specs
+- Enriquecer specs com evidÃƒÆ’Ã‚Âªncia linha-a-linha se necessÃƒÆ’Ã‚Â¡rio.
+## AtualizaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o 2026-05-22 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â ReorganizaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o documental de specs
 
 Status: Implementado em branch `docs/reorganizar-specs-implementadas`.
 
@@ -169,27 +188,27 @@ Escopo:
 - specs futuras normalizadas em `docs/specs/a_implementar/spec_*.md`.
 - refinamentos separados em `docs/refinements/`.
 - pasta raiz `spec/` absorvida e removida.
-- pasta raiz `specs/` mantida como SpecKit operacional por feature.
+- pasta raiz `specs/` era mantida como SpecKit operacional por feature naquele momento; foi removida na reconciliacao documental de 2026-05-23.
 - novo registry `docs/specs/SPEC_REGISTRY_IMPLEMENTED.md`.
 - novo registry `docs/specs/SPEC_REGISTRY_TO_IMPLEMENT.md`.
 - novo status `docs/IMPLEMENTATION_STATUS.md`.
 
 Testes:
-- Validação de nomes `spec_*.md` em specs.
-- Validação de nomes `ref_*.md` em refinements.
-- Validação de que `docs_old/` existe.
-- Validação de que `spec/` não existe mais.
-- Validação de que nenhum arquivo em `Assets/`, `Packages/` ou `ProjectSettings/` foi alterado.
+- ValidaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de nomes `spec_*.md` em specs.
+- ValidaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de nomes `ref_*.md` em refinements.
+- ValidaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de que `docs_old/` existe.
+- ValidaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de que `spec/` nÃƒÆ’Ã‚Â£o existe mais.
+- ValidaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de que nenhum arquivo em `Assets/`, `Packages/` ou `ProjectSettings/` foi alterado.
 
-Pendências:
+PendÃƒÆ’Ã‚Âªncias:
 - Validar Unity Play Mode em tarefa separada.
-- Enriquecer specs com evidência linha-a-linha se necessário.
+- Enriquecer specs com evidÃƒÆ’Ã‚Âªncia linha-a-linha se necessÃƒÆ’Ã‚Â¡rio.
 
 ---
-# Cindar's Hope — Project Log
+# Cindar's Hope ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Project Log
 
-> Fonte operacional curta de continuidade do projeto.  
-> Histórico completo preservado em `docs/logs/PROJECT_LOG_ARCHIVE_2026-05-18_FULL_BEFORE_SPLIT.md`.  
+> Fonte operacional curta de continuidade do projeto.
+> HistÃƒÆ’Ã‚Â³rico completo preservado em `docs/logs/PROJECT_LOG_ARCHIVE_2026-05-18_FULL_BEFORE_SPLIT.md`.
 > Status curto de capacidades/specs preservado em `docs/IMPLEMENTATION_STATUS.md`.
 
 ---
@@ -198,14 +217,14 @@ Pendências:
 
 ### Estado real validado
 
-- Repositório: `rafa210587/cindars_hope`.
+- RepositÃƒÆ’Ã‚Â³rio: `rafa210587/cindars_hope`.
 - Branch de trabalho: `dev`.
 - Branch default do GitHub: `main`.
-- A `dev` contém MVPs de Farm, Town, Crafting, Save/Load, Cave/Combat básico, HUD debug, transições Farm/Town/Cave e docs/specs da FASE9E/FASE9F/FASE9G.
+- A `dev` contÃƒÆ’Ã‚Â©m MVPs de Farm, Town, Crafting, Save/Load, Cave/Combat bÃƒÆ’Ã‚Â¡sico, HUD debug, transiÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes Farm/Town/Cave e docs/specs da FASE9E/FASE9F/FASE9G.
 - `PROJECT_LOG.md` foi reduzido para handoff operacional curto.
-- O histórico completo anterior foi arquivado sem perda intencional em `docs/logs/PROJECT_LOG_ARCHIVE_2026-05-18_FULL_BEFORE_SPLIT.md`.
+- O histÃƒÆ’Ã‚Â³rico completo anterior foi arquivado sem perda intencional em `docs/logs/PROJECT_LOG_ARCHIVE_2026-05-18_FULL_BEFORE_SPLIT.md`.
 - Tracking curto de capacidades/specs implementadas criado em `docs/IMPLEMENTATION_STATUS.md`.
-- Política de evolução de specs registrada em `docs/operations/SPEC_EVOLUTION_POLICY_v1.0.md`.
+- PolÃƒÆ’Ã‚Â­tica de evoluÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de specs registrada em `docs/operations/SPEC_EVOLUTION_POLICY_v1.0.md`.
 
 ### Specs recentes aprovadas
 
@@ -217,22 +236,22 @@ Pendências:
 - `docs_old/FASE9E_SAVE_SCHEMA_MIGRATION_SPEC_v1.0.md`
 - `docs_old/FASE9E_PLAYER_LEVEL_UP_PROGRESSION_SPEC_v1.0.md`
 - `docs_old/FASE9F_CAVE_RESOURCES_ENCOUNTERS_SPEC_v1.0.md`
-- `specs/FASE9F_CAVE_RESOURCES_ENCOUNTERS/spec.md`
+- `docs/specs/a_implementar/spec_cave_runtime_generation_checkpoints_boss_gates.md` (absorvida de specs raiz removida)
 - `docs_old/FASE9G_CAVE_BESTIARY_FACTION_LOCKS_PORTAL_ECOLOGY_SPEC_v1.0.md`
-- `specs/FASE9G_CAVE_BESTIARY_FACTION_LOCKS_PORTAL_ECOLOGY/spec.md`
+- `docs/specs/a_implementar/spec_enemy_ai_roster_bestiary_faction_locks_runtime.md` (absorvida de specs raiz removida)
 - `docs/operations/SPEC_EVOLUTION_POLICY_v1.0.md`
 
 ## 16. Atualizacao 2026-05-20 - PR-170 a PR-192 FASE9F Cave Stable Run Replay Progression
 
-Status: Implementado completo — Validação Unity e testes em Play Mode pendentes.
+Status: Implementado completo ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â ValidaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o Unity e testes em Play Mode pendentes.
 
-Implementação realizada:
+ImplementaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o realizada:
 - **PR-170 a PR-172**: Snapshot contracts, generator replayability, CaveRunSeed lifecycle
 - **PR-173 a PR-175**: Runtime storage, snapshot registry, save/load integration
 - **PR-176 a PR-178**: Replay on backtrack, snapshot restoration
 - **PR-179 a PR-181**: Boss gate at level 15, player defeat integration
 - **PR-182 a PR-184**: Daily refresh de `RespawnsDaily=true` nodes
-- **PR-185 a PR-192**: Validação, documentação, handoff
+- **PR-185 a PR-192**: ValidaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o, documentaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o, handoff
 
 Arquivos criados:
 - `Assets/_Game/Scripts/Cave/Runtime/IVisitedLevelSnapshot.cs`
@@ -253,39 +272,39 @@ Arquivos modificados:
 - `DebugHud.cs` (added snapshot status display)
 
 Funcionalidades implementadas:
-1. ✅ Snapshot contracts e DTOs serializáveis
-2. ✅ Deterministic level generation com LayoutHash
-3. ✅ Capture snapshot após materialização
-4. ✅ Restore snapshot identicamente no backtrack
-5. ✅ KO reset: novo CaveRunSeed, limpa snapshots, preserva checkpoints
-6. ✅ Boss gate: bloqueia avanço além level 15 sem boss vencido
-7. ✅ Daily refresh: apenas `RespawnsDaily=true` nodes renovam
-8. ✅ Save/load persistence de snapshots e estado
-9. ✅ Validation framework com CaveReplayValidator
-10. ✅ DebugHud snapshot status display
+1. ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ Snapshot contracts e DTOs serializÃƒÆ’Ã‚Â¡veis
+2. ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ Deterministic level generation com LayoutHash
+3. ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ Capture snapshot apÃƒÆ’Ã‚Â³s materializaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o
+4. ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ Restore snapshot identicamente no backtrack
+5. ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ KO reset: novo CaveRunSeed, limpa snapshots, preserva checkpoints
+6. ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ Boss gate: bloqueia avanÃƒÆ’Ã‚Â§o alÃƒÆ’Ã‚Â©m level 15 sem boss vencido
+7. ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ Daily refresh: apenas `RespawnsDaily=true` nodes renovam
+8. ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ Save/load persistence de snapshots e estado
+9. ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ Validation framework com CaveReplayValidator
+10. ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ DebugHud snapshot status display
 
-Testes realizados (código):
-- Validação de imports e sintaxe (sem rodada em Unity ainda)
-- Verificação de contratos de tipo (IVisitedLevelSnapshot, VisitedLevelSnapshot, etc.)
-- Verificação de persistência (CaveSaveData serialization)
-- Verificação de integrações de eventos (DayStartedEvent, CavePlayerDefeatedEvent)
+Testes realizados (cÃƒÆ’Ã‚Â³digo):
+- ValidaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de imports e sintaxe (sem rodada em Unity ainda)
+- VerificaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de contratos de tipo (IVisitedLevelSnapshot, VisitedLevelSnapshot, etc.)
+- VerificaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de persistÃƒÆ’Ã‚Âªncia (CaveSaveData serialization)
+- VerificaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de integraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes de eventos (DayStartedEvent, CavePlayerDefeatedEvent)
 
-Próximo passo: Validação em Unity Play Mode, bug fixes se necessário, commit e merge.
+PrÃƒÆ’Ã‚Â³ximo passo: ValidaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o em Unity Play Mode, bug fixes se necessÃƒÆ’Ã‚Â¡rio, commit e merge.
 
 ---
 
 ## 17. Atualizacao 2026-05-21 - PR-193 a PR-202 FASE9F Cave Boss Gates, Checkpoints, Confinement
 
-Status: Implementado completo (código) — Validação Unity Play Mode pendente.
+Status: Implementado completo (cÃƒÆ’Ã‚Â³digo) ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â ValidaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o Unity Play Mode pendente.
 
-**Escopo**: Extensão do pacote PR-170-192 com sistema de boss gates, seleção de checkpoints, persistência de derrota de boss e path confinement.
+**Escopo**: ExtensÃƒÆ’Ã‚Â£o do pacote PR-170-192 com sistema de boss gates, seleÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de checkpoints, persistÃƒÆ’Ã‚Âªncia de derrota de boss e path confinement.
 
 **Arquivos criados** (PR-193-202):
 
 Data Structures & Events:
-- `Assets/_Game/Scripts/Cave/Data/CaveBossGateDataSO.cs` - ScriptableObject para configuração de porta de boss
+- `Assets/_Game/Scripts/Cave/Data/CaveBossGateDataSO.cs` - ScriptableObject para configuraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de porta de boss
 - `Assets/_Game/Scripts/Cave/Data/CaveBossGateRegistrySO.cs` - Registry com lookup de boss gates
-- `Assets/_Game/Scripts/Cave/Runtime/CaveBossDefeatState.cs` - Classe serializável para persistir estado de derrota
+- `Assets/_Game/Scripts/Cave/Runtime/CaveBossDefeatState.cs` - Classe serializÃƒÆ’Ã‚Â¡vel para persistir estado de derrota
 
 Events:
 - `Assets/_Game/Scripts/Core/Events/CaveBossDefeatedEvent.cs`
@@ -295,12 +314,12 @@ Events:
 Runtime Components:
 - `Assets/_Game/Scripts/Cave/Runtime/CaveBossSpawner.cs` - Spawna boss com visual diferenciado (PR-195)
 - `Assets/_Game/Scripts/Cave/Runtime/CaveBossDefeatMonitor.cs` - Detecta derrota de boss e desbloqueia checkpoints (PR-196)
-- `Assets/_Game/Scripts/Cave/Runtime/CaveCheckpointSelectionUI.cs` - MVP debug UI para seleção de checkpoint (PR-199)
+- `Assets/_Game/Scripts/Cave/Runtime/CaveCheckpointSelectionUI.cs` - MVP debug UI para seleÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de checkpoint (PR-199)
 - `Assets/_Game/Scripts/Cave/Runtime/CaveEntryController.cs` - Fluxo de entrada via checkpoint selecionado (PR-200)
 - `Assets/_Game/Scripts/Cave/Runtime/CavePlayerPathConfinement.cs` - Confina player aos tiles walkable (PR-202)
 
 Validation:
-- `Assets/_Game/Scripts/Cave/Validation/CaveBossGateValidator.cs` - Valida configuração de boss gates (PR-201)
+- `Assets/_Game/Scripts/Cave/Validation/CaveBossGateValidator.cs` - Valida configuraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de boss gates (PR-201)
 
 **Arquivos modificados** (PR-193-202):
 
@@ -319,127 +338,127 @@ Validation:
 
 **Funcionalidades implementadas** (PR-193-202):
 
-1. ✅ **PR-193**: CaveBossGateData contracts, CaveBossDefeatState, eventos de boss/checkpoint
-2. ✅ **PR-194**: CaveBossGateRegistry com query methods, integração com CaveRunManager
-3. ✅ **PR-195**: CaveBossSpawner com cor diferenciada (laranja 1.0, 0.5, 0.0)
-4. ✅ **PR-196**: CaveBossDefeatMonitor detecta morte de boss via EnemyKilledEvent, desbloqueia checkpoint
-5. ✅ **PR-197**: CheckBossGate atualizado para usar registry, bloqueia avanço 15→16
-6. ✅ **PR-198**: BossDefeatStates persistem em save/load via CaveSaveData
-7. ✅ **PR-199**: CaveCheckpointSelectionUI com arrow keys (↑↓) e Enter para confirmar
-8. ✅ **PR-200**: CaveEntryController aguarda CaveCheckpointSelectedEvent, entra em checkpoint
-9. ✅ **PR-201**: DebugHud mostra boss gates + CaveBossGateValidator para validação
-10. ✅ **PR-202**: CavePlayerPathConfinement confina player ao boundary de WalkableTiles
+1. ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ **PR-193**: CaveBossGateData contracts, CaveBossDefeatState, eventos de boss/checkpoint
+2. ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ **PR-194**: CaveBossGateRegistry com query methods, integraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o com CaveRunManager
+3. ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ **PR-195**: CaveBossSpawner com cor diferenciada (laranja 1.0, 0.5, 0.0)
+4. ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ **PR-196**: CaveBossDefeatMonitor detecta morte de boss via EnemyKilledEvent, desbloqueia checkpoint
+5. ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ **PR-197**: CheckBossGate atualizado para usar registry, bloqueia avanÃƒÆ’Ã‚Â§o 15ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢16
+6. ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ **PR-198**: BossDefeatStates persistem em save/load via CaveSaveData
+7. ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ **PR-199**: CaveCheckpointSelectionUI com arrow keys (ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬ËœÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬Å“) e Enter para confirmar
+8. ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ **PR-200**: CaveEntryController aguarda CaveCheckpointSelectedEvent, entra em checkpoint
+9. ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ **PR-201**: DebugHud mostra boss gates + CaveBossGateValidator para validaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o
+10. ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ **PR-202**: CavePlayerPathConfinement confina player ao boundary de WalkableTiles
 
-**Testes realizados** (código):
-- Validação de imports e namespaces
-- Verificação de contratos de serialização (BossDefeatState, CaveSaveData)
-- Verificação de integrações de eventos (CaveBossDefeatedEvent, CaveCheckpointSelectedEvent)
-- Verificação de persistência save/load (boss defeat state roundtrip)
+**Testes realizados** (cÃƒÆ’Ã‚Â³digo):
+- ValidaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de imports e namespaces
+- VerificaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de contratos de serializaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o (BossDefeatState, CaveSaveData)
+- VerificaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de integraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes de eventos (CaveBossDefeatedEvent, CaveCheckpointSelectedEvent)
+- VerificaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de persistÃƒÆ’Ã‚Âªncia save/load (boss defeat state roundtrip)
 
-**Pendências**:
-- Validação Unity: compilação, Play Mode Farm→Cave→Boss→Checkpoint
+**PendÃƒÆ’Ã‚Âªncias**:
+- ValidaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o Unity: compilaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o, Play Mode FarmÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢CaveÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢BossÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢Checkpoint
 - Teste de boss spawn visual no CaveLevel 15
 - Teste de derrota de boss desbloqueando checkpoint 15
-- Teste de gate check bloqueando avanço 15→16
-- Teste de seleção de checkpoint e entrada no checkpoint
+- Teste de gate check bloqueando avanÃƒÆ’Ã‚Â§o 15ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢16
+- Teste de seleÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de checkpoint e entrada no checkpoint
 - Teste de path confinement mantendo player em bounds
 - Teste de save/load preservando boss defeat state
 
-**Próximo passo recomendado**:
-1. Validar compilação no Unity.
+**PrÃƒÆ’Ã‚Â³ximo passo recomendado**:
+1. Validar compilaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o no Unity.
 2. Rodar `CindarsHope/Validate/Validate MVP Data`.
-3. Play Mode: Farm → Cave (confirmar spawn Entrance no nível 1).
-4. ForwardExit 1 → 2 (confirmar spawn Entrance no nível 2).
-5. ForwardExit até level 15 (confirmar boss spawn com cor laranja).
+3. Play Mode: Farm ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ Cave (confirmar spawn Entrance no nÃƒÆ’Ã‚Â­vel 1).
+4. ForwardExit 1 ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ 2 (confirmar spawn Entrance no nÃƒÆ’Ã‚Â­vel 2).
+5. ForwardExit atÃƒÆ’Ã‚Â© level 15 (confirmar boss spawn com cor laranja).
 6. Derrotar boss (confirmar CaveBossDefeatedEvent publicado, checkpoint 15 desbloqueado).
-7. Tentar ForwardExit 15 → 16 (confirmar avanço permitido).
-8. BackExit 16 → 15 (confirmar layout restaurado do snapshot).
-9. BackExit 15 → 14 (confirmar ForwardExit spawn anchor).
-10. Cave → Farm BackExit 1 (confirmar spawn farm_from_cave).
-11. Farm → Cave (confirmar opção de seleção de checkpoint 1 e 15).
-12. Selecionar checkpoint 15 (confirmar entrada no nível 15).
+7. Tentar ForwardExit 15 ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ 16 (confirmar avanÃƒÆ’Ã‚Â§o permitido).
+8. BackExit 16 ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ 15 (confirmar layout restaurado do snapshot).
+9. BackExit 15 ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ 14 (confirmar ForwardExit spawn anchor).
+10. Cave ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ Farm BackExit 1 (confirmar spawn farm_from_cave).
+11. Farm ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ Cave (confirmar opÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de seleÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de checkpoint 1 e 15).
+12. Selecionar checkpoint 15 (confirmar entrada no nÃƒÆ’Ã‚Â­vel 15).
 13. Save/load (confirmar boss defeat state persistido).
 14. Confirmar player confinado ao WalkableTiles.
 15. Console: sem erro vermelho, logs mostram boss defeat, checkpoint unlock, path confinement.
 16. Commit + PR contra dev (sem auto-merge).
 
-### Próximo passo recomendado
+### PrÃƒÆ’Ã‚Â³ximo passo recomendado
 
-1. ✅ Clonar branch `feature/fase9f-cave-stable-run-replay-progression`
-2. 🔄 Abrir projeto em Unity
-3. 🔄 Compilação: Assets → Reimport All (ou aguardar auto-reimport)
-4. 🔄 Check Console para CS errors (validate imports, namespaces)
-5. 🔄 Test Play Mode: new run, backtrack, forward exit, KO, save/load, day refresh
-6. 🔄 Bug fix se necessário
-7. 🔄 Commit: `git commit -m "PR-170-192: Cave stable run replay progression"`
-8. 🔄 Push: `git push origin feature/fase9f-cave-stable-run-replay-progression`
-9. 🔄 Create PR on GitHub, merge to main após review
+1. ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ Clonar branch `feature/fase9f-cave-stable-run-replay-progression`
+2. ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ¢â‚¬Å¾ Abrir projeto em Unity
+3. ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ¢â‚¬Å¾ CompilaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o: Assets ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ Reimport All (ou aguardar auto-reimport)
+4. ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ¢â‚¬Å¾ Check Console para CS errors (validate imports, namespaces)
+5. ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ¢â‚¬Å¾ Test Play Mode: new run, backtrack, forward exit, KO, save/load, day refresh
+6. ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ¢â‚¬Å¾ Bug fix se necessÃƒÆ’Ã‚Â¡rio
+7. ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ¢â‚¬Å¾ Commit: `git commit -m "PR-170-192: Cave stable run replay progression"`
+8. ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ¢â‚¬Å¾ Push: `git push origin feature/fase9f-cave-stable-run-replay-progression`
+9. ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ¢â‚¬Å¾ Create PR on GitHub, merge to main apÃƒÆ’Ã‚Â³s review
 
-Após FASE9F merge:
+ApÃƒÆ’Ã‚Â³s FASE9F merge:
 - PR-193+: Boss defeat tracking e checkpoint selection UI
 - PR-19x: Enemy ecology, faction locks (FASE9G)
 - PR-20x: Bestiary, faction system (FASE9G)
 
 ---
 
-## 18. Atualizacao 2026-05-21 - PR-193-202 FASE9F Correções: Boss Gate, Checkpoint, Confinement, Debug Skip
+## 18. Atualizacao 2026-05-21 - PR-193-202 FASE9F CorreÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes: Boss Gate, Checkpoint, Confinement, Debug Skip
 
-Status: Implementado completo (código) — **Namespace collision corrigido** — Validação Unity Play Mode pendente.
+Status: Implementado completo (cÃƒÆ’Ã‚Â³digo) ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â **Namespace collision corrigido** ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â ValidaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o Unity Play Mode pendente.
 
 **Branch**: `feature/fix-pr193-202-boss-gate-checkpoint-confinement-debug-skip`
 
-**Escopo**: 7 correções críticas no pacote PR-193-202 para resolver integrações incompletas e adicionar debug utilities.
+**Escopo**: 7 correÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes crÃƒÆ’Ã‚Â­ticas no pacote PR-193-202 para resolver integraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes incompletas e adicionar debug utilities.
 
-**Hotfix de namespace collision (2026-05-21 pós-implementação)**:
+**Hotfix de namespace collision (2026-05-21 pÃƒÆ’Ã‚Â³s-implementaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o)**:
 - **Problema**: Namespace `CindarsHope.Cave.Debug` colide com `UnityEngine.Debug`, quebrando todas as chamadas `Debug.Log()` na cave
-- **Solução**: Renomeado para `CindarsHope.Cave.Runtime`
+- **SoluÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o**: Renomeado para `CindarsHope.Cave.Runtime`
 - **Arquivos afetados**: `CaveDebugLevelSkipController.cs`, `DebugHud.cs`, `CaveSceneRuntimeReferenceInstaller.cs`
 - **Regra adicionada em CLAUDE.md**: Namespace `Debug` nunca permitido dentro de `CindarsHope.*`
 
-**Correções implementadas**:
+**CorreÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes implementadas**:
 
-**Correção 1 — Robust Boss Gate (15→16)**
-- Adicionado método `CanAdvanceToLevel(int currentLevel, int targetLevel)` em `CaveRunManager.cs`
-- Bloqueia avanço 15→16 explicitamente se boss registry null ou gate inexistente
+**CorreÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o 1 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Robust Boss Gate (15ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢16)**
+- Adicionado mÃƒÆ’Ã‚Â©todo `CanAdvanceToLevel(int currentLevel, int targetLevel)` em `CaveRunManager.cs`
+- Bloqueia avanÃƒÆ’Ã‚Â§o 15ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢16 explicitamente se boss registry null ou gate inexistente
 - Logs de erro claro em vez de falha silenciosa
 - Arquivo: `CaveRunManager.cs:245-276`
 - Teste: `P hotkey respeita boss gate se _bypassBossGateForDebugSkip = false`
 
-**Correção 2 — Conditional Boss Spawn**
-- `CaveBossSpawner.SpawnBossForLevel()` agora valida se boss já foi derrotado
+**CorreÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o 2 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Conditional Boss Spawn**
+- `CaveBossSpawner.SpawnBossForLevel()` agora valida se boss jÃƒÆ’Ã‚Â¡ foi derrotado
 - Se `IsBossDefeated(gate.Id)`, skip com log "Boss gate already defeated. Skipping boss spawn."
 - Arquivo: `CaveBossSpawner.cs:35-39`
 - Teste: `Level 15 doesn't spawn boss if defeated`
 
-**Correção 3 — Checkpoint Unlock Methods**
+**CorreÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o 3 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Checkpoint Unlock Methods**
 - Adicionado `UnlockCheckpoint(int checkpointLevel)` e `IsCheckpointUnlocked(int checkpointLevel)` em `CaveRunManager.cs`
-- Complementa `CaveBossDefeatMonitor` que já chamava métodos de unlock
+- Complementa `CaveBossDefeatMonitor` que jÃƒÆ’Ã‚Â¡ chamava mÃƒÆ’Ã‚Â©todos de unlock
 - Arquivo: `CaveRunManager.cs:341-360`
 - Teste: `Boss defeat unlocks checkpoint 15`
 
-**Correção 4 — Checkpoint Selection UI**
+**CorreÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o 4 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Checkpoint Selection UI**
 - Aprimorado `CaveCheckpointSelectionUI.cs` com OnGUI rendering centralizado
-- Auto-seleciona checkpoint único (nível 1 só)
-- Exibe lista navegável com ↑↓/W/S, confirm Enter/E, cancel Escape
+- Auto-seleciona checkpoint ÃƒÆ’Ã‚Âºnico (nÃƒÆ’Ã‚Â­vel 1 sÃƒÆ’Ã‚Â³)
+- Exibe lista navegÃƒÆ’Ã‚Â¡vel com ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬ËœÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬Å“/W/S, confirm Enter/E, cancel Escape
 - Arquivo: `CaveCheckpointSelectionUI.cs:86-111` (OnGUI)
 - Teste: `Checkpoint selection shows multiple available` + `Checkpoint selection auto-selects when single`
 
-**Correção 5 — Debug Level Skip Hotkey P**
+**CorreÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o 5 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Debug Level Skip Hotkey P**
 - Criado novo namespace `CindarsHope.Cave.Debug` com classe `CaveDebugLevelSkipController.cs`
-- Hotkey P (customizável) avança level sem marcar boss derrotado
+- Hotkey P (customizÃƒÆ’Ã‚Â¡vel) avanÃƒÆ’Ã‚Â§a level sem marcar boss derrotado
 - `_bypassBossGateForDebugSkip = true` default (bypass opcional)
-- Rastreamento de última ação em `_lastDebugAction` para HUD display
+- Rastreamento de ÃƒÆ’Ã‚Âºltima aÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o em `_lastDebugAction` para HUD display
 - Arquivo: `CaveDebugLevelSkipController.cs:25-61` (SkipToNextLevel)
 - Teste: `P hotkey increments level without changing CaveRunSeed` + `P hotkey doesn't mark boss defeated` + `P hotkey doesn't unlock checkpoint`
 
-**Correção 6 — Path Confinement Rate-Limited**
-- `CavePlayerPathConfinement.cs` agora limita logs a máximo 1 por segundo
+**CorreÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o 6 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Path Confinement Rate-Limited**
+- `CavePlayerPathConfinement.cs` agora limita logs a mÃƒÆ’Ã‚Â¡ximo 1 por segundo
 - Adiciona `_lastLogTime` e constante `LogRateLimitSeconds = 1f`
 - Evita spam em console quando player toca repeats em WallTiles
 - Arquivo: `CavePlayerPathConfinement.cs:60-64`
 - Teste: `Player cannot traverse WallTiles` + `Player cannot exit dungeon bounds`
 
-**Correção 7 — Validators & HUD Display**
+**CorreÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o 7 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Validators & HUD Display**
 - `CaveBossGateValidator.cs` valida:
   - Registry null / empty
   - Duplicate gate IDs
@@ -448,97 +467,97 @@ Status: Implementado completo (código) — **Namespace collision corrigido** �
   - Invalid CheckpointUnlockedOnDefeat
   - Empty BossEnemyId
 - Adicionado `CaveDebugLevelSkipController` field em `DebugHud.cs`
-- Novo método `DrawDebugLevelSkip()` mostra status enabled/disabled, tecla P, última ação
+- Novo mÃƒÆ’Ã‚Â©todo `DrawDebugLevelSkip()` mostra status enabled/disabled, tecla P, ÃƒÆ’Ã‚Âºltima aÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o
 - Arquivo: `DebugHud.cs:404-425` (DrawDebugLevelSkip), `CaveSceneRuntimeReferenceInstaller.cs:53` (RebindExistingCaveRuntime pass)
 - Teste: `HUD shows debug skip status` + `Validators report all issues`
 
 **Arquivos modificados**:
-- `CaveRunManager.cs` — Métodos CanAdvanceToLevel, UnlockCheckpoint, IsCheckpointUnlocked
-- `CaveBossSpawner.cs` — Validação de boss já derrotado
-- `CaveCheckpointSelectionUI.cs` — OnGUI rendering e auto-select logic
-- `CavePlayerPathConfinement.cs` — Rate-limited logging
-- `DebugHud.cs` — Adicionado CaveDebugLevelSkipController field, DrawDebugLevelSkip method
-- `CaveSceneRuntimeReferenceInstaller.cs` — Pass CaveDebugLevelSkipController ao RebindExistingCaveRuntime
+- `CaveRunManager.cs` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â MÃƒÆ’Ã‚Â©todos CanAdvanceToLevel, UnlockCheckpoint, IsCheckpointUnlocked
+- `CaveBossSpawner.cs` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â ValidaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de boss jÃƒÆ’Ã‚Â¡ derrotado
+- `CaveCheckpointSelectionUI.cs` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â OnGUI rendering e auto-select logic
+- `CavePlayerPathConfinement.cs` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Rate-limited logging
+- `DebugHud.cs` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Adicionado CaveDebugLevelSkipController field, DrawDebugLevelSkip method
+- `CaveSceneRuntimeReferenceInstaller.cs` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Pass CaveDebugLevelSkipController ao RebindExistingCaveRuntime
 
 **Novos arquivos**:
 - `CaveDebugLevelSkipController.cs` (namespace `CindarsHope.Cave.Debug`)
 
-**Testes código**:
-- Validação de imports e namespaces
-- Verificação de contratos de tipo (métodos públicos acessíveis)
-- Verificação de integrações de eventos (CaveBossDefeatedEvent, CaveCheckpointSelectedEvent)
-- Verificação de persistência (CaveBossDefeatState roundtrip)
+**Testes cÃƒÆ’Ã‚Â³digo**:
+- ValidaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de imports e namespaces
+- VerificaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de contratos de tipo (mÃƒÆ’Ã‚Â©todos pÃƒÆ’Ã‚Âºblicos acessÃƒÆ’Ã‚Â­veis)
+- VerificaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de integraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes de eventos (CaveBossDefeatedEvent, CaveCheckpointSelectedEvent)
+- VerificaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de persistÃƒÆ’Ã‚Âªncia (CaveBossDefeatState roundtrip)
 
 **Acceptance Criteria** (29+ testes a executar em Play Mode):
-1. ✅ Code: CanAdvanceToLevel bloqueia 15→16 se registry null
-2. ✅ Code: CanAdvanceToLevel bloqueia 15→16 se gate inexistente
-3. ✅ Code: CanAdvanceToLevel permite 15→16 se boss derrotado
-4. ✅ Code: CaveBossSpawner não spawna se boss derrotado
-5. ✅ Code: UnlockCheckpoint/IsCheckpointUnlocked presentes
-6. ✅ Code: CaveCheckpointSelectionUI tem OnGUI e auto-select
-7. ✅ Code: CaveDebugLevelSkipController existe com hotkey P
-8. ✅ Code: CavePlayerPathConfinement rate-limits logs
-9. ✅ Code: CaveBossGateValidator valida registry
-10. ✅ Code: DebugHud exibe debug skip status
-11. 🔄 Play: P hotkey increments level without changing CaveRunSeed
-12. 🔄 Play: P hotkey doesn't mark boss defeated
-13. 🔄 Play: P hotkey doesn't unlock checkpoint
-14. 🔄 Play: P hotkey respeita boss gate se _bypassBossGateForDebugSkip = false
-15. 🔄 Play: Level 15 spawns boss if not defeated
-16. 🔄 Play: Level 15 doesn't spawn boss if defeated
-17. 🔄 Play: ForwardExit 15→16 blocks before boss defeat com explicit error
-18. 🔄 Play: ForwardExit 15→16 allows after boss defeat
-19. 🔄 Play: KO doesn't relock 15→16
-20. 🔄 Play: Save/load preserves boss defeat
-21. 🔄 Play: Cave→Farm→Cave doesn't relock
-22. 🔄 Play: Checkpoint selection shows when multiple available
-23. 🔄 Play: Checkpoint selection auto-selects when single
-24. 🔄 Play: Player cannot traverse WallTiles
-25. 🔄 Play: Player cannot exit dungeon bounds
-26. 🔄 Play: HUD shows boss gate status
-27. 🔄 Play: HUD shows debug skip status
-28. 🔄 Play: Validators report all issues
-29. 🔄 Play: Console sem erro vermelho durante boss defeat, checkpoint unlock, path confinement
+1. ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ Code: CanAdvanceToLevel bloqueia 15ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢16 se registry null
+2. ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ Code: CanAdvanceToLevel bloqueia 15ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢16 se gate inexistente
+3. ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ Code: CanAdvanceToLevel permite 15ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢16 se boss derrotado
+4. ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ Code: CaveBossSpawner nÃƒÆ’Ã‚Â£o spawna se boss derrotado
+5. ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ Code: UnlockCheckpoint/IsCheckpointUnlocked presentes
+6. ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ Code: CaveCheckpointSelectionUI tem OnGUI e auto-select
+7. ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ Code: CaveDebugLevelSkipController existe com hotkey P
+8. ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ Code: CavePlayerPathConfinement rate-limits logs
+9. ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ Code: CaveBossGateValidator valida registry
+10. ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ Code: DebugHud exibe debug skip status
+11. ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ¢â‚¬Å¾ Play: P hotkey increments level without changing CaveRunSeed
+12. ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ¢â‚¬Å¾ Play: P hotkey doesn't mark boss defeated
+13. ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ¢â‚¬Å¾ Play: P hotkey doesn't unlock checkpoint
+14. ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ¢â‚¬Å¾ Play: P hotkey respeita boss gate se _bypassBossGateForDebugSkip = false
+15. ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ¢â‚¬Å¾ Play: Level 15 spawns boss if not defeated
+16. ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ¢â‚¬Å¾ Play: Level 15 doesn't spawn boss if defeated
+17. ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ¢â‚¬Å¾ Play: ForwardExit 15ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢16 blocks before boss defeat com explicit error
+18. ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ¢â‚¬Å¾ Play: ForwardExit 15ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢16 allows after boss defeat
+19. ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ¢â‚¬Å¾ Play: KO doesn't relock 15ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢16
+20. ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ¢â‚¬Å¾ Play: Save/load preserves boss defeat
+21. ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ¢â‚¬Å¾ Play: CaveÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢FarmÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢Cave doesn't relock
+22. ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ¢â‚¬Å¾ Play: Checkpoint selection shows when multiple available
+23. ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ¢â‚¬Å¾ Play: Checkpoint selection auto-selects when single
+24. ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ¢â‚¬Å¾ Play: Player cannot traverse WallTiles
+25. ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ¢â‚¬Å¾ Play: Player cannot exit dungeon bounds
+26. ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ¢â‚¬Å¾ Play: HUD shows boss gate status
+27. ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ¢â‚¬Å¾ Play: HUD shows debug skip status
+28. ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ¢â‚¬Å¾ Play: Validators report all issues
+29. ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ¢â‚¬Å¾ Play: Console sem erro vermelho durante boss defeat, checkpoint unlock, path confinement
 
-**Pendências**:
-- Validação Unity Play Mode (29+ acceptance criteria acima)
-- Bug fixes se necessário durante testes
+**PendÃƒÆ’Ã‚Âªncias**:
+- ValidaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o Unity Play Mode (29+ acceptance criteria acima)
+- Bug fixes se necessÃƒÆ’Ã‚Â¡rio durante testes
 - Commit + PR contra dev
-- Eventual merge após review
+- Eventual merge apÃƒÆ’Ã‚Â³s review
 
-**Próximo passo recomendado**:
+**PrÃƒÆ’Ã‚Â³ximo passo recomendado**:
 1. Abrir projeto em Unity
-2. Compilação: Assets → Reimport All
+2. CompilaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o: Assets ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ Reimport All
 3. Check Console para CS errors
-4. Test Play Mode: Farm → Cave L1 → L15 (spawn boss) → Defeat → Checkpoint 15 unlock → ForwardExit 15→16 allowed
-5. Test: P hotkey incrementa level, não marca boss derrotado
+4. Test Play Mode: Farm ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ Cave L1 ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ L15 (spawn boss) ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ Defeat ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ Checkpoint 15 unlock ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ ForwardExit 15ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢16 allowed
+5. Test: P hotkey incrementa level, nÃƒÆ’Ã‚Â£o marca boss derrotado
 6. Test: Save/load preserva boss defeat
 7. Test: Player confinado ao boundary
-8. Validator feedback se aplicável
+8. Validator feedback se aplicÃƒÆ’Ã‚Â¡vel
 9. Commit + PR contra dev
-10. Merge após review
+10. Merge apÃƒÆ’Ã‚Â³s review
 
-1. PR-132 — DebugHud layout v2.
-2. PR-133 — Action feedback event.
-3. PR-134 — Tool gating contracts.
-4. PR-135 — Tool gating para árvore e pesca.
-5. PR-136 — Hotbar seed gating para FarmPlot.
-6. PR-137 — Attribute allocation debug MVP.
-7. PR-138 — DebugHud progression/tool/hotbar polish.
-8. PR-139 — Handoff para Cave Procedural.
+1. PR-132 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â DebugHud layout v2.
+2. PR-133 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Action feedback event.
+3. PR-134 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Tool gating contracts.
+4. PR-135 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Tool gating para ÃƒÆ’Ã‚Â¡rvore e pesca.
+5. PR-136 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Hotbar seed gating para FarmPlot.
+6. PR-137 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Attribute allocation debug MVP.
+7. PR-138 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â DebugHud progression/tool/hotbar polish.
+8. PR-139 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Handoff para Cave Procedural.
 
-Em paralelo, este chat pode continuar refinando novas specs. Specs aprovadas antigas não devem ser reescritas destrutivamente; correções entram como amendments/corrections.
+Em paralelo, este chat pode continuar refinando novas specs. Specs aprovadas antigas nÃƒÆ’Ã‚Â£o devem ser reescritas destrutivamente; correÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes entram como amendments/corrections.
 
 ---
 
-## 2. Protocolo obrigatório para agentes
+## 2. Protocolo obrigatÃƒÆ’Ã‚Â³rio para agentes
 
 Antes de qualquer tarefa:
 
 1. Ler `PROJECT_LOG.md`.
 2. Ler `docs/IMPLEMENTATION_STATUS.md`.
 3. Ler `AGENTS.md` e/ou `CLAUDE.md`.
-4. Ler os documentos de referência do PR/tarefa.
+4. Ler os documentos de referÃƒÆ’Ã‚Âªncia do PR/tarefa.
 5. Confirmar branch atual e escopo permitido.
 6. Validar estado real no GitHub/repo antes de planejar.
 7. Se o trabalho tocar specs, ler `docs/operations/SPEC_EVOLUTION_POLICY_v1.0.md`.
@@ -546,24 +565,24 @@ Antes de qualquer tarefa:
 Durante a tarefa:
 
 1. Manter escopo pequeno.
-2. Não implementar V2/FULL quando o PR é MVP.
-3. Não alterar docs de design sem pedido explícito.
-4. Não mexer em arquivos fora da lista permitida do PR.
-5. Registrar dúvidas/desvios em vez de decidir silenciosamente.
-6. Não reescrever spec aprovada de forma destrutiva; usar nova spec, amendment, correction ou errata.
+2. NÃƒÆ’Ã‚Â£o implementar V2/FULL quando o PR ÃƒÆ’Ã‚Â© MVP.
+3. NÃƒÆ’Ã‚Â£o alterar docs de design sem pedido explÃƒÆ’Ã‚Â­cito.
+4. NÃƒÆ’Ã‚Â£o mexer em arquivos fora da lista permitida do PR.
+5. Registrar dÃƒÆ’Ã‚Âºvidas/desvios em vez de decidir silenciosamente.
+6. NÃƒÆ’Ã‚Â£o reescrever spec aprovada de forma destrutiva; usar nova spec, amendment, correction ou errata.
 
 Ao final de tarefa relevante:
 
 1. Atualizar `PROJECT_LOG.md` com nova entrada curta.
 2. Atualizar `docs/IMPLEMENTATION_STATUS.md` com status curto de capacidades/specs.
 3. Informar arquivos alterados.
-4. Informar testes executados ou não executados.
-5. Informar pendências, riscos e próximo passo recomendado.
+4. Informar testes executados ou nÃƒÆ’Ã‚Â£o executados.
+5. Informar pendÃƒÆ’Ã‚Âªncias, riscos e prÃƒÆ’Ã‚Â³ximo passo recomendado.
 6. Se a entrada ficar grande demais, criar novo archive em `docs/logs/` e manter este arquivo curto.
 
 ---
 
-## 3. Política de evolução de specs
+## 3. PolÃƒÆ’Ã‚Â­tica de evoluÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de specs
 
 Fonte completa: `docs/operations/SPEC_EVOLUTION_POLICY_v1.0.md`.
 
@@ -571,24 +590,24 @@ Resumo operacional:
 
 ```text
 Implementar specs aprovadas pode acontecer em paralelo ao refinamento de novas specs.
-Specs antigas aprovadas não devem ser reescritas destrutivamente.
-Mudanças futuras entram como nova spec, amendment, correction ou errata.
-PR iniciado segue a spec vigente no início, salvo bug crítico ou decisão humana explícita.
+Specs antigas aprovadas nÃƒÆ’Ã‚Â£o devem ser reescritas destrutivamente.
+MudanÃƒÆ’Ã‚Â§as futuras entram como nova spec, amendment, correction ou errata.
+PR iniciado segue a spec vigente no inÃƒÆ’Ã‚Â­cio, salvo bug crÃƒÆ’Ã‚Â­tico ou decisÃƒÆ’Ã‚Â£o humana explÃƒÆ’Ã‚Â­cita.
 ```
 
 Regras:
 
-- Specs aprovadas são baseline de implementação.
-- Implementação pode continuar em outro chat usando a spec aprovada vigente.
+- Specs aprovadas sÃƒÆ’Ã‚Â£o baseline de implementaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o.
+- ImplementaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o pode continuar em outro chat usando a spec aprovada vigente.
 - Novas specs podem ser escritas em paralelo neste chat.
-- Correções em specs antigas devem indicar impacto em PRs futuros.
+- CorreÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes em specs antigas devem indicar impacto em PRs futuros.
 - Amendments/corrections devem ficar preferencialmente em `docs/amendments/`.
 
 ---
 
 ## 4. Estado consolidado curto
 
-Fonte curta e atualizável: `docs/IMPLEMENTATION_STATUS.md`.
+Fonte curta e atualizÃƒÆ’Ã‚Â¡vel: `docs/IMPLEMENTATION_STATUS.md`.
 
 ### Implementado no repo
 
@@ -597,17 +616,17 @@ Fonte curta e atualizável: `docs/IMPLEMENTATION_STATUS.md`.
 - Farm MVP: plots, seeds, plantio, crescimento, colheita.
 - Economy/Hunger/HUD debug.
 - Save/load JSON local com cena atual e rebind cross-scene.
-- World activities: árvores, pesca básica, pickups persistentes.
+- World activities: ÃƒÆ’Ã‚Â¡rvores, pesca bÃƒÆ’Ã‚Â¡sica, pickups persistentes.
 - Crafting MVP: receita de madeira processada e crafting point.
-- Town MVP: portal Farm/Town, NPC Pip, compra/venda básica.
+- Town MVP: portal Farm/Town, NPC Pip, compra/venda bÃƒÆ’Ã‚Â¡sica.
 - Cave/Combat MVP: CaveScene, portal Farm/Cave, Slime, melee punch, chase, contact damage, drops, hit flash, knockback.
 - Scene generators: FarmScene, TownScene, CaveScene.
 - Validators de dados/cenas MVP.
 
-### Especificado para próximas waves
+### Especificado para prÃƒÆ’Ã‚Â³ximas waves
 
 - UI/Hotbar/Inventory/Equipment.
-- Damage/Elementos/Status/Fórmula única.
+- Damage/Elementos/Status/FÃƒÆ’Ã‚Â³rmula ÃƒÆ’Ã‚Âºnica.
 - Item Taxonomy/IDs.
 - Save Schema/Migration.
 - Player Level Up/Progression.
@@ -616,91 +635,91 @@ Fonte curta e atualizável: `docs/IMPLEMENTATION_STATUS.md`.
 
 ---
 
-## 5. Decisões FASE9F Cave
+## 5. DecisÃƒÆ’Ã‚Âµes FASE9F Cave
 
-- Primeira entrada começa em `CaveLevel = 1`.
-- Checkpoints permanentes a cada 15 níveis: `1, 15, 30, 45, 60, 75, 90`.
+- Primeira entrada comeÃƒÆ’Ã‚Â§a em `CaveLevel = 1`.
+- Checkpoints permanentes a cada 15 nÃƒÆ’Ã‚Â­veis: `1, 15, 30, 45, 60, 75, 90`.
 - Jogador pode escolher qualquer checkpoint liberado ao entrar na caverna.
 - Cave usa `CaveWorldSeed` persistente e `CaveRunSeed` por run.
-- Ao sofrer KO/derrota, a cave run é regenerada com nova `CaveRunSeed`; checkpoints permanecem.
-- Cada nível deve ser grande, labiríntico e explorável.
-- ResourceNode exige ferramenta correta, tier mínimo e consome stamina.
-- Minério exige Pickaxe; sem pickaxe/tier suficiente, fallback gera `1x item_material_stone`, não entrega minério principal e não depleta node.
-- Renovação diária só reseta nodes com `RespawnsDaily = true`.
-- Baús ficam depois de nodes + enemies.
+- Ao sofrer KO/derrota, a cave run ÃƒÆ’Ã‚Â© regenerada com nova `CaveRunSeed`; checkpoints permanecem.
+- Cada nÃƒÆ’Ã‚Â­vel deve ser grande, labirÃƒÆ’Ã‚Â­ntico e explorÃƒÆ’Ã‚Â¡vel.
+- ResourceNode exige ferramenta correta, tier mÃƒÆ’Ã‚Â­nimo e consome stamina.
+- MinÃƒÆ’Ã‚Â©rio exige Pickaxe; sem pickaxe/tier suficiente, fallback gera `1x item_material_stone`, nÃƒÆ’Ã‚Â£o entrega minÃƒÆ’Ã‚Â©rio principal e nÃƒÆ’Ã‚Â£o depleta node.
+- RenovaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o diÃƒÆ’Ã‚Â¡ria sÃƒÆ’Ã‚Â³ reseta nodes com `RespawnsDaily = true`.
+- BaÃƒÆ’Ã‚Âºs ficam depois de nodes + enemies.
 - Slime especial deve ter cor/visual diferente.
-- Toda mudança de bioma tem boss poderoso e difícil.
-- Recursos variam por nível/faixa; árvores subterrâneas podem dar madeiras melhores que exigem refinamento.
+- Toda mudanÃƒÆ’Ã‚Â§a de bioma tem boss poderoso e difÃƒÆ’Ã‚Â­cil.
+- Recursos variam por nÃƒÆ’Ã‚Â­vel/faixa; ÃƒÆ’Ã‚Â¡rvores subterrÃƒÆ’Ã‚Â¢neas podem dar madeiras melhores que exigem refinamento.
 
 ---
 
-## 6. Decisões FASE9G Cave Bestiary/Faction Locks
+## 6. DecisÃƒÆ’Ã‚Âµes FASE9G Cave Bestiary/Faction Locks
 
-- Geração procedural deve travar `FactionLock` por subfaixa de 3–5 níveis.
+- GeraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o procedural deve travar `FactionLock` por subfaixa de 3ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“5 nÃƒÆ’Ã‚Â­veis.
 - Cada CaveLevel tem um FactionLock principal.
-- Inimigos incompatíveis não aparecem no mesmo nível salvo exceções explícitas.
-- Exceções: `AmbientFauna`, `RareIntruder`, `BossOverride`, `ConflictEncounter`.
+- Inimigos incompatÃƒÆ’Ã‚Â­veis nÃƒÆ’Ã‚Â£o aparecem no mesmo nÃƒÆ’Ã‚Â­vel salvo exceÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes explÃƒÆ’Ã‚Â­citas.
+- ExceÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes: `AmbientFauna`, `RareIntruder`, `BossOverride`, `ConflictEncounter`.
 - `ConflictEncounter` fica fora do MVP.
 - `RareIntruder` entra com chance baixa e limitado por bioma.
-- Boss e miniboss têm 3 opções procedurais por marco.
+- Boss e miniboss tÃƒÆ’Ã‚Âªm 3 opÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes procedurais por marco.
 - Boss checkpoint persiste por save.
 - Miniboss persiste por run.
-- Humanoides inimigos são facções/exilados/cultistas/corrompidos/guardiões, não raças malignas por natureza.
+- Humanoides inimigos sÃƒÆ’Ã‚Â£o facÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes/exilados/cultistas/corrompidos/guardiÃƒÆ’Ã‚Âµes, nÃƒÆ’Ã‚Â£o raÃƒÆ’Ã‚Â§as malignas por natureza.
 - Beholder-like vira Observador/Olho de Elyndor.
-- Duergar-like vira Anão da Forja Sem Sol / Anão Profundo Exilado.
-- Drakes/wyverns antes do 90; dragão verdadeiro só late game/boss.
-- Level 100 tem três possíveis final bosses por save.
-- Luas modificam pesos, não quebram lock.
+- Duergar-like vira AnÃƒÆ’Ã‚Â£o da Forja Sem Sol / AnÃƒÆ’Ã‚Â£o Profundo Exilado.
+- Drakes/wyverns antes do 90; dragÃƒÆ’Ã‚Â£o verdadeiro sÃƒÆ’Ã‚Â³ late game/boss.
+- Level 100 tem trÃƒÆ’Ã‚Âªs possÃƒÆ’Ã‚Â­veis final bosses por save.
+- Luas modificam pesos, nÃƒÆ’Ã‚Â£o quebram lock.
 
 ---
 
 ## 7. Checklist pendente
 
-### Validação Unity geral
+### ValidaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o Unity geral
 
 - [ ] Rodar `CindarsHope/Validate/Validate MVP Data`.
 - [ ] Rodar `CindarsHope/Scenes/Create MVP FarmScene`.
 - [ ] Rodar `CindarsHope/Scenes/Create MVP TownScene`.
 - [ ] Rodar `CindarsHope/Scenes/Create MVP CaveScene`.
-- [ ] Rodar validators de Farm/Town/Cave quando disponíveis.
-- [ ] Testar Play Mode completo Farm → Town → Cave → Farm.
+- [ ] Rodar validators de Farm/Town/Cave quando disponÃƒÆ’Ã‚Â­veis.
+- [ ] Testar Play Mode completo Farm ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ Town ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ Cave ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ Farm.
 - [ ] Testar save/load em FarmScene.
 - [ ] Testar save/load em TownScene.
 - [ ] Testar save/load em CaveScene.
 - [ ] Confirmar Console sem erro vermelho.
 
-### Validação FASE9F futura
+### ValidaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o FASE9F futura
 
 - [ ] CaveLevel 1 gera layout procedural grande.
-- [ ] Cave run muda após KO/derrota.
-- [ ] Checkpoints permanecem após KO/derrota.
+- [ ] Cave run muda apÃƒÆ’Ã‚Â³s KO/derrota.
+- [ ] Checkpoints permanecem apÃƒÆ’Ã‚Â³s KO/derrota.
 - [ ] ResourceNode consome stamina.
 - [ ] ResourceNode valida ferramenta/tier.
 - [ ] Fallback sem pickaxe retorna apenas `1x item_material_stone`.
 - [ ] Nodes `RespawnsDaily = true` renovam no novo dia.
 - [ ] Slime especial tem cor diferente.
-- [ ] Boss de bioma bloqueia avanço.
+- [ ] Boss de bioma bloqueia avanÃƒÆ’Ã‚Â§o.
 
-### Validação FASE9G futura
+### ValidaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o FASE9G futura
 
 - [ ] CaveLevel gerado possui `BiomeId`, `EncounterEcologyId`, `FactionLockId` e `EnemyFamilyIds`.
 - [ ] FactionLock impede mistura incoerente de inimigos.
-- [ ] Boss/miniboss é escolhido entre 3 candidatos compatíveis.
+- [ ] Boss/miniboss ÃƒÆ’Ã‚Â© escolhido entre 3 candidatos compatÃƒÆ’Ã‚Â­veis.
 - [ ] Boss checkpoint persiste por save.
 - [ ] Miniboss persiste por run.
 - [ ] DebugHud mostra ecology/faction/boss candidate quando implementado.
 
 ---
 
-## 8. Histórico arquivado
+## 8. HistÃƒÆ’Ã‚Â³rico arquivado
 
-O histórico completo antigo do `PROJECT_LOG.md` foi arquivado em:
+O histÃƒÆ’Ã‚Â³rico completo antigo do `PROJECT_LOG.md` foi arquivado em:
 
 ```text
 docs/logs/PROJECT_LOG_ARCHIVE_2026-05-18_FULL_BEFORE_SPLIT.md
 ```
 
-Esse arquivo preserva o log operacional anterior inteiro antes da redução do log raiz.
+Esse arquivo preserva o log operacional anterior inteiro antes da reduÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o do log raiz.
 
 ---
 
@@ -708,8 +727,8 @@ Esse arquivo preserva o log operacional anterior inteiro antes da redução do l
 
 ## 2026-05-20 - PR-100 Auditoria pos PR-099
 
-**Responsavel:** Codex/ChatGPT  
-**Branch:** `feature/pr-100-audit-pos-pr099`  
+**Responsavel:** Codex/ChatGPT
+**Branch:** `feature/pr-100-audit-pos-pr099`
 **Escopo:** auditar o estado real da `dev` apos o PR-099 e reconciliar a fila antes de voltar para Cave Procedural.
 
 ### Alteracoes
@@ -740,125 +759,125 @@ Esse arquivo preserva o log operacional anterior inteiro antes da redução do l
 
 ---
 
-## 2026-05-20 — FASE9G Cave Bestiary/Faction Locks
+## 2026-05-20 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â FASE9G Cave Bestiary/Faction Locks
 
-**Responsável:** ChatGPT  
-**Branch:** dev  
-**Escopo:** criar spec de bestiário, faction locks, ecologia procedural e boss/miniboss candidates para a cave.
+**ResponsÃƒÆ’Ã‚Â¡vel:** ChatGPT
+**Branch:** dev
+**Escopo:** criar spec de bestiÃƒÆ’Ã‚Â¡rio, faction locks, ecologia procedural e boss/miniboss candidates para a cave.
 
-### Alterações
+### AlteraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes
 
 - Criado `docs_old/FASE9G_CAVE_BESTIARY_FACTION_LOCKS_PORTAL_ECOLOGY_SPEC_v1.0.md`.
-- Criado `specs/FASE9G_CAVE_BESTIARY_FACTION_LOCKS_PORTAL_ECOLOGY/spec.md`.
-- Atualizado `PROJECT_LOG.md` com decisões FASE9G e checklist futuro.
-- Spec inclui uso do Guia de Raças de Vaalara, Vaalara/Daromir/Elyndor, faction locks por subfaixa, bestiário amplo e 3 opções procedurais de boss/miniboss por marco.
+- Criado historicamente `docs/specs/a_implementar/spec_enemy_ai_roster_bestiary_faction_locks_runtime.md` (absorvida de specs raiz removida); conteudo depois absorvido em `docs/specs/a_implementar/spec_enemy_ai_roster_bestiary_faction_locks_runtime.md`.
+- Atualizado `PROJECT_LOG.md` com decisÃƒÆ’Ã‚Âµes FASE9G e checklist futuro.
+- Spec inclui uso do Guia de RaÃƒÆ’Ã‚Â§as de Vaalara, Vaalara/Daromir/Elyndor, faction locks por subfaixa, bestiÃƒÆ’Ã‚Â¡rio amplo e 3 opÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes procedurais de boss/miniboss por marco.
 
 ### Testes
 
 - [x] Arquivos FASE9G criados no repo.
 - [x] Arquivos FASE9G lidos/validados no GitHub.
-- [ ] Unity não executado; alteração é documental.
+- [ ] Unity nÃƒÆ’Ã‚Â£o executado; alteraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o ÃƒÆ’Ã‚Â© documental.
 
-### Pendências / riscos
+### PendÃƒÆ’Ã‚Âªncias / riscos
 
 - Atualizar `docs/IMPLEMENTATION_STATUS.md` para listar FASE9G como especificada.
-- FASE9G depende da base FASE9F para implementação real.
+- FASE9G depende da base FASE9F para implementaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o real.
 
-### Próximo passo recomendado
+### PrÃƒÆ’Ã‚Â³ximo passo recomendado
 
-- Seguir com implementação FASE9F-A em outro chat.
-- Usar FASE9G quando a implementação chegar em enemy ecology/faction lock.
+- Seguir com implementaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o FASE9F-A em outro chat.
+- Usar FASE9G quando a implementaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o chegar em enemy ecology/faction lock.
 
 ---
 
-## 2026-05-20 — Tracking de implementação
+## 2026-05-20 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Tracking de implementaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o
 
-**Responsável:** ChatGPT  
-**Branch:** dev  
+**ResponsÃƒÆ’Ã‚Â¡vel:** ChatGPT
+**Branch:** dev
 **Escopo:** criar tracking curto de capacidades/specs implementadas e pendentes, separado do log operacional.
 
-### Alterações
+### AlteraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes
 
 - Criado `docs/IMPLEMENTATION_STATUS.md`.
-- Atualizado `PROJECT_LOG.md` para apontar o tracking como leitura obrigatória de agentes.
+- Atualizado `PROJECT_LOG.md` para apontar o tracking como leitura obrigatÃƒÆ’Ã‚Â³ria de agentes.
 - Formalizado que todo PR futuro deve atualizar `PROJECT_LOG.md` e `docs/IMPLEMENTATION_STATUS.md`.
-- Mantido `PROJECT_LOG.md` como log operacional/histórico curto.
+- Mantido `PROJECT_LOG.md` como log operacional/histÃƒÆ’Ã‚Â³rico curto.
 
 ### Testes
 
 - [x] Documento criado diretamente na `dev`.
-- [x] `PROJECT_LOG.md` atualizado com link e regra de manutenção.
-- [ ] Unity não executado; alteração é documental.
+- [x] `PROJECT_LOG.md` atualizado com link e regra de manutenÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o.
+- [ ] Unity nÃƒÆ’Ã‚Â£o executado; alteraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o ÃƒÆ’Ã‚Â© documental.
 
-### Pendências / riscos
+### PendÃƒÆ’Ã‚Âªncias / riscos
 
-- Opcional: reforçar a regra também em `AGENTS.md` e `CLAUDE.md`.
-- O status de Cave/Combat básico foi mantido conforme `PROJECT_LOG.md`; validar código/Unity antes de marcar qualquer avanço além de MVP básico.
+- Opcional: reforÃƒÆ’Ã‚Â§ar a regra tambÃƒÆ’Ã‚Â©m em `AGENTS.md` e `CLAUDE.md`.
+- O status de Cave/Combat bÃƒÆ’Ã‚Â¡sico foi mantido conforme `PROJECT_LOG.md`; validar cÃƒÆ’Ã‚Â³digo/Unity antes de marcar qualquer avanÃƒÆ’Ã‚Â§o alÃƒÆ’Ã‚Â©m de MVP bÃƒÆ’Ã‚Â¡sico.
 
-### Próximo passo recomendado
+### PrÃƒÆ’Ã‚Â³ximo passo recomendado
 
-- Iniciar FASE9F-A — Cave Procedural Foundation, começando pelo PR-170.
+- Iniciar FASE9F-A ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Cave Procedural Foundation, comeÃƒÆ’Ã‚Â§ando pelo PR-170.
 
 ---
 
-## 2026-05-20 — Política de evolução de specs
+## 2026-05-20 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â PolÃƒÆ’Ã‚Â­tica de evoluÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de specs
 
-**Responsável:** ChatGPT  
-**Branch:** dev  
-**Escopo:** registrar regra para permitir implementação paralela e refinamento de novas specs sem reescrever specs antigas.
+**ResponsÃƒÆ’Ã‚Â¡vel:** ChatGPT
+**Branch:** dev
+**Escopo:** registrar regra para permitir implementaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o paralela e refinamento de novas specs sem reescrever specs antigas.
 
-### Alterações
+### AlteraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes
 
 - Criado `docs/operations/SPEC_EVOLUTION_POLICY_v1.0.md`.
-- Atualizado `PROJECT_LOG.md` para apontar a política como leitura obrigatória quando o trabalho tocar specs.
-- Formalizado que specs aprovadas são baseline imutável.
-- Formalizado que mudanças futuras entram como nova spec, amendment, correction ou errata.
-- Formalizado que PR iniciado segue a spec vigente no início, salvo bug crítico ou decisão humana explícita.
+- Atualizado `PROJECT_LOG.md` para apontar a polÃƒÆ’Ã‚Â­tica como leitura obrigatÃƒÆ’Ã‚Â³ria quando o trabalho tocar specs.
+- Formalizado que specs aprovadas sÃƒÆ’Ã‚Â£o baseline imutÃƒÆ’Ã‚Â¡vel.
+- Formalizado que mudanÃƒÆ’Ã‚Â§as futuras entram como nova spec, amendment, correction ou errata.
+- Formalizado que PR iniciado segue a spec vigente no inÃƒÆ’Ã‚Â­cio, salvo bug crÃƒÆ’Ã‚Â­tico ou decisÃƒÆ’Ã‚Â£o humana explÃƒÆ’Ã‚Â­cita.
 
 ### Testes
 
-- [x] Política criada no repo.
+- [x] PolÃƒÆ’Ã‚Â­tica criada no repo.
 - [x] `PROJECT_LOG.md` atualizado com resumo e link.
-- [ ] Unity não executado; alteração é documental.
+- [ ] Unity nÃƒÆ’Ã‚Â£o executado; alteraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o ÃƒÆ’Ã‚Â© documental.
 
-### Pendências / riscos
+### PendÃƒÆ’Ã‚Âªncias / riscos
 
-- Opcional: adicionar link explícito para esta política em `AGENTS.md` e `CLAUDE.md` em uma próxima sync documental.
+- Opcional: adicionar link explÃƒÆ’Ã‚Â­cito para esta polÃƒÆ’Ã‚Â­tica em `AGENTS.md` e `CLAUDE.md` em uma prÃƒÆ’Ã‚Â³xima sync documental.
 
-### Próximo passo recomendado
+### PrÃƒÆ’Ã‚Â³ximo passo recomendado
 
-- Implementação em outro chat pode seguir FASE9F.
-- Este chat pode continuar escrevendo a próxima spec.
+- ImplementaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o em outro chat pode seguir FASE9F.
+- Este chat pode continuar escrevendo a prÃƒÆ’Ã‚Â³xima spec.
 
 ---
 
-## 2026-05-20 — Split operacional do PROJECT_LOG
+## 2026-05-20 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Split operacional do PROJECT_LOG
 
-**Responsável:** ChatGPT  
-**Branch:** dev  
-**Escopo:** reduzir `PROJECT_LOG.md` para handoff operacional curto e arquivar histórico completo.
+**ResponsÃƒÆ’Ã‚Â¡vel:** ChatGPT
+**Branch:** dev
+**Escopo:** reduzir `PROJECT_LOG.md` para handoff operacional curto e arquivar histÃƒÆ’Ã‚Â³rico completo.
 
-### Alterações
+### AlteraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes
 
 - Criado archive completo em `docs/logs/PROJECT_LOG_ARCHIVE_2026-05-18_FULL_BEFORE_SPLIT.md` reaproveitando o blob exato do `PROJECT_LOG.md` anterior.
-- Substituído `PROJECT_LOG.md` por versão operacional curta.
+- SubstituÃƒÆ’Ã‚Â­do `PROJECT_LOG.md` por versÃƒÆ’Ã‚Â£o operacional curta.
 - Mantidos links para specs FASE9E e FASE9F.
-- Próximo passo recomendado atualizado para PR-170 da FASE9F.
+- PrÃƒÆ’Ã‚Â³ximo passo recomendado atualizado para PR-170 da FASE9F.
 
 ### Testes
 
 - [x] Archive criado a partir do blob antigo do `PROJECT_LOG.md`.
-- [x] Novo `PROJECT_LOG.md` mantém handoff, decisões e próximos passos.
-- [ ] Unity não executado; alteração é documental.
+- [x] Novo `PROJECT_LOG.md` mantÃƒÆ’Ã‚Â©m handoff, decisÃƒÆ’Ã‚Âµes e prÃƒÆ’Ã‚Â³ximos passos.
+- [ ] Unity nÃƒÆ’Ã‚Â£o executado; alteraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o ÃƒÆ’Ã‚Â© documental.
 
-### Pendências / riscos
+### PendÃƒÆ’Ã‚Âªncias / riscos
 
 - Validar no GitHub se o archive aparece corretamente em `docs/logs/`.
-- Próximas entradas devem ser curtas; logs extensos devem ir para novos archives.
+- PrÃƒÆ’Ã‚Â³ximas entradas devem ser curtas; logs extensos devem ir para novos archives.
 
-### Próximo passo recomendado
+### PrÃƒÆ’Ã‚Â³ximo passo recomendado
 
-- Iniciar PR-170 — Cave procedural contracts.
+- Iniciar PR-170 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Cave procedural contracts.
 ---
 
 ## 2026-05-20 - PR-101 a PR-130 reconciliacao consolidada pos PR-099
@@ -945,7 +964,7 @@ Esse arquivo preserva o log operacional anterior inteiro antes da redução do l
 
 ### Testes
 
-- [x] Revisao estatica documental e inspeção dos arquivos relevantes.
+- [x] Revisao estatica documental e inspeÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o dos arquivos relevantes.
 - [ ] Unity nao executado; PR documental.
 
 ### Pendencias / riscos
@@ -987,54 +1006,54 @@ Esse arquivo preserva o log operacional anterior inteiro antes da redução do l
 - Validar em Play Mode: ferramenta None/Axe/FishingRod, plantio por hotbar e mensagens temporarias.
 - Este PR nao implementa distribuicao debug de atributos nem Cave Procedural.
 
-### Próximo passo recomendado
+### PrÃƒÆ’Ã‚Â³ximo passo recomendado
 
 - Validar PR-132-FIX no Unity.
-- Depois seguir para distribuição debug de atributos ou handoff FASE9E-D, conforme prioridade.
+- Depois seguir para distribuiÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o debug de atributos ou handoff FASE9E-D, conforme prioridade.
 
 ---
 
-## 2026-05-20 - FASE9F-B Marco 0 e Marco 1 — Auditoria + CaveRuntimeMaterializer
+## 2026-05-20 - FASE9F-B Marco 0 e Marco 1 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Auditoria + CaveRuntimeMaterializer
 
-**Responsável:** Claude (Haiku 4.5)  
-**Branch esperada:** `feature/pr-154-170-cave-procedural-real-loop` (para ser criada)  
-**Escopo:** Marco 0 auditoria do estado procedural cave + Marco 1 implementação do CaveRuntimeMaterializer.
+**ResponsÃƒÆ’Ã‚Â¡vel:** Claude (Haiku 4.5)
+**Branch esperada:** `feature/pr-154-170-cave-procedural-real-loop` (para ser criada)
+**Escopo:** Marco 0 auditoria do estado procedural cave + Marco 1 implementaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o do CaveRuntimeMaterializer.
 
-### Alterações
+### AlteraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes
 
 **Marco 0:**
-- Criado `docs/audits/MARCO0_FASE9F-B_CAVE_PROCEDURAL_REAL_LOOP_AUDIT.md` — Estado real vs gaps vs roadmap.
-- Registrado que infraestrutura de geração, runtime state, e contratos existem.
-- Identificado gap crítico: sem materialização de GameObjects a runtime.
-- Roadmap de 15 marcos listado com dependências.
+- Criado `docs/audits/MARCO0_FASE9F-B_CAVE_PROCEDURAL_REAL_LOOP_AUDIT.md` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Estado real vs gaps vs roadmap.
+- Registrado que infraestrutura de geraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o, runtime state, e contratos existem.
+- Identificado gap crÃƒÆ’Ã‚Â­tico: sem materializaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de GameObjects a runtime.
+- Roadmap de 15 marcos listado com dependÃƒÆ’Ã‚Âªncias.
 
 **Marco 1:**
-- Criado `Assets/_Game/Scripts/Cave/Runtime/CaveRuntimeMaterializer.cs` — Classe que converte `CaveGeneratedLevel` data em GameObjects.
+- Criado `Assets/_Game/Scripts/Cave/Runtime/CaveRuntimeMaterializer.cs` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Classe que converte `CaveGeneratedLevel` data em GameObjects.
 - Materializa: flooring, walls, entrance/exit, resource nodes.
-- Suporta cleanup de materialização anterior.
-- Criado `CaveRuntimeMaterializationCompleteEvent` para notificar conclusão.
-- Atualizado `CaveLevelRuntimeController` para chamar materializer após geração.
+- Suporta cleanup de materializaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o anterior.
+- Criado `CaveRuntimeMaterializationCompleteEvent` para notificar conclusÃƒÆ’Ã‚Â£o.
+- Atualizado `CaveLevelRuntimeController` para chamar materializer apÃƒÆ’Ã‚Â³s geraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o.
 - Adicionadas flags `_materializer` e `_materializeAfterGeneration` para controle.
 
 ### Testes
 
-- [x] Revisão estática de código e estrutura.
-- [x] Validação de referências e dependências.
-- [ ] Unity não executado nesta sessão.
-- [ ] Regeneração de CaveScene não executada.
-- [ ] Smoke test procedural não executado.
+- [x] RevisÃƒÆ’Ã‚Â£o estÃƒÆ’Ã‚Â¡tica de cÃƒÆ’Ã‚Â³digo e estrutura.
+- [x] ValidaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de referÃƒÆ’Ã‚Âªncias e dependÃƒÆ’Ã‚Âªncias.
+- [ ] Unity nÃƒÆ’Ã‚Â£o executado nesta sessÃƒÆ’Ã‚Â£o.
+- [ ] RegeneraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de CaveScene nÃƒÆ’Ã‚Â£o executada.
+- [ ] Smoke test procedural nÃƒÆ’Ã‚Â£o executado.
 
-### Pendências / riscos
+### PendÃƒÆ’Ã‚Âªncias / riscos
 
-- **Prefabs faltando:** Materializer esperà por floor tile prefab, wall tile prefab, entrance/exit portal prefab — todos precisam ser criados ou reutilizados.
-- **Seleção de resource node:** MVP usa seleção aleatória de todos os nodes; refinamento por nivel/bioma pendente (Marco 9).
-- **Enemies não são spawnadas:** Materializer coloca spawn points mas não materializa enemies — Marco 4.
-- **Validação Unity:** Compilação e cena procedural não testadas em Play Mode.
+- **Prefabs faltando:** Materializer esperÃƒÆ’Ã‚Â  por floor tile prefab, wall tile prefab, entrance/exit portal prefab ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â todos precisam ser criados ou reutilizados.
+- **SeleÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de resource node:** MVP usa seleÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o aleatÃƒÆ’Ã‚Â³ria de todos os nodes; refinamento por nivel/bioma pendente (Marco 9).
+- **Enemies nÃƒÆ’Ã‚Â£o sÃƒÆ’Ã‚Â£o spawnadas:** Materializer coloca spawn points mas nÃƒÆ’Ã‚Â£o materializa enemies ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Marco 4.
+- **ValidaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o Unity:** CompilaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o e cena procedural nÃƒÆ’Ã‚Â£o testadas em Play Mode.
 
-### Próximo passo recomendado
+### PrÃƒÆ’Ã‚Â³ximo passo recomendado
 
 - **Criar feature branch** `feature/pr-154-170-cave-procedural-real-loop`.
-- **Marco 2:** Implementar entrance/exit portais funcionais (interactables de navegação).
+- **Marco 2:** Implementar entrance/exit portais funcionais (interactables de navegaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o).
 - **Validar cena** no Unity com prefabs criados.
 
 ---
@@ -1143,8 +1162,8 @@ Esse arquivo preserva o log operacional anterior inteiro antes da redução do l
 ### Marco PR-151 - ResourceNodes debug na CaveScene
 
 - `CreateMvpCaveScene` cria nodes debug Stone, Copper e CaveRootTree ao regenerar a cena.
-- O gerador editorial cria assets `ResourceNode_Stone`, `ResourceNode_Copper`, `ResourceNode_CaveRootTree` e itens mínimos `item_material_stone`/`ore_copper` quando necessário.
-- A cena `.unity` e os `.asset` físicos dependem de executar o menu no Unity.
+- O gerador editorial cria assets `ResourceNode_Stone`, `ResourceNode_Copper`, `ResourceNode_CaveRootTree` e itens mÃƒÆ’Ã‚Â­nimos `item_material_stone`/`ore_copper` quando necessÃƒÆ’Ã‚Â¡rio.
+- A cena `.unity` e os `.asset` fÃƒÆ’Ã‚Â­sicos dependem de executar o menu no Unity.
 
 ### Marco PR-152 - Cave save/load procedural MVP
 
@@ -1159,72 +1178,72 @@ Esse arquivo preserva o log operacional anterior inteiro antes da redução do l
 
 ---
 
-## 2026-05-20 - FASE9F-B Marcos 1-7 Implementação Completa (Nesta Sessão)
+## 2026-05-20 - FASE9F-B Marcos 1-7 ImplementaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o Completa (Nesta SessÃƒÆ’Ã‚Â£o)
 
-**Responsável:** Claude (Haiku 4.5)  
-**Branch esperada:** `feature/pr-154-170-cave-procedural-real-loop` (a ser criada)  
-**Escopo:** Implementação completa dos marcos 1-7 do procedural cave real loop com materialização, spawning, persistência e validação.
+**ResponsÃƒÆ’Ã‚Â¡vel:** Claude (Haiku 4.5)
+**Branch esperada:** `feature/pr-154-170-cave-procedural-real-loop` (a ser criada)
+**Escopo:** ImplementaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o completa dos marcos 1-7 do procedural cave real loop com materializaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o, spawning, persistÃƒÆ’Ã‚Âªncia e validaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o.
 
-### Alterações
+### AlteraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes
 
 **Marco 1 - CaveRuntimeMaterializer:**
-- Criado `CaveRuntimeMaterializer.cs` — Converte `CaveGeneratedLevel` para GameObjects.
-- Materializa flooring (com verificação de prefab), walls (com collider), entrada/saída, e resource nodes.
+- Criado `CaveRuntimeMaterializer.cs` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Converte `CaveGeneratedLevel` para GameObjects.
+- Materializa flooring (com verificaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de prefab), walls (com collider), entrada/saÃƒÆ’Ã‚Â­da, e resource nodes.
 - Publica `CaveRuntimeMaterializationCompleteEvent` ao terminar.
-- Integrado em `CaveLevelRuntimeController` para materializar após gerar layout procedural.
+- Integrado em `CaveLevelRuntimeController` para materializar apÃƒÆ’Ã‚Â³s gerar layout procedural.
 
 **Marco 2 - Entrance/Exit Portals:**
-- Criado `CaveExitPortal.cs` — Portal especializado para transição da cave.
-- Materializer diferencia entrance (ScenePortal reutilizável) e exit (CaveExitPortal).
+- Criado `CaveExitPortal.cs` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Portal especializado para transiÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o da cave.
+- Materializer diferencia entrance (ScenePortal reutilizÃƒÆ’Ã‚Â¡vel) e exit (CaveExitPortal).
 - Colliders trigger criados automaticamente no materializer.
 
 **Marco 3-4 - Resource e Enemy Procedural Spawning:**
-- ResourceNodes materializadas pelo materializer com seleção aleatória de tipo.
-- Criado `CaveEnemySpawner.cs` — Spawna enemies dos spawn points com configuração pós-instanciação.
-- `CaveLevelRuntimeController` inscreve ao evento de materialização e chama spawner automaticamente.
-- Adicionado método `Configure(EnemyDataSO)` em `EnemyHealth` para setup de inimigos instanciados.
+- ResourceNodes materializadas pelo materializer com seleÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o aleatÃƒÆ’Ã‚Â³ria de tipo.
+- Criado `CaveEnemySpawner.cs` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Spawna enemies dos spawn points com configuraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o pÃƒÆ’Ã‚Â³s-instanciaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o.
+- `CaveLevelRuntimeController` inscreve ao evento de materializaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o e chama spawner automaticamente.
+- Adicionado mÃƒÆ’Ã‚Â©todo `Configure(EnemyDataSO)` em `EnemyHealth` para setup de inimigos instanciados.
 - Enemies spawned com: SpriteRenderer, CircleCollider2D, Rigidbody2D, EnemyHealth, KnockbackController, HitFlashController.
 
 **Marco 5 - Debug Visualization:**
-- Criado `CaveDebugVisualizer.cs` — Gizmo drawing para layout em Play Mode.
-- Visualiza: walkable tiles (verde), walls (cinza), rooms (azul), enemy spawn (vermelho), resource spawn (amarelo), entrada/saída (cyan/magenta).
+- Criado `CaveDebugVisualizer.cs` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Gizmo drawing para layout em Play Mode.
+- Visualiza: walkable tiles (verde), walls (cinza), rooms (azul), enemy spawn (vermelho), resource spawn (amarelo), entrada/saÃƒÆ’Ã‚Â­da (cyan/magenta).
 - Toggles em inspector para controlar cada camada visual.
 
 **Marco 6 - Regeneration Hardening:**
-- Métodos públicos `CleanupMaterialization()` e `CleanupSpawns()` adicionados.
+- MÃƒÆ’Ã‚Â©todos pÃƒÆ’Ã‚Âºblicos `CleanupMaterialization()` e `CleanupSpawns()` adicionados.
 - `CaveLevelRuntimeController.CleanupBeforeRegeneration()` chama ambos antes de re-seed.
-- Shift+R agora executa cleanup robusto → novo seed → regeneração completa.
+- Shift+R agora executa cleanup robusto ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ novo seed ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ regeneraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o completa.
 
 **Marco 7 - Save/Load Coherence:**
-- Save/load já integrado em `SaveManager` via `CaveRunManager.CaptureSaveData()` / `RestoreFromSaveData()`.
+- Save/load jÃƒÆ’Ã‚Â¡ integrado em `SaveManager` via `CaveRunManager.CaptureSaveData()` / `RestoreFromSaveData()`.
 - `CaveSaveData` persiste: CurrentCaveLevel, DeepestLayerReached, CaveWorldSeed, CaveRunSeed, UnlockedCheckpoints, DepletedNodeIds.
-- Coerência procedural garantida pela persistência de seeds.
+- CoerÃƒÆ’Ã‚Âªncia procedural garantida pela persistÃƒÆ’Ã‚Âªncia de seeds.
 
 ### Testes
 
-- [x] Revisão estática de código.
-- [x] Validação de integração de eventos GameEventBus.
-- [x] Verificação de referências e dependências.
-- [ ] Unity compilação não testada.
-- [ ] Play Mode não testado.
-- [ ] Smoke test completo não executado.
+- [x] RevisÃƒÆ’Ã‚Â£o estÃƒÆ’Ã‚Â¡tica de cÃƒÆ’Ã‚Â³digo.
+- [x] ValidaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de integraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de eventos GameEventBus.
+- [x] VerificaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de referÃƒÆ’Ã‚Âªncias e dependÃƒÆ’Ã‚Âªncias.
+- [ ] Unity compilaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o nÃƒÆ’Ã‚Â£o testada.
+- [ ] Play Mode nÃƒÆ’Ã‚Â£o testado.
+- [ ] Smoke test completo nÃƒÆ’Ã‚Â£o executado.
 
-### Pendências / Riscos
+### PendÃƒÆ’Ã‚Âªncias / Riscos
 
-- **Prefabs faltando:** Floor tile, wall tile, entrance, exit — precisam ser criados ou reutilizados de assets existentes.
-- **EnemyDatabase:** Materializer esperaà por DataRegistry<EnemyDataSO> não estar vazio.
-- **ResourceNodeDatabase:** Seleção MVP aleatória; refinamento por nível/bioma (Marco 9) pendente.
-- **Marcos 8-15:** Não implementados nesta sessão (loot tables, level scaling, KO regen, checkpoint selection, daily refresh, boss gates, HUD v2, validators).
-- **Validação crítica:** Cena deve rodar sem erros de compilação; Play Mode deve gerar layout sem exceções.
+- **Prefabs faltando:** Floor tile, wall tile, entrance, exit ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â precisam ser criados ou reutilizados de assets existentes.
+- **EnemyDatabase:** Materializer esperaÃƒÆ’Ã‚Â  por DataRegistry<EnemyDataSO> nÃƒÆ’Ã‚Â£o estar vazio.
+- **ResourceNodeDatabase:** SeleÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o MVP aleatÃƒÆ’Ã‚Â³ria; refinamento por nÃƒÆ’Ã‚Â­vel/bioma (Marco 9) pendente.
+- **Marcos 8-15:** NÃƒÆ’Ã‚Â£o implementados nesta sessÃƒÆ’Ã‚Â£o (loot tables, level scaling, KO regen, checkpoint selection, daily refresh, boss gates, HUD v2, validators).
+- **ValidaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o crÃƒÆ’Ã‚Â­tica:** Cena deve rodar sem erros de compilaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o; Play Mode deve gerar layout sem exceÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes.
 
-### Próximo passo recomendado
+### PrÃƒÆ’Ã‚Â³ximo passo recomendado
 
-1. Validar no Unity: compilação e Play Mode da CaveScene.
+1. Validar no Unity: compilaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o e Play Mode da CaveScene.
 2. Regenerar cena via `CindarsHope/Scenes/Create MVP CaveScene`.
 3. Atribuir prefabs aos campos do materializer (ou criar prefabs simples placeholder).
-4. Testar Shift+R para regeneração.
+4. Testar Shift+R para regeneraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o.
 5. Criar feature branch e push final com todos estes commits.
-6. Implementar marcos 8-15 conforme prioridade em próxima sessão ou paralelo.
+6. Implementar marcos 8-15 conforme prioridade em prÃƒÆ’Ã‚Â³xima sessÃƒÆ’Ã‚Â£o ou paralelo.
 
 ### Pendencias / riscos do pacote
 
@@ -1236,15 +1255,15 @@ Esse arquivo preserva o log operacional anterior inteiro antes da redução do l
 
 ## 2026-05-20 - FASE9F-B Marcos 3-11 Continuacao Visual + Spawning + HUD (Nesta Sessao)
 
-**Responsável:** Claude (Haiku 4.5)  
-**Branch:** `feature/fase9a-town-commerce-mvp-package`  
-**Escopo:** Continuar implementacao dos marcos 3-11 da FASE9F-B com foco em materialização visual, spawning procedural de enemies com componentes corretos, determinismo de seeds e HUD enhancements.
+**ResponsÃƒÆ’Ã‚Â¡vel:** Claude (Haiku 4.5)
+**Branch:** `feature/fase9a-town-commerce-mvp-package`
+**Escopo:** Continuar implementacao dos marcos 3-11 da FASE9F-B com foco em materializaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o visual, spawning procedural de enemies com componentes corretos, determinismo de seeds e HUD enhancements.
 
-### Alterações
+### AlteraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes
 
 **Marco 3-4 Hierarchical Structure & Resource Node Parenting:**
 - Atualizado `MaterializeResourceNodes()` para criar parent GameObject `GeneratedResourceNodes` e parental resource nodes sob ele (em vez de usar `transform`).
-- Exposado `GeneratedRuntimeRoot` como propriedade pública em `CaveRuntimeMaterializer` para acesso externo.
+- Exposado `GeneratedRuntimeRoot` como propriedade pÃƒÆ’Ã‚Âºblica em `CaveRuntimeMaterializer` para acesso externo.
 
 **Marco 7 Enemy Procedural Spawning com Componentes Corretos:**
 - Adicionado `_caveRunManager` como campo em `CaveEnemySpawner` para acesso a seeds.
@@ -1256,11 +1275,11 @@ Esse arquivo preserva o log operacional anterior inteiro antes da redução do l
 - Atualizado `CaveLevelRuntimeController` para passar playerTransform e root quando calling `SpawnEnemiesForLevel()`.
 
 **Marco 8 Determinismo Refinement:**
-- Enemy spawn selection agora usa full seed string: `{WorldSeed}_{RunSeed}_{Level}_enemies` (em vez de só `{Level}_enemies`).
-- Isso garante que mesma seed world + run produz mesma distribuição de enemies.
+- Enemy spawn selection agora usa full seed string: `{WorldSeed}_{RunSeed}_{Level}_enemies` (em vez de sÃƒÆ’Ã‚Â³ `{Level}_enemies`).
+- Isso garante que mesma seed world + run produz mesma distribuiÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de enemies.
 
 **Marco 9-10 HUD Updates & Enhanced Logging:**
-- Adicionado exibição de `Entrance` e `Exit` coordinates no `DrawCaveSummary()` do `DebugHud`.
+- Adicionado exibiÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de `Entrance` e `Exit` coordinates no `DrawCaveSummary()` do `DebugHud`.
 - Aprimorado `RegenerateCurrentRunDebug()` para logar old/new RunSeed: `"Cave regenerated via debug (Shift+R). RunSeed: {old} -> {new}."`
 
 **Player Transform Configuration:**
@@ -1275,17 +1294,17 @@ Esse arquivo preserva o log operacional anterior inteiro antes da redução do l
 - [x] Validacao de hierarquia GameObject: CaveGeneratedRuntime > GeneratedFloor/Walls/Exits/ResourceNodes/Enemies.
 - [x] Verificacao de determinismo de seeds para enemies.
 - [x] Inspecao de EnemyChaseController e EnemyContactDamage setup.
-- [ ] Unity compilacao não testada.
-- [ ] Play Mode não testado.
+- [ ] Unity compilacao nÃƒÆ’Ã‚Â£o testada.
+- [ ] Play Mode nÃƒÆ’Ã‚Â£o testado.
 
-### Pendências / Riscos
+### PendÃƒÆ’Ã‚Âªncias / Riscos
 
 - **EnemyChaseController needs player target:** Configurado via `_playerTransform` em controller, mas precisa validar que chase funciona no Play Mode.
-- **Enemy contact damage trigger:** Validar que OnTriggerStay2D do `EnemyContactDamage` é chamado corretamente.
-- **Resource node depletion:** Já implementado via `CaveRunManager.RegisterDepletedNode()` e `RestoreDepletedStateFromRun()` — apenas validação pendente.
-- **Marcos 11 em diante:** Documentação updates e smoke tests ainda pendentes.
+- **Enemy contact damage trigger:** Validar que OnTriggerStay2D do `EnemyContactDamage` ÃƒÆ’Ã‚Â© chamado corretamente.
+- **Resource node depletion:** JÃƒÆ’Ã‚Â¡ implementado via `CaveRunManager.RegisterDepletedNode()` e `RestoreDepletedStateFromRun()` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â apenas validaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o pendente.
+- **Marcos 11 em diante:** DocumentaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o updates e smoke tests ainda pendentes.
 
-### Próximo passo recomendado
+### PrÃƒÆ’Ã‚Â³ximo passo recomendado
 
 1. Validar compilacao no Unity.
 2. Testar Play Mode: spawning, chase behavior, contact damage, determinismo de regeneracao (Shift+R).
@@ -1295,38 +1314,38 @@ Esse arquivo preserva o log operacional anterior inteiro antes da redução do l
 
 ---
 
-## 2026-05-20 - FIX_CAVE_PROCEDURAL_VISUAL_RUNTIME_v1.0 Implementação Completa
+## 2026-05-20 - FIX_CAVE_PROCEDURAL_VISUAL_RUNTIME_v1.0 ImplementaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o Completa
 
-**Responsável:** Claude (Haiku 4.5)  
-**Branch:** `feature/fase9a-town-commerce-mvp-package`  
-**Escopo:** Implementação completa do FIX_CAVE_PROCEDURAL_VISUAL_RUNTIME_v1.0 — adicionar fallback visual e database population para materializar cave procedural visually.
+**ResponsÃƒÆ’Ã‚Â¡vel:** Claude (Haiku 4.5)
+**Branch:** `feature/fase9a-town-commerce-mvp-package`
+**Escopo:** ImplementaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o completa do FIX_CAVE_PROCEDURAL_VISUAL_RUNTIME_v1.0 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â adicionar fallback visual e database population para materializar cave procedural visually.
 
-### Alterações
+### AlteraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes
 
 **CaveRuntimeMaterializationResult.cs (criado):**
 - Nova classe de contratos para rastrear objetos realmente materializados.
 - Campos: `CreatedFloorTiles`, `CreatedWallTiles`, `CreatedResourceNodes`, `CreatedEnemies`, `BackExitPosition`, `ForwardExitPosition`.
-- Propósito: separar contagens de dados (WalkableTiles.Count) de contagens reais (objetos criados).
+- PropÃƒÆ’Ã‚Â³sito: separar contagens de dados (WalkableTiles.Count) de contagens reais (objetos criados).
 
 **CaveRuntimeMaterializer.cs (completado):**
-- Adicionado `_lastMaterializationResult` field e `LastMaterializationResult` property pública.
-- Implementado `GetBuiltinSprite()` com compilação condicional `#if UNITY_EDITOR` para carregamento de sprite builtin.
+- Adicionado `_lastMaterializationResult` field e `LastMaterializationResult` property pÃƒÆ’Ã‚Âºblica.
+- Implementado `GetBuiltinSprite()` com compilaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o condicional `#if UNITY_EDITOR` para carregamento de sprite builtin.
 - `MaterializeFloor()`: Cria fallback GameObject com SpriteRenderer (cor terra #6B3A2A), sem collider. Incrementa `CreatedFloorTiles`.
 - `MaterializeWalls()`: Cria fallback com cor cinza, BoxCollider2D. Incrementa `CreatedWallTiles`.
-- `MaterializeEntranceAndExit()`: Cria fallback cyan (BackExit) e magenta (ForwardExit) portals com CaveExitPortal component. Registra posições em `BackExitPosition` e `ForwardExitPosition`.
+- `MaterializeEntranceAndExit()`: Cria fallback cyan (BackExit) e magenta (ForwardExit) portals com CaveExitPortal component. Registra posiÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes em `BackExitPosition` e `ForwardExitPosition`.
 - `MaterializeResourceNodes()`: Cria fallback ResourceNode e incrementa `CreatedResourceNodes`.
 - `SelectAndConfigureResourceNode()`: Adiciona SpriteRenderer com cor brownish e CircleCollider2D trigger.
 
 **CaveExitPortal.cs (refatorado):**
 - Adicionado enum `CaveExitMode` (BackExit, ForwardExit).
-- Métodos `InitializeBackExit(CaveRunManager)` e `InitializeForwardExit(CaveRunManager)` para configuração de modo.
+- MÃƒÆ’Ã‚Â©todos `InitializeBackExit(CaveRunManager)` e `InitializeForwardExit(CaveRunManager)` para configuraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de modo.
 - `HandleBackExit()`: Level 1 carrega FarmScene; Level > 1 faz EnterLevel(CurrentLevel - 1).
 - `HandleForwardExit()`: EnterLevel(CurrentLevel + 1).
-- Mantém compatibilidade com `HandleSceneTransition()` para transições baseadas em cena.
+- MantÃƒÆ’Ã‚Â©m compatibilidade com `HandleSceneTransition()` para transiÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes baseadas em cena.
 
 **CaveEnemySpawner.cs (aprimorado):**
 - Adicionado field `_fallbackEnemyData` [SerializeField] para Slime default quando database vazio.
-- Método `SpawnEnemiesForLevel()` agora: usa database se populated, fallback para `_fallbackEnemyData`, skip se ambos null.
+- MÃƒÆ’Ã‚Â©todo `SpawnEnemiesForLevel()` agora: usa database se populated, fallback para `_fallbackEnemyData`, skip se ambos null.
 - Determinismo preservado com seed string `{WorldSeed}_{RunSeed}_{Level}_enemies`.
 
 **CreateMvpCaveScene.cs (database population):**
@@ -1345,24 +1364,24 @@ Esse arquivo preserva o log operacional anterior inteiro antes da redução do l
 
 ### Testes
 
-- [x] Revisão estática completa de todos os arquivos.
-- [x] Validação de integração de eventos GameEventBus.
-- [x] Verificação de referências Unity e dependências.
-- [x] Inspeção de fallback sprite conditional compilation.
-- [x] Validação de database population logic.
-- [ ] Unity compilação não testada.
-- [ ] Play Mode não testado.
-- [ ] Smoke test completo não executado.
+- [x] RevisÃƒÆ’Ã‚Â£o estÃƒÆ’Ã‚Â¡tica completa de todos os arquivos.
+- [x] ValidaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de integraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de eventos GameEventBus.
+- [x] VerificaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de referÃƒÆ’Ã‚Âªncias Unity e dependÃƒÆ’Ã‚Âªncias.
+- [x] InspeÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de fallback sprite conditional compilation.
+- [x] ValidaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de database population logic.
+- [ ] Unity compilaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o nÃƒÆ’Ã‚Â£o testada.
+- [ ] Play Mode nÃƒÆ’Ã‚Â£o testado.
+- [ ] Smoke test completo nÃƒÆ’Ã‚Â£o executado.
 
-### Pendências / Riscos
+### PendÃƒÆ’Ã‚Âªncias / Riscos
 
-- **Validação crítica:** Código deve compilar sem erros. Play Mode deve gerar e visualizar cave procedural sem exceções.
+- **ValidaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o crÃƒÆ’Ã‚Â­tica:** CÃƒÆ’Ã‚Â³digo deve compilar sem erros. Play Mode deve gerar e visualizar cave procedural sem exceÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes.
 - **Prefabs:** Se prefabs forem atribuidos, materializer usa prefab; se null, usa fallback GameObject.
-- **Databases:** Editor script popula datasets com assets default; permanecer vazio é aceitável (usa fallback).
+- **Databases:** Editor script popula datasets com assets default; permanecer vazio ÃƒÆ’Ã‚Â© aceitÃƒÆ’Ã‚Â¡vel (usa fallback).
 - **EnemyChaseController:** Requer `_playerTransform` configurado em `CaveLevelRuntimeController` para funcionar.
-- **Resource nodes depletion tracking:** Já integrado em `CaveRunManager.RegisterDepletedNode()`.
+- **Resource nodes depletion tracking:** JÃƒÆ’Ã‚Â¡ integrado em `CaveRunManager.RegisterDepletedNode()`.
 
-### Próximo passo recomendado
+### PrÃƒÆ’Ã‚Â³ximo passo recomendado
 
 1. Validar compilacao no Unity: abrir project, regenerar CaveScene via menu editor.
 2. Testar Play Mode: verificar materialization, contadores HUD, navigacao entre niveis (Shift+R para regeneracao).
@@ -1372,23 +1391,23 @@ Esse arquivo preserva o log operacional anterior inteiro antes da redução do l
 
 ---
 
-## 2026-05-20 - FIX_CAVE_CAMERA_FOLLOW_AND_VISIBLE_ENEMIES_v1.0 Implementação Completa
+## 2026-05-20 - FIX_CAVE_CAMERA_FOLLOW_AND_VISIBLE_ENEMIES_v1.0 ImplementaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o Completa
 
-**Responsável:** Claude (Haiku 4.5)  
-**Branch:** `feature/fase9a-town-commerce-mvp-package`  
-**Escopo:** Implementação completa de câmera com smooth follow e inimigos visíveis com visuais e spawning ordenado por distância.
+**ResponsÃƒÆ’Ã‚Â¡vel:** Claude (Haiku 4.5)
+**Branch:** `feature/fase9a-town-commerce-mvp-package`
+**Escopo:** ImplementaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o completa de cÃƒÆ’Ã‚Â¢mera com smooth follow e inimigos visÃƒÆ’Ã‚Â­veis com visuais e spawning ordenado por distÃƒÆ’Ã‚Â¢ncia.
 
-### Alterações
+### AlteraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes
 
 **CameraFollow2D.cs (criado):**
 - Nova classe para smooth camera following com damping.
 - Campos: `_target` (Transform), `_smoothTime` (0.08f), `_offset` (0, 0, -10), `_snapOnStart` (true).
-- `RebindTarget(Transform target)` — rebind do alvo dinamicamente.
-- `SnapToTarget()` — posicionamento imediato sem animação.
-- `LateUpdate()` — Vector3.SmoothDamp para seguimento suave.
+- `RebindTarget(Transform target)` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â rebind do alvo dinamicamente.
+- `SnapToTarget()` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â posicionamento imediato sem animaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o.
+- `LateUpdate()` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Vector3.SmoothDamp para seguimento suave.
 
 **CreateMvpCaveScene.cs (aprimorado):**
-- `CreateMainCamera()` agora aceita parâmetro `Transform playerTransform`.
+- `CreateMainCamera()` agora aceita parÃƒÆ’Ã‚Â¢metro `Transform playerTransform`.
 - Adicionado setup de `CameraFollow2D` via SerializedObject:
   - `AddComponent<CameraFollow2D>()`.
   - SetReference() para `_target = playerTransform`.
@@ -1396,45 +1415,45 @@ Esse arquivo preserva o log operacional anterior inteiro antes da redução do l
   - `ApplyModifiedPropertiesWithoutUndo()`.
 
 **CaveRuntimeMaterializer.cs (aprimorado):**
-- Adicionado `RepositionCamera()` método que:
+- Adicionado `RepositionCamera()` mÃƒÆ’Ã‚Â©todo que:
   - Detecta `CameraFollow2D` no main camera.
   - Se encontrado: chama `RebindTarget(_playerTransform)` + `SnapToTarget()`.
   - Fallback: posiciona camera diretamente sobre player.
-- Chamado em `Materialize()` após posicionar player na entrance.
+- Chamado em `Materialize()` apÃƒÆ’Ã‚Â³s posicionar player na entrance.
 
 **CaveEnemySpawner.cs (visual + ordering):**
 - Adicionado `GetBuiltinSprite()` helper com `#if UNITY_EDITOR` condicional (reutilizando pattern de CaveRuntimeMaterializer).
 - `SpawnEnemyAtPoint()` atualizado:
   - Se `enemyData.Icon != null`: usa sprite com cor white.
-  - Else: usa builtin sprite com cor fallback new Color(0.85f, 0.23f, 0.23f) (vermelho escuro visível).
+  - Else: usa builtin sprite com cor fallback new Color(0.85f, 0.23f, 0.23f) (vermelho escuro visÃƒÆ’Ã‚Â­vel).
   - `sortingOrder = 3` para visibilidade acima de floor/walls.
   - `transform.localScale = Vector3.one` para sizing consistente.
 - `SpawnEnemiesForLevel()` atualizado:
   - Adiciona `using System.Linq`.
-  - Ordena spawn points por distância à entrada: `.OrderBy(sp => Vector2.Distance(sp.Position, generatedLevel.Entrance))`.
+  - Ordena spawn points por distÃƒÆ’Ã‚Â¢ncia ÃƒÆ’Ã‚Â  entrada: `.OrderBy(sp => Vector2.Distance(sp.Position, generatedLevel.Entrance))`.
   - Itera sobre lista ordenada para spawning sequencial.
 
 ### Testes
 
-- [x] Revisão estática de código e integração CameraFollow2D.
-- [x] Validação de referências Transform e SerializedObject setup.
-- [x] Verificação de visual fallback e sorting order.
-- [x] Inspeção de ordenação de spawn por distância.
-- [ ] Unity compilação não testada.
-- [ ] Play Mode não testado (camera follow, enemy visibilidade, order de spawn).
+- [x] RevisÃƒÆ’Ã‚Â£o estÃƒÆ’Ã‚Â¡tica de cÃƒÆ’Ã‚Â³digo e integraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o CameraFollow2D.
+- [x] ValidaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de referÃƒÆ’Ã‚Âªncias Transform e SerializedObject setup.
+- [x] VerificaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de visual fallback e sorting order.
+- [x] InspeÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de ordenaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de spawn por distÃƒÆ’Ã‚Â¢ncia.
+- [ ] Unity compilaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o nÃƒÆ’Ã‚Â£o testada.
+- [ ] Play Mode nÃƒÆ’Ã‚Â£o testado (camera follow, enemy visibilidade, order de spawn).
 
-### Pendências / Riscos
+### PendÃƒÆ’Ã‚Âªncias / Riscos
 
-- **Validação crítica:** Código deve compilar. Play Mode deve mostrar:
-  - Camera seguindo player suavemente após materialização.
-  - Inimigos visíveis com cor fallback (vermelho escuro) se sem sprite.
-  - Inimigos spawned em ordem de proximidade à entrada.
-- **Prefabs enemy:** Se prefab reutilizado, já terá sprite; fallback só ativa se null.
-- **Physics/Chase:** EnemyChaseController requer player target configurado (já feito em passos anteriores).
+- **ValidaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o crÃƒÆ’Ã‚Â­tica:** CÃƒÆ’Ã‚Â³digo deve compilar. Play Mode deve mostrar:
+  - Camera seguindo player suavemente apÃƒÆ’Ã‚Â³s materializaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o.
+  - Inimigos visÃƒÆ’Ã‚Â­veis com cor fallback (vermelho escuro) se sem sprite.
+  - Inimigos spawned em ordem de proximidade ÃƒÆ’Ã‚Â  entrada.
+- **Prefabs enemy:** Se prefab reutilizado, jÃƒÆ’Ã‚Â¡ terÃƒÆ’Ã‚Â¡ sprite; fallback sÃƒÆ’Ã‚Â³ ativa se null.
+- **Physics/Chase:** EnemyChaseController requer player target configurado (jÃƒÆ’Ã‚Â¡ feito em passos anteriores).
 
-### Próximo passo recomendado
+### PrÃƒÆ’Ã‚Â³ximo passo recomendado
 
-1. Validar compilação no Unity.
+1. Validar compilaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o no Unity.
 2. Testar Play Mode: verificar smooth camera follow, enemy spawn order e visibilidade.
 3. Atualizar `docs/IMPLEMENTATION_STATUS.md` para marcar Cave Procedural como `Implementado parcial` com status de camera/visual confirmado.
 4. Executar smoke tests completos se Play Mode passar.
@@ -1442,17 +1461,17 @@ Esse arquivo preserva o log operacional anterior inteiro antes da redução do l
 
 ---
 
-## 2026-05-20 - FIX_GLOBAL_CAMERA_FOLLOW_MVP_v1.0 Implementação Completa
+## 2026-05-20 - FIX_GLOBAL_CAMERA_FOLLOW_MVP_v1.0 ImplementaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o Completa
 
-**Responsável:** Claude (Haiku 4.5)  
-**Branch:** `feature/fix-global-camera-follow-mvp`  
-**Escopo:** Padronizar câmera MVP em FarmScene, TownScene e CaveScene para seguir/centralizar no Player usando CameraFollow2D.
+**ResponsÃƒÆ’Ã‚Â¡vel:** Claude (Haiku 4.5)
+**Branch:** `feature/fix-global-camera-follow-mvp`
+**Escopo:** Padronizar cÃƒÆ’Ã‚Â¢mera MVP em FarmScene, TownScene e CaveScene para seguir/centralizar no Player usando CameraFollow2D.
 
-### Alterações
+### AlteraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes
 
 **CreateMvpFarmScene.cs (R1):**
 - Atualizado call de `CreateMainCamera()` para `CreateMainCamera(playerTransform)` na linha 81.
-- Assinatura do método `CreateMainCamera()` alterada para aceitar `Transform playerTransform`.
+- Assinatura do mÃƒÆ’Ã‚Â©todo `CreateMainCamera()` alterada para aceitar `Transform playerTransform`.
 - Adicionado setup de `CameraFollow2D` via SerializedObject:
   - `AddComponent<CindarsHope.Camera.CameraFollow2D>()`.
   - SetReference() para `_target = playerTransform`.
@@ -1461,49 +1480,49 @@ Esse arquivo preserva o log operacional anterior inteiro antes da redução do l
 
 **CreateMvpTownScene.cs (R2):**
 - Atualizado call de `CreateMainCamera()` para `CreateMainCamera(playerTransform)` na linha 67.
-- Assinatura do método `CreateMainCamera()` alterada para aceitar `Transform playerTransform`.
-- Adicionado setup de `CameraFollow2D` idêntico ao Farm, mantendo `orthographicSize = 7.5f`.
+- Assinatura do mÃƒÆ’Ã‚Â©todo `CreateMainCamera()` alterada para aceitar `Transform playerTransform`.
+- Adicionado setup de `CameraFollow2D` idÃƒÆ’Ã‚Âªntico ao Farm, mantendo `orthographicSize = 7.5f`.
 
 **CreateMvpCaveScene.cs (R3):**
-- Verificado: já chama `CreateMainCamera(playerTransform)` corretamente.
-- Verificado: método já tem CameraFollow2D implementado e configurado.
-- Sem alterações necessárias.
+- Verificado: jÃƒÆ’Ã‚Â¡ chama `CreateMainCamera(playerTransform)` corretamente.
+- Verificado: mÃƒÆ’Ã‚Â©todo jÃƒÆ’Ã‚Â¡ tem CameraFollow2D implementado e configurado.
+- Sem alteraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes necessÃƒÆ’Ã‚Â¡rias.
 
 ### Testes
 
-- [x] Revisão estática de código nos 3 arquivos.
-- [x] Validação de assinatura de método e chamadas.
-- [x] Verificação de CameraFollow2D setup idêntico entre Farm/Town.
-- [x] Confirmação de Cave já estar correto.
-- [ ] Unity compilação não testada.
-- [ ] Play Mode Farm/Town/Cave follow não testado.
+- [x] RevisÃƒÆ’Ã‚Â£o estÃƒÆ’Ã‚Â¡tica de cÃƒÆ’Ã‚Â³digo nos 3 arquivos.
+- [x] ValidaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de assinatura de mÃƒÆ’Ã‚Â©todo e chamadas.
+- [x] VerificaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de CameraFollow2D setup idÃƒÆ’Ã‚Âªntico entre Farm/Town.
+- [x] ConfirmaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de Cave jÃƒÆ’Ã‚Â¡ estar correto.
+- [ ] Unity compilaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o nÃƒÆ’Ã‚Â£o testada.
+- [ ] Play Mode Farm/Town/Cave follow nÃƒÆ’Ã‚Â£o testado.
 
-### Pendências / Riscos
+### PendÃƒÆ’Ã‚Âªncias / Riscos
 
-- **Validação crítica:** Código deve compilar. Play Mode deve mostrar:
-  - Farm: câmera segue player suavemente.
-  - Town: câmera segue player suavemente.
-  - Cave: câmera continua seguindo player (já funcionava).
-- **Transições:** Farm ↔ Town ↔ Cave devem funcionar sem erros.
-- **HUD:** Não deve duplicar em transições.
+- **ValidaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o crÃƒÆ’Ã‚Â­tica:** CÃƒÆ’Ã‚Â³digo deve compilar. Play Mode deve mostrar:
+  - Farm: cÃƒÆ’Ã‚Â¢mera segue player suavemente.
+  - Town: cÃƒÆ’Ã‚Â¢mera segue player suavemente.
+  - Cave: cÃƒÆ’Ã‚Â¢mera continua seguindo player (jÃƒÆ’Ã‚Â¡ funcionava).
+- **TransiÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes:** Farm ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬Â Town ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬Â Cave devem funcionar sem erros.
+- **HUD:** NÃƒÆ’Ã‚Â£o deve duplicar em transiÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes.
 
-### Próximo passo recomendado
+### PrÃƒÆ’Ã‚Â³ximo passo recomendado
 
-1. Validar compilação no Unity: regenerar FarmScene, TownScene, CaveScene via menus editor.
-2. Testar Play Mode: mover player em Farm → Town → Cave e voltar. Camera deve seguir em todas as cenas.
-3. Confirmar HUD não duplica após transições (Shift+F5 save/load test).
+1. Validar compilaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o no Unity: regenerar FarmScene, TownScene, CaveScene via menus editor.
+2. Testar Play Mode: mover player em Farm ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ Town ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ Cave e voltar. Camera deve seguir em todas as cenas.
+3. Confirmar HUD nÃƒÆ’Ã‚Â£o duplica apÃƒÆ’Ã‚Â³s transiÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes (Shift+F5 save/load test).
 4. Atualizar `docs/IMPLEMENTATION_STATUS.md`.
-5. Preparar commit com mudanças de editor scripts e docs.
+5. Preparar commit com mudanÃƒÆ’Ã‚Â§as de editor scripts e docs.
 
 ---
 
-## 2026-05-20 - FIX_CAVE_EXITS_AND_SPARSE_RESOURCES_v1.0 Implementação Completa
+## 2026-05-20 - FIX_CAVE_EXITS_AND_SPARSE_RESOURCES_v1.0 ImplementaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o Completa
 
-**Responsável:** Claude (Haiku 4.5)  
-**Branch:** `feature/fix-cave-exits-sparse-resources`  
-**Escopo:** Corrigir o loop mínimo da cave procedural com exits funcionais e resource nodes esparsos.
+**ResponsÃƒÆ’Ã‚Â¡vel:** Claude (Haiku 4.5)
+**Branch:** `feature/fix-cave-exits-sparse-resources`
+**Escopo:** Corrigir o loop mÃƒÆ’Ã‚Â­nimo da cave procedural com exits funcionais e resource nodes esparsos.
 
-### Alterações
+### AlteraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes
 
 **CaveExitPortal.cs (R1-R4):**
 - Adicionado `_targetScenePath` field para suportar caminhos de cena no Editor.
@@ -1512,17 +1531,17 @@ Esse arquivo preserva o log operacional anterior inteiro antes da redução do l
 - BackExit level 1: carrega FarmScene com spawn id `farm_from_cave` (corrigido de `cave_from_farm`).
 - BackExit level > 1: chama `EnterLevel(level - 1)` + `GenerateCurrentLevel()`.
 - ForwardExit: chama `EnterLevel(level + 1)` + `GenerateCurrentLevel()`.
-- `LoadTargetScene()`: usa `_targetScenePath` se disponível (R2).
+- `LoadTargetScene()`: usa `_targetScenePath` se disponÃƒÆ’Ã‚Â­vel (R2).
 
 **CaveRuntimeMaterializer.cs (R5, R7, R8, R9):**
 - Adicionado campos: `_levelController`, `_resourceSpawnChance` (0.28), `_minResourceNodes` (1), `_maxResourceNodes` (4).
 - `MaterializeEntranceAndExit()`: passa `_levelController` aos inicializadores de exits.
-- `MaterializeResourceNodes()`: implementa spawn chance determinística com randomness baseado em seeds.
+- `MaterializeResourceNodes()`: implementa spawn chance determinÃƒÆ’Ã‚Â­stica com randomness baseado em seeds.
   - Itera sobre spawn points com roll de chance.
-  - Limita máximo em `_maxResourceNodes`.
+  - Limita mÃƒÆ’Ã‚Â¡ximo em `_maxResourceNodes`.
   - Garante pelo menos `_minResourceNodes` se houver candidatos.
 - `SelectAndConfigureResourceNode()`: agora aceita spawnIndex e spawnPosition.
-- `SelectResourceNodeData()`: usa seed por posição e índice para variedade.
+- `SelectResourceNodeData()`: usa seed por posiÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o e ÃƒÆ’Ã‚Â­ndice para variedade.
   - Implementa pesos simples: Stone 70%, Copper 20%, CaveRootTree 10% (R9).
 
 **CaveRuntimeMaterializationResult.cs (R3):**
@@ -1533,197 +1552,197 @@ Esse arquivo preserva o log operacional anterior inteiro antes da redução do l
   - `_levelController = controller`.
   - `_resourceSpawnChance = 0.28`.
   - `_minResourceNodes = 1`, `_maxResourceNodes = 4`.
-- `EnsureResourceNodeDatabase()`: já populava Stone/Copper/CaveRootTree (validado).
+- `EnsureResourceNodeDatabase()`: jÃƒÆ’Ã‚Â¡ populava Stone/Copper/CaveRootTree (validado).
 
 **DebugHud.cs (R10):**
 - `DrawCaveSummary()`: exibe:
   - ResourceCandidates (total de candidatos).
-  - Resources (criados, após aplicar chance).
+  - Resources (criados, apÃƒÆ’Ã‚Â³s aplicar chance).
   - BackExitPosition, ForwardExitPosition.
 
 ### Testes
 
-- [x] Revisão estática de CaveExitPortal, CaveRuntimeMaterializer, resultado, editor script e HUD.
-- [x] Validação de spawn chance logic e weighted selection.
-- [x] Verificação de calls a GenerateCurrentLevel em exits.
-- [ ] Unity compilação não testada.
-- [ ] Play Mode exitsdão e regeneração não testados.
+- [x] RevisÃƒÆ’Ã‚Â£o estÃƒÆ’Ã‚Â¡tica de CaveExitPortal, CaveRuntimeMaterializer, resultado, editor script e HUD.
+- [x] ValidaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de spawn chance logic e weighted selection.
+- [x] VerificaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de calls a GenerateCurrentLevel em exits.
+- [ ] Unity compilaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o nÃƒÆ’Ã‚Â£o testada.
+- [ ] Play Mode exitsdÃƒÆ’Ã‚Â£o e regeneraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o nÃƒÆ’Ã‚Â£o testados.
 
-### Pendências / Riscos
+### PendÃƒÆ’Ã‚Âªncias / Riscos
 
-- **Validação crítica:** Código deve compilar. Play Mode deve:
+- **ValidaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o crÃƒÆ’Ã‚Â­tica:** CÃƒÆ’Ã‚Â³digo deve compilar. Play Mode deve:
   - BackExit level 1 voltar para Farm com spawn farm_from_cave.
-  - BackExit level > 1 voltar para nível anterior e regenerar.
-  - ForwardExit avançar e regenerar.
-  - Nodes aparecer em quantidade esparsa (1-4, não 8).
-  - Nodes variar com seed por posição.
+  - BackExit level > 1 voltar para nÃƒÆ’Ã‚Â­vel anterior e regenerar.
+  - ForwardExit avanÃƒÆ’Ã‚Â§ar e regenerar.
+  - Nodes aparecer em quantidade esparsa (1-4, nÃƒÆ’Ã‚Â£o 8).
+  - Nodes variar com seed por posiÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o.
 - **Acceptance Criteria AC1-AC14:** Aguardando testes no Unity.
 
-### Próximo passo recomendado
+### PrÃƒÆ’Ã‚Â³ximo passo recomendado
 
-1. Validar compilação no Unity.
+1. Validar compilaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o no Unity.
 2. Rodar Create MVP FarmScene, TownScene, CaveScene.
-3. Testar Play Mode: Cave entry → BackExit → Farm, Cave entry → ForwardExit → level 2 → BackExit → level 1 → BackExit → Farm.
+3. Testar Play Mode: Cave entry ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ BackExit ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ Farm, Cave entry ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ ForwardExit ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ level 2 ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ BackExit ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ level 1 ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ BackExit ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ Farm.
 4. Verificar HUD CaveLevel, ResourceCandidates, Materialized resources.
-5. Confirmar nodes aparecem com frequência baixa (1-4 em vez de 8).
+5. Confirmar nodes aparecem com frequÃƒÆ’Ã‚Âªncia baixa (1-4 em vez de 8).
 6. Confirmar Shift+R muda nodes.
-7. Regressão: Farm/Town/Cave camera, hotbar, tools, plantio, árvore, pesca.
+7. RegressÃƒÆ’Ã‚Â£o: Farm/Town/Cave camera, hotbar, tools, plantio, ÃƒÆ’Ã‚Â¡rvore, pesca.
 
 ---
 
 ## 2026-05-20 - FIX_CAVE_FORWARD_EXIT_LEVEL_ADVANCE_v1.0 Patch Completo
 
-**Responsável:** Claude (Haiku 4.5)  
-**Branch:** `feature/fix-cave-exits-sparse-resources`  
-**Escopo:** Reforçar avanço de nível, adicionar fallback GetComponent e melhorar logging/prompts.
+**ResponsÃƒÆ’Ã‚Â¡vel:** Claude (Haiku 4.5)
+**Branch:** `feature/fix-cave-exits-sparse-resources`
+**Escopo:** ReforÃƒÆ’Ã‚Â§ar avanÃƒÆ’Ã‚Â§o de nÃƒÆ’Ã‚Â­vel, adicionar fallback GetComponent e melhorar logging/prompts.
 
-### Alterações
+### AlteraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes
 
 **CaveRuntimeMaterializer.cs:**
 - Adicionado fallback GetComponent em Materialize() para _caveRunManager e _levelController.
-- Seguro porque CaveRuntime contém ambos os componentes no mesmo GameObject.
+- Seguro porque CaveRuntime contÃƒÆ’Ã‚Â©m ambos os componentes no mesmo GameObject.
 
 **CaveExitPortal.cs:**
-- Prompts melhorados: "Voltar / Sair" (BackExit) e "Avançar para próximo nível" (ForwardExit).
-- HandleBackExit/HandleForwardExit: logging detalhado de transição de nível.
-- Mensagens de erro melhoradas para regeneração de cena.
+- Prompts melhorados: "Voltar / Sair" (BackExit) e "AvanÃƒÆ’Ã‚Â§ar para prÃƒÆ’Ã‚Â³ximo nÃƒÆ’Ã‚Â­vel" (ForwardExit).
+- HandleBackExit/HandleForwardExit: logging detalhado de transiÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de nÃƒÆ’Ã‚Â­vel.
+- Mensagens de erro melhoradas para regeneraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de cena.
 
-### Validação Rápida
+### ValidaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o RÃƒÆ’Ã‚Â¡pida
 
 1. Regenerar CaveScene via Create MVP menu.
 2. Entrar na Cave pela Farm.
-3. Aproximar do ForwardExit (magenta) → HUD exibe "Avançar para próximo nível".
-4. Pressionar E → Console mostra transição Level 1 → 2.
+3. Aproximar do ForwardExit (magenta) ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ HUD exibe "AvanÃƒÆ’Ã‚Â§ar para prÃƒÆ’Ã‚Â³ximo nÃƒÆ’Ã‚Â­vel".
+4. Pressionar E ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ Console mostra transiÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o Level 1 ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ 2.
 5. Layout regenera.
 6. BackExit volta para Level 1.
 7. BackExit volta para Farm.
 
-### Pendências
+### PendÃƒÆ’Ã‚Âªncias
 
-- Unity compilação e Play Mode validation.
+- Unity compilaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o e Play Mode validation.
 - Verificar se prompts descritivos aparecem corretamente no HUD.
 
-### Próximo passo
+### PrÃƒÆ’Ã‚Â³ximo passo
 
-Regenerar cena, testar Play Mode com logging completo, validar transições.
+Regenerar cena, testar Play Mode com logging completo, validar transiÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes.
 
 ---
 
-## 2026-05-20 - FIX_CAVE_SPAWN_ANCHOR_SAFE_POSITIONING Implementação Completa
+## 2026-05-20 - FIX_CAVE_SPAWN_ANCHOR_SAFE_POSITIONING ImplementaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o Completa
 
-**Responsável:** Claude (Haiku 4.5)  
-**Branch:** `feature/fix-cave-spawn-anchor-safe-positioning`  
-**Escopo:** Corrigir posicionamento seguro do player usando CaveSpawnAnchor. Player nunca deve spawnar exatamente no portal, e deve aparecerperto da âncora correta (Entrance para novo nível, ForwardExit ao voltar).
+**ResponsÃƒÆ’Ã‚Â¡vel:** Claude (Haiku 4.5)
+**Branch:** `feature/fix-cave-spawn-anchor-safe-positioning`
+**Escopo:** Corrigir posicionamento seguro do player usando CaveSpawnAnchor. Player nunca deve spawnar exatamente no portal, e deve aparecerperto da ÃƒÆ’Ã‚Â¢ncora correta (Entrance para novo nÃƒÆ’Ã‚Â­vel, ForwardExit ao voltar).
 
-### Alterações
+### AlteraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes
 
 **CaveRuntimeMaterializer.cs:**
 - Assinatura de `Materialize()` modificada para aceitar `CaveSpawnAnchor spawnAnchor = CaveSpawnAnchor.Entrance`
-- Novo método `ResolveAnchorPosition()` → retorna grid position da âncora (Entrance, ForwardExit, BackExit)
-- Novo método `ResolvePlayerSpawnGrid()` → encontra posição segura walkable próxima da âncora
-- Novo método `FindSafeAdjacentWalkableTile()` → lookup em 8 direções por tile walkable
+- Novo mÃƒÆ’Ã‚Â©todo `ResolveAnchorPosition()` ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ retorna grid position da ÃƒÆ’Ã‚Â¢ncora (Entrance, ForwardExit, BackExit)
+- Novo mÃƒÆ’Ã‚Â©todo `ResolvePlayerSpawnGrid()` ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ encontra posiÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o segura walkable prÃƒÆ’Ã‚Â³xima da ÃƒÆ’Ã‚Â¢ncora
+- Novo mÃƒÆ’Ã‚Â©todo `FindSafeAdjacentWalkableTile()` ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ lookup em 8 direÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes por tile walkable
 - Player posicionado via `GridToWorld(ResolvePlayerSpawnGrid(...))` em vez de sempre Entrance
 - Logging detalhado: anchor position, grid resolvida, world position
 
 **CaveLevelRuntimeController.cs:**
-- Novo método público `SetSpawnAnchorForNextGeneration(CaveSpawnAnchor anchor)` para CaveExitPortal definir âncora
+- Novo mÃƒÆ’Ã‚Â©todo pÃƒÆ’Ã‚Âºblico `SetSpawnAnchorForNextGeneration(CaveSpawnAnchor anchor)` para CaveExitPortal definir ÃƒÆ’Ã‚Â¢ncora
 - `GenerateCurrentLevel()` passa `_currentSpawnAnchor` ao materializer
 - `RestoreFromSnapshot()` passa `_currentSpawnAnchor` ao materializer
-- `DetermineSpawnAnchorFromTransition()` expandida para detectar transições intracena (ForwardExit/BackExit)
+- `DetermineSpawnAnchorFromTransition()` expandida para detectar transiÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes intracena (ForwardExit/BackExit)
 - Logging expandido: SpawnAnchor, RunSeed, LayoutHash, UsedSnapshot, GeneratedNewSnapshot
 
 **CaveExitPortal.cs:**
 - `HandleForwardExit()` chama `SetSpawnAnchorForNextGeneration(CaveSpawnAnchor.Entrance)` antes de gerar
 - `HandleBackExit()` chama `SetSpawnAnchorForNextGeneration(CaveSpawnAnchor.ForwardExit)` antes de restaurar/gerar
-- Logging detalhado de transições com spawn anchor
+- Logging detalhado de transiÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes com spawn anchor
 
 **DebugHud.cs:**
 - `DrawCaveSummary()` exibe `SpawnAnchor: {valor}`
-- Exibe `LayoutHash: {shortened}` quando nível está carregado
+- Exibe `LayoutHash: {shortened}` quando nÃƒÆ’Ã‚Â­vel estÃƒÆ’Ã‚Â¡ carregado
 
-### Documentação
+### DocumentaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o
 
-- Criado `docs/audits/FIX_CAVE_SPAWN_ANCHOR_SAFE_POSITIONING.md` com detalhes técnicos, fluxo, critérios de aceite
+- Criado `docs/audits/FIX_CAVE_SPAWN_ANCHOR_SAFE_POSITIONING.md` com detalhes tÃƒÆ’Ã‚Â©cnicos, fluxo, critÃƒÆ’Ã‚Â©rios de aceite
 
 ### Testes
 
-- [x] Revisão estática de código.
-- [x] Validação de lógica de determinação de anchor.
-- [x] Validação de safe tile lookup (adjacent search).
-- [x] Verificação de logging detalhado.
-- [ ] Unity compilação não testada.
-- [ ] Play Mode não testado.
+- [x] RevisÃƒÆ’Ã‚Â£o estÃƒÆ’Ã‚Â¡tica de cÃƒÆ’Ã‚Â³digo.
+- [x] ValidaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de lÃƒÆ’Ã‚Â³gica de determinaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de anchor.
+- [x] ValidaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de safe tile lookup (adjacent search).
+- [x] VerificaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de logging detalhado.
+- [ ] Unity compilaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o nÃƒÆ’Ã‚Â£o testada.
+- [ ] Play Mode nÃƒÆ’Ã‚Â£o testado.
 
-### Pendências / Riscos
+### PendÃƒÆ’Ã‚Âªncias / Riscos
 
-- **Validação crítica:** Código deve compilar. Play Mode deve:
-  - Player spawnar perto de Entrance para nível novo (ForwardExit)
+- **ValidaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o crÃƒÆ’Ã‚Â­tica:** CÃƒÆ’Ã‚Â³digo deve compilar. Play Mode deve:
+  - Player spawnar perto de Entrance para nÃƒÆ’Ã‚Â­vel novo (ForwardExit)
   - Player spawnar perto de ForwardExit ao voltar (BackExit)
   - Player nunca spawnar exatamente no portal
-  - Apertar interact imediato não deve sair (deve estar afastado do portal)
+  - Apertar interact imediato nÃƒÆ’Ã‚Â£o deve sair (deve estar afastado do portal)
   - HUD exibe SpawnAnchor, LayoutHash, UsedSnapshot
 - **WalkableTiles:** Generator deve populardocumentedly para lookup funcionar
-- **Snapshot coherence:** Snapshots mantêm entrada/saída, coerência preservada
+- **Snapshot coherence:** Snapshots mantÃƒÆ’Ã‚Âªm entrada/saÃƒÆ’Ã‚Â­da, coerÃƒÆ’Ã‚Âªncia preservada
 
-### Próximo passo recomendado
+### PrÃƒÆ’Ã‚Â³ximo passo recomendado
 
-1. Validar compilação no Unity.
+1. Validar compilaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o no Unity.
 2. Regenerar CaveScene.
-3. Play Mode: Farm → Cave (Entrance), Level 1 → 2 (Entrance), Level 2 → 1 (ForwardExit).
-4. Confirmar posição ≠ portal.
-5. Confirmar interact imediato não sai.
+3. Play Mode: Farm ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ Cave (Entrance), Level 1 ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ 2 (Entrance), Level 2 ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ 1 (ForwardExit).
+4. Confirmar posiÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o ÃƒÂ¢Ã¢â‚¬Â°Ã‚Â  portal.
+5. Confirmar interact imediato nÃƒÆ’Ã‚Â£o sai.
 6. Commit + PR.
 
 ---
 
-## 2026-05-20 - FIX_CAVE_SNAPSHOT_REPLAY_FULL_LAYOUT Implementação Completa
+## 2026-05-20 - FIX_CAVE_SNAPSHOT_REPLAY_FULL_LAYOUT ImplementaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o Completa
 
-**Responsável:** Claude (Haiku 4.5)  
-**Branch:** `feature/fix-cave-snapshot-replay-full-layout`  
+**ResponsÃƒÆ’Ã‚Â¡vel:** Claude (Haiku 4.5)
+**Branch:** `feature/fix-cave-snapshot-replay-full-layout`
 **Escopo:** Corrigir snapshot replay para salvar e restaurar layout completo (Width, Height, WalkableTiles, WallTiles, EnemySpawnPoints, ResourceSpawnPoints).
 
-### Alterações
+### AlteraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes
 
 **VisitedLevelSnapshot.cs:**
 - Adicionados campos: Width, Height, WalkableTilesList, WallTilesList, EnemySpawnPointsList, ResourceSpawnPointsList
 - Nova classe SerializedCaveGenerationPoint com pointTypeValue e Position
 - IsValid() expandida: verifica Width > 0, Height > 0, WalkableTilesList.Count > 0
-- Novos métodos: SetLayoutDimensions(), AddWalkableTile(), AddWallTile(), AddEnemySpawnPoint(), AddResourceSpawnPoint()
+- Novos mÃƒÆ’Ã‚Â©todos: SetLayoutDimensions(), AddWalkableTile(), AddWallTile(), AddEnemySpawnPoint(), AddResourceSpawnPoint()
 
 **CaveLevelRuntimeController.cs:**
 - CaptureSnapshot() agora captura layout completo (dimensions, tiles, spawn points)
 - Logging detalhado com counts: WalkableTiles, WallTiles, EnemySpawnPoints, ResourceSpawnPoints
-- RestoreFromSnapshot() agora reconstrói CaveGeneratedLevel completo
-- Reconstrói HashSets de tiles e Listas de spawn points a partir do snapshot
+- RestoreFromSnapshot() agora reconstrÃƒÆ’Ã‚Â³i CaveGeneratedLevel completo
+- ReconstrÃƒÆ’Ã‚Â³i HashSets de tiles e Listas de spawn points a partir do snapshot
 - Logging expandido mostra counts restaurados
 
-**Documentação:**
-- Criado `docs/audits/FIX_CAVE_SNAPSHOT_REPLAY_FULL_LAYOUT.md` com detalhes técnicos
+**DocumentaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o:**
+- Criado `docs/audits/FIX_CAVE_SNAPSHOT_REPLAY_FULL_LAYOUT.md` com detalhes tÃƒÆ’Ã‚Â©cnicos
 
 ### Efeito
 
 **Antes:**
-- Farm → Cave → Farm → Cave → cave vazia (layout não materializado)
+- Farm ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ Cave ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ Farm ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ Cave ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ cave vazia (layout nÃƒÆ’Ã‚Â£o materializado)
 - Prompts apareciam mas floor/walls desapareciam
 
 **Depois:**
-- Farm → Cave → Farm → Cave → cave idêntica (layout completamente restaurado)
+- Farm ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ Cave ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ Farm ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ Cave ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ cave idÃƒÆ’Ã‚Âªntica (layout completamente restaurado)
 - Floor, walls, resource/enemy spawn points aparecem
-- Snapshots antigos sem layout são invalidados e regenerados uma vez
+- Snapshots antigos sem layout sÃƒÆ’Ã‚Â£o invalidados e regenerados uma vez
 
 ### Testes
 
-- [x] Revisão estática de código
-- [x] Validação de serialização (tipos simples, sem refs Unity)
-- [x] Verificação de IsValid() lógica
-- [x] Validação de reconstrução de CaveGeneratedLevel
-- [ ] Play Mode não testado
-- [ ] Unity compilação não testada
+- [x] RevisÃƒÆ’Ã‚Â£o estÃƒÆ’Ã‚Â¡tica de cÃƒÆ’Ã‚Â³digo
+- [x] ValidaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de serializaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o (tipos simples, sem refs Unity)
+- [x] VerificaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de IsValid() lÃƒÆ’Ã‚Â³gica
+- [x] ValidaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de reconstruÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de CaveGeneratedLevel
+- [ ] Play Mode nÃƒÆ’Ã‚Â£o testado
+- [ ] Unity compilaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o nÃƒÆ’Ã‚Â£o testada
 
-### Próximo passo recomendado
+### PrÃƒÆ’Ã‚Â³ximo passo recomendado
 
-1. Validar compilação no Unity
-2. Play Mode: Farm → Cave (layout visível), Cave → Farm → Cave (layout restaurado, visível)
+1. Validar compilaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o no Unity
+2. Play Mode: Farm ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ Cave (layout visÃƒÆ’Ã‚Â­vel), Cave ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ Farm ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ Cave (layout restaurado, visÃƒÆ’Ã‚Â­vel)
 3. Confirmar HUD mostra counts > 0
 4. Confirmar Console mostra logs detalhados
 5. Commit + PR
@@ -1732,7 +1751,7 @@ Regenerar cena, testar Play Mode com logging completo, validar transições.
 
 
 
-## Atualização 2026-05-23 — Harness operacional de agentes
+## AtualizaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o 2026-05-23 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Harness operacional de agentes
 
 Status: Documental em branch `docs/agent-execution-protocol`.
 
@@ -1743,18 +1762,18 @@ Escopo:
 - Criado `tools/docs/promote_spec.ps1`.
 - Criados templates para spec implementada, refinement implementado e project log.
 - `AGENTS.md`, `CLAUDE.md`, `README.md`, `docs/specs/README.md` e `SPEC_SOURCE_OF_TRUTH.md` atualizados para leitura por camadas.
-- Referências curtas a caminhos antigos corrigidas em spec/refinement FASE9C e refinement FASE9F-B para permitir validação documental.
-- Alterações Unity já existentes no worktree foram incluídas no escopo do commit por autorização humana nesta sessão.
+- ReferÃƒÆ’Ã‚Âªncias curtas a caminhos antigos corrigidas em spec/refinement FASE9C e refinement FASE9F-B para permitir validaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o documental.
+- AlteraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes Unity jÃƒÆ’Ã‚Â¡ existentes no worktree foram incluÃƒÆ’Ã‚Â­das no escopo do commit por autorizaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o humana nesta sessÃƒÆ’Ã‚Â£o.
 
 Testes:
-- `tools/docs/validate_docs.ps1` executado com sucesso antes do commit, validando estrutura documental, prefixos, placeholders e paths críticos.
-- `tools/docs/validate_docs.ps1` executado após o commit e reprovou apenas o guarda de mudanças em `Assets/`, porque as alterações Unity existentes foram incluídas por autorização humana.
-- Validação documental apenas.
-- Unity Play Mode não executado.
+- `tools/docs/validate_docs.ps1` executado com sucesso antes do commit, validando estrutura documental, prefixos, placeholders e paths crÃƒÆ’Ã‚Â­ticos.
+- `tools/docs/validate_docs.ps1` executado apÃƒÆ’Ã‚Â³s o commit e reprovou apenas o guarda de mudanÃƒÆ’Ã‚Â§as em `Assets/`, porque as alteraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes Unity existentes foram incluÃƒÆ’Ã‚Â­das por autorizaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o humana.
+- ValidaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o documental apenas.
+- Unity Play Mode nÃƒÆ’Ã‚Â£o executado.
 
-Pendências:
-- Ajustar ou ampliar scripts conforme novos fluxos de implementação.
-- Validar no Unity as alterações de cenas/assets incluídas por autorização humana.
+PendÃƒÆ’Ã‚Âªncias:
+- Ajustar ou ampliar scripts conforme novos fluxos de implementaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o.
+- Validar no Unity as alteraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes de cenas/assets incluÃƒÆ’Ã‚Â­das por autorizaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o humana.
 
-Próximo passo recomendado:
+PrÃƒÆ’Ã‚Â³ximo passo recomendado:
 - Revisar o commit local e executar Unity Play Mode em tarefa separada antes de push/PR.

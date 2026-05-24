@@ -1,4 +1,4 @@
-﻿# Registry de specs implementadas
+# Registry de specs implementadas
 
 > Status: registry ativo da documentacao reorganizada.
 > Historico preservado em `docs_old/`.
@@ -9,7 +9,7 @@
 | [spec_core_002_bootstrap_managers_e_runtime_references.md](implementados/spec_core_002_bootstrap_managers_e_runtime_references.md) | Implementado parcial | `docs_old/ARCH_fase4_v2.2.md` | `Assets/_Game/Scripts/Core/Bootstrap/GameBootstrap.cs` | `docs/refinements/implementados/ref_core_foundation_pr001_012.md` | Padronizar installers e validar cenas regeneradas. |
 | [spec_data_001_ids_registries_e_scriptableobjects.md](implementados/spec_data_001_ids_registries_e_scriptableobjects.md) | Implementado | `docs_old/CORE_CONTRACTS_EVENTS_SAVE_IDS_v1.0.md` | `Assets/_Game/Scripts/Core/Data/IIdentifiedData.cs` | `docs/refinements/implementados/ref_pr116_item_id_audit.md` | Completar taxonomia sem quebrar IDs existentes. |
 | [spec_save_001_json_save_load_cross_scene.md](implementados/spec_save_001_json_save_load_cross_scene.md) | Implementado parcial | `docs_old/IMPLEMENTATION_STATUS.md` | `Assets/_Game/Scripts/Save/SaveManager.cs` | `docs/refinements/implementados/ref_save_load_pr025_030.md` | Migration robusta e Play Mode completo pendentes. |
-| [spec_inventory_001_inventario_itens_gold_e_stacks.md](implementados/spec_inventory_001_inventario_itens_gold_e_stacks.md) | Implementado | `docs_old/CORE_CONTRACTS_EVENTS_SAVE_IDS_v1.0.md` | `Assets/_Game/Scripts/Inventory/InventoryManager.cs` | `docs/refinements/implementados/ref_core_foundation_pr001_012.md` | UI final de inventario e itemizacao futura. |
+| [spec_inventory_001_inventario_itens_gold_e_stacks.md](implementados/spec_inventory_001_inventario_itens_gold_e_stacks.md) | Implementado parcial | `docs_old/CORE_CONTRACTS_EVENTS_SAVE_IDS_v1.0.md` | `Assets/_Game/Scripts/Inventory/InventoryManager.cs` | `docs/refinements/implementados/ref_core_foundation_pr001_012.md` | O inventory atual usa Dictionary<string, int>, isto e, uma stack agregada por itemId. Ainda nao existem slots reais, multiplas stacks por item, capacidade final de mochila, drag/drop ou UI final. |
 | [spec_farm_001_farm_scene_movimento_interacao.md](implementados/spec_farm_001_farm_scene_movimento_interacao.md) | Implementado parcial | `docs_old/FASE7_SPEC_MVP_FARM_v2.2.md` | `Assets/_Game/Scripts/Player/PlayerController.cs` | `docs/refinements/implementados/ref_farm_loop_pr013_017.md` | Arte, UI final e smoke Unity completo. |
 | [spec_farm_002_plots_seeds_growth_harvest.md](implementados/spec_farm_002_plots_seeds_growth_harvest.md) | Implementado parcial | `docs_old/FASE7_SPEC_MVP_FARM_v2.2.md` | `Assets/_Game/Scripts/Farm/**` | `docs/refinements/implementados/ref_farm_loop_pr013_017.md` | Irrigacao, solo avancado e UX final. |
 | [spec_farm_003_arvores_pesca_pickups_world_activities.md](implementados/spec_farm_003_arvores_pesca_pickups_world_activities.md) | Implementado parcial | `docs_old/FASE9C_TOOLS_FARM_COMBAT_REFINEMENT_v1.0.md` | `Assets/_Game/Scripts/World/**` | `docs/refinements/implementados/ref_world_shop_hardening_pr031_045.md` | Fishing final, stamina, loot tables e visual polish. |
@@ -24,7 +24,7 @@
 | [spec_ui_001_debug_hud_e_feedback_mvp.md](implementados/spec_ui_001_debug_hud_e_feedback_mvp.md) | Implementado parcial | `docs_old/FASE9E_UI_HOTBAR_INVENTORY_EQUIPMENT_SPEC_v1.0.md` | `Assets/_Game/Scripts/UI/DebugHud.cs` | `docs/refinements/implementados/ref_economy_hunger_hud_pr018_024.md` | UI final Canvas e UX completa. |
 | [spec_ui_002_hud_tools_hotbar_progression_debug.md](implementados/spec_ui_002_hud_tools_hotbar_progression_debug.md) | Implementado parcial | `docs_old/audits/PR131_VALIDACAO_HUD_TOOLS_PROGRESSION.md` | `Assets/_Game/Scripts/UI/DebugHud.cs` | `docs/refinements/implementados/ref_pr131_validacao_hud_tools_progression.md` | HUD real separado do DebugHud. |
 | [spec_tools_001_tools_equipment_hotbar_parcial.md](implementados/spec_tools_001_tools_equipment_hotbar_parcial.md) | Implementado parcial | `docs_old/FASE9E_UI_HOTBAR_INVENTORY_EQUIPMENT_SPEC_v1.0.md` | `Assets/_Game/Scripts/Tools/**` | `docs/refinements/implementados/ref_tools_equipment_hotbar_progression_damage_pr101_130.md` | Durabilidade, equipamento completo e UI final. |
-| [spec_progression_001_xp_level_atributos_parcial.md](implementados/spec_progression_001_xp_level_atributos_parcial.md) | Implementado parcial estabilizado | `docs_old/FASE9E_PLAYER_LEVEL_UP_PROGRESSION_SPEC_v1.0.md` | `Assets/_Game/Scripts/Player/Progression/PlayerProgressionManager.cs` | `docs/refinements/implementados/ref_tools_equipment_hotbar_progression_damage_pr101_130.md` | Gasto/distribuicao final de atributos, active slots, capstones e respec em FASE9K. |
+| [spec_progression_001_xp_level_atributos_parcial.md](implementados/spec_progression_001_xp_level_atributos_parcial.md) | Implementado parcial estabilizado | `docs_old/FASE9E_PLAYER_LEVEL_UP_PROGRESSION_SPEC_v1.0.md` | `Assets/_Game/Scripts/Player/Progression/PlayerProgressionManager.cs` | `docs/refinements/implementados/ref_tools_equipment_hotbar_progression_damage_pr101_130.md` | SkillPoint a cada 2 niveis implementado: +1 em niveis pares, comecando no level 2. AttributePoint: +1 por level up. Pendentes: gasto/distribuicao final de atributos, skill trees completas, active slots, capstones, respec Fonte de Anya e save/load completo. |
 | [spec_damage_001_damage_formula_mvp.md](implementados/spec_damage_001_damage_formula_mvp.md) | Implementado parcial | `docs_old/FASE9E_DAMAGE_STATUS_FORMULA_SPEC_v1.0.md` | `Assets/_Game/Scripts/Combat/DamageCalculator.cs` | `docs/refinements/implementados/ref_tools_equipment_hotbar_progression_damage_pr101_130.md` | Status effects, elementos e resistencias completas. |
 | [spec_cave_002_procedural_contracts_resources_parcial.md](implementados/spec_cave_002_procedural_contracts_resources_parcial.md) | Implementado parcial | `docs_old/FASE9F_CAVE_RESOURCES_ENCOUNTERS_SPEC_v1.0.md` | `Assets/_Game/Scripts/Cave/Generation/**` | `docs/refinements/implementados/ref_cave_procedural_runtime_pr141_153.md` | Loot tables, bioma progressivo, enemy spawn final e Unity. |
 | [spec_cave_003_stable_run_snapshots_replay_parcial.md](implementados/spec_cave_003_stable_run_snapshots_replay_parcial.md) | Implementado em codigo - validacao Unity pendente | `docs_old/FASE9F_CAVE_REPLAY_CONTRACTS_v1.0.md` | `Assets/_Game/Scripts/Cave/Runtime/VisitedLevelSnapshot.cs` | `docs/refinements/implementados/ref_cave_stable_run_replay_pr170_192.md` | Play Mode de snapshots/replay pendente. |
@@ -38,4 +38,14 @@
 
 ## Rastreabilidade documental
 
-Para rastreabilidade completa entre docs_old/ e a documentação ativa, ver docs/DOCS_OLD_TO_ACTIVE_CROSSWALK.md.
+Para rastreabilidade completa entre docs_old/ e a documentaÃƒÂ§ÃƒÂ£o ativa, ver docs/DOCS_OLD_TO_ACTIVE_CROSSWALK.md.
+
+
+## Overnight 2026-05-23
+
+A execucao overnight foi reclassificada como parcial. Backend/data skeleton estabilizado e hotfixes pos-merge foram preservados, mas FASE9H/I/J/K/L nao devem ser tratadas como completas.
+
+
+## Overnight 2026-05-23
+
+A execucao overnight foi reclassificada como parcial. Backend/data skeleton estabilizado e hotfixes pos-merge foram preservados, mas FASE9H/I/J/K/L nao devem ser tratadas como completas.
