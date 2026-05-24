@@ -17,15 +17,24 @@ namespace CindarsHope.Craft.Data
         public string OutputItemId;
         public int OutputAmount = 1;
 
+        // Spec 07 - Crafting queue and timing
+        public float CraftTimeSeconds = 0f;
+        public int StaminaCost = 0;
+        public bool IsUnlocked = true;
+
         public void SetId(string id)
         {
             _id = id;
         }
 
+        public bool IsInstantaneous => CraftTimeSeconds <= 0f;
+
         private void OnValidate()
         {
             RequiredWorkshopLevel = Mathf.Max(1, RequiredWorkshopLevel);
             OutputAmount = Mathf.Max(1, OutputAmount);
+            CraftTimeSeconds = Mathf.Max(0f, CraftTimeSeconds);
+            StaminaCost = Mathf.Max(0, StaminaCost);
 
             if (Ingredients == null)
             {
