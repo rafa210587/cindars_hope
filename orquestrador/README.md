@@ -508,6 +508,96 @@ python .\orquestrador\run_orquestrador.py --mode spec --input-dir ".\my_custom_f
 
 ---
 
+## Real-Time Monitoring & Observability
+
+### Quick Start: 4-Tab Auto-Monitoring
+
+Auto-open 4 PowerShell tabs with all monitoring streams:
+
+```powershell
+.\orquestrador\run_with_monitoring.ps1 `
+  -Mode prompt `
+  -InputDir ".\docs\agent_prompts\a_executar"
+```
+
+Opens automatically:
+1. **Tab 1** - Main orchestrator execution
+2. **Tab 2** - Live monitor (status updates every 2s)
+3. **Tab 3** - Claude raw output stream (80-line tail)
+4. **Tab 4** - Git watch stream (30-line tail)
+
+```powershell
+# With options
+.\orquestrador\run_with_monitoring.ps1 `
+  -Mode prompt `
+  -InputDir ".\docs\agent_prompts\a_executar" `
+  -NoAutoCommit `
+  -StopOnFailure
+```
+
+### Manual Setup (3+ Terminals)
+
+If you prefer manual control:
+
+```powershell
+# Terminal 1: Main execution
+python .\orquestrador\run_orquestrador.py `
+  --mode prompt `
+  --input-dir ".\docs\agent_prompts\a_executar" `
+  --no-auto-commit
+
+# Terminal 2: Monitor status
+python .\orquestrador\run_orquestrador.py --monitor
+
+# Terminal 3: Stream Claude output
+$run = Get-ChildItem .\orquestrador\logs -Directory | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+$item = Get-ChildItem $run.FullName -Directory | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+Get-Content "$($item.FullName)\agent_primary_combined.log" -Wait -Tail 80
+
+# Terminal 4 (optional): Watch git changes
+Get-Content "$($item.FullName)\git_watch.log" -Wait -Tail 30
+```
+
+### Control Execution
+
+Stop gracefully:
+```powershell
+New-Item .\orquestrador\state\STOP -ItemType File -Force
+```
+
+Pause after current item:
+```powershell
+New-Item .\orquestrador\state\PAUSE -ItemType File -Force
+```
+
+### Log Files Generated
+
+Each item generates real-time logs at `orquestrador/logs/<timestamp>/<item_id>/`:
+
+- `agent_primary_stdout.log` - Agent output (tail -Wait)
+- `agent_primary_combined.log` - Combined output with timestamps
+- `events.jsonl` - JSON event stream (all events)
+- `timeline.md` - Human-readable timeline
+- `status.json` - Current status (read by monitor)
+- `heartbeat.log` - Periodic heartbeat with elapsed time
+- `git_watch.log` - Periodic git status/diff snapshot
+- `changed_files_live.txt` - Changed file count
+
+### Configuration
+
+Enable streaming observability in `orquestrador_config.json`:
+
+```json
+{
+  "enable_streaming_observability": true,
+  "agent_no_output_timeout_minutes": 10,
+  "heartbeat_interval_seconds": 5,
+  "git_watch_interval_seconds": 10
+}
+```
+
+---
+
 ## Next Steps
 
 1. Review logs in `orquestrador/logs/<timestamp>/`
