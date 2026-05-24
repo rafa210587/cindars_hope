@@ -15,6 +15,8 @@ namespace CindarsHope.Core
         [SerializeField] private ModalManager _modalManager;
 
         private float _phaseTimer = 0f;
+        private float _tickTimer = 0f;
+        private const float TickIntervalSeconds = 1f;
         private GamePhaseChangedEvent.GamePhase _currentPhase = GamePhaseChangedEvent.GamePhase.Day;
         private bool _isInitialized = false;
 
@@ -81,6 +83,13 @@ namespace CindarsHope.Core
                 return;
 
             _phaseTimer += UnityEngine.Time.deltaTime;
+            _tickTimer += UnityEngine.Time.deltaTime;
+
+            if (_tickTimer >= TickIntervalSeconds)
+            {
+                _tickTimer -= TickIntervalSeconds;
+                GameEventBus.Publish(new GameTimeTickEvent(_phaseTimer, _timeManager != null ? _timeManager.CurrentDay : 1));
+            }
 
             float phaseDuration = _currentPhase == GamePhaseChangedEvent.GamePhase.Day
                 ? _timeBalance.DayDurationSeconds
