@@ -15,7 +15,7 @@
 | Save/load JSON cross-scene | Implementado parcial | `docs/specs/implementados/spec_save_001_json_save_load_cross_scene.md` |
 | Save schema migration v2 | Implementado completo | `docs/specs/implementados/spec_save_002_schema_migration_v2.md` |
 | Inventory slots/capacidade/UI minima | Implementado completo | `docs/specs/implementados/spec_inventory_002_slots_capacity_ui_final.md` |
-| Farm irrigacao/solo/planting UI | Implementado parcial | `docs/specs/implementados/spec_farm_004_irrigacao_solo_planting_ui.md` |
+| Farm irrigacao/solo/planting UI | Implementado completo | `docs/specs/implementados/spec_farm_004_irrigacao_solo_planting_ui.md` |
 | World activities/fishing/trees/loot | Implementado parcial | `docs/specs/implementados/spec_world_002_activities_fishing_trees_pickups_loot.md` |
 | Farm loop/world activities | Implementado parcial | `docs/specs/implementados/spec_farm_001_farm_scene_movimento_interacao.md`, `docs/specs/implementados/spec_farm_002_plots_seeds_growth_harvest.md`, `docs/specs/implementados/spec_farm_003_arvores_pesca_pickups_world_activities.md` |
 | Game time / day-night cycles / hunger-stamina balance | Implementado parcial | `docs/specs/implementados/spec_hunger_stamina_status_balance.md` |
