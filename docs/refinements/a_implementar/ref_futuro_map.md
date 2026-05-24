@@ -8,7 +8,6 @@ O refinamento de tracking documental foi reclassificado como implementado/parcia
 
 | Refinement | Spec futura relacionada | Observacao |
 |---|---|---|
-| [pre_refinamentos/refinamento_init_inventory_slots_capacity_ui.md](pre_refinamentos/refinamento_init_inventory_slots_capacity_ui.md) | docs/specs/a_implementar/spec_inventory_slots_capacity_ui_final.md | Pendencia real consolidada; depende da migration de save. |
 | [pre_refinamentos/refinamento_init_farm_irrigacao_solo_planting_ui.md](pre_refinamentos/refinamento_init_farm_irrigacao_solo_planting_ui.md) | docs/specs/a_implementar/spec_farm_irrigacao_solo_planting_ui.md | Pendencia real consolidada; nao implementar fora da ordem oficial. |
 | [pre_refinamentos/refinamento_init_world_activities_fishing_trees_pickups_loot.md](pre_refinamentos/refinamento_init_world_activities_fishing_trees_pickups_loot.md) | docs/specs/a_implementar/spec_world_activities_fishing_trees_pickups_loot.md | Pendencia real consolidada; nao implementar fora da ordem oficial. |
 | [pre_refinamentos/refinamento_init_economy_shop_stock_pricing_ui.md](pre_refinamentos/refinamento_init_economy_shop_stock_pricing_ui.md) | docs/specs/a_implementar/spec_economy_shop_stock_pricing_ui.md | Pendencia real consolidada; nao implementar fora da ordem oficial. |

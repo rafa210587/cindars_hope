@@ -13,7 +13,7 @@
 
 ## Contexto
 
-O save atual permanece em `CurrentSchemaVersion = 1`, mas agora possui uma infraestrutura minima para migrations futuras sem rejeitar caminhos validos por pontos diferentes do `SaveManager`.
+Esta spec entregou a infraestrutura minima de migrations. A spec 03 consumiu essa base e elevou o save para `CurrentSchemaVersion = 2` com migration real `v1 -> v2` de inventory slots.
 
 ## Problema resolvido
 
@@ -26,12 +26,12 @@ Antes, `LoadGame()` e `TryReadExistingValidSave()` tinham rejeicoes independente
 - Criar resultado estruturado.
 - Criar backup service.
 - Unificar leitura por `TryReadSaveWithMigration`.
-- Manter `CurrentSchemaVersion = 1`.
+- Manter `CurrentSchemaVersion = 1` nesta etapa inicial, ate existir payload real de migration.
 - Preparar base para migrations reais das specs seguintes.
 
 ## Fora de escopo mantido
 
-- Nao foi criada migration real `v1 -> v2`.
+- A migration real `v1 -> v2` foi entregue posteriormente pela spec 03 (`InventorySlotsV1ToV2Migration`).
 - Inventory slots, skill trees, cave death/corpse recovery e bestiary/faction discoveries permanecem em specs futuras.
 
 ---
@@ -67,7 +67,7 @@ Assets/_Game/Scripts/Save/Migrations/**
 
 ## Save/load
 
-- Save v1 continua carregando sem migration.
+- Save v1 passa pelo registry de migration quando carregado em runtime v2.
 - Saves com schema futuro sao rejeitados claramente.
 - Saves sem `SchemaVersion` sao tratados como legacy candidate se tiverem estrutura minima compativel.
 - Escrita de save usa `.tmp`.
@@ -76,7 +76,7 @@ Assets/_Game/Scripts/Save/Migrations/**
 ## Riscos de regressao
 
 - `dotnet build` nao compilou por falta de `Temp/obj/Assembly-CSharp/project.assets.json`, entao a validacao formal Unity final ainda e obrigatoria.
-- Como `CurrentSchemaVersion` segue em 1, o fluxo de backup/migration real sera exercitado pela primeira migration de payload real.
+- A primeira migration real passou a ser exercitada pela spec 03: `save_v1_to_v2_inventory_slots`.
 
 ---
 

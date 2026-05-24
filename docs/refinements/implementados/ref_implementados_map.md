@@ -19,6 +19,7 @@
 | [ref_economy_hunger_hud_pr018_024.md](ref_economy_hunger_hud_pr018_024.md) | spec_economy_001, spec_hunger_001, spec_ui_001 |
 | [ref_save_load_pr025_030.md](ref_save_load_pr025_030.md) | spec_save_001 |
 | [ref_save_schema_migration_v2.md](ref_save_schema_migration_v2.md) | spec_save_002 |
+| [ref_inventory_slots_capacity_ui_final.md](ref_inventory_slots_capacity_ui_final.md) | spec_inventory_002 |
 | [ref_world_shop_hardening_pr031_045.md](ref_world_shop_hardening_pr031_045.md) | spec_world_001, spec_farm_003, spec_economy_001 |
 | [ref_crafting_pr046_052.md](ref_crafting_pr046_052.md) | spec_craft_001 |
 | [ref_town_pr053_063.md](ref_town_pr053_063.md) | spec_town_001 |

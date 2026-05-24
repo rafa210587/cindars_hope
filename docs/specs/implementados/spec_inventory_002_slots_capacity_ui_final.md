@@ -1,7 +1,7 @@
 # SPEC - Inventory slots, capacidade e painel de itens
 
 > Spec ID: spec_inventory_slots_capacity_ui_final
-> Status: A implementar
+> Status: Implementado parcial
 > Ordem de execucao: 03
 > Depende de: 00, 01, 02
 > Bloqueia: 04, 06, 07, 10, 12, 17
@@ -9,6 +9,27 @@
 > Fonte: docs/specs/ como fonte unica; fontes absorvidas listadas abaixo.
 > Escopo: Evoluir Dictionary<string,int> para slots reais, multiplas stacks, capacidade, migration v1->v2 e painel minimo de itens.
 > Fora de escopo: UI/UX final completa do jogo, drag/drop final, sort/auto-organize, crafting UI final, shop UI final, skill tree UI, equipment visual completo, docs_old.
+> Evidencia: `Assets/_Game/Scripts/Inventory/InventoryManager.cs`, `Assets/_Game/Scripts/Inventory/InventorySlot.cs`, `Assets/_Game/Scripts/UI/InventoryPanelController.cs`, `Assets/_Game/Scripts/Save/Migrations/InventorySlotsV1ToV2Migration.cs`
+
+## Resultado da implementacao 2026-05-24
+
+Implementado parcial:
+
+- `InventoryManager` passou a usar slots reais com capacidade inicial 18 e limite 30.
+- `Items` agregado foi preservado como compatibilidade para economy, crafting, farm, pickups e debug HUD.
+- `InventorySaveData` agora possui `Capacity`, `Slots` e `Items` legado.
+- `CurrentSchemaVersion` subiu para 2 com migration real `v1 -> v2` para criar slots a partir de `Items`.
+- `AddItem` ficou transacional: se nao houver espaco para a quantidade completa, nao altera o inventario.
+- `RemoveItem`, `SplitSlot`, `DestroySlot` e binding simples de equip foram implementados por slot.
+- Painel modal minimo por IMGUI abre com `I`, fecha com `Esc`, navega com WASD e executa menu vertical por `Enter`/`Space`/`E`.
+
+Pendencias reais:
+
+- `Use` ainda depende de handlers especificos por tipo de item.
+- `Drop` nao remove item enquanto nao existir spawner runtime persistente de pickup; o painel informa a pendencia e preserva o item.
+- Drag/drop, sort/auto-organize e UI Canvas final seguem fora do MVP.
+- Equipamento completo por `ItemInstanceId` fica para spec 10.
+- Validacao Unity formal fica acumulada para o final da sequencia 02-10, conforme instrucao da tarefa.
 
 Fontes absorvidas:
 - specs/FASE9E_UI_HOTBAR_INVENTORY_EQUIPMENT/spec.md

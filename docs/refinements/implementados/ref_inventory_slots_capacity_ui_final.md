@@ -1,9 +1,30 @@
-# refinamento_init_inventory_slots_capacity_ui
+# ref_inventory_slots_capacity_ui_final
 
-> Status: Refinamento inicial a implementar
+> Status: Implementado parcial
 > Origem: validacao das specs implementadas/parciais
-> Spec futura relacionada: `docs/specs/a_implementar/spec_inventory_slots_capacity_ui_final.md`
+> Spec relacionada: `docs/specs/implementados/spec_inventory_002_slots_capacity_ui_final.md`
 > Objetivo: evoluir o inventory MVP por ID/stack agregada para inventario final com slots, multiplas stacks, capacidade, migration v1->v2 e painel de itens jogavel.
+
+## Resultado da implementacao 2026-05-24
+
+Entregue:
+
+- Modelo por slots no `InventoryManager`.
+- Save/load com `InventorySlotSaveData`, `Capacity` e `Items` legado.
+- Migration `v1 -> v2` registrada no save registry.
+- Capacidade inicial 18 e limite 30.
+- Multiplas stacks por item respeitando `ItemDataSO.MaxStack`.
+- Split automatico por metade.
+- Destroy com confirmacao no painel.
+- Equip como binding simples mantendo item no inventario.
+- Painel minimo IMGUI com `I`, `Esc`, WASD, `Enter`/`Space`/`E`.
+
+Pendencias preservadas:
+
+- `Use` por tipo de item.
+- Drop transacional com spawner persistente real.
+- UI Canvas final, drag/drop e sorting.
+- Binding final por `ItemInstanceId` na spec 10.
 
 ---
 

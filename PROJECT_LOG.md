@@ -1,4 +1,23 @@
 
+## Atualizacao 2026-05-24 - Spec 03 Inventory slots, capacidade e UI minima
+
+Status: Implementado parcial.
+
+Escopo:
+- `InventoryManager` migrado de modelo exclusivamente agregado para slots reais com capacidade inicial 18 e limite 30.
+- `Items` agregado permanece como compatibilidade para sistemas existentes.
+- `InventorySaveData` ganhou `Capacity`, `Slots` e manteve `Items` legado.
+- `CurrentSchemaVersion` subiu para `2` com migration real `v1 -> v2` (`InventorySlotsV1ToV2Migration`).
+- Adicionado painel minimo `InventoryPanelController` com `I`, `Esc`, WASD e menu Use/Equip/Drop/Destroy/Split.
+- Spec/refinement movidos para implementados como parciais.
+
+Pendencias:
+- `Use` por tipo de item e Drop transacional com spawner persistente real.
+- UI Canvas final, drag/drop, sort/auto-organize e binding final por `ItemInstanceId`.
+- Validacao Unity formal fica acumulada para o final da sequencia 02-10, conforme pedido.
+
+---
+
 ## Atualizacao 2026-05-24 - Spec 02 Save schema migration v2
 
 Status: Implementado parcial.

@@ -14,7 +14,7 @@
 | Data/IDs/registries | Implementado | `docs/specs/implementados/spec_data_001_ids_registries_e_scriptableobjects.md` |
 | Save/load JSON cross-scene | Implementado parcial | `docs/specs/implementados/spec_save_001_json_save_load_cross_scene.md` |
 | Save schema migration v2 | Implementado parcial | `docs/specs/implementados/spec_save_002_schema_migration_v2.md` |
-| Inventory/itens/gold/stacks | Implementado parcial | `docs/specs/implementados/spec_inventory_001_inventario_itens_gold_e_stacks.md` |
+| Inventory slots/capacidade/UI minima | Implementado parcial | `docs/specs/implementados/spec_inventory_002_slots_capacity_ui_final.md` |
 | Farm loop/world activities | Implementado parcial | `docs/specs/implementados/spec_farm_001_farm_scene_movimento_interacao.md`, `docs/specs/implementados/spec_farm_002_plots_seeds_growth_harvest.md`, `docs/specs/implementados/spec_farm_003_arvores_pesca_pickups_world_activities.md` |
 | Economy/hunger/crafting/town | Implementado parcial | `docs/specs/implementados/spec_economy_001_compra_venda_gold_e_sellables.md`, `docs/specs/implementados/spec_hunger_001_fome_comida_e_hp_por_fome.md`, `docs/specs/implementados/spec_craft_001_crafting_mvp.md`, `docs/specs/implementados/spec_town_001_town_scene_portais_npc_pip_comercio.md` |
 | Combat/damage/enemy stats | Implementado parcial | `docs/specs/implementados/spec_combat_001_slime_melee_contact_damage_drops.md`, `docs/specs/implementados/spec_combat_002_enemy_data_driven_stats.md`, `docs/specs/implementados/spec_damage_001_damage_formula_mvp.md` |
@@ -58,8 +58,9 @@ docs/refinements/implementados/ref_docs_single_source_tracking_reconciliation_pa
 
 ### Inventory
 
-O inventory atual usa Dictionary<string, int>, isto e, uma stack agregada por itemId.
-Ainda nao existem slots reais, multiplas stacks por item, capacidade final de mochila, drag/drop ou UI final.
+O inventory atual usa slots reais com capacidade inicial 18 e limite 30, mantendo `Items` agregado apenas como compatibilidade para sistemas antigos.
+Existem multiplas stacks por item e migration `v1 -> v2` para `InventorySaveData`.
+Pendentes: `Use` especifico por tipo de item, Drop transacional com spawner persistente, drag/drop, sort/auto-organize, UI Canvas final e binding completo por `ItemInstanceId`.
 
 ### Progression
 
@@ -75,7 +76,7 @@ A ordem oficial esta em `docs/specs/SPEC_EXECUTION_ORDER.md` e o registry futuro
 A primeira spec futura executavel passa a ser:
 
 ```text
-docs/specs/a_implementar/spec_inventory_slots_capacity_ui_final.md
+docs/specs/a_implementar/spec_farm_irrigacao_solo_planting_ui.md
 ```
 
 Antes de executar runtime, as specs futuras devem ser enriquecidas usando seus pre-refinamentos relacionados.

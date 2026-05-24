@@ -40,7 +40,19 @@ namespace CindarsHope.Save
     [Serializable]
     public class InventorySaveData
     {
+        public int Capacity;
+        public List<InventorySlotSaveData> Slots = new List<InventorySlotSaveData>();
         public List<InventoryItemSaveData> Items = new List<InventoryItemSaveData>();
+    }
+
+    [Serializable]
+    public class InventorySlotSaveData
+    {
+        public int SlotIndex;
+        public string ItemId;
+        public int Amount;
+        public bool IsEquipped;
+        public string EquipmentBindingId;
     }
 
     [Serializable]

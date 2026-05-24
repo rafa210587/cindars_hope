@@ -9,8 +9,8 @@ A etapa 00 foi reclassificada como implementado documental parcial. As specs run
 | 00 | [spec_docs_001_single_source_specs_refinements_reconciliation_parcial](implementados/spec_docs_001_single_source_specs_refinements_reconciliation_parcial.md) | Implementado documental parcial | Nenhuma | Base para todas as specs futuras | Agentes podem implementar a partir de fonte errada se esta governanca for ignorada. |
 | 01 | [spec_unity_compile_validation_protocol_and_scripts](implementados/spec_unity_compile_validation_protocol_and_scripts.md) | Implementado parcial | 00 | 02-17 | Sem validacao Unity, mudancas runtime podem mascarar erro de compilacao. |
 | 02 | [spec_save_002_schema_migration_v2](implementados/spec_save_002_schema_migration_v2.md) | Implementado parcial | 00, 01 implementada/parcial | 03-17 | Specs posteriores podem persistir dados sem contrato de migracao. |
-| 03 | [spec_inventory_slots_capacity_ui_final](a_implementar/spec_inventory_slots_capacity_ui_final.md) | A implementar | 00, 01, 02 implementada/parcial | 04, 06, 07, 10, 12, 17 | Economy, craft e equipment podem depender de um modelo de inventory ainda provisorio. |
-| 04 | [spec_farm_irrigacao_solo_planting_ui](a_implementar/spec_farm_irrigacao_solo_planting_ui.md) | A implementar | 00, 01, 02, 03 | 05, 09, 17 | World activities e stamina podem duplicar custos/regras de tools. |
+| 03 | [spec_inventory_002_slots_capacity_ui_final](implementados/spec_inventory_002_slots_capacity_ui_final.md) | Implementado parcial | 00, 01, 02 implementada/parcial | 04, 06, 07, 10, 12, 17 | Economy, craft e equipment podem depender de um modelo de inventory ainda provisorio. |
+| 04 | [spec_farm_irrigacao_solo_planting_ui](a_implementar/spec_farm_irrigacao_solo_planting_ui.md) | A implementar | 00, 01, 02, 03 implementada/parcial | 05, 09, 17 | World activities e stamina podem duplicar custos/regras de tools. |
 | 05 | [spec_world_activities_fishing_trees_pickups_loot](a_implementar/spec_world_activities_fishing_trees_pickups_loot.md) | A implementar | 00-04 | 06, 07, 10 | Loot/economy podem ser balanceados sobre drops incompletos. |
 | 06 | [spec_economy_shop_stock_pricing_ui](a_implementar/spec_economy_shop_stock_pricing_ui.md) | A implementar | 00-05 | 07, 08, 17 | Crafting e town podem assumir precificacao ou estoque inexistente. |
 | 07 | [spec_crafting_queue_workstations_recipes_ui](a_implementar/spec_crafting_queue_workstations_recipes_ui.md) | A implementar | 00-06 | 10, 17 | Equipment e consumables podem criar receitas fora do modelo final. |
@@ -30,5 +30,6 @@ A etapa 00 foi reclassificada como implementado documental parcial. As specs run
 A spec 00 antiga em `a_implementar/spec_docs_single_source_specs_refinements_reconciliation_v1.md` nao deve ser executada novamente; ela permanece apenas como ponte historica ate remocao fisica futura.
 
 A spec 01 foi implementada parcialmente como tooling minimo.
-A spec 02 foi implementada parcialmente como infraestrutura de migration sem subir schema.
-A primeira spec futura executavel passa a ser `a_implementar/spec_inventory_slots_capacity_ui_final.md`.
+A spec 02 foi implementada parcialmente como infraestrutura de migration.
+A spec 03 foi implementada parcialmente com slots, capacidade, migration v1->v2 e painel minimo; Drop runtime e Use especifico permanecem pendentes.
+A primeira spec futura executavel passa a ser `a_implementar/spec_farm_irrigacao_solo_planting_ui.md`.

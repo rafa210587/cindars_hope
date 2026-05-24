@@ -25,7 +25,7 @@ namespace CindarsHope.Save
     [DisallowMultipleComponent]
     public class SaveManager : MonoBehaviour
     {
-        private const int CurrentSchemaVersion = 1;
+        private const int CurrentSchemaVersion = 2;
         private const int Slot = 1;
         private const string SaveDirectoryName = "saves";
         private const string SaveFileName = "slot_1.json";
@@ -44,7 +44,10 @@ namespace CindarsHope.Save
         [SerializeField] private CaveRunManager _caveRunManager;
 
         private readonly HotbarState _hotbarState = new HotbarState();
-        private readonly SaveMigrationRegistry _migrationRegistry = new SaveMigrationRegistry();
+        private readonly SaveMigrationRegistry _migrationRegistry = new SaveMigrationRegistry(new ISaveMigration[]
+        {
+            new InventorySlotsV1ToV2Migration()
+        });
 
         public bool IsInitialized { get; private set; }
         public string SaveFilePath => Path.Combine(Application.persistentDataPath, SaveDirectoryName, SaveFileName);
@@ -585,6 +588,12 @@ namespace CindarsHope.Save
             saveData.Cave ??= new CaveSaveData();
 
             saveData.Inventory.Items ??= new List<InventoryItemSaveData>();
+            saveData.Inventory.Slots ??= new List<InventorySlotSaveData>();
+            if (saveData.Inventory.Capacity <= 0)
+            {
+                saveData.Inventory.Capacity = InventoryManager.DefaultCapacity;
+            }
+
             saveData.Farm.Plots ??= new List<FarmPlotSaveData>();
             saveData.Farm.Trees ??= new List<TreeSaveData>();
             saveData.World.Pickups ??= new List<ItemPickupSaveData>();
