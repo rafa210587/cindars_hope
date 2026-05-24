@@ -1,16 +1,16 @@
 # refinamento_init_world_activities_fishing_trees_pickups_loot
 
-> **Status:** Refinamento inicial a implementar
-> **Spec futura sugerida:** `spec_world_activities_fishing_trees_pickups_loot.md`
-> **Objetivo:** completar Ã¡rvores, pesca, pickups persistentes e loot tables de atividades do mundo.
+> Status: Refinamento inicial a implementar
+> Spec futura relacionada: `docs/specs/a_implementar/spec_world_activities_fishing_trees_pickups_loot.md`
+> Objetivo: completar arvores, pesca, pickups persistentes e loot tables de atividades do mundo.
 
 ---
 
 ## 1. Estado atual
 
-O projeto jÃ¡ possui atividades MVP: cortar Ã¡rvore, pescar peixe comum e coletar pickups persistentes.
+O projeto ja possui atividades MVP: cortar arvore, pescar peixe comum e coletar pickups persistentes.
 
-EvidÃªncia:
+Evidencia:
 
 ```text
 Assets/_Game/Scripts/World/**
@@ -24,48 +24,190 @@ docs/specs/implementados/spec_world_001_pickups_persistentes_save_load.md
 
 ## 2. Gaps
 
-- Fishing ainda nÃ£o tem minigame real.
-- Fishing nÃ£o usa loot tables por bioma/horÃ¡rio/clima/vara.
-- Ãrvores nÃ£o tÃªm respawn/regrowth configurÃ¡vel completo.
-- Pickups persistentes dependem de validaÃ§Ã£o Unity/Play Mode.
-- Loot tables ainda nÃ£o sÃ£o fonte unificada para Ã¡rvores, pesca, cave resources e inimigos.
-- Falta integraÃ§Ã£o com stamina/durability.
+- Fishing ainda nao tem timing/minigame real.
+- Fishing nao usa loot tables por spot/contexto.
+- Fishing spots fixos/procedurais nao estao formalizados.
+- Arvores nao tem HP/tier/regrowth configuravel completo.
+- Arvores nao entregam madeira por hit de forma balanceada.
+- Pickups persistentes precisam preservar comportamento de save/load sem reaparecer indevidamente.
+- Loot tables ainda nao sao fonte padronizada para world activities.
+- Stamina/durability final ainda nao deve ser implementada nesta spec.
 
 ---
 
-## 3. Escopo esperado
+## 3. Decisoes aprovadas
 
-### Fishing
-
-- Criar `FishingSpotDataSO`.
-- Criar `FishingLootTableSO` ou reutilizar `LootTableSO` oficial.
-- Validar tool equipada: fishing rod.
-- Criar minigame simples ou timing window.
-- Resultado: catch, fail, rare catch.
-- Eventos: `FishingStarted`, `FishCaught`, `FishingFailed`.
-
-### Trees
-
-- TreeDataSO por tipo.
-- HP da Ã¡rvore por tier de axe.
-- Drops via loot table.
-- Stump/regrowth opcional.
-- PersistÃªncia de chopped/regrowth timer.
-
-### Pickups
-
-- Garantir ID estÃ¡vel por scene + index + itemId.
-- Evitar destroy permanente antes de registrar estado.
-- Save/load deve restaurar coletados e nÃ£o coletados.
-
-### Loot
-
-- Unificar drops simples com `LootTableSO`.
-- Permitir pesos, quantidade min/max e condiÃ§Ãµes.
+- Fishing usa `FishingSpot` explicito.
+- Na fazenda devem existir 2 fishing spots fixos.
+- Na cave, fishing spot e procedural: 10% de chance por level; quando cair nos 10%, gerar apenas 1 fishing spot naquele level.
+- Fishing exige Fishing Rod disponivel/equipada conforme sistema atual.
+- Fishing MVP usa timing window simples.
+- Isca/bait fica fora do escopo.
+- LootTableSO oficial deve ser usado por world activities nesta spec, inicialmente fishing e trees.
+- Enemy/cave loot final fica compativel/futuro, sem forcar implementacao nesta spec.
+- Arvore usa HP numerico + axe tier.
+- Arvores concedem madeira a cada hit.
+- Tool/axe de baixa qualidade gera pouquissima madeira por hit.
+- Hit final da arvore gera pelo menos 2x a madeira de um hit normal equivalente.
+- Arvore cortada vira stump e pode regrow por `RegrowthDays`.
+- Tree drops devem virar pickups persistentes no mundo.
+- Fish catch tenta ir para inventory; se inventory estiver cheio, criar pickup persistente proximo ao player ou falhar sem perda.
+- Pickups de cena usam ID estavel; pickups dinamicos usam runtime generated ID persistido.
+- Stamina/durability final fora do escopo; somente hooks opcionais.
+- Acoes sem escolha executam direto ao apertar `E`; nao abrir menu se houver apenas uma acao valida.
+- Menu vertical so deve aparecer quando houver multiplas opcoes reais.
 
 ---
 
-## 4. Arquivos provÃ¡veis
+## 4. Fishing
+
+### Fishing spots
+
+Tipos esperados:
+
+```text
+FarmFixedFishingSpot
+CaveProceduralFishingSpot
+```
+
+Farm:
+
+- FarmScene deve ter 2 fishing spots fixos.
+- Spots fixos devem ter IDs estaveis.
+- Spots fixos usam `FishingSpotDataSO` ou configuracao equivalente.
+
+Cave:
+
+- Ao gerar cada level de cave, aplicar chance de 10% para fishing spot.
+- Se a chance passar, gerar exatamente 1 fishing spot naquele level.
+- Se a chance falhar, nao gerar fishing spot naquele level.
+- Fishing spot procedural deve respeitar walkable/safe position e nao bloquear path critico.
+- O spot gerado deve ser reprodutivel dentro da mesma run/snapshot quando cave replay estiver ativo.
+
+### Fishing action
+
+- Exige Fishing Rod disponivel/equipada conforme sistema atual.
+- Sem rod: feedback claro e pesca nao inicia.
+- Pressionar `E` em fishing spot com uma unica acao valida inicia pesca direto.
+- Se algum spot futuro tiver multiplas opcoes, pode abrir menu contextual vertical.
+
+### Timing window MVP
+
+Fluxo:
+
+```text
+E em FishingSpot
+Validar Fishing Rod
+Iniciar casting
+Delay curto
+Abrir timing window
+Jogador confirma com E/Space dentro da janela
+Resultado: catch, fail ou rare catch
+```
+
+Resultado deve vir de loot table e dificuldade do spot.
+
+---
+
+## 5. Trees
+
+### Tree data
+
+Criar/usar `TreeDataSO` ou equivalente:
+
+```text
+TreeId
+MaxHp
+RequiredToolType = Axe
+MinimumToolTier
+WoodPerHitMin
+WoodPerHitMax
+FinalHitMultiplier default 2
+RegrowthDays
+LootTable
+```
+
+### Tree action
+
+- Pressionar `E` em arvore com Axe valida executa hit direto.
+- Nao abrir menu se a unica acao valida for cortar.
+- Se Axe ausente ou tier insuficiente, mostrar feedback e nao aplicar dano.
+
+### Wood per hit
+
+- Cada hit valido deve gerar madeira.
+- Axe/tool de baixa qualidade deve gerar pouquissima madeira por hit.
+- Hit final deve gerar pelo menos `2x` a madeira de um hit normal equivalente.
+- Madeira gerada deve sair como pickup persistente por padrao.
+
+### Stump/regrowth
+
+- Quando HP chega a 0, arvore vira stump.
+- Stump salva `RegrowthRemainingDays`.
+- Se `RegrowthDays > 0`, stump volta a arvore quando timer chegar a 0.
+- Se `RegrowthDays <= 0`, nao regenera automaticamente.
+
+---
+
+## 6. Pickups persistentes
+
+Regras:
+
+- Pickup de cena usa ID estavel: `SceneId + PickupIndex + ItemId` ou equivalente.
+- Pickup dinamico gerado por loot usa `RuntimeGeneratedPickupId` salvo em `WorldSaveData`.
+- Nao destruir GameObject antes de registrar estado coletado.
+- Coletar pickup deve atualizar save/runtime antes de remover visualmente.
+- Save/load deve restaurar coletados e nao coletados.
+- Pickups dinamicos nao podem duplicar apos save/load.
+
+---
+
+## 7. Loot
+
+Criar/usar `LootTableSO` oficial para world activities.
+
+Entry minima:
+
+```text
+ItemId
+MinAmount
+MaxAmount
+Weight
+RequiredTags opcional
+```
+
+Tags/condicoes futuras preparadas, sem obrigar sistemas ainda ausentes:
+
+```text
+BiomeTag
+TimeOfDayTag
+WeatherTag
+ToolTier
+SpotTag
+```
+
+Nesta spec, `LootTableSO` deve ser usado por fishing e trees. Enemy/cave loot final fica para specs futuras.
+
+---
+
+## 8. Invariantes anti-regressao
+
+Esta spec nao pode quebrar:
+
+- pickups persistentes ja existentes;
+- save/load de collected/uncollected pickups;
+- inventory slots/capacity;
+- farm plot interaction/menu da spec 04;
+- cave generation/replay/snapshots;
+- resource nodes da cave;
+- hotbar/HUD existente;
+- interacao `E` fora de world activities;
+- regra de nao usar `GameObject.Find()` ou `FindObjectOfType()`;
+- regra de nao serializar referencias Unity em DTOs.
+
+---
+
+## 9. Arquivos provaveis
 
 ```text
 Assets/_Game/Scripts/World/TreeNode.cs
@@ -75,25 +217,41 @@ Assets/_Game/Scripts/Fishing/**
 Assets/_Game/Scripts/Loot/LootTableSO.cs
 Assets/_Game/Scripts/Equipment/EquipmentManager.cs
 Assets/_Game/Scripts/Save/SaveData.cs
+Assets/_Game/Scripts/Cave/**
 ```
 
 ---
 
-## 5. Definition of Done
+## 10. Definition of Done
 
-- [ ] Fishing usa tool equipada e loot table.
-- [ ] Fishing tem outcome claro e eventos.
-- [ ] Ãrvores usam HP/tier/drops configurÃ¡veis.
-- [ ] Pickups persistem sem reaparecer indevidamente.
-- [ ] Loot table Ã© usada por pelo menos Ã¡rvore, fishing ou enemy.
-- [ ] Save/load preserva estado das world activities.
+- [ ] FarmScene possui 2 fishing spots fixos com IDs estaveis.
+- [ ] Cave level tem 10% de chance de gerar fishing spot; se gerar, apenas 1 por level.
+- [ ] Fishing exige Fishing Rod e usa timing window simples.
+- [ ] Fishing usa loot table.
+- [ ] Fish catch nao perde item se inventory estiver cheio.
+- [ ] Arvores usam HP, Axe/tier e TreeDataSO ou equivalente.
+- [ ] Arvores geram madeira por hit.
+- [ ] Hit final de arvore gera pelo menos 2x madeira de hit normal equivalente.
+- [ ] Arvore cortada vira stump e respeita regrowth configuravel.
+- [ ] Tree drops viram pickups persistentes.
+- [ ] Pickups de cena e dinamicos persistem corretamente.
+- [ ] LootTableSO e usado por fishing e trees.
+- [ ] Acoes sem escolha executam direto com `E`, sem menu desnecessario.
+- [ ] Invariantes anti-regressao preservadas.
 
 ---
 
-## 6. ValidaÃ§Ã£o
+## 11. Validacao
 
-1. Cortar Ã¡rvore, salvar, recarregar e validar estado.
-2. Coletar pickup, salvar, recarregar e validar que nÃ£o reaparece.
-3. Pescar com e sem fishing rod.
-4. Validar drops por loot table.
-5. Testar em FarmScene e eventual CaveScene se aplicÃ¡vel.
+1. FarmScene possui 2 fishing spots fixos.
+2. Pescar com e sem Fishing Rod.
+3. Validar timing catch/fail.
+4. Validar fish catch com inventory cheio sem perda.
+5. Cortar arvore com Axe de tier baixo e validar pouca madeira por hit.
+6. Validar hit final com pelo menos 2x madeira normal.
+7. Salvar/carregar arvore cortada/stump/regrowth.
+8. Coletar pickup, salvar, carregar e validar que nao reaparece.
+9. Gerar cave levels suficientes e validar regra 10%/max 1 fishing spot por level.
+10. Validar que cave replay/snapshot nao rerolla fishing spot ja gerado.
+11. Validar que acoes simples executam direto com `E` sem menu desnecessario.
+12. Validar Unity compile validation e docs validation.
