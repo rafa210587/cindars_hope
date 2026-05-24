@@ -1,18 +1,37 @@
-using UnityEngine;
+﻿using System;
 
 namespace CindarsHope.Combat
 {
-    public readonly struct DamageRequest
+    public class DamageRequest
     {
-        public readonly int Amount;
-        public readonly Vector2 SourcePosition;
-        public readonly float KnockbackForce;
+        public string SourceId { get; set; }
+        public string TargetId { get; set; }
+        public int BaseDamage { get; set; }
+        public DamageType DamageType { get; set; }
+        public int AttributeBonus { get; set; }
+        public int SourceFlatBonus { get; set; }
+        public bool CanTriggerVulnerability { get; set; } = true;
+        public string[] StatusApplicationRules { get; set; }
+        public bool IsDamageOverTimeTick { get; set; }
 
-        public DamageRequest(int amount, Vector2 sourcePosition, float knockbackForce = 0f)
+        public DamageRequest() { }
+
+        public DamageRequest(
+            string targetId,
+            int baseDamage,
+            DamageType damageType = DamageType.Physical,
+            string sourceId = "",
+            int attributeBonus = 0,
+            int sourceFlatBonus = 0)
         {
-            Amount = amount;
-            SourcePosition = sourcePosition;
-            KnockbackForce = knockbackForce;
+            SourceId = sourceId ?? string.Empty;
+            TargetId = targetId ?? string.Empty;
+            BaseDamage = baseDamage;
+            DamageType = damageType;
+            AttributeBonus = attributeBonus;
+            SourceFlatBonus = sourceFlatBonus;
+            CanTriggerVulnerability = true;
+            IsDamageOverTimeTick = false;
         }
     }
 }

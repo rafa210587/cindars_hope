@@ -169,4 +169,18 @@ namespace CindarsHope.Save
         public int CurrentDurability;
         public int MaxDurability;
     }
+
+    [Serializable]
+    public class EquipmentSaveData
+    {
+        public string EquippedToolId;
+        public List<EquipmentSlotSaveData> Slots = new List<EquipmentSlotSaveData>();
+    }
+
+    [Serializable]
+    public class EquipmentSlotSaveData
+    {
+        public EquipmentSlot SlotType;
+        public string ItemInstanceId;
+    }
 }

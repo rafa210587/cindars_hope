@@ -94,6 +94,7 @@ namespace CindarsHope.Save
                 var staminaSaveData = CaptureStaminaSaveData();
                 var gameTimeSaveData = CaptureGameTimeSaveData();
                 var statusEffectsSaveData = CapturePlayerStatusEffectsSaveData();
+                var equipmentDurabilitySaveData = CaptureEquipmentDurabilitySaveData();
 
                 var saveData = new GameSaveData
                 {
@@ -113,7 +114,8 @@ namespace CindarsHope.Save
                     Crafting = craftingSaveData,
                     Stamina = staminaSaveData,
                     GameTime = gameTimeSaveData,
-                    PlayerStatusEffects = statusEffectsSaveData
+                    PlayerStatusEffects = statusEffectsSaveData,
+                    EquipmentDurability = equipmentDurabilitySaveData
                 };
 
                 var savePath = SaveFilePath;
@@ -831,6 +833,11 @@ namespace CindarsHope.Save
                     }
                 }
             }
+
+            if (saveData.EquipmentDurability != null && _equipmentManager != null && _equipmentManager.DurabilityTracker != null)
+            {
+                _equipmentManager.DurabilityTracker.LoadFromSaveData(saveData.EquipmentDurability);
+            }
         }
 
         private EconomySaveData CaptureEconomySaveData(GameSaveData existingSaveData)
@@ -930,6 +937,18 @@ namespace CindarsHope.Save
                         RemainingSeconds = kvp.Value.RemainingSeconds
                     });
                 }
+            }
+
+            return data;
+        }
+
+        private EquipmentDurabilitySaveData CaptureEquipmentDurabilitySaveData()
+        {
+            var data = new EquipmentDurabilitySaveData();
+
+            if (_equipmentManager != null && _equipmentManager.DurabilityTracker != null)
+            {
+                return _equipmentManager.DurabilityTracker.CaptureSaveData();
             }
 
             return data;

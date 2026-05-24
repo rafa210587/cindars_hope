@@ -1,43 +1,127 @@
-using CindarsHope.Equipment;
 using UnityEngine;
 
 namespace CindarsHope.Combat
 {
     public static class DamageCalculator
     {
+        public static DamageResult Calculate(
+            DamageRequest request,
+            int defense = 0,
+            CombatResistanceProfile resistanceProfile = null,
+            float vulnerabilityMultiplier = 1f,
+            float statusReceivedDamageMultiplier = 1f)
+        {
+            if (request == null)
+                request = new DamageRequest();
+
+            var result = new DamageResult(request);
+
+            result.Defense = Mathf.Max(0, defense);
+            result.VulnerabilityMultiplier = Mathf.Max(0f, vulnerabilityMultiplier);
+            result.StatusReceivedDamageMultiplier = Mathf.Max(0f, statusReceivedDamageMultiplier);
+
+            // Raw damage: BaseDamage + AttributeBonus + SourceFlatBonus
+            int rawDamage = result.BaseDamage + result.AttributeBonus + result.SourceFlatBonus;
+            rawDamage = Mathf.Max(0, rawDamage);
+
+            if (rawDamage <= 0)
+            {
+                result.FinalDamage = 0;
+                result.DebugBreakdown = "RawDamage=0";
+                return result;
+            }
+
+            // Apply resistance/weakness/immunity multiplier
+            int mitigatedDamage = rawDamage;
+            float elementAdjustedDamage = rawDamage;
+
+            if (result.DamageType == DamageType.True)
+            {
+                // True damage ignores Defense and CombatResistanceMultiplier
+                mitigatedDamage = rawDamage;
+                elementAdjustedDamage = rawDamage;
+                result.CombatResistanceMultiplier = 1f;
+            }
+            else
+            {
+                // Apply Defense flat mitigation
+                mitigatedDamage = Mathf.Max(0, rawDamage - result.Defense);
+
+                // Get combat resistance multiplier
+                if (resistanceProfile != null)
+                {
+                    result.CombatResistanceMultiplier = resistanceProfile.GetMultiplier(result.DamageType);
+                }
+                else
+                {
+                    result.CombatResistanceMultiplier = 1f;
+                }
+
+                // Apply resistance multiplier
+                elementAdjustedDamage = mitigatedDamage * result.CombatResistanceMultiplier;
+            }
+
+            // Check for immunity
+            if (Mathf.Approximately(result.CombatResistanceMultiplier, 0f) && result.DamageType != DamageType.True)
+            {
+                result.WasImmune = true;
+                result.FinalDamage = 0;
+                result.DebugBreakdown = $"Raw={rawDamage},Defense={result.Defense},Immune=true";
+                return result;
+            }
+
+            // Apply vulnerability multiplier
+            float vulnerabilityAdjustedDamage = elementAdjustedDamage * result.VulnerabilityMultiplier;
+            if (vulnerabilityMultiplier > 1f && !Mathf.Approximately(vulnerabilityMultiplier, 1f))
+            {
+                result.WasVulnerable = true;
+            }
+
+            // Apply status received damage multiplier
+            float statusAdjustedDamage = vulnerabilityAdjustedDamage * result.StatusReceivedDamageMultiplier;
+
+            // Round to integer and apply minimum damage rule
+            int finalDamage = Mathf.RoundToInt(statusAdjustedDamage);
+
+            if (result.BaseDamage > 0 && !result.WasImmune && finalDamage < 1)
+            {
+                finalDamage = 1;
+            }
+
+            result.FinalDamage = Mathf.Max(0, finalDamage);
+
+            // Debug breakdown
+            result.DebugBreakdown = $"Raw={rawDamage},Attr={result.AttributeBonus},SrcFlat={result.SourceFlatBonus}," +
+                $"Defense={result.Defense},Mitigated={mitigatedDamage},ResistMult={result.CombatResistanceMultiplier:F2}," +
+                $"ElemAdj={elementAdjustedDamage:F1},VulnMult={result.VulnerabilityMultiplier:F2}," +
+                $"StatusMult={result.StatusReceivedDamageMultiplier:F2},Final={result.FinalDamage}," +
+                $"Immune={result.WasImmune},Vulnerable={result.WasVulnerable}";
+
+            return result;
+        }
+
+        // Backward compatible method
         public static DamageResult CalculateDirectDamage(
             int baseDamage,
             int attributeBonus = 0,
             float typeMultiplier = 1f,
-            EquipmentManager equipmentManager = null,
+            Equipment.EquipmentManager equipmentManager = null,
             float durabilityDamageMultiplier = 0.1f)
         {
-            baseDamage = Mathf.Max(0, baseDamage);
-            attributeBonus = Mathf.Max(0, attributeBonus);
-            typeMultiplier = Mathf.Max(0f, typeMultiplier);
+            var request = new DamageRequest(
+                targetId: "",
+                baseDamage: baseDamage,
+                damageType: DamageType.Physical,
+                attributeBonus: attributeBonus);
 
-            if (baseDamage <= 0)
-            {
-                return new DamageResult(0, baseDamage, attributeBonus, typeMultiplier, false, false);
-            }
+            var result = Calculate(request, 0, null, 1f, 1f);
 
-            if (Mathf.Approximately(typeMultiplier, 0f))
-            {
-                return new DamageResult(0, baseDamage, attributeBonus, typeMultiplier, false, true);
-            }
-
-            int scaledBase = baseDamage + attributeBonus;
-            int finalDamage = Mathf.RoundToInt(scaledBase * typeMultiplier);
-            bool reducedToMinimum = finalDamage < 1;
-            finalDamage = Mathf.Max(1, finalDamage);
-
-            // Apply durability damage if equipment manager provided
             if (equipmentManager != null)
             {
                 equipmentManager.RegisterEquipmentUsage();
             }
 
-            return new DamageResult(finalDamage, baseDamage, attributeBonus, typeMultiplier, reducedToMinimum, false);
+            return result;
         }
     }
 }

@@ -1,17 +1,13 @@
-namespace CindarsHope.Combat
+﻿namespace CindarsHope.Combat
 {
     public enum DamageType
     {
         Physical,
         Fire,
         Ice,
+        Toxic,
         Lightning,
-        Poison,
-        Earth,
-        Wind,
-        Water,
-        Light,
-        Shadow,
-        Arcane
+        Arcane,
+        True
     }
 }

@@ -1,68 +1,58 @@
-using CindarsHope.Core;
-using CindarsHope.Core.Events;
+﻿using CindarsHope.Core.Events;
 using UnityEngine;
 
-namespace CindarsHope.Player
+namespace CindarsHope.Combat
 {
     [DisallowMultipleComponent]
     public class ManaManager : MonoBehaviour
     {
         [SerializeField] private int _maxMana = 100;
+        [SerializeField] private float _manaRegenPerSecond = 5f;
+
         private int _currentMana;
-        private float _regenRate = 5f;
 
-        public int CurrentMana => _currentMana;
         public int MaxMana => _maxMana;
-        public float ManaPercent => _maxMana > 0 ? (float)_currentMana / _maxMana : 0f;
-        public bool IsInitialized { get; private set; }
+        public int CurrentMana => _currentMana;
+        public float ManaPercent => MaxMana > 0 ? (float)_currentMana / MaxMana : 0f;
 
-        public void Initialize(int maxMana = 100, int startingMana = 100)
+        private void Start()
         {
-            _maxMana = Mathf.Max(1, maxMana);
-            _currentMana = Mathf.Min(startingMana, _maxMana);
-            IsInitialized = true;
+            _currentMana = _maxMana;
         }
 
         private void Update()
         {
-            if (!IsInitialized || _currentMana >= _maxMana)
-                return;
-
-            _currentMana = Mathf.Min(_currentMana + (int)(_regenRate * Time.deltaTime), _maxMana);
-            PublishManaChanged();
+            if (_currentMana < _maxMana)
+            {
+                _currentMana = Mathf.Min(_currentMana + Mathf.RoundToInt(_manaRegenPerSecond * UnityEngine.Time.deltaTime), _maxMana);
+            }
         }
 
         public bool TrySpendMana(int amount)
         {
-            if (amount <= 0)
+            if (_currentMana >= amount)
+            {
+                _currentMana -= amount;
                 return true;
+            }
 
-            if (_currentMana < amount)
-                return false;
-
-            _currentMana -= amount;
-            PublishManaChanged();
-            return true;
+            return false;
         }
 
-        public void AddMana(int amount)
+        public void RestoreMana(int amount)
         {
-            if (amount <= 0)
-                return;
-
             _currentMana = Mathf.Min(_currentMana + amount, _maxMana);
-            PublishManaChanged();
         }
 
-        public void FullRecover()
+        public void SetMana(int amount)
         {
-            _currentMana = _maxMana;
-            PublishManaChanged();
+            _currentMana = Mathf.Clamp(amount, 0, _maxMana);
         }
 
-        private void PublishManaChanged()
+        public void SetMaxMana(int maxMana)
         {
-            GameEventBus.Publish(new ManaChangedEvent(_currentMana, _maxMana));
+            _maxMana = Mathf.Max(1, maxMana);
+            _currentMana = Mathf.Min(_currentMana, _maxMana);
         }
     }
 }

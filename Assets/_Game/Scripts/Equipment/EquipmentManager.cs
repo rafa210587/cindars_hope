@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using CindarsHope.Core.Events;
 using CindarsHope.Tools;
 using UnityEngine;
 
@@ -9,12 +11,32 @@ namespace CindarsHope.Equipment
         [SerializeField] private string _equippedToolId = string.Empty;
         [SerializeField] private ToolType _equippedToolType = ToolType.None;
         [SerializeField] private ToolTier _equippedToolTier = ToolTier.None;
-        [SerializeField] private string _equippedWeaponId = string.Empty;
+
+        private EquipmentDurabilityTracker _durabilityTracker;
+        private Dictionary<EquipmentSlot, string> _slots = new();
 
         public string EquippedToolId => _equippedToolId;
         public ToolType EquippedToolType => _equippedToolType;
         public ToolTier EquippedToolTier => _equippedToolTier;
-        public string EquippedWeaponId => _equippedWeaponId;
+        public EquipmentDurabilityTracker DurabilityTracker => _durabilityTracker;
+
+        private void Awake()
+        {
+            if (_durabilityTracker == null)
+            {
+                _durabilityTracker = new EquipmentDurabilityTracker();
+            }
+        }
+
+        private void OnEnable()
+        {
+            GameEventBus.Subscribe<InventoryChangedEvent>(HandleInventoryChanged);
+        }
+
+        private void OnDisable()
+        {
+            GameEventBus.Unsubscribe<InventoryChangedEvent>(HandleInventoryChanged);
+        }
 
         private void Update()
         {
@@ -32,15 +54,37 @@ namespace CindarsHope.Equipment
             Debug.Log($"EquipmentManager: equipped tool {_equippedToolId} ({_equippedToolType}/{_equippedToolTier}).", this);
         }
 
-        public void EquipWeapon(string weaponId)
+        public void EquipItem(EquipmentSlot slot, string itemInstanceId)
         {
-            _equippedWeaponId = weaponId ?? string.Empty;
-            Debug.Log($"EquipmentManager: equipped weapon {_equippedWeaponId}.", this);
+            _slots[slot] = itemInstanceId ?? string.Empty;
+            GameEventBus.Publish(new EquipmentSlotChangedEvent(slot, itemInstanceId));
+        }
+
+        public void UnequipSlot(EquipmentSlot slot)
+        {
+            if (_slots.ContainsKey(slot))
+            {
+                _slots.Remove(slot);
+                GameEventBus.Publish(new EquipmentSlotChangedEvent(slot, null));
+            }
+        }
+
+        public string GetEquippedItem(EquipmentSlot slot)
+        {
+            return _slots.TryGetValue(slot, out var itemInstanceId) ? itemInstanceId : null;
         }
 
         public void RegisterEquipmentUsage()
         {
-            // Durability tracking handled by EquipmentDurabilityTracker in combat systems
+            // Generic registration without specific item - used by combat
+        }
+
+        public void RegisterEquipmentUsage(string itemInstanceId)
+        {
+            if (_durabilityTracker != null)
+            {
+                _durabilityTracker.TryRegisterUsage(itemInstanceId);
+            }
         }
 
         public bool HasTool(ToolType requiredTool)
@@ -75,11 +119,22 @@ namespace CindarsHope.Equipment
 
         public EquipmentSaveData CaptureSaveData()
         {
-            return new EquipmentSaveData
+            var data = new EquipmentSaveData
             {
                 EquippedToolId = _equippedToolId,
-                EquippedWeaponId = _equippedWeaponId
+                Slots = new List<EquipmentSlotSaveData>()
             };
+
+            foreach (var kvp in _slots)
+            {
+                data.Slots.Add(new EquipmentSlotSaveData
+                {
+                    SlotType = kvp.Key,
+                    ItemInstanceId = kvp.Value
+                });
+            }
+
+            return data;
         }
 
         public void RestoreFromSaveData(EquipmentSaveData saveData)
@@ -89,13 +144,38 @@ namespace CindarsHope.Equipment
                 _equippedToolId = string.Empty;
                 _equippedToolType = ToolType.None;
                 _equippedToolTier = ToolTier.None;
-                _equippedWeaponId = string.Empty;
+                _slots.Clear();
                 return;
             }
 
             _equippedToolId = saveData.EquippedToolId ?? string.Empty;
-            _equippedWeaponId = saveData.EquippedWeaponId ?? string.Empty;
             InferEquippedToolFromId();
+
+            _slots.Clear();
+            if (saveData.Slots != null)
+            {
+                foreach (var slotData in saveData.Slots)
+                {
+                    _slots[slotData.SlotType] = slotData.ItemInstanceId;
+                }
+            }
+        }
+
+        private void HandleInventoryChanged(InventoryChangedEvent evt)
+        {
+            var slotsToRemove = new List<EquipmentSlot>();
+            foreach (var kvp in _slots)
+            {
+                if (string.IsNullOrEmpty(kvp.Value))
+                {
+                    slotsToRemove.Add(kvp.Key);
+                }
+            }
+
+            foreach (var slot in slotsToRemove)
+            {
+                UnequipSlot(slot);
+            }
         }
 
         private void CycleDebugTool()

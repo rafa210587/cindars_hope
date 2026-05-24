@@ -1,0 +1,126 @@
+﻿namespace CindarsHope.Core.Events
+{
+    public class StatusAppliedEvent
+    {
+        public string TargetId { get; }
+        public string StatusId { get; }
+        public string SourceId { get; }
+        public float DurationSeconds { get; }
+
+        public StatusAppliedEvent(string targetId, string statusId, string sourceId, float durationSeconds)
+        {
+            TargetId = targetId ?? string.Empty;
+            StatusId = statusId ?? string.Empty;
+            SourceId = sourceId ?? string.Empty;
+            DurationSeconds = durationSeconds;
+        }
+    }
+
+    public class StatusRefreshedEvent
+    {
+        public string TargetId { get; }
+        public string StatusId { get; }
+        public float NewDurationSeconds { get; }
+
+        public StatusRefreshedEvent(string targetId, string statusId, float newDurationSeconds)
+        {
+            TargetId = targetId ?? string.Empty;
+            StatusId = statusId ?? string.Empty;
+            NewDurationSeconds = newDurationSeconds;
+        }
+    }
+
+    public class StatusTickedEvent
+    {
+        public string TargetId { get; }
+        public string StatusId { get; }
+        public int Damage { get; }
+
+        public StatusTickedEvent(string targetId, string statusId, int damage)
+        {
+            TargetId = targetId ?? string.Empty;
+            StatusId = statusId ?? string.Empty;
+            Damage = damage;
+        }
+    }
+
+    public class StatusExpiredEvent
+    {
+        public string TargetId { get; }
+        public string StatusId { get; }
+
+        public StatusExpiredEvent(string targetId, string statusId)
+        {
+            TargetId = targetId ?? string.Empty;
+            StatusId = statusId ?? string.Empty;
+        }
+    }
+
+    public class StatusRemovedEvent
+    {
+        public string TargetId { get; }
+        public string StatusId { get; }
+
+        public StatusRemovedEvent(string targetId, string statusId)
+        {
+            TargetId = targetId ?? string.Empty;
+            StatusId = statusId ?? string.Empty;
+        }
+    }
+
+    public class DamageAppliedEvent
+    {
+        public CindarsHope.Combat.DamageResult DamageResult { get; }
+
+        public DamageAppliedEvent(CindarsHope.Combat.DamageResult result)
+        {
+            DamageResult = result;
+        }
+    }
+
+    public class DamageBlockedEvent
+    {
+        public string TargetId { get; }
+        public int BlockedAmount { get; }
+
+        public DamageBlockedEvent(string targetId, int blockedAmount)
+        {
+            TargetId = targetId ?? string.Empty;
+            BlockedAmount = blockedAmount;
+        }
+    }
+
+    public class DamageImmuneEvent
+    {
+        public string TargetId { get; }
+        public string DamageType { get; }
+
+        public DamageImmuneEvent(string targetId, string damageType)
+        {
+            TargetId = targetId ?? string.Empty;
+            DamageType = damageType ?? string.Empty;
+        }
+    }
+
+    public class VulnerabilityWindowStartedEvent
+    {
+        public string TargetId { get; }
+        public float DurationSeconds { get; }
+
+        public VulnerabilityWindowStartedEvent(string targetId, float durationSeconds)
+        {
+            TargetId = targetId ?? string.Empty;
+            DurationSeconds = durationSeconds;
+        }
+    }
+
+    public class VulnerabilityWindowEndedEvent
+    {
+        public string TargetId { get; }
+
+        public VulnerabilityWindowEndedEvent(string targetId)
+        {
+            TargetId = targetId ?? string.Empty;
+        }
+    }
+}
