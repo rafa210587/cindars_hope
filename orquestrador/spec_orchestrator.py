@@ -1,6 +1,17 @@
 """
+[DEPRECATED - LEGACY SYSTEM v1.0]
+
 Spec Orchestrator - Automates SPECS 1-17 execution for Cindar's Hope project.
 Handles dependency tracking, state persistence, validation, and Claude API integration.
+
+⚠️  THIS IS THE OLD SYSTEM. Used by run_orchestrator.py only.
+This system uses Anthropic API directly (not CLI subprocess).
+
+For new work, use the queue-based system (v2.0):
+- run_orquestrador.py (entry point)
+- queue.py, agent.py, validation.py, logger.py, spec_operations.py (modules)
+
+See CONFIG_GUIDE.md for system comparison.
 """
 
 import json

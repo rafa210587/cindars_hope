@@ -1,6 +1,16 @@
 #!/usr/bin/env python3
 """
+[DEPRECATED - LEGACY SYSTEM v1.0]
+
 Run Orchestrator - Main entry point for executing specs via Claude orchestration
+(Uses Anthropic API, not CLI subprocess)
+
+⚠️  THIS IS THE OLD SYSTEM. Use run_orquestrador.py instead (v2.0 - queue-based)
+
+Canonical command: python .\orquestrador\run_orquestrador.py
+Legacy command (still works): python .\orquestrador\run_orchestrator.py
+
+See CONFIG_GUIDE.md for which config file to use.
 """
 
 import argparse

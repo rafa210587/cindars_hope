@@ -1,5 +1,15 @@
 """
+[DEPRECATED - LEGACY SYSTEM v1.0]
+
 Claude API Integration - Handles calls to Claude/Codex for spec execution
+Uses Anthropic Python SDK (direct API calls, not CLI subprocess)
+
+⚠️  THIS IS THE OLD SYSTEM. Used by spec_orchestrator.py + run_orchestrator.py only.
+
+For new work, use agent.py which invokes Claude/Codex via subprocess CLI:
+- run_orquestrador.py → agent.py (subprocess-based)
+
+See CONFIG_GUIDE.md for system comparison.
 """
 
 import json
