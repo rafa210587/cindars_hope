@@ -1,3 +1,45 @@
+## Atualizacao 2026-05-24 - Spec 06 Economy shop stock pricing UI - Fundacao
+
+Status: Implementado fundacao.
+
+Escopo implementado:
+- `ShopDataSO` com lista de items e preco multiplicador (1.0x inicial).
+- `ShopItemEntry` para cada item em uma loja com MaxStock.
+- `NpcDialogueDataSO` para OpeningLine e ClosingLine de NPCs.
+- `ShopManager` com metodos de initialize shop, buy, sell, restock, load/save stock.
+- `ShopSession` para gerenciar estoque e preco de uma loja em runtime.
+- `ModalManager` com pilha de modais para evitar sobreposicao.
+- `DialogueModal` para exibir falas de abertura/despedida.
+- `ShopMenuModal` para menu Comprar/Vender/Sair.
+- `BuyPanel` com lista de itens do vendedor, preco, estoque e compra.
+- `SellPanel` com inventory do jogador, preco de venda (60%) e venda.
+- `NpcShopController` para orquestrar dialogo + shop menu + compra/venda.
+- Integracao em `SaveManager` para persistencia de estoque por dia.
+- `ShopRestockedEvent` para notificacoes de reposicao.
+- `EconomySaveData` com lista de `ShopStockSaveData` (ShopId, Items, LastRestockDay).
+- Script `CreateShopTestAssets.cs` para gerar ativos de teste (2 shops + 3 dialogues).
+- Script `ValidateShopSystem.cs` para validacao via editor (10+ checks).
+
+Compilacao: ✓ (0 erros, 1 aviso pre-existente CaveDebugLevelSkipController).
+
+Commits: 3
+- db91a91 economy: criar fundacao de sistema de lojas com modal e estoque
+- afc9cfd economy: implementar paineis de compra e venda
+- 2c7ccb4 economy: criar scripts de teste e validacao para spec 06
+
+Pendencias:
+- Criar NPCs lojistas (prefabs/GameObjects) com NpcShopController wired.
+- Ajustar Pip como recepcao da cidade sem loja.
+- Implementar movimento de Pip quando jogador entra na cidade.
+- Criar dados reais de shop (ShopDataSO) para weapons/armor e seeds/tools.
+- Remover/deprecar compra/venda na fazenda.
+- Play Mode manual completo com fluxo de dialogo + shop + compra/venda.
+
+Validacao:
+- dotnet build .\Assembly-CSharp.csproj: PASSED (0 erros, 1 aviso pre-existente).
+- Scripts de teste e validacao criadosmas ainda nao executados via editor/play mode.
+
+---
 
 ## Atualizacao 2026-05-24 - Spec 05 World activities, fishing, trees, pickups e loot
 
