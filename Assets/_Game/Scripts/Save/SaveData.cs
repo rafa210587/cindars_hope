@@ -24,6 +24,7 @@ namespace CindarsHope.Save
         public FarmSaveData Farm;
         public WorldSaveData World;
         public CaveSaveData Cave;
+        public EconomySaveData Economy;
     }
 
     [Serializable]
@@ -74,5 +75,26 @@ namespace CindarsHope.Save
     {
         public List<ItemPickupSaveData> Pickups = new List<ItemPickupSaveData>();
         public List<TreeSaveData> Trees = new List<TreeSaveData>();
+    }
+
+    [Serializable]
+    public class ShopStockSaveData
+    {
+        public string ShopId;
+        public List<ShopItemStockEntry> Items = new List<ShopItemStockEntry>();
+        public int LastRestockDay;
+    }
+
+    [Serializable]
+    public class ShopItemStockEntry
+    {
+        public string ItemId;
+        public int CurrentStock;
+    }
+
+    [Serializable]
+    public class EconomySaveData
+    {
+        public List<ShopStockSaveData> Shops = new List<ShopStockSaveData>();
     }
 }

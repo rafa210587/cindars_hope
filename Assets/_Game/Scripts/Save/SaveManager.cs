@@ -6,6 +6,7 @@ using CindarsHope.Core;
 using CindarsHope.Core.Events;
 using CindarsHope.Core.Time;
 using CindarsHope.Cave.Runtime;
+using CindarsHope.Economy;
 using CindarsHope.Equipment;
 using CindarsHope.Farm;
 using CindarsHope.Inventory;
@@ -42,6 +43,7 @@ namespace CindarsHope.Save
         [SerializeField] private EquipmentManager _equipmentManager;
         [SerializeField] private PlayerProgressionManager _progressionManager;
         [SerializeField] private CaveRunManager _caveRunManager;
+        [SerializeField] private ShopManager _shopManager;
 
         private readonly HotbarState _hotbarState = new HotbarState();
         private readonly SaveMigrationRegistry _migrationRegistry = new SaveMigrationRegistry(new ISaveMigration[]
@@ -81,6 +83,7 @@ namespace CindarsHope.Save
                 var farmSaveData = CaptureFarmSaveData(existingSaveData);
                 var worldSaveData = CaptureWorldSaveData(existingSaveData);
                 var caveSaveData = CaptureCaveSaveData(existingSaveData);
+                var economySaveData = CaptureEconomySaveData(existingSaveData);
 
                 var saveData = new GameSaveData
                 {
@@ -95,7 +98,8 @@ namespace CindarsHope.Save
                     Progression = CaptureProgressionSaveData(),
                     Farm = farmSaveData,
                     World = worldSaveData,
-                    Cave = caveSaveData
+                    Cave = caveSaveData,
+                    Economy = economySaveData
                 };
 
                 var savePath = SaveFilePath;
@@ -781,6 +785,41 @@ namespace CindarsHope.Save
                     Trees = saveData.World.Trees ?? new List<TreeSaveData>()
                 };
                 _treeRegistry.RestoreFromSaveData(treeFarmSaveData);
+            }
+
+            if (_shopManager != null && saveData.Economy != null)
+            {
+                RestoreEconomySaveData(saveData.Economy);
+            }
+        }
+
+        private EconomySaveData CaptureEconomySaveData(GameSaveData existingSaveData)
+        {
+            if (_shopManager == null)
+            {
+                return existingSaveData?.Economy ?? new EconomySaveData();
+            }
+
+            // For now, preserve existing economy data if ShopManager is not active
+            // Shops will be loaded from their respective ScriptableObjects
+            return existingSaveData?.Economy ?? new EconomySaveData();
+        }
+
+        private void RestoreEconomySaveData(EconomySaveData economyData)
+        {
+            if (_shopManager == null || economyData == null)
+            {
+                return;
+            }
+
+            if (economyData.Shops == null)
+            {
+                return;
+            }
+
+            foreach (var shopStockData in economyData.Shops)
+            {
+                _shopManager.LoadShopStock(shopStockData);
             }
         }
 

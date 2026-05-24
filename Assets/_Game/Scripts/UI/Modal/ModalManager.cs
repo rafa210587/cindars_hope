@@ -1,0 +1,85 @@
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace CindarsHope.UI.Modal
+{
+    public enum ModalType
+    {
+        None,
+        Dialogue,
+        ShopMenu,
+        Buy,
+        Sell
+    }
+
+    [DisallowMultipleComponent]
+    public sealed class ModalManager : MonoBehaviour
+    {
+        private Stack<ModalType> _modalStack = new Stack<ModalType>();
+
+        public bool IsInitialized { get; private set; }
+        public bool HasActiveModal => _modalStack.Count > 0;
+        public ModalType CurrentModal => HasActiveModal ? _modalStack.Peek() : ModalType.None;
+
+        public void Initialize()
+        {
+            if (IsInitialized)
+            {
+                return;
+            }
+
+            IsInitialized = true;
+        }
+
+        public void Shutdown()
+        {
+            if (!IsInitialized)
+            {
+                return;
+            }
+
+            _modalStack.Clear();
+            IsInitialized = false;
+        }
+
+        public void PushModal(ModalType modalType)
+        {
+            if (modalType == ModalType.None)
+            {
+                Debug.LogWarning("Cannot push ModalType.None");
+                return;
+            }
+
+            _modalStack.Push(modalType);
+            Debug.Log($"Modal pushed: {modalType}. Stack size: {_modalStack.Count}");
+        }
+
+        public bool TryPopModal(ModalType expectedType, out ModalType poppedModal)
+        {
+            poppedModal = ModalType.None;
+
+            if (_modalStack.Count == 0)
+            {
+                return false;
+            }
+
+            var top = _modalStack.Peek();
+            if (top != expectedType)
+            {
+                Debug.LogWarning($"Modal type mismatch: expected {expectedType}, but top is {top}");
+                return false;
+            }
+
+            _modalStack.Pop();
+            poppedModal = top;
+            Debug.Log($"Modal popped: {top}. Stack size: {_modalStack.Count}");
+            return true;
+        }
+
+        public void ClearAllModals()
+        {
+            _modalStack.Clear();
+            Debug.Log("All modals cleared");
+        }
+    }
+}
