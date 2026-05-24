@@ -6,15 +6,16 @@ namespace CindarsHope.Cave.Data
     [CreateAssetMenu(fileName = "CaveBossGateRegistry", menuName = "CindarsHope/Cave/Boss Gate Registry")]
     public sealed class CaveBossGateRegistrySO : ScriptableObject
     {
-        private const string DefaultGateId = "boss_gate_level_15";
-        private const int DefaultGateLevel = 15;
-        private const int DefaultCheckpointUnlockedOnDefeat = 15;
+        private const string DefaultGateIdPrefix = "boss_gate_level_";
         private const string DefaultBiomeId = "biome_cave_earth";
         private const string DefaultBossEnemyId = "enemy_meteor_ooze_king";
 
+        private static readonly int[] DefaultBossGateLevels = { 15, 30, 45, 60, 75, 90 };
+
         [SerializeField] private List<CaveBossGateDataSO> _gates = new List<CaveBossGateDataSO>();
 
-        private CaveBossGateDataSO _runtimeDefaultGate;
+        private readonly Dictionary<int, CaveBossGateDataSO> _runtimeDefaultGatesByLevel = new Dictionary<int, CaveBossGateDataSO>();
+        private bool _runtimeFallbackLogged;
 
         public IReadOnlyList<CaveBossGateDataSO> Gates => _gates.AsReadOnly();
 
@@ -28,7 +29,7 @@ namespace CindarsHope.Cave.Data
                 }
             }
 
-            return id == DefaultGateId ? GetRuntimeDefaultGate() : null;
+            return TryParseDefaultGateLevel(id, out var defaultLevel) ? GetRuntimeDefaultGate(defaultLevel) : null;
         }
 
         public CaveBossGateDataSO GetGateByLevel(int caveLevel)
@@ -41,7 +42,7 @@ namespace CindarsHope.Cave.Data
                 }
             }
 
-            return caveLevel == DefaultGateLevel ? GetRuntimeDefaultGate() : null;
+            return IsDefaultBossGateLevel(caveLevel) ? GetRuntimeDefaultGate(caveLevel) : null;
         }
 
         public bool IsBossGateLevel(int caveLevel)
@@ -55,26 +56,61 @@ namespace CindarsHope.Cave.Data
             return gate != null ? gate.CheckpointUnlockedOnDefeat : caveLevel;
         }
 
-        private CaveBossGateDataSO GetRuntimeDefaultGate()
+        public static bool IsDefaultBossGateLevel(int caveLevel)
         {
-            if (_runtimeDefaultGate != null)
+            foreach (var level in DefaultBossGateLevels)
             {
-                return _runtimeDefaultGate;
+                if (level == caveLevel)
+                {
+                    return true;
+                }
             }
 
-            _runtimeDefaultGate = CreateInstance<CaveBossGateDataSO>();
-            _runtimeDefaultGate.name = "RuntimeDefaultBossGate_Level15";
-            _runtimeDefaultGate.Id = DefaultGateId;
-            _runtimeDefaultGate.CaveLevel = DefaultGateLevel;
-            _runtimeDefaultGate.BiomeId = DefaultBiomeId;
-            _runtimeDefaultGate.BossEnemyId = DefaultBossEnemyId;
-            _runtimeDefaultGate.CheckpointUnlockedOnDefeat = DefaultCheckpointUnlockedOnDefeat;
+            return false;
+        }
 
-            Debug.LogWarning(
-                "CaveBossGateRegistrySO: registry has no matching persisted gate, using runtime fallback boss_gate_level_15. Regenerate CaveScene or fix CaveBossGateRegistry.asset to persist this gate.",
-                this);
+        public static string BuildDefaultGateId(int caveLevel)
+        {
+            return $"{DefaultGateIdPrefix}{caveLevel}";
+        }
 
-            return _runtimeDefaultGate;
+        private CaveBossGateDataSO GetRuntimeDefaultGate(int caveLevel)
+        {
+            if (_runtimeDefaultGatesByLevel.TryGetValue(caveLevel, out var existing) && existing != null)
+            {
+                return existing;
+            }
+
+            var gate = CreateInstance<CaveBossGateDataSO>();
+            gate.name = $"RuntimeDefaultBossGate_Level{caveLevel}";
+            gate.Id = BuildDefaultGateId(caveLevel);
+            gate.CaveLevel = caveLevel;
+            gate.BiomeId = DefaultBiomeId;
+            gate.BossEnemyId = DefaultBossEnemyId;
+            gate.CheckpointUnlockedOnDefeat = caveLevel;
+            _runtimeDefaultGatesByLevel[caveLevel] = gate;
+
+            if (!_runtimeFallbackLogged)
+            {
+                _runtimeFallbackLogged = true;
+                Debug.LogWarning(
+                    "CaveBossGateRegistrySO: using runtime fallback boss gate set for levels 15, 30, 45, 60, 75 and 90. Regenerate CaveScene or persist CaveBossGateRegistry.asset to remove this warning.",
+                    this);
+            }
+
+            return gate;
+        }
+
+        private static bool TryParseDefaultGateLevel(string id, out int caveLevel)
+        {
+            caveLevel = 0;
+            if (string.IsNullOrWhiteSpace(id) || !id.StartsWith(DefaultGateIdPrefix))
+            {
+                return false;
+            }
+
+            var suffix = id.Substring(DefaultGateIdPrefix.Length);
+            return int.TryParse(suffix, out caveLevel) && IsDefaultBossGateLevel(caveLevel);
         }
     }
 }
