@@ -45,12 +45,12 @@ namespace CindarsHope.Editor.Testing
             var prefabName = "NPC_WeaponsArmorShop";
             var go = new GameObject(prefabName);
 
-            var shopData = AssetDatabase.LoadAssetAtPath<ShopDataSO>("Assets/_Game/Data/Shops/ShopData_WeaponsArmor.asset");
-            var dialogueData = AssetDatabase.LoadAssetAtPath<NpcDialogueDataSO>("Assets/_Game/Data/NPCs/NpcDialogue_npc_shop_weapons_armor.asset");
+            var shopData = AssetDatabase.LoadAssetAtPath<ShopDataSO>("Assets/_Game/Data/Economy/Shop_Weapons_Armor.asset");
+            var npcData = AssetDatabase.LoadAssetAtPath<NpcDataSO>("Assets/_Game/Data/NPCs/Npc_Shop_Weapons_Armor.asset");
 
             var controller = go.AddComponent<NpcShopController>();
             controller.GetType().GetField("_shopData", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).SetValue(controller, shopData);
-            controller.GetType().GetField("_dialogueData", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).SetValue(controller, dialogueData);
+            controller.GetType().GetField("_npcData", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).SetValue(controller, npcData);
 
             var prefabPath = $"{PrefabPath}/{prefabName}.prefab";
             PrefabUtility.SaveAsPrefabAsset(go, prefabPath);
@@ -64,12 +64,12 @@ namespace CindarsHope.Editor.Testing
             var prefabName = "NPC_SeedsToolsShop";
             var go = new GameObject(prefabName);
 
-            var shopData = AssetDatabase.LoadAssetAtPath<ShopDataSO>("Assets/_Game/Data/Shops/ShopData_SeedsTools.asset");
-            var dialogueData = AssetDatabase.LoadAssetAtPath<NpcDialogueDataSO>("Assets/_Game/Data/NPCs/NpcDialogue_npc_shop_seeds_tools.asset");
+            var shopData = AssetDatabase.LoadAssetAtPath<ShopDataSO>("Assets/_Game/Data/Economy/Shop_Seeds_Tools.asset");
+            var npcData = AssetDatabase.LoadAssetAtPath<NpcDataSO>("Assets/_Game/Data/NPCs/Npc_Shop_Seeds_Tools.asset");
 
             var controller = go.AddComponent<NpcShopController>();
             controller.GetType().GetField("_shopData", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).SetValue(controller, shopData);
-            controller.GetType().GetField("_dialogueData", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).SetValue(controller, dialogueData);
+            controller.GetType().GetField("_npcData", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).SetValue(controller, npcData);
 
             var prefabPath = $"{PrefabPath}/{prefabName}.prefab";
             PrefabUtility.SaveAsPrefabAsset(go, prefabPath);
@@ -83,10 +83,10 @@ namespace CindarsHope.Editor.Testing
             var prefabName = "NPC_Pip_Receptionist";
             var go = new GameObject(prefabName);
 
-            var dialogueData = AssetDatabase.LoadAssetAtPath<NpcDialogueDataSO>("Assets/_Game/Data/NPCs/NpcDialogue_npc_pip.asset");
+            var npcData = AssetDatabase.LoadAssetAtPath<NpcDataSO>("Assets/_Game/Data/NPCs/Npc_Pip_Miudinho.asset");
 
             var controller = go.AddComponent<NpcShopController>();
-            controller.GetType().GetField("_dialogueData", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).SetValue(controller, dialogueData);
+            controller.GetType().GetField("_npcData", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).SetValue(controller, npcData);
             // Pip has no shop, so _shopData stays null
 
             var prefabPath = $"{PrefabPath}/{prefabName}.prefab";

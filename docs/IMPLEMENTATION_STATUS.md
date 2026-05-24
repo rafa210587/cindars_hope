@@ -24,7 +24,7 @@
 | UI/tools/hotbar/progression debug | Implementado parcial | `docs/specs/implementados/spec_ui_001_debug_hud_e_feedback_mvp.md`, `docs/specs/implementados/spec_ui_002_hud_tools_hotbar_progression_debug.md`, `docs/specs/implementados/spec_tools_001_tools_equipment_hotbar_parcial.md`, `docs/specs/implementados/spec_progression_001_xp_level_atributos_parcial.md` |
 | Cave runtime/procedural/stable run/boss gates | Implementado em codigo - validacao Unity pendente | `docs/specs/implementados/spec_cave_001_cave_scene_portal_e_runtime_basico.md` ate `spec_cave_008_debug_skip_confinement_wall_distance_hardening.md` |
 | Overnight 2026-05-23 | Executado parcialmente | `docs/IMPLEMENTATION_DELIVERY_20260523.md`, `docs/refinements/implementados/ref_stabilizacao_overnight_specs_20260523.md` |
-| Economy/shop/stock/pricing/UI (Spec 06) | Implementado fundação | Sistema de lojas com modais, estoque, transações |
+| Economy/shop/stock/pricing/UI (Spec 06) | Implementado completo | `docs/specs/implementados/spec_economy_shop_stock_pricing_ui.md` |
 
 ## Correcoes de tracking obrigatorias
 
@@ -119,7 +119,7 @@ A ordem oficial esta em `docs/specs/SPEC_EXECUTION_ORDER.md` e o registry futuro
 A primeira spec futura executavel passa a ser:
 
 ```text
-docs/specs/a_implementar/spec_economy_shop_stock_pricing_ui.md
+docs/specs/a_implementar/spec_crafting_queue_workstations_recipes_ui.md
 ```
 
 Antes de executar runtime, as specs futuras devem ser enriquecidas usando seus pre-refinamentos relacionados.

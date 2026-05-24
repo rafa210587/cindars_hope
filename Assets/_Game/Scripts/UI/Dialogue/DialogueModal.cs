@@ -42,22 +42,23 @@ namespace CindarsHope.UI.Dialogue
 
         private void Update()
         {
-            if (!_isShowing || _choiceButtons.Count == 0)
+            if (!_isShowing)
                 return;
 
-            if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))
+            if (_choiceButtons.Count > 0 && (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow)))
             {
                 SelectPreviousChoice();
             }
-            else if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow))
+            else if (_choiceButtons.Count > 0 && (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow)))
             {
                 SelectNextChoice();
             }
-            else if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.E))
+            else if (_choiceButtons.Count > 0 && (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.E)))
             {
                 ConfirmChoice();
             }
-            else if (Input.GetKeyDown(KeyCode.Escape))
+            else if (_choiceButtons.Count == 0
+                && (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.Escape)))
             {
                 Hide();
             }
@@ -76,6 +77,12 @@ namespace CindarsHope.UI.Dialogue
 
         public void ShowWithChoices(string dialogueText, List<DialogueChoice> choices)
         {
+            if (_modalManager != null && !_modalManager.PushModal(Modal.ModalType.Dialogue))
+            {
+                Debug.LogWarning("DialogueModal rejected because another interactive modal is active.", this);
+                return;
+            }
+
             if (_dialogueText != null)
             {
                 _dialogueText.text = dialogueText;
@@ -101,7 +108,6 @@ namespace CindarsHope.UI.Dialogue
 
             gameObject.SetActive(true);
             _isShowing = true;
-            _modalManager?.PushModal(Modal.ModalType.Dialogue);
         }
 
         public void Hide()

@@ -236,6 +236,17 @@ namespace CindarsHope.Inventory
             return TryAddItem(itemId, amount).Success;
         }
 
+        public bool CanAddItem(string itemId, int amount)
+        {
+            if (string.IsNullOrWhiteSpace(itemId) || amount <= 0 || !TryGetItemData(itemId, out var itemData))
+            {
+                return false;
+            }
+
+            EnsureCapacity(DefaultCapacity);
+            return GetAvailableCapacityFor(itemId, Mathf.Max(1, itemData.MaxStack)) >= amount;
+        }
+
         public InventoryAddResult TryAddItem(string itemId, int amount)
         {
             if (string.IsNullOrWhiteSpace(itemId) || amount <= 0)

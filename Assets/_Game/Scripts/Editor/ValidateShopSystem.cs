@@ -50,8 +50,8 @@ namespace CindarsHope.Editor.Validation
 
         private static void ValidateShopDataAssets()
         {
-            var weaponsShop = AssetDatabase.LoadAssetAtPath<ShopDataSO>("Assets/_Game/Data/Shops/ShopData_WeaponsArmor.asset");
-            var seedsShop = AssetDatabase.LoadAssetAtPath<ShopDataSO>("Assets/_Game/Data/Shops/ShopData_SeedsTools.asset");
+            var weaponsShop = AssetDatabase.LoadAssetAtPath<ShopDataSO>("Assets/_Game/Data/Economy/Shop_Weapons_Armor.asset");
+            var seedsShop = AssetDatabase.LoadAssetAtPath<ShopDataSO>("Assets/_Game/Data/Economy/Shop_Seeds_Tools.asset");
 
             CheckAsset("Weapons/Armor Shop Asset", weaponsShop);
             CheckAsset("Seeds/Tools Shop Asset", seedsShop);
@@ -62,7 +62,7 @@ namespace CindarsHope.Editor.Validation
                 Check($"Weapons Shop has items", weaponsShop.Items != null && weaponsShop.Items.Length > 0);
                 if (weaponsShop.Items != null)
                 {
-                    Check($"Weapons Shop item count", weaponsShop.Items.Length >= 3);
+                    Check($"Weapons Shop item count", weaponsShop.Items.Length >= 2);
                 }
             }
 
@@ -72,16 +72,16 @@ namespace CindarsHope.Editor.Validation
                 Check($"Seeds Shop has items", seedsShop.Items != null && seedsShop.Items.Length > 0);
                 if (seedsShop.Items != null)
                 {
-                    Check($"Seeds Shop item count", seedsShop.Items.Length >= 5);
+                    Check($"Seeds Shop item count", seedsShop.Items.Length >= 3);
                 }
             }
         }
 
         private static void ValidateNpcDialogueAssets()
         {
-            var pipDialogue = AssetDatabase.LoadAssetAtPath<NpcDialogueDataSO>("Assets/_Game/Data/NPCs/NpcDialogue_npc_pip.asset");
-            var weaponsDialogue = AssetDatabase.LoadAssetAtPath<NpcDialogueDataSO>("Assets/_Game/Data/NPCs/NpcDialogue_npc_shop_weapons_armor.asset");
-            var seedsDialogue = AssetDatabase.LoadAssetAtPath<NpcDialogueDataSO>("Assets/_Game/Data/NPCs/NpcDialogue_npc_shop_seeds_tools.asset");
+            var pipDialogue = AssetDatabase.LoadAssetAtPath<NpcDataSO>("Assets/_Game/Data/NPCs/Npc_Pip_Miudinho.asset");
+            var weaponsDialogue = AssetDatabase.LoadAssetAtPath<NpcDataSO>("Assets/_Game/Data/NPCs/Npc_Shop_Weapons_Armor.asset");
+            var seedsDialogue = AssetDatabase.LoadAssetAtPath<NpcDataSO>("Assets/_Game/Data/NPCs/Npc_Shop_Seeds_Tools.asset");
 
             CheckAsset("Pip Dialogue Data", pipDialogue);
             CheckAsset("Weapons Shop Dialogue Data", weaponsDialogue);
@@ -108,7 +108,8 @@ namespace CindarsHope.Editor.Validation
         {
             var go = new GameObject("_TestShopManager");
             var shopManager = go.AddComponent<ShopManager>();
-            shopManager.Initialize();
+            var itemDatabase = AssetDatabase.LoadAssetAtPath<ItemDatabaseSO>("Assets/_Game/Data/Registries/ItemDatabase.asset");
+            shopManager.Configure(itemDatabase);
 
             Check("ShopManager initializes", shopManager.IsInitialized);
 

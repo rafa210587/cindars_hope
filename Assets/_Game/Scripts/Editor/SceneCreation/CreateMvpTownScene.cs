@@ -13,10 +13,15 @@ using CindarsHope.Player.Data;
 using CindarsHope.Save;
 using CindarsHope.SceneManagement;
 using CindarsHope.UI;
+using CindarsHope.UI.Dialogue;
+using CindarsHope.UI.Modal;
+using CindarsHope.UI.Shop;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 using CindarsHope.UI.Hotbar;
 using CindarsHope.Equipment;
 using CindarsHope.Player.Progression;
@@ -59,16 +64,20 @@ namespace CindarsHope.Editor.SceneCreation
             var hungerManager = bootstrap.GetComponent<HungerManager>();
             var craftingManager = bootstrap.GetComponent<CraftingManager>();
             var economyManager = bootstrap.GetComponent<EconomyManager>();
+            var shopManager = bootstrap.GetComponent<ShopManager>();
+            var modalManager = bootstrap.GetComponent<ModalManager>();
+            var itemDatabase = AssetDatabase.LoadAssetAtPath<ItemDatabaseSO>(ItemDatabasePath);
 
             var playerTransform = CreatePlayer();
             var interactionSystem = playerTransform.GetComponent<InteractionSystem>();
+            var shopUi = CreateShopUi(modalManager);
 
             CreateGround();
             CreateBounds();
             CreateMainCamera(playerTransform);
             CreateSpawnPoints(playerTransform);
             CreatePortals();
-            CreateNpcs();
+            CreateNpcs(playerTransform, playerManager, inventoryManager, itemDatabase, shopManager, modalManager, shopUi);
             CreateTownCommerce();
             CreateTownDecorations();
             CreateDebugHud(playerManager, inventoryManager, hungerManager, interactionSystem, timeManager, saveManager);
@@ -83,7 +92,9 @@ namespace CindarsHope.Editor.SceneCreation
                 saveManager,
                 hungerManager,
                 craftingManager,
-                economyManager);
+                economyManager,
+                shopManager,
+                modalManager);
 
             EditorSceneManager.MarkSceneDirty(scene);
             EditorSceneManager.SaveScene(scene, ScenePath);
@@ -110,6 +121,8 @@ namespace CindarsHope.Editor.SceneCreation
             bootstrapObject.AddComponent<SaveInput>();
             bootstrapObject.AddComponent<CraftingManager>();
             bootstrapObject.AddComponent<EconomyManager>();
+            bootstrapObject.AddComponent<ShopManager>();
+            bootstrapObject.AddComponent<ModalManager>();
             bootstrapObject.AddComponent<EquipmentManager>();
             bootstrapObject.AddComponent<PlayerProgressionManager>();
             bootstrapObject.AddComponent<HotbarDebugInput>();
@@ -125,7 +138,9 @@ namespace CindarsHope.Editor.SceneCreation
             SaveManager saveManager,
             HungerManager hungerManager,
             CraftingManager craftingManager,
-            EconomyManager economyManager)
+            EconomyManager economyManager,
+            ShopManager shopManager,
+            ModalManager modalManager)
         {
             var serializedBootstrap = new SerializedObject(bootstrap);
             SetReference(serializedBootstrap, "_playerManager", playerManager);
@@ -135,6 +150,7 @@ namespace CindarsHope.Editor.SceneCreation
             SetReference(serializedBootstrap, "_hungerManager", hungerManager);
             SetReference(serializedBootstrap, "_craftingManager", craftingManager);
             SetReference(serializedBootstrap, "_economyManager", economyManager);
+            SetReference(serializedBootstrap, "_modalManager", modalManager);
             SetReference(serializedBootstrap, "_equipmentManager", bootstrap.GetComponent<EquipmentManager>());
             SetReference(serializedBootstrap, "_progressionManager", bootstrap.GetComponent<PlayerProgressionManager>());
 
@@ -164,6 +180,10 @@ namespace CindarsHope.Editor.SceneCreation
             if (itemDatabase != null)
             {
                 SetReference(serializedBootstrap, "_itemDatabase", itemDatabase);
+                var serializedShop = new SerializedObject(shopManager);
+                SetReference(serializedShop, "_itemDatabase", itemDatabase);
+                serializedShop.ApplyModifiedPropertiesWithoutUndo();
+                EditorUtility.SetDirty(shopManager);
             }
             else
             {
@@ -172,6 +192,10 @@ namespace CindarsHope.Editor.SceneCreation
 
             serializedBootstrap.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(bootstrap);
+            var serializedSave = new SerializedObject(saveManager);
+            SetReference(serializedSave, "_shopManager", shopManager);
+            serializedSave.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(saveManager);
             saveManager.RebindOptionalRuntimeManagers(
                 bootstrap.GetComponent<EquipmentManager>(),
                 bootstrap.GetComponent<PlayerProgressionManager>(),
@@ -541,77 +565,306 @@ namespace CindarsHope.Editor.SceneCreation
             CreateDecoration(decorations.transform, "TownLamp_Placeholder", new Vector3(-5f, -2.5f, 0f), new Vector3(0.45f, 1.3f, 1f), new Color(0.83f, 0.66f, 0.31f));
         }
 
-        private static void CreateNpcs()
+        private sealed class ShopUiReferences
+        {
+            public DialogueModal DialogueModal;
+            public ShopMenuModal ShopMenuModal;
+            public BuyPanel BuyPanel;
+            public SellPanel SellPanel;
+        }
+
+        private static ShopUiReferences CreateShopUi(ModalManager modalManager)
+        {
+            var canvasObject = new GameObject("ShopCanvas", typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
+            var canvas = canvasObject.GetComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            canvas.sortingOrder = 20;
+            var canvasScaler = canvasObject.GetComponent<CanvasScaler>();
+            canvasScaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            canvasScaler.referenceResolution = new Vector2(1280f, 720f);
+
+            new GameObject("ShopEventSystem", typeof(EventSystem), typeof(StandaloneInputModule));
+
+            var dialoguePanel = CreatePanel(canvasObject.transform, "DialogueModal", new Vector2(0f, -245f), new Vector2(1040f, 160f));
+            var dialogueText = CreateText(dialoguePanel.transform, "DialogueText", new Vector2(0f, 24f), new Vector2(900f, 56f), string.Empty);
+            var continueButton = CreateButton(dialoguePanel.transform, "ContinueButton", new Vector2(0f, -40f), new Vector2(160f, 42f), "Continuar");
+            var dialogue = dialoguePanel.AddComponent<DialogueModal>();
+            var serializedDialogue = new SerializedObject(dialogue);
+            SetReference(serializedDialogue, "_canvasGroup", dialoguePanel.GetComponent<CanvasGroup>());
+            SetReference(serializedDialogue, "_dialogueText", dialogueText);
+            SetReference(serializedDialogue, "_continueButton", continueButton);
+            serializedDialogue.ApplyModifiedPropertiesWithoutUndo();
+
+            var menuPanel = CreatePanel(canvasObject.transform, "ShopMenuModal", Vector2.zero, new Vector2(320f, 300f));
+            var buyButton = CreateButton(menuPanel.transform, "BuyButton", new Vector2(0f, 75f), new Vector2(240f, 48f), "Comprar");
+            var sellButton = CreateButton(menuPanel.transform, "SellButton", new Vector2(0f, 10f), new Vector2(240f, 48f), "Vender");
+            var exitButton = CreateButton(menuPanel.transform, "ExitButton", new Vector2(0f, -55f), new Vector2(240f, 48f), "Sair");
+            var menu = menuPanel.AddComponent<ShopMenuModal>();
+            var serializedMenu = new SerializedObject(menu);
+            SetReference(serializedMenu, "_canvasGroup", menuPanel.GetComponent<CanvasGroup>());
+            SetReference(serializedMenu, "_buyButton", buyButton);
+            SetReference(serializedMenu, "_sellButton", sellButton);
+            SetReference(serializedMenu, "_exitButton", exitButton);
+            serializedMenu.ApplyModifiedPropertiesWithoutUndo();
+
+            var buyPanel = CreatePanel(canvasObject.transform, "BuyPanel", Vector2.zero, new Vector2(760f, 560f));
+            var buyGold = CreateText(buyPanel.transform, "Gold", new Vector2(-260f, 235f), new Vector2(190f, 34f), "Ouro:");
+            var buyFeedback = CreateText(buyPanel.transform, "Feedback", new Vector2(0f, -195f), new Vector2(640f, 40f), string.Empty);
+            var buyBack = CreateButton(buyPanel.transform, "BackButton", new Vector2(280f, -235f), new Vector2(140f, 40f), "Voltar");
+            var buyContainer = CreateContainer(buyPanel.transform, "Items", new Vector2(0f, 15f), new Vector2(680f, 360f));
+            var buyTemplate = CreateBuyItemTemplate(buyContainer);
+            var buy = buyPanel.AddComponent<BuyPanel>();
+            var serializedBuy = new SerializedObject(buy);
+            SetReference(serializedBuy, "_canvasGroup", buyPanel.GetComponent<CanvasGroup>());
+            SetReference(serializedBuy, "_itemsContainer", buyContainer);
+            SetReference(serializedBuy, "_itemPrefab", buyTemplate);
+            SetReference(serializedBuy, "_goldDisplay", buyGold);
+            SetReference(serializedBuy, "_feedbackText", buyFeedback);
+            SetReference(serializedBuy, "_backButton", buyBack);
+            serializedBuy.ApplyModifiedPropertiesWithoutUndo();
+
+            var sellPanel = CreatePanel(canvasObject.transform, "SellPanel", Vector2.zero, new Vector2(760f, 560f));
+            var sellGold = CreateText(sellPanel.transform, "Gold", new Vector2(-260f, 235f), new Vector2(190f, 34f), "Ouro:");
+            var sellFeedback = CreateText(sellPanel.transform, "Feedback", new Vector2(0f, -195f), new Vector2(640f, 40f), string.Empty);
+            var sellBack = CreateButton(sellPanel.transform, "BackButton", new Vector2(280f, -235f), new Vector2(140f, 40f), "Voltar");
+            var sellContainer = CreateContainer(sellPanel.transform, "Items", new Vector2(0f, 15f), new Vector2(680f, 360f));
+            var sellTemplate = CreateSellItemTemplate(sellContainer);
+            var sell = sellPanel.AddComponent<SellPanel>();
+            var serializedSell = new SerializedObject(sell);
+            SetReference(serializedSell, "_canvasGroup", sellPanel.GetComponent<CanvasGroup>());
+            SetReference(serializedSell, "_itemsContainer", sellContainer);
+            SetReference(serializedSell, "_itemPrefab", sellTemplate);
+            SetReference(serializedSell, "_goldDisplay", sellGold);
+            SetReference(serializedSell, "_feedbackText", sellFeedback);
+            SetReference(serializedSell, "_backButton", sellBack);
+            serializedSell.ApplyModifiedPropertiesWithoutUndo();
+
+            modalManager.Initialize();
+            return new ShopUiReferences
+            {
+                DialogueModal = dialogue,
+                ShopMenuModal = menu,
+                BuyPanel = buy,
+                SellPanel = sell
+            };
+        }
+
+        private static void CreateNpcs(
+            Transform playerTransform,
+            PlayerManager playerManager,
+            InventoryManager inventoryManager,
+            ItemDatabaseSO itemDatabase,
+            ShopManager shopManager,
+            ModalManager modalManager,
+            ShopUiReferences shopUi)
         {
             var parent = new GameObject("NPCs");
             parent.transform.position = Vector3.zero;
 
-            var npcObject = new GameObject("NPC_Pip_Miudinho");
-            npcObject.transform.SetParent(parent.transform);
-            npcObject.transform.position = new Vector3(-2f, -0.75f, 0f);
-            npcObject.transform.localScale = new Vector3(1f, 1.5f, 1f);
+            var pip = CreateShopNpc(
+                parent.transform,
+                "NPC_Pip_Miudinho",
+                new Vector3(-5f, 1f, 0f),
+                new Color(0.92f, 0.88f, 0.75f),
+                "Assets/_Game/Data/NPCs/Npc_Pip_Miudinho.asset",
+                null,
+                playerManager,
+                inventoryManager,
+                itemDatabase,
+                shopManager,
+                modalManager,
+                shopUi);
+            var reception = pip.AddComponent<PipReceptionController>();
+            var serializedReception = new SerializedObject(reception);
+            SetReference(serializedReception, "_playerTransform", playerTransform);
+            serializedReception.ApplyModifiedPropertiesWithoutUndo();
 
-            var spriteRenderer = npcObject.AddComponent<SpriteRenderer>();
-            spriteRenderer.sprite = GetBuiltinSprite();
-            spriteRenderer.color = new Color(0.92f, 0.88f, 0.75f);
-            spriteRenderer.sortingOrder = 2;
-            TrySetSortingLayer(spriteRenderer, "Characters", spriteRenderer.sortingOrder);
-
-            if (spriteRenderer.sprite == null)
-            {
-                Debug.LogWarning("NPC_Pip_Miudinho placeholder SpriteRenderer was created without a sprite. Replace it with NPC art in a future art PR.");
-            }
-
-            var collider = npcObject.AddComponent<BoxCollider2D>();
-            collider.isTrigger = true;
-            collider.size = Vector2.one;
-
-            var talkPoint = npcObject.AddComponent<NpcTalkPoint>();
-            var serializedNpc = new SerializedObject(talkPoint);
-            serializedNpc.FindProperty("_displayName").stringValue = "Pip Miudinho";
-            serializedNpc.FindProperty("_dialogueLine").stringValue = "Bem-vindo a Cindar's Hope. Ainda estamos abrindo a cidade.";
-            SetReference(serializedNpc, "_spriteRenderer", spriteRenderer);
-            SetReference(serializedNpc, "_collider", collider);
-            serializedNpc.ApplyModifiedPropertiesWithoutUndo();
-            EditorUtility.SetDirty(talkPoint);
+            CreateShopNpc(
+                parent.transform,
+                "NPC_WeaponsArmorShop",
+                new Vector3(-3f, 2f, 0f),
+                new Color(0.64f, 0.45f, 0.3f),
+                "Assets/_Game/Data/NPCs/Npc_Shop_Weapons_Armor.asset",
+                "Assets/_Game/Data/Economy/Shop_Weapons_Armor.asset",
+                playerManager,
+                inventoryManager,
+                itemDatabase,
+                shopManager,
+                modalManager,
+                shopUi);
+            CreateShopNpc(
+                parent.transform,
+                "NPC_SeedsToolsShop",
+                new Vector3(4.5f, 2f, 0f),
+                new Color(0.42f, 0.72f, 0.34f),
+                "Assets/_Game/Data/NPCs/Npc_Shop_Seeds_Tools.asset",
+                "Assets/_Game/Data/Economy/Shop_Seeds_Tools.asset",
+                playerManager,
+                inventoryManager,
+                itemDatabase,
+                shopManager,
+                modalManager,
+                shopUi);
         }
 
         private static void CreateTownCommerce()
         {
             var parent = new GameObject("TownCommerce");
             parent.transform.position = Vector3.zero;
+            CreateDecoration(parent.transform, "WeaponsStorePlaceholder", new Vector3(-3f, 3.1f, 0f), new Vector3(3.2f, 1.1f, 1f), new Color(0.42f, 0.31f, 0.24f));
+            CreateDecoration(parent.transform, "FarmStorePlaceholder", new Vector3(4.5f, 3.1f, 0f), new Vector3(3.2f, 1.1f, 1f), new Color(0.3f, 0.44f, 0.24f));
+        }
 
-            CreateBuyItemPoint(
-                parent.transform,
-                "Shop_Buy_WheatSeeds",
-                new Vector3(1.5f, -0.75f, 0f),
-                new Color(0.78f, 0.55f, 0.25f),
-                "shop_town_seed_wheat",
-                "seed_wheat",
-                3,
-                5,
-                "Comprar trigo x3 por 5g");
+        private static GameObject CreateShopNpc(
+            Transform parent,
+            string objectName,
+            Vector3 position,
+            Color color,
+            string npcDataPath,
+            string shopDataPath,
+            PlayerManager playerManager,
+            InventoryManager inventoryManager,
+            ItemDatabaseSO itemDatabase,
+            ShopManager shopManager,
+            ModalManager modalManager,
+            ShopUiReferences shopUi)
+        {
+            var npcObject = new GameObject(objectName);
+            npcObject.transform.SetParent(parent);
+            npcObject.transform.position = position;
+            npcObject.transform.localScale = new Vector3(1f, 1.5f, 1f);
+            var renderer = npcObject.AddComponent<SpriteRenderer>();
+            renderer.sprite = GetBuiltinSprite();
+            renderer.color = color;
+            renderer.sortingOrder = 2;
+            TrySetSortingLayer(renderer, "Characters", renderer.sortingOrder);
+            var collider = npcObject.AddComponent<BoxCollider2D>();
+            collider.isTrigger = true;
+            collider.size = Vector2.one;
 
-            CreateBuyItemPoint(
-                parent.transform,
-                "Shop_Buy_CarrotSeeds",
-                new Vector3(3f, -0.75f, 0f),
-                new Color(0.9f, 0.45f, 0.18f),
-                "shop_town_seed_carrot",
-                "seed_carrot",
-                2,
-                6,
-                "Comprar cenoura x2 por 6g");
+            var controller = npcObject.AddComponent<NpcShopController>();
+            var serialized = new SerializedObject(controller);
+            SetReference(serialized, "_npcData", AssetDatabase.LoadAssetAtPath<NpcDataSO>(npcDataPath));
+            if (!string.IsNullOrWhiteSpace(shopDataPath))
+            {
+                SetReference(serialized, "_shopData", AssetDatabase.LoadAssetAtPath<ShopDataSO>(shopDataPath));
+            }
+            SetReference(serialized, "_playerManager", playerManager);
+            SetReference(serialized, "_inventoryManager", inventoryManager);
+            SetReference(serialized, "_itemDatabase", itemDatabase);
+            SetReference(serialized, "_shopManager", shopManager);
+            SetReference(serialized, "_dialogueModal", shopUi.DialogueModal);
+            SetReference(serialized, "_shopMenuModal", shopUi.ShopMenuModal);
+            SetReference(serialized, "_buyPanel", shopUi.BuyPanel);
+            SetReference(serialized, "_sellPanel", shopUi.SellPanel);
+            SetReference(serialized, "_modalManager", modalManager);
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+            return npcObject;
+        }
 
-            CreateSellAllPoint(
-                parent.transform,
-                "Shop_SellBox",
-                new Vector3(4.5f, -0.75f, 0f),
-                new Color(0.28f, 0.65f, 0.68f),
-                "shop_town_sell_box",
-                "Vender itens");
+        private static GameObject CreatePanel(Transform parent, string name, Vector2 position, Vector2 size)
+        {
+            var panel = new GameObject(name, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(CanvasGroup));
+            panel.transform.SetParent(parent, false);
+            var rect = panel.GetComponent<RectTransform>();
+            rect.anchoredPosition = position;
+            rect.sizeDelta = size;
+            panel.GetComponent<Image>().color = new Color(0.09f, 0.1f, 0.13f, 0.96f);
+            return panel;
+        }
 
-            CreateDecoration(parent.transform, "GeneralStorePlaceholder", new Vector3(3f, 0.75f, 0f), new Vector3(3.75f, 1.1f, 1f), new Color(0.42f, 0.31f, 0.24f));
+        private static Text CreateText(Transform parent, string name, Vector2 position, Vector2 size, string text)
+        {
+            var textObject = new GameObject(name, typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
+            textObject.transform.SetParent(parent, false);
+            var rect = textObject.GetComponent<RectTransform>();
+            rect.anchoredPosition = position;
+            rect.sizeDelta = size;
+            var label = textObject.GetComponent<Text>();
+            label.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            label.fontSize = 18;
+            label.alignment = TextAnchor.MiddleLeft;
+            label.color = Color.white;
+            label.text = text;
+            return label;
+        }
+
+        private static Button CreateButton(Transform parent, string name, Vector2 position, Vector2 size, string text)
+        {
+            var buttonObject = new GameObject(name, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
+            buttonObject.transform.SetParent(parent, false);
+            var rect = buttonObject.GetComponent<RectTransform>();
+            rect.anchoredPosition = position;
+            rect.sizeDelta = size;
+            buttonObject.GetComponent<Image>().color = new Color(0.26f, 0.29f, 0.36f, 1f);
+            var label = CreateText(buttonObject.transform, "Label", Vector2.zero, size, text);
+            label.alignment = TextAnchor.MiddleCenter;
+            return buttonObject.GetComponent<Button>();
+        }
+
+        private static Transform CreateContainer(Transform parent, string name, Vector2 position, Vector2 size)
+        {
+            var containerObject = new GameObject(name, typeof(RectTransform), typeof(VerticalLayoutGroup));
+            containerObject.transform.SetParent(parent, false);
+            var rect = containerObject.GetComponent<RectTransform>();
+            rect.anchoredPosition = position;
+            rect.sizeDelta = size;
+            var layout = containerObject.GetComponent<VerticalLayoutGroup>();
+            layout.spacing = 8f;
+            layout.childControlWidth = true;
+            layout.childForceExpandWidth = true;
+            layout.childControlHeight = false;
+            return containerObject.transform;
+        }
+
+        private static BuyPanelItem CreateBuyItemTemplate(Transform parent)
+        {
+            var item = CreatePanel(parent, "BuyItemTemplate", Vector2.zero, new Vector2(680f, 48f));
+            item.AddComponent<LayoutElement>().preferredHeight = 48f;
+            var component = item.AddComponent<BuyPanelItem>();
+            var serialized = new SerializedObject(component);
+            SetReference(serialized, "_itemNameText", CreateText(item.transform, "Name", new Vector2(-245f, 0f), new Vector2(180f, 40f), string.Empty));
+            SetReference(serialized, "_priceText", CreateText(item.transform, "Price", new Vector2(-60f, 0f), new Vector2(100f, 40f), string.Empty));
+            SetReference(serialized, "_stockText", CreateText(item.transform, "Stock", new Vector2(80f, 0f), new Vector2(140f, 40f), string.Empty));
+            SetReference(serialized, "_amountInput", CreateInputField(item.transform, "Amount", new Vector2(205f, 0f)));
+            SetReference(serialized, "_buyButton", CreateButton(item.transform, "Buy", new Vector2(290f, 0f), new Vector2(85f, 38f), "Comprar"));
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+            item.SetActive(false);
+            return component;
+        }
+
+        private static SellPanelItem CreateSellItemTemplate(Transform parent)
+        {
+            var item = CreatePanel(parent, "SellItemTemplate", Vector2.zero, new Vector2(680f, 48f));
+            item.AddComponent<LayoutElement>().preferredHeight = 48f;
+            var component = item.AddComponent<SellPanelItem>();
+            var serialized = new SerializedObject(component);
+            SetReference(serialized, "_itemNameText", CreateText(item.transform, "Name", new Vector2(-245f, 0f), new Vector2(180f, 40f), string.Empty));
+            SetReference(serialized, "_priceText", CreateText(item.transform, "Price", new Vector2(-60f, 0f), new Vector2(100f, 40f), string.Empty));
+            SetReference(serialized, "_amountText", CreateText(item.transform, "AmountOwned", new Vector2(80f, 0f), new Vector2(140f, 40f), string.Empty));
+            SetReference(serialized, "_amountInput", CreateInputField(item.transform, "Amount", new Vector2(205f, 0f)));
+            SetReference(serialized, "_sellButton", CreateButton(item.transform, "Sell", new Vector2(290f, 0f), new Vector2(85f, 38f), "Vender"));
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+            item.SetActive(false);
+            return component;
+        }
+
+        private static InputField CreateInputField(Transform parent, string name, Vector2 position)
+        {
+            var fieldObject = new GameObject(name, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(InputField));
+            fieldObject.transform.SetParent(parent, false);
+            var rect = fieldObject.GetComponent<RectTransform>();
+            rect.anchoredPosition = position;
+            rect.sizeDelta = new Vector2(55f, 36f);
+            fieldObject.GetComponent<Image>().color = Color.white;
+            var value = CreateText(fieldObject.transform, "Value", Vector2.zero, new Vector2(48f, 32f), "1");
+            value.color = Color.black;
+            value.alignment = TextAnchor.MiddleCenter;
+            var field = fieldObject.GetComponent<InputField>();
+            field.textComponent = value;
+            field.text = "1";
+            field.contentType = InputField.ContentType.IntegerNumber;
+            return field;
         }
 
         private static void CreateBuyItemPoint(

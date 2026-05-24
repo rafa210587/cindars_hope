@@ -22,7 +22,7 @@ namespace CindarsHope.UI.Shop
         [SerializeField] private Button _exitButton;
 
         private Modal.ModalManager _modalManager;
-        private ShopMenuOption _selectedOption = ShopMenuOption.None;
+        private ShopMenuOption _selectedOption = ShopMenuOption.Buy;
         public event Action<ShopMenuOption> OnOptionSelected;
 
         private void OnEnable()
@@ -41,9 +41,22 @@ namespace CindarsHope.UI.Shop
 
         private void Update()
         {
-            if (_canvasGroup != null && _canvasGroup.interactable && Input.GetKeyDown(KeyCode.Escape))
+            if (_canvasGroup == null || !_canvasGroup.interactable)
             {
-                SelectOption(ShopMenuOption.Exit);
+                return;
+            }
+
+            if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))
+            {
+                MoveSelection(-1);
+            }
+            else if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow))
+            {
+                MoveSelection(1);
+            }
+            else if (Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space))
+            {
+                SelectOption(_selectedOption);
             }
         }
 
@@ -55,6 +68,12 @@ namespace CindarsHope.UI.Shop
 
         public void Show()
         {
+            if (_modalManager != null && !_modalManager.PushModal(Modal.ModalType.ShopMenu))
+            {
+                Debug.LogWarning("ShopMenuModal rejected because another interactive modal is active.", this);
+                return;
+            }
+
             if (_canvasGroup != null)
             {
                 _canvasGroup.alpha = 1f;
@@ -63,7 +82,8 @@ namespace CindarsHope.UI.Shop
             }
 
             gameObject.SetActive(true);
-            _modalManager?.PushModal(Modal.ModalType.ShopMenu);
+            _selectedOption = ShopMenuOption.Buy;
+            UpdateHighlight();
         }
 
         public void Hide()
@@ -88,6 +108,34 @@ namespace CindarsHope.UI.Shop
             {
                 Hide();
             }
+        }
+
+        private void MoveSelection(int direction)
+        {
+            var options = new[] { ShopMenuOption.Buy, ShopMenuOption.Sell, ShopMenuOption.Exit };
+            var currentIndex = System.Array.IndexOf(options, _selectedOption);
+            currentIndex = (currentIndex + direction + options.Length) % options.Length;
+            _selectedOption = options[currentIndex];
+            UpdateHighlight();
+        }
+
+        private void UpdateHighlight()
+        {
+            SetHighlight(_buyButton, _selectedOption == ShopMenuOption.Buy);
+            SetHighlight(_sellButton, _selectedOption == ShopMenuOption.Sell);
+            SetHighlight(_exitButton, _selectedOption == ShopMenuOption.Exit);
+        }
+
+        private static void SetHighlight(Button button, bool selected)
+        {
+            if (button == null)
+            {
+                return;
+            }
+
+            var colors = button.colors;
+            colors.normalColor = selected ? new Color(1f, 0.86f, 0.34f) : Color.white;
+            button.colors = colors;
         }
     }
 }

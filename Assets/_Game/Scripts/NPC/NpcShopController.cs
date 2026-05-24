@@ -1,20 +1,20 @@
-using CindarsHope.Core;
-using CindarsHope.Core.Data;
-using CindarsHope.Core.Events;
 using CindarsHope.Economy;
+using CindarsHope.Core.Data;
+using CindarsHope.Interaction;
 using CindarsHope.Inventory;
 using CindarsHope.Inventory.Data;
 using CindarsHope.Player;
 using CindarsHope.UI.Dialogue;
+using CindarsHope.UI.Modal;
 using CindarsHope.UI.Shop;
 using UnityEngine;
 
 namespace CindarsHope.NPC
 {
     [DisallowMultipleComponent]
-    public class NpcShopController : MonoBehaviour
+    public sealed class NpcShopController : MonoBehaviour, IInteractable
     {
-        [SerializeField] private NpcDialogueDataSO _dialogueData;
+        [SerializeField] private NpcDataSO _npcData;
         [SerializeField] private ShopDataSO _shopData;
         [SerializeField] private PlayerManager _playerManager;
         [SerializeField] private InventoryManager _inventoryManager;
@@ -24,56 +24,61 @@ namespace CindarsHope.NPC
         [SerializeField] private ShopMenuModal _shopMenuModal;
         [SerializeField] private BuyPanel _buyPanel;
         [SerializeField] private SellPanel _sellPanel;
-        [SerializeField] private UI.Modal.ModalManager _modalManager;
+        [SerializeField] private ModalManager _modalManager;
 
-        private bool _isInteracting = false;
+        private bool _isInteracting;
+        private bool _isClosing;
 
-        private void OnEnable()
+        public string InteractionPrompt => $"Conversar com {_npcData?.DisplayName ?? "NPC"}";
+
+        private void Start()
         {
-            GameEventBus.Subscribe<InteractionPromptChangedEvent>(HandleInteractionPrompt);
+            _modalManager?.Initialize();
+            _dialogueModal?.Initialize(_modalManager);
+            _shopMenuModal?.Initialize(_modalManager);
+            _buyPanel?.Initialize(_shopManager, _playerManager, _inventoryManager, _itemDatabase, _modalManager);
+            _sellPanel?.Initialize(_shopManager, _playerManager, _inventoryManager, _itemDatabase, _modalManager);
+
+            if (_shopData != null && _shopManager != null)
+            {
+                _shopManager.Configure(_itemDatabase);
+                _shopManager.InitializeShop(_shopData);
+            }
         }
 
         private void OnDisable()
         {
-            GameEventBus.Unsubscribe<InteractionPromptChangedEvent>(HandleInteractionPrompt);
-        }
-
-        private void Start()
-        {
-            if (_shopData != null && _shopManager != null)
-            {
-                _shopManager.InitializeShop(_shopData);
-            }
-
-            if (_buyPanel != null)
-            {
-                _buyPanel.Initialize(_shopManager, _playerManager, _inventoryManager, _itemDatabase, _modalManager);
-                _buyPanel.OnBackPressed += ShowShopMenu;
-            }
-
-            if (_sellPanel != null)
-            {
-                _sellPanel.Initialize(_shopManager, _playerManager, _inventoryManager, _itemDatabase, _modalManager);
-                _sellPanel.OnBackPressed += ShowShopMenu;
-            }
+            DetachUiEvents();
+            _isInteracting = false;
+            _isClosing = false;
         }
 
         private void Update()
         {
-            if (_isInteracting && Input.GetKeyDown(KeyCode.Escape))
+            if (_isInteracting
+                && !_isClosing
+                && _modalManager != null
+                && _modalManager.CurrentModal != ModalType.Dialogue
+                && Input.GetKeyDown(KeyCode.Escape))
             {
-                CloseInteraction();
+                BeginCloseInteraction();
             }
         }
 
-        public void Interact()
+        public bool CanInteract(GameObject interactor)
         {
-            if (_isInteracting)
+            return _npcData != null && !_isInteracting;
+        }
+
+        public void Interact(GameObject interactor)
+        {
+            if (!CanInteract(interactor))
             {
                 return;
             }
 
             _isInteracting = true;
+            _isClosing = false;
             ShowOpeningDialogue();
         }
 
@@ -81,91 +86,150 @@ namespace CindarsHope.NPC
         {
             if (_dialogueModal == null)
             {
-                HandleDialogueClosed();
+                ShowShopMenuOrClose();
                 return;
             }
 
-            var text = _dialogueData != null ? _dialogueData.OpeningLine : "Bem-vindo!";
-            _dialogueModal.Show(text);
-            _dialogueModal.OnClose += HandleDialogueClosed;
+            _dialogueModal.OnClose += HandleOpeningClosed;
+            _dialogueModal.Show(_npcData.OpeningLine);
         }
 
-        private void HandleDialogueClosed()
+        private void HandleOpeningClosed()
         {
-            if (_dialogueModal != null)
+            _dialogueModal.OnClose -= HandleOpeningClosed;
+            ShowShopMenuOrClose();
+        }
+
+        private void ShowShopMenuOrClose()
+        {
+            if (_shopData == null)
             {
-                _dialogueModal.OnClose -= HandleDialogueClosed;
+                BeginCloseInteraction();
+                return;
             }
 
-            if (_shopData != null)
-            {
-                ShowShopMenu();
-            }
-            else
-            {
-                CloseInteraction();
-            }
+            ShowShopMenu();
         }
 
         private void ShowShopMenu()
         {
-            if (_shopMenuModal == null)
+            if (!_isInteracting || _isClosing || _shopMenuModal == null)
             {
-                CloseInteraction();
                 return;
             }
 
-            _shopMenuModal.Show();
+            _shopMenuModal.OnOptionSelected -= HandleShopMenuOption;
             _shopMenuModal.OnOptionSelected += HandleShopMenuOption;
+            if (_buyPanel != null)
+            {
+                _buyPanel.OnBackPressed -= HandlePanelBack;
+                _buyPanel.OnBackPressed += HandlePanelBack;
+            }
+
+            if (_sellPanel != null)
+            {
+                _sellPanel.OnBackPressed -= HandlePanelBack;
+                _sellPanel.OnBackPressed += HandlePanelBack;
+            }
+            _shopMenuModal.Show();
         }
 
         private void HandleShopMenuOption(ShopMenuOption option)
         {
             _shopMenuModal.OnOptionSelected -= HandleShopMenuOption;
+            _shopMenuModal.Hide();
 
             switch (option)
             {
                 case ShopMenuOption.Buy:
-                    if (_buyPanel != null && _shopData != null)
+                    if (_buyPanel != null)
                     {
                         _buyPanel.Show(_shopData.Id);
                     }
+                    else
+                    {
+                        BeginCloseInteraction();
+                    }
                     break;
                 case ShopMenuOption.Sell:
-                    if (_sellPanel != null && _shopData != null)
+                    if (_sellPanel != null)
                     {
                         _sellPanel.Show(_shopData.Id);
                     }
+                    else
+                    {
+                        BeginCloseInteraction();
+                    }
                     break;
                 case ShopMenuOption.Exit:
-                    ShowClosingDialogue();
+                    BeginCloseInteraction();
                     break;
             }
         }
 
-        private void ShowClosingDialogue()
+        private void HandlePanelBack()
         {
-            if (_dialogueModal == null)
+            ShowShopMenu();
+        }
+
+        private void BeginCloseInteraction()
+        {
+            if (!_isInteracting || _isClosing)
+            {
+                return;
+            }
+
+            _isClosing = true;
+            _buyPanel?.Hide();
+            _sellPanel?.Hide();
+            _shopMenuModal?.Hide();
+
+            if (_dialogueModal == null || string.IsNullOrWhiteSpace(_npcData.ClosingLine))
             {
                 CloseInteraction();
                 return;
             }
 
-            var text = _dialogueData != null ? _dialogueData.ClosingLine : "Até logo!";
-            _dialogueModal.Show(text);
-            _dialogueModal.OnClose += () => CloseInteraction();
+            _dialogueModal.OnClose += HandleClosingClosed;
+            _dialogueModal.Show(_npcData.ClosingLine);
+        }
+
+        private void HandleClosingClosed()
+        {
+            _dialogueModal.OnClose -= HandleClosingClosed;
+            CloseInteraction();
         }
 
         private void CloseInteraction()
         {
-            _isInteracting = false;
+            DetachUiEvents();
             _modalManager?.ClearAllModals();
-            Debug.Log("Interaction closed");
+            _isInteracting = false;
+            _isClosing = false;
         }
 
-        private void HandleInteractionPrompt(InteractionPromptChangedEvent evt)
+        private void DetachUiEvents()
         {
-            // Will be used for player input to trigger interaction
+            if (_dialogueModal != null)
+            {
+                _dialogueModal.OnClose -= HandleOpeningClosed;
+                _dialogueModal.OnClose -= HandleClosingClosed;
+            }
+
+            if (_shopMenuModal != null)
+            {
+                _shopMenuModal.OnOptionSelected -= HandleShopMenuOption;
+            }
+
+            if (_buyPanel != null)
+            {
+                _buyPanel.OnBackPressed -= HandlePanelBack;
+            }
+
+            if (_sellPanel != null)
+            {
+                _sellPanel.OnBackPressed -= HandlePanelBack;
+            }
         }
     }
 }

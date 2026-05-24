@@ -6,7 +6,6 @@ A antiga spec 00 de reconciliacao documental foi reclassificada como implementad
 
 | Ordem | Spec | Status | Dependencia | Observacao |
 |---|---|---|---|---|
-| 06 | [spec_economy_shop_stock_pricing_ui.md](a_implementar/spec_economy_shop_stock_pricing_ui.md) | Implementado parcial | 00-05 implementadas/parciais | ShopManager/StockManager com UI minima. Pendente: assets via Editor, Play Mode, balance. Bloqueia: 07, 08, 17. |
 | 07 | [spec_crafting_queue_workstations_recipes_ui.md](a_implementar/spec_crafting_queue_workstations_recipes_ui.md) | Implementado parcial | 00-06 | CraftingManager/Station com jobs. Pendente: UI modal final, recipe unlock avancado. Bloqueia: 10, 17. |
 | 08 | [spec_town_npc_dialogue_schedule_quests.md](a_implementar/spec_town_npc_dialogue_schedule_quests.md) | Implementado parcial | 00-07 | NPC/dialogue system completo. Pendente: assets via Editor, Play Mode. Bloqueia: 15, 17. |
 | 12 | [spec_player_combat_weapons_spells_skill_actions_runtime.md](a_implementar/spec_player_combat_weapons_spells_skill_actions_runtime.md) | A implementar | 00-11 | PlayerCombatController Q/E, melee, dodge, bow, spells, active slots. Bloqueia: 13, 14, 16, 17. |

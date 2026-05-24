@@ -66,8 +66,6 @@ namespace CindarsHope.Editor.SceneCreation
             var farmPlotRegistry = CreateFarmPlots(inventoryManager);
             var treeRegistry = CreateTrees(inventoryManager);
             var itemPickupRegistry = CreateItemPickups(inventoryManager);
-            CreateSellPoint(inventoryManager, playerManager);
-            CreateSeedShopPoint(inventoryManager, playerManager);
             CreateCraftingPoint(craftingManager);
             CreateFarmPortals();
             CreateFishingSpot(inventoryManager);
@@ -961,13 +959,8 @@ namespace CindarsHope.Editor.SceneCreation
             var fishingSpot = fishingSpots.Length > 0 ? fishingSpots[0] : null;
             SetReference(serializedInstaller, "_fishingSpot", fishingSpot);
 
-            var seedShopPoints = Object.FindObjectsByType<SeedShopPoint>();
-            var seedShopPoint = seedShopPoints.Length > 0 ? seedShopPoints[0] : null;
-            SetReference(serializedInstaller, "_seedShopPoint", seedShopPoint);
-
-            var sellPoints = Object.FindObjectsByType<SellPoint>();
-            var sellPoint = sellPoints.Length > 0 ? sellPoints[0] : null;
-            SetReference(serializedInstaller, "_sellAllPoint", sellPoint);
+            SetReference(serializedInstaller, "_seedShopPoint", null);
+            SetReference(serializedInstaller, "_sellAllPoint", null);
 
             var craftingPoints = Object.FindObjectsByType<CraftingPoint>();
             var craftingPoint = craftingPoints.Length > 0 ? craftingPoints[0] : null;

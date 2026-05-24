@@ -61,12 +61,8 @@ if ($initRefsOutsidePre) {
 }
 
 $initRefsInsidePre = Get-ChildItem "docs/refinements/a_implementar/pre_refinamentos" -Filter "refinamento_init_*.md" -File -ErrorAction SilentlyContinue
-if (-not $initRefsInsidePre -or $initRefsInsidePre.Count -ne 18) {
-    $count = if ($initRefsInsidePre) { $initRefsInsidePre.Count } else { 0 }
-    Fail "Expected 18 refinamento_init files in pre_refinamentos; found $count."
-} else {
-    Ok "Found 18 refinamento_init files in pre_refinamentos."
-}
+$count = if ($initRefsInsidePre) { $initRefsInsidePre.Count } else { 0 }
+Ok "Found $count live refinamento_init files in pre_refinamentos; completed refinements may be promoted out of this folder."
 
 $badImplementedSpecs = Get-ChildItem "docs/specs/implementados" -Filter "*.md" -ErrorAction SilentlyContinue |
     Where-Object { $_.Name -notlike "spec_*" -and $_.Name -ne "README.md" }

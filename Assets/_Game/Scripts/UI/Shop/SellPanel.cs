@@ -19,6 +19,7 @@ namespace CindarsHope.UI.Shop
         [SerializeField] private Transform _itemsContainer;
         [SerializeField] private SellPanelItem _itemPrefab;
         [SerializeField] private Text _goldDisplay;
+        [SerializeField] private Text _feedbackText;
         [SerializeField] private Button _backButton;
 
         private ShopManager _shopManager;
@@ -49,14 +50,6 @@ namespace CindarsHope.UI.Shop
             ClearItems();
         }
 
-        private void Update()
-        {
-            if (_canvasGroup != null && _canvasGroup.interactable && Input.GetKeyDown(KeyCode.Escape))
-            {
-                OnBackClicked();
-            }
-        }
-
         public void Initialize(ShopManager shopManager, PlayerManager playerManager, InventoryManager inventoryManager, ItemDatabaseSO itemDatabase, Modal.ModalManager modalManager)
         {
             _shopManager = shopManager;
@@ -75,6 +68,12 @@ namespace CindarsHope.UI.Shop
                 return;
             }
 
+            if (_modalManager != null && !_modalManager.PushModal(Modal.ModalType.Sell))
+            {
+                Debug.LogWarning("SellPanel rejected because another interactive modal is active.", this);
+                return;
+            }
+
             _shopId = shopId;
             ClearItems();
             PopulateItems();
@@ -87,7 +86,7 @@ namespace CindarsHope.UI.Shop
             }
 
             gameObject.SetActive(true);
-            _modalManager?.PushModal(Modal.ModalType.Sell);
+            SetFeedback(string.Empty);
             UpdateGoldDisplay();
         }
 
@@ -129,33 +128,31 @@ namespace CindarsHope.UI.Shop
                 }
 
                 var item = Instantiate(_itemPrefab, _itemsContainer);
-                item.Initialize(itemData, amount, OnItemSellClicked);
+                item.gameObject.SetActive(true);
+                item.Initialize(itemData, amount, _shopManager, _shopId, OnItemSellClicked);
                 _displayedItems.Add(item);
             }
         }
 
         private void OnItemSellClicked(string itemId, int amount)
         {
-            if (!_shopManager.TrySellItem(_shopId, itemId, amount, out var totalGold))
+            var result = _shopManager.TrySellItem(_shopId, itemId, amount, _playerManager, _inventoryManager);
+            SetFeedback(result.Message);
+            if (!result.Success)
             {
-                Debug.LogWarning($"SellPanel: Failed to sell {itemId} x{amount}");
                 return;
             }
 
-            if (_inventoryManager != null && !_inventoryManager.RemoveItem(itemId, amount))
-            {
-                Debug.LogWarning($"SellPanel: Failed to remove {itemId} x{amount} from inventory");
-                return;
-            }
-
-            if (_playerManager != null)
-            {
-                _playerManager.AddGold(totalGold);
-            }
-
-            GameEventBus.Publish(new EconomyTransactionCompletedEvent(true, "ShopSell", itemId, amount, totalGold, $"Vendeu {itemId} x{amount} por {totalGold}g"));
             UpdateGoldDisplay();
             RefreshPanel();
+        }
+
+        private void SetFeedback(string message)
+        {
+            if (_feedbackText != null)
+            {
+                _feedbackText.text = message ?? string.Empty;
+            }
         }
 
         private void UpdateGoldDisplay()
@@ -203,11 +200,15 @@ namespace CindarsHope.UI.Shop
 
         private ItemDataSO _itemData;
         private int _playerAmount;
+        private ShopManager _shopManager;
+        private string _shopId;
 
-        public void Initialize(ItemDataSO itemData, int playerAmount, Action<string, int> onSellClicked)
+        public void Initialize(ItemDataSO itemData, int playerAmount, ShopManager shopManager, string shopId, Action<string, int> onSellClicked)
         {
             _itemData = itemData;
             _playerAmount = playerAmount;
+            _shopManager = shopManager;
+            _shopId = shopId;
 
             if (_itemNameText != null)
             {
@@ -236,7 +237,8 @@ namespace CindarsHope.UI.Shop
         {
             if (_priceText != null && _itemData != null)
             {
-                var sellPrice = Mathf.RoundToInt(_itemData.BaseValue * 0.6f);
+                _shopManager.TryGetSession(_shopId, out var session);
+                var sellPrice = ShopManager.CalculateSellPrice(_itemData, session?.ShopData);
                 _priceText.text = $"{sellPrice}g";
             }
         }

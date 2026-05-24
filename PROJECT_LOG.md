@@ -2992,3 +2992,57 @@ PendÃƒÆ’Ã‚Âªncias:
 
 PrÃƒÆ’Ã‚Â³ximo passo recomendado:
 - Revisar o commit local e executar Unity Play Mode em tarefa separada antes de push/PR.
+## Sessao 2026-05-24 (8a) - Fechar SPEC 06 Economy Shop Stock Pricing UI
+
+**Data:** 2026-05-24  
+**Foco:** SPEC 06 - lojas por NPC, stock finito, pricing, modal UI e desativacao do comercio legado da fazenda  
+**Status:** COMPLETO
+
+### Deliverables
+
+- `Assets/_Game/Scripts/Economy/ShopManager.cs` - transacoes atomicas, stock persistente, restock diario e pricing.
+- `Assets/_Game/Scripts/NPC/NpcShopController.cs` e `PipReceptionController.cs` - dois lojistas e Pip recepcionista.
+- `Assets/_Game/Scripts/UI/Dialogue/**`, `UI/Modal/**`, `UI/Shop/**` - fluxo modal exclusivo Comprar/Vender/Sair.
+- `Assets/_Game/Scenes/TownScene.unity` - shop UI, dois lojistas e Pip materializados por gerador Editor.
+- `Assets/_Game/Scenes/FarmScene.unity` - `SellPoint` e `SeedShopPoint` removidos como fluxo oficial.
+- `docs/specs/implementados/spec_economy_shop_stock_pricing_ui.md` e `docs/refinements/implementados/ref_economy_shop_stock_pricing_ui.md` - promocao documental.
+- `docs/validation/SPEC_06_ECONOMY_SHOP_VALIDATION_20260524.md` - auditoria e checklist final.
+- `docs/agent_prompts/implementados/SPEC_06_economy-shop-stock-pricing_PROMPT.md` - prompt encerrado.
+
+### Skills usadas
+
+- SPEC Validation Pattern
+- Scene Wiring Validation Pattern
+- Unity Asset Creation Pattern
+- Save/Load Data Pattern
+- Event Publishing Pattern
+- Spec Closure / Registry Reconciliation Pattern
+- Play Mode Manual Validation Checklist
+
+### Validacoes
+
+- Unity compile: PASS - `Logs/unity-compile-spec06-corrected.log` contem `Tundra build success` e `return code 0`.
+- Shop assets/components: PASS - `Logs/spec06-shop-validation-final.log`: `24 passed, 0 failed`.
+- Scene wiring: PASS - `Logs/spec06-scene-validation-final.log`: TownScene e FarmScene aprovadas.
+- Docs validation: PASS apos promocao/registries.
+- `ScanUnityLogs.ps1`: FAIL por assemblies `firstpass` invalidos, sem `error CS`; alerta registrado como ruido residual do scanner.
+
+### Play Mode
+
+```text
+PLAY MODE TEST: SPEC 06 - Economy Shop, Stock, Pricing e UI
+Scene used: TownScene e FarmScene
+Steps executed: NOT RUN
+Expected result: Pip sem loja; dois lojistas; compra/venda atomicas; stock/save/restock; sem comercio oficial na fazenda.
+Observed result: NOT RUN
+Bugs found: Nenhum em validacao automatizada.
+Passed: NOT RUN
+Reason: validacao executada em Unity batchmode sem entrada interativa.
+Residual risk: input e layout visual dependem da validacao humana final.
+```
+
+### Proxima spec
+
+- SPEC_07 - Crafting queue, workstations, recipes e UI.
+
+---

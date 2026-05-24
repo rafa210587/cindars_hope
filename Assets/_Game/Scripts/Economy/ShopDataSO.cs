@@ -1,6 +1,7 @@
 using System;
 using CindarsHope.Core.Data;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace CindarsHope.Economy
 {
@@ -8,10 +9,28 @@ namespace CindarsHope.Economy
     public class ShopDataSO : ScriptableObject, IIdentifiedData
     {
         public string Id;
-        public string ShopKeeperId;
+        public string DisplayName;
+        [FormerlySerializedAs("ShopKeeperId")]
+        public string NpcId;
         public ShopItemEntry[] Items;
         public int BaseDailyStock = 5;
-        public float PriceMultiplier = 1.0f;
+        [FormerlySerializedAs("PriceMultiplier")]
+        public float BuyPriceMultiplier = 1.0f;
+        public float SellPriceMultiplier = 0.6f;
+        public bool DailyRestock = true;
+        public bool FutureAffinityPriceModifierEnabled;
+
+        public string ShopKeeperId
+        {
+            get => NpcId;
+            set => NpcId = value;
+        }
+
+        public float PriceMultiplier
+        {
+            get => BuyPriceMultiplier;
+            set => BuyPriceMultiplier = value;
+        }
 
         string IIdentifiedData.Id => Id;
 
@@ -34,6 +53,16 @@ namespace CindarsHope.Economy
     public class ShopItemEntry
     {
         public string ItemId;
-        public int MaxStock = 5;
+        [FormerlySerializedAs("MaxStock")]
+        public int BaseDailyStock = 5;
+        public bool IsFiniteStock = true;
+        public int BuyPriceOverride;
+        public string RequiredUnlockTag;
+
+        public int MaxStock
+        {
+            get => BaseDailyStock;
+            set => BaseDailyStock = value;
+        }
     }
 }

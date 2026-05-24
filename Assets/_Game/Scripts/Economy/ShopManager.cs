@@ -1,11 +1,10 @@
-using System;
 using System.Collections.Generic;
 using CindarsHope.Core;
 using CindarsHope.Core.Data;
 using CindarsHope.Core.Events;
-using CindarsHope.Core.Time;
 using CindarsHope.Inventory;
 using CindarsHope.Inventory.Data;
+using CindarsHope.Player;
 using CindarsHope.Save;
 using UnityEngine;
 
@@ -14,8 +13,8 @@ namespace CindarsHope.Economy
     [DisallowMultipleComponent]
     public sealed class ShopManager : MonoBehaviour
     {
-        [SerializeField] private TimeManager _timeManager;
         [SerializeField] private ItemDatabaseSO _itemDatabase;
+
         private readonly Dictionary<string, ShopSession> _sessions = new Dictionary<string, ShopSession>();
 
         public bool IsInitialized { get; private set; }
@@ -32,105 +31,166 @@ namespace CindarsHope.Economy
 
         public void Initialize()
         {
-            if (IsInitialized)
+            IsInitialized = true;
+        }
+
+        public void Configure(ItemDatabaseSO itemDatabase)
+        {
+            if (itemDatabase != null)
             {
-                return;
+                _itemDatabase = itemDatabase;
             }
 
-            IsInitialized = true;
+            Initialize();
         }
 
         public void Shutdown()
         {
-            if (!IsInitialized)
-            {
-                return;
-            }
-
             _sessions.Clear();
             IsInitialized = false;
         }
 
-        public void InitializeShop(ShopDataSO shopData)
+        public bool InitializeShop(ShopDataSO shopData, int currentDay = 1)
         {
             if (shopData == null || string.IsNullOrWhiteSpace(shopData.Id))
             {
-                Debug.LogWarning($"{nameof(ShopManager)}: Cannot initialize shop with null data or empty ID.");
-                return;
+                Debug.LogWarning($"{nameof(ShopManager)}: Cannot initialize shop with null data or empty ID.", this);
+                return false;
             }
 
             if (_sessions.ContainsKey(shopData.Id))
             {
-                Debug.LogWarning($"{nameof(ShopManager)}: Shop '{shopData.Id}' already initialized.");
-                return;
+                return true;
             }
 
             if (_itemDatabase == null)
             {
-                Debug.LogWarning($"{nameof(ShopManager)}: ItemDatabase not assigned. Cannot initialize shops.");
-                return;
+                Debug.LogWarning($"{nameof(ShopManager)}: ItemDatabase not assigned. Cannot initialize shop '{shopData.Id}'.", this);
+                return false;
             }
 
             var session = new ShopSession(shopData, _itemDatabase);
-            session.RestockAllItems(_timeManager != null ? _timeManager.CurrentDay : 0);
+            session.RestockAllItems(currentDay);
             _sessions[shopData.Id] = session;
+            return true;
         }
 
         public bool TryGetSession(string shopId, out ShopSession session)
         {
+            if (string.IsNullOrWhiteSpace(shopId))
+            {
+                session = null;
+                return false;
+            }
+
             return _sessions.TryGetValue(shopId, out session);
         }
 
-        public bool CanBuyItem(string shopId, string itemId, int amount)
+        public ShopTransactionResult TryBuyItem(
+            string shopId,
+            string itemId,
+            int amount,
+            PlayerManager playerManager,
+            InventoryManager inventoryManager)
         {
             if (!TryGetSession(shopId, out var session))
             {
-                return false;
+                return PublishFailure("ShopBuy", itemId, amount, $"Compra falhou: loja '{shopId}' indisponivel.");
             }
 
-            return session.GetItemStock(itemId) >= amount;
+            if (playerManager == null || inventoryManager == null)
+            {
+                return PublishFailure("ShopBuy", itemId, amount, "Compra falhou: managers de player/inventory ausentes.");
+            }
+
+            if (amount <= 0 || !session.TryGetItemData(itemId, out var itemData, out var entry))
+            {
+                return PublishFailure("ShopBuy", itemId, amount, $"Compra falhou: item '{itemId}' invalido.");
+            }
+
+            if (entry.IsFiniteStock && session.GetItemStock(itemId) < amount)
+            {
+                return PublishFailure("ShopBuy", itemId, amount, $"Compra falhou: estoque insuficiente de '{itemId}'.");
+            }
+
+            var totalCost = CalculateBuyPrice(itemData, entry, session.ShopData, amount);
+            if (playerManager.CurrentGold < totalCost)
+            {
+                return PublishFailure("ShopBuy", itemId, amount, $"Compra falhou: ouro insuficiente para '{itemId}' x{amount}.");
+            }
+
+            if (!inventoryManager.CanAddItem(itemId, amount))
+            {
+                return PublishFailure("ShopBuy", itemId, amount, $"Compra falhou: inventario sem espaco para '{itemId}' x{amount}.");
+            }
+
+            if (totalCost > 0 && !playerManager.TrySpendGold(totalCost))
+            {
+                return PublishFailure("ShopBuy", itemId, amount, $"Compra falhou ao gastar {totalCost}g.");
+            }
+
+            if (!inventoryManager.AddItem(itemId, amount))
+            {
+                if (totalCost > 0)
+                {
+                    playerManager.AddGold(totalCost);
+                }
+
+                return PublishFailure("ShopBuy", itemId, amount, $"Compra falhou ao adicionar '{itemId}' x{amount}; ouro reembolsado.");
+            }
+
+            if (entry.IsFiniteStock)
+            {
+                session.DecrementStock(itemId, amount);
+                GameEventBus.Publish(new ShopStockChangedEvent(shopId, itemId, session.GetItemStock(itemId)));
+            }
+
+            var message = $"Comprou '{itemId}' x{amount} por {totalCost}g.";
+            GameEventBus.Publish(new EconomyTransactionCompletedEvent(true, "ShopBuy", itemId, amount, -totalCost, message));
+            return ShopTransactionResult.Succeeded(-totalCost, message);
         }
 
-        public bool TryBuyItem(string shopId, string itemId, int amount, out int totalCost)
+        public ShopTransactionResult TrySellItem(
+            string shopId,
+            string itemId,
+            int amount,
+            PlayerManager playerManager,
+            InventoryManager inventoryManager)
         {
-            totalCost = 0;
-
             if (!TryGetSession(shopId, out var session))
             {
-                return false;
+                return PublishFailure("ShopSell", itemId, amount, $"Venda falhou: loja '{shopId}' indisponivel.");
             }
 
-            if (!session.TryGetItemData(itemId, out var itemData, out var entry))
+            if (playerManager == null || inventoryManager == null || amount <= 0)
             {
-                return false;
+                return PublishFailure("ShopSell", itemId, amount, "Venda falhou: transacao invalida.");
             }
 
-            if (session.GetItemStock(itemId) < amount)
+            if (!SellableItemPolicy.IsSellable(itemId)
+                || _itemDatabase == null
+                || !_itemDatabase.TryGetById(itemId, out var itemData)
+                || itemData == null
+                || itemData.BaseValue <= 0)
             {
-                return false;
+                return PublishFailure("ShopSell", itemId, amount, $"Venda falhou: item '{itemId}' nao vendavel.");
             }
 
-            totalCost = Mathf.RoundToInt(itemData.BaseValue * amount * session.ShopData.PriceMultiplier);
-            session.DecrementStock(itemId, amount);
-            return true;
-        }
-
-        public bool TrySellItem(string shopId, string itemId, int amount, out int totalGold)
-        {
-            totalGold = 0;
-
-            if (!TryGetSession(shopId, out var session))
+            if (!inventoryManager.HasItem(itemId, amount))
             {
-                return false;
+                return PublishFailure("ShopSell", itemId, amount, $"Venda falhou: quantidade insuficiente de '{itemId}'.");
             }
 
-            if (!session.TryGetItemData(itemId, out var itemData, out _))
+            var totalGold = CalculateSellPrice(itemData, session.ShopData, amount);
+            if (totalGold <= 0 || !inventoryManager.RemoveItem(itemId, amount))
             {
-                return false;
+                return PublishFailure("ShopSell", itemId, amount, $"Venda falhou ao remover '{itemId}' x{amount}.");
             }
 
-            totalGold = Mathf.RoundToInt(itemData.BaseValue * amount * 0.6f);
-            return true;
+            playerManager.AddGold(totalGold);
+            var message = $"Vendeu '{itemId}' x{amount} por {totalGold}g.";
+            GameEventBus.Publish(new EconomyTransactionCompletedEvent(true, "ShopSell", itemId, amount, totalGold, message));
+            return ShopTransactionResult.Succeeded(totalGold, message);
         }
 
         public void LoadShopStock(ShopStockSaveData stockData)
@@ -142,77 +202,74 @@ namespace CindarsHope.Economy
 
             if (!TryGetSession(stockData.ShopId, out var session))
             {
-                Debug.LogWarning($"{nameof(ShopManager)}: Cannot load stock for unknown shop '{stockData.ShopId}'.");
+                Debug.LogWarning($"{nameof(ShopManager)}: Cannot load stock for unknown shop '{stockData.ShopId}'.", this);
                 return;
             }
 
             session.LoadStockData(stockData);
         }
 
-        public ShopStockSaveData CaptureShopStock(string shopId)
-        {
-            if (!TryGetSession(shopId, out var session))
-            {
-                return null;
-            }
-
-            return session.CaptureSaveData();
-        }
-
         public List<ShopStockSaveData> CaptureAllShopStock()
         {
-            var allShopStock = new List<ShopStockSaveData>();
-
-            foreach (var kvp in _sessions)
+            var result = new List<ShopStockSaveData>();
+            foreach (var session in _sessions.Values)
             {
-                var stockData = kvp.Value.CaptureSaveData();
-                if (stockData != null)
-                {
-                    allShopStock.Add(stockData);
-                }
+                result.Add(session.CaptureSaveData());
             }
 
-            return allShopStock;
+            return result;
+        }
+
+        public static int CalculateSellPrice(ItemDataSO itemData, ShopDataSO shopData, int amount = 1)
+        {
+            if (itemData == null || itemData.BaseValue <= 0 || amount <= 0)
+            {
+                return 0;
+            }
+
+            var multiplier = shopData != null ? Mathf.Max(0f, shopData.SellPriceMultiplier) : 0.6f;
+            return Mathf.Max(1, Mathf.FloorToInt(itemData.BaseValue * multiplier)) * amount;
+        }
+
+        private static int CalculateBuyPrice(ItemDataSO itemData, ShopItemEntry entry, ShopDataSO shopData, int amount)
+        {
+            var unitPrice = entry.BuyPriceOverride > 0
+                ? entry.BuyPriceOverride
+                : Mathf.RoundToInt(itemData.BaseValue * Mathf.Max(0f, shopData.BuyPriceMultiplier));
+            return Mathf.Max(1, unitPrice) * amount;
         }
 
         private void HandleDayStarted(DayStartedEvent evt)
         {
-            if (_timeManager == null)
+            foreach (var session in _sessions.Values)
             {
-                return;
+                if (session.RestockAllItems(evt.DayNumber))
+                {
+                    GameEventBus.Publish(new ShopRestockedEvent(session.ShopData.Id));
+                }
             }
+        }
 
-            foreach (var kvp in _sessions)
-            {
-                kvp.Value.RestockAllItems(_timeManager.CurrentDay);
-            }
+        private static ShopTransactionResult PublishFailure(string operation, string itemId, int amount, string message)
+        {
+            GameEventBus.Publish(new EconomyTransactionCompletedEvent(false, operation, itemId, amount, 0, message));
+            return ShopTransactionResult.Failed(message);
         }
     }
 
-    public class ShopSession
+    public sealed class ShopSession
     {
-        public ShopDataSO ShopData { get; private set; }
-        private ItemDatabaseSO _itemDatabase;
-        private Dictionary<string, int> _itemStock;
+        private readonly ItemDatabaseSO _itemDatabase;
+        private readonly Dictionary<string, int> _itemStock = new Dictionary<string, int>();
         private int _lastRestockDay = -1;
+
+        public ShopDataSO ShopData { get; }
 
         public ShopSession(ShopDataSO shopData, ItemDatabaseSO itemDatabase)
         {
             ShopData = shopData;
             _itemDatabase = itemDatabase;
-            _itemStock = new Dictionary<string, int>();
-            InitializeStock();
-        }
-
-        private void InitializeStock()
-        {
-            _itemStock.Clear();
-            if (ShopData.Items == null)
-            {
-                return;
-            }
-
-            foreach (var entry in ShopData.Items)
+            foreach (var entry in ShopData.Items ?? new ShopItemEntry[0])
             {
                 if (entry != null && !string.IsNullOrWhiteSpace(entry.ItemId))
                 {
@@ -223,61 +280,44 @@ namespace CindarsHope.Economy
 
         public int GetItemStock(string itemId)
         {
-            return _itemStock.ContainsKey(itemId) ? _itemStock[itemId] : 0;
+            return _itemStock.TryGetValue(itemId, out var stock) ? stock : 0;
         }
 
         public void DecrementStock(string itemId, int amount)
         {
-            if (_itemStock.ContainsKey(itemId))
+            if (_itemStock.TryGetValue(itemId, out var stock) && amount > 0)
             {
-                _itemStock[itemId] = Mathf.Max(0, _itemStock[itemId] - amount);
+                _itemStock[itemId] = Mathf.Max(0, stock - amount);
             }
         }
 
         public bool TryGetItemData(string itemId, out ItemDataSO itemData, out ShopItemEntry entry)
         {
-            itemData = null;
-            entry = null;
-
-            if (string.IsNullOrWhiteSpace(itemId) || _itemDatabase == null)
-            {
-                return false;
-            }
-
             entry = ShopData.GetEntry(itemId);
-            if (entry == null)
-            {
-                return false;
-            }
-
-            if (!_itemDatabase.TryGetById(itemId, out itemData) || itemData == null)
-            {
-                return false;
-            }
-
-            return true;
+            itemData = null;
+            return entry != null
+                && _itemDatabase != null
+                && _itemDatabase.TryGetById(itemId, out itemData)
+                && itemData != null;
         }
 
-        public void RestockAllItems(int currentDay)
+        public bool RestockAllItems(int currentDay)
         {
-            if (_lastRestockDay == currentDay)
+            if (!ShopData.DailyRestock || _lastRestockDay == currentDay)
             {
-                return;
+                return false;
             }
 
             _lastRestockDay = currentDay;
-            if (ShopData.Items == null)
-            {
-                return;
-            }
-
-            foreach (var entry in ShopData.Items)
+            foreach (var entry in ShopData.Items ?? new ShopItemEntry[0])
             {
                 if (entry != null && !string.IsNullOrWhiteSpace(entry.ItemId))
                 {
-                    _itemStock[entry.ItemId] = entry.MaxStock;
+                    _itemStock[entry.ItemId] = Mathf.Max(0, entry.BaseDailyStock);
                 }
             }
+
+            return true;
         }
 
         public void LoadStockData(ShopStockSaveData data)
@@ -288,41 +328,52 @@ namespace CindarsHope.Economy
             }
 
             _lastRestockDay = data.LastRestockDay;
-            _itemStock.Clear();
-            InitializeStock();
-
-            if (data.Items == null)
+            foreach (var item in data.Items ?? new List<ShopItemStockEntry>())
             {
-                return;
-            }
-
-            foreach (var item in data.Items)
-            {
-                if (item != null && !string.IsNullOrWhiteSpace(item.ItemId))
+                var entry = ShopData.GetEntry(item.ItemId);
+                if (entry == null)
                 {
-                    _itemStock[item.ItemId] = item.CurrentStock;
+                    Debug.LogWarning($"Shop '{ShopData.Id}' ignored unknown saved item '{item.ItemId}'.");
+                    continue;
                 }
+
+                _itemStock[item.ItemId] = Mathf.Clamp(item.CurrentStock, 0, entry.BaseDailyStock);
             }
         }
 
         public ShopStockSaveData CaptureSaveData()
         {
-            var data = new ShopStockSaveData
+            var data = new ShopStockSaveData { ShopId = ShopData.Id, LastRestockDay = _lastRestockDay };
+            foreach (var item in _itemStock)
             {
-                ShopId = ShopData.Id,
-                LastRestockDay = _lastRestockDay
-            };
-
-            foreach (var kvp in _itemStock)
-            {
-                data.Items.Add(new ShopItemStockEntry
-                {
-                    ItemId = kvp.Key,
-                    CurrentStock = kvp.Value
-                });
+                data.Items.Add(new ShopItemStockEntry { ItemId = item.Key, CurrentStock = item.Value });
             }
 
             return data;
+        }
+    }
+
+    public readonly struct ShopTransactionResult
+    {
+        public bool Success { get; }
+        public int GoldDelta { get; }
+        public string Message { get; }
+
+        private ShopTransactionResult(bool success, int goldDelta, string message)
+        {
+            Success = success;
+            GoldDelta = goldDelta;
+            Message = message;
+        }
+
+        public static ShopTransactionResult Succeeded(int goldDelta, string message)
+        {
+            return new ShopTransactionResult(true, goldDelta, message);
+        }
+
+        public static ShopTransactionResult Failed(string message)
+        {
+            return new ShopTransactionResult(false, 0, message);
         }
     }
 }

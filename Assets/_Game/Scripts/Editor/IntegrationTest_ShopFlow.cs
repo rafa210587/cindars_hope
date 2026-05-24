@@ -45,7 +45,7 @@ namespace CindarsHope.Editor.Testing
             Debug.Log("TEST: Shop Initialization");
 
             var shopManager = testGo.AddComponent<ShopManager>();
-            shopManager.Initialize();
+            shopManager.Configure(AssetDatabase.LoadAssetAtPath<ItemDatabaseSO>("Assets/_Game/Data/Registries/ItemDatabase.asset"));
 
             Assert(shopManager.IsInitialized, "ShopManager should initialize");
 
@@ -72,14 +72,14 @@ namespace CindarsHope.Editor.Testing
 
             // Setup managers
             var shopManager = testGo.AddComponent<ShopManager>();
-            var itemDatabase = AssetDatabase.LoadAssetAtPath<ItemDatabaseSO>("Assets/_Game/Data/ItemDatabase.asset");
+            var itemDatabase = AssetDatabase.LoadAssetAtPath<ItemDatabaseSO>("Assets/_Game/Data/Registries/ItemDatabase.asset");
             if (itemDatabase == null)
             {
                 Debug.LogWarning("  ⚠ ItemDatabase not found, skipping buy flow test");
                 return;
             }
 
-            shopManager.Initialize();
+            shopManager.Configure(itemDatabase);
 
             // Create shop
             var shopData = ScriptableObject.CreateInstance<ShopDataSO>();
@@ -105,7 +105,7 @@ namespace CindarsHope.Editor.Testing
             Debug.Log("TEST: Shop Sell Flow");
 
             var shopManager = testGo.AddComponent<ShopManager>();
-            shopManager.Initialize();
+            shopManager.Configure(AssetDatabase.LoadAssetAtPath<ItemDatabaseSO>("Assets/_Game/Data/Registries/ItemDatabase.asset"));
 
             var shopData = ScriptableObject.CreateInstance<ShopDataSO>();
             shopData.Id = "test_sell_shop";
@@ -127,7 +127,7 @@ namespace CindarsHope.Editor.Testing
             Debug.Log("TEST: Stock Persistence");
 
             var shopManager = testGo.AddComponent<ShopManager>();
-            shopManager.Initialize();
+            shopManager.Configure(AssetDatabase.LoadAssetAtPath<ItemDatabaseSO>("Assets/_Game/Data/Registries/ItemDatabase.asset"));
 
             var shopData = ScriptableObject.CreateInstance<ShopDataSO>();
             shopData.Id = "test_persist_shop";
@@ -174,16 +174,14 @@ namespace CindarsHope.Editor.Testing
             Assert(modalManager.HasActiveModal, "Should have active modal");
             Assert(modalManager.CurrentModal == CindarsHope.UI.Modal.ModalType.Dialogue, "Current modal should be Dialogue");
 
-            modalManager.PushModal(CindarsHope.UI.Modal.ModalType.ShopMenu);
-            Assert(modalManager.CurrentModal == CindarsHope.UI.Modal.ModalType.ShopMenu, "Current modal should be ShopMenu");
+            Assert(!modalManager.PushModal(CindarsHope.UI.Modal.ModalType.ShopMenu), "Modal overlap should be rejected");
+            Assert(modalManager.CurrentModal == CindarsHope.UI.Modal.ModalType.Dialogue, "Dialogue should remain active");
 
-            var success = modalManager.TryPopModal(CindarsHope.UI.Modal.ModalType.ShopMenu, out var popped);
-            Assert(success, "Should pop ShopMenu");
-            Assert(popped == CindarsHope.UI.Modal.ModalType.ShopMenu, "Popped modal should be ShopMenu");
-            Assert(modalManager.CurrentModal == CindarsHope.UI.Modal.ModalType.Dialogue, "Current modal should revert to Dialogue");
-
-            success = modalManager.TryPopModal(CindarsHope.UI.Modal.ModalType.Dialogue, out popped);
+            var success = modalManager.TryPopModal(CindarsHope.UI.Modal.ModalType.Dialogue, out var popped);
             Assert(success, "Should pop Dialogue");
+            Assert(modalManager.PushModal(CindarsHope.UI.Modal.ModalType.ShopMenu), "Shop menu should open after dialogue closes");
+            success = modalManager.TryPopModal(CindarsHope.UI.Modal.ModalType.ShopMenu, out popped);
+            Assert(success, "Should pop ShopMenu");
             Assert(!modalManager.HasActiveModal, "Should have no active modal");
 
             Debug.Log("  ✓ Modal interaction passed\n");

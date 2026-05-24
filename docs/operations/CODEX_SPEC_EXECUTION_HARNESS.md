@@ -119,6 +119,12 @@ grep -E "Tundra build success|error|Error|FAILED" .\Logs\unity-compile-validatio
 - **Business errors found:** = FAIL (fix Phase 2, rerun Phase 3)
 - **Assembly warnings only:** = PASS (non-blocking)
 
+#### D. Unity batchmode sequencing
+
+- Execute a single Unity batchmode process at a time for the same project.
+- Scene generation, content asset generation and validation must run sequentially; parallel Unity sessions compete for the project lock.
+- If `ScanUnityLogs.ps1` flags only stale/invalid `Assembly-CSharp-firstpass.dll` assemblies while the same compile log contains `Tundra build success`, no `error CS` and Unity exits with return code `0`, register the scanner alert as residual tooling noise and treat compile as PASS.
+
 ### Phase 4: Move Documentation
 
 ```powershell

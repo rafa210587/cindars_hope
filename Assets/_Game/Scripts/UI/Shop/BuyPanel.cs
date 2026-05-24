@@ -19,6 +19,7 @@ namespace CindarsHope.UI.Shop
         [SerializeField] private Transform _itemsContainer;
         [SerializeField] private BuyPanelItem _itemPrefab;
         [SerializeField] private Text _goldDisplay;
+        [SerializeField] private Text _feedbackText;
         [SerializeField] private Button _backButton;
 
         private ShopManager _shopManager;
@@ -49,14 +50,6 @@ namespace CindarsHope.UI.Shop
             ClearItems();
         }
 
-        private void Update()
-        {
-            if (_canvasGroup != null && _canvasGroup.interactable && Input.GetKeyDown(KeyCode.Escape))
-            {
-                OnBackClicked();
-            }
-        }
-
         public void Initialize(ShopManager shopManager, PlayerManager playerManager, InventoryManager inventoryManager, ItemDatabaseSO itemDatabase, Modal.ModalManager modalManager)
         {
             _shopManager = shopManager;
@@ -75,6 +68,12 @@ namespace CindarsHope.UI.Shop
                 return;
             }
 
+            if (_modalManager != null && !_modalManager.PushModal(Modal.ModalType.Buy))
+            {
+                Debug.LogWarning("BuyPanel rejected because another interactive modal is active.", this);
+                return;
+            }
+
             _shopId = shopId;
             ClearItems();
             PopulateItems(session);
@@ -87,7 +86,7 @@ namespace CindarsHope.UI.Shop
             }
 
             gameObject.SetActive(true);
-            _modalManager?.PushModal(Modal.ModalType.Buy);
+            SetFeedback(string.Empty);
             UpdateGoldDisplay();
         }
 
@@ -131,47 +130,31 @@ namespace CindarsHope.UI.Shop
                 }
 
                 var item = Instantiate(_itemPrefab, _itemsContainer);
-                item.Initialize(itemData, session.GetItemStock(entry.ItemId), session.ShopData.PriceMultiplier, _itemDatabase, OnItemBuyClicked);
+                item.gameObject.SetActive(true);
+                item.Initialize(itemData, session.GetItemStock(entry.ItemId), session.ShopData.BuyPriceMultiplier, _itemDatabase, OnItemBuyClicked);
                 _displayedItems.Add(item);
             }
         }
 
         private void OnItemBuyClicked(string itemId, int amount)
         {
-            if (string.IsNullOrWhiteSpace(_shopId) || !_shopManager.TryBuyItem(_shopId, itemId, amount, out var totalCost))
+            var result = _shopManager.TryBuyItem(_shopId, itemId, amount, _playerManager, _inventoryManager);
+            SetFeedback(result.Message);
+            if (!result.Success)
             {
-                Debug.LogWarning($"BuyPanel: Failed to buy {itemId} x{amount}");
                 return;
             }
 
-            if (_playerManager != null && !_playerManager.TrySpendGold(totalCost))
-            {
-                Debug.LogWarning($"BuyPanel: Player doesn't have {totalCost}g");
-                _shopManager.TryGetSession(_shopId, out var session);
-                if (session != null)
-                {
-                    session.DecrementStock(itemId, -amount);
-                }
-                return;
-            }
-
-            if (_inventoryManager != null && !_inventoryManager.AddItem(itemId, amount))
-            {
-                Debug.LogWarning($"BuyPanel: Inventory full for {itemId}");
-                if (_playerManager != null)
-                {
-                    _playerManager.AddGold(totalCost);
-                }
-                if (_shopManager.TryGetSession(_shopId, out var session))
-                {
-                    session.DecrementStock(itemId, -amount);
-                }
-                return;
-            }
-
-            GameEventBus.Publish(new EconomyTransactionCompletedEvent(true, "ShopBuy", itemId, amount, -totalCost, $"Comprou {itemId} x{amount} por {totalCost}g"));
             UpdateGoldDisplay();
             RefreshItemStock();
+        }
+
+        private void SetFeedback(string message)
+        {
+            if (_feedbackText != null)
+            {
+                _feedbackText.text = message ?? string.Empty;
+            }
         }
 
         private void UpdateGoldDisplay()

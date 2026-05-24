@@ -42,16 +42,28 @@ namespace CindarsHope.UI.Modal
             IsInitialized = false;
         }
 
-        public void PushModal(ModalType modalType)
+        public bool PushModal(ModalType modalType)
         {
             if (modalType == ModalType.None)
             {
                 Debug.LogWarning("Cannot push ModalType.None");
-                return;
+                return false;
+            }
+
+            if (HasActiveModal)
+            {
+                if (CurrentModal == modalType)
+                {
+                    return true;
+                }
+
+                Debug.LogWarning($"Cannot show modal {modalType} while {CurrentModal} is active.");
+                return false;
             }
 
             _modalStack.Push(modalType);
             Debug.Log($"Modal pushed: {modalType}. Stack size: {_modalStack.Count}");
+            return true;
         }
 
         public bool TryPopModal(ModalType expectedType, out ModalType poppedModal)

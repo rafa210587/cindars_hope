@@ -14,6 +14,9 @@ using CindarsHope.Player;
 using CindarsHope.Save;
 using CindarsHope.SceneManagement;
 using CindarsHope.UI;
+using CindarsHope.UI.Dialogue;
+using CindarsHope.UI.Modal;
+using CindarsHope.UI.Shop;
 using CindarsHope.World;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -98,6 +101,23 @@ namespace CindarsHope.Editor.Validation
             }
         }
 
+        public static void ValidateSpec06Scenes()
+        {
+            EditorSceneManager.OpenScene("Assets/_Game/Scenes/TownScene.unity");
+            if (!ValidateTownScene())
+            {
+                throw new System.InvalidOperationException("SPEC 06 validation failed for TownScene.");
+            }
+
+            EditorSceneManager.OpenScene("Assets/_Game/Scenes/FarmScene.unity");
+            if (!ValidateFarmScene())
+            {
+                throw new System.InvalidOperationException("SPEC 06 validation failed for FarmScene.");
+            }
+
+            Debug.Log("SPEC 06 scene validation passed for TownScene and FarmScene.");
+        }
+
         private static bool ValidateFarmScene()
         {
             var rootObjects = EditorSceneManager.GetActiveScene().GetRootGameObjects();
@@ -157,11 +177,8 @@ namespace CindarsHope.Editor.Validation
             if (FindComponent<FishingSpot>(rootObjects) == null)
                 { Debug.LogError("MvpSceneValidator: FishingSpot not found in FarmScene."); passed = false; }
 
-            if (FindComponent<SeedShopPoint>(rootObjects) == null)
-                { Debug.LogError("MvpSceneValidator: SeedShopPoint not found in FarmScene."); passed = false; }
-
-            if (FindComponent<SellPoint>(rootObjects) == null)
-                { Debug.LogError("MvpSceneValidator: SellPoint not found in FarmScene."); passed = false; }
+            if (FindComponent<SeedShopPoint>(rootObjects) != null || FindComponent<SellPoint>(rootObjects) != null)
+                { Debug.LogError("MvpSceneValidator: Legacy farm purchase/sale points must be disabled after SPEC 06."); passed = false; }
 
             if (FindComponent<CraftingPoint>(rootObjects) == null)
                 { Debug.LogError("MvpSceneValidator: CraftingPoint not found in FarmScene."); passed = false; }
@@ -207,15 +224,19 @@ namespace CindarsHope.Editor.Validation
             if (portalToFarm == null)
                 { Debug.LogError("MvpSceneValidator: Portal to FarmScene not found in TownScene."); passed = false; }
 
-            if (FindComponent<NpcTalkPoint>(rootObjects) == null)
-                { Debug.LogError("MvpSceneValidator: NPC not found in TownScene."); passed = false; }
-
-            var buyPoints = Object.FindObjectsByType<BuyItemPoint>();
-            if (buyPoints.Length < 2)
-                { Debug.LogError("MvpSceneValidator: Less than 2 BuyItemPoint found in TownScene (expected at least seed_wheat and seed_carrot)."); passed = false; }
-
-            if (FindComponent<SellAllPoint>(rootObjects) == null)
-                { Debug.LogError("MvpSceneValidator: SellAllPoint not found in TownScene."); passed = false; }
+            if (Object.FindObjectsByType<NpcShopController>().Length < 3)
+                { Debug.LogError("MvpSceneValidator: SPEC 06 requires Pip plus two shop NPC controllers in TownScene."); passed = false; }
+            if (FindComponent<PipReceptionController>(rootObjects) == null)
+                { Debug.LogError("MvpSceneValidator: Pip reception controller not found in TownScene."); passed = false; }
+            if (FindComponent<ShopManager>(rootObjects) == null || FindComponent<ModalManager>(rootObjects) == null)
+                { Debug.LogError("MvpSceneValidator: ShopManager or ModalManager not found in TownScene."); passed = false; }
+            if (FindComponent<DialogueModal>(rootObjects) == null
+                || FindComponent<ShopMenuModal>(rootObjects) == null
+                || FindComponent<BuyPanel>(rootObjects) == null
+                || FindComponent<SellPanel>(rootObjects) == null)
+                { Debug.LogError("MvpSceneValidator: TownScene is missing one or more SPEC 06 shop UI modals."); passed = false; }
+            if (Object.FindObjectsByType<BuyItemPoint>().Length != 0 || FindComponent<SellAllPoint>(rootObjects) != null)
+                { Debug.LogError("MvpSceneValidator: Legacy Town commerce points must not compete with NPC shops."); passed = false; }
 
             return passed;
         }
