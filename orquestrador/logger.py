@@ -139,10 +139,15 @@ class ItemLogger:
         self.log_dir.mkdir(parents=True, exist_ok=True)
 
     @classmethod
-    def create(cls, item_id: str) -> "ItemLogger":
-        """Create a new logger for an item with timestamp directory"""
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        log_dir = Path("orquestrador/logs") / timestamp / item_id
+    def create(cls, item_id: str, run_log_root: Optional[Path] = None) -> "ItemLogger":
+        """Create a new logger for an item inside a run log root."""
+        if run_log_root is None:
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            run_log_root = Path("orquestrador/logs") / timestamp
+
+        run_log_root.mkdir(parents=True, exist_ok=True)
+
+        log_dir = run_log_root / item_id
         return cls(log_dir)
 
     def write_file(self, filename: str, content: str) -> Path:
@@ -286,6 +291,8 @@ class ItemLogger:
     @staticmethod
     def write_run_summary(log_root: Path, run_summary: "RunSummary") -> Path:
         """Write run summary as JSON and Markdown"""
+        log_root.mkdir(parents=True, exist_ok=True)
+
         run_summary_json = log_root / "RUN_SUMMARY.json"
         run_summary_md = log_root / "RUN_SUMMARY.md"
 

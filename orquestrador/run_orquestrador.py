@@ -123,6 +123,12 @@ Examples:
 
     repo_root = Path(config.get("repo_root", "."))
 
+    # Single run-level log root. All item logs, run summary and final checklist
+    # must use the same run_id.
+    run_id = datetime.now().strftime("%Y%m%d_%H%M%S")
+    run_log_root = Path("orquestrador/logs") / run_id
+    run_log_root.mkdir(parents=True, exist_ok=True)
+
     # Build queue (agnostic mode)
     if args.input_file:
         input_path = args.input_file
@@ -157,7 +163,7 @@ Examples:
         print(f"{'='*70}\n")
 
         # Create logger for this item
-        logger = ItemLogger.create(item_id)
+        logger = ItemLogger.create(item_id, run_log_root=run_log_root)
 
         # 1. Git status check
         clean, git_status_output = git_status(repo_root)
@@ -310,9 +316,8 @@ Examples:
             print(f"Stopping: {item_id} failed or partial")
             break
 
-    # Generate run summary
-    timestamp_dir = datetime.now().strftime("%Y%m%d_%H%M%S")
-    log_root = Path("orquestrador/logs") / timestamp_dir
+    # Generate run summary in the same run directory used by item logs
+    log_root = run_log_root
 
     # Determine stats
     total_found = len(queue) + len(skipped)

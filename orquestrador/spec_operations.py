@@ -427,6 +427,7 @@ Generated from orchestrator execution on {log_dir.name}
 - [ ] Mergear branches para prod quando pronto
 """
 
+    output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(checklist, encoding="utf-8")
     print(f"Generated: {output_path}")
     return output_path
