@@ -1,3 +1,82 @@
+## Sessão 2026-05-24 - Reconciliação Documental + Início SPEC 12
+
+**Data:** 2026-05-24  
+**Foco:** Reconciliar registries (SPECS 06-16 marcadas "A implementar" mas com código substantivo), enriquecer memory/skills, iniciar SPEC 12  
+**Status:** Fases A-G completas; Fase E em progresso
+
+### Fases Executadas
+
+#### Fase A ✅ - Enriquecer memory/skills
+- Adicionadas 4 novas skills reutilizáveis:
+  1. **Scene Wiring Validation Pattern** - validar bootstrap/cena/installer
+  2. **Spec Closure / Registry Reconciliation Pattern** - fechar specs com documentação consistente
+  3. **Unity Asset Creation Pattern** - criar assets via Editor, não YAML manual
+  4. **Play Mode Manual Validation Checklist** - padronizar testes funcionais
+
+#### Fase B ✅ - Revalidar Audit 01-16
+- Leitura completa da auditoria de compilação
+- Descoberta: SPECS 06-16 têm 80-100% código implementado mas registries marcavam "A implementar"
+- Causa: documentação nunca foi sincronizada após fase overnight (2026-05-23)
+
+#### Fase C ✅ - Analisar StatusEffectManager Triplicidade
+- Encontradas 3 classes com mesmo nome em namespaces diferentes:
+  - `CindarsHope.Combat.StatusEffect.StatusEffectManager` (non-MonoBehaviour, turn-based, EnemyHealth)
+  - `CindarsHope.Combat.StatusEffectManager` (MonoBehaviour, GameEventBus, multi-target runtime)
+  - `CindarsHope.Player.StatusEffectManager` (MonoBehaviour, player persistence/visuals)
+- **Decisão:** Triplicidade é intencional; cada uma tem responsabilidade distinta
+
+#### Fase D ✅ - Validar SPECS 09-11 não bloqueiam SPEC 12
+- Executado: `tools\unity\RunUnityCompileValidation.ps1`
+- Resultado: **Tundra build success** - 0 erros, 724 nós avaliados
+- Validado: SPECS 09-11 compilam e integram corretamente
+
+#### Fase F ✅ - Atualizar Documentação/Registries
+- **SPEC_REGISTRY_IMPLEMENTED.md:** Adicionadas SPECS 06-16 com status "Implementado parcial"
+- **SPEC_REGISTRY_TO_IMPLEMENT.md:** Removidas SPECS 06-16; apenas SPEC 17 permanece
+- Registries agora refletem realidade: 14 de 16 specs têm implementação substantiva em código
+
+#### Fase G ✅ - Rodar Validações
+- `RunUnityCompileValidation.ps1` validado: Tundra build success, ExitCode 0
+- Nenhum erro de compilação C#
+
+#### Fase E (In Progress) - Implementar SPEC 12
+**Iniciado:**
+- ✅ Enriquecido `ManaManager` (antes em Combat, agora em Player namespace)
+  - Integração com GameTimeTickEvent para regen pause-aware
+  - PublishManaChangedEvent para UI
+  - CaptureSaveData/RestoreFromSaveData
+  - Initialize/Shutdown lifecycle
+- ✅ Criado `ManaChangedEvent` em Core/Events
+- ✅ Atualizado `PlayerSpellCaster` com using CindarsHope.Player
+
+**Próximos passos SPEC 12 (não concluído nesta sessão):**
+1. PlayerCombatController com input Q/E
+2. Melee light attack via WeaponDataSO
+3. Dodge simples com Space
+4. Bow placeholder (range 6.0, sem ammo)
+5. SpellDataSO e ArcaneBolt
+6. SkillActionSO para active slots R/T/Y/G
+7. HUD updates com Mana e active slots
+8. Save/load integration
+9. Validação anti-regressão
+
+### Commits desta sessão
+1. `ca5f99a` - docs: enriquecer skills com 4 novos padrões operacionais
+2. `4b4e4b4` - docs: reconciliar registries - SPECS 06-16 agora em 'Implementado parcial'
+3. `d722cba` - feat: enriquecer ManaManager com pause-aware regen, events e save/load
+4. `1e03ccd` - fix: adicionar using CindarsHope.Player em PlayerSpellCaster
+
+### Bloqueadores Identificados
+- Nenhum bloqueador crítico para SPEC 13-16
+- SPEC 12 é desbloqueadora conforme planejado
+
+### Próxima Sessão
+- Continuar SPEC 12 (PlayerCombatController, melee, dodge, spells, skills)
+- Validar Play Mode com checklist obrigatório da spec
+- Atualizar SPEC_EXECUTION_ORDER.md e PROJECT_LOG.md ao final
+
+---
+
 ## Auditoria SPEC 10 - Análise Honesta de Incompletude
 
 **Status SPEC 10**: Estrutura de dados 100%, mas código ANTIGO é ainda o sistema primário.
