@@ -510,9 +510,9 @@ python .\orquestrador\run_orquestrador.py --mode spec --input-dir ".\my_custom_f
 
 ## Real-Time Monitoring & Observability
 
-### Quick Start: 4-Tab Auto-Monitoring
+### Quick Start: 5-Tab Auto-Monitoring
 
-Auto-open 4 PowerShell tabs with all monitoring streams:
+Auto-open 5 PowerShell tabs with all monitoring streams:
 
 ```powershell
 .\orquestrador\run_with_monitoring.ps1 `
@@ -525,6 +525,7 @@ Opens automatically:
 2. **Tab 2** - Live monitor (status updates every 2s)
 3. **Tab 3** - Claude raw output stream (80-line tail)
 4. **Tab 4** - Git watch stream (30-line tail)
+5. **Tab 5** - Ask mode (interactive guidance)
 
 ```powershell
 # With options
@@ -572,29 +573,39 @@ New-Item .\orquestrador\state\PAUSE -ItemType File -Force
 
 ### Ask Mode - Send Questions Mid-Execution
 
-Send hints, corrections, or questions to Claude/Codex **WITHOUT stopping execution**:
+**Already open in Tab 5!** When you run the 5-tab setup, Tab 5 is an interactive terminal where you can type questions/hints **WITHOUT stopping execution**:
 
 ```powershell
-# Send a hint
-.\orquestrador\ask_agent.ps1 "Usa GameEventBus para comunicação entre sistemas"
+# In Tab 5, just type (no need for ask_agent.ps1):
 
-# Ask a question
-.\orquestrador\ask_agent.ps1 "O que falta para passar nas validações?"
+> Usa GameEventBus para comunicação entre sistemas
 
-# Give a correction
-.\orquestrador\ask_agent.ps1 "Verifica se estás usando padrão _SO para ScriptableObjects"
+> O que falta para passar nas validações?
 
-# Request trace
-.\orquestrador\ask_agent.ps1 "Diz [TRACE] dos próximos passos que vais fazer"
+> Verifica se estás usando padrão _SO para ScriptableObjects
+
+> Diz [TRACE] dos próximos passos que vais fazer
+
+> Nunca use GameObject.Find() - viola regra inviolável
+
+> Como vamos resolver o erro X?
 ```
 
-The agent will:
-1. Receive your message
-2. Log it as event
-3. Incorporate it in next checkpoint
-4. Continue WITHOUT stopping
+Tab 5 will:
+1. Accept your input
+2. Log it as event + command file
+3. Display confirmation
+4. Monitor for Claude's response
+5. Stay open for next message
 
-This is perfect for **guiding Claude mid-execution** - like a code review happening live!
+This is perfect for **real-time code guidance** - like a code review happening live without interrupting Claude!
+
+#### Manual Ask (if not using 5-tab setup)
+
+```powershell
+# Manual - if you prefer to send individual questions
+.\orquestrador\ask_agent.ps1 "Usa GameEventBus para comunicação"
+```
 
 ### Log Files Generated
 

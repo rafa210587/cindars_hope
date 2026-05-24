@@ -109,12 +109,20 @@ if (`$run) {
 }
 "@
 
-Write-Host "Opening 4-tab monitoring setup..." -ForegroundColor Cyan
+# Tab 5: Ask mode (interactive)
+$tab5 = @"
+Write-Host "=== TAB 5: ASK MODE (INTERACTIVE) ===" -ForegroundColor Yellow
+Start-Sleep -Seconds 2
+.\orquestrador\ask_interactive.ps1
+"@
+
+Write-Host "Opening 5-tab monitoring setup..." -ForegroundColor Cyan
 Write-Host ""
 Write-Host "Tab 1: Main execution" -ForegroundColor Cyan
 Write-Host "Tab 2: Monitor (live status)" -ForegroundColor Green
 Write-Host "Tab 3: Claude output stream" -ForegroundColor Yellow
 Write-Host "Tab 4: Git watch stream" -ForegroundColor Magenta
+Write-Host "Tab 5: Ask mode (interactive guidance)" -ForegroundColor Cyan
 Write-Host ""
 
 # Create temp files for each tab
@@ -125,12 +133,14 @@ $tab1File = "$tempDir\tab1_$guid.ps1"
 $tab2File = "$tempDir\tab2_$guid.ps1"
 $tab3File = "$tempDir\tab3_$guid.ps1"
 $tab4File = "$tempDir\tab4_$guid.ps1"
+$tab5File = "$tempDir\tab5_$guid.ps1"
 
 # Write scripts to temp files
 $tab1 | Out-File -FilePath $tab1File -Encoding UTF8
 $tab2 | Out-File -FilePath $tab2File -Encoding UTF8
 $tab3 | Out-File -FilePath $tab3File -Encoding UTF8
 $tab4 | Out-File -FilePath $tab4File -Encoding UTF8
+$tab5 | Out-File -FilePath $tab5File -Encoding UTF8
 
 # Get current directory
 $currentDir = Get-Location
@@ -153,16 +163,27 @@ try {
     Start-Process pwsh -ArgumentList "-NoExit", "-Command", "cd '$currentDir'; & '$tab4File'" `
         -WindowStyle Normal
 
-    Write-Host "✓ All 4 tabs opened!" -ForegroundColor Green
+    # Tab 5: Ask mode
+    Start-Process pwsh -ArgumentList "-NoExit", "-Command", "cd '$currentDir'; & '$tab5File'" `
+        -WindowStyle Normal
+
+    Write-Host "✓ All 5 tabs opened!" -ForegroundColor Green
     Write-Host ""
-    Write-Host "Tips:" -ForegroundColor Cyan
-    Write-Host "- Tab 1 shows orchestrator progress"
-    Write-Host "- Tab 2 updates every 2 seconds with status"
-    Write-Host "- Tab 3 streams Claude's full output"
-    Write-Host "- Tab 4 shows git status/diff changes"
+    Write-Host "What each tab does:" -ForegroundColor Cyan
+    Write-Host "  Tab 1: Main orchestrator execution" -ForegroundColor White
+    Write-Host "  Tab 2: Live status monitor (updates every 2s)" -ForegroundColor Green
+    Write-Host "  Tab 3: Claude's full output stream (raw logs)" -ForegroundColor Yellow
+    Write-Host "  Tab 4: Git changes live tracking" -ForegroundColor Magenta
+    Write-Host "  Tab 5: Ask mode - send questions without stopping!" -ForegroundColor Cyan
     Write-Host ""
-    Write-Host "To stop execution:" -ForegroundColor Yellow
-    Write-Host "  New-Item .\orquestrador\state\STOP -ItemType File -Force"
+    Write-Host "Ask mode examples:" -ForegroundColor Yellow
+    Write-Host '  > Usa GameEventBus para comunicação' -ForegroundColor DarkGray
+    Write-Host '  > O que falta para passar nas validações?' -ForegroundColor DarkGray
+    Write-Host '  > Verifica padrão _SO para ScriptableObjects' -ForegroundColor DarkGray
+    Write-Host '  > Diz [TRACE] dos próximos passos' -ForegroundColor DarkGray
+    Write-Host ""
+    Write-Host "Emergency stop:" -ForegroundColor Red
+    Write-Host "  New-Item .\orquestrador\state\STOP -ItemType File -Force" -ForegroundColor DarkRed
     Write-Host ""
 }
 catch {
@@ -172,4 +193,4 @@ catch {
 
 # Cleanup temp files after a delay
 Start-Sleep -Seconds 2
-Remove-Item -Path $tab1File, $tab2File, $tab3File, $tab4File -Force -ErrorAction SilentlyContinue
+Remove-Item -Path $tab1File, $tab2File, $tab3File, $tab4File, $tab5File -Force -ErrorAction SilentlyContinue
