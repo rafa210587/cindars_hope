@@ -84,6 +84,7 @@ namespace CindarsHope.Save
                 var worldSaveData = CaptureWorldSaveData(existingSaveData);
                 var caveSaveData = CaptureCaveSaveData(existingSaveData);
                 var economySaveData = CaptureEconomySaveData(existingSaveData);
+                var craftingSaveData = CaptureCraftingSaveData(existingSaveData);
 
                 var saveData = new GameSaveData
                 {
@@ -99,7 +100,8 @@ namespace CindarsHope.Save
                     Farm = farmSaveData,
                     World = worldSaveData,
                     Cave = caveSaveData,
-                    Economy = economySaveData
+                    Economy = economySaveData,
+                    Crafting = craftingSaveData
                 };
 
                 var savePath = SaveFilePath;
@@ -791,6 +793,11 @@ namespace CindarsHope.Save
             {
                 RestoreEconomySaveData(saveData.Economy);
             }
+
+            if (saveData.Crafting != null)
+            {
+                RestoreCraftingSaveData(saveData.Crafting);
+            }
         }
 
         private EconomySaveData CaptureEconomySaveData(GameSaveData existingSaveData)
@@ -834,6 +841,29 @@ namespace CindarsHope.Save
             foreach (var shopStockData in economyData.Shops)
             {
                 _shopManager.LoadShopStock(shopStockData);
+            }
+        }
+
+        private CraftingSaveData CaptureCraftingSaveData(GameSaveData existingSaveData)
+        {
+            var craftingData = new CraftingSaveData();
+
+            // TODO: Capture crafting station data from CraftingManager when integrated
+            // For now, preserve existing crafting data
+            return existingSaveData?.Crafting ?? new CraftingSaveData();
+        }
+
+        private void RestoreCraftingSaveData(CraftingSaveData craftingData)
+        {
+            if (craftingData == null || craftingData.Stations == null)
+            {
+                return;
+            }
+
+            // TODO: Restore crafting station data to CraftingManager when integrated
+            foreach (var stationData in craftingData.Stations)
+            {
+                // Will be restored by CraftingManager/CraftingStation
             }
         }
 

@@ -25,6 +25,7 @@ namespace CindarsHope.Save
         public WorldSaveData World;
         public CaveSaveData Cave;
         public EconomySaveData Economy;
+        public CraftingSaveData Crafting;
     }
 
     [Serializable]
@@ -96,5 +97,32 @@ namespace CindarsHope.Save
     public class EconomySaveData
     {
         public List<ShopStockSaveData> Shops = new List<ShopStockSaveData>();
+    }
+
+    [Serializable]
+    public class CraftingSaveData
+    {
+        public List<CraftingStationSaveData> Stations = new List<CraftingStationSaveData>();
+    }
+
+    [Serializable]
+    public class CraftingStationSaveData
+    {
+        public string StationInstanceId;
+        public int StationType;
+        public int StationLevel;
+        public string PendingOutputItemId;
+        public int PendingOutputAmount;
+        public CraftingJobSaveData ActiveJob;
+    }
+
+    [Serializable]
+    public class CraftingJobSaveData
+    {
+        public string JobId;
+        public string StationInstanceId;
+        public string RecipeId;
+        public int Status;
+        public float RemainingSeconds;
     }
 }
