@@ -187,3 +187,151 @@ public void RestoreFromSaveData(SaveDataType data) {
 
 ---
 
+## Skill: Scene Wiring Validation Pattern
+
+**When to use**: After implementing a new manager/system that requires bootstrap, scene, or inspector wiring
+
+**Objective**: Validate that runtime code is actually connected to cenas, prefabs, bootstrap, or installers
+
+**Steps**:
+```
+1. Identify the new manager/component
+2. Verify it's in GameBootstrap (if required)
+3. Verify Initialize() and Shutdown() are called
+4. Verify SaveManager.Rebind...() receives the reference (if save/load applies)
+5. Verify scene installers updated (FarmSceneRuntimeReferenceInstaller, etc)
+6. Verify editor MVP scene creation scripts updated (CreateMvpFarmScene, etc)
+7. Verify fallback is safe when optional reference is missing
+8. If required reference is missing → spec remains PARTIAL
+9. Validate in Play Mode or register "NOT RUN" with reason
+```
+
+**Anti-patterns**:
+- ❌ Saying "implemented" just because code compiles
+- ❌ Relying on manual Inspector fields without registration
+- ❌ Creating manager nobody initializes
+- ❌ Skipping scene installer updates
+
+**Success criteria**:
+- Manager field exists in GameBootstrap with public property
+- Initialize/Shutdown called in correct lifecycle
+- SaveManager rebind passes reference correctly
+- All three scene installers updated
+- All three editor MVP scripts updated
+- Play Mode or formal registration of blocked status
+
+---
+
+## Skill: Spec Closure / Registry Reconciliation Pattern
+
+**When to use**: When finalizing a spec (moving from "A implementar" to "Implementados")
+
+**Objective**: Close spec correctly without leaving registry/log/audit contradictory
+
+**Steps**:
+```
+1. Read spec and refinement completely
+2. Read actual code - check all files listed in spec
+3. Verify wiring/bootstrap (if applies)
+4. Verify save/load (if applies)
+5. Verify documentation validation (compile, unity logs)
+6. Run compile Unity or register "NOT RUN" with reason
+7. Update SPECS_01_16_COMPLETENESS_AUDIT_*.md
+8. Update SPEC_EXECUTION_ORDER.md status column
+9. Update SPEC_REGISTRY_IMPLEMENTED.md - add entry with status
+10. Update SPEC_REGISTRY_TO_IMPLEMENT.md - remove entry
+11. Update docs/IMPLEMENTATION_STATUS.md
+12. Update PROJECT_LOG.md with evidence
+13. Move spec file to implementados/ only if scope fully met
+14. If partial: keep in pendencies clear, document gaps
+```
+
+**Anti-patterns**:
+- ❌ Using percentages as final conclusion
+- ❌ Marking 100% without Play Mode when spec depends on scenes
+- ❌ Removing from "A implementar" a spec still blocking others
+- ❌ Letting audit say one thing and registry another
+
+**Success criteria**:
+- No contradictions between audit, registry, and status
+- Gaps clearly documented
+- Expected vs. actual aligned
+- All registries updated consistently
+
+---
+
+## Skill: Unity Asset Creation Pattern
+
+**When to use**: When creating ScriptableObjects, data assets, or configuration files
+
+**Objective**: Avoid YAML-broken assets by creating via Editor, not manually
+
+**Steps**:
+```
+1. Prefer creating asset via Editor script or menu item
+2. Never write complex YAML manually without necessity
+3. If creating editor script: make it idempotent
+4. Script should validate asset doesn't already exist
+5. Create in Assets/_Game/Data/... directory
+6. Log which assets were created
+7. Run Unity validation afterward
+8. If Unity won't run: document residual risk
+```
+
+**Anti-patterns**:
+- ❌ Manual YAML with incorrect GUIDs
+- ❌ Duplicate asset creation
+- ❌ Hardcoding game data in MonoBehaviour instead of ScriptableObject
+- ❌ Creating `.asset` files without running validation
+
+**Success criteria**:
+- Asset created, GUID valid
+- No duplicates
+- Can be loaded by runtime code
+- Unity compile passes
+
+---
+
+## Skill: Play Mode Manual Validation Checklist
+
+**When to use**: When spec involves UI, input, scenes, save/load, or player interaction
+
+**Objective**: Standardize functional validation when automated tests don't exist
+
+**Format** (mandatory):
+```
+PLAY MODE TEST: [Spec Name]
+Scene used: [scene name]
+Steps executed:
+  1. [step 1]
+  2. [step 2]
+  3. ...
+Expected result: [what should happen]
+Observed result: [what actually happened]
+Bugs found:
+  - [bug 1]
+  - [bug 2]
+Passed: YES/NO
+Evidence: [log line, screenshot path, or "N/A"]
+```
+
+**When to mark PASSED**:
+- All steps executed without crashes
+- Result matches expected
+- No gameplay regressions observed
+- Save/load (if applies) works end-to-end
+
+**When to mark FAILED**:
+- Crash or exception
+- Result doesn't match expected
+- Input not responsive
+- Save/load broken
+
+**Anti-patterns**:
+- ❌ Saying "Play Mode recommended" with no checklist
+- ❌ Marking spec complete without testing flow
+- ❌ Ignoring scenes/prefabs/wiring
+- ❌ Testing only happy path, ignoring edge cases
+
+---
+
