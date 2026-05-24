@@ -1,5 +1,6 @@
 using CindarsHope.Core;
 using CindarsHope.Combat.Magic;
+using CindarsHope.Player;
 using UnityEngine;
 
 namespace CindarsHope.Combat
