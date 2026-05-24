@@ -1,6 +1,13 @@
 # Mapa de refinamentos implementados
 
-> Status: camada ativa de refinamentos, audits, handoffs e waves jÃ¡ implementadas ou implementadas em cÃ³digo com validaÃ§Ã£o Unity pendente.
+> Status: camada ativa de refinamentos, audits, handoffs e waves ja implementadas ou implementadas em codigo com validacao Unity pendente.
+
+## Governanca documental
+
+| Refinement | Specs relacionadas |
+|---|---|
+| [ref_docs_single_source_tracking_reconciliation_parcial.md](ref_docs_single_source_tracking_reconciliation_parcial.md) | spec_docs_001_single_source_specs_refinements_reconciliation_parcial |
+| [ref_stabilizacao_overnight_specs_20260523.md](ref_stabilizacao_overnight_specs_20260523.md) | overnight 2026-05-23 parcial; specs futuras 02-17 |
 
 ## Waves implementadas
 
@@ -49,7 +56,4 @@
 
 ## Rastreabilidade documental
 
-Para rastreabilidade completa entre docs_old/ e a documentaÃ§Ã£o ativa, ver docs/DOCS_OLD_TO_ACTIVE_CROSSWALK.md.
-
-
-| [ref_stabilizacao_overnight_specs_20260523.md](ref_stabilizacao_overnight_specs_20260523.md) | overnight 2026-05-23 parcial; specs futuras 02-17 |
+Para rastreabilidade completa entre `docs_old/` e a documentacao ativa, ver `docs/DOCS_OLD_TO_ACTIVE_CROSSWALK.md`.
