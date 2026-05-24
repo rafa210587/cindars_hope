@@ -12,8 +12,13 @@ namespace CindarsHope.Combat.Magic
         [TextArea] public string Description;
         public Sprite Icon;
         public SpellType Type;
+        public DamageType DamageType = DamageType.Arcane;
         public int BaseDamage;
         public int ManaCost;
+        public float CooldownSeconds = 1f;
+        public float CastTimeSeconds = 0f;
+        public float Range = 7f;
+        public float ProjectileSpeed = 8f;
         public int CooldownMs;
         public int RequiredIntelligence;
         public int RequiredWillpower;

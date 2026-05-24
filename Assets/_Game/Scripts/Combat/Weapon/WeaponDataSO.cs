@@ -12,10 +12,15 @@ namespace CindarsHope.Combat.Weapon
         [TextArea] public string Description;
         public Sprite Icon;
         public WeaponType Type;
+        public DamageType DamageType = DamageType.Physical;
         public int BaseDamage;
+        public float BaseCooldownSeconds = 0.5f;
+        public float StaminaCost = 10f;
+        public float Range = 1f;
+        public float ArcDegrees = 120f;
+        public float AttackSpeedMultiplier = 1f;
         public int CriticalChance;
         public int CooldownMs;
-        public float StaminaCost;
         public int RequiredStrength;
         public int RequiredDexterity;
         public int BaseValue;

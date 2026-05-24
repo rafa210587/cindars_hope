@@ -39,15 +39,52 @@
 - `RunUnityCompileValidation.ps1` validado: Tundra build success, ExitCode 0
 - Nenhum erro de compilação C#
 
-#### Fase E (In Progress) - Implementar SPEC 12
-**Iniciado:**
-- ✅ Enriquecido `ManaManager` (antes em Combat, agora em Player namespace)
-  - Integração com GameTimeTickEvent para regen pause-aware
+#### Fase E ✅ - Implementar SPEC 12 (Core Combat System)
+**Completado:**
+
+**Data Structures:**
+- ✅ Enriquecido `WeaponDataSO` com DamageType, BaseCooldownSeconds, Range, ArcDegrees, AttackSpeedMultiplier
+- ✅ Enriquecido `SpellDataSO` com DamageType, CooldownSeconds, Range, ProjectileSpeed, CastTimeSeconds
+- ✅ Criado `UnarmedAttackDataSO` para fallback sem arma (dano/cooldown/stamina reduzidos)
+- ✅ Criado `SkillActionSO` para active skill slots R/T/Y/G
+
+**Combat Controller:**
+- ✅ Reescrito `PlayerAttackController`:
+  - **Q key:** LeftHand attack via EquipmentManager.GetEquippedItem(LeftHand)
+  - **E key:** RightHand attack (interactable priority placeholder para spec futura)
+  - **Space:** Dodge com stamina cost, distância configurável, sem i-frames em MVP
+  - **R/T/Y/G:** Placeholders para active skill slots (wiring para spec futura)
+  - Integração com StaminaManager, ManaManager, DamageCalculator (spec 11), EquipmentManager (spec 10)
+  - Suporte para WeaponDataSO, UnarmedAttackDataSO com cooldown/stamina/damage
+  - Fallback para ataque desarmado quando nenhuma arma equipada
+
+**Spell System:**
+- ✅ Completado `PlayerSpellCaster.ExecuteSpell()`:
+  - Integral cast (direction inference)
+  - Damage via DamageCalculator pipeline (spec 11)
+  - Mana consumption e cooldown gatekeeping
+  - Area damage com overlap detection
+  - Tiro de knockback base
+- ✅ Enriquecido `ManaManager` (antes Combat, agora Player namespace):
+  - Integração GameTimeTickEvent para regen pause-aware
   - PublishManaChangedEvent para UI
-  - CaptureSaveData/RestoreFromSaveData
+  - CaptureSaveData/RestoreFromSaveData infrastructure
   - Initialize/Shutdown lifecycle
 - ✅ Criado `ManaChangedEvent` em Core/Events
-- ✅ Atualizado `PlayerSpellCaster` com using CindarsHope.Player
+- ✅ Integração com `PlayerSpellCaster` para TrycastSpell()
+
+**Validation:**
+- ✅ Tundra build success após edições: 0 compilation errors
+
+**Pendente para Completude SPEC 12:**
+- [ ] ManaManager: wire em GameBootstrap.Initialize()
+- [ ] ManaManager: integração SaveManager para CaptureSaveData/ApplySaveData
+- [ ] E key: verificação de interactable com prioridade (precisa IInteractable contract)
+- [ ] Spell: teste com ArcaneBolt asset (criação via Editor, não manual)
+- [ ] Active slots R/T/Y/G: execução real de SkillActionSO (gatekeeping + casting)
+- [ ] Bow/Ranged: projectile prefab simples + spawn/timeout
+- [ ] UI: Mana bar em HUD, active slot visualization
+- [ ] Save/Load: Active skill slots persistem por SkillActionId (não Unity ref)
 
 **Próximos passos SPEC 12 (não concluído nesta sessão):**
 1. PlayerCombatController com input Q/E
