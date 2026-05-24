@@ -1,4 +1,4 @@
-﻿# SPEC CAVE-002 - Procedural contracts e resources parcial
+# SPEC CAVE-002 - Procedural contracts e resources parcial
 
 > Status: Implementado parcial
 > Camada: Cave
@@ -11,6 +11,8 @@
 
 ### O que existe
 Contratos, generator, runtime materializer e resource nodes existem em codigo para Cave procedural MVP.
+
+A branch historica `feature/docs-fase9f-cave-stable-run-spec` reforcava que a cave procedural substitui a Cave MVP fixa por niveis grandes, reprodutiveis e exploraveis, com contratos de geracao, config, pontos de geracao, recursos e materializacao runtime.
 
 ### Por que existe
 Esta capacidade sustenta o loop jogavel atual de Cindar's Hope e normaliza, em uma spec ativa, o que ja esta implementado ou parcialmente implementado no repositorio.
@@ -25,8 +27,16 @@ Nao tratar como implementado final qualquer item listado como pendente, qualquer
 ### Arquitetura real
 A arquitetura real e composta pelos arquivos listados na evidencia, pelos dados preservados em `docs_old/` e pelo status operacional registrado em `PROJECT_LOG.md`.
 
+Detalhamento absorvido da branch historica:
+
+- `CaveProceduralGenerator` gera layout e pontos de interesse.
+- `CaveGeneratedLevel` representa o resultado gerado.
+- `CaveRuntimeMaterializer` materializa layout, inimigos, recursos e portais.
+- `ResourceNodeDataSO` e `ResourceNode` implementam recursos mineraveis/coletaveis.
+- `CaveRunManager` mantem seeds e estado runtime.
+
 ### Fluxo
-O fluxo operacional segue o MVP atual: sistemas runtime consultam managers/dados por IDs, publicam eventos simples quando aplicavel e expõem estado para HUD, save ou validadores conforme o sistema.
+O fluxo operacional segue o MVP atual: sistemas runtime consultam managers/dados por IDs, publicam eventos simples quando aplicavel e expoem estado para HUD, save ou validadores conforme o sistema.
 
 ### Persistencia
 Quando ha persistencia, ela deve usar DTOs simples e IDs estaveis. Referencias Unity permanecem fora dos DTOs. Quando nao ha persistencia propria, o estado e derivado de managers ou dados ScriptableObject.
@@ -39,12 +49,22 @@ Quando ha persistencia, ela deve usar DTOs simples e IDs estaveis. Referencias U
 - [x] Evidencia principal existe no repo.
 - [x] Estado foi registrado ou reconciliado em `PROJECT_LOG.md` e/ou `docs_old/IMPLEMENTATION_STATUS.md`.
 - [x] Conteudo historico antigo foi preservado em `docs_old/`.
+- [x] Contratos de geracao procedural.
+- [x] Configuracao de geracao.
+- [x] Resultado gerado com layout e pontos.
+- [x] Runtime materializer.
+- [x] ResourceNode e tool checks parciais.
+- [x] Save parcial de depleted nodes.
 
 ### Implementado parcial
 - [ ] Validacao Unity Play Mode completa pode estar pendente conforme a area.
 - [ ] UX final, arte final, balanceamento final ou cobertura completa so contam quando houver spec e validacao propria.
 
 ### Pendente/futuro
+- [ ] Balance final de layouts.
+- [ ] Loot/scaling completo.
+- [ ] Biomas completos.
+- [ ] Resource distribution final por level/faixa.
 - [ ] Loot tables, bioma progressivo, enemy spawn final e validacao Unity pendentes.
 
 ---
@@ -74,7 +94,3 @@ Quando ha persistencia, ela deve usar DTOs simples e IDs estaveis. Referencias U
 
 - Loot tables, bioma progressivo, enemy spawn final e validacao Unity pendentes.
 - Se a implementacao for parcial, nao promover para final sem evidencia de Unity e sem atualizar esta spec ou criar amendment/correction.
-
-
-
-
