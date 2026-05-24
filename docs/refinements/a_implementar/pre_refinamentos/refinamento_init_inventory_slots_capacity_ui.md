@@ -3,7 +3,7 @@
 > Status: Refinamento inicial a implementar
 > Origem: validacao das specs implementadas/parciais
 > Spec futura relacionada: `docs/specs/a_implementar/spec_inventory_slots_capacity_ui_final.md`
-> Objetivo: evoluir o inventory MVP por ID/stack agregada para um inventario final com slots, multiplas stacks, capacidade e painel de itens jogavel.
+> Objetivo: evoluir o inventory MVP por ID/stack agregada para inventario final com slots, multiplas stacks, capacidade, migration v1->v2 e painel de itens jogavel.
 
 ---
 
@@ -47,17 +47,44 @@ Mas esse refinement pertence a spec 17, que e a UI/UX final do jogo. O painel mi
 
 ---
 
-## 3. Escopo esperado
+## 3. Decisoes aprovadas
+
+- Capacidade inicial: `18 slots`, grid `3x6`.
+- Capacidade maxima planejada por equipamento/mochila: `30 slots`, grid `5x6`.
+- Painel de itens e modal.
+- `I` abre e fecha o painel.
+- `Esc` fecha o painel.
+- `WASD` navega no grid enquanto o painel esta aberto.
+- `Enter` e `Space` confirmam. `E` pode ser alias contextual somente quando o painel estiver aberto.
+- Confirmar um slot ocupado abre menu de acoes; nao executa acao destrutiva no primeiro confirm.
+- Split MVP usa metade automatica.
+- Destroy sempre exige confirmacao.
+- Drop e transacional: so remove do inventory depois que pickup persistente for criado com sucesso.
+- Equip segue a opcao B: item equipado permanece no inventory e o slot/item fica marcado como equipado.
+- Drag/drop, sort/auto-organize, merge manual e swap manual ficam fora do MVP.
+
+---
+
+## 4. Escopo esperado
 
 ### Runtime
 
 Criar modelo de inventory baseado em slots:
 
 ```text
+InventorySlot
 InventorySlotSaveData
+InventoryAddResult
+InventoryActionResult
+```
+
+Campos minimos:
+
+```text
 SlotIndex
 ItemId
 Amount
+IsEquipped ou EquippedBinding opcional
 ```
 
 Regras:
@@ -68,7 +95,17 @@ Regras:
 - AddItem distribui entre stacks existentes e slots vazios;
 - RemoveItem consome das stacks corretamente;
 - operacoes retornam sobra quando nao houver espaco;
-- nenhuma operacao deve perder item silenciosamente.
+- nenhuma operacao deve perder item silenciosamente;
+- item equipado nao pode ser destruido, dropado ou splitado sem antes passar por regra clara de unequip/bloqueio.
+
+### Capacidade
+
+```text
+Inicial: 18 slots / grid 3x6
+Planejado por mochila/equipamento: ate 30 slots / grid 5x6
+```
+
+Capacidade deve ser persistida como dado simples para permitir upgrades futuros sem reescrever o save.
 
 ### Painel minimo de itens / HUD de inventory
 
@@ -78,29 +115,33 @@ Regras de input:
 
 ```text
 I abre o painel de itens.
-I fecha o painel de itens quando ele ja esta aberto.
-WASD navega entre slots no grid quando o painel esta aberto.
-Enter/E/Space confirma selecao ou executa acao principal quando aplicavel.
+I fecha o painel se ja estiver aberto.
 Esc fecha o painel sem aplicar acao.
+WASD navega entre slots no grid quando o painel esta aberto.
+Enter ou Space confirmam selecao/acao.
+E pode confirmar como alias contextual somente quando painel esta aberto.
 ```
 
 Regras de layout:
 
-- o painel nao pode ocupar permanentemente o espaco das outras HUDs principais;
-- o painel deve abrir como overlay/modal temporario;
-- HUD de gameplay normal pode continuar visivel, mas nao deve ser sobrescrita ou destruida pelo painel;
-- quando o painel estiver aberto, movimento do player deve ser bloqueado ou ignorado para evitar conflito com WASD de navegacao;
-- ao fechar o painel, controle do player deve voltar ao normal.
+- painel deve abrir como overlay/modal temporario;
+- painel e modal: bloqueia movimento, ataque, interacao e uso de tool/weapon enquanto aberto;
+- HUD de gameplay normal pode continuar visivel ao fundo;
+- painel nao pode ocupar permanentemente o espaco das outras HUDs principais;
+- painel nao deve destruir, substituir ou esconder de forma definitiva HUDs como HP, hunger, gold, day/time e hotbar;
+- abrir/fechar painel nao dispara `SaveGame()` automaticamente.
 
-### Acoes minimas de item
+### Menu de acoes
 
-O painel deve permitir operar o slot selecionado.
+Confirmar slot ocupado abre menu de acoes.
+
+Nenhuma acao destrutiva acontece no primeiro confirm.
 
 Acoes minimas:
 
 ```text
 Use
-Equip, quando fizer sentido
+Equip
 Drop
 Destroy
 Split
@@ -111,43 +152,64 @@ Regras:
 
 - Use so aparece/funciona para item usavel/consumivel/interagivel;
 - Equip so aparece/funciona para item equipavel, ferramenta, arma, armor/accessory ou categoria equivalente suportada;
-- Drop deve criar pickup persistente quando o sistema de pickups estiver disponivel; se ainda nao for possivel, manter pendencia explicita e nao apenas apagar item;
-- Destroy deve exigir confirmacao simples;
-- Split deve pedir quantidade ou usar um default claro, como metade arredondada para baixo;
-- Split so e permitido quando `Amount > 1`;
-- Cancel fecha o submenu de acoes sem alterar inventory.
-
-### Navegacao e selecao
-
-- Slot selecionado deve ter highlight visual.
-- Item selecionado deve mostrar nome, quantidade e descricao curta quando houver `ItemDataSO`.
-- Ao selecionar slot vazio, a UI deve mostrar estado vazio e nao tentar executar acao.
-- Navegacao deve ser previsivel em grid: esquerda/direita/cima/baixo respeitam bordas.
+- Equip nao remove o item do inventory nesta spec; o item permanece no slot e fica marcado como equipado;
+- se a integracao final com equipment ainda nao suportar esse modelo, bloquear Equip com pendencia clara e nao duplicar item;
+- Drop deve criar pickup persistente antes de remover item do slot;
+- se Drop falhar, item permanece no inventory;
+- Destroy exige confirmacao simples;
+- Destroy nunca acontece direto no menu principal;
+- Split exige `Amount > 1`;
+- Split MVP usa metade automatica: `10 -> 5 + 5`, `9 -> 5 + 4`, mantendo a maior parte no slot original;
+- Split deve respeitar capacidade e nunca perder item se nao houver slot disponivel;
+- Cancel fecha submenu de acoes sem alterar inventory.
 
 ### Save/load
 
-Migrar save antigo:
+Inventory v2 deve ter `Slots` e `Capacity` como fonte de verdade:
 
 ```text
-InventorySaveData.Items -> InventorySlotSaveData[]
+InventorySaveData
+- List<InventorySlotSaveData> Slots
+- int Capacity
 ```
 
-Relacao com save migration:
-
-- esta spec deve depender da infraestrutura de `spec_save_schema_migration_v2`;
-- inventory slots provavelmente sera a primeira migration real `v1 -> v2`;
-- `CurrentSchemaVersion` so deve subir quando a migration real de inventory estiver implementada e validada.
+`Items` do modelo antigo pode permanecer temporariamente como legacy/deprecated para migration, mas nao deve ser a fonte de verdade em v2.
 
 Migration segura:
 
+- usar infraestrutura de `spec_save_schema_migration_v2`;
+- inventory slots provavelmente sera a primeira migration real `v1 -> v2`;
+- `CurrentSchemaVersion` so deve subir quando a migration real de inventory estiver implementada e validada;
 - se save antigo tiver Items, converter para slots sequenciais;
 - preservar quantidade total de cada item;
 - quebrar quantidades acima de `MaxStack` em multiplos slots;
-- se nao houver espaco suficiente, registrar erro claro e nao perder itens silenciosamente.
+- se os itens antigos excederem a capacidade inicial de 18 slots, expandir o numero de slots salvos para comportar tudo e registrar warning;
+- migration nunca pode perder item.
+
+### Fora do MVP desta spec
+
+```text
+Drag/drop final
+Sort/auto-organize
+Merge manual entre slots
+Swap manual entre slots
+Hotbar final
+Equipment visual completo/paper doll
+UI final consolidada do jogo
+```
+
+Permitido nesta spec:
+
+```text
+Auto-merge no AddItem
+Split automatico por metade
+Acoes via menu
+Equip marcado no inventory sem duplicar item
+```
 
 ---
 
-## 4. Arquivos provaveis
+## 5. Arquivos provaveis
 
 ```text
 Assets/_Game/Scripts/Inventory/InventoryManager.cs
@@ -164,7 +226,7 @@ docs/specs/implementados/spec_inventory_001_inventario_itens_gold_e_stacks.md
 
 ---
 
-## 5. Fora de escopo
+## 6. Fora de escopo
 
 - UI/UX final completa do jogo.
 - Equipment visual completo com paper doll.
@@ -174,46 +236,54 @@ docs/specs/implementados/spec_inventory_001_inventario_itens_gold_e_stacks.md
 - Item rarity/affixes.
 - Controller remapping avancado.
 - Multiplayer/trading.
+- Drag/drop final.
+- Sort/auto-organize.
 
 A spec 17 ainda deve tratar a UI final e consolidada do jogo. Esta spec entrega o painel minimo de itens necessario para inventory funcionar de forma jogavel.
 
 ---
 
-## 6. Definition of Done
+## 7. Definition of Done
 
-- [ ] Inventory suporta N slots configuraveis.
+- [ ] Inventory inicia com 18 slots / 3x6.
+- [ ] Capacity e persistida.
+- [ ] Arquitetura suporta expansao futura ate 30 slots / 5x6.
 - [ ] Mesmo item pode ocupar multiplas stacks.
 - [ ] `MaxStack` e por slot.
-- [ ] Save/load preserva slots.
+- [ ] Save/load preserva slots e capacity.
 - [ ] Save antigo por `ItemId + Amount` migra sem perda.
+- [ ] Migration expande slots se itens antigos excederem capacidade inicial.
 - [ ] Painel de itens abre e fecha com `I`.
-- [ ] Painel de itens usa WASD para navegar entre slots.
+- [ ] Painel de itens fecha com `Esc`.
+- [ ] Painel de itens usa WASD para navegar entre slots sem mover player.
 - [ ] Slot selecionado tem highlight.
+- [ ] Confirmar slot ocupado abre menu de acoes.
 - [ ] Painel mostra slots, quantidades e dados basicos do item.
 - [ ] Item selecionado permite Use/Equip/Drop/Destroy/Split quando aplicavel.
+- [ ] Equip mantem item no inventory e marca como equipado, sem duplicar item.
 - [ ] Destroy exige confirmacao simples.
-- [ ] Split nao perde item e respeita capacidade.
+- [ ] Split usa metade automatica e nao perde item.
 - [ ] Drop nao apaga item sem criar pickup persistente ou sem registrar pendencia explicita.
 - [ ] Painel nao ocupa permanentemente o espaco das outras HUDs.
-- [ ] Movimento do player nao conflita com WASD enquanto painel estiver aberto.
 - [ ] Add/remove nao perde item silenciosamente.
 - [ ] `spec_inventory_001` e atualizada com estado real.
 
 ---
 
-## 7. Validacao
+## 8. Validacao
 
 1. Adicionar item stackavel acima do `MaxStack` e verificar multiplos slots.
 2. Remover quantidade parcial e validar decremento correto.
 3. Salvar/carregar inventory com multiplos slots.
 4. Testar inventory cheio e validar sobra/rejeicao sem perda.
-5. Abrir painel com `I`.
-6. Navegar no grid com WASD.
-7. Fechar painel com `I` e com `Esc`.
-8. Selecionar item usavel e executar Use.
-9. Selecionar item equipavel e executar Equip.
-10. Executar Drop e validar pickup persistente ou pendencia registrada.
-11. Executar Destroy e validar confirmacao.
-12. Executar Split e validar duas stacks ou erro claro quando sem espaco.
-13. Validar que a HUD normal nao e sobrescrita/destruida pelo painel.
-14. Validar Unity compile validation e docs validation.
+5. Migrar save v1 para v2 e validar preservacao total de itens.
+6. Abrir painel com `I`.
+7. Navegar no grid com WASD.
+8. Fechar painel com `I` e com `Esc`.
+9. Selecionar item usavel e executar Use.
+10. Selecionar item equipavel e executar Equip sem duplicar/remover do inventory.
+11. Executar Drop e validar pickup persistente ou pendencia registrada sem perda.
+12. Executar Destroy e validar confirmacao.
+13. Executar Split e validar duas stacks ou erro claro quando sem espaco.
+14. Validar que a HUD normal nao e sobrescrita/destruida pelo painel.
+15. Validar Unity compile validation e docs validation.
