@@ -5,7 +5,123 @@ Execution Queue - Build and order spec/prompt execution queues
 
 import re
 from pathlib import Path
-from typing import Optional, List
+from typing import Optional, List, Tuple
+
+
+def natural_sort_key(path: Path) -> tuple:
+    """
+    Natural sort key with letter-suffix handling.
+    SPEC_17A sorts BEFORE SPEC_17 (letter suffix = prerequisite version).
+
+    Examples:
+      SPEC_17A_scale → ((1,"spec_"), (0,17,"a"), (1,"_scale"))
+      SPEC_17_ui    → ((1,"spec_"), (0,17,"~"), (1,"_ui"))
+    """
+    text = path.stem.lower()
+    parts = []
+    i = 0
+
+    while i < len(text):
+        # Consume non-digit characters
+        j = i
+        while j < len(text) and not text[j].isdigit():
+            j += 1
+        if j > i:
+            parts.append((1, text[i:j]))
+
+        if j >= len(text):
+            break
+
+        # Consume digit characters
+        k = j
+        while k < len(text) and text[k].isdigit():
+            k += 1
+        num = int(text[j:k])
+
+        # Check for letter suffix immediately after digits
+        m = k
+        while m < len(text) and text[m].isalpha():
+            m += 1
+
+        if m > k:
+            # Has letter suffix: sort BEFORE same num without suffix
+            suffix = text[k:m]
+        else:
+            # No letter suffix: sort AFTER any letter suffix
+            suffix = "~"
+
+        parts.append((0, num, suffix))
+        i = m
+
+    return tuple(parts)
+
+
+def build_agnostic_queue(
+    input_dir: Path,
+    ignored_patterns: List[str] = None,
+    sort_mode: str = "natural",
+    include_all_md: bool = False
+) -> Tuple[List[Path], List[Path]]:
+    """
+    Build execution queue from any folder (folder-agnostic).
+    Returns: (queue, ignored_list)
+    """
+    DEFAULT_IGNORE_PATTERNS = [
+        "00_INDEX_ORDEM_USO",
+        "00_PROMPT_MESTRE",
+        "00B_PROMPT_AUXILIAR",
+        "99_TEMPLATE",
+        "README",
+    ]
+
+    if not input_dir.exists():
+        return [], []
+
+    # Read only direct .md files (not recursive)
+    all_md = [f for f in input_dir.iterdir() if f.is_file() and f.suffix.lower() == ".md"]
+
+    if include_all_md:
+        eligible = all_md
+        skipped = []
+    else:
+        # Filter by ignored patterns (case-insensitive)
+        effective_patterns = list(DEFAULT_IGNORE_PATTERNS) + (ignored_patterns or [])
+        eligible = []
+        skipped = []
+
+        for f in all_md:
+            if any(pat.lower() in f.name.lower() for pat in effective_patterns):
+                skipped.append(f)
+            else:
+                eligible.append(f)
+
+    # Sort by mode
+    if sort_mode == "natural":
+        queue = sorted(eligible, key=natural_sort_key)
+    elif sort_mode == "alpha":
+        queue = sorted(eligible, key=lambda p: p.name.lower())
+    elif sort_mode == "index":
+        index_path = input_dir / "00_INDEX_ORDEM_USO.md"
+        if not index_path.exists():
+            print(f"ERROR: --sort index requires {index_path} but it does not exist.")
+            import sys
+            sys.exit(1)
+
+        index_order = parse_prompt_index(index_path)
+        index_dict = {name: i for i, (_, name) in enumerate(index_order)}
+
+        def sort_key(p):
+            if p.name in index_dict:
+                return (0, index_dict[p.name])
+            else:
+                return (1, natural_sort_key(p))
+
+        queue = sorted(eligible, key=sort_key)
+    else:
+        # Default to natural
+        queue = sorted(eligible, key=natural_sort_key)
+
+    return queue, skipped
 
 
 def extract_spec_number(filename: str) -> Optional[int]:
@@ -276,9 +392,9 @@ def infer_target_spec(
     return None
 
 
-def print_dry_run_report(queue: List[Path], mode: str, ignored: List[str] = None):
+def print_dry_run_report(queue: List[Path], mode: str, ignored_patterns: List[str] = None, skipped_items: List[Path] = None):
     """
-    Print dry run report showing queue and ignored items.
+    Print dry run report showing queue, ignored patterns, and skipped items.
     """
     print(f"\n{'='*70}")
     print(f"DRY RUN - {mode.upper()} MODE")
@@ -286,17 +402,21 @@ def print_dry_run_report(queue: List[Path], mode: str, ignored: List[str] = None
 
     if not queue:
         print("Queue is EMPTY\n")
-        return
+    else:
+        print(f"Queue ({len(queue)} items):")
+        for i, path in enumerate(queue, 1):
+            spec_num = extract_spec_number(path.name)
+            spec_label = f" [SPEC_{spec_num:02d}]" if spec_num else ""
+            print(f"  {i}. {path.name}{spec_label}")
 
-    print(f"Queue ({len(queue)} items):")
-    for i, path in enumerate(queue, 1):
-        spec_num = extract_spec_number(path.name)
-        spec_label = f" [SPEC_{spec_num:02d}]" if spec_num else ""
-        print(f"  {i}. {path.name}{spec_label}")
+    if skipped_items:
+        print(f"\nIgnored ({len(skipped_items)} items):")
+        for path in skipped_items:
+            print(f"  - {path.name}")
 
-    if ignored:
-        print(f"\nIgnored patterns ({len(ignored)} patterns):")
-        for pattern in ignored:
+    if ignored_patterns:
+        print(f"\nIgnored patterns:")
+        for pattern in ignored_patterns:
             print(f"  - {pattern}")
 
     print(f"\n{'='*70}\n")

@@ -11,10 +11,10 @@ from datetime import datetime
 from pathlib import Path
 
 from agent import run_with_fallback, build_agent_prompt, get_agent_rules, AgentResult
-from logger import ItemLogger, ItemSummary
-from execution_queue import build_spec_queue, build_prompt_queue, print_dry_run_report, extract_spec_number, infer_target_spec
+from logger import ItemLogger, ItemSummary, RunSummary
+from execution_queue import build_spec_queue, build_prompt_queue, build_agnostic_queue, print_dry_run_report, extract_spec_number, infer_target_spec
 from spec_operations import (
-    git_status, git_diff_stat, git_diff, git_commit, close_spec, archive_prompt,
+    git_status, git_diff_stat, git_diff, git_commit, close_spec, archive_prompt, move_item_to_subdir,
     build_repair_prompt, generate_final_human_validation_checklist
 )
 from validation import run_all_validations, parse_agent_result_block, normalize_spec_id
@@ -98,6 +98,16 @@ Examples:
     parser.add_argument("--archive-on-failure", action="store_true",
                         help="Archive prompt on failure")
 
+    # Agnostic mode control
+    parser.add_argument("--sort", choices=["natural", "alpha", "index"], default="natural",
+                        help="Sort mode for queue: natural (default), alpha, or index")
+    parser.add_argument("--completed-subdir", default="implementado",
+                        help="Subdirectory name for completed items (relative to input folder)")
+    parser.add_argument("--blocked-subdir", default="bloqueado",
+                        help="Subdirectory name for blocked items (relative to input folder)")
+    parser.add_argument("--include-all-md", action="store_true",
+                        help="Include all .md files (ignore default patterns)")
+
     args = parser.parse_args()
 
     # Validate arguments
@@ -113,28 +123,26 @@ Examples:
 
     repo_root = Path(config.get("repo_root", "."))
 
-    # Build queue
-    if args.mode == "spec":
-        input_path = args.input_dir or args.input_file
-        queue = build_spec_queue(
-            input_path if args.input_dir else input_path.parent,
-            Path(config.get("spec_execution_order_path", "docs/specs/SPEC_EXECUTION_ORDER.md"))
+    # Build queue (agnostic mode)
+    if args.input_file:
+        input_path = args.input_file
+        base_dir = input_path.parent
+        queue = [input_path]
+        skipped = []
+    else:
+        input_path = args.input_dir
+        base_dir = input_path
+
+        queue, skipped = build_agnostic_queue(
+            base_dir,
+            ignored_patterns=config.get("ignored_prompt_patterns", []),
+            sort_mode=args.sort,
+            include_all_md=args.include_all_md
         )
-        if args.input_file:
-            queue = [args.input_file]  # Override with single file
-    else:  # prompt mode
-        input_path = args.input_dir or args.input_file
-        queue = build_prompt_queue(
-            input_path if args.input_dir else input_path.parent,
-            config.get("ignored_prompt_patterns", []),
-            Path(config.get("prompt_input_dir", "docs/agent_prompts/a_executar")) / "00_INDEX_ORDEM_USO.md"
-        )
-        if args.input_file:
-            queue = [args.input_file]
 
     # Dry run: just print queue
     if args.dry_run:
-        print_dry_run_report(queue, args.mode, config.get("ignored_prompt_patterns", []))
+        print_dry_run_report(queue, args.mode, ignored_patterns=config.get("ignored_prompt_patterns", []), skipped_items=skipped)
         return
 
     # Main execution loop
@@ -215,42 +223,41 @@ Examples:
             agent_output = parse_agent_result_block(agent_result.combined)
             validations = run_all_validations(repo_root, config, logger.get_log_dir(), spec_id)
 
-        # 7. Determine success (correct gate per spec section 14)
+        # 7. Determine success (gate: agent SUCCESS AND spec COMPLETE AND validations)
         agent_success = agent_output.get("agent_result") == "SUCCESS"
         spec_complete = agent_output.get("spec_status") == "COMPLETE"
         validations_pass = validations.all_pass
         success = agent_success and spec_complete and validations_pass
 
-        # In prompt mode, also require target_spec to be found
-        if args.mode == "prompt":
-            success = success and target_spec is not None
+        # In prompt mode, target_spec is inferred for logging only (not a gate)
+        target_spec_inferred = target_spec is not None
 
         print(f"\n[SUCCESS GATE]")
         print(f"  AGENT_RESULT=SUCCESS: {agent_success}")
         print(f"  SPEC_STATUS=COMPLETE: {spec_complete}")
         print(f"  Validations all pass: {validations_pass}")
         if args.mode == "prompt":
-            print(f"  Target spec found: {target_spec is not None}")
+            print(f"  Target spec inferred: {target_spec_inferred}")
         print(f"  FINAL SUCCESS: {success}\n")
 
-        # 8. Close spec or archive prompt (transactional per spec section 14)
-        closed_spec = False
-        moved_prompt = False
+        # 8. Move item to appropriate subdir (agnostic mode)
+        item_moved_to_implemented = False
+        item_moved_to_blocked = False
+        completed_item_path = None
+        blocked_item_path = None
 
-        if success and target_spec:
-            closed_spec = close_spec(target_spec, config, repo_root)
-            if closed_spec:
-                executed_specs.append(f"SPEC_{extract_spec_number(target_spec.name):02d}" if target_spec else "UNKNOWN")
-
-        # Only archive prompt if spec closed successfully (or no spec in prompt mode)
-        if args.mode == "prompt":
-            if success and closed_spec:
-                # Archive as executed
-                moved_prompt = archive_prompt(item_path, Path(config.get("prompt_executed_dir", "docs/agent_prompts/executados")))
-                executed_prompts.append(item_path.name)
-            elif not success and args.archive_on_failure:
-                # Archive as blocked
-                moved_prompt = archive_prompt(item_path, Path(config.get("prompt_blocked_dir", "docs/agent_prompts/bloqueados")))
+        if success:
+            dest = move_item_to_subdir(item_path, args.completed_subdir)
+            if dest:
+                item_moved_to_implemented = True
+                completed_item_path = str(dest)
+                executed_items.append(item_id)
+        else:
+            if args.archive_on_failure:
+                dest = move_item_to_subdir(item_path, args.blocked_subdir)
+                if dest:
+                    item_moved_to_blocked = True
+                    blocked_item_path = str(dest)
 
         # 9. Create summary and commit
         diff_stat = git_diff_stat(repo_root)
@@ -278,20 +285,22 @@ Examples:
             docs_validation=validations.docs,
             unity_compile=validations.unity_compile,
             repo_checks=validations.repo_checks,
-            closed_spec=closed_spec,
-            moved_prompt=moved_prompt,
             commit_sha=commit_sha or "",
             started_at=start_time,
             finished_at=end_time,
             changed_files=agent_output.get("changed_files", []),
             errors=[],
-            residual_risks=[]
+            residual_risks=[],
+            # New agnostic fields
+            completed_item_path=completed_item_path,
+            blocked_item_path=blocked_item_path,
+            target_spec_inferred=target_spec_inferred,
+            item_moved_to_implemented=item_moved_to_implemented,
+            item_moved_to_blocked=item_moved_to_blocked,
         )
 
         logger.write_summary_json(summary)
         logger.write_summary_md(summary)
-
-        executed_items.append(item_id)
 
         # 10. Stop conditions
         if args.stop_after_one:
@@ -301,25 +310,55 @@ Examples:
             print(f"Stopping: {item_id} failed or partial")
             break
 
-    # Generate final checklist
+    # Generate run summary
     timestamp_dir = datetime.now().strftime("%Y%m%d_%H%M%S")
-    log_root = Path("orquestrador/logs")
-    checklist_path = log_root / timestamp_dir / "FINAL_HUMAN_VALIDATION_CHECKLIST.md"
+    log_root = Path("orquestrador/logs") / timestamp_dir
+
+    # Determine stats
+    total_found = len(queue) + len(skipped)
+    items_impl = [item.stem for item in queue if any(Path(item.parent / args.completed_subdir / item.name).exists() for _ in [None])]
+    items_blocked = [item.stem for item in queue if any(Path(item.parent / args.blocked_subdir / item.name).exists() for _ in [None])]
+    items_kept = [item.stem for item in queue if item.stem not in items_impl and item.stem not in items_blocked]
+
+    run_summary = RunSummary(
+        run_id=timestamp_dir,
+        input_dir=str(base_dir),
+        mode=args.mode,
+        sort_mode=args.sort,
+        total_found=total_found,
+        total_ignored=len(skipped),
+        total_executed=len(executed_items),
+        total_success=len([item for item in executed_items if item]),
+        total_failure=len(executed_items) - len([item for item in executed_items if item]),
+        total_blocked=len(items_blocked),
+        items_moved_to_implemented=items_impl,
+        items_kept_in_origin=items_kept,
+        items_moved_to_blocked=items_blocked,
+        next_suggested=queue[len(executed_items)].name if len(executed_items) < len(queue) else None,
+        stopped_on_failure=args.stop_on_failure and not success if 'success' in locals() else False
+    )
+
+    ItemLogger.write_run_summary(log_root, run_summary)
+
+    # Generate final checklist (legacy)
+    checklist_path = log_root / "FINAL_HUMAN_VALIDATION_CHECKLIST.md"
     generate_final_human_validation_checklist(
         executed_items,
         executed_specs,
         executed_prompts,
-        log_root / timestamp_dir,
+        log_root,
         checklist_path
     )
 
     print(f"\n{'='*70}")
     print(f"Orchestration Complete")
     print(f"{'='*70}")
-    print(f"Executed: {len(executed_items)} items")
-    print(f"Specs closed: {len(executed_specs)}")
-    print(f"Prompts executed: {len(executed_prompts)}")
-    print(f"Checklist: {checklist_path}")
+    print(f"Total encontrado: {total_found}")
+    print(f"Total ignorado: {len(skipped)}")
+    print(f"Total executado: {len(executed_items)}")
+    print(f"Movidos para {args.completed_subdir}/: {len(items_impl)}")
+    print(f"Movidos para {args.blocked_subdir}/: {len(items_blocked)}")
+    print(f"Run summary: {log_root}/RUN_SUMMARY.md")
 
 
 if __name__ == "__main__":

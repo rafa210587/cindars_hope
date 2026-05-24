@@ -4,6 +4,7 @@ Spec Operations - Spec closing, prompt archiving, registry updates, and git oper
 
 import shutil
 import subprocess
+from datetime import datetime
 from pathlib import Path
 from typing import Optional, Tuple
 from execution_queue import parse_spec_execution_order, extract_spec_number
@@ -115,6 +116,46 @@ def git_commit(repo_root: Path, message: str) -> Optional[str]:
 
     except Exception as e:
         print(f"Error committing: {str(e)}")
+        return None
+
+
+def move_item_to_subdir(
+    item_path: Path,
+    subdir_name: str,
+    collision_strategy: str = "timestamp"
+) -> Optional[Path]:
+    """
+    Move item_path to item_path.parent / subdir_name / item_path.name.
+    Handles collisions with timestamp-based renaming.
+    Returns: destination path on success, None on failure
+    """
+    if not item_path.exists():
+        print(f"ERROR: Item not found: {item_path}")
+        return None
+
+    try:
+        dest_dir = item_path.parent / subdir_name
+        dest_dir.mkdir(parents=True, exist_ok=True)
+
+        target = dest_dir / item_path.name
+
+        if target.exists():
+            if collision_strategy == "timestamp":
+                ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+                stem = item_path.stem
+                suffix = item_path.suffix
+                target = dest_dir / f"{stem}__{ts}{suffix}"
+                print(f"Collision detected, renaming with timestamp: {target.name}")
+            else:
+                print(f"ERROR: {target} already exists, collision strategy is '{collision_strategy}'")
+                return None
+
+        shutil.move(str(item_path), str(target))
+        print(f"Moved: {item_path.name} → {subdir_name}/")
+        return target
+
+    except Exception as e:
+        print(f"Error moving {item_path}: {str(e)}")
         return None
 
 

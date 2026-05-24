@@ -1,4 +1,4 @@
-# Orchestrator v2.0 - Spec/Prompt Queue Automation
+# Orchestrator v2.1 - Folder-Agnostic Spec/Prompt Queue Automation
 
 **Canonical command:**
 
@@ -28,14 +28,34 @@ python .\orquestrador\run_orquestrador.py `
   --dry-run
 ```
 
-### Execute a single spec
+### Execute a single item
 
 ```powershell
 python .\orquestrador\run_orquestrador.py `
-  --mode spec `
-  --input-file ".\docs\specs\a_implementar\spec_player_combat_weapons_spells_skill_actions_runtime.md" `
+  --mode prompt `
+  --input-file ".\docs\agent_prompts\a_executar\my_prompt.md" `
   --stop-after-one
 ```
+
+---
+
+## Folder-Agnostic Behavior
+
+The orchestrator now works with **any folder structure**:
+
+- Reads `.md` files from `--input-dir`
+- Moves completed items to `<input-dir>/implementado/`
+- Moves blocked items (on failure) to `<input-dir>/bloqueado/`
+- No hardcoded paths, no `SPEC_EXECUTION_ORDER.md` dependency
+- Works identically for specs, prompts, or any markdown documents
+
+### Destination Folders
+
+| Status | Destination | Custom Arg |
+|---|---|---|
+| Success | `<input-dir>/implementado/` | `--completed-subdir` |
+| Failure (if `--archive-on-failure`) | `<input-dir>/bloqueado/` | `--blocked-subdir` |
+| Failure (default) | Stays in `<input-dir>` | — |
 
 ---
 
@@ -43,16 +63,16 @@ python .\orquestrador\run_orquestrador.py `
 
 ### `--mode spec`
 
-Executes specs from a directory in dependency order (from `SPEC_EXECUTION_ORDER.md`).
+Executes specs from a directory in sort order.
 
 - Reads `.md` files from `--input-dir`
-- Orders by spec number from execution order file
+- Orders by `--sort` mode (default: natural)
 - For each spec:
   - Builds prompt with mandatory rules and result block
   - Invokes Claude or Codex via subprocess
   - Fallback to Codex on credit errors or failures
   - Repair loop for failed validations (3 attempts by default)
-  - Auto-closes spec (moves to `implementados/`) on success
+  - Auto-moves to `implementado/` on success
   - Auto-commits on success
 
 ### `--mode prompt`
@@ -61,13 +81,12 @@ Executes custom prompts from a directory.
 
 - Reads `.md` files from `--input-dir`
 - Infers target spec from:
-  - Explicit path in prompt content
+  - Explicit path in prompt content (optional)
   - `SPEC_XX` extracted from filename
-  - Lookup in `SPEC_EXECUTION_ORDER.md`
+  - Lookup in `SPEC_EXECUTION_ORDER.md` (if exists)
 - Same execution as spec mode, but:
-  - Archives prompt to `executados/` (success) or `bloqueados/` (failure)
-  - Spec closes only if explicitly required
-  - Prompts don't auto-replace spec execution
+  - Archives to `implementado/` (success) or `bloqueado/` (failure, with `--archive-on-failure`)
+  - Target spec is **optional** (for logging only, not a gate)
 
 ---
 
@@ -75,10 +94,7 @@ Executes custom prompts from a directory.
 
 ### `--input-dir PATH`
 
-Execute all `.md` files in directory. Files ordered by:
-1. SPEC_EXECUTION_ORDER.md (for spec mode) or 00_INDEX_ORDEM_USO.md (for prompt mode)
-2. Fallback: filename number extraction
-3. Fallback: alphabetical
+Execute all eligible `.md` files in directory. Files ordered by `--sort` mode.
 
 ### `--input-file PATH`
 
@@ -105,7 +121,78 @@ Continue to next item even if current is partial.
 List queue without executing. Shows:
 - Queue order
 - Item count
-- Ignored patterns (prompt mode)
+- Ignored items and patterns
+
+---
+
+## Sorting
+
+### `--sort natural` (default)
+
+Natural sort: `SPEC_01 < SPEC_02 < SPEC_10`, not lexicographic.
+
+Special handling: `SPEC_17A < SPEC_17` (letter suffix = prerequisite version).
+
+### `--sort alpha`
+
+Alphabetical by filename (case-insensitive).
+
+### `--sort index`
+
+Uses `00_INDEX_ORDEM_USO.md` in input directory for custom order.
+
+Requires that index file to exist.
+
+---
+
+## File Filtering
+
+### Default Ignored Patterns
+
+```
+00_INDEX_ORDEM_USO
+00_PROMPT_MESTRE
+00B_PROMPT_AUXILIAR
+99_TEMPLATE
+README
+```
+
+These are skipped unless `--include-all-md` is used.
+
+### `--include-all-md`
+
+Include all `.md` files, even those matching ignored patterns.
+
+### Custom Ignored Patterns
+
+Add to `orquestrador_config.json`:
+
+```json
+{
+  "ignored_prompt_patterns": ["draft_", "archived_", "wip_"]
+}
+```
+
+---
+
+## Folder Customization
+
+### `--completed-subdir NAME` (default: implementado)
+
+Subdirectory name for successful items.
+
+```powershell
+python .\orquestrador\run_orquestrador.py `
+  --mode prompt `
+  --input-dir ".\my_folder" `
+  --completed-subdir "done"
+```
+
+Result: `.\my_folder\done\item.md`
+
+### `--blocked-subdir NAME` (default: bloqueado)
+
+Subdirectory name for blocked items (with `--archive-on-failure`).
 
 ---
 
@@ -145,11 +232,11 @@ Commit even on partial success. Used with `--continue-on-partial`.
 
 ### `--archive-on-success`
 
-Archive prompt to `executados/` on success (default: true for prompts).
+Archive prompt to `completado/` on success (default: true for prompts).
 
 ### `--archive-on-failure`
 
-Archive prompt to `bloqueados/` on failure. Default: false.
+Archive prompt to `bloqueado/` on failure. Default: false.
 
 ---
 
@@ -162,13 +249,14 @@ An item is **successful** when ALL of these pass:
 3. Docs validation: PASS
 4. Unity compile validation: PASS
 5. Repo checks: PASS
-6. For prompt mode: target spec found and closed
 
 If ANY condition fails:
-- Spec is NOT moved to `implementados/`
-- Prompt is NOT archived as executed
+- Item is NOT moved to `implementado/`
+- Item is NOT archived as executed
 - If `--stop-on-failure`, execution stops
 - Summary saved with failure details
+
+**Note**: In prompt mode, target spec is optional (inferred for logging only, not a gate).
 
 ---
 
@@ -194,7 +282,7 @@ Runs global and spec-specific checks:
 - `GameObject.Find()` usage (forbidden)
 - `FindObjectOfType()` usage (forbidden)
 - `QuestManager` usage (legacy, forbidden)
-- Spec-specific patterns (for SPEC_012, SPEC_016, etc.)
+- Spec-specific patterns (if SPEC_EXECUTION_ORDER.md exists)
 
 ---
 
@@ -209,7 +297,7 @@ If validations fail:
 
 If all repair attempts exhaust and validations still fail:
 - Item marked partial
-- Spec NOT closed
+- Item NOT moved to `implementado/`
 - Prompt NOT archived as success
 
 ---
@@ -228,22 +316,6 @@ Fallback behavior:
 - Both stdout/stderr captured separately
 - If fallback succeeds, item succeeds
 - If fallback also fails, item fails
-
----
-
-## Prompts vs Specs
-
-**Specs** in `docs/specs/a_implementar/`:
-- Official feature definitions
-- Executable in dependency order
-- Must close (move to `implementados/`)
-- Multiple prompts can target same spec
-
-**Prompts** in `docs/agent_prompts/a_executar/`:
-- Custom instructions or repairs
-- Infer target spec automatically
-- Archive to `executados/` or `bloqueados/` on completion
-- Prompts do NOT bypass spec execution
 
 ---
 
@@ -272,7 +344,25 @@ orquestrador/logs/<timestamp>/<item_id>/
   git_diff.patch                   - Full diff
   summary.json                     - Structured summary
   summary.md                        - Human-readable summary
+
+orquestrador/logs/<timestamp>/
+  RUN_SUMMARY.json                 - Run-level statistics
+  RUN_SUMMARY.md                   - Run-level summary
+  FINAL_HUMAN_VALIDATION_CHECKLIST.md - Manual testing checklist
 ```
+
+---
+
+## Run Summary
+
+After execution, `RUN_SUMMARY.md` shows:
+
+- Total items found and executed
+- Items moved to `implementado/`
+- Items moved to `bloqueado/`
+- Items kept in origin (failed, no archive)
+- Next suggested item (if stopped early)
+- Sorting mode used
 
 ---
 
@@ -282,13 +372,18 @@ Config file: `orquestrador/orquestrador_config.json`
 
 Key settings:
 - `repo_root`: Project root (default: ".")
-- `spec_execution_order_path`: Path to SPEC_EXECUTION_ORDER.md
-- `implemented_specs_dir`: Where to move closed specs
+- `spec_execution_order_path`: Path to SPEC_EXECUTION_ORDER.md (optional)
+- `default_sort`: Default sort mode (default: "natural")
+- `completed_subdir`: Default destination for completed items (default: "implementado")
+- `blocked_subdir`: Default destination for blocked items (default: "bloqueado")
+- `include_all_md`: Include all .md files by default (default: false)
 - `primary_agent`, `fallback_agent`: Agent choices
 - `agent_timeout_minutes`: Timeout for agent execution
 - `require_docs_validation`, `require_unity_compile`, `require_repo_checks`: Enable/disable validators
 - `ignored_prompt_patterns`: Patterns to ignore in prompt mode
 - `credit_error_patterns`: Patterns that trigger fallback
+- `close_target_spec`: Close target spec after prompt (legacy, default: false)
+- `update_spec_registries`: Update registries after spec close (legacy, default: false)
 
 ---
 
@@ -300,11 +395,6 @@ Verify installation:
 ```powershell
 claude --version
 claude auth status --text
-```
-
-If missing:
-```powershell
-# Verify CLI is in PATH or install if needed
 ```
 
 ### "Codex CLI not found"
@@ -327,33 +417,101 @@ Or use `--allow-dirty` to force execution (not recommended).
 
 ### Timeout
 
-Increase `--max-repair-attempts` or adjust config `agent_timeout_minutes` if legitimate long operations.
+Increase `--max-repair-attempts` or adjust config `agent_timeout_minutes`.
 
 ### Validation failures
 
 Check logs:
 ```powershell
-# View specific validation failure
 cat orquestrador/logs/<timestamp>/<item_id>/docs_validation.log
 cat orquestrador/logs/<timestamp>/<item_id>/unity_compile_validation.log
 ```
 
+### Items not moving to destination
+
+- Check `--completed-subdir` / `--blocked-subdir` spelling
+- Verify folder permissions
+- Check logs for move errors
+
 ---
 
-## Legacy Compatibility
+## Examples
 
-Old command (deprecated):
+### Execute all prompts in custom folder, natural sort, archive failures
+
 ```powershell
-python .\orquestrador\run_orchestrator.py
+python .\orquestrador\run_orquestrador.py `
+  --mode prompt `
+  --input-dir ".\my_prompts" `
+  --sort natural `
+  --archive-on-failure
 ```
 
-This is now a wrapper that delegates to `run_orquestrador.py`. Do not use directly.
+Result: Success items → `.\my_prompts\implementado\`, failed items → `.\my_prompts\bloqueado\`
+
+### Execute specs with index order from 00_INDEX_ORDEM_USO.md
+
+```powershell
+python .\orquestrador\run_orquestrador.py `
+  --mode spec `
+  --input-dir ".\docs\specs\a_implementar" `
+  --sort index
+```
+
+### Alphabetical sort, custom destination names
+
+```powershell
+python .\orquestrador\run_orquestrador.py `
+  --mode prompt `
+  --input-dir ".\requests" `
+  --sort alpha `
+  --completed-subdir "approved" `
+  --blocked-subdir "rejected"
+```
+
+Result: `.\requests\approved\` and `.\requests\rejected\`
+
+### Include index file and template files
+
+```powershell
+python .\orquestrador\run_orquestrador.py `
+  --mode prompt `
+  --input-dir ".\docs\agent_prompts\a_executar" `
+  --include-all-md
+```
+
+---
+
+## Migration from v2.0
+
+Old hardcoded paths are now folder-agnostic:
+
+| v2.0 | v2.1 |
+|---|---|
+| Specs must be in `docs/specs/a_implementar/` | Any folder with `--input-dir` |
+| Completed → `docs/specs/implementados/` | Completed → `<input-dir>/implementado/` |
+| Requires `SPEC_EXECUTION_ORDER.md` | Optional; use `--sort natural` (default) |
+| Target spec required in prompt mode | Optional; inferred for logging only |
+
+To migrate:
+
+```powershell
+# Old way
+python .\orquestrador\run_orquestrador.py --mode spec --input-dir ".\docs\specs\a_implementar" --dry-run
+
+# New way (same effect)
+python .\orquestrador\run_orquestrador.py --mode spec --input-dir ".\docs\specs\a_implementar" --sort natural --dry-run
+
+# New way (any folder)
+python .\orquestrador\run_orquestrador.py --mode spec --input-dir ".\my_custom_folder" --sort natural --dry-run
+```
 
 ---
 
 ## Next Steps
 
 1. Review logs in `orquestrador/logs/<timestamp>/`
-2. Check `FINAL_HUMAN_VALIDATION_CHECKLIST.md` for manual testing
-3. Test in Play Mode for gameplay feel
-4. Review commits: `git log --oneline -<N>`
+2. Check `RUN_SUMMARY.md` for execution statistics
+3. Check `FINAL_HUMAN_VALIDATION_CHECKLIST.md` for manual testing
+4. Test in Play Mode for gameplay feel
+5. Review commits: `git log --oneline -<N>`

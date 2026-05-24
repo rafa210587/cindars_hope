@@ -7,10 +7,10 @@ import subprocess
 import sys
 import threading
 import time
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass, asdict, field
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
+from typing import Optional, List
 
 
 @dataclass
@@ -50,14 +50,85 @@ class ItemSummary:
     docs_validation: str
     unity_compile: str
     repo_checks: str
-    closed_spec: bool
-    moved_prompt: bool
-    commit_sha: str
-    started_at: str
-    finished_at: str
-    changed_files: list
-    errors: list
-    residual_risks: list
+    closed_spec: bool = False  # Legacy field
+    moved_prompt: bool = False  # Legacy field
+    commit_sha: str = ""
+    started_at: str = ""
+    finished_at: str = ""
+    changed_files: List[str] = field(default_factory=list)
+    errors: List[str] = field(default_factory=list)
+    residual_risks: List[str] = field(default_factory=list)
+    # New agnostic fields
+    completed_item_path: Optional[str] = None
+    blocked_item_path: Optional[str] = None
+    target_spec_inferred: bool = False
+    item_moved_to_implemented: bool = False
+    item_moved_to_blocked: bool = False
+
+
+@dataclass
+class RunSummary:
+    """Run-level summary across all executed items"""
+    run_id: str
+    input_dir: str
+    mode: str
+    sort_mode: str
+    total_found: int
+    total_ignored: int
+    total_executed: int
+    total_success: int
+    total_failure: int
+    total_blocked: int
+    items_moved_to_implemented: List[str] = field(default_factory=list)
+    items_kept_in_origin: List[str] = field(default_factory=list)
+    items_moved_to_blocked: List[str] = field(default_factory=list)
+    next_suggested: Optional[str] = None
+    stopped_on_failure: bool = False
+
+    def to_dict(self) -> dict:
+        """Convert to dictionary"""
+        return asdict(self)
+
+    def to_markdown(self) -> str:
+        """Generate markdown representation"""
+        return f"""# RUN_SUMMARY
+
+**Run ID**: {self.run_id}
+**Input Dir**: {self.input_dir}
+**Mode**: {self.mode}
+**Sort Mode**: {self.sort_mode}
+
+## Estatísticas
+
+| Métrica | Valor |
+|---|---|
+| Total encontrado | {self.total_found} |
+| Total ignorado | {self.total_ignored} |
+| Total executado | {self.total_executed} |
+| Sucesso | {self.total_success} |
+| Falha | {self.total_failure} |
+| Bloqueado | {self.total_blocked} |
+
+## Items Movidos para Implementado
+
+{chr(10).join(f"- {item}" for item in self.items_moved_to_implemented) if self.items_moved_to_implemented else "Nenhum"}
+
+## Items Mantidos na Origem (Falha)
+
+{chr(10).join(f"- {item}" for item in self.items_kept_in_origin) if self.items_kept_in_origin else "Nenhum"}
+
+## Items Movidos para Bloqueado
+
+{chr(10).join(f"- {item}" for item in self.items_moved_to_blocked) if self.items_moved_to_blocked else "Nenhum"}
+
+## Próximo Sugerido
+
+{self.next_suggested if self.next_suggested else "Nenhum"}
+
+## Status de Parada
+
+Parou na falha: {self.stopped_on_failure}
+"""
 
 
 class ItemLogger:
@@ -211,6 +282,27 @@ class ItemLogger:
         file_path = self.log_dir / "summary.md"
         file_path.write_text(md, encoding="utf-8")
         return file_path
+
+    @staticmethod
+    def write_run_summary(log_root: Path, run_summary: "RunSummary") -> Path:
+        """Write run summary as JSON and Markdown"""
+        run_summary_json = log_root / "RUN_SUMMARY.json"
+        run_summary_md = log_root / "RUN_SUMMARY.md"
+
+        run_summary_json.write_text(
+            json.dumps(run_summary.to_dict(), indent=2, default=str),
+            encoding="utf-8"
+        )
+
+        run_summary_md.write_text(
+            run_summary.to_markdown(),
+            encoding="utf-8"
+        )
+
+        print(f"Generated: {run_summary_json}")
+        print(f"Generated: {run_summary_md}")
+
+        return log_root
 
     def get_log_dir(self) -> Path:
         """Get the log directory path"""
