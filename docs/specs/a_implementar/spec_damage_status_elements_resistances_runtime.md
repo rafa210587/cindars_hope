@@ -7,11 +7,13 @@
 > Bloqueia: 12, 13, 14
 > Tipo: Runtime
 > Fonte: docs/specs/ como fonte unica; fontes absorvidas listadas abaixo.
-> Escopo: Completar pipeline de dano, elementos, resistencias e status effects.
-> Fora de escopo: Implementar gameplay nesta tarefa documental; alterar Assets, Packages, ProjectSettings, docs_old ou codigo C#.
+> Escopo: Completar pipeline de dano, elementos, resistencias, vulnerabilidades e status effects.
+> Fora de escopo: UI final de combat text, balanceamento final, critico/accuracy/evasion completos e combos elementais avancados.
 
 Fontes absorvidas:
+
 - specs/FASE9E_DAMAGE_STATUS_FORMULA/spec.md
+- docs/specs/a_implementar/spec_fase9e_damage_status_elements_complete.md
 - docs/refinements/a_implementar/pre_refinamentos/refinamento_init_damage_status_elements_resistances.md
 
 ---
@@ -19,79 +21,215 @@ Fontes absorvidas:
 # /speckit.specify
 
 ## Contexto
-Cindar's Hope usa Unity LTS, C#, pixel art 2D e fluxo SpecKit. A partir da reconciliacao documental, esta spec vive somente em docs/specs/a_implementar/ e substitui qualquer equivalente que existia em specs/.
+
+O projeto ja possui `DamageCalculator` MVP e skeletons de status vindos do overnight. Esta spec consolida a regra final de runtime para dano direto, dano elemental, resistencias, vulnerabilidades e status temporarios.
 
 ## Problema
-A area ainda esta parcial, fragmentada ou dependente de skeleton/backend. Sem uma spec consolidada, agentes podem duplicar regras, marcar estado incorreto ou implementar fora de ordem.
+
+Sem uma formula unica, armas, spells, inimigos, equipamentos e IA podem aplicar dano por caminhos diferentes. Isso quebra balanceamento, save/load de status e integracao futura com equipment, skill actions e enemy AI.
 
 ## Objetivo
-Completar pipeline de dano, elementos, resistencias e status effects.
+
+Todo dano direto deve passar por uma unica pipeline de calculo, com atributos ofensivos, elementos, resistencias, vulnerabilidades, imunidades e status temporarios persistiveis quando aplicavel.
 
 ## User stories / engineering stories
-- Como jogador, quero que a capacidade funcione de forma previsivel, persistente quando aplicavel e coerente com os demais sistemas.
-- Como desenvolvedor, quero contratos claros de dados, eventos, save/load e UI antes de alterar runtime.
-- Como agente, devo implementar somente depois que dependencias anteriores estiverem reconciliadas e sem pendencia bloqueadora.
+
+- Como jogador, quero que ataques, magias e inimigos causem dano de forma previsivel.
+- Como designer, quero uma formula unica para balancear armas, spells, monstros e equipamentos.
+- Como desenvolvedor, quero contratos claros para status temporarios e save/load.
+- Como agente, devo integrar esta spec somente depois de equipment/durability/environment estar reconciliado.
+
+## Regras funcionais obrigatorias
+
+### Formula unica
+
+Todo dano direto deve passar por `DamageCalculator` ou equivalente oficial.
+
+```text
+scaledBase = BaseDamage + AttributeBonus
+finalDamage = scaledBase * ElementMultiplier * VulnerabilityMultiplier * StatusReceivedDamageMultiplier
+finalDamage = RoundToInt(finalDamage)
+```
+
+### Atributos ofensivos
+
+- Strength: soco e melee fisico.
+- Dexterity: arco e fisico a distancia.
+- Intelligence: magia.
+
+### Elementos e resistencia
+
+Ataques e efeitos temporarios podem ter elemento. Alvos podem ter resistencia, vulnerabilidade ou imunidade. Imunidade usa multiplicador `0.0` e resulta em dano final `0`.
+
+### Dano minimo
+
+Se `BaseDamage > 0` e `ElementMultiplier > 0.0`, o dano final minimo apos arredondamento deve ser `1`.
+
+### Vulnerabilidade
+
+Janela vulneravel aplica multiplicador padrao `1.5x` em dano direto. Efeitos temporarios nao precisam receber esse multiplicador no primeiro slice, salvo decisao explicita.
+
+### Status temporarios minimos
+
+A spec deve cobrir pelo menos:
+
+- efeito de dano continuo por toxina/veneno;
+- efeito de dano continuo por fogo/calor;
+- efeito fisico continuo simples.
+
+Mesmo status reaplicado renova duracao, mas nao soma `Power` no MVP. Status diferentes podem coexistir.
+
+### Save/load
+
+Status ativos devem ser persistidos com DTOs simples:
+
+```text
+StatusId
+SourceId opcional
+RemainingDuration
+Power
+ElementId opcional
+TickProgress opcional
+```
+
+Nunca serializar referencias Unity.
 
 ## Criterios de aceite
-- A implementacao respeita as regras de codigo do projeto: sem GameObject.Find(), sem FindObjectOfType(), gameplay via GameEventBus, dados de conteudo em ScriptableObject e unsubscribe obrigatorio.
-- Save/load usa IDs e tipos simples; nenhum DTO serializa referencias Unity.
-- A validacao documental e runtime aplicavel fica registrada em PROJECT_LOG.md, docs/IMPLEMENTATION_STATUS.md, registries e refinements.
-- A spec nao e marcada como implementada sem evidencia curta no repo.
+
+- Todo dano direto usa a pipeline oficial.
+- Dano minimo, imunidade e vulnerabilidade sao testaveis.
+- Pelo menos tres status temporarios minimos existem como runtime ou contratos preparados e integrados ao pipeline.
+- Reaplicacao de mesmo status renova duracao sem stackar power.
+- Status ativos podem ser salvos/carregados com DTOs simples quando o runtime estiver completo.
+- Logs/debug conseguem exibir dano base, bonus, multiplicadores, dano final e status aplicado.
+- A spec nao e marcada como implementada sem evidencia no repo e validacao Unity aplicavel.
 
 ---
 
 # /speckit.plan
 
 ## Arquitetura
-Combat, status, player/enemy stats, equipment e UI feedback. devem seguir managers/bridges Unity finos, dados em ScriptableObject e logica de negocio fora de MonoBehaviour pesado.
 
-## Sistemas afetados
-Combat, status, player/enemy stats, equipment e UI feedback.
+Sistemas afetados:
 
-## Fluxos
-1. Validar dependencias anteriores em docs/specs/SPEC_EXECUTION_ORDER.md.
-2. Confirmar estado real no codigo e nos docs implementados.
-3. Implementar contratos de dados/eventos/save antes de UX final quando a spec exigir.
-4. Registrar evidencias e pendencias reais ao finalizar.
+```text
+Assets/_Game/Scripts/Combat/DamageCalculator.cs
+DamageRequest
+DamageResult
+DamageType
+status runtime/manager oficial
+enemy health/player health
+equipment stats/resistances
+future weapon/spell/skill actions
+save DTOs de status
+```
+
+A logica de calculo deve ficar fora de MonoBehaviour pesado.
+
+## Fluxo de dano direto
+
+1. Fonte cria request com BaseDamage, DamageType, ElementId opcional, atributo ofensivo e source id.
+2. Pipeline resolve atributo ofensivo.
+3. Pipeline resolve resistencia, vulnerabilidade ou imunidade do alvo.
+4. Pipeline aplica multiplicadores de status recebidos.
+5. Pipeline arredonda e aplica regra de dano minimo.
+6. Target health aplica resultado.
+7. Eventos/logs sao publicados.
+8. Chance de status e status payload sao avaliados apos dano direto quando aplicavel.
 
 ## Dados / DTOs / IDs
-Usar IDs estaveis e tipos simples. Conteudo/balanceamento deve ficar em ScriptableObject sob Assets/_Game/Data/ quando houver implementacao futura.
+
+Usar IDs estaveis e tipos simples. Se ja existir enum/ID oficial, usar o existente e nao duplicar.
 
 ## Eventos
-Comunicacao de gameplay deve ocorrer por eventos prefixados, publicados e assinados via GameEventBus.
+
+Eventos candidatos:
+
+```text
+DamageAppliedEvent
+StatusAppliedEvent
+StatusTickedEvent
+StatusExpiredEvent
+StatusRemovedEvent
+```
+
+Nomes finais devem seguir padrao `*Event` do projeto.
 
 ## Save/load
-Persistir somente estado necessario, com schema version/migration quando aplicavel. Nunca serializar ScriptableObject, GameObject, Transform, MonoBehaviour, Sprite, Collider ou Rigidbody.
 
-## UI, se aplicavel
-UI deve refletir estado runtime real, sem hardcode de gameplay e sem esconder pendencias de validacao Unity.
+Adicionar status ativos ao save apenas se o runtime de status estiver realmente integrado. Caso contrario, registrar pendencia explicitamente.
+
+## UI/debug
+
+UI final fica fora de escopo, mas DebugHud/logs podem exibir:
+
+```text
+DamageSource
+BaseDamage
+AttributeBonus
+ElementMultiplier
+VulnerabilityMultiplier
+FinalDamage
+StatusApplied
+RemainingDuration
+```
 
 ## Riscos de regressao
-Armas, spells e IA podem duplicar formulas de dano.
+
+- Player combat e enemy AI podem criar formulas paralelas se esta spec for ignorada.
+- Equipment resistances podem divergir se damage/status for implementado antes da spec 10.
+- Save schema pode quebrar se status persistir sem migration versionada.
 
 ---
 
 # /speckit.tasks
 
 ## Tasks
-- [ ] Revalidar estado real do repo antes de alterar runtime.
-- [ ] Confirmar dependencias anteriores e pendencias bloqueadoras.
-- [ ] Implementar dados, eventos, runtime, save/load e UI conforme escopo.
-- [ ] Atualizar spec implementada, refinement implementado, registries, maps, docs/IMPLEMENTATION_STATUS.md e PROJECT_LOG.md.
-- [ ] Rodar validacao documental e validacao Unity aplicavel.
+
+- [ ] Revalidar estado real de `DamageCalculator`, `DamageRequest`, `DamageResult` e status skeletons.
+- [ ] Consolidar uma unica formula oficial.
+- [ ] Definir como atributos ofensivos entram no dano.
+- [ ] Definir matriz inicial de elementos/resistencias/imunidades.
+- [ ] Implementar ou consolidar status temporarios minimos.
+- [ ] Integrar status ao dano direto e ao dano continuo.
+- [ ] Persistir status ativos se runtime completo for entregue.
+- [ ] Atualizar logs/debug.
+- [ ] Atualizar specs implementadas, registries, refinements, `IMPLEMENTATION_STATUS.md` e `PROJECT_LOG.md`.
 
 ## Arquivos permitidos
-- Durante implementacao futura: somente arquivos citados pela spec/refinement aprovado e dependencias diretas.
+
+Somente durante implementacao futura:
+
+```text
+Assets/_Game/Scripts/Combat/**
+Assets/_Game/Scripts/Player/**
+Assets/_Game/Scripts/Equipment/**
+Assets/_Game/Scripts/Save/**
+Assets/_Game/Scripts/Core/Events/**
+docs/specs/**
+docs/refinements/**
+docs/IMPLEMENTATION_STATUS.md
+PROJECT_LOG.md
+```
 
 ## Arquivos proibidos
-- docs_old/** para edicao.
-- Alteracoes fora do escopo aprovado.
+
+```text
+docs_old/**
+Packages/**
+ProjectSettings/**
+```
 
 ## Definition of Done
-- Criterios de aceite atendidos.
-- Evidencia curta registrada.
-- Pendencias reais mantidas como pendencias, nao como completo.
+
+- Formula oficial aplicada.
+- Status temporarios minimos integrados.
+- Resistencias, imunidades e vulnerabilidades testaveis.
+- Save/load de status implementado ou pendencia mantida sem falso positivo.
+- Validacao documental e Unity registrada.
 
 ## Validacao
-- ./tools/docs/validate_docs.ps1
-- Validacao Unity local/batchmode ou Play Mode quando a spec envolver runtime.
+
+- `./tools/docs/validate_docs.ps1`
+- Unity batchmode se houver alteracao C#.
+- Play Mode minimo: dano normal, dano imune, dano vulneravel, status temporario, save/load se aplicavel.
