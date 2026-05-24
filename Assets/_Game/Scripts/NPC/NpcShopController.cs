@@ -1,7 +1,9 @@
 using CindarsHope.Core;
+using CindarsHope.Core.Data;
 using CindarsHope.Core.Events;
 using CindarsHope.Economy;
 using CindarsHope.Inventory;
+using CindarsHope.Inventory.Data;
 using CindarsHope.Player;
 using CindarsHope.UI.Dialogue;
 using CindarsHope.UI.Shop;
@@ -16,9 +18,12 @@ namespace CindarsHope.NPC
         [SerializeField] private ShopDataSO _shopData;
         [SerializeField] private PlayerManager _playerManager;
         [SerializeField] private InventoryManager _inventoryManager;
+        [SerializeField] private ItemDatabaseSO _itemDatabase;
         [SerializeField] private ShopManager _shopManager;
         [SerializeField] private DialogueModal _dialogueModal;
         [SerializeField] private ShopMenuModal _shopMenuModal;
+        [SerializeField] private BuyPanel _buyPanel;
+        [SerializeField] private SellPanel _sellPanel;
         [SerializeField] private UI.Modal.ModalManager _modalManager;
 
         private bool _isInteracting = false;
@@ -38,6 +43,18 @@ namespace CindarsHope.NPC
             if (_shopData != null && _shopManager != null)
             {
                 _shopManager.InitializeShop(_shopData);
+            }
+
+            if (_buyPanel != null)
+            {
+                _buyPanel.Initialize(_shopManager, _playerManager, _inventoryManager, _itemDatabase, _modalManager);
+                _buyPanel.OnBackPressed += ShowShopMenu;
+            }
+
+            if (_sellPanel != null)
+            {
+                _sellPanel.Initialize(_shopManager, _playerManager, _inventoryManager, _itemDatabase, _modalManager);
+                _sellPanel.OnBackPressed += ShowShopMenu;
             }
         }
 
@@ -109,10 +126,16 @@ namespace CindarsHope.NPC
             switch (option)
             {
                 case ShopMenuOption.Buy:
-                    Debug.Log("Buy option selected - will implement with BuyPanel");
+                    if (_buyPanel != null && _shopData != null)
+                    {
+                        _buyPanel.Show(_shopData.Id);
+                    }
                     break;
                 case ShopMenuOption.Sell:
-                    Debug.Log("Sell option selected - will implement with SellPanel");
+                    if (_sellPanel != null && _shopData != null)
+                    {
+                        _sellPanel.Show(_shopData.Id);
+                    }
                     break;
                 case ShopMenuOption.Exit:
                     ShowClosingDialogue();
