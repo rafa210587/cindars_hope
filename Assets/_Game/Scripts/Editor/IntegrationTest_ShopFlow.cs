@@ -194,7 +194,7 @@ namespace CindarsHope.Editor.Testing
             if (!condition)
             {
                 Debug.LogError($"ASSERTION FAILED: {message}");
-                throw new System.AssertionException($"Assertion failed: {message}");
+                throw new System.InvalidOperationException($"Assertion failed: {message}");
             }
         }
     }

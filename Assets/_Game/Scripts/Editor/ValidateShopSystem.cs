@@ -2,11 +2,13 @@
 using CindarsHope.Core.Data;
 using CindarsHope.Economy;
 using CindarsHope.Inventory.Data;
+using CindarsHope.NPC;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 namespace CindarsHope.Editor.Validation
 {
