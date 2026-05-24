@@ -6,6 +6,7 @@ import json
 import subprocess
 import sys
 import threading
+import time
 from dataclasses import dataclass, asdict
 from datetime import datetime
 from pathlib import Path
@@ -84,12 +85,14 @@ class ItemLogger:
         process: subprocess.Popen,
         stdout_filename: str,
         stderr_filename: str,
-        combined_filename: str
+        combined_filename: str,
+        timeout_seconds: Optional[int] = None
     ) -> tuple[str, str]:
         """
         Stream stdout and stderr from process in real-time.
         Writes to files AND prints to console.
-        Returns combined (stdout, stderr) tuples.
+        Enforces timeout if specified.
+        Returns (stdout_text, stderr_text) tuple.
         """
         stdout_path = self.log_dir / stdout_filename
         stderr_path = self.log_dir / stderr_filename
@@ -101,19 +104,25 @@ class ItemLogger:
 
         def read_stdout():
             """Thread: read stdout"""
-            for line in process.stdout:
-                stdout_lines.append(line)
-                combined_lines.append(f"[STDOUT] {line}")
-                sys.stdout.write(f"{line}")
-                sys.stdout.flush()
+            try:
+                for line in process.stdout:
+                    stdout_lines.append(line)
+                    combined_lines.append(f"[STDOUT] {line}")
+                    sys.stdout.write(f"{line}")
+                    sys.stdout.flush()
+            except Exception:
+                pass
 
         def read_stderr():
             """Thread: read stderr"""
-            for line in process.stderr:
-                stderr_lines.append(line)
-                combined_lines.append(f"[STDERR] {line}")
-                sys.stderr.write(f"{line}")
-                sys.stderr.flush()
+            try:
+                for line in process.stderr:
+                    stderr_lines.append(line)
+                    combined_lines.append(f"[STDERR] {line}")
+                    sys.stderr.write(f"{line}")
+                    sys.stderr.flush()
+            except Exception:
+                pass
 
         # Start reader threads
         t_out = threading.Thread(target=read_stdout, daemon=True)
@@ -121,10 +130,25 @@ class ItemLogger:
         t_out.start()
         t_err.start()
 
-        # Wait for process
-        process.wait()
+        # Wait for process with timeout
+        try:
+            if timeout_seconds is not None:
+                process.wait(timeout=timeout_seconds)
+            else:
+                process.wait()
+        except subprocess.TimeoutExpired:
+            print(f"\n[TIMEOUT] Process exceeded {timeout_seconds}s, killing...\n")
+            process.kill()
+            try:
+                process.wait(timeout=5)
+            except subprocess.TimeoutExpired:
+                # Force kill if needed
+                process.terminate()
+                process.wait()
+            # Set exit code to timeout indicator
+            process.returncode = 124
 
-        # Wait for threads to finish
+        # Wait for threads to finish reading any remaining output
         t_out.join(timeout=5)
         t_err.join(timeout=5)
 

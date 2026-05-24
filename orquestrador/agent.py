@@ -41,39 +41,57 @@ def run_claude(
     prompt: str,
     repo_root: Path,
     timeout_minutes: int,
-    logger: ItemLogger
+    logger: ItemLogger,
+    agent_role: str = "primary"
 ) -> AgentResult:
     """
     Run Claude via CLI: claude -p "<prompt>" --output-format text
+    or via stdin for large prompts.
     """
     try:
-        # Write prompt to temp file to avoid shell escaping issues
-        temp_prompt_file = logger.get_log_dir() / "temp_prompt_claude.txt"
-        temp_prompt_file.write_text(prompt, encoding="utf-8")
+        timeout_seconds = timeout_minutes * 60
+        stdout_log = f"agent_{agent_role}_stdout.log"
+        stderr_log = f"agent_{agent_role}_stderr.log"
+        combined_log = f"agent_{agent_role}_combined.log"
 
-        cmd = [
-            "claude",
-            "-p", prompt,
-            "--output-format", "text"
-        ]
+        # Check prompt size
+        prompt_size = len(prompt.encode("utf-8"))
 
-        print(f"[CLAUDE] Running: {' '.join(cmd[:3])}...")
+        # Use stdin if prompt is too large (>30KB)
+        if prompt_size > 30000:
+            print(f"[CLAUDE] Prompt size ({prompt_size} bytes) > 30KB, using stdin")
+            cmd = ["claude", "--output-format", "text"]
+            process = subprocess.Popen(
+                cmd,
+                cwd=str(repo_root),
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                bufsize=1
+            )
+            # Write to stdin instead of pipe argument
+            process.stdin.write(prompt)
+            process.stdin.close()
+        else:
+            cmd = ["claude", "-p", prompt, "--output-format", "text"]
+            print(f"[CLAUDE] Running: {' '.join(cmd[:3])}...")
+            process = subprocess.Popen(
+                cmd,
+                cwd=str(repo_root),
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                bufsize=1
+            )
 
-        process = subprocess.Popen(
-            cmd,
-            cwd=str(repo_root),
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-            bufsize=1
-        )
-
-        # Stream output
+        # Stream output with timeout
         stdout_text, stderr_text = logger.stream_process(
             process,
-            "agent_primary_stdout.log",
-            "agent_primary_stderr.log",
-            "agent_primary_combined.log"
+            stdout_log,
+            stderr_log,
+            combined_log,
+            timeout_seconds=timeout_seconds
         )
 
         success = process.returncode == 0
@@ -95,7 +113,7 @@ def run_claude(
         )
 
     except FileNotFoundError:
-        error = "Claude CLI not found in PATH. Install with: pip install anthropic-cli"
+        error = "Claude Code CLI not found in PATH. Verify with: claude --version; claude auth status --text"
         print(f"[ERROR] {error}")
         return AgentResult(
             success=False,
@@ -145,35 +163,57 @@ def run_codex(
     prompt: str,
     repo_root: Path,
     timeout_minutes: int,
-    logger: ItemLogger
+    logger: ItemLogger,
+    agent_role: str = "fallback"
 ) -> AgentResult:
     """
     Run Codex via CLI: codex exec "<prompt>"
+    or via stdin for large prompts.
     """
     try:
-        cmd = [
-            "codex",
-            "exec",
-            prompt
-        ]
+        timeout_seconds = timeout_minutes * 60
+        stdout_log = f"agent_{agent_role}_stdout.log"
+        stderr_log = f"agent_{agent_role}_stderr.log"
+        combined_log = f"agent_{agent_role}_combined.log"
 
-        print(f"[CODEX] Running: {' '.join(cmd[:2])}...")
+        # Check prompt size
+        prompt_size = len(prompt.encode("utf-8"))
 
-        process = subprocess.Popen(
-            cmd,
-            cwd=str(repo_root),
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-            bufsize=1
-        )
+        # Use stdin if prompt is too large (>30KB)
+        if prompt_size > 30000:
+            print(f"[CODEX] Prompt size ({prompt_size} bytes) > 30KB, using stdin")
+            cmd = ["codex", "exec"]
+            process = subprocess.Popen(
+                cmd,
+                cwd=str(repo_root),
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                bufsize=1
+            )
+            # Write to stdin
+            process.stdin.write(prompt)
+            process.stdin.close()
+        else:
+            cmd = ["codex", "exec", prompt]
+            print(f"[CODEX] Running: {' '.join(cmd[:2])}...")
+            process = subprocess.Popen(
+                cmd,
+                cwd=str(repo_root),
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                bufsize=1
+            )
 
-        # Stream output
+        # Stream output with timeout
         stdout_text, stderr_text = logger.stream_process(
             process,
-            "agent_fallback_stdout.log",
-            "agent_fallback_stderr.log",
-            "agent_fallback_combined.log"
+            stdout_log,
+            stderr_log,
+            combined_log,
+            timeout_seconds=timeout_seconds
         )
 
         success = process.returncode == 0
@@ -192,7 +232,7 @@ def run_codex(
         )
 
     except FileNotFoundError:
-        error = "Codex CLI not found in PATH. Install with: pip install codex-cli"
+        error = "Codex CLI not found in PATH. Install with: npm install -g @openai/codex; codex --version"
         print(f"[ERROR] {error}")
         return AgentResult(
             success=False,
@@ -255,9 +295,9 @@ def run_with_fallback(
 
     # Run primary agent
     if primary == "claude":
-        result = run_claude(prompt, repo_root, timeout, logger)
+        result = run_claude(prompt, repo_root, timeout, logger, agent_role="primary")
     else:
-        result = run_codex(prompt, repo_root, timeout, logger)
+        result = run_codex(prompt, repo_root, timeout, logger, agent_role="primary")
 
     # Check if we should fallback
     should_fallback = (
@@ -274,9 +314,9 @@ def run_with_fallback(
         print(f"\n[FALLBACK] {result.fallback_reason}, trying {fallback}...\n")
 
         if fallback == "claude":
-            result = run_claude(prompt, repo_root, timeout, logger)
+            result = run_claude(prompt, repo_root, timeout, logger, agent_role="fallback")
         elif fallback == "codex":
-            result = run_codex(prompt, repo_root, timeout, logger)
+            result = run_codex(prompt, repo_root, timeout, logger, agent_role="fallback")
 
         result.used_fallback = True
 

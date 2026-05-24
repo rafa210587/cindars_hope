@@ -6,6 +6,7 @@ import shutil
 import subprocess
 from pathlib import Path
 from typing import Optional, Tuple
+from execution_queue import parse_spec_execution_order, extract_spec_number
 
 
 def git_status(repo_root: Path) -> Tuple[bool, str]:
@@ -117,6 +118,21 @@ def git_commit(repo_root: Path, message: str) -> Optional[str]:
         return None
 
 
+def get_spec_number_from_filename(filename: str, order_dict: dict) -> Optional[int]:
+    """
+    Get spec number from filename.
+    First tries to match by filename in order_dict.
+    Then tries to extract number from filename.
+    """
+    # Try to find by exact filename match in order_dict
+    for spec_num, info in order_dict.items():
+        if info.get("filename") == filename:
+            return spec_num
+
+    # Try to extract number from filename
+    return extract_spec_number(filename)
+
+
 def close_spec(
     spec_path: Path,
     config: dict,
@@ -124,30 +140,52 @@ def close_spec(
 ) -> bool:
     """
     Close a spec by moving it from a_implementar to implementados.
-    Updates related registries.
+    Transactional: copy first, update registries, then delete original.
     Returns success status.
     """
     if not spec_path.exists():
         print(f"Spec file not found: {spec_path}")
         return False
 
+    # Check if already in implementados
+    if "implementados" in str(spec_path):
+        print(f"Spec already in implementados: {spec_path}")
+        return True
+
     try:
         # Determine target directory
         impl_dir = Path(config.get("implemented_specs_dir", "docs/specs/implementados"))
         impl_dir.mkdir(parents=True, exist_ok=True)
 
-        # Move spec file
+        # Step 1: Copy spec file
         target_path = impl_dir / spec_path.name
-        shutil.move(str(spec_path), str(target_path))
-        print(f"Moved spec: {spec_path.name} → implementados/")
+        shutil.copy2(str(spec_path), str(target_path))
+        print(f"Copied spec: {spec_path.name} → implementados/")
 
-        # Update registries
-        update_implementation_registries(spec_path.name, config, repo_root)
+        # Step 2: Update registries
+        registry_ok = update_implementation_registries(spec_path.name, config, repo_root)
 
-        return True
+        if registry_ok:
+            # Step 3: Remove original only if update succeeded
+            spec_path.unlink()
+            print(f"Removed original: {spec_path.name}")
+            return True
+        else:
+            # Rollback: remove copy if registry update failed
+            if target_path.exists():
+                target_path.unlink()
+                print(f"Rollback: removed copy due to registry update failure")
+            return False
 
     except Exception as e:
         print(f"Error closing spec: {str(e)}")
+        # Cleanup any partial copy
+        target_path = impl_dir / spec_path.name
+        if target_path.exists():
+            try:
+                target_path.unlink()
+            except:
+                pass
         return False
 
 
@@ -181,12 +219,21 @@ def update_implementation_registries(
 ) -> bool:
     """
     Update SPEC_REGISTRY_IMPLEMENTED.md and SPEC_REGISTRY_TO_IMPLEMENT.md
+    Uses execution order map to handle real filenames.
     """
     try:
-        # Extract spec number from filename
-        import re
-        match = re.search(r"spec_(\d+)_", spec_filename)
-        spec_num = int(match.group(1)) if match else None
+        # Load execution order to get spec number
+        order_path = Path(config.get("spec_execution_order_path", "docs/specs/SPEC_EXECUTION_ORDER.md"))
+        order_dict = parse_spec_execution_order(order_path)
+
+        # Get spec number
+        spec_num = get_spec_number_from_filename(spec_filename, order_dict)
+
+        if spec_num is None:
+            # Fallback: try extracting number from filename
+            import re
+            match = re.search(r"spec_(\d+)_", spec_filename)
+            spec_num = int(match.group(1)) if match else None
 
         if spec_num is None:
             print(f"Could not extract spec number from {spec_filename}")

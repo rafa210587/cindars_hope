@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-"""
+r"""
 Run Orquestrador - Main orchestration entry point for spec/prompt queue execution
+Canonical command: python .\orquestrador\run_orquestrador.py
 """
 
 import argparse
@@ -11,12 +12,12 @@ from pathlib import Path
 
 from agent import run_with_fallback, build_agent_prompt, get_agent_rules, AgentResult
 from logger import ItemLogger, ItemSummary
-from queue import build_spec_queue, build_prompt_queue, print_dry_run_report, extract_spec_number, infer_target_spec
+from execution_queue import build_spec_queue, build_prompt_queue, print_dry_run_report, extract_spec_number, infer_target_spec
 from spec_operations import (
     git_status, git_diff_stat, git_diff, git_commit, close_spec, archive_prompt,
     build_repair_prompt, generate_final_human_validation_checklist
 )
-from validation import run_all_validations, parse_agent_result_block
+from validation import run_all_validations, parse_agent_result_block, normalize_spec_id
 
 
 def load_config(config_path: Path) -> dict:
@@ -184,7 +185,8 @@ Examples:
         agent_output = parse_agent_result_block(agent_result.combined)
 
         # 5. Run validations
-        spec_id = extract_spec_number(item_path.name) if args.mode == "spec" else None
+        spec_num = extract_spec_number(item_path.name) if args.mode == "spec" else None
+        spec_id = normalize_spec_id(spec_num) if spec_num else None
         validations = run_all_validations(repo_root, config, logger.get_log_dir(), spec_id)
 
         print(f"\nValidation Results:")
@@ -213,27 +215,42 @@ Examples:
             agent_output = parse_agent_result_block(agent_result.combined)
             validations = run_all_validations(repo_root, config, logger.get_log_dir(), spec_id)
 
-        # 7. Determine success
-        success = validations.all_pass and agent_output.get("agent_result") == "SUCCESS"
+        # 7. Determine success (correct gate per spec section 14)
+        agent_success = agent_output.get("agent_result") == "SUCCESS"
+        spec_complete = agent_output.get("spec_status") == "COMPLETE"
+        validations_pass = validations.all_pass
+        success = agent_success and spec_complete and validations_pass
 
-        # 8. Close spec or archive prompt
+        # In prompt mode, also require target_spec to be found
+        if args.mode == "prompt":
+            success = success and target_spec is not None
+
+        print(f"\n[SUCCESS GATE]")
+        print(f"  AGENT_RESULT=SUCCESS: {agent_success}")
+        print(f"  SPEC_STATUS=COMPLETE: {spec_complete}")
+        print(f"  Validations all pass: {validations_pass}")
+        if args.mode == "prompt":
+            print(f"  Target spec found: {target_spec is not None}")
+        print(f"  FINAL SUCCESS: {success}\n")
+
+        # 8. Close spec or archive prompt (transactional per spec section 14)
         closed_spec = False
         moved_prompt = False
 
-        if success:
-            if args.mode == "spec" or (args.mode == "prompt" and target_spec):
-                close_spec(target_spec, config, repo_root)
-                closed_spec = True
+        if success and target_spec:
+            closed_spec = close_spec(target_spec, config, repo_root)
+            if closed_spec:
                 executed_specs.append(f"SPEC_{extract_spec_number(target_spec.name):02d}" if target_spec else "UNKNOWN")
 
-            if args.mode == "prompt":
-                archive_prompt(item_path, Path(config.get("prompt_executed_dir", "docs/agent_prompts/executados")))
-                moved_prompt = True
+        # Only archive prompt if spec closed successfully (or no spec in prompt mode)
+        if args.mode == "prompt":
+            if success and closed_spec:
+                # Archive as executed
+                moved_prompt = archive_prompt(item_path, Path(config.get("prompt_executed_dir", "docs/agent_prompts/executados")))
                 executed_prompts.append(item_path.name)
-        else:
-            if args.archive_on_failure and args.mode == "prompt":
-                archive_prompt(item_path, Path(config.get("prompt_blocked_dir", "docs/agent_prompts/bloqueados")))
-                moved_prompt = True
+            elif not success and args.archive_on_failure:
+                # Archive as blocked
+                moved_prompt = archive_prompt(item_path, Path(config.get("prompt_blocked_dir", "docs/agent_prompts/bloqueados")))
 
         # 9. Create summary and commit
         diff_stat = git_diff_stat(repo_root)

@@ -60,3 +60,18 @@ AppData/
 # Local environment files
 .env
 .env.*
+
+# Orquestrador runtime outputs
+orquestrador/logs/**
+!orquestrador/logs/.gitkeep
+orquestrador/state/**
+!orquestrador/state/.gitkeep
+orquestrador/orchestrator.log
+orquestrador/*_prompt_*.txt
+orquestrador/temp_*.txt
+orquestrador/__pycache__/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
