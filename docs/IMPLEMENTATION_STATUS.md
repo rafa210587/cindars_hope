@@ -8,6 +8,7 @@
 
 | Area | Status | Spec |
 |---|---|---|
+| Governanca documental / fonte unica | Implementado documental parcial | `docs/specs/implementados/spec_docs_001_single_source_specs_refinements_reconciliation_parcial.md` |
 | Core/event bus/bootstrap | Implementado parcial | `docs/specs/implementados/spec_core_001_event_bus_e_eventos_base.md`, `docs/specs/implementados/spec_core_002_bootstrap_managers_e_runtime_references.md` |
 | Data/IDs/registries | Implementado | `docs/specs/implementados/spec_data_001_ids_registries_e_scriptableobjects.md` |
 | Save/load JSON cross-scene | Implementado parcial | `docs/specs/implementados/spec_save_001_json_save_load_cross_scene.md` |
@@ -20,6 +21,24 @@
 | Overnight 2026-05-23 | Executado parcialmente | `docs/IMPLEMENTATION_DELIVERY_20260523.md`, `docs/refinements/implementados/ref_stabilizacao_overnight_specs_20260523.md` |
 
 ## Correcoes de tracking obrigatorias
+
+### Governanca documental
+
+A antiga spec 00 de reconciliacao documental foi reclassificada como implementado documental parcial.
+
+Nao executar novamente:
+
+```text
+docs/specs/a_implementar/spec_docs_single_source_specs_refinements_reconciliation_v1.md
+docs/refinements/a_implementar/pre_refinamentos/refinamento_init_tracking_documental_status_specs.md
+```
+
+Usar como fonte ativa:
+
+```text
+docs/specs/implementados/spec_docs_001_single_source_specs_refinements_reconciliation_parcial.md
+docs/refinements/implementados/ref_docs_single_source_tracking_reconciliation_parcial.md
+```
 
 ### Inventory
 
@@ -36,5 +55,13 @@ Pendentes: gasto/distribuicao final de atributos, skill trees completas, active 
 ## Specs futuras
 
 A ordem oficial esta em `docs/specs/SPEC_EXECUTION_ORDER.md` e o registry futuro em `docs/specs/SPEC_REGISTRY_TO_IMPLEMENT.md`.
+
+A primeira spec futura executavel passa a ser:
+
+```text
+docs/specs/a_implementar/spec_scene_unity_validation_missing_scripts_prefabs.md
+```
+
+Antes de executar runtime, as specs futuras devem ser enriquecidas usando seus pre-refinamentos relacionados.
 
 FASE9H/I/J/K/L nao devem ser tratadas como completas. As proximas implementacoes devem seguir somente `docs/specs/`.
