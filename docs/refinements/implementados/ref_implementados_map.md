@@ -21,6 +21,7 @@
 | [ref_save_schema_migration_v2.md](ref_save_schema_migration_v2.md) | spec_save_002 |
 | [ref_inventory_slots_capacity_ui_final.md](ref_inventory_slots_capacity_ui_final.md) | spec_inventory_002 |
 | [ref_farm_irrigacao_solo_planting_ui.md](ref_farm_irrigacao_solo_planting_ui.md) | spec_farm_004 |
+| [ref_world_activities_fishing_trees_pickups_loot.md](ref_world_activities_fishing_trees_pickups_loot.md) | spec_world_002 |
 | [ref_world_shop_hardening_pr031_045.md](ref_world_shop_hardening_pr031_045.md) | spec_world_001, spec_farm_003, spec_economy_001 |
 | [ref_crafting_pr046_052.md](ref_crafting_pr046_052.md) | spec_craft_001 |
 | [ref_town_pr053_063.md](ref_town_pr053_063.md) | spec_town_001 |

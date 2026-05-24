@@ -1,8 +1,23 @@
-# refinamento_init_world_activities_fishing_trees_pickups_loot
+# ref_world_activities_fishing_trees_pickups_loot
 
-> Status: Refinamento inicial a implementar
-> Spec futura relacionada: `docs/specs/a_implementar/spec_world_activities_fishing_trees_pickups_loot.md`
+> Status: Implementado parcial
+> Spec relacionada: `docs/specs/implementados/spec_world_002_activities_fishing_trees_pickups_loot.md`
 > Objetivo: completar arvores, pesca, pickups persistentes e loot tables de atividades do mundo.
+
+## Resultado da implementacao 2026-05-24
+
+Entregue parcialmente:
+
+- Loot table oficial para world activities.
+- Fishing timing MVP com loot table opcional.
+- Tree HP/stump/regrowth e madeira por hit/final hit.
+- DTOs de save preparados para pickup dinamico.
+
+Pendencias:
+
+- Spawner persistente real para drops dinamicos.
+- Dois fishing spots fixos na FarmScene.
+- Fishing spot procedural de cave 10%.
 
 ---
 

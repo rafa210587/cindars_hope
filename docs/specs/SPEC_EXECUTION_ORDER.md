@@ -11,8 +11,8 @@ A etapa 00 foi reclassificada como implementado documental parcial. As specs run
 | 02 | [spec_save_002_schema_migration_v2](implementados/spec_save_002_schema_migration_v2.md) | Implementado parcial | 00, 01 implementada/parcial | 03-17 | Specs posteriores podem persistir dados sem contrato de migracao. |
 | 03 | [spec_inventory_002_slots_capacity_ui_final](implementados/spec_inventory_002_slots_capacity_ui_final.md) | Implementado parcial | 00, 01, 02 implementada/parcial | 04, 06, 07, 10, 12, 17 | Economy, craft e equipment podem depender de um modelo de inventory ainda provisorio. |
 | 04 | [spec_farm_004_irrigacao_solo_planting_ui](implementados/spec_farm_004_irrigacao_solo_planting_ui.md) | Implementado parcial | 00, 01, 02, 03 implementada/parcial | 05, 09, 17 | World activities e stamina podem duplicar custos/regras de tools. |
-| 05 | [spec_world_activities_fishing_trees_pickups_loot](a_implementar/spec_world_activities_fishing_trees_pickups_loot.md) | A implementar | 00-04 implementada/parcial | 06, 07, 10 | Loot/economy podem ser balanceados sobre drops incompletos. |
-| 06 | [spec_economy_shop_stock_pricing_ui](a_implementar/spec_economy_shop_stock_pricing_ui.md) | A implementar | 00-05 | 07, 08, 17 | Crafting e town podem assumir precificacao ou estoque inexistente. |
+| 05 | [spec_world_002_activities_fishing_trees_pickups_loot](implementados/spec_world_002_activities_fishing_trees_pickups_loot.md) | Implementado parcial | 00-04 implementada/parcial | 06, 07, 10 | Loot/economy podem ser balanceados sobre drops incompletos. |
+| 06 | [spec_economy_shop_stock_pricing_ui](a_implementar/spec_economy_shop_stock_pricing_ui.md) | A implementar | 00-05 implementada/parcial | 07, 08, 17 | Crafting e town podem assumir precificacao ou estoque inexistente. |
 | 07 | [spec_crafting_queue_workstations_recipes_ui](a_implementar/spec_crafting_queue_workstations_recipes_ui.md) | A implementar | 00-06 | 10, 17 | Equipment e consumables podem criar receitas fora do modelo final. |
 | 08 | [spec_town_npc_dialogue_schedule_quests](a_implementar/spec_town_npc_dialogue_schedule_quests.md) | A implementar | 00-07 | 15, 17 | Fonte de Anya e lojas podem nascer sem contratos de NPC/quest. |
 | 09 | [spec_hunger_stamina_status_balance](a_implementar/spec_hunger_stamina_status_balance.md) | A implementar | 00-05 | 10, 11, 12, 14, 17 | Combat/tools podem consumir recursos com regras divergentes. |
@@ -33,4 +33,5 @@ A spec 01 foi implementada parcialmente como tooling minimo.
 A spec 02 foi implementada parcialmente como infraestrutura de migration.
 A spec 03 foi implementada parcialmente com slots, capacidade, migration v1->v2 e painel minimo; Drop runtime e Use especifico permanecem pendentes.
 A spec 04 foi implementada parcialmente com solo/agua/plantio por inventory/menu contextual; Play Mode manual segue pendente.
-A primeira spec futura executavel passa a ser `a_implementar/spec_world_activities_fishing_trees_pickups_loot.md`.
+A spec 05 foi implementada parcialmente com loot table, fishing timing e tree HP/regrowth; spawner dinamico/cave fishing/farm scene spots seguem pendentes.
+A primeira spec futura executavel passa a ser `a_implementar/spec_economy_shop_stock_pricing_ui.md`.

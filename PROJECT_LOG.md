@@ -1,4 +1,35 @@
 
+## Atualizacao 2026-05-24 - Spec 05 World activities, fishing, trees, pickups e loot
+
+Status: Implementado parcial.
+
+Escopo:
+- Criado `Assets/_Game/Scripts/Loot/LootTableSO.cs` para loot de atividades.
+- `FishingSpot` passou a usar casting + timing window simples e loot table opcional.
+- `TreeDataSO` expandido com HP, tool/tier, madeira por hit, multiplicador final, regrowth e hook de loot table.
+- `TreeNode` passou a usar HP, madeira por hit, bonus final >= 2x, stump e regrowth por dia.
+- `TreeSaveData` e `ItemPickupSaveData` ganharam campos para HP/stump/regrowth e IDs persistentes de pickups dinamicos futuros.
+
+Pendencias:
+- FarmScene nao foi editada para criar/garantir dois fishing spots fixos.
+- Cave procedural fishing spot 10%/max 1 por level nao foi integrado.
+- Tree drops ainda usam inventory quando nao ha spawner persistente conectado.
+- Play Mode manual completo pendente.
+
+Validacao:
+- `dotnet build .\Assembly-CSharp.csproj`: PASSED antes da limpeza de include duplicado; 0 erros, 2 warnings (`LootTableSO.cs` duplicado no csproj local e warning antigo de CaveDebugLevelSkipController).
+- Include duplicado de `LootTableSO.cs` removido do csproj local; rerun sem escalonamento foi bloqueado por acesso negado em `Temp/obj`.
+- `.\tools\docs\validate_docs.ps1`: ainda bloqueado pelo erro de parse conhecido do proprio script.
+- `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -ExecutionPolicy Bypass -File .\tools\unity\RunUnityCompileValidation.ps1 -UnityEditorPath "C:\Program Files\Unity\Hub\Editor\6000.4.7f1\Editor\Unity.exe" -ProjectPath "." -LogFile ".\Logs\unity-compile-validation-spec05.log"`: FAILED por ambiente antes de compilar (`attempt to write a readonly database`).
+- `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -ExecutionPolicy Bypass -File .\tools\unity\ScanUnityLogs.ps1 -LogFile ".\Logs\unity-compile-validation-spec05.log"`: FAILED corretamente; log sem `error CS`, com BIOS/network access denied e exit code 1.
+
+Unity validation: NOT RUN
+Reason: Unity batchmode nao chegou a compilacao por ambiente local (`attempt to write a readonly database`, acesso negado a BIOS/rede/licenciamento).
+Command attempted: `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -ExecutionPolicy Bypass -File .\tools\unity\RunUnityCompileValidation.ps1 -UnityEditorPath "C:\Program Files\Unity\Hub\Editor\6000.4.7f1\Editor\Unity.exe" -ProjectPath "." -LogFile ".\Logs\unity-compile-validation-spec05.log"`
+Residual risk: Unity compile not validated locally for spec 05.
+
+---
+
 ## Atualizacao 2026-05-24 - Spec 04 Farm irrigacao, solo e planting UI
 
 Status: Implementado parcial.

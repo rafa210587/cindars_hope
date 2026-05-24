@@ -3,44 +3,68 @@ using UnityEngine;
 
 namespace CindarsHope.Loot
 {
-    [CreateAssetMenu(fileName = "LootTable_", menuName = "CindarsHope/Loot/LootTable")]
+    [CreateAssetMenu(fileName = "LootTable", menuName = "CindarsHope/Data/Loot Table")]
     public class LootTableSO : ScriptableObject
     {
-        public LootEntry[] Entries;
+        public LootTableEntry[] Entries;
 
-        public string GetRandomLoot()
+        public bool TryRoll(out string itemId, out int amount)
         {
+            itemId = string.Empty;
+            amount = 0;
+
             if (Entries == null || Entries.Length == 0)
             {
-                return null;
+                return false;
             }
 
-            float totalWeight = 0;
+            var totalWeight = 0;
             foreach (var entry in Entries)
             {
+                if (entry == null || string.IsNullOrWhiteSpace(entry.ItemId) || entry.Weight <= 0)
+                {
+                    continue;
+                }
+
                 totalWeight += entry.Weight;
             }
 
-            float roll = UnityEngine.Random.value * totalWeight;
-            foreach (var entry in Entries)
+            if (totalWeight <= 0)
             {
-                roll -= entry.Weight;
-                if (roll <= 0)
-                {
-                    return entry.ItemId;
-                }
+                return false;
             }
 
-            return Entries[Entries.Length - 1].ItemId;
+            var roll = UnityEngine.Random.Range(1, totalWeight + 1);
+            var cursor = 0;
+            foreach (var entry in Entries)
+            {
+                if (entry == null || string.IsNullOrWhiteSpace(entry.ItemId) || entry.Weight <= 0)
+                {
+                    continue;
+                }
+
+                cursor += entry.Weight;
+                if (roll > cursor)
+                {
+                    continue;
+                }
+
+                itemId = entry.ItemId;
+                amount = UnityEngine.Random.Range(Mathf.Max(1, entry.MinAmount), Mathf.Max(entry.MinAmount, entry.MaxAmount) + 1);
+                return amount > 0;
+            }
+
+            return false;
         }
     }
 
     [Serializable]
-    public class LootEntry
+    public class LootTableEntry
     {
         public string ItemId;
         public int MinAmount = 1;
         public int MaxAmount = 1;
-        public float Weight = 1f;
+        public int Weight = 1;
+        public string[] RequiredTags;
     }
 }

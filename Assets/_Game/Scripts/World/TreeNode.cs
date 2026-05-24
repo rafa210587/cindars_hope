@@ -19,7 +19,9 @@ namespace CindarsHope.World
         [SerializeField] private SpriteRenderer _spriteRenderer;
 
         public int HitsTaken { get; private set; }
+        public int CurrentHp { get; private set; }
         public bool IsChopped { get; private set; }
+        public int RegrowthRemainingDays { get; private set; }
         public string InteractionPrompt => IsChopped ? "Cortada" : "Cortar";
 
         public void Configure(int treeIndex, TreeDataSO treeData, InventoryManager inventoryManager, SpriteRenderer spriteRenderer)
@@ -28,6 +30,7 @@ namespace CindarsHope.World
             _treeData = treeData;
             _inventoryManager = inventoryManager;
             _spriteRenderer = spriteRenderer;
+            CurrentHp = GetMaxHp();
             UpdateVisual();
         }
 
@@ -52,26 +55,27 @@ namespace CindarsHope.World
                 return;
             }
 
+            var isFinalHit = CurrentHp <= 1;
+            var dropAmount = RollWoodAmount(isFinalHit);
+            if (!_inventoryManager.AddItem(_treeData.WoodItemId, dropAmount))
+            {
+                Debug.LogWarning($"TreeNode {_treeIndex} could not add wood '{_treeData.WoodItemId}' x{dropAmount}.", this);
+                return;
+            }
+
             HitsTaken++;
-            Debug.Log($"TreeNode {_treeIndex} hit {HitsTaken}/{_treeData.RequiredHits}.", this);
+            CurrentHp = Mathf.Max(0, CurrentHp - 1);
+            Debug.Log($"TreeNode {_treeIndex} hit {HitsTaken}. Hp={CurrentHp}/{GetMaxHp()}, wood={dropAmount}.", this);
 
-            if (HitsTaken < _treeData.RequiredHits)
+            if (CurrentHp <= 0)
             {
-                UpdateVisual();
-                return;
+                IsChopped = true;
+                RegrowthRemainingDays = _treeData.RegrowthDays;
+                GameEventBus.Publish(new TreeChoppedEvent(_treeData.Id, _treeData.WoodItemId, dropAmount, HitsTaken, GetTilePosition()));
+                Debug.Log($"TreeNode {_treeIndex} chopped. Added final '{_treeData.WoodItemId}' x{dropAmount}.", this);
             }
 
-            if (!_inventoryManager.AddItem(_treeData.WoodItemId, _treeData.WoodAmount))
-            {
-                Debug.LogWarning($"TreeNode {_treeIndex} could not add wood '{_treeData.WoodItemId}' x{_treeData.WoodAmount}.", this);
-                HitsTaken = Mathf.Max(0, HitsTaken - 1);
-                return;
-            }
-
-            IsChopped = true;
             UpdateVisual();
-            GameEventBus.Publish(new TreeChoppedEvent(_treeData.Id, _treeData.WoodItemId, _treeData.WoodAmount, HitsTaken, GetTilePosition()));
-            Debug.Log($"TreeNode {_treeIndex} chopped. Added '{_treeData.WoodItemId}' x{_treeData.WoodAmount}.", this);
         }
 
         public TreeSaveData CaptureSaveData()
@@ -81,7 +85,10 @@ namespace CindarsHope.World
                 TreeIndex = _treeIndex,
                 TreeId = _treeData != null ? _treeData.Id : string.Empty,
                 HitsTaken = HitsTaken,
-                IsChopped = IsChopped
+                CurrentHp = CurrentHp,
+                IsChopped = IsChopped,
+                IsStump = IsChopped,
+                RegrowthRemainingDays = RegrowthRemainingDays
             };
         }
 
@@ -94,7 +101,9 @@ namespace CindarsHope.World
             }
 
             HitsTaken = Mathf.Max(0, saveData.HitsTaken);
+            CurrentHp = saveData.CurrentHp > 0 ? saveData.CurrentHp : Mathf.Max(0, GetMaxHp() - HitsTaken);
             IsChopped = saveData.IsChopped;
+            RegrowthRemainingDays = Mathf.Max(0, saveData.RegrowthRemainingDays);
             UpdateVisual();
         }
 
@@ -114,12 +123,51 @@ namespace CindarsHope.World
             _spriteRenderer = GetComponent<SpriteRenderer>();
         }
 
+        private void Awake()
+        {
+            if (CurrentHp <= 0 && !IsChopped)
+            {
+                CurrentHp = GetMaxHp();
+            }
+
+            UpdateVisual();
+        }
+
+        private void OnEnable()
+        {
+            GameEventBus.Subscribe<DayStartedEvent>(OnDayStarted);
+        }
+
+        private void OnDisable()
+        {
+            GameEventBus.Unsubscribe<DayStartedEvent>(OnDayStarted);
+        }
+
         private void OnValidate()
         {
             if (_spriteRenderer == null)
             {
                 _spriteRenderer = GetComponent<SpriteRenderer>();
             }
+        }
+
+        private void OnDayStarted(DayStartedEvent evt)
+        {
+            if (!IsChopped || RegrowthRemainingDays <= 0)
+            {
+                return;
+            }
+
+            RegrowthRemainingDays--;
+            if (RegrowthRemainingDays > 0)
+            {
+                return;
+            }
+
+            IsChopped = false;
+            HitsTaken = 0;
+            CurrentHp = GetMaxHp();
+            UpdateVisual();
         }
 
         private void UpdateVisual()
@@ -150,6 +198,32 @@ namespace CindarsHope.World
             }
 
             return equipmentManager != null && equipmentManager.HasTool(ToolType.Axe, ToolTier.Basic);
+        }
+
+        private int GetMaxHp()
+        {
+            if (_treeData == null)
+            {
+                return 1;
+            }
+
+            return Mathf.Max(1, Mathf.Max(_treeData.MaxHp, _treeData.RequiredHits));
+        }
+
+        private int RollWoodAmount(bool isFinalHit)
+        {
+            if (_treeData == null)
+            {
+                return 1;
+            }
+
+            var amount = Random.Range(_treeData.WoodPerHitMin, _treeData.WoodPerHitMax + 1);
+            if (isFinalHit)
+            {
+                amount = Mathf.Max(amount * _treeData.FinalHitMultiplier, amount * 2);
+            }
+
+            return Mathf.Max(1, amount);
         }
 
         private Vector2Int GetTilePosition()

@@ -6,8 +6,7 @@ A antiga spec 00 de reconciliacao documental foi reclassificada como implementad
 
 | Ordem | Spec | Status | Dependencia | Observacao |
 |---|---|---|---|---|
-| 05 | [spec_world_activities_fishing_trees_pickups_loot.md](a_implementar/spec_world_activities_fishing_trees_pickups_loot.md) | A implementar | 00-04 implementadas/parciais | Completar pesca, arvores, pickups persistentes e loot tables; inclui fishing spots fixos/procedurais e drops persistentes. |
-| 06 | [spec_economy_shop_stock_pricing_ui.md](a_implementar/spec_economy_shop_stock_pricing_ui.md) | A implementar | 00-05 | Evoluir lojas para NPCs da cidade, estoque finito, precos, buy/sell UI, dialogue modal exclusivo, Pip recepcionista e save. |
+| 06 | [spec_economy_shop_stock_pricing_ui.md](a_implementar/spec_economy_shop_stock_pricing_ui.md) | A implementar | 00-05 implementadas/parciais | Evoluir lojas para NPCs da cidade, estoque finito, precos, buy/sell UI, dialogue modal exclusivo, Pip recepcionista e save. |
 | 07 | [spec_crafting_queue_workstations_recipes_ui.md](a_implementar/spec_crafting_queue_workstations_recipes_ui.md) | A implementar | 00-06 | Completar crafting com RecipeDataSO oficial, Workbench/Forge/CookingStation prontas na fazenda, craft de bolso limitado, fila/tempo, starter kit de teste, modal stack e save/load. |
 | 08 | [spec_town_npc_dialogue_schedule_quests.md](a_implementar/spec_town_npc_dialogue_schedule_quests.md) | A implementar | 00-07 | Evoluir Town/Pip para NPCs com NpcDataSO, DialogueModal, lojistas formais, NPC ambulante de lore, posicao fixa e hooks futuros de agenda/quest. |
 | 09 | [spec_hunger_stamina_status_balance.md](a_implementar/spec_hunger_stamina_status_balance.md) | A implementar | 00-08 | Integrar fome com stamina, status MVP, HUD Hunger/Stamina/Status, passagem de tempo dia/noite 10min/5min, pause por modal e eventos de tempo. |

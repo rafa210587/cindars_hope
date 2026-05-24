@@ -7,6 +7,8 @@ namespace CindarsHope.World
     public class ItemPickupSaveData
     {
         public int PickupIndex;
+        public string PickupInstanceId;
+        public string RuntimeGeneratedPickupId;
         public string ItemId;
         public int Amount;
         public Vector2 Position;

@@ -1,7 +1,7 @@
 # SPEC - World activities, fishing, trees, pickups e loot
 
 > Spec ID: spec_world_activities_fishing_trees_pickups_loot
-> Status: A implementar
+> Status: Implementado parcial
 > Ordem de execucao: 05
 > Depende de: 00-04
 > Bloqueia: 06, 07, 10
@@ -9,6 +9,26 @@
 > Fonte: docs/specs/ como fonte unica; fontes absorvidas listadas abaixo.
 > Escopo: Completar pesca, arvores, pickups persistentes e loot tables de atividades do mundo, preservando inventory/save/farm ja implementados.
 > Fora de escopo: stamina final, durabilidade final, isca/bait, clima real, economy pricing, crafting recipes finais, enemy/cave loot final, Packages, ProjectSettings e docs_old.
+> Evidencia: `Assets/_Game/Scripts/Loot/LootTableSO.cs`, `Assets/_Game/Scripts/World/FishingSpot.cs`, `Assets/_Game/Scripts/World/TreeNode.cs`, `Assets/_Game/Scripts/World/Data/TreeDataSO.cs`
+
+## Resultado da implementacao 2026-05-24
+
+Implementado parcial:
+
+- Criado `LootTableSO` com entries por `ItemId`, quantidade min/max, peso e tags futuras.
+- `FishingSpot` passou a exigir rod, iniciar casting, abrir janela simples de timing e resolver item via loot table opcional.
+- Catch nao remove estado se inventory cheio; falha com feedback sem perda de item.
+- `TreeDataSO` recebeu HP, tool/tier, madeira por hit, multiplicador final, regrowth e loot table hook.
+- `TreeNode` passou a ter HP, madeira por hit, bonus de hit final >= 2x, stump e regrowth por dia.
+- Save de arvore ganhou HP atual, stump e regrowth restante.
+- Save de pickup ganhou campos de ID persistente para pickup dinamico futuro.
+
+Pendencias reais:
+
+- Tree drops ainda entram no inventory quando nao ha spawner/registry persistente conectado; spawner dinamico real fica pendente.
+- FarmScene nao foi editada para garantir dois fishing spots fixos.
+- Cave procedural fishing spot 10%/max 1 por level nao foi integrado para evitar regressao em snapshots sem Play Mode.
+- Play Mode manual completo e Unity compile formal ficaram bloqueados por ambiente/licenca.
 
 Fontes absorvidas:
 - specs/FASE9C_TOOLS_FARM_COMBAT_REFINEMENT/spec.md
