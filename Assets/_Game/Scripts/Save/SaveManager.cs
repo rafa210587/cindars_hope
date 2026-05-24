@@ -5,6 +5,7 @@ using System.IO;
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
 using CindarsHope.Core.Time;
+using CindarsHope.Craft;
 using CindarsHope.Cave.Runtime;
 using CindarsHope.Economy;
 using CindarsHope.Equipment;
@@ -12,6 +13,7 @@ using CindarsHope.Farm;
 using CindarsHope.Inventory;
 using CindarsHope.Player;
 using CindarsHope.Player.Progression;
+using CindarsHope.Quest;
 using CindarsHope.Save.Migrations;
 using CindarsHope.UI.Hotbar;
 using CindarsHope.World;
@@ -35,6 +37,7 @@ namespace CindarsHope.Save
         [SerializeField] private PlayerManager _playerManager;
         [SerializeField] private InventoryManager _inventoryManager;
         [SerializeField] private HungerManager _hungerManager;
+        [SerializeField] private StaminaManager _staminaManager;
         [SerializeField] private TimeManager _timeManager;
         [SerializeField] private FarmPlotRegistry _farmPlotRegistry;
         [SerializeField] private TreeRegistry _treeRegistry;
@@ -44,6 +47,8 @@ namespace CindarsHope.Save
         [SerializeField] private PlayerProgressionManager _progressionManager;
         [SerializeField] private CaveRunManager _caveRunManager;
         [SerializeField] private ShopManager _shopManager;
+        [SerializeField] private CraftingRuntime _craftingRuntime;
+        [SerializeField] private QuestManager _questManager;
 
         private readonly HotbarState _hotbarState = new HotbarState();
         private readonly SaveMigrationRegistry _migrationRegistry = new SaveMigrationRegistry(new ISaveMigration[]
@@ -84,6 +89,9 @@ namespace CindarsHope.Save
                 var worldSaveData = CaptureWorldSaveData(existingSaveData);
                 var caveSaveData = CaptureCaveSaveData(existingSaveData);
                 var economySaveData = CaptureEconomySaveData(existingSaveData);
+                var craftingSaveData = CaptureCraftingSaveData();
+                var questsSaveData = CaptureQuestsSaveData();
+                var staminaSaveData = CaptureStaminaSaveData();
 
                 var saveData = new GameSaveData
                 {
@@ -99,7 +107,10 @@ namespace CindarsHope.Save
                     Farm = farmSaveData,
                     World = worldSaveData,
                     Cave = caveSaveData,
-                    Economy = economySaveData
+                    Economy = economySaveData,
+                    Crafting = craftingSaveData,
+                    Quests = questsSaveData,
+                    Stamina = staminaSaveData
                 };
 
                 var savePath = SaveFilePath;
@@ -791,6 +802,21 @@ namespace CindarsHope.Save
             {
                 RestoreEconomySaveData(saveData.Economy);
             }
+
+            if (_craftingRuntime != null && saveData.Crafting != null)
+            {
+                _craftingRuntime.LoadFromSaveData(saveData.Crafting);
+            }
+
+            if (_questManager != null && saveData.Quests != null)
+            {
+                _questManager.LoadFromSaveData(saveData.Quests);
+            }
+
+            if (_staminaManager != null && saveData.Stamina != null)
+            {
+                _staminaManager.Initialize(saveData.Stamina.MaxStamina, saveData.Stamina.CurrentStamina);
+            }
         }
 
         private EconomySaveData CaptureEconomySaveData(GameSaveData existingSaveData)
@@ -821,6 +847,40 @@ namespace CindarsHope.Save
             {
                 _shopManager.LoadShopStock(shopStockData);
             }
+        }
+
+        private CraftingRuntimeSaveData CaptureCraftingSaveData()
+        {
+            if (_craftingRuntime == null)
+            {
+                return new CraftingRuntimeSaveData();
+            }
+
+            return _craftingRuntime.CaptureSaveData();
+        }
+
+        private QuestManagerSaveData CaptureQuestsSaveData()
+        {
+            if (_questManager == null)
+            {
+                return new QuestManagerSaveData();
+            }
+
+            return _questManager.CaptureSaveData();
+        }
+
+        private StaminaSaveData CaptureStaminaSaveData()
+        {
+            if (_staminaManager == null)
+            {
+                return new StaminaSaveData { CurrentStamina = 100, MaxStamina = 100 };
+            }
+
+            return new StaminaSaveData
+            {
+                CurrentStamina = _staminaManager.CurrentStamina,
+                MaxStamina = _staminaManager.MaxStamina
+            };
         }
 
         private void PublishSaveResult(bool wasSuccessful, string message)

@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
+using CindarsHope.Craft;
 using CindarsHope.Equipment;
 using CindarsHope.Farm;
+using CindarsHope.Player;
 using CindarsHope.Player.Progression;
+using CindarsHope.Quest;
 using CindarsHope.UI.Hotbar;
 using CindarsHope.World;
 using UnityEngine;
@@ -25,6 +28,9 @@ namespace CindarsHope.Save
         public WorldSaveData World;
         public CaveSaveData Cave;
         public EconomySaveData Economy;
+        public CraftingRuntimeSaveData Crafting;
+        public QuestManagerSaveData Quests;
+        public StaminaSaveData Stamina;
     }
 
     [Serializable]
@@ -96,5 +102,12 @@ namespace CindarsHope.Save
     public class EconomySaveData
     {
         public List<ShopStockSaveData> Shops = new List<ShopStockSaveData>();
+    }
+
+    [Serializable]
+    public class StaminaSaveData
+    {
+        public int CurrentStamina;
+        public int MaxStamina;
     }
 }
