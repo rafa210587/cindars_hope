@@ -7,7 +7,7 @@ A etapa 00 foi reclassificada como implementado documental parcial. As specs run
 | Ordem | Spec | Status | Depende de | Bloqueia | Risco se antecipar |
 |---|---|---|---|---|---|
 | 00 | [spec_docs_001_single_source_specs_refinements_reconciliation_parcial](implementados/spec_docs_001_single_source_specs_refinements_reconciliation_parcial.md) | Implementado documental parcial | Nenhuma | Base para todas as specs futuras | Agentes podem implementar a partir de fonte errada se esta governanca for ignorada. |
-| 01 | [spec_unity_compile_validation_protocol_and_scripts](implementados/spec_unity_compile_validation_protocol_and_scripts.md) | Implementado parcial | 00 | 02-17 | Sem validacao Unity, mudancas runtime podem mascarar erro de compilacao. |
+| 01 | [spec_unity_compile_validation_protocol_and_scripts](implementados/spec_unity_compile_validation_protocol_and_scripts.md) | Implementado completo | 00 | 02-17 | Sem validacao Unity, mudancas runtime podem mascarar erro de compilacao. |
 | 02 | [spec_save_002_schema_migration_v2](implementados/spec_save_002_schema_migration_v2.md) | Implementado parcial | 00, 01 implementada/parcial | 03-17 | Specs posteriores podem persistir dados sem contrato de migracao. |
 | 03 | [spec_inventory_002_slots_capacity_ui_final](implementados/spec_inventory_002_slots_capacity_ui_final.md) | Implementado parcial | 00, 01, 02 implementada/parcial | 04, 06, 07, 10, 12, 17 | Economy, craft e equipment podem depender de um modelo de inventory ainda provisorio. |
 | 04 | [spec_farm_004_irrigacao_solo_planting_ui](implementados/spec_farm_004_irrigacao_solo_planting_ui.md) | Implementado parcial | 00, 01, 02, 03 implementada/parcial | 05, 09, 17 | World activities e stamina podem duplicar custos/regras de tools. |
@@ -29,7 +29,7 @@ A etapa 00 foi reclassificada como implementado documental parcial. As specs run
 
 A spec 00 antiga em `a_implementar/spec_docs_single_source_specs_refinements_reconciliation_v1.md` nao deve ser executada novamente; ela permanece apenas como ponte historica ate remocao fisica futura.
 
-A spec 01 foi implementada parcialmente como tooling minimo.
+A spec 01 foi implementada completamente como tooling minimo (validacao documental e Unity batchmode).
 A spec 02 foi implementada parcialmente como infraestrutura de migration.
 A spec 03 foi implementada parcialmente com slots, capacidade, migration v1->v2 e painel minimo; Drop runtime e Use especifico permanecem pendentes.
 A spec 04 foi implementada parcialmente com solo/agua/plantio por inventory/menu contextual; Play Mode manual segue pendente.

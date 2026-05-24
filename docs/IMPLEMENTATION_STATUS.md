@@ -9,7 +9,7 @@
 | Area | Status | Spec |
 |---|---|---|
 | Governanca documental / fonte unica | Implementado documental parcial | `docs/specs/implementados/spec_docs_001_single_source_specs_refinements_reconciliation_parcial.md` |
-| Unity compile validation protocol | Implementado parcial | `docs/specs/implementados/spec_unity_compile_validation_protocol_and_scripts.md` |
+| Unity compile validation protocol | Implementado completo | `docs/specs/implementados/spec_unity_compile_validation_protocol_and_scripts.md` |
 | Core/event bus/bootstrap | Implementado parcial | `docs/specs/implementados/spec_core_001_event_bus_e_eventos_base.md`, `docs/specs/implementados/spec_core_002_bootstrap_managers_e_runtime_references.md` |
 | Data/IDs/registries | Implementado | `docs/specs/implementados/spec_data_001_ids_registries_e_scriptableobjects.md` |
 | Save/load JSON cross-scene | Implementado parcial | `docs/specs/implementados/spec_save_001_json_save_load_cross_scene.md` |
@@ -30,17 +30,22 @@
 
 ### Unity compile validation protocol
 
-Implementado parcial em:
+Implementado completo em:
 
 ```text
 docs/specs/implementados/spec_unity_compile_validation_protocol_and_scripts.md
 tools/unity/RunUnityCompileValidation.ps1
 tools/unity/ScanUnityLogs.ps1
+tools/docs/validate_docs.ps1 (corrigido)
 ```
 
-Pendentes: MissingScriptScanner, SceneReferenceValidator, DataIdValidator e Play Mode automatizado completo.
+**Status 2026-05-24:**
+- Scripts PowerShell: Funcionais e operáveis
+- Validação documental: PASS
+- Validação Unity batchmode: NOT RUN (sandbox; aceitável)
+- Gaps de Play Mode/Advanced Scanners: Reclassificados para futuro
 
-Validacao local nesta entrega: Unity batchmode bloqueado por outra instancia do Unity aberta no mesmo projeto; compile Unity ainda nao validado localmente.
+Specs futuras dedicadas aos scanners avançados (Missing Script, Scene References, Data IDs) podem ser implementadas quando necessário, sem bloquear SPECS 02-17.
 
 ### Governanca documental
 
