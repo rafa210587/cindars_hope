@@ -8,7 +8,6 @@ O refinamento de tracking documental foi reclassificado como implementado/parcia
 
 | Refinement | Spec futura relacionada | Observacao |
 |---|---|---|
-| [pre_refinamentos/refinamento_init_scene_unity_validation_missing_scripts_prefabs.md](pre_refinamentos/refinamento_init_scene_unity_validation_missing_scripts_prefabs.md) | docs/specs/a_implementar/spec_scene_unity_validation_missing_scripts_prefabs.md | Pendencia real consolidada; proximo item a refinar antes de execucao. |
 | [pre_refinamentos/refinamento_init_save_schema_migration_v2.md](pre_refinamentos/refinamento_init_save_schema_migration_v2.md) | docs/specs/a_implementar/spec_save_schema_migration_v2.md | Pendencia real consolidada; refinar depois da validacao Unity. |
 | [pre_refinamentos/refinamento_init_inventory_slots_capacity_ui.md](pre_refinamentos/refinamento_init_inventory_slots_capacity_ui.md) | docs/specs/a_implementar/spec_inventory_slots_capacity_ui_final.md | Pendencia real consolidada; depende da migration de save. |
 | [pre_refinamentos/refinamento_init_farm_irrigacao_solo_planting_ui.md](pre_refinamentos/refinamento_init_farm_irrigacao_solo_planting_ui.md) | docs/specs/a_implementar/spec_farm_irrigacao_solo_planting_ui.md | Pendencia real consolidada; nao implementar fora da ordem oficial. |

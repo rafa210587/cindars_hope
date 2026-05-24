@@ -6,8 +6,7 @@ A antiga spec 00 de reconciliacao documental foi reclassificada como implementad
 
 | Ordem | Spec | Status | Dependencia | Observacao |
 |---|---|---|---|---|
-| 01 | [spec_scene_unity_validation_missing_scripts_prefabs.md](a_implementar/spec_scene_unity_validation_missing_scripts_prefabs.md) | A implementar | 00 implementada/parcial | Criar validacao local/batchmode para compile, missing scripts, prefabs, cenas e referencias criticas. |
-| 02 | [spec_save_schema_migration_v2.md](a_implementar/spec_save_schema_migration_v2.md) | A implementar | 00, 01 | Implementar migracao robusta de save com versao, backup e DTOs simples. |
+| 02 | [spec_save_schema_migration_v2.md](a_implementar/spec_save_schema_migration_v2.md) | A implementar | 00 e 01 implementadas/parciais | Implementar migracao robusta de save com versao, backup e DTOs simples. |
 | 03 | [spec_inventory_slots_capacity_ui_final.md](a_implementar/spec_inventory_slots_capacity_ui_final.md) | A implementar | 00, 01, 02 | Evoluir Dictionary<string,int> para slots reais, multiplas stacks, capacidade, drag/drop e UI. |
 | 04 | [spec_farm_irrigacao_solo_planting_ui.md](a_implementar/spec_farm_irrigacao_solo_planting_ui.md) | A implementar | 00, 01, 02, 03 | Completar solo, irrigacao, hoe/watering can, planting UI e condicoes de crescimento. |
 | 05 | [spec_world_activities_fishing_trees_pickups_loot.md](a_implementar/spec_world_activities_fishing_trees_pickups_loot.md) | A implementar | 00-04 | Completar pesca, arvores, pickups persistentes e loot tables de atividades. |

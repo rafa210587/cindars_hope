@@ -7,6 +7,7 @@
 | Refinement | Specs relacionadas |
 |---|---|
 | [ref_docs_single_source_tracking_reconciliation_parcial.md](ref_docs_single_source_tracking_reconciliation_parcial.md) | spec_docs_001_single_source_specs_refinements_reconciliation_parcial |
+| [ref_unity_compile_validation_protocol_and_scripts.md](ref_unity_compile_validation_protocol_and_scripts.md) | spec_unity_compile_validation_protocol_and_scripts |
 | [ref_stabilizacao_overnight_specs_20260523.md](ref_stabilizacao_overnight_specs_20260523.md) | overnight 2026-05-23 parcial; specs futuras 02-17 |
 
 ## Waves implementadas

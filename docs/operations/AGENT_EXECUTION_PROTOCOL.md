@@ -154,6 +154,38 @@ Se documentaÃƒÂ§ÃƒÂ£o foi alterada, rodar:
 .\tools\docs\validate_docs.ps1
 ```
 
+## Validacao obrigatoria por tipo de mudanca
+
+| Tipo de mudanca | Validacao obrigatoria |
+|---|---|
+| Docs-only (`*.md`, `docs/**`, `tools/docs/**`) | `.\tools\docs\validate_docs.ps1` |
+| C# runtime (`Assets/**/*.cs`) | docs validation + `.\tools\unity\RunUnityCompileValidation.ps1` + `.\tools\unity\ScanUnityLogs.ps1 -LogFile ".\Logs\unity-compile-validation.log"` |
+| Unity scenes/prefabs/assets (`Assets/**/*.unity`, `Assets/**/*.prefab`, `Assets/**/*.asset`) | Unity compile validation + validacao manual se aplicavel |
+| `Packages/**` ou `ProjectSettings/**` | Unity compile validation obrigatoria |
+
+Comando padrao:
+
+```powershell
+.\tools\unity\RunUnityCompileValidation.ps1 `
+  -UnityEditorPath "C:\Program Files\Unity\Hub\Editor\6000.4.7f1\Editor\Unity.exe" `
+  -ProjectPath "." `
+  -LogFile ".\Logs\unity-compile-validation.log"
+
+.\tools\unity\ScanUnityLogs.ps1 `
+  -LogFile ".\Logs\unity-compile-validation.log"
+```
+
+Se Unity nao puder rodar, registrar no resumo final e no `PROJECT_LOG.md`:
+
+```text
+Unity validation: NOT RUN
+Reason: <motivo>
+Command attempted: <comando>
+Residual risk: Unity compile not validated locally
+```
+
+Se a validacao Unity falhar, corrigir a causa raiz e repetir docs validation, RunUnityCompileValidation e ScanUnityLogs. Nao marcar spec runtime como implementada enquanto a compilacao Unity estiver quebrada, exceto impedimento real de ambiente registrado.
+
 ## Regra de economia de contexto
 
 O agente deve evitar carregar documentos grandes se a tarefa puder ser resolvida com:

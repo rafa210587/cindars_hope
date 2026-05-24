@@ -1,4 +1,30 @@
 
+## Atualizacao 2026-05-23 - Unity compile validation protocol
+
+Status: Implementado parcial.
+
+Escopo:
+- Criados `tools/unity/RunUnityCompileValidation.ps1` e `tools/unity/ScanUnityLogs.ps1`.
+- `AGENTS.md`, `CLAUDE.md` e `docs/operations/AGENT_EXECUTION_PROTOCOL.md` passam a exigir validacao Unity para tarefas runtime/Unity.
+- A antiga spec 01 de validacao Unity foi reclassificada como `docs/specs/implementados/spec_unity_compile_validation_protocol_and_scripts.md`.
+- O pre-refinamento correspondente foi reclassificado como `docs/refinements/implementados/ref_unity_compile_validation_protocol_and_scripts.md`.
+
+Validacao:
+- `tools/docs/validate_docs.ps1`: NOT RUN com sucesso. Reason: o script atual falha em parse antes de validar (`Future spec missing $marker:` em `tools/docs/validate_docs.ps1`).
+- `tools/unity/RunUnityCompileValidation.ps1`: FAILED por ambiente. Reason: ja existe outra instancia do Unity com este projeto aberto.
+- `tools/unity/ScanUnityLogs.ps1`: FAILED corretamente ao detectar `Application will terminate with return code 1`.
+
+Unity validation: NOT RUN
+Reason: Unity batchmode bloqueado por outra instancia do Unity aberta no mesmo projeto.
+Command attempted: `.\tools\unity\RunUnityCompileValidation.ps1 -UnityEditorPath "C:\Program Files\Unity\Hub\Editor\6000.4.7f1\Editor\Unity.exe" -ProjectPath "." -LogFile ".\Logs\unity-compile-validation.log"`
+Residual risk: Unity compile not validated locally
+
+Pendencias:
+- Fechar a instancia Unity aberta e rerodar compile validation.
+- Corrigir `tools/docs/validate_docs.ps1` em spec/tarefa propria; nao foi alterado nesta spec porque o escopo permitido cria apenas `tools/unity/**`.
+
+---
+
 ## Atualizacao 2026-05-23 - Validacao documental da fonte unica
 
 `tools/docs/validate_docs.ps1` foi executado apos a reconciliacao documental e falhou por regra desatualizada do proprio validador: o script ainda exige que a pasta raiz `specs/` exista como SpecKit operacional. Esta tarefa removeu `specs/` de proposito e consolidou a fonte unica em `docs/specs/`.

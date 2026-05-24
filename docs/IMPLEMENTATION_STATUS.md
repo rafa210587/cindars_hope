@@ -9,6 +9,7 @@
 | Area | Status | Spec |
 |---|---|---|
 | Governanca documental / fonte unica | Implementado documental parcial | `docs/specs/implementados/spec_docs_001_single_source_specs_refinements_reconciliation_parcial.md` |
+| Unity compile validation protocol | Implementado parcial | `docs/specs/implementados/spec_unity_compile_validation_protocol_and_scripts.md` |
 | Core/event bus/bootstrap | Implementado parcial | `docs/specs/implementados/spec_core_001_event_bus_e_eventos_base.md`, `docs/specs/implementados/spec_core_002_bootstrap_managers_e_runtime_references.md` |
 | Data/IDs/registries | Implementado | `docs/specs/implementados/spec_data_001_ids_registries_e_scriptableobjects.md` |
 | Save/load JSON cross-scene | Implementado parcial | `docs/specs/implementados/spec_save_001_json_save_load_cross_scene.md` |
@@ -21,6 +22,20 @@
 | Overnight 2026-05-23 | Executado parcialmente | `docs/IMPLEMENTATION_DELIVERY_20260523.md`, `docs/refinements/implementados/ref_stabilizacao_overnight_specs_20260523.md` |
 
 ## Correcoes de tracking obrigatorias
+
+### Unity compile validation protocol
+
+Implementado parcial em:
+
+```text
+docs/specs/implementados/spec_unity_compile_validation_protocol_and_scripts.md
+tools/unity/RunUnityCompileValidation.ps1
+tools/unity/ScanUnityLogs.ps1
+```
+
+Pendentes: MissingScriptScanner, SceneReferenceValidator, DataIdValidator e Play Mode automatizado completo.
+
+Validacao local nesta entrega: Unity batchmode bloqueado por outra instancia do Unity aberta no mesmo projeto; compile Unity ainda nao validado localmente.
 
 ### Governanca documental
 
@@ -59,7 +74,7 @@ A ordem oficial esta em `docs/specs/SPEC_EXECUTION_ORDER.md` e o registry futuro
 A primeira spec futura executavel passa a ser:
 
 ```text
-docs/specs/a_implementar/spec_scene_unity_validation_missing_scripts_prefabs.md
+docs/specs/a_implementar/spec_save_schema_migration_v2.md
 ```
 
 Antes de executar runtime, as specs futuras devem ser enriquecidas usando seus pre-refinamentos relacionados.

@@ -47,6 +47,8 @@ Nao ler por padrao:
 - Nao marcar nada como implementado sem evidencia no repo.
 - Ao finalizar, atualizar spec implementada, refinement implementado, registries, maps, `docs/IMPLEMENTATION_STATUS.md` e `PROJECT_LOG.md` quando aplicavel.
 - Rodar `tools/docs/validate_docs.ps1` quando documentacao for alterada.
+- Ao finalizar qualquer tarefa runtime/Unity, rodar `tools/docs/validate_docs.ps1`, `tools/unity/RunUnityCompileValidation.ps1` e `tools/unity/ScanUnityLogs.ps1`.
+- Se a validacao Unity nao rodar, registrar motivo, comando tentado e risco residual no resumo final e no `PROJECT_LOG.md`.
 
 ## Regras inviolaveis de codigo
 

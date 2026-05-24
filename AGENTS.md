@@ -59,6 +59,18 @@ Ao finalizar implementacao de spec:
 - atualizar `docs/IMPLEMENTATION_STATUS.md`;
 - atualizar `PROJECT_LOG.md`;
 - rodar `tools/docs/validate_docs.ps1`.
+- se a tarefa alterou runtime/Unity, rodar tambem:
+  - `tools/unity/RunUnityCompileValidation.ps1`;
+  - `tools/unity/ScanUnityLogs.ps1 -LogFile ".\Logs\unity-compile-validation.log"`.
+
+Se a validacao Unity nao puder rodar por ambiente, permissao, Unity ausente ou timeout, registrar no resumo final e no `PROJECT_LOG.md`:
+
+```text
+Unity validation: NOT RUN
+Reason: <motivo>
+Command attempted: <comando>
+Residual risk: Unity compile not validated locally
+```
 
 ## Estrutura documental ativa
 
