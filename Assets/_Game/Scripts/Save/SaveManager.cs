@@ -11,6 +11,7 @@ using CindarsHope.Farm;
 using CindarsHope.Inventory;
 using CindarsHope.Player;
 using CindarsHope.Player.Progression;
+using CindarsHope.Save.Migrations;
 using CindarsHope.UI.Hotbar;
 using CindarsHope.World;
 using UnityEngine;
@@ -43,6 +44,7 @@ namespace CindarsHope.Save
         [SerializeField] private CaveRunManager _caveRunManager;
 
         private readonly HotbarState _hotbarState = new HotbarState();
+        private readonly SaveMigrationRegistry _migrationRegistry = new SaveMigrationRegistry();
 
         public bool IsInitialized { get; private set; }
         public string SaveFilePath => Path.Combine(Application.persistentDataPath, SaveDirectoryName, SaveFileName);
@@ -101,7 +103,7 @@ namespace CindarsHope.Save
                 }
 
                 var json = JsonUtility.ToJson(saveData, true);
-                File.WriteAllText(savePath, json);
+                WriteTextSafely(savePath, json);
 
                 Debug.Log($"Game saved to {savePath}.", this);
                 PublishSaveResult(true, "Save complete.");
@@ -126,17 +128,9 @@ namespace CindarsHope.Save
 
             try
             {
-                var json = File.ReadAllText(savePath);
-                var saveData = JsonUtility.FromJson<GameSaveData>(json);
-                if (saveData == null)
+                if (!TryReadSaveWithMigration(savePath, true, out var saveData, out var migrationResult))
                 {
-                    Debug.LogWarning($"Save file at {savePath} could not be parsed.", this);
-                    return false;
-                }
-
-                if (saveData.SchemaVersion != CurrentSchemaVersion)
-                {
-                    Debug.LogWarning($"Unsupported save schema version {saveData.SchemaVersion}. Expected {CurrentSchemaVersion}.", this);
+                    Debug.LogWarning($"Save file at {savePath} could not be loaded. {migrationResult.ErrorMessage}", this);
                     return false;
                 }
 
@@ -376,27 +370,251 @@ namespace CindarsHope.Save
 
             try
             {
-                var json = File.ReadAllText(savePath);
-                var saveData = JsonUtility.FromJson<GameSaveData>(json);
-                if (saveData == null)
-                {
-                    Debug.LogWarning($"Existing save file could not be parsed.", this);
-                    return null;
-                }
-
-                if (saveData.SchemaVersion != CurrentSchemaVersion)
-                {
-                    Debug.LogWarning($"Existing save has unsupported schema version {saveData.SchemaVersion}.", this);
-                    return null;
-                }
-
-                return saveData;
+                return TryReadSaveWithMigration(savePath, true, out var saveData, out _)
+                    ? saveData
+                    : null;
             }
             catch (Exception exception)
             {
                 Debug.LogWarning($"Error reading existing save: {exception.Message}", this);
                 return null;
             }
+        }
+
+        private bool TryReadSaveWithMigration(string savePath, bool allowWriteBack, out GameSaveData saveData, out SaveMigrationResult result)
+        {
+            saveData = null;
+            result = SaveMigrationResult.Failed(0, CurrentSchemaVersion, "Unknown save migration failure.");
+
+            if (string.IsNullOrWhiteSpace(savePath) || !File.Exists(savePath))
+            {
+                result = SaveMigrationResult.Failed(0, CurrentSchemaVersion, $"Save file not found at {savePath}.");
+                return false;
+            }
+
+            string rawJson;
+            try
+            {
+                rawJson = File.ReadAllText(savePath);
+            }
+            catch (Exception exception)
+            {
+                result = SaveMigrationResult.Failed(0, CurrentSchemaVersion, $"Could not read save file: {exception.Message}");
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(rawJson))
+            {
+                result = SaveMigrationResult.Failed(0, CurrentSchemaVersion, "Save file is empty.");
+                return false;
+            }
+
+            if (!TryDeserializeSave(rawJson, out var parsedSaveData, out var parseError))
+            {
+                result = SaveMigrationResult.Failed(0, CurrentSchemaVersion, parseError);
+                return false;
+            }
+
+            var sourceVersion = DetectSourceSchemaVersion(parsedSaveData);
+            if (sourceVersion > CurrentSchemaVersion)
+            {
+                result = SaveMigrationResult.Failed(
+                    sourceVersion,
+                    CurrentSchemaVersion,
+                    $"Save schema version {sourceVersion} is newer than supported version {CurrentSchemaVersion}.");
+                return false;
+            }
+
+            if (sourceVersion == CurrentSchemaVersion)
+            {
+                parsedSaveData.SchemaVersion = CurrentSchemaVersion;
+                if (!ValidateAndNormalizeSave(parsedSaveData, out var validationError))
+                {
+                    result = SaveMigrationResult.Failed(sourceVersion, CurrentSchemaVersion, validationError);
+                    return false;
+                }
+
+                saveData = parsedSaveData;
+                result = SaveMigrationResult.NotRequired(CurrentSchemaVersion);
+                return true;
+            }
+
+            if (!_migrationRegistry.CanMigrate(sourceVersion, CurrentSchemaVersion))
+            {
+                result = SaveMigrationResult.Failed(
+                    sourceVersion,
+                    CurrentSchemaVersion,
+                    $"No complete migration path from v{sourceVersion} to v{CurrentSchemaVersion}.");
+                return false;
+            }
+
+            var backupFilePath = string.Empty;
+            if (allowWriteBack && !SaveBackupService.TryCreateBackup(savePath, out backupFilePath, out var backupError))
+            {
+                result = SaveMigrationResult.Failed(sourceVersion, CurrentSchemaVersion, $"Could not create save backup: {backupError}");
+                return false;
+            }
+
+            var context = new SaveMigrationContext(savePath, backupFilePath, sourceVersion, CurrentSchemaVersion, rawJson);
+            if (!_migrationRegistry.TryMigrate(context, out result))
+            {
+                Debug.LogWarning(result.ErrorMessage, this);
+                return false;
+            }
+
+            if (!TryDeserializeSave(result.MigratedJson, out var migratedSaveData, out var migratedParseError))
+            {
+                result.Success = false;
+                result.ErrorMessage = migratedParseError;
+                return false;
+            }
+
+            migratedSaveData.SchemaVersion = CurrentSchemaVersion;
+            if (!ValidateAndNormalizeSave(migratedSaveData, out var migratedValidationError))
+            {
+                result.Success = false;
+                result.ErrorMessage = migratedValidationError;
+                return false;
+            }
+
+            if (allowWriteBack)
+            {
+                try
+                {
+                    WriteTextSafely(savePath, JsonUtility.ToJson(migratedSaveData, true));
+                }
+                catch (Exception exception)
+                {
+                    result.Success = false;
+                    result.ErrorMessage = $"Could not write migrated save: {exception.Message}";
+                    return false;
+                }
+            }
+
+            saveData = migratedSaveData;
+            Debug.Log($"Save migrated from schema v{sourceVersion} to v{CurrentSchemaVersion}. Backup: {backupFilePath}", this);
+            return true;
+        }
+
+        private static bool TryDeserializeSave(string json, out GameSaveData saveData, out string errorMessage)
+        {
+            saveData = null;
+            errorMessage = string.Empty;
+
+            try
+            {
+                saveData = JsonUtility.FromJson<GameSaveData>(json);
+                if (saveData == null)
+                {
+                    errorMessage = "Save file could not be parsed.";
+                    return false;
+                }
+
+                return true;
+            }
+            catch (Exception exception)
+            {
+                errorMessage = $"Save file could not be parsed: {exception.Message}";
+                return false;
+            }
+        }
+
+        private static int DetectSourceSchemaVersion(GameSaveData saveData)
+        {
+            if (saveData == null)
+            {
+                return 0;
+            }
+
+            if (saveData.SchemaVersion > 0)
+            {
+                return saveData.SchemaVersion;
+            }
+
+            return IsLegacyV1Candidate(saveData) ? 1 : 0;
+        }
+
+        private static bool IsLegacyV1Candidate(GameSaveData saveData)
+        {
+            if (saveData == null)
+            {
+                return false;
+            }
+
+            return saveData.Player != null
+                || saveData.Inventory != null
+                || saveData.Farm != null
+                || saveData.World != null
+                || saveData.Cave != null
+                || saveData.CurrentDay > 0;
+        }
+
+        private static bool ValidateAndNormalizeSave(GameSaveData saveData, out string errorMessage)
+        {
+            errorMessage = string.Empty;
+
+            if (saveData == null)
+            {
+                errorMessage = "Save data is null.";
+                return false;
+            }
+
+            if (saveData.SchemaVersion != CurrentSchemaVersion)
+            {
+                errorMessage = $"Unsupported save schema version {saveData.SchemaVersion}. Expected {CurrentSchemaVersion}.";
+                return false;
+            }
+
+            if (saveData.Player == null)
+            {
+                errorMessage = "Save data is missing Player section.";
+                return false;
+            }
+
+            if (saveData.CurrentDay <= 0)
+            {
+                saveData.CurrentDay = 1;
+            }
+
+            saveData.Inventory ??= new InventorySaveData();
+            saveData.Equipment ??= new EquipmentSaveData();
+            saveData.Hotbar ??= new HotbarSaveData();
+            saveData.Progression ??= new PlayerProgressionSaveData();
+            saveData.Farm ??= new FarmSaveData();
+            saveData.World ??= new WorldSaveData();
+            saveData.Cave ??= new CaveSaveData();
+
+            saveData.Inventory.Items ??= new List<InventoryItemSaveData>();
+            saveData.Farm.Plots ??= new List<FarmPlotSaveData>();
+            saveData.Farm.Trees ??= new List<TreeSaveData>();
+            saveData.World.Pickups ??= new List<ItemPickupSaveData>();
+            saveData.World.Trees ??= new List<TreeSaveData>();
+
+            return true;
+        }
+
+        private static void WriteTextSafely(string path, string contents)
+        {
+            var directory = Path.GetDirectoryName(path);
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+
+            var tempPath = $"{path}.tmp";
+            File.WriteAllText(tempPath, contents);
+
+            if (!File.Exists(tempPath))
+            {
+                throw new IOException($"Temporary save file was not written: {tempPath}");
+            }
+
+            if (File.Exists(path))
+            {
+                File.Delete(path);
+            }
+
+            File.Move(tempPath, path);
         }
 
         private FarmSaveData CaptureFarmSaveData(GameSaveData existingSaveData)

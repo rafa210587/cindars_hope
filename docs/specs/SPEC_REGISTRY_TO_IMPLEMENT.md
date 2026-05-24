@@ -6,8 +6,7 @@ A antiga spec 00 de reconciliacao documental foi reclassificada como implementad
 
 | Ordem | Spec | Status | Dependencia | Observacao |
 |---|---|---|---|---|
-| 02 | [spec_save_schema_migration_v2.md](a_implementar/spec_save_schema_migration_v2.md) | A implementar | 00 e 01 implementadas/parciais | Implementar infraestrutura de migracao robusta de save com versao, backup, escrita segura e DTOs simples; `CurrentSchemaVersion` so sobe quando houver migration real. |
-| 03 | [spec_inventory_slots_capacity_ui_final.md](a_implementar/spec_inventory_slots_capacity_ui_final.md) | A implementar | 00, 01, 02 | Evoluir Dictionary<string,int> para slots reais, multiplas stacks, capacidade 18->30, painel modal de itens, WASD e acoes Use/Equip/Drop/Destroy/Split; drag/drop fica fora do MVP. |
+| 03 | [spec_inventory_slots_capacity_ui_final.md](a_implementar/spec_inventory_slots_capacity_ui_final.md) | A implementar | 00, 01 e 02 implementadas/parciais | Evoluir Dictionary<string,int> para slots reais, multiplas stacks, capacidade 18->30, painel modal de itens, WASD e acoes Use/Equip/Drop/Destroy/Split; drag/drop fica fora do MVP. |
 | 04 | [spec_farm_irrigacao_solo_planting_ui.md](a_implementar/spec_farm_irrigacao_solo_planting_ui.md) | A implementar | 00, 01, 02, 03 | Completar solo, irrigacao, hoe/watering can, crescimento por agua e menu contextual agricola acima do tile. |
 | 05 | [spec_world_activities_fishing_trees_pickups_loot.md](a_implementar/spec_world_activities_fishing_trees_pickups_loot.md) | A implementar | 00-04 | Completar pesca, arvores, pickups persistentes e loot tables; inclui fishing spots fixos/procedurais e drops persistentes. |
 | 06 | [spec_economy_shop_stock_pricing_ui.md](a_implementar/spec_economy_shop_stock_pricing_ui.md) | A implementar | 00-05 | Evoluir lojas para NPCs da cidade, estoque finito, precos, buy/sell UI, dialogue modal exclusivo, Pip recepcionista e save. |

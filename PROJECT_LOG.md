@@ -1,4 +1,24 @@
 
+## Atualizacao 2026-05-24 - Spec 02 Save schema migration v2
+
+Status: Implementado parcial.
+
+Escopo:
+- Criada infraestrutura de migration em `Assets/_Game/Scripts/Save/Migrations/`.
+- `SaveManager` passou a usar caminho unico `TryReadSaveWithMigration` em `LoadGame()` e `TryReadExistingValidSave()`.
+- Escrita de save passou a usar arquivo `.tmp` antes de substituir o original.
+- `CurrentSchemaVersion` permanece `1`; nenhuma migration real `v1 -> v2` foi criada nesta etapa.
+- Spec/refinement movidos para implementados como parciais.
+
+Validacao:
+- `dotnet build .\Assembly-CSharp.csproj --no-restore` nao concluiu: falta `Temp/obj/Assembly-CSharp/project.assets.json`.
+- Validacao Unity formal ficou para o final da sequencia 02-10, conforme pedido.
+
+Pendencias:
+- Migration real `v1 -> v2` deve ser criada pela spec de inventory slots quando o payload final existir.
+
+---
+
 ## Atualizacao 2026-05-23 - Unity compile validation protocol
 
 Status: Implementado parcial.
