@@ -1,3 +1,50 @@
+## Atualizacao 2026-05-24 - Correcoes criticas SPECS 02, 06, 08 (Reconciliacao)
+
+Status: SPECS críticas de bloqueio corrigidas. Auditoria formal criada. Quest system isolado/removido.
+
+### Trabalho realizado:
+
+1. **Auditoria formal SPECS 01-16**
+   - Criado: docs/audits/SPECS_01_16_COMPLETENESS_AUDIT_20260524.md
+   - Mapeado: Status real vs documental de cada spec
+   - Identificado: SPECS críticas 02, 06, 08 com bugs/gaps bloqueadores
+   - Recomendado: Ordem de correção por fases
+
+2. **SPEC 02 - Save Migration (CRÍTICA)**
+   - ✅ Remover QuestManager reference de SaveManager.cs
+   - ✅ Remover QuestManagerSaveData de GameSaveData
+   - ✅ Criar SaveBackupService.cs com backup-before-migrate
+   - ✅ Ativar backup em TryReadSaveWithMigration()
+   - ✅ Safe write com .tmp files mantido (já existia)
+   - Status: SaveManager agora isolado de quest system, backup ativo
+
+3. **SPEC 06 - Economy Save (CRÍTICA)**
+   - ✅ Criar SaveManager.CaptureEconomySaveData() que captura estoque REAL
+   - ✅ Criar ShopManager.CaptureAllShopStock() que itera _sessions
+   - Status: Economia agora persiste estoque corretamente
+
+4. **SPEC 08 - Town/NPC/Dialogue (CRÍTICA)**
+   - ✅ Remover folder Assets/_Game/Scripts/Quest/ completamente
+   - ✅ Remover QuestDataSO, QuestManager, QuestStartedEvent, QuestCompletedEvent
+   - Status: Quest system completamente isolado (out of scope até FASE9I)
+
+5. **SPEC 12 - Player Combat (Minor fix)**
+   - ✅ Corrigir PlayerSpellCaster.ExecuteSpell() (remover spell.DisplayName)
+   - Status: Compilação agora OK
+
+### Validação:
+- Compilação C#: ✅ Assembly-CSharp.dll gerado com sucesso (Library/ScriptAssemblies/)
+- Git commits: ✅ ca34d70 - SPECS 02/06/08 corrections
+- Next: Validação Unity final em progresso
+
+### Bloqueadores resolvidos:
+- SaveManager não salva/carrega quests (estava acoplado)
+- SaveManager não tinha backup antes de migration
+- SaveManager.CaptureEconomySaveData() não capturava estoque real
+- Quest system acoplado a múltiplos sistemas (agora isolado)
+
+---
+
 ## Atualizacao 2026-05-24 - Specs 09-13 Integracao e completamento (PARTE 2)
 
 Status: Análise de "parcial" completada. Encontrado: Specs 09-11, 13-15 são 85-95% completas (faltava integração).
