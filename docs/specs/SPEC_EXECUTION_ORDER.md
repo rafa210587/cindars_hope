@@ -2,9 +2,11 @@
 
 Regra: uma spec so pode ser implementada se suas dependencias anteriores estiverem reconciliadas e sem pendencia bloqueadora.
 
+A etapa 00 foi reclassificada como implementado documental parcial. As specs runtime continuam dependendo da governanca documental consolidada em `docs/specs/`, mas nao devem tentar executar novamente a spec 00 antiga de `a_implementar`.
+
 | Ordem | Spec | Status | Depende de | Bloqueia | Risco se antecipar |
 |---|---|---|---|---|---|
-| 00 | [spec_docs_single_source_specs_refinements_reconciliation_v1](a_implementar/spec_docs_single_source_specs_refinements_reconciliation_v1.md) | A implementar | Nenhuma | Todas as specs futuras | Agentes podem implementar a partir de fonte errada se esta spec for ignorada. |
+| 00 | [spec_docs_001_single_source_specs_refinements_reconciliation_parcial](implementados/spec_docs_001_single_source_specs_refinements_reconciliation_parcial.md) | Implementado documental parcial | Nenhuma | Base para todas as specs futuras | Agentes podem implementar a partir de fonte errada se esta governanca for ignorada. |
 | 01 | [spec_scene_unity_validation_missing_scripts_prefabs](a_implementar/spec_scene_unity_validation_missing_scripts_prefabs.md) | A implementar | 00 | 02-17 | Mudancas runtime podem mascarar problemas de cena/prefab. |
 | 02 | [spec_save_schema_migration_v2](a_implementar/spec_save_schema_migration_v2.md) | A implementar | 00, 01 | 03-17 | Specs posteriores podem persistir dados sem contrato de migracao. |
 | 03 | [spec_inventory_slots_capacity_ui_final](a_implementar/spec_inventory_slots_capacity_ui_final.md) | A implementar | 00, 01, 02 | 04, 06, 07, 10, 12, 17 | Economy, craft e equipment podem depender de um modelo de inventory ainda provisorio. |
@@ -22,3 +24,7 @@ Regra: uma spec so pode ser implementada se suas dependencias anteriores estiver
 | 15 | [spec_cave_entry_death_anya_corpse_recovery](a_implementar/spec_cave_entry_death_anya_corpse_recovery.md) | A implementar | 00-14 | 16, 17 | Skill respec e UI podem criar fluxos sem falha/recovery definidos. |
 | 16 | [spec_skill_trees_active_slots_respec_anya_runtime](a_implementar/spec_skill_trees_active_slots_respec_anya_runtime.md) | A implementar | 00-15 | 17 | UI final pode expor skill tree incompleta ou sem persistencia. |
 | 17 | [spec_ui_ux_full_gameplay_inventory_hotbar_menus](a_implementar/spec_ui_ux_full_gameplay_inventory_hotbar_menus.md) | A implementar | 00-16 | Nenhuma | UI pode cristalizar contratos de sistemas ainda instaveis se antecipada. |
+
+## Observacao operacional
+
+A spec 00 antiga em `a_implementar/spec_docs_single_source_specs_refinements_reconciliation_v1.md` nao deve ser executada novamente; ela permanece apenas como ponte historica ate remocao fisica futura.
