@@ -32,7 +32,7 @@ namespace CindarsHope.Combat
 
         private void ExecuteSpell(SpellDataSO spell, Vector2 direction)
         {
-            Debug.Log($"Casting spell: {spell.DisplayName}");
+            Debug.Log($"Casting spell.");
         }
     }
 }

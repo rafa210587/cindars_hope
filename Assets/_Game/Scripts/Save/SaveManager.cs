@@ -13,7 +13,6 @@ using CindarsHope.Farm;
 using CindarsHope.Inventory;
 using CindarsHope.Player;
 using CindarsHope.Player.Progression;
-using CindarsHope.Quest;
 using CindarsHope.Save.Migrations;
 using CindarsHope.UI.Hotbar;
 using CindarsHope.World;
@@ -48,7 +47,6 @@ namespace CindarsHope.Save
         [SerializeField] private CaveRunManager _caveRunManager;
         [SerializeField] private ShopManager _shopManager;
         [SerializeField] private CraftingRuntime _craftingRuntime;
-        [SerializeField] private QuestManager _questManager;
 
         private readonly HotbarState _hotbarState = new HotbarState();
         private readonly SaveMigrationRegistry _migrationRegistry = new SaveMigrationRegistry(new ISaveMigration[]
@@ -90,7 +88,6 @@ namespace CindarsHope.Save
                 var caveSaveData = CaptureCaveSaveData(existingSaveData);
                 var economySaveData = CaptureEconomySaveData(existingSaveData);
                 var craftingSaveData = CaptureCraftingSaveData();
-                var questsSaveData = CaptureQuestsSaveData();
                 var staminaSaveData = CaptureStaminaSaveData();
 
                 var saveData = new GameSaveData
@@ -109,7 +106,6 @@ namespace CindarsHope.Save
                     Cave = caveSaveData,
                     Economy = economySaveData,
                     Crafting = craftingSaveData,
-                    Quests = questsSaveData,
                     Stamina = staminaSaveData
                 };
 
@@ -466,13 +462,12 @@ namespace CindarsHope.Save
                 return false;
             }
 
-            // TODO: SaveBackupService backup feature (future)
             var backupFilePath = string.Empty;
-            // if (allowWriteBack && !SaveBackupService.TryCreateBackup(savePath, out backupFilePath, out var backupError))
-            // {
-            //     result = SaveMigrationResult.Failed(sourceVersion, CurrentSchemaVersion, $"Could not create save backup: {backupError}");
-            //     return false;
-            // }
+            if (allowWriteBack && !SaveBackupService.TryCreateBackup(savePath, out backupFilePath, out var backupError))
+            {
+                result = SaveMigrationResult.Failed(sourceVersion, CurrentSchemaVersion, $"Could not create save backup: {backupError}");
+                return false;
+            }
 
             var context = new SaveMigrationContext(savePath, backupFilePath, sourceVersion, CurrentSchemaVersion, rawJson);
             if (!_migrationRegistry.TryMigrate(context, out result))
@@ -808,11 +803,6 @@ namespace CindarsHope.Save
                 _craftingRuntime.LoadFromSaveData(saveData.Crafting);
             }
 
-            if (_questManager != null && saveData.Quests != null)
-            {
-                _questManager.LoadFromSaveData(saveData.Quests);
-            }
-
             if (_staminaManager != null && saveData.Stamina != null)
             {
                 _staminaManager.Initialize(saveData.Stamina.MaxStamina, saveData.Stamina.CurrentStamina);
@@ -821,14 +811,18 @@ namespace CindarsHope.Save
 
         private EconomySaveData CaptureEconomySaveData(GameSaveData existingSaveData)
         {
-            if (_shopManager == null)
+            var economyData = new EconomySaveData();
+
+            if (_shopManager != null)
             {
-                return existingSaveData?.Economy ?? new EconomySaveData();
+                economyData.Shops = _shopManager.CaptureAllShopStock();
+            }
+            else if (existingSaveData?.Economy != null)
+            {
+                economyData.Shops = existingSaveData.Economy.Shops;
             }
 
-            // For now, preserve existing economy data if ShopManager is not active
-            // Shops will be loaded from their respective ScriptableObjects
-            return existingSaveData?.Economy ?? new EconomySaveData();
+            return economyData;
         }
 
         private void RestoreEconomySaveData(EconomySaveData economyData)
@@ -857,16 +851,6 @@ namespace CindarsHope.Save
             }
 
             return _craftingRuntime.CaptureSaveData();
-        }
-
-        private QuestManagerSaveData CaptureQuestsSaveData()
-        {
-            if (_questManager == null)
-            {
-                return new QuestManagerSaveData();
-            }
-
-            return _questManager.CaptureSaveData();
         }
 
         private StaminaSaveData CaptureStaminaSaveData()

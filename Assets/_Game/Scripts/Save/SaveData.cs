@@ -5,7 +5,6 @@ using CindarsHope.Equipment;
 using CindarsHope.Farm;
 using CindarsHope.Player;
 using CindarsHope.Player.Progression;
-using CindarsHope.Quest;
 using CindarsHope.UI.Hotbar;
 using CindarsHope.World;
 using UnityEngine;
@@ -29,7 +28,6 @@ namespace CindarsHope.Save
         public CaveSaveData Cave;
         public EconomySaveData Economy;
         public CraftingRuntimeSaveData Crafting;
-        public QuestManagerSaveData Quests;
         public StaminaSaveData Stamina;
         public EquipmentDurabilitySaveData EquipmentDurability;
         public NpcManagerSaveData Npcs;

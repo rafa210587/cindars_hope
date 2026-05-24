@@ -159,6 +159,22 @@ namespace CindarsHope.Economy
             return session.CaptureSaveData();
         }
 
+        public List<ShopStockSaveData> CaptureAllShopStock()
+        {
+            var allShopStock = new List<ShopStockSaveData>();
+
+            foreach (var kvp in _sessions)
+            {
+                var stockData = kvp.Value.CaptureSaveData();
+                if (stockData != null)
+                {
+                    allShopStock.Add(stockData);
+                }
+            }
+
+            return allShopStock;
+        }
+
         private void HandleDayStarted(DayStartedEvent evt)
         {
             if (_timeManager == null)
