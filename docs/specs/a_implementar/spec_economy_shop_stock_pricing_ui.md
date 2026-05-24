@@ -7,7 +7,7 @@
 > Bloqueia: 07, 08, 17
 > Tipo: Runtime/UI
 > Fonte: docs/specs/ como fonte unica; fontes absorvidas listadas abaixo.
-> Escopo: Evoluir economia para lojas em NPCs da cidade, estoque finito, reposicao diaria, UI modal de compra/venda, precos, falas simples de NPC e save.
+> Escopo: Evoluir economia para lojas em NPCs da cidade, estoque finito, reposicao diaria, UI modal de compra/venda, dialogue modal de NPC, precos, falas simples e save.
 > Fora de escopo: reputacao/afinidade final, agenda completa de NPC, quests, crafting recipes finais, UI final consolidada, Packages, ProjectSettings e docs_old.
 
 Fontes absorvidas:
@@ -21,7 +21,7 @@ Fontes absorvidas:
 
 O projeto ja possui `EconomyManager`, policy de sellables e eventos de compra/venda MVP. A compra/venda atual ainda e simples e pode estar acoplada a um ponto de venda da fazenda.
 
-Esta spec deve mover o fluxo de loja para a cidade, com NPCs vendedores, estoque finito, UI modal e falas simples de abertura/despedida. A fazenda nao deve manter compra/venda como interface principal.
+Esta spec deve mover o fluxo de loja para a cidade, com NPCs vendedores, estoque finito, UI modal, dialogue modal e falas simples de abertura/despedida. A fazenda nao deve manter compra/venda como interface principal.
 
 ## Pre-condicoes
 
@@ -57,6 +57,7 @@ Gaps atuais:
 - nao ha dois vendedores especializados;
 - Pip ainda pode estar sendo tratado como vendedor, mas deve virar recepcao da cidade;
 - NPCs ainda nao possuem contrato simples de fala de abertura e despedida;
+- dialogos precisam usar modal proprio e nao podem ficar sobre outros modais;
 - compra/venda da fazenda deve ser removida/deprecada;
 - estoque nao e finito nem persistido;
 - reposicao diaria nao existe;
@@ -71,8 +72,8 @@ Criar o sistema de lojas da cidade com:
 - Pip como NPC recepcionista da cidade, sem loja;
 - NPC vendedor de armas e armaduras;
 - NPC vendedor de sementes e utensilios;
-- fala de abertura e despedida especifica para todos os NPCs desta spec;
-- menu modal vertical de conversa com `Comprar`, `Vender`, `Sair`;
+- dialogue modal para falas de abertura e despedida dos NPCs;
+- menu modal vertical de loja com `Comprar`, `Vender`, `Sair`;
 - estoque finito por vendedor;
 - reposicao diaria;
 - compra segura com gold, inventory capacity e decremento de estoque;
@@ -88,8 +89,10 @@ Criar o sistema de lojas da cidade com:
 - Pip nao vende itens nesta spec.
 - Pip recebe o jogador na cidade: quando o jogador entra na cidade, Pip se move ate perto do jogador e depois para.
 - Todos os NPCs desta spec possuem uma frase de abertura e uma frase de despedida especifica.
-- Ao interagir com um NPC, a fala de abertura aparece antes do menu de opcoes.
-- Ao fechar a conversa por `Sair` ou `Esc`, a fala de despedida especifica do NPC aparece antes de encerrar o modal.
+- Dialogos de NPC usam `DialogueModal` ou equivalente, separado visualmente do shop menu.
+- `DialogueModal`, `ShopMenuModal`, `ShopBuyPanel` e `ShopSellPanel` devem respeitar uma unica pilha/camada de modal: nao pode haver dois modais ativos se sobrepondo.
+- Ao interagir com um NPC, a fala de abertura aparece em `DialogueModal` antes do menu de opcoes.
+- Ao fechar a conversa por `Sair` ou `Esc`, a fala de despedida especifica aparece em `DialogueModal` antes de encerrar o fluxo.
 - Ambos os vendedores, ao conversar, abrem menu modal vertical:
 
 ```text
@@ -124,8 +127,8 @@ Comportamento:
 
 - Quando jogador entra na cidade pela primeira vez na sessao/cena, Pip anda ate perto do jogador.
 - Ao chegar em distancia segura, Pip para.
-- Pip deve ter uma fala curta de abertura/boas-vindas.
-- Pip deve ter uma fala curta de despedida.
+- Pip deve ter uma fala curta de abertura/boas-vindas exibida em `DialogueModal`.
+- Pip deve ter uma fala curta de despedida exibida em `DialogueModal`.
 - Nao implementar agenda completa, quest ou loja para Pip nesta spec.
 
 ### Vendedor de armas e armaduras
@@ -272,27 +275,31 @@ Regras:
 
 ```text
 Jogador interage com NPC
-Mostrar OpeningLine especifica do NPC
-Se NPC for lojista, abrir menu modal: Comprar / Vender / Sair
-Se jogador escolher Sair ou apertar Esc, mostrar ClosingLine especifica
+Abrir DialogueModal com OpeningLine especifica do NPC
+Fechar DialogueModal
+Se NPC for lojista, abrir ShopMenuModal: Comprar / Vender / Sair
+Se jogador escolher Sair ou apertar Esc, fechar menu/painel atual
+Abrir DialogueModal com ClosingLine especifica
 Fechar conversa/modal
 Restaurar input do player
 ```
 
 Garantias:
 
-- Pip mostra falas, mas nao abre loja.
+- Pip mostra falas em `DialogueModal`, mas nao abre loja.
 - Lojistas mostram fala de abertura antes do menu.
 - Lojistas mostram despedida ao sair.
 - Despedida nao deve disparar transacao.
 - Fechar com `Esc` deve seguir o mesmo encerramento seguro de `Sair`.
+- `DialogueModal` nao fica sobre `ShopMenuModal`, `ShopBuyPanel`, `ShopSellPanel`, inventory panel ou HUD interativo.
+- Ao trocar de modal, o modal anterior deve ser fechado/ocultado ou empilhado de forma controlada, sem sobreposicao visual permanente.
 
 ## Fluxo de compra
 
 ```text
 Jogador interage com NPC lojista
-OpeningLine
-Menu modal: Comprar / Vender / Sair
+DialogueModal: OpeningLine
+ShopMenuModal: Comprar / Vender / Sair
 Escolhe Comprar
 Abre ShopBuyPanel com lista de itens, preco, estoque restante e quantidade
 Jogador seleciona item/quantidade
@@ -312,8 +319,8 @@ Garantias:
 
 ```text
 Jogador interage com NPC lojista
-OpeningLine
-Menu modal: Comprar / Vender / Sair
+DialogueModal: OpeningLine
+ShopMenuModal: Comprar / Vender / Sair
 Escolhe Vender
 Abre ShopSellPanel usando inventory do jogador
 Mostra itens vendaveis e preco de venda = 60% do BaseValue
@@ -331,16 +338,48 @@ Garantias:
 
 ## UI/modal
 
+### Modal manager / exclusividade
+
+Esta spec deve usar um mecanismo unico de controle de modal, existente ou novo, para garantir:
+
+- no maximo um modal interativo ativo por vez;
+- dialogo nao fica sobre loja;
+- loja nao fica sobre dialogo;
+- inventory/shop panels nao ficam sobre dialogue modal;
+- HUD principal pode permanecer visivel ao fundo, mas nao deve receber input enquanto modal estiver aberto;
+- ao fechar um modal, input normal volta somente se nao houver outro modal ativo.
+
+Se ainda nao existir um `ModalManager`, `UiModalStack` ou equivalente, criar o minimo necessario sem virar UI final global.
+
+### DialogueModal
+
+Usado para:
+
+```text
+OpeningLine
+ClosingLine
+Mensagens simples de NPC desta spec
+```
+
+Regras:
+
+- aparece antes do shop menu;
+- aparece ao sair antes de encerrar conversa;
+- bloqueia input do player;
+- fecha por `E`, `Enter`, `Space` ou `Esc`, conforme fluxo seguro;
+- nao fica aberto quando `ShopMenuModal`, `ShopBuyPanel` ou `ShopSellPanel` estiverem ativos.
+
 ### Conversation shop menu
 
 Ao falar com um lojista:
 
 ```text
-OpeningLine
-Comprar
-Vender
-Sair
-ClosingLine ao sair
+DialogueModal: OpeningLine
+ShopMenuModal:
+  Comprar
+  Vender
+  Sair
+DialogueModal: ClosingLine ao sair
 ```
 
 Input:
@@ -355,7 +394,7 @@ Enquanto o menu estiver aberto:
 
 - movimento do player fica bloqueado/ignorado;
 - interacoes do mundo nao disparam em paralelo;
-- ao fechar, input normal volta.
+- ao fechar, input normal volta apenas depois da despedida.
 
 ### Buy panel
 
@@ -434,6 +473,8 @@ NpcGreetingStartedEvent opcional
 NpcGreetingFinishedEvent opcional
 NpcConversationOpenedEvent opcional
 NpcConversationClosedEvent opcional
+DialogueModalOpenedEvent opcional
+DialogueModalClosedEvent opcional
 ```
 
 Nao duplicar eventos de economy existentes se ja forem suficientes.
@@ -459,11 +500,12 @@ Se inventory estiver cheio, gold insuficiente, estoque esgotado ou item nao vend
 
 - Pip nao abre loja.
 - Pip se move ate o jogador ao entrar na cidade e para proximo dele.
-- Pip tem fala de abertura e despedida.
+- Pip tem fala de abertura e despedida em `DialogueModal`.
 - Existem dois NPCs lojistas: armas/armaduras e sementes/utensilios.
-- Cada lojista tem fala de abertura e despedida especifica.
+- Cada lojista tem fala de abertura e despedida especifica em `DialogueModal`.
 - Cada lojista abre menu modal vertical `Comprar / Vender / Sair` depois da fala de abertura.
-- Ao escolher `Sair` ou apertar `Esc`, o NPC mostra sua despedida antes de fechar.
+- Ao escolher `Sair` ou apertar `Esc`, o NPC mostra sua despedida em `DialogueModal` antes de fechar.
+- Dialogos nao ficam sobre shop menu, buy panel, sell panel, inventory panel ou outros modais.
 - Comprar abre HUD/lista de itens do vendedor.
 - Vender abre inventory do jogador em modo venda.
 - Estoque dos vendedores e finito.
@@ -492,6 +534,8 @@ Assets/_Game/Scripts/Economy/**
 Assets/_Game/Scripts/Economy/Data/**
 Assets/_Game/Scripts/NPC/**
 Assets/_Game/Scripts/UI/Shop/**
+Assets/_Game/Scripts/UI/Dialogue/**
+Assets/_Game/Scripts/UI/Modal/**
 Assets/_Game/Scripts/Inventory/**
 Assets/_Game/Scripts/Save/**
 Assets/_Game/Scripts/Core/Events/**
@@ -499,24 +543,26 @@ Assets/_Game/Scripts/Town/**
 docs/specs/implementados/spec_economy_001_compra_venda_gold_e_sellables.md
 ```
 
-Managers/bridges Unity devem ser finos. Calculo de preco, validacao de transacao, reposicao de estoque e falas simples devem ficar fora de MonoBehaviour pesado quando possivel.
+Managers/bridges Unity devem ser finos. Calculo de preco, validacao de transacao, reposicao de estoque, modal orchestration e falas simples devem ficar fora de MonoBehaviour pesado quando possivel.
 
 ## Ordem segura de implementacao
 
-1. Revalidar `EconomyManager`, inventory, gold, sellable policy e eventos existentes.
+1. Revalidar `EconomyManager`, inventory, gold, sellable policy, UI e eventos existentes.
 2. Criar dados de shop (`ShopDataSO`, entries e stock rules).
 3. Criar dados simples de NPC interaction com `OpeningLine` e `ClosingLine`.
-4. Criar runtime de shop/stock sem UI.
-5. Implementar price calculator com multiplicadores `1.0` e `0.6`.
-6. Implementar save/load de estoque.
-7. Implementar restock diario.
-8. Criar dois NPCs lojistas e associar `ShopDataSO`.
-9. Ajustar Pip como recepcao, sem loja.
-10. Implementar fala de abertura/despedida.
-11. Implementar menu modal `Comprar/Vender/Sair`.
-12. Implementar BuyPanel e SellPanel.
-13. Remover/desativar compra/venda oficial da fazenda.
-14. Validar anti-regressao e atualizar tracking.
+4. Criar/ajustar controle minimo de modais para impedir sobreposicao.
+5. Criar `DialogueModal` minimo.
+6. Criar runtime de shop/stock sem UI.
+7. Implementar price calculator com multiplicadores `1.0` e `0.6`.
+8. Implementar save/load de estoque.
+9. Implementar restock diario.
+10. Criar dois NPCs lojistas e associar `ShopDataSO`.
+11. Ajustar Pip como recepcao, sem loja.
+12. Implementar fala de abertura/despedida via `DialogueModal`.
+13. Implementar menu modal `Comprar/Vender/Sair`.
+14. Implementar BuyPanel e SellPanel.
+15. Remover/desativar compra/venda oficial da fazenda.
+16. Validar anti-regressao e atualizar tracking.
 
 ## Fluxos
 
@@ -525,13 +571,15 @@ Managers/bridges Unity devem ser finos. Calculo de preco, validacao de transacao
 ```text
 Player pressiona E em NPC
 Bloquear input do player
-Mostrar OpeningLine do NPC
-Se NPC for lojista, abrir menu modal Comprar/Vender/Sair
-Se NPC nao for lojista, encerrar com ClosingLine quando jogador sair
+Abrir DialogueModal com OpeningLine
+Fechar DialogueModal
+Se NPC for lojista, abrir ShopMenuModal Comprar/Vender/Sair
+Se NPC nao for lojista, ao sair abrir DialogueModal com ClosingLine
 Confirmar opcao
 Abrir painel correspondente ou sair
-Ao sair, mostrar ClosingLine
-Restaurar input do player
+Ao sair, abrir DialogueModal com ClosingLine
+Fechar DialogueModal
+Restaurar input do player se nao houver outro modal ativo
 ```
 
 ### Comprar
@@ -575,8 +623,8 @@ TownScene carrega / jogador entra na cidade
 Pip detecta entrada por evento/trigger seguro
 Pip caminha ate ponto perto do jogador
 Pip para
-Mostra OpeningLine de boas-vindas quando interagido ou quando recepcao disparar, se houver suporte
-Ao encerrar, mostra ClosingLine
+Mostra OpeningLine em DialogueModal quando interagido ou quando recepcao disparar, se houver suporte
+Ao encerrar, mostra ClosingLine em DialogueModal
 Nao abre loja
 ```
 
@@ -612,10 +660,11 @@ Regras:
 
 - modal bloqueia movimento;
 - lista vertical navegavel por teclado;
-- fala de abertura aparece antes do menu;
-- fala de despedida aparece antes de fechar;
+- fala de abertura aparece em `DialogueModal` antes do menu;
+- fala de despedida aparece em `DialogueModal` antes de fechar;
 - feedback de erro visivel;
 - nao substituir HUD/hotbar/inventory panel de forma permanente;
+- dialogo e shop panels nao podem ficar empilhados visualmente;
 - `Esc` sempre volta ou fecha com despedida quando em conversa ativa.
 
 ## Riscos de regressao
@@ -628,6 +677,7 @@ Regras:
 - Pip virar lojista por fallback antigo.
 - Shop UI mover/destruir HUD existente.
 - Fala de despedida disparar no meio de transacao.
+- DialogueModal ficar sobre ShopMenu/BuyPanel/SellPanel.
 
 ## Mitigacao
 
@@ -638,6 +688,7 @@ Regras:
 - Pip sem `ShopDataSO`.
 - UI modal temporaria.
 - ClosingLine executa apenas em encerramento de conversa, nao durante compra/venda.
+- Controle unico de modais para impedir sobreposicao visual e conflito de input.
 
 ---
 
@@ -645,10 +696,12 @@ Regras:
 
 ## Tasks
 
-- [ ] Revalidar estado real de economy, inventory, NPC, Town e save antes de alterar runtime.
+- [ ] Revalidar estado real de economy, inventory, NPC, Town, UI e save antes de alterar runtime.
 - [ ] Confirmar specs 02-05 implementadas antes de runtime.
 - [ ] Criar/ajustar `ShopDataSO`, `ShopItemEntry`, `ShopStockRule`, `PriceModifierRule`.
 - [ ] Criar/ajustar dados simples de NPC com `OpeningLine` e `ClosingLine`.
+- [ ] Criar/ajustar controle minimo de modais para impedir sobreposicao.
+- [ ] Criar/ajustar `DialogueModal`.
 - [ ] Criar/ajustar `ShopManager`, `ShopSession`, `ShopStockSaveData`.
 - [ ] Implementar price calculator: buy x1 inicial, sell 60%.
 - [ ] Implementar estoque finito e decremento por compra.
@@ -657,7 +710,7 @@ Regras:
 - [ ] Criar loja de sementes/utensilios.
 - [ ] Ajustar Pip como recepcao da cidade, sem loja.
 - [ ] Implementar movimento de Pip ate o jogador ao entrar na cidade e parada.
-- [ ] Implementar fala de abertura/despedida para Pip e lojistas.
+- [ ] Implementar fala de abertura/despedida para Pip e lojistas via `DialogueModal`.
 - [ ] Implementar menu modal `Comprar/Vender/Sair`.
 - [ ] Implementar BuyPanel com itens, preco, estoque e quantidade.
 - [ ] Implementar SellPanel com inventory do jogador e preco de 60%.
@@ -672,6 +725,8 @@ Regras:
 Assets/_Game/Scripts/Economy/**
 Assets/_Game/Scripts/NPC/**
 Assets/_Game/Scripts/UI/Shop/**
+Assets/_Game/Scripts/UI/Dialogue/**
+Assets/_Game/Scripts/UI/Modal/**
 Assets/_Game/Scripts/Inventory/**
 Assets/_Game/Scripts/Save/**
 Assets/_Game/Scripts/Core/Events/**
@@ -697,6 +752,7 @@ ProjectSettings/**
 - Dois NPCs lojistas funcionam na cidade.
 - Pip funciona como recepcao e nao como loja.
 - Todos os NPCs desta spec possuem fala de abertura e despedida especifica.
+- DialogueModal funciona e nao se sobrepoe aos modais de loja.
 - Menu modal Comprar/Vender/Sair funciona.
 - BuyPanel e SellPanel funcionam com inventory/gold reais.
 - Estoque finito, decremento e restock diario funcionam.
@@ -720,17 +776,19 @@ Play Mode minimo:
 
 1. Entrar na cidade e validar Pip caminhando ate o jogador e parando.
 2. Confirmar que Pip nao abre loja.
-3. Validar fala de abertura e despedida do Pip.
-4. Interagir com vendedor de armas/armaduras e validar fala de abertura.
-5. Abrir menu Comprar/Vender/Sair.
-6. Comprar item com gold e espaco suficientes.
-7. Validar decremento de estoque.
-8. Tentar comprar sem gold.
-9. Tentar comprar sem espaco no inventory.
-10. Comprar ate estoque acabar.
-11. Vender item do inventory e validar ganho de 60% do BaseValue.
-12. Sair da conversa e validar despedida especifica do lojista.
-13. Salvar/carregar e validar estoque restante.
-14. Avancar dia e validar restock uma unica vez.
-15. Confirmar que compra/venda da fazenda nao esta mais ativa como fluxo oficial.
-16. Validar que HUD/hotbar/inventory nao ficam deslocados ou quebrados.
+3. Validar fala de abertura e despedida do Pip em `DialogueModal`.
+4. Interagir com vendedor de armas/armaduras e validar fala de abertura em `DialogueModal`.
+5. Validar que `DialogueModal` fecha antes de abrir Comprar/Vender/Sair.
+6. Abrir menu Comprar/Vender/Sair.
+7. Comprar item com gold e espaco suficientes.
+8. Validar decremento de estoque.
+9. Tentar comprar sem gold.
+10. Tentar comprar sem espaco no inventory.
+11. Comprar ate estoque acabar.
+12. Vender item do inventory e validar ganho de 60% do BaseValue.
+13. Sair da conversa e validar despedida especifica do lojista em `DialogueModal`.
+14. Validar que dialogo nao fica sobre shop menu, buy panel ou sell panel.
+15. Salvar/carregar e validar estoque restante.
+16. Avancar dia e validar restock uma unica vez.
+17. Confirmar que compra/venda da fazenda nao esta mais ativa como fluxo oficial.
+18. Validar que HUD/hotbar/inventory nao ficam deslocados ou quebrados.
