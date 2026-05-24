@@ -15,6 +15,9 @@ namespace CindarsHope.Inventory.Data
         public int MaxStack = 1;
         public int BaseValue;
         public int HungerRestore;
+        public int StaminaRestore;
+        public string[] StatusEffectIds;
+        public float BuffDurationSeconds;
         public bool IsEquippable;
 
         string IIdentifiedData.Id => Id;
@@ -24,6 +27,8 @@ namespace CindarsHope.Inventory.Data
             MaxStack = Mathf.Max(1, MaxStack);
             BaseValue = Mathf.Max(0, BaseValue);
             HungerRestore = Mathf.Max(0, HungerRestore);
+            StaminaRestore = Mathf.Max(0, StaminaRestore);
+            BuffDurationSeconds = Mathf.Max(0, BuffDurationSeconds);
         }
     }
 }
