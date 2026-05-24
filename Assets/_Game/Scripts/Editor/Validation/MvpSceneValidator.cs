@@ -5,6 +5,7 @@ using CindarsHope.Cave.Runtime;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Time;
 using CindarsHope.Craft;
+using CindarsHope.Craft.Data;
 using CindarsHope.Economy;
 using CindarsHope.Farm;
 using CindarsHope.Inventory;
@@ -15,6 +16,7 @@ using CindarsHope.Save;
 using CindarsHope.SceneManagement;
 using CindarsHope.UI;
 using CindarsHope.UI.Dialogue;
+using CindarsHope.UI.Crafting;
 using CindarsHope.UI.Modal;
 using CindarsHope.UI.Shop;
 using CindarsHope.World;
@@ -118,6 +120,17 @@ namespace CindarsHope.Editor.Validation
             Debug.Log("SPEC 06 scene validation passed for TownScene and FarmScene.");
         }
 
+        public static void ValidateSpec07Scene()
+        {
+            EditorSceneManager.OpenScene("Assets/_Game/Scenes/FarmScene.unity");
+            if (!ValidateFarmScene())
+            {
+                throw new System.InvalidOperationException("SPEC 07 validation failed for FarmScene.");
+            }
+
+            Debug.Log("SPEC 07 scene validation passed for FarmScene.");
+        }
+
         private static bool ValidateFarmScene()
         {
             var rootObjects = EditorSceneManager.GetActiveScene().GetRootGameObjects();
@@ -180,8 +193,17 @@ namespace CindarsHope.Editor.Validation
             if (FindComponent<SeedShopPoint>(rootObjects) != null || FindComponent<SellPoint>(rootObjects) != null)
                 { Debug.LogError("MvpSceneValidator: Legacy farm purchase/sale points must be disabled after SPEC 06."); passed = false; }
 
-            if (FindComponent<CraftingPoint>(rootObjects) == null)
-                { Debug.LogError("MvpSceneValidator: CraftingPoint not found in FarmScene."); passed = false; }
+            if (FindComponent<CraftingRuntime>(rootObjects) == null
+                || FindComponent<ModalManager>(rootObjects) == null
+                || FindComponent<CraftingModal>(rootObjects) == null)
+                { Debug.LogError("MvpSceneValidator: SPEC 07 runtime/modal wiring is missing in FarmScene."); passed = false; }
+
+            var craftingStations = Object.FindObjectsByType<CraftingPoint>();
+            if (craftingStations.Length != 3
+                || !HasStation(craftingStations, "farm_workbench_01", WorkshopType.Workbench)
+                || !HasStation(craftingStations, "farm_forge_01", WorkshopType.Forge)
+                || !HasStation(craftingStations, "farm_cooking_01", WorkshopType.CookingStation))
+                { Debug.LogError("MvpSceneValidator: SPEC 07 requires Workbench, Forge and CookingStation with stable farm IDs."); passed = false; }
 
             var portalToTown = FindPortalTo(rootObjects, "TownScene");
             if (portalToTown == null)
@@ -319,6 +341,19 @@ namespace CindarsHope.Editor.Validation
                 }
             }
             return null;
+        }
+
+        private static bool HasStation(CraftingPoint[] stations, string id, WorkshopType type)
+        {
+            foreach (var station in stations)
+            {
+                if (station.StationInstanceId == id && station.StationType == type)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

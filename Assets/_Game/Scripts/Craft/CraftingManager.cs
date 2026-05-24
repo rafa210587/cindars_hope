@@ -142,6 +142,12 @@ namespace CindarsHope.Craft
                 return false;
             }
 
+            if (recipe.RequiredStationType != WorkshopType.None)
+            {
+                Debug.LogWarning($"CraftingManager rejected station recipe '{recipeId}' outside a physical workstation.", this);
+                return false;
+            }
+
             if (string.IsNullOrWhiteSpace(recipe.OutputItemId) || recipe.OutputAmount <= 0)
             {
                 Debug.LogWarning($"CraftingManager rejected invalid output data for recipe '{recipeId}'.", this);

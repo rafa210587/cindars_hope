@@ -9,7 +9,9 @@ namespace CindarsHope.UI.Modal
         Dialogue,
         ShopMenu,
         Buy,
-        Sell
+        Sell,
+        Crafting,
+        Inventory
     }
 
     [DisallowMultipleComponent]

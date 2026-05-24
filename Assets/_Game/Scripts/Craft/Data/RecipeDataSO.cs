@@ -1,5 +1,6 @@
 using CindarsHope.Core.Data;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace CindarsHope.Craft.Data
 {
@@ -11,16 +12,30 @@ namespace CindarsHope.Craft.Data
         public string Id => _id;
         public string DisplayName;
         [TextArea] public string Description;
-        public WorkshopType WorkshopType;
+        [FormerlySerializedAs("WorkshopType")] public WorkshopType RequiredStationType;
         public int RequiredWorkshopLevel = 1;
         public RecipeIngredient[] Ingredients;
         public string OutputItemId;
         public int OutputAmount = 1;
 
-        // Spec 07 - Crafting queue and timing
         public float CraftTimeSeconds = 0f;
         public int StaminaCost = 0;
-        public bool IsUnlocked = true;
+        [FormerlySerializedAs("IsUnlocked")] public bool IsUnlockedByDefault = true;
+        public int RequiredPlayerLevel;
+        public string RequiredSkillNodeId;
+        public string[] UnlockConditionIds;
+
+        public WorkshopType WorkshopType
+        {
+            get => RequiredStationType;
+            set => RequiredStationType = value;
+        }
+
+        public bool IsUnlocked
+        {
+            get => IsUnlockedByDefault;
+            set => IsUnlockedByDefault = value;
+        }
 
         public void SetId(string id)
         {
@@ -35,6 +50,7 @@ namespace CindarsHope.Craft.Data
             OutputAmount = Mathf.Max(1, OutputAmount);
             CraftTimeSeconds = Mathf.Max(0f, CraftTimeSeconds);
             StaminaCost = Mathf.Max(0, StaminaCost);
+            RequiredPlayerLevel = Mathf.Max(0, RequiredPlayerLevel);
 
             if (Ingredients == null)
             {

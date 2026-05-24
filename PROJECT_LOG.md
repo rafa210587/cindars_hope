@@ -3046,3 +3046,62 @@ Residual risk: input e layout visual dependem da validacao humana final.
 - SPEC_07 - Crafting queue, workstations, recipes e UI.
 
 ---
+## Sessao 2026-05-24 (9a) - Fechar SPEC 07 Crafting Queue Workstations Recipes UI
+
+**Data:** 2026-05-24
+**Foco:** concluir crafting com workstations fisicas, job temporizado, modal, save/load e starter/test kit
+**Status:** COMPLETO
+
+### Arquivos e Resumo Tecnico
+
+- Runtime: `CraftingRuntime`, `CraftingStation` e `CraftingJob` agora suportam station IDs estaveis, craft de bolso, instant craft atomico, job temporizado, cancelamento com rollback, coleta sem perda e DTOs simples.
+- UI/eventos: `CraftingModal` usa a exclusividade de `ModalManager`; eventos de station/job/collect/failure usam `GameEventBus`.
+- Cena/dados: `FarmScene` possui Workbench, Forge e CookingStation; `CraftingRecipeInitializer` cria quatro recipes oficiais e starter/test resources idempotentes.
+- Auditoria: spec/refinement promovidos, registries e status reconciliados, prompt arquivado e evidencias registradas em `docs/validation/SPEC_07_CRAFTING_VALIDATION_20260524.md`.
+
+### Specs/Refinements Lidos
+
+- `docs/specs/a_implementar/spec_crafting_queue_workstations_recipes_ui.md`
+- `docs/refinements/a_implementar/pre_refinamentos/refinamento_init_crafting_queue_workstations_recipes_ui.md`
+- Spec implementada parcial preexistente reconciliada pelo codigo real.
+
+### Skills Usadas
+
+- SPEC Validation Pattern
+- Scene Wiring Validation Pattern
+- Unity Asset Creation Pattern
+- Save/Load Data Pattern
+- Event Publishing Pattern
+- Spec Closure / Registry Reconciliation Pattern
+- Play Mode Manual Validation Checklist
+
+### Validacoes Executadas
+
+- Unity compile: PASS. `Logs/unity-compile-spec07-final.log` registra `Tundra build success`, nenhum `error CS` e retorno interno Unity `0`; o wrapper externo retornou `1`.
+- Crafting domain validation: PASS. `Logs/spec07-crafting-validation-final.log`, incluindo exclusividade Inventory/Crafting.
+- Scene wiring validation: PASS. `Logs/spec07-scene-validation-final.log`.
+- Unity log scan: FAIL documentado; marcou somente `Assembly-CSharp-Editor-firstpass.dll` e `Assembly-CSharp-firstpass.dll` invalidos, sem erro C#.
+- Docs validation: executar apos esta promocao documental.
+
+### Play Mode
+
+```text
+PLAY MODE TEST: SPEC 07 - Crafting Queue, Workstations, Recipes e UI
+Scene used: Assets/_Game/Scenes/FarmScene.unity
+Steps executed: NOT RUN
+Expected result: craft de bolso, tres workstations, cancel/collect/full inventory/save-load e exclusividade modal funcionam por input.
+Observed result: NOT RUN
+Bugs found: N/A
+Passed: NOT RUN
+Evidence: Logs/spec07-crafting-validation-final.log e Logs/spec07-scene-validation-final.log
+```
+
+Reason: execucao automatizada ocorreu em Unity batchmode sem interacao humana de Play Mode.
+Command attempted: `ValidateCraftingSystem.ValidateSpec07` e `MvpSceneValidator.ValidateSpec07Scene`.
+Residual risk: UX/input e save/load interativo precisam de verificacao humana final.
+
+### Proxima Spec
+
+- SPEC_08 - Town NPC dialogue, schedule e quests, sujeita a reconciliacao do codigo real.
+
+---

@@ -13,7 +13,7 @@ A etapa 00 foi reclassificada como implementado documental parcial. As specs run
 | 04 | [spec_farm_004_irrigacao_solo_planting_ui](implementados/spec_farm_004_irrigacao_solo_planting_ui.md) | Implementado parcial | 00, 01, 02, 03 implementada/parcial | 05, 09, 17 | World activities e stamina podem duplicar custos/regras de tools. |
 | 05 | [spec_world_002_activities_fishing_trees_pickups_loot](implementados/spec_world_002_activities_fishing_trees_pickups_loot.md) | Implementado parcial | 00-04 implementada/parcial | 06, 07, 10 | Loot/economy podem ser balanceados sobre drops incompletos. |
 | 06 | [spec_economy_shop_stock_pricing_ui](implementados/spec_economy_shop_stock_pricing_ui.md) | Implementado completo | 00-05 implementada/parcial | 07, 08, 17 | Shop NPC, stock, pricing, modal UI e save validados em batchmode; Play Mode final pendente. |
-| 07 | [spec_crafting_queue_workstations_recipes_ui](a_implementar/spec_crafting_queue_workstations_recipes_ui.md) | A implementar | 00-06 | 10, 17 | Equipment e consumables podem criar receitas fora do modelo final. |
+| 07 | [spec_crafting_queue_workstations_recipes_ui](implementados/spec_crafting_queue_workstations_recipes_ui.md) | Implementado completo | 00-06 | 10, 17 | Workstations, queue, modal, starter kit e save/load validados em batchmode; Play Mode final pendente. |
 | 08 | [spec_town_npc_dialogue_schedule_quests](a_implementar/spec_town_npc_dialogue_schedule_quests.md) | A implementar | 00-07 | 15, 17 | Fonte de Anya e lojas podem nascer sem contratos de NPC/quest. |
 | 09 | [spec_hunger_stamina_status_balance](implementados/spec_hunger_stamina_status_balance.md) | Implementado parcial | 00-05 implementada/parcial | 10, 11, 12, 14, 17 | GameTime, stamina regeneration, status effects core entregues. UI final fica para spec 17. |
 | 10 | [spec_equipment_durability_environment_loot_runtime](implementados/spec_equipment_durability_environment_loot_runtime.md) | Implementado parcial | 00-09 | 11, 12, 13, 14, 17 | Damage e enemy tuning ficam instaveis sem stats/equipment finais. |
@@ -34,4 +34,4 @@ A spec 02 foi implementada parcialmente como infraestrutura de migration.
 A spec 03 foi implementada parcialmente com slots, capacidade, migration v1->v2 e painel minimo; Drop runtime e Use especifico permanecem pendentes.
 A spec 04 foi implementada parcialmente com solo/agua/plantio por inventory/menu contextual; Play Mode manual segue pendente.
 A spec 05 foi implementada parcialmente com loot table, fishing timing e tree HP/regrowth; spawner dinamico/cave fishing/farm scene spots seguem pendentes.
-A primeira spec futura executavel passa a ser `a_implementar/spec_crafting_queue_workstations_recipes_ui.md`.
+A primeira spec futura executavel passa a ser `a_implementar/spec_town_npc_dialogue_schedule_quests.md`.

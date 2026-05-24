@@ -1,75 +1,134 @@
 using System;
 using System.Collections.Generic;
-using CindarsHope.Core;
-using CindarsHope.Core.Data;
 using CindarsHope.Craft.Data;
 using CindarsHope.Inventory;
-using CindarsHope.Inventory.Data;
+using CindarsHope.Player;
 using UnityEngine;
 
 namespace CindarsHope.Craft
 {
-    public class CraftingRuntime : MonoBehaviour
+    [DisallowMultipleComponent]
+    public sealed class CraftingRuntime : MonoBehaviour
     {
-        [SerializeField] private ItemDatabaseSO _itemDatabase;
+        private const string PocketStationId = "player_pocket";
+
+        [SerializeField] private InventoryManager _inventoryManager;
         [SerializeField] private RecipeDatabaseSO _recipeDatabase;
+        [SerializeField] private StaminaManager _staminaManager;
 
-        private Dictionary<string, CraftingStation> _stations = new();
-        private bool _isInitialized;
+        private readonly Dictionary<string, CraftingStation> _stations = new Dictionary<string, CraftingStation>();
 
-        public bool IsInitialized => _isInitialized;
+        public bool IsInitialized { get; private set; }
+        public RecipeDatabaseSO RecipeDatabase => _recipeDatabase;
+        public InventoryManager InventoryManager => _inventoryManager;
+
+        private void Awake()
+        {
+            Initialize();
+        }
 
         public void Initialize()
         {
-            if (_isInitialized)
-                return;
-
-            if (_itemDatabase == null || _recipeDatabase == null)
+            if (IsInitialized)
             {
-                Debug.LogError("CraftingRuntime: Missing database references");
                 return;
             }
 
-            _stations.Clear();
-            _isInitialized = true;
+            if (_inventoryManager == null || _recipeDatabase == null)
+            {
+                Debug.LogError("CraftingRuntime requires InventoryManager and RecipeDatabaseSO.", this);
+                return;
+            }
+
+            IsInitialized = true;
+        }
+
+        public void RebindInventoryManager(InventoryManager inventoryManager)
+        {
+            _inventoryManager = inventoryManager;
+            Initialize();
         }
 
         public CraftingStation GetOrCreateStation(string stationInstanceId, WorkshopType stationType)
         {
-            if (!_isInitialized)
+            if (!IsInitialized || string.IsNullOrWhiteSpace(stationInstanceId))
             {
-                Debug.LogError("CraftingRuntime not initialized");
                 return null;
             }
 
             if (_stations.TryGetValue(stationInstanceId, out var station))
+            {
                 return station;
+            }
 
-            station = new CraftingStation(stationInstanceId, stationType, _itemDatabase, _recipeDatabase);
-            _stations[stationInstanceId] = station;
+            station = new CraftingStation(stationInstanceId, stationType);
+            _stations.Add(stationInstanceId, station);
             return station;
         }
 
-        public CraftingStation GetStation(string stationInstanceId)
+        public CraftingStation GetPocketStation()
         {
-            _stations.TryGetValue(stationInstanceId, out var station);
-            return station;
+            return GetOrCreateStation(PocketStationId, WorkshopType.None);
         }
 
-        public bool TryGetStation(string stationInstanceId, out CraftingStation station)
+        public List<RecipeDataSO> GetRecipesForStation(WorkshopType stationType)
         {
-            return _stations.TryGetValue(stationInstanceId, out station);
+            var recipes = new List<RecipeDataSO>();
+            if (_recipeDatabase == null)
+            {
+                return recipes;
+            }
+
+            foreach (var recipe in _recipeDatabase.All)
+            {
+                if (recipe != null && recipe.IsUnlockedByDefault && recipe.RequiredStationType == stationType)
+                {
+                    recipes.Add(recipe);
+                }
+            }
+
+            return recipes;
         }
 
-        public void RemoveStation(string stationInstanceId)
+        public bool TryStartCraft(CraftingStation station, RecipeDataSO recipe, out string failureReason)
         {
-            _stations.Remove(stationInstanceId);
+            if (station == null)
+            {
+                failureReason = "Station is unavailable.";
+                return false;
+            }
+
+            return station.TryStartCraft(recipe, _inventoryManager, out failureReason, _staminaManager);
+        }
+
+        public bool TryCollect(CraftingStation station, out string failureReason)
+        {
+            if (station == null)
+            {
+                failureReason = "Station is unavailable.";
+                return false;
+            }
+
+            return station.TryCollectOutput(_inventoryManager, out failureReason);
+        }
+
+        public bool TryCancel(CraftingStation station, out string failureReason)
+        {
+            if (station == null)
+            {
+                failureReason = "Station is unavailable.";
+                return false;
+            }
+
+            return station.TryCancelJob(_inventoryManager, out failureReason);
         }
 
         private void Update()
         {
-            if (!_isInitialized)
+            if (!IsInitialized)
+            {
                 return;
+            }
 
             foreach (var station in _stations.Values)
             {
@@ -80,29 +139,32 @@ namespace CindarsHope.Craft
         public CraftingRuntimeSaveData CaptureSaveData()
         {
             var data = new CraftingRuntimeSaveData();
-            foreach (var kvp in _stations)
+            foreach (var station in _stations.Values)
             {
-                data.Stations.Add(kvp.Value.CaptureSaveData());
+                data.Stations.Add(station.CaptureSaveData());
             }
+
             return data;
         }
 
         public void LoadFromSaveData(CraftingRuntimeSaveData saveData)
         {
-            if (saveData?.Stations == null)
+            if (!IsInitialized || saveData?.Stations == null)
+            {
                 return;
+            }
 
             foreach (var stationData in saveData.Stations)
             {
                 var station = GetOrCreateStation(stationData.StationInstanceId, (WorkshopType)stationData.StationType);
-                station.LoadFromSaveData(stationData, _recipeDatabase);
+                station?.LoadFromSaveData(stationData, _recipeDatabase);
             }
         }
     }
 
-    [System.Serializable]
+    [Serializable]
     public class CraftingRuntimeSaveData
     {
-        public List<CraftingStationSaveData> Stations = new();
+        public List<CraftingStationSaveData> Stations = new List<CraftingStationSaveData>();
     }
 }

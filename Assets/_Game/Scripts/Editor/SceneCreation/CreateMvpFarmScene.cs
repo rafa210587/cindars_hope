@@ -15,6 +15,7 @@ using CindarsHope.Player.Progression;
 using CindarsHope.Save;
 using CindarsHope.SceneManagement;
 using CindarsHope.UI;
+using CindarsHope.UI.Crafting;
 using CindarsHope.World;
 using CindarsHope.World.Data;
 using UnityEditor;
@@ -22,6 +23,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using CindarsHope.UI.Hotbar;
+using CindarsHope.UI.Modal;
 
 namespace CindarsHope.Editor.SceneCreation
 {
@@ -59,14 +61,16 @@ namespace CindarsHope.Editor.SceneCreation
             var timeManager = bootstrap.GetComponent<TimeManager>();
             var hungerManager = bootstrap.GetComponent<HungerManager>();
             var saveManager = bootstrap.GetComponent<SaveManager>();
-            var craftingManager = bootstrap.GetComponent<CraftingManager>();
+            var craftingRuntime = bootstrap.GetComponent<CraftingRuntime>();
+            var modalManager = bootstrap.GetComponent<ModalManager>();
             var playerTransform = CreatePlayer();
             CreateFarmSpawnPoints(playerTransform);
             CreateGround();
             var farmPlotRegistry = CreateFarmPlots(inventoryManager);
             var treeRegistry = CreateTrees(inventoryManager);
             var itemPickupRegistry = CreateItemPickups(inventoryManager);
-            CreateCraftingPoint(craftingManager);
+            var craftingModal = CreateCraftingUi(craftingRuntime, modalManager);
+            CreateCraftingStations(craftingRuntime, craftingModal);
             CreateFarmPortals();
             CreateFishingSpot(inventoryManager);
             CreateDebugHud(
@@ -111,6 +115,8 @@ namespace CindarsHope.Editor.SceneCreation
             bootstrapObject.AddComponent<FoodConsumer>();
             bootstrapObject.AddComponent<SaveInput>();
             bootstrapObject.AddComponent<CraftingManager>();
+            bootstrapObject.AddComponent<CraftingRuntime>();
+            bootstrapObject.AddComponent<ModalManager>();
             bootstrapObject.AddComponent<EconomyManager>();
             bootstrapObject.AddComponent<EquipmentManager>();
             bootstrapObject.AddComponent<PlayerProgressionManager>();
@@ -134,6 +140,7 @@ namespace CindarsHope.Editor.SceneCreation
             SetReference(serializedBootstrap, "_saveManager", bootstrapObject.GetComponent<SaveManager>());
             SetReference(serializedBootstrap, "_hungerManager", bootstrapObject.GetComponent<HungerManager>());
             SetReference(serializedBootstrap, "_craftingManager", bootstrapObject.GetComponent<CraftingManager>());
+            SetReference(serializedBootstrap, "_modalManager", bootstrapObject.GetComponent<ModalManager>());
             SetReference(serializedBootstrap, "_economyManager", bootstrapObject.GetComponent<EconomyManager>());
             SetReference(serializedBootstrap, "_equipmentManager", bootstrapObject.GetComponent<EquipmentManager>());
             SetReference(serializedBootstrap, "_progressionManager", bootstrapObject.GetComponent<PlayerProgressionManager>());
@@ -150,7 +157,8 @@ namespace CindarsHope.Editor.SceneCreation
                 itemPickupRegistry,
                 playerTransform,
                 bootstrapObject.GetComponent<EquipmentManager>(),
-                bootstrapObject.GetComponent<PlayerProgressionManager>());
+                bootstrapObject.GetComponent<PlayerProgressionManager>(),
+                bootstrapObject.GetComponent<CraftingRuntime>());
             bootstrapObject.GetComponent<SaveManager>().RebindOptionalRuntimeManagers(
                 bootstrapObject.GetComponent<EquipmentManager>(),
                 bootstrapObject.GetComponent<PlayerProgressionManager>(),
@@ -160,6 +168,7 @@ namespace CindarsHope.Editor.SceneCreation
                 bootstrapObject.GetComponent<HotbarDebugInput>(),
                 bootstrapObject.GetComponent<SaveManager>());
             ConfigureCraftingManager(bootstrapObject.GetComponent<CraftingManager>(), bootstrapObject.GetComponent<InventoryManager>());
+            ConfigureCraftingRuntime(bootstrapObject.GetComponent<CraftingRuntime>(), bootstrapObject.GetComponent<InventoryManager>());
             ConfigureEconomyManager(bootstrapObject.GetComponent<EconomyManager>(), bootstrapObject.GetComponent<InventoryManager>(), bootstrapObject.GetComponent<PlayerManager>());
 
             var playerData = AssetDatabase.LoadAssetAtPath<PlayerDataSO>(PlayerDataPath);
@@ -206,7 +215,8 @@ namespace CindarsHope.Editor.SceneCreation
             ItemPickupRegistry itemPickupRegistry,
             Transform playerTransform,
             EquipmentManager equipmentManager,
-            PlayerProgressionManager progressionManager)
+            PlayerProgressionManager progressionManager,
+            CraftingRuntime craftingRuntime)
         {
             var serializedSave = new SerializedObject(saveManager);
             SetReference(serializedSave, "_playerManager", playerManager);
@@ -219,6 +229,7 @@ namespace CindarsHope.Editor.SceneCreation
             SetReference(serializedSave, "_playerTransform", playerTransform);
             SetReference(serializedSave, "_equipmentManager", equipmentManager);
             SetReference(serializedSave, "_progressionManager", progressionManager);
+            SetReference(serializedSave, "_craftingRuntime", craftingRuntime);
             serializedSave.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(saveManager);
         }
@@ -275,6 +286,15 @@ namespace CindarsHope.Editor.SceneCreation
 
             serializedCrafting.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(craftingManager);
+        }
+
+        private static void ConfigureCraftingRuntime(CraftingRuntime craftingRuntime, InventoryManager inventoryManager)
+        {
+            var serializedCrafting = new SerializedObject(craftingRuntime);
+            SetReference(serializedCrafting, "_inventoryManager", inventoryManager);
+            SetReference(serializedCrafting, "_recipeDatabase", AssetDatabase.LoadAssetAtPath<RecipeDatabaseSO>(RecipeDatabasePath));
+            serializedCrafting.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(craftingRuntime);
         }
 
         private static void ConfigureEconomyManager(EconomyManager economyManager, InventoryManager inventoryManager, PlayerManager playerManager)
@@ -564,21 +584,37 @@ namespace CindarsHope.Editor.SceneCreation
             EditorUtility.SetDirty(seedShopPoint);
         }
 
-        private static void CreateCraftingPoint(CraftingManager craftingManager)
+        private static CraftingModal CreateCraftingUi(CraftingRuntime craftingRuntime, ModalManager modalManager)
         {
-            var craftingObject = new GameObject("CraftingPoint_Carpentry");
-            craftingObject.transform.position = new Vector3(-3.25f, -4.6f, 0f);
+            var canvasObject = new GameObject("CraftingCanvas", typeof(Canvas));
+            canvasObject.GetComponent<Canvas>().renderMode = RenderMode.ScreenSpaceOverlay;
+            var craftingModal = canvasObject.AddComponent<CraftingModal>();
+            craftingModal.Configure(craftingRuntime, modalManager);
+            return craftingModal;
+        }
+
+        private static void CreateCraftingStations(CraftingRuntime craftingRuntime, CraftingModal craftingModal)
+        {
+            CreateCraftingStation("Workbench", "farm_workbench_01", WorkshopType.Workbench, new Vector3(-3.25f, -4.6f, 0f), new Color(0.58f, 0.36f, 0.18f), craftingRuntime, craftingModal);
+            CreateCraftingStation("Forge", "farm_forge_01", WorkshopType.Forge, new Vector3(-1.9f, -4.6f, 0f), new Color(0.58f, 0.23f, 0.16f), craftingRuntime, craftingModal);
+            CreateCraftingStation("CookingStation", "farm_cooking_01", WorkshopType.CookingStation, new Vector3(-0.55f, -4.6f, 0f), new Color(0.77f, 0.55f, 0.22f), craftingRuntime, craftingModal);
+        }
+
+        private static void CreateCraftingStation(string label, string stationId, WorkshopType stationType, Vector3 position, Color color, CraftingRuntime craftingRuntime, CraftingModal craftingModal)
+        {
+            var craftingObject = new GameObject($"CraftingStation_{label}");
+            craftingObject.transform.position = position;
             craftingObject.transform.localScale = new Vector3(0.95f, 0.95f, 1f);
 
             var spriteRenderer = craftingObject.AddComponent<SpriteRenderer>();
             spriteRenderer.sprite = GetBuiltinSprite();
-            spriteRenderer.color = new Color(0.58f, 0.36f, 0.18f);
+            spriteRenderer.color = color;
             spriteRenderer.sortingOrder = 2;
             TrySetSortingLayer(spriteRenderer, "Items", spriteRenderer.sortingOrder);
 
             if (spriteRenderer.sprite == null)
             {
-                Debug.LogWarning("CraftingPoint_Carpentry placeholder SpriteRenderer was created without a sprite. Replace it with workshop art in a future art PR.");
+                Debug.LogWarning($"CraftingStation_{label} placeholder SpriteRenderer was created without a sprite. Replace it with workshop art in a future art PR.");
             }
 
             var collider = craftingObject.AddComponent<BoxCollider2D>();
@@ -586,12 +622,7 @@ namespace CindarsHope.Editor.SceneCreation
             collider.size = Vector2.one;
 
             var craftingPoint = craftingObject.AddComponent<CraftingPoint>();
-            var serializedPoint = new SerializedObject(craftingPoint);
-            SetReference(serializedPoint, "_craftingManager", craftingManager);
-            serializedPoint.FindProperty("_recipeId").stringValue = "recipe_processed_wood";
-            SetReference(serializedPoint, "_spriteRenderer", spriteRenderer);
-            SetReference(serializedPoint, "_collider", collider);
-            serializedPoint.ApplyModifiedPropertiesWithoutUndo();
+            craftingPoint.Configure(stationId, stationType, craftingRuntime, craftingModal);
             EditorUtility.SetDirty(craftingPoint);
         }
 

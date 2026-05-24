@@ -1,248 +1,245 @@
 using System;
-using CindarsHope.Core.Data;
+using CindarsHope.Core;
+using CindarsHope.Core.Events;
 using CindarsHope.Craft.Data;
 using CindarsHope.Inventory;
-using CindarsHope.Inventory.Data;
 using CindarsHope.Player;
-using UnityEngine;
+using CindarsHope.Save;
 
 namespace CindarsHope.Craft
 {
-    public class CraftingStation
+    public sealed class CraftingStation
     {
-        public string StationInstanceId { get; private set; }
-        public WorkshopType StationType { get; private set; }
-        public int StationLevel { get; set; }
+        private CraftingJob _job;
 
-        private CraftingJob _activeJob;
-        private string _pendingOutputItemId;
-        private int _pendingOutputAmount;
-        private ItemDatabaseSO _itemDatabase;
-        private RecipeDatabaseSO _recipeDatabase;
-
-        public CraftingStation(string stationInstanceId, WorkshopType stationType, ItemDatabaseSO itemDatabase, RecipeDatabaseSO recipeDatabase)
+        public CraftingStation(string stationInstanceId, WorkshopType stationType)
         {
             StationInstanceId = stationInstanceId;
             StationType = stationType;
             StationLevel = 1;
-            _itemDatabase = itemDatabase;
-            _recipeDatabase = recipeDatabase;
         }
 
-        public CraftingJob GetActiveJob() => _activeJob;
-        public bool HasOutput => !string.IsNullOrEmpty(_pendingOutputItemId);
-        public bool HasActiveJob => _activeJob != null && _activeJob.Status == CraftingJobStatus.InProgress;
+        public string StationInstanceId { get; }
+        public WorkshopType StationType { get; }
+        public int StationLevel { get; set; }
+        public CraftingJob Job => _job;
+        public bool HasActiveJob => _job != null && _job.Status == CraftingJobStatus.InProgress;
+        public bool HasCompletedOutput => _job != null && _job.Status == CraftingJobStatus.Completed;
+        public bool IsBusy => HasActiveJob || HasCompletedOutput;
 
         public bool CanStartCraft(RecipeDataSO recipe, out string failureReason)
         {
-            failureReason = string.Empty;
-
             if (recipe == null)
             {
-                failureReason = "Recipe is null";
+                failureReason = "Recipe is unavailable.";
                 return false;
             }
 
-            if (recipe.WorkshopType != StationType)
+            if (recipe.RequiredStationType != StationType)
             {
-                failureReason = $"Recipe requires {recipe.WorkshopType}, station is {StationType}";
+                failureReason = $"Requires {recipe.RequiredStationType}.";
                 return false;
             }
 
             if (recipe.RequiredWorkshopLevel > StationLevel)
             {
-                failureReason = $"Recipe requires level {recipe.RequiredWorkshopLevel}, station is level {StationLevel}";
+                failureReason = $"Requires station level {recipe.RequiredWorkshopLevel}.";
                 return false;
             }
 
-            if (!recipe.IsUnlocked)
+            if (!recipe.IsUnlockedByDefault)
             {
-                failureReason = "Recipe is not unlocked";
+                failureReason = "Recipe is locked.";
                 return false;
             }
 
-            if (HasActiveJob || HasOutput)
+            if (IsBusy)
             {
-                failureReason = "Station is busy";
+                failureReason = "Station already has a pending job or output.";
                 return false;
             }
 
+            failureReason = string.Empty;
             return true;
         }
 
         public bool TryStartCraft(RecipeDataSO recipe, InventoryManager inventory, out string failureReason, StaminaManager staminaManager = null)
         {
-            failureReason = string.Empty;
-
-            if (!CanStartCraft(recipe, out failureReason))
-                return false;
-
-            if (!ValidateIngredients(recipe, inventory, out failureReason))
-                return false;
-
-            // Validate stamina if provided
-            if (staminaManager != null && recipe.StaminaCost > 0)
+            if (!CanStartCraft(recipe, out failureReason) || !ValidateIngredients(recipe, inventory, out failureReason))
             {
-                if (!staminaManager.TrySpendStamina(recipe.StaminaCost))
-                {
-                    failureReason = $"Not enough stamina (need {recipe.StaminaCost}, have {staminaManager.CurrentStamina})";
-                    return false;
-                }
+                PublishFailure(recipe, failureReason);
+                return false;
             }
 
-            // Consume ingredients
-            ConsumeIngredients(recipe, inventory);
+            if (staminaManager != null && recipe.StaminaCost > 0 && !staminaManager.TrySpendStamina(recipe.StaminaCost))
+            {
+                failureReason = "Not enough stamina.";
+                PublishFailure(recipe, failureReason);
+                return false;
+            }
+
+            var inventoryBeforeCraft = inventory.CaptureSaveData();
+            if (!ConsumeIngredients(recipe, inventory))
+            {
+                inventory.RestoreFromSaveData(inventoryBeforeCraft);
+                failureReason = "Ingredients could not be consumed safely.";
+                PublishFailure(recipe, failureReason);
+                return false;
+            }
 
             if (recipe.IsInstantaneous)
             {
-                // Instantaneous craft - set pending output
-                _pendingOutputItemId = recipe.OutputItemId;
-                _pendingOutputAmount = recipe.OutputAmount;
-            }
-            else
-            {
-                // Start timed job
-                _activeJob = new CraftingJob(StationInstanceId, recipe);
+                if (!inventory.AddItem(recipe.OutputItemId, recipe.OutputAmount))
+                {
+                    inventory.RestoreFromSaveData(inventoryBeforeCraft);
+                    failureReason = "Inventory is full for crafted output.";
+                    PublishFailure(recipe, failureReason);
+                    return false;
+                }
+
+                GameEventBus.Publish(new ItemCraftedEvent(recipe.Id, recipe.OutputItemId, recipe.OutputAmount));
+                GameEventBus.Publish(new CraftingOutputCollectedEvent(StationInstanceId, recipe.Id, recipe.OutputItemId, recipe.OutputAmount));
+                failureReason = string.Empty;
+                return true;
             }
 
+            _job = new CraftingJob(StationInstanceId, recipe);
+            GameEventBus.Publish(new CraftingJobStartedEvent(StationInstanceId, recipe.Id, _job.JobId));
+            failureReason = string.Empty;
             return true;
         }
 
         public bool TryCollectOutput(InventoryManager inventory, out string failureReason)
         {
+            if (!HasCompletedOutput)
+            {
+                failureReason = "No completed output to collect.";
+                return false;
+            }
+
+            if (!inventory.AddItem(_job.OutputItemId, _job.OutputAmount))
+            {
+                failureReason = "Inventory is full. Output remains at the station.";
+                GameEventBus.Publish(new CraftingFailedEvent(StationInstanceId, _job.RecipeId, failureReason));
+                return false;
+            }
+
+            GameEventBus.Publish(new ItemCraftedEvent(_job.RecipeId, _job.OutputItemId, _job.OutputAmount));
+            GameEventBus.Publish(new CraftingOutputCollectedEvent(StationInstanceId, _job.RecipeId, _job.OutputItemId, _job.OutputAmount));
+            _job = null;
             failureReason = string.Empty;
-
-            if (!HasOutput)
-            {
-                failureReason = "No output to collect";
-                return false;
-            }
-
-            if (!inventory.AddItem(_pendingOutputItemId, _pendingOutputAmount))
-            {
-                failureReason = "Inventory is full";
-                return false;
-            }
-
-            _pendingOutputItemId = string.Empty;
-            _pendingOutputAmount = 0;
             return true;
         }
 
         public bool TryCancelJob(InventoryManager inventory, out string failureReason)
         {
-            failureReason = string.Empty;
-
             if (!HasActiveJob)
             {
-                failureReason = "No active job to cancel";
+                failureReason = "Only an in-progress job can be cancelled.";
                 return false;
             }
 
-            var recipe = _activeJob.Recipe;
-
-            // Check if we have space for ingredients
-            int totalIngredients = 0;
-            if (recipe.Ingredients != null)
+            var inventoryBeforeCancel = inventory.CaptureSaveData();
+            foreach (var ingredient in _job.IngredientsConsumed)
             {
-                foreach (var ingredient in recipe.Ingredients)
+                if (!inventory.AddItem(ingredient.ItemId, ingredient.Amount))
                 {
-                    if (!string.IsNullOrWhiteSpace(ingredient.ItemId))
-                        totalIngredients += ingredient.Amount;
+                    inventory.RestoreFromSaveData(inventoryBeforeCancel);
+                    failureReason = "Inventory has no room to return all ingredients.";
+                    GameEventBus.Publish(new CraftingFailedEvent(StationInstanceId, _job.RecipeId, failureReason));
+                    return false;
                 }
             }
 
-            if (inventory.Capacity - inventory.Items.Count < totalIngredients)
-            {
-                failureReason = "Not enough inventory space to return ingredients";
-                return false;
-            }
-
-            // Return ingredients
-            ReturnIngredients(recipe, inventory);
-            _activeJob.Cancel();
-            _activeJob = null;
-
+            var cancelledJobId = _job.JobId;
+            var recipeId = _job.RecipeId;
+            _job.Cancel();
+            _job = null;
+            GameEventBus.Publish(new CraftingJobCancelledEvent(StationInstanceId, recipeId, cancelledJobId));
+            failureReason = string.Empty;
             return true;
         }
 
         public void Update(float deltaTime)
         {
-            if (_activeJob != null)
+            if (!HasActiveJob)
             {
-                _activeJob.Update(deltaTime);
+                return;
+            }
 
-                if (_activeJob.IsComplete)
-                {
-                    _activeJob.Complete();
-                    _pendingOutputItemId = _activeJob.Recipe.OutputItemId;
-                    _pendingOutputAmount = _activeJob.Recipe.OutputAmount;
-                }
+            _job.Update(deltaTime);
+            if (_job.IsComplete)
+            {
+                _job.Complete();
+                GameEventBus.Publish(new CraftingJobCompletedEvent(StationInstanceId, _job.RecipeId, _job.JobId));
             }
         }
 
         public void LoadFromSaveData(CraftingStationSaveData saveData, RecipeDatabaseSO recipeDatabase)
         {
             if (saveData == null)
-                return;
-
-            StationLevel = saveData.StationLevel;
-
-            if (saveData.ActiveJob != null && !string.IsNullOrEmpty(saveData.ActiveJob.RecipeId))
             {
-                if (recipeDatabase.TryGetById(saveData.ActiveJob.RecipeId, out var recipe))
-                {
-                    _activeJob = new CraftingJob(saveData.ActiveJob.StationInstanceId, recipe);
-                    _activeJob.RemainingSeconds = saveData.ActiveJob.RemainingSeconds;
-                    _activeJob.Status = (CraftingJobStatus)saveData.ActiveJob.Status;
-                }
+                return;
             }
 
-            _pendingOutputItemId = saveData.PendingOutputItemId;
-            _pendingOutputAmount = saveData.PendingOutputAmount;
+            StationLevel = saveData.StationLevel > 0 ? saveData.StationLevel : 1;
+            if (saveData.Job == null || string.IsNullOrWhiteSpace(saveData.Job.RecipeId))
+            {
+                return;
+            }
+
+            recipeDatabase.TryGetById(saveData.Job.RecipeId, out var recipe);
+            _job = new CraftingJob(saveData.Job, recipe);
+            if (recipe == null)
+            {
+                UnityEngine.Debug.LogError($"Crafting station '{StationInstanceId}' loaded missing recipe '{saveData.Job.RecipeId}'. Saved output and ingredients are retained.");
+            }
         }
 
         public CraftingStationSaveData CaptureSaveData()
         {
-            var data = new CraftingStationSaveData
+            return new CraftingStationSaveData
             {
                 StationInstanceId = StationInstanceId,
                 StationType = (int)StationType,
                 StationLevel = StationLevel,
-                PendingOutputItemId = _pendingOutputItemId,
-                PendingOutputAmount = _pendingOutputAmount
+                Job = _job?.CaptureSaveData()
             };
-
-            if (_activeJob != null && _activeJob.Status == CraftingJobStatus.InProgress)
-            {
-                data.ActiveJob = new CraftingJobSaveData
-                {
-                    JobId = _activeJob.JobId,
-                    StationInstanceId = _activeJob.StationInstanceId,
-                    RecipeId = _activeJob.Recipe.Id,
-                    Status = (int)_activeJob.Status,
-                    RemainingSeconds = _activeJob.RemainingSeconds
-                };
-            }
-
-            return data;
         }
 
         private bool ValidateIngredients(RecipeDataSO recipe, InventoryManager inventory, out string failureReason)
         {
-            failureReason = string.Empty;
+            if (inventory == null)
+            {
+                failureReason = "Inventory system is unavailable.";
+                return false;
+            }
 
             if (recipe.Ingredients == null || recipe.Ingredients.Length == 0)
-                return true;
+            {
+                failureReason = "Recipe has no ingredients.";
+                return false;
+            }
 
             foreach (var ingredient in recipe.Ingredients)
             {
-                if (string.IsNullOrWhiteSpace(ingredient.ItemId))
-                    continue;
-
-                if (!inventory.HasItem(ingredient.ItemId, ingredient.Amount))
+                if (string.IsNullOrWhiteSpace(ingredient.ItemId) || ingredient.Amount <= 0 || !inventory.HasItem(ingredient.ItemId, ingredient.Amount))
                 {
-                    failureReason = $"Missing {ingredient.ItemId} x{ingredient.Amount}";
+                    failureReason = $"Missing ingredient {ingredient.ItemId}.";
+                    return false;
+                }
+            }
+
+            failureReason = string.Empty;
+            return true;
+        }
+
+        private static bool ConsumeIngredients(RecipeDataSO recipe, InventoryManager inventory)
+        {
+            foreach (var ingredient in recipe.Ingredients)
+            {
+                if (!inventory.RemoveItem(ingredient.ItemId, ingredient.Amount))
+                {
                     return false;
                 }
             }
@@ -250,43 +247,18 @@ namespace CindarsHope.Craft
             return true;
         }
 
-        private void ConsumeIngredients(RecipeDataSO recipe, InventoryManager inventory)
+        private void PublishFailure(RecipeDataSO recipe, string failureReason)
         {
-            if (recipe.Ingredients == null)
-                return;
-
-            foreach (var ingredient in recipe.Ingredients)
-            {
-                if (!string.IsNullOrWhiteSpace(ingredient.ItemId))
-                {
-                    inventory.RemoveItem(ingredient.ItemId, ingredient.Amount);
-                }
-            }
-        }
-
-        private void ReturnIngredients(RecipeDataSO recipe, InventoryManager inventory)
-        {
-            if (recipe.Ingredients == null)
-                return;
-
-            foreach (var ingredient in recipe.Ingredients)
-            {
-                if (!string.IsNullOrWhiteSpace(ingredient.ItemId))
-                {
-                    inventory.AddItem(ingredient.ItemId, ingredient.Amount);
-                }
-            }
+            GameEventBus.Publish(new CraftingFailedEvent(StationInstanceId, recipe != null ? recipe.Id : string.Empty, failureReason));
         }
     }
 
-    [System.Serializable]
+    [Serializable]
     public class CraftingStationSaveData
     {
         public string StationInstanceId;
         public int StationType;
         public int StationLevel;
-        public string PendingOutputItemId;
-        public int PendingOutputAmount;
-        public CraftingJobSaveData ActiveJob;
+        public CraftingJobSaveData Job;
     }
 }

@@ -6,7 +6,6 @@ A antiga spec 00 de reconciliacao documental foi reclassificada como implementad
 
 | Ordem | Spec | Status | Dependencia | Observacao |
 |---|---|---|---|---|
-| 07 | [spec_crafting_queue_workstations_recipes_ui.md](a_implementar/spec_crafting_queue_workstations_recipes_ui.md) | Implementado parcial | 00-06 | CraftingManager/Station com jobs. Pendente: UI modal final, recipe unlock avancado. Bloqueia: 10, 17. |
 | 08 | [spec_town_npc_dialogue_schedule_quests.md](a_implementar/spec_town_npc_dialogue_schedule_quests.md) | Implementado parcial | 00-07 | NPC/dialogue system completo. Pendente: assets via Editor, Play Mode. Bloqueia: 15, 17. |
 | 12 | [spec_player_combat_weapons_spells_skill_actions_runtime.md](a_implementar/spec_player_combat_weapons_spells_skill_actions_runtime.md) | A implementar | 00-11 | PlayerCombatController Q/E, melee, dodge, bow, spells, active slots. Bloqueia: 13, 14, 16, 17. |
 | 13 | [spec_enemy_ai_roster_bestiary_faction_locks_runtime.md](a_implementar/spec_enemy_ai_roster_bestiary_faction_locks_runtime.md) | Implementado parcial | 00-12 | Enemy chase/patrol AI completo. Pendente: ranged enemies, faction locks, bestiary UI. Bloqueia: 14, 15, 17. |

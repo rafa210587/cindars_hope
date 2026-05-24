@@ -1,5 +1,6 @@
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Inventory;
+using CindarsHope.UI.Modal;
 using CindarsHope.World;
 using UnityEngine;
 
@@ -18,6 +19,7 @@ namespace CindarsHope.UI
         private static InventoryPanelController _instance;
 
         private InventoryManager _inventoryManager;
+        private ModalManager _modalManager;
         private PanelMode _mode;
         private bool _isOpen;
         private int _selectedSlotIndex;
@@ -48,6 +50,14 @@ namespace CindarsHope.UI
 
             _instance = this;
             DontDestroyOnLoad(gameObject);
+        }
+
+        private void OnDisable()
+        {
+            if (_isOpen)
+            {
+                ClosePanel();
+            }
         }
 
         private void Update()
@@ -121,7 +131,19 @@ namespace CindarsHope.UI
 
         private void Toggle()
         {
-            _isOpen = !_isOpen;
+            if (_isOpen)
+            {
+                ClosePanel();
+                return;
+            }
+
+            ResolveModalManager();
+            if (_modalManager != null && !_modalManager.PushModal(ModalType.Inventory))
+            {
+                return;
+            }
+
+            _isOpen = true;
             _mode = PanelMode.Slots;
             _selectedActionIndex = 0;
             _message = string.Empty;
@@ -131,7 +153,7 @@ namespace CindarsHope.UI
         {
             if (_mode == PanelMode.Slots)
             {
-                _isOpen = false;
+                ClosePanel();
                 return;
             }
 
@@ -375,6 +397,20 @@ namespace CindarsHope.UI
             {
                 _inventoryManager = GameBootstrap.Instance.InventoryManager;
             }
+        }
+
+        private void ResolveModalManager()
+        {
+            if (_modalManager == null && GameBootstrap.Instance != null)
+            {
+                _modalManager = GameBootstrap.Instance.ModalManager;
+            }
+        }
+
+        private void ClosePanel()
+        {
+            _isOpen = false;
+            _modalManager?.TryPopModal(ModalType.Inventory, out _);
         }
 
         private int GetCapacity()
