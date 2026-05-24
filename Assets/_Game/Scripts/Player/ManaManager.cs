@@ -1,52 +1,73 @@
-﻿using CindarsHope.Core.Events;
+﻿using CindarsHope.Core;
+using CindarsHope.Core.Events;
+using CindarsHope.UI.Modal;
 using UnityEngine;
 
-namespace CindarsHope.Combat
+namespace CindarsHope.Player
 {
     [DisallowMultipleComponent]
     public class ManaManager : MonoBehaviour
     {
         [SerializeField] private int _maxMana = 100;
         [SerializeField] private float _manaRegenPerSecond = 5f;
+        [SerializeField] private ModalManager _modalManager;
 
         private int _currentMana;
+        private float _regenAccumulator = 0f;
+        public bool IsInitialized { get; private set; }
 
         public int MaxMana => _maxMana;
         public int CurrentMana => _currentMana;
         public float ManaPercent => MaxMana > 0 ? (float)_currentMana / MaxMana : 0f;
 
-        private void Start()
+        private void OnEnable()
         {
-            _currentMana = _maxMana;
+            GameEventBus.Subscribe<GameTimeTickEvent>(HandleGameTimeTick);
         }
 
-        private void Update()
+        private void OnDisable()
         {
-            if (_currentMana < _maxMana)
-            {
-                _currentMana = Mathf.Min(_currentMana + Mathf.RoundToInt(_manaRegenPerSecond * UnityEngine.Time.deltaTime), _maxMana);
-            }
+            GameEventBus.Unsubscribe<GameTimeTickEvent>(HandleGameTimeTick);
+        }
+
+        public void Initialize()
+        {
+            _currentMana = _maxMana;
+            _regenAccumulator = 0f;
+            IsInitialized = true;
+        }
+
+        public void Shutdown()
+        {
+            IsInitialized = false;
         }
 
         public bool TrySpendMana(int amount)
         {
-            if (_currentMana >= amount)
-            {
-                _currentMana -= amount;
+            if (amount <= 0)
                 return true;
-            }
 
-            return false;
+            if (_currentMana < amount)
+                return false;
+
+            _currentMana -= amount;
+            PublishManaChanged();
+            return true;
         }
 
         public void RestoreMana(int amount)
         {
+            if (amount <= 0)
+                return;
+
             _currentMana = Mathf.Min(_currentMana + amount, _maxMana);
+            PublishManaChanged();
         }
 
         public void SetMana(int amount)
         {
             _currentMana = Mathf.Clamp(amount, 0, _maxMana);
+            PublishManaChanged();
         }
 
         public void SetMaxMana(int maxMana)
@@ -54,5 +75,52 @@ namespace CindarsHope.Combat
             _maxMana = Mathf.Max(1, maxMana);
             _currentMana = Mathf.Min(_currentMana, _maxMana);
         }
+
+        public ManaManagerSaveData CaptureSaveData()
+        {
+            return new ManaManagerSaveData { CurrentMana = _currentMana, MaxMana = _maxMana };
+        }
+
+        public void RestoreFromSaveData(ManaManagerSaveData data)
+        {
+            if (data == null)
+            {
+                Initialize();
+                return;
+            }
+
+            _maxMana = Mathf.Max(1, data.MaxMana);
+            _currentMana = Mathf.Min(data.CurrentMana, _maxMana);
+            IsInitialized = true;
+            PublishManaChanged();
+        }
+
+        private void HandleGameTimeTick(GameTimeTickEvent evt)
+        {
+            if (!IsInitialized || _currentMana >= _maxMana)
+                return;
+
+            if (_modalManager != null && _modalManager.HasActiveModal)
+                return;
+
+            _regenAccumulator += _manaRegenPerSecond;
+            if (_regenAccumulator >= 1f)
+            {
+                int manaGain = Mathf.FloorToInt(_regenAccumulator);
+                _regenAccumulator -= manaGain;
+                RestoreMana(manaGain);
+            }
+        }
+
+        private void PublishManaChanged()
+        {
+            GameEventBus.Publish(new ManaChangedEvent(_currentMana, _maxMana));
+        }
+    }
+
+    public class ManaManagerSaveData
+    {
+        public int CurrentMana;
+        public int MaxMana;
     }
 }

@@ -1,9 +1,6 @@
-namespace CindarsHope.Core.Events
+﻿namespace CindarsHope.Core.Events
 {
-    /// <summary>
-    /// Publicado quando o mana atual do jogador muda.
-    /// </summary>
-    public readonly struct ManaChangedEvent
+    public class ManaChangedEvent
     {
         public int CurrentMana { get; }
         public int MaxMana { get; }
