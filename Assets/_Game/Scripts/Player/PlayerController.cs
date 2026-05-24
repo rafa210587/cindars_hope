@@ -27,9 +27,11 @@ namespace CindarsHope.Player
         private float _distanceSinceLastStep;
         private bool _loggedMissingPlayerData;
         private bool _loggedMissingRigidbody;
+        private Vector2 _lastFacingDirection = Vector2.right;
 
         public Vector2 MoveInput { get; private set; }
         public float SpeedMultiplier { get; set; } = 1f;
+        public Vector2 LastFacingDirection => _lastFacingDirection;
 
         private void Awake()
         {
@@ -81,6 +83,11 @@ namespace CindarsHope.Player
             if (MoveInput.sqrMagnitude > 1f)
             {
                 MoveInput = MoveInput.normalized;
+            }
+
+            if (MoveInput.sqrMagnitude > 0.01f)
+            {
+                _lastFacingDirection = MoveInput;
             }
         }
 

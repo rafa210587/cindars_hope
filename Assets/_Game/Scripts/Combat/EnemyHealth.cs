@@ -1,4 +1,5 @@
 using CindarsHope.Cave.Runtime;
+using CindarsHope.Combat.StatusEffect;
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
 using CindarsHope.Player.Progression;
@@ -12,11 +13,13 @@ namespace CindarsHope.Combat
         [SerializeField] private EnemyDataSO _enemyData;
 
         private int _currentHp;
+        private StatusEffectManager _statusEffects = new StatusEffectManager();
 
         public int CurrentHp => _currentHp;
         public int MaxHp => _enemyData != null ? _enemyData.maxHp : 0;
         public string EnemyId => _enemyData != null ? _enemyData.enemyId : string.Empty;
         public string DisplayName => _enemyData != null && !string.IsNullOrWhiteSpace(_enemyData.DisplayName) ? _enemyData.DisplayName : name;
+        public StatusEffectManager StatusEffects => _statusEffects;
 
         public void Configure(EnemyDataSO enemyData)
         {
@@ -38,6 +41,15 @@ namespace CindarsHope.Combat
 
             _currentHp = _enemyData.maxHp;
             Debug.Log($"CombatLog: Enemy spawned. {BuildEnemyLogPrefix()}, HP={_currentHp}/{MaxHp}, Level={_enemyData.enemyLevel}, Difficulty={_enemyData.baseDifficulty}.", this);
+        }
+
+        public void ApplyStatusEffect(StatusEffectSO statusEffect)
+        {
+            if (statusEffect != null)
+            {
+                _statusEffects.ApplyStatusEffect(statusEffect);
+                Debug.Log($"CombatLog: Applied status effect '{statusEffect.DisplayName}' to {DisplayName}.", this);
+            }
         }
 
         public void TakeDamage(int amount)
