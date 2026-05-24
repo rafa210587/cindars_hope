@@ -795,14 +795,28 @@ namespace CindarsHope.Save
 
         private EconomySaveData CaptureEconomySaveData(GameSaveData existingSaveData)
         {
-            if (_shopManager == null)
+            var economyData = new EconomySaveData();
+
+            if (_shopManager != null)
             {
-                return existingSaveData?.Economy ?? new EconomySaveData();
+                // Capture shop stock from all active shops
+                // Note: This will require ShopManager to track all registered shops
+                // For now, shops register themselves during initialization
+                var existingEconomy = existingSaveData?.Economy;
+                if (existingEconomy?.Shops != null)
+                {
+                    foreach (var shopStock in existingEconomy.Shops)
+                    {
+                        var capturedStock = _shopManager.CaptureShopStock(shopStock.ShopId);
+                        if (capturedStock != null)
+                        {
+                            economyData.Shops.Add(capturedStock);
+                        }
+                    }
+                }
             }
 
-            // For now, preserve existing economy data if ShopManager is not active
-            // Shops will be loaded from their respective ScriptableObjects
-            return existingSaveData?.Economy ?? new EconomySaveData();
+            return economyData.Shops.Count > 0 ? economyData : (existingSaveData?.Economy ?? new EconomySaveData());
         }
 
         private void RestoreEconomySaveData(EconomySaveData economyData)
