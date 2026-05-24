@@ -27,7 +27,7 @@ namespace CindarsHope.Save
     [DisallowMultipleComponent]
     public class SaveManager : MonoBehaviour
     {
-        private const int CurrentSchemaVersion = 2;
+        private const int CurrentSchemaVersion = 3;
         private const int Slot = 1;
         private const string SaveDirectoryName = "saves";
         private const string SaveFileName = "slot_1.json";
@@ -38,6 +38,8 @@ namespace CindarsHope.Save
         [SerializeField] private HungerManager _hungerManager;
         [SerializeField] private StaminaManager _staminaManager;
         [SerializeField] private TimeManager _timeManager;
+        [SerializeField] private Core.GameTimeManager _gameTimeManager;
+        [SerializeField] private Player.StatusEffectManager _statusEffectManager;
         [SerializeField] private FarmPlotRegistry _farmPlotRegistry;
         [SerializeField] private TreeRegistry _treeRegistry;
         [SerializeField] private ItemPickupRegistry _itemPickupRegistry;
@@ -51,7 +53,8 @@ namespace CindarsHope.Save
         private readonly HotbarState _hotbarState = new HotbarState();
         private readonly SaveMigrationRegistry _migrationRegistry = new SaveMigrationRegistry(new ISaveMigration[]
         {
-            new InventorySlotsV1ToV2Migration()
+            new InventorySlotsV1ToV2Migration(),
+            new SaveV2ToV3Migration()
         });
 
         public bool IsInitialized { get; private set; }
@@ -89,6 +92,8 @@ namespace CindarsHope.Save
                 var economySaveData = CaptureEconomySaveData(existingSaveData);
                 var craftingSaveData = CaptureCraftingSaveData();
                 var staminaSaveData = CaptureStaminaSaveData();
+                var gameTimeSaveData = CaptureGameTimeSaveData();
+                var statusEffectsSaveData = CapturePlayerStatusEffectsSaveData();
 
                 var saveData = new GameSaveData
                 {
@@ -106,7 +111,9 @@ namespace CindarsHope.Save
                     Cave = caveSaveData,
                     Economy = economySaveData,
                     Crafting = craftingSaveData,
-                    Stamina = staminaSaveData
+                    Stamina = staminaSaveData,
+                    GameTime = gameTimeSaveData,
+                    PlayerStatusEffects = statusEffectsSaveData
                 };
 
                 var savePath = SaveFilePath;
@@ -807,6 +814,23 @@ namespace CindarsHope.Save
             {
                 _staminaManager.Initialize(saveData.Stamina.MaxStamina, saveData.Stamina.CurrentStamina);
             }
+
+            if (_gameTimeManager != null && saveData.GameTime != null)
+            {
+                _gameTimeManager.RestoreFromSaveData(saveData.GameTime);
+            }
+
+            if (_statusEffectManager != null && saveData.PlayerStatusEffects != null)
+            {
+                _statusEffectManager.Initialize();
+                foreach (var effectEntry in saveData.PlayerStatusEffects.ActiveEffects)
+                {
+                    if (!string.IsNullOrWhiteSpace(effectEntry.EffectId) && effectEntry.RemainingSeconds > 0)
+                    {
+                        _statusEffectManager.TryAddEffect(effectEntry.EffectId, effectEntry.RemainingSeconds);
+                    }
+                }
+            }
         }
 
         private EconomySaveData CaptureEconomySaveData(GameSaveData existingSaveData)
@@ -865,6 +889,50 @@ namespace CindarsHope.Save
                 CurrentStamina = _staminaManager.CurrentStamina,
                 MaxStamina = _staminaManager.MaxStamina
             };
+        }
+
+        private GameTimeSaveData CaptureGameTimeSaveData()
+        {
+            if (_gameTimeManager == null)
+            {
+                return new GameTimeSaveData
+                {
+                    CurrentDay = CaptureCurrentDay(),
+                    CurrentPhase = 0,
+                    PhaseElapsedSeconds = 0f
+                };
+            }
+
+            return new GameTimeSaveData
+            {
+                CurrentDay = _timeManager != null ? _timeManager.CurrentDay : 1,
+                CurrentPhase = (int)_gameTimeManager.CurrentPhase,
+                PhaseElapsedSeconds = _gameTimeManager.PhaseTimer
+            };
+        }
+
+        private PlayerStatusEffectsSaveData CapturePlayerStatusEffectsSaveData()
+        {
+            var data = new PlayerStatusEffectsSaveData();
+
+            if (_statusEffectManager == null || !_statusEffectManager.IsInitialized)
+            {
+                return data;
+            }
+
+            foreach (var kvp in _statusEffectManager.ActiveEffects)
+            {
+                if (kvp.Value != null && kvp.Value.IsActive)
+                {
+                    data.ActiveEffects.Add(new StatusEffectEntryData
+                    {
+                        EffectId = kvp.Key,
+                        RemainingSeconds = kvp.Value.RemainingSeconds
+                    });
+                }
+            }
+
+            return data;
         }
 
         private void PublishSaveResult(bool wasSuccessful, string message)

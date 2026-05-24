@@ -59,6 +59,18 @@ namespace CindarsHope.Core
             _isInitialized = false;
         }
 
+        public void RestoreFromSaveData(GameTimeSaveData saveData)
+        {
+            if (saveData == null)
+            {
+                Debug.LogWarning("GameTimeManager received null save data.");
+                return;
+            }
+
+            _currentPhase = (GamePhaseChangedEvent.GamePhase)Mathf.Clamp(saveData.CurrentPhase, 0, 1);
+            _phaseTimer = Mathf.Max(0, saveData.PhaseElapsedSeconds);
+        }
+
         private void Update()
         {
             if (!_isInitialized)
@@ -92,8 +104,8 @@ namespace CindarsHope.Core
                     _timeManager.AdvanceDay();
             }
 
-            GameEventBus.Publish(new GamePhaseChangedEvent(_currentPhase, _timeManager.CurrentDay));
-            Debug.Log($"Phase changed to {_currentPhase} on day {_timeManager.CurrentDay}");
+            GameEventBus.Publish(new GamePhaseChangedEvent(_currentPhase, _timeManager != null ? _timeManager.CurrentDay : 1));
+            Debug.Log($"Phase changed to {_currentPhase} on day {(_timeManager != null ? _timeManager.CurrentDay : 1)}");
         }
 
         private void HandleDayStarted(DayStartedEvent evt)

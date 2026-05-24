@@ -31,6 +31,8 @@ namespace CindarsHope.Save
         public StaminaSaveData Stamina;
         public EquipmentDurabilitySaveData EquipmentDurability;
         public NpcManagerSaveData Npcs;
+        public GameTimeSaveData GameTime;
+        public PlayerStatusEffectsSaveData PlayerStatusEffects;
     }
 
     [Serializable]
@@ -114,12 +116,13 @@ namespace CindarsHope.Save
     [Serializable]
     public class EquipmentDurabilitySaveData
     {
-        public Dictionary<string, DurabilityEntry> EquipmentDurabilities = new Dictionary<string, DurabilityEntry>();
+        public List<DurabilityEntryData> EquipmentDurabilities = new List<DurabilityEntryData>();
     }
 
     [Serializable]
-    public class DurabilityEntry
+    public class DurabilityEntryData
     {
+        public string ItemInstanceId;
         public int CurrentDurability;
         public int MaxDurability;
     }
@@ -137,5 +140,33 @@ namespace CindarsHope.Save
         public string SceneId;
         public Vector2 Position;
         public bool HasMet;
+    }
+
+    [Serializable]
+    public class GameTimeSaveData
+    {
+        public int CurrentDay;
+        public int CurrentPhase;
+        public float PhaseElapsedSeconds;
+    }
+
+    [Serializable]
+    public class PlayerStatusEffectsSaveData
+    {
+        public List<StatusEffectEntryData> ActiveEffects = new List<StatusEffectEntryData>();
+    }
+
+    [Serializable]
+    public class StatusEffectEntryData
+    {
+        public string EffectId;
+        public float RemainingSeconds;
+    }
+
+    [Serializable]
+    public class DurabilityEntry
+    {
+        public int CurrentDurability;
+        public int MaxDurability;
     }
 }
