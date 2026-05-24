@@ -33,6 +33,7 @@ namespace CindarsHope.Save
         public NpcManagerSaveData Npcs;
         public GameTimeSaveData GameTime;
         public PlayerStatusEffectsSaveData PlayerStatusEffects;
+        public ActiveSkillSlotsSaveData ActiveSkillSlots;
     }
 
     [Serializable]
@@ -43,6 +44,8 @@ namespace CindarsHope.Save
         public int Gold;
         public int CurrentHunger;
         public int MaxHunger;
+        public int CurrentMana;
+        public int MaxMana;
         public Vector2 PlayerPosition;
     }
 
@@ -183,4 +186,14 @@ namespace CindarsHope.Save
         public EquipmentSlot SlotType;
         public string ItemInstanceId;
     }
+
+    [Serializable]
+    public class ActiveSkillSlotsSaveData
+    {
+        public string SlotRSkillActionId;
+        public string SlotTSkillActionId;
+        public string SlotYSkillActionId;
+        public string SlotGSkillActionId;
+    }
+
 }

@@ -27,7 +27,7 @@ namespace CindarsHope.Save
     [DisallowMultipleComponent]
     public class SaveManager : MonoBehaviour
     {
-        private const int CurrentSchemaVersion = 3;
+        private const int CurrentSchemaVersion = 4;
         private const int Slot = 1;
         private const string SaveDirectoryName = "saves";
         private const string SaveFileName = "slot_1.json";
@@ -54,7 +54,8 @@ namespace CindarsHope.Save
         private readonly SaveMigrationRegistry _migrationRegistry = new SaveMigrationRegistry(new ISaveMigration[]
         {
             new InventorySlotsV1ToV2Migration(),
-            new SaveV2ToV3Migration()
+            new SaveV2ToV3Migration(),
+            new SaveV3ToV4Migration()
         });
 
         public bool IsInitialized { get; private set; }
