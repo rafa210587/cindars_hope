@@ -1,3 +1,4 @@
+using CindarsHope.Equipment;
 using UnityEngine;
 
 namespace CindarsHope.Combat
@@ -7,7 +8,9 @@ namespace CindarsHope.Combat
         public static DamageResult CalculateDirectDamage(
             int baseDamage,
             int attributeBonus = 0,
-            float typeMultiplier = 1f)
+            float typeMultiplier = 1f,
+            EquipmentManager equipmentManager = null,
+            float durabilityDamageMultiplier = 0.1f)
         {
             baseDamage = Mathf.Max(0, baseDamage);
             attributeBonus = Mathf.Max(0, attributeBonus);
@@ -27,6 +30,12 @@ namespace CindarsHope.Combat
             int finalDamage = Mathf.RoundToInt(scaledBase * typeMultiplier);
             bool reducedToMinimum = finalDamage < 1;
             finalDamage = Mathf.Max(1, finalDamage);
+
+            // Apply durability damage if equipment manager provided
+            if (equipmentManager != null)
+            {
+                equipmentManager.RegisterEquipmentUsage();
+            }
 
             return new DamageResult(finalDamage, baseDamage, attributeBonus, typeMultiplier, reducedToMinimum, false);
         }
