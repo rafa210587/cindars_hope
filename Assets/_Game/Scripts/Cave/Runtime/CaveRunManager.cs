@@ -256,57 +256,12 @@ namespace CindarsHope.Cave.Runtime
         {
             InitializeIfNeeded();
 
-            if (currentLevel == 15 && targetLevel == 16)
-            {
-                if (_bossGateRegistry == null)
-                {
-                    if (logBlocked)
-                    {
-                        Debug.LogError("CaveRunManager: Cannot advance 15->16. CaveBossGateRegistry is null.", this);
-                    }
-                    return false;
-                }
-
-                var gate = _bossGateRegistry.GetGateByLevel(15);
-                if (gate == null)
-                {
-                    if (logBlocked)
-                    {
-                        Debug.LogError("CaveRunManager: Cannot advance 15->16. No boss gate found for level 15.", this);
-                    }
-                    return false;
-                }
-
-                var isDefeated = IsBossDefeated(gate.Id);
-                if (!isDefeated)
-                {
-                    if (logBlocked)
-                    {
-                        Debug.LogWarning($"CaveRunManager: Cannot advance 15->16. Boss gate '{gate.Id}' not defeated.", this);
-                    }
-                    return false;
-                }
-
-                if (logBlocked)
-                {
-                    Debug.Log($"CaveRunManager: Boss gate '{gate.Id}' defeated. Advancing 15->16 permitted.", this);
-                }
-                return true;
-            }
-
-            return true;
-        }
-
-        public bool CheckBossGate(int targetLevel)
-        {
-            InitializeIfNeeded();
-
             if (_bossGateRegistry == null)
             {
                 return true;
             }
 
-            var gate = _bossGateRegistry.GetGateByLevel(_state.CurrentCaveLevel);
+            var gate = _bossGateRegistry.GetGateByLevel(currentLevel);
             if (gate == null)
             {
                 return true;
@@ -320,11 +275,24 @@ namespace CindarsHope.Cave.Runtime
             var isDefeated = IsBossDefeated(gate.Id);
             if (!isDefeated)
             {
-                Debug.LogWarning($"CaveRunManager: cannot advance from level {_state.CurrentCaveLevel} to {targetLevel}. Boss gate '{gate.Id}' at level {gate.CaveLevel} not defeated.", this);
+                if (logBlocked)
+                {
+                    Debug.LogWarning($"CaveRunManager: Cannot advance {currentLevel}->{targetLevel}. Boss gate '{gate.Id}' at level {gate.CaveLevel} not defeated.", this);
+                }
                 return false;
             }
 
+            if (logBlocked)
+            {
+                Debug.Log($"CaveRunManager: Boss gate '{gate.Id}' defeated. Advancing {currentLevel}->{targetLevel} permitted.", this);
+            }
             return true;
+        }
+
+        public bool CheckBossGate(int targetLevel)
+        {
+            InitializeIfNeeded();
+            return CanAdvanceToLevel(_state.CurrentCaveLevel, targetLevel, true);
         }
 
         public bool IsBossDefeated(string bossGateId)
