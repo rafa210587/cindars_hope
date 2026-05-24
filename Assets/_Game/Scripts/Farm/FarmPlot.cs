@@ -44,6 +44,7 @@ namespace CindarsHope.Farm
         [SerializeField] private SpriteRenderer _spriteRenderer;
         [SerializeField] private InventoryManager _inventoryManager;
         [SerializeField] private SeedDatabaseSO _seedDatabase;
+        [SerializeField] private Player.StaminaManager _staminaManager;
 
         private readonly List<FarmMenuAction> _menuActions = new List<FarmMenuAction>();
         private Sprite _baseSprite;
@@ -436,9 +437,23 @@ namespace CindarsHope.Farm
 
         private bool TryTill()
         {
+            const int tillStaminaCost = 16;
+
             if (State != FarmPlotState.Raw || !HasRequiredTool(ToolType.Hoe))
             {
                 PublishFeedback("Cannot till this plot.");
+                return false;
+            }
+
+            if (!ValidateStamina(tillStaminaCost))
+            {
+                PublishFeedback("Not enough stamina to till.");
+                return false;
+            }
+
+            if (!_staminaManager.TrySpendStamina(tillStaminaCost))
+            {
+                PublishFeedback("Not enough stamina to till.");
                 return false;
             }
 
@@ -449,14 +464,27 @@ namespace CindarsHope.Farm
 
         private bool TryWater()
         {
+            const int waterStaminaCost = 8;
+
             if (!HasRequiredTool(ToolType.WateringCan))
             {
                 PublishFeedback("Watering Can required.");
                 return false;
             }
 
+            if (!ValidateStamina(waterStaminaCost))
+            {
+                PublishFeedback("Not enough stamina to water.");
+                return false;
+            }
+
             if (State == FarmPlotState.TilledDry)
             {
+                if (!_staminaManager.TrySpendStamina(waterStaminaCost))
+                {
+                    PublishFeedback("Not enough stamina to water.");
+                    return false;
+                }
                 SetState(FarmPlotState.TilledWet);
                 PublishFeedback("Soil watered.");
                 return true;
@@ -464,6 +492,11 @@ namespace CindarsHope.Farm
 
             if (State == FarmPlotState.PlantedDry)
             {
+                if (!_staminaManager.TrySpendStamina(waterStaminaCost))
+                {
+                    PublishFeedback("Not enough stamina to water.");
+                    return false;
+                }
                 SetState(FarmPlotState.PlantedWet);
                 PublishFeedback("Crop watered.");
                 return true;
@@ -475,6 +508,8 @@ namespace CindarsHope.Farm
 
         private bool TryPlantSeed(string seedId)
         {
+            const int plantStaminaCost = 4;
+
             if (State != FarmPlotState.TilledDry && State != FarmPlotState.TilledWet)
             {
                 PublishFeedback("Plot is not plantable.");
@@ -499,9 +534,22 @@ namespace CindarsHope.Farm
                 return false;
             }
 
+            if (!ValidateStamina(plantStaminaCost))
+            {
+                PublishFeedback("Not enough stamina to plant.");
+                return false;
+            }
+
             if (!_inventoryManager.RemoveItem(seedId, 1))
             {
                 PublishFeedback("Could not consume seed.");
+                return false;
+            }
+
+            if (!_staminaManager.TrySpendStamina(plantStaminaCost))
+            {
+                _inventoryManager.AddItem(seedId, 1);
+                PublishFeedback("Not enough stamina to plant.");
                 return false;
             }
 
@@ -556,6 +604,8 @@ namespace CindarsHope.Farm
 
         private bool TryHarvest()
         {
+            const int harvestStaminaCost = 4;
+
             if (State != FarmPlotState.ReadyToHarvest)
             {
                 PublishFeedback("Crop is not ready.");
@@ -565,6 +615,12 @@ namespace CindarsHope.Farm
             if (_inventoryManager == null)
             {
                 Debug.LogWarning($"FarmPlot {_plotIndex} cannot harvest because InventoryManager is missing.", this);
+                return false;
+            }
+
+            if (!ValidateStamina(harvestStaminaCost))
+            {
+                PublishFeedback("Not enough stamina to harvest.");
                 return false;
             }
 
@@ -583,6 +639,12 @@ namespace CindarsHope.Farm
             if (pairCount == 0)
             {
                 Debug.LogWarning($"FarmPlot {_plotIndex} cannot harvest seed '{PlantedSeedId}' because harvest data is empty.", this);
+                return false;
+            }
+
+            if (!_staminaManager.TrySpendStamina(harvestStaminaCost))
+            {
+                PublishFeedback("Not enough stamina to harvest.");
                 return false;
             }
 
@@ -784,6 +846,14 @@ namespace CindarsHope.Farm
                 default:
                     return FarmPlotState.Raw;
             }
+        }
+
+        private bool ValidateStamina(int requiredStamina)
+        {
+            if (_staminaManager == null)
+                return true;
+
+            return _staminaManager.CurrentStamina >= requiredStamina;
         }
     }
 }

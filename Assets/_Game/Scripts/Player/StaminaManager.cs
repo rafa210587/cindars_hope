@@ -1,4 +1,5 @@
 using CindarsHope.Core;
+using CindarsHope.Core.Data;
 using CindarsHope.Core.Events;
 using UnityEngine;
 
@@ -8,8 +9,11 @@ namespace CindarsHope.Player
     public class StaminaManager : MonoBehaviour
     {
         [SerializeField] private int _maxStamina = 100;
+        [SerializeField] private PlayerNeedsBalanceSO _playerNeedsBalance;
+        [SerializeField] private HungerManager _hungerManager;
+
         private int _currentStamina;
-        private float _regenRate = 10f;
+        private float _regenRate = 15f;
         private float _regenDelay = 1f;
         private float _regenTimer = 0f;
 
@@ -41,11 +45,17 @@ namespace CindarsHope.Player
             if (!IsInitialized)
                 return;
 
+            HandleZeroHungerDamage();
+
             _regenTimer -= Time.deltaTime;
             if (_regenTimer <= 0f && _currentStamina < _maxStamina)
             {
-                _regenTimer = 1f / _regenRate;
-                AddStamina(1);
+                float effectiveRegenRate = GetEffectiveRegenRate();
+                if (effectiveRegenRate > 0)
+                {
+                    _regenTimer = 1f / effectiveRegenRate;
+                    AddStamina(1);
+                }
             }
         }
 
@@ -58,6 +68,7 @@ namespace CindarsHope.Player
                 return false;
 
             _currentStamina -= amount;
+            _regenTimer = _regenDelay;
             PublishStaminaChanged();
             return true;
         }
@@ -85,6 +96,34 @@ namespace CindarsHope.Player
         private void HandleDayStarted(DayStartedEvent evt)
         {
             FullRecover();
+        }
+
+        private float GetEffectiveRegenRate()
+        {
+            if (_hungerManager == null || _playerNeedsBalance == null)
+                return _regenRate;
+
+            if (_playerNeedsBalance.IsZeroHunger(_hungerManager.CurrentHunger))
+                return _playerNeedsBalance.ZeroHungerRegenRate;
+
+            float modifier = _playerNeedsBalance.GetStaminaRegenModifier(_hungerManager.CurrentHunger);
+            return _regenRate * modifier;
+        }
+
+        private void HandleZeroHungerDamage()
+        {
+            if (_hungerManager == null || _playerNeedsBalance == null)
+                return;
+
+            if (!_playerNeedsBalance.IsZeroHunger(_hungerManager.CurrentHunger))
+                return;
+
+            float damage = _playerNeedsBalance.ZeroHungerDamagePerSecond * Time.deltaTime;
+            if (damage > 0)
+            {
+                _currentStamina = Mathf.Max(0, Mathf.RoundToInt(_currentStamina - damage));
+                PublishStaminaChanged();
+            }
         }
     }
 }

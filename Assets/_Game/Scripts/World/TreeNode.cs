@@ -4,6 +4,7 @@ using CindarsHope.Core.Events;
 using CindarsHope.Equipment;
 using CindarsHope.Interaction;
 using CindarsHope.Inventory;
+using CindarsHope.Player;
 using CindarsHope.Tools;
 using CindarsHope.World.Data;
 using UnityEngine;
@@ -17,6 +18,7 @@ namespace CindarsHope.World
         [SerializeField] private TreeDataSO _treeData;
         [SerializeField] private InventoryManager _inventoryManager;
         [SerializeField] private SpriteRenderer _spriteRenderer;
+        [SerializeField] private StaminaManager _staminaManager;
 
         public int HitsTaken { get; private set; }
         public int CurrentHp { get; private set; }
@@ -41,6 +43,8 @@ namespace CindarsHope.World
 
         public void Interact(GameObject interactor)
         {
+            const int chopStaminaCost = 24;
+
             if (!CanInteract(interactor))
             {
                 Debug.Log($"TreeNode {_treeIndex} cannot be chopped now.", this);
@@ -55,11 +59,26 @@ namespace CindarsHope.World
                 return;
             }
 
+            if (_staminaManager != null && _staminaManager.CurrentStamina < chopStaminaCost)
+            {
+                const string message = "Not enough stamina to chop.";
+                GameEventBus.Publish(new PlayerActionFeedbackEvent(message));
+                return;
+            }
+
             var isFinalHit = CurrentHp <= 1;
             var dropAmount = RollWoodAmount(isFinalHit);
             if (!_inventoryManager.AddItem(_treeData.WoodItemId, dropAmount))
             {
                 Debug.LogWarning($"TreeNode {_treeIndex} could not add wood '{_treeData.WoodItemId}' x{dropAmount}.", this);
+                return;
+            }
+
+            if (_staminaManager != null && !_staminaManager.TrySpendStamina(chopStaminaCost))
+            {
+                _inventoryManager.RemoveItem(_treeData.WoodItemId, dropAmount);
+                const string message = "Not enough stamina to chop.";
+                GameEventBus.Publish(new PlayerActionFeedbackEvent(message));
                 return;
             }
 

@@ -5,6 +5,7 @@ using CindarsHope.Equipment;
 using CindarsHope.Interaction;
 using CindarsHope.Inventory;
 using CindarsHope.Loot;
+using CindarsHope.Player;
 using CindarsHope.Tools;
 using UnityEngine;
 
@@ -14,6 +15,7 @@ namespace CindarsHope.World
     public class FishingSpot : MonoBehaviour, IInteractable
     {
         [SerializeField] private InventoryManager _inventoryManager;
+        [SerializeField] private StaminaManager _staminaManager;
         [SerializeField] private string _requiredToolId = "item_tool_fishing_rod_basic";
         [SerializeField] private string _fishItemId = "item_fish_common";
         [SerializeField] private int _fishAmount = 1;
@@ -33,6 +35,8 @@ namespace CindarsHope.World
 
         public void Interact(GameObject interactor)
         {
+            const int fishCastStaminaCost = 20;
+
             if (_inventoryManager == null)
             {
                 Debug.LogWarning("FishingSpot cannot fish because InventoryManager is missing.", this);
@@ -49,7 +53,13 @@ namespace CindarsHope.World
 
             if (!_isFishing)
             {
-                StartCoroutine(FishingRoutine());
+                if (_staminaManager != null && _staminaManager.CurrentStamina < fishCastStaminaCost)
+                {
+                    GameEventBus.Publish(new PlayerActionFeedbackEvent("Not enough stamina to fish."));
+                    return;
+                }
+
+                StartCoroutine(FishingRoutine(fishCastStaminaCost));
                 return;
             }
 
@@ -74,9 +84,16 @@ namespace CindarsHope.World
             _timingWindowSeconds = Mathf.Max(0.1f, _timingWindowSeconds);
         }
 
-        private System.Collections.IEnumerator FishingRoutine()
+        private System.Collections.IEnumerator FishingRoutine(int staminaCost)
         {
             _isFishing = true;
+            if (_staminaManager != null && !_staminaManager.TrySpendStamina(staminaCost))
+            {
+                _isFishing = false;
+                GameEventBus.Publish(new PlayerActionFeedbackEvent("Not enough stamina to fish."));
+                yield break;
+            }
+
             GameEventBus.Publish(new PlayerActionFeedbackEvent("Fishing..."));
             yield return new WaitForSeconds(_castDelaySeconds);
             _windowOpenTime = Time.time;

@@ -1,3 +1,4 @@
+using CindarsHope.Player;
 using UnityEngine;
 
 namespace CindarsHope.Combat
@@ -10,6 +11,7 @@ namespace CindarsHope.Combat
         [SerializeField] private float _punchRange = 0.1f;
         [SerializeField] private float _attackCooldownSeconds = 0.4f;
         [SerializeField] private float _punchKnockbackForce = 2.5f;
+        [SerializeField] private StaminaManager _staminaManager;
 
         private float _lastAttackTime;
 
@@ -23,7 +25,14 @@ namespace CindarsHope.Combat
 
         private void Punch()
         {
+            const int punchStaminaCost = 20;
+
             if (Time.time < _lastAttackTime + _attackCooldownSeconds)
+            {
+                return;
+            }
+
+            if (_staminaManager != null && !_staminaManager.TrySpendStamina(punchStaminaCost))
             {
                 return;
             }
