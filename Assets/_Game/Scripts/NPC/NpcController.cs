@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using CindarsHope.Core;
+using CindarsHope.Core.Events;
 using CindarsHope.Interaction;
 using CindarsHope.UI.Dialogue;
 using CindarsHope.UI.Modal;
@@ -14,12 +16,16 @@ namespace CindarsHope.NPC
         [SerializeField] private ModalManager _modalManager;
         [SerializeField] private Collider2D _collider;
         [SerializeField] private SpriteRenderer _spriteRenderer;
+        [SerializeField] private NpcWanderer _wanderer;
 
-        private bool _isInteracting = false;
+        private bool _isInteracting;
+        private bool _hasMet;
         private DialogueTreeSO _currentDialogueTree;
         private DialogueNode _currentNode;
 
         public string InteractionPrompt => $"Conversar com {_npcData?.DisplayName ?? "NPC"}";
+        public NpcDataSO NpcData => _npcData;
+        public bool HasMet => _hasMet;
 
         private void OnEnable()
         {
@@ -41,15 +47,18 @@ namespace CindarsHope.NPC
 
         public bool CanInteract(GameObject interactor)
         {
-            return _npcData != null;
+            return _npcData != null && !_isInteracting;
         }
 
         public void Interact(GameObject interactor)
         {
-            if (!CanInteract(interactor) || _isInteracting)
+            if (!CanInteract(interactor))
                 return;
 
             _isInteracting = true;
+            _hasMet = true;
+            _wanderer?.SetInteractionPaused(true);
+            GameEventBus.Publish(new NpcInteractionStartedEvent(_npcData.NpcId));
 
             if (_npcData.DialogueTree != null)
             {
@@ -61,7 +70,7 @@ namespace CindarsHope.NPC
             }
             else
             {
-                _isInteracting = false;
+                EndInteraction();
             }
         }
 
@@ -75,13 +84,20 @@ namespace CindarsHope.NPC
             }
             else
             {
-                _isInteracting = false;
+                EndInteraction();
             }
         }
 
         private void ShowSimpleDialogue()
         {
-            _dialogueModal.Show(_npcData.OpeningLine);
+            if (_dialogueModal != null)
+            {
+                _dialogueModal.Show(_npcData.OpeningLine);
+            }
+            else
+            {
+                EndInteraction();
+            }
         }
 
         private void ShowDialogueNode(DialogueNode node)
@@ -89,9 +105,15 @@ namespace CindarsHope.NPC
             _currentNode = node;
             string text = node.Text;
 
-            if (!string.IsNullOrEmpty(text) && node.RandomLinePool.Count > 0)
+            if (node.RandomLinePool != null && node.RandomLinePool.Count > 0)
             {
                 text = node.RandomLinePool[Random.Range(0, node.RandomLinePool.Count)];
+            }
+
+            if (_dialogueModal == null)
+            {
+                EndInteraction();
+                return;
             }
 
             if (node.Choices != null && node.Choices.Count > 0)
@@ -106,6 +128,11 @@ namespace CindarsHope.NPC
 
         private void HandleChoiceSelected(DialogueChoice choice)
         {
+            if (!_isInteracting || _currentDialogueTree == null)
+            {
+                return;
+            }
+
             if (choice.ActionType == DialogueActionType.OpenShop)
             {
                 OpenShop(choice.ActionPayload);
@@ -145,16 +172,32 @@ namespace CindarsHope.NPC
 
         private void OpenShop(string shopId)
         {
-            Debug.Log($"Opening shop: {shopId}");
-            _modalManager?.ClearAllModals();
-            _isInteracting = false;
+            Debug.LogWarning($"NpcController '{_npcData.NpcId}' cannot open shop '{shopId}'. Use NpcShopController for shopkeepers.", this);
+            EndInteraction();
         }
 
         private void HandleDialogueClosed()
         {
+            EndInteraction();
+        }
+
+        public void RestoreState(bool hasMet)
+        {
+            _hasMet = hasMet;
+        }
+
+        private void EndInteraction()
+        {
+            if (!_isInteracting)
+            {
+                return;
+            }
+
             _isInteracting = false;
             _currentNode = null;
             _currentDialogueTree = null;
+            _wanderer?.SetInteractionPaused(false);
+            GameEventBus.Publish(new NpcInteractionEndedEvent(_npcData.NpcId));
         }
 
         private void Reset()
@@ -174,6 +217,9 @@ namespace CindarsHope.NPC
 
             if (_collider == null)
                 _collider = GetComponent<Collider2D>();
+
+            if (_wanderer == null)
+                _wanderer = GetComponent<NpcWanderer>();
         }
     }
 }

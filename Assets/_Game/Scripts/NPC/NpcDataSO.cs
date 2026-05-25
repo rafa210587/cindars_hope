@@ -19,6 +19,7 @@ namespace CindarsHope.NPC
         public DialogueTreeSO DialogueTree;
         public string ShopId;
         public string DefaultSceneId = "TownScene";
+        public string DefaultPositionId;
         public Vector2 DefaultPosition;
         public NpcMovementMode MovementMode = NpcMovementMode.Static;
         public NpcWanderData WanderData;

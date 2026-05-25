@@ -131,6 +131,17 @@ namespace CindarsHope.Editor.Validation
             Debug.Log("SPEC 07 scene validation passed for FarmScene.");
         }
 
+        public static void ValidateSpec08Scene()
+        {
+            EditorSceneManager.OpenScene("Assets/_Game/Scenes/TownScene.unity");
+            if (!ValidateTownScene() || !ValidateSpec08Assets())
+            {
+                throw new System.InvalidOperationException("SPEC 08 validation failed for TownScene or NPC dialogue assets.");
+            }
+
+            Debug.Log("SPEC 08 scene and NPC dialogue validation passed for TownScene.");
+        }
+
         private static bool ValidateFarmScene()
         {
             var rootObjects = EditorSceneManager.GetActiveScene().GetRootGameObjects();
@@ -246,10 +257,16 @@ namespace CindarsHope.Editor.Validation
             if (portalToFarm == null)
                 { Debug.LogError("MvpSceneValidator: Portal to FarmScene not found in TownScene."); passed = false; }
 
-            if (Object.FindObjectsByType<NpcShopController>().Length < 3)
-                { Debug.LogError("MvpSceneValidator: SPEC 06 requires Pip plus two shop NPC controllers in TownScene."); passed = false; }
+            if (Object.FindObjectsByType<NpcShopController>().Length != 2)
+                { Debug.LogError("MvpSceneValidator: TownScene requires exactly two shopkeeper NPC controllers."); passed = false; }
             if (FindComponent<PipReceptionController>(rootObjects) == null)
                 { Debug.LogError("MvpSceneValidator: Pip reception controller not found in TownScene."); passed = false; }
+            var dialogueNpcs = Object.FindObjectsByType<NpcController>();
+            if (!HasDialogueNpc(dialogueNpcs, "npc_pip_miudinho")
+                || !HasDialogueNpc(dialogueNpcs, "npc_vaalara_wanderer_01")
+                || FindComponent<NpcWanderer>(rootObjects) == null
+                || FindComponent<NpcManager>(rootObjects) == null)
+                { Debug.LogError("MvpSceneValidator: SPEC 08 requires Pip dialogue, bounded wanderer and NpcManager wiring."); passed = false; }
             if (FindComponent<ShopManager>(rootObjects) == null || FindComponent<ModalManager>(rootObjects) == null)
                 { Debug.LogError("MvpSceneValidator: ShopManager or ModalManager not found in TownScene."); passed = false; }
             if (FindComponent<DialogueModal>(rootObjects) == null
@@ -261,6 +278,43 @@ namespace CindarsHope.Editor.Validation
                 { Debug.LogError("MvpSceneValidator: Legacy Town commerce points must not compete with NPC shops."); passed = false; }
 
             return passed;
+        }
+
+        private static bool ValidateSpec08Assets()
+        {
+            var pip = AssetDatabase.LoadAssetAtPath<NpcDataSO>("Assets/_Game/Data/NPCs/Npc_Pip_Miudinho.asset");
+            var weapons = AssetDatabase.LoadAssetAtPath<NpcDataSO>("Assets/_Game/Data/NPCs/Npc_Shop_Weapons_Armor.asset");
+            var seeds = AssetDatabase.LoadAssetAtPath<NpcDataSO>("Assets/_Game/Data/NPCs/Npc_Shop_Seeds_Tools.asset");
+            var wanderer = AssetDatabase.LoadAssetAtPath<NpcDataSO>("Assets/_Game/Data/NPCs/Npc_Vaalara_Wanderer_01.asset");
+            if (pip == null || pip.DialogueTree == null
+                || weapons == null || weapons.ShopId != "shop_weapons_armor"
+                || seeds == null || seeds.ShopId != "shop_seeds_tools"
+                || wanderer == null || wanderer.DialogueTree == null
+                || wanderer.MovementMode != NpcMovementMode.RandomWander)
+            {
+                Debug.LogError("MvpSceneValidator: SPEC 08 NPC data assets are missing or invalid.");
+                return false;
+            }
+
+            var pipStart = pip.DialogueTree.GetNodeById(pip.DialogueTree.StartNodeId);
+            var wandererStart = wanderer.DialogueTree.GetNodeById(wanderer.DialogueTree.StartNodeId);
+            if (pipStart == null || pipStart.Choices == null || pipStart.Choices.Count < 3
+                || wandererStart == null || wandererStart.RandomLinePool == null || wandererStart.RandomLinePool.Count < 3)
+            {
+                Debug.LogError("MvpSceneValidator: Pip orientation choices or wanderer lore lines do not meet SPEC 08.");
+                return false;
+            }
+
+            foreach (var choice in pipStart.Choices)
+            {
+                if (choice.ActionType == DialogueActionType.OpenShop)
+                {
+                    Debug.LogError("MvpSceneValidator: Pip must not open a shop.");
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         private static bool ValidateCaveScene()
@@ -348,6 +402,19 @@ namespace CindarsHope.Editor.Validation
             foreach (var station in stations)
             {
                 if (station.StationInstanceId == id && station.StationType == type)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static bool HasDialogueNpc(NpcController[] npcs, string npcId)
+        {
+            foreach (var npc in npcs)
+            {
+                if (npc.NpcData != null && npc.NpcData.NpcId == npcId)
                 {
                     return true;
                 }

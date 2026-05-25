@@ -8,7 +8,6 @@ O refinamento de tracking documental foi reclassificado como implementado/parcia
 
 | Refinement | Spec futura relacionada | Observacao |
 |---|---|---|
-| [pre_refinamentos/refinamento_init_town_npc_dialogue_schedule_quests.md](pre_refinamentos/refinamento_init_town_npc_dialogue_schedule_quests.md) | docs/specs/a_implementar/spec_town_npc_dialogue_schedule_quests.md | Pendencia real consolidada; nao implementar fora da ordem oficial. |
 | [pre_refinamentos/refinamento_init_hunger_stamina_status_balance.md](pre_refinamentos/refinamento_init_hunger_stamina_status_balance.md) | docs/specs/a_implementar/spec_hunger_stamina_status_balance.md | Pendencia real consolidada; nao implementar fora da ordem oficial. |
 | [pre_refinamentos/refinamento_init_equipment_durability_environment_loot.md](pre_refinamentos/refinamento_init_equipment_durability_environment_loot.md) | docs/specs/a_implementar/spec_equipment_durability_environment_loot_runtime.md | Pendencia real consolidada; nao implementar fora da ordem oficial. |
 | [pre_refinamentos/refinamento_init_damage_status_elements_resistances.md](pre_refinamentos/refinamento_init_damage_status_elements_resistances.md) | docs/specs/a_implementar/spec_damage_status_elements_resistances_runtime.md | Spec ja esta relativamente madura, mas continua bloqueada pela ordem oficial. |

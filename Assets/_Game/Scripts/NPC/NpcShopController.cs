@@ -1,5 +1,7 @@
 using CindarsHope.Economy;
+using CindarsHope.Core;
 using CindarsHope.Core.Data;
+using CindarsHope.Core.Events;
 using CindarsHope.Interaction;
 using CindarsHope.Inventory;
 using CindarsHope.Inventory.Data;
@@ -30,6 +32,8 @@ namespace CindarsHope.NPC
         private bool _isClosing;
 
         public string InteractionPrompt => $"Conversar com {_npcData?.DisplayName ?? "NPC"}";
+        public NpcDataSO NpcData => _npcData;
+        public bool HasMet { get; private set; }
 
         private void Start()
         {
@@ -79,6 +83,8 @@ namespace CindarsHope.NPC
 
             _isInteracting = true;
             _isClosing = false;
+            HasMet = true;
+            GameEventBus.Publish(new NpcInteractionStartedEvent(_npcData.NpcId));
             ShowOpeningDialogue();
         }
 
@@ -206,6 +212,12 @@ namespace CindarsHope.NPC
             _modalManager?.ClearAllModals();
             _isInteracting = false;
             _isClosing = false;
+            GameEventBus.Publish(new NpcInteractionEndedEvent(_npcData.NpcId));
+        }
+
+        public void RestoreState(bool hasMet)
+        {
+            HasMet = hasMet;
         }
 
         private void DetachUiEvents()

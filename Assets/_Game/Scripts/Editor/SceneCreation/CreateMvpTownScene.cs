@@ -77,7 +77,7 @@ namespace CindarsHope.Editor.SceneCreation
             CreateMainCamera(playerTransform);
             CreateSpawnPoints(playerTransform);
             CreatePortals();
-            CreateNpcs(playerTransform, playerManager, inventoryManager, itemDatabase, shopManager, modalManager, shopUi);
+            var npcManager = CreateNpcs(playerTransform, playerManager, inventoryManager, itemDatabase, shopManager, modalManager, shopUi);
             CreateTownCommerce();
             CreateTownDecorations();
             CreateDebugHud(playerManager, inventoryManager, hungerManager, interactionSystem, timeManager, saveManager);
@@ -94,7 +94,8 @@ namespace CindarsHope.Editor.SceneCreation
                 craftingManager,
                 economyManager,
                 shopManager,
-                modalManager);
+                modalManager,
+                npcManager);
 
             EditorSceneManager.MarkSceneDirty(scene);
             EditorSceneManager.SaveScene(scene, ScenePath);
@@ -140,7 +141,8 @@ namespace CindarsHope.Editor.SceneCreation
             CraftingManager craftingManager,
             EconomyManager economyManager,
             ShopManager shopManager,
-            ModalManager modalManager)
+            ModalManager modalManager,
+            NpcManager npcManager)
         {
             var serializedBootstrap = new SerializedObject(bootstrap);
             SetReference(serializedBootstrap, "_playerManager", playerManager);
@@ -160,7 +162,7 @@ namespace CindarsHope.Editor.SceneCreation
             ConfigureHotbarDebugInput(
                 bootstrap.GetComponent<HotbarDebugInput>(),
                 saveManager);
-            ConfigureSaveManager(saveManager, playerManager, inventoryManager, hungerManager, timeManager, playerTransform);
+            ConfigureSaveManager(saveManager, playerManager, inventoryManager, hungerManager, timeManager, playerTransform, npcManager);
             ConfigureCraftingManager(craftingManager, inventoryManager);
             ConfigureEconomyManager(economyManager, inventoryManager, playerManager);
 
@@ -216,7 +218,8 @@ namespace CindarsHope.Editor.SceneCreation
             InventoryManager inventoryManager,
             HungerManager hungerManager,
             TimeManager timeManager,
-            Transform playerTransform)
+            Transform playerTransform,
+            NpcManager npcManager)
         {
             var serializedSave = new SerializedObject(saveManager);
             SetReference(serializedSave, "_playerManager", playerManager);
@@ -224,6 +227,7 @@ namespace CindarsHope.Editor.SceneCreation
             SetReference(serializedSave, "_hungerManager", hungerManager);
             SetReference(serializedSave, "_timeManager", timeManager);
             SetReference(serializedSave, "_playerTransform", playerTransform);
+            SetReference(serializedSave, "_npcManager", npcManager);
             serializedSave.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(saveManager);
         }
@@ -585,14 +589,20 @@ namespace CindarsHope.Editor.SceneCreation
 
             new GameObject("ShopEventSystem", typeof(EventSystem), typeof(StandaloneInputModule));
 
-            var dialoguePanel = CreatePanel(canvasObject.transform, "DialogueModal", new Vector2(0f, -245f), new Vector2(1040f, 160f));
-            var dialogueText = CreateText(dialoguePanel.transform, "DialogueText", new Vector2(0f, 24f), new Vector2(900f, 56f), string.Empty);
-            var continueButton = CreateButton(dialoguePanel.transform, "ContinueButton", new Vector2(0f, -40f), new Vector2(160f, 42f), "Continuar");
+            var dialoguePanel = CreatePanel(canvasObject.transform, "DialogueModal", new Vector2(0f, -195f), new Vector2(1040f, 300f));
+            var dialogueText = CreateText(dialoguePanel.transform, "DialogueText", new Vector2(0f, 105f), new Vector2(900f, 56f), string.Empty);
+            var continueButton = CreateButton(dialoguePanel.transform, "ContinueButton", new Vector2(0f, -105f), new Vector2(160f, 42f), "Continuar");
+            var choicesContainer = CreateContainer(dialoguePanel.transform, "Choices", new Vector2(0f, -5f), new Vector2(760f, 145f));
+            var choiceTemplate = CreateButton(choicesContainer, "ChoiceTemplate", Vector2.zero, new Vector2(760f, 30f), string.Empty);
+            choiceTemplate.gameObject.AddComponent<LayoutElement>().preferredHeight = 30f;
+            choiceTemplate.gameObject.SetActive(false);
             var dialogue = dialoguePanel.AddComponent<DialogueModal>();
             var serializedDialogue = new SerializedObject(dialogue);
             SetReference(serializedDialogue, "_canvasGroup", dialoguePanel.GetComponent<CanvasGroup>());
             SetReference(serializedDialogue, "_dialogueText", dialogueText);
             SetReference(serializedDialogue, "_continueButton", continueButton);
+            SetReference(serializedDialogue, "_choicesContainer", choicesContainer);
+            SetReference(serializedDialogue, "_choiceButtonPrefab", choiceTemplate.gameObject);
             serializedDialogue.ApplyModifiedPropertiesWithoutUndo();
 
             var menuPanel = CreatePanel(canvasObject.transform, "ShopMenuModal", Vector2.zero, new Vector2(320f, 300f));
@@ -649,7 +659,7 @@ namespace CindarsHope.Editor.SceneCreation
             };
         }
 
-        private static void CreateNpcs(
+        private static NpcManager CreateNpcs(
             Transform playerTransform,
             PlayerManager playerManager,
             InventoryManager inventoryManager,
@@ -661,25 +671,21 @@ namespace CindarsHope.Editor.SceneCreation
             var parent = new GameObject("NPCs");
             parent.transform.position = Vector3.zero;
 
-            var pip = CreateShopNpc(
+            var pip = CreateDialogueNpc(
                 parent.transform,
                 "NPC_Pip_Miudinho",
                 new Vector3(-5f, 1f, 0f),
                 new Color(0.92f, 0.88f, 0.75f),
                 "Assets/_Game/Data/NPCs/Npc_Pip_Miudinho.asset",
-                null,
-                playerManager,
-                inventoryManager,
-                itemDatabase,
-                shopManager,
                 modalManager,
-                shopUi);
+                shopUi.DialogueModal,
+                false);
             var reception = pip.AddComponent<PipReceptionController>();
             var serializedReception = new SerializedObject(reception);
             SetReference(serializedReception, "_playerTransform", playerTransform);
             serializedReception.ApplyModifiedPropertiesWithoutUndo();
 
-            CreateShopNpc(
+            var weaponsShop = CreateShopNpc(
                 parent.transform,
                 "NPC_WeaponsArmorShop",
                 new Vector3(-3f, 2f, 0f),
@@ -692,7 +698,7 @@ namespace CindarsHope.Editor.SceneCreation
                 shopManager,
                 modalManager,
                 shopUi);
-            CreateShopNpc(
+            var seedsShop = CreateShopNpc(
                 parent.transform,
                 "NPC_SeedsToolsShop",
                 new Vector3(4.5f, 2f, 0f),
@@ -705,6 +711,25 @@ namespace CindarsHope.Editor.SceneCreation
                 shopManager,
                 modalManager,
                 shopUi);
+
+            var wanderer = CreateDialogueNpc(
+                parent.transform,
+                "NPC_Vaalara_Wanderer_01",
+                new Vector3(0f, -1.5f, 0f),
+                new Color(0.62f, 0.56f, 0.82f),
+                "Assets/_Game/Data/NPCs/Npc_Vaalara_Wanderer_01.asset",
+                modalManager,
+                shopUi.DialogueModal,
+                true);
+
+            var manager = parent.AddComponent<NpcManager>();
+            var serializedManager = new SerializedObject(manager);
+            SetReference(serializedManager, "_dialogueModal", shopUi.DialogueModal);
+            SetReference(serializedManager, "_modalManager", modalManager);
+            SetReferences(serializedManager, "_npcs", pip.GetComponent<NpcController>(), wanderer.GetComponent<NpcController>());
+            SetReferences(serializedManager, "_shopNpcs", weaponsShop.GetComponent<NpcShopController>(), seedsShop.GetComponent<NpcShopController>());
+            serializedManager.ApplyModifiedPropertiesWithoutUndo();
+            return manager;
         }
 
         private static void CreateTownCommerce()
@@ -759,6 +784,56 @@ namespace CindarsHope.Editor.SceneCreation
             SetReference(serialized, "_sellPanel", shopUi.SellPanel);
             SetReference(serialized, "_modalManager", modalManager);
             serialized.ApplyModifiedPropertiesWithoutUndo();
+            return npcObject;
+        }
+
+        private static GameObject CreateDialogueNpc(
+            Transform parent,
+            string objectName,
+            Vector3 position,
+            Color color,
+            string npcDataPath,
+            ModalManager modalManager,
+            DialogueModal dialogueModal,
+            bool canWander)
+        {
+            var npcObject = new GameObject(objectName);
+            npcObject.transform.SetParent(parent);
+            npcObject.transform.position = position;
+            npcObject.transform.localScale = new Vector3(1f, 1.5f, 1f);
+            var renderer = npcObject.AddComponent<SpriteRenderer>();
+            renderer.sprite = GetBuiltinSprite();
+            renderer.color = color;
+            renderer.sortingOrder = 2;
+            TrySetSortingLayer(renderer, "Characters", renderer.sortingOrder);
+            var collider = npcObject.AddComponent<BoxCollider2D>();
+            collider.isTrigger = true;
+            collider.size = Vector2.one;
+
+            var controller = npcObject.AddComponent<NpcController>();
+            var serializedController = new SerializedObject(controller);
+            SetReference(serializedController, "_npcData", AssetDatabase.LoadAssetAtPath<NpcDataSO>(npcDataPath));
+            SetReference(serializedController, "_dialogueModal", dialogueModal);
+            SetReference(serializedController, "_modalManager", modalManager);
+            SetReference(serializedController, "_collider", collider);
+            SetReference(serializedController, "_spriteRenderer", renderer);
+
+            if (canWander)
+            {
+                var body = npcObject.AddComponent<Rigidbody2D>();
+                body.gravityScale = 0f;
+                body.constraints = RigidbodyConstraints2D.FreezeRotation;
+                var wanderer = npcObject.AddComponent<NpcWanderer>();
+                var serializedWanderer = new SerializedObject(wanderer);
+                SetReference(serializedWanderer, "_npcData", AssetDatabase.LoadAssetAtPath<NpcDataSO>(npcDataPath));
+                SetReference(serializedWanderer, "_rigidbody", body);
+                serializedWanderer.FindProperty("_wanderBoundsMin").vector2Value = new Vector2(-6f, -3.5f);
+                serializedWanderer.FindProperty("_wanderBoundsMax").vector2Value = new Vector2(6f, 3.5f);
+                serializedWanderer.ApplyModifiedPropertiesWithoutUndo();
+                SetReference(serializedController, "_wanderer", wanderer);
+            }
+
+            serializedController.ApplyModifiedPropertiesWithoutUndo();
             return npcObject;
         }
 
@@ -960,6 +1035,22 @@ namespace CindarsHope.Editor.SceneCreation
             }
 
             property.objectReferenceValue = value;
+        }
+
+        private static void SetReferences(SerializedObject serializedObject, string propertyName, params Object[] values)
+        {
+            var property = serializedObject.FindProperty(propertyName);
+            if (property == null)
+            {
+                Debug.LogWarning($"Serialized field '{propertyName}' was not found on '{serializedObject.targetObject.name}'.");
+                return;
+            }
+
+            property.arraySize = values.Length;
+            for (var index = 0; index < values.Length; index++)
+            {
+                property.GetArrayElementAtIndex(index).objectReferenceValue = values[index];
+            }
         }
 
         private static Sprite GetBuiltinSprite()

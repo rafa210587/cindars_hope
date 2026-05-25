@@ -134,6 +134,7 @@ namespace CindarsHope.UI.Dialogue
             foreach (var choice in choices)
             {
                 var buttonObj = Instantiate(_choiceButtonPrefab, _choicesContainer);
+                buttonObj.SetActive(true);
                 var button = buttonObj.GetComponent<Button>();
                 if (button != null)
                 {

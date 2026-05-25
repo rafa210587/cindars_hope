@@ -26,6 +26,7 @@
 | Overnight 2026-05-23 | Executado parcialmente | `docs/IMPLEMENTATION_DELIVERY_20260523.md`, `docs/refinements/implementados/ref_stabilizacao_overnight_specs_20260523.md` |
 | Economy/shop/stock/pricing/UI (Spec 06) | Implementado completo | `docs/specs/implementados/spec_economy_shop_stock_pricing_ui.md` |
 | Crafting queue/workstations/recipes/UI (Spec 07) | Implementado completo | `docs/specs/implementados/spec_crafting_queue_workstations_recipes_ui.md` |
+| Town NPC/dialogue/wanderer/save hooks (Spec 08) | Implementado completo | `docs/specs/implementados/spec_town_npc_dialogue_schedule_quests.md` |
 
 ## Correcoes de tracking obrigatorias
 
@@ -120,9 +121,9 @@ A ordem oficial esta em `docs/specs/SPEC_EXECUTION_ORDER.md` e o registry futuro
 A primeira spec futura executavel passa a ser:
 
 ```text
-docs/specs/a_implementar/spec_town_npc_dialogue_schedule_quests.md
+docs/specs/a_implementar/spec_player_combat_weapons_spells_skill_actions_runtime.md
 ```
 
-Antes de executar runtime, as specs futuras devem ser enriquecidas usando seus pre-refinamentos relacionados.
+Os prompts operacionais 09-11 podem ainda exigir reconciliacao das implementacoes parciais existentes antes da spec 12. Antes de executar runtime futuro, as specs devem ser enriquecidas usando seus pre-refinamentos relacionados.
 
 FASE9H/I/J/K/L nao devem ser tratadas como completas. As proximas implementacoes devem seguir somente `docs/specs/`.

@@ -11,6 +11,7 @@ using CindarsHope.Economy;
 using CindarsHope.Equipment;
 using CindarsHope.Farm;
 using CindarsHope.Inventory;
+using CindarsHope.NPC;
 using CindarsHope.Player;
 using CindarsHope.Player.Progression;
 using CindarsHope.Save.Migrations;
@@ -32,6 +33,7 @@ namespace CindarsHope.Save
         private const string SaveDirectoryName = "saves";
         private const string SaveFileName = "slot_1.json";
         private const string FarmSceneName = "FarmScene";
+        private const string TownSceneName = "TownScene";
 
         [SerializeField] private PlayerManager _playerManager;
         [SerializeField] private InventoryManager _inventoryManager;
@@ -49,6 +51,7 @@ namespace CindarsHope.Save
         [SerializeField] private CaveRunManager _caveRunManager;
         [SerializeField] private ShopManager _shopManager;
         [SerializeField] private CraftingRuntime _craftingRuntime;
+        [SerializeField] private NpcManager _npcManager;
 
         private readonly HotbarState _hotbarState = new HotbarState();
         private readonly SaveMigrationRegistry _migrationRegistry = new SaveMigrationRegistry(new ISaveMigration[]
@@ -96,6 +99,7 @@ namespace CindarsHope.Save
                 var gameTimeSaveData = CaptureGameTimeSaveData();
                 var statusEffectsSaveData = CapturePlayerStatusEffectsSaveData();
                 var equipmentDurabilitySaveData = CaptureEquipmentDurabilitySaveData();
+                var npcSaveData = CaptureNpcSaveData(existingSaveData);
 
                 var saveData = new GameSaveData
                 {
@@ -116,7 +120,8 @@ namespace CindarsHope.Save
                     Stamina = staminaSaveData,
                     GameTime = gameTimeSaveData,
                     PlayerStatusEffects = statusEffectsSaveData,
-                    EquipmentDurability = equipmentDurabilitySaveData
+                    EquipmentDurability = equipmentDurabilitySaveData,
+                    Npcs = npcSaveData
                 };
 
                 var savePath = SaveFilePath;
@@ -612,6 +617,7 @@ namespace CindarsHope.Save
             saveData.Farm ??= new FarmSaveData();
             saveData.World ??= new WorldSaveData();
             saveData.Cave ??= new CaveSaveData();
+            saveData.Npcs ??= new NpcManagerSaveData();
 
             saveData.Inventory.Items ??= new List<InventoryItemSaveData>();
             saveData.Inventory.Slots ??= new List<InventorySlotSaveData>();
@@ -624,6 +630,7 @@ namespace CindarsHope.Save
             saveData.Farm.Trees ??= new List<TreeSaveData>();
             saveData.World.Pickups ??= new List<ItemPickupSaveData>();
             saveData.World.Trees ??= new List<TreeSaveData>();
+            saveData.Npcs.Npcs ??= new List<NpcSaveData>();
 
             return true;
         }
@@ -813,6 +820,11 @@ namespace CindarsHope.Save
                 RestoreEconomySaveData(saveData.Economy);
             }
 
+            if (_npcManager != null && saveData.Npcs != null)
+            {
+                _npcManager.RestoreFromSaveData(saveData.Npcs);
+            }
+
             if (_craftingRuntime != null && saveData.Crafting != null)
             {
                 _craftingRuntime.LoadFromSaveData(saveData.Crafting);
@@ -958,6 +970,16 @@ namespace CindarsHope.Save
             }
 
             return data;
+        }
+
+        private NpcManagerSaveData CaptureNpcSaveData(GameSaveData existingSaveData)
+        {
+            if (SceneManager.GetActiveScene().name == TownSceneName && _npcManager != null)
+            {
+                return _npcManager.CaptureSaveData();
+            }
+
+            return existingSaveData?.Npcs ?? new NpcManagerSaveData();
         }
 
         private void PublishSaveResult(bool wasSuccessful, string message)

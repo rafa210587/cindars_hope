@@ -3105,3 +3105,34 @@ Residual risk: UX/input e save/load interativo precisam de verificacao humana fi
 - SPEC_08 - Town NPC dialogue, schedule e quests, sujeita a reconciliacao do codigo real.
 
 ---
+## Sessao 2026-05-24 (10a) - Fechar SPEC 08 (Town NPC, dialogue e wanderer)
+
+**Data:** 2026-05-24
+**Foco:** Formalizar NPCs de Town, dialogo ramificado do Pip, wanderer de lore e persistencia minima
+**Status:** COMPLETO
+
+### Deliverables
+
+- `NpcDataSO`, `NpcController`, `NpcShopController`, `NpcWanderer` e `NpcManager` alinhados ao contrato da SPEC 08.
+- `NpcInteractionStartedEvent` / `NpcInteractionEndedEvent` publicados via `GameEventBus`.
+- Save/load minimo de NPC conectado ao `SaveManager` com IDs, posicao e `HasMet`.
+- Dados de Pip, dois lojistas e `npc_vaalara_wanderer_01` reconciliados.
+- `CreateMvpTownScene` atualizado para gerar Pip de dialogo, dois lojistas, wanderer, choices UI e `NpcManager`.
+- `MvpSceneValidator.ValidateSpec08Scene()` e checklist em `docs/validation/SPEC_08_TOWN_NPC_VALIDATION_20260524.md`.
+- Spec, refinement e prompt promovidos para `implementados`; registries reconciliados.
+
+### Validacoes
+
+```text
+Docs validation: PASS - tools/docs/validate_docs.ps1
+Unity compile: PASS - *** Tundra build success em Logs/spec08-scene-validation-final.log
+TownScene generation: PASS - CreateMvpTownScene.CreateScene em Logs/spec08-scene-generation.log
+SPEC 08 validator: PASS - MvpSceneValidator.ValidateSpec08Scene em Logs/spec08-scene-validation-final.log
+SPEC 06 regression validator: PASS - MvpSceneValidator.ValidateSpec06Scenes em Logs/spec08-regression-spec06.log
+SPEC 07 regression validator: PASS - MvpSceneValidator.ValidateSpec07Scene em Logs/spec08-regression-spec07.log
+Unity log scanner: FAIL - mensagens conhecidas de Assembly-CSharp-Editor-firstpass.dll e Assembly-CSharp-firstpass.dll foram classificadas como criticas mesmo com Tundra build success
+Play Mode: NOT RUN
+Residual risk: UX, wandering visual e save/load interativo aguardam Play Mode; duplicate `item_crop_wheat` disparado pelo inicializador da SPEC 07 foi observado no log e fica fora do escopo desta spec.
+```
+
+---

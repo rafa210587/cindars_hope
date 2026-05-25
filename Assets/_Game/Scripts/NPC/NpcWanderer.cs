@@ -7,11 +7,14 @@ namespace CindarsHope.NPC
     {
         [SerializeField] private NpcDataSO _npcData;
         [SerializeField] private Rigidbody2D _rigidbody;
+        [SerializeField] private Vector2 _wanderBoundsMin = new Vector2(-6f, -3.5f);
+        [SerializeField] private Vector2 _wanderBoundsMax = new Vector2(6f, 3.5f);
 
         private Vector2 _spawnPosition;
         private Vector3 _targetPosition;
         private float _pauseTimer = 0f;
         private bool _isPaused = true;
+        private bool _isInteractionPaused;
         private Collider2D _collider;
 
         private void Start()
@@ -30,6 +33,12 @@ namespace CindarsHope.NPC
         {
             if (_npcData?.MovementMode != NpcMovementMode.RandomWander)
                 return;
+
+            if (_isInteractionPaused)
+            {
+                StopMotion();
+                return;
+            }
 
             if (_isPaused)
             {
@@ -83,7 +92,10 @@ namespace CindarsHope.NPC
                 Mathf.Sin(randomAngle) * randomDistance
             );
 
-            _targetPosition = _spawnPosition + offset;
+            var intendedTarget = _spawnPosition + offset;
+            _targetPosition = new Vector2(
+                Mathf.Clamp(intendedTarget.x, _wanderBoundsMin.x, _wanderBoundsMax.x),
+                Mathf.Clamp(intendedTarget.y, _wanderBoundsMin.y, _wanderBoundsMax.y));
         }
 
         private void StartPause()
@@ -92,6 +104,24 @@ namespace CindarsHope.NPC
             var wanderData = _npcData.WanderData;
             _pauseTimer = Random.Range(wanderData.PauseMinDuration, wanderData.PauseMaxDuration);
 
+            StopMotion();
+        }
+
+        public void SetInteractionPaused(bool isPaused)
+        {
+            _isInteractionPaused = isPaused;
+            if (isPaused)
+            {
+                StopMotion();
+            }
+            else if (_npcData?.WanderData != null)
+            {
+                StartPause();
+            }
+        }
+
+        private void StopMotion()
+        {
             if (_rigidbody != null)
             {
                 _rigidbody.linearVelocity = Vector2.zero;
