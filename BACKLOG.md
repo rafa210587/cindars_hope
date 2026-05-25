@@ -19,13 +19,14 @@ Git Commit: b50ed94
 ---
 
 ### Phase 9: Snapshot/Replay Integration
-- [ ] Integrate CaveGeneratedLevel with VisitedLevelSnapshot
-- [ ] Store enemy spawn plan in snapshot
-- [ ] Store fishing spot placement in snapshot
-- [ ] Store resource node state in snapshot
-- [ ] Load level from snapshot without regeneration
-- [ ] Validate layout hash matches snapshot
-- [ ] Handle snapshot cache within same run
+- [x] Integrate CaveGeneratedLevel with VisitedLevelSnapshot
+- [x] Store enemy spawn plan in snapshot
+- [x] Store resource node state in snapshot (DepletedNodeIds already captured)
+- [x] Load level from snapshot without regeneration
+- [x] Validate layout hash matches snapshot
+- [x] Handle snapshot cache within same run
+
+Git Commit: f5ef934
 
 ### Phase 10: Save/Load - Cave Runtime State
 
