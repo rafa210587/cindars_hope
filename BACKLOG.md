@@ -31,20 +31,20 @@ Git Commit: f5ef934
 ### Phase 10: Save/Load - Cave Runtime State
 
 #### Save Side (SaveManager Integration)
-- [ ] Create CaveRuntimeStateSaveDTO (run seed, current level, snapshots map, boss defeat states, checkpoint progress)
-- [ ] Implement IDataTransfer for CaveRuntimeStateSaveDTO
-- [ ] Serialize enemy spawn plans to DTOs (no Unity refs)
-- [ ] Serialize boss defeat states with unique rewards claimed
-- [ ] Serialize checkpoint unlock levels
-- [ ] Save to persistent data path
+- [x] CaveSaveData already serializes: run seed, current level, snapshots map, boss defeat states, checkpoint progress
+- [x] EnemySpawnPlan now serialized in VisitedLevelSnapshot via SerializedVisitedLevelSnapshot
+- [x] SaveManager.CaptureCaveSaveData() already calls CaveRunManager.CaptureSaveData()
+- [x] Save to persistent data path via Application.persistentDataPath
 
 #### Load Side (SaveManager Integration)
-- [ ] Deserialize CaveRuntimeStateSaveDTO
-- [ ] Restore CaveRunManager.State
-- [ ] Restore BossDefeatStates with unique rewards
-- [ ] Restore CheckpointUnlockedLevels
-- [ ] Restore current run seed
-- [ ] Restore enemy spawn plan for current level
+- [x] SaveManager.LoadGame() deserializes CaveSaveData
+- [x] CaveRunManager.RestoreFromSaveData() restores all state
+- [x] BossDefeatStates with unique rewards claimed restored
+- [x] CheckpointUnlockedLevels restored
+- [x] Current run seed restored
+- [x] Enemy spawn plan for current level restored via VisitedLevelSnapshot.RestoreEnemySpawnPlan()
+
+Git Commit: e38dd4c
 
 ### Phase 11: Checkpoint Menu UI & Selection
 
