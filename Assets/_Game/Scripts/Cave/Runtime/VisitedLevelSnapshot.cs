@@ -22,6 +22,9 @@ namespace CindarsHope.Cave.Runtime
         [SerializeField] public List<SerializedEnemySpawn> EnemySpawns = new();
         [SerializeField] public List<SerializedResourceNode> ResourceNodes = new();
         [SerializeField] public List<string> DepletedResourceNodeIds = new();
+        [SerializeField] public List<EnemySpawnPlanEntry> EnemySpawnPlan = new();
+        [SerializeField] public SerializedEnemyRedistributionState RedistributionState = new();
+        [SerializeField] public SerializedEnemyRespawnState RespawnState = new();
 
         int IVisitedLevelSnapshot.CaveLevel => CaveLevel;
         string IVisitedLevelSnapshot.SnapshotId => SnapshotId;
@@ -80,6 +83,61 @@ namespace CindarsHope.Cave.Runtime
             {
                 DepletedResourceNodeIds.Add(nodeInstanceId);
             }
+        }
+
+        public void SetEnemySpawnPlan(CaveLevelEnemyPlan plan)
+        {
+            EnemySpawnPlan.Clear();
+            if (plan != null && plan.EnemyPlans.Count > 0)
+            {
+                EnemySpawnPlan.AddRange(plan.EnemyPlans);
+            }
+
+            if (plan?.RedistributionState != null)
+            {
+                RedistributionState = new SerializedEnemyRedistributionState
+                {
+                    RedistributionCount = plan.RedistributionState.RedistributionCount,
+                    LastRedistributionReason = plan.RedistributionState.LastRedistributionReason,
+                    RedistributionSeedOffset = plan.RedistributionState.RedistributionSeedOffset
+                };
+            }
+
+            if (plan?.RespawnState != null)
+            {
+                RespawnState = new SerializedEnemyRespawnState
+                {
+                    RespawnDelayGameDays = plan.RespawnState.RespawnDelayGameDays,
+                    LastRespawnEvaluationDay = plan.RespawnState.LastRespawnEvaluationDay
+                };
+            }
+        }
+
+        public CaveLevelEnemyPlan RestoreEnemySpawnPlan()
+        {
+            var plan = new CaveLevelEnemyPlan();
+            plan.EnemyPlans.AddRange(EnemySpawnPlan);
+
+            if (RedistributionState != null)
+            {
+                plan.RedistributionState = new EnemyRedistributionState
+                {
+                    RedistributionCount = RedistributionState.RedistributionCount,
+                    LastRedistributionReason = RedistributionState.LastRedistributionReason,
+                    RedistributionSeedOffset = RedistributionState.RedistributionSeedOffset
+                };
+            }
+
+            if (RespawnState != null)
+            {
+                plan.RespawnState = new EnemyRespawnState
+                {
+                    RespawnDelayGameDays = RespawnState.RespawnDelayGameDays,
+                    LastRespawnEvaluationDay = RespawnState.LastRespawnEvaluationDay
+                };
+            }
+
+            return plan;
         }
 
         public void SetLayoutDimensions(int width, int height)
@@ -144,5 +202,20 @@ namespace CindarsHope.Cave.Runtime
     {
         public int PointTypeValue;
         public Vector2Int Position;
+    }
+
+    [Serializable]
+    public sealed class SerializedEnemyRedistributionState
+    {
+        public int RedistributionCount;
+        public string LastRedistributionReason;
+        public int RedistributionSeedOffset;
+    }
+
+    [Serializable]
+    public sealed class SerializedEnemyRespawnState
+    {
+        public int RespawnDelayGameDays = 2;
+        public int LastRespawnEvaluationDay = -1;
     }
 }

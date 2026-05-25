@@ -17,8 +17,11 @@ namespace CindarsHope.Cave.Runtime
         [SerializeField] private EnemyDataSO _fallbackEnemyData;
 
         private List<GameObject> _spawnedEnemies = new List<GameObject>();
+        private List<string> _spawnedEnemyIds = new List<string>();
         private GameObject _generatedEnemiesRoot;
         private Transform _playerTarget;
+
+        public List<string> LastSpawnedEnemyIds => new List<string>(_spawnedEnemyIds);
 
         public void SpawnEnemiesForLevel(CaveGeneratedLevel generatedLevel, GameObject generatedRuntimeRoot, Transform playerTarget = null)
         {
@@ -29,6 +32,7 @@ namespace CindarsHope.Cave.Runtime
             }
 
             CleanupPreviousSpawns();
+            _spawnedEnemyIds.Clear();
 
             List<EnemyDataSO> availableEnemies;
             if (_enemyDatabase != null && _enemyDatabase.All.Count > 0)
@@ -134,6 +138,7 @@ namespace CindarsHope.Cave.Runtime
             contactDamage.Configure(enemyData, triggerCollider);
 
             _spawnedEnemies.Add(enemyGO);
+            _spawnedEnemyIds.Add(enemyData.enemyId);
 
             Debug.Log(
                 $"CaveEnemySpawner: Spawned {enemyData.DisplayName} at grid ({gridPosition.x}, {gridPosition.y}) world ({spawnPos.x}, {spawnPos.y}).",
