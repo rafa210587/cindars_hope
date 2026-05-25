@@ -10,7 +10,6 @@ using UnityEngine;
 
 namespace CindarsHope.Editor
 {
-    [InitializeOnLoad]
     public static class CraftingRecipeInitializer
     {
         private const string RecipePath = "Assets/_Game/Data/Recipes";
@@ -18,17 +17,6 @@ namespace CindarsHope.Editor
         private const string ItemDatabasePath = "Assets/_Game/Data/Registries/ItemDatabase.asset";
         private const string RecipeDatabasePath = "Assets/_Game/Data/Registries/RecipeDatabase.asset";
         private const string PlayerDataPath = "Assets/_Game/Data/Config/PlayerData.asset";
-        private const string InitKey = "CraftingRecipeSpec07Initialized";
-
-        static CraftingRecipeInitializer()
-        {
-            if (!SessionState.GetBool(InitKey, false))
-            {
-                SessionState.SetBool(InitKey, true);
-                CreateSpec07TestContent();
-            }
-        }
-
         [MenuItem("CindarsHope/Testing/Create Crafting Assets (Spec 07)")]
         public static void CreateSpec07TestContent()
         {
@@ -76,6 +64,12 @@ namespace CindarsHope.Editor
                 return item;
             }
 
+            item = FindExistingItemById(id);
+            if (item != null)
+            {
+                return item;
+            }
+
             item = ScriptableObject.CreateInstance<ItemDataSO>();
             AssetDatabase.CreateAsset(item, path);
             item.Id = id;
@@ -86,6 +80,21 @@ namespace CindarsHope.Editor
             item.IsEquippable = equippable;
             EditorUtility.SetDirty(item);
             return item;
+        }
+
+        private static ItemDataSO FindExistingItemById(string id)
+        {
+            foreach (var guid in AssetDatabase.FindAssets("t:ItemDataSO", new[] { ItemPath }))
+            {
+                var path = AssetDatabase.GUIDToAssetPath(guid);
+                var item = AssetDatabase.LoadAssetAtPath<ItemDataSO>(path);
+                if (item != null && item.Id == id)
+                {
+                    return item;
+                }
+            }
+
+            return null;
         }
 
         private static RecipeDataSO CreateOrUpdateRecipe(
@@ -142,7 +151,8 @@ namespace CindarsHope.Editor
         {
             for (var index = 0; index < startingItems.Count; index++)
             {
-                if (startingItems[index].Item == item)
+                if (startingItems[index].Item == item
+                    || (startingItems[index].Item != null && startingItems[index].Item.Id == item.Id))
                 {
                     startingItems[index] = new StartingItem { Item = item, Amount = amount };
                     return;
@@ -167,7 +177,7 @@ namespace CindarsHope.Editor
             var entries = serialized.FindProperty("_items");
             foreach (var item in items)
             {
-                if (item == null || Contains(entries, item))
+                if (item == null || Contains(entries, item) || ContainsId<TData>(entries, item.Id))
                 {
                     continue;
                 }
@@ -209,6 +219,21 @@ namespace CindarsHope.Editor
             for (var index = 0; index < entries.arraySize; index++)
             {
                 if (entries.GetArrayElementAtIndex(index).objectReferenceValue == item)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static bool ContainsId<TData>(SerializedProperty entries, string id)
+            where TData : ScriptableObject, IIdentifiedData
+        {
+            for (var index = 0; index < entries.arraySize; index++)
+            {
+                var item = entries.GetArrayElementAtIndex(index).objectReferenceValue as TData;
+                if (item != null && item.Id == id)
                 {
                     return true;
                 }

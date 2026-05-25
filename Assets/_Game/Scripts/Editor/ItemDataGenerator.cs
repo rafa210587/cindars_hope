@@ -111,6 +111,16 @@ namespace CindarsHope.Editor
                 return existing;
             }
 
+            foreach (var guid in AssetDatabase.FindAssets("t:ItemDataSO", new[] { ItemsPath.TrimEnd('/') }))
+            {
+                var existingPath = AssetDatabase.GUIDToAssetPath(guid);
+                existing = AssetDatabase.LoadAssetAtPath<ItemDataSO>(existingPath);
+                if (existing != null && existing.Id == id)
+                {
+                    return existing;
+                }
+            }
+
             var asset = ScriptableObject.CreateInstance<ItemDataSO>();
             asset.Id = id;
             asset.DisplayName = displayName;

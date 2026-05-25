@@ -3174,3 +3174,35 @@ Residual risk: UX, wandering visual e save/load interativo aguardam Play Mode; d
 ```
 
 ---
+
+## Sessao 2026-05-24 (12a) - Corrigir inicializador de crafting e IDs duplicados
+
+**Data:** 2026-05-24
+**Foco:** Eliminar duplicidade de itens e escritas automaticas durante import/reload do Unity
+**Status:** COMPLETO
+
+### Correcao
+
+- Removida a execucao automatica `[InitializeOnLoad]` de `CraftingRecipeInitializer`; a geracao de assets da SPEC 07 permanece disponivel somente por menu explicito.
+- `CraftingRecipeInitializer`, `ItemDataInitializer` e `ItemDataGenerator` agora reutilizam `ItemDataSO` existente com o mesmo `Id`.
+- Insercao no registry e no starter kit passou a deduplicar por ID estavel.
+- Preservados `Item_Trigo.asset` e `Item_Cenoura.asset`, ja usados pelas sementes; removidas as copias geradas `item_crop_wheat.asset` e `item_crop_carrot.asset`.
+- `PlayerData` foi reconciliado para apontar ao item de trigo preservado.
+
+### Validacoes
+
+```text
+Item IDs scan: PASS - nenhum ItemDataSO duplicado em Assets/_Game/Data/Items.
+Explicit initializer: PASS - Logs/bugfix-crafting-initializer-generation.log sem Duplicate data Id nem Build asset version error.
+SPEC 07 crafting validator: PASS - Logs/bugfix-crafting-validation.log, Tundra build success e return code 0.
+Unity compile log: PASS por evidencia interna - Logs/bugfix-unity-compile-validation.log registra 0 items updated, Tundra build success e return code 0.
+RunUnityCompileValidation.ps1: FAIL (wrapper process code 1 apesar de log interno return code 0).
+ScanUnityLogs.ps1: FAIL - somente mensagens conhecidas de Assembly-CSharp-Editor-firstpass.dll e Assembly-CSharp-firstpass.dll; sem error CS ou assinatura dos bugs.
+Play Mode: NOT RUN - correcao restrita a assets/initializers de editor e validada em batchmode.
+```
+
+### Evidencia
+
+- `docs/validation/BUGFIX_SPEC07_CRAFTING_INITIALIZER_DATA_IDS_20260524.md`
+
+---
