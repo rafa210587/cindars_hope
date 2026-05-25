@@ -1,3 +1,62 @@
+## Sessão 2026-05-25 (12ª) - Fechar SPEC 10 (Equipment Durability Loot)
+
+**Data:** 2026-05-25  
+**Foco:** Implementar gaps de SPEC 10 - durability events, repair kit MVP, validador
+**Status:** COMPLETO (PARTIAL)
+
+### Deliverables
+
+**Equipment Durability Event Publishing:**
+- EquipmentDurabilityTracker publica DurabilityChangedEvent ao registrar uso
+- EquipmentDurabilityTracker publica ItemBrokenEvent quando durability <= 0
+- RepairEquipment() e FullRepairEquipment() publicam DurabilityChangedEvent + ItemRepairedEvent
+
+**RepairKit MVP:**
+- ConsumableSubtype.RepairKit enum value adicionado
+- ItemDataSO.DurabilityRestoreAmount field adicionado
+- ItemDataInitializer gera 3 repair kits (basic/50, standard/100, superior/200 durability)
+- RepairKitManager implementado com TryRepairEquipmentWithKit() e CanRepairEquipment()
+
+**Validação:**
+- ValidateSpec10Equipment menu validator criado
+- Docs validation: PASS
+- Unity compilation: PASS (Tundra build success)
+- Log scanner: Assembly firstpass warnings (preexisting, não introduzido pela SPEC 10)
+
+**Contratos Preservados:**
+- SPEC 07, 08, 09 untouched
+- SaveData v3 schemas preserved (EquipmentDurabilityTracker.LoadFromSaveData compatible)
+- LootTableSO.TryRollEquipment() já existente
+
+### Gaps Deferred
+
+- DerivedStatsCalculator integration com update ao equipar/desequipar → SPEC 11+
+- Equipment Selection UI (RepairKitManager pronto, UI deferred) → SPEC 17
+
+### Validações
+
+```text
+Docs validation: PASS - tools/docs/validate_docs.ps1
+Unity compile: PASS - *** Tundra build success em Logs/unity-compile-validation-spec10.log
+Log scanner: FAIL (preexisting) - Assembly-CSharp-Editor-firstpass.dll warnings (não C# errors)
+Play Mode: NOT RUN
+Reason: batchmode environment
+Residual risk: Play Mode features await manual validation (checklist fornecido em docs/validation/)
+```
+
+### Commit
+
+```
+e8ba730 feat: implementar spec 10 - equipment durability loot
+```
+
+### Próxima SPEC
+
+- SPEC 11: Damage/Status/Elements/Resistances
+- Pronto para executar
+
+---
+
 ## Sessão 2026-05-24 (7ª) - Criar Harness de Orquestração do Codex
 
 **Data:** 2026-05-24 (continuação)  
