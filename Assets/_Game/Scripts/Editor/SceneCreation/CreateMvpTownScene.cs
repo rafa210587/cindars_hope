@@ -118,6 +118,9 @@ namespace CindarsHope.Editor.SceneCreation
             bootstrapObject.AddComponent<SaveManager>();
             bootstrapObject.AddComponent<DayAdvanceInput>();
             bootstrapObject.AddComponent<HungerManager>();
+            bootstrapObject.AddComponent<StaminaManager>();
+            bootstrapObject.AddComponent<GameTimeManager>();
+            bootstrapObject.AddComponent<StatusEffectManager>();
             bootstrapObject.AddComponent<FoodConsumer>();
             bootstrapObject.AddComponent<SaveInput>();
             bootstrapObject.AddComponent<CraftingManager>();
@@ -150,11 +153,15 @@ namespace CindarsHope.Editor.SceneCreation
             SetReference(serializedBootstrap, "_timeManager", timeManager);
             SetReference(serializedBootstrap, "_saveManager", saveManager);
             SetReference(serializedBootstrap, "_hungerManager", hungerManager);
+            SetReference(serializedBootstrap, "_staminaManager", bootstrap.GetComponent<StaminaManager>());
+            SetReference(serializedBootstrap, "_gameTimeManager", bootstrap.GetComponent<GameTimeManager>());
+            SetReference(serializedBootstrap, "_statusEffectManager", bootstrap.GetComponent<StatusEffectManager>());
             SetReference(serializedBootstrap, "_craftingManager", craftingManager);
             SetReference(serializedBootstrap, "_economyManager", economyManager);
             SetReference(serializedBootstrap, "_modalManager", modalManager);
             SetReference(serializedBootstrap, "_equipmentManager", bootstrap.GetComponent<EquipmentManager>());
             SetReference(serializedBootstrap, "_progressionManager", bootstrap.GetComponent<PlayerProgressionManager>());
+            PlayerNeedsDataInitializer.ConfigureRuntimeManagers(bootstrap, timeManager, modalManager);
 
             ConfigureDayAdvanceInput(bootstrap.GetComponent<DayAdvanceInput>(), timeManager);
             ConfigureFoodConsumer(bootstrap.GetComponent<FoodConsumer>(), inventoryManager, hungerManager);
@@ -201,7 +208,9 @@ namespace CindarsHope.Editor.SceneCreation
             saveManager.RebindOptionalRuntimeManagers(
                 bootstrap.GetComponent<EquipmentManager>(),
                 bootstrap.GetComponent<PlayerProgressionManager>(),
-                bootstrap.GetComponent<GameTimeManager>());
+                bootstrap.GetComponent<GameTimeManager>(),
+                bootstrap.GetComponent<StaminaManager>(),
+                bootstrap.GetComponent<StatusEffectManager>());
         }
 
         private static void ConfigureHotbarDebugInput(HotbarDebugInput hotbarDebugInput, SaveManager saveManager)
@@ -256,6 +265,8 @@ namespace CindarsHope.Editor.SceneCreation
             var serializedConsumer = new SerializedObject(foodConsumer);
             SetReference(serializedConsumer, "_inventoryManager", inventoryManager);
             SetReference(serializedConsumer, "_hungerManager", hungerManager);
+            SetReference(serializedConsumer, "_staminaManager", foodConsumer.GetComponent<StaminaManager>());
+            SetReference(serializedConsumer, "_statusEffectManager", foodConsumer.GetComponent<StatusEffectManager>());
             serializedConsumer.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(foodConsumer);
         }
@@ -365,6 +376,7 @@ namespace CindarsHope.Editor.SceneCreation
             }
 
             serializedController.ApplyModifiedPropertiesWithoutUndo();
+            PlayerNeedsDataInitializer.ConfigurePlayerController(playerController);
             EditorUtility.SetDirty(playerController);
         }
 

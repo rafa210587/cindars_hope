@@ -1,4 +1,5 @@
 using CindarsHope.Core;
+using CindarsHope.Core.Data;
 using CindarsHope.Core.Events;
 using CindarsHope.Player.Data;
 using UnityEngine;
@@ -11,6 +12,7 @@ namespace CindarsHope.Player
         [SerializeField] private PlayerDataSO _playerData;
         [SerializeField] private PlayerManager _playerManager;
         [SerializeField] private Transform _playerTransform;
+        [SerializeField] private PlayerNeedsBalanceSO _playerNeedsBalance;
         [SerializeField] private int _hpLossWhenHungerEmpty = 5;
         [SerializeField] private Vector2 _respawnPosition = Vector2.zero;
 
@@ -107,12 +109,14 @@ namespace CindarsHope.Player
         {
             GameEventBus.Subscribe<PlayerStepEvent>(OnPlayerStep);
             GameEventBus.Subscribe<DayStartedEvent>(OnDayStarted);
+            GameEventBus.Subscribe<GameTimeTickEvent>(OnGameTimeTick);
         }
 
         private void OnDisable()
         {
             GameEventBus.Unsubscribe<PlayerStepEvent>(OnPlayerStep);
             GameEventBus.Unsubscribe<DayStartedEvent>(OnDayStarted);
+            GameEventBus.Unsubscribe<GameTimeTickEvent>(OnGameTimeTick);
         }
 
         private void OnPlayerStep(PlayerStepEvent evt)
@@ -146,6 +150,19 @@ namespace CindarsHope.Player
             LoseHunger(_hungerLossPerDay);
         }
 
+        private void OnGameTimeTick(GameTimeTickEvent evt)
+        {
+            if (!IsEmpty)
+            {
+                return;
+            }
+
+            var starvationDamage = _playerNeedsBalance != null
+                ? Mathf.CeilToInt(Mathf.Max(0f, _playerNeedsBalance.ZeroHungerDamagePerSecond))
+                : 1;
+            ApplyHungerDamage(starvationDamage, "Starvation tick");
+        }
+
         private void LoseHunger(int amount)
         {
             if (amount <= 0 || CurrentHunger <= 0)
@@ -173,11 +190,11 @@ namespace CindarsHope.Player
             {
                 _emptyEventPublished = true;
                 GameEventBus.Publish(new HungerEmptyEvent(CurrentHunger, MaxHunger));
-                ApplyEmptyHungerConsequence();
+                ApplyHungerDamage(Mathf.Max(0, _hpLossWhenHungerEmpty), "Hunger reached zero");
             }
         }
 
-        private void ApplyEmptyHungerConsequence()
+        private void ApplyHungerDamage(int damage, string reason)
         {
             if (_playerManager == null)
             {
@@ -185,8 +202,13 @@ namespace CindarsHope.Player
                 return;
             }
 
-            _playerManager.DamageHP(Mathf.Max(0, _hpLossWhenHungerEmpty));
-            Debug.Log($"Hunger reached zero. Player lost {_hpLossWhenHungerEmpty} HP.", this);
+            if (damage <= 0)
+            {
+                return;
+            }
+
+            _playerManager.DamageHP(damage);
+            Debug.Log($"{reason}. Player lost {damage} HP.", this);
 
             if (_playerManager.CurrentHP > 0)
             {

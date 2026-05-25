@@ -1,61 +1,32 @@
 ---
 type: refinement
 spec: spec_hunger_stamina_status_balance.md
-status: implementado
-phase: design
+status: implementado completo
+phase: implementation
 ---
 
-# Refinement: Hunger/Stamina Status Balance (Implementado)
+# Refinement - Hunger, stamina, status e time balance
 
-## Resumo
+## Contratos Fechados
 
-Especifica integração de fome com stamina, ciclo dia/noite com pause-aware, e sistema básico de status effects. SaveData v3 com migration de v2.
+- Fome zero aplica dano de HP em tick de tempo, nunca dreno de stamina por frame.
+- Regeneracao de stamina: base `15/s`, delay `1s`, tiers `1.0`, `0.6`, `0.3` e taxa fixa `2/s` em fome zero.
+- Fome critica (`1-9`) reduz movimento para `0.85x`.
+- Status do player usam IDs e duracao, com refresh para reaplicacao do mesmo ID e eventos de lifecycle.
+- Game time usa ciclo configuravel e pausa com modal ativo.
+- Save/load preserva valores simples de stamina, game time e status effects.
 
-## Escopo Implementado
+## Integracao Runtime
 
-### 1. GameTimeManager
-- Ciclo dia/noite configurável (10 min dia, 5 min noite)
-- GameTimeTickEvent a cada 1 segundo
-- Pause-aware via ModalManager.HasActiveModal
-- SaveData persistence com GameTimeSaveData
+- Bootstrap, installers e geradores conectam hunger, stamina, status e time nas tres cenas MVP.
+- Acoes existentes de farm/world/craft/combat recebem a instancia persistente de stamina.
+- `FoodConsumer` passou a respeitar restauracao de stamina e buffs do item consumido.
+- HUD minimo apresenta hunger, stamina e status com duracao; layout final permanece na SPEC 17.
 
-### 2. Stamina Regeneration com Hunger Tiers
-- 4 tiers: Normal (1.0x), Fome (0.6x), Crítica (0.3x), Vazio (0.0x)
-- Damaged mode: -2 stamina/s quando fome=0
-- PlayerNeedsBalanceSO configurável
+## Validacao
 
-### 3. SaveData v3 Migration
-- SaveV2ToV3Migration com Dictionary→List conversion
-- Compatível com JsonUtility (sem Dictionary)
-- Safe initialization para saves v2 legados
-
-### 4. PlayerNeedsHUD Mínima
-- Hunger bar, Stamina bar, Status effects text
-- Event subscribers para HungerChangedEvent, StaminaChangedEvent
-- Update() sincronizado
-
-### 5. StatusEffectManager Básico
-- Tracking de efeitos ativos
-- Save/load com List<StatusEffectEntryData>
-- GameTimeTickEvent para decay
-
-## Pendências (Spec 17)
-
-- Canvas consolidado com styling
-- Painel de dificuldade
-- HUD com fonts/spacing final
-
-## Validação
-
-- ✅ Compilação C# em batch mode
-- ✅ SaveData v3 migration testável
-- ✅ No breaking changes em code existente
-- ✅ Compatível com systems dependentes (Craft, Combat, etc)
-
-## Implementado por
-
-Claude Code, 2026-05-24
-
-## Próximo
-
-SPEC 10 (Equipment Durability/Loot/Environment)
+- Unity compile e scene wiring: PASS em batchmode.
+- Regressao SPEC 06 e SPEC 07: PASS.
+- Docs validator: PASS.
+- Scanner de logs: FAIL documentado por padroes conhecidos de assemblies `firstpass` apesar de `Tundra build success`.
+- Play Mode interativo: NOT RUN, com checklist em `docs/validation/SPEC_09_HUNGER_STAMINA_STATUS_TIME_VALIDATION_20260524.md`.

@@ -25,6 +25,7 @@
 | [ref_economy_shop_stock_pricing_ui.md](ref_economy_shop_stock_pricing_ui.md) | spec_economy_shop_stock_pricing_ui |
 | [ref_crafting_queue_workstations_recipes_ui.md](ref_crafting_queue_workstations_recipes_ui.md) | spec_crafting_queue_workstations_recipes_ui |
 | [ref_town_npc_dialogue_schedule_quests.md](ref_town_npc_dialogue_schedule_quests.md) | spec_town_npc_dialogue_schedule_quests |
+| [ref_hunger_stamina_status_balance.md](ref_hunger_stamina_status_balance.md) | spec_hunger_stamina_status_balance |
 | [ref_world_shop_hardening_pr031_045.md](ref_world_shop_hardening_pr031_045.md) | spec_world_001, spec_farm_003, spec_economy_001 |
 | [ref_crafting_pr046_052.md](ref_crafting_pr046_052.md) | spec_craft_001 |
 | [ref_town_pr053_063.md](ref_town_pr053_063.md) | spec_town_001 |

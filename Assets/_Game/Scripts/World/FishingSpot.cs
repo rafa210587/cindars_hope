@@ -77,6 +77,11 @@ namespace CindarsHope.World
             _inventoryManager = inventoryManager;
         }
 
+        public void RebindStaminaManager(StaminaManager staminaManager)
+        {
+            _staminaManager = staminaManager;
+        }
+
         private void OnValidate()
         {
             _fishAmount = Mathf.Max(1, _fishAmount);

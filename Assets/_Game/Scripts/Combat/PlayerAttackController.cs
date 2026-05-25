@@ -28,6 +28,11 @@ namespace CindarsHope.Combat
         private float _dodgeEndTime;
         private bool _isDodging;
 
+        public void RebindStaminaManager(StaminaManager staminaManager)
+        {
+            _staminaManager = staminaManager;
+        }
+
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.Q))

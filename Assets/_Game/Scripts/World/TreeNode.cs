@@ -137,6 +137,11 @@ namespace CindarsHope.World
             _inventoryManager = inventoryManager;
         }
 
+        public void RebindStaminaManager(StaminaManager staminaManager)
+        {
+            _staminaManager = staminaManager;
+        }
+
         private void Reset()
         {
             _spriteRenderer = GetComponent<SpriteRenderer>();

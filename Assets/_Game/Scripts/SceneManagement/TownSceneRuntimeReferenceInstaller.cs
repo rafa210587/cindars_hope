@@ -31,12 +31,13 @@ namespace CindarsHope.SceneManagement
             var playerManager = bootstrap.PlayerManager;
             var inventoryManager = bootstrap.InventoryManager;
             var hungerManager = bootstrap.HungerManager;
+            var staminaManager = bootstrap.StaminaManager;
             var timeManager = bootstrap.TimeManager;
 
             if (playerManager != null && inventoryManager != null && hungerManager != null && timeManager != null)
             {
                 saveManager.RebindRuntimeManagers(playerManager, inventoryManager, hungerManager, timeManager);
-                saveManager.RebindOptionalRuntimeManagers(bootstrap.EquipmentManager, bootstrap.PlayerProgressionManager, bootstrap.GameTimeManager);
+                saveManager.RebindOptionalRuntimeManagers(bootstrap.EquipmentManager, bootstrap.PlayerProgressionManager, bootstrap.GameTimeManager, staminaManager, bootstrap.StatusEffectManager);
             }
             else
             {
@@ -44,7 +45,7 @@ namespace CindarsHope.SceneManagement
             }
 
             var interactionSystem = _playerTransform != null ? _playerTransform.GetComponent<InteractionSystem>() : null;
-            DebugHud.RebindExisting(playerManager, inventoryManager, hungerManager, interactionSystem, timeManager, saveManager);
+            DebugHud.RebindExisting(playerManager, inventoryManager, hungerManager, staminaManager, bootstrap.StatusEffectManager, interactionSystem, timeManager, saveManager);
 
             Debug.Log("TownSceneRuntimeReferenceInstaller rebound runtime refs.", this);
         }

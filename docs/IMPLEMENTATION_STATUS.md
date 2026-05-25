@@ -18,7 +18,7 @@
 | Farm irrigacao/solo/planting UI | Implementado completo | `docs/specs/implementados/spec_farm_004_irrigacao_solo_planting_ui.md` |
 | World activities/fishing/trees/loot | Implementado completo | `docs/specs/implementados/spec_world_002_activities_fishing_trees_pickups_loot.md` |
 | Farm loop/world activities | Implementado parcial | `docs/specs/implementados/spec_farm_001_farm_scene_movimento_interacao.md`, `docs/specs/implementados/spec_farm_002_plots_seeds_growth_harvest.md`, `docs/specs/implementados/spec_farm_003_arvores_pesca_pickups_world_activities.md` |
-| Game time / day-night cycles / hunger-stamina balance | Implementado parcial | `docs/specs/implementados/spec_hunger_stamina_status_balance.md` |
+| Game time / day-night cycles / hunger-stamina balance | Implementado completo | `docs/specs/implementados/spec_hunger_stamina_status_balance.md` |
 | Economy/hunger/crafting/town | Implementado parcial | `docs/specs/implementados/spec_economy_001_compra_venda_gold_e_sellables.md`, `docs/specs/implementados/spec_hunger_001_fome_comida_e_hp_por_fome.md`, `docs/specs/implementados/spec_craft_001_crafting_mvp.md`, `docs/specs/implementados/spec_town_001_town_scene_portais_npc_pip_comercio.md` |
 | Combat/damage/enemy stats | Implementado parcial | `docs/specs/implementados/spec_combat_001_slime_melee_contact_damage_drops.md`, `docs/specs/implementados/spec_combat_002_enemy_data_driven_stats.md`, `docs/specs/implementados/spec_damage_001_damage_formula_mvp.md` |
 | UI/tools/hotbar/progression debug | Implementado parcial | `docs/specs/implementados/spec_ui_001_debug_hud_e_feedback_mvp.md`, `docs/specs/implementados/spec_ui_002_hud_tools_hotbar_progression_debug.md`, `docs/specs/implementados/spec_tools_001_tools_equipment_hotbar_parcial.md`, `docs/specs/implementados/spec_progression_001_xp_level_atributos_parcial.md` |
@@ -73,7 +73,7 @@ O inventory atual usa slots reais com capacidade inicial 18 e limite 30, mantend
 Existem multiplas stacks por item e migration `v1 -> v2` para `InventorySaveData`.
 Pendentes: `Use` especifico por tipo de item, Drop transacional com spawner persistente, drag/drop, sort/auto-organize, UI Canvas final e binding completo por `ItemInstanceId`.
 
-### Game Time / Hunger-Stamina Balance (SPEC 09)
+### Game Time / Hunger-Stamina Balance (SPEC 09) - Historico parcial superado
 
 GameTimeManager entregue com:
 - Ciclo dia/noite configurable (DayDurationSeconds=600, NightDurationSeconds=300)
@@ -106,6 +106,18 @@ Pendentes (spec 17):
 - Canvas consolidado final com styling/layout
 - Painel de dificuldade
 - HUD com fonts/spacing definidos
+
+### Fechamento Game Time / Hunger-Stamina Balance (SPEC 09)
+
+Status: Implementado completo em 2026-05-24.
+
+- GameTime, stamina, hunger e status estao ligados em `GameBootstrap`, installers, geradores e nas tres cenas MVP.
+- `PlayerNeedsBalanceSO` define tiers: regen `1.0/1.0/0.6/0.3`, regeneracao fixa `2/s` em hunger zero e movimento `0.85x` no tier critico.
+- Hunger zero aplica dano de HP por `GameTimeTickEvent`; nao drena stamina por frame.
+- Food aplica hunger, stamina e status; status publicam lifecycle events e persistem como ID/duracao.
+- Save/load inclui stamina, game time e status em DTOs simples.
+- HUD minimo funcional exibe hunger, stamina e status com duracao; Canvas final permanece na SPEC 17.
+- Evidencia: `docs/validation/SPEC_09_HUNGER_STAMINA_STATUS_TIME_VALIDATION_20260524.md`.
 
 ### Progression
 

@@ -25,6 +25,8 @@ namespace CindarsHope.UI
         [SerializeField] private PlayerManager _playerManager;
         [SerializeField] private InventoryManager _inventoryManager;
         [SerializeField] private HungerManager _hungerManager;
+        [SerializeField] private StaminaManager _staminaManager;
+        [SerializeField] private StatusEffectManager _statusEffectManager;
         [SerializeField] private InteractionSystem _interactionSystem;
         [SerializeField] private TimeManager _timeManager;
         [SerializeField] private SaveManager _saveManager;
@@ -153,6 +155,7 @@ namespace CindarsHope.UI
             DrawWorldState();
             DrawPlayerState();
             DrawHungerState();
+            DrawStaminaAndStatusState();
 
             GUILayout.Space(6f);
             DrawEquipmentState();
@@ -287,6 +290,37 @@ namespace CindarsHope.UI
             }
 
             GUILayout.Label($"Hunger: {_hungerManager.CurrentHunger}/{_hungerManager.MaxHunger}");
+        }
+
+        private void DrawStaminaAndStatusState()
+        {
+            var bootstrap = GameBootstrap.Instance;
+            var staminaManager = _staminaManager != null ? _staminaManager : bootstrap?.StaminaManager;
+            var statusEffectManager = _statusEffectManager != null ? _statusEffectManager : bootstrap?.StatusEffectManager;
+
+            if (staminaManager != null)
+            {
+                GUILayout.Label($"Stamina: {staminaManager.CurrentStamina}/{staminaManager.MaxStamina}");
+            }
+            else
+            {
+                GUILayout.Label("StaminaManager: not assigned");
+            }
+
+            if (statusEffectManager == null || statusEffectManager.ActiveEffects.Count == 0)
+            {
+                GUILayout.Label("Status: Normal");
+                return;
+            }
+
+            GUILayout.Label("Status:");
+            foreach (var effect in statusEffectManager.ActiveEffects)
+            {
+                if (effect.Value != null && effect.Value.IsActive)
+                {
+                    GUILayout.Label($"- {effect.Key}: {Mathf.CeilToInt(effect.Value.RemainingSeconds)}s");
+                }
+            }
         }
 
         private void DrawInventory()
@@ -510,6 +544,8 @@ namespace CindarsHope.UI
             PlayerManager playerManager,
             InventoryManager inventoryManager,
             HungerManager hungerManager,
+            StaminaManager staminaManager,
+            StatusEffectManager statusEffectManager,
             InteractionSystem interactionSystem,
             TimeManager timeManager,
             SaveManager saveManager)
@@ -527,6 +563,16 @@ namespace CindarsHope.UI
             if (hungerManager != null)
             {
                 _hungerManager = hungerManager;
+            }
+
+            if (staminaManager != null)
+            {
+                _staminaManager = staminaManager;
+            }
+
+            if (statusEffectManager != null)
+            {
+                _statusEffectManager = statusEffectManager;
             }
 
             if (interactionSystem != null)
@@ -576,13 +622,15 @@ namespace CindarsHope.UI
             PlayerManager playerManager,
             InventoryManager inventoryManager,
             HungerManager hungerManager,
+            StaminaManager staminaManager,
+            StatusEffectManager statusEffectManager,
             InteractionSystem interactionSystem,
             TimeManager timeManager,
             SaveManager saveManager)
         {
             if (_instance != null)
             {
-                _instance.RebindRuntimeReferences(playerManager, inventoryManager, hungerManager, interactionSystem, timeManager, saveManager);
+                _instance.RebindRuntimeReferences(playerManager, inventoryManager, hungerManager, staminaManager, statusEffectManager, interactionSystem, timeManager, saveManager);
             }
         }
 

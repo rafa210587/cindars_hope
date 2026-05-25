@@ -8,7 +8,10 @@ namespace CindarsHope.Player
     [DisallowMultipleComponent]
     public class StatusEffectManager : MonoBehaviour
     {
+        private const string PlayerTargetId = "player";
+
         private Dictionary<string, StatusEffect> _activeEffects = new Dictionary<string, StatusEffect>();
+        private readonly HashSet<string> _removedEffects = new HashSet<string>();
         private bool _isInitialized = false;
 
         public bool IsInitialized => _isInitialized;
@@ -20,6 +23,7 @@ namespace CindarsHope.Player
                 return;
 
             _activeEffects.Clear();
+            _removedEffects.Clear();
             _isInitialized = true;
         }
 
@@ -31,6 +35,7 @@ namespace CindarsHope.Player
                     Destroy(effect.gameObject);
             }
             _activeEffects.Clear();
+            _removedEffects.Clear();
             _isInitialized = false;
         }
 
@@ -42,6 +47,7 @@ namespace CindarsHope.Player
             if (_activeEffects.ContainsKey(effectId))
             {
                 _activeEffects[effectId].Refresh(durationSeconds);
+                GameEventBus.Publish(new StatusRefreshedEvent(PlayerTargetId, effectId, durationSeconds));
                 return true;
             }
 
@@ -51,6 +57,7 @@ namespace CindarsHope.Player
             effect.Initialize(effectId, durationSeconds, OnEffectExpired);
 
             _activeEffects[effectId] = effect;
+            GameEventBus.Publish(new StatusAppliedEvent(PlayerTargetId, effectId, string.Empty, durationSeconds));
             return true;
         }
 
@@ -59,6 +66,8 @@ namespace CindarsHope.Player
             if (!_activeEffects.TryGetValue(effectId, out var effect))
                 return false;
 
+            _removedEffects.Add(effectId);
+            GameEventBus.Publish(new StatusRemovedEvent(PlayerTargetId, effectId));
             effect.Expire();
             return true;
         }
@@ -93,6 +102,11 @@ namespace CindarsHope.Player
                 if (key != null)
                 {
                     _activeEffects.Remove(key);
+                    if (!_removedEffects.Remove(key))
+                    {
+                        GameEventBus.Publish(new StatusExpiredEvent(PlayerTargetId, key));
+                    }
+
                     Destroy(effect.gameObject);
                 }
             }

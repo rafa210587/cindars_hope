@@ -1,29 +1,29 @@
 # SPEC - Hunger, stamina, status, tempo e balance
 
 > Spec ID: spec_hunger_stamina_status_balance
-> Status: Implementado parcial
+> Status: Implementado completo
 > Ordem de execucao: 09
-> Data: 2026-05-24
-> Evidencia: Assets/_Game/Scripts/Player/HungerManager.cs, StaminaManager.cs
+> Data de fechamento: 2026-05-24
 
-## Resumo de Implementacao
+## Entrega
 
-### Implementado:
-- `HungerManager` com valores configuraveis, regeneracao, dano por fome zero
-- `StaminaManager` com max/current, regen com delay, spend validation
-- HungerChangedEvent e StaminaChangedEvent
-- Day started event triggers stamina recovery
-- Hunger affects gameplay (damage, critical states)
-- Save/load integrado para ambos
+- `HungerManager` publica estados de fome e aplica dano de HP controlado por `GameTimeTickEvent` quando a fome chega a zero, com respawn seguro.
+- `StaminaManager` inicia em `100`, regenera apos delay, respeita tiers de fome e mantem regeneracao fixa em fome zero sem dano incorreto de stamina.
+- `PlayerNeedsBalanceSO` e `GameTimeBalanceSO` mantem os valores de balanceamento em assets configuraveis.
+- `PlayerController` aplica reducao de movimento no tier critico de fome.
+- Custos de stamina existentes em farm, pesca, arvores, craft e ataque sao religados ao manager persistente.
+- `GameTimeManager`, `StaminaManager` e `StatusEffectManager` sao materializados e ligados em Farm, Town e Cave.
+- Comidas aplicam `HungerRestore`, `StaminaRestore` e status configurados em `ItemDataSO`.
+- Status temporarios publicam apply/refresh/remove/expire, persistem por ID/duracao e aparecem no HUD minimo com duracao.
+- `SaveManager` captura/restaura hunger, stamina, game time e status apenas com DTOs simples.
 
-### Nao implementado (futuro):
-- Integração completa de stamina costs para farm/fishing/crafting/combat
-- HUD consolidado de hunger/stamina/status
-- Status temporarios simples (buffs/debuffs)
-- Passagem de tempo in-game (dia/noite ciclos)
-- Modificadores de regen baseado em fome
-- Movimento/acao afetada por stamina critica
+## Reclassificacao
 
-### Validacao pendente:
-- Unity compile validation
-- Play mode test de stamina/hunger integration
+- Canvas final, icones finais e acabamento visual do HUD permanecem na SPEC 17. A SPEC 09 entrega a visualizacao funcional minima no `DebugHud`/`PlayerNeedsHUD`.
+- Validacao humana de input/UX em Play Mode permanece no checklist final do projeto; nao bloqueia esta promocao por regra do prompt.
+
+## Evidencia
+
+- Runtime: `Assets/_Game/Scripts/Player/`, `Assets/_Game/Scripts/Core/GameTimeManager.cs`, `Assets/_Game/Scripts/Save/SaveManager.cs`.
+- Wiring/assets: `Assets/_Game/Scripts/Editor/SceneCreation/`, `Assets/_Game/Scenes/`, `Assets/_Game/Data/Config/PlayerNeedsBalance.asset`, `Assets/_Game/Data/Config/GameTimeBalance.asset`.
+- Validacao: `docs/validation/SPEC_09_HUNGER_STAMINA_STATUS_TIME_VALIDATION_20260524.md`.

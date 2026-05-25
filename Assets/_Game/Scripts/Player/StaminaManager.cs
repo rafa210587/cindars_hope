@@ -35,17 +35,24 @@ namespace CindarsHope.Player
         public void Initialize(int maxStamina = 100, int startingStamina = 100)
         {
             _maxStamina = Mathf.Max(1, maxStamina);
-            _currentStamina = Mathf.Min(startingStamina, _maxStamina);
+            _currentStamina = Mathf.Clamp(startingStamina, 0, _maxStamina);
+            _regenRate = _playerNeedsBalance != null
+                ? Mathf.Max(0f, _playerNeedsBalance.BaseStaminaRegenRate)
+                : 15f;
             _regenTimer = _regenDelay;
             IsInitialized = true;
+            PublishStaminaChanged();
+        }
+
+        public void Shutdown()
+        {
+            IsInitialized = false;
         }
 
         private void Update()
         {
             if (!IsInitialized)
                 return;
-
-            HandleZeroHungerDamage();
 
             _regenTimer -= Time.deltaTime;
             if (_regenTimer <= 0f && _currentStamina < _maxStamina)
@@ -108,22 +115,6 @@ namespace CindarsHope.Player
 
             float modifier = _playerNeedsBalance.GetStaminaRegenModifier(_hungerManager.CurrentHunger);
             return _regenRate * modifier;
-        }
-
-        private void HandleZeroHungerDamage()
-        {
-            if (_hungerManager == null || _playerNeedsBalance == null)
-                return;
-
-            if (!_playerNeedsBalance.IsZeroHunger(_hungerManager.CurrentHunger))
-                return;
-
-            float damage = _playerNeedsBalance.ZeroHungerDamagePerSecond * Time.deltaTime;
-            if (damage > 0)
-            {
-                _currentStamina = Mathf.Max(0, Mathf.RoundToInt(_currentStamina - damage));
-                PublishStaminaChanged();
-            }
         }
     }
 }

@@ -64,6 +64,7 @@ namespace CindarsHope.SceneManagement
             var playerManager = bootstrap.PlayerManager;
             var inventoryManager = bootstrap.InventoryManager;
             var hungerManager = bootstrap.HungerManager;
+            var staminaManager = bootstrap.StaminaManager;
             var timeManager = bootstrap.TimeManager;
             var saveManager = bootstrap.SaveManager;
             var craftingManager = bootstrap.CraftingManager;
@@ -75,6 +76,7 @@ namespace CindarsHope.SceneManagement
                     if (plot != null)
                     {
                         plot.RebindInventoryManager(inventoryManager);
+                        plot.RebindStaminaManager(staminaManager);
                     }
                 }
             }
@@ -86,6 +88,7 @@ namespace CindarsHope.SceneManagement
                     if (tree != null)
                     {
                         tree.RebindInventoryManager(inventoryManager);
+                        tree.RebindStaminaManager(staminaManager);
                     }
                 }
             }
@@ -93,6 +96,7 @@ namespace CindarsHope.SceneManagement
             if (inventoryManager != null && _fishingSpot != null)
             {
                 _fishingSpot.RebindInventoryManager(inventoryManager);
+                _fishingSpot.RebindStaminaManager(staminaManager);
             }
 
             if (inventoryManager != null && playerManager != null && _seedShopPoint != null)
@@ -110,6 +114,12 @@ namespace CindarsHope.SceneManagement
                 _craftingPoint.RebindCraftingManager(craftingManager);
             }
 
+            var craftingRuntime = bootstrap.GetComponent<CraftingRuntime>();
+            if (craftingRuntime != null)
+            {
+                craftingRuntime.RebindStaminaManager(staminaManager);
+            }
+
             if (saveManager != null)
             {
                 saveManager.RebindSceneReferences(_farmPlotRegistry, _treeRegistry, _itemPickupRegistry, _playerTransform);
@@ -118,11 +128,11 @@ namespace CindarsHope.SceneManagement
                     saveManager.RebindRuntimeManagers(playerManager, inventoryManager, hungerManager, timeManager);
                 }
 
-                saveManager.RebindOptionalRuntimeManagers(bootstrap.EquipmentManager, bootstrap.PlayerProgressionManager, bootstrap.GameTimeManager);
+                saveManager.RebindOptionalRuntimeManagers(bootstrap.EquipmentManager, bootstrap.PlayerProgressionManager, bootstrap.GameTimeManager, staminaManager, bootstrap.StatusEffectManager);
             }
 
             var interactionSystem = _playerTransform != null ? _playerTransform.GetComponent<InteractionSystem>() : null;
-            DebugHud.RebindExisting(playerManager, inventoryManager, hungerManager, interactionSystem, timeManager, saveManager);
+            DebugHud.RebindExisting(playerManager, inventoryManager, hungerManager, staminaManager, bootstrap.StatusEffectManager, interactionSystem, timeManager, saveManager);
 
             var restored = FarmSceneRuntimeStateCache.TryRestore(_farmPlotRegistry, _treeRegistry, _itemPickupRegistry);
             var plotCount = _farmPlotRegistry?.Plots?.Count ?? 0;

@@ -49,6 +49,11 @@ namespace CindarsHope.Craft
             Initialize();
         }
 
+        public void RebindStaminaManager(StaminaManager staminaManager)
+        {
+            _staminaManager = staminaManager;
+        }
+
         public CraftingStation GetOrCreateStation(string stationInstanceId, WorkshopType stationType)
         {
             if (!IsInitialized || string.IsNullOrWhiteSpace(stationInstanceId))

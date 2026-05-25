@@ -181,6 +181,11 @@ namespace CindarsHope.Farm
             _inventoryManager = inventoryManager;
         }
 
+        public void RebindStaminaManager(Player.StaminaManager staminaManager)
+        {
+            _staminaManager = staminaManager;
+        }
+
         public bool CanInteract(GameObject interactor)
         {
             return _activeMenuPlot == null || _activeMenuPlot == this;

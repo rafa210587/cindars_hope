@@ -253,7 +253,12 @@ namespace CindarsHope.Save
             }
         }
 
-        public void RebindOptionalRuntimeManagers(EquipmentManager equipmentManager, PlayerProgressionManager progressionManager, Core.GameTimeManager gameTimeManager = null)
+        public void RebindOptionalRuntimeManagers(
+            EquipmentManager equipmentManager,
+            PlayerProgressionManager progressionManager,
+            Core.GameTimeManager gameTimeManager = null,
+            StaminaManager staminaManager = null,
+            Player.StatusEffectManager statusEffectManager = null)
         {
             if (equipmentManager != null)
             {
@@ -268,6 +273,16 @@ namespace CindarsHope.Save
             if (gameTimeManager != null)
             {
                 _gameTimeManager = gameTimeManager;
+            }
+
+            if (staminaManager != null)
+            {
+                _staminaManager = staminaManager;
+            }
+
+            if (statusEffectManager != null)
+            {
+                _statusEffectManager = statusEffectManager;
             }
         }
 
@@ -842,6 +857,7 @@ namespace CindarsHope.Save
 
             if (_statusEffectManager != null && saveData.PlayerStatusEffects != null)
             {
+                _statusEffectManager.Shutdown();
                 _statusEffectManager.Initialize();
                 foreach (var effectEntry in saveData.PlayerStatusEffects.ActiveEffects)
                 {

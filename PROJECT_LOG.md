@@ -33,6 +33,44 @@
 
 ---
 
+## Sessao 2026-05-24 (11a) - Fechar SPEC 09 (Hunger, Stamina, Status e Time)
+
+**Data:** 2026-05-24
+**Foco:** Fechar integracao runtime, persistencia, wiring de cenas e evidencias da SPEC 09
+**Status:** COMPLETO
+
+### Deliverables
+
+- Fome zero corrigida para dano periodico de HP por tick de tempo; removido dreno indevido de stamina por frame.
+- Tiers de regeneracao e penalidade de movimento critico configurados em `PlayerNeedsBalanceSO`.
+- `GameBootstrap`, `SaveManager` e installers ligam stamina, status e game time persistentes.
+- Consumo aplica hunger/stamina/status; lifecycle de status publica eventos e HUD minimo mostra duracao.
+- Assets `PlayerNeedsBalance.asset` e `GameTimeBalance.asset` criados por editor initializer idempotente.
+- Farm, Town e Cave regeneradas com wiring da SPEC 09; validador de cave alinhado ao runtime procedural atual.
+- Spec, refinement, maps, registries e prompt promovidos; Canvas final permanece reclassificado para SPEC 17.
+
+### Validacoes
+
+```text
+Docs validation: PASS - tools/docs/validate_docs.ps1
+Unity compile: PASS - *** Tundra build success em Logs/spec09-scene-validation-final.log
+Scene generation: PASS - Logs/spec09-generate-farm-final.log, Logs/spec09-generate-town-final.log e Logs/spec09-generate-cave-final.log
+SPEC 09 validator: PASS - MvpSceneValidator.ValidateSpec09Scenes em Logs/spec09-scene-validation-final.log
+SPEC 06 regression validator: PASS - MvpSceneValidator.ValidateSpec06Scenes em Logs/spec09-regression-spec06.log
+SPEC 07 regression validator: PASS - MvpSceneValidator.ValidateSpec07Scene em Logs/spec09-regression-spec07.log
+Unity log scanner: FAIL - captura linhas Assembly-CSharp-Editor.dll/firstpass.dll apesar de Tundra build success; sem error CS final
+Play Mode: NOT RUN
+Reason: validacao disponivel nesta execucao opera Unity em batchmode sem input interativo.
+Command attempted: MvpSceneValidator.ValidateSpec09Scenes, ValidateSpec06Scenes e ValidateSpec07Scene.
+Residual risk: input/UX, timing visivel de starvation/regen e save/load acionado pelo jogador aguardam checklist humano final.
+```
+
+### Checklist Play Mode
+
+- Evidencia e passos documentados em `docs/validation/SPEC_09_HUNGER_STAMINA_STATUS_TIME_VALIDATION_20260524.md`.
+
+---
+
 ## Sessão 2026-05-24 (6ª) - Fechar SPEC 05 (World Activities: Fishing, Trees, Pickups, Loot)
 
 **Data:** 2026-05-24 (continuação)  

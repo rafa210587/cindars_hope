@@ -20,6 +20,7 @@ namespace CindarsHope.Core.Data
 
         [SerializeField] private int _famineCriticalHungerMin = 1;
         [SerializeField] private float _famineCriticalHungerRegenModifier = 0.3f;
+        [SerializeField] private float _famineCriticalMoveSpeedModifier = 0.85f;
 
         [SerializeField] private float _zeroHungerRegenRate = 2f;
         [SerializeField] private float _zeroHungerDamagePerSecond = 1f;
@@ -37,6 +38,7 @@ namespace CindarsHope.Core.Data
 
         public int FamineCriticalHungerMin => _famineCriticalHungerMin;
         public float FamineCriticalHungerRegenModifier => _famineCriticalHungerRegenModifier;
+        public float FamineCriticalMoveSpeedModifier => _famineCriticalMoveSpeedModifier;
 
         public float ZeroHungerRegenRate => _zeroHungerRegenRate;
         public float ZeroHungerDamagePerSecond => _zeroHungerDamagePerSecond;
@@ -59,5 +61,12 @@ namespace CindarsHope.Core.Data
         }
 
         public bool IsZeroHunger(int currentHunger) => currentHunger <= 0;
+
+        public float GetMoveSpeedModifier(int currentHunger)
+        {
+            return currentHunger >= FamineCriticalHungerMin && currentHunger < FamineWarnHungerMin
+                ? FamineCriticalMoveSpeedModifier
+                : 1f;
+        }
     }
 }

@@ -41,6 +41,7 @@ namespace CindarsHope.Save.Migrations
             saveData.SchemaVersion = TargetSchemaVersion;
 
             MigrateEquipmentDurability(saveData);
+            InitializeStaminaSaveData(saveData);
             InitializeGameTimeSaveData(saveData);
             InitializePlayerStatusEffects(saveData);
 
@@ -84,6 +85,18 @@ namespace CindarsHope.Save.Migrations
                     CurrentDay = saveData.CurrentDay > 0 ? saveData.CurrentDay : 1,
                     CurrentPhase = 0,
                     PhaseElapsedSeconds = 0f
+                };
+            }
+        }
+
+        private void InitializeStaminaSaveData(GameSaveData saveData)
+        {
+            if (saveData.Stamina == null)
+            {
+                saveData.Stamina = new StaminaSaveData
+                {
+                    MaxStamina = 100,
+                    CurrentStamina = 100
                 };
             }
         }

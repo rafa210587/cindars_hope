@@ -26,6 +26,7 @@ namespace CindarsHope.Core.Bootstrap
         [SerializeField] private ModalManager _modalManager;
         [SerializeField] private SaveManager _saveManager;
         [SerializeField] private HungerManager _hungerManager;
+        [SerializeField] private StaminaManager _staminaManager;
         [SerializeField] private CraftingManager _craftingManager;
         [SerializeField] private EconomyManager _economyManager;
         [SerializeField] private EquipmentManager _equipmentManager;
@@ -45,6 +46,7 @@ namespace CindarsHope.Core.Bootstrap
         public ModalManager ModalManager => _modalManager;
         public SaveManager SaveManager => _saveManager;
         public HungerManager HungerManager => _hungerManager;
+        public StaminaManager StaminaManager => _staminaManager;
         public CraftingManager CraftingManager => _craftingManager;
         public EconomyManager EconomyManager => _economyManager;
         public EquipmentManager EquipmentManager => _equipmentManager;
@@ -178,6 +180,15 @@ namespace CindarsHope.Core.Bootstrap
                 }
             }
 
+            if (_staminaManager != null)
+            {
+                _staminaManager.Initialize();
+            }
+            else
+            {
+                Debug.LogWarning("GameBootstrap is missing a StaminaManager reference.", this);
+            }
+
             if (_craftingManager != null)
             {
                 _craftingManager.Initialize();
@@ -195,7 +206,7 @@ namespace CindarsHope.Core.Bootstrap
 
             if (_saveManager != null)
             {
-                _saveManager.RebindOptionalRuntimeManagers(_equipmentManager, _progressionManager, _gameTimeManager);
+                _saveManager.RebindOptionalRuntimeManagers(_equipmentManager, _progressionManager, _gameTimeManager, _staminaManager, _statusEffectManager);
             }
         }
 
@@ -209,6 +220,11 @@ namespace CindarsHope.Core.Bootstrap
             if (_statusEffectManager != null)
             {
                 _statusEffectManager.Shutdown();
+            }
+
+            if (_staminaManager != null)
+            {
+                _staminaManager.Shutdown();
             }
 
             if (_gameTimeManager != null)

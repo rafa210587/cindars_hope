@@ -3,6 +3,7 @@ using CindarsHope.Cave;
 using CindarsHope.Cave.Resources;
 using CindarsHope.Cave.Runtime;
 using CindarsHope.Core.Bootstrap;
+using CindarsHope.Core.Data;
 using CindarsHope.Core.Time;
 using CindarsHope.Craft;
 using CindarsHope.Craft.Data;
@@ -142,6 +143,35 @@ namespace CindarsHope.Editor.Validation
             Debug.Log("SPEC 08 scene and NPC dialogue validation passed for TownScene.");
         }
 
+        public static void ValidateSpec09Scenes()
+        {
+            EditorSceneManager.OpenScene("Assets/_Game/Scenes/FarmScene.unity");
+            if (!ValidateFarmScene())
+            {
+                throw new System.InvalidOperationException("SPEC 09 validation failed for FarmScene.");
+            }
+
+            EditorSceneManager.OpenScene("Assets/_Game/Scenes/TownScene.unity");
+            if (!ValidateTownScene())
+            {
+                throw new System.InvalidOperationException("SPEC 09 validation failed for TownScene.");
+            }
+
+            EditorSceneManager.OpenScene("Assets/_Game/Scenes/CaveScene.unity");
+            if (!ValidateCaveScene())
+            {
+                throw new System.InvalidOperationException("SPEC 09 validation failed for CaveScene.");
+            }
+
+            if (AssetDatabase.LoadAssetAtPath<PlayerNeedsBalanceSO>("Assets/_Game/Data/Config/PlayerNeedsBalance.asset") == null
+                || AssetDatabase.LoadAssetAtPath<GameTimeBalanceSO>("Assets/_Game/Data/Config/GameTimeBalance.asset") == null)
+            {
+                throw new System.InvalidOperationException("SPEC 09 balance assets are missing.");
+            }
+
+            Debug.Log("SPEC 09 scene validation passed for hunger, stamina, status and game time wiring.");
+        }
+
         private static bool ValidateFarmScene()
         {
             var rootObjects = EditorSceneManager.GetActiveScene().GetRootGameObjects();
@@ -169,6 +199,7 @@ namespace CindarsHope.Editor.Validation
                     { Debug.LogError("MvpSceneValidator: GameBootstrap missing CraftingManager."); passed = false; }
                 if (bootstrap.EconomyManager == null)
                     { Debug.LogError("MvpSceneValidator: GameBootstrap missing EconomyManager."); passed = false; }
+                passed &= ValidateSpec09Bootstrap(bootstrap);
             }
 
             if (FindComponent<DebugHud>(rootObjects) == null)
@@ -238,6 +269,7 @@ namespace CindarsHope.Editor.Validation
             {
                 if (bootstrap.EconomyManager == null)
                     { Debug.LogError("MvpSceneValidator: GameBootstrap missing EconomyManager."); passed = false; }
+                passed &= ValidateSpec09Bootstrap(bootstrap);
             }
 
             if (FindComponent<DebugHud>(rootObjects) == null)
@@ -325,6 +357,8 @@ namespace CindarsHope.Editor.Validation
             var bootstrap = FindComponent<GameBootstrap>(rootObjects);
             if (bootstrap == null)
                 { Debug.LogError("MvpSceneValidator: GameBootstrap not found in CaveScene."); passed = false; }
+            else
+                { passed &= ValidateSpec09Bootstrap(bootstrap); }
 
             if (FindComponent<PlayerController>(rootObjects) == null)
                 { Debug.LogError("MvpSceneValidator: PlayerController not found in CaveScene."); passed = false; }
@@ -344,18 +378,6 @@ namespace CindarsHope.Editor.Validation
             if (FindComponent<SaveInput>(rootObjects) == null)
                 { Debug.LogError("MvpSceneValidator: SaveInput not found in CaveScene."); passed = false; }
 
-            if (FindPortalTo(rootObjects, "FarmScene") == null)
-                { Debug.LogError("MvpSceneValidator: Portal to FarmScene not found in CaveScene."); passed = false; }
-
-            if (FindComponent<EnemyHealth>(rootObjects) == null)
-                { Debug.LogError("MvpSceneValidator: EnemyHealth not found in CaveScene."); passed = false; }
-
-            if (FindComponent<EnemyChaseController>(rootObjects) == null)
-                { Debug.LogError("MvpSceneValidator: EnemyChaseController not found in CaveScene."); passed = false; }
-
-            if (FindComponent<EnemyContactDamage>(rootObjects) == null)
-                { Debug.LogError("MvpSceneValidator: EnemyContactDamage not found in CaveScene."); passed = false; }
-
             if (FindComponent<EnemyDropSpawner>(rootObjects) == null)
                 { Debug.LogError("MvpSceneValidator: EnemyDropSpawner not found in CaveScene."); passed = false; }
 
@@ -365,9 +387,38 @@ namespace CindarsHope.Editor.Validation
             if (FindComponent<CaveLevelRuntimeController>(rootObjects) == null)
                 { Debug.LogError("MvpSceneValidator: CaveLevelRuntimeController not found in CaveScene."); passed = false; }
 
-            var resourceNodes = Object.FindObjectsByType<CindarsHope.Cave.Resources.ResourceNode>();
-            if (resourceNodes.Length < 3)
-                { Debug.LogError("MvpSceneValidator: Less than 3 ResourceNode debug instances found in CaveScene."); passed = false; }
+            if (FindComponent<CaveRuntimeMaterializer>(rootObjects) == null
+                || FindComponent<CaveEnemySpawner>(rootObjects) == null)
+                { Debug.LogError("MvpSceneValidator: Cave procedural materializer or enemy spawner not found in CaveScene."); passed = false; }
+
+            return passed;
+        }
+
+        private static bool ValidateSpec09Bootstrap(GameBootstrap bootstrap)
+        {
+            var passed = true;
+            if (bootstrap.StaminaManager == null || bootstrap.GameTimeManager == null || bootstrap.StatusEffectManager == null)
+            {
+                Debug.LogError("MvpSceneValidator: SPEC 09 requires StaminaManager, GameTimeManager and StatusEffectManager on GameBootstrap.");
+                return false;
+            }
+
+            var stamina = new SerializedObject(bootstrap.StaminaManager);
+            if (stamina.FindProperty("_playerNeedsBalance").objectReferenceValue == null
+                || stamina.FindProperty("_hungerManager").objectReferenceValue == null)
+            {
+                Debug.LogError("MvpSceneValidator: SPEC 09 StaminaManager dependencies are not wired.");
+                passed = false;
+            }
+
+            var gameTime = new SerializedObject(bootstrap.GameTimeManager);
+            if (gameTime.FindProperty("_timeBalance").objectReferenceValue == null
+                || gameTime.FindProperty("_timeManager").objectReferenceValue == null
+                || gameTime.FindProperty("_modalManager").objectReferenceValue == null)
+            {
+                Debug.LogError("MvpSceneValidator: SPEC 09 GameTimeManager dependencies are not wired.");
+                passed = false;
+            }
 
             return passed;
         }

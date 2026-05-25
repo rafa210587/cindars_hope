@@ -74,7 +74,7 @@ namespace CindarsHope.UI.HUD
             {
                 if (kvp.Value != null && kvp.Value.IsActive)
                 {
-                    statusString += kvp.Key + " ";
+                    statusString += $"{kvp.Key} ({Mathf.CeilToInt(kvp.Value.RemainingSeconds)}s) ";
                     count++;
                     if (count >= 3) break;
                 }

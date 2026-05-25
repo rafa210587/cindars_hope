@@ -1,4 +1,5 @@
 using CindarsHope.Inventory;
+using CindarsHope.Core.Bootstrap;
 using UnityEngine;
 
 namespace CindarsHope.Player
@@ -15,6 +16,8 @@ namespace CindarsHope.Player
 
         [SerializeField] private InventoryManager _inventoryManager;
         [SerializeField] private HungerManager _hungerManager;
+        [SerializeField] private StaminaManager _staminaManager;
+        [SerializeField] private StatusEffectManager _statusEffectManager;
         [SerializeField] private KeyCode _consumeKey = KeyCode.H;
 
         private void Update()
@@ -33,12 +36,6 @@ namespace CindarsHope.Player
                 return;
             }
 
-            if (_hungerManager.CurrentHunger >= _hungerManager.MaxHunger)
-            {
-                Debug.Log("FoodConsumer skipped consumption because hunger is already full.", this);
-                return;
-            }
-
             foreach (var itemId in FoodPriority)
             {
                 if (!_inventoryManager.HasItem(itemId))
@@ -52,9 +49,18 @@ namespace CindarsHope.Player
                     continue;
                 }
 
-                if (itemData.HungerRestore <= 0)
+                var staminaManager = _staminaManager ?? GameBootstrap.Instance?.StaminaManager;
+                var statusManager = _statusEffectManager ?? GameBootstrap.Instance?.StatusEffectManager;
+                var restoresHunger = itemData.HungerRestore > 0 && _hungerManager.CurrentHunger < _hungerManager.MaxHunger;
+                var restoresStamina = itemData.StaminaRestore > 0
+                    && staminaManager != null
+                    && staminaManager.CurrentStamina < staminaManager.MaxStamina;
+                var appliesStatus = statusManager != null
+                    && itemData.StatusEffectIds != null
+                    && itemData.StatusEffectIds.Length > 0;
+                if (!restoresHunger && !restoresStamina && !appliesStatus)
                 {
-                    Debug.Log($"FoodConsumer skipped '{itemId}' because it does not restore hunger.", this);
+                    Debug.Log($"FoodConsumer skipped '{itemId}' because no effect is currently applicable.", this);
                     continue;
                 }
 
@@ -65,7 +71,18 @@ namespace CindarsHope.Player
                 }
 
                 _hungerManager.RestoreHunger(itemData.HungerRestore);
-                Debug.Log($"Consumed '{itemId}' and restored {itemData.HungerRestore} hunger.", this);
+
+                staminaManager?.AddStamina(itemData.StaminaRestore);
+
+                if (statusManager != null && itemData.StatusEffectIds != null)
+                {
+                    foreach (var effectId in itemData.StatusEffectIds)
+                    {
+                        statusManager.TryAddEffect(effectId, itemData.BuffDurationSeconds);
+                    }
+                }
+
+                Debug.Log($"Consumed '{itemId}' and applied hunger/stamina/status effects.", this);
                 return;
             }
 

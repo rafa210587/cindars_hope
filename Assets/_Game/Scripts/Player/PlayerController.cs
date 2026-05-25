@@ -1,4 +1,5 @@
 using CindarsHope.Core;
+using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
 using CindarsHope.Farm;
 using CindarsHope.Player.Data;
@@ -20,6 +21,7 @@ namespace CindarsHope.Player
 
         [SerializeField] private PlayerDataSO _playerData;
         [SerializeField] private Rigidbody2D _rigidbody;
+        [SerializeField] private CindarsHope.Core.Data.PlayerNeedsBalanceSO _playerNeedsBalance;
 
 #if ENABLE_INPUT_SYSTEM
         private InputAction _moveAction;
@@ -101,7 +103,7 @@ namespace CindarsHope.Player
 
             var previousPosition = _rigidbody.position;
             var speed = GetMoveSpeed();
-            var movement = MoveInput * speed * Mathf.Max(0f, SpeedMultiplier) * Time.fixedDeltaTime;
+            var movement = MoveInput * speed * Mathf.Max(0f, SpeedMultiplier) * GetHungerMoveSpeedModifier() * Time.fixedDeltaTime;
             var nextPosition = previousPosition + movement;
 
             _rigidbody.MovePosition(nextPosition);
@@ -159,6 +161,22 @@ namespace CindarsHope.Player
             }
 
             return DefaultMoveSpeed;
+        }
+
+        private float GetHungerMoveSpeedModifier()
+        {
+            var hungerManager = GameBootstrap.Instance != null ? GameBootstrap.Instance.HungerManager : null;
+            if (hungerManager == null)
+            {
+                return 1f;
+            }
+
+            if (_playerNeedsBalance != null)
+            {
+                return Mathf.Max(0f, _playerNeedsBalance.GetMoveSpeedModifier(hungerManager.CurrentHunger));
+            }
+
+            return hungerManager.CurrentHunger > 0 && hungerManager.CurrentHunger < 10 ? 0.85f : 1f;
         }
 
         private void TrackStepDistance(Vector2 previousPosition, Vector2 nextPosition)
