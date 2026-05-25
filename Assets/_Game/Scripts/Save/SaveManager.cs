@@ -39,6 +39,7 @@ namespace CindarsHope.Save
         [SerializeField] private InventoryManager _inventoryManager;
         [SerializeField] private HungerManager _hungerManager;
         [SerializeField] private StaminaManager _staminaManager;
+        [SerializeField] private ManaManager _manaManager;
         [SerializeField] private TimeManager _timeManager;
         [SerializeField] private Core.GameTimeManager _gameTimeManager;
         [SerializeField] private Player.StatusEffectManager _statusEffectManager;
@@ -52,6 +53,7 @@ namespace CindarsHope.Save
         [SerializeField] private ShopManager _shopManager;
         [SerializeField] private CraftingRuntime _craftingRuntime;
         [SerializeField] private NpcManager _npcManager;
+        [SerializeField] private Skills.ActiveSkillSlots _activeSkillSlots;
 
         private readonly HotbarState _hotbarState = new HotbarState();
         private readonly SaveMigrationRegistry _migrationRegistry = new SaveMigrationRegistry(new ISaveMigration[]
@@ -100,6 +102,7 @@ namespace CindarsHope.Save
                 var statusEffectsSaveData = CapturePlayerStatusEffectsSaveData();
                 var equipmentDurabilitySaveData = CaptureEquipmentDurabilitySaveData();
                 var npcSaveData = CaptureNpcSaveData(existingSaveData);
+                var activeSkillSlotsSaveData = CaptureActiveSkillSlotsSaveData();
 
                 var saveData = new GameSaveData
                 {
@@ -121,7 +124,8 @@ namespace CindarsHope.Save
                     GameTime = gameTimeSaveData,
                     PlayerStatusEffects = statusEffectsSaveData,
                     EquipmentDurability = equipmentDurabilitySaveData,
-                    Npcs = npcSaveData
+                    Npcs = npcSaveData,
+                    ActiveSkillSlots = activeSkillSlotsSaveData
                 };
 
                 var savePath = SaveFilePath;

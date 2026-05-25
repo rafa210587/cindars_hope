@@ -1,3 +1,46 @@
+## Sessão 2026-05-24 (AgentOps-001) - Estruturar Claude Code Project (.claude/)
+
+**Data:** 2026-05-24  
+**Foco:** Criar estrutura operacional para Claude Code com commands, skills, agentes e hooks  
+**Status:** COMPLETO
+
+### Deliverables
+
+**Operacional:**
+- `.claude/settings.json` - Permissões versionadas e hooks configurados
+- `.claude/commands/` (5 commands) - start-spec, validate-unity, finish-spec, review-non-regression, docs-health
+- `.claude/skills/` (7 skills) - spec-execution, unity-validation, docs-migration, non-regression-review, save-load-pattern, event-bus-pattern, implementation-closeout
+- `.claude/agents/` (5 agents) - spec-implementer, unity-validator, docs-curator, non-regression-auditor, architecture-reviewer
+- `.claude/hooks/` (3 hooks) - pre-bash-guard, post-edit-docs-validate, stop-summary-check
+
+**Configuração:**
+- `.mcp.json` - Placeholder (sem MCP ativo)
+- `.gitignore` - Atualizado (CLAUDE.local.md, .claude/settings.local.json ignorados)
+- `CLAUDE.md` - Seção apontando para `.claude/`
+- `AGENTS.md` - Seção apontando para `.claude/`
+
+### Validações
+
+```text
+Docs validation: PASS (antes e depois)
+Git status: Clean
+Non-regression: PASS (docs-only, sem gameplay alterado)
+```
+
+### Commit
+
+```
+Nenhum commit nesta sessão (tooling/docs-only, awaits user approval)
+```
+
+### Próximas Tarefas
+
+- SPEC 12: Player Combat/Weapons/Spells (pronto para executar com nova estrutura)
+- Validação operacional: User pode testar estrutura no próximo /start-spec
+- MCP: Configurar quando necessário
+
+---
+
 ## Sessão 2026-05-25 (13ª) - Fechar SPEC 11 (Damage Status Resistances)
 
 **Data:** 2026-05-25  

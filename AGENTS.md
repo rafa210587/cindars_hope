@@ -1,5 +1,16 @@
 # AGENTS.md - Cindar's Hope
 
+## Claude Code Project Structure
+
+Este projeto usa `.claude/` para operacionalizar tarefas via comandos, skills e agentes:
+
+- **Commands** (`.claude/commands/`) — Fluxos: `/start-spec`, `/validate-unity`, `/finish-spec`, `/review-non-regression`, `/docs-health`
+- **Skills** (`.claude/skills/`) — Padrões acionáveis: spec-execution, unity-validation, docs-migration, non-regression-review, save-load-pattern, event-bus-pattern, implementation-closeout
+- **Agents** (`.claude/agents/`) — Especializados: spec-implementer, unity-validator, docs-curator, non-regression-auditor, architecture-reviewer
+- **Settings** (`.claude/settings.json`) — Permissões versionadas e hooks de segurança
+
+Consulte `.claude/` para operações. **Regras fundamentais permanecem em AGENTS.md, CLAUDE.md e `docs/operations/`.**
+
 ## Contexto do projeto
 
 Jogo 2D pixel art RPG + farm sim desenvolvido em Unity LTS com C#.

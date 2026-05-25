@@ -8,6 +8,7 @@
 
 | Area | Status | Spec |
 |---|---|---|
+| Claude Code project structure (.claude/) | Implementado completo | `.claude/settings.json`, `.claude/commands/`, `.claude/skills/`, `.claude/agents/`, `.claude/hooks/` |
 | Governanca documental / fonte unica | Implementado documental parcial | `docs/specs/implementados/spec_docs_001_single_source_specs_refinements_reconciliation_parcial.md` |
 | Unity compile validation protocol | Implementado completo | `docs/specs/implementados/spec_unity_compile_validation_protocol_and_scripts.md` |
 | Core/event bus/bootstrap | Implementado parcial | `docs/specs/implementados/spec_core_001_event_bus_e_eventos_base.md`, `docs/specs/implementados/spec_core_002_bootstrap_managers_e_runtime_references.md` |

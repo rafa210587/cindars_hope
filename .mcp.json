@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "note": "MCP (Model Context Protocol) server configuration placeholder. No MCP servers configured for this project yet. Add server configurations here when integrating external MCP-based tools or services.",
+    "example": {
+      "disabled": true,
+      "command": "example-mcp-server",
+      "args": [],
+      "env": {}
+    }
+  }
+}

@@ -2,6 +2,23 @@
 
 Arquivo operacional equivalente ao `AGENTS.md` para Claude/Codex.
 
+## Claude Code Project Structure
+
+Este projeto usa `.claude/` para operacionalizar comandos, skills, agentes e hooks reutilizáveis:
+
+- `.claude/commands/` — slash commands para fluxos repetíveis (start-spec, validate-unity, finish-spec, review-non-regression, docs-health)
+- `.claude/skills/` — padrões arquiteturais acionáveis (spec-execution, unity-validation, docs-migration, non-regression-review, save-load-pattern, event-bus-pattern, implementation-closeout)
+- `.claude/agents/` — subagentes especializados (spec-implementer, unity-validator, docs-curator, non-regression-auditor, architecture-reviewer)
+- `.claude/hooks/` — guardrails locais (pre-bash-guard, post-edit-docs-validate, stop-summary-check)
+- `.claude/settings.json` — permissões versionadas e hooks
+
+Consulte os arquivos em `.claude/` para fluxos operacionais. **A fonte de verdade permanece sendo:**
+
+1. `AGENTS.md` e `CLAUDE.md` (este arquivo) — regras e diretrizes
+2. `docs/operations/AGENT_EXECUTION_PROTOCOL.md` — protocolo oficial
+3. `docs/specs/` — especificações
+4. `memory/` — padrões provados
+
 ## Fonte unica de specs
 
 A unica fonte oficial de specs e:

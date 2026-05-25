@@ -15,28 +15,22 @@ namespace CindarsHope.Player
         [SerializeField] private PlayerManager _playerManager;
         [SerializeField] private EquipmentManager _equipmentManager;
         [SerializeField] private StaminaManager _staminaManager;
+        [SerializeField] private ManaManager _manaManager;
         [SerializeField] private ItemDatabaseSO _itemDatabase;
-        [SerializeField] private int _baseDamage = 10;
-        [SerializeField] private float _attackCooldown = 0.5f;
-        [SerializeField] private float _attackRange = 1.5f;
+        [SerializeField] private WeaponDatabaseSO _weaponDatabase;
 
         private float _leftHandCooldownEnd;
         private float _rightHandCooldownEnd;
         private UnarmedAttackDataSO _unarmedData;
 
-        public int BaseDamage => _baseDamage;
-        public float AttackRange => _attackRange;
+        public int BaseDamage => 10;
+        public float AttackRange => 1.5f;
 
         private void Start()
         {
             if (_unarmedData == null)
             {
-                var unarmedPath = "Combat/Weapons/unarmed_default";
-                _unarmedData = Resources.Load<UnarmedAttackDataSO>(unarmedPath);
-                if (_unarmedData == null)
-                {
-                    Debug.LogWarning($"PlayerCombatController: Could not load unarmed data from {unarmedPath}", this);
-                }
+                CreateDefaultUnarmedData();
             }
         }
 
@@ -88,33 +82,24 @@ namespace CindarsHope.Player
 
         private void ExecuteHandAttack(string itemInstanceId, bool isLeftHand)
         {
-            if (string.IsNullOrEmpty(itemInstanceId) && _itemDatabase != null)
-            {
-                ExecuteUnarmedAttack(isLeftHand);
-                return;
-            }
+            WeaponDataSO weaponData = null;
 
-            if (string.IsNullOrEmpty(itemInstanceId))
+            if (!string.IsNullOrEmpty(itemInstanceId) && _itemDatabase != null && _itemDatabase.TryGetById(itemInstanceId, out var itemData))
             {
-                ExecuteUnarmedAttack(isLeftHand);
-                return;
-            }
-
-            if (_itemDatabase != null && _itemDatabase.TryGetById(itemInstanceId, out var itemData))
-            {
-                if (!string.IsNullOrEmpty(itemData.WeaponId))
+                if (!string.IsNullOrEmpty(itemData.WeaponId) && _weaponDatabase != null)
                 {
-                    var weaponPath = $"Combat/Weapons/{itemData.WeaponId}";
-                    var weaponData = Resources.Load<WeaponDataSO>(weaponPath);
-                    if (weaponData != null)
-                    {
-                        ExecuteWeaponAttack(weaponData, isLeftHand);
-                        return;
-                    }
+                    _weaponDatabase.TryGetById(itemData.WeaponId, out weaponData);
                 }
             }
 
-            ExecuteUnarmedAttack(isLeftHand);
+            if (weaponData != null)
+            {
+                ExecuteWeaponAttack(weaponData, isLeftHand);
+            }
+            else
+            {
+                ExecuteUnarmedAttack(isLeftHand);
+            }
         }
 
         private void ExecuteWeaponAttack(WeaponDataSO weapon, bool isLeftHand)
@@ -144,13 +129,19 @@ namespace CindarsHope.Player
             {
                 _rightHandCooldownEnd = Time.time + cooldown;
             }
+
+            Debug.Log($"PlayerCombatController: Weapon attack {weapon.DisplayName}, damage={baseDamage}", this);
         }
 
         private void ExecuteUnarmedAttack(bool isLeftHand)
         {
             if (_unarmedData == null)
             {
-                Debug.LogWarning("PlayerCombatController: No unarmed attack data available", this);
+                CreateDefaultUnarmedData();
+            }
+
+            if (_unarmedData == null)
+            {
                 return;
             }
 
@@ -174,6 +165,8 @@ namespace CindarsHope.Player
             {
                 _rightHandCooldownEnd = Time.time + cooldown;
             }
+
+            Debug.Log($"PlayerCombatController: Unarmed attack, damage={baseDamage}", this);
         }
 
         private void TryDodge()
@@ -198,6 +191,19 @@ namespace CindarsHope.Player
         {
             _leftHandCooldownEnd = 0f;
             _rightHandCooldownEnd = 0f;
+        }
+
+        private void CreateDefaultUnarmedData()
+        {
+            _unarmedData = ScriptableObject.CreateInstance<UnarmedAttackDataSO>();
+            _unarmedData.Id = "unarmed_default";
+            _unarmedData.DisplayName = "Punch";
+            _unarmedData.BaseDamage = 3;
+            _unarmedData.BaseCooldownSeconds = 0.4f;
+            _unarmedData.StaminaCost = 10f;
+            _unarmedData.Range = 0.5f;
+            _unarmedData.ArcDegrees = 120f;
+            _unarmedData.DamageType = DamageType.Physical;
         }
 
         private void OnPlayerHit(PlayerHitEvent evt)
