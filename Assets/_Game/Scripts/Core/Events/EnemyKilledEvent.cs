@@ -2,23 +2,26 @@ using UnityEngine;
 
 namespace CindarsHope.Core.Events
 {
-    /// <summary>
-    /// Publicado quando um inimigo morre e dropa itens.
-    /// </summary>
     public readonly struct EnemyKilledEvent
     {
-        public string EnemyId { get; }
-        public string DropItemId { get; }
-        public int DropAmount { get; }
-        public Vector3 DeathPosition { get; }
-        public int XpReward { get; }
+        public readonly string EnemyId;
+        public readonly string DropItemId;
+        public readonly int DropAmount;
+        public readonly Vector3 DeathPosition;
+        public readonly int XpReward;
 
-        public EnemyKilledEvent(string enemyId, string dropItemId, int dropAmount, Vector3 deathPosition)
-            : this(enemyId, dropItemId, dropAmount, deathPosition, 0)
+        // Constructor for simple case: (enemyId, deathPosition)
+        public EnemyKilledEvent(string enemyId, Vector3 deathPosition)
         {
+            EnemyId = enemyId;
+            DropItemId = string.Empty;
+            DropAmount = 0;
+            DeathPosition = deathPosition;
+            XpReward = 0;
         }
 
-        public EnemyKilledEvent(string enemyId, string dropItemId, int dropAmount, Vector3 deathPosition, int xpReward)
+        // Constructor for full case: (enemyId, dropItemId, dropAmount, deathPosition, xpReward)
+        public EnemyKilledEvent(string enemyId, string dropItemId, int dropAmount, Vector3 deathPosition, int xpReward = 0)
         {
             EnemyId = enemyId;
             DropItemId = dropItemId;

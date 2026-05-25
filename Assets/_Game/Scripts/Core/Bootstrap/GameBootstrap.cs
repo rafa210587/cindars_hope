@@ -55,6 +55,7 @@ namespace CindarsHope.Core.Bootstrap
         public EquipmentManager EquipmentManager => _equipmentManager;
         public PlayerProgressionManager PlayerProgressionManager => _progressionManager;
         public StatusEffectManager StatusEffectManager => _statusEffectManager;
+        public ItemDatabaseSO ItemDatabase => _itemDatabase;
         public WeaponDatabaseSO WeaponDatabase => _weaponDatabase;
         public SpellDatabaseSO SpellDatabase => _spellDatabase;
         public SkillActionDatabaseSO SkillActionDatabase => _skillActionDatabase;

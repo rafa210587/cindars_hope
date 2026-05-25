@@ -1,5 +1,4 @@
 using CindarsHope.Combat;
-using CindarsHope.Combat.Data;
 using CindarsHope.Cave;
 using CindarsHope.Cave.Data;
 using CindarsHope.Cave.Resources;

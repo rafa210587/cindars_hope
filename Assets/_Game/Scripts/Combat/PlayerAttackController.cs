@@ -2,6 +2,7 @@ using CindarsHope.Combat.Weapon;
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
 using CindarsHope.Equipment;
+using CindarsHope.Interaction;
 using CindarsHope.Player;
 using CindarsHope.Skills;
 using UnityEngine;
@@ -16,6 +17,7 @@ namespace CindarsHope.Combat
         [SerializeField] private StaminaManager _staminaManager;
         [SerializeField] private ManaManager _manaManager;
         [SerializeField] private UnarmedAttackDataSO _unarmedFallback;
+        [SerializeField] private InteractionSystem _interactionSystem;
         [SerializeField] private float _knockbackForce = 2.5f;
         [SerializeField] private float _dodgeCooldownSeconds = 0.5f;
         [SerializeField] private float _dodgeStaminaCost = 20f;
@@ -27,6 +29,18 @@ namespace CindarsHope.Combat
         private float _lastDodgeTime;
         private float _dodgeEndTime;
         private bool _isDodging;
+
+        private void Start()
+        {
+            if (_interactionSystem == null)
+            {
+                _interactionSystem = GetComponent<InteractionSystem>();
+            }
+            if (_interactionSystem == null)
+            {
+                _interactionSystem = FindAnyObjectByType<InteractionSystem>();
+            }
+        }
 
         public void RebindStaminaManager(StaminaManager staminaManager)
         {
@@ -42,32 +56,16 @@ namespace CindarsHope.Combat
 
             if (Input.GetKeyDown(KeyCode.E))
             {
+                if (_interactionSystem != null && _interactionSystem.HasCandidate)
+                {
+                    return;
+                }
                 TryAttackRightHand();
             }
 
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 TryDodge();
-            }
-
-            if (Input.GetKeyDown(KeyCode.R))
-            {
-                TryActivateSkillSlot(0);
-            }
-
-            if (Input.GetKeyDown(KeyCode.T))
-            {
-                TryActivateSkillSlot(1);
-            }
-
-            if (Input.GetKeyDown(KeyCode.Y))
-            {
-                TryActivateSkillSlot(2);
-            }
-
-            if (Input.GetKeyDown(KeyCode.G))
-            {
-                TryActivateSkillSlot(3);
             }
 
             UpdateDodgeState();
@@ -125,6 +123,22 @@ namespace CindarsHope.Combat
         private void ExecuteWeaponAttack(WeaponDataSO weapon)
         {
             Vector2 direction = _playerController?.LastFacingDirection ?? Vector2.right;
+
+            if (weapon.Type == WeaponType.Bow && weapon.ProjectilePrefab != null)
+            {
+                ExecuteRangedAttack(weapon, direction);
+            }
+            else
+            {
+                ExecuteMeleeAttack(weapon, direction);
+            }
+
+            if (_equipmentManager != null)
+                _equipmentManager.RegisterEquipmentUsage();
+        }
+
+        private void ExecuteMeleeAttack(WeaponDataSO weapon, Vector2 direction)
+        {
             var hitColliders = Physics2D.OverlapCircleAll((Vector2)transform.position + direction * 0.5f, weapon.Range);
 
             foreach (var collider in hitColliders)
@@ -145,9 +159,25 @@ namespace CindarsHope.Combat
 
                 var result = DamageCalculator.Calculate(damageRequest);
                 enemyHealth.TakeDamage(damageRequest);
+            }
+        }
 
-                if (_equipmentManager != null)
-                    _equipmentManager.RegisterEquipmentUsage();
+        private void ExecuteRangedAttack(WeaponDataSO weapon, Vector2 direction)
+        {
+            Vector2 spawnPos = (Vector2)transform.position + direction.normalized * 0.5f;
+            var projectile = Instantiate(weapon.ProjectilePrefab, spawnPos, Quaternion.identity);
+
+            var projectileBehaviour = projectile.GetComponent<ProjectileBehaviour>();
+            if (projectileBehaviour != null)
+            {
+                projectileBehaviour.Initialize(
+                    direction,
+                    weapon.ProjectileSpeed,
+                    weapon.Range,
+                    weapon.BaseDamage,
+                    weapon.DamageType,
+                    _knockbackForce
+                );
             }
         }
 
@@ -172,6 +202,8 @@ namespace CindarsHope.Combat
             {
                 _playerController.GetComponent<Rigidbody2D>().MovePosition(nextPosition);
             }
+
+            GameEventBus.Publish(new PlayerDodgeStartedEvent());
         }
 
         private void UpdateDodgeState()
@@ -179,12 +211,8 @@ namespace CindarsHope.Combat
             if (_isDodging && Time.time >= _dodgeEndTime)
             {
                 _isDodging = false;
+                GameEventBus.Publish(new PlayerDodgeEndedEvent());
             }
-        }
-
-        private void TryActivateSkillSlot(int slotIndex)
-        {
-            // Placeholder for skill activation - will be enhanced in future specs
         }
 
         private WeaponDataSO GetWeaponAsset(string weaponId)

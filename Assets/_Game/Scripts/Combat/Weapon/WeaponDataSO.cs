@@ -27,6 +27,10 @@ namespace CindarsHope.Combat.Weapon
         public int Weight;
         public int DurabilityMax = 100;
 
+        [Header("Projectile (for Bow/Ranged)")]
+        public GameObject ProjectilePrefab;
+        public float ProjectileSpeed = 10f;
+
         string IIdentifiedData.Id => Id;
 
         private void OnValidate()

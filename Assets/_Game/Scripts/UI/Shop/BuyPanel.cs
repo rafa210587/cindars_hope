@@ -108,11 +108,15 @@ namespace CindarsHope.UI.Shop
         {
             if (_itemPrefab == null || _itemsContainer == null)
             {
+                Debug.LogWarning("BuyPanel: ItemPrefab or ItemsContainer not assigned");
+                SetFeedback("Erro ao carregar itens.");
                 return;
             }
 
-            if (session.ShopData.Items == null)
+            if (session.ShopData.Items == null || session.ShopData.Items.Length == 0)
             {
+                Debug.LogWarning($"BuyPanel: Shop '{session.ShopData.Id}' has no items configured");
+                SetFeedback("Sem itens disponíveis.");
                 return;
             }
 
@@ -125,7 +129,7 @@ namespace CindarsHope.UI.Shop
 
                 if (!_itemDatabase.TryGetById(entry.ItemId, out var itemData) || itemData == null)
                 {
-                    Debug.LogWarning($"BuyPanel: Item '{entry.ItemId}' not found in database");
+                    Debug.LogWarning($"BuyPanel: Item '{entry.ItemId}' not found in database for shop '{session.ShopData.Id}'");
                     continue;
                 }
 
@@ -133,6 +137,12 @@ namespace CindarsHope.UI.Shop
                 item.gameObject.SetActive(true);
                 item.Initialize(itemData, session.GetItemStock(entry.ItemId), session.ShopData.BuyPriceMultiplier, _itemDatabase, OnItemBuyClicked);
                 _displayedItems.Add(item);
+            }
+
+            if (_displayedItems.Count == 0)
+            {
+                Debug.LogWarning($"BuyPanel: No valid items found for shop '{session.ShopData.Id}'. Check ShopDataSO.Items and ItemDatabaseSO.");
+                SetFeedback("Sem itens disponíveis para compra.");
             }
         }
 

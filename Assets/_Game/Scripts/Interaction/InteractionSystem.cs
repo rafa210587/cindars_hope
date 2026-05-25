@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using CindarsHope.Core;
+using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
 using CindarsHope.Farm;
 using UnityEngine;
@@ -73,6 +74,13 @@ namespace CindarsHope.Interaction
         private void Update()
         {
             if (FarmPlot.IsAnyActionMenuOpen)
+            {
+                PublishPromptIfChanged();
+                return;
+            }
+
+            var modalManager = GameBootstrap.Instance?.ModalManager;
+            if (modalManager != null && modalManager.HasActiveModal)
             {
                 PublishPromptIfChanged();
                 return;

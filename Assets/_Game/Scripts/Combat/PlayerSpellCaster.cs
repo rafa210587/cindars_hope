@@ -1,4 +1,7 @@
 using CindarsHope.Core;
+using CindarsHope.Core.Bootstrap;
+using CindarsHope.Core.Data;
+using CindarsHope.Core.Events;
 using CindarsHope.Combat.Magic;
 using CindarsHope.Player;
 using UnityEngine;
@@ -10,15 +13,31 @@ namespace CindarsHope.Combat
     {
         [SerializeField] private ManaManager _manaManager;
         [SerializeField] private PlayerController _playerController;
+        [SerializeField] private SpellDatabaseSO _spellDatabase;
+        [SerializeField] private float _knockbackForce = 1.5f;
 
         private float _lastSpellCastTime = float.MinValue;
 
-        public bool CanCastSpell(SpellDataSO spell)
+        private void Start()
         {
-            if (spell == null)
+            if (_spellDatabase == null && GameBootstrap.Instance != null)
+            {
+                _spellDatabase = GameBootstrap.Instance.SpellDatabase;
+            }
+        }
+
+        public bool TrycastSpell(string spellId, Vector2 direction)
+        {
+            if (string.IsNullOrEmpty(spellId))
                 return false;
 
-            return Time.time - _lastSpellCastTime >= spell.CooldownSeconds;
+            if (_spellDatabase == null || !_spellDatabase.TryGetById(spellId, out var spell))
+            {
+                GameEventBus.Publish(new SpellCastFailedEvent(spellId, "Spell not found"));
+                return false;
+            }
+
+            return TrycastSpellWithData(spell, direction);
         }
 
         public bool TrycastSpell(SpellDataSO spell, Vector2 direction)
@@ -26,13 +45,26 @@ namespace CindarsHope.Combat
             if (spell == null)
                 return false;
 
-            if (!CanCastSpell(spell))
+            return TrycastSpellWithData(spell, direction);
+        }
+
+        private bool TrycastSpellWithData(SpellDataSO spell, Vector2 direction)
+        {
+            if (Time.time - _lastSpellCastTime < spell.CooldownSeconds)
+            {
+                GameEventBus.Publish(new SpellCastFailedEvent(spell.Id, "Cooldown active"));
                 return false;
+            }
 
             if (_manaManager != null && !_manaManager.TrySpendMana(spell.ManaCost))
+            {
+                GameEventBus.Publish(new SpellCastFailedEvent(spell.Id, "Insufficient mana"));
                 return false;
+            }
 
+            GameEventBus.Publish(new SpellCastStartedEvent(spell.Id));
             ExecuteSpell(spell, direction);
+            GameEventBus.Publish(new SpellCastSucceededEvent(spell.Id));
             _lastSpellCastTime = Time.time;
             return true;
         }
@@ -58,7 +90,7 @@ namespace CindarsHope.Combat
                 {
                     DamageType = spell.DamageType,
                     SourcePosition = transform.position,
-                    KnockbackForce = 1.5f
+                    KnockbackForce = _knockbackForce
                 };
 
                 var result = DamageCalculator.Calculate(damageRequest);

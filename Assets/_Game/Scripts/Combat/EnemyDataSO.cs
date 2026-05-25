@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace CindarsHope.Combat
 {
-    [CreateAssetMenu(fileName = "Enemy_Slime", menuName = "CindarsHope/Combat/Enemy Data")]
+    [CreateAssetMenu(fileName = "Enemy_", menuName = "CindarsHope/Combat/Enemy Data")]
     public class EnemyDataSO : ScriptableObject, IIdentifiedData
     {
         public string enemyId;
@@ -13,22 +13,31 @@ namespace CindarsHope.Combat
 
         string IIdentifiedData.Id => enemyId;
 
-        [Header("Health")]
-        public int maxHp = 10;
+        [Header("Identity")]
+        public string FactionId;
+        public EnemyRole PrimaryRole = EnemyRole.Chaser;
+        public EnemyRole[] SecondaryRoles = new EnemyRole[0];
+        public int CaveBand = 1;
+        public string[] BiomeTags = new string[0];
+        public string[] EnvironmentTags = new string[0];
 
-        [Header("Damage")]
+        [Header("Health & Combat")]
+        public int maxHp = 10;
         public int contactDamage = 1;
         public float contactDamageCooldownSeconds = 1f;
         public float contactKnockbackForce = 0f;
-
-        [Header("Defense")]
         public int defense = 0;
-
-        [Header("Knockback Resistance")]
         public float receivedKnockbackResistance = 0f;
         public float receivedKnockbackMultiplier = 1f;
 
-        [Header("Movement")]
+        [Header("Profile References (SPEC 13)")]
+        public string SizeProfileId;
+        public string MovementProfileId;
+        public string ActionSetId;
+        public string VulnerabilityProfileId;
+        public string CombatResistanceProfileId;
+
+        [Header("Movement (Legacy fallback)")]
         public float moveSpeed = 1.2f;
         public float detectionRadius = 5f;
         public float stopDistance = 0.55f;
@@ -48,7 +57,14 @@ namespace CindarsHope.Combat
         [Header("Progression")]
         public int enemyLevel = 1;
         public EnemyDifficulty baseDifficulty = EnemyDifficulty.Easy;
+        public int xpReward = 0;
         public int xpRewardOverride;
+        public bool IsElite;
+        public bool IsMiniBoss;
+        public bool IsBoss;
+
+        [Header("Bestiary")]
+        public string BestiaryEntryId;
 
         private void OnValidate()
         {
@@ -63,8 +79,28 @@ namespace CindarsHope.Combat
             hitFlashDuration = Mathf.Max(0.01f, hitFlashDuration);
             dropAmount = Mathf.Max(0, dropAmount);
             enemyLevel = Mathf.Max(1, enemyLevel);
+            xpReward = Mathf.Max(0, xpReward);
             xpRewardOverride = Mathf.Max(0, xpRewardOverride);
         }
+
+        public int GetXPReward()
+        {
+            return xpRewardOverride > 0 ? xpRewardOverride : xpReward;
+        }
+    }
+
+    public enum EnemyRole
+    {
+        Chaser,
+        Guard,
+        Ranged,
+        Caster,
+        Burrower,
+        Swarm,
+        Tank,
+        Elite,
+        MiniBoss,
+        Boss
     }
 
     public enum EnemyDifficulty

@@ -108,10 +108,19 @@ namespace CindarsHope.UI.Shop
         {
             if (_itemPrefab == null || _itemsContainer == null || _inventoryManager == null)
             {
+                Debug.LogWarning("SellPanel: ItemPrefab, ItemsContainer, or InventoryManager not assigned");
+                SetFeedback("Erro ao carregar inventário.");
                 return;
             }
 
             var items = _inventoryManager.Items;
+            if (items == null || items.Count == 0)
+            {
+                Debug.Log("SellPanel: Inventory is empty");
+                SetFeedback("Nenhum item vendável.");
+                return;
+            }
+
             foreach (var kvp in items)
             {
                 var itemId = kvp.Key;
@@ -124,6 +133,7 @@ namespace CindarsHope.UI.Shop
 
                 if (!_itemDatabase.TryGetById(itemId, out var itemData) || itemData == null)
                 {
+                    Debug.LogWarning($"SellPanel: Item '{itemId}' not found in database");
                     continue;
                 }
 
@@ -131,6 +141,12 @@ namespace CindarsHope.UI.Shop
                 item.gameObject.SetActive(true);
                 item.Initialize(itemData, amount, _shopManager, _shopId, OnItemSellClicked);
                 _displayedItems.Add(item);
+            }
+
+            if (_displayedItems.Count == 0)
+            {
+                Debug.Log("SellPanel: No sellable items in inventory");
+                SetFeedback("Nenhum item vendável no inventário.");
             }
         }
 

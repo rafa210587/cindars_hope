@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace CindarsHope.Cave.Runtime
@@ -10,9 +11,11 @@ namespace CindarsHope.Cave.Runtime
         [SerializeField] public int CaveLevel;
         [SerializeField] public bool IsDefeated;
         [SerializeField] public string DefeatedAt; // ISO 8601 timestamp
+        [SerializeField] public List<string> UniqueRewardsClaimed = new List<string>();
 
         public CaveBossDefeatState()
         {
+            UniqueRewardsClaimed = new List<string>();
         }
 
         public CaveBossDefeatState(string bossGateId, int caveLevel, bool isDefeated)
@@ -21,6 +24,7 @@ namespace CindarsHope.Cave.Runtime
             CaveLevel = caveLevel;
             IsDefeated = isDefeated;
             DefeatedAt = isDefeated ? DateTime.UtcNow.ToString("O") : null;
+            UniqueRewardsClaimed = new List<string>();
         }
 
         public void MarkAsDefeated()

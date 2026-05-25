@@ -117,6 +117,12 @@ namespace CindarsHope.Player
                 return Vector2.zero;
             }
 
+            var modalManager = GameBootstrap.Instance?.ModalManager;
+            if (modalManager != null && modalManager.HasActiveModal)
+            {
+                return Vector2.zero;
+            }
+
 #if ENABLE_INPUT_SYSTEM
             return _moveAction != null ? _moveAction.ReadValue<Vector2>() : Vector2.zero;
 #else

@@ -1,0 +1,136 @@
+using UnityEngine;
+
+namespace CindarsHope.Core.Events
+{
+    public class EnemySpawnedEvent
+    {
+        public string EnemyId;
+        public Vector2 Position;
+        public EnemySpawnedEvent(string enemyId, Vector2 position)
+        {
+            EnemyId = enemyId;
+            Position = position;
+        }
+    }
+
+    public class EnemySeenEvent
+    {
+        public string EnemyId;
+        public Vector2 Position;
+        public EnemySeenEvent(string enemyId, Vector2 position)
+        {
+            EnemyId = enemyId;
+            Position = position;
+        }
+    }
+
+    public class EnemyDamagedEvent
+    {
+        public string EnemyId;
+        public int DamageAmount;
+        public string DamageType;
+        public EnemyDamagedEvent(string enemyId, int damage, string damageType = "physical")
+        {
+            EnemyId = enemyId;
+            DamageAmount = damage;
+            DamageType = damageType;
+        }
+    }
+
+    public class EnemyDespawnedEvent
+    {
+        public string EnemyId;
+        public EnemyDespawnedEvent(string enemyId)
+        {
+            EnemyId = enemyId;
+        }
+    }
+
+    public class EnemyActionStartedEvent
+    {
+        public string EnemyId;
+        public string ActionId;
+        public EnemyActionStartedEvent(string enemyId, string actionId)
+        {
+            EnemyId = enemyId;
+            ActionId = actionId;
+        }
+    }
+
+    public class EnemyActionResolvedEvent
+    {
+        public string EnemyId;
+        public string ActionId;
+        public EnemyActionResolvedEvent(string enemyId, string actionId)
+        {
+            EnemyId = enemyId;
+            ActionId = actionId;
+        }
+    }
+
+    public class EnemyTelegraphStartedEvent
+    {
+        public string EnemyId;
+        public Vector2 Position;
+        public EnemyTelegraphStartedEvent(string enemyId, Vector2 position)
+        {
+            EnemyId = enemyId;
+            Position = position;
+        }
+    }
+
+    public class EnemyTelegraphEndedEvent
+    {
+        public string EnemyId;
+        public EnemyTelegraphEndedEvent(string enemyId)
+        {
+            EnemyId = enemyId;
+        }
+    }
+
+    public class BestiaryEntryUpdatedEvent
+    {
+        public string EnemyId;
+        public string UpdateType;
+        public BestiaryEntryUpdatedEvent(string enemyId, string updateType)
+        {
+            EnemyId = enemyId;
+            UpdateType = updateType;
+        }
+    }
+
+    public class EnemyXPGrantedEvent
+    {
+        public string EnemyId;
+        public int XPAmount;
+        public EnemyXPGrantedEvent(string enemyId, int xpAmount)
+        {
+            EnemyId = enemyId;
+            XPAmount = xpAmount;
+        }
+    }
+
+    public class EnemyLootRolledEvent
+    {
+        public string EnemyId;
+        public string ItemId;
+        public int Amount;
+        public EnemyLootRolledEvent(string enemyId, string itemId, int amount)
+        {
+            EnemyId = enemyId;
+            ItemId = itemId;
+            Amount = amount;
+        }
+    }
+
+    public class EnemyRespawnScheduledEvent
+    {
+        public string EnemyId;
+        public int GameDayAtRespawn;
+        public EnemyRespawnScheduledEvent(string enemyId, int gameDay)
+        {
+            EnemyId = enemyId;
+            GameDayAtRespawn = gameDay;
+        }
+    }
+}

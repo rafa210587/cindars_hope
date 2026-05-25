@@ -28,6 +28,12 @@
 | Economy/shop/stock/pricing/UI (Spec 06) | Implementado completo | `docs/specs/implementados/spec_economy_shop_stock_pricing_ui.md` |
 | Crafting queue/workstations/recipes/UI (Spec 07) | Implementado completo | `docs/specs/implementados/spec_crafting_queue_workstations_recipes_ui.md` |
 | Town NPC/dialogue/wanderer/save hooks (Spec 08) | Implementado completo | `docs/specs/implementados/spec_town_npc_dialogue_schedule_quests.md` |
+| Hunger/stamina/status/time (Spec 09) | Implementado completo | `docs/specs/implementados/spec_hunger_stamina_status_balance.md` |
+| Equipment/durability/environment/loot (Spec 10) | Implementado parcial | `docs/specs/implementados/spec_equipment_durability_environment_loot_runtime.md` |
+| Damage/status/elements/resistances (Spec 11) | Implementado parcial | `docs/specs/implementados/spec_damage_status_elements_resistances_runtime.md` |
+| Player Combat/weapons/spells/skill actions (Spec 12) | Implementado parcial | `docs/specs/implementados/spec_player_combat_weapons_spells_skill_actions_runtime.md` |
+| UI/Input/Shop/Sell Bugfix Bundle (Post-SPEC 12) | Implementado completo | `docs/specs/implementados/spec_bugfix_ui_input_shop_sell_bundle.md` |
+| Enemy AI/roster/bestiary/faction locks (Spec 13) | Implementado parcial | `docs/specs/implementados/spec_enemy_ai_roster_bestiary_faction_locks_runtime.md` |
 
 ## Correcoes de tracking obrigatorias
 

@@ -1,4 +1,5 @@
 using CindarsHope.Core.Data;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace CindarsHope.Enemy
@@ -21,6 +22,18 @@ namespace CindarsHope.Enemy
         {
             FirstEncounteredLevel = Mathf.Max(1, FirstEncounteredLevel);
             KillCount = Mathf.Max(0, KillCount);
+        }
+
+        public void SaveEntries(List<BestiaryEntry> entries)
+        {
+            // TODO: Implement bestiary save/load in future save system
+            Debug.Log("BestiaryDataSO: SaveEntries stub called");
+        }
+
+        public List<BestiaryEntry> LoadEntries()
+        {
+            // TODO: Implement bestiary save/load in future save system
+            return new List<BestiaryEntry>();
         }
     }
 }

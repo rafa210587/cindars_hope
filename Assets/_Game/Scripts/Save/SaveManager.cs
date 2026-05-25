@@ -104,13 +104,20 @@ namespace CindarsHope.Save
                 var npcSaveData = CaptureNpcSaveData(existingSaveData);
                 var activeSkillSlotsSaveData = CaptureActiveSkillSlotsSaveData();
 
+                var playerData = CapturePlayerSaveData();
+                if (playerData != null && _manaManager != null)
+                {
+                    playerData.CurrentMana = _manaManager.CurrentMana;
+                    playerData.MaxMana = _manaManager.MaxMana;
+                }
+
                 var saveData = new GameSaveData
                 {
                     SchemaVersion = CurrentSchemaVersion,
                     CurrentDay = CaptureCurrentDay(),
                     CurrentSceneName = activeScene.name,
                     CurrentScenePath = activeScene.path,
-                    Player = CapturePlayerSaveData(),
+                    Player = playerData,
                     Inventory = CaptureInventorySaveData(),
                     Equipment = CaptureEquipmentSaveData(),
                     Hotbar = _hotbarState.CaptureSaveData(),
