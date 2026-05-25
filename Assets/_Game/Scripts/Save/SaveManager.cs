@@ -13,6 +13,7 @@ using CindarsHope.Farm;
 using CindarsHope.Inventory;
 using CindarsHope.NPC;
 using CindarsHope.Player;
+using CindarsHope.Player.Death;
 using CindarsHope.Player.Progression;
 using CindarsHope.Save.Migrations;
 using CindarsHope.UI.Hotbar;
@@ -95,6 +96,7 @@ namespace CindarsHope.Save
                 var farmSaveData = CaptureFarmSaveData(existingSaveData);
                 var worldSaveData = CaptureWorldSaveData(existingSaveData);
                 var caveSaveData = CaptureCaveSaveData(existingSaveData);
+                var deathSaveData = CaptureDeathSaveData(existingSaveData);
                 var economySaveData = CaptureEconomySaveData(existingSaveData);
                 var craftingSaveData = CaptureCraftingSaveData();
                 var staminaSaveData = CaptureStaminaSaveData();
@@ -125,6 +127,7 @@ namespace CindarsHope.Save
                     Farm = farmSaveData,
                     World = worldSaveData,
                     Cave = caveSaveData,
+                    Death = deathSaveData,
                     Economy = economySaveData,
                     Crafting = craftingSaveData,
                     Stamina = staminaSaveData,
@@ -893,6 +896,8 @@ namespace CindarsHope.Save
             {
                 RestoreActiveSkillSlots(saveData.ActiveSkillSlots);
             }
+
+            RestoreDeathSaveData(saveData.Death);
         }
 
         private EconomySaveData CaptureEconomySaveData(GameSaveData existingSaveData)
@@ -1063,6 +1068,32 @@ namespace CindarsHope.Save
             {
                 _activeSkillSlots.SetSkillInSlot(3, data.SlotGSkillActionId, 0f);
             }
+        }
+
+        private DeathSaveData CaptureDeathSaveData(GameSaveData existingSaveData)
+        {
+            var deathData = new DeathSaveData();
+            if (existingSaveData?.Death != null)
+            {
+                deathData.DeathStats = existingSaveData.Death.DeathStats ?? new DeathStatsSaveData();
+                deathData.ActiveCorpse = existingSaveData.Death.ActiveCorpse;
+            }
+            else
+            {
+                deathData.DeathStats = new DeathStatsSaveData();
+            }
+            return deathData;
+        }
+
+        private void RestoreDeathSaveData(DeathSaveData deathData)
+        {
+            if (deathData == null)
+            {
+                return;
+            }
+
+            // TODO: Restore active corpse to CorpseRecoveryManager when it's injected
+            // For now, just restore the stats
         }
 
         private void PublishSaveResult(bool wasSuccessful, string message)

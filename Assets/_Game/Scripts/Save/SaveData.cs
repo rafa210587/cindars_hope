@@ -4,6 +4,7 @@ using CindarsHope.Craft;
 using CindarsHope.Equipment;
 using CindarsHope.Farm;
 using CindarsHope.Player;
+using CindarsHope.Player.Death;
 using CindarsHope.Player.Progression;
 using CindarsHope.UI.Hotbar;
 using CindarsHope.World;
@@ -26,6 +27,7 @@ namespace CindarsHope.Save
         public FarmSaveData Farm;
         public WorldSaveData World;
         public CaveSaveData Cave;
+        public DeathSaveData Death;
         public EconomySaveData Economy;
         public CraftingRuntimeSaveData Crafting;
         public StaminaSaveData Stamina;

@@ -5,8 +5,10 @@ using CindarsHope.Craft;
 using CindarsHope.Economy;
 using CindarsHope.Equipment;
 using CindarsHope.Inventory;
+using CindarsHope.Locations;
 using CindarsHope.Player;
 using CindarsHope.Player.Data;
+using CindarsHope.Player.Death;
 using CindarsHope.Player.Progression;
 using CindarsHope.Save;
 using CindarsHope.UI.Modal;
@@ -37,8 +39,12 @@ namespace CindarsHope.Core.Bootstrap
         [SerializeField] private WeaponDatabaseSO _weaponDatabase;
         [SerializeField] private SpellDatabaseSO _spellDatabase;
         [SerializeField] private SkillActionDatabaseSO _skillActionDatabase;
+        [SerializeField] private ManaManager _manaManager;
+        [SerializeField] private CaveRunManager _caveRunManager;
+        [SerializeField] private AnyaFountain _anyaFountain;
 
         private CaveRuntimeState _cachedCaveRunState;
+        private CorpseRecoveryManager _corpseRecoveryManager;
 
         public static GameBootstrap Instance => _instance;
 
@@ -50,11 +56,15 @@ namespace CindarsHope.Core.Bootstrap
         public SaveManager SaveManager => _saveManager;
         public HungerManager HungerManager => _hungerManager;
         public StaminaManager StaminaManager => _staminaManager;
+        public ManaManager ManaManager => _manaManager;
         public CraftingManager CraftingManager => _craftingManager;
         public EconomyManager EconomyManager => _economyManager;
         public EquipmentManager EquipmentManager => _equipmentManager;
         public PlayerProgressionManager PlayerProgressionManager => _progressionManager;
         public StatusEffectManager StatusEffectManager => _statusEffectManager;
+        public CaveRunManager CaveRunManager => _caveRunManager;
+        public CorpseRecoveryManager CorpseRecoveryManager => _corpseRecoveryManager;
+        public AnyaFountain AnyaFountain => _anyaFountain;
         public ItemDatabaseSO ItemDatabase => _itemDatabase;
         public WeaponDatabaseSO WeaponDatabase => _weaponDatabase;
         public SpellDatabaseSO SpellDatabase => _spellDatabase;
@@ -214,6 +224,37 @@ namespace CindarsHope.Core.Bootstrap
             if (_saveManager != null)
             {
                 _saveManager.RebindOptionalRuntimeManagers(_equipmentManager, _progressionManager, _gameTimeManager, _staminaManager, _statusEffectManager);
+            }
+
+            InitializeDeathSystem();
+        }
+
+        private void InitializeDeathSystem()
+        {
+            if (_playerManager != null && _inventoryManager != null && _equipmentManager != null)
+            {
+                _corpseRecoveryManager = new CorpseRecoveryManager(_playerManager, _inventoryManager, _equipmentManager);
+            }
+            else
+            {
+                Debug.LogWarning("GameBootstrap: Missing required managers for death system initialization.", this);
+            }
+
+            InitializeUIControllers();
+        }
+
+        private void InitializeUIControllers()
+        {
+            var recoveryUIController = FindObjectOfType<UI.Death.CorpseRecoveryUIController>();
+            if (recoveryUIController != null)
+            {
+                recoveryUIController.Initialize();
+            }
+
+            var fountainUIController = FindObjectOfType<UI.Locations.AnyaFountainUIController>();
+            if (fountainUIController != null)
+            {
+                fountainUIController.Initialize();
             }
         }
 

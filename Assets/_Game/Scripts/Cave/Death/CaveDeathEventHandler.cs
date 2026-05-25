@@ -1,0 +1,68 @@
+using CindarsHope.Core;
+using CindarsHope.Core.Bootstrap;
+using CindarsHope.Core.Events;
+using CindarsHope.Player.Death;
+using UnityEngine;
+
+namespace CindarsHope.Cave.Death
+{
+    public class CaveDeathEventHandler : MonoBehaviour
+    {
+        private CaveDeathPolicy _policy;
+        private CaveDeathResolver _resolver;
+        private CorpseRecoveryManager _recoveryManager;
+        private AnyaRespawnService _respawnService;
+
+        private void OnEnable()
+        {
+            GameEventBus.Subscribe<PlayerDiedEvent>(OnPlayerDied);
+        }
+
+        private void OnDisable()
+        {
+            GameEventBus.Unsubscribe<PlayerDiedEvent>(OnPlayerDied);
+        }
+
+        private void OnPlayerDied(PlayerDiedEvent evt)
+        {
+            if (!_resolver.IsDeathInCave(evt.SceneName))
+            {
+                return;
+            }
+
+            _resolver.ResolveCaveDeath(evt.SceneName);
+        }
+
+        public void Initialize()
+        {
+            var bootstrap = GameBootstrap.Instance;
+            if (bootstrap == null)
+            {
+                Debug.LogError("[CaveDeathEventHandler] GameBootstrap not found");
+                return;
+            }
+
+            _policy = new CaveDeathPolicy();
+            _recoveryManager = bootstrap.CorpseRecoveryManager;
+
+            _resolver = new CaveDeathResolver(
+                _policy,
+                bootstrap.CaveRunManager,
+                bootstrap.PlayerManager,
+                bootstrap.InventoryManager,
+                bootstrap.EquipmentManager,
+                bootstrap.PlayerProgressionManager
+            );
+
+            if (bootstrap.AnyaFountain != null)
+            {
+                _respawnService = new AnyaRespawnService(
+                    bootstrap.PlayerManager,
+                    bootstrap.StaminaManager,
+                    bootstrap.ManaManager,
+                    bootstrap.AnyaFountain.RespawnPoint
+                );
+            }
+        }
+    }
+}

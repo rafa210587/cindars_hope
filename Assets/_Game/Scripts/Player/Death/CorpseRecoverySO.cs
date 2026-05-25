@@ -17,14 +17,4 @@ namespace CindarsHope.Player.Death
             MaxCorpsesPerLocation = Mathf.Max(1, MaxCorpsesPerLocation);
         }
     }
-
-    [Serializable]
-    public class CorpseSaveData
-    {
-        public string LocationSceneName;
-        public Vector3 Position;
-        public long CreatedAtUtcTicks;
-        public string ItemIdList;
-        public string EquipmentIdList;
-    }
 }

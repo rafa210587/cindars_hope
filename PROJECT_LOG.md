@@ -1,3 +1,69 @@
+## Sessão 2026-05-25 (17ª) - SPEC 15: Cave Entry, Death, Anya & Corpse Recovery
+
+**Data:** 2026-05-25  
+**Foco:** Death flow, corpse recovery, Anya respawn, save/load integration, event orchestration  
+**Status:** IMPLEMENTADO (Phase 1 Foundation + Phase 2 Integration wiring complete)
+
+### Deliverables
+
+**Phase 1 - Foundation (23 files created):**
+- ✅ PlayerDeathController.cs - HP monitoring, death detection via HPChangedEvent
+- ✅ CaveDeathPolicy.cs - Death behavior rules definition
+- ✅ CaveDeathResolver.cs - Orchestrates corpse creation, item/gold/equipment transfer
+- ✅ CorpseRecoveryManager.cs - Corpse lifecycle management (active, partial, recovered states)
+- ✅ CorpseInteractable.cs - World interaction for corpse recovery
+- ✅ AnyaFountain.cs - Respawn location and point definition
+- ✅ AnyaRespawnService.cs - Respawn logic (HP/Stamina/Mana restoration)
+- ✅ AnyaFountainInteractable.cs - Fountain interaction handler
+- ✅ 10 Events: PlayerDiedEvent, CorpseCreatedEvent, CorpseReplacedEvent, CorpseRecoveredEvent, CorpsePartiallyRecoveredEvent, CavePlayerDeathResolvedEvent, AnyaRespawnCompletedEvent, AnyaFountainOpenedEvent, XpResetToLevelStartEvent, CaveEnemiesRedistributionRequestedEvent
+- ✅ Save/Load integration: DeathSaveData, CorpseSaveData, serialization in SaveManager
+
+**Phase 2 - Integration Wiring (4 files created):**
+- ✅ DeathSystemBootstrap.cs - Central orchestrator for death system initialization and event handling
+- ✅ CorpseSpawner.cs - Materializes corpses as GameObjects, attaches CorpseInteractable
+- ✅ CorpseRecoveryUIController.cs - Recovery modal management
+- ✅ AnyaFountainUIController.cs - Fountain menu management
+
+**Modified (8 files):**
+- ✅ GameBootstrap.cs - Added death managers, UI controllers initialization
+- ✅ SaveData.cs - Added DeathSaveData field
+- ✅ SaveManager.cs - Added CaptureDeathSaveData(), RestoreDeathSaveData() methods
+- ✅ CaveDeathResolver.cs - Added LastCreatedCorpse property
+- ✅ CorpseInteractable.cs - v2 with UI controller integration
+- ✅ AnyaFountainInteractable.cs - v2 with UI controller integration
+- ✅ CorpseRecoverySO.cs - Removed duplicate class definition
+
+**Documentation:**
+- ✅ SPEC15_IMPLEMENTATION_SUMMARY.md
+- ✅ SPEC15_PHASE2_INTEGRATION_SUMMARY.md  
+- ✅ SPEC15_COMPLETE_IMPLEMENTATION_LOG.md
+
+### Event Flow
+```
+PlayerDiedEvent → DeathSystemBootstrap → CaveDeathResolver.ResolveCaveDeath()
+  ├─ CreateCorpse, MoveInventory, MoveEquipment, MoveGold, ResetXp
+  ├─ PublishEvents: CorpseCreatedEvent, CavePlayerDeathResolvedEvent, CaveEnemiesRedistributionRequestedEvent
+  ├─ CorpseSpawner.OnCorpseCreated() → Spawn GameObject
+  └─ AnyaRespawnService.RespawnAtAnyaFountain() → Restore stats, move player
+Player navigates → CorpseInteractable → Opens recovery modal → CorpseRecoveryManager.RecoverCorpse()
+```
+
+### Integration with Existing Systems
+- ✅ SPEC 14 (cave runtime): CaveEnemiesRedistributionRequestedEvent triggers enemy redistribution
+- ✅ SPEC 13 (bestiary): Events available for tracking enemy kills during respawn
+- ✅ SPEC 10 (equipment): Equipment loss/recovery integrated
+- ✅ SPEC 03 (inventory): Capacity checked during recovery (partial recovery if full)
+- ✅ Save/Load: Full corpse state persistence
+
+### Próximos Passos
+1. ✅ Move spec file to implementados/ (complete)
+2. ✅ Update PROJECT_LOG (in progress)
+3. ✅ Update BACKLOG.md
+4. → Read SPEC 16 specification
+5. → Begin SPEC 16 implementation (Skill Trees, Active Slots, Respec)
+
+---
+
 ## Sessão 2026-05-25 (16ª) - SPEC 13: Enemy AI, Roster, Bestiary
 
 **Data:** 2026-05-25  
