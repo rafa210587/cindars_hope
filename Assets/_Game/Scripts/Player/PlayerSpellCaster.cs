@@ -59,7 +59,7 @@ namespace CindarsHope.Player
                 1f
             );
 
-            Debug.Log($"PlayerSpellCaster: Cast {spell.DisplayName}, damage={spell.BaseDamage}, mana cost={spell.ManaCost}", this);
+            Debug.Log($"PlayerSpellCaster: Cast {spell.SpellName}, damage={spell.BaseDamage}, mana cost={spell.ManaCost}", this);
             GameEventBus.Publish(new DamageAppliedEvent(damageResult, transform.position));
         }
     }

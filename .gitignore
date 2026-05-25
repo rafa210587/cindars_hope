@@ -79,3 +79,4 @@ __pycache__/
 # Claude Code local configuration (machine-specific)
 CLAUDE.local.md
 .claude/settings.local.json
+.claude/.runtime/

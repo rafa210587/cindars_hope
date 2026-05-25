@@ -62,17 +62,32 @@
     "preBashGuard": {
       "enabled": true,
       "path": ".claude/hooks/pre-bash-guard.ps1",
-      "description": "Block unsafe git and file operations"
+      "description": "Block unsafe git and file operations",
+      "trigger": "pre-bash"
+    },
+    "detectChangeScope": {
+      "enabled": true,
+      "path": ".claude/hooks/detect-change-scope.ps1",
+      "description": "Detect type of changes and save scope to .claude/.runtime/change-scope.json",
+      "trigger": "post-edit"
     },
     "postEditDocsValidate": {
       "enabled": false,
       "path": ".claude/hooks/post-edit-docs-validate.ps1",
-      "description": "Remind about doc validation after edits (non-blocking)"
+      "description": "Remind about doc validation after edits (non-blocking)",
+      "trigger": "post-edit"
     },
     "stopSummaryCheck": {
       "enabled": true,
       "path": ".claude/hooks/stop-summary-check.ps1",
-      "description": "Remind about closeout checklist on task completion"
+      "description": "Intelligent checklist based on change scope",
+      "trigger": "stop"
+    },
+    "runRequiredValidations": {
+      "enabled": false,
+      "path": ".claude/hooks/run-required-validations.ps1",
+      "description": "Run validations based on detected change scope (manual trigger via /implement-spec)",
+      "trigger": "manual"
     }
   },
 

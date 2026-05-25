@@ -40,7 +40,7 @@ namespace CindarsHope.Skills
             }
             if (_skillExecutor == null)
             {
-                _skillExecutor = FindFirstObjectByType<SkillActionExecutor>();
+                _skillExecutor = FindAnyObjectByType<SkillActionExecutor>();
             }
         }
 

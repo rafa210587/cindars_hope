@@ -1,6 +1,25 @@
 # /review-non-regression
 
-Audit current diff against project non-regression rules.
+Audit current diff against project non-regression rules and detected change scope.
+
+**Argument expected:** (optional) Force full audit even if no changes detected
+
+## Pre-Flight: Check Change Scope
+
+First, read `.claude/.runtime/change-scope.json` (if it exists from `/implement-spec` or detect-change-scope hook):
+
+```json
+{
+  "docsChanged": true,
+  "unityRuntimeChanged": false,
+  "projectSettingsChanged": false,
+  "forbiddenPathsChanged": false,
+  "rootSpecsRecreated": false
+}
+```
+
+**If forbidden paths were changed:** Stop immediately, this is a FAIL.
+**If root specs were recreated:** Stop immediately, this is a FAIL.
 
 ## Mandatory Checks
 
@@ -32,14 +51,24 @@ Audit current diff against project non-regression rules.
 - [ ] Events prefixed correctly (DayStartedEvent, ItemCraftedEvent, etc.)
 - [ ] No forbidden namespaces created (`CindarsHope.Debug`, etc.)
 
-### 4. Spec/Roadmap Safety (if spec task)
+### 4. Validations Executed (if using /implement-spec)
+
+If `.claude/.runtime/change-scope.json` exists:
+
+- [ ] Docs validation: PASS or acceptable WARNING (if `docsChanged == true`)
+- [ ] Unity validation: PASS or documented NOT RUN (if `unityRuntimeChanged == true`)
+- [ ] Log scan: PASS or documented NOT RUN (if `unityRuntimeChanged == true`)
+- [ ] Change scope detected correctly (verify flags match actual files)
+- [ ] No Unity changes in docs-only task (`unityRuntimeChanged == false` for docs-only)
+
+### 5. Spec/Roadmap Safety (if spec task)
 
 - [ ] Task doesn't exceed spec scope
 - [ ] Didn't implement blocked/future spec (check SPEC_EXECUTION_ORDER.md)
 - [ ] Didn't skip specs in wrong order
 - [ ] Status updates have evidence in repo (code, assets, or validated logs)
 
-### 5. Documentation Safety
+### 6. Documentation Safety
 
 - [ ] No spec marked as implemented without evidence
 - [ ] IMPLEMENTATION_STATUS.md changes reflect actual state

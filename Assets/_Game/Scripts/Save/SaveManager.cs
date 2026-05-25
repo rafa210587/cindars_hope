@@ -876,6 +876,16 @@ namespace CindarsHope.Save
             {
                 _equipmentManager.DurabilityTracker.LoadFromSaveData(saveData.EquipmentDurability);
             }
+
+            if (_manaManager != null && saveData.Player != null)
+            {
+                _manaManager.RestoreFromSaveData(new ManaManagerSaveData { CurrentMana = saveData.Player.CurrentMana, MaxMana = saveData.Player.MaxMana });
+            }
+
+            if (_activeSkillSlots != null && saveData.ActiveSkillSlots != null)
+            {
+                RestoreActiveSkillSlots(saveData.ActiveSkillSlots);
+            }
         }
 
         private EconomySaveData CaptureEconomySaveData(GameSaveData existingSaveData)
@@ -1000,6 +1010,52 @@ namespace CindarsHope.Save
             }
 
             return existingSaveData?.Npcs ?? new NpcManagerSaveData();
+        }
+
+        private ActiveSkillSlotsSaveData CaptureActiveSkillSlotsSaveData()
+        {
+            var data = new ActiveSkillSlotsSaveData();
+            if (_activeSkillSlots != null)
+            {
+                var slot0 = _activeSkillSlots.GetSlot(0);
+                var slot1 = _activeSkillSlots.GetSlot(1);
+                var slot2 = _activeSkillSlots.GetSlot(2);
+                var slot3 = _activeSkillSlots.GetSlot(3);
+
+                data.SlotRSkillActionId = slot0?.SkillActionId ?? string.Empty;
+                data.SlotTSkillActionId = slot1?.SkillActionId ?? string.Empty;
+                data.SlotYSkillActionId = slot2?.SkillActionId ?? string.Empty;
+                data.SlotGSkillActionId = slot3?.SkillActionId ?? string.Empty;
+            }
+            return data;
+        }
+
+        private void RestoreActiveSkillSlots(ActiveSkillSlotsSaveData data)
+        {
+            if (_activeSkillSlots == null)
+            {
+                return;
+            }
+
+            if (!string.IsNullOrEmpty(data.SlotRSkillActionId))
+            {
+                _activeSkillSlots.SetSkillInSlot(0, data.SlotRSkillActionId, 0f);
+            }
+
+            if (!string.IsNullOrEmpty(data.SlotTSkillActionId))
+            {
+                _activeSkillSlots.SetSkillInSlot(1, data.SlotTSkillActionId, 0f);
+            }
+
+            if (!string.IsNullOrEmpty(data.SlotYSkillActionId))
+            {
+                _activeSkillSlots.SetSkillInSlot(2, data.SlotYSkillActionId, 0f);
+            }
+
+            if (!string.IsNullOrEmpty(data.SlotGSkillActionId))
+            {
+                _activeSkillSlots.SetSkillInSlot(3, data.SlotGSkillActionId, 0f);
+            }
         }
 
         private void PublishSaveResult(bool wasSuccessful, string message)

@@ -37,7 +37,7 @@ namespace CindarsHope.Skills
                 {
                     if (skill.StaminaCost > 0 && _staminaManager != null)
                     {
-                        _staminaManager.RestoreStamina(Mathf.RoundToInt(skill.StaminaCost));
+                        _staminaManager.AddStamina(Mathf.RoundToInt(skill.StaminaCost));
                     }
                     return false;
                 }
