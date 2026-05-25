@@ -75,6 +75,7 @@ namespace CindarsHope.Save
         public List<SerializedEnemySpawn> EnemySpawns = new List<SerializedEnemySpawn>();
         public List<SerializedResourceNode> ResourceNodes = new List<SerializedResourceNode>();
         public List<string> DepletedResourceNodeIds = new List<string>();
+        public List<EnemySpawnPlanEntry> EnemySpawnPlan = new List<EnemySpawnPlanEntry>();
 
         public static SerializedVisitedLevelSnapshot FromSnapshot(VisitedLevelSnapshot snapshot)
         {
@@ -93,7 +94,8 @@ namespace CindarsHope.Save
                 ExitPosition = snapshot.ExitPosition,
                 EnemySpawns = new List<SerializedEnemySpawn>(snapshot.EnemySpawns),
                 ResourceNodes = new List<SerializedResourceNode>(snapshot.ResourceNodes),
-                DepletedResourceNodeIds = new List<string>(snapshot.DepletedResourceNodeIds)
+                DepletedResourceNodeIds = new List<string>(snapshot.DepletedResourceNodeIds),
+                EnemySpawnPlan = new List<EnemySpawnPlanEntry>(snapshot.EnemySpawnPlan)
             };
         }
 
@@ -111,7 +113,8 @@ namespace CindarsHope.Save
                 ExitPosition = ExitPosition,
                 EnemySpawns = new List<SerializedEnemySpawn>(EnemySpawns),
                 ResourceNodes = new List<SerializedResourceNode>(ResourceNodes),
-                DepletedResourceNodeIds = new List<string>(DepletedResourceNodeIds)
+                DepletedResourceNodeIds = new List<string>(DepletedResourceNodeIds),
+                EnemySpawnPlan = new List<EnemySpawnPlanEntry>(EnemySpawnPlan)
             };
 
             return snapshot;
