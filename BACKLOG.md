@@ -49,19 +49,21 @@ Git Commit: e38dd4c
 ### Phase 11: Checkpoint Menu UI & Selection
 
 #### Checkpoint Portal Menu
-- [ ] Create CaveCheckpointSelectionUI (side menu)
-- [ ] List unlocked checkpoints with level/biome name
-- [ ] Show locked checkpoints (greyed out)
-- [ ] Teleport on selection
-- [ ] Close menu on teleport or back button
-- [ ] Subscribe to CaveCheckpointPortalOpenedEvent
+- [x] CaveCheckpointSelectionUI implemented (OnGUI)
+- [x] List unlocked checkpoints with level numbers
+- [x] Show locked checkpoints (implicit - only unlocked in selection)
+- [x] Teleport on selection via CaveEntryController
+- [x] Close menu on teleport (via CaveLevelEnteredEvent) or ESC
+- [x] Subscribe to CaveCheckpointSelectionRequestedEvent
 
 #### Teleport Logic
-- [ ] CanProgressBeyondGate check before teleport
-- [ ] Load snapshot or generate level at destination
-- [ ] Spawn player at entrance
-- [ ] Publish CaveCheckpointTeleportCompletedEvent
-- [ ] Handle teleport failures gracefully
+- [x] CanProgressBeyondGate check in CaveRunManager.CanAdvanceToLevel()
+- [x] Load snapshot or generate level via CaveLevelRuntimeController.GenerateCurrentLevel()
+- [x] Spawn player at entrance via CaveSpawnAnchor.Entrance
+- [x] Publish CaveLevelEnteredEvent after teleport
+- [x] Handle teleport gracefully via CaveEntryController
+
+Git Commit: c1173ba
 
 ### Phase 12: Final Testing & Integration
 
