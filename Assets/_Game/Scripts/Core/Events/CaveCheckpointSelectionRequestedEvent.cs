@@ -1,14 +1,8 @@
-using System.Collections.Generic;
-
 namespace CindarsHope.Core.Events
 {
     public readonly struct CaveCheckpointSelectionRequestedEvent
     {
-        public readonly IReadOnlyList<int> AvailableCheckpoints;
-
-        public CaveCheckpointSelectionRequestedEvent(IReadOnlyList<int> availableCheckpoints)
-        {
-            AvailableCheckpoints = availableCheckpoints;
-        }
+        // Event to request checkpoint selection UI
+        // Available checkpoints are obtained from CaveRunManager.State.UnlockedCheckpoints
     }
 }
