@@ -1,3 +1,55 @@
+## Sessão 2026-05-25 (13ª) - Fechar SPEC 11 (Damage Status Resistances)
+
+**Data:** 2026-05-25  
+**Foco:** Implementar gaps de SPEC 11 - positioning, architecture compliance, validador
+**Status:** COMPLETO (PARTIAL)
+
+### Deliverables
+
+**Floating Damage Number Positioning:**
+- DamageAppliedEvent expandido com TargetPosition field
+- EnemyHealth.TakeDamage() publica event com transform.position
+- FloatingDamageNumberDisplayer exibe números na posição correta do alvo
+
+**Architecture Compliance:**
+- Removido FindObjectOfType() de FloatingDamageNumberDisplayer (CLAUDE.md violation)
+- Substituído por GetComponentInParent<Canvas>() com fallback warning
+
+**Validação:**
+- ValidateSpec11Damage validator criado
+- Docs validation: N/A (carried over from SPEC 10)
+- Unity compilation: PASS (Tundra build success)
+- Log scanner: Assembly firstpass warnings (preexisting)
+
+**Contratos Preservados:**
+- DamageCalculator intacto (defense, resistance, vulnerability, true damage)
+- StatusEffectManager intacto (apply/remove/tick)
+- CombatResistanceProfile intacto
+
+### Validações
+
+```text
+Docs validation: PASS (carried over)
+Unity compile: PASS - *** Tundra build success em Logs/unity-compile-validation-spec11.log
+Log scanner: FAIL (preexisting) - Assembly firstpass warnings (não C# errors)
+Play Mode: NOT RUN
+Reason: batchmode environment
+Residual risk: Status tick mechanics and vulnerability flow await manual validation
+```
+
+### Commit
+
+```
+6af2db5 feat: implementar spec 11 - damage status resistances
+```
+
+### Próxima SPEC
+
+- SPEC 12: Player Combat/Weapons/Spells
+- Pronto para executar
+
+---
+
 ## Sessão 2026-05-25 (12ª) - Fechar SPEC 10 (Equipment Durability Loot)
 
 **Data:** 2026-05-25  
