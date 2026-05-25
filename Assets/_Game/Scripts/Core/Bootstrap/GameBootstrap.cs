@@ -34,6 +34,9 @@ namespace CindarsHope.Core.Bootstrap
         [SerializeField] private StatusEffectManager _statusEffectManager;
         [SerializeField] private PlayerDataSO _playerData;
         [SerializeField] private ItemDatabaseSO _itemDatabase;
+        [SerializeField] private WeaponDatabaseSO _weaponDatabase;
+        [SerializeField] private SpellDatabaseSO _spellDatabase;
+        [SerializeField] private SkillActionDatabaseSO _skillActionDatabase;
 
         private CaveRuntimeState _cachedCaveRunState;
 
@@ -52,6 +55,9 @@ namespace CindarsHope.Core.Bootstrap
         public EquipmentManager EquipmentManager => _equipmentManager;
         public PlayerProgressionManager PlayerProgressionManager => _progressionManager;
         public StatusEffectManager StatusEffectManager => _statusEffectManager;
+        public WeaponDatabaseSO WeaponDatabase => _weaponDatabase;
+        public SpellDatabaseSO SpellDatabase => _spellDatabase;
+        public SkillActionDatabaseSO SkillActionDatabase => _skillActionDatabase;
         public CaveRuntimeState CachedCaveRunState => _cachedCaveRunState;
 
         public void SetCachedCaveRunState(CaveRuntimeState state)

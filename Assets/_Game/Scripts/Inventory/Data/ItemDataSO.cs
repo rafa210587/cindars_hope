@@ -20,6 +20,7 @@ namespace CindarsHope.Inventory.Data
         public float BuffDurationSeconds;
         public bool IsEquippable;
         public int DurabilityRestoreAmount;
+        public string WeaponId;
 
         string IIdentifiedData.Id => Id;
 

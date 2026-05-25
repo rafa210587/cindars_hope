@@ -1,8 +1,10 @@
 using CindarsHope.Combat;
+using CindarsHope.Combat.Weapon;
 using CindarsHope.Core;
+using CindarsHope.Core.Bootstrap;
+using CindarsHope.Core.Data;
 using CindarsHope.Core.Events;
 using CindarsHope.Equipment;
-using CindarsHope.Player;
 using UnityEngine;
 
 namespace CindarsHope.Player
@@ -13,16 +15,30 @@ namespace CindarsHope.Player
         [SerializeField] private PlayerManager _playerManager;
         [SerializeField] private EquipmentManager _equipmentManager;
         [SerializeField] private StaminaManager _staminaManager;
+        [SerializeField] private ItemDatabaseSO _itemDatabase;
         [SerializeField] private int _baseDamage = 10;
         [SerializeField] private float _attackCooldown = 0.5f;
         [SerializeField] private float _attackRange = 1.5f;
 
-        private float _lastAttackTime;
-        private bool _canAttack = true;
+        private float _leftHandCooldownEnd;
+        private float _rightHandCooldownEnd;
+        private UnarmedAttackDataSO _unarmedData;
 
         public int BaseDamage => _baseDamage;
         public float AttackRange => _attackRange;
-        public bool CanAttack => _canAttack && _lastAttackTime + _attackCooldown <= Time.time;
+
+        private void Start()
+        {
+            if (_unarmedData == null)
+            {
+                var unarmedPath = "Combat/Weapons/unarmed_default";
+                _unarmedData = Resources.Load<UnarmedAttackDataSO>(unarmedPath);
+                if (_unarmedData == null)
+                {
+                    Debug.LogWarning($"PlayerCombatController: Could not load unarmed data from {unarmedPath}", this);
+                }
+            }
+        }
 
         private void OnEnable()
         {
@@ -34,45 +50,158 @@ namespace CindarsHope.Player
             GameEventBus.Unsubscribe<PlayerHitEvent>(OnPlayerHit);
         }
 
-        public bool TryAttack(Vector2 direction, int? staminaCost = null)
+        private void Update()
         {
-            if (!CanAttack)
-                return false;
+            if (Input.GetKeyDown(KeyCode.Q))
+            {
+                TryAttackLeftHand();
+            }
 
-            int cost = staminaCost ?? Mathf.Max(1, Mathf.RoundToInt(_baseDamage * 0.2f));
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                TryAttackRightHand();
+            }
 
-            if (_staminaManager != null && !_staminaManager.TrySpendStamina(cost))
-                return false;
-
-            ExecuteAttack(direction);
-            _lastAttackTime = Time.time;
-            return true;
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                TryDodge();
+            }
         }
 
-        private void ExecuteAttack(Vector2 direction)
+        private void TryAttackLeftHand()
         {
-            int weaponBonus = 0;
-            int attributeBonus = _playerManager != null ? _playerManager.Strength : 0;
-            float typeMultiplier = 1f;
+            if (Time.time < _leftHandCooldownEnd)
+                return;
 
-            var damageResult = DamageCalculator.CalculateDirectDamage(_baseDamage, attributeBonus, typeMultiplier);
+            var leftHandItemId = _equipmentManager?.GetEquippedItem(EquipmentSlot.LeftHand);
+            ExecuteHandAttack(leftHandItemId, true);
+        }
 
-            GameEventBus.Publish(new PlayerAttackedEvent(_baseDamage + attributeBonus, direction, damageResult));
+        private void TryAttackRightHand()
+        {
+            if (Time.time < _rightHandCooldownEnd)
+                return;
+
+            var rightHandItemId = _equipmentManager?.GetEquippedItem(EquipmentSlot.RightHand);
+            ExecuteHandAttack(rightHandItemId, false);
+        }
+
+        private void ExecuteHandAttack(string itemInstanceId, bool isLeftHand)
+        {
+            if (string.IsNullOrEmpty(itemInstanceId) && _itemDatabase != null)
+            {
+                ExecuteUnarmedAttack(isLeftHand);
+                return;
+            }
+
+            if (string.IsNullOrEmpty(itemInstanceId))
+            {
+                ExecuteUnarmedAttack(isLeftHand);
+                return;
+            }
+
+            if (_itemDatabase != null && _itemDatabase.TryGetById(itemInstanceId, out var itemData))
+            {
+                if (!string.IsNullOrEmpty(itemData.WeaponId))
+                {
+                    var weaponPath = $"Combat/Weapons/{itemData.WeaponId}";
+                    var weaponData = Resources.Load<WeaponDataSO>(weaponPath);
+                    if (weaponData != null)
+                    {
+                        ExecuteWeaponAttack(weaponData, isLeftHand);
+                        return;
+                    }
+                }
+            }
+
+            ExecuteUnarmedAttack(isLeftHand);
+        }
+
+        private void ExecuteWeaponAttack(WeaponDataSO weapon, bool isLeftHand)
+        {
+            int staminaCost = Mathf.RoundToInt(weapon.StaminaCost);
+            if (_staminaManager != null && !_staminaManager.TrySpendStamina(staminaCost))
+            {
+                return;
+            }
+
+            int baseDamage = weapon.BaseDamage;
+            var damageResult = DamageCalculator.CalculateDirectDamage(baseDamage);
+
+            GameEventBus.Publish(new PlayerAttackedEvent(baseDamage, Vector2.right, damageResult));
 
             if (_equipmentManager != null)
             {
                 _equipmentManager.RegisterEquipmentUsage();
             }
+
+            float cooldown = weapon.BaseCooldownSeconds;
+            if (isLeftHand)
+            {
+                _leftHandCooldownEnd = Time.time + cooldown;
+            }
+            else
+            {
+                _rightHandCooldownEnd = Time.time + cooldown;
+            }
+        }
+
+        private void ExecuteUnarmedAttack(bool isLeftHand)
+        {
+            if (_unarmedData == null)
+            {
+                Debug.LogWarning("PlayerCombatController: No unarmed attack data available", this);
+                return;
+            }
+
+            int staminaCost = Mathf.RoundToInt(_unarmedData.StaminaCost);
+            if (_staminaManager != null && !_staminaManager.TrySpendStamina(staminaCost))
+            {
+                return;
+            }
+
+            int baseDamage = _unarmedData.BaseDamage;
+            var damageResult = DamageCalculator.CalculateDirectDamage(baseDamage);
+
+            GameEventBus.Publish(new PlayerAttackedEvent(baseDamage, Vector2.right, damageResult));
+
+            float cooldown = _unarmedData.BaseCooldownSeconds;
+            if (isLeftHand)
+            {
+                _leftHandCooldownEnd = Time.time + cooldown;
+            }
+            else
+            {
+                _rightHandCooldownEnd = Time.time + cooldown;
+            }
+        }
+
+        private void TryDodge()
+        {
+            int staminaCost = 15;
+            if (_staminaManager != null && !_staminaManager.TrySpendStamina(staminaCost))
+            {
+                return;
+            }
+
+            GameEventBus.Publish(new PlayerDodgeStartedEvent());
+            Debug.Log("PlayerCombatController: Dodge executed", this);
+        }
+
+        public bool TryAttack(Vector2 direction, int? staminaCost = null)
+        {
+            TryAttackRightHand();
+            return true;
         }
 
         public void ResetCooldown()
         {
-            _lastAttackTime = Time.time - _attackCooldown;
+            _leftHandCooldownEnd = 0f;
+            _rightHandCooldownEnd = 0f;
         }
 
         private void OnPlayerHit(PlayerHitEvent evt)
         {
-            // Handle player taking damage
             if (_playerManager != null)
             {
                 _playerManager.DamageHP(evt.DamageAmount);
