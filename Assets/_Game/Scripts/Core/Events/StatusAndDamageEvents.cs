@@ -71,10 +71,12 @@
     public class DamageAppliedEvent
     {
         public CindarsHope.Combat.DamageResult DamageResult { get; }
+        public UnityEngine.Vector3 TargetPosition { get; }
 
-        public DamageAppliedEvent(CindarsHope.Combat.DamageResult result)
+        public DamageAppliedEvent(CindarsHope.Combat.DamageResult result, UnityEngine.Vector3 targetPosition = default)
         {
             DamageResult = result;
+            TargetPosition = targetPosition;
         }
     }
 

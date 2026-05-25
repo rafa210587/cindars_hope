@@ -88,7 +88,7 @@ namespace CindarsHope.Combat
             _currentHp = Mathf.Max(0, _currentHp);
             Debug.Log($"CombatLog: Hit enemy. {BuildEnemyLogPrefix()}, Damage={damageResult.FinalDamage}, HP={hpBefore}->{_currentHp}/{MaxHp}.", this);
 
-            GameEventBus.Publish(new DamageAppliedEvent(damageResult));
+            GameEventBus.Publish(new DamageAppliedEvent(damageResult, transform.position));
 
             var hitFlash = GetComponentInChildren<HitFlashController>();
             if (hitFlash != null)
