@@ -44,6 +44,10 @@ $scope = @{
     "projectSettingsChanged" = $false
     "forbiddenPathsChanged" = $false
     "rootSpecsRecreated" = $false
+    "specDocsChanged" = $false
+    "specMigrationDetected" = $false
+    "refinementDocsChanged" = $false
+    "refinementMigrationDetected" = $false
     "changedFileCount" = $changedFiles.Count
     "changedFiles" = @()
 }
@@ -74,19 +78,35 @@ foreach ($file in $changedFiles) {
         $scope.projectSettingsChanged = $true
     }
 
-    # Check for forbidden paths
-    if ($file -match '^docs_old/' -or
-        $file -match '^specs/' -or
-        $file -match '^spec/' -or
-        $file -match '^docs/specs/implementados/' -or
-        $file -match '^docs/specs/a_implementar/' -or
-        $file -match '^docs/refinements/') {
+    # Check for docs_old (always forbidden)
+    if ($file -match '^docs_old/') {
         $scope.forbiddenPathsChanged = $true
     }
 
-    # Check for root specs recreation
+    # Check for root specs recreation (always forbidden)
     if ($file -match '^specs/' -or $file -match '^spec/') {
         $scope.rootSpecsRecreated = $true
+        $scope.forbiddenPathsChanged = $true
+    }
+
+    # Check for spec docs changes (not forbidden, but tracked)
+    if ($file -match '^docs/specs/') {
+        $scope.specDocsChanged = $true
+
+        # Detect spec migration (a_implementar → implementados)
+        if ($file -match '^docs/specs/a_implementar/' -or $file -match '^docs/specs/implementados/') {
+            $scope.specMigrationDetected = $true
+        }
+    }
+
+    # Check for refinement docs changes (not forbidden, but tracked)
+    if ($file -match '^docs/refinements/') {
+        $scope.refinementDocsChanged = $true
+
+        # Detect refinement migration
+        if ($file -match '^docs/refinements/(a_implementar/pre_refinamentos|implementados)') {
+            $scope.refinementMigrationDetected = $true
+        }
     }
 }
 
@@ -95,18 +115,22 @@ $jsonPath = "$runtimeDir/change-scope.json"
 $scope | ConvertTo-Json | Out-File -FilePath $jsonPath -Encoding UTF8 -Force
 
 # Display summary
-Write-Host "📊 Change Scope Detected:"
+Write-Host "[SCOPE] Change Scope Detected:"
 Write-Host ""
 Write-Host "  Files changed: $($scope.changedFileCount)"
 Write-Host "  Docs changed: $($scope.docsChanged)"
 Write-Host "  Unity runtime changed: $($scope.unityRuntimeChanged)"
 Write-Host "  ProjectSettings changed: $($scope.projectSettingsChanged)"
-Write-Host "  Forbidden paths: $($scope.forbiddenPathsChanged)"
+Write-Host "  Spec docs changed: $($scope.specDocsChanged)"
+Write-Host "  Spec migration detected: $($scope.specMigrationDetected)"
+Write-Host "  Refinement docs changed: $($scope.refinementDocsChanged)"
+Write-Host "  Refinement migration detected: $($scope.refinementMigrationDetected)"
+Write-Host "  Forbidden paths (docs_old/specs/spec/): $($scope.forbiddenPathsChanged)"
 Write-Host "  Root specs recreated: $($scope.rootSpecsRecreated)"
 Write-Host ""
 
 if ($scope.forbiddenPathsChanged -or $scope.rootSpecsRecreated) {
-    Write-Warning "⚠️  Forbidden paths detected! Non-regression check will catch this."
+    Write-Warning "ALERT: Forbidden paths detected! Non-regression check will catch this."
     Write-Host ""
 }
 

@@ -14,12 +14,21 @@ First, read `.claude/.runtime/change-scope.json` (if it exists from `/implement-
   "unityRuntimeChanged": false,
   "projectSettingsChanged": false,
   "forbiddenPathsChanged": false,
-  "rootSpecsRecreated": false
+  "rootSpecsRecreated": false,
+  "specDocsChanged": true,
+  "specMigrationDetected": true,
+  "refinementDocsChanged": false,
+  "refinementMigrationDetected": false
 }
 ```
 
-**If forbidden paths were changed:** Stop immediately, this is a FAIL.
-**If root specs were recreated:** Stop immediately, this is a FAIL.
+**Critical failures (immediate FAIL):**
+- `forbiddenPathsChanged == true` (docs_old/, root specs/)
+- `rootSpecsRecreated == true` (specs/ or spec/ created in root)
+
+**Legitimate actions (NOT failures):**
+- `specMigrationDetected == true` during `/implement-spec` closeout
+- `refinementMigrationDetected == true` during spec closeout
 
 ## Mandatory Checks
 
@@ -51,24 +60,34 @@ First, read `.claude/.runtime/change-scope.json` (if it exists from `/implement-
 - [ ] Events prefixed correctly (DayStartedEvent, ItemCraftedEvent, etc.)
 - [ ] No forbidden namespaces created (`CindarsHope.Debug`, etc.)
 
-### 4. Validations Executed (if using /implement-spec)
+### 4. Runtime Evidence (if available)
 
-If `.claude/.runtime/change-scope.json` exists:
+Inspect `.claude/.runtime/` directory for evidence files:
 
-- [ ] Docs validation: PASS or acceptable WARNING (if `docsChanged == true`)
-- [ ] Unity validation: PASS or documented NOT RUN (if `unityRuntimeChanged == true`)
-- [ ] Log scan: PASS or documented NOT RUN (if `unityRuntimeChanged == true`)
-- [ ] Change scope detected correctly (verify flags match actual files)
-- [ ] No Unity changes in docs-only task (`unityRuntimeChanged == false` for docs-only)
+- [ ] `.claude/.runtime/change-scope.json` — Persisted change detection
+- [ ] `.claude/.runtime/validation-results.json` — Persisted validation results
 
-### 5. Spec/Roadmap Safety (if spec task)
+Use these as evidence for required validations.
+
+### 5. Validations Executed (if using /implement-spec)
+
+If `.claude/.runtime/validation-results.json` exists:
+
+- [ ] Docs validation: PASS or acceptable WARNING
+- [ ] Unity compile: PASS or documented NOT RUN
+- [ ] Log scan: PASS or documented NOT RUN
+- [ ] Overall status: PASS/FAIL/WARNING
+
+If files are missing, check console output for validation evidence.
+
+### 6. Spec/Roadmap Safety (if spec task)
 
 - [ ] Task doesn't exceed spec scope
 - [ ] Didn't implement blocked/future spec (check SPEC_EXECUTION_ORDER.md)
 - [ ] Didn't skip specs in wrong order
 - [ ] Status updates have evidence in repo (code, assets, or validated logs)
 
-### 6. Documentation Safety
+### 7. Documentation Safety
 
 - [ ] No spec marked as implemented without evidence
 - [ ] IMPLEMENTATION_STATUS.md changes reflect actual state

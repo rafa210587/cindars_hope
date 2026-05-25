@@ -42,13 +42,13 @@ Este comando orquestra o fluxo completo:
    - Skills aplicáveis
    - Validações obrigatórias (docs, Unity, regressão)
 
-4. **Entregar plano de preparação:**
+4. **Registrar plano de preparação e continuar automaticamente:**
    - Objetivo (1-2 sentencas)
    - Escopo exato
    - Dependências
    - Riscos
-
-5. **Aguardar confirmação do usuário** antes de prosseguir para Fase 1
+   - Se bloqueador real detectado, PARAR e reportar
+   - Caso contrário, continuar para Fase 1 automaticamente
 
 ### Fase 1: Scope Lock
 
@@ -76,7 +76,7 @@ Após implementação, sistema executa automaticamente:
 **3a. Detectar tipo de alteração:**
 
 ```powershell
-.\claude\hooks\detect-change-scope.ps1
+.\.claude\hooks\detect-change-scope.ps1
 ```
 
 Saída: `.claude/.runtime/change-scope.json` com flags:
@@ -89,7 +89,7 @@ Saída: `.claude/.runtime/change-scope.json` com flags:
 **3b. Executar validações conforme flags:**
 
 ```powershell
-.\claude\hooks\run-required-validations.ps1
+.\.claude\hooks\run-required-validations.ps1
 ```
 
 Lógica:
@@ -100,9 +100,7 @@ Lógica:
 
 **3c. Revisar Regressão:**
 
-```powershell
-.\claude\commands\review-non-regression.md
-```
+Executar `/review-non-regression` para auditar diff:
 
 Verificar:
 - Nenhum arquivo proibido alterado
@@ -202,7 +200,7 @@ Status: PASS / WARNING / FAIL
 ```
 1. /implement-spec SPEC_NAME
    ↓
-2. [Sistema lê spec e pede confirmação]
+2. [Sistema lê spec, registra plano e continua salvo bloqueador real]
    ↓
 3. Implementar (sem ampliar)
    ↓
@@ -226,4 +224,4 @@ Status: PASS / WARNING / FAIL
 
 ---
 
-**Próximo:** User confirma preparação → You implement → System validates → System closes out.
+**Próximo:** Plano registrado → Implementação continua → System valida → System fecha. Validação humana no final do pacote.
