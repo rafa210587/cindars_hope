@@ -30,6 +30,7 @@ namespace CindarsHope.Inventory.Data
         None = 0,
         Potion = 1,
         Food = 2,
-        BuffFood = 3
+        BuffFood = 3,
+        RepairKit = 4
     }
 }

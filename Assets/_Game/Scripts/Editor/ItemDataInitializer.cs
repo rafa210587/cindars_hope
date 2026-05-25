@@ -33,6 +33,7 @@ namespace CindarsHope.Editor
             CreateCrops();
             CreateConsumables();
             CreateMaterials();
+            CreateRepairKits();
 
             AssetDatabase.SaveAssets();
         }
@@ -108,6 +109,21 @@ namespace CindarsHope.Editor
             }
         }
 
+        private static void CreateRepairKits()
+        {
+            var repairKits = new[]
+            {
+                ("item_consumable_repair_kit_basic", "Basic Repair Kit", 50),
+                ("item_consumable_repair_kit_standard", "Standard Repair Kit", 100),
+                ("item_consumable_repair_kit_superior", "Superior Repair Kit", 200),
+            };
+
+            foreach (var (id, name, durabilityRestore) in repairKits)
+            {
+                CreateRepairKitDataSO(id, name, durabilityRestore);
+            }
+        }
+
         private static void CreateItemDataSO(
             string id,
             string displayName,
@@ -141,6 +157,35 @@ namespace CindarsHope.Editor
             asset.BaseValue = baseValue;
             asset.HungerRestore = hungerRestore;
             asset.IsEquippable = isEquippable;
+
+            AssetDatabase.CreateAsset(asset, path);
+        }
+
+        private static void CreateRepairKitDataSO(string id, string displayName, int durabilityRestore)
+        {
+            var path = $"{ItemsPath}{id}.asset";
+            var existing = AssetDatabase.LoadAssetAtPath<ItemDataSO>(path);
+            if (existing != null)
+                return;
+
+            foreach (var guid in AssetDatabase.FindAssets("t:ItemDataSO", new[] { ItemsPath.TrimEnd('/') }))
+            {
+                var existingPath = AssetDatabase.GUIDToAssetPath(guid);
+                existing = AssetDatabase.LoadAssetAtPath<ItemDataSO>(existingPath);
+                if (existing != null && existing.Id == id)
+                    return;
+            }
+
+            var asset = ScriptableObject.CreateInstance<ItemDataSO>();
+            asset.Id = id;
+            asset.DisplayName = displayName;
+            asset.Description = $"Restores {durabilityRestore} durability to equipped items.";
+            asset.Category = ItemCategory.Consumable;
+            asset.ConsumableSubtype = ConsumableSubtype.RepairKit;
+            asset.MaxStack = 99;
+            asset.BaseValue = durabilityRestore / 2;
+            asset.DurabilityRestoreAmount = durabilityRestore;
+            asset.IsEquippable = false;
 
             AssetDatabase.CreateAsset(asset, path);
         }

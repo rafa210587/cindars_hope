@@ -19,6 +19,7 @@ namespace CindarsHope.Inventory.Data
         public string[] StatusEffectIds;
         public float BuffDurationSeconds;
         public bool IsEquippable;
+        public int DurabilityRestoreAmount;
 
         string IIdentifiedData.Id => Id;
 
@@ -29,6 +30,7 @@ namespace CindarsHope.Inventory.Data
             HungerRestore = Mathf.Max(0, HungerRestore);
             StaminaRestore = Mathf.Max(0, StaminaRestore);
             BuffDurationSeconds = Mathf.Max(0, BuffDurationSeconds);
+            DurabilityRestoreAmount = Mathf.Max(0, DurabilityRestoreAmount);
         }
     }
 }

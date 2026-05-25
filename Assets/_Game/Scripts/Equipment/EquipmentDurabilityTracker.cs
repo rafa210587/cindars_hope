@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using CindarsHope.Core;
+using CindarsHope.Core.Events;
 using CindarsHope.Save;
 using UnityEngine;
 
@@ -34,23 +36,40 @@ namespace CindarsHope.Equipment
                 return false;
             }
 
-            return durability.TakeDamage(1);
+            bool wasBroken = durability.IsBroken;
+            durability.TakeDamage(1);
+
+            GameEventBus.Publish(new DurabilityChangedEvent(equipmentId, durability.CurrentDurability, durability.MaxDurability));
+
+            if (!wasBroken && durability.IsBroken)
+            {
+                GameEventBus.Publish(new ItemBrokenEvent(equipmentId, EquipmentSlot.None));
+            }
+
+            return !durability.IsBroken;
         }
 
         public void RepairEquipment(string equipmentId, int amount)
         {
-            if (_equipmentDurabilities.TryGetValue(equipmentId, out var durability))
-            {
-                durability.Repair(amount);
-            }
+            if (!_equipmentDurabilities.TryGetValue(equipmentId, out var durability))
+                return;
+
+            int oldDurability = durability.CurrentDurability;
+            durability.Repair(amount);
+            int restored = durability.CurrentDurability - oldDurability;
+
+            GameEventBus.Publish(new DurabilityChangedEvent(equipmentId, durability.CurrentDurability, durability.MaxDurability));
+            GameEventBus.Publish(new ItemRepairedEvent(equipmentId, restored));
         }
 
         public void FullRepairEquipment(string equipmentId)
         {
-            if (_equipmentDurabilities.TryGetValue(equipmentId, out var durability))
-            {
-                durability.FullRepair();
-            }
+            if (!_equipmentDurabilities.TryGetValue(equipmentId, out var durability))
+                return;
+
+            durability.FullRepair();
+            GameEventBus.Publish(new DurabilityChangedEvent(equipmentId, durability.CurrentDurability, durability.MaxDurability));
+            GameEventBus.Publish(new ItemRepairedEvent(equipmentId, durability.MaxDurability));
         }
 
         public void RemoveEquipment(string equipmentId)
