@@ -109,20 +109,18 @@ namespace CindarsHope.Player.Death
             var equipmentItemsToRemove = new System.Collections.Generic.List<CorpseItem>();
             foreach (var corpseItem in _activeCorpse.EquipmentItems)
             {
-                if (_equipmentManager.TryEquipItem(corpseItem.ItemId, corpseItem.ItemInstanceId))
+                if (corpseItem.SourceSlotType >= 0)
+                {
+                    _equipmentManager.EquipItem((EquipmentSlot)corpseItem.SourceSlotType, corpseItem.ItemInstanceId);
+                    equipmentItemsToRemove.Add(corpseItem);
+                }
+                else if (_inventoryManager.TryAddItem(corpseItem.ItemId, 1, corpseItem.ItemInstanceId))
                 {
                     equipmentItemsToRemove.Add(corpseItem);
                 }
                 else
                 {
-                    if (_inventoryManager.TryAddItem(corpseItem.ItemId, 1, corpseItem.ItemInstanceId))
-                    {
-                        equipmentItemsToRemove.Add(corpseItem);
-                    }
-                    else
-                    {
-                        allRecovered = false;
-                    }
+                    allRecovered = false;
                 }
             }
 
