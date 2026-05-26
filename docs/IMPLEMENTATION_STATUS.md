@@ -133,28 +133,42 @@ Regra atual: +1 SkillPoint em niveis pares, comecando no level 2.
 AttributePoint: +1 por level up.
 Pendentes: gasto/distribuicao final de atributos, skill trees completas, active slots, capstones, respec Fonte de Anya e save/load completo.
 
-### Cave entry, death, Anya e corpse recovery (SPEC 15) - Status 2026-05-25
+### Cave entry, death, Anya e corpse recovery (SPEC 15) - Status 2026-05-26
 
-Status: Implementado codigo - validacao cache Unity pendente.
+Status: Implementado em codigo; compile validation PASS esperado; Play Mode humano pendente.
 
-SPEC 15 finalizacao concluda:
-- Fixed 16 compilation errors across modal stack, dependency injection, event system, and save/load infrastructure
-- Created ModalBase abstract class for modal UI lifecycle
-- Implemented ModalManager.OpenModal<T>() for type-safe modal instantiation
-- Added input blocking for skills (R, T, Y, G) when modal active
-- Corrected CaveRunManager and PlayerProgressionManager API mismatches
-- Implemented inventory/equipment snapshot system for corpse transfer
-- Created PlayerProgressionEvents (XpChanged, LevelChanged)
-- Removed all global FindObjectOfType()/FindAnyObjectByType() calls
-- Implemented IInteractable contract on all interactables
+SPEC 15 implementacao e finalizacao concluidas (2026-05-25 a 2026-05-26):
+- Death flow: PlayerDeathController, CaveDeathResolver, DeathSystemBootstrap
+- Corpse recovery: CorpseRecoveryManager, CorpseInteractable, CorpseSpawner
+- Anya respawn: AnyaFountain, AnyaRespawnService, AnyaFountainInteractable
+- ModalBase abstract class criado; ModalManager.OpenModal<T>() implementado
+- Input bloqueado (R, T, Y, G) quando modal ativo
+- IInteractable contract em todos os interactables
+
+Correcoes finais de compilacao (2026-05-26):
+- PlayerProgressionEvents.cs esvaziado (remocao de classes duplicadas de PlayerXpChangedEvent e PlayerLevelChangedEvent)
+- Causa raiz confirmada: sealed class vs readonly struct no mesmo namespace CindarsHope.Core.Events
+- CS0246 de DeathSaveData era cascata dos duplicados; DeathSaveData esta correto em CorpseSaveData.cs
+- Canonico: PlayerXpChangedEvent.cs e PlayerLevelChangedEvent.cs como readonly structs
 
 Pendentes:
-- Full Library cache rebuild to resolve residual CorpseSaveData duplicate definition artifact
-- Human Play Mode validation of death flow, Anya respawn, corpse recovery modal
-- Final UI polish and accessibility pass (spec 17)
-- Balance tuning of death penalties (XP loss, item penalties)
+- Fechar Unity Editor e rodar RunUnityCompileValidation.ps1 para confirmar PASS
+- Play Mode humano (morte na cave, respawn Anya, recuperar corpse)
+- UI polish final (SPEC 17)
 
 Evidencia: `docs/validation/SPEC15_FINALIZATION_SPEC16_PHASE0_VALIDATION_20260525.md`
+
+### Skill trees, active slots, respec e Anya (SPEC 16) - Status 2026-05-26
+
+Status: A implementar. NAO implementada nesta execucao.
+
+Evidencias de que permanece pendente:
+- SkillTreeManager: basico (sem 5 arvores completas, sem capstones, sem respec)
+- SkillNodeDataSO: basico (sem passives/equippables completos)
+- SkillTreePanel: nao existe
+- SkillRespecService: nao existe
+- Skill tree save/load: nao existe
+- 55 nodes / 5 arvores: nao existem
 
 ## Specs futuras
 

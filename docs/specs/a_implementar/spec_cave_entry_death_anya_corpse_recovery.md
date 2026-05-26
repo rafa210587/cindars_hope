@@ -1,7 +1,8 @@
 # SPEC - Cave entry, death, Anya e corpse recovery
 
 > Spec ID: spec_cave_entry_death_anya_corpse_recovery
-> Status: A implementar
+> Status: **IMPLEMENTADO** — 2026-05-25
+> ⚠️ **MOVIDO** — Versão ativa em: `docs/specs/implementados/spec_cave_entry_death_anya_corpse_recovery.md`
 > Ordem de execucao: 15
 > Depende de: 00-14
 > Bloqueia: 16, 17

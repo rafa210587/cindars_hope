@@ -1,5 +1,8 @@
 # Prompt para Claude Code/Codex — Cindar's Hope
 
+> ⚠️ **MOVIDO** — Este prompt foi implementado em 2026-05-25.
+> Versão atualizada em: `docs/agent_prompts/implementados/SPEC_15_cave-entry-death-anya-corpse_PROMPT.md`
+
 **Use o fluxo oficial:**
 
 ```text

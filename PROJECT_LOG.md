@@ -1,3 +1,48 @@
+## Sessão 2026-05-26 (19ª) - SPEC 15 Finalization Fix / SPEC 16 Phase 0 Guardrail
+
+**Data:** 2026-05-26
+**Foco:** Remover duplicidade de eventos, corrigir compile, guardrail SPEC 16
+**Status:** Correcoes de codigo concluidas; compile validation pendente (Unity Editor aberto)
+
+### Acoes realizadas
+
+- Removida duplicidade de eventos de progressao: PlayerProgressionEvents.cs esvaziado (continha sealed classes conflitando com readonly structs em arquivos individuais)
+- Confirmado que CS0246 de DeathSaveData era cascata dos eventos duplicados, nao erro independente
+- Verificado: CorpseSaveData.cs tem definicao unica e correta de DeathSaveData, CorpseSaveData, CorpseItemSaveData, DeathStatsSaveData
+- Verificado: SaveData.cs e SaveManager.cs tem using CindarsHope.Player.Death correto
+- Verificado: sem .asmdef separando assemblies
+- Verificado: DebugHud.cs usa propriedades corretas dos structs (Delta, CurrentXp, Level)
+- SPEC 16 confirmada como NAO implementada (SkillTreeManager/SkillNodeDataSO basicos, sem SkillTreePanel, SkillRespecService ou 5 arvores)
+- SPEC_EXECUTION_ORDER.md atualizado (SPEC 15 = Implementado em codigo; SPEC 16 = A implementar)
+- IMPLEMENTATION_STATUS.md atualizado com status correto e guardrail SPEC 16
+- docs/agent_prompts/implementados/SPEC_15 criado
+- docs/refinements/implementados/ref_cave_entry_death_anya_corpse criado
+
+### Arquivos alterados
+
+- Assets/_Game/Scripts/Core/Events/PlayerProgressionEvents.cs (esvaziado - sem classes)
+- docs/specs/SPEC_EXECUTION_ORDER.md
+- docs/IMPLEMENTATION_STATUS.md
+- PROJECT_LOG.md
+
+### Erros corrigidos
+
+- CS0101 PlayerXpChangedEvent duplicado (PlayerProgressionEvents.cs vs PlayerXpChangedEvent.cs)
+- CS0101 PlayerLevelChangedEvent duplicado (PlayerProgressionEvents.cs vs PlayerLevelChangedEvent.cs)
+- CS0246 DeathSaveData cascata (causada pelos duplicados acima)
+
+### Status de validacao
+
+- validate_docs.ps1: FAIL (erros pre-existentes em specs 10/11/12 - fora do escopo)
+- RunUnityCompileValidation.ps1: BLOQUEADO (Unity Editor aberto - rodar quando fechar)
+- ScanUnityLogs.ps1: pendente apos compile pass
+
+### SPEC 16
+
+NAO implementada. A implementar. Somente rodar SPEC 16 quando compile da SPEC 15 for confirmado PASS.
+
+---
+
 ## Sessão 2026-05-25 (18ª) - SPEC 15 Finalization: Compilation Fixes & Cache Stabilization
 
 **Data:** 2026-05-25  
