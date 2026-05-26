@@ -1,3 +1,35 @@
+## Sessão 2026-05-26 (21ª) - Correcao de erros de compilacao em cascata SPEC 15/16
+
+**Data:** 2026-05-26
+**Foco:** Corrigir CS0246 DeathSaveData persistente (4 erros de cascata encontrados)
+**Status:** 4 fixes committed; compile validation pendente
+
+### Acoes realizadas
+
+- `DefaultSkillCatalog.cs`: params named-arg multiplos invalidos em C# → convertidos para `new[] { ... }`
+- `CorpseRecoveryManager.cs`: `TryEquipItem()` inexistente em EquipmentManager → `EquipItem(EquipmentSlot, string)`
+- `CorpseRecoveryManager.cs`: `TryAddItem(3 args)` inexistente + check `bool` em InventoryAddResult → `TryAddItem(2 args).Success`
+- `AnyaRespawnService.cs`: `RestoreStamina()` inexistente em StaminaManager → `FullRecover()`
+
+### Diagnostico
+
+Todos os 4 erros eram de SPEC 15 ou SPEC 16. Como Unity compila em Assembly-CSharp unico, qualquer erro de compile em qualquer arquivo impede resolucao de todos os tipos, incluindo `DeathSaveData`. Nenhum dos erros estava no arquivo de DeathSaveData em si.
+
+### Commits
+
+- `a4db56f` fix: corrigir sintaxe params nomeados em DefaultSkillCatalog
+- `84379c5` fix: corrigir chamada TryEquipItem inexistente em CorpseRecoveryManager
+- `d69cb0a` fix: corrigir chamada RestoreStamina inexistente em AnyaRespawnService
+- `3714308` fix: corrigir assinatura TryAddItem e bool em CorpseRecoveryManager
+
+### Pendentes
+
+- Fechar Unity Editor e rodar RunUnityCompileValidation.ps1
+- Se PASS: ScanUnityLogs.ps1
+- Play Mode humano SPEC 15/16
+
+---
+
 ## Sessão 2026-05-26 (20ª) - SPEC 16 Skill Trees, Active Slots e Respec Anya
 
 **Data:** 2026-05-26
