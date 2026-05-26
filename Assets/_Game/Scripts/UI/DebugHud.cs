@@ -352,14 +352,18 @@ namespace CindarsHope.UI
             GUILayout.Label("Commands:");
             GUILayout.Label("E: interact");
             GUILayout.Label("J: attack");
-            GUILayout.Label("O: +99 XP debug");
-            GUILayout.Label("T: cycle tool");
+            GUILayout.Label("Q: skill/action debug");
             GUILayout.Label("1-6: select hotbar slot");
             GUILayout.Label("Tab: advance day");
             GUILayout.Label("H: consume food");
+            GUILayout.Label("I: inventory");
+            GUILayout.Label("K: attributes/progression");
+            GUILayout.Label("L: equipment");
+            GUILayout.Label("U: skill trees");
             GUILayout.Label("F5: save");
             GUILayout.Label("F9: load");
             GUILayout.Label("Shift+R: regenerate cave run");
+            GUILayout.Label("Esc: close modal/back");
 
             if (_saveManager != null)
             {

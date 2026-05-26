@@ -19,7 +19,7 @@ Execute the next unfinished SPEC in alphabetical order from `docs/agent_prompts/
    - Is in `docs/agent_prompts/a_executar/` (not `implementados/`)
    - Has all dependencies ready (check dependency matrix)
    - Is **not** marked as BLOCKED or WAITING
-3. If tie, use alphabetical order: SPEC_02 < SPEC_03 < ... < SPEC_17B
+3. If tie, use alphabetical order: SPEC_02 < SPEC_03 < ... < SPEC_17C
 
 **Example:** If SPEC_05 is done and SPEC_06 is ready, execute SPEC_06.
 

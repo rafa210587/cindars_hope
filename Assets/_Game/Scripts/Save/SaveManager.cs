@@ -277,7 +277,8 @@ namespace CindarsHope.Save
             PlayerProgressionManager progressionManager,
             Core.GameTimeManager gameTimeManager = null,
             StaminaManager staminaManager = null,
-            Player.StatusEffectManager statusEffectManager = null)
+            Player.StatusEffectManager statusEffectManager = null,
+            Skills.SkillTreeManager skillTreeManager = null)
         {
             if (equipmentManager != null)
             {
@@ -302,6 +303,11 @@ namespace CindarsHope.Save
             if (statusEffectManager != null)
             {
                 _statusEffectManager = statusEffectManager;
+            }
+
+            if (skillTreeManager != null)
+            {
+                _skillTreeManager = skillTreeManager;
             }
         }
 

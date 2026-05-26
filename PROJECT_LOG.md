@@ -1,3 +1,35 @@
+## Sessao 2026-05-26 (23a) - SPEC 17C Closeout UI Gameplay
+
+**Data:** 2026-05-26
+**Foco:** estabilizar Skill Trees, K/L, shop buy/sell, missing scripts, prompts e Actions HUD
+**Status:** Implementado em codigo; gates automaticos PASS; Play Mode humano final pendente
+
+### Acoes realizadas
+
+- `SkillTreeManager` ligado ao `GameBootstrap` e `SaveManager` nas tres cenas gameplay, com geradores e rebind runtime atualizados.
+- Painel compacto separado: `K` abre atributos/progressao e `L` abre equipamento; `U` continua Skill Trees.
+- `NpcShopController`, `BuyPanel` e `SellPanel` agora validam inicializacao/sessao e registram contexto de cena/GameObject/componente.
+- Causa dos missing scripts corrigida: `BuyPanelItem` e `SellPanelItem` foram separados em arquivos proprios e os templates da `TownScene` foram restaurados.
+- Scanner Editor ampliado para todas as cenas gameplay e prefabs com falha automatica e caminho exato.
+- Actions HUD reconciliada; `J` passou a acionar ataque principal; stubs promovidos das specs 10-12 e 15-16 foram removidos da fonte/fila ativa; residual ativo das specs 13/14 foi alinhado entre registry e ordem.
+
+### Validacao
+
+- Unity/Tundra: PASS interno, sem `error CS` em `Logs/spec17c-unity-compile-validation.log`; wrapper oficial retornou `1` no shutdown apesar de return code Unity interno `0`.
+- `dotnet build .\Assembly-CSharp.csproj`: PASS, 0 erros; warnings legados preservados.
+- `dotnet build .\Assembly-CSharp-Editor.csproj`: PASS, 0 erros.
+- Missing scripts: PASS para `FarmScene`, `TownScene`, `CaveScene` e prefabs `Assets/_Game`.
+- Shop: `ValidateShopSystem` PASS (24/0) e `IntegrationTest_ShopFlow` PASS.
+- Docs validator: PASS apos remover stubs `OBSOLETO - MOVED` que ainda estavam sob `a_implementar/`.
+- Evidencia: `docs/validation/SPEC17C_CLOSEOUT_VALIDATION_20260526.md`.
+
+### Pendente humano
+
+- Play Mode final: `U` comprar skill, `K` gastar atributo, `I`/`L` equipar/desequipar, buy/sell em Town e save/load com `F5`/`F9`.
+- SPEC 17C permanece ativa ate essa evidencia ser registrada.
+
+---
+
 ## Sessao 2026-05-26 (22a) - SPEC 17 UI Gameplay MVP parcial
 
 **Data:** 2026-05-26

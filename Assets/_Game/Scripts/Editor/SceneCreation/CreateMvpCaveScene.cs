@@ -17,6 +17,7 @@ using CindarsHope.Player.Data;
 using CindarsHope.Player.Progression;
 using CindarsHope.Save;
 using CindarsHope.SceneManagement;
+using CindarsHope.Skills;
 using CindarsHope.UI;
 using CindarsHope.UI.Modal;
 using UnityEditor;
@@ -130,6 +131,7 @@ namespace CindarsHope.Editor.SceneCreation
             bootstrapObject.AddComponent<EconomyManager>();
             bootstrapObject.AddComponent<EquipmentManager>();
             bootstrapObject.AddComponent<PlayerProgressionManager>();
+            bootstrapObject.AddComponent<SkillTreeManager>();
             bootstrapObject.AddComponent<HotbarDebugInput>();
             bootstrapObject.AddComponent<ModalManager>();
 
@@ -155,6 +157,7 @@ namespace CindarsHope.Editor.SceneCreation
             SetReference(serializedBootstrap, "_economyManager", bootstrapObject.GetComponent<EconomyManager>());
             SetReference(serializedBootstrap, "_equipmentManager", bootstrapObject.GetComponent<EquipmentManager>());
             SetReference(serializedBootstrap, "_progressionManager", bootstrapObject.GetComponent<PlayerProgressionManager>());
+            SetReference(serializedBootstrap, "_skillTreeManager", bootstrapObject.GetComponent<SkillTreeManager>());
             PlayerNeedsDataInitializer.ConfigureRuntimeManagers(bootstrap, bootstrapObject.GetComponent<TimeManager>(), bootstrapObject.GetComponent<ModalManager>());
 
             ConfigureSaveManager(
@@ -163,7 +166,8 @@ namespace CindarsHope.Editor.SceneCreation
                 bootstrapObject.GetComponent<InventoryManager>(),
                 bootstrapObject.GetComponent<HungerManager>(),
                 bootstrapObject.GetComponent<TimeManager>(),
-                playerTransform);
+                playerTransform,
+                bootstrapObject.GetComponent<SkillTreeManager>());
             ConfigureSaveInput(bootstrapObject.GetComponent<SaveInput>(), bootstrapObject.GetComponent<SaveManager>());
             ConfigureHotbarDebugInput(
                 bootstrapObject.GetComponent<HotbarDebugInput>(),
@@ -174,7 +178,8 @@ namespace CindarsHope.Editor.SceneCreation
                 bootstrapObject.GetComponent<PlayerProgressionManager>(),
                 bootstrapObject.GetComponent<GameTimeManager>(),
                 bootstrapObject.GetComponent<StaminaManager>(),
-                bootstrapObject.GetComponent<CindarsHope.Player.StatusEffectManager>());
+                bootstrapObject.GetComponent<CindarsHope.Player.StatusEffectManager>(),
+                bootstrapObject.GetComponent<SkillTreeManager>());
 
             var playerData = AssetDatabase.LoadAssetAtPath<PlayerDataSO>(PlayerDataPath);
             if (playerData != null)
@@ -208,7 +213,8 @@ namespace CindarsHope.Editor.SceneCreation
             InventoryManager inventoryManager,
             HungerManager hungerManager,
             TimeManager timeManager,
-            Transform playerTransform)
+            Transform playerTransform,
+            SkillTreeManager skillTreeManager)
         {
             var serializedSave = new SerializedObject(saveManager);
             SetReference(serializedSave, "_playerManager", playerManager);
@@ -216,6 +222,7 @@ namespace CindarsHope.Editor.SceneCreation
             SetReference(serializedSave, "_hungerManager", hungerManager);
             SetReference(serializedSave, "_timeManager", timeManager);
             SetReference(serializedSave, "_playerTransform", playerTransform);
+            SetReference(serializedSave, "_skillTreeManager", skillTreeManager);
             serializedSave.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(saveManager);
         }

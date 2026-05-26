@@ -224,9 +224,18 @@ namespace CindarsHope.Core.Bootstrap
                 _statusEffectManager.Initialize();
             }
 
+            if (_skillTreeManager == null)
+            {
+                Debug.LogError($"GameBootstrap skill tree wiring missing in scene '{gameObject.scene.name}' on GameObject '{gameObject.name}': _skillTreeManager.", this);
+            }
+            else
+            {
+                _skillTreeManager.RebindProgressionManager(_progressionManager);
+            }
+
             if (_saveManager != null)
             {
-                _saveManager.RebindOptionalRuntimeManagers(_equipmentManager, _progressionManager, _gameTimeManager, _staminaManager, _statusEffectManager);
+                _saveManager.RebindOptionalRuntimeManagers(_equipmentManager, _progressionManager, _gameTimeManager, _staminaManager, _statusEffectManager, _skillTreeManager);
             }
 
             InitializeDeathSystem();

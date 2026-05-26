@@ -56,6 +56,11 @@ namespace CindarsHope.Player
                 TryAttackLeftHand();
             }
 
+            if (Input.GetKeyDown(KeyCode.J))
+            {
+                TryAttackRightHand();
+            }
+
             if (Input.GetKeyDown(KeyCode.E))
             {
                 TryAttackRightHand();

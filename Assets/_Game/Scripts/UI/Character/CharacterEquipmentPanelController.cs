@@ -1,4 +1,3 @@
-using System;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Equipment;
 using CindarsHope.Inventory;
@@ -11,8 +10,15 @@ namespace CindarsHope.UI.Character
     [DisallowMultipleComponent]
     public sealed class CharacterEquipmentPanelController : MonoBehaviour
     {
+        private enum PanelMode
+        {
+            Attributes,
+            Equipment
+        }
+
         private static CharacterEquipmentPanelController _instance;
         private bool _isOpen;
+        private PanelMode _mode;
         private string _feedback = string.Empty;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -52,7 +58,12 @@ namespace CindarsHope.UI.Character
         {
             if (Input.GetKeyDown(KeyCode.K))
             {
-                Toggle();
+                Toggle(PanelMode.Attributes);
+            }
+
+            if (Input.GetKeyDown(KeyCode.L))
+            {
+                Toggle(PanelMode.Equipment);
             }
 
             if (_isOpen && Input.GetKeyDown(KeyCode.Escape))
@@ -68,38 +79,21 @@ namespace CindarsHope.UI.Character
                 return;
             }
 
-            var rect = new Rect((Screen.width - 520f) * 0.5f, (Screen.height - 560f) * 0.5f, 520f, 560f);
-            var progression = GameBootstrap.Instance?.PlayerProgressionManager;
-            var equipment = GameBootstrap.Instance?.EquipmentManager;
-            var inventory = GameBootstrap.Instance?.InventoryManager;
-
+            var rect = new Rect((Screen.width - 520f) * 0.5f, (Screen.height - 500f) * 0.5f, 520f, 500f);
             GUILayout.BeginArea(rect, GUI.skin.window);
-            GUILayout.Label("Personagem / Equipamento");
-            if (progression == null)
+
+            if (_mode == PanelMode.Attributes)
             {
-                GUILayout.Label("PlayerProgressionManager não disponível.");
+                GUILayout.Label("Atributos / Progressao");
+                DrawAttributes(GameBootstrap.Instance?.PlayerProgressionManager);
             }
             else
             {
-                GUILayout.Label($"Level: {progression.Level}  XP: {progression.CurrentXp} / {progression.XpToNextLevel}");
-                GUILayout.Label($"Attribute Points: {progression.UnspentAttributePoints}  Skill Points: {progression.UnspentSkillPoints}");
-                DrawAttribute(progression, PlayerAttributeType.Strength, "Strength", progression.Strength);
-                DrawAttribute(progression, PlayerAttributeType.Dexterity, "Dexterity", progression.Dexterity);
-                DrawAttribute(progression, PlayerAttributeType.Intelligence, "Intelligence", progression.Intelligence);
-                DrawAttribute(progression, PlayerAttributeType.Willpower, "Willpower", progression.Willpower);
-                DrawAttribute(progression, PlayerAttributeType.Constitution, "Constitution", progression.Constitution);
-                DrawAttribute(progression, PlayerAttributeType.Breath, "Breath", progression.Breath);
+                GUILayout.Label("Equipamento");
+                DrawEquipment(GameBootstrap.Instance?.EquipmentManager, GameBootstrap.Instance?.InventoryManager);
             }
 
-            GUILayout.Space(10f);
-            GUILayout.Label("Equipamento");
-            DrawEquipmentSlot(equipment, inventory, EquipmentSlot.RightHand, "Right Hand");
-            DrawEquipmentSlot(equipment, inventory, EquipmentSlot.LeftHand, "Left Hand");
-            DrawEquipmentSlot(equipment, inventory, EquipmentSlot.Chest, "Armor");
-            DrawEquipmentSlot(equipment, inventory, EquipmentSlot.Accessory, "Accessory");
-
             GUILayout.Space(8f);
-            GUILayout.Label("Stats derivados: bônus aplicados pelo equipamento/skills em runtime.");
             if (!string.IsNullOrWhiteSpace(_feedback))
             {
                 GUILayout.Label(_feedback);
@@ -113,6 +107,34 @@ namespace CindarsHope.UI.Character
             GUILayout.EndArea();
         }
 
+        private void DrawAttributes(PlayerProgressionManager progression)
+        {
+            if (progression == null)
+            {
+                GUILayout.Label("PlayerProgressionManager nao disponivel.");
+                return;
+            }
+
+            GUILayout.Label($"Level: {progression.Level}  XP: {progression.CurrentXp} / {progression.XpToNextLevel}");
+            GUILayout.Label($"Attribute Points: {progression.UnspentAttributePoints}  Skill Points: {progression.UnspentSkillPoints}");
+            DrawAttribute(progression, PlayerAttributeType.Strength, "Strength", progression.Strength);
+            DrawAttribute(progression, PlayerAttributeType.Dexterity, "Dexterity", progression.Dexterity);
+            DrawAttribute(progression, PlayerAttributeType.Intelligence, "Intelligence", progression.Intelligence);
+            DrawAttribute(progression, PlayerAttributeType.Willpower, "Willpower", progression.Willpower);
+            DrawAttribute(progression, PlayerAttributeType.Constitution, "Constitution", progression.Constitution);
+            DrawAttribute(progression, PlayerAttributeType.Breath, "Breath", progression.Breath);
+        }
+
+        private void DrawEquipment(EquipmentManager equipment, InventoryManager inventory)
+        {
+            DrawEquipmentSlot(equipment, inventory, EquipmentSlot.RightHand, "Right Hand");
+            DrawEquipmentSlot(equipment, inventory, EquipmentSlot.LeftHand, "Left Hand");
+            DrawEquipmentSlot(equipment, inventory, EquipmentSlot.Chest, "Armor");
+            DrawEquipmentSlot(equipment, inventory, EquipmentSlot.Accessory, "Accessory");
+            GUILayout.Space(10f);
+            GUILayout.Label("Stats derivados: bonus aplicados pelo equipamento/skills em runtime.");
+        }
+
         private void DrawAttribute(PlayerProgressionManager progression, PlayerAttributeType type, string label, int value)
         {
             GUILayout.BeginHorizontal();
@@ -121,7 +143,7 @@ namespace CindarsHope.UI.Character
             {
                 _feedback = progression.TrySpendAttributePoint(type)
                     ? $"{label} aumentado."
-                    : "Sem Attribute Points disponíveis.";
+                    : "Sem Attribute Points disponiveis.";
             }
             GUILayout.EndHorizontal();
         }
@@ -140,11 +162,19 @@ namespace CindarsHope.UI.Character
             GUILayout.EndHorizontal();
         }
 
-        private void Toggle()
+        private void Toggle(PanelMode mode)
         {
             if (_isOpen)
             {
-                Close();
+                if (_mode == mode)
+                {
+                    Close();
+                }
+                else
+                {
+                    _mode = mode;
+                    _feedback = string.Empty;
+                }
                 return;
             }
 
@@ -155,6 +185,7 @@ namespace CindarsHope.UI.Character
             }
 
             _feedback = string.Empty;
+            _mode = mode;
             _isOpen = true;
         }
 

@@ -1,7 +1,7 @@
 # SPEC - Cave runtime generation, checkpoints e boss gates
 
 > Spec ID: spec_cave_runtime_generation_checkpoints_boss_gates
-> Status: A implementar
+> Status: Implementado parcial - escopo residual ativo
 > Ordem de execucao: 14
 > Depende de: 00-13
 > Bloqueia: 15, 17

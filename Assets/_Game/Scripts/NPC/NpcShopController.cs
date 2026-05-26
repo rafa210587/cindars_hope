@@ -30,6 +30,7 @@ namespace CindarsHope.NPC
 
         private bool _isInteracting;
         private bool _isClosing;
+        private bool _isReady;
 
         public string InteractionPrompt => $"Conversar com {_npcData?.DisplayName ?? "NPC"}";
         public NpcDataSO NpcData => _npcData;
@@ -48,11 +49,14 @@ namespace CindarsHope.NPC
             _buyPanel?.Initialize(_shopManager, _playerManager, _inventoryManager, _itemDatabase, _modalManager);
             _sellPanel?.Initialize(_shopManager, _playerManager, _inventoryManager, _itemDatabase, _modalManager);
 
-            if (_shopData != null && _shopManager != null)
+            _shopManager.Configure(_itemDatabase);
+            if (!_shopManager.InitializeShop(_shopData))
             {
-                _shopManager.Configure(_itemDatabase);
-                _shopManager.InitializeShop(_shopData);
+                Debug.LogError($"{GetDiagnosticContext()} could not initialize shop session for '{_shopData.Id}'. Check ShopDataSO.Items and ItemDatabaseSO.", this);
+                return;
             }
+
+            _isReady = true;
         }
 
         private bool ValidateReferences()
@@ -79,8 +83,13 @@ namespace CindarsHope.NPC
                 return true;
             }
 
-            Debug.LogError($"NpcShopController '{gameObject.name}' missing required reference: {fieldName}.", this);
+            Debug.LogError($"{GetDiagnosticContext()} missing required reference: {fieldName}.", this);
             return false;
+        }
+
+        private string GetDiagnosticContext()
+        {
+            return $"Scene '{gameObject.scene.path}' GameObject '{gameObject.name}' component '{nameof(NpcShopController)}'";
         }
 
         private void OnDisable()
@@ -104,7 +113,7 @@ namespace CindarsHope.NPC
 
         public bool CanInteract(GameObject interactor)
         {
-            return _npcData != null && !_isInteracting;
+            return _isReady && _npcData != null && !_isInteracting;
         }
 
         public void Interact(GameObject interactor)

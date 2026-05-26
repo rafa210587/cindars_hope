@@ -1,6 +1,8 @@
 #if UNITY_EDITOR
+using System;
 using System.Collections.Generic;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -8,92 +10,130 @@ namespace CindarsHope.EditorTools
 {
     public static class MissingScriptScanner
     {
+        private static readonly string[] GameplayScenes =
+        {
+            "Assets/_Game/Scenes/FarmScene.unity",
+            "Assets/_Game/Scenes/TownScene.unity",
+            "Assets/_Game/Scenes/CaveScene.unity"
+        };
+
         [MenuItem("Cindar's Hope/Validation/Scan Open Scene for Missing Scripts")]
         public static void ScanOpenScene()
         {
-            int found = 0;
             var scene = SceneManager.GetActiveScene();
+            var found = ScanScene(scene);
+            CompleteOrFail($"Scene '{scene.path}'", found);
+        }
 
-            foreach (var root in scene.GetRootGameObjects())
+        [MenuItem("Cindar's Hope/Validation/Scan All Gameplay Scenes for Missing Scripts")]
+        public static void ScanGameplayScenes()
+        {
+            if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
             {
-                found += ScanGameObject(root, root.name);
+                Debug.LogWarning("[MissingScriptScanner] Scan cancelled because open scene changes were not saved.");
+                return;
             }
 
-            if (found == 0)
-                Debug.Log("[MissingScriptScanner] Cena aberta: nenhum missing script encontrado.");
-            else
-                Debug.LogWarning($"[MissingScriptScanner] Cena aberta: {found} missing script(s) encontrado(s).");
+            var found = 0;
+            foreach (var scenePath in GameplayScenes)
+            {
+                var scene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Single);
+                found += ScanScene(scene);
+            }
+
+            CompleteOrFail("Gameplay scenes", found);
         }
 
         [MenuItem("Cindar's Hope/Validation/Scan Prefabs in Assets/_Game for Missing Scripts")]
         public static void ScanPrefabs()
         {
-            int found = 0;
+            var found = 0;
             var guids = AssetDatabase.FindAssets("t:Prefab", new[] { "Assets/_Game" });
 
             foreach (var guid in guids)
             {
                 var path = AssetDatabase.GUIDToAssetPath(guid);
                 var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
-                if (prefab == null) continue;
+                if (prefab == null)
+                {
+                    continue;
+                }
 
                 var results = new List<string>();
                 ScanGameObjectInPrefab(prefab, prefab.name, path, results);
-
-                foreach (var msg in results)
+                foreach (var message in results)
                 {
-                    Debug.LogWarning(msg, prefab);
+                    Debug.LogError(message, prefab);
                     found++;
                 }
             }
 
-            if (found == 0)
-                Debug.Log("[MissingScriptScanner] Prefabs Assets/_Game: nenhum missing script encontrado.");
-            else
-                Debug.LogWarning($"[MissingScriptScanner] Prefabs Assets/_Game: {found} missing script(s) encontrado(s).");
+            CompleteOrFail("Prefabs in Assets/_Game", found);
         }
 
-        private static int ScanGameObject(GameObject go, string path)
+        private static int ScanScene(Scene scene)
         {
-            int count = 0;
-            var components = go.GetComponents<Component>();
-
-            for (int i = 0; i < components.Length; i++)
+            var found = 0;
+            foreach (var root in scene.GetRootGameObjects())
             {
-                if (components[i] == null)
-                {
-                    Debug.LogWarning(
-                        $"[MissingScriptScanner] Missing Script | GameObject: \"{path}\" | Componente índice: {i}",
-                        go);
-                    count++;
-                }
+                found += ScanGameObject(root, root.name, scene.path);
             }
 
-            foreach (Transform child in go.transform)
+            return found;
+        }
+
+        private static int ScanGameObject(GameObject gameObject, string objectPath, string scenePath)
+        {
+            var count = 0;
+            var components = gameObject.GetComponents<Component>();
+            for (var index = 0; index < components.Length; index++)
             {
-                count += ScanGameObject(child.gameObject, $"{path}/{child.name}");
+                if (components[index] != null)
+                {
+                    continue;
+                }
+
+                Debug.LogError(
+                    $"[MissingScriptScanner] Missing Script | Scene: '{scenePath}' | GameObject: '{objectPath}' | Component index: {index}",
+                    gameObject);
+                count++;
+            }
+
+            foreach (Transform child in gameObject.transform)
+            {
+                count += ScanGameObject(child.gameObject, $"{objectPath}/{child.name}", scenePath);
             }
 
             return count;
         }
 
-        private static void ScanGameObjectInPrefab(GameObject go, string objectPath, string prefabAssetPath, List<string> results)
+        private static void ScanGameObjectInPrefab(GameObject gameObject, string objectPath, string prefabPath, List<string> results)
         {
-            var components = go.GetComponents<Component>();
-
-            for (int i = 0; i < components.Length; i++)
+            var components = gameObject.GetComponents<Component>();
+            for (var index = 0; index < components.Length; index++)
             {
-                if (components[i] == null)
+                if (components[index] == null)
                 {
                     results.Add(
-                        $"[MissingScriptScanner] Missing Script | Prefab: \"{prefabAssetPath}\" | GameObject: \"{objectPath}\" | Componente índice: {i}");
+                        $"[MissingScriptScanner] Missing Script | Prefab: '{prefabPath}' | GameObject: '{objectPath}' | Component index: {index}");
                 }
             }
 
-            foreach (Transform child in go.transform)
+            foreach (Transform child in gameObject.transform)
             {
-                ScanGameObjectInPrefab(child.gameObject, $"{objectPath}/{child.name}", prefabAssetPath, results);
+                ScanGameObjectInPrefab(child.gameObject, $"{objectPath}/{child.name}", prefabPath, results);
             }
+        }
+
+        private static void CompleteOrFail(string scope, int found)
+        {
+            if (found == 0)
+            {
+                Debug.Log($"[MissingScriptScanner] {scope}: no missing scripts found.");
+                return;
+            }
+
+            throw new InvalidOperationException($"[MissingScriptScanner] {scope}: {found} missing script(s) found.");
         }
     }
 }

@@ -12,6 +12,7 @@ using CindarsHope.Player;
 using CindarsHope.Player.Data;
 using CindarsHope.Save;
 using CindarsHope.SceneManagement;
+using CindarsHope.Skills;
 using CindarsHope.UI;
 using CindarsHope.UI.Dialogue;
 using CindarsHope.UI.Modal;
@@ -129,6 +130,7 @@ namespace CindarsHope.Editor.SceneCreation
             bootstrapObject.AddComponent<ModalManager>();
             bootstrapObject.AddComponent<EquipmentManager>();
             bootstrapObject.AddComponent<PlayerProgressionManager>();
+            bootstrapObject.AddComponent<SkillTreeManager>();
             bootstrapObject.AddComponent<HotbarDebugInput>();
             return bootstrap;
         }
@@ -161,6 +163,7 @@ namespace CindarsHope.Editor.SceneCreation
             SetReference(serializedBootstrap, "_modalManager", modalManager);
             SetReference(serializedBootstrap, "_equipmentManager", bootstrap.GetComponent<EquipmentManager>());
             SetReference(serializedBootstrap, "_progressionManager", bootstrap.GetComponent<PlayerProgressionManager>());
+            SetReference(serializedBootstrap, "_skillTreeManager", bootstrap.GetComponent<SkillTreeManager>());
             PlayerNeedsDataInitializer.ConfigureRuntimeManagers(bootstrap, timeManager, modalManager);
 
             ConfigureDayAdvanceInput(bootstrap.GetComponent<DayAdvanceInput>(), timeManager);
@@ -203,6 +206,7 @@ namespace CindarsHope.Editor.SceneCreation
             EditorUtility.SetDirty(bootstrap);
             var serializedSave = new SerializedObject(saveManager);
             SetReference(serializedSave, "_shopManager", shopManager);
+            SetReference(serializedSave, "_skillTreeManager", bootstrap.GetComponent<SkillTreeManager>());
             serializedSave.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(saveManager);
             saveManager.RebindOptionalRuntimeManagers(
@@ -210,7 +214,8 @@ namespace CindarsHope.Editor.SceneCreation
                 bootstrap.GetComponent<PlayerProgressionManager>(),
                 bootstrap.GetComponent<GameTimeManager>(),
                 bootstrap.GetComponent<StaminaManager>(),
-                bootstrap.GetComponent<StatusEffectManager>());
+                bootstrap.GetComponent<StatusEffectManager>(),
+                bootstrap.GetComponent<SkillTreeManager>());
         }
 
         private static void ConfigureHotbarDebugInput(HotbarDebugInput hotbarDebugInput, SaveManager saveManager)

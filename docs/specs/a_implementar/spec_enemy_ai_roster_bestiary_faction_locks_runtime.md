@@ -1,7 +1,7 @@
 # SPEC - Enemy AI, roster, bestiary e faction locks runtime
 
 > Spec ID: spec_enemy_ai_roster_bestiary_faction_locks_runtime
-> Status: A implementar
+> Status: Implementado parcial - escopo residual ativo
 > Ordem de execucao: 13
 > Depende de: 00-12
 > Bloqueia: 14, 15, 17
