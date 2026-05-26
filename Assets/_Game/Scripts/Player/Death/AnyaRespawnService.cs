@@ -33,7 +33,7 @@ namespace CindarsHope.Player.Death
             // Restore Stamina
             if (_staminaManager != null)
             {
-                _staminaManager.RestoreStamina(_staminaManager.MaxStamina);
+                _staminaManager.FullRecover();
             }
 
             // Restore Mana if exists
