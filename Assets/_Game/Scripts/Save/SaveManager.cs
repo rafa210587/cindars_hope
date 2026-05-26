@@ -16,6 +16,7 @@ using CindarsHope.Player;
 using CindarsHope.Player.Death;
 using CindarsHope.Player.Progression;
 using CindarsHope.Save.Migrations;
+using CindarsHope.Skills;
 using CindarsHope.UI.Hotbar;
 using CindarsHope.World;
 using UnityEngine;
@@ -29,7 +30,7 @@ namespace CindarsHope.Save
     [DisallowMultipleComponent]
     public class SaveManager : MonoBehaviour
     {
-        private const int CurrentSchemaVersion = 4;
+        private const int CurrentSchemaVersion = 5;
         private const int Slot = 1;
         private const string SaveDirectoryName = "saves";
         private const string SaveFileName = "slot_1.json";
@@ -55,13 +56,15 @@ namespace CindarsHope.Save
         [SerializeField] private CraftingRuntime _craftingRuntime;
         [SerializeField] private NpcManager _npcManager;
         [SerializeField] private Skills.ActiveSkillSlots _activeSkillSlots;
+        [SerializeField] private Skills.SkillTreeManager _skillTreeManager;
 
         private readonly HotbarState _hotbarState = new HotbarState();
         private readonly SaveMigrationRegistry _migrationRegistry = new SaveMigrationRegistry(new ISaveMigration[]
         {
             new InventorySlotsV1ToV2Migration(),
             new SaveV2ToV3Migration(),
-            new SaveV3ToV4Migration()
+            new SaveV3ToV4Migration(),
+            new SaveV4ToV5Migration()
         });
 
         public bool IsInitialized { get; private set; }
@@ -105,6 +108,7 @@ namespace CindarsHope.Save
                 var equipmentDurabilitySaveData = CaptureEquipmentDurabilitySaveData();
                 var npcSaveData = CaptureNpcSaveData(existingSaveData);
                 var activeSkillSlotsSaveData = CaptureActiveSkillSlotsSaveData();
+                var skillTreeSaveData = CaptureSkillTreeSaveData();
 
                 var playerData = CapturePlayerSaveData();
                 if (playerData != null && _manaManager != null)
@@ -135,7 +139,8 @@ namespace CindarsHope.Save
                     PlayerStatusEffects = statusEffectsSaveData,
                     EquipmentDurability = equipmentDurabilitySaveData,
                     Npcs = npcSaveData,
-                    ActiveSkillSlots = activeSkillSlotsSaveData
+                    ActiveSkillSlots = activeSkillSlotsSaveData,
+                    SkillTree = skillTreeSaveData
                 };
 
                 var savePath = SaveFilePath;
@@ -897,6 +902,12 @@ namespace CindarsHope.Save
                 RestoreActiveSkillSlots(saveData.ActiveSkillSlots);
             }
 
+            if (_skillTreeManager != null && saveData.SkillTree != null)
+            {
+                int level = saveData.Progression?.Level ?? 1;
+                _skillTreeManager.RestoreFromSaveData(saveData.SkillTree, level);
+            }
+
             RestoreDeathSaveData(saveData.Death);
         }
 
@@ -1068,6 +1079,13 @@ namespace CindarsHope.Save
             {
                 _activeSkillSlots.SetSkillInSlot(3, data.SlotGSkillActionId, 0f);
             }
+        }
+
+        private Skills.SkillTreeSaveData CaptureSkillTreeSaveData()
+        {
+            if (_skillTreeManager != null)
+                return _skillTreeManager.CaptureSaveData();
+            return new Skills.SkillTreeSaveData();
         }
 
         private DeathSaveData CaptureDeathSaveData(GameSaveData existingSaveData)

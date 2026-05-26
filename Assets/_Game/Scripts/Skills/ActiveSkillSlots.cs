@@ -1,7 +1,7 @@
 using System;
 using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
-using CindarsHope.UI.Modal;
+using CindarsHope.Core.Events;
 using UnityEngine;
 
 namespace CindarsHope.Skills
@@ -29,80 +29,119 @@ namespace CindarsHope.Skills
         [SerializeField] private SkillActionExecutor _skillExecutor;
         private ActiveSkillSlot[] _slots = new ActiveSkillSlot[4];
 
+        private static readonly KeyCode[] SlotKeys = { KeyCode.R, KeyCode.T, KeyCode.Y, KeyCode.G };
+
         private void Awake()
         {
-            _slots[0] = new ActiveSkillSlot(KeyCode.R);
-            _slots[1] = new ActiveSkillSlot(KeyCode.T);
-            _slots[2] = new ActiveSkillSlot(KeyCode.Y);
-            _slots[3] = new ActiveSkillSlot(KeyCode.G);
+            for (int i = 0; i < SlotKeys.Length; i++)
+                _slots[i] = new ActiveSkillSlot(SlotKeys[i]);
 
             if (_skillExecutor == null)
-            {
                 _skillExecutor = GetComponent<SkillActionExecutor>();
-            }
+
             if (_skillExecutor == null)
-            {
-                Debug.LogWarning("ActiveSkillSlots: SkillActionExecutor not assigned in inspector and not found on same GameObject. Skill activation will not work.", this);
-            }
+                Debug.LogWarning("ActiveSkillSlots: SkillActionExecutor not found.", this);
+        }
+
+        private void OnEnable()
+        {
+            GameEventBus.Subscribe<ActiveSkillSlotAssignedEvent>(OnSlotAssigned);
+            GameEventBus.Subscribe<ActiveSkillSlotClearedEvent>(OnSlotCleared);
+        }
+
+        private void OnDisable()
+        {
+            GameEventBus.Unsubscribe<ActiveSkillSlotAssignedEvent>(OnSlotAssigned);
+            GameEventBus.Unsubscribe<ActiveSkillSlotClearedEvent>(OnSlotCleared);
         }
 
         private void Update()
         {
-            // Check if modal is active - don't process skill input while modal is open
             var modalManager = GameBootstrap.Instance?.ModalManager;
             bool isModalActive = modalManager != null && modalManager.HasActiveModal;
 
             foreach (var slot in _slots)
             {
                 if (slot.CooldownRemaining > 0)
-                {
                     slot.CooldownRemaining -= Time.deltaTime;
-                }
 
-                // Only process input activation if no modal is active
                 if (!isModalActive && Input.GetKeyDown(slot.InputKey))
-                {
                     TryActivateSlot(slot);
-                }
             }
         }
 
         private void TryActivateSlot(ActiveSkillSlot slot)
         {
-            if (!slot.IsReady || string.IsNullOrEmpty(slot.SkillActionId))
-                return;
+            if (!slot.IsReady || string.IsNullOrEmpty(slot.SkillActionId)) return;
 
-            if (_skillExecutor != null)
+            if (_skillExecutor == null)
             {
-                bool success = _skillExecutor.TryExecuteSkill(slot.SkillActionId);
-                if (success)
-                {
-                    slot.CooldownRemaining = 1f;
-                }
+                Debug.LogWarning("ActiveSkillSlots: SkillActionExecutor not found.", this);
+                return;
             }
-            else
-            {
-                Debug.LogWarning("ActiveSkillSlots: SkillActionExecutor not found", this);
-            }
+
+            bool success = _skillExecutor.TryExecuteSkill(slot.SkillActionId);
+            if (success)
+                slot.CooldownRemaining = 1f;
         }
 
-        public bool SetSkillInSlot(int slotIndex, string skillActionId, float cooldown)
+        // Set a skill into a slot with validation against SkillTreeManager
+        public bool TrySetSkillInSlot(int slotIndex, string skillActionId)
         {
-            if (slotIndex < 0 || slotIndex >= _slots.Length)
-                return false;
+            if (slotIndex < 0 || slotIndex >= _slots.Length) return false;
+
+            var skillMgr = GameBootstrap.Instance?.SkillTreeManager;
+            if (skillMgr != null && !string.IsNullOrEmpty(skillActionId))
+            {
+                bool isUnlocked = false;
+                foreach (var node in skillMgr.NodeIndex.Values)
+                {
+                    if (node.UnlockedSkillActionId == skillActionId
+                        && node.SkillCategory == SkillCategory.EquippableSkill
+                        && skillMgr.IsNodePurchased(node.SkillNodeId))
+                    {
+                        isUnlocked = true;
+                        break;
+                    }
+                }
+
+                if (!isUnlocked)
+                {
+                    Debug.LogWarning($"ActiveSkillSlots: SkillAction '{skillActionId}' is not unlocked, slot not set.", this);
+                    return false;
+                }
+            }
 
             _slots[slotIndex].SkillActionId = skillActionId;
-            _slots[slotIndex].CooldownRemaining = cooldown;
-            GameEventBus.Publish(new CindarsHope.Core.Events.ActiveSkillSlotChangedEvent(slotIndex, skillActionId));
+            return true;
+        }
+
+        // Legacy method kept for compatibility
+        public bool SetSkillInSlot(int slotIndex, string skillActionId, float cooldownOverride = 0f)
+        {
+            if (slotIndex < 0 || slotIndex >= _slots.Length) return false;
+            _slots[slotIndex].SkillActionId = skillActionId;
+            _slots[slotIndex].CooldownRemaining = cooldownOverride;
+            GameEventBus.Publish(new ActiveSkillSlotChangedEvent(slotIndex, skillActionId));
             return true;
         }
 
         public ActiveSkillSlot GetSlot(int slotIndex)
         {
-            if (slotIndex < 0 || slotIndex >= _slots.Length)
-                return null;
-
+            if (slotIndex < 0 || slotIndex >= _slots.Length) return null;
             return _slots[slotIndex];
+        }
+
+        private void OnSlotAssigned(ActiveSkillSlotAssignedEvent evt)
+        {
+            if (evt.SlotIndex < 0 || evt.SlotIndex >= _slots.Length) return;
+            _slots[evt.SlotIndex].SkillActionId = evt.SkillActionId;
+        }
+
+        private void OnSlotCleared(ActiveSkillSlotClearedEvent evt)
+        {
+            if (evt.SlotIndex < 0 || evt.SlotIndex >= _slots.Length) return;
+            _slots[evt.SlotIndex].SkillActionId = null;
         }
     }
 }

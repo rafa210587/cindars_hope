@@ -1,4 +1,5 @@
 using CindarsHope.Cave.Runtime;
+using CindarsHope.Skills;
 using CindarsHope.Core.Data;
 using CindarsHope.Core.Time;
 using CindarsHope.Craft;
@@ -42,6 +43,7 @@ namespace CindarsHope.Core.Bootstrap
         [SerializeField] private ManaManager _manaManager;
         [SerializeField] private CaveRunManager _caveRunManager;
         [SerializeField] private AnyaFountain _anyaFountain;
+        [SerializeField] private Skills.SkillTreeManager _skillTreeManager;
 
         private CaveRuntimeState _cachedCaveRunState;
         private CorpseRecoveryManager _corpseRecoveryManager;
@@ -65,6 +67,7 @@ namespace CindarsHope.Core.Bootstrap
         public CaveRunManager CaveRunManager => _caveRunManager;
         public CorpseRecoveryManager CorpseRecoveryManager => _corpseRecoveryManager;
         public AnyaFountain AnyaFountain => _anyaFountain;
+        public Skills.SkillTreeManager SkillTreeManager => _skillTreeManager;
         public ItemDatabaseSO ItemDatabase => _itemDatabase;
         public WeaponDatabaseSO WeaponDatabase => _weaponDatabase;
         public SpellDatabaseSO SpellDatabase => _spellDatabase;

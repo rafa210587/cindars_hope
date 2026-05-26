@@ -1,3 +1,47 @@
+## Sessão 2026-05-26 (20ª) - SPEC 16 Skill Trees, Active Slots e Respec Anya
+
+**Data:** 2026-05-26
+**Foco:** Implementar SPEC 16 completa - skill trees, purchase, respec Anya, save/load
+**Status:** Implementado em codigo; compile validation pendente (Unity Editor aberto)
+
+### Acoes realizadas
+
+- SkillNodeDataSO expandido: NodeType, SkillCategory, IsCapstone, PrerequisiteNodeIds, PassiveModifiers
+- SkillTreeDataSO expandido: CapstoneNodeId, Nodes list
+- SkillEnums.cs: SkillNodeType, SkillCategory, SkillModifierType, SkillTreeId
+- SkillPassiveModifier.cs: modificador serializable tipo+valor
+- DefaultSkillCatalog.cs: 55 nodes / 5 arvores gerados por codigo (fallback quando SO nao wired)
+- SkillTreeRegistrySO.cs e SkillNodeDatabaseSO.cs: DataRegistrySO extensions
+- SkillTreeState.cs: estado runtime (pontos, nodes comprados, slots, respec)
+- SkillPurchaseService.cs: validacao custo/prerequisites/level/capstone
+- SkillRespecService.cs: full respec (1o gratuito, 250g default)
+- SkillPassiveApplicator.cs: aplica passivas aos derived stats
+- SkillTreeManager.cs: REESCRITO como MonoBehaviour orquestrador
+- SkillTreePanel.cs (UI/Skills): modal K, abas Q/E, nav W/S, purchase, equip R/T/Y/G
+- SkillTreeInputHandler.cs: handler dedicado para abrir K
+- AnyaFountainMenu.cs: respec button habilitado com custo exibido
+- ActiveSkillSlots.cs: subscribers de eventos SPEC 16
+- DerivedStatsCalculator.cs: expandido para passiveModifiers
+- SaveData.cs: campo SkillTreeSaveData adicionado
+- SaveManager.cs: v5, CaptureSkillTreeSaveData, RestoreFromSaveData, SaveV4ToV5Migration registrado
+- SaveV4ToV5Migration.cs: inicializa SkillTreeSaveData
+- GameBootstrap.cs: expoe SkillTreeManager
+- 14 novos eventos em SkillTreeEvents.cs
+- SPEC 16 spec movida para docs/specs/implementados/
+- SPEC_EXECUTION_ORDER.md, IMPLEMENTATION_STATUS.md e PROJECT_LOG.md atualizados
+
+### Pendentes
+
+- Fechar Unity Editor e rodar RunUnityCompileValidation.ps1
+- Play Mode humano (level par → SkillPoint, comprar node, equipar slot, respec na Anya)
+- UI polish final (SPEC 17)
+
+### Evidencia
+
+docs/validation/SPEC16_SKILL_TREES_VALIDATION_20260526.md
+
+---
+
 ## Sessão 2026-05-26 (19ª) - SPEC 15 Finalization Fix / SPEC 16 Phase 0 Guardrail
 
 **Data:** 2026-05-26

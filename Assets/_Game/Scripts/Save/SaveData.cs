@@ -6,6 +6,7 @@ using CindarsHope.Farm;
 using CindarsHope.Player;
 using CindarsHope.Player.Death;
 using CindarsHope.Player.Progression;
+using CindarsHope.Skills;
 using CindarsHope.UI.Hotbar;
 using CindarsHope.World;
 using UnityEngine;
@@ -36,6 +37,7 @@ namespace CindarsHope.Save
         public GameTimeSaveData GameTime;
         public PlayerStatusEffectsSaveData PlayerStatusEffects;
         public ActiveSkillSlotsSaveData ActiveSkillSlots;
+        public SkillTreeSaveData SkillTree;
     }
 
     [Serializable]

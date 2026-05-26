@@ -22,7 +22,7 @@ A etapa 00 foi reclassificada como implementado documental parcial. As specs run
 | 13 | [spec_enemy_ai_roster_bestiary_faction_locks_runtime](implementados/spec_enemy_ai_roster_bestiary_faction_locks_runtime.md) | Implementado parcial | 00-12 | 14, 15, 17 | Cave generation pode distribuir inimigos sem regras finais. |
 | 14 | [spec_cave_runtime_generation_checkpoints_boss_gates](a_implementar/spec_cave_runtime_generation_checkpoints_boss_gates.md) | A implementar | 00-13 | 15, 17 | Entry/death pode quebrar replay se cave ainda rerollar. |
 | 15 | [spec_cave_entry_death_anya_corpse_recovery](implementados/spec_cave_entry_death_anya_corpse_recovery.md) | Implementado em codigo - Play Mode humano pendente | 00-14 | 16, 17 | Skill respec e UI podem criar fluxos sem falha/recovery definidos. |
-| 16 | [spec_skill_trees_active_slots_respec_anya_runtime](a_implementar/spec_skill_trees_active_slots_respec_anya_runtime.md) | A implementar | 00-15 | 17 | UI final pode expor skill tree incompleta ou sem persistencia. |
+| 16 | [spec_skill_trees_active_slots_respec_anya_runtime](implementados/spec_skill_trees_active_slots_respec_anya_runtime.md) | Implementado em codigo - Play Mode humano pendente | 00-15 | 17 | UI final pode expor skill tree incompleta ou sem persistencia. |
 | 17 | [spec_ui_ux_full_gameplay_inventory_hotbar_menus](a_implementar/spec_ui_ux_full_gameplay_inventory_hotbar_menus.md) | A implementar | 00-16 | Nenhuma | UI pode cristalizar contratos de sistemas ainda instaveis se antecipada. |
 
 ## Observacao operacional
@@ -38,4 +38,4 @@ A primeira spec futura executavel passa a ser `a_implementar/spec_player_combat_
 
 A spec 15 foi implementada em codigo em 2026-05-25/26. Compile validation requer Unity Editor fechado para rodar RunUnityCompileValidation.ps1. Play Mode humano permanece pendente.
 
-A spec 16 permanece a implementar. SkillTreeManager e SkillNodeDataSO sao basicos. Nao existem 5 arvores, SkillTreePanel, SkillRespecService, capstones ou save/load completo de skill tree.
+A spec 16 foi implementada em codigo em 2026-05-26. SkillTreeManager reescrito como MonoBehaviour; 5 arvores (55 nodes); SkillPurchaseService, SkillRespecService, SkillPassiveApplicator; SkillTreePanel com tecla K; save/load v5; respec na Fonte de Anya habilitado. Compile validation requer Unity Editor fechado. Play Mode humano pendente.

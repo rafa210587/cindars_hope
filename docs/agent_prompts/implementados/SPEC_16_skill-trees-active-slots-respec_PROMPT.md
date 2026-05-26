@@ -1,9 +1,5 @@
 # Prompt para Claude Code/Codex — Cindar's Hope
 
-> ⚠️ **MOVIDO** — Este prompt foi implementado em 2026-05-26.
-> Versão atualizada em: `docs/agent_prompts/implementados/SPEC_16_skill-trees-active-slots-respec_PROMPT.md`
-
-
 **Use o fluxo oficial:**
 
 ```text

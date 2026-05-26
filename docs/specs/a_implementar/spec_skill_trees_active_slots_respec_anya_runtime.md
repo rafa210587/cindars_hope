@@ -1,7 +1,10 @@
 # SPEC - Skill trees, active slots e respec na Fonte de Anya
 
+> ⚠️ **IMPLEMENTADO** — Esta spec foi implementada em 2026-05-26.
+> Versão ativa em: `docs/specs/implementados/spec_skill_trees_active_slots_respec_anya_runtime.md`
+
 > Spec ID: spec_skill_trees_active_slots_respec_anya_runtime
-> Status: A implementar
+> Status: IMPLEMENTADO em codigo - Play Mode humano pendente
 > Ordem de execucao: 16
 > Depende de: 00-15
 > Bloqueia: 17

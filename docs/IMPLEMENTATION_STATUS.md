@@ -34,6 +34,7 @@
 | Player Combat/weapons/spells/skill actions (Spec 12) | Implementado parcial | `docs/specs/implementados/spec_player_combat_weapons_spells_skill_actions_runtime.md` |
 | UI/Input/Shop/Sell Bugfix Bundle (Post-SPEC 12) | Implementado completo | `docs/specs/implementados/spec_bugfix_ui_input_shop_sell_bundle.md` |
 | Enemy AI/roster/bestiary/faction locks (Spec 13) | Implementado parcial | `docs/specs/implementados/spec_enemy_ai_roster_bestiary_faction_locks_runtime.md` |
+| Skill trees/active slots/respec Anya (Spec 16) | Implementado em codigo - Play Mode humano pendente | `docs/specs/implementados/spec_skill_trees_active_slots_respec_anya_runtime.md` |
 
 ## Correcoes de tracking obrigatorias
 
@@ -160,15 +161,34 @@ Evidencia: `docs/validation/SPEC15_FINALIZATION_SPEC16_PHASE0_VALIDATION_2026052
 
 ### Skill trees, active slots, respec e Anya (SPEC 16) - Status 2026-05-26
 
-Status: A implementar. NAO implementada nesta execucao.
+Status: Implementado em codigo; compile validation PASS esperado; Play Mode humano pendente.
 
-Evidencias de que permanece pendente:
-- SkillTreeManager: basico (sem 5 arvores completas, sem capstones, sem respec)
-- SkillNodeDataSO: basico (sem passives/equippables completos)
-- SkillTreePanel: nao existe
-- SkillRespecService: nao existe
-- Skill tree save/load: nao existe
-- 55 nodes / 5 arvores: nao existem
+SPEC 16 implementada em 2026-05-26:
+- SkillNodeDataSO expandido: NodeType, SkillCategory, IsCapstone, PrerequisiteNodeIds, PassiveModifiers
+- SkillTreeDataSO expandido: CapstoneNodeId, Nodes list
+- SkillEnums: SkillNodeType, SkillCategory, SkillModifierType, SkillTreeId
+- DefaultSkillCatalog: 55 nodes / 5 arvores (Melee, Ranged, Magic, Survival, Crafting) criados via codigo
+- SkillTreeRegistrySO e SkillNodeDatabaseSO: extencoes de DataRegistrySO para inspector-wired assets
+- SkillTreeManager reescrito como MonoBehaviour com DefaultSkillCatalog fallback
+- SkillPurchaseService: validacao de custo, prerequisites, level minimo, capstone rules
+- SkillRespecService: full respec, primeiro gratuito, seguintes custam 250g configuravel
+- SkillPassiveApplicator: aplica modificadores passivos aos derived stats
+- DerivedStatsCalculator expandido: aceita IList<SkillPassiveModifier>
+- SkillTreePanel (CindarsHope.UI.Skills): modal com tecla K, abas Q/E, nav W/S, compra, equipar R/T/Y/G
+- SkillTreeInputHandler: handler dedicado para tecla K abrir SkillTreePanel
+- AnyaFountainMenu: respec button habilitado, custo exibido, integrado com SkillRespecService
+- ActiveSkillSlots: subscriber de ActiveSkillSlotAssignedEvent/ActiveSkillSlotClearedEvent
+- SkillTreeSaveData e SaveV4ToV5Migration: persistencia de PurchasedNodeIds, ActiveSkillSlots, RespecCount
+- SaveManager v5: captura e restaura SkillTree, registra SaveV4ToV5Migration
+- GameBootstrap: expoe SkillTreeManager
+- SkillTreeEvents: 14 eventos novos
+
+Pendentes:
+- Fechar Unity Editor e rodar RunUnityCompileValidation.ps1
+- Play Mode humano (subir level par, comprar nodes, equipar slot, respec na Anya)
+- UI polish final (SPEC 17)
+
+Evidencia: `docs/validation/SPEC16_SKILL_TREES_VALIDATION_20260526.md`
 
 ## Specs futuras
 
