@@ -15,6 +15,8 @@ namespace CindarsHope.UI.Locations
 
         private AnyaRespawnService _respawnService;
 
+        public override ModalType ModalType => ModalType.AnyaFountain;
+
         private void OnEnable()
         {
             if (_returnToCaveButton != null)

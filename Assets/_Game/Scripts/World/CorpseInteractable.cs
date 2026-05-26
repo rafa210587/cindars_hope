@@ -1,6 +1,7 @@
 using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
+using CindarsHope.Interaction;
 using CindarsHope.Player.Death;
 using CindarsHope.UI.Death;
 using UnityEngine;
@@ -12,24 +13,24 @@ namespace CindarsHope.World
     public class CorpseInteractable : MonoBehaviour, IInteractable
     {
         [SerializeField] private string _corpseId;
+        [SerializeField] private CorpseRecoveryUIController _uiController;
         private Corpse _corpse;
         private CorpseRecoveryManager _recoveryManager;
-        private CorpseRecoveryUIController _uiController;
 
-        public string InteractableName => $"Corpse ({_corpse?.GetTotalRecoverableItems() ?? 0} items)";
         public string InteractionPrompt => "Press E to recover items";
+
+        public bool CanInteract(GameObject interactor)
+        {
+            return isActiveAndEnabled
+                && _corpse != null
+                && _corpse.Status == CorpseStatus.Active;
+        }
 
         public void Initialize(Corpse corpse, CorpseRecoveryManager recoveryManager)
         {
             _corpse = corpse;
             _corpseId = corpse.CorpseId;
             _recoveryManager = recoveryManager;
-
-            var bootstrap = GameBootstrap.Instance;
-            if (bootstrap != null)
-            {
-                _uiController = FindObjectOfType<CorpseRecoveryUIController>();
-            }
         }
 
         public void Interact(GameObject interactor)

@@ -165,6 +165,31 @@ namespace CindarsHope.Inventory
             return true;
         }
 
+        public List<InventoryItemSnapshot> GetAllItems()
+        {
+            var result = new List<InventoryItemSnapshot>();
+
+            foreach (var slot in _slots)
+            {
+                if (slot == null || slot.IsEmpty)
+                {
+                    continue;
+                }
+
+                result.Add(new InventoryItemSnapshot
+                {
+                    ItemId = slot.ItemId,
+                    Amount = slot.Amount,
+                    ItemInstanceId = slot.EquipmentBindingId ?? string.Empty,
+                    DurabilityCurrent = 1f,
+                    DurabilityMax = 1f,
+                    IsBroken = false
+                });
+            }
+
+            return result;
+        }
+
         public InventorySaveData CaptureSaveData()
         {
             RebuildAggregate();
@@ -594,5 +619,15 @@ namespace CindarsHope.Inventory
                 }
             }
         }
+    }
+
+    public sealed class InventoryItemSnapshot
+    {
+        public string ItemId;
+        public int Amount;
+        public string ItemInstanceId;
+        public float DurabilityCurrent;
+        public float DurabilityMax;
+        public bool IsBroken;
     }
 }

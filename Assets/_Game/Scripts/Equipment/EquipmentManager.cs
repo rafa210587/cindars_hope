@@ -83,6 +83,46 @@ namespace CindarsHope.Equipment
             return _slots.TryGetValue(slot, out var itemInstanceId) ? itemInstanceId : null;
         }
 
+        public List<EquippedItemSnapshot> GetAllEquippedItems()
+        {
+            var result = new List<EquippedItemSnapshot>();
+
+            foreach (var kvp in _slots)
+            {
+                var slot = kvp.Key;
+                var itemInstanceId = kvp.Value;
+
+                if (string.IsNullOrEmpty(itemInstanceId))
+                {
+                    continue;
+                }
+
+                var durData = _durabilityTracker?.GetDurability(itemInstanceId);
+
+                result.Add(new EquippedItemSnapshot
+                {
+                    ItemId = itemInstanceId,
+                    ItemInstanceId = itemInstanceId,
+                    DurabilityCurrent = durData?.CurrentDurability ?? 1f,
+                    DurabilityMax = durData?.MaxDurability ?? 1f,
+                    IsBroken = durData?.IsBroken ?? false,
+                    SlotType = slot,
+                    SlotIndex = (int)slot
+                });
+            }
+
+            return result;
+        }
+
+        public void UnequipAll()
+        {
+            var slotsToUnequip = new List<EquipmentSlot>(_slots.Keys);
+            foreach (var slot in slotsToUnequip)
+            {
+                UnequipSlot(slot);
+            }
+        }
+
         public void RegisterEquipmentUsage()
         {
             RegisterEquipmentUsage(GetEquippedItem(EquipmentSlot.LeftHand) ?? string.Empty);
@@ -341,5 +381,16 @@ namespace CindarsHope.Equipment
                     return string.Empty;
             }
         }
+    }
+
+    public sealed class EquippedItemSnapshot
+    {
+        public string ItemId;
+        public string ItemInstanceId;
+        public float DurabilityCurrent;
+        public float DurabilityMax;
+        public bool IsBroken;
+        public EquipmentSlot SlotType;
+        public int SlotIndex;
     }
 }

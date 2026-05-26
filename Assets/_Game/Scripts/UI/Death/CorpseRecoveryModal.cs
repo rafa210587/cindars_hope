@@ -16,6 +16,8 @@ namespace CindarsHope.UI.Death
         private CorpseRecoveryManager _recoveryManager;
         private Corpse _corpse;
 
+        public override ModalType ModalType => ModalType.CorpseRecovery;
+
         private void OnEnable()
         {
             if (_recoverButton != null)

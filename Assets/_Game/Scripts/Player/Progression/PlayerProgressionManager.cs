@@ -86,6 +86,20 @@ namespace CindarsHope.Player.Progression
             NormalizeState();
         }
 
+        public int ResetCurrentLevelXp()
+        {
+            NormalizeState();
+            var lostXp = _state.CurrentXp;
+            if (lostXp <= 0)
+            {
+                return 0;
+            }
+
+            _state.CurrentXp = 0;
+            GameEventBus.Publish(new PlayerXpChangedEvent(-lostXp, _state.CurrentXp, _state.XpToNextLevel, _state.Level));
+            return lostXp;
+        }
+
         private void OnEnemyKilled(EnemyKilledEvent evt)
         {
             if (evt.XpReward > 0)

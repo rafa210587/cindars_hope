@@ -1,3 +1,4 @@
+using CindarsHope.Cave.Runtime;
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
 using CindarsHope.Equipment;
@@ -72,9 +73,9 @@ namespace CindarsHope.Cave.Death
         {
             var corpse = new Corpse(Guid.NewGuid().ToString("N"));
             corpse.Status = CorpseStatus.Active;
-            corpse.RunId = _caveRunManager.State.CurrentRunSeed;
-            corpse.CaveSeed = _caveRunManager.State.CurrentRunSeed;
-            corpse.CaveLevel = _caveRunManager.CurrentLevel;
+            corpse.RunId = _caveRunManager.State.CaveRunSeed;
+            corpse.CaveSeed = _caveRunManager.State.CaveRunSeed;
+            corpse.CaveLevel = _caveRunManager.CurrentCaveLevel;
             corpse.SceneName = SceneManager.GetActiveScene().name;
             corpse.Position = GetPlayerPosition();
             corpse.CreatedAtGameDay = GetCurrentGameDay();
@@ -159,8 +160,8 @@ namespace CindarsHope.Cave.Death
                 return;
             }
 
-            var currentLevel = _progressionManager.CurrentLevel;
-            var lostXp = _progressionManager.CurrentLevelXpProgress;
+            var currentLevel = _progressionManager.Level;
+            var lostXp = _progressionManager.CurrentXp;
 
             _progressionManager.ResetCurrentLevelXp();
 
@@ -184,8 +185,8 @@ namespace CindarsHope.Cave.Death
                 GameEventBus.Publish(new CavePlayerDeathResolvedEvent
                 {
                     CorpseId = corpse.CorpseId,
-                    CaveRunId = _caveRunManager.State.CurrentRunSeed,
-                    CaveLevel = _caveRunManager.CurrentLevel
+                    CaveRunId = _caveRunManager.State.CaveRunSeed,
+                    CaveLevel = _caveRunManager.CurrentCaveLevel
                 });
 
                 if (_policy.RedistributeEnemies)

@@ -1,6 +1,7 @@
 using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
+using CindarsHope.Interaction;
 using CindarsHope.Player.Death;
 using CindarsHope.UI.Locations;
 using CindarsHope.World;
@@ -13,11 +14,15 @@ namespace CindarsHope.Locations
     public class AnyaFountainInteractable : MonoBehaviour, IInteractable
     {
         [SerializeField] private AnyaFountain _fountain;
-        private AnyaFountainUIController _uiController;
+        [SerializeField] private AnyaFountainUIController _uiController;
         private AnyaRespawnService _respawnService;
 
-        public string InteractableName => "Anya's Fountain";
         public string InteractionPrompt => "Press E to interact";
+
+        public bool CanInteract(GameObject interactor)
+        {
+            return isActiveAndEnabled;
+        }
 
         private void OnEnable()
         {
@@ -35,8 +40,6 @@ namespace CindarsHope.Locations
                     bootstrap.ManaManager,
                     bootstrap.AnyaFountain.RespawnPoint
                 );
-
-                _uiController = FindObjectOfType<AnyaFountainUIController>();
             }
         }
 

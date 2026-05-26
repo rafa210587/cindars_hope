@@ -133,6 +133,29 @@ Regra atual: +1 SkillPoint em niveis pares, comecando no level 2.
 AttributePoint: +1 por level up.
 Pendentes: gasto/distribuicao final de atributos, skill trees completas, active slots, capstones, respec Fonte de Anya e save/load completo.
 
+### Cave entry, death, Anya e corpse recovery (SPEC 15) - Status 2026-05-25
+
+Status: Implementado codigo - validacao cache Unity pendente.
+
+SPEC 15 finalizacao concluda:
+- Fixed 16 compilation errors across modal stack, dependency injection, event system, and save/load infrastructure
+- Created ModalBase abstract class for modal UI lifecycle
+- Implemented ModalManager.OpenModal<T>() for type-safe modal instantiation
+- Added input blocking for skills (R, T, Y, G) when modal active
+- Corrected CaveRunManager and PlayerProgressionManager API mismatches
+- Implemented inventory/equipment snapshot system for corpse transfer
+- Created PlayerProgressionEvents (XpChanged, LevelChanged)
+- Removed all global FindObjectOfType()/FindAnyObjectByType() calls
+- Implemented IInteractable contract on all interactables
+
+Pendentes:
+- Full Library cache rebuild to resolve residual CorpseSaveData duplicate definition artifact
+- Human Play Mode validation of death flow, Anya respawn, corpse recovery modal
+- Final UI polish and accessibility pass (spec 17)
+- Balance tuning of death penalties (XP loss, item penalties)
+
+Evidencia: `docs/validation/SPEC15_FINALIZATION_SPEC16_PHASE0_VALIDATION_20260525.md`
+
 ## Specs futuras
 
 A ordem oficial esta em `docs/specs/SPEC_EXECUTION_ORDER.md` e o registry futuro em `docs/specs/SPEC_REGISTRY_TO_IMPLEMENT.md`.

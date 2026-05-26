@@ -11,7 +11,10 @@ namespace CindarsHope.UI.Modal
         Buy,
         Sell,
         Crafting,
-        Inventory
+        Inventory,
+        CorpseRecovery,
+        AnyaFountain,
+        SkillTree
     }
 
     [DisallowMultipleComponent]
@@ -94,6 +97,27 @@ namespace CindarsHope.UI.Modal
         {
             _modalStack.Clear();
             Debug.Log("All modals cleared");
+        }
+
+        public T OpenModal<T>(T prefab) where T : ModalBase
+        {
+            if (prefab == null)
+            {
+                Debug.LogWarning("Cannot open modal: prefab is null");
+                return null;
+            }
+
+            if (!PushModal(prefab.ModalType))
+            {
+                Debug.LogWarning($"Cannot open modal {prefab.ModalType}: another modal is active or stack rejected the push");
+                return null;
+            }
+
+            var instance = Instantiate(prefab, transform);
+            instance.InitializeModal(this);
+            instance.ShowModal();
+
+            return instance;
         }
     }
 }

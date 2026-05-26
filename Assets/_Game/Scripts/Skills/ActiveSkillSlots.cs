@@ -1,5 +1,7 @@
 using System;
 using CindarsHope.Core;
+using CindarsHope.Core.Bootstrap;
+using CindarsHope.UI.Modal;
 using UnityEngine;
 
 namespace CindarsHope.Skills
@@ -40,12 +42,16 @@ namespace CindarsHope.Skills
             }
             if (_skillExecutor == null)
             {
-                _skillExecutor = FindAnyObjectByType<SkillActionExecutor>();
+                Debug.LogWarning("ActiveSkillSlots: SkillActionExecutor not assigned in inspector and not found on same GameObject. Skill activation will not work.", this);
             }
         }
 
         private void Update()
         {
+            // Check if modal is active - don't process skill input while modal is open
+            var modalManager = GameBootstrap.Instance?.ModalManager;
+            bool isModalActive = modalManager != null && modalManager.HasActiveModal;
+
             foreach (var slot in _slots)
             {
                 if (slot.CooldownRemaining > 0)
@@ -53,7 +59,8 @@ namespace CindarsHope.Skills
                     slot.CooldownRemaining -= Time.deltaTime;
                 }
 
-                if (Input.GetKeyDown(slot.InputKey))
+                // Only process input activation if no modal is active
+                if (!isModalActive && Input.GetKeyDown(slot.InputKey))
                 {
                     TryActivateSlot(slot);
                 }
