@@ -90,7 +90,7 @@ namespace CindarsHope.Player.Death
             var inventoryItemsToRemove = new System.Collections.Generic.List<CorpseItem>();
             foreach (var corpseItem in _activeCorpse.InventoryItems)
             {
-                if (_inventoryManager.TryAddItem(corpseItem.ItemId, corpseItem.Amount, corpseItem.ItemInstanceId))
+                if (_inventoryManager.TryAddItem(corpseItem.ItemId, corpseItem.Amount).Success)
                 {
                     inventoryItemsToRemove.Add(corpseItem);
                 }
@@ -114,7 +114,7 @@ namespace CindarsHope.Player.Death
                     _equipmentManager.EquipItem((EquipmentSlot)corpseItem.SourceSlotType, corpseItem.ItemInstanceId);
                     equipmentItemsToRemove.Add(corpseItem);
                 }
-                else if (_inventoryManager.TryAddItem(corpseItem.ItemId, 1, corpseItem.ItemInstanceId))
+                else if (_inventoryManager.TryAddItem(corpseItem.ItemId, 1).Success)
                 {
                     equipmentItemsToRemove.Add(corpseItem);
                 }
