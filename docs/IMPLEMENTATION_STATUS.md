@@ -37,6 +37,7 @@
 | Skill trees/active slots/respec Anya (Spec 16) | Implementado em codigo - Play Mode humano pendente | `docs/specs/implementados/spec_skill_trees_active_slots_respec_anya_runtime.md` |
 | UI Gameplay MVP: shops/sell/equipment/attributes/skills (Spec 17 incremento) | Implementado em codigo - Play Mode humano pendente; SPEC 17B ampla permanece aberta | `docs/specs/a_implementar/spec_ui_ux_full_gameplay_inventory_hotbar_menus.md`, `docs/validation/SPEC17_UI_GAMEPLAY_MVP_VALIDATION_20260526.md` |
 | UI Gameplay closeout: skills/shop/K-L/prompts/actions (Spec 17C) | Implementado em codigo - gates automaticos PASS; Play Mode humano pendente | `docs/specs/a_implementar/spec_ui_gameplay_closeout_skill_shop_prompts_actions_hud.md`, `docs/validation/SPEC17C_CLOSEOUT_VALIDATION_20260526.md` |
+| UI Gameplay shop injection/equipment slot picker (Spec 17D) | Implementado em codigo - dotnet compile PASS; Unity/Play Mode pendentes | `docs/specs/a_implementar/spec_ui_gameplay_shop_injection_equipment_slot_picker_closeout.md`, `docs/validation/SPEC17D_CLOSEOUT_VALIDATION_20260526.md` |
 
 ## Correcoes de tracking obrigatorias
 

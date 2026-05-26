@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using CindarsHope.Core;
 using CindarsHope.Core.Data;
 using CindarsHope.Core.Events;
+using CindarsHope.Equipment;
 using CindarsHope.Inventory.Data;
 using CindarsHope.Player.Data;
 using CindarsHope.Save;
@@ -428,6 +429,54 @@ namespace CindarsHope.Inventory
             return true;
         }
 
+        public bool MarkSlotEquipped(int slotIndex, EquipmentSlot equipmentSlot)
+        {
+            return equipmentSlot != EquipmentSlot.None
+                && MarkSlotEquipped(slotIndex, GetEquipmentSlotBindingId(equipmentSlot));
+        }
+
+        public bool ClearEquippedBindingAtSlot(int slotIndex)
+        {
+            if (!TryGetSlot(slotIndex, out var slot) || slot.IsEmpty || !slot.IsEquipped)
+            {
+                return false;
+            }
+
+            slot.IsEquipped = false;
+            slot.EquipmentBindingId = string.Empty;
+            return true;
+        }
+
+        public bool ClearEquippedBinding(EquipmentSlot equipmentSlot, string legacyItemId = null)
+        {
+            var bindingId = GetEquipmentSlotBindingId(equipmentSlot);
+            foreach (var slot in _slots)
+            {
+                if (slot != null && !slot.IsEmpty && slot.IsEquipped && slot.EquipmentBindingId == bindingId)
+                {
+                    slot.IsEquipped = false;
+                    slot.EquipmentBindingId = string.Empty;
+                    return true;
+                }
+            }
+
+            // Legacy SPEC 17 bindings stored item IDs; clear one matching stack only.
+            if (!string.IsNullOrWhiteSpace(legacyItemId))
+            {
+                foreach (var slot in _slots)
+                {
+                    if (slot != null && !slot.IsEmpty && slot.IsEquipped && slot.ItemId == legacyItemId)
+                    {
+                        slot.IsEquipped = false;
+                        slot.EquipmentBindingId = string.Empty;
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
         public bool ClearEquippedBinding(string equipmentBindingId)
         {
             var changed = false;
@@ -449,6 +498,11 @@ namespace CindarsHope.Inventory
             }
 
             return changed;
+        }
+
+        private static string GetEquipmentSlotBindingId(EquipmentSlot equipmentSlot)
+        {
+            return $"equipment-slot:{equipmentSlot}";
         }
 
         public bool ExpandCapacity(int newCapacity)

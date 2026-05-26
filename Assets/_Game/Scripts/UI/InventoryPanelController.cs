@@ -1,3 +1,4 @@
+using System;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Equipment;
 using CindarsHope.Inventory;
@@ -15,7 +16,8 @@ namespace CindarsHope.UI
         {
             Slots,
             Actions,
-            DestroyConfirm
+            DestroyConfirm,
+            EquipmentSelection
         }
 
         private static InventoryPanelController _instance;
@@ -28,6 +30,8 @@ namespace CindarsHope.UI
         private int _selectedSlotIndex;
         private int _selectedActionIndex;
         private string _message = string.Empty;
+        private EquipmentSlot _targetEquipmentSlot = EquipmentSlot.None;
+        private Action<bool, string> _onEquipmentSelectionClosed;
         private readonly string[] _actions = { "Use", "Equip", "Drop", "Destroy", "Split", "Cancel" };
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -94,6 +98,9 @@ namespace CindarsHope.UI
                 case PanelMode.DestroyConfirm:
                     UpdateDestroyConfirmation();
                     break;
+                case PanelMode.EquipmentSelection:
+                    UpdateEquipmentSelectionNavigation();
+                    break;
             }
         }
 
@@ -111,7 +118,10 @@ namespace CindarsHope.UI
             var rect = new Rect((Screen.width - width) * 0.5f, (Screen.height - height) * 0.5f, width, height);
 
             GUILayout.BeginArea(rect, GUI.skin.window);
-            GUILayout.Label($"Inventory ({GetFilledSlotCount()}/{GetCapacity()})");
+            var title = _mode == PanelMode.EquipmentSelection
+                ? $"Selecionar para {_targetEquipmentSlot} ({GetFilledSlotCount()}/{GetCapacity()})"
+                : $"Inventory ({GetFilledSlotCount()}/{GetCapacity()})";
+            GUILayout.Label(title);
             DrawSlots();
             DrawSelectedDetails();
 
@@ -130,9 +140,16 @@ namespace CindarsHope.UI
                 GUILayout.Label(_message);
             }
 
-            if (GUILayout.Button("Fechar"))
+            if (GUILayout.Button(_mode == PanelMode.EquipmentSelection ? "Cancelar (Esc)" : "Fechar"))
             {
-                ClosePanel();
+                if (_mode == PanelMode.EquipmentSelection)
+                {
+                    CompleteEquipmentSelection(false, "Selecao cancelada.");
+                }
+                else
+                {
+                    ClosePanel();
+                }
             }
 
             GUILayout.EndArea();
@@ -142,6 +159,12 @@ namespace CindarsHope.UI
         {
             if (_isOpen)
             {
+                if (_mode == PanelMode.EquipmentSelection)
+                {
+                    CompleteEquipmentSelection(false, "Selecao cancelada.");
+                    return;
+                }
+
                 ClosePanel();
                 return;
             }
@@ -158,8 +181,53 @@ namespace CindarsHope.UI
             _message = string.Empty;
         }
 
+        public static bool OpenForEquipmentSelection(EquipmentSlot targetSlot, Action<bool, string> onClosed)
+        {
+            return _instance != null
+                && targetSlot != EquipmentSlot.None
+                && _instance.OpenEquipmentSelection(targetSlot, onClosed);
+        }
+
+        private bool OpenEquipmentSelection(EquipmentSlot targetSlot, Action<bool, string> onClosed)
+        {
+            ResolveInventoryManager();
+            ResolveEquipmentManager();
+            ResolveModalManager();
+            if (_inventoryManager == null || _equipmentManager == null || _modalManager == null)
+            {
+                Debug.LogError(
+                    $"Scene '{gameObject.scene.path}' GameObject '{gameObject.name}' component '{nameof(InventoryPanelController)}' cannot open selection for slot '{targetSlot}': required manager missing.",
+                    this);
+                return false;
+            }
+
+            if (_isOpen)
+            {
+                ClosePanel();
+            }
+
+            if (!_modalManager.PushModal(ModalType.Inventory))
+            {
+                return false;
+            }
+
+            _targetEquipmentSlot = targetSlot;
+            _onEquipmentSelectionClosed = onClosed;
+            _selectedSlotIndex = FindFirstCompatibleSlotIndex(targetSlot);
+            _message = "Escolha um item compativel ou pressione Esc para voltar.";
+            _mode = PanelMode.EquipmentSelection;
+            _isOpen = true;
+            return true;
+        }
+
         private void CloseOrBack()
         {
+            if (_mode == PanelMode.EquipmentSelection)
+            {
+                CompleteEquipmentSelection(false, "Selecao cancelada.");
+                return;
+            }
+
             if (_mode == PanelMode.Slots)
             {
                 ClosePanel();
@@ -227,6 +295,30 @@ namespace CindarsHope.UI
                 }
 
                 _mode = PanelMode.Slots;
+            }
+        }
+
+        private void UpdateEquipmentSelectionNavigation()
+        {
+            if (Input.GetKeyDown(KeyCode.A))
+            {
+                MoveSelectionToCompatible(-1);
+            }
+            else if (Input.GetKeyDown(KeyCode.D))
+            {
+                MoveSelectionToCompatible(1);
+            }
+            else if (Input.GetKeyDown(KeyCode.W))
+            {
+                MoveSelectionToCompatible(-6);
+            }
+            else if (Input.GetKeyDown(KeyCode.S))
+            {
+                MoveSelectionToCompatible(6);
+            }
+            else if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.E))
+            {
+                SelectEquipmentSlot(_selectedSlotIndex);
             }
         }
 
@@ -351,16 +443,27 @@ namespace CindarsHope.UI
                     _inventoryManager.TryGetSlot(slotIndex, out var slot);
                     var label = FormatSlotLabel(slotIndex, slot);
                     var previousColor = GUI.color;
+                    var previousEnabled = GUI.enabled;
+                    var selectable = _mode != PanelMode.EquipmentSelection || IsCompatibleSlot(slotIndex, _targetEquipmentSlot);
                     if (slotIndex == _selectedSlotIndex)
                     {
                         GUI.color = Color.yellow;
                     }
 
+                    GUI.enabled = selectable;
                     if (GUILayout.Button(label, GUILayout.Width(92f), GUILayout.Height(44f)))
                     {
                         _selectedSlotIndex = slotIndex;
-                        _mode = PanelMode.Actions;
+                        if (_mode == PanelMode.EquipmentSelection)
+                        {
+                            SelectEquipmentSlot(slotIndex);
+                        }
+                        else
+                        {
+                            _mode = PanelMode.Actions;
+                        }
                     }
+                    GUI.enabled = previousEnabled;
                     GUI.color = previousColor;
                 }
 
@@ -379,6 +482,10 @@ namespace CindarsHope.UI
 
             var equipped = slot.IsEquipped ? $" [{slot.EquipmentBindingId}]" : string.Empty;
             GUILayout.Label($"Selected: {slot.ItemId} x{slot.Amount}{equipped}");
+            if (_mode == PanelMode.EquipmentSelection && !IsCompatibleSlot(_selectedSlotIndex, _targetEquipmentSlot))
+            {
+                GUILayout.Label($"Incompativel com {_targetEquipmentSlot}.");
+            }
         }
 
         private void DrawActions()
@@ -487,7 +594,7 @@ namespace CindarsHope.UI
                 {
                     _equipmentManager.UnequipSlot(currentSlot);
                 }
-                _inventoryManager.ClearEquippedBinding(slot.ItemId);
+                _inventoryManager.ClearEquippedBindingAtSlot(_selectedSlotIndex);
                 _message = "Item desequipado.";
                 return;
             }
@@ -499,10 +606,100 @@ namespace CindarsHope.UI
                 return;
             }
 
-            _equipmentManager.EquipItem(equipmentSlot, slot.ItemId);
-            _message = _inventoryManager.MarkSlotEquipped(_selectedSlotIndex, slot.ItemId)
+            ReplaceEquippedItem(equipmentSlot, _selectedSlotIndex, slot);
+            _message = _inventoryManager.MarkSlotEquipped(_selectedSlotIndex, equipmentSlot)
                 ? $"Item equipado em {equipmentSlot}."
                 : "Não foi possível equipar o item.";
+        }
+
+        private void SelectEquipmentSlot(int slotIndex)
+        {
+            if (_inventoryManager == null
+                || !_inventoryManager.TryGetSlot(slotIndex, out var slot)
+                || slot.IsEmpty
+                || !IsCompatibleSlot(slotIndex, _targetEquipmentSlot))
+            {
+                _message = $"Item incompativel com {_targetEquipmentSlot}.";
+                return;
+            }
+
+            ReplaceEquippedItem(_targetEquipmentSlot, slotIndex, slot);
+            if (!_inventoryManager.MarkSlotEquipped(slotIndex, _targetEquipmentSlot))
+            {
+                _message = "Nao foi possivel marcar o item equipado.";
+                return;
+            }
+
+            CompleteEquipmentSelection(true, $"{slot.ItemId} equipado em {_targetEquipmentSlot}.");
+        }
+
+        private void ReplaceEquippedItem(EquipmentSlot equipmentSlot, int slotIndex, InventorySlot slot)
+        {
+            var previousItemId = _equipmentManager.GetEquippedItem(equipmentSlot);
+            if (!string.IsNullOrWhiteSpace(previousItemId))
+            {
+                _inventoryManager.ClearEquippedBinding(equipmentSlot, previousItemId);
+            }
+
+            if (slot.IsEquipped)
+            {
+                _inventoryManager.ClearEquippedBindingAtSlot(slotIndex);
+            }
+
+            _equipmentManager.EquipItem(equipmentSlot, slot.ItemId);
+        }
+
+        private bool IsCompatibleSlot(int slotIndex, EquipmentSlot equipmentSlot)
+        {
+            return _inventoryManager != null
+                && _inventoryManager.TryGetSlot(slotIndex, out var slot)
+                && slot != null
+                && !slot.IsEmpty
+                && _inventoryManager.TryGetItemData(slot.ItemId, out var item)
+                && item != null
+                && IsCompatibleWithEquipmentSlot(item, equipmentSlot);
+        }
+
+        private int FindFirstCompatibleSlotIndex(EquipmentSlot equipmentSlot)
+        {
+            for (var index = 0; index < GetCapacity(); index++)
+            {
+                if (IsCompatibleSlot(index, equipmentSlot))
+                {
+                    return index;
+                }
+            }
+
+            return 0;
+        }
+
+        private void MoveSelectionToCompatible(int direction)
+        {
+            var capacity = GetCapacity();
+            if (capacity <= 0)
+            {
+                return;
+            }
+
+            var candidate = Mathf.Clamp(_selectedSlotIndex + direction, 0, capacity - 1);
+            var step = direction >= 0 ? 1 : -1;
+            for (; candidate >= 0 && candidate < capacity; candidate += step)
+            {
+                if (IsCompatibleSlot(candidate, _targetEquipmentSlot))
+                {
+                    _selectedSlotIndex = candidate;
+                    return;
+                }
+            }
+        }
+
+        private void CompleteEquipmentSelection(bool selected, string message)
+        {
+            var callback = _onEquipmentSelectionClosed;
+            _onEquipmentSelectionClosed = null;
+            _targetEquipmentSlot = EquipmentSlot.None;
+            ClosePanel();
+            callback?.Invoke(selected, message);
         }
 
         private static EquipmentSlot ResolveEquipmentSlot(ItemDataSO item)
@@ -529,6 +726,37 @@ namespace CindarsHope.UI
             }
 
             return EquipmentSlot.None;
+        }
+
+        private static bool IsCompatibleWithEquipmentSlot(ItemDataSO item, EquipmentSlot equipmentSlot)
+        {
+            if (item == null || !item.IsEquippable)
+            {
+                return false;
+            }
+
+            if (equipmentSlot == EquipmentSlot.RightHand)
+            {
+                return item.Category == ItemCategory.Weapon;
+            }
+
+            if (equipmentSlot == EquipmentSlot.LeftHand)
+            {
+                return item.Category == ItemCategory.Tool;
+            }
+
+            var id = item.Id?.ToLowerInvariant() ?? string.Empty;
+            if (equipmentSlot == EquipmentSlot.Chest)
+            {
+                return id.Contains("armor");
+            }
+
+            if (equipmentSlot == EquipmentSlot.Accessory)
+            {
+                return id.Contains("accessory") || id.Contains("ring") || id.Contains("amulet");
+            }
+
+            return false;
         }
 
         private static string FormatSlotLabel(int slotIndex, InventorySlot slot)

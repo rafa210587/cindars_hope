@@ -127,10 +127,16 @@ namespace CindarsHope.UI.Character
 
         private void DrawEquipment(EquipmentManager equipment, InventoryManager inventory)
         {
-            DrawEquipmentSlot(equipment, inventory, EquipmentSlot.RightHand, "Right Hand");
-            DrawEquipmentSlot(equipment, inventory, EquipmentSlot.LeftHand, "Left Hand");
-            DrawEquipmentSlot(equipment, inventory, EquipmentSlot.Chest, "Armor");
-            DrawEquipmentSlot(equipment, inventory, EquipmentSlot.Accessory, "Accessory");
+            if (equipment == null || inventory == null)
+            {
+                GUILayout.Label("EquipmentManager ou InventoryManager nao disponivel.");
+                return;
+            }
+
+            DrawEquipmentSlot(equipment, inventory, EquipmentSlot.Chest, "Corpo + Cabeca / Armadura");
+            DrawEquipmentSlot(equipment, inventory, EquipmentSlot.RightHand, "Mao direita");
+            DrawEquipmentSlot(equipment, inventory, EquipmentSlot.LeftHand, "Mao esquerda");
+            DrawEquipmentSlot(equipment, inventory, EquipmentSlot.Accessory, "Lateral / Acessorio");
             GUILayout.Space(10f);
             GUILayout.Label("Stats derivados: bonus aplicados pelo equipamento/skills em runtime.");
         }
@@ -152,14 +158,41 @@ namespace CindarsHope.UI.Character
         {
             var itemId = equipment?.GetEquippedItem(slot);
             GUILayout.BeginHorizontal();
-            GUILayout.Label($"{label}: {(string.IsNullOrWhiteSpace(itemId) ? "vazio" : itemId)}", GUILayout.Width(340f));
-            if (!string.IsNullOrWhiteSpace(itemId) && GUILayout.Button("Desequipar"))
+            GUILayout.Label($"{label}: {(string.IsNullOrWhiteSpace(itemId) ? "vazio" : itemId)}", GUILayout.Width(260f));
+            if (GUILayout.Button(string.IsNullOrWhiteSpace(itemId) ? "Equipar" : "Trocar", GUILayout.Width(82f)))
+            {
+                OpenEquipmentSelection(slot, label);
+            }
+
+            var previousEnabled = GUI.enabled;
+            GUI.enabled = !string.IsNullOrWhiteSpace(itemId);
+            if (GUILayout.Button("Desequipar", GUILayout.Width(90f)))
             {
                 equipment.UnequipSlot(slot);
-                inventory?.ClearEquippedBinding(itemId);
+                inventory.ClearEquippedBinding(slot, itemId);
                 _feedback = $"{label} desequipado.";
             }
+            GUI.enabled = previousEnabled;
             GUILayout.EndHorizontal();
+        }
+
+        private void OpenEquipmentSelection(EquipmentSlot slot, string label)
+        {
+            Close();
+            if (!InventoryPanelController.OpenForEquipmentSelection(slot, HandleEquipmentSelectionClosed))
+            {
+                _feedback = $"Nao foi possivel abrir selecao para {label}.";
+                Debug.LogError(
+                    $"Scene '{gameObject.scene.path}' GameObject '{gameObject.name}' component '{nameof(CharacterEquipmentPanelController)}' could not open inventory selection for slot '{slot}'.",
+                    this);
+                OpenEquipmentPanel();
+            }
+        }
+
+        private void HandleEquipmentSelectionClosed(bool selected, string message)
+        {
+            _feedback = message;
+            OpenEquipmentPanel();
         }
 
         private void Toggle(PanelMode mode)
@@ -186,6 +219,27 @@ namespace CindarsHope.UI.Character
 
             _feedback = string.Empty;
             _mode = mode;
+            _isOpen = true;
+        }
+
+        private void OpenEquipmentPanel()
+        {
+            if (_isOpen)
+            {
+                _mode = PanelMode.Equipment;
+                return;
+            }
+
+            var modal = GameBootstrap.Instance?.ModalManager;
+            if (modal != null && !modal.PushModal(ModalType.CharacterEquipment))
+            {
+                Debug.LogError(
+                    $"Scene '{gameObject.scene.path}' GameObject '{gameObject.name}' component '{nameof(CharacterEquipmentPanelController)}' cannot reopen equipment modal after slot selection: modal stack rejected slot picker return.",
+                    this);
+                return;
+            }
+
+            _mode = PanelMode.Equipment;
             _isOpen = true;
         }
 

@@ -1,3 +1,36 @@
+## Sessao 2026-05-26 (24a) - SPEC 17D Shop Injection + Equipment Slot Picker
+
+**Data:** 2026-05-26
+**Foco:** endurecer buy/sell e adicionar selecao de equipamento por slot
+**Status:** Implementado em codigo; dotnet compile PASS; Unity/Play Mode humano pendentes
+
+### Acoes realizadas
+
+- `NpcShopController` agora inicializa shop antes dos paines e valida sessao/contexto exato de `BuyPanel`/`SellPanel` antes de abrir transacao.
+- Novo validator Editor `ValidateSpec17DShopUiWiring` cobre referencias, singleton de shop UI, items precificados e missing scripts em `TownScene`.
+- Modal `L` ganhou slots clicaveis para `Chest`, `RightHand`, `LeftHand` e `Accessory`, com `Equipar/Trocar` e `Desequipar`.
+- `InventoryPanelController` ganhou modo selecao filtrada por slot, com retorno/cancelamento para `L`.
+- Bindings novos do inventory passam a identificar o slot equipado; fallback legado remove somente uma stack correspondente, evitando limpeza ampla por `itemId`.
+- Spec, prompt ativo, registries e evidencias da 17D foram registrados; prompts 15/16 continuam fora da fila ativa.
+
+### Validacao
+
+- `dotnet build .\Assembly-CSharp.csproj`: PASS, 0 erros; 7 warnings legados.
+- `dotnet build .\Assembly-CSharp-Editor.csproj` com inclusao local do validator novo no csproj gerado/ignorado: PASS, 0 erros.
+- `git diff --check`: PASS.
+- Unity validation: NOT RUN.
+  Reason: outra instancia Unity mantem o projeto aberto e bloqueou `-batchmode` antes da compilacao.
+  Command attempted: `.\tools\unity\RunUnityCompileValidation.ps1 -UnityEditorPath 'C:\Program Files\Unity\Hub\Editor\6000.4.7f1\Editor\Unity.exe' -ProjectPath '.' -LogFile '.\Logs\spec17d-unity-compile-validation.log' -TimeoutSeconds 180`
+  Residual risk: Unity compile, validator novo, scanner e fluxos Play Mode nao validados localmente nesta entrega.
+- Evidencia: `docs/validation/SPEC17D_CLOSEOUT_VALIDATION_20260526.md`.
+
+### Pendente humano
+
+- Liberar a instancia Unity e executar validator/scanners; validar buy/sell dos dois shops, picker `L`, cancelamento `Esc` e save/load.
+- SPEC 17D permanece ativa ate essa evidencia ser registrada.
+
+---
+
 ## Sessao 2026-05-26 (23a) - SPEC 17C Closeout UI Gameplay
 
 **Data:** 2026-05-26

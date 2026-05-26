@@ -44,17 +44,17 @@ namespace CindarsHope.NPC
             }
 
             _modalManager?.Initialize();
-            _dialogueModal?.Initialize(_modalManager);
-            _shopMenuModal?.Initialize(_modalManager);
-            _buyPanel?.Initialize(_shopManager, _playerManager, _inventoryManager, _itemDatabase, _modalManager);
-            _sellPanel?.Initialize(_shopManager, _playerManager, _inventoryManager, _itemDatabase, _modalManager);
-
             _shopManager.Configure(_itemDatabase);
             if (!_shopManager.InitializeShop(_shopData))
             {
                 Debug.LogError($"{GetDiagnosticContext()} could not initialize shop session for '{_shopData.Id}'. Check ShopDataSO.Items and ItemDatabaseSO.", this);
                 return;
             }
+
+            _dialogueModal.Initialize(_modalManager);
+            _shopMenuModal.Initialize(_modalManager);
+            _buyPanel.Initialize(_shopManager, _playerManager, _inventoryManager, _itemDatabase, _modalManager);
+            _sellPanel.Initialize(_shopManager, _playerManager, _inventoryManager, _itemDatabase, _modalManager);
 
             _isReady = true;
         }
@@ -190,7 +190,7 @@ namespace CindarsHope.NPC
             switch (option)
             {
                 case ShopMenuOption.Buy:
-                    if (_buyPanel != null)
+                    if (EnsureTransactionUiReady(ShopMenuOption.Buy))
                     {
                         _buyPanel.Show(_shopData.Id);
                     }
@@ -200,7 +200,7 @@ namespace CindarsHope.NPC
                     }
                     break;
                 case ShopMenuOption.Sell:
-                    if (_sellPanel != null)
+                    if (EnsureTransactionUiReady(ShopMenuOption.Sell))
                     {
                         _sellPanel.Show(_shopData.Id);
                     }
@@ -213,6 +213,31 @@ namespace CindarsHope.NPC
                     BeginCloseInteraction();
                     break;
             }
+        }
+
+        private bool EnsureTransactionUiReady(ShopMenuOption option)
+        {
+            if (!_isReady || _shopManager == null || !_shopManager.TryGetSession(_shopData.Id, out _))
+            {
+                Debug.LogError(
+                    $"{GetDiagnosticContext()} cannot open '{option}' for shopId '{_shopData?.Id ?? "<null>"}': field '_shopManager' has no initialized session.",
+                    this);
+                return false;
+            }
+
+            var panelReady = option == ShopMenuOption.Buy
+                ? _buyPanel != null && _buyPanel.IsInitializedWith(_shopManager, _playerManager, _inventoryManager, _itemDatabase, _modalManager)
+                : _sellPanel != null && _sellPanel.IsInitializedWith(_shopManager, _playerManager, _inventoryManager, _itemDatabase, _modalManager);
+            if (panelReady)
+            {
+                return true;
+            }
+
+            var fieldName = option == ShopMenuOption.Buy ? "_buyPanel" : "_sellPanel";
+            Debug.LogError(
+                $"{GetDiagnosticContext()} cannot open '{option}' for shopId '{_shopData.Id}': field '{fieldName}' is not initialized with this NPC shop context.",
+                this);
+            return false;
         }
 
         private void HandlePanelBack()

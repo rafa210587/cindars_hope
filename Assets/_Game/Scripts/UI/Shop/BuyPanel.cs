@@ -60,6 +60,15 @@ namespace CindarsHope.UI.Shop
             Hide();
         }
 
+        public bool IsInitializedWith(ShopManager shopManager, PlayerManager playerManager, InventoryManager inventoryManager, ItemDatabaseSO itemDatabase, Modal.ModalManager modalManager)
+        {
+            return _shopManager == shopManager
+                && _playerManager == playerManager
+                && _inventoryManager == inventoryManager
+                && _itemDatabase == itemDatabase
+                && _modalManager == modalManager;
+        }
+
         public void Show(string shopId)
         {
             if (_shopManager == null)
