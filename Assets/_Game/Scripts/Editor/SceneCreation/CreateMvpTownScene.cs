@@ -629,7 +629,7 @@ namespace CindarsHope.Editor.SceneCreation
             SetReference(serializedMenu, "_exitButton", exitButton);
             serializedMenu.ApplyModifiedPropertiesWithoutUndo();
 
-            var buyPanel = CreatePanel(canvasObject.transform, "BuyPanel", Vector2.zero, new Vector2(760f, 560f));
+            var buyPanel = CreatePanel(canvasObject.transform, "BuyPanel", Vector2.zero, new Vector2(540f, 520f));
             var buyGold = CreateText(buyPanel.transform, "Gold", new Vector2(-260f, 235f), new Vector2(190f, 34f), "Ouro:");
             var buyFeedback = CreateText(buyPanel.transform, "Feedback", new Vector2(0f, -195f), new Vector2(640f, 40f), string.Empty);
             var buyBack = CreateButton(buyPanel.transform, "BackButton", new Vector2(280f, -235f), new Vector2(140f, 40f), "Voltar");
@@ -645,7 +645,7 @@ namespace CindarsHope.Editor.SceneCreation
             SetReference(serializedBuy, "_backButton", buyBack);
             serializedBuy.ApplyModifiedPropertiesWithoutUndo();
 
-            var sellPanel = CreatePanel(canvasObject.transform, "SellPanel", Vector2.zero, new Vector2(760f, 560f));
+            var sellPanel = CreatePanel(canvasObject.transform, "SellPanel", Vector2.zero, new Vector2(540f, 520f));
             var sellGold = CreateText(sellPanel.transform, "Gold", new Vector2(-260f, 235f), new Vector2(190f, 34f), "Ouro:");
             var sellFeedback = CreateText(sellPanel.transform, "Feedback", new Vector2(0f, -195f), new Vector2(640f, 40f), string.Empty);
             var sellBack = CreateButton(sellPanel.transform, "BackButton", new Vector2(280f, -235f), new Vector2(140f, 40f), "Voltar");
@@ -906,7 +906,7 @@ namespace CindarsHope.Editor.SceneCreation
 
         private static BuyPanelItem CreateBuyItemTemplate(Transform parent)
         {
-            var item = CreatePanel(parent, "BuyItemTemplate", Vector2.zero, new Vector2(680f, 48f));
+            var item = CreatePanel(parent, "BuyItemTemplate", Vector2.zero, new Vector2(500f, 48f));
             item.AddComponent<LayoutElement>().preferredHeight = 48f;
             var component = item.AddComponent<BuyPanelItem>();
             var serialized = new SerializedObject(component);
@@ -922,7 +922,7 @@ namespace CindarsHope.Editor.SceneCreation
 
         private static SellPanelItem CreateSellItemTemplate(Transform parent)
         {
-            var item = CreatePanel(parent, "SellItemTemplate", Vector2.zero, new Vector2(680f, 48f));
+            var item = CreatePanel(parent, "SellItemTemplate", Vector2.zero, new Vector2(500f, 48f));
             item.AddComponent<LayoutElement>().preferredHeight = 48f;
             var component = item.AddComponent<SellPanelItem>();
             var serialized = new SerializedObject(component);

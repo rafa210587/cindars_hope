@@ -12,6 +12,7 @@ namespace CindarsHope.Skills
         [SerializeField] private SkillTreeRegistrySO _treeRegistry;
         [SerializeField] private SkillNodeDatabaseSO _nodeDatabase;
         [SerializeField] private int _respecCostGold = 250;
+        [SerializeField] private PlayerProgressionManager _progressionManager;
 
         private SkillTreeState _state;
         private SkillPurchaseService _purchaseService;
@@ -24,6 +25,15 @@ namespace CindarsHope.Skills
         public SkillTreeState State => _state;
         public IReadOnlyDictionary<string, SkillNodeDataSO> NodeIndex => _nodeIndex;
         public IReadOnlyDictionary<string, SkillTreeDataSO> TreeIndex => _treeIndex;
+
+        public void RebindProgressionManager(PlayerProgressionManager progressionManager)
+        {
+            _progressionManager = progressionManager;
+            if (_progressionManager != null && _state != null)
+            {
+                _state.SetAvailablePoints(_progressionManager.UnspentSkillPoints);
+            }
+        }
 
         private void Awake()
         {
@@ -74,11 +84,37 @@ namespace CindarsHope.Skills
 
         public bool TryPurchaseNode(string nodeId, int playerLevel)
         {
-            bool ok = _purchaseService.TryPurchase(nodeId, _state, playerLevel, out _);
+            return TryPurchaseNode(nodeId, playerLevel, out _);
+        }
+
+        public bool TryPurchaseNode(string nodeId, int playerLevel, out string feedback)
+        {
+            feedback = string.Empty;
+            if (_progressionManager != null)
+            {
+                _state.SetAvailablePoints(_progressionManager.UnspentSkillPoints);
+            }
+
+            bool ok = _purchaseService.TryPurchase(nodeId, _state, playerLevel, out feedback);
             if (ok)
             {
+                if (_progressionManager != null && !_progressionManager.TrySpendSkillPoints(1))
+                {
+                    feedback = "Skill points changed before purchase could complete.";
+                    return false;
+                }
+
                 if (_nodeIndex.TryGetValue(nodeId, out var node))
+                {
                     _passiveApplicator.Apply(node, _state);
+                    feedback = "Skill comprada.";
+                    if (node.SkillCategory == SkillCategory.EquippableSkill
+                        && !string.IsNullOrWhiteSpace(node.UnlockedSkillActionId))
+                    {
+                        feedback = AutoAssignActiveSkill(node.UnlockedSkillActionId);
+                    }
+                }
+
                 GameEventBus.Publish(new SkillDerivedStatsChangedEvent());
             }
             return ok;
@@ -141,6 +177,25 @@ namespace CindarsHope.Skills
 
         public List<SkillPassiveModifier> GetAllActivePassiveModifiers()
             => _passiveApplicator.GetAllActive();
+
+        private string AutoAssignActiveSkill(string skillActionId)
+        {
+            string[] keys = { "R", "T", "Y", "G" };
+            for (var index = 0; index < keys.Length; index++)
+            {
+                if (!string.IsNullOrEmpty(_state.GetActiveSlotSkillActionId(index)))
+                {
+                    continue;
+                }
+
+                if (TryAssignActiveSlot(index, skillActionId))
+                {
+                    return $"Skill ativa alocada em {keys[index]}.";
+                }
+            }
+
+            return "Skill comprada. Slots ativos cheios; escolha manualmente depois.";
+        }
 
         // ── Save / Load ────────────────────────────────────────────────────────
 

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using CindarsHope.Core;
+using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Data;
 using CindarsHope.Core.Events;
 using CindarsHope.Save;
@@ -47,6 +48,11 @@ namespace CindarsHope.Equipment
 
         private void Update()
         {
+            if (GameBootstrap.Instance?.ModalManager?.HasActiveModal == true)
+            {
+                return;
+            }
+
             if (Input.GetKeyDown(KeyCode.T))
             {
                 CycleDebugTool();

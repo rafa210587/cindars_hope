@@ -35,6 +35,7 @@
 | UI/Input/Shop/Sell Bugfix Bundle (Post-SPEC 12) | Implementado completo | `docs/specs/implementados/spec_bugfix_ui_input_shop_sell_bundle.md` |
 | Enemy AI/roster/bestiary/faction locks (Spec 13) | Implementado parcial | `docs/specs/implementados/spec_enemy_ai_roster_bestiary_faction_locks_runtime.md` |
 | Skill trees/active slots/respec Anya (Spec 16) | Implementado em codigo - Play Mode humano pendente | `docs/specs/implementados/spec_skill_trees_active_slots_respec_anya_runtime.md` |
+| UI Gameplay MVP: shops/sell/equipment/attributes/skills (Spec 17 incremento) | Implementado em codigo - Play Mode humano pendente; SPEC 17B ampla permanece aberta | `docs/specs/a_implementar/spec_ui_ux_full_gameplay_inventory_hotbar_menus.md`, `docs/validation/SPEC17_UI_GAMEPLAY_MVP_VALIDATION_20260526.md` |
 
 ## Correcoes de tracking obrigatorias
 

@@ -1,5 +1,6 @@
 using CindarsHope.Combat.Weapon;
 using CindarsHope.Core;
+using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
 using CindarsHope.Equipment;
 using CindarsHope.Interaction;
@@ -36,10 +37,6 @@ namespace CindarsHope.Combat
             {
                 _interactionSystem = GetComponent<InteractionSystem>();
             }
-            if (_interactionSystem == null)
-            {
-                _interactionSystem = FindAnyObjectByType<InteractionSystem>();
-            }
         }
 
         public void RebindStaminaManager(StaminaManager staminaManager)
@@ -49,6 +46,12 @@ namespace CindarsHope.Combat
 
         private void Update()
         {
+            if (GameBootstrap.Instance?.ModalManager?.HasActiveModal == true)
+            {
+                UpdateDodgeState();
+                return;
+            }
+
             if (Input.GetKeyDown(KeyCode.Q))
             {
                 TryAttackLeftHand();

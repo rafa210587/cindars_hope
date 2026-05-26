@@ -1,4 +1,5 @@
 using UnityEngine;
+using CindarsHope.Core.Bootstrap;
 
 namespace CindarsHope.Core.Time
 {
@@ -30,6 +31,11 @@ namespace CindarsHope.Core.Time
 
         private void Update()
         {
+            if (GameBootstrap.Instance?.ModalManager?.HasActiveModal == true)
+            {
+                return;
+            }
+
             if (!Input.GetKeyDown(_advanceDayKey))
             {
                 return;

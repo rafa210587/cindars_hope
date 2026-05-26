@@ -233,7 +233,10 @@ namespace CindarsHope.UI.Shop
 
             if (_itemNameText != null)
             {
-                _itemNameText.text = itemData.DisplayName ?? itemData.Id;
+                var name = itemData.DisplayName ?? itemData.Id;
+                _itemNameText.text = string.IsNullOrWhiteSpace(itemData.Description)
+                    ? name
+                    : $"{name}\n{itemData.Description}";
             }
 
             UpdatePriceDisplay();

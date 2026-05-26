@@ -26,7 +26,14 @@ namespace CindarsHope.Editor.Testing
             var sword = CreateOrUpdateItem("Item_Shop_Sword_Iron", "item_shop_weapon_sword_iron", "Espada de Ferro", ItemCategory.Weapon, 1, 50, true);
             var armor = CreateOrUpdateItem("Item_Shop_Armor_Leather", "item_shop_armor_leather", "Armadura de Couro", ItemCategory.Misc, 1, 35, true);
             var tool = CreateOrUpdateItem("Item_Shop_Hoe_Basic", "item_shop_tool_hoe_basic", "Enxada Basica", ItemCategory.Tool, 1, 20, true);
-            AddToItemDatabase(sword, armor, tool);
+            sword.Description = "Espada simples para treino e combate.";
+            armor.Description = "Armadura leve para proteção inicial.";
+            tool.Description = "Ferramenta básica para cultivo.";
+            var bread = LoadItem("item_consumable_food_bread");
+            var potion = LoadItem("item_consumable_potion_hp_small");
+            var repairBasic = LoadItem("item_consumable_repair_kit_basic");
+            var repairStandard = LoadItem("item_consumable_repair_kit_standard");
+            AddToItemDatabase(sword, armor, tool, bread, potion, repairBasic, repairStandard);
 
             CreateOrUpdateShop(
                 "Shop_Weapons_Armor",
@@ -36,7 +43,9 @@ namespace CindarsHope.Editor.Testing
                 new[]
                 {
                     new ShopItemEntry { ItemId = sword.Id, BaseDailyStock = 2 },
-                    new ShopItemEntry { ItemId = armor.Id, BaseDailyStock = 3 }
+                    new ShopItemEntry { ItemId = armor.Id, BaseDailyStock = 3 },
+                    new ShopItemEntry { ItemId = repairBasic.Id, BaseDailyStock = 5 },
+                    new ShopItemEntry { ItemId = repairStandard.Id, BaseDailyStock = 3 }
                 });
             CreateOrUpdateShop(
                 "Shop_Seeds_Tools",
@@ -47,7 +56,45 @@ namespace CindarsHope.Editor.Testing
                 {
                     new ShopItemEntry { ItemId = "seed_wheat", BaseDailyStock = 10 },
                     new ShopItemEntry { ItemId = "seed_carrot", BaseDailyStock = 8 },
-                    new ShopItemEntry { ItemId = tool.Id, BaseDailyStock = 2 }
+                    new ShopItemEntry { ItemId = tool.Id, BaseDailyStock = 2 },
+                    new ShopItemEntry { ItemId = bread.Id, BaseDailyStock = 8 },
+                    new ShopItemEntry { ItemId = potion.Id, BaseDailyStock = 5 }
+                });
+            CreateOrUpdateShop(
+                "Shop_General_Store",
+                "shop_general_store",
+                "General Store",
+                string.Empty,
+                new[]
+                {
+                    new ShopItemEntry { ItemId = "seed_wheat", BaseDailyStock = 10 },
+                    new ShopItemEntry { ItemId = "seed_carrot", BaseDailyStock = 8 },
+                    new ShopItemEntry { ItemId = bread.Id, BaseDailyStock = 8 },
+                    new ShopItemEntry { ItemId = potion.Id, BaseDailyStock = 5 },
+                    new ShopItemEntry { ItemId = repairBasic.Id, BaseDailyStock = 4 }
+                });
+            CreateOrUpdateShop(
+                "Shop_Blacksmith",
+                "shop_blacksmith",
+                "Blacksmith",
+                string.Empty,
+                new[]
+                {
+                    new ShopItemEntry { ItemId = sword.Id, BaseDailyStock = 2 },
+                    new ShopItemEntry { ItemId = armor.Id, BaseDailyStock = 3 },
+                    new ShopItemEntry { ItemId = repairBasic.Id, BaseDailyStock = 5 },
+                    new ShopItemEntry { ItemId = repairStandard.Id, BaseDailyStock = 3 }
+                });
+            CreateOrUpdateShop(
+                "Shop_Cave_Supplies",
+                "shop_cave_supplies",
+                "Cave Supplies",
+                string.Empty,
+                new[]
+                {
+                    new ShopItemEntry { ItemId = potion.Id, BaseDailyStock = 6 },
+                    new ShopItemEntry { ItemId = bread.Id, BaseDailyStock = 8 },
+                    new ShopItemEntry { ItemId = repairBasic.Id, BaseDailyStock = 4 }
                 });
 
             CreateOrUpdateNpc("Npc_Pip_Miudinho", "npc_pip_miudinho", "Pip Miudinho", "Bem-vindo a Cindar's Hope!", "Ate logo!", string.Empty);
@@ -79,6 +126,21 @@ namespace CindarsHope.Editor.Testing
             return data;
         }
 
+        private static ItemDataSO LoadItem(string id)
+        {
+            var guids = AssetDatabase.FindAssets($"{id} t:ItemDataSO", new[] { ItemPath });
+            foreach (var guid in guids)
+            {
+                var item = AssetDatabase.LoadAssetAtPath<ItemDataSO>(AssetDatabase.GUIDToAssetPath(guid));
+                if (item != null && item.Id == id)
+                {
+                    return item;
+                }
+            }
+
+            throw new FileNotFoundException($"Required MVP shop item '{id}' was not found.");
+        }
+
         private static void AddToItemDatabase(params ItemDataSO[] items)
         {
             var database = AssetDatabase.LoadAssetAtPath<ItemDatabaseSO>(ItemDatabasePath);
@@ -92,10 +154,16 @@ namespace CindarsHope.Editor.Testing
             var entries = serialized.FindProperty("_items");
             foreach (var item in items)
             {
+                if (item == null)
+                {
+                    continue;
+                }
+
                 var alreadyRegistered = false;
                 for (var index = 0; index < entries.arraySize; index++)
                 {
-                    if (entries.GetArrayElementAtIndex(index).objectReferenceValue == item)
+                    var registered = entries.GetArrayElementAtIndex(index).objectReferenceValue as ItemDataSO;
+                    if (registered == item || (registered != null && registered.Id == item.Id))
                     {
                         alreadyRegistered = true;
                         break;

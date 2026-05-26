@@ -23,7 +23,7 @@ A etapa 00 foi reclassificada como implementado documental parcial. As specs run
 | 14 | [spec_cave_runtime_generation_checkpoints_boss_gates](a_implementar/spec_cave_runtime_generation_checkpoints_boss_gates.md) | A implementar | 00-13 | 15, 17 | Entry/death pode quebrar replay se cave ainda rerollar. |
 | 15 | [spec_cave_entry_death_anya_corpse_recovery](implementados/spec_cave_entry_death_anya_corpse_recovery.md) | Implementado em codigo - Play Mode humano pendente | 00-14 | 16, 17 | Skill respec e UI podem criar fluxos sem falha/recovery definidos. |
 | 16 | [spec_skill_trees_active_slots_respec_anya_runtime](implementados/spec_skill_trees_active_slots_respec_anya_runtime.md) | Implementado em codigo - Play Mode humano pendente | 00-15 | 17 | UI final pode expor skill tree incompleta ou sem persistencia. |
-| 17 | [spec_ui_ux_full_gameplay_inventory_hotbar_menus](a_implementar/spec_ui_ux_full_gameplay_inventory_hotbar_menus.md) | A implementar | 00-16 | Nenhuma | UI pode cristalizar contratos de sistemas ainda instaveis se antecipada. |
+| 17 | [spec_ui_ux_full_gameplay_inventory_hotbar_menus](a_implementar/spec_ui_ux_full_gameplay_inventory_hotbar_menus.md) | Implementacao parcial - MVP gameplay em codigo | 00-16 | Nenhuma | Restam superficies da spec ampla e Play Mode humano antes de promocao. |
 
 ## Observacao operacional
 
@@ -39,3 +39,5 @@ A primeira spec futura executavel passa a ser `a_implementar/spec_player_combat_
 A spec 15 foi implementada em codigo em 2026-05-25/26. Compile validation requer Unity Editor fechado para rodar RunUnityCompileValidation.ps1. Play Mode humano permanece pendente.
 
 A spec 16 foi implementada em codigo em 2026-05-26. SkillTreeManager reescrito como MonoBehaviour; 5 arvores (55 nodes); SkillPurchaseService, SkillRespecService, SkillPassiveApplicator; SkillTreePanel com tecla K; save/load v5; respec na Fonte de Anya habilitado. Compile validation requer Unity Editor fechado. Play Mode humano pendente.
+
+A spec 17 recebeu em 2026-05-26 o incremento UI Gameplay MVP: lojas com estoque real, buy/sell, inventory equipavel, painel de personagem/attributes (`K`), skill trees (`U`) e bloqueio de input durante modais. A spec ampla permanece em `a_implementar` porque Canvas final, pause/options, fluxos cave/corpse/toasts e validacao Play Mode nao foram fechados.

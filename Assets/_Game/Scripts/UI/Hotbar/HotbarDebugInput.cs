@@ -1,4 +1,5 @@
 using CindarsHope.Save;
+using CindarsHope.Core.Bootstrap;
 using UnityEngine;
 
 namespace CindarsHope.UI.Hotbar
@@ -10,7 +11,7 @@ namespace CindarsHope.UI.Hotbar
 
         private void Update()
         {
-            if (_saveManager == null)
+            if (_saveManager == null || GameBootstrap.Instance?.ModalManager?.HasActiveModal == true)
             {
                 return;
             }

@@ -9,7 +9,7 @@ using UnityEngine.UI;
 
 namespace CindarsHope.UI.Skills
 {
-    // Minimal skill tree modal. Opens/closes with K. Tabs switch with Q/E inside modal.
+    // Minimal skill tree modal. Opens/closes with U. Tabs switch with Q/E inside modal.
     // W/A/S/D navigate nodes; Enter/E confirms purchase; R/T/Y/G assign to active slot.
     [DisallowMultipleComponent]
     public class SkillTreePanel : ModalBase
@@ -28,6 +28,7 @@ namespace CindarsHope.UI.Skills
         private SkillTreeManager _skillTreeManager;
         private int _currentTreeIndex;
         private int _currentNodeIndex;
+        private string _feedback = string.Empty;
 
         private static readonly string[] TreeOrder = { "melee", "ranged", "magic", "survival", "crafting" };
 
@@ -51,6 +52,7 @@ namespace CindarsHope.UI.Skills
         {
             base.InitializeModal(modalManager);
             _skillTreeManager = GameBootstrap.Instance?.SkillTreeManager;
+            _skillTreeManager?.RebindProgressionManager(GameBootstrap.Instance?.PlayerProgressionManager);
             RefreshDisplay();
             GameEventBus.Publish(new SkillTreeOpenedEvent());
         }
@@ -69,7 +71,7 @@ namespace CindarsHope.UI.Skills
         private void HandleInput()
         {
             // Close
-            if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.K))
+            if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.U))
             {
                 CloseModal();
                 return;
@@ -137,7 +139,7 @@ namespace CindarsHope.UI.Skills
 
             var bootstrap = GameBootstrap.Instance;
             int level = bootstrap?.PlayerProgressionManager?.Level ?? 1;
-            _skillTreeManager.TryPurchaseNode(nodes[_currentNodeIndex].SkillNodeId, level);
+            _skillTreeManager.TryPurchaseNode(nodes[_currentNodeIndex].SkillNodeId, level, out _feedback);
             RefreshDisplay();
         }
 
@@ -176,6 +178,8 @@ namespace CindarsHope.UI.Skills
                     status += " [Equipavel: R/T/Y/G]";
                 else if (selected.SkillCategory == SkillCategory.PassiveSkill && purchased)
                     status += " [Passiva ativa]";
+                if (!string.IsNullOrWhiteSpace(_feedback))
+                    status += $"\n{_feedback}";
                 _nodeStatusText.text = status;
             }
 

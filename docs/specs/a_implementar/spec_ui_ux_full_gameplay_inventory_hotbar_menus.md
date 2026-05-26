@@ -1,7 +1,7 @@
 # SPEC - UI/UX full gameplay, inventory, hotbar e menus
 
 > Spec ID: spec_ui_ux_full_gameplay_inventory_hotbar_menus
-> Status: A implementar
+> Status: Em implementacao parcial - incremento UI Gameplay MVP entregue em codigo em 2026-05-26; fechamento amplo pendente
 > Ordem de execucao: 17
 > Depende de: 00-16
 > Bloqueia: Nenhuma
@@ -15,6 +15,18 @@ Fontes absorvidas:
 - docs/refinements/a_implementar/pre_refinamentos/refinamento_init_ui_ux_full_gameplay_inventory_hotbar_menus.md
 - docs/specs/a_implementar/spec_fase9l_ui_ux_full_gameplay.md
 - docs/specs/a_implementar/spec_ui_menu_systems_final.md
+
+## Incremento implementado em 2026-05-26
+
+O recorte UI Gameplay MVP foi implementado em codigo sem promover esta spec ampla:
+
+- buy/sell com estoques validos, valores vendaveis e lojas `shop_general_store`, `shop_blacksmith` e `shop_cave_supplies`;
+- inventory com equipar/desequipar real e starter sword;
+- personagem/equipment em `K` com gasto de `Attribute Points`;
+- skill trees em `U` com compra por `Skill Points` e autoalocacao `R/T/Y/G`;
+- bloqueio de movimento, ataque, dodge, hotbar, consumo e avancar dia enquanto modal esta ativo.
+
+Permanecem para fechamento desta spec: substituir paineis MVP `OnGUI` remanescentes por UI final Canvas/UGUI, pause/options, cave/checkpoint/death/corpse/Anya/toasts consolidados e checklist Play Mode humano.
 
 ---
 

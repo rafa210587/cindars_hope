@@ -61,6 +61,56 @@ namespace CindarsHope.Player.Progression
             }
         }
 
+        public bool TrySpendAttributePoint(PlayerAttributeType attributeType)
+        {
+            NormalizeState();
+            if (_state.UnspentAttributePoints <= 0)
+            {
+                return false;
+            }
+
+            int value;
+            switch (attributeType)
+            {
+                case PlayerAttributeType.Strength:
+                    value = ++_state.Strength;
+                    break;
+                case PlayerAttributeType.Dexterity:
+                    value = ++_state.Dexterity;
+                    break;
+                case PlayerAttributeType.Intelligence:
+                    value = ++_state.Intelligence;
+                    break;
+                case PlayerAttributeType.Willpower:
+                    value = ++_state.Willpower;
+                    break;
+                case PlayerAttributeType.Constitution:
+                    value = ++_state.Constitution;
+                    break;
+                case PlayerAttributeType.Breath:
+                    value = ++_state.Breath;
+                    break;
+                default:
+                    return false;
+            }
+
+            _state.UnspentAttributePoints--;
+            GameEventBus.Publish(new PlayerAttributeChangedEvent(attributeType, value, _state.UnspentAttributePoints));
+            return true;
+        }
+
+        public bool TrySpendSkillPoints(int amount)
+        {
+            NormalizeState();
+            if (amount <= 0 || _state.UnspentSkillPoints < amount)
+            {
+                return false;
+            }
+
+            _state.UnspentSkillPoints -= amount;
+            return true;
+        }
+
         public PlayerProgressionSaveData CaptureSaveData()
         {
             NormalizeState();

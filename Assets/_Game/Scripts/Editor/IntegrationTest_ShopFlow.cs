@@ -64,6 +64,7 @@ namespace CindarsHope.Editor.Testing
 
             Debug.Log("  ✓ Shop initialization passed\n");
             Object.DestroyImmediate(shopData);
+            Object.DestroyImmediate(shopManager);
         }
 
         private static void TestShopBuyFlow(GameObject testGo)
@@ -98,6 +99,7 @@ namespace CindarsHope.Editor.Testing
 
             Debug.Log("  ✓ Shop buy flow passed\n");
             Object.DestroyImmediate(shopData);
+            Object.DestroyImmediate(shopManager);
         }
 
         private static void TestShopSellFlow(GameObject testGo)
@@ -120,6 +122,7 @@ namespace CindarsHope.Editor.Testing
 
             Debug.Log("  ✓ Shop sell flow passed\n");
             Object.DestroyImmediate(shopData);
+            Object.DestroyImmediate(shopManager);
         }
 
         private static void TestStockPersistence(GameObject testGo)
@@ -159,6 +162,7 @@ namespace CindarsHope.Editor.Testing
 
             Debug.Log("  ✓ Stock persistence passed\n");
             Object.DestroyImmediate(shopData);
+            Object.DestroyImmediate(shopManager);
         }
 
         private static void TestModalInteraction(GameObject testGo)

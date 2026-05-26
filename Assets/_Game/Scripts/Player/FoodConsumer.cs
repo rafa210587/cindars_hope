@@ -22,6 +22,11 @@ namespace CindarsHope.Player
 
         private void Update()
         {
+            if (GameBootstrap.Instance?.ModalManager?.HasActiveModal == true)
+            {
+                return;
+            }
+
             if (Input.GetKeyDown(_consumeKey))
             {
                 TryConsumeFood();

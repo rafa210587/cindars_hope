@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace CindarsHope.UI.Skills
 {
-    // Handles K key to open/close SkillTreePanel modal.
+    // U is reserved for skill trees; K opens character/equipment in the gameplay MVP.
     [DisallowMultipleComponent]
     public class SkillTreeInputHandler : MonoBehaviour
     {
@@ -13,7 +13,7 @@ namespace CindarsHope.UI.Skills
 
         private void Update()
         {
-            if (!Input.GetKeyDown(KeyCode.K)) return;
+            if (!Input.GetKeyDown(KeyCode.U)) return;
 
             var bootstrap = GameBootstrap.Instance;
             if (bootstrap == null) return;

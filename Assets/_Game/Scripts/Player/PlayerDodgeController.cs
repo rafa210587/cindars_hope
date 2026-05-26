@@ -1,4 +1,5 @@
 using CindarsHope.Core;
+using CindarsHope.Core.Bootstrap;
 using UnityEngine;
 
 namespace CindarsHope.Player
@@ -19,6 +20,11 @@ namespace CindarsHope.Player
 
         private void Update()
         {
+            if (GameBootstrap.Instance?.ModalManager?.HasActiveModal == true)
+            {
+                return;
+            }
+
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 TryDodge();

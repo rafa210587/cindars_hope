@@ -14,7 +14,8 @@ namespace CindarsHope.UI.Modal
         Inventory,
         CorpseRecovery,
         AnyaFountain,
-        SkillTree
+        SkillTree,
+        CharacterEquipment
     }
 
     [DisallowMultipleComponent]

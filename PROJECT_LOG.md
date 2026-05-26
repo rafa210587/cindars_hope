@@ -1,3 +1,36 @@
+## Sessao 2026-05-26 (22a) - SPEC 17 UI Gameplay MVP parcial
+
+**Data:** 2026-05-26
+**Foco:** tornar shops, sell, inventory/equipment, attributes e skill trees jogaveis no recorte MVP
+**Status:** Implementado em codigo; Play Mode humano pendente; SPEC 17B ampla permanece aberta
+
+### Acoes realizadas
+
+- Estoques de lojas existentes ampliados e novos assets `shop_general_store`, `shop_blacksmith` e `shop_cave_supplies` criados via utility Editor.
+- `PlayerData` ganhou espada equipavel inicial; bread, potion, wood e iron ore agora possuem valor de venda MVP.
+- `InventoryPanelController` liga equipar/desequipar ao `EquipmentManager` e remove buscas runtime por tag usadas no proprio painel.
+- Novo painel compacto de personagem/equipment em `K`, com gasto persistivel de `Attribute Points`.
+- Novo painel compacto de skill trees em `U`, com compra por `Skill Points` e autoalocacao de skill ativa em `R/T/Y/G`.
+- Inputs de ataque, dodge, hotbar, consumo, equipamento debug e avancar dia respeitam `ModalManager.HasActiveModal`.
+- `NpcShopController` passa a emitir erro claro para cada referencia obrigatoria ausente.
+
+### Validacao
+
+- Unity batchmode: log `Logs/spec17-ui-compile-final.log` sem `error CS` e terminando com return code interno `0`; wrapper reporta falha indevida.
+- `ScanUnityLogs.ps1`: reporta assemblies `firstpass` antigos como criticos; sem erro C#.
+- `dotnet build .\Assembly-CSharp.csproj`: PASS, 0 erros; warnings anteriores preservados.
+- `ValidateShopSystem.ValidateShops`: PASS, 24 checks e 0 falhas.
+- `IntegrationTest_ShopFlow.RunShopFlowTest`: PASS apos corrigir reuso invalido de `ShopManager` no proprio teste.
+- `tools/docs/validate_docs.ps1`: FAIL por tres specs futuras preexistentes sem marcadores/cabecalhos SpecKit; fora do diff desta entrega.
+- Evidencia: `docs/validation/SPEC17_UI_GAMEPLAY_MVP_VALIDATION_20260526.md`.
+
+### Pendentes
+
+- Play Mode humano para comprar/vender, equip/desequip, gastar pontos e confirmar bloqueio de input.
+- Fechamento da SPEC 17B ampla: Canvas final, pause/options e superficies cave/corpse/toasts.
+
+---
+
 ## Sessão 2026-05-26 (21ª) - Correcao de erros de compilacao em cascata SPEC 15/16
 
 **Data:** 2026-05-26

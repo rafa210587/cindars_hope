@@ -1,5 +1,7 @@
 using CindarsHope.Core.Bootstrap;
+using CindarsHope.Equipment;
 using CindarsHope.Inventory;
+using CindarsHope.Inventory.Data;
 using CindarsHope.UI.Modal;
 using CindarsHope.World;
 using UnityEngine;
@@ -19,6 +21,7 @@ namespace CindarsHope.UI
         private static InventoryPanelController _instance;
 
         private InventoryManager _inventoryManager;
+        private EquipmentManager _equipmentManager;
         private ModalManager _modalManager;
         private PanelMode _mode;
         private bool _isOpen;
@@ -102,6 +105,7 @@ namespace CindarsHope.UI
             }
 
             ResolveInventoryManager();
+            ResolveEquipmentManager();
             var width = Mathf.Min(620f, Screen.width - 32f);
             var height = Mathf.Min(520f, Screen.height - 32f);
             var rect = new Rect((Screen.width - width) * 0.5f, (Screen.height - height) * 0.5f, width, height);
@@ -124,6 +128,11 @@ namespace CindarsHope.UI
             {
                 GUILayout.Space(6f);
                 GUILayout.Label(_message);
+            }
+
+            if (GUILayout.Button("Fechar"))
+            {
+                ClosePanel();
             }
 
             GUILayout.EndArea();
@@ -236,9 +245,7 @@ namespace CindarsHope.UI
                     ExecuteUse();
                     break;
                 case "Equip":
-                    _message = _inventoryManager.MarkSlotEquipped(_selectedSlotIndex, "manual")
-                        ? "Item marked as equipped."
-                        : "Item is not equippable.";
+                    ExecuteEquipOrUnequip(slot);
                     _mode = PanelMode.Slots;
                     break;
                 case "Drop":
@@ -283,7 +290,7 @@ namespace CindarsHope.UI
                 return;
             }
 
-            var player = GameObject.FindWithTag("Player");
+            var player = GameBootstrap.Instance?.PlayerManager?.gameObject;
             if (useManager.TryUseItem(slot.ItemId, player))
             {
                 _message = $"Used {slot.ItemId}.";
@@ -305,8 +312,8 @@ namespace CindarsHope.UI
                 return;
             }
 
-            var player = GameObject.FindWithTag("Player");
-            var dropPosition = player != null ? player.transform.position + Vector3.right * 0.5f : Vector3.zero;
+            var player = GameBootstrap.Instance?.PlayerManager;
+            var dropPosition = player != null ? player.transform.position + Vector3.right * 0.5f : transform.position;
 
             if (_inventoryManager.DropItem(_selectedSlotIndex, dropPosition))
             {
@@ -349,7 +356,11 @@ namespace CindarsHope.UI
                         GUI.color = Color.yellow;
                     }
 
-                    GUILayout.Box(label, GUILayout.Width(92f), GUILayout.Height(44f));
+                    if (GUILayout.Button(label, GUILayout.Width(92f), GUILayout.Height(44f)))
+                    {
+                        _selectedSlotIndex = slotIndex;
+                        _mode = PanelMode.Actions;
+                    }
                     GUI.color = previousColor;
                 }
 
@@ -376,7 +387,12 @@ namespace CindarsHope.UI
             GUILayout.BeginVertical(GUI.skin.box);
             for (var index = 0; index < _actions.Length; index++)
             {
-                GUILayout.Label(index == _selectedActionIndex ? $"> {_actions[index]}" : $"  {_actions[index]}");
+                var label = _actions[index] == "Equip" ? GetEquipActionLabel() : _actions[index];
+                if (GUILayout.Button(index == _selectedActionIndex ? $"> {label}" : label))
+                {
+                    _selectedActionIndex = index;
+                    ExecuteSelectedAction();
+                }
             }
 
             GUILayout.EndVertical();
@@ -396,6 +412,14 @@ namespace CindarsHope.UI
             if (_inventoryManager == null && GameBootstrap.Instance != null)
             {
                 _inventoryManager = GameBootstrap.Instance.InventoryManager;
+            }
+        }
+
+        private void ResolveEquipmentManager()
+        {
+            if (_equipmentManager == null && GameBootstrap.Instance != null)
+            {
+                _equipmentManager = GameBootstrap.Instance.EquipmentManager;
             }
         }
 
@@ -435,6 +459,76 @@ namespace CindarsHope.UI
             }
 
             return count;
+        }
+
+        private string GetEquipActionLabel()
+        {
+            return _inventoryManager != null
+                && _inventoryManager.TryGetSlot(_selectedSlotIndex, out var slot)
+                && slot != null
+                && slot.IsEquipped
+                ? "Desequipar"
+                : "Equipar";
+        }
+
+        private void ExecuteEquipOrUnequip(InventorySlot slot)
+        {
+            ResolveEquipmentManager();
+            if (_equipmentManager == null || !_inventoryManager.TryGetItemData(slot.ItemId, out var item))
+            {
+                _message = "Item não equipável ou sem slot definido.";
+                return;
+            }
+
+            if (slot.IsEquipped)
+            {
+                var currentSlot = ResolveEquipmentSlot(item);
+                if (currentSlot != EquipmentSlot.None)
+                {
+                    _equipmentManager.UnequipSlot(currentSlot);
+                }
+                _inventoryManager.ClearEquippedBinding(slot.ItemId);
+                _message = "Item desequipado.";
+                return;
+            }
+
+            var equipmentSlot = ResolveEquipmentSlot(item);
+            if (!item.IsEquippable || equipmentSlot == EquipmentSlot.None)
+            {
+                _message = "Item não equipável ou sem slot definido.";
+                return;
+            }
+
+            _equipmentManager.EquipItem(equipmentSlot, slot.ItemId);
+            _message = _inventoryManager.MarkSlotEquipped(_selectedSlotIndex, slot.ItemId)
+                ? $"Item equipado em {equipmentSlot}."
+                : "Não foi possível equipar o item.";
+        }
+
+        private static EquipmentSlot ResolveEquipmentSlot(ItemDataSO item)
+        {
+            if (item.Category == ItemCategory.Weapon)
+            {
+                return EquipmentSlot.RightHand;
+            }
+
+            if (item.Category == ItemCategory.Tool)
+            {
+                return EquipmentSlot.LeftHand;
+            }
+
+            var id = item.Id?.ToLowerInvariant() ?? string.Empty;
+            if (id.Contains("armor"))
+            {
+                return EquipmentSlot.Chest;
+            }
+
+            if (id.Contains("accessory") || id.Contains("ring") || id.Contains("amulet"))
+            {
+                return EquipmentSlot.Accessory;
+            }
+
+            return EquipmentSlot.None;
         }
 
         private static string FormatSlotLabel(int slotIndex, InventorySlot slot)

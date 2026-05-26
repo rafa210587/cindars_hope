@@ -37,6 +37,11 @@ namespace CindarsHope.NPC
 
         private void Start()
         {
+            if (!ValidateReferences())
+            {
+                return;
+            }
+
             _modalManager?.Initialize();
             _dialogueModal?.Initialize(_modalManager);
             _shopMenuModal?.Initialize(_modalManager);
@@ -48,6 +53,34 @@ namespace CindarsHope.NPC
                 _shopManager.Configure(_itemDatabase);
                 _shopManager.InitializeShop(_shopData);
             }
+        }
+
+        private bool ValidateReferences()
+        {
+            var valid = true;
+            valid &= ValidateReference(_npcData, nameof(_npcData));
+            valid &= ValidateReference(_shopData, nameof(_shopData));
+            valid &= ValidateReference(_shopManager, nameof(_shopManager));
+            valid &= ValidateReference(_playerManager, nameof(_playerManager));
+            valid &= ValidateReference(_inventoryManager, nameof(_inventoryManager));
+            valid &= ValidateReference(_itemDatabase, nameof(_itemDatabase));
+            valid &= ValidateReference(_modalManager, nameof(_modalManager));
+            valid &= ValidateReference(_dialogueModal, nameof(_dialogueModal));
+            valid &= ValidateReference(_shopMenuModal, nameof(_shopMenuModal));
+            valid &= ValidateReference(_buyPanel, nameof(_buyPanel));
+            valid &= ValidateReference(_sellPanel, nameof(_sellPanel));
+            return valid;
+        }
+
+        private bool ValidateReference(Object reference, string fieldName)
+        {
+            if (reference != null)
+            {
+                return true;
+            }
+
+            Debug.LogError($"NpcShopController '{gameObject.name}' missing required reference: {fieldName}.", this);
+            return false;
         }
 
         private void OnDisable()
