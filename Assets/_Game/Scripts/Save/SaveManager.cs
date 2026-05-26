@@ -666,6 +666,14 @@ namespace CindarsHope.Save
             saveData.World.Trees ??= new List<TreeSaveData>();
             saveData.Npcs.Npcs ??= new List<NpcSaveData>();
 
+            saveData.Death ??= new DeathSaveData();
+            saveData.Death.DeathStats ??= new DeathStatsSaveData();
+            if (saveData.Death.ActiveCorpse != null)
+            {
+                saveData.Death.ActiveCorpse.LostInventoryItems ??= new List<InventorySlotSaveData>();
+                saveData.Death.ActiveCorpse.LostEquipmentItems ??= new List<InventorySlotSaveData>();
+            }
+
             return true;
         }
 
