@@ -231,8 +231,7 @@ namespace CindarsHope.Skills
                 SkillNodeType.Capstone, SkillCategory.CapstonePassive,
                 isCapstone: true, reqNodes: 8,
                 prereq: "ranged_projectile_tuning",
-                mods: Mod(SkillModifierType.BowRangeFlat, 1f),
-                     Mod(SkillModifierType.BowProjectileSpeedFlat, 1f)),
+                mods: new[] { Mod(SkillModifierType.BowRangeFlat, 1f), Mod(SkillModifierType.BowProjectileSpeedFlat, 1f) }),
         };
 
         // ── MAGIC ──────────────────────────────────────────────────────────────
@@ -303,8 +302,7 @@ namespace CindarsHope.Skills
                 SkillNodeType.Capstone, SkillCategory.CapstonePassive,
                 isCapstone: true, reqNodes: 8,
                 prereq: "magic_slowing_sigils",
-                mods: Mod(SkillModifierType.AttackFlat, 1f),
-                     Mod(SkillModifierType.ManaRegenFlat, 1f)),
+                mods: new[] { Mod(SkillModifierType.AttackFlat, 1f), Mod(SkillModifierType.ManaRegenFlat, 1f) }),
         };
 
         // ── SURVIVAL ───────────────────────────────────────────────────────────
@@ -375,10 +373,7 @@ namespace CindarsHope.Skills
                 SkillNodeType.Capstone, SkillCategory.CapstonePassive,
                 isCapstone: true, reqNodes: 8,
                 prereq: "survival_last_breath",
-                mods: Mod(SkillModifierType.ToxicResistanceBonus, 1f),
-                     Mod(SkillModifierType.ColdResistanceBonus, 1f),
-                     Mod(SkillModifierType.HeatResistanceBonus, 1f),
-                     Mod(SkillModifierType.MaxStaminaFlat, 5f)),
+                mods: new[] { Mod(SkillModifierType.ToxicResistanceBonus, 1f), Mod(SkillModifierType.ColdResistanceBonus, 1f), Mod(SkillModifierType.HeatResistanceBonus, 1f), Mod(SkillModifierType.MaxStaminaFlat, 5f) }),
         };
 
         // ── CRAFTING ───────────────────────────────────────────────────────────
@@ -444,8 +439,7 @@ namespace CindarsHope.Skills
                 SkillNodeType.Capstone, SkillCategory.CapstonePassive,
                 isCapstone: true, reqNodes: 8,
                 prereq: "crafting_durable_finish",
-                mods: Mod(SkillModifierType.CraftTimeReductionPercent, 0.15f),
-                     Mod(SkillModifierType.RepairEfficiencyBonus, 0.15f)),
+                mods: new[] { Mod(SkillModifierType.CraftTimeReductionPercent, 0.15f), Mod(SkillModifierType.RepairEfficiencyBonus, 0.15f) }),
         };
     }
 }
