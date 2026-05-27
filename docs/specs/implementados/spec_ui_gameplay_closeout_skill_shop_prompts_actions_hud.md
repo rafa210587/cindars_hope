@@ -1,7 +1,8 @@
 # SPEC 17C - Closeout UI Gameplay: Skill Tree, Equipment Panel, Shop, Prompts e Actions HUD
 
-**Status:** Implementado em codigo; gates automaticos PASS; Play Mode humano pendente
+**Status:** Implementado completo - Play Mode humano validado em 2026-05-26
 **Data de implementacao:** 2026-05-26
+**Data de fechamento:** 2026-05-26
 **Branch alvo:** `dev`
 **Tipo:** Bugfix / closeout / estabilizacao
 **Ordem de execucao:** 17C
@@ -74,10 +75,6 @@ Corrigir os bloqueios encontrados na validacao do MVP de UI:
 | Docs validation | PASS |
 | git diff --check | PASS |
 
-**Validacoes pendentes (gates humanos):**
-
-- Play Mode: `U` skill tree, `K` atributos, `L` equipamento, buy/sell NPC
-- Play Mode: save/load com skill comprada e item equipado
-- Play Mode: input bloqueado durante modais
+**Validacao humana:** PASS em 2026-05-26 — `U` skill tree, `K` atributos, `L` equipamento, buy/sell NPC, save/load com skill e item equipado, input bloqueado durante modais. Sem erros reportados.
 
 **Evidencia documental:** `docs/validation/SPEC17C_CLOSEOUT_VALIDATION_20260526.md`

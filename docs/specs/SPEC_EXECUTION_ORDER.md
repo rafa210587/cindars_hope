@@ -24,10 +24,10 @@ A etapa 00 foi reclassificada como implementado documental parcial. As specs run
 | 15 | [spec_cave_entry_death_anya_corpse_recovery](implementados/spec_cave_entry_death_anya_corpse_recovery.md) | Implementado em codigo - Play Mode humano pendente | 00-14 | 16, 17 | Skill respec e UI podem criar fluxos sem falha/recovery definidos. |
 | 16 | [spec_skill_trees_active_slots_respec_anya_runtime](implementados/spec_skill_trees_active_slots_respec_anya_runtime.md) | Implementado em codigo - Play Mode humano pendente | 00-15 | 17 | UI final pode expor skill tree incompleta ou sem persistencia. |
 | 17 | [spec_ui_ux_full_gameplay_inventory_hotbar_menus](a_implementar/spec_ui_ux_full_gameplay_inventory_hotbar_menus.md) | Implementacao parcial - MVP gameplay em codigo | 00-16 | Nenhuma | Restam superficies da spec ampla e Play Mode humano antes de promocao. |
-| 17C | [spec_ui_gameplay_closeout_skill_shop_prompts_actions_hud](implementados/spec_ui_gameplay_closeout_skill_shop_prompts_actions_hud.md) | Implementado em codigo - Play Mode humano pendente | 15-17 | Nenhuma | Gates automaticos passaram; closeout so fecha apos fluxo interativo final. |
-| 17D | [spec_ui_gameplay_shop_injection_equipment_slot_picker_closeout](implementados/spec_ui_gameplay_shop_injection_equipment_slot_picker_closeout.md) | Implementado em codigo - Unity/Play Mode pendentes | 17C | Nenhuma | Injecao shop e slot picker exigem confirmacao interativa final sem Unity concorrente. |
-| 17E | [spec_ui_gameplay_shop_session_lifecycle_npc_readiness_closeout](implementados/spec_ui_gameplay_shop_session_lifecycle_npc_readiness_closeout.md) | Implementado em codigo - Unity/Play Mode pendentes | 17D | Nenhuma | Corrige sessoes apos transicao de cena; fechar apenas com buy/sell e save/load no Unity. |
-| 17F | [spec_ui_gameplay_shop_modal_stack_responsive_names_closeout](a_implementar/spec_ui_gameplay_shop_modal_stack_responsive_names_closeout.md) | Implementado em codigo - Unity/Play Mode pendentes | 17E | Nenhuma | Corrige stack modal e layout/nomenclatura; fechar apenas sem mismatch em fluxos alternados. |
+| 17C | [spec_ui_gameplay_closeout_skill_shop_prompts_actions_hud](implementados/spec_ui_gameplay_closeout_skill_shop_prompts_actions_hud.md) | Implementado completo - Play Mode validado 2026-05-26 | 15-17 | Nenhuma | U/K/L/buy/sell/save/load validados por humano sem erros. |
+| 17D | [spec_ui_gameplay_shop_injection_equipment_slot_picker_closeout](implementados/spec_ui_gameplay_shop_injection_equipment_slot_picker_closeout.md) | Implementado completo - Play Mode validado 2026-05-26 | 17C | Nenhuma | Slot picker L com Chest/RightHand/LeftHand/Accessory; filtro e Esc validados por humano. |
+| 17E | [spec_ui_gameplay_shop_session_lifecycle_npc_readiness_closeout](implementados/spec_ui_gameplay_shop_session_lifecycle_npc_readiness_closeout.md) | Implementado completo - Play Mode validado 2026-05-26 | 17D | Nenhuma | Lifecycle persistente e duas sessoes de shop validados por humano sem erros. |
+| 17F | [spec_ui_gameplay_shop_modal_stack_responsive_names_closeout](implementados/spec_ui_gameplay_shop_modal_stack_responsive_names_closeout.md) | Implementado completo - Play Mode validado 2026-05-26 | 17E | Nenhuma | Modal stack sem mismatch; layout responsivo e nomes curtos validados por humano. |
 
 ## Observacao operacional
 
@@ -46,10 +46,10 @@ A spec 16 foi implementada em codigo em 2026-05-26. SkillTreeManager reescrito c
 
 A spec 17 recebeu em 2026-05-26 o incremento UI Gameplay MVP: lojas com estoque real, buy/sell, inventory equipavel, painel de personagem/attributes (`K`), skill trees (`U`) e bloqueio de input durante modais. A spec ampla permanece em `a_implementar` porque Canvas final, pause/options, fluxos cave/corpse/toasts e validacao Play Mode nao foram fechados.
 
-A spec 17C executa o closeout de integracao: `U` skill trees, `K` atributos/progressao, `L` equipamento, wiring de shop e scanner de missing scripts. Migrada para `implementados/` em 2026-05-26; gates automaticos PASS; Play Mode humano pendente.
+A spec 17C executa o closeout de integracao: `U` skill trees, `K` atributos/progressao, `L` equipamento, wiring de shop e scanner de missing scripts. Fechada em 2026-05-26 com Play Mode humano validado sem erros.
 
-A spec 17D endurece a injecao de buy/sell e adiciona o picker de equipamento por slot via `L`; dotnet compile PASS; Unity batchmode bloqueado por instancia aberta (nao e gap de implementacao). Migrada para `implementados/` em 2026-05-26; Unity/Play Mode pendentes.
+A spec 17D endurece a injecao de buy/sell e adiciona o picker de equipamento por slot via `L` com Chest/RightHand/LeftHand/Accessory. Fechada em 2026-05-26 com Play Mode humano validado sem erros.
 
-A spec 17E corrige o lifecycle das sessoes de shop: o `ShopManager` passa a pertencer ao `GameBootstrap` persistente, os NPCs fazem rebind e readiness idempotentes e um validator Editor verifica a `TownScene`. Dotnet compile PASS; Unity/Play Mode pendentes. Migrada para `implementados/` em 2026-05-26.
+A spec 17E corrige o lifecycle das sessoes de shop: o `ShopManager` passa a pertencer ao `GameBootstrap` persistente, os NPCs fazem rebind e readiness idempotentes. Fechada em 2026-05-26 com Play Mode humano validado sem erros.
 
-A spec 17F corrige a higiene da stack de buy/sell com pop condicional, introduz nomes curtos e painel de detalhes e aplica scroll/layout responsivo inclusive para o asset legado em runtime. Dotnet compile PASS (confirmado em 2026-05-26); Unity/Play Mode pendentes. Permanece em `a_implementar/` ate validacao Unity/Play Mode.
+A spec 17F corrige a higiene da stack de buy/sell com pop condicional, introduz nomes curtos e painel de detalhes e aplica scroll/layout responsivo. Fechada em 2026-05-26 com Play Mode humano validado sem erros.

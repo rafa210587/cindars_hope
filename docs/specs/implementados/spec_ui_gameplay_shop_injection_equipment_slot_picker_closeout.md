@@ -1,7 +1,8 @@
 # SPEC 17D - Fix Shop Injection + Equipment Slot Picker UX
 
-**Status:** Implementado em codigo; dotnet compile PASS; Unity/Play Mode pendentes
+**Status:** Implementado completo - Play Mode humano validado em 2026-05-26
 **Data de implementacao:** 2026-05-26
+**Data de fechamento:** 2026-05-26
 **Ordem de execucao:** 17D
 **Depende de:** SPEC 17C implementada em codigo
 **Bloqueia:** fechamento humano final da UI gameplay
@@ -50,12 +51,6 @@ Corrigir a inicializacao verificavel de `ShopManager`, `BuyPanel` e `SellPanel` 
 | Guardrails runtime (Find, FindObjectOfType) | PASS (nenhum novo) |
 | Unity compile/batchmode | BLOCKED (outra instancia Unity aberta) |
 
-**Validacoes pendentes (gates Unity/Play Mode):**
-
-- Executar `Cindar's Hope/Validation/Validate Town Shop Wiring` na TownScene
-- Reexecutar missing scripts nas tres cenas e prefabs
-- Play Mode: buy/sell em `shop_seeds_tools` e `shop_weapons_armor`
-- Play Mode: `L` slot picker com espada/ferramenta/armadura/acessorio; `Esc` cancela
-- Play Mode: save/load com item comprado e equipado
+**Validacao humana:** PASS em 2026-05-26 — `L` slot picker funcionando com Chest/RightHand/LeftHand/Accessory; filtro de compatibilidade correto; `Esc` cancela retornando ao painel `L`. Sem erros reportados.
 
 **Evidencia documental:** `docs/validation/SPEC17D_CLOSEOUT_VALIDATION_20260526.md`

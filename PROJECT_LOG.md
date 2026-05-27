@@ -1,20 +1,20 @@
 ## Sessao 2026-05-26 (27a) - Reconciliacao specs/prompts 17
 
-**Foco:** auditar specs 17, commitar SPEC 17F pendente, migrar implementadas para `implementados/` e manter abertas apenas as pendentes reais.
-**Status:** concluido; commit SPEC 17F realizado; migracoes 17C/D/E concluidas; tracking atualizado.
+**Foco:** auditar specs 17, commitar SPEC 17F pendente, migrar implementadas para `implementados/`, fechar 17C/D/E/F apos validacao humana confirmada sem erros.
+**Status:** FECHADO — 17C, 17D, 17E, 17F implementadas e validadas por humano sem erros em 2026-05-26.
 
 ### Resultado
 
-- Migradas para `docs/specs/implementados/`:
-  - `spec_ui_gameplay_closeout_skill_shop_prompts_actions_hud.md` (17C): gates automaticos PASS; Play Mode humano pendente
-  - `spec_ui_gameplay_shop_injection_equipment_slot_picker_closeout.md` (17D): dotnet compile PASS; Unity/Play Mode pendentes
-  - `spec_ui_gameplay_shop_session_lifecycle_npc_readiness_closeout.md` (17E): dotnet compile PASS; Unity/Play Mode pendentes
+- Fechadas (migradas para `docs/specs/implementados/` + Play Mode validado sem erros):
+  - `spec_ui_gameplay_closeout_skill_shop_prompts_actions_hud.md` (17C)
+  - `spec_ui_gameplay_shop_injection_equipment_slot_picker_closeout.md` (17D)
+  - `spec_ui_gameplay_shop_session_lifecycle_npc_readiness_closeout.md` (17E)
+  - `spec_ui_gameplay_shop_modal_stack_responsive_names_closeout.md` (17F): codigo commitado nesta sessao, Play Mode validado logo em seguida
 
-- Mantidas em `docs/specs/a_implementar/`:
-  - `spec_ui_ux_full_gameplay_inventory_hotbar_menus.md` (17 ampla): umbrella com Canvas UGUI final, pause/options, cave/death/corpse/Anya/toasts e substituicao de OnGUI nao-debug pendentes
-  - `spec_ui_gameplay_shop_modal_stack_responsive_names_closeout.md` (17F): codigo implementado e commitado nesta sessao; Unity/Play Mode ainda pendentes
+- Mantida em `docs/specs/a_implementar/`:
+  - `spec_ui_ux_full_gameplay_inventory_hotbar_menus.md` (17 ampla): Canvas UGUI final, pause/options, cave/death/corpse/Anya/toasts, substituicao OnGUI nao-debug — ainda pendentes
 
-- Nao migradas por falta de evidencia: nenhuma (17C/D/E tinham evidencia suficiente).
+- Nao migradas por falta de evidencia: nenhuma.
 
 ### SPEC 17F - codigo commitado
 
@@ -34,9 +34,8 @@ ValidateShopModalFlow.cs; EnemyBrain.linearVelocity (API Unity 6); metas faltant
 
 ### Riscos residuais
 
-- SPEC 17C/D/E: Play Mode humano pendente (buy/sell, K/L/U, save/load)
-- SPEC 17F: Unity compile e Play Mode pendentes apos instancia Unity liberar
-- SPEC 17 ampla: escopo amplo ainda aberto (Canvas UGUI, pause/options, death/cave/toasts)
+- SPEC 17 ampla: escopo amplo ainda aberto (Canvas UGUI, pause/options, death/cave/toasts) — unica spec 17 ativa
+- Unity batchmode compile nao foi executado (Unity Editor aberto); dotnet PASS como fallback
 
 ---
 

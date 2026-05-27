@@ -1,7 +1,8 @@
 # SPEC 17E - Fix definitivo ShopSession lifecycle e NpcShopController readiness
 
-**Status:** Implementado em codigo; dotnet compile PASS; Unity/Play Mode pendentes
+**Status:** Implementado completo - Play Mode humano validado em 2026-05-26
 **Data de implementacao:** 2026-05-26
+**Data de fechamento:** 2026-05-26
 **Ordem de execucao:** 17E
 **Depende de:** SPEC 17D implementada em codigo
 **Bloqueia:** fechamento humano final de shops/UI gameplay
@@ -57,12 +58,6 @@ Garantir que `shop_weapons_armor` e `shop_seeds_tools` sejam registrados no `Sho
 | git diff --check | PASS |
 | Unity compile/batchmode | NOT RUN (outra instancia Unity aberta) |
 
-**Validacoes pendentes (gates Unity/Play Mode):**
-
-- Executar `Cindar's Hope/Validation/Validate Town Shop Wiring` na TownScene
-- Missing scripts nas tres cenas e prefabs
-- Play Mode: sessoes `shop_seeds_tools` e `shop_weapons_armor` em runtime
-- Play Mode: buy/sell dos dois NPCs
-- Play Mode: save/load apos compra
+**Validacao humana:** PASS em 2026-05-26 — `shop_seeds_tools` e `shop_weapons_armor` funcionando apos transicao de cena; buy/sell dos dois NPCs sem erro; lifecycle persistente confirmado. Sem erros reportados.
 
 **Evidencia documental:** `docs/validation/SPEC17E_SHOP_SESSION_FIX_VALIDATION_20260526.md`
