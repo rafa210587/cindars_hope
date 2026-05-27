@@ -1,3 +1,40 @@
+## Sessao 2026-05-27 (28c) - SPEC 17A-FIX - Valores reais de escala, GameScaleConfigSO, cave 2x
+
+**Foco:** Aplicar valores de escala reais (cave 2x, boss 2.5x, arvores 3x, lago 6x) usando config central.
+**Status:** FECHADO em codigo. Play Mode humano + wiring de CameraScaleController + regenerar cenas pendentes.
+**Commit:** `bd06a3a`
+
+### Implementacao
+
+**GameScaleConfigSO** criado em `Assets/_Game/Scripts/Core/Data/`. Config central com:
+- PlayerReferenceScale=1, TreeScale=3, LakeScale=6
+- BossScale=2.5, BossMinScale=2, BossMaxScale=3
+- NormalEnemy{Small,Medium,Large}Scale=1.15/1.35/1.65
+- CaveWidthMultiplier=2, CaveHeightMultiplier=2, CaveRoomSizeMultiplier=2, CaveCorridorWidthMultiplier=2
+
+**CaveGenerationConfigSO defaults:** TargetWidth=160, TargetHeight=96, MinRoomWidth=12, MaxRoomWidth=28, MinRoomHeight=8, MaxRoomHeight=20, CorridorMinWidth=2, CorridorMaxWidth=3, BossArenaMinSize=20, EnemyPointCount=10, ResourcePointCount=12, SpawnSafeRadius=2.0, ResourceSpacing=4, GenerationConfigVersion=2.
+
+**CaveGenerationConfig_Default.asset:** Atualizado com todos os novos valores.
+
+**CaveBossSpawner:** Usa GameScaleConfigSO._scaleConfig para escala do boss (fallback 2.5). Colisores (radius 0.4 e 0.5) escalam proporcionalmente com bossScale.
+
+**EnemyDataSO:** Campo VisualScale=1f adicionado.
+
+**CreateDefaultScaleAssets:** Agora cria GameScaleConfig.asset em Assets/_Game/Data/Config/.
+
+**CreateMvpFarmScene:** Arvores usam TreeScale=3 de GameScaleConfigSO (fallback 3). Lago usa LakeScale=6 (fallback 6).
+
+**ValidateSpec17AScaleConfig:** Checks numericos adicionados: cave >=160x96, corredor >=2, boss >=2, arvore >=3, lago >=6.
+
+### Pendencias para Editor
+- Executar Cindar's Hope > Scale > Create Default Scale Assets (cria GameScaleConfig.asset)
+- Wire _scaleConfig em CaveBossSpawner no CaveScene
+- Wire CameraScaleController nas cameras das 3 cenas
+- Regenerar FarmScene (arvores agora usam TreeScale=3, lago LakeScale=6)
+- Regenerar CaveScene (TargetWidth=160, TargetHeight=96, corredores 2-3)
+
+---
+
 ## Sessao 2026-05-27 (28b) - SPEC 17A - Revalidacao, scale audit, boss gates, wiring UI
 
 **Foco:** corrigir logs GameBootstrap (UI scene-bound), boss gate persistence, enemy_meteor_ooze_king, CaveDebugLevelSkipController spam, e auditar scale 17A.
