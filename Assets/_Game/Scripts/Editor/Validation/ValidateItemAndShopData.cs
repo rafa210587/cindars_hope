@@ -119,7 +119,7 @@ namespace CindarsHope.EditorTools
             for (var i = 0; i < playerData.StartingItems.Length; i++)
             {
                 var entry = playerData.StartingItems[i];
-                if (entry?.Item == null)
+                if (entry.Item == null)
                 {
                     errors.Add($"[ValidateItemAndShopData] PlayerDataSO StartingItems[{i}] has null Item reference.");
                     continue;

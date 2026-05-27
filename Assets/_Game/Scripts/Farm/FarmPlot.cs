@@ -456,7 +456,7 @@ namespace CindarsHope.Farm
                 return false;
             }
 
-            if (!_staminaManager.TrySpendStamina(tillStaminaCost))
+            if (!TrySpendStamina(tillStaminaCost))
             {
                 PublishFeedback("Not enough stamina to till.");
                 return false;
@@ -485,7 +485,7 @@ namespace CindarsHope.Farm
 
             if (State == FarmPlotState.TilledDry)
             {
-                if (!_staminaManager.TrySpendStamina(waterStaminaCost))
+                if (!TrySpendStamina(waterStaminaCost))
                 {
                     PublishFeedback("Not enough stamina to water.");
                     return false;
@@ -497,7 +497,7 @@ namespace CindarsHope.Farm
 
             if (State == FarmPlotState.PlantedDry)
             {
-                if (!_staminaManager.TrySpendStamina(waterStaminaCost))
+                if (!TrySpendStamina(waterStaminaCost))
                 {
                     PublishFeedback("Not enough stamina to water.");
                     return false;
@@ -551,7 +551,7 @@ namespace CindarsHope.Farm
                 return false;
             }
 
-            if (!_staminaManager.TrySpendStamina(plantStaminaCost))
+            if (!TrySpendStamina(plantStaminaCost))
             {
                 _inventoryManager.AddItem(seedId, 1);
                 PublishFeedback("Not enough stamina to plant.");
@@ -647,7 +647,7 @@ namespace CindarsHope.Farm
                 return false;
             }
 
-            if (!_staminaManager.TrySpendStamina(harvestStaminaCost))
+            if (!TrySpendStamina(harvestStaminaCost))
             {
                 PublishFeedback("Not enough stamina to harvest.");
                 return false;
@@ -859,6 +859,14 @@ namespace CindarsHope.Farm
                 return true;
 
             return _staminaManager.CurrentStamina >= requiredStamina;
+        }
+
+        private bool TrySpendStamina(int requiredStamina)
+        {
+            if (_staminaManager == null)
+                return true;
+
+            return _staminaManager.TrySpendStamina(requiredStamina);
         }
     }
 }
