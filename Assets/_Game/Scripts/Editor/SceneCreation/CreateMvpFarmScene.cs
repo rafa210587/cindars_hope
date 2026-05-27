@@ -36,6 +36,7 @@ namespace CindarsHope.Editor.SceneCreation
         private const string SeedDatabasePath = "Assets/_Game/Data/Registries/SeedDatabase.asset";
         private const string RecipeDatabasePath = "Assets/_Game/Data/Registries/RecipeDatabase.asset";
         private const string TreeDataPath = "Assets/_Game/Data/World/Trees/Tree_Basic.asset";
+        private const string GameScaleConfigPath = "Assets/_Game/Data/Config/GameScaleConfig.asset";
         private const string BuiltinSpritePath = "UI/Skin/UISprite.psd";
 
         [MenuItem("CindarsHope/Scenes/Create MVP FarmScene")]
@@ -660,7 +661,9 @@ namespace CindarsHope.Editor.SceneCreation
         {
             var fishingObject = new GameObject("FishingSpot");
             fishingObject.transform.position = new Vector3(5.5f, -3f, 0f);
-            fishingObject.transform.localScale = new Vector3(1.35f, 1.35f, 1f);
+            var lakeScaleConfig = AssetDatabase.LoadAssetAtPath<GameScaleConfigSO>(GameScaleConfigPath);
+            var lakeScale = lakeScaleConfig != null ? lakeScaleConfig.LakeScale : 6f;
+            fishingObject.transform.localScale = new Vector3(lakeScale, lakeScale, 1f);
 
             var spriteRenderer = fishingObject.AddComponent<SpriteRenderer>();
             spriteRenderer.sprite = GetBuiltinSprite();
@@ -858,7 +861,9 @@ namespace CindarsHope.Editor.SceneCreation
             var treeObject = new GameObject($"TreeNode_{treeIndex:00}");
             treeObject.transform.SetParent(parent);
             treeObject.transform.position = position;
-            treeObject.transform.localScale = new Vector3(1.15f, 1.65f, 1f);
+            var treeScaleConfig = AssetDatabase.LoadAssetAtPath<GameScaleConfigSO>(GameScaleConfigPath);
+            var treeScale = treeScaleConfig != null ? treeScaleConfig.TreeScale : 3f;
+            treeObject.transform.localScale = new Vector3(treeScale, treeScale, 1f);
 
             var spriteRenderer = treeObject.AddComponent<SpriteRenderer>();
             spriteRenderer.sprite = GetBuiltinSprite();

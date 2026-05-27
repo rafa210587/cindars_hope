@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using CindarsHope.Combat;
 using CindarsHope.Cave.Data;
 using CindarsHope.Cave.Generation;
+using CindarsHope.Combat;
 using CindarsHope.Core.Data;
 using UnityEngine;
 
@@ -13,6 +13,7 @@ namespace CindarsHope.Cave.Runtime
         [SerializeField] private CaveRunManager _caveRunManager;
         [SerializeField] private DataRegistrySO<EnemyDataSO> _enemyDatabase;
         [SerializeField] private EnemyDataSO _fallbackEnemyData;
+        [SerializeField] private GameScaleConfigSO _scaleConfig;
 
         private GameObject _spawnedBoss;
         private Transform _playerTarget;
@@ -71,10 +72,11 @@ namespace CindarsHope.Cave.Runtime
             }
             spriteRenderer.sortingOrder = 3;
 
-            _spawnedBoss.transform.localScale = Vector3.one * 1.2f;
+            var bossScale = GetBossScale();
+            _spawnedBoss.transform.localScale = Vector3.one * bossScale;
 
             var collider = _spawnedBoss.AddComponent<CircleCollider2D>();
-            collider.radius = 0.4f;
+            collider.radius = 0.4f * bossScale;
 
             var rigidbody = _spawnedBoss.AddComponent<Rigidbody2D>();
             rigidbody.gravityScale = 0;
@@ -98,7 +100,7 @@ namespace CindarsHope.Cave.Runtime
             triggerChild.transform.localPosition = Vector3.zero;
 
             var triggerCollider = triggerChild.AddComponent<CircleCollider2D>();
-            triggerCollider.radius = 0.5f;
+            triggerCollider.radius = 0.5f * bossScale;
             triggerCollider.isTrigger = true;
 
             var contactDamage = triggerChild.AddComponent<EnemyContactDamage>();
@@ -275,6 +277,12 @@ namespace CindarsHope.Cave.Runtime
             }
 
             return null;
+        }
+
+        private float GetBossScale()
+        {
+            if (_scaleConfig == null) return 2.5f;
+            return Mathf.Clamp(_scaleConfig.BossScale, _scaleConfig.BossMinScale, _scaleConfig.BossMaxScale);
         }
 
         private Color GetBossColor()

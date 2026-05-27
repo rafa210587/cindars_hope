@@ -9,39 +9,39 @@ namespace CindarsHope.Cave.Data
         public string Id;
 
         [Header("Map Dimensions")]
-        public int TargetWidth = 80;
-        public int TargetHeight = 48;
+        public int TargetWidth = 160;
+        public int TargetHeight = 96;
 
         [Header("Rooms")]
         public int MinRooms = 8;
         public int MaxRooms = 14;
-        public int MinRoomWidth = 6;
-        public int MaxRoomWidth = 14;
-        public int MinRoomHeight = 4;
-        public int MaxRoomHeight = 10;
+        public int MinRoomWidth = 12;
+        public int MaxRoomWidth = 28;
+        public int MinRoomHeight = 8;
+        public int MaxRoomHeight = 20;
         public int ExtraConnectionChancePercent = 20;
 
         [Header("Corridors")]
         [Tooltip("Minimum corridor width in tiles (1 = single tile, spec target >= 2).")]
-        public int CorridorMinWidth = 1;
+        public int CorridorMinWidth = 2;
         [Tooltip("Maximum corridor width in tiles.")]
-        public int CorridorMaxWidth = 1;
+        public int CorridorMaxWidth = 3;
 
         [Header("Boss Arena")]
         [Tooltip("Minimum side length for boss arena rooms in tiles.")]
-        public int BossArenaMinSize = 10;
+        public int BossArenaMinSize = 20;
 
         [Header("Spawn")]
-        public int EnemyPointCount = 6;
-        public int ResourcePointCount = 8;
+        public int EnemyPointCount = 10;
+        public int ResourcePointCount = 12;
         [Tooltip("Minimum distance in tiles from a spawn point to any room or corridor wall.")]
-        public float SpawnSafeRadius = 1.5f;
+        public float SpawnSafeRadius = 2.0f;
         [Tooltip("Minimum distance in tiles between resource node spawn points.")]
-        public float ResourceSpacing = 3f;
+        public float ResourceSpacing = 4f;
 
         [Header("Versioning")]
         [Tooltip("Increment when generation params change to invalidate old snapshots.")]
-        public int GenerationConfigVersion = 1;
+        public int GenerationConfigVersion = 2;
 
         string IIdentifiedData.Id => Id;
 

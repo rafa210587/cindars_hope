@@ -54,6 +54,10 @@ namespace CindarsHope.Combat
         public int dropAmount = 1;
         public string lootTableId;
 
+        [Header("Visual")]
+        [Tooltip("Uniform visual scale multiplier applied to this enemy's sprite. 1 = default, 2.5 = boss-sized.")]
+        public float VisualScale = 1f;
+
         [Header("Progression")]
         public int enemyLevel = 1;
         public EnemyDifficulty baseDifficulty = EnemyDifficulty.Easy;
@@ -68,6 +72,7 @@ namespace CindarsHope.Combat
 
         private void OnValidate()
         {
+            VisualScale = Mathf.Max(0.1f, VisualScale);
             maxHp = Mathf.Max(1, maxHp);
             contactDamage = Mathf.Max(0, contactDamage);
             contactDamageCooldownSeconds = Mathf.Max(0.01f, contactDamageCooldownSeconds);

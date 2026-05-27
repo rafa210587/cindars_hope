@@ -1,5 +1,6 @@
 using System.IO;
 using CindarsHope.Camera;
+using CindarsHope.Core.Data;
 using CindarsHope.World.Scale;
 using UnityEditor;
 using UnityEngine;
@@ -10,12 +11,14 @@ namespace CindarsHope.Editor.ScaleSystem
     {
         private const string ScaleDataPath = "Assets/_Game/Data/Scale";
         private const string CameraDataPath = "Assets/_Game/Data/Camera";
+        private const string ConfigDataPath = "Assets/_Game/Data/Config";
 
         [MenuItem("Cindar's Hope/Scale/Create Default Scale Assets")]
         public static void CreateAll()
         {
             EnsureDirectory(ScaleDataPath);
             EnsureDirectory(CameraDataPath);
+            EnsureDirectory(ConfigDataPath);
 
             CreateProfile(EntityScaleCategory.Player,           "player",             "Player",            visualScale: 2.0f,  colliderScale: 1.0f, nameplateY: 1.4f);
             CreateProfile(EntityScaleCategory.NPC,              "npc",                "NPC",               visualScale: 2.0f,  colliderScale: 1.0f, nameplateY: 1.4f);
@@ -41,6 +44,7 @@ namespace CindarsHope.Editor.ScaleSystem
             CreateProfile(EntityScaleCategory.Corpse,           "corpse",             "Corpse",            visualScale: 2.0f,  colliderScale: 0.5f, nameplateY: 0.6f);
 
             CreateCameraConfig();
+            CreateGameScaleConfig();
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
@@ -93,6 +97,33 @@ namespace CindarsHope.Editor.ScaleSystem
             asset.SizeTransitionTime = 0.5f;
 
             AssetDatabase.CreateAsset(asset, path);
+        }
+
+        private static void CreateGameScaleConfig()
+        {
+            var path = $"{ConfigDataPath}/GameScaleConfig.asset";
+            if (File.Exists(Path.Combine(Application.dataPath, "..", path)))
+            {
+                return;
+            }
+
+            var asset = ScriptableObject.CreateInstance<GameScaleConfigSO>();
+            asset.PlayerReferenceScale = 1f;
+            asset.TreeScale = 3f;
+            asset.LakeScale = 6f;
+            asset.BossScale = 2.5f;
+            asset.BossMinScale = 2f;
+            asset.BossMaxScale = 3f;
+            asset.NormalEnemySmallScale = 1.15f;
+            asset.NormalEnemyMediumScale = 1.35f;
+            asset.NormalEnemyLargeScale = 1.65f;
+            asset.CaveWidthMultiplier = 2;
+            asset.CaveHeightMultiplier = 2;
+            asset.CaveRoomSizeMultiplier = 2;
+            asset.CaveCorridorWidthMultiplier = 2;
+
+            AssetDatabase.CreateAsset(asset, path);
+            Debug.Log($"[CreateDefaultScaleAssets] Created {path}.");
         }
 
         private static void EnsureDirectory(string path)
