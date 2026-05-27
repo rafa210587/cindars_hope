@@ -28,6 +28,7 @@ A etapa 00 foi reclassificada como implementado documental parcial. As specs run
 | 17D | [spec_ui_gameplay_shop_injection_equipment_slot_picker_closeout](implementados/spec_ui_gameplay_shop_injection_equipment_slot_picker_closeout.md) | Implementado completo - Play Mode validado 2026-05-26 | 17C | Nenhuma | Slot picker L com Chest/RightHand/LeftHand/Accessory; filtro e Esc validados por humano. |
 | 17E | [spec_ui_gameplay_shop_session_lifecycle_npc_readiness_closeout](implementados/spec_ui_gameplay_shop_session_lifecycle_npc_readiness_closeout.md) | Implementado completo - Play Mode validado 2026-05-26 | 17D | Nenhuma | Lifecycle persistente e duas sessoes de shop validados por humano sem erros. |
 | 17F | [spec_ui_gameplay_shop_modal_stack_responsive_names_closeout](implementados/spec_ui_gameplay_shop_modal_stack_responsive_names_closeout.md) | Implementado completo - Play Mode validado 2026-05-26 | 17E | Nenhuma | Modal stack sem mismatch; layout responsivo e nomes curtos validados por humano. |
+| 17A | [spec_visual_world_scale_camera_sprite_profiles](implementados/spec_visual_world_scale_camera_sprite_profiles.md) | Implementado em codigo - Play Mode humano pendente | 17F | Nenhuma | VisualScaleProfileSO, VisualScaleApplicator, CameraScaleConfigSO, CameraScaleController; cave corridors parametrizados; Farm/Town bounds 4x; dotnet PASS 0 erros. |
 
 ## Observacao operacional
 
@@ -53,3 +54,5 @@ A spec 17D endurece a injecao de buy/sell e adiciona o picker de equipamento por
 A spec 17E corrige o lifecycle das sessoes de shop: o `ShopManager` passa a pertencer ao `GameBootstrap` persistente, os NPCs fazem rebind e readiness idempotentes. Fechada em 2026-05-26 com Play Mode humano validado sem erros.
 
 A spec 17F corrige a higiene da stack de buy/sell com pop condicional, introduz nomes curtos e painel de detalhes e aplica scroll/layout responsivo. Fechada em 2026-05-26 com Play Mode humano validado sem erros.
+
+A spec 17A (visual scale / world scale / camera scale / sprite profiles) foi implementada em codigo em 2026-05-26: VisualScaleProfileSO (23 categorias), VisualScaleApplicator, CameraScaleConfigSO, CameraScaleController com SmoothDamp; cave corridors parametrizados (CorridorMinWidth/MaxWidth); Farm bounds 40x34 (~4x area anterior), Town bounds 36x30 (~4x area anterior); editor tool CreateDefaultScaleAssets; validator ValidateSpec17AScaleConfig. dotnet build runtime e editor: PASS 0 erros. Play Mode humano pendente.

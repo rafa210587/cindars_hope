@@ -439,10 +439,11 @@ namespace CindarsHope.Editor.SceneCreation
             var bounds = new GameObject("Bounds");
             bounds.transform.position = Vector3.zero;
 
-            CreateBound("Top", bounds.transform, new Vector2(0f, 7.5f), new Vector2(18f, 1f));
-            CreateBound("Bottom", bounds.transform, new Vector2(0f, -7.5f), new Vector2(18f, 1f));
-            CreateBound("Left", bounds.transform, new Vector2(-9.5f, 0f), new Vector2(1f, 14f));
-            CreateBound("Right", bounds.transform, new Vector2(9.5f, 0f), new Vector2(1f, 14f));
+            // Town: ~4x area (2x per axis) — was 18x15, now 36x30
+            CreateBound("Top", bounds.transform, new Vector2(0f, 15f), new Vector2(36f, 1f));
+            CreateBound("Bottom", bounds.transform, new Vector2(0f, -15f), new Vector2(36f, 1f));
+            CreateBound("Left", bounds.transform, new Vector2(-18.5f, 0f), new Vector2(1f, 30f));
+            CreateBound("Right", bounds.transform, new Vector2(18.5f, 0f), new Vector2(1f, 30f));
         }
 
         private static void CreateBound(string name, Transform parent, Vector2 position, Vector2 size)
@@ -463,7 +464,7 @@ namespace CindarsHope.Editor.SceneCreation
 
             var camera = cameraObject.AddComponent<UnityEngine.Camera>();
             camera.orthographic = true;
-            camera.orthographicSize = 7.5f;
+            camera.orthographicSize = 8f; // calibrate in Play Mode with CameraScaleConfigSO
             camera.backgroundColor = new Color(0.12f, 0.15f, 0.18f);
 
             var cameraFollow = cameraObject.AddComponent<CindarsHope.Camera.CameraFollow2D>();

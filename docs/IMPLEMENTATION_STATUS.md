@@ -40,6 +40,7 @@
 | UI Gameplay shop injection/equipment slot picker (Spec 17D) | Implementado completo - Play Mode humano validado 2026-05-26 | `docs/specs/implementados/spec_ui_gameplay_shop_injection_equipment_slot_picker_closeout.md`, `docs/validation/SPEC17D_CLOSEOUT_VALIDATION_20260526.md` |
 | UI Gameplay ShopSession lifecycle/readiness (Spec 17E) | Implementado completo - Play Mode humano validado 2026-05-26 | `docs/specs/implementados/spec_ui_gameplay_shop_session_lifecycle_npc_readiness_closeout.md`, `docs/validation/SPEC17E_SHOP_SESSION_FIX_VALIDATION_20260526.md` |
 | UI Gameplay shop modal/responsive/names (Spec 17F) | Implementado completo - Play Mode humano validado 2026-05-26 | `docs/specs/implementados/spec_ui_gameplay_shop_modal_stack_responsive_names_closeout.md`, `docs/validation/SPEC17F_SHOP_MODAL_UI_VALIDATION_20260526.md` |
+| Visual scale / world scale / camera profiles (Spec 17A) | Implementado em codigo - Play Mode humano pendente | `docs/specs/implementados/spec_visual_world_scale_camera_sprite_profiles.md` |
 
 ## Correcoes de tracking obrigatorias
 

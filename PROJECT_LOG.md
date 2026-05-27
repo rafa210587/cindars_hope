@@ -1,3 +1,40 @@
+## Sessao 2026-05-26 (27b) - SPEC 17A - Visual Scale, Camera Scale, World Scale
+
+**Foco:** implementar SPEC 17A - visual scale profiles, camera scale config, cave corridor width parametrizado, Farm/Town bounds 4x.
+**Status:** FECHADO em codigo — Play Mode humano pendente.
+
+### Arquivos criados
+
+- `Assets/_Game/Scripts/World/Scale/VisualScaleProfileSO.cs` — SO com 23 EntityScaleCategory; VisualScale, ColliderScale, offsets independentes
+- `Assets/_Game/Scripts/World/Scale/VisualScaleApplicator.cs` — MonoBehaviour que aplica perfil ao transform.localScale e Collider2D
+- `Assets/_Game/Scripts/Camera/CameraScaleConfigSO.cs` — tamanhos ortograficos por contexto (Farm 8.5, Town 8.0, Cave 7.0, Boss 10.0)
+- `Assets/_Game/Scripts/Camera/CameraScaleController.cs` — CameraContext enum, SmoothDamp, resolucao por nome de cena
+- `Assets/_Game/Scripts/Editor/ScaleSystem/CreateDefaultScaleAssets.cs` — menu editor criando 22 VisualScaleProfileSO + CameraScaleConfig.asset
+- `Assets/_Game/Scripts/Editor/Validation/ValidateSpec17AScaleConfig.cs` — validator de wiring de escala
+
+### Arquivos modificados
+
+- `Assets/_Game/Scripts/Cave/Data/CaveGenerationConfigSO.cs` — CorridorMinWidth, CorridorMaxWidth, BossArenaMinSize, SpawnSafeRadius, ResourceSpacing, GenerationConfigVersion
+- `Assets/_Game/Scripts/Cave/Generation/CaveProceduralGenerator.cs` — ResolveCorridorWidth(), corridores com largura variavel
+- `Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpFarmScene.cs` — bounds 40x34 (era 20x17, ~4x area)
+- `Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpTownScene.cs` — bounds 36x30 (era 18x15, ~4x area)
+
+### Validacao
+
+- dotnet build Assembly-CSharp.csproj: PASS (0 erros, 0 warnings)
+- dotnet build Assembly-CSharp-Editor.csproj: PASS (0 erros, 0 warnings)
+- tools/docs/validate_docs.ps1: PASS
+- Unity Play Mode humano: PENDENTE (requer regeneracao de cenas no Editor)
+
+### Documentacao
+
+- spec migrada: `docs/specs/a_implementar/spec_visual_world_scale_camera_sprite_profiles.md` → `docs/specs/implementados/`
+- prompt migrado: `docs/agent_prompts/a_executar/SPEC_17A_..._PROMPT.md` → `docs/agent_prompts/implementados/`
+- SPEC_EXECUTION_ORDER.md: entrada 17A adicionada
+- IMPLEMENTATION_STATUS.md: linha 17A adicionada
+
+---
+
 ## Sessao 2026-05-26 (27a) - Reconciliacao specs/prompts 17
 
 **Foco:** auditar specs 17, commitar SPEC 17F pendente, migrar implementadas para `implementados/`, fechar 17C/D/E/F apos validacao humana confirmada sem erros.

@@ -79,9 +79,11 @@ namespace CindarsHope.Cave.Generation
         {
             generated.Rooms.Sort((a, b) => a.Center.x == b.Center.x ? a.Center.y.CompareTo(b.Center.y) : a.Center.x.CompareTo(b.Center.x));
 
+            var corridorWidth = ResolveCorridorWidth(config, random);
+
             for (var i = 1; i < generated.Rooms.Count; i++)
             {
-                CarveCorridor(generated.Rooms[i - 1].Center, generated.Rooms[i].Center, generated.WalkableTiles, random.Next(0, 2) == 0);
+                CarveCorridor(generated.Rooms[i - 1].Center, generated.Rooms[i].Center, generated.WalkableTiles, random.Next(0, 2) == 0, corridorWidth);
             }
 
             for (var i = 0; i < generated.Rooms.Count; i++)
@@ -93,9 +95,16 @@ namespace CindarsHope.Cave.Generation
                         continue;
                     }
 
-                    CarveCorridor(generated.Rooms[i].Center, generated.Rooms[j].Center, generated.WalkableTiles, random.Next(0, 2) == 0);
+                    CarveCorridor(generated.Rooms[i].Center, generated.Rooms[j].Center, generated.WalkableTiles, random.Next(0, 2) == 0, corridorWidth);
                 }
             }
+        }
+
+        private static int ResolveCorridorWidth(CaveGenerationConfigSO config, System.Random random)
+        {
+            var min = Mathf.Max(1, config.CorridorMinWidth);
+            var max = Mathf.Max(min, config.CorridorMaxWidth);
+            return min == max ? min : random.Next(min, max + 1);
         }
 
         private static void PlaceEntranceAndExit(CaveGeneratedLevel generated)
@@ -192,37 +201,45 @@ namespace CindarsHope.Cave.Generation
             }
         }
 
-        private static void CarveCorridor(Vector2Int from, Vector2Int to, HashSet<Vector2Int> walkableTiles, bool horizontalFirst)
+        private static void CarveCorridor(Vector2Int from, Vector2Int to, HashSet<Vector2Int> walkableTiles, bool horizontalFirst, int width = 1)
         {
             if (horizontalFirst)
             {
-                CarveHorizontal(from.x, to.x, from.y, walkableTiles);
-                CarveVertical(from.y, to.y, to.x, walkableTiles);
+                CarveHorizontal(from.x, to.x, from.y, walkableTiles, width);
+                CarveVertical(from.y, to.y, to.x, walkableTiles, width);
             }
             else
             {
-                CarveVertical(from.y, to.y, from.x, walkableTiles);
-                CarveHorizontal(from.x, to.x, to.y, walkableTiles);
+                CarveVertical(from.y, to.y, from.x, walkableTiles, width);
+                CarveHorizontal(from.x, to.x, to.y, walkableTiles, width);
             }
         }
 
-        private static void CarveHorizontal(int startX, int endX, int y, HashSet<Vector2Int> walkableTiles)
+        private static void CarveHorizontal(int startX, int endX, int y, HashSet<Vector2Int> walkableTiles, int width = 1)
         {
             var min = Mathf.Min(startX, endX);
             var max = Mathf.Max(startX, endX);
+            var half = width / 2;
             for (var x = min; x <= max; x++)
             {
-                walkableTiles.Add(new Vector2Int(x, y));
+                for (var dy = -half; dy <= half; dy++)
+                {
+                    walkableTiles.Add(new Vector2Int(x, y + dy));
+                }
             }
         }
 
-        private static void CarveVertical(int startY, int endY, int x, HashSet<Vector2Int> walkableTiles)
+        private static void CarveVertical(int startY, int endY, int x, HashSet<Vector2Int> walkableTiles, int width = 1)
         {
             var min = Mathf.Min(startY, endY);
             var max = Mathf.Max(startY, endY);
+            var half = width / 2;
             for (var y = min; y <= max; y++)
             {
-                walkableTiles.Add(new Vector2Int(x, y));
+                for (var dx = -half; dx <= half; dx++)
+                {
+                    walkableTiles.Add(new Vector2Int(x + dx, y));
+                }
             }
         }
 

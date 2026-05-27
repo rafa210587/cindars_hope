@@ -7,8 +7,12 @@ namespace CindarsHope.Cave.Data
     public sealed class CaveGenerationConfigSO : ScriptableObject, IIdentifiedData
     {
         public string Id;
+
+        [Header("Map Dimensions")]
         public int TargetWidth = 80;
         public int TargetHeight = 48;
+
+        [Header("Rooms")]
         public int MinRooms = 8;
         public int MaxRooms = 14;
         public int MinRoomWidth = 6;
@@ -16,8 +20,28 @@ namespace CindarsHope.Cave.Data
         public int MinRoomHeight = 4;
         public int MaxRoomHeight = 10;
         public int ExtraConnectionChancePercent = 20;
+
+        [Header("Corridors")]
+        [Tooltip("Minimum corridor width in tiles (1 = single tile, spec target >= 2).")]
+        public int CorridorMinWidth = 1;
+        [Tooltip("Maximum corridor width in tiles.")]
+        public int CorridorMaxWidth = 1;
+
+        [Header("Boss Arena")]
+        [Tooltip("Minimum side length for boss arena rooms in tiles.")]
+        public int BossArenaMinSize = 10;
+
+        [Header("Spawn")]
         public int EnemyPointCount = 6;
         public int ResourcePointCount = 8;
+        [Tooltip("Minimum distance in tiles from a spawn point to any room or corridor wall.")]
+        public float SpawnSafeRadius = 1.5f;
+        [Tooltip("Minimum distance in tiles between resource node spawn points.")]
+        public float ResourceSpacing = 3f;
+
+        [Header("Versioning")]
+        [Tooltip("Increment when generation params change to invalidate old snapshots.")]
+        public int GenerationConfigVersion = 1;
 
         string IIdentifiedData.Id => Id;
 
@@ -32,8 +56,14 @@ namespace CindarsHope.Cave.Data
             MinRoomHeight = Mathf.Max(2, MinRoomHeight);
             MaxRoomHeight = Mathf.Max(MinRoomHeight, MaxRoomHeight);
             ExtraConnectionChancePercent = Mathf.Clamp(ExtraConnectionChancePercent, 0, 100);
+            CorridorMinWidth = Mathf.Max(1, CorridorMinWidth);
+            CorridorMaxWidth = Mathf.Max(CorridorMinWidth, CorridorMaxWidth);
+            BossArenaMinSize = Mathf.Max(4, BossArenaMinSize);
             EnemyPointCount = Mathf.Max(0, EnemyPointCount);
             ResourcePointCount = Mathf.Max(0, ResourcePointCount);
+            SpawnSafeRadius = Mathf.Max(0f, SpawnSafeRadius);
+            ResourceSpacing = Mathf.Max(0f, ResourceSpacing);
+            GenerationConfigVersion = Mathf.Max(1, GenerationConfigVersion);
         }
     }
 }
