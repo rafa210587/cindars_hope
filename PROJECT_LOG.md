@@ -1,3 +1,45 @@
+## Sessao 2026-05-26 (27a) - Reconciliacao specs/prompts 17
+
+**Foco:** auditar specs 17, commitar SPEC 17F pendente, migrar implementadas para `implementados/` e manter abertas apenas as pendentes reais.
+**Status:** concluido; commit SPEC 17F realizado; migracoes 17C/D/E concluidas; tracking atualizado.
+
+### Resultado
+
+- Migradas para `docs/specs/implementados/`:
+  - `spec_ui_gameplay_closeout_skill_shop_prompts_actions_hud.md` (17C): gates automaticos PASS; Play Mode humano pendente
+  - `spec_ui_gameplay_shop_injection_equipment_slot_picker_closeout.md` (17D): dotnet compile PASS; Unity/Play Mode pendentes
+  - `spec_ui_gameplay_shop_session_lifecycle_npc_readiness_closeout.md` (17E): dotnet compile PASS; Unity/Play Mode pendentes
+
+- Mantidas em `docs/specs/a_implementar/`:
+  - `spec_ui_ux_full_gameplay_inventory_hotbar_menus.md` (17 ampla): umbrella com Canvas UGUI final, pause/options, cave/death/corpse/Anya/toasts e substituicao de OnGUI nao-debug pendentes
+  - `spec_ui_gameplay_shop_modal_stack_responsive_names_closeout.md` (17F): codigo implementado e commitado nesta sessao; Unity/Play Mode ainda pendentes
+
+- Nao migradas por falta de evidencia: nenhuma (17C/D/E tinham evidencia suficiente).
+
+### SPEC 17F - codigo commitado
+
+Commit `87f1f0b` com dotnet build PASS (runtime 0 erros, editor 0 erros) confirmado antes do commit.
+Conteudo: TryPopIfCurrent/HideVisualOnly em ModalManager, NpcShopController, BuyPanel, SellPanel;
+ValidateShopModalFlow.cs; EnemyBrain.linearVelocity (API Unity 6); metas faltantes.
+
+### Validacao
+
+- dotnet build Assembly-CSharp.csproj: PASS (0 erros, 5 warnings legados preexistentes)
+- dotnet build Assembly-CSharp-Editor.csproj: PASS (0 erros)
+- tools/docs/validate_docs.ps1: PASS (sem erros de governanca documental)
+- Unity validation: NOT RUN
+- Reason: Unity Editor aberto com o projeto; batchmode bloqueado
+- Command attempted: `.\tools\unity\RunUnityCompileValidation.ps1 -UnityEditorPath 'C:\Program Files\Unity\Hub\Editor\6000.0.4.7f1\Editor\Unity.exe' -ProjectPath '.' -LogFile '.\Logs\spec17-reconciliation-unity-compile.log' -TimeoutSeconds 300`
+- Residual risk: Unity compile e Play Mode nao validados localmente
+
+### Riscos residuais
+
+- SPEC 17C/D/E: Play Mode humano pendente (buy/sell, K/L/U, save/load)
+- SPEC 17F: Unity compile e Play Mode pendentes apos instancia Unity liberar
+- SPEC 17 ampla: escopo amplo ainda aberto (Canvas UGUI, pause/options, death/cave/toasts)
+
+---
+
 ## Sessao 2026-05-26 (26a) - SPEC 17F Modal Stack + Responsive Shop UI
 
 **Foco:** eliminar mismatch de modal em buy/sell e melhorar legibilidade dos paineis de shop
