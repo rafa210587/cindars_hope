@@ -15,7 +15,10 @@ namespace CindarsHope.UI.Modal
         CorpseRecovery,
         AnyaFountain,
         SkillTree,
-        CharacterEquipment
+        CharacterEquipment,
+        Pause,
+        Death,
+        CaveCheckpoint
     }
 
     [DisallowMultipleComponent]

@@ -56,6 +56,7 @@ Principais conclusoes:
 | UI Gameplay shop modal/responsive/names (Spec 17F) | Implementado completo - Play Mode humano validado 2026-05-26 | `docs/specs/implementados/spec_ui_gameplay_shop_modal_stack_responsive_names_closeout.md`, `docs/validation/SPEC17F_SHOP_MODAL_UI_VALIDATION_20260526.md` |
 | Visual scale / world scale / camera profiles (Spec 17A) | Implementado em codigo completo (17A-FIX aplicado) - Play Mode humano pendente | `docs/specs/implementados/spec_visual_world_scale_camera_sprite_profiles.md` |
 | GameScaleConfigSO central config + valores reais 2x/3x/6x (17A-FIX) | Implementado - cave 160x96, boss 2.5x, arvores 3x, lago 6x, boss gates 15-90 no registry, enemy_meteor_ooze_king real | commit `bd06a3a` |
+| UI/UX infraestrutura 17B: input routing, pause, toasts, context hint, death screen, checkpoint menu (Spec 17B parcial) | Implementado em codigo - GameplayInputRouter, PauseMenuController, NotificationToastController, ContextHintController, DeathScreenController, CaveCheckpointSideMenuController; UIEvents.cs; ModalType Pause/Death/CaveCheckpoint; SkillTreeGameplayPanelController yield a GameplayInputRouter. Play Mode humano pendente. | branch `dev` 2026-05-27 |
 | Input Manager | Debito tecnico futuro | Input Manager legado ativo; migracao para Input System requer spec propria para evitar regressao de gameplay/UI. |
 
 ## 3. Status oficial por SPEC/prompt ate 16

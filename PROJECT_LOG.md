@@ -1,3 +1,35 @@
+## Sessao 2026-05-27 (28d) - SPEC 17B - UI infraestrutura: input routing, pause, toasts, hints, death, checkpoint
+
+**Foco:** Implementar camada de infraestrutura UI da SPEC 17B: GameplayInputRouter, PauseMenuController, NotificationToastController, ContextHintController, DeathScreenController, CaveCheckpointSideMenuController.
+**Status:** FECHADO em codigo (0 erros, 0 avisos). Play Mode humano + wiring de cena pendentes.
+
+### Implementacao
+
+**UIEvents.cs** criado em `Assets/_Game/Scripts/Core/Events/`: PauseOpenedEvent, PauseClosedEvent, NotificationToastRequestedEvent, InventoryPanelOpenedEvent, EquipmentPanelOpenedEvent, CraftingPanelOpenedEvent, SkillTreePanelClosedEvent, CheckpointMenuOpenedEvent, CheckpointMenuClosedEvent, DeathScreenOpenedEvent, DeathScreenClosedEvent, ModalCloseRequestedEvent, DebugHudToggledEvent.
+
+**GameplayInputRouter** em `Assets/_Game/Scripts/UI/Input/` (namespace `CindarsHope.UI.Routing`): roteamento central de Esc/I/K/U. Esc fecha modal ativo ou abre pause. I/K/U bloqueados enquanto modal aberto. `IsActive` static bool permite paineis legados OnGUI cederem o handling.
+
+**PauseMenuController** em `Assets/_Game/Scripts/UI/Pause/`: Open/Resume via MenuManager (com fallback Time.timeScale). Botoes Save/Load chamam SaveManager.SaveGame()/LoadGame(). Guard contra loop infinito via PauseOpenedEvent.
+
+**NotificationToastController** em `Assets/_Game/Scripts/UI/Notification/`: fila Queue<ToastEntry> + List<ToastEntry> ativo; max 4 simultâneos, 2.5s por toast. Time.unscaledTime para funcionar pausado. Subscreve: PlayerActionFeedbackEvent, NotificationToastRequestedEvent, ItemCraftedEvent, EconomyTransactionCompletedEvent, CaveCheckpointUnlockedEvent, CaveBossDefeatedEvent.
+
+**ContextHintController** em `Assets/_Game/Scripts/UI/Notification/`: exibe "[E] {prompt}" acima da hotbar quando InteractionPromptChangedEvent.HasCandidate == true.
+
+**DeathScreenController** em `Assets/_Game/Scripts/UI/Death/`: overlay de morte subscrito a PlayerDiedEvent + CavePlayerDefeatedEvent. Logica de respawn permanece em DeathSystemBootstrap/AnyaRespawnService; o controller e informacional.
+
+**CaveCheckpointSideMenuController** em `Assets/_Game/Scripts/UI/Cave/`: side menu lateral subscrito a CheckpointMenuOpenedEvent; lista checkpoints de GameBootstrap.CaveRunManager.State.UnlockedCheckpoints; confirma seleção publicando CaveCheckpointSelectedEvent.
+
+**ModalManager**: adicionado Pause, Death, CaveCheckpoint ao enum ModalType.
+
+**SkillTreeGameplayPanelController**: adicionado check `if (GameplayInputRouter.IsActive) return;` no Update para ceder handling de U ao novo router quando ativo.
+
+### Pendencias para Editor
+- Adicionar GameplayInputRouter ao GameObject de infraestrutura UI na cena
+- Adicionar PauseMenuController, NotificationToastController, ContextHintController, DeathScreenController, CaveCheckpointSideMenuController ao mesmo GameObject ou UIRoot
+- Canvas panel replacements (InventoryPanel, CharacterEquipmentPanel, CraftingPanel) pendentes para fase de arte/prefab
+
+---
+
 ## Sessao 2026-05-27 (28c) - SPEC 17A-FIX - Valores reais de escala, GameScaleConfigSO, cave 2x
 
 **Foco:** Aplicar valores de escala reais (cave 2x, boss 2.5x, arvores 3x, lago 6x) usando config central.

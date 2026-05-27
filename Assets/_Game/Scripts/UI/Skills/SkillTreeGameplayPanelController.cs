@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Player.Progression;
 using CindarsHope.Skills;
+using CindarsHope.UI.Routing;
 using CindarsHope.UI.Modal;
 using UnityEngine;
 
@@ -54,6 +55,10 @@ namespace CindarsHope.UI.Skills
 
         private void Update()
         {
+            // Yield to GameplayInputRouter when active; it publishes SkillTreeOpenedEvent
+            // which SkillTreeInputHandler handles via the Canvas SkillTreePanel.
+            if (GameplayInputRouter.IsActive) return;
+
             if (Input.GetKeyDown(KeyCode.U))
             {
                 Toggle();
