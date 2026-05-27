@@ -1,3 +1,66 @@
+## Sessao 2026-05-27 (28b) - SPEC 17A - Revalidacao, scale audit, boss gates, wiring UI
+
+**Foco:** corrigir logs GameBootstrap (UI scene-bound), boss gate persistence, enemy_meteor_ooze_king, CaveDebugLevelSkipController spam, e auditar scale 17A.
+**Status:** FECHADO em codigo. Play Mode humano + run do CreateCaveBossAssets + regenerar CaveScene pendentes.
+
+### Diagnostico e auditoria de scale
+
+SPEC 17A implementou infraestrutura data-driven de scale visual:
+- VisualScaleProfileSO / VisualScaleApplicator: criados, mas nao wired nos prefabs (Editor pendente).
+- CameraScaleConfigSO / CameraScaleController: criados, mas nao wired nas cameras de cena (Editor pendente).
+- Farm/Town bounds: expandidos no generator (2x por eixo), mas cenas precisam ser regeneradas no Editor.
+- Cave corridors: CorridorMinWidth/MaxWidth adicionados no config SO.
+- Resultado: scale nao e visivel porque precisa de: (1) wiring de VisualScaleApplicator nos prefabs, (2) CameraScaleController nas cameras, (3) criacao de assets via CreateDefaultScaleAssets, (4) regeneracao das cenas.
+
+### Correcoes aplicadas
+
+**GameBootstrap:** Removidos [SerializeField] _corpseRecoveryUIController e _anyaFountainUIController e InitializeUIControllers(). GameBootstrap nao deve referenciar UI scene-bound.
+
+**CorpseRecoveryUIController:** Adicionado padrao _isInitialized + TryInitialize(). Auto-inicializa em Start() e OnEnable() sem necessitar chamada externa do GameBootstrap.
+
+**AnyaFountainUIController:** Mesmo padrao TryInitialize(). Auto-inicializa em Start() e OnEnable().
+
+**CaveDebugLevelSkipController:** Skip de "no more gates" agora loga apenas uma vez por nivel com Debug.Log (nao warning). Campo _noMoreGatesWarnedAtLevel rastrea ultimo nivel avisado.
+
+**CreateCaveBossAssets.cs:** Editor tool criado para:
+- Criar BossGate_Level 15/30/45/60/75/90 com SerializedObject (campos private corretamente populados).
+- Criar enemy_meteor_ooze_king.asset (EnemyDataSO, IsBoss=true, maxHp=200, xp=150).
+- Wiring de todos os 6 gates em CaveBossGateRegistry.asset.
+- Adicionar boss ao EnemyDatabase.asset.
+- Executar via menu: Cindar's Hope > Cave > Create Boss Gate Assets.
+
+### Boss gates esperados vs encontrados (pre-fix)
+
+| Nivel | Gate existia no asset? | Na registry? | Status |
+|---|---|---|---|
+| 15 | Sim (BossGate_Level15.asset) - campos errados | Nao (_gates: []) | Runtime fallback |
+| 30 | Nao | Nao | Runtime fallback |
+| 45 | Nao | Nao | Runtime fallback |
+| 60 | Nao | Nao | Runtime fallback |
+| 75 | Nao | Nao | Runtime fallback |
+| 90 | Nao | Nao | Runtime fallback |
+
+### Pendencias apos commit
+
+1. Abrir Unity, executar: `Cindar's Hope > Cave > Create Boss Gate Assets`
+2. Executar: `Cindar's Hope > Scale > Create Default Scale Assets`
+3. Regenerar CaveScene: `Cindar's Hope > Scene > Create Cave Scene`
+4. Regenerar FarmScene e TownScene: `Cindar's Hope > Scene > Create Farm/Town Scene`
+5. Wiring de CameraScaleController nas cameras das cenas
+6. Wiring de VisualScaleApplicator nos prefabs de player/NPC/enemy
+7. Play Mode: confirmar ausencia dos logs de GameBootstrap/boss gates
+8. Play Mode: skipar para nivel 15, confirmar boss spawn sem fallback
+
+### Validacao
+
+- dotnet build Assembly-CSharp.csproj: PASS (0 erros)
+- dotnet build Assembly-CSharp-Editor.csproj: PASS (0 erros, 0 warnings)
+- tools/docs/validate_docs.ps1: PASS
+- FindObjectOfType em Assets/_Game/Scripts: 0 ocorrencias
+- Unity Play Mode: PENDENTE
+
+---
+
 ## Sessao 2026-05-27 (28a) - SPEC 17A - Validacao, correcao de warnings e reconciliacao
 
 **Foco:** validar SPEC 17A contra codigo, corrigir 5 warnings, resolver conflito de merge em IMPLEMENTATION_STATUS.md.

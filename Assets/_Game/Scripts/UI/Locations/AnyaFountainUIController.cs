@@ -13,10 +13,17 @@ namespace CindarsHope.UI.Locations
         [SerializeField] private AnyaFountainMenu _fountainMenuPrefab;
         private ModalManager _modalManager;
         private AnyaRespawnService _respawnService;
+        private bool _isInitialized;
+
+        private void Start()
+        {
+            TryInitialize("Start");
+        }
 
         private void OnEnable()
         {
             GameEventBus.Subscribe<AnyaFountainOpenedEvent>(OnFountainOpened);
+            TryInitialize("OnEnable");
         }
 
         private void OnDisable()
@@ -26,19 +33,32 @@ namespace CindarsHope.UI.Locations
 
         public void Initialize()
         {
+            TryInitialize("Initialize");
+        }
+
+        private bool TryInitialize(string reason)
+        {
+            if (_isInitialized)
+            {
+                return true;
+            }
+
             var bootstrap = GameBootstrap.Instance;
             if (bootstrap == null)
             {
-                Debug.LogError("[AnyaFountainUIController] GameBootstrap not found");
-                return;
+                return false;
             }
 
             _modalManager = bootstrap.ModalManager;
 
             if (_modalManager == null)
             {
-                Debug.LogWarning("[AnyaFountainUIController] ModalManager not found");
+                Debug.LogWarning($"[AnyaFountainUIController] Initialization incomplete from {reason}. modalManager=false", this);
+                return false;
             }
+
+            _isInitialized = true;
+            return true;
         }
 
         public void OpenFountainMenu(AnyaRespawnService respawnService)
@@ -49,15 +69,15 @@ namespace CindarsHope.UI.Locations
 
         private void OnFountainOpened(AnyaFountainOpenedEvent evt)
         {
-            if (_modalManager == null)
+            if (!TryInitialize("OnFountainOpened"))
             {
-                Debug.LogError("[AnyaFountainUIController] Cannot open menu: ModalManager missing");
+                Debug.LogError("[AnyaFountainUIController] Cannot open menu: ModalManager not initialized", this);
                 return;
             }
 
             if (_fountainMenuPrefab == null)
             {
-                Debug.LogWarning("[AnyaFountainUIController] Fountain menu prefab not assigned");
+                Debug.LogWarning("[AnyaFountainUIController] Fountain menu prefab not assigned", this);
                 return;
             }
 

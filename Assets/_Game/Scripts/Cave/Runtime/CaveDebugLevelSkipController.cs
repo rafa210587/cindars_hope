@@ -22,6 +22,7 @@ namespace CindarsHope.Cave.Runtime
 
         private string _lastDebugAction = "none";
         private bool _disabledLogged = false;
+        private int _noMoreGatesWarnedAtLevel = -1;
 
         private void OnValidate()
         {
@@ -128,8 +129,12 @@ namespace CindarsHope.Cave.Runtime
             var currentLevel = _caveRunManager.CurrentCaveLevel;
             if (!TryFindNextBossGateLevel(currentLevel, out var nextGateLevel, out var gateId))
             {
-                _lastDebugAction = $"DEBUG: No boss gate found after level {currentLevel} up to {_maxDebugGateSearchLevel}";
-                Debug.LogWarning($"CaveDebugLevelSkipController: {_lastDebugAction}. Check CaveBossGateRegistrySO data if more gates are expected.", this);
+                _lastDebugAction = $"DEBUG: No further boss gates configured after level {currentLevel}.";
+                if (_noMoreGatesWarnedAtLevel != currentLevel)
+                {
+                    _noMoreGatesWarnedAtLevel = currentLevel;
+                    Debug.Log($"CaveDebugLevelSkipController: {_lastDebugAction}", this);
+                }
                 return;
             }
 

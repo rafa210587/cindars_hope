@@ -12,8 +12,6 @@ using CindarsHope.Player.Data;
 using CindarsHope.Player.Death;
 using CindarsHope.Player.Progression;
 using CindarsHope.Save;
-using CindarsHope.UI.Death;
-using CindarsHope.UI.Locations;
 using CindarsHope.UI.Modal;
 using UnityEngine;
 
@@ -47,8 +45,6 @@ namespace CindarsHope.Core.Bootstrap
         [SerializeField] private CaveRunManager _caveRunManager;
         [SerializeField] private AnyaFountain _anyaFountain;
         [SerializeField] private Skills.SkillTreeManager _skillTreeManager;
-        [SerializeField] private CorpseRecoveryUIController _corpseRecoveryUIController;
-        [SerializeField] private AnyaFountainUIController _anyaFountainUIController;
 
         private CaveRuntimeState _cachedCaveRunState;
         private CorpseRecoveryManager _corpseRecoveryManager;
@@ -268,28 +264,6 @@ namespace CindarsHope.Core.Bootstrap
                 Debug.LogWarning("GameBootstrap: Missing required managers for death system initialization.", this);
             }
 
-            InitializeUIControllers();
-        }
-
-        private void InitializeUIControllers()
-        {
-            if (_corpseRecoveryUIController != null)
-            {
-                _corpseRecoveryUIController.Initialize();
-            }
-            else
-            {
-                Debug.LogWarning("GameBootstrap: CorpseRecoveryUIController reference is not assigned.", this);
-            }
-
-            if (_anyaFountainUIController != null)
-            {
-                _anyaFountainUIController.Initialize();
-            }
-            else
-            {
-                Debug.LogWarning("GameBootstrap: AnyaFountainUIController reference is not assigned.", this);
-            }
         }
 
         private void ShutdownManagers()

@@ -13,10 +13,17 @@ namespace CindarsHope.UI.Death
         [SerializeField] private CorpseRecoveryModal _recoveryModalPrefab;
         private ModalManager _modalManager;
         private CorpseRecoveryManager _recoveryManager;
+        private bool _isInitialized;
+
+        private void Start()
+        {
+            TryInitialize("Start");
+        }
 
         private void OnEnable()
         {
             GameEventBus.Subscribe<CorpseCreatedEvent>(OnCorpseCreated);
+            TryInitialize("OnEnable");
         }
 
         private void OnDisable()
@@ -26,25 +33,33 @@ namespace CindarsHope.UI.Death
 
         public void Initialize()
         {
+            TryInitialize("Initialize");
+        }
+
+        private bool TryInitialize(string reason)
+        {
+            if (_isInitialized)
+            {
+                return true;
+            }
+
             var bootstrap = GameBootstrap.Instance;
             if (bootstrap == null)
             {
-                Debug.LogError("[CorpseRecoveryUIController] GameBootstrap not found");
-                return;
+                return false;
             }
 
             _modalManager = bootstrap.ModalManager;
             _recoveryManager = bootstrap.CorpseRecoveryManager;
 
-            if (_modalManager == null)
+            if (_modalManager == null || _recoveryManager == null)
             {
-                Debug.LogWarning("[CorpseRecoveryUIController] ModalManager not found");
+                Debug.LogWarning($"[CorpseRecoveryUIController] Initialization incomplete from {reason}. modalManager={_modalManager != null}, recoveryManager={_recoveryManager != null}", this);
+                return false;
             }
 
-            if (_recoveryManager == null)
-            {
-                Debug.LogWarning("[CorpseRecoveryUIController] CorpseRecoveryManager not found");
-            }
+            _isInitialized = true;
+            return true;
         }
 
         private void OnCorpseCreated(CorpseCreatedEvent evt)
@@ -54,15 +69,15 @@ namespace CindarsHope.UI.Death
 
         public void OpenRecoveryModal(Corpse corpse)
         {
-            if (_modalManager == null || _recoveryManager == null)
+            if (!TryInitialize("OpenRecoveryModal"))
             {
-                Debug.LogError("[CorpseRecoveryUIController] Cannot open modal: missing managers");
+                Debug.LogError("[CorpseRecoveryUIController] Cannot open modal: managers not initialized", this);
                 return;
             }
 
             if (_recoveryModalPrefab == null)
             {
-                Debug.LogWarning("[CorpseRecoveryUIController] Recovery modal prefab not assigned");
+                Debug.LogWarning("[CorpseRecoveryUIController] Recovery modal prefab not assigned", this);
                 return;
             }
 
