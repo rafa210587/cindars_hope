@@ -9,7 +9,7 @@ namespace CindarsHope.Economy
     public sealed class BuyItemPoint : MonoBehaviour, IInteractable
     {
         [SerializeField] private string _sourceId = "shop_town_seed";
-        [SerializeField] private string _itemId = "seed_wheat";
+        [SerializeField] private string _itemId = "item_seed_wheat";
         [SerializeField] private int _amount = 3;
         [SerializeField] private int _totalCost = 5;
         [SerializeField] private string _interactionPrompt = "Comprar";

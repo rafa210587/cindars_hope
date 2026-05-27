@@ -82,8 +82,8 @@ namespace CindarsHope.Save
 
             if (string.IsNullOrWhiteSpace(_hotbarState.GetSlotItemId(0)))
             {
-                _hotbarState.SetSlot(0, "seed_wheat");
-                _hotbarState.SetSlot(1, "seed_carrot");
+                _hotbarState.SetSlot(0, "item_seed_wheat");
+                _hotbarState.SetSlot(1, "item_seed_carrot");
                 _hotbarState.SetSlot(2, "item_tool_fishing_rod_basic");
             }
         }

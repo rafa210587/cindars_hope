@@ -10,7 +10,7 @@ namespace CindarsHope.Economy
     {
         [SerializeField] private InventoryManager _inventoryManager;
         [SerializeField] private PlayerManager _playerManager;
-        [SerializeField] private string _seedId = "seed_wheat";
+        [SerializeField] private string _seedId = "item_seed_wheat";
         [SerializeField] private int _amount = 3;
         [SerializeField] private int _totalCost = 5;
 

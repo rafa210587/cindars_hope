@@ -54,8 +54,8 @@ namespace CindarsHope.Editor.Testing
                 "npc_shop_seeds_tools",
                 new[]
                 {
-                    new ShopItemEntry { ItemId = "seed_wheat", BaseDailyStock = 10 },
-                    new ShopItemEntry { ItemId = "seed_carrot", BaseDailyStock = 8 },
+                    new ShopItemEntry { ItemId = "item_seed_wheat", BaseDailyStock = 10 },
+                    new ShopItemEntry { ItemId = "item_seed_carrot", BaseDailyStock = 8 },
                     new ShopItemEntry { ItemId = tool.Id, BaseDailyStock = 2 },
                     new ShopItemEntry { ItemId = bread.Id, BaseDailyStock = 8 },
                     new ShopItemEntry { ItemId = potion.Id, BaseDailyStock = 5 }
@@ -67,8 +67,8 @@ namespace CindarsHope.Editor.Testing
                 string.Empty,
                 new[]
                 {
-                    new ShopItemEntry { ItemId = "seed_wheat", BaseDailyStock = 10 },
-                    new ShopItemEntry { ItemId = "seed_carrot", BaseDailyStock = 8 },
+                    new ShopItemEntry { ItemId = "item_seed_wheat", BaseDailyStock = 10 },
+                    new ShopItemEntry { ItemId = "item_seed_carrot", BaseDailyStock = 8 },
                     new ShopItemEntry { ItemId = bread.Id, BaseDailyStock = 8 },
                     new ShopItemEntry { ItemId = potion.Id, BaseDailyStock = 5 },
                     new ShopItemEntry { ItemId = repairBasic.Id, BaseDailyStock = 4 }

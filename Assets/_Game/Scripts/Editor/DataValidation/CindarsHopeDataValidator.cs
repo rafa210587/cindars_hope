@@ -18,8 +18,8 @@ namespace CindarsHope.Editor.DataValidation
 
         private static readonly string[] RequiredItemIds =
         {
-            "seed_wheat",
-            "seed_carrot",
+            "item_seed_wheat",
+            "item_seed_carrot",
             "item_crop_wheat",
             "item_crop_carrot",
             "item_fish_common",
@@ -309,8 +309,8 @@ namespace CindarsHope.Editor.DataValidation
                 startingAmountsById[startingItem.Item.Id] = startingItem.Amount;
             }
 
-            ValidateStartingItemAmount(startingAmountsById, "seed_wheat", 5, errors);
-            ValidateStartingItemAmount(startingAmountsById, "seed_carrot", 3, errors);
+            ValidateStartingItemAmount(startingAmountsById, "item_seed_wheat", 5, errors);
+            ValidateStartingItemAmount(startingAmountsById, "item_seed_carrot", 3, errors);
             ValidateStartingItemAmount(startingAmountsById, "item_tool_fishing_rod_basic", 1, errors);
         }
 
