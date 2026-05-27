@@ -385,9 +385,29 @@ namespace CindarsHope.NPC
             }
 
             _isClosing = true;
-            _buyPanel?.Hide();
-            _sellPanel?.Hide();
-            _shopMenuModal?.Hide();
+            switch (_modalManager != null ? _modalManager.CurrentModal : ModalType.None)
+            {
+                case ModalType.Buy:
+                    _buyPanel?.Hide();
+                    _sellPanel?.HideVisualOnly();
+                    _shopMenuModal?.HideVisualOnly();
+                    break;
+                case ModalType.Sell:
+                    _sellPanel?.Hide();
+                    _buyPanel?.HideVisualOnly();
+                    _shopMenuModal?.HideVisualOnly();
+                    break;
+                case ModalType.ShopMenu:
+                    _shopMenuModal?.Hide();
+                    _buyPanel?.HideVisualOnly();
+                    _sellPanel?.HideVisualOnly();
+                    break;
+                default:
+                    _buyPanel?.HideVisualOnly();
+                    _sellPanel?.HideVisualOnly();
+                    _shopMenuModal?.HideVisualOnly();
+                    break;
+            }
 
             if (_dialogueModal == null || string.IsNullOrWhiteSpace(_npcData.ClosingLine))
             {

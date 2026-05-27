@@ -636,11 +636,13 @@ namespace CindarsHope.Editor.SceneCreation
             SetReference(serializedMenu, "_exitButton", exitButton);
             serializedMenu.ApplyModifiedPropertiesWithoutUndo();
 
-            var buyPanel = CreatePanel(canvasObject.transform, "BuyPanel", Vector2.zero, new Vector2(540f, 520f));
-            var buyGold = CreateText(buyPanel.transform, "Gold", new Vector2(-260f, 235f), new Vector2(190f, 34f), "Ouro:");
-            var buyFeedback = CreateText(buyPanel.transform, "Feedback", new Vector2(0f, -195f), new Vector2(640f, 40f), string.Empty);
-            var buyBack = CreateButton(buyPanel.transform, "BackButton", new Vector2(280f, -235f), new Vector2(140f, 40f), "Voltar");
-            var buyContainer = CreateContainer(buyPanel.transform, "Items", new Vector2(0f, 15f), new Vector2(680f, 360f));
+            var buyPanel = CreatePanel(canvasObject.transform, "BuyPanel", Vector2.zero, new Vector2(620f, 560f));
+            var buyGold = CreateText(buyPanel.transform, "Gold", new Vector2(-205f, 258f), new Vector2(190f, 34f), "Ouro:");
+            var buyContainer = CreateScrollableContainer(buyPanel.transform, "ItemsScroll", new Vector2(0f, 72f), new Vector2(574f, 250f));
+            var buyDetails = CreateText(buyPanel.transform, "Details", new Vector2(0f, -100f), new Vector2(570f, 105f), "Selecione um item para ver detalhes.");
+            buyDetails.fontSize = 15;
+            var buyFeedback = CreateText(buyPanel.transform, "Feedback", new Vector2(-72f, -218f), new Vector2(420f, 36f), string.Empty);
+            var buyBack = CreateButton(buyPanel.transform, "BackButton", new Vector2(225f, -228f), new Vector2(120f, 40f), "Voltar");
             var buyTemplate = CreateBuyItemTemplate(buyContainer);
             var buy = buyPanel.AddComponent<BuyPanel>();
             var serializedBuy = new SerializedObject(buy);
@@ -649,14 +651,17 @@ namespace CindarsHope.Editor.SceneCreation
             SetReference(serializedBuy, "_itemPrefab", buyTemplate);
             SetReference(serializedBuy, "_goldDisplay", buyGold);
             SetReference(serializedBuy, "_feedbackText", buyFeedback);
+            SetReference(serializedBuy, "_detailsText", buyDetails);
             SetReference(serializedBuy, "_backButton", buyBack);
             serializedBuy.ApplyModifiedPropertiesWithoutUndo();
 
-            var sellPanel = CreatePanel(canvasObject.transform, "SellPanel", Vector2.zero, new Vector2(540f, 520f));
-            var sellGold = CreateText(sellPanel.transform, "Gold", new Vector2(-260f, 235f), new Vector2(190f, 34f), "Ouro:");
-            var sellFeedback = CreateText(sellPanel.transform, "Feedback", new Vector2(0f, -195f), new Vector2(640f, 40f), string.Empty);
-            var sellBack = CreateButton(sellPanel.transform, "BackButton", new Vector2(280f, -235f), new Vector2(140f, 40f), "Voltar");
-            var sellContainer = CreateContainer(sellPanel.transform, "Items", new Vector2(0f, 15f), new Vector2(680f, 360f));
+            var sellPanel = CreatePanel(canvasObject.transform, "SellPanel", Vector2.zero, new Vector2(620f, 560f));
+            var sellGold = CreateText(sellPanel.transform, "Gold", new Vector2(-205f, 258f), new Vector2(190f, 34f), "Ouro:");
+            var sellContainer = CreateScrollableContainer(sellPanel.transform, "ItemsScroll", new Vector2(0f, 72f), new Vector2(574f, 250f));
+            var sellDetails = CreateText(sellPanel.transform, "Details", new Vector2(0f, -100f), new Vector2(570f, 105f), "Selecione um item para ver detalhes.");
+            sellDetails.fontSize = 15;
+            var sellFeedback = CreateText(sellPanel.transform, "Feedback", new Vector2(-72f, -218f), new Vector2(420f, 36f), string.Empty);
+            var sellBack = CreateButton(sellPanel.transform, "BackButton", new Vector2(225f, -228f), new Vector2(120f, 40f), "Voltar");
             var sellTemplate = CreateSellItemTemplate(sellContainer);
             var sell = sellPanel.AddComponent<SellPanel>();
             var serializedSell = new SerializedObject(sell);
@@ -665,6 +670,7 @@ namespace CindarsHope.Editor.SceneCreation
             SetReference(serializedSell, "_itemPrefab", sellTemplate);
             SetReference(serializedSell, "_goldDisplay", sellGold);
             SetReference(serializedSell, "_feedbackText", sellFeedback);
+            SetReference(serializedSell, "_detailsText", sellDetails);
             SetReference(serializedSell, "_backButton", sellBack);
             serializedSell.ApplyModifiedPropertiesWithoutUndo();
 
@@ -911,17 +917,51 @@ namespace CindarsHope.Editor.SceneCreation
             return containerObject.transform;
         }
 
+        private static Transform CreateScrollableContainer(Transform parent, string name, Vector2 position, Vector2 size)
+        {
+            var viewportObject = new GameObject(name, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(RectMask2D), typeof(ScrollRect));
+            viewportObject.transform.SetParent(parent, false);
+            var viewportRect = viewportObject.GetComponent<RectTransform>();
+            viewportRect.anchoredPosition = position;
+            viewportRect.sizeDelta = size;
+            viewportObject.GetComponent<Image>().color = new Color(0.06f, 0.07f, 0.09f, 0.75f);
+
+            var contentObject = new GameObject("Content", typeof(RectTransform), typeof(VerticalLayoutGroup), typeof(ContentSizeFitter));
+            contentObject.transform.SetParent(viewportObject.transform, false);
+            var contentRect = contentObject.GetComponent<RectTransform>();
+            contentRect.anchorMin = new Vector2(0f, 1f);
+            contentRect.anchorMax = new Vector2(1f, 1f);
+            contentRect.pivot = new Vector2(0.5f, 1f);
+            contentRect.sizeDelta = new Vector2(0f, 0f);
+            var layout = contentObject.GetComponent<VerticalLayoutGroup>();
+            layout.spacing = 6f;
+            layout.padding = new RectOffset(6, 6, 6, 6);
+            layout.childControlWidth = true;
+            layout.childForceExpandWidth = true;
+            layout.childControlHeight = false;
+            contentObject.GetComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+            var scroll = viewportObject.GetComponent<ScrollRect>();
+            scroll.viewport = viewportRect;
+            scroll.content = contentRect;
+            scroll.horizontal = false;
+            scroll.vertical = true;
+            scroll.movementType = ScrollRect.MovementType.Clamped;
+            scroll.scrollSensitivity = 24f;
+            return contentObject.transform;
+        }
+
         private static BuyPanelItem CreateBuyItemTemplate(Transform parent)
         {
-            var item = CreatePanel(parent, "BuyItemTemplate", Vector2.zero, new Vector2(500f, 48f));
+            var item = CreatePanel(parent, "BuyItemTemplate", Vector2.zero, new Vector2(560f, 48f));
             item.AddComponent<LayoutElement>().preferredHeight = 48f;
             var component = item.AddComponent<BuyPanelItem>();
             var serialized = new SerializedObject(component);
-            SetReference(serialized, "_itemNameText", CreateText(item.transform, "Name", new Vector2(-245f, 0f), new Vector2(180f, 40f), string.Empty));
-            SetReference(serialized, "_priceText", CreateText(item.transform, "Price", new Vector2(-60f, 0f), new Vector2(100f, 40f), string.Empty));
-            SetReference(serialized, "_stockText", CreateText(item.transform, "Stock", new Vector2(80f, 0f), new Vector2(140f, 40f), string.Empty));
-            SetReference(serialized, "_amountInput", CreateInputField(item.transform, "Amount", new Vector2(205f, 0f)));
-            SetReference(serialized, "_buyButton", CreateButton(item.transform, "Buy", new Vector2(290f, 0f), new Vector2(85f, 38f), "Comprar"));
+            SetReference(serialized, "_itemNameText", CreateText(item.transform, "Name", new Vector2(-183f, 0f), new Vector2(185f, 40f), string.Empty));
+            SetReference(serialized, "_priceText", CreateText(item.transform, "Price", new Vector2(-40f, 0f), new Vector2(62f, 40f), string.Empty));
+            SetReference(serialized, "_stockText", CreateText(item.transform, "Stock", new Vector2(50f, 0f), new Vector2(112f, 40f), string.Empty));
+            SetReference(serialized, "_amountInput", CreateInputField(item.transform, "Amount", new Vector2(145f, 0f)));
+            SetReference(serialized, "_buyButton", CreateButton(item.transform, "Buy", new Vector2(214f, 0f), new Vector2(82f, 36f), "Comprar"));
             serialized.ApplyModifiedPropertiesWithoutUndo();
             item.SetActive(false);
             return component;
@@ -929,15 +969,15 @@ namespace CindarsHope.Editor.SceneCreation
 
         private static SellPanelItem CreateSellItemTemplate(Transform parent)
         {
-            var item = CreatePanel(parent, "SellItemTemplate", Vector2.zero, new Vector2(500f, 48f));
+            var item = CreatePanel(parent, "SellItemTemplate", Vector2.zero, new Vector2(560f, 48f));
             item.AddComponent<LayoutElement>().preferredHeight = 48f;
             var component = item.AddComponent<SellPanelItem>();
             var serialized = new SerializedObject(component);
-            SetReference(serialized, "_itemNameText", CreateText(item.transform, "Name", new Vector2(-245f, 0f), new Vector2(180f, 40f), string.Empty));
-            SetReference(serialized, "_priceText", CreateText(item.transform, "Price", new Vector2(-60f, 0f), new Vector2(100f, 40f), string.Empty));
-            SetReference(serialized, "_amountText", CreateText(item.transform, "AmountOwned", new Vector2(80f, 0f), new Vector2(140f, 40f), string.Empty));
-            SetReference(serialized, "_amountInput", CreateInputField(item.transform, "Amount", new Vector2(205f, 0f)));
-            SetReference(serialized, "_sellButton", CreateButton(item.transform, "Sell", new Vector2(290f, 0f), new Vector2(85f, 38f), "Vender"));
+            SetReference(serialized, "_itemNameText", CreateText(item.transform, "Name", new Vector2(-183f, 0f), new Vector2(185f, 40f), string.Empty));
+            SetReference(serialized, "_priceText", CreateText(item.transform, "Price", new Vector2(-40f, 0f), new Vector2(62f, 40f), string.Empty));
+            SetReference(serialized, "_amountText", CreateText(item.transform, "AmountOwned", new Vector2(50f, 0f), new Vector2(112f, 40f), string.Empty));
+            SetReference(serialized, "_amountInput", CreateInputField(item.transform, "Amount", new Vector2(145f, 0f)));
+            SetReference(serialized, "_sellButton", CreateButton(item.transform, "Sell", new Vector2(214f, 0f), new Vector2(82f, 36f), "Vender"));
             serialized.ApplyModifiedPropertiesWithoutUndo();
             item.SetActive(false);
             return component;

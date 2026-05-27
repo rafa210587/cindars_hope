@@ -1,13 +1,13 @@
 using System;
-using CindarsHope.Core.Data;
 using CindarsHope.Inventory.Data;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace CindarsHope.UI.Shop
 {
     [DisallowMultipleComponent]
-    public sealed class BuyPanelItem : MonoBehaviour
+    public sealed class BuyPanelItem : MonoBehaviour, IPointerEnterHandler, ISelectHandler
     {
         [SerializeField] private Text _itemNameText;
         [SerializeField] private Text _priceText;
@@ -17,22 +17,21 @@ namespace CindarsHope.UI.Shop
 
         private ItemDataSO _itemData;
         private int _currentStock;
-        private float _priceMultiplier;
+        private int _unitPrice;
+        private Action<ItemDataSO, int, int> _onFocused;
 
         public string ItemId => _itemData?.Id;
 
-        public void Initialize(ItemDataSO itemData, int stock, float priceMultiplier, ItemDatabaseSO database, Action<string, int> onBuyClicked)
+        public void Initialize(ItemDataSO itemData, int stock, int unitPrice, Action<string, int> onBuyClicked, Action<ItemDataSO, int, int> onFocused)
         {
             _itemData = itemData;
             _currentStock = stock;
-            _priceMultiplier = priceMultiplier;
+            _unitPrice = unitPrice;
+            _onFocused = onFocused;
 
             if (_itemNameText != null)
             {
-                var name = itemData.DisplayName ?? itemData.Id;
-                _itemNameText.text = string.IsNullOrWhiteSpace(itemData.Description)
-                    ? name
-                    : $"{name}\n{itemData.Description}";
+                _itemNameText.text = ItemDisplayNameFormatter.GetShortName(itemData);
             }
 
             UpdatePriceDisplay();
@@ -53,6 +52,21 @@ namespace CindarsHope.UI.Shop
             }
         }
 
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            Focus();
+        }
+
+        public void OnSelect(BaseEventData eventData)
+        {
+            Focus();
+        }
+
+        public void Focus()
+        {
+            _onFocused?.Invoke(_itemData, _unitPrice, _currentStock);
+        }
+
         public void SetStock(int stock)
         {
             _currentStock = stock;
@@ -61,10 +75,9 @@ namespace CindarsHope.UI.Shop
 
         private void UpdatePriceDisplay()
         {
-            if (_priceText != null && _itemData != null)
+            if (_priceText != null)
             {
-                var price = Mathf.RoundToInt(_itemData.BaseValue * _priceMultiplier);
-                _priceText.text = $"{price}g";
+                _priceText.text = $"{_unitPrice}g";
             }
         }
 

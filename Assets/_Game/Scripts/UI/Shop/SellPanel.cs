@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-using CindarsHope.Core;
 using CindarsHope.Core.Data;
-using CindarsHope.Core.Events;
 using CindarsHope.Economy;
 using CindarsHope.Inventory;
 using CindarsHope.Inventory.Data;
@@ -20,6 +18,7 @@ namespace CindarsHope.UI.Shop
         [SerializeField] private SellPanelItem _itemPrefab;
         [SerializeField] private Text _goldDisplay;
         [SerializeField] private Text _feedbackText;
+        [SerializeField] private Text _detailsText;
         [SerializeField] private Button _backButton;
 
         private ShopManager _shopManager;
@@ -28,7 +27,7 @@ namespace CindarsHope.UI.Shop
         private ItemDatabaseSO _itemDatabase;
         private Modal.ModalManager _modalManager;
         private string _shopId;
-        private List<SellPanelItem> _displayedItems = new List<SellPanelItem>();
+        private readonly List<SellPanelItem> _displayedItems = new List<SellPanelItem>();
 
         public event Action OnBackPressed;
 
@@ -57,7 +56,8 @@ namespace CindarsHope.UI.Shop
             _inventoryManager = inventoryManager;
             _itemDatabase = itemDatabase;
             _modalManager = modalManager;
-            Hide();
+            _detailsText = ShopPanelLayoutUtility.EnsureResponsiveLayout(transform as RectTransform, _itemsContainer, _detailsText);
+            HideVisualOnly();
         }
 
         public bool IsInitializedWith(ShopManager shopManager, PlayerManager playerManager, InventoryManager inventoryManager, ItemDatabaseSO itemDatabase, Modal.ModalManager modalManager)
@@ -79,9 +79,7 @@ namespace CindarsHope.UI.Shop
 
             if (!_shopManager.TryGetSession(shopId, out _))
             {
-                Debug.LogError(
-                    $"{GetDiagnosticContext()} cannot show shopId '{shopId}': no initialized ShopSession exists. IsInitialized={_shopManager.IsInitialized}. {_shopManager.GetDiagnosticSummary()}",
-                    this);
+                Debug.LogError($"{GetDiagnosticContext()} cannot show shopId '{shopId}': no initialized ShopSession exists. IsInitialized={_shopManager.IsInitialized}. {_shopManager.GetDiagnosticSummary()}", this);
                 return;
             }
 
@@ -94,30 +92,29 @@ namespace CindarsHope.UI.Shop
             _shopId = shopId;
             ClearItems();
             PopulateItems();
-
-            if (_canvasGroup != null)
+            SetPanelVisible(true);
+            SetFeedback(string.Empty);
+            if (_displayedItems.Count > 0)
             {
-                _canvasGroup.alpha = 1f;
-                _canvasGroup.interactable = true;
-                _canvasGroup.blocksRaycasts = true;
+                _displayedItems[0].Focus();
+            }
+            else
+            {
+                SetDetails("Selecione um item para ver detalhes.");
             }
 
-            gameObject.SetActive(true);
-            SetFeedback(string.Empty);
             UpdateGoldDisplay();
         }
 
         public void Hide()
         {
-            if (_canvasGroup != null)
-            {
-                _canvasGroup.alpha = 0f;
-                _canvasGroup.interactable = false;
-                _canvasGroup.blocksRaycasts = false;
-            }
+            HideVisualOnly();
+            _modalManager?.TryPopIfCurrent(Modal.ModalType.Sell);
+        }
 
-            gameObject.SetActive(false);
-            _modalManager?.TryPopModal(Modal.ModalType.Sell, out _);
+        public void HideVisualOnly()
+        {
+            SetPanelVisible(false);
             ClearItems();
         }
 
@@ -126,15 +123,14 @@ namespace CindarsHope.UI.Shop
             if (_itemPrefab == null || _itemsContainer == null || _inventoryManager == null)
             {
                 Debug.LogWarning("SellPanel: ItemPrefab, ItemsContainer, or InventoryManager not assigned");
-                SetFeedback("Erro ao carregar inventário.");
+                SetFeedback("Erro ao carregar inventario.");
                 return;
             }
 
             var items = _inventoryManager.Items;
             if (items == null || items.Count == 0)
             {
-                Debug.Log("SellPanel: Inventory is empty");
-                SetFeedback("Nenhum item vendável.");
+                SetFeedback("Nenhum item vendavel.");
                 return;
             }
 
@@ -142,7 +138,6 @@ namespace CindarsHope.UI.Shop
             {
                 var itemId = kvp.Key;
                 var amount = kvp.Value;
-
                 if (amount <= 0 || !SellableItemPolicy.IsSellable(itemId))
                 {
                     continue;
@@ -156,14 +151,13 @@ namespace CindarsHope.UI.Shop
 
                 var item = Instantiate(_itemPrefab, _itemsContainer);
                 item.gameObject.SetActive(true);
-                item.Initialize(itemData, amount, _shopManager, _shopId, OnItemSellClicked);
+                item.Initialize(itemData, amount, _shopManager, _shopId, OnItemSellClicked, ShowItemDetails);
                 _displayedItems.Add(item);
             }
 
             if (_displayedItems.Count == 0)
             {
-                Debug.Log("SellPanel: No sellable items in inventory");
-                SetFeedback("Nenhum item vendável no inventário.");
+                SetFeedback("Nenhum item vendavel no inventario.");
             }
         }
 
@@ -188,6 +182,20 @@ namespace CindarsHope.UI.Shop
             }
         }
 
+        private void ShowItemDetails(ItemDataSO itemData, int unitPrice, int ownedAmount)
+        {
+            SetDetails($"{ItemDisplayNameFormatter.GetTooltip(itemData)}\nVenda: {unitPrice}g | Quantidade: {ownedAmount}");
+        }
+
+        private void SetDetails(string message)
+        {
+            var display = _detailsText != null ? _detailsText : _feedbackText;
+            if (display != null)
+            {
+                display.text = message ?? string.Empty;
+            }
+        }
+
         private void UpdateGoldDisplay()
         {
             if (_goldDisplay != null && _playerManager != null)
@@ -200,6 +208,10 @@ namespace CindarsHope.UI.Shop
         {
             ClearItems();
             PopulateItems();
+            if (_displayedItems.Count > 0)
+            {
+                _displayedItems[0].Focus();
+            }
         }
 
         private void ClearItems()
@@ -215,6 +227,18 @@ namespace CindarsHope.UI.Shop
             _displayedItems.Clear();
         }
 
+        private void SetPanelVisible(bool visible)
+        {
+            if (_canvasGroup != null)
+            {
+                _canvasGroup.alpha = visible ? 1f : 0f;
+                _canvasGroup.interactable = visible;
+                _canvasGroup.blocksRaycasts = visible;
+            }
+
+            gameObject.SetActive(visible);
+        }
+
         private void OnBackClicked()
         {
             Hide();
@@ -226,5 +250,4 @@ namespace CindarsHope.UI.Shop
             return $"Scene '{gameObject.scene.path}' GameObject '{gameObject.name}' component '{nameof(SellPanel)}'";
         }
     }
-
 }

@@ -118,8 +118,14 @@ namespace CindarsHope.EditorTools
         {
             var buyPanel = FindInScene<BuyPanel>(scene);
             var sellPanel = FindInScene<SellPanel>(scene);
-            var buyTemplate = FindGameObject(scene, "ShopCanvas/BuyPanel/Items/BuyItemTemplate");
-            var sellTemplate = FindGameObject(scene, "ShopCanvas/SellPanel/Items/SellItemTemplate");
+            var buyTemplate = FindFirstGameObject(
+                scene,
+                "ShopCanvas/BuyPanel/ItemsScroll/Content/BuyItemTemplate",
+                "ShopCanvas/BuyPanel/Items/BuyItemTemplate");
+            var sellTemplate = FindFirstGameObject(
+                scene,
+                "ShopCanvas/SellPanel/ItemsScroll/Content/SellItemTemplate",
+                "ShopCanvas/SellPanel/Items/SellItemTemplate");
             if (buyPanel == null || sellPanel == null || buyTemplate == null || sellTemplate == null)
             {
                 throw new InvalidOperationException($"[SPEC17C] Scene '{scene.path}' shop panels or templates were not found.");
@@ -191,6 +197,20 @@ namespace CindarsHope.EditorTools
                 }
 
                 return root.transform.Find(childPath)?.gameObject;
+            }
+
+            return null;
+        }
+
+        private static GameObject FindFirstGameObject(Scene scene, params string[] paths)
+        {
+            foreach (var path in paths)
+            {
+                var value = FindGameObject(scene, path);
+                if (value != null)
+                {
+                    return value;
+                }
             }
 
             return null;

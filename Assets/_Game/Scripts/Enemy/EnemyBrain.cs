@@ -134,7 +134,7 @@ namespace CindarsHope.Enemy
             if (rb != null)
             {
                 Vector2 moveDir = Random.insideUnitCircle.normalized;
-                rb.velocity = moveDir * (_movementProfile?.MoveSpeed ?? 1f);
+                rb.linearVelocity = moveDir * (_movementProfile?.MoveSpeed ?? 1f);
             }
         }
 
@@ -148,7 +148,7 @@ namespace CindarsHope.Enemy
                 return;
 
             Vector2 direction = (_playerTarget.transform.position - transform.position).normalized;
-            rb.velocity = direction * (_movementProfile?.MoveSpeed ?? 2f);
+            rb.linearVelocity = direction * (_movementProfile?.MoveSpeed ?? 2f);
         }
 
         private void PrepareAttack()

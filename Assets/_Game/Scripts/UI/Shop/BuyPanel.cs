@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-using CindarsHope.Core;
 using CindarsHope.Core.Data;
-using CindarsHope.Core.Events;
 using CindarsHope.Economy;
 using CindarsHope.Inventory;
 using CindarsHope.Inventory.Data;
@@ -20,6 +18,7 @@ namespace CindarsHope.UI.Shop
         [SerializeField] private BuyPanelItem _itemPrefab;
         [SerializeField] private Text _goldDisplay;
         [SerializeField] private Text _feedbackText;
+        [SerializeField] private Text _detailsText;
         [SerializeField] private Button _backButton;
 
         private ShopManager _shopManager;
@@ -28,7 +27,7 @@ namespace CindarsHope.UI.Shop
         private ItemDatabaseSO _itemDatabase;
         private Modal.ModalManager _modalManager;
         private string _shopId;
-        private List<BuyPanelItem> _displayedItems = new List<BuyPanelItem>();
+        private readonly List<BuyPanelItem> _displayedItems = new List<BuyPanelItem>();
 
         public event Action OnBackPressed;
 
@@ -57,7 +56,8 @@ namespace CindarsHope.UI.Shop
             _inventoryManager = inventoryManager;
             _itemDatabase = itemDatabase;
             _modalManager = modalManager;
-            Hide();
+            _detailsText = ShopPanelLayoutUtility.EnsureResponsiveLayout(transform as RectTransform, _itemsContainer, _detailsText);
+            HideVisualOnly();
         }
 
         public bool IsInitializedWith(ShopManager shopManager, PlayerManager playerManager, InventoryManager inventoryManager, ItemDatabaseSO itemDatabase, Modal.ModalManager modalManager)
@@ -79,9 +79,7 @@ namespace CindarsHope.UI.Shop
 
             if (!_shopManager.TryGetSession(shopId, out var session))
             {
-                Debug.LogError(
-                    $"{GetDiagnosticContext()} cannot show shopId '{shopId}': no initialized ShopSession exists. IsInitialized={_shopManager.IsInitialized}. {_shopManager.GetDiagnosticSummary()}",
-                    this);
+                Debug.LogError($"{GetDiagnosticContext()} cannot show shopId '{shopId}': no initialized ShopSession exists. IsInitialized={_shopManager.IsInitialized}. {_shopManager.GetDiagnosticSummary()}", this);
                 return;
             }
 
@@ -94,30 +92,29 @@ namespace CindarsHope.UI.Shop
             _shopId = shopId;
             ClearItems();
             PopulateItems(session);
-
-            if (_canvasGroup != null)
+            SetPanelVisible(true);
+            SetFeedback(string.Empty);
+            if (_displayedItems.Count > 0)
             {
-                _canvasGroup.alpha = 1f;
-                _canvasGroup.interactable = true;
-                _canvasGroup.blocksRaycasts = true;
+                _displayedItems[0].Focus();
+            }
+            else
+            {
+                SetDetails("Selecione um item para ver detalhes.");
             }
 
-            gameObject.SetActive(true);
-            SetFeedback(string.Empty);
             UpdateGoldDisplay();
         }
 
         public void Hide()
         {
-            if (_canvasGroup != null)
-            {
-                _canvasGroup.alpha = 0f;
-                _canvasGroup.interactable = false;
-                _canvasGroup.blocksRaycasts = false;
-            }
+            HideVisualOnly();
+            _modalManager?.TryPopIfCurrent(Modal.ModalType.Buy);
+        }
 
-            gameObject.SetActive(false);
-            _modalManager?.TryPopModal(Modal.ModalType.Buy, out _);
+        public void HideVisualOnly()
+        {
+            SetPanelVisible(false);
             ClearItems();
         }
 
@@ -133,7 +130,7 @@ namespace CindarsHope.UI.Shop
             if (session.ShopData.Items == null || session.ShopData.Items.Length == 0)
             {
                 Debug.LogWarning($"BuyPanel: Shop '{session.ShopData.Id}' has no items configured");
-                SetFeedback("Sem itens disponíveis.");
+                SetFeedback("Sem itens disponiveis.");
                 return;
             }
 
@@ -150,16 +147,19 @@ namespace CindarsHope.UI.Shop
                     continue;
                 }
 
+                var unitPrice = entry.BuyPriceOverride > 0
+                    ? entry.BuyPriceOverride
+                    : Mathf.Max(1, Mathf.RoundToInt(itemData.BaseValue * session.ShopData.BuyPriceMultiplier));
                 var item = Instantiate(_itemPrefab, _itemsContainer);
                 item.gameObject.SetActive(true);
-                item.Initialize(itemData, session.GetItemStock(entry.ItemId), session.ShopData.BuyPriceMultiplier, _itemDatabase, OnItemBuyClicked);
+                item.Initialize(itemData, session.GetItemStock(entry.ItemId), unitPrice, OnItemBuyClicked, ShowItemDetails);
                 _displayedItems.Add(item);
             }
 
             if (_displayedItems.Count == 0)
             {
                 Debug.LogWarning($"BuyPanel: No valid items found for shop '{session.ShopData.Id}'. Check ShopDataSO.Items and ItemDatabaseSO.");
-                SetFeedback("Sem itens disponíveis para compra.");
+                SetFeedback("Sem itens disponiveis para compra.");
             }
         }
 
@@ -181,6 +181,20 @@ namespace CindarsHope.UI.Shop
             if (_feedbackText != null)
             {
                 _feedbackText.text = message ?? string.Empty;
+            }
+        }
+
+        private void ShowItemDetails(ItemDataSO itemData, int unitPrice, int stock)
+        {
+            SetDetails($"{ItemDisplayNameFormatter.GetTooltip(itemData)}\nCompra: {unitPrice}g | Estoque: {stock}");
+        }
+
+        private void SetDetails(string message)
+        {
+            var display = _detailsText != null ? _detailsText : _feedbackText;
+            if (display != null)
+            {
+                display.text = message ?? string.Empty;
             }
         }
 
@@ -221,6 +235,18 @@ namespace CindarsHope.UI.Shop
             _displayedItems.Clear();
         }
 
+        private void SetPanelVisible(bool visible)
+        {
+            if (_canvasGroup != null)
+            {
+                _canvasGroup.alpha = visible ? 1f : 0f;
+                _canvasGroup.interactable = visible;
+                _canvasGroup.blocksRaycasts = visible;
+            }
+
+            gameObject.SetActive(visible);
+        }
+
         private void OnBackClicked()
         {
             Hide();
@@ -232,5 +258,4 @@ namespace CindarsHope.UI.Shop
             return $"Scene '{gameObject.scene.path}' GameObject '{gameObject.name}' component '{nameof(BuyPanel)}'";
         }
     }
-
 }

@@ -94,6 +94,11 @@ namespace CindarsHope.UI.Modal
             return true;
         }
 
+        public bool TryPopIfCurrent(ModalType expectedType)
+        {
+            return CurrentModal == expectedType && TryPopModal(expectedType, out _);
+        }
+
         public void ClearAllModals()
         {
             _modalStack.Clear();

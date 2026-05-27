@@ -2,12 +2,13 @@ using System;
 using CindarsHope.Economy;
 using CindarsHope.Inventory.Data;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace CindarsHope.UI.Shop
 {
     [DisallowMultipleComponent]
-    public sealed class SellPanelItem : MonoBehaviour
+    public sealed class SellPanelItem : MonoBehaviour, IPointerEnterHandler, ISelectHandler
     {
         [SerializeField] private Text _itemNameText;
         [SerializeField] private Text _priceText;
@@ -19,20 +20,19 @@ namespace CindarsHope.UI.Shop
         private int _playerAmount;
         private ShopManager _shopManager;
         private string _shopId;
+        private Action<ItemDataSO, int, int> _onFocused;
 
-        public void Initialize(ItemDataSO itemData, int playerAmount, ShopManager shopManager, string shopId, Action<string, int> onSellClicked)
+        public void Initialize(ItemDataSO itemData, int playerAmount, ShopManager shopManager, string shopId, Action<string, int> onSellClicked, Action<ItemDataSO, int, int> onFocused)
         {
             _itemData = itemData;
             _playerAmount = playerAmount;
             _shopManager = shopManager;
             _shopId = shopId;
+            _onFocused = onFocused;
 
             if (_itemNameText != null)
             {
-                var name = itemData.DisplayName ?? itemData.Id;
-                _itemNameText.text = string.IsNullOrWhiteSpace(itemData.Description)
-                    ? name
-                    : $"{name}\n{itemData.Description}";
+                _itemNameText.text = ItemDisplayNameFormatter.GetShortName(itemData);
             }
 
             UpdatePriceDisplay();
@@ -53,13 +53,26 @@ namespace CindarsHope.UI.Shop
             }
         }
 
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            Focus();
+        }
+
+        public void OnSelect(BaseEventData eventData)
+        {
+            Focus();
+        }
+
+        public void Focus()
+        {
+            _onFocused?.Invoke(_itemData, CalculateUnitPrice(), _playerAmount);
+        }
+
         private void UpdatePriceDisplay()
         {
-            if (_priceText != null && _itemData != null)
+            if (_priceText != null)
             {
-                _shopManager.TryGetSession(_shopId, out var session);
-                var sellPrice = ShopManager.CalculateSellPrice(_itemData, session?.ShopData);
-                _priceText.text = $"{sellPrice}g";
+                _priceText.text = $"{CalculateUnitPrice()}g";
             }
         }
 
@@ -69,6 +82,12 @@ namespace CindarsHope.UI.Shop
             {
                 _amountText.text = $"Tem: {_playerAmount}";
             }
+        }
+
+        private int CalculateUnitPrice()
+        {
+            _shopManager.TryGetSession(_shopId, out var session);
+            return ShopManager.CalculateSellPrice(_itemData, session?.ShopData);
         }
     }
 }

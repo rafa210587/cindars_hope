@@ -39,6 +39,7 @@
 | UI Gameplay closeout: skills/shop/K-L/prompts/actions (Spec 17C) | Implementado em codigo - gates automaticos PASS; Play Mode humano pendente | `docs/specs/a_implementar/spec_ui_gameplay_closeout_skill_shop_prompts_actions_hud.md`, `docs/validation/SPEC17C_CLOSEOUT_VALIDATION_20260526.md` |
 | UI Gameplay shop injection/equipment slot picker (Spec 17D) | Implementado em codigo - dotnet compile PASS; Unity/Play Mode pendentes | `docs/specs/a_implementar/spec_ui_gameplay_shop_injection_equipment_slot_picker_closeout.md`, `docs/validation/SPEC17D_CLOSEOUT_VALIDATION_20260526.md` |
 | UI Gameplay ShopSession lifecycle/readiness (Spec 17E) | Implementado em codigo - dotnet compile PASS; Unity/Play Mode pendentes | `docs/specs/a_implementar/spec_ui_gameplay_shop_session_lifecycle_npc_readiness_closeout.md`, `docs/validation/SPEC17E_SHOP_SESSION_FIX_VALIDATION_20260526.md` |
+| UI Gameplay shop modal/responsive/names (Spec 17F) | Implementado em codigo - compile/Unity/Play Mode pendentes | `docs/specs/a_implementar/spec_ui_gameplay_shop_modal_stack_responsive_names_closeout.md`, `docs/validation/SPEC17F_SHOP_MODAL_UI_VALIDATION_20260526.md` |
 
 ## Correcoes de tracking obrigatorias
 

@@ -1,3 +1,40 @@
+## Sessao 2026-05-26 (26a) - SPEC 17F Modal Stack + Responsive Shop UI
+
+**Foco:** eliminar mismatch de modal em buy/sell e melhorar legibilidade dos paineis de shop
+**Status:** Implementado em codigo; compile Unity/Play Mode pendentes
+
+### Causa raiz
+- `BeginCloseInteraction()` escondia `BuyPanel` e `SellPanel` em sequencia, independentemente do modal ativo.
+- Cada `Hide()` executava pop do proprio tipo; com `Sell` ativo, `BuyPanel.Hide()` tentava remover `Buy` do topo `Sell` e gerava `Modal type mismatch`.
+- Rows concatenavam descricao no nome e o layout legado nao possuia scroll nem detalhes separados.
+
+### Implementacao
+- `ModalManager.TryPopIfCurrent()` e `HideVisualOnly()` em buy/sell/menu impedem pop de tipo incorreto e efeitos colaterais durante `Initialize()`.
+- `NpcShopController` fecha somente o painel correspondente ao `CurrentModal`; os demais sao apenas ocultados visualmente.
+- `ItemDisplayNameFormatter` fornece aliases, fallback por id e truncamento para linhas compactas.
+- Rows de buy/sell atualizam um painel de detalhes por hover/selecao e exibem somente nome curto, preco e quantidade/estoque.
+- `ShopPanelLayoutUtility` adapta a UI antiga em runtime, adicionando viewport com scroll e detalhes; `CreateMvpTownScene` gera diretamente o layout responsivo.
+- `ValidateShopModalFlow` cobre pops condicionais e encerramento com `Buy`/`Sell` ativo; o wiring legado aceita os novos caminhos de template.
+
+### Validacao
+- `git diff --check`: PASS antes do fechamento documental; repetir no commit.
+- Build fallback `dotnet build .\Assembly-CSharp.csproj --no-restore`: NOT RUN com sinal de codigo; bloqueado ao gravar `Temp\obj` (`Access to the path is denied`).
+- Build fallback Editor: NOT RUN com sinal de codigo; mesmo bloqueio de escrita em `Temp\obj`.
+- `tools/docs/validate_docs.ps1`: PASS.
+- Unity validation: NOT RUN
+- Reason: tentativa batchmode abortada com `attempt to write a readonly database` e `Multiple Unity instances cannot open the same project`.
+- Command attempted: `.\tools\unity\RunUnityCompileValidation.ps1 -UnityEditorPath 'C:\Program Files\Unity\Hub\Editor\6000.4.7f1\Editor\Unity.exe' -ProjectPath '.' -LogFile '.\Logs\spec17f-unity-compile-validation.log' -TimeoutSeconds 180`
+- Residual risk: compile Unity, validator Editor e fluxos Play Mode ainda precisam confirmar ausencia de mismatch e layout final.
+- Commit local: PENDENTE - `git add` falhou com `Unable to create '.git/index.lock': Permission denied`.
+- Evidencia: `docs/validation/SPEC17F_REPRO_BEFORE_20260526.md` e `docs/validation/SPEC17F_SHOP_MODAL_UI_VALIDATION_20260526.md`.
+
+### Pendente
+- Executar `Validate Shop Modal Flow`, recompilar/regenerar `TownScene` se desejado para persistir o layout visual, e validar Buy/Back/Sell/Back/Exit sem warnings no Play Mode.
+- Repetir staging/commit local quando o checkout permitir escrita em `.git/index.lock`.
+- SPEC 17F permanece ativa ate essa evidencia ser registrada.
+
+---
+
 ## Sessao 2026-05-26 (25a) - SPEC 17E ShopSession Lifecycle e Readiness
 
 **Foco:** corrigir sessoes ausentes nos NPC shops apos transicao para `TownScene`

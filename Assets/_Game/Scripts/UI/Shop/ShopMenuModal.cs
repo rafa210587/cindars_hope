@@ -63,7 +63,7 @@ namespace CindarsHope.UI.Shop
         public void Initialize(Modal.ModalManager modalManager)
         {
             _modalManager = modalManager;
-            Hide();
+            HideVisualOnly();
         }
 
         public void Show()
@@ -88,6 +88,12 @@ namespace CindarsHope.UI.Shop
 
         public void Hide()
         {
+            HideVisualOnly();
+            _modalManager?.TryPopIfCurrent(Modal.ModalType.ShopMenu);
+        }
+
+        public void HideVisualOnly()
+        {
             if (_canvasGroup != null)
             {
                 _canvasGroup.alpha = 0f;
@@ -96,7 +102,6 @@ namespace CindarsHope.UI.Shop
             }
 
             gameObject.SetActive(false);
-            _modalManager?.TryPopModal(Modal.ModalType.ShopMenu, out _);
         }
 
         private void SelectOption(ShopMenuOption option)

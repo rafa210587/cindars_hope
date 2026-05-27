@@ -27,6 +27,7 @@ A etapa 00 foi reclassificada como implementado documental parcial. As specs run
 | 17C | [spec_ui_gameplay_closeout_skill_shop_prompts_actions_hud](a_implementar/spec_ui_gameplay_closeout_skill_shop_prompts_actions_hud.md) | Implementado em codigo - Play Mode humano pendente | 15-17 | Nenhuma | Gates automaticos passaram; closeout so fecha apos fluxo interativo final. |
 | 17D | [spec_ui_gameplay_shop_injection_equipment_slot_picker_closeout](a_implementar/spec_ui_gameplay_shop_injection_equipment_slot_picker_closeout.md) | Implementado em codigo - Unity/Play Mode pendentes | 17C | Nenhuma | Injecao shop e slot picker exigem confirmacao interativa final sem Unity concorrente. |
 | 17E | [spec_ui_gameplay_shop_session_lifecycle_npc_readiness_closeout](a_implementar/spec_ui_gameplay_shop_session_lifecycle_npc_readiness_closeout.md) | Implementado em codigo - Unity/Play Mode pendentes | 17D | Nenhuma | Corrige sessoes apos transicao de cena; fechar apenas com buy/sell e save/load no Unity. |
+| 17F | [spec_ui_gameplay_shop_modal_stack_responsive_names_closeout](a_implementar/spec_ui_gameplay_shop_modal_stack_responsive_names_closeout.md) | Implementado em codigo - Unity/Play Mode pendentes | 17E | Nenhuma | Corrige stack modal e layout/nomenclatura; fechar apenas sem mismatch em fluxos alternados. |
 
 ## Observacao operacional
 
@@ -50,3 +51,5 @@ A spec 17C executa o closeout de integracao: `U` skill trees, `K` atributos/prog
 A spec 17D endurece a injecao de buy/sell e adiciona o picker de equipamento por slot via `L`; compile fallback passou, mas Unity batchmode foi bloqueado por instancia aberta e o Play Mode final permanece pendente.
 
 A spec 17E corrige o lifecycle das sessoes de shop: o `ShopManager` passa a pertencer ao `GameBootstrap` persistente, os NPCs fazem rebind e readiness idempotentes e um validator Editor verifica a `TownScene`. Compile `dotnet` passou; Unity/Play Mode final permanece pendente.
+
+A spec 17F corrige a higiene da stack de buy/sell com pop condicional, introduz nomes curtos e painel de detalhes e aplica scroll/layout responsivo inclusive para o asset legado em runtime. Builds/Unity e Play Mode permanecem pendentes de execucao sem bloqueio ambiental.
