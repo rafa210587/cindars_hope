@@ -73,7 +73,7 @@ namespace CindarsHope.Editor.Validation
             }
 
             // CameraScaleController in scene cameras
-            var controllers = Object.FindObjectsByType<CameraScaleController>(FindObjectsSortMode.None);
+            var controllers = Object.FindObjectsByType<CameraScaleController>(FindObjectsInactive.Include);
             if (controllers.Length == 0)
             {
                 Debug.LogWarning("[17A] No CameraScaleController found in open scene. Wire it to the main camera in each scene.");

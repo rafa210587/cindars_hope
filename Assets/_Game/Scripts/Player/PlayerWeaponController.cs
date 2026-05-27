@@ -11,7 +11,6 @@ namespace CindarsHope.Player
         [SerializeField] private EquipmentManager _equipmentManager;
         [SerializeField] private StaminaManager _staminaManager;
         [SerializeField] private float _attackCooldown = 0.5f;
-        [SerializeField] private float _attackRange = 2f;
 
         private float _lastAttackTime = float.MinValue;
 

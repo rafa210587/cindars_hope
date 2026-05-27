@@ -1,3 +1,35 @@
+## Sessao 2026-05-27 (28a) - SPEC 17A - Validacao, correcao de warnings e reconciliacao
+
+**Foco:** validar SPEC 17A contra codigo, corrigir 5 warnings, resolver conflito de merge em IMPLEMENTATION_STATUS.md.
+**Status:** FECHADO em codigo com warnings zerados.
+
+### Auditoria SPEC 17A vs codigo
+
+Todos os requisitos de codigo implementados. Pendencias sao apenas Play Mode humano.
+
+### Warnings corrigidos
+
+| Warning | Arquivo | Solucao |
+|---|---|---|
+| CS0618 FindObjectOfType<T>() x2 | GameBootstrap.cs | Substituido por [SerializeField] _corpseRecoveryUIController e _anyaFountainUIController |
+| CS0414 _attackRange nunca usado | PlayerWeaponController.cs | Campo removido (nenhum consumidor no codebase) |
+| CS0414 _bypassBossGateForDebugSkip nunca usado | CaveDebugLevelSkipController.cs | Lido via `_ = _bypassBossGateForDebugSkip` em SyncLegacySerializedFields() |
+| CS0618 FindObjectsByType(FindObjectsSortMode) obsoleto | ValidateSpec17AScaleConfig.cs | Substituido por FindObjectsByType<T>(FindObjectsInactive.Include) |
+
+### Conflito de merge resolvido
+
+IMPLEMENTATION_STATUS.md tinha conflito `<<<HEAD` vs `00562ddca`. Mantida versao HEAD (mais detalhada, com 17C/D/E/F/A). Adicionada nota de debito tecnico Input Manager.
+
+### Validacao
+
+- dotnet build Assembly-CSharp.csproj: PASS (0 erros; 1 warning preexistente EnemyBrain._movementProfile)
+- dotnet build Assembly-CSharp-Editor.csproj: PASS (0 erros, 0 warnings)
+- tools/docs/validate_docs.ps1: PASS
+- FindObjectOfType em Assets/_Game/Scripts: 0 ocorrencias
+- Unity Play Mode humano: PENDENTE
+
+---
+
 ## Sessao 2026-05-26 (27b) - SPEC 17A - Visual Scale, Camera Scale, World Scale
 
 **Foco:** implementar SPEC 17A - visual scale profiles, camera scale config, cave corridor width parametrizado, Farm/Town bounds 4x.

@@ -22,7 +22,6 @@ Principais conclusoes:
 
 | Area | Status real | Evidencia / observacao |
 |---|---|---|
-<<<<<<< HEAD
 | Claude Code project structure (.claude/) | Implementado completo | `.claude/settings.json`, `.claude/commands/`, `.claude/skills/`, `.claude/agents/`, `.claude/hooks/` |
 | Governanca documental / fonte unica | Implementado documental parcial | `docs/specs/implementados/spec_docs_001_single_source_specs_refinements_reconciliation_parcial.md` |
 | Unity compile validation protocol | Implementado completo | `docs/specs/implementados/spec_unity_compile_validation_protocol_and_scripts.md` |
@@ -50,36 +49,13 @@ Principais conclusoes:
 | UI/Input/Shop/Sell Bugfix Bundle (Post-SPEC 12) | Implementado completo | `docs/specs/implementados/spec_bugfix_ui_input_shop_sell_bundle.md` |
 | Enemy AI/roster/bestiary/faction locks (Spec 13) | Implementado parcial | `docs/specs/implementados/spec_enemy_ai_roster_bestiary_faction_locks_runtime.md` |
 | Skill trees/active slots/respec Anya (Spec 16) | Implementado em codigo - Play Mode humano pendente | `docs/specs/implementados/spec_skill_trees_active_slots_respec_anya_runtime.md` |
-| UI Gameplay MVP: shops/sell/equipment/attributes/skills (Spec 17 incremento) | Implementado em codigo - Play Mode humano pendente; SPEC 17B ampla permanece aberta | `docs/specs/a_implementar/spec_ui_ux_full_gameplay_inventory_hotbar_menus.md`, `docs/validation/SPEC17_UI_GAMEPLAY_MVP_VALIDATION_20260526.md` |
+| UI Gameplay MVP: shops/sell/equipment/attributes/skills (Spec 17 incremento) | Implementado em codigo - Play Mode humano pendente; SPEC 17 ampla permanece aberta | `docs/specs/a_implementar/spec_ui_ux_full_gameplay_inventory_hotbar_menus.md`, `docs/validation/SPEC17_UI_GAMEPLAY_MVP_VALIDATION_20260526.md` |
 | UI Gameplay closeout: skills/shop/K-L/prompts/actions (Spec 17C) | Implementado completo - Play Mode humano validado 2026-05-26 | `docs/specs/implementados/spec_ui_gameplay_closeout_skill_shop_prompts_actions_hud.md`, `docs/validation/SPEC17C_CLOSEOUT_VALIDATION_20260526.md` |
 | UI Gameplay shop injection/equipment slot picker (Spec 17D) | Implementado completo - Play Mode humano validado 2026-05-26 | `docs/specs/implementados/spec_ui_gameplay_shop_injection_equipment_slot_picker_closeout.md`, `docs/validation/SPEC17D_CLOSEOUT_VALIDATION_20260526.md` |
 | UI Gameplay ShopSession lifecycle/readiness (Spec 17E) | Implementado completo - Play Mode humano validado 2026-05-26 | `docs/specs/implementados/spec_ui_gameplay_shop_session_lifecycle_npc_readiness_closeout.md`, `docs/validation/SPEC17E_SHOP_SESSION_FIX_VALIDATION_20260526.md` |
 | UI Gameplay shop modal/responsive/names (Spec 17F) | Implementado completo - Play Mode humano validado 2026-05-26 | `docs/specs/implementados/spec_ui_gameplay_shop_modal_stack_responsive_names_closeout.md`, `docs/validation/SPEC17F_SHOP_MODAL_UI_VALIDATION_20260526.md` |
-| Visual scale / world scale / camera profiles (Spec 17A) | Implementado em codigo - Play Mode humano pendente | `docs/specs/implementados/spec_visual_world_scale_camera_sprite_profiles.md` |
-=======
-| Claude Code project structure `.claude/` | Implementado completo | `.claude/settings.json`, commands, skills, agents e hooks. |
-| Governanca documental / fonte unica | Implementado documental parcial | Fonte oficial em `docs/specs/`. Nao recriar `specs/` ou `spec/` na raiz. |
-| Unity compile validation protocol | Implementado completo como tooling minimo | `tools/unity/RunUnityCompileValidation.ps1`, `tools/unity/ScanUnityLogs.ps1`, `tools/docs/validate_docs.ps1`. |
-| Core/event bus/bootstrap | Implementado parcial | Base operacional presente; ainda existem gaps de wiring em features parciais. |
-| Data/IDs/registries | Implementado | ScriptableObjects e registries ativos. |
-| Save/load JSON cross-scene | Implementado parcial | SaveManager v5 existe; algumas features ainda nao restauram todo estado funcional. |
-| Save schema migration v2+ | Implementado em codigo | Registry de migrations inclui v1->v2, v2->v3, v3->v4 e v4->v5. |
-| Inventory slots/capacidade/UI minima | Implementado em codigo / parcial funcional | Slots reais e compat agregado; pendem Use especifico, drag/drop, sort e UI final. |
-| Farm irrigacao/solo/planting UI | Implementado parcial | Menu contextual/plantio/irrigacao existem; Play Mode final e polimento seguem pendentes. |
-| World activities/fishing/trees/loot | Implementado parcial | Loot/fishing/tree HP/regrowth existem parcialmente; spawners/cave variants ainda residuais. |
-| Economy/shop/stock/pricing/UI | Implementado em codigo | ShopManager, sessoes, buy/sell, stock e save existem; 17D/17E ainda pedem Unity/Play Mode final. |
-| Crafting queue/workstations/recipes/UI | Implementado em codigo | CraftingManager e runtime existem; Play Mode final segue pendente. |
-| Town NPC/dialogue/schedule/quests | Implementado em codigo | NPC/shop/dialogue wiring existe; Play Mode final segue pendente. |
-| Hunger/stamina/status/time | Implementado completo MVP | GameTime, hunger, stamina, status, save e HUD minimo estao documentados como fechados; Canvas final fica na SPEC 17. |
-| Equipment/durability/environment/loot | Implementado parcial | Mantido como parcial. |
-| Damage/status/elements/resistances | Implementado parcial | Mantido como parcial. |
-| Player combat/weapons/spells/skill actions | Implementado parcial | Mantido como parcial; UI final em SPEC 17. |
-| Enemy AI/roster/bestiary/faction locks | Implementado parcial | Residual ativo. |
-| Cave runtime/procedural/checkpoints/boss gates | Implementado parcial / validacao Unity pendente | Residual ativo. |
-| Cave entry/death/Anya/corpse recovery — SPEC 15 | Implementado parcial em codigo | Ver secao 5. |
-| Skill trees/active slots/respec Anya — SPEC 16 | Implementado em codigo; Unity/Play Mode pendentes | Ver secao 6. |
-| UI Gameplay MVP / closeout — SPEC 17+ | Implementado parcialmente | SPEC 17 ampla permanece aberta; 17C/17D/17E possuem pendencias de Unity/Play Mode. |
->>>>>>> 00562ddca18286a2a51e0816c8cb2387aa30407c
+| Visual scale / world scale / camera profiles (Spec 17A) | Implementado em codigo - warnings corrigidos - Play Mode humano pendente | `docs/specs/implementados/spec_visual_world_scale_camera_sprite_profiles.md` |
+| Input Manager | Debito tecnico futuro | Input Manager legado ativo; migracao para Input System requer spec propria para evitar regressao de gameplay/UI. |
 
 ## 3. Status oficial por SPEC/prompt ate 16
 

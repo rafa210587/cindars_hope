@@ -12,6 +12,8 @@ using CindarsHope.Player.Data;
 using CindarsHope.Player.Death;
 using CindarsHope.Player.Progression;
 using CindarsHope.Save;
+using CindarsHope.UI.Death;
+using CindarsHope.UI.Locations;
 using CindarsHope.UI.Modal;
 using UnityEngine;
 
@@ -45,6 +47,8 @@ namespace CindarsHope.Core.Bootstrap
         [SerializeField] private CaveRunManager _caveRunManager;
         [SerializeField] private AnyaFountain _anyaFountain;
         [SerializeField] private Skills.SkillTreeManager _skillTreeManager;
+        [SerializeField] private CorpseRecoveryUIController _corpseRecoveryUIController;
+        [SerializeField] private AnyaFountainUIController _anyaFountainUIController;
 
         private CaveRuntimeState _cachedCaveRunState;
         private CorpseRecoveryManager _corpseRecoveryManager;
@@ -269,16 +273,22 @@ namespace CindarsHope.Core.Bootstrap
 
         private void InitializeUIControllers()
         {
-            var recoveryUIController = FindObjectOfType<UI.Death.CorpseRecoveryUIController>();
-            if (recoveryUIController != null)
+            if (_corpseRecoveryUIController != null)
             {
-                recoveryUIController.Initialize();
+                _corpseRecoveryUIController.Initialize();
+            }
+            else
+            {
+                Debug.LogWarning("GameBootstrap: CorpseRecoveryUIController reference is not assigned.", this);
             }
 
-            var fountainUIController = FindObjectOfType<UI.Locations.AnyaFountainUIController>();
-            if (fountainUIController != null)
+            if (_anyaFountainUIController != null)
             {
-                fountainUIController.Initialize();
+                _anyaFountainUIController.Initialize();
+            }
+            else
+            {
+                Debug.LogWarning("GameBootstrap: AnyaFountainUIController reference is not assigned.", this);
             }
         }
 

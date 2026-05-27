@@ -94,6 +94,10 @@ namespace CindarsHope.Cave.Runtime
             {
                 _alternateNextGateKey = _alternateNextLevelKey;
             }
+
+            // Legacy serialized field intentionally read to preserve backward compatibility
+            // with older scene generators without changing current boss gate behavior.
+            _ = _bypassBossGateForDebugSkip;
         }
 
         private bool TryRebindLocalReferences()
