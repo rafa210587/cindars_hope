@@ -278,7 +278,8 @@ namespace CindarsHope.Save
             Core.GameTimeManager gameTimeManager = null,
             StaminaManager staminaManager = null,
             Player.StatusEffectManager statusEffectManager = null,
-            Skills.SkillTreeManager skillTreeManager = null)
+            Skills.SkillTreeManager skillTreeManager = null,
+            ShopManager shopManager = null)
         {
             if (equipmentManager != null)
             {
@@ -308,6 +309,11 @@ namespace CindarsHope.Save
             if (skillTreeManager != null)
             {
                 _skillTreeManager = skillTreeManager;
+            }
+
+            if (shopManager != null)
+            {
+                _shopManager = shopManager;
             }
         }
 

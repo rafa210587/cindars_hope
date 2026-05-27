@@ -1,5 +1,6 @@
 using CindarsHope.Economy;
 using CindarsHope.Core;
+using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Data;
 using CindarsHope.Core.Events;
 using CindarsHope.Interaction;
@@ -36,19 +37,65 @@ namespace CindarsHope.NPC
         public NpcDataSO NpcData => _npcData;
         public bool HasMet { get; private set; }
 
+        private void OnEnable()
+        {
+            TryEnsureShopInitialized("OnEnable");
+        }
+
         private void Start()
         {
-            if (!ValidateReferences())
+            TryEnsureShopInitialized("Start");
+        }
+
+        private bool TryEnsureShopInitialized(string reason)
+        {
+            _isReady = false;
+            AdoptPersistentBootstrapReferences(reason);
+
+            if (_shopData == null)
             {
-                return;
+                LogInitializationError(reason, "_shopData", "ShopDataSO is null.");
+                return false;
             }
 
-            _modalManager?.Initialize();
-            _shopManager.Configure(_itemDatabase);
-            if (!_shopManager.InitializeShop(_shopData))
+            if (string.IsNullOrWhiteSpace(_shopData.Id))
             {
-                Debug.LogError($"{GetDiagnosticContext()} could not initialize shop session for '{_shopData.Id}'. Check ShopDataSO.Items and ItemDatabaseSO.", this);
-                return;
+                LogInitializationError(reason, "_shopData.Id", "ShopDataSO.Id is empty.");
+                return false;
+            }
+
+            if (_shopData.Items == null || _shopData.Items.Length == 0)
+            {
+                LogInitializationError(reason, "_shopData.Items", "ShopDataSO.Items is empty.");
+                return false;
+            }
+
+            if (!ValidateReference(_npcData, nameof(_npcData), reason)
+                || !ValidateReference(_shopManager, nameof(_shopManager), reason)
+                || !ValidateReference(_playerManager, nameof(_playerManager), reason)
+                || !ValidateReference(_inventoryManager, nameof(_inventoryManager), reason)
+                || !ValidateReference(_itemDatabase, nameof(_itemDatabase), reason)
+                || !ValidateReference(_modalManager, nameof(_modalManager), reason)
+                || !ValidateReference(_dialogueModal, nameof(_dialogueModal), reason)
+                || !ValidateReference(_shopMenuModal, nameof(_shopMenuModal), reason)
+                || !ValidateReference(_buyPanel, nameof(_buyPanel), reason)
+                || !ValidateReference(_sellPanel, nameof(_sellPanel), reason))
+            {
+                return false;
+            }
+
+            _modalManager.Initialize();
+            _shopManager.Configure(_itemDatabase);
+            if (!_shopManager.IsInitialized)
+            {
+                LogInitializationError(reason, "_shopManager", "ShopManager exists but IsInitialized is false after Configure.");
+                return false;
+            }
+
+            if (!_shopManager.InitializeShop(_shopData) || !_shopManager.TryGetSession(_shopData.Id, out _))
+            {
+                LogInitializationError(reason, "_shopManager", $"ShopManager could not create session. {_shopManager.GetDiagnosticSummary()}");
+                return false;
             }
 
             _dialogueModal.Initialize(_modalManager);
@@ -57,34 +104,55 @@ namespace CindarsHope.NPC
             _sellPanel.Initialize(_shopManager, _playerManager, _inventoryManager, _itemDatabase, _modalManager);
 
             _isReady = true;
+            Debug.Log($"{GetDiagnosticContext()} shopId '{_shopData.Id}' ready via '{reason}'. {_shopManager.GetDiagnosticSummary()}", this);
+            return true;
         }
 
-        private bool ValidateReferences()
-        {
-            var valid = true;
-            valid &= ValidateReference(_npcData, nameof(_npcData));
-            valid &= ValidateReference(_shopData, nameof(_shopData));
-            valid &= ValidateReference(_shopManager, nameof(_shopManager));
-            valid &= ValidateReference(_playerManager, nameof(_playerManager));
-            valid &= ValidateReference(_inventoryManager, nameof(_inventoryManager));
-            valid &= ValidateReference(_itemDatabase, nameof(_itemDatabase));
-            valid &= ValidateReference(_modalManager, nameof(_modalManager));
-            valid &= ValidateReference(_dialogueModal, nameof(_dialogueModal));
-            valid &= ValidateReference(_shopMenuModal, nameof(_shopMenuModal));
-            valid &= ValidateReference(_buyPanel, nameof(_buyPanel));
-            valid &= ValidateReference(_sellPanel, nameof(_sellPanel));
-            return valid;
-        }
-
-        private bool ValidateReference(Object reference, string fieldName)
+        private bool ValidateReference(Object reference, string fieldName, string reason)
         {
             if (reference != null)
             {
                 return true;
             }
 
-            Debug.LogError($"{GetDiagnosticContext()} missing required reference: {fieldName}.", this);
+            LogInitializationError(reason, fieldName, "required reference is null.");
             return false;
+        }
+
+        private void AdoptPersistentBootstrapReferences(string reason)
+        {
+            var bootstrap = GameBootstrap.Instance;
+            if (bootstrap == null)
+            {
+                return;
+            }
+
+            RebindIfAvailable(ref _shopManager, bootstrap.ShopManager, nameof(_shopManager), reason);
+            RebindIfAvailable(ref _playerManager, bootstrap.PlayerManager, nameof(_playerManager), reason);
+            RebindIfAvailable(ref _inventoryManager, bootstrap.InventoryManager, nameof(_inventoryManager), reason);
+            RebindIfAvailable(ref _itemDatabase, bootstrap.ItemDatabase, nameof(_itemDatabase), reason);
+            RebindIfAvailable(ref _modalManager, bootstrap.ModalManager, nameof(_modalManager), reason);
+        }
+
+        private void RebindIfAvailable<T>(ref T field, T stableReference, string fieldName, string reason) where T : Object
+        {
+            if (stableReference == null || field == stableReference)
+            {
+                return;
+            }
+
+            field = stableReference;
+            Debug.Log($"{GetDiagnosticContext()} shopId '{GetShopId()}' rebound field '{fieldName}' from persistent GameBootstrap during '{reason}'.", this);
+        }
+
+        private void LogInitializationError(string reason, string fieldName, string cause)
+        {
+            Debug.LogError($"{GetDiagnosticContext()} shopId '{GetShopId()}' initialization failed during '{reason}': field '{fieldName}' - {cause}", this);
+        }
+
+        private string GetShopId()
+        {
+            return _shopData != null && !string.IsNullOrWhiteSpace(_shopData.Id) ? _shopData.Id : "<null>";
         }
 
         private string GetDiagnosticContext()
@@ -97,6 +165,7 @@ namespace CindarsHope.NPC
             DetachUiEvents();
             _isInteracting = false;
             _isClosing = false;
+            _isReady = false;
         }
 
         private void Update()
@@ -113,12 +182,26 @@ namespace CindarsHope.NPC
 
         public bool CanInteract(GameObject interactor)
         {
-            return _isReady && _npcData != null && !_isInteracting;
+            if ((!_isReady || RequiresPersistentBootstrapRebind()) && !TryEnsureShopInitialized("CanInteract"))
+            {
+                return false;
+            }
+
+            return _npcData != null
+                && _shopData != null
+                && _shopManager != null
+                && _itemDatabase != null
+                && _modalManager != null
+                && _buyPanel != null
+                && _sellPanel != null
+                && _shopMenuModal != null
+                && _isReady
+                && !_isInteracting;
         }
 
         public void Interact(GameObject interactor)
         {
-            if (!CanInteract(interactor))
+            if (!CanInteract(interactor) || !TryEnsureShopInitialized("Interact"))
             {
                 return;
             }
@@ -161,7 +244,7 @@ namespace CindarsHope.NPC
 
         private void ShowShopMenu()
         {
-            if (!_isInteracting || _isClosing || _shopMenuModal == null)
+            if (!_isInteracting || _isClosing || _shopMenuModal == null || !TryEnsureShopInitialized("ShowShopMenu"))
             {
                 return;
             }
@@ -217,11 +300,46 @@ namespace CindarsHope.NPC
 
         private bool EnsureTransactionUiReady(ShopMenuOption option)
         {
-            if (!_isReady || _shopManager == null || !_shopManager.TryGetSession(_shopData.Id, out _))
+            if (_shopData == null)
             {
-                Debug.LogError(
-                    $"{GetDiagnosticContext()} cannot open '{option}' for shopId '{_shopData?.Id ?? "<null>"}': field '_shopManager' has no initialized session.",
-                    this);
+                LogTransactionError(option, "_shopData", "ShopDataSO is null.");
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(_shopData.Id))
+            {
+                LogTransactionError(option, "_shopData.Id", "ShopDataSO.Id is empty.");
+                return false;
+            }
+
+            if (_shopManager == null)
+            {
+                LogTransactionError(option, "_shopManager", "ShopManager reference is null.");
+                return false;
+            }
+
+            if (_itemDatabase == null)
+            {
+                LogTransactionError(option, "_itemDatabase", "ItemDatabaseSO reference is null.");
+                return false;
+            }
+
+            if (!_isReady && !TryEnsureShopInitialized($"Before{option}"))
+            {
+                LogTransactionError(option, "_isReady", "controller is not ready after initialization attempt.");
+                return false;
+            }
+
+            if (!_shopManager.IsInitialized)
+            {
+                LogTransactionError(option, "_shopManager.IsInitialized", "ShopManager exists but is not initialized.");
+                return false;
+            }
+
+            if (!_shopManager.TryGetSession(_shopData.Id, out _)
+                && (!TryEnsureShopInitialized($"MissingSessionBefore{option}") || !_shopManager.TryGetSession(_shopData.Id, out _)))
+            {
+                LogTransactionError(option, "_shopManager", $"ShopManager exists but has no session for this shopId. {_shopManager.GetDiagnosticSummary()}");
                 return false;
             }
 
@@ -234,10 +352,24 @@ namespace CindarsHope.NPC
             }
 
             var fieldName = option == ShopMenuOption.Buy ? "_buyPanel" : "_sellPanel";
-            Debug.LogError(
-                $"{GetDiagnosticContext()} cannot open '{option}' for shopId '{_shopData.Id}': field '{fieldName}' is not initialized with this NPC shop context.",
-                this);
+            LogTransactionError(option, fieldName, "panel is not initialized with this NPC shop context.");
             return false;
+        }
+
+        private bool RequiresPersistentBootstrapRebind()
+        {
+            var bootstrap = GameBootstrap.Instance;
+            return bootstrap != null
+                && ((bootstrap.ShopManager != null && _shopManager != bootstrap.ShopManager)
+                    || (bootstrap.PlayerManager != null && _playerManager != bootstrap.PlayerManager)
+                    || (bootstrap.InventoryManager != null && _inventoryManager != bootstrap.InventoryManager)
+                    || (bootstrap.ItemDatabase != null && _itemDatabase != bootstrap.ItemDatabase)
+                    || (bootstrap.ModalManager != null && _modalManager != bootstrap.ModalManager));
+        }
+
+        private void LogTransactionError(ShopMenuOption option, string fieldName, string cause)
+        {
+            Debug.LogError($"{GetDiagnosticContext()} shopId '{GetShopId()}' cannot open '{option}': field '{fieldName}' - {cause}", this);
         }
 
         private void HandlePanelBack()

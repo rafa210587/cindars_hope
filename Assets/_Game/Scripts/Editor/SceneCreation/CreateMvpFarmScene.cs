@@ -122,6 +122,7 @@ namespace CindarsHope.Editor.SceneCreation
             bootstrapObject.AddComponent<CraftingRuntime>();
             bootstrapObject.AddComponent<ModalManager>();
             bootstrapObject.AddComponent<EconomyManager>();
+            bootstrapObject.AddComponent<ShopManager>();
             bootstrapObject.AddComponent<EquipmentManager>();
             bootstrapObject.AddComponent<PlayerProgressionManager>();
             bootstrapObject.AddComponent<SkillTreeManager>();
@@ -150,6 +151,7 @@ namespace CindarsHope.Editor.SceneCreation
             SetReference(serializedBootstrap, "_craftingManager", bootstrapObject.GetComponent<CraftingManager>());
             SetReference(serializedBootstrap, "_modalManager", bootstrapObject.GetComponent<ModalManager>());
             SetReference(serializedBootstrap, "_economyManager", bootstrapObject.GetComponent<EconomyManager>());
+            SetReference(serializedBootstrap, "_shopManager", bootstrapObject.GetComponent<ShopManager>());
             SetReference(serializedBootstrap, "_equipmentManager", bootstrapObject.GetComponent<EquipmentManager>());
             SetReference(serializedBootstrap, "_progressionManager", bootstrapObject.GetComponent<PlayerProgressionManager>());
             SetReference(serializedBootstrap, "_skillTreeManager", bootstrapObject.GetComponent<SkillTreeManager>());
@@ -169,14 +171,16 @@ namespace CindarsHope.Editor.SceneCreation
                 bootstrapObject.GetComponent<EquipmentManager>(),
                 bootstrapObject.GetComponent<PlayerProgressionManager>(),
                 bootstrapObject.GetComponent<CraftingRuntime>(),
-                bootstrapObject.GetComponent<SkillTreeManager>());
+                bootstrapObject.GetComponent<SkillTreeManager>(),
+                bootstrapObject.GetComponent<ShopManager>());
             bootstrapObject.GetComponent<SaveManager>().RebindOptionalRuntimeManagers(
                 bootstrapObject.GetComponent<EquipmentManager>(),
                 bootstrapObject.GetComponent<PlayerProgressionManager>(),
                 bootstrapObject.GetComponent<GameTimeManager>(),
                 bootstrapObject.GetComponent<StaminaManager>(),
                 bootstrapObject.GetComponent<StatusEffectManager>(),
-                bootstrapObject.GetComponent<SkillTreeManager>());
+                bootstrapObject.GetComponent<SkillTreeManager>(),
+                bootstrapObject.GetComponent<ShopManager>());
             ConfigureSaveInput(bootstrapObject.GetComponent<SaveInput>(), bootstrapObject.GetComponent<SaveManager>());
             ConfigureHotbarDebugInput(
                 bootstrapObject.GetComponent<HotbarDebugInput>(),
@@ -201,6 +205,10 @@ namespace CindarsHope.Editor.SceneCreation
             if (itemDatabase != null)
             {
                 SetReference(serializedBootstrap, "_itemDatabase", itemDatabase);
+                var serializedShop = new SerializedObject(bootstrapObject.GetComponent<ShopManager>());
+                SetReference(serializedShop, "_itemDatabase", itemDatabase);
+                serializedShop.ApplyModifiedPropertiesWithoutUndo();
+                EditorUtility.SetDirty(bootstrapObject.GetComponent<ShopManager>());
             }
             else
             {
@@ -231,7 +239,8 @@ namespace CindarsHope.Editor.SceneCreation
             EquipmentManager equipmentManager,
             PlayerProgressionManager progressionManager,
             CraftingRuntime craftingRuntime,
-            SkillTreeManager skillTreeManager)
+            SkillTreeManager skillTreeManager,
+            ShopManager shopManager)
         {
             var serializedSave = new SerializedObject(saveManager);
             SetReference(serializedSave, "_playerManager", playerManager);
@@ -246,6 +255,7 @@ namespace CindarsHope.Editor.SceneCreation
             SetReference(serializedSave, "_progressionManager", progressionManager);
             SetReference(serializedSave, "_craftingRuntime", craftingRuntime);
             SetReference(serializedSave, "_skillTreeManager", skillTreeManager);
+            SetReference(serializedSave, "_shopManager", shopManager);
             serializedSave.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(saveManager);
         }

@@ -37,7 +37,7 @@ namespace CindarsHope.SceneManagement
             if (playerManager != null && inventoryManager != null && hungerManager != null && timeManager != null)
             {
                 saveManager.RebindRuntimeManagers(playerManager, inventoryManager, hungerManager, timeManager);
-                saveManager.RebindOptionalRuntimeManagers(bootstrap.EquipmentManager, bootstrap.PlayerProgressionManager, bootstrap.GameTimeManager, staminaManager, bootstrap.StatusEffectManager, bootstrap.SkillTreeManager);
+                saveManager.RebindOptionalRuntimeManagers(bootstrap.EquipmentManager, bootstrap.PlayerProgressionManager, bootstrap.GameTimeManager, staminaManager, bootstrap.StatusEffectManager, bootstrap.SkillTreeManager, bootstrap.ShopManager);
             }
             else
             {

@@ -26,6 +26,7 @@ A etapa 00 foi reclassificada como implementado documental parcial. As specs run
 | 17 | [spec_ui_ux_full_gameplay_inventory_hotbar_menus](a_implementar/spec_ui_ux_full_gameplay_inventory_hotbar_menus.md) | Implementacao parcial - MVP gameplay em codigo | 00-16 | Nenhuma | Restam superficies da spec ampla e Play Mode humano antes de promocao. |
 | 17C | [spec_ui_gameplay_closeout_skill_shop_prompts_actions_hud](a_implementar/spec_ui_gameplay_closeout_skill_shop_prompts_actions_hud.md) | Implementado em codigo - Play Mode humano pendente | 15-17 | Nenhuma | Gates automaticos passaram; closeout so fecha apos fluxo interativo final. |
 | 17D | [spec_ui_gameplay_shop_injection_equipment_slot_picker_closeout](a_implementar/spec_ui_gameplay_shop_injection_equipment_slot_picker_closeout.md) | Implementado em codigo - Unity/Play Mode pendentes | 17C | Nenhuma | Injecao shop e slot picker exigem confirmacao interativa final sem Unity concorrente. |
+| 17E | [spec_ui_gameplay_shop_session_lifecycle_npc_readiness_closeout](a_implementar/spec_ui_gameplay_shop_session_lifecycle_npc_readiness_closeout.md) | Implementado em codigo - Unity/Play Mode pendentes | 17D | Nenhuma | Corrige sessoes apos transicao de cena; fechar apenas com buy/sell e save/load no Unity. |
 
 ## Observacao operacional
 
@@ -47,3 +48,5 @@ A spec 17 recebeu em 2026-05-26 o incremento UI Gameplay MVP: lojas com estoque 
 A spec 17C executa o closeout de integracao: `U` skill trees, `K` atributos/progressao, `L` equipamento, wiring de shop e scanner de missing scripts. Ela permanece ativa ate a validacao Play Mode humana final.
 
 A spec 17D endurece a injecao de buy/sell e adiciona o picker de equipamento por slot via `L`; compile fallback passou, mas Unity batchmode foi bloqueado por instancia aberta e o Play Mode final permanece pendente.
+
+A spec 17E corrige o lifecycle das sessoes de shop: o `ShopManager` passa a pertencer ao `GameBootstrap` persistente, os NPCs fazem rebind e readiness idempotentes e um validator Editor verifica a `TownScene`. Compile `dotnet` passou; Unity/Play Mode final permanece pendente.

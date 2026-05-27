@@ -129,6 +129,7 @@ namespace CindarsHope.Editor.SceneCreation
             bootstrapObject.AddComponent<FoodConsumer>();
             bootstrapObject.AddComponent<SaveInput>();
             bootstrapObject.AddComponent<EconomyManager>();
+            bootstrapObject.AddComponent<ShopManager>();
             bootstrapObject.AddComponent<EquipmentManager>();
             bootstrapObject.AddComponent<PlayerProgressionManager>();
             bootstrapObject.AddComponent<SkillTreeManager>();
@@ -155,6 +156,7 @@ namespace CindarsHope.Editor.SceneCreation
             SetReference(serializedBootstrap, "_statusEffectManager", bootstrapObject.GetComponent<CindarsHope.Player.StatusEffectManager>());
             SetReference(serializedBootstrap, "_modalManager", bootstrapObject.GetComponent<ModalManager>());
             SetReference(serializedBootstrap, "_economyManager", bootstrapObject.GetComponent<EconomyManager>());
+            SetReference(serializedBootstrap, "_shopManager", bootstrapObject.GetComponent<ShopManager>());
             SetReference(serializedBootstrap, "_equipmentManager", bootstrapObject.GetComponent<EquipmentManager>());
             SetReference(serializedBootstrap, "_progressionManager", bootstrapObject.GetComponent<PlayerProgressionManager>());
             SetReference(serializedBootstrap, "_skillTreeManager", bootstrapObject.GetComponent<SkillTreeManager>());
@@ -167,7 +169,8 @@ namespace CindarsHope.Editor.SceneCreation
                 bootstrapObject.GetComponent<HungerManager>(),
                 bootstrapObject.GetComponent<TimeManager>(),
                 playerTransform,
-                bootstrapObject.GetComponent<SkillTreeManager>());
+                bootstrapObject.GetComponent<SkillTreeManager>(),
+                bootstrapObject.GetComponent<ShopManager>());
             ConfigureSaveInput(bootstrapObject.GetComponent<SaveInput>(), bootstrapObject.GetComponent<SaveManager>());
             ConfigureHotbarDebugInput(
                 bootstrapObject.GetComponent<HotbarDebugInput>(),
@@ -179,7 +182,8 @@ namespace CindarsHope.Editor.SceneCreation
                 bootstrapObject.GetComponent<GameTimeManager>(),
                 bootstrapObject.GetComponent<StaminaManager>(),
                 bootstrapObject.GetComponent<CindarsHope.Player.StatusEffectManager>(),
-                bootstrapObject.GetComponent<SkillTreeManager>());
+                bootstrapObject.GetComponent<SkillTreeManager>(),
+                bootstrapObject.GetComponent<ShopManager>());
 
             var playerData = AssetDatabase.LoadAssetAtPath<PlayerDataSO>(PlayerDataPath);
             if (playerData != null)
@@ -197,6 +201,10 @@ namespace CindarsHope.Editor.SceneCreation
             if (itemDatabase != null)
             {
                 SetReference(serializedBootstrap, "_itemDatabase", itemDatabase);
+                var serializedShop = new SerializedObject(bootstrapObject.GetComponent<ShopManager>());
+                SetReference(serializedShop, "_itemDatabase", itemDatabase);
+                serializedShop.ApplyModifiedPropertiesWithoutUndo();
+                EditorUtility.SetDirty(bootstrapObject.GetComponent<ShopManager>());
             }
             else
             {
@@ -214,7 +222,8 @@ namespace CindarsHope.Editor.SceneCreation
             HungerManager hungerManager,
             TimeManager timeManager,
             Transform playerTransform,
-            SkillTreeManager skillTreeManager)
+            SkillTreeManager skillTreeManager,
+            ShopManager shopManager)
         {
             var serializedSave = new SerializedObject(saveManager);
             SetReference(serializedSave, "_playerManager", playerManager);
@@ -223,6 +232,7 @@ namespace CindarsHope.Editor.SceneCreation
             SetReference(serializedSave, "_timeManager", timeManager);
             SetReference(serializedSave, "_playerTransform", playerTransform);
             SetReference(serializedSave, "_skillTreeManager", skillTreeManager);
+            SetReference(serializedSave, "_shopManager", shopManager);
             serializedSave.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(saveManager);
         }

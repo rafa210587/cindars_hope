@@ -160,6 +160,7 @@ namespace CindarsHope.Editor.SceneCreation
             SetReference(serializedBootstrap, "_statusEffectManager", bootstrap.GetComponent<StatusEffectManager>());
             SetReference(serializedBootstrap, "_craftingManager", craftingManager);
             SetReference(serializedBootstrap, "_economyManager", economyManager);
+            SetReference(serializedBootstrap, "_shopManager", shopManager);
             SetReference(serializedBootstrap, "_modalManager", modalManager);
             SetReference(serializedBootstrap, "_equipmentManager", bootstrap.GetComponent<EquipmentManager>());
             SetReference(serializedBootstrap, "_progressionManager", bootstrap.GetComponent<PlayerProgressionManager>());
@@ -215,7 +216,8 @@ namespace CindarsHope.Editor.SceneCreation
                 bootstrap.GetComponent<GameTimeManager>(),
                 bootstrap.GetComponent<StaminaManager>(),
                 bootstrap.GetComponent<StatusEffectManager>(),
-                bootstrap.GetComponent<SkillTreeManager>());
+                bootstrap.GetComponent<SkillTreeManager>(),
+                shopManager);
         }
 
         private static void ConfigureHotbarDebugInput(HotbarDebugInput hotbarDebugInput, SaveManager saveManager)

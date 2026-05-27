@@ -1,3 +1,37 @@
+## Sessao 2026-05-26 (25a) - SPEC 17E ShopSession Lifecycle e Readiness
+
+**Foco:** corrigir sessoes ausentes nos NPC shops apos transicao para `TownScene`
+**Status:** Implementado em codigo; dotnet compile PASS; Unity/Play Mode pendentes
+
+### Causa raiz
+- A `TownScene` ja possuia um unico `ShopManager` e referencias coerentes para os dois NPCs e paineis.
+- Ao entrar na Town a partir de outra cena, o `GameBootstrap` persistente destruia o `_Bootstrap` novo da Town; o `ShopManager` serializado local deixava de ser a dependencia estavel dos NPCs.
+- O problema era lifecycle cross-scene, nao ausencia dos assets `shop_weapons_armor`/`shop_seeds_tools`.
+
+### Implementacao
+- `GameBootstrap` passa a possuir/expor um `ShopManager` persistente e o injeta no save/scene installers.
+- `NpcShopController` faz rebind explicito para referencias persistentes, inicializacao idempotente e diagnosticos separados por campo/causa.
+- `ShopManager` expoe sessoes registradas, resumo diagnostico e valida `ShopDataSO.Items`/precos/ItemDatabase ao criar sessao.
+- `BuyPanel` e `SellPanel` reportam manager ausente ou sessao inexistente com sessoes conhecidas, sem criar fallback.
+- `ValidateTownShopWiring` valida singleton de manager, paineis/NPCs/assets, missing scripts e sessoes obrigatorias na `TownScene`.
+- Geradores de Farm/Town/Cave e a cena Town foram atualizados para manter o wiring do manager persistente.
+
+### Validacao
+- `dotnet build .\Assembly-CSharp.csproj --no-restore`: PASS, 0 erros; 7 warnings legados.
+- `dotnet build .\Assembly-CSharp-Editor.csproj --no-restore`: PASS, 0 erros.
+- `tools/docs/validate_docs.ps1`: PASS.
+- Unity validation: NOT RUN
+- Reason: outra instancia Unity esta com `D:/Projetos/Jogos/Cindars_hope/cindars_hope` aberto e abortou o batchmode.
+- Command attempted: `.\tools\unity\RunUnityCompileValidation.ps1 -UnityEditorPath 'C:\Program Files\Unity\Hub\Editor\6000.4.7f1\Editor\Unity.exe' -ProjectPath '.' -LogFile '.\Logs\spec17e-unity-compile-validation.log' -TimeoutSeconds 180`
+- Residual risk: Unity compile, scanner/validator Editor e fluxos Play Mode ainda nao foram validados localmente.
+- Evidencia: `docs/validation/SPEC17E_REPRO_BEFORE_20260526.md` e `docs/validation/SPEC17E_SHOP_SESSION_FIX_VALIDATION_20260526.md`.
+
+### Pendente
+- Rodar Unity compile e `Validate Town Shop Wiring`, scanner de missing scripts, buy/sell dos dois NPCs e save/load em Play Mode.
+- SPEC 17E permanece ativa ate essa evidencia ser registrada.
+
+---
+
 ## Sessao 2026-05-26 (24a) - SPEC 17D Shop Injection + Equipment Slot Picker
 
 **Data:** 2026-05-26

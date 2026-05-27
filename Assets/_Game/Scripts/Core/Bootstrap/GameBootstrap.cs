@@ -32,6 +32,7 @@ namespace CindarsHope.Core.Bootstrap
         [SerializeField] private StaminaManager _staminaManager;
         [SerializeField] private CraftingManager _craftingManager;
         [SerializeField] private EconomyManager _economyManager;
+        [SerializeField] private ShopManager _shopManager;
         [SerializeField] private EquipmentManager _equipmentManager;
         [SerializeField] private PlayerProgressionManager _progressionManager;
         [SerializeField] private StatusEffectManager _statusEffectManager;
@@ -61,6 +62,7 @@ namespace CindarsHope.Core.Bootstrap
         public ManaManager ManaManager => _manaManager;
         public CraftingManager CraftingManager => _craftingManager;
         public EconomyManager EconomyManager => _economyManager;
+        public ShopManager ShopManager => _shopManager;
         public EquipmentManager EquipmentManager => _equipmentManager;
         public PlayerProgressionManager PlayerProgressionManager => _progressionManager;
         public StatusEffectManager StatusEffectManager => _statusEffectManager;
@@ -104,6 +106,7 @@ namespace CindarsHope.Core.Bootstrap
 
             _instance = this;
             DontDestroyOnLoad(gameObject);
+            EnsurePersistentShopManager();
             InitializeManagers();
         }
 
@@ -219,6 +222,15 @@ namespace CindarsHope.Core.Bootstrap
                 _economyManager.Initialize();
             }
 
+            if (_shopManager != null)
+            {
+                _shopManager.Configure(_itemDatabase);
+            }
+            else
+            {
+                Debug.LogError($"Scene '{gameObject.scene.path}' GameObject '{gameObject.name}' component '{nameof(GameBootstrap)}' field '_shopManager' could not be initialized.", this);
+            }
+
             if (_statusEffectManager != null)
             {
                 _statusEffectManager.Initialize();
@@ -235,7 +247,7 @@ namespace CindarsHope.Core.Bootstrap
 
             if (_saveManager != null)
             {
-                _saveManager.RebindOptionalRuntimeManagers(_equipmentManager, _progressionManager, _gameTimeManager, _staminaManager, _statusEffectManager, _skillTreeManager);
+                _saveManager.RebindOptionalRuntimeManagers(_equipmentManager, _progressionManager, _gameTimeManager, _staminaManager, _statusEffectManager, _skillTreeManager, _shopManager);
             }
 
             InitializeDeathSystem();
@@ -316,6 +328,29 @@ namespace CindarsHope.Core.Bootstrap
             {
                 _economyManager.Shutdown();
             }
+
+            if (_shopManager != null && _shopManager.IsInitialized)
+            {
+                _shopManager.Shutdown();
+            }
+        }
+
+        private void EnsurePersistentShopManager()
+        {
+            if (_shopManager != null)
+            {
+                return;
+            }
+
+            _shopManager = GetComponent<ShopManager>();
+            if (_shopManager != null)
+            {
+                Debug.Log($"GameBootstrap adopted serialized ShopManager on persistent bootstrap in scene '{gameObject.scene.path}'.", this);
+                return;
+            }
+
+            _shopManager = gameObject.AddComponent<ShopManager>();
+            Debug.Log($"GameBootstrap created persistent ShopManager because scene '{gameObject.scene.path}' did not serialize one.", this);
         }
     }
 }

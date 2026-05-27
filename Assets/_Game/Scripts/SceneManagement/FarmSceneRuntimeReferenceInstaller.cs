@@ -128,7 +128,7 @@ namespace CindarsHope.SceneManagement
                     saveManager.RebindRuntimeManagers(playerManager, inventoryManager, hungerManager, timeManager);
                 }
 
-                saveManager.RebindOptionalRuntimeManagers(bootstrap.EquipmentManager, bootstrap.PlayerProgressionManager, bootstrap.GameTimeManager, staminaManager, bootstrap.StatusEffectManager, bootstrap.SkillTreeManager);
+                saveManager.RebindOptionalRuntimeManagers(bootstrap.EquipmentManager, bootstrap.PlayerProgressionManager, bootstrap.GameTimeManager, staminaManager, bootstrap.StatusEffectManager, bootstrap.SkillTreeManager, bootstrap.ShopManager);
             }
 
             var interactionSystem = _playerTransform != null ? _playerTransform.GetComponent<InteractionSystem>() : null;

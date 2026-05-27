@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using CindarsHope.Core;
 using CindarsHope.Core.Data;
 using CindarsHope.Core.Events;
@@ -18,6 +19,7 @@ namespace CindarsHope.Economy
         private readonly Dictionary<string, ShopSession> _sessions = new Dictionary<string, ShopSession>();
 
         public bool IsInitialized { get; private set; }
+        public IReadOnlyCollection<string> RegisteredShopIds => _sessions.Keys;
 
         private void OnEnable()
         {
@@ -52,9 +54,15 @@ namespace CindarsHope.Economy
 
         public bool InitializeShop(ShopDataSO shopData, int currentDay = 1)
         {
-            if (shopData == null || string.IsNullOrWhiteSpace(shopData.Id))
+            if (shopData == null)
             {
-                Debug.LogWarning($"{nameof(ShopManager)}: Cannot initialize shop with null data or empty ID.", this);
+                Debug.LogError($"{GetDiagnosticContext()} cannot initialize shop: field 'shopData' is null.", this);
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(shopData.Id))
+            {
+                Debug.LogError($"{GetDiagnosticContext()} cannot initialize shop: field 'ShopDataSO.Id' is empty.", this);
                 return false;
             }
 
@@ -65,13 +73,42 @@ namespace CindarsHope.Economy
 
             if (_itemDatabase == null)
             {
-                Debug.LogWarning($"{nameof(ShopManager)}: ItemDatabase not assigned. Cannot initialize shop '{shopData.Id}'.", this);
+                Debug.LogError($"{GetDiagnosticContext()} cannot initialize shopId '{shopData.Id}': field '_itemDatabase' is null.", this);
                 return false;
             }
 
+            if (shopData.Items == null || shopData.Items.Length == 0)
+            {
+                Debug.LogError($"{GetDiagnosticContext()} cannot initialize shopId '{shopData.Id}': field 'ShopDataSO.Items' is empty.", this);
+                return false;
+            }
+
+            foreach (var entry in shopData.Items)
+            {
+                if (entry == null || string.IsNullOrWhiteSpace(entry.ItemId))
+                {
+                    Debug.LogError($"{GetDiagnosticContext()} cannot initialize shopId '{shopData.Id}': field 'ShopDataSO.Items' contains an empty item id.", this);
+                    return false;
+                }
+
+                if (!_itemDatabase.TryGetById(entry.ItemId, out var itemData) || itemData == null)
+                {
+                    Debug.LogError($"{GetDiagnosticContext()} cannot initialize shopId '{shopData.Id}': item '{entry.ItemId}' is absent from ItemDatabaseSO.", this);
+                    return false;
+                }
+
+                if (entry.BuyPriceOverride <= 0 && itemData.BaseValue <= 0)
+                {
+                    Debug.LogError($"{GetDiagnosticContext()} cannot initialize shopId '{shopData.Id}': item '{entry.ItemId}' has no valid price.", this);
+                    return false;
+                }
+            }
+
+            Initialize();
             var session = new ShopSession(shopData, _itemDatabase);
             session.RestockAllItems(currentDay);
             _sessions[shopData.Id] = session;
+            Debug.Log($"{GetDiagnosticContext()} initialized session '{shopData.Id}'. {GetDiagnosticSummary()}", this);
             return true;
         }
 
@@ -84,6 +121,17 @@ namespace CindarsHope.Economy
             }
 
             return _sessions.TryGetValue(shopId, out session);
+        }
+
+        public bool HasSession(string shopId)
+        {
+            return !string.IsNullOrWhiteSpace(shopId) && _sessions.ContainsKey(shopId);
+        }
+
+        public string GetDiagnosticSummary()
+        {
+            var sessions = _sessions.Keys.OrderBy(id => id).ToArray();
+            return $"ShopManager initialized sessions: {(sessions.Length == 0 ? "<none>" : string.Join(", ", sessions))}";
         }
 
         public ShopTransactionResult TryBuyItem(
@@ -254,6 +302,11 @@ namespace CindarsHope.Economy
         {
             GameEventBus.Publish(new EconomyTransactionCompletedEvent(false, operation, itemId, amount, 0, message));
             return ShopTransactionResult.Failed(message);
+        }
+
+        private string GetDiagnosticContext()
+        {
+            return $"Scene '{gameObject.scene.path}' GameObject '{gameObject.name}' component '{nameof(ShopManager)}'";
         }
     }
 

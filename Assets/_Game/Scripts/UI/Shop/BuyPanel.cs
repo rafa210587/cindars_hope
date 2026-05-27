@@ -73,13 +73,15 @@ namespace CindarsHope.UI.Shop
         {
             if (_shopManager == null)
             {
-                Debug.LogError($"{GetDiagnosticContext()} cannot show shop '{shopId}': ShopManager was not initialized.", this);
+                Debug.LogError($"{GetDiagnosticContext()} cannot show shopId '{shopId}': field '_shopManager' is null.", this);
                 return;
             }
 
             if (!_shopManager.TryGetSession(shopId, out var session))
             {
-                Debug.LogError($"{GetDiagnosticContext()} cannot show shop '{shopId}': no initialized ShopSession exists.", this);
+                Debug.LogError(
+                    $"{GetDiagnosticContext()} cannot show shopId '{shopId}': no initialized ShopSession exists. IsInitialized={_shopManager.IsInitialized}. {_shopManager.GetDiagnosticSummary()}",
+                    this);
                 return;
             }
 
