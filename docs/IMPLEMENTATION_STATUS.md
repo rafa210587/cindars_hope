@@ -1,13 +1,28 @@
 # Cindar's Hope - Implementation Status
 
-> Status: tracking reconciliado pos-overnight.
+> Status: tracking reconciliado por validacao estatica de codigo em 2026-05-26.
 > Fonte oficial de specs: `docs/specs/`.
 > A pasta raiz `specs/` foi removida e nao deve ser recriada.
 
-## Resumo
+## 1. Resumo executivo
 
-| Area | Status | Spec |
+A validacao de codigo ate a SPEC 16 confirma que o projeto possui baseline suficiente para seguir para a proxima etapa de UI/closeout, desde que as proximas execucoes nao tratem specs parciais como completas.
+
+Nao ha erro CS0023 ativo em `ValidateItemAndShopData.cs`: o validador usa `entry.Item == null` para `StartingItem` struct.
+
+Principais conclusoes:
+
+- SPECS 00-09: base documental/tooling/runtime MVP majoritariamente implementada, com algumas areas historicas ainda parciais.
+- SPECS 10-14: implementacao parcial/residual ativa; nao tratar como completas.
+- SPEC 15: implementacao parcial em codigo. Existem death DTOs, `PlayerDeathController`, `Corpse`, `CorpseRecoveryManager` e captura de `DeathSaveData`, mas a orquestracao completa de cave death/Anya/corpse spawn/restore nao esta fechada no codigo validado.
+- SPEC 16: implementada em codigo. Skill trees, 5 arvores/55 nodes, compra, slots ativos, respec service, save v5 e manager existem; Unity compile e Play Mode humano seguem pendentes.
+- SPEC 17+: ja recebeu incrementos, mas permanece etapa de UI/closeout e validacao final.
+
+## 2. Resumo por area
+
+| Area | Status real | Evidencia / observacao |
 |---|---|---|
+<<<<<<< HEAD
 | Claude Code project structure (.claude/) | Implementado completo | `.claude/settings.json`, `.claude/commands/`, `.claude/skills/`, `.claude/agents/`, `.claude/hooks/` |
 | Governanca documental / fonte unica | Implementado documental parcial | `docs/specs/implementados/spec_docs_001_single_source_specs_refinements_reconciliation_parcial.md` |
 | Unity compile validation protocol | Implementado completo | `docs/specs/implementados/spec_unity_compile_validation_protocol_and_scripts.md` |
@@ -41,171 +56,144 @@
 | UI Gameplay ShopSession lifecycle/readiness (Spec 17E) | Implementado completo - Play Mode humano validado 2026-05-26 | `docs/specs/implementados/spec_ui_gameplay_shop_session_lifecycle_npc_readiness_closeout.md`, `docs/validation/SPEC17E_SHOP_SESSION_FIX_VALIDATION_20260526.md` |
 | UI Gameplay shop modal/responsive/names (Spec 17F) | Implementado completo - Play Mode humano validado 2026-05-26 | `docs/specs/implementados/spec_ui_gameplay_shop_modal_stack_responsive_names_closeout.md`, `docs/validation/SPEC17F_SHOP_MODAL_UI_VALIDATION_20260526.md` |
 | Visual scale / world scale / camera profiles (Spec 17A) | Implementado em codigo - Play Mode humano pendente | `docs/specs/implementados/spec_visual_world_scale_camera_sprite_profiles.md` |
+=======
+| Claude Code project structure `.claude/` | Implementado completo | `.claude/settings.json`, commands, skills, agents e hooks. |
+| Governanca documental / fonte unica | Implementado documental parcial | Fonte oficial em `docs/specs/`. Nao recriar `specs/` ou `spec/` na raiz. |
+| Unity compile validation protocol | Implementado completo como tooling minimo | `tools/unity/RunUnityCompileValidation.ps1`, `tools/unity/ScanUnityLogs.ps1`, `tools/docs/validate_docs.ps1`. |
+| Core/event bus/bootstrap | Implementado parcial | Base operacional presente; ainda existem gaps de wiring em features parciais. |
+| Data/IDs/registries | Implementado | ScriptableObjects e registries ativos. |
+| Save/load JSON cross-scene | Implementado parcial | SaveManager v5 existe; algumas features ainda nao restauram todo estado funcional. |
+| Save schema migration v2+ | Implementado em codigo | Registry de migrations inclui v1->v2, v2->v3, v3->v4 e v4->v5. |
+| Inventory slots/capacidade/UI minima | Implementado em codigo / parcial funcional | Slots reais e compat agregado; pendem Use especifico, drag/drop, sort e UI final. |
+| Farm irrigacao/solo/planting UI | Implementado parcial | Menu contextual/plantio/irrigacao existem; Play Mode final e polimento seguem pendentes. |
+| World activities/fishing/trees/loot | Implementado parcial | Loot/fishing/tree HP/regrowth existem parcialmente; spawners/cave variants ainda residuais. |
+| Economy/shop/stock/pricing/UI | Implementado em codigo | ShopManager, sessoes, buy/sell, stock e save existem; 17D/17E ainda pedem Unity/Play Mode final. |
+| Crafting queue/workstations/recipes/UI | Implementado em codigo | CraftingManager e runtime existem; Play Mode final segue pendente. |
+| Town NPC/dialogue/schedule/quests | Implementado em codigo | NPC/shop/dialogue wiring existe; Play Mode final segue pendente. |
+| Hunger/stamina/status/time | Implementado completo MVP | GameTime, hunger, stamina, status, save e HUD minimo estao documentados como fechados; Canvas final fica na SPEC 17. |
+| Equipment/durability/environment/loot | Implementado parcial | Mantido como parcial. |
+| Damage/status/elements/resistances | Implementado parcial | Mantido como parcial. |
+| Player combat/weapons/spells/skill actions | Implementado parcial | Mantido como parcial; UI final em SPEC 17. |
+| Enemy AI/roster/bestiary/faction locks | Implementado parcial | Residual ativo. |
+| Cave runtime/procedural/checkpoints/boss gates | Implementado parcial / validacao Unity pendente | Residual ativo. |
+| Cave entry/death/Anya/corpse recovery — SPEC 15 | Implementado parcial em codigo | Ver secao 5. |
+| Skill trees/active slots/respec Anya — SPEC 16 | Implementado em codigo; Unity/Play Mode pendentes | Ver secao 6. |
+| UI Gameplay MVP / closeout — SPEC 17+ | Implementado parcialmente | SPEC 17 ampla permanece aberta; 17C/17D/17E possuem pendencias de Unity/Play Mode. |
+>>>>>>> 00562ddca18286a2a51e0816c8cb2387aa30407c
 
-## Correcoes de tracking obrigatorias
+## 3. Status oficial por SPEC/prompt ate 16
 
-### Unity compile validation protocol
+| Spec | Status real apos validacao de codigo | Observacao |
+|---|---|---|
+| 00 | Implementado documental parcial | Nao reexecutar spec antiga. |
+| 01 | Implementado completo | Tooling minimo existe. |
+| 02 | Implementado parcial | Infra de migration existe; manter parcial conforme ordem oficial. |
+| 03 | Implementado parcial | Inventory tem slots e capacidade, mas ainda ha pendencias funcionais/UI. |
+| 04 | Implementado parcial | Farm planting/irrigacao existem, mas Play Mode/polimento pendem. |
+| 05 | Implementado parcial | World activities existem parcialmente; residual ativo. |
+| 06 | Implementado completo em codigo | Shop/economy implementado; Play Mode final ainda depende das specs de closeout. |
+| 07 | Implementado completo em codigo | Crafting/workstations/recipes em codigo; Play Mode final pendente. |
+| 08 | Implementado completo em codigo | Town/NPC/dialogue em codigo; Play Mode final pendente. |
+| 09 | Implementado completo MVP | Hunger/stamina/status/time fechados como MVP. |
+| 10 | Implementado parcial | Nao tratar como completo. |
+| 11 | Implementado parcial | Nao tratar como completo. |
+| 12 | Implementado parcial | Nao tratar como completo. |
+| 13 | Implementado parcial - residual ativo | Ainda listado como residual ativo. |
+| 14 | Implementado parcial - residual ativo | Ainda listado como residual ativo. |
+| 15 | Implementado parcial em codigo | Death/corpse base existe; Anya/orquestracao/spawn/restore incompletos no codigo validado. |
+| 16 | Implementado em codigo | Skill tree stack existe; Unity compile/Play Mode humano pendentes. |
 
-Implementado completo em:
+## 4. Evidencias de codigo validadas
 
-```text
-docs/specs/implementados/spec_unity_compile_validation_protocol_and_scripts.md
-tools/unity/RunUnityCompileValidation.ps1
-tools/unity/ScanUnityLogs.ps1
-tools/docs/validate_docs.ps1 (corrigido)
+### 4.1 Erro CS0023 ja corrigido
+
+`Assets/_Game/Scripts/Editor/Validation/ValidateItemAndShopData.cs` usa:
+
+```csharp
+var entry = playerData.StartingItems[i];
+if (entry.Item == null)
 ```
 
-**Status 2026-05-24:**
-- Scripts PowerShell: Funcionais e operáveis
-- Validação documental: PASS
-- Validação Unity batchmode: NOT RUN (sandbox; aceitável)
-- Gaps de Play Mode/Advanced Scanners: Reclassificados para futuro
+Como `StartingItem` e struct, isso esta correto. Nao ha mais `entry?.Item` nesse trecho.
 
-Specs futuras dedicadas aos scanners avançados (Missing Script, Scene References, Data IDs) podem ser implementadas quando necessário, sem bloquear SPECS 02-17.
+### 4.2 SaveManager v5 / migrations
 
-### Governanca documental
+`SaveManager` esta em schema v5 e registra:
 
-A antiga spec 00 de reconciliacao documental foi reclassificada como implementado documental parcial.
+- `InventorySlotsV1ToV2Migration`
+- `SaveV2ToV3Migration`
+- `SaveV3ToV4Migration`
+- `SaveV4ToV5Migration`
 
-Nao executar novamente:
+Tambem captura `SkillTree`, `ActiveSkillSlots`, `Death`, `Economy`, `Crafting`, `Stamina`, `GameTime`, `StatusEffects`, `EquipmentDurability` e `Npcs`.
 
-```text
-docs/specs/a_implementar/spec_docs_single_source_specs_refinements_reconciliation_v1.md
-docs/refinements/a_implementar/pre_refinamentos/refinamento_init_tracking_documental_status_specs.md
-```
+## 5. SPEC 15 — Cave entry, death, Anya e corpse recovery
 
-Usar como fonte ativa:
+Status real: **implementado parcial em codigo**.
 
-```text
-docs/specs/implementados/spec_docs_001_single_source_specs_refinements_reconciliation_parcial.md
-docs/refinements/implementados/ref_docs_single_source_tracking_reconciliation_parcial.md
-```
+### 5.1 Confirmado em codigo
 
-### Inventory
+Arquivos/elementos encontrados e coerentes:
 
-O inventory atual usa slots reais com capacidade inicial 18 e limite 30, mantendo `Items` agregado apenas como compatibilidade para sistemas antigos.
-Existem multiplas stacks por item e migration `v1 -> v2` para `InventorySaveData`.
-Pendentes: `Use` especifico por tipo de item, Drop transacional com spawner persistente, drag/drop, sort/auto-organize, UI Canvas final e binding completo por `ItemInstanceId`.
+- `PlayerDeathController`: escuta `HPChangedEvent` e publica `PlayerDiedEvent` quando HP chega a zero.
+- `Corpse`: modelo runtime com id, status, run/cave data, posicao, gold e listas de itens/equipment.
+- `CorpseRecoveryManager`: controla active corpse, recuperacao de gold, itens e equipment, e publica eventos de recovery/parcial/replaced.
+- `CorpseSaveData`, `CorpseItemSaveData`, `DeathStatsSaveData`, `DeathSaveData`: DTOs serializaveis.
+- `SaveManager.CaptureDeathSaveData`: captura/preserva `DeathStats` e `ActiveCorpse` existente.
 
-### Game Time / Hunger-Stamina Balance (SPEC 09) - Historico parcial superado
+### 5.2 Nao encontrado / nao fechado no codigo validado
 
-GameTimeManager entregue com:
-- Ciclo dia/noite configurable (DayDurationSeconds=600, NightDurationSeconds=300)
-- GameTimeTickEvent publicado a cada 1 segundo para sistemas dependentes
-- Pause-aware via ModalManager.HasActiveModal
-- Save/load com GameTimeSaveData (CurrentDay, CurrentPhase, PhaseElapsedSeconds)
+Nao foram encontrados no `dev` durante esta validacao:
 
-Stamina regeneration integrada:
-- 4 fome tiers com modifiers: Normal (1.0), Fome (0.6), Fome Crítica (0.3), Vazio (0.0 com damaged mode)
-- Modo danificado com -2 stamina/s quando fome=0
-- PlayerNeedsBalanceSO drive configuração
+- `CaveDeathResolver`
+- `DeathSystemBootstrap`
+- `CorpseInteractable`
+- `CorpseSpawner`
+- `AnyaFountain`
+- `AnyaRespawnService`
+- `AnyaFountainInteractable`
 
-SaveData v3 migration (SaveV2ToV3Migration):
-- Converte EquipmentDurabilityData de Dictionary para List<DurabilityEntryData>
-- Inicializa GameTimeSaveData e PlayerStatusEffectsSaveData para saves v2 legados
-- Sem perda de dados
+Alem disso, `SaveManager.RestoreDeathSaveData` ainda contem TODO e nao restaura active corpse para o runtime.
 
-StatusEffectManager básico:
-- Tracking de efeitos ativos por ID
-- Evento GameTimeTickEvent para decay/expiry
-- Save/load com List<StatusEffectEntryData>
+Conclusao: SPEC 15 nao deve ser tratada como completa. Ela e suficiente como fundacao parcial, mas nao como fluxo funcional fechado de morte -> respawn Anya -> corpse persistente -> recover.
 
-PlayerNeedsHUD mínimo:
-- Barra de fome (Hunger%)
-- Barra de stamina (Stamina%)
-- Texto de efeitos ativos (até 3)
-- Subscriber de HungerChangedEvent e StaminaChangedEvent
+## 6. SPEC 16 — Skill trees, active slots e respec Anya
 
-Pendentes (spec 17):
-- Canvas consolidado final com styling/layout
-- Painel de dificuldade
-- HUD com fonts/spacing definidos
+Status real: **implementado em codigo; Unity compile/Play Mode humano pendentes**.
 
-### Fechamento Game Time / Hunger-Stamina Balance (SPEC 09)
+Confirmado em codigo/documentacao:
 
-Status: Implementado completo em 2026-05-24.
+- `SkillTreeManager` como `MonoBehaviour`.
+- Fallback `DefaultSkillCatalog` com 5 arvores / 55 nodes.
+- `SkillPurchaseService` para custo, prerequisites, level minimo e capstone rules.
+- `SkillRespecService` com primeiro respec gratuito e custo padrao posterior.
+- `SkillPassiveApplicator` e eventos de derived stats.
+- `SkillTreeSaveData` com `PurchasedNodeIds`, `ActiveSkillSlots` e `RespecCount`.
+- `SaveV4ToV5Migration` inicializa `SkillTreeSaveData`.
+- `SaveManager` captura e restaura `SkillTree`.
+- `SkillTreeInputHandler` abre skill tree em `U`.
 
-- GameTime, stamina, hunger e status estao ligados em `GameBootstrap`, installers, geradores e nas tres cenas MVP.
-- `PlayerNeedsBalanceSO` define tiers: regen `1.0/1.0/0.6/0.3`, regeneracao fixa `2/s` em hunger zero e movimento `0.85x` no tier critico.
-- Hunger zero aplica dano de HP por `GameTimeTickEvent`; nao drena stamina por frame.
-- Food aplica hunger, stamina e status; status publicam lifecycle events e persistem como ID/duracao.
-- Save/load inclui stamina, game time e status em DTOs simples.
-- HUD minimo funcional exibe hunger, stamina e status com duracao; Canvas final permanece na SPEC 17.
-- Evidencia: `docs/validation/SPEC_09_HUNGER_STAMINA_STATUS_TIME_VALIDATION_20260524.md`.
+Pendencias:
 
-### Progression
+- Rodar Unity compile real.
+- Play Mode humano: subir level par, comprar node, equipar slot, respec, salvar/carregar.
+- Validar a integracao real com Fonte de Anya em cena, porque SPEC 15/Anya ainda esta parcial no codigo validado.
 
-SkillPoint a cada 2 niveis: implementado no codigo.
-Regra atual: +1 SkillPoint em niveis pares, comecando no level 2.
-AttributePoint: +1 por level up.
-Pendentes: gasto/distribuicao final de atributos, skill trees completas, active slots, capstones, respec Fonte de Anya e save/load completo.
+## 7. Pendencias que nao devem bloquear a proxima etapa de UI/closeout
 
-### Cave entry, death, Anya e corpse recovery (SPEC 15) - Status 2026-05-26
+As pendencias abaixo nao impedem iniciar a proxima etapa, desde que fiquem declaradas como riscos/residuais:
 
-Status: Implementado em codigo; compile validation PASS esperado; Play Mode humano pendente.
+- SPEC 10-14 continuam parciais/residuais.
+- SPEC 15 nao fecha orquestracao/Anya/corpse restore.
+- SPEC 16 precisa Unity/Play Mode humano.
+- SPEC 17 ampla ainda precisa Canvas final, pause/options, fluxos cave/corpse/toasts e validacao final.
 
-SPEC 15 implementacao e finalizacao concluidas (2026-05-25 a 2026-05-26):
-- Death flow: PlayerDeathController, CaveDeathResolver, DeathSystemBootstrap
-- Corpse recovery: CorpseRecoveryManager, CorpseInteractable, CorpseSpawner
-- Anya respawn: AnyaFountain, AnyaRespawnService, AnyaFountainInteractable
-- ModalBase abstract class criado; ModalManager.OpenModal<T>() implementado
-- Input bloqueado (R, T, Y, G) quando modal ativo
-- IInteractable contract em todos os interactables
+## 8. Proximo passo recomendado
 
-Correcoes finais de compilacao (2026-05-26):
-- PlayerProgressionEvents.cs esvaziado (remocao de classes duplicadas de PlayerXpChangedEvent e PlayerLevelChangedEvent)
-- Causa raiz confirmada: sealed class vs readonly struct no mesmo namespace CindarsHope.Core.Events
-- CS0246 de DeathSaveData era cascata dos duplicados; DeathSaveData esta correto em CorpseSaveData.cs
-- Canonico: PlayerXpChangedEvent.cs e PlayerLevelChangedEvent.cs como readonly structs
+Seguir para SPEC 17/UI/UX/closeout, com guardrails:
 
-Pendentes:
-- Fechar Unity Editor e rodar RunUnityCompileValidation.ps1 para confirmar PASS
-- Play Mode humano (morte na cave, respawn Anya, recuperar corpse)
-- UI polish final (SPEC 17)
-
-Evidencia: `docs/validation/SPEC15_FINALIZATION_SPEC16_PHASE0_VALIDATION_20260525.md`
-
-### Skill trees, active slots, respec e Anya (SPEC 16) - Status 2026-05-26
-
-Status: Implementado em codigo; compile validation PASS esperado; Play Mode humano pendente.
-
-SPEC 16 implementada em 2026-05-26:
-- SkillNodeDataSO expandido: NodeType, SkillCategory, IsCapstone, PrerequisiteNodeIds, PassiveModifiers
-- SkillTreeDataSO expandido: CapstoneNodeId, Nodes list
-- SkillEnums: SkillNodeType, SkillCategory, SkillModifierType, SkillTreeId
-- DefaultSkillCatalog: 55 nodes / 5 arvores (Melee, Ranged, Magic, Survival, Crafting) criados via codigo
-- SkillTreeRegistrySO e SkillNodeDatabaseSO: extencoes de DataRegistrySO para inspector-wired assets
-- SkillTreeManager reescrito como MonoBehaviour com DefaultSkillCatalog fallback
-- SkillPurchaseService: validacao de custo, prerequisites, level minimo, capstone rules
-- SkillRespecService: full respec, primeiro gratuito, seguintes custam 250g configuravel
-- SkillPassiveApplicator: aplica modificadores passivos aos derived stats
-- DerivedStatsCalculator expandido: aceita IList<SkillPassiveModifier>
-- SkillTreePanel (CindarsHope.UI.Skills): modal com tecla `U`, abas Q/E, nav W/S, compra, equipar R/T/Y/G
-- SkillTreeInputHandler: handler dedicado para tecla `U` abrir SkillTreePanel
-- AnyaFountainMenu: respec button habilitado, custo exibido, integrado com SkillRespecService
-- ActiveSkillSlots: subscriber de ActiveSkillSlotAssignedEvent/ActiveSkillSlotClearedEvent
-- SkillTreeSaveData e SaveV4ToV5Migration: persistencia de PurchasedNodeIds, ActiveSkillSlots, RespecCount
-- SaveManager v5: captura e restaura SkillTree, registra SaveV4ToV5Migration
-- GameBootstrap: expoe SkillTreeManager
-- SkillTreeEvents: 14 eventos novos
-
-Pendentes:
-- Fechar Unity Editor e rodar RunUnityCompileValidation.ps1
-- Play Mode humano (subir level par, comprar nodes, equipar slot, respec na Anya)
-- UI polish final (SPEC 17)
-
-Evidencia: `docs/validation/SPEC16_SKILL_TREES_VALIDATION_20260526.md`
-
-## Specs futuras
-
-A ordem oficial esta em `docs/specs/SPEC_EXECUTION_ORDER.md` e o registry futuro em `docs/specs/SPEC_REGISTRY_TO_IMPLEMENT.md`.
-
-A primeira spec futura executavel passa a ser:
-
-```text
-docs/specs/a_implementar/spec_player_combat_weapons_spells_skill_actions_runtime.md
-```
-
-Os prompts operacionais 09-11 podem ainda exigir reconciliacao das implementacoes parciais existentes antes da spec 12. Antes de executar runtime futuro, as specs devem ser enriquecidas usando seus pre-refinamentos relacionados.
-
-FASE9H/I/J/K/L nao devem ser tratadas como completas. As proximas implementacoes devem seguir somente `docs/specs/`.
+- Nao marcar 10-15 como completas.
+- Nao depender de Anya/corpse restore como pronto.
+- Validar UI em cima do que existe em codigo.
+- Deixar claro que a validacao humana sera feita no final do pacote.
+- Antes de fechamento final, executar Unity compile, scanners e Play Mode.
