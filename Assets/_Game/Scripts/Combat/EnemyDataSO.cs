@@ -8,6 +8,7 @@ namespace CindarsHope.Combat
     {
         public string enemyId;
         public string DisplayName;
+        [TextArea(1, 2)] public string LoreTagline;
         [TextArea] public string Description;
         public Sprite Icon;
 

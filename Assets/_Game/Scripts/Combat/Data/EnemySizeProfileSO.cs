@@ -26,6 +26,10 @@ namespace CindarsHope.Combat
         [Header("Pathing")]
         public float PathingRadius = 0.5f;
 
+        [Header("Room Requirements")]
+        [Tooltip("Minimum room dimension (cells) required to spawn this size class.")]
+        public int MinimumRoomSize = 6;
+
         string IIdentifiedData.Id => SizeProfileId;
 
         private void OnValidate()
@@ -35,6 +39,8 @@ namespace CindarsHope.Combat
             FootprintCells = Mathf.Max(1f, FootprintCells);
             KnockbackMultiplier = Mathf.Max(0f, KnockbackMultiplier);
             PathingRadius = Mathf.Max(0.1f, PathingRadius);
+
+            MinimumRoomSize = Mathf.Max(4, MinimumRoomSize);
 
             if (string.IsNullOrWhiteSpace(SizeProfileId))
                 SizeProfileId = "size_" + name.ToLower();

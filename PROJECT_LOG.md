@@ -1,3 +1,35 @@
+## Sessao 2026-05-27 (28e) - SPEC 13A - Enemy taxonomy, profiles e contracts
+
+**Foco:** Implementar taxonomia canônica de inimigos: factions (16), size profiles (6), movement profiles (10), vulnerability profiles (10), contratos de EnemyDataSO.
+**Status:** FECHADO em codigo (0 erros, 0 avisos). Assets gerados pelo menu Unity pendentes. Play Mode humano aguarda SPEC 13D.
+
+### Implementacao
+
+**EnemyDataSO.cs:** Adicionado `LoreTagline` (TextArea) — retrocompatível.
+
+**EnemySizeProfileSO.cs:** Adicionado `MinimumRoomSize` (int, padrão 6, clamp ≥4 no OnValidate).
+
+**EnemyVulnerabilityProfileSO.cs:** Enum `VulnerabilityTriggerMode` recebeu 4 novos valores: `AfterProjectileVolley`, `AfterShieldDrop`, `AfterBlinkArrival`, `AfterEnragePulse`.
+
+**CreateDefaultEnemyProfiles.cs** (Editor): Menu `CindarsHope > SPEC 13 > Create Default Enemy Profiles` cria:
+- 16 EnemyFactionSO: beast, fungal, goblin, kobold, orc, duergar, drow, gnome, ninrorin, undead, cultist, elemental, construct, abyssal, corrupted, draconic
+- 6 EnemySizeProfileSO: tiny (0.65x/0.22r), small (0.85x/0.32r), medium (1x/0.45r), large (1.35x/0.65r), huge (1.8x/0.95r), boss (2.2x/1.2r)
+- 10 EnemyMovementProfileSO: ground_chase, ground_patrol, guard_stationary, kite_ranged, caster_keep_away, burrow_ambush, swarm_erratic, tank_slow_push, phase_short_blink, leaper — todos com CanFly=false
+- 10 EnemyVulnerabilityProfileSO: vuln_swarm_after_bite, chaser_charge, ranged_after_volley, caster_after_cast, burrow_emerge, guard_shield_drop, tank_recover, phase_arrival, leaper_landing, corrupted_enrage_pulse
+
+**ValidateSpec13EnemyTaxonomyProfiles.cs** (Editor): Valida roles, Phase ausente, movement/size/vuln/faction profiles presentes, CanFly=false.
+
+### Confirmado sem alteracao
+- `EnemyRole` já tem todos os 10 roles oficiais; `Phase` não existe como role.
+- `EnemyMovementType` já tem todos os 10 tipos; `Flying` não existe.
+- `EnemySizeClass` já tem todos os 6 sizes.
+
+### Pendencias para Editor
+- Executar `CindarsHope > SPEC 13 > Create Default Enemy Profiles` para gerar os .asset files
+- Executar `CindarsHope > Validation > Validate SPEC 13A - Enemy Taxonomy` para confirmar assets
+
+---
+
 ## Sessao 2026-05-27 (28d) - SPEC 17B - UI infraestrutura: input routing, pause, toasts, hints, death, checkpoint
 
 **Foco:** Implementar camada de infraestrutura UI da SPEC 17B: GameplayInputRouter, PauseMenuController, NotificationToastController, ContextHintController, DeathScreenController, CaveCheckpointSideMenuController.
