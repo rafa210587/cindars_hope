@@ -37,6 +37,8 @@ namespace CindarsHope.Combat
         public string ActionSetId;
         public string VulnerabilityProfileId;
         public string CombatResistanceProfileId;
+        [Tooltip("Primary damage type hint for this enemy (e.g. 'physical', 'fire'). Full per-action typing lives in EnemyActionSO.")]
+        public string PrimaryDamageTypeId;
 
         [Header("Movement (Legacy fallback)")]
         public float moveSpeed = 1.2f;

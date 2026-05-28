@@ -1,3 +1,26 @@
+## Sessao 2026-05-27 (28f) - SPEC 13B - Roster 40 EnemyDataSO
+
+**Foco:** Criar os 44 EnemyDataSO do roster oficial de Vaalara/Dornecia (7 band1, 9 band2, 9 band3, 8 band4, 6 band5, 5 bosses, distribuídos por faction/role/profile).
+**Status:** FECHADO em código (0 erros, 0 avisos). Assets gerados pelo menu Unity pendentes. Play Mode humano aguarda SPEC 13D.
+
+### Implementacao
+
+**EnemyDataSO.cs:** Adicionado `PrimaryDamageTypeId` (string, tooltip) — campo hint para tipo de dano primário; retrocompatível.
+
+**CreateRoster40EnemyData.cs** (Editor): Menu `CindarsHope > SPEC 13 > Create Roster 40 Enemy Data`. Cria em `Assets/_Game/Data/Enemies/Roster/`:
+- 44 EnemyDataSO cobrindo todas as 16 fações técnicas
+- 3 MiniBosses: goblin_warchief (band2), orc_warlord (band3), abyssal_gatekeeper (band4)
+- 5 Bosses: cave_mite_queen, fungal_patriarch, duergar_artificer_lord, void_herald, draconic_elder
+- Idempotente: skipa assets já existentes
+
+**ValidateSpec13EnemyRoster.cs** (Editor): Menu `CindarsHope > Validation > Validate SPEC 13B - Enemy Roster`. Valida: 44 IDs presentes, dados completos (faction/size/movement/vuln), ≥5 bosses, ≥3 minibosses, cobertura de ≥10 factions.
+
+### Pendencias para Editor
+- Executar `CindarsHope > SPEC 13 > Create Roster 40 Enemy Data` para gerar os .asset files
+- Executar `CindarsHope > Validation > Validate SPEC 13B - Enemy Roster` para confirmar assets
+
+---
+
 ## Sessao 2026-05-27 (28e) - SPEC 13A - Enemy taxonomy, profiles e contracts
 
 **Foco:** Implementar taxonomia canônica de inimigos: factions (16), size profiles (6), movement profiles (10), vulnerability profiles (10), contratos de EnemyDataSO.
