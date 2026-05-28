@@ -1,3 +1,58 @@
+## Sessao 2026-05-28 (28j) - SPEC 13F - Spawn resolver/ecology/faction locks
+
+**Foco:** Implementar resolvedor data-driven de spawn de inimigos, packs/ecologia e faction locks sem materializacao final da cave e sem snapshot da SPEC 14.
+**Status:** FECHADO em codigo (0 erros runtime/editor). Assets `.asset`, validator Unity e Play Mode pendentes.
+
+### Implementacao
+
+- `EnemySpawnResolver`: resolver deterministico por seed, com filtros por level, bioma, ambiente, faction lock, boss gate progress, room size e size class.
+- `EnemySpawnProfileSO`: contrato data-driven por inimigo.
+- `EnemySpawnPackSO`: packs de coexistencia com entries min/max, required/opcional e limites por sala.
+- `EnemyFactionLockSO`: locks por gate/story/cave level com faccoes/packs desbloqueados.
+- `EnemySpawnRequest`, `EnemySpawnResult`, `EnemySpawnCandidate`, `EnemyRoomSizeClass`: DTOs/contratos runtime por IDs e tipos simples.
+- `EnemyEvents.cs`: adicionados `EnemySpawnResolvedEvent`, `EnemySpawnResolverWarningEvent` e `EnemySpawnPackSelectedEvent`.
+- `CreateEnemySpawnEcologyData`: gerador Editor para 40 spawn profiles, 17 packs e 7 faction locks.
+- `ValidateSpec13SpawnResolverEcology`: validator Editor com cenarios de determinismo, bands, locks, room size e warning sem candidates.
+
+### Packs preparados
+
+- pack_stone_fauna_basic
+- pack_grashnaar_kobold_scouts
+- pack_blackroot_growth
+- pack_fungal_colony
+- pack_urudakh_trappers
+- pack_nyx_ambush
+- pack_frozen_beasts
+- pack_duergar_patrol
+- pack_ice_guardians
+- pack_ember_swarm
+- pack_kaand_warband
+- pack_lava_guard
+- pack_furnace_guard
+- pack_rune_shards
+- pack_gnome_ruin_tinkerers
+- pack_oathless_dead
+- pack_puzzle_guardians
+
+### Validacao
+
+- `dotnet build .\Assembly-CSharp.csproj --no-restore`: 0 erros, 0 avisos.
+- `dotnet build .\Assembly-CSharp-Editor.csproj --no-restore`: 0 erros, 3 avisos pre-existentes em `CreateEnemyActionsAndSets.cs`.
+- `git diff --check`: sem problemas.
+- `tools/docs/validate_docs.ps1`: PASSED.
+- Busca proibida runtime via `Select-String`: sem ocorrencias.
+- `tools/unity/RunUnityCompileValidation.ps1`: script retornou exit code 1, mas o log registrou batchmode quit/shutdown com sucesso e nao trouxe `error CS`; `ScanUnityLogs.ps1` falhou por mensagens pre-existentes de assemblies `*-firstpass.dll`/test assemblies "not valid".
+
+### Pendencias
+
+- Executar no Unity `CindarsHope > SPEC 13 > Create Spawn Resolver Ecology Data`.
+- Executar `CindarsHope > Validation > Validate SPEC 13F - Spawn Resolver Ecology`.
+- Reexecutar/limpar Unity validation se for necessario gate estrito sem warnings de assemblies `not valid`.
+- Integrar materializacao/snapshot/respawn no recorte SPEC 14.
+- Roster 13B vs 13C segue pendente para reconciliacao final da SPEC 13 completa.
+
+---
+
 ## Sessao 2026-05-27 (28i) - SPEC 13E - Bestiary runtime/save
 
 **Foco:** Implementar Bestiary persistente por IDs, integrado ao EventBus e ao save existente, sem criar sistemas paralelos de enemy runtime, dano, loot, cave snapshot ou save.

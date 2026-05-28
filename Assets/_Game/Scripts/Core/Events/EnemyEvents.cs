@@ -155,4 +155,52 @@ namespace CindarsHope.Core.Events
         public string EnemyId;
         public EnemyVulnerabilityEndedEvent(string enemyId) { EnemyId = enemyId; }
     }
+
+    public class EnemySpawnResolvedEvent
+    {
+        public int CaveLevel;
+        public string[] BiomeTags;
+        public string PackId;
+        public string[] EnemyIds;
+        public string[] Warnings;
+
+        public EnemySpawnResolvedEvent(int caveLevel, string[] biomeTags, string packId, string[] enemyIds, string[] warnings)
+        {
+            CaveLevel = caveLevel;
+            BiomeTags = biomeTags ?? System.Array.Empty<string>();
+            PackId = packId ?? string.Empty;
+            EnemyIds = enemyIds ?? System.Array.Empty<string>();
+            Warnings = warnings ?? System.Array.Empty<string>();
+        }
+    }
+
+    public class EnemySpawnResolverWarningEvent
+    {
+        public int CaveLevel;
+        public string[] BiomeTags;
+        public string[] Warnings;
+
+        public EnemySpawnResolverWarningEvent(int caveLevel, string[] biomeTags, string[] warnings)
+        {
+            CaveLevel = caveLevel;
+            BiomeTags = biomeTags ?? System.Array.Empty<string>();
+            Warnings = warnings ?? System.Array.Empty<string>();
+        }
+    }
+
+    public class EnemySpawnPackSelectedEvent
+    {
+        public int CaveLevel;
+        public string[] BiomeTags;
+        public string PackId;
+        public string[] EnemyIds;
+
+        public EnemySpawnPackSelectedEvent(int caveLevel, string[] biomeTags, string packId, string[] enemyIds)
+        {
+            CaveLevel = caveLevel;
+            BiomeTags = biomeTags ?? System.Array.Empty<string>();
+            PackId = packId ?? string.Empty;
+            EnemyIds = enemyIds ?? System.Array.Empty<string>();
+        }
+    }
 }
