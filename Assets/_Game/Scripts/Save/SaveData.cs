@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using CindarsHope.Craft;
+using CindarsHope.Enemy;
 using CindarsHope.Equipment;
 using CindarsHope.Farm;
 using CindarsHope.Player;
@@ -38,6 +39,7 @@ namespace CindarsHope.Save
         public PlayerStatusEffectsSaveData PlayerStatusEffects;
         public ActiveSkillSlotsSaveData ActiveSkillSlots;
         public SkillTreeSaveData SkillTree;
+        public BestiarySaveData Bestiary;
     }
 
     [Serializable]

@@ -1,3 +1,40 @@
+## Sessao 2026-05-27 (28i) - SPEC 13E - Bestiary runtime/save
+
+**Foco:** Implementar Bestiary persistente por IDs, integrado ao EventBus e ao save existente, sem criar sistemas paralelos de enemy runtime, dano, loot, cave snapshot ou save.
+**Status:** FECHADO em codigo (0 erros runtime/editor). Assets `.asset` de Bestiary e validacao Play Mode pendentes no Unity.
+
+### Implementacao
+
+- `BestiaryManager`: refeito como runtime manager event-driven, com `CaptureSaveData()` e `RestoreFromSaveData(BestiarySaveData)`.
+- `BestiarySaveData` / `BestiaryEntrySaveData`: DTOs simples para `EnemyId`, `FirstSeen`, `KillCount`, discoveries e `LastSeenCaveLevel`.
+- `GameSaveData` / `SaveManager`: nova secao `Bestiary`, captura e restore junto ao save/load existente.
+- `GameBootstrap`: garante `BestiaryManager` persistente no bootstrap e injeta no `SaveManager`.
+- `EnemyBestiaryEntrySO`: contrato textual minimo para entries de bestiary.
+- `CreateBestiaryEntries40`: gerador Editor para entries textuais do roster 13B atual (44 ids).
+- `ValidateSpec13BestiaryRuntimeSave`: validator Editor da SPEC 13E.
+- `EnemyHealth`: preserva `DamageRequest.TargetId` em `DamageAppliedEvent` e aplica multiplicador de `EnemyVulnerabilityState` no `DamageCalculator`.
+- `BestiaryEntryUpdatedEvent`: payload simples ampliado com `BestiaryEntryId`.
+
+### Validacao
+
+- `dotnet build .\Assembly-CSharp.csproj --no-restore`: 0 erros, 0 avisos (rodado escalado apos sandbox bloquear escrita em `Temp/obj`).
+- `dotnet build .\Assembly-CSharp-Editor.csproj --no-restore`: 0 erros, 3 avisos pre-existentes em `CreateEnemyActionsAndSets.cs`.
+- Busca por `GameObject.Find`, `FindObjectOfType`, `FindObjectsByType`, `StreamingAssets` nos arquivos runtime alterados: sem ocorrencias.
+- `git diff --check`: passou escalado; primeira tentativa falhou por erro Git/MSYS `CreateFileMapping` no sandbox.
+- `tools/docs/validate_docs.ps1`: PASSED.
+- `tools/unity/RunUnityCompileValidation.ps1`: NOT RUN/blocked por ambiente; Unity recusou batchmode porque outra instancia esta com o projeto aberto. `ScanUnityLogs.ps1` apontou a falha fatal de ambiente no log.
+
+### Pendencias
+
+- Fechar a instancia Unity aberta e rerodar Unity compile/batchmode oficial.
+- Gerar assets no Unity: `CindarsHope > SPEC 13 > Create Bestiary Entries 40`.
+- Rodar `CindarsHope > Validation > Validate SPEC 13E - Bestiary Runtime Save`.
+- Validar Play Mode: FirstSeen, KillCount, DropsDiscovered, Weaknesses/Resistances, vulnerability discovery e save/load.
+- Roster 13B vs 13C segue pendente para reconciliacao futura.
+- SPEC 13F SpawnResolver/ecology/faction locks nao foi implementada.
+
+---
+
 ## Sessao 2026-05-27 (28h) - SPEC 13D - EnemyBrain runtime MVP
 
 **Foco:** Implementar state machine data-driven completa no EnemyBrain com resolução de action sets, execução de ações, integração DamageCalculator, telegraph e janelas de vulnerabilidade.

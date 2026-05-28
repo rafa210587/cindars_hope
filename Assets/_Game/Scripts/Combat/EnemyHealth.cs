@@ -2,6 +2,7 @@ using CindarsHope.Cave.Runtime;
 using CindarsHope.Combat.StatusEffect;
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
+using CindarsHope.Enemy;
 using CindarsHope.Player.Progression;
 using UnityEngine;
 
@@ -77,7 +78,17 @@ namespace CindarsHope.Combat
                 return;
             }
 
-            var damageResult = DamageCalculator.CalculateDirectDamage(request.BaseDamage);
+            if (string.IsNullOrWhiteSpace(request.TargetId))
+            {
+                request.TargetId = EnemyId;
+            }
+
+            var vulnerabilityState = GetComponent<EnemyVulnerabilityState>();
+            float vulnerabilityMultiplier = vulnerabilityState != null && vulnerabilityState.IsVulnerable
+                ? vulnerabilityState.Multiplier
+                : 1f;
+
+            var damageResult = DamageCalculator.Calculate(request, _enemyData.defense, null, vulnerabilityMultiplier);
             if (damageResult.FinalDamage <= 0)
             {
                 return;

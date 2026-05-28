@@ -92,10 +92,13 @@ namespace CindarsHope.Core.Events
     {
         public string EnemyId;
         public string UpdateType;
-        public BestiaryEntryUpdatedEvent(string enemyId, string updateType)
+        public string BestiaryEntryId;
+
+        public BestiaryEntryUpdatedEvent(string enemyId, string updateType, string bestiaryEntryId = "")
         {
-            EnemyId = enemyId;
-            UpdateType = updateType;
+            EnemyId = enemyId ?? string.Empty;
+            UpdateType = updateType ?? string.Empty;
+            BestiaryEntryId = bestiaryEntryId ?? string.Empty;
         }
     }
 

@@ -12,7 +12,7 @@ namespace CindarsHope.Enemy
     public class BestiaryEntrySaveData
     {
         public string EnemyId;
-        public float FirstSeen;
+        public bool FirstSeen;
         public int KillCount;
         public List<string> DropsDiscovered = new List<string>();
         public List<string> WeaknessesDiscovered = new List<string>();
@@ -24,7 +24,12 @@ namespace CindarsHope.Enemy
 
         public BestiaryEntrySaveData(BestiaryEntry entry)
         {
-            EnemyId = entry.EnemyId;
+            EnemyId = entry?.EnemyId ?? string.Empty;
+            if (entry == null)
+            {
+                return;
+            }
+
             FirstSeen = entry.FirstSeen;
             KillCount = entry.KillCount;
             DropsDiscovered = new List<string>(entry.DropsDiscovered);
@@ -38,12 +43,12 @@ namespace CindarsHope.Enemy
         {
             return new BestiaryEntry
             {
-                EnemyId = EnemyId,
+                EnemyId = EnemyId ?? string.Empty,
                 FirstSeen = FirstSeen,
-                KillCount = KillCount,
-                DropsDiscovered = new List<string>(DropsDiscovered),
-                WeaknessesDiscovered = new List<string>(WeaknessesDiscovered),
-                ResistancesDiscovered = new List<string>(ResistancesDiscovered),
+                KillCount = System.Math.Max(0, KillCount),
+                DropsDiscovered = DropsDiscovered != null ? new List<string>(DropsDiscovered) : new List<string>(),
+                WeaknessesDiscovered = WeaknessesDiscovered != null ? new List<string>(WeaknessesDiscovered) : new List<string>(),
+                ResistancesDiscovered = ResistancesDiscovered != null ? new List<string>(ResistancesDiscovered) : new List<string>(),
                 VulnerabilityWindowDiscovered = VulnerabilityWindowDiscovered,
                 LastSeenCaveLevel = LastSeenCaveLevel
             };

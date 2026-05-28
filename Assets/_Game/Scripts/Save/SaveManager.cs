@@ -7,6 +7,7 @@ using CindarsHope.Core.Events;
 using CindarsHope.Core.Time;
 using CindarsHope.Craft;
 using CindarsHope.Cave.Runtime;
+using CindarsHope.Enemy;
 using CindarsHope.Economy;
 using CindarsHope.Equipment;
 using CindarsHope.Farm;
@@ -57,6 +58,7 @@ namespace CindarsHope.Save
         [SerializeField] private NpcManager _npcManager;
         [SerializeField] private Skills.ActiveSkillSlots _activeSkillSlots;
         [SerializeField] private Skills.SkillTreeManager _skillTreeManager;
+        [SerializeField] private BestiaryManager _bestiaryManager;
 
         private readonly HotbarState _hotbarState = new HotbarState();
         private readonly SaveMigrationRegistry _migrationRegistry = new SaveMigrationRegistry(new ISaveMigration[]
@@ -109,6 +111,7 @@ namespace CindarsHope.Save
                 var npcSaveData = CaptureNpcSaveData(existingSaveData);
                 var activeSkillSlotsSaveData = CaptureActiveSkillSlotsSaveData();
                 var skillTreeSaveData = CaptureSkillTreeSaveData();
+                var bestiarySaveData = CaptureBestiarySaveData();
 
                 var playerData = CapturePlayerSaveData();
                 if (playerData != null && _manaManager != null)
@@ -140,7 +143,8 @@ namespace CindarsHope.Save
                     EquipmentDurability = equipmentDurabilitySaveData,
                     Npcs = npcSaveData,
                     ActiveSkillSlots = activeSkillSlotsSaveData,
-                    SkillTree = skillTreeSaveData
+                    SkillTree = skillTreeSaveData,
+                    Bestiary = bestiarySaveData
                 };
 
                 var savePath = SaveFilePath;
@@ -279,7 +283,8 @@ namespace CindarsHope.Save
             StaminaManager staminaManager = null,
             Player.StatusEffectManager statusEffectManager = null,
             Skills.SkillTreeManager skillTreeManager = null,
-            ShopManager shopManager = null)
+            ShopManager shopManager = null,
+            BestiaryManager bestiaryManager = null)
         {
             if (equipmentManager != null)
             {
@@ -314,6 +319,11 @@ namespace CindarsHope.Save
             if (shopManager != null)
             {
                 _shopManager = shopManager;
+            }
+
+            if (bestiaryManager != null)
+            {
+                _bestiaryManager = bestiaryManager;
             }
         }
 
@@ -664,6 +674,7 @@ namespace CindarsHope.Save
             saveData.World ??= new WorldSaveData();
             saveData.Cave ??= new CaveSaveData();
             saveData.Npcs ??= new NpcManagerSaveData();
+            saveData.Bestiary ??= new BestiarySaveData();
 
             saveData.Inventory.Items ??= new List<InventoryItemSaveData>();
             saveData.Inventory.Slots ??= new List<InventorySlotSaveData>();
@@ -677,6 +688,7 @@ namespace CindarsHope.Save
             saveData.World.Pickups ??= new List<ItemPickupSaveData>();
             saveData.World.Trees ??= new List<TreeSaveData>();
             saveData.Npcs.Npcs ??= new List<NpcSaveData>();
+            saveData.Bestiary.Entries ??= new List<BestiaryEntrySaveData>();
 
             saveData.Death ??= new DeathSaveData();
             saveData.Death.DeathStats ??= new DeathStatsSaveData();
@@ -928,6 +940,11 @@ namespace CindarsHope.Save
                 _skillTreeManager.RestoreFromSaveData(saveData.SkillTree, level);
             }
 
+            if (_bestiaryManager != null && saveData.Bestiary != null)
+            {
+                _bestiaryManager.RestoreFromSaveData(saveData.Bestiary);
+            }
+
             RestoreDeathSaveData(saveData.Death);
         }
 
@@ -1106,6 +1123,11 @@ namespace CindarsHope.Save
             if (_skillTreeManager != null)
                 return _skillTreeManager.CaptureSaveData();
             return new Skills.SkillTreeSaveData();
+        }
+
+        private BestiarySaveData CaptureBestiarySaveData()
+        {
+            return _bestiaryManager != null ? _bestiaryManager.CaptureSaveData() : new BestiarySaveData();
         }
 
         private DeathSaveData CaptureDeathSaveData(GameSaveData existingSaveData)
