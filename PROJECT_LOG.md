@@ -1,3 +1,42 @@
+## Sessao 2026-05-27 (28g) - SPEC 13C - Enemy actions/action sets
+
+**Foco:** Sistema data-driven de EnemyActionSO e EnemyActionSetSO para o roster canônico de 40 inimigos.
+**Status:** FECHADO em código (0 erros, 0 avisos de erro). Assets gerados pelo menu Unity pendentes. Conflito de roster 13B documentado.
+
+### Implementacao
+
+**EnemyActionSO.cs:** Adicionados campos opcionais retrocompatíveis:
+- `StatusApplyChance` (float, 0-1) — chance de aplicar status por hit
+- `VulnerabilityWindowTrigger` (VulnerabilityTriggerMode) — qual trigger mode esta action dispara
+- `MinRange`, `MaxTargets`, `RequiresLineOfSight`, `IsInterruptible` — campos de targeting
+
+**EnemyActionSetSO.cs:** Adicionados campos opcionais retrocompatíveis:
+- `FallbackActionId` — action usada quando ações preferidas estão em cooldown
+- `RoleTags[]` — hints de role para IA (SPEC 13D)
+- `Notes` — anotações de editor
+
+**CreateEnemyActionsAndSets.cs** (Editor): Menu `CindarsHope > SPEC 13 > Create Enemy Actions and Sets`. Cria em `Assets/_Game/Data/Enemies/`:
+- 8 EnemyTelegraphProfileSO (fast_melee, heavy_melee, ranged_projectile, caster_spell, area_pulse, burrow_emerge, leap, phase)
+- 71 EnemyActionSO distribuídos por 40 inimigos (band 1-5, todas as 7 action types MVP)
+- 40 EnemyActionSetSO com FallbackActionId e RoleTags; idempotente
+
+**ValidateSpec13EnemyActions.cs** (Editor): Menu `CindarsHope > Validation > Validate SPEC 13C - Enemy Actions`. Valida: telegraph profiles, action sets obrigatórios, ações por set, DamageType válido, telegraph em actions ofensivas, StatusIds separados de DamageType.
+
+### Hooks futuros documentados
+- action_ember_tick_death_pop: cooldown=999 (inativo até SPEC 13D)
+- action_mirror_adept_short_blink_strike: resolve como melee até SPEC 13D
+- action_oathless_shade_shadow_step: resolve como cast até SPEC 13D
+
+### Conflito de roster (SPEC 13B vs 13C)
+SPEC 13B criou roster alternativo (enemy_verdant_mite etc.) incompatível com roster canônico (enemy_cave_mite etc.). Reconciliação pendente antes de SPEC 13D.
+
+### Pendencias para Editor
+- Executar `CindarsHope > SPEC 13 > Create Enemy Actions and Sets`
+- Executar `CindarsHope > Validation > Validate SPEC 13C - Enemy Actions`
+- Reconciliar roster 13B com 13C (criar EnemyDataSO canônicos + wiring de ActionSetId)
+
+---
+
 ## Sessao 2026-05-27 (28f) - SPEC 13B - Roster 40 EnemyDataSO
 
 **Foco:** Criar os 44 EnemyDataSO do roster oficial de Vaalara/Dornecia (7 band1, 9 band2, 9 band3, 8 band4, 6 band5, 5 bosses, distribuídos por faction/role/profile).

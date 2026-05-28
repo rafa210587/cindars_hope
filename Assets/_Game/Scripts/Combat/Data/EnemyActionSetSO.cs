@@ -9,6 +9,9 @@ namespace CindarsHope.Combat
         public string ActionSetId;
         public string DisplayName;
         [SerializeField] public string[] ActionIds = new string[0];
+        public string FallbackActionId;
+        public string[] RoleTags = new string[0];
+        [Multiline(2)] public string Notes;
 
         string IIdentifiedData.Id => ActionSetId;
 
