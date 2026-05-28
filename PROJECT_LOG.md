@@ -1,3 +1,51 @@
+## Sessao 2026-05-27 (28h) - SPEC 13D - EnemyBrain runtime MVP
+
+**Foco:** Implementar state machine data-driven completa no EnemyBrain com resolução de action sets, execução de ações, integração DamageCalculator, telegraph e janelas de vulnerabilidade.
+**Status:** FECHADO em código (0 erros, 0 avisos). Wiring no Unity Editor (prefabs + databases) pendente. Reconciliação de roster 13B pendente.
+
+### Implementacao
+
+**EnemyBrain.cs** (REESCRITO — substitui skeleton): State machine data-driven completa:
+- Estados: Idle, Patrol, Alert, Chase, Kite, GuardHold, AttackWindup, AttackRecover, Stunned, Dead (+ Burrow/SwarmGroup/Retreat/CastPrepare no enum)
+- Movement profiles: GroundChase, TankSlowPush, SwarmErratic, KiteRanged, CasterKeepAway, GuardStationary
+- Resolução de EnemyActionSetSO por ActionSetId via EnemyActionSetDatabaseSO
+- Seleção de ação por range/cooldown (SelectBestAction)
+- Ciclo Windup → Resolve → Recover via timers em Update
+- Telegraph: StartTelegraph(Color, frequency) via EnemyTelegraphController + lookup em EnemyTelegraphProfileDatabaseSO
+- Damage: DamageCalculator.Calculate() → PlayerHitEvent
+- Fallback gracioso quando databases não estão wired (usa EnemyDataSO legacy fields)
+
+**EnemyActionRuntime.cs** (CRIADO): Rastreamento de cooldown por ação. `IsReady(Time.time)` + `MarkUsed(Time.time)`.
+
+**EnemyVulnerabilityState.cs** (CRIADO): MonoBehaviour que gerencia janela de vulnerabilidade:
+- `OpenWindow(duration, multiplier, cooldown)` — guarda via cooldown para evitar abertura dupla
+- Publica `EnemyVulnerabilityStartedEvent` e `EnemyVulnerabilityEndedEvent`
+- Trigger mapping: DuringChargeWindup/AfterCast/AfterProjectileVolley no resolve, AfterAttackRecover no pós-recover
+- AlwaysForTest → abre ao fim de AfterAttackRecover
+
+**3 Database SOs** (CRIADOS — DataRegistrySO<T>):
+- EnemyActionDatabaseSO — lookup EnemyActionSO por ActionId
+- EnemyActionSetDatabaseSO — lookup EnemyActionSetSO por ActionSetId
+- EnemyTelegraphProfileDatabaseSO — lookup EnemyTelegraphProfileSO por TelegraphProfileId
+
+**EnemyEvents.cs:** Adicionados `EnemyVulnerabilityStartedEvent` (EnemyId, Multiplier, Duration) e `EnemyVulnerabilityEndedEvent` (EnemyId).
+
+**ValidateSpec13EnemyBrainRuntime.cs** (CRIADO Editor): Menu `CindarsHope > Validation > Validate SPEC 13D - EnemyBrain Runtime`. Valida: tipos presentes, campos de EnemyBrain, enum de estados, eventos, action sets dos 8 testáveis.
+
+### Validacao
+- `dotnet build Assembly-CSharp.csproj`: 0 erros, 0 avisos
+- `dotnet build Assembly-CSharp-Editor.csproj`: 0 erros, 3 avisos pré-existentes (SPEC 13C CS0649/CS0219)
+- `tools/docs/validate_docs.ps1`: PASSED
+
+### Pendencias para Editor
+- Criar/popular assets de database (EnemyActionDatabaseSO, EnemyActionSetDatabaseSO, EnemyTelegraphProfileDatabaseSO)
+- Executar `CindarsHope > SPEC 13 > Create Enemy Actions and Sets` (gera .asset files de ações)
+- Configurar prefabs de inimigo com EnemyBrain + databases + EnemyVulnerabilityState
+- Reconciliar roster 13B com 13C (criar EnemyDataSO canônicos + ActionSetId wiring)
+- Executar `CindarsHope > Validation > Validate SPEC 13D - EnemyBrain Runtime`
+
+---
+
 ## Sessao 2026-05-27 (28g) - SPEC 13C - Enemy actions/action sets
 
 **Foco:** Sistema data-driven de EnemyActionSO e EnemyActionSetSO para o roster canônico de 40 inimigos.

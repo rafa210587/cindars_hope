@@ -133,4 +133,23 @@ namespace CindarsHope.Core.Events
             GameDayAtRespawn = gameDay;
         }
     }
+
+    public class EnemyVulnerabilityStartedEvent
+    {
+        public string EnemyId;
+        public float Multiplier;
+        public float Duration;
+        public EnemyVulnerabilityStartedEvent(string enemyId, float multiplier, float duration)
+        {
+            EnemyId = enemyId;
+            Multiplier = multiplier;
+            Duration = duration;
+        }
+    }
+
+    public class EnemyVulnerabilityEndedEvent
+    {
+        public string EnemyId;
+        public EnemyVulnerabilityEndedEvent(string enemyId) { EnemyId = enemyId; }
+    }
 }
