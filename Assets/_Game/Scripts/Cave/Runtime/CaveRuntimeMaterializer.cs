@@ -686,14 +686,14 @@ namespace CindarsHope.Cave.Runtime
 
             if (_enemyDatabase == null)
             {
-                Debug.LogWarning("CaveRuntimeMaterializer: EnemyDatabaseSO not assigned. Enemy materialization skipped.", this);
+                LogEnemySpawnWiringWarning(generatedLevel, "EnemyDatabaseSO not assigned");
                 return;
             }
 
             if ((_enemySpawnProfiles == null || _enemySpawnProfiles.Length == 0)
                 && (_snapshotEnemySpawnPlan == null || !_snapshotEnemySpawnPlan.IsValid))
             {
-                Debug.LogWarning("CaveRuntimeMaterializer: Enemy spawn profiles not assigned. Run SPEC 13G asset generation and wire CaveRuntimeMaterializer.", this);
+                LogEnemySpawnWiringWarning(generatedLevel, "Enemy spawn profiles not assigned");
                 return;
             }
 
@@ -753,6 +753,49 @@ namespace CindarsHope.Cave.Runtime
             Debug.Log(
                 $"CaveRuntimeMaterializer: Materialized {_lastMaterializationResult.CreatedEnemies} enemies for level {generatedLevel.CaveLevel}. Seed={_lastEnemySpawnPlan.LevelSeed}. LayoutHash={_lastEnemySpawnPlan.LayoutHash}.",
                 this);
+        }
+
+        private void LogEnemySpawnWiringWarning(CaveGeneratedLevel generatedLevel, string cause)
+        {
+            var profileCount = CountAssigned(_enemySpawnProfiles);
+            var packCount = CountAssigned(_enemySpawnPacks);
+            var lockCount = CountAssigned(_enemyFactionLocks);
+            var hasSnapshotPlan = _snapshotEnemySpawnPlan != null && _snapshotEnemySpawnPlan.IsValid;
+            var snapshotEntries = _snapshotEnemySpawnPlan?.Entries?.Count ?? 0;
+            var level = generatedLevel != null ? generatedLevel.CaveLevel.ToString() : "unknown";
+            var walkableTiles = generatedLevel != null ? generatedLevel.WalkableTiles.Count.ToString() : "unknown";
+
+            Debug.LogWarning(
+                "CaveRuntimeMaterializer: Enemy materialization skipped. " +
+                $"Cause='{cause}'. Level={level}, WalkableTiles={walkableTiles}, " +
+                $"EnemyDatabaseAssigned={(_enemyDatabase != null)}, EnemyPrefabAssigned={(_enemyPrefab != null)}, " +
+                $"SpawnProfiles={profileCount}, SpawnPacks={packCount}, FactionLocks={lockCount}, " +
+                $"SnapshotPlanValid={hasSnapshotPlan}, SnapshotEntries={snapshotEntries}. " +
+                "Expected assets: Assets/_Game/Data/Combat/EnemyDatabase.asset, " +
+                "Assets/_Game/Data/EnemySpawn/Profiles, Assets/_Game/Data/EnemySpawn/Packs, " +
+                "Assets/_Game/Data/EnemySpawn/FactionLocks. " +
+                "Run CindarsHope/SPEC 13/Generate And Wire SPEC 13G Assets.",
+                this);
+        }
+
+        private static int CountAssigned<T>(IEnumerable<T> values)
+            where T : Object
+        {
+            var count = 0;
+            if (values == null)
+            {
+                return count;
+            }
+
+            foreach (var value in values)
+            {
+                if (value != null)
+                {
+                    count++;
+                }
+            }
+
+            return count;
         }
 
         private void LogEnemySpawnPlanWarnings(CaveEnemySpawnPlan plan)

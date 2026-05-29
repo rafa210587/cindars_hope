@@ -1,3 +1,40 @@
+## Sessao 2026-05-29 (29c) - SPEC 14A Fix - Enemy Spawn Wiring
+
+**Foco:** Corrigir o bug pós-SPEC 14A/14B em que `CaveRuntimeMaterializer` pulava inimigos por `_enemySpawnProfiles` vazio e `GameBootstrap` criava `BestiaryManager` por fallback.
+**Status:** Tooling/wiring implementado em codigo; geração de assets e salvamento da CaveScene bloqueados por Unity aberto.
+
+### Diagnostico
+
+- `Assets/_Game/Scenes/CaveScene.unity` tem `CaveRuntimeMaterializer._enemyDatabase` atribuído.
+- `CaveRuntimeMaterializer._enemySpawnProfiles`, `_enemySpawnPacks` e `_enemyFactionLocks` estão vazios na cena.
+- `GameBootstrap._bestiaryManager` está vazio na cena.
+- `Assets/_Game/Data/EnemySpawn`, `Assets/_Game/Data/Bestiary` e `Assets/_Game/Data/Enemies/Roster` não existiam no workspace durante a validação.
+
+### Implementacao
+
+- `CaveRuntimeMaterializer` agora loga diagnóstico completo de wiring: database/prefab, contagem de profiles/packs/locks, snapshot plan e paths esperados.
+- `CreateMvpCaveScene` adiciona e serializa `BestiaryManager` no `_Bootstrap`.
+- Criado `GenerateAndWireSpec13GAssets` com menu `CindarsHope/SPEC 13/Generate And Wire SPEC 13G Assets` para gerar os assets SPEC 13G e rewirear `CaveScene`.
+- `ValidateSpec14AEnemySpawnMaterialization` agora falha se assets/wiring de spawn ou `GameBootstrap._bestiaryManager` estiverem ausentes e valida plano com seed fixa.
+
+### Validacao
+
+- `tools/docs/validate_docs.ps1`: OK.
+- `git diff --check`: OK.
+- Busca de uso proibido: novos `FindObjectsByType` apenas em Editor tooling; uso runtime existente em `CaveLevelRuntimeController.RefreshDailyResourceNodes` não foi introduzido neste fix.
+- Tentativa de Unity batchmode:
+  - `Unity.exe -batchmode -quit -nographics -projectPath . -executeMethod CindarsHope.Editor.EnemyTaxonomy.GenerateAndWireSpec13GAssets.GenerateAndWire`
+  - Bloqueado: outra instancia do Unity está com o projeto aberto.
+- `dotnet build` final não executado após o último ajuste porque a execução escalada foi bloqueada pelo limite da sessão; erro intermediário de namespace no validator 14A foi corrigido para `CindarsHope.Combat.EnemyDatabaseSO`.
+
+### Pendencias
+
+- Fechar Unity aberto e executar `CindarsHope/SPEC 13/Generate And Wire SPEC 13G Assets`.
+- Executar `CindarsHope/Validation/Validate SPEC 14A - Enemy Spawn Materialization`.
+- Validar Play Mode em `CaveScene`: `CreatedEnemies > 0`, Bestiary FirstSeen e ausência dos warnings originais.
+
+---
+
 ## Sessao 2026-05-29 (29b) - SPEC 14B - Cave Snapshot Replay with EnemySpawnPlan
 
 **Foco:** Consolidar snapshot/replay de nivel visitado para preservar layout, resources, fishing hook e EnemySpawnPlan dentro da mesma run.

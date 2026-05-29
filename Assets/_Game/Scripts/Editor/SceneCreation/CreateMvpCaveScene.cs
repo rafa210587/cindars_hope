@@ -137,6 +137,7 @@ namespace CindarsHope.Editor.SceneCreation
             bootstrapObject.AddComponent<SkillTreeManager>();
             bootstrapObject.AddComponent<HotbarDebugInput>();
             bootstrapObject.AddComponent<ModalManager>();
+            bootstrapObject.AddComponent<BestiaryManager>();
 
             
 
@@ -162,6 +163,7 @@ namespace CindarsHope.Editor.SceneCreation
             SetReference(serializedBootstrap, "_equipmentManager", bootstrapObject.GetComponent<EquipmentManager>());
             SetReference(serializedBootstrap, "_progressionManager", bootstrapObject.GetComponent<PlayerProgressionManager>());
             SetReference(serializedBootstrap, "_skillTreeManager", bootstrapObject.GetComponent<SkillTreeManager>());
+            SetReference(serializedBootstrap, "_bestiaryManager", bootstrapObject.GetComponent<BestiaryManager>());
             PlayerNeedsDataInitializer.ConfigureRuntimeManagers(bootstrap, bootstrapObject.GetComponent<TimeManager>(), bootstrapObject.GetComponent<ModalManager>());
 
             ConfigureSaveManager(
@@ -185,7 +187,8 @@ namespace CindarsHope.Editor.SceneCreation
                 bootstrapObject.GetComponent<StaminaManager>(),
                 bootstrapObject.GetComponent<CindarsHope.Player.StatusEffectManager>(),
                 bootstrapObject.GetComponent<SkillTreeManager>(),
-                bootstrapObject.GetComponent<ShopManager>());
+                bootstrapObject.GetComponent<ShopManager>(),
+                bootstrapObject.GetComponent<BestiaryManager>());
 
             var playerData = AssetDatabase.LoadAssetAtPath<PlayerDataSO>(PlayerDataPath);
             if (playerData != null)
@@ -638,6 +641,13 @@ namespace CindarsHope.Editor.SceneCreation
             var spawnProfiles = LoadAssets<EnemySpawnProfileSO>("Assets/_Game/Data/EnemySpawn/Profiles");
             var spawnPacks = LoadAssets<EnemySpawnPackSO>("Assets/_Game/Data/EnemySpawn/Packs");
             var factionLocks = LoadAssets<EnemyFactionLockSO>("Assets/_Game/Data/EnemySpawn/FactionLocks");
+            if (spawnProfiles.Length == 0 || spawnPacks.Length == 0 || factionLocks.Length == 0)
+            {
+                Debug.LogWarning(
+                    "CreateMvpCaveScene: SPEC 13G spawn assets missing or incomplete. " +
+                    $"Profiles={spawnProfiles.Length}, Packs={spawnPacks.Length}, FactionLocks={factionLocks.Length}. " +
+                    "Run CindarsHope/SPEC 13/Generate And Wire SPEC 13G Assets before Play Mode.");
+            }
             var serializedMaterializer = new SerializedObject(materializer);
             SetReference(serializedMaterializer, "_caveRunManager", runManager);
             SetReference(serializedMaterializer, "_inventoryManager", inventoryManager);
