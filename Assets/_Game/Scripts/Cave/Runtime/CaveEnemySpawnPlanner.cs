@@ -9,9 +9,9 @@ namespace CindarsHope.Cave.Runtime
 {
     public sealed class CaveEnemySpawnPlanner
     {
-        private const int DefaultMaxEnemies = 20;
-        private const int MinEnemiesPerLevel = 12;
-        private const int MaxEnemiesPerLevel = 20;
+        private const int DefaultMaxEnemies = 24;
+        private const int MinEnemiesPerLevel = 14;
+        private const int MaxEnemiesPerLevel = 24;
         private const int MinDistanceFromEntrance = 5;
         private const int MinDistanceFromExit = 2;
         private const int MinDistanceBetweenEnemies = 2;

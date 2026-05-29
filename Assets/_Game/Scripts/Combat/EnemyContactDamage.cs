@@ -1,4 +1,6 @@
+using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
+using CindarsHope.Core.Events;
 using CindarsHope.Player;
 using UnityEngine;
 
@@ -66,7 +68,8 @@ namespace CindarsHope.Combat
                 if (Time.time >= _lastDamageTime + _enemyData.contactDamageCooldownSeconds)
                 {
                     _playerManager.DamageHP(_enemyData.contactDamage);
-                    Debug.Log($"EnemyContactDamage: dealt {_enemyData.contactDamage} damage to player. HP should update through PlayerManager.");
+                    Debug.Log($"CombatLog: EnemyContactDamage. SourceName={_enemyData.DisplayName}, SourceEnemyId={_enemyData.enemyId}, Target=Player, Damage={_enemyData.contactDamage}.");
+                    GameEventBus.Publish(new PlayerDamagedEvent(_enemyData.contactDamage, collision.transform.position, _enemyData.enemyId, _enemyData.DisplayName));
 
                     var playerHitFlash = collision.GetComponentInParent<HitFlashController>();
                     if (playerHitFlash == null)

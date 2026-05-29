@@ -68,6 +68,22 @@
         }
     }
 
+    public class PlayerDamagedEvent
+    {
+        public int DamageAmount { get; }
+        public UnityEngine.Vector3 WorldPosition { get; }
+        public string SourceId { get; }
+        public string SourceName { get; }
+
+        public PlayerDamagedEvent(int damageAmount, UnityEngine.Vector3 worldPosition, string sourceId = "", string sourceName = "")
+        {
+            DamageAmount = damageAmount;
+            WorldPosition = worldPosition;
+            SourceId = sourceId ?? string.Empty;
+            SourceName = sourceName ?? string.Empty;
+        }
+    }
+
     public class DamageAppliedEvent
     {
         public CindarsHope.Combat.DamageResult DamageResult { get; }

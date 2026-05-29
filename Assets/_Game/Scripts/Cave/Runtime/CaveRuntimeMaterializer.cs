@@ -40,7 +40,7 @@ namespace CindarsHope.Cave.Runtime
         [SerializeField, Range(0f, 1f)] private float _resourceSpawnChance = 0.28f;
         [SerializeField] private int _minResourceNodes = 1;
         [SerializeField] private int _maxResourceNodes = 4;
-        [SerializeField] private int _maxEnemiesPerLevel = 20;
+        [SerializeField] private int _maxEnemiesPerLevel = 24;
 
         private GameObject _generatedRuntimeRoot;
         private CaveExitPortal _backExitPortal;

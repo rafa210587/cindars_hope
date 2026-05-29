@@ -18,11 +18,13 @@ namespace CindarsHope.Combat
                 _worldCanvas = GetComponentInParent<Canvas>();
 
             GameEventBus.Subscribe<DamageAppliedEvent>(DisplayDamage);
+            GameEventBus.Subscribe<PlayerDamagedEvent>(DisplayPlayerDamage);
         }
 
         private void OnDisable()
         {
             GameEventBus.Unsubscribe<DamageAppliedEvent>(DisplayDamage);
+            GameEventBus.Unsubscribe<PlayerDamagedEvent>(DisplayPlayerDamage);
         }
 
         private void DisplayDamage(DamageAppliedEvent evt)
@@ -46,6 +48,20 @@ namespace CindarsHope.Combat
             }
 
             CreateFloatingNumber(damageText, displayPosition, damageColor);
+        }
+
+        private void DisplayPlayerDamage(PlayerDamagedEvent evt)
+        {
+            if (evt == null || evt.DamageAmount <= 0)
+                return;
+
+            if (_worldCanvas == null)
+            {
+                Debug.LogWarning("FloatingDamageNumberDisplayer: World Canvas not assigned and not found in hierarchy.", this);
+                return;
+            }
+
+            CreateFloatingNumber(evt.DamageAmount.ToString(), evt.WorldPosition, Color.red);
         }
 
         private void CreateFloatingNumber(string text, Vector3 position, Color color)

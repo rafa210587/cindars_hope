@@ -1,3 +1,27 @@
+## Sessao 2026-05-29 (29e) - SPEC 14A-FIX2 - Spawn Density, Combat Feedback e Floating Damage Numbers
+
+**Foco:** Incremento sobre SPEC 14A com densidade de spawn aumentada, logs de combate melhorados e números flutuantes de dano para o player.
+
+### Implementacao
+
+- `CaveEnemySpawnPlanner`: `MinEnemiesPerLevel` 12→14, `MaxEnemiesPerLevel` 20→24, `DefaultMaxEnemies` 20→24.
+- `CaveRuntimeMaterializer`: default `_maxEnemiesPerLevel` 20→24.
+- `StatusAndDamageEvents.cs`: `PlayerDamagedEvent` adicionado (`DamageAmount`, `WorldPosition`, `SourceId`, `SourceName`).
+- `EnemyContactDamage`: log melhorado para `CombatLog: EnemyContactDamage. SourceName=..., SourceEnemyId=..., Target=Player, Damage=...`; `GameEventBus.Publish(PlayerDamagedEvent)` adicionado após `DamageHP`.
+- `FloatingDamageNumberDisplayer`: subscribe/unsubscribe `PlayerDamagedEvent` em `OnEnable`/`OnDisable`; handler `DisplayPlayerDamage` exibe número em `Color.red`.
+- `ValidateSpec14AFix2CombatFeedback.cs` criado — menu `CindarsHope/Validation/Validate SPEC 14A-FIX2 - Spawn Density and Combat Feedback`.
+- `docs/validation/SPEC14A_FIX2_SPAWN_DENSITY_COMBAT_FEEDBACK_VALIDATION_20260529.md` criado.
+
+### Validacao
+
+- `dotnet build Assembly-CSharp.csproj`: PASSED (0 erros, 0 warnings).
+- `dotnet build Assembly-CSharp-Editor.csproj`: PASSED (0 erros, 3 warnings pre-existentes em CreateEnemyActionsAndSets.cs).
+- `tools/docs/validate_docs.ps1`: PASSED.
+- Unity batchmode: NOT RUN (Unity Editor aberto).
+- Play Mode: NOT RUN.
+
+---
+
 ## Sessao 2026-05-29 (29d) - SPEC 14A Fix - Enemy Wiring Assets e Compile Error
 
 **Foco:** Corrigir compile error `EnemyBrain.Configure` e criar os 64 assets de spawn ecology ausentes.
