@@ -34,6 +34,12 @@ namespace CindarsHope.Cave.Runtime
         [SerializeField] private EnemySpawnProfileSO[] _enemySpawnProfiles = new EnemySpawnProfileSO[0];
         [SerializeField] private EnemySpawnPackSO[] _enemySpawnPacks = new EnemySpawnPackSO[0];
         [SerializeField] private EnemyFactionLockSO[] _enemyFactionLocks = new EnemyFactionLockSO[0];
+        [SerializeField] private EnemyMovementProfileDatabaseSO _movementProfileDatabase;
+        [SerializeField] private EnemyActionSetDatabaseSO _actionSetDatabase;
+        [SerializeField] private EnemyActionDatabaseSO _actionDatabase;
+        [SerializeField] private EnemyTelegraphProfileDatabaseSO _telegraphDatabase;
+        [SerializeField] private EnemyVulnerabilityProfileDatabaseSO _vulnerabilityProfileDatabase;
+        [SerializeField] private EnemySizeProfileDatabaseSO _sizeProfileDatabase;
         [SerializeField] private ResourceNodeDatabaseSO _resourceNodeDatabase;
         [SerializeField] private Transform _playerTransform;
         [SerializeField] private CaveLevelRuntimeController _levelController;
@@ -734,7 +740,7 @@ namespace CindarsHope.Cave.Runtime
                     continue;
                 }
 
-                var enemyObject = CreateEnemyRuntimeObject(entry, enemyData, enemyParent.transform);
+                var enemyObject = CreateEnemyRuntimeObject(entry, enemyData, enemyParent.transform, generatedLevel.CaveLevel);
                 _materializedObjects.Add(enemyObject);
                 _lastMaterializationResult.CreatedEnemies++;
 
@@ -817,7 +823,8 @@ namespace CindarsHope.Cave.Runtime
         private GameObject CreateEnemyRuntimeObject(
             CaveEnemySpawnPlanEntry entry,
             EnemyDataSO enemyData,
-            Transform parent)
+            Transform parent,
+            int caveLevel = 0)
         {
             GameObject enemyObject;
             if (_enemyPrefab != null)
@@ -832,15 +839,29 @@ namespace CindarsHope.Cave.Runtime
             }
 
             enemyObject.name = entry.EnemyInstanceId;
-            ConfigureEnemyRuntimeObject(enemyObject, enemyData, entry);
+            ConfigureEnemyRuntimeObject(enemyObject, enemyData, entry, caveLevel);
             return enemyObject;
         }
 
         private void ConfigureEnemyRuntimeObject(
             GameObject enemyObject,
             EnemyDataSO enemyData,
-            CaveEnemySpawnPlanEntry entry)
+            CaveEnemySpawnPlanEntry entry,
+            int caveLevel = 0)
         {
+            // Resolve profiles from databases
+            EnemyMovementProfileSO movementProfile = null;
+            if (_movementProfileDatabase != null && !string.IsNullOrEmpty(enemyData.MovementProfileId))
+                _movementProfileDatabase.TryGetById(enemyData.MovementProfileId, out movementProfile);
+
+            EnemyVulnerabilityProfileSO vulnerabilityProfile = null;
+            if (_vulnerabilityProfileDatabase != null && !string.IsNullOrEmpty(enemyData.VulnerabilityProfileId))
+                _vulnerabilityProfileDatabase.TryGetById(enemyData.VulnerabilityProfileId, out vulnerabilityProfile);
+
+            EnemySizeProfileSO sizeProfile = null;
+            if (_sizeProfileDatabase != null && !string.IsNullOrEmpty(enemyData.SizeProfileId))
+                _sizeProfileDatabase.TryGetById(enemyData.SizeProfileId, out sizeProfile);
+
             var spriteRenderer = enemyObject.GetComponent<SpriteRenderer>();
             if (spriteRenderer == null)
             {
@@ -851,8 +872,11 @@ namespace CindarsHope.Cave.Runtime
             spriteRenderer.color = enemyData.IsElite || entry.IsElite ? new Color(1f, 0.55f, 0.25f) : new Color(0.85f, 0.23f, 0.23f);
             spriteRenderer.sortingOrder = 3;
 
-            var scale = Mathf.Max(0.1f, enemyData.VisualScale);
-            enemyObject.transform.localScale = new Vector3(scale, scale, 1f);
+            // Scale: prefer SizeProfile.SpriteScale, fallback to EnemyDataSO.VisualScale
+            float visualScale = sizeProfile != null
+                ? Mathf.Max(0.1f, sizeProfile.SpriteScale)
+                : Mathf.Max(0.1f, enemyData.VisualScale);
+            enemyObject.transform.localScale = new Vector3(visualScale, visualScale, 1f);
 
             var collider = enemyObject.GetComponent<CircleCollider2D>();
             if (collider == null)
@@ -860,7 +884,10 @@ namespace CindarsHope.Cave.Runtime
                 collider = enemyObject.AddComponent<CircleCollider2D>();
             }
 
-            collider.radius = ResolveColliderRadius(entry.SizeClass);
+            // Collider: prefer SizeProfile.ColliderRadius, fallback to SizeClass switch
+            collider.radius = sizeProfile != null
+                ? Mathf.Max(0.1f, sizeProfile.ColliderRadius)
+                : ResolveColliderRadius(entry.SizeClass);
 
             var rigidbody = enemyObject.GetComponent<Rigidbody2D>();
             if (rigidbody == null)
@@ -904,17 +931,37 @@ namespace CindarsHope.Cave.Runtime
             {
                 brain = enemyObject.AddComponent<EnemyBrain>();
             }
-            brain.Configure(enemyData);
 
-            var chaseController = enemyObject.GetComponent<EnemyChaseController>();
-            if (chaseController == null)
+            bool hasFullDatabases = _actionSetDatabase != null && _actionDatabase != null && _telegraphDatabase != null;
+            if (hasFullDatabases)
             {
-                chaseController = enemyObject.AddComponent<EnemyChaseController>();
+                brain.ConfigureRuntime(
+                    enemyData,
+                    movementProfile,
+                    _actionSetDatabase,
+                    _actionDatabase,
+                    _telegraphDatabase,
+                    vulnerabilityProfile);
             }
-            chaseController.ConfigureFromData(enemyData);
-            if (_playerTransform != null)
+            else
             {
-                chaseController.RebindTarget(_playerTransform);
+                brain.Configure(enemyData, movementProfile);
+            }
+
+            // EnemyChaseController: legacy fallback only when no movement profile is available
+            bool useLegacyChase = movementProfile == null;
+            var chaseController = enemyObject.GetComponent<EnemyChaseController>();
+            if (useLegacyChase)
+            {
+                if (chaseController == null)
+                    chaseController = enemyObject.AddComponent<EnemyChaseController>();
+                chaseController.ConfigureFromData(enemyData);
+                if (_playerTransform != null)
+                    chaseController.RebindTarget(_playerTransform);
+            }
+            else if (chaseController != null)
+            {
+                chaseController.enabled = false;
             }
 
             var triggerChild = new GameObject("ContactDamageTrigger");
@@ -927,6 +974,15 @@ namespace CindarsHope.Cave.Runtime
 
             var contactDamage = triggerChild.AddComponent<EnemyContactDamage>();
             contactDamage.Configure(enemyData, triggerCollider);
+
+            Debug.Log(
+                $"CombatLog: EnemyRuntimeConfigured. Name={enemyData.DisplayName}, EnemyId={enemyData.enemyId}, " +
+                $"InstanceId={entry.EnemyInstanceId}, CaveLevel={caveLevel}, DataLevel=enemy_data, " +
+                $"MovementType={movementProfile?.MovementType.ToString() ?? "LegacyChase"}, " +
+                $"ActionSetResolved={hasFullDatabases && !string.IsNullOrEmpty(enemyData.ActionSetId)}, " +
+                $"VulnerabilityResolved={vulnerabilityProfile != null}, SizeClass={entry.SizeClass}, " +
+                $"VisualScale={visualScale:F2}, HasEnemyBrain=True, HasLegacyChase={useLegacyChase}",
+                enemyObject);
         }
 
         private static float ResolveColliderRadius(string sizeClass)

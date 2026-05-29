@@ -73,7 +73,7 @@ namespace CindarsHope.Cave.Runtime
                     RoomSizeClass = ResolveRoomSizeClass(generatedLevel),
                     RoomTags = BuildRoomTags(generatedLevel),
                     BossGateProgressIds = BuildBossGateProgressIds(runManager),
-                    UnlockedFactionLockIds = BuildUnlockedFactionLockIds(runManager, factionLocks),
+                    UnlockedFactionLockIds = BuildUnlockedFactionLockIds(runManager, factionLocks, generatedLevel.CaveLevel),
                     Seed = levelSeed + pass * 13337,
                     MaxEnemies = requestMaxEnemies - resolvedCount,
                     AllowElite = true,
@@ -415,7 +415,8 @@ namespace CindarsHope.Cave.Runtime
 
         private static List<string> BuildUnlockedFactionLockIds(
             CaveRunManager runManager,
-            IEnumerable<EnemyFactionLockSO> factionLocks)
+            IEnumerable<EnemyFactionLockSO> factionLocks,
+            int caveLevel)
         {
             var result = new List<string>();
             foreach (var factionLock in factionLocks ?? Array.Empty<EnemyFactionLockSO>())
@@ -426,6 +427,12 @@ namespace CindarsHope.Cave.Runtime
                 }
 
                 if (factionLock.IsUnlockedByDefault)
+                {
+                    result.Add(factionLock.FactionLockId);
+                    continue;
+                }
+
+                if (factionLock.RequiredCaveLevelMin > 0 && caveLevel >= factionLock.RequiredCaveLevelMin)
                 {
                     result.Add(factionLock.FactionLockId);
                     continue;

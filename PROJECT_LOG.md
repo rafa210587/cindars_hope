@@ -1,3 +1,42 @@
+## Sessao 2026-05-29 (29g) - SPEC 14A-FIX4 - Enemy Runtime Integration (Faction Lock Progression, Behavior, Size)
+
+**Foco:** Corrigir level 30/45 com 0 inimigos; separar comportamentos por MovementProfile; aplicar escala por SizeProfile.
+
+### Causa raiz
+
+- Level 30/45: `BuildUnlockedFactionLockIds` ignorava `RequiredCaveLevelMin` → packs de banda superior bloqueados.
+- Comportamento igual: `brain.Configure(enemyData)` nao injetava databases → action sets nunca inicializavam. `EnemyChaseController` sempre ativo sobrepoendo EnemyBrain.
+- Escala igual: `enemyData.VisualScale` padrão 1.0 para todos; `EnemySizeProfileSO` nunca consultado.
+
+### Implementacao
+
+- `CaveEnemySpawnPlanner.BuildUnlockedFactionLockIds`: adicionado `int caveLevel`; verifica `RequiredCaveLevelMin`.
+- `EnemyBrain.ConfigureRuntime(...)`: novo metodo injeta todos os databases e perfis.
+- `EnemyBrain._vulnerabilityProfile`: `TryOpenVulnerabilityWindow` usa dados do perfil.
+- `CaveRuntimeMaterializer`: 6 novos `[SerializeField]`; `ConfigureEnemyRuntimeObject` resolve profiles; usa `ConfigureRuntime`; desabilita `EnemyChaseController` quando MovementProfile disponivel; aplica `SizeProfile.SpriteScale`/`ColliderRadius`; log `CombatLog: EnemyRuntimeConfigured`.
+- Criados: `EnemyMovementProfileDatabaseSO`, `EnemyVulnerabilityProfileDatabaseSO`, `EnemySizeProfileDatabaseSO`.
+- Criado: `ValidateSpec14AEnemyRuntimeIntegration.cs` com MenuItem `CindarsHope/Validation/Validate SPEC 14A - Enemy Runtime Integration`.
+- `docs/validation/SPEC14A_FIX4_ENEMY_RUNTIME_INTEGRATION_VALIDATION_20260529.md` criado.
+
+### Validacao
+
+- `dotnet build Assembly-CSharp.csproj --no-restore`: PASSOU — 0 erros.
+- `dotnet build Assembly-CSharp-Editor.csproj --no-restore`: PASSOU — 0 erros.
+- `tools/docs/validate_docs.ps1`: PASSOU.
+- Unity batchmode: BLOQUEADO (Unity Editor aberto).
+- Play Mode: PENDENTE.
+
+### Pendencias para o usuario
+
+1. Abrir Unity → aguardar auto-refresh para incluir novos arquivos .cs no projeto.
+2. Criar assets: `EnemyMovementProfileDatabaseSO`, `EnemyVulnerabilityProfileDatabaseSO`, `EnemySizeProfileDatabaseSO` em `Assets/_Game/Data/Combat/`.
+3. Registrar profiles existentes nos 3 novos databases.
+4. Wiring dos 6 novos campos no Inspector do `CaveRuntimeMaterializer`.
+5. Rodar `CindarsHope/Validation/Validate SPEC 14A - Enemy Runtime Integration`.
+6. Validar Play Mode em Cave Level 1, 30, 45: confirmar inimigos presentes e comportamentos distintos.
+
+---
+
 ## Sessao 2026-05-29 (29f) - SPEC 14A-FIX3 - Spawn Ecology, Biome Fix, Menu Consolidation
 
 **Foco:** Corrigir level 1 (3 inimigos) e level 15 (0 inimigos) observados em Play Mode; consolidar menus Unity.

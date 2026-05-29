@@ -19,6 +19,9 @@ namespace CindarsHope.Enemy
         [SerializeField] private EnemyActionDatabaseSO _actionDatabase;
         [SerializeField] private EnemyTelegraphProfileDatabaseSO _telegraphDatabase;
 
+        [Header("Runtime Profiles (SPEC 14A-FIX4)")]
+        [SerializeField] private EnemyVulnerabilityProfileSO _vulnerabilityProfile;
+
         [Header("Tuning")]
         [SerializeField] private float _decisionTickSeconds = 0.3f;
 
@@ -290,7 +293,12 @@ namespace CindarsHope.Enemy
                                trigger == VulnerabilityTriggerMode.AfterAttackRecover);
 
             if (shouldOpen)
-                _vulnerabilityState.OpenWindow(1.5f, 1.5f, 10f);
+            {
+                float dur = _vulnerabilityProfile != null ? _vulnerabilityProfile.WindowDurationSeconds : 1.5f;
+                float mul = _vulnerabilityProfile != null ? _vulnerabilityProfile.Multiplier : 1.5f;
+                float cd  = _vulnerabilityProfile != null ? _vulnerabilityProfile.CooldownSeconds : 10f;
+                _vulnerabilityState.OpenWindow(dur, mul, cd);
+            }
         }
 
         // ─── Telegraph ────────────────────────────────────────────────────────
@@ -435,6 +443,30 @@ namespace CindarsHope.Enemy
             {
                 _vulnerabilityState.Initialize(_enemyData?.enemyId);
             }
+
+            InitActionSet();
+        }
+
+        public void ConfigureRuntime(
+            EnemyDataSO enemyData,
+            EnemyMovementProfileSO movementProfile,
+            EnemyActionSetDatabaseSO actionSetDatabase,
+            EnemyActionDatabaseSO actionDatabase,
+            EnemyTelegraphProfileDatabaseSO telegraphDatabase,
+            EnemyVulnerabilityProfileSO vulnerabilityProfile)
+        {
+            _enemyData = enemyData;
+            _movementProfile = movementProfile;
+            _actionSetDatabase = actionSetDatabase;
+            _actionDatabase = actionDatabase;
+            _telegraphDatabase = telegraphDatabase;
+            _vulnerabilityProfile = vulnerabilityProfile;
+
+            if (_movementProfile != null && _movementProfile.DecisionTickSeconds > 0f)
+                _decisionTickSeconds = _movementProfile.DecisionTickSeconds;
+
+            if (_vulnerabilityState != null)
+                _vulnerabilityState.Initialize(_enemyData?.enemyId);
 
             InitActionSet();
         }
