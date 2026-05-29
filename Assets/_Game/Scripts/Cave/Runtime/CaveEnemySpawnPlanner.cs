@@ -57,36 +57,59 @@ namespace CindarsHope.Cave.Runtime
             var targetEnemyCount = ResolveTargetEnemyCount(levelSeed, maxEnemies);
             var requestMaxEnemies = Math.Max(1, Math.Min(targetEnemyCount, spawnPoints.Count));
 
-            var request = new EnemySpawnRequest
-            {
-                CaveLevel = generatedLevel.CaveLevel,
-                BiomeTags = BuildBiomeTags(generatedLevel),
-                EnvironmentTags = BuildEnvironmentTags(generatedLevel),
-                RoomSizeClass = ResolveRoomSizeClass(generatedLevel),
-                RoomTags = BuildRoomTags(generatedLevel),
-                BossGateProgressIds = BuildBossGateProgressIds(runManager),
-                UnlockedFactionLockIds = BuildUnlockedFactionLockIds(runManager, factionLocks),
-                Seed = levelSeed,
-                MaxEnemies = requestMaxEnemies,
-                AllowElite = true,
-                DebugReason = "SPEC14A cave materialization"
-            };
-
             var resolver = new EnemySpawnResolver(profiles, packs, factionLocks);
-            var result = resolver.Resolve(request);
-            if (result == null || !result.IsValid || result.SelectedEnemies.Count == 0)
+            var allSelections = new List<EnemySpawnSelection>();
+            var allWarnings = new List<string>();
+            int resolvedCount = 0;
+            string lastSelectedPackId = string.Empty;
+
+            for (int pass = 0; pass < 4 && resolvedCount < requestMaxEnemies; pass++)
             {
-                var warning = result == null
-                    ? "resolver returned null"
-                    : string.Join("; ", result.Warnings);
+                var passRequest = new EnemySpawnRequest
+                {
+                    CaveLevel = generatedLevel.CaveLevel,
+                    BiomeTags = BuildBiomeTags(generatedLevel),
+                    EnvironmentTags = BuildEnvironmentTags(generatedLevel),
+                    RoomSizeClass = ResolveRoomSizeClass(generatedLevel),
+                    RoomTags = BuildRoomTags(generatedLevel),
+                    BossGateProgressIds = BuildBossGateProgressIds(runManager),
+                    UnlockedFactionLockIds = BuildUnlockedFactionLockIds(runManager, factionLocks),
+                    Seed = levelSeed + pass * 13337,
+                    MaxEnemies = requestMaxEnemies - resolvedCount,
+                    AllowElite = true,
+                    DebugReason = $"SPEC14A cave materialization pass {pass}"
+                };
+
+                var result = resolver.Resolve(passRequest);
+                if (result == null || !result.IsValid || result.SelectedEnemies.Count == 0)
+                {
+                    if (result?.Warnings != null) allWarnings.AddRange(result.Warnings);
+                    break;
+                }
+
+                allWarnings.AddRange(result.Warnings ?? new List<string>());
+                if (!string.IsNullOrEmpty(result.SelectedPackId))
+                    lastSelectedPackId = result.SelectedPackId;
+                foreach (var sel in result.SelectedEnemies)
+                {
+                    allSelections.Add(sel);
+                    resolvedCount += sel.Count;
+                }
+            }
+
+            if (allSelections.Count == 0)
+            {
+                var warning = allWarnings.Count > 0 ? string.Join("; ", allWarnings) : "no valid pack or profile";
                 plan.Warnings.Add($"No enemies resolved for level {generatedLevel.CaveLevel}. {warning}");
                 Debug.LogWarning($"CaveEnemySpawnPlanner: No enemies resolved for level {generatedLevel.CaveLevel}. {warning}");
                 return plan;
             }
 
-            plan.Warnings.AddRange(result.Warnings ?? new List<string>());
+            plan.Warnings.AddRange(allWarnings);
+            if (resolvedCount < targetEnemyCount)
+                plan.Warnings.Add($"Resolved {resolvedCount} enemies, below target {targetEnemyCount}. Data packs/profiles limited the count.");
 
-            var expanded = ExpandSelections(result.SelectedEnemies, request.MaxEnemies);
+            var expanded = ExpandSelections(allSelections, requestMaxEnemies);
             var orderedPoints = OrderSpawnPoints(spawnPoints, levelSeed);
             var selectedPoints = SelectSpawnPointsWithSpacing(orderedPoints, expanded.Count, plan.Warnings);
             var profilesBySpawnProfile = (profiles ?? Array.Empty<EnemySpawnProfileSO>())
@@ -97,11 +120,6 @@ namespace CindarsHope.Cave.Runtime
                 .Where(p => p != null && !string.IsNullOrWhiteSpace(p.EnemyId))
                 .GroupBy(p => p.EnemyId)
                 .ToDictionary(g => g.Key, g => g.First());
-
-            if (expanded.Count < targetEnemyCount)
-            {
-                plan.Warnings.Add($"Resolved {expanded.Count} enemies, below target {targetEnemyCount}. Data packs/profiles limited the count.");
-            }
 
             for (int i = 0; i < expanded.Count && i < selectedPoints.Count; i++)
             {
@@ -121,7 +139,7 @@ namespace CindarsHope.Cave.Runtime
                     EnemyInstanceId = instanceId,
                     EnemyId = selection.EnemyId ?? string.Empty,
                     SpawnProfileId = selection.SpawnProfileId ?? string.Empty,
-                    PackId = selection.PackId ?? result.SelectedPackId ?? string.Empty,
+                    PackId = selection.PackId ?? lastSelectedPackId,
                     GridPosition = point,
                     WorldPosition = GridToWorld(point, generatedLevel),
                     RoomId = roomId,
@@ -171,21 +189,23 @@ namespace CindarsHope.Cave.Runtime
 
         private static List<Vector2Int> ResolveSpawnPoints(CaveGeneratedLevel generatedLevel)
         {
-            var points = generatedLevel.EnemySpawnPoints
+            var explicitPoints = generatedLevel.EnemySpawnPoints
                 .Select(p => p.Position)
                 .Where(p => IsValidEnemySpawnTile(p, generatedLevel))
                 .Distinct()
                 .ToList();
 
-            if (points.Count > 0)
-            {
-                return points;
-            }
+            // Supplement with walkable tiles when explicit spawn points are fewer than the minimum target
+            if (explicitPoints.Count >= MinEnemiesPerLevel)
+                return explicitPoints;
 
-            return generatedLevel.WalkableTiles
-                .Where(p => IsValidEnemySpawnTile(p, generatedLevel))
-                .Distinct()
-                .ToList();
+            var all = new HashSet<Vector2Int>(explicitPoints);
+            foreach (var tile in generatedLevel.WalkableTiles)
+            {
+                if (IsValidEnemySpawnTile(tile, generatedLevel))
+                    all.Add(tile);
+            }
+            return all.ToList();
         }
 
         private static bool IsValidEnemySpawnTile(Vector2Int point, CaveGeneratedLevel generatedLevel)
@@ -310,13 +330,7 @@ namespace CindarsHope.Cave.Runtime
 
         private static List<string> BuildBiomeTags(CaveGeneratedLevel level)
         {
-            var explicitTag = NormalizeBiomeTag(level.BiomeId);
-            if (!string.IsNullOrWhiteSpace(explicitTag))
-            {
-                return new List<string> { explicitTag };
-            }
-
-            var tag = level.CaveLevel switch
+            var levelTag = level.CaveLevel switch
             {
                 <= 10 => "stone",
                 <= 25 => "fungal",
@@ -325,7 +339,13 @@ namespace CindarsHope.Cave.Runtime
                 _ => "ruins"
             };
 
-            return new List<string> { tag };
+            var normalizedTag = NormalizeBiomeTag(level.BiomeId);
+            if (string.IsNullOrWhiteSpace(normalizedTag) || normalizedTag == levelTag)
+                return new List<string> { levelTag };
+
+            // Include both the level-range biome and the cave-specific biome so profiles/packs
+            // match regardless of which tag they use (e.g. level 15 cave_earth → ["fungal","stone"])
+            return new List<string> { levelTag, normalizedTag };
         }
 
         private static string NormalizeBiomeTag(string biomeId)

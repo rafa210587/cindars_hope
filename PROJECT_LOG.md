@@ -1,3 +1,38 @@
+## Sessao 2026-05-29 (29f) - SPEC 14A-FIX3 - Spawn Ecology, Biome Fix, Menu Consolidation
+
+**Foco:** Corrigir level 1 (3 inimigos) e level 15 (0 inimigos) observados em Play Mode; consolidar menus Unity.
+
+### Causa raiz
+
+- Level 15: `biome_cave_earth` → `NormalizeBiomeTag` = `"stone"`, mas todos os packs 11-25 exigiam `"fungal"` → 0 candidatos.
+- Level 1: `MaxTotalEnemies = 4` em `pack_stone_fauna_basic` + resolver de passe único + `EnemySpawnPoints` < 14 → apenas 3 inimigos.
+
+### Implementacao
+
+- `CaveEnemySpawnPlanner.BuildBiomeTags`: retorna `[levelTag, normalizedTag]` → level 15 recebe `["fungal","stone"]` → packs fungal passam.
+- `CaveEnemySpawnPlanner.ResolveSpawnPoints`: complementa com `WalkableTiles` quando `explicit.Count < MinEnemiesPerLevel`.
+- `CaveEnemySpawnPlanner.CreatePlan`: loop multi-pass (4x) com seed `levelSeed + pass * 13337` (deterministico, FASE9F-safe).
+- `EnemySpawnResolver.BuildDiagnosticSummary`: log detalhado quando nenhum candidato é selecionado.
+- `CreateEnemySpawnEcologyData.BuildPackDefinitions`: `MaxTotalEnemies` 4-5→10-14 em todos os packs; novos `pack_low_undead` (1-10, stone) e `pack_beast_mid` (11-25, fungal); `lock_default_low_tier` inclui `orc_nyx`.
+- Menus consolidados: 8 arquivos editor renomeados de `"Cindar's Hope/"` para `"CindarsHope/"`.
+- `ValidateSpec14AFix2CombatFeedback.cs`: renomeado para FIX3; métodos `ValidateSpawnEcologyData`, `ValidateMenuConsolidation`, `ValidateBiomeFix` adicionados.
+- `docs/validation/SPEC14A_FIX3_SPAWN_ECOLOGY_FEEDBACK_VALIDATION_20260529.md` criado.
+
+### Validacao
+
+- `dotnet build`: PENDENTE (executar apos commit).
+- Unity batchmode: BLOQUEADO (Unity Editor aberto).
+- Play Mode: PENDENTE.
+
+### Pendencias para o usuario
+
+1. Rodar `CindarsHope/Generate/Enemy/Generate And Wire SPEC 13G Assets` (regenera assets com packs rebalanceados).
+2. Rodar `CindarsHope/Validation/Validate SPEC 14A-FIX3 - Spawn Ecology and Combat Feedback`.
+3. Validar em Play Mode: Cave Level 1 ≥14 inimigos, Level 15 ≥1 inimigo comum.
+4. Confirmar menus Unity consolidados sob `CindarsHope/`.
+
+---
+
 ## Sessao 2026-05-29 (29e) - SPEC 14A-FIX2 - Spawn Density, Combat Feedback e Floating Damage Numbers
 
 **Foco:** Incremento sobre SPEC 14A com densidade de spawn aumentada, logs de combate melhorados e números flutuantes de dano para o player.

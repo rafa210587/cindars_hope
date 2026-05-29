@@ -17,7 +17,7 @@ namespace CindarsHope.Editor.Validation
     {
         private const string TownScenePath = "Assets/_Game/Scenes/TownScene.unity";
 
-        [MenuItem("Cindar's Hope/Validation/Validate Town Shop Wiring")]
+        [MenuItem("CindarsHope/Validation/Validate Town Shop Wiring")]
         public static void Validate()
         {
             var scene = EditorSceneManager.OpenScene(TownScenePath, OpenSceneMode.Single);

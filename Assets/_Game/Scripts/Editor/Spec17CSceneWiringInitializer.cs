@@ -23,7 +23,7 @@ namespace CindarsHope.EditorTools
             "Assets/_Game/Scenes/CaveScene.unity"
         };
 
-        [MenuItem("Cindar's Hope/Validation/Apply SPEC 17C Scene Wiring")]
+        [MenuItem("CindarsHope/Validation/Apply SPEC 17C Scene Wiring")]
         public static void ApplySceneWiring()
         {
             foreach (var scenePath in GameplayScenes)

@@ -12,7 +12,7 @@ namespace CindarsHope.Editor.Validation
         private const string CaveConfigPath = "Assets/_Game/Data/Cave/CaveGenerationConfig_Default.asset";
         private const string GameScaleConfigPath = "Assets/_Game/Data/Config/GameScaleConfig.asset";
 
-        [MenuItem("Cindar's Hope/Validation/Validate Spec 17A - Scale Config")]
+        [MenuItem("CindarsHope/Validation/Validate Spec 17A - Scale Config")]
         public static void Run()
         {
             var errors = 0;
@@ -22,7 +22,7 @@ namespace CindarsHope.Editor.Validation
             var profileGuids = AssetDatabase.FindAssets("t:VisualScaleProfileSO", new[] { "Assets/_Game/Data/Scale" });
             if (profileGuids.Length == 0)
             {
-                Debug.LogWarning("[17A] No VisualScaleProfileSO assets found in Assets/_Game/Data/Scale/. Run 'Cindar's Hope/Scale/Create Default Scale Assets' first.");
+                Debug.LogWarning("[17A] No VisualScaleProfileSO assets found in Assets/_Game/Data/Scale/. Run 'CindarsHope/Generate/Data/Create Default Scale Assets' first.");
                 warnings++;
             }
             else
@@ -52,7 +52,7 @@ namespace CindarsHope.Editor.Validation
             var cameraGuids = AssetDatabase.FindAssets("t:CameraScaleConfigSO", new[] { "Assets/_Game/Data/Camera" });
             if (cameraGuids.Length == 0)
             {
-                Debug.LogWarning("[17A] No CameraScaleConfigSO asset found in Assets/_Game/Data/Camera/. Run 'Cindar's Hope/Scale/Create Default Scale Assets' first.");
+                Debug.LogWarning("[17A] No CameraScaleConfigSO asset found in Assets/_Game/Data/Camera/. Run 'CindarsHope/Generate/Data/Create Default Scale Assets' first.");
                 warnings++;
             }
             else
@@ -130,7 +130,7 @@ namespace CindarsHope.Editor.Validation
             var scaleConfig = AssetDatabase.LoadAssetAtPath<GameScaleConfigSO>(GameScaleConfigPath);
             if (scaleConfig == null)
             {
-                Debug.LogWarning($"[17A] GameScaleConfig not found at {GameScaleConfigPath}. Run 'Cindar's Hope/Scale/Create Default Scale Assets' first.");
+                Debug.LogWarning($"[17A] GameScaleConfig not found at {GameScaleConfigPath}. Run 'CindarsHope/Generate/Data/Create Default Scale Assets' first.");
                 warnings++;
             }
             else

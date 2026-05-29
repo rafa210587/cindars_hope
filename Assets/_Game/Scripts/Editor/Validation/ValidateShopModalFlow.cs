@@ -11,7 +11,7 @@ namespace CindarsHope.Editor.Validation
 {
     public static class ValidateShopModalFlow
     {
-        [MenuItem("Cindar's Hope/Validation/Validate Shop Modal Flow")]
+        [MenuItem("CindarsHope/Validation/Validate Shop Modal Flow")]
         public static void Validate()
         {
             var root = new GameObject("[SPEC17F] Modal Validation");

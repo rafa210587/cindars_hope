@@ -16,7 +16,7 @@ namespace CindarsHope.EditorTools
         private const string PlayerDataPath = "Assets/_Game/Data/Config/PlayerData.asset";
         private const string ShopFolder = "Assets/_Game/Data/Economy";
 
-        [MenuItem("Cindar's Hope/Validation/Validate Item and Shop Data")]
+        [MenuItem("CindarsHope/Validation/Validate Item and Shop Data")]
         public static bool Run()
         {
             var errors = new List<string>();

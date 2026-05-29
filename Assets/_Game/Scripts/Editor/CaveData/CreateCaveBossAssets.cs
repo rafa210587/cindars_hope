@@ -13,7 +13,7 @@ namespace CindarsHope.Editor.CaveData
         private const string EnemyDatabasePath = "Assets/_Game/Data/Combat/EnemyDatabase.asset";
         private const string RegistryPath = "Assets/_Game/Data/Cave/CaveBossGateRegistry.asset";
 
-        [MenuItem("Cindar's Hope/Cave/Create Boss Gate Assets")]
+        [MenuItem("CindarsHope/Generate/Scenes/Create Boss Gate Assets")]
         public static void CreateAll()
         {
             EnsureDirectory(CaveDataPath);

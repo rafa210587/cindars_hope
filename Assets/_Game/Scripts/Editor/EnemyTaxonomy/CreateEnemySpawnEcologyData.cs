@@ -183,23 +183,27 @@ namespace CindarsHope.Editor.EnemyTaxonomy
         {
             return new List<PackDefinition>
             {
-                Pack("pack_stone_fauna_basic",1,10,"stone",4,E("enemy_cave_mite",2,4),E("enemy_stone_rat",1,2)),
-                Pack("pack_grashnaar_kobold_scouts",1,10,"stone",5,E("enemy_goblin_grashnaar_scavenger",1,3),E("enemy_kobold_scout",1,2)),
-                Pack("pack_blackroot_growth",1,10,"fungal",3,E("enemy_mossling",1,2),E("enemy_blackroot_sprout",1,1)),
-                Pack("pack_fungal_colony",11,25,"fungal",5,E("enemy_spore_imp",1,2),E("enemy_mossling",1,2),E("enemy_rootsnare",0,1,false)),
-                Pack("pack_urudakh_trappers",11,25,"fungal",4,E("enemy_goblin_urudakh_trapper",1,1),E("enemy_thorn_archer",1,1),E("enemy_goblin_grashnaar_scavenger",1,2)),
-                Pack("pack_nyx_ambush",11,25,"fungal",3,E("enemy_orc_nyx_stalker",1,1),E("enemy_nyx_moth",1,2)),
-                Pack("pack_frozen_beasts",26,40,"ice",3,E("enemy_frost_gnawer",2,2),E("enemy_glassbone",1,1)),
-                Pack("pack_duergar_patrol",26,40,"ice",3,E("enemy_duergar_frostdelver",1,2),E("enemy_duergar_shieldbreaker",0,1,false)),
-                Pack("pack_ice_guardians",26,40,"ice",2,E("enemy_icebound_sentinel",1,1),E("enemy_cold_cult_acolyte",1,1)),
-                Pack("pack_ember_swarm",41,55,"fire",6,E("enemy_ember_tick",3,5),E("enemy_ash_crawler",1,1)),
-                Pack("pack_kaand_warband",41,55,"fire",2,E("enemy_orc_kaand_berserker",1,1),E("enemy_orc_kaand_ashcaller",1,1)),
-                Pack("pack_lava_guard",41,55,"fire",3,E("enemy_lava_bulwark",1,1),E("enemy_cinder_spitter",1,2)),
-                Pack("pack_furnace_guard",41,55,"fire",2,E("enemy_furnace_warden",1,1),E("enemy_scorched_cultist",1,1)),
-                Pack("pack_rune_shards",56,70,"ruins",5,E("enemy_rune_shard",2,4),E("enemy_clockwork_guard",1,1)),
-                Pack("pack_gnome_ruin_tinkerers",56,70,"ruins",3,E("enemy_gnome_gem_madcap",1,1),E("enemy_gnomorin_rune_tinker",1,2)),
-                Pack("pack_oathless_dead",56,70,"ruins",2,E("enemy_sealed_knight",1,1),E("enemy_oathless_shade",1,1)),
-                Pack("pack_puzzle_guardians",56,70,"ruins",2,E("enemy_puzzle_golem",1,1),E("enemy_mirror_adept",1,1)),
+                // Band 1-10: increased MaxTotal and per-entry counts to reach density target 14-24
+                Pack("pack_stone_fauna_basic",1,10,"stone",14,E("enemy_cave_mite",3,8),E("enemy_stone_rat",2,5),E("enemy_cave_bat",1,3,false)),
+                Pack("pack_grashnaar_kobold_scouts",1,10,"stone",14,E("enemy_goblin_grashnaar_scavenger",2,6),E("enemy_kobold_scout",2,5)),
+                Pack("pack_low_undead",1,10,"stone",8,E("enemy_cracked_bone",3,6),E("enemy_cave_bat",1,2,false)),
+                Pack("pack_blackroot_growth",1,25,"fungal",10,E("enemy_mossling",2,4),E("enemy_blackroot_sprout",1,3,false)),
+                // Band 11-25: increased MaxTotal for density and added beast_mid pack
+                Pack("pack_fungal_colony",11,25,"fungal",14,E("enemy_spore_imp",2,5),E("enemy_mossling",2,4),E("enemy_rootsnare",1,2,false)),
+                Pack("pack_urudakh_trappers",11,25,"fungal",12,E("enemy_goblin_urudakh_trapper",1,3),E("enemy_thorn_archer",1,3),E("enemy_goblin_grashnaar_scavenger",1,3,false)),
+                Pack("pack_nyx_ambush",11,25,"fungal",10,E("enemy_orc_nyx_stalker",1,2),E("enemy_nyx_moth",2,4)),
+                Pack("pack_beast_mid",11,25,"fungal",10,E("enemy_hollow_stagling",1,3),E("enemy_nyx_moth",2,4),E("enemy_rootsnare",1,2,false)),
+                Pack("pack_frozen_beasts",26,40,"ice",12,E("enemy_frost_gnawer",2,4),E("enemy_glassbone",1,2)),
+                Pack("pack_duergar_patrol",26,40,"ice",12,E("enemy_duergar_frostdelver",2,4),E("enemy_duergar_shieldbreaker",1,2,false)),
+                Pack("pack_ice_guardians",26,40,"ice",8,E("enemy_icebound_sentinel",1,2),E("enemy_cold_cult_acolyte",1,2)),
+                Pack("pack_ember_swarm",41,55,"fire",14,E("enemy_ember_tick",4,8),E("enemy_ash_crawler",1,2)),
+                Pack("pack_kaand_warband",41,55,"fire",10,E("enemy_orc_kaand_berserker",1,3),E("enemy_orc_kaand_ashcaller",1,3)),
+                Pack("pack_lava_guard",41,55,"fire",10,E("enemy_lava_bulwark",1,1),E("enemy_cinder_spitter",2,5)),
+                Pack("pack_furnace_guard",41,55,"fire",10,E("enemy_furnace_warden",1,2),E("enemy_scorched_cultist",1,3)),
+                Pack("pack_rune_shards",56,70,"ruins",14,E("enemy_rune_shard",3,6),E("enemy_clockwork_guard",1,2)),
+                Pack("pack_gnome_ruin_tinkerers",56,70,"ruins",10,E("enemy_gnome_gem_madcap",1,2),E("enemy_gnomorin_rune_tinker",2,4)),
+                Pack("pack_oathless_dead",56,70,"ruins",8,E("enemy_sealed_knight",1,2),E("enemy_oathless_shade",1,3)),
+                Pack("pack_puzzle_guardians",56,70,"ruins",8,E("enemy_puzzle_golem",1,1),E("enemy_mirror_adept",1,2)),
             };
         }
 
@@ -207,7 +211,7 @@ namespace CindarsHope.Editor.EnemyTaxonomy
         {
             return new List<LockDefinition>
             {
-                new LockDefinition("lock_default_low_tier", true, "", 0, new[] { "beast", "fungal", "goblin", "kobold", "undead_weak" }, new[] { "pack_stone_fauna_basic", "pack_grashnaar_kobold_scouts", "pack_blackroot_growth" }),
+                new LockDefinition("lock_default_low_tier", true, "", 0, new[] { "beast", "fungal", "goblin", "kobold", "undead_weak", "orc_nyx" }, new[] { "pack_stone_fauna_basic", "pack_grashnaar_kobold_scouts", "pack_blackroot_growth", "pack_low_undead", "pack_fungal_colony", "pack_urudakh_trappers", "pack_nyx_ambush", "pack_beast_mid" }),
                 new LockDefinition("lock_after_gate_15", false, "boss_gate_level_15", 16, new[] { "duergar", "ice_cult", "undead_stronger" }, new[] { "pack_frozen_beasts", "pack_duergar_patrol", "pack_ice_guardians" }),
                 new LockDefinition("lock_after_gate_30", false, "boss_gate_level_30", 31, new[] { "orc_kaand", "elemental_fire", "furnace_construct" }, new[] { "pack_ember_swarm", "pack_kaand_warband", "pack_lava_guard", "pack_furnace_guard" }),
                 new LockDefinition("lock_after_gate_45", false, "boss_gate_level_45", 46, new[] { "gnome_ruins", "stronger_construct", "oathless_undead" }, new[] { "pack_rune_shards", "pack_gnome_ruin_tinkerers", "pack_oathless_dead", "pack_puzzle_guardians" }),

@@ -56,6 +56,7 @@ namespace CindarsHope.Enemy
             if (validProfiles.Count == 0)
             {
                 result.Warnings.Add("EnemySpawnResolver: no spawn pack or individual candidate matched the request.");
+                result.Warnings.Add(BuildDiagnosticSummary(request));
                 PublishWarnings(request, result);
                 return result;
             }
@@ -389,6 +390,22 @@ namespace CindarsHope.Enemy
             };
             copy.Normalize();
             return copy;
+        }
+
+        private string BuildDiagnosticSummary(EnemySpawnRequest request)
+        {
+            int profilesAfterLevel = _profiles.Count(p => p.IsEnabled && request.CaveLevel >= p.CaveLevelMin && request.CaveLevel <= p.CaveLevelMax);
+            int profilesAfterBiome = _profiles.Count(p => p.IsEnabled && request.CaveLevel >= p.CaveLevelMin && request.CaveLevel <= p.CaveLevelMax && TagsMatch(request.BiomeTags, p.BiomeTags));
+            int packsAfterLevel = _packs.Count(p => p.IsEnabled && request.CaveLevel >= p.CaveLevelMin && request.CaveLevel <= p.CaveLevelMax);
+            int packsAfterBiome = _packs.Count(p => p.IsEnabled && request.CaveLevel >= p.CaveLevelMin && request.CaveLevel <= p.CaveLevelMax && TagsMatch(request.BiomeTags, p.BiomeTags));
+            var biomeTags = request.BiomeTags != null ? string.Join(",", request.BiomeTags) : "";
+            var envTags = request.EnvironmentTags != null ? string.Join(",", request.EnvironmentTags) : "";
+            var lockedFactions = string.Join(",", request.UnlockedFactionLockIds ?? new List<string>());
+            return $"EnemySpawnResolver diagnostic: CaveLevel={request.CaveLevel}, " +
+                   $"BiomeTags=[{biomeTags}], EnvTags=[{envTags}], RoomSize={request.RoomSizeClass}, " +
+                   $"ProfilesTotal={_profiles.Count}, ProfilesAfterLevel={profilesAfterLevel}, ProfilesAfterBiome={profilesAfterBiome}, " +
+                   $"PacksTotal={_packs.Count}, PacksAfterLevel={packsAfterLevel}, PacksAfterBiome={packsAfterBiome}, " +
+                   $"UnlockedLocks=[{lockedFactions}]";
         }
 
         private static bool Reject(string message, out string reason)

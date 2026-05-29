@@ -2,9 +2,11 @@
 
 > Spec ID: spec_14a_fix2_spawn_density_combat_feedback_damage_numbers
 > Status: A implementar
+> Ordem de execucao: 14A-FIX2
 > Tipo: Cave Spawn Density / Combat Feedback / Floating Damage Numbers
 > Fonte de refinamento: `docs/refinements/a_implementar/pre_refinamentos/refinamento_spec14a_fix2_spawn_density_combat_feedback_damage_numbers.md`
 > Depende de: SPEC 14A/14B com inimigos materializando na cave.
+> Bloqueia: Nenhuma spec futura diretamente.
 > Fora de escopo: balance final, UI final de combate, critical system, healing numbers completo, boss UI, SPEC 18 movement/projectiles/melee visuals.
 
 ---
