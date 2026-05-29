@@ -19,7 +19,8 @@ namespace CindarsHope.Editor.EnemyTaxonomy
             var enemyMap = AssetDatabase.FindAssets("t:EnemyDataSO")
                 .Select(g => AssetDatabase.LoadAssetAtPath<EnemyDataSO>(AssetDatabase.GUIDToAssetPath(g)))
                 .Where(e => e != null && !string.IsNullOrWhiteSpace(e.enemyId))
-                .ToDictionary(e => e.enemyId, e => e);
+                .GroupBy(e => e.enemyId)
+                .ToDictionary(g => g.Key, g => g.OrderBy(e => AssetDatabase.GetAssetPath(e)).First());
 
             int created = 0;
             int updated = 0;
