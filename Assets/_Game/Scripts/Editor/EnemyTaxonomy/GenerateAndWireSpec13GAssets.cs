@@ -19,6 +19,9 @@ namespace CindarsHope.Editor.EnemyTaxonomy
         private const string EnemySpawnPacksFolder = "Assets/_Game/Data/EnemySpawn/Packs";
         private const string EnemyFactionLocksFolder = "Assets/_Game/Data/EnemySpawn/FactionLocks";
 
+        // Batchmode entry: Unity.exe -executeMethod CindarsHope.Editor.EnemyTaxonomy.GenerateAndWireSpec13GAssets.Execute
+        public static void Execute() => GenerateAndWire();
+
         [MenuItem("CindarsHope/SPEC 13/Generate And Wire SPEC 13G Assets")]
         public static void GenerateAndWire()
         {

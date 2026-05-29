@@ -159,3 +159,63 @@ Depois validar Play Mode:
 - `CreatedEnemies > 0`.
 - `EnemySpawnedEvent`/`EnemySeenEvent`.
 - Bestiary FirstSeen.
+
+---
+
+## Update 2026-05-29 (sessão 29d) — Assets gerados, EnemyBrain.Configure corrigido
+
+### Correções desta sessão
+
+**1. EnemyBrain.Configure(EnemyDataSO) — compile error corrigido**
+
+`CaveRuntimeMaterializer:907` chama `brain.Configure(enemyData)`. O SPEC 13D rewrite do EnemyBrain não possuía esse método, causando erro de compilação. Adicionado:
+
+```csharp
+// Assets/_Game/Scripts/Enemy/EnemyBrain.cs
+public void Configure(EnemyDataSO data)
+{
+    _enemyData = data;
+}
+```
+
+**2. GenerateAndWireSpec13GAssets.Execute() — batchmode entry**
+
+```csharp
+// Assets/_Game/Scripts/Editor/EnemyTaxonomy/GenerateAndWireSpec13GAssets.cs
+public static void Execute() => GenerateAndWire();
+```
+
+Permite: `Unity.exe -batchmode -executeMethod CindarsHope.Editor.EnemyTaxonomy.GenerateAndWireSpec13GAssets.Execute`
+
+**3. Assets YAML criados via PowerShell**
+
+Script: `tools/unity/GenerateSpawnEcologyAssets.ps1`
+
+Resultado confirmado:
+
+```text
+Profiles: 40  Packs: 17  Locks: 7
+```
+
+Pastas criadas com `.meta`:
+- `Assets/_Game/Data/EnemySpawn/`
+- `Assets/_Game/Data/EnemySpawn/Profiles/`
+- `Assets/_Game/Data/EnemySpawn/Packs/`
+- `Assets/_Game/Data/EnemySpawn/FactionLocks/`
+
+### Wiring da CaveScene — ainda bloqueado
+
+```text
+Asset generation via Unity batchmode: BLOQUEADO
+Razão: Unity Editor ainda aberto com o projeto
+```
+
+### Ação necessária (única pendência)
+
+Com o Unity Editor aberto, aguardar recompilação e executar o menu:
+
+```text
+CindarsHope → SPEC 13 → Generate And Wire SPEC 13G Assets
+```
+
+Os 64 assets já existem no disco — o menu fará apenas populate + wiring da CaveScene + serialize BestiaryManager.

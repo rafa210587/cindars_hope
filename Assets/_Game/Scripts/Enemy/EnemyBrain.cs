@@ -45,6 +45,11 @@ namespace CindarsHope.Enemy
 
         public EnemyBrainState CurrentState => _currentState;
 
+        public void Configure(EnemyDataSO data)
+        {
+            _enemyData = data;
+        }
+
         private void Awake()
         {
             _rb = GetComponent<Rigidbody2D>();

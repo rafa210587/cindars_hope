@@ -1,3 +1,31 @@
+## Sessao 2026-05-29 (29d) - SPEC 14A Fix - Enemy Wiring Assets e Compile Error
+
+**Foco:** Corrigir compile error `EnemyBrain.Configure` e criar os 64 assets de spawn ecology ausentes.
+
+### Implementacao
+
+- `EnemyBrain.Configure(EnemyDataSO data)` adicionado — corrige erro de compilação causado por `CaveRuntimeMaterializer:907`.
+- `GenerateAndWireSpec13GAssets.Execute()` adicionado — alias sem parâmetros para uso com `-executeMethod` em batchmode.
+- `tools/unity/GenerateSpawnEcologyAssets.ps1` criado — gera YAML Unity para todos os assets de spawn ecology.
+- 40 `EnemySpawnProfileSO` criados em `Assets/_Game/Data/EnemySpawn/Profiles/`.
+- 17 `EnemySpawnPackSO` criados em `Assets/_Game/Data/EnemySpawn/Packs/`.
+- 7 `EnemyFactionLockSO` criados em `Assets/_Game/Data/EnemySpawn/FactionLocks/`.
+- 4 folder `.meta` criados.
+
+### Validacao
+
+- Assets gerados: Profiles=40, Packs=17, Locks=7 (confirmado via PowerShell).
+- Unity batchmode: BLOQUEADO (Unity Editor aberto).
+- Unity compile: NOT RUN (batchmode bloqueado).
+- Play Mode: NOT RUN.
+
+### Pendencia unica
+
+Com Unity aberto, rodar: `CindarsHope → SPEC 13 → Generate And Wire SPEC 13G Assets`  
+Isso wirea `CaveRuntimeMaterializer` + serializa `BestiaryManager` e salva `CaveScene`.
+
+---
+
 ## Sessao 2026-05-29 (29c) - SPEC 14A Fix - Enemy Spawn Wiring
 
 **Foco:** Corrigir o bug pós-SPEC 14A/14B em que `CaveRuntimeMaterializer` pulava inimigos por `_enemySpawnProfiles` vazio e `GameBootstrap` criava `BestiaryManager` por fallback.
