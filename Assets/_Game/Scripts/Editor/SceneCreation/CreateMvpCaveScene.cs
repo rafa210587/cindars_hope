@@ -1,3 +1,4 @@
+using System.Linq;
 using CindarsHope.Combat;
 using CindarsHope.Cave;
 using CindarsHope.Cave.Data;
@@ -9,6 +10,7 @@ using CindarsHope.Core.Data;
 using CindarsHope.Core.Time;
 using CindarsHope.Economy;
 using CindarsHope.Equipment;
+using CindarsHope.Enemy;
 using CindarsHope.Inventory;
 using CindarsHope.Inventory.Data;
 using CindarsHope.Interaction;
@@ -527,7 +529,7 @@ namespace CindarsHope.Editor.SceneCreation
             rigidbody.bodyType = RigidbodyType2D.Kinematic;
             rigidbody.constraints = RigidbodyConstraints2D.FreezeRotation;
 
-            var healthComponent = slimeObject.AddComponent<EnemyHealth>();
+            var healthComponent = slimeObject.AddComponent<CindarsHope.Combat.EnemyHealth>();
             var serializedHealth = new SerializedObject(healthComponent);
 
             var enemyData = AssetDatabase.LoadAssetAtPath<EnemyDataSO>(EnemySlimeDataPath);
@@ -632,20 +634,31 @@ namespace CindarsHope.Editor.SceneCreation
             EditorUtility.SetDirty(checkpointService);
 
             var resourceNodeDatabase = EnsureResourceNodeDatabase();
+            var enemyDatabase = EnsureEnemyDatabase();
+            var spawnProfiles = LoadAssets<EnemySpawnProfileSO>("Assets/_Game/Data/EnemySpawn/Profiles");
+            var spawnPacks = LoadAssets<EnemySpawnPackSO>("Assets/_Game/Data/EnemySpawn/Packs");
+            var factionLocks = LoadAssets<EnemyFactionLockSO>("Assets/_Game/Data/EnemySpawn/FactionLocks");
             var serializedMaterializer = new SerializedObject(materializer);
             SetReference(serializedMaterializer, "_caveRunManager", runManager);
             SetReference(serializedMaterializer, "_inventoryManager", inventoryManager);
             SetReference(serializedMaterializer, "_equipmentManager", equipmentManager);
+            if (enemyDatabase != null)
+            {
+                SetReference(serializedMaterializer, "_enemyDatabase", enemyDatabase);
+            }
+            SetObjectArray(serializedMaterializer, "_enemySpawnProfiles", spawnProfiles);
+            SetObjectArray(serializedMaterializer, "_enemySpawnPacks", spawnPacks);
+            SetObjectArray(serializedMaterializer, "_enemyFactionLocks", factionLocks);
             SetReference(serializedMaterializer, "_resourceNodeDatabase", resourceNodeDatabase);
             SetReference(serializedMaterializer, "_playerTransform", playerTransform);
             SetReference(serializedMaterializer, "_levelController", controller);
             serializedMaterializer.FindProperty("_resourceSpawnChance").floatValue = 0.28f;
             serializedMaterializer.FindProperty("_minResourceNodes").intValue = 1;
             serializedMaterializer.FindProperty("_maxResourceNodes").intValue = 4;
+            serializedMaterializer.FindProperty("_maxEnemiesPerLevel").intValue = 12;
             serializedMaterializer.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(materializer);
 
-            var enemyDatabase = EnsureEnemyDatabase();
             var fallbackSlimeData = EnsureEnemySlimeData();
 
             var serializedSpawner = new SerializedObject(enemySpawner);
@@ -832,13 +845,10 @@ namespace CindarsHope.Editor.SceneCreation
         {
             const string databasePath = "Assets/_Game/Data/Combat/EnemyDatabase.asset";
             var existing = AssetDatabase.LoadAssetAtPath<EnemyDatabaseSO>(databasePath);
-            if (existing != null && existing.All.Count > 0)
-            {
-                return existing;
-            }
 
             // Ensure enemy slime data exists
             var slimeData = EnsureEnemySlimeData();
+            var rosterEnemies = LoadAssets<EnemyDataSO>("Assets/_Game/Data/Enemies/Roster");
 
             var database = existing ?? ScriptableObject.CreateInstance<EnemyDatabaseSO>();
             if (database == null)
@@ -848,7 +858,7 @@ namespace CindarsHope.Editor.SceneCreation
             }
             database.name = "EnemyDatabase";
 
-            if (slimeData != null)
+            if (slimeData != null || rosterEnemies.Length > 0)
             {
                 var serializedDatabase = new SerializedObject(database);
                 var enemiesProperty = serializedDatabase.FindProperty("_items");
@@ -859,10 +869,19 @@ namespace CindarsHope.Editor.SceneCreation
                     return database;
                 }
 
-                if (!ContainsEnemy(enemiesProperty, slimeData))
+                if (slimeData != null && !ContainsEnemy(enemiesProperty, slimeData))
                 {
                     enemiesProperty.InsertArrayElementAtIndex(enemiesProperty.arraySize);
                     enemiesProperty.GetArrayElementAtIndex(enemiesProperty.arraySize - 1).objectReferenceValue = slimeData;
+                }
+
+                foreach (var enemy in rosterEnemies)
+                {
+                    if (enemy != null && !ContainsEnemy(enemiesProperty, enemy))
+                    {
+                        enemiesProperty.InsertArrayElementAtIndex(enemiesProperty.arraySize);
+                        enemiesProperty.GetArrayElementAtIndex(enemiesProperty.arraySize - 1).objectReferenceValue = enemy;
+                    }
                 }
 
                 serializedDatabase.ApplyModifiedPropertiesWithoutUndo();
@@ -1109,6 +1128,32 @@ namespace CindarsHope.Editor.SceneCreation
             }
 
             property.objectReferenceValue = value;
+        }
+
+        private static void SetObjectArray<T>(SerializedObject serializedObject, string propertyName, T[] values)
+            where T : Object
+        {
+            var property = serializedObject.FindProperty(propertyName);
+            if (property == null || !property.isArray)
+            {
+                Debug.LogWarning($"Property '{propertyName}' not found or not array on {serializedObject.targetObject.name}.");
+                return;
+            }
+
+            property.arraySize = values?.Length ?? 0;
+            for (var i = 0; i < property.arraySize; i++)
+            {
+                property.GetArrayElementAtIndex(i).objectReferenceValue = values[i];
+            }
+        }
+
+        private static T[] LoadAssets<T>(string folder) where T : Object
+        {
+            return AssetDatabase.FindAssets($"t:{typeof(T).Name}", new[] { folder })
+                .Select(g => AssetDatabase.LoadAssetAtPath<T>(AssetDatabase.GUIDToAssetPath(g)))
+                .Where(a => a != null)
+                .OrderBy(a => a.name)
+                .ToArray();
         }
 
         private static Sprite GetBuiltinSprite()

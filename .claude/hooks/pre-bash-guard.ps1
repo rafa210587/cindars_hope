@@ -46,5 +46,16 @@ foreach ($pattern in $BlockedPatterns) {
     }
 }
 
+if ($Command -match "Unity(\.exe)?['""]?\s+.*-batchmode" -or $Command -match "Unity\.exe.*-batchmode") {
+    $unityProcesses = Get-Process -Name "Unity" -ErrorAction SilentlyContinue
+    if ($unityProcesses) {
+        Write-Error "Blocked Unity batchmode while another Unity process is running."
+        Write-Error "Reason: Unity cannot safely open the same project in multiple instances."
+        Write-Error "Running Unity processes: $($unityProcesses.Count)"
+        Write-Error "Close the existing Unity Editor or document validation as blocked."
+        return $false
+    }
+}
+
 # Command is safe
 return $true

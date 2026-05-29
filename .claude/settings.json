@@ -88,6 +88,24 @@
       "path": ".claude/hooks/run-required-validations.ps1",
       "description": "Run validations based on detected change scope (manual trigger via /implement-spec)",
       "trigger": "manual"
+    },
+    "checkCsprojIncludes": {
+      "enabled": false,
+      "path": ".claude/hooks/check-csproj-includes.ps1",
+      "description": "Warn when changed C# files are missing from local Unity csproj files",
+      "trigger": "manual"
+    },
+    "checkRuntimeForbiddenSearch": {
+      "enabled": false,
+      "path": ".claude/hooks/check-runtime-forbidden-search.ps1",
+      "description": "Warn or fail on prohibited runtime scene search APIs",
+      "trigger": "manual"
+    },
+    "checkCaveStableRunScope": {
+      "enabled": false,
+      "path": ".claude/hooks/check-cave-stable-run-scope.ps1",
+      "description": "Warn when cave runtime/procedural changes require FASE9F stable-run guardrails",
+      "trigger": "manual"
     }
   },
 
@@ -105,8 +123,15 @@
   },
 
   "rules": {
+    "ruleIndex": ".claude/rules/RULES.md",
     "noRootSpecs": true,
     "noDocOldEdits": true,
+    "noRuntimeGlobalSearch": true,
+    "saveDtoSimpleTypesOnly": true,
+    "caveStableRun": true,
+    "unityValidationHonesty": true,
+    "generatedAssetEvidence": true,
+    "noParallelUnityBatchmode": true,
     "requireEvidenceForStatus": true,
     "requireValidationBeforeCloseout": true,
     "forbiddenNamespaces": [

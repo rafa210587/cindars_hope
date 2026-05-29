@@ -421,6 +421,19 @@ namespace CindarsHope.Enemy
             }
         }
 
+        public void Configure(EnemyDataSO enemyData, EnemyMovementProfileSO movementProfile = null)
+        {
+            _enemyData = enemyData;
+            _movementProfile = movementProfile;
+
+            if (_vulnerabilityState != null)
+            {
+                _vulnerabilityState.Initialize(_enemyData?.enemyId);
+            }
+
+            InitActionSet();
+        }
+
         public void SetState(EnemyBrainState newState) => _currentState = newState;
     }
 

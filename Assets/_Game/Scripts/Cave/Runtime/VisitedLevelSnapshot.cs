@@ -1,14 +1,17 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace CindarsHope.Cave.Runtime
 {
     [Serializable]
-    public sealed class VisitedLevelSnapshot : IVisitedLevelSnapshot
+    public class VisitedLevelSnapshot : IVisitedLevelSnapshot
     {
         [SerializeField] public int CaveLevel;
         [SerializeField] public string SnapshotId;
+        [SerializeField] public string CaveWorldSeed;
+        [SerializeField] public string CaveRunSeed;
         [SerializeField] public string BiomeId;
         [SerializeField] public string LayoutHash;
         [SerializeField] public Vector2 EntrancePosition;
@@ -21,8 +24,12 @@ namespace CindarsHope.Cave.Runtime
         [SerializeField] public List<SerializedCaveGenerationPoint> ResourceSpawnPointsList = new();
         [SerializeField] public List<SerializedEnemySpawn> EnemySpawns = new();
         [SerializeField] public List<SerializedResourceNode> ResourceNodes = new();
+        [SerializeField] public List<CaveResourceNodeSnapshotEntry> ResourceNodeStates = new();
         [SerializeField] public List<string> DepletedResourceNodeIds = new();
-        [SerializeField] public List<EnemySpawnPlanEntry> EnemySpawnPlan = new();
+        [SerializeField] public CaveFishingSpotSnapshotEntry FishingSpotState = new();
+        [SerializeField] public CaveEnemySpawnPlan EnemySpawnPlan = new();
+        [SerializeField] public List<EnemySpawnPlanEntry> LegacyEnemySpawnPlanEntries = new();
+        [SerializeField] public List<string> Warnings = new();
         [SerializeField] public SerializedEnemyRedistributionState RedistributionState = new();
         [SerializeField] public SerializedEnemyRespawnState RespawnState = new();
 
@@ -38,7 +45,17 @@ namespace CindarsHope.Cave.Runtime
             CaveLevel = caveLevel;
             BiomeId = biomeId;
             LayoutHash = layoutHash;
-            SnapshotId = $"snapshot_{caveLevel}_{DateTime.UtcNow:yyyyMMddHHmmssfff}_{Guid.NewGuid():N}";
+            SnapshotId = BuildSnapshotId(string.Empty, caveLevel);
+        }
+
+        public VisitedLevelSnapshot(int caveLevel, string biomeId, string layoutHash, string caveWorldSeed, string caveRunSeed)
+        {
+            CaveLevel = caveLevel;
+            BiomeId = biomeId;
+            LayoutHash = layoutHash;
+            CaveWorldSeed = caveWorldSeed ?? string.Empty;
+            CaveRunSeed = caveRunSeed ?? string.Empty;
+            SnapshotId = BuildSnapshotId(CaveRunSeed, caveLevel);
         }
 
         public bool IsValid()
@@ -75,6 +92,14 @@ namespace CindarsHope.Cave.Runtime
                 Position = position,
                 ResourceDataId = resourceDataId
             });
+
+            ResourceNodeStates.Add(new CaveResourceNodeSnapshotEntry
+            {
+                NodeInstanceId = nodeId ?? string.Empty,
+                ResourceNodeId = resourceDataId ?? string.Empty,
+                GridPosition = Vector2Int.RoundToInt(position),
+                IsDepleted = DepletedResourceNodeIds.Contains(nodeId)
+            });
         }
 
         public void MarkResourceNodeDepleted(string nodeInstanceId)
@@ -83,14 +108,22 @@ namespace CindarsHope.Cave.Runtime
             {
                 DepletedResourceNodeIds.Add(nodeInstanceId);
             }
+
+            foreach (var resourceNodeState in ResourceNodeStates)
+            {
+                if (resourceNodeState != null && resourceNodeState.NodeInstanceId == nodeInstanceId)
+                {
+                    resourceNodeState.IsDepleted = true;
+                }
+            }
         }
 
         public void SetEnemySpawnPlan(CaveLevelEnemyPlan plan)
         {
-            EnemySpawnPlan.Clear();
+            LegacyEnemySpawnPlanEntries.Clear();
             if (plan != null && plan.EnemyPlans.Count > 0)
             {
-                EnemySpawnPlan.AddRange(plan.EnemyPlans);
+                LegacyEnemySpawnPlanEntries.AddRange(plan.EnemyPlans);
             }
 
             if (plan?.RedistributionState != null)
@@ -113,10 +146,62 @@ namespace CindarsHope.Cave.Runtime
             }
         }
 
+        public void SetEnemySpawnPlan(CaveEnemySpawnPlan plan)
+        {
+            EnemySpawnPlan = plan ?? new CaveEnemySpawnPlan();
+            LegacyEnemySpawnPlanEntries.Clear();
+
+            if (EnemySpawnPlan.Entries == null)
+            {
+                return;
+            }
+
+            foreach (var entry in EnemySpawnPlan.Entries)
+            {
+                if (entry == null || string.IsNullOrWhiteSpace(entry.EnemyId))
+                {
+                    continue;
+                }
+
+                LegacyEnemySpawnPlanEntries.Add(new EnemySpawnPlanEntry(
+                    entry.EnemyInstanceId,
+                    entry.EnemyId,
+                    !string.IsNullOrWhiteSpace(entry.RoomId)
+                        ? $"{entry.RoomId}_{entry.GridPosition.x}_{entry.GridPosition.y}"
+                        : $"anchor_{entry.SpawnIndex}")
+                {
+                    IsBoss = entry.SizeClass == "Boss"
+                });
+            }
+        }
+
         public CaveLevelEnemyPlan RestoreEnemySpawnPlan()
         {
             var plan = new CaveLevelEnemyPlan();
-            plan.EnemyPlans.AddRange(EnemySpawnPlan);
+            if (LegacyEnemySpawnPlanEntries.Count > 0)
+            {
+                plan.EnemyPlans.AddRange(LegacyEnemySpawnPlanEntries);
+            }
+            else if (EnemySpawnPlan?.Entries != null)
+            {
+                foreach (var entry in EnemySpawnPlan.Entries)
+                {
+                    if (entry == null || string.IsNullOrWhiteSpace(entry.EnemyId))
+                    {
+                        continue;
+                    }
+
+                    plan.EnemyPlans.Add(new EnemySpawnPlanEntry(
+                        entry.EnemyInstanceId,
+                        entry.EnemyId,
+                        !string.IsNullOrWhiteSpace(entry.RoomId)
+                            ? $"{entry.RoomId}_{entry.GridPosition.x}_{entry.GridPosition.y}"
+                            : $"anchor_{entry.SpawnIndex}")
+                    {
+                        IsBoss = entry.SizeClass == "Boss"
+                    });
+                }
+            }
 
             if (RedistributionState != null)
             {
@@ -138,6 +223,11 @@ namespace CindarsHope.Cave.Runtime
             }
 
             return plan;
+        }
+
+        public void SetFishingSpot(CaveFishingSpotSnapshotEntry fishingSpot)
+        {
+            FishingSpotState = fishingSpot ?? new CaveFishingSpotSnapshotEntry();
         }
 
         public void SetLayoutDimensions(int width, int height)
@@ -179,6 +269,44 @@ namespace CindarsHope.Cave.Runtime
                 Position = position
             });
         }
+
+        public static string BuildSnapshotId(string caveRunSeed, int caveLevel)
+        {
+            var seed = string.IsNullOrWhiteSpace(caveRunSeed) ? "run_unknown" : caveRunSeed;
+            var safeSeed = new string(seed.Select(c => char.IsLetterOrDigit(c) ? c : '_').ToArray());
+            return $"snapshot_{safeSeed}_{Mathf.Max(1, caveLevel)}";
+        }
+    }
+
+    [Serializable]
+    public sealed class CaveLevelSnapshot : VisitedLevelSnapshot
+    {
+        public CaveLevelSnapshot()
+        {
+        }
+
+        public CaveLevelSnapshot(int caveLevel, string biomeId, string layoutHash, string caveWorldSeed, string caveRunSeed)
+            : base(caveLevel, biomeId, layoutHash, caveWorldSeed, caveRunSeed)
+        {
+        }
+    }
+
+    [Serializable]
+    public sealed class CaveResourceNodeSnapshotEntry
+    {
+        public string NodeInstanceId = string.Empty;
+        public string ResourceNodeId = string.Empty;
+        public Vector2Int GridPosition;
+        public bool IsDepleted;
+    }
+
+    [Serializable]
+    public sealed class CaveFishingSpotSnapshotEntry
+    {
+        public bool HasFishingSpot;
+        public string FishingSpotId = string.Empty;
+        public Vector2Int GridPosition;
+        public string FishingProfileId = string.Empty;
     }
 
     [Serializable]

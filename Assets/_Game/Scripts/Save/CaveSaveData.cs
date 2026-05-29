@@ -68,14 +68,26 @@ namespace CindarsHope.Save
     {
         public int CaveLevel;
         public string SnapshotId;
+        public string CaveWorldSeed;
+        public string CaveRunSeed;
         public string BiomeId;
         public string LayoutHash;
+        public int Width;
+        public int Height;
         public Vector2 EntrancePosition;
         public Vector2 ExitPosition;
+        public List<Vector2Int> WalkableTilesList = new List<Vector2Int>();
+        public List<Vector2Int> WallTilesList = new List<Vector2Int>();
+        public List<SerializedCaveGenerationPoint> EnemySpawnPointsList = new List<SerializedCaveGenerationPoint>();
+        public List<SerializedCaveGenerationPoint> ResourceSpawnPointsList = new List<SerializedCaveGenerationPoint>();
         public List<SerializedEnemySpawn> EnemySpawns = new List<SerializedEnemySpawn>();
         public List<SerializedResourceNode> ResourceNodes = new List<SerializedResourceNode>();
+        public List<CaveResourceNodeSnapshotEntry> ResourceNodeStates = new List<CaveResourceNodeSnapshotEntry>();
         public List<string> DepletedResourceNodeIds = new List<string>();
-        public List<EnemySpawnPlanEntry> EnemySpawnPlan = new List<EnemySpawnPlanEntry>();
+        public CaveFishingSpotSnapshotEntry FishingSpotState = new CaveFishingSpotSnapshotEntry();
+        public CaveEnemySpawnPlan EnemySpawnPlan = new CaveEnemySpawnPlan();
+        public List<EnemySpawnPlanEntry> LegacyEnemySpawnPlanEntries = new List<EnemySpawnPlanEntry>();
+        public List<string> Warnings = new List<string>();
 
         public static SerializedVisitedLevelSnapshot FromSnapshot(VisitedLevelSnapshot snapshot)
         {
@@ -88,14 +100,26 @@ namespace CindarsHope.Save
             {
                 CaveLevel = snapshot.CaveLevel,
                 SnapshotId = snapshot.SnapshotId,
+                CaveWorldSeed = snapshot.CaveWorldSeed,
+                CaveRunSeed = snapshot.CaveRunSeed,
                 BiomeId = snapshot.BiomeId,
                 LayoutHash = snapshot.LayoutHash,
+                Width = snapshot.Width,
+                Height = snapshot.Height,
                 EntrancePosition = snapshot.EntrancePosition,
                 ExitPosition = snapshot.ExitPosition,
+                WalkableTilesList = new List<Vector2Int>(snapshot.WalkableTilesList),
+                WallTilesList = new List<Vector2Int>(snapshot.WallTilesList),
+                EnemySpawnPointsList = new List<SerializedCaveGenerationPoint>(snapshot.EnemySpawnPointsList),
+                ResourceSpawnPointsList = new List<SerializedCaveGenerationPoint>(snapshot.ResourceSpawnPointsList),
                 EnemySpawns = new List<SerializedEnemySpawn>(snapshot.EnemySpawns),
                 ResourceNodes = new List<SerializedResourceNode>(snapshot.ResourceNodes),
+                ResourceNodeStates = new List<CaveResourceNodeSnapshotEntry>(snapshot.ResourceNodeStates),
                 DepletedResourceNodeIds = new List<string>(snapshot.DepletedResourceNodeIds),
-                EnemySpawnPlan = new List<EnemySpawnPlanEntry>(snapshot.EnemySpawnPlan)
+                FishingSpotState = snapshot.FishingSpotState,
+                EnemySpawnPlan = snapshot.EnemySpawnPlan,
+                LegacyEnemySpawnPlanEntries = new List<EnemySpawnPlanEntry>(snapshot.LegacyEnemySpawnPlanEntries),
+                Warnings = new List<string>(snapshot.Warnings)
             };
         }
 
@@ -109,13 +133,32 @@ namespace CindarsHope.Save
             var snapshot = new VisitedLevelSnapshot(CaveLevel, BiomeId, LayoutHash)
             {
                 SnapshotId = SnapshotId,
+                CaveWorldSeed = CaveWorldSeed,
+                CaveRunSeed = CaveRunSeed,
+                Width = Width,
+                Height = Height,
                 EntrancePosition = EntrancePosition,
                 ExitPosition = ExitPosition,
+                WalkableTilesList = new List<Vector2Int>(WalkableTilesList ?? new List<Vector2Int>()),
+                WallTilesList = new List<Vector2Int>(WallTilesList ?? new List<Vector2Int>()),
+                EnemySpawnPointsList = new List<SerializedCaveGenerationPoint>(EnemySpawnPointsList ?? new List<SerializedCaveGenerationPoint>()),
+                ResourceSpawnPointsList = new List<SerializedCaveGenerationPoint>(ResourceSpawnPointsList ?? new List<SerializedCaveGenerationPoint>()),
                 EnemySpawns = new List<SerializedEnemySpawn>(EnemySpawns),
                 ResourceNodes = new List<SerializedResourceNode>(ResourceNodes),
+                ResourceNodeStates = new List<CaveResourceNodeSnapshotEntry>(ResourceNodeStates ?? new List<CaveResourceNodeSnapshotEntry>()),
                 DepletedResourceNodeIds = new List<string>(DepletedResourceNodeIds),
-                EnemySpawnPlan = new List<EnemySpawnPlanEntry>(EnemySpawnPlan)
+                FishingSpotState = FishingSpotState ?? new CaveFishingSpotSnapshotEntry(),
+                EnemySpawnPlan = EnemySpawnPlan ?? new CaveEnemySpawnPlan(),
+                LegacyEnemySpawnPlanEntries = new List<EnemySpawnPlanEntry>(LegacyEnemySpawnPlanEntries ?? new List<EnemySpawnPlanEntry>()),
+                Warnings = new List<string>(Warnings ?? new List<string>())
             };
+
+            if ((snapshot.LegacyEnemySpawnPlanEntries == null || snapshot.LegacyEnemySpawnPlanEntries.Count == 0)
+                && EnemySpawnPlan == null
+                && LegacyEnemySpawnPlanEntries == null)
+            {
+                snapshot.LegacyEnemySpawnPlanEntries = new List<EnemySpawnPlanEntry>();
+            }
 
             return snapshot;
         }

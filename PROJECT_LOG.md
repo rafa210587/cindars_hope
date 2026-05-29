@@ -1,3 +1,74 @@
+## Sessao 2026-05-29 (29b) - SPEC 14B - Cave Snapshot Replay with EnemySpawnPlan
+
+**Foco:** Consolidar snapshot/replay de nivel visitado para preservar layout, resources, fishing hook e EnemySpawnPlan dentro da mesma run.
+**Status:** Implementado em codigo; build runtime/editor OK. Unity validator e Play Mode humano pendentes.
+
+### Implementacao
+
+- `VisitedLevelSnapshot` expandido com `CaveWorldSeed`, `CaveRunSeed`, `ResourceNodeStates`, `FishingSpotState`, `CaveEnemySpawnPlan`, warnings e snapshot id deterministico por `CaveRunSeed + CaveLevel`.
+- `CaveLevelSnapshot`: tipo compativel para o contrato especifico da 14B.
+- `CaveResourceNodeSnapshotEntry` e `CaveFishingSpotSnapshotEntry`: DTOs simples por IDs/posicoes.
+- `CaveSnapshotService`: captura/restaura `CaveGeneratedLevel`, cria fishing hook 10%, calcula `LayoutHash` SHA256 canonico e valida replay.
+- `CaveLevelRuntimeController`: passa a buscar snapshot via service e, em revisita, materializa a partir do snapshot.
+- `CaveRuntimeMaterializer`: adiciona `MaterializeFromSnapshot`, usa `CaveEnemySpawnPlan` salvo sem rerodar resolver e materializa resources do snapshot quando disponiveis.
+- `CaveSaveData`: preserva campos de layout, spawn points, resources, fishing hook e `CaveEnemySpawnPlan`.
+- `ValidateSpec14BCaveSnapshotReplay`: validator Editor para contratos, hash, controller, save e busca runtime proibida.
+
+### Validacao
+
+- `dotnet build .\Assembly-CSharp.csproj --no-restore`: 0 erros, 0 avisos.
+- `dotnet build .\Assembly-CSharp-Editor.csproj --no-restore`: primeira tentativa falhou por lock temporario de `Assembly-CSharp.dll` pelo processo `aswEngSrv.exe`; reexecucao isolada OK, 0 erros, 3 avisos pre-existentes em `CreateEnemyActionsAndSets.cs`.
+- `tools/docs/validate_docs.ps1`: OK.
+- `git diff --check`: OK fora do sandbox.
+- `.claude/hooks/check-runtime-forbidden-search.ps1`: OK.
+- `.claude/hooks/check-csproj-includes.ps1`: OK.
+- `.claude/hooks/check-cave-stable-run-scope.ps1`: OK com aviso esperado de escopo cave.
+- `tools/unity/RunUnityCompileValidation.ps1`: wrapper retornou exit code 1, mas o log mostra Csc/Bee concluido sem `error CS` e `Exiting batchmode successfully now!`.
+- `tools/unity/ScanUnityLogs.ps1`: falhou por falsos positivos em linhas `Csc ... Assembly-CSharp.dll` e assemblies `*-firstpass.dll not valid` pre-existentes.
+
+### Pendencias
+
+- Unity batchmode/validator Editor segue pendente se houver outra instancia do Unity aberta.
+- Play Mode humano: confirmar mesma run/level com mesmo `LayoutHash`, mesmo `EnemySpawnPlan`, resources/fishing sem reroll e save/load preservando snapshot.
+- SPEC 14C deve implementar defeated state e respawn 2 dias; SPEC 14D redistribuicao pos-morte.
+
+---
+
+## Sessao 2026-05-29 (29a) - SPEC 14A - Cave Enemy SpawnPlan / Materialization / Run Stability
+
+**Foco:** Conectar `EnemySpawnResolver` ao runtime da cave via `CaveEnemySpawnPlan`, materializando inimigos com IDs deterministicos por run e publicando eventos para o Bestiary.
+**Status:** Implementado em codigo; build runtime/editor OK. Unity validator e Play Mode humano pendentes.
+
+### Implementacao
+
+- `CaveEnemySpawnPlan` / `CaveEnemySpawnPlanEntry`: contratos por IDs/tipos simples com `BiomeId`, `LevelSeed`, `LayoutHash`, `Warnings` e `FactionId`.
+- `CaveEnemySpawnPlanner`: monta `EnemySpawnRequest`, chama `EnemySpawnResolver`, seleciona posicoes seguras, aplica distancia minima entre inimigos e gera `EnemyInstanceId` deterministico por `CaveWorldSeed + CaveRunSeed + CaveLevel + BiomeId`.
+- `CaveRuntimeMaterializer`: adicionada etapa `MaterializeEnemies` apos floor/walls/exits/resources, cria `GeneratedEnemies`, configura runtime fallback/prefab, incrementa `CreatedEnemies` e publica `EnemySpawnedEvent`/`EnemySeenEvent`.
+- `BestiaryManager` segue recebendo `FirstSeen` por eventos de spawn/seen sem criar sistema paralelo.
+- `ValidateSpec14AEnemySpawnMaterialization`: validator Editor para contratos, materializer, determinismo, eventos, Bestiary e busca runtime proibida.
+
+### Validacao
+
+- `dotnet restore .\Assembly-CSharp.csproj`: OK.
+- `dotnet restore .\Assembly-CSharp-Editor.csproj`: OK.
+- `dotnet build .\Assembly-CSharp.csproj --no-restore`: 0 erros, 0 avisos.
+- `dotnet build .\Assembly-CSharp-Editor.csproj --no-restore`: 0 erros, 3 avisos pre-existentes em `CreateEnemyActionsAndSets.cs`.
+- `tools/docs/validate_docs.ps1`: OK apos corrigir headers `Bloqueia` em 14A/14B.
+- `git diff --check`: OK fora do sandbox; primeira tentativa falhou por erro Git/MSYS `couldn't create signal pipe`.
+- `.claude/hooks/check-runtime-forbidden-search.ps1`: OK.
+- `.claude/hooks/check-csproj-includes.ps1`: OK.
+- `.claude/hooks/check-cave-stable-run-scope.ps1`: OK com aviso esperado de escopo cave; docs FASE9F lidos.
+- `tools/unity/RunUnityCompileValidation.ps1`: NOT RUN/blocked por ambiente; Unity recusou batchmode porque outra instancia esta com o projeto aberto.
+- `tools/unity/ScanUnityLogs.ps1`: falhou sobre o log abortado antes de compile (`Application will terminate with return code 1`).
+
+### Pendencias
+
+- Executar no Unity `CindarsHope/Validation/Validate SPEC 14A - Enemy Spawn Materialization`.
+- Validar Play Mode em `CaveScene`: spawn, estabilidade mesma run, nova run, Bestiary FirstSeen e save/load.
+- SPEC 14B deve persistir/replayar `EnemySpawnPlan` em snapshot; 14A ainda reconstrói por seed.
+
+---
+
 ## Sessao 2026-05-28 (28j) - SPEC 13F - Spawn resolver/ecology/faction locks
 
 **Foco:** Implementar resolvedor data-driven de spawn de inimigos, packs/ecologia e faction locks sem materializacao final da cave e sem snapshot da SPEC 14.

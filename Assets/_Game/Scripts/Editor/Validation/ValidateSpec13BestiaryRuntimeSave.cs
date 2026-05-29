@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using CindarsHope.Combat;
+using CindarsHope.Editor.EnemyTaxonomy;
 using CindarsHope.Enemy;
 using CindarsHope.Save;
 using UnityEditor;
@@ -89,7 +90,7 @@ namespace CindarsHope.Editor.Validation
             int requiredEnemyCount = 0;
             int requiredEntryCount = 0;
 
-            foreach (var enemyId in RequiredEnemyIds)
+            foreach (var enemyId in GetRequiredEnemyIds())
             {
                 if (!enemies.TryGetValue(enemyId, out var enemy))
                 {
@@ -213,5 +214,13 @@ namespace CindarsHope.Editor.Validation
             "enemy_cave_mite_queen", "enemy_fungal_patriarch", "enemy_duergar_artificer_lord", "enemy_void_herald",
             "enemy_draconic_elder",
         };
+
+        private static string[] GetRequiredEnemyIds()
+        {
+            return CreateEnemySpawnEcologyData.BuildProfileDefinitions()
+                .Select(p => p.EnemyId)
+                .Distinct()
+                .ToArray();
+        }
     }
 }

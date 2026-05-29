@@ -66,6 +66,37 @@ namespace CindarsHope.Cave.Runtime
             }
         }
 
+        public CaveLevelEnemyPlan CreatePlanFromCaveEnemySpawnPlan(CaveEnemySpawnPlan spawnPlan)
+        {
+            var plan = new CaveLevelEnemyPlan();
+            if (spawnPlan?.Entries == null)
+            {
+                return plan;
+            }
+
+            foreach (var spawnEntry in spawnPlan.Entries)
+            {
+                if (spawnEntry == null || string.IsNullOrWhiteSpace(spawnEntry.EnemyId))
+                {
+                    continue;
+                }
+
+                var anchorId = !string.IsNullOrWhiteSpace(spawnEntry.RoomId)
+                    ? $"{spawnEntry.RoomId}_{spawnEntry.GridPosition.x}_{spawnEntry.GridPosition.y}"
+                    : $"anchor_{spawnEntry.SpawnIndex}";
+
+                plan.EnemyPlans.Add(new EnemySpawnPlanEntry(
+                    spawnEntry.EnemyInstanceId,
+                    spawnEntry.EnemyId,
+                    anchorId)
+                {
+                    IsBoss = spawnEntry.SizeClass == "Boss"
+                });
+            }
+
+            return plan;
+        }
+
         public bool IsPlanValid(CaveLevelEnemyPlan plan)
         {
             return plan != null && plan.EnemyPlans.Count > 0;

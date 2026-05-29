@@ -6,10 +6,14 @@ namespace CindarsHope.Core.Events
     {
         public string EnemyId;
         public Vector2 Position;
-        public EnemySpawnedEvent(string enemyId, Vector2 position)
+        public string EnemyInstanceId;
+        public int CaveLevel;
+        public EnemySpawnedEvent(string enemyId, Vector2 position, string enemyInstanceId = "", int caveLevel = 0)
         {
             EnemyId = enemyId;
             Position = position;
+            EnemyInstanceId = enemyInstanceId ?? string.Empty;
+            CaveLevel = caveLevel;
         }
     }
 
@@ -17,10 +21,14 @@ namespace CindarsHope.Core.Events
     {
         public string EnemyId;
         public Vector2 Position;
-        public EnemySeenEvent(string enemyId, Vector2 position)
+        public string EnemyInstanceId;
+        public int CaveLevel;
+        public EnemySeenEvent(string enemyId, Vector2 position, string enemyInstanceId = "", int caveLevel = 0)
         {
             EnemyId = enemyId;
             Position = position;
+            EnemyInstanceId = enemyInstanceId ?? string.Empty;
+            CaveLevel = caveLevel;
         }
     }
 

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using CindarsHope.Combat;
 using UnityEditor;
 using UnityEngine;
@@ -24,6 +25,7 @@ namespace CindarsHope.Editor.EnemyTaxonomy
             public EnemyRole[] SecondaryRoles;
             public string MovementProfileId;
             public string SizeProfileId;
+            public string ActionSetId;
             public string VulnerabilityProfileId;
             public string PrimaryDamageTypeId;
             public string BestiaryEntryId;
@@ -41,21 +43,25 @@ namespace CindarsHope.Editor.EnemyTaxonomy
         {
             EnsureFolder(RosterFolder);
 
-            var roster = BuildRoster();
             int created = 0;
-            int skipped = 0;
+            int updated = 0;
 
-            foreach (var entry in roster)
+            foreach (var entry in BuildCanonicalRoster())
             {
                 string assetPath = $"{RosterFolder}/{entry.EnemyId}.asset";
+                var so = AssetDatabase.LoadAssetAtPath<EnemyDataSO>(assetPath);
 
-                if (AssetDatabase.LoadAssetAtPath<EnemyDataSO>(assetPath) != null)
+                if (so == null)
                 {
-                    skipped++;
-                    continue;
+                    so = ScriptableObject.CreateInstance<EnemyDataSO>();
+                    AssetDatabase.CreateAsset(so, assetPath);
+                    created++;
+                }
+                else
+                {
+                    updated++;
                 }
 
-                var so = ScriptableObject.CreateInstance<EnemyDataSO>();
                 so.enemyId              = entry.EnemyId;
                 so.DisplayName          = entry.DisplayName;
                 so.LoreTagline          = entry.LoreTagline;
@@ -64,6 +70,7 @@ namespace CindarsHope.Editor.EnemyTaxonomy
                 so.SecondaryRoles       = entry.SecondaryRoles ?? new EnemyRole[0];
                 so.MovementProfileId    = entry.MovementProfileId;
                 so.SizeProfileId        = entry.SizeProfileId;
+                so.ActionSetId          = entry.ActionSetId;
                 so.VulnerabilityProfileId = entry.VulnerabilityProfileId;
                 so.PrimaryDamageTypeId  = entry.PrimaryDamageTypeId;
                 so.BestiaryEntryId      = entry.BestiaryEntryId;
@@ -75,13 +82,12 @@ namespace CindarsHope.Editor.EnemyTaxonomy
                 so.IsMiniBoss           = entry.IsMiniBoss;
                 so.IsBoss               = entry.IsBoss;
 
-                AssetDatabase.CreateAsset(so, assetPath);
-                created++;
+                EditorUtility.SetDirty(so);
             }
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
-            Debug.Log($"[SPEC 13B] Roster creation complete. Created: {created}, Skipped (already exist): {skipped}.");
+            Debug.Log($"[SPEC 13B] Canonical roster creation complete. Created: {created}, Updated: {updated}.");
         }
 
         private static void EnsureFolder(string path)
@@ -794,6 +800,131 @@ namespace CindarsHope.Editor.EnemyTaxonomy
                     IsBoss = true
                 },
             };
+        }
+
+        private static List<RosterEntry> BuildCanonicalRoster()
+        {
+            return CreateEnemySpawnEcologyData.BuildProfileDefinitions()
+                .Select(BuildCanonicalEntry)
+                .ToList();
+        }
+
+        private static RosterEntry BuildCanonicalEntry(CreateEnemySpawnEcologyData.ProfileDefinition profile)
+        {
+            var caveBand = profile.MinLevel switch
+            {
+                <= 10 => 1,
+                <= 25 => 2,
+                <= 40 => 3,
+                <= 55 => 4,
+                _ => 5
+            };
+
+            var role = GuessPrimaryRole(profile.EnemyId, profile.SizeClass);
+            var displayName = ToTitle(profile.EnemyId.Replace("enemy_", string.Empty));
+            return new RosterEntry
+            {
+                EnemyId = profile.EnemyId,
+                DisplayName = displayName,
+                LoreTagline = $"A criatura {displayName} foi catalogada nas rotas profundas de Vaalara.",
+                FactionId = $"faction_{MapFaction(profile.FactionId)}",
+                PrimaryRole = role,
+                SecondaryRoles = BuildSecondaryRoles(role, profile.SizeClass),
+                MovementProfileId = GuessMovementProfile(profile.EnemyId, role),
+                SizeProfileId = $"size_{profile.SizeClass.ToString().ToLowerInvariant()}",
+                ActionSetId = $"actionset_{profile.EnemyId}",
+                VulnerabilityProfileId = GuessVulnerability(profile.EnemyId, role),
+                PrimaryDamageTypeId = GuessDamageType(profile.EnemyId),
+                BestiaryEntryId = $"bestiary_{profile.EnemyId.Replace("enemy_", string.Empty)}",
+                XpReward = profile.MinLevel * 4 + profile.MaxCountPerRoom * 3,
+                CaveBand = caveBand,
+                MaxHp = 8 + profile.MinLevel + (int)profile.SizeClass * 8,
+                ContactDamage = 2 + caveBand + (profile.SizeClass >= EnemySizeClass.Large ? 3 : 0),
+                IsElite = profile.CanSpawnAsElite && profile.EnemyId.Contains("warden"),
+                IsMiniBoss = false,
+                IsBoss = profile.SizeClass == EnemySizeClass.Boss
+            };
+        }
+
+        private static EnemyRole GuessPrimaryRole(string enemyId, EnemySizeClass size)
+        {
+            if (enemyId.Contains("archer") || enemyId.Contains("spitter") || enemyId.Contains("bat") || enemyId.Contains("moth")) return EnemyRole.Ranged;
+            if (enemyId.Contains("acolyte") || enemyId.Contains("ashcaller") || enemyId.Contains("adept") || enemyId.Contains("tinker")) return EnemyRole.Caster;
+            if (enemyId.Contains("sentinel") || enemyId.Contains("guard") || enemyId.Contains("knight") || enemyId.Contains("warden")) return EnemyRole.Guard;
+            if (enemyId.Contains("rootsnare")) return EnemyRole.Burrower;
+            if (enemyId.Contains("mite") || enemyId.Contains("tick") || enemyId.Contains("shard")) return EnemyRole.Swarm;
+            if (size >= EnemySizeClass.Large) return EnemyRole.Tank;
+            return EnemyRole.Chaser;
+        }
+
+        private static EnemyRole[] BuildSecondaryRoles(EnemyRole primary, EnemySizeClass size)
+        {
+            if (size >= EnemySizeClass.Large && primary != EnemyRole.Tank)
+            {
+                return new[] { EnemyRole.Tank };
+            }
+
+            return new EnemyRole[0];
+        }
+
+        private static string GuessMovementProfile(string enemyId, EnemyRole role)
+        {
+            if (enemyId.Contains("leaper")) return "movement_leaper";
+            if (enemyId.Contains("shade") || enemyId.Contains("mirror")) return "movement_phase_short_blink";
+            return role switch
+            {
+                EnemyRole.Swarm => "movement_swarm_erratic",
+                EnemyRole.Ranged => "movement_kite_ranged",
+                EnemyRole.Caster => "movement_caster_keep_away",
+                EnemyRole.Guard => "movement_guard_stationary",
+                EnemyRole.Burrower => "movement_burrow_ambush",
+                EnemyRole.Tank => "movement_tank_slow_push",
+                _ => "movement_ground_chase"
+            };
+        }
+
+        private static string GuessVulnerability(string enemyId, EnemyRole role)
+        {
+            if (enemyId.Contains("leaper")) return "vuln_leaper_landing";
+            if (enemyId.Contains("shade") || enemyId.Contains("mirror")) return "vuln_phase_arrival";
+            return role switch
+            {
+                EnemyRole.Swarm => "vuln_swarm_after_bite",
+                EnemyRole.Ranged => "vuln_ranged_after_volley",
+                EnemyRole.Caster => "vuln_caster_after_cast",
+                EnemyRole.Guard => "vuln_guard_shield_drop",
+                EnemyRole.Burrower => "vuln_burrow_emerge",
+                EnemyRole.Tank => "vuln_tank_recover",
+                _ => "vuln_chaser_charge"
+            };
+        }
+
+        private static string GuessDamageType(string enemyId)
+        {
+            if (enemyId.Contains("frost") || enemyId.Contains("ice") || enemyId.Contains("cold")) return "ice";
+            if (enemyId.Contains("ember") || enemyId.Contains("ash") || enemyId.Contains("lava") || enemyId.Contains("furnace") || enemyId.Contains("scorched")) return "fire";
+            if (enemyId.Contains("spore") || enemyId.Contains("moss") || enemyId.Contains("root") || enemyId.Contains("blackroot")) return "toxic";
+            if (enemyId.Contains("rune") || enemyId.Contains("mirror") || enemyId.Contains("shade")) return "arcane";
+            return "physical";
+        }
+
+        private static string MapFaction(string factionId)
+        {
+            return factionId switch
+            {
+                "undead_weak" or "undead_stronger" or "oathless_undead" => "undead",
+                "orc_nyx" or "orc_kaand" => "orc",
+                "ice_cult" => "cultist",
+                "elemental_fire" => "elemental",
+                "furnace_construct" or "stronger_construct" => "construct",
+                "gnome_ruins" => "gnome",
+                _ => factionId
+            };
+        }
+
+        private static string ToTitle(string value)
+        {
+            return string.Join(" ", value.Split('_').Where(p => !string.IsNullOrWhiteSpace(p)).Select(p => char.ToUpperInvariant(p[0]) + p.Substring(1)));
         }
     }
 }

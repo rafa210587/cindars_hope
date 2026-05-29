@@ -111,12 +111,12 @@ namespace CindarsHope.Enemy
 
         private void OnEnemySpawned(EnemySpawnedEvent evt)
         {
-            RegisterEnemySeen(evt?.EnemyId);
+            RegisterEnemySeen(evt?.EnemyId, evt?.CaveLevel ?? 0);
         }
 
         private void OnEnemySeen(EnemySeenEvent evt)
         {
-            RegisterEnemySeen(evt?.EnemyId);
+            RegisterEnemySeen(evt?.EnemyId, evt?.CaveLevel ?? 0);
         }
 
         private void OnEnemyDamaged(EnemyDamagedEvent evt)

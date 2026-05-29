@@ -25,6 +25,7 @@ namespace CindarsHope.Cave
 
         private readonly CaveProceduralGenerator _generator = new CaveProceduralGenerator();
         private readonly CaveEnemySpawnPlanService _spawnPlanService = new CaveEnemySpawnPlanService();
+        private readonly CaveSnapshotService _snapshotService = new CaveSnapshotService();
         private CaveSpawnAnchor _currentSpawnAnchor = CaveSpawnAnchor.Entrance;
         private CaveLevelEnemyPlan _currentEnemyPlan;
 
@@ -127,14 +128,6 @@ namespace CindarsHope.Cave
             {
                 _bossSpawner.SpawnBossForLevel(e.GeneratedLevel, _materializer.GeneratedRuntimeRoot, _playerTransform);
             }
-
-            if (_enemySpawner != null)
-            {
-                _enemySpawner.SpawnEnemiesForLevel(e.GeneratedLevel, _materializer.GeneratedRuntimeRoot, _playerTransform);
-                var spawnedIds = _enemySpawner.LastSpawnedEnemyIds;
-                var plan = _spawnPlanService.CreatePlanForLevel(e.GeneratedLevel, spawnedIds);
-                RegisterEnemySpawnPlan(plan);
-            }
         }
 
         private void Start()
@@ -168,9 +161,9 @@ namespace CindarsHope.Cave
                 visitedSnapshot = cachedSnapshot;
                 Debug.Log($"CaveLevelRuntimeController: Using cached snapshot for level {caveLevel}.", this);
             }
-            else if (_runManager.State.VisitedLevelSnapshots.ContainsKey(caveLevel))
+            else if (_snapshotService.TryGetSnapshot(_runManager.State, _runManager.CaveRunSeed, caveLevel, out var stateSnapshot))
             {
-                visitedSnapshot = _runManager.State.VisitedLevelSnapshots[caveLevel];
+                visitedSnapshot = stateSnapshot;
             }
 
             if (visitedSnapshot != null && visitedSnapshot.IsValid())
@@ -221,6 +214,7 @@ namespace CindarsHope.Cave
             if (_materializeAfterGeneration && _materializer != null)
             {
                 _materializer.Materialize(CurrentGeneratedLevel, _currentSpawnAnchor);
+                RegisterEnemySpawnPlan(_spawnPlanService.CreatePlanFromCaveEnemySpawnPlan(_materializer.LastEnemySpawnPlan));
                 RepositionCamera();
                 CaptureSnapshot();
             }
@@ -238,44 +232,19 @@ namespace CindarsHope.Cave
                 return;
             }
 
-            var snapshot = new VisitedLevelSnapshot(
-                CurrentGeneratedLevel.CaveLevel,
-                CurrentGeneratedLevel.BiomeId,
-                CurrentGeneratedLevel.LayoutHash);
+            var snapshot = _snapshotService.CaptureSnapshot(
+                CurrentGeneratedLevel,
+                _runManager.CaveWorldSeed,
+                _runManager.CaveRunSeed,
+                _materializer != null ? _materializer.LastEnemySpawnPlan : null,
+                _materializer != null ? _materializer.LastResourceNodeSnapshots : null,
+                null,
+                _runManager.State.DepletedNodeIds);
 
-            snapshot.SetEntranceAndExit(CurrentGeneratedLevel.Entrance, CurrentGeneratedLevel.Exit);
-            snapshot.SetLayoutDimensions(CurrentGeneratedLevel.Width, CurrentGeneratedLevel.Height);
-
-            foreach (var walkableTile in CurrentGeneratedLevel.WalkableTiles)
+            if (snapshot == null)
             {
-                snapshot.AddWalkableTile(walkableTile);
-            }
-
-            foreach (var wallTile in CurrentGeneratedLevel.WallTiles)
-            {
-                snapshot.AddWallTile(wallTile);
-            }
-
-            foreach (var point in CurrentGeneratedLevel.EnemySpawnPoints)
-            {
-                snapshot.AddEnemySpawnPoint((int)point.PointType, point.Position);
-                snapshot.AddEnemySpawn($"enemy_{point.Position.x}_{point.Position.y}", new Vector2(point.Position.x, point.Position.y), CurrentGeneratedLevel.CaveLevel);
-            }
-
-            foreach (var point in CurrentGeneratedLevel.ResourceSpawnPoints)
-            {
-                snapshot.AddResourceSpawnPoint((int)point.PointType, point.Position);
-                snapshot.AddResourceNode($"node_{point.Position.x}_{point.Position.y}", new Vector2(point.Position.x, point.Position.y), point.PointType.ToString());
-            }
-
-            foreach (var depletedId in _runManager.State.DepletedNodeIds)
-            {
-                snapshot.MarkResourceNodeDepleted(depletedId);
-            }
-
-            if (_currentEnemyPlan != null)
-            {
-                snapshot.SetEnemySpawnPlan(_currentEnemyPlan);
+                Debug.LogWarning("CaveLevelRuntimeController: Snapshot capture returned null.", this);
+                return;
             }
 
             _runManager.State.VisitedLevelSnapshots[CurrentGeneratedLevel.CaveLevel] = snapshot;
@@ -298,37 +267,11 @@ namespace CindarsHope.Cave
                 return;
             }
 
-            CurrentGeneratedLevel = new CaveGeneratedLevel
+            CurrentGeneratedLevel = _snapshotService.RestoreGeneratedLevel(snapshot);
+            if (CurrentGeneratedLevel == null)
             {
-                CaveLevel = snapshot.CaveLevel,
-                BiomeId = snapshot.BiomeId,
-                LayoutHash = snapshot.LayoutHash,
-                Width = snapshot.Width,
-                Height = snapshot.Height,
-                Entrance = Vector2Int.FloorToInt(snapshot.EntrancePosition),
-                Exit = Vector2Int.FloorToInt(snapshot.ExitPosition)
-            };
-
-            foreach (var walkableTile in snapshot.WalkableTilesList)
-            {
-                CurrentGeneratedLevel.WalkableTiles.Add(walkableTile);
-            }
-
-            foreach (var wallTile in snapshot.WallTilesList)
-            {
-                CurrentGeneratedLevel.WallTiles.Add(wallTile);
-            }
-
-            foreach (var serializedPoint in snapshot.EnemySpawnPointsList)
-            {
-                CurrentGeneratedLevel.EnemySpawnPoints.Add(
-                    new CaveGenerationPoint((CaveGenerationPointType)serializedPoint.PointTypeValue, serializedPoint.Position));
-            }
-
-            foreach (var serializedPoint in snapshot.ResourceSpawnPointsList)
-            {
-                CurrentGeneratedLevel.ResourceSpawnPoints.Add(
-                    new CaveGenerationPoint((CaveGenerationPointType)serializedPoint.PointTypeValue, serializedPoint.Position));
+                Debug.LogWarning("CaveLevelRuntimeController: Snapshot could not restore CaveGeneratedLevel.", this);
+                return;
             }
 
             _currentEnemyPlan = snapshot.RestoreEnemySpawnPlan();
@@ -357,7 +300,8 @@ namespace CindarsHope.Cave
 
             if (_materializeAfterGeneration && _materializer != null)
             {
-                _materializer.Materialize(CurrentGeneratedLevel, _currentSpawnAnchor);
+                _materializer.MaterializeFromSnapshot(snapshot, CurrentGeneratedLevel, _currentSpawnAnchor);
+                RegisterEnemySpawnPlan(_spawnPlanService.CreatePlanFromCaveEnemySpawnPlan(_materializer.LastEnemySpawnPlan));
                 RepositionCamera();
             }
 
@@ -496,14 +440,14 @@ namespace CindarsHope.Cave
                 return;
             }
 
-            reconstructed.ComputeLayoutHash();
+            var replayHash = _snapshotService.CalculateLayoutHash(snapshot);
 
-            if (snapshot.LayoutHash != reconstructed.LayoutHash)
+            if (snapshot.LayoutHash != replayHash)
             {
                 Debug.LogWarning(
                     $"CaveLevelRuntimeController: Layout hash mismatch for level {snapshot.CaveLevel}.\n" +
                     $"  Snapshot hash: {snapshot.LayoutHash}\n" +
-                    $"  Reconstructed hash: {reconstructed.LayoutHash}\n" +
+                    $"  Recomputed hash: {replayHash}\n" +
                     $"  This may indicate a corruption or version mismatch.",
                     this);
             }

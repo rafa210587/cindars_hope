@@ -7,6 +7,7 @@
 > Fonte de refinamento: `docs/refinements/a_implementar/pre_refinamentos/refinamento_spec14b_cave_snapshot_replay_enemy_plan.md`
 > Spec ampla relacionada: `docs/specs/a_implementar/spec_cave_runtime_generation_checkpoints_boss_gates.md`
 > Depende de: SPEC 14A implementada em codigo.
+> Bloqueia: SPEC 14C respawn comum; SPEC 14D redistribuicao pos-morte; fechamento da SPEC 14 ampla.
 > Fora de escopo: respawn comum 2 dias, redistribuicao pos-morte, boss fights/rewards, checkpoint UI, cave UI final, save runtime individual completo de inimigo.
 
 ---

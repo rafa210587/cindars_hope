@@ -24,7 +24,7 @@ namespace CindarsHope.Editor.EnemyTaxonomy
             int created = 0;
             int updated = 0;
 
-            foreach (var enemyId in RequiredEnemyIds)
+            foreach (var enemyId in GetRequiredEnemyIds())
             {
                 enemyMap.TryGetValue(enemyId, out var enemy);
                 string entryId = !string.IsNullOrWhiteSpace(enemy?.BestiaryEntryId)
@@ -231,5 +231,13 @@ namespace CindarsHope.Editor.EnemyTaxonomy
             "enemy_cave_mite_queen", "enemy_fungal_patriarch", "enemy_duergar_artificer_lord", "enemy_void_herald",
             "enemy_draconic_elder",
         };
+
+        private static string[] GetRequiredEnemyIds()
+        {
+            return CreateEnemySpawnEcologyData.BuildProfileDefinitions()
+                .Select(p => p.EnemyId)
+                .Distinct()
+                .ToArray();
+        }
     }
 }

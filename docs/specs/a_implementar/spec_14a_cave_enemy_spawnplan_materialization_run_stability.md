@@ -7,6 +7,7 @@
 > Fonte de refinamento: `docs/refinements/a_implementar/pre_refinamentos/refinamento_spec14a_cave_enemy_spawnplan_materialization.md`
 > Spec ampla relacionada: `docs/specs/a_implementar/spec_cave_runtime_generation_checkpoints_boss_gates.md`
 > Depende de: SPEC 13A-13F implementadas em codigo; SPEC 13G closeout recomendado antes ou junto.
+> Bloqueia: SPEC 14B snapshot/replay com EnemySpawnPlan; validacao completa da SPEC 14 ampla.
 > Fora de escopo: cave snapshot completo, respawn comum 2 dias, redistribuicao pos-morte, boss fights, boss rewards, checkpoint UI, Bestiary UI, Flying runtime, arte final.
 
 ---
