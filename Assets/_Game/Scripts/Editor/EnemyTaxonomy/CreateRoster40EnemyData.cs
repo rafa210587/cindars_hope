@@ -817,7 +817,9 @@ namespace CindarsHope.Editor.EnemyTaxonomy
                 <= 25 => 2,
                 <= 40 => 3,
                 <= 55 => 4,
-                _ => 5
+                <= 70 => 5,
+                <= 85 => 6,
+                _ => 7
             };
 
             var role = GuessPrimaryRole(profile.EnemyId, profile.SizeClass);
@@ -870,7 +872,7 @@ namespace CindarsHope.Editor.EnemyTaxonomy
         private static string GuessMovementProfile(string enemyId, EnemyRole role)
         {
             if (enemyId.Contains("leaper")) return "movement_leaper";
-            if (enemyId.Contains("shade") || enemyId.Contains("mirror")) return "movement_phase_short_blink";
+            if (enemyId.Contains("shade") || enemyId.Contains("mirror") || enemyId.Contains("phase") || enemyId.Contains("phantom")) return "movement_phase_short_blink";
             return role switch
             {
                 EnemyRole.Swarm => "movement_swarm_erratic",
@@ -886,7 +888,7 @@ namespace CindarsHope.Editor.EnemyTaxonomy
         private static string GuessVulnerability(string enemyId, EnemyRole role)
         {
             if (enemyId.Contains("leaper")) return "vuln_leaper_landing";
-            if (enemyId.Contains("shade") || enemyId.Contains("mirror")) return "vuln_phase_arrival";
+            if (enemyId.Contains("shade") || enemyId.Contains("mirror") || enemyId.Contains("phase") || enemyId.Contains("phantom")) return "vuln_phase_arrival";
             return role switch
             {
                 EnemyRole.Swarm => "vuln_swarm_after_bite",
@@ -903,8 +905,10 @@ namespace CindarsHope.Editor.EnemyTaxonomy
         {
             if (enemyId.Contains("frost") || enemyId.Contains("ice") || enemyId.Contains("cold")) return "ice";
             if (enemyId.Contains("ember") || enemyId.Contains("ash") || enemyId.Contains("lava") || enemyId.Contains("furnace") || enemyId.Contains("scorched")) return "fire";
+            if (enemyId.Contains("draconic") || enemyId.Contains("wyvern") || enemyId.Contains("wyrm")) return "fire";
             if (enemyId.Contains("spore") || enemyId.Contains("moss") || enemyId.Contains("root") || enemyId.Contains("blackroot")) return "toxic";
-            if (enemyId.Contains("rune") || enemyId.Contains("mirror") || enemyId.Contains("shade")) return "arcane";
+            if (enemyId.Contains("corrupted")) return "poison";
+            if (enemyId.Contains("void") || enemyId.Contains("abyssal") || enemyId.Contains("shadow") || enemyId.Contains("ninrorin") || enemyId.Contains("drow") || enemyId.Contains("rune") || enemyId.Contains("mirror") || enemyId.Contains("shade") || enemyId.Contains("arcane")) return "arcane";
             return "physical";
         }
 

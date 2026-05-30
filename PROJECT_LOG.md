@@ -1,3 +1,48 @@
+## Sessao 2026-05-30 (30a) - SPEC 14A-FIX5 - Roster 60 Inimigos, Bandas 6-7, Bug Level 30, Menus e Validator
+
+**Foco:** Corrigir spawn vazio em level 30; adicionar bandas 6 (Deep 71-85) e 7 (Void 86-99); expandir roster para 60 inimigos; limpar menus Unity; criar validator de cobertura.
+
+### Causa raiz level 30 = 0 inimigos
+
+`EnemySpawnProfileSO.RequiredBossGateProgress = "boss_gate_level_15"` nos perfis de gelo bloqueava o spawn quando nenhum boss estava derrotado, mesmo que `lock_after_gate_15` ja estivesse desbloqueado pelo nivel (>= 16). O campo era redundante e quebrado para novos jogos.
+
+### Implementacao
+
+- `CreateEnemySpawnEcologyData.BuildProfileDefinitions()` e `BuildProfileDefinitionsNoPacks()`:
+  - Removido 8o argumento (gateId = `boss_gate_level_XX`) de TODOS os profiles de gelo (8), fogo (8) e ruinas (8).
+  - Adicionados 10 perfis para banda 6 (deep 71-85): drow + abyssal + ninrorin.
+  - Adicionados 10 perfis para banda 7 (void 86-99): ninrorin + corrupted + draconic + blackstone_wyvern.
+- `CreateEnemySpawnEcologyData.BuildPackDefinitions()`: 6 novos packs (pack_drow_court, pack_abyssal_void_rift, pack_ninrorin_broken_echoes, pack_corrupted_draconic_nest, pack_void_deep_horde, pack_blackstone_wyvern_arena).
+- `CreateEnemySpawnEcologyData.BuildLockDefinitions()`: locks gate_60, gate_75 e gate_90 atualizados com novos packs.
+- `CaveEnemySpawnPlanner.BuildBiomeTags()`: adicionados "deep" (71-85) e "void" (86+).
+- `CreateRoster40EnemyData.BuildCanonicalEntry()`: caveBand switch expandido para bands 6 e 7.
+- `CreateRoster40EnemyData.GuessMovementProfile/GuessVulnerability()`: adicionados keywords "phase" e "phantom" para ninrorin.
+- `CreateRoster40EnemyData.GuessDamageType()`: adicionados draconic/wyvern/wyrm (fire), corrupted (poison), void/abyssal/shadow/ninrorin/drow (arcane).
+- `CreateEnemyActionsAndSets.cs`: 20 novas actions + 20 novos action sets para os 20 inimigos das bandas 6-7.
+- `GenerateAndWireSpec13GAssets.cs`: menu unificado `CindarsHope/Generate/Enemy Runtime Data/Regenerate All Enemy Data`.
+- Criado: `ValidateEnemyCaveSpawnCoverage.cs` com MenuItem `CindarsHope/Validate/Enemy Cave Spawn Coverage`.
+- `Assembly-CSharp-Editor.csproj`: entrada adicionada para ValidateEnemyCaveSpawnCoverage.
+
+### Validacao
+
+- `dotnet build Assembly-CSharp.csproj`: PASSOU — 0 erros, 0 avisos.
+- `dotnet build Assembly-CSharp-Editor.csproj`: PASSOU — 0 erros, 2 avisos CS0649 pre-existentes.
+- `tools/docs/validate_docs.ps1`: PASSOU.
+- Unity batchmode / Play Mode: PENDENTE (requer Unity aberto e execucao de `Regenerate All Enemy Data`).
+
+### Roster final
+
+Total: 60 profiles (40 bandas 1-5 + 10 banda 6 + 10 banda 7). Todos geram EnemyDataSO via BuildCanonicalRoster.
+
+### Pendencias para o usuario
+
+1. Abrir Unity Editor.
+2. Executar `CindarsHope > Generate > Enemy Runtime Data > Regenerate All Enemy Data`.
+3. Executar `CindarsHope > Validate > Enemy Cave Spawn Coverage` e verificar todos os niveis passam.
+4. Testar Play Mode em cave levels 30, 71-85 e 86-99 e confirmar inimigos aparecem com roles/scales corretos.
+
+---
+
 ## Sessao 2026-05-29 (29g) - SPEC 14A-FIX4 - Enemy Runtime Integration (Faction Lock Progression, Behavior, Size)
 
 **Foco:** Corrigir level 30/45 com 0 inimigos; separar comportamentos por MovementProfile; aplicar escala por SizeProfile.

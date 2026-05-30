@@ -562,6 +562,192 @@ namespace CindarsHope.Editor.EnemyTaxonomy
                     Range=2.5f, AreaRadius=2.5f, Cooldown=5.0f, Windup=0.65f, Recover=0.6f,
                     StatusIds=new[]{"status_slow_minor"}, StatusChance=0.8f,
                     TelegraphId=TAP, TriggersVuln=true, VulnTrigger=AC, IsInterruptible=false, MaxTargets=5 },
+
+                // ── BAND 6 – DEEP (71-85) ──────────────────────────────────────────
+
+                // 41. enemy_drow_shadowblade
+                new ActionEntry { Id="action_drow_shadowblade_shadow_strike", DisplayName="Shadow Strike",
+                    ActionType=M, DamageTypeId="physical", BaseDamage=24,
+                    Range=1.0f, Cooldown=2.0f, Windup=0.4f, Recover=0.35f,
+                    TelegraphId=TFM, TriggersVuln=true, VulnTrigger=AAR, IsInterruptible=true, MaxTargets=1 },
+                new ActionEntry { Id="action_drow_shadowblade_void_slash", DisplayName="Void Slash",
+                    ActionType=M, DamageTypeId="arcane", BaseDamage=20,
+                    Range=1.2f, Cooldown=3.0f, Windup=0.5f, Recover=0.4f,
+                    TelegraphId=THM, TriggersVuln=true, VulnTrigger=DCW, IsInterruptible=false, MaxTargets=1 },
+
+                // 42. enemy_drow_arcane_adept
+                new ActionEntry { Id="action_drow_arcane_adept_shadow_bolt", DisplayName="Shadow Bolt",
+                    ActionType=C, DamageTypeId="arcane", BaseDamage=22,
+                    Range=4.5f, Cooldown=2.5f, Windup=0.55f, Recover=0.5f, ProjectileSpeed=5.5f,
+                    StatusIds=new[]{"status_slow_minor"}, StatusChance=0.7f,
+                    TelegraphId=TCS, TriggersVuln=true, VulnTrigger=AC, IsInterruptible=false, MaxTargets=1 },
+
+                // 43. enemy_drow_shadow_warden
+                new ActionEntry { Id="action_drow_shadow_warden_guardian_slam", DisplayName="Guardian Slam",
+                    ActionType=M, DamageTypeId="physical", BaseDamage=30,
+                    Range=1.2f, Cooldown=3.0f, Windup=0.65f, Recover=0.55f,
+                    TelegraphId=THM, TriggersVuln=true, VulnTrigger=ASD, IsInterruptible=false, MaxTargets=1 },
+                new ActionEntry { Id="action_drow_shadow_warden_dark_shield_bash", DisplayName="Dark Shield Bash",
+                    ActionType=A, DamageTypeId="arcane", BaseDamage=22,
+                    Range=1.5f, AreaRadius=1.5f, Cooldown=5.0f, Windup=0.7f, Recover=0.6f,
+                    StatusIds=new[]{"status_slow"}, StatusChance=0.75f,
+                    TelegraphId=TAP, TriggersVuln=true, VulnTrigger=ASD, IsInterruptible=false, MaxTargets=3 },
+
+                // 44. enemy_void_tick
+                new ActionEntry { Id="action_void_tick_void_bite", DisplayName="Void Bite",
+                    ActionType=M, DamageTypeId="arcane", BaseDamage=18,
+                    Range=0.5f, Cooldown=1.5f, Windup=0.2f, Recover=0.25f,
+                    TelegraphId=TFM, TriggersVuln=true, VulnTrigger=AAR, IsInterruptible=true, MaxTargets=1 },
+
+                // 45. enemy_abyssal_riftstalker
+                new ActionEntry { Id="action_abyssal_riftstalker_rift_claw", DisplayName="Rift Claw",
+                    ActionType=M, DamageTypeId="arcane", BaseDamage=24,
+                    Range=1.0f, Cooldown=2.0f, Windup=0.4f, Recover=0.35f,
+                    StatusIds=new[]{"status_slow_minor"}, StatusChance=0.6f,
+                    TelegraphId=TFM, TriggersVuln=true, VulnTrigger=AAR, IsInterruptible=true, MaxTargets=1 },
+
+                // 46. enemy_shadow_sentinel
+                new ActionEntry { Id="action_shadow_sentinel_void_slam", DisplayName="Void Slam",
+                    ActionType=M, DamageTypeId="arcane", BaseDamage=32,
+                    Range=1.3f, Cooldown=3.0f, Windup=0.7f, Recover=0.65f,
+                    TelegraphId=THM, TriggersVuln=true, VulnTrigger=ASD, IsInterruptible=false, MaxTargets=1 },
+                new ActionEntry { Id="action_shadow_sentinel_abyssal_pulse", DisplayName="Abyssal Pulse",
+                    ActionType=A, DamageTypeId="arcane", BaseDamage=24,
+                    Range=2.0f, AreaRadius=2.0f, Cooldown=5.0f, Windup=0.75f, Recover=0.7f,
+                    StatusIds=new[]{"status_slow"}, StatusChance=0.8f,
+                    TelegraphId=TAP, TriggersVuln=true, VulnTrigger=ASD, IsInterruptible=false, MaxTargets=5 },
+
+                // 47. enemy_void_spitter
+                new ActionEntry { Id="action_void_spitter_void_bolt", DisplayName="Void Bolt",
+                    ActionType=R, DamageTypeId="arcane", BaseDamage=20,
+                    Range=4.5f, Cooldown=2.0f, Windup=0.4f, Recover=0.4f, ProjectileSpeed=5.5f,
+                    StatusIds=new[]{"status_slow_minor"}, StatusChance=0.65f,
+                    TelegraphId=TRP, TriggersVuln=true, VulnTrigger=APV, IsInterruptible=true, MaxTargets=1 },
+
+                // 48. enemy_abyssal_void_reaver
+                new ActionEntry { Id="action_abyssal_void_reaver_reaving_claw", DisplayName="Reaving Claw",
+                    ActionType=M, DamageTypeId="arcane", BaseDamage=26,
+                    Range=1.0f, Cooldown=2.5f, Windup=0.45f, Recover=0.4f,
+                    TelegraphId=TFM, TriggersVuln=true, VulnTrigger=AAR, IsInterruptible=true, MaxTargets=1 },
+
+                // 49. enemy_ninrorin_phasewalker
+                new ActionEntry { Id="action_ninrorin_phasewalker_phase_strike", DisplayName="Phase Strike",
+                    ActionType=M, DamageTypeId="arcane", BaseDamage=24,
+                    Range=1.0f, Cooldown=2.5f, Windup=0.35f, Recover=0.4f,
+                    TelegraphId=TPH, TriggersVuln=true, VulnTrigger=ABA, IsInterruptible=false, MaxTargets=1 },
+
+                // 50. enemy_ninrorin_echo_shade
+                new ActionEntry { Id="action_ninrorin_echo_shade_echo_dart", DisplayName="Echo Dart",
+                    ActionType=C, DamageTypeId="arcane", BaseDamage=20,
+                    Range=4.0f, Cooldown=2.5f, Windup=0.5f, Recover=0.45f, ProjectileSpeed=5.0f,
+                    TelegraphId=TCS, TriggersVuln=true, VulnTrigger=ABA, IsInterruptible=false, MaxTargets=1 },
+
+                // ── BAND 7 – VOID (86-99) ──────────────────────────────────────────
+
+                // 51. enemy_ninrorin_void_knight
+                new ActionEntry { Id="action_ninrorin_void_knight_void_slash", DisplayName="Void Slash",
+                    ActionType=M, DamageTypeId="arcane", BaseDamage=36,
+                    Range=1.3f, Cooldown=2.5f, Windup=0.65f, Recover=0.55f,
+                    TelegraphId=THM, TriggersVuln=true, VulnTrigger=AAR, IsInterruptible=false, MaxTargets=1 },
+                new ActionEntry { Id="action_ninrorin_void_knight_phase_guard", DisplayName="Phase Guard",
+                    ActionType=A, DamageTypeId="arcane", BaseDamage=26,
+                    Range=2.0f, AreaRadius=1.8f, Cooldown=5.0f, Windup=0.7f, Recover=0.65f,
+                    TelegraphId=TAP, TriggersVuln=true, VulnTrigger=ASD, IsInterruptible=false, MaxTargets=4 },
+
+                // 52. enemy_ninrorin_void_acolyte
+                new ActionEntry { Id="action_ninrorin_void_acolyte_void_ray", DisplayName="Void Ray",
+                    ActionType=C, DamageTypeId="arcane", BaseDamage=32,
+                    Range=5.0f, Cooldown=3.0f, Windup=0.65f, Recover=0.55f, ProjectileSpeed=5.5f,
+                    StatusIds=new[]{"status_slow"}, StatusChance=0.8f,
+                    TelegraphId=TCS, TriggersVuln=true, VulnTrigger=AC, IsInterruptible=false, MaxTargets=1 },
+                new ActionEntry { Id="action_ninrorin_void_acolyte_rift_pulse", DisplayName="Rift Pulse",
+                    ActionType=A, DamageTypeId="arcane", BaseDamage=24,
+                    Range=2.5f, AreaRadius=2.5f, Cooldown=5.5f, Windup=0.75f, Recover=0.7f,
+                    TelegraphId=TAP, TriggersVuln=true, VulnTrigger=AC, IsInterruptible=false, MaxTargets=5 },
+
+                // 53. enemy_corrupted_draconic_spawn
+                new ActionEntry { Id="action_corrupted_draconic_spawn_corrupted_bite", DisplayName="Corrupted Bite",
+                    ActionType=M, DamageTypeId="poison", BaseDamage=38,
+                    Range=1.3f, Cooldown=2.5f, Windup=0.65f, Recover=0.6f,
+                    StatusIds=new[]{"status_poison"}, StatusChance=0.8f,
+                    TelegraphId=THM, TriggersVuln=true, VulnTrigger=DCW, IsInterruptible=false, MaxTargets=1 },
+                new ActionEntry { Id="action_corrupted_draconic_spawn_toxic_roar", DisplayName="Toxic Roar",
+                    ActionType=A, DamageTypeId="poison", BaseDamage=28,
+                    Range=2.5f, AreaRadius=2.5f, Cooldown=5.0f, Windup=0.75f, Recover=0.7f,
+                    StatusIds=new[]{"status_poison_minor"}, StatusChance=0.9f,
+                    TelegraphId=TAP, TriggersVuln=true, VulnTrigger=AEP, IsInterruptible=false, MaxTargets=5 },
+
+                // 54. enemy_corrupted_lich_shard
+                new ActionEntry { Id="action_corrupted_lich_shard_void_shard", DisplayName="Void Shard",
+                    ActionType=R, DamageTypeId="arcane", BaseDamage=22,
+                    Range=4.0f, Cooldown=2.0f, Windup=0.4f, Recover=0.35f, ProjectileSpeed=5.5f,
+                    TelegraphId=TRP, TriggersVuln=true, VulnTrigger=APV, IsInterruptible=true, MaxTargets=1 },
+
+                // 55. enemy_draconic_void_wyrm
+                new ActionEntry { Id="action_draconic_void_wyrm_void_fire_breath", DisplayName="Void Fire Breath",
+                    ActionType=A, DamageTypeId="fire", BaseDamage=42,
+                    Range=3.0f, AreaRadius=1.5f, Cooldown=4.5f, Windup=0.75f, Recover=0.7f,
+                    StatusIds=new[]{"status_burn"}, StatusChance=0.85f,
+                    TelegraphId=TAP, TriggersVuln=true, VulnTrigger=AAR, IsInterruptible=false, MaxTargets=4 },
+                new ActionEntry { Id="action_draconic_void_wyrm_tail_swipe", DisplayName="Tail Swipe",
+                    ActionType=M, DamageTypeId="physical", BaseDamage=36,
+                    Range=1.5f, Cooldown=3.0f, Windup=0.65f, Recover=0.6f,
+                    TelegraphId=THM, TriggersVuln=true, VulnTrigger=AAR, IsInterruptible=false, MaxTargets=2 },
+
+                // 56. enemy_draconic_elder_kin
+                new ActionEntry { Id="action_draconic_elder_kin_elder_breath", DisplayName="Elder Breath",
+                    ActionType=A, DamageTypeId="fire", BaseDamage=44,
+                    Range=3.5f, AreaRadius=2.0f, Cooldown=5.0f, Windup=0.8f, Recover=0.75f,
+                    StatusIds=new[]{"status_burn"}, StatusChance=0.9f,
+                    TelegraphId=TAP, TriggersVuln=true, VulnTrigger=AEP, IsInterruptible=false, MaxTargets=5 },
+                new ActionEntry { Id="action_draconic_elder_kin_earth_crush", DisplayName="Earth Crush",
+                    ActionType=M, DamageTypeId="physical", BaseDamage=40,
+                    Range=1.5f, Cooldown=3.0f, Windup=0.7f, Recover=0.65f,
+                    TelegraphId=THM, TriggersVuln=true, VulnTrigger=ASD, IsInterruptible=false, MaxTargets=1 },
+
+                // 57. enemy_corrupted_bone_knight
+                new ActionEntry { Id="action_corrupted_bone_knight_bone_slash", DisplayName="Bone Slash",
+                    ActionType=M, DamageTypeId="physical", BaseDamage=36,
+                    Range=1.2f, Cooldown=2.5f, Windup=0.65f, Recover=0.55f,
+                    StatusIds=new[]{"status_bleed"}, StatusChance=0.75f,
+                    TelegraphId=THM, TriggersVuln=true, VulnTrigger=ASD, IsInterruptible=false, MaxTargets=1 },
+                new ActionEntry { Id="action_corrupted_bone_knight_void_shield_bash", DisplayName="Void Shield Bash",
+                    ActionType=A, DamageTypeId="arcane", BaseDamage=26,
+                    Range=1.8f, AreaRadius=1.5f, Cooldown=5.0f, Windup=0.7f, Recover=0.65f,
+                    TelegraphId=TAP, TriggersVuln=true, VulnTrigger=ASD, IsInterruptible=false, MaxTargets=3 },
+
+                // 58. enemy_ninrorin_void_sentinel
+                new ActionEntry { Id="action_ninrorin_void_sentinel_sentinel_phase", DisplayName="Sentinel Phase",
+                    ActionType=M, DamageTypeId="arcane", BaseDamage=38,
+                    Range=1.3f, Cooldown=2.5f, Windup=0.65f, Recover=0.6f,
+                    TelegraphId=TPH, TriggersVuln=true, VulnTrigger=ABA, IsInterruptible=false, MaxTargets=1 },
+                new ActionEntry { Id="action_ninrorin_void_sentinel_void_pulse", DisplayName="Void Pulse",
+                    ActionType=A, DamageTypeId="arcane", BaseDamage=28,
+                    Range=2.5f, AreaRadius=2.0f, Cooldown=6.0f, Windup=0.8f, Recover=0.7f,
+                    TelegraphId=TAP, TriggersVuln=true, VulnTrigger=ASD, IsInterruptible=false, MaxTargets=5 },
+
+                // 59. enemy_blackstone_wyvern
+                new ActionEntry { Id="action_blackstone_wyvern_wyvern_crush", DisplayName="Wyvern Crush",
+                    ActionType=M, DamageTypeId="physical", BaseDamage=50,
+                    Range=1.8f, Cooldown=2.5f, Windup=0.75f, Recover=0.7f,
+                    TelegraphId=THM, TriggersVuln=true, VulnTrigger=AAR, IsInterruptible=false, MaxTargets=2 },
+                new ActionEntry { Id="action_blackstone_wyvern_shadow_flame", DisplayName="Shadow Flame",
+                    ActionType=A, DamageTypeId="fire", BaseDamage=44,
+                    Range=3.5f, AreaRadius=2.5f, Cooldown=5.0f, Windup=0.85f, Recover=0.8f,
+                    StatusIds=new[]{"status_burn"}, StatusChance=0.9f,
+                    TelegraphId=TAP, TriggersVuln=true, VulnTrigger=AEP, IsInterruptible=false, MaxTargets=5 },
+
+                // 60. enemy_draconic_ashspitter
+                new ActionEntry { Id="action_draconic_ashspitter_ash_spit", DisplayName="Ash Spit",
+                    ActionType=R, DamageTypeId="fire", BaseDamage=30,
+                    Range=4.5f, Cooldown=2.0f, Windup=0.45f, Recover=0.4f, ProjectileSpeed=5.5f,
+                    StatusIds=new[]{"status_burn_minor"}, StatusChance=0.75f,
+                    TelegraphId=TRP, TriggersVuln=true, VulnTrigger=APV, IsInterruptible=true, MaxTargets=1 },
+                new ActionEntry { Id="action_draconic_ashspitter_ember_cloud", DisplayName="Ember Cloud",
+                    ActionType=A, DamageTypeId="fire", BaseDamage=26,
+                    Range=2.0f, AreaRadius=1.8f, Cooldown=4.5f, Windup=0.6f, Recover=0.55f,
+                    StatusIds=new[]{"status_burn_minor"}, StatusChance=0.8f,
+                    TelegraphId=TAP, TriggersVuln=true, VulnTrigger=AAR, IsInterruptible=false, MaxTargets=4 },
             };
         }
 
@@ -811,6 +997,130 @@ namespace CindarsHope.Editor.EnemyTaxonomy
                 FallbackId="action_oathless_shade_shadow_step",
                 RoleTags=new[]{"Caster"},
                 Notes="action_oathless_shade_shadow_step — full blink resolution is SPEC 13D" },
+
+            // ── BAND 6 – DEEP (71-85) ────────────────────────────────────────────
+
+            new ActionSetEntry { Id="actionset_enemy_drow_shadowblade",
+                DisplayName="Drow Shadowblade Actions",
+                ActionIds=new[]{"action_drow_shadowblade_shadow_strike","action_drow_shadowblade_void_slash"},
+                FallbackId="action_drow_shadowblade_shadow_strike",
+                RoleTags=new[]{"Chaser"} },
+
+            new ActionSetEntry { Id="actionset_enemy_drow_arcane_adept",
+                DisplayName="Drow Arcane Adept Actions",
+                ActionIds=new[]{"action_drow_arcane_adept_shadow_bolt"},
+                FallbackId="action_drow_arcane_adept_shadow_bolt",
+                RoleTags=new[]{"Caster"} },
+
+            new ActionSetEntry { Id="actionset_enemy_drow_shadow_warden",
+                DisplayName="Drow Shadow Warden Actions",
+                ActionIds=new[]{"action_drow_shadow_warden_guardian_slam","action_drow_shadow_warden_dark_shield_bash"},
+                FallbackId="action_drow_shadow_warden_guardian_slam",
+                RoleTags=new[]{"Guard","Tank"} },
+
+            new ActionSetEntry { Id="actionset_enemy_void_tick",
+                DisplayName="Void Tick Actions",
+                ActionIds=new[]{"action_void_tick_void_bite"},
+                FallbackId="action_void_tick_void_bite",
+                RoleTags=new[]{"Swarm","Chaser"} },
+
+            new ActionSetEntry { Id="actionset_enemy_abyssal_riftstalker",
+                DisplayName="Abyssal Riftstalker Actions",
+                ActionIds=new[]{"action_abyssal_riftstalker_rift_claw"},
+                FallbackId="action_abyssal_riftstalker_rift_claw",
+                RoleTags=new[]{"Chaser"} },
+
+            new ActionSetEntry { Id="actionset_enemy_shadow_sentinel",
+                DisplayName="Shadow Sentinel Actions",
+                ActionIds=new[]{"action_shadow_sentinel_void_slam","action_shadow_sentinel_abyssal_pulse"},
+                FallbackId="action_shadow_sentinel_void_slam",
+                RoleTags=new[]{"Guard","Tank"} },
+
+            new ActionSetEntry { Id="actionset_enemy_void_spitter",
+                DisplayName="Void Spitter Actions",
+                ActionIds=new[]{"action_void_spitter_void_bolt"},
+                FallbackId="action_void_spitter_void_bolt",
+                RoleTags=new[]{"Ranged"} },
+
+            new ActionSetEntry { Id="actionset_enemy_abyssal_void_reaver",
+                DisplayName="Abyssal Void Reaver Actions",
+                ActionIds=new[]{"action_abyssal_void_reaver_reaving_claw"},
+                FallbackId="action_abyssal_void_reaver_reaving_claw",
+                RoleTags=new[]{"Chaser"} },
+
+            new ActionSetEntry { Id="actionset_enemy_ninrorin_phasewalker",
+                DisplayName="Ninrorin Phasewalker Actions",
+                ActionIds=new[]{"action_ninrorin_phasewalker_phase_strike"},
+                FallbackId="action_ninrorin_phasewalker_phase_strike",
+                RoleTags=new[]{"Chaser"} },
+
+            new ActionSetEntry { Id="actionset_enemy_ninrorin_echo_shade",
+                DisplayName="Ninrorin Echo Shade Actions",
+                ActionIds=new[]{"action_ninrorin_echo_shade_echo_dart"},
+                FallbackId="action_ninrorin_echo_shade_echo_dart",
+                RoleTags=new[]{"Caster"} },
+
+            // ── BAND 7 – VOID (86-99) ────────────────────────────────────────────
+
+            new ActionSetEntry { Id="actionset_enemy_ninrorin_void_knight",
+                DisplayName="Ninrorin Void Knight Actions",
+                ActionIds=new[]{"action_ninrorin_void_knight_void_slash","action_ninrorin_void_knight_phase_guard"},
+                FallbackId="action_ninrorin_void_knight_void_slash",
+                RoleTags=new[]{"Guard","Tank"} },
+
+            new ActionSetEntry { Id="actionset_enemy_ninrorin_void_acolyte",
+                DisplayName="Ninrorin Void Acolyte Actions",
+                ActionIds=new[]{"action_ninrorin_void_acolyte_void_ray","action_ninrorin_void_acolyte_rift_pulse"},
+                FallbackId="action_ninrorin_void_acolyte_void_ray",
+                RoleTags=new[]{"Caster","Elite"} },
+
+            new ActionSetEntry { Id="actionset_enemy_corrupted_draconic_spawn",
+                DisplayName="Corrupted Draconic Spawn Actions",
+                ActionIds=new[]{"action_corrupted_draconic_spawn_corrupted_bite","action_corrupted_draconic_spawn_toxic_roar"},
+                FallbackId="action_corrupted_draconic_spawn_corrupted_bite",
+                RoleTags=new[]{"Tank","Elite"} },
+
+            new ActionSetEntry { Id="actionset_enemy_corrupted_lich_shard",
+                DisplayName="Corrupted Lich Shard Actions",
+                ActionIds=new[]{"action_corrupted_lich_shard_void_shard"},
+                FallbackId="action_corrupted_lich_shard_void_shard",
+                RoleTags=new[]{"Swarm","Ranged"} },
+
+            new ActionSetEntry { Id="actionset_enemy_draconic_void_wyrm",
+                DisplayName="Draconic Void Wyrm Actions",
+                ActionIds=new[]{"action_draconic_void_wyrm_void_fire_breath","action_draconic_void_wyrm_tail_swipe"},
+                FallbackId="action_draconic_void_wyrm_void_fire_breath",
+                RoleTags=new[]{"Tank","Chaser"} },
+
+            new ActionSetEntry { Id="actionset_enemy_draconic_elder_kin",
+                DisplayName="Draconic Elder Kin Actions",
+                ActionIds=new[]{"action_draconic_elder_kin_elder_breath","action_draconic_elder_kin_earth_crush"},
+                FallbackId="action_draconic_elder_kin_elder_breath",
+                RoleTags=new[]{"Tank","Elite"} },
+
+            new ActionSetEntry { Id="actionset_enemy_corrupted_bone_knight",
+                DisplayName="Corrupted Bone Knight Actions",
+                ActionIds=new[]{"action_corrupted_bone_knight_bone_slash","action_corrupted_bone_knight_void_shield_bash"},
+                FallbackId="action_corrupted_bone_knight_bone_slash",
+                RoleTags=new[]{"Guard","Tank"} },
+
+            new ActionSetEntry { Id="actionset_enemy_ninrorin_void_sentinel",
+                DisplayName="Ninrorin Void Sentinel Actions",
+                ActionIds=new[]{"action_ninrorin_void_sentinel_sentinel_phase","action_ninrorin_void_sentinel_void_pulse"},
+                FallbackId="action_ninrorin_void_sentinel_sentinel_phase",
+                RoleTags=new[]{"Guard","Elite"} },
+
+            new ActionSetEntry { Id="actionset_enemy_blackstone_wyvern",
+                DisplayName="Blackstone Wyvern Actions",
+                ActionIds=new[]{"action_blackstone_wyvern_wyvern_crush","action_blackstone_wyvern_shadow_flame"},
+                FallbackId="action_blackstone_wyvern_wyvern_crush",
+                RoleTags=new[]{"Tank","Elite"} },
+
+            new ActionSetEntry { Id="actionset_enemy_draconic_ashspitter",
+                DisplayName="Draconic Ashspitter Actions",
+                ActionIds=new[]{"action_draconic_ashspitter_ash_spit","action_draconic_ashspitter_ember_cloud"},
+                FallbackId="action_draconic_ashspitter_ash_spit",
+                RoleTags=new[]{"Ranged","Chaser"} },
         };
 
         // ── Helpers ──────────────────────────────────────────────────────────────

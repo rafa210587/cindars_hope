@@ -336,7 +336,9 @@ namespace CindarsHope.Cave.Runtime
                 <= 25 => "fungal",
                 <= 40 => "ice",
                 <= 55 => "fire",
-                _ => "ruins"
+                <= 70 => "ruins",
+                <= 85 => "deep",
+                _ => "void"
             };
 
             var normalizedTag = NormalizeBiomeTag(level.BiomeId);
