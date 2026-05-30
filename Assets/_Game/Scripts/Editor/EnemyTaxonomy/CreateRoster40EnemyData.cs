@@ -7,9 +7,11 @@ using UnityEngine;
 namespace CindarsHope.Editor.EnemyTaxonomy
 {
     /// <summary>
-    /// SPEC 13B — Creates the official 40-enemy roster as EnemyDataSO assets.
-    /// Run via: CindarsHope > SPEC 13 > Create Roster 40 Enemy Data
-    /// Skips assets that already exist (by enemyId) to avoid overwriting manual edits.
+    /// SPEC 13B (extended for SPEC 14A-FIX5/FIX6) — Creates the canonical enemy roster as EnemyDataSO assets.
+    /// As of FIX5, the roster is auto-derived from BuildProfileDefinitions and grows whenever new bands are added.
+    /// Current roster: 60 enemies (40 bands 1-5 + 10 band 6 deep + 10 band 7 void).
+    /// Run via: CindarsHope > Generate > Enemy Runtime Data > Regenerate All Enemy Data (or legacy SPEC 13 menu).
+    /// Updates existing assets (rewrites all fields) so per-band changes in ecology data propagate.
     /// </summary>
     public static class CreateRoster40EnemyData
     {
@@ -38,7 +40,7 @@ namespace CindarsHope.Editor.EnemyTaxonomy
             public bool IsBoss;
         }
 
-        [MenuItem("CindarsHope/SPEC 13/Create Roster 40 Enemy Data")]
+        [MenuItem("CindarsHope/SPEC 13/Create Canonical Enemy Roster")]
         public static void CreateRoster()
         {
             EnsureFolder(RosterFolder);

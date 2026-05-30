@@ -64,6 +64,93 @@ namespace CindarsHope.Editor.EnemyTaxonomy
             AssetDatabase.Refresh();
 
             WireCaveScene(enemyDatabase, actionDb, actionSetDb, telegraphDb, movementDb, vulnerabilityDb, sizeDb);
+
+            // SPEC 14A-FIX6: post-wiring assertions — fail loud if generator left stale state
+            AssertPostGenerationInvariants(actionSetDb, movementDb, vulnerabilityDb, sizeDb);
+        }
+
+        private static void AssertPostGenerationInvariants(
+            EnemyActionSetDatabaseSO actionSetDb,
+            EnemyMovementProfileDatabaseSO movementDb,
+            EnemyVulnerabilityProfileDatabaseSO vulnerabilityDb,
+            EnemySizeProfileDatabaseSO sizeDb)
+        {
+            int failures = 0;
+
+            // 1. Profile count must exceed legacy 40-only roster
+            var profiles = LoadAssets<EnemySpawnProfileSO>(EnemySpawnProfilesFolder);
+            if (profiles.Length <= 40)
+            {
+                Debug.LogError($"GenerateAndWireSpec13GAssets FAIL: ProfilesTotal={profiles.Length}. Expected > 40 (bands 6-7 should add 20 new profiles). Check CreateEnemySpawnEcologyData.");
+                failures++;
+            }
+
+            // 2. No profile may still carry RequiredBossGateProgress (FIX5 removed the field from all P() calls)
+            int staleGate = profiles.Count(p => p != null && !string.IsNullOrWhiteSpace(p.RequiredBossGateProgress));
+            if (staleGate > 0)
+            {
+                var sample = profiles.Where(p => p != null && !string.IsNullOrWhiteSpace(p.RequiredBossGateProgress)).Take(3).Select(p => $"{p.EnemyId}->{p.RequiredBossGateProgress}").ToArray();
+                Debug.LogError($"GenerateAndWireSpec13GAssets FAIL: {staleGate} profile(s) still have RequiredBossGateProgress set (sample: {string.Join(", ", sample)}). FIX5 should leave this empty.");
+                failures++;
+            }
+
+            // 3. Pack count must include bands 6-7 (>=25 expected: 19 original + 6 new)
+            var packs = LoadAssets<EnemySpawnPackSO>(EnemySpawnPacksFolder);
+            if (packs.Length < 25)
+            {
+                Debug.LogError($"GenerateAndWireSpec13GAssets FAIL: PacksTotal={packs.Length}. Expected >= 25 (19 original + 6 new bands 6-7 packs).");
+                failures++;
+            }
+
+            // 4. CaveRuntimeMaterializer must end up with the same profile count as on disk
+            if (AssetDatabase.LoadAssetAtPath<SceneAsset>(CaveScenePath))
+            {
+                var materializers = Object.FindObjectsByType<CaveRuntimeMaterializer>(FindObjectsInactive.Include);
+                foreach (var mat in materializers)
+                {
+                    var serialized = new SerializedObject(mat);
+                    var spawnProfilesProp = serialized.FindProperty("_enemySpawnProfiles");
+                    if (spawnProfilesProp != null && spawnProfilesProp.isArray && spawnProfilesProp.arraySize != profiles.Length)
+                    {
+                        Debug.LogError($"GenerateAndWireSpec13GAssets FAIL: CaveScene materializer wired with {spawnProfilesProp.arraySize} profiles but disk has {profiles.Length}. Re-run wiring or check WireMaterializer.");
+                        failures++;
+                    }
+                }
+            }
+
+            // 5. Databases must all be populated (not just created)
+            if (actionSetDb != null && CountDatabaseItems(actionSetDb) < 50)
+            {
+                Debug.LogError($"GenerateAndWireSpec13GAssets FAIL: ActionSetDatabase has {CountDatabaseItems(actionSetDb)} items (expected >=50 for 40+20 enemies).");
+                failures++;
+            }
+            if (movementDb != null && CountDatabaseItems(movementDb) < 8)
+            {
+                Debug.LogError($"GenerateAndWireSpec13GAssets FAIL: MovementProfileDatabase has {CountDatabaseItems(movementDb)} items (expected >=8 movement archetypes).");
+                failures++;
+            }
+            if (vulnerabilityDb != null && CountDatabaseItems(vulnerabilityDb) < 8)
+            {
+                Debug.LogError($"GenerateAndWireSpec13GAssets FAIL: VulnerabilityProfileDatabase has {CountDatabaseItems(vulnerabilityDb)} items (expected >=8).");
+                failures++;
+            }
+            if (sizeDb != null && CountDatabaseItems(sizeDb) < 6)
+            {
+                Debug.LogError($"GenerateAndWireSpec13GAssets FAIL: SizeProfileDatabase has {CountDatabaseItems(sizeDb)} items (expected >=6: tiny/small/medium/large/huge/boss).");
+                failures++;
+            }
+
+            if (failures == 0)
+                Debug.Log($"GenerateAndWireSpec13GAssets: ALL POST-WIRING ASSERTIONS PASSED. Profiles={profiles.Length}, Packs={packs.Length}.");
+            else
+                Debug.LogError($"GenerateAndWireSpec13GAssets: {failures} POST-WIRING ASSERTION(S) FAILED. See errors above.");
+        }
+
+        private static int CountDatabaseItems(ScriptableObject db)
+        {
+            var so = new SerializedObject(db);
+            var prop = so.FindProperty("_items");
+            return prop != null && prop.isArray ? prop.arraySize : 0;
         }
 
         private static EnemyDatabaseSO EnsureEnemyDatabaseHasRoster()

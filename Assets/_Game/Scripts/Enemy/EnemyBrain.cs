@@ -48,6 +48,16 @@ namespace CindarsHope.Enemy
 
         public EnemyBrainState CurrentState => _currentState;
 
+        // SPEC 14A-FIX6: Public state for real runtime resolution checks
+        public bool HasResolvedActionSet => _activeActionSet != null && _activeActionSet.ActionIds != null && _activeActionSet.ActionIds.Length > 0;
+        public int ResolvedActionCount => _actionCooldowns.Count;
+        public bool HasResolvedMovementProfile => _movementProfile != null;
+        public bool HasResolvedVulnerabilityProfile => _vulnerabilityProfile != null;
+        public EnemyMovementType MovementType => _movementProfile?.MovementType ?? EnemyMovementType.GroundChase;
+        public string ResolvedActionSetId => _activeActionSet?.ActionSetId ?? string.Empty;
+        public string ResolvedMovementProfileId => _movementProfile?.MovementProfileId ?? string.Empty;
+        public string ResolvedVulnerabilityProfileId => _vulnerabilityProfile?.VulnerabilityProfileId ?? string.Empty;
+
         public void Configure(EnemyDataSO data)
         {
             _enemyData = data;

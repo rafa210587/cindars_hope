@@ -975,14 +975,37 @@ namespace CindarsHope.Cave.Runtime
             var contactDamage = triggerChild.AddComponent<EnemyContactDamage>();
             contactDamage.Configure(enemyData, triggerCollider);
 
+            // SPEC 14A-FIX6: use brain's actual resolution state (not just database/id presence)
+            bool actionSetResolved = brain.HasResolvedActionSet;
+            int actionsCount       = brain.ResolvedActionCount;
+            bool movementResolved  = movementProfile != null;
+            bool vulnResolved      = vulnerabilityProfile != null;
+            bool sizeResolved      = sizeProfile != null;
+            float colliderRadius   = sizeProfile != null
+                ? Mathf.Max(0.1f, sizeProfile.ColliderRadius)
+                : ResolveColliderRadius(entry.SizeClass);
+
             Debug.Log(
-                $"CombatLog: EnemyRuntimeConfigured. Name={enemyData.DisplayName}, EnemyId={enemyData.enemyId}, " +
-                $"InstanceId={entry.EnemyInstanceId}, CaveLevel={caveLevel}, DataLevel=enemy_data, " +
-                $"MovementType={movementProfile?.MovementType.ToString() ?? "LegacyChase"}, " +
-                $"ActionSetResolved={hasFullDatabases && !string.IsNullOrEmpty(enemyData.ActionSetId)}, " +
-                $"VulnerabilityResolved={vulnerabilityProfile != null}, SizeClass={entry.SizeClass}, " +
-                $"VisualScale={visualScale:F2}, HasEnemyBrain=True, HasLegacyChase={useLegacyChase}",
+                $"CombatLog: EnemyRuntimeConfigured. " +
+                $"Name={enemyData.DisplayName}, EnemyId={enemyData.enemyId}, " +
+                $"InstanceId={entry.EnemyInstanceId}, CaveLevel={caveLevel}, " +
+                $"EnemyDataLevel={enemyData.CaveBand}, Faction={enemyData.FactionId}, " +
+                $"MovementProfileId={enemyData.MovementProfileId}, MovementProfileResolved={movementResolved}, " +
+                $"MovementType={brain.MovementType}, " +
+                $"ActionSetId={enemyData.ActionSetId}, ActionSetResolved={actionSetResolved}, ActionsCount={actionsCount}, " +
+                $"VulnerabilityProfileId={enemyData.VulnerabilityProfileId}, VulnerabilityResolved={vulnResolved}, " +
+                $"SizeProfileId={enemyData.SizeProfileId}, SizeProfileResolved={sizeResolved}, " +
+                $"SizeClass={entry.SizeClass}, VisualScale={visualScale:F2}, ColliderRadius={colliderRadius:F2}, " +
+                $"HasEnemyBrain=True, HasLegacyChase={useLegacyChase}",
                 enemyObject);
+
+            // SPEC 14A-FIX6: surface clear errors when expected resolutions fail
+            if (!string.IsNullOrEmpty(enemyData.MovementProfileId) && !movementResolved)
+                Debug.LogError($"CombatLog: EnemyRuntimeConfigured MISSING MovementProfile '{enemyData.MovementProfileId}' for {enemyData.enemyId}. _movementProfileDatabase assigned={_movementProfileDatabase != null}.", enemyObject);
+            if (!string.IsNullOrEmpty(enemyData.ActionSetId) && !actionSetResolved)
+                Debug.LogError($"CombatLog: EnemyRuntimeConfigured MISSING ActionSet '{enemyData.ActionSetId}' for {enemyData.enemyId}. _actionSetDatabase assigned={_actionSetDatabase != null}, _actionDatabase assigned={_actionDatabase != null}.", enemyObject);
+            if (!string.IsNullOrEmpty(enemyData.SizeProfileId) && !sizeResolved)
+                Debug.LogError($"CombatLog: EnemyRuntimeConfigured MISSING SizeProfile '{enemyData.SizeProfileId}' for {enemyData.enemyId}. _sizeProfileDatabase assigned={_sizeProfileDatabase != null}.", enemyObject);
         }
 
         private static float ResolveColliderRadius(string sizeClass)

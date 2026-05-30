@@ -48,6 +48,11 @@ namespace CindarsHope.Enemy
                 result.SelectedPackId = selectedPack.PackId;
                 AddPackSelections(selectedPack, request, profileMap, random, result);
                 result.IsValid = result.SelectedEnemies.Count > 0;
+                if (!result.IsValid)
+                {
+                    result.Warnings.Add($"EnemySpawnResolver: pack '{selectedPack.PackId}' selected but produced 0 enemies.");
+                    result.Warnings.Add(BuildDiagnosticSummary(request));
+                }
                 PublishResult(request, result);
                 return result;
             }
@@ -63,6 +68,11 @@ namespace CindarsHope.Enemy
 
             AddIndividualSelections(validProfiles, request, random, result);
             result.IsValid = result.SelectedEnemies.Count > 0;
+            if (!result.IsValid)
+            {
+                result.Warnings.Add("EnemySpawnResolver: profiles passed filters but produced 0 enemies.");
+                result.Warnings.Add(BuildDiagnosticSummary(request));
+            }
             PublishResult(request, result);
             return result;
         }
@@ -394,18 +404,71 @@ namespace CindarsHope.Enemy
 
         private string BuildDiagnosticSummary(EnemySpawnRequest request)
         {
-            int profilesAfterLevel = _profiles.Count(p => p.IsEnabled && request.CaveLevel >= p.CaveLevelMin && request.CaveLevel <= p.CaveLevelMax);
-            int profilesAfterBiome = _profiles.Count(p => p.IsEnabled && request.CaveLevel >= p.CaveLevelMin && request.CaveLevel <= p.CaveLevelMax && TagsMatch(request.BiomeTags, p.BiomeTags));
-            int packsAfterLevel = _packs.Count(p => p.IsEnabled && request.CaveLevel >= p.CaveLevelMin && request.CaveLevel <= p.CaveLevelMax);
-            int packsAfterBiome = _packs.Count(p => p.IsEnabled && request.CaveLevel >= p.CaveLevelMin && request.CaveLevel <= p.CaveLevelMax && TagsMatch(request.BiomeTags, p.BiomeTags));
+            // Per-step profile filter counts (SPEC 14A-FIX6 — reveal which rule actually rejects)
+            bool Enabled(EnemySpawnProfileSO p) => p != null && p.IsEnabled && !string.IsNullOrWhiteSpace(p.EnemyId) && p.Weight > 0;
+            bool MatchLevel(EnemySpawnProfileSO p) => Enabled(p) && request.CaveLevel >= p.CaveLevelMin && request.CaveLevel <= p.CaveLevelMax;
+            bool MatchBiome(EnemySpawnProfileSO p) => MatchLevel(p) && TagsMatch(request.BiomeTags, p.BiomeTags);
+            bool MatchEnv(EnemySpawnProfileSO p) => MatchBiome(p) && TagsMatch(request.EnvironmentTags, p.EnvironmentTags);
+            bool MatchFactionLock(EnemySpawnProfileSO p) => MatchEnv(p) && (string.IsNullOrWhiteSpace(p.FactionLockId) || ContainsId(request.UnlockedFactionLockIds, p.FactionLockId));
+            bool MatchFaction(EnemySpawnProfileSO p) => MatchFactionLock(p) && !IsFactionLocked(p.FactionId, request);
+            bool MatchBossGate(EnemySpawnProfileSO p) => MatchFaction(p) && (string.IsNullOrWhiteSpace(p.RequiredBossGateProgress) || ContainsId(request.BossGateProgressIds, p.RequiredBossGateProgress));
+            bool MatchRoom(EnemySpawnProfileSO p) => MatchBossGate(p) && IsRoomAllowed(p, request);
+
+            int profilesAfterLevel        = _profiles.Count(MatchLevel);
+            int profilesAfterBiome        = _profiles.Count(MatchBiome);
+            int profilesAfterEnvironment  = _profiles.Count(MatchEnv);
+            int profilesAfterFactionLock  = _profiles.Count(MatchFactionLock);
+            int profilesAfterFaction      = _profiles.Count(MatchFaction);
+            int profilesAfterBossGate     = _profiles.Count(MatchBossGate);
+            int profilesAfterRoom         = _profiles.Count(MatchRoom);
+
+            // Per-step pack filter counts
+            bool PackEnabled(EnemySpawnPackSO p) => p != null && p.IsEnabled && !string.IsNullOrWhiteSpace(p.PackId) && p.Weight > 0;
+            bool PackMatchLevel(EnemySpawnPackSO p) => PackEnabled(p) && request.CaveLevel >= p.CaveLevelMin && request.CaveLevel <= p.CaveLevelMax;
+            bool PackMatchBiome(EnemySpawnPackSO p) => PackMatchLevel(p) && TagsMatch(request.BiomeTags, p.BiomeTags);
+            bool PackMatchEnv(EnemySpawnPackSO p) => PackMatchBiome(p) && TagsMatch(request.EnvironmentTags, p.EnvironmentTags);
+            bool PackMatchRoom(EnemySpawnPackSO p) => PackMatchEnv(p) && IsRoomAtLeast(request.RoomSizeClass, p.MinimumRoomSize);
+            bool PackMatchFaction(EnemySpawnPackSO p)
+            {
+                if (!PackMatchRoom(p)) return false;
+                foreach (var f in p.RequiredFactionIds ?? Array.Empty<string>())
+                    if (IsFactionLocked(f, request)) return false;
+                return true;
+            }
+
+            int packsAfterLevel       = _packs.Count(PackMatchLevel);
+            int packsAfterBiome       = _packs.Count(PackMatchBiome);
+            int packsAfterEnvironment = _packs.Count(PackMatchEnv);
+            int packsAfterRoom        = _packs.Count(PackMatchRoom);
+            int packsAfterFaction     = _packs.Count(PackMatchFaction);
+
+            // Top rejection reasons for profiles that pass biome (most actionable: shows what's stopping things)
+            var rejectionReasons = new Dictionary<string, int>();
+            foreach (var profile in _profiles.Where(MatchEnv))
+            {
+                if (TryRejectProfile(profile, request, out var reason))
+                {
+                    if (!rejectionReasons.ContainsKey(reason)) rejectionReasons[reason] = 0;
+                    rejectionReasons[reason]++;
+                }
+            }
+            var topRejections = string.Join(" | ", rejectionReasons.OrderByDescending(kv => kv.Value).Take(3).Select(kv => $"{kv.Value}x:'{kv.Key}'"));
+
             var biomeTags = request.BiomeTags != null ? string.Join(",", request.BiomeTags) : "";
             var envTags = request.EnvironmentTags != null ? string.Join(",", request.EnvironmentTags) : "";
-            var lockedFactions = string.Join(",", request.UnlockedFactionLockIds ?? new List<string>());
+            var unlockedLocks = string.Join(",", request.UnlockedFactionLockIds ?? new List<string>());
+            var bossGates = string.Join(",", request.BossGateProgressIds ?? new List<string>());
+
             return $"EnemySpawnResolver diagnostic: CaveLevel={request.CaveLevel}, " +
                    $"BiomeTags=[{biomeTags}], EnvTags=[{envTags}], RoomSize={request.RoomSizeClass}, " +
                    $"ProfilesTotal={_profiles.Count}, ProfilesAfterLevel={profilesAfterLevel}, ProfilesAfterBiome={profilesAfterBiome}, " +
+                   $"ProfilesAfterEnvironment={profilesAfterEnvironment}, ProfilesAfterFactionLock={profilesAfterFactionLock}, " +
+                   $"ProfilesAfterFaction={profilesAfterFaction}, ProfilesAfterRequiredBossGate={profilesAfterBossGate}, " +
+                   $"ProfilesAfterRoom={profilesAfterRoom}, " +
                    $"PacksTotal={_packs.Count}, PacksAfterLevel={packsAfterLevel}, PacksAfterBiome={packsAfterBiome}, " +
-                   $"UnlockedLocks=[{lockedFactions}]";
+                   $"PacksAfterEnvironment={packsAfterEnvironment}, PacksAfterRoom={packsAfterRoom}, PacksAfterFaction={packsAfterFaction}, " +
+                   $"UnlockedLocks=[{unlockedLocks}], BossGates=[{bossGates}], " +
+                   $"TopRejectedProfiles=[{topRejections}]";
         }
 
         private static bool Reject(string message, out string reason)

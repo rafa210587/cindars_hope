@@ -1,3 +1,38 @@
+## Sessao 2026-05-30 (30b) - SPEC 14A-FIX6 - Diagnostico, Fail-safe e Drift de Assets
+
+**Foco:** Tornar visível e fail-loud o drift de assets que mantinha level 30/45/60/75/90 vazios apos FIX5.
+
+### Causa raiz reconfirmada
+
+FIX5 corrigiu o codigo gerador (removeu `boss_gate_level_XX` dos P() calls; adicionou bandas 6-7). Mas os 24 EnemySpawnProfileSO de ice/fire/ruinas no disco foram criados ANTES de FIX5 e ainda tinham `RequiredBossGateProgress="boss_gate_level_15"` baked-in. Sem boss derrotado, `TryRejectProfile` rejeitava todos com "Required boss gate progress missing." → level 30 ficava com 0 inimigos. O bug so se resolve quando o usuario roda `Regenerate All Enemy Data` (que regrava `asset.RequiredBossGateProgress = ""`).
+
+### Implementacao
+
+- `EnemySpawnResolver.BuildDiagnosticSummary`: reescrita com ProfilesAfterFactionLock/Faction/RequiredBossGate/Room + idem para Packs + `TopRejectedProfiles`. Diagnostico tambem disparado quando pack seleciona mas produz 0.
+- `EnemyBrain`: propriedades publicas `HasResolvedActionSet`, `ResolvedActionCount`, `HasResolvedMovementProfile`, `HasResolvedVulnerabilityProfile`, `MovementType` etc - expoem estado real pos-InitActionSet.
+- `CaveRuntimeMaterializer.ConfigureEnemyRuntimeObject`: CombatLog usa dados reais do brain; `Debug.LogError` quando ID presente mas profile nao resolve.
+- `GenerateAndWireSpec13GAssets`: novo `AssertPostGenerationInvariants` - falha se ProfilesTotal<=40, stale RequiredBossGateProgress, PacksTotal<25, materializer-disk count divergente, ou databases sub-populados.
+- `CreateRoster40EnemyData`: menu renomeado para `Create Canonical Enemy Roster`; docstring atualizada (60 inimigos canonicos).
+- `ValidateEnemyCaveSpawnCoverage`: levels 30/45/60/75/90 viram LogError quando falham; ProfilesTotal>=60, no stale gate, PacksTotal>=25. Menu mantido em `CindarsHope/Validate/Enemy Cave Spawn Coverage`.
+- `ValidateSpec14AEnemyRuntimeIntegration`: menu agora `CindarsHope/Validate/Enemy Runtime Integration`. Adicionado: ValidateSpawnProfilesCount, ValidateNoStaleBossGateProgress, ValidateSizeProfileScaleVariation (Tiny/Large/Huge/Boss !=1.00), ValidateDatabasesPopulated.
+
+### Validacao
+
+- `dotnet build Assembly-CSharp.csproj`: PASSOU — 0 erros, 0 avisos.
+- `dotnet build Assembly-CSharp-Editor.csproj`: PASSOU — 0 erros, 2 CS0649 pre-existentes.
+- `tools/docs/validate_docs.ps1`: pendente.
+- Unity Play Mode / batchmode: requer usuario rodar `Regenerate All Enemy Data` + validators.
+
+### Pendencias para o usuario
+
+1. `CindarsHope > Generate > Enemy Runtime Data > Regenerate All Enemy Data` (flush dos 24 perfis ice/fire/ruinas + cria 20 novos bands 6-7 + popula 6 databases).
+2. `CindarsHope > Validate > Enemy Runtime Integration` (espera todos PASS).
+3. `CindarsHope > Validate > Enemy Cave Spawn Coverage` (espera nenhum CRITICAL FAIL).
+4. Play Mode com debug skip em levels 30/45/60/75/90; conferir CombatLog: EnemyRuntimeConfigured com `ActionSetResolved=True`, `MovementType≠LegacyChase`, `VisualScale` variando.
+5. Commitar os assets gerados (60 spawn profiles + roster + databases populados).
+
+---
+
 ## Sessao 2026-05-30 (30a) - SPEC 14A-FIX5 - Roster 60 Inimigos, Bandas 6-7, Bug Level 30, Menus e Validator
 
 **Foco:** Corrigir spawn vazio em level 30; adicionar bandas 6 (Deep 71-85) e 7 (Void 86-99); expandir roster para 60 inimigos; limpar menus Unity; criar validator de cobertura.
