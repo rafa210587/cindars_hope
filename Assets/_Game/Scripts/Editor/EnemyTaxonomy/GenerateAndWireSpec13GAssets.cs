@@ -3,6 +3,7 @@ using System.Linq;
 using CindarsHope.Cave.Runtime;
 using CindarsHope.Combat;
 using CindarsHope.Core.Bootstrap;
+using CindarsHope.Core.Data;
 using CindarsHope.Enemy;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -19,6 +20,21 @@ namespace CindarsHope.Editor.EnemyTaxonomy
         private const string EnemySpawnPacksFolder = "Assets/_Game/Data/EnemySpawn/Packs";
         private const string EnemyFactionLocksFolder = "Assets/_Game/Data/EnemySpawn/FactionLocks";
 
+        private const string CombatDataFolder = "Assets/_Game/Data/Combat";
+        private const string ActionDatabasePath = "Assets/_Game/Data/Combat/EnemyActionDatabase.asset";
+        private const string ActionSetDatabasePath = "Assets/_Game/Data/Combat/EnemyActionSetDatabase.asset";
+        private const string TelegraphDatabasePath = "Assets/_Game/Data/Combat/EnemyTelegraphProfileDatabase.asset";
+        private const string MovementDatabasePath = "Assets/_Game/Data/Combat/EnemyMovementProfileDatabase.asset";
+        private const string VulnerabilityDatabasePath = "Assets/_Game/Data/Combat/EnemyVulnerabilityProfileDatabase.asset";
+        private const string SizeDatabasePath = "Assets/_Game/Data/Combat/EnemySizeProfileDatabase.asset";
+
+        private const string ActionsFolder    = "Assets/_Game/Data/Enemies/Actions";
+        private const string ActionSetsFolder = "Assets/_Game/Data/Enemies/ActionSets";
+        private const string TelegraphFolder  = "Assets/_Game/Data/Enemies/TelegraphProfiles";
+        private const string MovementFolder   = "Assets/_Game/Data/Enemies/MovementProfiles";
+        private const string VulnFolder       = "Assets/_Game/Data/Enemies/VulnerabilityProfiles";
+        private const string SizeFolder       = "Assets/_Game/Data/Enemies/SizeProfiles";
+
         // Batchmode entry: Unity.exe -executeMethod CindarsHope.Editor.EnemyTaxonomy.GenerateAndWireSpec13GAssets.Execute
         public static void Execute() => GenerateAndWire();
 
@@ -32,10 +48,19 @@ namespace CindarsHope.Editor.EnemyTaxonomy
             CreateEnemySpawnEcologyData.CreateData();
 
             var enemyDatabase = EnsureEnemyDatabaseHasRoster();
+
+            EnsureFolder(CombatDataFolder);
+            var actionDb      = EnsureDatabase<EnemyActionDatabaseSO, EnemyActionSO>(ActionDatabasePath, ActionsFolder);
+            var actionSetDb   = EnsureDatabase<EnemyActionSetDatabaseSO, EnemyActionSetSO>(ActionSetDatabasePath, ActionSetsFolder);
+            var telegraphDb   = EnsureDatabase<EnemyTelegraphProfileDatabaseSO, EnemyTelegraphProfileSO>(TelegraphDatabasePath, TelegraphFolder);
+            var movementDb    = EnsureDatabase<EnemyMovementProfileDatabaseSO, EnemyMovementProfileSO>(MovementDatabasePath, MovementFolder);
+            var vulnerabilityDb = EnsureDatabase<EnemyVulnerabilityProfileDatabaseSO, EnemyVulnerabilityProfileSO>(VulnerabilityDatabasePath, VulnFolder);
+            var sizeDb        = EnsureDatabase<EnemySizeProfileDatabaseSO, EnemySizeProfileSO>(SizeDatabasePath, SizeFolder);
+
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
-            WireCaveScene(enemyDatabase);
+            WireCaveScene(enemyDatabase, actionDb, actionSetDb, telegraphDb, movementDb, vulnerabilityDb, sizeDb);
         }
 
         private static EnemyDatabaseSO EnsureEnemyDatabaseHasRoster()
@@ -78,7 +103,14 @@ namespace CindarsHope.Editor.EnemyTaxonomy
             return database;
         }
 
-        private static void WireCaveScene(EnemyDatabaseSO enemyDatabase)
+        private static void WireCaveScene(
+            EnemyDatabaseSO enemyDatabase,
+            EnemyActionDatabaseSO actionDb,
+            EnemyActionSetDatabaseSO actionSetDb,
+            EnemyTelegraphProfileDatabaseSO telegraphDb,
+            EnemyMovementProfileDatabaseSO movementDb,
+            EnemyVulnerabilityProfileDatabaseSO vulnerabilityDb,
+            EnemySizeProfileDatabaseSO sizeDb)
         {
             if (!AssetDatabase.LoadAssetAtPath<SceneAsset>(CaveScenePath))
             {
@@ -98,7 +130,7 @@ namespace CindarsHope.Editor.EnemyTaxonomy
             {
                 foreach (var materializer in materializers)
                 {
-                    WireMaterializer(materializer, enemyDatabase);
+                    WireMaterializer(materializer, enemyDatabase, actionDb, actionSetDb, telegraphDb, movementDb, vulnerabilityDb, sizeDb);
                 }
             }
 
@@ -122,7 +154,9 @@ namespace CindarsHope.Editor.EnemyTaxonomy
                 $"Materializers={materializers.Length}, Bootstraps={bootstraps.Length}, " +
                 $"Profiles={LoadAssets<EnemySpawnProfileSO>(EnemySpawnProfilesFolder).Length}, " +
                 $"Packs={LoadAssets<EnemySpawnPackSO>(EnemySpawnPacksFolder).Length}, " +
-                $"FactionLocks={LoadAssets<EnemyFactionLockSO>(EnemyFactionLocksFolder).Length}.");
+                $"FactionLocks={LoadAssets<EnemyFactionLockSO>(EnemyFactionLocksFolder).Length}, " +
+                $"Actions={actionDb?.name ?? "null"}, ActionSets={actionSetDb?.name ?? "null"}, " +
+                $"Movement={movementDb?.name ?? "null"}, Vulnerability={vulnerabilityDb?.name ?? "null"}, Size={sizeDb?.name ?? "null"}.");
 
             if (!string.IsNullOrWhiteSpace(previousScene) && previousScene != CaveScenePath)
             {
@@ -130,13 +164,27 @@ namespace CindarsHope.Editor.EnemyTaxonomy
             }
         }
 
-        private static void WireMaterializer(CaveRuntimeMaterializer materializer, EnemyDatabaseSO enemyDatabase)
+        private static void WireMaterializer(
+            CaveRuntimeMaterializer materializer,
+            EnemyDatabaseSO enemyDatabase,
+            EnemyActionDatabaseSO actionDb,
+            EnemyActionSetDatabaseSO actionSetDb,
+            EnemyTelegraphProfileDatabaseSO telegraphDb,
+            EnemyMovementProfileDatabaseSO movementDb,
+            EnemyVulnerabilityProfileDatabaseSO vulnerabilityDb,
+            EnemySizeProfileDatabaseSO sizeDb)
         {
             var serializedMaterializer = new SerializedObject(materializer);
             SetReference(serializedMaterializer, "_enemyDatabase", enemyDatabase);
             SetObjectArray(serializedMaterializer, "_enemySpawnProfiles", LoadAssets<EnemySpawnProfileSO>(EnemySpawnProfilesFolder));
             SetObjectArray(serializedMaterializer, "_enemySpawnPacks", LoadAssets<EnemySpawnPackSO>(EnemySpawnPacksFolder));
             SetObjectArray(serializedMaterializer, "_enemyFactionLocks", LoadAssets<EnemyFactionLockSO>(EnemyFactionLocksFolder));
+            SetReference(serializedMaterializer, "_actionSetDatabase", actionSetDb);
+            SetReference(serializedMaterializer, "_actionDatabase", actionDb);
+            SetReference(serializedMaterializer, "_telegraphDatabase", telegraphDb);
+            SetReference(serializedMaterializer, "_movementProfileDatabase", movementDb);
+            SetReference(serializedMaterializer, "_vulnerabilityProfileDatabase", vulnerabilityDb);
+            SetReference(serializedMaterializer, "_sizeProfileDatabase", sizeDb);
             serializedMaterializer.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(materializer);
         }
@@ -192,6 +240,39 @@ namespace CindarsHope.Editor.EnemyTaxonomy
             {
                 property.GetArrayElementAtIndex(i).objectReferenceValue = values[i];
             }
+        }
+
+        private static TDb EnsureDatabase<TDb, TItem>(string assetPath, string itemsFolder)
+            where TDb : DataRegistrySO<TItem>
+            where TItem : ScriptableObject, CindarsHope.Core.Data.IIdentifiedData
+        {
+            var db = AssetDatabase.LoadAssetAtPath<TDb>(assetPath);
+            if (db == null)
+            {
+                db = ScriptableObject.CreateInstance<TDb>();
+                db.name = System.IO.Path.GetFileNameWithoutExtension(assetPath);
+                AssetDatabase.CreateAsset(db, assetPath);
+            }
+
+            var items = AssetDatabase.FindAssets($"t:{typeof(TItem).Name}", new[] { itemsFolder })
+                .Select(guid => AssetDatabase.LoadAssetAtPath<TItem>(AssetDatabase.GUIDToAssetPath(guid)))
+                .Where(item => item != null)
+                .OrderBy(item => item.name)
+                .ToArray();
+
+            var so = new SerializedObject(db);
+            var prop = so.FindProperty("_items");
+            if (prop != null && prop.isArray)
+            {
+                prop.arraySize = items.Length;
+                for (int i = 0; i < items.Length; i++)
+                    prop.GetArrayElementAtIndex(i).objectReferenceValue = items[i];
+                so.ApplyModifiedPropertiesWithoutUndo();
+            }
+
+            EditorUtility.SetDirty(db);
+            Debug.Log($"GenerateAndWireSpec13GAssets: {typeof(TDb).Name} populated with {items.Length} items from '{itemsFolder}'.");
+            return db;
         }
 
         private static void EnsureFolder(string folder)
