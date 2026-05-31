@@ -12,10 +12,46 @@ namespace CindarsHope.Combat
         [SerializeField] private float _moveDistance = 2f;
         [SerializeField] private int _fontSize = 36;
 
+        // SPEC 14A-FIX7: track current instance so callers (e.g. CaveSceneRuntimeReferenceInstaller)
+        // can avoid duplicate bootstrap without using FindObjectOfType (banned at runtime).
+        private static FloatingDamageNumberDisplayer s_currentInstance;
+
+        public static FloatingDamageNumberDisplayer EnsureExists(Transform parent = null)
+        {
+            if (s_currentInstance != null) return s_currentInstance;
+            var go = new GameObject("FloatingDamageNumberDisplayer_Runtime");
+            if (parent != null) go.transform.SetParent(parent, false);
+            return go.AddComponent<FloatingDamageNumberDisplayer>();
+        }
+
+        private void Awake()
+        {
+            if (s_currentInstance != null && s_currentInstance != this)
+            {
+                Debug.LogWarning("FloatingDamageNumberDisplayer: another instance already exists. Destroying this duplicate.", this);
+                Destroy(gameObject);
+                return;
+            }
+            s_currentInstance = this;
+        }
+
         private void OnEnable()
         {
             if (_worldCanvas == null)
                 _worldCanvas = GetComponentInParent<Canvas>();
+
+            // FIX7 fallback: build a world-space Canvas as our child so floating numbers render
+            // even when the instance was created at runtime without a serialized canvas.
+            if (_worldCanvas == null)
+            {
+                var canvasGo = new GameObject("FloatingDamageCanvas_Runtime");
+                canvasGo.transform.SetParent(transform, false);
+                _worldCanvas = canvasGo.AddComponent<Canvas>();
+                _worldCanvas.renderMode = RenderMode.WorldSpace;
+                _worldCanvas.sortingOrder = 100;
+                canvasGo.AddComponent<UnityEngine.UI.CanvasScaler>();
+                Debug.Log("FloatingDamageNumberDisplayer: created runtime world-space Canvas fallback.", this);
+            }
 
             GameEventBus.Subscribe<DamageAppliedEvent>(DisplayDamage);
             GameEventBus.Subscribe<PlayerDamagedEvent>(DisplayPlayerDamage);
@@ -25,6 +61,11 @@ namespace CindarsHope.Combat
         {
             GameEventBus.Unsubscribe<DamageAppliedEvent>(DisplayDamage);
             GameEventBus.Unsubscribe<PlayerDamagedEvent>(DisplayPlayerDamage);
+        }
+
+        private void OnDestroy()
+        {
+            if (s_currentInstance == this) s_currentInstance = null;
         }
 
         private void DisplayDamage(DamageAppliedEvent evt)

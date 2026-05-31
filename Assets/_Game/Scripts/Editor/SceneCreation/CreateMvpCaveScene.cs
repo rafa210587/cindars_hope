@@ -36,7 +36,9 @@ namespace CindarsHope.Editor.SceneCreation
         private const string PlayerDataPath = "Assets/_Game/Data/Config/PlayerData.asset";
         private const string ItemDatabasePath = "Assets/_Game/Data/Registries/ItemDatabase.asset";
         private const string EnemySlimeDataPath = "Assets/_Game/Data/Combat/Enemy_Slime.asset";
-        private const string EnemyMeteorOozeKingDataPath = "Assets/_Game/Data/Combat/Enemy_Meteor_Ooze_King.asset";
+        // SPEC 14A-FIX7: canonical roster lives under Data/Enemies/. The stale duplicate at
+        // Data/Combat/Enemy_Meteor_Ooze_King.asset was deleted to fix "Duplicate data Id" in EnemyDatabase.
+        private const string EnemyMeteorOozeKingDataPath = "Assets/_Game/Data/Enemies/enemy_meteor_ooze_king.asset";
         private const string CaveGenerationConfigPath = "Assets/_Game/Data/Cave/CaveGenerationConfig_Default.asset";
         private const string ResourceNodeStonePath = "Assets/_Game/Data/Cave/ResourceNode_Stone.asset";
         private const string ResourceNodeCopperPath = "Assets/_Game/Data/Cave/ResourceNode_Copper.asset";

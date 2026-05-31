@@ -46,8 +46,18 @@ namespace CindarsHope.Combat
 
         private void Update()
         {
-            if (GameBootstrap.Instance?.ModalManager?.HasActiveModal == true)
+            bool modalOpen = GameBootstrap.Instance?.ModalManager?.HasActiveModal == true;
+
+            if (Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.J) || Input.GetKeyDown(KeyCode.E))
             {
+                string key = Input.GetKeyDown(KeyCode.Q) ? "Q" : Input.GetKeyDown(KeyCode.J) ? "J" : "E";
+                Debug.Log($"CombatLog: PlayerAttackInputReceived. Key={key}, ModalOpen={modalOpen}", this);
+            }
+
+            if (modalOpen)
+            {
+                if (Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.J) || Input.GetKeyDown(KeyCode.E))
+                    Debug.Log("CombatLog: PlayerAttackBlocked. Reason=ModalActive", this);
                 UpdateDodgeState();
                 return;
             }
@@ -66,6 +76,7 @@ namespace CindarsHope.Combat
             {
                 if (_interactionSystem != null && _interactionSystem.HasCandidate)
                 {
+                    Debug.Log("CombatLog: PlayerAttackBlocked. Reason=InteractionCandidatePresent (E used for interact)", this);
                     return;
                 }
                 TryAttackRightHand();
@@ -94,7 +105,10 @@ namespace CindarsHope.Combat
         private void AttackWithSlot(EquipmentSlot slot, ref float lastAttackTime, string equippedItemId)
         {
             if (_isDodging)
+            {
+                Debug.Log($"CombatLog: PlayerAttackBlocked. Reason=Dodging, Slot={slot}", this);
                 return;
+            }
 
             WeaponDataSO weapon = null;
             if (!string.IsNullOrEmpty(equippedItemId))
@@ -108,7 +122,10 @@ namespace CindarsHope.Combat
             }
 
             if (weapon == null && _unarmedFallback == null)
+            {
+                Debug.LogWarning($"CombatLog: PlayerAttackBlocked. Reason=NoWeaponNoUnarmedFallback, Slot={slot}, EquippedItemId='{equippedItemId}'", this);
                 return;
+            }
 
             float cooldown = weapon?.BaseCooldownSeconds ?? _unarmedFallback.BaseCooldownSeconds;
             if (weapon != null)
@@ -118,13 +135,21 @@ namespace CindarsHope.Combat
             }
 
             if (Time.time < lastAttackTime + cooldown)
+            {
+                Debug.Log($"CombatLog: PlayerAttackBlocked. Reason=Cooldown, Slot={slot}, RemainingSeconds={(lastAttackTime + cooldown - Time.time):F2}", this);
                 return;
+            }
 
             float staminaCost = weapon?.StaminaCost ?? _unarmedFallback.StaminaCost;
             if (_staminaManager != null && !_staminaManager.TrySpendStamina((int)staminaCost))
+            {
+                Debug.Log($"CombatLog: PlayerAttackBlocked. Reason=InsufficientStamina, Slot={slot}, StaminaCost={(int)staminaCost}", this);
                 return;
+            }
 
-            ExecuteWeaponAttack(weapon ?? ConvertUnarmedToWeapon(_unarmedFallback));
+            var resolvedWeapon = weapon ?? ConvertUnarmedToWeapon(_unarmedFallback);
+            Debug.Log($"CombatLog: PlayerAttackStarted. Slot={slot}, Weapon={resolvedWeapon.DisplayName}, BaseDamage={resolvedWeapon.BaseDamage}, Range={resolvedWeapon.Range:F2}, Type={resolvedWeapon.Type}", this);
+            ExecuteWeaponAttack(resolvedWeapon);
             lastAttackTime = Time.time;
         }
 
@@ -147,8 +172,11 @@ namespace CindarsHope.Combat
 
         private void ExecuteMeleeAttack(WeaponDataSO weapon, Vector2 direction)
         {
-            var hitColliders = Physics2D.OverlapCircleAll((Vector2)transform.position + direction * 0.5f, weapon.Range);
+            Vector2 attackCenter = (Vector2)transform.position + direction * 0.5f;
+            var hitColliders = Physics2D.OverlapCircleAll(attackCenter, weapon.Range);
 
+            int candidatesTotal = hitColliders.Length;
+            int hitEnemies = 0;
             foreach (var collider in hitColliders)
             {
                 if (collider.gameObject == gameObject)
@@ -158,6 +186,8 @@ namespace CindarsHope.Combat
                 if (enemyHealth == null)
                     continue;
 
+                Debug.Log($"CombatLog: PlayerAttackHitCandidate. EnemyId={enemyHealth.EnemyId}, EnemyHP={enemyHealth.CurrentHp}/{enemyHealth.MaxHp}, Distance={Vector2.Distance(attackCenter, collider.transform.position):F2}", this);
+
                 var damageRequest = new DamageRequest(enemyHealth.EnemyId, weapon.BaseDamage)
                 {
                     DamageType = weapon.DamageType,
@@ -165,8 +195,15 @@ namespace CindarsHope.Combat
                     KnockbackForce = _knockbackForce
                 };
 
-                var result = DamageCalculator.Calculate(damageRequest);
+                int hpBefore = enemyHealth.CurrentHp;
                 enemyHealth.TakeDamage(damageRequest);
+                hitEnemies++;
+                Debug.Log($"CombatLog: PlayerAttackDamageApplied. EnemyId={enemyHealth.EnemyId}, BaseDamage={weapon.BaseDamage}, HP={hpBefore}->{enemyHealth.CurrentHp}", this);
+            }
+
+            if (hitEnemies == 0)
+            {
+                Debug.Log($"CombatLog: PlayerAttackMissed. Reason={(candidatesTotal == 0 ? "NoCollidersInRange" : "NoEnemyHealthInColliders")}, AttackCenter={attackCenter}, Range={weapon.Range:F2}, CollidersSeen={candidatesTotal}, Direction={direction}", this);
             }
         }
 

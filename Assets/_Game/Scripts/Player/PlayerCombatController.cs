@@ -44,33 +44,10 @@ namespace CindarsHope.Player
             GameEventBus.Unsubscribe<PlayerHitEvent>(OnPlayerHit);
         }
 
-        private void Update()
-        {
-            if (GameBootstrap.Instance?.ModalManager?.HasActiveModal == true)
-            {
-                return;
-            }
-
-            if (Input.GetKeyDown(KeyCode.Q))
-            {
-                TryAttackLeftHand();
-            }
-
-            if (Input.GetKeyDown(KeyCode.J))
-            {
-                TryAttackRightHand();
-            }
-
-            if (Input.GetKeyDown(KeyCode.E))
-            {
-                TryAttackRightHand();
-            }
-
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                TryDodge();
-            }
-        }
+        // SPEC 14A-FIX7: Update() was reading Q/J/E/Space and competing with PlayerAttackController
+        // for the same input. PlayerAttackController is the authoritative attack handler (it does
+        // proper Physics2D enemy detection and calls EnemyHealth.TakeDamage). This controller is
+        // now reduced to its OnPlayerHit damage handler (enemy contact -> player HP).
 
         private void TryAttackLeftHand()
         {

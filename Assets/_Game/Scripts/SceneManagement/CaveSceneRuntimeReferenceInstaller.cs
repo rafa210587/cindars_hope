@@ -74,6 +74,10 @@ namespace CindarsHope.SceneManagement
                 attackController.RebindStaminaManager(staminaManager);
             }
 
+            // SPEC 14A-FIX7: bootstrap floating damage numbers if the scene didn't include the component.
+            // Self-creating instance auto-builds its world-space Canvas in OnEnable.
+            CindarsHope.Combat.FloatingDamageNumberDisplayer.EnsureExists(transform);
+
             var interactionSystem = _playerTransform != null ? _playerTransform.GetComponent<InteractionSystem>() : null;
             DebugHud.RebindExisting(playerManager, inventoryManager, hungerManager, staminaManager, bootstrap.StatusEffectManager, interactionSystem, timeManager, saveManager);
             DebugHud.RebindExistingCaveRuntime(_caveRunManager, _caveLevelRuntimeController, _caveDebugLevelSkipController);

@@ -115,7 +115,9 @@ namespace CindarsHope.Editor.EnemyTaxonomy
             CreateMovement("movement_kite_ranged",     Combat.EnemyMovementType.KiteRanged,     2.0f, 10f, 25f, 7.0f, 5.5f, 5f,  0.30f, false, false, false);
             CreateMovement("movement_caster_keep_away",Combat.EnemyMovementType.CasterKeepAway, 1.8f, 9f,  22f, 8.0f, 6.0f, 4f,  0.40f, false, false, false);
             CreateMovement("movement_burrow_ambush",   Combat.EnemyMovementType.BurrowAmbush,   2.2f, 8f,  20f, 1.0f, 0.5f, 3f,  0.30f, true,  false, false);
-            CreateMovement("movement_swarm_erratic",   Combat.EnemyMovementType.SwarmErratic,   3.0f, 7f,  18f, 0.8f, 0.4f, 3f,  0.20f, false, false, false);
+            // SPEC 14A-FIX7: swarm speed lowered from 3.0 -> 2.2. 3.0 made Tiny-class swarm enemies
+            // (cave mite, pale grub, void tick, ember tick) feel impossible to track and hit.
+            CreateMovement("movement_swarm_erratic",   Combat.EnemyMovementType.SwarmErratic,   2.2f, 7f,  18f, 0.8f, 0.4f, 3f,  0.20f, false, false, false);
             CreateMovement("movement_tank_slow_push",  Combat.EnemyMovementType.TankSlowPush,   1.0f, 8f,  20f, 1.8f, 1.2f, 2f,  0.45f, false, false, false);
             CreateMovement("movement_phase_short_blink",Combat.EnemyMovementType.PhaseShortBlink,2.0f,10f, 24f, 1.2f, 0.9f, 4f,  0.30f, false, true,  false);
             CreateMovement("movement_leaper",          Combat.EnemyMovementType.Leaper,         2.5f, 9f,  22f, 3.5f, 2.5f, 5f,  0.30f, false, false, true);
