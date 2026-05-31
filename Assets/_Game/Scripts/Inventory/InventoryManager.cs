@@ -53,41 +53,87 @@ namespace CindarsHope.Inventory
         public void InitializeFromStartingItems(PlayerDataSO playerData, ItemDatabaseSO itemDatabase)
         {
             Initialize(itemDatabase);
-            Clear();
+            // SPEC 14A-FIX14: instead of Clear() unconditionally, check if a non-empty inventory
+            // is already present (load-from-save path). If so, treat as AlreadyPresent and ONLY
+            // re-apply for items that are missing (idempotent repair). If the inventory is empty,
+            // apply the full starter kit (new game / fresh inventory).
+            Debug.Log("CombatLog: StarterInventoryCheckStarted.", this);
 
             if (playerData == null)
             {
-                Debug.LogWarning("InventoryManager cannot initialize starting items because PlayerDataSO is missing.", this);
+                Debug.LogWarning("CombatLog: StarterInventoryApplied=False. Reason=PlayerDataMissing.", this);
                 return;
             }
 
             if (itemDatabase == null)
             {
-                Debug.LogWarning("InventoryManager cannot initialize starting items because ItemDatabaseSO is missing.", this);
+                Debug.LogWarning("CombatLog: StarterInventoryApplied=False. Reason=ItemDatabaseMissing.", this);
                 return;
             }
 
-            if (playerData.StartingItems == null)
+            if (playerData.StartingItems == null || playerData.StartingItems.Length == 0)
             {
+                Debug.LogWarning("CombatLog: StarterInventoryApplied=False. Reason=StartingItemsEmpty.", this);
                 return;
             }
 
+            bool inventoryWasEmpty = _items.Count == 0;
+            string reason = inventoryWasEmpty ? "NewGameOrEmptyInventory" : "RepairMissingItems";
+            if (inventoryWasEmpty) Clear();
+
+            var added = new List<string>();
+            var skipped = new List<string>();
             foreach (var startingItem in playerData.StartingItems)
             {
                 if (startingItem.Item == null)
                 {
-                    Debug.LogWarning("InventoryManager skipped a null starting item.", this);
+                    skipped.Add("<null-item>:null-reference");
                     continue;
                 }
-
                 if (startingItem.Amount <= 0)
                 {
-                    Debug.LogWarning($"InventoryManager skipped starting item '{startingItem.Item.Id}' with invalid amount {startingItem.Amount}.", this);
+                    skipped.Add($"{startingItem.Item.Id}:invalid-amount-{startingItem.Amount}");
                     continue;
                 }
-
-                AddItem(startingItem.Item.Id, startingItem.Amount);
+                if (!itemDatabase.TryGetById(startingItem.Item.Id, out _))
+                {
+                    skipped.Add($"{startingItem.Item.Id}:not-in-itemdatabase");
+                    continue;
+                }
+                if (!inventoryWasEmpty && GetAmount(startingItem.Item.Id) >= startingItem.Amount)
+                {
+                    skipped.Add($"{startingItem.Item.Id}:already-have-{GetAmount(startingItem.Item.Id)}");
+                    continue;
+                }
+                int desired = startingItem.Amount;
+                int currentlyHave = inventoryWasEmpty ? 0 : GetAmount(startingItem.Item.Id);
+                int toAdd = desired - currentlyHave;
+                if (toAdd <= 0) { skipped.Add($"{startingItem.Item.Id}:nothing-to-add"); continue; }
+                if (AddItem(startingItem.Item.Id, toAdd)) added.Add($"{startingItem.Item.Id}x{toAdd}");
+                else skipped.Add($"{startingItem.Item.Id}:add-failed");
             }
+
+            Debug.Log($"CombatLog: StarterInventoryApplied={added.Count > 0}. Reason={reason}. ItemsAdded=[{string.Join(", ", added)}]. Skipped=[{string.Join(", ", skipped)}].", this);
+        }
+
+        // SPEC 14A-FIX14: clear hotbar bindings that point to items not present in the inventory.
+        // Returns the number of cleared bindings.
+        public int ClearHotbarBindingsForMissingItems(System.Func<int, string> getSlotItemId, System.Action<int, string> setSlot, int slotCount)
+        {
+            int cleared = 0;
+            for (int i = 0; i < slotCount; i++)
+            {
+                var id = getSlotItemId(i);
+                if (string.IsNullOrWhiteSpace(id)) continue;
+                if (GetAmount(id) <= 0)
+                {
+                    Debug.Log($"CombatLog: HotbarInvalidBindingCleared. Slot={i}, ItemId='{id}', Reason=NotInInventory.", this);
+                    setSlot(i, string.Empty);
+                    cleared++;
+                }
+            }
+            Debug.Log($"CombatLog: HotbarConsistencyCheck. Cleared={cleared}/{slotCount}.", this);
+            return cleared;
         }
 
         public void Shutdown()

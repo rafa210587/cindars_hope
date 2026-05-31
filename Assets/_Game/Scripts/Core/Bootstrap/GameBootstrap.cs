@@ -189,6 +189,17 @@ namespace CindarsHope.Core.Bootstrap
             if (_saveManager != null)
             {
                 _saveManager.Initialize();
+
+                // SPEC 14A-FIX14: drop hotbar bindings that don't have a matching item in the inventory.
+                // Prevents the "hotbar shows item_seed_wheat but Inventory is empty" inconsistency.
+                if (_inventoryManager != null && _saveManager.HotbarState != null)
+                {
+                    var hotbar = _saveManager.HotbarState;
+                    _inventoryManager.ClearHotbarBindingsForMissingItems(
+                        hotbar.GetSlotItemId,
+                        (slot, id) => hotbar.SetSlot(slot, id),
+                        CindarsHope.UI.Hotbar.HotbarState.SlotCount);
+                }
             }
             else
             {

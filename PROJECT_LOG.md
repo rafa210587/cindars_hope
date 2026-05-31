@@ -1,3 +1,65 @@
+## Sessao 2026-05-31 (31d) - SPEC 14A-FIX14 - Starter inventory + hotbar consistency + lago 4x
+
+**Foco:** Inventario iniciava vazio mesmo apos FIX13; hotbar mostrava item nao presente no inventario; lago precisava 4x maior com fisica de bloqueio e interacao apenas pela borda.
+
+### Causa raiz do inventario vazio
+
+1. `PlayerData.asset` apos FIX13 ficou com COMENTARIOS YAML (`# Iron Sword`, `# Wheat Seed (modern)` etc.) dentro do bloco `StartingItems`. Unity deserializa via parser proprio que NAO suporta comentarios inline em estruturas serializadas. Resultado: o array StartingItems era ignorado ou parseado parcialmente e o inventario ficava vazio.
+2. Mesmo com o YAML correto, 3 dos 15 GUIDs no PlayerData.StartingItems nao estavam registrados no `ItemDatabase.asset._items`: wheat seed modern (6123711f...), carrot seed modern (384f1bb2...), copper ore (e6b3ea04...). `InventoryManager.TryAddItem` rejeitava esses items silenciosamente apenas com um LogWarning generico.
+3. `SaveManager.Initialize()` setava hotbar slots 0/1/2 com defaults hardcoded (item_seed_wheat, item_seed_carrot, item_tool_fishing_rod_basic) sem verificar se esses itens estavam de fato no inventario - inconsistencia entre HUD da hotbar e o inventario real.
+
+### Implementacao
+
+P1 - Starter inventory consistente
+- `Assets/_Game/Data/Config/PlayerData.asset`: TODOS os comentarios YAML inline removidos do bloco StartingItems. Mantidos apenas as 15 entries puras (GUID + Amount).
+- `Assets/_Game/Data/Registries/ItemDatabase.asset`: adicionados os 3 GUIDs faltantes (wheat seed modern, carrot seed modern, copper ore). Total agora 22 items na database.
+- `InventoryManager.InitializeFromStartingItems` reescrito com idempotency check e logging detalhado:
+  - "CombatLog: StarterInventoryCheckStarted."
+  - Pre-verifica se inventario ja tem items (load-from-save). Se sim: nao limpa, so completa missing items. Se nao: Clear + aplica tudo.
+  - Para cada starting item: verifica null/amount/presenca no ItemDatabase/quantidade ja existente, e loga add/skip com razao especifica.
+  - "CombatLog: StarterInventoryApplied=True/False. Reason=NewGameOrEmptyInventory|RepairMissingItems|PlayerDataMissing|ItemDatabaseMissing|StartingItemsEmpty. ItemsAdded=[id1xN, id2xN, ...]. Skipped=[id:reason, ...]."
+- `InventoryManager.ClearHotbarBindingsForMissingItems(getSlotItemId, setSlot, slotCount)` - novo metodo:
+  - Itera os 6 slots da hotbar.
+  - Para cada slot nao-vazio, verifica `GetAmount(id) > 0`. Se nao, limpa o binding e loga "HotbarInvalidBindingCleared".
+  - Loga "HotbarConsistencyCheck. Cleared=N/6."
+- `GameBootstrap.InitializeManagers`: apos `SaveManager.Initialize`, chama `_inventoryManager.ClearHotbarBindingsForMissingItems` passando as APIs do HotbarState.
+
+P4 - Lago 4x maior + fisica
+- `Assets/_Game/Scenes/FarmScene.unity` FishingSpot (fileID 929740470):
+  - Transform.localScale: (6, 6, 1) -> (24, 24, 1). Linear 4x, area 16x.
+  - BoxCollider2D existente (929740472) mantido: size (1, 1), IsTrigger=1. Effective 24x24 trigger cobrindo toda a area do lago.
+  - NOVO BoxCollider2D (929740475): size (0.92, 0.92), IsTrigger=0. Effective 22.08x22.08 blocker centrado.
+  - Resultado: jogador nao consegue atravessar a agua (blocker 22x22); trigger (24x24) detecta jogador na faixa de 1 unidade ao redor do blocker = a "borda" do lago.
+
+P5 - Interacao apenas pela borda
+- FishingSpot ja implementa IInteractable. InteractionPrompt="Pescar".
+- Trigger 24x24 + blocker 22x22 = jogador so consegue acionar `Interact` quando esta na faixa de 1u entre os dois colliders.
+- Centro do lago e fisicamente inacessivel - jogador parado no centro nao existe.
+- Quando jogador sai do trigger 24x24, prompt some.
+
+### Arquivos alterados
+
+- Assets/_Game/Data/Config/PlayerData.asset (comentarios YAML removidos)
+- Assets/_Game/Data/Registries/ItemDatabase.asset (3 items adicionados)
+- Assets/_Game/Scripts/Inventory/InventoryManager.cs (idempotency + logs + ClearHotbarBindingsForMissingItems)
+- Assets/_Game/Scripts/Core/Bootstrap/GameBootstrap.cs (chama ClearHotbarBindingsForMissingItems pos-Init)
+- Assets/_Game/Scenes/FarmScene.unity (FishingSpot scale 4x + segundo BoxCollider2D blocker)
+
+### Validacao
+
+- dotnet build Assembly-CSharp.csproj: PASSOU - 0 erros, 0 avisos.
+- tools/docs/validate_docs.ps1: PASSED.
+- Unity Play Mode: requer usuario testar (Parte 6 da spec).
+
+### Pendencias honestas
+
+- Axe / Pickaxe / Hammer continuam ausentes - sem ItemDataSO/asset criado. Quando existirem, adicionar ao PlayerData.StartingItems + ItemDatabase._items.
+- O sprite atual do FishingSpot e um asset builtin do Unity (UISprite.psd) colorido azul. Visual final do lago deve trocar o sprite por arte propria.
+- Blocker e trigger usam mesmo centro do GameObject. Caso o sprite do lago nao seja perfeitamente quadrado/centrado, ajustar `m_Offset` dos colliders para alinhar com a forma visual.
+- Layer "Default" usado em ambos os colliders. Se o jogo usar Physics2D matrix custom, garantir que Player layer colide com Default.
+
+---
+
 ## Sessao 2026-05-31 (31c) - SPEC 14A-FIX13 - Starter kit, HUD responsivo, J removido, slots no HUD
 
 **Foco:** Tornar o jogo testavel sem precisar pegar item manualmente, deixar HUD responsiva e organizada, separar gameplay vs debug, remover J como ataque e mostrar equipamento real no HUD.
