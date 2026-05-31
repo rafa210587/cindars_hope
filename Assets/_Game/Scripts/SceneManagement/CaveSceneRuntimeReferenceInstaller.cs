@@ -74,9 +74,36 @@ namespace CindarsHope.SceneManagement
                 attackController.RebindStaminaManager(staminaManager);
             }
 
+            // SPEC 14A-FIX10: rebind combat databases on every cave-scene load from the single
+            // Resources-loaded registry, so wiring can't drift when the scene gets re-saved.
+            var combatRegistry = Resources.Load<CindarsHope.Core.Data.CombatRuntimeDatabasesRegistrySO>("CombatRuntimeDatabasesRegistry");
+            if (combatRegistry == null)
+            {
+                Debug.LogError("CaveSceneRuntimeReferenceInstaller: CombatRuntimeDatabasesRegistry not found at Resources/CombatRuntimeDatabasesRegistry. Enemy profiles and player weapon resolution will rely solely on inspector wiring.", this);
+            }
+            else
+            {
+                if (_caveRunManager != null)
+                {
+                    var materializer = _caveRunManager.GetComponent<CaveRuntimeMaterializer>();
+                    if (materializer != null) materializer.RebindCombatDatabases(combatRegistry);
+                }
+                if (attackController != null)
+                {
+                    attackController.RebindCombatData(combatRegistry.ItemDatabase, combatRegistry.WeaponDatabase);
+                }
+            }
+
             // SPEC 14A-FIX7: bootstrap floating damage numbers if the scene didn't include the component.
             // Self-creating instance auto-builds its world-space Canvas in OnEnable.
             CindarsHope.Combat.FloatingDamageNumberDisplayer.EnsureExists(transform);
+
+            // SPEC 14A-FIX10: ensure the player has a DamagePopupAnchor so EnemyContactDamage
+            // can show numbers above the player's head instead of guessing.
+            if (_playerTransform != null && _playerTransform.GetComponent<CindarsHope.Combat.DamagePopupAnchor>() == null)
+            {
+                _playerTransform.gameObject.AddComponent<CindarsHope.Combat.DamagePopupAnchor>();
+            }
 
             var interactionSystem = _playerTransform != null ? _playerTransform.GetComponent<InteractionSystem>() : null;
             DebugHud.RebindExisting(playerManager, inventoryManager, hungerManager, staminaManager, bootstrap.StatusEffectManager, interactionSystem, timeManager, saveManager);

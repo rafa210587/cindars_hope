@@ -674,6 +674,68 @@ namespace CindarsHope.Cave.Runtime
             return selectedNode;
         }
 
+        // SPEC 14A-FIX10: explicit rebind so installers can wire combat databases at runtime
+        // without depending on serialized inspector references that get wiped on scene re-save.
+        // Called by CaveSceneRuntimeReferenceInstaller before the first materialization.
+        public void RebindCombatDatabases(CindarsHope.Core.Data.CombatRuntimeDatabasesRegistrySO registry)
+        {
+            if (registry == null)
+            {
+                Debug.LogError("CaveRuntimeMaterializer.RebindCombatDatabases: registry is null.", this);
+                return;
+            }
+
+            if (registry.EnemyDatabase != null)                  _enemyDatabase                 = registry.EnemyDatabase;
+            if (registry.MovementProfileDatabase != null)        _movementProfileDatabase       = registry.MovementProfileDatabase;
+            if (registry.ActionSetDatabase != null)              _actionSetDatabase             = registry.ActionSetDatabase;
+            if (registry.ActionDatabase != null)                 _actionDatabase                = registry.ActionDatabase;
+            if (registry.TelegraphDatabase != null)              _telegraphDatabase             = registry.TelegraphDatabase;
+            if (registry.VulnerabilityProfileDatabase != null)   _vulnerabilityProfileDatabase  = registry.VulnerabilityProfileDatabase;
+            if (registry.SizeProfileDatabase != null)            _sizeProfileDatabase           = registry.SizeProfileDatabase;
+        }
+
+        // Fallback: if any combat database is still null at materialization time, load the
+        // registry asset from Resources/ and apply it. Keeps the runtime self-healing even if
+        // the installer hasn't run yet (e.g. scene loaded directly, tests, isolated play).
+        private void EnsureCombatDatabasesBound()
+        {
+            bool anyMissing = _enemyDatabase == null
+                              || _movementProfileDatabase == null
+                              || _actionSetDatabase == null
+                              || _actionDatabase == null
+                              || _telegraphDatabase == null
+                              || _vulnerabilityProfileDatabase == null
+                              || _sizeProfileDatabase == null;
+
+            if (!anyMissing) return;
+
+            var registry = UnityEngine.Resources.Load<CindarsHope.Core.Data.CombatRuntimeDatabasesRegistrySO>("CombatRuntimeDatabasesRegistry");
+            if (registry == null)
+            {
+                Debug.LogError("CaveRuntimeMaterializer.EnsureCombatDatabasesBound: registry asset not found at Resources/CombatRuntimeDatabasesRegistry. Inspector wiring is the only path left.", this);
+                return;
+            }
+
+            RebindCombatDatabases(registry);
+            Debug.Log("CaveRuntimeMaterializer: combat databases re-bound from Resources/CombatRuntimeDatabasesRegistry.", this);
+        }
+
+        private void LogDatabasesWiringStatus(CaveGeneratedLevel generatedLevel)
+        {
+            Debug.Log(
+                "CombatLog: EnemyDatabasesWiringStatus. " +
+                $"CaveLevel={generatedLevel?.CaveLevel}, " +
+                $"EnemyDatabaseAssigned={_enemyDatabase != null}, " +
+                $"MovementProfileDatabaseAssigned={_movementProfileDatabase != null}, " +
+                $"ActionSetDatabaseAssigned={_actionSetDatabase != null}, " +
+                $"ActionDatabaseAssigned={_actionDatabase != null}, " +
+                $"TelegraphDatabaseAssigned={_telegraphDatabase != null}, " +
+                $"VulnerabilityProfileDatabaseAssigned={_vulnerabilityProfileDatabase != null}, " +
+                $"SizeProfileDatabaseAssigned={_sizeProfileDatabase != null}, " +
+                $"EnemyPrefabAssigned={_enemyPrefab != null}",
+                this);
+        }
+
         private void MaterializeEnemies(CaveGeneratedLevel generatedLevel)
         {
             _lastEnemySpawnPlan = null;
@@ -689,6 +751,10 @@ namespace CindarsHope.Cave.Runtime
                 Debug.LogError("CaveRuntimeMaterializer: Cannot materialize enemies because CaveRunManager is not assigned.", this);
                 return;
             }
+
+            // SPEC 14A-FIX10: self-heal combat database wiring + emit explicit status log.
+            EnsureCombatDatabasesBound();
+            LogDatabasesWiringStatus(generatedLevel);
 
             if (_enemyDatabase == null)
             {
@@ -849,18 +915,34 @@ namespace CindarsHope.Cave.Runtime
             CaveEnemySpawnPlanEntry entry,
             int caveLevel = 0)
         {
-            // Resolve profiles from databases
+            // SPEC 14A-FIX10: resolve profiles with explicit LogError when ID is set but database
+            // is missing OR id not found in database. Previously silent null -> LegacyChase fallback.
             EnemyMovementProfileSO movementProfile = null;
-            if (_movementProfileDatabase != null && !string.IsNullOrEmpty(enemyData.MovementProfileId))
-                _movementProfileDatabase.TryGetById(enemyData.MovementProfileId, out movementProfile);
+            if (!string.IsNullOrEmpty(enemyData.MovementProfileId))
+            {
+                if (_movementProfileDatabase == null)
+                    Debug.LogError($"CombatLog: ProfileResolveFailed. EnemyId={enemyData.enemyId}, ProfileType=MovementProfile, ProfileId={enemyData.MovementProfileId}, Reason=DatabaseNotAssigned.", this);
+                else if (!_movementProfileDatabase.TryGetById(enemyData.MovementProfileId, out movementProfile) || movementProfile == null)
+                    Debug.LogError($"CombatLog: ProfileResolveFailed. EnemyId={enemyData.enemyId}, ProfileType=MovementProfile, ProfileId={enemyData.MovementProfileId}, Reason=IdNotFoundInDatabase '{_movementProfileDatabase.name}'.", this);
+            }
 
             EnemyVulnerabilityProfileSO vulnerabilityProfile = null;
-            if (_vulnerabilityProfileDatabase != null && !string.IsNullOrEmpty(enemyData.VulnerabilityProfileId))
-                _vulnerabilityProfileDatabase.TryGetById(enemyData.VulnerabilityProfileId, out vulnerabilityProfile);
+            if (!string.IsNullOrEmpty(enemyData.VulnerabilityProfileId))
+            {
+                if (_vulnerabilityProfileDatabase == null)
+                    Debug.LogError($"CombatLog: ProfileResolveFailed. EnemyId={enemyData.enemyId}, ProfileType=VulnerabilityProfile, ProfileId={enemyData.VulnerabilityProfileId}, Reason=DatabaseNotAssigned.", this);
+                else if (!_vulnerabilityProfileDatabase.TryGetById(enemyData.VulnerabilityProfileId, out vulnerabilityProfile) || vulnerabilityProfile == null)
+                    Debug.LogError($"CombatLog: ProfileResolveFailed. EnemyId={enemyData.enemyId}, ProfileType=VulnerabilityProfile, ProfileId={enemyData.VulnerabilityProfileId}, Reason=IdNotFoundInDatabase '{_vulnerabilityProfileDatabase.name}'.", this);
+            }
 
             EnemySizeProfileSO sizeProfile = null;
-            if (_sizeProfileDatabase != null && !string.IsNullOrEmpty(enemyData.SizeProfileId))
-                _sizeProfileDatabase.TryGetById(enemyData.SizeProfileId, out sizeProfile);
+            if (!string.IsNullOrEmpty(enemyData.SizeProfileId))
+            {
+                if (_sizeProfileDatabase == null)
+                    Debug.LogError($"CombatLog: ProfileResolveFailed. EnemyId={enemyData.enemyId}, ProfileType=SizeProfile, ProfileId={enemyData.SizeProfileId}, Reason=DatabaseNotAssigned.", this);
+                else if (!_sizeProfileDatabase.TryGetById(enemyData.SizeProfileId, out sizeProfile) || sizeProfile == null)
+                    Debug.LogError($"CombatLog: ProfileResolveFailed. EnemyId={enemyData.enemyId}, ProfileType=SizeProfile, ProfileId={enemyData.SizeProfileId}, Reason=IdNotFoundInDatabase '{_sizeProfileDatabase.name}'.", this);
+            }
 
             var spriteRenderer = enemyObject.GetComponent<SpriteRenderer>();
             if (spriteRenderer == null)
@@ -926,6 +1008,13 @@ namespace CindarsHope.Cave.Runtime
                 hitFlash = enemyObject.AddComponent<HitFlashController>();
             }
 
+            // SPEC 14A-FIX10: attach a damage popup anchor so floating numbers know exactly
+            // where the enemy's head is (collider top). Avoids OverlapPoint guesses.
+            if (enemyObject.GetComponent<DamagePopupAnchor>() == null)
+            {
+                enemyObject.AddComponent<DamagePopupAnchor>();
+            }
+
             var brain = enemyObject.GetComponent<EnemyBrain>();
             if (brain == null)
             {
@@ -948,8 +1037,18 @@ namespace CindarsHope.Cave.Runtime
                 brain.Configure(enemyData, movementProfile);
             }
 
-            // EnemyChaseController: legacy fallback only when no movement profile is available
-            bool useLegacyChase = movementProfile == null;
+            // EnemyChaseController: legacy fallback only when enemyData has NO MovementProfileId
+            // AND no profile resolved. When MovementProfileId IS set but resolution failed, do NOT
+            // silently fall through to LegacyChase — log error and leave the brain in charge so
+            // the symptom is visible (no movement) instead of hidden behind a wrong-behaviour fallback.
+            bool hasMovementProfileId = !string.IsNullOrEmpty(enemyData.MovementProfileId);
+            bool useLegacyChase = movementProfile == null && !hasMovementProfileId;
+            if (movementProfile == null && hasMovementProfileId)
+            {
+                Debug.LogError($"CombatLog: LegacyChaseFallbackSuppressed. EnemyId={enemyData.enemyId}, " +
+                               $"MovementProfileId={enemyData.MovementProfileId}. Profile failed to resolve - see ProfileResolveFailed log. " +
+                               $"EnemyBrain remains in control to keep the regression visible.", this);
+            }
             var chaseController = enemyObject.GetComponent<EnemyChaseController>();
             if (useLegacyChase)
             {

@@ -21,6 +21,10 @@ namespace CindarsHope.Combat
         public string EnemyId => _enemyData != null ? _enemyData.enemyId : string.Empty;
         public string DisplayName => _enemyData != null && !string.IsNullOrWhiteSpace(_enemyData.DisplayName) ? _enemyData.DisplayName : name;
         public CindarsHope.Combat.StatusEffect.StatusEffectManager StatusEffects => _statusEffects;
+        // SPEC 14A-FIX10: expose IsDead so EnemyBrain/external controllers can check death state.
+        // Previously a duplicate CindarsHope.Enemy.EnemyHealth in /Enemy/ provided this; removed
+        // in FIX10 because it was a parallel/legacy class that never got Configure'd at runtime.
+        public bool IsDead => _enemyData != null && _currentHp <= 0;
 
         public void Configure(EnemyDataSO enemyData)
         {
@@ -100,6 +104,9 @@ namespace CindarsHope.Combat
             Debug.Log($"CombatLog: Hit enemy. {BuildEnemyLogPrefix()}, Damage={damageResult.FinalDamage}, HP={hpBefore}->{_currentHp}/{MaxHp}.", this);
 
             GameEventBus.Publish(new DamageAppliedEvent(damageResult, transform.position));
+            // SPEC 14A-FIX10: explicit show-at-target so popup lands above this enemy's collider
+            // top, not at the OverlapPoint guess (which is unreliable for fast-moving enemies).
+            FloatingDamageNumberDisplayer.ShowAtTarget(gameObject, damageResult.FinalDamage, damageResult.DamageType, damageResult.WasImmune, false);
 
             var hitFlash = GetComponentInChildren<HitFlashController>();
             if (hitFlash != null)

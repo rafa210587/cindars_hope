@@ -43,7 +43,9 @@ namespace CindarsHope.Enemy
         // Components
         private Rigidbody2D _rb;
         private EnemyTelegraphController _telegraph;
-        private EnemyHealth _health;
+        // SPEC 14A-FIX10: explicitly qualified - previously bound to the now-removed legacy
+        // CindarsHope.Enemy.EnemyHealth via same-namespace resolution, which never got Configure'd.
+        private CindarsHope.Combat.EnemyHealth _health;
         private EnemyVulnerabilityState _vulnerabilityState;
 
         public EnemyBrainState CurrentState => _currentState;

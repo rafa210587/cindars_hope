@@ -86,6 +86,17 @@ namespace CindarsHope.Combat
             _staminaManager = staminaManager;
         }
 
+        // SPEC 14A-FIX10: explicit rebind so the installer can supply combat databases at runtime
+        // without depending on serialized inspector references that get wiped on scene re-save.
+        public void RebindCombatData(ItemDatabaseSO itemDatabase, WeaponDatabaseSO weaponDatabase)
+        {
+            if (itemDatabase != null) _itemDatabase = itemDatabase;
+            if (weaponDatabase != null) _weaponDatabase = weaponDatabase;
+            string itemDbName = _itemDatabase != null ? _itemDatabase.name : "null";
+            string weaponDbName = _weaponDatabase != null ? _weaponDatabase.name : "null";
+            Debug.Log($"PlayerAttackController.RebindCombatData. ItemDb={itemDbName}, WeaponDb={weaponDbName}.", this);
+        }
+
         private void Update()
         {
             bool modalOpen = GameBootstrap.Instance?.ModalManager?.HasActiveModal == true;

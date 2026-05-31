@@ -70,6 +70,8 @@ namespace CindarsHope.Combat
                     _playerManager.DamageHP(_enemyData.contactDamage);
                     Debug.Log($"CombatLog: EnemyContactDamage. SourceName={_enemyData.DisplayName}, SourceEnemyId={_enemyData.enemyId}, Target=Player, Damage={_enemyData.contactDamage}.");
                     GameEventBus.Publish(new PlayerDamagedEvent(_enemyData.contactDamage, collision.transform.position, _enemyData.enemyId, _enemyData.DisplayName));
+                    // SPEC 14A-FIX10: popup at the actual player object, not the trigger position.
+                    FloatingDamageNumberDisplayer.ShowAtTarget(playerController.gameObject, _enemyData.contactDamage, DamageType.Physical, false, true);
 
                     var playerHitFlash = collision.GetComponentInParent<HitFlashController>();
                     if (playerHitFlash == null)

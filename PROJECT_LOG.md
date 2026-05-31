@@ -1,3 +1,88 @@
+## Sessao 2026-05-31 (31a) - SPEC 14A-FIX10 - Wiring runtime de combat databases, floating damage com anchor, EnemyHealth duplicado removido
+
+**Foco:** Regressao de wiring (MovementProfileResolved=False, HasLegacyChase=True para todos os inimigos) + ataque do player que dependia de databases nao wired + floating damage gigante/mal posicionado + EnemyHealth duplicado.
+
+### Causas raiz
+
+1. CaveRuntimeMaterializer tinha 7 SerializeFields para combat databases dependendo apenas de Inspector wiring na CaveScene. Apos qualquer re-save da cena, referencias caiam para null. Resultado: movement/action/vuln/size profiles nao resolviam e EnemyChaseController legado entrava silenciosamente.
+2. PlayerAttackController dependia de _itemDatabase e _weaponDatabase wired no Inspector. Mesmo problema.
+3. EnemyHealth EXISTIA EM DOIS LUGARES:
+   - CindarsHope.Combat.EnemyHealth (Assets/_Game/Scripts/Combat/EnemyHealth.cs) - a versao USADA por EnemyContactDamage, PlayerAttackController e CaveRuntimeMaterializer (Configure'd com EnemyDataSO).
+   - CindarsHope.Enemy.EnemyHealth (Assets/_Game/Scripts/Enemy/EnemyHealth.cs) - legacy nao usada por ninguem, mas EnemyBrain (em CindarsHope.Enemy namespace) bindava a ela por same-namespace resolution. Logo brain._health era sempre null em runtime.
+4. FloatingDamageNumberDisplayer usava OverlapPoint para adivinhar posicao do alvo, e fonte/sizeDelta resultavam em texto enorme. Cor "Physical" era off-white em vez de vermelho.
+
+### Implementacao
+
+- CindarsHope.Core.Data.CombatRuntimeDatabasesRegistrySO criado: um SO unico com 9 referencias (Enemy/Movement/ActionSet/Action/Telegraph/Vuln/Size databases + ItemDatabase + WeaponDatabase). Asset em Assets/_Game/Resources/CombatRuntimeDatabasesRegistry.asset.
+- CaveRuntimeMaterializer:
+  - public RebindCombatDatabases(registry) atribui as 7 databases.
+  - private EnsureCombatDatabasesBound() auto-loads do Resources/ se qualquer field for null.
+  - LogDatabasesWiringStatus emite "CombatLog: EnemyDatabasesWiringStatus." com assigned=True/False para todas.
+  - ResolveProfile* trocado por checks explicitos: quando EnemyDataSO tem MovementProfileId/VulnerabilityProfileId/SizeProfileId mas database null OU id nao encontrado, emite "CombatLog: ProfileResolveFailed." com Reason=DatabaseNotAssigned ou IdNotFoundInDatabase.
+  - LegacyChase fallback so ativa se MovementProfileId for vazio. Se ID existe mas profile nao resolve, EnemyBrain continua no controle e emite "CombatLog: LegacyChaseFallbackSuppressed." (regressao fica visivel, nao escondida).
+  - Inimigos agora ganham componente DamagePopupAnchor automaticamente.
+- PlayerAttackController:
+  - public RebindCombatData(itemDb, weaponDb) wireavel pelo installer.
+- CaveSceneRuntimeReferenceInstaller.Start():
+  - Resources.Load do registry.
+  - materializer.RebindCombatDatabases(registry) chamado antes da primeira materializacao.
+  - attackController.RebindCombatData(registry.ItemDatabase, registry.WeaponDatabase).
+  - Player ganha DamagePopupAnchor se nao tiver.
+- DamagePopupAnchor.cs novo: expoe GetPopupWorldPosition() lendo Collider2D.bounds.max.y do alvo, com fallback para transform.position + offset.
+- FloatingDamageNumberDisplayer reescrito:
+  - public static ShowAtTarget(GameObject, amount, type, immune, isPlayer) chamado de EnemyHealth.TakeDamage e EnemyContactDamage.
+  - Cores: Physical = vermelho saturado (1, 0.15, 0.15), magical/elemental (Fire/Ice/Lightning/Arcane/Toxic) = azul saturado (0.35, 0.65, 1), True = vermelho claro, Immune = cinza. Player damage forcado para vermelho.
+  - Tamanho calibrado: canvasWorldScale=0.02, fontSize=24, sizeDelta=(80,30), moveDistance=0.35, duration=0.8s.
+  - Skip de Vector3.zero positions.
+- EnemyHealth:
+  - Removido Assets/_Game/Scripts/Enemy/EnemyHealth.cs + .meta (legacy duplicate).
+  - Adicionado public bool IsDead => _currentHp <= 0 no CindarsHope.Combat.EnemyHealth.
+  - EnemyBrain._health agora explicitamente tipado como CindarsHope.Combat.EnemyHealth.
+- Assembly-CSharp.csproj atualizado: removida entrada do EnemyHealth legacy, adicionadas entradas para CombatRuntimeDatabasesRegistrySO e DamagePopupAnchor.
+
+### Arquivos alterados
+
+- Assets/_Game/Scripts/Core/Data/CombatRuntimeDatabasesRegistrySO.cs (novo)
+- Assets/_Game/Scripts/Core/Data/CombatRuntimeDatabasesRegistrySO.cs.meta (novo)
+- Assets/_Game/Resources.meta (novo)
+- Assets/_Game/Resources/CombatRuntimeDatabasesRegistry.asset (novo)
+- Assets/_Game/Resources/CombatRuntimeDatabasesRegistry.asset.meta (novo)
+- Assets/_Game/Scripts/Combat/DamagePopupAnchor.cs (novo)
+- Assets/_Game/Scripts/Combat/EnemyHealth.cs (IsDead adicionado)
+- Assets/_Game/Scripts/Combat/EnemyContactDamage.cs (ShowAtTarget)
+- Assets/_Game/Scripts/Combat/FloatingDamageNumberDisplayer.cs (reescrito)
+- Assets/_Game/Scripts/Combat/PlayerAttackController.cs (RebindCombatData)
+- Assets/_Game/Scripts/Cave/Runtime/CaveRuntimeMaterializer.cs (rebind + status + logerror + suppress + anchor)
+- Assets/_Game/Scripts/SceneManagement/CaveSceneRuntimeReferenceInstaller.cs (wire registry + player anchor)
+- Assets/_Game/Scripts/Enemy/EnemyBrain.cs (qualified _health type)
+- Assets/_Game/Scripts/Enemy/EnemyHealth.cs (REMOVIDO legacy duplicate)
+- Assembly-CSharp.csproj (entries atualizadas)
+
+### Validacao
+
+- dotnet build Assembly-CSharp.csproj: PASSOU - 0 erros, 0 avisos.
+- dotnet build Assembly-CSharp-Editor.csproj: PASSOU - 0 erros, 2 CS0649 pre-existentes.
+- tools/docs/validate_docs.ps1: PASSED.
+- Unity Play Mode: requer usuario testar (Parte 6 da spec). Logs esperados na entrada da cave:
+  - "CombatLog: EnemyDatabasesWiringStatus. ... MovementProfileDatabaseAssigned=True, ActionSetDatabaseAssigned=True, ..."
+  - "CombatLog: EnemyRuntimeConfigured. ... MovementProfileResolved=True, ActionSetResolved=True, HasLegacyChase=False, ..."
+  - Sem mais "ProfileResolveFailed" para inimigos da banda atual.
+
+### Pendencias para o usuario
+
+1. Entrar Play Mode na CaveScene. Confirmar "EnemyDatabasesWiringStatus" com tudo True.
+2. Confirmar EnemyRuntimeConfigured com MovementProfileResolved=True / HasLegacyChase=False.
+3. Atacar inimigo com espada (J): confirmar PlayerAttackStarted/HitCandidate/DamageApplied.
+4. Confirmar popup pequeno vermelho acima do inimigo (physical) ou azul para magico.
+5. Levar dano de inimigo: popup vermelho acima do player.
+
+### Pendencias honestas
+
+- Parte 2 da spec (audit detalhado de velocidade/comportamento por criatura) deixada para depois de o usuario validar que o wiring esta resolvendo. Como pedido explicitamente: "Não comece pelo balance de velocidade antes de corrigir o wiring".
+- CavePlayerPathConfinement com horizontalHalfWidth=0.005 nao foi alterado por nao haver evidencia de bug ativo de locomocao - se aparecer, registrar em sessao futura.
+
+---
+
 ## Sessao 2026-05-30 (30b) - SPEC 14A-FIX6 - Diagnostico, Fail-safe e Drift de Assets
 
 **Foco:** Tornar visível e fail-loud o drift de assets que mantinha level 30/45/60/75/90 vazios apos FIX5.
