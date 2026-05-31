@@ -1,19 +1,23 @@
-﻿using CindarsHope.Core;
+using CindarsHope.Core;
 using CindarsHope.Core.Events;
 using UnityEngine;
 using TMPro;
 
 namespace CindarsHope.Combat
 {
+    // SPEC 14A-FIX8: small floating damage numbers anchored above the target.
+    // Configuration is tuned for a top-down 2D view; the runtime world-space Canvas is scaled
+    // down so font/sizeDelta values translate to reasonable world units instead of giant text.
     public class FloatingDamageNumberDisplayer : MonoBehaviour
     {
         [SerializeField] private Canvas _worldCanvas;
-        [SerializeField] private float _displayDuration = 1.5f;
-        [SerializeField] private float _moveDistance = 2f;
-        [SerializeField] private int _fontSize = 36;
+        [SerializeField] private float _displayDuration = 0.8f;
+        [SerializeField] private float _moveDistance = 0.4f;
+        [SerializeField] private int _fontSize = 24;            // canvas-pixel size; with canvas scale 0.02 -> ~0.5 world units tall
+        [SerializeField] private float _canvasWorldScale = 0.02f;
+        [SerializeField] private Vector2 _rectSize = new Vector2(80f, 30f);
+        [SerializeField] private float _headOffsetY = 0.6f;    // fallback offset when no collider available
 
-        // SPEC 14A-FIX7: track current instance so callers (e.g. CaveSceneRuntimeReferenceInstaller)
-        // can avoid duplicate bootstrap without using FindObjectOfType (banned at runtime).
         private static FloatingDamageNumberDisplayer s_currentInstance;
 
         public static FloatingDamageNumberDisplayer EnsureExists(Transform parent = null)
@@ -40,8 +44,6 @@ namespace CindarsHope.Combat
             if (_worldCanvas == null)
                 _worldCanvas = GetComponentInParent<Canvas>();
 
-            // FIX7 fallback: build a world-space Canvas as our child so floating numbers render
-            // even when the instance was created at runtime without a serialized canvas.
             if (_worldCanvas == null)
             {
                 var canvasGo = new GameObject("FloatingDamageCanvas_Runtime");
@@ -52,6 +54,10 @@ namespace CindarsHope.Combat
                 canvasGo.AddComponent<UnityEngine.UI.CanvasScaler>();
                 Debug.Log("FloatingDamageNumberDisplayer: created runtime world-space Canvas fallback.", this);
             }
+
+            // FIX8: canvas-space units -> world units. With scale 0.02f, fontSize 24 renders at
+            // ~0.48 world units tall, which reads as a small top-down popup instead of giant text.
+            _worldCanvas.transform.localScale = new Vector3(_canvasWorldScale, _canvasWorldScale, _canvasWorldScale);
 
             GameEventBus.Subscribe<DamageAppliedEvent>(DisplayDamage);
             GameEventBus.Subscribe<PlayerDamagedEvent>(DisplayPlayerDamage);
@@ -70,77 +76,80 @@ namespace CindarsHope.Combat
 
         private void DisplayDamage(DamageAppliedEvent evt)
         {
-            if (evt?.DamageResult == null || evt.DamageResult.FinalDamage <= 0 && !evt.DamageResult.WasImmune)
-                return;
-
-            if (_worldCanvas == null)
-            {
-                Debug.LogWarning("FloatingDamageNumberDisplayer: World Canvas not assigned and not found in hierarchy.", this);
-                return;
-            }
+            if (evt?.DamageResult == null) return;
+            if (evt.DamageResult.FinalDamage <= 0 && !evt.DamageResult.WasImmune) return;
+            if (_worldCanvas == null) return;
+            if (evt.TargetPosition == Vector3.zero) return; // skip nonsense origin
 
             string damageText = evt.DamageResult.WasImmune ? "Immune" : evt.DamageResult.FinalDamage.ToString();
             Color damageColor = GetDamageColor(evt.DamageResult);
 
-            Vector3 displayPosition = Vector3.zero;
-            if (evt.TargetPosition != Vector3.zero)
-            {
-                displayPosition = evt.TargetPosition;
-            }
-
-            CreateFloatingNumber(damageText, displayPosition, damageColor);
+            Vector3 head = ResolveHeadPosition(evt.TargetPosition);
+            CreateFloatingNumber(damageText, head, damageColor);
         }
 
         private void DisplayPlayerDamage(PlayerDamagedEvent evt)
         {
-            if (evt == null || evt.DamageAmount <= 0)
-                return;
+            if (evt == null || evt.DamageAmount <= 0) return;
+            if (_worldCanvas == null) return;
+            if (evt.WorldPosition == Vector3.zero) return;
 
-            if (_worldCanvas == null)
-            {
-                Debug.LogWarning("FloatingDamageNumberDisplayer: World Canvas not assigned and not found in hierarchy.", this);
-                return;
-            }
-
-            CreateFloatingNumber(evt.DamageAmount.ToString(), evt.WorldPosition, Color.red);
+            Vector3 head = ResolveHeadPosition(evt.WorldPosition);
+            CreateFloatingNumber(evt.DamageAmount.ToString(), head, Color.red);
         }
 
-        private void CreateFloatingNumber(string text, Vector3 position, Color color)
+        // FIX8: anchor above the actual target via Collider2D bounds when available,
+        // fallback to a fixed offset above the supplied position.
+        private Vector3 ResolveHeadPosition(Vector3 targetWorldPosition)
         {
-            if (_worldCanvas == null)
-                return;
+            var hit = Physics2D.OverlapPoint(targetWorldPosition);
+            if (hit != null)
+            {
+                var b = hit.bounds;
+                return new Vector3(b.center.x, b.max.y + 0.05f, targetWorldPosition.z);
+            }
+            return targetWorldPosition + Vector3.up * _headOffsetY;
+        }
+
+        private void CreateFloatingNumber(string text, Vector3 worldPosition, Color color)
+        {
+            if (_worldCanvas == null) return;
 
             var go = new GameObject("FloatingDamageNumber");
             go.transform.SetParent(_worldCanvas.transform, false);
-            go.transform.position = position + Vector3.up * 0.5f;
+            go.transform.position = worldPosition;
 
             var textComponent = go.AddComponent<TextMeshProUGUI>();
             textComponent.text = text;
             textComponent.fontSize = _fontSize;
             textComponent.color = color;
             textComponent.alignment = TextAlignmentOptions.Center;
+            textComponent.fontStyle = FontStyles.Bold;
+            textComponent.outlineWidth = 0.2f;
+            textComponent.outlineColor = new Color(0f, 0f, 0f, 0.85f);
 
             var rectTransform = go.GetComponent<RectTransform>();
-            rectTransform.sizeDelta = new Vector2(200, 100);
+            rectTransform.sizeDelta = _rectSize;
 
             var floatingBehavior = go.AddComponent<FloatingNumberBehavior>();
             floatingBehavior.SetupAnimation(_displayDuration, _moveDistance);
         }
 
+        // FIX8: distinguish physical (red) from magical/elemental (blue) damage.
+        // Other types kept color-coded for clarity; "Immune" stays gray.
         private Color GetDamageColor(DamageResult result)
         {
-            if (result.WasImmune)
-                return Color.gray;
+            if (result.WasImmune) return new Color(0.6f, 0.6f, 0.6f);
 
             return result.DamageType switch
             {
-                DamageType.Physical => Color.white,
-                DamageType.Fire => new Color(1f, 0.5f, 0f),
-                DamageType.Ice => new Color(0.5f, 0.8f, 1f),
-                DamageType.Toxic => new Color(0f, 1f, 0.5f),
-                DamageType.Lightning => new Color(1f, 1f, 0f),
-                DamageType.Arcane => new Color(0.8f, 0.5f, 1f),
-                DamageType.True => Color.red,
+                DamageType.Physical => new Color(1f, 0.85f, 0.85f),         // off-white red for melee
+                DamageType.Fire => new Color(1f, 0.55f, 0.1f),
+                DamageType.Ice => new Color(0.55f, 0.85f, 1f),
+                DamageType.Toxic => new Color(0.4f, 1f, 0.4f),
+                DamageType.Lightning => new Color(1f, 1f, 0.4f),
+                DamageType.Arcane => new Color(0.7f, 0.55f, 1f),
+                DamageType.True => new Color(1f, 0.2f, 0.2f),
                 _ => Color.white
             };
         }
@@ -172,10 +181,8 @@ namespace CindarsHope.Combat
                 return;
             }
 
-            // Move up
             transform.position = _startPos + Vector3.up * (_moveDistance * progress);
 
-            // Fade out
             var textComponent = GetComponent<TextMeshProUGUI>();
             if (textComponent != null)
             {

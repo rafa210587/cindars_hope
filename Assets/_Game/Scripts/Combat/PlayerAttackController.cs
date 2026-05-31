@@ -1,9 +1,11 @@
 using CindarsHope.Combat.Weapon;
 using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
+using CindarsHope.Core.Data;
 using CindarsHope.Core.Events;
 using CindarsHope.Equipment;
 using CindarsHope.Interaction;
+using CindarsHope.Inventory.Data;
 using CindarsHope.Player;
 using CindarsHope.Skills;
 using UnityEngine;
@@ -19,6 +21,14 @@ namespace CindarsHope.Combat
         [SerializeField] private ManaManager _manaManager;
         [SerializeField] private UnarmedAttackDataSO _unarmedFallback;
         [SerializeField] private InteractionSystem _interactionSystem;
+
+        // SPEC 14A-FIX8: Resolution chain - itemInstanceId -> ItemDataSO -> ItemDataSO.WeaponId -> WeaponDataSO.
+        // Either wire _weaponDatabase, or list the known weapons in _knownWeapons (or both).
+        // Equipment IDs that ARE weapon IDs (e.g. "weapon_sword_iron") also resolve directly.
+        [SerializeField] private ItemDatabaseSO _itemDatabase;
+        [SerializeField] private WeaponDatabaseSO _weaponDatabase;
+        [SerializeField] private WeaponDataSO[] _knownWeapons = new WeaponDataSO[0];
+
         [SerializeField] private float _knockbackForce = 2.5f;
         [SerializeField] private float _dodgeCooldownSeconds = 0.5f;
         [SerializeField] private float _dodgeStaminaCost = 20f;
@@ -92,14 +102,79 @@ namespace CindarsHope.Combat
 
         private void TryAttackLeftHand()
         {
-            var equippedItemId = _equipmentManager?.GetEquippedItem(EquipmentSlot.LeftHand);
+            var equippedItemId = _equipmentManager != null ? _equipmentManager.GetEquippedItem(EquipmentSlot.LeftHand) : null;
             AttackWithSlot(EquipmentSlot.LeftHand, ref _lastLeftHandAttackTime, equippedItemId);
         }
 
         private void TryAttackRightHand()
         {
-            var equippedItemId = _equipmentManager?.GetEquippedItem(EquipmentSlot.RightHand);
+            var equippedItemId = _equipmentManager != null ? _equipmentManager.GetEquippedItem(EquipmentSlot.RightHand) : null;
             AttackWithSlot(EquipmentSlot.RightHand, ref _lastRightHandAttackTime, equippedItemId);
+        }
+
+        // SPEC 14A-FIX8: full resolution chain itemInstanceId -> ItemDataSO -> WeaponDataSO
+        // with explicit logging at each step. Returns null when nothing is equipped (caller will use
+        // unarmed fallback). Returns null + sets error when SOMETHING is equipped but doesn't resolve
+        // (caller must NOT silently fall back to unarmed in that case).
+        private WeaponDataSO ResolveEquippedWeapon(EquipmentSlot slot, string equippedItemId, out string error)
+        {
+            error = null;
+
+            if (string.IsNullOrEmpty(equippedItemId))
+            {
+                Debug.Log($"CombatLog: PlayerAttackResolveSlot. Slot={slot}, EquippedInstanceId=<empty>", this);
+                return null;
+            }
+
+            Debug.Log($"CombatLog: PlayerAttackResolveSlot. Slot={slot}, EquippedInstanceId={equippedItemId}", this);
+
+            ItemDataSO itemData = null;
+            string weaponLookupId = equippedItemId;
+            bool wentThroughItemDatabase = false;
+
+            if (_itemDatabase != null && _itemDatabase.TryGetById(equippedItemId, out itemData) && itemData != null)
+            {
+                wentThroughItemDatabase = true;
+                Debug.Log($"CombatLog: PlayerAttackResolveItemData. ItemInstanceId={equippedItemId}, ItemDataId={itemData.Id}, ItemType={itemData.Category}, WeaponId='{itemData.WeaponId}'", this);
+                if (!string.IsNullOrEmpty(itemData.WeaponId))
+                {
+                    weaponLookupId = itemData.WeaponId;
+                }
+                else
+                {
+                    error = $"Item '{equippedItemId}' (Category={itemData.Category}) is not a weapon — WeaponId is empty.";
+                    Debug.Log($"CombatLog: PlayerAttackResolveWeapon. WeaponId=<none>, WeaponResolved=False, Reason=ItemNotWeapon", this);
+                    return null;
+                }
+            }
+            else
+            {
+                Debug.Log($"CombatLog: PlayerAttackResolveItemData. ItemInstanceId={equippedItemId}, ItemDataId=<not_in_itemdb>, FallingBackToDirectWeaponLookup=True", this);
+            }
+
+            var weapon = LookupWeapon(weaponLookupId);
+            Debug.Log($"CombatLog: PlayerAttackResolveWeapon. WeaponId={weaponLookupId}, WeaponResolved={weapon != null}, ViaItemDb={wentThroughItemDatabase}", this);
+
+            if (weapon == null)
+            {
+                error = $"Could not resolve WeaponDataSO for WeaponId='{weaponLookupId}' (from EquippedInstanceId='{equippedItemId}'). " +
+                        $"_itemDatabase assigned={_itemDatabase != null}, _weaponDatabase assigned={_weaponDatabase != null}, _knownWeapons count={(_knownWeapons?.Length ?? 0)}.";
+            }
+            return weapon;
+        }
+
+        private WeaponDataSO LookupWeapon(string weaponId)
+        {
+            if (string.IsNullOrEmpty(weaponId)) return null;
+            if (_weaponDatabase != null && _weaponDatabase.TryGetById(weaponId, out var fromDb) && fromDb != null) return fromDb;
+            if (_knownWeapons != null)
+            {
+                foreach (var w in _knownWeapons)
+                {
+                    if (w != null && w.Id == weaponId) return w;
+                }
+            }
+            return null;
         }
 
         private void AttackWithSlot(EquipmentSlot slot, ref float lastAttackTime, string equippedItemId)
@@ -110,29 +185,29 @@ namespace CindarsHope.Combat
                 return;
             }
 
-            WeaponDataSO weapon = null;
-            if (!string.IsNullOrEmpty(equippedItemId))
-            {
-                weapon = Resources.Load<WeaponDataSO>($"Weapons/{equippedItemId}");
-            }
+            WeaponDataSO weapon = ResolveEquippedWeapon(slot, equippedItemId, out string resolveError);
 
-            if (weapon == null)
+            // CASE A: Slot is empty (nothing equipped) -> use unarmed fallback.
+            // CASE B: Something IS equipped but didn't resolve -> ERROR + abort (do not silently fall to unarmed).
+            // CASE C: Resolved weapon -> attack with it.
+            if (weapon == null && string.IsNullOrEmpty(equippedItemId))
             {
-                weapon = GetWeaponAsset(_unarmedFallback?.Id ?? "unarmed_default");
+                if (_unarmedFallback == null)
+                {
+                    Debug.LogError($"CombatLog: PlayerAttackBlocked. Reason=NoWeaponEquippedAndNoUnarmedFallback, Slot={slot}", this);
+                    return;
+                }
+                weapon = ConvertUnarmedToWeapon(_unarmedFallback);
             }
-
-            if (weapon == null && _unarmedFallback == null)
+            else if (weapon == null)
             {
-                Debug.LogWarning($"CombatLog: PlayerAttackBlocked. Reason=NoWeaponNoUnarmedFallback, Slot={slot}, EquippedItemId='{equippedItemId}'", this);
+                Debug.LogError($"CombatLog: PlayerAttackBlocked. Reason=WeaponEquippedButNotResolved, Slot={slot}, EquippedInstanceId={equippedItemId}, ResolveError={resolveError}", this);
                 return;
             }
 
-            float cooldown = weapon?.BaseCooldownSeconds ?? _unarmedFallback.BaseCooldownSeconds;
-            if (weapon != null)
-            {
-                float attackSpeed = weapon.AttackSpeedMultiplier;
-                cooldown = cooldown / Mathf.Max(0.1f, attackSpeed);
-            }
+            float cooldown = weapon.BaseCooldownSeconds;
+            float attackSpeed = weapon.AttackSpeedMultiplier;
+            cooldown = cooldown / Mathf.Max(0.1f, attackSpeed);
 
             if (Time.time < lastAttackTime + cooldown)
             {
@@ -140,16 +215,15 @@ namespace CindarsHope.Combat
                 return;
             }
 
-            float staminaCost = weapon?.StaminaCost ?? _unarmedFallback.StaminaCost;
-            if (_staminaManager != null && !_staminaManager.TrySpendStamina((int)staminaCost))
+            int staminaCost = Mathf.RoundToInt(weapon.StaminaCost);
+            if (_staminaManager != null && !_staminaManager.TrySpendStamina(staminaCost))
             {
-                Debug.Log($"CombatLog: PlayerAttackBlocked. Reason=InsufficientStamina, Slot={slot}, StaminaCost={(int)staminaCost}", this);
+                Debug.Log($"CombatLog: PlayerAttackBlocked. Reason=InsufficientStamina, Slot={slot}, StaminaCost={staminaCost}", this);
                 return;
             }
 
-            var resolvedWeapon = weapon ?? ConvertUnarmedToWeapon(_unarmedFallback);
-            Debug.Log($"CombatLog: PlayerAttackStarted. Slot={slot}, Weapon={resolvedWeapon.DisplayName}, BaseDamage={resolvedWeapon.BaseDamage}, Range={resolvedWeapon.Range:F2}, Type={resolvedWeapon.Type}", this);
-            ExecuteWeaponAttack(resolvedWeapon);
+            Debug.Log($"CombatLog: PlayerAttackStarted. Slot={slot}, Weapon={weapon.DisplayName}, BaseDamage={weapon.BaseDamage}, Range={weapon.Range:F2}, Type={weapon.Type}", this);
+            ExecuteWeaponAttack(weapon);
             lastAttackTime = Time.time;
         }
 
@@ -260,13 +334,8 @@ namespace CindarsHope.Combat
             }
         }
 
-        private WeaponDataSO GetWeaponAsset(string weaponId)
-        {
-            if (string.IsNullOrEmpty(weaponId))
-                return null;
-
-            return Resources.Load<WeaponDataSO>($"Weapons/{weaponId}");
-        }
+        // SPEC 14A-FIX8: removed GetWeaponAsset (Resources.Load fallback); resolution now goes
+        // through ItemDatabase + WeaponDatabase + _knownWeapons (LookupWeapon).
 
         private WeaponDataSO ConvertUnarmedToWeapon(UnarmedAttackDataSO unarmed)
         {
