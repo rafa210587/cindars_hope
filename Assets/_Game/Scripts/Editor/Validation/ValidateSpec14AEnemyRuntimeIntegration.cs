@@ -187,36 +187,35 @@ namespace CindarsHope.Editor.Validation
                 return;
             }
 
-            int missingMovement = 0;
-            int missingVuln = 0;
-            int missingSize = 0;
-            var examples = new List<string>();
+            // SPEC 14A-FIX12: track per-field offenders by enemyId+path so the report names names.
+            var missingMovement = new List<string>();
+            var missingVuln = new List<string>();
+            var missingSize = new List<string>();
 
             foreach (var guid in guids)
             {
                 var path = AssetDatabase.GUIDToAssetPath(guid);
                 var so = AssetDatabase.LoadAssetAtPath<EnemyDataSO>(path);
                 if (so == null) continue;
-                bool bad = false;
-                if (string.IsNullOrEmpty(so.MovementProfileId)) { missingMovement++; bad = true; }
-                if (string.IsNullOrEmpty(so.VulnerabilityProfileId)) { missingVuln++; bad = true; }
-                if (string.IsNullOrEmpty(so.SizeProfileId)) { missingSize++; bad = true; }
-                if (bad && examples.Count < 5) examples.Add(so.enemyId ?? path);
+                string label = $"{(string.IsNullOrEmpty(so.enemyId) ? "<no-enemyId>" : so.enemyId)} @ {path}";
+                if (string.IsNullOrEmpty(so.MovementProfileId)) missingMovement.Add(label);
+                if (string.IsNullOrEmpty(so.VulnerabilityProfileId)) missingVuln.Add(label);
+                if (string.IsNullOrEmpty(so.SizeProfileId)) missingSize.Add(label);
             }
 
             passed.Add($"EnemyDataSO: {guids.Length} total.");
-            if (missingMovement > 0)
-                errors.Add($"{missingMovement} EnemyDataSO missing MovementProfileId. Examples: {string.Join(", ", examples)}");
+            if (missingMovement.Count > 0)
+                errors.Add($"{missingMovement.Count} EnemyDataSO missing MovementProfileId: {string.Join("; ", missingMovement)}");
             else
                 passed.Add("All EnemyDataSO have MovementProfileId.");
 
-            if (missingVuln > 0)
-                errors.Add($"{missingVuln} EnemyDataSO missing VulnerabilityProfileId.");
+            if (missingVuln.Count > 0)
+                errors.Add($"{missingVuln.Count} EnemyDataSO missing VulnerabilityProfileId: {string.Join("; ", missingVuln)}");
             else
                 passed.Add("All EnemyDataSO have VulnerabilityProfileId.");
 
-            if (missingSize > 0)
-                errors.Add($"{missingSize} EnemyDataSO missing SizeProfileId.");
+            if (missingSize.Count > 0)
+                errors.Add($"{missingSize.Count} EnemyDataSO missing SizeProfileId: {string.Join("; ", missingSize)}");
             else
                 passed.Add("All EnemyDataSO have SizeProfileId.");
         }
