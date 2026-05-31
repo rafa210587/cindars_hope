@@ -22,6 +22,9 @@ namespace CindarsHope.World
         [SerializeField] private LootTableSO _lootTable;
         [SerializeField] private float _castDelaySeconds = 0.5f;
         [SerializeField] private float _timingWindowSeconds = 1.25f;
+        [SerializeField] private bool _requireEdgeInteraction = true;
+        [SerializeField] private Vector2 _edgeInteractionOuterHalfExtents = new Vector2(0.45f, 0.45f);
+        [SerializeField] private Vector2 _edgeInteractionInnerHalfExtents = new Vector2(0.35f, 0.35f);
 
         private bool _isFishing;
         private float _windowOpenTime;
@@ -30,7 +33,12 @@ namespace CindarsHope.World
 
         public bool CanInteract(GameObject interactor)
         {
-            return _inventoryManager != null;
+            if (_inventoryManager == null)
+            {
+                return false;
+            }
+
+            return !_requireEdgeInteraction || IsInteractorOnEdge(interactor);
         }
 
         public void Interact(GameObject interactor)
@@ -87,6 +95,31 @@ namespace CindarsHope.World
             _fishAmount = Mathf.Max(1, _fishAmount);
             _castDelaySeconds = Mathf.Max(0f, _castDelaySeconds);
             _timingWindowSeconds = Mathf.Max(0.1f, _timingWindowSeconds);
+            _edgeInteractionOuterHalfExtents = Max(_edgeInteractionOuterHalfExtents, new Vector2(0.01f, 0.01f));
+            _edgeInteractionInnerHalfExtents = Vector2.Min(_edgeInteractionInnerHalfExtents, _edgeInteractionOuterHalfExtents);
+            _edgeInteractionInnerHalfExtents = Max(_edgeInteractionInnerHalfExtents, Vector2.zero);
+        }
+
+        private bool IsInteractorOnEdge(GameObject interactor)
+        {
+            if (interactor == null)
+            {
+                return false;
+            }
+
+            var localPosition = transform.InverseTransformPoint(interactor.transform.position);
+            var absoluteLocal = new Vector2(Mathf.Abs(localPosition.x), Mathf.Abs(localPosition.y));
+            var insideOuter = absoluteLocal.x <= _edgeInteractionOuterHalfExtents.x
+                && absoluteLocal.y <= _edgeInteractionOuterHalfExtents.y;
+            var outsideInnerWater = absoluteLocal.x >= _edgeInteractionInnerHalfExtents.x
+                || absoluteLocal.y >= _edgeInteractionInnerHalfExtents.y;
+
+            return insideOuter && outsideInnerWater;
+        }
+
+        private static Vector2 Max(Vector2 value, Vector2 minimum)
+        {
+            return new Vector2(Mathf.Max(value.x, minimum.x), Mathf.Max(value.y, minimum.y));
         }
 
         private System.Collections.IEnumerator FishingRoutine(int staminaCost)

@@ -1,3 +1,57 @@
+## Sessao 2026-05-31 (31e) - FarmScene lake collider + central plot placeholder removal
+
+**Foco:** corrigir repulsao na borda do lago da FarmScene e remover o quadrado/grade bege central sem mexer em Cave, Enemy, Combat, ItemDatabase, Starter Inventory, HUD ou save.
+
+### Diagnostico
+
+- Objeto visual/interativo do lago: `FishingSpot` em `Assets/_Game/Scenes/FarmScene.unity`.
+  - Position: `(5.5, -3, 0)`.
+  - Scale: `(24, 24, 1)`.
+  - Layer/Tag: `Default` / `Untagged`.
+  - SpriteRenderer: placeholder `UISprite`, cor azul `{0.18, 0.42, 0.85, 1}`, sorting order `1`.
+  - Trigger antes: `BoxCollider2D` `isTrigger=true`, size `(1, 1)`, offset `(0, 0)`, efetivo `24x24`.
+  - Blocker antes: `BoxCollider2D` `isTrigger=false`, size `(0.92, 0.92)`, offset `(0, 0)`, efetivo `22.08x22.08`.
+  - Rigidbody2D: ausente.
+  - Scripts: `FishingSpot`.
+- Causa raiz provavel da repulsao: blocker fisico quase do tamanho total do lago, deixando margem jogavel muito curta para um sprite escalado `24x24`.
+- Causa raiz da interacao ruim na borda: `InteractionSystem.GetCandidatePosition` media distancia ate o transform do componente interativo; para `FishingSpot`, isso era o centro do lago, nao a borda/trigger mais proxima.
+- Objeto bege central identificado: parent `FarmPlots`, com 9 filhos `FarmPlot_00` a `FarmPlot_08`, sprites placeholder marrons/bege (`FarmPlot`) no centro da FarmScene. E um grid real de plots, mas ainda visualmente placeholder e incompreensivel para a cena inicial.
+
+### Correcoes
+
+- `Assets/_Game/Scenes/FarmScene.unity`:
+  - `FishingSpot` manteve visual grande `24x24`.
+  - Trigger de interacao ajustado para size `(0.9, 0.9)`, efetivo `21.6x21.6`.
+  - Blocker fisico ajustado para size `(0.7, 0.7)`, efetivo `16.8x16.8`.
+  - `FishingSpot` agora serializa gate de borda: outer half extents `(0.45, 0.45)` e inner half extents `(0.35, 0.35)`.
+  - `FarmPlots` movido para `(-100, -100, 0)` para remover a grade bege do centro sem deletar registry/scripts.
+- `Assets/_Game/Scripts/World/FishingSpot.cs`:
+  - `CanInteract` agora exige que o player esteja na faixa de borda configurada, nao no centro do lago.
+- `Assets/_Game/Scripts/Interaction/InteractionSystem.cs`:
+  - Distancia de interacao agora usa `Collider2D.ClosestPoint(origin)` antes do centro do componente, permitindo interacao na borda real do trigger.
+- `Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpFarmScene.cs`:
+  - Gerador da FarmScene passa a criar trigger `0.9`, blocker `0.7` e `FarmPlots` fora da area visivel inicial, evitando regressao em regeneracao.
+
+### Pendencias honestas
+
+- O grid `FarmPlots` nao foi removido do sistema; foi movido para fora da area visivel como medida temporaria. Precisa de redesign visual antes de voltar para o centro da fazenda.
+- Validacao Play Mode humana ainda deve confirmar aproximacao do lago por cima, baixo, esquerda e direita.
+
+### Validacao
+
+- `dotnet restore Assembly-CSharp.csproj`: PASS.
+- `dotnet restore Assembly-CSharp-Editor.csproj`: PASS.
+- `dotnet build Assembly-CSharp.csproj --no-restore`: PASS, 0 warnings, 0 errors.
+- `dotnet build Assembly-CSharp-Editor.csproj --no-restore`: PASS, 2 warnings legados em `CreateEnemyActionsAndSets.ActionEntry` (`MinRange`, `RequiresLos`), 0 errors.
+- `tools/docs/validate_docs.ps1`: PASS.
+- `tools/unity/RunUnityCompileValidation.ps1`: NOT RUN com sucesso. Reason: Unity batchmode abortou porque outra instancia do projeto esta aberta.
+- `tools/unity/ScanUnityLogs.ps1`: reportou falha pelo abort de batchmode; sem evidencia de erro C# novo nesse log.
+- `git diff --check`: NOT RUN com sucesso. Reason: Git/MSYS falhou com `couldn't create signal pipe, Win32 error 5`, falha de ambiente ja observada neste repo.
+- `CindarsHope > Repair and Validate Project`: NOT RUN. Reason: requer Editor/menus Unity interativos.
+- Play Mode FarmScene: NOT RUN. Reason: requer Editor aberto pelo usuario.
+
+---
+
 ## Sessao 2026-05-31 (31d) - SPEC 14A-FIX14 - Starter inventory + hotbar consistency + lago 4x
 
 **Foco:** Inventario iniciava vazio mesmo apos FIX13; hotbar mostrava item nao presente no inventario; lago precisava 4x maior com fisica de bloqueio e interacao apenas pela borda.

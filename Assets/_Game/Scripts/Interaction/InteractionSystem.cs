@@ -204,14 +204,14 @@ namespace CindarsHope.Interaction
 
         private static Vector2 GetCandidatePosition(InteractionCandidate candidate, Vector2 origin)
         {
+            if (candidate.Collider != null)
+            {
+                return candidate.Collider.ClosestPoint(origin);
+            }
+
             if (candidate.Interactable is Component component)
             {
                 return component.transform.position;
-            }
-
-            if (candidate.Collider != null)
-            {
-                return candidate.Collider.bounds.center;
             }
 
             return origin;

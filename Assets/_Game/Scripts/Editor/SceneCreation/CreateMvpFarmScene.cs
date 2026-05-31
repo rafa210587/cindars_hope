@@ -676,9 +676,13 @@ namespace CindarsHope.Editor.SceneCreation
                 Debug.LogWarning("FishingSpot placeholder SpriteRenderer was created without a sprite. Replace it with water/fishing art in a future art PR.");
             }
 
-            var collider = fishingObject.AddComponent<BoxCollider2D>();
-            collider.isTrigger = true;
-            collider.size = Vector2.one;
+            var edgeTrigger = fishingObject.AddComponent<BoxCollider2D>();
+            edgeTrigger.isTrigger = true;
+            edgeTrigger.size = new Vector2(0.9f, 0.9f);
+
+            var blockingCollider = fishingObject.AddComponent<BoxCollider2D>();
+            blockingCollider.isTrigger = false;
+            blockingCollider.size = new Vector2(0.7f, 0.7f);
 
             var fishingSpot = fishingObject.AddComponent<FishingSpot>();
             var serializedFishing = new SerializedObject(fishingSpot);
@@ -773,7 +777,7 @@ namespace CindarsHope.Editor.SceneCreation
             }
 
             var parent = new GameObject("FarmPlots");
-            parent.transform.position = Vector3.zero;
+            parent.transform.position = new Vector3(-100f, -100f, 0f);
             var registry = parent.AddComponent<FarmPlotRegistry>();
 
             const int gridSize = 3;
