@@ -114,6 +114,22 @@ namespace CindarsHope.UI
             }
         }
 
+        // SPEC 14A-FIX13: responsive HUD layout. Font size and panel widths scale with screen size
+        // so the HUD stays legible on 1280x720, 1920x1080 and editor windows of any size.
+        private float GetPanelWidth(float maxPx, float screenRatio)
+        {
+            return Mathf.Min(maxPx, Screen.width * screenRatio);
+        }
+
+        private void ApplyResponsiveStyles()
+        {
+            int fs = Mathf.Clamp(Mathf.RoundToInt(Screen.height / 55f), 11, 20);
+            GUI.skin.label.fontSize = fs;
+            GUI.skin.label.wordWrap = true;
+            GUI.skin.box.fontSize = fs;
+            GUI.skin.button.fontSize = fs;
+        }
+
         private void OnGUI()
         {
             if (!_isPrimaryInstance || _instance != this)
@@ -121,13 +137,14 @@ namespace CindarsHope.UI
                 return;
             }
 
+            ApplyResponsiveStyles();
             DrawActionsPanel();
             DrawInfoPanel();
         }
 
         private void DrawActionsPanel()
         {
-            const float width = 360f;
+            var width = GetPanelWidth(380f, 0.28f);
             var height = Screen.height - 24f;
 
             GUILayout.BeginArea(new Rect(12f, 12f, width, height), GUI.skin.box);
@@ -144,7 +161,7 @@ namespace CindarsHope.UI
 
         private void DrawInfoPanel()
         {
-            const float width = 430f;
+            var width = GetPanelWidth(450f, 0.32f);
             var height = Screen.height - 24f;
 
             GUILayout.BeginArea(new Rect(Screen.width - width - 12f, 12f, width, height), GUI.skin.box);
@@ -236,6 +253,10 @@ namespace CindarsHope.UI
                 : $"Progressao: {_lastProgressionMessage}");
         }
 
+        // SPEC 14A-FIX13: equipment HUD shows DisplayName for each slot (RightHand/LeftHand)
+        // resolved via ItemDatabase + InventoryManager.TryGetItemData. Updates automatically when
+        // EquipmentSlotChangedEvent fires (no manual refresh needed). Falls back to legacy
+        // EquippedToolId only if slots are empty (covers items equipped via legacy EquipTool).
         private void DrawEquipmentState()
         {
             var equipmentManager = _equipmentManager;
@@ -244,29 +265,41 @@ namespace CindarsHope.UI
                 equipmentManager = GameBootstrap.Instance.EquipmentManager;
             }
 
-            if (equipmentManager != null)
+            if (equipmentManager == null)
             {
-                GUILayout.Label($"Tool: {equipmentManager.EquippedToolId} ({equipmentManager.EquippedToolType}/{equipmentManager.EquippedToolTier})");
+                GUILayout.Label("Equipment: not assigned");
+                return;
             }
-            else
+
+            GUILayout.Label("Equipment:");
+            GUILayout.Label($"  Right hand (E): {ResolveSlotDisplayLabel(equipmentManager, EquipmentSlot.RightHand)}");
+            GUILayout.Label($"  Left hand (Q): {ResolveSlotDisplayLabel(equipmentManager, EquipmentSlot.LeftHand)}");
+
+            // Legacy fallback row only when slot-based system has nothing.
+            var leftHand = equipmentManager.GetEquippedItem(EquipmentSlot.LeftHand);
+            var rightHand = equipmentManager.GetEquippedItem(EquipmentSlot.RightHand);
+            if (string.IsNullOrEmpty(leftHand) && string.IsNullOrEmpty(rightHand) && !string.IsNullOrEmpty(equipmentManager.EquippedToolId))
             {
-                GUILayout.Label("Tool: not assigned");
+                GUILayout.Label($"  Legacy tool: {equipmentManager.EquippedToolId} ({equipmentManager.EquippedToolType}/{equipmentManager.EquippedToolTier})");
             }
 
             if (_saveManager != null && _saveManager.HotbarState != null)
             {
                 var selectedItem = _saveManager.HotbarState.SelectedItemId;
-                if (string.IsNullOrWhiteSpace(selectedItem))
-                {
-                    selectedItem = "empty";
-                }
-
+                if (string.IsNullOrWhiteSpace(selectedItem)) selectedItem = "empty";
                 GUILayout.Label($"Hotbar: slot {_saveManager.HotbarState.SelectedSlotIndex + 1} [{selectedItem}]");
             }
-            else
+        }
+
+        private string ResolveSlotDisplayLabel(EquipmentManager equipmentManager, EquipmentSlot slot)
+        {
+            var instanceId = equipmentManager.GetEquippedItem(slot);
+            if (string.IsNullOrEmpty(instanceId)) return "empty";
+            if (_inventoryManager != null && _inventoryManager.TryGetItemData(instanceId, out var itemData) && itemData != null)
             {
-                GUILayout.Label("Hotbar: not assigned");
+                return !string.IsNullOrWhiteSpace(itemData.DisplayName) ? $"{itemData.DisplayName} ({instanceId})" : instanceId;
             }
+            return instanceId;
         }
 
         private void DrawPlayerState()
@@ -346,27 +379,37 @@ namespace CindarsHope.UI
             }
         }
 
+        // SPEC 14A-FIX13: Gameplay commands separated from Debug commands.
+        // J was removed - attack uses Q (left hand) and E (right hand / interact).
         private void DrawCommands()
         {
             GUILayout.Space(8f);
-            GUILayout.Label("Commands:");
-            GUILayout.Label("E: interact");
-            GUILayout.Label("J: attack");
-            GUILayout.Label("Q: skill/action debug");
-            GUILayout.Label("1-6: select hotbar slot");
-            GUILayout.Label("Tab: advance day");
-            GUILayout.Label("H: consume food");
+            GUILayout.Label("== Gameplay ==");
+            GUILayout.Label("WASD / Arrows: move");
+            GUILayout.Label("E: interact / right-hand attack");
+            GUILayout.Label("Q: left-hand / tool action");
+            GUILayout.Label("Space: dodge");
             GUILayout.Label("I: inventory");
-            GUILayout.Label("K: attributes/progression");
             GUILayout.Label("L: equipment");
+            GUILayout.Label("K: attributes / progression");
             GUILayout.Label("U: skill trees");
+            GUILayout.Label("1-6: hotbar slot");
+            GUILayout.Label("H: consume food");
+            GUILayout.Label("Esc: close modal / back");
+
+            GUILayout.Space(6f);
+            GUILayout.Label("== Debug ==");
+            GUILayout.Label("O: +99 XP");
+            GUILayout.Label("P: next gate / level skip");
+            GUILayout.Label("F2: alt debug skip");
+            GUILayout.Label("Tab: advance day");
+            GUILayout.Label("Shift+R: regenerate cave run");
             GUILayout.Label("F5: save");
             GUILayout.Label("F9: load");
-            GUILayout.Label("Shift+R: regenerate cave run");
-            GUILayout.Label("Esc: close modal/back");
 
             if (_saveManager != null)
             {
+                GUILayout.Space(4f);
                 GUILayout.Label($"Save: {ShortenMiddle(_saveManager.SaveFilePath, 48)}");
             }
         }

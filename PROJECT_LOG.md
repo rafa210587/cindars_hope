@@ -1,3 +1,71 @@
+## Sessao 2026-05-31 (31c) - SPEC 14A-FIX13 - Starter kit, HUD responsivo, J removido, slots no HUD
+
+**Foco:** Tornar o jogo testavel sem precisar pegar item manualmente, deixar HUD responsiva e organizada, separar gameplay vs debug, remover J como ataque e mostrar equipamento real no HUD.
+
+### Mudancas
+
+P1 - Starter inventory expandido
+- PlayerData.asset (Assets/_Game/Data/Config/PlayerData.asset) StartingItems estendido de 7 para 15 entries:
+  - Iron Sword x1 (item_shop_weapon_sword_iron)
+  - Hoe Basico x1 (item_shop_tool_hoe_basic)
+  - Cana Basica (fishing rod) x1 (item_tool_fishing_rod_basic)
+  - Wheat Seed x10 (legacy + modern, dois assets diferentes)
+  - Carrot Seed x10 (legacy + modern, dois assets diferentes)
+  - Wood Material x15 (item_material_wood)
+  - Stone Material x15 (item_material_stone)
+  - Iron Ore x8 (item_material_iron_ore)
+  - Copper Ore x8 (item_material_copper_ore)
+  - Wheat Crop x6 (Item_Trigo)
+  - Bread x5 (item_consumable_food_bread)
+  - HP Potion Small x3 (item_consumable_potion_hp_small)
+  - Repair Kit Basic x2 (item_consumable_repair_kit_basic)
+- InventoryManager.InitializeFromStartingItems ja existia e usa esses dados em new game. Idempotente: limpa o inventario antes de aplicar, nao duplica em reload de save existente (RestoreFromSaveData prefere o save).
+
+P3 - HUD: comandos reais vs debug separados
+- DebugHud.DrawCommands reescrito com duas secoes claras:
+  - "== Gameplay ==": WASD/E/Q/Space/I/L/K/U/1-6/H/Esc.
+  - "== Debug ==": O/P/F2/Tab/Shift+R/F5/F9.
+- J removido do guia.
+
+P4 - J removido como ataque
+- PlayerAttackController.Update agora so escuta Q e E. J nao dispara mais ataque (nao gera log de Input recebido tambem).
+- DebugHud nao menciona mais J em nenhum lugar.
+- grep -rn "KeyCode.J" em Scripts/ retorna 0 matches.
+
+P2 - HUD responsivo
+- DebugHud.GetPanelWidth(maxPx, screenRatio) - paineis usam Mathf.Min(maxPx, Screen.width * ratio). Actions panel: max 380px ou 28% da tela. Info panel: max 450px ou 32%.
+- DebugHud.ApplyResponsiveStyles() chamado no inicio de OnGUI - GUI.skin.label.fontSize calculado como Mathf.Clamp(Screen.height/55, 11, 20). Aplicado em label/box/button. wordWrap=true para quebra de linha.
+- Janelas pequenas (1280x720) -> fonte ~13px. Telas grandes (1920x1080+) -> fonte ~20px.
+
+P5 - Equipment slot no HUD
+- DebugHud.DrawEquipmentState reescrito. Mostra:
+  - "Right hand (E): <DisplayName ou empty>"
+  - "Left hand (Q): <DisplayName ou empty>"
+  - Legacy tool fallback so se ambos os slots estiverem vazios.
+- Resolucao: EquipmentManager.GetEquippedItem(slot) -> InventoryManager.TryGetItemData(id) -> ItemDataSO.DisplayName.
+- Atualiza automaticamente em todo OnGUI (sem refresh manual). EquipmentSlotChangedEvent ja era publicado em FIX9.
+
+### Arquivos alterados
+
+- Assets/_Game/Data/Config/PlayerData.asset (StartingItems estendido)
+- Assets/_Game/Scripts/Combat/PlayerAttackController.cs (J removido)
+- Assets/_Game/Scripts/UI/DebugHud.cs (responsive + commands + equipment slots)
+
+### Validacao
+
+- dotnet build Assembly-CSharp.csproj: PASSOU - 0 erros, 0 avisos.
+- tools/docs/validate_docs.ps1: PASSED.
+- Unity Play Mode: requer usuario testar (Parte 6 da spec).
+
+### Pendencias honestas
+
+- Axe e Pickaxe nao foram adicionados ao starter kit porque NAO HA ItemDataSO/asset correspondente no projeto. Para incluir, alguem precisa primeiro criar Item_Tool_Axe_Basic.asset e Item_Tool_Pickaxe_Basic.asset com Category=Tool, IsEquippable=true. Quando existirem, basta acrescentar ao PlayerData.StartingItems.
+- Hammer tambem nao existe. Mesma observacao.
+- Comida basica modelada via Bread (item_consumable_food_bread). Outros foods existem (carrot stew, moonbean soup etc) e podem ser acrescentados conforme necessario.
+- HUD esquerda atualmente usa OnGUI (IMGUI), nao Canvas+CanvasScaler. A responsividade foi feita por scaling de fontSize+widths, suficiente para testar mas nao e a solucao final de produto. Migrar para Canvas UI fica para spec posterior.
+
+---
+
 ## Sessao 2026-05-31 (31b) - SPEC 14A-FIX11 - WeaponDatabase YAML, DataRegistrySO diagnostico e menu CindarsHope consolidado
 
 **Foco:** "Null item found in data registry WeaponDatabase" no boot da cave + menu Unity poluido com 6 grupos diferentes (Validation, Validate, SPEC 13, Scenes, Generate, Testing).

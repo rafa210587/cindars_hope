@@ -101,15 +101,17 @@ namespace CindarsHope.Combat
         {
             bool modalOpen = GameBootstrap.Instance?.ModalManager?.HasActiveModal == true;
 
-            if (Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.J) || Input.GetKeyDown(KeyCode.E))
+            // SPEC 14A-FIX13: J removido como ataque. Q = mao esquerda (tool), E = mao direita
+            // (weapon, ou interagir se ha InteractionCandidate).
+            if (Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.E))
             {
-                string key = Input.GetKeyDown(KeyCode.Q) ? "Q" : Input.GetKeyDown(KeyCode.J) ? "J" : "E";
+                string key = Input.GetKeyDown(KeyCode.Q) ? "Q" : "E";
                 Debug.Log($"CombatLog: PlayerAttackInputReceived. Key={key}, ModalOpen={modalOpen}", this);
             }
 
             if (modalOpen)
             {
-                if (Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.J) || Input.GetKeyDown(KeyCode.E))
+                if (Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.E))
                     Debug.Log("CombatLog: PlayerAttackBlocked. Reason=ModalActive", this);
                 UpdateDodgeState();
                 return;
@@ -118,11 +120,6 @@ namespace CindarsHope.Combat
             if (Input.GetKeyDown(KeyCode.Q))
             {
                 TryAttackLeftHand();
-            }
-
-            if (Input.GetKeyDown(KeyCode.J))
-            {
-                TryAttackRightHand();
             }
 
             if (Input.GetKeyDown(KeyCode.E))
