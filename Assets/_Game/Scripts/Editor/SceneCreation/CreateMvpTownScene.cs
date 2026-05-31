@@ -5,6 +5,7 @@ using CindarsHope.Core.Time;
 using CindarsHope.Craft;
 using CindarsHope.Craft.Data;
 using CindarsHope.Economy;
+using CindarsHope.Enemy;
 using CindarsHope.Inventory;
 using CindarsHope.Interaction;
 using CindarsHope.NPC;
@@ -73,7 +74,8 @@ namespace CindarsHope.Editor.SceneCreation
             var interactionSystem = playerTransform.GetComponent<InteractionSystem>();
             var shopUi = CreateShopUi(modalManager);
 
-            CreateGround();
+            // Camera background is the uniform white playfield; do not create a giant
+            // ground sprite because it reads as a horizon/central rectangle in MVP art.
             CreateBounds();
             CreateMainCamera(playerTransform);
             CreateSpawnPoints(playerTransform);
@@ -131,6 +133,7 @@ namespace CindarsHope.Editor.SceneCreation
             bootstrapObject.AddComponent<EquipmentManager>();
             bootstrapObject.AddComponent<PlayerProgressionManager>();
             bootstrapObject.AddComponent<SkillTreeManager>();
+            bootstrapObject.AddComponent<BestiaryManager>();
             bootstrapObject.AddComponent<HotbarDebugInput>();
             return bootstrap;
         }
@@ -165,6 +168,7 @@ namespace CindarsHope.Editor.SceneCreation
             SetReference(serializedBootstrap, "_equipmentManager", bootstrap.GetComponent<EquipmentManager>());
             SetReference(serializedBootstrap, "_progressionManager", bootstrap.GetComponent<PlayerProgressionManager>());
             SetReference(serializedBootstrap, "_skillTreeManager", bootstrap.GetComponent<SkillTreeManager>());
+            SetReference(serializedBootstrap, "_bestiaryManager", bootstrap.GetComponent<BestiaryManager>());
             PlayerNeedsDataInitializer.ConfigureRuntimeManagers(bootstrap, timeManager, modalManager);
 
             ConfigureDayAdvanceInput(bootstrap.GetComponent<DayAdvanceInput>(), timeManager);
@@ -208,6 +212,7 @@ namespace CindarsHope.Editor.SceneCreation
             var serializedSave = new SerializedObject(saveManager);
             SetReference(serializedSave, "_shopManager", shopManager);
             SetReference(serializedSave, "_skillTreeManager", bootstrap.GetComponent<SkillTreeManager>());
+            SetReference(serializedSave, "_bestiaryManager", bootstrap.GetComponent<BestiaryManager>());
             serializedSave.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(saveManager);
             saveManager.RebindOptionalRuntimeManagers(
@@ -217,7 +222,8 @@ namespace CindarsHope.Editor.SceneCreation
                 bootstrap.GetComponent<StaminaManager>(),
                 bootstrap.GetComponent<StatusEffectManager>(),
                 bootstrap.GetComponent<SkillTreeManager>(),
-                shopManager);
+                shopManager,
+                bootstrap.GetComponent<BestiaryManager>());
         }
 
         private static void ConfigureHotbarDebugInput(HotbarDebugInput hotbarDebugInput, SaveManager saveManager)
@@ -416,24 +422,6 @@ namespace CindarsHope.Editor.SceneCreation
             EditorUtility.SetDirty(debugHud);
         }
 
-        private static void CreateGround()
-        {
-            var ground = new GameObject("Ground");
-            ground.transform.position = new Vector3(0f, 0f, 1f);
-            ground.transform.localScale = new Vector3(18f, 14f, 1f);
-
-            var spriteRenderer = ground.AddComponent<SpriteRenderer>();
-            spriteRenderer.sprite = GetBuiltinSprite();
-            spriteRenderer.color = new Color(0.48f, 0.54f, 0.6f);
-            spriteRenderer.sortingOrder = -10;
-            TrySetSortingLayer(spriteRenderer, "Ground", spriteRenderer.sortingOrder);
-
-            if (spriteRenderer.sprite == null)
-            {
-                Debug.LogWarning("Town Ground placeholder SpriteRenderer was created without a sprite. Replace it with tilemap art in a future scene/art PR.");
-            }
-        }
-
         private static void CreateBounds()
         {
             var bounds = new GameObject("Bounds");
@@ -465,7 +453,7 @@ namespace CindarsHope.Editor.SceneCreation
             var camera = cameraObject.AddComponent<UnityEngine.Camera>();
             camera.orthographic = true;
             camera.orthographicSize = 8f; // calibrate in Play Mode with CameraScaleConfigSO
-            camera.backgroundColor = new Color(0.12f, 0.15f, 0.18f);
+            camera.backgroundColor = Color.white;
 
             var cameraFollow = cameraObject.AddComponent<CindarsHope.Camera.CameraFollow2D>();
             var serializedFollow = new SerializedObject(cameraFollow);

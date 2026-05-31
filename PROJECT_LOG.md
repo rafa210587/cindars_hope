@@ -1,3 +1,123 @@
+## Sessao 2026-05-31 (31h) - Farm/Town/Cave visual bugfix follow-up
+
+**Foco:** remover de vez os retangulos centrais/horizonte, reduzir hitboxes do lago e das arvores, registrar mais arvores na FarmScene e serializar BestiaryManager no bootstrap sem tocar em starter inventory, ItemDatabase, WeaponDatabase, Q/E, save ou Cave enemies nesta rodada.
+
+### Diagnostico
+
+- Retangulo branco central / horizonte:
+  - FarmScene: o objeto `Ground` continuava existindo como `SpriteRenderer` gigante no centro. Mesmo branco, ainda lia como retangulo/horizonte; a cor nao era a correcao correta.
+  - TownScene: o objeto `Ground` tambem continuava como fundo gigante.
+  - CaveScene: a camera ja estava com background branco; nao havia `Ground` ativo na cena atual.
+- Lago:
+  - Objeto real: `FishingSpot`.
+  - Triggers de borda ja estavam separados e `isTrigger=true`.
+  - O blocker fisico ainda podia ser menor para permitir aproximacao mais clara da margem.
+- Arvores:
+  - O installer/registry ainda referenciava apenas 3 `TreeNode`; as 10 novas arvores eram visuais/fisicas, mas nao estavam no `TreeRegistry`.
+  - Colliders precisavam ficar ainda mais focados em tronco/base.
+- Bestiary:
+  - FarmScene e TownScene tinham `_bestiaryManager: {fileID: 0}` em `GameBootstrap` e `SaveManager`; CaveScene ja estava serializada corretamente.
+
+### Correcoes
+
+- `Assets/_Game/Scenes/FarmScene.unity`:
+  - `Ground` removido da cena e de `SceneRoots` para remover o retangulo central em vez de apenas recolorir/desativar.
+  - Camera mantida com `m_BackGroundColor` branco puro.
+  - `FishingSpot` mantido em `(7.8, -2.8, 0)` e scale `(24, 24, 1)`.
+  - `LakeBlockingCollider` reduzido para local size aproximado `(0.08, 0.10)`, ficando claramente dentro do sprite azul.
+  - Triggers de interacao do lago preservados como `isTrigger=true`.
+  - As 10 arvores novas `DecorativeTree_03` a `DecorativeTree_12` receberam `TreeNode` e foram ligadas ao `FarmSceneRuntimeReferenceInstaller` e ao `TreeRegistry`.
+  - Total final registrado: 13 arvores (`TreeNode_00..02` + `DecorativeTree_03..12`).
+  - Colliders de arvores ajustados para tronco/base: `BoxCollider2D isTrigger=false`, local size `(0.08, 0.10)`, offset `(0, -0.03)`.
+  - `FarmPlotRegistry` preservado com 9 plots.
+  - `_Bootstrap` recebeu `BestiaryManager` serializado e `GameBootstrap`/`SaveManager` agora apontam para ele.
+- `Assets/_Game/Scenes/TownScene.unity`:
+  - `Ground` removido da cena e de `SceneRoots` para remover o retangulo/fundo gigante.
+  - Camera mantida com `m_BackGroundColor` branco puro.
+  - `_Bootstrap` recebeu `BestiaryManager` serializado e `GameBootstrap`/`SaveManager` agora apontam para ele.
+- `Assets/_Game/Scenes/CaveScene.unity`:
+  - Camera confirmada com fundo branco; wiring de enemy/cave runtime nao foi alterado nesta rodada.
+- Geradores:
+  - `CreateMvpFarmScene.cs`: nao cria mais `Ground` gigante; gera 13 `TreeNode`, colliders pequenos de tronco, lago com blocker menor e BestiaryManager no bootstrap.
+  - `CreateMvpTownScene.cs`: nao cria mais `Ground` gigante e adiciona BestiaryManager no bootstrap.
+
+### Validacao
+
+- `dotnet build .\Assembly-CSharp.csproj --no-restore`: PASS, 0 warnings, 0 errors.
+- `dotnet build .\Assembly-CSharp-Editor.csproj --no-restore`: PASS, 3 warnings legados/ambiente, 0 errors.
+- `tools/docs/validate_docs.ps1`: PASS.
+- Conferencia estatica:
+  - FarmScene sem fileIDs YAML duplicados.
+  - TownScene sem fileIDs YAML duplicados.
+  - Farm/Town/Cave com camera background branca.
+  - Farm/Town sem `Ground` residual na YAML.
+  - FarmScene com 13 arvores ligadas ao installer/registry.
+  - FarmScene com 9 plots preservados.
+  - Farm/Town/Cave com `BestiaryManager` serializado no bootstrap.
+- `tools/unity/RunUnityCompileValidation.ps1`: NOT RUN com sucesso. Reason: acesso negado ao remover `Logs/unity-compile-validation.log`; provavel arquivo preso por Unity/processo externo.
+- `tools/unity/ScanUnityLogs.ps1 -LogFile .\Logs\unity-compile-validation.log`: FAIL sobre log anterior/stale com `Application will terminate with return code 1`; nao representa uma nova execucao Unity concluida.
+- `git diff --check`: NOT RUN com sucesso. Reason: Git/MSYS falhou com `couldn't create signal pipe, Win32 error 5`.
+- Pendente para validacao humana/Unity Editor:
+  - `CindarsHope > Repair and Validate Project`.
+  - Play Mode em FarmScene: confirmar ausencia do retangulo, fundo branco uniforme, lago sem repulsao, interacao na margem, arvores com colisao apenas no tronco e 13 arvores registradas.
+  - Play Mode em TownScene: confirmar fundo branco uniforme e ausencia do retangulo.
+  - Play Mode em CaveScene: confirmar fundo branco e sem regressao de cave/enemy wiring.
+
+---
+
+## Sessao 2026-05-31 (31g) - Farm/Town/Cave visual pass + inventory bow starter
+
+**Foco:** ajustes finais em FarmScene/TownScene/CaveScene: lago com hitbox menor, portal da cidade reposicionado, fundo branco, arvores fisicas na fazenda, inventario 30 slots e arco/flechas iniciais.
+
+### Correcoes
+
+- `Assets/_Game/Scenes/FarmScene.unity`:
+  - `FishingSpot` manteve posicao superior `(7.8, -2.8, 0)` e scale `(24, 24, 1)`.
+  - `LakeBlockingCollider` reduzido de local size `(0.14, 0.14)` para `(0.12, 0.12)`, mantendo o bloqueio dentro do sprite azul.
+  - Triggers de borda do lago preservados como `isTrigger=true`; o trigger central segue minimo `(0.01, 0.01)`.
+  - `Portal_Farm_To_Town` movido para `(-8.25, -4.75, 0)`.
+  - `Spawn_farm_from_town` movido para `(-7.25, -4.75, 0)`, para o retorno da cidade nao nascer no lado antigo.
+  - `Ground` recolorido para branco uniforme.
+  - Adicionadas 10 arvores decorativas fisicas em `Trees`: `DecorativeTree_03` a `DecorativeTree_12`.
+    - Posicoes aproximadas: `(-8.2,4.6)`, `(-6.4,3.2)`, `(-8.4,1.2)`, `(-7.6,-3.1)`, `(-2.3,4.8)`, `(1.9,4.5)`, `(4.8,4.6)`, `(8.5,2.9)`, `(8.7,-0.4)`, `(2.2,-4.9)`.
+    - Colliders: `BoxCollider2D isTrigger=false`, local size `(0.12,0.12)`, offset `(0,-0.02)`, focados no tronco/base.
+  - Os 3 `TreeNode` existentes tambem foram ajustados para collider fisico de tronco.
+  - `FarmPlot_00` e `FarmPlot_04` foram restaurados para trigger de plantio apos uma edicao intermediaria ter reduzido esses colliders por engano.
+- `Assets/_Game/Scenes/TownScene.unity`:
+  - Camera e `Ground` ajustados para fundo branco.
+  - O placeholder bege de `NPC_Pip_Miudinho` permanece removido pela recoloracao teal da sessao anterior.
+- `Assets/_Game/Scenes/CaveScene.unity`:
+  - Camera background ajustado para branco, sem tocar no wiring de enemies/cave runtime.
+- Geradores:
+  - `CreateMvpFarmScene.cs`: portal/spawn, lago, ground branco e 13 arvores no gerador.
+  - `CreateMvpTownScene.cs`: ground/camera brancos.
+  - `CreateMvpCaveScene.cs`: camera branca.
+- Inventario:
+  - `InventoryManager.DefaultCapacity` expandido para `30`; `MaxCapacity` continua `30`.
+- Starter bow/ammo:
+  - Criados `item_weapon_bow_basic`, `item_ammo_arrow_basic` e `weapon_bow_basic`.
+  - Registrados em `ItemDatabase.asset`, `WeaponDatabase.asset` e `PlayerData.asset`.
+  - StartingItems adicionados: `item_weapon_bow_basic x1`, `item_ammo_arrow_basic x50`.
+
+### Validacao
+
+- `dotnet build .\Assembly-CSharp.csproj --no-restore`: PASS na segunda tentativa, 0 warnings, 0 errors. Primeira tentativa falhou por lock temporario em `Temp/obj/Assembly-CSharp/Assembly-CSharp.dll`.
+- `dotnet build .\Assembly-CSharp-Editor.csproj --no-restore`: PASS, 3 warnings legados/ambiente, 0 errors.
+- `tools/docs/validate_docs.ps1`: PASS.
+- `tools/unity/RunUnityCompileValidation.ps1`: NOT RUN com sucesso. Reason: nao conseguiu remover `Logs/unity-compile-validation.log` por acesso negado, indicando log/Unity preso por outro processo.
+- `tools/unity/ScanUnityLogs.ps1 -LogFile .\Logs\unity-compile-validation.log`: FAIL sobre log anterior/stale com `Application will terminate with return code 1`; sem nova execucao Unity concluida nesta rodada.
+- `git diff --check`: NOT RUN com sucesso. Reason: Git/MSYS falhou com `couldn't create signal pipe, Win32 error 5`.
+- `git status --short`: PASS; lista alteracoes desta task e novos assets bow/arrow.
+- Conferencia estatica:
+  - FarmScene sem fileIDs YAML duplicados.
+  - Registros de bow/arrow encontrados no ItemDatabase, WeaponDatabase e PlayerData.
+  - Farm/Town/Cave com camera background branca.
+- Ainda pendente nesta entrada:
+  - Unity batchmode/Repair and Validate Project.
+  - Play Mode humano para confirmar fisica do lago, transicao Farm/Town, arvores, inventario 30 e starter bow/arrows.
+
+---
+
 ## Sessao 2026-05-31 (31f) - FarmScene lake final sizing + Town beige placeholder + planting restore
 
 **Foco:** corrigir definitivamente o collider do lago da FarmScene, remover o visual bege central da FarmScene/TownScene e restaurar plots de plantio jogaveis.

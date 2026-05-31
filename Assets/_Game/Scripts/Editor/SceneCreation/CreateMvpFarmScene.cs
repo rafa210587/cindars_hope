@@ -5,6 +5,7 @@ using CindarsHope.Core.Time;
 using CindarsHope.Craft;
 using CindarsHope.Craft.Data;
 using CindarsHope.Economy;
+using CindarsHope.Enemy;
 using CindarsHope.Equipment;
 using CindarsHope.Farm;
 using CindarsHope.Inventory;
@@ -67,7 +68,8 @@ namespace CindarsHope.Editor.SceneCreation
             var modalManager = bootstrap.GetComponent<ModalManager>();
             var playerTransform = CreatePlayer();
             CreateFarmSpawnPoints(playerTransform);
-            CreateGround();
+            // Camera background is the uniform white playfield; do not create a giant
+            // ground sprite because it reads as a horizon/central rectangle in MVP art.
             var farmPlotRegistry = CreateFarmPlots(inventoryManager);
             var treeRegistry = CreateTrees(inventoryManager);
             var itemPickupRegistry = CreateItemPickups(inventoryManager);
@@ -127,6 +129,7 @@ namespace CindarsHope.Editor.SceneCreation
             bootstrapObject.AddComponent<EquipmentManager>();
             bootstrapObject.AddComponent<PlayerProgressionManager>();
             bootstrapObject.AddComponent<SkillTreeManager>();
+            bootstrapObject.AddComponent<BestiaryManager>();
             bootstrapObject.AddComponent<HotbarDebugInput>();
             return bootstrap;
         }
@@ -156,6 +159,7 @@ namespace CindarsHope.Editor.SceneCreation
             SetReference(serializedBootstrap, "_equipmentManager", bootstrapObject.GetComponent<EquipmentManager>());
             SetReference(serializedBootstrap, "_progressionManager", bootstrapObject.GetComponent<PlayerProgressionManager>());
             SetReference(serializedBootstrap, "_skillTreeManager", bootstrapObject.GetComponent<SkillTreeManager>());
+            SetReference(serializedBootstrap, "_bestiaryManager", bootstrapObject.GetComponent<BestiaryManager>());
             PlayerNeedsDataInitializer.ConfigureRuntimeManagers(bootstrap, bootstrapObject.GetComponent<TimeManager>(), bootstrapObject.GetComponent<ModalManager>());
             ConfigureDayAdvanceInput(bootstrapObject.GetComponent<DayAdvanceInput>(), bootstrapObject.GetComponent<TimeManager>());
             ConfigureFoodConsumer(bootstrapObject.GetComponent<FoodConsumer>(), bootstrapObject.GetComponent<InventoryManager>(), bootstrapObject.GetComponent<HungerManager>());
@@ -173,7 +177,8 @@ namespace CindarsHope.Editor.SceneCreation
                 bootstrapObject.GetComponent<PlayerProgressionManager>(),
                 bootstrapObject.GetComponent<CraftingRuntime>(),
                 bootstrapObject.GetComponent<SkillTreeManager>(),
-                bootstrapObject.GetComponent<ShopManager>());
+                bootstrapObject.GetComponent<ShopManager>(),
+                bootstrapObject.GetComponent<BestiaryManager>());
             bootstrapObject.GetComponent<SaveManager>().RebindOptionalRuntimeManagers(
                 bootstrapObject.GetComponent<EquipmentManager>(),
                 bootstrapObject.GetComponent<PlayerProgressionManager>(),
@@ -181,7 +186,8 @@ namespace CindarsHope.Editor.SceneCreation
                 bootstrapObject.GetComponent<StaminaManager>(),
                 bootstrapObject.GetComponent<StatusEffectManager>(),
                 bootstrapObject.GetComponent<SkillTreeManager>(),
-                bootstrapObject.GetComponent<ShopManager>());
+                bootstrapObject.GetComponent<ShopManager>(),
+                bootstrapObject.GetComponent<BestiaryManager>());
             ConfigureSaveInput(bootstrapObject.GetComponent<SaveInput>(), bootstrapObject.GetComponent<SaveManager>());
             ConfigureHotbarDebugInput(
                 bootstrapObject.GetComponent<HotbarDebugInput>(),
@@ -241,7 +247,8 @@ namespace CindarsHope.Editor.SceneCreation
             PlayerProgressionManager progressionManager,
             CraftingRuntime craftingRuntime,
             SkillTreeManager skillTreeManager,
-            ShopManager shopManager)
+            ShopManager shopManager,
+            BestiaryManager bestiaryManager)
         {
             var serializedSave = new SerializedObject(saveManager);
             SetReference(serializedSave, "_playerManager", playerManager);
@@ -257,6 +264,7 @@ namespace CindarsHope.Editor.SceneCreation
             SetReference(serializedSave, "_craftingRuntime", craftingRuntime);
             SetReference(serializedSave, "_skillTreeManager", skillTreeManager);
             SetReference(serializedSave, "_shopManager", shopManager);
+            SetReference(serializedSave, "_bestiaryManager", bestiaryManager);
             serializedSave.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(saveManager);
         }
@@ -423,7 +431,7 @@ namespace CindarsHope.Editor.SceneCreation
             parent.transform.position = Vector3.zero;
 
             var defaultSpawn = CreateSceneSpawnPoint(parent.transform, "farm_default", Vector3.zero);
-            var fromTownSpawn = CreateSceneSpawnPoint(parent.transform, "farm_from_town", new Vector3(7.25f, -4.75f, 0f));
+            var fromTownSpawn = CreateSceneSpawnPoint(parent.transform, "farm_from_town", new Vector3(-7.25f, -4.75f, 0f));
             var fromCaveSpawn = CreateSceneSpawnPoint(parent.transform, "farm_from_cave", new Vector3(-5f, 0f, 0f));
 
             var installer = parent.AddComponent<SceneSpawnInstaller>();
@@ -475,7 +483,7 @@ namespace CindarsHope.Editor.SceneCreation
             CreateScenePortal(
                 portals.transform,
                 "Portal_Farm_To_Town",
-                new Vector3(8.25f, -4.75f, 0f),
+                new Vector3(-8.25f, -4.75f, 0f),
                 new Color(0.29f, 0.43f, 0.67f),
                 "TownScene",
                 "Assets/_Game/Scenes/TownScene.unity",
@@ -678,7 +686,7 @@ namespace CindarsHope.Editor.SceneCreation
 
             var blockingCollider = fishingObject.AddComponent<BoxCollider2D>();
             blockingCollider.isTrigger = false;
-            blockingCollider.size = new Vector2(0.14f, 0.14f);
+            blockingCollider.size = new Vector2(0.10f, 0.10f);
 
             var fishingSpot = fishingObject.AddComponent<FishingSpot>();
             var serializedFishing = new SerializedObject(fishingSpot);
@@ -861,10 +869,20 @@ namespace CindarsHope.Editor.SceneCreation
             parent.transform.position = Vector3.zero;
             var registry = parent.AddComponent<TreeRegistry>();
 
-            var trees = new TreeNode[3];
+            var trees = new TreeNode[13];
             trees[0] = CreateTree(parent.transform, 0, new Vector3(6.5f, 3.5f, 0f), treeData, inventoryManager);
             trees[1] = CreateTree(parent.transform, 1, new Vector3(7.5f, 1.5f, 0f), treeData, inventoryManager);
             trees[2] = CreateTree(parent.transform, 2, new Vector3(6.25f, -0.75f, 0f), treeData, inventoryManager);
+            trees[3] = CreateTree(parent.transform, 3, new Vector3(-8.2f, 4.6f, 0f), treeData, inventoryManager);
+            trees[4] = CreateTree(parent.transform, 4, new Vector3(-6.4f, 3.2f, 0f), treeData, inventoryManager);
+            trees[5] = CreateTree(parent.transform, 5, new Vector3(-8.4f, 1.2f, 0f), treeData, inventoryManager);
+            trees[6] = CreateTree(parent.transform, 6, new Vector3(-7.6f, -3.1f, 0f), treeData, inventoryManager);
+            trees[7] = CreateTree(parent.transform, 7, new Vector3(-2.3f, 4.8f, 0f), treeData, inventoryManager);
+            trees[8] = CreateTree(parent.transform, 8, new Vector3(1.9f, 4.5f, 0f), treeData, inventoryManager);
+            trees[9] = CreateTree(parent.transform, 9, new Vector3(4.8f, 4.6f, 0f), treeData, inventoryManager);
+            trees[10] = CreateTree(parent.transform, 10, new Vector3(8.5f, 2.9f, 0f), treeData, inventoryManager);
+            trees[11] = CreateTree(parent.transform, 11, new Vector3(8.7f, -0.4f, 0f), treeData, inventoryManager);
+            trees[12] = CreateTree(parent.transform, 12, new Vector3(2.2f, -4.9f, 0f), treeData, inventoryManager);
 
             registry.Configure(trees);
             EditorUtility.SetDirty(registry);
@@ -897,8 +915,9 @@ namespace CindarsHope.Editor.SceneCreation
             }
 
             var collider = treeObject.AddComponent<BoxCollider2D>();
-            collider.isTrigger = true;
-            collider.size = Vector2.one;
+            collider.isTrigger = false;
+            collider.size = new Vector2(0.08f, 0.10f);
+            collider.offset = new Vector2(0f, -0.03f);
 
             var treeNode = treeObject.AddComponent<TreeNode>();
             var serializedTree = new SerializedObject(treeNode);
@@ -910,24 +929,6 @@ namespace CindarsHope.Editor.SceneCreation
             treeNode.Configure(treeIndex, treeData, inventoryManager, spriteRenderer);
             EditorUtility.SetDirty(treeNode);
             return treeNode;
-        }
-
-        private static void CreateGround()
-        {
-            var ground = new GameObject("Ground");
-            ground.transform.position = new Vector3(0f, 0f, 1f);
-            ground.transform.localScale = new Vector3(20f, 16f, 1f);
-
-            var spriteRenderer = ground.AddComponent<SpriteRenderer>();
-            spriteRenderer.sprite = GetBuiltinSprite();
-            spriteRenderer.color = new Color(0.34f, 0.54f, 0.27f);
-            spriteRenderer.sortingOrder = -10;
-            TrySetSortingLayer(spriteRenderer, "Ground", spriteRenderer.sortingOrder);
-
-            if (spriteRenderer.sprite == null)
-            {
-                Debug.LogWarning("Ground placeholder SpriteRenderer was created without a sprite. Replace it with tilemap art in a future scene/art PR.");
-            }
         }
 
         private static void CreateBounds()
@@ -961,7 +962,7 @@ namespace CindarsHope.Editor.SceneCreation
             var camera = cameraObject.AddComponent<UnityEngine.Camera>();
             camera.orthographic = true;
             camera.orthographicSize = 8.5f; // calibrate in Play Mode with CameraScaleConfigSO
-            camera.backgroundColor = new Color(0.11f, 0.13f, 0.14f);
+            camera.backgroundColor = Color.white;
 
             var cameraFollow = cameraObject.AddComponent<CindarsHope.Camera.CameraFollow2D>();
             var serializedFollow = new SerializedObject(cameraFollow);
