@@ -211,6 +211,18 @@ namespace CindarsHope.Editor.EnemyTaxonomy
             var previousScene = SceneManager.GetActiveScene().path;
             var scene = EditorSceneManager.OpenScene(CaveScenePath, OpenSceneMode.Single);
 
+            // SPEC 14A-FIX6.1: re-load database references AFTER scene change.
+            // EditorSceneManager.OpenScene(Single) can invalidate ScriptableObject references held since
+            // before the load (Unity "fake null" / MissingReferenceException on subsequent access).
+            // Reading them back from disk by path guarantees live wrappers for wiring + logging.
+            enemyDatabase   = AssetDatabase.LoadAssetAtPath<EnemyDatabaseSO>(EnemyDatabasePath)              ?? enemyDatabase;
+            actionDb        = AssetDatabase.LoadAssetAtPath<EnemyActionDatabaseSO>(ActionDatabasePath)        ?? actionDb;
+            actionSetDb     = AssetDatabase.LoadAssetAtPath<EnemyActionSetDatabaseSO>(ActionSetDatabasePath)  ?? actionSetDb;
+            telegraphDb     = AssetDatabase.LoadAssetAtPath<EnemyTelegraphProfileDatabaseSO>(TelegraphDatabasePath) ?? telegraphDb;
+            movementDb      = AssetDatabase.LoadAssetAtPath<EnemyMovementProfileDatabaseSO>(MovementDatabasePath)   ?? movementDb;
+            vulnerabilityDb = AssetDatabase.LoadAssetAtPath<EnemyVulnerabilityProfileDatabaseSO>(VulnerabilityDatabasePath) ?? vulnerabilityDb;
+            sizeDb          = AssetDatabase.LoadAssetAtPath<EnemySizeProfileDatabaseSO>(SizeDatabasePath)     ?? sizeDb;
+
             var materializers = Object.FindObjectsByType<CaveRuntimeMaterializer>(FindObjectsInactive.Include);
             if (materializers.Length == 0)
             {
@@ -245,13 +257,22 @@ namespace CindarsHope.Editor.EnemyTaxonomy
                 $"Profiles={LoadAssets<EnemySpawnProfileSO>(EnemySpawnProfilesFolder).Length}, " +
                 $"Packs={LoadAssets<EnemySpawnPackSO>(EnemySpawnPacksFolder).Length}, " +
                 $"FactionLocks={LoadAssets<EnemyFactionLockSO>(EnemyFactionLocksFolder).Length}, " +
-                $"Actions={actionDb?.name ?? "null"}, ActionSets={actionSetDb?.name ?? "null"}, " +
-                $"Movement={movementDb?.name ?? "null"}, Vulnerability={vulnerabilityDb?.name ?? "null"}, Size={sizeDb?.name ?? "null"}.");
+                $"Actions={SafeName(actionDb)}, ActionSets={SafeName(actionSetDb)}, " +
+                $"Movement={SafeName(movementDb)}, Vulnerability={SafeName(vulnerabilityDb)}, Size={SafeName(sizeDb)}.");
 
             if (!string.IsNullOrWhiteSpace(previousScene) && previousScene != CaveScenePath)
             {
                 EditorSceneManager.OpenScene(previousScene, OpenSceneMode.Single);
             }
+        }
+
+        // SPEC 14A-FIX6.1: Unity Object aware name accessor.
+        // The C# `?.` operator does NOT handle Unity's "fake null" / destroyed objects — it only checks
+        // the C# reference. `obj != null` uses Unity's overloaded `==` and correctly returns false for
+        // destroyed UnityEngine.Objects, preventing MissingReferenceException on `obj.name`.
+        private static string SafeName(Object obj)
+        {
+            return obj != null ? obj.name : "null";
         }
 
         private static void WireMaterializer(
