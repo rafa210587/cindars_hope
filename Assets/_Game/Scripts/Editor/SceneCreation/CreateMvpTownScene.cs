@@ -701,7 +701,7 @@ namespace CindarsHope.Editor.SceneCreation
                 parent.transform,
                 "NPC_Pip_Miudinho",
                 new Vector3(-5f, 1f, 0f),
-                new Color(0.92f, 0.88f, 0.75f),
+                new Color(0.38f, 0.72f, 0.86f),
                 "Assets/_Game/Data/NPCs/Npc_Pip_Miudinho.asset",
                 modalManager,
                 shopUi.DialogueModal,

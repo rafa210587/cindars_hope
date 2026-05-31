@@ -1,3 +1,63 @@
+## Sessao 2026-05-31 (31f) - FarmScene lake final sizing + Town beige placeholder + planting restore
+
+**Foco:** corrigir definitivamente o collider do lago da FarmScene, remover o visual bege central da FarmScene/TownScene e restaurar plots de plantio jogaveis.
+
+### Diagnostico
+
+- Lago real da FarmScene: `FishingSpot`.
+  - Position antes desta correcao: `(5.5, -3, 0)`.
+  - Scale: `(24, 24, 1)`.
+  - SpriteRenderer: `UISprite`, `m_Size (0.16, 0.16)`, bounds visuais efetivos aproximados `3.84x3.84`.
+  - Collider fisico anterior: `BoxCollider2D isTrigger=false`, local size `(0.7, 0.7)`, efetivo `16.8x16.8`.
+  - Causa raiz: o collider fisico ainda era varias vezes maior que o sprite azul visivel. O player era bloqueado antes da margem porque o collider nao estava dimensionado em relacao ao `SpriteRenderer.bounds`.
+- FarmScene bege central:
+  - `Ground` era um `UISprite` bege/marrom escalado no centro (`scale 20x16`, cor `{0.78, 0.64, 0.39}`), criando o retangulo bege com borda escura.
+  - `FarmPlots` tinha sido movido para `(-100, -100, 0)` na correcao anterior, removendo tambem a area de plantio.
+- TownScene bege:
+  - O placeholder bege localizado era o sprite do `NPC_Pip_Miudinho` (`{0.92, 0.88, 0.75}`), nao um objeto descartavel. O NPC foi preservado; apenas o visual placeholder bege foi alterado.
+
+### Correcoes
+
+- `Assets/_Game/Scenes/FarmScene.unity`:
+  - `FishingSpot` movido para `(7.8, -2.8, 0)`.
+  - Visual do lago mantido grande via scale `(24, 24, 1)`.
+  - Collider fisico do lago ajustado para local size `(0.14, 0.14)`, efetivo `3.36x3.36`, dentro dos bounds visuais aproximados `3.84x3.84`.
+  - Trigger central antigo reduzido para `(0.01, 0.01)`; nao cobre mais o mapa nem a area do lago.
+  - Criados 4 triggers finos filhos:
+    - `LakeEdgeInteractionTrigger_Top`: local pos `(0, 0.085, 0)`, size `(0.18, 0.025)`.
+    - `LakeEdgeInteractionTrigger_Bottom`: local pos `(0, -0.085, 0)`, size `(0.18, 0.025)`.
+    - `LakeEdgeInteractionTrigger_Left`: local pos `(-0.085, 0, 0)`, size `(0.025, 0.18)`.
+    - `LakeEdgeInteractionTrigger_Right`: local pos `(0.085, 0, 0)`, size `(0.025, 0.18)`.
+  - `FishingSpot` edge gate ajustado para outer `(0.16, 0.16)` e inner `(0.055, 0.055)`.
+  - `Ground` recolorido para verde `{0.34, 0.54, 0.27}`, removendo o retangulo bege central sem apagar o chao.
+  - `FarmPlots` restaurado para `(-4.75, -1, 0)`: 9 plots funcionais registrados em `FarmPlotRegistry`, fora do player spawn e longe do lago.
+- `Assets/_Game/Scenes/TownScene.unity`:
+  - `NPC_Pip_Miudinho` preservado, mas recolorido para `{0.38, 0.72, 0.86}` para remover o quadrado bege placeholder da TownScene.
+- `Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpFarmScene.cs`:
+  - Gerador atualizado com a nova posicao do lago, collider fisico `(0.14, 0.14)`, 4 edge triggers finos, ground verde e `FarmPlots` restaurado.
+- `Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpTownScene.cs`:
+  - Gerador atualizado para manter `NPC_Pip_Miudinho` sem visual bege.
+
+### Pendencias honestas
+
+- A FarmScene ainda usa placeholders `UISprite`; o lago, chao e plots precisam de arte/tilemap final.
+- Existem 9 plots restaurados. A sugestao de 12-24 plots fica para redesign de layout se o humano quiser ampliar a fazenda.
+- Validacao Play Mode humana ainda deve confirmar fisica do lago pelos 4 lados, interacao nas bordas e funcionamento de hoe/seeds nos plots.
+
+### Validacao
+
+- `dotnet build Assembly-CSharp.csproj --no-restore`: PASS, 0 warnings, 0 errors. Primeira tentativa falhou por lock temporario em `Temp/obj/Assembly-CSharp/Assembly-CSharp.dll`; segunda tentativa passou.
+- `dotnet build Assembly-CSharp-Editor.csproj --no-restore`: PASS, 2 warnings legados em `CreateEnemyActionsAndSets.ActionEntry` (`MinRange`, `RequiresLos`), 0 errors.
+- `tools/docs/validate_docs.ps1`: PASS.
+- `tools/unity/RunUnityCompileValidation.ps1`: NOT RUN com sucesso. Reason: Unity batchmode abortou porque outra instancia do projeto esta aberta.
+- `tools/unity/ScanUnityLogs.ps1`: reportou falha pelo abort de batchmode; sem evidencia de erro C# novo nesse log.
+- Busca de uso proibido nos arquivos alterados: nenhum uso novo em runtime. `FindObjectsByType` aparece apenas em `CreateMvpFarmScene.cs`, que fica em pasta `Editor`.
+- `git status --short`: NOT RUN com sucesso. Reason: Git/MSYS falhou com `couldn't create signal pipe, Win32 error 5`.
+- `CindarsHope > Repair and Validate Project`: NOT RUN. Reason: requer Editor/menus Unity interativos.
+- Play Mode FarmScene/TownScene: NOT RUN. Reason: requer Editor aberto pelo usuario.
+
+---
+
 ## Sessao 2026-05-31 (31e) - FarmScene lake collider + central plot placeholder removal
 
 **Foco:** corrigir repulsao na borda do lago da FarmScene e remover o quadrado/grade bege central sem mexer em Cave, Enemy, Combat, ItemDatabase, Starter Inventory, HUD ou save.

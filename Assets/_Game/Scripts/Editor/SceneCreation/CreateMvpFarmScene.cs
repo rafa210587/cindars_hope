@@ -660,7 +660,7 @@ namespace CindarsHope.Editor.SceneCreation
         private static void CreateFishingSpot(InventoryManager inventoryManager)
         {
             var fishingObject = new GameObject("FishingSpot");
-            fishingObject.transform.position = new Vector3(5.5f, -3f, 0f);
+            fishingObject.transform.position = new Vector3(7.8f, -2.8f, 0f);
             var lakeScaleConfig = AssetDatabase.LoadAssetAtPath<GameScaleConfigSO>(GameScaleConfigPath);
             var lakeScale = lakeScaleConfig != null ? lakeScaleConfig.LakeScale : 6f;
             fishingObject.transform.localScale = new Vector3(lakeScale, lakeScale, 1f);
@@ -676,19 +676,35 @@ namespace CindarsHope.Editor.SceneCreation
                 Debug.LogWarning("FishingSpot placeholder SpriteRenderer was created without a sprite. Replace it with water/fishing art in a future art PR.");
             }
 
-            var edgeTrigger = fishingObject.AddComponent<BoxCollider2D>();
-            edgeTrigger.isTrigger = true;
-            edgeTrigger.size = new Vector2(0.9f, 0.9f);
-
             var blockingCollider = fishingObject.AddComponent<BoxCollider2D>();
             blockingCollider.isTrigger = false;
-            blockingCollider.size = new Vector2(0.7f, 0.7f);
+            blockingCollider.size = new Vector2(0.14f, 0.14f);
 
             var fishingSpot = fishingObject.AddComponent<FishingSpot>();
             var serializedFishing = new SerializedObject(fishingSpot);
             SetReference(serializedFishing, "_inventoryManager", inventoryManager);
+            serializedFishing.FindProperty("_edgeInteractionOuterHalfExtents").vector2Value = new Vector2(0.16f, 0.16f);
+            serializedFishing.FindProperty("_edgeInteractionInnerHalfExtents").vector2Value = new Vector2(0.055f, 0.055f);
             serializedFishing.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(fishingSpot);
+
+            CreateLakeEdgeTrigger(fishingObject.transform, "LakeEdgeInteractionTrigger_Top", new Vector3(0f, 0.085f, 0f), new Vector2(0.18f, 0.025f));
+            CreateLakeEdgeTrigger(fishingObject.transform, "LakeEdgeInteractionTrigger_Bottom", new Vector3(0f, -0.085f, 0f), new Vector2(0.18f, 0.025f));
+            CreateLakeEdgeTrigger(fishingObject.transform, "LakeEdgeInteractionTrigger_Left", new Vector3(-0.085f, 0f, 0f), new Vector2(0.025f, 0.18f));
+            CreateLakeEdgeTrigger(fishingObject.transform, "LakeEdgeInteractionTrigger_Right", new Vector3(0.085f, 0f, 0f), new Vector2(0.025f, 0.18f));
+        }
+
+        private static void CreateLakeEdgeTrigger(Transform parent, string name, Vector3 localPosition, Vector2 size)
+        {
+            var triggerObject = new GameObject(name);
+            triggerObject.transform.SetParent(parent);
+            triggerObject.transform.localPosition = localPosition;
+            triggerObject.transform.localRotation = Quaternion.identity;
+            triggerObject.transform.localScale = Vector3.one;
+
+            var collider = triggerObject.AddComponent<BoxCollider2D>();
+            collider.isTrigger = true;
+            collider.size = size;
         }
 
         private static ItemPickupRegistry CreateItemPickups(InventoryManager inventoryManager)
@@ -777,7 +793,7 @@ namespace CindarsHope.Editor.SceneCreation
             }
 
             var parent = new GameObject("FarmPlots");
-            parent.transform.position = new Vector3(-100f, -100f, 0f);
+            parent.transform.position = new Vector3(-4.75f, -1f, 0f);
             var registry = parent.AddComponent<FarmPlotRegistry>();
 
             const int gridSize = 3;
@@ -904,7 +920,7 @@ namespace CindarsHope.Editor.SceneCreation
 
             var spriteRenderer = ground.AddComponent<SpriteRenderer>();
             spriteRenderer.sprite = GetBuiltinSprite();
-            spriteRenderer.color = new Color(0.78f, 0.64f, 0.39f);
+            spriteRenderer.color = new Color(0.34f, 0.54f, 0.27f);
             spriteRenderer.sortingOrder = -10;
             TrySetSortingLayer(spriteRenderer, "Ground", spriteRenderer.sortingOrder);
 
