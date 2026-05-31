@@ -67,6 +67,8 @@ namespace CindarsHope.Editor
                     if (report.EmptyIdEntries.Count > 0) totalErrors += report.EmptyIdEntries.Count;
                     if (report.DuplicateIds.Count > 0) totalErrors += report.DuplicateIds.Count;
                     Debug.LogError($"  FAIL: {report.Summarize()}");
+                    var registry = AssetDatabase.LoadAssetAtPath<ScriptableObject>(report.RegistryAssetPath);
+                    LogRegistryIssueDetails(registry, report);
                 }
             }
 
@@ -165,6 +167,7 @@ namespace CindarsHope.Editor
                     foreach (var idx in report.NullEntries) Debug.LogError($"    Null at index {idx}");
                     foreach (var idx in report.EmptyIdEntries) Debug.LogError($"    Empty Id at index {idx}");
                     foreach (var dup in report.DuplicateIds) Debug.LogError($"    Duplicate Id '{dup.Id}' at index {dup.Index} (first seen at {dup.FirstIndex})");
+                    LogDuplicateAssetDetails(so, report);
                 }
                 else
                 {
@@ -228,6 +231,57 @@ namespace CindarsHope.Editor
             var method = so.GetType().GetMethod("ValidateRegistry", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public);
             if (method == null) return null;
             return method.Invoke(so, null) as RegistryValidationReport;
+        }
+
+        private static void LogRegistryIssueDetails(ScriptableObject registry, RegistryValidationReport report)
+        {
+            foreach (var idx in report.NullEntries)
+            {
+                Debug.LogError($"    Null at index {idx}");
+            }
+
+            foreach (var idx in report.EmptyIdEntries)
+            {
+                Debug.LogError($"    Empty Id at index {idx}");
+                LogRegistryEntryAssetDetails(registry, idx, "empty-id");
+            }
+
+            foreach (var dup in report.DuplicateIds)
+            {
+                Debug.LogError($"    Duplicate Id '{dup.Id}' at index {dup.Index} (first seen at {dup.FirstIndex})");
+            }
+
+            LogDuplicateAssetDetails(registry, report);
+        }
+
+        private static void LogDuplicateAssetDetails(ScriptableObject registry, RegistryValidationReport report)
+        {
+            foreach (var dup in report.DuplicateIds)
+            {
+                LogRegistryEntryAssetDetails(registry, dup.FirstIndex, $"duplicate-first:{dup.Id}");
+                LogRegistryEntryAssetDetails(registry, dup.Index, $"duplicate-current:{dup.Id}");
+            }
+        }
+
+        private static void LogRegistryEntryAssetDetails(ScriptableObject registry, int index, string context)
+        {
+            if (registry == null)
+            {
+                return;
+            }
+
+            var serialized = new SerializedObject(registry);
+            var items = serialized.FindProperty("_items");
+            if (items == null || !items.isArray || index < 0 || index >= items.arraySize)
+            {
+                Debug.LogError($"      EntryDetail[{context}] Registry='{AssetDatabase.GetAssetPath(registry)}' Index={index} Asset=<unavailable>");
+                return;
+            }
+
+            var reference = items.GetArrayElementAtIndex(index).objectReferenceValue;
+            var assetPath = reference != null ? AssetDatabase.GetAssetPath(reference) : "<null>";
+            var assetName = reference != null ? reference.name : "<null>";
+            Debug.LogError($"      EntryDetail[{context}] Registry='{AssetDatabase.GetAssetPath(registry)}' Index={index} AssetName='{assetName}' AssetPath='{assetPath}'");
         }
 
         private static int ValidateWeaponItemReferences(CombatRuntimeDatabasesRegistrySO combatRegistry)

@@ -53,10 +53,6 @@ namespace CindarsHope.Inventory
         public void InitializeFromStartingItems(PlayerDataSO playerData, ItemDatabaseSO itemDatabase)
         {
             Initialize(itemDatabase);
-            // SPEC 14A-FIX14: instead of Clear() unconditionally, check if a non-empty inventory
-            // is already present (load-from-save path). If so, treat as AlreadyPresent and ONLY
-            // re-apply for items that are missing (idempotent repair). If the inventory is empty,
-            // apply the full starter kit (new game / fresh inventory).
             Debug.Log("CombatLog: StarterInventoryCheckStarted.", this);
 
             if (playerData == null)
@@ -77,9 +73,32 @@ namespace CindarsHope.Inventory
                 return;
             }
 
-            bool inventoryWasEmpty = _items.Count == 0;
-            string reason = inventoryWasEmpty ? "NewGameOrEmptyInventory" : "RepairMissingItems";
-            if (inventoryWasEmpty) Clear();
+            var reason = _items.Count == 0 ? "NewGameOrEmptyInventory" : "RepairMissingItems";
+            EnsureStarterItemsPresent(playerData, itemDatabase, reason);
+        }
+
+        public void EnsureStarterItemsPresent(PlayerDataSO playerData, ItemDatabaseSO itemDatabase, string reason)
+        {
+            Initialize(itemDatabase);
+            Debug.Log($"CombatLog: StarterInventoryCheckStarted. Reason={reason}.", this);
+
+            if (playerData == null)
+            {
+                Debug.LogWarning($"CombatLog: StarterInventoryApplied=False. Reason={reason}. StarterInventoryReason=PlayerDataMissing.", this);
+                return;
+            }
+
+            if (itemDatabase == null)
+            {
+                Debug.LogWarning($"CombatLog: StarterInventoryApplied=False. Reason={reason}. StarterInventoryReason=ItemDatabaseMissing.", this);
+                return;
+            }
+
+            if (playerData.StartingItems == null || playerData.StartingItems.Length == 0)
+            {
+                Debug.LogWarning($"CombatLog: StarterInventoryApplied=False. Reason={reason}. StarterInventoryReason=StartingItemsEmpty.", this);
+                return;
+            }
 
             var added = new List<string>();
             var skipped = new List<string>();
@@ -100,20 +119,22 @@ namespace CindarsHope.Inventory
                     skipped.Add($"{startingItem.Item.Id}:not-in-itemdatabase");
                     continue;
                 }
-                if (!inventoryWasEmpty && GetAmount(startingItem.Item.Id) >= startingItem.Amount)
+                if (GetAmount(startingItem.Item.Id) >= startingItem.Amount)
                 {
                     skipped.Add($"{startingItem.Item.Id}:already-have-{GetAmount(startingItem.Item.Id)}");
                     continue;
                 }
+
                 int desired = startingItem.Amount;
-                int currentlyHave = inventoryWasEmpty ? 0 : GetAmount(startingItem.Item.Id);
+                int currentlyHave = GetAmount(startingItem.Item.Id);
                 int toAdd = desired - currentlyHave;
                 if (toAdd <= 0) { skipped.Add($"{startingItem.Item.Id}:nothing-to-add"); continue; }
                 if (AddItem(startingItem.Item.Id, toAdd)) added.Add($"{startingItem.Item.Id}x{toAdd}");
                 else skipped.Add($"{startingItem.Item.Id}:add-failed");
             }
 
-            Debug.Log($"CombatLog: StarterInventoryApplied={added.Count > 0}. Reason={reason}. ItemsAdded=[{string.Join(", ", added)}]. Skipped=[{string.Join(", ", skipped)}].", this);
+            var appliedReason = added.Count > 0 ? reason : "AlreadyPresent";
+            Debug.Log($"CombatLog: StarterInventoryApplied={added.Count > 0}. StarterInventoryReason={appliedReason}. ItemsAdded=[{string.Join(", ", added)}]. Skipped=[{string.Join(", ", skipped)}].", this);
         }
 
         // SPEC 14A-FIX14: clear hotbar bindings that point to items not present in the inventory.

@@ -505,6 +505,51 @@ Isso wirea `CaveRuntimeMaterializer` + serializa `BestiaryManager` e salva `Cave
 
 ---
 
+## Sessao 2026-05-31 (31a) - ItemDatabase duplicate fix e starter inventory
+
+**Foco:** Corrigir apenas o `ItemDatabase.asset` reportado por `CindarsHope > Repair and Validate Project` e validar consistencia do starter inventory/hotbar.
+**Status:** Implementado em codigo/dados; builds C# runtime/editor OK. Unity menu/Play Mode pendentes porque outra instancia do Unity esta com o projeto aberto.
+
+### Diagnostico
+
+- `ItemDatabase.asset` tinha 22 slots e 2 ids duplicados.
+- Duplicados encontrados:
+  - `item_seed_wheat`: primeiro indice 0 `Assets/_Game/Data/Items/Item_Semente_Trigo.asset`; duplicado indice 19 `Assets/_Game/Data/Items/item_seed_wheat.asset`.
+  - `item_seed_carrot`: primeiro indice 1 `Assets/_Game/Data/Items/Item_Semente_Cenoura.asset`; duplicado indice 20 `Assets/_Game/Data/Items/item_seed_carrot.asset`.
+- Os duplicados posteriores eram assets gerados em ingles com `MaxStack=1` e `IsEquippable=1`, inadequados para seed; os primeiros assets localizados estavam corretos (`MaxStack=20`, `IsEquippable=0`).
+
+### Implementacao
+
+- Removidas do `ItemDatabase.asset` somente as duas entradas duplicadas posteriores.
+- `ItemDatabase.asset` ficou com 20 slots e `Duplicate=0` em validacao estatica por GUID/Id.
+- `PlayerData.asset` deixou de referenciar os seed assets duplicados removidos e manteve seeds oficiais:
+  - `item_seed_wheat x20`
+  - `item_seed_carrot x20`
+- Starter inventory validado estaticamente: sword, hoe, fishing rod, seeds, materials, crop, bread, potion e repair kit apontam para itens presentes no `ItemDatabase`.
+- `CindarsHopeProjectMaintenanceMenu.RepairAndValidateProject` agora imprime detalhes de `Null`, `Empty Id`, `Duplicate Id` e asset path/nome dos indices envolvidos.
+- `InventoryManager` recebeu `EnsureStarterItemsPresent(...)` idempotente.
+- `SaveManager` passa a reparar starter inventory apos restore vazio e limpa hotbar bindings ausentes apos restore.
+- `GameBootstrap` rebinda `PlayerDataSO` e `ItemDatabaseSO` no `SaveManager` para esse repair.
+
+### Validacao
+
+- `dotnet build .\Assembly-CSharp.csproj --no-restore`: OK, 0 erros, 0 avisos.
+- `dotnet build .\Assembly-CSharp-Editor.csproj --no-restore`: OK, 0 erros, 3 avisos pre-existentes/ambiente.
+- `tools/docs/validate_docs.ps1`: OK.
+- Validacao estatica do `ItemDatabase.asset`: `slots=20`, `Duplicate=0`.
+- Validacao estatica do `PlayerData.StartingItems`: nenhum item fora do `ItemDatabase`.
+- `git diff --check`: bloqueado por erro Git/MSYS `couldn't create signal pipe`, nao por whitespace detectado.
+- Unity batchmode para `RepairAndValidateProject`: bloqueado porque outra instancia do Unity esta com o projeto aberto.
+
+### Pendencias
+
+- Rodar no Unity:
+  - `CindarsHope > Repair and Validate Project`
+  - `CindarsHope > Advanced > Validate Registries`
+- Play Mode em `FarmScene`: confirmar inventory populado, hotbar sem item fantasma e logs `StarterInventoryApplied`/`HotbarConsistencyCheck`.
+
+---
+
 ## Sessao 2026-05-29 (29c) - SPEC 14A Fix - Enemy Spawn Wiring
 
 **Foco:** Corrigir o bug pós-SPEC 14A/14B em que `CaveRuntimeMaterializer` pulava inimigos por `_enemySpawnProfiles` vazio e `GameBootstrap` criava `BestiaryManager` por fallback.

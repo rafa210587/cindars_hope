@@ -188,6 +188,7 @@ namespace CindarsHope.Core.Bootstrap
 
             if (_saveManager != null)
             {
+                _saveManager.RebindStarterInventoryData(_playerData, _itemDatabase);
                 _saveManager.Initialize();
 
                 // SPEC 14A-FIX14: drop hotbar bindings that don't have a matching item in the inventory.

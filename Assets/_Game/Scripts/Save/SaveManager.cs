@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using CindarsHope.Core;
+using CindarsHope.Core.Data;
 using CindarsHope.Core.Events;
 using CindarsHope.Core.Time;
 using CindarsHope.Craft;
@@ -14,6 +15,7 @@ using CindarsHope.Farm;
 using CindarsHope.Inventory;
 using CindarsHope.NPC;
 using CindarsHope.Player;
+using CindarsHope.Player.Data;
 using CindarsHope.Player.Death;
 using CindarsHope.Player.Progression;
 using CindarsHope.Save.Migrations;
@@ -59,6 +61,8 @@ namespace CindarsHope.Save
         [SerializeField] private Skills.ActiveSkillSlots _activeSkillSlots;
         [SerializeField] private Skills.SkillTreeManager _skillTreeManager;
         [SerializeField] private BestiaryManager _bestiaryManager;
+        [SerializeField] private PlayerDataSO _playerData;
+        [SerializeField] private ItemDatabaseSO _itemDatabase;
 
         private readonly HotbarState _hotbarState = new HotbarState();
         private readonly SaveMigrationRegistry _migrationRegistry = new SaveMigrationRegistry(new ISaveMigration[]
@@ -324,6 +328,19 @@ namespace CindarsHope.Save
             if (bestiaryManager != null)
             {
                 _bestiaryManager = bestiaryManager;
+            }
+        }
+
+        public void RebindStarterInventoryData(PlayerDataSO playerData, ItemDatabaseSO itemDatabase)
+        {
+            if (playerData != null)
+            {
+                _playerData = playerData;
+            }
+
+            if (itemDatabase != null)
+            {
+                _itemDatabase = itemDatabase;
             }
         }
 
@@ -839,6 +856,10 @@ namespace CindarsHope.Save
             if (_inventoryManager != null)
             {
                 _inventoryManager.RestoreFromSaveData(saveData.Inventory);
+                if (ShouldRepairStarterInventoryAfterRestore(saveData.Inventory))
+                {
+                    _inventoryManager.EnsureStarterItemsPresent(_playerData, _itemDatabase, "RepairMissingItems");
+                }
             }
             else
             {
@@ -851,6 +872,13 @@ namespace CindarsHope.Save
             }
 
             _hotbarState.RestoreFromSaveData(saveData.Hotbar);
+            if (_inventoryManager != null)
+            {
+                _inventoryManager.ClearHotbarBindingsForMissingItems(
+                    _hotbarState.GetSlotItemId,
+                    (slot, id) => _hotbarState.SetSlot(slot, id),
+                    HotbarState.SlotCount);
+            }
 
             if (_progressionManager != null)
             {
@@ -946,6 +974,21 @@ namespace CindarsHope.Save
             }
 
             RestoreDeathSaveData(saveData.Death);
+        }
+
+        private static bool ShouldRepairStarterInventoryAfterRestore(InventorySaveData inventorySaveData)
+        {
+            if (inventorySaveData == null)
+            {
+                return true;
+            }
+
+            var hasSlots = inventorySaveData.Slots != null
+                && inventorySaveData.Slots.Exists(slot => slot != null && !string.IsNullOrWhiteSpace(slot.ItemId) && slot.Amount > 0);
+            var hasLegacyItems = inventorySaveData.Items != null
+                && inventorySaveData.Items.Exists(item => item != null && !string.IsNullOrWhiteSpace(item.ItemId) && item.Amount > 0);
+
+            return !hasSlots && !hasLegacyItems;
         }
 
         private EconomySaveData CaptureEconomySaveData(GameSaveData existingSaveData)
