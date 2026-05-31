@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -13,7 +13,7 @@ namespace CindarsHope.Editor.Validation
 {
     public static class ValidateSpec13SpawnResolverEcology
     {
-        [MenuItem("CindarsHope/Validation/Validate SPEC 13F - Spawn Resolver Ecology")]
+        [MenuItem("CindarsHope/Advanced/Legacy/Validation/Validate SPEC 13F - Spawn Resolver Ecology")]
         public static void RunValidation()
         {
             var errors = new List<string>();

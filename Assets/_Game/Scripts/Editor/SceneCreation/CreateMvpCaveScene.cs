@@ -1,4 +1,4 @@
-using System.Linq;
+﻿using System.Linq;
 using CindarsHope.Combat;
 using CindarsHope.Cave;
 using CindarsHope.Cave.Data;
@@ -49,7 +49,7 @@ namespace CindarsHope.Editor.SceneCreation
         private const string CaveBossGateLevel15Path = "Assets/_Game/Data/Cave/BossGate_Level15.asset";
         private const string BuiltinSpritePath = "UI/Skin/UISprite.psd";
 
-        [MenuItem("CindarsHope/Scenes/Create MVP CaveScene")]
+        [MenuItem("CindarsHope/Advanced/Legacy/Scenes/Create MVP CaveScene")]
         public static void CreateSceneFromMenu()
         {
             if (EditorApplication.isPlayingOrWillChangePlaymode)

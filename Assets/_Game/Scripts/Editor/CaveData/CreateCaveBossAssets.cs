@@ -1,4 +1,4 @@
-using System.IO;
+﻿using System.IO;
 using CindarsHope.Cave.Data;
 using CindarsHope.Combat;
 using UnityEditor;
@@ -13,7 +13,7 @@ namespace CindarsHope.Editor.CaveData
         private const string EnemyDatabasePath = "Assets/_Game/Data/Combat/EnemyDatabase.asset";
         private const string RegistryPath = "Assets/_Game/Data/Cave/CaveBossGateRegistry.asset";
 
-        [MenuItem("CindarsHope/Generate/Scenes/Create Boss Gate Assets")]
+        [MenuItem("CindarsHope/Advanced/Legacy/Generate/Scenes/Create Boss Gate Assets")]
         public static void CreateAll()
         {
             EnsureDirectory(CaveDataPath);

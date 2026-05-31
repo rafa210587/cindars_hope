@@ -1,4 +1,4 @@
-#if UNITY_EDITOR
+﻿#if UNITY_EDITOR
 using CindarsHope.Economy;
 using CindarsHope.Inventory;
 using CindarsHope.Inventory.Data;
@@ -16,7 +16,7 @@ namespace CindarsHope.Editor.Testing
     {
         private const string PrefabPath = "Assets/_Game/Prefabs/NPCs";
 
-        [MenuItem("CindarsHope/Testing/Create NPC Prefabs (Complete Spec 06)")]
+        [MenuItem("CindarsHope/Advanced/Legacy/Testing/Create NPC Prefabs (Complete Spec 06)")]
         public static void CreateNpcPrefabs_Complete()
         {
             EnsureDirectory();

@@ -1,4 +1,4 @@
-using CindarsHope.Core;
+﻿using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Data;
 using CindarsHope.Core.Time;
@@ -39,7 +39,7 @@ namespace CindarsHope.Editor.SceneCreation
         private const string GameScaleConfigPath = "Assets/_Game/Data/Config/GameScaleConfig.asset";
         private const string BuiltinSpritePath = "UI/Skin/UISprite.psd";
 
-        [MenuItem("CindarsHope/Scenes/Create MVP FarmScene")]
+        [MenuItem("CindarsHope/Advanced/Legacy/Scenes/Create MVP FarmScene")]
         public static void CreateSceneFromMenu()
         {
             if (EditorApplication.isPlayingOrWillChangePlaymode)

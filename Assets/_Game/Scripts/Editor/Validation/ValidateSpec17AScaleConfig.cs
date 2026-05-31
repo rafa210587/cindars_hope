@@ -1,4 +1,4 @@
-using CindarsHope.Camera;
+﻿using CindarsHope.Camera;
 using CindarsHope.Cave.Data;
 using CindarsHope.Core.Data;
 using CindarsHope.World.Scale;
@@ -12,7 +12,7 @@ namespace CindarsHope.Editor.Validation
         private const string CaveConfigPath = "Assets/_Game/Data/Cave/CaveGenerationConfig_Default.asset";
         private const string GameScaleConfigPath = "Assets/_Game/Data/Config/GameScaleConfig.asset";
 
-        [MenuItem("CindarsHope/Validation/Validate Spec 17A - Scale Config")]
+        [MenuItem("CindarsHope/Advanced/Legacy/Validation/Validate Spec 17A - Scale Config")]
         public static void Run()
         {
             var errors = 0;

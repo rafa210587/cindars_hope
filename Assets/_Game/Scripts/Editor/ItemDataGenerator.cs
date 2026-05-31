@@ -1,4 +1,4 @@
-#if UNITY_EDITOR
+﻿#if UNITY_EDITOR
 using CindarsHope.Inventory.Data;
 using UnityEditor;
 using UnityEngine;
@@ -9,7 +9,7 @@ namespace CindarsHope.Editor
     {
         private const string ItemsPath = "Assets/_Game/Data/Items/";
 
-        [MenuItem("CindarsHope/Generate/Create Item Examples")]
+        [MenuItem("CindarsHope/Advanced/Legacy/Generate/Create Item Examples")]
         public static void CreateItemExamples()
         {
             CreateSeeds();

@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using CindarsHope.Cave.Generation;
@@ -22,7 +22,7 @@ namespace CindarsHope.Editor.Validation
         private const string EnemySpawnPacksFolder = "Assets/_Game/Data/EnemySpawn/Packs";
         private const string EnemyFactionLocksFolder = "Assets/_Game/Data/EnemySpawn/FactionLocks";
 
-        [MenuItem("CindarsHope/Validation/Validate SPEC 14A - Enemy Spawn Materialization")]
+        [MenuItem("CindarsHope/Advanced/Legacy/Validation/Validate SPEC 14A - Enemy Spawn Materialization")]
         public static void RunValidation()
         {
             var errors = new List<string>();

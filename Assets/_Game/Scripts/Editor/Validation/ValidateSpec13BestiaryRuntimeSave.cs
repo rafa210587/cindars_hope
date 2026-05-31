@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using CindarsHope.Combat;
@@ -12,7 +12,7 @@ namespace CindarsHope.Editor.Validation
 {
     public static class ValidateSpec13BestiaryRuntimeSave
     {
-        [MenuItem("CindarsHope/Validation/Validate SPEC 13E - Bestiary Runtime Save")]
+        [MenuItem("CindarsHope/Advanced/Legacy/Validation/Validate SPEC 13E - Bestiary Runtime Save")]
         public static void RunValidation()
         {
             var errors = new List<string>();

@@ -1,3 +1,89 @@
+## Sessao 2026-05-31 (31b) - SPEC 14A-FIX11 - WeaponDatabase YAML, DataRegistrySO diagnostico e menu CindarsHope consolidado
+
+**Foco:** "Null item found in data registry WeaponDatabase" no boot da cave + menu Unity poluido com 6 grupos diferentes (Validation, Validate, SPEC 13, Scenes, Generate, Testing).
+
+### Causa raiz
+
+1. Asset Assets/_Game/Data/Combat/WeaponDatabase.asset (criado em FIX8) tinha as 3 referencias no array _items marcadas como "type: 3" (script reference). Para asset references o type correto e 2. Resultado: Unity deserializa cada entry como null e DataRegistrySO.RebuildIndex emite "Null item found".
+2. Menu CindarsHope acumulou 38 MenuItems espalhados em 6 grupos. Validation/Validate eram quase duplicados. SPEC 13/Generate/Testing tinham comandos legados/internos que poluiam a navegacao.
+
+### Implementacao
+
+- WeaponDatabase.asset: trocadas as 3 entries _items de `type: 3` para `type: 2`. m_Script (linha 12) mantido em `type: 3` que e o correto para MonoScript.
+- DataRegistrySO<T>.RebuildIndex reescrito: cada erro agora carrega:
+  - nome do registry
+  - tipo T
+  - indice do item
+  - path do asset (AssetDatabase.GetAssetPath em editor)
+  - total de slots
+  - resumo final (Valid=N, Null=N, EmptyId=N, Duplicate=N)
+- DataRegistrySO ganhou helpers editor-only:
+  - public int RemoveNullEntries() - limpa nulls via SerializedObject, retorna quantos removidos.
+  - public RegistryValidationReport ValidateRegistry() - retorna report estruturado.
+- Novo CindarsHope.Editor.CindarsHopeProjectMaintenanceMenu (Assets/_Game/Scripts/Editor/CindarsHopeProjectMaintenanceMenu.cs):
+  - [MenuItem("CindarsHope/Repair and Validate Project")] - master command que itera 9 registries conhecidos, chama RemoveNullEntries em cada, valida CombatRuntimeDatabasesRegistry, valida referencias item->weapon, gera relatorio PASS/FAIL com manual-actions-left.
+  - [MenuItem("CindarsHope/Open Main Scenes/Cave|Farm|Town")] - quick scene access.
+  - [MenuItem("CindarsHope/Advanced/Generate Runtime Assets")] - chama GenerateAndWireSpec13GAssets.GenerateAndWire.
+  - [MenuItem("CindarsHope/Advanced/Validate Registries")] - itera 9 registries via reflection (DataRegistrySO<T> e generico).
+  - [MenuItem("CindarsHope/Advanced/Validate Cave Runtime")] - chama ValidateSpec14AEnemyRuntimeIntegration.RunValidation + ValidateEnemyCaveSpawnCoverage.Validate.
+  - [MenuItem("CindarsHope/Advanced/Run PlayMode Smoke Validation")] - abre CaveScene + executa validacoes estaticas.
+- 38 arquivos Editor tiveram seus [MenuItem("CindarsHope/X/...")] renomeados via PowerShell para [MenuItem("CindarsHope/Advanced/Legacy/X/...")]. Os metodos continuam publicos e callable; so a posicao no menu Unity mudou. Mapeamento de prefixos:
+  - CindarsHope/Validation/ -> CindarsHope/Advanced/Legacy/Validation/
+  - CindarsHope/Validate/ -> CindarsHope/Advanced/Legacy/Validate/
+  - CindarsHope/SPEC 13/ -> CindarsHope/Advanced/Legacy/SPEC 13/
+  - CindarsHope/Scenes/ -> CindarsHope/Advanced/Legacy/Scenes/
+  - CindarsHope/Generate/ -> CindarsHope/Advanced/Legacy/Generate/
+  - CindarsHope/Testing/ -> CindarsHope/Advanced/Legacy/Testing/
+
+### Menu antes vs depois
+
+Antes (top-level): Generate, Scenes, SPEC 13, Testing, Validate, Validation (38 itens espalhados).
+
+Depois (top-level):
+- Repair and Validate Project
+- Open Main Scenes (Cave/Farm/Town)
+- Advanced
+  - Generate Runtime Assets
+  - Validate Registries
+  - Validate Cave Runtime
+  - Run PlayMode Smoke Validation
+  - Legacy (todos os 38 comandos antigos preservados, mas hidden one level deeper)
+
+### Arquivos alterados
+
+- Assets/_Game/Data/Combat/WeaponDatabase.asset (type:2 nos items)
+- Assets/_Game/Scripts/Core/Data/DataRegistrySO.cs (log detalhado + editor helpers + RegistryValidationReport)
+- Assets/_Game/Scripts/Editor/CindarsHopeProjectMaintenanceMenu.cs (novo)
+- Assembly-CSharp-Editor.csproj (entry para orchestrator)
+- 38 arquivos Editor com [MenuItem("CindarsHope/...")] renomeados (PowerShell mass-rename)
+
+### Validacao
+
+- dotnet build Assembly-CSharp.csproj: 0 erros, 0 avisos.
+- dotnet build Assembly-CSharp-Editor.csproj: 0 erros, 2 CS0649 pre-existentes.
+- tools/docs/validate_docs.ps1: PASSED.
+- Unity Play Mode: requer usuario testar.
+
+### Pendencias para o usuario
+
+1. Abrir Unity. O menu CindarsHope deve mostrar apenas: Repair and Validate Project, Open Main Scenes, Advanced.
+2. Rodar CindarsHope > Repair and Validate Project. Esperado:
+   - PASS: WeaponDatabase Valid=3/3
+   - PASS: todos os registries clean
+   - PASS: CombatRegistry com 9 databases wired
+   - PASS final
+3. Entrar Play Mode na CaveScene. Confirmar:
+   - Sem mais "Null item found in data registry WeaponDatabase"
+   - CombatLog: EnemyDatabasesWiringStatus com tudo True
+   - EnemyRuntimeConfigured com HasLegacyChase=False
+
+### Pendencias honestas
+
+- Nenhum dos 38 [MenuItem] legados foi deletado; todos continuam em Advanced/Legacy/. Se o usuario quiser remover por completo, e uma decisao caso a caso (alguns ainda podem ter valor).
+- O orchestrator "Repair and Validate Project" e idempotente; pode ser rodado quantas vezes precisar.
+
+---
+
 ## Sessao 2026-05-31 (31a) - SPEC 14A-FIX10 - Wiring runtime de combat databases, floating damage com anchor, EnemyHealth duplicado removido
 
 **Foco:** Regressao de wiring (MovementProfileResolved=False, HasLegacyChase=True para todos os inimigos) + ataque do player que dependia de databases nao wired + floating damage gigante/mal posicionado + EnemyHealth duplicado.

@@ -1,4 +1,4 @@
-#if UNITY_EDITOR
+﻿#if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
 using CindarsHope.Core.Bootstrap;
@@ -17,7 +17,7 @@ namespace CindarsHope.Editor.Validation
     {
         private const string TownScenePath = "Assets/_Game/Scenes/TownScene.unity";
 
-        [MenuItem("CindarsHope/Validation/Validate Town Shop Wiring")]
+        [MenuItem("CindarsHope/Advanced/Legacy/Validation/Validate Town Shop Wiring")]
         public static void Validate()
         {
             var scene = EditorSceneManager.OpenScene(TownScenePath, OpenSceneMode.Single);

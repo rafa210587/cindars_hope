@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEditor;
 
 namespace CindarsHope.Editor.EnemyTaxonomy
@@ -15,7 +15,7 @@ namespace CindarsHope.Editor.EnemyTaxonomy
         private const string MovementPath      = "Assets/_Game/Data/Enemies/MovementProfiles";
         private const string VulnPath          = "Assets/_Game/Data/Enemies/VulnerabilityProfiles";
 
-        [MenuItem("CindarsHope/SPEC 13/Create Default Enemy Profiles")]
+        [MenuItem("CindarsHope/Advanced/Legacy/SPEC 13/Create Default Enemy Profiles")]
         public static void CreateAll()
         {
             EnsureDirectory(FactionsPath);

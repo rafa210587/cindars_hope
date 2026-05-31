@@ -1,4 +1,4 @@
-#if UNITY_EDITOR
+﻿#if UNITY_EDITOR
 using System.IO;
 using CindarsHope.Core.Data;
 using CindarsHope.Economy;
@@ -16,7 +16,7 @@ namespace CindarsHope.Editor.Testing
         private const string NpcPath = "Assets/_Game/Data/NPCs";
         private const string ItemDatabasePath = "Assets/_Game/Data/Registries/ItemDatabase.asset";
 
-        [MenuItem("CindarsHope/Testing/Create Shop Assets (Spec 06)")]
+        [MenuItem("CindarsHope/Advanced/Legacy/Testing/Create Shop Assets (Spec 06)")]
         public static void CreateCompleteShopAssets()
         {
             EnsureDirectory(EconomyPath);

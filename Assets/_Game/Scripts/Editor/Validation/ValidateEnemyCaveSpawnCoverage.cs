@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using CindarsHope.Enemy;
 using UnityEditor;
@@ -21,7 +21,7 @@ namespace CindarsHope.Editor.Validation
         private const string PacksFolder    = "Assets/_Game/Data/EnemySpawn/Packs";
         private const string LocksFolder    = "Assets/_Game/Data/EnemySpawn/FactionLocks";
 
-        [MenuItem("CindarsHope/Validate/Enemy Cave Spawn Coverage")]
+        [MenuItem("CindarsHope/Advanced/Legacy/Validate/Enemy Cave Spawn Coverage")]
         public static void Validate()
         {
             var profiles = LoadAll<EnemySpawnProfileSO>(ProfilesFolder);

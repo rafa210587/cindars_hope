@@ -1,4 +1,4 @@
-using CindarsHope.Core;
+﻿using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Data;
 using CindarsHope.Core.Time;
@@ -38,7 +38,7 @@ namespace CindarsHope.Editor.SceneCreation
         private const string RecipeDatabasePath = "Assets/_Game/Data/Registries/RecipeDatabase.asset";
         private const string BuiltinSpritePath = "UI/Skin/UISprite.psd";
 
-        [MenuItem("CindarsHope/Scenes/Create MVP TownScene")]
+        [MenuItem("CindarsHope/Advanced/Legacy/Scenes/Create MVP TownScene")]
         public static void CreateSceneFromMenu()
         {
 

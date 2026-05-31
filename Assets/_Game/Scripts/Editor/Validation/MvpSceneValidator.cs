@@ -1,4 +1,4 @@
-using CindarsHope.Combat;
+﻿using CindarsHope.Combat;
 using CindarsHope.Cave;
 using CindarsHope.Cave.Resources;
 using CindarsHope.Cave.Runtime;
@@ -30,7 +30,7 @@ namespace CindarsHope.Editor.Validation
 {
     public static class MvpSceneValidator
     {
-        [MenuItem("CindarsHope/Validate/Validate Farm Town MVP")]
+        [MenuItem("CindarsHope/Advanced/Legacy/Validate/Validate Farm Town MVP")]
         public static void ValidateScenes()
         {
             var scene = EditorSceneManager.GetActiveScene();
@@ -62,7 +62,7 @@ namespace CindarsHope.Editor.Validation
             }
         }
 
-        [MenuItem("CindarsHope/Validate/Validate Cave MVP")]
+        [MenuItem("CindarsHope/Advanced/Legacy/Validate/Validate Cave MVP")]
         public static void ValidateCaveSceneFromMenu()
         {
             var sceneName = EditorSceneManager.GetActiveScene().name;
@@ -82,7 +82,7 @@ namespace CindarsHope.Editor.Validation
             }
         }
 
-        [MenuItem("CindarsHope/Validate/Validate All MVP Scenes")]
+        [MenuItem("CindarsHope/Advanced/Legacy/Validate/Validate All MVP Scenes")]
         public static void ValidateAllMvpScenes()
         {
             var sceneName = EditorSceneManager.GetActiveScene().name;

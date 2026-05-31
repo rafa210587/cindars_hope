@@ -1,4 +1,4 @@
-#if UNITY_EDITOR
+﻿#if UNITY_EDITOR
 using System;
 using System.Reflection;
 using CindarsHope.NPC;
@@ -11,7 +11,7 @@ namespace CindarsHope.Editor.Validation
 {
     public static class ValidateShopModalFlow
     {
-        [MenuItem("CindarsHope/Validation/Validate Shop Modal Flow")]
+        [MenuItem("CindarsHope/Advanced/Legacy/Validation/Validate Shop Modal Flow")]
         public static void Validate()
         {
             var root = new GameObject("[SPEC17F] Modal Validation");

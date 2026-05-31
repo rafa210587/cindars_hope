@@ -1,4 +1,4 @@
-#if UNITY_EDITOR
+﻿#if UNITY_EDITOR
 using CindarsHope.Core.Data;
 using CindarsHope.Economy;
 using CindarsHope.Inventory.Data;
@@ -18,7 +18,7 @@ namespace CindarsHope.Editor.Validation
         private static int _passCount = 0;
         private static int _failCount = 0;
 
-        [MenuItem("CindarsHope/Validation/Validate Shop System")]
+        [MenuItem("CindarsHope/Advanced/Legacy/Validation/Validate Shop System")]
         public static void ValidateShops()
         {
             _validationResults.Clear();

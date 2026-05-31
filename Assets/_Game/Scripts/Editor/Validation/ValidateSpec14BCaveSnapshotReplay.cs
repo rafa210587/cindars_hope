@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using CindarsHope.Cave.Runtime;
@@ -9,7 +9,7 @@ namespace CindarsHope.Editor.Validation
 {
     public static class ValidateSpec14BCaveSnapshotReplay
     {
-        [MenuItem("CindarsHope/Validation/Validate SPEC 14B - Cave Snapshot Replay")]
+        [MenuItem("CindarsHope/Advanced/Legacy/Validation/Validate SPEC 14B - Cave Snapshot Replay")]
         public static void RunValidation()
         {
             var errors = new List<string>();

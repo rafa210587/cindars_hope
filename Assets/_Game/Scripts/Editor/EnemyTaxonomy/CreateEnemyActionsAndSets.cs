@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using CindarsHope.Combat;
 using UnityEditor;
 using UnityEngine;
@@ -55,7 +55,7 @@ namespace CindarsHope.Editor.EnemyTaxonomy
 
         // ── Entry point ──────────────────────────────────────────────────────────
 
-        [MenuItem("CindarsHope/SPEC 13/Create Enemy Actions and Sets")]
+        [MenuItem("CindarsHope/Advanced/Legacy/SPEC 13/Create Enemy Actions and Sets")]
         public static void CreateAll()
         {
             EnsureFolder("Assets/_Game/Data/Enemies");

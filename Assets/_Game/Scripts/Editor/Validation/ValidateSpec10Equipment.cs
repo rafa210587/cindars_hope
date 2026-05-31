@@ -1,4 +1,4 @@
-#if UNITY_EDITOR
+﻿#if UNITY_EDITOR
 using CindarsHope.Core.Data;
 using CindarsHope.Equipment;
 using CindarsHope.Inventory.Data;
@@ -10,7 +10,7 @@ namespace CindarsHope.Editor.Validation
 {
     public class ValidateSpec10Equipment
     {
-        [MenuItem("CindarsHope/Validation/SPEC 10 - Equipment Durability Loot")]
+        [MenuItem("CindarsHope/Advanced/Legacy/Validation/SPEC 10 - Equipment Durability Loot")]
         public static void ValidateSpec10()
         {
             Debug.Log("=== SPEC 10 Validation: Equipment Durability Loot ===");

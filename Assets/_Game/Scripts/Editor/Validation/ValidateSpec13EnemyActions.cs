@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using CindarsHope.Combat;
 using UnityEditor;
@@ -73,7 +73,7 @@ namespace CindarsHope.Editor.Validation
             "physical", "fire", "ice", "toxic", "lightning", "arcane", "true"
         };
 
-        [MenuItem("CindarsHope/Validation/Validate SPEC 13C - Enemy Actions")]
+        [MenuItem("CindarsHope/Advanced/Legacy/Validation/Validate SPEC 13C - Enemy Actions")]
         public static void RunValidation()
         {
             var errors   = new List<string>();

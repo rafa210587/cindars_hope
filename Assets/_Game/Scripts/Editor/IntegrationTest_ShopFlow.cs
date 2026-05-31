@@ -1,4 +1,4 @@
-#if UNITY_EDITOR
+﻿#if UNITY_EDITOR
 using CindarsHope.Core;
 using CindarsHope.Core.Data;
 using CindarsHope.Core.Events;
@@ -14,7 +14,7 @@ namespace CindarsHope.Editor.Testing
 {
     public class IntegrationTest_ShopFlow
     {
-        [MenuItem("CindarsHope/Testing/Integration Test - Shop Flow")]
+        [MenuItem("CindarsHope/Advanced/Legacy/Testing/Integration Test - Shop Flow")]
         public static void RunShopFlowTest()
         {
             Debug.Log("═══════════════════════════════════════════════════════");

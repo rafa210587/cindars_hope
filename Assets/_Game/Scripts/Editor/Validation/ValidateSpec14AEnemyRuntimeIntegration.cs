@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using CindarsHope.Combat;
 using CindarsHope.Enemy;
@@ -15,7 +15,7 @@ namespace CindarsHope.Editor.Validation
         private const string SizeProfileFolder = "Assets/_Game/Data/Combat/SizeProfiles";
         private const string FactionLocksFolder = "Assets/_Game/Data/EnemySpawn/FactionLocks";
 
-        [MenuItem("CindarsHope/Validate/Enemy Runtime Integration")]
+        [MenuItem("CindarsHope/Advanced/Legacy/Validate/Enemy Runtime Integration")]
         public static void RunValidation()
         {
             var errors = new List<string>();

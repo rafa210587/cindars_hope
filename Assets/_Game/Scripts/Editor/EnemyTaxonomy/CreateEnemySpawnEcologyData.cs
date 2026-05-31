@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using CindarsHope.Combat;
 using CindarsHope.Enemy;
@@ -14,7 +14,7 @@ namespace CindarsHope.Editor.EnemyTaxonomy
         private const string PacksFolder = SpawnFolder + "/Packs";
         private const string LocksFolder = SpawnFolder + "/FactionLocks";
 
-        [MenuItem("CindarsHope/SPEC 13/Create Spawn Resolver Ecology Data")]
+        [MenuItem("CindarsHope/Advanced/Legacy/SPEC 13/Create Spawn Resolver Ecology Data")]
         public static void CreateData()
         {
             EnsureFolder(ProfilesFolder);
