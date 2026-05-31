@@ -47,6 +47,38 @@ namespace CindarsHope.Combat
             {
                 _interactionSystem = GetComponent<InteractionSystem>();
             }
+
+            // SPEC 14A-FIX9: create a runtime unarmed fallback if the inspector field is null.
+            // Otherwise pressing attack with empty slot would hard-error with NoUnarmedFallback.
+            if (_unarmedFallback == null)
+            {
+                _unarmedFallback = ScriptableObject.CreateInstance<UnarmedAttackDataSO>();
+                _unarmedFallback.Id = "unarmed_default_runtime";
+                _unarmedFallback.DisplayName = "Punch";
+                _unarmedFallback.BaseDamage = 3;
+                _unarmedFallback.BaseCooldownSeconds = 0.4f;
+                _unarmedFallback.StaminaCost = 5f;
+                _unarmedFallback.Range = 0.6f;
+                _unarmedFallback.ArcDegrees = 120f;
+                _unarmedFallback.DamageType = DamageType.Physical;
+                Debug.Log("PlayerAttackController: created runtime UnarmedAttackDataSO fallback (no asset wired).", this);
+            }
+        }
+
+        private void OnEnable()
+        {
+            GameEventBus.Subscribe<EquipmentSlotChangedEvent>(OnEquipmentSlotChanged);
+        }
+
+        private void OnDisable()
+        {
+            GameEventBus.Unsubscribe<EquipmentSlotChangedEvent>(OnEquipmentSlotChanged);
+        }
+
+        // SPEC 14A-FIX9: log every equip/unequip so we can see what the UI flow really stored.
+        private void OnEquipmentSlotChanged(EquipmentSlotChangedEvent evt)
+        {
+            Debug.Log($"CombatLog: EquipmentSlotChanged. Slot={evt.Slot}, ItemInstanceId='{evt.ItemInstanceId ?? "<null>"}'", this);
         }
 
         public void RebindStaminaManager(StaminaManager staminaManager)
