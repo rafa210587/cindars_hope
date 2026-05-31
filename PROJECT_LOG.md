@@ -1,3 +1,57 @@
+## Sessao 2026-05-31 (31i) - Solid background + collider fine tuning
+
+**Foco:** corrigir o fundo que ainda aparecia como ceu/terra/horizonte, aumentar levemente a fisica do lago e reduzir levemente a fisica das arvores. Nao houve alteracao em inventory, starter items, ItemDatabase, WeaponDatabase, combat, enemies, Q/E, save ou HUD nesta rodada.
+
+### Diagnostico
+
+- O quadrado central ja estava removido, mas as cameras de FarmScene, TownScene e CaveScene ainda tinham `m_ClearFlags: 1`.
+- Causa raiz do horizonte: `m_ClearFlags: 1` renderiza o Skybox padrao da Unity, que mostra uma divisao visual de ceu/terra. O `m_BackGroundColor` branco estava configurado, mas nao era usado como fundo solido enquanto a camera limpava com Skybox.
+- Busca estatica nao encontrou objetos residuais chamados `Ground`, `Background`, `Sky`, `Horizon` ou `Terrain` nas tres cenas apos a correcao anterior.
+- Lago:
+  - `FishingSpot` tinha `LakeBlockingCollider` local size `(0.08, 0.10)`.
+  - Esse ajuste ficou pequeno demais na validacao humana.
+- Arvores:
+  - 13 colliders de arvores estavam em local size `(0.08, 0.10)`, offset `(0, -0.03)`.
+  - A validacao humana indicou que ainda prendiam o player perto da copa/lateral.
+
+### Correcoes
+
+- `Assets/_Game/Scenes/FarmScene.unity`, `TownScene.unity`, `CaveScene.unity`:
+  - `m_ClearFlags` alterado de `1` para `2`, usando cor solida.
+  - `m_BackGroundColor` permanece `{r: 1, g: 1, b: 1, a: 1}`.
+- `Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpFarmScene.cs`, `CreateMvpTownScene.cs`, `CreateMvpCaveScene.cs`:
+  - Geradores agora configuram `camera.clearFlags = CameraClearFlags.SolidColor`.
+  - `camera.backgroundColor = Color.white` preservado.
+- Lago:
+  - `LakeBlockingCollider` aumentado aproximadamente 10%, de `(0.08, 0.10)` para `(0.088, 0.11)`.
+  - Visual do lago e triggers de interacao nao foram aumentados.
+- Arvores:
+  - 13 colliders fisicos reduzidos aproximadamente 10%, de `(0.08, 0.10)` para `(0.072, 0.09)`.
+  - Offset preservado em `(0, -0.03)` para manter a colisao na base/tronco.
+  - `TreeRegistry` e installer continuam com 13 arvores registradas.
+
+### Validacao
+
+- `dotnet restore .\Assembly-CSharp.csproj`: PASS.
+- `dotnet restore .\Assembly-CSharp-Editor.csproj`: PASS.
+- `dotnet build .\Assembly-CSharp-Editor.csproj --no-restore` com permissao elevada: PASS, 2 warnings legados em `CreateEnemyActionsAndSets`, 0 errors. Esse build tambem compilou `Assembly-CSharp` como dependencia.
+- `dotnet build .\Assembly-CSharp.csproj --no-restore`: NOT PASS isolado. Reason: `Temp/obj/Assembly-CSharp/Assembly-CSharp.dll` estava bloqueado por outro processo (`CS2012`). O build editor passou depois, indicando codigo compilavel, mas o build runtime isolado ficou bloqueado por lock de arquivo.
+- `tools/docs/validate_docs.ps1`: PASS antes desta entrada; deve ser rerodado apos o log.
+- `tools/unity/RunUnityCompileValidation.ps1`: NOT RUN com sucesso. Reason: acesso negado ao remover `Logs/unity-compile-validation.log`.
+- `git diff --check`: NOT RUN com sucesso. Reason: Git/MSYS falhou com `couldn't create signal pipe, Win32 error 5`.
+- Conferencia estatica:
+  - Farm/Town/Cave sem fileIDs YAML duplicados.
+  - Farm/Town/Cave com `m_ClearFlags: 2` e fundo branco.
+  - FarmScene com 13 colliders de arvores no tamanho `(0.072, 0.09)`.
+  - FarmScene com 1 blocker do lago no tamanho `(0.088, 0.11)`.
+- Pendente para validacao humana/Unity Editor:
+  - Confirmar visualmente fundo branco real nas tres cenas.
+  - Confirmar que o lago bloqueia sem deixar atravessar e sem repelir antes da margem.
+  - Confirmar que as arvores bloqueiam tronco/base, mas deixam passar perto da copa.
+  - `CindarsHope > Repair and Validate Project`.
+
+---
+
 ## Sessao 2026-05-31 (31h) - Farm/Town/Cave visual bugfix follow-up
 
 **Foco:** remover de vez os retangulos centrais/horizonte, reduzir hitboxes do lago e das arvores, registrar mais arvores na FarmScene e serializar BestiaryManager no bootstrap sem tocar em starter inventory, ItemDatabase, WeaponDatabase, Q/E, save ou Cave enemies nesta rodada.
