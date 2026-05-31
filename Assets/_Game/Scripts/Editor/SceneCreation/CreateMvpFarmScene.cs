@@ -686,7 +686,7 @@ namespace CindarsHope.Editor.SceneCreation
 
             var blockingCollider = fishingObject.AddComponent<BoxCollider2D>();
             blockingCollider.isTrigger = false;
-            blockingCollider.size = new Vector2(0.088f, 0.11f);
+            blockingCollider.size = new Vector2(0.10f, 0.125f);
 
             var fishingSpot = fishingObject.AddComponent<FishingSpot>();
             var serializedFishing = new SerializedObject(fishingSpot);
@@ -916,8 +916,8 @@ namespace CindarsHope.Editor.SceneCreation
 
             var collider = treeObject.AddComponent<BoxCollider2D>();
             collider.isTrigger = false;
-            collider.size = new Vector2(0.072f, 0.09f);
-            collider.offset = new Vector2(0f, -0.03f);
+            collider.size = new Vector2(0.045f, 0.04f);
+            collider.offset = new Vector2(0f, -0.045f);
 
             var treeNode = treeObject.AddComponent<TreeNode>();
             var serializedTree = new SerializedObject(treeNode);
@@ -963,7 +963,7 @@ namespace CindarsHope.Editor.SceneCreation
             camera.orthographic = true;
             camera.orthographicSize = 8.5f; // calibrate in Play Mode with CameraScaleConfigSO
             camera.clearFlags = CameraClearFlags.SolidColor;
-            camera.backgroundColor = Color.white;
+            camera.backgroundColor = new Color(0.7843137f, 0.7215686f, 0.5411765f);
 
             var cameraFollow = cameraObject.AddComponent<CindarsHope.Camera.CameraFollow2D>();
             var serializedFollow = new SerializedObject(cameraFollow);

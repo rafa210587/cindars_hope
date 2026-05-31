@@ -493,7 +493,7 @@ namespace CindarsHope.Editor.SceneCreation
             camera.orthographic = true;
             camera.orthographicSize = 7.5f;
             camera.clearFlags = CameraClearFlags.SolidColor;
-            camera.backgroundColor = Color.white;
+            camera.backgroundColor = new Color(0.7176471f, 0.7176471f, 0.7176471f);
 
             var cameraFollow = cameraObject.AddComponent<CindarsHope.Camera.CameraFollow2D>();
             var serializedFollow = new SerializedObject(cameraFollow);

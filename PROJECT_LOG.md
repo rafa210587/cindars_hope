@@ -1,3 +1,43 @@
+## Sessao 2026-05-31 (31j) - Flat color backgrounds + final collider tuning
+
+**Foco:** trocar o fundo branco puro por cores chapadas com melhor contraste, reduzir bastante a fisica das arvores e aumentar um pouco a fisica do lago. Nao houve alteracao em inventory, starter items, ItemDatabase, WeaponDatabase, combat, enemies, Q/E, save ou HUD.
+
+### Correcoes
+
+- Fundos chapados sem horizonte/gradiente:
+  - `FarmScene`: camera em `m_ClearFlags: 2` com cor `#C8B88A` (`r: 0.7843137, g: 0.7215686, b: 0.5411765`).
+  - `TownScene`: camera em `m_ClearFlags: 2` com cor `#C6C2B2` (`r: 0.7764706, g: 0.7607843, b: 0.6980392`).
+  - `CaveScene`: camera em `m_ClearFlags: 2` com cor `#B7B7B7` (`r: 0.7176471, g: 0.7176471, b: 0.7176471`).
+  - Geradores `CreateMvpFarmScene`, `CreateMvpTownScene` e `CreateMvpCaveScene` atualizados para recriar as cameras com as mesmas cores solidas.
+- Lago:
+  - `LakeBlockingCollider` aumentado de `(0.088, 0.11)` para `(0.10, 0.125)`.
+  - Visual do lago e triggers de interacao nao foram aumentados.
+- Arvores:
+  - 13 colliders fisicos de arvores reduzidos de `(0.072, 0.09)` para `(0.045, 0.04)`.
+  - Offset ajustado de `(0, -0.03)` para `(0, -0.045)` para concentrar a colisao na base/tronco.
+  - Visual das arvores nao foi alterado.
+- Durante a edicao mecanica, `CaveScene.unity` ficou com 0 bytes; foi recuperada imediatamente do objeto Git LFS local do `HEAD` (`size 51817`) e recebeu apenas a cor chapada cinza desta task.
+
+### Validacao
+
+- Conferencia estatica:
+  - Farm/Town/Cave usam `m_ClearFlags: 2`.
+  - Farm/Town/Cave usam as cores chapadas listadas acima.
+  - FarmScene contem 13 colliders de arvores no tamanho `(0.045, 0.04)` e offset `(0, -0.045)`.
+  - FarmScene contem 1 `LakeBlockingCollider` no tamanho `(0.10, 0.125)`.
+- `tools/docs/validate_docs.ps1`: PASS.
+- `dotnet restore .\Assembly-CSharp.csproj`: PASS com permissao elevada apos bloqueio de escrita em `Temp/obj` no sandbox.
+- `dotnet restore .\Assembly-CSharp-Editor.csproj`: PASS com permissao elevada apos bloqueio de escrita em `Temp/obj` no sandbox.
+- `dotnet build .\Assembly-CSharp.csproj --no-restore`: PASS com permissao elevada, 0 warnings, 0 errors.
+- `dotnet build .\Assembly-CSharp-Editor.csproj --no-restore`: PASS com permissao elevada, 2 warnings legados em `CreateEnemyActionsAndSets`, 0 errors.
+- `tools/unity/RunUnityCompileValidation.ps1`: script retornou FAIL, mas o log novo mostra `Tundra build success`, `Batchmode quit successfully invoked` e `return code 0`; nao ha `error CS` no log. O retorno do wrapper ficou inconsistente com o conteudo do log.
+- `tools/unity/ScanUnityLogs.ps1 -LogFile .\Logs\unity-compile-validation.log`: FAIL por padrao de scanner em linhas de compilacao/assemblies de teste (`Csc`, `not valid. Loading of assembly skipped`), sem `error CS` encontrado.
+- `git diff --check`: NOT RUN com sucesso. Reason: Git/MSYS falhou com `couldn't create signal pipe, Win32 error 5`.
+- `CindarsHope > Repair and Validate Project`: NOT RUN; menu interativo do Unity pendente para validacao humana.
+- Play Mode visual nas tres cenas: NOT RUN; pendente para validar colisao/movimento no Editor.
+
+---
+
 ## Sessao 2026-05-31 (31i) - Solid background + collider fine tuning
 
 **Foco:** corrigir o fundo que ainda aparecia como ceu/terra/horizonte, aumentar levemente a fisica do lago e reduzir levemente a fisica das arvores. Nao houve alteracao em inventory, starter items, ItemDatabase, WeaponDatabase, combat, enemies, Q/E, save ou HUD nesta rodada.
