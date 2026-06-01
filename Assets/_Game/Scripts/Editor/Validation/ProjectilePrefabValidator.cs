@@ -15,8 +15,8 @@ namespace CindarsHope.EditorTools.Validation
     public class ProjectilePrefabValidator : IProjectValidator
     {
         private const string ProjectilePrefabFolderPath = "Assets/_Game/Data/Combat/Prefabs";
-        private const string WeaponDatabasePath = "Assets/_Game/Data/Registries/WeaponDatabase.asset";
-        private const string SpellDatabasePath = "Assets/_Game/Data/Registries/SpellDatabase.asset";
+        private const string WeaponDatabasePath = "Assets/_Game/Data/Combat/WeaponDatabase.asset";
+        private const string SpellDatabasePath = "Assets/_Game/Data/Combat/SpellDatabase.asset";
 
         public string ValidatorId => "projectile_prefab_validator";
         public string DisplayName => "Projectile Prefab Validator";

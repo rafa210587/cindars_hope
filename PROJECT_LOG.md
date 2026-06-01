@@ -34,6 +34,41 @@
 
 ---
 
+## Sessao 2026-06-01 (micro-closeout) - Architecture Reorganization: Post-Merge Path Alignment e Consolidacao
+
+**Foco:** Micro-closeout pós-merge SPEC_02/SPEC_03. Corrigir inconsistencias de asset paths entre validators e atualizar documentacao minima antes de SPEC_04.
+
+### O que foi feito
+
+**Path Alignment:**
+- Confirmado paths reais dos combat assets:
+  - ItemDatabase: `Assets/_Game/Data/Registries/ItemDatabase.asset` ✓
+  - WeaponDatabase: `Assets/_Game/Data/Combat/WeaponDatabase.asset` ✓
+  - SpellDatabase: `Assets/_Game/Data/Combat/SpellDatabase.asset` ✓
+  - PlayerData: `Assets/_Game/Data/Config/PlayerData.asset` ✓
+- Corrigido ProjectilePrefabValidator.cs: WeaponDatabase e SpellDatabase paths (Registries → Combat)
+- Alinhamento confirmado: ambos validators agora usam os mesmos paths reais
+
+**Validacoes Obrigatorias:**
+- `dotnet restore Assembly-CSharp.csproj`: ✓ PASS
+- `dotnet restore Assembly-CSharp-Editor.csproj`: ✓ PASS
+- `dotnet build Assembly-CSharp.csproj --no-restore`: ✓ PASS 0E/0W
+- `dotnet build Assembly-CSharp-Editor.csproj --no-restore`: ✓ PASS 0E/2W (pre-existentes)
+- `tools/docs/validate_docs.ps1`: ✓ PASS (13 checks)
+
+**Documentacao:**
+- PROJECT_LOG.md: atualizado com sessao de micro-closeout
+- IMPLEMENTATION_STATUS.md: atualizado para registrar SPEC_02/SPEC_03 como Implementado completo (validators editor-only, Unity validation pendente)
+
+**Nenhuma alteracao a:**
+- Gameplay (PlayerAttackController, ProjectileBehaviour, SaveManager, GameBootstrap)
+- Assets/prefabs/scenes
+- Banco de dados (ItemDatabase, WeaponDatabase, SpellDatabase, PlayerData)
+
+**Status:** ✓ CLOSEOUT COMPLETO. SPEC_04 LIBERADA.
+
+---
+
 ## Sessao 2026-06-01 (reorg) - Architecture Reorganization Specs 00-01: Strategy + Validator Foundation
 
 **Foco:** Iniciar pacote SpecKit de reorganizacao arquitetural incremental. SPEC_00 define estrategia sequencial e regras anti-drift. SPEC_01 implementa fundacao editor-only para validators futuros (SPEC_02/03). Nenhuma alteracao a gameplay, assets, GameBootstrap, SaveManager, PlayerAttackController, ProjectileBehaviour ou scenes.
