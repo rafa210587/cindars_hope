@@ -1,3 +1,48 @@
+## Sessao 2026-05-31 (31k) - Scene contrast + tree/lake collider follow-up
+
+**Foco:** escurecer os fundos chapados em aproximadamente 20%, reduzir em 30% os colliders de arvores, diminuir somente a altura do blocker do lago, adicionar arvores ao redor do lago e adicionar arvores visuais/fisicas na cidade. Nao houve alteracao em inventory, starter items, ItemDatabase, WeaponDatabase, combat, enemies, Q/E, save ou HUD.
+
+### Correcoes
+
+- Fundos chapados 20% mais escuros:
+  - `FarmScene`: `#A0936E` aproximado (`r: 0.627451, g: 0.5772549, b: 0.4329412`).
+  - `TownScene`: `#9E9B8E` aproximado (`r: 0.6211765, g: 0.6086274, b: 0.5584314`).
+  - `CaveScene`: `#929292` aproximado (`r: 0.5741177, g: 0.5741177, b: 0.5741177`).
+  - As tres cameras continuam com `m_ClearFlags: 2`, sem skybox/horizonte/gradiente.
+- Lago:
+  - `LakeBlockingCollider` manteve largura `0.10`.
+  - Altura reduzida de `0.125` para `0.105`, para aliviar topo/base sem mexer nas laterais.
+- Arvores:
+  - Colliders reduzidos de `(0.045, 0.04)` para `(0.0315, 0.028)`, reducao de 30%.
+  - Offset ajustado para `(0, -0.052)` para manter colisao na base/tronco.
+- FarmScene:
+  - Adicionadas 6 arvores novas ao redor do lago: `TreeNode_13` a `TreeNode_18`.
+  - `TreeRegistry` e `FarmSceneRuntimeReferenceInstaller._treeNodes` atualizados para 19 arvores.
+- TownScene:
+  - Adicionado root `TownTrees` com 8 arvores: `TownTree_00` a `TownTree_07`.
+  - Arvores da cidade usam visual placeholder existente e collider pequeno de tronco/base.
+- Geradores:
+  - `CreateMvpFarmScene`, `CreateMvpTownScene` e `CreateMvpCaveScene` atualizados com as mesmas cores/colliders/posicoes para recriacao futura.
+
+### Validacao
+
+- `dotnet restore .\Assembly-CSharp.csproj`: PASS com permissao elevada.
+- `dotnet restore .\Assembly-CSharp-Editor.csproj`: PASS com permissao elevada.
+- `dotnet build .\Assembly-CSharp.csproj --no-restore`: PASS, 0 warnings, 0 errors.
+- `dotnet build .\Assembly-CSharp-Editor.csproj --no-restore`: PASS, 2 warnings legados em `CreateEnemyActionsAndSets`, 0 errors.
+- Unity batchmode para executar gerador FarmScene: NOT RUN com sucesso. Reason: Unity recusou abrir o projeto porque outra instancia ja esta aberta.
+- Conferencia estatica:
+  - Farm/Town/Cave sem fileIDs YAML duplicados.
+  - FarmScene com 19 colliders de arvore no tamanho `(0.0315, 0.028)`.
+  - FarmScene com 6 novas arvores ao redor do lago.
+  - FarmScene com 1 `LakeBlockingCollider` no tamanho `(0.10, 0.105)`.
+  - TownScene com 8 arvores novas e 8 colliders pequenos.
+- Pendente para validacao humana/Unity Editor:
+  - `CindarsHope > Repair and Validate Project`.
+  - Play Mode em Farm/Town/Cave para confirmar contraste e colisao real do player.
+
+---
+
 ## Sessao 2026-05-31 (31j) - Flat color backgrounds + final collider tuning
 
 **Foco:** trocar o fundo branco puro por cores chapadas com melhor contraste, reduzir bastante a fisica das arvores e aumentar um pouco a fisica do lago. Nao houve alteracao em inventory, starter items, ItemDatabase, WeaponDatabase, combat, enemies, Q/E, save ou HUD.

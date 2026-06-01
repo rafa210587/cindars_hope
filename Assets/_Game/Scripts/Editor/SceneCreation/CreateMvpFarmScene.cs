@@ -686,7 +686,7 @@ namespace CindarsHope.Editor.SceneCreation
 
             var blockingCollider = fishingObject.AddComponent<BoxCollider2D>();
             blockingCollider.isTrigger = false;
-            blockingCollider.size = new Vector2(0.10f, 0.125f);
+            blockingCollider.size = new Vector2(0.10f, 0.105f);
 
             var fishingSpot = fishingObject.AddComponent<FishingSpot>();
             var serializedFishing = new SerializedObject(fishingSpot);
@@ -869,7 +869,7 @@ namespace CindarsHope.Editor.SceneCreation
             parent.transform.position = Vector3.zero;
             var registry = parent.AddComponent<TreeRegistry>();
 
-            var trees = new TreeNode[13];
+            var trees = new TreeNode[19];
             trees[0] = CreateTree(parent.transform, 0, new Vector3(6.5f, 3.5f, 0f), treeData, inventoryManager);
             trees[1] = CreateTree(parent.transform, 1, new Vector3(7.5f, 1.5f, 0f), treeData, inventoryManager);
             trees[2] = CreateTree(parent.transform, 2, new Vector3(6.25f, -0.75f, 0f), treeData, inventoryManager);
@@ -883,6 +883,12 @@ namespace CindarsHope.Editor.SceneCreation
             trees[10] = CreateTree(parent.transform, 10, new Vector3(8.5f, 2.9f, 0f), treeData, inventoryManager);
             trees[11] = CreateTree(parent.transform, 11, new Vector3(8.7f, -0.4f, 0f), treeData, inventoryManager);
             trees[12] = CreateTree(parent.transform, 12, new Vector3(2.2f, -4.9f, 0f), treeData, inventoryManager);
+            trees[13] = CreateTree(parent.transform, 13, new Vector3(5.6f, 0.25f, 0f), treeData, inventoryManager);
+            trees[14] = CreateTree(parent.transform, 14, new Vector3(9.8f, 0.15f, 0f), treeData, inventoryManager);
+            trees[15] = CreateTree(parent.transform, 15, new Vector3(4.6f, -2.8f, 0f), treeData, inventoryManager);
+            trees[16] = CreateTree(parent.transform, 16, new Vector3(10.95f, -2.7f, 0f), treeData, inventoryManager);
+            trees[17] = CreateTree(parent.transform, 17, new Vector3(6.1f, -5.8f, 0f), treeData, inventoryManager);
+            trees[18] = CreateTree(parent.transform, 18, new Vector3(9.3f, -5.75f, 0f), treeData, inventoryManager);
 
             registry.Configure(trees);
             EditorUtility.SetDirty(registry);
@@ -916,8 +922,8 @@ namespace CindarsHope.Editor.SceneCreation
 
             var collider = treeObject.AddComponent<BoxCollider2D>();
             collider.isTrigger = false;
-            collider.size = new Vector2(0.045f, 0.04f);
-            collider.offset = new Vector2(0f, -0.045f);
+            collider.size = new Vector2(0.0315f, 0.028f);
+            collider.offset = new Vector2(0f, -0.052f);
 
             var treeNode = treeObject.AddComponent<TreeNode>();
             var serializedTree = new SerializedObject(treeNode);
@@ -963,7 +969,7 @@ namespace CindarsHope.Editor.SceneCreation
             camera.orthographic = true;
             camera.orthographicSize = 8.5f; // calibrate in Play Mode with CameraScaleConfigSO
             camera.clearFlags = CameraClearFlags.SolidColor;
-            camera.backgroundColor = new Color(0.7843137f, 0.7215686f, 0.5411765f);
+            camera.backgroundColor = new Color(0.627451f, 0.5772549f, 0.4329412f);
 
             var cameraFollow = cameraObject.AddComponent<CindarsHope.Camera.CameraFollow2D>();
             var serializedFollow = new SerializedObject(cameraFollow);

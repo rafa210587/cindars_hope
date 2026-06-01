@@ -74,7 +74,7 @@ namespace CindarsHope.Editor.SceneCreation
             var interactionSystem = playerTransform.GetComponent<InteractionSystem>();
             var shopUi = CreateShopUi(modalManager);
 
-            // Camera background is the uniform white playfield; do not create a giant
+            // Camera background is a flat color playfield; do not create a giant
             // ground sprite because it reads as a horizon/central rectangle in MVP art.
             CreateBounds();
             CreateMainCamera(playerTransform);
@@ -83,6 +83,7 @@ namespace CindarsHope.Editor.SceneCreation
             var npcManager = CreateNpcs(playerTransform, playerManager, inventoryManager, itemDatabase, shopManager, modalManager, shopUi);
             CreateTownCommerce();
             CreateTownDecorations();
+            CreateTownTrees();
             CreateDebugHud(playerManager, inventoryManager, hungerManager, interactionSystem, timeManager, saveManager);
             CreateSceneRuntimeInstaller(playerTransform);
 
@@ -454,7 +455,7 @@ namespace CindarsHope.Editor.SceneCreation
             camera.orthographic = true;
             camera.orthographicSize = 8f; // calibrate in Play Mode with CameraScaleConfigSO
             camera.clearFlags = CameraClearFlags.SolidColor;
-            camera.backgroundColor = new Color(0.7764706f, 0.7607843f, 0.6980392f);
+            camera.backgroundColor = new Color(0.6211765f, 0.6086274f, 0.5584314f);
 
             var cameraFollow = cameraObject.AddComponent<CindarsHope.Camera.CameraFollow2D>();
             var serializedFollow = new SerializedObject(cameraFollow);
@@ -576,6 +577,40 @@ namespace CindarsHope.Editor.SceneCreation
             CreateDecoration(decorations.transform, "TownWell_Placeholder", new Vector3(-3.5f, 1f, 0f), new Vector3(1.2f, 1.2f, 1f), new Color(0.32f, 0.38f, 0.44f));
             CreateDecoration(decorations.transform, "TownHouse_Placeholder", new Vector3(4f, 2f, 0f), new Vector3(2.2f, 1.6f, 1f), new Color(0.36f, 0.28f, 0.22f));
             CreateDecoration(decorations.transform, "TownLamp_Placeholder", new Vector3(-5f, -2.5f, 0f), new Vector3(0.45f, 1.3f, 1f), new Color(0.83f, 0.66f, 0.31f));
+        }
+
+        private static void CreateTownTrees()
+        {
+            var parent = new GameObject("TownTrees");
+            parent.transform.position = Vector3.zero;
+
+            CreateTownTree(parent.transform, 0, new Vector3(-8f, 5f, 0f));
+            CreateTownTree(parent.transform, 1, new Vector3(-8.5f, 0f, 0f));
+            CreateTownTree(parent.transform, 2, new Vector3(-7.6f, -4f, 0f));
+            CreateTownTree(parent.transform, 3, new Vector3(8f, 5f, 0f));
+            CreateTownTree(parent.transform, 4, new Vector3(8.4f, 0.2f, 0f));
+            CreateTownTree(parent.transform, 5, new Vector3(7.5f, -4f, 0f));
+            CreateTownTree(parent.transform, 6, new Vector3(0f, 5.5f, 0f));
+            CreateTownTree(parent.transform, 7, new Vector3(3.6f, -4.2f, 0f));
+        }
+
+        private static void CreateTownTree(Transform parent, int treeIndex, Vector3 position)
+        {
+            var treeObject = new GameObject($"TownTree_{treeIndex:00}");
+            treeObject.transform.SetParent(parent);
+            treeObject.transform.position = position;
+            treeObject.transform.localScale = new Vector3(3f, 3f, 1f);
+
+            var spriteRenderer = treeObject.AddComponent<SpriteRenderer>();
+            spriteRenderer.sprite = GetBuiltinSprite();
+            spriteRenderer.color = new Color(0.24f, 0.48f, 0.22f);
+            spriteRenderer.sortingOrder = 2;
+            TrySetSortingLayer(spriteRenderer, "Items", spriteRenderer.sortingOrder);
+
+            var collider = treeObject.AddComponent<BoxCollider2D>();
+            collider.isTrigger = false;
+            collider.size = new Vector2(0.0315f, 0.028f);
+            collider.offset = new Vector2(0f, -0.052f);
         }
 
         private sealed class ShopUiReferences
