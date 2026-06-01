@@ -1,3 +1,111 @@
+## Sessao 2026-05-31 (31n) - Tree collider fit-to-sprite (correcao de abordagem)
+
+**Foco:** fornecer uma unica funcao Unity Editor que ajusta automaticamente o BoxCollider2D de todas as arvores ao tamanho real do sprite. Nao houve alteracao em inventory, starter items, ItemDatabase, WeaponDatabase, combat, enemies, Q/E, save, HUD, portals, lake, NPCs ou player movement.
+
+### O que foi feito
+
+- `CreateMvpFarmScene.CreateTree()`: substituidos valores fixos por `FitBoxColliderToSprite(collider, spriteRenderer)`. Helper privado adicionado.
+- `CreateMvpTownScene.CreateTownTree()`: mesma substituicao. Helper privado adicionado.
+- `ValidateAndRepairTreeColliders.cs` (NOVO): unica funcao `CindarsHope/Fix Tree Colliders` que:
+  - Abre FarmScene, ajusta todos TreeNode_ pelo sprite bounds real, salva.
+  - Abre TownScene, ajusta todos TownTree_ pelo sprite bounds real, salva.
+  - Relata contagem no Console e dialogo.
+- Cenas YAML: mantidas nos valores da versao commitada (0.0315/0.028, offset -0.052) para serem corrigidas pelo menu acima no Unity Editor.
+
+### Como usar
+
+No Unity Editor: menu `CindarsHope > Fix Tree Colliders`.
+
+A funcao le `spriteRenderer.sprite.bounds.size` e `.center` dos sprites reais carregados, define `collider.size` e `collider.offset` em local space, e salva ambas as cenas. Nao usa valores fixos.
+
+### Validacao
+
+- `dotnet build Assembly-CSharp-Editor.csproj`: PASS, 0 erros, 2 warnings pre-existentes (CreateEnemyActionsAndSets.cs).
+- Unity compile/Play Mode: NAO EXECUTADO. Pendente: rodar `CindarsHope > Fix Tree Colliders` no Editor e confirmar gizmos em Scene View.
+
+---
+
+## Sessao 2026-05-31 (31m) - Tree/forest collider fit-to-sprite
+
+**Foco:** corrigir colliders de arvores para cobrirem exatamente a area do sprite visivel (sprite.bounds). Substituicao de valores fixos magicos por derivacao automatica via `spriteRenderer.sprite.bounds`. Nao houve alteracao em inventory, starter items, ItemDatabase, WeaponDatabase, combat, enemies, Q/E, save, HUD, portals, lake, NPCs ou player movement.
+
+### Diagnostico
+
+- Coliders de arvore estavam com tamanho fixo (0.018, 0.018) local com offset (0, -0.045).
+- O sprite placeholder (UISprite.psd, fileID 10905) tem `sprite.bounds.size = (0.16, 0.16)` confirmado pelo campo `m_SpriteTilingProperty.newSize` no YAML das cenas.
+- Valores fixos nao derivavam do sprite: colisao/interacao desalinhada da area visual.
+- Nenhum objeto de floresta separado (ForestTree, TreeCluster, TreeLine, TreeWall) encontrado alem de TreeNode e TownTree.
+
+### Regra nova
+
+Para arvore/floresta com SpriteRenderer + BoxCollider2D:
+- `collider.size = spriteRenderer.sprite.bounds.size` (local space, nao world space)
+- `collider.offset = spriteRenderer.sprite.bounds.center` (centro do sprite local)
+- Nunca usar valores fixos magicos; nunca usar SpriteRenderer.bounds (world space).
+
+### Arquivos alterados
+
+- `Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpFarmScene.cs`: substituicao de valores fixos por `FitBoxColliderToSprite(collider, spriteRenderer)` em `CreateTree()`. Novo helper privado `FitBoxColliderToSprite`.
+- `Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpTownScene.cs`: mesmo padrao em `CreateTownTree()`. Novo helper privado `FitBoxColliderToSprite`.
+- `Assets/_Game/Scripts/Editor/Validation/ValidateAndRepairTreeColliders.cs`: NOVO - validator e repair tool com menus `CindarsHope/Advanced/Validate Tree Colliders` e `CindarsHope/Advanced/Repair Tree Colliders`.
+- `Assets/_Game/Scenes/FarmScene.unity`: 19 colliders de TreeNode_* corrigidos: `m_Offset {x:0, y:-0.045}` -> `{x:0, y:0}`, `m_Size {x:0.018, y:0.018}` -> `{x:0.16, y:0.16}`.
+- `Assets/_Game/Scenes/TownScene.unity`: 8 colliders de TownTree_* corrigidos com os mesmos valores.
+
+### Contagem de arvores
+
+- FarmScene: 19 TreeNode_* (TreeNode_00 a TreeNode_18) - todos corrigidos.
+- TownScene: 8 TownTree_* (TownTree_00 a TownTree_07) - todos corrigidos.
+- Floresta separada (Forest, TreeCluster, TreeLine, TreeWall): NAO encontrada.
+
+### Validacao
+
+- `dotnet restore Assembly-CSharp.csproj`: PASS.
+- `dotnet restore Assembly-CSharp-Editor.csproj`: PASS.
+- `dotnet build Assembly-CSharp.csproj --no-restore`: PASS, 0 erros, 0 warnings.
+- `dotnet build Assembly-CSharp-Editor.csproj --no-restore`: PASS, 0 erros, 2 warnings pre-existentes (CreateEnemyActionsAndSets.cs CS0649, sem relacao).
+- `tools/docs/validate_docs.ps1`: PASS.
+- Unity compile/Play Mode: NAO EXECUTADO. Motivo: Unity Editor nao disponivel via batchmode nesta sessao.
+
+### Pendencias para validacao humana
+
+- Abrir FarmScene no Unity Editor, ativar gizmos, confirmar que cada TreeNode tem collider do tamanho do sprite (0.48x0.48 world a scale 3).
+- Entrar em Play Mode e confirmar: sem colisao invisivel antes do sprite, interacao aparece ao aproximar da borda visual.
+- Repetir para TownScene (TownTrees).
+- Rodar `CindarsHope > Advanced > Validate Tree Colliders` na cena ativa para confirmar zero erros.
+- Opcional: rodar `CindarsHope > Advanced > Repair Tree Colliders (Farm + Town)` se cenas tiverem sido modificadas manualmente.
+
+---
+
+## Sessao 2026-05-31 (31l) - Tree collider tightening
+
+**Foco:** diminuir a area fisica das arvores porque a hitbox ainda parecia sair do desenho. Nao houve alteracao em inventory, starter items, ItemDatabase, WeaponDatabase, combat, enemies, Q/E, save ou HUD.
+
+### Correcoes
+
+- FarmScene:
+  - 19 colliders de arvores reduzidos de `(0.0315, 0.028)` para `(0.018, 0.018)`.
+  - Offset ajustado de `(0, -0.052)` para `(0, -0.045)` para manter o collider dentro do desenho/base.
+- TownScene:
+  - 8 colliders de arvores reduzidos de `(0.0315, 0.028)` para `(0.018, 0.018)`.
+  - Offset ajustado de `(0, -0.052)` para `(0, -0.045)`.
+- Geradores `CreateMvpFarmScene` e `CreateMvpTownScene` atualizados com os mesmos valores.
+
+### Validacao
+
+- Conferencia estatica:
+  - FarmScene: 19 colliders de arvores em `(0.018, 0.018)`.
+  - TownScene: 8 colliders de arvores em `(0.018, 0.018)`.
+  - Farm/Town/Cave sem fileIDs YAML duplicados.
+- `tools/docs/validate_docs.ps1`: PASS.
+- `dotnet restore .\Assembly-CSharp.csproj`: PASS.
+- `dotnet restore .\Assembly-CSharp-Editor.csproj`: NOT RUN com sucesso. Reason: aprovacao escalada bloqueada por limite de uso da sessao.
+- `dotnet build`: NOT RUN com sucesso apos o ultimo ajuste. Reason: faltava `project.assets.json` e o restore editor foi bloqueado por limite de uso da aprovacao automatica.
+- Pendente para validacao humana/Unity Editor:
+  - Build/compile apos restore editor.
+  - Play Mode para confirmar que o player ainda bloqueia no tronco/base, mas nao trava na copa/lateral.
+
+---
+
 ## Sessao 2026-05-31 (31k) - Scene contrast + tree/lake collider follow-up
 
 **Foco:** escurecer os fundos chapados em aproximadamente 20%, reduzir em 30% os colliders de arvores, diminuir somente a altura do blocker do lago, adicionar arvores ao redor do lago e adicionar arvores visuais/fisicas na cidade. Nao houve alteracao em inventory, starter items, ItemDatabase, WeaponDatabase, combat, enemies, Q/E, save ou HUD.

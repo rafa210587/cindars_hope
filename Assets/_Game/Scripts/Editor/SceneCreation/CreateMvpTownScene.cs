@@ -609,8 +609,7 @@ namespace CindarsHope.Editor.SceneCreation
 
             var collider = treeObject.AddComponent<BoxCollider2D>();
             collider.isTrigger = false;
-            collider.size = new Vector2(0.0315f, 0.028f);
-            collider.offset = new Vector2(0f, -0.052f);
+            FitBoxColliderToSprite(collider, spriteRenderer);
         }
 
         private sealed class ShopUiReferences
@@ -1093,6 +1092,19 @@ namespace CindarsHope.Editor.SceneCreation
             collider.size = Vector2.one;
 
             return pointObject;
+        }
+
+        private static void FitBoxColliderToSprite(BoxCollider2D collider, SpriteRenderer spriteRenderer)
+        {
+            if (collider == null || spriteRenderer == null || spriteRenderer.sprite == null)
+            {
+                Debug.LogWarning($"FitBoxColliderToSprite: cannot fit collider — collider, renderer, or sprite is null.");
+                return;
+            }
+
+            var b = spriteRenderer.sprite.bounds;
+            collider.size = new Vector2(b.size.x, b.size.y);
+            collider.offset = new Vector2(b.center.x, b.center.y);
         }
 
         private static void CreateDecoration(Transform parent, string name, Vector3 position, Vector3 scale, Color color)
