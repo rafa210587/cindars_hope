@@ -1,3 +1,43 @@
+## Sessao 2026-06-01 (reorg continuation 3) - Architecture Reorganization SPEC_11: Wave 6 Bootstrap Installers
+
+**Foco:** Executar SPEC_11 em modo sequencial. Objetivo: Criar CombatRuntimeInstaller como piloto de validação explícita de wiring do domínio combat, sem alterar lifecycle do GameBootstrap, sem scene/prefab edits, sem FindObjectOfType.
+
+### Resumo de Execucao
+
+**SPEC_11 — Wave 6 Bootstrap Installers:**
+- Criado CombatRuntimeInstallContext.cs — POCO [Serializable] com 8 campos do domínio combat (ItemDatabase, WeaponDatabase, SpellDatabase, StatusEffectDatabase, EquipmentManager, InventoryManager, StaminaManager, ManaManager)
+- Criado CombatRuntimeInstaller.cs — static class com Install(context, owner) validando refs required com Debug.LogError e optional com Debug.LogWarning; FR-004: sem fallback silencioso
+- Modificado GameBootstrap.cs — adicionado using, BuildCombatInstallContext() e chamada Install() em InitializeManagers() após RebindOptionalRuntimeManagers e antes de InitializeDeathSystem()
+- Modificado MvpSceneValidator.cs — adicionado ValidateSpec11CombatDatabases(bootstrap) chamado em ValidateCaveScene(), checando ItemDatabase/WeaponDatabase/SpellDatabase não nulos
+- Assembly-CSharp.csproj — 2 entradas Compile Include adicionadas
+
+**Comportamento preservado:**
+- GameBootstrap lifecycle inalterado (Awake → InitializeManagers → InitializeDeathSystem)
+- DontDestroyOnLoad preservado
+- Getters públicos preservados
+- PlayerAttackController.Start() resolve via GameBootstrap.Instance sem mudança
+- Sem wiring adicional em scenes, prefabs ou YAML
+- SPEC_09 StatusEffectDatabase wiring preservado
+
+**Validacoes:**
+- dotnet restore: PASS
+- dotnet build (runtime): PASS 0E/0W
+- dotnet build (editor): PASS 0E/2W (pre-existentes em CreateEnemyActionsAndSets.cs)
+- validate_docs.ps1: PASS (14/14 checks)
+- Unity validation: NOT RUN — motivo: code-only change, validators editor-only, nenhum asset novo criado
+- Risco residual: muito baixo — Install() é read-only (só loga), não altera estado de manager algum
+
+**Arquivos criados/modificados:**
+- Assets/_Game/Scripts/Core/Bootstrap/Installers/CombatRuntimeInstallContext.cs (criado)
+- Assets/_Game/Scripts/Core/Bootstrap/Installers/CombatRuntimeInstaller.cs (criado)
+- Assets/_Game/Scripts/Core/Bootstrap/GameBootstrap.cs (+using +BuildCombatInstallContext +Install call)
+- Assets/_Game/Scripts/Editor/Validation/MvpSceneValidator.cs (+ValidateSpec11CombatDatabases +call em ValidateCaveScene)
+- Assembly-CSharp.csproj (2 entradas Compile Include adicionadas)
+
+**Status:** ✓ COMPLETO. SPEC_12 liberada.
+
+---
+
 ## Sessao 2026-06-01 (micro-closeout documental) - Consolidar Documentacao pós SPEC_10
 
 **Foco:** Micro-closeout documental. Sem alteracao de codigo runtime. Objetivo: Registrar SPEC_10 em docs/IMPLEMENTATION_STATUS.md e consolidar pacote de reorg SPEC_04-10.

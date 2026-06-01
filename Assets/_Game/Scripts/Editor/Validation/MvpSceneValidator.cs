@@ -358,7 +358,10 @@ namespace CindarsHope.Editor.Validation
             if (bootstrap == null)
                 { Debug.LogError("MvpSceneValidator: GameBootstrap not found in CaveScene."); passed = false; }
             else
-                { passed &= ValidateSpec09Bootstrap(bootstrap); }
+            {
+                passed &= ValidateSpec09Bootstrap(bootstrap);
+                passed &= ValidateSpec11CombatDatabases(bootstrap);
+            }
 
             if (FindComponent<PlayerController>(rootObjects) == null)
                 { Debug.LogError("MvpSceneValidator: PlayerController not found in CaveScene."); passed = false; }
@@ -391,6 +394,18 @@ namespace CindarsHope.Editor.Validation
                 || FindComponent<CaveEnemySpawner>(rootObjects) == null)
                 { Debug.LogError("MvpSceneValidator: Cave procedural materializer or enemy spawner not found in CaveScene."); passed = false; }
 
+            return passed;
+        }
+
+        private static bool ValidateSpec11CombatDatabases(GameBootstrap bootstrap)
+        {
+            var passed = true;
+            if (bootstrap.ItemDatabase == null)
+                { Debug.LogError("MvpSceneValidator: SPEC_11 requires ItemDatabase wired on GameBootstrap."); passed = false; }
+            if (bootstrap.WeaponDatabase == null)
+                { Debug.LogError("MvpSceneValidator: SPEC_11 requires WeaponDatabase wired on GameBootstrap."); passed = false; }
+            if (bootstrap.SpellDatabase == null)
+                { Debug.LogError("MvpSceneValidator: SPEC_11 requires SpellDatabase wired on GameBootstrap."); passed = false; }
             return passed;
         }
 

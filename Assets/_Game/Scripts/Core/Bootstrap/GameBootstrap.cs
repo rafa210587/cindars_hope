@@ -1,4 +1,5 @@
 using CindarsHope.Cave.Runtime;
+using CindarsHope.Core.Bootstrap.Installers;
 using CindarsHope.Skills;
 using CindarsHope.Core.Data;
 using CindarsHope.Core.Time;
@@ -268,7 +269,24 @@ namespace CindarsHope.Core.Bootstrap
                 _saveManager.RebindOptionalRuntimeManagers(_equipmentManager, _progressionManager, _gameTimeManager, _staminaManager, _statusEffectManager, _skillTreeManager, _shopManager, _bestiaryManager);
             }
 
+            CombatRuntimeInstaller.Install(BuildCombatInstallContext(), this);
+
             InitializeDeathSystem();
+        }
+
+        private CombatRuntimeInstallContext BuildCombatInstallContext()
+        {
+            return new CombatRuntimeInstallContext
+            {
+                ItemDatabase = _itemDatabase,
+                WeaponDatabase = _weaponDatabase,
+                SpellDatabase = _spellDatabase,
+                StatusEffectDatabase = _statusEffectDatabase,
+                EquipmentManager = _equipmentManager,
+                InventoryManager = _inventoryManager,
+                StaminaManager = _staminaManager,
+                ManaManager = _manaManager
+            };
         }
 
         private void EnsurePersistentBestiaryManager()
