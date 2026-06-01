@@ -50,6 +50,10 @@ namespace CindarsHope.Combat
         private EquippedItemResolver _itemResolver;
         private CombatActionContext _currentActionContext;
 
+        // SPEC_07: Attack services
+        private BowArrowAttackService _bowArrowService;
+        private SpellCastService _spellCastService;
+
         private void Start()
         {
             if (_interactionSystem == null)
@@ -88,6 +92,9 @@ namespace CindarsHope.Combat
             // SPEC_05: Initialize item resolver with current databases
             RefreshItemResolver();
             _currentActionContext = new CombatActionContext();
+
+            // SPEC_07: Initialize attack services
+            RefreshServices();
         }
 
         private void OnEnable()
@@ -123,6 +130,8 @@ namespace CindarsHope.Combat
 
             // SPEC_05B: Refresh resolver with updated databases
             RefreshItemResolver();
+            // SPEC_07: Refresh services after resolver update
+            RefreshServices();
         }
 
         public void RebindCombatData(ItemDatabaseSO itemDatabase, WeaponDatabaseSO weaponDatabase, SpellDatabaseSO spellDatabase)
@@ -134,6 +143,8 @@ namespace CindarsHope.Combat
 
             // SPEC_05B: Refresh resolver with updated spell database
             RefreshItemResolver();
+            // SPEC_07: Refresh services after resolver update
+            RefreshServices();
         }
 
         // SPEC_05B: Recreate EquippedItemResolver with current database references.
@@ -141,6 +152,13 @@ namespace CindarsHope.Combat
         private void RefreshItemResolver()
         {
             _itemResolver = new EquippedItemResolver(_itemDatabase, _weaponDatabase, _spellDatabase, _knownWeapons);
+        }
+
+        // SPEC_07: Recreate attack services after resolver or database rebind.
+        private void RefreshServices()
+        {
+            _bowArrowService = new BowArrowAttackService(_equipmentManager, _inventoryManager, _staminaManager, _itemDatabase, _itemResolver, _knockbackForce);
+            _spellCastService = new SpellCastService(_manaManager, _equipmentManager, _itemResolver, _knockbackForce);
         }
 
         private void Update()
@@ -302,92 +320,32 @@ namespace CindarsHope.Combat
             lastAttackTime = Time.time;
         }
 
+        // SPEC_07: Delegated to BowArrowAttackService
         private void TryExecuteArrowAttack(EquipmentSlot ammoSlot, ItemDataSO ammoItemData, ref float lastAttackTime)
         {
-            var bowSlot = GetOppositeHand(ammoSlot);
-            var bowItemId = _equipmentManager != null ? _equipmentManager.GetEquippedItem(bowSlot) : null;
-
-            ItemDataSO bowItemData = null;
-            if (!string.IsNullOrEmpty(bowItemId) && _itemDatabase != null)
-                _itemDatabase.TryGetById(bowItemId, out bowItemData);
-
-            var bowWeapon = bowItemData != null && !string.IsNullOrEmpty(bowItemData.WeaponId)
-                ? LookupWeapon(bowItemData.WeaponId) : null;
-
-            if (bowWeapon == null || bowWeapon.Type != WeaponType.Bow)
+            if (_bowArrowService == null)
             {
-                Debug.Log($"CombatLog: PlayerAttackBlocked. Reason=ArrowRequiresBowInOtherHand, AmmoSlot={ammoSlot}, BowSlot={bowSlot}", this);
+                Debug.LogError($"CombatLog: PlayerAttackBlocked. Reason=BowArrowServiceNull, Slot={ammoSlot}", this);
                 return;
             }
-
-            if (bowWeapon.ProjectilePrefab == null)
-            {
-                Debug.LogError($"CombatLog: PlayerAttackBlocked. Reason=BowHasNoProjectilePrefab, Weapon={bowWeapon.Id}", this);
-                return;
-            }
-
-            float cooldown = CooldownHelper.CalculateWeaponCooldown(bowWeapon);
-            if (!CooldownHelper.IsCooldownExpired(lastAttackTime, cooldown))
-            {
-                Debug.Log($"CombatLog: PlayerAttackBlocked. Reason=Cooldown, Slot={ammoSlot}, RemainingSeconds={CooldownHelper.GetRemainingCooldown(lastAttackTime, cooldown):F2}", this);
-                return;
-            }
-
-            if (_inventoryManager == null || !_inventoryManager.HasItem(ammoItemData.Id, 1))
-            {
-                Debug.Log($"CombatLog: PlayerAttackBlocked. Reason=NoArrowsInInventory, AmmoItemId={ammoItemData.Id}", this);
-                return;
-            }
-
-            int staminaCost = Mathf.RoundToInt(bowWeapon.StaminaCost);
-            if (_staminaManager != null && !_staminaManager.TrySpendStamina(staminaCost))
-            {
-                Debug.Log($"CombatLog: PlayerAttackBlocked. Reason=InsufficientStamina, Slot={ammoSlot}, StaminaCost={staminaCost}", this);
-                return;
-            }
-
-            _inventoryManager.RemoveItem(ammoItemData.Id, 1);
-
             Vector2 direction = _playerController?.LastFacingDirection ?? Vector2.right;
-            ExecuteRangedAttack(bowWeapon, direction);
-
-            if (_equipmentManager != null)
-                _equipmentManager.RegisterEquipmentUsage();
-
-            lastAttackTime = Time.time;
-            Debug.Log($"CombatLog: ArrowFired. AmmoSlot={ammoSlot}, BowWeapon={bowWeapon.Id}, Range={bowWeapon.Range}, Speed={bowWeapon.ProjectileSpeed}, AmmoId={ammoItemData.Id}", this);
+            var result = _bowArrowService.TryFire(ammoSlot, ammoItemData, lastAttackTime, direction, transform.position);
+            if (result.Success)
+                lastAttackTime = Time.time;
         }
 
+        // SPEC_07: Delegated to SpellCastService
         private void TryExecuteSpellAttack(EquipmentSlot slot, ItemDataSO itemData, ref float lastAttackTime)
         {
-            var spellData = ResolveEquippedSpell(itemData);
-            if (spellData == null)
+            if (_spellCastService == null)
             {
-                Debug.LogError($"CombatLog: PlayerAttackBlocked. Reason=SpellNotResolved, ItemId={itemData.Id}, SpellId='{itemData.SpellId}'", this);
+                Debug.LogError($"CombatLog: PlayerAttackBlocked. Reason=SpellCastServiceNull, Slot={slot}", this);
                 return;
             }
-
-            float cooldown = Mathf.Max(0.1f, spellData.CooldownSeconds);
-            if (!CooldownHelper.IsCooldownExpired(lastAttackTime, cooldown))
-            {
-                Debug.Log($"CombatLog: PlayerAttackBlocked. Reason=Cooldown, Slot={slot}, RemainingSeconds={CooldownHelper.GetRemainingCooldown(lastAttackTime, cooldown):F2}", this);
-                return;
-            }
-
-            if (_manaManager != null && !_manaManager.TrySpendMana(spellData.ManaCost))
-            {
-                Debug.Log($"CombatLog: PlayerAttackBlocked. Reason=InsufficientMana, Slot={slot}, ManaCost={spellData.ManaCost}", this);
-                return;
-            }
-
             Vector2 direction = _playerController?.LastFacingDirection ?? Vector2.right;
-            ExecuteSpellAttack(spellData, direction);
-
-            if (_equipmentManager != null)
-                _equipmentManager.RegisterEquipmentUsage();
-
-            lastAttackTime = Time.time;
-            Debug.Log($"CombatLog: SpellFired. Slot={slot}, Spell={spellData.Id}, Range={spellData.Range}, Speed={spellData.ProjectileSpeed}, ManaCost={spellData.ManaCost}", this);
+            var result = _spellCastService.TryCast(slot, itemData, lastAttackTime, direction, transform.position);
+            if (result.Success)
+                lastAttackTime = Time.time;
         }
 
         // SPEC_05: Delegated to EquippedItemResolver

@@ -1,3 +1,44 @@
+## Sessao 2026-06-01 (reorg) - Architecture Reorganization SPEC_07: Wave 2C Bow/Arrow and Spell Services
+
+**Foco:** Executar SPEC_07 em modo sequencial. Objetivo: Extrair regras de bow+arrow e spell/fireball para services dedicados, mantendo comportamento funcional identico.
+
+### Resumo de Execucao
+
+**SPEC_07 — Wave 2C Bow/Arrow and Spell Services:**
+- Criado AttackResult.cs — DTO com Success, ErrorCode, Message e factory methods CreateSuccess/CreateError
+- Criado BowArrowAttackService.cs — servico extrai toda logica de TryExecuteArrowAttack (bow lookup, cooldown, inventory, stamina, consume arrow, spawn)
+- Criado SpellCastService.cs — servico extrai toda logica de TryExecuteSpellAttack (spell resolve, cooldown, mana, status effect load, spawn)
+- Adicionado RefreshServices() em PlayerAttackController — recria services após resolver ou database rebind
+- TryExecuteArrowAttack refatorado para thin delegate a _bowArrowService.TryFire()
+- TryExecuteSpellAttack refatorado para thin delegate a _spellCastService.TryCast()
+
+**Comportamento preservado:**
+- Arrow: validacao bow na mao oposta, cooldown, inventory, stamina, consume 1 arrow, spawn, RegisterEquipmentUsage
+- Fireball: spell resolve, cooldown, mana, status effect load (Resources.Load), spawn, RegisterEquipmentUsage
+- Todos CombatLog entries mantidos com mesmos campos
+- Q/E/Space input — nenhuma mudança
+- E interaction priority — nenhuma mudança
+- Melee/unarmed — nenhuma mudança
+
+**Arquivos criados/modificados:**
+- Assets/_Game/Scripts/Combat/AttackResult.cs (criado)
+- Assets/_Game/Scripts/Combat/BowArrowAttackService.cs (criado)
+- Assets/_Game/Scripts/Combat/SpellCastService.cs (criado)
+- Assets/_Game/Scripts/Combat/PlayerAttackController.cs (TryExecuteArrowAttack + TryExecuteSpellAttack delegados)
+- Assembly-CSharp.csproj (3 entradas Compile Include adicionadas)
+
+**Validacoes:**
+- dotnet restore: PASS
+- dotnet build (runtime): PASS 0E/0W
+- dotnet build (editor): PASS 0E/2W (pre-existentes)
+- validate_docs.ps1: PASS (13/13 checks)
+- Unity validation: NOT RUN — motivo: runtime code refactor, nao altera prefabs/scenes; validators sao editor-only
+- Risco residual: muito baixo — refactor mecanico sem mudancas de gameplay
+
+**Status:** ✓ COMPLETO. SPEC_08 liberada. Build status: 0E/0W runtime, 0E/2W pre-existentes editor.
+
+---
+
 ## Sessao 2026-06-01 (reorg) - Architecture Reorganization SPEC_06: Wave 2B Projectile Spawn Service
 
 **Foco:** Executar SPEC_06 em modo sequencial. Objetivo: Centralizar spawn e inicializacao de projeteis em ProjectileSpawnService, preservando exatamente o comportamento atual de arrow e fireball.
