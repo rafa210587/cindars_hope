@@ -1,95 +1,112 @@
 # /start-spec
 
-Use when the user requests to start implementing or preparing a spec.
+Use when preparing to implement a spec. Delivers an execution plan without touching code.
 
-**Arguments expected:** `$ARGUMENTS` - spec number or filename (e.g., "spec_12" or "spec_12_player_combat")
+**Arguments:** `$ARGUMENTS` — spec number or filename (e.g., `spec_09` or `spec_09_status_effect_database`)
+
+---
 
 ## Objective
 
-Prepare spec execution without implementing code yet.
+Understand spec scope, dependencies, and risks. Deliver a concise plan. Do NOT implement.
 
-## Execution Flow
+---
 
-1. Read Camada 0 (minimal):
-   - `AGENTS.md` or `CLAUDE.md`
-   - `PROJECT_LOG.md` (top/recent entries only)
-   - `docs/IMPLEMENTATION_STATUS.md`
-   - `docs/operations/AGENT_EXECUTION_PROTOCOL.md`
+## Required Reads
 
-2. Read Camada 1 (spec-specific):
-   - `docs/specs/SPEC_SOURCE_OF_TRUTH.md` (if exists)
-   - `docs/specs/SPEC_EXECUTION_ORDER.md` (if exists)
-   - Target spec in `docs/specs/a_implementar/spec_*.md`
-   - Related pre-refinement in `docs/refinements/a_implementar/pre_refinamentos/` (if exists)
-   - Related implemented specs in `docs/specs/implementados/` (only if cited)
+1. `CLAUDE.md` — routing and stop conditions
+2. `docs/00_PROJECT/CURRENT_STATE.md` — active queue, blockers
+3. Target spec: `docs/specs/a_implementar/spec_<name>.md`
 
-3. Identify:
-   - Objective and scope
-   - Dependencies and blockers
-   - Allowed files (in spec scope)
-   - Forbidden files (docs_old, Assets, ProjectSettings, etc.)
-   - Mandatory validations (docs, Unity compile, log scan)
-   - Residual risks
-   - Applicable skills from `.claude/skills/`
-   - Recommended specialized agent (if complex)
+## Optional Reads (only if spec cites them)
 
-4. Deliver execution plan:
-   - Summary (1-2 sentences)
-   - Scope boundaries
-   - File changes expected
-   - Validations required
-   - Recommended approach
-   - Risks
+- A specific refinement listed in the spec's `depends_on` or `required_read` frontmatter
+- An implemented spec listed as a dependency
+- A specific architecture document referenced by the spec
 
-## Rules
-
-- Do NOT implement code in this command
-- Do NOT move spec to implementados/
-- Do NOT update status as completed
-- Do NOT read full docs_old/ or GDD
-- Do NOT amplify scope beyond spec
-- Do NOT merge multiple large specs into one task
-
-## Example Output
+## Do NOT Read By Default
 
 ```
-Spec 12: Player Combat/Weapons/Spells
-Objective: Implement basic player melee and ranged attacks with combat UI.
+PROJECT_LOG.md
+docs/IMPLEMENTATION_STATUS.md
+docs/operations/AGENT_EXECUTION_PROTOCOL.md
+memory/ (unless task cites prior pattern explicitly)
+SPEC_EXECUTION_ORDER.md (use CURRENT_STATE.md queue instead)
+ROADMAP.md
+```
 
-Dependencies: SPEC 11 (damage status resistances) - PASS
-             SPEC 08 (town NPC dialogue) - independent
+---
+
+## Procedure
+
+1. Read required files (above)
+2. From the spec, identify:
+   - Objective and deliverables
+   - Scope: permitted files, forbidden files
+   - Dependencies: blocked? ready?
+   - Mandatory validations (docs, build, Unity, Play Mode)
+   - Applicable skills from `.claude/skills/`
+   - Phase 2-3 requirements (does this spec need Unity validators or Play Mode?)
+3. Deliver plan (see output format)
+4. Stop. Wait for human confirmation before implementing.
+
+---
+
+## Allowed Edits
+
+None. This command is read-only.
+
+---
+
+## Forbidden Edits
+
+- No code changes
+- No spec movement
+- No status updates
+
+---
+
+## Validation
+
+None needed. This command does not change files.
+
+---
+
+## Stop Conditions
+
+- Spec and CURRENT_STATE conflict (e.g., spec says dependency is done but CURRENT_STATE says blocked)
+- Spec is not in `a_implementar/` — may have been moved or was never there
+- Spec ID not found
+
+---
+
+## Output Format
+
+```
+Spec: <SPEC_ID> — <Title>
+Objective: <1-2 sentences>
+
+Dependencies:
+  - <DEP_ID> (<status: ready/blocked>)
 
 Scope:
-  Files allowed: Assets/Scripts/Runtime/Combat/*
-                 Assets/_Game/Data/Combat/*
-                 Relevant Unity scenes
+  Permitted: <list>
+  Forbidden: <list>
 
-  Files forbidden: Assets/Gameplay/* (outside combat scope)
-                   docs_old/**
-                   ProjectSettings/**
+Validations required:
+  - [ ] docs validation (if docs change)
+  - [ ] dotnet build runtime (if C# changes)
+  - [ ] dotnet build editor (if editor C# changes)
+  - [ ] Unity validators (if spec requires Phase 2)
+  - [ ] Play Mode (if spec requires Phase 3)
 
-Validations:
-  Mandatory: docs validation, Unity compile validation
-  Optional: Play Mode (sandboxed, cannot run)
+Phase 2-3 requirement: <YES / NO — docs-only spec>
 
 Skills applicable:
-  - SPEC Execution Pattern
-  - Unity Validation Skill
-  - Event Bus Pattern (weapon/spell events)
-  - DamageRequest Construction (attack payload)
+  - <skill-name>: <why>
 
-Recommended approach:
-  1. Create WeaponDataSO for melee/ranged stats
-  2. Implement PlayerCombatManager with attack logic
-  3. Create DamageRequest in attack event
-  4. Add weapon hotbar selection (if UI scope allows)
-  5. Validate compilation after each phase
-
-Residual risk: Play Mode features must be tested manually by user later.
+Risks:
+  - <risk>
 
 Ready to proceed?
 ```
-
-## Do NOT Continue Into Implementation
-
-Stop here. Wait for user confirmation to advance to actual implementation task.

@@ -1,58 +1,12 @@
-# AGENTS.md - Cindar's Hope
+# AGENTS.md — Cindar's Hope
 
-## Claude Code Project Structure
-
-Este projeto usa `.claude/` para operacionalizar tarefas via comandos, skills e agentes:
-
-- **Commands** (`.claude/commands/`) — Fluxos: `/start-spec`, `/validate-unity`, `/finish-spec`, `/review-non-regression`, `/docs-health`
-- **Skills** (`.claude/skills/`) — Padrões acionáveis: spec-execution, unity-validation, docs-migration, non-regression-review, save-load-pattern, event-bus-pattern, implementation-closeout
-- **Agents** (`.claude/agents/`) — Especializados: spec-implementer, unity-validator, docs-curator, non-regression-auditor, architecture-reviewer
-- **Settings** (`.claude/settings.json`) — Permissões versionadas e hooks de segurança
-
-Consulte `.claude/` para operações. **Regras fundamentais permanecem em AGENTS.md, CLAUDE.md e `docs/operations/`.**
+> Common rules for all agents. For routing, commands, and skills see `CLAUDE.md`.
 
 ## Contexto do projeto
 
-Jogo 2D pixel art RPG + farm sim desenvolvido em Unity LTS com C#.
+Jogo 2D pixel art RPG + farm sim em Unity LTS / C#.
 Mundo: Vaalara, cidade Cindar's Hope, regiao Dornecia.
-Arte: Aseprite como ferramenta principal; Pixelorama/LibreSprite como fallback, sprites 32x32px, resolucao 1280x720.
-Geracao de codigo: Codex (VS Code) + Claude.
-Spec: GitHub SpecKit com fluxo Specify -> Plan -> Tasks -> Implement.
-
-## Fonte unica de specs
-
-A unica fonte oficial de specs e:
-
-```text
-docs/specs/
-```
-
-A pasta raiz `specs/` foi removida e nao deve ser recriada.
-A pasta raiz `spec/` tambem nao deve ser recriada.
-
-Para implementar qualquer feature, o agente deve usar:
-
-1. `docs/specs/SPEC_EXECUTION_ORDER.md`.
-2. A spec alvo em `docs/specs/a_implementar/spec_*.md`.
-3. O pre-refinamento relacionado em `docs/refinements/a_implementar/pre_refinamentos/`, quando existir.
-4. Specs implementadas dependentes em `docs/specs/implementados/`, apenas quando citadas.
-
-## Padrões e Skills Reutilizáveis
-
-Antes de executar tarefas, consultar:
-
-- `memory/MEMORY.md` - índice de padrões provados
-- `memory/feedback_working_method.md` - método sequencial para SPECS com validação real-time
-- `memory/project_skills_available.md` - 8 skills reutilizáveis para tarefas comuns
-
-### Skills Disponíveis
-- **SPEC Validation Pattern**: Validar compilação após cada fase com triage de erros por categoria
-- **Namespace Consolidation**: Resolver conflitos de classes duplicadas
-- **Bootstrap Integration Pattern**: Wiring de novos managers em GameBootstrap
-- **Event Publishing Pattern**: Comunicação descentralizada via GameEventBus
-- **Using Directive Organization**: Ordem padrão de imports
-- **DamageRequest Construction**: Padrão para criar requisições de dano
-- **Save/Load Data Pattern**: Persistência correta (IDs simples, nunca refs Unity)
+Spec source: `docs/specs/`. Pasta raiz `specs/` e `spec/` removidas — nao recriar.
 
 ## Context Reading Policy
 
@@ -85,25 +39,18 @@ Nao ler por padrao:
 
 ## Fluxo operacional
 
-Antes de qualquer tarefa, seguir:
+Leitura minima para qualquer tarefa de implementacao:
 
-- `docs/operations/AGENT_EXECUTION_PROTOCOL.md`
-- Consultar memory se tarefa é similar a anteriores
+1. `AGENTS.md` ou `CLAUDE.md`
+2. `docs/00_PROJECT/CURRENT_STATE.md`
+3. Spec ativa
+4. Arquivos citados pela spec
 
-Ao finalizar implementacao de spec:
+Para detalhes de workflow: `.claude/commands/` e `.claude/skills/`.
 
-- atualizar spec implementada;
-- atualizar refinement implementado;
-- atualizar registries afetados;
-- atualizar maps de refinements afetados;
-- atualizar `docs/IMPLEMENTATION_STATUS.md`;
-- atualizar `PROJECT_LOG.md`;
-- rodar `tools/docs/validate_docs.ps1`.
-- se a tarefa alterou runtime/Unity, rodar tambem:
-  - `tools/unity/RunUnityCompileValidation.ps1`;
-  - `tools/unity/ScanUnityLogs.ps1 -LogFile ".\Logs\unity-compile-validation.log"`.
+Ao finalizar implementacao de spec, usar `/finish-spec` para closeout completo com evidencia.
 
-Se a validacao Unity nao puder rodar por ambiente, permissao, Unity ausente ou timeout, registrar no resumo final e no `PROJECT_LOG.md`:
+Se a validacao Unity nao puder rodar, registrar:
 
 ```text
 Unity validation: NOT RUN
@@ -111,22 +58,6 @@ Reason: <motivo>
 Command attempted: <comando>
 Residual risk: Unity compile not validated locally
 ```
-
-## Estrutura documental ativa
-
-- `docs/design/` - design ativo do jogo.
-- `docs/architecture/` - arquitetura ativa.
-- `docs/operations/` - instrucoes operacionais, ambiente, politica de specs e handoff LLM.
-- `docs/roadmap/` - roadmap ativo.
-- `docs/backlog/` - backlog e ideias futuras.
-- `docs/amendments/` - amendments ativos.
-- `docs/validation/` - smoke tests e validacoes.
-- `docs/specs/implementados/` - specs consolidadas do que ja existe no repo.
-- `docs/specs/a_implementar/` - specs futuras aprovadas/consolidadas no padrao SpecKit.
-- `docs/specs/SPEC_EXECUTION_ORDER.md` - ordem oficial de execucao.
-- `docs/refinements/implementados/` - refinamentos, audits e handoffs implementados.
-- `docs/refinements/a_implementar/pre_refinamentos/` - pre-refinamentos vivos.
-- `docs_old/` - historico integral preservado; consultar para auditoria, nao editar como fonte ativa.
 
 ## Regras inviolaveis de codigo
 

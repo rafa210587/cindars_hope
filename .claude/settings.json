@@ -36,7 +36,7 @@
     "write": true,
     "bash": true,
     "powerShell": true,
-    "todovrite": true,
+    "todoWrite": true,
     "agent": true,
     "skill": true,
     "ask": true
@@ -106,14 +106,48 @@
       "path": ".claude/hooks/check-cave-stable-run-scope.ps1",
       "description": "Warn when cave runtime/procedural changes require FASE9F stable-run guardrails",
       "trigger": "manual"
+    },
+    "contextPolicyCheck": {
+      "enabled": false,
+      "path": ".claude/hooks/context-policy-check.ps1",
+      "description": "Warn when execution plan includes heavy historical reads without justification",
+      "trigger": "manual"
+    },
+    "docsStatusHonestyCheck": {
+      "enabled": false,
+      "path": ".claude/hooks/docs-status-honesty-check.ps1",
+      "description": "Scan modified doc files for premature acceptance claims without evidence",
+      "trigger": "manual"
+    },
+    "specPromotionGuard": {
+      "enabled": false,
+      "path": ".claude/hooks/spec-promotion-guard.ps1",
+      "description": "Warn when spec is moved to implementados/ without execution report",
+      "trigger": "manual"
+    },
+    "deleteGuard": {
+      "enabled": false,
+      "path": ".claude/hooks/delete-guard.ps1",
+      "description": "Block doc deletion without entry in DOCUMENT_DELETE_CANDIDATES.md",
+      "trigger": "manual"
+    },
+    "unityYamlEditGuard": {
+      "enabled": false,
+      "path": ".claude/hooks/unity-yaml-edit-guard.ps1",
+      "description": "Warn when .unity/.prefab/.asset files are modified (review required)",
+      "trigger": "manual"
     }
   },
 
   "documentation": {
+    "currentState": "docs/00_PROJECT/CURRENT_STATE.md",
+    "documentGovernance": "docs/00_PROJECT/DOCUMENT_GOVERNANCE.md",
+    "documentIndex": "docs/00_PROJECT/DOCUMENT_INDEX.md",
+    "historyLogPolicy": "docs/00_PROJECT/HISTORY_LOG_POLICY.md",
     "sourceOfTruth": "docs/specs/",
     "implementationStatus": "docs/IMPLEMENTATION_STATUS.md",
     "projectLog": "PROJECT_LOG.md",
-    "operationalProtocol": "docs/operations/AGENT_EXECUTION_PROTOCOL.md"
+    "validationStatus": "docs/05_VALIDATION/current/LAST_VALIDATION_STATUS.md"
   },
 
   "validation": {
@@ -124,6 +158,13 @@
 
   "rules": {
     "ruleIndex": ".claude/rules/RULES.md",
+    "contextReadingPolicy": true,
+    "specPromotionRequiresEvidence": true,
+    "noPrematureAcceptanceClaims": true,
+    "noDocDeleteWithoutCandidate": true,
+    "unityYamlEditingPolicy": true,
+    "eventBusOnlyGameplayCommunication": true,
+    "noUnsafeGit": true,
     "noRootSpecs": true,
     "noDocOldEdits": true,
     "noRuntimeGlobalSearch": true,

@@ -4,6 +4,29 @@
 
 ---
 
+## Sessao 2026-06-01 (SPEC_CLAUDE_31) - Agent Runtime Governance (CLAUDE CODE HARNESS)
+
+**Foco:** Reorganizar harness do Claude Code para execução token-eficiente e segura. Sem alterações runtime, C# ou assets Unity.
+
+### Resumo
+
+- `CLAUDE.md` reescrito como roteador curto (~80 linhas; era ~150 linhas com regras misturadas)
+- `AGENTS.md` refatorado para arquivo de regras comuns (removidos: lista de skills, estrutura documental, routing duplicado)
+- 7 novas rules em `.claude/rules/`: context-reading-policy, spec-promotion-requires-evidence, no-premature-acceptance-claims, no-doc-delete-without-candidate, unity-yaml-editing-policy, no-unsafe-git, event-bus-only-gameplay-communication
+- 5 novos commands: `audit-spec`, `validate-spec`, `reconcile-status`, `plan-wave`, `bugfix`
+- 3 commands atualizados: `start-spec` (sem PROJECT_LOG padrão), `implement-spec` (sem auto-promoção), `finish-spec` (distinção de fases)
+- 4 novas skills: `docs-governance`, `bootstrap-wiring`, `combat-data-wiring`, `ui-modal-stack`
+- 2 novos agents: `bugfix-investigator`, `asset-wiring-specialist`
+- 5 novos hooks criados (desabilitados): context-policy-check, docs-status-honesty-check, spec-promotion-guard, delete-guard, unity-yaml-edit-guard
+- `settings.json`: typo `todovrite` → `todoWrite` corrigido; `currentState` adicionado ao docs block; 7 novas rule flags; 5 novos hooks
+
+Contexto padrão agora: `CURRENT_STATE.md` (não PROJECT_LOG.md). Promoção de spec: faseada via `/finish-spec`.
+
+**Validação:** docs PASS 14/14. Build NE (sem C#). Unity NOT RUN (harness-only).
+**Evidência:** `docs/validation/spec_claude_31_agent_runtime_governance_execution_report.md`
+
+---
+
 ## Sessao 2026-06-01 (SPEC_DOCS_30) - Context Governance and Document Reorganization (DOCUMENTATION)
 
 **Foco:** Reorganização documental para reduzir custo de contexto em FASE 10+. Criar sistema de governança em `docs/00_PROJECT/`. Sem alterações em runtime, C# ou save schema.

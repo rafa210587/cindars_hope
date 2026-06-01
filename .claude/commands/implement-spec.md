@@ -1,227 +1,163 @@
 # /implement-spec
 
-Execute uma spec inteira com validação e closeout obrigatório e automático.
+Execute a spec. Generates execution report. Does NOT auto-promote spec to `implementados/` — closeout is phase-gated.
 
-**Argumento esperado:** `$ARGUMENTS` - número ou nome da spec (ex: "spec_12" ou "12" ou "spec_12_player_combat")
-
-## Fluxo Completo Automático
-
-Este comando orquestra o fluxo completo:
-
-1. **Preparação** — Lê spec, identifica escopo, dependências
-2. **Implementação** — Código conforme spec, sem ampliar escopo
-3. **Validação Documental** — Automática se docs alterados
-4. **Validação Unity** — Automática se runtime alterado (Assets/, ProjectSettings/, Packages/)
-5. **Revisão Regressão** — Auditoria automática de violações
-6. **Closeout** — Atualiza logs, status, move spec para implementados
-7. **Entrega** — Resumo final com evidências
-
-## Fluxo Detalhado
-
-### Fase 0: Preparation (Automática)
-
-**Executado automaticamente:**
-
-1. Ler Camada 0:
-   - `AGENTS.md` ou `CLAUDE.md`
-   - `PROJECT_LOG.md` (topo/entradas recentes)
-   - `docs/IMPLEMENTATION_STATUS.md`
-   - `docs/operations/AGENT_EXECUTION_PROTOCOL.md`
-
-2. Ler Camada 1 (spec):
-   - `docs/specs/SPEC_SOURCE_OF_TRUTH.md` (se existe)
-   - `docs/specs/SPEC_EXECUTION_ORDER.md` (se existe)
-   - Spec alvo em `docs/specs/a_implementar/spec_*.md`
-   - Refinement relacionado em `docs/refinements/a_implementar/pre_refinamentos/` (se existe)
-
-3. Identificar:
-   - Objetivo e escopo
-   - Dependências (bloqueadas? prontas?)
-   - Arquivos permitidos (apenas no escopo)
-   - Arquivos proibidos (docs_old, root specs, etc.)
-   - Skills aplicáveis
-   - Validações obrigatórias (docs, Unity, regressão)
-
-4. **Registrar plano de preparação e continuar automaticamente:**
-   - Objetivo (1-2 sentencas)
-   - Escopo exato
-   - Dependências
-   - Riscos
-   - Se bloqueador real detectado, PARAR e reportar
-   - Caso contrário, continuar para Fase 1 automaticamente
-
-### Fase 1: Scope Lock
-
-- [ ] Arquivos permitidos identificados
-- [ ] Arquivos proibidos listados
-- [ ] Escopo confirmado
-- [ ] Dependências prontas (ou documentado se bloqueado)
-
-**Se bloqueado:** PARAR. Reportar bloqueador.
-
-### Fase 2: Implementation
-
-- [ ] Implementar conforme spec exatamente
-- [ ] Sem ampliar escopo
-- [ ] Sem mexer em files fora do escopo
-- [ ] Commits frequentes em português
-- [ ] Do NOT mover spec para implementados ainda
-
-**Progresso:** Relatar commits ao final de cada fase lógica.
-
-### Fase 3: Validation (Automática)
-
-Após implementação, sistema executa automaticamente:
-
-**3a. Detectar tipo de alteração:**
-
-```powershell
-.\.claude\hooks\detect-change-scope.ps1
-```
-
-Saída: `.claude/.runtime/change-scope.json` com flags:
-- `docsChanged`: docs foram alterados?
-- `unityRuntimeChanged`: Assets/**/*.cs, *.unity, *.prefab, *.asset alterados?
-- `projectSettingsChanged`: ProjectSettings/** alterado?
-- `forbiddenPathsChanged`: docs_old/, specs/, spec/ alterados?
-- `rootSpecsRecreated`: specs/ ou spec/ na raiz criadas?
-
-**3b. Executar validações conforme flags:**
-
-```powershell
-.\.claude\hooks\run-required-validations.ps1
-```
-
-Lógica:
-- Se `docsChanged == true`: rodar `tools/docs/validate_docs.ps1`
-- Se `unityRuntimeChanged == true` OU `projectSettingsChanged == true`: rodar Unity validation (compile + log scan)
-- Se nenhuma alteração: skip
-- Se Unity não conseguir rodar: documentar reason e residual risk
-
-**3c. Revisar Regressão:**
-
-Executar `/review-non-regression` para auditar diff:
-
-Verificar:
-- Nenhum arquivo proibido alterado
-- Nenhuma spec raiz criada
-- Nenhuma alteração Unity em tarefa docs-only
-- Validações obrigatórias executadas
-- Nenhum padrão proibido (GameObject.Find, direct calls, etc.)
-
-### Fase 4: Closeout (Automática)
-
-**Executado automaticamente ao finalizar:**
-
-1. Validações executadas?
-   - Docs: ✅ PASS / ⚠️ WARNING / ❌ FAIL / ⊗ NOT RUN
-   - Unity: ✅ PASS / ❌ FAIL / ⊗ NOT RUN
-   - Regressão: ✅ PASS / ⚠️ WARNING / ❌ FAIL
-
-2. Se todos PASS ou WARNING aceitável:
-   - Mover spec: `docs/specs/a_implementar/` → `docs/specs/implementados/`
-   - Adicionar evidence header com commit, files, validations
-   - Mover refinement relacionado (se existe)
-   - Atualizar registries/maps (se existem)
-
-3. Atualizar documentação:
-   - `PROJECT_LOG.md` — Adicionar entrada com data, deliverables, validations
-   - `docs/IMPLEMENTATION_STATUS.md` — Atualizar status com evidência
-   - Rodar docs validation final
-
-4. Gerar resumo final (veja seção abaixo)
-
-## Output Format Final
-
-```markdown
-## Resumo Técnico — [SPEC Name]
-
-**Data:** YYYY-MM-DD
-**Status:** COMPLETE / PARTIAL / BLOCKED
-
-### Deliverables
-
-[Lista do que foi implementado]
-
-### Arquivos Alterados
-
-[git diff --name-only]
-
-### Commits
-
-[git log --oneline da tarefa]
-
-### Validações Executadas
-
-| Tipo | Resultado | Evidência |
-|---|---|---|
-| Docs | ✅ PASS | tools/docs/validate_docs.ps1 |
-| Unity compile | ✅ PASS | Logs/unity-compile-validation.log |
-| Log scan | ✅ PASS | ScanUnityLogs output |
-| Non-regression | ✅ PASS | No violations detected |
-| Play Mode | ⊗ NOT RUN | Sandboxed environment |
-
-### Validações Não Executadas
-
-[Se alguma não rodou, reason e risk]
-
-### Não-Regressão
-
-Status: PASS / WARNING / FAIL
-
-### Riscos Residuais
-
-[Se houver]
-
-### Pendências
-
-[Se houver]
-
-### Próximo Passo
-
-[Qual spec vem depois, se aplicável]
-```
-
-## Regras Obrigatórias
-
-- ✅ **DO:** Implementar spec exatamente conforme escopo
-- ✅ **DO:** Rodar validações automáticas
-- ✅ **DO:** Mover spec para implementados com evidência
-- ✅ **DO:** Atualizar logs e status
-- ❌ **DO NOT:** Executar `git push`
-- ❌ **DO NOT:** Abrir PR/MR
-- ❌ **DO NOT:** Mergear
-- ❌ **DO NOT:** Ampliar escopo
-- ❌ **DO NOT:** Alterar arquivos fora do escopo
-- ❌ **DO NOT:** Marcar como implementado sem evidência
-
-## Fluxo Simplificado (Para Referência Rápida)
-
-```
-1. /implement-spec SPEC_NAME
-   ↓
-2. [Sistema lê spec, registra plano e continua salvo bloqueador real]
-   ↓
-3. Implementar (sem ampliar)
-   ↓
-4. [Sistema detecta mudanças]
-   ↓
-5. [Sistema roda validações apropriadas]
-   ↓
-6. [Sistema faz closeout automático]
-   ↓
-7. [Sistema entrega resumo final]
-```
-
-## Se Algo Der Errado
-
-- **Validação falha:** Reporta issue, pede fix
-- **Regressão detectada:** Para e lista violações
-- **Bloqueador encontrado:** Para e reporta
-- **Não consegue rodar Unity:** Documenta reason e residual risk
-
-**Importante:** Este comando NÃO faz `git push` ou merge. Entrega artefatos ao usuário para review.
+**Arguments:** `$ARGUMENTS` — spec number or filename
 
 ---
 
-**Próximo:** Plano registrado → Implementação continua → System valida → System fecha. Validação humana no final do pacote.
+## Objective
+
+Implement the spec within its declared scope. Validate. Generate execution report with honest phase status. Stop before promoting spec.
+
+---
+
+## Required Reads
+
+1. `CLAUDE.md`
+2. `docs/00_PROJECT/CURRENT_STATE.md`
+3. Target spec
+4. Files explicitly in spec scope
+
+## Optional Reads (only if spec cites them)
+
+- A specific refinement
+- An implemented dependency spec (only if directly referenced)
+- Prior validation report listed as dependency
+
+## Do NOT Read By Default
+
+```
+PROJECT_LOG.md
+docs/IMPLEMENTATION_STATUS.md
+docs/operations/AGENT_EXECUTION_PROTOCOL.md
+SPEC_EXECUTION_ORDER.md (full)
+ROADMAP.md
+memory/ (unless spec cites prior pattern)
+```
+
+---
+
+## Execution Phases
+
+### Phase 0 — Scope Lock
+
+- [ ] Read spec and identify scope
+- [ ] List permitted files
+- [ ] List forbidden files
+- [ ] Identify applicable skills
+- [ ] Check CURRENT_STATE.md for blockers
+- [ ] If blocked: stop and report
+
+### Phase 1 — Implementation
+
+- [ ] Implement per spec exactly
+- [ ] Do NOT amplify scope
+- [ ] Do NOT touch files outside scope
+- [ ] Commit frequently in Portuguese
+- [ ] Do NOT move spec to implementados/ yet
+
+### Phase 2 — Validation
+
+Run `/validate-spec` after implementation:
+
+- [ ] Docs validation (if docs changed)
+- [ ] C# runtime build (if .cs changed)
+- [ ] C# editor build (if editor .cs changed)
+- [ ] Record NOT RUN with reason for Phase 4-5 (Unity/Play Mode)
+
+### Phase 3 — Non-Regression Review
+
+Run `/review-non-regression`:
+
+- [ ] No forbidden patterns introduced (GameObject.Find, direct gameplay calls)
+- [ ] No files outside scope modified
+- [ ] No root specs/ created
+- [ ] No docs_old/ edited
+- [ ] No Unity refs in save DTOs
+
+### Phase 4 — Execution Report
+
+Create `docs/validation/<spec_id>_execution_report.md` with:
+
+- Phase status table
+- Files changed
+- Commits
+- Validations executed
+- Validations NOT RUN (with reason and residual risk)
+- Status classification (see taxonomy)
+
+---
+
+## Phase Status Taxonomy
+
+Do NOT use just "COMPLETE". Use:
+
+| Status | Meaning |
+|--------|---------|
+| `CODE_COMPLETE` | Code written; not yet validated |
+| `BUILD_VALIDATED` | dotnet build + docs PASS |
+| `UNITY_VALIDATED` | Unity validators PASS (Phase 2) |
+| `PLAYMODE_VALIDATED` | Play Mode checklist PASS (Phase 3) |
+| `ACCEPTED` | All required phases complete |
+| `PARTIAL` | Some phases done, some blocked |
+| `BLOCKED` | Blocker found; cannot continue |
+
+---
+
+## Spec Promotion Rule
+
+DO NOT move spec to `implementados/` in this command.
+
+Promotion happens in `/finish-spec` ONLY when:
+- Spec does NOT require Phase 2-3: `BUILD_VALIDATED` is sufficient
+- Spec DOES require Phase 2-3: must reach `PLAYMODE_VALIDATED` or `ACCEPTED`
+- Both: execution report exists in repo
+
+---
+
+## Output Format
+
+```markdown
+## Resumo Técnico — <SPEC_ID>
+
+**Data:** YYYY-MM-DD
+**Status:** <BUILD_VALIDATED / PARTIAL / BLOCKED / etc.>
+
+### Deliverables
+[what was implemented]
+
+### Files Changed
+[git diff --name-only]
+
+### Commits
+[git log --oneline]
+
+### Validations
+
+| Level | Type | Result | Notes |
+|-------|------|--------|-------|
+| 1 | Docs | PASS/FAIL/NE | |
+| 2 | C# runtime | PASS 0E/0W / FAIL / NE | |
+| 3 | C# editor | PASS 0E/XW / FAIL / NE | |
+| 4 | Unity validators | NOT RUN | Reason: requires Unity Editor |
+| 5 | Play Mode | NOT RUN | Reason: requires human |
+
+### Risks
+[if any]
+
+### Next Step
+[/finish-spec when Phase 2-3 evidence collected, OR: spec is docs-only → can promote now]
+```
+
+---
+
+## Rules
+
+- DO implement spec exactly as scoped
+- DO run validations and record results
+- DO create execution report
+- DO NOT push to remote
+- DO NOT open PR/MR
+- DO NOT move spec to implementados/ here
+- DO NOT claim ACCEPTED without Phase 2-3 evidence if required

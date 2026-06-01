@@ -1,150 +1,135 @@
-# CLAUDE.md - Cindar's Hope
+# CLAUDE.md — Cindar's Hope
 
-Arquivo operacional equivalente ao `AGENTS.md` para Claude/Codex.
+> Short router for Claude Code. Full rules in `AGENTS.md` and `.claude/rules/`.
 
-## Claude Code Project Structure
+---
 
-Este projeto usa `.claude/` para operacionalizar comandos, skills, agentes e hooks reutilizáveis:
+## Project Identity
 
-- `.claude/commands/` — slash commands para fluxos repetíveis (start-spec, validate-unity, finish-spec, review-non-regression, docs-health)
-- `.claude/skills/` — padrões arquiteturais acionáveis (spec-execution, unity-validation, docs-migration, non-regression-review, save-load-pattern, event-bus-pattern, implementation-closeout)
-- `.claude/agents/` — subagentes especializados (spec-implementer, unity-validator, docs-curator, non-regression-auditor, architecture-reviewer)
-- `.claude/hooks/` — guardrails locais (pre-bash-guard, post-edit-docs-validate, stop-summary-check)
-- `.claude/settings.json` — permissões versionadas e hooks
+2D pixel art RPG + farm sim in Unity LTS/C#. World: Vaalara / Cindar's Hope / Dornecia.
+Specs live in `docs/specs/`. Spec is the execution contract. Refinement is fallback only.
 
-Consulte os arquivos em `.claude/` para fluxos operacionais. **A fonte de verdade permanece sendo:**
+---
 
-1. `AGENTS.md` e `CLAUDE.md` (este arquivo) — regras e diretrizes
-2. `docs/operations/AGENT_EXECUTION_PROTOCOL.md` — protocolo oficial
-3. `docs/specs/` — especificações
-4. `memory/` — padrões provados
+## Default Reads (implementation task)
 
-## Fonte unica de specs
+Read ONLY:
 
-A unica fonte oficial de specs e:
+1. `CLAUDE.md` (this file)
+2. `docs/00_PROJECT/CURRENT_STATE.md` — active queue, blockers, key paths (~80 lines)
+3. The active spec (`docs/specs/a_implementar/spec_*.md`)
+4. Files explicitly listed in the spec scope
 
-```text
-docs/specs/
+## Conditional Reads (only if spec or prompt cites them)
+
+- A specific refinement
+- The immediately prior validation report listed as a dependency
+- A specific architecture document needed by the spec
+- A specific backlog item
+
+## Do NOT Read By Default
+
+```
+PROJECT_LOG.md         — audit / reconciliation / regression only
+ROADMAP.md             — planning new waves / creating specs only
+docs/IMPLEMENTATION_STATUS.md  — audit only; use CURRENT_STATE.md instead
+AGENTS.md (full)       — rules apply without reading whole file; stop conditions are enforced
+GDD complete           — never by default
+all refinements        — conditional only
+archived/superseded specs
+docs_old/**
+unrelated validation reports
 ```
 
-A pasta raiz `specs/` foi removida e nao deve ser recriada. A pasta raiz `spec/` tambem nao deve ser recriada.
+---
 
-Para implementar qualquer feature, usar:
+## Commands
 
-1. `docs/specs/SPEC_EXECUTION_ORDER.md`.
-2. A spec alvo em `docs/specs/a_implementar/spec_*.md`.
-3. O pre-refinamento relacionado em `docs/refinements/a_implementar/pre_refinamentos/`, quando existir.
-4. Specs implementadas dependentes em `docs/specs/implementados/`, apenas quando citadas.
+| Command | When to use |
+|---------|-------------|
+| `/start-spec` | Plan a spec (no code) |
+| `/audit-spec` | Phase 0 only — map what exists, risks, delta |
+| `/implement-spec` | Execute a spec |
+| `/validate-spec` | Run validations after implementation |
+| `/finish-spec` | Closeout — phase-aware, no auto-promote |
+| `/reconcile-status` | Audit inconsistencies (may read PROJECT_LOG) |
+| `/plan-wave` | Plan next FASE/wave (reads ROADMAP) |
+| `/bugfix` | Fix a specific bug |
+| `/docs-health` | Run docs validation only |
+| `/review-non-regression` | Audit diff for violations |
 
-## Padrões de Trabalho Provados
+---
 
-**SEMPRE consultar antes de começar qualquer tarefa**:
+## Skills
 
-- `memory/MEMORY.md` - índice de padrões consolidados
-- `memory/feedback_working_method.md` - método sequencial (SPEC -> validação -> commit)
-- `memory/project_skills_available.md` - 7 skills reutilizáveis
+Use `.claude/skills/<name>/SKILL.md` when task matches:
 
-### Skills Disponíveis para Invocar
+| Skill | When |
+|-------|------|
+| `spec-execution` | Implementing any spec |
+| `docs-governance` | Organizing/archiving docs |
+| `unity-validation` | Compile + validator flow |
+| `bootstrap-wiring` | GameBootstrap / manager wiring |
+| `combat-data-wiring` | Weapon/Spell/StatusEffect databases |
+| `ui-modal-stack` | ModalManager / input blocking |
+| `save-load-pattern` | Save/load data |
+| `event-bus-pattern` | GameEventBus communication |
+| `non-regression-review` | Pre-closeout audit |
+| `cave-stable-run-guard` | Any cave procedural change |
 
-1. **SPEC Validation Pattern** - Validar compilação após cada fase, triage por categoria de erro
-2. **Namespace Consolidation** - Resolver conflitos de classes duplicadas
-3. **Bootstrap Integration Pattern** - Wiring correto em GameBootstrap + cenas + editors
-4. **Event Publishing Pattern** - Comunicação via GameEventBus (não direct calls)
-5. **Using Directive Organization** - Ordem padrão de imports para consistência
-6. **DamageRequest Construction** - Padrão seguro para criar requisições de dano
-7. **Save/Load Data Pattern** - Persistência: IDs+tipos simples, nunca refs Unity
+---
 
-**Exemplo de invocação**: Se tarefa é similar a SPEC anterior, usar padrão já documentado em memory ao invés de inventar novo.
+## Agents
 
-## Leitura minima
+Delegate via `.claude/agents/`:
 
-Antes de qualquer tarefa:
+| Agent | Role |
+|-------|------|
+| `spec-implementer` | Code specs |
+| `docs-curator` | Document governance |
+| `unity-validator` | Validation only |
+| `non-regression-auditor` | Regression audit |
+| `architecture-reviewer` | Pre-wave architecture |
+| `bugfix-investigator` | Bug investigation |
+| `asset-wiring-specialist` | Unity data / prefab wiring |
 
-- `AGENTS.md` ou `CLAUDE.md`.
-- `memory/MEMORY.md` (verificar se tarefa é similar a anteriores).
-- `PROJECT_LOG.md` - somente topo/entradas recentes.
-- `docs/IMPLEMENTATION_STATUS.md`.
-- `docs/operations/AGENT_EXECUTION_PROTOCOL.md`.
+---
 
-Nao ler por padrao:
+## Stop Conditions
 
-- `docs_old/**`
-- crosswalk completo
-- GDD completo
-- arquitetura completa
-- todos os registries
-- todos os refinements
-- documentos historicos fora do alvo
+Stop and report to human if:
 
-## Regras de implementacao
+- Spec and `CURRENT_STATE.md` conflict
+- Spec requires files outside its declared scope
+- A mandatory validation fails with no documented path forward
+- Task would move a spec to `implementados/` without required evidence
+- Task would delete a document not in `DOCUMENT_DELETE_CANDIDATES.md`
+- Task would manually edit `.unity` / `.prefab` / `.asset` YAML without spec authorization
+- Context requires reading PROJECT_LOG without audit/reconciliation/regression justification
 
-- Nunca implementar feature sem spec aprovada em `docs/specs/a_implementar/`.
-- Respeitar `docs/specs/SPEC_EXECUTION_ORDER.md`; nao antecipar specs bloqueadas.
-- Alterar somente arquivos dentro do escopo da spec/refinement.
-- Nao editar `docs_old/**`.
-- Nao marcar nada como implementado sem evidencia no repo.
-- Ao finalizar, atualizar spec implementada, refinement implementado, registries, maps, `docs/IMPLEMENTATION_STATUS.md` e `PROJECT_LOG.md` quando aplicavel.
-- Rodar `tools/docs/validate_docs.ps1` quando documentacao for alterada.
-- Ao finalizar qualquer tarefa runtime/Unity, rodar `tools/docs/validate_docs.ps1`, `tools/unity/RunUnityCompileValidation.ps1` e `tools/unity/ScanUnityLogs.ps1`.
-- Se a validacao Unity nao rodar, registrar motivo, comando tentado e risco residual no resumo final e no `PROJECT_LOG.md`.
+---
 
-## Regras inviolaveis de codigo
+## Invariant Rules
 
-1. NUNCA usar `GameObject.Find()` ou `FindObjectOfType()`.
-2. NUNCA criar comunicacao direta de gameplay; usar `GameEventBus.Publish()` e `Subscribe()`.
-3. NUNCA hardcodar dados de balanceamento/conteudo em `MonoBehaviour`; usar ScriptableObject em `Assets/_Game/Data/`.
-4. SEMPRE fazer unsubscribe em `OnDisable` ou `OnDestroy`.
-5. NUNCA escrever logica de negocio pesada em `MonoBehaviour`; `MonoBehaviour` deve ser ponte Unity/runtime.
-6. SEMPRE prefixar ScriptableObjects: `ItemDataSO`, `SeedDataSO`, `ToolDataSO`, `WeaponDataSO`, etc.
-7. SEMPRE prefixar eventos: `DayStartedEvent`, `ItemCraftedEvent`, `ToolEquippedEvent`, etc.
-8. SEMPRE commits em portugues.
-9. Save deve persistir IDs e tipos simples, nunca referencias Unity.
-10. Nao usar `StreamingAssets` para save editavel; usar `Application.persistentDataPath`.
-11. Nao serializar `ScriptableObject`, `GameObject`, `Transform`, `MonoBehaviour`, `Sprite`, `Collider` ou `Rigidbody` em DTOs de save.
-12. Sprites: Filter Mode `Point`, Compression `None`, Generate Mip Maps `false`.
+See `.claude/rules/RULES.md` for full list. Key non-negotiables:
 
-## Git
+- No `GameObject.Find()` / `FindObjectOfType()` at runtime
+- No gameplay communication without `GameEventBus`
+- No Unity refs in save DTOs
+- No `CindarsHope.Debug` namespace
+- No spec promoted without evidence
+- No MVP/Play Mode PASS claim without evidence
+- Commits in Portuguese
 
-Permitido:
+---
 
-- criar/usar branch local indicada;
-- alterar somente arquivos permitidos no escopo;
-- criar commits locais em portugues;
-- entregar arquivos alterados, testes executados e pendencias.
+## Conflict Resolution
 
-Proibido sem autorizacao explicita:
+- Spec vs. roadmap → follow spec
+- Spec vs. refinement → follow spec
+- Spec vs. CURRENT_STATE → stop and report
+- PROJECT_LOG vs. CURRENT_STATE → prefer CURRENT_STATE, report mismatch
 
-- `git push`;
-- abrir PR/MR;
-- merge;
-- deletar branches;
-- `git stash`;
-- `git clean`;
-- `git reset --hard`;
-- commitar fora do escopo.
+---
 
-## Namespace Debug proibido
-
-NUNCA criar namespace chamado `Debug` dentro de `CindarsHope.*`.
-
-Usar alternativas:
-
-- `Runtime`
-- `DebugTools`
-- `Diagnostics`
-- `Editor`
-
-## Regra FASE9F - Cave Stable Run
-
-Antes de alterar Cave procedural/stable run, ler:
-
-- `docs/amendments/FASE9F_CAVE_STABLE_RUN_AND_REPLAY_AMENDMENT_v1.0.md`
-- `docs/roadmap/FASE9F_CAVE_STABLE_RUN_ROADMAP_PR170_192.md`
-- `docs/refinements/implementados/ref_pr170_192_cave_stable_run_pre_implementation_audit.md`
-
-Regra central:
-
-- `CaveLevel` ja visitado dentro da mesma `CaveRunSeed` deve ser carregado por snapshot.
-- `ForwardExit` e `BackExit` nao podem regenerar layout, inimigos ou resource nodes.
-- Procedural so muda em novo jogo, KO/morte/derrota do personagem ou comando debug explicito.
-- Save de cave deve persistir snapshots com tipos simples e sem Unity refs.
+*Updated: 2026-06-01 (SPEC_CLAUDE_31)*

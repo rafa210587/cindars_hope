@@ -43,21 +43,37 @@
 
 ---
 
+## Claude Code Harness
+
+| Item | Status |
+|------|--------|
+| CLAUDE.md | Short router (~80 lines) — SPEC_CLAUDE_31 |
+| AGENTS.md | Multi-agent rules — SPEC_CLAUDE_31 |
+| `.claude/rules/` | 15 rules active — SPEC_CLAUDE_31 |
+| `.claude/commands/` | 11 commands (8 updated, 3 created) — SPEC_CLAUDE_31 |
+| `.claude/skills/` | 14 skills (2 updated, 4 created) — SPEC_CLAUDE_31 |
+| `.claude/agents/` | 7 agents (2 updated, 2 created) — SPEC_CLAUDE_31 |
+| `.claude/hooks/` | 13 hooks (5 created, disabled) — SPEC_CLAUDE_31 |
+| Default context | `CURRENT_STATE.md` (not PROJECT_LOG.md) |
+| Spec promotion | Phase-gated via `/finish-spec` |
+
+---
+
 ## Active Spec Queue
 
 | Spec | Status | Notes |
 |------|--------|-------|
-| SPEC_DOCS_30 | IN PROGRESS | Context governance + doc reorg (this session) |
+| SPEC_CLAUDE_31 | IN PROGRESS | Agent runtime governance (this session) |
 | SPEC_18-28 Phase 2-3 | PENDING HUMAN | Play Mode validation; requires local Unity Editor |
 | SPEC_29 Phase 2-3 | PENDING HUMAN | Final acceptance; blocked on Phase 2-3 above |
+| SPEC_DOCS_31 | PENDING | Safe archive and delete — blocked on Phase 2-3 |
 | FASE 10+ | BLOCKED | Blocked until Phase 2-3 or explicit human decision to skip |
 
 ---
 
 ## Blockers
 
-1. **Human Play Mode acceptance:** Phase 2-3 not yet executed for any SPEC_18-28  
-2. **Doc reorg in progress:** SPEC_DOCS_30 creating governance structure (this session)
+1. **Human Play Mode acceptance:** Phase 2-3 not yet executed for any SPEC_18-28
 
 ---
 
@@ -65,10 +81,11 @@
 
 | What | Where |
 |------|-------|
-| Agent rules | `AGENTS.md`, `CLAUDE.md` |
+| Agent rules | `CLAUDE.md` (router), `AGENTS.md` (rules), `.claude/rules/RULES.md` |
 | Active specs | `docs/specs/a_implementar/closeout_mvp/` |
+| Commands | `.claude/commands/` (11 commands) |
+| Skills | `.claude/skills/` (14 skills) |
 | Validation evidence | `docs/validation/spec_mvp_closeout_*.md` |
-| Execution protocol | `docs/operations/AGENT_EXECUTION_PROTOCOL.md` |
 | MVP acceptance | `docs/release/MVP_ACCEPTANCE_REPORT.md` |
 | Post-MVP backlog | `docs/backlog/post_mvp_backlog.md` |
 | Last validation status | `docs/05_VALIDATION/current/LAST_VALIDATION_STATUS.md` |
@@ -101,5 +118,5 @@ PROJECT_LOG + CURRENT_STATE conflict → prefer CURRENT_STATE; report mismatch
 
 ---
 
-*Last updated: 2026-06-01 (SPEC_DOCS_30)*  
+*Last updated: 2026-06-01 (SPEC_CLAUDE_31)*  
 *Next update: after Phase 2-3 human execution or next spec session*

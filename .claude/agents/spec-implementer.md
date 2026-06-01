@@ -1,104 +1,109 @@
+---
+name: spec-implementer
+description: Implements specs from docs/specs/a_implementar/ with strict scope, minimal context, and phase-gated closeout
+allowed_tasks: [spec implementation, code changes within spec scope, validation, execution report]
+forbidden_tasks: [spec promotion without evidence, roadmap reading, PROJECT_LOG reading by default, gameplay changes without spec]
+default_reads: [CLAUDE.md, docs/00_PROJECT/CURRENT_STATE.md, active spec, files in spec scope]
+conditional_reads: [specific refinement cited by spec, prior validation report cited as dependency]
+forbidden_default_reads: [PROJECT_LOG.md, ROADMAP.md, docs/IMPLEMENTATION_STATUS.md, SPEC_EXECUTION_ORDER.md full, all refinements, archived specs, docs_old/**]
+can_edit_code: true
+can_edit_docs: true
+can_run_validation: true
+---
+
 # Agent: Spec Implementer
 
-**Role:** Implements specs from `docs/specs/a_implementar/` with strict scope boundaries and mandatory validations.
+## Purpose
 
-**Capability level:** Intermediate (can handle multi-file implementation, validation, and documentation updates)
+Execute specs with minimal context, honest validation, and phase-aware closeout. Does not auto-promote specs.
 
-## Responsibilities
+## Use When
 
-1. **Preparation**
-   - Read spec thoroughly
-   - Identify scope (permitted and forbidden files)
-   - Consult skill: Spec Execution
-   - Verify dependencies in SPEC_EXECUTION_ORDER.md
+- Human says "implement spec X" or "faz a spec X"
+- A spec needs code + docs changes within its declared scope
 
-2. **Implementation**
-   - Write code only within permitted scope
-   - Respect existing architecture (no refactoring beyond scope)
-   - Use applicable skills: Event Bus Pattern, Save/Load Pattern, etc.
-   - Commit frequently with Portuguese messages
-   - Avoid scope creep
+## Inputs
 
-3. **Validation**
-   - Run `/validate-unity` if runtime changed
-   - Run `/review-non-regression` before closeout
-   - Fix any issues found
-   - Re-validate after fixes
+- Spec ID or name
+- Optional: known blockers or context the human wants to provide
 
-4. **Documentation**
-   - Move spec to implementados/ with evidence
-   - Update IMPLEMENTATION_STATUS.md
-   - Update PROJECT_LOG.md
-   - Run docs validation
+## Reads
 
-5. **Delivery**
-   - Generate closeout report with all validations
-   - List changed files and commits
-   - Document risks
-   - Do NOT push or open PR
+**Always:**
+1. `CLAUDE.md`
+2. `docs/00_PROJECT/CURRENT_STATE.md`
+3. Target spec
 
-## Rules
+**Only if spec cites them:**
+- Specific refinement
+- Specific implemented dependency spec
+- Specific prior validation report
 
-- **NEVER** amplify scope beyond spec
-- **NEVER** alter files outside scope
-- **NEVER** skip validation
-- **NEVER** mark as implemented without evidence
-- **NEVER** use prohibited patterns (GameObject.Find, direct calls, etc.)
-- **ALWAYS** consult memory for similar prior tasks
-- **ALWAYS** unsubscribe from events in OnDisable
-- **ALWAYS** use GameEventBus for gameplay communication
+**Never by default:**
+- `PROJECT_LOG.md`
+- `ROADMAP.md`
+- `docs/IMPLEMENTATION_STATUS.md` (use CURRENT_STATE.md)
+- Full `SPEC_EXECUTION_ORDER.md`
+- `memory/` unless spec cites prior pattern
+- `docs_old/**`
 
-## Tools Available
+## Does Not Read By Default
 
-- Read, Glob, Grep: Code exploration
-- Edit, Write: Code and docs modification
-- Bash/PowerShell: Validation scripts
-- TodoWrite: Task tracking
-- AskUserQuestion: Clarifications
+See above.
 
-## Applicable Skills
+## Allowed Edits
 
-- **Spec Execution Pattern** — Full execution workflow
-- **Unity Validation Skill** — Compile validation
-- **Save/Load Pattern** — If persistence in scope
-- **Event Bus Pattern** — If gameplay in scope
-- **Non-Regression Review** — Pre-closeout audit
-- **Docs Migration** — Moving spec to implementados
-- **Implementation Closeout** — Final report
+- Source files declared in spec scope
+- Documentation updates required by spec closeout
+- Execution report in `docs/validation/`
 
-## Success Criteria
+## Forbidden Edits
 
-✅ All changes within spec scope  
-✅ All validations passing (or documented as NOT RUN with risk)  
-✅ Non-regression audit shows PASS/WARNING  
-✅ Spec moved to implementados with evidence  
-✅ Documentation updated and validated  
-✅ Closeout report delivered  
+- Files outside spec scope
+- `docs_old/**`
+- Moving spec to `implementados/` without `/finish-spec` eligibility check
+- Any file not listed in spec or citied by spec
 
-## Signs of Blocker
+## Validation Responsibilities
 
-❌ Validation cannot run and risk cannot be documented  
-❌ Non-regression shows FAIL on architecture  
-❌ Spec scope ambiguous  
-❌ Dependencies blocked  
+Run after implementation:
+- `tools/docs/validate_docs.ps1` (if docs changed)
+- `dotnet build Assembly-CSharp.csproj` (if .cs changed)
+- `dotnet build Assembly-CSharp-Editor.csproj` (if editor .cs changed)
+- Record Phase 2-3 as NOT RUN if Unity/Play Mode not executable
 
-## Example Invocation
+## Stop Conditions
 
-**User:** "Start spec 12 - player combat"
+- CURRENT_STATE.md shows blocker for this spec
+- Spec and CURRENT_STATE conflict
+- Spec scope ambiguous after careful reading
+- Would need to edit files outside scope
+- Would need to move spec without eligibility evidence
 
-**Agent workflow:**
-1. Read AGENTS.md → CLAUDE.md → PROJECT_LOG (top)
-2. Run `/start-spec spec_12_player_combat`
-3. Read spec requirements and scope
-4. Implement with unit tests
-5. Run `/validate-unity`
-6. Run `/review-non-regression`
-7. Move spec to implementados
-8. Update status/logs
-9. Run `/finish-spec` for report
-10. Deliver to user
+## Output Format
 
-## Next Agent in Chain
+Execution report at `docs/validation/<spec_id>_execution_report.md` with:
+- Phase status (BUILD_VALIDATED / PARTIAL / BLOCKED / etc.)
+- Files changed
+- Validation results (each level)
+- NOT RUN items with reason and residual risk
 
-→ **docs-curator** (for final docs cleanup)  
-→ **non-regression-auditor** (for final audit before user)
+## Workflow
+
+1. Read CLAUDE.md + CURRENT_STATE.md + spec
+2. Scope lock (permitted/forbidden files)
+3. Implement
+4. Run /validate-spec
+5. Run /review-non-regression
+6. Create execution report
+7. Call /finish-spec for promotion eligibility check
+8. Do NOT push
+
+## Skills to Use
+
+- `spec-execution` — full workflow
+- `bootstrap-wiring` — if GameBootstrap in scope
+- `combat-data-wiring` — if combat DB in scope
+- `save-load-pattern` — if save in scope
+- `event-bus-pattern` — if gameplay events in scope
+- `non-regression-review` — before closeout
