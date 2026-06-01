@@ -87,27 +87,32 @@ Este documento lista debitos remanescentes sem mascarar completude.
 ### 2.1 StatusEffectDatabase Asset Not Wired in Scenes
 
 **Item:** StatusEffectDatabaseSO created in code (SPEC_09); asset and Inspector wiring pending  
-**Status:** PARTIALLY RESOLVED (2026-06-01 residual fix)  
+**Status:** CODE-SIDE RESOLVED (2026-06-01 residual fix #3)  
 **Details:**
 - Code: StatusEffectDatabaseSO.cs created (✓)
 - Asset: Assets/_Game/Data/Combat/StatusEffectDatabase.asset — **CREATED** ✓
 - Asset: Assets/_Game/Data/Combat/StatusEffects/status_burn_test.asset — **CREATED** ✓
-- Wiring: GameBootstrap._statusEffectDatabase field — **still not assigned in scenes** (requires Unity Editor)
-
-**What happens if not wired in scenes:**
-- EnemyStatusRuntimeTicker.Start() fallback to Resources.Load("status_burn_test") — still works
-- SpellCastService fallback to Resources.Load(statusEffectId) — still works
-- No error; fallback preserves behavior
+- Wiring: Scene creators now load and wire via AssetDatabase.LoadAssetAtPath (✓)
 
 **What was done:**
 1. ✓ Created StatusEffectDatabase.asset in Assets/_Game/Data/Combat/
 2. ✓ Created status_burn_test.asset in Assets/_Game/Data/Combat/StatusEffects/
 3. ✓ Registered status_burn_test in StatusEffectDatabase._items
-4. ⏳ Remaining: Assign StatusEffectDatabase.asset to GameBootstrap._statusEffectDatabase in scenes via Unity Editor
+4. ✓ Updated CreateMvpTownScene.cs/CreateMvpFarmScene.cs/CreateMvpCaveScene.cs to load StatusEffectDatabase
 
-**Effort remaining:** ~10 min (scene wiring via Inspector)  
-**Priority:** Medium (fallback works; best-practice wiring preferred)  
-**Target:** Unity Editor play mode validation
+**Also added in same fix:**
+- WeaponDatabase loading in all three scene creators (was missing entirely)
+- ManaManager component in all three scene creators (was missing in Town/Farm)
+- Proper fallback warnings if databases don't exist
+
+**What happens when scenes are recreated in Unity:**
+- AssetDatabase.LoadAssetAtPath() will auto-wire databases if they exist
+- If database missing: warning logged, but fallback Resources.Load() still works
+- No error; graceful degradation preserved
+
+**Effort remaining:** ~5 min (recreate scenes via menu in Unity Editor)  
+**Priority:** Medium (code-side complete; awaits Unity Editor scene recreation)  
+**Target:** Unity Editor play mode validation after scene recreation
 
 ---
 
@@ -256,7 +261,7 @@ Este documento lista debitos remanescentes sem mascarar completude.
 |----------|------|--------|--------|
 | **Critical** | Play Mode validation | ~30 min | Human acceptance test |
 | **High** | Editor validators (prefab, database, wiring) | ~15 min | Validation checkpoint |
-| **Medium** | StatusEffectDatabase asset + wiring | ~20 min | Asset dependency fix |
+| **Medium** | Scene recreation (Town/Farm/Cave) after wiring fixes | ~20 min | Apply code-side bootstrap wiring |
 | **Medium** | Unity licensing wrapper (batchmode) | N/A | CI/CD improvement |
 | **Low** | Save provider pattern scaling | ~4.5 hours | Future specs |
 | **Low** | Installer pattern scaling | ~1.5 hours | Future specs |
@@ -289,6 +294,14 @@ Este documento lista debitos remanescentes sem mascarar completude.
 
 SPEC_04-11 reorganizacao arquitetural esta **code-complete**, **compila clean**, e **pronta para Play Mode validation**. Nenhum critical blocker. Residual backlog e claro, actionable, e bem-priorizado. Pattern para providers/installers esta proven e ready para scaling em future specs.
 
-**Next mandatory step:** Play Mode human validation (30 min).  
+**2026-06-01 Residual Fix Update:**
+- Combat bootstrap wiring in TownScene/FarmScene/CaveScene agora code-complete
+- All three scenes now consistently load WeaponDatabase, SpellDatabase, StatusEffectDatabase, ManaManager
+- CombatRuntimeInstaller nao sera mais acionado com campos nulos apos scenes serem recreadas
+
+**Next mandatory steps:** 
+1. Recreate scenes in Unity Editor via menus (5-20 min)
+2. Play Mode human validation (30 min)
+
 **Next recommended step:** Editor validator audit (15 min).  
-**Next architectural step:** StatusEffectDatabase wiring + save provider scaling (SPEC_13+).
+**Next architectural step:** Save provider pattern scaling + installer pattern scaling (SPEC_13+).

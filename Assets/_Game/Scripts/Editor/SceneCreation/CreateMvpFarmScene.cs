@@ -40,7 +40,9 @@ namespace CindarsHope.Editor.SceneCreation
         private const string TreeDataPath = "Assets/_Game/Data/World/Trees/Tree_Basic.asset";
         private const string GameScaleConfigPath = "Assets/_Game/Data/Config/GameScaleConfig.asset";
         private const string BuiltinSpritePath = "UI/Skin/UISprite.psd";
+        private const string WeaponDatabasePath = "Assets/_Game/Data/Combat/WeaponDatabase.asset";
         private const string SpellDatabasePath = "Assets/_Game/Data/Combat/SpellDatabase.asset";
+        private const string StatusEffectDatabasePath = "Assets/_Game/Data/Combat/StatusEffectDatabase.asset";
 
         [MenuItem("CindarsHope/Advanced/Legacy/Scenes/Create MVP FarmScene")]
         public static void CreateSceneFromMenu()
@@ -132,6 +134,7 @@ namespace CindarsHope.Editor.SceneCreation
             bootstrapObject.AddComponent<PlayerProgressionManager>();
             bootstrapObject.AddComponent<SkillTreeManager>();
             bootstrapObject.AddComponent<BestiaryManager>();
+            bootstrapObject.AddComponent<ManaManager>();
             bootstrapObject.AddComponent<HotbarDebugInput>();
             return bootstrap;
         }
@@ -224,6 +227,16 @@ namespace CindarsHope.Editor.SceneCreation
                 Debug.LogWarning($"ItemDatabaseSO not found at {ItemDatabasePath}. Assign it manually on GameBootstrap.");
             }
 
+            var weaponDatabase = AssetDatabase.LoadAssetAtPath<WeaponDatabaseSO>(WeaponDatabasePath);
+            if (weaponDatabase != null)
+            {
+                SetReference(serializedBootstrap, "_weaponDatabase", weaponDatabase);
+            }
+            else
+            {
+                Debug.LogWarning($"WeaponDatabaseSO not found at {WeaponDatabasePath}. Assign it manually on GameBootstrap.");
+            }
+
             var spellDatabase = AssetDatabase.LoadAssetAtPath<SpellDatabaseSO>(SpellDatabasePath);
             if (spellDatabase != null)
             {
@@ -233,6 +246,18 @@ namespace CindarsHope.Editor.SceneCreation
             {
                 Debug.LogWarning($"SpellDatabaseSO not found at {SpellDatabasePath}. Assign it manually on GameBootstrap.");
             }
+
+            var statusEffectDatabase = AssetDatabase.LoadAssetAtPath<StatusEffectDatabaseSO>(StatusEffectDatabasePath);
+            if (statusEffectDatabase != null)
+            {
+                SetReference(serializedBootstrap, "_statusEffectDatabase", statusEffectDatabase);
+            }
+            else
+            {
+                Debug.LogWarning($"StatusEffectDatabaseSO not found at {StatusEffectDatabasePath}. Create it or assign it manually on GameBootstrap.");
+            }
+
+            SetReference(serializedBootstrap, "_manaManager", bootstrapObject.GetComponent<ManaManager>());
 
             serializedBootstrap.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(bootstrap);

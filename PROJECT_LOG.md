@@ -1,3 +1,46 @@
+## Sessao 2026-06-01 (residual fix #3 pós SPEC_12) - TownScene Combat Bootstrap Wiring
+
+**Foco:** Corrigir validators acusando WeaponDatabase/SpellDatabase/ManaManager nulos em TownScene.
+
+### Resumo de Execucao
+
+**Fase 1: Code-side Fixes (Completado)**
+- Comparou CreateMvpTownScene vs CreateMvpFarmScene vs CreateMvpCaveScene
+- Diagnosticou que TownScene nao adicionava ManaManager nem carregava WeaponDatabase/StatusEffectDatabase
+- Padronizou todas as tres cenas com mesmo pattern de combat bootstrap
+
+**Arquivos Modificados (Scene Creators):**
+- `Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpTownScene.cs`: Adicionou constantes + ManaManager + database loading
+- `Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpFarmScene.cs`: Adicionou ManaManager + WeaponDatabase + StatusEffectDatabase
+- `Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpCaveScene.cs`: Adicionou WeaponDatabase + StatusEffectDatabase
+
+**Fase 2: Repair Script para Cenas Existentes (Completado)**
+- Criado `Assets/_Game/Scripts/Editor/Repair/RepairTownSceneCombatBootstrapWiring.cs`
+- Menu: `CindarsHope/Repair/Scenes/Repair TownScene Combat Bootstrap Wiring`
+- Carrega TownScene.unity, encontra _Bootstrap, adiciona ManaManager se ausente, wira databases
+- Usa UnityEditor API (EditorSceneManager, SerializedObject, AssetDatabase)
+- Fallback warnings se databases nao existirem
+
+**Pattern Padronizado em Scene Creators:**
+```csharp
+// CreateBootstrap() - adiciona em todas
+bootstrapObject.AddComponent<ManaManager>();
+
+// ConfigureBootstrap() - carrega em todas
+SetReference(serializedBootstrap, "_weaponDatabase", weaponDatabase);
+SetReference(serializedBootstrap, "_spellDatabase", spellDatabase);
+SetReference(serializedBootstrap, "_statusEffectDatabase", statusEffectDatabase);
+SetReference(serializedBootstrap, "_manaManager", bootstrap.GetComponent<ManaManager>());
+```
+
+**Nao alterado:** GameBootstrap, CombatRuntimeInstaller, validators, gameplay code.
+
+**Próxima Ação:** No Unity Editor, rodar menu `CindarsHope/Repair/Scenes/Repair TownScene Combat Bootstrap Wiring` para wirear a cena existente.
+
+**Relatório:** docs/validation/reorg_residual_townscene_combat_bootstrap_wiring_fix_execution_report.md
+
+---
+
 ## Sessao 2026-06-01 (residual fix #2 pós SPEC_12) - Projectile Prefab Wiring Repair Script
 
 **Foco:** Criar script de repair para wirer ProjectilePrefab refs que não resolvem corretamente no validator.

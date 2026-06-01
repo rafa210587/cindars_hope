@@ -47,7 +47,9 @@ namespace CindarsHope.Editor.SceneCreation
         private const string ItemCopperOrePath = "Assets/_Game/Data/Items/Item_Ore_Copper.asset";
         private const string CaveBossGateRegistryPath = "Assets/_Game/Data/Cave/CaveBossGateRegistry.asset";
         private const string CaveBossGateLevel15Path = "Assets/_Game/Data/Cave/BossGate_Level15.asset";
+        private const string WeaponDatabasePath = "Assets/_Game/Data/Combat/WeaponDatabase.asset";
         private const string SpellDatabasePath = "Assets/_Game/Data/Combat/SpellDatabase.asset";
+        private const string StatusEffectDatabasePath = "Assets/_Game/Data/Combat/StatusEffectDatabase.asset";
         private const string BuiltinSpritePath = "UI/Skin/UISprite.psd";
 
         [MenuItem("CindarsHope/Advanced/Legacy/Scenes/Create MVP CaveScene")]
@@ -219,6 +221,16 @@ namespace CindarsHope.Editor.SceneCreation
                 Debug.LogWarning($"ItemDatabaseSO not found at {ItemDatabasePath}. Assign it manually on CaveScene GameBootstrap.");
             }
 
+            var weaponDatabase = AssetDatabase.LoadAssetAtPath<WeaponDatabaseSO>(WeaponDatabasePath);
+            if (weaponDatabase != null)
+            {
+                SetReference(serializedBootstrap, "_weaponDatabase", weaponDatabase);
+            }
+            else
+            {
+                Debug.LogWarning($"WeaponDatabaseSO not found at {WeaponDatabasePath}. Assign it manually on CaveScene GameBootstrap.");
+            }
+
             var spellDatabase = AssetDatabase.LoadAssetAtPath<SpellDatabaseSO>(SpellDatabasePath);
             if (spellDatabase != null)
             {
@@ -227,6 +239,16 @@ namespace CindarsHope.Editor.SceneCreation
             else
             {
                 Debug.LogWarning($"SpellDatabaseSO not found at {SpellDatabasePath}. Assign it manually on CaveScene GameBootstrap.");
+            }
+
+            var statusEffectDatabase = AssetDatabase.LoadAssetAtPath<StatusEffectDatabaseSO>(StatusEffectDatabasePath);
+            if (statusEffectDatabase != null)
+            {
+                SetReference(serializedBootstrap, "_statusEffectDatabase", statusEffectDatabase);
+            }
+            else
+            {
+                Debug.LogWarning($"StatusEffectDatabaseSO not found at {StatusEffectDatabasePath}. Create it or assign it manually on CaveScene GameBootstrap.");
             }
 
             serializedBootstrap.ApplyModifiedPropertiesWithoutUndo();

@@ -38,6 +38,9 @@ namespace CindarsHope.Editor.SceneCreation
         private const string PlayerDataPath = "Assets/_Game/Data/Config/PlayerData.asset";
         private const string ItemDatabasePath = "Assets/_Game/Data/Registries/ItemDatabase.asset";
         private const string RecipeDatabasePath = "Assets/_Game/Data/Registries/RecipeDatabase.asset";
+        private const string WeaponDatabasePath = "Assets/_Game/Data/Combat/WeaponDatabase.asset";
+        private const string SpellDatabasePath = "Assets/_Game/Data/Combat/SpellDatabase.asset";
+        private const string StatusEffectDatabasePath = "Assets/_Game/Data/Combat/StatusEffectDatabase.asset";
         private const string BuiltinSpritePath = "UI/Skin/UISprite.psd";
 
         [MenuItem("CindarsHope/Advanced/Legacy/Scenes/Create MVP TownScene")]
@@ -136,6 +139,7 @@ namespace CindarsHope.Editor.SceneCreation
             bootstrapObject.AddComponent<PlayerProgressionManager>();
             bootstrapObject.AddComponent<SkillTreeManager>();
             bootstrapObject.AddComponent<BestiaryManager>();
+            bootstrapObject.AddComponent<ManaManager>();
             bootstrapObject.AddComponent<HotbarDebugInput>();
             return bootstrap;
         }
@@ -208,6 +212,38 @@ namespace CindarsHope.Editor.SceneCreation
             {
                 Debug.LogWarning($"ItemDatabaseSO not found at {ItemDatabasePath}. Assign it manually on TownScene GameBootstrap.");
             }
+
+            var weaponDatabase = AssetDatabase.LoadAssetAtPath<WeaponDatabaseSO>(WeaponDatabasePath);
+            if (weaponDatabase != null)
+            {
+                SetReference(serializedBootstrap, "_weaponDatabase", weaponDatabase);
+            }
+            else
+            {
+                Debug.LogWarning($"WeaponDatabaseSO not found at {WeaponDatabasePath}. Assign it manually on TownScene GameBootstrap.");
+            }
+
+            var spellDatabase = AssetDatabase.LoadAssetAtPath<SpellDatabaseSO>(SpellDatabasePath);
+            if (spellDatabase != null)
+            {
+                SetReference(serializedBootstrap, "_spellDatabase", spellDatabase);
+            }
+            else
+            {
+                Debug.LogWarning($"SpellDatabaseSO not found at {SpellDatabasePath}. Assign it manually on TownScene GameBootstrap.");
+            }
+
+            var statusEffectDatabase = AssetDatabase.LoadAssetAtPath<StatusEffectDatabaseSO>(StatusEffectDatabasePath);
+            if (statusEffectDatabase != null)
+            {
+                SetReference(serializedBootstrap, "_statusEffectDatabase", statusEffectDatabase);
+            }
+            else
+            {
+                Debug.LogWarning($"StatusEffectDatabaseSO not found at {StatusEffectDatabasePath}. Create it or assign it manually on TownScene GameBootstrap.");
+            }
+
+            SetReference(serializedBootstrap, "_manaManager", bootstrap.GetComponent<ManaManager>());
 
             serializedBootstrap.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(bootstrap);
