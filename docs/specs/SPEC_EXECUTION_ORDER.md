@@ -2,6 +2,21 @@
 
 Regra: uma spec so pode ser implementada se suas dependencias anteriores estiverem reconciliadas e sem pendencia bloqueadora.
 
+---
+
+## 📋 Consolidation Note (2026-06-01 SPEC_29B)
+
+**MVP Closeout Status:** SPEC_18-28 Consolidation package created to close specs SPEC_10-17 (which were partial/residual).
+
+- **Code Status:** All SPEC_18-28 have Phase 0-1 complete (Phase 0 audit + Phase 1 build/docs validation)
+- **Play Mode Status:** Phase 2-3 human validation NOT YET EXECUTED (checklists prepared, awaiting local Unity Editor)
+- **Spec Movement:** DO NOT MOVE specs to `implementados/` until Phase 2-3 evidence collected
+- **Old Specs:** SPEC_10-17 status clarified below per closeout findings
+
+See `docs/validation/spec_29b_phase0_human_acceptance_reconciliation_audit_matrix.md` for full reconciliation audit.
+
+---
+
 A etapa 00 foi reclassificada como implementado documental parcial. As specs runtime continuam dependendo da governanca documental consolidada em `docs/specs/`, mas nao devem tentar executar novamente a spec 00 antiga de `a_implementar`.
 
 | Ordem | Spec | Status | Depende de | Bloqueia | Risco se antecipar |

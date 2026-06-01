@@ -16,6 +16,24 @@ This backlog captures residual work identified during MVP closeout (SPEC_18-29) 
 
 ---
 
+## Priority 0: Phase 2-3 Human Acceptance (CURRENTLY PENDING — NOT YET EXECUTED)
+
+### 0.1 Play Mode Validation Execution
+
+**Status as of 2026-06-01:** Phase 2-3 checklists prepared but NOT YET executed in Unity Editor
+
+**Required Before Any Post-MVP Work:**
+- [ ] Phase 2: Run validators in Unity Editor (15-20 min) — **NOT RUN YET**
+- [ ] Phase 3: Execute comprehensive Play Mode checklist (1.5-2 hours) — **NOT RUN YET**
+
+**Critical Note:** MVP acceptance CANNOT be finalized until Phase 2-3 evidence is collected
+
+**Responsible:** Human tester with local Unity Editor access
+
+**Estimated Total Time:** 2-2.5 hours of human execution
+
+---
+
 ## Priority 1: Post-MVP Phase Start Blockers (If Phase 2-3 Reveals Issues)
 
 ### 1.1 Play Mode Validation Issues
@@ -363,10 +381,10 @@ This backlog captures residual work identified during MVP closeout (SPEC_18-29) 
 
 ## Summary: Post-MVP Roadmap
 
-| Priority | Category | Effort | Timeline | Blocker |
-|----------|----------|--------|----------|---------|
-| **0** | **Phase 2-3 Validation** | 2-3 hours | ASAP (human) | MVP acceptance |
-| 1 | Play Mode Issue Fixes | Variable | Immediately post-Phase 3 | Depends on test results |
+| Priority | Category | Effort | Timeline | Blocker | Status |
+|----------|----------|--------|----------|---------|--------|
+| **0** | **Phase 2-3 Validation** | 2-2.5 hours | CURRENTLY PENDING | MVP acceptance | **NOT YET EXECUTED** |
+| 1 | Play Mode Issue Fixes | Variable | Immediately post-Phase 3 | Depends on test results | Pending Phase 3 results |
 | 2 | Code Architecture | 50-75 hours | FASE 10 Q1 | No |
 | 3 | Testing Coverage | 70-100 hours | FASE 10 Q1-Q2 | No |
 | 4 | Gameplay Balance | 35-50 hours | FASE 10 Q2 | No |

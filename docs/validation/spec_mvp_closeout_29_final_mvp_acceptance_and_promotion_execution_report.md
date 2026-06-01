@@ -302,10 +302,12 @@ Created: `docs/validation/spec_mvp_closeout_29_phase0_consolidation_audit_matrix
 |-------|--------|----------|
 | **Phase 0** | ✓ COMPLETE | Consolidation audit of SPEC_18-28 (11 SPECs) + zero gaps |
 | **Phase 1** | ✓ CONFIRMED | Build 0E/0W runtime + 0E/0W editor + docs 14/14 |
-| **Phase 2** | ⚠ NOT RUN | Validators exist but require Unity Editor interactive |
-| **Phase 3** | ⚠ NOT RUN | Play Mode testing blocked — requires Unity Editor with Play Mode |
+| **Phase 2** | ⏳ NOT RUN | Validators prepared, checklists empty — awaiting human execution |
+| **Phase 3** | ⏳ NOT RUN | Play Mode testing prepared, checklists empty — awaiting human execution |
 
-**Overall Status:** PHASE 0-1 COMPLETE. ALL MVP SYSTEMS CODE-READY FOR FINAL ACCEPTANCE. PHASE 2-3 REQUIRES HUMAN EXECUTION IN UNITY EDITOR.
+**Overall Status:** PHASE 0-1 COMPLETE. ALL MVP SYSTEMS CODE-READY. PHASE 2-3 NOT YET EXECUTED — HUMAN ACCEPTANCE PENDING IN UNITY EDITOR.
+
+**MVP Acceptance Decision:** **PENDING** (requires Phase 2-3 completion)
 
 ---
 
@@ -336,45 +338,57 @@ Created: `docs/validation/spec_mvp_closeout_29_phase0_consolidation_audit_matrix
 
 ---
 
-## Phase 2 Results (To be filled by human execution in Unity Editor)
+## Phase 2 Results (Human Execution in Unity Editor)
+
+**STATUS: NOT RUN** (as of 2026-06-01)
+
+All validators require interactive Unity Editor environment and have not been executed.
 
 **Validator Execution Status:**
-- [ ] CindarsHope/Repair and Validate Project: **PASS** / **FAIL** / **NOT RUN**
-- [ ] ValidateShopModalFlow: **PASS** / **FAIL** / **NOT RUN**
-- [ ] Combat Validators (SPEC_22-23): **PASS** / **FAIL** / **NOT RUN**
-- [ ] Visual Scale Validator (SPEC_27): **PASS** / **FAIL** / **NOT RUN**
-- [ ] Enemy Roster Validator (SPEC_23): **PASS** / **FAIL** / **NOT RUN**
-- [ ] Farm Town MVP Validator (SPEC_19): **PASS** / **FAIL** / **NOT RUN**
+- [ ] CindarsHope/Repair and Validate Project: **NOT RUN**
+- [ ] ValidateShopModalFlow: **NOT RUN**
+- [ ] Combat Validators (SPEC_22-23): **NOT RUN**
+- [ ] Visual Scale Validator (SPEC_27): **NOT RUN**
+- [ ] Enemy Roster Validator (SPEC_23): **NOT RUN**
+- [ ] Farm Town MVP Validator (SPEC_19): **NOT RUN**
 
-**Issues Found (if any):**
-- [ ] (List any errors/warnings here)
+**Status Evidence:** All checklist boxes remained unchecked [ ] in execution reports
+
+**Issues Found:** None documented (validators not executed)
+
+**Pending Human Action:** Run validators via CindarsHope menu items in Unity Editor (estimated 15-20 min)
 
 ---
 
-## Phase 3 Results (To be filled by human execution in Unity Editor Play Mode)
+## Phase 3 Results (Human Execution in Unity Editor Play Mode)
+
+**STATUS: NOT RUN** (as of 2026-06-01)
+
+Play Mode testing has not been executed. All checklists prepared but validation pending human execution.
 
 | System | Status | Notes |
 |--------|--------|-------|
-| Save/Load System | PASS/FAIL/NOT RUN | |
-| Inventory/Equipment | PASS/FAIL | |
-| Damage/Combat | PASS/FAIL | |
-| Status Effects | PASS/FAIL | |
-| Enemy AI/Roster | PASS/FAIL | |
-| Cave Generation | PASS/FAIL | |
-| Death/Corpse/Anya | PASS/FAIL | |
-| Skill Trees | PASS/FAIL | |
-| Visual Scale/Camera | PASS/FAIL | |
-| HUD System | PASS/FAIL | |
-| Modal Stack/UI | PASS/FAIL | |
-| Input Blocking | PASS/FAIL | |
-| Notifications | PASS/FAIL | |
-| Pause Menu | PASS/FAIL | |
-| Console Errors | PASS/FAIL | |
+| Save/Load System | NOT RUN | Checklist prepared, not executed |
+| Inventory/Equipment | NOT RUN | Checklist prepared, not executed |
+| Damage/Combat | NOT RUN | Checklist prepared, not executed |
+| Status Effects | NOT RUN | Checklist prepared, not executed |
+| Enemy AI/Roster | NOT RUN | Checklist prepared, not executed |
+| Cave Generation | NOT RUN | Checklist prepared, not executed |
+| Death/Corpse/Anya | NOT RUN | Checklist prepared, not executed |
+| Skill Trees | NOT RUN | Checklist prepared, not executed |
+| Visual Scale/Camera | NOT RUN | Checklist prepared, not executed |
+| HUD System | NOT RUN | Checklist prepared, not executed |
+| Modal Stack/UI | NOT RUN | Checklist prepared, not executed |
+| Input Blocking | NOT RUN | Checklist prepared, not executed |
+| Notifications | NOT RUN | Checklist prepared, not executed |
+| Pause Menu | NOT RUN | Checklist prepared, not executed |
+| Console Errors | NOT RUN | Checklist prepared, not executed |
 
-**Overall Play Mode Result:** PASS / FAIL / PARTIAL
+**Overall Play Mode Result:** NOT RUN
 
-**Bugs Found (if any):**
-- [ ] (List any bugs here)
+**Bugs Found:** None — validators not executed
+
+**Pending Human Action:** Execute Play Mode checklist in Unity Editor (estimated 1.5-2 hours)
 
 ---
 

@@ -18,7 +18,27 @@ MVP definition fully satisfied. Ready for Phase 2-3 human Play Mode validation i
 
 ---
 
-## 0.1. Prior Status (Reference)
+## 0.1. Post-SPEC_29B Consolidation Status (2026-06-01)
+
+**CRITICAL RECONCILIATION COMPLETED:**
+
+The MVP Closeout package (SPEC_18-28) was designed to address earlier partial/residual specs (SPEC_10-17).
+
+**Current Status:**
+- **SPEC_18-28 Code:** ✓ Phase 0-1 complete (code-ready, build-validated 0E/0W, docs 14/14)
+- **SPEC_18-28 Play Mode:** ✗ Phase 2-3 NOT YET EXECUTED (checklists prepared, awaiting human in Unity Editor)
+- **SPEC_10-17 Status:** Addressed by closeout but status changes PENDING Phase 2-3 evidence
+- **MVP Acceptance:** **PENDING** (requires Phase 2-3 completion before final promotion)
+
+**Do NOT move specs to `implementados/` yet.** Physical spec moves deferred until Phase 2-3 human evidence collected.
+
+See `docs/validation/spec_29b_phase0_human_acceptance_reconciliation_audit_matrix.md` for audit details.
+
+**Estimated Next Actions:** 2-2.5 hours human execution in Unity Editor (Phase 2 validators + Phase 3 Play Mode)
+
+---
+
+## 0.2. Prior Status (Reference)
 
 A validacao de codigo ate a SPEC 16 confirma que o projeto possui baseline suficiente para seguir para a proxima etapa de UI/closeout, desde que as proximas execucoes nao tratem specs parciais como completas.
 

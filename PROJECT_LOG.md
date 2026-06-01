@@ -1,3 +1,42 @@
+## Sessao 2026-06-01 (SPEC_29B) - Human Acceptance Reconciliation (DOCUMENTATION RECONCILIATION)
+
+**Foco:** Reconciliar relatórios finais do MVP após SPEC_18-29: corrigir inconsistências documentais, registrar que Phase 2-3 NÃO foi executado, manter honestidade sobre status de aceitação humana.
+
+### Resumo de Execucao
+
+**Phase 0 — Documentary Audit (EXECUTADO):**
+- Criada matriz reconciliação: `docs/validation/spec_29b_phase0_human_acceptance_reconciliation_audit_matrix.md`
+- Auditado todos relatórios SPEC_18-28: ZERO Phase 3 evidence (checklists vazios [ ])
+- Achado crítico: MVP_ACCEPTANCE_REPORT.md declarava "100% fulfilled" mas Phase 2-3 pending → INCONSISTÊNCIA
+- Identificadas 5 inconsistências documentais principais
+- Recomendado: NÃO mudar specs para `implementados` sem Phase 2-3 evidence
+
+**Documentação Atualizada:**
+- ✓ MVP_ACCEPTANCE_REPORT.md: "100% fulfilled" → "Phase 0-1 fulfilled; Phase 2-3 pending"
+- ✓ spec_mvp_closeout_29_execution_report.md: Phase 2-3 marcado como "NOT RUN" (não preenchido)
+- ✓ post_mvp_backlog.md: Priority 0 agora como "CURRENTLY PENDING"
+- ✓ PROJECT_LOG.md: Adicionada esta entrada SPEC_29B
+
+**Status Final Registrado:**
+- MVP é: **CODE-COMPLETE AND BUILD-VALIDATED** (Phase 0-1 ✓)
+- MVP NOT: **ACCEPTED** (Phase 2-3 ✗ not executed)
+- Human Acceptance: **PENDING** (awaits Phase 2-3 in Unity Editor)
+
+**Bloqueador:**
+- Nenhum bloqueador de código (tudo compila 0E/0W)
+- Bloqueador documentacional resolvido (inconsistências removidas)
+- Bloqueador de aceitação: Phase 2-3 humano não foi executado
+
+**Próximas Ações (REQUEREM UNITY EDITOR):**
+- Phase 2: Rodar validators em CindarsHope menu (15-20 min)
+- Phase 3: Play Mode checklist SPEC_18-28 (1.5-2 horas)
+- Atualizar SPEC_29 execution report com resultados Phase 2-3
+- SÓ ENTÃO: Mover specs para `implementados` e declarar MVP final aceito
+
+**Tipo:** SPEC_29B é uma reconciliação documentacional, não implementação. Nenhuma feature ou runtime alterado.
+
+---
+
 ## Sessao 2026-06-01 (SPEC_29) - Final MVP Acceptance and Promotion (PHASE 0-1 COMPLETE)
 
 **Foco:** Consolidar e validar SPEC_18-28 para aceitação final do MVP — confirmar code-ready, zero gaps críticos, documentar bloqueadores Phase 2-3.
