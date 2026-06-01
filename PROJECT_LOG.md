@@ -1,3 +1,82 @@
+## Sessao 2026-05-31 (31p) - Lake collider, InteractionTrigger, Fireball item, Hotbar defaults
+
+**Foco:** Ajustar collider fisico do lago, aumentar raio do InteractionTrigger, adicionar item fireball test com bridge para PlayerSpellCaster, e completar hotbar defaults (slots 3-5). Nao foram alterados save schema, trees, cave, enemies, shop, crafting, skill tree, NPCs, portals ou player movement.
+
+### O que foi feito
+
+**Lake blocking collider:**
+- `CreateMvpFarmScene.cs` — substituido `blockingCollider.size = new Vector2(0.10f, 0.105f)` por `FitLakeBlockingCollider(blockingCollider, spriteRenderer)`.
+- Novo helper `FitLakeBlockingCollider` usa `sprite.rect.size / sprite.pixelsPerUnit * 0.92f` → tamanho local `(0.1472, 0.1472)` × escala 6 = world `(0.8832, 0.8832)` (92% do visual UISprite).
+- `FarmScene.unity` — `m_Size: {x: 0.1, y: 0.105}` → `{x: 0.1472, y: 0.1472}`.
+
+**InteractionTrigger radius:**
+- `CreateMvpFarmScene.cs` e `CreateMvpTownScene.cs` — `trigger.radius = 0.45f` → `0.55f`.
+- `FarmScene.unity` e `TownScene.unity` — `m_Radius: 0.45` → `0.55` (unico em cada arquivo).
+- `_maxInteractionDistance` (InteractionSystem) NAO alterado.
+
+**Fireball test item:**
+- Novo: `Assets/_Game/Data/Combat/SpellDatabase.asset` — contém spell_fireball, spell_ice_spike, spell_heal.
+- Novo: `Assets/_Game/Data/Items/item_spell_fireball_test.asset` — Category=Consumable(101), MaxStack=99, Id=item_spell_fireball_test.
+- `ItemDatabase.asset` — GUID e5f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5 adicionado.
+- `PlayerData.asset` — item_spell_fireball_test Amount:30 adicionado em StartingItems.
+- Novo: `FireballUseHandler.cs` (CindarsHope.Player) — ItemUseHandler que delega CastFireball ao bridge.
+- Novo: `FireballItemBridge.cs` (CindarsHope.Player) — MonoBehaviour no Player; registra handler em ItemUseManager.Start(); chama CindarsHope.Combat.PlayerSpellCaster.TrycastSpell.
+- `CreateMvpFarmScene.CreatePlayer()` — adiciona CindarsHope.Combat.PlayerSpellCaster e FireballItemBridge ao Player; wira _playerController no caster.
+- `CreateMvpFarmScene.ConfigureBootstrap()` — carrega SpellDatabase.asset e wira _spellDatabase no GameBootstrap.
+- `Assembly-CSharp.csproj` — FireballUseHandler.cs e FireballItemBridge.cs adicionados.
+
+**Hotbar defaults (slots 3-5):**
+- `SaveManager.Initialize()` — adicionados SetSlot(3, "item_weapon_bow_basic"), SetSlot(4, "item_ammo_arrow_basic"), SetSlot(5, "item_spell_fireball_test") dentro do bloco existente.
+
+### Limitacoes
+
+- Unity validation: NAO executada (Unity nao disponivel em batchmode nesta sessao).
+- Residual risk: PlayerSpellCaster._spellDatabase e o bridge FireballItemBridge -> PlayerSpellCaster dependem do GameBootstrap.Instance estar disponivel em runtime. SpellDatabase.asset criado manualmente (sem gerador Editor); verificar no Unity se os GUIDs das referencias estao corretos apos reimport.
+- Arco e flecha ja estavam em ItemDatabase e PlayerData desde sessao anterior — nenhuma alteracao necessaria.
+
+### Validacao
+
+- `dotnet build Assembly-CSharp.csproj`: PASS, 0 erros, 0 warnings.
+- `dotnet build Assembly-CSharp-Editor.csproj`: PASS, 0 erros, 2 warnings pre-existentes (CS0649 em CreateEnemyActionsAndSets.cs).
+- `validate_docs.ps1`: PASS.
+- Unity batchmode: NAO executado.
+
+---
+
+## Sessao 2026-05-31 (31o) - Diagnostico e correcao do player collider (gap player-arvore)
+
+**Foco:** Diagnosticar e corrigir a causa do player parar longe das arvores com espaco vazio visivel. Nao foram alterados inventory, combat, enemies, Q/E input, save schema, HUD, portals, lake, NPCs ou player movement.
+
+### Diagnostico
+
+- Arvores (FarmScene + TownScene): colliders ja estavam corretos no HEAD commitado: `m_Size: {x: 0.16, y: 0.16}` local × escala 3 = world (0.48, 0.48), igual ao visual UISprite.
+- **Causa real identificada:** Player BoxCollider2D `(0.85, 0.85)` local × escala (1, 1.5) = world (0.85, 1.275) vs sprite visual UISprite world (0.16, 0.24). Collider era 5× maior que o sprite — causava gap enorme com qualquer objeto.
+- Nenhum collider de lago, floresta separada ou bounds bloqueava na regiao das arvores.
+
+### O que foi feito
+
+- **Novo:** `SpriteOpaqueBoundsUtility.cs` — varre pixels opacos (alpha > threshold) para obter bounds locais reais. Para sprites builtin/nao-readable (UISprite), usa fallback via `sprite.rect.size / sprite.pixelsPerUnit` que retorna corretamente (0.16, 0.16) para UISprite.
+- `ValidateAndRepairTreeColliders.cs` — atualizado para usar `SpriteOpaqueBoundsUtility` e agora tambem corrige o Player BoxCollider2D (alem de TreeNode e TownTree). Menu permanece unico: `CindarsHope/Fix Tree Colliders`.
+- `CreateMvpFarmScene.cs` — player usa `FitBoxColliderToOpaqueSprite` ao inves de `(0.85, 0.85)` fixo. Arvores tambem usam o novo helper.
+- `CreateMvpTownScene.cs` — mesmas alteracoes.
+- `FarmScene.unity` + `TownScene.unity` — player collider corrigido de `{x: 0.85, y: 0.85}` para `{x: 0.16, y: 0.16}` via edicao direta (padrao unico em cada arquivo).
+- `Assembly-CSharp-Editor.csproj` — novo arquivo adicionado ao projeto.
+
+### Resultado esperado em Play Mode
+
+- Player world collider: (0.16, 0.24) — coincide com o sprite visual
+- Tree world collider: (0.48, 0.48) — coincide com o sprite visual
+- Distancia de colisao player-arvore: half-widths = 0.08 + 0.24 = 0.32 world (sprites se tocam, sem gap)
+- InteractionSystem (`maxInteractionDistance = 0.45f`): funciona normalmente
+
+### Validacao
+
+- `dotnet build Assembly-CSharp.csproj`: PASS, 0 erros, 0 warnings.
+- `dotnet build Assembly-CSharp-Editor.csproj`: PASS, 0 erros, 0 warnings.
+- Unity compile/Play Mode: NAO EXECUTADO (Unity nao disponivel em batch). Para aplicar nas cenas existentes: rodar `CindarsHope > Fix Tree Colliders` no Unity Editor.
+
+---
+
 ## Sessao 2026-05-31 (31n) - Tree collider fit-to-sprite (correcao de abordagem)
 
 **Foco:** fornecer uma unica funcao Unity Editor que ajusta automaticamente o BoxCollider2D de todas as arvores ao tamanho real do sprite. Nao houve alteracao em inventory, starter items, ItemDatabase, WeaponDatabase, combat, enemies, Q/E, save, HUD, portals, lake, NPCs ou player movement.

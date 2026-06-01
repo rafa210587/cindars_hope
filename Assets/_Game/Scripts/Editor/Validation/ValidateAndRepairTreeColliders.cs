@@ -27,8 +27,8 @@ namespace CindarsHope.Editor.Validation
             EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());
 
             AssetDatabase.Refresh();
-            EditorUtility.DisplayDialog("Fix Tree Colliders",
-                $"Done. {total} collider(s) updated to sprite bounds.\n\nSee Console for details.",
+            EditorUtility.DisplayDialog("Fix Colliders",
+                $"Done. {total} collider(s) updated (trees + player).\n\nSee Console for details.",
                 "OK");
         }
 
@@ -39,7 +39,7 @@ namespace CindarsHope.Editor.Validation
             // TreeNode objects (FarmScene)
             foreach (var tree in Object.FindObjectsByType<TreeNode>())
             {
-                if (FitColliderToSprite(tree.GetComponent<BoxCollider2D>(), tree.GetComponent<SpriteRenderer>(), tree.name))
+                if (FitColliderToOpaqueSprite(tree.GetComponent<BoxCollider2D>(), tree.GetComponent<SpriteRenderer>(), tree.name))
                     count++;
             }
 
@@ -49,37 +49,50 @@ namespace CindarsHope.Editor.Validation
                 foreach (var sr in root.GetComponentsInChildren<SpriteRenderer>(true))
                 {
                     if (!sr.gameObject.name.StartsWith("TownTree_")) continue;
-                    if (FitColliderToSprite(sr.GetComponent<BoxCollider2D>(), sr, sr.gameObject.name))
+                    if (FitColliderToOpaqueSprite(sr.GetComponent<BoxCollider2D>(), sr, sr.gameObject.name))
                         count++;
                 }
             }
 
-            Debug.Log($"FixTreeColliders [{sceneName}]: {count} collider(s) updated.");
+            // Player physical collider
+            foreach (var root in EditorSceneManager.GetActiveScene().GetRootGameObjects())
+            {
+                if (root.name != "Player") continue;
+                if (FitColliderToOpaqueSprite(root.GetComponent<BoxCollider2D>(), root.GetComponent<SpriteRenderer>(), "Player"))
+                    count++;
+            }
+
+            Debug.Log($"FixColliders [{sceneName}]: {count} collider(s) updated.");
             return count;
         }
 
-        private static bool FitColliderToSprite(BoxCollider2D collider, SpriteRenderer sr, string label)
+        private static bool FitColliderToOpaqueSprite(BoxCollider2D collider, SpriteRenderer sr, string label)
         {
             if (collider == null || sr == null)
             {
-                Debug.LogWarning($"FixTreeColliders: '{label}' missing BoxCollider2D or SpriteRenderer — skipped.");
+                Debug.LogWarning($"FixColliders: '{label}' missing BoxCollider2D or SpriteRenderer — skipped.");
                 return false;
             }
 
             if (sr.sprite == null)
             {
-                Debug.LogWarning($"FixTreeColliders: '{label}' has no sprite — collider not changed.");
+                Debug.LogWarning($"FixColliders: '{label}' has no sprite — skipped.");
                 return false;
             }
 
-            var b = sr.sprite.bounds;
-            var newSize   = new Vector2(b.size.x, b.size.y);
-            var newOffset = new Vector2(b.center.x, b.center.y);
+            if (!SpriteOpaqueBoundsUtility.TryGetOpaqueLocalBounds(sr.sprite, 0.05f, out var localBounds))
+            {
+                Debug.LogWarning($"FixColliders: '{label}' could not determine opaque bounds — skipped.");
+                return false;
+            }
+
+            var newSize   = new Vector2(localBounds.size.x, localBounds.size.y);
+            var newOffset = new Vector2(localBounds.center.x, localBounds.center.y);
 
             if (collider.size == newSize && collider.offset == newOffset)
                 return false;
 
-            Undo.RecordObject(collider, "Fix Tree Collider");
+            Undo.RecordObject(collider, "Fix Collider to Sprite");
             collider.size   = newSize;
             collider.offset = newOffset;
             EditorUtility.SetDirty(collider);

@@ -27,6 +27,7 @@ using UnityEngine.UI;
 using CindarsHope.UI.Hotbar;
 using CindarsHope.Equipment;
 using CindarsHope.Player.Progression;
+using CindarsHope.Editor.Validation;
 
 namespace CindarsHope.Editor.SceneCreation
 {
@@ -345,7 +346,7 @@ namespace CindarsHope.Editor.SceneCreation
             rigidbody.constraints = RigidbodyConstraints2D.FreezeRotation;
 
             var collider = player.AddComponent<BoxCollider2D>();
-            collider.size = new Vector2(0.85f, 0.85f);
+            FitBoxColliderToOpaqueSprite(collider, spriteRenderer);
 
             var playerController = player.AddComponent<PlayerController>();
             ConfigurePlayerController(playerController, rigidbody);
@@ -366,7 +367,7 @@ namespace CindarsHope.Editor.SceneCreation
 
             var trigger = triggerObject.AddComponent<CircleCollider2D>();
             trigger.isTrigger = true;
-            trigger.radius = 0.45f;
+            trigger.radius = 0.55f;
 
             var relay = triggerObject.AddComponent<InteractionTriggerRelay>();
             relay.Configure(interactionSystem);
@@ -609,7 +610,7 @@ namespace CindarsHope.Editor.SceneCreation
 
             var collider = treeObject.AddComponent<BoxCollider2D>();
             collider.isTrigger = false;
-            FitBoxColliderToSprite(collider, spriteRenderer);
+            FitBoxColliderToOpaqueSprite(collider, spriteRenderer);
         }
 
         private sealed class ShopUiReferences
@@ -1094,17 +1095,22 @@ namespace CindarsHope.Editor.SceneCreation
             return pointObject;
         }
 
-        private static void FitBoxColliderToSprite(BoxCollider2D collider, SpriteRenderer spriteRenderer)
+        private static void FitBoxColliderToOpaqueSprite(BoxCollider2D collider, SpriteRenderer spriteRenderer)
         {
             if (collider == null || spriteRenderer == null || spriteRenderer.sprite == null)
             {
-                Debug.LogWarning($"FitBoxColliderToSprite: cannot fit collider — collider, renderer, or sprite is null.");
+                Debug.LogWarning("FitBoxColliderToOpaqueSprite: cannot fit collider — collider, renderer, or sprite is null.");
                 return;
             }
 
-            var b = spriteRenderer.sprite.bounds;
-            collider.size = new Vector2(b.size.x, b.size.y);
-            collider.offset = new Vector2(b.center.x, b.center.y);
+            if (!SpriteOpaqueBoundsUtility.TryGetOpaqueLocalBounds(spriteRenderer.sprite, 0.05f, out var localBounds))
+            {
+                Debug.LogWarning($"FitBoxColliderToOpaqueSprite: could not determine bounds for '{spriteRenderer.sprite.name}'.");
+                return;
+            }
+
+            collider.size   = new Vector2(localBounds.size.x, localBounds.size.y);
+            collider.offset = new Vector2(localBounds.center.x, localBounds.center.y);
         }
 
         private static void CreateDecoration(Transform parent, string name, Vector3 position, Vector3 scale, Color color)

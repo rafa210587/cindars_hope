@@ -26,6 +26,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using CindarsHope.UI.Hotbar;
 using CindarsHope.UI.Modal;
+using CindarsHope.Editor.Validation;
 
 namespace CindarsHope.Editor.SceneCreation
 {
@@ -39,6 +40,7 @@ namespace CindarsHope.Editor.SceneCreation
         private const string TreeDataPath = "Assets/_Game/Data/World/Trees/Tree_Basic.asset";
         private const string GameScaleConfigPath = "Assets/_Game/Data/Config/GameScaleConfig.asset";
         private const string BuiltinSpritePath = "UI/Skin/UISprite.psd";
+        private const string SpellDatabasePath = "Assets/_Game/Data/Combat/SpellDatabase.asset";
 
         [MenuItem("CindarsHope/Advanced/Legacy/Scenes/Create MVP FarmScene")]
         public static void CreateSceneFromMenu()
@@ -222,6 +224,16 @@ namespace CindarsHope.Editor.SceneCreation
                 Debug.LogWarning($"ItemDatabaseSO not found at {ItemDatabasePath}. Assign it manually on GameBootstrap.");
             }
 
+            var spellDatabase = AssetDatabase.LoadAssetAtPath<SpellDatabaseSO>(SpellDatabasePath);
+            if (spellDatabase != null)
+            {
+                SetReference(serializedBootstrap, "_spellDatabase", spellDatabase);
+            }
+            else
+            {
+                Debug.LogWarning($"SpellDatabaseSO not found at {SpellDatabasePath}. Assign it manually on GameBootstrap.");
+            }
+
             serializedBootstrap.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(bootstrap);
         }
@@ -368,7 +380,7 @@ namespace CindarsHope.Editor.SceneCreation
             rigidbody.constraints = RigidbodyConstraints2D.FreezeRotation;
 
             var collider = player.AddComponent<BoxCollider2D>();
-            collider.size = new Vector2(0.85f, 0.85f);
+            FitBoxColliderToOpaqueSprite(collider, spriteRenderer);
 
             var playerController = player.AddComponent<PlayerController>();
             ConfigurePlayerController(playerController, rigidbody);
@@ -376,6 +388,15 @@ namespace CindarsHope.Editor.SceneCreation
             var interactionSystem = player.AddComponent<InteractionSystem>();
             var interactionTrigger = CreateInteractionTrigger(player.transform, interactionSystem);
             ConfigureInteractionSystem(interactionSystem, interactionTrigger);
+
+            var spellCaster = player.AddComponent<CindarsHope.Combat.PlayerSpellCaster>();
+            var serializedCaster = new SerializedObject(spellCaster);
+            SetReference(serializedCaster, "_playerController", playerController);
+            serializedCaster.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(spellCaster);
+
+            player.AddComponent<FireballItemBridge>();
+
             return player.transform;
         }
 
@@ -389,7 +410,7 @@ namespace CindarsHope.Editor.SceneCreation
 
             var trigger = triggerObject.AddComponent<CircleCollider2D>();
             trigger.isTrigger = true;
-            trigger.radius = 0.45f;
+            trigger.radius = 0.55f;
 
             var relay = triggerObject.AddComponent<InteractionTriggerRelay>();
             relay.Configure(interactionSystem);
@@ -686,7 +707,7 @@ namespace CindarsHope.Editor.SceneCreation
 
             var blockingCollider = fishingObject.AddComponent<BoxCollider2D>();
             blockingCollider.isTrigger = false;
-            blockingCollider.size = new Vector2(0.10f, 0.105f);
+            FitLakeBlockingCollider(blockingCollider, spriteRenderer);
 
             var fishingSpot = fishingObject.AddComponent<FishingSpot>();
             var serializedFishing = new SerializedObject(fishingSpot);
@@ -922,7 +943,7 @@ namespace CindarsHope.Editor.SceneCreation
 
             var collider = treeObject.AddComponent<BoxCollider2D>();
             collider.isTrigger = false;
-            FitBoxColliderToSprite(collider, spriteRenderer);
+            FitBoxColliderToOpaqueSprite(collider, spriteRenderer);
 
             var treeNode = treeObject.AddComponent<TreeNode>();
             var serializedTree = new SerializedObject(treeNode);
@@ -936,17 +957,37 @@ namespace CindarsHope.Editor.SceneCreation
             return treeNode;
         }
 
-        private static void FitBoxColliderToSprite(BoxCollider2D collider, SpriteRenderer spriteRenderer)
+        private static void FitBoxColliderToOpaqueSprite(BoxCollider2D collider, SpriteRenderer spriteRenderer)
         {
             if (collider == null || spriteRenderer == null || spriteRenderer.sprite == null)
             {
-                Debug.LogWarning($"FitBoxColliderToSprite: cannot fit collider — collider, renderer, or sprite is null.");
+                Debug.LogWarning("FitBoxColliderToOpaqueSprite: cannot fit collider — collider, renderer, or sprite is null.");
                 return;
             }
 
-            var b = spriteRenderer.sprite.bounds;
-            collider.size = new Vector2(b.size.x, b.size.y);
-            collider.offset = new Vector2(b.center.x, b.center.y);
+            if (!SpriteOpaqueBoundsUtility.TryGetOpaqueLocalBounds(spriteRenderer.sprite, 0.05f, out var localBounds))
+            {
+                Debug.LogWarning($"FitBoxColliderToOpaqueSprite: could not determine bounds for '{spriteRenderer.sprite.name}'.");
+                return;
+            }
+
+            collider.size   = new Vector2(localBounds.size.x, localBounds.size.y);
+            collider.offset = new Vector2(localBounds.center.x, localBounds.center.y);
+        }
+
+        private static void FitLakeBlockingCollider(BoxCollider2D collider, SpriteRenderer spriteRenderer)
+        {
+            const float lakeColliderScale = 0.92f;
+            if (collider == null || spriteRenderer == null || spriteRenderer.sprite == null)
+            {
+                collider.size = new Vector2(0.92f, 0.92f);
+                return;
+            }
+
+            var sprite = spriteRenderer.sprite;
+            var spriteSize = sprite.rect.size / sprite.pixelsPerUnit;
+            var fitSize = spriteSize * lakeColliderScale;
+            collider.size = new Vector2(fitSize.x, fitSize.y);
         }
 
         private static void CreateBounds()

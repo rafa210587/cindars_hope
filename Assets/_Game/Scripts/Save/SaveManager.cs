@@ -91,6 +91,9 @@ namespace CindarsHope.Save
                 _hotbarState.SetSlot(0, "item_seed_wheat");
                 _hotbarState.SetSlot(1, "item_seed_carrot");
                 _hotbarState.SetSlot(2, "item_tool_fishing_rod_basic");
+                _hotbarState.SetSlot(3, "item_weapon_bow_basic");
+                _hotbarState.SetSlot(4, "item_ammo_arrow_basic");
+                _hotbarState.SetSlot(5, "item_spell_fireball_test");
             }
         }
 
