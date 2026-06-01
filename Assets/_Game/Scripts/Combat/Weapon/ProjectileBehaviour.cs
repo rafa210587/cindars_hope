@@ -13,7 +13,9 @@ namespace CindarsHope.Combat.Weapon
         [SerializeField] private DamageType _damageType = DamageType.Physical;
         [SerializeField] private float _knockbackForce = 2f;
         [SerializeField] private Rigidbody2D _rigidbody;
-        [SerializeField] private CircleCollider2D _collider;
+        // Keep this serialized field as Collider2D so projectile prefabs can use either
+        // CircleCollider2D or BoxCollider2D without Unity YAML type mismatch errors.
+        [SerializeField] private Collider2D _collider;
         [SerializeField] private CindarsHope.Combat.StatusEffect.StatusEffectSO _statusEffect;
         [SerializeField] private float _statusApplyChance = 0f;
 
@@ -25,7 +27,7 @@ namespace CindarsHope.Combat.Weapon
             if (_rigidbody == null)
                 _rigidbody = GetComponent<Rigidbody2D>();
             if (_collider == null)
-                _collider = GetComponent<CircleCollider2D>();
+                _collider = GetComponent<Collider2D>();
 
             _spawnPosition = transform.position;
         }
