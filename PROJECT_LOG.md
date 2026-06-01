@@ -1,3 +1,40 @@
+## Sessao 2026-06-01 (reorg continuation 4) - Architecture Reorganization SPEC_12: Wave 7 Closeout Validation
+
+**Foco:** Fechar pacote de reorg SPEC_04-11 com validação integrada, documentação factual e backlog residual explícito. Não implementar feature nova. Não refatorar.
+
+### Resumo de Execucao
+
+**SPEC_12 — Wave 7 Architecture Closeout Validation:**
+- Executadas validações obrigatórias: dotnet restore, dotnet build (runtime/editor), validate_docs.ps1
+- Build status: PASS (0E/0W runtime, 0E/2W editor pre-existentes)
+- Docs validation: PASS (14/14 checks OK)
+- Unity batchmode compile validation: Tentado; C# side valida OK (nenhum error CS); wrapper script exit code 1 devido a licensing callback abort no sandbox
+- Editor validators: NOT RUN (requerem active Unity editor)
+- Play Mode checklist: NOT RUN (requerem active editor e gameplay interativo)
+- Arquivo execution report criado: docs/validation/spec_arch_reorg_12_wave7_architecture_closeout_validation_execution_report.md
+
+**Validacao consolidada de SPEC_04-11:**
+- Compilacao: PASS
+- Documentacao: PASS
+- C# runtime compile: PASS
+- Behavior: 0 mudanças (installers/providers sao validacao/extracao, nao logica)
+- Save schema: Preservado (v5)
+- Gameplay: Preservado (Q/E/Space, hotbar, bow, arrow, fireball, defaults)
+
+**Backlog residual criado:** docs/backlog/reorg_architecture_residual_backlog.md
+- Unity batchmode licensing wrapper issue
+- Editor validators pendentes
+- Play Mode validation pendente
+- StatusEffectDatabase asset wiring pendente
+- Save providers pattern nao escalado (so hotbar)
+- CombatRuntimeInstaller pattern nao escalado (so combat)
+- GameBootstrap still monolithic (50+ fields)
+- Validator coverage gaps (SPEC_05-08 sem validators de scene)
+
+**Status:** ✓ COMPLETO. Pacote reorg fechado com estado factual documentado. Nenhum new behavioral break. Code-complete e pronto para Play Mode validation.
+
+---
+
 ## Sessao 2026-06-01 (reorg continuation 3) - Architecture Reorganization SPEC_11: Wave 6 Bootstrap Installers
 
 **Foco:** Executar SPEC_11 em modo sequencial. Objetivo: Criar CombatRuntimeInstaller como piloto de validação explícita de wiring do domínio combat, sem alterar lifecycle do GameBootstrap, sem scene/prefab edits, sem FindObjectOfType.

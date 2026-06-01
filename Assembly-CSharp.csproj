@@ -63,6 +63,7 @@
     <Compile Include="Assets\_Game\Scripts\SceneManagement\SceneTransitionState.cs" />
     <Compile Include="Assets\_Game\Scripts\Core\Events\PlayerProgressionEvents.cs" />
     <Compile Include="Assets\_Game\Scripts\NPC\DialogueNode.cs" />
+    <Compile Include="Assets\_Game\Scripts\Save\Providers\HotbarSectionProvider.cs" />
     <Compile Include="Assets\_Game\Scripts\Core\Events\PlayerDiedEvent.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextEventHandler.cs" />
     <Compile Include="Assets\_Game\Scripts\Skills\SkillPassiveApplicator.cs" />
@@ -77,6 +78,7 @@
     <Compile Include="Assets\_Game\Scripts\Save\SaveInput.cs" />
     <Compile Include="Assets\_Game\Scripts\Cave\Runtime\CaveBossGateService.cs" />
     <Compile Include="Assets\_Game\Scripts\World\Data\TreeDataSO.cs" />
+    <Compile Include="Assets\_Game\Scripts\Inventory\Data\ItemUseKind.cs" />
     <Compile Include="Assets\_Game\Scripts\SceneManagement\FarmSceneRuntimeStateCache.cs" />
     <Compile Include="Assets\_Game\Scripts\Economy\ShopDataSO.cs" />
     <Compile Include="Assets\_Game\Scripts\Save\Migrations\SaveV4ToV5Migration.cs" />
@@ -90,6 +92,7 @@
     <Compile Include="Assets\_Game\Scripts\Save\Migrations\SaveMigrationContext.cs" />
     <Compile Include="Assets\_Game\Scripts\Inventory\ItemUseManager.cs" />
     <Compile Include="Assets\_Game\Scripts\UI\Shop\ShopPanelLayoutUtility.cs" />
+    <Compile Include="Assets\_Game\Scripts\Combat\CombatActionContext.cs" />
     <Compile Include="Assets\_Game\Scripts\Core\Events\ManaChangedEvent.cs" />
     <Compile Include="Assets\_Game\Scripts\NPC\DialogueTreeSO.cs" />
     <Compile Include="Assets\_Game\Scripts\Cave\Data\ResourceNodeDataSO.cs" />
@@ -100,8 +103,6 @@
     <Compile Include="Assets\_Game\Scripts\Enemy\AIBehaviorSO.cs" />
     <Compile Include="Assets\_Game\Scripts\Cave\Runtime\EnemySpawnPlan.cs" />
     <Compile Include="Assets\_Game\Scripts\Save\SaveManager.cs" />
-    <Compile Include="Assets\_Game\Scripts\Save\ISaveSectionProvider.cs" />
-    <Compile Include="Assets\_Game\Scripts\Save\Providers\HotbarSectionProvider.cs" />
     <Compile Include="Assets\_Game\Scripts\Core\StatusEffect.cs" />
     <Compile Include="Assets\_Game\Scripts\NPC\PipReceptionController.cs" />
     <Compile Include="Assets\_Game\Scripts\UI\Hotbar\HotbarSaveData.cs" />
@@ -112,6 +113,7 @@
     <Compile Include="Assets\_Game\Scripts\Cave\Generation\CaveGenerationDebugPrinter.cs" />
     <Compile Include="Assets\_Game\Scripts\Combat\HitFlashController.cs" />
     <Compile Include="Assets\_Game\Scripts\Cave\Runtime\CaveRuntimeMaterializer.cs" />
+    <Compile Include="Assets\_Game\Scripts\Core\Bootstrap\Installers\CombatRuntimeInstaller.cs" />
     <Compile Include="Assets\_Game\Scripts\Combat\Data\EnemyActionDatabaseSO.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextSelector_A.cs" />
     <Compile Include="Assets\_Game\Scripts\Combat\EnemyDatabaseSO.cs" />
@@ -128,6 +130,7 @@
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\SimpleScript.cs" />
     <Compile Include="Assets\_Game\Scripts\Player\Death\CorpseSaveData.cs" />
     <Compile Include="Assets\_Game\Scripts\Cave\Runtime\CaveSnapshotService.cs" />
+    <Compile Include="Assets\_Game\Scripts\Combat\Weapon\ProjectileSpawnResult.cs" />
     <Compile Include="Assets\_Game\Scripts\UI\InventoryPanelController.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark04.cs" />
     <Compile Include="Assets\_Game\Scripts\Cave\Runtime\CaveLayoutHashGenerator.cs" />
@@ -151,12 +154,6 @@
     <Compile Include="Assets\_Game\Scripts\Core\Data\CombatRuntimeDatabasesRegistrySO.cs" />
     <Compile Include="Assets\_Game\Scripts\Loot\LootTableSO.cs" />
     <Compile Include="Assets\_Game\Scripts\Combat\PlayerAttackController.cs" />
-    <Compile Include="Assets\_Game\Scripts\Combat\AttackResult.cs" />
-    <Compile Include="Assets\_Game\Scripts\Combat\BowArrowAttackService.cs" />
-    <Compile Include="Assets\_Game\Scripts\Combat\SpellCastService.cs" />
-    <Compile Include="Assets\_Game\Scripts\Combat\CombatActionContext.cs" />
-    <Compile Include="Assets\_Game\Scripts\Combat\CooldownHelper.cs" />
-    <Compile Include="Assets\_Game\Scripts\Combat\EquippedItemResolver.cs" />
     <Compile Include="Assets\_Game\Scripts\Craft\Data\RecipeDatabaseSO.cs" />
     <Compile Include="Assets\_Game\Scripts\World\ResourceNodeRegistry.cs" />
     <Compile Include="Assets\_Game\Scripts\Core\Events\CaveRunRegeneratedEvent.cs" />
@@ -187,6 +184,7 @@
     <Compile Include="Assets\_Game\Scripts\Interaction\DebugInteractable.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark01.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TextMeshSpawner.cs" />
+    <Compile Include="Assets\_Game\Scripts\Combat\Weapon\ProjectileSpawnRequest.cs" />
     <Compile Include="Assets\_Game\Scripts\UI\Shop\SellPanel.cs" />
     <Compile Include="Assets\_Game\Scripts\Inventory\InventoryAddResult.cs" />
     <Compile Include="Assets\_Game\Scripts\Cave\Runtime\VisitedLevelSnapshot.cs" />
@@ -221,9 +219,6 @@
     <Compile Include="Assets\_Game\Scripts\Farm\FarmPlot.cs" />
     <Compile Include="Assets\_Game\Scripts\Cave\Runtime\CaveEntryController.cs" />
     <Compile Include="Assets\_Game\Scripts\Core\Data\WeaponDatabaseSO.cs" />
-    <Compile Include="Assets\_Game\Scripts\Core\Data\StatusEffectDatabaseSO.cs" />
-    <Compile Include="Assets\_Game\Scripts\Core\Bootstrap\Installers\CombatRuntimeInstallContext.cs" />
-    <Compile Include="Assets\_Game\Scripts\Core\Bootstrap\Installers\CombatRuntimeInstaller.cs" />
     <Compile Include="Assets\_Game\Scripts\Combat\Magic\SpellDataSO.cs" />
     <Compile Include="Assets\_Game\Scripts\Cave\Generation\CaveProceduralGenerator.cs" />
     <Compile Include="Assets\_Game\Scripts\Cave\Resources\ResourceNodeToolCheckResult.cs" />
@@ -237,6 +232,7 @@
     <Compile Include="Assets\_Game\Scripts\Player\FireballUseHandler.cs" />
     <Compile Include="Assets\_Game\Scripts\SceneManagement\SceneSpawnPoint.cs" />
     <Compile Include="Assets\_Game\Scripts\Equipment\EquipmentSlot.cs" />
+    <Compile Include="Assets\_Game\Scripts\Core\Data\StatusEffectDatabaseSO.cs" />
     <Compile Include="Assets\_Game\Scripts\Core\Events\PlayerHitEvent.cs" />
     <Compile Include="Assets\_Game\Scripts\SceneManagement\FarmSceneRuntimeReferenceInstaller.cs" />
     <Compile Include="Assets\_Game\Scripts\UI\Shop\SellPanelItem.cs" />
@@ -249,6 +245,7 @@
     <Compile Include="Assets\_Game\Scripts\Player\EnvironmentalExposureManager.cs" />
     <Compile Include="Assets\_Game\Scripts\Combat\Data\EnemyTelegraphProfileSO.cs" />
     <Compile Include="Assets\_Game\Scripts\Cave\Death\CaveDeathEventHandler.cs" />
+    <Compile Include="Assets\_Game\Scripts\Combat\Weapon\ProjectileSpawnService.cs" />
     <Compile Include="Assets\_Game\Scripts\Core\Events\PlayerLevelChangedEvent.cs" />
     <Compile Include="Assets\_Game\Scripts\Player\Death\Corpse.cs" />
     <Compile Include="Assets\_Game\Scripts\UI\HUD\ManaHUD.cs" />
@@ -288,6 +285,7 @@
     <Compile Include="Assets\_Game\Scripts\Interaction\InteractionSystem.cs" />
     <Compile Include="Assets\_Game\Scripts\Combat\Data\EnemyFactionSO.cs" />
     <Compile Include="Assets\_Game\Scripts\UI\Dialogue\DialogueModal.cs" />
+    <Compile Include="Assets\_Game\Scripts\Combat\BowArrowAttackService.cs" />
     <Compile Include="Assets\_Game\Scripts\Farm\Data\SeedDataSO.cs" />
     <Compile Include="Assets\_Game\Scripts\Player\Progression\PlayerAttributeType.cs" />
     <Compile Include="Assets\_Game\Scripts\Core\Events\FishCaughtEvent.cs" />
@@ -296,19 +294,18 @@
     <Compile Include="Assets\_Game\Scripts\Combat\DamageCalculator.cs" />
     <Compile Include="Assets\_Game\Scripts\Player\StatusEffectManager.cs" />
     <Compile Include="Assets\_Game\Scripts\Combat\Weapon\ProjectileBehaviour.cs" />
-    <Compile Include="Assets\_Game\Scripts\Combat\Weapon\ProjectileSpawnRequest.cs" />
-    <Compile Include="Assets\_Game\Scripts\Combat\Weapon\ProjectileSpawnResult.cs" />
-    <Compile Include="Assets\_Game\Scripts\Combat\Weapon\ProjectileSpawnService.cs" />
     <Compile Include="Assets\_Game\Scripts\Cave\Runtime\CaveBossDefeatMonitor.cs" />
     <Compile Include="Assets\_Game\Scripts\Core\Events\StatusAndDamageEvents.cs" />
     <Compile Include="Assets\_Game\Scripts\Core\Events\PlayerActionFeedbackEvent.cs" />
     <Compile Include="Assets\_Game\Scripts\UI\Death\CorpseRecoveryModal.cs" />
     <Compile Include="Assets\_Game\Scripts\Core\Events\ItemCraftedEvent.cs" />
     <Compile Include="Assets\_Game\Scripts\UI\DebugHud.cs" />
+    <Compile Include="Assets\_Game\Scripts\Inventory\Data\ItemUseContractResolver.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_ExampleScript_01.cs" />
     <Compile Include="Assets\_Game\Scripts\Locations\AnyaFountainInteractable.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMPro_InstructionOverlay.cs" />
     <Compile Include="Assets\_Game\Scripts\Cave\Generation\CaveGenerationPointType.cs" />
+    <Compile Include="Assets\_Game\Scripts\Combat\CooldownHelper.cs" />
     <Compile Include="Assets\_Game\Scripts\Combat\StatusEffect\StatusEffectSO.cs" />
     <Compile Include="Assets\_Game\Scripts\Cave\Death\CaveDeathResolver.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexShakeB.cs" />
@@ -328,6 +325,7 @@
     <Compile Include="Assets\_Game\Scripts\Equipment\RepairKitManager.cs" />
     <Compile Include="Assets\_Game\Scripts\Core\Events\PlayerAttackedEvent.cs" />
     <Compile Include="Assets\_Game\Scripts\Save\Migrations\SaveMigrationResult.cs" />
+    <Compile Include="Assets\_Game\Scripts\Combat\AttackResult.cs" />
     <Compile Include="Assets\_Game\Scripts\Core\Events\HungerChangedEvent.cs" />
     <Compile Include="Assets\_Game\Scripts\Combat\Data\EnemyActionSetDatabaseSO.cs" />
     <Compile Include="Assets\_Game\Scripts\Cave\Data\CaveBossGateRegistrySO.cs" />
@@ -367,6 +365,7 @@
     <Compile Include="Assets\_Game\Scripts\Combat\Data\EnemyVulnerabilityProfileSO.cs" />
     <Compile Include="Assets\_Game\Scripts\Core\Events\SkillTreeEvents.cs" />
     <Compile Include="Assets\_Game\Scripts\Core\Events\StaminaChangedEvent.cs" />
+    <Compile Include="Assets\_Game\Scripts\Core\Bootstrap\Installers\CombatRuntimeInstallContext.cs" />
     <Compile Include="Assets\_Game\Scripts\Combat\KnockbackController.cs" />
     <Compile Include="Assets\_Game\Scripts\Enemy\EnemySpawnRequest.cs" />
     <Compile Include="Assets\_Game\Scripts\Combat\CombatResistanceProfile.cs" />
@@ -378,6 +377,7 @@
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TeleType.cs" />
     <Compile Include="Assets\_Game\Scripts\World\TreeNode.cs" />
     <Compile Include="Assets\_Game\Scripts\Core\Events\CropHarvestedEvent.cs" />
+    <Compile Include="Assets\_Game\Scripts\Combat\SpellCastService.cs" />
     <Compile Include="Assets\_Game\Scripts\Save\Migrations\ISaveMigration.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextEventCheck.cs" />
     <Compile Include="Assets\_Game\Scripts\UI\Modal\ModalManager.cs" />
@@ -411,6 +411,7 @@
     <Compile Include="Assets\_Game\Scripts\Core\Events\TreeChoppedEvent.cs" />
     <Compile Include="Assets\_Game\Scripts\Inventory\InventoryStack.cs" />
     <Compile Include="Assets\_Game\Scripts\UI\HUD\PlayerStatusHUD.cs" />
+    <Compile Include="Assets\_Game\Scripts\Save\ISaveSectionProvider.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextSelector_B.cs" />
     <Compile Include="Assets\_Game\Scripts\Tools\ToolType.cs" />
     <Compile Include="Assets\_Game\Scripts\UI\Locations\AnyaFountainMenu.cs" />
@@ -437,8 +438,6 @@
     <Compile Include="Assets\_Game\Scripts\Economy\SellPoint.cs" />
     <Compile Include="Assets\_Game\Scripts\Core\Events\HungerEmptyEvent.cs" />
     <Compile Include="Assets\_Game\Scripts\Inventory\Data\ItemDataSO.cs" />
-    <Compile Include="Assets\_Game\Scripts\Inventory\Data\ItemUseKind.cs" />
-    <Compile Include="Assets\_Game\Scripts\Inventory\Data\ItemUseContractResolver.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\ShaderPropAnimator.cs" />
     <Compile Include="Assets\_Game\Scripts\Core\Events\GamePhaseChangedEvent.cs" />
     <Compile Include="Assets\_Game\Scripts\Core\Events\EnvironmentalExposureEvents.cs" />
@@ -463,6 +462,7 @@
     <Compile Include="Assets\_Game\Scripts\Combat\Weapon\WeaponDataResolver.cs" />
     <Compile Include="Assets\_Game\Scripts\Cave\Runtime\CaveEnemySpawnPlan.cs" />
     <Compile Include="Assets\_Game\Scripts\NPC\NpcDataSO.cs" />
+    <Compile Include="Assets\_Game\Scripts\Combat\EquippedItemResolver.cs" />
     <Compile Include="Assets\_Game\Scripts\Combat\StatusEffect\ActiveStatusEffect.cs" />
     <Compile Include="Assets\_Game\Scripts\Inventory\InventoryManager.cs" />
     <Compile Include="Assets\_Game\Scripts\Enemy\EnemyBestiaryEntrySO.cs" />
