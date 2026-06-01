@@ -1,3 +1,38 @@
+> **Historical log only. Do not use as default execution context.**
+> **Agents should read `docs/00_PROJECT/CURRENT_STATE.md` instead.**
+> Use this file only for: audit, reconciliation, regression investigation, or explicit human request.
+
+---
+
+## Sessao 2026-06-01 (SPEC_DOCS_30) - Context Governance and Document Reorganization (DOCUMENTATION)
+
+**Foco:** Reorganização documental para reduzir custo de contexto em FASE 10+. Criar sistema de governança em `docs/00_PROJECT/`. Sem alterações em runtime, C# ou save schema.
+
+### Resumo de Execucao
+
+**Phase 0 — Inventory Audit:** 140+ documentos inventariados. 28 candidatos para delete (SPEC_DOCS_31). Alto risco: `docs/specs/a_implementar/reorg/` parece ativo mas README_STATUS.md marca como CLOSED.
+
+**Deliverables criados:**
+- `docs/00_PROJECT/` — CURRENT_STATE.md, DOCUMENT_GOVERNANCE.md, HISTORY_LOG_POLICY.md, DOCUMENT_DELETE_CANDIDATES.md, DOCUMENT_INDEX.md, ROADMAP.md
+- `docs/03_SPECS/SPEC_TEMPLATE.md` — template com YAML frontmatter
+- `docs/04_REFINEMENTS/README.md` + `REFINEMENT_TEMPLATE.md`
+- `docs/05_VALIDATION/README.md` + `current/LAST_VALIDATION_STATUS.md` + `VALIDATION_REPORT_TEMPLATE.md`
+- `docs/06_BACKLOG/current_backlog.md` — backlog operacional (Priority 0: Phase 2-3 blocking)
+
+**Arquivos modificados:**
+- `AGENTS.md` — seção Context Reading Policy + regras de conflito
+- `PROJECT_LOG.md` — governance header
+- `docs/specs/SPEC_EXECUTION_ORDER.md` — governance header
+- `docs/IMPLEMENTATION_STATUS.md` — governance header
+
+**Validacao:** docs PASS 14/14. Build NE (sem alteracoes C#). Unity NOT RUN (docs-only).
+
+**Evidencia:** `docs/validation/spec_docs_30_context_governance_and_document_reorg_execution_report.md`
+
+**Pendente (SPEC_DOCS_31):** delecao fisica dos 28 candidatos, move de specs reorg para archive, move SPEC_18-28 para implementados (bloqueado em Phase 2-3).
+
+---
+
 ## Sessao 2026-06-01 (SPEC_29B) - Human Acceptance Reconciliation (DOCUMENTATION RECONCILIATION)
 
 **Foco:** Reconciliar relatórios finais do MVP após SPEC_18-29: corrigir inconsistências documentais, registrar que Phase 2-3 NÃO foi executado, manter honestidade sobre status de aceitação humana.

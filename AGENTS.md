@@ -54,30 +54,41 @@ Antes de executar tarefas, consultar:
 - **DamageRequest Construction**: Padrão para criar requisições de dano
 - **Save/Load Data Pattern**: Persistência correta (IDs simples, nunca refs Unity)
 
+## Context Reading Policy
+
+Para tarefas de implementacao, ler somente:
+
+1. `AGENTS.md` ou `CLAUDE.md`
+2. `docs/00_PROJECT/CURRENT_STATE.md` — contexto de execucao primario (~80 linhas)
+3. A spec alvo
+4. Arquivos explicitamente citados pela spec
+5. O relatorio de validacao imediatamente anterior, somente se listado como dependencia
+
+Nao ler por padrao:
+
+- `PROJECT_LOG.md` — somente para: auditoria, reconciliacao, investigacao de regressao, pedido humano explicito
+- `ROADMAP.md` — somente para: planejamento de novas waves, criacao de specs, repriorizacao
+- GDD completo
+- refinements antigos
+- specs arquivadas ou superseded
+- relatorios de validacao nao relacionados
+- `docs_old/**`
+
+### Resolucao de conflitos
+
+- Spec vs. roadmap → seguir a spec.
+- Spec vs. refinement → seguir a spec.
+- Spec vs. CURRENT_STATE → parar e reportar a inconsistencia ao humano.
+- PROJECT_LOG vs. CURRENT_STATE → preferir CURRENT_STATE e reportar a divergencia.
+
+---
+
 ## Fluxo operacional
 
 Antes de qualquer tarefa, seguir:
 
 - `docs/operations/AGENT_EXECUTION_PROTOCOL.md`
-- `docs/operations/READING_MATRIX.md`
 - Consultar memory se tarefa é similar a anteriores
-
-Leitura minima:
-
-- `AGENTS.md` ou `CLAUDE.md`.
-- `PROJECT_LOG.md` - somente topo/entradas recentes.
-- `docs/IMPLEMENTATION_STATUS.md`.
-- `docs/operations/AGENT_EXECUTION_PROTOCOL.md`.
-
-Nao ler por padrao:
-
-- `docs_old/**`
-- crosswalk completo
-- GDD completo
-- arquitetura completa
-- todos os registries
-- todos os refinements
-- documentos historicos fora do alvo
 
 Ao finalizar implementacao de spec:
 

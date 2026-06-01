@@ -1,5 +1,9 @@
 # SPEC EXECUTION ORDER
 
+> **Dependency registry and execution sequence.**
+> Agents implementing a spec: read ONLY the row for the target spec and its direct dependencies.
+> Do not read the full file as part of minimum context — use `docs/00_PROJECT/CURRENT_STATE.md` instead.
+
 Regra: uma spec so pode ser implementada se suas dependencias anteriores estiverem reconciliadas e sem pendencia bloqueadora.
 
 ---

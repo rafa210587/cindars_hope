@@ -1,5 +1,9 @@
 # Cindar's Hope - Implementation Status
 
+> **Agents executing a spec should NOT read this full file.**
+> For current project state and active queue, read `docs/00_PROJECT/CURRENT_STATE.md` instead.
+> Read this file only for: full implementation history, audit, or explicit human request.
+
 > Status: tracking reconciliado por validacao estatica de codigo em 2026-05-26.
 > Fonte oficial de specs: `docs/specs/`.
 > A pasta raiz `specs/` foi removida e nao deve ser recriada.
