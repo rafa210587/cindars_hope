@@ -73,10 +73,11 @@ namespace CindarsHope.EditorTools.Validation
 
         private void ValidateItemData(ItemDatabaseSO itemDb, WeaponDatabaseSO weaponDb, SpellDatabaseSO spellDb, ValidationReport report)
         {
-            if (itemDb.Items == null || itemDb.Items.Count == 0)
+            var items = itemDb.All;
+            if (items == null || items.Count == 0)
                 return;
 
-            foreach (var item in itemDb.Items)
+            foreach (var item in items)
             {
                 if (item == null)
                     continue;
@@ -143,24 +144,23 @@ namespace CindarsHope.EditorTools.Validation
 
         private void ValidateWeaponData(WeaponDatabaseSO weaponDb, ValidationReport report)
         {
-            if (weaponDb.Weapons == null || weaponDb.Weapons.Count == 0)
+            var weapons = weaponDb.All;
+            if (weapons == null || weapons.Count == 0)
                 return;
 
-            foreach (var weapon in weaponDb.Weapons)
+            foreach (var weapon in weapons)
             {
                 if (weapon == null || weapon.Type != WeaponType.Bow)
                     continue;
 
                 // FR-004: Bow must have valid projectile config
                 var assetPath = AssetDatabase.GetAssetPath(weapon);
-                var issues = false;
 
                 if (weapon.Range <= 0)
                 {
                     report.AddIssue("Weapon", "BOW_INVALID_RANGE", ValidationSeverity.Error,
                         $"Bow '{weapon.DisplayName}' has invalid Range: {weapon.Range}",
                         assetPath, weapon.DisplayName, "Set Range > 0");
-                    issues = true;
                 }
 
                 if (weapon.ProjectileSpeed <= 0)
@@ -168,7 +168,6 @@ namespace CindarsHope.EditorTools.Validation
                     report.AddIssue("Weapon", "BOW_INVALID_SPEED", ValidationSeverity.Error,
                         $"Bow '{weapon.DisplayName}' has invalid ProjectileSpeed: {weapon.ProjectileSpeed}",
                         assetPath, weapon.DisplayName, "Set ProjectileSpeed > 0");
-                    issues = true;
                 }
 
                 if (weapon.ProjectilePrefab == null)
@@ -176,17 +175,17 @@ namespace CindarsHope.EditorTools.Validation
                     report.AddIssue("Weapon", "BOW_NO_PROJECTILE", ValidationSeverity.Error,
                         $"Bow '{weapon.DisplayName}' has no ProjectilePrefab.",
                         assetPath, weapon.DisplayName, "Assign ProjectilePrefab in WeaponDataSO.");
-                    issues = true;
                 }
             }
         }
 
         private void ValidateSpellData(SpellDatabaseSO spellDb, ValidationReport report)
         {
-            if (spellDb.Spells == null || spellDb.Spells.Count == 0)
+            var spells = spellDb.All;
+            if (spells == null || spells.Count == 0)
                 return;
 
-            foreach (var spell in spellDb.Spells)
+            foreach (var spell in spells)
             {
                 if (spell == null || spell.Type != SpellType.Fireball)
                     continue;
@@ -233,11 +232,11 @@ namespace CindarsHope.EditorTools.Validation
 
         private void ValidatePlayerData(PlayerDataSO playerData, ItemDatabaseSO itemDb, ValidationReport report)
         {
-            if (playerData.StartingItems == null || playerData.StartingItems.Count == 0)
+            if (playerData.StartingItems == null || playerData.StartingItems.Length == 0)
                 return;
 
             // FR-007: Starting items validation
-            for (int i = 0; i < playerData.StartingItems.Count; i++)
+            for (int i = 0; i < playerData.StartingItems.Length; i++)
             {
                 var startingItem = playerData.StartingItems[i];
                 var assetPath = AssetDatabase.GetAssetPath(playerData);

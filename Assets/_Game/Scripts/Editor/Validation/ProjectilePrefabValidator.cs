@@ -98,10 +98,11 @@ namespace CindarsHope.EditorTools.Validation
 
         private void ValidateWeaponPrefabReferences(WeaponDatabaseSO weaponDb, ValidationReport report)
         {
-            if (weaponDb.Weapons == null || weaponDb.Weapons.Count == 0)
+            var weapons = weaponDb.All;
+            if (weapons == null || weapons.Count == 0)
                 return;
 
-            foreach (var weapon in weaponDb.Weapons)
+            foreach (var weapon in weapons)
             {
                 if (weapon == null || weapon.Type != WeaponType.Bow)
                     continue;
@@ -118,10 +119,11 @@ namespace CindarsHope.EditorTools.Validation
 
         private void ValidateSpellPrefabReferences(SpellDatabaseSO spellDb, ValidationReport report)
         {
-            if (spellDb.Spells == null || spellDb.Spells.Count == 0)
+            var spells = spellDb.All;
+            if (spells == null || spells.Count == 0)
                 return;
 
-            foreach (var spell in spellDb.Spells)
+            foreach (var spell in spells)
             {
                 if (spell == null || spell.Type != SpellType.Fireball)
                     continue;
