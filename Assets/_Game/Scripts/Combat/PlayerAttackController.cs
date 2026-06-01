@@ -116,6 +116,8 @@ namespace CindarsHope.Combat
         public void RebindStaminaManager(StaminaManager staminaManager)
         {
             _staminaManager = staminaManager;
+            // SPEC_07B: Refresh services to pick up updated stamina manager
+            RefreshServices();
         }
 
         // SPEC 14A-FIX10: explicit rebind so the installer can supply combat databases at runtime
@@ -297,6 +299,13 @@ namespace CindarsHope.Combat
             else if (weapon == null)
             {
                 Debug.LogError($"CombatLog: PlayerAttackBlocked. Reason=WeaponEquippedButNotResolved, Slot={slot}, EquippedInstanceId={equippedItemId}, ResolveError={resolveError}", this);
+                return;
+            }
+
+            // SPEC_07B: Block bow from normal weapon path — must use bow+arrow path instead
+            if (weapon.Type == WeaponType.Bow)
+            {
+                Debug.Log($"CombatLog: PlayerAttackBlocked. Reason=BowHandPressed_UseArrowHand, Slot={slot}", this);
                 return;
             }
 

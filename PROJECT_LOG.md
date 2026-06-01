@@ -1,3 +1,24 @@
+## Sessao 2026-06-01 (reorg) - Architecture Reorganization SPEC_07B: Bow Direct Weapon and Stamina Rebind Fix
+
+**Foco:** Micro-fix sequencial pós-SPEC_07. Objetivos: (1) RebindStaminaManager recria BowArrowAttackService, (2) Bow bloqueado no path normal mesmo se resolvido como WeaponId direto.
+
+### Resumo de Execucao
+
+**SPEC_07B — Micro-fix:**
+- RebindStaminaManager: +RefreshServices() — garante BowArrowAttackService usa StaminaManager atualizado
+- AttackWithSlot: +bloqueio bow pós-resolution — weapon.Type == Bow → Reason=BowHandPressed_UseArrowHand antes de cooldown/stamina
+- Efeito: Bow nunca dispara pelo path normal (redundância + segurança em profundidade)
+
+**Validacoes:**
+- dotnet build (runtime): PASS 0E/0W
+- dotnet build (editor): PASS 0E/2W (pre-existentes)
+- validate_docs.ps1: PASS (13/13 checks)
+- Comportamento: 100% preservado, risco residual muito baixo
+
+**Status:** ✓ COMPLETO. SPEC_08 liberada.
+
+---
+
 ## Sessao 2026-06-01 (reorg) - Architecture Reorganization SPEC_07: Wave 2C Bow/Arrow and Spell Services
 
 **Foco:** Executar SPEC_07 em modo sequencial. Objetivo: Extrair regras de bow+arrow e spell/fireball para services dedicados, mantendo comportamento funcional identico.
