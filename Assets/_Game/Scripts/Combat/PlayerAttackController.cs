@@ -46,6 +46,10 @@ namespace CindarsHope.Combat
         private float _dodgeEndTime;
         private bool _isDodging;
 
+        // SPEC_05: Service extraction
+        private EquippedItemResolver _itemResolver;
+        private CombatActionContext _currentActionContext;
+
         private void Start()
         {
             if (_interactionSystem == null)
@@ -80,6 +84,10 @@ namespace CindarsHope.Combat
                 _unarmedFallback.DamageType = DamageType.Physical;
                 Debug.Log("PlayerAttackController: created runtime UnarmedAttackDataSO fallback (no asset wired).", this);
             }
+
+            // SPEC_05: Initialize item resolver with current databases
+            _itemResolver = new EquippedItemResolver(_itemDatabase, _weaponDatabase, _spellDatabase, _knownWeapons);
+            _currentActionContext = new CombatActionContext();
         }
 
         private void OnEnable()
@@ -177,69 +185,18 @@ namespace CindarsHope.Combat
             AttackWithSlot(EquipmentSlot.RightHand, ref _lastRightHandAttackTime, equippedItemId);
         }
 
-        // SPEC 14A-FIX8: full resolution chain itemInstanceId -> ItemDataSO -> WeaponDataSO
-        // with explicit logging at each step. Returns null when nothing is equipped (caller will use
-        // unarmed fallback). Returns null + sets error when SOMETHING is equipped but doesn't resolve
-        // (caller must NOT silently fall back to unarmed in that case).
+        // SPEC_05: Delegated to EquippedItemResolver; kept here as wrapper for external callers
+        // Full resolution chain itemInstanceId -> ItemDataSO -> WeaponDataSO with explicit logging.
+        // Returns null when nothing is equipped (caller will use unarmed fallback).
+        // Returns null + sets error when SOMETHING is equipped but doesn't resolve.
         private WeaponDataSO ResolveEquippedWeapon(EquipmentSlot slot, string equippedItemId, out string error)
         {
-            error = null;
-
-            if (string.IsNullOrEmpty(equippedItemId))
-            {
-                Debug.Log($"CombatLog: PlayerAttackResolveSlot. Slot={slot}, EquippedInstanceId=<empty>", this);
-                return null;
-            }
-
-            Debug.Log($"CombatLog: PlayerAttackResolveSlot. Slot={slot}, EquippedInstanceId={equippedItemId}", this);
-
-            ItemDataSO itemData = null;
-            string weaponLookupId = equippedItemId;
-            bool wentThroughItemDatabase = false;
-
-            if (_itemDatabase != null && _itemDatabase.TryGetById(equippedItemId, out itemData) && itemData != null)
-            {
-                wentThroughItemDatabase = true;
-                Debug.Log($"CombatLog: PlayerAttackResolveItemData. ItemInstanceId={equippedItemId}, ItemDataId={itemData.Id}, ItemType={itemData.Category}, WeaponId='{itemData.WeaponId}'", this);
-                if (!string.IsNullOrEmpty(itemData.WeaponId))
-                {
-                    weaponLookupId = itemData.WeaponId;
-                }
-                else
-                {
-                    error = $"Item '{equippedItemId}' (Category={itemData.Category}) is not a weapon — WeaponId is empty.";
-                    Debug.Log($"CombatLog: PlayerAttackResolveWeapon. WeaponId=<none>, WeaponResolved=False, Reason=ItemNotWeapon", this);
-                    return null;
-                }
-            }
-            else
-            {
-                Debug.Log($"CombatLog: PlayerAttackResolveItemData. ItemInstanceId={equippedItemId}, ItemDataId=<not_in_itemdb>, FallingBackToDirectWeaponLookup=True", this);
-            }
-
-            var weapon = LookupWeapon(weaponLookupId);
-            Debug.Log($"CombatLog: PlayerAttackResolveWeapon. WeaponId={weaponLookupId}, WeaponResolved={weapon != null}, ViaItemDb={wentThroughItemDatabase}", this);
-
-            if (weapon == null)
-            {
-                error = $"Could not resolve WeaponDataSO for WeaponId='{weaponLookupId}' (from EquippedInstanceId='{equippedItemId}'). " +
-                        $"_itemDatabase assigned={_itemDatabase != null}, _weaponDatabase assigned={_weaponDatabase != null}, _knownWeapons count={(_knownWeapons?.Length ?? 0)}.";
-            }
-            return weapon;
+            return _itemResolver.ResolveEquippedWeapon(slot, equippedItemId, out error);
         }
 
         private WeaponDataSO LookupWeapon(string weaponId)
         {
-            if (string.IsNullOrEmpty(weaponId)) return null;
-            if (_weaponDatabase != null && _weaponDatabase.TryGetById(weaponId, out var fromDb) && fromDb != null) return fromDb;
-            if (_knownWeapons != null)
-            {
-                foreach (var w in _knownWeapons)
-                {
-                    if (w != null && w.Id == weaponId) return w;
-                }
-            }
-            return null;
+            return _itemResolver.LookupWeapon(weaponId);
         }
 
         private void AttackWithSlot(EquipmentSlot slot, ref float lastAttackTime, string equippedItemId)
@@ -300,13 +257,11 @@ namespace CindarsHope.Combat
                 return;
             }
 
-            float cooldown = weapon.BaseCooldownSeconds;
-            float attackSpeed = weapon.AttackSpeedMultiplier;
-            cooldown = cooldown / Mathf.Max(0.1f, attackSpeed);
+            float cooldown = CooldownHelper.CalculateWeaponCooldown(weapon);
 
-            if (Time.time < lastAttackTime + cooldown)
+            if (!CooldownHelper.IsCooldownExpired(lastAttackTime, cooldown))
             {
-                Debug.Log($"CombatLog: PlayerAttackBlocked. Reason=Cooldown, Slot={slot}, RemainingSeconds={(lastAttackTime + cooldown - Time.time):F2}", this);
+                Debug.Log($"CombatLog: PlayerAttackBlocked. Reason=Cooldown, Slot={slot}, RemainingSeconds={CooldownHelper.GetRemainingCooldown(lastAttackTime, cooldown):F2}", this);
                 return;
             }
 
@@ -346,10 +301,10 @@ namespace CindarsHope.Combat
                 return;
             }
 
-            float cooldown = bowWeapon.BaseCooldownSeconds / Mathf.Max(0.1f, bowWeapon.AttackSpeedMultiplier);
-            if (Time.time < lastAttackTime + cooldown)
+            float cooldown = CooldownHelper.CalculateWeaponCooldown(bowWeapon);
+            if (!CooldownHelper.IsCooldownExpired(lastAttackTime, cooldown))
             {
-                Debug.Log($"CombatLog: PlayerAttackBlocked. Reason=Cooldown, Slot={ammoSlot}, RemainingSeconds={(lastAttackTime + cooldown - Time.time):F2}", this);
+                Debug.Log($"CombatLog: PlayerAttackBlocked. Reason=Cooldown, Slot={ammoSlot}, RemainingSeconds={CooldownHelper.GetRemainingCooldown(lastAttackTime, cooldown):F2}", this);
                 return;
             }
 
@@ -388,9 +343,9 @@ namespace CindarsHope.Combat
             }
 
             float cooldown = Mathf.Max(0.1f, spellData.CooldownSeconds);
-            if (Time.time < lastAttackTime + cooldown)
+            if (!CooldownHelper.IsCooldownExpired(lastAttackTime, cooldown))
             {
-                Debug.Log($"CombatLog: PlayerAttackBlocked. Reason=Cooldown, Slot={slot}, RemainingSeconds={(lastAttackTime + cooldown - Time.time):F2}", this);
+                Debug.Log($"CombatLog: PlayerAttackBlocked. Reason=Cooldown, Slot={slot}, RemainingSeconds={CooldownHelper.GetRemainingCooldown(lastAttackTime, cooldown):F2}", this);
                 return;
             }
 
@@ -410,15 +365,10 @@ namespace CindarsHope.Combat
             Debug.Log($"CombatLog: SpellFired. Slot={slot}, Spell={spellData.Id}, Range={spellData.Range}, Speed={spellData.ProjectileSpeed}, ManaCost={spellData.ManaCost}", this);
         }
 
+        // SPEC_05: Delegated to EquippedItemResolver
         private SpellDataSO ResolveEquippedSpell(ItemDataSO itemData)
         {
-            if (itemData == null || string.IsNullOrEmpty(itemData.SpellId))
-                return null;
-
-            if (_spellDatabase != null && _spellDatabase.TryGetById(itemData.SpellId, out var spell) && spell != null)
-                return spell;
-
-            return null;
+            return _itemResolver.ResolveEquippedSpell(itemData);
         }
 
         private static EquipmentSlot GetOppositeHand(EquipmentSlot slot)

@@ -1,3 +1,40 @@
+## Sessao 2026-06-01 (reorg) - Architecture Reorganization SPEC_05: Wave 2A Combat Service Extraction
+
+**Foco:** Executar SPEC_05 em modo sequencial apos SPEC_04. Objetivo: Extrair servicos pequenos do PlayerAttackController (EquippedItemResolver, CooldownHelper) sem alterar comportamento funcional. Refactor mecanico e seguro com 100% preservacao de gameplay.
+
+### Resumo de Execucao
+
+**SPEC_05 — Wave 2A Combat Service Extraction:**
+- Criado CombatActionContext.cs (35 linhas) — contexto simples para operacoes de ataque
+- Criado EquippedItemResolver.cs (102 linhas) — resolver de items/armas/feiticos equipados com lógica de resolucao extraída
+- Criado CooldownHelper.cs (38 linhas) — helper estático para calculos e checks de cooldown
+- Refatorado PlayerAttackController.cs — delegacao para novos servicos, reducao de 597→532 linhas (65 linhas reduzidas)
+- Validacoes: dotnet build ✓ PASS (0E/0W runtime, 0E/2W pre-existentes editor), validate_docs.ps1 ✓ PASS
+
+**Comportamento Preservado:**
+- ✓ Q/E/Space input handling — nenhuma mudanca
+- ✓ E interaction priority — nenhuma mudanca
+- ✓ Bow+arrow combo — lógica idêntica
+- ✓ Fireball casting — lógica idêntica
+- ✓ Melee/unarmed fallback — lógica idêntica
+- ✓ CombatLog entries — todos 24 logs preservados com textos identicos
+- ✓ Dodge — nenhuma mudanca
+- ✓ Cooldown checks — formula preservada, refatorada para helper
+
+**Arquivos adicionados (total 3):**
+- Assets/_Game/Scripts/Combat/CombatActionContext.cs
+- Assets/_Game/Scripts/Combat/CooldownHelper.cs
+- Assets/_Game/Scripts/Combat/EquippedItemResolver.cs
+- docs/validation/spec_arch_reorg_05_wave2a_combat_service_extraction_execution_report.md
+
+**Arquivos modificados (total 2):**
+- Assets/_Game/Scripts/Combat/PlayerAttackController.cs (refator mecanico, comportamento preservado)
+- Assembly-CSharp.csproj (adicionadas 3 entradas <Compile Include>)
+
+**Status:** ✓ COMPLETO. SPEC_06 liberada. Build status: 0E/0W runtime, 0E/2W pre-existentes editor.
+
+---
+
 ## Sessao 2026-06-01 (reorg) - Architecture Reorganization Specs 02-03: Projectile + Combat Database Validators (MERGED)
 
 **Foco:** Executar SPEC_02 (projectile prefab validator) e SPEC_03 (combat database validators) em paralelo com branches isoladas. Ambas completadas com merge sequencial: SPEC_02 → SPEC_03 → dev. Nenhuma alteracao a gameplay, assets, GameBootstrap, SaveManager, PlayerAttackController, ProjectileBehaviour, scenes ou PROJECT_LOG/IMPLEMENTATION_STATUS durante execucao paralela.
