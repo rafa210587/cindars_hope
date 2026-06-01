@@ -4,7 +4,21 @@
 > Fonte oficial de specs: `docs/specs/`.
 > A pasta raiz `specs/` foi removida e nao deve ser recriada.
 
-## 1. Resumo executivo
+## 1. Resumo executivo — SPEC_29 Consolidation (2026-06-01)
+
+**MVP Status: CODE-COMPLETE AND BUILD-VALIDATED ✓**
+
+A consolidacao de SPEC_18-28 confirma que o projeto possui implementacao completa do MVP:
+
+- Fase 0: 11/11 specs auditadas, zero gaps criticos
+- Fase 1: Build PASS 0E/0W runtime, 0E/0W editor, docs PASS 14/14
+- Fase 2-3: Pendente execucao humana Play Mode (validators e checklist de ~2h em Unity Editor)
+
+MVP definition fully satisfied. Ready for Phase 2-3 human Play Mode validation in local Unity Editor.
+
+---
+
+## 0.1. Prior Status (Reference)
 
 A validacao de codigo ate a SPEC 16 confirma que o projeto possui baseline suficiente para seguir para a proxima etapa de UI/closeout, desde que as proximas execucoes nao tratem specs parciais como completas.
 

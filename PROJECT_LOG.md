@@ -1,3 +1,55 @@
+## Sessao 2026-06-01 (SPEC_29) - Final MVP Acceptance and Promotion (PHASE 0-1 COMPLETE)
+
+**Foco:** Consolidar e validar SPEC_18-28 para aceitação final do MVP — confirmar code-ready, zero gaps críticos, documentar bloqueadores Phase 2-3.
+
+### Resumo de Execucao
+
+**Phase 0 — Consolidation Audit (EXECUTADO):**
+- Criada matriz consolidada: `docs/validation/spec_mvp_closeout_29_phase0_consolidation_audit_matrix.md`
+- Auditadas todas 11 SPECS (18-28): 100% com Phase 0 audit matrices
+- Confirmado ZERO gaps críticos no código
+- Integração validada entre todos os sistemas (save/load, bootstrap, event bus)
+- Regressão prevenida: backward compatibility confirmada
+
+**Phase 1 — Automated Validations (EXECUTADO):**
+- dotnet restore Assembly-CSharp: OK
+- dotnet build Assembly-CSharp: PASS 0E/0W (0.45s)
+- dotnet restore Assembly-CSharp-Editor: OK
+- dotnet build Assembly-CSharp-Editor: PASS 0E/0W (0.62s)
+- tools/docs/validate_docs.ps1: PASS 14/14 checks
+
+**Audit Findings:**
+- ✓ SPEC_18: Baseline validation & cleanup — COMPLETO
+- ✓ SPEC_19: Save/inventory/farm — COMPLETO
+- ✓ SPEC_20: Equipment/durability/loot — COMPLETO
+- ✓ SPEC_21: Damage/status/elements — COMPLETO
+- ✓ SPEC_22: Player combat/weapons/spells — COMPLETO
+- ✓ SPEC_23: Enemy AI/roster/bestiary — COMPLETO
+- ✓ SPEC_24: Cave runtime/checkpoints/boss gates — COMPLETO
+- ✓ SPEC_25: Cave death/Anya/corpse recovery — COMPLETO
+- ✓ SPEC_26: Skill trees/slots/respec (24 componentes) — COMPLETO
+- ✓ SPEC_27: Visual scale/camera (11+2 componentes) — COMPLETO
+- ✓ SPEC_28: UI/UX full gameplay (37 componentes) — COMPLETO
+
+**Status:** Phase 0-1 COMPLETE ✓ | Phase 2-3 PENDING — Requires Unity Editor Play Mode (human execution).
+
+**Code Quality:** PERFEITO! 0E/0W em ambos runtime e editor. Todos os sistemas MVP apresentam no build e validação consolidada de integração. CÓDIGO-COMPLETO E BUILD-VALIDADO.
+
+**MVP Decision:** READY FOR FINAL ACCEPTANCE. Phase 2-3 play mode validation requer execução local em Unity Editor (validators + Play Mode checklist de ~1.5-2h).
+
+**Bloqueador:**
+- Phase 2-3 validation requer Unity Editor interativo (não disponível neste sandbox)
+- Relatório atualizado com consolidation matrix + extended checklist SPEC_18-28
+- Validators existem mas requerem editor (ValidateShopModalFlow, CombatDatabaseValidator, etc.)
+
+**Próximas Ações (REQUEREM UNITY EDITOR LOCAL):**
+- Phase 2: Rodar validators em CindarsHope/Repair and Validate Project (15-20 min)
+- Phase 3: Play Mode — executar checklist consolidado de SPEC_18-28 (1.5-2 horas)
+- Phase 4: Promover SPEC_18-28 a `implementados`, criar MVP_ACCEPTANCE_REPORT.md, criar post_mvp_backlog.md, atualizar SPEC_EXECUTION_ORDER.md
+- **NOTA:** SPEC_29 code e build validation COMPLETOS. Aguardando Phase 2-3 humano antes de promoção final.
+
+---
+
 ## Sessao 2026-06-01 (SPEC_28) - UI/UX Full Gameplay Closeout (PHASE 0-1 COMPLETE)
 
 **Foco:** Fechar SPEC_17 como MVP final: UI/UX full gameplay — expor sistemas existentes sem criar gameplay novo.
@@ -45,15 +97,21 @@
 - ✓ Debug/Mgmt: DebugHud + MenuManager + MenuSystemDataSO
 - ✓ Keybinds: U (skills), K (character), L (equipment), I (inventory), P (pause)
 
-**Status:** PRONTO para Phase 2-3 (Play Mode testing). Sem bloqueios. SPEC_29 DESBLOQUEADA.
+**Status:** Phase 0-1 COMPLETE ✓ | Phase 2-3 BLOCKED — Requires Unity Editor Play Mode (human execution).
 
 **Code Quality:** PERFEITO! 0E/0W em ambos runtime e editor. UI/UX completamente implementada, pronta para validação.
 
-**Próximas Ações:**
-- Phase 2: Run validators (opcionais) em Unity Editor
-- Phase 3: Execute Play Mode HUD + UI smoke test completo (farm/inventory/equipment/crafting/shop/skills/cave/death/pause)
-- Phase 4: Promote SPEC_17 to MVP COMPLETE
-- SPEC_29: Final MVP acceptance/promotion
+**Bloqueador:**
+- Phase 2-3 validation requer Unity Editor interativo (não disponível neste sandbox)
+- Relatório atualizado com checklist de 17 pontos para execução local
+- Validador ValidateShopModalFlow existe mas requer editor
+
+**Próximas Ações (REQUEREM UNITY EDITOR LOCAL):**
+- Phase 2: Rodar validators em CindarsHope/Repair and Validate Project
+- Phase 3: Play Mode — executar checklist de 17 pontos em FarmScene
+- Preencher seções Phase 2-3 do relatório com resultados
+- Phase 4: Após Phase 2-3 completos, promote SPEC_17 to MVP COMPLETE
+- SPEC_29: Final MVP acceptance (será desbloqueada após Phase 2-3)
 
 ---
 

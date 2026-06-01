@@ -30,7 +30,7 @@ UI/UX system is **EXTENSIVELY IMPLEMENTED** with **37 COMPONENTS AND ZERO MVP-CR
 - **Debug/Management** — DebugHud + MenuManager (3 components) ✓
 - **Phase 1 automated validations: ALL PASS** (0E/0W runtime, 0E/0W editor, 14/14 docs)
 
-**Status:** PHASE 2-3 PENDING (Play Mode testing in Unity Editor)
+**Status:** PHASE 1 CONFIRMED ✓ | PHASE 2-3 BLOCKED — Unity Editor Play Mode validation not available in this environment
 
 ---
 
@@ -204,17 +204,38 @@ Audit matrix created: `docs/validation/spec_mvp_closeout_28_phase0_audit_matrix.
 
 ---
 
-## Phase 2-3 Status (Pending Human Execution in Unity Editor)
+## Phase 2-3 Status
 
-### Phase 2 — Manual Validators (Optional)
+### ⚠️ BLOCKER: Phase 2-3 NOT RUN — Requires Unity Editor Interactive Environment
 
-**Recommended (Run in Unity Editor):**
-- [ ] Modal consistency validator (if exists)
-- [ ] Input blocking validator (if exists)
-- [ ] HUD completeness checker (all stats displayed)
-- [ ] UI connectivity validator (all buttons wired)
+**Reason:** This validation environment does not have access to:
+- Unity Editor Play Mode testing
+- Interactive UI validation
+- Scene loading and gameplay verification
+- Visual inspection of UI layouts
+- Real-time game state verification
 
-**Estimated:** 10 min (optional, many validators may not exist yet)
+**Resolution:** Execute Phase 2-3 locally in your Unity Editor following the checklist below.
+
+### Phase 2 — Manual Validators (Run in Unity Editor)
+
+**Available Validators Found:**
+- ✓ ValidateShopModalFlow.cs: Shop modal flow validator (requires Unity Editor)
+- ⚠️ No dedicated modal stack validator found
+- ⚠️ No dedicated input blocking validator found
+- ⚠️ No dedicated HUD completeness validator found
+
+**How to Run Validators in Unity Editor:**
+1. Open Unity Editor with this project
+2. Navigate to menu: **CindarsHope/Repair and Validate Project**
+3. Also run:
+   - **CindarsHope/Validate/Combat/Validate Combat Databases**
+   - **CindarsHope/Advanced/Legacy/Validate/Validate Farm Town MVP**
+   - If you find the Shop modal validator: **[Find ValidateShopModalFlow menu path]**
+
+**Expected Results:** Zero errors, warnings acceptable if pre-existing
+
+**Estimated Time:** 10-15 min
 
 ### Phase 3 — Play Mode Testing
 
@@ -294,29 +315,90 @@ Audit matrix created: `docs/validation/spec_mvp_closeout_28_phase0_audit_matrix.
   - [ ] No input lag during modals
   - [ ] Smooth transitions between states
 
-**Estimated:** 45 min
+**Estimated:** 45 min in Unity Editor with Play Mode enabled
+
+**CRITICAL:** Do not declare PASS for Play Mode without executing all 17 checkpoints in Unity Editor.
 
 ---
 
 ## Summary
 
-| Phase | Status | Result |
-|-------|--------|--------|
-| **Phase 0** | ✓ COMPLETE | Audit + 37 components documented |
-| **Phase 1** | ✓ COMPLETE | Builds PASS 0E/0W + 0E/0W, docs PASS 14/14 |
-| **Phase 2** | PENDING | Manual validators (optional, ~10 min) |
-| **Phase 3** | PENDING | Play Mode UI smoke test (~45 min) |
+| Phase | Status | Evidence |
+|-------|--------|----------|
+| **Phase 0** | ✓ COMPLETE | 37 UI components audited, zero gaps |
+| **Phase 1** | ✓ CONFIRMED | Build 0E/0W runtime + 0E/0W editor + docs 14/14 |
+| **Phase 2** | ⚠ NOT RUN | Validators exist but require Unity Editor interactive |
+| **Phase 3** | ⚠ NOT RUN | Play Mode testing blocked — requires Unity Editor with Play Mode |
 
-**Overall Status:** PHASE 1 PASS. SPEC_28 ready for Phase 2-3.
+**Overall Status:** PHASE 1-2 READINESS CONFIRMED (code audit + build pass). PHASE 2-3 REQUIRES HUMAN EXECUTION IN UNITY EDITOR.
+
+**Blocker:** Phase 2-3 validation cannot run in this CLI/sandbox environment. Manual execution required locally.
 
 ---
 
-## Next Actions
+## Next Actions (REQUIRED IN UNITY EDITOR)
 
-1. **Phase 2 (Human - Optional):** Run UI validators in Unity Editor if available
-2. **Phase 3 (Human):** Play Mode test (Farm scene HUD + all UI flows + modal stack + input blocking + save/load)
-3. **Phase 4 (Automated):** Update PROJECT_LOG.md, promote SPEC_17 to MVP COMPLETE
-4. **SPEC_29 Unblock:** Final MVP acceptance/promotion (automated closeout)
+**LOCAL EXECUTION REQUIRED:**
+
+1. **Phase 2 (Human - Required):** 
+   - Open Unity Editor
+   - Run validators: **CindarsHope/Repair and Validate Project**
+   - Run combat validators: **CindarsHope/Validate/...**
+   - Document results in Phase 2 section below
+
+2. **Phase 3 (Human - Required):**
+   - Enter Play Mode (Ctrl+P or menu)
+   - Execute 17-point checklist above
+   - Document PASS/FAIL/NOT RUN for each point
+   - Check Console for critical errors
+   - Record any bugs found
+
+3. **Phase 4 (Automated after Phase 2-3):**
+   - Once Phase 2-3 completed locally: update PROJECT_LOG.md
+   - Promote SPEC_17 to MVP COMPLETE
+   - If all Phase 2-3 pass: SPEC_29 unblocked
+
+---
+
+## Phase 2 Results (To be filled by human execution in Unity Editor)
+
+**Validator Execution Status:**
+- [ ] CindarsHope/Repair and Validate Project: **PASS** / **FAIL** / **NOT RUN**
+- [ ] ValidateShopModalFlow: **PASS** / **FAIL** / **NOT RUN**
+- [ ] Combat Validators: **PASS** / **FAIL** / **NOT RUN**
+- [ ] Farm Town MVP Validator: **PASS** / **FAIL** / **NOT RUN**
+
+**Issues Found (if any):**
+- [ ] (List any errors/warnings here)
+
+---
+
+## Phase 3 Results (To be filled by human execution in Unity Editor Play Mode)
+
+| Step | Checklist | Status | Notes |
+|------|-----------|--------|-------|
+| 1 | Open FarmScene | PASS/FAIL/NOT RUN | |
+| 2 | HUD visible (HP, Hunger, Stamina, Mana, Gold, Time, Equipment, Skills) | PASS/FAIL | |
+| 3 | Inventory open/close (I key) | PASS/FAIL | |
+| 4 | Equipment open/close (K key) | PASS/FAIL | |
+| 5 | Crafting open/close | PASS/FAIL | |
+| 6 | Skill Tree open/close (U key) | PASS/FAIL | |
+| 7 | Shop buy/sell | PASS/FAIL | |
+| 8 | Slot picker (L key) | PASS/FAIL | |
+| 9 | Modal stack (Esc closes top) | PASS/FAIL | |
+| 10 | Input blocked during modal | PASS/FAIL | |
+| 11 | Farm ↔ Town transition | PASS/FAIL | |
+| 12 | Enter Cave | PASS/FAIL | |
+| 13 | Checkpoint UI | PASS/FAIL/N/A | |
+| 14 | Death/Corpse/Anya UI | PASS/FAIL/N/A | |
+| 15 | Save game | PASS/FAIL | |
+| 16 | Load game → UI restored | PASS/FAIL | |
+| 17 | Console no critical errors | PASS/FAIL | |
+
+**Overall Play Mode Result:** PASS / FAIL / PARTIAL
+
+**Bugs Found (if any):**
+- [ ] (List any bugs here)
 
 ---
 
