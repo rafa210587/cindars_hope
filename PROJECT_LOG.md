@@ -1,3 +1,40 @@
+## Sessao 2026-06-01 (reorg) - Architecture Reorganization SPEC_05B: Rebind Item Resolver Fix (Micro-fix)
+
+**Foco:** Corrigir regressao potencial de SPEC_05. `EquippedItemResolver` criado no Start() nao era atualizado quando RebindCombatData() era chamado, deixando resolver com referencias antigas. Correção: método `RefreshItemResolver()` centraliza recriacao do resolver e é chamado em Start e ambas sobrecarga de RebindCombatData.
+
+### Resumo de Execucao
+
+**SPEC_05B — Rebind Item Resolver Fix:**
+- Criado método privado `RefreshItemResolver()` — recria EquippedItemResolver com referencias atualizadas
+- Chamada em `Start()` — usar método ao invés de criar diretamente
+- Chamada em `RebindCombatData(ItemDatabaseSO, WeaponDatabaseSO)` — sincroniza resolver após rebind
+- Chamada em `RebindCombatData(ItemDatabaseSO, WeaponDatabaseSO, SpellDatabaseSO)` — sincroniza resolver após spell database update
+- Null guards adicionados em `ResolveEquippedWeapon()`, `LookupWeapon()`, `ResolveEquippedSpell()` — segurança para edge cases
+
+**Problema corrigido:**
+- Antes: Resolver desincronizado após rebind (databases antigos)
+- Depois: Resolver sempre sincronizado com databases atuais
+
+**Validacoes:**
+- dotnet build (runtime): PASS 0E/0W
+- dotnet build (editor): PASS 0E/2W (pre-existentes)
+- validate_docs.ps1: PASS (13/13 checks)
+
+**Comportamento:**
+- Q/E/Space: nenhuma mudanca
+- Weapon resolution: agora correto apos rebind
+- Spell resolution: agora correto apos rebind
+- CombatLog: nenhuma mudanca
+- Dodge, melee, bow+arrow, fireball: nenhuma mudanca
+
+**Arquivos modificados (total 1):**
+- Assets/_Game/Scripts/Combat/PlayerAttackController.cs (RefreshItemResolver method + null guards)
+- docs/validation/spec_arch_reorg_05b_rebind_item_resolver_fix_execution_report.md
+
+**Status:** ✓ COMPLETO. SPEC_06 liberada. Build status: 0E/0W runtime, 0E/2W pre-existentes editor.
+
+---
+
 ## Sessao 2026-06-01 (reorg) - Architecture Reorganization SPEC_05: Wave 2A Combat Service Extraction
 
 **Foco:** Executar SPEC_05 em modo sequencial apos SPEC_04. Objetivo: Extrair servicos pequenos do PlayerAttackController (EquippedItemResolver, CooldownHelper) sem alterar comportamento funcional. Refactor mecanico e seguro com 100% preservacao de gameplay.

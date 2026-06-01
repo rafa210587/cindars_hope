@@ -86,7 +86,7 @@ namespace CindarsHope.Combat
             }
 
             // SPEC_05: Initialize item resolver with current databases
-            _itemResolver = new EquippedItemResolver(_itemDatabase, _weaponDatabase, _spellDatabase, _knownWeapons);
+            RefreshItemResolver();
             _currentActionContext = new CombatActionContext();
         }
 
@@ -120,6 +120,9 @@ namespace CindarsHope.Combat
             string itemDbName = _itemDatabase != null ? _itemDatabase.name : "null";
             string weaponDbName = _weaponDatabase != null ? _weaponDatabase.name : "null";
             Debug.Log($"PlayerAttackController.RebindCombatData. ItemDb={itemDbName}, WeaponDb={weaponDbName}.", this);
+
+            // SPEC_05B: Refresh resolver with updated databases
+            RefreshItemResolver();
         }
 
         public void RebindCombatData(ItemDatabaseSO itemDatabase, WeaponDatabaseSO weaponDatabase, SpellDatabaseSO spellDatabase)
@@ -128,6 +131,16 @@ namespace CindarsHope.Combat
             if (spellDatabase != null) _spellDatabase = spellDatabase;
             string spellDbName = _spellDatabase != null ? _spellDatabase.name : "null";
             Debug.Log($"PlayerAttackController.RebindCombatData (with spell). SpellDb={spellDbName}.", this);
+
+            // SPEC_05B: Refresh resolver with updated spell database
+            RefreshItemResolver();
+        }
+
+        // SPEC_05B: Recreate EquippedItemResolver with current database references.
+        // Called on Start and after any RebindCombatData to ensure resolver uses latest databases.
+        private void RefreshItemResolver()
+        {
+            _itemResolver = new EquippedItemResolver(_itemDatabase, _weaponDatabase, _spellDatabase, _knownWeapons);
         }
 
         private void Update()
@@ -189,13 +202,25 @@ namespace CindarsHope.Combat
         // Full resolution chain itemInstanceId -> ItemDataSO -> WeaponDataSO with explicit logging.
         // Returns null when nothing is equipped (caller will use unarmed fallback).
         // Returns null + sets error when SOMETHING is equipped but doesn't resolve.
+        // SPEC_05B: Added null guard for resolver safety.
         private WeaponDataSO ResolveEquippedWeapon(EquipmentSlot slot, string equippedItemId, out string error)
         {
+            error = null;
+            if (_itemResolver == null)
+            {
+                Debug.LogError($"CombatLog: PlayerAttackBlocked. Reason=ItemResolverNull, Slot={slot}", this);
+                return null;
+            }
             return _itemResolver.ResolveEquippedWeapon(slot, equippedItemId, out error);
         }
 
         private WeaponDataSO LookupWeapon(string weaponId)
         {
+            if (_itemResolver == null)
+            {
+                Debug.LogError($"CombatLog: PlayerAttackBlocked. Reason=ItemResolverNull", this);
+                return null;
+            }
             return _itemResolver.LookupWeapon(weaponId);
         }
 
@@ -366,8 +391,14 @@ namespace CindarsHope.Combat
         }
 
         // SPEC_05: Delegated to EquippedItemResolver
+        // SPEC_05B: Added null guard for resolver safety.
         private SpellDataSO ResolveEquippedSpell(ItemDataSO itemData)
         {
+            if (_itemResolver == null)
+            {
+                Debug.LogError($"CombatLog: PlayerAttackBlocked. Reason=ItemResolverNull", this);
+                return null;
+            }
             return _itemResolver.ResolveEquippedSpell(itemData);
         }
 
