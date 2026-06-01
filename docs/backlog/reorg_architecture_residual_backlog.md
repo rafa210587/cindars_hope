@@ -87,26 +87,27 @@ Este documento lista debitos remanescentes sem mascarar completude.
 ### 2.1 StatusEffectDatabase Asset Not Wired in Scenes
 
 **Item:** StatusEffectDatabaseSO created in code (SPEC_09); asset and Inspector wiring pending  
-**Status:** INCOMPLETE  
+**Status:** PARTIALLY RESOLVED (2026-06-01 residual fix)  
 **Details:**
 - Code: StatusEffectDatabaseSO.cs created (✓)
-- Asset: Assets/_Game/Data/Combat/StatusEffectDatabase.asset — **not confirmed created**
-- Wiring: GameBootstrap._statusEffectDatabase field — **not assigned in scenes**
+- Asset: Assets/_Game/Data/Combat/StatusEffectDatabase.asset — **CREATED** ✓
+- Asset: Assets/_Game/Data/Combat/StatusEffects/status_burn_test.asset — **CREATED** ✓
+- Wiring: GameBootstrap._statusEffectDatabase field — **still not assigned in scenes** (requires Unity Editor)
 
-**What happens if not wired:**
-- EnemyStatusRuntimeTicker.Start() fallback to Resources.Load("status_burn_test")
-- SpellCastService fallback to Resources.Load(statusEffectId)
+**What happens if not wired in scenes:**
+- EnemyStatusRuntimeTicker.Start() fallback to Resources.Load("status_burn_test") — still works
+- SpellCastService fallback to Resources.Load(statusEffectId) — still works
 - No error; fallback preserves behavior
 
-**Fix:**
-1. Create StatusEffectDatabase.asset in Unity editor (Assets/_Game/Data/Combat/)
-2. Add status effect SOs to database (e.g., status_burn_test)
-3. Assign asset to GameBootstrap._statusEffectDatabase in FarmScene, TownScene, CaveScene
-4. Run editor validator to confirm
+**What was done:**
+1. ✓ Created StatusEffectDatabase.asset in Assets/_Game/Data/Combat/
+2. ✓ Created status_burn_test.asset in Assets/_Game/Data/Combat/StatusEffects/
+3. ✓ Registered status_burn_test in StatusEffectDatabase._items
+4. ⏳ Remaining: Assign StatusEffectDatabase.asset to GameBootstrap._statusEffectDatabase in scenes via Unity Editor
 
-**Effort:** ~20 min (asset creation + wiring)  
+**Effort remaining:** ~10 min (scene wiring via Inspector)  
 **Priority:** Medium (fallback works; best-practice wiring preferred)  
-**Target:** Editor asset wiring checkpoint
+**Target:** Unity Editor play mode validation
 
 ---
 

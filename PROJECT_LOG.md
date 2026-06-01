@@ -1,3 +1,33 @@
+## Sessao 2026-06-01 (residual fix pós SPEC_12) - Combat Asset Wiring Residual Fix
+
+**Foco:** Corrigir erros encontrados pelos validators após SPEC_12 closeout. Sem alterar gameplay.
+
+### Resumo de Execucao
+
+**Residual Combat Asset Wiring Fix:**
+- Corrigido Item_Shop_Sword_Iron.asset: adicionado WeaponId = weapon_sword_iron
+- Validado Projectile_Arrow.prefab: ProjectileBehaviour + Rigidbody2D + CircleCollider2D (isTrigger=true) ✓
+- Validado Projectile_Fireball.prefab: ProjectileBehaviour + Rigidbody2D + CircleCollider2D (isTrigger=true) ✓
+- Criado Assets/_Game/Data/Combat/StatusEffects/status_burn_test.asset (StatusEffectSO: Id=status_burn_test, Type=Burn, DurationTurns=3, DamagePerTurn=2)
+- Criado Assets/_Game/Data/Combat/StatusEffectDatabase.asset (registry registrando status_burn_test)
+
+**Comportamento preservado:** 0 mudanças em gameplay, Q/E/Space, PlayerAttackController, BowArrowAttackService, SpellCastService, ProjectileBehaviour, save schema.
+
+**Validacoes:**
+- dotnet restore: PASS
+- dotnet build (runtime): PASS 0E/0W
+- dotnet build (editor): PASS 0E/2W (pre-existentes em CreateEnemyActionsAndSets.cs)
+- validate_docs.ps1: PASS (14/14 checks)
+
+**Arquivos criados/modificados:**
+- Item_Shop_Sword_Iron.asset (modificado - adicionado WeaponId)
+- status_burn_test.asset + meta (criado)
+- StatusEffectDatabase.asset + meta (criado)
+
+**Status:** ✓ COMPLETO. Assets corrigidos, nenhuma regressão. Pronto para Play Mode validation em Unity Editor.
+
+---
+
 ## Sessao 2026-06-01 (reorg continuation 4) - Architecture Reorganization SPEC_12: Wave 7 Closeout Validation
 
 **Foco:** Fechar pacote de reorg SPEC_04-11 com validação integrada, documentação factual e backlog residual explícito. Não implementar feature nova. Não refatorar.
