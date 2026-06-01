@@ -89,7 +89,7 @@ Comparou tres scene creators:
 **Funcionalidade:**
 - Menu item: `CindarsHope/Repair/Scenes/Repair TownScene Combat Bootstrap Wiring`
 - Abre `Assets/_Game/Scenes/TownScene.unity`
-- Encontra GameObject `_Bootstrap`
+- Encontra GameObject `_Bootstrap` (usa `scene.GetRootGameObjects().FirstOrDefault()`, nao `GameObject.Find()`)
 - Adiciona `ManaManager` component se ausente
 - Carrega `WeaponDatabaseSO`, `SpellDatabaseSO`, `StatusEffectDatabaseSO` via `AssetDatabase.LoadAssetAtPath<T>()`
 - Seta via `SerializedObject.FindProperty()` e `ApplyModifiedPropertiesWithoutUndo()`
@@ -102,6 +102,11 @@ Comparou tres scene creators:
 - Nao altera nada alem dos campos de database/manager em GameBootstrap
 - Nao edita YAML manualmente; usa UnityEditor API
 - Pode rodar multiplas vezes com seguranca (idempotente)
+
+**Compilation Fixes (2026-06-01):**
+- Adicionado `using CindarsHope.Player;` para resolver CS0246 ManaManager
+- Adicionado `using System.Linq;` para suportar `FirstOrDefault()`
+- Substituido `GameObject.Find()` por `scene.GetRootGameObjects().FirstOrDefault()` (respeita rule: no runtime global search)
 
 ---
 

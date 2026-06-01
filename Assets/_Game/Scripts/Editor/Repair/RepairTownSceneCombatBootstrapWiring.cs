@@ -1,7 +1,9 @@
 #if UNITY_EDITOR
 
+using System.Linq;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Data;
+using CindarsHope.Player;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -33,8 +35,10 @@ namespace CindarsHope.EditorTools.Repair
                 return;
             }
 
-            // Find _Bootstrap GameObject
-            var bootstrapObject = GameObject.Find(BootstrapName);
+            // Find _Bootstrap GameObject in scene root
+            var bootstrapObject = scene
+                .GetRootGameObjects()
+                .FirstOrDefault(go => go.name == BootstrapName);
             if (bootstrapObject == null)
             {
                 Debug.LogError($"RepairTownSceneCombatBootstrapWiring: Cannot find GameObject '{BootstrapName}' in scene.");

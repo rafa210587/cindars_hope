@@ -20,6 +20,8 @@
 - Carrega TownScene.unity, encontra _Bootstrap, adiciona ManaManager se ausente, wira databases
 - Usa UnityEditor API (EditorSceneManager, SerializedObject, AssetDatabase)
 - Fallback warnings se databases nao existirem
+- **Compilation fix:** Adicionado `using CindarsHope.Player;` e `using System.Linq;`
+- **Substituido** `GameObject.Find()` por `scene.GetRootGameObjects().FirstOrDefault()` (respeita rule: no runtime global search)
 
 **Pattern Padronizado em Scene Creators:**
 ```csharp
