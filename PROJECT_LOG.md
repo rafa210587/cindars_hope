@@ -1,3 +1,29 @@
+## Sessao 2026-06-01 (residual fix #2 pós SPEC_12) - Projectile Prefab Wiring Repair Script
+
+**Foco:** Criar script de repair para wirer ProjectilePrefab refs que não resolvem corretamente no validator.
+
+### Resumo de Execucao
+
+**Projectile Prefab Wiring Repair Script:**
+- Criado Assets/_Game/Scripts/Editor/Validation/RepairProjectilePrefabReferences.cs
+- Menu item: CindarsHope/Repair/Combat/Repair Projectile Prefab References
+- Método batchmode: RepairViaCommandLine() para -executeMethod
+- Usa UnityEditor API (AssetDatabase, EditorUtility)
+- Wira weapon_bow_basic.ProjectilePrefab → Projectile_Arrow.prefab
+- Wira spell_fireball.ProjectilePrefab → Projectile_Fireball.prefab
+- Não altera damage, range, speed, mana, cooldown, status chance
+- Não altera ProjectileBehaviour, PlayerAttackController, BowArrowAttackService, SpellCastService
+
+**Validacoes:**
+- dotnet restore: PASS
+- dotnet build (runtime): PASS 0E/0W
+- dotnet build (editor): PASS 0E/2W (2 pre-existentes; novo script compila limpo)
+- validate_docs.ps1: PASS (14/14 checks)
+
+**Status:** ✓ COMPLETO. Script criado, compila limpo, pronto para rodar no Unity Editor.
+
+---
+
 ## Sessao 2026-06-01 (residual fix pós SPEC_12) - Combat Asset Wiring Residual Fix
 
 **Foco:** Corrigir erros encontrados pelos validators após SPEC_12 closeout. Sem alterar gameplay.
