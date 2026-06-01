@@ -1,3 +1,39 @@
+## Sessao 2026-06-01 (reorg) - Architecture Reorganization Specs 02-03: Projectile + Combat Database Validators (MERGED)
+
+**Foco:** Executar SPEC_02 (projectile prefab validator) e SPEC_03 (combat database validators) em paralelo com branches isoladas. Ambas completadas com merge sequencial: SPEC_02 → SPEC_03 → dev. Nenhuma alteracao a gameplay, assets, GameBootstrap, SaveManager, PlayerAttackController, ProjectileBehaviour, scenes ou PROJECT_LOG/IMPLEMENTATION_STATUS durante execucao paralela.
+
+### Resumo de Merge
+
+**SPEC_02 — Projectile Prefab Validator (reorg/spec02-projectile-validator → dev):**
+- Implementado ProjectilePrefabValidator.cs (263 linhas) com 6 issue codes (MISSING_PROJECTILE_BEHAVIOUR, MISSING_RIGIDBODY2D, MISSING_COLLIDER2D, COLLIDER_NOT_TRIGGER, BOW_MISSING_PROJECTILE, FIREBALL_MISSING_PROJECTILE)
+- Menu item: `CindarsHope/Validate/Combat/Validate Projectile Prefabs`
+- Validacoes: dotnet build ✓ PASS (0E/0W runtime, 0E/2W pre-existentes editor), validate_docs.ps1 ✓ PASS
+- Execution report: docs/validation/spec_arch_reorg_02_wave0b_projectile_prefab_validator_execution_report.md
+
+**SPEC_03 — Combat Database Validators (reorg/spec03-combat-db-validators → dev):**
+- Implementado CombatDatabaseValidator.cs (370 linhas) com 17 validacoes across FR-001 a FR-009
+  - FR-001/002: weapon/magic items vs WeaponDatabase/SpellDatabase (4 checks)
+  - FR-003: ammo stackability (2 checks)
+  - FR-004/005: bow/fireball projectile config (6 checks)
+  - FR-006: status effect validation (1 check)
+  - FR-007: starting items validation (3 checks)
+  - FR-008/009: hotbar defaults + runner integration (1 check)
+- Menu item: `CindarsHope/Validate/Combat/Validate Combat Databases`
+- Validacoes: dotnet build ✓ PASS (0E/0W runtime, 0E/2W pre-existentes editor), validate_docs.ps1 ✓ PASS
+- Execution report: docs/validation/spec_arch_reorg_03_wave0c_combat_database_validators_execution_report.md
+
+**Arquivos adicionados (total 5):**
+- Assets/_Game/Scripts/Editor/Validation/ProjectilePrefabValidator.cs
+- Assets/_Game/Scripts/Editor/Validation/CombatDatabaseValidator.cs
+- Assets/_Game/Scripts/Editor/Validation/CombatValidationMenu.cs (actualizado para ambos validators)
+- Assets/_Game/Scripts/Editor/Validation/CombatDatabaseValidationMenu.cs
+- docs/validation/spec_arch_reorg_02_wave0b_projectile_prefab_validator_execution_report.md
+- docs/validation/spec_arch_reorg_03_wave0c_combat_database_validators_execution_report.md
+
+**Status:** ✓ MERGED (ambas branches merged em sequencia a dev). Proxy pendente: IMPLEMENTATION_STATUS.md requer atualizar completeness de SPEC_02 e SPEC_03.
+
+---
+
 ## Sessao 2026-06-01 (reorg) - Architecture Reorganization Specs 00-01: Strategy + Validator Foundation
 
 **Foco:** Iniciar pacote SpecKit de reorganizacao arquitetural incremental. SPEC_00 define estrategia sequencial e regras anti-drift. SPEC_01 implementa fundacao editor-only para validators futuros (SPEC_02/03). Nenhuma alteracao a gameplay, assets, GameBootstrap, SaveManager, PlayerAttackController, ProjectileBehaviour ou scenes.
