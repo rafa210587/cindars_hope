@@ -62,6 +62,7 @@ namespace CindarsHope.Save
         [SerializeField] private Skills.ActiveSkillSlots _activeSkillSlots;
         [SerializeField] private Skills.SkillTreeManager _skillTreeManager;
         [SerializeField] private BestiaryManager _bestiaryManager;
+        [SerializeField] private Player.Death.CorpseRecoveryManager _corpseRecoveryManager;
         [SerializeField] private PlayerDataSO _playerData;
         [SerializeField] private ItemDatabaseSO _itemDatabase;
 
@@ -1217,8 +1218,64 @@ namespace CindarsHope.Save
                 return;
             }
 
-            // TODO: Restore active corpse to CorpseRecoveryManager when it's injected
-            // For now, just restore the stats
+            // SPEC_25: Restore active corpse to CorpseRecoveryManager if available
+            if (_corpseRecoveryManager != null && deathData.ActiveCorpse != null)
+            {
+                var corpseData = deathData.ActiveCorpse;
+                var corpse = new Player.Death.Corpse(corpseData.CorpseId)
+                {
+                    Status = (Player.Death.CorpseStatus)corpseData.CorpseStatusValue,
+                    RunId = corpseData.RunId,
+                    CaveSeed = corpseData.CaveSeed,
+                    CaveLevel = corpseData.CaveLevel,
+                    SceneName = corpseData.SceneName,
+                    Position = corpseData.Position,
+                    GoldAmount = corpseData.GoldAmount,
+                    CreatedAtGameDay = corpseData.CreatedAtGameDay,
+                    CreatedAtGameTime = corpseData.CreatedAtGameTime,
+                    RecoveredAtGameDay = corpseData.RecoveredAtGameDay,
+                    ReplacedByCorpseId = corpseData.ReplacedByCorpseId
+                };
+
+                // Restore lost inventory items
+                if (corpseData.LostInventoryItems != null)
+                {
+                    foreach (var slotData in corpseData.LostInventoryItems)
+                    {
+                        if (slotData == null || string.IsNullOrWhiteSpace(slotData.ItemId))
+                            continue;
+
+                        var corpseItem = new Player.Death.CorpseItem(slotData.ItemId, slotData.Amount)
+                        {
+                            SourceSlotIndex = slotData.SlotIndex
+                        };
+                        corpse.InventoryItems.Add(corpseItem);
+                    }
+                }
+
+                // Restore lost equipment items
+                if (corpseData.LostEquipmentItems != null)
+                {
+                    foreach (var slotData in corpseData.LostEquipmentItems)
+                    {
+                        if (slotData == null || string.IsNullOrWhiteSpace(slotData.ItemId))
+                            continue;
+
+                        var corpseItem = new Player.Death.CorpseItem(slotData.ItemId, slotData.Amount)
+                        {
+                            SourceSlotIndex = slotData.SlotIndex
+                        };
+                        corpse.EquipmentItems.Add(corpseItem);
+                    }
+                }
+
+                _corpseRecoveryManager.SetActiveCorpse(corpse);
+                Debug.Log($"[SaveManager] Restored active corpse {corpse.CorpseId} from save data with {corpse.InventoryItems.Count} inventory items and {corpse.EquipmentItems.Count} equipment items", this);
+            }
+            else if (_corpseRecoveryManager == null && deathData.ActiveCorpse != null)
+            {
+                Debug.LogWarning("[SaveManager] CorpseRecoveryManager not injected; active corpse from save data will not be restored", this);
+            }
         }
 
         private void PublishSaveResult(bool wasSuccessful, string message)

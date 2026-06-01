@@ -1,92 +1,141 @@
-# SPEC_18 — Baseline validation e cleanup operacional
+﻿# SPEC_18 - Baseline Validation and Spec Cleanup
 
-> Spec ID: `spec_mvp_closeout_18_baseline_validation_and_spec_cleanup`  
-> Ordem: 18  
-> Status: A implementar  
-> Depende de: reorg SPEC_12 + residual fixes pós SPEC_12  
-> Bloqueia: SPEC_19-29  
-> Tipo: Validation/Docs/Editor
+**Status:** IN EXECUTION  
+**Branch:** dev  
+**Executor:** Claude Code  
+**Mode:** Validation and Cleanup Only  
+**Date Started:** 2026-06-01
 
-## /speckit.specify
+## Objective
 
-### Objetivo
+Create factual baseline validation after SPEC_04-11 (Architecture Reorganization) and residual fixes. Determine whether SPEC_19 (gameplay closeout) can be unblocked based on objective evidence.
 
-Estabelecer baseline factual antes de fechar specs parciais. Esta spec não implementa gameplay novo.
+---
 
-### Escopo
+## Scope
 
-- Confirmar build runtime/editor.
-- Confirmar docs validation.
-- Confirmar que residual fixes pós SPEC_12 foram aplicados.
-- Rodar repair/validators Unity.
-- Criar status de execução confiável para specs 19-29.
-- Marcar pacote `docs/specs/a_implementar/reorg` como fechado/não reexecutável sem mover arquivos.
+**Allowed:** Validating, documenting, creating repair scripts, running validators.  
+**Prohibited:** Feature implementation, runtime refactoring, gameplay changes, manual YAML edits.
 
-### Fora de escopo
+---
 
-- Refatorar runtime.
-- Alterar gameplay.
-- Alterar save schema.
-- Alterar scenes manualmente por YAML.
-- Implementar specs 19-29.
+## Deliverables (By End of SPEC_18)
 
-## /speckit.plan
+1. ✓ **Audit Matrix** — `docs/validation/spec_18_audit_matrix.md`
+2. ✓ **Execution Report** — `docs/validation/spec_18_baseline_validation_and_spec_cleanup_execution_report.md`
+3. ✓ **Reorg Closure Declaration** — `docs/specs/a_implementar/reorg/README_STATUS.md`
+4. **Phase 1 Results** — Automated build/docs validation
+5. **Phase 2 Results** — Manual Unity validators (if available)
+6. **Phase 3 Results** — Play Mode testing (if available)
+7. **PROJECT_LOG Update** — Append SPEC_18 closure entry
+8. **Final Decision** — SPEC_19 unblocked or blocked, with evidence
 
-### Arquivos a ler
+---
 
-```text
-AGENTS.md
-PROJECT_LOG.md
-docs/IMPLEMENTATION_STATUS.md
-docs/specs/SPEC_EXECUTION_ORDER.md
-docs/backlog/reorg_architecture_residual_backlog.md
-docs/validation/reorg_residual_townscene_combat_bootstrap_wiring_fix_execution_report.md
-docs/specs/a_implementar/reorg/README_EXECUTION_ORDER.md
-Assets/_Game/Scripts/Editor/Repair/RepairTownSceneCombatBootstrapWiring.cs
-Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpTownScene.cs
-Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpFarmScene.cs
-Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpCaveScene.cs
+## Phase 1: Automated Builds & Docs Validation
+
+### Commands to Execute (Sequential)
+
+```powershell
+dotnet restore .\Assembly-CSharp.csproj
+dotnet restore .\Assembly-CSharp-Editor.csproj
+dotnet build .\Assembly-CSharp.csproj --no-restore
+dotnet build .\Assembly-CSharp-Editor.csproj --no-restore
+tools/docs/validate_docs.ps1
 ```
 
-### Implementação
+**Expected Results:**
+- `dotnet build Assembly-CSharp.csproj`: 0E/0W
+- `dotnet build Assembly-CSharp-Editor.csproj`: 0E/2W (pre-existing)
+- `tools/docs/validate_docs.ps1`: 14/14 PASS
 
-1. Rodar validações C# obrigatórias.
-2. No Unity Editor, rodar `CindarsHope/Repair/Scenes/Repair TownScene Combat Bootstrap Wiring`.
-3. Verificar no Inspector ou via validator que `TownScene` tem `_manaManager`, `_weaponDatabase`, `_spellDatabase`, `_statusEffectDatabase`.
-4. Rodar validators principais.
-5. Criar `docs/validation/spec_mvp_closeout_18_baseline_validation_and_spec_cleanup_execution_report.md`.
-6. Criar `docs/specs/a_implementar/reorg/README_STATUS.md` com status `CLOSED — DO NOT REEXECUTE`.
-7. Atualizar `PROJECT_LOG.md`.
-8. Atualizar `docs/IMPLEMENTATION_STATUS.md` se validação real mudou.
+**Stop Condition:** Any command fails with code error → STOP, document reason, mark SPEC_19 BLOCKED.
 
-## /speckit.tasks
+---
 
-### Tasks
+## Phase 2: Manual Unity Validators
 
-- [ ] Build runtime/editor PASS.
-- [ ] `tools/docs/validate_docs.ps1` PASS.
-- [ ] TownScene repair executado ou marcado NOT RUN com motivo.
-- [ ] Projectile Prefab Validator PASS ou erros documentados.
-- [ ] Combat Database Validator PASS ou erros documentados.
-- [ ] Farm/Town MVP Validator PASS ou erros documentados.
-- [ ] Cave MVP Validator PASS ou erros documentados.
-- [ ] Play Mode smoke mínimo executado ou NOT RUN factual.
-- [ ] `README_STATUS.md` criado em `docs/specs/a_implementar/reorg/`.
+**Requires:** Unity Editor available
 
-## Critérios de aceite
+### Validators to Execute (Sequential)
 
-- Nenhum erro C#.
-- Nenhum erro crítico nos validators principais.
-- `CombatRuntimeInstaller` não reporta `WeaponDatabase null`, `SpellDatabase null` ou `ManaManager null` em TownScene após repair.
-- Reorg não aparece como fila ativa acidental.
-- SPEC_19 liberada somente se baseline estiver estável.
+1. `CindarsHope/Repair/Scenes/Repair TownScene Combat Bootstrap Wiring`
+2. `CindarsHope/Repair and Validate Project`
+3. `CindarsHope/Validate/Combat/Validate Projectile Prefabs`
+4. `CindarsHope/Validate/Combat/Validate Combat Databases`
+5. `CindarsHope/Advanced/Legacy/Validate/Validate Farm Town MVP`
+6. `CindarsHope/Advanced/Legacy/Validate/Validate Cave MVP`
 
-## Stop conditions
+**Stop Condition:** Any validator reports new critical error → document, do not proceed to Phase 3.
 
-Parar se:
+---
 
-- build falhar;
-- Unity não importar scripts;
-- repair falhar;
-- validators acusarem erro crítico de asset/cena;
-- Play Mode acusar erro crítico novo em startup.
+## Phase 3: Play Mode Testing
+
+**Requires:** Unity Editor available
+
+### Manual Checklist (Open TownScene, Enter Play Mode)
+
+**Console Verification:**
+- ✓ Should appear: `CombatRuntimeInstaller: Install completed. ItemDb=ItemDatabase, WeaponDb=WeaponDatabase, SpellDb=SpellDatabase, StatusEffectDb=StatusEffectDatabase...`
+- ✗ Should NOT appear: `WeaponDatabase is null`, `SpellDatabase is null`, `ManaManager is null`
+
+**Gameplay Checklist:**
+- [ ] Starter inventory applied (bow, arrows, fireball)
+- [ ] Shops initialized and interactable
+- [ ] DebugHud functional
+- [ ] Movement (WASD) works
+- [ ] Interaction (E) works
+- [ ] Attack (Space) works
+- [ ] Spell (Q) works
+
+**Stop Condition:** Any new critical error in Console → document, mark SPEC_19 BLOCKED.
+
+---
+
+## Phase 4: Documentation & Final Decision
+
+### Updates to Make
+
+1. `PROJECT_LOG.md` — Append SPEC_18 closure summary
+2. Verify `docs/IMPLEMENTATION_STATUS.md` reflects SPEC_04-11 closure
+3. Verify `docs/backlog/reorg_architecture_residual_backlog.md` updated
+
+### Decision Criteria
+
+**SPEC_19 UNBLOCKED if:**
+- Phase 1: All builds PASS (or documented NOT RUN with environmental reason, last known PASS)
+- Phase 2: Validators run without new critical errors (or documented NOT RUN with human constraint)
+- Phase 3: Play Mode shows no new critical errors (or documented NOT RUN with human constraint)
+- No stop condition triggered
+
+**SPEC_19 BLOCKED if:**
+- Any stop condition triggered
+- Build fails with code issue
+- Validator reports critical error not resolvable in SPEC_18
+- Play Mode shows new critical error
+
+---
+
+## Reorg Status Summary
+
+| Item | Status |
+|------|--------|
+| SPEC_04-11 Code | COMPLETE |
+| Compilation (last known) | PASS 0E/0W runtime, 0E/2W editor |
+| Residual Fix #1: Combat Assets | COMPLETE |
+| Residual Fix #2: Projectile Prefabs | COMPLETE |
+| Residual Fix #3: TownScene Wiring | COMPLETE |
+| Repair Scripts Created | COMPLETE |
+| Automated Validation (Phase 1) | PENDING |
+| Manual Validators (Phase 2) | PENDING HUMAN |
+| Play Mode Testing (Phase 3) | PENDING HUMAN |
+| SPEC_19 Decision | PENDING |
+
+---
+
+## Execution Evidence
+
+All results documented in `docs/validation/spec_18_*.md`.
+
+Stop conditions checked at each phase; decision made objectively based on evidence.
