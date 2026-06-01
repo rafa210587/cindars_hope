@@ -18,6 +18,7 @@ namespace CindarsHope.EditorTools.Validation
         private const string ItemDatabasePath = "Assets/_Game/Data/Registries/ItemDatabase.asset";
         private const string WeaponDatabasePath = "Assets/_Game/Data/Combat/WeaponDatabase.asset";
         private const string SpellDatabasePath = "Assets/_Game/Data/Combat/SpellDatabase.asset";
+        private const string StatusEffectDatabasePath = "Assets/_Game/Data/Combat/StatusEffectDatabase.asset";
         private const string PlayerDataPath = "Assets/_Game/Data/Config/PlayerData.asset";
 
         // Hardcoded hotbar defaults from SaveManager.Initialize()
@@ -63,6 +64,9 @@ namespace CindarsHope.EditorTools.Validation
 
             if (spellDb != null)
                 ValidateSpellData(spellDb, report);
+
+            // Validate StatusEffect references (SPEC_09)
+            ValidateStatusEffectReferences(spellDb, report);
 
             // Validate PlayerData starting items
             if (playerData != null)
@@ -281,6 +285,34 @@ namespace CindarsHope.EditorTools.Validation
                             $"Fireball '{spell.SpellName}' references StatusEffectId '{spell.StatusEffectId}' not found.",
                             assetPath, spell.SpellName, "Ensure StatusEffect asset exists in Resources or database.");
                     }
+                }
+            }
+        }
+
+        private void ValidateStatusEffectReferences(SpellDatabaseSO spellDb, ValidationReport report)
+        {
+            var statusEffectDb = AssetDatabase.LoadAssetAtPath<StatusEffectDatabaseSO>(StatusEffectDatabasePath);
+
+            // Database may not be created yet; warn but do not error
+            if (statusEffectDb == null)
+            {
+                report.AddIssue("StatusEffect", "STATUS_DB_MISSING", ValidationSeverity.Warning,
+                    "StatusEffectDatabase not found. Create it and wire in GameBootstrap.",
+                    StatusEffectDatabasePath, "StatusEffectDatabase", "Create StatusEffectDatabase.asset");
+                return;
+            }
+
+            if (spellDb == null) return;
+
+            foreach (var spell in spellDb.All)
+            {
+                if (spell == null || string.IsNullOrEmpty(spell.StatusEffectId)) continue;
+                if (!statusEffectDb.TryGetById(spell.StatusEffectId, out _))
+                {
+                    var assetPath = AssetDatabase.GetAssetPath(spell);
+                    report.AddIssue("Spell", "STATUSEFFECT_ID_NOT_IN_DB", ValidationSeverity.Error,
+                        $"Spell '{spell.SpellName}' references StatusEffectId '{spell.StatusEffectId}' not in StatusEffectDatabase.",
+                        assetPath, spell.SpellName, "Add StatusEffectSO to StatusEffectDatabase or fix StatusEffectId.");
                 }
             }
         }

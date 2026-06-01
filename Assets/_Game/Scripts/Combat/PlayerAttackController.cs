@@ -31,6 +31,7 @@ namespace CindarsHope.Combat
         [SerializeField] private ItemDatabaseSO _itemDatabase;
         [SerializeField] private WeaponDatabaseSO _weaponDatabase;
         [SerializeField] private SpellDatabaseSO _spellDatabase;
+        private StatusEffectDatabaseSO _statusEffectDatabase;
         [SerializeField] private InventoryManager _inventoryManager;
         [SerializeField] private WeaponDataSO[] _knownWeapons = new WeaponDataSO[0];
 
@@ -71,6 +72,7 @@ namespace CindarsHope.Combat
                 if (_itemDatabase == null) _itemDatabase = bootstrap.ItemDatabase;
                 if (_weaponDatabase == null) _weaponDatabase = bootstrap.WeaponDatabase;
                 if (_spellDatabase == null) _spellDatabase = bootstrap.SpellDatabase;
+                if (_statusEffectDatabase == null) _statusEffectDatabase = bootstrap.StatusEffectDatabase;
             }
 
             // SPEC 14A-FIX9: create a runtime unarmed fallback if the inspector field is null.
@@ -160,7 +162,7 @@ namespace CindarsHope.Combat
         private void RefreshServices()
         {
             _bowArrowService = new BowArrowAttackService(_equipmentManager, _inventoryManager, _staminaManager, _itemDatabase, _itemResolver, _knockbackForce);
-            _spellCastService = new SpellCastService(_manaManager, _equipmentManager, _itemResolver, _knockbackForce);
+            _spellCastService = new SpellCastService(_manaManager, _equipmentManager, _itemResolver, _knockbackForce, _statusEffectDatabase);
         }
 
         private void Update()

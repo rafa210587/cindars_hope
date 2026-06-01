@@ -1,3 +1,48 @@
+## Sessao 2026-06-01 (reorg continuation) - Architecture Reorganization SPEC_09: Wave 4 Status Effect Runtime Unification
+
+**Foco:** Executar SPEC_09 em modo sequencial. Objetivo: Remover acoplamento frágil de `Resources.Load("status_burn_test")` via `StatusEffectDatabaseSO`, wiring mínimo em `GameBootstrap`, propagação via `SpellCastService` e `EnemyStatusRuntimeTicker` com fallback preservado.
+
+### Resumo de Execucao
+
+**SPEC_09 — Wave 4 Status Effect Runtime Unification:**
+- Criado StatusEffectDatabaseSO.cs — registry genérico padrão, namespace CindarsHope.Core.Data
+- GameBootstrap wiring: [SerializeField] StatusEffectDatabaseSO + property pública
+- SpellCastService integrado: field privado, parâmetro construtor opcional (default null), lookup database + fallback Resources.Load
+- EnemyStatusRuntimeTicker atualizado: GameBootstrap.Instance?.StatusEffectDatabase lookup em Start() + fallback, documentação de tick semântica confirmada
+- PlayerAttackController: resolve database de bootstrap em Start(), passa para SpellCastService em RefreshServices()
+- CombatDatabaseValidator estendido: ValidateStatusEffectReferences() valida spell→statuseffect refs (warning se database missing, error se spell ref inválida)
+- Assembly-CSharp.csproj: 1 entrada Compile Include para StatusEffectDatabaseSO.cs
+
+**Comportamento preservado:**
+- Fireball continua disparando projectile com status effect
+- Burn tick continua funcionando a 1 segundo (1 tick = 1 segundo documentado)
+- Se StatusEffectDatabase null/missing → fallback Resources.Load garante funcionalidade
+- Se StatusEffectId não encontrado em database → fallback Resources.Load
+- Q/E/Space, melee, arrow, dodge, hotbar, inventory, equipment → sem mudanca
+- Save schema → sem alteracao
+
+**Arquivos criados/modificados:**
+- Assets/_Game/Scripts/Core/Data/StatusEffectDatabaseSO.cs (criado)
+- Assets/_Game/Scripts/Core/Bootstrap/GameBootstrap.cs (+field +property)
+- Assets/_Game/Scripts/Combat/SpellCastService.cs (+using +field +parâmetro +lookup)
+- Assets/_Game/Scripts/Combat/StatusEffect/EnemyStatusRuntimeTicker.cs (+bootstrap lookup em Start())
+- Assets/_Game/Scripts/Combat/PlayerAttackController.cs (+field +resolve +propagate)
+- Assets/_Game/Scripts/Editor/Validation/CombatDatabaseValidator.cs (+const +call +method)
+- Assembly-CSharp.csproj (1 entrada Compile Include adicionada)
+
+**Validacoes:**
+- dotnet restore Assembly-CSharp.csproj: PASS
+- dotnet restore Assembly-CSharp-Editor.csproj: PASS
+- dotnet build (runtime): PASS 0E/0W
+- dotnet build (editor): PASS 0E/2W (pre-existentes em CreateEnemyActionsAndSets.cs)
+- validate_docs.ps1: PASS (14/14 checks)
+- Backward compat: 100% — fallback por Resources.Load preserva todos assets
+- Risco residual: muito baixo
+
+**Status:** ✓ COMPLETO. SPEC_10 bloqueada por constraint "Não iniciar SPEC_10".
+
+---
+
 ## Sessao 2026-06-01 (reorg) - Architecture Reorganization SPEC_08: Wave 3 Item Equipment Contracts
 
 **Foco:** Executar SPEC_08 em modo sequencial. Objetivo: Formalizar contratos leves de uso/equipamento de item sem quebrar assets existentes, save schema ou gameplay.

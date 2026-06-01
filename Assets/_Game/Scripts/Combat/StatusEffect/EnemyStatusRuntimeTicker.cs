@@ -14,10 +14,19 @@ namespace CindarsHope.Combat.StatusEffect
         private void Start()
         {
             _enemyHealth = GetComponent<EnemyHealth>();
-            _burnSO = Resources.Load<StatusEffectSO>("status_burn_test");
 
-            if (_burnSO == null)
-                Debug.LogWarning("EnemyStatusRuntimeTicker: status_burn_test not found in Resources.", this);
+            // SPEC_09: Try registry lookup first; fallback to Resources.Load for backward compat
+            var db = CindarsHope.Core.Bootstrap.GameBootstrap.Instance?.StatusEffectDatabase;
+            if (db != null && db.TryGetById("status_burn_test", out _burnSO))
+            {
+                // resolved via StatusEffectDatabase
+            }
+            else
+            {
+                _burnSO = Resources.Load<StatusEffectSO>("status_burn_test");
+                if (_burnSO == null)
+                    Debug.LogWarning("EnemyStatusRuntimeTicker: status_burn_test not found in StatusEffectDatabase or Resources.", this);
+            }
 
             InvokeRepeating(nameof(Tick), 1f, 1f);
         }

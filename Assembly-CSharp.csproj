@@ -219,6 +219,7 @@
     <Compile Include="Assets\_Game\Scripts\Farm\FarmPlot.cs" />
     <Compile Include="Assets\_Game\Scripts\Cave\Runtime\CaveEntryController.cs" />
     <Compile Include="Assets\_Game\Scripts\Core\Data\WeaponDatabaseSO.cs" />
+    <Compile Include="Assets\_Game\Scripts\Core\Data\StatusEffectDatabaseSO.cs" />
     <Compile Include="Assets\_Game\Scripts\Combat\Magic\SpellDataSO.cs" />
     <Compile Include="Assets\_Game\Scripts\Cave\Generation\CaveProceduralGenerator.cs" />
     <Compile Include="Assets\_Game\Scripts\Cave\Resources\ResourceNodeToolCheckResult.cs" />

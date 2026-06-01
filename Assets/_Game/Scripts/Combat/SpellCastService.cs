@@ -1,4 +1,5 @@
 using CindarsHope.Combat.Weapon;
+using CindarsHope.Core.Data;
 using CindarsHope.Equipment;
 using CindarsHope.Inventory.Data;
 using CindarsHope.Player;
@@ -12,17 +13,20 @@ namespace CindarsHope.Combat
         private readonly EquipmentManager _equipmentManager;
         private readonly EquippedItemResolver _itemResolver;
         private readonly float _knockbackForce;
+        private readonly StatusEffectDatabaseSO _statusEffectDatabase;
 
         public SpellCastService(
             ManaManager manaManager,
             EquipmentManager equipmentManager,
             EquippedItemResolver itemResolver,
-            float knockbackForce)
+            float knockbackForce,
+            StatusEffectDatabaseSO statusEffectDatabase = null)
         {
             _manaManager = manaManager;
             _equipmentManager = equipmentManager;
             _itemResolver = itemResolver;
             _knockbackForce = knockbackForce;
+            _statusEffectDatabase = statusEffectDatabase;
         }
 
         public AttackResult TryCast(
@@ -60,7 +64,12 @@ namespace CindarsHope.Combat
 
             CindarsHope.Combat.StatusEffect.StatusEffectSO statusEffect = null;
             if (!string.IsNullOrEmpty(spellData.StatusEffectId))
-                statusEffect = Resources.Load<CindarsHope.Combat.StatusEffect.StatusEffectSO>(spellData.StatusEffectId);
+            {
+                if (_statusEffectDatabase != null && _statusEffectDatabase.TryGetById(spellData.StatusEffectId, out var dbEffect))
+                    statusEffect = dbEffect;
+                else
+                    statusEffect = Resources.Load<CindarsHope.Combat.StatusEffect.StatusEffectSO>(spellData.StatusEffectId);
+            }
 
             var spawnRequest = new ProjectileSpawnRequest(
                 spellData.ProjectilePrefab,
