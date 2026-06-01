@@ -7,6 +7,14 @@ using UnityEngine;
 
 namespace CindarsHope.Player
 {
+    /// <summary>
+    /// LEGACY: This class is deprecated. Use PlayerAttackController for spell casting instead.
+    ///
+    /// Status: QUARANTINED - Preserved for fallback, but not actively used in current attack flow.
+    /// The authoritative spell casting path is PlayerAttackController.TryExecuteSpellAttack().
+    ///
+    /// Reference: SPEC_04 (Wave 1 - Legacy Combat Quarantine)
+    /// </summary>
     [DisallowMultipleComponent]
     public class PlayerSpellCaster : MonoBehaviour
     {

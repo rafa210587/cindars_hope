@@ -389,14 +389,9 @@ namespace CindarsHope.Editor.SceneCreation
             var interactionTrigger = CreateInteractionTrigger(player.transform, interactionSystem);
             ConfigureInteractionSystem(interactionSystem, interactionTrigger);
 
-            var spellCaster = player.AddComponent<CindarsHope.Combat.PlayerSpellCaster>();
-            var serializedCaster = new SerializedObject(spellCaster);
-            SetReference(serializedCaster, "_playerController", playerController);
-            serializedCaster.ApplyModifiedPropertiesWithoutUndo();
-            EditorUtility.SetDirty(spellCaster);
-
-            player.AddComponent<FireballItemBridge>();
-
+            // SPEC_04: PlayerAttackController is the authoritative attack handler and includes spell casting.
+            // Legacy PlayerSpellCaster and FireballItemBridge are no longer added here.
+            // They are preserved in-codebase for fallback but marked as QUARANTINED.
             var attackController = player.AddComponent<CindarsHope.Combat.PlayerAttackController>();
             var serializedAttack = new SerializedObject(attackController);
             SetReference(serializedAttack, "_playerController", playerController);

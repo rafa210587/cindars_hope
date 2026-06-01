@@ -3,6 +3,15 @@ using UnityEngine;
 
 namespace CindarsHope.Player
 {
+    /// <summary>
+    /// LEGACY: This class is part of the deprecated fireball flow.
+    ///
+    /// Status: QUARANTINED - Registers a FireballUseHandler with ItemUseManager, which was the old
+    /// spell casting mechanism. The new flow uses PlayerAttackController.TryExecuteSpellAttack(),
+    /// which instanc iates projectile prefabs directly.
+    ///
+    /// Reference: SPEC_04 (Wave 1 - Legacy Combat Quarantine)
+    /// </summary>
     [DisallowMultipleComponent]
     public sealed class FireballItemBridge : MonoBehaviour
     {
