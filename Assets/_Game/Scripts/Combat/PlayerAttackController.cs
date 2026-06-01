@@ -463,20 +463,23 @@ namespace CindarsHope.Combat
 
         private void ExecuteRangedAttack(WeaponDataSO weapon, Vector2 direction)
         {
-            Vector2 spawnPos = (Vector2)transform.position + direction.normalized * 0.5f;
-            var projectile = Instantiate(weapon.ProjectilePrefab, spawnPos, Quaternion.identity);
+            // SPEC_06: Use ProjectileSpawnService to centralize spawn logic
+            var spawnRequest = new ProjectileSpawnRequest(
+                weapon.ProjectilePrefab,
+                (Vector2)transform.position,
+                direction,
+                weapon.ProjectileSpeed,
+                weapon.Range,
+                weapon.BaseDamage,
+                weapon.DamageType,
+                _knockbackForce,
+                spawnOffset: 0.5f
+            );
 
-            var projectileBehaviour = projectile.GetComponent<ProjectileBehaviour>();
-            if (projectileBehaviour != null)
+            var spawnResult = ProjectileSpawnService.SpawnProjectile(spawnRequest);
+            if (!spawnResult.Success)
             {
-                projectileBehaviour.Initialize(
-                    direction,
-                    weapon.ProjectileSpeed,
-                    weapon.Range,
-                    weapon.BaseDamage,
-                    weapon.DamageType,
-                    _knockbackForce
-                );
+                Debug.LogError($"CombatLog: PlayerAttackBlocked. Reason=ProjectileSpawnFailed, ErrorCode={spawnResult.ErrorCode}", this);
             }
         }
 
@@ -488,40 +491,29 @@ namespace CindarsHope.Combat
                 return;
             }
 
-            Vector2 spawnPos = (Vector2)transform.position + direction.normalized * 0.5f;
-            var projectile = Instantiate(spellData.ProjectilePrefab, spawnPos, Quaternion.identity);
+            // SPEC_06: Use ProjectileSpawnService to centralize spawn logic
+            CindarsHope.Combat.StatusEffect.StatusEffectSO statusEffect = null;
+            if (!string.IsNullOrEmpty(spellData.StatusEffectId))
+                statusEffect = Resources.Load<CindarsHope.Combat.StatusEffect.StatusEffectSO>(spellData.StatusEffectId);
 
-            var projectileBehaviour = projectile.GetComponent<ProjectileBehaviour>();
-            if (projectileBehaviour != null)
+            var spawnRequest = new ProjectileSpawnRequest(
+                spellData.ProjectilePrefab,
+                (Vector2)transform.position,
+                direction,
+                spellData.ProjectileSpeed,
+                spellData.Range,
+                spellData.BaseDamage,
+                spellData.DamageType,
+                _knockbackForce,
+                spawnOffset: 0.5f,
+                statusEffect: statusEffect,
+                statusApplyChance: spellData.StatusApplyChance
+            );
+
+            var spawnResult = ProjectileSpawnService.SpawnProjectile(spawnRequest);
+            if (!spawnResult.Success)
             {
-                CindarsHope.Combat.StatusEffect.StatusEffectSO statusEffect = null;
-                if (!string.IsNullOrEmpty(spellData.StatusEffectId))
-                    statusEffect = Resources.Load<CindarsHope.Combat.StatusEffect.StatusEffectSO>(spellData.StatusEffectId);
-
-                if (statusEffect != null && spellData.StatusApplyChance > 0f)
-                {
-                    projectileBehaviour.InitializeWithStatus(
-                        direction,
-                        spellData.ProjectileSpeed,
-                        spellData.Range,
-                        spellData.BaseDamage,
-                        spellData.DamageType,
-                        _knockbackForce,
-                        statusEffect,
-                        spellData.StatusApplyChance
-                    );
-                }
-                else
-                {
-                    projectileBehaviour.Initialize(
-                        direction,
-                        spellData.ProjectileSpeed,
-                        spellData.Range,
-                        spellData.BaseDamage,
-                        spellData.DamageType,
-                        _knockbackForce
-                    );
-                }
+                Debug.LogError($"CombatLog: PlayerAttackBlocked. Reason=ProjectileSpawnFailed, ErrorCode={spawnResult.ErrorCode}", this);
             }
         }
 

@@ -1,3 +1,42 @@
+## Sessao 2026-06-01 (reorg) - Architecture Reorganization SPEC_06: Wave 2B Projectile Spawn Service
+
+**Foco:** Executar SPEC_06 em modo sequencial. Objetivo: Centralizar spawn e inicializacao de projeteis em ProjectileSpawnService, preservando exatamente o comportamento atual de arrow e fireball.
+
+### Resumo de Execucao
+
+**SPEC_06 — Wave 2B Projectile Spawn Service:**
+- Criado ProjectileSpawnRequest.cs (49 linhas) — DTO com todos parametros necessarios para spawn
+- Criado ProjectileSpawnResult.cs (38 linhas) — DTO com resultado (sucesso/erro)
+- Criado ProjectileSpawnService.cs (68 linhas) — servico estático que faz spawn e inicializacao
+- Refatorado ExecuteRangedAttack — delegado a ProjectileSpawnService para arrow
+- Refatorado ExecuteSpellAttack — delegado a ProjectileSpawnService para fireball
+
+**Validacoes feitas:**
+- ProjectileSpawnService valida prefab null, direction zero, missing ProjectileBehaviour
+- Ambos arrow e fireball usam mesmo código de spawn/initialize
+- Offset mantido em 0.5f
+- Speed, range, damage, damageType, knockback preservados 1:1
+- Status effect loading preservado para spells
+- CombatLog: novos logs de erro para falhas de spawn
+
+**Arquivos criados/modificados (total 4):**
+- Assets/_Game/Scripts/Combat/Weapon/ProjectileSpawnRequest.cs
+- Assets/_Game/Scripts/Combat/Weapon/ProjectileSpawnResult.cs
+- Assets/_Game/Scripts/Combat/Weapon/ProjectileSpawnService.cs
+- Assets/_Game/Scripts/Combat/PlayerAttackController.cs (ExecuteRangedAttack + ExecuteSpellAttack refatorados)
+
+**Validacoes:**
+- dotnet build (runtime): PASS 0E/0W
+- dotnet build (editor): PASS 0E/2W (pre-existentes)
+- validate_docs.ps1: PASS
+- Arrow dispara: ✓
+- Fireball dispara: ✓
+- Comportamento: 100% preservado
+
+**Status:** ✓ COMPLETO. SPEC_07 liberada. Build status: 0E/0W runtime, 0E/2W pre-existentes editor.
+
+---
+
 ## Sessao 2026-06-01 (reorg) - Architecture Reorganization SPEC_05B: Rebind Item Resolver Fix (Micro-fix)
 
 **Foco:** Corrigir regressao potencial de SPEC_05. `EquippedItemResolver` criado no Start() nao era atualizado quando RebindCombatData() era chamado, deixando resolver com referencias antigas. Correção: método `RefreshItemResolver()` centraliza recriacao do resolver e é chamado em Start e ambas sobrecarga de RebindCombatData.
