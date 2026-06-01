@@ -19,6 +19,7 @@ using CindarsHope.Player.Data;
 using CindarsHope.Player.Death;
 using CindarsHope.Player.Progression;
 using CindarsHope.Save.Migrations;
+using CindarsHope.Save.Providers;
 using CindarsHope.Skills;
 using CindarsHope.UI.Hotbar;
 using CindarsHope.World;
@@ -65,6 +66,7 @@ namespace CindarsHope.Save
         [SerializeField] private ItemDatabaseSO _itemDatabase;
 
         private readonly HotbarState _hotbarState = new HotbarState();
+        private ISaveSectionProvider _hotbarProvider;
         private readonly SaveMigrationRegistry _migrationRegistry = new SaveMigrationRegistry(new ISaveMigration[]
         {
             new InventorySlotsV1ToV2Migration(),
@@ -85,6 +87,9 @@ namespace CindarsHope.Save
             }
 
             IsInitialized = true;
+
+            // SPEC_10: Initialize save providers
+            _hotbarProvider = new HotbarSectionProvider(_hotbarState);
 
             if (string.IsNullOrWhiteSpace(_hotbarState.GetSlotItemId(0)))
             {
@@ -127,6 +132,11 @@ namespace CindarsHope.Save
                     playerData.MaxMana = _manaManager.MaxMana;
                 }
 
+                // SPEC_10: Use hotbar provider if available, otherwise fallback to direct _hotbarState
+                var hotbarSaveData = _hotbarProvider != null
+                    ? (_hotbarProvider.Capture(existingSaveData) as HotbarSaveData)
+                    : _hotbarState.CaptureSaveData();
+
                 var saveData = new GameSaveData
                 {
                     SchemaVersion = CurrentSchemaVersion,
@@ -136,7 +146,7 @@ namespace CindarsHope.Save
                     Player = playerData,
                     Inventory = CaptureInventorySaveData(),
                     Equipment = CaptureEquipmentSaveData(),
-                    Hotbar = _hotbarState.CaptureSaveData(),
+                    Hotbar = hotbarSaveData,
                     Progression = CaptureProgressionSaveData(),
                     Farm = farmSaveData,
                     World = worldSaveData,
@@ -874,7 +884,16 @@ namespace CindarsHope.Save
                 _equipmentManager.RestoreFromSaveData(saveData.Equipment);
             }
 
-            _hotbarState.RestoreFromSaveData(saveData.Hotbar);
+            // SPEC_10: Use hotbar provider if available, otherwise fallback to direct _hotbarState
+            if (_hotbarProvider != null)
+            {
+                _hotbarProvider.Restore(saveData.Hotbar);
+            }
+            else
+            {
+                _hotbarState.RestoreFromSaveData(saveData.Hotbar);
+            }
+
             if (_inventoryManager != null)
             {
                 _inventoryManager.ClearHotbarBindingsForMissingItems(

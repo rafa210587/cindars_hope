@@ -1,3 +1,45 @@
+## Sessao 2026-06-01 (reorg continuation 2) - Architecture Reorganization SPEC_10: Wave 5 Save Providers Incremental Refactor
+
+**Foco:** Executar SPEC_10 em modo sequencial. Objetivo: Reduzir acoplamento do SaveManager criando providers/adapters de save por domínio, começando com Hotbar como domínio piloto, sem alterar schema v5 nem quebrar save/load existente.
+
+### Resumo de Execucao
+
+**SPEC_10 — Wave 5 Save Providers:**
+- Criado ISaveSectionProvider.cs — interface simples com Capture(existingSaveData) e Restore(sectionData)
+- Criado HotbarSectionProvider.cs — implementação piloto delegando a HotbarState com fallback para GameSaveData
+- Integrado SaveManager com provider para hotbar capture/restore preservando fallback direto a _hotbarState
+- SaveManager agora menos acoplado: Hotbar isolado em provider, outros domínios mantidos inline (próximas specs)
+- GameSaveData.cs permanece inalterado
+- Schema version permanece 5
+- Migrations preservadas
+
+**Comportamento preservado:**
+- SaveGame() salva hotbar com mesma estrutura JSON
+- LoadGame() restaura hotbar com mesma semântica
+- Hotbar defaults mantidos (wheat, carrot, fishing_rod, bow, arrow, fireball)
+- ClearHotbarBindingsForMissingItems funciona após restore
+- Player/Inventory/Equipment/Farm/World/Cave/Death/Economy/Crafting/Stamina/GameTime/StatusEffects/Bestiary sem mudança
+- Fallback em Initialize() para defaults se hotbar vazia
+
+**Arquivos criados/modificados:**
+- Assets/_Game/Scripts/Save/ISaveSectionProvider.cs (criado)
+- Assets/_Game/Scripts/Save/Providers/HotbarSectionProvider.cs (criado)
+- Assets/_Game/Scripts/Save/SaveManager.cs (+using +field +provider init +capture com fallback +restore com fallback)
+- Assembly-CSharp.csproj (2 entradas Compile Include adicionadas)
+
+**Validacoes:**
+- dotnet restore: PASS
+- dotnet build (runtime): PASS 0E/0W
+- dotnet build (editor): PASS 0E/2W (pre-existentes em CreateEnemyActionsAndSets.cs)
+- validate_docs.ps1: PASS (14/14 checks)
+- Unity validation: NOT RUN — motivo: code-only change, validators editor-only, assets existem
+- Backward compat: 100% — JSON save/load idêntico, provider transparente
+- Risco residual: muito baixo
+
+**Status:** ✓ COMPLETO. SPEC_11 liberada. Padrão provider escalável para próximos domínios (Bestiary, Economy, etc.).
+
+---
+
 ## Sessao 2026-06-01 (reorg continuation) - Architecture Reorganization SPEC_09: Wave 4 Status Effect Runtime Unification
 
 **Foco:** Executar SPEC_09 em modo sequencial. Objetivo: Remover acoplamento frágil de `Resources.Load("status_burn_test")` via `StatusEffectDatabaseSO`, wiring mínimo em `GameBootstrap`, propagação via `SpellCastService` e `EnemyStatusRuntimeTicker` com fallback preservado.

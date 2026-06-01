@@ -100,6 +100,8 @@
     <Compile Include="Assets\_Game\Scripts\Enemy\AIBehaviorSO.cs" />
     <Compile Include="Assets\_Game\Scripts\Cave\Runtime\EnemySpawnPlan.cs" />
     <Compile Include="Assets\_Game\Scripts\Save\SaveManager.cs" />
+    <Compile Include="Assets\_Game\Scripts\Save\ISaveSectionProvider.cs" />
+    <Compile Include="Assets\_Game\Scripts\Save\Providers\HotbarSectionProvider.cs" />
     <Compile Include="Assets\_Game\Scripts\Core\StatusEffect.cs" />
     <Compile Include="Assets\_Game\Scripts\NPC\PipReceptionController.cs" />
     <Compile Include="Assets\_Game\Scripts\UI\Hotbar\HotbarSaveData.cs" />
