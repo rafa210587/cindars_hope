@@ -1,3 +1,19 @@
+## Sessao 2026-06-01 (micro-closeout documental) - Consolidar Documentacao pós SPEC_10
+
+**Foco:** Micro-closeout documental. Sem alteracao de codigo runtime. Objetivo: Registrar SPEC_10 em docs/IMPLEMENTATION_STATUS.md e consolidar pacote de reorg SPEC_04-10.
+
+### Resumo Documental
+
+- SPEC_10 registrada em IMPLEMENTATION_STATUS.md linha de reorg agregada (SPEC_04-09 → SPEC_04-10)
+- Bloco de reorg estendido com descricao completa de SPEC_10 (ISaveSectionProvider, HotbarSectionProvider, SaveManager integrado, schema v5, migrations preservadas, padrão escalável)
+- Status: Implementado em codigo - validacao Unity/Play Mode pendente
+- Docs validation PASS
+- SPEC_11 permanece liberada
+
+**Status:** ✓ COMPLETO.
+
+---
+
 ## Sessao 2026-06-01 (reorg continuation 2) - Architecture Reorganization SPEC_10: Wave 5 Save Providers Incremental Refactor
 
 **Foco:** Executar SPEC_10 em modo sequencial. Objetivo: Reduzir acoplamento do SaveManager criando providers/adapters de save por domínio, começando com Hotbar como domínio piloto, sem alterar schema v5 nem quebrar save/load existente.
