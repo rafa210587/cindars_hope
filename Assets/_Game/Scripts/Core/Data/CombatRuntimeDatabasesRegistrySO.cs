@@ -27,5 +27,6 @@ namespace CindarsHope.Core.Data
         [Header("Player combat stack")]
         public ItemDatabaseSO ItemDatabase;
         public WeaponDatabaseSO WeaponDatabase;
+        public SpellDatabaseSO SpellDatabase;
     }
 }

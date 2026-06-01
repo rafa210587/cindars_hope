@@ -90,7 +90,7 @@ namespace CindarsHope.SceneManagement
                 }
                 if (attackController != null)
                 {
-                    attackController.RebindCombatData(combatRegistry.ItemDatabase, combatRegistry.WeaponDatabase);
+                    attackController.RebindCombatData(combatRegistry.ItemDatabase, combatRegistry.WeaponDatabase, combatRegistry.SpellDatabase);
                 }
             }
 

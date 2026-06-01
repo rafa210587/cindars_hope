@@ -1,3 +1,5 @@
+using CindarsHope.Combat.Magic;
+using CindarsHope.Combat.StatusEffect;
 using CindarsHope.Combat.Weapon;
 using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
@@ -5,6 +7,7 @@ using CindarsHope.Core.Data;
 using CindarsHope.Core.Events;
 using CindarsHope.Equipment;
 using CindarsHope.Interaction;
+using CindarsHope.Inventory;
 using CindarsHope.Inventory.Data;
 using CindarsHope.Player;
 using CindarsHope.Skills;
@@ -27,6 +30,8 @@ namespace CindarsHope.Combat
         // Equipment IDs that ARE weapon IDs (e.g. "weapon_sword_iron") also resolve directly.
         [SerializeField] private ItemDatabaseSO _itemDatabase;
         [SerializeField] private WeaponDatabaseSO _weaponDatabase;
+        [SerializeField] private SpellDatabaseSO _spellDatabase;
+        [SerializeField] private InventoryManager _inventoryManager;
         [SerializeField] private WeaponDataSO[] _knownWeapons = new WeaponDataSO[0];
 
         [SerializeField] private float _knockbackForce = 2.5f;
@@ -46,6 +51,18 @@ namespace CindarsHope.Combat
             if (_interactionSystem == null)
             {
                 _interactionSystem = GetComponent<InteractionSystem>();
+            }
+
+            var bootstrap = GameBootstrap.Instance;
+            if (bootstrap != null)
+            {
+                if (_equipmentManager == null) _equipmentManager = bootstrap.EquipmentManager;
+                if (_staminaManager == null) _staminaManager = bootstrap.StaminaManager;
+                if (_manaManager == null) _manaManager = bootstrap.ManaManager;
+                if (_inventoryManager == null) _inventoryManager = bootstrap.InventoryManager;
+                if (_itemDatabase == null) _itemDatabase = bootstrap.ItemDatabase;
+                if (_weaponDatabase == null) _weaponDatabase = bootstrap.WeaponDatabase;
+                if (_spellDatabase == null) _spellDatabase = bootstrap.SpellDatabase;
             }
 
             // SPEC 14A-FIX9: create a runtime unarmed fallback if the inspector field is null.
@@ -95,6 +112,14 @@ namespace CindarsHope.Combat
             string itemDbName = _itemDatabase != null ? _itemDatabase.name : "null";
             string weaponDbName = _weaponDatabase != null ? _weaponDatabase.name : "null";
             Debug.Log($"PlayerAttackController.RebindCombatData. ItemDb={itemDbName}, WeaponDb={weaponDbName}.", this);
+        }
+
+        public void RebindCombatData(ItemDatabaseSO itemDatabase, WeaponDatabaseSO weaponDatabase, SpellDatabaseSO spellDatabase)
+        {
+            RebindCombatData(itemDatabase, weaponDatabase);
+            if (spellDatabase != null) _spellDatabase = spellDatabase;
+            string spellDbName = _spellDatabase != null ? _spellDatabase.name : "null";
+            Debug.Log($"PlayerAttackController.RebindCombatData (with spell). SpellDb={spellDbName}.", this);
         }
 
         private void Update()
@@ -225,6 +250,36 @@ namespace CindarsHope.Combat
                 return;
             }
 
+            // Resolve ItemDataSO first to categorize the equipped item.
+            ItemDataSO itemData = null;
+            if (!string.IsNullOrEmpty(equippedItemId) && _itemDatabase != null)
+                _itemDatabase.TryGetById(equippedItemId, out itemData);
+
+            // Ammo (arrow) slot dispatch: fire bow+arrow combo.
+            if (itemData != null && itemData.Category == ItemCategory.Ammo)
+            {
+                TryExecuteArrowAttack(slot, itemData, ref lastAttackTime);
+                return;
+            }
+
+            // Magic slot dispatch: fire spell.
+            if (itemData != null && itemData.Category == ItemCategory.Magic)
+            {
+                TryExecuteSpellAttack(slot, itemData, ref lastAttackTime);
+                return;
+            }
+
+            // Weapon (Bow) dispatch: block — bow fires only from the arrow-hand side.
+            if (itemData != null && itemData.Category == ItemCategory.Weapon && !string.IsNullOrEmpty(itemData.WeaponId))
+            {
+                var bowCheck = LookupWeapon(itemData.WeaponId);
+                if (bowCheck != null && bowCheck.Type == WeaponType.Bow)
+                {
+                    Debug.Log($"CombatLog: PlayerAttackBlocked. Reason=BowHandPressed_UseArrowHand, Slot={slot}", this);
+                    return;
+                }
+            }
+
             WeaponDataSO weapon = ResolveEquippedWeapon(slot, equippedItemId, out string resolveError);
 
             // CASE A: Slot is empty (nothing equipped) -> use unarmed fallback.
@@ -265,6 +320,110 @@ namespace CindarsHope.Combat
             Debug.Log($"CombatLog: PlayerAttackStarted. Slot={slot}, Weapon={weapon.DisplayName}, BaseDamage={weapon.BaseDamage}, Range={weapon.Range:F2}, Type={weapon.Type}", this);
             ExecuteWeaponAttack(weapon);
             lastAttackTime = Time.time;
+        }
+
+        private void TryExecuteArrowAttack(EquipmentSlot ammoSlot, ItemDataSO ammoItemData, ref float lastAttackTime)
+        {
+            var bowSlot = GetOppositeHand(ammoSlot);
+            var bowItemId = _equipmentManager != null ? _equipmentManager.GetEquippedItem(bowSlot) : null;
+
+            ItemDataSO bowItemData = null;
+            if (!string.IsNullOrEmpty(bowItemId) && _itemDatabase != null)
+                _itemDatabase.TryGetById(bowItemId, out bowItemData);
+
+            var bowWeapon = bowItemData != null && !string.IsNullOrEmpty(bowItemData.WeaponId)
+                ? LookupWeapon(bowItemData.WeaponId) : null;
+
+            if (bowWeapon == null || bowWeapon.Type != WeaponType.Bow)
+            {
+                Debug.Log($"CombatLog: PlayerAttackBlocked. Reason=ArrowRequiresBowInOtherHand, AmmoSlot={ammoSlot}, BowSlot={bowSlot}", this);
+                return;
+            }
+
+            if (bowWeapon.ProjectilePrefab == null)
+            {
+                Debug.LogError($"CombatLog: PlayerAttackBlocked. Reason=BowHasNoProjectilePrefab, Weapon={bowWeapon.Id}", this);
+                return;
+            }
+
+            float cooldown = bowWeapon.BaseCooldownSeconds / Mathf.Max(0.1f, bowWeapon.AttackSpeedMultiplier);
+            if (Time.time < lastAttackTime + cooldown)
+            {
+                Debug.Log($"CombatLog: PlayerAttackBlocked. Reason=Cooldown, Slot={ammoSlot}, RemainingSeconds={(lastAttackTime + cooldown - Time.time):F2}", this);
+                return;
+            }
+
+            if (_inventoryManager == null || !_inventoryManager.HasItem(ammoItemData.Id, 1))
+            {
+                Debug.Log($"CombatLog: PlayerAttackBlocked. Reason=NoArrowsInInventory, AmmoItemId={ammoItemData.Id}", this);
+                return;
+            }
+
+            int staminaCost = Mathf.RoundToInt(bowWeapon.StaminaCost);
+            if (_staminaManager != null && !_staminaManager.TrySpendStamina(staminaCost))
+            {
+                Debug.Log($"CombatLog: PlayerAttackBlocked. Reason=InsufficientStamina, Slot={ammoSlot}, StaminaCost={staminaCost}", this);
+                return;
+            }
+
+            _inventoryManager.RemoveItem(ammoItemData.Id, 1);
+
+            Vector2 direction = _playerController?.LastFacingDirection ?? Vector2.right;
+            ExecuteRangedAttack(bowWeapon, direction);
+
+            if (_equipmentManager != null)
+                _equipmentManager.RegisterEquipmentUsage();
+
+            lastAttackTime = Time.time;
+            Debug.Log($"CombatLog: ArrowFired. AmmoSlot={ammoSlot}, BowWeapon={bowWeapon.Id}, Range={bowWeapon.Range}, Speed={bowWeapon.ProjectileSpeed}, AmmoId={ammoItemData.Id}", this);
+        }
+
+        private void TryExecuteSpellAttack(EquipmentSlot slot, ItemDataSO itemData, ref float lastAttackTime)
+        {
+            var spellData = ResolveEquippedSpell(itemData);
+            if (spellData == null)
+            {
+                Debug.LogError($"CombatLog: PlayerAttackBlocked. Reason=SpellNotResolved, ItemId={itemData.Id}, SpellId='{itemData.SpellId}'", this);
+                return;
+            }
+
+            float cooldown = Mathf.Max(0.1f, spellData.CooldownSeconds);
+            if (Time.time < lastAttackTime + cooldown)
+            {
+                Debug.Log($"CombatLog: PlayerAttackBlocked. Reason=Cooldown, Slot={slot}, RemainingSeconds={(lastAttackTime + cooldown - Time.time):F2}", this);
+                return;
+            }
+
+            if (_manaManager != null && !_manaManager.TrySpendMana(spellData.ManaCost))
+            {
+                Debug.Log($"CombatLog: PlayerAttackBlocked. Reason=InsufficientMana, Slot={slot}, ManaCost={spellData.ManaCost}", this);
+                return;
+            }
+
+            Vector2 direction = _playerController?.LastFacingDirection ?? Vector2.right;
+            ExecuteSpellAttack(spellData, direction);
+
+            if (_equipmentManager != null)
+                _equipmentManager.RegisterEquipmentUsage();
+
+            lastAttackTime = Time.time;
+            Debug.Log($"CombatLog: SpellFired. Slot={slot}, Spell={spellData.Id}, Range={spellData.Range}, Speed={spellData.ProjectileSpeed}, ManaCost={spellData.ManaCost}", this);
+        }
+
+        private SpellDataSO ResolveEquippedSpell(ItemDataSO itemData)
+        {
+            if (itemData == null || string.IsNullOrEmpty(itemData.SpellId))
+                return null;
+
+            if (_spellDatabase != null && _spellDatabase.TryGetById(itemData.SpellId, out var spell) && spell != null)
+                return spell;
+
+            return null;
+        }
+
+        private static EquipmentSlot GetOppositeHand(EquipmentSlot slot)
+        {
+            return slot == EquipmentSlot.LeftHand ? EquipmentSlot.RightHand : EquipmentSlot.LeftHand;
         }
 
         private void ExecuteWeaponAttack(WeaponDataSO weapon)
@@ -337,6 +496,51 @@ namespace CindarsHope.Combat
                     weapon.DamageType,
                     _knockbackForce
                 );
+            }
+        }
+
+        private void ExecuteSpellAttack(SpellDataSO spellData, Vector2 direction)
+        {
+            if (spellData.ProjectilePrefab == null)
+            {
+                Debug.LogError($"CombatLog: PlayerAttackBlocked. Reason=SpellHasNoProjectilePrefab, SpellId={spellData.Id}", this);
+                return;
+            }
+
+            Vector2 spawnPos = (Vector2)transform.position + direction.normalized * 0.5f;
+            var projectile = Instantiate(spellData.ProjectilePrefab, spawnPos, Quaternion.identity);
+
+            var projectileBehaviour = projectile.GetComponent<ProjectileBehaviour>();
+            if (projectileBehaviour != null)
+            {
+                CindarsHope.Combat.StatusEffect.StatusEffectSO statusEffect = null;
+                if (!string.IsNullOrEmpty(spellData.StatusEffectId))
+                    statusEffect = Resources.Load<CindarsHope.Combat.StatusEffect.StatusEffectSO>(spellData.StatusEffectId);
+
+                if (statusEffect != null && spellData.StatusApplyChance > 0f)
+                {
+                    projectileBehaviour.InitializeWithStatus(
+                        direction,
+                        spellData.ProjectileSpeed,
+                        spellData.Range,
+                        spellData.BaseDamage,
+                        spellData.DamageType,
+                        _knockbackForce,
+                        statusEffect,
+                        spellData.StatusApplyChance
+                    );
+                }
+                else
+                {
+                    projectileBehaviour.Initialize(
+                        direction,
+                        spellData.ProjectileSpeed,
+                        spellData.Range,
+                        spellData.BaseDamage,
+                        spellData.DamageType,
+                        _knockbackForce
+                    );
+                }
             }
         }
 

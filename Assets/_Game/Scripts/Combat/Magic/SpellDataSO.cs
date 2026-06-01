@@ -24,6 +24,8 @@ namespace CindarsHope.Combat.Magic
         public int RequiredWillpower;
         public int BaseValue;
         public string StatusEffectId;
+        public float StatusApplyChance = 0f;
+        public GameObject ProjectilePrefab;
         public int CastRangeMeters = 10;
 
         string IIdentifiedData.Id => Id;

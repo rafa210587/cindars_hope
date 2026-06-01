@@ -1,3 +1,65 @@
+## Sessao 2026-06-01 (31q) - Combate ranged: arco+flecha e fireball via PlayerAttackController
+
+**Foco:** Implementar disparo de arco+flecha e fireball como feitico via PlayerAttackController. Nenhum novo sistema de combate paralelo criado. Melee/unarmed nao regredido. E bloqueado por InteractionCandidate preservado.
+
+### O que foi feito
+
+**ItemDataSO + SpellDataSO:**
+- `ItemDataSO.cs` — adicionado `public string SpellId;`.
+- `SpellDataSO.cs` — adicionados `public float StatusApplyChance = 0f;` e `public GameObject ProjectilePrefab;`.
+
+**ProjectileBehaviour (CindarsHope.Combat.Weapon):**
+- Adicionados campos `_statusEffect` (FQN `CindarsHope.Combat.StatusEffect.StatusEffectSO`) e `_statusApplyChance`.
+- `HitEnemy()` aplica status apos dano com chance configuravel.
+- Novo metodo `InitializeWithStatus()` para injecao de status em spawn.
+- Uso de FQN para StatusEffectSO (evita conflito com classe legacy `CindarsHope.Combat.StatusEffectSO`).
+
+**EnemyStatusRuntimeTicker (novo):**
+- `Assets/_Game/Scripts/Combat/StatusEffect/EnemyStatusRuntimeTicker.cs` — MonoBehaviour auto-adicionado ao enemy; ticks de burn DOT a cada 1s via InvokeRepeating; para quando enemy morre.
+- `EnemyHealth.cs` — auto-AddComponent no `Configure()` e `Start()` com null guard.
+- `Assembly-CSharp.csproj` — entrada adicionada.
+
+**PlayerAttackController — despacho por categoria de item:**
+- Despacho por `ItemCategory`: Ammo→`TryExecuteArrowAttack`, Magic→`TryExecuteSpellAttack`, Bow→bloqueado (disparo e pela mao da flecha).
+- `TryExecuteArrowAttack`: valida bow na mao oposta, cooldown, inventario, stamina; remove 1 arrow por disparo; loga `ArrowRequiresBowInOtherHand` se bow ausente.
+- `TryExecuteSpellAttack`: resolve SpellDataSO, cooldown, mana; instancia prefab com InitializeWithStatus se status configurado.
+- Auto-wire em `Start()` via `GameBootstrap.Instance` para `_spellDatabase` e `_inventoryManager`.
+- Novo overload `RebindCombatData(itemDb, weaponDb, spellDb)`.
+- Helpers: `GetOppositeHand()`, `ResolveEquippedSpell()`.
+
+**Assets:**
+- `Projectile_Arrow.prefab` — GUID c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6; velocidade=12, range=12, Physical.
+- `Projectile_Fireball.prefab` — GUID d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7; velocidade=6, range=6, Fire, baseDamage=8.
+- `status_burn_test.asset` (Resources/) — GUID a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8; Type=Burn, DurationTurns=3, DamagePerTurn=2.
+- `weapon_bow_basic.asset` — Range 5→12, ProjectileSpeed 5→12, ProjectilePrefab wired.
+- `spell_fireball.asset` — DamageType Fire, Range=6, Speed=6, StatusEffectId=status_burn_test, StatusApplyChance=0.35, ProjectilePrefab wired.
+- `item_ammo_arrow_basic.asset` — IsEquippable: 0→1.
+- `item_spell_fireball_test.asset` — Category 101→103(Magic), MaxStack 99→1, SpellId=spell_fireball.
+- `PlayerData.asset` — arrows Amount→99, fireball Amount→1.
+- `CombatRuntimeDatabasesRegistrySO.cs` + `CombatRuntimeDatabasesRegistry.asset` — campo SpellDatabase adicionado.
+- `CaveSceneRuntimeReferenceInstaller.cs` — usa overload RebindCombatData com SpellDatabase.
+- `CreateMvpFarmScene.cs` — adiciona PlayerAttackController ao Player (FQN, sem using CindarsHope.Combat).
+- `CreateMvpCaveScene.cs` — adiciona ManaManager ao bootstrap, wira SpellDatabase.
+
+### Nota de implementacao
+
+`DurationTurns` de StatusEffectSO tratado como contagem de ticks (1 tick = 1 segundo) no runtime MVP. EnemyStatusRuntimeTicker carrega `status_burn_test` via Resources.Load — requer asset em pasta Resources/ com nome exato.
+
+### Limitacoes
+
+- Unity validation: NAO executada (Unity nao disponivel em batchmode nesta sessao).
+- Residual risk: prefabs de projetil criados como YAML; verificar no Unity se Rigidbody2D e CircleCollider2D estao corretamente serializados apos reimport. ManaManager null em CaveScene bootstrap → fireball dispara sem custo de mana (aceitavel MVP).
+- FireballItemBridge e PlayerSpellCaster da sessao 31p ainda existem mas nao sao ativados pelo novo fluxo (PlayerAttackController nao os usa).
+
+### Validacao
+
+- `dotnet build Assembly-CSharp.csproj`: PASS, 0 erros, 0 warnings.
+- `dotnet build Assembly-CSharp-Editor.csproj`: PASS, 0 erros, 2 warnings pre-existentes (CS0649 em CreateEnemyActionsAndSets.cs).
+- `validate_docs.ps1`: PASS.
+- Unity batchmode: NAO executado.
+
+---
+
 ## Sessao 2026-05-31 (31p) - Lake collider, InteractionTrigger, Fireball item, Hotbar defaults
 
 **Foco:** Ajustar collider fisico do lago, aumentar raio do InteractionTrigger, adicionar item fireball test com bridge para PlayerSpellCaster, e completar hotbar defaults (slots 3-5). Nao foram alterados save schema, trees, cave, enemies, shop, crafting, skill tree, NPCs, portals ou player movement.

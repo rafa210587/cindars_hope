@@ -14,6 +14,8 @@ namespace CindarsHope.Combat.Weapon
         [SerializeField] private float _knockbackForce = 2f;
         [SerializeField] private Rigidbody2D _rigidbody;
         [SerializeField] private CircleCollider2D _collider;
+        [SerializeField] private CindarsHope.Combat.StatusEffect.StatusEffectSO _statusEffect;
+        [SerializeField] private float _statusApplyChance = 0f;
 
         private Vector2 _spawnPosition;
         private bool _hasHit;
@@ -62,6 +64,11 @@ namespace CindarsHope.Combat.Weapon
 
             var result = DamageCalculator.Calculate(damageRequest);
             enemyHealth.TakeDamage(damageRequest);
+
+            if (!enemyHealth.IsDead && _statusEffect != null && _statusApplyChance > 0f && Random.value <= _statusApplyChance)
+            {
+                enemyHealth.ApplyStatusEffect(_statusEffect);
+            }
         }
 
         public void Initialize(Vector2 direction, float speed, float range, int baseDamage, DamageType damageType, float knockbackForce)
@@ -80,6 +87,13 @@ namespace CindarsHope.Combat.Weapon
 
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
             transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+        }
+
+        public void InitializeWithStatus(Vector2 direction, float speed, float range, int baseDamage, DamageType damageType, float knockbackForce, CindarsHope.Combat.StatusEffect.StatusEffectSO statusEffect, float statusApplyChance)
+        {
+            _statusEffect = statusEffect;
+            _statusApplyChance = statusApplyChance;
+            Initialize(direction, speed, range, baseDamage, damageType, knockbackForce);
         }
     }
 }

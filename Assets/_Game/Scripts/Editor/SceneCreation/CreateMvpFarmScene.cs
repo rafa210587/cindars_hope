@@ -397,6 +397,12 @@ namespace CindarsHope.Editor.SceneCreation
 
             player.AddComponent<FireballItemBridge>();
 
+            var attackController = player.AddComponent<CindarsHope.Combat.PlayerAttackController>();
+            var serializedAttack = new SerializedObject(attackController);
+            SetReference(serializedAttack, "_playerController", playerController);
+            serializedAttack.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(attackController);
+
             return player.transform;
         }
 

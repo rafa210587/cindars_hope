@@ -47,6 +47,7 @@ namespace CindarsHope.Editor.SceneCreation
         private const string ItemCopperOrePath = "Assets/_Game/Data/Items/Item_Ore_Copper.asset";
         private const string CaveBossGateRegistryPath = "Assets/_Game/Data/Cave/CaveBossGateRegistry.asset";
         private const string CaveBossGateLevel15Path = "Assets/_Game/Data/Cave/BossGate_Level15.asset";
+        private const string SpellDatabasePath = "Assets/_Game/Data/Combat/SpellDatabase.asset";
         private const string BuiltinSpritePath = "UI/Skin/UISprite.psd";
 
         [MenuItem("CindarsHope/Advanced/Legacy/Scenes/Create MVP CaveScene")]
@@ -140,8 +141,7 @@ namespace CindarsHope.Editor.SceneCreation
             bootstrapObject.AddComponent<HotbarDebugInput>();
             bootstrapObject.AddComponent<ModalManager>();
             bootstrapObject.AddComponent<BestiaryManager>();
-
-            
+            bootstrapObject.AddComponent<ManaManager>();
 
             return bootstrap;
         }
@@ -166,6 +166,7 @@ namespace CindarsHope.Editor.SceneCreation
             SetReference(serializedBootstrap, "_progressionManager", bootstrapObject.GetComponent<PlayerProgressionManager>());
             SetReference(serializedBootstrap, "_skillTreeManager", bootstrapObject.GetComponent<SkillTreeManager>());
             SetReference(serializedBootstrap, "_bestiaryManager", bootstrapObject.GetComponent<BestiaryManager>());
+            SetReference(serializedBootstrap, "_manaManager", bootstrapObject.GetComponent<ManaManager>());
             PlayerNeedsDataInitializer.ConfigureRuntimeManagers(bootstrap, bootstrapObject.GetComponent<TimeManager>(), bootstrapObject.GetComponent<ModalManager>());
 
             ConfigureSaveManager(
@@ -216,6 +217,16 @@ namespace CindarsHope.Editor.SceneCreation
             else
             {
                 Debug.LogWarning($"ItemDatabaseSO not found at {ItemDatabasePath}. Assign it manually on CaveScene GameBootstrap.");
+            }
+
+            var spellDatabase = AssetDatabase.LoadAssetAtPath<SpellDatabaseSO>(SpellDatabasePath);
+            if (spellDatabase != null)
+            {
+                SetReference(serializedBootstrap, "_spellDatabase", spellDatabase);
+            }
+            else
+            {
+                Debug.LogWarning($"SpellDatabaseSO not found at {SpellDatabasePath}. Assign it manually on CaveScene GameBootstrap.");
             }
 
             serializedBootstrap.ApplyModifiedPropertiesWithoutUndo();

@@ -21,6 +21,7 @@ namespace CindarsHope.Inventory.Data
         public bool IsEquippable;
         public int DurabilityRestoreAmount;
         public string WeaponId;
+        public string SpellId;
 
         string IIdentifiedData.Id => Id;
 
