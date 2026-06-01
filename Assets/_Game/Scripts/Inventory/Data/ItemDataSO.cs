@@ -1,4 +1,5 @@
 using CindarsHope.Core.Data;
+using CindarsHope.Equipment;
 using UnityEngine;
 
 namespace CindarsHope.Inventory.Data
@@ -22,6 +23,12 @@ namespace CindarsHope.Inventory.Data
         public int DurabilityRestoreAmount;
         public string WeaponId;
         public string SpellId;
+
+        // SPEC_08: Item use contract fields — backward compatible; UseKind.None triggers fallback inference
+        public ItemUseKind UseKind = ItemUseKind.None;
+        public EquipmentSlot[] AllowedEquipmentSlots;
+        public string AmmoType;
+        public ItemUseKind RequiredPairedUseKind = ItemUseKind.None;
 
         string IIdentifiedData.Id => Id;
 

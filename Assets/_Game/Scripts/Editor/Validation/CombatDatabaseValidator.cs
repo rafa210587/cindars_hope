@@ -54,6 +54,9 @@ namespace CindarsHope.EditorTools.Validation
             // Validate ItemDataSO cross-references
             ValidateItemData(itemDb, weaponDb, spellDb, report);
 
+            // Validate ItemUseKind contracts (SPEC_08)
+            ValidateItemUseContracts(itemDb, report);
+
             // Validate Weapon and Spell specifics
             if (weaponDb != null)
                 ValidateWeaponData(weaponDb, report);
@@ -138,6 +141,58 @@ namespace CindarsHope.EditorTools.Validation
                             $"Ammo item '{item.DisplayName}' is not equippable.",
                             assetPath, item.DisplayName, "Set IsEquippable = true if used in hands.");
                     }
+                }
+            }
+        }
+
+        private void ValidateItemUseContracts(ItemDatabaseSO itemDb, ValidationReport report)
+        {
+            // SPEC_08: Validate ItemUseKind contracts
+            var items = itemDb.All;
+            if (items == null || items.Count == 0)
+                return;
+
+            foreach (var item in items)
+            {
+                if (item == null)
+                    continue;
+
+                var assetPath = AssetDatabase.GetAssetPath(item);
+
+                // Rule 1: UseKind == EquipWeapon must have WeaponId
+                if (item.UseKind == ItemUseKind.EquipWeapon && string.IsNullOrEmpty(item.WeaponId))
+                {
+                    report.AddIssue("ItemData", "USEKIND_EQUIPWEAPON_NO_WEAPON_ID", ValidationSeverity.Error,
+                        $"Item '{item.DisplayName}' (ID: {item.Id}) has UseKind=EquipWeapon but WeaponId is empty.",
+                        assetPath, item.DisplayName, "Set WeaponId in ItemDataSO or change UseKind.");
+                }
+
+                // Rule 2: UseKind == EquipSpell must have SpellId
+                if (item.UseKind == ItemUseKind.EquipSpell && string.IsNullOrEmpty(item.SpellId))
+                {
+                    report.AddIssue("ItemData", "USEKIND_EQUIPSPELL_NO_SPELL_ID", ValidationSeverity.Error,
+                        $"Item '{item.DisplayName}' (ID: {item.Id}) has UseKind=EquipSpell but SpellId is empty.",
+                        assetPath, item.DisplayName, "Set SpellId in ItemDataSO or change UseKind.");
+                }
+
+                // Rule 3: IsEquippable without explicit UseKind and truly uninferrable → Warning (not error for backward compat)
+                if (item.IsEquippable && item.UseKind == ItemUseKind.None)
+                {
+                    var inferred = ItemUseContractResolver.Resolve(item);
+                    if (inferred == ItemUseKind.None)
+                    {
+                        report.AddIssue("ItemData", "EQUIPPABLE_NO_USE_KIND", ValidationSeverity.Warning,
+                            $"Item '{item.DisplayName}' (ID: {item.Id}) is equippable but has no explicit UseKind and no inferrable kind.",
+                            assetPath, item.DisplayName, "Set UseKind explicitly or ensure Category/WeaponId/SpellId is configured.");
+                    }
+                }
+
+                // Rule 4: AllowedEquipmentSlots empty on equippable item → Weak warning only (not error for backward compat)
+                if (item.IsEquippable && (item.AllowedEquipmentSlots == null || item.AllowedEquipmentSlots.Length == 0))
+                {
+                    report.AddIssue("ItemData", "EQUIPPABLE_NO_ALLOWED_SLOTS", ValidationSeverity.Warning,
+                        $"Item '{item.DisplayName}' (ID: {item.Id}) is equippable but has no AllowedEquipmentSlots defined.",
+                        assetPath, item.DisplayName, "Set AllowedEquipmentSlots for clarity (optional).");
                 }
             }
         }

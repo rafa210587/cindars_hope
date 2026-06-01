@@ -1,3 +1,40 @@
+## Sessao 2026-06-01 (reorg) - Architecture Reorganization SPEC_08: Wave 3 Item Equipment Contracts
+
+**Foco:** Executar SPEC_08 em modo sequencial. Objetivo: Formalizar contratos leves de uso/equipamento de item sem quebrar assets existentes, save schema ou gameplay.
+
+### Resumo de Execucao
+
+**SPEC_08 — Wave 3 Item Equipment Contracts:**
+- Criado ItemUseKind.cs — enum (None, EquipWeapon, EquipAmmo, EquipSpell, ConsumeFood, ConsumePotion, UseTool, Quest)
+- Criado ItemUseContractResolver.cs — helper puro que resolve UseKind explícito ou infere de Category/WeaponId/SpellId/HungerRestore
+- Adicionados 4 campos em ItemDataSO: UseKind, AllowedEquipmentSlots, AmmoType, RequiredPairedUseKind (backward compat via UseKind.None fallback)
+- Atualizado CombatDatabaseValidator com novo método ValidateItemUseContracts — 4 validacoes (2 erros, 2 warnings; sem falsos positivos em assets antigos)
+
+**Comportamento preservado:**
+- Arrow continua resolvendo por Category == Ammo
+- Fireball continua resolvendo por Category == Magic
+- Hotbar/inventory/equipment → nenhuma mudanca
+- Save schema → nenhuma alteracao
+- Q/E/Space, interaction priority, melee/unarmed → nenhuma mudanca
+
+**Arquivos criados/modificados:**
+- Assets/_Game/Scripts/Inventory/Data/ItemUseKind.cs (criado)
+- Assets/_Game/Scripts/Inventory/Data/ItemUseContractResolver.cs (criado)
+- Assets/_Game/Scripts/Inventory/Data/ItemDataSO.cs (+4 campos com using Equipment)
+- Assets/_Game/Scripts/Editor/Validation/CombatDatabaseValidator.cs (+ValidateItemUseContracts method)
+- Assembly-CSharp.csproj (2 entradas Compile Include adicionadas)
+
+**Validacoes:**
+- dotnet build (runtime): PASS 0E/0W
+- dotnet build (editor): PASS 0E/2W (pre-existentes)
+- validate_docs.ps1: PASS (14/14 checks)
+- Backward compat: 100% — fallback por Category preserva todos assets antigos
+- Risco residual: muito baixo
+
+**Status:** ✓ COMPLETO. SPEC_09 liberada.
+
+---
+
 ## Sessao 2026-06-01 (reorg) - Architecture Reorganization SPEC_07B: Bow Direct Weapon and Stamina Rebind Fix
 
 **Foco:** Micro-fix sequencial pós-SPEC_07. Objetivos: (1) RebindStaminaManager recria BowArrowAttackService, (2) Bow bloqueado no path normal mesmo se resolvido como WeaponId direto.

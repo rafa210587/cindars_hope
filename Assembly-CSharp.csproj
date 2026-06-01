@@ -432,6 +432,8 @@
     <Compile Include="Assets\_Game\Scripts\Economy\SellPoint.cs" />
     <Compile Include="Assets\_Game\Scripts\Core\Events\HungerEmptyEvent.cs" />
     <Compile Include="Assets\_Game\Scripts\Inventory\Data\ItemDataSO.cs" />
+    <Compile Include="Assets\_Game\Scripts\Inventory\Data\ItemUseKind.cs" />
+    <Compile Include="Assets\_Game\Scripts\Inventory\Data\ItemUseContractResolver.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\ShaderPropAnimator.cs" />
     <Compile Include="Assets\_Game\Scripts\Core\Events\GamePhaseChangedEvent.cs" />
     <Compile Include="Assets\_Game\Scripts\Core\Events\EnvironmentalExposureEvents.cs" />
