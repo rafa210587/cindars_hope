@@ -1,3 +1,73 @@
+## Sessao 2026-06-01 (reorg) - Architecture Reorganization Specs 00-01: Strategy + Validator Foundation
+
+**Foco:** Iniciar pacote SpecKit de reorganizacao arquitetural incremental. SPEC_00 define estrategia sequencial e regras anti-drift. SPEC_01 implementa fundacao editor-only para validators futuros (SPEC_02/03). Nenhuma alteracao a gameplay, assets, GameBootstrap, SaveManager, PlayerAttackController, ProjectileBehaviour ou scenes.
+
+### O que foi feito
+
+**SPEC_00 (Strategy):**
+- Leitura obrigatoria de docs: AGENTS.md, IMPLEMENTATION_STATUS.md, AGENT_EXECUTION_PROTOCOL.md, READING_MATRIX.md, todas as specs de reorg.
+- Verificacao de premissas: repo diverge minimamente (prefab YAML da sessao 31q com erro class ID — sera corrigido).
+- Definicao de modo sequencial seguro: SPEC_00 → SPEC_01 → SPEC_02/03 (paralelo limitado) → SPEC_04+ (sequencial).
+- Identificacao de arquivos sensíveis: PROJECT_LOG.md, IMPLEMENTATION_STATUS.md, .csproj, GameBootstrap, SaveManager, PlayerAttackController, ProjectileBehaviour, Assets/_Game/Data/**, Assets/_Game/Scenes/**.
+- Aplicacao de 10 anti-drift rules explicitamente verificadas.
+- Registrado em: `docs/validation/spec_arch_reorg_00_strategy_subagents_execution_report.md`
+
+**SPEC_01 (Foundation):**
+- T-001: Auditoria — 21 validators legados existem em Validation/, nenhum sera alterado.
+- T-002: Modelos — criados ValidationSeverity (enum), ValidationIssue (class), ValidationReport (class) em editor-only.
+- T-003: Contrato — criado IProjectValidator (interface) para validators futuros.
+- T-004: Runner — criado ProjectValidationRunner (static class) que executa suite de validators.
+- T-005: Menu — criado ArchitectureValidationMenu com menu item `CindarsHope/Validate/Architecture/Run Architecture Validators`.
+- T-006: Validacoes:
+  - `dotnet restore`: ✓ 2/2 PASS
+  - `dotnet build Assembly-CSharp`: ✓ PASS 0E/0W (4.05s)
+  - `dotnet build Assembly-CSharp-Editor`: ✓ PASS 0E/2W (2W pre-existentes em CreateEnemyActionsAndSets.cs)
+  - `validate_docs.ps1`: ✓ PASS (13 checks)
+  - Unity validation: NOT RUN (Unity nao disponivel nesta sessao)
+- Registrado em: `docs/validation/spec_arch_reorg_01_wave0a_architecture_validator_foundation_execution_report.md`
+
+### Arquivos criados
+
+**Novos (SPEC_01 foundation):**
+- `Assets/_Game/Scripts/Editor/Validation/ValidationSeverity.cs`
+- `Assets/_Game/Scripts/Editor/Validation/ValidationIssue.cs`
+- `Assets/_Game/Scripts/Editor/Validation/ValidationReport.cs`
+- `Assets/_Game/Scripts/Editor/Validation/IProjectValidator.cs`
+- `Assets/_Game/Scripts/Editor/Validation/ProjectValidationRunner.cs`
+- `Assets/_Game/Scripts/Editor/Validation/ArchitectureValidationMenu.cs`
+
+**Novos (relatórios):**
+- `docs/validation/spec_arch_reorg_00_strategy_subagents_execution_report.md`
+- `docs/validation/spec_arch_reorg_01_wave0a_architecture_validator_foundation_execution_report.md`
+
+### Preservado
+
+- ✓ Nenhuma alteracao a GameBootstrap.cs, SaveManager.cs, PlayerAttackController.cs, ProjectileBehaviour.cs
+- ✓ Nenhuma alteracao a scenes (FarmScene, TownScene, CaveScene)
+- ✓ Nenhuma alteracao a Assets/_Game/Data/** (ItemDatabase, ShopDatabase, WeaponDatabase, etc)
+- ✓ Nenhuma alteracao a 21 validators legados
+- ✓ Nenhuma alteracao a hotbar, combat, save, inventory, UI, cave procedural
+- ✓ Comportamento de gameplay nao foi impactado
+
+### Validacao
+
+- `dotnet build Assembly-CSharp.csproj`: PASS, 0 erros, 0 warnings.
+- `dotnet build Assembly-CSharp-Editor.csproj`: PASS, 0 erros, 2 warnings pre-existentes (CS0649 em CreateEnemyActionsAndSets.cs).
+- `validate_docs.ps1`: PASS.
+- Unity validation: NOT RUN (Unity nao disponivel nesta sessao).
+
+### Limitacoes
+
+- Unity compile validation: NAO executada (Unity nao disponivel em batchmode nesta sessao).
+- Residual risk: Fundacao editor-only nao ha overhead runtime; menu visual check requer Unity Editor interativo (aceptavel).
+
+### Proximas specs desbloqueadas
+
+✓ **SPEC_02** — Projectile Validator (pode rodar em branch paralela com SPEC_03)  
+✓ **SPEC_03** — Combat Database Validators (pode rodar em branch paralela com SPEC_02)
+
+---
+
 ## Sessao 2026-06-01 (31q) - Combate ranged: arco+flecha e fireball via PlayerAttackController
 
 **Foco:** Implementar disparo de arco+flecha e fireball como feitico via PlayerAttackController. Nenhum novo sistema de combate paralelo criado. Melee/unarmed nao regredido. E bloqueado por InteractionCandidate preservado.
