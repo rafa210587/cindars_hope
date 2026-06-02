@@ -10,19 +10,22 @@ created_from_refinement: ""
 read_refinement_by_default: false
 required_read:
   - AGENTS.md
-  - docs/00_PROJECT/CURRENT_STATE.md
+  - docs/project/CURRENT_STATE.md
   - this_spec
 optional_read:
-  - docs/04_REFINEMENTS/accepted/<refinement>.md
+  - docs/refinements/accepted/<refinement>.md
+required_adrs: []
+required_game_rules: []
 do_not_read_by_default:
   - PROJECT_LOG.md
-  - docs/00_PROJECT/ROADMAP.md
-  - docs/design/GDD_v2.7_FASE9C_DELTA.md
+  - docs/project/ROADMAP.md
   - docs/IMPLEMENTATION_STATUS.md
+  - unrelated docs/validation reports
+  - all ADRs/game_rules unless explicitly listed
 validation_required:
   - dotnet build runtime (0E/0W)
   - dotnet build editor (0E/0W)
-  - docs validation (14/14)
+  - tools/docs/validate_docs.ps1
 ---
 
 # SPEC_NN — Title
@@ -54,7 +57,25 @@ What this spec explicitly does NOT do:
 
 ---
 
-## 3. Current Known State
+## 3. Required ADRs and Game Rules
+
+List only what is necessary for this spec.
+
+```yaml
+required_adrs:
+  - ADR-0005-cave-stable-run-and-replay
+required_game_rules:
+  - cave_rules.md
+  - event_rules.md
+```
+
+**If no ADR/game_rule is needed, keep both lists empty.**
+
+This spec must remain self-contained. ADRs explain *why* decisions were made. Game rules define *what is true now*.
+
+---
+
+## 4. Current Known State
 
 What is the state of the system before this spec runs?
 
@@ -66,14 +87,7 @@ Build: PASS 0E/0W (from last validation)
 
 ---
 
-## 4. Required Files to Read
-
-```
-AGENTS.md
-docs/00_PROJECT/CURRENT_STATE.md
-[this spec]
-[source files listed below]
-```
+## 5. Scope
 
 **Source files:**
 - `Assets/_Game/Scripts/...`

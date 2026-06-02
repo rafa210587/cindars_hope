@@ -7,6 +7,8 @@ result: NOT_RUN
 date: YYYY-MM-DD
 executor: Claude Code | Human
 source_of_truth: false
+validated_adrs: []
+validated_game_rules: []
 ---
 
 # Validation Report — SPEC_NN <Title>
@@ -38,9 +40,18 @@ source_of_truth: false
 |-------|--------|-------|
 | C# runtime build | PASS/FAIL — NE/NW | Duration: Xs |
 | C# editor build | PASS/FAIL — NE/NW | Duration: Xs |
-| Docs validation | PASS/FAIL — N/14 | |
+| Docs validation | PASS/FAIL | tools/docs/validate_docs.ps1 |
 | Unity validators | PASS/FAIL/NOT RUN | Which validators |
 | Play Mode | PASS/FAIL/NOT RUN | |
+
+---
+
+## ADRs / Game Rules Validated
+
+| Item | Status | Notes |
+|---|---|---|
+| ADR-XXXX | PASS/FAIL/NOT_RUN | |
+| game_rule.md | PASS/FAIL/NOT_RUN | |
 
 ---
 
