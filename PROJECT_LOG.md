@@ -4,6 +4,30 @@
 
 ---
 
+## Sessao 2026-06-01 (SPEC_DOCS_32 Phase 1) - Obsolete File Investigations and Deletions (REPOSITORY HYGIENE)
+
+**Foco:** Completar Phase 1 do SPEC_DOCS_32: investigações de 7 arquivos candidatos, determinar status de deleção, deletar obsoletos confirmados.
+
+### Resumo
+
+- Investigadas 7 arquivos: 2 Codex (harness + prompt), 2 corrompidos + contraditórios (governance), 2 deltas históricos, 1 não encontrado
+- Confirmados obsoletos e deletados: 6 arquivos
+  - docs/operations/CODEX_SPEC_EXECUTION_HARNESS.md (legacy Codex)
+  - docs/operations/CODEX_ORCHESTRATION_PROMPT.md (legacy Codex)
+  - docs/operations/SPECKIT_DRIFT_CONTROL.md (mojibake + redundant com .claude/rules/)
+  - docs/operations/AGENT_EXECUTION_PROTOCOL.md (mojibake + contradicts context-reading-policy.md)
+  - docs/design/GDD_v2.7_FASE9C_DELTA.md (orphaned delta; base já deletado)
+  - docs/roadmap/FASE9F_CAVE_STABLE_RUN_ROADMAP_PR170_192.md (histórico; rule em .claude/rules/)
+- Atualizado AGENTS.md: removida referência roadmap, preservadas amendment + rule
+- Atualizado DOCUMENT_DELETE_CANDIDATES.md com Batch 1C
+- Validação: docs PASS 14/14
+
+**Resultado:** SPEC_DOCS_32 Phase 1 completa. 6 arquivos obsoletos removidos. Governança atualizada.
+
+**Evidência:** spec_docs_32_phase1_investigations_and_deletions_execution_report.md
+
+---
+
 ## Sessao 2026-06-01 (SPEC_DOCS_33) - Radical Agent Prompts & Packages Cleanup (REPOSITORY HYGIENE)
 
 **Foco:** Remover documentação legada de sistema Codex antigo (agent_prompts, agent_packages) e limpar docs/operations/docs/backlog dos resíduos.
