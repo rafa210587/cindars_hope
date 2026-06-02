@@ -27,11 +27,18 @@ if (Test-Path "specs") {
     Ok "Root folder 'specs/' does not exist."
 }
 
-# Check for required folders
-if (-not (Test-Path "docs_old")) {
-    Fail "docs_old/ must exist."
+# Check for forbidden legacy folders
+if (Test-Path "docs_old") {
+    Fail "docs_old/ must not exist. Legacy documentation has been consolidated to canonical folders."
 } else {
-    Ok "docs_old/ exists."
+    Ok "docs_old/ does not exist (legacy cleanup complete)."
+}
+
+# Check for required canonical governance folders
+if (-not (Test-Path "docs/project")) {
+    Fail "docs/project/ must exist as canonical project governance folder."
+} else {
+    Ok "docs/project/ exists as canonical governance folder."
 }
 
 if (-not (Test-Path "docs/specs")) {
@@ -44,6 +51,24 @@ if (-not (Test-Path "docs/specs/SPEC_EXECUTION_ORDER.md")) {
     Fail "docs/specs/SPEC_EXECUTION_ORDER.md must exist."
 } else {
     Ok "SPEC_EXECUTION_ORDER.md exists."
+}
+
+if (-not (Test-Path "docs/project/CURRENT_STATE.md")) {
+    Fail "docs/project/CURRENT_STATE.md must exist as execution context."
+} else {
+    Ok "docs/project/CURRENT_STATE.md exists."
+}
+
+if (-not (Test-Path "docs/project/DOCUMENT_GOVERNANCE.md")) {
+    Fail "docs/project/DOCUMENT_GOVERNANCE.md must exist."
+} else {
+    Ok "docs/project/DOCUMENT_GOVERNANCE.md exists."
+}
+
+if (-not (Test-Path "docs/project/DOCUMENT_INDEX.md")) {
+    Fail "docs/project/DOCUMENT_INDEX.md must exist."
+} else {
+    Ok "docs/project/DOCUMENT_INDEX.md exists."
 }
 
 if (-not (Test-Path "docs/refinements/a_implementar/pre_refinamentos")) {
