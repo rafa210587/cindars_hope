@@ -1,25 +1,28 @@
 ﻿# Amendments — ARCHIVED
 
-**Status:** All active amendments migrated to ADRs and game_rules (SPEC_DOCS_38, 2026-06-01).
+**Status:** All active amendments migrated to ADRs and game_rules and archived (SPEC_DOCS_39C Phase 9, 2026-06-01).
 
 This folder contains historical amendments, now migrated to canonical Architecture Decision Records (ADRs) and Game Rules.
 
-## Migration Summary (SPEC_DOCS_38 Phase 7-8)
+## Amendment Resolution Status
 
-### FASE9F — Cave Stable Run and Replay
+### FASE9F — Cave Stable Run and Replay (DELETED)
 
 - **Migrated to:**
-  - `docs/decisions/ADR-0005-cave-stable-run-and-replay.md`
-  - `docs/game_rules/cave_rules.md`
+  - `docs/decisions/ADR-0005-cave-stable-run-and-replay.md` (decision rationale)
+  - `docs/game_rules/cave_rules.md` (current operational behavior)
 - **Content:** Stable run invariant, snapshots, enemy/resource ranges (12-20, 4-10), first/revisit behavior
-- **Active references:** None (safe to archive)
+- **Resolution:** ✓ DELETED (100% migration verified, no active references)
+- **Deleted in:** SPEC_DOCS_39C Phase 9, 2026-06-01
 
-### FASE9G — Enemy Combat Roles, AI, Status & Movesets
+### FASE9G — Enemy Combat Roles, AI, Status & Movesets (ARCHIVED)
 
 - **Migrated to:**
   - `docs/game_rules/combat_rules.md` (MVP current rules)
+  - `docs/amendments/archived/FASE9G_...` (content reserved for Batch 2)
 - **Content reserved:** Hardening rules, telegraph, cooldowns, status budgets → Batch 2
-- **Active references:** None (safe to archive)
+- **Resolution:** ✓ ARCHIVED in `archived/` subfolder (safe for historical reference)
+- **Archived in:** SPEC_DOCS_39C Phase 9, 2026-06-01
 
 ---
 
