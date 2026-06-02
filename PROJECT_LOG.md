@@ -4,6 +4,29 @@
 
 ---
 
+## Sessao 2026-06-01 (SPEC_DOCS_37) - Final Refinements, Specs and Validation Sweep (REPOSITORY HYGIENE)
+
+**Foco:** Completar limpeza documental final: auditar pre_refinements, specs a_implementar, validation structure; atualizar ferramentas de validação; consolidar referências canônicas.
+
+### Resumo
+
+- Criada matriz Phase 0: 138 items classificados (19 pre_refinements, 22 specs, 92 validation)
+- Atualizadas referências canônicas: 12 fixes em CURRENT_STATE.md + DOCUMENT_INDEX.md
+- Melhorado validate_docs.ps1: 10 checks novos (forbid numbered folders, require templates)
+- Criado LAST_VALIDATION_STATUS.md com status tracking (Phase 2-3 pending human)
+- Reorganizadas pre_refinements: 14 movidas para archived/, 4 deletadas (superseded), 1 mantida (Batch 2)
+- Verificados specs Batch 2: 8 futuros + 12 closeout, todos KEEP_UNTIL_PHASE_2_3
+- Preservados validation reports: 92 arquivos intactos, estrutura verificada
+- Validação final: docs PASS (25+ checks)
+
+**Resultado:** Limpeza documental COMPLETA. 24 arquivos alterados. 12 referências fixadas. 14 refinements arquivadas. Validação reforçada. Estrutura canônica consolidada.
+
+**Evidência:** spec_docs_37_phase0_refinements_specs_validation_sweep_audit_matrix.md + spec_docs_37_refinements_specs_validation_sweep_execution_report.md
+
+**Git commits:** b9ae4d5, 45e299f
+
+---
+
 ## Sessao 2026-06-01 (SPEC_DOCS_36) - Final Root and Legacy Folder Cleanup (REPOSITORY HYGIENE)
 
 **Foco:** Completar limpeza final pós-SPEC_DOCS_35: deletar 5 arquivos root status, remover docs_old/ (86 arquivos), remover legado prompts/templates/orquestrador/, atualizar ferramentas de validação.
