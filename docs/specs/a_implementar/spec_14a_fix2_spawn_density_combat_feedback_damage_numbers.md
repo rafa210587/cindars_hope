@@ -1,3 +1,8 @@
+---
+required_adrs: [ADR-0005-cave-stable-run-and-replay, ADR-0008-combat-resolution-damage-formula]
+required_game_rules: [cave_rules.md, combat_rules.md]
+---
+
 # SPEC 14A-FIX2 - Spawn Density, Combat Logs and Floating Damage Numbers
 
 > Spec ID: spec_14a_fix2_spawn_density_combat_feedback_damage_numbers

@@ -1,3 +1,8 @@
+---
+required_adrs: [ADR-0005-cave-stable-run-and-replay]
+required_game_rules: [cave_rules.md]
+---
+
 # SPEC - Cave runtime generation, checkpoints e boss gates
 
 > Spec ID: spec_cave_runtime_generation_checkpoints_boss_gates

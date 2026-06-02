@@ -1,3 +1,8 @@
+---
+required_adrs: [ADR-0005-cave-stable-run-and-replay]
+required_game_rules: [cave_rules.md, save_load_rules.md]
+---
+
 # SPEC 14B - Cave Snapshot Replay with EnemySpawnPlan
 
 > Spec ID: spec_14b_cave_snapshot_replay_enemy_plan

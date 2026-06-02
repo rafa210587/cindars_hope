@@ -1,3 +1,8 @@
+---
+required_adrs: [ADR-0008-combat-resolution-damage-formula]
+required_game_rules: [combat_rules.md, event_bus_rules.md]
+---
+
 # SPEC 18 - Combat Movement, Projectiles, Spells and Melee Visuals Runtime
 
 > Spec ID: spec_combat_movement_projectiles_melee_visuals_runtime

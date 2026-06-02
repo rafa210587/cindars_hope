@@ -1,3 +1,8 @@
+---
+required_adrs: []
+required_game_rules: [ui_rules.md, event_bus_rules.md]
+---
+
 # SPEC - UI/UX full gameplay, inventory, hotbar e menus
 
 > Spec ID: spec_ui_ux_full_gameplay_inventory_hotbar_menus

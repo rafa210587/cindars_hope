@@ -48,11 +48,15 @@
 |------|--------|
 | CLAUDE.md | Short router (~80 lines) — SPEC_CLAUDE_31 |
 | AGENTS.md | Multi-agent rules — SPEC_CLAUDE_31 |
-| `.claude/rules/` | 15 rules active — SPEC_CLAUDE_31 |
+| `.claude/rules/` | 16 rules active — SPEC_DOCS_38/39 (incl. decision-and-game-rule-policy, legacy-doc-paths-forbidden) |
+| `.claude/settings.json` | Updated with canonical paths and new hooks — SPEC_DOCS_39D |
 | `.claude/commands/` | 11 commands (8 updated, 3 created) — SPEC_CLAUDE_31 |
-| `.claude/skills/` | 14 skills (2 updated, 4 created) — SPEC_CLAUDE_31 |
+| `.claude/skills/` | 15 skills (incl. decision-rule-extraction) — SPEC_DOCS_39B |
 | `.claude/agents/` | 7 agents (2 updated, 2 created) — SPEC_CLAUDE_31 |
-| `.claude/hooks/` | 13 hooks (5 created, disabled) — SPEC_CLAUDE_31 |
+| `.claude/hooks/` | 14 hooks (incl. decision-rule-reference-guard) — SPEC_DOCS_39B/39D |
+| Decision Records | 9 ADRs (ADR-0001 to ADR-0009) — SPEC_DOCS_38 |
+| Game Rules | 12 game_rules documents — SPEC_DOCS_38 |
+| Docs validation | 25+ checks (validate_docs.ps1) — SPEC_DOCS_37/39C |
 | Default context | `CURRENT_STATE.md` (not PROJECT_LOG.md) |
 | Spec promotion | Phase-gated via `/finish-spec` |
 

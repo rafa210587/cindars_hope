@@ -142,18 +142,26 @@
       "path": ".claude/hooks/test-scenario-required-guard.ps1",
       "description": "Check if human test scenario file exists when runtime/gameplay changes detected",
       "trigger": "manual"
+    },
+    "decisionRuleReferenceGuard": {
+      "enabled": false,
+      "path": ".claude/hooks/decision-rule-reference-guard.ps1",
+      "description": "Warn when specs or active docs cite amendments as canonical or omit required ADR/game_rules fields",
+      "trigger": "manual"
     }
   },
 
   "documentation": {
-    "currentState": "docs/00_PROJECT/CURRENT_STATE.md",
-    "documentGovernance": "docs/00_PROJECT/DOCUMENT_GOVERNANCE.md",
-    "documentIndex": "docs/00_PROJECT/DOCUMENT_INDEX.md",
-    "historyLogPolicy": "docs/00_PROJECT/HISTORY_LOG_POLICY.md",
+    "currentState": "docs/project/CURRENT_STATE.md",
+    "documentGovernance": "docs/project/DOCUMENT_GOVERNANCE.md",
+    "documentIndex": "docs/project/DOCUMENT_INDEX.md",
+    "historyLogPolicy": "docs/project/HISTORY_LOG_POLICY.md",
+    "decisionLog": "docs/project/DECISION_LOG.md",
     "sourceOfTruth": "docs/specs/",
+    "gameRulesIndex": "docs/game_rules/GAME_RULES_INDEX.md",
     "implementationStatus": "docs/IMPLEMENTATION_STATUS.md",
     "projectLog": "PROJECT_LOG.md",
-    "validationStatus": "docs/05_VALIDATION/current/LAST_VALIDATION_STATUS.md"
+    "validationStatus": "docs/validation/current/LAST_VALIDATION_STATUS.md"
   },
 
   "validation": {
@@ -172,13 +180,14 @@
     "eventBusOnlyGameplayCommunication": true,
     "noUnsafeGit": true,
     "noRootSpecs": true,
-    "noDocOldEdits": true,
+    "legacyDocPathsForbidden": true,
     "noRuntimeGlobalSearch": true,
     "saveDtoSimpleTypesOnly": true,
     "caveStableRun": true,
     "unityValidationHonesty": true,
     "generatedAssetEvidence": true,
     "noParallelUnityBatchmode": true,
+    "decisionAndGameRulePolicy": true,
     "requireEvidenceForStatus": true,
     "requireValidationBeforeCloseout": true,
     "forbiddenNamespaces": [

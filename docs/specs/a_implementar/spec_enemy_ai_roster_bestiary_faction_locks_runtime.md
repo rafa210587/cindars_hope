@@ -1,3 +1,8 @@
+---
+required_adrs: [ADR-0008-combat-resolution-damage-formula]
+required_game_rules: [combat_rules.md, enemy_rules.md]
+---
+
 # SPEC 13 - Enemy AI, roster, bestiary e faction locks runtime
 
 > Spec ID: spec_enemy_ai_roster_bestiary_faction_locks_runtime

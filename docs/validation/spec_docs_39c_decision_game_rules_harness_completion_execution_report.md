@@ -188,16 +188,15 @@ These are expected issues for specs/reports created before SPEC_DOCS_39 and will
 | Phase 10 | ✓ PASS | RULES.md updated |
 | Phase 11 | ✓ PASS | Validation executed; baseline issues identified |
 | Phase 12 | ✓ COMPLETE | This report (execution evidence) |
-| Phase 13 | PENDING | Update SPEC_DOCS_38 report marking harness complete |
+| Phase 13 | ✓ COMPLETE | SPEC_DOCS_38 report updated; PROJECT_LOG.md documented |
 
 ---
 
 ## Next Action
 
-- **Immediate:** Add entry to PROJECT_LOG.md documenting SPEC_DOCS_39C completion
-- **Phase 13:** Update `docs/validation/spec_docs_38_decision_records_game_rules_migration_execution_report.md` to mark harness as COMPLETE
 - **Future specs:** Will use required_adrs/required_game_rules fields and be validated by enhanced validate_docs.ps1
 - **Batch 2:** FASE9G reserved content available in archived/ for hardening phase
+- **Ongoing:** Harness complete; governance enforced via validate_docs.ps1 and hooks
 
 ---
 
