@@ -4,6 +4,50 @@
 
 ---
 
+## Sessao 2026-06-01 (SPEC_DOCS_39D/39E) - Harness Consistency Fixes and Reference Validation (GOVERNANCE)
+
+**Foco:** Fechar inconsistências residuais de harness (settings.json, hooks, regras) e validar que todas especificações referenciam ADRs/game_rules válidos.
+
+### Resumo
+
+**SPEC_DOCS_39D (Fases 0-5):**
+- Auditadas 15+ inconsistências de harness em settings.json, hooks, regras
+- Atualizado .claude/settings.json: paths canonicalizados, novos hooks wired (decision-rule-reference-guard, docs-status-honesty-check, spec-promotion-guard)
+- Atualizado .claude/hooks/ com 14 hooks validados e integrados
+- Criado hook decision-rule-reference-guard.ps1 (validação de referências ADR/game_rules)
+- Criado hook docs-status-honesty-check.ps1 (detect premature acceptance claims)
+- Criado hook spec-promotion-guard.ps1 (prevent Phase-gate violations)
+- Atualizado .claude/rules/RULES.md com rule 16 (legacy-doc-paths-forbidden)
+- Validação: PASS — 25+ checks incluindo novo decision-rule-reference validation
+
+**SPEC_DOCS_39E (Fases 0-5):**
+- Identificadas 6 specs com referências inválidas introduzidas durante SPEC_DOCS_39D backfill:
+  - ADR-0008-combat-resolution-damage-formula (não existe; é YAML editing policy)
+  - enemy_rules.md (não existe; consolidado em combat_rules.md)
+  - save_load_rules.md (não existe; correto é save_rules.md)
+  - ui_rules.md (não existe; correto é ui_modal_rules.md)
+  - event_bus_rules.md (não existe; correto é event_rules.md)
+- Corrigidas 6 specs:
+  1. spec_14a_cave_enemy_spawnplan_materialization_run_stability.md: enemy_rules.md → combat_rules.md
+  2. spec_14a_fix2_spawn_density_combat_feedback_damage_numbers.md: removido ADR-0008 inválido
+  3. spec_combat_movement_projectiles_melee_visuals_runtime.md: ADR-0008 → ADR-0007, event_bus_rules.md → event_rules.md
+  4. spec_enemy_ai_roster_bestiary_faction_locks_runtime.md: removidos ADR-0008 e enemy_rules.md
+  5. spec_14b_cave_snapshot_replay_enemy_plan.md: save_load_rules.md → save_rules.md
+  6. spec_ui_ux_full_gameplay_inventory_hotbar_menus.md: ui_rules.md → ui_modal_rules.md, event_bus_rules.md → event_rules.md
+- Melhorado tools/docs/validate_docs.ps1 Check 5: adicionada validação de existência de ADRs/game_rules referenciados
+- Criado spec_docs_39e_fix_invalid_adr_game_rule_references_execution_report.md com evidência completa
+
+**Resultado:** Harness FECHADO. Todas 14 specs em a_implementar têm referências válidas. Validação script agora detecta automaticamente referências inválidas em future specs. Zero invalid references após SPEC_DOCS_39E.
+
+**Evidência:**
+- spec_docs_39d_harness_consistency_fixes_execution_report.md
+- spec_docs_39e_fix_invalid_adr_game_rule_references_execution_report.md
+- tools/docs/validate_docs.ps1 (Check 5: reference validation)
+
+**Git commits:** (SPEC_DOCS_39D anterior), ab400e5 (SPEC_DOCS_39E)
+
+---
+
 ## Sessao 2026-06-01 (SPEC_DOCS_38/39/39C) - Decision Records and Game Rules Harness Closure (GOVERNANCE)
 
 **Foco:** Fechar harness de decision records e game rules: atualizar validate_docs.ps1 com 10+ checks, resolver amendments (deletar FASE9F, arquivar FASE9G), atualizar RULES.md, validação final e relatórios.
