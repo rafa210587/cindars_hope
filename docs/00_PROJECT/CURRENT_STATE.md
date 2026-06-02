@@ -64,8 +64,9 @@
 | Spec | Status | Notes |
 |------|--------|-------|
 | SPEC_DOCS_31 | COMPLETE | Safe Batch 1 deletion (20 files); commit 956e4d1 |
-| SPEC_DOCS_32 | PHASE 0 COMPLETE | Phase 0 audit done; Phase 1 investigations pending (6 candidates) |
+| SPEC_DOCS_32 | PHASE 1 COMPLETE | Phase 0-1 complete: 6 obsolete files deleted; AGENTS.md updated; commit af8bb1b |
 | SPEC_DOCS_33 | COMPLETE | Agent_prompts + agent_packages cleanup (39 files); commit 5c5ecae |
+| SPEC_DOCS_34 | COMPLETE | Final legacy cleanup: 65 files (ARCH delta + orquestrador/); commit 3c6dda9 |
 | SPEC_18-28 Phase 2-3 | PENDING HUMAN | Play Mode validation; requires local Unity Editor |
 | SPEC_29 Phase 2-3 | PENDING HUMAN | Final acceptance; blocked on Phase 2-3 above |
 | FASE 10+ | BLOCKED | Blocked until Phase 2-3 or explicit human decision to skip |
