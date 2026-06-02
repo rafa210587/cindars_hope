@@ -1,6 +1,28 @@
 > **Historical log only. Do not use as default execution context.**
-> **Agents should read `docs/00_PROJECT/CURRENT_STATE.md` instead.**
+> **Agents should read `docs/project/CURRENT_STATE.md` instead.**
 > Use this file only for: audit, reconciliation, regression investigation, or explicit human request.
+
+---
+
+## Sessao 2026-06-01 (SPEC_DOCS_36) - Final Root and Legacy Folder Cleanup (REPOSITORY HYGIENE)
+
+**Foco:** Completar limpeza final pós-SPEC_DOCS_35: deletar 5 arquivos root status, remover docs_old/ (86 arquivos), remover legado prompts/templates/orquestrador/, atualizar ferramentas de validação.
+
+### Resumo
+
+- Deletados 5 arquivos root: SPEC_10_STATUS.md, SPEC_AGENTIC_SPEC_ORCHESTRATOR_PYTHON_CLI.md, SPEC_ORQUESTRADOR_CONSOLIDACAO_V2_CLEANUP_E_GATES.md, SPEC15_COMMIT_SUMMARY.txt, SPEC15_COMPLETE_IMPLEMENTATION_LOG.md
+- Deletado docs_old/ (86 arquivos) — archival material contradiz estrutura canônica
+- Deletado prompts/ (1 arquivo) — artefato orquestrador Codex
+- Deletado templates/ (3 arquivos) — consolidado para docs/*/_templates/ em SPEC_DOCS_35
+- Deletado orquestrador/ (64 arquivos) — sistema orquestrador Codex superseded
+- Atualizado tools/docs/validate_docs.ps1: forbid docs_old/, add checks para governance files canônicas (docs/project/CURRENT_STATE.md, DOCUMENT_GOVERNANCE.md, DOCUMENT_INDEX.md)
+- Validação: docs PASS (14/14 checks)
+
+**Resultado:** Limpeza repositório COMPLETA. 159 arquivos legados deletados (5 root + 154 legacy folders). Validação de docs reforçada. Estrutura canônica validada e enforçada.
+
+**Evidência:** spec_docs_36_phase0_final_root_legacy_cleanup_audit_matrix.md + spec_docs_36_phase1_3_final_root_legacy_cleanup_execution_report.md
+
+**Git commit:** 9c4ffa5
 
 ---
 
