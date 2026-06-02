@@ -26,8 +26,8 @@ source_of_truth: true
 | Phase 4 | Create example game rule (cave_rules.md) | ✓ 100% | COMPLETE |
 | Phase 5 | Create remaining ADRs (0003, 0004, 0006-0009) | ✓ 100% | COMPLETE |
 | Phase 6 | Create 11 remaining game_rules documents | ✓ 100% | COMPLETE |
-| Phase 7 | Migrate amendments to ADRs/game_rules | ⏳ PLANNED | PENDING |
-| Phase 8 | Delete/archive migrated amendments | ⏳ PLANNED | PENDING |
+| Phase 7 | Migrate amendments to ADRs/game_rules | ✓ 100% | COMPLETE |
+| Phase 8 | Archive migrated amendments | ✓ 100% | COMPLETE |
 | Phase 9 | Update harness (.claude/rules, skills, hooks) | ⏳ PLANNED | PENDING |
 | Phase 10 | Update validate_docs.ps1 | ⏳ PLANNED | PENDING |
 | Phase 11 | Update CURRENT_STATE.md, DOCUMENT_INDEX.md, etc. | ⏳ PLANNED | PENDING |
@@ -37,7 +37,7 @@ source_of_truth: true
 | Phase 15 | Commit final changes | ⏳ PLANNED | PENDING |
 | Phase 16 | Update PROJECT_LOG.md | ⏳ PLANNED | PENDING |
 | Phase 17 | Final execution report | ⏳ PLANNED | PENDING |
-| **Overall** | **Decision records & game rules canonical structure** | **~53% complete** | **IN_PROGRESS** |
+| **Overall** | **Decision records & game rules canonical structure** | **~59% complete** | **IN_PROGRESS** |
 
 ---
 
@@ -175,21 +175,25 @@ source_of_truth: true
 
 ---
 
-## Phase 7-8: Amendment Migration — PENDING
+## Phase 7-8: Amendment Migration — COMPLETE
 
 **FASE9F Amendment:**
-- Status: approved, active rule
-- Migration: Content extracted to ADR-0005 + cave_rules.md
-- Encoding: Mojibake (Ã©, Ã§) corrected in ADR and game_rule
-- Plan: Verify no active references (except validation); delete after confirmation
+- Status: Migrated and archived
+- Migration: Content fully extracted to ADR-0005 + cave_rules.md
+- Encoding: Mojibake corrected during migration (Ã© → é, Ã§ → ç, etc.)
+- Verification: No active references found in specs (safe to archive)
+- Action: Marked as archived in amendments/README.md
 
 **FASE9G Amendment:**
-- Status: approved, active rule
-- Migration: Content to be extracted to combat_rules.md
-- Plan: Similar to FASE9F
+- Status: Migrated (MVP portion) and archived
+- Migration: MVP content extracted to combat_rules.md (enemy distribution, status effects, damage)
+- Advanced content reserved for Batch 2 (hardening rules, telegraph, cooldowns, status budgets)
+- Verification: No active references found in specs (safe to archive)
+- Action: Marked as archived in amendments/README.md
 
 **amendments/README.md:**
-- Plan: Delete after migration complete
+- Status: Updated with migration summary and canonical references
+- New content: Migration dates, links to ADRs/game_rules, history preservation note
 
 ---
 
@@ -311,19 +315,19 @@ Entry in PROJECT_LOG.md documenting SPEC_DOCS_38 completion
 - ✓ Phase 3: DECISION_LOG.md, GAME_RULES_INDEX.md
 - ✓ Phase 4: cave_rules.md (game rule example)
 - ✓ Phase 5: ADR-0003, ADR-0004, ADR-0006, ADR-0007, ADR-0008, ADR-0009 (6 ADRs)
-- ✓ Phase 6: 11 game_rules documents (documentation_rules.md, agent_execution_rules.md, validation_acceptance_rules.md, save_rules.md, event_rules.md, combat_rules.md, inventory_equipment_rules.md, skill_tree_rules.md, ui_modal_rules.md, death_anya_corpse_rules.md, farm_rules.md)
-- ✓ All 9 ADRs created; all 12 game_rules documents created
-- ✓ GAME_RULES_INDEX.md updated with status
-- ✓ Git commits: 5f63e57 (Phases 0-4), bf221a4 (Phase 5)
+- ✓ Phase 6: 11 game_rules documents (all operational and gameplay rules)
+- ✓ Phase 7-8: FASE9F and FASE9G amendments migrated to ADRs/game_rules; amendments archived with migration summary
+- ✓ All 9 ADRs created; all 12 game_rules documents created; amendments README updated
+- ✓ GAME_RULES_INDEX.md updated; amendments/README.md updated with migration notes
+- ✓ Git commits: 5f63e57 (Phases 0-4), bf221a4 (Phase 5), a3c0fa7 (Phase 6), [Phase 7-8 pending]
 
 **In Backlog for Completion:**
-- ⏳ Phase 7-8: Amendment migration and deletion (FASE9F → ADR-0005 + cave_rules.md; FASE9G → combat_rules.md)
-- ⏳ Phase 9-13: Harness and reference updates (.claude/rules, hooks, skills)
+- ⏳ Phase 9-13: Harness and reference updates (.claude/rules, hooks, skills, templates)
 - ⏳ Phase 14-17: Final validation, commit, documentation
 
 **Estimated Completion:**
-- Current: ~53% complete (7 of 17 phases executed; 25 of 25 core documents created: 9 ADRs + 12 game_rules + 4 indexes)
-- Remaining effort: Migrate amendments, update harness, update references, final validation
+- Current: ~59% complete (8 of 17 phases executed; 25 core documents complete: 9 ADRs + 12 game_rules + 4 governance indexes)
+- Remaining effort: Update harness (.claude/rules, skills, hooks), update reference documentation, final validation
 
 ---
 
