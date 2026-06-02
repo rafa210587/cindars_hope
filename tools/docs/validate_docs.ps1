@@ -174,7 +174,7 @@ if ($badFutureRefs) {
     Ok "Future refinements use ref_ prefix."
 }
 
-# Collect doc files for pattern scanning
+# Collect doc files for pattern scanning (exclude this validation script from placeholder check)
 $docFiles = @(
     "AGENTS.md",
     "CLAUDE.md",
@@ -183,7 +183,9 @@ $docFiles = @(
 )
 
 $docFiles += Get-ChildItem "docs" -Recurse -Filter "*.md" -ErrorAction SilentlyContinue | ForEach-Object { $_.FullName }
-$docFiles += Get-ChildItem "tools" -Recurse -Filter "*.ps1" -ErrorAction SilentlyContinue | ForEach-Object { $_.FullName }
+$docFiles += Get-ChildItem "tools" -Recurse -Filter "*.ps1" -ErrorAction SilentlyContinue |
+    Where-Object { $_.FullName -ne (Resolve-Path "tools/docs/validate_docs.ps1").Path } |
+    ForEach-Object { $_.FullName }
 
 # Check for template placeholders
 $placeholderPattern = '\$(source|Source|src|ref|evidence|old|dest)|\$\(\s*docs_old'
@@ -199,6 +201,162 @@ if ($placeholderMatches) {
 
 # Check for mojibake in active docs
 Ok "Mojibake check skipped (not critical for SPEC 01)."
+
+# === ADR / GAME_RULES GOVERNANCE CHECKS (SPEC_DOCS_39) ===
+
+# Check 1: Required decision record infrastructure
+if (-not (Test-Path "docs/project/DECISION_LOG.md")) {
+    Fail "docs/project/DECISION_LOG.md must exist as decision index."
+} else {
+    Ok "docs/project/DECISION_LOG.md exists."
+}
+
+if (-not (Test-Path "docs/decisions")) {
+    Fail "docs/decisions/ must exist as architectural decision records folder."
+} else {
+    Ok "docs/decisions/ exists."
+}
+
+if (-not (Test-Path "docs/decisions/_templates/ADR_TEMPLATE.md")) {
+    Fail "docs/decisions/_templates/ADR_TEMPLATE.md must exist as ADR template."
+} else {
+    Ok "docs/decisions/_templates/ADR_TEMPLATE.md exists."
+}
+
+# Check 2: Required game rules infrastructure
+if (-not (Test-Path "docs/game_rules")) {
+    Fail "docs/game_rules/ must exist as game rules folder."
+} else {
+    Ok "docs/game_rules/ exists."
+}
+
+if (-not (Test-Path "docs/game_rules/GAME_RULES_INDEX.md")) {
+    Fail "docs/game_rules/GAME_RULES_INDEX.md must exist as game rules index."
+} else {
+    Ok "docs/game_rules/GAME_RULES_INDEX.md exists."
+}
+
+if (-not (Test-Path "docs/game_rules/_templates/GAME_RULE_TEMPLATE.md")) {
+    Fail "docs/game_rules/_templates/GAME_RULE_TEMPLATE.md must exist as game rule template."
+} else {
+    Ok "docs/game_rules/_templates/GAME_RULE_TEMPLATE.md exists."
+}
+
+# Check 3: ADR naming pattern (ADR-NNNN-slug.md)
+$adrPattern = '^ADR-\d{4}-[a-z0-9-]+\.md$'
+$adrFiles = Get-ChildItem "docs/decisions" -Filter "ADR-*.md" -File -ErrorAction SilentlyContinue
+$badAdrs = $adrFiles | Where-Object { $_.Name -notmatch $adrPattern }
+if ($badAdrs) {
+    $badAdrs | ForEach-Object { Fail "ADR with invalid naming: $($_.FullName) (expected: ADR-NNNN-slug.md)" }
+} else {
+    Ok "All ADRs follow naming pattern ADR-NNNN-slug.md."
+}
+
+# Check 4: Game rule naming pattern (lower_snake_case.md)
+$gameRulePattern = '^[a-z0-9_]+\.md$'
+$gameRuleFiles = Get-ChildItem "docs/game_rules" -Filter "*.md" -File -ErrorAction SilentlyContinue |
+    Where-Object { $_.Name -ne "GAME_RULES_INDEX.md" -and $_.Name -ne "README.md" }
+$badGameRules = $gameRuleFiles | Where-Object { $_.Name -notmatch $gameRulePattern }
+if ($badGameRules) {
+    $badGameRules | ForEach-Object { Fail "Game rule with invalid naming: $($_.FullName) (expected: lower_snake_case.md)" }
+} else {
+    Ok "All game rules follow naming pattern lower_snake_case.md."
+}
+
+# Check 5: Active specs (a_implementar) have required_adrs and required_game_rules fields with proper format
+$activeSpecFiles = Get-ChildItem "docs/specs/a_implementar" -Filter "spec_*.md" -File -ErrorAction SilentlyContinue
+$specFieldErrors = 0
+foreach ($spec in $activeSpecFiles) {
+    $content = Get-Content $spec.FullName -Raw -ErrorAction SilentlyContinue
+    if ($content -notmatch 'required_adrs:\s*\[') {
+        Fail "Active spec missing required_adrs field or improper format: $($spec.FullName)"
+        $specFieldErrors++
+    }
+    if ($content -notmatch 'required_game_rules:\s*\[') {
+        Fail "Active spec missing required_game_rules field or improper format: $($spec.FullName)"
+        $specFieldErrors++
+    }
+}
+if ($specFieldErrors -eq 0) {
+    Ok "All active specs (a_implementar) have required_adrs and required_game_rules fields."
+}
+
+# Check 6: Validation reports have validated_adrs and validated_game_rules fields (if they exist)
+$valReports = Get-ChildItem "docs/validation" -Filter "*execution_report.md" -File -ErrorAction SilentlyContinue
+$valFieldErrors = 0
+if ($valReports) {
+    foreach ($report in $valReports) {
+        $content = Get-Content $report.FullName -Raw -ErrorAction SilentlyContinue
+        # Only check reports created after SPEC_DOCS_39 (which added these fields)
+        if ($content -match 'SPEC_DOCS_39|SPEC_DOCS_4[0-9]|SPEC_[0-9]{2}[A-Z]') {
+            if ($content -notmatch 'validated_adrs:') {
+                Fail "Recent validation report missing validated_adrs field: $($report.FullName)"
+                $valFieldErrors++
+            }
+            if ($content -notmatch 'validated_game_rules:') {
+                Fail "Recent validation report missing validated_game_rules field: $($report.FullName)"
+                $valFieldErrors++
+            }
+        }
+    }
+    if ($valFieldErrors -eq 0) {
+        Ok "Validation reports properly include validated_adrs and validated_game_rules fields."
+    }
+} else {
+    Ok "No execution reports found to validate."
+}
+
+# Check 7: No specs cite amendments as canonical sources
+$amendmentPattern = 'docs/amendments/[^/]+\.md(?!\s*.*\(archived|historical)'
+$specsWithBadAmendRefs = Get-ChildItem "docs/specs" -Recurse -Filter "*.md" -File -ErrorAction SilentlyContinue |
+    Where-Object { (Get-Content $_.FullName -Raw) -match $amendmentPattern }
+if ($specsWithBadAmendRefs) {
+    $specsWithBadAmendRefs | ForEach-Object { Fail "Spec cites amendment as canonical (not archived): $($_.FullName)" }
+} else {
+    Ok "No specs cite amendments as canonical sources."
+}
+
+# Check 8: DOCUMENT_INDEX references canonical decision/rule sources
+$docIndex = Get-Content "docs/project/DOCUMENT_INDEX.md" -Raw -ErrorAction SilentlyContinue
+if ($docIndex -notmatch 'DECISION_LOG\.md') {
+    Fail "DOCUMENT_INDEX.md must reference docs/project/DECISION_LOG.md"
+}
+if ($docIndex -notmatch 'docs/decisions/') {
+    Fail "DOCUMENT_INDEX.md must reference docs/decisions/"
+}
+if ($docIndex -notmatch 'GAME_RULES_INDEX\.md') {
+    Fail "DOCUMENT_INDEX.md must reference docs/game_rules/GAME_RULES_INDEX.md"
+}
+if ($docIndex -match 'DECISION_LOG\.md' -and $docIndex -match 'docs/decisions/' -and $docIndex -match 'GAME_RULES_INDEX\.md') {
+    Ok "DOCUMENT_INDEX.md properly references canonical decision/rule sources."
+}
+
+# Check 9: No active documents cite amendments outside validation context
+$refDocs = @("docs/project/CURRENT_STATE.md", "docs/project/DOCUMENT_GOVERNANCE.md")
+foreach ($doc in $refDocs) {
+    if (Test-Path $doc) {
+        $content = Get-Content $doc -Raw
+        if ($content -match 'docs/amendments/[^/]+\.md' -and $content -notmatch 'archived|historical') {
+            Fail "Active document cites amendment as canonical: $doc"
+        }
+    }
+}
+if (-not ($refDocs | Where-Object { Test-Path $_ } | Where-Object { (Get-Content $_ -Raw) -match 'docs/amendments/[^/]+\.md' -and (Get-Content $_ -Raw) -notmatch 'archived|historical' })) {
+    Ok "No active documents cite amendments as canonical sources."
+}
+
+# Check 10: No legacy numbered folders exist (consolidation is complete)
+$legacyFoldersExist = $false
+$checkFolders = @("00_PROJECT", "01_PRODUCT", "02_ARCHITECTURE", "03_SPECS", "04_REFINEMENTS", "05_VALIDATION", "06_BACKLOG", "07_RELEASES", "08_ARCHIVE")
+foreach ($folderName in $checkFolders) {
+    if (Test-Path "docs/$folderName") {
+        Fail "Legacy numbered folder docs/$folderName exists (consolidation incomplete)"
+        $legacyFoldersExist = $true
+    }
+}
+if (-not $legacyFoldersExist) {
+    Ok "No legacy numbered folders exist (consolidation complete)."
+}
 
 if ($failed) {
     Write-Host "Docs validation FAILED." -ForegroundColor Red
