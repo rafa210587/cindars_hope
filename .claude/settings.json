@@ -136,6 +136,12 @@
       "path": ".claude/hooks/unity-yaml-edit-guard.ps1",
       "description": "Warn when .unity/.prefab/.asset files are modified (review required)",
       "trigger": "manual"
+    },
+    "testScenarioRequiredGuard": {
+      "enabled": false,
+      "path": ".claude/hooks/test-scenario-required-guard.ps1",
+      "description": "Check if human test scenario file exists when runtime/gameplay changes detected",
+      "trigger": "manual"
     }
   },
 

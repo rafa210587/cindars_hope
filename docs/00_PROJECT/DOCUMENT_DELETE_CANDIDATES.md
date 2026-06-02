@@ -18,65 +18,81 @@ A document may be deleted ONLY if:
 
 ---
 
-## Candidates List
+## Batch 1 — Deleted in SPEC_DOCS_31 ✓
 
-| Path | Type | Reason | Substitute | Risk | Status |
-|------|------|--------|------------|------|--------|
-| docs/specs/a_implementar/reorg/SPEC_00.md | spec (superseded) | CLOSED per README_STATUS | docs/validation/spec_arch_reorg_00_* | LOW | candidate |
-| docs/specs/a_implementar/reorg/SPEC_01.md | spec (superseded) | CLOSED | docs/validation/spec_arch_reorg_01_* | LOW | candidate |
-| docs/specs/a_implementar/reorg/SPEC_02.md | spec (superseded) | CLOSED | docs/validation/spec_arch_reorg_02_* | LOW | candidate |
-| docs/specs/a_implementar/reorg/SPEC_03.md | spec (superseded) | CLOSED | docs/validation/spec_arch_reorg_03_* | LOW | candidate |
-| docs/specs/a_implementar/reorg/SPEC_04.md | spec (superseded) | CLOSED | docs/validation/spec_arch_reorg_04_* | LOW | candidate |
-| docs/specs/a_implementar/reorg/SPEC_05.md | spec (superseded) | CLOSED | docs/validation/spec_arch_reorg_05_* | LOW | candidate |
-| docs/specs/a_implementar/reorg/SPEC_06.md | spec (superseded) | CLOSED | docs/validation/spec_arch_reorg_06_* | LOW | candidate |
-| docs/specs/a_implementar/reorg/SPEC_07.md | spec (superseded) | CLOSED | docs/validation/spec_arch_reorg_07_* | LOW | candidate |
-| docs/specs/a_implementar/reorg/SPEC_08.md | spec (superseded) | CLOSED | docs/validation/spec_arch_reorg_08_* | LOW | candidate |
-| docs/specs/a_implementar/reorg/SPEC_09.md | spec (superseded) | CLOSED | docs/validation/spec_arch_reorg_09_* | LOW | candidate |
-| docs/specs/a_implementar/reorg/SPEC_10.md | spec (superseded) | CLOSED | docs/validation/spec_arch_reorg_10_* | LOW | candidate |
-| docs/specs/a_implementar/reorg/SPEC_11.md | spec (superseded) | CLOSED | docs/validation/spec_arch_reorg_11_* | LOW | candidate |
-| docs/specs/a_implementar/reorg/SPEC_12.md | spec (superseded) | CLOSED | docs/validation/spec_arch_reorg_12_* | LOW | candidate |
-| docs/specs/a_implementar/reorg/SPEC_00_STRATEGY_SUBAGENTS.md | spec (superseded) | CLOSED | README_STATUS.md | LOW | candidate |
-| docs/specs/a_implementar/spec_14a_cave_enemy_spawnplan_materialization_run_stability.md | spec (superseded) | Covered by SPEC_24 | SPEC_24 report | LOW | candidate — after Phase 2-3 |
-| docs/specs/a_implementar/spec_14a_fix2_spawn_density_combat_feedback_damage_numbers.md | spec (superseded) | Covered by SPEC_24 | SPEC_24 report | LOW | candidate — after Phase 2-3 |
-| docs/specs/a_implementar/spec_14b_cave_snapshot_replay_enemy_plan.md | spec (superseded) | Covered by SPEC_24 | SPEC_24 report | LOW | candidate — after Phase 2-3 |
-| docs/specs/a_implementar/spec_enemy_ai_roster_bestiary_faction_locks_runtime.md | spec (superseded) | Covered by SPEC_23; copy in implementados | SPEC_23 report | LOW | candidate — after Phase 2-3 |
-| docs/specs/a_implementar/spec_cave_runtime_generation_checkpoints_boss_gates.md | spec (superseded) | Covered by SPEC_24; copy in implementados | SPEC_24 report | LOW | candidate — after Phase 2-3 |
-| docs/specs/a_implementar/spec_ui_ux_full_gameplay_inventory_hotbar_menus.md | spec (superseded) | Covered by SPEC_28 | SPEC_28 report | LOW | candidate — after Phase 2-3 |
-| docs/roadmap/NEXT_WAVES_ROADMAP_v1.0.md | roadmap (old) | Superseded by v1.1 | v1.1 + new ROADMAP.md | LOW | candidate |
-| docs/architecture/ARCH_fase4_v2.2.md | architecture (old) | Superseded by v2.3 | v2.3 | LOW | candidate |
-| docs/design/GDD_v2.6.md | product (old) | Superseded by v2.7 | GDD_v2.7 | LOW | candidate |
-| docs/design/CHANGELOG_ATUALIZACAO_v2.6.md | historical | Not needed standalone | GDD_v2.7 | LOW | candidate |
-| docs/implementation_runs/RUN_20260523_0000_wave00_planning.md | historical_log | Session log superseded by PROJECT_LOG | PROJECT_LOG.md | LOW | candidate |
-| docs/implementation_runs/RUN_20260523_0100_wave01_data_save_progression.md | historical_log | Session log | PROJECT_LOG.md | LOW | candidate |
-| docs/implementation_runs/RUN_FINAL_OVERNIGHT_20260523_0300.md | historical_log | Session log | PROJECT_LOG.md | LOW | candidate |
-| docs/implementation_runs/RUN_POST_MERGE_AUDIT_HOTFIXES_20260523.md | historical_log | Session log | PROJECT_LOG.md | LOW | candidate |
-| docs/implementation_runs/RUN_STABILIZATION_OVERNIGHT_20260523.md | historical_log | Session log | PROJECT_LOG.md | LOW | candidate |
-| docs/IMPLEMENTATION_DELIVERY_20260523.md | historical_log | Snapshot superseded | PROJECT_LOG.md | LOW | candidate |
+**Criteria:** Superseded, no active references, archived specification.
+
+**Status:** DELETED on 2026-06-01
+
+| Path | Status | Notes |
+|------|--------|-------|
+| docs/specs/a_implementar/reorg/SPEC_00 through SPEC_12 (13 files) | ✓ DELETED | CLOSED per README_STATUS.md; validation evidence preserved |
+| docs/specs/a_implementar/reorg/SPEC_00_STRATEGY_SUBAGENTS.md | ✓ DELETED | CLOSED |
+| docs/roadmap/NEXT_WAVES_ROADMAP_v1.0.md | ✓ DELETED | Superseded by v1.1 + current ROADMAP.md |
+| docs/architecture/ARCH_fase4_v2.2.md | ✓ DELETED | Superseded by v2.3 FASE9C_DELTA |
+| docs/design/GDD_v2.6.md | ✓ DELETED | Superseded by v2.7 FASE9C_DELTA |
+| docs/design/CHANGELOG_ATUALIZACAO_v2.6.md | ✓ DELETED | Old changelog for deprecated GDD |
+| docs/implementation_runs/RUN_20260523_0000_wave00_planning.md | ✓ DELETED | Consolidado em PROJECT_LOG.md |
+| docs/implementation_runs/RUN_20260523_0100_wave01_data_save_progression.md | ✓ DELETED | Consolidado em PROJECT_LOG.md |
+| docs/implementation_runs/RUN_FINAL_OVERNIGHT_20260523_0300.md | ✓ DELETED | Consolidado em PROJECT_LOG.md |
+| docs/implementation_runs/RUN_POST_MERGE_AUDIT_HOTFIXES_20260523.md | ✓ DELETED | Consolidado em PROJECT_LOG.md |
+| docs/implementation_runs/RUN_STABILIZATION_OVERNIGHT_20260523.md | ✓ DELETED | Consolidado em PROJECT_LOG.md |
+
+**Total:** 20 files successfully deleted in SPEC_DOCS_31 (2026-06-01).
 
 ---
 
-## NOT Delete Candidates
+## Batch 2 — Defer Until After Phase 2-3 Closeout
 
-The following must be preserved regardless:
+**Criteria:** Content covered by SPEC_18-28 closeout, but source SPECS not yet promoted to implementados/.
+
+**Risk Level:** MEDIUM — Deletion would be safe after SPEC_18-28 closeout, but premature now could create confusion.
+
+**Action:** Delete only after SPEC_23, SPEC_24, SPEC_28 are promoted (Phase 2-3 complete).
+
+| Path | Type | Reason | Covered By | Status |
+|------|------|--------|------------|--------|
+| docs/specs/a_implementar/spec_14a_cave_enemy_spawnplan_materialization_run_stability.md | spec (superseded) | Covered by SPEC_24 closeout | SPEC_24 | blocked |
+| docs/specs/a_implementar/spec_14a_fix2_spawn_density_combat_feedback_damage_numbers.md | spec (superseded) | Covered by SPEC_24 closeout | SPEC_24 | blocked |
+| docs/specs/a_implementar/spec_14b_cave_snapshot_replay_enemy_plan.md | spec (superseded) | Covered by SPEC_24 closeout | SPEC_24 | blocked |
+| docs/specs/a_implementar/spec_enemy_ai_roster_bestiary_faction_locks_runtime.md | spec (superseded) | Covered by SPEC_23 closeout; duplicate exists in implementados | SPEC_23 | blocked |
+| docs/specs/a_implementar/spec_cave_runtime_generation_checkpoints_boss_gates.md | spec (superseded) | Covered by SPEC_24 closeout; duplicate exists in implementados | SPEC_24 | blocked |
+| docs/specs/a_implementar/spec_ui_ux_full_gameplay_inventory_hotbar_menus.md | spec (superseded) | Covered by SPEC_28 closeout | SPEC_28 | blocked |
+
+**Total:** 6 files. Safe after Phase 2-3 completion.
+
+---
+
+## Batch 3 — DO NOT DELETE (Protected Categories)
+
+**Criteria:** Governance, evidence, operational necessity, or active specs.
+
+**Risk Level:** NONE — Deleting any of these would break governance, lose evidence, or disrupt operations.
+
+**Protected Categories:**
 
 ```
-AGENTS.md
-CLAUDE.md
-docs/00_PROJECT/*  (new governance)
-docs/validation/*  (evidence)
-docs/specs/implementados/*  (implemented history)
-docs/refinements/implementados/*  (refinement history)
-docs/release/MVP_ACCEPTANCE_REPORT.md
-docs/backlog/post_mvp_backlog.md
-docs/architecture/CORE_CONTRACTS_EVENTS_SAVE_IDS_v1.1_FASE9C_DELTA.md
-docs/amendments/*  (critical amendments including FASE9F cave stable run)
-docs/operations/AGENT_EXECUTION_PROTOCOL.md
-docs/operations/READING_MATRIX.md
-PROJECT_LOG.md
-docs/IMPLEMENTATION_STATUS.md
-docs/specs/SPEC_EXECUTION_ORDER.md
-docs/specs/a_implementar/closeout_mvp/*  (pending Phase 2-3)
+AGENTS.md                                            (governance)
+CLAUDE.md                                            (governance)
+docs/00_PROJECT/*                                    (governance hub)
+docs/validation/*                                    (evidence)
+docs/specs/implementados/*                           (implemented history, searchable)
+docs/refinements/implementados/*                     (refinement history)
+docs/release/MVP_ACCEPTANCE_REPORT.md                (release acceptance evidence)
+docs/backlog/post_mvp_backlog.md                     (active backlog)
+docs/architecture/CORE_CONTRACTS_EVENTS_SAVE_IDS_v1.1_FASE9C_DELTA.md  (active architecture)
+docs/amendments/*                                    (governance: critical amendments including FASE9F cave stable run)
+docs/operations/AGENT_EXECUTION_PROTOCOL.md         (governance: operational protocol)
+docs/operations/READING_MATRIX.md                    (governance: reading policy)
+PROJECT_LOG.md                                       (historical record)
+docs/IMPLEMENTATION_STATUS.md                        (active status tracking)
+docs/specs/SPEC_EXECUTION_ORDER.md                   (execution dependency matrix)
+docs/specs/a_implementar/closeout_mvp/*              (active pending Phase 2-3)
+docs/05_VALIDATION/playmode/*                        (Phase 3 human test scenarios)
+docs/05_VALIDATION/current/LAST_VALIDATION_STATUS.md (current validation status)
 ```
+
+Total: 19+ protected categories. None are deletion candidates.
 
 ---
 

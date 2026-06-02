@@ -97,12 +97,12 @@
 
 | Location | Status |
 |----------|--------|
-| `docs/specs/a_implementar/reorg/` | CLOSED per README_STATUS.md — do not execute |
-| `docs/specs/a_implementar/spec_14a*.md` | Covered by SPEC_24 — do not execute |
-| `docs/specs/a_implementar/spec_14b*.md` | Covered by SPEC_24 — do not execute |
-| `docs/specs/a_implementar/spec_enemy_ai*.md` | Covered by SPEC_23 — do not execute |
-| `docs/specs/a_implementar/spec_cave_runtime*.md` | Covered by SPEC_24, copy in implementados |
-| `docs/specs/a_implementar/spec_ui_ux_full_gameplay*.md` | Covered by SPEC_28 — do not execute |
+| `docs/specs/a_implementar/reorg/` | README_STATUS.md preserved as historical marker; SPEC_00-12 and SPEC_00_STRATEGY_SUBAGENTS deleted in SPEC_DOCS_31 |
+| `docs/specs/a_implementar/spec_14a*.md` | Covered by SPEC_24 — do not execute (Batch 2 candidates) |
+| `docs/specs/a_implementar/spec_14b*.md` | Covered by SPEC_24 — do not execute (Batch 2 candidates) |
+| `docs/specs/a_implementar/spec_enemy_ai*.md` | Covered by SPEC_23 — do not execute (Batch 2 candidates) |
+| `docs/specs/a_implementar/spec_cave_runtime*.md` | Covered by SPEC_24, copy in implementados (Batch 2 candidates) |
+| `docs/specs/a_implementar/spec_ui_ux_full_gameplay*.md` | Covered by SPEC_28 — do not execute (Batch 2 candidates) |
 
 ---
 

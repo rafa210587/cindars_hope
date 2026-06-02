@@ -4,6 +4,45 @@
 
 ---
 
+## Sessao 2026-06-01 (SPEC_DOCS_31) - Safe Delete Batch 1 Documentation (REPOSITORY HYGIENE)
+
+**Foco:** Executar primeira limpeza segura de documentos obsoletos. Deletar apenas 20 arquivos Batch 1 aprovados (SPEC_00-12 reorg, old roadmap/arch/GDD, implementation runs).
+
+### Resumo
+
+- Criada matriz Phase 0: `spec_docs_31_phase0_safe_delete_batch_1_audit_matrix.md` — auditou 24 candidatos, 20 aprovados para deleção, 4 bloqueados (1 tinha referência ativa, 3 eram Batch 2)
+- Corrigida referência em `IMPLEMENTATION_STATUS.md`: `IMPLEMENTATION_DELIVERY_20260523.md` → `PROJECT_LOG.md` (Sessao 2026-05-23 Overnight)
+- Deletados 20 arquivos aprovados: 13 SPEC reorg + 1 strategy + roadmap v1.0 + ARCH v2.2 + GDD v2.6 + changelog + 5 run logs
+- Atualizados: DOCUMENT_DELETE_CANDIDATES.md (marcado como DELETED), DOCUMENT_INDEX.md, IMPLEMENTATION_STATUS.md
+- Validação: docs PASS 14/14
+
+**Resultado:** Repositório limpado de 20 documentos obsoletos. Nenhuma runtime/asset alterado. Batch 2 deferred.
+
+**Evidência:** `docs/validation/spec_docs_31_phase0_safe_delete_batch_1_audit_matrix.md` + spec_docs_31_execution_report.md
+
+---
+
+## Sessao 2026-06-01 (SPEC_CLAUDE_32) - Human Gameplay Test Scenario Infrastructure (CLAUDE CODE HARNESS)
+
+**Foco:** Criar infraestrutura de cenários de teste humano obrigatórios para specs de gameplay/runtime. Atualizar `/finish-spec` para exigir Phase 3 antes de promoção. Organizar 28 candidatos a deleção em lotes seguros sem executar deleção.
+
+### Resumo
+
+- Criada skill `gameplay-test-scenario` (.claude/skills/gameplay-test-scenario/SKILL.md) — guia completo para criar cenários de teste humano
+- Criado template `PLAYMODE_TEST_SCENARIO_TEMPLATE.md` — template abrangente com todas as seções obrigatórias
+- Atualizado comando `/finish-spec`: distinção explícita de specs docs-only vs runtime/gameplay; exigência de arquivo cenário em `docs/05_VALIDATION/playmode/<spec_id>_human_test_scenario.md`
+- Atualizada skill `spec-execution`: Phase 4 agora invoca `gameplay-test-scenario` para specs de runtime; adicionada sub-skill à lista
+- Criado hook `test-scenario-required-guard.ps1` (desabilitado) — verifica se arquivo de cenário existe quando mudanças runtime detectadas
+- Atualizado `settings.json`: adicionada definição de hook testScenarioRequiredGuard
+- Atualizado `CLAUDE.md`: adicionada skill gameplay-test-scenario à tabela de skills
+- Atualizado `docs/00_PROJECT/DOCUMENT_GOVERNANCE.md`: adicionada Seção 6.5 sobre regras de cenários de teste humano
+- Reorganizado `DOCUMENT_DELETE_CANDIDATES.md`: 3 lotes (Batch 1: 24 arquivos seguros agora; Batch 2: 6 bloqueados em Phase 2-3; Batch 3: 19+ categorias protegidas)
+
+**Validação:** docs PASS 14/14. Build NE (sem C#). Unity NOT RUN (harness-only).
+**Evidência:** `docs/validation/spec_claude_32_test_scenario_and_cleanup_execution_report.md`
+
+---
+
 ## Sessao 2026-06-01 (SPEC_CLAUDE_31) - Agent Runtime Governance (CLAUDE CODE HARNESS)
 
 **Foco:** Reorganizar harness do Claude Code para execução token-eficiente e segura. Sem alterações runtime, C# ou assets Unity.

@@ -67,7 +67,7 @@ Run `/review-non-regression`:
 - [ ] No out-of-scope file edits
 - [ ] No Unity refs in save
 
-### Phase 4: Execution Report
+### Phase 4: Execution Report & Test Scenario
 
 Create `docs/validation/<spec_id>_execution_report.md`.
 
@@ -81,6 +81,15 @@ Record phase status using taxonomy:
 | `ACCEPTED` | All required phases complete |
 | `PARTIAL` | Some phases complete, some not |
 | `BLOCKED` | Cannot proceed |
+
+**If runtime/gameplay changes (Phase 2-3 required):**
+
+Before Phase 5 closeout, invoke `/gameplay-test-scenario` skill to:
+- [ ] Create human test scenario: `docs/05_VALIDATION/playmode/<spec_id>_human_test_scenario.md`
+- [ ] Document in execution report Phase 3 section: how human tester will verify feature
+- [ ] Link test scenario file in report
+
+Without test scenario evidence for runtime specs, closeout status maxes at `BUILD_VALIDATED`.
 
 ### Phase 5: Closeout (via /finish-spec)
 
@@ -125,6 +134,7 @@ Execution report at `docs/validation/<spec_id>_execution_report.md` + commit his
 
 ## Applicable Sub-Skills
 
+- `gameplay-test-scenario` — if runtime/gameplay changes (creates Phase 3 test plan)
 - `unity-validation` — if runtime changes
 - `save-load-pattern` — if persistence in scope
 - `event-bus-pattern` — if gameplay communication in scope

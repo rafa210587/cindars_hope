@@ -67,6 +67,7 @@ Use `.claude/skills/<name>/SKILL.md` when task matches:
 | Skill | When |
 |-------|------|
 | `spec-execution` | Implementing any spec |
+| `gameplay-test-scenario` | Creating human test plan for runtime/gameplay specs |
 | `docs-governance` | Organizing/archiving docs |
 | `unity-validation` | Compile + validator flow |
 | `bootstrap-wiring` | GameBootstrap / manager wiring |
