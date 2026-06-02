@@ -25,7 +25,7 @@ source_of_truth: true
 | Phase 3 | Create DECISION_LOG.md and GAME_RULES_INDEX.md | ✓ 100% | COMPLETE |
 | Phase 4 | Create example game rule (cave_rules.md) | ✓ 100% | COMPLETE |
 | Phase 5 | Create remaining ADRs (0003, 0004, 0006-0009) | ✓ 100% | COMPLETE |
-| Phase 6 | Create 11 remaining game_rules documents | ⏳ PLANNED | IN_PROGRESS |
+| Phase 6 | Create 11 remaining game_rules documents | ✓ 100% | COMPLETE |
 | Phase 7 | Migrate amendments to ADRs/game_rules | ⏳ PLANNED | PENDING |
 | Phase 8 | Delete/archive migrated amendments | ⏳ PLANNED | PENDING |
 | Phase 9 | Update harness (.claude/rules, skills, hooks) | ⏳ PLANNED | PENDING |
@@ -37,7 +37,7 @@ source_of_truth: true
 | Phase 15 | Commit final changes | ⏳ PLANNED | PENDING |
 | Phase 16 | Update PROJECT_LOG.md | ⏳ PLANNED | PENDING |
 | Phase 17 | Final execution report | ⏳ PLANNED | PENDING |
-| **Overall** | **Decision records & game rules canonical structure** | **~41% complete** | **IN_PROGRESS** |
+| **Overall** | **Decision records & game rules canonical structure** | **~53% complete** | **IN_PROGRESS** |
 
 ---
 
@@ -155,23 +155,23 @@ source_of_truth: true
 
 ---
 
-## Phase 6: Remaining Game Rules — PLANNED
+## Phase 6: Remaining Game Rules — COMPLETE
 
-**Game Rules Documents to Create (11 remaining):**
+**Game Rules Documents Created (11 completed):**
 
-| Document | Domain | Plan |
-|---|---|---|
-| documentation_rules.md | Documentation | Canonical folders, file organization, source locations |
-| agent_execution_rules.md | Agent Ops | What agents read/don't read (from ADR-0002) |
-| validation_acceptance_rules.md | Validation | Phase gates, acceptance criteria (from ADR-0004, ADR-0009) |
-| save_rules.md | Game Data | DTO contracts, versioning, migration (from ADR-0006) |
-| event_rules.md | Architecture | Event bus, gameplay communication (from ADR-0007) |
-| combat_rules.md | Gameplay | Enemy roles, AI, status effects (from FASE9G Amendment) |
-| inventory_equipment_rules.md | Gameplay | Slots, capacity, durability (from SPEC_19, SPEC_20) |
-| skill_tree_rules.md | Gameplay | Points, slots, respec (from SPEC_26) |
-| ui_modal_rules.md | UX | Modal stack, input blocking, ESC (from SPEC_28, SPEC_17) |
-| death_anya_corpse_rules.md | Gameplay | Death flow, recovery, Anya (from SPEC_25) |
-| farm_rules.md | Gameplay | Farm mechanics (if needed for completeness) |
+| Document | Domain | File | Status |
+|---|---|---|---|
+| documentation_rules.md | Documentation | `docs/game_rules/documentation_rules.md` | ✓ accepted |
+| agent_execution_rules.md | Agent Ops | `docs/game_rules/agent_execution_rules.md` | ✓ accepted |
+| validation_acceptance_rules.md | Validation | `docs/game_rules/validation_acceptance_rules.md` | ✓ accepted |
+| save_rules.md | Game Data | `docs/game_rules/save_rules.md` | ✓ accepted |
+| event_rules.md | Architecture | `docs/game_rules/event_rules.md` | ✓ accepted |
+| combat_rules.md | Gameplay | `docs/game_rules/combat_rules.md` | ✓ accepted |
+| inventory_equipment_rules.md | Gameplay | `docs/game_rules/inventory_equipment_rules.md` | ✓ accepted |
+| skill_tree_rules.md | Gameplay | `docs/game_rules/skill_tree_rules.md` | ✓ accepted |
+| ui_modal_rules.md | UX | `docs/game_rules/ui_modal_rules.md` | ✓ accepted |
+| death_anya_corpse_rules.md | Gameplay | `docs/game_rules/death_anya_corpse_rules.md` | ✓ accepted |
+| farm_rules.md | Gameplay | `docs/game_rules/farm_rules.md` | ✓ accepted |
 
 ---
 
@@ -311,18 +311,19 @@ Entry in PROJECT_LOG.md documenting SPEC_DOCS_38 completion
 - ✓ Phase 3: DECISION_LOG.md, GAME_RULES_INDEX.md
 - ✓ Phase 4: cave_rules.md (game rule example)
 - ✓ Phase 5: ADR-0003, ADR-0004, ADR-0006, ADR-0007, ADR-0008, ADR-0009 (6 ADRs)
-- ✓ All 9 ADRs created; DECISION_LOG.md updated with final references
-- ✓ Git commits: 5f63e57, [Phase 5 commit pending]
+- ✓ Phase 6: 11 game_rules documents (documentation_rules.md, agent_execution_rules.md, validation_acceptance_rules.md, save_rules.md, event_rules.md, combat_rules.md, inventory_equipment_rules.md, skill_tree_rules.md, ui_modal_rules.md, death_anya_corpse_rules.md, farm_rules.md)
+- ✓ All 9 ADRs created; all 12 game_rules documents created
+- ✓ GAME_RULES_INDEX.md updated with status
+- ✓ Git commits: 5f63e57 (Phases 0-4), bf221a4 (Phase 5)
 
 **In Backlog for Completion:**
-- ⏳ Phase 6: 11 game_rules documents (documentation_rules.md, agent_execution_rules.md, validation_acceptance_rules.md, save_rules.md, event_rules.md, combat_rules.md, inventory_equipment_rules.md, skill_tree_rules.md, ui_modal_rules.md, death_anya_corpse_rules.md, farm_rules.md)
-- ⏳ Phase 7-8: Amendment migration and deletion (FASE9F, FASE9G)
-- ⏳ Phase 9-13: Harness and reference updates
+- ⏳ Phase 7-8: Amendment migration and deletion (FASE9F → ADR-0005 + cave_rules.md; FASE9G → combat_rules.md)
+- ⏳ Phase 9-13: Harness and reference updates (.claude/rules, hooks, skills)
 - ⏳ Phase 14-17: Final validation, commit, documentation
 
 **Estimated Completion:**
-- Current: ~41% complete (6 of 17 phases executed; 14 of 23 documents created: 9 ADRs + 5 governance docs)
-- Remaining effort: Create 11 game_rules, migrate amendments, update harness, final validation
+- Current: ~53% complete (7 of 17 phases executed; 25 of 25 core documents created: 9 ADRs + 12 game_rules + 4 indexes)
+- Remaining effort: Migrate amendments, update harness, update references, final validation
 
 ---
 
@@ -335,7 +336,7 @@ Entry in PROJECT_LOG.md documenting SPEC_DOCS_38 completion
 | ADR-0001 to ADR-0009 exist | ✓ DONE | 9 of 9 created |
 | docs/game_rules/ exists | ✓ DONE | Directory created |
 | docs/game_rules/GAME_RULES_INDEX.md exists | ✓ DONE | File created, 120+ lines |
-| Game rules documents exist | ⏳ PARTIAL | 1 of 12 created (cave_rules.md) |
+| Game rules documents exist | ✓ DONE | 12 of 12 created |
 | Amendments migrated | ⏳ PENDING | Content identified, not yet migrated |
 | References updated | ⏳ PENDING | CURRENT_STATE.md, DOCUMENT_INDEX.md, etc. |
 | Harness updated | ⏳ PENDING | New rule, skill, hook planned |

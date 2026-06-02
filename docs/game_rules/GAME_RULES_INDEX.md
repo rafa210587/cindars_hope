@@ -7,19 +7,20 @@
 
 ## Game Rules by Domain
 
-| Domain | File | Key ADRs | Purpose |
-|---|---|---|---|
-| Documentation | [documentation_rules.md](documentation_rules.md) | ADR-0001 | Canonical folders, file organization, source locations |
-| Agent Execution | [agent_execution_rules.md](agent_execution_rules.md) | ADR-0002 | What agents read/don't read by default |
-| Validation/Acceptance | [validation_acceptance_rules.md](validation_acceptance_rules.md) | ADR-0004, ADR-0009 | Phase gates (0/1/2/3), acceptance criteria, NOT_RUN tracking |
-| Cave Gameplay | [cave_rules.md](cave_rules.md) | ADR-0005 | Stable run invariant, snapshots, enemy/resource ranges, boss gates |
-| Event/Architecture | [event_rules.md](event_rules.md) | ADR-0007 | Event bus, gameplay communication, avoid global lookup |
-| Save/Data | [save_rules.md](save_rules.md) | ADR-0006 | DTO contracts, no Unity refs, versioning, migration |
-| Combat | [combat_rules.md](combat_rules.md) | ADR-0005 (enemy factions) | Enemy roles, AI, status effects, damage, factions |
-| Inventory/Equipment | [inventory_equipment_rules.md](inventory_equipment_rules.md) | — | Slots, capacity, durability, equip rules, shop/crafting |
-| Skill Trees | [skill_tree_rules.md](skill_tree_rules.md) | — | Points, active slots, respec via Anya, save/load |
-| UI/Modal | [ui_modal_rules.md](ui_modal_rules.md) | — | Modal stack, Esc behavior, input blocking, hud/inventory/shop |
-| Death/Respawn | [death_anya_corpse_rules.md](death_anya_corpse_rules.md) | — | Death flow, corpse recovery, Anya respawn/respec, constraints |
+| Domain | File | Key ADRs | Status | Purpose |
+|---|---|---|---|---|
+| Documentation | [documentation_rules.md](documentation_rules.md) | ADR-0001 | ✓ | Canonical folders, file organization, source locations |
+| Agent Execution | [agent_execution_rules.md](agent_execution_rules.md) | ADR-0002 | ✓ | What agents read/don't read by default |
+| Validation/Acceptance | [validation_acceptance_rules.md](validation_acceptance_rules.md) | ADR-0004, ADR-0009 | ✓ | Phase gates (0/1/2/3), acceptance criteria, NOT_RUN tracking |
+| Cave Gameplay | [cave_rules.md](cave_rules.md) | ADR-0005 | ✓ | Stable run invariant, snapshots, enemy/resource ranges, boss gates |
+| Event/Architecture | [event_rules.md](event_rules.md) | ADR-0007 | ✓ | Event bus, gameplay communication, avoid global lookup |
+| Save/Data | [save_rules.md](save_rules.md) | ADR-0006 | ✓ | DTO contracts, no Unity refs, versioning, migration |
+| Combat | [combat_rules.md](combat_rules.md) | ADR-0005 | ✓ | Enemy roles, AI, status effects, damage, factions |
+| Inventory/Equipment | [inventory_equipment_rules.md](inventory_equipment_rules.md) | — | ✓ | Slots, capacity, durability, equip rules, shop/crafting |
+| Skill Trees | [skill_tree_rules.md](skill_tree_rules.md) | — | ✓ | Points, active slots, respec via Anya, save/load |
+| UI/Modal | [ui_modal_rules.md](ui_modal_rules.md) | — | ✓ | Modal stack, Esc behavior, input blocking, hud/inventory/shop |
+| Death/Respawn | [death_anya_corpse_rules.md](death_anya_corpse_rules.md) | — | ✓ | Death flow, corpse recovery, Anya respawn/respec, constraints |
+| Farming | [farm_rules.md](farm_rules.md) | — | ✓ | Crop growth, daily cycles, farm storage, economy |
 
 ---
 
