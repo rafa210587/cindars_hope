@@ -12,7 +12,7 @@
 | Branch (working) | `dev` |
 | MVP code-complete | ✓ YES |
 | MVP build-validated (C#) | ✓ YES — 0E/0W runtime + editor |
-| Docs validation | ✓ YES — 14/14 |
+| Docs validation | ✓ YES — 25+ checks |
 | MVP Phase 2 (Unity validators) | ✗ NOT RUN — pending human execution |
 | MVP Phase 3 (Play Mode) | ✗ NOT RUN — pending human execution |
 | MVP final accepted | ✗ NOT YET |
@@ -34,7 +34,6 @@
 ```
 - PROJECT_LOG.md  (use only for audit/reconciliation/regression)
 - docs/project/ROADMAP.md  (planning only)
-- docs/design/GDD_v2.7*.md  (product design; read only if spec cites it)
 - docs/refinements/  (read only if spec is ambiguous)
 - docs/specs/a_implementar/reorg/  (CLOSED — do not execute)
 - docs/validation/spec_mvp_closeout_*  (evidence; read only if explicitly listed)
@@ -96,6 +95,19 @@
 | Last validation status | `docs/validation/current/LAST_VALIDATION_STATUS.md` |
 | Spec template | `docs/specs/_templates/SPEC_TEMPLATE.md` |
 | Document governance | `docs/project/DOCUMENT_GOVERNANCE.md` |
+| Decision log | `docs/project/DECISION_LOG.md` |
+| ADRs | `docs/decisions/` (9 ADRs, ADR-0001 to ADR-0009) |
+| Game rules | `docs/game_rules/GAME_RULES_INDEX.md` |
+
+---
+
+## Reading Policy for ADRs and Game Rules
+
+- **Agents do NOT read all ADRs or all game_rules by default.**
+- **Agents read only ADRs/game_rules explicitly listed in the active spec's `required_adrs:` and `required_game_rules:` fields.**
+- **If a spec conflicts with an ADR or game_rule, STOP and report the conflict. Do not implement until reconciled.**
+- **See `DECISION_LOG.md` for index of all ADRs and reading policy details.**
+- **See `docs/game_rules/GAME_RULES_INDEX.md` for index of all game rules.**
 
 ---
 

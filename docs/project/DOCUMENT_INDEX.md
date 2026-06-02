@@ -68,13 +68,37 @@
 
 ---
 
+## Decision Records (Architecture Decisions)
+
+| Document | Purpose |
+|----------|---------|
+| `docs/project/DECISION_LOG.md` | Index of all ADRs with reading policy |
+| `docs/decisions/` | Canonical Architecture Decision Records (ADR-0001 through ADR-0009) |
+| `docs/decisions/_templates/ADR_TEMPLATE.md` | ADR template for new decisions |
+
+**Reading policy:** Agents read only ADRs explicitly cited by the active spec in `required_adrs:` field.
+
+---
+
+## Game Rules (Current Operational Behavior)
+
+| Document | Purpose |
+|----------|---------|
+| `docs/game_rules/GAME_RULES_INDEX.md` | Index of all game rules by domain (12 documents) |
+| `docs/game_rules/*.md` | Current gameplay, architecture, and operational rules (cave, combat, inventory, skill tree, UI, etc.) |
+| `docs/game_rules/_templates/GAME_RULE_TEMPLATE.md` | Game rule template for new rules |
+
+**Reading policy:** Agents read only game_rules explicitly cited by the active spec in `required_game_rules:` field.
+
+---
+
 ## Architecture Reference
 
 | Document | Purpose |
 |----------|---------|
 | `docs/architecture/CORE_CONTRACTS_EVENTS_SAVE_IDS_v1.1_FASE9C_DELTA.md` | Core contracts (current) |
-| `docs/amendments/FASE9F_CAVE_STABLE_RUN_AND_REPLAY_AMENDMENT_v1.0.md` | Cave stable run amendment |
-| `docs/amendments/FASE9G_AMENDMENT_ENEMY_COMBAT_ROLES_AI_STATUS_v1.1.md` | Enemy combat roles amendment |
+| `docs/amendments/` | **ARCHIVED HISTORICAL SOURCE** — Amendment content migrated to ADRs and game_rules; not canonical |
+| `docs/amendments/README.md` | Migration map showing where amendment content now lives |
 
 ---
 
