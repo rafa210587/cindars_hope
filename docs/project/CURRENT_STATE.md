@@ -33,7 +33,7 @@
 
 ```
 - PROJECT_LOG.md  (use only for audit/reconciliation/regression)
-- docs/00_PROJECT/ROADMAP.md  (planning only)
+- docs/project/ROADMAP.md  (planning only)
 - docs/design/GDD_v2.7*.md  (product design; read only if spec cites it)
 - docs/refinements/  (read only if spec is ambiguous)
 - docs/specs/a_implementar/reorg/  (CLOSED — do not execute)
@@ -92,9 +92,9 @@
 | Validation evidence | `docs/validation/spec_mvp_closeout_*.md` |
 | MVP acceptance | `docs/release/MVP_ACCEPTANCE_REPORT.md` |
 | Post-MVP backlog | `docs/backlog/post_mvp_backlog.md` |
-| Last validation status | `docs/05_VALIDATION/current/LAST_VALIDATION_STATUS.md` |
-| Spec template | `docs/03_SPECS/SPEC_TEMPLATE.md` |
-| Document governance | `docs/00_PROJECT/DOCUMENT_GOVERNANCE.md` |
+| Last validation status | `docs/validation/current/LAST_VALIDATION_STATUS.md` |
+| Spec template | `docs/specs/_templates/SPEC_TEMPLATE.md` |
+| Document governance | `docs/project/DOCUMENT_GOVERNANCE.md` |
 
 ---
 

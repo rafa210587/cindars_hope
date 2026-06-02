@@ -11,8 +11,8 @@
 |----------|---------|
 | `AGENTS.md` | Agent rules, skills, protocol |
 | `CLAUDE.md` | Claude Code project instructions |
-| `docs/00_PROJECT/CURRENT_STATE.md` | Current project status; active queue |
-| `docs/05_VALIDATION/current/LAST_VALIDATION_STATUS.md` | Latest automated validation results |
+| `docs/project/CURRENT_STATE.md` | Current project status; active queue |
+| `docs/validation/current/LAST_VALIDATION_STATUS.md` | Latest automated validation results |
 
 ---
 
@@ -29,8 +29,8 @@
 
 | Document | Purpose |
 |----------|---------|
-| `docs/00_PROJECT/ROADMAP.md` | High-level project roadmap |
-| `docs/06_BACKLOG/current_backlog.md` | Current operational backlog |
+| `docs/project/ROADMAP.md` | High-level project roadmap |
+| `docs/backlog/current_backlog.md` | Current operational backlog |
 | `docs/backlog/post_mvp_backlog.md` | Post-MVP work items |
 | `docs/backlog/FUTURE_IDEAS_TODO_v1.0.md` | Future ideas |
 
@@ -64,7 +64,7 @@
 | `docs/validation/spec_mvp_closeout_18-29*` | MVP closeout evidence (22 reports) |
 | `docs/validation/spec_arch_reorg_00-12*` | Architecture reorg evidence (14 reports) |
 | `docs/validation/SPEC06-17*` | Historical validation evidence (20+ reports) |
-| `docs/05_VALIDATION/current/LAST_VALIDATION_STATUS.md` | Most recent automated results |
+| `docs/validation/current/LAST_VALIDATION_STATUS.md` | Most recent automated results |
 
 ---
 
@@ -82,13 +82,13 @@
 
 | Document | Purpose |
 |----------|---------|
-| `docs/00_PROJECT/DOCUMENT_GOVERNANCE.md` | Rules for types, states, reading policy |
-| `docs/00_PROJECT/HISTORY_LOG_POLICY.md` | When to read PROJECT_LOG.md |
-| `docs/00_PROJECT/DOCUMENT_DELETE_CANDIDATES.md` | Candidates for future deletion |
-| `docs/00_PROJECT/DOCUMENT_INDEX.md` | This file |
-| `docs/03_SPECS/SPEC_TEMPLATE.md` | Template for new specs |
-| `docs/04_REFINEMENTS/REFINEMENT_TEMPLATE.md` | Template for new refinements |
-| `docs/05_VALIDATION/VALIDATION_REPORT_TEMPLATE.md` | Template for validation reports |
+| `docs/project/DOCUMENT_GOVERNANCE.md` | Rules for types, states, reading policy |
+| `docs/project/HISTORY_LOG_POLICY.md` | When to read PROJECT_LOG.md |
+| `docs/project/DOCUMENT_DELETE_CANDIDATES.md` | Candidates for future deletion |
+| `docs/project/DOCUMENT_INDEX.md` | This file |
+| `docs/specs/_templates/SPEC_TEMPLATE.md` | Template for new specs |
+| `docs/refinements/_templates/REFINEMENT_TEMPLATE.md` | Template for new refinements |
+| `docs/validation/_templates/VALIDATION_REPORT_TEMPLATE.md` | Template for validation reports |
 
 ---
 

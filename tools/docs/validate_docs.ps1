@@ -34,6 +34,15 @@ if (Test-Path "docs_old") {
     Ok "docs_old/ does not exist (legacy cleanup complete)."
 }
 
+# Check for forbidden numbered folder structure (consolidated in SPEC_DOCS_35)
+$numberedFolders = @("docs/00_PROJECT", "docs/01_PRODUCT", "docs/02_ARCHITECTURE", "docs/03_SPECS", "docs/04_REFINEMENTS", "docs/05_VALIDATION", "docs/06_BACKLOG", "docs/07_RELEASES")
+foreach ($folder in $numberedFolders) {
+    if (Test-Path $folder) {
+        Fail "Numbered folder '$folder' must not exist. Use canonical equivalent instead."
+    }
+}
+Ok "No numbered documentation folders found (consolidation complete)."
+
 # Check for required canonical governance folders
 if (-not (Test-Path "docs/project")) {
     Fail "docs/project/ must exist as canonical project governance folder."
@@ -69,6 +78,25 @@ if (-not (Test-Path "docs/project/DOCUMENT_INDEX.md")) {
     Fail "docs/project/DOCUMENT_INDEX.md must exist."
 } else {
     Ok "docs/project/DOCUMENT_INDEX.md exists."
+}
+
+# Check for required template files
+if (-not (Test-Path "docs/specs/_templates/SPEC_TEMPLATE.md")) {
+    Fail "docs/specs/_templates/SPEC_TEMPLATE.md must exist as spec template."
+} else {
+    Ok "docs/specs/_templates/SPEC_TEMPLATE.md exists."
+}
+
+if (-not (Test-Path "docs/refinements/_templates/REFINEMENT_TEMPLATE.md")) {
+    Fail "docs/refinements/_templates/REFINEMENT_TEMPLATE.md must exist as refinement template."
+} else {
+    Ok "docs/refinements/_templates/REFINEMENT_TEMPLATE.md exists."
+}
+
+if (-not (Test-Path "docs/validation/_templates/VALIDATION_REPORT_TEMPLATE.md")) {
+    Fail "docs/validation/_templates/VALIDATION_REPORT_TEMPLATE.md must exist as validation template."
+} else {
+    Ok "docs/validation/_templates/VALIDATION_REPORT_TEMPLATE.md exists."
 }
 
 if (-not (Test-Path "docs/refinements/a_implementar/pre_refinamentos")) {
