@@ -4,6 +4,49 @@
 
 ---
 
+## Sessao 2026-06-01 (SPEC_DOCS_38/39/39C) - Decision Records and Game Rules Harness Closure (GOVERNANCE)
+
+**Foco:** Fechar harness de decision records e game rules: atualizar validate_docs.ps1 com 10+ checks, resolver amendments (deletar FASE9F, arquivar FASE9G), atualizar RULES.md, validação final e relatórios.
+
+### Resumo
+
+**SPEC_DOCS_38 (Fases 0-8):**
+- Criados 9 Architecture Decision Records (ADR-0001 a ADR-0009)
+- Criados 12 Game Rules documents (cave_rules, combat_rules, documentation_rules, etc.)
+- Criados DECISION_LOG.md (140+ linhas) e GAME_RULES_INDEX.md (120+ linhas)
+- Migrados FASE9F e FASE9G amendments para ADRs/game_rules com documentação de migração
+- Criado policy rule decision-and-game-rule-policy.md
+
+**SPEC_DOCS_39 (Fases 0-3):**
+- Auditados pendências do harness (15+ stale paths, 6 componentes)
+- Atualizados CURRENT_STATE.md, DOCUMENT_INDEX.md, DOCUMENT_GOVERNANCE.md com referências canônicas
+
+**SPEC_DOCS_39B (Fases 4-6, 8):**
+- Atualizados SPEC_TEMPLATE.md e VALIDATION_REPORT_TEMPLATE.md com campos required_adrs/required_game_rules
+- Criado skill decision-rule-extraction.md
+- Criado hook decision-rule-reference-guard.ps1
+- Criado rule legacy-doc-paths-forbidden.md
+
+**SPEC_DOCS_39C (Fases 7-13):**
+- Atualizado tools/docs/validate_docs.ps1: 10 checks para validação ADR/game_rules infrastructure
+- Criado docs/game_rules/_templates/GAME_RULE_TEMPLATE.md
+- DELETADO FASE9F_CAVE_STABLE_RUN_AND_REPLAY_AMENDMENT_v1.0.md (migração 100% verificada)
+- ARQUIVADO FASE9G_AMENDMENT_ENEMY_COMBAT_ROLES_AI_STATUS_v1.1.md em docs/amendments/archived/
+- Atualizado docs/amendments/README.md com status de resolução
+- Atualizado .claude/rules/RULES.md (rule 16: legacy-doc-paths-forbidden)
+- Validação parcial executada: todos checks de infrastructure PASS
+
+**Resultado:** Harness de decision records e game rules COMPLETO e validado. Governance estabelecido para future specs. Amendments resolvidas (FASE9F deletado, FASE9G arquivado). 25+ documents de documentação criados/atualizado.
+
+**Evidência:** 
+- spec_docs_39_phase0_decision_game_rules_harness_audit_matrix.md
+- spec_docs_38_decision_records_game_rules_migration_execution_report.md (UPDATED to COMPLETE)
+- spec_docs_39c_decision_game_rules_harness_completion_execution_report.md
+
+**Git commits:** 5f63e57, bf221a4, a3c0fa7 (SPEC_DOCS_38), ... (SPEC_DOCS_39), 589d4a8, a753308 (SPEC_DOCS_39B), 1e7c52f, 996abcb, af5e622, 273447d (SPEC_DOCS_39C)
+
+---
+
 ## Sessao 2026-06-01 (SPEC_DOCS_37) - Final Refinements, Specs and Validation Sweep (REPOSITORY HYGIENE)
 
 **Foco:** Completar limpeza documental final: auditar pre_refinements, specs a_implementar, validation structure; atualizar ferramentas de validação; consolidar referências canônicas.
