@@ -10,20 +10,21 @@ These rules are project invariants. Skills explain workflows; hooks provide chec
 3. [No Premature Acceptance Claims](./no-premature-acceptance-claims.md) — no MVP/Play Mode PASS without evidence
 4. [No Doc Delete Without Candidate](./no-doc-delete-without-candidate.md) — delete only from candidates list
 5. [Spec Source Of Truth](./spec-source-of-truth.md) — only `docs/specs/`
+6. [Decision and Game Rule Policy](./decision-and-game-rule-policy.md) — ADRs/game_rules canonical; amendments archived
 
 **Code Architecture**
-6. [No Runtime Global Search](./no-runtime-global-search.md) — no GameObject.Find at runtime
-7. [Event Bus Only Gameplay Communication](./event-bus-only-gameplay-communication.md) — GameEventBus required
-8. [Save DTO Simple Types Only](./save-dto-simple-types-only.md) — no Unity refs in save
-9. [Cave Stable Run](./cave-stable-run.md) — stable-run contract for cave procedural
+7. [No Runtime Global Search](./no-runtime-global-search.md) — no GameObject.Find at runtime
+8. [Event Bus Only Gameplay Communication](./event-bus-only-gameplay-communication.md) — GameEventBus required
+9. [Save DTO Simple Types Only](./save-dto-simple-types-only.md) — no Unity refs in save
+10. [Cave Stable Run](./cave-stable-run.md) — stable-run contract for cave procedural
 
 **Unity & Git Safety**
-10. [Unity Validation Honesty](./unity-validation-honesty.md) — no overstating validation results
-11. [Unity YAML Editing Policy](./unity-yaml-editing-policy.md) — no manual .unity/.prefab/.asset edits
-12. [Generated Asset Evidence](./generated-asset-evidence.md) — asset generation requires evidence
-13. [No Parallel Unity Batchmode](./no-parallel-unity-batchmode.md) — sequential Unity processes only
-14. [No Unsafe Git](./no-unsafe-git.md) — no push/reset/clean without per-instance authorization
-15. [No docs_old Edits](./no-docs-old-edits.md) — docs_old is read-only
+11. [Unity Validation Honesty](./unity-validation-honesty.md) — no overstating validation results
+12. [Unity YAML Editing Policy](./unity-yaml-editing-policy.md) — no manual .unity/.prefab/.asset edits
+13. [Generated Asset Evidence](./generated-asset-evidence.md) — asset generation requires evidence
+14. [No Parallel Unity Batchmode](./no-parallel-unity-batchmode.md) — sequential Unity processes only
+15. [No Unsafe Git](./no-unsafe-git.md) — no push/reset/clean without per-instance authorization
+16. [No docs_old Edits](./no-docs-old-edits.md) — docs_old is read-only
 
 ## Application
 

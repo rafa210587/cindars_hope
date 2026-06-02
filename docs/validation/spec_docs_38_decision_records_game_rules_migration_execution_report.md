@@ -197,23 +197,29 @@ source_of_truth: true
 
 ---
 
-## Phase 9: Harness Updates — PENDING
+## Phase 9: Harness Updates — IN_PROGRESS
 
-### .claude/rules/decision-and-game-rule-policy.md (to create)
+### .claude/rules/decision-and-game-rule-policy.md
 
-**Content:** Link ADRs, game_rules, explain relationship; prohibit using amendments as canonical after migration
+**Status:** ✓ Created  
+**Content:** ADRs/game_rules canonical; amendments archived; conflict resolution policy; reading policy  
+**File:** `.claude/rules/decision-and-game-rule-policy.md`
 
-### .claude/rules/RULES.md (to update)
+### .claude/rules/RULES.md
 
-**Change:** Add rule 16: decision-and-game-rule-policy
+**Status:** ✓ Updated  
+**Change:** Added rule 6 (renumbered 6-16): decision-and-game-rule-policy  
+**Content:** Links to new rule in governance section
 
 ### .claude/skills/decision-rule-extraction/SKILL.md (to create)
 
+**Status:** ⏳ Pending  
 **Content:** Guide for extracting decisions from amendments/specs into ADRs and game_rules
 
 ### .claude/hooks/decision-rule-reference-guard.ps1 (to create)
 
-**Behavior:** Warn if spec uses amendment as canonical after migration; warn if spec doesn't list required_adrs/required_game_rules
+**Status:** ⏳ Pending  
+**Behavior:** Warn if spec uses amendment as canonical; warn if spec missing required_adrs/required_game_rules
 
 ---
 
