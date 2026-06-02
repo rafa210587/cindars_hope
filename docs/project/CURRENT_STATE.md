@@ -23,7 +23,7 @@
 
 ```
 1. AGENTS.md
-2. docs/00_PROJECT/CURRENT_STATE.md  (this file)
+2. docs/project/CURRENT_STATE.md  (this file)
 3. Active spec file
 4. Source files referenced by the spec
 5. Immediately prior validation report ONLY if listed as a dependency

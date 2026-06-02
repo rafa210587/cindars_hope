@@ -16,7 +16,7 @@ Specs live in `docs/specs/`. Spec is the execution contract. Refinement is fallb
 Read ONLY:
 
 1. `CLAUDE.md` (this file)
-2. `docs/00_PROJECT/CURRENT_STATE.md` — active queue, blockers, key paths (~80 lines)
+2. `docs/project/CURRENT_STATE.md` — active queue, blockers, key paths (~80 lines)
 3. The active spec (`docs/specs/a_implementar/spec_*.md`)
 4. Files explicitly listed in the spec scope
 
