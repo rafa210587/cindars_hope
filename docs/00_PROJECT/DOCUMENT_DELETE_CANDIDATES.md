@@ -42,6 +42,41 @@ A document may be deleted ONLY if:
 
 ---
 
+## Batch 1B — Deleted in SPEC_DOCS_32 + SPEC_DOCS_33 ✓
+
+**Criteria:** Legacy documentation, contradictory to governance, corrupted encoding, or obsolete artifact system.
+
+**Status:** DELETED on 2026-06-01
+
+### Operations & Legacy Docs (SPEC_DOCS_32 Phase 0)
+
+| Path | Status | Notes |
+|------|--------|-------|
+| docs/operations/LLM_HANDOFF_INSTRUCTIONS.md | ✓ DELETED | Mojibake corruption; contradicts CLAUDE.md governance |
+| docs/operations/READING_MATRIX.md | ✓ DELETED | Mojibake corruption; references obsolete spec registries |
+| docs/operations/HANDOFF_MERGE_STABILIZATION_TO_DEV_20260523.md | ✓ DELETED | Historical merge handoff; consolidated in PROJECT_LOG.md |
+| docs/roadmap/NEXT_WAVES_ROADMAP_v1.1_FASE9C_DELTA.md | ✓ DELETED | Orphaned delta (base v1.0 already deleted) |
+| docs/backlog/FASE6_FARM_backlog_v1.2.md | ✓ DELETED | FASE6 historical; items in current_backlog |
+| docs/backlog/FASE6_INDEX_global_v1.2.md | ✓ DELETED | FASE6 index; superseded by current backlog |
+| docs/backlog/FASE6_INDEX_global_v1.3_FASE9C_DELTA.md | ✓ DELETED | FASE6 delta; historical |
+
+### Agent Prompts & Packages (SPEC_DOCS_33)
+
+| Path | Status | Notes |
+|------|--------|-------|
+| docs/agent_prompts/ (26 files total) | ✓ DELETED | Historical Codex prompts for implemented specs (SPEC_01-17F); not used by current harness |
+| docs/agent_prompts/a_executar/ | ✓ DELETED | Includes SPEC_17B prompt + validation template |
+| docs/agent_prompts/implementados/ | ✓ DELETED | 22 historical spec prompts |
+| docs/agent_prompts/bloqueados/ | ✓ DELETED | Empty except .gitkeep |
+| docs/agent_prompts/executados/ | ✓ DELETED | Empty except .gitkeep |
+| docs/agent_packages/ (6 files total) | ✓ DELETED | Legacy orchestration packages (P00, P12A, P12B); Codex artifact system |
+| docs/agent_packages/README.md | ✓ DELETED | Describes obsolete package orchestration system |
+| docs/agent_packages/PACKAGE_*.md (4 files) | ✓ DELETED | Legacy package definitions + templates |
+
+**Total:** 39 files successfully deleted in SPEC_DOCS_32 + SPEC_DOCS_33 (2026-06-01).
+
+---
+
 ## Batch 2 — Defer Until After Phase 2-3 Closeout
 
 **Criteria:** Content covered by SPEC_18-28 closeout, but source SPECS not yet promoted to implementados/.

@@ -4,7 +4,26 @@
 
 ---
 
-## Sessao 2026-06-01 (SPEC_DOCS_31) - Safe Delete Batch 1 Documentation (REPOSITORY HYGIENE)
+## Sessao 2026-06-01 (SPEC_DOCS_33) - Radical Agent Prompts & Packages Cleanup (REPOSITORY HYGIENE)
+
+**Foco:** Remover documentação legada de sistema Codex antigo (agent_prompts, agent_packages) e limpar docs/operations/docs/backlog dos resíduos.
+
+### Resumo
+
+- Auditada matriz Phase 0: agent_prompts (26 arquivos, prompts históricos para SPEC_01-17F), agent_packages (6 arquivos, pacotes de orquestração obsoletos)
+- Deletados diretórios inteiros: docs/agent_prompts/ + docs/agent_packages/ (32 arquivos)
+- Deletados arquivos adicionais da SPEC_DOCS_32: operações corrompidas (LLM_HANDOFF, READING_MATRIX, HANDOFF_MERGE), roadmaps/backlogs antigos (7 arquivos)
+- Total deletado em SPEC_DOCS_32 + SPEC_DOCS_33: 39 arquivos
+- Atualizado DOCUMENT_DELETE_CANDIDATES.md com Batch 1B
+- Validação: docs PASS (esperado)
+
+**Resultado:** Limpeza radical completa. Sistema Codex antigo removido. Nenhum runtime/asset alterado.
+
+**Evidência:** spec_docs_33_phase0_radical_agent_prompts_packages_cleanup_audit_matrix.md + spec_docs_33_execution_report.md
+
+---
+
+## Sessao 2026-06-01 (SPEC_DOCS_32) - Radical Legacy Documentation Cleanup (REPOSITORY HYGIENE)
 
 **Foco:** Executar primeira limpeza segura de documentos obsoletos. Deletar apenas 20 arquivos Batch 1 aprovados (SPEC_00-12 reorg, old roadmap/arch/GDD, implementation runs).
 

@@ -63,10 +63,11 @@
 
 | Spec | Status | Notes |
 |------|--------|-------|
-| SPEC_CLAUDE_31 | IN PROGRESS | Agent runtime governance (this session) |
+| SPEC_DOCS_31 | COMPLETE | Safe Batch 1 deletion (20 files); commit 956e4d1 |
+| SPEC_DOCS_32 | PHASE 0 COMPLETE | Phase 0 audit done; Phase 1 investigations pending (6 candidates) |
+| SPEC_DOCS_33 | COMPLETE | Agent_prompts + agent_packages cleanup (39 files); commit 5c5ecae |
 | SPEC_18-28 Phase 2-3 | PENDING HUMAN | Play Mode validation; requires local Unity Editor |
 | SPEC_29 Phase 2-3 | PENDING HUMAN | Final acceptance; blocked on Phase 2-3 above |
-| SPEC_DOCS_31 | PENDING | Safe archive and delete — blocked on Phase 2-3 |
 | FASE 10+ | BLOCKED | Blocked until Phase 2-3 or explicit human decision to skip |
 
 ---
