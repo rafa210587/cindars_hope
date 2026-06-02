@@ -32,7 +32,6 @@
 | `docs/00_PROJECT/ROADMAP.md` | High-level project roadmap |
 | `docs/06_BACKLOG/current_backlog.md` | Current operational backlog |
 | `docs/backlog/post_mvp_backlog.md` | Post-MVP work items |
-| `docs/design/GDD_v2.7_FASE9C_DELTA.md` | Game Design Document |
 | `docs/backlog/FUTURE_IDEAS_TODO_v1.0.md` | Future ideas |
 
 ---

@@ -96,6 +96,21 @@ A document may be deleted ONLY if:
 
 ---
 
+## Batch 1D — Deleted in SPEC_DOCS_34 Phase 1-2 Final Cleanup ✓
+
+**Criteria:** Final legacy file reconciliation: orphaned architecture delta, legacy Python orchestrator tool.
+
+**Status:** DELETED on 2026-06-01
+
+| Path | Status | Notes |
+|------|--------|-------|
+| docs/architecture/ARCH_fase4_v2.3_FASE9C_DELTA.md | ✓ DELETED | Orphaned delta (base v2.2 deleted in SPEC_DOCS_31); authority in CORE_CONTRACTS |
+| orquestrador/ (64 files + directory) | ✓ DELETED | Legacy Python orchestrator for Codex; replaced by .claude/ harness; 0 active references |
+
+**Total:** 65 files successfully deleted in SPEC_DOCS_34 Phase 1-2 (2026-06-01).
+
+---
+
 ## Batch 2 — Defer Until After Phase 2-3 Closeout
 
 **Criteria:** Content covered by SPEC_18-28 closeout, but source SPECS not yet promoted to implementados/.
