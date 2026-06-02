@@ -24,7 +24,7 @@ These rules are project invariants. Skills explain workflows; hooks provide chec
 13. [Generated Asset Evidence](./generated-asset-evidence.md) — asset generation requires evidence
 14. [No Parallel Unity Batchmode](./no-parallel-unity-batchmode.md) — sequential Unity processes only
 15. [No Unsafe Git](./no-unsafe-git.md) — no push/reset/clean without per-instance authorization
-16. [No docs_old Edits](./no-docs-old-edits.md) — docs_old is read-only
+16. [Legacy Doc Paths Forbidden](./legacy-doc-paths-forbidden.md) — canonical paths only; no docs_old, numbered folders
 
 ## Application
 
