@@ -1,0 +1,131 @@
+# Decision Log — Cindar's Hope
+
+> Index of Architecture and Design Decision Records.  
+> Agents do not read all ADRs by default; specs must cite required ADRs explicitly.
+
+---
+
+## Reading Policy
+
+An agent implementing a spec reads ONLY the ADRs/game rules explicitly listed by the spec.
+
+If a spec conflicts with an ADR or game rule:
+- **Stop**
+- **Report conflict**
+- **Do not implement** until reconciled
+
+If an ADR conflicts with a game rule:
+- Game rule is the current operational rule
+- ADR explains history and rationale
+- Update the ADR or create superseding ADR
+
+---
+
+## Active Decisions (ADR-0001 to ADR-0009)
+
+| ADR | Title | Theme | Status | Canonical Ref | Source |
+|---|---|---|---|---|---|
+| [ADR-0001](../decisions/ADR-0001-canonical-documentation-structure.md) | Canonical Documentation Structure | Documentation | accepted | docs/decisions/ADR-0001-* | SPEC_DOCS_35-37 |
+| [ADR-0002](../decisions/ADR-0002-agent-context-minimum.md) | Agent Context Minimum | Governance | accepted | .claude/rules/context-reading-policy.md | CLAUDE.md, AGENTS.md |
+| [ADR-0003](../decisions/ADR-0003-spec-lifecycle.md) | Spec Lifecycle | Governance | accepted | docs/game_rules/documentation_rules.md | SPEC_EXECUTION_ORDER.md, CURRENT_STATE.md |
+| [ADR-0004](../decisions/ADR-0004-validation-evidence-phase-gates.md) | Validation Evidence and Phase Gates | Validation | accepted | docs/game_rules/validation_acceptance_rules.md | LAST_VALIDATION_STATUS.md, .claude/rules/* |
+| [ADR-0005](../decisions/ADR-0005-cave-stable-run-and-replay.md) | Cave Stable Run and Replay | Gameplay | accepted | docs/game_rules/cave_rules.md | FASE9F Amendment, SPEC_24 |
+| [ADR-0006](../decisions/ADR-0006-save-data-contracts-simple-dtos.md) | Save Data Contracts Simple DTOs | Architecture | accepted | docs/game_rules/save_rules.md | .claude/rules/save-dto-simple-types-only.md |
+| [ADR-0007](../decisions/ADR-0007-event-bus-gameplay-communication.md) | Event Bus Gameplay Communication | Architecture | accepted | docs/game_rules/event_rules.md | .claude/rules/event-bus-only-gameplay-communication.md |
+| [ADR-0008](../decisions/ADR-0008-unity-yaml-editing-policy.md) | Unity Scene/Asset YAML Editing Policy | Tooling | accepted | .claude/rules/unity-yaml-editing-policy.md | .claude/rules/unity-yaml-editing-policy.md |
+| [ADR-0009](../decisions/ADR-0009-mvp-acceptance-phase-2-3.md) | MVP Acceptance Requires Phase 2-3 | Validation | accepted | docs/game_rules/validation_acceptance_rules.md | LAST_VALIDATION_STATUS.md, .claude/rules/no-premature-acceptance-claims.md |
+
+---
+
+## Decision Categories
+
+### Documentation & Governance (ADR-0001, ADR-0002, ADR-0003)
+
+These define how documentation is organized and read:
+- Canonical folder structure
+- Agent context minimum
+- Spec lifecycle locations
+
+**See also:** docs/game_rules/documentation_rules.md, docs/game_rules/agent_execution_rules.md
+
+### Validation & Acceptance (ADR-0004, ADR-0009)
+
+These define validation phases and acceptance criteria:
+- Phase 0/1/2/3 gates
+- NOT_RUN explicit tracking
+- MVP acceptance requires Phase 2-3
+
+**See also:** docs/game_rules/validation_acceptance_rules.md
+
+### Gameplay Architecture (ADR-0005, ADR-0007)
+
+These define core gameplay and communication patterns:
+- Cave stable run invariant
+- Event bus for gameplay communication
+
+**See also:** docs/game_rules/cave_rules.md, docs/game_rules/event_rules.md
+
+### Data & Persistence (ADR-0006)
+
+Defines save/load and data contracts:
+- Simple DTOs, no Unity refs, versionable
+
+**See also:** docs/game_rules/save_rules.md
+
+### Tooling & Safety (ADR-0008)
+
+Defines how tools and code editing work:
+- No manual YAML edits (use scripts/tools)
+
+**See also:** .claude/rules/unity-yaml-editing-policy.md
+
+---
+
+## Related Game Rules
+
+All game-specific rules are in `docs/game_rules/`. Key documents:
+
+- [documentation_rules.md](../game_rules/documentation_rules.md) — File organization, canonical sources
+- [agent_execution_rules.md](../game_rules/agent_execution_rules.md) — What agents read/don't read
+- [validation_acceptance_rules.md](../game_rules/validation_acceptance_rules.md) — Phase definitions, acceptance criteria
+- [cave_rules.md](../game_rules/cave_rules.md) — Cave stable run, snapshots, ranges
+- [event_rules.md](../game_rules/event_rules.md) — Event bus, communication patterns
+- [save_rules.md](../game_rules/save_rules.md) — DTO contracts, versioning, migration
+- [combat_rules.md](../game_rules/combat_rules.md) — Enemy roles, AI, status effects
+- [inventory_equipment_rules.md](../game_rules/inventory_equipment_rules.md) — Slots, capacity, durability
+- [skill_tree_rules.md](../game_rules/skill_tree_rules.md) — Points, slots, respec
+- [ui_modal_rules.md](../game_rules/ui_modal_rules.md) — Modal stack, input blocking
+- [death_anya_corpse_rules.md](../game_rules/death_anya_corpse_rules.md) — Death flow, recovery
+
+---
+
+## Decisions Deprecated/Superseded
+
+(None yet. Old amendments migrated to ADRs and game_rules.)
+
+---
+
+## How to Use This Log
+
+### For Agents
+
+- Spec cites `required_adrs: [ADR-0005]` → Read ADR-0005 only, not others
+- Spec cites `required_game_rules: [cave_rules.md, event_rules.md]` → Read only those game rule docs
+- Spec is self-contained → Don't read ADRs/game rules unless cited
+
+### For Humans
+
+- Looking for why a decision was made? → Find the ADR
+- Looking for current rules/behavior? → Find the game_rules doc
+- Looking for historical amendments? → Amendments are archived after migration; ADR explains what changed
+
+### For Architecture Review
+
+- New spec contradicts ADR? → Stop, report, reconcile
+- New code contradicts game rule? → Stop, report, reconcile
+- New document needs ADR? → Create ADR, cite in DECISION_LOG, update related game_rules
+
+---
+
+*Last Updated: 2026-06-01 (SPEC_DOCS_38)*  
+*Source of Truth: docs/decisions/ (ADRs) and docs/game_rules/ (rules)*
