@@ -1,6 +1,6 @@
 ---
 required_adrs: []
-required_game_rules: [ui_rules.md, event_bus_rules.md]
+required_game_rules: [ui_modal_rules.md, event_rules.md]
 ---
 
 # SPEC - UI/UX full gameplay, inventory, hotbar e menus

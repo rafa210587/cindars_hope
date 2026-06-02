@@ -266,6 +266,15 @@ if ($badGameRules) {
 # Check 5: Active specs (a_implementar) have required_adrs and required_game_rules fields with proper format
 $activeSpecFiles = Get-ChildItem "docs/specs/a_implementar" -Filter "spec_*.md" -File -ErrorAction SilentlyContinue
 $specFieldErrors = 0
+$specRefErrors = 0
+
+# Get list of valid ADRs and game rules for reference validation
+$validAdrFiles = Get-ChildItem "docs/decisions" -Filter "ADR-*.md" -File -ErrorAction SilentlyContinue
+$validAdrIds = $validAdrFiles | ForEach-Object { if ($_.BaseName -match '(ADR-\d{4})') { $matches[1] } }
+$validGameRuleFiles = Get-ChildItem "docs/game_rules" -Filter "*.md" -File -ErrorAction SilentlyContinue |
+    Where-Object { $_.Name -ne "GAME_RULES_INDEX.md" -and $_.Name -ne "README.md" }
+$validGameRuleNames = $validGameRuleFiles | ForEach-Object { $_.BaseName }
+
 foreach ($spec in $activeSpecFiles) {
     $content = Get-Content $spec.FullName -Raw -ErrorAction SilentlyContinue
     if ($content -notmatch 'required_adrs:\s*\[') {
@@ -276,9 +285,32 @@ foreach ($spec in $activeSpecFiles) {
         Fail "Active spec missing required_game_rules field or improper format: $($spec.FullName)"
         $specFieldErrors++
     }
+
+    # Validate that referenced ADRs exist (extract ADR-NNNN pattern and check against valid IDs)
+    if ($content -match 'required_adrs:\s*\[(.*?)\]') {
+        $adrRefs = $matches[1] -split ',' | ForEach-Object { $_.Trim() } | Where-Object { $_ }
+        foreach ($adrRef in $adrRefs) {
+            $adrId = if ($adrRef -match '(ADR-\d{4})') { $matches[1] } else { $adrRef }
+            if ($validAdrIds -notcontains $adrId) {
+                Fail "Active spec references non-existent ADR: $($spec.FullName) references $adrRef"
+                $specRefErrors++
+            }
+        }
+    }
+
+    # Validate that referenced game rules exist (normalize names by removing .md)
+    if ($content -match 'required_game_rules:\s*\[(.*?)\]') {
+        $gameRuleRefs = $matches[1] -split ',' | ForEach-Object { $_.Trim() -replace '\.md$', '' } | Where-Object { $_ }
+        foreach ($gameRuleRef in $gameRuleRefs) {
+            if ($validGameRuleNames -notcontains $gameRuleRef) {
+                Fail "Active spec references non-existent game rule: $($spec.FullName) references $gameRuleRef"
+                $specRefErrors++
+            }
+        }
+    }
 }
-if ($specFieldErrors -eq 0) {
-    Ok "All active specs (a_implementar) have required_adrs and required_game_rules fields."
+if ($specFieldErrors -eq 0 -and $specRefErrors -eq 0) {
+    Ok "All active specs (a_implementar) have required_adrs and required_game_rules fields with valid references."
 }
 
 # Check 6: Validation reports have validated_adrs and validated_game_rules fields (if they exist)

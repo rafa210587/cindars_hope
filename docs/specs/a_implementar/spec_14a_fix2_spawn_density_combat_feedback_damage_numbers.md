@@ -1,5 +1,5 @@
 ---
-required_adrs: [ADR-0005-cave-stable-run-and-replay, ADR-0008-combat-resolution-damage-formula]
+required_adrs: [ADR-0005-cave-stable-run-and-replay]
 required_game_rules: [cave_rules.md, combat_rules.md]
 ---
 

@@ -1,6 +1,6 @@
 ---
 required_adrs: [ADR-0005-cave-stable-run-and-replay]
-required_game_rules: [cave_rules.md, enemy_rules.md]
+required_game_rules: [cave_rules.md, combat_rules.md]
 ---
 
 # SPEC 14A - Cave Enemy SpawnPlan, Materialization and Run Stability
