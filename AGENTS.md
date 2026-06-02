@@ -113,7 +113,6 @@ Usar alternativas:
 Antes de qualquer alteracao em Cave procedural/stable run, ler:
 
 - `docs/amendments/FASE9F_CAVE_STABLE_RUN_AND_REPLAY_AMENDMENT_v1.0.md`
-- `docs/roadmap/FASE9F_CAVE_STABLE_RUN_ROADMAP_PR170_192.md`
 - `docs/refinements/implementados/ref_pr170_192_cave_stable_run_pre_implementation_audit.md`
 
 Regra central:

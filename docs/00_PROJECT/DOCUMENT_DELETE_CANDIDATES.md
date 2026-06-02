@@ -77,6 +77,25 @@ A document may be deleted ONLY if:
 
 ---
 
+## Batch 1C — Deleted in SPEC_DOCS_32 Phase 1 Investigations ✓
+
+**Criteria:** Legacy Codex orchestration, corrupted/contradictory governance, historical design deltas.
+
+**Status:** DELETED on 2026-06-01
+
+| Path | Status | Notes |
+|------|--------|-------|
+| docs/operations/CODEX_SPEC_EXECUTION_HARNESS.md | ✓ DELETED | Old Codex harness; references deleted agent_prompts/ |
+| docs/operations/CODEX_ORCHESTRATION_PROMPT.md | ✓ DELETED | Old Codex prompt; references deleted agent_prompts/ |
+| docs/operations/SPECKIT_DRIFT_CONTROL_v1.0.md | ✓ DELETED | Mojibake corruption; rules already in .claude/rules/ |
+| docs/operations/AGENT_EXECUTION_PROTOCOL.md | ✓ DELETED | Mojibake corruption; contradicts context-reading-policy.md |
+| docs/design/GDD_v2.7_FASE9C_DELTA.md | ✓ DELETED | Historical delta (base v2.6 deleted in SPEC_DOCS_31); not referenced by specs |
+| docs/roadmap/FASE9F_CAVE_STABLE_RUN_ROADMAP_PR170_192.md | ✓ DELETED | Historical roadmap; authoritative source is amendment + rule in .claude/rules/ |
+
+**Total:** 6 files successfully deleted in SPEC_DOCS_32 Phase 1 (2026-06-01).
+
+---
+
 ## Batch 2 — Defer Until After Phase 2-3 Closeout
 
 **Criteria:** Content covered by SPEC_18-28 closeout, but source SPECS not yet promoted to implementados/.
