@@ -27,13 +27,13 @@ If an ADR conflicts with a game rule:
 |---|---|---|---|---|---|
 | [ADR-0001](../decisions/ADR-0001-canonical-documentation-structure.md) | Canonical Documentation Structure | Documentation | accepted | docs/decisions/ADR-0001-* | SPEC_DOCS_35-37 |
 | [ADR-0002](../decisions/ADR-0002-agent-context-minimum.md) | Agent Context Minimum | Governance | accepted | .claude/rules/context-reading-policy.md | CLAUDE.md, AGENTS.md |
-| [ADR-0003](../decisions/ADR-0003-spec-lifecycle.md) | Spec Lifecycle | Governance | accepted | docs/game_rules/documentation_rules.md | SPEC_EXECUTION_ORDER.md, CURRENT_STATE.md |
-| [ADR-0004](../decisions/ADR-0004-validation-evidence-phase-gates.md) | Validation Evidence and Phase Gates | Validation | accepted | docs/game_rules/validation_acceptance_rules.md | LAST_VALIDATION_STATUS.md, .claude/rules/* |
-| [ADR-0005](../decisions/ADR-0005-cave-stable-run-and-replay.md) | Cave Stable Run and Replay | Gameplay | accepted | docs/game_rules/cave_rules.md | FASE9F Amendment, SPEC_24 |
-| [ADR-0006](../decisions/ADR-0006-save-data-contracts-simple-dtos.md) | Save Data Contracts Simple DTOs | Architecture | accepted | docs/game_rules/save_rules.md | .claude/rules/save-dto-simple-types-only.md |
-| [ADR-0007](../decisions/ADR-0007-event-bus-gameplay-communication.md) | Event Bus Gameplay Communication | Architecture | accepted | docs/game_rules/event_rules.md | .claude/rules/event-bus-only-gameplay-communication.md |
-| [ADR-0008](../decisions/ADR-0008-unity-yaml-editing-policy.md) | Unity Scene/Asset YAML Editing Policy | Tooling | accepted | .claude/rules/unity-yaml-editing-policy.md | .claude/rules/unity-yaml-editing-policy.md |
-| [ADR-0009](../decisions/ADR-0009-mvp-acceptance-phase-2-3.md) | MVP Acceptance Requires Phase 2-3 | Validation | accepted | docs/game_rules/validation_acceptance_rules.md | LAST_VALIDATION_STATUS.md, .claude/rules/no-premature-acceptance-claims.md |
+| [ADR-0003](../decisions/ADR-0003-spec-lifecycle.md) | Spec Lifecycle | Governance | accepted | docs/decisions/ADR-0003-* | SPEC_EXECUTION_ORDER.md, CURRENT_STATE.md |
+| [ADR-0004](../decisions/ADR-0004-validation-evidence-phase-gates.md) | Validation Evidence and Phase Gates | Validation | accepted | docs/decisions/ADR-0004-* | LAST_VALIDATION_STATUS.md, .claude/rules/* |
+| [ADR-0005](../decisions/ADR-0005-cave-stable-run-and-replay.md) | Cave Stable Run and Replay | Gameplay | accepted | docs/decisions/ADR-0005-* | FASE9F Amendment, SPEC_24 |
+| [ADR-0006](../decisions/ADR-0006-save-data-contracts-simple-dtos.md) | Save Data Contracts Simple DTOs | Architecture | accepted | docs/decisions/ADR-0006-* | .claude/rules/save-dto-simple-types-only.md |
+| [ADR-0007](../decisions/ADR-0007-event-bus-gameplay-communication.md) | Event Bus Gameplay Communication | Architecture | accepted | docs/decisions/ADR-0007-* | .claude/rules/event-bus-only-gameplay-communication.md |
+| [ADR-0008](../decisions/ADR-0008-unity-yaml-editing-policy.md) | Unity Scene/Asset YAML Editing Policy | Tooling | accepted | docs/decisions/ADR-0008-* | .claude/rules/unity-yaml-editing-policy.md |
+| [ADR-0009](../decisions/ADR-0009-mvp-acceptance-phase-2-3.md) | MVP Acceptance Requires Phase 2-3 | Validation | accepted | docs/decisions/ADR-0009-* | .claude/rules/no-premature-acceptance-claims.md |
 
 ---
 
