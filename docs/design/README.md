@@ -38,7 +38,7 @@ docs/design/SPEC_SOURCE_MAP.md
 docs/design/SPECIFICATION_PROCESS.md
 ```
 
-O `SPEC_SOURCE_MAP.md` define quais documentos de design devem ser lidos para cada tipo de spec.
+O `SPEC_SOURCE_MAP.md` define quais documentos de design devem ser lidos antes de criar/refinar cada spec.
 
 O `SPECIFICATION_PROCESS.md` define como transformar design direction em spec implementável.
 
@@ -108,6 +108,8 @@ docs/design/
       CAVE_MONSTER_VISUAL_SPRITE_DIRECTION.md
     player/
       PLAYER_CORE_SYSTEMS_DIRECTION.md
+      PLAYER_SKILL_TREES_DIRECTION.md
+      PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md
     combat_magic_progression/
       COMBAT_MAGIC_PROGRESSION_DESIGN_DIRECTION_v1.0.md
     companions/
@@ -226,6 +228,18 @@ Documento ativo consolidado dos sistemas centrais do personagem:
 docs/design/gameplay/player/PLAYER_CORE_SYSTEMS_DIRECTION.md
 ```
 
+Direção detalhada das skill trees do personagem:
+
+```text
+docs/design/gameplay/player/PLAYER_SKILL_TREES_DIRECTION.md
+```
+
+Direção dos atributos derivados do personagem:
+
+```text
+docs/design/gameplay/player/PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md
+```
+
 ## Leitura mínima antes de specs
 
 Toda spec de gameplay/lore deve começar lendo:
@@ -267,4 +281,6 @@ Specs de personagem devem ler também:
 
 ```text
 docs/design/gameplay/player/PLAYER_CORE_SYSTEMS_DIRECTION.md
+docs/design/gameplay/player/PLAYER_SKILL_TREES_DIRECTION.md
+docs/design/gameplay/player/PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md
 ```
