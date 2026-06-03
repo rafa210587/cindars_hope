@@ -9,7 +9,9 @@
 
 ---
 
-## 0. Decisão canônica: Breath/Fôlego removido
+## 0. Decisões canônicas atuais
+
+### 0.1 Breath/Fôlego removido
 
 `Breath` / `Fôlego` foi removido como atributo, recurso, barra e custo.
 
@@ -27,40 +29,49 @@ campo BR em tabela nova
 recurso salvo no save/load
 ```
 
-Motivo:
+### 0.2 Constituição não é atributo defensivo universal
+
+Constituição estava forte demais porque acumulava:
 
 ```text
-Breath estava sobreposto com Stamina, Constituição e Cansaço.
-Ele criava uma segunda stamina sem função clara.
-O sistema fica mais legível removendo Breath e redistribuindo suas funções.
+HP
+Stamina
+Stamina Regen
+Defense
+Block Stability
+Posture Resistance
+resistência física/status
+tolerância a cansaço
 ```
 
-Substituições:
+Nova direção:
 
 ```text
-Stamina
-  recurso físico imediato gasto em ações.
+Constituição continua importante, mas não deve dominar defesa, stamina e sobrevivência sozinha.
+HP cresce pouco por Constituição.
+Stamina cresce de forma distribuída entre Constituição, Força e Destreza.
+Defense vem principalmente de Armor/equipamento, não de Constituição.
+Block Stability vem de Melee + escudo + Constituição moderada.
+Fatigue Resistance vem de Survival + Constituição moderada.
+```
 
-Cansaço
-  desgaste acumulado de longo prazo.
+### 0.3 Stamina deve continuar exigindo organização
 
-Constituição
-  HP, Stamina, estabilidade física, resistência a dano/status físico, tolerância a cansaço.
+Stamina não deve escalar de forma que:
 
-Destreza
-  dodge, dash, movement, attack speed, reação, crítico condicional.
+```text
+level 1 = 4 ações antes de zerar
+level 50 = 20-30 ataques antes de zerar
+```
 
-Vontade
-  MP, MP Regen lenta, resistência mental/espiritual, corrupção/Nyx/Void.
+Direção correta:
 
-Survival/Sobrevivente
-  redução de fome/cansaço, eficiência em runs, resistência ambiental, melhoria de Dash/Dodge.
-
-Melee/Guerreiro
-  Block, estabilidade, postura, stagger, defesa ativa.
-
-Traits de monstros
-  movimento, perseguição, recuperação, pressão e comportamento.
+```text
+Stamina Max cresce devagar.
+Custos de ações escalam com tier de arma, peso, ferramenta e tipo de ação.
+Level alto dá mais margem e conforto, mas não permite spam infinito.
+Stamina Regen em combate é baixa.
+Fome e Cansaço reduzem Stamina Regen e eficiência.
 ```
 
 ---
@@ -68,8 +79,6 @@ Traits de monstros
 # PARTE A — Modelo geral de cálculo
 
 ## 1. Fórmula em camadas
-
-Todo atributo derivado deve seguir uma estrutura parecida:
 
 ```text
 DerivedStat = BaseValue
@@ -91,256 +100,210 @@ Regras:
 
 ```text
 Flat bonuses entram antes dos multiplicadores.
-Percent bonuses devem ter cap ou softcap quando puderem quebrar o jogo.
+Percent bonuses precisam de cap/softcap quando puderem quebrar o jogo.
 StatusPenalty deve ser claro e legível.
-ContextMultiplier só deve existir quando houver condição explícita, como critical window, alvo marcado ou vulnerabilidade elemental.
+ContextMultiplier só deve existir quando houver condição explícita.
 ```
 
-## 2. Caps e softcaps
-
-Tipos de limite:
-
-```text
-Hard Cap
-  limite absoluto.
-
-Soft Cap
-  depois de certo valor, cada ponto adicional rende menos.
-
-Context Cap
-  limite diferente por contexto.
-```
-
-Stats que precisam de caps/softcaps:
-
-```text
-Crit Chance
-Crit Damage
-Attack Speed
-Cast Speed
-Movement Speed
-Dash Cooldown Reduction
-Dodge Invulnerability Window
-HP Regen
-MP Regen
-Block Power
-Block Stability
-Resource Yield Bonus
-Gold Bonus
-Vendor Price Modifier
-```
-
-Fórmula de softcap sugerida:
+## 2. Softcap sugerido
 
 ```text
 EffectiveValue = SoftCap + (RawValue - SoftCap) * DiminishingFactor
 ```
 
----
-
-# PARTE B — Atributos derivados canônicos
-
-## 3. Recursos principais
+Usar em:
 
 ```text
-HP Max
-MP Max
-Stamina Max
+Crit Chance
+Crit Damage
+Attack Speed
+Cast Speed
+Movement Speed
+Dash Cooldown Reduction
+Dodge Invulnerability Window
 HP Regen
 MP Regen
 Stamina Regen
+Block Power
+Block Stability
+Resource Yield Bonus
+Gold Bonus
+Vendor Price Modifier
 ```
 
-Não existe:
+---
+
+# PARTE B — Atributos centrais e responsabilidades
+
+## 3. Força
+
+Representa potência física e esforço bruto.
+
+Afeta principalmente:
 
 ```text
-Breath Max
-Breath Recovery
-Fôlego Max
-BR
+dano físico
+armas pesadas
+stagger
+posture damage
+knockback
+ferramentas pesadas
+quebra de troncos/rochas/obstáculos
+Stamina Max em menor grau
+custo relativo de ações pesadas em menor grau
 ```
 
-## 4. Ofensivos físicos
+Não afeta diretamente:
 
 ```text
-Base Attack
-Attack Damage
-Melee Damage
-Ranged Damage
-Tool Attack Damage
-Attack Speed
-Charge Speed
-Crit Chance
-Crit Damage
-Stagger Power
-Posture Damage
-Armor Penetration
-Knockback Power
+yield de recurso
+loot
+gold
+HP máximo
+HP Regen
 ```
 
-## 5. Ofensivos mágicos
+## 4. Constituição
+
+Representa tolerância física e estrutura corporal.
+
+Afeta principalmente:
 
 ```text
-Magic Power
-Elemental Power
-Fire Power
-Ice Power
-Lightning Power
-Water/Nature Power
-Arcane Power
-Spiritual Power
-Corruption Power futuro/controlado
-Healing Power
-Shield/Barrier Power
-Cast Speed
-MP Cost Reduction
-Magic Crit Chance
-Magic Crit Damage
-Status Application Power
+HP Max de forma moderada
+Stamina Max de forma moderada
+Status Resistance física
+Posture Resistance
+Block Stability de forma moderada
+Fatigue Resistance de forma moderada
 ```
 
-## 6. Defensivos
+Não deve dominar:
 
 ```text
 Defense
-Armor
-Physical Resistance
-Elemental Resistance
-Fire Resistance
-Ice Resistance
-Lightning Resistance
-Water/Nature Resistance
-Arcane Resistance
-Shadow/Nyx Resistance
-Blackstone/Corruption Resistance
-Status Resistance
-Poison Resistance
-Bleed Resistance
-Burn Resistance
-Chill Resistance
-Fear Resistance
-Confusion Resistance
-Stun Resistance
-Posture Resistance
-Knockback Resistance
+Stamina Regen
 Block Power
-Block Stability
-Block Recovery
+HP Regen
 ```
 
-## 7. Movimento e controle
+Regra:
 
 ```text
+Constituição é segurança e tolerância, não multiplicador universal de sobrevivência.
+```
+
+## 5. Destreza
+
+Representa coordenação, reação e eficiência de movimento.
+
+Afeta principalmente:
+
+```text
+Dodge
+Dash
 Movement Speed
-Dash Distance
-Dash Cooldown Reduction
-Dash Cost Reduction
-Dodge Invulnerability Window
-Dodge Recovery
-Dodge Cost Reduction
-Collision Recovery
-Turn/Acceleration Feel
+Attack Speed
+Recovery
+Crit Chance condicional
+Stamina Max em menor grau
+redução de custo/recovery de ações leves
 ```
 
-## 8. Produção, coleta e economia
+## 6. Inteligência
+
+Afeta:
 
 ```text
-Resource Yield Bonus
-Gathering Efficiency
-Tool Stamina Cost Reduction
-Tool Action Speed
-Mining Efficiency
-Woodcutting Efficiency
-Farming Efficiency
-Watering Efficiency
-Fishing Efficiency
-Crafting Efficiency
-Construction Cost Reduction
-Craft Quality Bonus
-Cooking Quality Bonus
-Potion/Consumable Potency
-Loot Bonus
-Gold Bonus
-Treasure Quality Bonus
+Magic Power técnico
+crafting
+máquinas/tecnologia bromeciana
+leitura de monstros/traps/recursos
+uso de itens mágicos técnicos
 ```
 
-## 9. Condição, social e companions
+## 7. Vontade
+
+Afeta:
 
 ```text
-Hunger Resistance
-Fatigue Resistance
-Sleep Recovery Bonus
-Environmental Endurance
+MP Max
+MP Regen lenta
+Spiritual Power
+resistência mental/espiritual
+corrupção/Nyx/Void
+Fonte de Anya
+```
+
+## 8. Carisma
+
+Afeta:
+
+```text
 Social Influence
-Vendor Price Modifier
-Relationship Gain Modifier
-Companion Command futuro
-Companion Bond Effect futuro
-Pet Bond Effect futuro
-Pet Combat Support futuro
+Vendor Price Modifier futuro
+Relationship Gain
+Companion/Pet bond futuro
+reputação/eventos sociais
 ```
 
 ---
 
 # PARTE C — Recursos principais
 
-## 10. HP Max
+## 9. HP Max do jogador
 
-Representa vida máxima.
+HP representa vida física.
 
-Influenciado por:
-
-```text
-Constituição principalmente
-Level em menor grau
-equipamentos
-buffs de comida
-skills defensivas
-arquétipos
-Fonte de Anya/eventos especiais
-```
-
-Fórmula direcional:
+Nova fórmula direcional do jogador:
 
 ```text
 HPMax = BaseHP
-      + (Level * HPPerLevel)
-      + (Constituição * HPPerCon)
+      + (Level * 2)
+      + (Constituição * 5)
       + EquipmentHP
       + SkillHP
       + BuffHP
 ```
 
-Regras:
+Constantes recomendadas para teste:
 
 ```text
-HP Max não representa regeneração.
-Constituição aumenta vida e tolerância, não cura automática.
+BaseHP = 110
+HPPerLevel = 2
+HPPerCon = 5
 ```
 
-HUD:
+Leitura:
 
 ```text
-Barra principal sempre visível.
+Level aumenta HP, mas devagar.
+Constituição importa, mas não transforma o personagem em elite só por atributo.
+Equipamentos, comida, skills e estilo defensivo completam a sobrevivência.
 ```
 
-## 11. MP Max
-
-Representa reserva mágica.
-
-Influenciado por:
+Exemplo level 30, CON 8, equipamento +20 HP:
 
 ```text
-Vontade principalmente
-Inteligência secundária
-Level em menor grau
-equipamentos mágicos
-Magic/Arcano
-Fruto de Mana
-Fonte de Anya
+HPMax = 110 + 30*2 + 8*5 + 20
+HPMax = 230
 ```
 
-Fórmula direcional:
+Exemplo level 30, CON 15, equipamento +20 HP:
+
+```text
+HPMax = 110 + 30*2 + 15*5 + 20
+HPMax = 265
+```
+
+Resultado esperado:
+
+```text
+Mesmo focando Constituição, o jogador não alcança HP de elite tank apenas por atributo.
+Build defensiva precisa também de armor, block, skills, comida, companions/pets e execução.
+```
+
+## 10. MP Max do jogador
 
 ```text
 MPMax = BaseMP
@@ -352,208 +315,252 @@ MPMax = BaseMP
       + BuffMP
 ```
 
-HUD:
+Constantes de teste:
 
 ```text
-Aparece quando magia/item mágico for desbloqueado ou equipado.
+BaseMP = 40
+MPPerLevel = 1
+MPPerWill = 6
+MPPerInt = 2
 ```
 
-## 12. Stamina Max
-
-Representa energia física imediata para ações.
-
-Influenciado por:
+Regra:
 
 ```text
-Constituição principalmente
-Força em menor grau para esforço físico pesado
-Level em menor grau
-Survival/Sobrevivente
-Crafting/Produção para rotinas produtivas
-equipamentos
-comida/buffs
+Ter MP não torna o personagem mago.
+Magic/Arcano, equipamentos e active skills definem uso real de magia.
 ```
 
-Fórmula direcional:
+## 11. Stamina Max do jogador
+
+Stamina representa o recurso físico imediato.
+
+Nova fórmula direcional:
 
 ```text
 StaminaMax = BaseStamina
-           + (Level * StaminaPerLevel)
-           + (Constituição * StaminaPerCon)
-           + (Força * StaminaPerStrSmall)
+           + (Level * 0.6)
+           + (Constituição * 2.0)
+           + (Força * 1.5)
+           + (Destreza * 1.0)
            + EquipmentStamina
            + SkillStamina
            + BuffStamina
 ```
 
-Gasta em:
+Constantes recomendadas:
 
 ```text
-ataques físicos
-ataques carregados
-Dash
-Dodge
-Block
-corrida
-ferramentas
-mineração
-corte de madeira
-plantio/rega/colheita
-pesca
+BaseStamina = 80
+StaminaPerLevel = 0.6
+StaminaPerCon = 2.0
+StaminaPerStr = 1.5
+StaminaPerDex = 1.0
 ```
 
-HUD:
+Leitura:
 
 ```text
-Barra secundária sempre visível.
+Constituição não carrega Stamina sozinha.
+Força ajuda ações pesadas.
+Destreza ajuda economia de movimento e ações leves.
+Level aumenta margem, mas devagar.
+Equipamentos e skills dão conforto, não spam infinito.
 ```
 
-## 13. HP Regen
-
-Representa regeneração de vida.
-
-Influenciado por:
+Exemplo level 30, CON 8, FOR 9, DES 6, equipamento +10:
 
 ```text
-Regeneração Natural
-Descanso Curto
-itens amplificadores
-comida/poções
-Fonte de Anya
-Magic em cura ativa
-capstones específicos
+StaminaMax = 80 + 30*0.6 + 8*2.0 + 9*1.5 + 6*1.0 + 10
+StaminaMax = 143.5 ≈ 144
 ```
 
-Não influenciado diretamente por:
+Exemplo level 50, CON 12, FOR 14, DES 10, equipamento +15:
 
 ```text
-Constituição sozinha.
+StaminaMax = 80 + 50*0.6 + 12*2.0 + 14*1.5 + 10*1.0 + 15
+StaminaMax = 180
 ```
 
-Fórmula direcional:
+Resultado esperado:
 
 ```text
-HPRegenPerSecond = BaseHPRegenFromSkill
-                 * (1 + ItemRegenAmplifier)
-                 * (1 + BuffRegenAmplifier)
-                 * ContextMultiplier
+Level 50 não deve fazer 20-30 ataques seguidos sem gestão.
+O personagem tem mais margem que no início, mas ainda precisa alternar ataque, reposicionamento, block, comida e timing.
 ```
 
-Regras:
+## 12. Custos de Stamina devem escalar
+
+Stamina Max só funciona se os custos também forem calibrados.
+
+Tabela direcional:
+
+| Ação | Early | Mid | Late/Endgame | Observação |
+|---|---:|---:|---:|---|
+| Light melee | 10-12 | 13-16 | 16-20 | armas leves custam menos |
+| Heavy melee | 20-24 | 26-34 | 34-44 | armas pesadas custam mais |
+| Bow shot | 9-12 | 12-16 | 15-20 | charged shot custa mais |
+| Magic staff hit físico | 8-10 | 10-14 | 12-16 | magia usa MP à parte |
+| Dash | 18-22 | 20-26 | 24-32 | reduzido por Survival/Destreza |
+| Dodge | 12-15 | 14-18 | 16-22 | reduzido por Survival/Destreza |
+| Block hold | 4-8/s | 6-10/s | 8-14/s | depende de escudo/skill |
+| Block impact | 8-18 | 14-28 | 22-42 | depende do golpe inimigo |
+| Pickaxe/Axe | 8-14 | 12-22 | 18-32 | reduzido por ferramenta/Força/Crafting |
+
+Regra:
 
 ```text
-BaseHPRegen sem skill = 0 ou quase 0.
-HP Regen passivo deve ser lento e geralmente fora de combate.
-Tomar dano pausa HP Regen por X segundos.
-HP Regen forte exige item, Fonte, magia, comida ou condição.
+Stamina de level alto aumenta, mas arma/ferramenta de tier alto também custa mais.
+Upgrades devem melhorar eficiência, mas não eliminar custo.
 ```
 
-## 14. MP Regen
+## 13. Stamina Regen
 
-Representa regeneração natural de MP.
-
-Influenciado por:
+Nova fórmula direcional:
 
 ```text
-Vontade principalmente
-Fluxo Lento
-Magic/Arcano
-equipamentos
-comida/poções
-Fonte de Anya
+StaminaRegenOutOfCombat = BaseRegen
+                         + (Constituição * 0.15)
+                         + (Destreza * 0.20)
+                         + SurvivalBonus
+                         + EquipmentBonus
+                         + FoodBuff
+                         - ArmorPenalty
+
+StaminaRegenInCombat = StaminaRegenOutOfCombat * CombatMultiplier
 ```
 
-Fórmula direcional:
+Constantes recomendadas:
 
 ```text
-MPRegenPerSecond = BaseMPRegen
-                 + (Vontade * MPRegenPerWill)
-                 + SkillMPRegen
-                 + EquipmentMPRegen
-                 + BuffMPRegen
-```
-
-Regras:
-
-```text
-MP Regen natural é lenta.
-Vontade melhora a regeneração, mas não a torna rápida sozinha.
-Regeneração rápida depende de efeito explícito.
-```
-
-## 15. Stamina Regen
-
-Representa recuperação de stamina ao longo do tempo.
-
-Influenciado por:
-
-```text
-Constituição
-fome
-cansaço
-comida
-Survival/Sobrevivente
-equipamentos
-status negativos
-```
-
-Fórmula direcional:
-
-```text
-StaminaRegen = BaseStaminaRegen
-             * HungerMultiplier
-             * FatigueMultiplier
-             * CombatMultiplier
-             * (1 + SkillBonus + EquipmentBonus + BuffBonus)
+BaseRegen = 5
+CombatMultiplier = 0.35 a 0.50
 ```
 
 Regras:
 
 ```text
+Stamina Regen em combate deve ser baixa.
 Fome baixa reduz regen.
 Cansaço alto reduz regen.
-Stamina Regen em combate deve ser menor que fora de combate.
-Stamina não deve recuperar rápido durante ações pesadas contínuas.
+Armadura pesada reduz regen ou aumenta custo.
+Survival e comida ajudam, mas com cap.
+```
+
+Exemplo level 30, CON 8, DES 6, Survival +1.5, armor -1.2:
+
+```text
+OutOfCombat = 5 + 8*0.15 + 6*0.20 + 1.5 - 1.2
+OutOfCombat = 7.7/s
+InCombat = 2.7 a 3.9/s
+```
+
+Resultado esperado:
+
+```text
+O jogador recupera bem entre ações e fora de combate.
+Durante combate, ainda precisa escolher quando atacar, defender, esquivar ou recuar.
 ```
 
 ---
 
-# PARTE D — Ofensivos físicos
+# PARTE D — Defesa
 
-## 16. Base Attack
+## 14. Defense e Armor
 
-Representa potência ofensiva física antes de arma e skill.
+Defense não deve crescer muito por Constituição.
+
+Nova fórmula direcional:
+
+```text
+Defense = BaseDefense
+        + Armor
+        + (Constituição * 0.75)
+        + SkillDefense
+        + BuffDefense
+```
+
+Regra:
+
+```text
+Armor é a principal fonte de mitigação flat.
+Constituição dá estrutura, mas não substitui equipamento.
+```
+
+## 15. Physical Resistance
+
+```text
+PhysicalDamageTaken = IncomingPhysicalDamage
+                    * (1 - PhysicalResistanceCapped)
+                    - FlatDefenseMitigation
+```
+
+Regras:
+
+```text
+PhysicalResistance vem mais de equipamento, buffs e skills do que de Constituição pura.
+Constituição pode ajudar status físico e posture, mas pouco em resistência percentual direta.
+```
+
+## 16. Block
+
+```text
+BlockedDamage = IncomingDamage * (1 - BlockPower)
+
+BlockResourceDrain = IncomingImpactPower
+                   * (1 - BlockStability)
+                   * ShieldOrWeaponMultiplier
+```
 
 Influenciado por:
 
 ```text
-Força principalmente
-Destreza secundária para armas leves/ranged
-Level em menor grau
+Melee/Guerreiro
+Block rank
+Guarda Firme
+escudo/arma
+material do equipamento
+Constituição moderada
+Força em menor grau contra impacto pesado
+capstone Kanthor/Kaand
 ```
 
-Fórmula direcional:
+Regra:
+
+```text
+Block drena Stamina.
+Sem Stamina, Block quebra ou perde eficiência.
+Não aplicar Defense/Armor completo depois de Block; usar mitigação flat parcial.
+```
+
+## 17. Posture Resistance
+
+```text
+PostureDamageTaken = IncomingPostureDamage * (1 - PostureResistance)
+```
+
+Influenciado por:
+
+```text
+Constituição moderada
+Força em menor grau
+equipamento pesado
+Melee/Guerreiro
+Block ativo
+```
+
+---
+
+# PARTE E — Ofensivos físicos
+
+## 18. Base Attack e Attack Damage
 
 ```text
 BaseAttack = BaseAttackValue
            + (Força * BaseAttackPerStr)
            + (Destreza * BaseAttackPerDexSmall)
            + (Level * BaseAttackPerLevel)
-```
 
-Exposição:
-
-```text
-Pode ser interno. No menu, exibir Attack Damage final é mais útil.
-```
-
-## 17. Attack Damage
-
-Representa dano físico final após arma, material, skill, buff, resistência inimiga e contexto.
-
-Fórmula direcional:
-
-```text
 AttackDamage = (BaseAttack + WeaponDamage + EquipmentFlatDamage)
              * WeaponScaling
              * (1 + SkillDamageBonus)
@@ -562,136 +569,16 @@ AttackDamage = (BaseAttack + WeaponDamage + EquipmentFlatDamage)
              * EnemyResistanceMultiplier
 ```
 
-Regras:
+Direção:
 
 ```text
-Força não aumenta yield de recurso.
-Força aumenta dano físico e facilidade contra obstáculos físicos.
-Attack Damage não substitui Stagger/Posture.
+Força domina dano físico bruto.
+Destreza ajuda armas leves, velocidade e crítico condicional.
+Level ajuda pouco.
+Arma/material/skill devem importar mais que atributo isolado.
 ```
 
-## 18. Melee Damage
-
-Subtipo de Attack Damage para armas corpo a corpo.
-
-Influenciado por:
-
-```text
-Attack Damage
-Força
-Destreza para armas leves
-Melee/Guerreiro
-material da arma
-capstone Kanthor/Kaand
-```
-
-## 19. Ranged Damage
-
-Subtipo de Attack Damage para arcos/projéteis.
-
-Influenciado por:
-
-```text
-Attack Damage
-Destreza
-Inteligência em leitura/marcação
-Ranged/Caçador
-munição/material
-alvo marcado
-```
-
-## 20. Tool Attack Damage
-
-Dano quando uma ferramenta é usada ofensivamente.
-
-Regras:
-
-```text
-Ferramentas podem causar dano, mas não devem superar armas dedicadas de mesmo tier.
-```
-
-## 21. Attack Speed
-
-Representa velocidade de execução/recovery de ataques físicos.
-
-Influenciado por:
-
-```text
-Destreza
-tipo de arma
-peso/material da arma
-Melee/Guerreiro
-Ranged/Caçador
-cansaço
-status negativos
-```
-
-Fórmula direcional:
-
-```text
-AttackInterval = BaseWeaponInterval
-               * (1 - AttackSpeedBonusCapped)
-               * FatiguePenaltyMultiplier
-               * WeaponWeightMultiplier
-```
-
-## 22. Crit Chance
-
-Representa chance de dano crítico.
-
-Influenciado por:
-
-```text
-Destreza
-Ranged/Caçador
-Melee/Guerreiro
-estado do inimigo
-critical window
-marcação
-buffs/equipamento
-```
-
-Fórmula direcional:
-
-```text
-CritChance = BaseCritChance
-           + DexCritBonus
-           + WeaponCritBonus
-           + SkillConditionalCritBonus
-           + BuffCritBonus
-           + ContextCritBonus
-```
-
-Caps:
-
-```text
-Base/permanente: softcap ~35%.
-Com condição: pode chegar a ~60%.
-Critical window pode garantir crítico automático apenas em casos especiais bem telegrafados.
-```
-
-## 23. Crit Damage
-
-Representa multiplicador de dano crítico.
-
-```text
-CriticalDamage = NormalDamage * CritMultiplier
-CritMultiplier = BaseCritMultiplier + SkillCritDamage + EquipmentCritDamage + ContextCritDamage
-```
-
-Direção inicial:
-
-```text
-BaseCritMultiplier: 1.5x.
-Builds especializadas podem chegar a 2.0x-2.5x em condição.
-Acima disso apenas com capstone, item raro ou janela especial.
-```
-
-## 24. Stagger Power / Posture Damage
-
-Stagger Power representa capacidade de abalar o inimigo.
-
-Posture Damage representa dano aplicado à barra/estado de postura.
+## 19. Stagger e Posture Damage
 
 ```text
 StaggerPower = BaseStagger
@@ -707,288 +594,9 @@ PostureDamage = StaggerPower
 
 ---
 
-# PARTE E — Ofensivos mágicos
+# PARTE F — Movimento
 
-## 25. Magic Power
-
-Representa potência mágica geral.
-
-Influenciado por:
-
-```text
-Inteligência
-Vontade
-Magic/Arcano
-equipamentos mágicos
-Fruto de Mana
-Fonte de Anya
-capstone Anya/Senya
-```
-
-```text
-MagicPower = BaseMagicPower
-           + (Inteligência * MagicPerInt)
-           + (Vontade * MagicPerWill)
-           + EquipmentMagic
-           + SkillMagic
-           + BuffMagic
-```
-
-## 26. Elemental / Arcane / Spiritual Power
-
-```text
-ElementalPower[type] = MagicPower
-                     * (1 + ElementAffinityBonus[type])
-                     * (1 + EquipmentElementBonus[type])
-                     * TargetElementMultiplier[type]
-```
-
-Subtipos:
-
-```text
-Fire Power
-Ice Power
-Lightning Power
-Water/Nature Power
-Arcane Power
-Spiritual Power
-```
-
-Corruption Power:
-
-```text
-futuro/controlado
-não é magia inicial livre
-depende de lore, risco, Nyx/Void/Blackstone e decisões futuras
-```
-
-## 27. Healing Power
-
-Representa potência de cura.
-
-```text
-HealingAmount = BaseHeal
-              + (HealingPower * HealScaling)
-              + SkillHealBonus
-              + EquipmentHealBonus
-```
-
-Regras:
-
-```text
-Cura mágica deve ser limitada, cara e com cooldown.
-Healing Power não deve invalidar comida, poções e Survival.
-```
-
-## 28. Shield / Barrier Power
-
-Representa força de barreiras.
-
-```text
-BarrierHP = BaseBarrier
-          + (MagicPower * BarrierScaling)
-          + ShieldSkillBonus
-          + EquipmentBarrierBonus
-```
-
-## 29. Cast Speed / MP Cost Reduction
-
-```text
-CastTime = BaseCastTime * (1 - CastSpeedBonusCapped)
-FinalMPCost = BaseMPCost * (1 - MPCostReductionCapped)
-```
-
-Regras:
-
-```text
-Cast Speed não permite spam sem custo de MP.
-MP Cost Reduction permanente precisa de cap.
-```
-
-## 30. Magic Crit e Status Application
-
-```text
-MagicCritChance = BaseMagicCrit + SkillMagicCrit + ContextMagicCrit
-MagicCritDamage = BaseMagicCritMultiplier + SkillMagicCritDamage
-```
-
-Direção:
-
-```text
-Magic Crit deve ser mais raro que crítico físico comum.
-Semente de Senya pode abrir crit mágico ofensivo.
-Magia de cura não deve critar por padrão; Anya aumenta efeito de suporte/cura.
-```
-
-```text
-StatusApplyChance = BaseStatusChance
-                  + ElementPowerBonus
-                  + SkillStatusBonus
-                  - TargetStatusResistance
-```
-
----
-
-# PARTE F — Defensivos
-
-## 31. Defense / Armor
-
-```text
-Defense = BaseDefense
-        + (Constituição * DefensePerCon)
-        + Armor
-        + SkillDefense
-        + BuffDefense
-
-Armor = ArmorBaseFromGear
-      + MaterialArmorBonus
-      + QualityArmorBonus
-      + CraftingBonus
-```
-
-Diferença:
-
-```text
-Defense = defesa total.
-Armor = contribuição material do equipamento.
-```
-
-## 32. Physical / Elemental Resistance
-
-```text
-PhysicalDamageTaken = IncomingPhysicalDamage
-                    * (1 - PhysicalResistanceCapped)
-                    - FlatDefenseMitigation
-
-ElementalDamageTaken[type] = IncomingElementalDamage[type]
-                           * (1 - ElementalResistance[type])
-```
-
-Tipos:
-
-```text
-Fire
-Ice
-Lightning
-Water/Nature
-Arcane
-Shadow/Nyx
-Blackstone/Corruption
-Heat
-Cold
-```
-
-## 33. Status Resistance
-
-```text
-FinalStatusChance = IncomingStatusChance - StatusResistance[type]
-FinalStatusDuration = BaseDuration * (1 - StatusDurationReduction[type])
-```
-
-Tipos:
-
-```text
-Poison
-Bleed
-Burn
-Chill
-Fear
-ConfusionLite
-Stun
-Root
-Slow
-Corruption
-```
-
-## 34. Posture / Knockback Resistance
-
-```text
-PostureDamageTaken = IncomingPostureDamage * (1 - PostureResistance)
-Knockback = IncomingKnockback * (1 - KnockbackResistance)
-```
-
-Influenciado por:
-
-```text
-Constituição
-Força em menor grau
-equipamento pesado
-Melee/Guerreiro
-Block ativo
-```
-
-## 35. Block Power / Stability / Recovery
-
-Input:
-
-```text
-Left Shift.
-```
-
-```text
-BlockedDamage = IncomingDamage * (1 - BlockPower)
-
-BlockResourceDrain = IncomingImpactPower
-                   * (1 - BlockStability)
-                   * ShieldOrWeaponMultiplier
-
-BlockRecoveryTime = BaseBlockRecovery * (1 - BlockRecoveryReduction)
-```
-
-Influenciado por:
-
-```text
-Block rank
-Guarda Firme
-Constituição
-Força em menor grau
-escudo/arma
-material do equipamento
-capstone Kanthor/Kaand
-```
-
-Regras:
-
-```text
-Block forte reduz dano, mas não é gratuito.
-Block drena Stamina.
-Sem Stamina, Block quebra ou perde eficiência.
-Perfect Block pode anular muito mais por timing, não por segurar botão.
-```
-
----
-
-# PARTE G — Movimento
-
-## 36. Movement Speed
-
-```text
-MovementSpeed = BaseMovementSpeed
-              * (1 + MovementBonusCapped)
-              * FatigueMultiplier
-              * HungerMultiplier
-              * EquipmentWeightMultiplier
-              * StatusMultiplier
-```
-
-Influenciado por:
-
-```text
-Destreza em menor grau
-equipamento/peso
-cansaço
-fome
-status negativos
-buffs
-```
-
-## 37. Dash
-
-Input:
-
-```text
-Space + direção.
-```
+## 20. Dash
 
 ```text
 DashDistance = BaseDashDistance
@@ -1016,13 +624,7 @@ Custo:
 Stamina.
 ```
 
-## 38. Dodge
-
-Input:
-
-```text
-double tap direcional.
-```
+## 21. Dodge
 
 ```text
 DodgeIFrames = BaseDodgeIFrames + ReflexoDeEsquivaBonus - StatusPenalty
@@ -1047,9 +649,62 @@ Stamina.
 
 ---
 
+# PARTE G — Ofensivos mágicos
+
+## 22. Magic Power
+
+```text
+MagicPower = BaseMagicPower
+           + (Inteligência * MagicPerInt)
+           + (Vontade * MagicPerWill)
+           + EquipmentMagic
+           + SkillMagic
+           + BuffMagic
+```
+
+## 23. MP Regen
+
+```text
+MPRegenPerSecond = BaseMPRegen
+                 + (Vontade * MPRegenPerWill)
+                 + SkillMPRegen
+                 + EquipmentMPRegen
+                 + BuffMPRegen
+```
+
+Regra:
+
+```text
+MP Regen natural é lenta.
+Regeneração rápida depende de efeito explícito.
+```
+
+## 24. Healing / Barrier
+
+```text
+HealingAmount = BaseHeal
+              + (HealingPower * HealScaling)
+              + SkillHealBonus
+              + EquipmentHealBonus
+
+BarrierHP = BaseBarrier
+          + (MagicPower * BarrierScaling)
+          + ShieldSkillBonus
+          + EquipmentBarrierBonus
+```
+
+Regra:
+
+```text
+Cura mágica deve ser limitada, cara e com cooldown.
+Barreira não deve bloquear tudo.
+```
+
+---
+
 # PARTE H — Produção, coleta e economia
 
-## 39. Resource Yield Bonus
+## 25. Resource Yield e Gathering Efficiency
 
 ```text
 ExtraYieldChance = BaseExtraYieldChance
@@ -1057,17 +712,7 @@ ExtraYieldChance = BaseExtraYieldChance
                  + ToolYieldBonus
                  + BuffYieldBonus
                  + CompanionYieldBonus
-```
 
-Não influenciado diretamente por:
-
-```text
-Força sozinha.
-```
-
-## 40. Gathering Efficiency
-
-```text
 HitsRequired = BaseHitsRequired
              * ToolTierMultiplier
              * StrengthObstacleMultiplier
@@ -1077,62 +722,32 @@ HitsRequired = BaseHitsRequired
 Diferença:
 
 ```text
-Gathering Efficiency = coletar com menos esforço.
-Resource Yield Bonus = ganhar mais recurso.
+Força reduz esforço/golpes.
+Yield vem de skill, ferramenta, buff, companion ou sistema específico.
 ```
 
-## 41. Tool Stamina Cost Reduction
+## 26. Tool Stamina Cost
 
 ```text
 ToolStaminaCost = BaseToolCost
-                * (1 - ToolCostReduction)
+                * ToolTierCostMultiplier
                 * FatigueMultiplier
                 * HungerMultiplier
+                * (1 - ToolCostReduction)
 ```
 
-## 42. Crafting / Construction / Quality
+Regra:
 
 ```text
-FinalCraftCost = BaseCraftCost * (1 - ConstructionCostReductionCapped)
-CraftQuality = BaseQuality + CraftingSkillBonus + MaterialQuality + StationBonus
-FinalConstructionCost = BaseConstructionCost * (1 - ConstructionReductionCapped)
-```
-
-Influenciado por:
-
-```text
-Inteligência
-Crafting/Produção
-Oficina Organizada
-material
-estação de trabalho
-Forja Viva de Thoren
-```
-
-## 43. Loot / Gold / Treasure
-
-```text
-LootQualityRoll = BaseLootRoll
-                + SkillLootBonus
-                + BuffLootBonus
-                + ContextBonus
-
-GoldReward = BaseGoldReward * (1 + GoldBonusCapped)
-```
-
-Regras:
-
-```text
-Loot Bonus e Gold Bonus devem ser moderados.
-Não criam loot inexistente em boss/quest único.
-Não podem quebrar economia.
+Ferramenta de tier alto pode ter custo maior ou igual, mas melhor eficiência.
+Upgrade não deve sempre significar custo menor absoluto.
 ```
 
 ---
 
 # PARTE I — Fome, cansaço e ambiente
 
-## 44. Hunger Resistance
+## 27. Hunger Resistance
 
 ```text
 HungerDrain = BaseHungerDrain
@@ -1140,17 +755,7 @@ HungerDrain = BaseHungerDrain
             * (1 - HungerResistanceCapped)
 ```
 
-Influenciado por:
-
-```text
-Estômago Forte
-comida
-Constituição em menor grau
-Survival
-status negativos
-```
-
-## 45. Fatigue Resistance
+## 28. Fatigue Resistance
 
 ```text
 FatigueGain = BaseFatigueGain
@@ -1164,108 +769,78 @@ FatigueGain = BaseFatigueGain
 Influenciado por:
 
 ```text
-Ritmo de Jornada
-Survival
-Constituição
-Stamina gasta
-fome
+Survival principalmente
+Constituição moderada
+comida
 sono
 buffs
+equipamentos
 ```
 
-Regras:
+Regra:
 
 ```text
 Fatigue Resistance reduz pressão, mas não elimina necessidade de dormir.
 ```
 
-## 46. Sleep Recovery / Environmental Endurance
+---
+
+# PARTE J — Monstros
+
+## 29. Monstros não usam a fórmula do jogador
+
+Monstros têm HP autorado por:
 
 ```text
-SleepRecovery = BaseSleepRecovery * BedQualityMultiplier * HomeMultiplier * BuffMultiplier
-EnvironmentalPenalty = BaseEnvironmentPenalty * (1 - EnvironmentalEndurance)
+faixa de nível
+família
+papel no encontro
+size class
+role multiplier
+CON do monstro
+variante
+boss/elite/common
 ```
 
-Influenciado por:
+Fórmula conceitual para specs futuras:
 
 ```text
-qualidade da cama
-casa/fazenda
-Survival
-Resistência Ambiental
-Constituição
-Vontade
-equipamentos
-comida
+EnemyHP = FamilyBaseHP
+        + LevelBandHP
+        + (CON * FamilyConHPFactor)
+        * RoleHPMultiplier
+        * VariantMultiplier
+```
+
+`FamilyConHPFactor` varia por família:
+
+| Família/Papel | CON -> HP sugerido |
+|---|---:|
+| Swarm/Tiny | 1-3 por CON |
+| Small fast | 2-4 por CON |
+| Humanoid comum | 4-6 por CON |
+| Beast comum | 5-8 por CON |
+| Caster frágil | 2-5 por CON |
+| Elite duelist | 6-10 por CON |
+| Tank/Construct | 10-16 por CON |
+| Huge/mini-boss | 14-24 por CON |
+| Boss | autorado/custom |
+
+Regra:
+
+```text
+A CON do monstro não espelha a CON do jogador.
+Em monstro, CON ajuda HP conforme família e papel.
+Em jogador, CON tem multiplicador baixo para evitar build defensiva universal.
 ```
 
 ---
 
-# PARTE J — Social, pets e companions
+# PARTE K — HUD e save/load
 
-## 47. Social Influence
+## 30. HUD gameplay
 
-```text
-SocialInfluence = BaseSocial
-                + (Carisma * SocialPerCha)
-                + ReputationBonus
-                + GiftContextBonus
-                + QuestBonus
-                + ItemBonus
-```
-
-Uso:
-
-```text
-amizade
-preços
-contratos
-eventos
-flerte/casamento
-```
-
-## 48. Vendor Price Modifier
-
-```text
-BuyPrice = BaseBuyPrice * (1 - DiscountCapped)
-SellPrice = BaseSellPrice * (1 + SellBonusCapped)
-```
-
-## 49. Relationship Gain Modifier
-
-Influenciado por:
-
-```text
-Carisma
-presentes corretos
-quests pessoais
-eventos
-festivais
-reputação
-```
-
-## 50. Companion/Pet futuros
-
-```text
-Companion Command futuro
-Companion Bond Effect futuro
-Pet Bond Effect futuro
-Pet Combat Support futuro
-```
-
-Direção:
-
-```text
-Não expor como número cedo se companions/pets ainda estiverem simples.
-```
-
----
-
-# PARTE K — HUD e menus
-
-## 51. HUD gameplay
-
-Mostrar sempre ou quase sempre:
+Mostrar sempre/quase sempre:
 
 ```text
 HP
@@ -1294,57 +869,7 @@ Fôlego
 BR
 ```
 
-Não mostrar sempre:
-
-```text
-Crit Chance
-Attack Speed
-Loot Bonus
-Gold Bonus
-Crafting Efficiency
-Resource Yield Bonus
-Social Influence
-```
-
-## 52. Menu de atributos
-
-Grupos sugeridos:
-
-```text
-Recursos: HP, MP, Stamina, Regen
-Ofensivo físico: Attack Damage, Crit, Attack Speed, Stagger
-Ofensivo mágico: Magic Power, Elemental, Healing, Cast, MP Cost
-Defensivo: Defense, Armor, Resistances, Block
-Movimento: Movement, Dash, Dodge
-Produção: Yield, Gathering, Crafting
-Exploração: Loot, Gold, Hunger/Fatigue, Environment
-Social: Social Influence, Companions, Pets
-```
-
-## 53. Tooltips e transparência
-
-Cada stat derivado importante deve explicar sua origem:
-
-```text
-Attack Damage
-  Base: X
-  Força: +Y
-  Arma: +Z
-  Skill: +A%
-  Buff: +B%
-
-Block Power
-  Base Block: X%
-  Skill Block: +Y%
-  Escudo: +Z%
-  Penalidade atual: -A%
-```
-
----
-
-# PARTE L — Save/load
-
-## 54. Persistência
+## 31. Save/load
 
 Salvar:
 
@@ -1356,7 +881,6 @@ equipamentos
 buffs persistentes
 status persistentes
 arquétipos ativos
-flags de Fonte/Anya/capstones exclusivos
 HP atual
 MP atual
 Stamina atual
@@ -1378,60 +902,37 @@ produção
 loot/social derivados
 ```
 
-Não salvar:
-
-```text
-Breath atual
-Breath Max
-BR
-```
-
 ---
 
-# PARTE M — Decisões fechadas
+# PARTE L — Decisões fechadas
 
 ```text
 Breath/Fôlego removido como atributo/recurso.
-O cálculo deve ser em camadas: base + atributos + level + equipamento + skill + buff + contexto + caps.
-Força melhora dano físico, stagger e esforço contra obstáculos, não yield direto.
-Constituição aumenta HP, Stamina, estabilidade física, resistência e tolerância a cansaço.
-Constituição não gera HP Regen sozinha.
-Vontade influencia MP e MP Regen lenta.
-Destreza influencia timing, ataque leve, dodge, dash, movement e crit condicional.
-Inteligência influencia magia técnica, crafting e leitura de sistemas.
-Carisma influencia relação social, companions e economia social.
-Dash custa Stamina.
-Dodge custa Stamina.
-Block drena Stamina.
-Resource Yield Bonus é derivado de skills/ferramentas/buffs, não Força pura.
-Gathering Efficiency é diferente de Resource Yield Bonus.
-HP Regen é derivado de skill/efeito explícito, não Constituição pura.
-MP Regen é lenta e ligada principalmente a Vontade/Magic.
-Crit, Attack Speed, Movement Speed, HP Regen, MP Regen, Block Reduction e Yield precisam de caps/softcaps.
-Nem todo derivado aparece na HUD; muitos aparecem só em menu/tooltip.
-A maioria dos derivados deve ser recalculada no load, não salva como valor fixo.
+Constituição não é mais atributo defensivo universal.
+Player HPPerLevel recomendado = 2.
+Player HPPerCon recomendado = 5.
+Player Stamina usa Level + Constituição + Força + Destreza.
+Player StaminaPerLevel recomendado = 0.6.
+Player StaminaPerCon recomendado = 2.0.
+Player StaminaPerStr recomendado = 1.5.
+Player StaminaPerDex recomendado = 1.0.
+Defense vem principalmente de Armor/equipamento.
+DefensePerCon recomendado = 0.75.
+Stamina costs escalam por tier/tipo/peso da ação.
+Stamina Regen em combate deve ser baixa.
+Monstros não usam fórmula de HP do jogador.
+Monstros têm HP autorado por faixa, família, papel e multiplicador próprio de CON.
 ```
 
 ---
 
-# PARTE N — Pendências
+# PARTE M — Pendências
 
 ```text
-Remover Breath/Fôlego dos demais documentos canônicos.
-Remover BR das tabelas de monstros.
-Substituir BR por MovementProfile, RecoveryProfile, PressureProfile ou traits.
-Renomear/redefinir Respiração Controlada em Survival.
-Definir fórmulas finais numéricas.
-Definir nomes finais em PT-BR/EN para cada stat.
-Definir quais stats aparecem no menu inicial.
-Definir quais stats são ocultos e só afetam internamente.
-Definir se Defense e Armor serão separados ou fundidos na implementação.
-Definir se Base Attack precisa existir exposto ou apenas como cálculo interno.
-Definir valores base por level.
-Definir impacto exato de cada atributo central por ponto.
-Definir impacto de equipamentos e materiais.
-Definir limites máximos/caps finais de Crit Chance, Attack Speed, Cast Speed, Movement Speed e HP/MP Regen.
-Definir se magia terá crítico por padrão ou apenas com Senya/itens.
-Definir se armor penetration entra no primeiro ciclo de combate ou fica futuro.
-Definir como buffs temporários aparecem no menu/HUD.
-Definir contratos de save/load para buffs e stats permanentes.
+Atualizar teste de mesa com HP 230 e Stamina 144 no exemplo level 30.
+Validar custos de ataques por tier de arma.
+Validar Stamina Regen em Unity.
+Definir Armor/Resistance por família de monstro.
+Definir EnemyActionDamage por ação inimiga.
+Definir EnemyHP formula apenas para geração/validação de dados, não para runtime obrigatório.
+Definir caps finais de Block Power, Block Stability e Stamina Regen.
