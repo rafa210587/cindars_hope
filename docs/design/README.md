@@ -46,7 +46,7 @@ docs/design/
   README.md
   gameplay/
     farm/
-      FARM_DESIGN_DIRECTION_v1.2.md
+      FARM_DESIGN_DIRECTION_v1.3.md
     city/
       CITY_DESIGN_DIRECTION_v1.0.md
     cave/
@@ -58,6 +58,7 @@ docs/design/
     ui_ux/
       UI_UX_DESIGN_DIRECTION_v1.0.md
   lore/
+    VAALARA_GAME_CANON_DIRECTION_v1.0.md
     WORLD_LORE_DIRECTION_v1.0.md
     CINDAR_ANYA_FONTE_ELYNDOR_DIRECTION_v1.0.md
 ```
@@ -80,10 +81,16 @@ Registro em docs/specs/implementados/ e docs/refinements/implementados/
 
 ## Estado atual
 
+Canon jogável ativo de Vaalara:
+
+```text
+docs/design/lore/VAALARA_GAME_CANON_DIRECTION_v1.0.md
+```
+
 Documento ativo consolidado de direção ampla da fazenda:
 
 ```text
-docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.2.md
+docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.3.md
 ```
 
 As versões anteriores ficam como histórico incremental:
@@ -91,6 +98,9 @@ As versões anteriores ficam como histórico incremental:
 ```text
 docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.1.md
 docs/design/gameplay/farm/FARM_DESIGN_DECISIONS_v1.2.md
+docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.2.md
 ```
 
-Usar `FARM_DESIGN_DIRECTION_v1.2.md` antes de quebrar novas specs de layout, crops, fertilizantes, animais, automação, pets, cansaço, Fruto Mana, pedreira final e economia agrícola.
+Usar `VAALARA_GAME_CANON_DIRECTION_v1.0.md` antes de qualquer novo design direction de cidade, caverna, magia/progressão, companions ou lore.
+
+Usar `FARM_DESIGN_DIRECTION_v1.3.md` antes de quebrar novas specs de layout, crops, fertilizantes, animais, automação, pets, cansaço, Fonte de Anya, Água Viva, Raiz Dormente de Mana, pedreira final e economia agrícola.
