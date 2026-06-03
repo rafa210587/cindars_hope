@@ -3,51 +3,40 @@
 > **Status:** documento complementar de validação de mesa  
 > **Local:** `docs/design/gameplay/player/PLAYER_DERIVED_ATTRIBUTES_TABLETOP_EXAMPLE.md`  
 > **Complementa:** `docs/design/gameplay/player/PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md`  
-> **Função:** demonstrar, com personagem exemplo, como atributos centrais viram atributos derivados, como esses valores se comportam contra monstros reais da caverna, e registrar a remoção de **Breath/Fôlego** como atributo.  
+> **Função:** demonstrar, com personagem exemplo, como atributos centrais viram atributos derivados, como esses valores se comportam contra monstros reais da caverna, e validar a nova régua sem Breath/Fôlego, com Constituição menos dominante e Stamina mais controlada.  
 > **Não é spec implementável.** Os números abaixo são exemplos de mesa para validar escala relativa, não valores finais.
 
 ---
 
 ## 0. Veredito desta revisão
 
-A primeira simulação deixou uma confusão real:
+A revisão anterior removeu Breath/Fôlego, mas ainda deixou Constituição forte demais.
+
+Problema identificado:
 
 ```text
-Stamina e Breath ficaram parcialmente sobrepostos.
-Breath foi tratado como segunda barra de recurso gasta por Dash/Dodge/Block.
-Isso não deve ser a direção final.
+Constituição estava influenciando HP, Stamina, Stamina Regen, Defense, Block Stability, Posture Resistance, status físico e cansaço.
+Isso fazia Constituição virar atributo defensivo universal.
 ```
 
-Decisão corrigida:
+Correção desta versão:
 
 ```text
-Breath/Fôlego foi removido como atributo/recurso.
-Não existe como barra.
-Não existe como custo.
-Não entra em HUD.
-Não entra como stat base do jogador.
-Não entra como stat base de monstro.
-```
-
-Substituições:
-
-```text
-Stamina = recurso físico imediato.
-Cansaço = desgaste acumulado.
-Constituição = tolerância física, HP, resistência, estabilidade.
-Destreza = reação, dodge, movimento, timing.
-Vontade = resistência mental/espiritual, MP e pressão mágica.
-Survival = eficiência em runs, fome, cansaço, ambiente, dodge/dash melhorados.
-Traits de monstro = padrão de movimento, perseguição, recuperação e pressão.
+HP do jogador cresce pouco por level e por Constituição.
+Stamina do jogador cresce devagar.
+Stamina é distribuída entre Constituição, Força e Destreza.
+Stamina Regen em combate é baixa.
+Custos de ataque, ferramenta, block, dash e dodge precisam escalar por tier/peso/tipo.
+Monstros não usam fórmula do jogador; HP de monstro é autorado por família, papel e faixa.
 ```
 
 ---
 
-# PARTE A — Modelo final sem Breath
+# PARTE A — Modelo sem Breath e com Constituição redistribuída
 
 ## 1. Stamina
 
-Stamina representa energia física disponível para executar ações.
+Stamina representa energia física imediata.
 
 Gasta em:
 
@@ -65,13 +54,16 @@ plantio/rega/colheita quando aplicável
 pesca
 ```
 
-É uma barra de recurso.
+Regra:
 
-Aparece na HUD.
+```text
+Stamina deve sempre exigir organização.
+Level alto não deve permitir spam infinito.
+```
 
 ## 2. Cansaço
 
-Cansaço é o sistema de atrito longo.
+Cansaço representa desgaste acumulado.
 
 Aumenta com:
 
@@ -88,8 +80,8 @@ status negativos
 É reduzido/mitigado por:
 
 ```text
-Constituição
-Survival/Sobrevivente
+Survival/Sobrevivente principalmente
+Constituição em menor grau
 comida
 sono
 descanso
@@ -97,22 +89,21 @@ equipamentos específicos
 buffs específicos
 ```
 
-## 3. Movimento, esforço e recuperação sem Breath
+## 3. Nova distribuição de papéis
 
-O que antes seria Breath agora fica distribuído:
-
-| Função antiga de Breath | Nova fonte |
-|---|---|
-| sustentar corrida/dash | Stamina + Destreza + Survival |
-| manter Block | Stamina + Constituição + Melee + escudo |
-| recuperar ritmo | Stamina Regen + Constituição + Cansaço/Fome |
-| resistir a ambiente | Survival + Constituição + Vontade + resistências |
-| perseguir como monstro | MovementProfile + traits + Stamina |
-| resistir a controle | Constituição/Vontade + StatusResistance |
+| Função | Fonte principal | Fonte secundária |
+|---|---|---|
+| HP Max | Level + Constituição baixa | equipamento, comida, skill |
+| Stamina Max | base + level baixo | Constituição, Força, Destreza, equipamento, skill |
+| Stamina Regen | base + Destreza/Constituição leves | Survival, comida, equipamento |
+| Block Stability | Melee + escudo | Constituição moderada, Força leve |
+| Posture Resistance | equipamento + Melee | Constituição moderada |
+| Dash/Dodge eficiência | Destreza + Survival | equipamento/status |
+| Cansaço | sistema próprio | mitigado por Survival + CON leve |
 
 ---
 
-# PARTE B — Personagem de teste revisado
+# PARTE B — Personagem de teste
 
 ## 4. Identidade
 
@@ -129,9 +120,9 @@ Atributos centrais:
 
 | Atributo | Valor | Papel |
 |---|---:|---|
-| Força | 9 | dano físico, stagger, mineração |
-| Constituição | 8 | HP, Stamina, resistência, estabilidade |
-| Destreza | 6 | timing, dodge, crit condicional |
+| Força | 9 | dano físico, stagger, mineração, ações pesadas |
+| Constituição | 8 | HP moderado, Stamina moderada, estabilidade |
+| Destreza | 6 | timing, dodge, dash, crit condicional |
 | Inteligência | 4 | crafting básico, baixa magia técnica |
 | Vontade | 5 | MP, resistência mental/espiritual |
 | Carisma | 3 | social baixo |
@@ -147,7 +138,7 @@ Distribuição:
 | Árvore | Pontos | Skills relevantes |
 |---|---:|---|
 | Melee / Guerreiro | 10 | Treinamento Marcial r3, Ataque Pesado r3, Block r3, Guarda Firme r2, Corte Amplo r1 |
-| Survival / Sobrevivente | 4 | Ritmo de Jornada r1, Reflexo de Esquiva r1, Passo de Impulso r1, Respiração Controlada r1 |
+| Survival / Sobrevivente | 4 | Ritmo de Jornada r1, Reflexo de Esquiva r1, Passo de Impulso r1, Ritmo Controlado r1 |
 | Crafting / Produção | 1 | Prospector de Superfície r1 |
 | Ranged / Caçador | 0 | sem investimento |
 | Magic / Arcano | 0 | sem investimento |
@@ -164,24 +155,25 @@ Equipamento:
 
 ---
 
-# PARTE C — Constantes revisadas
+# PARTE C — Constantes de mesa
 
-## 5. Constantes de mesa
+## 5. Constantes revisadas
 
 ```text
-BaseHP = 100
-HPPerLevel = 4
-HPPerCon = 12
+BaseHP = 110
+HPPerLevel = 2
+HPPerCon = 5
 
 BaseMP = 40
 MPPerLevel = 1
 MPPerWill = 6
 MPPerInt = 2
 
-BaseStamina = 75
-StaminaPerLevel = 1.5
-StaminaPerCon = 5
-StaminaPerStrSmall = 1.5
+BaseStamina = 80
+StaminaPerLevel = 0.6
+StaminaPerCon = 2.0
+StaminaPerStr = 1.5
+StaminaPerDex = 1.0
 
 BaseAttackValue = 8
 BaseAttackPerStr = 3
@@ -192,33 +184,41 @@ BaseCritChance = 5%
 BaseCritMultiplier = 1.5x
 BaseDodgeIFrames = 0.18s
 BaseDashDistance = 2.25 tiles
-BaseDashCooldown = 1.20s
-BaseDashCost = 22 Stamina
-BaseDodgeCost = 14 Stamina
+```
+
+Custos de ação para este teste:
+
+```text
+Light melee com Espada de Aço: 14 Stamina
+Heavy melee com Espada de Aço: 30 Stamina
+Dash: 20 Stamina
+Dodge: 13 Stamina
+Block hold: 6 Stamina/s
+Block impact comum: 12-18 Stamina
+Block impact elite: 22-34 Stamina
 ```
 
 ---
 
 # PARTE D — Atributos derivados revisados
 
-## 6. Recursos principais
-
-### HP Max
+## 6. HP Max
 
 ```text
-HPMax = BaseHP + Level*4 + Constituição*12 + EquipmentHP
-HPMax = 100 + 30*4 + 8*12 + 20
-HPMax = 336
+HPMax = BaseHP + Level*2 + Constituição*5 + EquipmentHP
+HPMax = 110 + 30*2 + 8*5 + 20
+HPMax = 230
 ```
 
 Leitura:
 
 ```text
-336 HP coloca o personagem acima de monstros comuns da faixa 26-40, mas abaixo/na borda de elites.
-Isso é mais saudável que 420 HP para um level 30 sem companion/pet contabilizado.
+230 HP fica abaixo de elites da faixa 26-40 e dentro da região alta de comuns.
+O jogador não vira elite tank só por Constituição.
+Sobrevivência vem de armor, block, dodge, comida, companion/pet e execução.
 ```
 
-### MP Max
+## 7. MP Max
 
 ```text
 MPMax = BaseMP + Level*1 + Vontade*6 + Inteligência*2 + EquipmentMP
@@ -232,79 +232,86 @@ Leitura:
 MP existe, mas sem Magic/Arcano não vira poder mágico relevante.
 ```
 
-### Stamina Max
+## 8. Stamina Max
 
 ```text
-StaminaMax = BaseStamina + Level*1.5 + Constituição*5 + Força*1.5 + EquipmentStamina
-StaminaMax = 75 + 30*1.5 + 8*5 + 9*1.5 + 10
-StaminaMax = 183.5 ≈ 184
+StaminaMax = BaseStamina + Level*0.6 + Constituição*2.0 + Força*1.5 + Destreza*1.0 + EquipmentStamina
+StaminaMax = 80 + 30*0.6 + 8*2 + 9*1.5 + 6*1 + 10
+StaminaMax = 143.5 ≈ 144
 ```
 
 Leitura:
 
 ```text
-184 Stamina ainda permite combate e mineração, mas impede spam excessivo.
-É mais coerente que 291 para a faixa 26-40.
+144 Stamina permite sequência curta de ações, mas não spam.
+Com espada de aço, 5-7 ataques leves já consomem boa parte da barra.
+Heavy attacks, Dash e Block competem de verdade pelo mesmo recurso.
 ```
 
-## 7. Regeneração e custos corrigidos
-
-### Stamina Regen
+## 9. Stamina Regen
 
 ```text
-StaminaRegen fora de combate = BaseRegen + Constituição*0.55 + SurvivalBonus - ArmorPenalty
-StaminaRegen fora de combate = 8 + 8*0.55 + 1.5 - 1.2
-StaminaRegen fora de combate ≈ 12.7/s
+StaminaRegen fora de combate = BaseRegen + Constituição*0.15 + Destreza*0.20 + SurvivalBonus - ArmorPenalty
+StaminaRegen fora de combate = 5 + 8*0.15 + 6*0.20 + 1.5 - 1.2
+StaminaRegen fora de combate ≈ 7.7/s
 
-StaminaRegen em combate = 55% a 70% do valor fora de combate
-StaminaRegen em combate ≈ 7.0 a 8.9/s
+StaminaRegen em combate = 35% a 50% do valor fora de combate
+StaminaRegen em combate ≈ 2.7 a 3.9/s
 
-Com fome baixa/cansaço alto ≈ 4.0 a 6.0/s
+Com fome baixa/cansaço alto ≈ 1.5 a 2.8/s
 ```
 
-### Dash
+Leitura:
 
 ```text
-DashCost = BaseDashCost * (1 - PassoDeImpulsoBonus - DexSmallBonus)
-DashCost = 22 * (1 - 0.05 - 0.02)
-DashCost ≈ 20 Stamina
-
-DashCooldown = 1.20s * (1 - 0.05 - 0.02)
-DashCooldown ≈ 1.12s
-```
-
-### Dodge
-
-```text
-DodgeCost = BaseDodgeCost * (1 - ReflexoBonusSmall - DexSmallBonus)
-DodgeCost = 14 * (1 - 0.03 - 0.02)
-DodgeCost ≈ 13 Stamina
-
-DodgeIFrames = 0.18s + 0.02s por Reflexo de Esquiva r1
-DodgeIFrames = 0.20s
-```
-
-### Block
-
-```text
-Block não usa Breath.
-Block usa Left Shift.
-Block drena Stamina por tempo segurando e por impacto.
-Constituição entra em Block Stability.
-```
-
-Exemplo:
-
-```text
-BlockPower = 49% por Block r3 + 10% escudo = 59%
-BlockStability = 12% Guarda Firme r2 + 8% escudo + 8% Constituição = 28%
+Em combate, Stamina não volta rápido o suficiente para sustentar spam.
+Fora de combate, a recuperação não é punitiva demais.
 ```
 
 ---
 
-# PARTE E — Ofensivos e defensivos revisados
+# PARTE E — Movimento, defesa e ataque
 
-## 8. Ofensivos físicos
+## 10. Dash
+
+```text
+DashCost = 22 * (1 - 0.05 PassoDeImpulso - 0.02 DexSmallBonus)
+DashCost ≈ 20 Stamina
+DashCooldown ≈ 1.12s
+```
+
+## 11. Dodge
+
+```text
+DodgeCost = 14 * (1 - 0.03 ReflexoBonusSmall - 0.02 DexSmallBonus)
+DodgeCost ≈ 13 Stamina
+DodgeIFrames = 0.18s + 0.02s por Reflexo de Esquiva r1
+DodgeIFrames = 0.20s
+```
+
+## 12. Block
+
+```text
+BlockPower = 49% por Block r3 + 10% escudo = 59%
+BlockStability = 12% Guarda Firme r2 + 8% escudo + 4% Constituição moderada = 24%
+```
+
+Custos:
+
+```text
+Block hold: 6 Stamina/s
+Block impact comum: 12-18 Stamina
+Block impact elite: 22-34 Stamina
+```
+
+Leitura:
+
+```text
+Block continua forte, mas agora consome uma parcela relevante da Stamina total.
+Se o jogador segurar block o tempo todo, esgota rápido.
+```
+
+## 13. Ataque físico
 
 ```text
 BaseAttack = 8 + Força*3 + Destreza*1 + Level*0.5
@@ -327,19 +334,19 @@ CritDamage = 1.5x
 ```text
 StaggerPower = 10 base + 10 arma + Força*2 + SkillBonus 15
 StaggerPower = 53
-
 PostureDamageNormal ≈ 40
 PostureDamageCharged ≈ 80
 ```
 
-## 9. Defensivos
+## 14. Defesa
 
 ```text
 Armor = 45
-Defense = 5 + Constituição*2 + Armor
-Defense = 66
+Defense = BaseDefense + Armor + Constituição*0.75
+Defense = 5 + 45 + 8*0.75
+Defense = 56
 PhysicalResistance = 12%
-PostureResistance = 18%
+PostureResistance = 15-18%
 ```
 
 Mitigação sugerida:
@@ -348,52 +355,26 @@ Mitigação sugerida:
 DamageTaken = IncomingDamage * (1 - PhysicalResistance) - (Defense * 0.25)
 ```
 
-Em golpes bloqueados:
+Em block:
 
 ```text
 BlockedIncoming = IncomingDamage * (1 - BlockPower)
 BlockedDamageTaken = BlockedIncoming * (1 - PhysicalResistance) - (Defense * 0.10 a 0.15)
 ```
 
-Regra importante:
+Regra:
 
 ```text
 Não aplicar Defense/Armor completo depois do Block.
-Isso empilha mitigação demais.
 ```
 
 ---
 
 # PARTE F — Comparação contra monstros reais da faixa 26-40
 
-## 10. Fontes de comparação
+## 15. Monstros usados
 
 A faixa 26-40 do roster corresponde à Caverna de Gelo.
-
-Monstros usados:
-
-```text
-Roedor de Geada
-Escavador Duergar do Gelo
-Quebra-Escudo Duergar
-Sentinela Enregelado
-Osso de Vidro
-Acólito do Frio
-Saltador Cristalino
-Lamento Frio
-Horror-Gancho de Gelo
-Larva Devora-Mentes
-```
-
-Observação:
-
-```text
-O roster ainda não define dano por ação em cada ataque.
-A comparação abaixo usa HP/STA/atributos do roster e uma fórmula provisória para estimar dano.
-A spec final precisa criar EnemyActionDamage por ação.
-```
-
-## 11. Leitura da faixa 26-40 sem BR
 
 | Monstro | HP | STA | FOR | CON | DES | Papel |
 |---|---:|---:|---:|---:|---:|---|
@@ -408,42 +389,29 @@ A spec final precisa criar EnemyActionDamage por ação.
 | Horror-Gancho de Gelo | 560 | 88 | 24 | 21 | 8 | elite duelist |
 | Larva Devora-Mentes | 240 | 50 | 3 | 8 | 12 | controller aberrante |
 
-Comparação com Brann revisado:
+Comparação:
 
 ```text
-Brann HP 336
-Brann Stamina 184
+Brann HP 230
+Brann Stamina 144
 Brann AttackDamage 95
-Brann Defense 66
+Brann Defense 56
 Brann BlockPower 59%
 ```
 
 Leitura:
 
 ```text
-HP do Brann fica acima dos comuns, mas abaixo de elites tank.
-Stamina do Brann é maior que a dos monstros porque player precisa carregar exploração, ferramentas, defesa e combate.
-AttackDamage 95 mata comuns rápido, mas elites ainda exigem padrão, postura e janela.
+HP do Brann agora fica parecido com comum robusto, não com elite.
+Stamina do Brann continua maior que a dos monstros porque ele carrega exploração, defesa, ferramentas e combate.
+AttackDamage continua alto contra comuns; packs e stamina management precisam segurar o desafio.
 ```
 
 ---
 
-# PARTE G — TTK aproximado contra monstros 26-40
+# PARTE G — TTK e consumo de Stamina
 
-## 12. Dano efetivo usado
-
-Como o roster não tem Armor/Resistance por monstro individual ainda, esta comparação usa mitigação estimada por papel:
-
-```text
-comum leve: 0-10% mitigação
-comum robusto: 15-20% mitigação
-elite móvel: 10-15% mitigação
-elite tank: 25-35% mitigação
-caster: 5-10% mitigação
-construct/tank: 30-40% mitigação se o jogador usar espada comum
-```
-
-Dano médio do Brann:
+## 16. Dano efetivo estimado
 
 ```text
 hit contra leve/caster: 85-95
@@ -453,39 +421,37 @@ hit contra elite tank: 55-70
 hit contra construct/tank com espada: 45-60
 ataque carregado: +25% dano e mais PostureDamage
 crítico normal: x1.5
-critical window: depende da regra final; preferir crit automático apenas em janelas claras
+critical window: crítico automático apenas em janelas claras/especiais; janelas comuns dão bônus de crit/dano
 ```
 
-## 13. Tabela de TTK
+## 17. Hits para matar
 
-| Monstro | HP | Dano efetivo estimado | Hits normais para matar | Veredito |
-|---|---:|---:|---:|---|
-| Roedor de Geada | 155 | 85-95 | 2 | ok se vier em pack; fraco isolado |
-| Escavador Duergar | 230 | 70-80 | 3-4 | ok como comum robusto |
-| Osso de Vidro | 210 | 80-90 | 3 | ok, ameaça por ranged/mobilidade |
-| Acólito do Frio | 190 | 85-95 | 2-3 | ok se protegido por pack; fraco isolado |
-| Larva Devora-Mentes | 240 | 80-90 | 3 | ok se controle for perigoso |
-| Lamento Frio | 300 | 75-85 | 4 | ok como caster/controller |
-| Saltador Cristalino | 330 | 75-85 | 4-5 | ok; dificuldade vem da mobilidade |
-| Sentinela Enregelado | 480 | 45-60 | 8-11 | ok se for tank/guard; espada não é ideal |
-| Quebra-Escudo Duergar | 520 | 55-70 | 8-10 | ok como elite anti-block |
-| Horror-Gancho de Gelo | 560 | 55-70 | 8-11 | ok como elite duelist |
+| Monstro | HP | Dano efetivo estimado | Hits normais | Stamina em ataques leves | Veredito |
+|---|---:|---:|---:|---:|---|
+| Roedor de Geada | 155 | 85-95 | 2 | ~28 | ok em pack |
+| Escavador Duergar | 230 | 70-80 | 3-4 | ~42-56 | ok comum robusto |
+| Osso de Vidro | 210 | 80-90 | 3 | ~42 | ok |
+| Acólito do Frio | 190 | 85-95 | 2-3 | ~28-42 | frágil se isolado |
+| Larva Devora-Mentes | 240 | 80-90 | 3 | ~42 | depende do controle |
+| Lamento Frio | 300 | 75-85 | 4 | ~56 | ok caster/controller |
+| Saltador Cristalino | 330 | 75-85 | 4-5 | ~56-70 | ok elite móvel |
+| Sentinela Enregelado | 480 | 45-60 | 8-11 | ~112-154 | exige janela/arma adequada |
+| Quebra-Escudo Duergar | 520 | 55-70 | 8-10 | ~112-140 | elite anti-block adequado |
+| Horror-Gancho de Gelo | 560 | 55-70 | 8-11 | ~112-154 | elite duelist adequado |
 
 Veredito:
 
 ```text
-Com HP/Stamina revisados, o personagem fica mais coerente.
-O dano do personagem ainda está alto contra comuns, mas isso é aceitável se comuns vierem em pack.
-Elites ficam no intervalo bom: 8-11 hits normais, menos se o jogador usar charged attacks, vulnerabilidade e critical window.
+Contra comuns, o jogador consegue matar sem esgotar toda a Stamina.
+Contra elites, se usar só ataque leve, fica perto de esgotar a barra.
+Isso força charged attacks bem usados, critical windows, troca de ritmo, comida, companion/pet ou recuo.
 ```
 
 ---
 
-# PARTE H — Dano recebido aproximado
+# PARTE H — Dano recebido
 
-## 14. Fórmula provisória de dano inimigo
-
-Como o roster ainda não tem dano por ataque, usar mesa provisória:
+## 18. Fórmula provisória de dano inimigo
 
 ```text
 CommonLightDamage = 18 + SpawnLevel*0.6 + FOR*1.4
@@ -500,34 +466,33 @@ CasterDamage = 22 + SpawnLevel*0.6 + INT*1.5 ou VON*1.3
 Para level 30:
 
 ```text
-Brann Defense = 66
+Brann Defense = 56
 PhysicalResistance = 12%
-HP = 336
+HP = 230
 BlockPower = 59%
 ```
 
-## 15. Dano recebido sem block
+## 19. Dano recebido sem block
 
 | Monstro | Ataque estimado | Dano bruto | Dano final aproximado | Hits para derrubar Brann |
 |---|---|---:|---:|---:|
-| Roedor de Geada | bite comum | ~49 | ~27-32 | 10-12 |
-| Escavador Duergar | pick swing | ~57 | ~34-40 | 8-10 |
-| Osso de Vidro | lunge/shard | ~53 | ~30-36 | 9-11 |
-| Acólito do Frio | cold bolt | ~50 mágico | depende de resistência gelo | 7-10 se sem resistência |
-| Saltador Cristalino | leap | ~78 elite | ~52-60 | 6-7 |
-| Quebra-Escudo Duergar | crush | ~87 elite | ~60-70 | 5-6 |
-| Horror-Gancho de Gelo | hook impale | ~90 elite | ~63-73 | 5-6 |
+| Roedor de Geada | bite comum | ~49 | ~29 | 8 |
+| Escavador Duergar | pick swing | ~57 | ~36 | 6-7 |
+| Osso de Vidro | lunge/shard | ~53 | ~33 | 7 |
+| Acólito do Frio | cold bolt | ~50 mágico | depende de resistência gelo | 5-7 se sem resistência |
+| Saltador Cristalino | leap | ~78 elite | ~55 | 4-5 |
+| Quebra-Escudo Duergar | crush | ~87 elite | ~62 | 4 |
+| Horror-Gancho de Gelo | hook impale | ~90 elite | ~65 | 3-4 |
 
 Leitura:
 
 ```text
-Com HP 336, golpes comuns não matam rápido.
-Elites punem erro em 5-7 hits.
-Caster de gelo fica perigoso se o jogador não tiver resistência a frio.
-Isso conversa com a regra da caverna 26-40: solo difícil, companion recomendado forte, resistência a frio e gear esperado.
+Com HP 230, comuns não matam rápido, mas packs pressionam.
+Elites punem erro em 3-5 hits.
+Isso fica mais próximo de “difícil, mas possível”.
 ```
 
-## 16. Dano recebido com block
+## 20. Dano recebido com block
 
 Exemplo contra elite:
 
@@ -536,49 +501,63 @@ Incoming = 90
 BlockPower = 59%
 BlockedIncoming = 90 * 0.41 = 36.9
 PhysicalResistance = 12%
-DefenseFlat parcial = Defense * 0.12 = 7.9
-DamageTaken = 36.9 * 0.88 - 7.9 ≈ 25
+DefenseFlat parcial = Defense * 0.12 = 6.7
+DamageTaken = 36.9 * 0.88 - 6.7 ≈ 26
+```
+
+Custo de block:
+
+```text
+Block impact elite = 22-34 Stamina
+Block hold por 1s = 6 Stamina
 ```
 
 Leitura:
 
 ```text
-Block reduz elite hit de ~65 para ~25.
-Isso é forte, mas custa Stamina e pode sofrer GuardBreak.
-Contra Quebra-Escudo Duergar, parte dos ataques deve punir block segurado.
+Block reduz muito dano, mas consome 20% ou mais da Stamina total se usado contra elite.
+Se o jogador bloquear errado, atacar e dar dash em sequência, a barra cai rápido.
 ```
 
 ---
 
-# PARTE I — Simulação curta contra três monstros
+# PARTE I — Simulações curtas
 
-## 17. Brann vs Escavador Duergar do Gelo
+## 21. Brann vs Escavador Duergar do Gelo
 
 ```text
 Escavador HP 230
 Brann dano efetivo: 75
 Hits para matar: 4
-Dano recebido por hit: 35-40
+Stamina se só atacar leve: ~56
+Dano recebido por hit: 36
 ```
 
 Cenário jogando bem:
 
 ```text
-Round 1: Brann acerta normal, Duergar -75
-Round 2: Duergar usa PickSwing, Brann bloqueia, recebe ~12-16
-Round 3: Brann usa ataque carregado, Duergar -95 e perde postura
-Round 4: Brann finaliza com hit normal/crítico de janela
+Round 1: ataque normal, Duergar -75, Stamina -14
+Round 2: Duergar ataca, Brann bloqueia, recebe ~12-16, Stamina -18 a -24
+Round 3: ataque carregado, Duergar -95/posture pressure, Stamina -30
+Round 4: finaliza em abertura, Stamina -14
+```
+
+Consumo aproximado:
+
+```text
+Stamina total consumida: 76-82
+Stamina restante antes de regen: ~62-68
 ```
 
 Veredito:
 
 ```text
 Comum robusto adequado.
-Isolado não é grande ameaça.
+O jogador vence bem, mas gasta recurso relevante.
 Em pack com caster/roedor, vira pressão real.
 ```
 
-## 18. Brann vs Saltador Cristalino
+## 22. Brann vs Saltador Cristalino
 
 ```text
 Saltador HP 330
@@ -591,12 +570,11 @@ Leitura:
 
 ```text
 O Saltador não deve tankar muito.
-Ele deve ameaçar por mobilidade, burst e erro de dodge.
-Se o jogador acertar todas as janelas, vence rápido.
-Se errar dodge, recebe muito dano e perde ritmo.
+Ele ameaça por mobilidade, burst e erro de dodge.
+Se o jogador errar dodge, perde HP e Stamina rápido.
 ```
 
-## 19. Brann vs Quebra-Escudo Duergar
+## 23. Brann vs Quebra-Escudo Duergar
 
 ```text
 Quebra-Escudo HP 520
@@ -608,95 +586,88 @@ FOR 22 / CON 22 / elite tank
 Leitura:
 
 ```text
-Esse inimigo deve ser teste direto da build de Block.
-Se Brann só segura Left Shift, deve ser punido por GuardBreak.
+Esse inimigo testa Block.
+Se Brann só segura Left Shift, GuardBreak deve punir.
 Se alterna Dodge, ataque carregado e janela, vence.
-```
-
-Veredito:
-
-```text
-Adequado como elite se tiver ShieldCrush/GuardBreak bem telegrafado.
-Sem GuardBreak, o Block do jogador pode trivializar o encontro.
+Sem GuardBreak, Block ainda pode trivializar.
 ```
 
 ---
 
-# PARTE J — Conclusão de balanceamento
+# PARTE J — Comparação level 50
 
-## 20. Comparação final
-
-Com os valores antigos:
+## 24. Exemplo level 50 físico equilibrado
 
 ```text
-HP 420
-Stamina 291
-Breath 135 como barra/recurso
+Level 50
+FOR 14
+CON 12
+DES 10
+Equipamento HP +35
+Equipamento Stamina +15
 ```
 
-Problemas:
+HP:
 
 ```text
-HP alto demais para level 30 defensivo.
-Stamina alta demais para custo de Dash/Dodge/Block.
-Breath competia conceitualmente com Stamina.
+HPMax = 110 + 50*2 + 12*5 + 35
+HPMax = 305
 ```
 
-Com os valores revisados:
+Stamina:
 
 ```text
-HP 336
-Stamina 184
-Breath removido
+StaminaMax = 80 + 50*0.6 + 12*2 + 14*1.5 + 10*1 + 15
+StaminaMax = 180
 ```
 
-Resultado:
+Leitura:
 
 ```text
-HP fica próximo da borda baixa de elite, adequado para player tank level 30.
-Stamina ainda é maior que a dos monstros, mas justificável para o player.
-Stamina volta a ser o recurso físico principal.
-Cansaço vira o limitador de longo prazo.
-Constituição, Destreza e Vontade assumem o que antes estava disperso em Breath.
+Level 50 não pula para 20-30 ataques leves de graça.
+Com arma late/mid-late custando 18-22 por ataque leve, ele ainda faz algo como 8-10 ataques leves antes de zerar, sem contar dash/block/dodge.
+Isso é mais saudável.
 ```
 
-## 21. Decisões corrigidas
+---
+
+# PARTE K — Conclusão
+
+## 25. Veredito
 
 ```text
-Breath/Fôlego removido como atributo.
-Dash custa Stamina.
-Dodge custa Stamina.
-Block drena Stamina.
-Constituição melhora HP, Stamina, estabilidade, resistência física e tolerância a cansaço.
-Destreza melhora dodge, movimento, attack speed, crit condicional e reação.
-Vontade melhora MP, MP Regen lenta e resistência mental/espiritual.
-Survival melhora runs longas, custo/cooldown/recovery de Dash/Dodge, fome, cansaço e ambiente.
+A nova régua é melhor.
+Constituição deixa de ser atributo defensivo universal.
+HP do jogador fica mais próximo de comum robusto, não de elite.
+Stamina fica mais controlada.
+Elites voltam a ser perigosos em 3-5 hits sem block/dodge.
+Block continua forte, mas consome Stamina relevante.
+Stamina exige organização mesmo no level 30 e 50.
 ```
 
-## 22. Ajustes necessários em documentos futuros
+## 26. Decisões corrigidas
 
 ```text
-PLAYER_CORE_SYSTEMS_DIRECTION.md
-  remover Breath como recurso/atributo derivado.
-
-PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md
-  remover Breath Max, Breath Recovery, Dash/Dodge/Block com Breath.
-
-PLAYER_SKILL_TREES_DIRECTION.md
-  Respiração Controlada deve ser renomeada ou redefinida, porque não há Breath.
-
-CAVE_MONSTER_ROSTER_DIRECTION.md
-  remover BR dos monstros e substituir por MovementProfile, RecoveryProfile, PressureProfile ou traits.
+Player HPPerLevel = 2.
+Player HPPerCon = 5.
+Player StaminaPerLevel = 0.6.
+Player StaminaPerCon = 2.0.
+Player StaminaPerStr = 1.5.
+Player StaminaPerDex = 1.0.
+Player DefensePerCon = 0.75.
+Stamina costs escalam por tier/peso/tipo de ação.
+Stamina Regen em combate fica baixa.
+Monstros não usam fórmula de HP do jogador.
+Monstros podem usar multiplicador próprio de CON por família/papel.
 ```
 
-## 23. Pendências para a spec de combate
+## 27. Riscos restantes
 
 ```text
-Criar EnemyActionDamage por ação.
-Definir Armor/Resistance por monstro ou por família.
-Definir se CriticalWindow é sempre crítico automático ou se varia por tipo de janela.
-Definir como GuardBreak interage com Block.
-Definir Stamina Regen em combate, fora de combate, com fome e com cansaço.
-Definir como Constituição/Survival alteram FatigueGain.
-Definir que Breath não aparece na HUD.
+AttackDamage 95 ainda pode estar alto contra comuns se eles aparecerem isolados.
+Packs precisam ser densos o suficiente para gerar pressão.
+Block precisa de GuardBreak, stamina drain e ataques que não sejam resolvidos só segurando Left Shift.
+Critical window não deve ser sempre crítico automático.
+Armor flat precisa de dano mínimo para inimigos pequenos continuarem relevantes em grupo.
+Stamina Regen em combate precisa ser testada em Unity.
 ```
