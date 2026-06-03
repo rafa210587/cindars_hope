@@ -992,7 +992,7 @@ Monstros têm HP autorado por faixa, família, papel e multiplicador próprio de
 # PARTE M — Pendências
 
 ```text
-Atualizar teste de mesa com BlockImpact baseado em dano pós-armadura.
+Validar BlockImpact baseado em dano pós-armadura em Play Mode.
 Validar se 144 Stamina no level 30 ainda está adequado com Dodge/Dash a 40.
 Validar custos de ataques por tier de arma.
 Validar Stamina Regen em Unity.
