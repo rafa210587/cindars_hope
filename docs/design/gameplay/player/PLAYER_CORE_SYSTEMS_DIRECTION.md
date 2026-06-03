@@ -10,8 +10,8 @@
 > - `docs/design/gameplay/city/CITY_DESIGN_DIRECTION_v1.2.md`  
 > - `docs/design/gameplay/cave/CAVE_DESIGN_DIRECTION.md`  
 > - `docs/design/gameplay/cave/CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md`  
-> **Função:** consolidar a direção ampla do personagem jogável: criação inicial, raças, gênero, aparência por sprites, atributos, HP/MP/Stamina/Breath, fome, cansaço, level up, skills, skill trees, arquétipos inferidos, ferramentas, armas, magia, equipamentos, resistências, morte, Fonte de Anya, companions, pets, fazenda, cidade, caverna, flerte, casamento, UI e save/load.  
-> **Não é spec implementável.** Este documento descreve como o sistema deve funcionar em visão de jogo. Specs futuras devem quebrar partes disso quando entrarmos em execução.
+> **Função:** consolidar a direção ampla do personagem jogável: criação inicial, raças, gênero, aparência por sprites, atributos, HP/MP/Stamina/Breath, fome, cansaço, level up, skills, 5 skill trees, arquétipos inferidos, ferramentas, armas, magia, equipamentos, resistências, morte, Fonte de Anya, companions, pets, fazenda, cidade, caverna, flerte, casamento, UI e save/load.  
+> **Não é spec implementável.** Este documento descreve como o sistema deve funcionar em visão de jogo. Specs futuras quebram partes disso quando entrarmos em execução.
 
 ---
 
@@ -32,10 +32,11 @@ fome
 cansaço
 level up
 pontos de atributo
-skills
-skill levels 1-5
-skill trees
+skills nível 1-5
+5 skill trees
 active slots
+capstones
+respec na Fonte de Anya
 arquétipos inferidos / jobs vestíveis
 ferramentas
 armas
@@ -71,7 +72,7 @@ O jogador pode vestir/ativar um arquétipo desbloqueado para receber bônus, sem
 
 O personagem é um habitante/adventurer de Vaalara que pode combinar vida rural, exploração e crescimento pessoal.
 
-O personagem deve conseguir seguir caminhos híbridos como:
+O jogo deve permitir builds híbridas como:
 
 ```text
 fazendeiro-mago
@@ -86,7 +87,7 @@ líder de companions
 personagem ligado à Fonte de Anya
 ```
 
-O jogo deve permitir que a identidade do personagem surja das escolhas mecânicas e sociais, não de uma classe inicial fixa.
+A identidade do personagem deve surgir de escolhas mecânicas e sociais, não de uma classe inicial fixa.
 
 ## 2. Princípios de design
 
@@ -94,13 +95,13 @@ O jogo deve permitir que a identidade do personagem surja das escolhas mecânica
 Liberdade primeiro.
 Classes fixas não devem limitar o jogador.
 Raça/gênero/aparência não devem impedir acesso a conteúdo central.
-Atributos precisam ter sinergia real com skills e equipamentos.
-Skills evoluem de nível 1 a 5.
+Atributos definem aptidão bruta, não substituem skills.
+Skills e skill trees definem domínio, eficiência, rendimento, técnicas e especializações.
 Magia usa MP.
 Ações físicas usam Stamina e/ou Breath.
 Fome e cansaço afetam performance.
 Companions e pets ajudam, mas não substituem o jogador.
-Flerte e casamento devem respeitar NPCs, disponibilidade e narrativa.
+Flerte e casamento respeitam NPCs, disponibilidade e narrativa.
 A Fonte de Anya conecta morte, respec, cura, narrativa e progressão especial.
 ```
 
@@ -133,9 +134,7 @@ A customização deve ser limitada, clara e sustentável para spritesheets.
 
 ## 4. Raças jogáveis iniciais
 
-A lista inicial deve usar raças de Vaalara que façam sentido no recorte rural de Dornécia e que sejam viáveis em sprites.
-
-Raças iniciais sugeridas:
+Lista inicial sugerida:
 
 | Raça | Nome no jogo | Direção visual | Papel de gameplay |
 |---|---|---|---|
@@ -148,21 +147,20 @@ Raças iniciais sugeridas:
 | Draconato | Draconato | cabeça/escamas dracônicas, cauda opcional se suportada | Breath, resistências, presença física |
 | Goblin | Goblin | pequeno, orelhas grandes, postura esperta | Destreza, engenharia/traps, exploração |
 
-Regra:
+Regras:
 
 ```text
 Raça inicial pode dar identidade visual, pequenos bônus e pequenos traços passivos.
 Raça inicial não deve bloquear romances, profissões, magia, fazenda ou final do jogo.
+Bônus raciais devem ser menores que escolhas de build, skills, equipamentos e arquétipos.
 ```
 
 ## 5. Raças não iniciais ou futuras
 
-Algumas raças/povos devem existir no mundo, mas não precisam ser jogáveis no início.
-
 ```text
 Nymirianos
   ligados a Anya, Cindar, Água Viva e Fonte.
-  Devem ser tratados como lore profunda, não raça comum inicial.
+  Devem ser lore profunda, não raça comum inicial.
 
 Gnomorin / gnomos técnicos
   podem aparecer em ruínas, cidade, tecnologia bromeciana e NPCs.
@@ -176,34 +174,7 @@ Outras linhagens regionais de Vaalara
   podem ser adicionadas depois, se fizerem sentido no recorte de Cindar's Hope.
 ```
 
-## 6. Bônus raciais iniciais
-
-Os bônus raciais devem ser leves.
-
-Direção:
-
-```text
-Não usar bônus grandes que forcem meta.
-Preferir pequenos bônus de identidade, resistência, eficiência ou afinidade.
-Permitir que atributos, skills, equipamentos e arquétipos sejam mais importantes que raça.
-```
-
-Exemplos conceituais:
-
-```text
-Humano: pequeno bônus social/econômico ou ponto flexível futuro.
-Elfo da Noite: leve bônus em exploração noturna, Destreza ou resistência a sombra.
-Anão: leve bônus em mineração, Constituição ou resistência a stagger.
-Halfling: leve bônus de sorte, esquiva ou culinária/social.
-Tiefling: leve bônus mágico/social ou resistência a calor/medo, conforme lore final.
-Meio-Orc: leve bônus de Força/Constituição ou resistência a stagger.
-Draconato: leve bônus de Breath/resistência elemental, se definido por linhagem.
-Goblin: leve bônus em traps, engenharia, Destreza ou achados.
-```
-
-## 7. Gênero / apresentação
-
-O jogador pode escolher gênero/apresentação inicial.
+## 6. Gênero / apresentação
 
 Direção inicial:
 
@@ -218,18 +189,10 @@ Regras:
 ```text
 Gênero/apresentação não altera atributos.
 Gênero/apresentação não bloqueia romance por padrão.
-NPCs disponíveis para romance podem se relacionar com jogador homem ou mulher, conforme direção já consolidada.
 O efeito principal é visual, pronome/texto, animação base se necessário e leitura social.
 ```
 
-Pendência:
-
-```text
-Definir se o jogo terá pronomes separados da apresentação visual.
-Definir se teremos sprites diferentes por gênero para todas as raças ou apenas variações de cabelo/roupa.
-```
-
-## 8. Aparência em sprites
+## 7. Aparência em sprites
 
 Por ser um jogo em sprites, a customização deve ser controlada.
 
@@ -252,17 +215,7 @@ morfologia facial detalhada
 múltiplas camadas complexas de roupa
 ```
 
-Regra:
-
-```text
-Cada opção visual precisa ser sustentável em spritesheets de idle, walk, tool use, combat, hit, sleep/defeat e social interaction.
-```
-
-## 9. Cabelos e cores
-
-Tipos iniciais de cabelo devem ser poucos e reutilizáveis.
-
-Sugestão inicial:
+Tipos iniciais de cabelo:
 
 ```text
 curto simples
@@ -289,15 +242,13 @@ verde escuro/fantasia
 Regras:
 
 ```text
-Algumas raças podem ter restrições ou adaptações visuais.
 Draconatos podem usar crista/chifre/escama no lugar de cabelo comum.
 Tieflings precisam compatibilizar cabelo com chifres.
 Goblin/halfling/anão podem reaproveitar cabelo com escala ajustada.
+Cada opção visual precisa ser sustentável em spritesheets de idle, walk, tool use, combat, hit, sleep/defeat e social interaction.
 ```
 
-## 10. Sprite base por raça
-
-Cada raça precisa de base visual própria ou adaptação clara.
+## 8. Sprite base por raça
 
 | Raça | Base sprite | Observação |
 |---|---|---|
@@ -322,9 +273,7 @@ Raça grande não deve ser punida por sprite maior, salvo se houver compensaçã
 
 # PARTE C — Atributos principais
 
-## 11. Atributos canônicos
-
-Atributos principais:
+## 9. Atributos canônicos
 
 ```text
 Força
@@ -344,13 +293,13 @@ Stamina
 Breath / Fôlego
 Resistências
 Carga / peso futuro
-Chance de crítico / precisão futura
+Precisão / crítico futuro
 Eficiência de ferramentas
 Eficiência de magia
 Eficiência social
 ```
 
-## 12. Progressão de atributos
+## 10. Progressão de atributos
 
 Regra canônica inicial:
 
@@ -362,41 +311,76 @@ A cada level up, o jogador ganha +1 ponto para distribuir em um atributo princip
 Direção:
 
 ```text
-A progressão deve ser lenta o bastante para escolhas importarem.
-Equipamentos, alimentos, buffs, skills, raça e arquétipos inferidos podem alterar temporariamente a performance.
-Bônus raciais devem ser menores que escolhas de build de longo prazo.
+Atributo representa aptidão bruta.
+Skill representa domínio técnico.
+Equipamento representa capacidade material.
+Buff representa vantagem temporária.
 ```
 
-## 13. O que cada atributo representa
+## 11. Regra contra sobreposição atributo/skill
+
+```text
+Força não aumenta quantidade de recursos coletados.
+Constituição não gera regeneração passiva de vida por si só.
+Destreza não substitui skill de exploração/traps.
+Inteligência não substitui skill de crafting/engenharia.
+Vontade pode influenciar regeneração lenta de MP, mas magia forte depende de skill/equipamento.
+Carisma não substitui reputação, quests e relação real com NPCs.
+```
+
+Rendimento extra de recursos deve vir de:
+
+```text
+skills
+nodes de skill tree
+ferramentas melhores
+buffs de comida
+companions/pets
+arquétipos ativos
+eventos raros
+```
+
+## 12. O que cada atributo representa
 
 ### Força
 
-Representa potência física.
+Representa potência física e capacidade de aplicar força.
 
 Afeta:
 
 ```text
 dano com armas pesadas
 dano com ferramentas usadas ofensivamente
-eficiência de mineração pesada
-eficiência em cortar madeira
-capacidade de quebrar rochas/troncos mais resistentes
+facilidade para derrubar árvores resistentes
+facilidade para quebrar rochas resistentes
+redução de número de golpes necessários em alguns obstáculos
 stagger/knockback
-algumas janelas de crítico com HeavyAttack
+uso de HeavyAttack
 ```
+
+Não afeta diretamente:
+
+```text
+quantidade de madeira obtida
+quantidade de minério obtida
+chance de drop raro
+qualidade de recurso
+```
+
+Esses ganhos pertencem a skills, ferramentas, buffs ou nodes.
 
 Sinergias:
 
 ```text
-Força + Constituição = tanque físico / minerador pesado
+Força + Constituição = frontliner/minerador pesado
 Força + Destreza = combatente agressivo
 Força + Breath = armas pesadas com melhor ritmo
-Força + Ferramentas = melhor coleta pesada
+Força + Produção & Coleta = menos esforço bruto, mas yield vem da árvore/skill
 ```
 
 ### Constituição
 
-Representa robustez, saúde e resistência corporal.
+Representa robustez, saúde e tolerância corporal.
 
 Afeta:
 
@@ -404,17 +388,35 @@ Afeta:
 HP máximo
 resistência a dano físico
 resistência a veneno/sangramento/frio/calor em menor grau
-recuperação passiva limitada
-resistência ao cansaço
+limite de cansaço antes de penalidades fortes
 capacidade de long runs na caverna
+resistência a stagger/knockdown, se definido
+```
+
+Não afeta diretamente:
+
+```text
+regeneração passiva de vida
+cura automática forte
+ignorar fome/cansaço
+```
+
+Regeneração de vida, se existir, deve vir de:
+
+```text
+skill/tree de Sobrevivência
+comida/poção
+Fonte de Anya
+gear
+buffs específicos
 ```
 
 Sinergias:
 
 ```text
-Constituição + Vontade = alta resistência geral
-Constituição + Força = frontliner/tanque/minerador
-Constituição + Farming/Animals = rotina pesada de fazenda
+Constituição + Vontade = resistência geral
+Constituição + Força = tanque físico/minerador
+Constituição + Sobrevivência = long runs mais seguras
 ```
 
 ### Destreza
@@ -427,10 +429,10 @@ Afeta:
 velocidade de ataque leve
 esquiva/dodge
 precisão com arco/dagger/spear
-chance ou qualidade de crítico futura
-interação com traps
+interação com janelas de crítico
 movimentação em combate
-janelas de backstab/positioning
+backstab/positioning
+reação contra traps, se houver skill adequada
 ```
 
 Sinergias:
@@ -438,31 +440,30 @@ Sinergias:
 ```text
 Destreza + Força = melee rápido/agressivo
 Destreza + Inteligência = trap/precision/magic hybrid
-Destreza + Bow/Spear/Dagger = explorador ágil
-Destreza + Pet = interrupções e flancos
+Destreza + Exploração & Sobrevivência = leitura e mobilidade
+Destreza + Combate Físico = crítico, dodge e armas leves
 ```
 
 ### Inteligência
 
-Representa conhecimento, técnica, magia estruturada e crafting avançado.
+Representa conhecimento, técnica, raciocínio, magia estruturada e crafting avançado.
 
 Afeta:
 
 ```text
-MP máximo secundário ou scaling mágico, conforme decisão futura
-potência/eficiência de magia técnica
+eficiência de magia técnica
 crafting avançado
 identificação de monstros/traps/recursos
 uso de tecnologia bromeciana
-eficiência de skills mágicas ou técnicas
+leitura de ruínas/mecanismos
 ```
 
 Sinergias:
 
 ```text
 Inteligência + Vontade = mago consistente
-Inteligência + Destreza = arqueiro/trapper/mago ágil
-Inteligência + Crafting/Mining = engenheiro/artesão
+Inteligência + Destreza = explorador técnico/trapper
+Inteligência + Produção & Coleta = crafting, processadores e yield técnico
 Inteligência + Ruínas = bônus em conteúdo bromeciano/Elyndor
 ```
 
@@ -473,12 +474,22 @@ Representa força espiritual, foco, resistência mental e ligação com magia pr
 Afeta:
 
 ```text
-MP máximo principal ou regeneração, conforme decisão futura
+MP máximo principal ou secundário, conforme fórmula futura
+regeneração muito lenta de MP
 resistência a medo/confusão/Nyx/Void
 força de magias espirituais
 resistência a corrupção
 interação com Fonte de Anya
 estabilidade em eventos de lore
+```
+
+Regra de MP regen:
+
+```text
+MP regenera naturalmente de forma lenta.
+Vontade melhora essa regeneração lentamente.
+Nodes da árvore de Magia & Fonte podem melhorar a regeneração, mas não devem banalizar custo de magia.
+Regeneração rápida de MP deve depender de comida, poção, Fonte, equipamento ou capstone específico.
 ```
 
 Sinergias:
@@ -515,14 +526,14 @@ Sinergias:
 Carisma + Vontade = líder espiritual/suporte
 Carisma + Inteligência = negociador/artesão/comerciante
 Carisma + Pets/Animals = vínculo e bônus sociais
-Carisma + City Reputation = acesso social e quests
+Carisma + Cidade = acesso social e quests
 ```
 
 ---
 
 # PARTE D — HP / MP / Stamina / Breath
 
-## 14. HP
+## 13. HP
 
 HP representa sobrevivência física.
 
@@ -533,30 +544,21 @@ Constituição
 equipamentos
 alimentos/buffs
 skills defensivas
+nodes de Sobrevivência ou Combate
 arquétipo inferido ativo
 Fonte de Anya/eventos especiais
 ```
 
-Usos:
-
-```text
-combate
-traps
-hazards
-caverna
-queda/dano ambiental futuro
-```
-
-## 15. MP
-
-MP representa energia mágica para habilidades mágicas.
-
 Regra:
 
 ```text
-MP é obrigatório para magia e skill actions mágicas.
-Magia não deve consumir apenas stamina.
+HP não regenera automaticamente por Constituição.
+Regeneração de HP deve ser desbloqueada/ativada por skill, item, equipamento, comida ou Fonte.
 ```
+
+## 14. MP
+
+MP representa energia mágica para habilidades mágicas.
 
 Fontes:
 
@@ -571,18 +573,15 @@ skills mágicas
 arquétipos inferidos mágicos
 ```
 
-Usos:
+Regra:
 
 ```text
-magias ofensivas
-magias defensivas
-cura limitada, se existir
-skills de utilidade
-interações arcanas
-tecnologia/lore de Elyndor/Bromécia, quando aplicável
+MP é obrigatório para magia e skill actions mágicas.
+MP regenera naturalmente de forma lenta baseada principalmente em Vontade.
+Magia não deve consumir apenas stamina.
 ```
 
-## 16. Stamina
+## 15. Stamina
 
 Stamina representa energia física de ação.
 
@@ -608,7 +607,7 @@ Gastar stamina acelera crescimento de cansaço.
 Gastar stamina com fome acelera ainda mais.
 ```
 
-## 17. Breath / Fôlego
+## 16. Breath / Fôlego
 
 Breath representa ritmo respiratório, explosão, sustentação e capacidade de manter esforço sob pressão.
 
@@ -635,7 +634,7 @@ Breath = capacidade de sustentar ritmo, explosão e recuperação sob esforço.
 
 # PARTE E — Fome e cansaço
 
-## 18. Fome
+## 17. Fome
 
 Fome representa nutrição/energia alimentar.
 
@@ -656,11 +655,9 @@ Fome não deve matar o jogador de forma punitiva no design base.
 Fome deve pressionar planejamento, alimentação, fazenda e cozinha.
 ```
 
-## 19. Cansaço
+## 18. Cansaço
 
 Cansaço é sistema próprio, mas afeta `PlayerConditionManager`.
-
-Representa desgaste acumulado do dia.
 
 Aumenta com:
 
@@ -696,9 +693,9 @@ Fonte de Anya em casos especiais
 
 ---
 
-# PARTE F — Level up e pontos
+# PARTE F — Level up, skill points e respec
 
-## 20. Level up
+## 19. Level up
 
 O level representa experiência geral do personagem.
 
@@ -720,30 +717,36 @@ Regra:
 
 ```text
 O jogo deve evitar que só combate seja caminho válido.
-Fazenda e cidade também devem contribuir para progressão, mas a caverna concentra risco/recompensa maior.
+Fazenda e cidade também devem contribuir para progressão.
+A caverna concentra risco/recompensa maior.
 ```
 
-## 21. Pontos por level
+## 20. Pontos por level
 
-A cada level:
+Regra canônica inicial:
 
 ```text
-+1 ponto de atributo principal para distribuir.
+A cada level: +1 ponto de atributo principal.
+SkillPoint: 1 ponto a cada 2 níveis, conforme decisão já consolidada em refinamentos anteriores.
 ```
 
-Pontos de skill podem seguir regra própria.
+## 21. Respec
 
-Direção possível:
+Respec é feito na Fonte de Anya.
+
+Regras:
 
 ```text
-SkillPoint a cada 2 níveis, se mantido do refinamento anterior.
-Skill XP por uso para progressão interna das skills.
-O design final pode combinar pontos globais + uso prático da skill.
+Permite redistribuir pontos de skill e/ou atributos, conforme escopo futuro.
+Custo cresce com o nível do que está sendo respeccado.
+Não deve ser tão barato que escolhas não importem.
+Não deve ser tão caro que impeça experimentação.
+Explicação diegética: a Fonte reorganiza ecos de crescimento do personagem.
 ```
 
 ---
 
-# PARTE G — Skills e níveis de skill
+# PARTE G — Skills e 5 skill trees
 
 ## 22. Regra geral de skills
 
@@ -768,381 +771,351 @@ equipamentos
 Fonte de Anya/respec
 ```
 
-## 23. Skills agrícolas
-
-### Farming / Agricultura
-
-Afeta:
+Regra:
 
 ```text
-arar
-plantar
-regar
-colher
-qualidade de crops
-chance de crop especial
-uso de fertilizante
-eficiência de stamina em ações agrícolas
+Skill não é a mesma coisa que atributo.
+Atributo facilita ou potencializa.
+Skill desbloqueia domínio real, yield, qualidade, eficiência, técnicas e passivas.
 ```
 
-Níveis:
+## 23. Modelo inicial de 5 skill trees
+
+A direção inicial deve trabalhar com 5 árvores, não 10+ árvores separadas.
+
+As 5 árvores canônicas iniciais são:
 
 ```text
-1: ações básicas de plantio.
-2: menor custo de stamina ao arar/reguar.
-3: melhor qualidade média de crops.
-4: melhor uso de fertilizantes/irrigação.
-5: chance de colheita rara/qualidade premium/sinergia com Mana.
+1. Produção & Coleta
+2. Exploração & Sobrevivência
+3. Combate Físico
+4. Magia & Fonte
+5. Social, Companions & Pets
 ```
 
-### Animal Care / Criação de Animais
-
-Afeta:
+Motivo:
 
 ```text
-alimentação
-carinho/afinidade
-qualidade de produtos animais
-saúde animal
-pets e vínculo, se compartilhado parcialmente
+Cinco árvores mantêm a UI mais simples.
+Cobrem todos os loops principais.
+Permitem builds híbridas.
+Evitam granularidade excessiva no início.
 ```
 
-Níveis:
+## 24. Tree 1 — Produção & Coleta
+
+Cobre:
 
 ```text
-1: cuidado básico.
-2: menor perda de afinidade por rotina falha.
-3: produtos melhores.
-4: animais mais resistentes/felizes.
-5: bônus forte de produção/vínculo raro.
+farming
+animal care
+cooking
+fishing
+woodcutting
+mining
+crafting básico
+resource gathering
+qualidade/yield de coleta
+uso eficiente de ferramentas
 ```
 
-### Cooking / Culinária
-
-Afeta:
+O que ela afeta:
 
 ```text
-comidas
-buffs
-recuperação de stamina/fome/cansaço
-resistências temporárias
-preparação para caverna
+quantidade de recursos coletados
+chance de recurso extra
+qualidade de crop/produto
+redução de custo de stamina em ações produtivas
+melhor uso de fertilizantes
+melhor rendimento de pesca/mineração/corte
+crafting rural/oficinas iniciais
 ```
 
-Níveis:
+Relação com atributos:
 
 ```text
-1: receitas simples.
-2: melhor recuperação.
-3: buffs básicos.
-4: buffs combinados.
-5: pratos especiais, Fruto de Mana e receitas raras.
+Força: facilita derrubar árvores/quebrar rochas resistentes, mas não aumenta yield sozinha.
+Constituição: reduz desgaste/cansaço em rotina pesada, mas não regenera vida.
+Destreza: ajuda pesca, timing e uso rápido de ferramentas.
+Inteligência: melhora crafting, processamento e leitura de qualidade.
+Vontade: interage com crops raras, Mana, Fonte e efeitos mágicos sutis.
+Carisma: ajuda com animais, venda, trocas e reputação produtiva.
 ```
 
-## 24. Skills de exploração/caverna
-
-### Mining / Mineração
-
-Afeta:
+Exemplos de nodes:
 
 ```text
-quebrar pedras
-minérios raros
-eficiência da picareta
-stamina por golpe
-chance de gemas
-salas de mineração
-interação com Titã Escavador/rochas especiais, se definido
+Mãos de Lavrador: menor stamina ao arar/reguar.
+Colheita Cuidadosa: pequena chance de qualidade melhor.
+Lenhador Eficiente: árvores exigem menos golpes e podem render madeira extra por skill, não por Força pura.
+Prospector: chance de minério extra em nodes.
+Pescador Paciente: melhora captura e espécies raras.
+Cozinha Sustentadora: comida recupera melhor fome/stamina/cansaço.
+Oficina Organizada: crafting básico consome menos tempo/recurso.
 ```
 
-Níveis:
+Capstone possível:
 
 ```text
-1: mineração básica.
-2: menor custo de stamina.
-3: maior chance de minério raro.
-4: quebra de nodes especiais.
-5: leitura de veios raros e bônus em mining rooms.
+Mestre da Terra
+  melhora rendimento geral de produção/coleta e aumenta chance de qualidade alta sem quebrar economia.
 ```
 
-### Exploration / Exploração
+## 25. Tree 2 — Exploração & Sobrevivência
 
-Afeta:
-
-```text
-map awareness
-secret rooms
-traps
-landmarks
-rotas alternativas
-chance de encontrar special rooms
-```
-
-Níveis:
+Cobre:
 
 ```text
-1: percepção básica de landmarks.
-2: melhor detecção de rotas/saídas.
-3: chance de detectar secret rooms.
-4: melhor leitura de traps.
-5: bônus forte em exploração e recompensas ocultas.
-```
-
-### Survival / Sobrevivência
-
-Afeta:
-
-```text
-fome
-cansaço
-hazards
-frio/calor
+movimentação
 long runs
-consumo de recursos
+traps
+secret rooms
+map awareness
+hazards
+frio/calor/gás
+fome/cansaço
+recuperação fora de combate
+uso de recursos em exploração
 ```
 
-Níveis:
+O que ela afeta:
 
 ```text
-1: penalidades menores em ambiente leve.
-2: menor cansaço por exploração.
-3: melhor resistência ambiental.
-4: melhor recuperação com comida/descanso.
-5: long runs muito mais viáveis.
+redução de cansaço em exploração
+melhor leitura de traps
+chance de detectar salas secretas
+menor penalidade ambiental
+melhor fuga/reposicionamento
+pequena recuperação de HP fora de combate, se desbloqueada por node
+uso mais eficiente de comida/poções em long runs
 ```
 
-## 25. Skills de combate
+Relação com atributos:
 
-### Melee Combat / Combate Corpo a Corpo
+```text
+Destreza: dodge, movimentação, reação a traps.
+Constituição: tolerância a long runs e hazards.
+Vontade: resistência a medo/Nyx/Void/corrupção.
+Inteligência: leitura de mapas, traps e ruínas.
+Força: ajuda obstáculos físicos, mas não detecta segredos.
+Carisma: pouca influência direta, salvo companions/pets em exploração.
+```
 
-Afeta:
+Regra de regen de vida:
+
+```text
+Se houver regeneração de HP, ela pertence a nodes desta árvore, itens, comida, equipamentos ou Fonte.
+Constituição pode potencializar limites/eficiência, mas não concede regen sozinha.
+```
+
+Exemplos de nodes:
+
+```text
+Passo Seguro: menor chance de ativar traps simples.
+Olho de Explorador: maior chance de detectar secret rooms.
+Fôlego de Jornada: menor gasto de Breath ao correr/dodge fora de combate.
+Sangue Frio: menor penalidade de frio/calor.
+Descanso Curto: pequena recuperação fora de combate após tempo sem dano.
+Leitura de Ruína: melhora sinais de Bromécia/Elyndor.
+```
+
+Capstone possível:
+
+```text
+Sobrevivente das Profundezas
+  melhora long runs, reduz cansaço de exploração e aumenta leitura de perigos sem remover risco.
+```
+
+## 26. Tree 3 — Combate Físico
+
+Cobre:
+
+```text
+melee
+ranged físico
+defesa
+bloqueio/esquiva
+armas
+charged attacks
+critical windows
+stagger
+knockback
+uso de stamina/breath em combate
+```
+
+O que ela afeta:
 
 ```text
 dano físico
-combos
-janelas de crítico
-armas corpo a corpo
-stagger
-uso de stamina/breath em ataque
-```
-
-Níveis:
-
-```text
-1: ataques básicos.
-2: menor custo/maior precisão.
-3: charged attack melhor.
-4: melhor uso de critical windows.
-5: perk marcante de estilo melee.
-```
-
-### Ranged Combat / Combate à Distância
-
-Afeta:
-
-```text
-arcos/projéteis
 precisão
-distância
-pontos fracos
-inimigos flutuantes
-traps à distância
+uso de armas
+janela de crítico automático
+counterplay contra monstros
+redução de custo de stamina/breath em ataques
+bloqueio/dodge
+resistência a stagger
 ```
 
-Níveis:
+Relação com atributos:
 
 ```text
-1: tiro básico.
-2: melhor precisão.
-3: dano em ponto fraco.
-4: melhor crítico em janelas.
-5: tiro especial/perk de elite.
+Força: dano pesado, stagger, armas grandes.
+Destreza: armas rápidas, arco, dodge, crítico e posicionamento.
+Constituição: sobrevivência e resistência a stagger.
+Breath: ritmo de combate e armas pesadas.
+Inteligência: pouco impacto direto, salvo armas técnicas/traps.
+Vontade: resistência mental em combate.
+Carisma: liderança/companion, não dano físico direto.
 ```
 
-### Defense / Defesa
-
-Afeta:
+Exemplos de nodes:
 
 ```text
-bloqueio
-redução de dano
-stagger resistance
-defesa com escudo/armadura
-recuperação após hit
+Golpe Pesado: melhora HeavyAttack.
+Lâmina Precisa: melhor crítico em janela vulnerável.
+Passo Lateral: dodge mais eficiente.
+Guarda Firme: bloqueio reduz mais dano.
+Arqueiro de Caverna: melhora alvos flutuantes/pontos fracos.
+Quebra-Postura: aumenta stagger contra inimigos vulneráveis.
 ```
 
-Níveis:
+Capstone possível:
 
 ```text
-1: defesa básica.
-2: menor dano recebido em bloqueio.
-3: melhor resistência a stagger.
-4: counter após bloqueio/perfect guard, se existir.
-5: defesa avançada contra elites/bosses.
+Executor de Janelas
+  ataques durante critical windows recebem bônus adicional moderado e feedback especial.
 ```
 
-## 26. Skills mágicas
+## 27. Tree 4 — Magia & Fonte
 
-### Magic Control / Controle Mágico
+Cobre:
 
-Afeta:
+```text
+magias ofensivas
+magias defensivas
+magias de suporte
+controle leve
+eficiência de MP
+regeneração lenta de MP
+Fonte de Anya
+Água Viva
+Mana
+resistência a corrupção
+interações arcanas
+```
+
+O que ela afeta:
 
 ```text
 custo de MP
 potência de magia
-controle de projéteis/áreas
-interações arcanas
+alcance/área/duração
+recuperação de MP
+interação com Fonte de Anya
+cura limitada
+purificação
+resistência a Blackstone/Corruption/Nyx/Void
 ```
 
-Níveis:
+Relação com atributos:
 
 ```text
-1: magia básica.
-2: menor custo de MP.
-3: maior potência/alcance.
-4: novas propriedades/sinergias.
-5: domínio mágico e skill action forte.
+Vontade: MP, regen lenta, resistência espiritual, Fonte.
+Inteligência: eficiência, controle técnico e potência estruturada.
+Carisma: magia social/suporte/liderança, se existir.
+Constituição: sobreviver ao custo/risco de magia, não mana regen principal.
+Destreza: cast em movimento/posicionamento, se definido.
+Força: pouca influência direta.
 ```
 
-### Anya Affinity / Afinidade com Anya
-
-Skill especial/lore. Não deve ser tratada como skill comum desde o início sem desbloqueio narrativo.
-
-Afeta:
+Regra de MP regen:
 
 ```text
-Fonte de Anya
-respec
-cura especial
-morte/retorno
-Água Viva
-eventos de lore
-libertação parcial do poder de Anya
+MP regenera naturalmente de forma lenta, baseada principalmente em Vontade.
+Nodes de Magia & Fonte podem melhorar a regeneração ou reduzir custo.
+Regeneração rápida deve exigir comida, poção, Fonte, equipamento, Fruto de Mana ou capstone.
 ```
 
-Níveis:
+Exemplos de nodes:
 
 ```text
-1: percepção fraca da Fonte.
-2: interações melhores com cura/respec.
-3: resistência parcial a corrupção.
-4: Água Viva/rituais especiais.
-5: efeitos após nível 101/libertação parcial.
+Canalização Serena: menor custo de MP em magias simples.
+Eco da Fonte: melhora efeitos de Água Viva/Fonte.
+Foco Arcano: melhora precisão/potência mágica.
+Resistir Corrupção: menor efeito de Blackstone/Corruption.
+Fluxo Lento: melhora levemente regen natural de MP.
+Selo de Anya: cura/suporte limitado com custo alto.
 ```
 
-## 27. Skills sociais/econômicas
-
-### Social / Socialização
-
-Afeta:
+Capstone possível:
 
 ```text
-diálogos
-reputação
-amizade
+Fragmento Desperto
+  fortalece interação com Fonte, Mana e magia de suporte após marcos narrativos profundos.
+```
+
+## 28. Tree 5 — Social, Companions & Pets
+
+Cobre:
+
+```text
+relacionamentos
 flerte
-eventos sociais
-convites para fazenda
-```
-
-### Romance / Flerte
-
-Afeta:
-
-```text
-opções românticas
-eventos de relacionamento
-interpretação de preferências
-ritmo de vínculo
 casamento
+reputação
+presentes
+quests pessoais
+companions
+pets
+trade/negociação
+visitas à fazenda
+liderança em party
 ```
 
-Regra:
+O que ela afeta:
 
 ```text
-Romance deve depender de relação, quests, presentes, eventos e compatibilidade narrativa, não só de barra numérica.
+ganho de relação
+qualidade de interações sociais
+desbloqueio de eventos
+eficiência de companions
+vínculo com pets
+preços/contratos, se definido
+visitas de NPCs à fazenda
+bônus sociais/econômicos
 ```
 
-### Trade / Comércio
-
-Afeta:
+Relação com atributos:
 
 ```text
-preços
-shipping bin
-ordens
-contratos
-negociação
-reputação econômica
+Carisma: atributo principal da árvore.
+Vontade: liderança, confiança, vínculo profundo.
+Inteligência: negociação, leitura social, contratos.
+Constituição/Força/Destreza: pouca influência direta, salvo NPCs que valorizem esses traços.
 ```
 
-## 28. Skills técnicas
-
-### Crafting / Artesanato
-
-Afeta:
+Exemplos de nodes:
 
 ```text
-receitas
-equipamentos
-processadores
-workshops
-qualidade de item
-reparo
+Boa Conversa: melhora ganho de amizade em diálogo.
+Presente Atento: aumenta efeito de presentes corretos.
+Líder de Jornada: melhora eficiência de companion ativo.
+Treino do Cão: pet abre mais janelas de interrupção/detecção.
+Gato Sortudo: melhora achados/segredos pequenos.
+Comerciante Local: melhora preços/contratos sem quebrar economia.
+Companheiro de Vida: melhora eventos pós-casamento sem transformar NPC em ferramenta.
 ```
 
-### Engineering / Engenharia Bromeciana
-
-Skill avançada.
-
-Afeta:
+Capstone possível:
 
 ```text
-tecnologia bromeciana
-ruínas
-constructos
-mecanismos
-irrigação avançada
-máquinas
-traps mecânicas
+Coração da Comunidade
+  melhora relações, visitas à fazenda, companions e economia social de forma ampla.
 ```
 
----
+## 29. Active slots
 
-# PARTE H — Skill trees e active slots
-
-## 29. Skill trees
-
-Skill trees organizam progressão por tema.
-
-Árvores iniciais sugeridas:
-
-```text
-Fazenda
-Animais/Pets
-Mineração
-Exploração
-Combate Corpo a Corpo
-Combate à Distância
-Defesa
-Magia
-Social/Romance
-Crafting/Engenharia
-Afinidade com Anya
-```
-
-Regra:
-
-```text
-Skill tree não deve impedir builds híbridas.
-Capstones devem ser fortes, mas não obrigatórios para jogar.
-```
-
-## 30. Active slots
-
-Active slots representam habilidades ativas equipadas.
-
-Direção já consolidada anteriormente:
+Direção consolidada:
 
 ```text
 4 active slots como base.
@@ -1152,13 +1125,27 @@ Regras:
 
 ```text
 O jogador não pode equipar todas as skills ativas ao mesmo tempo.
-Trocar active slots deve exigir menu/descanso/Fonte/fora de combate, conforme decisão futura.
 Skills passivas não ocupam active slot.
+Trocar active slots deve exigir menu/descanso/Fonte/fora de combate, conforme decisão futura.
+Active skills podem vir de qualquer uma das 5 árvores.
+```
+
+## 30. Capstones
+
+Cada árvore deve ter pelo menos um capstone forte.
+
+Regras:
+
+```text
+Capstone deve recompensar especialização.
+Capstone não deve ser obrigatório para zerar o jogo.
+Capstone não deve invalidar outras árvores.
+Capstone pode desbloquear arquétipos inferidos.
 ```
 
 ---
 
-# PARTE I — Arquétipos inferidos / jobs vestíveis
+# PARTE H — Arquétipos inferidos / jobs vestíveis
 
 ## 31. Sem classes fixas
 
@@ -1173,48 +1160,22 @@ Com isso, pode inferir arquétipos/jobs funcionais.
 O jogador pode vestir/ativar um arquétipo desbloqueado para receber bônus.
 ```
 
-## 32. Arquétipos inferidos
+## 32. Arquétipos inferidos iniciais
 
-Exemplos:
+| Arquétipo | Origem principal | Bônus sugerido |
+|---|---|---|
+| Fazendeiro | Produção & Coleta | melhor eficiência rural e qualidade moderada |
+| Minerador | Produção & Coleta + Força/Constituição | menos custo em mineração, melhor minério via skill |
+| Explorador | Exploração & Sobrevivência | melhor leitura de mapa/traps/secret rooms |
+| Guerreiro | Combate Físico | melhor uso de armas físicas |
+| Guardião | Combate Físico + Constituição/Vontade | defesa, stagger resistance e proteção |
+| Mago | Magia & Fonte | MP/custo/potência mágica equilibrada |
+| Devoto de Anya | Magia & Fonte + eventos | Fonte, Água Viva, purificação/cura limitada |
+| Artífice | Produção & Coleta + Inteligência | crafting, engenharia e ruínas técnicas |
+| Mercador | Social + Carisma/Inteligência | preços, contratos e reputação econômica |
+| Líder de Companions | Social + Vontade/Carisma | companions/pets mais úteis |
 
-```text
-Minerador
-Explorador
-Fazendeiro
-Criador
-Combatente
-Arqueiro
-Guardião
-Mago
-Artífice
-Mercador
-Companheiro/Líder
-Devoto de Anya
-```
-
-## 33. Como desbloquear arquétipos
-
-Um arquétipo pode exigir:
-
-```text
-skill levels mínimos
-atributos mínimos
-equipamento compatível
-quests
-marcos de caverna/fazenda/cidade
-relacionamentos
-Fonte de Anya
-```
-
-Exemplo:
-
-```text
-Minerador
-Requisitos: Mining 3, Força 4, Constituição 3, picareta melhorada.
-Bônus ativo: menor stamina em mineração, maior chance de minério raro, resistência leve a cave fatigue.
-```
-
-## 34. Vestir arquétipo
+## 33. Vestir arquétipo
 
 Regras:
 
@@ -1227,9 +1188,9 @@ Troca de arquétipo deve ser feita fora de combate ou em locais seguros.
 
 ---
 
-# PARTE J — Ferramentas, armas, magia e equipamentos
+# PARTE I — Ferramentas, armas, magia e equipamentos
 
-## 35. Ferramentas
+## 34. Ferramentas
 
 Ferramentas principais:
 
@@ -1255,7 +1216,15 @@ cansaço
 skills por uso
 ```
 
-## 36. Armas
+Regra:
+
+```text
+Ferramenta melhor pode aumentar yield.
+Skill pode aumentar yield.
+Força pode reduzir esforço/golpes, mas não aumenta yield sozinha.
+```
+
+## 35. Armas
 
 Categorias possíveis:
 
@@ -1281,21 +1250,9 @@ stamina/breath
 magia/equipamentos
 ```
 
-## 37. Magia
+## 36. Magia
 
 Magia usa MP.
-
-Fontes de magia:
-
-```text
-Inteligência
-Vontade
-skills mágicas
-equipamentos
-Fonte de Anya
-Fruto de Mana
-lore de Vaalara
-```
 
 Tipos iniciais possíveis:
 
@@ -1315,7 +1272,7 @@ Magia não deve resolver todos os sistemas sozinha.
 Ela deve ter custo, limite, build e counterplay.
 ```
 
-## 38. Equipamentos
+## 37. Equipamentos
 
 Slots possíveis:
 
@@ -1339,13 +1296,14 @@ redução de custo
 bônus de crit window
 bônus social/econômico
 bônus de pet/companion
+regen HP/MP específica, se rara e balanceada
 ```
 
 ---
 
-# PARTE K — Resistências e status negativos
+# PARTE J — Resistências e status negativos
 
-## 39. Resistências
+## 38. Resistências
 
 Resistências principais:
 
@@ -1378,7 +1336,7 @@ companions/pets
 Fonte de Anya
 ```
 
-## 40. Status negativos
+## 39. Status negativos
 
 Status possíveis:
 
@@ -1410,9 +1368,9 @@ DurabilityStress não destrói item permanentemente sem direção específica.
 
 ---
 
-# PARTE L — Morte, derrota e Fonte de Anya
+# PARTE K — Morte, derrota e Fonte de Anya
 
-## 41. Derrota
+## 40. Derrota
 
 Derrota deve ser integrada a:
 
@@ -1433,7 +1391,7 @@ Regra:
 Morte/derrota deve ter consequência, mas não apagar progresso de forma injusta.
 ```
 
-## 42. Fonte de Anya
+## 41. Fonte de Anya
 
 A Fonte de Anya é eixo de:
 
@@ -1457,9 +1415,9 @@ A libertação parcial do poder de Anya ocorre por conteúdo profundo da caverna
 
 ---
 
-# PARTE M — Companions, pets, fazenda, cidade e caverna
+# PARTE L — Companions, pets, fazenda, cidade e caverna
 
-## 43. Companions
+## 42. Companions
 
 Companions podem ajudar em:
 
@@ -1484,7 +1442,7 @@ invalidar pet
 invalidar build do personagem
 ```
 
-## 44. Pets
+## 43. Pets
 
 Pets são sistema próprio, separado de companion.
 
@@ -1495,7 +1453,7 @@ Gato pode apoiar sorte, detecção de segredo/anomalia e vínculo social/fazenda
 
 Cachorro não ocupa slot de companion.
 
-## 45. Relação com fazenda
+## 44. Relação com fazenda
 
 O personagem se conecta à fazenda por:
 
@@ -1504,7 +1462,8 @@ stamina
 fome
 cansaço
 ferramentas
-skills agrícolas
+Produção & Coleta
+Social, Companions & Pets
 pets
 companions trabalhando
 construções
@@ -1512,7 +1471,7 @@ Fruto de Mana
 Fonte de Anya
 ```
 
-## 46. Relação com cidade
+## 45. Relação com cidade
 
 O personagem se conecta à cidade por:
 
@@ -1527,9 +1486,10 @@ lojas
 festivais
 contratos
 visitas de NPCs à fazenda
+Social, Companions & Pets
 ```
 
-## 47. Relação com caverna
+## 46. Relação com caverna
 
 O personagem se conecta à caverna por:
 
@@ -1541,7 +1501,10 @@ Breath
 armas
 magia
 resistências
-skills de combate/exploração/mineração
+Combate Físico
+Magia & Fonte
+Exploração & Sobrevivência
+Produção & Coleta para mineração/coleta
 companions
 pets
 critical windows
@@ -1553,11 +1516,11 @@ morte/retorno
 
 ---
 
-# PARTE N — Flerte, relacionamento e casamento
+# PARTE M — Flerte, relacionamento e casamento
 
-## 48. Relacionamentos
+## 47. Relacionamentos
 
-Relacionamentos devem considerar:
+Relacionamentos consideram:
 
 ```text
 amizade
@@ -1571,20 +1534,19 @@ visitas à fazenda
 compatibilidade narrativa
 ```
 
-## 49. Flerte
-
-Flerte deve ser opção explícita e respeitar disponibilidade do NPC.
+## 48. Flerte
 
 Regras:
 
 ```text
+Flerte deve ser opção explícita.
 NPCs casados não são candidatos a casamento.
 NPCs disponíveis podem aceitar romance com jogador homem ou mulher, conforme design de personagem.
 Romance não deve depender só de gifts repetidos.
 Romance deve ter eventos, escolhas, quests e limites claros.
 ```
 
-## 50. Casamento
+## 49. Casamento
 
 Casamento pode desbloquear:
 
@@ -1608,9 +1570,9 @@ quebrar serviços essenciais da cidade
 
 ---
 
-# PARTE O — UI/HUD e save/load
+# PARTE N — UI/HUD e save/load
 
-## 51. UI/HUD do personagem
+## 50. UI/HUD do personagem
 
 HUD deve mostrar claramente:
 
@@ -1636,7 +1598,7 @@ criação do personagem
 raça/gênero/aparência
 atributos
 skills
-skill trees
+5 skill trees
 arquétipo ativo
 equipamentos
 relacionamentos
@@ -1645,7 +1607,7 @@ companions
 status/resistências
 ```
 
-## 52. Save/load
+## 51. Save/load
 
 Save deve persistir:
 
@@ -1663,9 +1625,10 @@ fome
 cansaço
 skills e níveis
 skill points
-skill trees desbloqueadas
+5 skill trees desbloqueadas
 active slots
 ações equipadas
+capstones desbloqueados
 arquétipos desbloqueados/ativo
 ferramentas
 armas
@@ -1683,7 +1646,7 @@ morte/corpse recovery state
 
 ---
 
-# PARTE P — Roadmap de direção futura
+# PARTE O — Roadmap de direção futura
 
 Este documento é a visão ampla. Antes de implementação, ainda precisamos refinar documentos ou seções específicas de direção para:
 
@@ -1691,7 +1654,8 @@ Este documento é a visão ampla. Antes de implementação, ainda precisamos ref
 fórmulas de atributos e stats derivados
 curva de XP e level cap
 progressão de skills 1-5
-skill trees e capstones
+nodes completos das 5 skill trees
+capstones das 5 skill trees
 arquétipos inferidos/jobs vestíveis
 ferramentas e upgrades
 armas e dano
@@ -1708,17 +1672,27 @@ save/load do personagem
 
 ---
 
-# PARTE Q — Decisões fechadas
+# PARTE P — Decisões fechadas
 
 ```text
 O jogador não terá classe fixa estilo D&D.
 O jogador evolui livremente por atributos, skills, equipamentos, ferramentas, armas e magia.
 Classes/jobs serão arquétipos inferidos por distribuição de skills/atributos e poderão ser vestidos/ativados para bônus.
+O modelo inicial terá 5 skill trees, não 10+ árvores separadas.
+As 5 árvores são: Produção & Coleta, Exploração & Sobrevivência, Combate Físico, Magia & Fonte, Social/Companions/Pets.
 Cada skill pode ter níveis de 1 a 5.
+SkillPoint a cada 2 níveis continua como direção.
+4 active slots continua como direção.
+Capstones existem e devem recompensar especialização sem serem obrigatórios.
+Respec ocorre na Fonte de Anya.
 MP existe e é usado por magia.
+MP regenera naturalmente de forma lenta baseada principalmente em Vontade.
 Breath/Fôlego é stat separado de Stamina.
 Cansaço é sistema próprio e afeta PlayerConditionManager.
 Fome pressiona planejamento, mas não deve ser morte punitiva por padrão.
+Força não aumenta yield de recurso sozinha; ela reduz esforço/golpes/dificuldade física.
+Constituição não concede regeneração passiva de HP sozinha.
+Regeneração de HP, se existir, vem de skill, item, equipamento, comida ou Fonte.
 Pets são separados de companions.
 Cachorro pode apoiar combate sem ocupar slot de companion.
 Flerte/casamento fazem parte dos sistemas do personagem/social.
@@ -1729,7 +1703,7 @@ Raça/gênero/aparência não devem bloquear build, romance ou conteúdo central
 
 ---
 
-# PARTE R — Pendências
+# PARTE Q — Pendências
 
 ```text
 Validar lista final de raças jogáveis iniciais contra o canon de raças de Vaalara.
@@ -1739,8 +1713,9 @@ Definir sprites base finais por raça e gênero/apresentação.
 Definir paleta final de cabelo/pele/escamas.
 Definir fórmulas finais de HP/MP/Stamina/Breath.
 Definir curva de XP e level cap.
-Definir se skill XP é por uso, por ponto ou híbrido.
-Definir número final de skill trees e capstones.
+Definir progressão final de skill XP vs SkillPoint.
+Definir nodes completos de cada uma das 5 skill trees.
+Definir capstones completos das 5 skill trees.
 Definir quantos arquétipos/jobs podem ficar ativos ao mesmo tempo.
 Definir se troca de active slots/jobs ocorre na Fonte, casa, menu ou checkpoint.
 Definir dano base por arma/ferramenta/magia.
