@@ -385,33 +385,70 @@ StaminaMax = 180
 Resultado esperado:
 
 ```text
-Level 50 não deve fazer 20-30 ataques seguidos sem gestão.
+Level 50 não deve fazer 20-30 ataques seguidos de graça.
 O personagem tem mais margem que no início, mas ainda precisa alternar ataque, reposicionamento, block, comida e timing.
 ```
 
-## 12. Custos de Stamina devem escalar
+## 12. Custos de Stamina devem ser altos e escalar
 
-Stamina Max só funciona se os custos também forem calibrados.
+Stamina Max só funciona se os custos também forem calibrados para forçar decisão.
 
-Tabela direcional:
+Valores canônicos de referência com Espada de Aço:
 
-| Ação | Early | Mid | Late/Endgame | Observação |
-|---|---:|---:|---:|---|
-| Light melee | 10-12 | 13-16 | 16-20 | armas leves custam menos |
-| Heavy melee | 20-24 | 26-34 | 34-44 | armas pesadas custam mais |
-| Bow shot | 9-12 | 12-16 | 15-20 | charged shot custa mais |
-| Magic staff hit físico | 8-10 | 10-14 | 12-16 | magia usa MP à parte |
-| Dash | 18-22 | 20-26 | 24-32 | reduzido por Survival/Destreza |
-| Dodge | 12-15 | 14-18 | 16-22 | reduzido por Survival/Destreza |
-| Block hold | 4-8/s | 6-10/s | 8-14/s | depende de escudo/skill |
-| Block impact | 8-18 | 14-28 | 22-42 | depende do golpe inimigo |
-| Pickaxe/Axe | 8-14 | 12-22 | 18-32 | reduzido por ferramenta/Força/Crafting |
+| Ação | Custo de referência |
+|---|---:|
+| Light melee com Espada de Aço | 25 Stamina |
+| Heavy melee com Espada de Aço | 40 Stamina |
+| Dash | 40 Stamina |
+| Dodge | 40 Stamina |
+| Block hold | 18 Stamina/s |
 
 Regra:
 
 ```text
 Stamina de level alto aumenta, mas arma/ferramenta de tier alto também custa mais.
-Upgrades devem melhorar eficiência, mas não eliminar custo.
+Upgrades devem melhorar eficiência, alcance, dano, utilidade ou tempo de ação, mas não eliminar custo.
+Dash e Dodge são fortes e devem ser escolhas, não spam defensivo.
+```
+
+### Block impact baseado em proporção de ameaça
+
+O custo de Stamina por impacto bloqueado deve ser proporcional ao dano bruto da criatura em relação ao HP máximo do jogador.
+
+Fórmula direcional:
+
+```text
+IncomingDamageRatio = IncomingRawDamage / PlayerMaxHP
+BlockImpactStaminaCost = PlayerMaxStamina * IncomingDamageRatio * BlockImpactMultiplier * (1 - BlockStability)
+```
+
+Valores recomendados:
+
+```text
+BlockImpactMultiplier comum: 0.75 a 1.00
+BlockImpactMultiplier elite: 1.00 a 1.35
+BlockImpactMultiplier boss: 1.25 a 1.75
+```
+
+Exemplo:
+
+```text
+PlayerMaxHP = 230
+PlayerMaxStamina = 144
+IncomingRawDamage = 57
+BlockStability = 24%
+BlockImpactMultiplier comum = 0.90
+
+IncomingDamageRatio = 57 / 230 = 24.8%
+BlockImpactStaminaCost = 144 * 0.248 * 0.90 * 0.76
+BlockImpactStaminaCost ≈ 24 Stamina
+```
+
+Regra:
+
+```text
+Golpes que ameaçam muito a vida também ameaçam muito a Stamina ao bloquear.
+Isso faz Block ser forte, mas não gratuito.
 ```
 
 ## 13. Stamina Regen
@@ -507,9 +544,11 @@ Constituição pode ajudar status físico e posture, mas pouco em resistência p
 ```text
 BlockedDamage = IncomingDamage * (1 - BlockPower)
 
-BlockResourceDrain = IncomingImpactPower
-                   * (1 - BlockStability)
-                   * ShieldOrWeaponMultiplier
+IncomingDamageRatio = IncomingRawDamage / PlayerMaxHP
+BlockImpactStaminaCost = PlayerMaxStamina
+                       * IncomingDamageRatio
+                       * BlockImpactMultiplier
+                       * (1 - BlockStability)
 ```
 
 Influenciado por:
@@ -528,7 +567,7 @@ capstone Kanthor/Kaand
 Regra:
 
 ```text
-Block drena Stamina.
+Block drena Stamina por tempo segurado e por impacto.
 Sem Stamina, Block quebra ou perde eficiência.
 Não aplicar Defense/Armor completo depois de Block; usar mitigação flat parcial.
 ```
@@ -622,6 +661,7 @@ Custo:
 
 ```text
 Stamina.
+Valor de referência inicial para Dash: 40 Stamina.
 ```
 
 ## 21. Dodge
@@ -645,6 +685,7 @@ Custo:
 
 ```text
 Stamina.
+Valor de referência inicial para Dodge: 40 Stamina.
 ```
 
 ---
@@ -816,14 +857,14 @@ EnemyHP = FamilyBaseHP
 
 | Família/Papel | CON -> HP sugerido |
 |---|---:|
-| Swarm/Tiny | 1-3 por CON |
-| Small fast | 2-4 por CON |
-| Humanoid comum | 4-6 por CON |
-| Beast comum | 5-8 por CON |
-| Caster frágil | 2-5 por CON |
-| Elite duelist | 6-10 por CON |
-| Tank/Construct | 10-16 por CON |
-| Huge/mini-boss | 14-24 por CON |
+| Swarm/Tiny | 1-2 por CON |
+| Small fast | 2-3 por CON |
+| Humanoid comum | 3-5 por CON |
+| Beast comum | 4-7 por CON |
+| Caster frágil | 2-4 por CON |
+| Elite duelist | 5-8 por CON |
+| Tank/Construct | 8-14 por CON |
+| Huge/mini-boss | 12-20 por CON |
 | Boss | autorado/custom |
 
 Regra:
@@ -918,6 +959,12 @@ Player StaminaPerStr recomendado = 1.5.
 Player StaminaPerDex recomendado = 1.0.
 Defense vem principalmente de Armor/equipamento.
 DefensePerCon recomendado = 0.75.
+Light melee com Espada de Aço custa 25 Stamina.
+Heavy melee com Espada de Aço custa 40 Stamina.
+Dash custa 40 Stamina.
+Dodge custa 40 Stamina.
+Block hold custa 18 Stamina/s.
+Block impact drena Stamina conforme proporção do dano bruto da criatura contra HP máximo do jogador.
 Stamina costs escalam por tier/tipo/peso da ação.
 Stamina Regen em combate deve ser baixa.
 Monstros não usam fórmula de HP do jogador.
@@ -929,7 +976,8 @@ Monstros têm HP autorado por faixa, família, papel e multiplicador próprio de
 # PARTE M — Pendências
 
 ```text
-Atualizar teste de mesa com HP 230 e Stamina 144 no exemplo level 30.
+Atualizar teste de mesa com custos altos de Stamina e Block proporcional.
+Validar se 144 Stamina no level 30 ainda está adequado com Dodge/Dash a 40.
 Validar custos de ataques por tier de arma.
 Validar Stamina Regen em Unity.
 Definir Armor/Resistance por família de monstro.
