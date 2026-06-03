@@ -7,20 +7,25 @@
 > - `docs/design/SPECIFICATION_PROCESS.md`  
 > - `docs/design/lore/VAALARA_GAME_CANON_DIRECTION_v1.0.md`  
 > - `docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.3.md`  
+> - `docs/design/gameplay/city/CITY_DESIGN_DIRECTION_v1.2.md`  
 > - `docs/design/gameplay/cave/CAVE_DESIGN_DIRECTION.md`  
 > - `docs/design/gameplay/cave/CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md`  
-> **Função:** consolidar atributos, status, progressão, skills, arquétipos inferidos, ferramentas, armas, magia, equipamentos, morte, companions, pets, fazenda, caverna, casamento, UI e save/load do personagem.  
-> **Não é spec implementável.** Specs futuras devem ser quebradas em `docs/specs/a_implementar/`.
+> **Função:** consolidar a direção ampla do personagem jogável: criação inicial, raças, gênero, aparência por sprites, atributos, HP/MP/Stamina/Breath, fome, cansaço, level up, skills, skill trees, arquétipos inferidos, ferramentas, armas, magia, equipamentos, resistências, morte, Fonte de Anya, companions, pets, fazenda, cidade, caverna, flerte, casamento, UI e save/load.  
+> **Não é spec implementável.** Este documento descreve como o sistema deve funcionar em visão de jogo. Specs futuras devem quebrar partes disso quando entrarmos em execução.
 
 ---
 
 ## 0. Regra de uso
 
-Toda spec que tocar o personagem deve ler este documento.
+Este é o documento canônico de direção para o personagem jogável.
 
-Isso inclui:
+Ele deve orientar qualquer refinamento futuro de:
 
 ```text
+criação do personagem
+raças jogáveis iniciais
+gênero / apresentação
+aparência em sprites
 atributos
 HP / MP / Stamina / Breath
 fome
@@ -28,7 +33,7 @@ cansaço
 level up
 pontos de atributo
 skills
-skill levels
+skill levels 1-5
 skill trees
 active slots
 arquétipos inferidos / jobs vestíveis
@@ -42,6 +47,7 @@ morte / derrota / Fonte de Anya
 companions
 pets
 fazenda
+cidade
 caverna
 UI/HUD
 save/load
@@ -53,7 +59,8 @@ Regra principal:
 ```text
 O jogador não possui classe fixa estilo D&D.
 O jogador evolui livremente por atributos, skills, equipamentos, armas, ferramentas, magia e escolhas de gameplay.
-O jogo pode inferir arquétipos/classes funcionais a partir da distribuição de skills e permitir que o jogador vista um arquétipo ativo para receber bônus.
+O jogo pode inferir arquétipos/jobs funcionais a partir da distribuição de skills, atributos e equipamentos.
+O jogador pode vestir/ativar um arquétipo desbloqueado para receber bônus, sem ficar preso a uma classe permanente.
 ```
 
 ---
@@ -62,56 +69,260 @@ O jogo pode inferir arquétipos/classes funcionais a partir da distribuição de
 
 ## 1. Fantasia de gameplay
 
-O personagem é um habitante/adventurer de Vaalara capaz de combinar:
+O personagem é um habitante/adventurer de Vaalara que pode combinar vida rural, exploração e crescimento pessoal.
 
-```text
-vida de fazenda
-exploração de caverna
-combate
-mineração
-crafting
-magia
-relacionamentos
-companions
-pets
-progressão de equipamentos
-interação com a Fonte de Anya
-```
-
-O jogo deve permitir builds híbridas.
-
-Exemplos:
+O personagem deve conseguir seguir caminhos híbridos como:
 
 ```text
 fazendeiro-mago
 minerador-tanque
 explorador arqueiro
-combatente de duas armas
-suporte com companions
+combatente de armas pesadas
 criador de animais com pet de combate
 artesão focado em economia
+socializador com forte rede de NPCs
 aventureiro de caverna com magia e resistência ambiental
+líder de companions
+personagem ligado à Fonte de Anya
 ```
+
+O jogo deve permitir que a identidade do personagem surja das escolhas mecânicas e sociais, não de uma classe inicial fixa.
 
 ## 2. Princípios de design
 
 ```text
 Liberdade primeiro.
 Classes fixas não devem limitar o jogador.
+Raça/gênero/aparência não devem impedir acesso a conteúdo central.
 Atributos precisam ter sinergia real com skills e equipamentos.
-Skills devem evoluir de nível 1 a 5.
+Skills evoluem de nível 1 a 5.
 Magia usa MP.
 Ações físicas usam Stamina e/ou Breath.
 Fome e cansaço afetam performance.
 Companions e pets ajudam, mas não substituem o jogador.
+Flerte e casamento devem respeitar NPCs, disponibilidade e narrativa.
 A Fonte de Anya conecta morte, respec, cura, narrativa e progressão especial.
 ```
 
 ---
 
-# PARTE B — Atributos principais
+# PARTE B — Criação inicial do personagem
 
-## 3. Atributos canônicos
+## 3. Objetivo da criação de personagem
+
+A criação inicial deve ser simples, legível e compatível com produção em sprites.
+
+O jogador escolhe:
+
+```text
+nome
+raça inicial
+gênero/apresentação
+sprite base de corpo
+tipo de cabelo
+cor de cabelo
+cor/variação visual básica, quando suportado pela raça
+```
+
+Regra:
+
+```text
+O jogo não terá editor profundo de corpo/rosto.
+A customização deve ser limitada, clara e sustentável para spritesheets.
+```
+
+## 4. Raças jogáveis iniciais
+
+A lista inicial deve usar raças de Vaalara que façam sentido no recorte rural de Dornécia e que sejam viáveis em sprites.
+
+Raças iniciais sugeridas:
+
+| Raça | Nome no jogo | Direção visual | Papel de gameplay |
+|---|---|---|---|
+| Humano de Dornécia | Humano | silhueta padrão, maior variação de cabelo/pele | versátil, social, sem especialização extrema |
+| Elfo da Noite / Luandil | Elfo da Noite | orelhas longas, tons frios, postura elegante | Destreza, Vontade, exploração/noturno |
+| Anão de Khaz Baruk | Anão | corpo baixo/largo, barba/cabelo forte | mineração, Constituição, Força, ferramentas |
+| Halfling | Halfling | pequeno, ágil, expressivo | sorte, social, agricultura, esquiva |
+| Tiefling | Tiefling | chifres pequenos/médios, cauda opcional se suportada | magia, Carisma, resistência a efeitos |
+| Meio-Orc | Meio-Orc | corpo forte, presas pequenas, postura robusta | Força, Constituição, combate físico |
+| Draconato | Draconato | cabeça/escamas dracônicas, cauda opcional se suportada | Breath, resistências, presença física |
+| Goblin | Goblin | pequeno, orelhas grandes, postura esperta | Destreza, engenharia/traps, exploração |
+
+Regra:
+
+```text
+Raça inicial pode dar identidade visual, pequenos bônus e pequenos traços passivos.
+Raça inicial não deve bloquear romances, profissões, magia, fazenda ou final do jogo.
+```
+
+## 5. Raças não iniciais ou futuras
+
+Algumas raças/povos devem existir no mundo, mas não precisam ser jogáveis no início.
+
+```text
+Nymirianos
+  ligados a Anya, Cindar, Água Viva e Fonte.
+  Devem ser tratados como lore profunda, não raça comum inicial.
+
+Gnomorin / gnomos técnicos
+  podem aparecer em ruínas, cidade, tecnologia bromeciana e NPCs.
+  Podem virar jogáveis no futuro, mas exigem visual e animações próprias.
+
+Drow / linhagens sombrias específicas
+  podem aparecer no Abismo Sem-Lua/caverna/Nyx.
+  Não devem ser jogáveis inicialmente sem direção narrativa clara.
+
+Outras linhagens regionais de Vaalara
+  podem ser adicionadas depois, se fizerem sentido no recorte de Cindar's Hope.
+```
+
+## 6. Bônus raciais iniciais
+
+Os bônus raciais devem ser leves.
+
+Direção:
+
+```text
+Não usar bônus grandes que forcem meta.
+Preferir pequenos bônus de identidade, resistência, eficiência ou afinidade.
+Permitir que atributos, skills, equipamentos e arquétipos sejam mais importantes que raça.
+```
+
+Exemplos conceituais:
+
+```text
+Humano: pequeno bônus social/econômico ou ponto flexível futuro.
+Elfo da Noite: leve bônus em exploração noturna, Destreza ou resistência a sombra.
+Anão: leve bônus em mineração, Constituição ou resistência a stagger.
+Halfling: leve bônus de sorte, esquiva ou culinária/social.
+Tiefling: leve bônus mágico/social ou resistência a calor/medo, conforme lore final.
+Meio-Orc: leve bônus de Força/Constituição ou resistência a stagger.
+Draconato: leve bônus de Breath/resistência elemental, se definido por linhagem.
+Goblin: leve bônus em traps, engenharia, Destreza ou achados.
+```
+
+## 7. Gênero / apresentação
+
+O jogador pode escolher gênero/apresentação inicial.
+
+Direção inicial:
+
+```text
+Masculino
+Feminino
+Neutro/Indefinido, se a UI e os textos suportarem
+```
+
+Regras:
+
+```text
+Gênero/apresentação não altera atributos.
+Gênero/apresentação não bloqueia romance por padrão.
+NPCs disponíveis para romance podem se relacionar com jogador homem ou mulher, conforme direção já consolidada.
+O efeito principal é visual, pronome/texto, animação base se necessário e leitura social.
+```
+
+Pendência:
+
+```text
+Definir se o jogo terá pronomes separados da apresentação visual.
+Definir se teremos sprites diferentes por gênero para todas as raças ou apenas variações de cabelo/roupa.
+```
+
+## 8. Aparência em sprites
+
+Por ser um jogo em sprites, a customização deve ser controlada.
+
+O jogador escolhe:
+
+```text
+tipo de cabelo
+cor de cabelo
+variação básica de pele/escama, se suportada
+roupa inicial simples, se suportada
+```
+
+Não teremos no início:
+
+```text
+editor de rosto detalhado
+altura customizada livre
+peso/corpo customizado livre
+morfologia facial detalhada
+múltiplas camadas complexas de roupa
+```
+
+Regra:
+
+```text
+Cada opção visual precisa ser sustentável em spritesheets de idle, walk, tool use, combat, hit, sleep/defeat e social interaction.
+```
+
+## 9. Cabelos e cores
+
+Tipos iniciais de cabelo devem ser poucos e reutilizáveis.
+
+Sugestão inicial:
+
+```text
+curto simples
+médio simples
+longo simples
+preso/rabo de cavalo
+cacheado/volumoso
+careca/sem cabelo
+```
+
+Cores iniciais:
+
+```text
+preto
+castanho
+loiro
+ruivo
+branco/cinza
+azul escuro/fantasia
+roxo/fantasia
+verde escuro/fantasia
+```
+
+Regras:
+
+```text
+Algumas raças podem ter restrições ou adaptações visuais.
+Draconatos podem usar crista/chifre/escama no lugar de cabelo comum.
+Tieflings precisam compatibilizar cabelo com chifres.
+Goblin/halfling/anão podem reaproveitar cabelo com escala ajustada.
+```
+
+## 10. Sprite base por raça
+
+Cada raça precisa de base visual própria ou adaptação clara.
+
+| Raça | Base sprite | Observação |
+|---|---|---|
+| Humano | Medium 32x48 | base padrão |
+| Elfo da Noite | Medium 32x48 | orelhas e paleta diferenciadas |
+| Anão | Short/Stocky 32x40 ou 32x44 | collider deve continuar consistente |
+| Halfling | Small 24x32 ou 28x36 | precisa validar leitura com ferramentas |
+| Tiefling | Medium 32x48 | chifres/cauda não podem quebrar animações |
+| Meio-Orc | Medium/Large visual 32x48 | corpo mais largo sem alterar collider injustamente |
+| Draconato | Medium/Large visual 32x48 | cabeça/escamas demandam sprites próprios |
+| Goblin | Small 24x32 ou 28x36 | animações rápidas e orelhas grandes |
+
+Regra:
+
+```text
+Collider/footbox deve preservar justiça de gameplay.
+Raça pequena não deve ter vantagem abusiva de hitbox, salvo decisão explícita.
+Raça grande não deve ser punida por sprite maior, salvo se houver compensação mecânica clara.
+```
+
+---
+
+# PARTE C — Atributos principais
+
+## 11. Atributos canônicos
 
 Atributos principais:
 
@@ -139,7 +350,7 @@ Eficiência de magia
 Eficiência social
 ```
 
-## 4. Progressão de atributos
+## 12. Progressão de atributos
 
 Regra canônica inicial:
 
@@ -152,10 +363,11 @@ Direção:
 
 ```text
 A progressão deve ser lenta o bastante para escolhas importarem.
-Equipamentos, alimentos, buffs, skills e arquétipos inferidos podem alterar temporariamente a performance.
+Equipamentos, alimentos, buffs, skills, raça e arquétipos inferidos podem alterar temporariamente a performance.
+Bônus raciais devem ser menores que escolhas de build de longo prazo.
 ```
 
-## 5. O que cada atributo representa
+## 13. O que cada atributo representa
 
 ### Força
 
@@ -215,7 +427,7 @@ Afeta:
 velocidade de ataque leve
 esquiva/dodge
 precisão com arco/dagger/spear
-chance ou qualidade de crítico, se definido em spec
+chance ou qualidade de crítico futura
 interação com traps
 movimentação em combate
 janelas de backstab/positioning
@@ -237,7 +449,7 @@ Representa conhecimento, técnica, magia estruturada e crafting avançado.
 Afeta:
 
 ```text
-MP máximo secundário ou scaling mágico, conforme spec
+MP máximo secundário ou scaling mágico, conforme decisão futura
 potência/eficiência de magia técnica
 crafting avançado
 identificação de monstros/traps/recursos
@@ -261,7 +473,7 @@ Representa força espiritual, foco, resistência mental e ligação com magia pr
 Afeta:
 
 ```text
-MP máximo principal ou regeneração, conforme spec
+MP máximo principal ou regeneração, conforme decisão futura
 resistência a medo/confusão/Nyx/Void
 força de magias espirituais
 resistência a corrupção
@@ -308,9 +520,9 @@ Carisma + City Reputation = acesso social e quests
 
 ---
 
-# PARTE C — HP / MP / Stamina / Breath
+# PARTE D — HP / MP / Stamina / Breath
 
-## 6. HP
+## 14. HP
 
 HP representa sobrevivência física.
 
@@ -335,7 +547,7 @@ caverna
 queda/dano ambiental futuro
 ```
 
-## 7. MP
+## 15. MP
 
 MP representa energia mágica para habilidades mágicas.
 
@@ -370,7 +582,7 @@ interações arcanas
 tecnologia/lore de Elyndor/Bromécia, quando aplicável
 ```
 
-## 8. Stamina
+## 16. Stamina
 
 Stamina representa energia física de ação.
 
@@ -396,7 +608,7 @@ Gastar stamina acelera crescimento de cansaço.
 Gastar stamina com fome acelera ainda mais.
 ```
 
-## 9. Breath / Fôlego
+## 17. Breath / Fôlego
 
 Breath representa ritmo respiratório, explosão, sustentação e capacidade de manter esforço sob pressão.
 
@@ -421,9 +633,9 @@ Breath = capacidade de sustentar ritmo, explosão e recuperação sob esforço.
 
 ---
 
-# PARTE D — Fome e cansaço
+# PARTE E — Fome e cansaço
 
-## 10. Fome
+## 18. Fome
 
 Fome representa nutrição/energia alimentar.
 
@@ -444,7 +656,7 @@ Fome não deve matar o jogador de forma punitiva no design base.
 Fome deve pressionar planejamento, alimentação, fazenda e cozinha.
 ```
 
-## 11. Cansaço
+## 19. Cansaço
 
 Cansaço é sistema próprio, mas afeta `PlayerConditionManager`.
 
@@ -469,7 +681,7 @@ Efeitos por estágio:
 Leve: redução pequena de recuperação.
 Moderado: ações consomem mais stamina/breath.
 Alto: menor dano/eficiência, movimento pior, risco em combate.
-Extremo: jogador precisa dormir/retornar, risco de colapso conforme spec futura.
+Extremo: jogador precisa dormir/retornar, risco de colapso conforme direção futura.
 ```
 
 Reduz com:
@@ -484,9 +696,9 @@ Fonte de Anya em casos especiais
 
 ---
 
-# PARTE E — Level up e pontos
+# PARTE F — Level up e pontos
 
-## 12. Level up
+## 20. Level up
 
 O level representa experiência geral do personagem.
 
@@ -511,7 +723,7 @@ O jogo deve evitar que só combate seja caminho válido.
 Fazenda e cidade também devem contribuir para progressão, mas a caverna concentra risco/recompensa maior.
 ```
 
-## 13. Pontos por level
+## 21. Pontos por level
 
 A cada level:
 
@@ -519,29 +731,30 @@ A cada level:
 +1 ponto de atributo principal para distribuir.
 ```
 
-Pontos de skill podem seguir outra regra, a definir em spec.
+Pontos de skill podem seguir regra própria.
 
 Direção possível:
 
 ```text
 SkillPoint a cada 2 níveis, se mantido do refinamento anterior.
 Skill XP por uso para progressão interna das skills.
+O design final pode combinar pontos globais + uso prático da skill.
 ```
 
 ---
 
-# PARTE F — Skills e níveis de skill
+# PARTE G — Skills e níveis de skill
 
-## 14. Regra geral de skills
+## 22. Regra geral de skills
 
 Skills são competências de gameplay. Cada skill pode ter níveis de 1 a 5.
 
 ```text
-Skill Level 1: desbloqueio básico
-Skill Level 2: eficiência ou custo melhor
-Skill Level 3: nova interação ou melhoria relevante
-Skill Level 4: especialização forte
-Skill Level 5: domínio / perk marcante / sinergia com tree
+Skill Level 1: desbloqueio básico.
+Skill Level 2: eficiência ou custo melhor.
+Skill Level 3: nova interação ou melhoria relevante.
+Skill Level 4: especialização forte.
+Skill Level 5: domínio / perk marcante / sinergia com tree.
 ```
 
 Skills podem evoluir por:
@@ -555,9 +768,7 @@ equipamentos
 Fonte de Anya/respec
 ```
 
-Specs futuras devem decidir quais skills usam XP por uso, pontos ou ambos.
-
-## 15. Skills agrícolas
+## 23. Skills agrícolas
 
 ### Farming / Agricultura
 
@@ -628,7 +839,7 @@ Níveis:
 5: pratos especiais, Fruto de Mana e receitas raras.
 ```
 
-## 16. Skills de exploração/caverna
+## 24. Skills de exploração/caverna
 
 ### Mining / Mineração
 
@@ -700,7 +911,7 @@ Níveis:
 5: long runs muito mais viáveis.
 ```
 
-## 17. Skills de combate
+## 25. Skills de combate
 
 ### Melee Combat / Combate Corpo a Corpo
 
@@ -770,7 +981,7 @@ Níveis:
 5: defesa avançada contra elites/bosses.
 ```
 
-## 18. Skills mágicas
+## 26. Skills mágicas
 
 ### Magic Control / Controle Mágico
 
@@ -819,7 +1030,7 @@ Níveis:
 5: efeitos após nível 101/libertação parcial.
 ```
 
-## 19. Skills sociais/econômicas
+## 27. Skills sociais/econômicas
 
 ### Social / Socialização
 
@@ -865,7 +1076,7 @@ negociação
 reputação econômica
 ```
 
-## 20. Skills técnicas
+## 28. Skills técnicas
 
 ### Crafting / Artesanato
 
@@ -898,9 +1109,9 @@ traps mecânicas
 
 ---
 
-# PARTE G — Skill trees e active slots
+# PARTE H — Skill trees e active slots
 
-## 21. Skill trees
+## 29. Skill trees
 
 Skill trees organizam progressão por tema.
 
@@ -927,7 +1138,7 @@ Skill tree não deve impedir builds híbridas.
 Capstones devem ser fortes, mas não obrigatórios para jogar.
 ```
 
-## 22. Active slots
+## 30. Active slots
 
 Active slots representam habilidades ativas equipadas.
 
@@ -941,15 +1152,15 @@ Regras:
 
 ```text
 O jogador não pode equipar todas as skills ativas ao mesmo tempo.
-Trocar active slots deve exigir menu/descanso/Fonte/fora de combate, conforme spec.
+Trocar active slots deve exigir menu/descanso/Fonte/fora de combate, conforme decisão futura.
 Skills passivas não ocupam active slot.
 ```
 
 ---
 
-# PARTE H — Arquétipos inferidos / jobs vestíveis
+# PARTE I — Arquétipos inferidos / jobs vestíveis
 
-## 23. Sem classes fixas
+## 31. Sem classes fixas
 
 O jogo não implementa classes estilo D&D.
 
@@ -962,7 +1173,7 @@ Com isso, pode inferir arquétipos/jobs funcionais.
 O jogador pode vestir/ativar um arquétipo desbloqueado para receber bônus.
 ```
 
-## 24. Arquétipos inferidos
+## 32. Arquétipos inferidos
 
 Exemplos:
 
@@ -981,7 +1192,7 @@ Companheiro/Líder
 Devoto de Anya
 ```
 
-## 25. Como desbloquear arquétipos
+## 33. Como desbloquear arquétipos
 
 Um arquétipo pode exigir:
 
@@ -1003,7 +1214,7 @@ Requisitos: Mining 3, Força 4, Constituição 3, picareta melhorada.
 Bônus ativo: menor stamina em mineração, maior chance de minério raro, resistência leve a cave fatigue.
 ```
 
-## 26. Vestir arquétipo
+## 34. Vestir arquétipo
 
 Regras:
 
@@ -1016,9 +1227,9 @@ Troca de arquétipo deve ser feita fora de combate ou em locais seguros.
 
 ---
 
-# PARTE I — Ferramentas, armas, magia e equipamentos
+# PARTE J — Ferramentas, armas, magia e equipamentos
 
-## 27. Ferramentas
+## 35. Ferramentas
 
 Ferramentas principais:
 
@@ -1044,7 +1255,7 @@ cansaço
 skills por uso
 ```
 
-## 28. Armas
+## 36. Armas
 
 Categorias possíveis:
 
@@ -1070,7 +1281,7 @@ stamina/breath
 magia/equipamentos
 ```
 
-## 29. Magia
+## 37. Magia
 
 Magia usa MP.
 
@@ -1104,7 +1315,7 @@ Magia não deve resolver todos os sistemas sozinha.
 Ela deve ter custo, limite, build e counterplay.
 ```
 
-## 30. Equipamentos
+## 38. Equipamentos
 
 Slots possíveis:
 
@@ -1132,9 +1343,9 @@ bônus de pet/companion
 
 ---
 
-# PARTE J — Resistências e status negativos
+# PARTE K — Resistências e status negativos
 
-## 31. Resistências
+## 39. Resistências
 
 Resistências principais:
 
@@ -1167,7 +1378,7 @@ companions/pets
 Fonte de Anya
 ```
 
-## 32. Status negativos
+## 40. Status negativos
 
 Status possíveis:
 
@@ -1194,14 +1405,14 @@ Regra:
 ```text
 Status forte precisa de telegraph, duração curta ou counterplay.
 ConfusionLite não tira controle total do jogador.
-DurabilityStress não destrói item permanentemente sem spec própria.
+DurabilityStress não destrói item permanentemente sem direção específica.
 ```
 
 ---
 
-# PARTE K — Morte, derrota e Fonte de Anya
+# PARTE L — Morte, derrota e Fonte de Anya
 
-## 33. Derrota
+## 41. Derrota
 
 Derrota deve ser integrada a:
 
@@ -1222,7 +1433,7 @@ Regra:
 Morte/derrota deve ter consequência, mas não apagar progresso de forma injusta.
 ```
 
-## 34. Fonte de Anya
+## 42. Fonte de Anya
 
 A Fonte de Anya é eixo de:
 
@@ -1241,14 +1452,14 @@ Regras já consolidadas:
 ```text
 Anya não tem altar construível na fazenda.
 A Fonte é a representação física ativa de Anya na fazenda.
-A libertação parcial do poder de Anya ocorre por conteúdo profundo da caverna/nivel 101.
+A libertação parcial do poder de Anya ocorre por conteúdo profundo da caverna/nível 101.
 ```
 
 ---
 
-# PARTE L — Companions, pets, fazenda e caverna
+# PARTE M — Companions, pets, fazenda, cidade e caverna
 
-## 35. Companions
+## 43. Companions
 
 Companions podem ajudar em:
 
@@ -1273,7 +1484,7 @@ invalidar pet
 invalidar build do personagem
 ```
 
-## 36. Pets
+## 44. Pets
 
 Pets são sistema próprio, separado de companion.
 
@@ -1284,7 +1495,7 @@ Gato pode apoiar sorte, detecção de segredo/anomalia e vínculo social/fazenda
 
 Cachorro não ocupa slot de companion.
 
-## 37. Relação com fazenda
+## 45. Relação com fazenda
 
 O personagem se conecta à fazenda por:
 
@@ -1301,7 +1512,24 @@ Fruto de Mana
 Fonte de Anya
 ```
 
-## 38. Relação com caverna
+## 46. Relação com cidade
+
+O personagem se conecta à cidade por:
+
+```text
+reputação
+relacionamentos
+amizade
+flerte
+casamento
+serviços
+lojas
+festivais
+contratos
+visitas de NPCs à fazenda
+```
+
+## 47. Relação com caverna
 
 O personagem se conecta à caverna por:
 
@@ -1325,9 +1553,9 @@ morte/retorno
 
 ---
 
-# PARTE M — Flerte, relacionamento e casamento
+# PARTE N — Flerte, relacionamento e casamento
 
-## 39. Relacionamentos
+## 48. Relacionamentos
 
 Relacionamentos devem considerar:
 
@@ -1343,7 +1571,7 @@ visitas à fazenda
 compatibilidade narrativa
 ```
 
-## 40. Flerte
+## 49. Flerte
 
 Flerte deve ser opção explícita e respeitar disponibilidade do NPC.
 
@@ -1356,7 +1584,7 @@ Romance não deve depender só de gifts repetidos.
 Romance deve ter eventos, escolhas, quests e limites claros.
 ```
 
-## 41. Casamento
+## 50. Casamento
 
 Casamento pode desbloquear:
 
@@ -1380,9 +1608,9 @@ quebrar serviços essenciais da cidade
 
 ---
 
-# PARTE N — UI/HUD e save/load
+# PARTE O — UI/HUD e save/load
 
-## 42. UI/HUD do personagem
+## 51. UI/HUD do personagem
 
 HUD deve mostrar claramente:
 
@@ -1404,6 +1632,8 @@ pet/companion status quando relevante
 Menus necessários:
 
 ```text
+criação do personagem
+raça/gênero/aparência
 atributos
 skills
 skill trees
@@ -1415,11 +1645,16 @@ companions
 status/resistências
 ```
 
-## 43. Save/load
+## 52. Save/load
 
 Save deve persistir:
 
 ```text
+nome
+raça
+gênero/apresentação
+sprite base
+cabelo/cor/opções visuais
 level
 XP
 atributos
@@ -1448,29 +1683,32 @@ morte/corpse recovery state
 
 ---
 
-# PARTE O — Roadmap de specs futuras
+# PARTE P — Roadmap de direção futura
+
+Este documento é a visão ampla. Antes de implementação, ainda precisamos refinar documentos ou seções específicas de direção para:
 
 ```text
-spec_player_attributes_progression_points.md
-spec_player_hp_mp_stamina_breath_formulas.md
-spec_player_hunger_fatigue_condition_manager.md
-spec_player_skills_level_1_5_progression.md
-spec_player_skill_trees_active_slots.md
-spec_player_inferred_jobs_archetypes.md
-spec_player_tools_usage_upgrade_stamina.md
-spec_player_weapons_damage_types_critical_windows.md
-spec_player_magic_mp_skill_actions.md
-spec_player_equipment_resistances_status.md
-spec_player_death_defeat_anya_fountain.md
-spec_player_companion_pet_integration.md
-spec_player_relationship_flirt_marriage.md
-spec_ui_player_hud_status_skills_equipment.md
-spec_save_player_core_systems.md
+fórmulas de atributos e stats derivados
+curva de XP e level cap
+progressão de skills 1-5
+skill trees e capstones
+arquétipos inferidos/jobs vestíveis
+ferramentas e upgrades
+armas e dano
+magia e MP
+resistências e status
+morte/derrota/Fonte de Anya
+criação visual do personagem em sprites
+raças jogáveis e passivas raciais
+companions e pets integrados ao personagem
+flerte, romance e casamento
+UI/HUD do personagem
+save/load do personagem
 ```
 
 ---
 
-# PARTE P — Decisões fechadas
+# PARTE Q — Decisões fechadas
 
 ```text
 O jogador não terá classe fixa estilo D&D.
@@ -1485,13 +1723,20 @@ Pets são separados de companions.
 Cachorro pode apoiar combate sem ocupar slot de companion.
 Flerte/casamento fazem parte dos sistemas do personagem/social.
 Fonte de Anya conecta morte, respec, cura especial e progressão de lore.
+Criação do personagem terá raça, gênero/apresentação e aparência limitada por sprites.
+Raça/gênero/aparência não devem bloquear build, romance ou conteúdo central.
 ```
 
 ---
 
-# PARTE Q — Pendências
+# PARTE R — Pendências
 
 ```text
+Validar lista final de raças jogáveis iniciais contra o canon de raças de Vaalara.
+Definir passivas raciais finais.
+Definir se gênero e pronome serão campos separados.
+Definir sprites base finais por raça e gênero/apresentação.
+Definir paleta final de cabelo/pele/escamas.
 Definir fórmulas finais de HP/MP/Stamina/Breath.
 Definir curva de XP e level cap.
 Definir se skill XP é por uso, por ponto ou híbrido.
@@ -1501,4 +1746,4 @@ Definir se troca de active slots/jobs ocorre na Fonte, casa, menu ou checkpoint.
 Definir dano base por arma/ferramenta/magia.
 Definir sistema de romance/casamento por NPC.
 Definir relação entre cônjuge, companion e NPC de serviço.
-Definir save contracts concretos.
+Definir contratos concretos de save/load.
