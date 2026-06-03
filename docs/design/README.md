@@ -101,7 +101,8 @@ docs/design/
       CITY_NPC_ROSTER_SERVICES_DIRECTION_v1.1.md
       CITY_LAYOUT_BUILDINGS_SCHEDULE_DIRECTION.md
     cave/
-      CAVE_DESIGN_DIRECTION_v1.0.md
+      CAVE_DESIGN_DIRECTION.md
+      CAVE_MONSTER_ROSTER_DIRECTION.md
     combat_magic_progression/
       COMBAT_MAGIC_PROGRESSION_DESIGN_DIRECTION_v1.0.md
     companions/
@@ -184,6 +185,18 @@ Layout, construções, interiores, camas, schedules, física e roadmap da cidade
 docs/design/gameplay/city/CITY_LAYOUT_BUILDINGS_SCHEDULE_DIRECTION.md
 ```
 
+Documento ativo consolidado de direção ampla da caverna:
+
+```text
+docs/design/gameplay/cave/CAVE_DESIGN_DIRECTION.md
+```
+
+Roster ativo de monstros, bosses, packs, XP, drops e bestiário da caverna:
+
+```text
+docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_DIRECTION.md
+```
+
 ## Leitura mínima antes de specs
 
 Toda spec de gameplay/lore deve começar lendo:
@@ -207,4 +220,13 @@ Specs de cidade devem ler também:
 docs/design/gameplay/city/CITY_DESIGN_DIRECTION_v1.2.md
 docs/design/gameplay/city/CITY_NPC_ROSTER_SERVICES_DIRECTION_v1.1.md
 docs/design/gameplay/city/CITY_LAYOUT_BUILDINGS_SCHEDULE_DIRECTION.md
+```
+
+Specs de caverna devem ler também:
+
+```text
+docs/design/gameplay/cave/CAVE_DESIGN_DIRECTION.md
+docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_DIRECTION.md
+docs/game_rules/cave_rules.md
+docs/decisions/ADR-0005-cave-stable-run-and-replay.md
 ```
