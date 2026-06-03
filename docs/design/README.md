@@ -29,22 +29,26 @@ Usar o histórico do Git como versionamento.
 
 Exceção: specs implementáveis em `docs/specs/` podem ter nomes específicos por entrega, porque representam unidades diferentes de implementação.
 
-## Mapa obrigatório para criação de specs
+## Mapa e processo obrigatórios para criação de specs
 
 Antes de criar qualquer spec em `docs/specs/a_implementar/`, consultar:
 
 ```text
 docs/design/SPEC_SOURCE_MAP.md
+docs/design/SPECIFICATION_PROCESS.md
 ```
 
-Esse arquivo define quais documentos de design devem ser lidos para cada tipo de spec.
+O `SPEC_SOURCE_MAP.md` define quais documentos de design devem ser lidos para cada tipo de spec.
+
+O `SPECIFICATION_PROCESS.md` define como transformar design direction em spec implementável.
 
 Toda spec deve declarar uma seção:
 
 ```md
 ## Fontes obrigatórias lidas
 
-- docs/design/...
+- docs/design/SPEC_SOURCE_MAP.md
+- docs/design/SPECIFICATION_PROCESS.md
 - docs/design/...
 ```
 
@@ -54,6 +58,7 @@ Toda spec deve declarar uma seção:
 |---|---|---|
 | Design direction | `docs/design/` | Descrever como cada parte do jogo deve funcionar, qual é a visão, regras, mecanismos, lore e intenção de produto. Deve existir um único arquivo canônico por tema. |
 | Source map | `docs/design/SPEC_SOURCE_MAP.md` | Dizer quais documentos devem ser lidos antes de criar/refinar cada spec. |
+| Specification process | `docs/design/SPECIFICATION_PROCESS.md` | Definir o método obrigatório para transformar design em spec implementável. |
 | Pré-refinamento transitório | `docs/refinements/a_implementar/pre_refinamentos/` | Rascunhos vivos, análises e exploração de decisões antes de virar design consolidado ou spec. |
 | Refinamento implementado | `docs/refinements/implementados/` | Contexto histórico, auditorias, waves e decisões já absorvidas. |
 | Spec implementável | `docs/specs/a_implementar/` | Documento operacional para execução com escopo, dependências, arquivos permitidos/proibidos, critérios de aceite e validação. |
@@ -86,6 +91,7 @@ Como testar no Unity?
 docs/design/
   README.md
   SPEC_SOURCE_MAP.md
+  SPECIFICATION_PROCESS.md
   gameplay/
     farm/
       FARM_DESIGN_DIRECTION_v1.3.md
@@ -118,6 +124,8 @@ Design direction consolidado em docs/design/
   ↓
 Consulta obrigatória a docs/design/SPEC_SOURCE_MAP.md
   ↓
+Consulta obrigatória a docs/design/SPECIFICATION_PROCESS.md
+  ↓
 Spec quebrada em docs/specs/a_implementar/
   ↓
 Implementação
@@ -137,6 +145,12 @@ Mapa de fontes para specs:
 
 ```text
 docs/design/SPEC_SOURCE_MAP.md
+```
+
+Processo canônico de especificação:
+
+```text
+docs/design/SPECIFICATION_PROCESS.md
 ```
 
 Documento ativo consolidado de direção ampla da fazenda:
@@ -169,6 +183,7 @@ Toda spec de gameplay/lore deve começar lendo:
 
 ```text
 docs/design/SPEC_SOURCE_MAP.md
+docs/design/SPECIFICATION_PROCESS.md
 docs/design/lore/VAALARA_GAME_CANON_DIRECTION_v1.0.md
 ```
 
