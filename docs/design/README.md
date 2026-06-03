@@ -102,7 +102,10 @@ docs/design/
       CITY_LAYOUT_BUILDINGS_SCHEDULE_DIRECTION.md
     cave/
       CAVE_DESIGN_DIRECTION.md
+      CAVE_LEVEL_GENERATION_LAYOUT_BIOME_DIRECTION.md
       CAVE_MONSTER_ROSTER_DIRECTION.md
+      CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md
+      CAVE_MONSTER_VISUAL_SPRITE_DIRECTION.md
     combat_magic_progression/
       COMBAT_MAGIC_PROGRESSION_DESIGN_DIRECTION_v1.0.md
     companions/
@@ -191,10 +194,28 @@ Documento ativo consolidado de direção ampla da caverna:
 docs/design/gameplay/cave/CAVE_DESIGN_DIRECTION.md
 ```
 
+Geração procedural, tamanho dos níveis e randomização de biomas da caverna:
+
+```text
+docs/design/gameplay/cave/CAVE_LEVEL_GENERATION_LAYOUT_BIOME_DIRECTION.md
+```
+
 Roster ativo de monstros, bosses, packs, XP, drops e bestiário da caverna:
 
 ```text
 docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_DIRECTION.md
+```
+
+Balanceamento, vulnerabilidades e janelas de crítico da caverna:
+
+```text
+docs/design/gameplay/cave/CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md
+```
+
+Direção visual de sprites, silhuetas, animações e variações dos monstros da caverna:
+
+```text
+docs/design/gameplay/cave/CAVE_MONSTER_VISUAL_SPRITE_DIRECTION.md
 ```
 
 ## Leitura mínima antes de specs
@@ -226,7 +247,10 @@ Specs de caverna devem ler também:
 
 ```text
 docs/design/gameplay/cave/CAVE_DESIGN_DIRECTION.md
+docs/design/gameplay/cave/CAVE_LEVEL_GENERATION_LAYOUT_BIOME_DIRECTION.md
 docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_DIRECTION.md
+docs/design/gameplay/cave/CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md
+docs/design/gameplay/cave/CAVE_MONSTER_VISUAL_SPRITE_DIRECTION.md
 docs/game_rules/cave_rules.md
 docs/decisions/ADR-0005-cave-stable-run-and-replay.md
 ```
