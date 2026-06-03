@@ -9,7 +9,7 @@
 
 ## 1. Regra principal
 
-Toda spec em `docs/specs/a_implementar/` deve declarar uma seção:
+Toda spec em `docs/specs/a_implementar/` deve declarar:
 
 ```md
 ## Fontes obrigatórias lidas
@@ -44,14 +44,6 @@ docs/design/SPECIFICATION_PROCESS.md
 docs/design/lore/VAALARA_GAME_CANON_DIRECTION_v1.0.md
 ```
 
-Motivo:
-
-- mantém Vaalara como contexto obrigatório;
-- define como especificar;
-- evita specs sem rastreabilidade;
-- evita contradições sobre Anya, Kanthor, Thandra, Nyx, Senya, Alihana, Finan, Merithus, Thoren, Kaand, Bromécia, Elyndor e Mana;
-- garante que cada sistema continue ligado ao mundo.
-
 ---
 
 # PARTE A — Fazenda
@@ -65,11 +57,7 @@ docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.3.md
 docs/design/gameplay/farm/FARM_LAYOUT_SCALE_BUILDINGS_DIRECTION.md
 ```
 
-Usar `FARM_DESIGN_DIRECTION_v1.3.md` para visão, regras, sistemas, lore, roadmap e funcionamento amplo.
-
-Usar `FARM_LAYOUT_SCALE_BUILDINGS_DIRECTION.md` para escala visual, tile 32x32, player 32x48, footprints, props, construções, interiores, colisão, pathfinding e tamanhos em pixels.
-
-Ler para specs de:
+Usar para specs de:
 
 ```text
 farm layout
@@ -132,36 +120,11 @@ docs/design/gameplay/city/CITY_NPC_ROSTER_SERVICES_DIRECTION_v1.1.md
 docs/design/gameplay/city/CITY_LAYOUT_BUILDINGS_SCHEDULE_DIRECTION.md
 ```
 
-Ler para specs de:
+Specs de cidade que tocam fazenda devem ler também:
 
 ```text
-city layout
-city buildings
-city interiors
-city NPCs
-NPC residences
-NPC beds
-NPC schedules
-NPC pathfinding
-shops
-services
-contracts
-reputation
-romance
-marriage
-farm visits
-festivals
-moon events
-Kanthor temple
-altars
-Anya statue garden
-night shop
-Nyx behaviours
-Bromecia/Elyndor hooks
-pixel scale
-sprite scale
-building sizes
-props/interactables
+docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.3.md
+docs/design/gameplay/farm/FARM_LAYOUT_SCALE_BUILDINGS_DIRECTION.md
 ```
 
 Specs recomendadas derivadas:
@@ -184,47 +147,44 @@ spec_city_festivals_layout_variations.md
 spec_city_hidden_subsoil_bromecia_elyndor_hooks.md
 ```
 
-## 5. Specs de cidade que tocam fazenda
-
-Além das fontes de cidade, ler:
-
-```text
-docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.3.md
-docs/design/gameplay/farm/FARM_LAYOUT_SCALE_BUILDINGS_DIRECTION.md
-```
-
-Obrigatório para:
-
-```text
-farm visits
-shipping bin/city economy
-construction permits
-animals/pets deliveries
-marriage moving to farm
-altar placement on farm
-Fonte de Anya interactions
-```
-
 ---
 
 # PARTE C — Caverna
 
-## 6. Specs de caverna
+## 5. Specs de caverna
 
 Fontes obrigatórias:
 
 ```text
 docs/design/gameplay/cave/CAVE_DESIGN_DIRECTION.md
+docs/design/gameplay/cave/CAVE_LEVEL_GENERATION_LAYOUT_BIOME_DIRECTION.md
 docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_DIRECTION.md
+docs/design/gameplay/cave/CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md
+docs/design/gameplay/cave/CAVE_MONSTER_VISUAL_SPRITE_DIRECTION.md
 docs/game_rules/cave_rules.md
 docs/decisions/ADR-0005-cave-stable-run-and-replay.md
 ```
 
-Usar `CAVE_DESIGN_DIRECTION.md` para visão, estrutura macro, densidade, biomas, mineração, tesouros, boss gates, checkpoints, level 100, level 101 e roadmap.
+Uso de cada fonte:
 
-Usar `CAVE_MONSTER_ROSTER_DIRECTION.md` para criaturas, bosses, packs, XP, drops, ataques, comportamento, bestiary e loot direction.
+```text
+CAVE_DESIGN_DIRECTION.md
+  visão macro, 100 níveis, nível 101, boss gates, mineração, tesouros e roadmap.
 
-Além dessas fontes, specs de caverna que tocam runtime já existente devem ler:
+CAVE_LEVEL_GENERATION_LAYOUT_BIOME_DIRECTION.md
+  tamanho mínimo/máximo dos níveis, randomização ponderada de biomas, layout archetypes, special rooms e snapshot.
+
+CAVE_MONSTER_ROSTER_DIRECTION.md
+  criaturas, bosses, packs, atributos, XP, drops, ataques, comportamento e scaling.
+
+CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md
+  active combat budget, vulnerabilidades, crítico automático em janela, companions/pets e TTK.
+
+CAVE_MONSTER_VISUAL_SPRITE_DIRECTION.md
+  descrição visual, tamanho, silhueta, cores, animações, variações e telegraph de sprites.
+```
+
+Specs de caverna que tocam runtime já existente devem ler também:
 
 ```text
 docs/specs/a_implementar/spec_cave_runtime_generation_checkpoints_boss_gates.md
@@ -242,6 +202,10 @@ docs/specs/implementados/spec_cave_008_debug_skip_confinement_wall_distance_hard
 Temas esperados:
 
 ```text
+procedural generation
+level size ranges
+weighted biome randomization
+layout archetypes
 100 levels
 level 101/endgame
 boss gate 100
@@ -252,8 +216,13 @@ treasure rooms
 special rooms
 hazards
 monster density
+active enemy budget
 monster packs
+monster visual sprites
 bosses
+boss phases
+vulnerabilities
+critical windows
 checkpoints
 Elyndor portals
 Bromecia ruins
@@ -270,20 +239,26 @@ pet dog support
 Specs recomendadas futuras:
 
 ```text
+spec_cave_level_size_ranges_generation_config.md
+spec_cave_weighted_biome_randomization.md
+spec_cave_layout_archetypes_rooms_corridors.md
+spec_cave_special_rooms_treasure_hazards_generation.md
+spec_cave_snapshot_layout_biome_special_elements.md
 spec_cave_design_reconciliation_density_rules.md
-spec_cave_world_generation_levels_biomes.md
 spec_cave_enemy_density_packs_spawnplan_rebalance.md
-spec_cave_special_rooms_mining_treasure_generation.md
-spec_cave_mining_resources_nodes.md
-spec_cave_resources_treasures_biome_tables.md
+spec_cave_active_enemy_budget.md
+spec_cave_vulnerability_critical_windows.md
+spec_cave_enemy_vulnerability_tables.md
+spec_cave_boss_phase_vulnerabilities.md
 spec_cave_boss_gate_100_level_101_unlock.md
 spec_cave_level_101_boss_gauntlet_anya_lore.md
 spec_cave_monster_roster_data_expansion.md
-spec_cave_enemy_actions_vulnerability_profiles.md
-spec_cave_boss_gate_roster_rewards.md
-spec_cave_bestiary_entries_lore_rewards.md
-spec_cave_snapshot_special_elements_persistence.md
-spec_cave_checkpoints_elyndor_portals.md
+spec_cave_monster_sprite_prompts_by_family.md
+spec_cave_monster_sprite_atlas_requirements.md
+spec_cave_monster_animation_sets.md
+spec_cave_boss_phase_visuals.md
+spec_cave_vulnerability_telegraph_vfx.md
+spec_cave_monster_variant_visuals.md
 spec_cave_death_corpse_recovery_fonte.md
 spec_cave_city_guild_contracts_integration.md
 ```
@@ -292,7 +267,7 @@ spec_cave_city_guild_contracts_integration.md
 
 # PARTE D — Combate, magia e progressão
 
-## 7. Specs de combate/magia/progressão
+## 6. Specs de combate/magia/progressão
 
 Fonte futura principal:
 
@@ -309,36 +284,7 @@ docs/design/gameplay/farm/FARM_LAYOUT_SCALE_BUILDINGS_DIRECTION.md
 docs/design/gameplay/city/CITY_NPC_ROSTER_SERVICES_DIRECTION_v1.1.md
 docs/design/gameplay/cave/CAVE_DESIGN_DIRECTION.md
 docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_DIRECTION.md
-```
-
-Temas esperados:
-
-```text
-HP
-MP
-Stamina
-Breath/Fôlego
-Força
-Constituição
-Destreza
-Inteligência
-Vontade
-Carisma
-Fome
-Exaustão
-Frio
-Calor
-Veneno
-Medo
-Morte
-weapons
-magic skills
-skill trees
-levels
-classes/jobs do jogo
-companions combat
-pets combat support
-cave combat balance
+docs/design/gameplay/cave/CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md
 ```
 
 Specs recomendadas futuras:
@@ -356,7 +302,7 @@ spec_jobs_classes_gameplay_roles.md
 
 # PARTE E — Companions e pets
 
-## 8. Specs de companions
+## 7. Specs de companions
 
 Fonte futura principal:
 
@@ -374,22 +320,7 @@ docs/design/gameplay/city/CITY_NPC_ROSTER_SERVICES_DIRECTION_v1.1.md
 docs/design/gameplay/city/CITY_LAYOUT_BUILDINGS_SCHEDULE_DIRECTION.md
 docs/design/gameplay/cave/CAVE_DESIGN_DIRECTION.md
 docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_DIRECTION.md
-```
-
-Temas esperados:
-
-```text
-companion recruitment
-relationship
-farm jobs
-cave companions
-death/unavailable state
-resurrection at Fonte
-affinity
-marriage distinction
-NPC service mode
-pet system separate from companion
-pet dog cave support
+docs/design/gameplay/cave/CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md
 ```
 
 Specs recomendadas futuras:
@@ -406,7 +337,7 @@ spec_pets_dog_cat_bond_buffs_combat_support.md
 
 # PARTE F — UI/UX
 
-## 9. Specs de UI/UX
+## 8. Specs de UI/UX
 
 Fonte futura principal:
 
@@ -419,34 +350,10 @@ Enquanto não existir, ler fontes do domínio tocado:
 ```text
 Fazenda -> FARM_DESIGN_DIRECTION_v1.3.md + FARM_LAYOUT_SCALE_BUILDINGS_DIRECTION.md
 Cidade -> CITY_DESIGN_DIRECTION_v1.2.md + CITY_LAYOUT_BUILDINGS_SCHEDULE_DIRECTION.md
-Caverna -> CAVE_DESIGN_DIRECTION.md + CAVE_MONSTER_ROSTER_DIRECTION.md
+Caverna -> CAVE_DESIGN_DIRECTION.md + CAVE_LEVEL_GENERATION_LAYOUT_BIOME_DIRECTION.md + CAVE_MONSTER_ROSTER_DIRECTION.md + CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md + CAVE_MONSTER_VISUAL_SPRITE_DIRECTION.md
 NPCs -> CITY_NPC_ROSTER_SERVICES_DIRECTION_v1.1.md
 Canon -> VAALARA_GAME_CANON_DIRECTION_v1.0.md
 Processo -> SPECIFICATION_PROCESS.md
-```
-
-Temas esperados:
-
-```text
-HUD
-inventory
-equipment
-hotbar
-shops
-dialogue
-relationship UI
-calendar
-map
-building mode
-skill tree
-crafting
-shipping bin
-quests
-contracts
-festival UI
-cave checkpoint side menu
-cave boss UI
-bestiary UI
 ```
 
 Specs recomendadas futuras:
@@ -459,13 +366,14 @@ spec_ui_city_map_calendar_shops_contracts.md
 spec_ui_farm_build_mode_layout.md
 spec_ui_skill_tree_respec_fonte.md
 spec_ui_cave_checkpoint_bestiary_boss_feedback.md
+spec_ui_cave_vulnerability_critical_feedback.md
 ```
 
 ---
 
 # PARTE G — Template obrigatório de spec
 
-## 10. Cabeçalho mínimo
+## 9. Cabeçalho mínimo
 
 Toda spec deve começar com:
 
@@ -502,7 +410,7 @@ Toda spec deve começar com:
 ## Riscos e rollback
 ```
 
-## 11. Regra de rastreabilidade
+## 10. Regra de rastreabilidade
 
 Toda spec deve conseguir responder:
 
