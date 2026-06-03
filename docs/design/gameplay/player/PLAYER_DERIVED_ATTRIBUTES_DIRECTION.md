@@ -411,15 +411,25 @@ Upgrades devem melhorar eficiência, alcance, dano, utilidade ou tempo de ação
 Dash e Dodge são fortes e devem ser escolhas, não spam defensivo.
 ```
 
-### Block impact baseado em proporção de ameaça
+### Block impact baseado em dano pós-armadura
 
-O custo de Stamina por impacto bloqueado deve ser proporcional ao dano bruto da criatura em relação ao HP máximo do jogador.
+O custo de Stamina por impacto bloqueado deve ser proporcional ao dano que o golpe representaria no jogador **após mitigação de armadura/defesa**, não ao dano bruto total da criatura.
 
 Fórmula direcional:
 
 ```text
-IncomingDamageRatio = IncomingRawDamage / PlayerMaxHP
+MitigatedDamageForStamina = max(MinDamageForStamina, IncomingRawDamage - ArmorMitigationValue)
+IncomingDamageRatio = MitigatedDamageForStamina / PlayerMaxHP
 BlockImpactStaminaCost = PlayerMaxStamina * IncomingDamageRatio * BlockImpactMultiplier * (1 - BlockStability)
+```
+
+Se a spec futura separar resistência percentual e armadura flat, usar:
+
+```text
+MitigatedDamageForStamina = max(
+  MinDamageForStamina,
+  (IncomingRawDamage * (1 - PhysicalResistance)) - ArmorFlatMitigation
+)
 ```
 
 Valores recomendados:
@@ -428,6 +438,7 @@ Valores recomendados:
 BlockImpactMultiplier comum: 0.75 a 1.00
 BlockImpactMultiplier elite: 1.00 a 1.35
 BlockImpactMultiplier boss: 1.25 a 1.75
+MinDamageForStamina: 1 a 5, conforme tier/nível
 ```
 
 Exemplo:
@@ -436,19 +447,22 @@ Exemplo:
 PlayerMaxHP = 230
 PlayerMaxStamina = 144
 IncomingRawDamage = 57
+ArmorMitigationValue = 14
 BlockStability = 24%
 BlockImpactMultiplier comum = 0.90
 
-IncomingDamageRatio = 57 / 230 = 24.8%
-BlockImpactStaminaCost = 144 * 0.248 * 0.90 * 0.76
-BlockImpactStaminaCost ≈ 24 Stamina
+MitigatedDamageForStamina = 57 - 14 = 43
+IncomingDamageRatio = 43 / 230 = 18.7%
+BlockImpactStaminaCost = 144 * 0.187 * 0.90 * 0.76
+BlockImpactStaminaCost ≈ 18 Stamina
 ```
 
 Regra:
 
 ```text
-Golpes que ameaçam muito a vida também ameaçam muito a Stamina ao bloquear.
-Isso faz Block ser forte, mas não gratuito.
+Golpes que ameaçam muito a vida depois da armadura também ameaçam muito a Stamina ao bloquear.
+Golpes que a armadura absorve bem drenam menos Stamina.
+Isso preserva valor de armor sem transformar Block em defesa gratuita.
 ```
 
 ## 13. Stamina Regen
@@ -544,7 +558,8 @@ Constituição pode ajudar status físico e posture, mas pouco em resistência p
 ```text
 BlockedDamage = IncomingDamage * (1 - BlockPower)
 
-IncomingDamageRatio = IncomingRawDamage / PlayerMaxHP
+MitigatedDamageForStamina = max(MinDamageForStamina, IncomingRawDamage - ArmorMitigationValue)
+IncomingDamageRatio = MitigatedDamageForStamina / PlayerMaxHP
 BlockImpactStaminaCost = PlayerMaxStamina
                        * IncomingDamageRatio
                        * BlockImpactMultiplier
@@ -568,8 +583,9 @@ Regra:
 
 ```text
 Block drena Stamina por tempo segurado e por impacto.
+O impacto usa dano pós-armadura/mitigação como base do percentual.
 Sem Stamina, Block quebra ou perde eficiência.
-Não aplicar Defense/Armor completo depois de Block; usar mitigação flat parcial.
+Não aplicar Defense/Armor completo depois de Block; usar mitigação flat parcial para dano recebido.
 ```
 
 ## 17. Posture Resistance
@@ -964,7 +980,7 @@ Heavy melee com Espada de Aço custa 40 Stamina.
 Dash custa 40 Stamina.
 Dodge custa 40 Stamina.
 Block hold custa 18 Stamina/s.
-Block impact drena Stamina conforme proporção do dano bruto da criatura contra HP máximo do jogador.
+Block impact drena Stamina conforme proporção do dano pós-armadura/mitigação contra HP máximo do jogador.
 Stamina costs escalam por tier/tipo/peso da ação.
 Stamina Regen em combate deve ser baixa.
 Monstros não usam fórmula de HP do jogador.
@@ -976,7 +992,7 @@ Monstros têm HP autorado por faixa, família, papel e multiplicador próprio de
 # PARTE M — Pendências
 
 ```text
-Atualizar teste de mesa com custos altos de Stamina e Block proporcional.
+Atualizar teste de mesa com BlockImpact baseado em dano pós-armadura.
 Validar se 144 Stamina no level 30 ainda está adequado com Dodge/Dash a 40.
 Validar custos de ataques por tier de arma.
 Validar Stamina Regen em Unity.
@@ -984,3 +1000,4 @@ Definir Armor/Resistance por família de monstro.
 Definir EnemyActionDamage por ação inimiga.
 Definir EnemyHP formula apenas para geração/validação de dados, não para runtime obrigatório.
 Definir caps finais de Block Power, Block Stability e Stamina Regen.
+Definir cap mínimo/máximo de BlockImpactStaminaCost.
