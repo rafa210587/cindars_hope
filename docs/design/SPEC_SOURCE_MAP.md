@@ -161,6 +161,7 @@ docs/design/gameplay/cave/CAVE_LEVEL_GENERATION_LAYOUT_BIOME_DIRECTION.md
 docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_DIRECTION.md
 docs/design/gameplay/cave/CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md
 docs/design/gameplay/cave/CAVE_MONSTER_VISUAL_SPRITE_DIRECTION.md
+docs/design/gameplay/combat/COMBAT_CORE_DIRECTION.md
 docs/game_rules/cave_rules.md
 docs/decisions/ADR-0005-cave-stable-run-and-replay.md
 ```
@@ -178,10 +179,13 @@ CAVE_MONSTER_ROSTER_DIRECTION.md
   criaturas, bosses, packs, atributos, XP, drops, ataques, comportamento e scaling.
 
 CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md
-  active combat budget, vulnerabilidades, crítico automático em janela, companions/pets e TTK.
+  active combat budget, vulnerabilidades, janelas críticas, companions/pets, TTK e telemetria de Stamina.
 
 CAVE_MONSTER_VISUAL_SPRITE_DIRECTION.md
   descrição visual, tamanho, silhueta, cores, animações, variações e telegraph de sprites.
+
+COMBAT_CORE_DIRECTION.md
+  regras gerais de combate, inputs, HP/MP/Stamina, ataque, block, dodge, dash, dano, armor, vulnerabilidades, bosses, HUD e telemetria.
 ```
 
 Specs de caverna que tocam runtime já existente devem ler também:
@@ -234,304 +238,187 @@ Anya partial power liberation
 fatigue in cave
 companions in cave
 pet dog support
+combat inputs
+Stamina economy
+Block/Dodge/Dash
+telemetry
 ```
 
 Specs recomendadas futuras:
 
 ```text
-spec_cave_level_size_ranges_generation_config.md
-spec_cave_weighted_biome_randomization.md
-spec_cave_layout_archetypes_rooms_corridors.md
-spec_cave_special_rooms_treasure_hazards_generation.md
-spec_cave_snapshot_layout_biome_special_elements.md
-spec_cave_design_reconciliation_density_rules.md
-spec_cave_enemy_density_packs_spawnplan_rebalance.md
 spec_cave_active_enemy_budget.md
 spec_cave_vulnerability_critical_windows.md
 spec_cave_enemy_vulnerability_tables.md
 spec_cave_boss_phase_vulnerabilities.md
-spec_cave_boss_gate_100_level_101_unlock.md
-spec_cave_level_101_boss_gauntlet_anya_lore.md
-spec_cave_monster_roster_data_expansion.md
-spec_cave_monster_sprite_prompts_by_family.md
-spec_cave_monster_sprite_atlas_requirements.md
-spec_cave_monster_animation_sets.md
-spec_cave_boss_phase_visuals.md
-spec_cave_vulnerability_telegraph_vfx.md
-spec_cave_monster_variant_visuals.md
-spec_cave_death_corpse_recovery_fonte.md
-spec_cave_city_guild_contracts_integration.md
+spec_cave_companion_pet_combat_balance.md
+spec_cave_time_to_kill_balance_targets.md
+spec_cave_stamina_telemetry_playtest.md
+spec_cave_treasure_trap_counterplay.md
 ```
 
 ---
 
-# PARTE D — Personagem
+# PARTE D — Combate
 
-## 6. Specs de personagem/core systems
+## 6. Specs gerais de combate
 
 Fontes obrigatórias:
 
 ```text
+docs/design/gameplay/combat/COMBAT_CORE_DIRECTION.md
 docs/design/gameplay/player/PLAYER_CORE_SYSTEMS_DIRECTION.md
-docs/design/gameplay/player/PLAYER_SKILL_TREES_DIRECTION.md
 docs/design/gameplay/player/PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md
-```
-
-Uso de cada fonte:
-
-```text
-PLAYER_CORE_SYSTEMS_DIRECTION.md
-  visão ampla do personagem, criação inicial, raças, atributos centrais, HP/MP/Stamina/Breath, fome, cansaço, relações, UI e save/load.
-
-PLAYER_SKILL_TREES_DIRECTION.md
-  5 skill trees, tiers, SkillPoints, active slots, Dash/Dodge/Block, capstones divinos, HUD de skills e balanceamento.
-
-PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md
-  atributos derivados, fórmula em camadas, caps/softcaps, dano, defesa, movimento, produção, loot, social e save/load de stats.
+docs/design/gameplay/player/PLAYER_SKILL_TREES_DIRECTION.md
+docs/design/gameplay/cave/CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md
+docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_DIRECTION.md
 ```
 
 Usar para specs de:
 
 ```text
-atributos centrais
-atributos derivados
-HP / MP / Stamina / Breath
-fórmulas de stats
-fome
-cansaço
+combat controller
+input buffer
+attack controller
+light attack
+heavy attack
+charged attack
+Stamina costs
+Stamina regen
+Dash
+Dodge
+Block
+Perfect Block
+BlockImpact
+HP/MP/Stamina combat rules
+DamageType
+Armor/Defense
+critical hit
+MinorOpening
+CriticalWindow
+CoreExposed
+posture/stagger
+guard break
+weapon actions
+magic combat actions
+combat HUD
+combat feedback
+combat telemetry
+```
+
+Specs recomendadas derivadas:
+
+```text
+spec_combat_core_controller_inputs.md
+spec_combat_stamina_costs_regen_runtime.md
+spec_combat_block_dodge_dash_runtime.md
+spec_combat_damage_armor_resistance_contract.md
+spec_combat_critical_windows_vulnerability_contract.md
+spec_combat_weapon_actions_light_heavy_charged.md
+spec_combat_magic_actions_mp_casting.md
+spec_combat_posture_stagger_guardbreak.md
+spec_combat_hud_feedback_telemetry.md
+```
+
+---
+
+# PARTE E — Player / atributos / skills
+
+## 7. Specs de player core
+
+Fontes obrigatórias:
+
+```text
+docs/design/gameplay/player/PLAYER_CORE_SYSTEMS_DIRECTION.md
+docs/design/gameplay/player/PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md
+docs/design/gameplay/player/PLAYER_SKILL_TREES_DIRECTION.md
+docs/design/gameplay/player/PLAYER_DERIVED_ATTRIBUTES_TABLETOP_EXAMPLE.md
+docs/design/gameplay/combat/COMBAT_CORE_DIRECTION.md
+```
+
+Usar para specs de:
+
+```text
+player creation
+initial races
+attributes
+HP
+MP
+Stamina
+hunger
+fatigue
 level up
-pontos de atributo
-skills nível 1-5
+attribute points
+skill points
 skill trees
 active slots
-Dash / Dodge / Block
-capstones divinos
-arquétipos/jobs inferidos
-ferramentas
-armas
-magia
-equipamentos
-resistências
-status negativos
-morte / derrota / Fonte de Anya
-companions
-pets
-fazenda
-caverna
-UI/HUD do personagem
-save/load do personagem
-flerte / relacionamento / casamento
-```
-
-Specs de personagem que tocam caverna devem ler também:
-
-```text
-docs/design/gameplay/cave/CAVE_DESIGN_DIRECTION.md
-docs/design/gameplay/cave/CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md
-```
-
-Specs de personagem que tocam fazenda devem ler também:
-
-```text
-docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.3.md
-docs/design/gameplay/farm/FARM_LAYOUT_SCALE_BUILDINGS_DIRECTION.md
-```
-
-Specs de personagem que tocam cidade/relacionamento/casamento devem ler também:
-
-```text
-docs/design/gameplay/city/CITY_DESIGN_DIRECTION_v1.2.md
-docs/design/gameplay/city/CITY_NPC_ROSTER_SERVICES_DIRECTION_v1.1.md
-docs/design/gameplay/city/CITY_LAYOUT_BUILDINGS_SCHEDULE_DIRECTION.md
-```
-
-Specs recomendadas futuras:
-
-```text
-spec_player_attributes_progression_points.md
-spec_player_derived_attributes_formulas.md
-spec_player_hp_mp_stamina_breath_formulas.md
-spec_player_hunger_fatigue_condition_manager.md
-spec_player_skills_level_1_5_progression.md
-spec_player_skill_trees_active_slots.md
-spec_player_capstones_divine_exclusive_choices.md
-spec_player_dash_dodge_block_input.md
-spec_player_inferred_jobs_archetypes.md
-spec_player_tools_usage_upgrade_stamina.md
-spec_player_weapons_damage_types_critical_windows.md
-spec_player_magic_mp_skill_actions.md
-spec_player_equipment_resistances_status.md
-spec_player_death_defeat_anya_fountain.md
-spec_player_companion_pet_integration.md
-spec_player_relationship_flirt_marriage.md
-spec_ui_player_hud_status_skills_equipment.md
-spec_save_player_core_systems.md
+Dash/Dodge/Block
+classes/jobs inferred
+save/load player state
 ```
 
 ---
 
-# PARTE E — Combate, magia e progressão
+# PARTE F — Equipamentos, armas, magia, companions, pets e HUD
 
-## 7. Specs de combate/magia/progressão
+## 8. Specs que devem ler Combat Core
 
-Fonte futura principal:
-
-```text
-docs/design/gameplay/combat_magic_progression/COMBAT_MAGIC_PROGRESSION_DESIGN_DIRECTION_v1.0.md
-```
-
-Enquanto não existir, ler:
+Specs de equipamentos/armas devem ler:
 
 ```text
-docs/design/gameplay/player/PLAYER_CORE_SYSTEMS_DIRECTION.md
+docs/design/gameplay/combat/COMBAT_CORE_DIRECTION.md
+docs/design/gameplay/player/PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md
 docs/design/gameplay/player/PLAYER_SKILL_TREES_DIRECTION.md
-docs/design/gameplay/player/PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md
+```
+
+Specs de magia devem ler:
+
+```text
+docs/design/gameplay/combat/COMBAT_CORE_DIRECTION.md
+docs/design/gameplay/player/PLAYER_SKILL_TREES_DIRECTION.md
 docs/design/lore/VAALARA_GAME_CANON_DIRECTION_v1.0.md
-docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.3.md
-docs/design/gameplay/farm/FARM_LAYOUT_SCALE_BUILDINGS_DIRECTION.md
-docs/design/gameplay/city/CITY_NPC_ROSTER_SERVICES_DIRECTION_v1.1.md
-docs/design/gameplay/cave/CAVE_DESIGN_DIRECTION.md
-docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_DIRECTION.md
+```
+
+Specs de companions/pets em combate devem ler:
+
+```text
+docs/design/gameplay/combat/COMBAT_CORE_DIRECTION.md
 docs/design/gameplay/cave/CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md
+docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_DIRECTION.md
 ```
 
-Specs recomendadas futuras:
+Specs de HUD gameplay/combat devem ler:
 
 ```text
-spec_player_stats_hp_mp_stamina_breath_attributes.md
-spec_player_derived_attributes_formula_runtime.md
-spec_status_effects_hunger_exhaustion_temperature_poison_fear_death.md
-spec_combat_player_weapons_actions.md
-spec_magic_mp_skills_progression.md
-spec_skill_trees_active_slots_respec.md
-spec_jobs_classes_gameplay_roles.md
-```
-
----
-
-# PARTE F — Companions e pets
-
-## 8. Specs de companions
-
-Fonte futura principal:
-
-```text
-docs/design/gameplay/companions/COMPANIONS_DESIGN_DIRECTION_v1.0.md
-```
-
-Enquanto não existir, ler:
-
-```text
+docs/design/gameplay/combat/COMBAT_CORE_DIRECTION.md
 docs/design/gameplay/player/PLAYER_CORE_SYSTEMS_DIRECTION.md
 docs/design/gameplay/player/PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md
-docs/design/lore/VAALARA_GAME_CANON_DIRECTION_v1.0.md
-docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.3.md
-docs/design/gameplay/farm/FARM_LAYOUT_SCALE_BUILDINGS_DIRECTION.md
-docs/design/gameplay/city/CITY_NPC_ROSTER_SERVICES_DIRECTION_v1.1.md
-docs/design/gameplay/city/CITY_LAYOUT_BUILDINGS_SCHEDULE_DIRECTION.md
-docs/design/gameplay/cave/CAVE_DESIGN_DIRECTION.md
-docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_DIRECTION.md
-docs/design/gameplay/cave/CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md
-```
-
-Specs recomendadas futuras:
-
-```text
-spec_companions_recruitment_relationship_affinity.md
-spec_companions_farm_jobs_automation.md
-spec_companions_cave_party_slots.md
-spec_companions_death_unavailable_resurrection_fonte.md
-spec_pets_dog_cat_bond_buffs_combat_support.md
 ```
 
 ---
 
-# PARTE G — UI/UX
+# PARTE G — Regra anti-regressão
 
-## 9. Specs de UI/UX
+## 9. Quando houver conflito
 
-Fonte futura principal:
-
-```text
-docs/design/gameplay/ui_ux/UI_UX_DESIGN_DIRECTION_v1.0.md
-```
-
-Enquanto não existir, ler fontes do domínio tocado:
+Se houver conflito entre documentos:
 
 ```text
-Personagem -> PLAYER_CORE_SYSTEMS_DIRECTION.md + PLAYER_SKILL_TREES_DIRECTION.md + PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md
-Fazenda -> FARM_DESIGN_DIRECTION_v1.3.md + FARM_LAYOUT_SCALE_BUILDINGS_DIRECTION.md
-Cidade -> CITY_DESIGN_DIRECTION_v1.2.md + CITY_LAYOUT_BUILDINGS_SCHEDULE_DIRECTION.md
-Caverna -> CAVE_DESIGN_DIRECTION.md + CAVE_LEVEL_GENERATION_LAYOUT_BIOME_DIRECTION.md + CAVE_MONSTER_ROSTER_DIRECTION.md + CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md + CAVE_MONSTER_VISUAL_SPRITE_DIRECTION.md
-NPCs -> CITY_NPC_ROSTER_SERVICES_DIRECTION_v1.1.md
-Canon -> VAALARA_GAME_CANON_DIRECTION_v1.0.md
-Processo -> SPECIFICATION_PROCESS.md
+1. Documento mais específico vence sobre documento geral.
+2. Documento de design canônico vence conversa solta.
+3. Documento mais recente vence documento antigo quando ambos cobrem o mesmo tema.
+4. SPEC_SOURCE_MAP.md deve ser atualizado quando uma nova fonte canônica for criada.
 ```
 
-Specs recomendadas futuras:
+Conflitos conhecidos resolvidos:
 
 ```text
-spec_ui_hud_status_bars_hp_mp_stamina_breath_hunger_fatigue.md
-spec_ui_inventory_equipment_hotbar.md
-spec_ui_dialogue_relationship_gifts.md
-spec_ui_city_map_calendar_shops_contracts.md
-spec_ui_farm_build_mode_layout.md
-spec_ui_skill_tree_respec_fonte.md
-spec_ui_cave_checkpoint_bestiary_boss_feedback.md
-spec_ui_cave_vulnerability_critical_feedback.md
+Breath/Fôlego não existe como atributo/recurso.
+Breath pode continuar como nome de ataque de sopro de criatura.
+BR não existe como coluna/stat de monstro.
+Monstros mantêm HP, MP e STA.
+Stamina é recurso físico imediato.
+Cansaço é desgaste acumulado.
+Constituição não é atributo defensivo universal.
+Nem toda janela comportamental gera crítico automático.
 ```
-
----
-
-# PARTE H — Template obrigatório de spec
-
-## 10. Cabeçalho mínimo
-
-Toda spec deve começar com:
-
-```md
-# Cindar's Hope — <Nome da Spec>
-
-> Status: a implementar
-> Tipo: spec implementável
-> Fontes obrigatórias lidas:
-> - docs/design/SPEC_SOURCE_MAP.md
-> - docs/design/SPECIFICATION_PROCESS.md
-> - docs/design/...
-
-## Objetivo
-
-## Escopo
-
-## Fora de escopo
-
-## Estado atual do repo
-
-## Dependências
-
-## Contratos/dados/eventos
-
-## Arquivos permitidos
-
-## Arquivos proibidos
-
-## Critérios de aceite
-
-## Validação Unity
-
-## Riscos e rollback
-```
-
-## 11. Regra de rastreabilidade
-
-Toda spec deve conseguir responder:
-
-```text
-De qual design direction esta decisão veio?
-Qual arquivo sustenta essa regra?
-Qual parte é lore/canon?
-Qual parte é mecânica?
-Qual parte é implementação proposta agora?
-```
-
-Se a spec não conseguir responder isso, ela ainda é pré-refinamento, não spec.
