@@ -106,6 +106,8 @@ docs/design/
       CAVE_MONSTER_ROSTER_DIRECTION.md
       CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md
       CAVE_MONSTER_VISUAL_SPRITE_DIRECTION.md
+    player/
+      PLAYER_CORE_SYSTEMS_DIRECTION.md
     combat_magic_progression/
       COMBAT_MAGIC_PROGRESSION_DESIGN_DIRECTION_v1.0.md
     companions/
@@ -218,6 +220,12 @@ Direção visual de sprites, silhuetas, animações e variações dos monstros d
 docs/design/gameplay/cave/CAVE_MONSTER_VISUAL_SPRITE_DIRECTION.md
 ```
 
+Documento ativo consolidado dos sistemas centrais do personagem:
+
+```text
+docs/design/gameplay/player/PLAYER_CORE_SYSTEMS_DIRECTION.md
+```
+
 ## Leitura mínima antes de specs
 
 Toda spec de gameplay/lore deve começar lendo:
@@ -253,4 +261,10 @@ docs/design/gameplay/cave/CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md
 docs/design/gameplay/cave/CAVE_MONSTER_VISUAL_SPRITE_DIRECTION.md
 docs/game_rules/cave_rules.md
 docs/decisions/ADR-0005-cave-stable-run-and-replay.md
+```
+
+Specs de personagem devem ler também:
+
+```text
+docs/design/gameplay/player/PLAYER_CORE_SYSTEMS_DIRECTION.md
 ```
