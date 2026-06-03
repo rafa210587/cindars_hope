@@ -3,31 +3,33 @@
 > **Status:** documento complementar de validação de mesa  
 > **Local:** `docs/design/gameplay/player/PLAYER_DERIVED_ATTRIBUTES_TABLETOP_EXAMPLE.md`  
 > **Complementa:** `docs/design/gameplay/player/PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md`  
-> **Função:** demonstrar, com personagem exemplo, como atributos centrais viram atributos derivados, como esses valores se comportam contra monstros reais da caverna, e validar a nova régua sem Breath/Fôlego, com Constituição menos dominante e Stamina mais controlada.  
+> **Função:** demonstrar, com personagem exemplo, como atributos centrais viram atributos derivados, como esses valores se comportam contra monstros reais da caverna, e validar a régua sem Breath/Fôlego, com Constituição menos dominante, Stamina controlada e custos de ação altos.  
 > **Não é spec implementável.** Os números abaixo são exemplos de mesa para validar escala relativa, não valores finais.
 
 ---
 
 ## 0. Veredito desta revisão
 
-A revisão anterior removeu Breath/Fôlego, mas ainda deixou Constituição forte demais.
+A nova régua usa Stamina como recurso decisivo.
 
-Problema identificado:
+Mudanças principais:
 
 ```text
-Constituição estava influenciando HP, Stamina, Stamina Regen, Defense, Block Stability, Posture Resistance, status físico e cansaço.
-Isso fazia Constituição virar atributo defensivo universal.
+Light melee com Espada de Aço: 25 Stamina.
+Heavy melee com Espada de Aço: 40 Stamina.
+Dash: 40 Stamina.
+Dodge: 40 Stamina.
+Block hold: 18 Stamina/s.
+Block impact: proporcional ao dano bruto recebido em relação ao HP máximo do jogador.
 ```
 
-Correção desta versão:
+Consequência:
 
 ```text
-HP do jogador cresce pouco por level e por Constituição.
-Stamina do jogador cresce devagar.
-Stamina é distribuída entre Constituição, Força e Destreza.
-Stamina Regen em combate é baixa.
-Custos de ataque, ferramenta, block, dash e dodge precisam escalar por tier/peso/tipo.
-Monstros não usam fórmula do jogador; HP de monstro é autorado por família, papel e faixa.
+Com 144 Stamina no level 30, o jogador não pode spammar ataque, dodge, dash e block.
+Cada ação defensiva forte consome quase 28% da Stamina total.
+Block segurado por 2s consome 36 Stamina antes mesmo do impacto.
+O jogo passa a exigir ritmo, janela, posicionamento, comida, skill e companion/pet.
 ```
 
 ---
@@ -59,6 +61,7 @@ Regra:
 ```text
 Stamina deve sempre exigir organização.
 Level alto não deve permitir spam infinito.
+Dash e Dodge devem ser escolhas táticas fortes, não movimento gratuito.
 ```
 
 ## 2. Cansaço
@@ -89,7 +92,7 @@ equipamentos específicos
 buffs específicos
 ```
 
-## 3. Nova distribuição de papéis
+## 3. Distribuição de papéis
 
 | Função | Fonte principal | Fonte secundária |
 |---|---|---|
@@ -189,13 +192,13 @@ BaseDashDistance = 2.25 tiles
 Custos de ação para este teste:
 
 ```text
-Light melee com Espada de Aço: 14 Stamina
-Heavy melee com Espada de Aço: 30 Stamina
-Dash: 20 Stamina
-Dodge: 13 Stamina
-Block hold: 6 Stamina/s
-Block impact comum: 12-18 Stamina
-Block impact elite: 22-34 Stamina
+Light melee com Espada de Aço: 25 Stamina
+Heavy melee com Espada de Aço: 40 Stamina
+Dash: 40 Stamina
+Dodge: 40 Stamina
+Block hold: 18 Stamina/s
+Block impact comum: proporcional ao dano bruto / HP máximo do jogador
+Block impact elite: proporcional ao dano bruto / HP máximo do jogador
 ```
 
 ---
@@ -243,9 +246,9 @@ StaminaMax = 143.5 ≈ 144
 Leitura:
 
 ```text
-144 Stamina permite sequência curta de ações, mas não spam.
-Com espada de aço, 5-7 ataques leves já consomem boa parte da barra.
-Heavy attacks, Dash e Block competem de verdade pelo mesmo recurso.
+144 Stamina permite sequência curta de ações.
+Com espada de aço, o jogador consegue cerca de 5 ataques leves sem contar regen.
+Com Dash/Dodge a 40, cada evasão consome quase 28% da barra.
 ```
 
 ## 9. Stamina Regen
@@ -275,18 +278,30 @@ Fora de combate, a recuperação não é punitiva demais.
 ## 10. Dash
 
 ```text
-DashCost = 22 * (1 - 0.05 PassoDeImpulso - 0.02 DexSmallBonus)
-DashCost ≈ 20 Stamina
-DashCooldown ≈ 1.12s
+DashCost = 40 Stamina antes de reduções.
+DashCooldown ≈ 1.12s no exemplo após pequenos bônus.
+```
+
+Leitura:
+
+```text
+Dash é reposicionamento forte.
+Não deve ser usado em loop; 3 dashes quase zeram a barra.
 ```
 
 ## 11. Dodge
 
 ```text
-DodgeCost = 14 * (1 - 0.03 ReflexoBonusSmall - 0.02 DexSmallBonus)
-DodgeCost ≈ 13 Stamina
+DodgeCost = 40 Stamina antes de reduções.
 DodgeIFrames = 0.18s + 0.02s por Reflexo de Esquiva r1
 DodgeIFrames = 0.20s
+```
+
+Leitura:
+
+```text
+Dodge é uma defesa forte de timing.
+Não deve substituir movimentação normal.
 ```
 
 ## 12. Block
@@ -294,21 +309,46 @@ DodgeIFrames = 0.20s
 ```text
 BlockPower = 49% por Block r3 + 10% escudo = 59%
 BlockStability = 12% Guarda Firme r2 + 8% escudo + 4% Constituição moderada = 24%
+Block hold = 18 Stamina/s
 ```
 
-Custos:
+### Block impact proporcional
 
 ```text
-Block hold: 6 Stamina/s
-Block impact comum: 12-18 Stamina
-Block impact elite: 22-34 Stamina
+IncomingDamageRatio = IncomingRawDamage / PlayerMaxHP
+BlockImpactStaminaCost = PlayerMaxStamina * IncomingDamageRatio * BlockImpactMultiplier * (1 - BlockStability)
+```
+
+Multiplicadores usados neste teste:
+
+```text
+comum = 0.90
+elite = 1.20
+boss = 1.50
+```
+
+Exemplo comum com dano bruto 57:
+
+```text
+IncomingDamageRatio = 57 / 230 = 24.8%
+BlockImpactStaminaCost = 144 * 0.248 * 0.90 * 0.76
+BlockImpactStaminaCost ≈ 24 Stamina
+```
+
+Exemplo elite com dano bruto 90:
+
+```text
+IncomingDamageRatio = 90 / 230 = 39.1%
+BlockImpactStaminaCost = 144 * 0.391 * 1.20 * 0.76
+BlockImpactStaminaCost ≈ 51 Stamina
 ```
 
 Leitura:
 
 ```text
-Block continua forte, mas agora consome uma parcela relevante da Stamina total.
-Se o jogador segurar block o tempo todo, esgota rápido.
+Block contra comum custa relevante, mas sustentável.
+Block contra elite custa muito e não pode ser spamado.
+Se o jogador segurar block por 1s antes do impacto elite, gasta ~69 Stamina total.
 ```
 
 ## 13. Ataque físico
@@ -424,27 +464,27 @@ crítico normal: x1.5
 critical window: crítico automático apenas em janelas claras/especiais; janelas comuns dão bônus de crit/dano
 ```
 
-## 17. Hits para matar
+## 17. Hits para matar e Stamina
 
-| Monstro | HP | Dano efetivo estimado | Hits normais | Stamina em ataques leves | Veredito |
+| Monstro | HP | Dano efetivo estimado | Hits normais | Stamina só em light attacks | Veredito |
 |---|---:|---:|---:|---:|---|
-| Roedor de Geada | 155 | 85-95 | 2 | ~28 | ok em pack |
-| Escavador Duergar | 230 | 70-80 | 3-4 | ~42-56 | ok comum robusto |
-| Osso de Vidro | 210 | 80-90 | 3 | ~42 | ok |
-| Acólito do Frio | 190 | 85-95 | 2-3 | ~28-42 | frágil se isolado |
-| Larva Devora-Mentes | 240 | 80-90 | 3 | ~42 | depende do controle |
-| Lamento Frio | 300 | 75-85 | 4 | ~56 | ok caster/controller |
-| Saltador Cristalino | 330 | 75-85 | 4-5 | ~56-70 | ok elite móvel |
-| Sentinela Enregelado | 480 | 45-60 | 8-11 | ~112-154 | exige janela/arma adequada |
-| Quebra-Escudo Duergar | 520 | 55-70 | 8-10 | ~112-140 | elite anti-block adequado |
-| Horror-Gancho de Gelo | 560 | 55-70 | 8-11 | ~112-154 | elite duelist adequado |
+| Roedor de Geada | 155 | 85-95 | 2 | ~50 | ok em pack |
+| Escavador Duergar | 230 | 70-80 | 3-4 | ~75-100 | consome muito se lutar direto |
+| Osso de Vidro | 210 | 80-90 | 3 | ~75 | ok, mas exige cuidado |
+| Acólito do Frio | 190 | 85-95 | 2-3 | ~50-75 | frágil se isolado |
+| Larva Devora-Mentes | 240 | 80-90 | 3 | ~75 | depende do controle |
+| Lamento Frio | 300 | 75-85 | 4 | ~100 | caster/controller relevante |
+| Saltador Cristalino | 330 | 75-85 | 4-5 | ~100-125 | elite móvel adequado |
+| Sentinela Enregelado | 480 | 45-60 | 8-11 | ~200-275 | exige janela/arma adequada |
+| Quebra-Escudo Duergar | 520 | 55-70 | 8-10 | ~200-250 | elite anti-block adequado |
+| Horror-Gancho de Gelo | 560 | 55-70 | 8-11 | ~200-275 | elite duelist adequado |
 
 Veredito:
 
 ```text
-Contra comuns, o jogador consegue matar sem esgotar toda a Stamina.
-Contra elites, se usar só ataque leve, fica perto de esgotar a barra.
-Isso força charged attacks bem usados, critical windows, troca de ritmo, comida, companion/pet ou recuo.
+Contra comuns, o jogador consegue vencer, mas não pode errar muito se houver pack.
+Contra elites, ataque leve puro é inviável sem regen, janelas, charged attacks, vulnerabilidades, comida, companion/pet ou recuo.
+Isso reforça o papel de critical window e vulnerabilidades.
 ```
 
 ---
@@ -470,6 +510,7 @@ Brann Defense = 56
 PhysicalResistance = 12%
 HP = 230
 BlockPower = 59%
+Stamina = 144
 ```
 
 ## 19. Dano recebido sem block
@@ -487,9 +528,9 @@ BlockPower = 59%
 Leitura:
 
 ```text
-Com HP 230, comuns não matam rápido, mas packs pressionam.
+Com HP 230, comuns não matam rápido isolados, mas packs pressionam.
 Elites punem erro em 3-5 hits.
-Isso fica mais próximo de “difícil, mas possível”.
+Isso fica mais próximo de difícil, mas possível.
 ```
 
 ## 20. Dano recebido com block
@@ -505,18 +546,19 @@ DefenseFlat parcial = Defense * 0.12 = 6.7
 DamageTaken = 36.9 * 0.88 - 6.7 ≈ 26
 ```
 
-Custo de block:
+Custo de Stamina:
 
 ```text
-Block impact elite = 22-34 Stamina
-Block hold por 1s = 6 Stamina
+BlockImpactStaminaCost ≈ 51
+Block hold por 1s = 18
+Total aproximado se segurou 1s antes do impacto = 69
 ```
 
 Leitura:
 
 ```text
-Block reduz muito dano, mas consome 20% ou mais da Stamina total se usado contra elite.
-Se o jogador bloquear errado, atacar e dar dash em sequência, a barra cai rápido.
+Block reduz muito dano, mas custa quase metade da Stamina se usado contra elite com tempo de hold.
+Isso força perfect block, dodge, reposicionamento e leitura de telegraph.
 ```
 
 ---
@@ -529,32 +571,38 @@ Se o jogador bloquear errado, atacar e dar dash em sequência, a barra cai rápi
 Escavador HP 230
 Brann dano efetivo: 75
 Hits para matar: 4
-Stamina se só atacar leve: ~56
+Stamina se só atacar leve: ~100
 Dano recebido por hit: 36
 ```
 
 Cenário jogando bem:
 
 ```text
-Round 1: ataque normal, Duergar -75, Stamina -14
-Round 2: Duergar ataca, Brann bloqueia, recebe ~12-16, Stamina -18 a -24
-Round 3: ataque carregado, Duergar -95/posture pressure, Stamina -30
-Round 4: finaliza em abertura, Stamina -14
+Round 1: ataque normal, Duergar -75, Stamina -25
+Round 2: Duergar ataca, Brann bloqueia por ~0.5s, recebe ~12-16, Stamina -9 hold -24 impacto
+Round 3: ataque carregado, Duergar -95/posture pressure, Stamina -40
+Round 4: finaliza em abertura, Stamina -25
 ```
 
 Consumo aproximado:
 
 ```text
-Stamina total consumida: 76-82
-Stamina restante antes de regen: ~62-68
+Stamina total consumida: ~123
+Stamina restante antes de regen: ~21
+```
+
+Com regen em combate por ~4-6 segundos:
+
+```text
+recupera ~11-23 Stamina
+fica com ~32-44 Stamina
 ```
 
 Veredito:
 
 ```text
-Comum robusto adequado.
-O jogador vence bem, mas gasta recurso relevante.
-Em pack com caster/roedor, vira pressão real.
+Comum robusto isolado agora consome recurso relevante.
+Em pack, o jogador precisa usar janela, recuar, comer, usar companion/pet ou evitar trocar golpe direto.
 ```
 
 ## 22. Brann vs Saltador Cristalino
@@ -569,9 +617,9 @@ Saltador tem DES 24 e STA 104.
 Leitura:
 
 ```text
-O Saltador não deve tankar muito.
-Ele ameaça por mobilidade, burst e erro de dodge.
-Se o jogador errar dodge, perde HP e Stamina rápido.
+O Saltador ameaça porque obriga Dodge/Dash caros.
+Se o jogador usar 2 Dodges, gasta 80 Stamina.
+O encontro precisa permitir leitura de telegraph, não forçar dodge impossível.
 ```
 
 ## 23. Brann vs Quebra-Escudo Duergar
@@ -587,9 +635,9 @@ Leitura:
 
 ```text
 Esse inimigo testa Block.
-Se Brann só segura Left Shift, GuardBreak deve punir.
+Se Brann só segura Left Shift, GuardBreak e custo proporcional drenam a Stamina.
 Se alterna Dodge, ataque carregado e janela, vence.
-Sem GuardBreak, Block ainda pode trivializar.
+Sem janelas claras, pode ficar punitivo demais.
 ```
 
 ---
@@ -624,9 +672,8 @@ StaminaMax = 180
 Leitura:
 
 ```text
-Level 50 não pula para 20-30 ataques leves de graça.
-Com arma late/mid-late custando 18-22 por ataque leve, ele ainda faz algo como 8-10 ataques leves antes de zerar, sem contar dash/block/dodge.
-Isso é mais saudável.
+Com ataques late/mid-late custando 30+ Stamina, level 50 ainda não vira spam.
+Com Dash/Dodge em 40+, movimentação defensiva segue sendo decisão forte.
 ```
 
 ---
@@ -636,13 +683,12 @@ Isso é mais saudável.
 ## 25. Veredito
 
 ```text
-A nova régua é melhor.
-Constituição deixa de ser atributo defensivo universal.
-HP do jogador fica mais próximo de comum robusto, não de elite.
-Stamina fica mais controlada.
-Elites voltam a ser perigosos em 3-5 hits sem block/dodge.
-Block continua forte, mas consome Stamina relevante.
-Stamina exige organização mesmo no level 30 e 50.
+A régua ficou mais difícil e tática.
+Stamina é limitador real.
+Comuns robustos já consomem recurso se enfrentados sem cuidado.
+Elites exigem janelas, vulnerabilidades, companion/pet, comida, ou execução boa.
+Dash/Dodge a 40 impedem spam defensivo.
+Block é forte, mas caro contra dano alto.
 ```
 
 ## 26. Decisões corrigidas
@@ -655,19 +701,23 @@ Player StaminaPerCon = 2.0.
 Player StaminaPerStr = 1.5.
 Player StaminaPerDex = 1.0.
 Player DefensePerCon = 0.75.
-Stamina costs escalam por tier/peso/tipo de ação.
-Stamina Regen em combate fica baixa.
+Light melee com Espada de Aço = 25 Stamina.
+Heavy melee com Espada de Aço = 40 Stamina.
+Dash = 40 Stamina.
+Dodge = 40 Stamina.
+Block hold = 18 Stamina/s.
+Block impact = proporcional ao dano bruto / HP máximo do jogador.
 Monstros não usam fórmula de HP do jogador.
-Monstros podem usar multiplicador próprio de CON por família/papel.
+Monstros usam multiplicador próprio de CON por família/papel.
 ```
 
 ## 27. Riscos restantes
 
 ```text
-AttackDamage 95 ainda pode estar alto contra comuns se eles aparecerem isolados.
-Packs precisam ser densos o suficiente para gerar pressão.
-Block precisa de GuardBreak, stamina drain e ataques que não sejam resolvidos só segurando Left Shift.
-Critical window não deve ser sempre crítico automático.
-Armor flat precisa de dano mínimo para inimigos pequenos continuarem relevantes em grupo.
-Stamina Regen em combate precisa ser testada em Unity.
+Custos altos podem ficar punitivos se o input ou hitbox forem imprecisos.
+Dash/Dodge a 40 exigem telegraphs muito claros.
+Packs densos demais podem ficar injustos se todos exigirem Dodge.
+Stamina Regen em combate precisa ser validada em Unity.
+Com 144 Stamina, early/mid-game precisa de comida, descanso e pacing bem calibrados.
+Block proporcional precisa de cap mínimo/máximo para evitar casos extremos.
 ```
