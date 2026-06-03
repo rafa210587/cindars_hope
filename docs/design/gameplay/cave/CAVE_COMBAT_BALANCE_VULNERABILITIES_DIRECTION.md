@@ -1,26 +1,35 @@
 # Cindar's Hope — Cave Combat Balance & Vulnerabilities Direction
 
-> **Status:** documento canônico complementar de balanceamento, vulnerabilidades, janelas de crítico e orçamento de combate da caverna  
+> **Status:** documento canônico complementar de balanceamento, vulnerabilidades, janelas de abertura/crítico e orçamento de combate da caverna  
 > **Local:** `docs/design/gameplay/cave/CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md`  
 > **Depende de:**  
 > - `docs/design/gameplay/cave/CAVE_DESIGN_DIRECTION.md`  
 > - `docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_DIRECTION.md`  
+> - `docs/design/gameplay/player/PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md`  
 > - `docs/design/lore/VAALARA_GAME_CANON_DIRECTION_v1.0.md`  
-> **Função:** garantir que a caverna seja difícil, rica e possível, definindo limites de combate ativo, expectativa de companions/pets/itens, vulnerabilidades e crítico automático em janelas de vulnerabilidade.  
+> **Função:** garantir que a caverna seja difícil, rica e possível, definindo limites de combate ativo, expectativa de companions/pets/itens, vulnerabilidades, janelas de punição, janelas críticas, consumo esperado de Stamina e pacing.  
 > **Não é spec implementável.** Specs futuras devem transformar estas regras em dados/sistemas.
 
 ---
 
 ## 0. Regra de uso
 
-Toda spec que mexer em inimigos, packs, bosses, dano, status, armas, companions, pets, spawn density, active budget, loot, balanceamento ou boss phases da caverna deve ler este documento.
+Toda spec que mexer em inimigos, packs, bosses, dano, status, armas, companions, pets, spawn density, active budget, loot, balanceamento, vulnerabilidades, stamina ou boss phases da caverna deve ler este documento.
 
 Regra principal:
 
 ```text
 A caverna deve ser difícil, mas possível.
 O desafio deve vir de leitura, preparação, uso de recursos, vulnerabilidades e decisões de combate.
-Não deve vir de inimigos ativos demais ao mesmo tempo, HP inflado sem janelas ou controle injusto do jogador.
+Não deve vir de HP inflado sem janelas, controle injusto do jogador ou dano impossível de ler.
+```
+
+Observação importante:
+
+```text
+A palavra Breath pode continuar existindo em nomes de ataques de sopro de criaturas.
+Ela não representa mais atributo, barra, recurso, BR ou Fôlego do personagem/monstro.
+Exemplos válidos: AfterBreath, CorruptBreath, DragonBreath, FrostBreath.
 ```
 
 ---
@@ -48,6 +57,8 @@ Regra:
 ```text
 O início da caverna não pode exigir companion/pet.
 A partir do meio do jogo, companions/pets/itens passam a ser parte esperada da dificuldade.
+Skills, gear, companions, pets, comida e domínio do jogador devem mitigar naturalmente os custos altos de Stamina.
+O começo pode e deve ser difícil, desde que o jogador tenha rotas de recuo e aprendizado.
 ```
 
 ## 2. Floor level não é igual a player level
@@ -111,6 +122,8 @@ Regra:
 
 ```text
 Se mais de um pack for puxado por erro de pathing/linha de visão, o sistema deve evitar avalanche injusta.
+Não reduzir esta tabela apenas porque Stamina é cara: skills, companions, pets, consumíveis e progressão devem mitigar esse custo.
+O desafio deve continuar alto.
 ```
 
 ## 5. Early game safety rules
@@ -227,44 +240,68 @@ ToolAttack
 
 ## 8. Regra de dano de vulnerabilidade
 
-Direção inicial:
+A vulnerabilidade agora tem três níveis de abertura.
 
 ```text
-VulnerabilityHit = dano aumentado.
-CriticalWindowHit = crítico automático.
-Vulnerability + CriticalWindow = crítico automático + bônus adicional moderado, nunca dano infinito.
+MinorOpening
+  abertura comum/curta.
+  Não garante crítico automático.
+  Pode dar +crit chance, +dano moderado, +posture damage ou menor custo de follow-up.
+
+CriticalWindow
+  janela clara, mais rara ou mais arriscada.
+  Pode garantir crítico automático.
+  Exige telegraph claro ou recompensa por execução.
+
+CoreExposed / BossMechanicWindow / StaggeredWindow
+  janela especial de mecânica, exposição de núcleo, quebra de postura ou fase de boss.
+  Pode garantir crítico automático + bônus moderado de vulnerabilidade.
 ```
 
 Multiplicadores conceituais:
 
 ```text
-Vulnerability damage: x1.25 a x1.50
-Critical hit: x2.00
-Critical + vulnerability: x2.25 a x2.50
-Resistance: x0.50 a x0.75
-Immunity: evitar salvo boss/lore muito específico
+MinorOpening damage: x1.10 a x1.25 ou +15% a +35% crit chance.
+Vulnerability damage: x1.25 a x1.50.
+Critical hit: x1.50 a x2.00 conforme arma/build.
+Critical + vulnerability: x2.00 a x2.50, nunca dano infinito.
+CoreExposed/BossMechanicWindow: pode usar limite superior, mas com cooldown/fase clara.
+Resistance: x0.50 a x0.75.
+Immunity: evitar salvo boss/lore muito específico.
 ```
 
 Regra:
 
 ```text
+Nem toda janela comportamental vira crítico automático.
+Crítico automático deve ser reservado para CriticalWindow, CoreExposed, StaggeredWindow ou mecânica bem telegrafada.
 Evitar imunidades amplas.
 Preferir resistência e janelas de counterplay.
 ```
 
 ---
 
-# PARTE D — Janela de vulnerabilidade e crítico automático
+# PARTE D — Janela de vulnerabilidade e crítico
 
 ## 9. Regra central
 
 Todo monstro deve ter pelo menos uma janela de vulnerabilidade comportamental.
 
 ```text
-Quando o jogador acerta o monstro dentro da janela de vulnerabilidade, o ataque causa crítico automático.
+BehavioralVulnerabilityWindow = momento de punição/counterplay.
+Ela pode ser MinorOpening, CriticalWindow ou CoreExposed/BossMechanicWindow.
 ```
 
-Isso vale para:
+Regras:
+
+```text
+MinorOpening não garante crítico automático.
+CriticalWindow pode garantir crítico automático.
+CoreExposed/BossMechanicWindow pode garantir crítico automático + bônus moderado.
+A spec final deve declarar a categoria de cada janela por inimigo/ação.
+```
+
+Isso pode valer para:
 
 ```text
 ataques corpo a corpo
@@ -294,6 +331,7 @@ AfterBlockBreak
 AfterBlinkArrival
 AfterLeapLanding
 AfterEyeBeam
+AfterBreath
 AfterTreasureReveal
 AfterEnragePulse
 AfterSummonAdds
@@ -305,6 +343,13 @@ RootedWindow
 FrozenWindow
 PetInterruptWindow
 CompanionSetupWindow
+```
+
+Observação:
+
+```text
+AfterBreath é nome válido para janela depois de ataque de sopro de criatura.
+Não tem relação com atributo Breath/Fôlego removido.
 ```
 
 ## 11. Duração sugerida das janelas
@@ -322,11 +367,12 @@ Regra:
 
 ```text
 Quanto mais letal o ataque do inimigo, maior ou mais clara deve ser a janela de punição.
+Janelas críticas devem ser mais claras do que MinorOpenings.
 ```
 
 ## 12. Telegraph obrigatório
 
-Janelas de crítico só funcionam bem se o jogador conseguir ler o momento.
+Janelas só funcionam bem se o jogador conseguir ler o momento.
 
 Todo ataque relevante deve ter:
 
@@ -336,6 +382,7 @@ sinal visual/sonoro
 execução
 recovery
 janela de vulnerabilidade quando aplicável
+categoria da janela: MinorOpening, CriticalWindow ou CoreExposed/BossMechanicWindow
 ```
 
 Bosses precisam de telegraph mais claro que mobs comuns.
@@ -364,7 +411,7 @@ Element: Fire, Light/Radiant
 Status: Burn, Stun moderado
 AttackType: Slash contra raízes, AreaOfEffect contra enxames fúngicos
 Weapon: Axe, Sword
-CriticalWindow: AfterSporeCast, AfterRootGrabMiss, CoreExposed em bosses
+Window: AfterSporeCast, AfterRootGrabMiss, CoreExposed em bosses
 ```
 
 Resistências:
@@ -394,7 +441,7 @@ Vulnerabilidades:
 Status: Bleed, Stun curto, Fear em alguns casos
 AttackType: Backstab, HeavyAttack após investida errada
 Weapon: Spear, Bow, Sword
-CriticalWindow: AfterChargeMiss, AfterLeapLanding, AfterPackHowl
+Window: AfterChargeMiss, AfterLeapLanding, AfterPackHowl
 ```
 
 Resistências:
@@ -411,7 +458,7 @@ Vulnerabilidades:
 Status: Fear, Stun, Bleed
 AttackType: Backstab, RangedProjectile, CompanionSkill
 Weapon: Sword, Dagger, Bow
-CriticalWindow: WhileRetreating, AfterTrapPlace, AfterThrow
+Window: WhileRetreating, AfterTrapPlace, AfterThrow
 ```
 
 Resistências:
@@ -429,7 +476,7 @@ Element: Ice, Water, Light/Radiant
 Status: Chill, Stun, Bleed
 AttackType: Counter após RageCleave ou LeapSmash
 Weapon: Spear, Hammer, Sword
-CriticalWindow: AfterLeapSmash, AfterRageCleave, DuringOverrage
+Window: AfterLeapSmash, AfterRageCleave, DuringOverrage
 ```
 
 Resistências:
@@ -448,7 +495,7 @@ Element: Fire, Lightning
 Status: Burn, Stun
 AttackType: HeavyAttack, Blunt, Backstab contra casters
 Weapon: Hammer, Pickaxe, Axe
-CriticalWindow: AfterShieldBreak, AfterPickSwing, AfterColdCast
+Window: AfterShieldBreak, AfterPickSwing, AfterColdCast
 ```
 
 Resistências:
@@ -468,7 +515,7 @@ Element: Light/Radiant, Fire
 Status: Stun sagrado/futuro, Fear não funciona bem
 AttackType: Blunt contra ossos, MagicProjectile contra sombras
 Weapon: Hammer, Staff, Sword encantada
-CriticalWindow: AfterWail, AfterShadeStep, AfterBoneLunge
+Window: AfterWail, AfterShadeStep, AfterBoneLunge
 ```
 
 Resistências:
@@ -490,7 +537,7 @@ Lava/stone -> Pickaxe, Hammer, Water
 Crystal -> Blunt/HeavyAttack
 ```
 
-CriticalWindow:
+Windows:
 
 ```text
 AfterElementalBurst
@@ -507,7 +554,7 @@ Element: Lightning, Water em alguns casos
 Status: Stun técnico/overload, Slow mecânico
 AttackType: Blunt, HeavyAttack, ChargedAttack
 Weapon: Hammer, Pickaxe
-CriticalWindow: AfterProtocolAttack, AfterShieldDrop, CoreExposed, OverloadWindow
+Window: AfterProtocolAttack, AfterShieldDrop, CoreExposed, OverloadWindow
 ```
 
 Resistências:
@@ -527,7 +574,7 @@ Element: Light/Radiant, Arcane controlado
 Status: Stun curto, Silence futuro contra casters
 AttackType: RangedProjectile nos olhos, HeavyAttack em lodos grandes, Backstab em devora-mentes
 Weapon: Bow, Staff, Spear, Hammer contra lodos
-CriticalWindow: AfterEyeBeam, AfterPsychicPulse, AfterEngulfMiss, AfterTreasureReveal
+Window: AfterEyeBeam, AfterPsychicPulse, AfterEngulfMiss, AfterTreasureReveal
 ```
 
 Resistências:
@@ -541,7 +588,7 @@ Poison em lodos
 Regra específica de observadores:
 
 ```text
-Ataques no olho durante AfterEyeBeam causam crítico automático.
+Ataques no olho durante AfterEyeBeam podem ser CriticalWindow.
 Ataques nas costas não são o counter principal.
 ```
 
@@ -554,7 +601,7 @@ Element: Light/Radiant, Ice contra alguns, Arcane estabilizado futuro
 Status: Stun curto, Chill moderado
 AttackType: Pierce contra asas, HeavyAttack após breath, RangedProjectile em ponto fraco
 Weapon: Spear, Bow, Hammer em placas
-CriticalWindow: AfterBreath, AfterTailSweep, WingExposed, CoreExposed
+Window: AfterBreath, AfterTailSweep, WingExposed, CoreExposed
 ```
 
 Resistências:
@@ -563,6 +610,12 @@ Resistências:
 Blackstone
 Fear
 Burn em alguns
+```
+
+Observação:
+
+```text
+breath/AfterBreath aqui significa ataque de sopro dracônico, não atributo de Fôlego.
 ```
 
 ## 23. Echo de Anya / Lore guardians
@@ -578,7 +631,7 @@ O objetivo pode ser resistir, interagir, purificar ou interromper, não matar.
 
 ---
 
-# PARTE F — Bosses e crítico automático
+# PARTE F — Bosses e janelas críticas
 
 ## 24. Bosses devem ter vulnerabilidades por fase
 
@@ -591,9 +644,11 @@ MovementMode
 MainAttackSet
 SummonOrHazardRule
 VulnerabilityWindow
+WindowCategory
 CriticalWindowRule
 Element/Status/WeaponVulnerabilities
 Resistances
+StaminaPressureRule
 ```
 
 ## 25. Exemplo — Matriarca Raiz-Negra
@@ -602,17 +657,20 @@ Resistances
 Phase 1 100-70
 Move: ProtectAnchor
 Vulnerabilities: Fire, Slash, Axe
-CriticalWindow: AfterRootSwipe
+Window: AfterRootSwipe
+WindowCategory: MinorOpening ou CriticalWindow conforme telegraph
 
 Phase 2 70-35
 Move: GuardStationary + summon roots
 Vulnerabilities: Fire, AreaOfEffect, CompanionSkill
-CriticalWindow: AfterSummonRoots
+Window: AfterSummonRoots
+WindowCategory: CriticalWindow se o summon tiver long cast claro
 
 Phase 3 35-0
 Move: fixed core
 Vulnerabilities: Fire, Light/Radiant, HeavyAttack
-CriticalWindow: CoreExposed after long cast
+Window: CoreExposed after long cast
+WindowCategory: CoreExposed
 ```
 
 ## 26. Exemplo — Wyvern de Pedra Negra
@@ -621,17 +679,20 @@ CriticalWindow: CoreExposed after long cast
 Phase 1 100-70
 Move: ChargeLine/Leaper
 Vulnerabilities: Pierce, Bow, Spear
-CriticalWindow: AfterTailSweep
+Window: AfterTailSweep
+WindowCategory: MinorOpening ou CriticalWindow conforme recovery
 
 Phase 2 70-35
 Move: low flight / arena reposition
 Vulnerabilities: Ice, RangedProjectile, WingHit
-CriticalWindow: AfterBreath
+Window: AfterBreath
+WindowCategory: CriticalWindow se o sopro tiver windup/recovery claro
 
 Phase 3 35-0
 Move: damaged wing / aggressive ground
 Vulnerabilities: HeavyAttack, Hammer, Light/Radiant
-CriticalWindow: WingExposed or AfterCrashLanding
+Window: WingExposed or AfterCrashLanding
+WindowCategory: CoreExposed/CriticalWindow
 ```
 
 ## 27. Exemplo — Observador Tirano da Pedra Negra
@@ -640,17 +701,20 @@ CriticalWindow: WingExposed or AfterCrashLanding
 Phase 1 100-70
 Move: FloatingOrbit
 Vulnerabilities: Bow, Staff, Arcane, Light/Radiant
-CriticalWindow: AfterEyeShardVolley
+Window: AfterEyeShardVolley
+WindowCategory: MinorOpening
 
 Phase 2 70-35
 Move: BossArenaControl
 Vulnerabilities: RangedProjectile no olho, Silence futuro, Stun curto
-CriticalWindow: AfterEyeBeam
+Window: AfterEyeBeam
+WindowCategory: CriticalWindow
 
 Phase 3 35-0
 Move: unstable orbit + corruption pulse
 Vulnerabilities: Light/Radiant, Arcane, ChargedAttack
-CriticalWindow: CentralEyeExposed after CorruptionPulse
+Window: CentralEyeExposed after CorruptionPulse
+WindowCategory: CoreExposed
 ```
 
 ## 28. Exemplo — Quebra-Juramento do Núcleo
@@ -659,17 +723,20 @@ CriticalWindow: CentralEyeExposed after CorruptionPulse
 Phase 1 100-70
 Move: TankSlowPush
 Vulnerabilities: Hammer, HeavyAttack, Light/Radiant
-CriticalWindow: AfterHeavySmash
+Window: AfterHeavySmash
+WindowCategory: CriticalWindow se o ataque for bem telegrafado
 
 Phase 2 70-35
 Move: BossArenaControl + summons
 Vulnerabilities: CompanionSkill, AreaOfEffect, Arcane
-CriticalWindow: AfterSummonAdds or AfterShieldDrop
+Window: AfterSummonAdds or AfterShieldDrop
+WindowCategory: MinorOpening/CriticalWindow conforme risco
 
 Phase 3 35-0
 Move: CorruptedFrenzy
 Vulnerabilities: CoreExposed, Light/Radiant, Hammer
-CriticalWindow: AfterEnragePulse
+Window: AfterEnragePulse
+WindowCategory: CoreExposed/CriticalWindow
 ```
 
 ---
@@ -723,7 +790,7 @@ Controller: abre janelas, mas não stunlocka bosses.
 Miner/Hybrid: ajuda em mining rooms e combate leve.
 ```
 
-CompanionSkill pode criar janela de crítico em inimigos específicos:
+CompanionSkill pode criar janela em inimigos específicos:
 
 ```text
 CompanionSetupWindow
@@ -732,9 +799,17 @@ ShieldBreakWindow
 StaggerWindow
 ```
 
+A categoria da janela deve ser declarada:
+
+```text
+MinorOpening
+CriticalWindow
+CoreExposed/BossMechanicWindow
+```
+
 ---
 
-# PARTE H — Time to kill e pacing
+# PARTE H — Time to kill, stamina e pacing
 
 ## 32. Time To Kill alvo
 
@@ -757,7 +832,33 @@ Se o TTK real passar muito disso, o inimigo está virando esponja de HP.
 Se ficar muito abaixo, o inimigo não cumpre papel de ameaça.
 ```
 
-## 33. Recuperação e atrito
+## 33. Stamina Budget por encontro
+
+Depois do rebalance do personagem, todo encontro deve considerar Stamina como recurso central.
+
+Valores alvo quando o jogador está no power tier recomendado e joga bem:
+
+| Encontro | Stamina esperada consumida | Leitura |
+|---|---:|---|
+| inimigo comum isolado | 20-45% da Stamina | deve ensinar ritmo, não esgotar tudo |
+| comum robusto isolado | 45-85% da Stamina | vence, mas sente atrito |
+| swarm pack pequeno | 50-100% da Stamina | exige posição, área, pet/companion ou recuo curto |
+| pack médio | 80-160% da Stamina | espera regen, comida, janelas, companion/pet ou pausa tática |
+| elite isolado | 90-180% da Stamina | exige execução, janelas, vulnerabilidade e/ou consumível |
+| elite pack | 150-260% da Stamina | deve ser encontro de preparo, não troca direta |
+| boss phase | 80-180% por fase | deve ter microjanelas de recuperação e leitura |
+| boss gate completo | múltiplas barras de Stamina | exige consumíveis, build, companion/pet, gear e domínio |
+
+Regra:
+
+```text
+Esses valores não reduzem o active combat budget.
+Eles servem para garantir que habilidades, companions, pets, gear e comida tenham papel real.
+No começo, o jogador deve sentir a Stamina como limitador severo.
+Com skill, gear e domínio, a fricção melhora naturalmente.
+```
+
+## 34. Recuperação e atrito
 
 A caverna pode ter atrito de HP/Stamina/itens, mas deve permitir decisões:
 
@@ -789,6 +890,7 @@ spec_cave_enemy_vulnerability_tables.md
 spec_cave_boss_phase_vulnerabilities.md
 spec_cave_companion_pet_combat_balance.md
 spec_cave_time_to_kill_balance_targets.md
+spec_cave_stamina_budget_by_encounter.md
 spec_cave_treasure_trap_counterplay.md
 ```
 
@@ -800,13 +902,19 @@ spec_cave_treasure_trap_counterplay.md
 Todos os monstros devem ter pelo menos uma vulnerabilidade ou counterplay claro.
 Vulnerabilidades podem ser de elemento, status, tipo de ataque, arma ou comportamento.
 Todo monstro deve ter pelo menos uma janela de vulnerabilidade comportamental.
-Ataque acertado durante janela de vulnerabilidade causa crítico automático.
+Nem toda janela comportamental causa crítico automático.
+MinorOpening gera bônus moderado, maior chance de crítico, posture damage ou oportunidade tática.
+CriticalWindow pode causar crítico automático.
+CoreExposed/BossMechanicWindow pode causar crítico automático + bônus moderado.
 Bosses devem ter vulnerabilidades e janelas por fase.
+Breath pode continuar em nome de ataques de sopro de criaturas; não é atributo/recurso.
 Inimigos planejados no snapshot não são iguais a inimigos ativos simultâneos.
 A caverna deve usar active combat budget por faixa.
-Early game solo precisa ser possível.
+O active combat budget não foi reduzido pelo custo alto de Stamina.
+Early game solo precisa ser possível, mas difícil.
 Companions/pets/itens passam a ser expectativa progressiva, não requisito imediato.
 TTK alvo deve ser usado para evitar inimigos esponja ou triviais.
+Stamina Budget por encontro deve ser usado para garantir pacing, atrito e valor de skills/gear/companions.
 ```
 
 ---
@@ -816,9 +924,13 @@ TTK alvo deve ser usado para evitar inimigos esponja ou triviais.
 ```text
 Definir DamageType final.
 Definir CriticalHit contract.
+Definir MinorOpening/CriticalWindow/CoreExposed data contract.
 Definir VulnerabilityProfile data structure.
 Definir CriticalWindow detector no EnemyBrain.
 Definir integração com CompanionSkill e PetInterrupt.
-Definir UI/feedback visual de vulnerabilidade e crítico.
+Definir UI/feedback visual de MinorOpening, vulnerabilidade e crítico.
 Definir se bestiário revela vulnerabilidades por descoberta ou automaticamente.
+Definir StaminaBudget telemetry em Play Mode.
 Validar TTK real em Play Mode.
+Validar consumo real de Stamina por faixa em Play Mode.
+```
