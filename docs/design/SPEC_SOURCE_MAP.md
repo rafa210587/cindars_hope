@@ -265,9 +265,92 @@ spec_cave_city_guild_contracts_integration.md
 
 ---
 
-# PARTE D — Combate, magia e progressão
+# PARTE D — Personagem
 
-## 6. Specs de combate/magia/progressão
+## 6. Specs de personagem/core systems
+
+Fontes obrigatórias:
+
+```text
+docs/design/gameplay/player/PLAYER_CORE_SYSTEMS_DIRECTION.md
+```
+
+Usar para specs de:
+
+```text
+atributos
+HP / MP / Stamina / Breath
+fome
+cansaço
+level up
+pontos de atributo
+skills nível 1-5
+skill trees
+active slots
+arquétipos/jobs inferidos
+ferramentas
+armas
+magia
+equipamentos
+resistências
+status negativos
+morte / derrota / Fonte de Anya
+companions
+pets
+fazenda
+caverna
+UI/HUD do personagem
+save/load do personagem
+flerte / relacionamento / casamento
+```
+
+Specs de personagem que tocam caverna devem ler também:
+
+```text
+docs/design/gameplay/cave/CAVE_DESIGN_DIRECTION.md
+docs/design/gameplay/cave/CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md
+```
+
+Specs de personagem que tocam fazenda devem ler também:
+
+```text
+docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.3.md
+docs/design/gameplay/farm/FARM_LAYOUT_SCALE_BUILDINGS_DIRECTION.md
+```
+
+Specs de personagem que tocam cidade/relacionamento/casamento devem ler também:
+
+```text
+docs/design/gameplay/city/CITY_DESIGN_DIRECTION_v1.2.md
+docs/design/gameplay/city/CITY_NPC_ROSTER_SERVICES_DIRECTION_v1.1.md
+docs/design/gameplay/city/CITY_LAYOUT_BUILDINGS_SCHEDULE_DIRECTION.md
+```
+
+Specs recomendadas futuras:
+
+```text
+spec_player_attributes_progression_points.md
+spec_player_hp_mp_stamina_breath_formulas.md
+spec_player_hunger_fatigue_condition_manager.md
+spec_player_skills_level_1_5_progression.md
+spec_player_skill_trees_active_slots.md
+spec_player_inferred_jobs_archetypes.md
+spec_player_tools_usage_upgrade_stamina.md
+spec_player_weapons_damage_types_critical_windows.md
+spec_player_magic_mp_skill_actions.md
+spec_player_equipment_resistances_status.md
+spec_player_death_defeat_anya_fountain.md
+spec_player_companion_pet_integration.md
+spec_player_relationship_flirt_marriage.md
+spec_ui_player_hud_status_skills_equipment.md
+spec_save_player_core_systems.md
+```
+
+---
+
+# PARTE E — Combate, magia e progressão
+
+## 7. Specs de combate/magia/progressão
 
 Fonte futura principal:
 
@@ -278,6 +361,7 @@ docs/design/gameplay/combat_magic_progression/COMBAT_MAGIC_PROGRESSION_DESIGN_DI
 Enquanto não existir, ler:
 
 ```text
+docs/design/gameplay/player/PLAYER_CORE_SYSTEMS_DIRECTION.md
 docs/design/lore/VAALARA_GAME_CANON_DIRECTION_v1.0.md
 docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.3.md
 docs/design/gameplay/farm/FARM_LAYOUT_SCALE_BUILDINGS_DIRECTION.md
@@ -300,9 +384,9 @@ spec_jobs_classes_gameplay_roles.md
 
 ---
 
-# PARTE E — Companions e pets
+# PARTE F — Companions e pets
 
-## 7. Specs de companions
+## 8. Specs de companions
 
 Fonte futura principal:
 
@@ -313,6 +397,7 @@ docs/design/gameplay/companions/COMPANIONS_DESIGN_DIRECTION_v1.0.md
 Enquanto não existir, ler:
 
 ```text
+docs/design/gameplay/player/PLAYER_CORE_SYSTEMS_DIRECTION.md
 docs/design/lore/VAALARA_GAME_CANON_DIRECTION_v1.0.md
 docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.3.md
 docs/design/gameplay/farm/FARM_LAYOUT_SCALE_BUILDINGS_DIRECTION.md
@@ -335,9 +420,9 @@ spec_pets_dog_cat_bond_buffs_combat_support.md
 
 ---
 
-# PARTE F — UI/UX
+# PARTE G — UI/UX
 
-## 8. Specs de UI/UX
+## 9. Specs de UI/UX
 
 Fonte futura principal:
 
@@ -348,6 +433,7 @@ docs/design/gameplay/ui_ux/UI_UX_DESIGN_DIRECTION_v1.0.md
 Enquanto não existir, ler fontes do domínio tocado:
 
 ```text
+Personagem -> PLAYER_CORE_SYSTEMS_DIRECTION.md
 Fazenda -> FARM_DESIGN_DIRECTION_v1.3.md + FARM_LAYOUT_SCALE_BUILDINGS_DIRECTION.md
 Cidade -> CITY_DESIGN_DIRECTION_v1.2.md + CITY_LAYOUT_BUILDINGS_SCHEDULE_DIRECTION.md
 Caverna -> CAVE_DESIGN_DIRECTION.md + CAVE_LEVEL_GENERATION_LAYOUT_BIOME_DIRECTION.md + CAVE_MONSTER_ROSTER_DIRECTION.md + CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md + CAVE_MONSTER_VISUAL_SPRITE_DIRECTION.md
@@ -371,9 +457,9 @@ spec_ui_cave_vulnerability_critical_feedback.md
 
 ---
 
-# PARTE G — Template obrigatório de spec
+# PARTE H — Template obrigatório de spec
 
-## 9. Cabeçalho mínimo
+## 10. Cabeçalho mínimo
 
 Toda spec deve começar com:
 
@@ -410,7 +496,7 @@ Toda spec deve começar com:
 ## Riscos e rollback
 ```
 
-## 10. Regra de rastreabilidade
+## 11. Regra de rastreabilidade
 
 Toda spec deve conseguir responder:
 
