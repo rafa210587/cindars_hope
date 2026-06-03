@@ -48,7 +48,8 @@ docs/design/
     farm/
       FARM_DESIGN_DIRECTION_v1.3.md
     city/
-      CITY_DESIGN_DIRECTION_v1.0.md
+      CITY_DESIGN_DIRECTION_v1.1.md
+      CITY_NPC_ROSTER_SERVICES_DIRECTION_v1.0.md
     cave/
       CAVE_DESIGN_DIRECTION_v1.0.md
     combat_magic_progression/
@@ -96,7 +97,13 @@ docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.3.md
 Documento ativo consolidado de direção ampla da cidade:
 
 ```text
-docs/design/gameplay/city/CITY_DESIGN_DIRECTION_v1.0.md
+docs/design/gameplay/city/CITY_DESIGN_DIRECTION_v1.1.md
+```
+
+Roster ativo de cidadãos/serviços da cidade:
+
+```text
+docs/design/gameplay/city/CITY_NPC_ROSTER_SERVICES_DIRECTION_v1.0.md
 ```
 
 As versões anteriores de fazenda ficam como histórico incremental:
@@ -111,4 +118,4 @@ Usar `VAALARA_GAME_CANON_DIRECTION_v1.0.md` antes de qualquer novo design direct
 
 Usar `FARM_DESIGN_DIRECTION_v1.3.md` antes de quebrar novas specs de layout, crops, fertilizantes, animais, automação, pets, cansaço, Fonte de Anya, Água Viva, Raiz Dormente de Mana, pedreira final e economia agrícola.
 
-Usar `CITY_DESIGN_DIRECTION_v1.0.md` antes de quebrar novas specs de cidade, NPCs, lojas, reputação, calendário, festivais, contratos, guildas, capelas, cultos, visitas à fazenda e integração com caverna.
+Usar `CITY_DESIGN_DIRECTION_v1.1.md` e `CITY_NPC_ROSTER_SERVICES_DIRECTION_v1.0.md` antes de quebrar novas specs de cidade, NPCs, lojas, reputação, calendário, festivais, contratos, guildas, templo de Kanthor, altares, visitas à fazenda e integração com caverna.
