@@ -9,7 +9,7 @@
 
 ## 0. Objetivo
 
-Este documento refina somente as **skills**, **skill trees**, **tiers**, **feedback de HUD** e **economia de pontos** do jogador.
+Este documento refina somente as **skills**, **skill trees**, **tiers**, **feedback de HUD**, **economia de pontos** e **capstones divinos** do jogador.
 
 Ele substitui a lista preliminar de skills do documento de core sempre que houver conflito.
 
@@ -20,6 +20,8 @@ O jogador terá 5 skill trees.
 O jogador terá no máximo 50 SkillPoints no endgame.
 Cada árvore tem 5 tiers.
 Tier 5 é o capstone.
+Capstones devem estar conectados a deuses/forças de Vaalara.
+Alguns capstones são escolhas mutuamente exclusivas.
 O jogador deve conseguir masterizar uma árvore principal e investir parcialmente em outras.
 O jogador não deve conseguir masterizar duas árvores completas.
 Skills devem ter efeito mecânico real no jogo, não só flavour.
@@ -33,8 +35,6 @@ A HUD precisa caber em tela pequena e priorizar leitura rápida.
 
 ## 1. Árvores canônicas
 
-As 5 árvores iniciais são:
-
 ```text
 1. Melee / Guerreiro
 2. Ranged / Caçador
@@ -43,7 +43,7 @@ As 5 árvores iniciais são:
 5. Crafting / Produção
 ```
 
-Sistemas sociais, romance, companions e pets são transversais neste momento. Eles podem receber bônus por atributos, arquétipos, quests ou itens, mas não são uma sexta árvore agora.
+Sistemas sociais, romance, companions e pets são transversais neste momento.
 
 ## 2. Economia de SkillPoints
 
@@ -67,8 +67,6 @@ Com 50 pontos: não deve ser possível masterizar duas árvores completas.
 | Tier 5 | 26 | Capstone | Identidade final da árvore, exige compromisso claro |
 
 ## 4. Rank cap por tier
-
-Para evitar que o jogador maximize uma skill cedo demais, nodes escaláveis devem respeitar limites de rank por profundidade da árvore.
 
 | Profundidade atual na árvore | Rank máximo recomendado em nodes escaláveis |
 |---|---:|
@@ -96,18 +94,32 @@ Dash base não depende da árvore; Survival melhora Dash.
 | Unlock | Não | Libera sistema, receita, tier, material, item ou interação |
 | Modifier | Não | Altera ação existente, como ataque, dodge, mineração, magia |
 | Capstone | Normalmente não | Pode ser passivo, modificador ou active especial |
+| Exclusive Capstone | Normalmente não | Escolha final de Tier 5 que bloqueia outra opção equivalente da mesma árvore |
 
-## 6. Regras de miss, precisão e crítico
+## 6. Capstones divinos e exclusão mútua
 
-Chance de miss existe, mas deve ser superficial.
+Capstones podem representar uma inclinação espiritual, filosófica ou de gameplay ligada a deuses de Vaalara.
+
+Regras:
 
 ```text
+Capstone divino não transforma automaticamente o jogador em clérigo/devoto formal.
+Ele representa afinidade mecânica e narrativa com uma força/ideal.
+Quando houver duas opções exclusivas, escolher uma bloqueia a outra até respec na Fonte de Anya.
+A escolha precisa ter efeito mecânico e feedback visual próprios.
+Capstones não devem ser apenas bônus numérico genérico.
+```
+
+## 7. Regras de miss, precisão e crítico
+
+```text
+Chance de miss existe, mas deve ser superficial.
 Miss não deve dominar o combate.
 Skills não devem gastar muitos pontos só para “acertar mais”.
 Precisão pode existir como flavour, mas mecanicamente deve virar bônus mais útil.
 ```
 
-Preferir efeitos como:
+Preferir:
 
 ```text
 +chance de crítico
@@ -121,11 +133,7 @@ Preferir efeitos como:
 +maior controle/status
 ```
 
-## 7. Regra sobre partes do corpo / pontos fracos
-
-O jogo ainda não terá sistema de ataque em local específico do corpo.
-
-Portanto:
+## 8. Regra sobre partes do corpo / pontos fracos
 
 ```text
 Não usar skill que exige mirar em olho, asa, cabeça, perna ou core específico.
@@ -133,7 +141,7 @@ Não usar skill que exige mirar em olho, asa, cabeça, perna ou core específico
 Mecanicamente, deve ser tratado como abertura, vulnerabilidade, critical window, alvo marcado ou estado exposto.
 ```
 
-## 8. Active slots e input separado
+## 9. Active slots e input separado
 
 ```text
 4 active slots são para habilidades equipáveis.
@@ -158,7 +166,7 @@ Block é desbloqueado/melhorado por Melee/Guerreiro, mas usa Left Shift como inp
 
 # PARTE B — Melee / Guerreiro
 
-## 9. Identidade da árvore
+## 10. Identidade da árvore
 
 Melee/Guerreiro é a árvore de combate físico de curta distância.
 
@@ -172,6 +180,7 @@ heavy attacks
 controle de swarms próximos
 crítico por abertura
 sobrevivência em proximidade
+escolha final entre disciplina de Kanthor e fúria de Kaand
 ```
 
 Atributos de sinergia:
@@ -183,7 +192,7 @@ Destreza: timing, dodge follow-up, crítico por abertura.
 Breath: ritmo de combate e sustentação de block/ataques pesados.
 ```
 
-## 10. Skills Melee/Guerreiro
+## 11. Skills Melee/Guerreiro
 
 | Skill | Tier | Custo/Ranks | Tipo | Mecânica in-game | HUD/Feedback |
 |---|---:|---:|---|---|---|
@@ -199,23 +208,25 @@ Breath: ritmo de combate e sustentação de block/ataques pesados.
 | Especialização: Arma Leve | 3 | 1-5 | Passive | Dagger/Sword/Spear curta: -4/8/12/16/20% recovery entre ataques; +2/4/6/8/10% crit chance contra alvo marcado/vulnerável. | marcador de especialização |
 | Pele de Batalha | 4 | 1-5 | Passive | Enquanto HP > 60%, reduz dano físico recebido em 3/6/9/12/15%. Não regenera HP. | buff passivo no status |
 | Golpe de Ruptura | 4 | 1-3 | Active Skill | Golpe forte que aplica grande posture damage e pequeno knockback. Custo alto, cooldown médio. | active slot + impacto |
-| Capstone: Voto do Aço Profundo | 5 | 3 | Capstone | Ao quebrar postura de um inimigo elite/boss ou bloquear perfeitamente ataque pesado, ativa “Aço Profundo” por 7s: +20% dano melee, +25% resistência a stagger, Block custa -25% e ataques em critical window causam +30% dano crítico. Cooldown por encontro. | aura de aço escuro + pulso de postura |
+| Capstone: Voto do Aço Profundo de Kanthor | 5 | 3 | Exclusive Capstone | Escolha equilibrada/disciplinada. Ao bloquear perfeitamente ou quebrar postura, ativa “Julgamento de Aço” por 8s: +15% dano melee, +25% Block Stability, +20% resistência a stagger, e o próximo hit em critical window cura 3% do HP máximo ou recupera pequena Stamina. Bloqueia o capstone de Kaand. | aura dourada/azul, selo de justiça |
+| Capstone: Voto do Aço Profundo de Kaand | 5 | 3 | Exclusive Capstone | Escolha ofensiva/agressiva. Ao quebrar postura ou acertar crítico melee, ativa “Fúria de Aço” por 6s: +30% dano melee, +25% Crit Damage e +20% Stagger Power, mas Block Power cai 15% durante o efeito. Bloqueia o capstone de Kanthor. | aura rubra, pulso de guerra |
 
-## 11. Observações de balanceamento Melee
+## 12. Observações de balanceamento Melee
 
 ```text
+Kanthor = combate estável, justo, defensivo/ofensivo equilibrado.
+Kaand = combate agressivo, risco/recompensa, menor segurança.
+As duas opções são mutuamente exclusivas até respec.
 Melee deve ser forte em risco/recompensa.
 Block dá segurança, mas custa recurso.
-Ataque pesado deve ser perigoso se usado no timing errado.
 Crítico vem de abertura/vulnerabilidade, não de mirar em parte específica.
-Block rank 1 pode existir cedo; Block forte só deve aparecer com investimento maior.
 ```
 
 ---
 
 # PARTE C — Ranged / Caçador
 
-## 12. Identidade da árvore
+## 13. Identidade da árvore
 
 Ranged/Caçador é a árvore de distância, controle, marcação e exploração ofensiva segura.
 
@@ -229,6 +240,7 @@ crítico por abertura
 interrupção
 loot de caça
 combate contra inimigos voadores/flutuantes sem mirar em parte específica
+afinidade com a Caça das Três Luas
 ```
 
 Atributos de sinergia:
@@ -239,7 +251,7 @@ Inteligência: leitura de padrões, marcação, armadilhas simples.
 Vontade: foco sob medo/pressão e resistência mental.
 ```
 
-## 13. Skills Ranged/Caçador
+## 14. Skills Ranged/Caçador
 
 | Skill | Tier | Custo/Ranks | Tipo | Mecânica in-game | HUD/Feedback |
 |---|---:|---:|---|---|---|
@@ -255,24 +267,22 @@ Vontade: foco sob medo/pressão e resistência mental.
 | Flecha Preparada | 4 | 1-5 | Modifier/Unlock | Permite aplicar consumíveis simples à flecha: fogo/gelo/veneno leve. Consome item ou carga. Efeitos fortes exigem crafting/magia. | ícone de munição preparada |
 | Retirada Tática | 4 | 1-3 | Passive | Ao acertar inimigo marcado que se aproxima, chance de 20/35/50% de aplicar slow curto. Cooldown interno. | efeito de slow |
 | Olho do Caçador | 4 | 1-5 | Passive | +3/6/9/12/15% chance de loot de caça adicional em criaturas orgânicas: couro, presa, pena, carne ou componente. | feedback de loot extra |
-| Capstone: Marca da Caçada Lunar | 5 | 3 | Capstone | O primeiro alvo marcado em cada encontro recebe “Caçada Lunar”: enquanto marcado, ataques ranged contra ele têm +15% crit chance. O primeiro crítico ranged nele causa +45% dano crítico e espalha uma marca menor para 1 inimigo próximo. | marca lunar acima do alvo |
+| Capstone: Marca da Caça das Três Luas | 5 | 3 | Capstone | O primeiro alvo marcado em cada encontro recebe “Marca das Três Luas”. Enquanto marcado: +15% crit chance ranged contra ele. O primeiro crítico ranged causa +45% Crit Damage e espalha uma marca menor para 1 inimigo próximo. Se o alvo morrer marcado, recupera pequena Stamina/Breath. | três luas pequenas orbitando a marca |
 
-## 14. Observações de balanceamento Ranged
+## 15. Observações de balanceamento Ranged
 
 ```text
 Ranged deve ser seguro, mas depender de posicionamento e recurso.
 Não deve virar magia gratuita.
-Não deve depender de mirar em partes específicas.
 “Ponto fraco” vira abertura, marcação, vulnerabilidade ou critical window.
 Precisão pura é baixa prioridade porque miss será superficial.
-Interrupção fica em Tier 3 para não trivializar inimigos especiais cedo demais.
 ```
 
 ---
 
 # PARTE D — Magic / Arcano
 
-## 15. Identidade da árvore
+## 16. Identidade da árvore
 
 Magic/Arcano é a árvore de MP, magia elemental, magia arcana, magia espiritual/divina limitada, uso de itens mágicos e interação com Fonte/Mana.
 
@@ -287,6 +297,7 @@ barreiras/selos
 purificação/corrupção
 uso de itens mágicos
 interação com Fruto de Mana e Fonte de Anya
+escolha final entre semente de Anya e semente de Senya
 ```
 
 Atributos de sinergia:
@@ -297,7 +308,7 @@ Inteligência: controle, eficiência, potência técnica.
 Carisma: suporte/liderança espiritual, quando aplicável.
 ```
 
-## 16. Skills Magic/Arcano
+## 17. Skills Magic/Arcano
 
 | Skill | Tier | Custo/Ranks | Tipo | Mecânica in-game | HUD/Feedback |
 |---|---:|---:|---|---|---|
@@ -314,24 +325,25 @@ Carisma: suporte/liderança espiritual, quando aplicável.
 | Uso de Item Mágico | 3 | 1-5 | Unlock/Passive | Permite usar varinhas, selos, scrolls, amuletos e cargas mágicas de tiers maiores. Reduz chance de falha/efeito fraco de item mágico. | item mágico desbloqueado |
 | Resistir Corrupção | 4 | 1-5 | Passive | Reduz efeito/duração de Corruption, Shadow/Nyx, Void e Blackstone em 5/10/15/20/25%. | ícone de resistência espiritual |
 | Eco da Fonte | 4 | 1-5 | Passive/Lore | Melhora efeitos da Fonte de Anya, Água Viva, respec e cura especial após marcos narrativos. Sem efeito total no início. | HUD contextual na Fonte |
-| Capstone: Semente Arcana de Anya | 5 | 3 | Capstone | Ao gastar 40% do MP máximo em uma sequência, cria uma “Semente Arcana” por 10s. A próxima magia espiritual/arcana custa -50% MP, tem +30% efeito e deixa um eco de proteção/regen leve por 4s. Cooldown longo. | semente luminosa girando no personagem |
+| Capstone: Semente Arcana de Anya | 5 | 3 | Exclusive Capstone | Escolha de suporte/cura. Ao gastar 35% do MP máximo em sequência, cria “Semente de Anya” por 10s. Próxima magia espiritual/suporte custa -50% MP, cura/barreira/purificação recebe +35% efeito e deixa eco de regen leve por 4s. Bloqueia Semente de Senya. | semente branca/azul, pulso de Água Viva |
+| Capstone: Semente Arcana de Senya | 5 | 3 | Exclusive Capstone | Escolha ofensiva/caótica. Ao gastar 35% do MP máximo em sequência, cria “Semente de Senya” por 8s. Próxima magia ofensiva causa +35% Magic Damage, aplica efeito elemental amplificado e tem +15% chance de crit mágico/overload. A magia custa +10% MP. Bloqueia Semente de Anya. | semente violeta/dourada, faíscas caóticas |
 
-## 17. Observações de balanceamento Magic
+## 18. Observações de balanceamento Magic
 
 ```text
+Anya = suporte, cura, barreira, purificação, segurança.
+Senya = dano mágico, elemental, risco/custo maior, pressão ofensiva.
+As duas sementes são mutuamente exclusivas até respec.
 MP regenera lentamente e não deve ser trivializado.
 Cura existe, mas é cara e limitada.
 Magia elemental deve gerar escolhas de build.
-Uso de item mágico é progressão real, não só flavour.
-Magia sombria/corrompida deve depender de lore, risco e progressão; não é magia inicial livre.
-Ranks altos de custo de MP e regen ficam limitados pelo rank cap global.
 ```
 
 ---
 
 # PARTE E — Survival / Sobrevivente
 
-## 18. Identidade da árvore
+## 19. Identidade da árvore
 
 Survival/Sobrevivente é a árvore de runs longas, resistência, fome, cansaço, exploração da caverna, loot contextual, tesouros, ouro e mitigação de ambiente.
 
@@ -348,6 +360,7 @@ extrair melhor de nodes de minério durante run
 melhorar Dash
 melhorar Dodge
 HP regen fora de combate
+afinação final com Telisandra
 ```
 
 Não cobre neste momento:
@@ -368,7 +381,7 @@ Vontade: medo, corrupção, pressão espiritual.
 Inteligência: leitura de perigo e aproveitamento de recursos.
 ```
 
-## 19. Skills Survival/Sobrevivente
+## 20. Skills Survival/Sobrevivente
 
 | Skill | Tier | Custo/Ranks | Tipo | Mecânica in-game | HUD/Feedback |
 |---|---:|---:|---|---|---|
@@ -385,9 +398,9 @@ Inteligência: leitura de perigo e aproveitamento de recursos.
 | Faro de Tesouro | 4 | 1-5 | Passive | Baús/tesouros já gerados têm +2/4/6/8/10% chance de rolar item de raridade superior. Não cria sala secreta. | brilho no baú após abrir |
 | Mente Inabalável | 4 | 1-5 | Passive | Reduz duração/efeito de Fear, ConfusionLite, Nyx/Void leve em 5/10/15/20/25%. | ícone mental/espiritual |
 | Resistência de Run Profunda | 4 | 1-3 | Passive | Em run de caverna, após 10/20/30 min in-game de exploração contínua, reduz penalidades de fome/cansaço em valor moderado. | buff de run longa |
-| Capstone: Último Fôlego de Elyndor | 5 | 3 | Capstone | Uma vez por run, ao entrar em HP baixo, Breath crítico ou cansaço alto, ativa por 10s: -45% gasto de Breath, +30% resistência ambiental/mental, Dodge ganha pequena janela extra e HP regen fora de combate fica dobrada após sair do perigo. | pulso azul-prateado + alerta de run |
+| Capstone: Último Fôlego de Telisandra | 5 | 3 | Capstone | Uma vez por run, ao entrar em HP baixo, Breath crítico ou cansaço alto, ativa “Fôlego de Telisandra” por 10s: -45% gasto de Breath, +30% resistência ambiental/mental, Dodge ganha pequena janela extra e HP Regen fora de combate fica dobrada após sair do perigo. | brisa prateada/azulada + alerta de run |
 
-## 20. Observações de balanceamento Survival
+## 21. Observações de balanceamento Survival
 
 ```text
 Survival deve tornar runs longas mais viáveis, não mais fáceis sem limite.
@@ -402,7 +415,7 @@ Dash base vem de tutorial/progressão inicial; Survival melhora Dash.
 
 # PARTE F — Crafting / Produção
 
-## 21. Identidade da árvore
+## 22. Identidade da árvore
 
 Crafting/Produção é a árvore de ferramentas, fazenda, construção, oficinas, materiais, qualidade, tiers e eficiência econômica/produtiva.
 
@@ -417,6 +430,7 @@ liberar tiers de material
 liberar armas/ferramentas melhores
 melhorar cozinha, buffs e preparo
 criar máquinas/processadores/oficinas
+afinidade final com Thoren
 ```
 
 Atributos de sinergia:
@@ -430,7 +444,7 @@ Carisma: comércio/animais em efeitos futuros.
 Vontade: crops raras, Mana e Fonte em efeitos específicos.
 ```
 
-## 22. Skills Crafting/Produção
+## 23. Skills Crafting/Produção
 
 | Skill | Tier | Custo/Ranks | Tipo | Mecânica in-game | HUD/Feedback |
 |---|---:|---:|---|---|---|
@@ -447,9 +461,9 @@ Vontade: crops raras, Mana e Fonte em efeitos específicos.
 | Trabalho em Mithril | 4 | 1-3 | Unlock/Modifier | Libera armas/armaduras/ferramentas de Mithril. Equipamentos tendem a ser leves, duráveis e com menor custo de stamina. | tier mithril |
 | Engenharia Bromeciana | 4 | 1-5 | Unlock/Crafting | Libera máquinas, processadores, irrigação avançada, mecanismos e itens técnicos por rank. | UI de máquina/processador |
 | Cultivo de Mana | 4 | 1-5 | Lore/Crafting | Aumenta chance de cultivar/estabilizar crops raras ligadas a Mana, sem garantir Fruto de Mana. Depende de Fonte/lore/fazenda. | ícone de Mana/crop rara |
-| Capstone: Forja Viva de Cindar | 5 | 3 | Capstone | Uma vez por dia, ao craftar, construir ou colher lote relevante, ativa “Forja Viva”: recupera parte de material comum, melhora qualidade ou gera output extra moderado. Se o item envolver Mana/Fonte, adiciona chance baixa de propriedade rara. Não afeta materiais únicos/endgame. | brilho de brasas azuis/douradas |
+| Capstone: Forja Viva de Thoren | 5 | 3 | Capstone | Uma vez por dia, ao craftar, construir ou colher lote relevante, ativa “Forja Viva”: recupera parte de material comum, melhora qualidade ou gera output extra moderado. Em armas/ferramentas, chance baixa de conceder propriedade temporária de durabilidade/eficiência. Não afeta materiais únicos/endgame. | bigorna luminosa + brasas azuis/douradas |
 
-## 23. Por que reduzir stamina agrícola ainda importa
+## 24. Por que reduzir stamina agrícola ainda importa
 
 ```text
 No early game, reduz custo direto de ações básicas.
@@ -457,11 +471,7 @@ No mid game, reduz cansaço acumulado porque Stamina gasta acelera cansaço.
 No late game, continua útil em dias de grande produção, mas perde peso para automação, irrigação, companions, máquinas e upgrades.
 ```
 
-## 24. Substituição de “Estabilização Rara”
-
-A skill antiga “Estabilização Rara” fica removida como nome genérico.
-
-Substituições melhores:
+## 25. Substituição de “Estabilização Rara”
 
 ```text
 Cultivo de Mana
@@ -478,7 +488,7 @@ Alquimia Prática
 
 # PARTE G — HUD e UI das skills
 
-## 25. Princípios de HUD para tela pequena
+## 26. Princípios de HUD para tela pequena
 
 A HUD deve seguir uma lógica comum em farm sims e action RPGs 2D: **estado essencial sempre visível**, informação contextual só aparece quando importa, e menus completos ficam fora da tela de gameplay.
 
@@ -502,7 +512,7 @@ Durante fazenda, priorizar ferramenta/item, Stamina, Fome, Cansaço, tempo e int
 Durante caverna, priorizar HP, MP, Stamina, Breath, andar da caverna, active skills, status e recursos de run.
 ```
 
-## 26. Layout base recomendado
+## 27. Layout base recomendado
 
 ### Top-left — estado do personagem
 
@@ -523,8 +533,6 @@ Fome e Cansaço aparecem como ícones compactos com fill/estado, não como barra
 
 ### Top-right — tempo, mundo e economia
 
-Sempre visível fora de menus:
-
 ```text
 Dia
 Hora/período
@@ -535,8 +543,6 @@ Ouro carregado
 
 ### Bottom-center — hotbar de itens/ferramentas
 
-Uso principal:
-
 ```text
 ferramenta ativa
 item selecionado
@@ -544,20 +550,10 @@ sementes
 comida
 poções
 recursos rápidos
-```
-
-Direção:
-
-```text
-8 slots visíveis inicialmente.
-Slot selecionado maior ou com outline.
-Em caverna, hotbar pode destacar consumíveis e arma/ferramenta ativa.
-Em fazenda, hotbar destaca ferramentas e sementes.
+8 slots visíveis inicialmente
 ```
 
 ### Bottom-right — habilidades equipáveis
-
-Uso principal:
 
 ```text
 4 active slots
@@ -580,8 +576,6 @@ Cada active slot deve mostrar ícone, cooldown radial, custo principal e estado 
 
 ### Próximo ao personagem — prompts contextuais
 
-Aparece só quando relevante:
-
 ```text
 E Interagir
 E Colher
@@ -593,91 +587,12 @@ E Entrar
 
 ### Top-center — alvo, boss e objetivo curto
 
-Uso condicional:
-
 ```text
 barra de boss
 nome de alvo elite
 andar da caverna ao entrar
 objetivo curto temporário
 checkpoint alcançado
-```
-
-Regra:
-
-```text
-Não mostrar barra de inimigo comum permanentemente.
-Inimigos comuns comunicam HP/status por feedback visual local.
-Bosses e elites podem usar barra top-center.
-```
-
-## 27. Estados de HUD por modo de jogo
-
-### Fazenda
-
-HUD prioriza:
-
-```text
-ferramenta ativa
-item/semente selecionada
-Stamina
-Fome
-Cansaço
-Dia/Hora/Season/Lua
-Ouro
-prompt de interação
-estado contextual do tile/crop/animal
-```
-
-### Cidade
-
-HUD prioriza:
-
-```text
-Dia/Hora
-Ouro
-prompt de interação
-nome do NPC ao aproximar
-estado de loja/serviço
-ícone de relacionamento quando relevante
-```
-
-### Caverna
-
-HUD prioriza:
-
-```text
-HP
-MP, se magia/item mágico existir
-Stamina
-Breath
-Fome
-Cansaço
-andar atual da caverna
-estado de checkpoint/run
-4 active slots
-Dash/Dodge/Block
-status negativos
-consumíveis rápidos
-```
-
-### Combate
-
-HUD prioriza:
-
-```text
-HP
-Stamina
-Breath
-MP, se usado
-4 active slots
-cooldowns
-Dash cooldown
-Dodge feedback
-Block ativo/perfeito
-status negativos
-critical window
-stagger/posture do alvo importante
 ```
 
 ## 28. Feedback de skills na HUD
@@ -697,6 +612,7 @@ stagger/posture do alvo importante
 | Loot extra | pop-up curto no pickup: +ouro, +minério, +recurso |
 | Resistência ambiental | ícone pequeno quando reduzindo frio/calor/gás/corrupção |
 | Craft unlock | toast curto: “Ferramentas de Ferro liberadas” |
+| Capstone divino | ícone temporário do deus/força associado e feedback visual próprio |
 
 ## 29. Menu de skill tree
 
@@ -712,19 +628,10 @@ pré-requisitos por node
 rank atual de cada skill
 rank máximo atual permitido pelo tier
 se a skill ocupa active slot ou não
-se a skill é movement modifier, passive, unlock, modifier ou capstone
+se a skill é movement modifier, passive, unlock, modifier, capstone ou exclusive capstone
 preview mecânico do próximo rank
 respec disponível na Fonte de Anya
-```
-
-Para tela pequena:
-
-```text
-Uma árvore por vez.
-Zoom/pan simples se a árvore for visual.
-Lista lateral de nodes selecionáveis se a UI visual ficar pequena demais.
-Tooltip à direita ou painel inferior, nunca cobrindo tudo.
-Mostrar caminho até o próximo tier.
+quando o node for exclusivo, mostrar claramente qual opção será bloqueada
 ```
 
 ## 30. Tooltip de skill
@@ -746,28 +653,13 @@ Custo de recurso se active
 Cooldown se active
 Ocupa active slot? Sim/Não
 Interações com atributos/equipamentos
-```
-
-## 31. O que a HUD não deve fazer
-
-```text
-Não mostrar todos os status como barras grandes permanentes.
-Não colocar Dash/Dodge/Block dentro dos 4 active slots.
-Não mostrar números excessivos durante gameplay comum.
-Não depender de texto longo para entender combate.
-Não abrir painel grande para feedback simples.
-Não usar pop-ups que escondam o personagem em combate.
-Não mostrar barra de HP de todo inimigo comum o tempo todo.
-Não misturar hotbar de itens com active skills sem separação visual.
+Deus/força associada, quando houver
+Exclusões, quando houver
 ```
 
 ---
 
 # PARTE H — Avaliação dos tiers após revisão
-
-## 32. Veredito
-
-A ideia de 5 tiers continua correta, com a curva revisada:
 
 ```text
 Tier 1: 0
@@ -793,15 +685,21 @@ Duas árvores completas continuam inviáveis com 50 pontos.
 # PARTE I — Decisões fechadas neste refinamento
 
 ```text
+Capstones devem se conectar a deuses/forças de Vaalara.
+Melee tem dois capstones exclusivos: Kanthor e Kaand.
+Kanthor é equilibrado/defensivo/ofensivo estável.
+Kaand é ofensivo/agressivo/risco-recompensa.
+Magic tem dois capstones exclusivos: Anya e Senya.
+Anya é suporte, cura, proteção e purificação.
+Senya é dano mágico, caos e efeitos elementais ofensivos.
+Ranged usa Marca da Caça das Três Luas.
+Survival usa Último Fôlego de Telisandra.
+Crafting usa Forja Viva de Thoren.
 Tiro em ponto fraco não será skill literal de mirar em parte específica.
 Ranged terá Leitura de Abertura, Marcador de Presa e crítico condicional.
 Chance de miss será superficial; skills de precisão pura serão evitadas.
 Secret rooms/atalhos não entram em Survival por enquanto.
 Survival foca runs longas, fome/cansaço, loot, ouro, tesouros existentes, mineração de caverna, resistência ambiental, melhoria de Dash, Dodge melhorado e HP regen.
-Crafting/Produção mantém redução de stamina agrícola, mas como skill early/mid que reduz cansaço indiretamente.
-Oficina Organizada reduz custo de construir/craftar estruturas, não apenas flavour.
-Estabilização Rara foi removida como skill genérica.
-Crafting/Produção terá Cultivo de Mana, Engenharia Bromeciana e Alquimia Prática como alternativas mais claras.
 Dash base é desbloqueado por tutorial/progressão inicial.
 Survival melhora Dash, mas não o torna obrigatório para todas as builds.
 Dash não ocupa active slot.
@@ -813,7 +711,6 @@ HP regen é skill de Survival e pode ser amplificada por itens.
 Tier 5 exige 26 pontos gastos na árvore.
 Nodes escaláveis respeitam rank cap por tier.
 A HUD deve ser compacta, contextual e separada por zonas: estado do jogador, mundo/economia, hotbar, active skills e prompts contextuais.
-Capstones devem ser icônicos, com nome e feedback próprios, não apenas bônus numérico genérico.
 ```
 
 ---
@@ -825,6 +722,7 @@ Definir custo final de cada node.
 Definir se todos os ranks custam 1 ponto ou se ranks altos custam mais.
 Definir valores finais de cooldown, custo e duração em gameplay real.
 Validar se todos os capstones ficam passivos/modificadores ou se algum vira active especial.
+Validar se os capstones exclusivos exigem confirmação extra na UI.
 Validar quantos active skills por árvore entram na primeira implementação.
 Validar se Ranged terá munição consumível ou munição abstrata.
 Validar como loot extra interage com economia da cidade.
