@@ -13,49 +13,86 @@
 > - `docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_DIRECTION.md`  
 > - `docs/design/gameplay/cave/CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md`  
 > - `docs/design/gameplay/cave/CAVE_MONSTER_VISUAL_SPRITE_DIRECTION.md`  
-> **Função:** consolidar a visão de combate do jogo: ação, movimento, Stamina, HP, MP, armas, magia, block, dodge, dash, janelas, vulnerabilidades, inimigos, companions, pets, bosses, HUD e validação.  
-> **Não é spec implementável.** Este documento define direção de design. Specs futuras devem transformar isto em código/data assets.
+> **Função:** consolidar como o combate deve funcionar: ritmo, input, movimentação, stamina, ataque, defesa, magia, janelas, inimigos, companions, pets, HUD e validação.  
+> **Não é spec implementável.** Este documento orienta design. Specs futuras devem transformar isto em código/data assets.
 
 ---
 
-## 0. Referência externa de design — Children of Morta
+## 0. Regra anti-duplicação
 
-`Children of Morta` é uma referência útil de feeling e arquitetura, não uma fonte para copiar sistemas.
+Este documento não deve ser a fonte primária de fórmulas numéricas de atributos derivados.
 
-Elementos observados como referência:
+Fonte canônica de fórmulas:
 
 ```text
-action RPG / hack'n'slash com abordagem roguelite
-incursões em dungeons proceduralmente geradas
-personagens/playstyles distintos
-combate com ataques corpo a corpo, ranged, magia, block, stun, cura, evasão e passivas
-progressão entre runs
-identidade narrativa forte conectada à base/casa/família
+docs/design/gameplay/player/PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md
 ```
 
-Adaptação para Cindar's Hope:
+Fonte canônica de exemplo/teste de mesa:
 
 ```text
-Cindar's Hope não terá personagens fixos como os Bergsons.
-O jogador é um personagem livre, com build construída por atributos, skill trees, gear, armas, magia, companions e pets.
-O feeling desejado é similar no ritmo de dungeon action: leitura de inimigos, hordas controladas, skills claras, evasão, block, janelas de punição e progressão persistente.
-A estrutura emocional/narrativa vem de Vaalara, fazenda, Fonte de Anya, cidade, companions, pets e caverna.
+docs/design/gameplay/player/PLAYER_DERIVED_ATTRIBUTES_TABLETOP_EXAMPLE.md
+```
+
+Fonte canônica de roster/atributos dos monstros:
+
+```text
+docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_DIRECTION.md
+```
+
+Fonte canônica de vulnerabilidades/janelas/TTK/telemetria da caverna:
+
+```text
+docs/design/gameplay/cave/CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md
 ```
 
 Regra:
 
 ```text
-Usar Children of Morta como inspiração de ritmo, clareza, run loop e diversidade de kits.
-Não copiar nomes, personagens, habilidades, valores, textos, bosses, mapas ou sistemas proprietários.
+Se houver divergência de fórmula, o documento de atributos derivados vence.
+Se houver divergência de roster/monstro, o roster da caverna vence.
+Se houver divergência de vulnerabilidade/janela da caverna, o documento de balance da caverna vence.
+Combat Core pode repetir decisões fechadas apenas em forma de resumo, não como fonte duplicada de cálculo.
+```
+
+---
+
+## 1. Referência externa de design — Children of Morta
+
+`Children of Morta` é referência de feeling e arquitetura de combate, não de cópia.
+
+Elementos usados como inspiração:
+
+```text
+action RPG / hack'n'slash com ritmo claro
+incursões em dungeons com risco e progressão persistente
+kits legíveis
+combate baseado em leitura, posicionamento, ataques, evasão, defesa, habilidades e passivas
+sensação de run perigosa, com base/casa/narrativa sustentando progressão
+```
+
+Adaptação para Cindar's Hope:
+
+```text
+Cindar's Hope usa personagem livre, não personagens fixos.
+A build nasce de atributos, skill trees, armas, magia, equipamentos, companions e pets.
+A caverna deve ter combate action semelhante no ritmo: inimigos legíveis, packs densos, janelas de punição, evasão cara, defesa cara e progressão persistente.
+A identidade vem de Vaalara, fazenda, Fonte de Anya, cidade, companions, pets e caverna.
+```
+
+Regra:
+
+```text
+Não copiar nomes, personagens, habilidades, textos, valores, mapas, bosses ou sistemas proprietários.
 ```
 
 ---
 
 # PARTE A — Visão geral do combate
 
-## 1. Fantasia de combate
+## 2. Fantasia de combate
 
-O combate de Cindar's Hope deve ser:
+O combate deve ser:
 
 ```text
 tático
@@ -66,7 +103,7 @@ possível quando o jogador entende inimigo, Stamina, janelas e preparação
 fortemente conectado a build, gear, companions, pets e consumíveis
 ```
 
-O combate não deve ser:
+Não deve ser:
 
 ```text
 spam de ataque sem custo
@@ -78,21 +115,22 @@ dano inevitável sem telegraph
 arena lotada sem counterplay
 ```
 
-## 2. Pilares
+## 3. Pilares
 
 ```text
-1. Stamina é decisão.
-2. HP é consequência de erro, build, armor e preparo.
-3. MP abre magia, suporte, dano e controle, mas com custo claro.
-4. Block é defesa forte, mas cara.
-5. Dodge/Dash são fortes, caros e devem ser usados com intenção.
-6. Vulnerabilidades e janelas recompensam leitura.
-7. Companions/pets ajudam, mas não jogam pelo jogador.
-8. Bosses são fases, telegraphs e escolhas, não só vida alta.
-9. A caverna deve ficar mais difícil naturalmente, sem reduzir densidade por causa de Stamina cara.
+Stamina é decisão.
+Movimento normal é a primeira defesa.
+Dash e Dodge são fortes, caros e intencionais.
+Block é forte, caro e escala com gear/skills.
+HP é margem de erro, não tanque universal.
+MP abre magia, suporte e controle, mas com custo e build.
+Vulnerabilidades e janelas recompensam leitura.
+Companions/pets ajudam, mas não jogam pelo jogador.
+Bosses são fases, telegraphs e escolhas, não só vida alta.
+A caverna continua densa e desafiadora; progressão mitiga pressão naturalmente.
 ```
 
-## 3. Loop de combate desejado
+## 4. Loop de combate desejado
 
 ```text
 entrar na sala
@@ -111,7 +149,7 @@ coletar recompensa ou decidir recuar
 
 # PARTE B — Inputs centrais
 
-## 4. Inputs de combate
+## 5. Inputs de combate
 
 ```text
 Movimento: WASD ou direcional equivalente
@@ -132,21 +170,28 @@ Dash, Dodge e Block não ocupam active slot.
 Active slots são para skills equipáveis: ataques especiais, magias, suporte, utilidade ou técnicas.
 ```
 
-## 5. Resposta de input
-
-O combate precisa de responsividade alta.
+## 6. Responsividade e input buffer
 
 Regras:
 
 ```text
-input buffer curto para ataque, dodge, dash e block
-cancelamento limitado, nunca irrestrito
-prioridade de Dodge/Dash deve ser clara
-block deve levantar rápido, mas não instantâneo se o jogador estiver em recovery pesado
-ataques pesados devem comprometer o jogador
+Input buffer curto para ataque, dodge, dash, block e skill.
+Cancelamento limitado, nunca irrestrito.
+Prioridade de Dodge/Dash deve ser clara.
+Block deve levantar rápido, mas não instantâneo se o jogador estiver em recovery pesado.
+Ataques pesados devem comprometer o jogador.
 ```
 
-Direção:
+Alvos iniciais de sensação:
+
+```text
+Input buffer comum: 0.10s a 0.18s.
+Buffer de Dodge/Dash: 0.08s a 0.14s.
+Buffer de ataque leve em combo simples: 0.12s a 0.20s.
+Buffer de ataque pesado: menor ou inexistente se for charged.
+```
+
+Regra:
 
 ```text
 O jogador deve sentir que perdeu por decisão ruim, posicionamento ruim ou leitura ruim, não por input engolido.
@@ -154,66 +199,57 @@ O jogador deve sentir que perdeu por decisão ruim, posicionamento ruim ou leitu
 
 ---
 
-# PARTE C — Recursos principais em combate
+# PARTE C — Recursos em combate
 
-## 6. HP
+## 7. HP
 
-HP representa margem de erro.
+HP é margem de erro.
 
-Fórmula canônica do jogador:
-
-```text
-HPMax = BaseHP + Level*2 + Constituição*5 + EquipmentHP + SkillHP + BuffHP
-```
-
-Regras:
+Direção:
 
 ```text
-HP não deve escalar alto demais por Constituição.
-HP Regen não vem de Constituição pura.
-HP Regen vem de skill, item, comida, magia, Fonte ou efeito explícito.
+HP do jogador escala devagar.
+Constituição não transforma o jogador em elite tank sozinha.
+Sobrevivência real vem da soma de HP, armor, block, dodge, comida, skills, companion/pet e execução.
 ```
-
-## 7. MP
-
-MP representa reserva mágica.
-
-```text
-MPMax = BaseMP
-      + Level*MPPerLevel
-      + Vontade*MPPerWill
-      + Inteligência*MPPerInt
-      + EquipmentMP
-      + SkillMP
-      + BuffMP
-```
-
-Regras:
-
-```text
-MP Regen natural é lenta.
-Vontade melhora MP e MP Regen, mas não gera spam mágico sozinha.
-Magia forte exige build, item, custo, cooldown e telegraph.
-```
-
-## 8. Stamina
-
-Stamina é o recurso físico imediato do combate.
 
 Fórmula canônica:
 
 ```text
-StaminaMax = BaseStamina
-           + Level*0.6
-           + Constituição*2.0
-           + Força*1.5
-           + Destreza*1.0
-           + EquipmentStamina
-           + SkillStamina
-           + BuffStamina
+PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md
 ```
 
-Valores de referência:
+## 8. MP
+
+MP é reserva mágica.
+
+Direção:
+
+```text
+MP permite magia, suporte, dano e controle.
+MP Regen natural é lenta.
+Magia forte precisa de custo, cooldown, cast time, risco ou build.
+```
+
+Fórmula canônica:
+
+```text
+PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md
+```
+
+## 9. Stamina
+
+Stamina é recurso físico imediato.
+
+Direção:
+
+```text
+Stamina deve ser restritiva no começo.
+Com tempo, skills, gear, comida, companions e domínio reduzem a fricção.
+Mesmo no late game, Stamina não deve virar irrelevante.
+```
+
+Custos de referência já fechados:
 
 ```text
 Light melee com Espada de Aço: 25 Stamina
@@ -223,53 +259,79 @@ Dodge: 40 Stamina
 Block hold: 18 Stamina/s
 ```
 
-Regras:
+Fórmulas canônicas:
 
 ```text
-Stamina deve ser restritiva no começo.
-Com tempo, skills, gear, comida, companions e domínio reduzem a fricção.
-Mesmo no late game, Stamina não deve virar irrelevante.
+Stamina Max: PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md
+Stamina Regen: PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md
+Block Impact: PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md
+Teste de mesa: PLAYER_DERIVED_ATTRIBUTES_TABLETOP_EXAMPLE.md
 ```
 
-## 9. Stamina Regen
-
-```text
-StaminaRegenOutOfCombat = BaseRegen
-                         + Constituição*0.15
-                         + Destreza*0.20
-                         + SurvivalBonus
-                         + EquipmentBonus
-                         + FoodBuff
-                         - ArmorPenalty
-
-StaminaRegenInCombat = StaminaRegenOutOfCombat * CombatMultiplier
-```
+## 10. Fome e Cansaço no combate
 
 Direção:
 
 ```text
-CombatMultiplier = 0.35 a 0.50 inicialmente.
-Fome e Cansaço reduzem regen.
-Armadura pesada pode reduzir regen ou aumentar custo.
+Fome baixa reduz Stamina Regen e eficiência.
+Cansaço alto reduz recuperação, segurança e ritmo.
+Caverna longa deve pressionar planejamento, comida e decisão de retorno.
+```
+
+Fonte canônica:
+
+```text
+PLAYER_CORE_SYSTEMS_DIRECTION.md
+FARM_DESIGN_DIRECTION_v1.3.md quando a spec tocar sono/fazenda/comida
 ```
 
 ---
 
 # PARTE D — Movimento em combate
 
-## 10. Movimento normal
+## 11. Unidade de movimento
 
-Movimento normal é a primeira defesa.
+Usar `tile/s` como unidade de design.
 
-Regras:
+Regra:
 
 ```text
-O jogador deve conseguir evitar parte de ataques simples só andando bem.
-Nem todo ataque deve exigir Dodge ou Dash.
-Ataques fortes devem ter telegraph e área clara.
+1 tile = unidade lógica de tilemap definida pela spec de cena.
+Sprites podem ter 32x48 px, mas velocidade deve ser calibrada por tile/s e footbox, não por tamanho visual inteiro.
 ```
 
-## 11. Dash
+Direção visual:
+
+```text
+Player sprite: aproximadamente 32x48 px.
+Player footbox: menor que o sprite completo, calibrada para colisão justa.
+Ataques e hazards devem respeitar footbox/hurtbox legíveis.
+```
+
+## 12. Velocidade do jogador
+
+Valores iniciais de design:
+
+| Estado do jogador | Velocidade alvo | Observação |
+|---|---:|---|
+| caminhada/exploração normal | 3.8-4.2 tiles/s | velocidade base fora de combate |
+| combate com arma pronta | 3.4-3.8 tiles/s | sensação mais tática |
+| com armadura média | -4% a -8% | penalidade leve/moderada |
+| com armadura pesada | -8% a -15% | em troca de armor/block |
+| Stamina baixa crítica | -5% a -12% | feedback de exaustão, se usado |
+| cansaço alto | -5% a -15% | aplicado fora/long run conforme sistema |
+| fome baixa | sem slow direto no início | preferir afetar regen/eficiência antes de speed |
+| slow status | -20% a -45% | duração curta, telegraph claro |
+| root | movimento 0 ou quase 0 | raro, curto, com counterplay |
+
+Regra:
+
+```text
+Movimento normal deve ser suficiente para evitar parte dos ataques simples.
+Nem todo ataque deve exigir Dodge ou Dash.
+```
+
+## 13. Dash
 
 ```text
 Input: Space + direção
@@ -277,6 +339,16 @@ Custo base: 40 Stamina
 Função: reposicionamento forte
 Não ocupa active slot
 ```
+
+Valores iniciais:
+
+| Propriedade | Alvo inicial |
+|---|---:|
+| distância | 2.0-2.6 tiles |
+| duração ativa | 0.14s-0.22s |
+| recovery | 0.20s-0.35s |
+| cooldown mínimo | 0.65s-1.10s |
+| i-frame | nenhum ou muito baixo |
 
 Influenciado por:
 
@@ -291,13 +363,13 @@ cansaço/status
 Regras:
 
 ```text
-Dash não é esquiva universal.
 Dash serve para reposicionar, sair de zona, atravessar pequena distância ou criar espaço.
-Dash pode ter i-frame baixo ou nenhum, conforme spec final.
-Dash deve ter cooldown/recovery.
+Dash não deve ser esquiva universal.
+Dash não deve substituir Dodge.
+Dash caro exige que hazards/telegraphs deem espaço para decisão.
 ```
 
-## 12. Dodge
+## 14. Dodge
 
 ```text
 Input: double tap direcional
@@ -305,6 +377,16 @@ Custo base: 40 Stamina
 Função: evasão de timing
 Não ocupa active slot
 ```
+
+Valores iniciais:
+
+| Propriedade | Alvo inicial |
+|---|---:|
+| distância | 1.2-1.8 tiles |
+| duração total | 0.28s-0.45s |
+| i-frame base | 0.16s-0.24s |
+| recovery | 0.18s-0.35s |
+| cooldown mínimo | 0.45s-0.90s |
 
 Influenciado por:
 
@@ -318,13 +400,63 @@ cansaço/status
 Regras:
 
 ```text
-Dodge deve ter janela de invulnerabilidade curta.
-Dodge deve ter recovery.
+Dodge deve ser defesa de timing.
 Dodge não deve substituir movimentação normal.
 Dodge caro exige telegraph justo dos inimigos.
+Skills podem melhorar janela/custo/recovery, mas com cap.
 ```
 
-## 13. Collision e body blocking
+## 15. Movimento durante ações
+
+Tabela inicial:
+
+| Ação | Movimento permitido |
+|---|---|
+| ataque leve | 25%-45% da velocidade base durante execução |
+| cadeia de ataques leves | micro avanço opcional, sem magnetismo exagerado |
+| ataque pesado/charged | 0%-25% durante charge/execução |
+| bow aiming | 45%-65% da velocidade base |
+| cast mágico leve | 40%-70%, dependendo da magia |
+| cast mágico pesado | 0%-30%, com telegraph claro |
+| block segurado | 35%-55% da velocidade base |
+| hit reaction leve | breve redução, sem travar demais |
+| knockback/stagger | controle parcial ou nenhum, curto e legível |
+
+Regra:
+
+```text
+Ação forte deve comprometer movimento.
+Ação leve pode manter fluidez.
+O jogador não deve deslizar sem controle nem ficar travado por longos períodos sem feedback.
+```
+
+## 16. Velocidade dos inimigos
+
+Usar perfis, não valores soltos por inimigo.
+
+| Perfil | Velocidade alvo | Uso |
+|---|---:|---|
+| SlowTank | 1.5-2.4 tiles/s | tanques, constructos, baluartes |
+| StandardChaser | 2.7-3.5 tiles/s | comuns corpo a corpo |
+| FastPredator | 3.8-4.8 tiles/s | predadores, hounds, panteras |
+| SwarmErratic | 3.4-5.2 tiles/s | enxames, morcegos, pequenos rápidos |
+| KiteRanged | 2.4-3.4 tiles/s | arqueiros/cuspidor, recua e atira |
+| CasterKeepAway | 2.0-3.0 tiles/s | caster que reposiciona pouco |
+| Leaper | baixa base + salto | usa burst, não speed contínua alta |
+| Burrower | deslocamento subterrâneo por telegraph | não deve ser hitscan |
+| FloatingOrbit | 2.0-3.2 tiles/s | orbit, olho, wisp, caster flutuante |
+| EliteDuelist | 3.0-4.4 tiles/s | elite técnico, janelas claras |
+| BossArenaControl | custom | por fase/arena |
+
+Regra:
+
+```text
+Inimigo mais rápido que o jogador precisa ter vida menor, telegraph claro, ou janelas de punição frequentes.
+Inimigo tank lento pode ter HP/armor maior.
+Burst de movimento deve ter windup/recovery.
+```
+
+## 17. Collision e body blocking
 
 Direção:
 
@@ -335,17 +467,26 @@ Inimigos grandes podem bloquear passagem como papel tático.
 Bosses usam colliders customizados.
 ```
 
+Regras:
+
+```text
+Swarm pode pressionar, mas precisa de saída.
+Body block deve ser desafio, não bug de pathing.
+Dash pode atravessar alguns inimigos pequenos apenas se skill/spec permitir.
+Dodge não deve atravessar todos os corpos por padrão.
+```
+
 ---
 
 # PARTE E — Ataques do jogador
 
-## 14. Ataque leve
+## 18. Ataque leve
 
 Função:
 
 ```text
 dano principal de baixo compromisso
-combos simples ou cadência curta
+cadência curta
 baixo/moderado posture damage
 custo relevante de Stamina
 ```
@@ -353,12 +494,20 @@ custo relevante de Stamina
 Regras:
 
 ```text
-Ataque leve não deve ser gratuito.
+Ataque leve não é gratuito.
 Ataque leve deve ter recovery suficiente para punir spam em inimigos perigosos.
 Armas leves podem atacar mais rápido, mas ainda gastam Stamina.
 ```
 
-## 15. Ataque pesado / charged attack
+Valores de sensação:
+
+| Tipo | Duração total alvo | Uso |
+|---|---:|---|
+| dagger/light | 0.22s-0.38s | baixo dano, alta cadência |
+| sword/spear | 0.35s-0.55s | baseline |
+| axe/hammer leve | 0.50s-0.75s | mais dano/posture, mais risco |
+
+## 19. Ataque pesado / charged attack
 
 Função:
 
@@ -370,6 +519,16 @@ maior custo de Stamina
 boa ferramenta contra armor, constructos, elites e janelas
 ```
 
+Valores de sensação:
+
+| Tipo | Charge/execução alvo | Uso |
+|---|---:|---|
+| sword heavy | 0.55s-0.85s | finisher/abertura |
+| axe/hammer heavy | 0.75s-1.20s | posture/armor |
+| spear thrust charged | 0.55s-0.95s | alcance/pierce |
+| bow charged | 0.65s-1.10s | precisão/dano |
+| staff charged | 0.70s-1.30s | magia/risco |
+
 Regras:
 
 ```text
@@ -378,7 +537,7 @@ Ataque pesado deve ser recompensador em CriticalWindow/CoreExposed.
 Ataque pesado não deve ser sempre melhor que ataque leve.
 ```
 
-## 16. Combos
+## 20. Combos
 
 Direção inicial:
 
@@ -393,7 +552,7 @@ Possibilidades futuras:
 ```text
 terceiro hit com stagger maior
 ataque leve -> pesado como finisher
-ataque pós-block perfeito
+ataque pós-perfect block
 ataque pós-dodge bem sucedido
 ataque pós-companion setup
 ```
@@ -402,7 +561,7 @@ ataque pós-companion setup
 
 # PARTE F — Block
 
-## 17. Block base
+## 21. Block base
 
 ```text
 Input: Left Shift
@@ -420,50 +579,24 @@ Sem Stamina, Block quebra ou perde eficiência.
 Block não deve resolver todo tipo de ataque.
 ```
 
-## 18. Block Power
+## 22. Block Power e BlockImpact
+
+Fonte canônica:
 
 ```text
-BlockedDamage = IncomingDamage * (1 - BlockPower)
+docs/design/gameplay/player/PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md
 ```
 
-Influenciado por:
+Decisões fechadas:
 
 ```text
-Block rank
-escudo/arma
-Melee/Guerreiro
-material do equipamento
-capstone Kanthor/Kaand
+Block hold custa 18 Stamina/s como referência.
+Block impact usa dano pós-armadura/mitigação contra HP máximo do jogador.
+Armor reduz dano recebido e reduz dreno de Stamina do impacto.
+Block Stability reduz dreno de Stamina, não deve eliminar custo.
 ```
 
-## 19. Block impact
-
-O custo de Stamina por impacto bloqueado usa dano pós-armadura/mitigação.
-
-```text
-MitigatedDamageForStamina = max(MinDamageForStamina, IncomingRawDamage - ArmorMitigationValue)
-IncomingDamageRatio = MitigatedDamageForStamina / PlayerMaxHP
-BlockImpactStaminaCost = PlayerMaxStamina * IncomingDamageRatio * BlockImpactMultiplier * (1 - BlockStability)
-```
-
-Se houver resistência percentual e armor flat:
-
-```text
-MitigatedDamageForStamina = max(
-  MinDamageForStamina,
-  (IncomingRawDamage * (1 - PhysicalResistance)) - ArmorFlatMitigation
-)
-```
-
-Regras:
-
-```text
-Golpes que ameaçam muito a vida depois da armadura drenam muita Stamina.
-Golpes que a armadura absorve bem drenam menos Stamina.
-Armor é valiosa para builds de Block.
-```
-
-## 20. Perfect Block / Counter futuro
+## 23. Perfect Block / Counter futuro
 
 Direção:
 
@@ -478,23 +611,15 @@ Não deve ser obrigatório no early game.
 
 # PARTE G — Dano, armor e resistências
 
-## 21. Dano físico
+## 24. Dano físico
+
+Fonte canônica de fórmula:
 
 ```text
-BaseAttack = BaseAttackValue
-           + Força*BaseAttackPerStr
-           + Destreza*BaseAttackPerDexSmall
-           + Level*BaseAttackPerLevel
-
-AttackDamage = (BaseAttack + WeaponDamage + EquipmentFlatDamage)
-             * WeaponScaling
-             * (1 + SkillDamageBonus)
-             * (1 + BuffDamageBonus)
-             * ContextMultiplier
-             * EnemyResistanceMultiplier
+docs/design/gameplay/player/PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md
 ```
 
-Regra:
+Direção:
 
 ```text
 Força domina dano bruto.
@@ -502,21 +627,24 @@ Destreza ajuda armas leves, cadência, recovery e crítico condicional.
 Arma/material/skill devem importar mais que atributo isolado.
 ```
 
-## 22. Armor e mitigação
+## 25. Armor e mitigação
+
+Fonte canônica de fórmula:
 
 ```text
-Defense = BaseDefense + Armor + Constituição*0.75 + SkillDefense + BuffDefense
+docs/design/gameplay/player/PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md
 ```
 
-Regras:
+Direção:
 
 ```text
 Armor é a principal mitigação flat.
 Constituição não substitui equipamento.
 Defense/Armor não deve zerar dano de packs inteiros sem regra de dano mínimo.
+Armor também reduz o dreno de Stamina em BlockImpact.
 ```
 
-## 23. Resistências
+## 26. Resistências
 
 Tipos principais:
 
@@ -548,25 +676,23 @@ Vulnerabilidade deve abrir counterplay, não ser requisito único.
 
 # PARTE H — Crit, janelas e vulnerabilidades
 
-## 24. Tipos de abertura
+## 27. Tipos de abertura
+
+Fonte canônica de categorias:
 
 ```text
-MinorOpening
-  abertura comum/curta.
-  Não garante crítico automático.
-  Pode dar +crit chance, +dano moderado, +posture damage ou oportunidade tática.
-
-CriticalWindow
-  janela clara, mais rara ou mais arriscada.
-  Pode garantir crítico automático.
-  Exige telegraph claro ou execução.
-
-CoreExposed / BossMechanicWindow / StaggeredWindow
-  janela especial de mecânica, exposição de núcleo, quebra de postura ou fase de boss.
-  Pode garantir crítico automático + bônus moderado.
+docs/design/gameplay/cave/CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md
 ```
 
-## 25. Critical Hit
+Resumo:
+
+```text
+MinorOpening: abertura comum/curta, sem crítico automático.
+CriticalWindow: janela clara, mais rara/arriscada, pode garantir crítico.
+CoreExposed/BossMechanicWindow/StaggeredWindow: janela especial, pode garantir crítico + bônus moderado.
+```
+
+## 28. Critical Hit
 
 Direção:
 
@@ -577,16 +703,7 @@ CoreExposed pode garantir crítico + bônus moderado.
 Crítico nunca deve virar dano infinito.
 ```
 
-Multiplicadores conceituais:
-
-```text
-MinorOpening damage: x1.10 a x1.25 ou +15% a +35% crit chance.
-Vulnerability damage: x1.25 a x1.50.
-Critical hit: x1.50 a x2.00 conforme arma/build.
-Critical + vulnerability: x2.00 a x2.50.
-```
-
-## 26. Vulnerabilidades
+## 29. Vulnerabilidades
 
 Cada inimigo deve declarar pelo menos um caminho de counterplay:
 
@@ -598,14 +715,13 @@ WeaponVulnerability
 BehavioralVulnerabilityWindow
 ```
 
-Regra:
+Fonte canônica:
 
 ```text
-Nem todo inimigo precisa ser vulnerável a tudo.
-Todo inimigo precisa de pelo menos uma leitura/recompensa clara.
+docs/design/gameplay/cave/CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md
 ```
 
-## 27. Telegraphs
+## 30. Telegraphs
 
 Todo ataque relevante deve ter:
 
@@ -624,7 +740,7 @@ Bosses precisam de telegraph mais claro que mobs comuns.
 
 # PARTE I — Status e controle
 
-## 28. Status negativos permitidos
+## 31. Status negativos permitidos
 
 ```text
 Burn
@@ -654,18 +770,15 @@ Status de boss deve ter counterplay.
 DurabilityStress não destrói item permanentemente sem spec própria.
 ```
 
-## 29. Posture / stagger
+## 32. Posture / stagger
 
-Posture representa estabilidade do alvo.
+Fonte canônica futura:
 
 ```text
-PostureDamage = StaggerPower
-              * AttackPostureMultiplier
-              * VulnerabilityMultiplier
-              * SkillPostureMultiplier
+spec_combat_posture_stagger_guardbreak.md
 ```
 
-Regras:
+Direção:
 
 ```text
 Ataques pesados causam mais posture damage.
@@ -674,7 +787,7 @@ Posture break pode abrir CriticalWindow ou StaggeredWindow.
 Bosses podem ter posture por fase, não barra única simples.
 ```
 
-## 30. Guard Break
+## 33. Guard Break
 
 GuardBreak é ferramenta contra Block/Shield.
 
@@ -698,7 +811,7 @@ GuardBreak não deve ignorar toda defesa sem aviso.
 
 # PARTE J — Armas e estilos
 
-## 31. Tipos iniciais
+## 34. Tipos iniciais
 
 ```text
 Sword
@@ -711,7 +824,7 @@ Staff
 ToolAttack
 ```
 
-## 32. Papéis
+## 35. Papéis
 
 ```text
 Sword: equilíbrio, bom contra aberturas médias.
@@ -724,7 +837,7 @@ Staff: magia, suporte, dano arcano, defesa mágica.
 ToolAttack: utilitário, emergencial, não substitui arma dedicada.
 ```
 
-## 33. Materiais e tiers
+## 36. Materiais e tiers
 
 Direção:
 
@@ -739,7 +852,7 @@ Materiais raros podem alterar stamina cost, damage type ou vulnerability interac
 
 # PARTE K — Magia
 
-## 34. Magia em combate
+## 37. Magia em combate
 
 Magia usa MP e deve ter função clara.
 
@@ -765,7 +878,7 @@ Cura mágica deve ser limitada, cara e com cooldown.
 Barreiras não bloqueiam tudo.
 ```
 
-## 35. Anya e Senya
+## 38. Anya e Senya
 
 ```text
 Semente Arcana de Anya: suporte, cura, purificação, barreira, eco de recuperação.
@@ -783,7 +896,7 @@ Não devem invalidar comida, poções, companions ou gear.
 
 # PARTE L — Inimigos, packs e bosses
 
-## 36. Monstros comuns
+## 39. Monstros comuns
 
 Função:
 
@@ -803,7 +916,7 @@ Comum em pack deve mudar o problema tático.
 Comum não deve exigir execução perfeita.
 ```
 
-## 37. Elites
+## 40. Elites
 
 Função:
 
@@ -824,22 +937,15 @@ Elite pode exigir uso de skill, comida, companion/pet ou recuo.
 Elite não deve ser apenas comum com HP alto.
 ```
 
-## 38. Packs
+## 41. Packs
 
-Packs precisam ter lógica:
+Fonte canônica de composição e roster:
 
 ```text
-mesma facção
-ecosistema
-predador/presa
-culto/ritual
-guardião/recurso
-constructo/ruína
-mímico/tesouro
-Pedra Negra/corrupção
+docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_DIRECTION.md
 ```
 
-Regras:
+Direção:
 
 ```text
 Packs devem ser densos e desafiadores.
@@ -847,7 +953,7 @@ O active budget não deve ser reduzido só porque Stamina é cara.
 Skills, companions, pets, consumíveis e domínio do jogador mitigam naturalmente a pressão.
 ```
 
-## 39. Bosses
+## 42. Bosses
 
 Bosses devem ter:
 
@@ -874,7 +980,7 @@ controle permanente
 
 # PARTE M — Companions e pets
 
-## 40. Companions
+## 43. Companions
 
 Papéis possíveis:
 
@@ -894,7 +1000,7 @@ Companion pode abrir MinorOpening/CriticalWindow em casos específicos.
 Companion pode segurar pressão, mas não substituir decisão do jogador.
 ```
 
-## 41. Pets
+## 44. Pets
 
 Pets são sistema próprio.
 
@@ -929,7 +1035,7 @@ Pet não deve ser obrigatório no início.
 
 # PARTE N — Consumíveis e preparo
 
-## 42. Consumíveis
+## 45. Consumíveis
 
 Tipos:
 
@@ -954,7 +1060,7 @@ Comida deve conversar com fazenda/cozinha.
 Fruto de Mana é raro e especial, não item comum de spam.
 ```
 
-## 43. Loadout de entrada
+## 46. Loadout de entrada
 
 Antes da caverna, o jogador deve considerar:
 
@@ -975,7 +1081,7 @@ objetivo da run
 
 # PARTE O — HUD e feedback
 
-## 44. HUD de combate
+## 47. HUD de combate
 
 Mostrar:
 
@@ -1002,7 +1108,7 @@ BR
 números internos demais na HUD principal
 ```
 
-## 45. Feedback visual
+## 48. Feedback visual
 
 O jogador precisa ler:
 
@@ -1028,7 +1134,7 @@ Pixel art deve ter telegraph claro por cor, silhueta, antecipação e efeitos.
 Feedback não pode poluir tela pequena.
 ```
 
-## 46. Feedback sonoro
+## 49. Feedback sonoro
 
 Usar áudio para:
 
@@ -1046,7 +1152,7 @@ pet/companion trigger
 
 # PARTE P — Integração com caverna
 
-## 47. Procedural e combate
+## 50. Procedural e combate
 
 A geração procedural deve respeitar:
 
@@ -1061,7 +1167,7 @@ boss gates
 checkpoints
 ```
 
-## 48. Biomas
+## 51. Biomas
 
 Cada bioma deve influenciar combate:
 
@@ -1073,7 +1179,7 @@ abismo: Fear, Shadow/Nyx, controllers
 núcleo: corrupção, Pedra Negra, bosses/endgame
 ```
 
-## 49. Nível 101
+## 52. Nível 101
 
 ```text
 conteúdo endgame
@@ -1088,7 +1194,7 @@ sem farm trivial
 
 # PARTE Q — Telemetria e validação
 
-## 50. Métricas de Play Mode
+## 53. Métricas de Play Mode
 
 Registrar em playtest:
 
@@ -1105,16 +1211,19 @@ hits em MinorOpening/CriticalWindow/CoreExposed
 consumíveis usados
 companion/pet triggers
 deaths/retreats
+velocidade média do jogador em combate
+vezes em que o jogador ficou body blocked
+vezes em que hitbox/telegraph pareceram injustos
 ```
 
 Regra:
 
 ```text
 Não transformar consumo de Stamina em percentual fixo de spec.
-Usar telemetria para detectar extremos: trivial, injusto, esponja, sem counterplay ou stamina irrelevante.
+Usar telemetria para detectar extremos: trivial, injusto, esponja, sem counterplay, velocidade ruim ou stamina irrelevante.
 ```
 
-## 51. Validação humana
+## 54. Validação humana
 
 A validação humana deve observar:
 
@@ -1123,10 +1232,12 @@ se o combate parece justo
 se o custo de Stamina é sentido
 se Dodge/Dash são escolhas fortes
 se Block é útil, mas não dominante
+se movimento normal resolve parte dos ataques simples
 se telegraphs são legíveis
 se packs são desafiadores sem avalanche injusta
 se companions/pets ajudam sem resolver tudo
 se bosses têm fases claras
+se velocidade do jogador e inimigos combina com tela pequena e pixel art
 ```
 
 ---
@@ -1134,13 +1245,14 @@ se bosses têm fases claras
 # PARTE R — Decisões fechadas
 
 ```text
-Combat Core deve seguir referência de feeling similar a Children of Morta: action RPG/hack'n'slash roguelite, runs, kits claros, dungeons perigosas e progressão persistente.
-Cindar's Hope não copia personagens fixos; usa personagem livre com build.
+Combat Core segue referência de feeling similar a Children of Morta: action RPG/hack'n'slash roguelite, runs, kits claros, dungeons perigosas e progressão persistente.
+Combat Core não deve duplicar fórmulas canônicas de atributos derivados.
+Cindar's Hope usa personagem livre com build, não personagens fixos.
 Breath/Fôlego não existe como atributo/recurso.
 Breath pode existir em nome de ataque de sopro de criatura.
 HP do jogador escala devagar.
 Constituição não é atributo defensivo universal.
-Stamina usa Level + CON + FOR + DES.
+Stamina usa Level + CON + FOR + DES conforme documento de atributos derivados.
 Light melee com Espada de Aço custa 25 Stamina.
 Heavy melee com Espada de Aço custa 40 Stamina.
 Dash custa 40 Stamina.
@@ -1149,6 +1261,11 @@ Block hold custa 18 Stamina/s.
 Block impact usa dano pós-armadura/mitigação contra HP máximo.
 Dash, Dodge e Block não ocupam active slot.
 4 active slots são para skills equipáveis.
+Movimento normal é a primeira defesa.
+Velocidade base do jogador em exploração deve ficar em 3.8-4.2 tiles/s.
+Velocidade em combate com arma pronta deve ficar em 3.4-3.8 tiles/s.
+Dash deve cobrir 2.0-2.6 tiles e ser reposicionamento forte, não dodge universal.
+Dodge deve cobrir 1.2-1.8 tiles com i-frame curto e recovery.
 Nem toda abertura dá crítico automático.
 MinorOpening, CriticalWindow e CoreExposed são categorias diferentes.
 Active combat budget da caverna não foi reduzido por causa da Stamina cara.
@@ -1161,11 +1278,14 @@ Companions/pets/gear/skills/consumíveis mitigam naturalmente a dificuldade com 
 
 ```text
 Definir CombatController input contract.
+Definir PlayerMovementController e unidade tile/s em Unity.
 Definir PlayerAttackController.
 Definir WeaponActionDataSO.
 Definir StaminaCostProfileSO.
 Definir BlockController e BlockImpact formula final.
 Definir Dash/Dodge timing, i-frames, cooldown e recovery.
+Definir MovementProfileSO para jogador e inimigos.
+Definir EnemyMovementProfileSO com SlowTank, StandardChaser, FastPredator, SwarmErratic, KiteRanged, CasterKeepAway, Leaper, Burrower, FloatingOrbit, EliteDuelist e BossArenaControl.
 Definir DamageType final.
 Definir Armor/Defense final.
 Definir CriticalHit contract.
@@ -1173,5 +1293,5 @@ Definir MinorOpening/CriticalWindow/CoreExposed data contract.
 Definir EnemyAction telegraph/recovery/window contract.
 Definir UI feedback de Stamina baixa, block, critical window e vulnerability.
 Definir integração com companions/pets.
-Definir Play Mode telemetry para TTK/Stamina/HP/MP.
+Definir Play Mode telemetry para TTK/Stamina/HP/MP/movement.
 Definir validações Unity por spec.
