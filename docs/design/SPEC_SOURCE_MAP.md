@@ -273,13 +273,30 @@ Fontes obrigatórias:
 
 ```text
 docs/design/gameplay/player/PLAYER_CORE_SYSTEMS_DIRECTION.md
+docs/design/gameplay/player/PLAYER_SKILL_TREES_DIRECTION.md
+docs/design/gameplay/player/PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md
+```
+
+Uso de cada fonte:
+
+```text
+PLAYER_CORE_SYSTEMS_DIRECTION.md
+  visão ampla do personagem, criação inicial, raças, atributos centrais, HP/MP/Stamina/Breath, fome, cansaço, relações, UI e save/load.
+
+PLAYER_SKILL_TREES_DIRECTION.md
+  5 skill trees, tiers, SkillPoints, active slots, Dash/Dodge/Block, capstones divinos, HUD de skills e balanceamento.
+
+PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md
+  atributos derivados, fórmula em camadas, caps/softcaps, dano, defesa, movimento, produção, loot, social e save/load de stats.
 ```
 
 Usar para specs de:
 
 ```text
-atributos
+atributos centrais
+atributos derivados
 HP / MP / Stamina / Breath
+fórmulas de stats
 fome
 cansaço
 level up
@@ -287,6 +304,8 @@ pontos de atributo
 skills nível 1-5
 skill trees
 active slots
+Dash / Dodge / Block
+capstones divinos
 arquétipos/jobs inferidos
 ferramentas
 armas
@@ -330,10 +349,13 @@ Specs recomendadas futuras:
 
 ```text
 spec_player_attributes_progression_points.md
+spec_player_derived_attributes_formulas.md
 spec_player_hp_mp_stamina_breath_formulas.md
 spec_player_hunger_fatigue_condition_manager.md
 spec_player_skills_level_1_5_progression.md
 spec_player_skill_trees_active_slots.md
+spec_player_capstones_divine_exclusive_choices.md
+spec_player_dash_dodge_block_input.md
 spec_player_inferred_jobs_archetypes.md
 spec_player_tools_usage_upgrade_stamina.md
 spec_player_weapons_damage_types_critical_windows.md
@@ -362,6 +384,8 @@ Enquanto não existir, ler:
 
 ```text
 docs/design/gameplay/player/PLAYER_CORE_SYSTEMS_DIRECTION.md
+docs/design/gameplay/player/PLAYER_SKILL_TREES_DIRECTION.md
+docs/design/gameplay/player/PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md
 docs/design/lore/VAALARA_GAME_CANON_DIRECTION_v1.0.md
 docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.3.md
 docs/design/gameplay/farm/FARM_LAYOUT_SCALE_BUILDINGS_DIRECTION.md
@@ -375,6 +399,7 @@ Specs recomendadas futuras:
 
 ```text
 spec_player_stats_hp_mp_stamina_breath_attributes.md
+spec_player_derived_attributes_formula_runtime.md
 spec_status_effects_hunger_exhaustion_temperature_poison_fear_death.md
 spec_combat_player_weapons_actions.md
 spec_magic_mp_skills_progression.md
@@ -398,6 +423,7 @@ Enquanto não existir, ler:
 
 ```text
 docs/design/gameplay/player/PLAYER_CORE_SYSTEMS_DIRECTION.md
+docs/design/gameplay/player/PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md
 docs/design/lore/VAALARA_GAME_CANON_DIRECTION_v1.0.md
 docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.3.md
 docs/design/gameplay/farm/FARM_LAYOUT_SCALE_BUILDINGS_DIRECTION.md
@@ -433,7 +459,7 @@ docs/design/gameplay/ui_ux/UI_UX_DESIGN_DIRECTION_v1.0.md
 Enquanto não existir, ler fontes do domínio tocado:
 
 ```text
-Personagem -> PLAYER_CORE_SYSTEMS_DIRECTION.md
+Personagem -> PLAYER_CORE_SYSTEMS_DIRECTION.md + PLAYER_SKILL_TREES_DIRECTION.md + PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md
 Fazenda -> FARM_DESIGN_DIRECTION_v1.3.md + FARM_LAYOUT_SCALE_BUILDINGS_DIRECTION.md
 Cidade -> CITY_DESIGN_DIRECTION_v1.2.md + CITY_LAYOUT_BUILDINGS_SCHEDULE_DIRECTION.md
 Caverna -> CAVE_DESIGN_DIRECTION.md + CAVE_LEVEL_GENERATION_LAYOUT_BIOME_DIRECTION.md + CAVE_MONSTER_ROSTER_DIRECTION.md + CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md + CAVE_MONSTER_VISUAL_SPRITE_DIRECTION.md
