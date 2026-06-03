@@ -14,7 +14,9 @@ Toda spec em `docs/specs/a_implementar/` deve declarar uma seção:
 ```md
 ## Fontes obrigatórias lidas
 
-- docs/design/...
+- docs/design/SPEC_SOURCE_MAP.md
+- docs/design/SPECIFICATION_PROCESS.md
+- docs/design/lore/VAALARA_GAME_CANON_DIRECTION_v1.0.md
 - docs/design/...
 ```
 
@@ -22,6 +24,7 @@ A spec também deve declarar:
 
 ```md
 ## Fora de escopo
+## Estado atual do repo
 ## Dependências
 ## Arquivos permitidos
 ## Arquivos proibidos
@@ -31,17 +34,21 @@ A spec também deve declarar:
 
 ---
 
-## 2. Fonte global obrigatória
+## 2. Fontes globais obrigatórias
 
 Toda spec de gameplay/lore/sistemas deve ler:
 
 ```text
+docs/design/SPEC_SOURCE_MAP.md
+docs/design/SPECIFICATION_PROCESS.md
 docs/design/lore/VAALARA_GAME_CANON_DIRECTION_v1.0.md
 ```
 
 Motivo:
 
 - mantém Vaalara como contexto obrigatório;
+- define como especificar;
+- evita specs sem rastreabilidade;
 - evita contradições sobre Anya, Kanthor, Thandra, Nyx, Senya, Alihana, Finan, Merithus, Thoren, Kaand, Bromécia, Elyndor e Mana;
 - garante que cada sistema continue ligado ao mundo.
 
@@ -141,6 +148,10 @@ Anya statue garden
 night shop
 Nyx behaviours
 Bromecia/Elyndor hooks
+pixel scale
+sprite scale
+building sizes
+props/interactables
 ```
 
 Specs recomendadas derivadas:
@@ -362,6 +373,7 @@ Fazenda -> FARM_DESIGN_DIRECTION_v1.3.md
 Cidade -> CITY_DESIGN_DIRECTION_v1.2.md + CITY_LAYOUT_BUILDINGS_SCHEDULE_DIRECTION.md
 NPCs -> CITY_NPC_ROSTER_SERVICES_DIRECTION_v1.1.md
 Canon -> VAALARA_GAME_CANON_DIRECTION_v1.0.md
+Processo -> SPECIFICATION_PROCESS.md
 ```
 
 Temas esperados:
@@ -410,7 +422,8 @@ Toda spec deve começar com:
 > Status: a implementar
 > Tipo: spec implementável
 > Fontes obrigatórias lidas:
-> - docs/design/...
+> - docs/design/SPEC_SOURCE_MAP.md
+> - docs/design/SPECIFICATION_PROCESS.md
 > - docs/design/...
 
 ## Objetivo
@@ -418,6 +431,8 @@ Toda spec deve começar com:
 ## Escopo
 
 ## Fora de escopo
+
+## Estado atual do repo
 
 ## Dependências
 
