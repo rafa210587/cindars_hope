@@ -832,30 +832,45 @@ Se o TTK real passar muito disso, o inimigo está virando esponja de HP.
 Se ficar muito abaixo, o inimigo não cumpre papel de ameaça.
 ```
 
-## 33. Stamina Budget por encontro
+## 33. Observação de atrito de Stamina
 
-Depois do rebalance do personagem, todo encontro deve considerar Stamina como recurso central.
+Esta seção não define regra numérica de implementação.
 
-Valores alvo quando o jogador está no power tier recomendado e joga bem:
+Ela serve apenas para orientar validação, telemetria e playtest.
 
-| Encontro | Stamina esperada consumida | Leitura |
-|---|---:|---|
-| inimigo comum isolado | 20-45% da Stamina | deve ensinar ritmo, não esgotar tudo |
-| comum robusto isolado | 45-85% da Stamina | vence, mas sente atrito |
-| swarm pack pequeno | 50-100% da Stamina | exige posição, área, pet/companion ou recuo curto |
-| pack médio | 80-160% da Stamina | espera regen, comida, janelas, companion/pet ou pausa tática |
-| elite isolado | 90-180% da Stamina | exige execução, janelas, vulnerabilidade e/ou consumível |
-| elite pack | 150-260% da Stamina | deve ser encontro de preparo, não troca direta |
-| boss phase | 80-180% por fase | deve ter microjanelas de recuperação e leitura |
-| boss gate completo | múltiplas barras de Stamina | exige consumíveis, build, companion/pet, gear e domínio |
+Durante testes, registrar:
+
+```text
+Stamina inicial do encontro
+Stamina gasta em ataques
+Stamina gasta em Dash/Dodge
+Stamina gasta em Block hold
+Stamina gasta em Block impact
+Stamina recuperada durante o encontro
+duração do encontro
+uso de comida/poção
+uso de companion/pet
+janelas de vulnerabilidade exploradas
+se o jogador precisou recuar
+```
+
+Leitura esperada:
+
+```text
+Encontros comuns devem ensinar ritmo sem obrigar consumo perfeito.
+Comuns robustos devem gerar atrito perceptível.
+Packs devem pressionar posicionamento, área, pet, companion ou recuo.
+Elites devem exigir execução, janelas, vulnerabilidades, preparo ou consumíveis.
+Bosses devem consumir múltiplos ciclos de Stamina ao longo de fases, com oportunidades claras de leitura e recuperação.
+```
 
 Regra:
 
 ```text
-Esses valores não reduzem o active combat budget.
-Eles servem para garantir que habilidades, companions, pets, gear e comida tenham papel real.
-No começo, o jogador deve sentir a Stamina como limitador severo.
-Com skill, gear e domínio, a fricção melhora naturalmente.
+Não transformar esta seção em percentuais fixos de balanceamento.
+Não usar esta seção para reduzir active combat budget.
+Não exigir que specs futuras tentem bater números exatos de consumo de Stamina.
+Usar apenas como guia de playtest para identificar extremos: encontros triviais, injustos, sem counterplay ou que invalidam skills/gear/companions.
 ```
 
 ## 34. Recuperação e atrito
@@ -890,7 +905,7 @@ spec_cave_enemy_vulnerability_tables.md
 spec_cave_boss_phase_vulnerabilities.md
 spec_cave_companion_pet_combat_balance.md
 spec_cave_time_to_kill_balance_targets.md
-spec_cave_stamina_budget_by_encounter.md
+spec_cave_stamina_telemetry_playtest.md
 spec_cave_treasure_trap_counterplay.md
 ```
 
@@ -914,7 +929,7 @@ O active combat budget não foi reduzido pelo custo alto de Stamina.
 Early game solo precisa ser possível, mas difícil.
 Companions/pets/itens passam a ser expectativa progressiva, não requisito imediato.
 TTK alvo deve ser usado para evitar inimigos esponja ou triviais.
-Stamina Budget por encontro deve ser usado para garantir pacing, atrito e valor de skills/gear/companions.
+Atrito de Stamina deve ser medido em playtest/telemetria, mas não deve virar regra percentual fixa.
 ```
 
 ---
@@ -930,7 +945,7 @@ Definir CriticalWindow detector no EnemyBrain.
 Definir integração com CompanionSkill e PetInterrupt.
 Definir UI/feedback visual de MinorOpening, vulnerabilidade e crítico.
 Definir se bestiário revela vulnerabilidades por descoberta ou automaticamente.
-Definir StaminaBudget telemetry em Play Mode.
+Definir Stamina telemetry em Play Mode.
 Validar TTK real em Play Mode.
 Validar consumo real de Stamina por faixa em Play Mode.
 ```
