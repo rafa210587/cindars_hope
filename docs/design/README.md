@@ -95,6 +95,7 @@ docs/design/
   gameplay/
     farm/
       FARM_DESIGN_DIRECTION_v1.3.md
+      FARM_LAYOUT_SCALE_BUILDINGS_DIRECTION.md
     city/
       CITY_DESIGN_DIRECTION_v1.2.md
       CITY_NPC_ROSTER_SERVICES_DIRECTION_v1.1.md
@@ -159,6 +160,12 @@ Documento ativo consolidado de direção ampla da fazenda:
 docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.3.md
 ```
 
+Escala, layout, footprints, construções, props e pixels da fazenda:
+
+```text
+docs/design/gameplay/farm/FARM_LAYOUT_SCALE_BUILDINGS_DIRECTION.md
+```
+
 Documento ativo consolidado de direção ampla da cidade:
 
 ```text
@@ -191,6 +198,7 @@ Specs de fazenda devem ler também:
 
 ```text
 docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.3.md
+docs/design/gameplay/farm/FARM_LAYOUT_SCALE_BUILDINGS_DIRECTION.md
 ```
 
 Specs de cidade devem ler também:
