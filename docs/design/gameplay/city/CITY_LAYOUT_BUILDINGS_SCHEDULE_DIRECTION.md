@@ -7,7 +7,7 @@
 > - `docs/design/gameplay/city/CITY_DESIGN_DIRECTION_v1.2.md`  
 > - `docs/design/gameplay/city/CITY_NPC_ROSTER_SERVICES_DIRECTION_v1.1.md`  
 > - `docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.3.md`  
-> **Função:** definir a cidade como espaço jogável: mapa, zonas, prédios, interiores, moradores, camas, rotinas, colisão, pathfinding, cenas, props e roadmap.  
+> **Função:** definir a cidade como espaço jogável: mapa, escala visual, zonas, prédios, interiores, moradores, camas, rotinas, colisão, pathfinding, cenas, props e roadmap.  
 > **Não é spec implementável.** Specs futuras devem ser quebradas em `docs/specs/a_implementar/`.
 
 ---
@@ -19,6 +19,9 @@ Toda spec de cidade que envolva mapa, cena, NPC, loja, rotina, pathfinding, resi
 Este documento responde:
 
 ```text
+Qual é a escala visual da cidade?
+Qual é o tamanho do player e dos NPCs?
+Qual é o tamanho dos prédios e props?
 Onde fica cada coisa?
 Quem mora onde?
 Onde cada NPC trabalha?
@@ -33,98 +36,153 @@ Qual é o roadmap de construção da cidade?
 
 ---
 
-# PARTE A — Escala e premissas técnicas
+# PARTE A — Escala visual e premissas técnicas
 
-## 1. Tile, sprite e câmera
+## 1. Decisão de escala
 
-Direção recomendada:
+A escala visual deve ser baseada no personagem do jogador com sprite aproximado de:
 
 ```text
-Tile base: 16x16 px
-Personagem comum: 16x24 px ou 16x32 px
-NPC grande: 16x32 px ou 24x32 px
-Porta comum: 16x24 px
-Porta larga: 32x24 px
-Cama simples: 32x32 px
-Cama casal: 48x32 px
-Balcão: 16 px de profundidade visual, collider em grid
+Player sprite: 32x48 px
 ```
 
-Câmera recomendada:
+NPCs devem ter escala semelhante ao jogador para manter leitura consistente.
+
+Decisão canônica:
 
 ```text
-Visão padrão: 20x12 a 24x14 tiles
+Tile base: 32x32 px
+Player visual: 32x48 px
+NPC comum visual: 32x48 px
+Collider de movimento: footbox inferior, não sprite inteiro
+```
+
+Motivo:
+
+- player 32x48 fica proporcional em tile 32x32;
+- o personagem ocupa 1 tile de largura e 1,5 tile de altura visual;
+- permite casas, portas e props em escala legível;
+- evita cidade visualmente minúscula por usar tile 16x16 com personagem grande.
+
+## 2. Tamanhos de personagens
+
+| Tipo | Sprite visual | Collider recomendado | Observação |
+|---|---:|---:|---|
+| Player | 32x48 px | 20x12 a 24x16 px nos pés | referência principal |
+| NPC humano/elfo/tiefling médio | 32x48 px | 20x12 a 24x16 px | similar ao player |
+| NPC halfling/goblin | 28x40 px ou 32x40 px | 18x10 a 22x14 px | menor, mas ainda compatível com grid |
+| NPC anão | 32x44 px | 22x14 px | baixo e largo |
+| NPC orc/meio-orc/draconato | 36x52 px a 40x56 px | 24x16 px | maior visualmente, sem quebrar pathfinding |
+| Criança/jovem | 24x36 px a 28x40 px | 16x10 px | Pip e NPCs jovens |
+| Pet gato | 24x24 px | 14x10 px | baixo, collider pequeno |
+| Pet cachorro | 32x32 px | 18x12 px | pode seguir player |
+
+Regra:
+
+```text
+O collider representa os pés/base do personagem.
+A cabeça/corpo podem sobrepor visualmente objetos atrás, desde que sorting esteja correto.
+```
+
+## 3. Sorting e pivô
+
+Direção técnica:
+
+```text
+Pivot visual do personagem: bottom-center
+Sorting Y: ordenar por coordenada Y dos pés
+Collider: centralizado na base inferior
+Interação: cone/caixa curta à frente do player
+```
+
+Isso evita o erro de usar o sprite inteiro como colisão.
+
+## 4. Câmera recomendada
+
+Com tile 32x32 e player 32x48:
+
+```text
+Visão padrão: 20x12 tiles a 24x14 tiles
+Equivalente em pixels: 640x384 px a 768x448 px antes de escala de tela
 Scroll suave seguindo jogador
 Cidade maior que uma tela
 Sem teleport interno dentro do mapa externo, salvo portas/interiores
 ```
 
-## 2. Tamanho da cidade externa
+A resolução final da janela pode escalar isso em 2x/3x sem alterar o tamanho lógico da cidade.
 
-Tamanho canônico recomendado:
+---
+
+# PARTE B — Tamanho da cidade
+
+## 5. Tamanho externo canônico
+
+Com tile base de 32x32 px, o tamanho recomendado da cidade muda para:
 
 ```text
-Cidade externa: 192x144 tiles
-Tamanho em pixels: 3072x2304 px
+Cidade externa: 128x96 tiles
+Tamanho em pixels: 4096x3072 px
 ```
 
 Motivo:
 
-- grande o bastante para conter mercado, templo, taverna, ofícios, guilda, casas, jardim e entrada da caverna;
-- pequena o bastante para o jogador memorizar;
-- permite festivais na praça sem trocar toda a cena;
-- permite zonas noturnas e ruína discreta sem inflar escopo.
+- mantém a cidade grande e navegável sem virar mapa gigantesco;
+- comporta todos os prédios, praça, templo, jardim, guilda, caverna e residências;
+- funciona melhor com personagem 32x48 px;
+- permite pathfinding simples por zonas;
+- mantém proporção boa para câmera de 20x12 ou 24x14 tiles.
 
-## 3. Sistema de coordenadas
+## 6. Sistema de coordenadas
 
 Usar coordenadas em tiles com origem no canto inferior esquerdo da cidade externa:
 
 ```text
-X: 0 → 191
-Y: 0 → 143
+X: 0 → 127
+Y: 0 → 95
 Origem: sudoeste / canto inferior esquerdo
+Tile: 32x32 px
 ```
 
 Coordenadas são direção de design, não contrato final de Unity.
 
 ---
 
-# PARTE B — Macro layout
+# PARTE C — Macro layout
 
-## 4. Zonas externas
+## 7. Zonas externas
 
-| Zona | Coordenada aproximada | Tamanho | Função |
-|---|---:|---:|---|
-| Praça Central | x72 y62 | 48x36 | centro social, calendário, festivais, quadro público |
-| Mercado/Rua Comercial | x24 y72 | 48x32 | loja geral, sementes, animais, barracas |
-| Distrito de Ofícios | x24 y28 | 52x36 | ferreiro, carpintaria, costura, alquimia |
-| Taverna/Estalagem | x82 y32 | 36x28 | comida, descanso, rumores, quadro de pedidos |
-| Templo de Kanthor | x128 y74 | 40x34 | ordem, juramentos, cerimônias, proteção civil |
-| Jardim das Estátuas Antigas | x136 y42 | 34x28 | vestígios de Anya/Cindar, eventos de Alihana/Nyx |
-| Prefeitura/Cartório | x80 y104 | 36x26 | licenças, impostos, contratos, reputação |
-| Guilda das Estradas | x24 y108 | 38x24 | mapas, caverna, caravanas, contratos de exploração |
-| Estrada/Caravançará | x0 y112 | 26x28 | entrada de viajantes, mercadores de Finan |
-| Caminho da Fazenda | x72 y0 | 36x20 | saída para fazenda |
-| Entrada da Caverna | x148 y10 | 36x28 | advertências, acesso à caverna, patrulhas |
-| Beco/Loja Noturna | x154 y100 | 24x24 | Yael, Nyx, segredos |
-| Ruína Discreta/Poço | x160 y62 | 22x20 | subsolo, Bromécia/Elyndor, cultos |
-| Residências Norte | x112 y112 | 42x24 | casas de NPCs não comerciantes |
-| Residências Sul | x116 y10 | 30x24 | casas simples, passagem para caverna |
+| Zona | Coordenada aproximada | Tamanho em tiles | Tamanho em px | Função |
+|---|---:|---:|---:|---|
+| Praça Central | x48 y40 | 32x24 | 1024x768 | centro social, calendário, festivais, quadro público |
+| Mercado/Rua Comercial | x12 y48 | 30x22 | 960x704 | loja geral, sementes, animais, barracas |
+| Distrito de Ofícios | x14 y18 | 32x24 | 1024x768 | ferreiro, carpintaria, costura, alquimia |
+| Taverna/Estalagem | x54 y18 | 24x18 | 768x576 | comida, descanso, rumores, quadro de pedidos |
+| Templo de Kanthor | x86 y50 | 28x24 | 896x768 | ordem, juramentos, cerimônias, proteção civil |
+| Jardim das Estátuas Antigas | x90 y28 | 26x20 | 832x640 | vestígios de Anya/Cindar, eventos de Alihana/Nyx |
+| Prefeitura/Cartório | x50 y70 | 24x18 | 768x576 | licenças, impostos, contratos, reputação |
+| Guilda das Estradas | x14 y72 | 28x18 | 896x576 | mapas, caverna, caravanas, contratos de exploração |
+| Estrada/Caravançará | x0 y76 | 18x20 | 576x640 | entrada de viajantes, mercadores de Finan |
+| Caminho da Fazenda | x48 y0 | 32x14 | 1024x448 | saída para fazenda |
+| Entrada da Caverna | x96 y4 | 24x20 | 768x640 | advertências, acesso à caverna, patrulhas |
+| Beco/Loja Noturna | x104 y70 | 16x16 | 512x512 | Yael, Nyx, segredos |
+| Ruína Discreta/Poço | x110 y44 | 14x14 | 448x448 | subsolo, Bromécia/Elyndor, cultos |
+| Residências Norte | x78 y76 | 28x18 | 896x576 | casas de NPCs não comerciantes |
+| Residências Sul | x80 y8 | 20x14 | 640x448 | casas simples, passagem para caverna |
 
-## 5. Diagrama macro
+## 8. Diagrama macro
 
 ```text
 NORTE
 ┌──────────────────────────────────────────────────────────────┐
-│ Estrada/Caravançará  Guilda        Cartório      Casas Norte │
-│ Mercado/Rua Comercial     Praça Central       Templo Kanthor │
-│ Ofícios/Workshops         Taverna        Estátuas / Ruína    │
-│ Caminho Fazenda                      Casas Sul  Caverna      │
+│ Estrada/Caravançará  Guilda       Cartório   Casas Norte     │
+│ Mercado/Rua Comercial     Praça Central      Templo Kanthor  │
+│ Ofícios/Workshops         Taverna      Estátuas / Ruína      │
+│ Caminho Fazenda                         Casas Sul  Caverna   │
 └──────────────────────────────────────────────────────────────┘
 SUL
 ```
 
-## 6. Regras de navegação
+## 9. Regras de navegação
 
 - Mercado, praça, taverna e ofícios devem ser próximos.
 - Templo de Kanthor deve ser visível e institucional.
@@ -136,39 +194,60 @@ SUL
 
 ---
 
-# PARTE C — Construções externas e interiores
+# PARTE D — Tamanhos de construções e interiores
 
-## 7. Lista canônica de construções
+## 10. Regra de proporção
 
-| ID | Construção | Externo | Interno | Donos/residentes | Serviço |
-|---|---|---:|---:|---|---|
-| bld_kanthor_temple | Templo de Kanthor | 28x22 | 34x28 | Corvus | bênçãos, juramentos, lei |
-| bld_town_hall | Prefeitura/Cartório | 28x20 | 34x24 | Mara, Tovin | licenças, contratos, reputação |
-| bld_seed_shop | Loja de Sementes | 22x18 | 26x20 | Sylveth | sementes, fertilizante, calendário agrícola |
-| bld_general_store | Loja Geral | 24x18 | 28x22 | Renko | itens comuns, compra/venda |
-| bld_blacksmith | Forja | 24x20 | 30x24 | Brumdar | ferramentas, armas, reparo |
-| bld_carpentry | Carpintaria | 28x22 | 34x26 | Nimble, Gurd, Hund | construções, mover estrutura |
-| bld_alchemy | Alquimia | 22x18 | 28x22 | Ozzra | poções, fertilizantes, reagentes |
-| bld_tavern_inn | Taverna Panela-Funda | 32x24 | 42x30 | Gruta, Orlan | comida, rumor, hospedagem |
-| bld_roads_guild | Guilda das Estradas | 30x20 | 34x24 | Zrix, Dagna parcial | mapas, caverna, contratos |
-| bld_archive | Arquivo/Biblioteca | 24x20 | 32x26 | Thalindra | pesquisa, lore, tradução |
-| bld_tailor | Ateliê de Costura | 22x18 | 26x22 | Mirela | bolsas, roupas, acessórios |
-| bld_ranch | Rancho/Animais | 30x22 | 34x24 | Eiran | animais, pets, ração |
-| bld_herbalist | Cabana de Ervas | 22x18 | 26x22 | Savra | ervas, antídotos, pragas |
-| bld_night_shop | Loja Noturna | 18x16 | 22x18 | Yael | itens raros, Nyx, segredos |
-| bld_liora_house | Casa de Liora | 18x16 | 22x18 | Liora | residência/eventos de música |
-| bld_maelor_hideout | Esconderijo de Maelor | oculto | 18x16 | Maelor | segredo, Nyx, memória |
-| bld_statue_garden | Jardim das Estátuas | 34x28 | externo | âncora de lore | Anya/Cindar, não culto ativo |
-| bld_cave_gate | Entrada da Caverna | 36x28 | externo | guarda/guilda | acesso à caverna |
-
-## 8. Templo de Kanthor
+Com player 32x48 px:
 
 ```text
-Externo: 28x22 tiles
-Interno: 34x28 tiles
+Porta comum: 2x2 tiles = 64x64 px
+Porta alta/templo: 3x3 tiles = 96x96 px
+Janela comum: 1x1 tile = 32x32 px
+Balcão mínimo: 3x1 tiles = 96x32 px
+Cama simples: 2x2 tiles = 64x64 px
+Cama casal: 3x2 tiles = 96x64 px
+Mesa comum: 2x2 tiles = 64x64 px
+Mesa grande: 3x2 tiles = 96x64 px
+Barraca de feira: 3x3 tiles = 96x96 px
+Árvore média: 2x3 tiles = 64x96 px
+Árvore grande: 3x4 tiles = 96x128 px
+Estátua média: 2x3 tiles = 64x96 px
+Estátua grande: 3x4 tiles = 96x128 px
+```
+
+## 11. Lista canônica de construções
+
+| ID | Construção | Externo tiles | Externo px | Interno tiles | Interno px | Donos/residentes | Serviço |
+|---|---|---:|---:|---:|---:|---|---|
+| bld_kanthor_temple | Templo de Kanthor | 18x14 | 576x448 | 24x18 | 768x576 | Corvus | bênçãos, juramentos, lei |
+| bld_town_hall | Prefeitura/Cartório | 16x12 | 512x384 | 22x16 | 704x512 | Mara, Tovin | licenças, contratos, reputação |
+| bld_seed_shop | Loja de Sementes | 12x10 | 384x320 | 16x13 | 512x416 | Sylveth | sementes, fertilizante, calendário agrícola |
+| bld_general_store | Loja Geral | 14x10 | 448x320 | 18x14 | 576x448 | Renko | itens comuns, compra/venda |
+| bld_blacksmith | Forja | 14x12 | 448x384 | 18x15 | 576x480 | Brumdar | ferramentas, armas, reparo |
+| bld_carpentry | Carpintaria | 18x12 | 576x384 | 22x16 | 704x512 | Nimble, Gurd, Hund | construções, mover estrutura |
+| bld_alchemy | Alquimia | 12x10 | 384x320 | 17x14 | 544x448 | Ozzra | poções, fertilizantes, reagentes |
+| bld_tavern_inn | Taverna Panela-Funda | 20x14 | 640x448 | 28x20 | 896x640 | Gruta, Orlan | comida, rumor, hospedagem |
+| bld_roads_guild | Guilda das Estradas | 18x12 | 576x384 | 22x16 | 704x512 | Zrix, Dagna parcial | mapas, caverna, contratos |
+| bld_archive | Arquivo/Biblioteca | 14x12 | 448x384 | 20x16 | 640x512 | Thalindra | pesquisa, lore, tradução |
+| bld_tailor | Ateliê de Costura | 12x10 | 384x320 | 16x14 | 512x448 | Mirela | bolsas, roupas, acessórios |
+| bld_ranch | Rancho/Animais | 20x14 | 640x448 | 22x16 | 704x512 | Eiran | animais, pets, ração |
+| bld_herbalist | Cabana de Ervas | 12x10 | 384x320 | 16x14 | 512x448 | Savra | ervas, antídotos, pragas |
+| bld_night_shop | Loja Noturna | 10x8 | 320x256 | 14x10 | 448x320 | Yael | itens raros, Nyx, segredos |
+| bld_liora_house | Casa de Liora | 10x8 | 320x256 | 14x10 | 448x320 | Liora | residência/eventos de música |
+| bld_maelor_hideout | Esconderijo de Maelor | oculto | oculto | 10x8 | 320x256 | Maelor | segredo, Nyx, memória |
+| bld_statue_garden | Jardim das Estátuas | 26x20 | 832x640 | externo | externo | âncora de lore | Anya/Cindar, não culto ativo |
+| bld_cave_gate | Entrada da Caverna | 24x20 | 768x640 | externo | externo | guarda/guilda | acesso à caverna |
+
+## 12. Templo de Kanthor
+
+```text
+Externo: 18x14 tiles / 576x448 px
+Interno: 24x18 tiles / 768x576 px
 Local: nordeste da praça
 Morador: Padre Corvus
 Cama: cama simples no aposento lateral dos fundos
+Porta principal: 3x3 tiles / 96x96 px
 ```
 
 Componentes:
@@ -181,14 +260,6 @@ Componentes:
 - pequeno arquivo religioso;
 - porta lateral trancada para subsolo futuro.
 
-Interações:
-
-- bênção de Kanthor;
-- juramento/contrato;
-- diálogo com Corvus;
-- eventos de ordem;
-- quest de inscrição sob pedra.
-
 Regra:
 
 ```text
@@ -197,11 +268,11 @@ Anya não tem altar ativo aqui.
 Qualquer vestígio de Anya fica fora do culto público, no Jardim das Estátuas ou em subsolo/lore.
 ```
 
-## 9. Jardim das Estátuas Antigas
+## 13. Jardim das Estátuas Antigas
 
 ```text
 Tipo: área externa
-Tamanho: 34x28 tiles
+Tamanho: 26x20 tiles / 832x640 px
 Local: leste/sudeste do templo
 Morador: nenhum
 Camas: nenhuma
@@ -211,6 +282,8 @@ Componentes:
 
 - 3 a 5 estátuas gastas;
 - uma delas associada a Anya, mas sem identificação pública clara;
+- estátuas médias: 2x3 tiles / 64x96 px;
+- estátua principal: 3x4 tiles / 96x128 px;
 - musgo, água parada, pedra clara, flores antigas;
 - banco quebrado;
 - pedestal apagado;
@@ -226,65 +299,50 @@ Regras:
 - não substitui a Fonte da fazenda;
 - reage lentamente à progressão de lore.
 
-## 10. Taverna Panela-Funda
+## 14. Taverna Panela-Funda
 
 ```text
-Externo: 32x24 tiles
-Interno: 42x30 tiles
+Externo: 20x14 tiles / 640x448 px
+Interno: 28x20 tiles / 896x640 px
 Moradores: Gruta e Orlan
 Cama: cama casal nos fundos
 Camas extras: 2 camas de hóspedes
+Porta: 2x2 tiles / 64x64 px
 ```
 
 Componentes:
 
-- balcão;
-- cozinha;
-- palco pequeno;
-- 6 mesas;
-- quadro de pedidos secundário;
+- balcão: 6x1 tiles / 192x32 px;
+- cozinha: 8x5 tiles / 256x160 px;
+- palco pequeno: 5x3 tiles / 160x96 px;
+- 6 mesas de 2x2 tiles / 64x64 px;
+- quadro de pedidos secundário: 2x2 tiles / 64x64 px;
 - escada/porta para quartos;
 - barris e cozinha;
-- lareira;
+- lareira: 2x2 tiles / 64x64 px;
 - mesa de rumores.
 
-Interações:
-
-- comprar comida;
-- ouvir rumores;
-- aceitar pedidos;
-- eventos de Gruta/Liora/Orlan;
-- encontro social noturno.
-
-## 11. Prefeitura/Cartório
+## 15. Prefeitura/Cartório
 
 ```text
-Externo: 28x20 tiles
-Interno: 34x24 tiles
+Externo: 16x12 tiles / 512x384 px
+Interno: 22x16 tiles / 704x512 px
 Moradores: Mara e Tovin em casa anexa
 Cama: cama casal em cômodo residencial lateral
+Porta: 2x2 tiles / 64x64 px
 ```
 
 Componentes:
 
-- balcão de registros;
+- balcão de registros: 5x1 tiles / 160x32 px;
 - mesa de Mara;
 - mesa de Tovin;
 - armário de documentos;
-- mural de licenças;
+- mural de licenças: 2x2 tiles / 64x64 px;
 - sala trancada de arquivo civil;
 - acesso futuro a registros antigos.
 
-Interações:
-
-- licenças de construção;
-- contratos;
-- impostos;
-- reputação da cidade;
-- autorização de altares permitidos;
-- bloqueio formal de altar/estátua de Anya como construção livre.
-
-## 12. Distrito de Ofícios
+## 16. Distrito de Ofícios
 
 Inclui:
 
@@ -296,11 +354,48 @@ Inclui:
 Regras:
 
 - deve ser visualmente produtivo: fumaça, madeira, caixas, ferramentas;
-- deve ter colisores fortes em bancadas;
+- corredores externos mínimos de 2 tiles / 64 px;
+- caminhos principais de 3 tiles / 96 px;
 - deve ter rotas largas para NPCs carregando material;
 - deve conectar diretamente ao caminho da fazenda.
 
-## 13. Residências e camas
+## 17. Tamanhos de props e elementos urbanos
+
+| Elemento | Tiles | Pixels | Uso |
+|---|---:|---:|---|
+| Quadro público | 2x2 | 64x64 | praça |
+| Quadro de pedidos | 2x2 | 64x64 | taverna/guilda |
+| Calendário da praça | 2x2 | 64x64 | eventos |
+| Placa de loja | 1x1 ou 2x1 | 32x32 / 64x32 | leitura de serviço |
+| Poste/lampião | 1x2 | 32x64 | noite/Nyx |
+| Banco simples | 2x1 | 64x32 | praça/jardim |
+| Banco longo | 3x1 | 96x32 | praça |
+| Barril | 1x1 | 32x32 | colisão/decoração |
+| Caixote | 1x1 | 32x32 | mercado/ofícios |
+| Caixote grande | 2x1 | 64x32 | mercado/ofícios |
+| Barraca de feira | 3x3 | 96x96 | festival/mercado |
+| Carruagem | 5x3 | 160x96 | caravançará |
+| Fonte pública comum | 4x4 | 128x128 | praça, não Anya |
+| Poço lacrado | 3x3 | 96x96 | ruína discreta |
+| Anvil/Bigorna | 2x1 | 64x32 | forja |
+| Forja acesa | 3x3 | 96x96 | Brumdar |
+| Bancada alquímica | 3x2 | 96x64 | Ozzra |
+| Mesa de pesquisa | 3x2 | 96x64 | Thalindra |
+| Cama simples | 2x2 | 64x64 | NPC schedule |
+| Cama casal | 3x2 | 96x64 | NPCs casados |
+| Cama de hóspede | 2x2 | 64x64 | estalagem |
+| Tigela de pet | 1x1 | 32x32 | rancho/fazenda |
+| Cerca pequena | 1x1 por segmento | 32x32 | rancho/festival |
+| Portão de cerca | 2x1 | 64x32 | rancho |
+| Arbusto pequeno | 1x1 | 32x32 | decoração |
+| Árvore média | 2x3 | 64x96 | cidade/jardim |
+| Árvore grande | 3x4 | 96x128 | bordas |
+
+---
+
+# PARTE E — Residências e camas
+
+## 18. Residências e camas
 
 | NPC | Residência | Cama |
 |---|---|---|
@@ -337,9 +432,9 @@ Jogador não usa camas de NPC, exceto camas de hóspedes da estalagem se sistema
 
 ---
 
-# PARTE D — Agenda diária canônica
+# PARTE F — Agenda diária canônica
 
-## 14. Períodos do dia
+## 19. Períodos do dia
 
 ```text
 06:00–09:00 Morning
@@ -351,7 +446,7 @@ Jogador não usa camas de NPC, exceto camas de hóspedes da estalagem se sistema
 00:00–06:00 Sleep/LateNight
 ```
 
-## 15. Agenda padrão por NPC
+## 20. Agenda padrão por NPC
 
 | NPC | Morning | WorkStart | Midday | WorkAfternoon | Evening | Night/Sleep |
 |---|---|---|---|---|---|---|
@@ -379,7 +474,7 @@ Jogador não usa camas de NPC, exceto camas de hóspedes da estalagem se sistema
 | Savra | cabana | ervas/floresta | mercado | cabana | trilha/cabana | cama cabana |
 | Maelor | oculto | oculto | oculto | jardim distante | beco/jardim | esconderijo |
 
-## 16. Modificadores de agenda
+## 21. Modificadores de agenda
 
 ### Chuva
 
@@ -419,21 +514,21 @@ Jogador não usa camas de NPC, exceto camas de hóspedes da estalagem se sistema
 
 ---
 
-# PARTE E — Movimento, física e pathfinding
+# PARTE G — Movimento, física e pathfinding
 
-## 17. Movimento do jogador
+## 22. Movimento do jogador
 
 Direção recomendada:
 
 ```text
-Movimento livre suave sobre tilemap.
-Colisão baseada em colliders/tile collision.
+Movimento livre suave sobre tilemap 32x32.
+Colisão baseada no footbox, não no sprite inteiro.
 Interação por proximidade + direção do jogador.
 ```
 
 Não usar movimento preso rigidamente tile-a-tile para o jogador, salvo se o projeto decidir por estética/escopo.
 
-## 18. Movimento de NPCs
+## 23. Movimento de NPCs
 
 Direção recomendada:
 
@@ -449,9 +544,10 @@ Regras:
 - schedule pode teleportar NPC fora de câmera/interior;
 - quando player entra na cena, NPC aparece no waypoint correto conforme hora/estado;
 - NPC em rota visível deve andar até destino;
-- se caminho estiver bloqueado por evento, usa fallback waypoint.
+- se caminho estiver bloqueado por evento, usa fallback waypoint;
+- NPCs grandes usam o mesmo grafo, mas footbox levemente maior.
 
-## 19. Colisão
+## 24. Colisão
 
 Colisores obrigatórios:
 
@@ -466,7 +562,7 @@ Colisores obrigatórios:
 - água;
 - cliffs/limites;
 - barris/caixotes grandes;
-- forge/anvil;
+- forja/bigorna;
 - bancadas;
 - portas trancadas;
 - entrada da caverna enquanto bloqueada.
@@ -480,7 +576,7 @@ Objetos com colisão parcial:
 - bancos, se interativos;
 - barracas de festival.
 
-## 20. Portas e cenas internas
+## 25. Portas e cenas internas
 
 ```text
 DoorTrigger
@@ -489,17 +585,21 @@ DoorTrigger
   RequiredState
   LockedMessage
   OpenHoursRule optional
+  DoorSizeTiles
+  DoorSizePx
 ```
 
 Regras:
 
+- porta comum usa 2x2 tiles / 64x64 px;
+- porta de templo/guilda pode usar 3x3 tiles / 96x96 px;
 - porta de loja fechada mostra horário;
 - porta de casa privada pode bloquear entrada até relação/quest;
 - estalagem permite entrada mais ampla;
 - loja noturna só ativa em condições específicas;
 - interiores podem ser cenas separadas ou subáreas carregadas, a definir em spec.
 
-## 21. Camas
+## 26. Camas
 
 ```text
 BedId
@@ -508,10 +608,14 @@ LocationId
 BedType
 ScheduleOnly
 CanPlayerUse
+SizeTiles
+SizePx
 ```
 
 Regras:
 
+- cama simples: 2x2 tiles / 64x64 px;
+- cama casal: 3x2 tiles / 96x64 px;
 - cama de NPC é marcador de rotina;
 - cama de casal aceita dois NPCs casados;
 - jogador só usa cama de hóspedes da estalagem, se hospedagem existir;
@@ -519,32 +623,32 @@ Regras:
 
 ---
 
-# PARTE F — Props, componentes e pontos de interação
+# PARTE H — Props, componentes e pontos de interação
 
-## 22. Componentes extras da cidade
+## 27. Componentes extras da cidade
 
-| Componente | Local | Função |
-|---|---|---|
-| Quadro público | Praça | eventos, avisos, pedidos simples |
-| Quadro de pedidos | Taverna/Guilda | contratos e encomendas |
-| Calendário | Praça | festivais, aniversários, luas |
-| Sino de Kanthor | Templo | festival, quest de Corvus |
-| Estátuas antigas | Jardim | lore Anya/Cindar |
-| Poço lacrado | Ruína discreta | acesso/subsolo futuro |
-| Fonte pública comum | Praça | decoração, não Anya |
-| Placas de lojas | lojas | horário e nome |
-| Barracas de festival | Praça/Mercado | eventos temporários |
-| Carruagem/caravançará | Estrada | Finan/mercadores |
-| Placa de perigo | Caverna | tutorial e alerta |
-| Poste/lampiões | ruas | noite/Nyx |
-| Bancos | praça/jardim | NPC idle/social |
-| Caixotes/barris | mercado/ofícios | colisão/decoração |
-| Anvil/forja | forja | interação de Brumdar |
-| Bancada alquímica | alquimia | interação de Ozzra |
-| Mesa de pesquisa | arquivo | Thalindra/lore |
-| Tigelas/currais | rancho | Eiran/animais |
+| Componente | Local | Função | Tamanho |
+|---|---|---|---:|
+| Quadro público | Praça | eventos, avisos, pedidos simples | 2x2 tiles |
+| Quadro de pedidos | Taverna/Guilda | contratos e encomendas | 2x2 tiles |
+| Calendário | Praça | festivais, aniversários, luas | 2x2 tiles |
+| Sino de Kanthor | Templo | festival, quest de Corvus | 2x2 tiles |
+| Estátuas antigas | Jardim | lore Anya/Cindar | 2x3 a 3x4 tiles |
+| Poço lacrado | Ruína discreta | acesso/subsolo futuro | 3x3 tiles |
+| Fonte pública comum | Praça | decoração, não Anya | 4x4 tiles |
+| Placas de lojas | lojas | horário e nome | 1x1 ou 2x1 tiles |
+| Barracas de festival | Praça/Mercado | eventos temporários | 3x3 tiles |
+| Carruagem/caravançará | Estrada | Finan/mercadores | 5x3 tiles |
+| Placa de perigo | Caverna | tutorial e alerta | 2x2 tiles |
+| Poste/lampiões | ruas | noite/Nyx | 1x2 tiles |
+| Bancos | praça/jardim | NPC idle/social | 2x1 ou 3x1 tiles |
+| Caixotes/barris | mercado/ofícios | colisão/decoração | 1x1 ou 2x1 tiles |
+| Bigorna/forja | forja | interação de Brumdar | 2x1 / 3x3 tiles |
+| Bancada alquímica | alquimia | interação de Ozzra | 3x2 tiles |
+| Mesa de pesquisa | arquivo | Thalindra/lore | 3x2 tiles |
+| Tigelas/currais | rancho | Eiran/animais | 1x1 / área variável |
 
-## 23. Pontos de spawn
+## 28. Pontos de spawn
 
 | SpawnId | Uso |
 |---|---|
@@ -559,9 +663,9 @@ Regras:
 
 ---
 
-# PARTE G — Roadmap de construção da cidade
+# PARTE I — Roadmap de construção da cidade
 
-## 24. Roadmap conceitual
+## 29. Roadmap conceitual
 
 Seguir o mesmo modelo da fazenda: roadmap por ondas funcionais, sem limitar a MVP.
 
@@ -575,28 +679,22 @@ Roadmap 5 — Festivais, luas e religião pública
 Roadmap 6 — Segredos, subsolo, Bromécia/Elyndor e Anya
 ```
 
-## 25. Roadmap 0 — Reconciliar base existente
+## 30. Roadmap 0 — Reconciliar base existente
 
 Objetivo:
 
 - verificar cenas existentes;
 - verificar sistemas de interação já implementados;
 - verificar sistema de shops, inventory, save, economy, time/day;
-- mapear o que pode ser reaproveitado.
+- mapear o que pode ser reaproveitado;
+- confirmar assets reais de player/NPC 32x48 px no Unity.
 
-Entregas:
-
-- inventário de cenas;
-- lista de scripts existentes;
-- lacunas de sistemas;
-- spec de implementação segura.
-
-## 26. Roadmap 1 — Cidade navegável essencial
+## 31. Roadmap 1 — Cidade navegável essencial
 
 Entregas:
 
 - CityScene externa;
-- tilemap base 192x144;
+- tilemap base 128x96 tiles, 32x32 px;
 - zonas principais;
 - colisores;
 - portas placeholder;
@@ -605,7 +703,7 @@ Entregas:
 - saída para caverna bloqueada/liberável;
 - praça, mercado, templo, taverna, ofícios e guilda como formas externas.
 
-## 27. Roadmap 2 — Serviços, lojas e interiores essenciais
+## 32. Roadmap 2 — Serviços, lojas e interiores essenciais
 
 Entregas:
 
@@ -621,7 +719,7 @@ Entregas:
 - horários de porta/loja;
 - UI mínima de compra/venda/serviço.
 
-## 28. Roadmap 3 — NPC schedules, casas e camas
+## 33. Roadmap 3 — NPC schedules, casas e camas
 
 Entregas:
 
@@ -633,7 +731,7 @@ Entregas:
 - NPCs fora de cena resolvidos por schedule tick;
 - diálogo básico por horário.
 
-## 29. Roadmap 4 — Reputação, visitas à fazenda e quests pessoais
+## 34. Roadmap 4 — Reputação, visitas à fazenda e quests pessoais
 
 Entregas:
 
@@ -645,7 +743,7 @@ Entregas:
 - romance flags;
 - casamento ainda pode ficar para spec separada.
 
-## 30. Roadmap 5 — Festivais, luas e religião pública
+## 35. Roadmap 5 — Festivais, luas e religião pública
 
 Entregas:
 
@@ -657,7 +755,7 @@ Entregas:
 - eventos de Alihana, Senya e Nyx;
 - loja noturna de Yael.
 
-## 31. Roadmap 6 — Segredos, subsolo, Bromécia/Elyndor e Anya
+## 36. Roadmap 6 — Segredos, subsolo, Bromécia/Elyndor e Anya
 
 Entregas:
 
@@ -672,9 +770,9 @@ Entregas:
 
 ---
 
-# PARTE H — Specs futuras derivadas
+# PARTE J — Specs futuras derivadas
 
-## 32. Ordem recomendada
+## 37. Ordem recomendada
 
 ```text
 spec_city_scene_tilemap_collision_spawns.md
@@ -690,11 +788,13 @@ spec_city_farm_visits_schedule_hooks.md
 spec_city_hidden_subsoil_bromecia_elyndor_hooks.md
 ```
 
-## 33. Fontes obrigatórias por spec
+## 38. Fontes obrigatórias por spec
 
 Toda spec acima deve ler:
 
 ```text
+docs/design/SPEC_SOURCE_MAP.md
+docs/design/SPECIFICATION_PROCESS.md
 docs/design/lore/VAALARA_GAME_CANON_DIRECTION_v1.0.md
 docs/design/gameplay/city/CITY_DESIGN_DIRECTION_v1.2.md
 docs/design/gameplay/city/CITY_NPC_ROSTER_SERVICES_DIRECTION_v1.1.md
@@ -709,13 +809,16 @@ docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.3.md
 
 ---
 
-# PARTE I — Decisões fechadas
+# PARTE K — Decisões fechadas
 
 ```text
-Cidade externa recomendada: 192x144 tiles.
-Tile base recomendado: 16x16 px.
-Tamanho externo em pixels: 3072x2304 px.
+Player visual de referência: 32x48 px.
+NPC comum visual: 32x48 px.
+Tile base da cidade: 32x32 px.
+Cidade externa recomendada: 128x96 tiles.
+Tamanho externo em pixels: 4096x3072 px.
 Cidade usa movimento livre suave sobre tilemap.
+Player e NPCs usam collider de footbox, não sprite inteiro.
 NPCs usam waypoints e schedule tick, não simulação full offscreen.
 Camas de NPC são marcadores de rotina.
 Jogador não usa camas de NPC, exceto hospedaria se implementada.
@@ -728,9 +831,12 @@ Cada NPC tem residência/cama/local de trabalho definidos em direção.
 
 ---
 
-# PARTE J — Pendências
+# PARTE L — Pendências
 
-- Validar se cidade externa 192x144 é aceitável para performance/arte.
+- Confirmar no Unity o tamanho real do sprite do player.
+- Confirmar PPU/import settings dos sprites.
+- Confirmar se tilemap atual usa 16x16, 32x32 ou escala visual diferente.
+- Validar se cidade externa 128x96 tiles é aceitável para performance/arte.
 - Definir se interiores são cenas separadas ou carregados no mesmo mapa.
 - Definir pathfinding final: grid A*, waypoint fixo ou híbrido.
 - Definir visual final das construções.
