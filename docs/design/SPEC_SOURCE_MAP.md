@@ -211,20 +211,32 @@ Fonte de Anya interactions
 
 ## 6. Specs de caverna
 
-Fonte futura principal:
+Fontes obrigatórias:
 
 ```text
-docs/design/gameplay/cave/CAVE_DESIGN_DIRECTION_v1.0.md
+docs/design/gameplay/cave/CAVE_DESIGN_DIRECTION.md
+docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_DIRECTION.md
+docs/game_rules/cave_rules.md
+docs/decisions/ADR-0005-cave-stable-run-and-replay.md
 ```
 
-Enquanto não existir, specs de caverna devem ler:
+Usar `CAVE_DESIGN_DIRECTION.md` para visão, estrutura macro, densidade, biomas, mineração, tesouros, boss gates, checkpoints, level 100, level 101 e roadmap.
+
+Usar `CAVE_MONSTER_ROSTER_DIRECTION.md` para criaturas, bosses, packs, XP, drops, ataques, comportamento, bestiary e loot direction.
+
+Além dessas fontes, specs de caverna que tocam runtime já existente devem ler:
 
 ```text
-docs/design/lore/VAALARA_GAME_CANON_DIRECTION_v1.0.md
-docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.3.md
-docs/design/gameplay/farm/FARM_LAYOUT_SCALE_BUILDINGS_DIRECTION.md
-docs/design/gameplay/city/CITY_DESIGN_DIRECTION_v1.2.md
-docs/design/gameplay/city/CITY_LAYOUT_BUILDINGS_SCHEDULE_DIRECTION.md
+docs/specs/a_implementar/spec_cave_runtime_generation_checkpoints_boss_gates.md
+docs/specs/a_implementar/spec_enemy_ai_roster_bestiary_faction_locks_runtime.md
+docs/specs/implementados/spec_cave_001_cave_scene_portal_e_runtime_basico.md
+docs/specs/implementados/spec_cave_002_procedural_contracts_resources_parcial.md
+docs/specs/implementados/spec_cave_003_stable_run_snapshots_replay_parcial.md
+docs/specs/implementados/spec_cave_004_boss_gates_checkpoints_confinement_parcial.md
+docs/specs/implementados/spec_cave_005_visual_runtime_camera_enemy_visuals.md
+docs/specs/implementados/spec_cave_006_spawn_anchor_safe_positioning.md
+docs/specs/implementados/spec_cave_007_snapshot_replay_full_layout_hardening.md
+docs/specs/implementados/spec_cave_008_debug_skip_confinement_wall_distance_hardening.md
 ```
 
 Temas esperados:
@@ -232,9 +244,15 @@ Temas esperados:
 ```text
 100 levels
 level 101/endgame
+boss gate 100
 biomes
 mining
 resource nodes
+treasure rooms
+special rooms
+hazards
+monster density
+monster packs
 bosses
 checkpoints
 Elyndor portals
@@ -243,6 +261,7 @@ Pedra Negra corrompida
 Pedra de Meteoro Negra Estabilizada
 death/corpse recovery
 Fonte de Anya integration
+Anya partial power liberation
 fatigue in cave
 companions in cave
 pet dog support
@@ -251,11 +270,20 @@ pet dog support
 Specs recomendadas futuras:
 
 ```text
+spec_cave_design_reconciliation_density_rules.md
 spec_cave_world_generation_levels_biomes.md
+spec_cave_enemy_density_packs_spawnplan_rebalance.md
+spec_cave_special_rooms_mining_treasure_generation.md
 spec_cave_mining_resources_nodes.md
+spec_cave_resources_treasures_biome_tables.md
+spec_cave_boss_gate_100_level_101_unlock.md
+spec_cave_level_101_boss_gauntlet_anya_lore.md
+spec_cave_monster_roster_data_expansion.md
+spec_cave_enemy_actions_vulnerability_profiles.md
+spec_cave_boss_gate_roster_rewards.md
+spec_cave_bestiary_entries_lore_rewards.md
+spec_cave_snapshot_special_elements_persistence.md
 spec_cave_checkpoints_elyndor_portals.md
-spec_cave_bestiary_factions_ecology.md
-spec_cave_bosses_milestones_100_101.md
 spec_cave_death_corpse_recovery_fonte.md
 spec_cave_city_guild_contracts_integration.md
 ```
@@ -279,6 +307,8 @@ docs/design/lore/VAALARA_GAME_CANON_DIRECTION_v1.0.md
 docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.3.md
 docs/design/gameplay/farm/FARM_LAYOUT_SCALE_BUILDINGS_DIRECTION.md
 docs/design/gameplay/city/CITY_NPC_ROSTER_SERVICES_DIRECTION_v1.1.md
+docs/design/gameplay/cave/CAVE_DESIGN_DIRECTION.md
+docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_DIRECTION.md
 ```
 
 Temas esperados:
@@ -308,6 +338,7 @@ levels
 classes/jobs do jogo
 companions combat
 pets combat support
+cave combat balance
 ```
 
 Specs recomendadas futuras:
@@ -341,6 +372,8 @@ docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.3.md
 docs/design/gameplay/farm/FARM_LAYOUT_SCALE_BUILDINGS_DIRECTION.md
 docs/design/gameplay/city/CITY_NPC_ROSTER_SERVICES_DIRECTION_v1.1.md
 docs/design/gameplay/city/CITY_LAYOUT_BUILDINGS_SCHEDULE_DIRECTION.md
+docs/design/gameplay/cave/CAVE_DESIGN_DIRECTION.md
+docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_DIRECTION.md
 ```
 
 Temas esperados:
@@ -356,6 +389,7 @@ affinity
 marriage distinction
 NPC service mode
 pet system separate from companion
+pet dog cave support
 ```
 
 Specs recomendadas futuras:
@@ -385,6 +419,7 @@ Enquanto não existir, ler fontes do domínio tocado:
 ```text
 Fazenda -> FARM_DESIGN_DIRECTION_v1.3.md + FARM_LAYOUT_SCALE_BUILDINGS_DIRECTION.md
 Cidade -> CITY_DESIGN_DIRECTION_v1.2.md + CITY_LAYOUT_BUILDINGS_SCHEDULE_DIRECTION.md
+Caverna -> CAVE_DESIGN_DIRECTION.md + CAVE_MONSTER_ROSTER_DIRECTION.md
 NPCs -> CITY_NPC_ROSTER_SERVICES_DIRECTION_v1.1.md
 Canon -> VAALARA_GAME_CANON_DIRECTION_v1.0.md
 Processo -> SPECIFICATION_PROCESS.md
@@ -409,6 +444,9 @@ shipping bin
 quests
 contracts
 festival UI
+cave checkpoint side menu
+cave boss UI
+bestiary UI
 ```
 
 Specs recomendadas futuras:
@@ -420,6 +458,7 @@ spec_ui_dialogue_relationship_gifts.md
 spec_ui_city_map_calendar_shops_contracts.md
 spec_ui_farm_build_mode_layout.md
 spec_ui_skill_tree_respec_fonte.md
+spec_ui_cave_checkpoint_bestiary_boss_feedback.md
 ```
 
 ---
