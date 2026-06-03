@@ -20,7 +20,7 @@ Heavy melee com Espada de Aço: 40 Stamina.
 Dash: 40 Stamina.
 Dodge: 40 Stamina.
 Block hold: 18 Stamina/s.
-Block impact: proporcional ao dano bruto recebido em relação ao HP máximo do jogador.
+Block impact: proporcional ao dano pós-armadura/mitigação em relação ao HP máximo do jogador.
 ```
 
 Consequência:
@@ -29,6 +29,7 @@ Consequência:
 Com 144 Stamina no level 30, o jogador não pode spammar ataque, dodge, dash e block.
 Cada ação defensiva forte consome quase 28% da Stamina total.
 Block segurado por 2s consome 36 Stamina antes mesmo do impacto.
+O impacto do Block respeita Armor/Defense: golpes bem absorvidos drenam menos Stamina.
 O jogo passa a exigir ritmo, janela, posicionamento, comida, skill e companion/pet.
 ```
 
@@ -197,8 +198,8 @@ Heavy melee com Espada de Aço: 40 Stamina
 Dash: 40 Stamina
 Dodge: 40 Stamina
 Block hold: 18 Stamina/s
-Block impact comum: proporcional ao dano bruto / HP máximo do jogador
-Block impact elite: proporcional ao dano bruto / HP máximo do jogador
+Block impact comum: proporcional ao dano pós-armadura / HP máximo do jogador
+Block impact elite: proporcional ao dano pós-armadura / HP máximo do jogador
 ```
 
 ---
@@ -312,11 +313,21 @@ BlockStability = 12% Guarda Firme r2 + 8% escudo + 4% Constituição moderada = 
 Block hold = 18 Stamina/s
 ```
 
-### Block impact proporcional
+### Block impact proporcional ao dano pós-armadura
 
 ```text
-IncomingDamageRatio = IncomingRawDamage / PlayerMaxHP
+MitigatedDamageForStamina = max(MinDamageForStamina, IncomingRawDamage - ArmorMitigationValue)
+IncomingDamageRatio = MitigatedDamageForStamina / PlayerMaxHP
 BlockImpactStaminaCost = PlayerMaxStamina * IncomingDamageRatio * BlockImpactMultiplier * (1 - BlockStability)
+```
+
+Se a spec futura separar resistência percentual e armadura flat:
+
+```text
+MitigatedDamageForStamina = max(
+  MinDamageForStamina,
+  (IncomingRawDamage * (1 - PhysicalResistance)) - ArmorFlatMitigation
+)
 ```
 
 Multiplicadores usados neste teste:
@@ -325,30 +336,34 @@ Multiplicadores usados neste teste:
 comum = 0.90
 elite = 1.20
 boss = 1.50
+MinDamageForStamina = 1 a 5
 ```
 
-Exemplo comum com dano bruto 57:
+Exemplo comum com dano bruto 57 e mitigação 14:
 
 ```text
-IncomingDamageRatio = 57 / 230 = 24.8%
-BlockImpactStaminaCost = 144 * 0.248 * 0.90 * 0.76
-BlockImpactStaminaCost ≈ 24 Stamina
+MitigatedDamageForStamina = 57 - 14 = 43
+IncomingDamageRatio = 43 / 230 = 18.7%
+BlockImpactStaminaCost = 144 * 0.187 * 0.90 * 0.76
+BlockImpactStaminaCost ≈ 18 Stamina
 ```
 
-Exemplo elite com dano bruto 90:
+Exemplo elite com dano bruto 90 e mitigação 14:
 
 ```text
-IncomingDamageRatio = 90 / 230 = 39.1%
-BlockImpactStaminaCost = 144 * 0.391 * 1.20 * 0.76
-BlockImpactStaminaCost ≈ 51 Stamina
+MitigatedDamageForStamina = 90 - 14 = 76
+IncomingDamageRatio = 76 / 230 = 33.0%
+BlockImpactStaminaCost = 144 * 0.330 * 1.20 * 0.76
+BlockImpactStaminaCost ≈ 43 Stamina
 ```
 
 Leitura:
 
 ```text
 Block contra comum custa relevante, mas sustentável.
-Block contra elite custa muito e não pode ser spamado.
-Se o jogador segurar block por 1s antes do impacto elite, gasta ~69 Stamina total.
+Block contra elite custa muito, mas menos do que se fosse baseado em dano bruto total.
+Armadura melhora sobrevivência e também reduz dreno de Stamina no block impact.
+Se o jogador segurou block por 1s antes do impacto elite, gasta ~61 Stamina total.
 ```
 
 ## 13. Ataque físico
@@ -546,19 +561,27 @@ DefenseFlat parcial = Defense * 0.12 = 6.7
 DamageTaken = 36.9 * 0.88 - 6.7 ≈ 26
 ```
 
-Custo de Stamina:
+Custo de Stamina para o impacto:
 
 ```text
-BlockImpactStaminaCost ≈ 51
+MitigatedDamageForStamina = 90 - 14 = 76
+IncomingDamageRatio = 76 / 230 = 33.0%
+BlockImpactStaminaCost = 144 * 0.330 * 1.20 * 0.76
+BlockImpactStaminaCost ≈ 43
+```
+
+Com hold:
+
+```text
 Block hold por 1s = 18
-Total aproximado se segurou 1s antes do impacto = 69
+Total aproximado se segurou 1s antes do impacto = 61
 ```
 
 Leitura:
 
 ```text
-Block reduz muito dano, mas custa quase metade da Stamina se usado contra elite com tempo de hold.
-Isso força perfect block, dodge, reposicionamento e leitura de telegraph.
+Block reduz muito dano, mas custa Stamina relevante.
+Armadura reduz o dano usado no cálculo do dreno de Stamina, então armor continua valiosa para builds de block.
 ```
 
 ---
@@ -579,7 +602,7 @@ Cenário jogando bem:
 
 ```text
 Round 1: ataque normal, Duergar -75, Stamina -25
-Round 2: Duergar ataca, Brann bloqueia por ~0.5s, recebe ~12-16, Stamina -9 hold -24 impacto
+Round 2: Duergar ataca, Brann bloqueia por ~0.5s, recebe ~12-16, Stamina -9 hold -18 impacto
 Round 3: ataque carregado, Duergar -95/posture pressure, Stamina -40
 Round 4: finaliza em abertura, Stamina -25
 ```
@@ -587,21 +610,22 @@ Round 4: finaliza em abertura, Stamina -25
 Consumo aproximado:
 
 ```text
-Stamina total consumida: ~123
-Stamina restante antes de regen: ~21
+Stamina total consumida: ~117
+Stamina restante antes de regen: ~27
 ```
 
 Com regen em combate por ~4-6 segundos:
 
 ```text
 recupera ~11-23 Stamina
-fica com ~32-44 Stamina
+fica com ~38-50 Stamina
 ```
 
 Veredito:
 
 ```text
-Comum robusto isolado agora consome recurso relevante.
+Comum robusto isolado ainda consome recurso relevante.
+A armadura reduz o dreno do block impact, mas não torna block gratuito.
 Em pack, o jogador precisa usar janela, recuar, comer, usar companion/pet ou evitar trocar golpe direto.
 ```
 
@@ -689,6 +713,7 @@ Comuns robustos já consomem recurso se enfrentados sem cuidado.
 Elites exigem janelas, vulnerabilidades, companion/pet, comida, ou execução boa.
 Dash/Dodge a 40 impedem spam defensivo.
 Block é forte, mas caro contra dano alto.
+Armor agora reduz também o dreno de Stamina do impacto bloqueado.
 ```
 
 ## 26. Decisões corrigidas
@@ -706,7 +731,7 @@ Heavy melee com Espada de Aço = 40 Stamina.
 Dash = 40 Stamina.
 Dodge = 40 Stamina.
 Block hold = 18 Stamina/s.
-Block impact = proporcional ao dano bruto / HP máximo do jogador.
+Block impact = proporcional ao dano pós-armadura/mitigação contra HP máximo do jogador.
 Monstros não usam fórmula de HP do jogador.
 Monstros usam multiplicador próprio de CON por família/papel.
 ```
@@ -720,4 +745,5 @@ Packs densos demais podem ficar injustos se todos exigirem Dodge.
 Stamina Regen em combate precisa ser validada em Unity.
 Com 144 Stamina, early/mid-game precisa de comida, descanso e pacing bem calibrados.
 Block proporcional precisa de cap mínimo/máximo para evitar casos extremos.
+ArmorMitigationValue precisa ser definido de forma consistente na spec de combate.
 ```
