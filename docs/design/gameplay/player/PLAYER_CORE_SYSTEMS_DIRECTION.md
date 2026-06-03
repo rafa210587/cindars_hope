@@ -10,7 +10,7 @@
 > - `docs/design/gameplay/city/CITY_DESIGN_DIRECTION_v1.2.md`  
 > - `docs/design/gameplay/cave/CAVE_DESIGN_DIRECTION.md`  
 > - `docs/design/gameplay/cave/CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md`  
-> **Função:** consolidar a direção ampla do personagem jogável: criação inicial, raças iniciais, gênero, aparência por sprites, atributos, HP/MP/Stamina/Breath, fome, cansaço, level up, skill trees existentes, active slots, arquétipos inferidos, ferramentas, armas, magia, equipamentos, resistências, morte, Fonte de Anya, companions, pets, fazenda, cidade, caverna, flerte, casamento, UI/HUD e save/load.  
+> **Função:** consolidar a direção ampla do personagem jogável: criação inicial, raças iniciais, gênero, aparência por sprites, atributos, HP/MP/Stamina/Breath, fome, cansaço, level up, skill trees, input de movimento, active slots, arquétipos inferidos, ferramentas, armas, magia, equipamentos, resistências, morte, Fonte de Anya, companions, pets, fazenda, cidade, caverna, flerte, casamento, UI/HUD e save/load.  
 > **Não é spec implementável.** Este documento descreve como o sistema deve funcionar em visão de jogo. Specs futuras quebram partes disso quando entrarmos em execução.
 
 ---
@@ -35,6 +35,8 @@ level up
 pontos de atributo
 50 SkillPoints máximos
 5 skill trees existentes
+input de movimento
+Dash / Dodge / Block
 active slots
 capstones
 respec na Fonte de Anya
@@ -63,6 +65,8 @@ O jogador não possui classe fixa estilo D&D.
 O jogador evolui livremente por atributos, skills, equipamentos, armas, ferramentas, magia e escolhas de gameplay.
 O jogo usa 5 skill trees iniciais já consolidadas: Melee/Guerreiro, Ranged/Caçador, Magic/Arcano, Survival/Sobrevivente e Crafting/Produção.
 Social, romance, companions e pets são sistemas transversais neste momento; não substituem uma das 5 árvores existentes.
+Dash/Dodge não ocupam os 4 active slots.
+Active slots são reservados para habilidades equipáveis de combate, magia, suporte e utilidade.
 O jogo pode inferir arquétipos/jobs funcionais a partir da distribuição de skills, atributos e equipamentos.
 O jogador pode vestir/ativar um arquétipo desbloqueado para receber bônus, sem ficar preso a uma classe permanente.
 ```
@@ -81,7 +85,7 @@ A adaptação deve ser própria de Cindar's Hope e Vaalara.
 
 ## 1. Fantasia de gameplay
 
-O personagem é um habitante/adventurer de Vaalara que pode combinar vida rural, exploração e crescimento pessoal.
+O personagem é um habitante/adventurer de Vaalara que pode combinar vida rural, exploração, combate, magia, relações sociais e crescimento pessoal.
 
 O jogo deve permitir builds híbridas como:
 
@@ -111,6 +115,9 @@ A economia de pontos deve permitir masterizar uma árvore e investir parcialment
 Não deve ser possível dominar todas as árvores em uma única build.
 Magia usa MP.
 Ações físicas usam Stamina e/ou Breath.
+Dash é skill desbloqueável, mas seu botão não pertence aos active slots.
+Dodge é ação base, não skill.
+Block é skill desbloqueável/melhorável e deve usar input defensivo claro.
 Fome e cansaço afetam performance.
 Companions e pets ajudam, mas não substituem o jogador.
 Flerte e casamento respeitam NPCs, disponibilidade e narrativa.
@@ -370,8 +377,6 @@ chance de drop raro
 qualidade de recurso
 ```
 
-Esses ganhos pertencem a skills, ferramentas, buffs ou nodes.
-
 ### Constituição
 
 Representa robustez, saúde e tolerância corporal.
@@ -595,9 +600,96 @@ Breath = capacidade de sustentar ritmo, explosão e recuperação sob esforço.
 
 ---
 
-# PARTE E — Fome, cansaço, level e respec
+# PARTE E — Input de movimento, Dash, Dodge e Active Slots
 
-## 17. Fome
+## 17. Regra central de input
+
+```text
+Dash e Dodge pertencem ao sistema de movimento/input.
+Dash e Dodge não ocupam os 4 active slots.
+Os 4 active slots são para habilidades equipáveis: golpes especiais, magia, suporte, utilidade, ranged skills e técnicas fortes.
+```
+
+## 18. Dodge
+
+Dodge é ação base do personagem.
+
+Regras:
+
+```text
+Dodge existe mesmo sem gastar SkillPoint.
+Dodge usa botão de movimento defensivo próprio.
+Dodge consome Stamina/Breath conforme balanceamento futuro.
+Dodge pode ter janela curta de invulnerabilidade ou redução de hitbox, conforme combate final.
+Skills podem melhorar dodge, mas não transformar dodge em skill equipada.
+```
+
+Melhorias possíveis:
+
+```text
+janela de invulnerabilidade um pouco maior
+menor recovery
+menor custo
+melhor resposta após dodge perfeito
+maior tolerância contra traps/ataques telegrafados
+```
+
+## 19. Dash
+
+Dash é skill desbloqueável, mas não é active slot.
+
+Regras:
+
+```text
+Dash precisa ser habilitado por node, provavelmente em Survival/Sobrevivente.
+Dash usa botão de movimento próprio, separado da hotbar/active slots.
+Dash consome Stamina/Breath e pode ter cooldown curto.
+Dash deve ser direcional quando houver input de direção.
+Se não houver direção explícita, Dash pode usar a direção/facing atual do personagem.
+Dash não deve competir com magias/golpes nos 4 active slots.
+```
+
+Mapeamento inicial sugerido para teclado/controle:
+
+```text
+Movimento: WASD / analógico.
+Botão de movimento defensivo: Space ou equivalente no controle.
+Dodge: toque curto no botão de movimento defensivo.
+Dash desbloqueado: botão de movimento defensivo + direção, ou comando diferenciado como segurar/double tap, conforme teste de feel.
+Dash sem direção: avança para frente/facing atual.
+```
+
+Pendência:
+
+```text
+Definir no teste de input se Dash substitui Dodge quando há direção, se usa hold, double tap ou modificador.
+A decisão final deve priorizar clareza, responsividade e não conflitar com interação, ataque, magia ou hotbar.
+```
+
+## 20. Block
+
+Block é skill desbloqueável/melhorável, mas precisa de input defensivo claro.
+
+Direção:
+
+```text
+Block pode usar botão próprio de defesa, se o sistema de combate suportar.
+Block também pode ser uma habilidade equipada se decidirmos que só builds defensivas devem acessá-lo ativamente.
+A decisão final deve evitar sobrecarregar os 4 active slots com ações fundamentais de movimentação/defesa.
+```
+
+Regra atual:
+
+```text
+Dash/Dodge não ocupam active slots.
+Block ainda precisa de decisão final: botão defensivo próprio ou active skill equipada.
+```
+
+---
+
+# PARTE F — Fome, cansaço, level e respec
+
+## 21. Fome
 
 Fome representa nutrição/energia alimentar.
 
@@ -618,7 +710,7 @@ Fome não deve matar o jogador de forma punitiva no design base.
 Fome deve pressionar planejamento, alimentação, fazenda e cozinha.
 ```
 
-## 18. Cansaço
+## 22. Cansaço
 
 Cansaço é sistema próprio, mas afeta `PlayerConditionManager`.
 
@@ -644,7 +736,7 @@ Alto: menor dano/eficiência, movimento pior, risco em combate.
 Extremo: jogador precisa dormir/retornar, risco de colapso conforme direção futura.
 ```
 
-## 19. Level up e pontos
+## 23. Level up e pontos
 
 Regra canônica inicial:
 
@@ -668,7 +760,7 @@ bosses
 relacionamentos/eventos, se definido
 ```
 
-## 20. Respec
+## 24. Respec
 
 Respec é feito na Fonte de Anya.
 
@@ -684,9 +776,9 @@ Explicação diegética: a Fonte reorganiza ecos de crescimento do personagem.
 
 ---
 
-# PARTE F — Economia das 5 Skill Trees
+# PARTE G — Economia das 5 Skill Trees
 
-## 21. Regra geral
+## 25. Regra geral
 
 O modelo inicial mantém 5 árvores:
 
@@ -705,12 +797,13 @@ Regras consolidadas:
 Tier 5 = capstone.
 4 active slots.
 Passivas não ocupam active slot.
+Dash/Dodge não ocupam active slot.
 SkillPoint a cada 2 níveis.
 Máximo esperado: 50 SkillPoints.
 Respec na Fonte de Anya.
 ```
 
-## 22. Economia de pontos
+## 26. Economia de pontos
 
 A árvore precisa ser grande o bastante para dar escolha real, mas não grande demais para virar ruído.
 
@@ -745,7 +838,7 @@ Active skill forte pode exigir pré-requisito e custar 1-3 pontos/ranks.
 Capstone deve custar 3-5 pontos e exigir Tier 5.
 ```
 
-## 23. Tiers vs ranks
+## 27. Tiers vs ranks
 
 ```text
 Tree Tier = posição/desbloqueio na árvore.
@@ -756,15 +849,16 @@ Exemplo:
 
 ```text
 Dash pode ser desbloqueado em Survival Tier 2.
-Dash Rank 1 habilita a ação.
+Dash Rank 1 habilita a ação de movimento.
 Dash Ranks 2-5 reduzem custo, cooldown, recovery ou melhoram distância de forma controlada.
+Mesmo com ranks, Dash continua fora dos 4 active slots.
 ```
 
 ---
 
-# PARTE G — Melee / Guerreiro
+# PARTE H — Melee / Guerreiro
 
-## 24. Função da árvore
+## 28. Função da árvore
 
 Melee/Guerreiro cobre:
 
@@ -788,12 +882,12 @@ Destreza
 Breath/Fôlego como stat derivado importante
 ```
 
-## 25. Skills sugeridas
+## 29. Skills sugeridas
 
 | Skill/Node | Tipo | Ranks | Função |
 |---|---|---:|---|
 | Ataque Pesado | active/modifier | 1-5 | melhora golpes carregados, dano de postura e custo controlado |
-| Block / Bloqueio | active | 1-5 | habilita e melhora bloqueio com arma/escudo, reduz dano frontal |
+| Block / Bloqueio | defensive action unlock | 1-5 | habilita/melhora bloqueio com arma/escudo, reduz dano frontal |
 | Guarda Firme | passive | 1-5 | reduz custo de stamina/breath ao bloquear e melhora resistência a stagger |
 | Contra-Ataque | active/reaction | 1-3 | permite resposta após block perfeito ou defesa bem-sucedida |
 | Quebra-Postura | passive | 1-5 | aumenta stagger contra inimigos vulneráveis ou após telegraph pesado |
@@ -808,7 +902,8 @@ Breath/Fôlego como stat derivado importante
 Regras:
 
 ```text
-Block é skill e precisa ser habilitada.
+Block é skill e precisa ser habilitada ou melhorada por Melee/Guerreiro.
+Block deve ter input claro e não pode ser confundido com Dash/Dodge.
 Dodge não pertence a Melee como skill base.
 Melee pode melhorar punição, postura e defesa, mas não deve substituir Survival em mobilidade/long runs.
 ```
@@ -816,7 +911,7 @@ Melee pode melhorar punição, postura e defesa, mas não deve substituir Surviv
 HUD relacionado:
 
 ```text
-ícone de Block habilitado
+ícone de Block habilitado fora da hotbar, se for input defensivo próprio
 feedback de block perfeito
 barra/indicador de stamina/breath durante block sustentado
 ícone de stagger aplicado no inimigo
@@ -826,9 +921,9 @@ cooldown de Contra-Ataque/Golpe Circular se forem active skills
 
 ---
 
-# PARTE H — Ranged / Caçador
+# PARTE I — Ranged / Caçador
 
-## 26. Função da árvore
+## 30. Função da árvore
 
 Ranged/Caçador cobre:
 
@@ -850,7 +945,7 @@ Inteligência
 Vontade secundária para foco/controle
 ```
 
-## 27. Skills sugeridas
+## 31. Skills sugeridas
 
 | Skill/Node | Tipo | Ranks | Função |
 |---|---|---:|---|
@@ -888,9 +983,9 @@ cooldowns de Disparo de Interrupção, Marcador de Presa e Armadilha de Caçador
 
 ---
 
-# PARTE I — Magic / Arcano
+# PARTE J — Magic / Arcano
 
-## 28. Função da árvore
+## 32. Função da árvore
 
 Magic/Arcano cobre:
 
@@ -918,9 +1013,7 @@ Inteligência
 Carisma secundário para suporte/liderança espiritual, se existir
 ```
 
-## 29. Escolas/tipos de magia do jogo
-
-O jogo pode organizar magia por tipos próprios:
+## 33. Escolas/tipos de magia do jogo
 
 ```text
 Elemental
@@ -943,7 +1036,7 @@ Magia espiritual/divina não significa que o jogador serve diretamente a Anya no
 A Fonte de Anya deve continuar sendo mistério/lore progressiva.
 ```
 
-## 30. Skills sugeridas
+## 34. Skills sugeridas
 
 | Skill/Node | Tipo | Ranks | Função |
 |---|---|---:|---|
@@ -987,9 +1080,9 @@ estado da Fonte de Anya quando interagindo com ela
 
 ---
 
-# PARTE J — Survival / Sobrevivente
+# PARTE K — Survival / Sobrevivente
 
-## 31. Função da árvore
+## 35. Função da árvore
 
 Survival/Sobrevivente cobre:
 
@@ -1018,11 +1111,11 @@ Vontade
 Inteligência secundária para leitura de ambiente
 ```
 
-## 32. Skills sugeridas
+## 36. Skills sugeridas
 
 | Skill/Node | Tipo | Ranks | Função |
 |---|---|---:|---|
-| Dash | active/movement | 1-5 | habilita dash; ranks reduzem custo/cooldown/recovery e melhoram distância moderadamente |
+| Dash | movement action unlock | 1-5 | habilita dash fora dos active slots; ranks reduzem custo/cooldown/recovery e melhoram distância moderadamente |
 | Reflexo de Esquiva | passive | 1-5 | dodge continua ação base, mas ganha janela de invulnerabilidade maior ou recovery menor |
 | Fôlego de Jornada | passive | 1-5 | reduz gasto de Breath em corrida/dash/exploração |
 | Passo Seguro | passive | 1-5 | reduz chance de ativar traps simples e melhora leitura de chão perigoso |
@@ -1040,6 +1133,7 @@ Regras:
 
 ```text
 Dash é skill e precisa ser habilitada.
+Dash não ocupa active slot.
 Dodge não é skill; é ação base.
 Survival pode melhorar dodge, mas não transformar o jogador em invulnerável.
 HP regen é skill, não efeito automático de Constituição.
@@ -1049,6 +1143,7 @@ Itens podem amplificar HP regen, mas não criar regen forte sem base/efeito clar
 HUD relacionado:
 
 ```text
+indicador separado de Dash/Dodge fora da hotbar de 4 active slots
 ícone/cooldown de Dash
 feedback de dodge bem-sucedido
 indicador sutil de janela de invulnerabilidade melhorada, se necessário
@@ -1061,9 +1156,9 @@ indicador de secret room/landmark apenas quando descoberta ou suspeita
 
 ---
 
-# PARTE K — Crafting / Produção
+# PARTE L — Crafting / Produção
 
-## 33. Função da árvore
+## 37. Função da árvore
 
 Crafting/Produção cobre:
 
@@ -1093,7 +1188,7 @@ Carisma secundário para comércio/animais
 Vontade secundária para Mana/Fonte/crops raras
 ```
 
-## 34. Tiers de material
+## 38. Tiers de material
 
 Crafting/Produção deve controlar acesso a materiais e equipamentos melhores.
 
@@ -1118,7 +1213,7 @@ Pedra Negra Estabilizada é recurso raro/endgame e não deve banalizar corrupç�
 Material ligado a Anya/Mana deve depender de lore profunda, Fonte, Água Viva ou nível 101.
 ```
 
-## 35. Skills sugeridas
+## 39. Skills sugeridas
 
 | Skill/Node | Tipo | Ranks | Função |
 |---|---|---:|---|
@@ -1158,9 +1253,9 @@ avisos de estação necessária/oficina necessária
 
 ---
 
-# PARTE L — Sistemas transversais não tratados como árvore inicial
+# PARTE M — Sistemas transversais não tratados como árvore inicial
 
-## 36. Social, romance, companions e pets
+## 40. Social, romance, companions e pets
 
 Esses sistemas são importantes, mas não substituem uma das 5 árvores iniciais.
 
@@ -1176,9 +1271,9 @@ Eles podem futuramente ganhar árvore própria, mas não devem substituir Melee/
 
 ---
 
-# PARTE M — Active slots, capstones e arquétipos
+# PARTE N — Active slots, capstones e arquétipos
 
-## 37. Active slots
+## 41. Active slots
 
 Direção consolidada:
 
@@ -1191,21 +1286,24 @@ Regras:
 ```text
 O jogador não pode equipar todas as skills ativas ao mesmo tempo.
 Passivas não ocupam active slot.
+Dash não ocupa active slot.
+Dodge não ocupa active slot.
 Trocar active slots deve exigir menu/descanso/Fonte/fora de combate, conforme decisão futura.
 Active skills podem vir de qualquer uma das 5 árvores.
-Dash, Block, Disparo de Interrupção, magias e técnicas fortes podem ocupar active slots.
+Active slots devem ser usados por golpes especiais, magias, técnicas de arco, suporte e utilidades equipáveis.
 ```
 
 HUD:
 
 ```text
 4 slots visíveis na HUD.
-Cada slot mostra ícone, cooldown, custo principal e disponibilidade.
+Dash/Dodge aparecem em indicador separado de movimento, não dentro desses 4 slots.
+Cada active slot mostra ícone, cooldown, custo principal e disponibilidade.
 Skills sem recurso suficiente devem aparecer esmaecidas.
 Skills bloqueadas por estado, como silêncio/stun/fadiga extrema, devem comunicar motivo.
 ```
 
-## 38. Capstones
+## 42. Capstones
 
 Regras:
 
@@ -1217,7 +1315,7 @@ Capstone não deve invalidar outras árvores.
 Capstone pode desbloquear arquétipos inferidos.
 ```
 
-## 39. Arquétipos inferidos / jobs vestíveis
+## 43. Arquétipos inferidos / jobs vestíveis
 
 O jogo não implementa classes estilo D&D.
 
@@ -1247,9 +1345,9 @@ Arquétipos iniciais possíveis:
 
 ---
 
-# PARTE N — Ferramentas, armas, magia e equipamentos
+# PARTE O — Ferramentas, armas, magia e equipamentos
 
-## 40. Ferramentas
+## 44. Ferramentas
 
 Ferramentas principais:
 
@@ -1271,7 +1369,7 @@ Crafting/Produção pode aumentar yield.
 Força pode reduzir esforço/golpes, mas não aumenta yield sozinha.
 ```
 
-## 41. Armas
+## 45. Armas
 
 Categorias possíveis:
 
@@ -1298,7 +1396,7 @@ magia/equipamentos
 material/tier de crafting
 ```
 
-## 42. Magia
+## 46. Magia
 
 Magia usa MP.
 
@@ -1321,7 +1419,7 @@ Magia não deve resolver todos os sistemas sozinha.
 Ela deve ter custo, limite, build e counterplay.
 ```
 
-## 43. Equipamentos
+## 47. Equipamentos
 
 Slots possíveis:
 
@@ -1352,9 +1450,9 @@ amplificador de MP regen quando Magic/Vontade sustentam
 
 ---
 
-# PARTE O — Resistências e status negativos
+# PARTE P — Resistências e status negativos
 
-## 44. Resistências
+## 48. Resistências
 
 Resistências principais:
 
@@ -1387,7 +1485,7 @@ companions/pets
 Fonte de Anya
 ```
 
-## 45. Status negativos
+## 49. Status negativos
 
 Status possíveis:
 
@@ -1419,9 +1517,9 @@ DurabilityStress não destrói item permanentemente sem direção específica.
 
 ---
 
-# PARTE P — Morte, derrota e Fonte de Anya
+# PARTE Q — Morte, derrota e Fonte de Anya
 
-## 46. Derrota
+## 50. Derrota
 
 Derrota deve ser integrada a:
 
@@ -1442,7 +1540,7 @@ Regra:
 Morte/derrota deve ter consequência, mas não apagar progresso de forma injusta.
 ```
 
-## 47. Fonte de Anya
+## 51. Fonte de Anya
 
 A Fonte de Anya é eixo de:
 
@@ -1466,9 +1564,9 @@ A libertação parcial do poder de Anya ocorre por conteúdo profundo da caverna
 
 ---
 
-# PARTE Q — Companions, pets, fazenda, cidade e caverna
+# PARTE R — Companions, pets, fazenda, cidade e caverna
 
-## 48. Companions
+## 52. Companions
 
 Companions podem ajudar em:
 
@@ -1493,7 +1591,7 @@ invalidar pet
 invalidar build do personagem
 ```
 
-## 49. Pets
+## 53. Pets
 
 Pets são sistema próprio, separado de companion.
 
@@ -1504,7 +1602,7 @@ Gato pode apoiar sorte, detecção de segredo/anomalia e vínculo social/fazenda
 
 Cachorro não ocupa slot de companion.
 
-## 50. Relação com fazenda
+## 54. Relação com fazenda
 
 O personagem se conecta à fazenda por:
 
@@ -1522,7 +1620,7 @@ Fruto de Mana
 Fonte de Anya
 ```
 
-## 51. Relação com cidade
+## 55. Relação com cidade
 
 O personagem se conecta à cidade por:
 
@@ -1541,7 +1639,7 @@ Carisma
 arquétipos sociais inferidos
 ```
 
-## 52. Relação com caverna
+## 56. Relação com caverna
 
 O personagem se conecta à caverna por:
 
@@ -1569,9 +1667,9 @@ morte/retorno
 
 ---
 
-# PARTE R — Flerte, relacionamento e casamento
+# PARTE S — Flerte, relacionamento e casamento
 
-## 53. Relacionamentos
+## 57. Relacionamentos
 
 Relacionamentos consideram:
 
@@ -1587,7 +1685,7 @@ visitas à fazenda
 compatibilidade narrativa
 ```
 
-## 54. Flerte
+## 58. Flerte
 
 Regras:
 
@@ -1599,7 +1697,7 @@ Romance não deve depender só de gifts repetidos.
 Romance deve ter eventos, escolhas, quests e limites claros.
 ```
 
-## 55. Casamento
+## 59. Casamento
 
 Casamento pode desbloquear:
 
@@ -1623,9 +1721,9 @@ quebrar serviços essenciais da cidade
 
 ---
 
-# PARTE S — UI/HUD e feedback
+# PARTE T — UI/HUD e feedback
 
-## 56. HUD base do personagem
+## 60. HUD base do personagem
 
 HUD deve mostrar claramente:
 
@@ -1638,13 +1736,29 @@ Fome
 Cansaço
 hotbar
 4 active slots
+indicador separado de Dash/Dodge
 status negativos
 buffs
 arma/ferramenta ativa
 pet/companion status quando relevante
 ```
 
-## 57. Feedback de combate
+## 61. Feedback de movimento
+
+HUD/feedback de movimento deve comunicar:
+
+```text
+Dodge disponível/indisponível
+Dash bloqueado/desbloqueado
+cooldown de Dash
+custo de Dash
+direção/facing do Dash quando aplicável
+Dodge bem-sucedido
+janela de invulnerabilidade melhorada, se houver skill
+Stamina/Breath insuficiente para Dash/Dodge
+```
+
+## 62. Feedback de combate
 
 HUD/feedback de combate deve comunicar:
 
@@ -1652,8 +1766,6 @@ HUD/feedback de combate deve comunicar:
 block disponível/ativo
 block perfeito, se existir
 stamina/breath drenando durante block
-cooldown de Dash
-dodge bem-sucedido
 critical window no inimigo
 hit crítico automático
 stagger/posture do inimigo, se visível
@@ -1663,7 +1775,7 @@ magia preparada/elemento ativo
 MP insuficiente
 ```
 
-## 58. Feedback de sobrevivência
+## 63. Feedback de sobrevivência
 
 HUD/feedback de sobrevivência deve comunicar:
 
@@ -1678,7 +1790,7 @@ secret room suspeita/descoberta
 Breath baixo em corrida/dash/combate
 ```
 
-## 59. Feedback de produção/crafting
+## 64. Feedback de produção/crafting
 
 HUD/feedback de produção deve comunicar:
 
@@ -1694,7 +1806,7 @@ upgrade disponível
 risco de usar material corrompido/especial
 ```
 
-## 60. Menus necessários
+## 65. Menus necessários
 
 Menus necessários:
 
@@ -1712,13 +1824,14 @@ relacionamentos
 pets
 companions
 status/resistências
+configuração de input de Dash/Dodge/Block
 ```
 
 ---
 
-# PARTE T — Save/load
+# PARTE U — Save/load
 
-## 61. Save/load
+## 66. Save/load
 
 Save deve persistir:
 
@@ -1741,6 +1854,9 @@ skill ranks
 active slots
 ações equipadas
 capstones desbloqueados
+Dash desbloqueado/rank/cooldown state se necessário
+Dodge modifiers desbloqueados
+Block desbloqueado/rank se necessário
 arquétipos desbloqueados/ativo
 ferramentas
 armas
@@ -1758,7 +1874,7 @@ morte/corpse recovery state
 
 ---
 
-# PARTE U — Roadmap de direção futura
+# PARTE V — Roadmap de direção futura
 
 Antes de implementação, ainda precisamos refinar documentos/seções específicas de direção para:
 
@@ -1767,6 +1883,7 @@ nodes completos das 5 skill trees existentes
 custos finais dos nodes
 capstones completos das 5 skill trees existentes
 balanceamento de 50 SkillPoints
+input final de Dash/Dodge/Block
 sinergia final com atributos
 fórmulas de atributos e stats derivados
 curva de XP e level cap
@@ -1788,7 +1905,7 @@ save/load do personagem
 
 ---
 
-# PARTE V — Decisões fechadas
+# PARTE W — Decisões fechadas
 
 ```text
 Raças jogáveis iniciais: Humano e Anão.
@@ -1808,9 +1925,15 @@ SkillPoint a cada 2 níveis continua como direção.
 4 active slots continua como direção.
 Passivas não ocupam active slot.
 Dash é skill desbloqueável, provavelmente em Survival/Sobrevivente.
+Dash não ocupa active slot.
+Dash usa botão de movimento próprio, separado da hotbar/active slots.
 Dodge é ação base, não skill.
+Dodge não ocupa active slot.
 Skills podem melhorar dodge aumentando janela de invulnerabilidade/recovery/custo.
-Block é skill desbloqueável, provavelmente em Melee/Guerreiro.
+Botão sugerido para movimento defensivo: Space ou equivalente no controle.
+Dash pode ser acionado por direção + botão de movimento defensivo, ou variação como hold/double tap, a validar em teste.
+Block é skill desbloqueável/melhorável.
+Block precisa de input defensivo claro e decisão futura se será botão próprio ou active skill.
 HP regen é skill/efeito explícito, não atributo gratuito.
 Itens podem amplificar HP regen, mas não substituem a base de skill/efeito.
 Crafting/Produção libera tiers de material como Ferro, Aço, Prata, Mithril, Liga Bromeciana e materiais especiais.
@@ -1830,12 +1953,12 @@ Flerte/casamento fazem parte dos sistemas do personagem/social.
 Fonte de Anya conecta morte, respec, cura especial e progressão de lore.
 Criação do personagem terá raça, gênero/apresentação e aparência limitada por sprites.
 Raça/gênero/aparência não devem bloquear build, romance ou conteúdo central.
-HUD precisa comunicar HP, MP, Stamina, Breath, Fome, Cansaço, active slots, Dash, Block, Dodge feedback, regen, skill costs, crafting tiers e critical windows.
+HUD precisa comunicar HP, MP, Stamina, Breath, Fome, Cansaço, active slots, indicador separado de Dash/Dodge, Block, Dodge feedback, regen, skill costs, crafting tiers e critical windows.
 ```
 
 ---
 
-# PARTE W — Pendências
+# PARTE X — Pendências
 
 ```text
 Validar no repo os nomes exatos de classes/arquivos/assets das skill trees implementadas.
@@ -1850,6 +1973,9 @@ Definir custos finais de cada node.
 Definir progressão final de skill rank vs SkillPoint.
 Definir nodes completos de cada uma das 5 skill trees.
 Definir capstones completos das 5 skill trees.
+Definir input final de Dash/Dodge/Block.
+Definir se Dash usa Space + direção, hold, double tap, modificador ou outro mapeamento.
+Definir se Block fica em botão defensivo próprio ou active slot.
 Definir quantos arquétipos/jobs podem ficar ativos ao mesmo tempo.
 Definir se troca de active slots/jobs ocorre na Fonte, casa, menu ou checkpoint.
 Definir dano base por arma/ferramenta/magia.
