@@ -3,43 +3,118 @@
 > **Status:** documento complementar de validação de mesa  
 > **Local:** `docs/design/gameplay/player/PLAYER_DERIVED_ATTRIBUTES_TABLETOP_EXAMPLE.md`  
 > **Complementa:** `docs/design/gameplay/player/PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md`  
-> **Função:** demonstrar, com um personagem exemplo, como atributos centrais viram atributos derivados, como esses valores se comportam em combate e quais riscos de balanceamento aparecem antes de virar spec implementável.  
+> **Função:** demonstrar, com personagem exemplo, como atributos centrais viram atributos derivados, como esses valores se comportam contra monstros reais da caverna, e registrar a remoção de **Breath/Fôlego** como atributo.  
 > **Não é spec implementável.** Os números abaixo são exemplos de mesa para validar escala relativa, não valores finais.
 
 ---
 
-## 0. Regra deste teste
+## 0. Veredito desta revisão
 
-Este documento usa constantes provisórias para simular um personagem.
-
-Objetivo:
+A primeira simulação deixou uma confusão real:
 
 ```text
-ver se os atributos derivados ficam legíveis
-ver se o personagem fica forte demais
-ver se o personagem consegue enfrentar uma criatura compatível
-ver se o combate exige uso de recursos
-ver se HP, Stamina, Breath, Block, Dodge, Crit e Posture fazem sentido juntos
-identificar riscos antes de criar fórmulas finais em spec
+Stamina e Breath ficaram parcialmente sobrepostos.
+Breath foi tratado como segunda barra de recurso gasta por Dash/Dodge/Block.
+Isso não deve ser a direção final.
 ```
 
-Não fechar aqui:
+Decisão corrigida:
 
 ```text
-valores finais de fórmula
-curva final de level
-valores finais de armas
-valores finais de monstros
-TTK final
-cooldowns finais
-caps finais
+Breath/Fôlego foi removido como atributo/recurso.
+Não existe como barra.
+Não existe como custo.
+Não entra em HUD.
+Não entra como stat base do jogador.
+Não entra como stat base de monstro.
+```
+
+Substituições:
+
+```text
+Stamina = recurso físico imediato.
+Cansaço = desgaste acumulado.
+Constituição = tolerância física, HP, resistência, estabilidade.
+Destreza = reação, dodge, movimento, timing.
+Vontade = resistência mental/espiritual, MP e pressão mágica.
+Survival = eficiência em runs, fome, cansaço, ambiente, dodge/dash melhorados.
+Traits de monstro = padrão de movimento, perseguição, recuperação e pressão.
 ```
 
 ---
 
-# PARTE A — Personagem exemplo
+# PARTE A — Modelo final sem Breath
 
-## 1. Identidade do personagem
+## 1. Stamina
+
+Stamina representa energia física disponível para executar ações.
+
+Gasta em:
+
+```text
+ataques físicos
+ataques carregados
+Block segurado ou impacto bloqueado
+Dodge
+Dash
+corrida
+uso de ferramentas
+mineração
+corte de madeira
+plantio/rega/colheita quando aplicável
+pesca
+```
+
+É uma barra de recurso.
+
+Aparece na HUD.
+
+## 2. Cansaço
+
+Cansaço é o sistema de atrito longo.
+
+Aumenta com:
+
+```text
+tempo acordado
+gasto de Stamina
+gasto de Stamina com fome baixa
+combate prolongado
+long runs na caverna
+ambiente hostil
+status negativos
+```
+
+É reduzido/mitigado por:
+
+```text
+Constituição
+Survival/Sobrevivente
+comida
+sono
+descanso
+equipamentos específicos
+buffs específicos
+```
+
+## 3. Movimento, esforço e recuperação sem Breath
+
+O que antes seria Breath agora fica distribuído:
+
+| Função antiga de Breath | Nova fonte |
+|---|---|
+| sustentar corrida/dash | Stamina + Destreza + Survival |
+| manter Block | Stamina + Constituição + Melee + escudo |
+| recuperar ritmo | Stamina Regen + Constituição + Cansaço/Fome |
+| resistir a ambiente | Survival + Constituição + Vontade + resistências |
+| perseguir como monstro | MovementProfile + traits + Stamina |
+| resistir a controle | Constituição/Vontade + StatusResistance |
+
+---
+
+# PARTE B — Personagem de teste revisado
+
+## 4. Identidade
 
 ```text
 Nome de teste: Brann Ferrocinza
@@ -47,122 +122,66 @@ Raça: Anão de Khaz Baruk
 Level: 30
 Função: guerreiro/minerador de caverna
 Build: Melee principal, Survival secundário, Crafting leve
-Contexto: mid game avançado, antes de capstones finais
+Contexto: faixa 26-40 da caverna, Caverna de Gelo
 ```
 
-Fantasia:
+Atributos centrais:
 
-```text
-Personagem resistente, bom de block, dano melee consistente, mineração eficiente, pouca magia e mobilidade razoável.
-Não é glass cannon.
-Não é mago.
-Não é build social.
-```
-
-## 2. Atributos centrais
-
-Regra usada:
-
-```text
-Level 1 começa com 1 em cada atributo.
-A cada level: +1 ponto de atributo.
-Level 30 = 6 pontos iniciais + 29 pontos distribuídos = 35 pontos totais.
-```
-
-Distribuição:
-
-| Atributo central | Valor | Justificativa |
+| Atributo | Valor | Papel |
 |---|---:|---|
-| Força | 9 | dano físico, stagger, mineração, arma melee |
-| Constituição | 8 | HP, Stamina, Breath, resistência, long runs |
-| Destreza | 6 | dodge, crit condicional, attack speed moderado |
-| Inteligência | 4 | crafting básico, leitura de sistemas, baixa magia técnica |
-| Vontade | 5 | MP moderado, resistência mental, Breath secundário |
-| Carisma | 3 | social baixo, sem foco em companions/loja |
-
-Leitura:
-
-```text
-A build está bem focada em combate físico e sobrevivência.
-O personagem não deve ter dano mágico alto.
-O personagem não deve ter social/economia forte.
-```
-
----
-
-# PARTE B — Equipamentos e skills do exemplo
-
-## 3. Equipamentos usados
-
-| Slot | Item de teste | Bônus usado no teste |
-|---|---|---|
-| Arma | Espada de Aço | WeaponDamage +34, intervalo base 0.75s, crit +2%, stagger +10 |
-| Escudo | Escudo de Ferro | Block Power +10%, Block Stability +8%, Breath Recovery -2 |
-| Armadura | Cota Reforçada | Armor +45, HP +20, Movement Speed -4%, Breath Recovery -3 |
-| Acessório 1 | Anel do Mineiro | Mining Efficiency +6%, Stamina Max +10 |
-| Acessório 2 | Amuleto Simples | Fear Resistance +5%, MP +8 |
-
-Observação:
-
-```text
-Equipamento de aço/ferro deve ser forte, mas não endgame.
-A armadura ajuda muito na defesa, mas cobra custo em movimento/fôlego.
-```
-
-## 4. Skills usadas
+| Força | 9 | dano físico, stagger, mineração |
+| Constituição | 8 | HP, Stamina, resistência, estabilidade |
+| Destreza | 6 | timing, dodge, crit condicional |
+| Inteligência | 4 | crafting básico, baixa magia técnica |
+| Vontade | 5 | MP, resistência mental/espiritual |
+| Carisma | 3 | social baixo |
 
 SkillPoints estimados no level 30:
 
 ```text
-1 SkillPoint a cada 2 níveis ≈ 15 SkillPoints.
+~15 SkillPoints.
 ```
 
-Distribuição de teste:
+Distribuição:
 
 | Árvore | Pontos | Skills relevantes |
 |---|---:|---|
-| Melee / Guerreiro | 10 | Treinamento Marcial rank 3, Ataque Pesado rank 3, Block rank 3, Guarda Firme rank 2, Corte Amplo rank 1 |
-| Survival / Sobrevivente | 4 | Ritmo de Jornada rank 1, Reflexo de Esquiva rank 1, Passo de Impulso rank 1, Respiração Controlada rank 1 |
-| Crafting / Produção | 1 | Prospector de Superfície rank 1 |
+| Melee / Guerreiro | 10 | Treinamento Marcial r3, Ataque Pesado r3, Block r3, Guarda Firme r2, Corte Amplo r1 |
+| Survival / Sobrevivente | 4 | Ritmo de Jornada r1, Reflexo de Esquiva r1, Passo de Impulso r1, Respiração Controlada r1 |
+| Crafting / Produção | 1 | Prospector de Superfície r1 |
 | Ranged / Caçador | 0 | sem investimento |
 | Magic / Arcano | 0 | sem investimento |
 
-Leitura:
+Equipamento:
 
-```text
-O personagem tem defesa ativa e dano melee decente.
-Dash já existe por tutorial/progressão, mas só tem melhoria leve de Survival.
-Não tem HP Regen ainda porque Regeneração Natural é Tier 3 de Survival e não cabe nessa build.
-Não tem capstone porque Tier 5 exige 26 pontos na árvore.
-```
+| Slot | Item | Bônus de teste |
+|---|---|---|
+| Arma | Espada de Aço | WeaponDamage +34, crit +2%, stagger +10 |
+| Escudo | Escudo de Ferro | Block Power +10%, Block Stability +8% |
+| Armadura | Cota Reforçada | Armor +45, HP +20, Movement -4%, Stamina Regen -8% |
+| Acessório 1 | Anel do Mineiro | Mining Efficiency +6%, Stamina +10 |
+| Acessório 2 | Amuleto Simples | Fear Resistance +5%, MP +8 |
 
 ---
 
-# PARTE C — Constantes provisórias do teste
+# PARTE C — Constantes revisadas
 
-## 5. Constantes usadas
-
-Estas constantes existem só para o teste de mesa.
+## 5. Constantes de mesa
 
 ```text
 BaseHP = 100
-HPPerLevel = 6
-HPPerCon = 15
+HPPerLevel = 4
+HPPerCon = 12
 
 BaseMP = 40
 MPPerLevel = 1
 MPPerWill = 6
 MPPerInt = 2
 
-BaseStamina = 100
-StaminaPerLevel = 3
-StaminaPerCon = 8
-StaminaPerStrSmall = 3
-
-BaseBreath = 50
-BreathPerCon = 6
-BreathPerDex = 4
-BreathPerWillSmall = 2
+BaseStamina = 75
+StaminaPerLevel = 1.5
+StaminaPerCon = 5
+StaminaPerStrSmall = 1.5
 
 BaseAttackValue = 8
 BaseAttackPerStr = 3
@@ -171,40 +190,32 @@ BaseAttackPerLevel = 0.5
 
 BaseCritChance = 5%
 BaseCritMultiplier = 1.5x
-
-BaseMovementSpeed = 1.00
 BaseDodgeIFrames = 0.18s
 BaseDashDistance = 2.25 tiles
 BaseDashCooldown = 1.20s
-BaseDashCost = 18 Stamina + 10 Breath
-BaseDodgeCost = 12 Stamina + 8 Breath
-```
-
-Regra:
-
-```text
-Se esses valores finais parecerem altos/baixos no Unity, ajustar a constante base antes de mexer nos atributos.
+BaseDashCost = 22 Stamina
+BaseDodgeCost = 14 Stamina
 ```
 
 ---
 
-# PARTE D — Atributos derivados calculados
+# PARTE D — Atributos derivados revisados
 
 ## 6. Recursos principais
 
 ### HP Max
 
 ```text
-HPMax = BaseHP + Level*6 + Constituição*15 + EquipmentHP
-HPMax = 100 + 30*6 + 8*15 + 20
-HPMax = 420
+HPMax = BaseHP + Level*4 + Constituição*12 + EquipmentHP
+HPMax = 100 + 30*4 + 8*12 + 20
+HPMax = 336
 ```
 
 Leitura:
 
 ```text
-420 HP no level 30 parece alto, mas aceitável para build anã defensiva.
-Se inimigos equivalentes baterem 40-70 após mitigação, ele aguenta 6-10 hits.
+336 HP coloca o personagem acima de monstros comuns da faixa 26-40, mas abaixo/na borda de elites.
+Isso é mais saudável que 420 HP para um level 30 sem companion/pet contabilizado.
 ```
 
 ### MP Max
@@ -218,60 +229,82 @@ MPMax = 116
 Leitura:
 
 ```text
-MP existe, mas sem investimento em Magic/Arcano o personagem não usa bem.
-MP não significa poder mágico alto.
+MP existe, mas sem Magic/Arcano não vira poder mágico relevante.
 ```
 
 ### Stamina Max
 
 ```text
-StaminaMax = BaseStamina + Level*3 + Constituição*8 + Força*3 + EquipmentStamina
-StaminaMax = 100 + 30*3 + 8*8 + 9*3 + 10
-StaminaMax = 291
+StaminaMax = BaseStamina + Level*1.5 + Constituição*5 + Força*1.5 + EquipmentStamina
+StaminaMax = 75 + 30*1.5 + 8*5 + 9*1.5 + 10
+StaminaMax = 183.5 ≈ 184
 ```
 
 Leitura:
 
 ```text
-291 Stamina permite lutar, minerar e bloquear, mas não permite spam infinito.
-Block, Dodge, Dash e Ataque Pesado ainda competem pelo mesmo recurso.
+184 Stamina ainda permite combate e mineração, mas impede spam excessivo.
+É mais coerente que 291 para a faixa 26-40.
 ```
 
-### Breath Max
+## 7. Regeneração e custos corrigidos
+
+### Stamina Regen
 
 ```text
-BreathMax = BaseBreath + Constituição*6 + Destreza*4 + Vontade*2 + SkillBreath + EquipmentPenalty
-BreathMax = 50 + 8*6 + 6*4 + 5*2 + 8 - 5
-BreathMax = 135
+StaminaRegen fora de combate = BaseRegen + Constituição*0.55 + SurvivalBonus - ArmorPenalty
+StaminaRegen fora de combate = 8 + 8*0.55 + 1.5 - 1.2
+StaminaRegen fora de combate ≈ 12.7/s
+
+StaminaRegen em combate = 55% a 70% do valor fora de combate
+StaminaRegen em combate ≈ 7.0 a 8.9/s
+
+Com fome baixa/cansaço alto ≈ 4.0 a 6.0/s
 ```
 
-Leitura:
+### Dash
 
 ```text
-135 Breath é bom para combate sustentado, mas a armadura reduz recuperação.
+DashCost = BaseDashCost * (1 - PassoDeImpulsoBonus - DexSmallBonus)
+DashCost = 22 * (1 - 0.05 - 0.02)
+DashCost ≈ 20 Stamina
+
+DashCooldown = 1.20s * (1 - 0.05 - 0.02)
+DashCooldown ≈ 1.12s
 ```
 
-### Regenerações
-
-| Derivado | Valor de teste | Leitura |
-|---|---:|---|
-| HP Regen | 0/s em combate; 0/s fora de combate | Sem Regeneração Natural, sem Fonte, sem comida |
-| MP Regen | ~1.0 MP/s fora de combate; menor em combate | Vontade 5, sem Fluxo Lento |
-| Stamina Regen | 18/s normal; 12/s cansado; 8/s com fome baixa | Depende muito de fome/cansaço |
-| Breath Recovery | 16/s base, -5 por armadura/escudo = 11/s | Penalidade visível por equipamento pesado |
-
-Risco identificado:
+### Dodge
 
 ```text
-Se Stamina Regen ficar alta demais, Block/Dodge/Dash deixam de competir.
-Manter regen menor durante combate e menor ainda com fome/cansaço alto.
+DodgeCost = BaseDodgeCost * (1 - ReflexoBonusSmall - DexSmallBonus)
+DodgeCost = 14 * (1 - 0.03 - 0.02)
+DodgeCost ≈ 13 Stamina
+
+DodgeIFrames = 0.18s + 0.02s por Reflexo de Esquiva r1
+DodgeIFrames = 0.20s
+```
+
+### Block
+
+```text
+Block não usa Breath.
+Block usa Left Shift.
+Block drena Stamina por tempo segurando e por impacto.
+Constituição entra em Block Stability.
+```
+
+Exemplo:
+
+```text
+BlockPower = 49% por Block r3 + 10% escudo = 59%
+BlockStability = 12% Guarda Firme r2 + 8% escudo + 8% Constituição = 28%
 ```
 
 ---
 
-## 7. Ofensivos físicos
+# PARTE E — Ofensivos e defensivos revisados
 
-### Base Attack
+## 8. Ofensivos físicos
 
 ```text
 BaseAttack = 8 + Força*3 + Destreza*1 + Level*0.5
@@ -279,749 +312,391 @@ BaseAttack = 8 + 9*3 + 6 + 15
 BaseAttack = 56
 ```
 
-### Attack Damage com Espada de Aço
-
 ```text
 AttackDamage = (BaseAttack + WeaponDamage) * (1 + SkillDamageBonus)
 AttackDamage = (56 + 34) * 1.06
-AttackDamage = 95.4
+AttackDamage ≈ 95
 ```
 
-Arredondamento de mesa:
-
 ```text
-Attack Damage exibido: 95
+CritChance normal = 5% + 3% Destreza + 2% arma = 10%
+CritChance em abertura comum = 30%
+CritDamage = 1.5x
 ```
 
-### Melee Damage
-
 ```text
-MeleeDamage = AttackDamage * MeleeWeaponMultiplier
-MeleeDamage = 95 * 1.00
-MeleeDamage = 95
+StaggerPower = 10 base + 10 arma + Força*2 + SkillBonus 15
+StaggerPower = 53
+
+PostureDamageNormal ≈ 40
+PostureDamageCharged ≈ 80
 ```
 
-### Ranged Damage
+## 9. Defensivos
 
 ```text
-RangedDamage = baixo/não relevante
-Sem arma ranged e sem Ranged/Caçador.
+Armor = 45
+Defense = 5 + Constituição*2 + Armor
+Defense = 66
+PhysicalResistance = 12%
+PostureResistance = 18%
 ```
 
-### Tool Attack Damage
+Mitigação sugerida:
 
 ```text
-ToolAttackDamage = AttackDamage * 0.65 se usar ferramenta ofensivamente
-ToolAttackDamage = 95 * 0.65 ≈ 62
+DamageTaken = IncomingDamage * (1 - PhysicalResistance) - (Defense * 0.25)
 ```
 
-Regra validada:
+Em golpes bloqueados:
 
 ```text
-Ferramenta machuca, mas não supera arma dedicada.
+BlockedIncoming = IncomingDamage * (1 - BlockPower)
+BlockedDamageTaken = BlockedIncoming * (1 - PhysicalResistance) - (Defense * 0.10 a 0.15)
 ```
 
-### Attack Speed
+Regra importante:
 
 ```text
-AttackInterval = BaseWeaponInterval * (1 - DexBonus) * WeaponWeightMultiplier
-AttackInterval = 0.75s * 0.95 * 1.00
-AttackInterval ≈ 0.71s
+Não aplicar Defense/Armor completo depois do Block.
+Isso empilha mitigação demais.
 ```
 
-Leitura:
+---
+
+# PARTE F — Comparação contra monstros reais da faixa 26-40
+
+## 10. Fontes de comparação
+
+A faixa 26-40 do roster corresponde à Caverna de Gelo.
+
+Monstros usados:
 
 ```text
-Ataque é responsivo, mas não rápido demais.
-```
-
-### Charge Speed
-
-```text
-BaseChargeTime = 1.20s
-ChargeSpeedBonus de Ataque Pesado rank 3: 10%
-ChargeTime = 1.20 * 0.90 = 1.08s
-```
-
-### Crit Chance
-
-```text
-CritChance normal = Base 5% + DestrezaBonus 3% + WeaponCrit 2%
-CritChance normal = 10%
-```
-
-Contra alvo vulnerável/critical window:
-
-```text
-CritChance contextual = 10% + Lâmina de Abertura ausente + critical window bonus 20%
-CritChance contextual = 30%
+Roedor de Geada
+Escavador Duergar do Gelo
+Quebra-Escudo Duergar
+Sentinela Enregelado
+Osso de Vidro
+Acólito do Frio
+Saltador Cristalino
+Lamento Frio
+Horror-Gancho de Gelo
+Larva Devora-Mentes
 ```
 
 Observação:
 
 ```text
-Como o personagem não comprou Lâmina de Abertura, o crítico condicional não está absurdo.
-Se ele comprar Lâmina depois, pode ir para 40-50% em janela, ainda aceitável.
+O roster ainda não define dano por ação em cada ataque.
+A comparação abaixo usa HP/STA/atributos do roster e uma fórmula provisória para estimar dano.
+A spec final precisa criar EnemyActionDamage por ação.
 ```
 
-### Crit Damage
+## 11. Leitura da faixa 26-40 sem BR
+
+| Monstro | HP | STA | FOR | CON | DES | Papel |
+|---|---:|---:|---:|---:|---:|---|
+| Roedor de Geada | 155 | 72 | 9 | 9 | 16 | comum rápido |
+| Escavador Duergar | 230 | 76 | 15 | 16 | 7 | comum robusto |
+| Quebra-Escudo Duergar | 520 | 84 | 22 | 22 | 5 | elite tank |
+| Sentinela Enregelado | 480 | 40 | 18 | 24 | 3 | construct/tank |
+| Osso de Vidro | 210 | 58 | 12 | 8 | 15 | ranged/chaser |
+| Acólito do Frio | 190 | 48 | 5 | 8 | 8 | caster |
+| Saltador Cristalino | 330 | 104 | 16 | 12 | 24 | elite móvel |
+| Lamento Frio | 300 | 52 | 4 | 11 | 10 | controller/caster |
+| Horror-Gancho de Gelo | 560 | 88 | 24 | 21 | 8 | elite duelist |
+| Larva Devora-Mentes | 240 | 50 | 3 | 8 | 12 | controller aberrante |
+
+Comparação com Brann revisado:
 
 ```text
-CritDamage normal = 1.5x
-CriticalHit = 95 * 1.5 = 142
-```
-
-### Stagger Power
-
-```text
-StaggerPower = BaseStagger + WeaponStagger + Força*2 + SkillBonus
-StaggerPower = 10 + 10 + 9*2 + 15
-StaggerPower = 53
-```
-
-### Posture Damage
-
-Ataque normal:
-
-```text
-PostureDamageNormal = StaggerPower * 0.75
-PostureDamageNormal = 53 * 0.75 ≈ 40
-```
-
-Ataque carregado:
-
-```text
-PostureDamageCharged = StaggerPower * 1.50
-PostureDamageCharged = 53 * 1.50 ≈ 80
+Brann HP 336
+Brann Stamina 184
+Brann AttackDamage 95
+Brann Defense 66
+Brann BlockPower 59%
 ```
 
 Leitura:
 
 ```text
-Ataques carregados realmente servem para quebrar postura.
-Ataque normal ainda contribui, mas bem menos.
-```
-
-### Armor Penetration e Knockback
-
-| Derivado | Valor de teste | Leitura |
-|---|---:|---|
-| Armor Penetration | 0% | Espada de Aço comum, sem óleo, sem skill específica |
-| Knockback Power | 18 | Moderado; não empurra elite pesado facilmente |
-
----
-
-## 8. Ofensivos mágicos
-
-| Derivado | Valor de teste | Leitura |
-|---|---:|---|
-| Magic Power | 34 | Baixo/médio; sem Magic/Arcano |
-| Elemental Power | 34 base | Sem afinidade elemental |
-| Fire Power | 34 | Sem bônus |
-| Ice Power | 34 | Sem bônus |
-| Lightning Power | 34 | Sem bônus |
-| Water/Nature Power | 34 | Sem bônus |
-| Arcane Power | 34 | Sem Foco Arcano |
-| Spiritual Power | 38 | Vontade ajuda um pouco, mas sem build |
-| Corruption Power | 0 | Futuro/controlado, não disponível |
-| Healing Power | 30 | Não suficiente para cura relevante sem skill |
-| Shield/Barrier Power | 28 | Não usa Selo de Proteção |
-| Cast Speed | 0% bônus | Sem Magic/Arcano |
-| MP Cost Reduction | 0% | Sem Canalização Serena |
-| Magic Crit Chance | 0-3% | Não relevante sem Senya/itens |
-| Magic Crit Damage | 1.3x se habilitado | Não relevante neste personagem |
-| Status Application Power | baixo | Não é build de status |
-
-Leitura:
-
-```text
-O personagem tem MP, mas não tem kit mágico.
-Isso valida que MP Max sozinho não torna o personagem mago.
+HP do Brann fica acima dos comuns, mas abaixo de elites tank.
+Stamina do Brann é maior que a dos monstros porque player precisa carregar exploração, ferramentas, defesa e combate.
+AttackDamage 95 mata comuns rápido, mas elites ainda exigem padrão, postura e janela.
 ```
 
 ---
 
-## 9. Defensivos
+# PARTE G — TTK aproximado contra monstros 26-40
 
-### Defense e Armor
+## 12. Dano efetivo usado
+
+Como o roster não tem Armor/Resistance por monstro individual ainda, esta comparação usa mitigação estimada por papel:
 
 ```text
-Armor = 45
-Defense = BaseDefense + Constituição*2 + Armor
-Defense = 5 + 8*2 + 45
-Defense = 66
+comum leve: 0-10% mitigação
+comum robusto: 15-20% mitigação
+elite móvel: 10-15% mitigação
+elite tank: 25-35% mitigação
+caster: 5-10% mitigação
+construct/tank: 30-40% mitigação se o jogador usar espada comum
 ```
 
-Fórmula de mitigação usada no teste:
+Dano médio do Brann:
 
 ```text
-DamageTaken = IncomingDamage * (1 - PhysicalResistance) - (Defense * 0.30)
-Dano mínimo sempre >= 1
+hit contra leve/caster: 85-95
+hit contra comum robusto: 70-80
+hit contra elite móvel: 75-85
+hit contra elite tank: 55-70
+hit contra construct/tank com espada: 45-60
+ataque carregado: +25% dano e mais PostureDamage
+crítico normal: x1.5
+critical window: depende da regra final; preferir crit automático apenas em janelas claras
 ```
 
-### Resistências
+## 13. Tabela de TTK
 
-| Derivado | Valor de teste | Fonte |
-|---|---:|---|
-| Physical Resistance | 12% | Constituição + armadura |
-| Fire Resistance | 0% | sem item |
-| Ice Resistance | 5% | anão/equipamento leve de teste, se mantido |
-| Lightning Resistance | 0% | sem item |
-| Water/Nature Resistance | 0% | sem item |
-| Arcane Resistance | 0% | sem item |
-| Shadow/Nyx Resistance | 5% | Vontade + amuleto simples |
-| Blackstone/Corruption Resistance | 0-5% | baixa; sem Magic/Arcano |
-| Poison Resistance | 8% | Constituição/anão |
-| Bleed Resistance | 6% | Constituição/armadura |
-| Burn Resistance | 0% | sem item |
-| Chill Resistance | 5% | anão/equipamento leve |
-| Fear Resistance | 10% | Vontade + amuleto |
-| Confusion Resistance | 4% | Vontade |
-| Stun Resistance | 6% | Constituição |
+| Monstro | HP | Dano efetivo estimado | Hits normais para matar | Veredito |
+|---|---:|---:|---:|---|
+| Roedor de Geada | 155 | 85-95 | 2 | ok se vier em pack; fraco isolado |
+| Escavador Duergar | 230 | 70-80 | 3-4 | ok como comum robusto |
+| Osso de Vidro | 210 | 80-90 | 3 | ok, ameaça por ranged/mobilidade |
+| Acólito do Frio | 190 | 85-95 | 2-3 | ok se protegido por pack; fraco isolado |
+| Larva Devora-Mentes | 240 | 80-90 | 3 | ok se controle for perigoso |
+| Lamento Frio | 300 | 75-85 | 4 | ok como caster/controller |
+| Saltador Cristalino | 330 | 75-85 | 4-5 | ok; dificuldade vem da mobilidade |
+| Sentinela Enregelado | 480 | 45-60 | 8-11 | ok se for tank/guard; espada não é ideal |
+| Quebra-Escudo Duergar | 520 | 55-70 | 8-10 | ok como elite anti-block |
+| Horror-Gancho de Gelo | 560 | 55-70 | 8-11 | ok como elite duelist |
 
-### Posture e Knockback Resistance
-
-| Derivado | Valor de teste | Leitura |
-|---|---:|---|
-| Posture Resistance | 18% | bom, mas não imune |
-| Knockback Resistance | 15% | inimigos grandes ainda empurram |
-
-### Block
+Veredito:
 
 ```text
-BlockPower = Block rank 3 49% + Escudo 10%
-BlockPower = 59%
-```
-
-```text
-BlockStability = Guarda Firme rank 2 12% + Escudo 8% + ConstituiçãoBonus 5%
-BlockStability = 25%
-```
-
-```text
-BlockRecovery = Base 0.45s * (1 - 0.10)
-BlockRecovery ≈ 0.40s
-```
-
-Leitura:
-
-```text
-Block é forte, mas não gratuito.
-Se aplicar Defense completa depois do Block, pode ficar forte demais.
-Recomendação do teste: para golpes bloqueados, aplicar BlockPower primeiro e depois mitigação física reduzida, não mitigação completa duplicada.
+Com HP/Stamina revisados, o personagem fica mais coerente.
+O dano do personagem ainda está alto contra comuns, mas isso é aceitável se comuns vierem em pack.
+Elites ficam no intervalo bom: 8-11 hits normais, menos se o jogador usar charged attacks, vulnerabilidade e critical window.
 ```
 
 ---
 
-## 10. Movimento e controle
+# PARTE H — Dano recebido aproximado
 
-| Derivado | Valor de teste | Cálculo/leitura |
-|---|---:|---|
-| Movement Speed | 0.96x | armadura -4%, sem build de velocidade |
-| Dash Distance | 2.45 tiles | base 2.25 + Passo de Impulso rank 1 |
-| Dash Cooldown | 1.10s | base 1.20s com redução leve |
-| Dash Cost | 16 Stamina + 9 Breath | redução leve por Survival |
-| Dodge IFrames | 0.20s | base 0.18s + Reflexo rank 1 |
-| Dodge Recovery | 0.32s | leve melhoria por Destreza/skill |
-| Dodge Cost | 11 Stamina + 7 Breath | redução pequena |
-| Collision Recovery | normal | sem investimento específico |
+## 14. Fórmula provisória de dano inimigo
 
-Leitura:
+Como o roster ainda não tem dano por ataque, usar mesa provisória:
 
 ```text
-Movimento não fica rápido demais.
-Dash ajuda reposicionar, mas custa recurso.
-Dodge tem janela curta; exige timing.
+CommonLightDamage = 18 + SpawnLevel*0.6 + FOR*1.4
+CommonHeavyDamage = CommonLightDamage * 1.45
+
+EliteLightDamage = 28 + SpawnLevel*0.8 + FOR*1.6
+EliteHeavyDamage = EliteLightDamage * 1.55
+
+CasterDamage = 22 + SpawnLevel*0.6 + INT*1.5 ou VON*1.3
 ```
 
----
-
-## 11. Produção, coleta e economia
-
-| Derivado | Valor de teste | Leitura |
-|---|---:|---|
-| Resource Yield Bonus | +3% mineração comum | Prospector rank 1, baixo |
-| Gathering Efficiency | +moderado contra rocha | Força 9 + ferramenta |
-| Tool Stamina Cost Reduction | 0-5% | sem Mãos de Lavrador |
-| Tool Action Speed | normal | sem skill forte |
-| Mining Efficiency | +6% anel + Força alta + Prospector | bom para build mineradora |
-| Woodcutting Efficiency | moderado | Força alta, sem Lenhador |
-| Farming Efficiency | baixo | sem foco agrícola |
-| Watering Efficiency | baixo | sem skill/automação |
-| Fishing Efficiency | baixo/médio | Destreza 6, sem skill |
-| Crafting Efficiency | baixo | Inteligência 4, sem Oficina |
-| Construction Cost Reduction | 0% | sem Oficina Organizada |
-| Craft Quality Bonus | baixo | sem Crafting |
-| Cooking Quality Bonus | baixo | sem Cozinha |
-| Potion/Consumable Potency | baixo | sem Alquimia |
-| Loot Bonus | 0% | sem Survival Tier 4/Ranged |
-| Gold Bonus | 0% | sem Saqueador |
-| Treasure Quality Bonus | 0% | sem Faro de Tesouro |
-
-Leitura:
+Para level 30:
 
 ```text
-O personagem é bom em quebrar rochas e razoável em mineração, mas não vira mestre de produção.
-Isso preserva espaço para builds Crafting/Survival dedicadas.
-```
-
----
-
-## 12. Condição, social e companions
-
-| Derivado | Valor de teste | Leitura |
-|---|---:|---|
-| Hunger Resistance | 0% | sem Estômago Forte |
-| Fatigue Resistance | +4% | Ritmo de Jornada rank 1 |
-| Sleep Recovery Bonus | normal | sem cama/buff especial |
-| Environmental Endurance | baixo/médio | Con/Vontade ok, sem Resistência Ambiental |
-| Social Influence | baixo | Carisma 3 |
-| Vendor Price Modifier | 0-2% | baixo, sem foco social |
-| Relationship Gain Modifier | baixo | sem foco social |
-| Companion Command | futuro/baixo | não expor ainda |
-| Companion Bond Effect | futuro/baixo | não expor ainda |
-| Pet Bond Effect | futuro/baixo | não expor ainda |
-| Pet Combat Support | futuro/baixo | não expor ainda |
-
----
-
-# PARTE E — Resumo da ficha derivada
-
-## 13. Painel resumido do personagem
-
-```text
-Brann Ferrocinza — Level 30
-Raça: Anão
-Build: Melee/Sobrevivência leve
-
-HP Max: 420
-MP Max: 116
-Stamina Max: 291
-Breath Max: 135
-
-Attack Damage: 95
-Melee Damage: 95
-Ranged Damage: baixo
-Magic Power: 34
-Healing Power: baixo
-
-Attack Speed: 0.71s por ataque
-Crit Chance: 10% normal / 30% em critical window
-Crit Damage: 1.5x
-Stagger Power: 53
-Posture Damage: 40 normal / 80 carregado
-
-Defense: 66
-Armor: 45
-Physical Resistance: 12%
-Posture Resistance: 18%
-Block Power: 59%
-Block Stability: 25%
-
-Movement Speed: 0.96x
-Dash: 2.45 tiles / 1.10s cooldown / 16 Stamina + 9 Breath
-Dodge: 0.20s i-frame / 11 Stamina + 7 Breath
-
-HP Regen: 0
-MP Regen: lenta
-Fatigue Resistance: +4%
-Mining Efficiency: boa
-Social Influence: baixo
-```
-
-## 14. Veredito inicial da ficha
-
-```text
-O personagem parece forte, mas não quebrado.
-Ele é durável e consistente em melee.
-Ele não tem sustain automático de HP.
-Ele não tem magia relevante.
-Ele não tem economia/social forte.
-Ele depende de Stamina/Breath para Block, Dodge, Dash e Ataque Pesado.
-```
-
-Risco principal:
-
-```text
-Block + Defense pode ficar forte demais se ambos mitigarem 100% em sequência.
-```
-
-Correção recomendada:
-
-```text
-Em golpes bloqueados:
-1. aplicar BlockPower
-2. aplicar resistência física
-3. aplicar apenas parte da mitigação flat de Defense/Armor
-
-Não aplicar a mitigação completa duas vezes.
-```
-
----
-
-# PARTE F — Criatura de teste
-
-## 15. Criatura: Ghul de Pedra Negra
-
-```text
-Nome: Ghul de Pedra Negra
-Faixa: caverna mid game avançada
-Level de teste: 28
-Função: elite menor / inimigo perigoso isolado
-```
-
-Stats de teste:
-
-| Stat | Valor |
-|---|---:|
-| HP | 620 |
-| Armor | 35 |
-| Physical Resistance | 15% |
-| Shadow/Nyx Resistance | 30% |
-| Silver Vulnerability | +25% dano recebido de Prata |
-| Spiritual Vulnerability | +20% dano recebido espiritual/purificação |
-| Posture Max | 160 |
-| Posture Resistance | 10% |
-| Attack Damage comum | 72 |
-| Heavy Attack Damage | 105 |
-| Posture Damage causado | 35 comum / 60 pesado |
-| Movement | médio/lento |
-
-Comportamento:
-
-```text
-aproxima em zigue-zague curto
-faz swipe comum se colado
-faz heavy claw telegraphado a cada X segundos
-fica vulnerável por 1.2s se errar heavy claw
-fica staggered quando Posture zera
-resiste a Shadow/Nyx
-é vulnerável a Prata e espiritual
-```
-
-Critical window:
-
-```text
-Depois de errar heavy claw.
-Depois de posture break.
-Durante recovery de grito/canalização, se houver variante.
-```
-
----
-
-# PARTE G — Simulação de combate
-
-## 16. Fórmulas usadas no combate
-
-Dano do jogador contra o Ghul:
-
-```text
-RawHit = 95
-EnemyPhysicalResistance = 15%
-EnemyArmorMitigation = Armor * 0.20 = 35 * 0.20 = 7
-
-NormalHit = RawHit * 0.85 - 7
-NormalHit = 95 * 0.85 - 7
-NormalHit ≈ 74
-```
-
-Ataque carregado:
-
-```text
-ChargedRaw = 95 * 1.25 = 119
-ChargedHit = 119 * 0.85 - 7
-ChargedHit ≈ 94
-```
-
-Crítico em janela:
-
-```text
-CriticalNormal = NormalHit * 1.5
-CriticalNormal = 74 * 1.5 = 111
-
-CriticalCharged = ChargedHit * 1.5
-CriticalCharged = 94 * 1.5 = 141
-```
-
-Posture:
-
-```text
-NormalPostureDamage = 40 * 0.90 = 36
-ChargedPostureDamage = 80 * 0.90 = 72
-Posture Max do Ghul = 160
-```
-
-Dano recebido pelo jogador sem block:
-
-```text
-Incoming = 72
+Brann Defense = 66
 PhysicalResistance = 12%
-DefenseFlat = Defense * 0.30 = 66 * 0.30 = 19.8
-
-DamageTaken = 72 * 0.88 - 19.8
-DamageTaken ≈ 44
-```
-
-Dano recebido com block:
-
-```text
-Incoming = 72
+HP = 336
 BlockPower = 59%
-BlockedIncoming = 72 * 0.41 = 29.5
-PhysicalResistance parcial = 12%
-DefenseFlat parcial = Defense * 0.15 = 9.9
-
-BlockedDamageTaken = 29.5 * 0.88 - 9.9
-BlockedDamageTaken ≈ 16
 ```
 
-Heavy attack sem block:
+## 15. Dano recebido sem block
+
+| Monstro | Ataque estimado | Dano bruto | Dano final aproximado | Hits para derrubar Brann |
+|---|---|---:|---:|---:|
+| Roedor de Geada | bite comum | ~49 | ~27-32 | 10-12 |
+| Escavador Duergar | pick swing | ~57 | ~34-40 | 8-10 |
+| Osso de Vidro | lunge/shard | ~53 | ~30-36 | 9-11 |
+| Acólito do Frio | cold bolt | ~50 mágico | depende de resistência gelo | 7-10 se sem resistência |
+| Saltador Cristalino | leap | ~78 elite | ~52-60 | 6-7 |
+| Quebra-Escudo Duergar | crush | ~87 elite | ~60-70 | 5-6 |
+| Horror-Gancho de Gelo | hook impale | ~90 elite | ~63-73 | 5-6 |
+
+Leitura:
 
 ```text
-Incoming = 105
-DamageTaken = 105 * 0.88 - 19.8
-DamageTaken ≈ 73
+Com HP 336, golpes comuns não matam rápido.
+Elites punem erro em 5-7 hits.
+Caster de gelo fica perigoso se o jogador não tiver resistência a frio.
+Isso conversa com a regra da caverna 26-40: solo difícil, companion recomendado forte, resistência a frio e gear esperado.
 ```
 
-Heavy attack com block:
+## 16. Dano recebido com block
+
+Exemplo contra elite:
 
 ```text
-BlockedIncoming = 105 * 0.41 = 43
-BlockedDamageTaken = 43 * 0.88 - 9.9
-BlockedDamageTaken ≈ 28
+Incoming = 90
+BlockPower = 59%
+BlockedIncoming = 90 * 0.41 = 36.9
+PhysicalResistance = 12%
+DefenseFlat parcial = Defense * 0.12 = 7.9
+DamageTaken = 36.9 * 0.88 - 7.9 ≈ 25
 ```
 
 Leitura:
 
 ```text
-Block reduz muito dano, mas consome Stamina/Breath.
-Dodge evita dano, mas exige timing e também consome recurso.
-Tomar heavy sem defesa dói bastante, mas não mata de uma vez.
+Block reduz elite hit de ~65 para ~25.
+Isso é forte, mas custa Stamina e pode sofrer GuardBreak.
+Contra Quebra-Escudo Duergar, parte dos ataques deve punir block segurado.
 ```
 
 ---
 
-## 17. Simulação em rounds de mesa
+# PARTE I — Simulação curta contra três monstros
 
-Estado inicial:
+## 17. Brann vs Escavador Duergar do Gelo
 
 ```text
-Brann HP: 420
-Brann Stamina: 291
-Brann Breath: 135
-Ghul HP: 620
-Ghul Posture: 160
+Escavador HP 230
+Brann dano efetivo: 75
+Hits para matar: 4
+Dano recebido por hit: 35-40
 ```
 
-| Round | Ação do jogador | Resultado | Ação do Ghul | Estado |
-|---:|---|---|---|---|
-| 1 | Ataque normal | Ghul -74 HP, -36 posture | Swipe comum acerta | Brann -44 HP |
-| 2 | Ataque carregado | Ghul -94 HP, -72 posture | Heavy claw telegraphado | Brann usa Dodge, evita dano, gasta recurso |
-| 3 | Ataque carregado | Ghul -94 HP, -72 posture; posture quebra | Ghul staggered | abre critical window |
-| 4 | Ataque normal em janela | crítico: Ghul -111 HP | Ghul recuperando | sem dano recebido |
-| 5 | Corte Amplo/ataque normal | Ghul -74 HP | Swipe comum bloqueado | Brann -16 HP, gasta Stamina/Breath |
-| 6 | Ataque normal | Ghul -74 HP | Heavy claw começa | Brann reposiciona com Dash |
-| 7 | Ataque carregado em recovery | Ghul -94 HP | Ghul falha heavy | critical window curta |
-
-Totais aproximados após round 7:
+Cenário jogando bem:
 
 ```text
-Dano causado ao Ghul:
-74 + 94 + 94 + 111 + 74 + 74 + 94 = 615
-Ghul fica praticamente morto.
-
-Dano recebido por Brann:
-44 + 16 = 60
-Brann HP restante: 360
+Round 1: Brann acerta normal, Duergar -75
+Round 2: Duergar usa PickSwing, Brann bloqueia, recebe ~12-16
+Round 3: Brann usa ataque carregado, Duergar -95 e perde postura
+Round 4: Brann finaliza com hit normal/crítico de janela
 ```
 
-Custo aproximado de recursos:
+Veredito:
 
 ```text
-2 ataques carregados relevantes: -50 a -70 Stamina total
-1 Dodge: -11 Stamina / -7 Breath
-1 Block: -recurso conforme impacto, ~15-25 Stamina/Breath equivalente
-1 Dash: -16 Stamina / -9 Breath
+Comum robusto adequado.
+Isolado não é grande ameaça.
+Em pack com caster/roedor, vira pressão real.
+```
+
+## 18. Brann vs Saltador Cristalino
+
+```text
+Saltador HP 330
+Brann dano efetivo: 80
+Hits para matar: 4-5
+Saltador tem DES 24 e STA 104.
 ```
 
 Leitura:
 
 ```text
-Se o jogador lê telegraphs e usa Dodge/Block/Dash bem, vence com folga.
-Se o jogador erra heavy attacks e não defende, toma 44-73 por golpe e pode perder rápido.
-O inimigo isolado não é ameaça extrema para uma build defensiva bem equipada.
-Para ser elite real, ele precisa vir com pack, hazard, arena ruim ou variante mais agressiva.
+O Saltador não deve tankar muito.
+Ele deve ameaçar por mobilidade, burst e erro de dodge.
+Se o jogador acertar todas as janelas, vence rápido.
+Se errar dodge, recebe muito dano e perde ritmo.
 ```
 
----
-
-## 18. Simulação alternativa: jogador joga mal
-
-Cenário:
+## 19. Brann vs Quebra-Escudo Duergar
 
 ```text
-Brann não usa Dodge no heavy.
-Brann tenta spammar Ataque Pesado.
-Brann bloqueia tarde.
-```
-
-Resultado provável:
-
-```text
-Round 1: -44 HP
-Round 2: -73 HP
-Round 3: -44 HP
-Round 4: -73 HP
-Round 5: -44 HP
-
-Dano recebido em 5 rounds: ~278
-HP restante: 142
+Quebra-Escudo HP 520
+Brann dano efetivo: 55-70
+Hits normais para matar: 8-10
+FOR 22 / CON 22 / elite tank
 ```
 
 Leitura:
 
 ```text
-O personagem sobrevive alguns erros, mas não pode ignorar mecânica.
-Isso é adequado para build defensiva mid game.
+Esse inimigo deve ser teste direto da build de Block.
+Se Brann só segura Left Shift, deve ser punido por GuardBreak.
+Se alterna Dodge, ataque carregado e janela, vence.
+```
+
+Veredito:
+
+```text
+Adequado como elite se tiver ShieldCrush/GuardBreak bem telegrafado.
+Sem GuardBreak, o Block do jogador pode trivializar o encontro.
 ```
 
 ---
 
-# PARTE H — Validação de balanceamento
+# PARTE J — Conclusão de balanceamento
 
-## 19. O que parece adequado
+## 20. Comparação final
+
+Com os valores antigos:
 
 ```text
-HP 420 não parece absurdo se inimigos equivalentes causam 40-70 de dano real.
-Attack Damage 95 gera TTK aceitável contra elite de 620 HP.
-Crit normal 10% é baixo o bastante para não dominar.
-Crit em janela 30% valoriza leitura sem garantir sempre.
-Posture break exige 2-3 ataques carregados, o que cria risco.
-Block 59% é forte, mas consome recurso e precisa de ajuste contra mitigação dupla.
-Dash/Dodge competem com Stamina/Breath e não parecem gratuitos.
-Sem HP Regen, o personagem ainda precisa de comida/poção/Fonte.
+HP 420
+Stamina 291
+Breath 135 como barra/recurso
 ```
 
-## 20. O que pode ficar forte demais
+Problemas:
 
 ```text
-Block Power + Defense completa pode reduzir dano demais.
-Stamina Regen alta demais pode permitir block/dodge/dash infinito.
-Posture Damage alto demais pode trivializar elites.
-Armor flat muito alto pode zerar dano de inimigos pequenos.
-Critical window com crítico automático sempre pode explodir TTK se Crit Damage subir demais.
+HP alto demais para level 30 defensivo.
+Stamina alta demais para custo de Dash/Dodge/Block.
+Breath competia conceitualmente com Stamina.
 ```
 
-## 21. Ajustes recomendados antes de spec
+Com os valores revisados:
 
 ```text
-1. Definir que golpe bloqueado usa mitigação flat reduzida de Defense/Armor.
-2. Definir Stamina Regen menor durante combate.
-3. Definir que Breath Recovery cai durante block/corrida/dash spam.
-4. Definir que elites/bosses têm Posture Resistance maior.
-5. Definir que Critical Window garante crítico automático apenas em casos específicos; caso contrário, adiciona chance alta de crítico.
-6. Definir que Armor flat nunca reduz dano abaixo de uma fração mínima do ataque.
-7. Definir que HP Regen passiva não funciona em combate, salvo exceção explícita.
+HP 336
+Stamina 184
+Breath removido
 ```
 
----
-
-# PARTE I — Exemplo com capstone futuro
-
-## 22. Mesmo personagem em endgame parcial
-
-Para testar capstones, simular uma versão futura:
+Resultado:
 
 ```text
-Level: 60
-SkillPoints: ~30
-Melee points: 26+
-Capstone escolhido: Voto do Aço Profundo de Kanthor ou Kaand
+HP fica próximo da borda baixa de elite, adequado para player tank level 30.
+Stamina ainda é maior que a dos monstros, mas justificável para o player.
+Stamina volta a ser o recurso físico principal.
+Cansaço vira o limitador de longo prazo.
+Constituição, Destreza e Vontade assumem o que antes estava disperso em Breath.
 ```
 
-### Kanthor
-
-Efeito esperado:
+## 21. Decisões corrigidas
 
 ```text
-mais estabilidade
-mais block
-mais resistência a stagger
-recuperação leve em critical window
+Breath/Fôlego removido como atributo.
+Dash custa Stamina.
+Dodge custa Stamina.
+Block drena Stamina.
+Constituição melhora HP, Stamina, estabilidade, resistência física e tolerância a cansaço.
+Destreza melhora dodge, movimento, attack speed, crit condicional e reação.
+Vontade melhora MP, MP Regen lenta e resistência mental/espiritual.
+Survival melhora runs longas, custo/cooldown/recovery de Dash/Dodge, fome, cansaço e ambiente.
 ```
 
-Risco:
+## 22. Ajustes necessários em documentos futuros
 
 ```text
-Pode virar tanque demais se Block + Defense + cura leve empilharem sem cooldown.
+PLAYER_CORE_SYSTEMS_DIRECTION.md
+  remover Breath como recurso/atributo derivado.
+
+PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md
+  remover Breath Max, Breath Recovery, Dash/Dodge/Block com Breath.
+
+PLAYER_SKILL_TREES_DIRECTION.md
+  Respiração Controlada deve ser renomeada ou redefinida, porque não há Breath.
+
+CAVE_MONSTER_ROSTER_DIRECTION.md
+  remover BR dos monstros e substituir por MovementProfile, RecoveryProfile, PressureProfile ou traits.
 ```
 
-Controle recomendado:
+## 23. Pendências para a spec de combate
 
 ```text
-cura de 3% HP máximo deve ter cooldown interno por encontro ou por X segundos.
-```
-
-### Kaand
-
-Efeito esperado:
-
-```text
-mais dano
-mais crit damage
-mais stagger
-menos segurança durante efeito
-```
-
-Risco:
-
-```text
-Pode explodir boss se acumular com critical window garantida e ataque carregado.
-```
-
-Controle recomendado:
-
-```text
-bonus de Kaand deve durar pouco, exigir postura quebrada/crítico e reduzir Block Power durante a janela.
-```
-
----
-
-# PARTE J — Conclusão do teste
-
-## 23. Veredito
-
-```text
-A estrutura de atributos derivados faz sentido.
-A build de exemplo fica forte, mas não invencível.
-O personagem tem identidade clara: melee defensivo/minerador.
-O combate contra uma elite compatível é vencível com boa execução.
-O combate pune erro sem virar morte instantânea.
-O maior risco matemático é mitigação defensiva empilhada.
-O segundo maior risco é regeneração de Stamina/Breath alta demais.
-O terceiro risco é posture/critical window reduzindo demais o TTK.
-```
-
-## 24. Próximo teste de mesa recomendado
-
-Criar mais três fichas comparativas:
-
-```text
-1. Ranged/Sobrevivente leve — baixa defesa, alto controle e marcação.
-2. Magic/Anya — cura/suporte/MP, baixo dano físico.
-3. Crafting/Produção — economia/fazenda/caverna com baixo combate direto.
-```
-
-Objetivo:
-
-```text
-comparar TTK
-comparar dano recebido
-comparar consumo de Stamina/Breath/MP
-comparar sobrevivência sem companion/pet
-comparar impacto de loot/economia
-validar se Melee não está obrigatório
-validar se Survival não está obrigatório
-validar se Magic não cura demais
-validar se Crafting não quebra economia
+Criar EnemyActionDamage por ação.
+Definir Armor/Resistance por monstro ou por família.
+Definir se CriticalWindow é sempre crítico automático ou se varia por tipo de janela.
+Definir como GuardBreak interage com Block.
+Definir Stamina Regen em combate, fora de combate, com fome e com cansaço.
+Definir como Constituição/Survival alteram FatigueGain.
+Definir que Breath não aparece na HUD.
 ```
