@@ -9,49 +9,58 @@
 
 ---
 
-## 0. Objetivo
+## 0. Decisão canônica: Breath/Fôlego removido
 
-Este documento define os atributos derivados do jogador.
+`Breath` / `Fôlego` foi removido como atributo, recurso, barra e custo.
 
-Atributos centrais:
+Não deve existir como:
 
 ```text
-Força
+atributo central
+atributo derivado
+barra de HUD
+custo de Dash
+custo de Dodge
+custo de Block
+stat de monstro
+campo BR em tabela nova
+recurso salvo no save/load
+```
+
+Motivo:
+
+```text
+Breath estava sobreposto com Stamina, Constituição e Cansaço.
+Ele criava uma segunda stamina sem função clara.
+O sistema fica mais legível removendo Breath e redistribuindo suas funções.
+```
+
+Substituições:
+
+```text
+Stamina
+  recurso físico imediato gasto em ações.
+
+Cansaço
+  desgaste acumulado de longo prazo.
+
 Constituição
+  HP, Stamina, estabilidade física, resistência a dano/status físico, tolerância a cansaço.
+
 Destreza
-Inteligência
+  dodge, dash, movement, attack speed, reação, crítico condicional.
+
 Vontade
-Carisma
-```
+  MP, MP Regen lenta, resistência mental/espiritual, corrupção/Nyx/Void.
 
-Atributos derivados são valores calculados a partir de:
+Survival/Sobrevivente
+  redução de fome/cansaço, eficiência em runs, resistência ambiental, melhoria de Dash/Dodge.
 
-```text
-atributos centrais
-level
-equipamentos
-material/tier do equipamento
-skills
-skill ranks
-capstones
-arquétipos/jobs ativos
-buffs temporários
-comida/poções
-status negativos
-condição atual do personagem
-ambiente/bioma
-vulnerabilidades/resistências do alvo
-```
+Melee/Guerreiro
+  Block, estabilidade, postura, stagger, defesa ativa.
 
-Regra central:
-
-```text
-Atributo central dá aptidão bruta.
-Atributo derivado traduz aptidão em gameplay.
-Skill tree dá domínio, desbloqueios e especialização.
-Equipamento dá capacidade material.
-Buff dá modificação temporária.
-Status negativo aplica penalidade situacional.
+Traits de monstros
+  movimento, perseguição, recuperação, pressão e comportamento.
 ```
 
 ---
@@ -60,7 +69,7 @@ Status negativo aplica penalidade situacional.
 
 ## 1. Fórmula em camadas
 
-Todo atributo derivado deve seguir uma estrutura de cálculo parecida:
+Todo atributo derivado deve seguir uma estrutura parecida:
 
 ```text
 DerivedStat = BaseValue
@@ -89,78 +98,69 @@ ContextMultiplier só deve existir quando houver condição explícita, como cri
 
 ## 2. Caps e softcaps
 
-Nem todo stat precisa crescer sem limite.
-
 Tipos de limite:
 
 ```text
 Hard Cap
-  limite absoluto. Exemplo: Crit Chance não passa de 60% fora de efeitos especiais.
+  limite absoluto.
 
 Soft Cap
   depois de certo valor, cada ponto adicional rende menos.
 
 Context Cap
-  limite diferente por contexto. Exemplo: Movement Speed tem cap menor na cidade/fazenda e cap maior durante Dash.
+  limite diferente por contexto.
 ```
 
-Direção:
+Stats que precisam de caps/softcaps:
 
 ```text
-Crit Chance, Attack Speed, Cast Speed, Movement Speed, HP Regen, MP Regen, Block Reduction e Resource Yield precisam de caps.
-HP, MP, Stamina e Breath podem crescer mais livremente, mas ainda precisam de curva controlada.
+Crit Chance
+Crit Damage
+Attack Speed
+Cast Speed
+Movement Speed
+Dash Cooldown Reduction
+Dodge Invulnerability Window
+HP Regen
+MP Regen
+Block Power
+Block Stability
+Resource Yield Bonus
+Gold Bonus
+Vendor Price Modifier
 ```
 
-## 3. Fórmula de softcap sugerida
-
-Quando um stat precisar de diminishing returns:
+Fórmula de softcap sugerida:
 
 ```text
 EffectiveValue = SoftCap + (RawValue - SoftCap) * DiminishingFactor
 ```
 
-Exemplo:
-
-```text
-Se Crit Chance softcap = 35%
-Raw Crit Chance = 50%
-DiminishingFactor = 0.5
-Effective Crit Chance = 35 + (50 - 35) * 0.5 = 42.5%
-```
-
-## 4. Ordem de cálculo recomendada
-
-```text
-1. Ler atributos centrais atuais.
-2. Calcular recursos máximos: HP, MP, Stamina, Breath.
-3. Calcular ofensivos base: Base Attack, Magic Power, Attack Speed, Cast Speed.
-4. Aplicar arma/ferramenta/equipamento.
-5. Aplicar skills e capstones.
-6. Aplicar buffs/comida/poções.
-7. Aplicar status negativos.
-8. Aplicar contexto do alvo/ambiente.
-9. Aplicar caps/softcaps.
-10. Expor na HUD/menu conforme relevância.
-```
-
 ---
 
-# PARTE B — Lista canônica de atributos derivados
+# PARTE B — Atributos derivados canônicos
 
-## 5. Recursos principais
+## 3. Recursos principais
 
 ```text
 HP Max
 MP Max
 Stamina Max
-Breath Max
 HP Regen
 MP Regen
 Stamina Regen
-Breath Recovery
 ```
 
-## 6. Ofensivos físicos
+Não existe:
+
+```text
+Breath Max
+Breath Recovery
+Fôlego Max
+BR
+```
+
+## 4. Ofensivos físicos
 
 ```text
 Base Attack
@@ -178,7 +178,7 @@ Armor Penetration
 Knockback Power
 ```
 
-## 7. Ofensivos mágicos
+## 5. Ofensivos mágicos
 
 ```text
 Magic Power
@@ -199,7 +199,7 @@ Magic Crit Damage
 Status Application Power
 ```
 
-## 8. Defensivos
+## 6. Defensivos
 
 ```text
 Defense
@@ -228,7 +228,7 @@ Block Stability
 Block Recovery
 ```
 
-## 9. Movimento e controle
+## 7. Movimento e controle
 
 ```text
 Movement Speed
@@ -242,7 +242,7 @@ Collision Recovery
 Turn/Acceleration Feel
 ```
 
-## 10. Produção, coleta e economia
+## 8. Produção, coleta e economia
 
 ```text
 Resource Yield Bonus
@@ -264,7 +264,7 @@ Gold Bonus
 Treasure Quality Bonus
 ```
 
-## 11. Condição, social e companions
+## 9. Condição, social e companions
 
 ```text
 Hunger Resistance
@@ -284,7 +284,7 @@ Pet Combat Support futuro
 
 # PARTE C — Recursos principais
 
-## 12. HP Max
+## 10. HP Max
 
 Representa vida máxima.
 
@@ -311,14 +311,6 @@ HPMax = BaseHP
       + BuffHP
 ```
 
-Direção inicial sugerida:
-
-```text
-BaseHP: 100
-HPPerLevel: 4-8
-HPPerCon: 12-18
-```
-
 Regras:
 
 ```text
@@ -332,7 +324,7 @@ HUD:
 Barra principal sempre visível.
 ```
 
-## 13. MP Max
+## 11. MP Max
 
 Representa reserva mágica.
 
@@ -360,33 +352,26 @@ MPMax = BaseMP
       + BuffMP
 ```
 
-Direção inicial:
-
-```text
-BaseMP: 30-50, ou 0 até magia ser desbloqueada, conforme decisão futura.
-MPPerWill > MPPerInt.
-```
-
 HUD:
 
 ```text
 Aparece quando magia/item mágico for desbloqueado ou equipado.
 ```
 
-## 14. Stamina Max
+## 12. Stamina Max
 
-Representa energia física disponível para ações.
+Representa energia física imediata para ações.
 
 Influenciado por:
 
 ```text
-Constituição
-Força em menor grau para ações pesadas
-Level
-Survival
-Crafting
-comida
+Constituição principalmente
+Força em menor grau para esforço físico pesado
+Level em menor grau
+Survival/Sobrevivente
+Crafting/Produção para rotinas produtivas
 equipamentos
+comida/buffs
 ```
 
 Fórmula direcional:
@@ -401,16 +386,20 @@ StaminaMax = BaseStamina
            + BuffStamina
 ```
 
-Usos:
+Gasta em:
 
 ```text
-ferramentas
 ataques físicos
-block
-dodge
-dash
+ataques carregados
+Dash
+Dodge
+Block
 corrida
-pesca/mineração/corte/plantio
+ferramentas
+mineração
+corte de madeira
+plantio/rega/colheita
+pesca
 ```
 
 HUD:
@@ -419,52 +408,7 @@ HUD:
 Barra secundária sempre visível.
 ```
 
-## 15. Breath Max / Fôlego Máximo
-
-Representa capacidade de sustentar esforço sob pressão.
-
-Influenciado por:
-
-```text
-Constituição
-Destreza
-Vontade em menor grau
-Survival/Sobrevivente
-Melee/Guerreiro para block/armas pesadas
-equipamentos leves/pesados
-```
-
-Fórmula direcional:
-
-```text
-BreathMax = BaseBreath
-          + (Constituição * BreathPerCon)
-          + (Destreza * BreathPerDex)
-          + (Vontade * BreathPerWillSmall)
-          + SkillBreath
-          + EquipmentBreath
-          + BuffBreath
-```
-
-Usos:
-
-```text
-corrida
-dash
-dodge
-block sustentado
-ritmo de combate
-long fights
-ambiente hostil
-```
-
-HUD:
-
-```text
-Medidor compacto, expandido em combate/caverna/movimento intenso.
-```
-
-## 16. HP Regen
+## 13. HP Regen
 
 Representa regeneração de vida.
 
@@ -504,15 +448,7 @@ Tomar dano pausa HP Regen por X segundos.
 HP Regen forte exige item, Fonte, magia, comida ou condição.
 ```
 
-Caps:
-
-```text
-Normal: até ~1% HP Max por segundo fora de combate.
-Com item/capstone: pode dobrar temporariamente, mas com condição/cooldown.
-Em combate: por padrão desativado ou muito reduzido.
-```
-
-## 17. MP Regen
+## 14. MP Regen
 
 Representa regeneração natural de MP.
 
@@ -545,7 +481,7 @@ Vontade melhora a regeneração, mas não a torna rápida sozinha.
 Regeneração rápida depende de efeito explícito.
 ```
 
-## 18. Stamina Regen
+## 15. Stamina Regen
 
 Representa recuperação de stamina ao longo do tempo.
 
@@ -553,12 +489,12 @@ Influenciado por:
 
 ```text
 Constituição
-Breath atual
 fome
 cansaço
 comida
-Survival
+Survival/Sobrevivente
 equipamentos
+status negativos
 ```
 
 Fórmula direcional:
@@ -567,6 +503,7 @@ Fórmula direcional:
 StaminaRegen = BaseStaminaRegen
              * HungerMultiplier
              * FatigueMultiplier
+             * CombatMultiplier
              * (1 + SkillBonus + EquipmentBonus + BuffBonus)
 ```
 
@@ -575,41 +512,15 @@ Regras:
 ```text
 Fome baixa reduz regen.
 Cansaço alto reduz regen.
+Stamina Regen em combate deve ser menor que fora de combate.
 Stamina não deve recuperar rápido durante ações pesadas contínuas.
-```
-
-## 19. Breath Recovery
-
-Representa recuperação do fôlego.
-
-Influenciado por:
-
-```text
-Constituição
-Destreza
-Survival
-Respiração Controlada
-cansaço
-status ambientais
-equipamento pesado
-```
-
-Fórmula direcional:
-
-```text
-BreathRecovery = BaseBreathRecovery
-               + AttributeBonus
-               + SkillBonus
-               - EquipmentWeightPenalty
-               - FatiguePenalty
-               - StatusPenalty
 ```
 
 ---
 
 # PARTE D — Ofensivos físicos
 
-## 20. Base Attack
+## 16. Base Attack
 
 Representa potência ofensiva física antes de arma e skill.
 
@@ -630,19 +541,13 @@ BaseAttack = BaseAttackValue
            + (Level * BaseAttackPerLevel)
 ```
 
-Uso:
-
-```text
-base para Attack Damage físico.
-```
-
 Exposição:
 
 ```text
 Pode ser interno. No menu, exibir Attack Damage final é mais útil.
 ```
 
-## 21. Attack Damage
+## 17. Attack Damage
 
 Representa dano físico final após arma, material, skill, buff, resistência inimiga e contexto.
 
@@ -657,28 +562,15 @@ AttackDamage = (BaseAttack + WeaponDamage + EquipmentFlatDamage)
              * EnemyResistanceMultiplier
 ```
 
-Fontes:
-
-```text
-BaseAttack
-arma equipada
-material da arma
-Melee/Guerreiro
-Ranged/Caçador
-buffs
-critical windows
-resistência/vulnerabilidade do inimigo
-```
-
 Regras:
 
 ```text
 Força não aumenta yield de recurso.
 Força aumenta dano físico e facilidade contra obstáculos físicos.
-Attack Damage não deve substituir Stagger/Posture.
+Attack Damage não substitui Stagger/Posture.
 ```
 
-## 22. Melee Damage
+## 18. Melee Damage
 
 Subtipo de Attack Damage para armas corpo a corpo.
 
@@ -693,13 +585,7 @@ material da arma
 capstone Kanthor/Kaand
 ```
 
-Fórmula direcional:
-
-```text
-MeleeDamage = AttackDamage * MeleeWeaponMultiplier * MeleeSkillMultiplier
-```
-
-## 23. Ranged Damage
+## 19. Ranged Damage
 
 Subtipo de Attack Damage para arcos/projéteis.
 
@@ -714,24 +600,9 @@ munição/material
 alvo marcado
 ```
 
-Fórmula direcional:
-
-```text
-RangedDamage = AttackDamage * RangedWeaponMultiplier * RangedSkillMultiplier * MarkMultiplier
-```
-
-## 24. Tool Attack Damage
+## 20. Tool Attack Damage
 
 Dano quando uma ferramenta é usada ofensivamente.
-
-Influenciado por:
-
-```text
-Força
-ferramenta
-tier/material
-Melee em menor grau, se permitido
-```
 
 Regras:
 
@@ -739,7 +610,7 @@ Regras:
 Ferramentas podem causar dano, mas não devem superar armas dedicadas de mesmo tier.
 ```
 
-## 25. Attack Speed
+## 21. Attack Speed
 
 Representa velocidade de execução/recovery de ataques físicos.
 
@@ -751,8 +622,8 @@ tipo de arma
 peso/material da arma
 Melee/Guerreiro
 Ranged/Caçador
-Breath em ritmo sustentado
 cansaço
+status negativos
 ```
 
 Fórmula direcional:
@@ -764,33 +635,7 @@ AttackInterval = BaseWeaponInterval
                * WeaponWeightMultiplier
 ```
 
-Caps:
-
-```text
-Attack Speed não deve reduzir intervalo além de ~35-45% por meios permanentes.
-Buffs temporários podem exceder levemente com cooldown/condição.
-```
-
-## 26. Charge Speed
-
-Representa velocidade para carregar ataque pesado ou disparo carregado.
-
-Influenciado por:
-
-```text
-Força para armas pesadas
-Destreza para ranged/leve
-Breath
-skills específicas
-```
-
-Fórmula direcional:
-
-```text
-ChargeTime = BaseChargeTime * (1 - ChargeSpeedBonusCapped)
-```
-
-## 27. Crit Chance
+## 22. Crit Chance
 
 Representa chance de dano crítico.
 
@@ -822,14 +667,12 @@ Caps:
 ```text
 Base/permanente: softcap ~35%.
 Com condição: pode chegar a ~60%.
-Critical window pode garantir crítico automático se definido no sistema de combate/caverna.
+Critical window pode garantir crítico automático apenas em casos especiais bem telegrafados.
 ```
 
-## 28. Crit Damage
+## 23. Crit Damage
 
 Representa multiplicador de dano crítico.
-
-Fórmula direcional:
 
 ```text
 CriticalDamage = NormalDamage * CritMultiplier
@@ -844,101 +687,29 @@ Builds especializadas podem chegar a 2.0x-2.5x em condição.
 Acima disso apenas com capstone, item raro ou janela especial.
 ```
 
-## 29. Stagger Power
+## 24. Stagger Power / Posture Damage
 
-Representa capacidade de abalar o inimigo.
+Stagger Power representa capacidade de abalar o inimigo.
 
-Influenciado por:
-
-```text
-Força
-arma pesada
-Melee/Guerreiro
-ataques carregados
-material da arma
-capstone Kaand
-```
-
-Fórmula direcional:
+Posture Damage representa dano aplicado à barra/estado de postura.
 
 ```text
 StaggerPower = BaseStagger
              + WeaponStagger
              + (Força * StaggerPerStr)
              + SkillStaggerBonus
-```
 
-## 30. Posture Damage
-
-Representa dano aplicado à barra/estado de postura do inimigo.
-
-Fórmula direcional:
-
-```text
 PostureDamage = StaggerPower
               * AttackPostureMultiplier
               * VulnerabilityMultiplier
               * SkillPostureMultiplier
 ```
 
-Regras:
-
-```text
-Posture Damage deve ser importante contra elites/bosses.
-Nem todo inimigo precisa ter barra visível de postura.
-```
-
-## 31. Armor Penetration
-
-Representa quanto da defesa/armadura inimiga é ignorada.
-
-Influenciado por:
-
-```text
-armas perfurantes
-prata/mithril/liga especial
-skills específicas
-buffs/óleos de arma
-```
-
-Fórmula direcional:
-
-```text
-EffectiveEnemyArmor = EnemyArmor * (1 - ArmorPenetrationCapped)
-```
-
-Caps:
-
-```text
-Permanente: até ~30%.
-Condicional/consumível: até ~50%, com custo.
-```
-
-## 32. Knockback Power
-
-Representa empurrão aplicado ao inimigo.
-
-Influenciado por:
-
-```text
-Força
-arma pesada
-Golpe de Ruptura
-peso do inimigo
-resistência do inimigo
-```
-
-Fórmula direcional:
-
-```text
-Knockback = (AttackKnockback + StrengthBonus + SkillBonus) * EnemyWeightResistance
-```
-
 ---
 
 # PARTE E — Ofensivos mágicos
 
-## 33. Magic Power
+## 25. Magic Power
 
 Representa potência mágica geral.
 
@@ -954,8 +725,6 @@ Fonte de Anya
 capstone Anya/Senya
 ```
 
-Fórmula direcional:
-
 ```text
 MagicPower = BaseMagicPower
            + (Inteligência * MagicPerInt)
@@ -965,20 +734,7 @@ MagicPower = BaseMagicPower
            + BuffMagic
 ```
 
-## 34. Elemental Power
-
-Representa potência com magias elementais.
-
-Subtipos:
-
-```text
-Fire Power
-Ice Power
-Lightning Power
-Water/Nature Power
-```
-
-Fórmula direcional:
+## 26. Elemental / Arcane / Spiritual Power
 
 ```text
 ElementalPower[type] = MagicPower
@@ -987,77 +743,34 @@ ElementalPower[type] = MagicPower
                      * TargetElementMultiplier[type]
 ```
 
-## 35. Arcane Power
-
-Representa potência de magia arcana não-elemental.
-
-Influenciado por:
+Subtipos:
 
 ```text
-Inteligência
-Foco Arcano
-Projétil Arcano
-itens mágicos
+Fire Power
+Ice Power
+Lightning Power
+Water/Nature Power
+Arcane Power
+Spiritual Power
 ```
 
-## 36. Spiritual Power
-
-Representa potência espiritual/divina.
-
-Influenciado por:
+Corruption Power:
 
 ```text
-Vontade
-Eco da Fonte
-Semente Arcana de Anya
-Fonte de Anya
-Água Viva
+futuro/controlado
+não é magia inicial livre
+depende de lore, risco, Nyx/Void/Blackstone e decisões futuras
 ```
 
-Usos:
-
-```text
-cura
-purificação
-barreiras espirituais
-resistência a corrupção
-```
-
-## 37. Corruption Power futuro/controlado
-
-Representa potência de efeitos sombrios/corrompidos.
-
-Direção:
-
-```text
-Não é magia inicial livre.
-Depende de lore, risco, Nyx/Void/Blackstone e decisões futuras.
-Deve ter custo narrativo ou mecânico.
-```
-
-## 38. Healing Power
+## 27. Healing Power
 
 Representa potência de cura.
-
-Fórmula direcional:
 
 ```text
 HealingAmount = BaseHeal
               + (HealingPower * HealScaling)
               + SkillHealBonus
               + EquipmentHealBonus
-```
-
-Influenciado por:
-
-```text
-Vontade
-Magic/Arcano
-Fonte de Anya
-Água Viva
-itens de cura
-equipamentos espirituais
-Semente Arcana de Anya
 ```
 
 Regras:
@@ -1067,11 +780,9 @@ Cura mágica deve ser limitada, cara e com cooldown.
 Healing Power não deve invalidar comida, poções e Survival.
 ```
 
-## 39. Shield / Barrier Power
+## 28. Shield / Barrier Power
 
 Representa força de barreiras.
-
-Fórmula direcional:
 
 ```text
 BarrierHP = BaseBarrier
@@ -1080,82 +791,34 @@ BarrierHP = BaseBarrier
           + EquipmentBarrierBonus
 ```
 
-Regras:
-
-```text
-Barreira não deve bloquear tudo.
-Duração curta.
-Custo médio/alto de MP.
-```
-
-## 40. Cast Speed
-
-Representa velocidade de conjuração/canalização.
-
-Fórmula direcional:
+## 29. Cast Speed / MP Cost Reduction
 
 ```text
 CastTime = BaseCastTime * (1 - CastSpeedBonusCapped)
-```
-
-Influenciado por:
-
-```text
-Inteligência
-Destreza em menor grau
-Magic/Arcano
-equipamento
-cansaço/status
-```
-
-Caps:
-
-```text
-Permanente: redução até ~35%.
-Buffs temporários: maior, com custo/condição.
-```
-
-## 41. MP Cost Reduction
-
-Representa redução de custo de MP.
-
-Fórmula direcional:
-
-```text
 FinalMPCost = BaseMPCost * (1 - MPCostReductionCapped)
 ```
 
-Caps:
+Regras:
 
 ```text
-Permanente: até ~40%.
-Efeitos especiais/capstones: podem reduzir mais em uma magia específica ou janela curta.
+Cast Speed não permite spam sem custo de MP.
+MP Cost Reduction permanente precisa de cap.
 ```
 
-## 42. Magic Crit Chance e Magic Crit Damage
-
-Magias podem critar apenas se o sistema final permitir.
-
-Direção:
-
-```text
-Magic Crit deve ser mais raro que crítico físico comum.
-Semente de Senya pode abrir crit mágico ofensivo.
-Magia de cura não deve critar por padrão; pode ter bônus de efeito por Anya.
-```
-
-Fórmula direcional:
+## 30. Magic Crit e Status Application
 
 ```text
 MagicCritChance = BaseMagicCrit + SkillMagicCrit + ContextMagicCrit
 MagicCritDamage = BaseMagicCritMultiplier + SkillMagicCritDamage
 ```
 
-## 43. Status Application Power
+Direção:
 
-Representa chance/potência de aplicar Burn, Chill, Shock, Slow, Poison etc.
-
-Fórmula direcional:
+```text
+Magic Crit deve ser mais raro que crítico físico comum.
+Semente de Senya pode abrir crit mágico ofensivo.
+Magia de cura não deve critar por padrão; Anya aumenta efeito de suporte/cura.
+```
 
 ```text
 StatusApplyChance = BaseStatusChance
@@ -1164,22 +827,11 @@ StatusApplyChance = BaseStatusChance
                   - TargetStatusResistance
 ```
 
-Regras:
-
-```text
-Bosses devem ter resistência maior.
-Status forte precisa de duração curta, telegraph ou cooldown.
-```
-
 ---
 
 # PARTE F — Defensivos
 
-## 44. Defense
-
-Representa defesa total do personagem contra dano físico.
-
-Fórmula direcional:
+## 31. Defense / Armor
 
 ```text
 Defense = BaseDefense
@@ -1187,15 +839,7 @@ Defense = BaseDefense
         + Armor
         + SkillDefense
         + BuffDefense
-```
 
-## 45. Armor
-
-Representa proteção material do equipamento.
-
-Fórmula direcional:
-
-```text
 Armor = ArmorBaseFromGear
       + MaterialArmorBonus
       + QualityArmorBonus
@@ -1209,26 +853,16 @@ Defense = defesa total.
 Armor = contribuição material do equipamento.
 ```
 
-## 46. Physical Resistance
-
-Representa redução percentual contra dano físico.
-
-Fórmula direcional:
+## 32. Physical / Elemental Resistance
 
 ```text
 PhysicalDamageTaken = IncomingPhysicalDamage
                     * (1 - PhysicalResistanceCapped)
                     - FlatDefenseMitigation
+
+ElementalDamageTaken[type] = IncomingElementalDamage[type]
+                           * (1 - ElementalResistance[type])
 ```
-
-Caps:
-
-```text
-Resistência física permanente não deve passar de ~50-60%.
-Block e efeitos temporários podem reduzir mais, mas com custo/condição.
-```
-
-## 47. Elemental Resistance
 
 Tipos:
 
@@ -1244,26 +878,12 @@ Heat
 Cold
 ```
 
-Fórmula direcional:
+## 33. Status Resistance
 
 ```text
-ElementalDamageTaken[type] = IncomingElementalDamage[type]
-                           * (1 - ElementalResistance[type])
+FinalStatusChance = IncomingStatusChance - StatusResistance[type]
+FinalStatusDuration = BaseDuration * (1 - StatusDurationReduction[type])
 ```
-
-Influenciado por:
-
-```text
-Constituição
-Vontade
-equipamentos
-comida
-Survival
-Magic
-bioma/ambiente
-```
-
-## 48. Status Resistance
 
 Tipos:
 
@@ -1280,30 +900,11 @@ Slow
 Corruption
 ```
 
-Fórmula direcional:
-
-```text
-FinalStatusChance = IncomingStatusChance - StatusResistance[type]
-FinalStatusDuration = BaseDuration * (1 - StatusDurationReduction[type])
-```
-
-Regras:
-
-```text
-Constituição ajuda contra físico/tóxico.
-Vontade ajuda contra mental/espiritual.
-Survival ajuda contra ambiente/run.
-Magic ajuda contra corrupção/Nyx/Void.
-```
-
-## 49. Posture Resistance
-
-Representa resistência a stagger/knockback/quebra de postura.
-
-Fórmula direcional:
+## 34. Posture / Knockback Resistance
 
 ```text
 PostureDamageTaken = IncomingPostureDamage * (1 - PostureResistance)
+Knockback = IncomingKnockback * (1 - KnockbackResistance)
 ```
 
 Influenciado por:
@@ -1316,9 +917,7 @@ Melee/Guerreiro
 Block ativo
 ```
 
-## 50. Block Power
-
-Representa quanto dano o Block reduz.
+## 35. Block Power / Stability / Recovery
 
 Input:
 
@@ -1326,79 +925,42 @@ Input:
 Left Shift.
 ```
 
-Fórmula direcional:
-
 ```text
 BlockedDamage = IncomingDamage * (1 - BlockPower)
-```
 
-Influenciado por:
-
-```text
-Block rank
-escudo/arma
-Força
-Constituição
-Melee/Guerreiro
-material do equipamento
-capstone Kanthor/Kaand
-```
-
-Caps:
-
-```text
-Block Power permanente não deve anular 100% do dano.
-Perfect Block pode anular muito mais por timing, não por segurar botão.
-```
-
-## 51. Block Stability
-
-Representa quanto Stamina/Breath o Block consome ao receber impacto.
-
-Fórmula direcional:
-
-```text
 BlockResourceDrain = IncomingImpactPower
                    * (1 - BlockStability)
                    * ShieldOrWeaponMultiplier
-```
 
-Regras:
-
-```text
-Block forte reduz dano, mas não deve ser gratuito.
-Impactos fortes drenam recurso.
-Sem recurso, Block quebra ou perde eficiência.
-```
-
-## 52. Block Recovery
-
-Representa tempo para agir após bloquear.
-
-Fórmula direcional:
-
-```text
 BlockRecoveryTime = BaseBlockRecovery * (1 - BlockRecoveryReduction)
 ```
 
 Influenciado por:
 
 ```text
-Destreza
+Block rank
 Guarda Firme
-Contra-Ataque
-equipamento
+Constituição
+Força em menor grau
+escudo/arma
+material do equipamento
+capstone Kanthor/Kaand
+```
+
+Regras:
+
+```text
+Block forte reduz dano, mas não é gratuito.
+Block drena Stamina.
+Sem Stamina, Block quebra ou perde eficiência.
+Perfect Block pode anular muito mais por timing, não por segurar botão.
 ```
 
 ---
 
 # PARTE G — Movimento
 
-## 53. Movement Speed
-
-Representa velocidade base de deslocamento.
-
-Fórmula direcional:
+## 36. Movement Speed
 
 ```text
 MovementSpeed = BaseMovementSpeed
@@ -1420,13 +982,7 @@ status negativos
 buffs
 ```
 
-Caps:
-
-```text
-Variação permanente deve ser pequena para não quebrar mapas, câmera e colisão.
-```
-
-## 54. Dash Distance
+## 37. Dash
 
 Input:
 
@@ -1434,57 +990,33 @@ Input:
 Space + direção.
 ```
 
-Fórmula direcional:
-
 ```text
 DashDistance = BaseDashDistance
              * (1 + DashDistanceBonusCapped)
              * StatusMultiplier
-```
 
-Influenciado por:
-
-```text
-Dash base desbloqueado por tutorial/progressão
-Passo de Impulso
-Destreza
-Breath
-equipamento/status
-```
-
-## 55. Dash Cooldown Reduction
-
-Fórmula direcional:
-
-```text
 DashCooldown = BaseDashCooldown * (1 - DashCooldownReductionCapped)
-```
 
-Caps:
-
-```text
-Dash não deve ficar spammável sem custo.
-Cooldown mínimo precisa preservar leitura de combate.
-```
-
-## 56. Dash Cost Reduction
-
-Fórmula direcional:
-
-```text
 DashCost = BaseDashCost * (1 - DashCostReductionCapped)
 ```
 
 Influenciado por:
 
 ```text
+Destreza
 Passo de Impulso
-Respiração Controlada
-Breath atual
-equipamento leve
+Survival/Sobrevivente
+equipamento leve/pesado
+cansaço/status
 ```
 
-## 57. Dodge Invulnerability Window
+Custo:
+
+```text
+Stamina.
+```
+
+## 38. Dodge
 
 Input:
 
@@ -1492,77 +1024,32 @@ Input:
 double tap direcional.
 ```
 
-Fórmula direcional:
-
 ```text
 DodgeIFrames = BaseDodgeIFrames + ReflexoDeEsquivaBonus - StatusPenalty
-```
-
-Regras:
-
-```text
-Dodge não deve tornar o jogador invulnerável continuamente.
-Janela deve ser curta e legível.
-```
-
-## 58. Dodge Recovery
-
-Representa tempo até o jogador poder agir plenamente após dodge.
-
-Fórmula direcional:
-
-```text
 DodgeRecovery = BaseDodgeRecovery * (1 - DodgeRecoveryReductionCapped)
-```
-
-## 59. Dodge Cost Reduction
-
-Fórmula direcional:
-
-```text
 DodgeCost = BaseDodgeCost * (1 - DodgeCostReductionCapped)
 ```
-
-## 60. Collision Recovery
-
-Representa quanto tempo o jogador fica travado/empurrado após colisões ou hits leves.
 
 Influenciado por:
 
 ```text
-Constituição
-Posture Resistance
 Destreza
-status
+Reflexo de Esquiva
+Survival/Sobrevivente
+cansaço/status
+```
+
+Custo:
+
+```text
+Stamina.
 ```
 
 ---
 
 # PARTE H — Produção, coleta e economia
 
-## 61. Resource Yield Bonus
-
-Representa chance/quantidade extra de recurso.
-
-Influenciado por:
-
-```text
-Crafting/Produção
-Coleta Eficiente
-Prospector de Superfície
-Garimpo de Run, para caverna
-ferramenta/material
-buffs
-companions/pets
-```
-
-Não influenciado diretamente por:
-
-```text
-Força sozinha.
-```
-
-Fórmula direcional:
+## 39. Resource Yield Bonus
 
 ```text
 ExtraYieldChance = BaseExtraYieldChance
@@ -1572,28 +1059,13 @@ ExtraYieldChance = BaseExtraYieldChance
                  + CompanionYieldBonus
 ```
 
-Caps:
+Não influenciado diretamente por:
 
 ```text
-Yield extra comum pode crescer moderadamente.
-Recursos raros/endgame devem ter cap menor e depender de contexto.
+Força sozinha.
 ```
 
-## 62. Gathering Efficiency
-
-Representa custo/tempo/golpes para coletar.
-
-Influenciado por:
-
-```text
-Força para obstáculos físicos
-ferramenta
-Crafting/Produção
-Stamina
-cansaço
-```
-
-Fórmula direcional:
+## 40. Gathering Efficiency
 
 ```text
 HitsRequired = BaseHitsRequired
@@ -1609,11 +1081,7 @@ Gathering Efficiency = coletar com menos esforço.
 Resource Yield Bonus = ganhar mais recurso.
 ```
 
-## 63. Tool Stamina Cost Reduction
-
-Representa redução de custo de stamina ao usar ferramenta.
-
-Fórmula direcional:
+## 41. Tool Stamina Cost Reduction
 
 ```text
 ToolStaminaCost = BaseToolCost
@@ -1622,122 +1090,12 @@ ToolStaminaCost = BaseToolCost
                 * HungerMultiplier
 ```
 
-Influenciado por:
-
-```text
-Mãos de Lavrador
-ferramenta
-equipamento
-comida
-cansaço/fome
-```
-
-## 64. Tool Action Speed
-
-Representa velocidade de animação/execução de ferramenta.
-
-Fórmula direcional:
-
-```text
-ToolActionTime = BaseToolActionTime * (1 - ToolSpeedBonusCapped)
-```
-
-Regras:
-
-```text
-Não acelerar demais a ponto de quebrar animação/tile interaction.
-```
-
-## 65. Mining Efficiency
-
-Representa eficiência em mineração.
-
-Influenciado por:
-
-```text
-Força para quebrar rochas
-picareta/material
-Prospector/Garimpo
-caverna/bioma
-buffs
-```
-
-Fórmula direcional:
-
-```text
-MiningResult = BaseMiningResult
-             + YieldRoll
-             + RareOreRoll
-```
-
-## 66. Woodcutting Efficiency
-
-Representa eficiência em cortar madeira.
-
-Influenciado por:
-
-```text
-Força
-machado/material
-Lenhador Prático
-árvore/tronco
-buffs
-```
-
-## 67. Farming Efficiency
-
-Representa eficiência agrícola.
-
-Influenciado por:
-
-```text
-Mãos de Lavrador
-Coleta Eficiente
-ferramentas
-fertilizantes
-irrigação
-companions
-fazenda nível
-```
-
-## 68. Watering Efficiency
-
-Representa alcance/custo/automação de rega.
-
-Influenciado por:
-
-```text
-regador
-irrigação
-automação
-Crafting/Produção
-Mãos de Lavrador
-```
-
-## 69. Fishing Efficiency
-
-Representa chance de captura, qualidade e esforço na pesca.
-
-Influenciado por:
-
-```text
-Destreza
-vara de pesca
-Crafting/Produção
-Pescador, se existir/retornar como node
-comida/buffs
-bioma/água
-```
-
-## 70. Crafting Efficiency
-
-Representa custo, qualidade, velocidade ou desperdício em crafting/construção.
-
-Fórmula direcional:
+## 42. Crafting / Construction / Quality
 
 ```text
 FinalCraftCost = BaseCraftCost * (1 - ConstructionCostReductionCapped)
 CraftQuality = BaseQuality + CraftingSkillBonus + MaterialQuality + StationBonus
+FinalConstructionCost = BaseConstructionCost * (1 - ConstructionReductionCapped)
 ```
 
 Influenciado por:
@@ -1751,120 +1109,30 @@ estação de trabalho
 Forja Viva de Thoren
 ```
 
-## 71. Construction Cost Reduction
-
-Representa redução específica para construções/estruturas.
-
-Fórmula direcional:
-
-```text
-FinalConstructionCost = BaseConstructionCost * (1 - ConstructionReductionCapped)
-```
-
-Caps:
-
-```text
-Materiais comuns podem reduzir até ~15-25%.
-Materiais raros/únicos não devem ser reduzidos ou têm redução mínima.
-```
-
-## 72. Craft Quality Bonus
-
-Representa qualidade extra em item criado.
-
-Influenciado por:
-
-```text
-Inteligência
-estação
-material
-Crafting/Produção
-Forja Viva de Thoren
-```
-
-## 73. Cooking Quality Bonus
-
-Representa melhoria de comida.
-
-Influenciado por:
-
-```text
-Cozinha Sustentadora
-ingredientes
-qualidade da cozinha
-Inteligência
-```
-
-## 74. Potion / Consumable Potency
-
-Representa potência de poções, antídotos, óleos e bombas leves.
-
-Influenciado por:
-
-```text
-Alquimia Prática
-Inteligência
-material
-estação
-```
-
-## 75. Loot Bonus
-
-Representa chance de loot melhor.
-
-Fórmula direcional:
+## 43. Loot / Gold / Treasure
 
 ```text
 LootQualityRoll = BaseLootRoll
                 + SkillLootBonus
                 + BuffLootBonus
                 + ContextBonus
-```
 
-Influenciado por:
-
-```text
-Survival
-Faro de Tesouro
-Olho do Caçador
-Ranged para criaturas orgânicas
-itens raros
-buffs
+GoldReward = BaseGoldReward * (1 + GoldBonusCapped)
 ```
 
 Regras:
 
 ```text
-Loot Bonus deve ser moderado.
-Não cria loot inexistente em boss/quest único.
-```
-
-## 76. Gold Bonus
-
-Representa chance/quantidade extra de ouro em drops/tesouros.
-
-Fórmula direcional:
-
-```text
-GoldReward = BaseGoldReward * (1 + GoldBonusCapped)
-```
-
-Caps:
-
-```text
-Gold Bonus deve ser baixo/moderado.
-Economia da cidade e fazenda não pode ser quebrada por farming de ouro.
+Loot Bonus e Gold Bonus devem ser moderados.
+Não criam loot inexistente em boss/quest único.
+Não podem quebrar economia.
 ```
 
 ---
 
 # PARTE I — Fome, cansaço e ambiente
 
-## 77. Hunger Resistance
-
-Representa resistência à perda de fome.
-
-Fórmula direcional:
+## 44. Hunger Resistance
 
 ```text
 HungerDrain = BaseHungerDrain
@@ -1882,17 +1150,14 @@ Survival
 status negativos
 ```
 
-## 78. Fatigue Resistance
-
-Representa resistência ao acúmulo de cansaço.
-
-Fórmula direcional:
+## 45. Fatigue Resistance
 
 ```text
 FatigueGain = BaseFatigueGain
             + StaminaSpentFatigue
             + HungerFatiguePenalty
             + TimeOfDayFatigue
+            + EnvironmentFatiguePenalty
             - FatigueResistance
 ```
 
@@ -1914,27 +1179,18 @@ Regras:
 Fatigue Resistance reduz pressão, mas não elimina necessidade de dormir.
 ```
 
-## 79. Sleep Recovery Bonus
+## 46. Sleep Recovery / Environmental Endurance
 
-Representa quanto sono recupera recursos e remove penalidades.
+```text
+SleepRecovery = BaseSleepRecovery * BedQualityMultiplier * HomeMultiplier * BuffMultiplier
+EnvironmentalPenalty = BaseEnvironmentPenalty * (1 - EnvironmentalEndurance)
+```
 
 Influenciado por:
 
 ```text
 qualidade da cama
 casa/fazenda
-cansaço acumulado
-comida/eventos
-possíveis buffs sociais/cônjuge/pet futuros
-```
-
-## 80. Environmental Endurance
-
-Representa resistência geral a biomas/ambientes hostis.
-
-Influenciado por:
-
-```text
 Survival
 Resistência Ambiental
 Constituição
@@ -1943,26 +1199,11 @@ equipamentos
 comida
 ```
 
-Aplica em:
-
-```text
-frio
-calor
-gás
-gelo ambiental
-corrupção leve
-pressão de caverna profunda
-```
-
 ---
 
 # PARTE J — Social, pets e companions
 
-## 81. Social Influence
-
-Representa influência social geral.
-
-Fórmula direcional:
+## 47. Social Influence
 
 ```text
 SocialInfluence = BaseSocial
@@ -1983,37 +1224,14 @@ eventos
 flerte/casamento
 ```
 
-## 82. Vendor Price Modifier
-
-Representa desconto/bonificação de venda.
-
-Influenciado por:
-
-```text
-Carisma
-reputação
-cidade
-quests
-arquétipo mercador futuro
-itens sociais
-```
-
-Fórmula direcional:
+## 48. Vendor Price Modifier
 
 ```text
 BuyPrice = BaseBuyPrice * (1 - DiscountCapped)
 SellPrice = BaseSellPrice * (1 + SellBonusCapped)
 ```
 
-Caps:
-
-```text
-Descontos e bônus de venda precisam de cap forte para não quebrar economia.
-```
-
-## 83. Relationship Gain Modifier
-
-Representa ganho de relação com NPCs.
+## 49. Relationship Gain Modifier
 
 Influenciado por:
 
@@ -2026,80 +1244,26 @@ festivais
 reputação
 ```
 
-## 84. Companion Command futuro
-
-Representa eficiência em coordenar companions.
-
-Influenciado por:
+## 50. Companion/Pet futuros
 
 ```text
-Carisma
-Vontade
-relacionamento com companion
-arquétipo Líder
-quests
+Companion Command futuro
+Companion Bond Effect futuro
+Pet Bond Effect futuro
+Pet Combat Support futuro
 ```
 
 Direção:
 
 ```text
-Não implementar como número exposto cedo se companions ainda estiverem simples.
-```
-
-## 85. Companion Bond Effect futuro
-
-Representa força dos bônus de companion.
-
-Influenciado por:
-
-```text
-relação
-quests
-Carisma
-Vontade
-uso recorrente
-```
-
-## 86. Pet Bond Effect futuro
-
-Representa força dos bônus de pet.
-
-Influenciado por:
-
-```text
-cuidado
-alimentação
-vínculo
-Carisma
-Animal/Pet systems futuros
-itens
-```
-
-Direção:
-
-```text
-Pode afetar detecção de traps, ajuda contra swarms, achados, sorte e companhia na fazenda.
-```
-
-## 87. Pet Combat Support futuro
-
-Representa eficiência de pet em combate.
-
-Influenciado por:
-
-```text
-vínculo
-treinamento
-comida
-pet específico
-Carisma em menor grau
+Não expor como número cedo se companions/pets ainda estiverem simples.
 ```
 
 ---
 
 # PARTE K — HUD e menus
 
-## 88. HUD gameplay
+## 51. HUD gameplay
 
 Mostrar sempre ou quase sempre:
 
@@ -2113,7 +1277,6 @@ Mostrar quando relevante:
 
 ```text
 MP
-Breath
 Dash cooldown
 Dodge feedback
 Block state
@@ -2121,6 +1284,14 @@ HP Regen ativa
 MP Regen discreta
 status negativos
 critical window
+```
+
+Não mostrar:
+
+```text
+Breath
+Fôlego
+BR
 ```
 
 Não mostrar sempre:
@@ -2135,23 +1306,12 @@ Resource Yield Bonus
 Social Influence
 ```
 
-## 89. Menu de atributos
+## 52. Menu de atributos
 
-Menu deve mostrar:
-
-```text
-atributos centrais
-stats derivados principais
-fonte dos bônus
-efeito de equipamento atual
-efeito de skills
-efeitos temporários
-```
-
-Sugestão de grupos:
+Grupos sugeridos:
 
 ```text
-Recursos: HP, MP, Stamina, Breath, Regen
+Recursos: HP, MP, Stamina, Regen
 Ofensivo físico: Attack Damage, Crit, Attack Speed, Stagger
 Ofensivo mágico: Magic Power, Elemental, Healing, Cast, MP Cost
 Defensivo: Defense, Armor, Resistances, Block
@@ -2161,9 +1321,9 @@ Exploração: Loot, Gold, Hunger/Fatigue, Environment
 Social: Social Influence, Companions, Pets
 ```
 
-## 90. Tooltips e transparência
+## 53. Tooltips e transparência
 
-Cada stat derivado importante deve conseguir explicar sua origem:
+Cada stat derivado importante deve explicar sua origem:
 
 ```text
 Attack Damage
@@ -2184,9 +1344,7 @@ Block Power
 
 # PARTE L — Save/load
 
-## 91. Persistência
-
-Não é necessário salvar todos os atributos derivados calculados, se eles puderem ser recalculados.
+## 54. Persistência
 
 Salvar:
 
@@ -2199,6 +1357,11 @@ buffs persistentes
 status persistentes
 arquétipos ativos
 flags de Fonte/Anya/capstones exclusivos
+HP atual
+MP atual
+Stamina atual
+fome atual
+cansaço atual
 ```
 
 Recalcular ao carregar:
@@ -2207,7 +1370,6 @@ Recalcular ao carregar:
 HP Max
 MP Max
 Stamina Max
-Breath Max
 Attack Damage
 Defense
 resistências
@@ -2216,15 +1378,12 @@ produção
 loot/social derivados
 ```
 
-Salvar valor atual de recursos:
+Não salvar:
 
 ```text
-HP atual
-MP atual
-Stamina atual
 Breath atual
-fome atual
-cansaço atual
+Breath Max
+BR
 ```
 
 ---
@@ -2232,17 +1391,18 @@ cansaço atual
 # PARTE M — Decisões fechadas
 
 ```text
-Atributos derivados existem para traduzir atributos centrais em gameplay.
+Breath/Fôlego removido como atributo/recurso.
 O cálculo deve ser em camadas: base + atributos + level + equipamento + skill + buff + contexto + caps.
 Força melhora dano físico, stagger e esforço contra obstáculos, não yield direto.
-Constituição aumenta HP e tolerância, não HP regen sozinha.
-Vontade influencia MP e regen lenta de MP.
-Destreza influencia timing, ataque leve, dodge e crit condicional.
+Constituição aumenta HP, Stamina, estabilidade física, resistência e tolerância a cansaço.
+Constituição não gera HP Regen sozinha.
+Vontade influencia MP e MP Regen lenta.
+Destreza influencia timing, ataque leve, dodge, dash, movement e crit condicional.
 Inteligência influencia magia técnica, crafting e leitura de sistemas.
 Carisma influencia relação social, companions e economia social.
-Dash Distance é derivado de movimento e Survival, não active slot.
-Dodge Invulnerability Window é derivado de movimento e Reflexo de Esquiva.
-Block Power e Block Stability são derivados defensivos ligados a Left Shift, Melee e equipamento.
+Dash custa Stamina.
+Dodge custa Stamina.
+Block drena Stamina.
 Resource Yield Bonus é derivado de skills/ferramentas/buffs, não Força pura.
 Gathering Efficiency é diferente de Resource Yield Bonus.
 HP Regen é derivado de skill/efeito explícito, não Constituição pura.
@@ -2257,6 +1417,10 @@ A maioria dos derivados deve ser recalculada no load, não salva como valor fixo
 # PARTE N — Pendências
 
 ```text
+Remover Breath/Fôlego dos demais documentos canônicos.
+Remover BR das tabelas de monstros.
+Substituir BR por MovementProfile, RecoveryProfile, PressureProfile ou traits.
+Renomear/redefinir Respiração Controlada em Survival.
 Definir fórmulas finais numéricas.
 Definir nomes finais em PT-BR/EN para cada stat.
 Definir quais stats aparecem no menu inicial.
