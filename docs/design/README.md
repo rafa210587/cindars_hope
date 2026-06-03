@@ -6,13 +6,34 @@ Esta pasta guarda documentos de **descrição ampla e direcional** do projeto.
 
 Eles não são specs implementáveis e não devem ser tratados como backlog direto de Codex/Claude Code.
 
-As versões históricas originais continuam preservadas em `docs_old/`.
+## Regra de documento canônico único
+
+Para cada tema de design, deve existir **um único documento ativo**.
+
+Não manter versões paralelas como:
+
+```text
+*_v1.0.md
+*_v1.1.md
+*_v1.2.md
+```
+
+Quando um refinamento alterar uma área já documentada:
+
+```text
+Atualizar o mesmo arquivo canônico.
+Não criar uma nova versão paralela.
+Não deixar documento antigo coexistindo na mesma pasta.
+Usar o histórico do Git como versionamento.
+```
+
+Exceção: specs implementáveis em `docs/specs/` podem ter nomes específicos por entrega, porque representam unidades diferentes de implementação.
 
 ## Diferença entre design, refinamento e spec
 
 | Tipo | Local | Função |
 |---|---|---|
-| Design direction | `docs/design/` | Descrever como cada parte do jogo deve funcionar, qual é a visão, regras, mecanismos, lore e intenção de produto. |
+| Design direction | `docs/design/` | Descrever como cada parte do jogo deve funcionar, qual é a visão, regras, mecanismos, lore e intenção de produto. Deve existir um único arquivo canônico por tema. |
 | Pré-refinamento transitório | `docs/refinements/a_implementar/pre_refinamentos/` | Rascunhos vivos, análises e exploração de decisões antes de virar design consolidado ou spec. |
 | Refinamento implementado | `docs/refinements/implementados/` | Contexto histórico, auditorias, waves e decisões já absorvidas. |
 | Spec implementável | `docs/specs/a_implementar/` | Documento operacional para execução com escopo, dependências, arquivos permitidos/proibidos, critérios de aceite e validação. |
@@ -104,14 +125,6 @@ Roster ativo de cidadãos/serviços/relacionamentos da cidade:
 
 ```text
 docs/design/gameplay/city/CITY_NPC_ROSTER_SERVICES_DIRECTION_v1.1.md
-```
-
-As versões anteriores de fazenda ficam como histórico incremental:
-
-```text
-docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.1.md
-docs/design/gameplay/farm/FARM_DESIGN_DECISIONS_v1.2.md
-docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.2.md
 ```
 
 Usar `VAALARA_GAME_CANON_DIRECTION_v1.0.md` antes de qualquer novo design direction de cidade, caverna, magia/progressão, companions ou lore.
