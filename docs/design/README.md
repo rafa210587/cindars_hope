@@ -46,7 +46,7 @@ docs/design/
   README.md
   gameplay/
     farm/
-      FARM_DESIGN_DIRECTION_v1.0.md
+      FARM_DESIGN_DIRECTION_v1.1.md
     city/
       CITY_DESIGN_DIRECTION_v1.0.md
     cave/
@@ -80,10 +80,10 @@ Registro em docs/specs/implementados/ e docs/refinements/implementados/
 
 ## Estado atual
 
-O primeiro documento consolidado nesse modelo é:
+Documento ativo de fazenda:
 
 ```text
-docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.0.md
+docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.1.md
 ```
 
-Ele deve ser usado como direção ampla da fazenda antes de quebrar novas specs de layout, crops, fertilizantes, animais, automação, Fruto Mana, pedreira final e economia agrícola.
+Ele deve ser usado como direção ampla da fazenda antes de quebrar novas specs de layout, crops, fertilizantes, animais, automação, pets, cansaço, Fruto Mana, pedreira final e economia agrícola.
