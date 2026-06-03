@@ -58,18 +58,25 @@ Motivo:
 
 ## 3. Specs de fazenda
 
-Fonte principal:
+Fontes obrigatórias:
 
 ```text
 docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.3.md
+docs/design/gameplay/farm/FARM_LAYOUT_SCALE_BUILDINGS_DIRECTION.md
 ```
+
+Usar `FARM_DESIGN_DIRECTION_v1.3.md` para visão, regras, sistemas, lore, roadmap e funcionamento amplo.
+
+Usar `FARM_LAYOUT_SCALE_BUILDINGS_DIRECTION.md` para escala visual, tile 32x32, player 32x48, footprints, props, construções, interiores, colisão, pathfinding e tamanhos em pixels.
 
 Ler para specs de:
 
 ```text
 farm layout
+farm scale
 farm expansion
 free build
+building footprints
 soil/crops
 watering/rain
 crop death
@@ -93,6 +100,9 @@ farm economy
 Specs recomendadas derivadas:
 
 ```text
+spec_farm_scale_tilemap_player_footbox.md
+spec_farm_level1_layout_fixed_anchors.md
+spec_farm_building_footprints_placement_grid.md
 spec_farm_layout_expansion_zones_free_build.md
 spec_player_condition_fatigue_sleep_hunger_stamina.md
 spec_farm_buildings_construction_workshops_storage.md
@@ -180,6 +190,7 @@ Além das fontes de cidade, ler:
 
 ```text
 docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.3.md
+docs/design/gameplay/farm/FARM_LAYOUT_SCALE_BUILDINGS_DIRECTION.md
 ```
 
 Obrigatório para:
@@ -211,6 +222,7 @@ Enquanto não existir, specs de caverna devem ler:
 ```text
 docs/design/lore/VAALARA_GAME_CANON_DIRECTION_v1.0.md
 docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.3.md
+docs/design/gameplay/farm/FARM_LAYOUT_SCALE_BUILDINGS_DIRECTION.md
 docs/design/gameplay/city/CITY_DESIGN_DIRECTION_v1.2.md
 docs/design/gameplay/city/CITY_LAYOUT_BUILDINGS_SCHEDULE_DIRECTION.md
 ```
@@ -265,6 +277,7 @@ Enquanto não existir, ler:
 ```text
 docs/design/lore/VAALARA_GAME_CANON_DIRECTION_v1.0.md
 docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.3.md
+docs/design/gameplay/farm/FARM_LAYOUT_SCALE_BUILDINGS_DIRECTION.md
 docs/design/gameplay/city/CITY_NPC_ROSTER_SERVICES_DIRECTION_v1.1.md
 ```
 
@@ -325,6 +338,7 @@ Enquanto não existir, ler:
 ```text
 docs/design/lore/VAALARA_GAME_CANON_DIRECTION_v1.0.md
 docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.3.md
+docs/design/gameplay/farm/FARM_LAYOUT_SCALE_BUILDINGS_DIRECTION.md
 docs/design/gameplay/city/CITY_NPC_ROSTER_SERVICES_DIRECTION_v1.1.md
 docs/design/gameplay/city/CITY_LAYOUT_BUILDINGS_SCHEDULE_DIRECTION.md
 ```
@@ -369,7 +383,7 @@ docs/design/gameplay/ui_ux/UI_UX_DESIGN_DIRECTION_v1.0.md
 Enquanto não existir, ler fontes do domínio tocado:
 
 ```text
-Fazenda -> FARM_DESIGN_DIRECTION_v1.3.md
+Fazenda -> FARM_DESIGN_DIRECTION_v1.3.md + FARM_LAYOUT_SCALE_BUILDINGS_DIRECTION.md
 Cidade -> CITY_DESIGN_DIRECTION_v1.2.md + CITY_LAYOUT_BUILDINGS_SCHEDULE_DIRECTION.md
 NPCs -> CITY_NPC_ROSTER_SERVICES_DIRECTION_v1.1.md
 Canon -> VAALARA_GAME_CANON_DIRECTION_v1.0.md
