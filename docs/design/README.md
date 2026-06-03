@@ -29,11 +29,31 @@ Usar o histórico do Git como versionamento.
 
 Exceção: specs implementáveis em `docs/specs/` podem ter nomes específicos por entrega, porque representam unidades diferentes de implementação.
 
+## Mapa obrigatório para criação de specs
+
+Antes de criar qualquer spec em `docs/specs/a_implementar/`, consultar:
+
+```text
+docs/design/SPEC_SOURCE_MAP.md
+```
+
+Esse arquivo define quais documentos de design devem ser lidos para cada tipo de spec.
+
+Toda spec deve declarar uma seção:
+
+```md
+## Fontes obrigatórias lidas
+
+- docs/design/...
+- docs/design/...
+```
+
 ## Diferença entre design, refinamento e spec
 
 | Tipo | Local | Função |
 |---|---|---|
 | Design direction | `docs/design/` | Descrever como cada parte do jogo deve funcionar, qual é a visão, regras, mecanismos, lore e intenção de produto. Deve existir um único arquivo canônico por tema. |
+| Source map | `docs/design/SPEC_SOURCE_MAP.md` | Dizer quais documentos devem ser lidos antes de criar/refinar cada spec. |
 | Pré-refinamento transitório | `docs/refinements/a_implementar/pre_refinamentos/` | Rascunhos vivos, análises e exploração de decisões antes de virar design consolidado ou spec. |
 | Refinamento implementado | `docs/refinements/implementados/` | Contexto histórico, auditorias, waves e decisões já absorvidas. |
 | Spec implementável | `docs/specs/a_implementar/` | Documento operacional para execução com escopo, dependências, arquivos permitidos/proibidos, critérios de aceite e validação. |
@@ -65,12 +85,14 @@ Como testar no Unity?
 ```text
 docs/design/
   README.md
+  SPEC_SOURCE_MAP.md
   gameplay/
     farm/
       FARM_DESIGN_DIRECTION_v1.3.md
     city/
       CITY_DESIGN_DIRECTION_v1.2.md
       CITY_NPC_ROSTER_SERVICES_DIRECTION_v1.1.md
+      CITY_LAYOUT_BUILDINGS_SCHEDULE_DIRECTION.md
     cave/
       CAVE_DESIGN_DIRECTION_v1.0.md
     combat_magic_progression/
@@ -94,6 +116,8 @@ Pré-refinamento em docs/refinements/a_implementar/pre_refinamentos/
   ↓
 Design direction consolidado em docs/design/
   ↓
+Consulta obrigatória a docs/design/SPEC_SOURCE_MAP.md
+  ↓
 Spec quebrada em docs/specs/a_implementar/
   ↓
 Implementação
@@ -107,6 +131,12 @@ Canon jogável ativo de Vaalara:
 
 ```text
 docs/design/lore/VAALARA_GAME_CANON_DIRECTION_v1.0.md
+```
+
+Mapa de fontes para specs:
+
+```text
+docs/design/SPEC_SOURCE_MAP.md
 ```
 
 Documento ativo consolidado de direção ampla da fazenda:
@@ -127,8 +157,31 @@ Roster ativo de cidadãos/serviços/relacionamentos da cidade:
 docs/design/gameplay/city/CITY_NPC_ROSTER_SERVICES_DIRECTION_v1.1.md
 ```
 
-Usar `VAALARA_GAME_CANON_DIRECTION_v1.0.md` antes de qualquer novo design direction de cidade, caverna, magia/progressão, companions ou lore.
+Layout, construções, interiores, camas, schedules, física e roadmap da cidade:
 
-Usar `FARM_DESIGN_DIRECTION_v1.3.md` antes de quebrar novas specs de layout, crops, fertilizantes, animais, automação, pets, cansaço, Fonte de Anya, Água Viva, Raiz Dormente de Mana, pedreira final e economia agrícola.
+```text
+docs/design/gameplay/city/CITY_LAYOUT_BUILDINGS_SCHEDULE_DIRECTION.md
+```
 
-Usar `CITY_DESIGN_DIRECTION_v1.2.md` e `CITY_NPC_ROSTER_SERVICES_DIRECTION_v1.1.md` antes de quebrar novas specs de cidade, NPCs, lojas, reputação, calendário, festivais, contratos, guildas, templo de Kanthor, altares, romance/casamento, visitas à fazenda e integração com caverna.
+## Leitura mínima antes de specs
+
+Toda spec de gameplay/lore deve começar lendo:
+
+```text
+docs/design/SPEC_SOURCE_MAP.md
+docs/design/lore/VAALARA_GAME_CANON_DIRECTION_v1.0.md
+```
+
+Specs de fazenda devem ler também:
+
+```text
+docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.3.md
+```
+
+Specs de cidade devem ler também:
+
+```text
+docs/design/gameplay/city/CITY_DESIGN_DIRECTION_v1.2.md
+docs/design/gameplay/city/CITY_NPC_ROSTER_SERVICES_DIRECTION_v1.1.md
+docs/design/gameplay/city/CITY_LAYOUT_BUILDINGS_SCHEDULE_DIRECTION.md
+```
