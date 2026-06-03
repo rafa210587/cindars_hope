@@ -1,8 +1,7 @@
-# Cindar's Hope — City NPC Roster & Services Direction v1.1
+# Cindar's Hope — City NPC Roster & Services Direction
 
 > **Status:** direção ativa de elenco, serviços, romance, stats e quests da cidade  
 > **Local:** `docs/design/gameplay/city/CITY_NPC_ROSTER_SERVICES_DIRECTION_v1.1.md`  
-> **Substitui como direção ativa:** `CITY_NPC_ROSTER_SERVICES_DIRECTION_v1.0.md`  
 > **Depende de:** `docs/design/gameplay/city/CITY_DESIGN_DIRECTION_v1.2.md`  
 > **Canon obrigatório:** `docs/design/lore/VAALARA_GAME_CANON_DIRECTION_v1.0.md`  
 > **Fontes de referência:** `RACAS_DE_VAALARA_Guia_Completo.md`, `Deuses_de_Vaalara.md`, `DORNECIA_Guia_Completo.md`, `GDD_v2.6.md`  
@@ -10,40 +9,81 @@
 
 ---
 
-## 0. Alterações da v1.1
+## 0. Correção estrutural
 
-Esta versão adiciona:
+Este documento usa **classes funcionais do jogo**, não classes de D&D.
 
-- subraça/origem para cada NPC;
-- classe/arquétipo clara;
-- aparência baseada nas raças/subraças de Vaalara;
-- HP, MP e atributos;
-- resistências/status relevantes;
-- estado civil;
-- NPCs casados entre si;
-- NPCs disponíveis para relacionamento/casamento com jogador de qualquer gênero;
-- pelo menos 3 quests por NPC;
-- regra de visita à fazenda por reputação/relacionamento/quest/casamento;
-- compatibilidade com o templo de Kanthor e com a regra de Anya na Fonte.
+Classes como `Cleric`, `Paladin`, `Fighter`, `Wizard`, `Rogue`, `Bard`, etc. não são classes mecânicas de Cindar's Hope.
+
+Elas podem inspirar tom narrativo, mas não devem aparecer como classe de gameplay.
 
 ---
 
-# PARTE A — Regras gerais de NPC
+# PARTE A — Taxonomia correta do jogo
 
-## 1. Atributos usados
+## 1. Classes funcionais usadas no roster
 
-Cada NPC usa os atributos do projeto:
+| Classe funcional | Função no jogo |
+|---|---|
+| Plantador | planta sementes conforme área/plano permitido |
+| Colhedor | coleta crops maduras |
+| Pescador | pesca no lago/rios |
+| Lenhador | corta árvores e coleta madeira |
+| Minerador | coleta rochas/minérios em áreas válidas |
+| Artesão | opera workshops e crafting autorizado |
+| Explorador | vai à caverna buscar materiais e informações |
+| Construtor | constrói, move e expande estruturas |
+| Tratador | cuida de animais e pets |
+| Comerciante | vende, compra, negocia, altera estoque/preço |
+| Escriba | contratos, licenças, registros e reputação |
+| Curandeiro | cura, antídotos, recuperação e suporte |
+| Guardião | defesa, patrulha, proteção e escolta |
+| Combatente | combate direto em eventos ou caverna |
+| Pesquisador | lore, ruínas, tradução e tecnologia antiga |
+| Músico | buffs sociais, eventos, sonhos e pistas |
+| Alquimista | poções, fertilizantes, reagentes e transformação |
+
+Cada NPC pode ter:
 
 ```text
-FOR = Força
-CON = Constituição
-DES = Destreza
-INT = Inteligência
-VON = Vontade
-CAR = Carisma
+Classe Primária
+Classe Secundária
+Tags de serviço
 ```
 
-Escala recomendada para NPCs da cidade:
+## 2. Atributos e stats usados
+
+Atributos e stats do jogo:
+
+```text
+HP
+MP
+Stamina
+Breath/Fôlego
+Força
+Constituição
+Destreza
+Inteligência
+Vontade
+Carisma
+```
+
+Uso:
+
+| Stat | Função |
+|---|---|
+| HP | vida/sobrevivência |
+| MP | Pontos de Magia, se aplicável |
+| Stamina | energia para ações físicas |
+| Breath/Fôlego | ritmo de ação, esforço contínuo, caverna e combate prolongado |
+| Força | dano físico, coleta pesada, carga |
+| Constituição | HP, resistência física, status |
+| Destreza | movimento, esquiva, precisão |
+| Inteligência | crafting, poções, pesquisa, técnica |
+| Vontade | MP, resistência a medo, foco |
+| Carisma | descontos, venda, influência social e companions |
+
+Escala de atributos:
 
 ```text
 1 = muito baixo
@@ -54,9 +94,44 @@ Escala recomendada para NPCs da cidade:
 6 = excepcional local
 ```
 
-HP base é orientativo para design e balanceamento futuro. Não é contrato final de combate.
+Status negativos considerados:
 
-## 2. Estado de relacionamento
+```text
+Fome
+Exaustão
+Frio
+Calor
+Veneno
+Medo
+Morte
+```
+
+## 3. Religião pessoal dos NPCs
+
+Cada NPC deve declarar:
+
+```text
+Deus cultuado/principal
+Deuses com simpatia
+Deuses de que não gosta/desconfia
+```
+
+Isso afeta:
+
+- diálogo;
+- reputação;
+- presentes;
+- festivais;
+- reações a altares do jogador;
+- conflitos entre NPCs;
+- quests pessoais;
+- reações à Fonte de Anya.
+
+---
+
+# PARTE B — Regras sociais
+
+## 4. Estados de relacionamento
 
 ```text
 MarriedToNpc
@@ -68,7 +143,7 @@ LateRomanceEligible
 
 Quando um NPC é `RomanceEligibleAnyPlayerGender`, ele pode se relacionar e casar com o jogador independentemente do gênero escolhido pelo jogador.
 
-## 3. Casais fixos
+## 5. Casais fixos
 
 | Casal | Status |
 |---|---|
@@ -76,9 +151,7 @@ Quando um NPC é `RomanceEligibleAnyPlayerGender`, ele pode se relacionar e casa
 | Gruta Panela-Funda + Orlan Pouso-Curto | casados |
 | Mara Vellum + Tovin Mãos-de-Selo | casados |
 
-Esses NPCs não são candidatos de romance.
-
-## 4. Candidatos a relacionamento/casamento
+## 6. Candidatos a relacionamento/casamento
 
 | NPC | Gênero | Observação |
 |---|---|---|
@@ -94,329 +167,289 @@ Esses NPCs não são candidatos de romance.
 | Savra Escama-Verde | mulher | romance ervas/floresta |
 | Maelor Cinza | homem | romance tardio/Nyx/memória |
 
-## 5. Regra de Anya
-
-```text
-Nenhum NPC oferece construção de estátua de Anya na fazenda.
-Nenhum NPC vende altar independente de Anya.
-Anya só se manifesta na fazenda pela Fonte de Ressurreição / Fonte de Anya.
-```
-
-NPCs podem falar de Anya, pesquisar Anya, reagir às estátuas antigas da cidade ou à Fonte, mas não transformar Anya em decoração comum.
-
 ---
 
-# PARTE B — Tabela-mestra
+# PARTE C — Tabela-mestra
 
-| ID | Nome | Raça/subraça | Classe clara | Serviço | Romance | HP/MP |
+| ID | Nome | Raça/subraça | Classe primária | Classe secundária | Romance | Deus principal |
 |---|---|---|---|---|---|---|
-| npc_corvus | Padre Corvus | Humano de Mana | Cleric 5 / Paladin 2 de Kanthor | templo, juramentos | não | 120/45 |
-| npc_mara | Mara Vellum | Humana de Mana | Expert 6 / Magistrate | cartório, reputação | casada | 75/20 |
-| npc_sylveth | Sylveth | Elfa Silvestre | Druid 5 / Herbal Expert | sementes, Thandra | sim | 82/55 |
-| npc_brumdar | Brumdar Ferro-Quieto | Anão de Khaz Baruk | Fighter 5 / Smith | forja, ferramentas | não | 150/10 |
-| npc_nimble | Nimble Galhobaixo | Halfling Andarilho de Méritos | Expert 5 / Carpenter | construção | casado | 70/10 |
-| npc_gurd | Gurd Carvalho-Torto | Meio-orc Clã da Fúria | Fighter 4 / Laborer | obras pesadas | não | 145/0 |
-| npc_hund | Hund Carvalho-Torto | Meio-orc Clã da Noite | Guardian 4 / Laborer | defesa/obras | não | 135/10 |
-| npc_ozzra | Ozzra Fumaçazul | Goblin Zhak'thul | Alchemist 5 / Artificer 2 | alquimia | sim | 68/60 |
-| npc_gruta | Gruta Panela-Funda | Orc Clã da Chama Viva | Cook 4 / Bard 2 / Brawler | taverna/comida | casada | 130/15 |
-| npc_zrix | Zrix das Estradas | Draconato Cinza do Julgamento, cobre | Ranger 5 / Merchant | guilda/caverna | sim | 125/25 |
-| npc_yael | Yael Noite-Mansa | Elfa da Noite | Rogue 6 / Occult Trader | loja noturna | sim | 88/45 |
-| npc_thalindra | Thalindra Véu-de-Lua | Ninrorin | Wizard 6 / Archivist | arquivo/lore | sim | 72/80 |
-| npc_dagna | Dagna Rocha-Morna | Anã de Khaz Baruk | Miner 5 / Fighter 3 | minérios | sim | 155/10 |
-| npc_pip | Pip Semente-Solta | Halfling Sortudo de Finan | Scout 1 / Commoner | tutorial/entregas | não | 45/0 |
-| npc_alaric | Ser Alaric Veyr | Humano de Mana | Fighter 6 / Guard Captain | guarda | sim | 140/15 |
-| npc_mirela | Mirela dos Laços | Humana de Mana | Tailor 5 / Expert | costura | casada | 68/15 |
-| npc_renko | Renko Três-Sorrisos | Goblin Zhak'thul | Merchant 5 / Rogue 2 | loja geral | não | 65/10 |
-| npc_eiran | Eiran Valeclaro | Meio-elfo de Thandra | Ranger 4 / Animal Handler | animais/pets | sim | 95/30 |
-| npc_liora | Liora Canta-Rio | Humana de Mana com sangue nymiriano distante | Bard 5 / Seer | música/sonhos | sim | 70/70 |
-| npc_orlan | Orlan Pouso-Curto | Humano de Mana | Innkeeper 4 / Commoner | hospedagem | casado | 80/5 |
-| npc_savra | Savra Escama-Verde | Draconata oficial verde | Ranger 5 / Herbalist | ervas/antídotos | sim | 118/35 |
-| npc_tovin | Tovin Mãos-de-Selo | Gnomo Artífice | Scribe 5 / Expert | contratos | casado | 58/40 |
-| npc_maelor | Maelor Cinza | Elfo da Noite / Luandil | Monk 5 / Rogue 3 | segredos/Nyx | tardio | 105/50 |
-| lore_anya_fountain | Fonte de Ressurreição | Lore Anchor | Sistema de Anya | respec/ressurreição | não | n/a |
+| npc_corvus | Padre Corvus | Humano de Mana | Curandeiro | Guardião | não | Kanthor |
+| npc_mara | Mara Vellum | Humana de Mana | Escriba | Comerciante | casada | Merithus |
+| npc_sylveth | Sylveth | Elfa Silvestre | Plantador | Curandeiro | sim | Thandra |
+| npc_brumdar | Brumdar Ferro-Quieto | Anão de Khaz Baruk | Artesão | Combatente | não | Thoren |
+| npc_nimble | Nimble Galhobaixo | Halfling Andarilho de Méritos | Construtor | Artesão | casado | Merithus |
+| npc_gurd | Gurd Carvalho-Torto | Meio-orc Clã da Fúria | Construtor | Combatente | não | Kaand |
+| npc_hund | Hund Carvalho-Torto | Meio-orc Clã da Noite | Guardião | Construtor | não | Kanthor |
+| npc_ozzra | Ozzra Fumaçazul | Goblin Zhak'thul | Alquimista | Artesão | sim | Senya |
+| npc_gruta | Gruta Panela-Funda | Orc Clã da Chama Viva | Comerciante | Músico | casada | Senya |
+| npc_zrix | Zrix das Estradas | Draconato Cinza do Julgamento, cobre | Explorador | Comerciante | sim | Finan |
+| npc_yael | Yael Noite-Mansa | Elfa da Noite / Luandil | Comerciante | Explorador | sim | Nyx |
+| npc_thalindra | Thalindra Véu-de-Lua | Ninrorin | Pesquisador | Alquimista | sim | Alihana |
+| npc_dagna | Dagna Rocha-Morna | Anã de Khaz Baruk | Minerador | Combatente | sim | Thoren |
+| npc_pip | Pip Semente-Solta | Halfling Sortudo de Finan | Comerciante | Explorador | não | Finan |
+| npc_alaric | Ser Alaric Veyr | Humano de Mana | Guardião | Combatente | sim | Kanthor |
+| npc_mirela | Mirela dos Laços | Humana de Mana | Artesão | Comerciante | casada | Merithus |
+| npc_renko | Renko Três-Sorrisos | Goblin Zhak'thul | Comerciante | Artesão | não | Finan |
+| npc_eiran | Eiran Valeclaro | Meio-elfo de Thandra | Tratador | Plantador | sim | Thandra |
+| npc_liora | Liora Canta-Rio | Humana de Mana com sangue nymiriano distante | Músico | Pesquisador | sim | Alihana |
+| npc_orlan | Orlan Pouso-Curto | Humano de Mana | Comerciante | Escriba | casado | Finan |
+| npc_savra | Savra Escama-Verde | Draconata verde | Curandeiro | Explorador | sim | Tandra/Telisandra |
+| npc_tovin | Tovin Mãos-de-Selo | Gnomo Artífice | Escriba | Artesão | casado | Merithus |
+| npc_maelor | Maelor Cinza | Elfo da Noite / Luandil | Explorador | Pesquisador | tardio | Nyx |
 
 ---
 
-# PARTE C — NPCs detalhados
+# PARTE D — NPCs detalhados
 
-## 6. Padre Corvus
+## 7. Padre Corvus
 
 ```text
 ID: npc_corvus
 Gênero: homem
-Idade narrativa: adulto maduro
-Raça: Humano
-Subraça/origem: Humano de Mana, dornécio
-Classe clara: Cleric 5 / Paladin 2 de Kanthor
-Estado relacionamento: UnavailableForRomance
-Serviço: Templo de Kanthor, juramentos, bênçãos de ordem, mediação civil
-Visita à fazenda: sim, por alerta, juramento, cerimônia ou investigação
-HP: 120
-MP: 45
-FOR 3 | CON 4 | DES 2 | INT 4 | VON 6 | CAR 5
-Resistências/status: +Medo, +Exaustão; fraco contra dúvida moral prolongada
+Raça/subraça: Humano de Mana, dornécio
+Classe Primária: Curandeiro
+Classe Secundária: Guardião
+Tags: kanthor, templo, juramento, cura, ordem
+Relacionamento: UnavailableForRomance
+Deus cultuado: Kanthor
+Simpatia: Merithus, Thoren
+Não gosta/desconfia: Nyx, Kaand, cultos de Senya
+Visita fazenda: sim, por juramento, alerta, proteção ou investigação
+HP 120 | MP 45 | Stamina 70 | Breath 65
+Força 3 | Constituição 4 | Destreza 2 | Inteligência 4 | Vontade 6 | Carisma 5
+Resiste: Medo, Exaustão leve
+Vulnerável: Veneno, dúvida moral prolongada
 ```
 
 Aparência:
 
-Humano de Mana de pele morena clara, cabelos grisalhos presos curtos, olhos castanhos firmes. Usa vestes brancas e douradas de Kanthor com uma pequena balança de prata no peito. Sua postura é sempre controlada, mas os olhos denunciam cansaço.
+Humano de Mana de pele morena clara, cabelos grisalhos presos curtos, olhos castanhos firmes. Usa vestes brancas e douradas de Kanthor com balança de prata no peito.
 
 Background:
 
-Corvus é a face pública da ordem em Cindar's Hope. Ele acredita que a cidade só sobrevive porque mantém juramentos, contratos e lei mesmo longe da capital.
+Corvus é a face pública da ordem. Sabe que o templo de Kanthor foi construído sobre fundações antigas, mas não entende toda a ligação com Anya.
 
 Relações:
 
 - confia em Ser Alaric;
 - respeita Mara;
 - desconfia de Yael;
-- evita Liora quando ela fala de sonhos;
-- sabe que Thalindra pesquisa coisas que podem causar pânico.
+- evita Liora quando ela fala de sonhos.
 
 Quests:
 
-1. **O Sino que Não Toca**  
-   O sino do templo de Kanthor racha antes de um festival. O jogador precisa coletar metal bom com Brumdar e convencer Corvus a aceitar ajuda de um ferreiro anão, não apenas rito religioso.  
-   Recompensa: reputação com templo, bênção menor de Kanthor.
-
-2. **Juramento Partido**  
-   Um contrato público foi falsificado. O jogador investiga Mara, Tovin e Renko para descobrir se foi crime comum ou tentativa de desacreditar Kanthor.  
-   Recompensa: acesso a contratos melhores e desconto em licenças.
-
-3. **O Nome Sob a Pedra**  
-   Uma obra revela uma inscrição anterior ao templo. Corvus pede discrição. O jogador decide ocultar, mostrar a Thalindra ou confrontar Corvus.  
-   Recompensa: avanço na trama de Cindar/Anya ou reputação com Kanthor.
+1. **O Sino que Não Toca** — reparar o sino rachado do templo com ajuda de Brumdar. Recompensa: bênção menor de Kanthor.
+2. **Juramento Partido** — investigar contrato falsificado entre Mara, Tovin e Renko. Recompensa: contratos melhores.
+3. **O Nome Sob a Pedra** — decidir se uma inscrição antiga sob o templo deve ser ocultada ou revelada. Recompensa: avanço de lore Anya/Cindar ou reputação com Kanthor.
 
 ---
 
-## 7. Mara Vellum
+## 8. Mara Vellum
 
 ```text
 ID: npc_mara
 Gênero: mulher
-Idade narrativa: adulta
-Raça: Humana
-Subraça/origem: Humana de Mana, dornécia
-Classe clara: Expert 6 / Magistrate
-Estado relacionamento: MarriedToNpc
+Raça/subraça: Humana de Mana, dornécia
+Classe Primária: Escriba
+Classe Secundária: Comerciante
+Tags: cartorio, licenca, contrato, reputacao, merithus
+Relacionamento: MarriedToNpc
 Cônjuge: Tovin Mãos-de-Selo
-Serviço: cartório, licenças, reputação, impostos, registros
-Visita à fazenda: sim, para inspeções e licenças
-HP: 75
-MP: 20
-FOR 1 | CON 2 | DES 3 | INT 6 | VON 5 | CAR 4
-Resistências/status: +Medo burocrático, +Persuasão institucional; fraca contra Veneno/combate
+Deus cultuado: Merithus/Meritos
+Simpatia: Kanthor, Finan quando dentro da lei
+Não gosta/desconfia: Kaand, Nyx, Senya sem controle
+Visita fazenda: sim, inspeção e licenças
+HP 75 | MP 20 | Stamina 55 | Breath 45
+Força 1 | Constituição 2 | Destreza 3 | Inteligência 6 | Vontade 5 | Carisma 4
+Resiste: Medo burocrático, Manipulação social
+Vulnerável: Combate direto, Veneno
 ```
 
 Aparência:
 
-Humana de Mana de pele oliva, cabelos pretos presos em coque severo, olhos escuros atentos. Usa casaco azul-ardósia com botões de bronze e carrega sempre um livro de registros.
+Humana de Mana de pele oliva, cabelos pretos em coque severo, olhos escuros atentos e casaco azul-ardósia com botões de bronze.
 
 Background:
 
-Mara administra permissões e contratos. Para ela, papel assinado é o que separa uma comunidade de um bando assustado.
+Mara mantém a cidade de pé por registros, licenças e contratos. Acredita que civilização é aquilo que pode ser assinado e cobrado.
 
 Relações:
 
 - casada com Tovin;
 - trabalha com Corvus;
-- briga com Nimble por obras informais;
-- suspeita que Renko subdeclara estoque.
+- discute com Nimble;
+- suspeita de Renko.
 
 Quests:
 
-1. **Licença de Primeira Obra**  
-   Ensina o jogador a registrar uma construção. Exige madeira, ouro e assinatura de Nimble.  
-   Recompensa: desbloqueio formal de construção avançada.
-
-2. **As Páginas Arrancadas**  
-   Registros antigos da cidade desapareceram. Mara acha que é fraude fiscal; a investigação aponta para Cindar e o Jardim das Estátuas.  
-   Recompensa: primeira flag de segredo urbano.
-
-3. **Lei ou Compaixão**  
-   Uma família não consegue pagar licença. O jogador escolhe pagar, negociar serviço comunitário ou aplicar a lei de forma dura.  
-   Recompensa: altera reputação com Mara, Corvus e moradores.
+1. **Licença de Primeira Obra** — registrar a primeira construção da fazenda. Recompensa: desbloqueio de construção formal.
+2. **As Páginas Arrancadas** — recuperar registros antigos removidos do cartório. Recompensa: flag de segredo urbano.
+3. **Lei ou Compaixão** — resolver caso de família sem recursos para licença. Recompensa: reputação variável.
 
 ---
 
-## 8. Sylveth
+## 9. Sylveth
 
 ```text
 ID: npc_sylveth
 Gênero: mulher
-Idade narrativa: adulta jovem
-Raça: Elfa
-Subraça/origem: Elfa Silvestre, comunidade rural de Dornécia
-Classe clara: Druid 5 / Herbal Expert
-Estado relacionamento: RomanceEligibleAnyPlayerGender
-Serviço: sementes, calendário agrícola, Thandra, crops raras não-Mana
-Visita à fazenda: sim, por crops, sementes e eventos de Thandra
-HP: 82
-MP: 55
-FOR 2 | CON 3 | DES 5 | INT 4 | VON 5 | CAR 4
-Resistências/status: +Veneno vegetal, +Frio leve; fraca contra Fogo/Calor
+Raça/subraça: Elfa Silvestre
+Classe Primária: Plantador
+Classe Secundária: Curandeiro
+Tags: sementes, thandra, crops, estacoes, ervas
+Relacionamento: RomanceEligibleAnyPlayerGender
+Deus cultuado: Thandra
+Simpatia: Alihana, Anya como mistério de cura
+Não gosta/desconfia: Kaand, tecnologia bromeciana sem cuidado
+Visita fazenda: sim, crops, sementes e eventos de Thandra
+HP 82 | MP 55 | Stamina 80 | Breath 75
+Força 2 | Constituição 3 | Destreza 5 | Inteligência 4 | Vontade 5 | Carisma 4
+Resiste: Veneno vegetal, Exaustão leve
+Vulnerável: Calor extremo, Fogo
 ```
 
 Aparência:
 
-Elfa Silvestre de pele bronze-cobre, cabelos castanho-musgo trançados com folhas secas e olhos verde-âmbar. Usa roupas naturais em tons de terra e verde, com pequenas contas de madeira.
+Elfa Silvestre de pele bronze-cobre, cabelos castanho-musgo trançados com folhas secas e olhos verde-âmbar. Usa roupas naturais em tons de terra e verde.
 
 Background:
 
-Sylveth cuida da loja de sementes e mantém os ritos de Thandra vivos sem transformá-los em dogma público.
+Sylveth cuida da loja de sementes e mantém vivos os ritos rurais de Thandra.
 
 Relações:
 
 - amiga de Eiran;
 - fornece ervas para Ozzra;
 - respeita Savra;
-- acha Thalindra distante demais da terra.
+- acha Thalindra distante da terra.
 
 Quests:
 
-1. **Sementes de Retorno**  
-   Sylveth pede ajuda para recuperar sementes antigas em uma trilha tomada por ervas agressivas.  
-   Recompensa: novo seed comum da estação.
-
-2. **Festival de Thandra**  
-   O jogador fornece crops de qualidade para a Feira da Primeira Colheita e ajuda Sylveth a montar um altar rural temporário.  
-   Recompensa: reputação rural, fertilizante simples.
-
-3. **Raízes que Ouvem**  
-   Algumas plantas reagem à Fonte e às estátuas antigas. Sylveth teme que não seja bênção de Thandra.  
-   Recompensa: pista sobre Anya sem revelar demais.
+1. **Sementes de Retorno** — recuperar sementes antigas em trilha tomada por ervas agressivas. Recompensa: nova semente da estação.
+2. **Festival de Thandra** — fornecer crops de qualidade para a feira rural. Recompensa: fertilizante simples e reputação rural.
+3. **Raízes que Ouvem** — investigar plantas reagindo à Fonte e às estátuas antigas. Recompensa: pista sobre Anya.
 
 Romance:
 
 - Quest de vínculo: **A Terra Escolhe Devagar**.
-- Após casamento, pode visitar a fazenda em dias de feira e ajudar com crops sem automatizar tudo.
+- Após casamento: visita a fazenda e ajuda com crops em eventos específicos, sem automatizar tudo.
 
 ---
 
-## 9. Brumdar Ferro-Quieto
+## 10. Brumdar Ferro-Quieto
 
 ```text
 ID: npc_brumdar
 Gênero: homem
-Idade narrativa: adulto maduro
-Raça: Anão
-Subraça/origem: Anão de Khaz Baruk
-Classe clara: Fighter 5 / Smith
-Estado relacionamento: UnavailableForRomance
-Serviço: forja, ferramentas, armas, reparo
-Visita à fazenda: sim, para entrega de upgrades
-HP: 150
-MP: 10
-FOR 5 | CON 6 | DES 2 | INT 4 | VON 5 | CAR 2
-Resistências/status: +Calor, +Medo, +Exaustão; fraco contra magia mental
+Raça/subraça: Anão de Khaz Baruk
+Classe Primária: Artesão
+Classe Secundária: Combatente
+Tags: forja, ferramentas, armas, minerio, thoren
+Relacionamento: UnavailableForRomance
+Deus cultuado: Thoren
+Simpatia: Kanthor, Merithus
+Não gosta/desconfia: Senya, Nyx, Finan quando vira trapaça
+Visita fazenda: sim, upgrades e ferramentas
+HP 150 | MP 10 | Stamina 90 | Breath 80
+Força 5 | Constituição 6 | Destreza 2 | Inteligência 4 | Vontade 5 | Carisma 2
+Resiste: Calor, Medo, Exaustão
+Vulnerável: Medo mental/ilusões
 ```
 
 Aparência:
 
-Anão de Khaz Baruk de pele curtida, barba cinza longa em três tranças com argolas de ferro, braços grossos e mãos marcadas por queimaduras antigas. Usa avental escuro, martelo curto no cinto e olhos de brilho mineral.
+Anão robusto de pele curtida, barba cinza em três tranças com argolas de ferro, braços grossos e mãos queimadas pela forja.
 
 Background:
 
-Brumdar veio para Cindar's Hope pela qualidade estranha dos minérios da caverna. Ele não confia em metal sem história.
+Brumdar veio por causa dos minérios estranhos da caverna. Não confia em metal sem procedência.
 
 Relações:
 
-- grande amigo de Dagna;
+- amigo de Dagna;
 - rival técnico de Ozzra;
 - respeita Corvus;
-- acha Zrix informal demais.
+- desconfia de Zrix quando ele traz material sem origem clara.
 
 Quests:
 
-1. **A Primeira Ferramenta Séria**  
-   O jogador traz cobre/ferro para melhorar uma ferramenta. Brumdar explica durabilidade e cuidado.  
-   Recompensa: primeiro upgrade de ferramenta.
-
-2. **Metal que Sussurra**  
-   Um lingote vibra perto de uma Pedra Negra corrompida. Brumdar pede análise antes que Mara confisque.  
-   Recompensa: desbloqueio de minério especial rastreado.
-
-3. **O Martelo do Aprendiz**  
-   Brumdar perdeu um martelo antigo em uma galeria. Dagna sabe mais do que conta.  
-   Recompensa: receita de arma/ferramenta intermediária.
+1. **A Primeira Ferramenta Séria** — melhorar ferramenta com cobre/ferro. Recompensa: primeiro upgrade.
+2. **Metal que Sussurra** — analisar lingote que vibra perto de Pedra Negra. Recompensa: minério especial rastreado.
+3. **O Martelo do Aprendiz** — recuperar martelo antigo em galeria. Recompensa: receita de ferramenta intermediária.
 
 ---
 
-## 10. Nimble Galhobaixo
+## 11. Nimble Galhobaixo
 
 ```text
 ID: npc_nimble
 Gênero: homem
-Idade narrativa: adulto
-Raça: Halfling
-Subraça/origem: Andarilho de Méritos
-Classe clara: Expert 5 / Carpenter
-Estado relacionamento: MarriedToNpc
+Raça/subraça: Halfling Andarilho de Méritos
+Classe Primária: Construtor
+Classe Secundária: Artesão
+Tags: carpintaria, construcao, layout, mover, casa, sellpoint
+Relacionamento: MarriedToNpc
 Cônjuge: Mirela dos Laços
-Serviço: carpintaria, construções, modo construção
-Visita à fazenda: sim, frequentemente por obras
-HP: 70
-MP: 10
-FOR 2 | CON 3 | DES 5 | INT 5 | VON 3 | CAR 4
-Resistências/status: +Medo por sorte, +Exaustão leve; fraco contra dano direto
+Deus cultuado: Merithus/Meritos
+Simpatia: Finan, Thandra
+Não gosta/desconfia: Kaand, burocracia excessiva mesmo cultuando Merithus
+Visita fazenda: sim, obras e movimentação de estruturas
+HP 70 | MP 10 | Stamina 75 | Breath 70
+Força 2 | Constituição 3 | Destreza 5 | Inteligência 5 | Vontade 3 | Carisma 4
+Resiste: Exaustão leve, Medo por sorte
+Vulnerável: Dano direto
 ```
 
 Aparência:
 
-Halfling de cabelos castanhos claros, costeletas compridas, dedos rápidos e pés peludos sempre sujos de serragem. Usa colete azul gasto cheio de bolsos, fita métrica no pescoço e lápis atrás da orelha.
+Halfling de cabelos castanhos claros, costeletas compridas, pés peludos sempre sujos de serragem e colete cheio de bolsos.
 
 Background:
 
-Nimble adora construir, mover, medir e reclamar do layout dos outros.
+Nimble adora medir, mover, construir e reclamar de layout ruim.
 
 Relações:
 
 - casado com Mirela;
 - trabalha com Gurd e Hund;
-- discute com Mara;
+- briga com Mara por licenças;
 - gosta de Gruta.
 
 Quests:
 
-1. **Madeira, Pedra e Assinatura**  
-   Tutorial de construção: juntar materiais, pagar licença e escolher local válido.  
-   Recompensa: primeira construção secundária.
-
-2. **Mover é Mais Difícil que Erguer**  
-   Libera movimentação de SellPoint/casa. Exige resolver conflito com Mara sobre registro de planta da fazenda.  
-   Recompensa: modo mover construção.
-
-3. **A Tábua que Cura**  
-   Nimble encontra madeira auto-reparável bromeciana. O jogador decide usar, guardar ou entregar a Thalindra.  
-   Recompensa: avanço em tecnologia bromeciana.
+1. **Madeira, Pedra e Assinatura** — tutorial de construção. Recompensa: primeira construção secundária.
+2. **Mover é Mais Difícil que Erguer** — liberar movimentação de casa/SellPoint. Recompensa: modo mover construção.
+3. **A Tábua que Cura** — decidir destino de madeira auto-reparável bromeciana. Recompensa: pista tecnológica.
 
 ---
 
-## 11. Gurd Carvalho-Torto
+## 12. Gurd Carvalho-Torto
 
 ```text
 ID: npc_gurd
 Gênero: homem
-Idade narrativa: adulto jovem
-Raça: Meio-orc
-Subraça/origem: Clã da Fúria, sangue integrado em Dornécia
-Classe clara: Fighter 4 / Laborer
-Estado relacionamento: UnavailableForRomance
-Serviço: obra pesada, limpeza de expansão, força bruta
-Visita à fazenda: sim, para obras/expansões
-HP: 145
-MP: 0
-FOR 6 | CON 5 | DES 2 | INT 2 | VON 3 | CAR 3
-Resistências/status: +Medo, +Exaustão; fraco contra Encanto/controle mental
+Raça/subraça: Meio-orc Clã da Fúria
+Classe Primária: Construtor
+Classe Secundária: Combatente
+Tags: obra, forca, limpeza, expansao
+Relacionamento: UnavailableForRomance
+Deus cultuado: Kaand
+Simpatia: Thoren, Senya
+Não gosta/desconfia: Kanthor quando vira controle, Merithus
+Visita fazenda: sim, obras e expansão
+HP 145 | MP 0 | Stamina 95 | Breath 85
+Força 6 | Constituição 5 | Destreza 2 | Inteligência 2 | Vontade 3 | Carisma 3
+Resiste: Medo, Exaustão
+Vulnerável: Controle mental, Veneno
 ```
 
 Aparência:
 
-Meio-orc de pele cinza-avermelhada, presas evidentes, corpo largo, tatuagens geométricas nos ombros e cicatrizes visíveis. Usa camisa sem mangas, botas pesadas e luvas de obra.
+Meio-orc de pele cinza-avermelhada, presas evidentes, corpo largo, tatuagens geométricas e cicatrizes nos ombros.
 
 Background:
 
-Gurd resolve problemas levantando, quebrando ou carregando. Ele é direto, mas não cruel.
+Gurd resolve problemas carregando, quebrando ou encarando. Direto, mas não cruel.
 
 Relações:
 
@@ -427,45 +460,39 @@ Relações:
 
 Quests:
 
-1. **Pedra Grande, Martelo Maior**  
-   Ajuda a remover obstáculos da fazenda.  
-   Recompensa: desbloqueia limpeza de área pesada.
-
-2. **A Parede que Não Quebrou**  
-   Gurd encontra uma parede antiga que resiste a golpes. Precisa decidir chamar Thalindra ou tentar quebrar.  
-   Recompensa: pista sobre ruína subterrânea.
-
-3. **Força sem Fúria**  
-   Gurd se envolve em briga durante festival de Senya. O jogador pode acalmá-lo, apoiá-lo ou entregá-lo a Corvus.  
-   Recompensa: melhora relação e possível job de força na fazenda.
+1. **Pedra Grande, Martelo Maior** — remover obstáculos da fazenda. Recompensa: limpeza pesada.
+2. **A Parede que Não Quebrou** — investigar parede antiga resistente. Recompensa: pista de ruína.
+3. **Força sem Fúria** — resolver briga em festival de Senya. Recompensa: relação e job de força.
 
 ---
 
-## 12. Hund Carvalho-Torto
+## 13. Hund Carvalho-Torto
 
 ```text
 ID: npc_hund
 Gênero: homem
-Idade narrativa: adulto jovem
-Raça: Meio-orc
-Subraça/origem: Clã da Noite, sangue integrado em Dornécia
-Classe clara: Guardian 4 / Laborer
-Estado relacionamento: UnavailableForRomance
-Serviço: transporte, defesa de obras, guarda informal
-Visita à fazenda: sim, obras e eventos de ameaça
-HP: 135
-MP: 10
-FOR 5 | CON 5 | DES 3 | INT 3 | VON 4 | CAR 2
-Resistências/status: +Medo, +Frio noturno; fraco contra Calor
+Raça/subraça: Meio-orc Clã da Noite
+Classe Primária: Guardião
+Classe Secundária: Construtor
+Tags: defesa, transporte, obra, vigilancia
+Relacionamento: UnavailableForRomance
+Deus cultuado: Kanthor
+Simpatia: Nyx, Thoren
+Não gosta/desconfia: Kaand sem disciplina, Senya caótica
+Visita fazenda: sim, obras e ameaça
+HP 135 | MP 10 | Stamina 85 | Breath 90
+Força 5 | Constituição 5 | Destreza 3 | Inteligência 3 | Vontade 4 | Carisma 2
+Resiste: Medo, Frio noturno
+Vulnerável: Calor extremo
 ```
 
 Aparência:
 
-Meio-orc de pele cinza-azulada, presas menores que as de Gurd, olhos escuros atentos e cabelo raspado nas laterais. Usa casaco de couro pesado e carrega cordas e ferramentas de içamento.
+Meio-orc de pele cinza-azulada, presas menores, olhos escuros atentos, cabelo raspado nas laterais e casaco de couro pesado.
 
 Background:
 
-Hund observa antes de agir. Ele é mais silencioso que Gurd e percebe detalhes que outros ignoram.
+Hund observa antes de agir. Percebe ruídos, sombras e rotas de fuga.
 
 Relações:
 
@@ -476,45 +503,39 @@ Relações:
 
 Quests:
 
-1. **A Entrega que Não Chegou**  
-   Uma carga de madeira desaparece no caminho da fazenda. Hund pede ajuda discreta.  
-   Recompensa: materiais de construção.
-
-2. **Barulho no Poço**  
-   Hund ouviu algo sob a cidade durante uma obra. O jogador investiga à noite.  
-   Recompensa: flag de subsolo.
-
-3. **Guardar sem Mandar**  
-   Hund quer proteger a cidade sem virar guarda oficial. O jogador ajuda a definir patrulha de fazenda/cidade.  
-   Recompensa: possível proteção contra eventos negativos na fazenda.
+1. **A Entrega que Não Chegou** — recuperar carga de madeira sumida. Recompensa: materiais.
+2. **Barulho no Poço** — investigar ruído sob a cidade. Recompensa: flag de subsolo.
+3. **Guardar sem Mandar** — montar patrulha informal entre cidade e fazenda. Recompensa: proteção leve.
 
 ---
 
-## 13. Ozzra Fumaçazul
+## 14. Ozzra Fumaçazul
 
 ```text
 ID: npc_ozzra
 Gênero: mulher
-Idade narrativa: adulta jovem
-Raça: Goblin
-Subraça/origem: Zhak'thul, clã do Grito Livre
-Classe clara: Alchemist 5 / Artificer 2
-Estado relacionamento: RomanceEligibleAnyPlayerGender
-Serviço: alquimia, poções, fertilizantes, reagentes
-Visita à fazenda: sim, para testes autorizados
-HP: 68
-MP: 60
-FOR 1 | CON 3 | DES 5 | INT 6 | VON 3 | CAR 4
-Resistências/status: +Veneno, +Caos/Senya; fraca contra Medo institucional
+Raça/subraça: Goblin Zhak'thul, clã do Grito Livre
+Classe Primária: Alquimista
+Classe Secundária: Artesão
+Tags: alquimia, pocao, fertilizante, reagente, senya
+Relacionamento: RomanceEligibleAnyPlayerGender
+Deus cultuado: Senya
+Simpatia: Finan, Nyx, Anya como energia curativa misteriosa
+Não gosta/desconfia: Kanthor rígido, Merithus quando trava experimento
+Visita fazenda: sim, testes autorizados
+HP 68 | MP 60 | Stamina 70 | Breath 60
+Força 1 | Constituição 3 | Destreza 5 | Inteligência 6 | Vontade 3 | Carisma 4
+Resiste: Veneno, Calor leve
+Vulnerável: Medo institucional, Frio
 ```
 
 Aparência:
 
-Goblin de pele laranja-acinzentada, orelhas grandes, cabelo azul espetado por tintura alquímica, sorriso amplo e olhos amarelos vivos. Usa avental cheio de frascos e luvas grandes demais.
+Goblin de pele laranja-acinzentada, orelhas grandes, cabelo azul espetado por tintura alquímica, olhos amarelos vivos e avental cheio de frascos.
 
 Background:
 
-Ozzra vê cada coisa como possível mistura útil. Seu laboratório é metade oficina, metade ameaça pública.
+Ozzra enxerga cada coisa como mistura possível. Seu laboratório é ameaça pública parcialmente útil.
 
 Relações:
 
@@ -525,100 +546,88 @@ Relações:
 
 Quests:
 
-1. **Explode Só um Pouco**  
-   Tutorial de poção: coletar ervas, água e frasco.  
-   Recompensa: receita de poção simples.
-
-2. **Fertilizante Fumaçazul**  
-   Ozzra cria fertilizante que pode melhorar qualidade, mas precisa teste seguro na fazenda.  
-   Recompensa: primeiro fertilizante avançado.
-
-3. **Reagente que Bebe Luz**  
-   Um cristal da caverna absorve luz e deixa pessoas cansadas.  
-   Recompensa: pista sobre Pedra Negra corrompida.
+1. **Explode Só um Pouco** — tutorial de poção. Recompensa: receita de poção simples.
+2. **Fertilizante Fumaçazul** — testar fertilizante na fazenda. Recompensa: fertilizante avançado.
+3. **Reagente que Bebe Luz** — analisar cristal que drena luz/cansaço. Recompensa: pista de Pedra Negra.
 
 Romance:
 
 - Quest de vínculo: **A Fórmula do Afeto Improvável**.
-- Após casamento, pode montar uma bancada de alquimia na fazenda com regras de segurança.
+- Após casamento: bancada de alquimia na fazenda com regras de segurança.
 
 ---
 
-## 14. Gruta Panela-Funda
+## 15. Gruta Panela-Funda
 
 ```text
 ID: npc_gruta
 Gênero: mulher
-Idade narrativa: adulta
-Raça: Orc
-Subraça/origem: Clã da Chama Viva, integrada em Dornécia
-Classe clara: Cook 4 / Bard 2 / Brawler
-Estado relacionamento: MarriedToNpc
+Raça/subraça: Orc Clã da Chama Viva
+Classe Primária: Comerciante
+Classe Secundária: Músico
+Tags: taverna, comida, rumores, buffs, senya
+Relacionamento: MarriedToNpc
 Cônjuge: Orlan Pouso-Curto
-Serviço: taverna, comida, descanso, rumores
-Visita à fazenda: sim, para ingredientes ou evento social
-HP: 130
-MP: 15
-FOR 5 | CON 5 | DES 2 | INT 3 | VON 4 | CAR 5
-Resistências/status: +Calor, +Medo; fraca contra Frio
+Deus cultuado: Senya
+Simpatia: Finan, Thandra
+Não gosta/desconfia: Merithus burocrático, Nyx quando ameaça clientes
+Visita fazenda: sim, ingredientes/evento social
+HP 130 | MP 15 | Stamina 90 | Breath 80
+Força 5 | Constituição 5 | Destreza 2 | Inteligência 3 | Vontade 4 | Carisma 5
+Resiste: Calor, Medo
+Vulnerável: Frio
 ```
 
 Aparência:
 
-Orc de pele verde-escura com reflexos quentes, presas fortes, cabelo ruivo preso em trança grossa e braços poderosos. Usa avental vermelho gasto, colheres de madeira no cinto e gargalhada alta.
+Orc de pele verde-escura com reflexos quentes, presas fortes, cabelo ruivo em trança grossa e avental vermelho gasto.
 
 Background:
 
-Gruta comanda a taverna como se fosse um quartel acolhedor. Alimenta, intimida e escuta a cidade inteira.
+Gruta comanda a taverna como quartel acolhedor. Alimenta, intimida e escuta todos.
 
 Relações:
 
 - casada com Orlan;
 - protege Pip;
 - troca rumores com Zrix;
-- provoca Corvus para ele rir ao menos uma vez.
+- provoca Corvus.
 
 Quests:
 
-1. **Sopa para um Dia Ruim**  
-   Coletar ingredientes básicos para prato que reduz cansaço.  
-   Recompensa: receita simples de comida.
-
-2. **Rumor Queimado**  
-   Símbolos aparecem sob mesas da taverna. Gruta quer saber quem marcou sem assustar clientes.  
-   Recompensa: pista de culto.
-
-3. **Banquete de Festival**  
-   Preparar comida para festival de Senya ou Thandra.  
-   Recompensa: reputação social e buff temporário.
+1. **Sopa para um Dia Ruim** — coletar ingredientes para comida que reduz cansaço. Recompensa: receita.
+2. **Rumor Queimado** — investigar símbolos sob mesas. Recompensa: pista de culto.
+3. **Banquete de Festival** — preparar comida de festival. Recompensa: buff social.
 
 ---
 
-## 15. Zrix das Estradas
+## 16. Zrix das Estradas
 
 ```text
 ID: npc_zrix
 Gênero: homem
-Idade narrativa: adulto
-Raça: Draconato
-Subraça/origem: Cinza do Julgamento, escamas cobre/cinzentas
-Classe clara: Ranger 5 / Merchant
-Estado relacionamento: RomanceEligibleAnyPlayerGender
-Serviço: Guilda das Estradas, mapas, caverna, checkpoints
-Visita à fazenda: sim, por contratos e mapas
-HP: 125
-MP: 25
-FOR 4 | CON 5 | DES 4 | INT 4 | VON 4 | CAR 4
-Resistências/status: +Medo, +Veneno leve; fraco contra Frio intenso
+Raça/subraça: Draconato Cinza do Julgamento, cobre
+Classe Primária: Explorador
+Classe Secundária: Comerciante
+Tags: guilda, estrada, mapa, caverna, checkpoint, finan
+Relacionamento: RomanceEligibleAnyPlayerGender
+Deus cultuado: Finan
+Simpatia: Kanthor, Thoren
+Não gosta/desconfia: Nyx quando esconde rota, Kaand quando cria guerra inútil
+Visita fazenda: sim, contratos/mapas
+HP 125 | MP 25 | Stamina 85 | Breath 95
+Força 4 | Constituição 5 | Destreza 4 | Inteligência 4 | Vontade 4 | Carisma 4
+Resiste: Medo, Calor leve
+Vulnerável: Frio intenso
 ```
 
 Aparência:
 
-Draconato de escamas cobre escurecido com placas cinza, chifres curtos polidos, olhos âmbar e cauda marcada por cicatrizes de estrada. Usa capa de viagem e mapas enrolados em tubos de couro.
+Draconato de escamas cobre escurecido com placas cinza, chifres curtos, olhos âmbar e cauda marcada por cicatrizes de estrada.
 
 Background:
 
-Zrix conhece rotas, atalhos, mapas e perigos. Trata a caverna como estrada ruim: não é segura, mas dá para aprender.
+Zrix conhece rotas e atalhos. Trata a caverna como estrada ruim: perigosa, mas mapeável.
 
 Relações:
 
@@ -629,50 +638,44 @@ Relações:
 
 Quests:
 
-1. **Mapa de Entrada**  
-   Tutorial de Guilda e primeiros contratos de caverna.  
-   Recompensa: mapa parcial do nível inicial.
-
-2. **Sinal de Elyndor**  
-   Zrix reconhece símbolo de portal em pedra antiga.  
-   Recompensa: desbloqueia investigação de checkpoint.
-
-3. **A Estrada que Desce**  
-   Um contrato pede item de nível perigoso. Zrix oferece acompanhar se relação for alta.  
-   Recompensa: possível companion de caverna.
+1. **Mapa de Entrada** — tutorial da Guilda e primeiros contratos. Recompensa: mapa parcial.
+2. **Sinal de Elyndor** — identificar símbolo de portal. Recompensa: investigação de checkpoint.
+3. **A Estrada que Desce** — contrato em nível perigoso. Recompensa: possível companion Explorador.
 
 Romance:
 
 - Quest de vínculo: **O Caminho de Volta**.
-- Após casamento, mantém Guilda, mas visita a fazenda em dias definidos.
+- Após casamento: mantém Guilda e visita a fazenda em dias definidos.
 
 ---
 
-## 16. Yael Noite-Mansa
+## 17. Yael Noite-Mansa
 
 ```text
 ID: npc_yael
 Gênero: mulher
-Idade narrativa: adulta
-Raça: Elfa
-Subraça/origem: Elfa da Noite, Luandil
-Classe clara: Rogue 6 / Occult Trader
-Estado relacionamento: RomanceEligibleAnyPlayerGender
-Serviço: loja noturna, Nyx, itens raros, rumores
-Visita à fazenda: sim, raro, à noite
-HP: 88
-MP: 45
-FOR 2 | CON 3 | DES 6 | INT 5 | VON 4 | CAR 5
-Resistências/status: +Medo, +Furtividade, +Nyx; fraca sob Senya/festa intensa
+Raça/subraça: Elfa da Noite / Luandil
+Classe Primária: Comerciante
+Classe Secundária: Explorador
+Tags: loja_noturna, nyx, segredo, item_raro
+Relacionamento: RomanceEligibleAnyPlayerGender
+Deus cultuado: Nyx
+Simpatia: Finan, Alihana
+Não gosta/desconfia: Kanthor quando persegue sombra, Merithus quando cataloga demais
+Visita fazenda: sim, rara, à noite
+HP 88 | MP 45 | Stamina 80 | Breath 75
+Força 2 | Constituição 3 | Destreza 6 | Inteligência 5 | Vontade 4 | Carisma 5
+Resiste: Medo, Exaustão noturna
+Vulnerável: Senya/festa intensa, exposição pública
 ```
 
 Aparência:
 
-Elfa da Noite de pele azul-noite, cabelos branco-prateados, olhos violeta que brilham no escuro e pequenas tatuagens luminescentes nos pulsos. Usa roupas escuras com detalhes prateados e capuz leve.
+Elfa da Noite de pele azul-noite, cabelos branco-prateados, olhos violeta brilhando no escuro e tatuagens luminescentes discretas.
 
 Background:
 
-Yael vende coisas raras e informações discretas. Ela não é vilã, mas sabe lucrar com segredos.
+Yael vende itens que “não existem” para pessoas que “não perguntaram”. Não é vilã, mas sabe lucrar com segredos.
 
 Relações:
 
@@ -683,154 +686,136 @@ Relações:
 
 Quests:
 
-1. **Aberto Depois da Meia-Noite**  
-   Encontrar a loja noturna pela primeira vez.  
-   Recompensa: acesso a estoque de Nyx.
-
-2. **Comprador de Fragmentos**  
-   Yael revela que alguém compra pedras escuras. O jogador decide contar a Alaric, Corvus ou ninguém.  
-   Recompensa: avanço de culto/Pedra Negra.
-
-3. **Preço do Silêncio**  
-   Um segredo de Yael ameaça vir à tona. Ajudá-la fortalece vínculo, mas reduz confiança com Corvus se descoberto.  
-   Recompensa: item raro noturno.
+1. **Aberto Depois da Meia-Noite** — encontrar loja noturna. Recompensa: estoque de Nyx.
+2. **Comprador de Fragmentos** — investigar compra de pedras escuras. Recompensa: avanço de culto.
+3. **Preço do Silêncio** — proteger ou revelar segredo de Yael. Recompensa: item raro noturno.
 
 Romance:
 
 - Quest de vínculo: **Confiança no Escuro**.
-- Após casamento, não vira moradora comum diurna; mantém rotina noturna.
+- Após casamento: mantém rotina noturna.
 
 ---
 
-## 17. Thalindra Véu-de-Lua
+## 18. Thalindra Véu-de-Lua
 
 ```text
 ID: npc_thalindra
 Gênero: mulher
-Idade narrativa: adulta
-Raça: Elfa
-Subraça/origem: Ninrorin, elfa cinzenta
-Classe clara: Wizard 6 / Archivist
-Estado relacionamento: RomanceEligibleAnyPlayerGender
-Serviço: arquivo, história, Cindar, Bromécia, Elyndor
-Visita à fazenda: sim, quando há Fonte/ruína/inscrição
-HP: 72
-MP: 80
-FOR 1 | CON 2 | DES 3 | INT 6 | VON 5 | CAR 3
-Resistências/status: +Medo arcano, +Frio mental; fraca contra dano físico
+Raça/subraça: Ninrorin, elfa cinzenta
+Classe Primária: Pesquisador
+Classe Secundária: Alquimista
+Tags: arquivo, lore, cindar, anya, bromecia, elyndor
+Relacionamento: RomanceEligibleAnyPlayerGender
+Deus cultuado: Alihana
+Simpatia: Anya, Merithus
+Não gosta/desconfia: Senya, Kaand, Finan quando distorce registro
+Visita fazenda: sim, por Fonte/inscrição/ruína
+HP 72 | MP 80 | Stamina 55 | Breath 50
+Força 1 | Constituição 2 | Destreza 3 | Inteligência 6 | Vontade 5 | Carisma 3
+Resiste: Medo arcano, Frio mental
+Vulnerável: Dano físico, Exaustão
 ```
 
 Aparência:
 
-Ninrorin de pele cinza clara, cabelos prata lisos, olhos azul-gelo e porte elegante. Usa túnica azul-cobalto com fios prateados e luvas para manusear pergaminhos.
+Ninrorin de pele cinza clara, cabelos prata lisos, olhos azul-gelo e túnica azul-cobalto com fios prateados.
 
 Background:
 
-Thalindra quer versão correta dos fatos. O problema é que os fatos corretos podem desestabilizar a cidade.
+Thalindra quer a versão correta dos fatos, mesmo quando a verdade ameaça a cidade.
 
 Relações:
 
 - debate com Corvus;
-- depende de Mara para acesso a documentos;
+- depende de Mara;
 - ouve Liora com interesse cético;
-- teme tecnologia bromeciana, mas não consegue ignorá-la.
+- teme Bromécia, mas pesquisa mesmo assim.
 
 Quests:
 
-1. **Poeira no Arquivo**  
-   Restaurar registros danificados com itens simples e ajuda de Tovin.  
-   Recompensa: entrada no arquivo restrito.
-
-2. **A Palavra Nymiriana**  
-   Identificar inscrição no Jardim das Estátuas.  
-   Recompensa: primeira tradução parcial sobre Anya/Cindar.
-
-3. **O Mapa Que Não Deveria Existir**  
-   Um mapa aponta conexão entre cidade e caverna.  
-   Recompensa: pista de Elyndor/Bromécia.
+1. **Poeira no Arquivo** — restaurar registros. Recompensa: acesso ao arquivo restrito.
+2. **A Palavra Nymiriana** — traduzir inscrição antiga. Recompensa: pista de Anya/Cindar.
+3. **O Mapa Que Não Deveria Existir** — conectar cidade e caverna. Recompensa: pista Elyndor/Bromécia.
 
 Romance:
 
 - Quest de vínculo: **O Que a História Não Diz**.
-- Após casamento, pode instalar pequena mesa de pesquisa na fazenda.
+- Após casamento: mesa de pesquisa na fazenda.
 
 ---
 
-## 18. Dagna Rocha-Morna
+## 19. Dagna Rocha-Morna
 
 ```text
 ID: npc_dagna
 Gênero: mulher
-Idade narrativa: adulta madura
-Raça: Anã
-Subraça/origem: Anã de Khaz Baruk
-Classe clara: Miner 5 / Fighter 3
-Estado relacionamento: RomanceEligibleAnyPlayerGender
-Serviço: minérios, avaliação de rocha, contratos de mineração
-Visita à fazenda: sim, pedreira/rochas/minério
-HP: 155
-MP: 10
-FOR 5 | CON 6 | DES 2 | INT 4 | VON 5 | CAR 3
-Resistências/status: +Calor, +Exaustão, +Medo; fraca contra magia psíquica
+Raça/subraça: Anã de Khaz Baruk
+Classe Primária: Minerador
+Classe Secundária: Combatente
+Tags: minerio, caverna, pedreira, thoren
+Relacionamento: RomanceEligibleAnyPlayerGender
+Deus cultuado: Thoren
+Simpatia: Kanthor, Thandra
+Não gosta/desconfia: Nyx, Senya, cultos subterrâneos
+Visita fazenda: sim, pedreira/rochas/minério
+HP 155 | MP 10 | Stamina 95 | Breath 90
+Força 5 | Constituição 6 | Destreza 2 | Inteligência 4 | Vontade 5 | Carisma 3
+Resiste: Calor, Exaustão, Medo
+Vulnerável: Medo mental/ilusões
 ```
 
 Aparência:
 
-Anã robusta de pele bronzeada, cabelo preto com mechas brancas, barba curta trançada, olhos castanho-escuros e braços marcados por pó de minério. Usa botas reforçadas e capacete pendurado no cinto.
+Anã robusta de pele bronzeada, cabelo preto com mechas brancas, barba curta trançada e olhos castanho-escuros.
 
 Background:
 
-Dagna conhece pedra viva, pedra morta e pedra que mente. Ela respeita a caverna porque sabe que ela muda.
+Dagna conhece pedra viva, pedra morta e pedra que mente.
 
 Relações:
 
-- amiga íntima de Brumdar;
+- amiga de Brumdar;
 - discorda de Zrix sobre risco;
 - respeita Alaric;
 - suspeita de Renko.
 
 Quests:
 
-1. **Veio de Cobre**  
-   Ensina avaliação de minério e contratos de mineração.  
-   Recompensa: preço melhor por minérios comuns.
-
-2. **Galeria Sem Nome**  
-   Dagna perdeu alguém numa galeria que não aparece nos mapas.  
-   Recompensa: acesso a sala especial da caverna.
-
-3. **A Rocha Quente Demais**  
-   Uma pedra da fazenda reage à noite. Dagna pede ajuda para remover sem quebrar.  
-   Recompensa: caminho para pedreira final futura.
+1. **Veio de Cobre** — ensinar avaliação de minério. Recompensa: preço melhor por minério.
+2. **Galeria Sem Nome** — procurar galeria onde perdeu parente. Recompensa: sala especial.
+3. **A Rocha Quente Demais** — remover pedra estranha da fazenda. Recompensa: pista da pedreira final.
 
 Romance:
 
 - Quest de vínculo: **Pedra Também Guarda Luto**.
-- Após casamento, pode avaliar nodes de mineração na fazenda/caverna.
+- Após casamento: avalia nodes da fazenda/caverna.
 
 ---
 
-## 19. Pip Semente-Solta
+## 20. Pip Semente-Solta
 
 ```text
 ID: npc_pip
 Gênero: homem
-Idade narrativa: adolescente/jovem mensageiro
-Raça: Halfling
-Subraça/origem: Sortudo de Finan
-Classe clara: Scout 1 / Commoner
-Estado relacionamento: TooYoungOrNarrativelyBlocked
-Serviço: tutorial, entregas, recados, humor
-Visita à fazenda: sim, cedo e com frequência
-HP: 45
-MP: 0
-FOR 1 | CON 2 | DES 5 | INT 2 | VON 2 | CAR 5
-Resistências/status: +Sorte/Medo leve; fraco contra qualquer combate real
+Raça/subraça: Halfling Sortudo de Finan
+Classe Primária: Comerciante
+Classe Secundária: Explorador
+Tags: tutorial, entrega, recado, humor, finan
+Relacionamento: TooYoungOrNarrativelyBlocked
+Deus cultuado: Finan
+Simpatia: Thandra, Senya
+Não gosta/desconfia: Kanthor quando dá sermão, Nyx quando assusta
+Visita fazenda: sim, cedo e frequentemente
+HP 45 | MP 0 | Stamina 65 | Breath 55
+Força 1 | Constituição 2 | Destreza 5 | Inteligência 2 | Vontade 2 | Carisma 5
+Resiste: Sorte contra Medo leve
+Vulnerável: Combate real, Veneno
 ```
 
 Aparência:
 
-Halfling pequeno, cabelos ruivos bagunçados, sardas abundantes, pés com pelos dourados e sorriso de quem acabou de fazer algo errado. Usa mochila grande demais.
+Halfling pequeno, cabelos ruivos bagunçados, sardas, pés peludos dourados e mochila grande demais.
 
 Background:
 
@@ -841,361 +826,318 @@ Relações:
 - protegido por Gruta e Hund;
 - ajuda Sylveth;
 - admira Alaric;
-- tem medo e fascínio por Yael.
+- teme e admira Yael.
 
 Quests:
 
-1. **Primeira Entrega**  
-   Pip leva o jogador até a loja de sementes e praça.  
-   Recompensa: tutorial social.
-
-2. **Vi o Fantasma**  
-   Pip viu alguém no Jardim das Estátuas. Ele acha que era fantasma.  
-   Recompensa: primeira pista de evento noturno.
-
-3. **A Carta Errada**  
-   Pip entrega carta no destino errado e expõe pequena tensão entre Mara, Renko e Yael.  
-   Recompensa: reputação com Pip e pistas urbanas.
+1. **Primeira Entrega** — levar jogador à loja de sementes. Recompensa: tutorial social.
+2. **Vi o Fantasma** — relatar figura no Jardim das Estátuas. Recompensa: pista noturna.
+3. **A Carta Errada** — carta entregue no destino errado revela tensão. Recompensa: pistas urbanas.
 
 ---
 
-## 20. Ser Alaric Veyr
+## 21. Ser Alaric Veyr
 
 ```text
 ID: npc_alaric
 Gênero: homem
-Idade narrativa: adulto
-Raça: Humano
-Subraça/origem: Humano de Mana, dornécio
-Classe clara: Fighter 6 / Guard Captain
-Estado relacionamento: RomanceEligibleAnyPlayerGender
-Serviço: guarda, patrulha, segurança, combate
-Visita à fazenda: sim, alertas e ameaças
-HP: 140
-MP: 15
-FOR 5 | CON 5 | DES 4 | INT 3 | VON 5 | CAR 4
-Resistências/status: +Medo, +Exaustão; fraco contra magia ilusória
+Raça/subraça: Humano de Mana, dornécio
+Classe Primária: Guardião
+Classe Secundária: Combatente
+Tags: guarda, patrulha, kanthor, seguranca, combate
+Relacionamento: RomanceEligibleAnyPlayerGender
+Deus cultuado: Kanthor
+Simpatia: Thoren, Merithus
+Não gosta/desconfia: Nyx, Finan oportunista, Kaand
+Visita fazenda: sim, alerta e ameaça
+HP 140 | MP 15 | Stamina 90 | Breath 85
+Força 5 | Constituição 5 | Destreza 4 | Inteligência 3 | Vontade 5 | Carisma 4
+Resiste: Medo, Exaustão
+Vulnerável: Ilusão, Veneno
 ```
 
 Aparência:
 
-Humano alto, pele clara bronzeada pelo sol, cabelo castanho curto, barba aparada e olhos verdes. Usa meia-armadura azul-ardósia com símbolo de Kanthor no ombro.
+Humano alto, pele bronzeada, cabelo castanho curto, barba aparada, olhos verdes e meia-armadura azul-ardósia com símbolo de Kanthor.
 
 Background:
 
-Alaric acredita em patrulha, lâmina e responsabilidade. Ele é honesto, mas tende a simplificar problemas antigos como crimes comuns.
+Alaric acredita em patrulha, lâmina e responsabilidade.
 
 Relações:
 
 - leal a Corvus;
 - trabalha com Mara;
 - respeita Dagna;
-- não confia em Yael;
-- considera Zrix útil, mas indisciplinado.
+- não confia em Yael.
 
 Quests:
 
-1. **Patrulha da Estrada Baixa**  
-   O jogador ajuda Alaric a afastar criaturas perto da entrada da caverna.  
-   Recompensa: reputação com guarda.
-
-2. **Relatório Incompleto**  
-   Alaric omitiu um incidente para evitar pânico. O jogador decide cobrir ou revelar.  
-   Recompensa: confiança de Alaric ou reputação pública.
-
-3. **A Justiça Não Basta**  
-   Um suspeito de culto é inocente de um crime, mas sabe algo perigoso.  
-   Recompensa: bifurcação entre Kanthor/segredo.
+1. **Patrulha da Estrada Baixa** — afastar criaturas perto da caverna. Recompensa: reputação com guarda.
+2. **Relatório Incompleto** — decidir se encobre incidente para evitar pânico. Recompensa variável.
+3. **A Justiça Não Basta** — lidar com suspeito inocente, mas envolvido em segredo. Recompensa: bifurcação moral.
 
 Romance:
 
 - Quest de vínculo: **O Peso do Escudo**.
-- Após casamento, pode proteger a fazenda em eventos de ameaça.
+- Após casamento: protege a fazenda em eventos de ameaça.
 
 ---
 
-## 21. Mirela dos Laços
+## 22. Mirela dos Laços
 
 ```text
 ID: npc_mirela
 Gênero: mulher
-Idade narrativa: adulta
-Raça: Humana
-Subraça/origem: Humana de Mana
-Classe clara: Tailor 5 / Expert
-Estado relacionamento: MarriedToNpc
+Raça/subraça: Humana de Mana
+Classe Primária: Artesão
+Classe Secundária: Comerciante
+Tags: costura, bolsa, roupa, acessorio, merithus
+Relacionamento: MarriedToNpc
 Cônjuge: Nimble Galhobaixo
-Serviço: costura, bolsas, roupas, capas, acessórios
-Visita à fazenda: sim, encomendas de lã/tecido
-HP: 68
-MP: 15
-FOR 1 | CON 2 | DES 5 | INT 5 | VON 3 | CAR 5
-Resistências/status: +Medo social, +Frio leve com roupas; fraca contra combate direto
+Deus cultuado: Merithus/Meritos
+Simpatia: Finan, Thandra
+Não gosta/desconfia: Kaand, Senya quando vira desordem
+Visita fazenda: sim, lã/tecido/encomenda
+HP 68 | MP 15 | Stamina 60 | Breath 55
+Força 1 | Constituição 2 | Destreza 5 | Inteligência 5 | Vontade 3 | Carisma 5
+Resiste: Medo social, Frio leve por roupas
+Vulnerável: Combate direto
 ```
 
 Aparência:
 
-Humana de pele morena, cabelos cacheados escuros com fitas coloridas, olhos castanhos vivos e roupas sempre bem ajustadas. Usa tesoura pequena no cinto e agulhas em estojo de madeira.
+Humana de pele morena, cabelos cacheados escuros com fitas coloridas, olhos castanhos vivos e roupas bem ajustadas.
 
 Background:
 
-Mirela acredita que roupa também é ferramenta: muda proteção, presença e pertencimento.
+Mirela vê roupa como ferramenta social e mecânica.
 
 Relações:
 
 - casada com Nimble;
 - amiga de Gruta;
 - compra lã de Eiran;
-- irrita Mara com pedidos de licença estética.
+- irrita Mara com licenças estéticas.
 
 Quests:
 
-1. **Bolsa de Trabalho**  
-   Criar primeira expansão de inventário com tecido e couro simples.  
-   Recompensa: upgrade de bolsa.
-
-2. **Fio que Não Rasga**  
-   Mirela encontra tecido auto-reparável possivelmente bromeciano.  
-   Recompensa: unlock de roupa especial futura.
-
-3. **Roupa de Festival**  
-   Preparar traje para festival escolhido.  
-   Recompensa: buff social temporário.
+1. **Bolsa de Trabalho** — criar upgrade de inventário. Recompensa: bolsa maior.
+2. **Fio que Não Rasga** — investigar tecido auto-reparável. Recompensa: roupa especial futura.
+3. **Roupa de Festival** — preparar traje. Recompensa: buff social.
 
 ---
 
-## 22. Renko Três-Sorrisos
+## 23. Renko Três-Sorrisos
 
 ```text
 ID: npc_renko
 Gênero: homem
-Idade narrativa: adulto
-Raça: Goblin
-Subraça/origem: Zhak'thul, comerciante integrado
-Classe clara: Merchant 5 / Rogue 2
-Estado relacionamento: UnavailableForRomance
-Serviço: loja geral, barganhas, itens comuns
-Visita à fazenda: sim, mercador ambulante em reputação alta
-HP: 65
-MP: 10
-FOR 1 | CON 3 | DES 5 | INT 5 | VON 2 | CAR 6
-Resistências/status: +Sorte/Finan, +Enganação; fraco contra Kanthor/contratos rígidos
+Raça/subraça: Goblin Zhak'thul, comerciante integrado
+Classe Primária: Comerciante
+Classe Secundária: Artesão
+Tags: loja_geral, barganha, item_comum, finan
+Relacionamento: UnavailableForRomance
+Deus cultuado: Finan
+Simpatia: Senya, Merithus quando dá lucro
+Não gosta/desconfia: Kanthor, Thoren rígido demais
+Visita fazenda: sim, mercador ambulante em reputação alta
+HP 65 | MP 10 | Stamina 70 | Breath 55
+Força 1 | Constituição 3 | Destreza 5 | Inteligência 5 | Vontade 2 | Carisma 6
+Resiste: Barganha, Medo leve
+Vulnerável: Contratos rígidos de Kanthor/Merithus
 ```
 
 Aparência:
 
-Goblin de pele laranja-acinzentada, olhos amarelos semicerrados, dentes pequenos e sorriso constante. Usa colete cheio de moedas falsas e verdadeiras misturadas.
+Goblin de pele laranja-acinzentada, olhos amarelos semicerrados, dentes pequenos e sorriso constante.
 
 Background:
 
-Renko compra, vende e sorri. Nem sempre mente por maldade; às vezes mente porque considera preço fixo uma ofensa criativa.
+Renko compra, vende e sorri. Considera preço fixo uma ofensa criativa.
 
 Relações:
 
 - Ozzra deve dinheiro a ele;
 - negocia com Zrix;
 - teme multas de Mara;
-- vende besteiras para Pip.
+- vende quinquilharias para Pip.
 
 Quests:
 
-1. **Preço de Amigo**  
-   Tutorial de loja geral e barganha.  
-   Recompensa: desconto pequeno.
-
-2. **Mercadoria Sem Dono**  
-   Renko comprou item perigoso sem saber. O jogador decide vender, entregar ou investigar.  
-   Recompensa: pista de Pedra Negra.
-
-3. **Três Sorrisos, Uma Mentira**  
-   Descobrir qual das três versões de Renko é verdade.  
-   Recompensa: estoque raro ou multa reduzida.
+1. **Preço de Amigo** — tutorial de loja geral. Recompensa: desconto pequeno.
+2. **Mercadoria Sem Dono** — decidir destino de item perigoso. Recompensa: pista de Pedra Negra.
+3. **Três Sorrisos, Uma Mentira** — descobrir qual versão dele é real. Recompensa: estoque raro.
 
 ---
 
-## 23. Eiran Valeclaro
+## 24. Eiran Valeclaro
 
 ```text
 ID: npc_eiran
 Gênero: homem
-Idade narrativa: adulto jovem
-Raça: Meio-elfo
-Subraça/origem: Meio-elfo de Thandra
-Classe clara: Ranger 4 / Animal Handler
-Estado relacionamento: RomanceEligibleAnyPlayerGender
-Serviço: animais, ração, pets, cuidado animal
-Visita à fazenda: sim, entrega animal/pet/tratamento
-HP: 95
-MP: 30
-FOR 3 | CON 4 | DES 4 | INT 3 | VON 5 | CAR 4
-Resistências/status: +Medo animal, +Veneno leve; fraco contra ruído/caos urbano
+Raça/subraça: Meio-elfo de Thandra
+Classe Primária: Tratador
+Classe Secundária: Plantador
+Tags: animais, pets, racao, thandra
+Relacionamento: RomanceEligibleAnyPlayerGender
+Deus cultuado: Thandra
+Simpatia: Tandra/Telisandra, Anya como cura
+Não gosta/desconfia: Ozzra perto de animais, Kaand
+Visita fazenda: sim, animal/pet/tratamento
+HP 95 | MP 30 | Stamina 80 | Breath 75
+Força 3 | Constituição 4 | Destreza 4 | Inteligência 3 | Vontade 5 | Carisma 4
+Resiste: Medo animal, Veneno leve
+Vulnerável: Ruído/caos urbano
 ```
 
 Aparência:
 
-Meio-elfo de pele bronzeada, orelhas levemente pontudas, cabelo castanho longo preso com cordão verde e olhos âmbar calmos. Usa roupas de couro macio e sempre carrega ração.
+Meio-elfo de pele bronzeada, orelhas levemente pontudas, cabelo castanho longo preso com cordão verde e olhos âmbar calmos.
 
 Background:
 
-Eiran entende animais melhor que pessoas. Ele é calmo, firme e muito observador.
+Eiran entende animais melhor que pessoas. Calmo, firme e observador.
 
 Relações:
 
-- amigo próximo de Sylveth;
+- amigo de Sylveth;
 - respeita Savra;
 - compra tecido de Mirela;
 - evita Ozzra perto dos animais.
 
 Quests:
 
-1. **Primeira Tigela**  
-   Tutorial de pet: comida, cama e vínculo.  
-   Recompensa: desbloqueio de pet.
-
-2. **Animal Assustado**  
-   Animais evitam uma trilha. O jogador investiga sem violência primeiro.  
-   Recompensa: reputação com Eiran e pista de ameaça natural.
-
-3. **Cuidado Não é Fraqueza**  
-   Um animal doente precisa de ervas, poção e rotina.  
-   Recompensa: desbloqueio de remédio animal.
+1. **Primeira Tigela** — tutorial de pet. Recompensa: desbloqueio de pet.
+2. **Animal Assustado** — investigar trilha evitada por animais. Recompensa: pista natural.
+3. **Cuidado Não é Fraqueza** — tratar animal doente. Recompensa: remédio animal.
 
 Romance:
 
 - Quest de vínculo: **Ficar é Também Cuidar**.
-- Após casamento, pode ajudar com pets/animais sem ocupar slot de companion.
+- Após casamento: ajuda com pets/animais sem ocupar slot de companion.
 
 ---
 
-## 24. Liora Canta-Rio
+## 25. Liora Canta-Rio
 
 ```text
 ID: npc_liora
 Gênero: mulher
-Idade narrativa: adulta jovem
-Raça: Humana
-Subraça/origem: Humana de Mana com sangue nymiriano distante, não revelado cedo
-Classe clara: Bard 5 / Seer
-Estado relacionamento: RomanceEligibleAnyPlayerGender
-Serviço: música, sonhos, Alihana, pistas sutis
-Visita à fazenda: sim, em noites de Alihana ou relação alta
-HP: 70
-MP: 70
-FOR 1 | CON 2 | DES 4 | INT 4 | VON 6 | CAR 6
-Resistências/status: +Medo por sonho, +Alihana; fraca contra Nyx/cansaço mental
+Raça/subraça: Humana de Mana com sangue nymiriano distante
+Classe Primária: Músico
+Classe Secundária: Pesquisador
+Tags: musica, sonho, alihana, anya, pistas
+Relacionamento: RomanceEligibleAnyPlayerGender
+Deus cultuado: Alihana
+Simpatia: Anya, Senya em arte
+Não gosta/desconfia: Nyx quando silencia memórias, Kaand
+Visita fazenda: sim, Alihana/relação alta
+HP 70 | MP 70 | Stamina 55 | Breath 65
+Força 1 | Constituição 2 | Destreza 4 | Inteligência 4 | Vontade 6 | Carisma 6
+Resiste: Medo por sonho, Exaustão mental leve
+Vulnerável: Nyx/cansaço mental
 ```
 
 Aparência:
 
-Humana de pele dourada clara, cabelo castanho-escuro ondulado, olhos azulados incomuns e voz suave. Usa vestidos simples com fitas brancas e pequenos pingentes de rio.
+Humana de pele dourada clara, cabelos castanho-escuros ondulados, olhos azulados incomuns e voz suave.
 
 Background:
 
-Liora canta músicas que não aprendeu. Algumas reagem ao Jardim das Estátuas e, futuramente, à Fonte.
+Liora canta músicas que não aprendeu. Algumas reagem ao Jardim das Estátuas e à Fonte.
 
 Relações:
 
 - Gruta dá espaço para ela cantar;
 - Corvus observa com cautela;
-- Thalindra quer registrar suas canções;
+- Thalindra registra suas canções;
 - Maelor reconhece uma melodia.
 
 Quests:
 
-1. **Canção sem Autor**  
-   Liora pede ajuda para encontrar a origem de uma melodia.  
-   Recompensa: evento de Alihana.
-
-2. **A Estátua que Escutou**  
-   Uma estátua antiga parece reagir à música.  
-   Recompensa: pista de Anya/Cindar.
-
-3. **Sonho de Água Clara**  
-   Liora sonha com a Fonte e a caverna. O jogador compara sonho com mapa real.  
-   Recompensa: pista de nível especial/Água Viva.
+1. **Canção sem Autor** — encontrar origem de melodia. Recompensa: evento de Alihana.
+2. **A Estátua que Escutou** — música reage à estátua antiga. Recompensa: pista de Anya.
+3. **Sonho de Água Clara** — comparar sonho com mapa real. Recompensa: pista de Água Viva.
 
 Romance:
 
 - Quest de vínculo: **A Voz que Fica**.
-- Após casamento, pode gerar eventos musicais raros na fazenda.
+- Após casamento: eventos musicais raros na fazenda.
 
 ---
 
-## 25. Orlan Pouso-Curto
+## 26. Orlan Pouso-Curto
 
 ```text
 ID: npc_orlan
 Gênero: homem
-Idade narrativa: adulto
-Raça: Humano
-Subraça/origem: Humano de Mana, dornécio
-Classe clara: Innkeeper 4 / Commoner
-Estado relacionamento: MarriedToNpc
+Raça/subraça: Humano de Mana, dornécio
+Classe Primária: Comerciante
+Classe Secundária: Escriba
+Tags: hospedagem, viajante, noticia, finan
+Relacionamento: MarriedToNpc
 Cônjuge: Gruta Panela-Funda
-Serviço: hospedagem, notícias, viajantes
-Visita à fazenda: raro, eventos sociais
-HP: 80
-MP: 5
-FOR 2 | CON 3 | DES 2 | INT 4 | VON 4 | CAR 5
-Resistências/status: +Medo social, +Exaustão; fraco contra combate real
+Deus cultuado: Finan
+Simpatia: Kanthor, Merithus
+Não gosta/desconfia: Nyx, Kaand
+Visita fazenda: raro, evento social
+HP 80 | MP 5 | Stamina 60 | Breath 55
+Força 2 | Constituição 3 | Destreza 2 | Inteligência 4 | Vontade 4 | Carisma 5
+Resiste: Exaustão social, Medo leve
+Vulnerável: Combate real
 ```
 
 Aparência:
 
-Humano baixo e largo, pele clara, cabelo castanho ralo, bigode curto e olhos gentis. Usa camisa azul, avental limpo demais para uma taverna e carrega chaves no cinto.
+Humano baixo e largo, pele clara, cabelo castanho ralo, bigode curto e olhos gentis. Carrega chaves no cinto.
 
 Background:
 
-Orlan cuida das camas, contas e viajantes. Ele sabe quem chegou e quem partiu antes do amanhecer.
+Orlan sabe quem chegou, quem partiu e quem mentiu sobre isso.
 
 Relações:
 
 - casado com Gruta;
-- informa Mara sobre viajantes suspeitos;
+- informa Mara;
 - respeita Corvus;
 - desconfia de Maelor.
 
 Quests:
 
-1. **Quarto de Viajante**  
-   Ajudar a preparar hospedagem para caravana.  
-   Recompensa: notícia de estrada.
-
-2. **Hóspede Sem Sombra**  
-   Um viajante desaparece deixando mapa incompleto.  
-   Recompensa: mapa/rumor de caverna.
-
-3. **Conta Aberta**  
-   Orlan precisa cobrar dívida sem criar briga com Renko.  
-   Recompensa: reputação social.
+1. **Quarto de Viajante** — preparar hospedagem para caravana. Recompensa: notícia de estrada.
+2. **Hóspede Sem Sombra** — investigar viajante desaparecido. Recompensa: mapa incompleto.
+3. **Conta Aberta** — cobrar dívida sem conflito. Recompensa: reputação social.
 
 ---
 
-## 26. Savra Escama-Verde
+## 27. Savra Escama-Verde
 
 ```text
 ID: npc_savra
 Gênero: mulher
-Idade narrativa: adulta
-Raça: Draconata
-Subraça/origem: Draconata verde, linhagem oficial cromática domesticada/integrada
-Classe clara: Ranger 5 / Herbalist
-Estado relacionamento: RomanceEligibleAnyPlayerGender
-Serviço: ervas, antídotos, floresta, pragas
-Visita à fazenda: sim, por ervas/pragas/plantas estranhas
-HP: 118
-MP: 35
-FOR 4 | CON 5 | DES 4 | INT 4 | VON 4 | CAR 3
-Resistências/status: +Veneno, +Calor úmido; fraca contra Frio intenso
+Raça/subraça: Draconata verde
+Classe Primária: Curandeiro
+Classe Secundária: Explorador
+Tags: ervas, antidoto, floresta, veneno, telisandra
+Relacionamento: RomanceEligibleAnyPlayerGender
+Deus cultuado: Tandra/Telisandra
+Simpatia: Thandra, Nyx em trilhas noturnas
+Não gosta/desconfia: Kanthor quando simplifica natureza, Kaand predatório
+Visita fazenda: sim, ervas/pragas/plantas estranhas
+HP 118 | MP 35 | Stamina 85 | Breath 80
+Força 4 | Constituição 5 | Destreza 4 | Inteligência 4 | Vontade 4 | Carisma 3
+Resiste: Veneno, Calor úmido
+Vulnerável: Frio intenso
 ```
 
 Aparência:
 
-Draconata de escamas verde-escuras com manchas oliva, olhos amarelo-ouro, chifres curtos voltados para trás e cauda fina. Usa capas de couro vegetal e frascos de antídoto.
+Draconata de escamas verde-escuras com manchas oliva, olhos amarelo-ouro, chifres curtos voltados para trás e cauda fina.
 
 Background:
 
-Savra entende venenos, trilhas e plantas hostis. Ela rejeita a ideia de que linhagem verde define caráter.
+Savra entende venenos, trilhas e plantas hostis. Rejeita a ideia de que linhagem verde define caráter.
 
 Relações:
 
@@ -1206,47 +1148,41 @@ Relações:
 
 Quests:
 
-1. **Antídoto Amargo**  
-   Coletar ervas para primeiro antídoto.  
-   Recompensa: receita de antídoto.
-
-2. **Praga que Anda**  
-   Uma praga vegetal se move de noite.  
-   Recompensa: defesa contra pragas na fazenda.
-
-3. **O Fungo de Baixo**  
-   Fungos de caverna aparecem perto da cidade.  
-   Recompensa: pista de bioma subterrâneo.
+1. **Antídoto Amargo** — coletar ervas para antídoto. Recompensa: receita de antídoto.
+2. **Praga que Anda** — investigar praga vegetal noturna. Recompensa: defesa contra pragas.
+3. **O Fungo de Baixo** — identificar fungos de caverna. Recompensa: pista de bioma subterrâneo.
 
 Romance:
 
 - Quest de vínculo: **Não Sou Meu Sangue**.
-- Após casamento, pode ajudar a detectar pragas e venenos.
+- Após casamento: ajuda a detectar pragas e venenos.
 
 ---
 
-## 27. Tovin Mãos-de-Selo
+## 28. Tovin Mãos-de-Selo
 
 ```text
 ID: npc_tovin
 Gênero: homem
-Idade narrativa: adulto
-Raça: Gnomo
-Subraça/origem: Gnomo Artífice
-Classe clara: Scribe 5 / Expert
-Estado relacionamento: MarriedToNpc
+Raça/subraça: Gnomo Artífice
+Classe Primária: Escriba
+Classe Secundária: Artesão
+Tags: contrato, imposto, registro, altar, merithus
+Relacionamento: MarriedToNpc
 Cônjuge: Mara Vellum
-Serviço: contratos, impostos, registros, Merithus
-Visita à fazenda: sim, licenças e altares permitidos
-HP: 58
-MP: 40
-FOR 1 | CON 2 | DES 4 | INT 6 | VON 4 | CAR 3
-Resistências/status: +Medo burocrático, +Confusão legal; fraco contra dano direto
+Deus cultuado: Merithus/Meritos
+Simpatia: Kanthor, Finan quando registrado
+Não gosta/desconfia: Senya, Kaand, Nyx sem documento
+Visita fazenda: sim, licenças/altares permitidos
+HP 58 | MP 40 | Stamina 50 | Breath 45
+Força 1 | Constituição 2 | Destreza 4 | Inteligência 6 | Vontade 4 | Carisma 3
+Resiste: Confusão legal, Medo burocrático
+Vulnerável: Dano direto
 ```
 
 Aparência:
 
-Gnomo pequeno, pele clara, cabelo castanho muito penteado, olhos enormes atrás de lentes redondas. Usa colete com carimbos, penas e selos em bolsos separados por finalidade.
+Gnomo pequeno, pele clara, cabelo castanho penteado, olhos enormes atrás de lentes redondas e colete cheio de carimbos.
 
 Background:
 
@@ -1261,45 +1197,39 @@ Relações:
 
 Quests:
 
-1. **Carimbo de Propriedade**  
-   Registrar oficialmente a fazenda expandida.  
-   Recompensa: licença de expansão.
-
-2. **Altar Permitido**  
-   Explica regras de altares construíveis e bloqueia Anya como construção livre.  
-   Recompensa: desbloqueio de altar permitido.
-
-3. **Selo Sem Reino**  
-   Um selo antigo não pertence à Dornécia atual.  
-   Recompensa: pista de Bromécia/Elyndor.
+1. **Carimbo de Propriedade** — registrar fazenda expandida. Recompensa: licença.
+2. **Altar Permitido** — explicar altares e bloquear Anya como construção livre. Recompensa: altar permitido.
+3. **Selo Sem Reino** — identificar selo antigo. Recompensa: pista Bromécia/Elyndor.
 
 ---
 
-## 28. Maelor Cinza
+## 29. Maelor Cinza
 
 ```text
 ID: npc_maelor
 Gênero: homem
-Idade narrativa: adulto indefinido
-Raça: Elfo
-Subraça/origem: Elfo da Noite / Luandil
-Classe clara: Monk 5 / Rogue 3
-Estado relacionamento: LateRomanceEligible
-Serviço: segredo, Nyx, observação, memória oculta
-Visita à fazenda: sim, raro, à noite
-HP: 105
-MP: 50
-FOR 3 | CON 4 | DES 6 | INT 5 | VON 5 | CAR 3
-Resistências/status: +Medo, +Nyx, +Furtividade; fraco sob Senya e exposição pública
+Raça/subraça: Elfo da Noite / Luandil
+Classe Primária: Explorador
+Classe Secundária: Pesquisador
+Tags: nyx, segredo, memoria, noite, ruina
+Relacionamento: LateRomanceEligible
+Deus cultuado: Nyx
+Simpatia: Alihana, Anya como memória silenciada
+Não gosta/desconfia: Kanthor público, Merithus que registra tudo, Kaand
+Visita fazenda: sim, raro, à noite
+HP 105 | MP 50 | Stamina 80 | Breath 85
+Força 3 | Constituição 4 | Destreza 6 | Inteligência 5 | Vontade 5 | Carisma 3
+Resiste: Medo, Exaustão noturna, Frio leve
+Vulnerável: Senya/exposição pública
 ```
 
 Aparência:
 
-Elfo da Noite de pele cinza-carvão, cabelo azul-escuro quase negro, olhos prateados e tatuagens luminescentes discretas no pescoço. Usa roupas simples, sem metal aparente.
+Elfo da Noite de pele cinza-carvão, cabelo azul-escuro quase negro, olhos prateados e tatuagens luminescentes discretas no pescoço.
 
 Background:
 
-Maelor parece sempre saber onde a sombra será antes dela chegar. Ele não é vilão, mas não entende transparência como virtude.
+Maelor sabe que a cidade esqueceu algo de propósito. Ele não sabe se deve ajudar o jogador a lembrar.
 
 Relações:
 
@@ -1310,36 +1240,24 @@ Relações:
 
 Quests:
 
-1. **Passos Onde Não Há Luz**  
-   Encontrar Maelor em uma rota noturna sem ser visto por guardas.  
-   Recompensa: acesso a rumor de Nyx.
-
-2. **Memória Que Escolheu Sumir**  
-   Maelor revela que a cidade esqueceu algo de propósito.  
-   Recompensa: pista de Anya/Cindar.
-
-3. **O Silêncio Também Protege**  
-   O jogador escolhe revelar ou preservar um segredo que pode ferir a cidade.  
-   Recompensa: desbloqueia confiança de Maelor.
+1. **Passos Onde Não Há Luz** — encontrar Maelor sem ser visto por guardas. Recompensa: rumor de Nyx.
+2. **Memória Que Escolheu Sumir** — descobrir que a cidade esqueceu algo. Recompensa: pista Anya/Cindar.
+3. **O Silêncio Também Protege** — revelar ou preservar segredo. Recompensa: confiança de Maelor.
 
 Romance:
 
-- Quest de vínculo tardia: **O Nome que a Noite Não Levou**.
-- Só disponível após resolver parte da trama de Nyx/Anya.
+- Quest tardia: **O Nome que a Noite Não Levou**.
+- Só disponível após parte da trama de Nyx/Anya.
 
 ---
 
-# PARTE D — Âncora de lore: Fonte de Ressurreição
-
-## 29. Fonte de Ressurreição / Fonte de Anya
+# PARTE E — Fonte de Ressurreição / Anya
 
 ```text
 ID: lore_anya_fountain
 Tipo: Lore Anchor / Sistema
 Local: fazenda
 Função: ressurreição de companions, respec, Água Viva, cura rara, mistério de Anya
-Romance: não
-HP/Stats: n/a
 ```
 
 Regras:
@@ -1354,21 +1272,17 @@ Pode evoluir por progresso narrativo e sistema próprio.
 
 Quests/sistemas ligados:
 
-1. **Água que Lembra**  
-   A Fonte recupera uma carga de Água Viva após evento de Alihana.
-
-2. **Nome Apagado**  
-   Thalindra, Liora ou Corvus reagem a símbolo próximo à Fonte.
-
-3. **Ressurreição Dolorosa**  
-   Companion caído retorna, mas com custo progressivo e possível diálogo.
+1. **Água que Lembra** — Fonte recupera Água Viva após evento de Alihana.
+2. **Nome Apagado** — Thalindra, Liora ou Corvus reagem a símbolo próximo à Fonte.
+3. **Ressurreição Dolorosa** — companion retorna com custo progressivo e possível diálogo.
 
 ---
 
-# PARTE E — Próximos documentos/specs
+# PARTE F — Próximas specs
 
 ```text
 spec_city_npc_data_roster_stats.md
+spec_city_deity_preferences_and_reputation.md
 spec_city_relationship_romance_marriage.md
 spec_city_farm_visits_schedule.md
 spec_city_personal_quests_batch_01.md
