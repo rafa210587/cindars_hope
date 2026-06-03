@@ -3,13 +3,13 @@
 > **Status:** documento canônico de direção detalhada das skill trees do personagem  
 > **Local:** `docs/design/gameplay/player/PLAYER_SKILL_TREES_DIRECTION.md`  
 > **Complementa:** `docs/design/gameplay/player/PLAYER_CORE_SYSTEMS_DIRECTION.md`  
-> **Não é spec implementável.** Este documento define direção de design, mecânica e balanceamento das skills. Specs futuras devem quebrar isso em implementação quando for a hora.
+> **Não é spec implementável.** Este documento define direção de design, mecânica, progressão, HUD e balanceamento das skills. Specs futuras devem quebrar isso em implementação quando for a hora.
 
 ---
 
 ## 0. Objetivo
 
-Este documento refina somente as **skills** e **skill trees** do jogador.
+Este documento refina somente as **skills**, **skill trees**, **tiers**, **feedback de HUD** e **economia de pontos** do jogador.
 
 Ele substitui a lista preliminar de skills do documento de core sempre que houver conflito.
 
@@ -24,6 +24,7 @@ O jogador deve conseguir masterizar uma árvore principal e investir parcialment
 O jogador não deve conseguir masterizar duas árvores completas.
 Skills devem ter efeito mecânico real no jogo, não só flavour.
 Skills de precisão pura devem ser evitadas porque chance de miss será superficial.
+A HUD precisa caber em tela pequena e priorizar leitura rápida.
 ```
 
 ---
@@ -49,23 +50,43 @@ Sistemas sociais, romance, companions e pets são transversais neste momento. El
 ```text
 SkillPoints máximos no endgame: 50.
 SkillPoint: 1 ponto a cada 2 níveis, salvo ajuste futuro de curva.
-Masterização funcional de uma árvore: ~28-32 pontos.
-Completar tudo de uma árvore: ~38-45 pontos.
+Masterização funcional de uma árvore: ~30-34 pontos.
+Completar tudo de uma árvore: ~40-46 pontos.
 Com 50 pontos: 1 árvore principal masterizada + investimento parcial em outras.
 Com 50 pontos: não deve ser possível masterizar duas árvores completas.
 ```
 
-## 3. Tiers
+A versão anterior permitia capstone com investimento baixo demais. A curva abaixo exige compromisso maior com a árvore antes do Tier 5.
 
-| Tier | Requisito de pontos gastos na árvore | Papel |
-|---:|---:|---|
-| Tier 1 | 0 | Fundamentos, ações básicas, pequenas passivas |
-| Tier 2 | 4 | Eficiência, custo, primeira especialização leve |
-| Tier 3 | 9 | Técnicas relevantes, alteração de gameplay |
-| Tier 4 | 16 | Especialização forte, sinergias de build |
-| Tier 5 | 24 | Capstone, identidade final da árvore |
+## 3. Tiers revisados
 
-## 4. Tipos de node
+| Tier | Requisito de pontos gastos na árvore | Papel | Direção de gameplay |
+|---:|---:|---|---|
+| Tier 1 | 0 | Fundamentos | Ações básicas, passivas leves, primeiras escolhas |
+| Tier 2 | 5 | Eficiência | Custo, conforto, desbloqueios de rotina |
+| Tier 3 | 11 | Técnica real | Habilidades que mudam forma de jogar |
+| Tier 4 | 18 | Especialização forte | Sinergias de build, loot, materiais ou defesa avançada |
+| Tier 5 | 26 | Capstone | Identidade final da árvore, exige compromisso claro |
+
+## 4. Rank cap por tier
+
+Para evitar que o jogador maximize uma skill cedo demais, nodes escaláveis devem respeitar limites de rank por profundidade da árvore.
+
+| Profundidade atual na árvore | Rank máximo recomendado em nodes escaláveis |
+|---|---:|
+| Tier 1 desbloqueado | Rank 2 |
+| Tier 2 desbloqueado | Rank 3 |
+| Tier 3 desbloqueado | Rank 4 |
+| Tier 4 ou Tier 5 desbloqueado | Rank 5 |
+
+Regra:
+
+```text
+Uma skill pode ser aprendida cedo, mas seus ranks altos exigem investimento real na árvore.
+Isso evita que Block, Dash, dano base, coleta ou regen sejam maximizados no começo.
+```
+
+## 5. Tipos de node
 
 | Tipo | Ocupa active slot? | Direção |
 |---|---:|---|
@@ -77,7 +98,7 @@ Com 50 pontos: não deve ser possível masterizar duas árvores completas.
 | Modifier | Não | Altera ação existente, como ataque, dodge, mineração, magia |
 | Capstone | Normalmente não | Pode ser passivo, modificador ou active especial |
 
-## 5. Regras de miss, precisão e crítico
+## 6. Regras de miss, precisão e crítico
 
 Chance de miss existe, mas deve ser superficial.
 
@@ -101,7 +122,7 @@ Preferir efeitos como:
 +maior controle/status
 ```
 
-## 6. Regra sobre partes do corpo / pontos fracos
+## 7. Regra sobre partes do corpo / pontos fracos
 
 O jogo ainda não terá sistema de ataque em local específico do corpo.
 
@@ -127,7 +148,7 @@ Tiro no Olho:
   exige acertar especificamente o olho do monstro.
 ```
 
-## 7. Active slots e input separado
+## 8. Active slots e input separado
 
 ```text
 4 active slots são para habilidades equipáveis.
@@ -142,7 +163,7 @@ Block é skill, mas precisa de decisão final: input defensivo próprio ou activ
 
 # PARTE B — Melee / Guerreiro
 
-## 8. Identidade da árvore
+## 9. Identidade da árvore
 
 Melee/Guerreiro é a árvore de combate físico de curta distância.
 
@@ -167,16 +188,16 @@ Destreza: timing, dodge follow-up, crítico por abertura.
 Breath: ritmo de combate e sustentação de block/ataques pesados.
 ```
 
-## 9. Skills Melee/Guerreiro
+## 10. Skills Melee/Guerreiro
 
 | Skill | Tier | Custo/Ranks | Tipo | Mecânica in-game | HUD/Feedback |
 |---|---:|---:|---|---|---|
-| Treinamento Marcial | 1 | 1-5 | Passive | +2/4/6/8/10% dano com armas melee. Não afeta ferramentas usadas para coleta. | bônus passivo no painel da arma |
+| Treinamento Marcial | 1 | 1-5 | Passive | +2/4/6/8/10% dano com armas melee. Não afeta ferramentas usadas para coleta. Ranks altos seguem rank cap global. | bônus passivo no painel da arma |
 | Ataque Pesado | 1 | 1-5 | Modifier | Charged attack melee causa +10/18/26/34/42% posture damage e +5/10/15/20/25% dano, com custo maior de Stamina. | brilho/charge na arma |
-| Block / Bloqueio | 1 | 1-5 | Defensive Action | Habilita block. Reduz dano frontal em 35/42/49/56/63%. Consome Stamina/Breath ao segurar. | ícone de escudo + drain de recurso |
+| Block / Bloqueio | 1 | 1-5 | Defensive Action | Habilita block no rank 1. Reduz dano frontal em 35/42/49/56/63%. Consome Stamina/Breath ao segurar. Ranks altos exigem tiers mais fundos. | ícone de escudo + drain de recurso |
 | Guarda Firme | 2 | 1-5 | Passive | Reduz custo de block em 6/12/18/24/30% e reduz chance de stagger recebido enquanto bloqueia. | escudo reforçado no HUD |
 | Corte Amplo | 2 | 1-3 | Active Skill | Ataque em arco curto. Atinge até 2/3/4 inimigos próximos com dano reduzido em alvos secundários. Bom contra packs. | active slot + cooldown |
-| Contra-Ataque | 2 | 1-3 | Modifier/Reaction | Após block perfeito, próximo ataque melee em até 1.5s ganha +20/35/50% crit chance. | flash de contra-ataque |
+| Contra-Ataque | 3 | 1-3 | Modifier/Reaction | Após block perfeito, próximo ataque melee em até 1.5s ganha +20/35/50% crit chance. | flash de contra-ataque |
 | Quebra-Postura | 3 | 1-5 | Passive | +8/16/24/32/40% dano de postura contra inimigos em telegraph, recovery ou usando ataque pesado. | barra/ícone de posture do inimigo |
 | Lâmina de Abertura | 3 | 1-5 | Passive | Ataques melee contra inimigos vulneráveis, stunned, slowed ou em critical window ganham +5/10/15/20/25% crit chance. | feedback de abertura |
 | Especialização: Arma Pesada | 3 | 1-5 | Passive | Hammer/Axe/Great Sword: +6/12/18/24/30% dano de postura; +3/6/9/12/15% custo de Stamina. | marcador de especialização |
@@ -185,20 +206,21 @@ Breath: ritmo de combate e sustentação de block/ataques pesados.
 | Golpe de Ruptura | 4 | 1-3 | Active Skill | Golpe forte que aplica grande posture damage e pequeno knockback. Custo alto, cooldown médio. | active slot + impacto |
 | Capstone: Guerreiro das Profundezas | 5 | 3 | Capstone | Após quebrar postura de inimigo, por 5s: +20% dano melee, +20% resistência a stagger, e ataques em critical window causam +25% dano crítico. | aura curta + ícone de capstone |
 
-## 10. Observações de balanceamento Melee
+## 11. Observações de balanceamento Melee
 
 ```text
 Melee deve ser forte em risco/recompensa.
 Block dá segurança, mas custa recurso.
 Ataque pesado deve ser perigoso se usado no timing errado.
 Crítico vem de abertura/vulnerabilidade, não de mirar em parte específica.
+Block rank 1 pode existir cedo; Block forte só deve aparecer com investimento maior.
 ```
 
 ---
 
 # PARTE C — Ranged / Caçador
 
-## 11. Identidade da árvore
+## 12. Identidade da árvore
 
 Ranged/Caçador é a árvore de distância, controle, marcação e exploração ofensiva segura.
 
@@ -222,7 +244,7 @@ Inteligência: leitura de padrões, marcação, armadilhas simples.
 Vontade: foco sob medo/pressão e resistência mental.
 ```
 
-## 12. Skills Ranged/Caçador
+## 13. Skills Ranged/Caçador
 
 | Skill | Tier | Custo/Ranks | Tipo | Mecânica in-game | HUD/Feedback |
 |---|---:|---:|---|---|---|
@@ -231,16 +253,16 @@ Vontade: foco sob medo/pressão e resistência mental.
 | Disparo Carregado | 1 | 1-5 | Active Skill | Tiro com windup. +15/25/35/45/55% dano e +10/15/20/25/30% chance de stagger leve/interrupção em inimigos menores. | barra de charge |
 | Passo do Caçador | 2 | 1-5 | Passive | Após ataque ranged, próximo movimento nos 0.8s seguintes recebe +4/8/12/16/20% velocidade curta. Não é Dash. | rastro breve nos pés |
 | Leitura de Abertura | 2 | 1-5 | Passive | Contra alvo marcado, slowed, stunned ou em recovery: +4/8/12/16/20% crit chance. Substitui “tiro em ponto fraco”. | brilho no retículo/alvo |
-| Disparo de Interrupção | 2 | 1-3 | Active Skill | Interrompe casts fracos ou ataques canalizados de inimigos não-boss. Em boss, reduz barra de posture em 6/9/12%. | active slot + efeito de impacto |
+| Disparo de Interrupção | 3 | 1-3 | Active Skill | Interrompe casts fracos ou ataques canalizados de inimigos não-boss. Em boss, reduz barra de posture em 6/9/12%. | active slot + efeito de impacto |
 | Flecha Perfurante | 3 | 1-3 | Active Skill | Projétil atravessa até 2/3/4 alvos em linha curta. Dano cai 20% por alvo atravessado. | linha de projétil |
 | Armadilha de Caçador | 3 | 1-3 | Active Utility | Coloca trap simples de slow/root curto por 1.0/1.5/2.0s. Não substitui traps do mundo. | armadilha no chão + cooldown |
 | Caçador de Voadores | 3 | 1-5 | Passive | Contra inimigos flying/floating: +4/8/12/16/20% dano e +5/10/15/20/25% posture damage. | ícone de asa no alvo |
 | Flecha Preparada | 4 | 1-5 | Modifier/Unlock | Permite aplicar consumíveis simples à flecha: fogo/gelo/veneno leve. Consome item ou carga. Efeitos fortes exigem crafting/magia. | ícone de munição preparada |
 | Retirada Tática | 4 | 1-3 | Passive | Ao acertar inimigo marcado que se aproxima, chance de 20/35/50% de aplicar slow curto. Cooldown interno. | efeito de slow |
-| Olho do Caçador | 4 | 1-5 | Passive | +3/6/9/12/15% chance de loot de caça adicional em criaturas orgânicas, couro, presa, pena, carne, componente. | feedback de loot extra |
+| Olho do Caçador | 4 | 1-5 | Passive | +3/6/9/12/15% chance de loot de caça adicional em criaturas orgânicas: couro, presa, pena, carne ou componente. | feedback de loot extra |
 | Capstone: Predador de Aberturas | 5 | 3 | Capstone | Contra alvo marcado e vulnerável: primeiro crítico ranged causa +40% dano crítico e renova 50% da duração da marca. Cooldown por alvo. | marca evoluída + hit flash |
 
-## 13. Observações de balanceamento Ranged
+## 14. Observações de balanceamento Ranged
 
 ```text
 Ranged deve ser seguro, mas depender de posicionamento e recurso.
@@ -248,13 +270,14 @@ Não deve virar magia gratuita.
 Não deve depender de mirar em partes específicas.
 “Ponto fraco” vira abertura, marcação, vulnerabilidade ou critical window.
 Precisão pura é baixa prioridade porque miss será superficial.
+Interrupção fica em Tier 3 para não trivializar inimigos especiais cedo demais.
 ```
 
 ---
 
 # PARTE D — Magic / Arcano
 
-## 14. Identidade da árvore
+## 15. Identidade da árvore
 
 Magic/Arcano é a árvore de MP, magia elemental, magia arcana, magia espiritual/divina limitada, uso de itens mágicos e interação com Fonte/Mana.
 
@@ -279,7 +302,7 @@ Inteligência: controle, eficiência, potência técnica.
 Carisma: suporte/liderança espiritual, quando aplicável.
 ```
 
-## 15. Skills Magic/Arcano
+## 16. Skills Magic/Arcano
 
 | Skill | Tier | Custo/Ranks | Tipo | Mecânica in-game | HUD/Feedback |
 |---|---:|---:|---|---|---|
@@ -292,13 +315,13 @@ Carisma: suporte/liderança espiritual, quando aplicável.
 | Afinidade Elemental: Gelo | 2 | 1-5 | Modifier/Unlock | Magias de gelo: +4/8/12/16/20% potência de Chill/slow, sem stun abusivo. | ícone gelo |
 | Afinidade Elemental: Raio | 3 | 1-5 | Modifier/Unlock | Magias de raio: +4/8/12/16/20% chance de interrupção leve; bônus contra constructos/máquinas. | ícone raio |
 | Afinidade Natural/Água | 3 | 1-5 | Modifier/Unlock | Magias de água/natureza: melhora purificação leve, suporte e interação ambiental. | ícone água/folha |
-| Toque Restaurador | 3 | 1-5 | Active Skill | Cura limitada. Custo alto. Cura 8/12/16/20/24% do HP máximo, cooldown alto. Não substitui comida/poção. | active slot + cura |
+| Toque Restaurador | 3 | 1-5 | Active Skill | Cura limitada. Custo alto. Cura 8/12/16/20/24% do HP máximo, cooldown alto. Não substitui comida/poções. | active slot + cura |
 | Uso de Item Mágico | 3 | 1-5 | Unlock/Passive | Permite usar varinhas, selos, scrolls, amuletos e cargas mágicas de tiers maiores. Reduz chance de falha/efeito fraco de item mágico. | item mágico desbloqueado |
 | Resistir Corrupção | 4 | 1-5 | Passive | Reduz efeito/duração de Corruption, Shadow/Nyx, Void e Blackstone em 5/10/15/20/25%. | ícone de resistência espiritual |
 | Eco da Fonte | 4 | 1-5 | Passive/Lore | Melhora efeitos da Fonte de Anya, Água Viva, respec e cura especial após marcos narrativos. Sem efeito total no início. | HUD contextual na Fonte |
 | Capstone: Fragmento Desperto | 5 | 3 | Capstone | Após gastar 40% do MP máximo em combate/exploração, próxima magia espiritual/arcana custa -50% MP e tem +25% efeito. Cooldown longo. | aura de Fonte/Mana |
 
-## 16. Observações de balanceamento Magic
+## 17. Observações de balanceamento Magic
 
 ```text
 MP regenera lentamente e não deve ser trivializado.
@@ -306,13 +329,14 @@ Cura existe, mas é cara e limitada.
 Magia elemental deve gerar escolhas de build.
 Uso de item mágico é progressão real, não só flavour.
 Magia sombria/corrompida deve depender de lore, risco e progressão; não é magia inicial livre.
+Ranks altos de custo de MP e regen ficam limitados pelo rank cap global.
 ```
 
 ---
 
 # PARTE E — Survival / Sobrevivente
 
-## 17. Identidade da árvore
+## 18. Identidade da árvore
 
 Survival/Sobrevivente é a árvore de runs longas, resistência, fome, cansaço, exploração da caverna, loot contextual, tesouros, ouro e mitigação de ambiente.
 
@@ -349,7 +373,7 @@ Vontade: medo, corrupção, pressão espiritual.
 Inteligência: leitura de perigo e aproveitamento de recursos.
 ```
 
-## 18. Skills Survival/Sobrevivente
+## 19. Skills Survival/Sobrevivente
 
 | Skill | Tier | Custo/Ranks | Tipo | Mecânica in-game | HUD/Feedback |
 |---|---:|---:|---|---|---|
@@ -368,7 +392,7 @@ Inteligência: leitura de perigo e aproveitamento de recursos.
 | Resistência de Run Profunda | 4 | 1-3 | Passive | Em run de caverna, após 10/20/30 min in-game de exploração contínua, reduz penalidades de fome/cansaço em valor moderado. | buff de run longa |
 | Capstone: Sobrevivente das Profundezas | 5 | 3 | Capstone | Uma vez por run, ao chegar em cansaço alto ou HP baixo, ativa por 8s: -40% gasto de Breath, +25% resistência ambiental, HP regen fora de combate fica dobrada após sair do perigo. | alerta de sobrevivência |
 
-## 19. Observações de balanceamento Survival
+## 20. Observações de balanceamento Survival
 
 ```text
 Survival deve tornar runs longas mais viáveis, não mais fáceis sem limite.
@@ -376,13 +400,14 @@ Loot melhor deve ser probabilístico e moderado.
 Ouro extra deve ser pequeno para não quebrar economia.
 Garimpo de Run existe porque mineração da caverna é loop central.
 Secret rooms/atalhos ficam fora até o sistema existir.
+Dash entra em Tier 2 porque muda mobilidade e não deve existir no começo absoluto.
 ```
 
 ---
 
 # PARTE F — Crafting / Produção
 
-## 20. Identidade da árvore
+## 21. Identidade da árvore
 
 Crafting/Produção é a árvore de ferramentas, fazenda, construção, oficinas, materiais, qualidade, tiers e eficiência econômica/produtiva.
 
@@ -410,7 +435,7 @@ Carisma: comércio/animais em efeitos futuros.
 Vontade: crops raras, Mana e Fonte em efeitos específicos.
 ```
 
-## 21. Skills Crafting/Produção
+## 22. Skills Crafting/Produção
 
 | Skill | Tier | Custo/Ranks | Tipo | Mecânica in-game | HUD/Feedback |
 |---|---:|---:|---|---|---|
@@ -423,13 +448,13 @@ Vontade: crops raras, Mana e Fonte em efeitos específicos.
 | Ferramentas de Ferro | 2 | 1 | Unlock | Libera upgrade/craft de ferramentas de Ferro. | tier liberado |
 | Ferramentas de Aço | 3 | 1 | Unlock | Libera ferramentas de Aço e upgrades equivalentes. | tier liberado |
 | Forja de Prata | 3 | 1-3 | Unlock/Modifier | Libera armas de Prata. Ranks melhoram dano contra mortos-vivos/sombras/maldições em +5/10/15%. | ícone prata + bônus situacional |
+| Alquimia Prática | 3 | 1-5 | Crafting | Melhora poções, antídotos, bombas leves, óleos de arma e consumíveis de run. | tooltip de consumível |
 | Trabalho em Mithril | 4 | 1-3 | Unlock/Modifier | Libera armas/armaduras/ferramentas de Mithril. Equipamentos tendem a ser leves, duráveis e com menor custo de stamina. | tier mithril |
 | Engenharia Bromeciana | 4 | 1-5 | Unlock/Crafting | Libera máquinas, processadores, irrigação avançada, mecanismos e itens técnicos por rank. | UI de máquina/processador |
-| Alquimia Prática | 3 | 1-5 | Crafting | Melhora poções, antídotos, bombas leves, óleos de arma e consumíveis de run. | tooltip de consumível |
 | Cultivo de Mana | 4 | 1-5 | Lore/Crafting | Aumenta chance de cultivar/estabilizar crops raras ligadas a Mana, sem garantir Fruto de Mana. Depende de Fonte/lore/fazenda. | ícone de Mana/crop rara |
 | Capstone: Mestre da Produção | 5 | 3 | Capstone | Uma vez por dia, ao craftar/construir/colher lote relevante: chance de recuperar parte de material comum, melhorar qualidade ou gerar output extra moderado. Não afeta materiais únicos/endgame. | feedback dourado de produção |
 
-## 22. Por que reduzir stamina agrícola ainda importa
+## 23. Por que reduzir stamina agrícola ainda importa
 
 ```text
 No early game, reduz custo direto de ações básicas.
@@ -445,7 +470,7 @@ Mãos de Lavrador não deve ser capstone.
 No late game, deve ser complementada por máquinas, ferramentas melhores, companions e construções.
 ```
 
-## 23. Substituição de “Estabilização Rara”
+## 24. Substituição de “Estabilização Rara”
 
 A skill antiga “Estabilização Rara” fica removida como nome genérico.
 
@@ -466,27 +491,283 @@ Alquimia Prática
 
 # PARTE G — HUD e UI das skills
 
-## 24. HUD base relacionado a skills
+## 25. Princípios de HUD para tela pequena
 
-HUD deve comunicar:
+A HUD deve seguir uma lógica comum em farm sims e action RPGs 2D: **estado essencial sempre visível**, informação contextual só aparece quando importa, e menus completos ficam fora da tela de gameplay.
+
+Premissas:
+
+```text
+Resolução base: 1280x720.
+Pixel art: UI legível em 32x32 e múltiplos limpos.
+Tela pequena não pode ficar cheia de barras permanentes.
+Combate, fazenda, cidade e caverna devem reaproveitar a mesma HUD base com overlays contextuais.
+```
+
+Regras:
+
+```text
+Não mostrar tudo o tempo todo.
+Não usar texto longo durante gameplay.
+Preferir ícones + barras curtas + tooltips em menu.
+Durante combate, priorizar HP, Stamina, active skills, Dash/Dodge/Block e status.
+Durante fazenda, priorizar ferramenta/item, Stamina, Fome, Cansaço, tempo e interação.
+Durante caverna, priorizar HP, MP, Stamina, Breath, andar da caverna, active skills, status e recursos de run.
+```
+
+## 26. Layout base recomendado
+
+### Top-left — estado do personagem
+
+Sempre visível:
+
+```text
+HP
+Stamina
+```
+
+Condicional:
+
+```text
+MP aparece quando o jogador desbloquear magia ou equipar skill/item mágico.
+Breath aparece expandido em combate, caverna, corrida, dash, dodge, block ou ambiente hostil.
+Fome e Cansaço aparecem como ícones compactos com fill/estado, não como barras grandes permanentes.
+```
+
+Direção visual:
+
+```text
+HP: barra principal curta.
+Stamina: barra secundária curta abaixo do HP.
+MP: barra curta abaixo/ao lado, só quando relevante.
+Breath: barra fina ou medidor compacto, só expandido quando ativo.
+Fome/Cansaço: ícones pequenos com 3-4 estados visuais.
+```
+
+### Top-right — tempo, mundo e economia
+
+Sempre visível fora de menus:
+
+```text
+Dia
+Hora/período
+Season
+Lua atual
+Ouro carregado
+```
+
+Regra:
+
+```text
+Em tela pequena, Dia/Hora/Season/Lua/Ouro devem caber em um painel compacto.
+A lua pode ser ícone, não texto longo.
+Ouro pode ser número com ícone.
+```
+
+### Bottom-center — hotbar de itens/ferramentas
+
+Uso principal:
+
+```text
+ferramenta ativa
+item selecionado
+sementes
+comida
+poções
+recursos rápidos
+```
+
+Direção:
+
+```text
+8 slots visíveis inicialmente.
+Slot selecionado maior ou com outline.
+Em caverna, hotbar pode destacar consumíveis e arma/ferramenta ativa.
+Em fazenda, hotbar destaca ferramentas e sementes.
+```
+
+### Bottom-right — habilidades equipáveis
+
+Uso principal:
 
 ```text
 4 active slots
-cooldown de active skills
-custo de MP/Stamina/Breath
-recurso insuficiente
-Dash separado dos active slots
-Dodge por feedback de movimento, não hotbar
-Block disponível/ativo, conforme decisão de input
-buffs/debuffs de skills
-HP regen ativa/inativa
-loot/yield extra quando ocorrer
-critical window e hit crítico
-marcação de alvo
-resistência ambiental ativa
+magias
+golpes especiais
+técnicas ranged
+suporte
+utilidades equipáveis
 ```
 
-## 25. Menu de skill tree
+Regras:
+
+```text
+Dash não fica aqui.
+Dodge não fica aqui.
+Block só fica aqui se a decisão futura for tratá-lo como active skill; se tiver botão próprio, aparece como indicador defensivo separado.
+Cada active slot deve mostrar ícone, cooldown radial, custo principal e estado indisponível.
+```
+
+### Próximo ao personagem — prompts contextuais
+
+Aparece só quando relevante:
+
+```text
+E Interagir
+E Colher
+E Falar
+E Abrir
+E Dormir
+E Entrar
+```
+
+Regra:
+
+```text
+Prompt contextual deve ficar próximo ao objeto/personagem ou acima da hotbar.
+Não deve ocupar painel fixo grande.
+```
+
+### Top-center — alvo, boss e objetivo curto
+
+Uso condicional:
+
+```text
+barra de boss
+nome de alvo elite
+andar da caverna ao entrar
+objetivo curto temporário
+checkpoint alcançado
+```
+
+Regra:
+
+```text
+Não mostrar barra de inimigo comum permanentemente.
+Inimigos comuns comunicam HP/status por feedback visual local.
+Bosses e elites podem usar barra top-center.
+```
+
+## 27. Estados de HUD por modo de jogo
+
+### Fazenda
+
+HUD prioriza:
+
+```text
+ferramenta ativa
+item/semente selecionada
+Stamina
+Fome
+Cansaço
+Dia/Hora/Season/Lua
+Ouro
+prompt de interação
+estado contextual do tile/crop/animal
+```
+
+Não precisa mostrar por padrão:
+
+```text
+barra de MP, se nenhuma magia estiver equipada
+barra de Breath expandida, salvo corrida/dash/cansaço relevante
+active combat skills se não houver perigo próximo, podendo ficar minimizadas
+```
+
+### Cidade
+
+HUD prioriza:
+
+```text
+Dia/Hora
+Ouro
+prompt de interação
+nome do NPC ao aproximar
+estado de loja/serviço
+ícone de relacionamento quando relevante
+```
+
+Não precisa mostrar por padrão:
+
+```text
+active skills em destaque
+barras de combate expandidas
+loot/combat feedback
+```
+
+### Caverna
+
+HUD prioriza:
+
+```text
+HP
+MP, se magia/item mágico existir
+Stamina
+Breath
+Fome
+Cansaço
+andar atual da caverna
+estado de checkpoint/run
+4 active slots
+Dash/Dodge/Block
+status negativos
+consumíveis rápidos
+```
+
+Caverna pode ter overlay compacto:
+
+```text
+Nível atual
+Bioma atual, se revelado
+Checkpoint mais próximo, se descoberto
+Pedra de Retorno, se disponível
+```
+
+### Combate
+
+HUD prioriza:
+
+```text
+HP
+Stamina
+Breath
+MP, se usado
+4 active slots
+cooldowns
+Dash cooldown
+Dodge feedback
+Block ativo/perfeito
+status negativos
+critical window
+stagger/posture do alvo importante
+```
+
+Regra:
+
+```text
+Durante combate, elementos de fazenda/cidade ficam reduzidos.
+O jogador precisa ler recursos e cooldowns sem abrir menu.
+```
+
+## 28. Feedback de skills na HUD
+
+| Sistema | Feedback mínimo |
+|---|---|
+| Active skill | ícone, cooldown radial, custo, estado bloqueado |
+| Dash | indicador separado, cooldown curto, recurso insuficiente |
+| Dodge | feedback visual no personagem, não precisa ícone permanente grande |
+| Block | ícone/estado defensivo, drain de Stamina/Breath, flash de block perfeito |
+| HP regen | ícone pequeno quando ativa; cinza quando pausada por dano/combate |
+| MP regen | indicador discreto; não precisa número flutuante constante |
+| Fome | ícone com estados: ok, atenção, baixo, crítico |
+| Cansaço | ícone com estados: ok, leve, alto, extremo |
+| Critical window | brilho/outline no inimigo, som curto, hit flash no crítico |
+| Marcador de Presa | ícone pequeno acima do inimigo marcado |
+| Loot extra | pop-up curto no pickup: +ouro, +minério, +recurso |
+| Resistência ambiental | ícone pequeno quando reduzindo frio/calor/gás/corrupção |
+| Craft unlock | toast curto: “Ferramentas de Ferro liberadas” |
+
+## 29. Menu de skill tree
 
 O menu deve mostrar:
 
@@ -498,13 +779,24 @@ pontos gastos por árvore
 tier desbloqueado por árvore
 pré-requisitos por node
 rank atual de cada skill
+rank máximo atual permitido pelo tier
 se a skill ocupa active slot ou não
 se a skill é movement action, passive, unlock, modifier ou capstone
 preview mecânico do próximo rank
 respec disponível na Fonte de Anya
 ```
 
-## 26. Tooltip de skill
+Para tela pequena:
+
+```text
+Uma árvore por vez.
+Zoom/pan simples se a árvore for visual.
+Lista lateral de nodes selecionáveis se a UI visual ficar pequena demais.
+Tooltip à direita ou painel inferior, nunca cobrindo tudo.
+Mostrar caminho até o próximo tier.
+```
+
+## 30. Tooltip de skill
 
 Cada tooltip deve ter formato mínimo:
 
@@ -514,6 +806,7 @@ Nome
 Tier
 Tipo
 Rank atual / rank máximo
+Rank máximo permitido agora
 Custo em SkillPoints
 Pré-requisitos
 Efeito mecânico atual
@@ -524,9 +817,69 @@ Ocupa active slot? Sim/Não
 Interações com atributos/equipamentos
 ```
 
+## 31. O que a HUD não deve fazer
+
+```text
+Não mostrar todos os status como barras grandes permanentes.
+Não colocar Dash/Dodge dentro dos 4 active slots.
+Não mostrar números excessivos durante gameplay comum.
+Não depender de texto longo para entender combate.
+Não abrir painel grande para feedback simples.
+Não usar pop-ups que escondam o personagem em combate.
+Não mostrar barra de HP de todo inimigo comum o tempo todo.
+Não misturar hotbar de itens com active skills sem separação visual.
+```
+
 ---
 
-# PARTE H — Decisões fechadas neste refinamento
+# PARTE H — Avaliação dos tiers após revisão
+
+## 32. Veredito
+
+A ideia de 5 tiers continua correta, mas a curva foi ajustada.
+
+Antes:
+
+```text
+Tier 1: 0
+Tier 2: 4
+Tier 3: 9
+Tier 4: 16
+Tier 5: 24
+```
+
+Problema:
+
+```text
+Capstone ficava acessível cedo demais para uma economia de 50 pontos.
+Algumas skills de Tier 1 podiam ser maximizadas cedo se não houvesse trava de rank.
+O jogador poderia pegar utilidades fortes em várias árvores sem compromisso suficiente.
+```
+
+Agora:
+
+```text
+Tier 1: 0
+Tier 2: 5
+Tier 3: 11
+Tier 4: 18
+Tier 5: 26
+```
+
+Resultado esperado:
+
+```text
+Capstone exige compromisso real.
+Masterização funcional fica em ~30-34 pontos.
+Sobram ~16-20 pontos para splash em outras árvores.
+Ranks altos exigem profundidade.
+Builds híbridas continuam possíveis.
+Duas árvores completas continuam inviáveis com 50 pontos.
+```
+
+---
+
+# PARTE I — Decisões fechadas neste refinamento
 
 ```text
 Tiro em ponto fraco não será skill literal de mirar em parte específica.
@@ -542,11 +895,14 @@ Dash não ocupa active slot.
 Dodge não ocupa active slot.
 Block é skill, mas input final ainda precisa ser definido.
 HP regen é skill de Survival e pode ser amplificada por itens.
+Tier 5 agora exige 26 pontos gastos na árvore.
+Nodes escaláveis respeitam rank cap por tier.
+A HUD deve ser compacta, contextual e separada por zonas: estado do jogador, mundo/economia, hotbar, active skills e prompts contextuais.
 ```
 
 ---
 
-# PARTE I — Pendências
+# PARTE J — Pendências
 
 ```text
 Definir custo final de cada node.
@@ -561,3 +917,7 @@ Validar quais materiais entram em cada tier de crafting.
 Validar se Cultivo de Mana depende de nível da fazenda, Fonte, estação, lua ou quest.
 Validar se Engenharia Bromeciana depende de ruínas/caverna/cidade.
 Validar integração com HUD final.
+Validar visual real da HUD em 1280x720 e em tela pequena.
+Validar se a hotbar terá 8 ou 10 slots no gameplay final.
+Validar se MP fica invisível até magia ser desbloqueada ou apenas minimizado.
+Validar se Breath fica sempre visível ou apenas contextual.
