@@ -56,8 +56,6 @@ Com 50 pontos: 1 árvore principal masterizada + investimento parcial em outras.
 Com 50 pontos: não deve ser possível masterizar duas árvores completas.
 ```
 
-A versão anterior permitia capstone com investimento baixo demais. A curva abaixo exige compromisso maior com a árvore antes do Tier 5.
-
 ## 3. Tiers revisados
 
 | Tier | Requisito de pontos gastos na árvore | Papel | Direção de gameplay |
@@ -83,7 +81,8 @@ Regra:
 
 ```text
 Uma skill pode ser aprendida cedo, mas seus ranks altos exigem investimento real na árvore.
-Isso evita que Block, Dash, dano base, coleta ou regen sejam maximizados no começo.
+Isso evita que Block, dano base, coleta ou regen sejam maximizados no começo.
+Dash base não depende da árvore; Survival melhora Dash.
 ```
 
 ## 5. Tipos de node
@@ -92,8 +91,8 @@ Isso evita que Block, Dash, dano base, coleta ou regen sejam maximizados no come
 |---|---:|---|
 | Passive | Não | Bônus permanente ou condicional |
 | Active Skill | Sim | Habilidade equipada em um dos 4 active slots |
-| Movement Action | Não | Dash/Dodge ficam fora dos active slots |
-| Defensive Action | A decidir | Block pode usar input próprio ou active slot, decisão futura |
+| Movement Modifier | Não | Melhora movimento base, como Dash/Dodge |
+| Defensive Action | Não | Block usa input fixo próprio e é melhorado por Melee |
 | Unlock | Não | Libera sistema, receita, tier, material, item ou interação |
 | Modifier | Não | Altera ação existente, como ataque, dodge, mineração, magia |
 | Capstone | Normalmente não | Pode ser passivo, modificador ou active especial |
@@ -134,29 +133,25 @@ Não usar skill que exige mirar em olho, asa, cabeça, perna ou core específico
 Mecanicamente, deve ser tratado como abertura, vulnerabilidade, critical window, alvo marcado ou estado exposto.
 ```
 
-Exemplo correto:
-
-```text
-Leitura de Abertura:
-  aumenta chance de crítico contra inimigos marcados, stunned, slowed, em recovery ou durante critical window.
-```
-
-Exemplo incorreto:
-
-```text
-Tiro no Olho:
-  exige acertar especificamente o olho do monstro.
-```
-
 ## 8. Active slots e input separado
 
 ```text
 4 active slots são para habilidades equipáveis.
 Dash não ocupa active slot.
 Dodge não ocupa active slot.
-Dash = Space + direção, após desbloqueio.
-Dodge = double tap direcional, ação base.
-Block é skill, mas precisa de decisão final: input defensivo próprio ou active slot.
+Block não ocupa active slot.
+Dash = Space + direção.
+Dodge = double tap direcional.
+Block = Left Shift.
+```
+
+Direção de desbloqueio:
+
+```text
+Dodge existe desde o começo como ação base.
+Dash deve ser desbloqueado por tutorial/progressão inicial, não por investimento obrigatório em Survival.
+Survival melhora Dash.
+Block é desbloqueado/melhorado por Melee/Guerreiro, mas usa Left Shift como input fixo quando disponível.
 ```
 
 ---
@@ -194,7 +189,7 @@ Breath: ritmo de combate e sustentação de block/ataques pesados.
 |---|---:|---:|---|---|---|
 | Treinamento Marcial | 1 | 1-5 | Passive | +2/4/6/8/10% dano com armas melee. Não afeta ferramentas usadas para coleta. Ranks altos seguem rank cap global. | bônus passivo no painel da arma |
 | Ataque Pesado | 1 | 1-5 | Modifier | Charged attack melee causa +10/18/26/34/42% posture damage e +5/10/15/20/25% dano, com custo maior de Stamina. | brilho/charge na arma |
-| Block / Bloqueio | 1 | 1-5 | Defensive Action | Habilita block no rank 1. Reduz dano frontal em 35/42/49/56/63%. Consome Stamina/Breath ao segurar. Ranks altos exigem tiers mais fundos. | ícone de escudo + drain de recurso |
+| Block / Bloqueio | 1 | 1-5 | Defensive Action | Habilita Block no rank 1. Usa Left Shift. Reduz dano frontal em 35/42/49/56/63%. Consome Stamina/Breath ao segurar. Ranks altos exigem tiers mais fundos. | ícone de escudo + drain de recurso |
 | Guarda Firme | 2 | 1-5 | Passive | Reduz custo de block em 6/12/18/24/30% e reduz chance de stagger recebido enquanto bloqueia. | escudo reforçado no HUD |
 | Corte Amplo | 2 | 1-3 | Active Skill | Ataque em arco curto. Atinge até 2/3/4 inimigos próximos com dano reduzido em alvos secundários. Bom contra packs. | active slot + cooldown |
 | Contra-Ataque | 3 | 1-3 | Modifier/Reaction | Após block perfeito, próximo ataque melee em até 1.5s ganha +20/35/50% crit chance. | flash de contra-ataque |
@@ -204,7 +199,7 @@ Breath: ritmo de combate e sustentação de block/ataques pesados.
 | Especialização: Arma Leve | 3 | 1-5 | Passive | Dagger/Sword/Spear curta: -4/8/12/16/20% recovery entre ataques; +2/4/6/8/10% crit chance contra alvo marcado/vulnerável. | marcador de especialização |
 | Pele de Batalha | 4 | 1-5 | Passive | Enquanto HP > 60%, reduz dano físico recebido em 3/6/9/12/15%. Não regenera HP. | buff passivo no status |
 | Golpe de Ruptura | 4 | 1-3 | Active Skill | Golpe forte que aplica grande posture damage e pequeno knockback. Custo alto, cooldown médio. | active slot + impacto |
-| Capstone: Guerreiro das Profundezas | 5 | 3 | Capstone | Após quebrar postura de inimigo, por 5s: +20% dano melee, +20% resistência a stagger, e ataques em critical window causam +25% dano crítico. | aura curta + ícone de capstone |
+| Capstone: Voto do Aço Profundo | 5 | 3 | Capstone | Ao quebrar postura de um inimigo elite/boss ou bloquear perfeitamente ataque pesado, ativa “Aço Profundo” por 7s: +20% dano melee, +25% resistência a stagger, Block custa -25% e ataques em critical window causam +30% dano crítico. Cooldown por encontro. | aura de aço escuro + pulso de postura |
 
 ## 11. Observações de balanceamento Melee
 
@@ -260,7 +255,7 @@ Vontade: foco sob medo/pressão e resistência mental.
 | Flecha Preparada | 4 | 1-5 | Modifier/Unlock | Permite aplicar consumíveis simples à flecha: fogo/gelo/veneno leve. Consome item ou carga. Efeitos fortes exigem crafting/magia. | ícone de munição preparada |
 | Retirada Tática | 4 | 1-3 | Passive | Ao acertar inimigo marcado que se aproxima, chance de 20/35/50% de aplicar slow curto. Cooldown interno. | efeito de slow |
 | Olho do Caçador | 4 | 1-5 | Passive | +3/6/9/12/15% chance de loot de caça adicional em criaturas orgânicas: couro, presa, pena, carne ou componente. | feedback de loot extra |
-| Capstone: Predador de Aberturas | 5 | 3 | Capstone | Contra alvo marcado e vulnerável: primeiro crítico ranged causa +40% dano crítico e renova 50% da duração da marca. Cooldown por alvo. | marca evoluída + hit flash |
+| Capstone: Marca da Caçada Lunar | 5 | 3 | Capstone | O primeiro alvo marcado em cada encontro recebe “Caçada Lunar”: enquanto marcado, ataques ranged contra ele têm +15% crit chance. O primeiro crítico ranged nele causa +45% dano crítico e espalha uma marca menor para 1 inimigo próximo. | marca lunar acima do alvo |
 
 ## 14. Observações de balanceamento Ranged
 
@@ -319,7 +314,7 @@ Carisma: suporte/liderança espiritual, quando aplicável.
 | Uso de Item Mágico | 3 | 1-5 | Unlock/Passive | Permite usar varinhas, selos, scrolls, amuletos e cargas mágicas de tiers maiores. Reduz chance de falha/efeito fraco de item mágico. | item mágico desbloqueado |
 | Resistir Corrupção | 4 | 1-5 | Passive | Reduz efeito/duração de Corruption, Shadow/Nyx, Void e Blackstone em 5/10/15/20/25%. | ícone de resistência espiritual |
 | Eco da Fonte | 4 | 1-5 | Passive/Lore | Melhora efeitos da Fonte de Anya, Água Viva, respec e cura especial após marcos narrativos. Sem efeito total no início. | HUD contextual na Fonte |
-| Capstone: Fragmento Desperto | 5 | 3 | Capstone | Após gastar 40% do MP máximo em combate/exploração, próxima magia espiritual/arcana custa -50% MP e tem +25% efeito. Cooldown longo. | aura de Fonte/Mana |
+| Capstone: Semente Arcana de Anya | 5 | 3 | Capstone | Ao gastar 40% do MP máximo em uma sequência, cria uma “Semente Arcana” por 10s. A próxima magia espiritual/arcana custa -50% MP, tem +30% efeito e deixa um eco de proteção/regen leve por 4s. Cooldown longo. | semente luminosa girando no personagem |
 
 ## 17. Observações de balanceamento Magic
 
@@ -350,8 +345,8 @@ resistir a frio/calor/gás/medo/corrupção leve
 melhorar loot e ouro em contexto de caverna
 achar itens melhores em baús/tesouros já existentes
 extrair melhor de nodes de minério durante run
-Dash
-Dodge melhorado
+melhorar Dash
+melhorar Dodge
 HP regen fora de combate
 ```
 
@@ -380,7 +375,7 @@ Inteligência: leitura de perigo e aproveitamento de recursos.
 | Estômago Forte | 1 | 1-5 | Passive | Reduz perda de fome em runs/caverna em 4/8/12/16/20%. Em combate, reduz parte do multiplicador de fome. | barra de fome com ícone |
 | Ritmo de Jornada | 1 | 1-5 | Passive | Reduz ganho de cansaço por movimento/exploração em 4/8/12/16/20%. | indicador de cansaço reduzido |
 | Reflexo de Esquiva | 1 | 1-5 | Passive | Dodge continua base. Aumenta janela de invulnerabilidade/reduz recovery em valores pequenos por rank. | feedback de dodge perfeito |
-| Dash | 2 | 1-5 | Movement Action | Habilita Dash com Space + direção. Ranks reduzem custo/cooldown/recovery. Não ocupa active slot. | indicador de Dash separado |
+| Passo de Impulso | 2 | 1-5 | Movement Modifier | Melhora Dash já desbloqueado por tutorial/progressão. Ranks reduzem custo/cooldown/recovery e melhoram distância moderadamente. Não ocupa active slot. | indicador de Dash separado |
 | Respiração Controlada | 2 | 1-5 | Passive | Reduz custo de Breath em Dash, corrida, dodge e pressão ambiental em 5/10/15/20/25%. | Breath com ícone de fôlego |
 | Saqueador Cuidadoso | 2 | 1-5 | Passive | +3/6/9/12/15% chance de ouro adicional em drops de criatura e tesouros. Não cria loot infinito. | pop-up de ouro extra |
 | Garimpo de Run | 2 | 1-5 | Passive | Nodes de minério na caverna têm +3/6/9/12/15% chance de minério extra. Funciona em caverna; produção/fazenda segue Crafting. | feedback de minério extra |
@@ -390,7 +385,7 @@ Inteligência: leitura de perigo e aproveitamento de recursos.
 | Faro de Tesouro | 4 | 1-5 | Passive | Baús/tesouros já gerados têm +2/4/6/8/10% chance de rolar item de raridade superior. Não cria sala secreta. | brilho no baú após abrir |
 | Mente Inabalável | 4 | 1-5 | Passive | Reduz duração/efeito de Fear, ConfusionLite, Nyx/Void leve em 5/10/15/20/25%. | ícone mental/espiritual |
 | Resistência de Run Profunda | 4 | 1-3 | Passive | Em run de caverna, após 10/20/30 min in-game de exploração contínua, reduz penalidades de fome/cansaço em valor moderado. | buff de run longa |
-| Capstone: Sobrevivente das Profundezas | 5 | 3 | Capstone | Uma vez por run, ao chegar em cansaço alto ou HP baixo, ativa por 8s: -40% gasto de Breath, +25% resistência ambiental, HP regen fora de combate fica dobrada após sair do perigo. | alerta de sobrevivência |
+| Capstone: Último Fôlego de Elyndor | 5 | 3 | Capstone | Uma vez por run, ao entrar em HP baixo, Breath crítico ou cansaço alto, ativa por 10s: -45% gasto de Breath, +30% resistência ambiental/mental, Dodge ganha pequena janela extra e HP regen fora de combate fica dobrada após sair do perigo. | pulso azul-prateado + alerta de run |
 
 ## 20. Observações de balanceamento Survival
 
@@ -400,7 +395,7 @@ Loot melhor deve ser probabilístico e moderado.
 Ouro extra deve ser pequeno para não quebrar economia.
 Garimpo de Run existe porque mineração da caverna é loop central.
 Secret rooms/atalhos ficam fora até o sistema existir.
-Dash entra em Tier 2 porque muda mobilidade e não deve existir no começo absoluto.
+Dash base vem de tutorial/progressão inicial; Survival melhora Dash.
 ```
 
 ---
@@ -452,7 +447,7 @@ Vontade: crops raras, Mana e Fonte em efeitos específicos.
 | Trabalho em Mithril | 4 | 1-3 | Unlock/Modifier | Libera armas/armaduras/ferramentas de Mithril. Equipamentos tendem a ser leves, duráveis e com menor custo de stamina. | tier mithril |
 | Engenharia Bromeciana | 4 | 1-5 | Unlock/Crafting | Libera máquinas, processadores, irrigação avançada, mecanismos e itens técnicos por rank. | UI de máquina/processador |
 | Cultivo de Mana | 4 | 1-5 | Lore/Crafting | Aumenta chance de cultivar/estabilizar crops raras ligadas a Mana, sem garantir Fruto de Mana. Depende de Fonte/lore/fazenda. | ícone de Mana/crop rara |
-| Capstone: Mestre da Produção | 5 | 3 | Capstone | Uma vez por dia, ao craftar/construir/colher lote relevante: chance de recuperar parte de material comum, melhorar qualidade ou gerar output extra moderado. Não afeta materiais únicos/endgame. | feedback dourado de produção |
+| Capstone: Forja Viva de Cindar | 5 | 3 | Capstone | Uma vez por dia, ao craftar, construir ou colher lote relevante, ativa “Forja Viva”: recupera parte de material comum, melhora qualidade ou gera output extra moderado. Se o item envolver Mana/Fonte, adiciona chance baixa de propriedade rara. Não afeta materiais únicos/endgame. | brilho de brasas azuis/douradas |
 
 ## 23. Por que reduzir stamina agrícola ainda importa
 
@@ -460,14 +455,6 @@ Vontade: crops raras, Mana e Fonte em efeitos específicos.
 No early game, reduz custo direto de ações básicas.
 No mid game, reduz cansaço acumulado porque Stamina gasta acelera cansaço.
 No late game, continua útil em dias de grande produção, mas perde peso para automação, irrigação, companions, máquinas e upgrades.
-```
-
-Direção:
-
-```text
-Mãos de Lavrador não deve ser capstone.
-É skill de conforto e eficiência inicial.
-No late game, deve ser complementada por máquinas, ferramentas melhores, companions e construções.
 ```
 
 ## 24. Substituição de “Estabilização Rara”
@@ -534,16 +521,6 @@ Breath aparece expandido em combate, caverna, corrida, dash, dodge, block ou amb
 Fome e Cansaço aparecem como ícones compactos com fill/estado, não como barras grandes permanentes.
 ```
 
-Direção visual:
-
-```text
-HP: barra principal curta.
-Stamina: barra secundária curta abaixo do HP.
-MP: barra curta abaixo/ao lado, só quando relevante.
-Breath: barra fina ou medidor compacto, só expandido quando ativo.
-Fome/Cansaço: ícones pequenos com 3-4 estados visuais.
-```
-
 ### Top-right — tempo, mundo e economia
 
 Sempre visível fora de menus:
@@ -554,14 +531,6 @@ Hora/período
 Season
 Lua atual
 Ouro carregado
-```
-
-Regra:
-
-```text
-Em tela pequena, Dia/Hora/Season/Lua/Ouro devem caber em um painel compacto.
-A lua pode ser ícone, não texto longo.
-Ouro pode ser número com ícone.
 ```
 
 ### Bottom-center — hotbar de itens/ferramentas
@@ -604,7 +573,8 @@ Regras:
 ```text
 Dash não fica aqui.
 Dodge não fica aqui.
-Block só fica aqui se a decisão futura for tratá-lo como active skill; se tiver botão próprio, aparece como indicador defensivo separado.
+Block não fica aqui.
+Block usa indicador defensivo separado por ser Left Shift.
 Cada active slot deve mostrar ícone, cooldown radial, custo principal e estado indisponível.
 ```
 
@@ -619,13 +589,6 @@ E Falar
 E Abrir
 E Dormir
 E Entrar
-```
-
-Regra:
-
-```text
-Prompt contextual deve ficar próximo ao objeto/personagem ou acima da hotbar.
-Não deve ocupar painel fixo grande.
 ```
 
 ### Top-center — alvo, boss e objetivo curto
@@ -666,14 +629,6 @@ prompt de interação
 estado contextual do tile/crop/animal
 ```
 
-Não precisa mostrar por padrão:
-
-```text
-barra de MP, se nenhuma magia estiver equipada
-barra de Breath expandida, salvo corrida/dash/cansaço relevante
-active combat skills se não houver perigo próximo, podendo ficar minimizadas
-```
-
 ### Cidade
 
 HUD prioriza:
@@ -685,14 +640,6 @@ prompt de interação
 nome do NPC ao aproximar
 estado de loja/serviço
 ícone de relacionamento quando relevante
-```
-
-Não precisa mostrar por padrão:
-
-```text
-active skills em destaque
-barras de combate expandidas
-loot/combat feedback
 ```
 
 ### Caverna
@@ -714,15 +661,6 @@ status negativos
 consumíveis rápidos
 ```
 
-Caverna pode ter overlay compacto:
-
-```text
-Nível atual
-Bioma atual, se revelado
-Checkpoint mais próximo, se descoberto
-Pedra de Retorno, se disponível
-```
-
 ### Combate
 
 HUD prioriza:
@@ -740,13 +678,6 @@ Block ativo/perfeito
 status negativos
 critical window
 stagger/posture do alvo importante
-```
-
-Regra:
-
-```text
-Durante combate, elementos de fazenda/cidade ficam reduzidos.
-O jogador precisa ler recursos e cooldowns sem abrir menu.
 ```
 
 ## 28. Feedback de skills na HUD
@@ -781,7 +712,7 @@ pré-requisitos por node
 rank atual de cada skill
 rank máximo atual permitido pelo tier
 se a skill ocupa active slot ou não
-se a skill é movement action, passive, unlock, modifier ou capstone
+se a skill é movement modifier, passive, unlock, modifier ou capstone
 preview mecânico do próximo rank
 respec disponível na Fonte de Anya
 ```
@@ -821,7 +752,7 @@ Interações com atributos/equipamentos
 
 ```text
 Não mostrar todos os status como barras grandes permanentes.
-Não colocar Dash/Dodge dentro dos 4 active slots.
+Não colocar Dash/Dodge/Block dentro dos 4 active slots.
 Não mostrar números excessivos durante gameplay comum.
 Não depender de texto longo para entender combate.
 Não abrir painel grande para feedback simples.
@@ -836,27 +767,7 @@ Não misturar hotbar de itens com active skills sem separação visual.
 
 ## 32. Veredito
 
-A ideia de 5 tiers continua correta, mas a curva foi ajustada.
-
-Antes:
-
-```text
-Tier 1: 0
-Tier 2: 4
-Tier 3: 9
-Tier 4: 16
-Tier 5: 24
-```
-
-Problema:
-
-```text
-Capstone ficava acessível cedo demais para uma economia de 50 pontos.
-Algumas skills de Tier 1 podiam ser maximizadas cedo se não houvesse trava de rank.
-O jogador poderia pegar utilidades fortes em várias árvores sem compromisso suficiente.
-```
-
-Agora:
+A ideia de 5 tiers continua correta, com a curva revisada:
 
 ```text
 Tier 1: 0
@@ -886,18 +797,23 @@ Tiro em ponto fraco não será skill literal de mirar em parte específica.
 Ranged terá Leitura de Abertura, Marcador de Presa e crítico condicional.
 Chance de miss será superficial; skills de precisão pura serão evitadas.
 Secret rooms/atalhos não entram em Survival por enquanto.
-Survival foca runs longas, fome/cansaço, loot, ouro, tesouros existentes, mineração de caverna, resistência ambiental, Dash, Dodge melhorado e HP regen.
+Survival foca runs longas, fome/cansaço, loot, ouro, tesouros existentes, mineração de caverna, resistência ambiental, melhoria de Dash, Dodge melhorado e HP regen.
 Crafting/Produção mantém redução de stamina agrícola, mas como skill early/mid que reduz cansaço indiretamente.
 Oficina Organizada reduz custo de construir/craftar estruturas, não apenas flavour.
 Estabilização Rara foi removida como skill genérica.
 Crafting/Produção terá Cultivo de Mana, Engenharia Bromeciana e Alquimia Prática como alternativas mais claras.
+Dash base é desbloqueado por tutorial/progressão inicial.
+Survival melhora Dash, mas não o torna obrigatório para todas as builds.
 Dash não ocupa active slot.
 Dodge não ocupa active slot.
-Block é skill, mas input final ainda precisa ser definido.
+Dodge é double tap direcional.
+Block usa Left Shift.
+Block não ocupa active slot.
 HP regen é skill de Survival e pode ser amplificada por itens.
-Tier 5 agora exige 26 pontos gastos na árvore.
+Tier 5 exige 26 pontos gastos na árvore.
 Nodes escaláveis respeitam rank cap por tier.
 A HUD deve ser compacta, contextual e separada por zonas: estado do jogador, mundo/economia, hotbar, active skills e prompts contextuais.
+Capstones devem ser icônicos, com nome e feedback próprios, não apenas bônus numérico genérico.
 ```
 
 ---
@@ -907,9 +823,8 @@ A HUD deve ser compacta, contextual e separada por zonas: estado do jogador, mun
 ```text
 Definir custo final de cada node.
 Definir se todos os ranks custam 1 ponto ou se ranks altos custam mais.
-Definir input final do Block.
 Definir valores finais de cooldown, custo e duração em gameplay real.
-Validar se o capstone de cada árvore fica passivo ou active.
+Validar se todos os capstones ficam passivos/modificadores ou se algum vira active especial.
 Validar quantos active skills por árvore entram na primeira implementação.
 Validar se Ranged terá munição consumível ou munição abstrata.
 Validar como loot extra interage com economia da cidade.
