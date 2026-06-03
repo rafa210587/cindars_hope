@@ -93,7 +93,13 @@ Documento ativo consolidado de direção ampla da fazenda:
 docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.3.md
 ```
 
-As versões anteriores ficam como histórico incremental:
+Documento ativo consolidado de direção ampla da cidade:
+
+```text
+docs/design/gameplay/city/CITY_DESIGN_DIRECTION_v1.0.md
+```
+
+As versões anteriores de fazenda ficam como histórico incremental:
 
 ```text
 docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.1.md
@@ -104,3 +110,5 @@ docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.2.md
 Usar `VAALARA_GAME_CANON_DIRECTION_v1.0.md` antes de qualquer novo design direction de cidade, caverna, magia/progressão, companions ou lore.
 
 Usar `FARM_DESIGN_DIRECTION_v1.3.md` antes de quebrar novas specs de layout, crops, fertilizantes, animais, automação, pets, cansaço, Fonte de Anya, Água Viva, Raiz Dormente de Mana, pedreira final e economia agrícola.
+
+Usar `CITY_DESIGN_DIRECTION_v1.0.md` antes de quebrar novas specs de cidade, NPCs, lojas, reputação, calendário, festivais, contratos, guildas, capelas, cultos, visitas à fazenda e integração com caverna.
