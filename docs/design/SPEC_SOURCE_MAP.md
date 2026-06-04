@@ -57,14 +57,16 @@ docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.3.md
 docs/design/gameplay/farm/FARM_LAYOUT_SCALE_BUILDINGS_DIRECTION.md
 ```
 
-Specs de fazenda que envolvam invasões, defesa, dano a crops/estruturas, pets/companions em defesa ou inimigos no mapa da fazenda devem ler também:
+Specs de fazenda **não devem implementar invasões, defesa contra inimigos, dano a crops/estruturas ou inimigos no mapa da fazenda agora**.
+
+Quando esse tema entrar explicitamente no roadmap futuro, ler também:
 
 ```text
 docs/design/gameplay/enemies/ENEMY_BEHAVIORS_DIRECTION.md
 docs/design/gameplay/combat/COMBAT_CORE_DIRECTION.md
 ```
 
-Usar para specs de:
+Usar para specs atuais de:
 
 ```text
 farm layout
@@ -90,12 +92,9 @@ Fonte de Anya
 Raiz Dormente de Mana
 pedreira final
 farm economy
-farm invasions futuras
-farm defense futura
-repair/recovery de crops/estruturas
 ```
 
-Specs recomendadas derivadas:
+Specs recomendadas derivadas atuais:
 
 ```text
 spec_farm_scale_tilemap_player_footbox.md
@@ -114,6 +113,11 @@ spec_farm_fonte_anya_living_water.md
 spec_farm_mana_root_arcane_soil_endgame.md
 spec_farm_final_quarry_late_game_resources.md
 spec_farm_fountain_anya_no_buildable_statue.md
+```
+
+Backlog futuro, não atual:
+
+```text
 spec_farm_invasion_events_future.md
 spec_farm_defense_repair_recovery_future.md
 ```
@@ -139,14 +143,16 @@ docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.3.md
 docs/design/gameplay/farm/FARM_LAYOUT_SCALE_BUILDINGS_DIRECTION.md
 ```
 
-Specs de cidade que envolvam eventos hostis, defesa, cultistas, monstros, civis fugindo ou combate em área urbana devem ler também:
+Specs de cidade **não devem implementar eventos hostis, defesa urbana, cultistas, monstros ou civis fugindo agora**.
+
+Quando esse tema entrar explicitamente no roadmap futuro, ler também:
 
 ```text
 docs/design/gameplay/enemies/ENEMY_BEHAVIORS_DIRECTION.md
 docs/design/gameplay/combat/COMBAT_CORE_DIRECTION.md
 ```
 
-Specs recomendadas derivadas:
+Specs recomendadas derivadas atuais:
 
 ```text
 spec_city_scene_tilemap_collision_spawns.md
@@ -164,6 +170,11 @@ spec_city_kanthor_temple_statue_garden_no_anya_altar.md
 spec_city_night_shop_nyx_behaviour.md
 spec_city_festivals_layout_variations.md
 spec_city_hidden_subsoil_bromecia_elyndor_hooks.md
+```
+
+Backlog futuro, não atual:
+
+```text
 spec_city_hostile_event_behaviors_future.md
 ```
 
@@ -209,7 +220,7 @@ COMBAT_CORE_DIRECTION.md
   regras gerais de combate, inputs, HP/MP/Stamina, ataque, block, dodge, dash, dano, armor, vulnerabilidades, bosses, HUD e telemetria.
 
 ENEMY_BEHAVIORS_DIRECTION.md
-  EnemyBrain, EnemyAction, reação a Dash/Dodge/Block, Stamina/MP de inimigos, pack coordination, leash, objetivos e comportamentos transversais.
+  EnemyBrain, EnemyAction, reação a Dash/Dodge/Block, Stamina/MP de inimigos, pack coordination, leash, módulos injetáveis e comportamentos transversais.
 ```
 
 Specs de caverna que tocam runtime já existente devem ler também:
@@ -371,7 +382,7 @@ docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_DIRECTION.md
 docs/design/gameplay/cave/CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md
 ```
 
-Usar para specs de:
+Usar para specs atuais de:
 
 ```text
 EnemyBrain
@@ -385,15 +396,21 @@ EnemyTargetPriority
 EnemyLeashRules
 EnemyReactionRules
 PackCoordinationRules
-EnemyObjectiveProfileSO
-EnemyInvasionProfileSO
-farm invasion enemies
-town hostile event enemies
 boss AI phases
 pet/companion target logic
 ```
 
-Specs recomendadas derivadas:
+Não usar em specs atuais sem nova decisão de roadmap:
+
+```text
+EnemyObjectiveProfileSO
+EnemyInvasionProfileSO
+farm invasion enemies
+town hostile event enemies
+world enemy events
+```
+
+Specs recomendadas derivadas atuais:
 
 ```text
 spec_enemy_brain_runtime_architecture.md
@@ -405,8 +422,14 @@ spec_enemy_threat_aggro_target_priority.md
 spec_enemy_reactions_block_dodge_dash_magic_pet_companion.md
 spec_enemy_pack_coordination_leash_rules.md
 spec_enemy_boss_phase_ai_contract.md
+```
+
+Backlog futuro, não atual:
+
+```text
 spec_enemy_farm_invasion_profile_future.md
 spec_enemy_objective_profile_events_future.md
+spec_city_hostile_event_behaviors_future.md
 ```
 
 ---
@@ -513,4 +536,6 @@ Constituição não é atributo defensivo universal.
 Nem toda janela comportamental gera crítico automático.
 Moves oficiais de inimigos vêm do CAVE_MONSTER_ROSTER_DIRECTION.md quando o inimigo pertence ao roster da caverna.
 Enemy Behaviors é transversal e pode ser usado por caverna, fazenda, cidade e eventos.
+Farm invasion, town hostile events e world enemy events são backlog futuro; não entram em specs atuais sem nova decisão de roadmap.
+Hearing/audição não é elemento atual de IA inimiga.
 ```
