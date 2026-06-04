@@ -11,35 +11,46 @@
 > - `docs/design/gameplay/player/PLAYER_SKILL_TREES_DIRECTION.md`  
 > - `docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_DIRECTION.md`  
 > - `docs/design/gameplay/cave/CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md`  
-> - `docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.3.md`  
-> - `docs/design/gameplay/farm/FARM_LAYOUT_SCALE_BUILDINGS_DIRECTION.md`  
-> **Função:** definir como inimigos pensam, escolhem alvos, se movem, atacam, gastam Stamina/MP, reagem ao jogador, coordenam packs e participam de caverna, eventos e possíveis invasões da fazenda.  
+> **Função:** definir como inimigos pensam, percebem, escolhem alvos, se movem, atacam, gastam Stamina/MP, reagem ao jogador, coordenam packs e podem ser reutilizados em contextos futuros fora da caverna.  
 > **Não é spec implementável.** Este documento define direção de design. Specs futuras devem converter isto em dados e sistemas.
 
 ---
 
-## 0. Escopo
+## 0. Escopo atual e escopo futuro
 
-Este documento cobre comportamento de inimigos em qualquer ambiente do jogo.
+Este documento é transversal, mas nem todo contexto descrito aqui deve virar spec agora.
 
-Ambientes previstos:
+### Escopo atual
 
 ```text
 caverna
 boss gates
 nível 101
-fazenda durante eventos/invasões
-cidade durante eventos raros
+monstros já previstos no roster da caverna
+packs de monstros
+bosses
+elites
+reação a player, companions e pets em combate
+EnemyBrain / EnemyAction / Movement / Reaction / PackCoordination
+```
+
+### Escopo futuro explícito
+
+```text
+invasões da fazenda
+defesa da fazenda
+dano a crops, animais, máquinas, cercas ou estruturas
+inimigos em cidade durante eventos hostis
 áreas futuras de mundo externo
-eventos narrativos
+raids narrativas fora da caverna
 ```
 
 Regra:
 
 ```text
-A caverna continua sendo a fonte principal de roster e monstros já definidos.
-Este documento não substitui o roster da caverna.
-Este documento define comportamento transversal para EnemyBrain, EnemyAction, movimento, decisão e eventos.
+Specs atuais não devem implementar farm invasion, town hostile event ou world enemy events apenas porque este documento cita esses temas.
+Essas seções existem para evitar conflito futuro e orientar arquitetura extensível.
+Farm invasion só deve virar spec quando o roadmap explicitamente abrir esse tema.
 ```
 
 ---
@@ -71,15 +82,16 @@ Se houver conflito de stat/roster de monstro, o roster da caverna vence para mon
 Se houver conflito de fórmula de combate, o documento de atributos derivados vence.
 Se houver conflito de input/movimento do jogador, Combat Core vence.
 Se houver conflito de vulnerabilidade/janela da caverna, Cave Combat Balance vence.
+Enemy Behaviors define como os dados são usados pelo cérebro inimigo; não redefine números canônicos.
 ```
 
 ---
 
-# PARTE A — Visão geral da IA inimiga
+# PARTE A — Princípios gerais
 
 ## 2. Filosofia
 
-Inimigos devem parecer perigosos por comportamento, não apenas por números altos.
+Inimigos devem parecer perigosos por comportamento, leitura e combinação de ações, não apenas por números altos.
 
 Inimigo bom deve:
 
@@ -87,10 +99,11 @@ Inimigo bom deve:
 ter intenção legível
 ter função clara no encontro
 ter pelo menos uma forma de counterplay
-ter telegraph para ataques relevantes
+usar telegraph em ataques relevantes
 ter recovery/janela quando usa ação forte
 usar Stamina/MP/cooldown de forma previsível
-interagir com packs, ambiente e objetivo do evento
+interagir com pack, ambiente, objetivo e facção
+reagir a Dash, Dodge, Block, ranged, magic, pet e companion sem invalidar essas escolhas
 ```
 
 Inimigo ruim seria:
@@ -101,166 +114,284 @@ atacar instantaneamente sem telegraph
 controlar o jogador sem counterplay
 ter HP alto sem janela
 ignorar colisão/pathing de forma injusta
-spammar dash/blink/leap sem recovery
-trivializar fazenda/crops/pets/companions sem chance de resposta
+spammar dash/blink/leap sem recovery/cooldown
+colar instantaneamente no jogador após Dash longo
+reagir a toda estratégia do jogador com counter perfeito
 ```
 
-## 3. Papéis de inimigo
+## 3. Comportamentos são injetáveis, não totalmente fixos
 
-Papéis globais:
+O comportamento de um inimigo não deve ser uma classe rígida única.
+
+Direção de arquitetura:
 
 ```text
-Chaser
-Guard
-Ranged
-Caster
-Burrower
-Swarm
-Tank
-Controller
-TreasureTrap
-Elite
-Boss
-Invader
-Raider
-CropDestroyer
-LivestockPredator
-ResourceThief
-Ritualist
-Summoner
-HazardLurer
-LoreGuardian
+EnemyData define stats, visual, família, facção, drops e identidade.
+EnemyBrainProfile define como o inimigo toma decisões.
+EnemyBehaviorProfile define módulos de comportamento injetáveis.
+EnemyMovementProfile define Move oficial e parâmetros de movimento.
+EnemyActionSet define ações disponíveis.
+EnemyActionSO define cada ação em dados.
+EnemyReactionRules definem respostas a player/companion/pet/status.
+EnemyPackRole define função dentro do pack.
+EnemyObjectiveProfile existe apenas para eventos objetivos/futuros.
 ```
 
 Regra:
 
 ```text
-Um inimigo pode ter mais de um papel, mas deve ter um papel primário.
-O papel primário define como ele decide alvo, se move, escolhe ações e recua.
+Um mesmo monstro pode trocar comportamento por contexto sem duplicar o monstro inteiro.
+Exemplo: um goblin pode ser Guard em uma sala, PackFlanker em outra, ResourceThief em invasão futura, ou RetreatAndCall em emboscada.
+O roster define a identidade do monstro; os perfis injetados definem como ele age naquele encontro.
+```
+
+## 4. Papéis de inimigo
+
+Papéis globais são tags de intenção, não classes rígidas.
+
+| Papel | Função | Como joga | Counterplay esperado |
+|---|---|---|---|
+| Chaser | pressionar o jogador | aproxima e força reação | kiting curto, block, dodge, terreno |
+| Guard | proteger ponto | segura área/anchor | puxar, flanquear, ranged, janela após ataque |
+| Ranged | punir distância | mantém range e projéteis | linha de visão, Dash, interrupção |
+| Caster | aplicar magia/controle | cast, zona, debuff, summon | interrupt, line of sight, cooldown |
+| Burrower | emboscar | some/reaparece com tell | ler solo, punir emerge |
+| Swarm | pressionar espaço | muitos pequenos | área, pet, posicionamento |
+| Tank | bloquear avanço | lento, resistente, posture | heavy, hammer, flank, magia |
+| Controller | mexer com espaço/estado | slow, root, fear, zona | resistências, interrupt, cooldown |
+| TreasureTrap | punir ganância | finge loot/interação | leitura, pet/gato futuro, telegraph |
+| Elite | testar mecânica | 2-3 ações relevantes | janela clara, execução |
+| Boss | clímax/fase | padrões por fase | aprender fase, usar build/preparo |
+| Ritualist | proteger/canalizar evento | canaliza, invoca, defende anchor | interromper ritual |
+| Summoner | multiplicar pressão | chama adds controlados | focar caster, cooldown |
+| HazardLurer | usar ambiente | puxa para hazard | posicionamento |
+| LoreGuardian | encontro narrativo | pode não ser só matar | interação, purificação, resistência |
+
+Papéis futuros não implementáveis agora:
+
+| Papel futuro | Uso futuro | Status |
+|---|---|---|
+| Invader | inimigo que entra na fazenda/evento | futuro |
+| Raider | rouba/recolhe recurso | futuro |
+| CropDestroyer | ameaça crop/solo | futuro |
+| LivestockPredator | ameaça animais | futuro |
+| ResourceThief | foge com item/recurso | futuro |
+
+Regra:
+
+```text
+Todo inimigo deve ter PrimaryRole.
+SecondaryRoles são opcionais.
+PrimaryRole define prioridade de alvo, movimento, ação preferida e retirada.
+SecondaryRoles adicionam variação sem reescrever o inimigo.
 ```
 
 ---
 
-# PARTE B — EnemyBrain
+# PARTE B — EnemyBrain modular
 
-## 4. Camadas do EnemyBrain
+## 5. Camadas do EnemyBrain
 
-EnemyBrain deve ser pensado em camadas.
+EnemyBrain deve ser composto por módulos claros.
 
-```text
-PerceptionLayer
-  detecta jogador, companion, pet, aliados, objetivos, hazards, crops, estruturas e line of sight.
+| Módulo | Responsabilidade | Observação |
+|---|---|---|
+| PerceptionModule | descobre alvos válidos | sem hearing/som por enquanto |
+| IntentModule | escolhe intenção atual | atacar, guardar, recuar, castar, proteger |
+| TargetingModule | escolhe alvo | player, companion, pet, anchor, objetivo |
+| MovementModule | move usando Move oficial | GroundChase, KiteRanged etc. |
+| ActionSelectorModule | escolhe ação | score por range, custo, cooldown e contexto |
+| ResourceModule | valida STA/MP | impede spam de ações fortes |
+| CooldownModule | controla repetição | evita loops injustos |
+| ReactionModule | responde a eventos | dano, block, dodge, dash, pet, companion |
+| PackModule | coordena aliados | call, flanker, leader, protect |
+| LeashModule | limita perseguição | evita cheese e avalanche |
+| PhaseModule | bosses/elites especiais | fases e transições |
+| ObjectiveModule | objetivos de evento | futuro para farm/cidade |
 
-IntentLayer
-  decide objetivo atual: atacar, guardar, flanquear, fugir, chamar ajuda, destruir recurso, roubar, castar, proteger ritual.
-
-MovementLayer
-  executa Move oficial ou movimento específico de evento.
-
-ActionLayer
-  escolhe ação usando range, cooldown, Stamina, MP, risco, telegraph e papel.
-
-ReactionLayer
-  reage a dano, block, dodge, dash, magia, pet, companion, stagger, status e morte de aliados.
-
-StateLayer
-  controla estados: idle, patrol, alert, engage, recover, retreat, enrage, phase shift, dead.
-```
-
-## 5. Estados globais
+Regra:
 
 ```text
-Idle
-Patrol
-Guard
-Suspicious
-Alert
-Engage
-Reposition
-Recover
-Retreat
-CallForHelp
-ProtectObjective
-AttackObjective
-Cast
-Staggered
-Stunned
-Fleeing
-Enraged
-PhaseTransition
-Dead
+Módulos são injetáveis por EnemyBrainProfile.
+Nem todo inimigo precisa de todos os módulos.
+Comum simples pode usar módulos mínimos.
+Elite/boss usa mais módulos.
+Farm/city objective modules são futuros e não entram em specs atuais sem decisão explícita.
 ```
+
+## 6. Estados globais
+
+Estados são estados de execução, não papéis.
+
+| Estado | Significado | Saída típica |
+|---|---|---|
+| Idle | parado/inativo | percebe alvo ou trigger |
+| Patrol | anda entre pontos | alerta, retorna ou engaja |
+| Guard | protege posição/anchor | engaja dentro de raio |
+| Suspicious | percebeu algo parcial | investiga ou volta |
+| Alert | alvo detectado | escolhe intenção |
+| Engage | em combate | ação/reposition/recover |
+| Reposition | busca posição melhor | action ou retreat |
+| Recover | após ação/reação | volta ao selector |
+| Retreat | recua taticamente | cast, call, reset parcial |
+| CallForHelp | chama pack próximo | cooldown e limite |
+| ProtectObjective | protege anchor/ritual/recurso | futuro fora da caverna |
+| AttackObjective | ataca objetivo não-player | futuro fora da caverna |
+| Cast | canaliza magia/efeito | active/recovery/interruption |
+| Staggered | postura quebrada | janela de punição |
+| Stunned | controle temporário | recuperação |
+| Fleeing | fuga por medo/baixa vida | saída, call ou morte |
+| Enraged | comportamento agressivo | phase/rage cooldown |
+| PhaseTransition | boss/elite muda fase | nova action set |
+| Dead | morto | drop, XP, cleanup |
 
 Regras:
 
 ```text
 Todo inimigo não-boss deve ter pelo menos Idle/Patrol ou Guard, Alert, Engage, Recover e Dead.
-Elites devem ter Reposition ou outra camada tática.
+Elites devem ter Reposition, Enraged ou outra camada tática.
 Bosses devem ter PhaseTransition.
-Invasores de fazenda devem ter ProtectObjective/AttackObjective ou Retreat conforme objetivo.
+Estados de Objective são futuros fora da caverna.
 ```
 
-## 6. Percepção
+## 7. PerceptionModule
 
-Tipos de percepção:
+PerceptionModule define o que o inimigo consegue perceber.
+
+Campos conceituais:
+
+| Campo | Significado | Direção |
+|---|---|---|
+| SightRadius | raio de visão/ativação | principal forma de detectar |
+| SightAngle | cone/ângulo de visão | opcional, útil para patrulha |
+| LineOfSightRequired | exige linha limpa | recomendado para maioria |
+| DamageAggro | ativa ao sofrer dano | sim para quase todos |
+| AllyCallRadius | recebe chamado de aliado | controlado por active budget |
+| ObjectiveAwareness | percebe anchor/objetivo | atual na caverna, futuro fora dela |
+| PetAwareness | considera pet como alvo/evento | opcional |
+| CompanionAwareness | considera companion | recomendado em combate |
+| ArenaAwareness | boss percebe arena toda | apenas boss/arena |
+| TriggerAwareness | ativa por interação/proximidade | treasure traps, ambushes |
+| LightDarknessModifier | modificador futuro | não implementar agora salvo spec própria |
+
+Removido por decisão atual:
 
 ```text
-SightRadius
-HearingRadius
-DamageAggro
-AllyCallRadius
-ObjectiveAwareness
-PetAwareness
-CompanionAwareness
-Light/Darkness modifiers futuro
+HearingRadius / audição não será elemento de IA por enquanto.
+Specs não devem implementar aggro por som sem nova decisão.
 ```
 
 Regras:
 
 ```text
 Inimigo não deve ativar através de paredes sem regra específica.
-AllyCallRadius deve ser controlado para evitar avalanche injusta.
-TreasureTrap pode ignorar percepção até trigger específico.
-Boss pode ter percepção de arena inteira.
+AllyCallRadius deve ser limitado para evitar avalanche injusta.
+TreasureTrap pode ignorar percepção comum até trigger específico.
+Boss pode ter ArenaAwareness.
 ```
 
-## 7. Threat / aggro
+## 8. IntentModule
 
-Ameaça deve ser calculada por intenção de combate e papel.
+Intent é o objetivo de curto prazo.
 
-Fatores possíveis:
+Intents possíveis:
 
 ```text
-dano recebido
-proximidade
-cura/suporte do jogador
-companion tankando
-pet interrompendo
-jogador usando magia de área
-jogador com HP baixo
-jogador carregando recurso/objetivo
-crops/animais/estruturas em invasão de fazenda
-ritual/anchor protegido
+AttackPlayer
+AttackCompanion
+HarassPet
+GuardAnchor
+ProtectAlly
+Flank
+Kite
+CastDamage
+CastControl
+Summon
+Retreat
+CallForHelp
+RecoverStamina
+RecoverMP
+UseHazard
+PhaseShift
+Ambush
+Flee
 ```
 
-Regras:
+Intents futuros, não escopo atual:
+
+```text
+AttackFarmObject
+StealResource
+CorruptTile
+HarassLivestock
+BreakFence
+ChannelFarmRitual
+EscapeWithLoot
+```
+
+Regra:
+
+```text
+Intent não executa nada sozinho.
+Intent informa MovementModule e ActionSelectorModule.
+```
+
+## 9. TargetingModule
+
+Escolhe alvo com base em prioridade e papel.
+
+Alvos possíveis atuais:
+
+```text
+Player
+Companion
+Pet
+SummonedAlly futuro
+Anchor/RitualObject da caverna
+BossMechanicObject
+```
+
+Alvos futuros:
+
+```text
+CropTile
+FarmAnimal
+FarmStructure
+Machine
+StorageObject
+TownCivilian
+```
+
+Fatores de target score:
+
+```text
+dano recente recebido
+proximidade
+linha de visão
+alvo vulnerável
+alvo bloqueando
+alvo usando magia/ranged
+companion tankando
+pet interrompendo
+objetivo protegido
+fase do boss
+```
+
+Regra:
 
 ```text
 Nem todo inimigo deve focar sempre o jogador.
-Tank/Guard tende a manter posição.
-Predator tende a caçar alvo vulnerável.
-Ranged/Caster tende a evitar melee direto.
-Invader pode priorizar objetivo da invasão antes do jogador.
-Boss pode trocar alvo por fase ou mecânica.
+Também não deve haver regra universal de sempre focar healer/support/companion.
+Targeting deve variar por papel, inteligência do inimigo e contexto.
 ```
 
 ---
 
-# PARTE C — Movimento
+# PARTE C — MovementModule
 
-## 8. Fonte canônica de Moves
+## 10. Fonte canônica de Moves
 
-Para inimigos da caverna, os nomes oficiais de `Move` vêm do roster:
+Para inimigos da caverna, nomes oficiais de `Move` vêm de:
 
 ```text
 CAVE_MONSTER_ROSTER_DIRECTION.md
@@ -301,9 +432,36 @@ Para ambientes fora da caverna, reutilizar Moves oficiais quando fizer sentido.
 Moves novos só devem ser criados se o comportamento não existir no roster.
 ```
 
-## 9. Moves adicionais para eventos/fazenda
+## 11. Explicação declarativa dos Moves oficiais
 
-Moves possíveis para invasões/eventos, se necessário:
+| Move | Comportamento | Quando usar | Cuidado |
+|---|---|---|---|
+| GroundChase | persegue por caminho direto | melee comum | precisa recovery/ataque legível |
+| GroundPatrol | anda entre pontos | guarda, patrulha | não deve parecer aleatório demais |
+| GuardStationary | fica parado/curto raio | sentinela, turret, baú | precisa forma de puxar/punir |
+| KiteRanged | mantém distância e atira | arqueiro/cuspidor | evitar kiting infinito |
+| CasterKeepAway | recua pouco e castas | caster frágil | casts precisam de windup |
+| BurrowAmbush | some/reaparece do solo | verme, larva, predador | tell no chão obrigatório |
+| SwarmErratic | movimento rápido irregular | morcegos, enxames | não travar jogador sem saída |
+| TankSlowPush | avança lento e ocupa espaço | tank/construct | não virar parede injusta |
+| PhaseShortBlink | blink curto | sombra/caster/elite | precisa tell/recovery |
+| Leaper | salto com windup | predador/elite | landing deve abrir janela |
+| FloatingSlow | flutua lento | wisp/eco | usar ameaça espacial |
+| FloatingOrbit | orbita alvo/arena | olho/wisp/caster | evitar tiro impossível |
+| TreasureIdleAmbush | inerte até trigger | mimic/tesouro | trigger legível ou detectável |
+| PackFlanker | busca lateral | lobos/goblins | não teletransportar para trás |
+| PackLeader | coordena pack | líder/elite | call limitado |
+| RetreatAndCall | recua e chama | goblin/cultista | evitar avalanche |
+| ProtectAnchor | protege node/ritual | guardião | leash ao anchor |
+| CircleStrafe | circula alvo | duelista/ranged móvel | manter legibilidade |
+| ChargeLine | investida em linha | brute/boar/elite | windup e linha clara |
+| HazardLure | tenta levar para hazard | lurer/trap enemy | hazard deve ser visível |
+| BossArenaControl | movimento custom de boss | boss | por fase |
+| BossPhaseShift | transição de fase | boss | não causar dano sem tell |
+
+## 12. Moves futuros para eventos/fazenda
+
+Os Moves abaixo são **futuros** e não devem ser implementados em specs atuais.
 
 ```text
 FarmEdgeApproach
@@ -312,21 +470,20 @@ StructureHarass
 LivestockHarass
 ResourceStealRetreat
 FenceBreakAttempt
-TorchLure
 PortalSpawnAdvance
 RitualCircleHold
 CivilianAvoidance
 ```
 
-Regras:
+Regra:
 
 ```text
-Esses Moves são candidatos, não implementação obrigatória.
-Se um Move oficial do roster resolver o caso, preferir o Move oficial.
-Invasor de fazenda deve ter objetivo claro e rota de entrada/saída clara.
+Esses Moves existem apenas para orientar extensibilidade.
+Não devem entrar em spec de caverna ou combate atual.
+Quando farm invasion entrar no roadmap, revisar esta seção antes de gerar specs.
 ```
 
-## 10. Reação ao Dash longo do jogador
+## 13. Reação ao Dash longo do jogador
 
 Dash longo do jogador pode chegar a aproximadamente 8 tiles com upgrades/skills fortes.
 
@@ -348,7 +505,7 @@ Anti-cheese permitido:
 reacquire target após Dash
 retornar ao anchor se kited para longe demais
 cooldown de leash
-pack leader chamar aliados próximos
+pack leader chamar aliados próximos dentro do budget
 boss reposicionar por fase
 hazard punir fuga óbvia em arena específica
 ```
@@ -361,217 +518,121 @@ hitscan sem telegraph
 puxar jogador de volta sem counterplay
 resetar HP injustamente
 atravessar paredes sem regra clara
+colar instantaneamente no jogador após Dash
 ```
 
 ---
 
-# PARTE D — Ações inimigas
+# PARTE D — ActionSelector e EnemyAction
 
-## 11. Estrutura de EnemyAction
+## 14. Estrutura de EnemyAction
 
-Toda ação relevante deve ter fases.
+Toda ação relevante deve ter fases explícitas.
 
-```text
-Intent
-  inimigo escolhe ação e começa orientação/posição.
-
-Windup
-  telegraph visual/sonoro antes do hit/efeito.
-
-Active
-  hitbox/projétil/zona/efeito acontece.
-
-Recovery
-  inimigo fica vulnerável ou menos eficiente.
-
-Window
-  MinorOpening, CriticalWindow ou CoreExposed, se aplicável.
-
-Cooldown
-  ação não pode ser repetida até cooldown terminar.
-```
+| Fase | Significado | Obrigatória? |
+|---|---|---|
+| Intent | inimigo decidiu ação e orienta corpo/posição | sim |
+| Windup | telegraph antes do hit/efeito | sim para ação perigosa |
+| Active | hitbox/projétil/zona/efeito acontece | sim |
+| Recovery | inimigo fica exposto ou menos eficiente | sim para ação forte |
+| Window | MinorOpening/CriticalWindow/CoreExposed se aplicável | conforme ação |
+| Cooldown | impede repetição imediata | sim |
 
 Regra:
 
 ```text
 Ataques fortes precisam de Windup e Recovery.
 Ações sem telegraph devem ser fracas, curtas ou apenas movimento.
+Ação de controle forte sempre precisa de Windup, Cooldown e counterplay.
 ```
 
-## 12. Campos conceituais de EnemyActionSO
+## 15. ActionType
+
+Tipos de ação atuais:
+
+| ActionType | O que faz | Observação |
+|---|---|---|
+| MeleeLight | ataque físico rápido | baixo telegraph, baixo dano |
+| MeleeHeavy | ataque físico forte | windup/recovery claros |
+| Charge | investida | linha/direção clara |
+| Leap | salto | landing deve abrir janela |
+| DashAttack | avanço curto ofensivo | não confundir com Dash do jogador |
+| Projectile | projétil físico/mágico | line of sight recomendado |
+| Cone/BreathAttack | sopro/cone de criatura | Breath aqui é nome de ataque |
+| AreaCast | zona no chão/área | telegraph de chão |
+| Summon | chama adds | budget controlado |
+| BuffAlly | fortalece aliado | foco/counterplay |
+| DebuffPlayer | aplica debuff | cooldown e resistência |
+| Guard | defesa ativa | pode ter guard break |
+| Block | bloqueio inimigo | usado por poucos |
+| Retreat | recuo tático | não reset injusto |
+| CallForHelp | chama aliados | radius e cooldown |
+| Burrow | movimento subterrâneo | tell obrigatório |
+| Blink | reposicionamento curto | tell/recovery |
+| TrapPlace | coloca armadilha | visibilidade mínima |
+| TreasureAmbush | ativa emboscada | trigger claro/detectável |
+| RitualChannel | canaliza efeito | interrupção possível |
+| PhaseTransition | muda fase | boss/elite |
+
+Tipos futuros, fora do escopo atual:
 
 ```text
-ActionId
-DisplayName
-ActionType
-DamageType
-RangeMin
-RangeMax
-PreferredRange
-StaminaCost
-MPCost
-Cooldown
-WindupDuration
-ActiveDuration
-RecoveryDuration
-MovementLock
-TurnRate
-CanHitPlayer
-CanHitCompanion
-CanHitPet
-CanHitFarmObject
-CanHitStructure
-AppliesStatus
-StatusChance
-PostureDamage
-GuardBreakPower
-VulnerabilityWindowType
-WindowDuration
-TelegraphVisual
-TelegraphAudio
-Interruptible
-RequiresLineOfSight
-RequiresObjective
-BossPhaseAllowed
-Tags
-```
-
-Regra:
-
-```text
-Não hardcodar comportamento em scripts quando ele puder ser data-driven por EnemyActionSO.
-```
-
-## 13. Tipos de ação
-
-```text
-MeleeLight
-MeleeHeavy
-Charge
-Leap
-DashAttack
-Projectile
-Cone/BreathAttack
-AreaCast
-Summon
-BuffAlly
-DebuffPlayer
-Guard
-Block
-Retreat
-CallForHelp
-Burrow
-Blink
-TrapPlace
-TreasureAmbush
 ObjectiveAttack
 ResourceSteal
-RitualChannel
-PhaseTransition
+FarmObjectHarass
+CropCorrupt
+FenceBreak
+LivestockHarass
 ```
 
-Observação:
+## 16. Campos conceituais de EnemyActionSO explicados
 
-```text
-BreathAttack é nome válido para ataque de sopro de criatura.
-Não tem relação com atributo Breath/Fôlego removido.
-```
-
----
-
-# PARTE E — Stamina e MP dos inimigos
-
-## 14. Regra geral
-
-Todo inimigo tem STA.
-
-```text
-STA = recurso para ações físicas, investidas, saltos, defesa ativa, reposicionamento e ataques especiais físicos.
-MP = recurso mágico, espiritual, psíquico, corrupto, elemental ou técnico.
-```
-
-Fonte de stats:
-
-```text
-CAVE_MONSTER_ROSTER_DIRECTION.md para inimigos da caverna.
-Docs futuros de farm/eventos para inimigos específicos fora da caverna.
-```
-
-## 15. Uso de Stamina inimiga
-
-Ações que devem gastar STA:
-
-```text
-ChargeLine
-Leaper jump
-DashBite / DashAttack
-FastRecovery chain
-Block/Guard ativo
-GuardBreak físico
-Burrow emerge attack
-LongChase sprint
-Swarm burst
-Heavy melee
-```
-
-Regras:
-
-```text
-Inimigo sem STA suficiente deve escolher ação menor, recuperar, reposicionar ou pausar.
-Inimigos físicos não devem spammar ação forte sem custo/cooldown.
-STA inimiga não precisa aparecer na HUD comum.
-STA pode ser exposta em debug/telemetria.
-```
-
-## 16. Uso de MP inimigo
-
-Ações que devem gastar MP:
-
-```text
-projectile mágico
-curse/debuff
-summon
-heal/support
-shield mágico
-blink mágico
-fear/confusion/mental
-corruption pulse
-boss arena control
-ritual channel
-```
-
-Regras:
-
-```text
-Caster sem MP deve alternar para ataque fraco, reposicionar, canalizar, recuar ou chamar ajuda.
-Boss pode ter MP especial por fase, mas precisa ser claro na spec.
-MP não deve permitir spam infinito de controle.
-```
-
-## 17. Regeneração de inimigos
-
-Direção:
-
-```text
-Inimigos comuns podem não regenerar STA/MP ou regenerar pouco.
-Elites podem ter regen moderada conforme papel.
-Bosses podem regenerar por fase/mecânica.
-Summoners/casters podem recuperar MP ao canalizar, mas ficam vulneráveis.
-```
+| Campo | Significado | Direção |
+|---|---|---|
+| ActionId | identificador único | estável para save/debug |
+| DisplayName | nome legível interno | não precisa aparecer ao jogador |
+| ActionType | tipo da ação | usar enum/data contract |
+| DamageType | tipo de dano | alinhar com Combat Core |
+| RangeMin | distância mínima útil | evita usar colado se não faz sentido |
+| RangeMax | distância máxima | evita ataques fora de alcance |
+| PreferredRange | distância ideal | usado no scoring |
+| StaminaCost | custo físico | ações fortes físicas gastam STA |
+| MPCost | custo mágico/técnico | caster/summon/blink etc. |
+| Cooldown | intervalo de repetição | evita spam |
+| WindupDuration | antecipação | maior para ação perigosa |
+| ActiveDuration | tempo ativo | hitbox/projétil/zona |
+| RecoveryDuration | vulnerabilidade pós-ação | recompensa leitura |
+| MovementLock | quanto prende movimento | forte em heavy/cast |
+| TurnRate | velocidade de virar | evita tracking injusto |
+| CanHitPlayer | pode acertar jogador | padrão sim em ataques |
+| CanHitCompanion | pode acertar companion | conforme ação |
+| CanHitPet | pode acertar pet | cuidado para não punir pet demais |
+| CanHitObjective | pode acertar objetivo | futuro/anchors |
+| CanHitFarmObject | futuro | não usar agora |
+| CanHitStructure | futuro | não usar agora |
+| AppliesStatus | status aplicado | Burn, Slow etc. |
+| StatusChance | chance de status | evitar 100% sem tell |
+| PostureDamage | dano de postura | heavy/hammer/brute |
+| GuardBreakPower | força anti-block | telegraph obrigatório |
+| VulnerabilityWindowType | abertura gerada | Minor/Critical/Core |
+| WindowDuration | duração da janela | calibrar por letalidade |
+| TelegraphVisual | indicação visual | obrigatório para ações fortes |
+| TelegraphAudio | indicação sonora | opcional, complementar |
+| Interruptible | pode interromper | comum/caster geralmente sim |
+| RequiresLineOfSight | exige visão/linha | recomendado para ranged/caster |
+| RequiresObjective | exige anchor/objetivo | rituals/futuro |
+| BossPhaseAllowed | fases permitidas | bosses |
+| Tags | tags de busca/filtro | Fire, Heavy, AntiBlock etc. |
 
 Regra:
 
 ```text
-Regen de inimigo deve existir para pacing, não para criar luta infinita.
+Campos futuros podem existir no contrato, mas specs atuais devem ignorar campos de farm/city objective até roadmap abrir esses temas.
 ```
 
----
+## 17. Action scoring
 
-# PARTE F — Seleção de ação
-
-## 18. Action scoring
-
-EnemyBrain deve escolher ações por score, não por sequência fixa simples, exceto bosses roteirizados por fase.
+EnemyBrain deve escolher ações por score, não por sequência fixa simples, exceto boss scripts por fase.
 
 Fatores de score:
 
@@ -598,22 +659,113 @@ fase do boss
 Regra:
 
 ```text
-Ação forte não deve ser escolhida se não houver telegraph/recovery compatível.
+Ação forte não deve ser escolhida se não houver recurso, telegraph e recovery compatíveis.
 Ação de controle não deve ser repetida em loop sem cooldown.
+Score deve evitar que o inimigo use sempre a ação matematicamente mais forte.
 ```
 
-## 19. Reação a Block
+---
 
-Inimigos devem reagir ao Block conforme papel.
+# PARTE E — ResourceModule: Stamina e MP dos inimigos
+
+## 18. Regra geral
+
+Todo inimigo tem STA.
 
 ```text
-comum fraco: continua atacando e pode ser punido.
-elite anti-block: usa GuardBreak com telegraph.
-caster: pode trocar para zona/projétil/ângulo.
-tank: pressiona postura.
-swarm: tenta cercar, não quebrar block sozinho.
-boss: tem padrões que testam block, dodge e movimento.
+STA = recurso para ações físicas, investidas, saltos, defesa ativa, reposicionamento e ataques especiais físicos.
+MP = recurso mágico, espiritual, psíquico, corrupto, elemental ou técnico.
 ```
+
+Fonte de stats:
+
+```text
+CAVE_MONSTER_ROSTER_DIRECTION.md para inimigos da caverna.
+Docs futuros de farm/eventos para inimigos específicos fora da caverna.
+```
+
+## 19. Uso de Stamina inimiga
+
+Ações que devem gastar STA:
+
+```text
+ChargeLine
+Leaper jump
+DashAttack
+FastRecovery chain
+Block/Guard ativo
+GuardBreak físico
+Burrow emerge attack
+LongChase sprint
+Swarm burst
+Heavy melee
+```
+
+Regras:
+
+```text
+Inimigo sem STA suficiente deve escolher ação menor, recuperar, reposicionar ou pausar.
+Inimigos físicos não devem spammar ação forte sem custo/cooldown.
+STA inimiga não precisa aparecer na HUD comum.
+STA pode ser exposta em debug/telemetria.
+```
+
+## 20. Uso de MP inimigo
+
+Ações que devem gastar MP:
+
+```text
+projectile mágico
+curse/debuff
+summon
+heal/support
+shield mágico
+blink mágico
+fear/confusion/mental
+corruption pulse
+boss arena control
+ritual channel
+```
+
+Regras:
+
+```text
+Caster sem MP deve alternar para ataque fraco, reposicionar, canalizar, recuar ou chamar ajuda.
+Boss pode ter MP especial por fase, mas precisa ser claro na spec.
+MP não deve permitir spam infinito de controle.
+```
+
+## 21. Recuperação de recurso
+
+Direção:
+
+```text
+Inimigos comuns podem não regenerar STA/MP ou regenerar pouco.
+Elites podem ter regen moderada conforme papel.
+Bosses podem regenerar por fase/mecânica.
+Summoners/casters podem recuperar MP ao canalizar, mas ficam vulneráveis.
+```
+
+Regra:
+
+```text
+Regen de inimigo deve existir para pacing, não para criar luta infinita.
+```
+
+---
+
+# PARTE F — ReactionModule
+
+## 22. Reação a Block
+
+| Tipo de inimigo | Reação esperada |
+|---|---|
+| comum fraco | continua atacando e pode ser punido |
+| swarm | tenta cercar, não quebrar block sozinho |
+| elite anti-block | usa GuardBreak com telegraph |
+| caster | troca para zona/projétil/ângulo |
+| tank | pressiona postura e espaço |
+| boss | alterna padrões que testam block, dodge e movimento |
 
 Regras:
 
@@ -623,30 +775,30 @@ Anti-block não deve invalidar Block sempre.
 Block deve ser bom contra alguns ataques e ruim contra outros.
 ```
 
-## 20. Reação a Dodge
+## 23. Reação a Dodge
 
 ```text
-comuns: podem whiffar e abrir MinorOpening.
-fast predators: podem recuperar rápido, mas com baixa vida/janela.
-elites: podem ter follow-up limitado, não infinito.
-bosses: podem encadear padrões, mas com leitura clara.
+comuns podem errar e abrir MinorOpening.
+fast predators podem recuperar rápido, mas precisam vida menor/janela.
+elites podem ter follow-up limitado, não infinito.
+bosses podem encadear padrões, mas com leitura clara.
 ```
 
 Regra:
 
 ```text
 Não punir Dodge correto com tracking impossível.
-Ataques com tracking alto precisam de windup e limite.
+Ataques com tracking alto precisam de windup e limite de rotação.
 ```
 
-## 21. Reação a Dash
+## 24. Reação a Dash
 
 ```text
-melee comum: reacquire target após breve delay.
-flanker/predator: tenta cortar caminho.
-ranged/caster: mantém pressão se line of sight existir.
-guard/tank: pode não perseguir, mantendo objetivo.
-boss: pode reposicionar por padrão/fase.
+melee comum reacquire target após breve delay.
+flanker/predator tenta cortar caminho.
+ranged/caster mantém pressão se line of sight existir.
+guard/tank pode não perseguir, mantendo objetivo.
+boss pode reposicionar por padrão/fase.
 ```
 
 Regra:
@@ -654,16 +806,17 @@ Regra:
 ```text
 Dash deve criar espaço real.
 Inimigo não deve colar instantaneamente após Dash sem motivo visual/mecânico.
+Dash longo deve ser validado por telemetria, não nerfado preventivamente por IA injusta.
 ```
 
-## 22. Reação a ranged/magic
+## 25. Reação a ranged/magic
 
 ```text
-melee: tenta encurtar distância ou usar cobertura se existir.
-ranged: troca tiro/reposiciona.
-caster: usa zona, shield, summon ou debuff.
-tank: avança lento ou protege aliado.
-flanker: tenta ângulo lateral.
+melee tenta encurtar distância ou usar cobertura se existir.
+ranged troca tiro/reposiciona.
+caster usa zona, shield, summon ou debuff.
+tank avança lento ou protege aliado.
+flanker tenta ângulo lateral.
 ```
 
 Regra:
@@ -672,11 +825,39 @@ Regra:
 Build ranged/magic deve funcionar, mas não ser kite infinito sem risco.
 ```
 
+## 26. Reação a companions e pets
+
+Companion:
+
+```text
+Tank companion aumenta threat.
+Ranged companion pode virar alvo de flanker.
+Healer/support pode gerar threat em elites/casters.
+Controller companion pode ser priorizado por inimigos inteligentes.
+Miner/hybrid pode ser ignorado por bestas, mas visado por humanoides táticos.
+```
+
+Pet:
+
+```text
+Cachorro pode alertar, marcar, interromper ou distrair inimigo pequeno.
+Gato pode revelar anomalia/tesouro/ambush em chance ou contexto específico futuro.
+Elites podem ignorar pet salvo se pet ativar janela específica.
+Boss não deve ser tankado por pet.
+```
+
+Regra:
+
+```text
+Inimigo não deve sempre ignorar companion/pet.
+Inimigo também não deve sempre focar companion/pet para invalidar o sistema.
+```
+
 ---
 
-# PARTE G — Packs e coordenação
+# PARTE G — PackModule e LeashModule
 
-## 23. Pack roles
+## 27. Pack roles
 
 Um pack ideal tem composição lógica.
 
@@ -692,7 +873,7 @@ objective holder
 
 Nem todo pack precisa de todos os papéis.
 
-## 24. Pack coordination
+## 28. Pack coordination
 
 Comportamentos coordenados possíveis:
 
@@ -713,20 +894,25 @@ Regras:
 Coordenação deve ser legível.
 Coordenação não deve virar avalanche sem limite.
 AllyCallRadius precisa respeitar active combat budget do ambiente.
+Pack coordination deve ser data-driven por PackCoordinationRules.
 ```
 
-## 25. Leash e reset
+## 29. Leash e reset
 
 Leash evita cheese e avalanche.
 
-```text
-SoftLeashRadius
-HardLeashRadius
-ObjectiveLeashRadius
-ReturnToAnchor
-ReacquireAfterDash
-DisengageIfTooFar
-```
+Campos conceituais:
+
+| Campo | Significado |
+|---|---|
+| SoftLeashRadius | começa a reduzir perseguição |
+| HardLeashRadius | força retorno/abandono |
+| ObjectiveLeashRadius | raio ao redor de anchor/objetivo |
+| ReturnToAnchor | volta ao ponto protegido |
+| ReacquireAfterDash | tenta reencontrar alvo após Dash |
+| DisengageIfTooFar | abandona perseguição |
+| PreserveDamageOnLeash | não reseta HP injustamente |
+| CooldownAfterReturn | evita reengage instantâneo |
 
 Regras:
 
@@ -734,14 +920,13 @@ Regras:
 Leash não deve resetar HP injustamente no meio de luta normal.
 Guardians podem voltar ao objetivo em vez de perseguir eternamente.
 Bosses usam arena bounds, não leash comum.
-Invasores de fazenda podem fugir quando objetivo falha ou tempo acaba.
 ```
 
 ---
 
 # PARTE H — Janelas, vulnerabilidades e telegraph
 
-## 26. Categorias de janela
+## 30. Categorias de janela
 
 Fonte canônica:
 
@@ -762,18 +947,19 @@ CoreExposed / BossMechanicWindow / StaggeredWindow
   janela especial; pode garantir crítico + bônus moderado.
 ```
 
-## 27. Telegraph obrigatório
+## 31. Telegraph obrigatório
 
 Todo ataque relevante precisa de:
 
 ```text
 windup visual
-windup sonoro quando possível
 direção/intenção legível
 active frames claros
 recovery claro
 janela declarada quando aplicável
 ```
+
+TelegraphAudio é complementar, não obrigatório.
 
 Regra:
 
@@ -781,7 +967,7 @@ Regra:
 Quanto mais letal o ataque, mais claro deve ser o telegraph ou maior deve ser o recovery.
 ```
 
-## 28. Interrupção
+## 32. Interrupção
 
 Ações podem ser:
 
@@ -803,113 +989,9 @@ Pet/companion podem abrir janela em ações específicas, não em tudo.
 
 ---
 
-# PARTE I — Farm invasions / invasões da fazenda
+# PARTE I — Bosses e elites
 
-## 29. Premissa
-
-Invasões da fazenda são conteúdo futuro possível.
-
-Elas devem expandir o jogo sem transformar a fazenda em punição constante.
-
-Direção:
-
-```text
-Invasão deve ser evento claro, legível e com aviso.
-Não deve destruir progresso permanentemente sem chance real de defesa.
-Pode ameaçar crops, animais, estruturas, baús externos, máquinas, cercas, fontes de recurso ou visitantes.
-Deve ter reparo, mitigação, prevenção ou recuperação.
-```
-
-## 30. Tipos de invasão
-
-Possibilidades:
-
-```text
-beasts atacando animais/crops
-fungal corruption tentando contaminar solo/crops
-goblins/kobolds tentando roubar recursos
-cultistas tentando ritual perto da Fonte/limites da fazenda
-constructs bromecianos antigos ativando próximo a máquinas
-sombras/Nyx gerando evento noturno raro
-Pedra Negra corrompendo área temporária
-```
-
-Regra:
-
-```text
-Invasão precisa fazer sentido com lore, estação, reputação, progresso da caverna ou evento.
-Não usar invasão aleatória punitiva sem telegraph.
-```
-
-## 31. Objetivos de invasores
-
-Invasores podem ter objetivo diferente de matar o jogador.
-
-```text
-roubar item/recurso
-quebrar cerca/estrutura leve
-contaminar crop/solo
-assustar animais
-atacar pet/companion apenas como ameaça tática, sem morte permanente sem sistema próprio
-canalizar ritual
-proteger portal temporário
-fugir com loot
-chamar reforço
-```
-
-Regra:
-
-```text
-Dano permanente à fazenda deve ser limitado, reparável e sinalizado.
-Não criar perda irreversível sem decisão clara do jogador.
-```
-
-## 32. Estados específicos de invasão
-
-```text
-ApproachFarmEdge
-ScoutFarm
-TargetObjective
-AttackObjective
-StealResource
-RetreatWithLoot
-FleeIfOutmatched
-CallReinforcement
-CorruptTile
-HarassLivestock
-BreakFence
-ChannelRitual
-EscapeMap
-```
-
-## 33. Defesas da fazenda futuras
-
-Sistemas possíveis:
-
-```text
-cercas
-iluminação
-cachorro/pet alertando
-companion guard duty
-espantalho/wards mágicos
-altares divinos com bônus de proteção
-armadilhas leves
-sino de alerta
-reputação com cidade atraindo ajuda
-```
-
-Regra:
-
-```text
-Defesas devem reduzir risco, atrasar invasores ou alterar comportamento.
-Defesas não devem transformar tudo em tower defense obrigatório.
-```
-
----
-
-# PARTE J — Bosses e elites
-
-## 34. Elites
+## 33. Elites
 
 Elites devem ter:
 
@@ -931,7 +1013,7 @@ elite caster testa interrupção/line of sight.
 elite tank testa posture/charged attack.
 ```
 
-## 35. Bosses
+## 34. Bosses
 
 Bosses devem ter:
 
@@ -953,7 +1035,7 @@ Boss não deve virar puzzle único sem combate.
 Boss deve respeitar o Combat Core: leitura, recurso, janela e decisão.
 ```
 
-## 36. Boss AI por fase
+## 35. Boss AI por fase
 
 ```text
 Phase 1
@@ -966,54 +1048,25 @@ Phase 3
   aumenta pressão, mas mantém counterplay.
 ```
 
-Regra:
+Cada fase deve declarar:
 
 ```text
-Cada fase deve declarar allowed actions, forbidden actions, movement mode, vulnerability window e recovery rules.
+AllowedActions
+ForbiddenActions
+MovementMode
+VulnerabilityWindow
+RecoveryRules
+AddRules
+HazardRules
+AntiCheeseRules
+PhaseExitCondition
 ```
 
 ---
 
-# PARTE K — Companions e pets
+# PARTE J — Status aplicados por inimigos
 
-## 37. Reação a companions
-
-```text
-Tank companion aumenta threat.
-Ranged companion pode virar alvo de flanker.
-Healer/support pode gerar threat em elites/casters.
-Controller companion pode ser priorizado por inimigos inteligentes.
-Miner/hybrid pode ser ignorado por bestas, mas visado por humanoides táticos.
-```
-
-Regra:
-
-```text
-Inimigo não deve sempre ignorar companion.
-Inimigo também não deve sempre focar companion para invalidar o sistema.
-```
-
-## 38. Reação a pets
-
-```text
-Cachorro pode alertar, marcar, interromper ou distrair inimigo pequeno.
-Gato pode revelar anomalia/tesouro/ambush em chance ou contexto específico.
-Inimigos pequenos podem reagir ao cachorro.
-Elites podem ignorar pet salvo se pet ativar janela específica.
-Boss não deve ser tankado por pet.
-```
-
-Regra:
-
-```text
-Pet é apoio tático e de exploração, não substituto de companion.
-```
-
----
-
-# PARTE L — Status aplicados por inimigos
-
-## 39. Status permitidos
+## 36. Status permitidos
 
 Fonte de lista geral:
 
@@ -1050,33 +1103,95 @@ DurabilityStress não destrói permanentemente sem spec própria.
 Corruption deve ser relevante, mas com cura/prevenção/purificação.
 ```
 
-## 40. Status em invasões de fazenda
+---
 
-Possíveis efeitos:
+# PARTE K — Farm invasion e eventos hostis futuros
+
+## 37. Status desta seção
+
+Esta seção é **futura**.
+
+Regra:
 
 ```text
-CropWitherTemporary
-SoilCorruptionTemporary
-AnimalFear
-MachineJam
-FenceDamage
-StorageThreat
-VisitorPanic
+Não gerar specs atuais de farm invasion com base nesta seção.
+Não alterar sistemas atuais de fazenda por causa desta seção.
+Não implementar dano a crops/animais/estruturas agora.
+Esta seção existe para que a arquitetura de EnemyBrain não nasça presa à caverna.
 ```
 
-Regras:
+## 38. Premissa futura
+
+Invasões da fazenda, se entrarem no roadmap, devem expandir o jogo sem transformar a fazenda em punição constante.
+
+Direção futura:
 
 ```text
-Status de fazenda deve ser reparável/curável.
-Evitar perda permanente não anunciada.
-Usar eventos para criar urgência, não punição arbitrária.
+Invasão deve ser evento claro, legível e com aviso.
+Não deve destruir progresso permanentemente sem chance real de defesa.
+Pode ameaçar crops, animais, estruturas, baús externos, máquinas, cercas, fontes de recurso ou visitantes.
+Deve ter reparo, mitigação, prevenção ou recuperação.
+```
+
+## 39. Tipos futuros de invasão
+
+```text
+beasts atacando animais/crops
+fungal corruption tentando contaminar solo/crops
+goblins/kobolds tentando roubar recursos
+cultistas tentando ritual perto da Fonte/limites da fazenda
+constructs bromecianos antigos ativando próximo a máquinas
+sombras/Nyx gerando evento noturno raro
+Pedra Negra corrompendo área temporária
+```
+
+## 40. Objetivos futuros de invasores
+
+```text
+roubar item/recurso
+quebrar cerca/estrutura leve
+contaminar crop/solo
+assustar animais
+atacar pet/companion apenas como ameaça tática, sem morte permanente sem sistema próprio
+canalizar ritual
+proteger portal temporário
+fugir com loot
+chamar reforço
+```
+
+Regra futura:
+
+```text
+Dano permanente à fazenda deve ser limitado, reparável e sinalizado.
+Não criar perda irreversível sem decisão clara do jogador.
+```
+
+## 41. Defesas futuras da fazenda
+
+```text
+cercas
+iluminação
+cachorro/pet alertando
+companion guard duty
+espantalho/wards mágicos
+altares divinos com bônus de proteção
+armadilhas leves
+sino de alerta
+reputação com cidade atraindo ajuda
+```
+
+Regra futura:
+
+```text
+Defesas devem reduzir risco, atrasar invasores ou alterar comportamento.
+Defesas não devem transformar tudo em tower defense obrigatório.
 ```
 
 ---
 
-# PARTE M — Dados e runtime futuros
+# PARTE L — Data assets e contratos futuros
 
-## 41. Data assets esperados
+## 42. Data assets esperados
 
 ```text
 EnemyDataSO
@@ -1089,35 +1204,59 @@ EnemySpawnProfileSO
 EnemySpawnPackSO
 EnemyFactionLockSO
 EnemyBestiaryEntrySO
-EnemyObjectiveProfileSO
-EnemyInvasionProfileSO
+EnemyObjectiveProfileSO futuro
+EnemyInvasionProfileSO futuro
 LootTableSO
 ```
 
-## 42. EnemyBrainProfileSO conceitual
+## 43. EnemyBrainProfileSO explicado
+
+| Campo | Significado |
+|---|---|
+| BrainId | identificador do perfil de cérebro |
+| PrimaryRole | papel principal |
+| SecondaryRoles | variações secundárias |
+| BehaviorProfile | módulos injetados de comportamento |
+| MovementProfile | Move oficial + parâmetros |
+| AggroProfile | como calcula ameaça |
+| TargetPriorityProfile | como escolhe alvo |
+| ActionSet | ações disponíveis |
+| RetreatRules | quando recua |
+| LeashRules | até onde persegue |
+| PackCoordinationRules | como conversa com pack |
+| ObjectiveRules | futuro/anchors/eventos |
+| ReactionRules | respostas a eventos |
+| AllowedBiomes | biomas/contextos válidos |
+| AllowedContexts | Cave, BossGate, FutureFarm etc. |
+| DebugTags | filtros de debug |
+
+## 44. EnemyBehaviorProfileSO explicado
+
+| Campo | Significado |
+|---|---|
+| PerceptionModuleId | módulo de percepção |
+| IntentModuleId | módulo de intenção |
+| TargetingModuleId | módulo de alvo |
+| MovementModuleId | módulo de movimento |
+| ActionSelectorModuleId | módulo de decisão de ação |
+| ResourceModuleId | módulo de STA/MP |
+| CooldownModuleId | módulo de cooldown |
+| ReactionModuleId | módulo de reação |
+| PackModuleId | módulo de coordenação |
+| LeashModuleId | módulo de leash |
+| PhaseModuleId | módulo de fase, se boss/elite |
+| ObjectiveModuleId | futuro/evento |
+
+Regra:
 
 ```text
-BrainId
-PrimaryRole
-SecondaryRoles
-BehaviorProfile
-MovementProfile
-AggroProfile
-TargetPriorityProfile
-ActionSet
-RetreatRules
-LeashRules
-PackCoordinationRules
-ObjectiveRules
-ReactionRules
-AllowedBiomes
-AllowedContexts
-DebugTags
+Perfis devem ser combináveis.
+Não criar uma classe nova para cada monstro se a variação puder ser feita por módulos e dados.
 ```
 
-## 43. EnemyObjectiveProfileSO conceitual
+## 45. EnemyObjectiveProfileSO futuro
 
-Para eventos/fazenda:
+Apenas para eventos/fazenda/cidade futuros.
 
 ```text
 ObjectiveId
@@ -1134,11 +1273,17 @@ PlayerWarningLevel
 RecoveryRules
 ```
 
+Regra:
+
+```text
+Não implementar este asset agora sem roadmap específico de eventos objetivos.
+```
+
 ---
 
-# PARTE N — Telemetria e validação
+# PARTE M — Telemetria e validação
 
-## 44. Telemetria de IA
+## 46. Telemetria de IA
 
 Registrar em Play Mode:
 
@@ -1152,16 +1297,23 @@ tempo preso em pathfinding
 leash triggers
 ally calls
 pack activation count
-objetivos atacados
-objetivos destruídos/danificados
-recursos roubados
 retreats
 boss phase transitions
 dashes do jogador que quebraram sala/encontro
 body block incidents
 ```
 
-## 45. Validação humana
+Telemetria futura, não atual:
+
+```text
+objetivos de fazenda atacados
+crops afetados
+estruturas danificadas
+recursos roubados
+recovery/reparo pós-invasão
+```
+
+## 47. Validação humana
 
 Perguntas de validação:
 
@@ -1174,20 +1326,32 @@ O pack ficou desafiador sem avalanche injusta?
 O Dash longo quebrou o encontro?
 Block/Dodge/Dash tiveram respostas justas?
 Companion/pet ajudaram sem trivializar?
-Invasão da fazenda pareceu evento interessante, não punição arbitrária?
+A IA parecia variar sem parecer aleatória?
+O comportamento veio de módulos reutilizáveis ou de exceção hardcoded?
+```
+
+Perguntas futuras para farm invasion:
+
+```text
+Invasão pareceu evento interessante, não punição arbitrária?
 Dano a crops/estruturas foi sinalizado e recuperável?
+O jogador teve aviso e resposta possível?
 ```
 
 ---
 
-# PARTE O — Decisões fechadas
+# PARTE N — Decisões fechadas
 
 ```text
 Enemy Behaviors é documento transversal; não fica preso à caverna.
+Farm invasion é futuro explícito e não deve gerar specs atuais.
+Cidade/eventos hostis também são futuro explícito.
 Caverna continua com roster canônico próprio.
 Moves oficiais da caverna vêm do CAVE_MONSTER_ROSTER_DIRECTION.md.
 Specs devem reutilizar Moves oficiais antes de criar novos.
-EnemyBrain deve ser orientado por percepção, intenção, movimento, ação, reação e estado.
+Hearing/audição não será elemento de IA por enquanto.
+Comportamentos são injetáveis por profiles/modules, não classes totalmente fixas.
+EnemyBrain deve ser orientado por percepção, intenção, alvo, movimento, ação, recurso, reação, pack, leash e estado.
 Ações relevantes devem ter Intent, Windup, Active, Recovery, Window e Cooldown.
 Todo inimigo tem STA; inimigos físicos podem ter MP 0.
 Inimigos devem gastar STA/MP em ações fortes conforme dados da ação.
@@ -1196,28 +1360,36 @@ Inimigos podem reagir ao Dash longo por reacquire, leash, line of sight, reposic
 GuardBreak precisa de telegraph.
 Controle forte precisa de counterplay.
 Packs devem ter coordenação legível.
-Invasões da fazenda são conteúdo futuro possível e devem ser eventos sinalizados, reparáveis e não punitivos de forma arbitrária.
 Pet e companion são considerados pelo EnemyBrain, mas não devem ser sempre ignorados nem sempre focados.
 ```
 
 ---
 
-# PARTE P — Pendências para specs futuras
+# PARTE O — Pendências para specs futuras
+
+## 48. Specs atuais úteis
 
 ```text
 Definir EnemyBrain runtime architecture.
 Definir EnemyActionSO data contract.
 Definir EnemyActionSetSO data contract.
 Definir EnemyMovementProfileSO usando Moves oficiais.
-Definir EnemyBehaviorProfileSO.
+Definir EnemyBehaviorProfileSO com módulos injetáveis.
 Definir EnemyThreat/Aggro model.
 Definir EnemyTargetPriorityProfile.
 Definir EnemyLeashRules.
 Definir PackCoordinationRules.
 Definir ReactionRules para Block/Dodge/Dash/ranged/magic/companion/pet.
+Definir telemetria de IA em Play Mode.
+Validar em Unity pathfinding, body blocking, telegraph, windows e Dash longo.
+```
+
+## 49. Specs futuras, não atuais
+
+```text
 Definir FarmInvasionProfileSO.
 Definir EnemyObjectiveProfileSO para invasões/eventos.
 Definir regras de dano reparável em crops/estruturas.
-Definir telemetria de IA em Play Mode.
-Validar em Unity pathfinding, body blocking, telegraph, windows e Dash longo.
+Definir town hostile event behavior.
+Definir mundo externo com inimigos fora da caverna.
 ```
