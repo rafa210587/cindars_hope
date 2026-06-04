@@ -435,21 +435,40 @@ O jogador não deve deslizar sem controle nem ficar travado por longos períodos
 
 ## 16. Velocidade dos inimigos
 
-Usar perfis, não valores soltos por inimigo.
+Os nomes oficiais de `Move` pertencem ao roster da caverna.
 
-| Perfil | Velocidade alvo | Uso |
+Fonte canônica:
+
+```text
+docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_DIRECTION.md
+```
+
+Este documento só registra faixas de velocidade sugeridas para esses `Move` oficiais.
+
+| Move oficial do roster | Velocidade alvo | Uso |
 |---|---:|---|
-| SlowTank | 1.5-2.4 tiles/s | tanques, constructos, baluartes |
-| StandardChaser | 2.7-3.5 tiles/s | comuns corpo a corpo |
-| FastPredator | 3.8-4.8 tiles/s | predadores, hounds, panteras |
+| TankSlowPush | 1.5-2.4 tiles/s | tanques, constructos, baluartes |
+| GroundPatrol | 2.0-3.0 tiles/s | patrulha, guarda leve, deslocamento não agressivo |
+| GuardStationary | 0.0-1.5 tiles/s | guardião fixo, anchor, recurso/baú/porta |
+| GroundChase | 2.7-3.5 tiles/s | comuns corpo a corpo |
+| PackFlanker | 3.2-4.2 tiles/s | flanqueadores, humanoides rápidos, pack hunters |
+| PackLeader | 2.8-3.8 tiles/s | líder que comanda e pressiona sem ser sempre o mais rápido |
+| RetreatAndCall | 2.8-4.0 tiles/s | recua, chama pack, reposiciona |
 | SwarmErratic | 3.4-5.2 tiles/s | enxames, morcegos, pequenos rápidos |
 | KiteRanged | 2.4-3.4 tiles/s | arqueiros/cuspidor, recua e atira |
 | CasterKeepAway | 2.0-3.0 tiles/s | caster que reposiciona pouco |
-| Leaper | baixa base + salto | usa burst, não speed contínua alta |
-| Burrower | deslocamento subterrâneo por telegraph | não deve ser hitscan |
+| FloatingSlow | 1.6-2.6 tiles/s | wisp lento, eco, ameaça espacial |
 | FloatingOrbit | 2.0-3.2 tiles/s | orbit, olho, wisp, caster flutuante |
-| EliteDuelist | 3.0-4.4 tiles/s | elite técnico, janelas claras |
+| CircleStrafe | 3.0-4.0 tiles/s | duelistas, arqueiros móveis, predadores táticos |
+| Leaper | baixa base + salto | usa burst, não speed contínua alta |
+| ChargeLine | windup + burst | investida em linha, sempre com telegraph/recovery |
+| BurrowAmbush | deslocamento subterrâneo por telegraph | não deve ser hitscan |
+| PhaseShortBlink | blink curto com tell/recovery | não deve ser fuga infinita sem counterplay |
+| TreasureIdleAmbush | 0 até ativar | emboscada de tesouro, ativa por interação/proximidade |
+| HazardLure | 2.2-3.4 tiles/s | tenta puxar o jogador para hazard |
+| ProtectAnchor | 0.8-2.2 tiles/s | protege núcleo, ritual, node ou boss mechanic |
 | BossArenaControl | custom | por fase/arena |
+| BossPhaseShift | custom | transição e reposicionamento por fase |
 
 Regra:
 
@@ -458,6 +477,7 @@ Inimigo mais rápido que o jogador precisa ter vida menor, telegraph claro, ou j
 Inimigo tank lento pode ter HP/armor maior.
 Burst de movimento deve ter windup/recovery.
 Dash longo do jogador não obriga reduzir velocidade/densidade dos inimigos; ele é recurso caro e/ou de build.
+Não criar novos nomes de MovementProfile em specs se já existir Move oficial equivalente no roster.
 ```
 
 ## 17. Collision e body blocking
@@ -1276,6 +1296,8 @@ Dash com upgrades/skills fortes pode chegar até ~8.0 tiles, com cap e validaç�
 Dash longo não deve ter i-frame relevante por padrão.
 Dash longo não atravessa corpos por padrão; atravessar inimigos exige skill/regra explícita.
 Dodge deve cobrir 1.2-1.8 tiles com i-frame curto e recovery.
+Moves oficiais de inimigos vêm do CAVE_MONSTER_ROSTER_DIRECTION.md.
+Combat Core só sugere faixas de velocidade para esses Moves oficiais.
 Nem toda abertura dá crítico automático.
 MinorOpening, CriticalWindow e CoreExposed são categorias diferentes.
 Active combat budget da caverna não foi reduzido por causa da Stamina cara.
@@ -1295,8 +1317,7 @@ Definir StaminaCostProfileSO.
 Definir BlockController e BlockImpact formula final.
 Definir Dash/Dodge timing, i-frames, cooldown e recovery.
 Definir Dash long-upgrade cap, validação de sala e interação com colisão.
-Definir MovementProfileSO para jogador e inimigos.
-Definir EnemyMovementProfileSO com SlowTank, StandardChaser, FastPredator, SwarmErratic, KiteRanged, CasterKeepAway, Leaper, Burrower, FloatingOrbit, EliteDuelist e BossArenaControl.
+Definir MovementProfileSO para jogador e inimigos usando nomes oficiais de Move do CAVE_MONSTER_ROSTER_DIRECTION.md.
 Definir DamageType final.
 Definir Armor/Defense final.
 Definir CriticalHit contract.
