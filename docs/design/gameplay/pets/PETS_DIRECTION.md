@@ -1,6 +1,6 @@
 # Cindar's Hope — Pets Direction
 
-> **Status:** documento canônico de direção do sistema de pets  
+> **Status:** documento canônico de direção futura do sistema de pets  
 > **Local:** `docs/design/gameplay/pets/PETS_DIRECTION.md`  
 > **Depende de:**  
 > - `docs/design/SPEC_SOURCE_MAP.md`  
@@ -16,14 +16,37 @@
 > - `docs/design/gameplay/loot_crafting_economy/ECONOMY_PRICING_STOCK_REFRESH_DIRECTION.md`  
 > - `docs/design/gameplay/player/PLAYER_CORE_SYSTEMS_DIRECTION.md`  
 > - `docs/design/gameplay/player/PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md`  
-> **Função:** definir cachorro, gato, pets futuros, vínculo, alimentação, rotina, área/cama, funções na fazenda, funções na caverna, HUD, save/load, data assets e roadmap de specs futuras.  
+> **Função:** registrar direção futura para cachorro, gato, pets futuros, vínculo, alimentação, rotina, área/cama, funções na fazenda, funções na caverna, HUD, save/load, data assets e roadmap de specs futuras.  
 > **Não é spec implementável.** Specs futuras devem converter isto em dados, runtime, UI e validações Unity.
+
+---
+
+## Nota de escopo atual
+
+Pets estão **deferidos**.
+
+Este documento existe apenas como referência de direção futura. Pets não entram no escopo atual de implementação, specs, código, UI, save/load ou validação Unity.
+
+Até nova decisão explícita:
+
+```text
+não criar specs de pets;
+não implementar runtime de pets;
+não criar HUD de pets;
+não criar data assets de pets;
+não integrar pets à fazenda;
+não integrar pets à caverna;
+não integrar pets a companion jobs;
+não tratar pet como requisito de progressão.
+```
+
+Quando o sistema de pets voltar ao escopo, ele deve ser reavaliado a partir deste documento, do `SPEC_SOURCE_MAP.md` e do estado real do repo na branch `dev`.
 
 ---
 
 ## 0. Regra anti-duplicação
 
-Este documento define **pets**.
+Este documento define **pets** como direção futura.
 
 Ele não redefine:
 
@@ -90,7 +113,7 @@ Pet não joga pelo jogador.
 
 Pet é um animal/mascote ligado ao jogador por vínculo, rotina e convivência.
 
-Um pet pode:
+No escopo futuro, um pet pode:
 
 ```text
 morar na fazenda;
@@ -132,7 +155,7 @@ ter Breath/Fôlego.
 | Farm animal | animal produtivo, como vaca/galinha/futuro, ligado a produtos e manejo |
 | Mount | montaria futura, se existir; não é pet base |
 
-Regra:
+Regra futura:
 
 ```text
 Pet pode coexistir com companion ativo, mas não aumenta o active combat budget livremente.
@@ -158,16 +181,16 @@ Pets devem criar vínculo e legibilidade, não complexidade tática pesada.
 
 # PARTE B — Pets iniciais e futuros
 
-## 4. Pets iniciais
+## 4. Pets iniciais futuros
 
-O baseline do jogo deve suportar:
+Quando o sistema voltar ao escopo, o baseline sugerido deve suportar:
 
 ```text
 cachorro;
 gato.
 ```
 
-A escolha inicial pode ser:
+A escolha inicial futura pode ser:
 
 ```text
 um pet inicial escolhido pelo jogador;
@@ -192,7 +215,7 @@ social;
 ligado a som, cheiro e presença física.
 ```
 
-Funções principais:
+Funções futuras principais:
 
 ```text
 alerta de perigo;
@@ -236,7 +259,7 @@ curioso;
 ligado a detalhes, passagens, brilho e comportamento estranho.
 ```
 
-Funções principais:
+Funções futuras principais:
 
 ```text
 pista de tesouro escondido;
@@ -296,7 +319,7 @@ Pet raro não deve ser power creep direto de cachorro/gato.
 
 ## 8. Bond / vínculo
 
-Todo pet deve ter vínculo com o jogador.
+Todo pet deve ter vínculo com o jogador quando o sistema futuro existir.
 
 Estados sugeridos:
 
@@ -406,9 +429,9 @@ Pet não deve sumir aleatoriamente sem feedback.
 
 ## 11. Cama, tigela e área do pet
 
-A fazenda deve suportar área do pet.
+A fazenda deve suportar área do pet quando o sistema futuro existir.
 
-Objetos base:
+Objetos base futuros:
 
 ```text
 PetBed
@@ -446,9 +469,9 @@ Upgrades de pet devem ser conforto/vínculo/rotina, não multiplicadores econôm
 
 # PARTE D — Funções na fazenda
 
-## 12. Funções permitidas
+## 12. Funções permitidas no escopo futuro
 
-Pets podem ajudar na fazenda de forma leve.
+Pets podem ajudar na fazenda de forma leve quando o sistema for retomado.
 
 Funções possíveis:
 
@@ -483,7 +506,7 @@ substituir companion job.
 
 ## 13. Achados na fazenda
 
-Pets podem encontrar itens simples.
+Pets podem encontrar itens simples quando o sistema existir.
 
 Categorias aceitáveis:
 
@@ -536,7 +559,7 @@ Pet não deve purificar Pedra Negra sozinho.
 
 ## 15. Entrada na caverna
 
-Baseline:
+Baseline futuro:
 
 ```text
 1 pet ativo opcional pode acompanhar o jogador na caverna, se desbloqueado e com energia/humor suficientes.
@@ -555,7 +578,7 @@ Pet deve respeitar boss gates, checkpoints e restrições de run.
 
 ## 16. Alerta de perigo
 
-Pet pode alertar perigo por feedback simples.
+Pet pode alertar perigo por feedback simples quando o sistema existir.
 
 Tipos de alerta:
 
@@ -580,7 +603,7 @@ Alerta não deve revelar posição exata sempre.
 
 ## 17. Interrupção leve
 
-Pet pode interromper levemente inimigo comum.
+Pet pode interromper levemente inimigo comum quando o sistema existir.
 
 Exemplos:
 
@@ -675,7 +698,7 @@ Se o pet estiver presente em boss fight, ele deve ser protegido por comportament
 
 ## 20. HUD de pet
 
-HUD de pet deve ser leve.
+HUD de pet é futuro e deve ser leve.
 
 Informações possíveis:
 
@@ -778,7 +801,9 @@ SpriteSetId
 
 ## 23. Estado salvo
 
-Save/load deve preservar estado por IDs e valores simples.
+Save/load de pet é futuro.
+
+Quando existir, deve preservar estado por IDs e valores simples.
 
 Estado esperado:
 
@@ -814,7 +839,7 @@ Pet não deve ter Breath/Fôlego no save.
 
 ## 24. Compatibilidade com economia e inventário
 
-Itens de pet devem seguir economia geral.
+Itens de pet devem seguir economia geral quando entrarem no escopo.
 
 Categorias prováveis:
 
@@ -901,27 +926,29 @@ Bonificações de player podem afetar vínculo/social futuramente, mas não deve
 
 ---
 
-# PARTE I — Roadmap conceitual
+# PARTE I — Roadmap conceitual futuro
 
-## 28. Roadmap 0 — Reconciliar base existente
+## 28. Roadmap 0 — Reavaliar entrada no escopo
 
-Objetivo:
+Objetivo futuro:
 
 ```text
+confirmar quando pets voltam ao roadmap;
 confirmar que pet é separado de companion;
 confirmar que pet não usa Breath/Fôlego;
 confirmar que pets não entram como farm invasion/town hostile/world enemy events;
-confirmar que SPEC_SOURCE_MAP aponta para PETS_DIRECTION.md.
+confirmar que SPEC_SOURCE_MAP aponta para PETS_DIRECTION.md;
+definir se cachorro/gato entram no primeiro corte ou se todo o sistema continua deferido.
 ```
 
-Specs futuras sugeridas:
+Specs futuras sugeridas, somente após nova aprovação:
 
 ```text
 spec_pet_data_contract.md
 spec_pet_save_load_contract.md
 ```
 
-## 29. Roadmap 1 — Base doméstica/fazenda
+## 29. Roadmap 1 — Base doméstica/fazenda futura
 
 Objetivo:
 
@@ -942,7 +969,7 @@ spec_pet_follow_home_routine_runtime.md
 spec_pet_hud_icons_feedback.md
 ```
 
-## 30. Roadmap 2 — Funções leves de fazenda
+## 30. Roadmap 2 — Funções leves de fazenda futuras
 
 Objetivo:
 
@@ -962,7 +989,7 @@ spec_pet_farm_daily_find_cooldowns.md
 spec_pet_anya_fountain_reactions.md
 ```
 
-## 31. Roadmap 3 — Caverna e exploração
+## 31. Roadmap 3 — Caverna e exploração futuras
 
 Objetivo:
 
@@ -984,7 +1011,7 @@ spec_pet_light_interrupt_runtime.md
 spec_pet_cave_stress_energy_limits.md
 ```
 
-## 32. Roadmap 4 — Integrações sociais/econômicas
+## 32. Roadmap 4 — Integrações sociais/econômicas futuras
 
 Objetivo:
 
@@ -1029,6 +1056,7 @@ spec_pet_cosmetic_variants_runtime.md
 Não implementar agora:
 
 ```text
+qualquer sistema de pet;
 pet combat build;
 pet skill tree grande;
 pet equipment completo;
@@ -1051,9 +1079,10 @@ multiplayer pet sync.
 
 ```text
 Pet é sistema separado de companion.
+Pet não entra no escopo atual.
 Pet não conta como companion ativo.
-Pet pode coexistir com companion, respeitando active combat budget.
-Pet ajuda por alerta, pista, vínculo e interrupção leve.
+Pet pode coexistir com companion no futuro, respeitando active combat budget.
+Pet ajuda por alerta, pista, vínculo e interrupção leve apenas quando o sistema for retomado.
 Pet não joga pelo jogador.
 Pet não cura, tanka ou causa dano relevante.
 Pet não gera loot extra por padrão.
@@ -1061,7 +1090,7 @@ Pet não puxa packs novos.
 Pet não resolve boss.
 Pet não tem Breath/Fôlego.
 Pet não substitui farm jobs de companion.
-Cachorro e gato são baseline inicial.
+Cachorro e gato são baseline futuro sugerido.
 Pets futuros devem ser expansão, não power creep obrigatório.
 ```
 
@@ -1078,6 +1107,7 @@ docs/design/gameplay/pets/PETS_DIRECTION.md
 E devem respeitar:
 
 ```text
+pets como sistema futuro/deferido;
 pets como suporte leve;
 separação clara de companions;
 economia sem abuso;
