@@ -190,6 +190,7 @@ Fontes obrigatórias:
 docs/design/gameplay/cave/CAVE_DESIGN_DIRECTION.md
 docs/design/gameplay/cave/CAVE_LEVEL_GENERATION_LAYOUT_BIOME_DIRECTION.md
 docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_DIRECTION.md
+docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_ENEMY_BEHAVIOR_ADAPTER.md
 docs/design/gameplay/cave/CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md
 docs/design/gameplay/cave/CAVE_MONSTER_VISUAL_SPRITE_DIRECTION.md
 docs/design/gameplay/combat/COMBAT_CORE_DIRECTION.md
@@ -208,7 +209,10 @@ CAVE_LEVEL_GENERATION_LAYOUT_BIOME_DIRECTION.md
   tamanho mínimo/máximo dos níveis, randomização ponderada de biomas, layout archetypes, special rooms e snapshot.
 
 CAVE_MONSTER_ROSTER_DIRECTION.md
-  criaturas, bosses, packs, atributos, XP, drops, ataques, comportamento e scaling.
+  criaturas concretas da caverna, atributos, XP, drops, packs, bosses, scaling e nomes autorais de ataques.
+
+CAVE_MONSTER_ROSTER_ENEMY_BEHAVIOR_ADAPTER.md
+  ponte obrigatória para converter campos do roster em EnemyDataSO, EnemyBrainProfileSO, EnemyMovementProfileSO, EnemyActionSetSO e LootTableSO.
 
 CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md
   active combat budget, vulnerabilidades, janelas críticas, companions/pets, TTK e telemetria de Stamina.
@@ -220,7 +224,7 @@ COMBAT_CORE_DIRECTION.md
   regras gerais de combate, inputs, HP/MP/Stamina, ataque, block, dodge, dash, dano, armor, vulnerabilidades, bosses, HUD e telemetria.
 
 ENEMY_BEHAVIORS_DIRECTION.md
-  EnemyBrain, EnemyAction, reação a Dash/Dodge/Block, Stamina/MP de inimigos, pack coordination, leash, módulos injetáveis e comportamentos transversais.
+  taxonomia geral de Move, BehaviorProfile, Trait, EnemyAction, EnemyBrain, módulos injetáveis, pack coordination e leash.
 ```
 
 Specs de caverna que tocam runtime já existente devem ler também:
@@ -267,6 +271,10 @@ enemy action selection
 enemy stamina/MP use
 pack coordination
 leash/reacquire
+roster to EnemyDataSO conversion
+roster Behavior normalization
+roster Move normalization
+roster Trait modifiers
 checkpoints
 Elyndor portals
 Bromecia ruins
@@ -295,6 +303,7 @@ spec_cave_companion_pet_combat_balance.md
 spec_cave_time_to_kill_balance_targets.md
 spec_cave_stamina_telemetry_playtest.md
 spec_cave_treasure_trap_counterplay.md
+spec_cave_monster_roster_to_enemy_data_conversion.md
 spec_enemy_brain_action_selection_runtime.md
 spec_enemy_movement_profiles_official_moves.md
 spec_enemy_pack_coordination_leash_runtime.md
@@ -379,6 +388,7 @@ docs/design/gameplay/enemies/ENEMY_BEHAVIORS_DIRECTION.md
 docs/design/gameplay/combat/COMBAT_CORE_DIRECTION.md
 docs/design/gameplay/player/PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md
 docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_DIRECTION.md
+docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_ENEMY_BEHAVIOR_ADAPTER.md
 docs/design/gameplay/cave/CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md
 ```
 
@@ -398,6 +408,7 @@ EnemyReactionRules
 PackCoordinationRules
 boss AI phases
 pet/companion target logic
+cave roster to enemy data conversion
 ```
 
 Não usar em specs atuais sem nova decisão de roadmap:
@@ -422,6 +433,7 @@ spec_enemy_threat_aggro_target_priority.md
 spec_enemy_reactions_block_dodge_dash_magic_pet_companion.md
 spec_enemy_pack_coordination_leash_rules.md
 spec_enemy_boss_phase_ai_contract.md
+spec_cave_monster_roster_to_enemy_data_conversion.md
 ```
 
 Backlog futuro, não atual:
@@ -498,6 +510,7 @@ docs/design/gameplay/combat/COMBAT_CORE_DIRECTION.md
 docs/design/gameplay/enemies/ENEMY_BEHAVIORS_DIRECTION.md
 docs/design/gameplay/cave/CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md
 docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_DIRECTION.md
+docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_ENEMY_BEHAVIOR_ADAPTER.md
 ```
 
 Specs de HUD gameplay/combat devem ler:
@@ -534,8 +547,9 @@ Stamina é recurso físico imediato.
 Cansaço é desgaste acumulado.
 Constituição não é atributo defensivo universal.
 Nem toda janela comportamental gera crítico automático.
-Moves oficiais de inimigos vêm do CAVE_MONSTER_ROSTER_DIRECTION.md quando o inimigo pertence ao roster da caverna.
-Enemy Behaviors é transversal e pode ser usado por caverna, fazenda, cidade e eventos.
+Enemy Behaviors é fonte canônica geral de Move, BehaviorProfile, Trait, EnemyAction e EnemyBrain.
+Cave Monster Roster é fonte canônica das criaturas concretas, stats, drops, packs, bosses e scaling da caverna.
+Cave Monster Roster Enemy Behavior Adapter é ponte obrigatória para converter o roster em runtime.
 Farm invasion, town hostile events e world enemy events são backlog futuro; não entram em specs atuais sem nova decisão de roadmap.
 Hearing/audição não é elemento atual de IA inimiga.
 ```
