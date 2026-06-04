@@ -53,10 +53,11 @@ docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.3.md
 docs/design/gameplay/farm/FARM_LAYOUT_SCALE_BUILDINGS_DIRECTION.md
 ```
 
-Specs de fazenda que envolvam ferramentas, crafting, materiais, pedreira final, oficinas, reparo, shipping bin, encomendas, storage, economia, processamento ou venda devem ler também:
+Specs de fazenda que envolvam ferramentas, crafting, materiais, pedreira final, oficinas, reparo, shipping bin, encomendas, storage, economia, processamento, venda, preço, BaseValue, SellPoint, pending payments, resource refresh, node refresh ou anti-arbitragem devem ler também:
 
 ```text
 docs/design/gameplay/loot_crafting_economy/LOOT_CRAFTING_ECONOMY_DIRECTION.md
+docs/design/gameplay/loot_crafting_economy/ECONOMY_PRICING_STOCK_REFRESH_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_WEAPONS_ARMOR_MATERIALS_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_MECHANICAL_BASELINES_DIRECTION.md
 ```
@@ -104,6 +105,8 @@ spec_farm_fonte_anya_living_water.md
 spec_farm_mana_root_arcane_soil_endgame.md
 spec_farm_final_quarry_late_game_resources.md
 spec_farm_fountain_anya_no_buildable_statue.md
+spec_sellpoint_shipping_price_pending_payment_runtime.md
+spec_resource_node_refresh_runtime.md
 ```
 
 ---
@@ -133,10 +136,11 @@ Specs de cidade que envolvam companion eligibility, companion unlock, convite, d
 docs/design/gameplay/companions/COMPANIONS_DIRECTION.md
 ```
 
-Specs de cidade que envolvam loja, ferreiro, crafting, reparo, equipamentos, armas, armaduras, materiais, pergaminhos, wands, arrows, encomendas, reputação econômica, serviços, estoque, economia de gear, ensino de magia ou venda de item mágico devem ler:
+Specs de cidade que envolvam loja, ferreiro, crafting, reparo, equipamentos, armas, armaduras, materiais, pergaminhos, wands, arrows, encomendas, reputação econômica, serviços, estoque, refresh/restock, limited stock, preço, compra/venda, economia de gear, ensino de magia ou venda de item mágico devem ler:
 
 ```text
 docs/design/gameplay/loot_crafting_economy/LOOT_CRAFTING_ECONOMY_DIRECTION.md
+docs/design/gameplay/loot_crafting_economy/ECONOMY_PRICING_STOCK_REFRESH_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_WEAPONS_ARMOR_MATERIALS_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_MECHANICAL_BASELINES_DIRECTION.md
 docs/design/gameplay/magic/MAGIC_SPELLS_ACTIONS_DIRECTION.md
@@ -169,6 +173,9 @@ spec_city_kanthor_temple_statue_garden_no_anya_altar.md
 spec_city_night_shop_nyx_behaviour.md
 spec_city_festivals_layout_variations.md
 spec_city_hidden_subsoil_bromecia_elyndor_hooks.md
+spec_shop_inventory_stockline_restock_contract.md
+spec_shop_buy_sell_price_runtime.md
+spec_economy_anti_arbitrage_tests.md
 ```
 
 ---
@@ -196,6 +203,7 @@ docs/design/gameplay/magic/MAGIC_SPELLS_ACTIONS_DIRECTION.md
 docs/design/gameplay/magic/MAGIC_LEARNING_UNLOCKS_SOURCES_DIRECTION.md
 docs/design/gameplay/companions/COMPANIONS_DIRECTION.md
 docs/design/gameplay/loot_crafting_economy/LOOT_CRAFTING_ECONOMY_DIRECTION.md
+docs/design/gameplay/loot_crafting_economy/ECONOMY_PRICING_STOCK_REFRESH_DIRECTION.md
 docs/game_rules/cave_rules.md
 docs/decisions/ADR-0005-cave-stable-run-and-replay.md
 ```
@@ -230,6 +238,7 @@ spec_cave_monster_roster_to_enemy_data_conversion.md
 spec_cave_enemy_component_loot_tables.md
 spec_cave_enemy_material_vulnerability_tags.md
 spec_cave_treasure_mining_loot_tables.md
+spec_cave_loot_refresh_snapshot_rules.md
 spec_enemy_brain_action_selection_runtime.md
 spec_enemy_movement_profiles_official_moves.md
 spec_enemy_pack_coordination_leash_runtime.md
@@ -270,10 +279,11 @@ docs/design/gameplay/magic/MAGIC_SPELLS_ACTIONS_DIRECTION.md
 docs/design/gameplay/magic/MAGIC_LEARNING_UNLOCKS_SOURCES_DIRECTION.md
 ```
 
-Specs de combate que envolvam loot, drops, reward, gold, item use, consumíveis, durability economy ou crafting devem ler também:
+Specs de combate que envolvam loot, drops, reward, gold, item use, consumíveis, durability economy, repair cost, upgrade cost ou crafting devem ler também:
 
 ```text
 docs/design/gameplay/loot_crafting_economy/LOOT_CRAFTING_ECONOMY_DIRECTION.md
+docs/design/gameplay/loot_crafting_economy/ECONOMY_PRICING_STOCK_REFRESH_DIRECTION.md
 ```
 
 Specs recomendadas derivadas:
@@ -310,6 +320,7 @@ docs/design/gameplay/magic/MAGIC_SPELLS_ACTIONS_DIRECTION.md
 docs/design/gameplay/magic/MAGIC_LEARNING_UNLOCKS_SOURCES_DIRECTION.md
 docs/design/gameplay/companions/COMPANIONS_DIRECTION.md
 docs/design/gameplay/loot_crafting_economy/LOOT_CRAFTING_ECONOMY_DIRECTION.md
+docs/design/gameplay/loot_crafting_economy/ECONOMY_PRICING_STOCK_REFRESH_DIRECTION.md
 docs/design/gameplay/player/PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md
 docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_DIRECTION.md
 docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_ENEMY_BEHAVIOR_ADAPTER.md
@@ -404,6 +415,7 @@ Specs de player que envolvam equipamentos, slots, armas, armaduras, escudos, ace
 docs/design/gameplay/equipment/EQUIPMENT_WEAPONS_ARMOR_MATERIALS_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_MECHANICAL_BASELINES_DIRECTION.md
 docs/design/gameplay/loot_crafting_economy/LOOT_CRAFTING_ECONOMY_DIRECTION.md
+docs/design/gameplay/loot_crafting_economy/ECONOMY_PRICING_STOCK_REFRESH_DIRECTION.md
 ```
 
 Specs de player que envolvam known spells, equipped spells, MP casting, spell unlocks, spell learning, spell source, staff/focus, wands, scrolls, tomes, magic HUD ou capstones Anya/Senya devem ler também:
@@ -432,6 +444,7 @@ docs/design/gameplay/equipment/EQUIPMENT_WEAPONS_ARMOR_MATERIALS_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_MECHANICAL_BASELINES_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_ENEMY_VULNERABILITY_ADAPTER.md
 docs/design/gameplay/loot_crafting_economy/LOOT_CRAFTING_ECONOMY_DIRECTION.md
+docs/design/gameplay/loot_crafting_economy/ECONOMY_PRICING_STOCK_REFRESH_DIRECTION.md
 docs/design/gameplay/combat/COMBAT_CORE_DIRECTION.md
 docs/design/gameplay/combat/STATUS_EFFECTS_DIRECTION.md
 docs/design/gameplay/player/PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md
@@ -486,6 +499,7 @@ docs/design/gameplay/equipment/EQUIPMENT_WEAPONS_ARMOR_MATERIALS_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_MECHANICAL_BASELINES_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_ENEMY_VULNERABILITY_ADAPTER.md
 docs/design/gameplay/loot_crafting_economy/LOOT_CRAFTING_ECONOMY_DIRECTION.md
+docs/design/gameplay/loot_crafting_economy/ECONOMY_PRICING_STOCK_REFRESH_DIRECTION.md
 docs/design/gameplay/player/PLAYER_SKILL_TREES_DIRECTION.md
 docs/design/gameplay/player/PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md
 docs/design/lore/VAALARA_GAME_CANON_DIRECTION_v1.0.md
@@ -571,6 +585,7 @@ docs/design/gameplay/cave/CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_WEAPONS_ARMOR_MATERIALS_DIRECTION.md
 docs/design/gameplay/magic/MAGIC_SPELLS_ACTIONS_DIRECTION.md
 docs/design/gameplay/loot_crafting_economy/LOOT_CRAFTING_ECONOMY_DIRECTION.md
+docs/design/gameplay/loot_crafting_economy/ECONOMY_PRICING_STOCK_REFRESH_DIRECTION.md
 ```
 
 Usar para specs de:
@@ -642,6 +657,7 @@ docs/design/gameplay/magic/MAGIC_SPELLS_ACTIONS_DIRECTION.md
 docs/design/gameplay/magic/MAGIC_LEARNING_UNLOCKS_SOURCES_DIRECTION.md
 docs/design/gameplay/companions/COMPANIONS_DIRECTION.md
 docs/design/gameplay/loot_crafting_economy/LOOT_CRAFTING_ECONOMY_DIRECTION.md
+docs/design/gameplay/loot_crafting_economy/ECONOMY_PRICING_STOCK_REFRESH_DIRECTION.md
 docs/design/gameplay/player/PLAYER_CORE_SYSTEMS_DIRECTION.md
 docs/design/gameplay/player/PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md
 ```
@@ -656,6 +672,7 @@ Fontes obrigatórias:
 
 ```text
 docs/design/gameplay/loot_crafting_economy/LOOT_CRAFTING_ECONOMY_DIRECTION.md
+docs/design/gameplay/loot_crafting_economy/ECONOMY_PRICING_STOCK_REFRESH_DIRECTION.md
 docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.3.md
 docs/design/gameplay/city/CITY_NPC_ROSTER_SERVICES_DIRECTION_v1.1.md
 docs/design/gameplay/equipment/EQUIPMENT_WEAPONS_ARMOR_MATERIALS_DIRECTION.md
@@ -677,6 +694,13 @@ ItemCategorySO
 ItemTag
 QualityProfileSO
 RarityProfileSO
+PricingProfileSO
+RestockPolicySO
+StockLineSO
+ShopInventorySO
+ShopPriceRulesSO
+ShippingPriceProfileSO
+ResourceRefreshProfileSO
 LootTableSO
 EnemyDropTableSO
 BossDropTableSO
@@ -684,14 +708,11 @@ TreasureTableSO
 MiningNodeTableSO
 ForageTableSO
 FishingTableSO
-ShopInventorySO
-ShopPriceRulesSO
 RecipeSO
 CraftingStationSO
 ProcessingRecipeSO
 OrderSO
 RewardTableSO
-ShippingPriceProfileSO
 EconomyBalanceProfileSO
 ItemStack
 ItemInstance
@@ -699,6 +720,8 @@ storage
 shipping bin
 pending payments
 shop inventory
+shop stock state
+refresh/restock
 orders/encomendas
 reputation rewards
 gold economy
@@ -716,6 +739,15 @@ focuses
 SpellUnlockSourceSO
 companion job output
 companion quest rewards
+BaseValue
+BuyPrice
+SellPrice
+ShopSellToPlayerPrice
+ShopBuyFromPlayerPrice
+anti-arbitrage
+resource node refresh
+cave loot refresh
+boss first-time/repeat reward
 ```
 
 Specs recomendadas derivadas:
@@ -730,11 +762,18 @@ spec_recipe_so_and_crafting_station_contract.md
 spec_processing_recipes_and_timers.md
 spec_shop_inventory_price_rules.md
 spec_shipping_bin_pending_payment_runtime.md
-spec_orders_reputation_rewards_runtime.md
 spec_inventory_stack_instance_storage_rules.md
 spec_economy_balance_profile.md
 spec_repair_upgrade_cost_rules.md
 spec_bows_arrows_scrolls_wands_item_instances.md
+spec_pricing_profile_so_contract.md
+spec_shop_inventory_stockline_restock_contract.md
+spec_shop_buy_sell_price_runtime.md
+spec_sellpoint_shipping_price_pending_payment_runtime.md
+spec_resource_node_refresh_runtime.md
+spec_cave_loot_refresh_snapshot_rules.md
+spec_item_base_values_initial_tables.md
+spec_economy_anti_arbitrage_tests.md
 ```
 
 ---
@@ -774,6 +813,7 @@ Magic Spells Actions é fonte canônica da lista enxuta de spells, SpellActionDa
 Magic Learning Unlocks Sources é fonte canônica para spell source, LearnableScroll, CastScroll, Tome, Wand, Staff/Weapon spell, Focus, NPC teaching, Fonte de Anya story unlock, knownSpellIds, ItemProvided e ConsumableProvided.
 Companions é fonte canônica do sistema de companions, companion eligibility, active companion, farm jobs, cave follow/leash, companion combat assist, downed/injury/recovery, bond, HUD e save/load.
 Loot Crafting Economy é fonte canônica de fluxos de itens, loot tables, recipes, quality, rarity, shops, orders, shipping, storage, ItemStack, ItemInstance e economy balance.
+Economy Pricing Stock Refresh é fonte canônica de BaseValue, BuyPrice, SellPrice, ShopStockState, StockLineSO, RestockPolicySO, SellPoint, ShippingPriceProfileSO, ResourceRefreshProfileSO, anti-arbitrage, cave loot refresh e boss first-time/repeat reward.
 MaterialVulnerability deve existir em specs futuras de EnemyDataSO.
 Vulnerabilidades por família/inimigo ficam em Cave Combat Balance, Cave Monster Roster e EnemyDataSO futuro; não em documentos de equipment.
 Quality é diferente de Rarity.
@@ -794,6 +834,16 @@ Companion não tem Breath/Fôlego.
 Companion não gera rolagem separada de loot por padrão.
 Companion equipment completo é futuro, não MVP.
 Romance/casamento não devem ser caminho obrigatório de poder.
+BaseValue é obrigatório para item vendável.
+Preço final é recalculável e não deve ser persistido como fonte primária.
+ShopSellToPlayerPrice deve ser maior que ShopBuyFromPlayerPrice salvo exceção limitada.
+Restock não acontece ao abrir menu.
+UniqueStock não repõe.
+LimitedStock persiste counters.
+Itens vendidos pelo jogador não entram automaticamente no estoque da loja no baseline.
+SellPoint processa no day transition e não é loja.
+Cave loot usa run/snapshot/floor generation conforme regras da caverna.
+Boss first-time reward deve ser separado de repeat reward.
 Farm invasion, town hostile events e world enemy events são backlog futuro; não entram em specs atuais sem nova decisão de roadmap.
 Hearing/audição não é elemento atual de IA inimiga.
 ```
