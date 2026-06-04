@@ -61,6 +61,13 @@ docs/design/gameplay/equipment/EQUIPMENT_WEAPONS_ARMOR_MATERIALS_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_MECHANICAL_BASELINES_DIRECTION.md
 ```
 
+Specs de fazenda que envolvam visitors, companion jobs, job board, automação por NPC, visitas de NPCs, spouse helper ou vínculo funcional devem ler também:
+
+```text
+docs/design/gameplay/companions/COMPANIONS_DIRECTION.md
+docs/design/gameplay/city/CITY_NPC_ROSTER_SERVICES_DIRECTION_v1.1.md
+```
+
 Specs de fazenda **não devem implementar invasões, defesa contra inimigos, dano a crops/estruturas ou inimigos no mapa da fazenda agora**.
 
 Backlog futuro, não atual:
@@ -75,6 +82,7 @@ Quando esse tema entrar explicitamente no roadmap futuro, ler:
 ```text
 docs/design/gameplay/enemies/ENEMY_BEHAVIORS_DIRECTION.md
 docs/design/gameplay/combat/COMBAT_CORE_DIRECTION.md
+docs/design/gameplay/companions/COMPANIONS_DIRECTION.md
 ```
 
 Specs recomendadas atuais:
@@ -117,6 +125,12 @@ Specs de cidade que tocam fazenda devem ler:
 ```text
 docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.3.md
 docs/design/gameplay/farm/FARM_LAYOUT_SCALE_BUILDINGS_DIRECTION.md
+```
+
+Specs de cidade que envolvam companion eligibility, companion unlock, convite, disponibilidade, rotina de companion, visitas à fazenda, spouse helper ou companion services devem ler também:
+
+```text
+docs/design/gameplay/companions/COMPANIONS_DIRECTION.md
 ```
 
 Specs de cidade que envolvam loja, ferreiro, crafting, reparo, equipamentos, armas, armaduras, materiais, pergaminhos, wands, arrows, encomendas, reputação econômica, serviços, estoque, economia de gear, ensino de magia ou venda de item mágico devem ler:
@@ -180,6 +194,7 @@ docs/design/gameplay/equipment/EQUIPMENT_MECHANICAL_BASELINES_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_ENEMY_VULNERABILITY_ADAPTER.md
 docs/design/gameplay/magic/MAGIC_SPELLS_ACTIONS_DIRECTION.md
 docs/design/gameplay/magic/MAGIC_LEARNING_UNLOCKS_SOURCES_DIRECTION.md
+docs/design/gameplay/companions/COMPANIONS_DIRECTION.md
 docs/design/gameplay/loot_crafting_economy/LOOT_CRAFTING_ECONOMY_DIRECTION.md
 docs/game_rules/cave_rules.md
 docs/decisions/ADR-0005-cave-stable-run-and-replay.md
@@ -242,6 +257,12 @@ docs/design/gameplay/cave/CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md
 docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_DIRECTION.md
 ```
 
+Specs de combate que envolvam companions, companion AI, companion assist, companion healer/guardian, target priority de companion, downed companion ou cave party balance devem ler também:
+
+```text
+docs/design/gameplay/companions/COMPANIONS_DIRECTION.md
+```
+
 Specs de combate que envolvam spells, MP casting, staff charged, magic actions, healing, barrier, purification, wands, scrolls, tomes, focuses, known spells ou spell source devem ler também:
 
 ```text
@@ -287,6 +308,7 @@ docs/design/gameplay/equipment/EQUIPMENT_MECHANICAL_BASELINES_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_ENEMY_VULNERABILITY_ADAPTER.md
 docs/design/gameplay/magic/MAGIC_SPELLS_ACTIONS_DIRECTION.md
 docs/design/gameplay/magic/MAGIC_LEARNING_UNLOCKS_SOURCES_DIRECTION.md
+docs/design/gameplay/companions/COMPANIONS_DIRECTION.md
 docs/design/gameplay/loot_crafting_economy/LOOT_CRAFTING_ECONOMY_DIRECTION.md
 docs/design/gameplay/player/PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md
 docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_DIRECTION.md
@@ -391,6 +413,12 @@ docs/design/gameplay/magic/MAGIC_SPELLS_ACTIONS_DIRECTION.md
 docs/design/gameplay/magic/MAGIC_LEARNING_UNLOCKS_SOURCES_DIRECTION.md
 ```
 
+Specs de player que envolvam companion state, active companion, companion interaction, companion save/load, spouse helper, companion bond ou party state devem ler também:
+
+```text
+docs/design/gameplay/companions/COMPANIONS_DIRECTION.md
+```
+
 ---
 
 # PARTE G — Equipamentos, armas, magia, companions, pets e HUD
@@ -418,6 +446,12 @@ Specs de equipamentos mágicos, staff, wands, scrolls, tomes, focuses, SpellActi
 ```text
 docs/design/gameplay/magic/MAGIC_SPELLS_ACTIONS_DIRECTION.md
 docs/design/gameplay/magic/MAGIC_LEARNING_UNLOCKS_SOURCES_DIRECTION.md
+```
+
+Specs de companion equipment futuro devem ler também:
+
+```text
+docs/design/gameplay/companions/COMPANIONS_DIRECTION.md
 ```
 
 Specs recomendadas derivadas:
@@ -455,6 +489,12 @@ docs/design/gameplay/loot_crafting_economy/LOOT_CRAFTING_ECONOMY_DIRECTION.md
 docs/design/gameplay/player/PLAYER_SKILL_TREES_DIRECTION.md
 docs/design/gameplay/player/PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md
 docs/design/lore/VAALARA_GAME_CANON_DIRECTION_v1.0.md
+```
+
+Specs de healing/support magic que afetam companions devem ler também:
+
+```text
+docs/design/gameplay/companions/COMPANIONS_DIRECTION.md
 ```
 
 Usar para specs de:
@@ -514,26 +554,82 @@ spec_magic_save_load_known_spells_slots_cooldowns.md
 spec_magic_balance_playtest_profile.md
 ```
 
-## 10. Specs de companions/pets em combate
+## 10. Specs de companions
 
 Fontes obrigatórias:
 
 ```text
+docs/design/gameplay/companions/COMPANIONS_DIRECTION.md
+docs/design/gameplay/city/CITY_NPC_ROSTER_SERVICES_DIRECTION_v1.1.md
+docs/design/gameplay/city/CITY_LAYOUT_BUILDINGS_SCHEDULE_DIRECTION.md
+docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.3.md
+docs/design/gameplay/player/PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md
 docs/design/gameplay/combat/COMBAT_CORE_DIRECTION.md
 docs/design/gameplay/combat/STATUS_EFFECTS_DIRECTION.md
 docs/design/gameplay/enemies/ENEMY_BEHAVIORS_DIRECTION.md
-docs/design/gameplay/equipment/EQUIPMENT_WEAPONS_ARMOR_MATERIALS_DIRECTION.md
-docs/design/gameplay/equipment/EQUIPMENT_MECHANICAL_BASELINES_DIRECTION.md
-docs/design/gameplay/equipment/EQUIPMENT_ENEMY_VULNERABILITY_ADAPTER.md
-docs/design/gameplay/magic/MAGIC_SPELLS_ACTIONS_DIRECTION.md
-docs/design/gameplay/magic/MAGIC_LEARNING_UNLOCKS_SOURCES_DIRECTION.md
-docs/design/gameplay/loot_crafting_economy/LOOT_CRAFTING_ECONOMY_DIRECTION.md
 docs/design/gameplay/cave/CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md
-docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_DIRECTION.md
-docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_ENEMY_BEHAVIOR_ADAPTER.md
+docs/design/gameplay/equipment/EQUIPMENT_WEAPONS_ARMOR_MATERIALS_DIRECTION.md
+docs/design/gameplay/magic/MAGIC_SPELLS_ACTIONS_DIRECTION.md
+docs/design/gameplay/loot_crafting_economy/LOOT_CRAFTING_ECONOMY_DIRECTION.md
 ```
 
-## 11. Specs de HUD gameplay/combat
+Usar para specs de:
+
+```text
+CompanionDataSO
+CompanionEligibilitySO
+CompanionBrainProfileSO
+CompanionRoleProfileSO
+CompanionAbilitySO
+CompanionJobProfileSO
+CompanionBondProfileSO
+CompanionCaveProfileSO
+CompanionFarmProfileSO
+CompanionScheduleOverrideSO
+CompanionRecoveryProfileSO
+CompanionHUDProfileSO
+CompanionBalanceProfileSO
+active companion
+companion unlock
+companion availability
+companion farm jobs
+companion cave follow/leash
+companion combat assist
+companion downed/injury/recovery
+companion bond progression
+companion save/load
+```
+
+Specs recomendadas derivadas:
+
+```text
+spec_companion_data_contract.md
+spec_companion_unlock_availability_runtime.md
+spec_companion_farm_jobs_runtime.md
+spec_companion_cave_follow_and_leash_runtime.md
+spec_companion_combat_assist_runtime.md
+spec_companion_healing_guardian_support_limits.md
+spec_companion_downed_injury_recovery_runtime.md
+spec_companion_bond_progression_runtime.md
+spec_companion_hud_feedback.md
+spec_companion_save_load_state.md
+spec_companion_balance_playtest_profile.md
+```
+
+## 11. Specs de pets em combate/fazenda
+
+Enquanto `PETS_DIRECTION.md` não existir, specs de pets devem ler:
+
+```text
+docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.3.md
+docs/design/gameplay/companions/COMPANIONS_DIRECTION.md
+docs/design/gameplay/combat/COMBAT_CORE_DIRECTION.md
+docs/design/gameplay/enemies/ENEMY_BEHAVIORS_DIRECTION.md
+```
+
+Quando `PETS_DIRECTION.md` existir, ele vira fonte canônica para pets.
+
+## 12. Specs de HUD gameplay/combat
 
 Fontes obrigatórias:
 
@@ -544,6 +640,7 @@ docs/design/gameplay/equipment/EQUIPMENT_WEAPONS_ARMOR_MATERIALS_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_MECHANICAL_BASELINES_DIRECTION.md
 docs/design/gameplay/magic/MAGIC_SPELLS_ACTIONS_DIRECTION.md
 docs/design/gameplay/magic/MAGIC_LEARNING_UNLOCKS_SOURCES_DIRECTION.md
+docs/design/gameplay/companions/COMPANIONS_DIRECTION.md
 docs/design/gameplay/loot_crafting_economy/LOOT_CRAFTING_ECONOMY_DIRECTION.md
 docs/design/gameplay/player/PLAYER_CORE_SYSTEMS_DIRECTION.md
 docs/design/gameplay/player/PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md
@@ -553,7 +650,7 @@ docs/design/gameplay/player/PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md
 
 # PARTE H — Loot / Crafting / Economy
 
-## 12. Specs de loot, crafting e economia
+## 13. Specs de loot, crafting e economia
 
 Fontes obrigatórias:
 
@@ -565,6 +662,7 @@ docs/design/gameplay/equipment/EQUIPMENT_WEAPONS_ARMOR_MATERIALS_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_MECHANICAL_BASELINES_DIRECTION.md
 docs/design/gameplay/magic/MAGIC_SPELLS_ACTIONS_DIRECTION.md
 docs/design/gameplay/magic/MAGIC_LEARNING_UNLOCKS_SOURCES_DIRECTION.md
+docs/design/gameplay/companions/COMPANIONS_DIRECTION.md
 docs/design/gameplay/combat/STATUS_EFFECTS_DIRECTION.md
 docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_DIRECTION.md
 docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_ENEMY_BEHAVIOR_ADAPTER.md
@@ -616,6 +714,8 @@ cast scrolls
 wands
 focuses
 SpellUnlockSourceSO
+companion job output
+companion quest rewards
 ```
 
 Specs recomendadas derivadas:
@@ -641,7 +741,7 @@ spec_bows_arrows_scrolls_wands_item_instances.md
 
 # PARTE I — Regra anti-regressão
 
-## 13. Quando houver conflito
+## 14. Quando houver conflito
 
 Se houver conflito entre documentos:
 
@@ -672,6 +772,7 @@ Equipment Mechanical Baselines é fonte canônica de baseline mecânico inicial:
 Equipment Enemy Vulnerability Adapter é fonte canônica da ponte entre tags de equipamentos e vulnerabilidades de inimigos, incluindo MaterialVulnerability, sem duplicar matriz por família.
 Magic Spells Actions é fonte canônica da lista enxuta de spells, SpellActionDataSO, spell shapes, MP costs, cast time, spell unlocks, spell scaling, staff/wand/scroll/tome/focus integration e spell HUD.
 Magic Learning Unlocks Sources é fonte canônica para spell source, LearnableScroll, CastScroll, Tome, Wand, Staff/Weapon spell, Focus, NPC teaching, Fonte de Anya story unlock, knownSpellIds, ItemProvided e ConsumableProvided.
+Companions é fonte canônica do sistema de companions, companion eligibility, active companion, farm jobs, cave follow/leash, companion combat assist, downed/injury/recovery, bond, HUD e save/load.
 Loot Crafting Economy é fonte canônica de fluxos de itens, loot tables, recipes, quality, rarity, shops, orders, shipping, storage, ItemStack, ItemInstance e economy balance.
 MaterialVulnerability deve existir em specs futuras de EnemyDataSO.
 Vulnerabilidades por família/inimigo ficam em Cave Combat Balance, Cave Monster Roster e EnemyDataSO futuro; não em documentos de equipment.
@@ -686,6 +787,13 @@ CastScroll casta e consome, mas não ensina.
 Wand/Staff/arma/focus podem fornecer magia temporária enquanto equipados, sem adicionar knownSpellIds por padrão.
 Magias podem ter nomes de deuses, mas tipo mecânico é definido por DamageType, SpellCategory, SpellShape, Tags e Scaling.
 Corruption/Nyx em magia é risco late/endgame, não sistema obrigatório inicial.
+Companion ajuda, mas não joga pelo jogador.
+Baseline de caverna é 1 companion ativo.
+Pet é sistema separado e não conta como companion.
+Companion não tem Breath/Fôlego.
+Companion não gera rolagem separada de loot por padrão.
+Companion equipment completo é futuro, não MVP.
+Romance/casamento não devem ser caminho obrigatório de poder.
 Farm invasion, town hostile events e world enemy events são backlog futuro; não entram em specs atuais sem nova decisão de roadmap.
 Hearing/audição não é elemento atual de IA inimiga.
 ```
