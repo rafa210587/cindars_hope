@@ -59,7 +59,6 @@ Atributos e stats do jogo:
 HP
 MP
 Stamina
-Breath/Fôlego
 Força
 Constituição
 Destreza
@@ -68,17 +67,29 @@ Vontade
 Carisma
 ```
 
+Não existe para NPCs:
+
+```text
+Fôlego
+BR
+```
+
+Regra:
+
+```text
+NPCs seguem a mesma decisão canônica do player e de companions: Fôlego não é atributo, recurso, barra, custo, campo de save/load ou stat.
+```
+
 Uso:
 
 | Stat | Função |
 |---|---|
 | HP | vida/sobrevivência |
 | MP | Pontos de Magia, se aplicável |
-| Stamina | energia para ações físicas |
-| Breath/Fôlego | ritmo de ação, esforço contínuo, caverna e combate prolongado |
+| Stamina | energia para ações físicas, trabalho, combate e esforço imediato |
 | Força | dano físico, coleta pesada, carga |
-| Constituição | HP, resistência física, status |
-| Destreza | movimento, esquiva, precisão |
+| Constituição | HP, resistência física, estabilidade e tolerância a status |
+| Destreza | movimento, esquiva, precisão e timing |
 | Inteligência | crafting, poções, pesquisa, técnica |
 | Vontade | MP, resistência a medo, foco |
 | Carisma | descontos, venda, influência social e companions |
@@ -215,7 +226,7 @@ Deus cultuado: Kanthor
 Simpatia: Merithus, Thoren
 Não gosta/desconfia: Nyx, Kaand, cultos de Senya
 Visita fazenda: sim, por juramento, alerta, proteção ou investigação
-HP 120 | MP 45 | Stamina 70 | Breath 65
+HP 120 | MP 45 | Stamina 70
 Força 3 | Constituição 4 | Destreza 2 | Inteligência 4 | Vontade 6 | Carisma 5
 Resiste: Medo, Exaustão leve
 Vulnerável: Veneno, dúvida moral prolongada
@@ -259,7 +270,7 @@ Deus cultuado: Merithus/Meritos
 Simpatia: Kanthor, Finan quando dentro da lei
 Não gosta/desconfia: Kaand, Nyx, Senya sem controle
 Visita fazenda: sim, inspeção e licenças
-HP 75 | MP 20 | Stamina 55 | Breath 45
+HP 75 | MP 20 | Stamina 55
 Força 1 | Constituição 2 | Destreza 3 | Inteligência 6 | Vontade 5 | Carisma 4
 Resiste: Medo burocrático, Manipulação social
 Vulnerável: Combate direto, Veneno
@@ -302,7 +313,7 @@ Deus cultuado: Thandra
 Simpatia: Alihana, Anya como mistério de cura
 Não gosta/desconfia: Kaand, tecnologia bromeciana sem cuidado
 Visita fazenda: sim, crops, sementes e eventos de Thandra
-HP 82 | MP 55 | Stamina 80 | Breath 75
+HP 82 | MP 55 | Stamina 80
 Força 2 | Constituição 3 | Destreza 5 | Inteligência 4 | Vontade 5 | Carisma 4
 Resiste: Veneno vegetal, Exaustão leve
 Vulnerável: Calor extremo, Fogo
@@ -350,7 +361,7 @@ Deus cultuado: Thoren
 Simpatia: Kanthor, Merithus
 Não gosta/desconfia: Senya, Nyx, Finan quando vira trapaça
 Visita fazenda: sim, upgrades e ferramentas
-HP 150 | MP 10 | Stamina 90 | Breath 80
+HP 150 | MP 10 | Stamina 90
 Força 5 | Constituição 6 | Destreza 2 | Inteligência 4 | Vontade 5 | Carisma 2
 Resiste: Calor, Medo, Exaustão
 Vulnerável: Medo mental/ilusões
@@ -394,7 +405,7 @@ Deus cultuado: Merithus/Meritos
 Simpatia: Finan, Thandra
 Não gosta/desconfia: Kaand, burocracia excessiva mesmo cultuando Merithus
 Visita fazenda: sim, obras e movimentação de estruturas
-HP 70 | MP 10 | Stamina 75 | Breath 70
+HP 70 | MP 10 | Stamina 75
 Força 2 | Constituição 3 | Destreza 5 | Inteligência 5 | Vontade 3 | Carisma 4
 Resiste: Exaustão leve, Medo por sorte
 Vulnerável: Dano direto
@@ -437,7 +448,7 @@ Deus cultuado: Kaand
 Simpatia: Thoren, Senya
 Não gosta/desconfia: Kanthor quando vira controle, Merithus
 Visita fazenda: sim, obras e expansão
-HP 145 | MP 0 | Stamina 95 | Breath 85
+HP 145 | MP 0 | Stamina 95
 Força 6 | Constituição 5 | Destreza 2 | Inteligência 2 | Vontade 3 | Carisma 3
 Resiste: Medo, Exaustão
 Vulnerável: Controle mental, Veneno
@@ -480,7 +491,7 @@ Deus cultuado: Kanthor
 Simpatia: Nyx, Thoren
 Não gosta/desconfia: Kaand sem disciplina, Senya caótica
 Visita fazenda: sim, obras e ameaça
-HP 135 | MP 10 | Stamina 85 | Breath 90
+HP 135 | MP 10 | Stamina 85
 Força 5 | Constituição 5 | Destreza 3 | Inteligência 3 | Vontade 4 | Carisma 2
 Resiste: Medo, Frio noturno
 Vulnerável: Calor extremo
@@ -523,7 +534,7 @@ Deus cultuado: Senya
 Simpatia: Finan, Nyx, Anya como energia curativa misteriosa
 Não gosta/desconfia: Kanthor rígido, Merithus quando trava experimento
 Visita fazenda: sim, testes autorizados
-HP 68 | MP 60 | Stamina 70 | Breath 60
+HP 68 | MP 60 | Stamina 70
 Força 1 | Constituição 3 | Destreza 5 | Inteligência 6 | Vontade 3 | Carisma 4
 Resiste: Veneno, Calor leve
 Vulnerável: Medo institucional, Frio
@@ -572,7 +583,7 @@ Deus cultuado: Senya
 Simpatia: Finan, Thandra
 Não gosta/desconfia: Merithus burocrático, Nyx quando ameaça clientes
 Visita fazenda: sim, ingredientes/evento social
-HP 130 | MP 15 | Stamina 90 | Breath 80
+HP 130 | MP 15 | Stamina 90
 Força 5 | Constituição 5 | Destreza 2 | Inteligência 3 | Vontade 4 | Carisma 5
 Resiste: Calor, Medo
 Vulnerável: Frio
@@ -615,7 +626,7 @@ Deus cultuado: Finan
 Simpatia: Kanthor, Thoren
 Não gosta/desconfia: Nyx quando esconde rota, Kaand quando cria guerra inútil
 Visita fazenda: sim, contratos/mapas
-HP 125 | MP 25 | Stamina 85 | Breath 95
+HP 125 | MP 25 | Stamina 85
 Força 4 | Constituição 5 | Destreza 4 | Inteligência 4 | Vontade 4 | Carisma 4
 Resiste: Medo, Calor leve
 Vulnerável: Frio intenso
@@ -663,7 +674,7 @@ Deus cultuado: Nyx
 Simpatia: Finan, Alihana
 Não gosta/desconfia: Kanthor quando persegue sombra, Merithus quando cataloga demais
 Visita fazenda: sim, rara, à noite
-HP 88 | MP 45 | Stamina 80 | Breath 75
+HP 88 | MP 45 | Stamina 80
 Força 2 | Constituição 3 | Destreza 6 | Inteligência 5 | Vontade 4 | Carisma 5
 Resiste: Medo, Exaustão noturna
 Vulnerável: Senya/festa intensa, exposição pública
@@ -711,7 +722,7 @@ Deus cultuado: Alihana
 Simpatia: Anya, Merithus
 Não gosta/desconfia: Senya, Kaand, Finan quando distorce registro
 Visita fazenda: sim, por Fonte/inscrição/ruína
-HP 72 | MP 80 | Stamina 55 | Breath 50
+HP 72 | MP 80 | Stamina 55
 Força 1 | Constituição 2 | Destreza 3 | Inteligência 6 | Vontade 5 | Carisma 3
 Resiste: Medo arcano, Frio mental
 Vulnerável: Dano físico, Exaustão
@@ -759,7 +770,7 @@ Deus cultuado: Thoren
 Simpatia: Kanthor, Thandra
 Não gosta/desconfia: Nyx, Senya, cultos subterrâneos
 Visita fazenda: sim, pedreira/rochas/minério
-HP 155 | MP 10 | Stamina 95 | Breath 90
+HP 155 | MP 10 | Stamina 95
 Força 5 | Constituição 6 | Destreza 2 | Inteligência 4 | Vontade 5 | Carisma 3
 Resiste: Calor, Exaustão, Medo
 Vulnerável: Medo mental/ilusões
@@ -807,7 +818,7 @@ Deus cultuado: Finan
 Simpatia: Thandra, Senya
 Não gosta/desconfia: Kanthor quando dá sermão, Nyx quando assusta
 Visita fazenda: sim, cedo e frequentemente
-HP 45 | MP 0 | Stamina 65 | Breath 55
+HP 45 | MP 0 | Stamina 65
 Força 1 | Constituição 2 | Destreza 5 | Inteligência 2 | Vontade 2 | Carisma 5
 Resiste: Sorte contra Medo leve
 Vulnerável: Combate real, Veneno
@@ -850,7 +861,7 @@ Deus cultuado: Kanthor
 Simpatia: Thoren, Merithus
 Não gosta/desconfia: Nyx, Finan oportunista, Kaand
 Visita fazenda: sim, alerta e ameaça
-HP 140 | MP 15 | Stamina 90 | Breath 85
+HP 140 | MP 15 | Stamina 90
 Força 5 | Constituição 5 | Destreza 4 | Inteligência 3 | Vontade 5 | Carisma 4
 Resiste: Medo, Exaustão
 Vulnerável: Ilusão, Veneno
@@ -899,7 +910,7 @@ Deus cultuado: Merithus/Meritos
 Simpatia: Finan, Thandra
 Não gosta/desconfia: Kaand, Senya quando vira desordem
 Visita fazenda: sim, lã/tecido/encomenda
-HP 68 | MP 15 | Stamina 60 | Breath 55
+HP 68 | MP 15 | Stamina 60
 Força 1 | Constituição 2 | Destreza 5 | Inteligência 5 | Vontade 3 | Carisma 5
 Resiste: Medo social, Frio leve por roupas
 Vulnerável: Combate direto
@@ -942,7 +953,7 @@ Deus cultuado: Finan
 Simpatia: Senya, Merithus quando dá lucro
 Não gosta/desconfia: Kanthor, Thoren rígido demais
 Visita fazenda: sim, mercador ambulante em reputação alta
-HP 65 | MP 10 | Stamina 70 | Breath 55
+HP 65 | MP 10 | Stamina 70
 Força 1 | Constituição 3 | Destreza 5 | Inteligência 5 | Vontade 2 | Carisma 6
 Resiste: Barganha, Medo leve
 Vulnerável: Contratos rígidos de Kanthor/Merithus
@@ -985,7 +996,7 @@ Deus cultuado: Thandra
 Simpatia: Tandra/Telisandra, Anya como cura
 Não gosta/desconfia: Ozzra perto de animais, Kaand
 Visita fazenda: sim, animal/pet/tratamento
-HP 95 | MP 30 | Stamina 80 | Breath 75
+HP 95 | MP 30 | Stamina 80
 Força 3 | Constituição 4 | Destreza 4 | Inteligência 3 | Vontade 5 | Carisma 4
 Resiste: Medo animal, Veneno leve
 Vulnerável: Ruído/caos urbano
@@ -1033,7 +1044,7 @@ Deus cultuado: Alihana
 Simpatia: Anya, Senya em arte
 Não gosta/desconfia: Nyx quando silencia memórias, Kaand
 Visita fazenda: sim, Alihana/relação alta
-HP 70 | MP 70 | Stamina 55 | Breath 65
+HP 70 | MP 70 | Stamina 55
 Força 1 | Constituição 2 | Destreza 4 | Inteligência 4 | Vontade 6 | Carisma 6
 Resiste: Medo por sonho, Exaustão mental leve
 Vulnerável: Nyx/cansaço mental
@@ -1082,7 +1093,7 @@ Deus cultuado: Finan
 Simpatia: Kanthor, Merithus
 Não gosta/desconfia: Nyx, Kaand
 Visita fazenda: raro, evento social
-HP 80 | MP 5 | Stamina 60 | Breath 55
+HP 80 | MP 5 | Stamina 60
 Força 2 | Constituição 3 | Destreza 2 | Inteligência 4 | Vontade 4 | Carisma 5
 Resiste: Exaustão social, Medo leve
 Vulnerável: Combate real
@@ -1125,7 +1136,7 @@ Deus cultuado: Tandra/Telisandra
 Simpatia: Thandra, Nyx em trilhas noturnas
 Não gosta/desconfia: Kanthor quando simplifica natureza, Kaand predatório
 Visita fazenda: sim, ervas/pragas/plantas estranhas
-HP 118 | MP 35 | Stamina 85 | Breath 80
+HP 118 | MP 35 | Stamina 85
 Força 4 | Constituição 5 | Destreza 4 | Inteligência 4 | Vontade 4 | Carisma 3
 Resiste: Veneno, Calor úmido
 Vulnerável: Frio intenso
@@ -1174,7 +1185,7 @@ Deus cultuado: Merithus/Meritos
 Simpatia: Kanthor, Finan quando registrado
 Não gosta/desconfia: Senya, Kaand, Nyx sem documento
 Visita fazenda: sim, licenças/altares permitidos
-HP 58 | MP 40 | Stamina 50 | Breath 45
+HP 58 | MP 40 | Stamina 50
 Força 1 | Constituição 2 | Destreza 4 | Inteligência 6 | Vontade 4 | Carisma 3
 Resiste: Confusão legal, Medo burocrático
 Vulnerável: Dano direto
@@ -1217,7 +1228,7 @@ Deus cultuado: Nyx
 Simpatia: Alihana, Anya como memória silenciada
 Não gosta/desconfia: Kanthor público, Merithus que registra tudo, Kaand
 Visita fazenda: sim, raro, à noite
-HP 105 | MP 50 | Stamina 80 | Breath 85
+HP 105 | MP 50 | Stamina 80
 Força 3 | Constituição 4 | Destreza 6 | Inteligência 5 | Vontade 5 | Carisma 3
 Resiste: Medo, Exaustão noturna, Frio leve
 Vulnerável: Senya/exposição pública
