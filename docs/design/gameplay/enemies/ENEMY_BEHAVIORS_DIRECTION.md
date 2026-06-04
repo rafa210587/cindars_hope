@@ -1,6 +1,6 @@
 # Cindar's Hope — Enemy Behaviors Direction
 
-> **Status:** documento canônico transversal de comportamento de inimigos  
+> **Status:** documento canônico transversal de comportamento, taxonomia e arquitetura de inimigos  
 > **Local:** `docs/design/gameplay/enemies/ENEMY_BEHAVIORS_DIRECTION.md`  
 > **Depende de:**  
 > - `docs/design/SPEC_SOURCE_MAP.md`  
@@ -11,7 +11,7 @@
 > - `docs/design/gameplay/player/PLAYER_SKILL_TREES_DIRECTION.md`  
 > - `docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_DIRECTION.md`  
 > - `docs/design/gameplay/cave/CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md`  
-> **Função:** definir como inimigos pensam, percebem, escolhem alvos, se movem, atacam, gastam Stamina/MP, reagem ao jogador, coordenam packs e podem ser reutilizados em contextos futuros fora da caverna.  
+> **Função:** definir como inimigos pensam, percebem, escolhem alvos, se movem, atacam, gastam Stamina/MP, reagem ao jogador, coordenam packs e como a taxonomia geral de `Move`, `Behavior`, `Trait`, `EnemyAction` e `EnemyBrainProfile` deve ser reutilizada em qualquer ambiente.  
 > **Não é spec implementável.** Este documento define direção de design. Specs futuras devem converter isto em dados e sistemas.
 
 ---
@@ -32,6 +32,7 @@ bosses
 elites
 reação a player, companions e pets em combate
 EnemyBrain / EnemyAction / Movement / Reaction / PackCoordination
+normalização de Move, Behavior, Trait e EnemyAction usados pelo roster da caverna
 ```
 
 ### Escopo futuro explícito
@@ -55,7 +56,7 @@ Farm invasion só deve virar spec quando o roadmap explicitamente abrir esse tem
 
 ---
 
-## 1. Regra anti-duplicação
+## 1. Regra anti-duplicação e autoridade dos documentos
 
 Este documento não deve duplicar fórmulas de atributos, dano, HP, Stamina, MP ou Block.
 
@@ -66,30 +67,126 @@ PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md
   fórmulas do jogador e regras de atributos derivados.
 
 COMBAT_CORE_DIRECTION.md
-  feeling, input, Stamina em combate, Dash, Dodge, Block, movimento, HUD e validação.
+  feeling, input, Stamina em combate, Dash, Dodge, Block, movimento do jogador, HUD e validação.
 
 CAVE_MONSTER_ROSTER_DIRECTION.md
-  roster de monstros da caverna, stats, moves, behaviors, traits, ataques, drops e scaling.
+  roster de monstros da caverna, stats, drops, packs, bosses, scaling e instâncias concretas de inimigos da caverna.
 
 CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md
   vulnerabilidades, janelas, TTK, active combat budget e telemetria de caverna.
+
+ENEMY_BEHAVIORS_DIRECTION.md
+  taxonomia geral de Move, Behavior, Trait, EnemyAction, EnemyBrain, módulos injetáveis e contratos conceituais de IA.
 ```
 
 Regra:
 
 ```text
-Se houver conflito de stat/roster de monstro, o roster da caverna vence para monstros da caverna.
+Se houver conflito de stat/roster de monstro da caverna, o roster da caverna vence.
 Se houver conflito de fórmula de combate, o documento de atributos derivados vence.
 Se houver conflito de input/movimento do jogador, Combat Core vence.
 Se houver conflito de vulnerabilidade/janela da caverna, Cave Combat Balance vence.
-Enemy Behaviors define como os dados são usados pelo cérebro inimigo; não redefine números canônicos.
+Se houver conflito sobre o significado geral de Move, Behavior, Trait, EnemyAction ou módulos de IA, Enemy Behaviors vence.
 ```
 
 ---
 
-# PARTE A — Princípios gerais
+# PARTE A — Refactor da caverna para estrutura geral de enemies
 
-## 2. Filosofia
+## 2. Decisão de refactor
+
+O `CAVE_MONSTER_ROSTER_DIRECTION.md` nasceu antes deste documento e contém parte da taxonomia geral de inimigos dentro da caverna.
+
+A partir desta versão:
+
+```text
+CAVE_MONSTER_ROSTER_DIRECTION.md continua sendo a fonte canônica das criaturas concretas da caverna.
+ENEMY_BEHAVIORS_DIRECTION.md passa a ser a fonte canônica da taxonomia geral.
+```
+
+Isso significa:
+
+```text
+Move/Behavior/Trait dentro do roster da caverna são usos concretos de uma taxonomia geral.
+Novos Moves/Behaviors/Traits não devem ser criados diretamente em docs de caverna sem antes serem definidos aqui ou em spec própria de enemies.
+Specs futuras devem converter entradas do roster em EnemyDataSO + EnemyBrainProfileSO + EnemyActionSetSO, não em classes hardcoded por monstro.
+```
+
+## 3. O que fica no Cave Monster Roster
+
+O roster da caverna deve continuar contendo:
+
+```text
+enemy_id
+nome localizado
+faixa nativa de nível
+bioma/faixa de cave
+SizeClass
+HP/MP/STA/FOR/CON/DES/INT/VON/CAR/XP
+Behavior usado pela criatura
+Move usado pela criatura
+Traits usadas pela criatura
+lista de ataques por criatura
+drops
+packs
+bosses
+boss gates
+justificativa ecológica/social/faccional dos packs
+scaling específico da caverna
+```
+
+## 4. O que fica em Enemy Behaviors
+
+Este documento deve centralizar:
+
+```text
+significado de cada Move
+significado de cada BehaviorProfile
+significado de cada Role
+categorias de Traits
+estrutura modular do EnemyBrain
+campos de EnemyActionSO
+campos de EnemyBrainProfileSO
+campos de EnemyBehaviorProfileSO
+regras gerais de Stamina/MP inimiga
+regras gerais de Reaction a Dash/Dodge/Block/ranged/magic/pet/companion
+pack coordination genérica
+leash genérico
+campos futuros de objective/invasion, sem implementar agora
+```
+
+## 5. Adapter do roster da caverna para dados gerais
+
+Cada entrada do roster da caverna deve ser interpretada assim:
+
+```text
+enemy_id -> EnemyDataSO.Id
+Nome -> EnemyDataSO.DisplayName
+Nível nativo -> EnemySpawnProfileSO.NativeMinLevel/NativeMaxLevel
+Size -> EnemyDataSO.SizeClass
+HP/MP/STA/FOR/CON/DES/INT/VON/CAR/XP -> EnemyDataSO.BaseStats
+Behavior -> EnemyBrainProfileSO.PrimaryBehavior + SecondaryBehaviors
+Move -> EnemyMovementProfileSO.MoveId + MovementOverrides
+Traits -> EnemyDataSO.Traits + EnemyBrainProfileSO.TraitModifiers
+Ataques -> EnemyActionSetSO.ActionIds
+Drops -> LootTableSO / EnemyDropProfileSO
+Pack -> EnemySpawnPackSO
+Faction -> EnemyFactionLockSO
+Boss phase -> EnemyBossPhaseProfileSO futuro
+```
+
+Regra:
+
+```text
+A entrada textual do roster é uma fonte de dados autorada.
+A spec futura deve normalizar para assets, mas não reinterpretar nomes, stats ou drops livremente.
+```
+
+---
+
+# PARTE B — Princípios gerais
+
+## 6. Filosofia
 
 Inimigos devem parecer perigosos por comportamento, leitura e combinação de ações, não apenas por números altos.
 
@@ -119,7 +216,7 @@ colar instantaneamente no jogador após Dash longo
 reagir a toda estratégia do jogador com counter perfeito
 ```
 
-## 3. Comportamentos são injetáveis, não totalmente fixos
+## 7. Comportamentos são injetáveis, não classes fixas
 
 O comportamento de um inimigo não deve ser uma classe rígida única.
 
@@ -137,19 +234,49 @@ EnemyPackRole define função dentro do pack.
 EnemyObjectiveProfile existe apenas para eventos objetivos/futuros.
 ```
 
+Exemplo:
+
+```text
+Um goblin pode ser Guard em uma sala, PackFlanker em outra, ResourceThief em invasão futura ou RetreatAndCall em emboscada.
+O roster define a identidade do monstro.
+Os perfis injetados definem como ele age naquele encontro.
+```
+
 Regra:
 
 ```text
-Um mesmo monstro pode trocar comportamento por contexto sem duplicar o monstro inteiro.
-Exemplo: um goblin pode ser Guard em uma sala, PackFlanker em outra, ResourceThief em invasão futura, ou RetreatAndCall em emboscada.
-O roster define a identidade do monstro; os perfis injetados definem como ele age naquele encontro.
+Não criar uma classe C# nova para cada variação comportamental se a variação puder ser expressa por profile/data asset.
 ```
 
-## 4. Papéis de inimigo
+---
 
-Papéis globais são tags de intenção, não classes rígidas.
+# PARTE C — Roles e BehaviorProfiles
 
-| Papel | Função | Como joga | Counterplay esperado |
+## 8. Role não é BehaviorProfile
+
+`Role` descreve a função tática do inimigo no encontro.
+
+`BehaviorProfile` descreve o padrão de decisão que pode ser injetado.
+
+Exemplo:
+
+```text
+Role: Ranged
+BehaviorProfile: FactionPatrol
+Move: KiteRanged
+ActionSet: PebbleShot, SpearJab, MarkTarget
+```
+
+Regra:
+
+```text
+O roster antigo às vezes usa Role e BehaviorProfile no mesmo campo Behavior.
+Specs futuras devem normalizar isso em PrimaryRole + BehaviorProfiles.
+```
+
+## 9. Roles atuais
+
+| Role | Função | Como joga | Counterplay esperado |
 |---|---|---|---|
 | Chaser | pressionar o jogador | aproxima e força reação | kiting curto, block, dodge, terreno |
 | Guard | proteger ponto | segura área/anchor | puxar, flanquear, ranged, janela após ataque |
@@ -161,15 +288,16 @@ Papéis globais são tags de intenção, não classes rígidas.
 | Controller | mexer com espaço/estado | slow, root, fear, zona | resistências, interrupt, cooldown |
 | TreasureTrap | punir ganância | finge loot/interação | leitura, pet/gato futuro, telegraph |
 | Elite | testar mecânica | 2-3 ações relevantes | janela clara, execução |
+| MiniBoss | encontro especial menor | kit mais próximo de boss | preparação, janelas e arena |
 | Boss | clímax/fase | padrões por fase | aprender fase, usar build/preparo |
 | Ritualist | proteger/canalizar evento | canaliza, invoca, defende anchor | interromper ritual |
 | Summoner | multiplicar pressão | chama adds controlados | focar caster, cooldown |
 | HazardLurer | usar ambiente | puxa para hazard | posicionamento |
 | LoreGuardian | encontro narrativo | pode não ser só matar | interação, purificação, resistência |
 
-Papéis futuros não implementáveis agora:
+Roles futuros, não implementáveis agora:
 
-| Papel futuro | Uso futuro | Status |
+| Role futuro | Uso futuro | Status |
 |---|---|---|
 | Invader | inimigo que entra na fazenda/evento | futuro |
 | Raider | rouba/recolhe recurso | futuro |
@@ -177,22 +305,137 @@ Papéis futuros não implementáveis agora:
 | LivestockPredator | ameaça animais | futuro |
 | ResourceThief | foge com item/recurso | futuro |
 
+## 10. BehaviorProfiles atuais refatorados do roster da caverna
+
+| BehaviorProfile | Significado | Uso típico |
+|---|---|---|
+| Predator | caça e pressiona alvo vulnerável | ratos, feras, cães, cervinos |
+| Scavenger | luta oportunista e coleta/rouba | goblins, criaturas de sucata |
+| TerritorialGuard | protege área simples | brotos, guardas naturais |
+| ResourceGuardian | protege node, baú, minério ou sala | fungais, constructs, lodos |
+| TreasureTrap | espera interação/proximidade | mímicos, baús vivos, lodos de tesouro |
+| FactionPatrol | patrulha organizada | goblins, kobolds, drow, cultistas |
+| PackHunter | coordena com grupo | lobos, morcegos, drow, pseudodragões |
+| CasterSupport | usa magia de suporte/zonas | drow caster, gnomos, cultistas |
+| EliteDuelist | pressiona com kit técnico | drow blade, mirror adept, elites móveis |
+| SwarmPressure | muitos pequenos pressionando saída | ácaros, wisps, morcegos |
+| Ambusher | espera oportunidade/trigger | rootsnare, baús, burrowers |
+| BurrowPredator | emboscada subterrânea | tubarão de pedra, escavadores |
+| ConstructProtocol | comportamento semi-programado | guards, golems, ruínas bromecianas |
+| ConstructSupport | suporte técnico a constructs | tinkers/gnomorin |
+| CultRitualist | protege/canaliza ritual | cultistas, lanternas negras |
+| CorruptedFrenzy | agressividade corrompida | hulks, orcs de Kaand, bosses corrompidos |
+| AberrantController | controla espaço/mente | observadores, devora-mentes, geleias |
+| BossMultiPhase | troca comportamento por fase | boss gates, nível 101 |
+| LoreGuardian | encontro narrativo/lore | Eco de Anya e guardiões especiais |
+| Phase | usa deslocamento/estado instável | sombras, casters, blinkers |
+
 Regra:
 
 ```text
-Todo inimigo deve ter PrimaryRole.
-SecondaryRoles são opcionais.
-PrimaryRole define prioridade de alvo, movimento, ação preferida e retirada.
-SecondaryRoles adicionam variação sem reescrever o inimigo.
+Specs futuras devem preferir esses BehaviorProfiles antes de criar novos.
+Se um monstro do roster usa Behavior não listado aqui, a spec deve normalizar para Role existente ou criar BehaviorProfile novo com justificativa.
 ```
 
 ---
 
-# PARTE B — EnemyBrain modular
+# PARTE D — Traits gerais
 
-## 5. Camadas do EnemyBrain
+## 11. Traits são modificadores, não comportamento completo
 
-EnemyBrain deve ser composto por módulos claros.
+Traits modificam stats, movimento, resistências, animação, telegraph, loot ou reação.
+
+Regra:
+
+```text
+Trait não substitui BehaviorProfile.
+Trait explica uma qualidade persistente do inimigo.
+```
+
+## 12. Traits por categoria
+
+### Movimento / tempo
+
+```text
+HighMobility
+FastRecovery
+SlowRecovery
+LeapPressure
+ChargePressure
+LongChase
+Burrower
+Blinker
+FloatingBody
+```
+
+### Defesa / corpo / postura
+
+```text
+PhysicalStable
+PostureHeavy
+PostureFragile
+TankBody
+SwarmBody
+ConstructBody
+UndeadBody
+BossBody
+Shielded
+EliteBody
+```
+
+### Dano / controle / tática
+
+```text
+GuardBreak
+PackCoordination
+CasterDiscipline
+RitualAnchor
+HazardAdapted
+TreasureAmbush
+TrapUser
+RangedDiscipline
+Controller
+GazeUser
+OathDrain
+VulnerabilityCycle
+ProtectAnchor
+ConstructSupport
+ErraticCaster
+Scout
+RootedGuard
+AcidBody
+```
+
+### Adaptação elemental / espiritual
+
+```text
+HeatAdapted
+ColdAdapted
+PoisonAdapted
+CorruptionAdapted
+ShadowAdapted
+MentalResistant
+AberrantMind
+```
+
+### Loot / exceção
+
+```text
+NoNormalLoot
+```
+
+Regra:
+
+```text
+Traits futuras devem declarar categoria e efeito esperado.
+Não criar trait apenas como flavor se ela não altera leitura, comportamento, resistência, drop ou telegraph.
+```
+
+---
+
+# PARTE E — EnemyBrain modular
+
+## 13. Camadas do EnemyBrain
 
 | Módulo | Responsabilidade | Observação |
 |---|---|---|
@@ -219,9 +462,7 @@ Elite/boss usa mais módulos.
 Farm/city objective modules são futuros e não entram em specs atuais sem decisão explícita.
 ```
 
-## 6. Estados globais
-
-Estados são estados de execução, não papéis.
+## 14. Estados globais
 
 | Estado | Significado | Saída típica |
 |---|---|---|
@@ -254,9 +495,7 @@ Bosses devem ter PhaseTransition.
 Estados de Objective são futuros fora da caverna.
 ```
 
-## 7. PerceptionModule
-
-PerceptionModule define o que o inimigo consegue perceber.
+## 15. PerceptionModule
 
 Campos conceituais:
 
@@ -281,20 +520,9 @@ HearingRadius / audição não será elemento de IA por enquanto.
 Specs não devem implementar aggro por som sem nova decisão.
 ```
 
-Regras:
+## 16. IntentModule
 
-```text
-Inimigo não deve ativar através de paredes sem regra específica.
-AllyCallRadius deve ser limitado para evitar avalanche injusta.
-TreasureTrap pode ignorar percepção comum até trigger específico.
-Boss pode ter ArenaAwareness.
-```
-
-## 8. IntentModule
-
-Intent é o objetivo de curto prazo.
-
-Intents possíveis:
+Intents atuais:
 
 ```text
 AttackPlayer
@@ -329,24 +557,14 @@ ChannelFarmRitual
 EscapeWithLoot
 ```
 
-Regra:
+## 17. TargetingModule
 
-```text
-Intent não executa nada sozinho.
-Intent informa MovementModule e ActionSelectorModule.
-```
-
-## 9. TargetingModule
-
-Escolhe alvo com base em prioridade e papel.
-
-Alvos possíveis atuais:
+Alvos atuais:
 
 ```text
 Player
 Companion
 Pet
-SummonedAlly futuro
 Anchor/RitualObject da caverna
 BossMechanicObject
 ```
@@ -387,52 +605,11 @@ Targeting deve variar por papel, inteligência do inimigo e contexto.
 
 ---
 
-# PARTE C — MovementModule
+# PARTE F — MovementModule
 
-## 10. Fonte canônica de Moves
+## 18. Moves oficiais gerais
 
-Para inimigos da caverna, nomes oficiais de `Move` vêm de:
-
-```text
-CAVE_MONSTER_ROSTER_DIRECTION.md
-```
-
-Moves oficiais atuais:
-
-```text
-GroundChase
-GroundPatrol
-GuardStationary
-KiteRanged
-CasterKeepAway
-BurrowAmbush
-SwarmErratic
-TankSlowPush
-PhaseShortBlink
-Leaper
-FloatingSlow
-FloatingOrbit
-TreasureIdleAmbush
-PackFlanker
-PackLeader
-RetreatAndCall
-ProtectAnchor
-CircleStrafe
-ChargeLine
-HazardLure
-BossArenaControl
-BossPhaseShift
-```
-
-Regra:
-
-```text
-Specs não devem criar sinônimos se já existe Move oficial equivalente.
-Para ambientes fora da caverna, reutilizar Moves oficiais quando fizer sentido.
-Moves novos só devem ser criados se o comportamento não existir no roster.
-```
-
-## 11. Explicação declarativa dos Moves oficiais
+Estes Moves foram extraídos/normalizados a partir do roster da caverna e agora são taxonomia geral.
 
 | Move | Comportamento | Quando usar | Cuidado |
 |---|---|---|---|
@@ -459,7 +636,15 @@ Moves novos só devem ser criados se o comportamento não existir no roster.
 | BossArenaControl | movimento custom de boss | boss | por fase |
 | BossPhaseShift | transição de fase | boss | não causar dano sem tell |
 
-## 12. Moves futuros para eventos/fazenda
+Regra:
+
+```text
+Specs não devem criar sinônimos se já existe Move oficial equivalente.
+Para ambientes fora da caverna, reutilizar Moves oficiais quando fizer sentido.
+Moves novos só devem ser criados se o comportamento não existir aqui.
+```
+
+## 19. Moves futuros para eventos/fazenda
 
 Os Moves abaixo são **futuros** e não devem ser implementados em specs atuais.
 
@@ -475,15 +660,7 @@ RitualCircleHold
 CivilianAvoidance
 ```
 
-Regra:
-
-```text
-Esses Moves existem apenas para orientar extensibilidade.
-Não devem entrar em spec de caverna ou combate atual.
-Quando farm invasion entrar no roadmap, revisar esta seção antes de gerar specs.
-```
-
-## 13. Reação ao Dash longo do jogador
+## 20. Reação ao Dash longo do jogador
 
 Dash longo do jogador pode chegar a aproximadamente 8 tiles com upgrades/skills fortes.
 
@@ -523,9 +700,9 @@ colar instantaneamente no jogador após Dash
 
 ---
 
-# PARTE D — ActionSelector e EnemyAction
+# PARTE G — EnemyAction e ActionSelector
 
-## 14. Estrutura de EnemyAction
+## 21. Estrutura de EnemyAction
 
 Toda ação relevante deve ter fases explícitas.
 
@@ -538,17 +715,7 @@ Toda ação relevante deve ter fases explícitas.
 | Window | MinorOpening/CriticalWindow/CoreExposed se aplicável | conforme ação |
 | Cooldown | impede repetição imediata | sim |
 
-Regra:
-
-```text
-Ataques fortes precisam de Windup e Recovery.
-Ações sem telegraph devem ser fracas, curtas ou apenas movimento.
-Ação de controle forte sempre precisa de Windup, Cooldown e counterplay.
-```
-
-## 15. ActionType
-
-Tipos de ação atuais:
+## 22. ActionTypes atuais
 
 | ActionType | O que faz | Observação |
 |---|---|---|
@@ -585,7 +752,44 @@ FenceBreak
 LivestockHarass
 ```
 
-## 16. Campos conceituais de EnemyActionSO explicados
+## 23. Catálogo de ataques comuns extraído do roster da caverna
+
+Estes nomes são exemplos/candidatos de `EnemyActionSO`, não obrigam todos os inimigos a usarem todos.
+
+```text
+MeleeBite
+MeleeClaw
+MeleeHeavySmash
+ShortDash
+ShortLeap
+RangedStoneThrow
+RangedSporeShot
+RangedShardShot
+RangedCinderSpit
+CasterPulse
+CasterZoneSmall
+GuardBlock
+BurrowEmerge
+PhaseShortBlink
+FloatingRay
+FloatingOrbitRay
+TreasureAmbushBite
+AcidContact
+PsychicPulse
+EyeBeamBlackstone
+PackCall
+ProtectiveAura
+CorruptCone
+```
+
+Regra:
+
+```text
+O roster pode citar ataques específicos como Bite, DashBite, RootGrab ou BlackstoneBeamMinor.
+A spec deve mapear cada ataque específico para um ActionType e EnemyActionSO.
+```
+
+## 24. Campos conceituais de EnemyActionSO explicados
 
 | Campo | Significado | Direção |
 |---|---|---|
@@ -630,7 +834,7 @@ Regra:
 Campos futuros podem existir no contrato, mas specs atuais devem ignorar campos de farm/city objective até roadmap abrir esses temas.
 ```
 
-## 17. Action scoring
+## 25. Action scoring
 
 EnemyBrain deve escolher ações por score, não por sequência fixa simples, exceto boss scripts por fase.
 
@@ -666,9 +870,9 @@ Score deve evitar que o inimigo use sempre a ação matematicamente mais forte.
 
 ---
 
-# PARTE E — ResourceModule: Stamina e MP dos inimigos
+# PARTE H — ResourceModule: Stamina e MP dos inimigos
 
-## 18. Regra geral
+## 26. Regra geral
 
 Todo inimigo tem STA.
 
@@ -684,7 +888,7 @@ CAVE_MONSTER_ROSTER_DIRECTION.md para inimigos da caverna.
 Docs futuros de farm/eventos para inimigos específicos fora da caverna.
 ```
 
-## 19. Uso de Stamina inimiga
+## 27. Uso de Stamina inimiga
 
 Ações que devem gastar STA:
 
@@ -710,7 +914,7 @@ STA inimiga não precisa aparecer na HUD comum.
 STA pode ser exposta em debug/telemetria.
 ```
 
-## 20. Uso de MP inimigo
+## 28. Uso de MP inimigo
 
 Ações que devem gastar MP:
 
@@ -735,7 +939,7 @@ Boss pode ter MP especial por fase, mas precisa ser claro na spec.
 MP não deve permitir spam infinito de controle.
 ```
 
-## 21. Recuperação de recurso
+## 29. Recuperação de recurso
 
 Direção:
 
@@ -754,9 +958,9 @@ Regen de inimigo deve existir para pacing, não para criar luta infinita.
 
 ---
 
-# PARTE F — ReactionModule
+# PARTE I — ReactionModule
 
-## 22. Reação a Block
+## 30. Reação a Block
 
 | Tipo de inimigo | Reação esperada |
 |---|---|
@@ -775,7 +979,7 @@ Anti-block não deve invalidar Block sempre.
 Block deve ser bom contra alguns ataques e ruim contra outros.
 ```
 
-## 23. Reação a Dodge
+## 31. Reação a Dodge
 
 ```text
 comuns podem errar e abrir MinorOpening.
@@ -791,7 +995,7 @@ Não punir Dodge correto com tracking impossível.
 Ataques com tracking alto precisam de windup e limite de rotação.
 ```
 
-## 24. Reação a Dash
+## 32. Reação a Dash
 
 ```text
 melee comum reacquire target após breve delay.
@@ -809,7 +1013,7 @@ Inimigo não deve colar instantaneamente após Dash sem motivo visual/mecânico.
 Dash longo deve ser validado por telemetria, não nerfado preventivamente por IA injusta.
 ```
 
-## 25. Reação a ranged/magic
+## 33. Reação a ranged/magic
 
 ```text
 melee tenta encurtar distância ou usar cobertura se existir.
@@ -825,7 +1029,7 @@ Regra:
 Build ranged/magic deve funcionar, mas não ser kite infinito sem risco.
 ```
 
-## 26. Reação a companions e pets
+## 34. Reação a companions e pets
 
 Companion:
 
@@ -855,9 +1059,9 @@ Inimigo também não deve sempre focar companion/pet para invalidar o sistema.
 
 ---
 
-# PARTE G — PackModule e LeashModule
+# PARTE J — PackModule e LeashModule
 
-## 27. Pack roles
+## 35. Pack roles
 
 Um pack ideal tem composição lógica.
 
@@ -873,7 +1077,7 @@ objective holder
 
 Nem todo pack precisa de todos os papéis.
 
-## 28. Pack coordination
+## 36. Pack coordination
 
 Comportamentos coordenados possíveis:
 
@@ -897,9 +1101,7 @@ AllyCallRadius precisa respeitar active combat budget do ambiente.
 Pack coordination deve ser data-driven por PackCoordinationRules.
 ```
 
-## 29. Leash e reset
-
-Leash evita cheese e avalanche.
+## 37. Leash e reset
 
 Campos conceituais:
 
@@ -924,11 +1126,11 @@ Bosses usam arena bounds, não leash comum.
 
 ---
 
-# PARTE H — Janelas, vulnerabilidades e telegraph
+# PARTE K — Janelas, status e telegraph
 
-## 30. Categorias de janela
+## 38. Categorias de janela
 
-Fonte canônica:
+Fonte canônica de balance de caverna:
 
 ```text
 CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md
@@ -947,7 +1149,67 @@ CoreExposed / BossMechanicWindow / StaggeredWindow
   janela especial; pode garantir crítico + bônus moderado.
 ```
 
-## 31. Telegraph obrigatório
+## 39. Windows nomeadas extraídas do roster/caverna
+
+```text
+AfterAttackRecover
+DuringChargeWindup
+AfterBurrowEmerges
+AfterCast
+AfterProjectileVolley
+AfterShieldDrop
+AfterBlinkArrival
+AfterEnragePulse
+AfterEyeBeam
+AfterTreasureReveal
+AfterPhaseTransition
+AlwaysForTest apenas debug
+```
+
+Regra:
+
+```text
+AlwaysForTest não pode existir em build final de gameplay.
+```
+
+## 40. Status permitidos por inimigos
+
+Fonte geral:
+
+```text
+COMBAT_CORE_DIRECTION.md
+```
+
+Lista atual normalizada:
+
+```text
+Burn
+Poison
+Bleed
+Slow
+Stun
+Chill
+Root
+Fear
+ConfusionLite
+DurabilityStress
+Corruption
+HeatStress
+ColdStress
+VulnerabilityWindow como estado/janela, não status comum de dano
+```
+
+Regras:
+
+```text
+ConfusionLite não remove controle total do jogador.
+DurabilityStress não destrói item permanentemente sem spec própria.
+Petrificação instantânea não existe.
+Controle permanente não existe.
+Todo status forte exige telegraph e cooldown.
+```
+
+## 41. Telegraph obrigatório
 
 Todo ataque relevante precisa de:
 
@@ -967,31 +1229,11 @@ Regra:
 Quanto mais letal o ataque, mais claro deve ser o telegraph ou maior deve ser o recovery.
 ```
 
-## 32. Interrupção
-
-Ações podem ser:
-
-```text
-Interruptible
-PartiallyInterruptible
-Uninterruptible
-BossProtected
-```
-
-Regras:
-
-```text
-Ação de caster comum deve ser interrompível com ferramenta certa.
-Ação de elite pode exigir posture damage, stun ou timing.
-Boss pode ter ações protegidas, mas com counterplay por fase.
-Pet/companion podem abrir janela em ações específicas, não em tudo.
-```
-
 ---
 
-# PARTE I — Bosses e elites
+# PARTE L — Bosses e elites
 
-## 33. Elites
+## 42. Elites
 
 Elites devem ter:
 
@@ -1013,7 +1255,7 @@ elite caster testa interrupção/line of sight.
 elite tank testa posture/charged attack.
 ```
 
-## 34. Bosses
+## 43. Bosses
 
 Bosses devem ter:
 
@@ -1025,27 +1267,6 @@ telegraph forte
 anti-cheese claro
 momentos de pressão e recuperação
 interação com arena/hazard/adds quando fizer sentido
-```
-
-Regra:
-
-```text
-Boss não deve ser só stat alto.
-Boss não deve virar puzzle único sem combate.
-Boss deve respeitar o Combat Core: leitura, recurso, janela e decisão.
-```
-
-## 35. Boss AI por fase
-
-```text
-Phase 1
-  ensina padrão principal.
-
-Phase 2
-  altera movimento, adiciona ação, hazard ou adds.
-
-Phase 3
-  aumenta pressão, mas mantém counterplay.
 ```
 
 Cada fase deve declarar:
@@ -1062,52 +1283,19 @@ AntiCheeseRules
 PhaseExitCondition
 ```
 
----
-
-# PARTE J — Status aplicados por inimigos
-
-## 36. Status permitidos
-
-Fonte de lista geral:
+Regra:
 
 ```text
-COMBAT_CORE_DIRECTION.md
-```
-
-Status comuns para inimigos:
-
-```text
-Burn
-Poison
-Bleed
-Slow
-Stun
-Chill
-Root
-Fear
-ConfusionLite
-DurabilityStress
-HeatStress
-ColdStress
-Corruption
-```
-
-Regras:
-
-```text
-Controle forte precisa de telegraph e cooldown.
-ConfusionLite não remove controle total.
-Root deve ser raro, curto ou quebrável.
-Fear deve deslocar/pressionar sem tirar agência total.
-DurabilityStress não destrói permanentemente sem spec própria.
-Corruption deve ser relevante, mas com cura/prevenção/purificação.
+Boss não deve ser só stat alto.
+Boss não deve virar puzzle único sem combate.
+Boss deve respeitar o Combat Core: leitura, recurso, janela e decisão.
 ```
 
 ---
 
-# PARTE K — Farm invasion e eventos hostis futuros
+# PARTE M — Farm invasion e eventos hostis futuros
 
-## 37. Status desta seção
+## 44. Status desta seção
 
 Esta seção é **futura**.
 
@@ -1120,7 +1308,7 @@ Não implementar dano a crops/animais/estruturas agora.
 Esta seção existe para que a arquitetura de EnemyBrain não nasça presa à caverna.
 ```
 
-## 38. Premissa futura
+## 45. Premissa futura
 
 Invasões da fazenda, se entrarem no roadmap, devem expandir o jogo sem transformar a fazenda em punição constante.
 
@@ -1133,7 +1321,7 @@ Pode ameaçar crops, animais, estruturas, baús externos, máquinas, cercas, fon
 Deve ter reparo, mitigação, prevenção ou recuperação.
 ```
 
-## 39. Tipos futuros de invasão
+## 46. Tipos futuros de invasão
 
 ```text
 beasts atacando animais/crops
@@ -1145,53 +1333,11 @@ sombras/Nyx gerando evento noturno raro
 Pedra Negra corrompendo área temporária
 ```
 
-## 40. Objetivos futuros de invasores
-
-```text
-roubar item/recurso
-quebrar cerca/estrutura leve
-contaminar crop/solo
-assustar animais
-atacar pet/companion apenas como ameaça tática, sem morte permanente sem sistema próprio
-canalizar ritual
-proteger portal temporário
-fugir com loot
-chamar reforço
-```
-
-Regra futura:
-
-```text
-Dano permanente à fazenda deve ser limitado, reparável e sinalizado.
-Não criar perda irreversível sem decisão clara do jogador.
-```
-
-## 41. Defesas futuras da fazenda
-
-```text
-cercas
-iluminação
-cachorro/pet alertando
-companion guard duty
-espantalho/wards mágicos
-altares divinos com bônus de proteção
-armadilhas leves
-sino de alerta
-reputação com cidade atraindo ajuda
-```
-
-Regra futura:
-
-```text
-Defesas devem reduzir risco, atrasar invasores ou alterar comportamento.
-Defesas não devem transformar tudo em tower defense obrigatório.
-```
-
 ---
 
-# PARTE L — Data assets e contratos futuros
+# PARTE N — Data assets e contratos futuros
 
-## 42. Data assets esperados
+## 47. Data assets esperados
 
 ```text
 EnemyDataSO
@@ -1209,7 +1355,7 @@ EnemyInvasionProfileSO futuro
 LootTableSO
 ```
 
-## 43. EnemyBrainProfileSO explicado
+## 48. EnemyBrainProfileSO explicado
 
 | Campo | Significado |
 |---|---|
@@ -1230,7 +1376,7 @@ LootTableSO
 | AllowedContexts | Cave, BossGate, FutureFarm etc. |
 | DebugTags | filtros de debug |
 
-## 44. EnemyBehaviorProfileSO explicado
+## 49. EnemyBehaviorProfileSO explicado
 
 | Campo | Significado |
 |---|---|
@@ -1254,7 +1400,7 @@ Perfis devem ser combináveis.
 Não criar uma classe nova para cada monstro se a variação puder ser feita por módulos e dados.
 ```
 
-## 45. EnemyObjectiveProfileSO futuro
+## 50. EnemyObjectiveProfileSO futuro
 
 Apenas para eventos/fazenda/cidade futuros.
 
@@ -1281,9 +1427,9 @@ Não implementar este asset agora sem roadmap específico de eventos objetivos.
 
 ---
 
-# PARTE M — Telemetria e validação
+# PARTE O — Telemetria e validação
 
-## 46. Telemetria de IA
+## 51. Telemetria de IA
 
 Registrar em Play Mode:
 
@@ -1313,7 +1459,7 @@ recursos roubados
 recovery/reparo pós-invasão
 ```
 
-## 47. Validação humana
+## 52. Validação humana
 
 Perguntas de validação:
 
@@ -1330,25 +1476,20 @@ A IA parecia variar sem parecer aleatória?
 O comportamento veio de módulos reutilizáveis ou de exceção hardcoded?
 ```
 
-Perguntas futuras para farm invasion:
-
-```text
-Invasão pareceu evento interessante, não punição arbitrária?
-Dano a crops/estruturas foi sinalizado e recuperável?
-O jogador teve aviso e resposta possível?
-```
-
 ---
 
-# PARTE N — Decisões fechadas
+# PARTE P — Decisões fechadas
 
 ```text
 Enemy Behaviors é documento transversal; não fica preso à caverna.
+Enemy Behaviors é fonte canônica da taxonomia geral de Move, Behavior, Trait, EnemyAction e EnemyBrain.
+Cave Monster Roster continua fonte canônica das criaturas concretas, stats, drops, packs, bosses e scaling da caverna.
 Farm invasion é futuro explícito e não deve gerar specs atuais.
 Cidade/eventos hostis também são futuro explícito.
-Caverna continua com roster canônico próprio.
-Moves oficiais da caverna vêm do CAVE_MONSTER_ROSTER_DIRECTION.md.
-Specs devem reutilizar Moves oficiais antes de criar novos.
+Moves oficiais refatorados do roster da caverna agora vivem como taxonomia geral neste documento.
+BehaviorProfiles oficiais refatorados do roster da caverna agora vivem como taxonomia geral neste documento.
+Traits são modificadores categorizados, não comportamento completo.
+Specs devem reutilizar Moves/BehaviorProfiles/Traits oficiais antes de criar novos.
 Hearing/audição não será elemento de IA por enquanto.
 Comportamentos são injetáveis por profiles/modules, não classes totalmente fixas.
 EnemyBrain deve ser orientado por percepção, intenção, alvo, movimento, ação, recurso, reação, pack, leash e estado.
@@ -1365,9 +1506,9 @@ Pet e companion são considerados pelo EnemyBrain, mas não devem ser sempre ign
 
 ---
 
-# PARTE O — Pendências para specs futuras
+# PARTE Q — Pendências para specs futuras
 
-## 48. Specs atuais úteis
+## 53. Specs atuais úteis
 
 ```text
 Definir EnemyBrain runtime architecture.
@@ -1380,11 +1521,12 @@ Definir EnemyTargetPriorityProfile.
 Definir EnemyLeashRules.
 Definir PackCoordinationRules.
 Definir ReactionRules para Block/Dodge/Dash/ranged/magic/companion/pet.
+Definir CaveMonsterRosterToEnemyDataSO conversion spec.
 Definir telemetria de IA em Play Mode.
 Validar em Unity pathfinding, body blocking, telegraph, windows e Dash longo.
 ```
 
-## 49. Specs futuras, não atuais
+## 54. Specs futuras, não atuais
 
 ```text
 Definir FarmInvasionProfileSO.
