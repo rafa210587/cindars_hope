@@ -209,6 +209,7 @@ docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_ENEMY_BEHAVIOR_ADAPTER.md
 docs/design/gameplay/cave/CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md
 docs/design/gameplay/cave/CAVE_MONSTER_VISUAL_SPRITE_DIRECTION.md
 docs/design/gameplay/combat/COMBAT_CORE_DIRECTION.md
+docs/design/gameplay/combat/STATUS_EFFECTS_DIRECTION.md
 docs/design/gameplay/enemies/ENEMY_BEHAVIORS_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_WEAPONS_ARMOR_MATERIALS_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_MECHANICAL_BASELINES_DIRECTION.md
@@ -241,6 +242,9 @@ CAVE_MONSTER_VISUAL_SPRITE_DIRECTION.md
 COMBAT_CORE_DIRECTION.md
   regras gerais de combate, inputs, HP/MP/Stamina, ataque, block, dodge, dash, dano, armor, vulnerabilidades, bosses, HUD e telemetria.
 
+STATUS_EFFECTS_DIRECTION.md
+  significado mecânico de Bleed, Burn, Chill, Poison, Stun, Root, Fear, ConfusionLite, DurabilityStress e Corruption.
+
 ENEMY_BEHAVIORS_DIRECTION.md
   taxonomia geral de Move, BehaviorProfile, Trait, EnemyAction, EnemyBrain, módulos injetáveis, pack coordination e leash.
 
@@ -248,10 +252,10 @@ EQUIPMENT_WEAPONS_ARMOR_MATERIALS_DIRECTION.md
   direção geral de armas, armaduras, escudos, materiais, resistências, durabilidade, crafting, loot de componentes e balance contra famílias de inimigos.
 
 EQUIPMENT_MECHANICAL_BASELINES_DIRECTION.md
-  baselines mecânicos de WeaponDamage, ASPD, scaling por atributo, custo de Stamina, range, peso, armor, shield, arrows, wands, scrolls e focuses.
+  baselines mecânicos de WeaponDamage, ASPD, scaling por atributo, custo de Stamina, charged effects, range, peso, armor, shield, arrows, wands, scrolls e focuses.
 
 EQUIPMENT_ENEMY_VULNERABILITY_ADAPTER.md
-  ponte entre tags de equipamento e vulnerabilidades de inimigos, incluindo MaterialVulnerability.
+  contrato de matching entre tags de equipamento e vulnerabilidades de inimigos, incluindo MaterialVulnerability, sem duplicar matriz por família.
 ```
 
 Specs de caverna que tocam runtime já existente devem ler também:
@@ -293,6 +297,7 @@ bosses
 boss phases
 vulnerabilities
 critical windows
+status effects
 enemy brain
 enemy action selection
 enemy stamina/MP use
@@ -309,6 +314,8 @@ armor/resistance balance
 component loot tables
 MaterialVulnerability
 arrows/bows/wands/scrolls counters
+charged effects
+Bleed/Burn/Chill/Poison consistency
 checkpoints
 Elyndor portals
 Bromecia ruins
@@ -355,6 +362,7 @@ Fontes obrigatórias:
 
 ```text
 docs/design/gameplay/combat/COMBAT_CORE_DIRECTION.md
+docs/design/gameplay/combat/STATUS_EFFECTS_DIRECTION.md
 docs/design/gameplay/enemies/ENEMY_BEHAVIORS_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_WEAPONS_ARMOR_MATERIALS_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_MECHANICAL_BASELINES_DIRECTION.md
@@ -393,6 +401,7 @@ posture/stagger
 guard break
 weapon actions
 magic combat actions
+status effects
 equipment modifiers
 weapon damage
 ASPD
@@ -418,6 +427,7 @@ spec_combat_critical_windows_vulnerability_contract.md
 spec_combat_weapon_actions_light_heavy_charged.md
 spec_combat_magic_actions_mp_casting.md
 spec_combat_posture_stagger_guardbreak.md
+spec_combat_status_effects_runtime.md
 spec_combat_hud_feedback_telemetry.md
 ```
 
@@ -432,6 +442,7 @@ Fontes obrigatórias:
 ```text
 docs/design/gameplay/enemies/ENEMY_BEHAVIORS_DIRECTION.md
 docs/design/gameplay/combat/COMBAT_CORE_DIRECTION.md
+docs/design/gameplay/combat/STATUS_EFFECTS_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_WEAPONS_ARMOR_MATERIALS_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_MECHANICAL_BASELINES_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_ENEMY_VULNERABILITY_ADAPTER.md
@@ -463,6 +474,9 @@ enemy component drops
 MaterialVulnerability
 ResistanceTags
 ImmunityTags
+StatusVulnerability
+BodyTags
+FamilyTags
 ```
 
 Não usar em specs atuais sem nova decisão de roadmap:
@@ -557,6 +571,7 @@ docs/design/gameplay/equipment/EQUIPMENT_WEAPONS_ARMOR_MATERIALS_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_MECHANICAL_BASELINES_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_ENEMY_VULNERABILITY_ADAPTER.md
 docs/design/gameplay/combat/COMBAT_CORE_DIRECTION.md
+docs/design/gameplay/combat/STATUS_EFFECTS_DIRECTION.md
 docs/design/gameplay/player/PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md
 docs/design/gameplay/player/PLAYER_SKILL_TREES_DIRECTION.md
 docs/design/gameplay/enemies/ENEMY_BEHAVIORS_DIRECTION.md
@@ -582,6 +597,7 @@ WeaponDamage
 ASPD
 attribute scaling
 weapon actions
+charged effects
 equipment slots
 armor weight
 stamina cost modifiers
@@ -589,6 +605,7 @@ BlockPower/BlockStability gear
 resistances
 durability
 DurabilityStress
+status tags
 bows/arrows/ammo
 wands
 scrolls/pergaminhos
@@ -606,6 +623,7 @@ Specs recomendadas derivadas:
 ```text
 spec_equipment_item_so_contract.md
 spec_weapon_data_so_contract.md
+spec_weapon_charged_effect_profiles.md
 spec_armor_shield_accessory_data_contract.md
 spec_material_tiers_and_modifiers.md
 spec_equipment_mechanical_baselines_runtime.md
@@ -625,6 +643,7 @@ Specs de magia devem ler:
 
 ```text
 docs/design/gameplay/combat/COMBAT_CORE_DIRECTION.md
+docs/design/gameplay/combat/STATUS_EFFECTS_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_WEAPONS_ARMOR_MATERIALS_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_MECHANICAL_BASELINES_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_ENEMY_VULNERABILITY_ADAPTER.md
@@ -638,6 +657,7 @@ Specs de companions/pets em combate devem ler:
 
 ```text
 docs/design/gameplay/combat/COMBAT_CORE_DIRECTION.md
+docs/design/gameplay/combat/STATUS_EFFECTS_DIRECTION.md
 docs/design/gameplay/enemies/ENEMY_BEHAVIORS_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_WEAPONS_ARMOR_MATERIALS_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_MECHANICAL_BASELINES_DIRECTION.md
@@ -653,6 +673,7 @@ Specs de HUD gameplay/combat devem ler:
 
 ```text
 docs/design/gameplay/combat/COMBAT_CORE_DIRECTION.md
+docs/design/gameplay/combat/STATUS_EFFECTS_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_WEAPONS_ARMOR_MATERIALS_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_MECHANICAL_BASELINES_DIRECTION.md
 docs/design/gameplay/player/PLAYER_CORE_SYSTEMS_DIRECTION.md
@@ -688,10 +709,12 @@ Nem toda janela comportamental gera crítico automático.
 Enemy Behaviors é fonte canônica geral de Move, BehaviorProfile, Trait, EnemyAction e EnemyBrain.
 Cave Monster Roster é fonte canônica das criaturas concretas, stats, drops, packs, bosses e scaling da caverna.
 Cave Monster Roster Enemy Behavior Adapter é ponte obrigatória para converter o roster em runtime.
+Status Effects é fonte canônica do significado mecânico de Bleed, Burn, Chill, Poison, Stun, Root, Fear, ConfusionLite, DurabilityStress e Corruption.
 Equipment Weapons Armor Materials é fonte canônica de direção geral de armas, armaduras, escudos, materiais, durabilidade, upgrades e balance de gear contra famílias de inimigos.
-Equipment Mechanical Baselines é fonte canônica de baseline mecânico inicial: WeaponDamage, ASPD, scaling por atributo, StaminaCost, range, armor, shield, arrows, wands, scrolls, tomes e focuses.
-Equipment Enemy Vulnerability Adapter é fonte canônica da ponte entre tags de equipamentos e vulnerabilidades de inimigos, incluindo MaterialVulnerability.
+Equipment Mechanical Baselines é fonte canônica de baseline mecânico inicial: WeaponDamage, ASPD, scaling por atributo, StaminaCost, charged effects, range, armor, shield, arrows, wands, scrolls, tomes e focuses.
+Equipment Enemy Vulnerability Adapter é fonte canônica da ponte entre tags de equipamentos e vulnerabilidades de inimigos, incluindo MaterialVulnerability, sem duplicar matriz por família.
 MaterialVulnerability deve existir em specs futuras de EnemyDataSO.
+Vulnerabilidades por família/inimigo ficam em Cave Combat Balance, Cave Monster Roster e EnemyDataSO futuro; não em documentos de equipment.
 Farm invasion, town hostile events e world enemy events são backlog futuro; não entram em specs atuais sem nova decisão de roadmap.
 Hearing/audição não é elemento atual de IA inimiga.
 ```
