@@ -6,9 +6,11 @@
 > **Depende de:**  
 > - `docs/design/gameplay/player/PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md`  
 > - `docs/design/gameplay/combat/COMBAT_CORE_DIRECTION.md`  
+> - `docs/design/gameplay/combat/STATUS_EFFECTS_DIRECTION.md`  
 > - `docs/design/gameplay/cave/CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md`  
 > - `docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_DIRECTION.md`  
 > - `docs/design/gameplay/enemies/ENEMY_BEHAVIORS_DIRECTION.md`  
+> - `docs/design/gameplay/equipment/EQUIPMENT_ENEMY_VULNERABILITY_ADAPTER.md`  
 > **Função:** explicitar os stats mecânicos iniciais de armas, armaduras, escudos, acessórios, arrows, wands, scrolls e materiais para specs futuras.  
 > **Não é spec implementável.** Os valores são baseline de balance/playtest, não garantia final.
 
@@ -24,7 +26,7 @@ qual ASPD inicial de cada arma?
 qual atributo escala cada item?
 quanto pesa uma armor?
 quanto altera Stamina?
-qual material causa qual vulnerabilidade?
+qual efeito charged cada arma pode ter?
 como bow/arrows funcionam?
 como wands/scrolls entram no sistema mágico?
 ```
@@ -34,6 +36,8 @@ Regra:
 ```text
 Os valores abaixo são baseline inicial de teste.
 Specs futuras podem ajustar com telemetria, mas não devem inventar outro modelo sem registrar decisão.
+Este documento define stats e tags aplicadas por equipamento.
+Vulnerabilidades por família/inimigo pertencem ao roster/enemy data e ao Cave Combat Balance.
 ```
 
 ---
@@ -54,10 +58,10 @@ Uso com equipamentos:
 AttackDamage = (BaseAttack + WeaponDamage + EquipmentFlatDamage)
              * WeaponScaling
              * AttackActionMultiplier
-             * MaterialEnemyMultiplier
              * (1 + SkillDamageBonus)
              * (1 + BuffDamageBonus)
              * EnemyResistanceMultiplier
+             * VulnerabilityMultiplier quando aplicável
 ```
 
 Definições:
@@ -78,11 +82,11 @@ WeaponScaling
 AttackActionMultiplier
   light, heavy, charged, special, bow charged etc.
 
-MaterialEnemyMultiplier
-  bônus condicional quando material/damage type explora vulnerabilidade do inimigo.
-
 EnemyResistanceMultiplier
-  resistência/vulnerabilidade final do inimigo.
+  resistência final do inimigo.
+
+VulnerabilityMultiplier
+  só aplica se o inimigo declarar vulnerabilidade compatível nos dados.
 ```
 
 Regra:
@@ -109,10 +113,12 @@ PostureDamageModifier
 CritChanceModifier
 CritDamageModifier
 WeightClass
-MaterialSlots
+MaterialTagsApplied
+StatusTagsApplied
 AllowedAmmoType
 AllowedDamageTypes
 DefaultActionSet
+ChargedEffectProfileId
 ```
 
 ## 3. Campos mínimos de ArmorDataSO
@@ -157,22 +163,23 @@ DurabilityMax
 
 Valores iniciais usando tier Aço como referência média.
 
-| WeaponType | WeaponDamage aço | ASPD base | Atributo primário | Secundário | Scaling sugerido | Light STA | Heavy STA | Range | Peso | Papel |
-|---|---:|---:|---|---|---|---:|---:|---:|---|---|
-| Sword | 12 | 1.20/s | Força | Destreza | FOR 70% / DES 30% | 25 | 40 | 1.25 tiles | Médio | baseline |
-| Axe | 15 | 0.90/s | Força | Constituição | FOR 85% / CON 15% | 31 | 50 | 1.20 tiles | Médio/Pesado | dano/corte |
-| Hammer | 17 | 0.75/s | Força | Constituição | FOR 90% / CON 10% | 36 | 58 | 1.10 tiles | Pesado | posture/armor |
-| Spear | 11 | 1.05/s | Destreza | Força | DES 60% / FOR 40% | 24 | 42 | 1.70 tiles | Médio | alcance/pierce |
-| Dagger | 7 | 1.75/s | Destreza | Força | DES 80% / FOR 20% | 16 | 28 | 0.85 tiles | Leve | crit/velocidade |
-| Bow | 10 | 0.85/s | Destreza | Inteligência | DES 75% / INT 25% | 22 | 38 charged | 5.5-7.0 tiles | Leve/Médio | ranged |
-| Staff | 6 físico / 10 mágico | 0.90/s | Vontade | Inteligência | VON 55% / INT 45% | 18 físico | 0-STA / MP em magia | 1.10 físico / 5.0 mágico | Leve | magia/suporte |
-| ToolAttack | 6-12 | 0.70-1.00/s | Força | Inteligência | depende da tool | 28-45 | 45-65 | curto | varia | emergência |
+| WeaponType | WeaponDamage aço | ASPD base | Atributo primário | Secundário | Scaling sugerido | Light STA | Heavy STA | Charged STA | Range | Peso | Papel |
+|---|---:|---:|---|---|---|---:|---:|---:|---:|---|---|
+| Sword | 12 | 1.20/s | Força | Destreza | FOR 70% / DES 30% | 25 | 40 | 48 | 1.25 tiles | Médio | baseline/aparo |
+| Axe | 15 | 0.90/s | Força | Constituição | FOR 85% / CON 15% | 31 | 50 | 60 | 1.20 tiles | Médio/Pesado | dano/corte/bleed |
+| Hammer | 17 | 0.75/s | Força | Constituição | FOR 90% / CON 10% | 36 | 58 | 70 | 1.10 tiles | Pesado | posture/knockback |
+| Spear | 11 | 1.05/s | Destreza | Força | DES 60% / FOR 40% | 24 | 42 | 52 | 1.70 tiles | Médio | alcance/pierce |
+| Dagger | 7 | 1.75/s | Destreza | Força | DES 80% / FOR 20% | 16 | 28 | 36 | 0.85 tiles | Leve | crit/velocidade |
+| Bow | 10 | 0.85/s | Destreza | Inteligência | DES 75% / INT 25% | 22 | 38 charged | 44 full draw | 5.5-7.0 tiles | Leve/Médio | ranged/mark |
+| Staff | 6 físico / 10 mágico | 0.90/s | Vontade | Inteligência | VON 55% / INT 45% | 18 físico | 0-STA / MP em magia | MP based | 1.10 físico / 5.0 mágico | Leve | magia/suporte |
+| ToolAttack | 6-12 | 0.70-1.00/s | Força | Inteligência | depende da tool | 28-45 | 45-65 | custom | curto | varia | emergência |
 
 Regras:
 
 ```text
 ASPD é ataques por segundo antes de recovery, peso, status e skills.
 Heavy não usa ASPD puro; usa windup/recovery próprio.
+Charged é uma variação de alto risco com efeito especial por arma.
 Dagger ataca mais vezes, mas cada hit causa menos dano e sofre contra armor.
 Hammer causa mais posture e armor pressure, mas custa caro e erra mais facilmente contra alvos rápidos.
 Bow depende de arrows/ammo/line of sight e sofre pressão de flankers/swarms.
@@ -189,6 +196,7 @@ Staff físico é fraco; seu valor real vem de MP, MagicPower, wands, scrolls e s
 | ChargedAttack longo | x1.90 | x2.20 | alto risco |
 | BowQuickShot | x0.85 | x0.60 | rápido/seguro |
 | BowChargedShot | x1.50 | x1.10 | bom contra flying/caster |
+| BowFullDrawShot | x1.75 | x1.25 | alto risco, melhor Mark chance |
 | StaffBasicBolt | x1.00 mágico | x0.40 | usa MP ou carga, não Stamina física |
 | ToolAttack | x0.70-x0.95 | x0.80-x1.30 | depende de tool |
 
@@ -200,9 +208,163 @@ Heavy/Charged só compensam se o jogador usa janela, postura, armor counter ou r
 
 ---
 
-# PARTE C — Material/tier modificando armas
+# PARTE C — Charged effects por arma
 
-## 7. WeaponDamage por tier/material
+## 7. Regra geral de charged effect
+
+Cada arma deve ter um efeito de charged attack que reforça sua identidade.
+
+Regras:
+
+```text
+Charged effect não deve ser garantido sempre.
+Chance baixa/moderada por padrão.
+Chance pode subir com skill, material, janela crítica, status do alvo ou capstone.
+Efeito não deve ignorar resistência/imunidade do inimigo.
+Efeito deve ter cooldown interno ou regra anti-spam quando puder quebrar balance.
+```
+
+## 8. Tabela de charged effects
+
+| WeaponType | ChargedEffect | Chance base | O que faz | Não funciona bem contra | Observação |
+|---|---|---:|---|---|---|
+| Sword | ParryWindow / Aparar | 8%-12% | se usado contra ataque melee durante janela curta, reduz dano e abre MinorOpening | projéteis, AoE, boss unblockable | chance sobe com Destreza/Melee/escudo leve |
+| Axe | Bleed / Sangramento | 18%-28% | aplica Bleed em alvo vivo vulnerável | undead, constructs, elementais minerais, slimes | usa STATUS_EFFECTS_DIRECTION.md |
+| Hammer | Knockback / Empurrão | 12%-20% | empurra alvo pequeno/médio e causa posture extra | bosses, Huge, RootedGuard pesado | pode causar ArmorCracked em construct/armor se vulnerável |
+| Spear | Impale / Perfuração | 12%-18% | aumenta Pierce e chance de interromper charge/leap | shield/tank frontal, construct pesado | forte em AfterChargeMiss/WingExposed |
+| Dagger | Focused Critical | +20%-35% crit chance condicional | aumenta crit chance no próximo hit charged | armor pesada/construct | melhor contra BackTurned/CriticalWindow |
+| Bow | Mark / Marcar | 20%-35% | aplica Marked curto, melhorando crit/ranged follow-up | shielded/untargetable | full draw aumenta chance |
+| Staff | Arcane Channel | 100% se cast completo | converte charged em spell/foco, gasta MP | silence/interrupt/sem MP | efeito depende da spell/focus |
+| ToolAttack | Utility Break | custom | maior dano contra node/obstáculo/construct frágil | combat elite/boss | não substitui arma |
+
+## 9. Sword charged — Aparar
+
+```text
+Sword charged cria uma janela curta de aparo.
+Se o inimigo usa melee direto durante essa janela, o jogador reduz parte do dano e pode abrir MinorOpening.
+Não é Block completo.
+Não substitui Shield/Block.
+Não funciona contra AoE, magia de zona, breath, boss unblockable ou projétil salvo skill futura.
+```
+
+Baseline:
+
+```text
+ParryWindow: 0.18s-0.28s
+BaseChance: 8%-12% se timing correto
+DamageReductionOnSuccess: 30%-50%
+MinorOpeningDuration: 0.35s-0.65s
+```
+
+## 10. Axe charged — Bleed
+
+```text
+Axe charged tem chance de aplicar Bleed em alvos vivos vulneráveis.
+Bleed é definido em STATUS_EFFECTS_DIRECTION.md.
+Axe não deve causar Bleed relevante em construct, undead, elemental mineral ou slime sem anatomia compatível.
+```
+
+Baseline:
+
+```text
+BaseBleedChance: 18%-28%
+BleedDuration: usar StatusEffectDataSO
+Stack: respeita cap do status
+ExtraRule: se acertar CriticalWindow, chance pode subir moderadamente
+```
+
+## 11. Hammer charged — Knockback / ArmorCracked
+
+```text
+Hammer charged pode empurrar inimigos pequenos/médios e causar posture extra.
+Contra inimigos blindados/constructs vulneráveis, pode aplicar ArmorCracked em vez de knockback.
+```
+
+Baseline:
+
+```text
+BaseKnockbackChance: 12%-20%
+KnockbackDistance: 0.5-1.5 tiles conforme size/weight
+PostureBonus: +25%-45%
+ArmorCrackedChance contra vulnerável: 10%-18%
+```
+
+Regras:
+
+```text
+Bosses não devem ser empurrados salvo mecânica explícita.
+Huge/Large reduzem knockback.
+Knockback não deve jogar inimigo através de parede/collider.
+```
+
+## 12. Spear charged — Impale
+
+```text
+Spear charged é perfuração precisa.
+Pode interromper charge/leap de inimigos vulneráveis e causar bônus em asas/pontos expostos sem exigir sistema de mira por parte corporal.
+```
+
+Baseline:
+
+```text
+ImpaleBonusPierce: +15%-25%
+InterruptChanceVsChargeOrLeap: 12%-25%
+Wing/Weakpoint window bonus: usa vulnerabilidade do inimigo
+```
+
+## 13. Dagger charged — Focused Critical
+
+```text
+Dagger charged sacrifica tempo/risco para aumentar chance de crítico.
+Não garante crítico fora de CriticalWindow.
+Em CriticalWindow, pode melhorar crit damage ou reduzir recovery de follow-up conforme skill.
+```
+
+Baseline:
+
+```text
+CritChanceBonus: +20%-35% no hit charged
+CritDamageBonus: +0%-15% se skill/material permitir
+RecoveryPenalty: maior se errar
+```
+
+## 14. Bow charged — Mark
+
+```text
+Bow charged/full draw pode aplicar Marked.
+Marked aumenta a eficiência de follow-up ranged/crit por curta duração.
+```
+
+Baseline:
+
+```text
+MarkedChance charged: 20%-35%
+MarkedDuration: 3s-6s
+MarkedEffect: +10%-20% crit chance ranged ou +10%-15% damage ranged, não ambos altos sem skill
+```
+
+## 15. Staff charged — Arcane Channel
+
+```text
+Staff charged não é apenas pancada física.
+Ele canaliza magia do staff/focus/spell equipada.
+Gasta MP, pode ser interrompido e depende de INT/VON/Magic skill.
+```
+
+Baseline:
+
+```text
+CastWindup: 0.6s-1.2s
+MPCost: definido pela spell/focus
+Interruptible: sim por padrão
+Effect: bolt, barrier, heal, purify, elemental burst ou support, conforme action equipada
+```
+
+---
+
+# PARTE D — Material/tier modificando armas
+
+## 16. WeaponDamage por tier/material
 
 Aplicar como modificador ao `WeaponDamage aço` ou como tabela específica por item.
 
@@ -231,38 +393,38 @@ Prata não é melhor contra tudo; é counter espiritual.
 Pedra Negra estabilizada exige gating e risco.
 ```
 
-## 8. MaterialEnemyMultiplier
+## 17. Tags aplicadas por material/equipamento
 
-Só aplica se o inimigo declarar vulnerabilidade por família, roster, tag ou spec.
+Este documento só define tags que itens aplicam.
 
-| Material/Efeito | Vulnerabilidade exigida no inimigo | Multiplicador alvo | Observação |
-|---|---|---:|---|
-| Prata | MaterialVulnerability: Silver / Undead / Shadow / Curse / CorruptionLight | x1.25-x1.45 | não universal |
-| Aço refinado | ArmorVulnerability / PhysicalMedium | x1.05-x1.15 | bônus pequeno |
-| Mithril | FastWindow / MobilityCounter | não dano direto | melhora execução/custo |
-| Liga bromeciana | Construct / Machine / Protocol | x1.15-x1.35 | melhor em technical gear |
-| Cristal arcano | ArcaneVulnerability | x1.15-x1.35 | depende de MP/spell |
-| Fire Oil | FireVulnerability / BurnVulnerability | x1.20-x1.40 | consumível/cargas |
-| Frost Oil | IceVulnerability / ChillVulnerability | x1.15-x1.35 | bom contra Kaand/fire/beasts específicos |
-| Shock Oil | LightningVulnerability / Overload | x1.20-x1.45 | constructs/duergar tech |
-| Purifying Oil | Light/Radiant / Corruption / Undead | x1.25-x1.50 | raro/caro |
-| Poison Coating | PoisonVulnerability | x1.10-x1.30 | inútil contra undead/construct |
-| Bleed Edge | BleedVulnerability | x1.10-x1.35 | inútil contra constructs/undead sem carne |
-| Blackstone Edge | BlackstoneVulnerability ou CorruptionInteraction | custom | late/endgame, risco |
+```text
+Silver
+FireOil
+FrostOil
+ShockOil
+PurifyingOil
+PoisonCoating
+BleedEdge
+BlackstoneEdge
+BromecianAlloy
+ArcaneCrystal
+StabilizedBlackstone
+ManaInfused
+```
 
 Regra:
 
 ```text
-Item não cria vulnerabilidade do nada por padrão.
-Item aplica DamageType/Material/Status.
-O inimigo precisa ter vulnerabilidade/resistência compatível nos dados.
+O cálculo de bônus contra inimigos usa EQUIPMENT_ENEMY_VULNERABILITY_ADAPTER.md.
+A lista de vulnerabilidades por família/inimigo fica em CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md e no EnemyDataSO derivado do roster.
+Este documento não deve duplicar matriz de vulnerabilidade por família.
 ```
 
 ---
 
-# PARTE D — Bows, arrows e munição
+# PARTE E — Bows, arrows e munição
 
-## 9. Bow baseline
+## 18. Bow baseline
 
 Bow usa arma + arrow.
 
@@ -281,25 +443,25 @@ Baseline:
 | Mithril | 11 | 0.95/s | 0.75s | 7.0 tiles | 19 | 34 |
 | Arcano/Mana | 8 físico / +magic channel | 0.80/s | 0.90s | 6.5 tiles | 20 | 32 + MP se mágico |
 
-## 10. Arrow baseline
+## 19. Arrow baseline
 
-| ArrowType | ArrowDamage | DamageType | Efeito | Recurso |
-|---|---:|---|---|---|
-| WoodenArrow | +2 | Pierce | básica | comum |
-| IronArrow | +4 | Pierce | baseline | comum |
-| SteelArrow | +6 | Pierce | mid | comum/mid |
-| SilverArrow | +4 | Pierce + Silver | anti-undead/shadow | cara |
-| FireArrow | +3 | Pierce + Fire | chance Burn baixa | craft/óleo |
-| FrostArrow | +3 | Pierce + Ice | chance Chill baixa | craft/óleo |
-| ShockArrow | +3 | Pierce + Lightning | overload construct | craft/óleo |
-| BarbedArrow | +2 | Pierce + Bleed | chance Bleed | craft |
-| ArcaneArrow | +2 físico + magic | Arcane | usa carga/MP | rara |
-| PurifyingArrow | +2 físico + radiant | Light/Radiant | anti-corruption | rara |
+| ArrowType | ArrowDamage | DamageType | Tags aplicadas | Efeito | Recurso |
+|---|---:|---|---|---|---|
+| WoodenArrow | +2 | Pierce | WoodenArrow | básica | comum |
+| IronArrow | +4 | Pierce | IronArrow | baseline | comum |
+| SteelArrow | +6 | Pierce | SteelArrow | mid | comum/mid |
+| SilverArrow | +4 | Pierce + Silver | SilverArrow, Silver | anti-undead/shadow se vulnerável | cara |
+| FireArrow | +3 | Pierce + Fire | FireArrow, Fire | chance Burn baixa | craft/óleo |
+| FrostArrow | +3 | Pierce + Ice | FrostArrow, Ice | chance Chill baixa | craft/óleo |
+| ShockArrow | +3 | Pierce + Lightning | ShockArrow, Lightning | overload se vulnerável | craft/óleo |
+| BarbedArrow | +2 | Pierce + Bleed | BarbedArrow, Bleed | chance Bleed | craft |
+| ArcaneArrow | +2 físico + magic | Arcane | ArcaneArrow, Arcane | usa carga/MP | rara |
+| PurifyingArrow | +2 físico + radiant | Light/Radiant | PurifyingArrow, Light/Radiant | anti-corruption se vulnerável | rara |
 
 Regras:
 
 ```text
-Arrow define dano secundário e efeito.
+Arrow define dano secundário e tags aplicadas.
 Bow define cadência, range e parte do dano base.
 Arrow elemental só recebe bônus se inimigo tiver vulnerabilidade compatível.
 Arrows especiais devem ser consumíveis/cargas, não infinitas no early game.
@@ -307,9 +469,9 @@ Arrows especiais devem ser consumíveis/cargas, não infinitas no early game.
 
 ---
 
-# PARTE E — Magic items: wands, scrolls, tomes e focuses
+# PARTE F — Magic items: wands, scrolls, tomes e focuses
 
-## 11. Categorias mágicas
+## 20. Categorias mágicas
 
 ```text
 Staff
@@ -331,18 +493,18 @@ Rune / Sigil
   componente ou socket futuro.
 ```
 
-## 12. Wand baseline
+## 21. Wand baseline
 
 Wand é equipamento/carga, não substitui build de magia completa.
 
-| WandType | MagicDamage | MP Cost | Charges | Scaling | Uso |
-|---|---:|---:|---:|---|---|
-| SimpleWand | 10 | 4 | 20 | INT 50% / VON 50% | projétil básico |
-| FireWand | 12 Fire | 5 | 15 | INT 60% / VON 40% | burn leve |
-| FrostWand | 10 Ice | 5 | 15 | INT 50% / VON 50% | chill leve |
-| ShockWand | 11 Lightning | 6 | 12 | INT 65% / VON 35% | overload construct |
-| PurifyingWand | 9 Light/Radiant | 7 | 10 | VON 70% / INT 30% | anti-undead/corruption |
-| BlackstoneWand | 15 Corruption | custom | baixa | INT/VON custom | late, risco |
+| WandType | MagicDamage | MP Cost | Charges | Scaling | Tags aplicadas | Uso |
+|---|---:|---:|---:|---|---|---|
+| SimpleWand | 10 | 4 | 20 | INT 50% / VON 50% | Arcane | projétil básico |
+| FireWand | 12 Fire | 5 | 15 | INT 60% / VON 40% | Fire, WandFire | burn leve |
+| FrostWand | 10 Ice | 5 | 15 | INT 50% / VON 50% | Ice, WandFrost | chill leve |
+| ShockWand | 11 Lightning | 6 | 12 | INT 65% / VON 35% | Lightning, WandShock | overload se vulnerável |
+| PurifyingWand | 9 Light/Radiant | 7 | 10 | VON 70% / INT 30% | Light/Radiant, WandPurifying | anti-undead/corruption se vulnerável |
+| BlackstoneWand | 15 Corruption | custom | baixa | INT/VON custom | Corruption, WandBlackstone | late, risco |
 
 Regras:
 
@@ -352,19 +514,19 @@ Wands permitem magia utilitária sem build completa, mas não devem superar staf
 Wands especiais devem ter custo, carga, cooldown ou risco.
 ```
 
-## 13. Scroll / Pergaminho baseline
+## 22. Scroll / Pergaminho baseline
 
 Pergaminho é consumível.
 
-| ScrollType | Efeito | Scaling | Custo | Risco/limite |
-|---|---|---|---|---|
-| ScrollFireburst | AoE Fire pequeno | fixo + INT leve | consome scroll | friendly fire não no início |
-| ScrollBarrier | barrier curta | VON leve | consome scroll | cooldown global |
-| ScrollPurify | remove Corruption/Poison leve | VON leve | consome scroll | raro |
-| ScrollBlink | reposicionamento curto | fixo | consome scroll | não atravessa boss wall |
-| ScrollReveal | revela trap/treasure | INT leve | consome scroll | útil em cave |
-| ScrollRecall | retorno/checkpoint futuro | fixo | raro | não usar em boss |
-| ScrollRespecMinor futuro | ajuste pequeno | Fonte/Anya | raro | se permitido |
+| ScrollType | Efeito | Tags aplicadas | Scaling | Custo | Risco/limite |
+|---|---|---|---|---|---|
+| ScrollFireburst | AoE Fire pequeno | Fire, AreaOfEffect | fixo + INT leve | consome scroll | friendly fire não no início |
+| ScrollBarrier | barrier curta | Barrier | VON leve | consome scroll | cooldown global |
+| ScrollPurify | remove Corruption/Poison leve | Purify, Light/Radiant | VON leve | consome scroll | raro |
+| ScrollBlink | reposicionamento curto | Blink | fixo | consome scroll | não atravessa boss wall |
+| ScrollReveal | revela trap/treasure | Reveal | INT leve | consome scroll | útil em cave |
+| ScrollRecall | retorno/checkpoint futuro | Recall | fixo | raro | não usar em boss |
+| ScrollRespecMinor futuro | ajuste pequeno | Respec | Fonte/Anya | raro | se permitido |
 
 Regras:
 
@@ -374,7 +536,7 @@ Scroll não deve invalidar Magic skill tree.
 Scroll não deve trivializar boss gate.
 ```
 
-## 14. Tome / Grimório baseline
+## 23. Tome / Grimório baseline
 
 Tomes são persistentes e mais raros.
 
@@ -385,7 +547,7 @@ Pode exigir INT/VON/Skill Magic.
 Pode ser usado como gating para spell avançada.
 ```
 
-## 15. Focus / offhand mágico baseline
+## 24. Focus / offhand mágico baseline
 
 | FocusType | Efeito | Tradeoff |
 |---|---|---|
@@ -397,9 +559,9 @@ Pode ser usado como gating para spell avançada.
 
 ---
 
-# PARTE F — Armaduras baseline
+# PARTE G — Armaduras baseline
 
-## 16. Armor baseline por tipo
+## 25. Armor baseline por tipo
 
 Valores iniciais por tier Aço/Equivalente médio.
 
@@ -420,7 +582,7 @@ Armadura leve não deve dar muita mitigação.
 Robes protegem pouco fisicamente, mas podem dar MP, MagicPower, resistance espiritual ou cast.
 ```
 
-## 17. Armor por material
+## 26. Armor por material
 
 | Material | ArmorFlatMod | WeightMod | Resistência típica | Observação |
 |---|---:|---:|---|---|
@@ -437,9 +599,9 @@ Robes protegem pouco fisicamente, mas podem dar MP, MagicPower, resistance espir
 
 ---
 
-# PARTE G — Escudos baseline
+# PARTE H — Escudos baseline
 
-## 18. Shield baseline
+## 27. Shield baseline
 
 | ShieldType | BlockPowerBonus | BlockStabilityBonus | ArmorFlat | MoveMod | RegenMod | BlockHoldMod | Peso | Identidade |
 |---|---:|---:|---:|---:|---:|---:|---|---|
@@ -458,9 +620,24 @@ Buckler deve favorecer timing/perfect block, não tankar boss.
 
 ---
 
-# PARTE H — Vulnerabilidades e consistência com monstros
+# PARTE I — Consistência com vulnerabilidades de inimigos
 
-## 19. Vulnerabilidade vem do inimigo, item só aplica tag
+## 28. Fonte de vulnerabilidades
+
+Este documento não é a fonte da matriz de vulnerabilidades por família.
+
+Fontes corretas:
+
+```text
+CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md
+  vulnerabilidades por família, janelas, multiplicadores e limites.
+
+CAVE_MONSTER_ROSTER_DIRECTION.md
+  inimigos concretos e futuras tags por inimigo.
+
+EQUIPMENT_ENEMY_VULNERABILITY_ADAPTER.md
+  regra de matching entre tags de equipamento e vulnerabilidades do inimigo.
+```
 
 Regra central:
 
@@ -470,56 +647,20 @@ O inimigo precisa declarar vulnerabilidade/resistência correspondente.
 Se não declarar, o item usa dano normal ou resistência normal.
 ```
 
-Categorias que devem existir nos dados de inimigo:
+## 29. Efeitos temporários aplicados por equipamento
 
-```text
-ElementVulnerability
-StatusVulnerability
-AttackTypeVulnerability
-WeaponVulnerability
-MaterialVulnerability
-BehavioralVulnerabilityWindow
-ResistanceTags
-ImmunityTags raro
-```
+Alguns equipamentos podem aplicar estado temporário, mas isso precisa ser declarado em status/window data.
 
-## 20. MaterialVulnerability mínima por família
-
-Esta matriz deve ser refletida em specs futuras de roster/enemy data.
-
-| Família | MaterialVulnerability sugerida | Resistências relevantes |
-|---|---|---|
-| Fungal/Raiz-Negra | FireOil, PurifyingOil, AxeEdge opcional | Poison, Root/Nature |
-| Beast/Predator | Barbed/Bleed, SpearTip, BowProjectile | mental forte limitado |
-| Goblin/Kobold | Steel, Bleed, FearTools | poucas resistências |
-| Orcs de Kaand | FrostOil, Water, Hammer/Spear | Burn, Fear reduzido |
-| Duergar/Gelo | FireOil, ShockOil, Hammer/Pickaxe | Ice, Chill |
-| Undead/Sombras | Silver, PurifyingOil, Light/Radiant, BluntBone | Poison, Bleed, Fear |
-| Elementals | elemento oposto, Hammer/Pickaxe em stone/crystal | elemento próprio |
-| Constructs/Bromecianos | ShockOil, BromecianOverride, Hammer/Pickaxe | Poison, Bleed, Fear |
-| Aberrants/Observadores | Light/Radiant, ArcaneStable, BowEyeShot | Fear parcial, ConfusionLite |
-| Dracônicos/Pedra Negra | Light/Radiant, SpearPierce, BowWeakpoint, ArcaneStable | Blackstone, Fear, Burn alguns |
-
-Regra:
-
-```text
-Se o item tiver tag Silver mas o inimigo não tiver MaterialVulnerability Silver, não aplicar bônus anti-espiritual.
-Se o inimigo tiver Resistance Poison, Poison Coating deve falhar ou ser muito reduzido.
-```
-
-## 21. Efeitos que podem causar estado de vulnerabilidade temporária
-
-Alguns equipamentos podem aplicar estado temporário, mas isso precisa ser declarado.
-
-| Estado temporário | Aplicado por | Efeito | Restrições |
+| Estado temporário | Aplicado por | Efeito | Fonte canônica |
 |---|---|---|---|
-| ArmorCracked | Hammer/Heavy/Charged | +Blunt/Posture recebido | não em todos os bosses |
-| ShockOverloaded | ShockOil/Lightning/Wand | janela em constructs | exige LightningVulnerability/Construct |
-| Purified | PurifyingOil/Anya/Light | reduz corrupção/sombra | raro/caro |
-| Burning | FireOil/FireArrow/Wand | DoT + abre FireVulnerability se inimigo permitir | não contra FireResist |
-| Chilled | FrostOil/FrostArrow | slow leve + janela curta | não contra IceResist |
-| Marked | Bow skill/companion/pet | melhora crit/ranged | duração curta |
-| ExposedCore | boss/construct mechanic | CriticalWindow/CoreExposed | só por mecânica |
+| ArmorCracked | Hammer/Heavy/Charged | +Blunt/Posture recebido se inimigo permitir | Combat/Enemy specs futuras |
+| ShockOverloaded | ShockOil/Lightning/Wand | janela em constructs se vulnerável | Cave vulnerability + adapter |
+| Purified | PurifyingOil/Anya/Light | reduz corrupção/sombra | Status/Anya specs futuras |
+| Burning | FireOil/FireArrow/Wand | Burn DoT/status | STATUS_EFFECTS_DIRECTION.md |
+| Chilled | FrostOil/FrostArrow | Chill/slow leve | STATUS_EFFECTS_DIRECTION.md |
+| Bleed | Axe/Dagger/BarbedArrow/BleedEdge | dano físico por tempo | STATUS_EFFECTS_DIRECTION.md |
+| Marked | Bow skill/companion/pet | melhora crit/ranged follow-up | Combat/Skill specs futuras |
+| ExposedCore | boss/construct mechanic | CriticalWindow/CoreExposed | Cave Combat Balance |
 
 Regra:
 
@@ -529,9 +670,9 @@ Estados temporários não podem sobrescrever imunidade/resistência forte sem re
 
 ---
 
-# PARTE I — Tooltips mecânicos
+# PARTE J — Tooltips mecânicos
 
-## 22. Tooltip mínimo de arma
+## 30. Tooltip mínimo de arma
 
 Mostrar:
 
@@ -540,6 +681,7 @@ WeaponDamage
 ASPD
 Light Stamina Cost
 Heavy/Charged Stamina Cost
+ChargedEffect
 DamageType
 MaterialTag
 Atributo primário/secundário
@@ -548,7 +690,7 @@ Posture
 Crit modifier
 Peso
 Durabilidade
-Vulnerabilidades que pode explorar
+Tags aplicadas
 ```
 
 Exemplo:
@@ -557,16 +699,15 @@ Exemplo:
 Espada de Aço
 WeaponDamage: 12
 ASPD: 1.20/s
-Light: 25 STA | Heavy: 40 STA
+Light: 25 STA | Heavy: 40 STA | Charged: 48 STA
 Scaling: FOR 70% / DES 30%
 DamageType: Slash
+ChargedEffect: Aparar, chance baixa com timing
 Material: Steel
 Peso: Médio
-Boa contra: humanoides, abertura média
-Ruim contra: armor pesada/construct sem skill
 ```
 
-## 23. Tooltip mínimo de bow/arrow
+## 31. Tooltip mínimo de bow/arrow
 
 Bow:
 
@@ -577,6 +718,7 @@ Charged time
 Range
 Stamina Cost
 Scaling
+ChargedEffect: Mark
 Allowed Arrow Types
 ```
 
@@ -588,10 +730,9 @@ DamageType
 Material/StatusTag
 Chance de status
 Consumo/carga
-Famílias vulneráveis conhecidas se descobertas no bestiário
 ```
 
-## 24. Tooltip mínimo de wand/scroll
+## 32. Tooltip mínimo de wand/scroll
 
 Wand:
 
@@ -602,7 +743,7 @@ Charges
 DamageType
 Scaling INT/VON
 Cooldown
-Famílias vulneráveis conhecidas se descobertas
+Tags aplicadas
 ```
 
 Scroll:
@@ -617,10 +758,19 @@ Restrições
 
 ---
 
-# PARTE J — Decisões fechadas
+# PARTE K — Decisões fechadas
 
 ```text
 WeaponDamage, ASPD, scaling de atributo, custo de Stamina, range e peso devem existir em WeaponDataSO.
+Cada arma deve ter ChargedEffectProfileId.
+Sword charged pode aparar com chance baixa/timing e abrir MinorOpening.
+Axe charged pode aplicar Bleed em alvos vivos vulneráveis.
+Hammer charged pode causar Knockback em alvos pequenos/médios e ArmorCracked em alvos vulneráveis.
+Spear charged pode causar Impale/interrupção contra charge/leap vulnerável.
+Dagger charged aumenta chance de crítico condicional.
+Bow charged pode aplicar Marked.
+Staff charged canaliza magia/foco e gasta MP.
+Bleed é definido apenas em STATUS_EFFECTS_DIRECTION.md.
 ArmorFlat, resistência, peso, StaminaRegenMod, DashMod e DodgeRecoveryMod devem existir em ArmorDataSO.
 Escudos devem ter BlockPowerBonus, BlockStabilityBonus, peso e modificadores de Block/Stamina.
 Bows usam BowData + ArrowData; arrows definem dano secundário/status/material.
@@ -628,22 +778,25 @@ Wands usam carga e/ou MP; não substituem staff + skill tree.
 Pergaminhos são consumíveis fortes, raros conforme efeito.
 Tomes/Grimórios são persistentes e podem desbloquear spells/modificadores.
 Equipamento só explora vulnerabilidade se o inimigo declarar tag compatível.
-MaterialVulnerability deve ser adicionada aos dados futuros de inimigos junto de Element/Status/AttackType/Weapon/Window.
+Vulnerabilidades por família/inimigo não ficam neste documento; ficam em Cave Combat Balance, roster/enemy data e adapter.
 ```
 
 ---
 
-# PARTE K — Pendências para specs futuras
+# PARTE L — Pendências para specs futuras
 
 ```text
 Definir enums finais: WeaponType, ArmorType, ShieldType, DamageType, MaterialTag, StatusTag, VulnerabilityTag.
+Adicionar ChargedEffectProfileId ao contrato de WeaponDataSO.
+Criar ChargedEffectDataSO.
 Adicionar MaterialVulnerability ao contrato de EnemyDataSO.
 Criar WeaponDataSO com os campos mecânicos deste documento.
 Criar ArmorDataSO/ShieldDataSO com os campos mecânicos deste documento.
 Criar BowDataSO e ArrowDataSO.
 Criar WandDataSO, ScrollDataSO, TomeDataSO e FocusDataSO.
-Criar EquipmentTooltip UI com stats mecânicos.
-Criar EnemyFamilyEquipmentCounter table em dados.
+Criar EquipmentTooltip UI com stats mecânicos e ChargedEffect.
+Criar EnemyFamilyEquipmentCounter table em dados, derivada do roster/Cave Combat Balance.
 Validar WeaponDamage/ASPD/StaminaCost contra TTK real dos monstros do roster.
 Validar armor/Block/Stamina contra active combat budget da caverna.
+Validar Bleed contra Beast/Humanoid/Construct/Undead.
 ```
