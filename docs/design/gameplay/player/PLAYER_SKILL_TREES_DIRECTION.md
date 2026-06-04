@@ -82,6 +82,7 @@ Regra:
 ```text
 Uma skill pode ser aprendida cedo, mas seus ranks altos exigem investimento real na árvore.
 Dash base não depende da árvore; Survival melhora Dash.
+Dash longo/endgame depende de investimento real em Survival, gear leve/buffs ou efeitos específicos.
 ```
 
 ## 5. Active slots e input separado
@@ -281,7 +282,7 @@ HP Regen fora de combate
 | Estômago Forte | 1 | 1-5 | Passive | Reduz perda de fome em runs/caverna em 4/8/12/16/20%. | fome |
 | Ritmo de Jornada | 1 | 1-5 | Passive | Reduz ganho de cansaço por movimento/exploração em 4/8/12/16/20%. | cansaço reduzido |
 | Reflexo de Esquiva | 1 | 1-5 | Passive | Dodge continua base. Aumenta i-frame/reduz recovery em valores pequenos por rank. | dodge perfeito |
-| Passo de Impulso | 2 | 1-5 | Movement Modifier | Melhora Dash já desbloqueado. Reduz custo/cooldown/recovery e melhora distância moderadamente. | indicador de Dash |
+| Passo de Impulso | 2 | 1-5 | Movement Modifier | Melhora Dash já desbloqueado. Ranks baixos reduzem custo/cooldown/recovery e aumentam distância de forma moderada; ranks altos podem transformar Dash em mobilidade longa de build, respeitando o cap global de ~8 tiles definido no Combat Core. Dash longo não ganha i-frame relevante por padrão. | indicador de Dash |
 | Ritmo Controlado | 2 | 1-5 | Passive | Reduz custo de Stamina de Dash, Dodge e corrida em 5/10/15/20/25%, e reduz cansaço gerado por essas ações. Substitui Respiração Controlada. | Stamina/cansaço |
 | Saqueador Cuidadoso | 2 | 1-5 | Passive | +3/6/9/12/15% chance de ouro adicional em drops e tesouros. | ouro extra |
 | Garimpo de Run | 2 | 1-5 | Passive | Nodes de minério na caverna têm +3/6/9/12/15% chance de minério extra. | minério extra |
@@ -391,6 +392,9 @@ Respiração Controlada foi substituída por Ritmo Controlado.
 Dash custa Stamina.
 Dodge custa Stamina.
 Block drena Stamina.
+Dash base não ocupa active slot e é melhorado por Survival/Passo de Impulso.
+Dash longo/endgame pode chegar até ~8 tiles com cap global do Combat Core.
+Dash longo não ganha i-frame relevante por padrão.
 Constituição, Destreza, Vontade, Survival e Melee absorvem as funções antigas de Breath.
 Melee tem capstones exclusivos de Kanthor e Kaand.
 Magic tem capstones exclusivos de Anya e Senya.
@@ -404,11 +408,10 @@ Crafting usa Forja Viva de Thoren.
 # PARTE I — Pendências
 
 ```text
-Remover Breath/Fôlego dos demais documentos canônicos.
-Remover BR das tabelas de monstros.
-Substituir BR por MovementProfile, RecoveryProfile, PressureProfile ou traits.
 Definir custos finais de Stamina para Dash, Dodge, Block e corrida.
 Definir Stamina Regen em combate, fora de combate, com fome e com cansaço.
 Definir valores finais de cooldown, custo e duração.
+Definir progressão final de Passo de Impulso para Dash base, Dash longo e cap de ~8 tiles.
 Validar integração com HUD final.
 Validar visual em 1280x720 e tela pequena.
+```
