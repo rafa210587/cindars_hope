@@ -57,6 +57,13 @@ docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.3.md
 docs/design/gameplay/farm/FARM_LAYOUT_SCALE_BUILDINGS_DIRECTION.md
 ```
 
+Specs de fazenda que envolvam invasões, defesa, dano a crops/estruturas, pets/companions em defesa ou inimigos no mapa da fazenda devem ler também:
+
+```text
+docs/design/gameplay/enemies/ENEMY_BEHAVIORS_DIRECTION.md
+docs/design/gameplay/combat/COMBAT_CORE_DIRECTION.md
+```
+
 Usar para specs de:
 
 ```text
@@ -83,6 +90,9 @@ Fonte de Anya
 Raiz Dormente de Mana
 pedreira final
 farm economy
+farm invasions futuras
+farm defense futura
+repair/recovery de crops/estruturas
 ```
 
 Specs recomendadas derivadas:
@@ -104,6 +114,8 @@ spec_farm_fonte_anya_living_water.md
 spec_farm_mana_root_arcane_soil_endgame.md
 spec_farm_final_quarry_late_game_resources.md
 spec_farm_fountain_anya_no_buildable_statue.md
+spec_farm_invasion_events_future.md
+spec_farm_defense_repair_recovery_future.md
 ```
 
 ---
@@ -127,6 +139,13 @@ docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.3.md
 docs/design/gameplay/farm/FARM_LAYOUT_SCALE_BUILDINGS_DIRECTION.md
 ```
 
+Specs de cidade que envolvam eventos hostis, defesa, cultistas, monstros, civis fugindo ou combate em área urbana devem ler também:
+
+```text
+docs/design/gameplay/enemies/ENEMY_BEHAVIORS_DIRECTION.md
+docs/design/gameplay/combat/COMBAT_CORE_DIRECTION.md
+```
+
 Specs recomendadas derivadas:
 
 ```text
@@ -145,6 +164,7 @@ spec_city_kanthor_temple_statue_garden_no_anya_altar.md
 spec_city_night_shop_nyx_behaviour.md
 spec_city_festivals_layout_variations.md
 spec_city_hidden_subsoil_bromecia_elyndor_hooks.md
+spec_city_hostile_event_behaviors_future.md
 ```
 
 ---
@@ -162,6 +182,7 @@ docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_DIRECTION.md
 docs/design/gameplay/cave/CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md
 docs/design/gameplay/cave/CAVE_MONSTER_VISUAL_SPRITE_DIRECTION.md
 docs/design/gameplay/combat/COMBAT_CORE_DIRECTION.md
+docs/design/gameplay/enemies/ENEMY_BEHAVIORS_DIRECTION.md
 docs/game_rules/cave_rules.md
 docs/decisions/ADR-0005-cave-stable-run-and-replay.md
 ```
@@ -186,6 +207,9 @@ CAVE_MONSTER_VISUAL_SPRITE_DIRECTION.md
 
 COMBAT_CORE_DIRECTION.md
   regras gerais de combate, inputs, HP/MP/Stamina, ataque, block, dodge, dash, dano, armor, vulnerabilidades, bosses, HUD e telemetria.
+
+ENEMY_BEHAVIORS_DIRECTION.md
+  EnemyBrain, EnemyAction, reação a Dash/Dodge/Block, Stamina/MP de inimigos, pack coordination, leash, objetivos e comportamentos transversais.
 ```
 
 Specs de caverna que tocam runtime já existente devem ler também:
@@ -227,6 +251,11 @@ bosses
 boss phases
 vulnerabilities
 critical windows
+enemy brain
+enemy action selection
+enemy stamina/MP use
+pack coordination
+leash/reacquire
 checkpoints
 Elyndor portals
 Bromecia ruins
@@ -255,6 +284,9 @@ spec_cave_companion_pet_combat_balance.md
 spec_cave_time_to_kill_balance_targets.md
 spec_cave_stamina_telemetry_playtest.md
 spec_cave_treasure_trap_counterplay.md
+spec_enemy_brain_action_selection_runtime.md
+spec_enemy_movement_profiles_official_moves.md
+spec_enemy_pack_coordination_leash_runtime.md
 ```
 
 ---
@@ -267,6 +299,7 @@ Fontes obrigatórias:
 
 ```text
 docs/design/gameplay/combat/COMBAT_CORE_DIRECTION.md
+docs/design/gameplay/enemies/ENEMY_BEHAVIORS_DIRECTION.md
 docs/design/gameplay/player/PLAYER_CORE_SYSTEMS_DIRECTION.md
 docs/design/gameplay/player/PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md
 docs/design/gameplay/player/PLAYER_SKILL_TREES_DIRECTION.md
@@ -301,6 +334,8 @@ posture/stagger
 guard break
 weapon actions
 magic combat actions
+enemy reactions
+enemy action phases
 combat HUD
 combat feedback
 combat telemetry
@@ -322,9 +357,63 @@ spec_combat_hud_feedback_telemetry.md
 
 ---
 
-# PARTE E — Player / atributos / skills
+# PARTE E — Inimigos / Enemy AI
 
-## 7. Specs de player core
+## 7. Specs gerais de inimigos
+
+Fontes obrigatórias:
+
+```text
+docs/design/gameplay/enemies/ENEMY_BEHAVIORS_DIRECTION.md
+docs/design/gameplay/combat/COMBAT_CORE_DIRECTION.md
+docs/design/gameplay/player/PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md
+docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_DIRECTION.md
+docs/design/gameplay/cave/CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md
+```
+
+Usar para specs de:
+
+```text
+EnemyBrain
+EnemyActionSO
+EnemyActionSetSO
+EnemyBrainProfileSO
+EnemyMovementProfileSO
+EnemyBehaviorProfileSO
+EnemyThreat/Aggro
+EnemyTargetPriority
+EnemyLeashRules
+EnemyReactionRules
+PackCoordinationRules
+EnemyObjectiveProfileSO
+EnemyInvasionProfileSO
+farm invasion enemies
+town hostile event enemies
+boss AI phases
+pet/companion target logic
+```
+
+Specs recomendadas derivadas:
+
+```text
+spec_enemy_brain_runtime_architecture.md
+spec_enemy_action_so_contract.md
+spec_enemy_actionset_so_contract.md
+spec_enemy_movement_profiles_official_moves.md
+spec_enemy_behavior_profiles_runtime.md
+spec_enemy_threat_aggro_target_priority.md
+spec_enemy_reactions_block_dodge_dash_magic_pet_companion.md
+spec_enemy_pack_coordination_leash_rules.md
+spec_enemy_boss_phase_ai_contract.md
+spec_enemy_farm_invasion_profile_future.md
+spec_enemy_objective_profile_events_future.md
+```
+
+---
+
+# PARTE F — Player / atributos / skills
+
+## 8. Specs de player core
 
 Fontes obrigatórias:
 
@@ -359,9 +448,9 @@ save/load player state
 
 ---
 
-# PARTE F — Equipamentos, armas, magia, companions, pets e HUD
+# PARTE G — Equipamentos, armas, magia, companions, pets e HUD
 
-## 8. Specs que devem ler Combat Core
+## 9. Specs que devem ler Combat Core
 
 Specs de equipamentos/armas devem ler:
 
@@ -383,6 +472,7 @@ Specs de companions/pets em combate devem ler:
 
 ```text
 docs/design/gameplay/combat/COMBAT_CORE_DIRECTION.md
+docs/design/gameplay/enemies/ENEMY_BEHAVIORS_DIRECTION.md
 docs/design/gameplay/cave/CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md
 docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_DIRECTION.md
 ```
@@ -397,9 +487,9 @@ docs/design/gameplay/player/PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md
 
 ---
 
-# PARTE G — Regra anti-regressão
+# PARTE H — Regra anti-regressão
 
-## 9. Quando houver conflito
+## 10. Quando houver conflito
 
 Se houver conflito entre documentos:
 
@@ -421,4 +511,6 @@ Stamina é recurso físico imediato.
 Cansaço é desgaste acumulado.
 Constituição não é atributo defensivo universal.
 Nem toda janela comportamental gera crítico automático.
+Moves oficiais de inimigos vêm do CAVE_MONSTER_ROSTER_DIRECTION.md quando o inimigo pertence ao roster da caverna.
+Enemy Behaviors é transversal e pode ser usado por caverna, fazenda, cidade e eventos.
 ```
