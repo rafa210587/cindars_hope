@@ -22,37 +22,29 @@
 
 Este documento não deve ser a fonte primária de fórmulas numéricas de atributos derivados.
 
-Fonte canônica de fórmulas:
+Fontes canônicas:
 
 ```text
 docs/design/gameplay/player/PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md
-```
+  fórmulas de HP, MP, Stamina, Stamina Regen, BlockImpact, Defense, AttackDamage etc.
 
-Fonte canônica de exemplo/teste de mesa:
-
-```text
 docs/design/gameplay/player/PLAYER_DERIVED_ATTRIBUTES_TABLETOP_EXAMPLE.md
-```
+  exemplo/teste de mesa de personagem contra monstros.
 
-Fonte canônica de roster/atributos dos monstros:
-
-```text
 docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_DIRECTION.md
-```
+  roster, atributos, packs, bosses, traits, moves, behavior e dados de monstros.
 
-Fonte canônica de vulnerabilidades/janelas/TTK/telemetria da caverna:
-
-```text
 docs/design/gameplay/cave/CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md
+  vulnerabilidades, janelas, TTK, active combat budget e telemetria de caverna.
 ```
 
 Regra:
 
 ```text
-Se houver divergência de fórmula, o documento de atributos derivados vence.
-Se houver divergência de roster/monstro, o roster da caverna vence.
-Se houver divergência de vulnerabilidade/janela da caverna, o documento de balance da caverna vence.
-Combat Core pode repetir decisões fechadas apenas em forma de resumo, não como fonte duplicada de cálculo.
+Se houver divergência de fórmula, PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md vence.
+Se houver divergência de roster/monstro, CAVE_MONSTER_ROSTER_DIRECTION.md vence.
+Se houver divergência de vulnerabilidade/janela da caverna, CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md vence.
+Combat Core pode repetir decisões fechadas apenas em resumo, não como fonte duplicada de cálculo.
 ```
 
 ---
@@ -139,7 +131,8 @@ identificar ameaça principal
 usar posicionamento normal antes de gastar Dash/Dodge
 atacar com ritmo
 bloquear quando fizer sentido
-usar Dodge/Dash para evitar ataques críticos ou reposicionar
+usar Dodge para evitar ataque crítico
+usar Dash para reposicionar, sair de zona ou criar espaço
 explorar MinorOpening/CriticalWindow/CoreExposed
 usar companion/pet/consumível quando necessário
 coletar recompensa ou decidir recuar
@@ -291,7 +284,7 @@ FARM_DESIGN_DIRECTION_v1.3.md quando a spec tocar sono/fazenda/comida
 
 ## 11. Unidade de movimento
 
-Usar `tile/s` como unidade de design.
+Usar `tile/s` e `tiles` como unidades de design.
 
 Regra:
 
@@ -345,10 +338,13 @@ Valores iniciais:
 | Propriedade | Alvo inicial |
 |---|---:|
 | distância base | 3.2-4.0 tiles |
-| distância com upgrades/skills | até 4.5 tiles, com cap |
-| duração ativa | 0.18s-0.30s |
-| recovery | 0.25s-0.40s |
-| cooldown mínimo | 0.75s-1.20s |
+| distância com upgrades/skills fortes | até 8.0 tiles, com cap |
+| duração ativa base | 0.18s-0.30s |
+| duração ativa com upgrades longos | pode subir, mas deve manter leitura visual |
+| recovery base | 0.25s-0.40s |
+| recovery em Dash muito longo | pode ser maior se necessário |
+| cooldown mínimo base | 0.75s-1.20s |
+| cooldown/custo em Dash muito longo | deve ser balanceado por skill/gear/cap |
 | i-frame | nenhum ou muito baixo |
 
 Influenciado por:
@@ -359,17 +355,23 @@ Survival / Passo de Impulso
 Ritmo Controlado
 equipamento leve/pesado
 cansaço/status
+gear leve/endgame
+buffs/consumíveis específicos
 ```
 
 Regras:
 
 ```text
-Dash serve para reposicionar, sair de zona, atravessar pequena distância ou criar espaço.
+Dash serve para reposicionar, sair de zona, cruzar espaço perigoso ou criar distância.
 Dash deve ser perceptivelmente maior que Dodge.
+Dash base deve parecer forte, mas não resolver tudo.
+Dash com upgrades/skills pode virar mobilidade longa de build, chegando até ~8 tiles com cap.
 Dash não deve ser esquiva universal.
 Dash não deve substituir Dodge.
 Dash caro exige que hazards/telegraphs deem espaço para decisão.
-Um Dash de 4 tiles é aceitável porque custa 40 Stamina e não deve ter i-frame relevante.
+Dash longo não deve ter i-frame relevante por padrão.
+Dash longo pode atravessar espaço, mas atravessar inimigos/corpos exige skill ou regra explícita.
+O cap alto existe para late game/builds de mobilidade, não para início do jogo.
 ```
 
 ## 14. Dodge
@@ -410,8 +412,6 @@ Skills podem melhorar janela/custo/recovery, mas com cap.
 ```
 
 ## 15. Movimento durante ações
-
-Tabela inicial:
 
 | Ação | Movimento permitido |
 |---|---|
@@ -457,6 +457,7 @@ Regra:
 Inimigo mais rápido que o jogador precisa ter vida menor, telegraph claro, ou janelas de punição frequentes.
 Inimigo tank lento pode ter HP/armor maior.
 Burst de movimento deve ter windup/recovery.
+Dash longo do jogador não obriga reduzir velocidade/densidade dos inimigos; ele é recurso caro e/ou de build.
 ```
 
 ## 17. Collision e body blocking
@@ -477,6 +478,7 @@ Swarm pode pressionar, mas precisa de saída.
 Body block deve ser desafio, não bug de pathing.
 Dash pode atravessar alguns inimigos pequenos apenas se skill/spec permitir.
 Dodge não deve atravessar todos os corpos por padrão.
+Dash longo sem skill de atravessar corpo ainda deve respeitar colisão.
 ```
 
 ---
@@ -1208,6 +1210,7 @@ Stamina recuperada
 HP perdido
 MP gasto
 número de Dodges/Dashes
+distância média do Dash usado
 tempo segurando Block
 Block impacts
 hits em MinorOpening/CriticalWindow/CoreExposed
@@ -1223,7 +1226,7 @@ Regra:
 
 ```text
 Não transformar consumo de Stamina em percentual fixo de spec.
-Usar telemetria para detectar extremos: trivial, injusto, esponja, sem counterplay, velocidade ruim ou stamina irrelevante.
+Usar telemetria para detectar extremos: trivial, injusto, esponja, sem counterplay, velocidade ruim, dash longo quebrando salas ou stamina irrelevante.
 ```
 
 ## 54. Validação humana
@@ -1234,6 +1237,7 @@ A validação humana deve observar:
 se o combate parece justo
 se o custo de Stamina é sentido
 se Dodge/Dash são escolhas fortes
+se Dash longo cria posicionamento divertido sem trivializar salas
 se Block é útil, mas não dominante
 se movimento normal resolve parte dos ataques simples
 se telegraphs são legíveis
@@ -1268,7 +1272,9 @@ Movimento normal é a primeira defesa.
 Velocidade base do jogador em exploração deve ficar em 3.8-4.2 tiles/s.
 Velocidade em combate com arma pronta deve ficar em 3.4-3.8 tiles/s.
 Dash base deve cobrir 3.2-4.0 tiles e ser reposicionamento forte, não dodge universal.
-Dash com upgrades/skills pode chegar até 4.5 tiles, com cap.
+Dash com upgrades/skills fortes pode chegar até ~8.0 tiles, com cap e validação.
+Dash longo não deve ter i-frame relevante por padrão.
+Dash longo não atravessa corpos por padrão; atravessar inimigos exige skill/regra explícita.
 Dodge deve cobrir 1.2-1.8 tiles com i-frame curto e recovery.
 Nem toda abertura dá crítico automático.
 MinorOpening, CriticalWindow e CoreExposed são categorias diferentes.
@@ -1288,6 +1294,7 @@ Definir WeaponActionDataSO.
 Definir StaminaCostProfileSO.
 Definir BlockController e BlockImpact formula final.
 Definir Dash/Dodge timing, i-frames, cooldown e recovery.
+Definir Dash long-upgrade cap, validação de sala e interação com colisão.
 Definir MovementProfileSO para jogador e inimigos.
 Definir EnemyMovementProfileSO com SlowTank, StandardChaser, FastPredator, SwarmErratic, KiteRanged, CasterKeepAway, Leaper, Burrower, FloatingOrbit, EliteDuelist e BossArenaControl.
 Definir DamageType final.
@@ -1297,6 +1304,6 @@ Definir MinorOpening/CriticalWindow/CoreExposed data contract.
 Definir EnemyAction telegraph/recovery/window contract.
 Definir UI feedback de Stamina baixa, block, critical window e vulnerability.
 Definir integração com companions/pets.
-Definir Play Mode telemetry para TTK/Stamina/HP/MP/movement.
+Definir Play Mode telemetry para TTK/Stamina/HP/MP/movement/dash distance.
 Definir validações Unity por spec.
 ```
