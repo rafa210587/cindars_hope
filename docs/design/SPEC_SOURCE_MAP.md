@@ -57,9 +57,10 @@ docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.3.md
 docs/design/gameplay/farm/FARM_LAYOUT_SCALE_BUILDINGS_DIRECTION.md
 ```
 
-Specs de fazenda que envolvam ferramentas, crafting, materiais, pedreira final, oficinas, reparo ou economia de equipamentos devem ler também:
+Specs de fazenda que envolvam ferramentas, crafting, materiais, pedreira final, oficinas, reparo, shipping bin, encomendas, storage, economia, processamento ou venda devem ler também:
 
 ```text
+docs/design/gameplay/loot_crafting_economy/LOOT_CRAFTING_ECONOMY_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_WEAPONS_ARMOR_MATERIALS_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_MECHANICAL_BASELINES_DIRECTION.md
 ```
@@ -151,9 +152,10 @@ docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.3.md
 docs/design/gameplay/farm/FARM_LAYOUT_SCALE_BUILDINGS_DIRECTION.md
 ```
 
-Specs de cidade que envolvam loja, ferreiro, crafting, reparo, equipamentos, armas, armaduras, materiais, pergaminhos, wands, arrows ou economia de gear devem ler também:
+Specs de cidade que envolvam loja, ferreiro, crafting, reparo, equipamentos, armas, armaduras, materiais, pergaminhos, wands, arrows, encomendas, reputação econômica, serviços, estoque ou economia de gear devem ler também:
 
 ```text
+docs/design/gameplay/loot_crafting_economy/LOOT_CRAFTING_ECONOMY_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_WEAPONS_ARMOR_MATERIALS_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_MECHANICAL_BASELINES_DIRECTION.md
 ```
@@ -214,6 +216,7 @@ docs/design/gameplay/enemies/ENEMY_BEHAVIORS_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_WEAPONS_ARMOR_MATERIALS_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_MECHANICAL_BASELINES_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_ENEMY_VULNERABILITY_ADAPTER.md
+docs/design/gameplay/loot_crafting_economy/LOOT_CRAFTING_ECONOMY_DIRECTION.md
 docs/game_rules/cave_rules.md
 docs/decisions/ADR-0005-cave-stable-run-and-replay.md
 ```
@@ -256,6 +259,9 @@ EQUIPMENT_MECHANICAL_BASELINES_DIRECTION.md
 
 EQUIPMENT_ENEMY_VULNERABILITY_ADAPTER.md
   contrato de matching entre tags de equipamento e vulnerabilidades de inimigos, incluindo MaterialVulnerability, sem duplicar matriz por família.
+
+LOOT_CRAFTING_ECONOMY_DIRECTION.md
+  loot tables, drops, mining, treasure, component loot, crafting recipes, economy, storage, shipping, shops e recompensas.
 ```
 
 Specs de caverna que tocam runtime já existente devem ler também:
@@ -312,6 +318,10 @@ materials
 weapon counters
 armor/resistance balance
 component loot tables
+loot tables
+treasure tables
+mining node tables
+boss drops
 MaterialVulnerability
 arrows/bows/wands/scrolls counters
 charged effects
@@ -347,6 +357,7 @@ spec_cave_treasure_trap_counterplay.md
 spec_cave_monster_roster_to_enemy_data_conversion.md
 spec_cave_enemy_component_loot_tables.md
 spec_cave_enemy_material_vulnerability_tags.md
+spec_cave_treasure_mining_loot_tables.md
 spec_enemy_brain_action_selection_runtime.md
 spec_enemy_movement_profiles_official_moves.md
 spec_enemy_pack_coordination_leash_runtime.md
@@ -372,6 +383,12 @@ docs/design/gameplay/player/PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md
 docs/design/gameplay/player/PLAYER_SKILL_TREES_DIRECTION.md
 docs/design/gameplay/cave/CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md
 docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_DIRECTION.md
+```
+
+Specs de combate que envolvam loot, drops, reward, gold, item use, consumíveis, durability economy ou crafting devem ler também:
+
+```text
+docs/design/gameplay/loot_crafting_economy/LOOT_CRAFTING_ECONOMY_DIRECTION.md
 ```
 
 Usar para specs de:
@@ -446,6 +463,7 @@ docs/design/gameplay/combat/STATUS_EFFECTS_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_WEAPONS_ARMOR_MATERIALS_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_MECHANICAL_BASELINES_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_ENEMY_VULNERABILITY_ADAPTER.md
+docs/design/gameplay/loot_crafting_economy/LOOT_CRAFTING_ECONOMY_DIRECTION.md
 docs/design/gameplay/player/PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md
 docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_DIRECTION.md
 docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_ENEMY_BEHAVIOR_ADAPTER.md
@@ -471,6 +489,9 @@ pet/companion target logic
 cave roster to enemy data conversion
 enemy family equipment counters
 enemy component drops
+LootTableSO
+EnemyDropTableSO
+BossDropTableSO
 MaterialVulnerability
 ResistanceTags
 ImmunityTags
@@ -503,6 +524,7 @@ spec_enemy_pack_coordination_leash_rules.md
 spec_enemy_boss_phase_ai_contract.md
 spec_cave_monster_roster_to_enemy_data_conversion.md
 spec_enemy_material_vulnerability_contract.md
+spec_enemy_drop_tables_by_family.md
 ```
 
 Backlog futuro, não atual:
@@ -529,11 +551,12 @@ docs/design/gameplay/player/PLAYER_DERIVED_ATTRIBUTES_TABLETOP_EXAMPLE.md
 docs/design/gameplay/combat/COMBAT_CORE_DIRECTION.md
 ```
 
-Specs de player que envolvam equipamentos, slots, armas, armaduras, escudos, acessórios, peso, ASPD, durabilidade, arrows, wands, scrolls ou save/load de itens devem ler também:
+Specs de player que envolvam equipamentos, slots, armas, armaduras, escudos, acessórios, peso, ASPD, durabilidade, arrows, wands, scrolls, inventory, storage, ItemStack, ItemInstance, save/load de itens ou economia devem ler também:
 
 ```text
 docs/design/gameplay/equipment/EQUIPMENT_WEAPONS_ARMOR_MATERIALS_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_MECHANICAL_BASELINES_DIRECTION.md
+docs/design/gameplay/loot_crafting_economy/LOOT_CRAFTING_ECONOMY_DIRECTION.md
 ```
 
 Usar para specs de:
@@ -555,6 +578,7 @@ active slots
 Dash/Dodge/Block
 classes/jobs inferred
 equipment slots
+inventory/storage
 save/load player state
 ```
 
@@ -570,6 +594,7 @@ Fontes obrigatórias:
 docs/design/gameplay/equipment/EQUIPMENT_WEAPONS_ARMOR_MATERIALS_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_MECHANICAL_BASELINES_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_ENEMY_VULNERABILITY_ADAPTER.md
+docs/design/gameplay/loot_crafting_economy/LOOT_CRAFTING_ECONOMY_DIRECTION.md
 docs/design/gameplay/combat/COMBAT_CORE_DIRECTION.md
 docs/design/gameplay/combat/STATUS_EFFECTS_DIRECTION.md
 docs/design/gameplay/player/PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md
@@ -647,6 +672,7 @@ docs/design/gameplay/combat/STATUS_EFFECTS_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_WEAPONS_ARMOR_MATERIALS_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_MECHANICAL_BASELINES_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_ENEMY_VULNERABILITY_ADAPTER.md
+docs/design/gameplay/loot_crafting_economy/LOOT_CRAFTING_ECONOMY_DIRECTION.md
 docs/design/gameplay/player/PLAYER_SKILL_TREES_DIRECTION.md
 docs/design/lore/VAALARA_GAME_CANON_DIRECTION_v1.0.md
 ```
@@ -662,6 +688,7 @@ docs/design/gameplay/enemies/ENEMY_BEHAVIORS_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_WEAPONS_ARMOR_MATERIALS_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_MECHANICAL_BASELINES_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_ENEMY_VULNERABILITY_ADAPTER.md
+docs/design/gameplay/loot_crafting_economy/LOOT_CRAFTING_ECONOMY_DIRECTION.md
 docs/design/gameplay/cave/CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md
 docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_DIRECTION.md
 docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_ENEMY_BEHAVIOR_ADAPTER.md
@@ -676,15 +703,96 @@ docs/design/gameplay/combat/COMBAT_CORE_DIRECTION.md
 docs/design/gameplay/combat/STATUS_EFFECTS_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_WEAPONS_ARMOR_MATERIALS_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_MECHANICAL_BASELINES_DIRECTION.md
+docs/design/gameplay/loot_crafting_economy/LOOT_CRAFTING_ECONOMY_DIRECTION.md
 docs/design/gameplay/player/PLAYER_CORE_SYSTEMS_DIRECTION.md
 docs/design/gameplay/player/PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md
 ```
 
 ---
 
-# PARTE H — Regra anti-regressão
+# PARTE H — Loot / Crafting / Economy
 
-## 13. Quando houver conflito
+## 13. Specs de loot, crafting e economia
+
+Fontes obrigatórias:
+
+```text
+docs/design/gameplay/loot_crafting_economy/LOOT_CRAFTING_ECONOMY_DIRECTION.md
+docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.3.md
+docs/design/gameplay/city/CITY_NPC_ROSTER_SERVICES_DIRECTION_v1.1.md
+docs/design/gameplay/equipment/EQUIPMENT_WEAPONS_ARMOR_MATERIALS_DIRECTION.md
+docs/design/gameplay/equipment/EQUIPMENT_MECHANICAL_BASELINES_DIRECTION.md
+docs/design/gameplay/combat/STATUS_EFFECTS_DIRECTION.md
+docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_DIRECTION.md
+docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_ENEMY_BEHAVIOR_ADAPTER.md
+docs/design/gameplay/cave/CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md
+```
+
+Usar para specs de:
+
+```text
+ItemDefinitionSO
+ItemCategorySO
+ItemTag
+QualityProfileSO
+RarityProfileSO
+LootTableSO
+EnemyDropTableSO
+BossDropTableSO
+TreasureTableSO
+MiningNodeTableSO
+ForageTableSO
+FishingTableSO
+ShopInventorySO
+ShopPriceRulesSO
+RecipeSO
+CraftingStationSO
+ProcessingRecipeSO
+OrderSO
+RewardTableSO
+ShippingPriceProfileSO
+EconomyBalanceProfileSO
+ItemStack
+ItemInstance
+storage
+shipping bin
+pending payments
+shop inventory
+orders/encomendas
+reputation rewards
+gold economy
+repair costs
+upgrade costs
+loot rarity
+quality
+crafting timers
+processing timers
+```
+
+Specs recomendadas derivadas:
+
+```text
+spec_item_definition_so_contract.md
+spec_item_tags_categories_quality_rarity.md
+spec_loot_table_so_contract.md
+spec_enemy_drop_tables_by_family.md
+spec_cave_treasure_mining_loot_tables.md
+spec_recipe_so_and_crafting_station_contract.md
+spec_processing_recipes_and_timers.md
+spec_shop_inventory_price_rules.md
+spec_shipping_bin_pending_payment_runtime.md
+spec_orders_reputation_rewards_runtime.md
+spec_inventory_stack_instance_storage_rules.md
+spec_economy_balance_profile.md
+spec_repair_upgrade_cost_rules.md
+spec_bows_arrows_scrolls_wands_item_instances.md
+```
+
+---
+
+# PARTE I — Regra anti-regressão
+
+## 14. Quando houver conflito
 
 Se houver conflito entre documentos:
 
@@ -713,8 +821,13 @@ Status Effects é fonte canônica do significado mecânico de Bleed, Burn, Chill
 Equipment Weapons Armor Materials é fonte canônica de direção geral de armas, armaduras, escudos, materiais, durabilidade, upgrades e balance de gear contra famílias de inimigos.
 Equipment Mechanical Baselines é fonte canônica de baseline mecânico inicial: WeaponDamage, ASPD, scaling por atributo, StaminaCost, charged effects, range, armor, shield, arrows, wands, scrolls, tomes e focuses.
 Equipment Enemy Vulnerability Adapter é fonte canônica da ponte entre tags de equipamentos e vulnerabilidades de inimigos, incluindo MaterialVulnerability, sem duplicar matriz por família.
+Loot Crafting Economy é fonte canônica de fluxos de itens, loot tables, recipes, quality, rarity, shops, orders, shipping, storage, ItemStack, ItemInstance e economy balance.
 MaterialVulnerability deve existir em specs futuras de EnemyDataSO.
 Vulnerabilidades por família/inimigo ficam em Cave Combat Balance, Cave Monster Roster e EnemyDataSO futuro; não em documentos de equipment.
+Quality é diferente de Rarity.
+Tier é diferente de Quality e Rarity.
+Reputação é desbloqueio social/econômico, não moeda comum.
+Fruto de Mana, Água Viva da Fonte e Pedra Negra estabilizada não são commodities comuns.
 Farm invasion, town hostile events e world enemy events são backlog futuro; não entram em specs atuais sem nova decisão de roadmap.
 Hearing/audição não é elemento atual de IA inimiga.
 ```
