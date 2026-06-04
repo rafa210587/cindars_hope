@@ -119,13 +119,14 @@ docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.3.md
 docs/design/gameplay/farm/FARM_LAYOUT_SCALE_BUILDINGS_DIRECTION.md
 ```
 
-Specs de cidade que envolvam loja, ferreiro, crafting, reparo, equipamentos, armas, armaduras, materiais, pergaminhos, wands, arrows, encomendas, reputação econômica, serviços, estoque ou economia de gear devem ler:
+Specs de cidade que envolvam loja, ferreiro, crafting, reparo, equipamentos, armas, armaduras, materiais, pergaminhos, wands, arrows, encomendas, reputação econômica, serviços, estoque, economia de gear, ensino de magia ou venda de item mágico devem ler:
 
 ```text
 docs/design/gameplay/loot_crafting_economy/LOOT_CRAFTING_ECONOMY_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_WEAPONS_ARMOR_MATERIALS_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_MECHANICAL_BASELINES_DIRECTION.md
 docs/design/gameplay/magic/MAGIC_SPELLS_ACTIONS_DIRECTION.md
+docs/design/gameplay/magic/MAGIC_LEARNING_UNLOCKS_SOURCES_DIRECTION.md
 ```
 
 Specs de cidade **não devem implementar eventos hostis, defesa urbana, cultistas, monstros ou civis fugindo agora**.
@@ -178,6 +179,7 @@ docs/design/gameplay/equipment/EQUIPMENT_WEAPONS_ARMOR_MATERIALS_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_MECHANICAL_BASELINES_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_ENEMY_VULNERABILITY_ADAPTER.md
 docs/design/gameplay/magic/MAGIC_SPELLS_ACTIONS_DIRECTION.md
+docs/design/gameplay/magic/MAGIC_LEARNING_UNLOCKS_SOURCES_DIRECTION.md
 docs/design/gameplay/loot_crafting_economy/LOOT_CRAFTING_ECONOMY_DIRECTION.md
 docs/game_rules/cave_rules.md
 docs/decisions/ADR-0005-cave-stable-run-and-replay.md
@@ -240,10 +242,11 @@ docs/design/gameplay/cave/CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md
 docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_DIRECTION.md
 ```
 
-Specs de combate que envolvam spells, MP casting, staff charged, magic actions, healing, barrier, purification, wands, scrolls, tomes ou focuses devem ler também:
+Specs de combate que envolvam spells, MP casting, staff charged, magic actions, healing, barrier, purification, wands, scrolls, tomes, focuses, known spells ou spell source devem ler também:
 
 ```text
 docs/design/gameplay/magic/MAGIC_SPELLS_ACTIONS_DIRECTION.md
+docs/design/gameplay/magic/MAGIC_LEARNING_UNLOCKS_SOURCES_DIRECTION.md
 ```
 
 Specs de combate que envolvam loot, drops, reward, gold, item use, consumíveis, durability economy ou crafting devem ler também:
@@ -283,6 +286,7 @@ docs/design/gameplay/equipment/EQUIPMENT_WEAPONS_ARMOR_MATERIALS_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_MECHANICAL_BASELINES_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_ENEMY_VULNERABILITY_ADAPTER.md
 docs/design/gameplay/magic/MAGIC_SPELLS_ACTIONS_DIRECTION.md
+docs/design/gameplay/magic/MAGIC_LEARNING_UNLOCKS_SOURCES_DIRECTION.md
 docs/design/gameplay/loot_crafting_economy/LOOT_CRAFTING_ECONOMY_DIRECTION.md
 docs/design/gameplay/player/PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md
 docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_DIRECTION.md
@@ -380,10 +384,11 @@ docs/design/gameplay/equipment/EQUIPMENT_MECHANICAL_BASELINES_DIRECTION.md
 docs/design/gameplay/loot_crafting_economy/LOOT_CRAFTING_ECONOMY_DIRECTION.md
 ```
 
-Specs de player que envolvam known spells, equipped spells, MP casting, spell unlocks, staff/focus, wands, scrolls, tomes, magic HUD ou capstones Anya/Senya devem ler também:
+Specs de player que envolvam known spells, equipped spells, MP casting, spell unlocks, spell learning, spell source, staff/focus, wands, scrolls, tomes, magic HUD ou capstones Anya/Senya devem ler também:
 
 ```text
 docs/design/gameplay/magic/MAGIC_SPELLS_ACTIONS_DIRECTION.md
+docs/design/gameplay/magic/MAGIC_LEARNING_UNLOCKS_SOURCES_DIRECTION.md
 ```
 
 ---
@@ -408,10 +413,11 @@ docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_DIRECTION.md
 docs/design/gameplay/cave/CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md
 ```
 
-Specs de equipamentos mágicos, staff, wands, scrolls, tomes, focuses, SpellActionDataSO, spell unlocks ou spell modifiers devem ler também:
+Specs de equipamentos mágicos, staff, wands, scrolls, tomes, focuses, SpellActionDataSO, SpellUnlockSourceSO, spell learning, spell sources ou spell modifiers devem ler também:
 
 ```text
 docs/design/gameplay/magic/MAGIC_SPELLS_ACTIONS_DIRECTION.md
+docs/design/gameplay/magic/MAGIC_LEARNING_UNLOCKS_SOURCES_DIRECTION.md
 ```
 
 Specs recomendadas derivadas:
@@ -439,6 +445,7 @@ Fontes obrigatórias:
 
 ```text
 docs/design/gameplay/magic/MAGIC_SPELLS_ACTIONS_DIRECTION.md
+docs/design/gameplay/magic/MAGIC_LEARNING_UNLOCKS_SOURCES_DIRECTION.md
 docs/design/gameplay/combat/COMBAT_CORE_DIRECTION.md
 docs/design/gameplay/combat/STATUS_EFFECTS_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_WEAPONS_ARMOR_MATERIALS_DIRECTION.md
@@ -454,6 +461,7 @@ Usar para specs de:
 
 ```text
 SpellActionDataSO
+SpellUnlockSourceSO
 SpellShapeProfileSO
 SpellScalingProfileSO
 SpellUnlockRuleSO
@@ -468,7 +476,13 @@ WandSpellProfileSO
 ScrollSpellProfileSO
 MagicBalanceProfileSO
 knownSpellIds
+knownSpellVariants
+discoveredSpellIds
+studiedTomeIds
 equippedSpellSlots
+ItemProvided spells
+ConsumableProvided spells
+spell source state
 spell cooldowns
 spell targeting
 spell shapes
@@ -486,6 +500,8 @@ Specs recomendadas derivadas:
 
 ```text
 spec_magic_spell_action_data_contract.md
+spec_magic_spell_unlock_source_contract.md
+spec_magic_spell_learning_scroll_tome_runtime.md
 spec_magic_spell_shapes_targeting_runtime.md
 spec_magic_mp_cost_cast_cooldown_runtime.md
 spec_magic_spell_unlocks_tomes_focus_modifiers.md
@@ -510,6 +526,7 @@ docs/design/gameplay/equipment/EQUIPMENT_WEAPONS_ARMOR_MATERIALS_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_MECHANICAL_BASELINES_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_ENEMY_VULNERABILITY_ADAPTER.md
 docs/design/gameplay/magic/MAGIC_SPELLS_ACTIONS_DIRECTION.md
+docs/design/gameplay/magic/MAGIC_LEARNING_UNLOCKS_SOURCES_DIRECTION.md
 docs/design/gameplay/loot_crafting_economy/LOOT_CRAFTING_ECONOMY_DIRECTION.md
 docs/design/gameplay/cave/CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md
 docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_DIRECTION.md
@@ -526,6 +543,7 @@ docs/design/gameplay/combat/STATUS_EFFECTS_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_WEAPONS_ARMOR_MATERIALS_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_MECHANICAL_BASELINES_DIRECTION.md
 docs/design/gameplay/magic/MAGIC_SPELLS_ACTIONS_DIRECTION.md
+docs/design/gameplay/magic/MAGIC_LEARNING_UNLOCKS_SOURCES_DIRECTION.md
 docs/design/gameplay/loot_crafting_economy/LOOT_CRAFTING_ECONOMY_DIRECTION.md
 docs/design/gameplay/player/PLAYER_CORE_SYSTEMS_DIRECTION.md
 docs/design/gameplay/player/PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md
@@ -546,6 +564,7 @@ docs/design/gameplay/city/CITY_NPC_ROSTER_SERVICES_DIRECTION_v1.1.md
 docs/design/gameplay/equipment/EQUIPMENT_WEAPONS_ARMOR_MATERIALS_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_MECHANICAL_BASELINES_DIRECTION.md
 docs/design/gameplay/magic/MAGIC_SPELLS_ACTIONS_DIRECTION.md
+docs/design/gameplay/magic/MAGIC_LEARNING_UNLOCKS_SOURCES_DIRECTION.md
 docs/design/gameplay/combat/STATUS_EFFECTS_DIRECTION.md
 docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_DIRECTION.md
 docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_ENEMY_BEHAVIOR_ADAPTER.md
@@ -592,9 +611,11 @@ quality
 crafting timers
 processing timers
 spell tomes
-scrolls
+learnable scrolls
+cast scrolls
 wands
 focuses
+SpellUnlockSourceSO
 ```
 
 Specs recomendadas derivadas:
@@ -650,6 +671,7 @@ Equipment Weapons Armor Materials é fonte canônica de direção geral de armas
 Equipment Mechanical Baselines é fonte canônica de baseline mecânico inicial: WeaponDamage, ASPD, scaling por atributo, StaminaCost, charged effects, range, armor, shield, arrows, wands, scrolls, tomes e focuses.
 Equipment Enemy Vulnerability Adapter é fonte canônica da ponte entre tags de equipamentos e vulnerabilidades de inimigos, incluindo MaterialVulnerability, sem duplicar matriz por família.
 Magic Spells Actions é fonte canônica da lista enxuta de spells, SpellActionDataSO, spell shapes, MP costs, cast time, spell unlocks, spell scaling, staff/wand/scroll/tome/focus integration e spell HUD.
+Magic Learning Unlocks Sources é fonte canônica para spell source, LearnableScroll, CastScroll, Tome, Wand, Staff/Weapon spell, Focus, NPC teaching, Fonte de Anya story unlock, knownSpellIds, ItemProvided e ConsumableProvided.
 Loot Crafting Economy é fonte canônica de fluxos de itens, loot tables, recipes, quality, rarity, shops, orders, shipping, storage, ItemStack, ItemInstance e economy balance.
 MaterialVulnerability deve existir em specs futuras de EnemyDataSO.
 Vulnerabilidades por família/inimigo ficam em Cave Combat Balance, Cave Monster Roster e EnemyDataSO futuro; não em documentos de equipment.
@@ -657,6 +679,11 @@ Quality é diferente de Rarity.
 Tier é diferente de Quality e Rarity.
 Reputação é desbloqueio social/econômico, não moeda comum.
 Fruto de Mana, Água Viva da Fonte e Pedra Negra estabilizada não são commodities comuns.
+Magia não é concedida automaticamente só por level ou skill point.
+Skill tree libera capacidade/domínio; fonte libera spell.
+LearnableScroll ensina permanentemente se pré-requisitos forem cumpridos.
+CastScroll casta e consome, mas não ensina.
+Wand/Staff/arma/focus podem fornecer magia temporária enquanto equipados, sem adicionar knownSpellIds por padrão.
 Magias podem ter nomes de deuses, mas tipo mecânico é definido por DamageType, SpellCategory, SpellShape, Tags e Scaling.
 Corruption/Nyx em magia é risco late/endgame, não sistema obrigatório inicial.
 Farm invasion, town hostile events e world enemy events são backlog futuro; não entram em specs atuais sem nova decisão de roadmap.
