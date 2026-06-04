@@ -32,11 +32,7 @@ A spec também deve declarar:
 ## Validação Unity
 ```
 
----
-
-## 2. Fontes globais obrigatórias
-
-Toda spec de gameplay/lore/sistemas deve ler:
+Fontes globais obrigatórias para gameplay/lore/sistemas:
 
 ```text
 docs/design/SPEC_SOURCE_MAP.md
@@ -48,7 +44,7 @@ docs/design/lore/VAALARA_GAME_CANON_DIRECTION_v1.0.md
 
 # PARTE A — Fazenda
 
-## 3. Specs de fazenda
+## 2. Specs de fazenda
 
 Fontes obrigatórias:
 
@@ -67,43 +63,21 @@ docs/design/gameplay/equipment/EQUIPMENT_MECHANICAL_BASELINES_DIRECTION.md
 
 Specs de fazenda **não devem implementar invasões, defesa contra inimigos, dano a crops/estruturas ou inimigos no mapa da fazenda agora**.
 
-Quando esse tema entrar explicitamente no roadmap futuro, ler também:
+Backlog futuro, não atual:
+
+```text
+spec_farm_invasion_events_future.md
+spec_farm_defense_repair_recovery_future.md
+```
+
+Quando esse tema entrar explicitamente no roadmap futuro, ler:
 
 ```text
 docs/design/gameplay/enemies/ENEMY_BEHAVIORS_DIRECTION.md
 docs/design/gameplay/combat/COMBAT_CORE_DIRECTION.md
 ```
 
-Usar para specs atuais de:
-
-```text
-farm layout
-farm scale
-farm expansion
-free build
-building footprints
-soil/crops
-watering/rain
-crop death
-fertilizers
-quality
-animals
-pets
-shipping bin
-farm buildings
-workshops
-storage
-companion farm jobs
-fatigue/stamina/hunger/sleep
-Fonte de Anya
-Água Viva
-Raiz Dormente de Mana
-pedreira final
-farm economy
-ferramentas/crafting quando aplicável
-```
-
-Specs recomendadas derivadas atuais:
+Specs recomendadas atuais:
 
 ```text
 spec_farm_scale_tilemap_player_footbox.md
@@ -124,18 +98,11 @@ spec_farm_final_quarry_late_game_resources.md
 spec_farm_fountain_anya_no_buildable_statue.md
 ```
 
-Backlog futuro, não atual:
-
-```text
-spec_farm_invasion_events_future.md
-spec_farm_defense_repair_recovery_future.md
-```
-
 ---
 
 # PARTE B — Cidade
 
-## 4. Specs gerais de cidade
+## 3. Specs de cidade
 
 Fontes obrigatórias:
 
@@ -145,31 +112,31 @@ docs/design/gameplay/city/CITY_NPC_ROSTER_SERVICES_DIRECTION_v1.1.md
 docs/design/gameplay/city/CITY_LAYOUT_BUILDINGS_SCHEDULE_DIRECTION.md
 ```
 
-Specs de cidade que tocam fazenda devem ler também:
+Specs de cidade que tocam fazenda devem ler:
 
 ```text
 docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.3.md
 docs/design/gameplay/farm/FARM_LAYOUT_SCALE_BUILDINGS_DIRECTION.md
 ```
 
-Specs de cidade que envolvam loja, ferreiro, crafting, reparo, equipamentos, armas, armaduras, materiais, pergaminhos, wands, arrows, encomendas, reputação econômica, serviços, estoque ou economia de gear devem ler também:
+Specs de cidade que envolvam loja, ferreiro, crafting, reparo, equipamentos, armas, armaduras, materiais, pergaminhos, wands, arrows, encomendas, reputação econômica, serviços, estoque ou economia de gear devem ler:
 
 ```text
 docs/design/gameplay/loot_crafting_economy/LOOT_CRAFTING_ECONOMY_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_WEAPONS_ARMOR_MATERIALS_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_MECHANICAL_BASELINES_DIRECTION.md
+docs/design/gameplay/magic/MAGIC_SPELLS_ACTIONS_DIRECTION.md
 ```
 
 Specs de cidade **não devem implementar eventos hostis, defesa urbana, cultistas, monstros ou civis fugindo agora**.
 
-Quando esse tema entrar explicitamente no roadmap futuro, ler também:
+Backlog futuro, não atual:
 
 ```text
-docs/design/gameplay/enemies/ENEMY_BEHAVIORS_DIRECTION.md
-docs/design/gameplay/combat/COMBAT_CORE_DIRECTION.md
+spec_city_hostile_event_behaviors_future.md
 ```
 
-Specs recomendadas derivadas atuais:
+Specs recomendadas atuais:
 
 ```text
 spec_city_scene_tilemap_collision_spawns.md
@@ -189,17 +156,11 @@ spec_city_festivals_layout_variations.md
 spec_city_hidden_subsoil_bromecia_elyndor_hooks.md
 ```
 
-Backlog futuro, não atual:
-
-```text
-spec_city_hostile_event_behaviors_future.md
-```
-
 ---
 
 # PARTE C — Caverna
 
-## 5. Specs de caverna
+## 4. Specs de caverna
 
 Fontes obrigatórias:
 
@@ -216,52 +177,10 @@ docs/design/gameplay/enemies/ENEMY_BEHAVIORS_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_WEAPONS_ARMOR_MATERIALS_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_MECHANICAL_BASELINES_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_ENEMY_VULNERABILITY_ADAPTER.md
+docs/design/gameplay/magic/MAGIC_SPELLS_ACTIONS_DIRECTION.md
 docs/design/gameplay/loot_crafting_economy/LOOT_CRAFTING_ECONOMY_DIRECTION.md
 docs/game_rules/cave_rules.md
 docs/decisions/ADR-0005-cave-stable-run-and-replay.md
-```
-
-Uso de cada fonte:
-
-```text
-CAVE_DESIGN_DIRECTION.md
-  visão macro, 100 níveis, nível 101, boss gates, mineração, tesouros e roadmap.
-
-CAVE_LEVEL_GENERATION_LAYOUT_BIOME_DIRECTION.md
-  tamanho mínimo/máximo dos níveis, randomização ponderada de biomas, layout archetypes, special rooms e snapshot.
-
-CAVE_MONSTER_ROSTER_DIRECTION.md
-  criaturas concretas da caverna, atributos, XP, drops, packs, bosses, scaling e nomes autorais de ataques.
-
-CAVE_MONSTER_ROSTER_ENEMY_BEHAVIOR_ADAPTER.md
-  ponte obrigatória para converter campos do roster em EnemyDataSO, EnemyBrainProfileSO, EnemyMovementProfileSO, EnemyActionSetSO e LootTableSO.
-
-CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md
-  active combat budget, vulnerabilidades, janelas críticas, companions/pets, TTK e telemetria de Stamina.
-
-CAVE_MONSTER_VISUAL_SPRITE_DIRECTION.md
-  descrição visual, tamanho, silhueta, cores, animações, variações e telegraph de sprites.
-
-COMBAT_CORE_DIRECTION.md
-  regras gerais de combate, inputs, HP/MP/Stamina, ataque, block, dodge, dash, dano, armor, vulnerabilidades, bosses, HUD e telemetria.
-
-STATUS_EFFECTS_DIRECTION.md
-  significado mecânico de Bleed, Burn, Chill, Poison, Stun, Root, Fear, ConfusionLite, DurabilityStress e Corruption.
-
-ENEMY_BEHAVIORS_DIRECTION.md
-  taxonomia geral de Move, BehaviorProfile, Trait, EnemyAction, EnemyBrain, módulos injetáveis, pack coordination e leash.
-
-EQUIPMENT_WEAPONS_ARMOR_MATERIALS_DIRECTION.md
-  direção geral de armas, armaduras, escudos, materiais, resistências, durabilidade, crafting, loot de componentes e balance contra famílias de inimigos.
-
-EQUIPMENT_MECHANICAL_BASELINES_DIRECTION.md
-  baselines mecânicos de WeaponDamage, ASPD, scaling por atributo, custo de Stamina, charged effects, range, peso, armor, shield, arrows, wands, scrolls e focuses.
-
-EQUIPMENT_ENEMY_VULNERABILITY_ADAPTER.md
-  contrato de matching entre tags de equipamento e vulnerabilidades de inimigos, incluindo MaterialVulnerability, sem duplicar matriz por família.
-
-LOOT_CRAFTING_ECONOMY_DIRECTION.md
-  loot tables, drops, mining, treasure, component loot, crafting recipes, economy, storage, shipping, shops e recompensas.
 ```
 
 Specs de caverna que tocam runtime já existente devem ler também:
@@ -277,70 +196,6 @@ docs/specs/implementados/spec_cave_005_visual_runtime_camera_enemy_visuals.md
 docs/specs/implementados/spec_cave_006_spawn_anchor_safe_positioning.md
 docs/specs/implementados/spec_cave_007_snapshot_replay_full_layout_hardening.md
 docs/specs/implementados/spec_cave_008_debug_skip_confinement_wall_distance_hardening.md
-```
-
-Temas esperados:
-
-```text
-procedural generation
-level size ranges
-weighted biome randomization
-layout archetypes
-100 levels
-level 101/endgame
-boss gate 100
-biomes
-mining
-resource nodes
-treasure rooms
-special rooms
-hazards
-monster density
-active enemy budget
-monster packs
-monster visual sprites
-bosses
-boss phases
-vulnerabilities
-critical windows
-status effects
-enemy brain
-enemy action selection
-enemy stamina/MP use
-pack coordination
-leash/reacquire
-roster to EnemyDataSO conversion
-roster Behavior normalization
-roster Move normalization
-roster Trait modifiers
-equipment drops
-materials
-weapon counters
-armor/resistance balance
-component loot tables
-loot tables
-treasure tables
-mining node tables
-boss drops
-MaterialVulnerability
-arrows/bows/wands/scrolls counters
-charged effects
-Bleed/Burn/Chill/Poison consistency
-checkpoints
-Elyndor portals
-Bromecia ruins
-Pedra Negra corrompida
-Pedra de Meteoro Negra Estabilizada
-death/corpse recovery
-Fonte de Anya integration
-Anya partial power liberation
-fatigue in cave
-companions in cave
-pet dog support
-combat inputs
-Stamina economy
-Block/Dodge/Dash
-telemetry
 ```
 
 Specs recomendadas futuras:
@@ -367,7 +222,7 @@ spec_enemy_pack_coordination_leash_runtime.md
 
 # PARTE D — Combate
 
-## 6. Specs gerais de combate
+## 5. Specs de combate
 
 Fontes obrigatórias:
 
@@ -385,52 +240,16 @@ docs/design/gameplay/cave/CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md
 docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_DIRECTION.md
 ```
 
+Specs de combate que envolvam spells, MP casting, staff charged, magic actions, healing, barrier, purification, wands, scrolls, tomes ou focuses devem ler também:
+
+```text
+docs/design/gameplay/magic/MAGIC_SPELLS_ACTIONS_DIRECTION.md
+```
+
 Specs de combate que envolvam loot, drops, reward, gold, item use, consumíveis, durability economy ou crafting devem ler também:
 
 ```text
 docs/design/gameplay/loot_crafting_economy/LOOT_CRAFTING_ECONOMY_DIRECTION.md
-```
-
-Usar para specs de:
-
-```text
-combat controller
-input buffer
-attack controller
-light attack
-heavy attack
-charged attack
-Stamina costs
-Stamina regen
-Dash
-Dodge
-Block
-Perfect Block
-BlockImpact
-HP/MP/Stamina combat rules
-DamageType
-Armor/Defense
-critical hit
-MinorOpening
-CriticalWindow
-CoreExposed
-posture/stagger
-guard break
-weapon actions
-magic combat actions
-status effects
-equipment modifiers
-weapon damage
-ASPD
-armor weight
-shield/block gear
-bows/arrows
-wands/scrolls/focuses
-enemy reactions
-enemy action phases
-combat HUD
-combat feedback
-combat telemetry
 ```
 
 Specs recomendadas derivadas:
@@ -452,7 +271,7 @@ spec_combat_hud_feedback_telemetry.md
 
 # PARTE E — Inimigos / Enemy AI
 
-## 7. Specs gerais de inimigos
+## 6. Specs de inimigos
 
 Fontes obrigatórias:
 
@@ -463,6 +282,7 @@ docs/design/gameplay/combat/STATUS_EFFECTS_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_WEAPONS_ARMOR_MATERIALS_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_MECHANICAL_BASELINES_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_ENEMY_VULNERABILITY_ADAPTER.md
+docs/design/gameplay/magic/MAGIC_SPELLS_ACTIONS_DIRECTION.md
 docs/design/gameplay/loot_crafting_economy/LOOT_CRAFTING_ECONOMY_DIRECTION.md
 docs/design/gameplay/player/PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md
 docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_DIRECTION.md
@@ -489,6 +309,7 @@ pet/companion target logic
 cave roster to enemy data conversion
 enemy family equipment counters
 enemy component drops
+spell vulnerability matching
 LootTableSO
 EnemyDropTableSO
 BossDropTableSO
@@ -539,7 +360,7 @@ spec_city_hostile_event_behaviors_future.md
 
 # PARTE F — Player / atributos / skills
 
-## 8. Specs de player core
+## 7. Specs de player core
 
 Fontes obrigatórias:
 
@@ -559,34 +380,17 @@ docs/design/gameplay/equipment/EQUIPMENT_MECHANICAL_BASELINES_DIRECTION.md
 docs/design/gameplay/loot_crafting_economy/LOOT_CRAFTING_ECONOMY_DIRECTION.md
 ```
 
-Usar para specs de:
+Specs de player que envolvam known spells, equipped spells, MP casting, spell unlocks, staff/focus, wands, scrolls, tomes, magic HUD ou capstones Anya/Senya devem ler também:
 
 ```text
-player creation
-initial races
-attributes
-HP
-MP
-Stamina
-hunger
-fatigue
-level up
-attribute points
-skill points
-skill trees
-active slots
-Dash/Dodge/Block
-classes/jobs inferred
-equipment slots
-inventory/storage
-save/load player state
+docs/design/gameplay/magic/MAGIC_SPELLS_ACTIONS_DIRECTION.md
 ```
 
 ---
 
 # PARTE G — Equipamentos, armas, magia, companions, pets e HUD
 
-## 9. Specs de equipamentos/armas/armaduras/materiais
+## 8. Specs de equipamentos/armas/armaduras/materiais
 
 Fontes obrigatórias:
 
@@ -604,43 +408,10 @@ docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_DIRECTION.md
 docs/design/gameplay/cave/CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md
 ```
 
-Usar para specs de:
+Specs de equipamentos mágicos, staff, wands, scrolls, tomes, focuses, SpellActionDataSO, spell unlocks ou spell modifiers devem ler também:
 
 ```text
-EquipmentItemSO
-WeaponDataSO
-ArmorDataSO
-ShieldDataSO
-AccessoryDataSO
-ToolDataSO
-MaterialDataSO
-EquipmentTierSO
-UpgradeRecipeSO
-RepairRecipeSO
-LootTableSO
-WeaponDamage
-ASPD
-attribute scaling
-weapon actions
-charged effects
-equipment slots
-armor weight
-stamina cost modifiers
-BlockPower/BlockStability gear
-resistances
-durability
-DurabilityStress
-status tags
-bows/arrows/ammo
-wands
-scrolls/pergaminhos
-tomes/grimórios
-focuses/relics
-MaterialVulnerability
-crafting/upgrades
-unique equipment
-tooltip/inventory comparison
-save/load equipment instances
+docs/design/gameplay/magic/MAGIC_SPELLS_ACTIONS_DIRECTION.md
 ```
 
 Specs recomendadas derivadas:
@@ -662,11 +433,12 @@ spec_equipment_tooltip_inventory_comparison.md
 spec_equipment_save_load_instances.md
 ```
 
-## 10. Specs de magia
+## 9. Specs de magia
 
-Specs de magia devem ler:
+Fontes obrigatórias:
 
 ```text
+docs/design/gameplay/magic/MAGIC_SPELLS_ACTIONS_DIRECTION.md
 docs/design/gameplay/combat/COMBAT_CORE_DIRECTION.md
 docs/design/gameplay/combat/STATUS_EFFECTS_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_WEAPONS_ARMOR_MATERIALS_DIRECTION.md
@@ -674,12 +446,61 @@ docs/design/gameplay/equipment/EQUIPMENT_MECHANICAL_BASELINES_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_ENEMY_VULNERABILITY_ADAPTER.md
 docs/design/gameplay/loot_crafting_economy/LOOT_CRAFTING_ECONOMY_DIRECTION.md
 docs/design/gameplay/player/PLAYER_SKILL_TREES_DIRECTION.md
+docs/design/gameplay/player/PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md
 docs/design/lore/VAALARA_GAME_CANON_DIRECTION_v1.0.md
 ```
 
-## 11. Specs de companions/pets em combate
+Usar para specs de:
 
-Specs de companions/pets em combate devem ler:
+```text
+SpellActionDataSO
+SpellShapeProfileSO
+SpellScalingProfileSO
+SpellUnlockRuleSO
+SpellUpgradeRuleSO
+SpellStatusApplicationSO
+SpellVFXProfileSO
+SpellSFXProfileSO
+SpellHUDProfileSO
+TomeSpellUnlockSO
+FocusSpellModifierSO
+WandSpellProfileSO
+ScrollSpellProfileSO
+MagicBalanceProfileSO
+knownSpellIds
+equippedSpellSlots
+spell cooldowns
+spell targeting
+spell shapes
+MP costs
+cast time
+interrupt
+healing
+barrier
+purification
+elemental damage
+Anya/Senya capstone spell modifiers
+```
+
+Specs recomendadas derivadas:
+
+```text
+spec_magic_spell_action_data_contract.md
+spec_magic_spell_shapes_targeting_runtime.md
+spec_magic_mp_cost_cast_cooldown_runtime.md
+spec_magic_spell_unlocks_tomes_focus_modifiers.md
+spec_magic_status_application_and_vulnerability_matching.md
+spec_magic_staff_wand_scroll_integration.md
+spec_magic_healing_barrier_purification_runtime.md
+spec_magic_elemental_damage_runtime.md
+spec_magic_hud_cast_preview_feedback.md
+spec_magic_save_load_known_spells_slots_cooldowns.md
+spec_magic_balance_playtest_profile.md
+```
+
+## 10. Specs de companions/pets em combate
+
+Fontes obrigatórias:
 
 ```text
 docs/design/gameplay/combat/COMBAT_CORE_DIRECTION.md
@@ -688,21 +509,23 @@ docs/design/gameplay/enemies/ENEMY_BEHAVIORS_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_WEAPONS_ARMOR_MATERIALS_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_MECHANICAL_BASELINES_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_ENEMY_VULNERABILITY_ADAPTER.md
+docs/design/gameplay/magic/MAGIC_SPELLS_ACTIONS_DIRECTION.md
 docs/design/gameplay/loot_crafting_economy/LOOT_CRAFTING_ECONOMY_DIRECTION.md
 docs/design/gameplay/cave/CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md
 docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_DIRECTION.md
 docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_ENEMY_BEHAVIOR_ADAPTER.md
 ```
 
-## 12. Specs de HUD gameplay/combat
+## 11. Specs de HUD gameplay/combat
 
-Specs de HUD gameplay/combat devem ler:
+Fontes obrigatórias:
 
 ```text
 docs/design/gameplay/combat/COMBAT_CORE_DIRECTION.md
 docs/design/gameplay/combat/STATUS_EFFECTS_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_WEAPONS_ARMOR_MATERIALS_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_MECHANICAL_BASELINES_DIRECTION.md
+docs/design/gameplay/magic/MAGIC_SPELLS_ACTIONS_DIRECTION.md
 docs/design/gameplay/loot_crafting_economy/LOOT_CRAFTING_ECONOMY_DIRECTION.md
 docs/design/gameplay/player/PLAYER_CORE_SYSTEMS_DIRECTION.md
 docs/design/gameplay/player/PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md
@@ -712,7 +535,7 @@ docs/design/gameplay/player/PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md
 
 # PARTE H — Loot / Crafting / Economy
 
-## 13. Specs de loot, crafting e economia
+## 12. Specs de loot, crafting e economia
 
 Fontes obrigatórias:
 
@@ -722,6 +545,7 @@ docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.3.md
 docs/design/gameplay/city/CITY_NPC_ROSTER_SERVICES_DIRECTION_v1.1.md
 docs/design/gameplay/equipment/EQUIPMENT_WEAPONS_ARMOR_MATERIALS_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_MECHANICAL_BASELINES_DIRECTION.md
+docs/design/gameplay/magic/MAGIC_SPELLS_ACTIONS_DIRECTION.md
 docs/design/gameplay/combat/STATUS_EFFECTS_DIRECTION.md
 docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_DIRECTION.md
 docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_ENEMY_BEHAVIOR_ADAPTER.md
@@ -767,6 +591,10 @@ loot rarity
 quality
 crafting timers
 processing timers
+spell tomes
+scrolls
+wands
+focuses
 ```
 
 Specs recomendadas derivadas:
@@ -792,7 +620,7 @@ spec_bows_arrows_scrolls_wands_item_instances.md
 
 # PARTE I — Regra anti-regressão
 
-## 14. Quando houver conflito
+## 13. Quando houver conflito
 
 Se houver conflito entre documentos:
 
@@ -821,6 +649,7 @@ Status Effects é fonte canônica do significado mecânico de Bleed, Burn, Chill
 Equipment Weapons Armor Materials é fonte canônica de direção geral de armas, armaduras, escudos, materiais, durabilidade, upgrades e balance de gear contra famílias de inimigos.
 Equipment Mechanical Baselines é fonte canônica de baseline mecânico inicial: WeaponDamage, ASPD, scaling por atributo, StaminaCost, charged effects, range, armor, shield, arrows, wands, scrolls, tomes e focuses.
 Equipment Enemy Vulnerability Adapter é fonte canônica da ponte entre tags de equipamentos e vulnerabilidades de inimigos, incluindo MaterialVulnerability, sem duplicar matriz por família.
+Magic Spells Actions é fonte canônica da lista enxuta de spells, SpellActionDataSO, spell shapes, MP costs, cast time, spell unlocks, spell scaling, staff/wand/scroll/tome/focus integration e spell HUD.
 Loot Crafting Economy é fonte canônica de fluxos de itens, loot tables, recipes, quality, rarity, shops, orders, shipping, storage, ItemStack, ItemInstance e economy balance.
 MaterialVulnerability deve existir em specs futuras de EnemyDataSO.
 Vulnerabilidades por família/inimigo ficam em Cave Combat Balance, Cave Monster Roster e EnemyDataSO futuro; não em documentos de equipment.
@@ -828,6 +657,8 @@ Quality é diferente de Rarity.
 Tier é diferente de Quality e Rarity.
 Reputação é desbloqueio social/econômico, não moeda comum.
 Fruto de Mana, Água Viva da Fonte e Pedra Negra estabilizada não são commodities comuns.
+Magias podem ter nomes de deuses, mas tipo mecânico é definido por DamageType, SpellCategory, SpellShape, Tags e Scaling.
+Corruption/Nyx em magia é risco late/endgame, não sistema obrigatório inicial.
 Farm invasion, town hostile events e world enemy events são backlog futuro; não entram em specs atuais sem nova decisão de roadmap.
 Hearing/audição não é elemento atual de IA inimiga.
 ```
