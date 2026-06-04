@@ -69,6 +69,12 @@ docs/design/gameplay/companions/COMPANIONS_DIRECTION.md
 docs/design/gameplay/city/CITY_NPC_ROSTER_SERVICES_DIRECTION_v1.1.md
 ```
 
+Specs de fazenda que envolvam pets, cachorro, gato, cama/tigela/brinquedo, pet home area, vínculo de pet, rotina de pet, pet farm hints, pet foraging hints ou interação pet-fazenda devem ler também:
+
+```text
+docs/design/gameplay/pets/PETS_DIRECTION.md
+```
+
 Specs de fazenda **não devem implementar invasões, defesa contra inimigos, dano a crops/estruturas ou inimigos no mapa da fazenda agora**.
 
 Backlog futuro, não atual:
@@ -84,6 +90,7 @@ Quando esse tema entrar explicitamente no roadmap futuro, ler:
 docs/design/gameplay/enemies/ENEMY_BEHAVIORS_DIRECTION.md
 docs/design/gameplay/combat/COMBAT_CORE_DIRECTION.md
 docs/design/gameplay/companions/COMPANIONS_DIRECTION.md
+docs/design/gameplay/pets/PETS_DIRECTION.md
 ```
 
 Specs recomendadas atuais:
@@ -134,6 +141,12 @@ Specs de cidade que envolvam companion eligibility, companion unlock, convite, d
 
 ```text
 docs/design/gameplay/companions/COMPANIONS_DIRECTION.md
+```
+
+Specs de cidade que envolvam pet adoption, pet shop, pet food, pet toys, pet bed/bowl, pet services ou NPCs interagindo com pets devem ler também:
+
+```text
+docs/design/gameplay/pets/PETS_DIRECTION.md
 ```
 
 Specs de cidade que envolvam loja, ferreiro, crafting, reparo, equipamentos, armas, armaduras, materiais, pergaminhos, wands, arrows, encomendas, reputação econômica, serviços, estoque, refresh/restock, limited stock, preço, compra/venda, economia de gear, ensino de magia ou venda de item mágico devem ler:
@@ -202,6 +215,7 @@ docs/design/gameplay/equipment/EQUIPMENT_ENEMY_VULNERABILITY_ADAPTER.md
 docs/design/gameplay/magic/MAGIC_SPELLS_ACTIONS_DIRECTION.md
 docs/design/gameplay/magic/MAGIC_LEARNING_UNLOCKS_SOURCES_DIRECTION.md
 docs/design/gameplay/companions/COMPANIONS_DIRECTION.md
+docs/design/gameplay/pets/PETS_DIRECTION.md
 docs/design/gameplay/loot_crafting_economy/LOOT_CRAFTING_ECONOMY_DIRECTION.md
 docs/design/gameplay/loot_crafting_economy/ECONOMY_PRICING_STOCK_REFRESH_DIRECTION.md
 docs/game_rules/cave_rules.md
@@ -272,6 +286,12 @@ Specs de combate que envolvam companions, companion AI, companion assist, compan
 docs/design/gameplay/companions/COMPANIONS_DIRECTION.md
 ```
 
+Specs de combate que envolvam pets, pet follow/leash, pet interrupt, pet alert, pet trap/treasure hint, pet cave state ou pet boss limits devem ler também:
+
+```text
+docs/design/gameplay/pets/PETS_DIRECTION.md
+```
+
 Specs de combate que envolvam spells, MP casting, staff charged, magic actions, healing, barrier, purification, wands, scrolls, tomes, focuses, known spells ou spell source devem ler também:
 
 ```text
@@ -319,6 +339,7 @@ docs/design/gameplay/equipment/EQUIPMENT_ENEMY_VULNERABILITY_ADAPTER.md
 docs/design/gameplay/magic/MAGIC_SPELLS_ACTIONS_DIRECTION.md
 docs/design/gameplay/magic/MAGIC_LEARNING_UNLOCKS_SOURCES_DIRECTION.md
 docs/design/gameplay/companions/COMPANIONS_DIRECTION.md
+docs/design/gameplay/pets/PETS_DIRECTION.md
 docs/design/gameplay/loot_crafting_economy/LOOT_CRAFTING_ECONOMY_DIRECTION.md
 docs/design/gameplay/loot_crafting_economy/ECONOMY_PRICING_STOCK_REFRESH_DIRECTION.md
 docs/design/gameplay/player/PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md
@@ -431,6 +452,12 @@ Specs de player que envolvam companion state, active companion, companion intera
 docs/design/gameplay/companions/COMPANIONS_DIRECTION.md
 ```
 
+Specs de player que envolvam pet state, active pet, pet bond, pet mood, pet energy, pet food, pet home area, pet save/load ou pet interaction devem ler também:
+
+```text
+docs/design/gameplay/pets/PETS_DIRECTION.md
+```
+
 ---
 
 # PARTE G — Equipamentos, armas, magia, companions, pets e HUD
@@ -465,6 +492,12 @@ Specs de companion equipment futuro devem ler também:
 
 ```text
 docs/design/gameplay/companions/COMPANIONS_DIRECTION.md
+```
+
+Specs de pet items, pet food, pet toys, pet bed, pet bowl ou pet-related shop items devem ler também:
+
+```text
+docs/design/gameplay/pets/PETS_DIRECTION.md
 ```
 
 Specs recomendadas derivadas:
@@ -505,10 +538,11 @@ docs/design/gameplay/player/PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md
 docs/design/lore/VAALARA_GAME_CANON_DIRECTION_v1.0.md
 ```
 
-Specs de healing/support magic que afetam companions devem ler também:
+Specs de healing/support magic que afetam companions ou pets devem ler também:
 
 ```text
 docs/design/gameplay/companions/COMPANIONS_DIRECTION.md
+docs/design/gameplay/pets/PETS_DIRECTION.md
 ```
 
 Usar para specs de:
@@ -588,6 +622,12 @@ docs/design/gameplay/loot_crafting_economy/LOOT_CRAFTING_ECONOMY_DIRECTION.md
 docs/design/gameplay/loot_crafting_economy/ECONOMY_PRICING_STOCK_REFRESH_DIRECTION.md
 ```
 
+Specs de companions que envolvam interação com pets devem ler também:
+
+```text
+docs/design/gameplay/pets/PETS_DIRECTION.md
+```
+
 Usar para specs de:
 
 ```text
@@ -633,16 +673,61 @@ spec_companion_balance_playtest_profile.md
 
 ## 11. Specs de pets em combate/fazenda
 
-Enquanto `PETS_DIRECTION.md` não existir, specs de pets devem ler:
+Fontes obrigatórias:
 
 ```text
+docs/design/gameplay/pets/PETS_DIRECTION.md
 docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.3.md
+docs/design/gameplay/farm/FARM_LAYOUT_SCALE_BUILDINGS_DIRECTION.md
 docs/design/gameplay/companions/COMPANIONS_DIRECTION.md
 docs/design/gameplay/combat/COMBAT_CORE_DIRECTION.md
 docs/design/gameplay/enemies/ENEMY_BEHAVIORS_DIRECTION.md
+docs/design/gameplay/cave/CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md
+docs/design/gameplay/loot_crafting_economy/LOOT_CRAFTING_ECONOMY_DIRECTION.md
+docs/design/gameplay/loot_crafting_economy/ECONOMY_PRICING_STOCK_REFRESH_DIRECTION.md
+docs/design/gameplay/player/PLAYER_CORE_SYSTEMS_DIRECTION.md
+docs/design/gameplay/player/PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md
 ```
 
-Quando `PETS_DIRECTION.md` existir, ele vira fonte canônica para pets.
+Usar para specs futuras de:
+
+```text
+PetDataSO
+PetBondProfileSO
+PetMoodProfileSO
+PetFoodDataSO
+PetRoutineProfileSO
+PetFarmBehaviorProfileSO
+PetCaveBehaviorProfileSO
+PetAlertProfileSO
+PetTreasureHintProfileSO
+PetTrapHintProfileSO
+PetHUDProfileSO
+PetSaveProfileSO
+pet home area
+pet bed/bowl/toy
+pet bond/mood/energy
+pet follow/leash/safe spawn
+pet cave alert
+pet treasure/trap hints
+pet light interrupt
+pet save/load
+```
+
+Specs recomendadas futuras:
+
+```text
+spec_pet_data_contract.md
+spec_pet_home_area_bed_bowl_runtime.md
+spec_pet_bond_mood_energy_runtime.md
+spec_pet_follow_home_routine_runtime.md
+spec_pet_farm_alerts_and_foraging_hints.md
+spec_pet_cave_follow_leash_safe_spawn.md
+spec_pet_cave_alerts_treasure_trap_hints.md
+spec_pet_light_interrupt_runtime.md
+spec_pet_hud_icons_feedback.md
+spec_pet_save_load_state.md
+```
 
 ## 12. Specs de HUD gameplay/combat
 
@@ -656,6 +741,7 @@ docs/design/gameplay/equipment/EQUIPMENT_MECHANICAL_BASELINES_DIRECTION.md
 docs/design/gameplay/magic/MAGIC_SPELLS_ACTIONS_DIRECTION.md
 docs/design/gameplay/magic/MAGIC_LEARNING_UNLOCKS_SOURCES_DIRECTION.md
 docs/design/gameplay/companions/COMPANIONS_DIRECTION.md
+docs/design/gameplay/pets/PETS_DIRECTION.md
 docs/design/gameplay/loot_crafting_economy/LOOT_CRAFTING_ECONOMY_DIRECTION.md
 docs/design/gameplay/loot_crafting_economy/ECONOMY_PRICING_STOCK_REFRESH_DIRECTION.md
 docs/design/gameplay/player/PLAYER_CORE_SYSTEMS_DIRECTION.md
@@ -680,6 +766,7 @@ docs/design/gameplay/equipment/EQUIPMENT_MECHANICAL_BASELINES_DIRECTION.md
 docs/design/gameplay/magic/MAGIC_SPELLS_ACTIONS_DIRECTION.md
 docs/design/gameplay/magic/MAGIC_LEARNING_UNLOCKS_SOURCES_DIRECTION.md
 docs/design/gameplay/companions/COMPANIONS_DIRECTION.md
+docs/design/gameplay/pets/PETS_DIRECTION.md
 docs/design/gameplay/combat/STATUS_EFFECTS_DIRECTION.md
 docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_DIRECTION.md
 docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_ENEMY_BEHAVIOR_ADAPTER.md
@@ -739,6 +826,10 @@ focuses
 SpellUnlockSourceSO
 companion job output
 companion quest rewards
+pet food
+pet toys
+pet bed/bowl
+pet-related shop items
 BaseValue
 BuyPrice
 SellPrice
@@ -812,6 +903,7 @@ Equipment Enemy Vulnerability Adapter é fonte canônica da ponte entre tags de 
 Magic Spells Actions é fonte canônica da lista enxuta de spells, SpellActionDataSO, spell shapes, MP costs, cast time, spell unlocks, spell scaling, staff/wand/scroll/tome/focus integration e spell HUD.
 Magic Learning Unlocks Sources é fonte canônica para spell source, LearnableScroll, CastScroll, Tome, Wand, Staff/Weapon spell, Focus, NPC teaching, Fonte de Anya story unlock, knownSpellIds, ItemProvided e ConsumableProvided.
 Companions é fonte canônica do sistema de companions, companion eligibility, active companion, farm jobs, cave follow/leash, companion combat assist, downed/injury/recovery, bond, HUD e save/load.
+Pets é fonte canônica do sistema de pets, pet bond, pet mood/energy, pet food, pet home area, pet bed/bowl/toy, pet routine, pet farm alerts, pet cave follow/leash, pet treasure/trap hints, pet light interrupt, HUD e save/load.
 Loot Crafting Economy é fonte canônica de fluxos de itens, loot tables, recipes, quality, rarity, shops, orders, shipping, storage, ItemStack, ItemInstance e economy balance.
 Economy Pricing Stock Refresh é fonte canônica de BaseValue, BuyPrice, SellPrice, ShopStockState, StockLineSO, RestockPolicySO, SellPoint, ShippingPriceProfileSO, ResourceRefreshProfileSO, anti-arbitrage, cave loot refresh e boss first-time/repeat reward.
 MaterialVulnerability deve existir em specs futuras de EnemyDataSO.
@@ -830,6 +922,12 @@ Corruption/Nyx em magia é risco late/endgame, não sistema obrigatório inicial
 Companion ajuda, mas não joga pelo jogador.
 Baseline de caverna é 1 companion ativo.
 Pet é sistema separado e não conta como companion.
+Pet não tem Breath/Fôlego.
+Pet não substitui companion, build, skill tree, execução de combate ou ferramentas.
+Pet não gera rolagem separada de loot por padrão.
+Pet não deve puxar packs novos sozinho.
+Pet não resolve boss.
+Pet light interrupt, trap hint e treasure hint são suporte leve e limitado.
 Companion não tem Breath/Fôlego.
 Companion não gera rolagem separada de loot por padrão.
 Companion equipment completo é futuro, não MVP.
