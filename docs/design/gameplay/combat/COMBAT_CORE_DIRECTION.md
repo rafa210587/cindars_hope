@@ -344,10 +344,11 @@ Valores iniciais:
 
 | Propriedade | Alvo inicial |
 |---|---:|
-| distância | 2.0-2.6 tiles |
-| duração ativa | 0.14s-0.22s |
-| recovery | 0.20s-0.35s |
-| cooldown mínimo | 0.65s-1.10s |
+| distância base | 3.2-4.0 tiles |
+| distância com upgrades/skills | até 4.5 tiles, com cap |
+| duração ativa | 0.18s-0.30s |
+| recovery | 0.25s-0.40s |
+| cooldown mínimo | 0.75s-1.20s |
 | i-frame | nenhum ou muito baixo |
 
 Influenciado por:
@@ -364,9 +365,11 @@ Regras:
 
 ```text
 Dash serve para reposicionar, sair de zona, atravessar pequena distância ou criar espaço.
+Dash deve ser perceptivelmente maior que Dodge.
 Dash não deve ser esquiva universal.
 Dash não deve substituir Dodge.
 Dash caro exige que hazards/telegraphs deem espaço para decisão.
+Um Dash de 4 tiles é aceitável porque custa 40 Stamina e não deve ter i-frame relevante.
 ```
 
 ## 14. Dodge
@@ -1264,7 +1267,8 @@ Dash, Dodge e Block não ocupam active slot.
 Movimento normal é a primeira defesa.
 Velocidade base do jogador em exploração deve ficar em 3.8-4.2 tiles/s.
 Velocidade em combate com arma pronta deve ficar em 3.4-3.8 tiles/s.
-Dash deve cobrir 2.0-2.6 tiles e ser reposicionamento forte, não dodge universal.
+Dash base deve cobrir 3.2-4.0 tiles e ser reposicionamento forte, não dodge universal.
+Dash com upgrades/skills pode chegar até 4.5 tiles, com cap.
 Dodge deve cobrir 1.2-1.8 tiles com i-frame curto e recovery.
 Nem toda abertura dá crítico automático.
 MinorOpening, CriticalWindow e CoreExposed são categorias diferentes.
@@ -1295,3 +1299,4 @@ Definir UI feedback de Stamina baixa, block, critical window e vulnerability.
 Definir integração com companions/pets.
 Definir Play Mode telemetry para TTK/Stamina/HP/MP/movement.
 Definir validações Unity por spec.
+```
