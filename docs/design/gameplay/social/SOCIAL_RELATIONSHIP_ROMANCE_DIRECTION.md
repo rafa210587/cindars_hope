@@ -1,6 +1,6 @@
 # Cindar's Hope — Social Relationship & Romance Direction
 
-> **Status:** documento canônico de direção futura de relacionamento, amizade, romance e casamento  
+> **Status:** documento canônico de direção futura de relacionamento, amizade, romance, casamento, poliamor e parceiros-companions  
 > **Local:** `docs/design/gameplay/social/SOCIAL_RELATIONSHIP_ROMANCE_DIRECTION.md`  
 > **Depende de:**  
 > - `docs/design/SPEC_SOURCE_MAP.md`  
@@ -15,14 +15,14 @@
 > - `docs/design/gameplay/pets/PETS_DIRECTION.md`  
 > - `docs/design/gameplay/loot_crafting_economy/LOOT_CRAFTING_ECONOMY_DIRECTION.md`  
 > - `docs/design/gameplay/loot_crafting_economy/ECONOMY_PRICING_STOCK_REFRESH_DIRECTION.md`  
-> **Função:** preparar a arquitetura de design para vínculos sociais, romance, casamento e visitas sem forçar implementação imediata.  
+> **Função:** preparar a arquitetura de design para vínculos sociais, romance, casamento, poliamor consentido, visitas, parceiro-companion e ajuda na fazenda sem forçar implementação imediata.  
 > **Não é spec implementável.** Specs futuras devem converter isto em dados/runtime/UI/Unity.
 
 ---
 
 ## 0. Regra anti-duplicação
 
-Este documento define a direção do **sistema social** do jogo.
+Este documento define a direção futura do **sistema social**.
 
 Ele **não redefine**:
 
@@ -46,7 +46,7 @@ CITY_LAYOUT_BUILDINGS_SCHEDULE_DIRECTION.md
   vence para prédios, residências, camas, rotas, horários, locais de visita e anchors físicos da cidade.
 
 COMPANIONS_DIRECTION.md
-  vence para companion eligibility, active companion, companion jobs, cave follow/leash, downed/recovery e companion bond funcional.
+  vence para companion runtime, active companion, cave follow/leash, downed/recovery, companion jobs e companion bond funcional.
 
 PETS_DIRECTION.md
   vence para pet bond, pet mood/energy, pet home area, pet food, pet toys, pet follow/leash e pet hints.
@@ -55,7 +55,7 @@ ECONOMY_PRICING_STOCK_REFRESH_DIRECTION.md
   vence para BaseValue, preço, estoque, restock, loja, SellPoint e anti-arbitragem.
 ```
 
-Este documento vence apenas quando a decisão for sobre:
+Este documento vence quando a decisão for sobre:
 
 ```text
 amizade;
@@ -63,8 +63,13 @@ vínculo social;
 presentes sociais;
 diálogo por relação;
 romance;
+romance homoafetivo;
 casamento;
-spouse helper;
+casamento poliamoroso consentido;
+limite de parceiros românticos/cônjuges;
+parceiro virando companion;
+parceiro ajudando na fazenda;
+spouse/partner helper;
 visitas sociais à fazenda;
 convites sociais;
 ciúme/conflito social leve;
@@ -83,7 +88,7 @@ Esta feature **não entra nas specs executáveis atuais**.
 Objetivo desta direção:
 
 ```text
-preparar as próximas features para não contradizerem relacionamento/romance/casamento;
+preparar próximas features para não contradizerem relacionamento/romance/casamento;
 garantir que cidade, NPCs, companions, pets, fazenda, calendário, UI e save deixem hooks corretos;
 evitar que specs atuais fechem portas técnicas ou narrativas;
 definir o que deve ficar reservado para implementação futura.
@@ -95,10 +100,11 @@ Durante a próxima leva de specs executáveis, esta direção deve ser usada ape
 não bloquear NPC relationship state futuro;
 não usar campos incompatíveis;
 não transformar romance/casamento em caminho obrigatório de poder;
-não acoplar spouse helper em farm automation atual;
+não acoplar partner helper em farm automation atual;
 não misturar companion bond com romance sem regra explícita;
 não misturar pet bond com social romance;
-não persistir estado social de forma incompleta que vire dívida técnica.
+não persistir estado social de forma incompleta que vire dívida técnica;
+reservar anchors de visita/partner sem implementar runtime social.
 ```
 
 Não implementar agora:
@@ -109,8 +115,10 @@ Friendship UI;
 gift runtime completo;
 romance cutscenes;
 marriage ceremony;
-spouse moving to farm;
-spouse helper automation;
+poly marriage ceremony;
+partner moving to farm;
+partner helper automation;
+romantic partner companion unlock runtime;
 jealousy runtime;
 social questline runtime;
 festivals sociais completos;
@@ -121,7 +129,35 @@ children/family system.
 
 ---
 
-## 2. Objetivo de produto
+## 2. Inspiração e limite de referência
+
+A direção segue padrões comuns de **farm sim/social sim**:
+
+```text
+conversar com NPCs;
+dar presentes;
+descobrir preferências;
+ganhar amizade ao longo do tempo;
+liberar eventos pessoais;
+resolver quests pessoais;
+iniciar romance;
+casar;
+receber ajuda doméstica/fazenda;
+ver NPCs reagindo ao calendário, clima, festivais e progresso do jogador.
+```
+
+Referências de gênero incluem Harvest Moon e Stardew Valley apenas como inspiração de estrutura.
+
+Regra:
+
+```text
+Não copiar nomes, textos, UI, balance, eventos, personagens, falas, paleta, assets ou tabelas específicas.
+Usar apenas padrões de gênero e adaptar à identidade de Vaalara, Cindar's Hope, Anya, Nyx, Senya, cidade, fazenda e caverna.
+```
+
+---
+
+## 3. Objetivo de produto
 
 O sistema social deve fazer a cidade parecer habitada, reativa e emocionalmente consistente sem transformar vínculos sociais em obrigação mecânica.
 
@@ -131,20 +167,22 @@ Pilares:
 1. Relações dão contexto, histórias, desbloqueios e conveniência, não poder obrigatório.
 2. Romance é opcional.
 3. Casamento é opcional.
-4. Amizade deve ser útil mesmo sem romance.
-5. NPCs devem manter identidade própria, rotina, crenças, limites e preferências.
-6. O jogador não deve otimizar relações como uma planilha sem feedback diegético.
-7. Presentes e escolhas devem respeitar religião, personalidade, trabalho e história do NPC.
-8. Spouse helper ajuda, mas não joga pelo jogador.
-9. O sistema deve preservar coerência com companions e pets.
-10. Save/load social deve ser explícito e estável.
+4. Romance homoafetivo é permitido por padrão para candidatos marcados como RomanceEligibleAnyPlayerGender.
+5. Casamento poliamoroso consentido é permitido até 3 parceiros totais.
+6. Amizade deve ser útil mesmo sem romance.
+7. NPCs mantêm identidade própria, rotina, crenças, limites e preferências.
+8. Presentes e escolhas respeitam religião, personalidade, trabalho e história do NPC.
+9. Parceiros românticos/cônjuges podem virar companions futuros.
+10. Parceiros românticos/cônjuges podem ajudar na fazenda futuramente.
+11. Ajuda de parceiros não deve substituir o jogador, companions, pets, skill tree, ferramentas ou economia.
+12. Save/load social deve ser explícito e estável.
 ```
 
 ---
 
-## 3. Conceitos centrais
+## 4. Conceitos centrais
 
-### 3.1 Relationship
+### 4.1 Relationship
 
 Relationship é o estado social do jogador com um NPC.
 
@@ -158,6 +196,7 @@ respeito;
 conflito;
 romance;
 casamento;
+polycule membership;
 bloqueios narrativos;
 memória de eventos sociais importantes.
 ```
@@ -173,7 +212,7 @@ shop price isolado;
 quest flags genéricas sem relação social.
 ```
 
-### 3.2 Friendship
+### 4.2 Friendship
 
 Friendship é o vínculo social base.
 
@@ -185,8 +224,8 @@ destravar pequenas cenas;
 liberar pedidos pessoais;
 melhorar resposta a presentes;
 permitir visitas;
-criar pequenas conveniências;
-abrir possibilidade de romance para NPC elegível.
+abrir possibilidade de romance para NPC elegível;
+abrir possibilidade de companion unlock para parceiro/companions elegíveis.
 ```
 
 Friendship não deve:
@@ -199,7 +238,7 @@ ser obrigatória para completar o jogo;
 ser farmável infinitamente no mesmo dia.
 ```
 
-### 3.3 Trust
+### 4.3 Trust
 
 Trust representa confiança prática.
 
@@ -211,48 +250,51 @@ NPC permite acesso a área pessoal;
 NPC confia uma entrega;
 NPC recomenda o jogador a outro NPC;
 NPC aceita visitar a fazenda;
-NPC aceita trabalhar como helper eventual.
+NPC aceita trabalhar como helper eventual;
+NPC aceita se tornar companion futuro se elegível;
+NPC aceita entrar em relação poliamorosa se sua rota permitir.
 ```
 
-Trust pode subir por:
-
-```text
-quest pessoal;
-ajuda em evento;
-presente coerente;
-diálogo alinhado com valores;
-serviço prestado;
-respeito a tabu religioso ou pessoal.
-```
-
-Trust pode cair por:
-
-```text
-quebrar promessa;
-entregar item odiado repetidamente;
-escolha contra dogma central do NPC;
-ignorar evento pessoal importante;
-agir contra alguém amado pelo NPC.
-```
-
-### 3.4 Affection
+### 4.4 Affection
 
 Affection representa afeição romântica ou proximidade emocional especial.
 
-Só deve existir para NPCs elegíveis a romance ou romance tardio.
+Só existe para NPCs elegíveis a romance ou romance tardio.
 
 Não usar Affection para:
 
 ```text
 crianças;
-NPCs casados;
+NPCs casados em casal fixo indisponível;
 NPCs indisponíveis;
 NPCs bloqueados por narrativa;
 pets;
 companions sem romance eligibility.
 ```
 
-### 3.5 Social Memory
+### 4.5 Polycule
+
+Polycule é o conjunto de parceiros românticos/cônjuges do jogador quando houver relação poliamorosa.
+
+Regra fechada:
+
+```text
+O jogador pode ter até 3 parceiros românticos/cônjuges simultâneos no máximo.
+```
+
+Regras de segurança de design:
+
+```text
+todos os envolvidos devem consentir pela rota narrativa;
+NPCs podem recusar relação poliamorosa por personalidade, fé, história ou preferência;
+casais fixos não são automaticamente disponíveis;
+poliamor não é exploit de helper, ouro ou combat power;
+limite de 3 é global, não por cidade/fazenda;
+romance múltiplo não deve exigir mentira como mecânica base;
+ciúme, se existir, deve ser narrativo, leve, claro e reparável.
+```
+
+### 4.6 Social Memory
 
 Social Memory guarda fatos sociais relevantes.
 
@@ -268,18 +310,21 @@ pedido recusado;
 romance iniciado;
 romance encerrado;
 casamento realizado;
+polycule formado;
+novo parceiro aceito pela relação atual;
+parceiro recusou poliamor;
 NPC visitou a fazenda;
+NPC virou companion;
+NPC ajudou na fazenda;
 NPC conheceu pet ativo;
 NPC reagiu à Fonte de Anya;
 NPC reagiu a altar/deus relevante;
 NPC participou de festival com o jogador.
 ```
 
-Social Memory deve ser usada para evitar diálogos repetitivos e permitir reatividade.
-
 ---
 
-## 4. Estados sociais
+## 5. Estados sociais
 
 Estados base:
 
@@ -294,66 +339,32 @@ RomanceAvailable
 Dating
 Committed
 Married
+PolyculePartner
 Estranged
 Blocked
 ```
 
-### 4.1 Unknown
+### 5.1 Unknown
 
 NPC existe no mundo, mas o jogador ainda não interagiu.
 
-### 4.2 Known
+### 5.2 Known
 
 O jogador conhece o NPC.
 
-Uso:
-
-```text
-aparece no social log;
-nome e função ficam visíveis;
-presentes ainda têm resposta simples.
-```
-
-### 4.3 Acquaintance
+### 5.3 Acquaintance
 
 Relação inicial regular.
 
-Uso:
-
-```text
-diálogos básicos;
-serviços normais;
-presentes aceitos com efeito limitado.
-```
-
-### 4.4 Friendly
+### 5.4 Friendly
 
 NPC reconhece o jogador positivamente.
 
-Uso:
-
-```text
-diálogos pessoais leves;
-pequenos pedidos;
-comentários sobre cidade/fazenda;
-primeiros hints de preferência.
-```
-
-### 4.5 CloseFriend
+### 5.5 CloseFriend
 
 NPC compartilha temas pessoais.
 
-Uso:
-
-```text
-quests pessoais;
-visitas ocasionais;
-convites para eventos;
-comentários sobre outros NPCs;
-reação mais forte a presentes relevantes.
-```
-
-### 4.6 Trusted
+### 5.6 Trusted
 
 NPC confia no jogador.
 
@@ -365,10 +376,11 @@ rotas sociais;
 segredos;
 ajuda em situações futuras;
 companion eligibility para NPCs aplicáveis;
-romance eligibility para NPCs aplicáveis.
+romance eligibility para NPCs aplicáveis;
+partner helper eligibility futura.
 ```
 
-### 4.7 RomanceAvailable
+### 5.7 RomanceAvailable
 
 NPC é elegível a romance e a relação atingiu pré-requisitos.
 
@@ -380,83 +392,47 @@ Friendship mínima;
 Trust mínima;
 quest pessoal resolvida;
 sem bloqueio narrativo ativo;
-sem casamento fixo;
-sem TooYoungOrNarrativelyBlocked.
+sem casamento fixo indisponível;
+sem TooYoungOrNarrativelyBlocked;
+limite de parceiros não excedido;
+compatibilidade com monogamia/poliamor do NPC.
 ```
 
-### 4.8 Dating
+### 5.8 Dating
 
 Jogador iniciou relacionamento romântico.
 
-Uso:
-
-```text
-diálogos românticos;
-convites especiais;
-eventos pessoais;
-limites de presentes/atenção;
-possível ciúme leve se o jogo decidir usar esse sistema futuramente.
-```
-
-### 4.9 Committed
+### 5.9 Committed
 
 Relação romântica avançada, pré-casamento.
 
-Uso:
-
-```text
-pedido de casamento futuro;
-quest de compromisso;
-preparação de cerimônia;
-resolução de conflito pessoal.
-```
-
-### 4.10 Married
+### 5.10 Married
 
 Jogador casou com o NPC.
 
-Uso:
+### 5.11 PolyculePartner
+
+NPC participa de relação poliamorosa consentida com o jogador.
+
+Pode coexistir com:
 
 ```text
-spouse rotina especial;
-visitas ou residência na fazenda;
-spouse helper futuro;
-diálogos de vida conjunta;
-reações a pets, companions e Fonte de Anya;
-pequenos benefícios de conveniência.
+Dating;
+Committed;
+Married.
 ```
 
-### 4.11 Estranged
+### 5.12 Estranged
 
 Relação foi prejudicada.
 
-Uso:
-
-```text
-diálogos frios;
-serviços sociais bloqueados;
-romance pausado;
-quest de reconciliação futura.
-```
-
-### 4.12 Blocked
+### 5.13 Blocked
 
 Relação não pode avançar por regra sistêmica ou narrativa.
 
-Exemplos:
-
-```text
-NPC casado;
-NPC jovem demais;
-NPC indisponível por dogma/narrativa;
-NPC antagonista;
-NPC morto/desaparecido;
-NPC bloqueado por capítulo futuro.
-```
-
 ---
 
-## 5. Elegibilidade de romance
+## 6. Elegibilidade de romance
 
 A elegibilidade individual é declarada no roster de NPCs.
 
@@ -468,83 +444,73 @@ UnavailableForRomance
 MarriedToNpc
 TooYoungOrNarrativelyBlocked
 LateRomanceEligible
+PolyCompatible
+PolyBlocked
+PartnerCompanionEligible
+PartnerFarmHelperEligible
 ```
 
-### 5.1 RomanceEligibleAnyPlayerGender
+### 6.1 RomanceEligibleAnyPlayerGender
 
-NPC pode se relacionar com o jogador independentemente do gênero escolhido.
+NPC pode se relacionar com o jogador independentemente do gênero escolhido pelo jogador.
 
 Regra:
 
 ```text
-O gênero do player não bloqueia romance com NPC marcado assim.
+Romance homoafetivo é permitido por padrão para NPC marcado assim.
+O gênero do player não bloqueia romance.
 ```
 
-### 5.2 UnavailableForRomance
+### 6.2 UnavailableForRomance
 
 NPC não é candidato romântico.
 
-Ainda pode ter:
+Ainda pode ter amizade, trust, quest pessoal, serviço especial, visita à fazenda e vínculo de respeito.
 
-```text
-amizade;
-trust;
-quest pessoal;
-serviço especial;
-visita à fazenda;
-comentários reativos;
-vínculo de respeito.
-```
-
-### 5.3 MarriedToNpc
+### 6.3 MarriedToNpc
 
 NPC está em casal fixo.
 
-Não pode ser romance do jogador.
+Não pode ser romance do jogador, salvo se uma decisão futura alterar explicitamente o roster e a rota narrativa.
 
-Pode ter:
-
-```text
-amizade alta;
-quest de casal;
-serviços familiares;
-visitas em dupla;
-reações a presentes para o cônjuge.
-```
-
-### 5.4 TooYoungOrNarrativelyBlocked
+### 6.4 TooYoungOrNarrativelyBlocked
 
 NPC está bloqueado por idade ou narrativa.
 
 Regra:
 
 ```text
-Não criar rotas ambíguas.
+Não criar rota ambígua.
 Não criar flerte.
 Não criar presente romântico.
 Não criar evento de dating.
 ```
 
-### 5.5 LateRomanceEligible
+### 6.5 LateRomanceEligible
 
 NPC pode virar romance apenas após evento futuro.
 
-Uso:
+### 6.6 PolyCompatible
 
-```text
-arco narrativo;
-resolução de trauma;
-revelação de memória;
-capítulo de história;
-mudança de cidade;
-liberação por quest pessoal.
-```
+NPC aceita relação poliamorosa se os pré-requisitos narrativos forem cumpridos.
 
-Não implementar como romance disponível no início.
+### 6.7 PolyBlocked
+
+NPC não aceita relação poliamorosa.
+
+Não é falha do jogador; é identidade/preferência/limite do NPC.
+
+### 6.8 PartnerCompanionEligible
+
+NPC, quando parceiro romântico/cônjuge, pode ser desbloqueado como companion futuro.
+
+### 6.9 PartnerFarmHelperEligible
+
+NPC, quando parceiro romântico/cônjuge, pode ajudar na fazenda futuramente.
 
 ---
 
-## 6. Candidatos atuais registrados no roster
+## 7. Candidatos atuais registrados no roster
 
 O roster canônico atual declara como candidatos:
 
@@ -572,38 +538,34 @@ Mara Vellum + Tovin Mãos-de-Selo
 
 Este documento não altera essa lista.
 
-Qualquer alteração futura deve ocorrer no roster canônico e este documento deve apenas refletir regras sistêmicas.
+Alterações individuais devem ocorrer no roster canônico.
 
 ---
 
-## 7. Presentes
+## 8. Presentes e progressão por relacionamento
 
-### 7.1 Papel de presentes
+O sistema pode usar pontos/valores internos, mas o feedback ao jogador não deve ser uma planilha dominante.
 
-Presentes são uma forma de comunicar atenção, não o único caminho de relacionamento.
-
-Presentes devem:
+Ganho de relação pode vir de:
 
 ```text
-revelar preferências;
-reforçar personalidade;
-conectar cidade, fazenda, caverna e crafting;
-ser limitados para evitar grind diário;
-gerar feedback claro;
-ter memória social.
+conversa diária;
+presente relevante;
+presente em aniversário/festival;
+quest pessoal;
+ajuda em trabalho do NPC;
+escolha de diálogo;
+escolha religiosa/cultural respeitosa;
+evento de fazenda;
+evento de caverna;
+proteção/apoio em evento;
+convite aceito;
+participação em festival;
+spouse/partner event;
+companion event.
 ```
 
-Presentes não devem:
-
-```text
-substituir quests pessoais;
-permitir casamento sem relação narrativa;
-ser a forma dominante de progressão;
-dar ganhos infinitos por spam;
-criar economia quebrada.
-```
-
-### 7.2 Categorias de preferência
+### 8.1 Categorias de preferência
 
 Cada NPC pode ter:
 
@@ -614,6 +576,9 @@ NeutralGiftTags
 DislikedGiftTags
 HatedGiftTags
 ForbiddenGiftTags
+RomanticGiftTags
+PolyCommitmentGiftTags
+MarriageGiftTags
 ```
 
 Tags podem vir de:
@@ -636,37 +601,11 @@ religious object;
 Nyx/Anya/Senya/Kanthor/Thoren/Finan/etc.
 ```
 
-### 7.3 Presentes proibidos
+### 8.2 Presentes proibidos
 
-ForbiddenGiftTags não são apenas presentes ruins; são presentes que ferem limite pessoal, dogma ou narrativa.
+ForbiddenGiftTags ferem limite pessoal, dogma ou narrativa.
 
-Exemplos:
-
-```text
-item de Nyx para NPC devoto de Kanthor, se o contexto for ofensivo;
-item profano para curandeiro de Anya;
-arma de guerra para NPC pacifista;
-item roubado para NPC legalista;
-produto animal para NPC com tabu específico;
-artefato de caverna corrompido para NPC sensível a corrupção.
-```
-
-ForbiddenGift pode:
-
-```text
-bloquear ganho social;
-reduzir trust;
-disparar diálogo único;
-registrar SocialMemory;
-abrir quest de reparação;
-impedir presente adicional por período.
-```
-
-### 7.4 Qualidade do item
-
-Quality pode modificar efeito social, mas não deve quebrar limites.
-
-Regra:
+Quality não anula rejeição:
 
 ```text
 Item odiado de alta qualidade continua odiado.
@@ -674,14 +613,13 @@ Item proibido de alta qualidade continua proibido.
 Item amado de alta qualidade pode dar bônus controlado.
 ```
 
-### 7.5 Limites de presente
+### 8.3 Limites de presente
 
 Baseline futuro recomendado:
 
 ```text
 1 presente social relevante por NPC por dia.
 2 presentes sociais relevantes por NPC por semana.
-Presentes adicionais no mesmo período geram diálogo, mas não ganho pleno.
 Eventos especiais podem abrir exceção.
 ```
 
@@ -689,7 +627,7 @@ Os números finais são de balance futuro.
 
 ---
 
-## 8. Diálogo social
+## 9. Diálogo social
 
 O diálogo deve variar por:
 
@@ -703,7 +641,7 @@ local;
 quest pessoal;
 favorito/ódio descoberto;
 religião do NPC;
-romance/dating/marriage;
+romance/dating/marriage/polycule;
 pet ativo;
 companion ativo;
 progresso na caverna;
@@ -711,7 +649,7 @@ eventos de Anya/Nyx/Senya;
 reputação local.
 ```
 
-### 8.1 Camadas de diálogo
+Camadas de diálogo:
 
 ```text
 Greeting
@@ -722,6 +660,7 @@ GiftReaction
 RelationshipMilestone
 PersonalQuest
 RomanceContext
+PolyRelationshipContext
 MarriageContext
 FestivalContext
 FarmVisitContext
@@ -731,24 +670,9 @@ DeityReaction
 StoryProgressionReaction
 ```
 
-### 8.2 Regra de repetição
-
-O sistema deve evitar repetir falas especiais.
-
-Falas únicas devem gravar SocialMemory.
-
-Exemplo:
-
-```text
-npc_sylveth_first_farm_visit_seen
-npc_yael_first_nyx_moon_comment_seen
-npc_corvus_first_anya_fountain_reaction_seen
-npc_dagna_first_mana_ore_warning_seen
-```
-
 ---
 
-## 9. Quests pessoais
+## 10. Quests pessoais
 
 Relacionamento alto deve desbloquear quests pessoais.
 
@@ -766,7 +690,10 @@ evento de fazenda;
 evento de caverna;
 conciliação entre NPCs;
 quest de romance;
+quest de poliamor/aceite entre parceiros;
 quest de casamento;
+quest de partner companion unlock;
+quest de partner helper unlock;
 quest de reconciliação.
 ```
 
@@ -782,7 +709,7 @@ Quest pessoal pode dar conveniência, lore, item cosmético, serviço ou abertur
 
 ---
 
-## 10. Romance
+## 11. Romance
 
 Romance deve ser uma rota opcional de aprofundamento narrativo.
 
@@ -805,14 +732,15 @@ eventos;
 visitas;
 presente especial;
 cosmético;
-spouse helper limitado futuro;
+partner helper limitado futuro;
+companion unlock futuro;
 pequenos buffs situacionais;
 atalhos sociais;
 final/epílogo personalizado;
 lore pessoal.
 ```
 
-### 10.1 Início de romance
+### 11.1 Início de romance
 
 Pré-requisitos futuros típicos:
 
@@ -824,41 +752,40 @@ quest pessoal inicial concluída;
 presente ou item de intenção romântica;
 evento de conversa aceito;
 sem estado Estranged;
-sem bloqueio narrativo.
+sem bloqueio narrativo;
+limite global de parceiros respeitado.
 ```
 
-### 10.2 Dating
+### 11.2 Romance homoafetivo
 
-Durante Dating:
+Decisão fechada:
 
 ```text
-NPC mantém rotina própria;
-NPC não abandona profissão;
-NPC pode visitar a fazenda ocasionalmente;
-diálogos especiais aparecem;
-eventos de romance podem ser agendados;
-presentes românticos ganham contexto;
-outros NPCs podem comentar, mas sem punição sistêmica pesada no baseline.
+Romance homoafetivo é permitido.
+NPCs marcados como RomanceEligibleAnyPlayerGender podem se relacionar com o jogador independentemente do gênero escolhido.
 ```
 
-### 10.3 Romance múltiplo
+### 11.3 Romance múltiplo / poliamor
 
-Decisão base:
+Decisão fechada:
 
 ```text
-Não definir romance múltiplo como sistema agora.
+O jogo permite relação poliamorosa consentida com até 3 parceiros românticos/cônjuges totais.
 ```
 
-Para specs futuras:
+Regras:
 
 ```text
-não assumir monogamia sistêmica rígida no core data;
-não implementar ciúme punitivo agora;
-reservar campo para relationship exclusivity rule;
-deixar decisão de design para spec futura específica.
+limite máximo global: 3 parceiros;
+cada NPC pode aceitar ou recusar poliamor conforme perfil;
+poliamor exige consentimento narrativo dos envolvidos;
+poliamor não deve ser exploit de farm helper, companion power ou economia;
+novos parceiros devem passar por evento/quest de aceite quando já houver parceiro ativo;
+NPC PolyBlocked não entra em polycule;
+NPC PolyCompatible pode entrar se pré-requisitos forem cumpridos.
 ```
 
-### 10.4 Ciúme e conflito
+### 11.4 Ciúme e conflito
 
 Ciúme não deve ser sistema punitivo amplo no baseline.
 
@@ -870,13 +797,14 @@ narrativo;
 limitado;
 transparente;
 reparável;
+não obrigatório;
 não abusivo;
 não necessário para o core loop.
 ```
 
 ---
 
-## 11. Casamento
+## 12. Casamento
 
 Casamento é estado social avançado e opcional.
 
@@ -890,12 +818,31 @@ quest pessoal principal concluída;
 item/ritual de compromisso;
 casa/fazenda com condição mínima;
 cerimônia ou evento social;
-aceite explícito do NPC.
+aceite explícito do NPC;
+compatibilidade com relação atual do jogador.
 ```
 
-### 11.1 Casamento não é domínio do jogador
+### 12.1 Casamento poliamoroso
 
-NPC casado com o jogador mantém:
+Decisão fechada:
+
+```text
+Casamento poliamoroso consentido é permitido até o limite de 3 parceiros totais.
+```
+
+Regras:
+
+```text
+cada parceiro precisa aceitar a estrutura;
+cada parceiro mantém identidade, rotina, limites e preferências;
+a cerimônia pode ser individual ou coletiva, conforme rota futura;
+nenhum parceiro deve ser tratado como subordinado;
+benefícios de helper devem usar orçamento global para evitar exploit.
+```
+
+### 12.2 Parceiros mantêm agência
+
+NPC parceiro/cônjuge mantém:
 
 ```text
 nome;
@@ -910,26 +857,45 @@ preferências de local;
 reações próprias.
 ```
 
-### 11.2 Residência
+---
 
-Possibilidades futuras:
+## 13. Parceiros como companions
+
+Decisão fechada:
 
 ```text
-NPC se muda para a fazenda;
-NPC alterna cidade/fazenda;
-NPC mantém casa na cidade e visita a fazenda;
-NPC só visita em dias definidos por narrativa.
+Parceiros românticos/cônjuges podem se tornar companions futuros quando forem elegíveis.
 ```
 
-A decisão pode variar por NPC.
+Regras:
 
-Não assumir que todos os cônjuges seguem o mesmo padrão.
+```text
+romance/casamento pode desbloquear rota de companion para NPC elegível;
+companion unlock ainda exige perfil e quest apropriada;
+ser parceiro não deve ignorar balance de companion;
+ser parceiro não remove companion injury/recovery, leash, cave risk ou limites de combate;
+NPC não combatente pode ser farm helper sem virar cave companion;
+NPC combatente pode virar cave companion se tiver PartnerCompanionEligible.
+```
 
-### 11.3 Spouse helper
+Conflito resolvido com caverna:
 
-Spouse helper é ajuda limitada e contextual.
+```text
+Mesmo com até 3 parceiros, o baseline atual da caverna continua 1 companion ativo por run.
+Os 3 parceiros podem estar desbloqueados como companions, mas apenas 1 acompanha a caverna por vez até uma decisão futura mudar o party size.
+```
 
-Pode ajudar em:
+---
+
+## 14. Parceiros ajudando na fazenda
+
+Decisão fechada:
+
+```text
+Parceiros românticos/cônjuges podem ajudar na fazenda futuramente.
+```
+
+Ajuda possível:
 
 ```text
 regar poucas crops;
@@ -940,47 +906,38 @@ entregar item social;
 dar hint de cidade;
 dar hint de pet;
 ajudar em craft leve se fizer sentido para o NPC;
-acompanhar evento de fazenda.
+acompanhar evento de fazenda;
+executar pequena rotina baseada na classe funcional do NPC.
 ```
 
-Não pode:
+Limites:
 
 ```text
-automatizar a fazenda inteira;
-substituir companions;
-substituir pets;
-substituir skill tree;
-substituir crafting progression;
-resolver economia;
-executar caverna sozinho;
-ser fonte superior de ouro;
-quebrar stamina/fome/cansaço do jogador.
+não automatizar a fazenda inteira;
+não substituir companions;
+não substituir pets;
+não substituir skill tree;
+não substituir crafting progression;
+não resolver economia;
+não executar caverna sozinho;
+não ser fonte superior de ouro;
+não quebrar stamina/fome/cansaço do jogador.
 ```
 
-### 11.4 Casamento e companions
+### 14.1 Orçamento global de ajuda
 
-Um NPC pode ser:
-
-```text
-apenas spouse;
-apenas companion;
-spouse e companion, se o roster e companions direction permitirem;
-spouse com helper farm, mas sem cave companion;
-companion sem romance.
-```
-
-Regra:
+Para evitar exploit com até 3 parceiros:
 
 ```text
-romance/casamento não deve transformar automaticamente um NPC em companion de caverna.
-companion unlock não deve obrigar romance.
+partner helper deve ter orçamento global por dia/semana;
+mais parceiros aumentam variedade e cobertura narrativa, não multiplicam linearmente produção;
+helper actions devem ser limitadas por perfil, clima, humor, schedule e anchors;
+se 3 parceiros ajudarem, cada um executa contribuição pequena ou alternada.
 ```
 
 ---
 
-## 12. Visitas à fazenda
-
-Visitas sociais à fazenda são hooks importantes para preparar specs futuras.
+## 15. Visitas à fazenda
 
 Tipos:
 
@@ -990,6 +947,7 @@ visita por amizade;
 visita por quest;
 visita por romance;
 visita por casamento;
+visita por polycule;
 visita de serviço;
 visita de festival;
 visita por pet;
@@ -998,147 +956,88 @@ visita por evento de Anya/Fonte;
 visita por clima/lua/season.
 ```
 
-### 12.1 Regras de visita
-
-Visita deve respeitar:
-
-```text
-schedule do NPC;
-weather;
-season;
-fase do relacionamento;
-quest state;
-local seguro na fazenda;
-spawn point válido;
-pathing possível;
-horário de retorno;
-colisão;
-prioridade de evento.
-```
-
-### 12.2 Anchors na fazenda
-
 Specs futuras de farm layout devem reservar anchors conceituais para:
 
 ```text
 visitor spawn;
 visitor idle point;
 visitor social talk point;
-spouse idle point;
-spouse helper start point;
+partner idle point;
+partner helper start point;
+polycule shared idle point;
 pet interaction point;
 companion interaction point;
 festival temporary point;
 Fonte de Anya reaction point.
 ```
 
-Não implementar o runtime social agora, mas não bloquear esses anchors.
-
 ---
 
-## 13. Relação com cidade
+## 16. Relação com cidade
 
-Cidade deve suportar social future hooks.
-
-Specs atuais de cidade devem evitar:
+Specs atuais de cidade devem preparar, sem implementar runtime social:
 
 ```text
-NPC sem ID estável;
-NPC sem residência ou schedule mínimo;
-NPC sem local de serviço;
-NPC sem estado social futuro;
-NPC sem religião/preferências básicas;
-NPC sem anchor de diálogo;
-NPC sem tag de romance eligibility;
-NPC sem possibilidade de social memory futura.
-```
-
-Specs de cidade executáveis agora podem preparar:
-
-```text
-NPC IDs;
+NPC IDs estáveis;
 residências;
 beds;
 schedule markers;
-shop/service markers;
+service markers;
 talk interactable;
 quest board hooks;
 festival anchors;
-visitor route anchors.
-```
-
-Mas não devem implementar:
-
-```text
-Friendship runtime;
-gift runtime;
-romance runtime;
-marriage runtime;
-spouse helper;
-cutscenes sociais.
+visitor route anchors;
+romance eligibility vindo do roster;
+poly compatibility hook futuro;
+partner companion eligibility hook futuro;
+partner farm helper eligibility hook futuro;
+religion fields;
+sem Friendship/Gift/Romance runtime completo.
 ```
 
 ---
 
-## 14. Relação com fazenda
+## 17. Relação com fazenda
 
-Fazenda deve suportar social future hooks.
-
-Specs executáveis atuais de fazenda devem evitar:
+Specs atuais de fazenda devem preparar, sem implementar runtime social:
 
 ```text
-layout que impeça visitor spawn;
-spouse helper acoplado à automação básica;
-pet home area incompatível com visitas;
-Fonte de Anya sem espaço para reação de NPC;
-shipping/processing que assuma nenhum NPC interage socialmente;
-farmhouse sem expansão social futura.
+visitor spawn anchor;
+visitor idle anchor;
+partner helper anchor;
+polycule shared anchor;
+Fonte de Anya reaction anchor;
+farmhouse expansion hook;
+mailbox/board hook;
+pet/social interaction area;
+sem partner helper runtime.
 ```
-
-Podem preparar:
-
-```text
-social anchor vazio;
-visitor spawn placeholder;
-farmhouse upgrade hook;
-pet interaction area;
-Fonte de Anya reaction point;
-board/mailbox hook para convites.
-```
-
-Não implementar runtime social agora.
 
 ---
 
-## 15. Relação com companions
+## 18. Relação com companions
 
-Companion bond e social relationship são sistemas relacionados, mas não iguais.
+Relationship e CompanionBond são relacionados, mas não iguais.
 
 ```text
 Relationship = vínculo social geral com NPC.
 CompanionBond = vínculo funcional com companion ativo/potencial.
 Romance = rota opcional para NPC elegível.
 Marriage = estado social avançado opcional.
+Polycule = conjunto de até 3 parceiros românticos/cônjuges consentidos.
 ```
 
-Um companion pode exigir:
+Regra:
 
 ```text
-Friendship mínima;
-Trust mínimo;
-quest pessoal;
-reputação;
-serviço contratado;
-história principal;
-resgate;
-evento de cidade/caverna.
+romance/casamento pode abrir rota de companion para parceiros elegíveis;
+companion unlock não deve obrigar romance por padrão;
+active cave companion baseline continua 1.
 ```
-
-Mas companion não deve exigir romance por padrão.
 
 ---
 
-## 16. Relação com pets
+## 19. Relação com pets
 
 Pets têm bond próprio.
 
@@ -1152,15 +1051,16 @@ NPC teme o pet ativo;
 NPC dá comida/brinquedo ao pet;
 NPC vende item de pet;
 NPC comenta pet na fazenda;
-spouse interage com pet;
-pet reage a visitante.
+partner interage com pet;
+pet reage a visitante;
+pet reage a múltiplos parceiros na fazenda.
 ```
 
 Não implementar romance/pet em qualquer forma.
 
 ---
 
-## 17. Religião, deuses e preferências
+## 20. Religião, deuses e preferências
 
 Religião pessoal do NPC deve afetar relação.
 
@@ -1179,21 +1079,13 @@ FonteAnyaReactionRule
 NyxMoonReactionRule
 SenyaMoonReactionRule
 AlihanaMoonReactionRule
-```
-
-Exemplos de uso:
-
-```text
-NPC devoto de Kanthor reage bem a justiça, contratos honrados e atos de proteção.
-NPC ligado a Finan valoriza sorte, estrada, humor e oportunidade.
-NPC ligado a Thoren valoriza trabalho, forja, pedra, compromisso e ferramentas.
-NPC ligado a Nyx pode reagir de forma complexa a segredo, noite, morte, silêncio e memória.
-NPC ligado a Anya ou à Fonte deve ter reação especial a cura, esperança e Água Viva.
+PolyRelationshipRule
+MarriageRitePreference
 ```
 
 ---
 
-## 18. Data assets esperados
+## 21. Data assets esperados
 
 Specs futuras podem criar assets como:
 
@@ -1206,8 +1098,10 @@ SocialMemoryFlagSO
 DialogueConditionSO
 DialogueLineSO
 RomanceRouteProfileSO
+PolyRelationshipProfileSO
 MarriageProfileSO
-SpouseHelperProfileSO
+PartnerCompanionProfileSO
+PartnerHelperProfileSO
 FarmVisitProfileSO
 SocialQuestProfileSO
 FestivalSocialProfileSO
@@ -1215,7 +1109,7 @@ SocialBalanceProfileSO
 SocialHUDProfileSO
 ```
 
-### 18.1 RelationshipProfileSO
+### 21.1 RelationshipProfileSO
 
 Campos conceituais:
 
@@ -1223,19 +1117,25 @@ Campos conceituais:
 NpcId
 InitialState
 RomanceEligibility
+PolyCompatibility
+PartnerCompanionEligibility
+PartnerFarmHelperEligibility
 FriendshipThresholds
 TrustThresholds
 AffectionThresholds
 GiftPreferenceProfileId
 RomanceRouteProfileId
+PolyRelationshipProfileId
 MarriageProfileId
+PartnerCompanionProfileId
+PartnerHelperProfileId
 FarmVisitProfileId
 PersonalQuestIds
 DialogueConditionSetIds
 ForbiddenSocialActions
 ```
 
-### 18.2 NpcRelationshipState
+### 21.2 NpcRelationshipState
 
 Campos conceituais de save:
 
@@ -1249,7 +1149,10 @@ IsKnown
 IsDating
 IsCommitted
 IsMarried
+IsPolyculePartner
 IsEstranged
+PartnerSlotIndex
+PolyculeId
 LastGiftDay
 GiftsGivenThisWeek
 DiscoveredLovedGiftTags
@@ -1259,28 +1162,29 @@ CompletedSocialQuestIds
 ActiveSocialQuestIds
 LastTalkDay
 LastVisitDay
+IsPartnerCompanionUnlocked
+IsPartnerHelperUnlocked
 ```
 
-### 18.3 GiftPreferenceProfileSO
+### 21.3 PolyRelationshipProfileSO
 
 Campos conceituais:
 
 ```text
-LovedGiftTags
-LikedGiftTags
-NeutralGiftTags
-DislikedGiftTags
-HatedGiftTags
-ForbiddenGiftTags
-UniqueLovedItemIds
-UniqueHatedItemIds
-QualityMultiplierRules
-DeityTagRules
-SeasonalGiftRules
-FestivalGiftRules
+MaxPartners = 3
+RequiresConsentEvent
+RequiresExistingPartnerApproval
+AllowedNpcIds
+BlockedNpcIds
+PolyCompatibilityTags
+JealousyRules
+ConflictResolutionQuestIds
+SharedCeremonyRules
+SharedFarmVisitRules
+SharedHelperBudgetRules
 ```
 
-### 18.4 SpouseHelperProfileSO
+### 21.4 PartnerHelperProfileSO
 
 Campos conceituais:
 
@@ -1290,6 +1194,7 @@ AllowedHelperActions
 BlockedHelperActions
 WeeklyHelperFrequency
 HelperActionBudget
+SharedPolyculeHelperBudget
 WeatherRules
 SeasonRules
 RelationshipMoodRules
@@ -1300,7 +1205,7 @@ DialogueAfterAction
 
 ---
 
-## 19. Save/load conceitual
+## 22. Save/load conceitual
 
 Social save deve persistir valores simples e IDs estáveis.
 
@@ -1312,13 +1217,16 @@ RelationshipState;
 FriendshipValue;
 TrustValue;
 AffectionValue;
-booleans de dating/committed/married/estranged;
+booleans de dating/committed/married/polycule/estranged;
+PolyculeId;
+PartnerSlotIndex;
 SocialMemoryFlags;
 Gift discovery;
 quest social state;
+partner companion unlock;
+partner helper unlock;
 last gift/talk/visit day;
-spouse state;
-farm visit state.
+partner visit state.
 ```
 
 Não persistir:
@@ -1340,17 +1248,19 @@ Ordem conceitual de load futuro:
 1. carregar registries de NPCs e relationship profiles;
 2. carregar save social bruto;
 3. validar NpcIds;
-4. aplicar relationship state;
-5. aplicar SocialMemoryFlags;
-6. resolver schedule/scene atual;
-7. instanciar NPCs conforme cena;
-8. aplicar diálogo/ícones/availability;
-9. aplicar spouse/farm visit state apenas se cena permitir.
+4. validar limite de 3 parceiros;
+5. aplicar relationship state;
+6. aplicar SocialMemoryFlags;
+7. resolver partner companion/helper unlock;
+8. resolver schedule/scene atual;
+9. instanciar NPCs conforme cena;
+10. aplicar diálogo/ícones/availability;
+11. aplicar farm visit/partner helper state apenas se cena permitir.
 ```
 
 ---
 
-## 20. HUD e feedback social
+## 23. HUD e feedback social
 
 Feedback deve ser claro, mas não excessivamente numérico por padrão.
 
@@ -1364,8 +1274,10 @@ marcador de quest pessoal;
 convite recebido;
 calendário de aniversário/evento;
 notificação de visita;
-feedback de spouse helper;
-registro de preferências descobertas.
+feedback de partner helper;
+registro de preferências descobertas;
+status de parceiro/companions desbloqueado;
+status de parceiro na polycule.
 ```
 
 Evitar:
@@ -1380,7 +1292,7 @@ feedback ambíguo quando presente é ofensivo;
 
 ---
 
-## 21. Balance e anti-exploit
+## 24. Balance e anti-exploit
 
 Riscos:
 
@@ -1389,8 +1301,10 @@ farm infinito de presentes;
 comprar item barato e converter em relação alta;
 presentear item produzido em massa sem limite;
 casamento usado como automação superior;
-spouse helper superando companions;
+3 parceiros multiplicarem produção linearmente;
+partner helper superando companions;
 romance virando requisito de poder;
+parceiro-companion superando companions normais;
 relação social quebrando economia de loja;
 reset de save para rerollar reação;
 visitas bloqueando pathing/trabalho;
@@ -1403,23 +1317,25 @@ Regras anti-exploit:
 limite diário/semanal de presente relevante;
 diminishing returns para spam;
 memória de presente odiado/proibido;
-spouse helper com orçamento limitado;
+partner helper com orçamento global;
+3 parceiros aumentam variedade, não produção linear;
 romance/casamento sem bônus permanente forte;
 presentes comprados em loja não devem quebrar progressão;
 qualidade não anula preferência negativa;
 serviços essenciais não devem ficar indisponíveis sem fallback;
-eventos sociais devem respeitar schedule e prioridade.
+eventos sociais devem respeitar schedule e prioridade;
+active cave companion baseline continua 1.
 ```
 
 ---
 
-## 22. Preparação para specs atuais sem implementação social
+## 25. Preparação para specs atuais sem implementação social
 
 Specs executáveis próximas devem considerar este documento apenas como restrição de compatibilidade futura.
 
-### 22.1 Cidade
+### 25.1 Cidade
 
-Ao criar specs atuais de cidade, preparar:
+Preparar:
 
 ```text
 NpcId estável;
@@ -1430,49 +1346,54 @@ talk anchor;
 festival anchor;
 farm visit eligibility hook;
 romance eligibility vindo do roster;
+poly compatibility hook futuro;
+partner companion/helper hooks futuros;
 religion fields;
 sem runtime social completo.
 ```
 
-### 22.2 Fazenda
+### 25.2 Fazenda
 
-Ao criar specs atuais de fazenda, preparar:
+Preparar:
 
 ```text
 visitor spawn anchor;
 visitor idle anchor;
+partner helper anchor;
+polycule shared anchor;
 Fonte de Anya reaction anchor;
 farmhouse expansion hook;
 mailbox/board hook;
 pet/social interaction area;
-sem spouse helper runtime.
+sem partner helper runtime.
 ```
 
-### 22.3 Companions
+### 25.3 Companions
 
-Ao criar specs atuais de companions, preparar:
+Preparar:
 
 ```text
 separação entre Relationship e CompanionBond;
 companion unlock por Trust/Friendship futuro sem romance obrigatório;
-active companion independente de spouse;
+partner companion eligibility hook;
+active companion independente de spouse/partner count;
 sem romance runtime.
 ```
 
-### 22.4 Pets
+### 25.4 Pets
 
-Ao criar specs atuais de pets, preparar:
+Preparar:
 
 ```text
 pet bond separado;
 NPC reaction hooks;
-spouse-pet interaction hook futuro;
+partner-pet interaction hook futuro;
 sem social romance runtime.
 ```
 
-### 22.5 Save/load
+### 25.5 Save/load
 
-Ao criar specs atuais de save, não implementar social state incompleto.
+Não implementar social state incompleto.
 
 Se necessário, reservar versão/schema futuro:
 
@@ -1484,7 +1405,7 @@ Não criar campos parciais sem uso.
 
 ---
 
-## 23. Roadmap de specs futuras
+## 26. Roadmap de specs futuras
 
 Specs futuras sugeridas, não atuais:
 
@@ -1495,8 +1416,10 @@ spec_social_gift_preferences_reactions_future.md
 spec_social_dialogue_conditions_memory_future.md
 spec_social_personal_quests_future.md
 spec_social_romance_route_runtime_future.md
+spec_social_poly_relationship_runtime_future.md
 spec_social_marriage_ceremony_state_future.md
-spec_social_spouse_helper_farm_runtime_future.md
+spec_social_partner_companion_unlock_future.md
+spec_social_partner_helper_farm_runtime_future.md
 spec_social_farm_visits_runtime_future.md
 spec_social_festivals_dates_birthdays_future.md
 spec_social_hud_log_feedback_future.md
@@ -1527,17 +1450,25 @@ spec_pet_follow_home_routine_runtime.md
 
 ---
 
-## 24. Decisões fechadas
+## 27. Decisões fechadas
 
 ```text
 Relacionamento/romance/casamento é feature futura, não entra na execução atual.
 O documento existe para preparar dependências e evitar bloqueios.
 Romance é opcional.
 Casamento é opcional.
-Romance/casamento não são caminho obrigatório de poder.
+Romance homoafetivo é permitido.
+NPCs RomanceEligibleAnyPlayerGender aceitam jogador de qualquer gênero.
+Casamento poliamoroso consentido é permitido até 3 parceiros totais.
+Cada NPC pode aceitar ou recusar poliamor conforme perfil.
+Todos os envolvidos em poliamor precisam consentir por rota narrativa.
 Amizade deve ter valor mesmo sem romance.
-NPCs casados, jovens demais ou bloqueados narrativamente não têm rota romântica.
-Spouse helper é futuro, limitado e não substitui companions, pets, skill tree, ferramentas ou execução do jogador.
+NPCs casados fixos, jovens demais ou bloqueados narrativamente não têm rota romântica por padrão.
+Parceiros românticos/cônjuges podem virar companions futuros se elegíveis.
+Parceiros românticos/cônjuges podem ajudar na fazenda futuramente.
+Mesmo com 3 parceiros, baseline de caverna continua 1 companion ativo por run.
+Partner helper é futuro, limitado e não substitui companions, pets, skill tree, ferramentas ou execução do jogador.
+Partner helper usa orçamento global para evitar multiplicação linear de produção.
 CompanionBond não é igual a Relationship.
 PetBond não é Relationship.
 NPC roster vence para elegibilidade individual.
@@ -1547,20 +1478,23 @@ Save/load social deve usar IDs e valores simples, nunca referências Unity.
 
 ---
 
-## 25. Pendências abertas / validações futuras
+## 28. Pendências abertas / validações futuras
 
 ```text
 Definir valores finais de Friendship/Trust/Affection.
 Definir thresholds por estado social.
 Definir se haverá aniversários.
 Definir se haverá bouquet/item de namoro.
-Definir se haverá item/ritual de casamento.
+Definir item/ritual de casamento.
+Definir cerimônia monogâmica e poliamorosa.
+Definir quais NPCs são PolyCompatible e PolyBlocked.
+Definir quais NPCs são PartnerCompanionEligible.
+Definir quais NPCs são PartnerFarmHelperEligible.
 Definir se NPC casado muda para fazenda ou mantém rotina híbrida.
-Definir se romance múltiplo existe ou não.
-Definir se ciúme existe e com qual severidade.
 Definir lista de loved/liked/disliked/hated gifts por NPC.
 Definir social questline de cada candidato.
-Definir spouse helper por NPC.
+Definir partner helper por NPC.
+Definir orçamento global de helper para 1, 2 e 3 parceiros.
 Definir reação de cada NPC à Fonte de Anya.
 Definir reação de cada NPC às luas Alihana/Senya/Nyx.
 Definir como festivais sociais interagem com relação.
