@@ -1262,32 +1262,26 @@ Ordem conceitual de load futuro:
 
 ## 23. HUD e feedback social
 
-Feedback deve ser claro, mas não excessivamente numérico por padrão.
-
-Possíveis superfícies:
+O sistema social precisa comunicar:
 
 ```text
-ícone de relação no social log;
-texto de reação ao presente;
-ícone de diálogo novo;
-marcador de quest pessoal;
-convite recebido;
-calendário de aniversário/evento;
-notificação de visita;
-feedback de partner helper;
-registro de preferências descobertas;
-status de parceiro/companions desbloqueado;
-status de parceiro na polycule.
+ícone de relação no social log
+reação a presente
+diálogo novo
+quest pessoal
+convite
+evento de calendário
+visita
+partner helper
+preferências descobertas
+status de parceiro
+status de polycule
 ```
 
-Evitar:
+Social log, ícones, notificações, layout, feedback social, calendário e apresentação de estado social são definidos em:
 
 ```text
-barra gigante sempre visível;
-spam de números;
-feedback que transforme NPC em planilha;
-feedback ambíguo quando presente é ofensivo;
-ícone romântico em NPC bloqueado por idade/narrativa.
+docs/design/gameplay/ui_ux/UI_UX_FULL_GAMEPLAY_DIRECTION.md
 ```
 
 ---

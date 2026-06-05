@@ -476,29 +476,35 @@ HP, MP, Stamina, armas, magia, resistências, skill trees, companions, pets, cri
 
 # PARTE J — UI/HUD
 
-HUD base:
+A HUD do player precisa comunicar, quando relevante:
 
 ```text
 HP
-MP quando relevante
+MP
 Stamina
 Fome
 Cansaço
 hotbar
 4 active slots
-indicador de Dash/Dodge/Block
+Dash/Dodge/Block state
 status negativos
 buffs
 arma/ferramenta ativa
 pet/companion status quando relevante
 ```
 
-Não mostrar:
+Não deve existir HUD para:
 
 ```text
 Breath
 Fôlego
 BR
+```
+
+Apresentação, layout, input routing, foco, modal, feedback visual/sonoro, tooltips, hotbar visual, HUD final e debug HUD são definidos em:
+
+```text
+docs/design/gameplay/ui_ux/UI_UX_FULL_GAMEPLAY_DIRECTION.md
 ```
 
 ---

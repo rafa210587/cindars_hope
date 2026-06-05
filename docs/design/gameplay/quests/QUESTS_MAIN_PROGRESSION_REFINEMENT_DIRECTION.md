@@ -975,10 +975,15 @@ como Vaelrion chega oficialmente;
 qual é a relação exata entre Sethra e Yael;
 se Padre Corvus pode ser companion/quest giver recorrente;
 como a cidade reage a cada fragmento recuperado;
-como a Fonte muda visualmente por estágio;
 quais tecnologias bromecianas ficam disponíveis no final Usar;
 quais limitações mecânicas do final Selar;
 quais recompensas permanentes do final Proteger.
+```
+
+Quest log, Fonte UI, notificações de fragmentos, feedback de mundo, modal de decisão final e spoiler control são definidos em:
+
+```text
+docs/design/gameplay/ui_ux/UI_UX_FULL_GAMEPLAY_DIRECTION.md
 ```
 
 ---

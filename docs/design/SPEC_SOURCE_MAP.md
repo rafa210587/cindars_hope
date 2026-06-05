@@ -40,6 +40,14 @@ docs/design/SPECIFICATION_PROCESS.md
 docs/design/lore/VAALARA_GAME_CANON_DIRECTION_v1.0.md
 ```
 
+**Regra UI/UX centralizada:**
+
+Specs que envolvam UI, HUD, menus, modal, input routing, foco de UI, tooltip, inventory UI, equipment UI, shop UI, crafting UI, skill tree UI, dialogue UI, quest log, social log, calendar, Fonte UI, cave HUD, combat feedback, notifications ou debug HUD devem ler obrigatoriamente:
+
+```text
+docs/design/gameplay/ui_ux/UI_UX_FULL_GAMEPLAY_DIRECTION.md
+```
+
 ---
 
 # PARTE A — Fazenda
@@ -804,7 +812,13 @@ spec_pet_save_load_state.md
 
 ## 12. Specs de HUD gameplay/combat
 
-Fontes obrigatórias:
+Fontes obrigatórias centrais para UI/HUD/menus/input/foco/feedback:
+
+```text
+docs/design/gameplay/ui_ux/UI_UX_FULL_GAMEPLAY_DIRECTION.md
+```
+
+Fontes obrigatórias de sistemas:
 
 ```text
 docs/design/gameplay/combat/COMBAT_CORE_DIRECTION.md
@@ -1144,4 +1158,11 @@ Cave loot usa run/snapshot/floor generation conforme regras da caverna.
 Boss first-time reward deve ser separado de repeat reward.
 Farm invasion, town hostile events e world enemy events são backlog futuro; não entram em specs atuais sem nova decisão de roadmap.
 Hearing/audição não é elemento atual de IA inimiga.
+UI_UX_FULL_GAMEPLAY_DIRECTION.md é fonte canônica de apresentação, layout, input routing, foco, modal, navegação, tooltip, feedback visual/sonoro, notificações, HUD e debug HUD.
+Documentos de sistema definem o que precisa ser comunicado; UI_UX_FULL_GAMEPLAY_DIRECTION.md define como comunicar.
+UI modal bloqueia input de gameplay.
+WASD não move o personagem enquanto Dialogue, Inventory, Equipment, SkillTree, Crafting, Shop, QuestLog, SocialLog, Calendar, Fonte menu ou System menu estiver aberto.
+HUD final não mostra Breath/Fôlego/BR.
+Buy/Sell UI deve separar inventário da loja e inventário vendável do jogador.
+Empty state de loja/inventário deve ser explícito.
 ```

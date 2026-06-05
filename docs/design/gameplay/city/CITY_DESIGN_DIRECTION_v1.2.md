@@ -421,6 +421,16 @@ UsesFountainSystem = true
 
 ---
 
+## 16. Apresentação e UI urbana
+
+Dialogue UI, service UI, shop UI, social log, quest log, calendar, rumors UI, prompts e markers são definidos em:
+
+```text
+docs/design/gameplay/ui_ux/UI_UX_FULL_GAMEPLAY_DIRECTION.md
+```
+
+---
+
 # PARTE G — Próximas specs derivadas
 
 ```text

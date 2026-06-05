@@ -1106,71 +1106,31 @@ objetivo da run
 
 # PARTE O — HUD e feedback
 
-## 47. HUD de combate
-
-Mostrar:
-
-```text
-HP
-MP quando relevante
-Stamina
-Fome/Cansaço compacto
-active slots
-hotbar
-Dash/Dodge feedback
-Block state
-status negativos
-buffs
-arma/ferramenta ativa
-companion/pet state quando relevante
-```
-
-Não mostrar:
-
-```text
-Breath/Fôlego como atributo/recurso
-BR
-números internos demais na HUD principal
-```
-
-## 48. Feedback visual
+## 47. Feedback de combate que precisa ser comunicado
 
 O jogador precisa ler:
 
 ```text
 hit recebido
+hit causado
 block bem sucedido
 block quase quebrando
 Stamina insuficiente
+MP insuficiente
 MinorOpening
 CriticalWindow
 CoreExposed
-vulnerabilidade elemental
+vulnerabilidade hit
 status aplicado
 boss phase transition
 companion setup
 pet interrupt
 ```
 
-Direção:
+Apresentação, HUD layout, prioridade visual, feedback visual/sonoro, notificações, cave HUD e debug HUD são definidos em:
 
 ```text
-Pixel art deve ter telegraph claro por cor, silhueta, antecipação e efeitos.
-Feedback não pode poluir tela pequena.
-```
-
-## 49. Feedback sonoro
-
-Usar áudio para:
-
-```text
-windup de elite/boss
-block impact
-Stamina baixa
-critical hit
-vulnerability hit
-cast perigoso
-pet/companion trigger
+docs/design/gameplay/ui_ux/UI_UX_FULL_GAMEPLAY_DIRECTION.md
 ```
 
 ---

@@ -1663,6 +1663,18 @@ Pedras Negras:
   Pedra de Meteoro Negra Estabilizada é diferente de Pedra Negra Cultista/Corrompida.
 ```
 
+---
+
+## 78.5 UI/HUD agrícola
+
+Prompts, HUD agrícola, feedback visual, inventory/storage UI, shipping/sell feedback, notifications e Fonte UI são definidos em:
+
+```text
+docs/design/gameplay/ui_ux/UI_UX_FULL_GAMEPLAY_DIRECTION.md
+```
+
+---
+
 ## 79. Pendências restantes
 
 ### Produto
