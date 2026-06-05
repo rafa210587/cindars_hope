@@ -62,17 +62,26 @@ docs/design/gameplay/equipment/EQUIPMENT_WEAPONS_ARMOR_MATERIALS_DIRECTION.md
 docs/design/gameplay/equipment/EQUIPMENT_MECHANICAL_BASELINES_DIRECTION.md
 ```
 
-Specs de fazenda que envolvam visitors, companion jobs, job board, automação por NPC, visitas de NPCs, spouse helper ou vínculo funcional devem ler também:
+Specs de fazenda que envolvam visitors, companion jobs, job board, automação por NPC, visitas de NPCs, spouse/partner helper, vínculo funcional, romance/casamento, poliamor, visitas sociais à fazenda ou partner companion hooks devem ler também:
 
 ```text
 docs/design/gameplay/companions/COMPANIONS_DIRECTION.md
 docs/design/gameplay/city/CITY_NPC_ROSTER_SERVICES_DIRECTION_v1.1.md
+docs/design/gameplay/social/SOCIAL_RELATIONSHIP_ROMANCE_DIRECTION.md
 ```
 
 Specs de fazenda que envolvam pets, cachorro, gato, cama/tigela/brinquedo, pet home area, vínculo de pet, rotina de pet, pet farm hints, pet foraging hints ou interação pet-fazenda devem ler também:
 
 ```text
 docs/design/gameplay/pets/PETS_DIRECTION.md
+```
+
+Specs de fazenda que envolvam Fonte de Anya, Água Viva, fragmentos de Anya, Cindar, Mana, Arco da Memória, main quest, eventos de quest na fazenda ou progressão da Fonte devem ler também:
+
+```text
+docs/design/gameplay/quests/QUESTS_LORE_WEAVING_BRIEF.md
+docs/design/gameplay/quests/QUESTS_MAIN_LORE_DIRECTION.md
+docs/design/gameplay/quests/QUESTS_MAIN_PROGRESSION_REFINEMENT_DIRECTION.md
 ```
 
 Specs de fazenda **não devem implementar invasões, defesa contra inimigos, dano a crops/estruturas ou inimigos no mapa da fazenda agora**.
@@ -143,6 +152,12 @@ Specs de cidade que envolvam companion eligibility, companion unlock, convite, d
 docs/design/gameplay/companions/COMPANIONS_DIRECTION.md
 ```
 
+Specs de cidade que envolvam relationship, friendship, trust, gift, romance, casamento, casamento poliamoroso, até 3 parceiros, partner companion unlock, partner helper, spouse/partner farm visit ou social memory devem ler também:
+
+```text
+docs/design/gameplay/social/SOCIAL_RELATIONSHIP_ROMANCE_DIRECTION.md
+```
+
 Specs de cidade que envolvam pet adoption, pet shop, pet food, pet toys, pet bed/bowl, pet services ou NPCs interagindo com pets devem ler também:
 
 ```text
@@ -160,12 +175,31 @@ docs/design/gameplay/magic/MAGIC_SPELLS_ACTIONS_DIRECTION.md
 docs/design/gameplay/magic/MAGIC_LEARNING_UNLOCKS_SOURCES_DIRECTION.md
 ```
 
+Specs de cidade que envolvam main quest, Cindar, Anya, Litania do Primeiro Retorno, Padre Corvus, Vaelrion, Sethra, Yael, Arco da Memória, culto de Nyx, Pedra Negra, Fonte, fragmentos de Anya, ruínas urbanas ou progressão de atos devem ler também:
+
+```text
+docs/design/gameplay/quests/QUESTS_LORE_WEAVING_BRIEF.md
+docs/design/gameplay/quests/QUESTS_MAIN_LORE_DIRECTION.md
+docs/design/gameplay/quests/QUESTS_MAIN_PROGRESSION_REFINEMENT_DIRECTION.md
+```
+
 Specs de cidade **não devem implementar eventos hostis, defesa urbana, cultistas, monstros ou civis fugindo agora**.
+
+Specs de cidade **não devem implementar runtime completo de social/romance/casamento/poliamor na execução atual** sem nova decisão de roadmap. Devem apenas preparar hooks, IDs, anchors, schedules e compatibilidade futura quando necessário.
 
 Backlog futuro, não atual:
 
 ```text
 spec_city_hostile_event_behaviors_future.md
+spec_city_relationship_romance_marriage_future.md
+spec_city_farm_visits_schedule_hooks_future.md
+spec_social_relationship_profile_contract_future.md
+spec_social_friendship_trust_runtime_future.md
+spec_social_gift_preferences_reactions_future.md
+spec_social_romance_route_runtime_future.md
+spec_social_poly_relationship_runtime_future.md
+spec_social_partner_companion_unlock_future.md
+spec_social_partner_helper_farm_runtime_future.md
 ```
 
 Specs recomendadas atuais:
@@ -178,8 +212,6 @@ spec_city_npc_residences_beds_schedule_markers.md
 spec_city_npc_data_roster_stats.md
 spec_city_npc_pathfinding_waypoints.md
 spec_city_props_interactables_calendar_boards.md
-spec_city_relationship_romance_marriage.md
-spec_city_farm_visits_schedule_hooks.md
 spec_city_kanthor_temple_and_altars.md
 spec_city_deity_preferences_and_reputation.md
 spec_city_kanthor_temple_statue_garden_no_anya_altar.md
@@ -220,6 +252,14 @@ docs/design/gameplay/loot_crafting_economy/LOOT_CRAFTING_ECONOMY_DIRECTION.md
 docs/design/gameplay/loot_crafting_economy/ECONOMY_PRICING_STOCK_REFRESH_DIRECTION.md
 docs/game_rules/cave_rules.md
 docs/decisions/ADR-0005-cave-stable-run-and-replay.md
+```
+
+Specs de caverna que envolvam main quest, níveis 100/101, Arco da Memória, Cindar, Anya, fragmentos de Anya, Vaelrion, Sethra, Arquivista do Silêncio, Pedra Negra, Água Viva, Mana, Elyndor, Bromécia ou boss gate narrativo devem ler também:
+
+```text
+docs/design/gameplay/quests/QUESTS_LORE_WEAVING_BRIEF.md
+docs/design/gameplay/quests/QUESTS_MAIN_LORE_DIRECTION.md
+docs/design/gameplay/quests/QUESTS_MAIN_PROGRESSION_REFINEMENT_DIRECTION.md
 ```
 
 Specs de caverna que tocam runtime já existente devem ler também:
@@ -304,6 +344,13 @@ Specs de combate que envolvam loot, drops, reward, gold, item use, consumíveis,
 ```text
 docs/design/gameplay/loot_crafting_economy/LOOT_CRAFTING_ECONOMY_DIRECTION.md
 docs/design/gameplay/loot_crafting_economy/ECONOMY_PRICING_STOCK_REFRESH_DIRECTION.md
+```
+
+Specs de combate que envolvam boss final, Arquivista do Silêncio, Água Viva corrompida, fragmentos de Anya, Pedra Negra, boss gate do nível 100 ou nível 101 devem ler também:
+
+```text
+docs/design/gameplay/quests/QUESTS_MAIN_LORE_DIRECTION.md
+docs/design/gameplay/quests/QUESTS_MAIN_PROGRESSION_REFINEMENT_DIRECTION.md
 ```
 
 Specs recomendadas derivadas:
@@ -458,6 +505,13 @@ Specs de player que envolvam pet state, active pet, pet bond, pet mood, pet ener
 docs/design/gameplay/pets/PETS_DIRECTION.md
 ```
 
+Specs de player que envolvam respawn na Fonte, respec pela Fonte, Água Viva, fragmentos de Anya, purificação, cansaço reduzido por Água Viva, main quest ou escolhas finais devem ler também:
+
+```text
+docs/design/gameplay/quests/QUESTS_MAIN_LORE_DIRECTION.md
+docs/design/gameplay/quests/QUESTS_MAIN_PROGRESSION_REFINEMENT_DIRECTION.md
+```
+
 ---
 
 # PARTE G — Equipamentos, armas, magia, companions, pets e HUD
@@ -545,6 +599,13 @@ docs/design/gameplay/companions/COMPANIONS_DIRECTION.md
 docs/design/gameplay/pets/PETS_DIRECTION.md
 ```
 
+Specs de magia que envolvam Anya, Fonte, Água Viva, purificação, fragmentos de Anya, Nyx, Pedra Negra, Senya/Alihana como gatilhos de quest ou spell source narrativo devem ler também:
+
+```text
+docs/design/gameplay/quests/QUESTS_MAIN_LORE_DIRECTION.md
+docs/design/gameplay/quests/QUESTS_MAIN_PROGRESSION_REFINEMENT_DIRECTION.md
+```
+
 Usar para specs de:
 
 ```text
@@ -628,6 +689,12 @@ Specs de companions que envolvam interação com pets devem ler também:
 docs/design/gameplay/pets/PETS_DIRECTION.md
 ```
 
+Specs de companions que envolvam romance, casamento, poliamor, partner companion unlock, spouse/partner helper ou social bond futuro devem ler também:
+
+```text
+docs/design/gameplay/social/SOCIAL_RELATIONSHIP_ROMANCE_DIRECTION.md
+```
+
 Usar para specs de:
 
 ```text
@@ -689,6 +756,12 @@ docs/design/gameplay/player/PLAYER_CORE_SYSTEMS_DIRECTION.md
 docs/design/gameplay/player/PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md
 ```
 
+Specs de pets que envolvam NPC reaction, partner-pet interaction, social hooks, romance/casamento ou visitas sociais devem ler também:
+
+```text
+docs/design/gameplay/social/SOCIAL_RELATIONSHIP_ROMANCE_DIRECTION.md
+```
+
 Usar para specs futuras de:
 
 ```text
@@ -748,6 +821,14 @@ docs/design/gameplay/player/PLAYER_CORE_SYSTEMS_DIRECTION.md
 docs/design/gameplay/player/PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md
 ```
 
+Specs de HUD/UI que envolvam quest log, Fonte, social log, romance, companions/pets, fragmentos, final choices ou feedback de main quest devem ler também:
+
+```text
+docs/design/gameplay/social/SOCIAL_RELATIONSHIP_ROMANCE_DIRECTION.md
+docs/design/gameplay/quests/QUESTS_MAIN_LORE_DIRECTION.md
+docs/design/gameplay/quests/QUESTS_MAIN_PROGRESSION_REFINEMENT_DIRECTION.md
+```
+
 ---
 
 # PARTE H — Loot / Crafting / Economy
@@ -771,6 +852,13 @@ docs/design/gameplay/combat/STATUS_EFFECTS_DIRECTION.md
 docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_DIRECTION.md
 docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_ENEMY_BEHAVIOR_ADAPTER.md
 docs/design/gameplay/cave/CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md
+```
+
+Specs de loot/economia que envolvam Mana, Água Viva, Pedra Negra estabilizada/cultista, fragmentos de Anya, Fonte, rewards de boss da main quest ou final choices devem ler também:
+
+```text
+docs/design/gameplay/quests/QUESTS_MAIN_LORE_DIRECTION.md
+docs/design/gameplay/quests/QUESTS_MAIN_PROGRESSION_REFINEMENT_DIRECTION.md
 ```
 
 Usar para specs de:
@@ -869,9 +957,111 @@ spec_economy_anti_arbitrage_tests.md
 
 ---
 
-# PARTE I — Regra anti-regressão
+# PARTE I — Quests / Main Progression / Social Future
 
-## 14. Quando houver conflito
+## 14. Specs de quests, main progression e narrativa jogável
+
+Fontes obrigatórias para qualquer spec de quests/main progression:
+
+```text
+docs/design/gameplay/quests/QUESTS_LORE_WEAVING_BRIEF.md
+docs/design/gameplay/quests/QUESTS_MAIN_LORE_DIRECTION.md
+docs/design/gameplay/quests/QUESTS_MAIN_PROGRESSION_REFINEMENT_DIRECTION.md
+docs/design/lore/VAALARA_GAME_CANON_DIRECTION_v1.0.md
+```
+
+Specs de quests que envolvam cidade, NPCs, Padre Corvus, Vaelrion, Sethra, Yael, loja noturna, templo de Kanthor, Litania do Primeiro Retorno, social hooks ou relação com romance/companions devem ler também:
+
+```text
+docs/design/gameplay/city/CITY_DESIGN_DIRECTION_v1.2.md
+docs/design/gameplay/city/CITY_NPC_ROSTER_SERVICES_DIRECTION_v1.1.md
+docs/design/gameplay/city/CITY_LAYOUT_BUILDINGS_SCHEDULE_DIRECTION.md
+docs/design/gameplay/social/SOCIAL_RELATIONSHIP_ROMANCE_DIRECTION.md
+docs/design/gameplay/companions/COMPANIONS_DIRECTION.md
+```
+
+Specs de quests que envolvam fazenda, Fonte, Água Viva, Mana plantável, pedreira final, visitas à fazenda ou estado da fazenda devem ler também:
+
+```text
+docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.3.md
+docs/design/gameplay/farm/FARM_LAYOUT_SCALE_BUILDINGS_DIRECTION.md
+```
+
+Specs de quests que envolvam caverna, nível 100/101, boss gates, Arco da Memória, Arquivista do Silêncio, boss final, checkpoints, Pedra Negra, Bromécia ou Elyndor devem ler também:
+
+```text
+docs/design/gameplay/cave/CAVE_DESIGN_DIRECTION.md
+docs/design/gameplay/cave/CAVE_LEVEL_GENERATION_LAYOUT_BIOME_DIRECTION.md
+docs/design/gameplay/cave/CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md
+docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_DIRECTION.md
+docs/design/gameplay/combat/COMBAT_CORE_DIRECTION.md
+docs/design/gameplay/enemies/ENEMY_BEHAVIORS_DIRECTION.md
+```
+
+Specs de quests que envolvam itens, rewards, Água Viva, Mana, Pedra Negra, boss rewards, loja noturna, economia de final ou crafting devem ler também:
+
+```text
+docs/design/gameplay/loot_crafting_economy/LOOT_CRAFTING_ECONOMY_DIRECTION.md
+docs/design/gameplay/loot_crafting_economy/ECONOMY_PRICING_STOCK_REFRESH_DIRECTION.md
+docs/design/gameplay/equipment/EQUIPMENT_WEAPONS_ARMOR_MATERIALS_DIRECTION.md
+docs/design/gameplay/magic/MAGIC_SPELLS_ACTIONS_DIRECTION.md
+docs/design/gameplay/magic/MAGIC_LEARNING_UNLOCKS_SOURCES_DIRECTION.md
+```
+
+Specs de social/romance/casamento/poliamor são futuras, não atuais. Quando entrarem explicitamente no roadmap, fontes obrigatórias:
+
+```text
+docs/design/gameplay/social/SOCIAL_RELATIONSHIP_ROMANCE_DIRECTION.md
+docs/design/gameplay/city/CITY_NPC_ROSTER_SERVICES_DIRECTION_v1.1.md
+docs/design/gameplay/city/CITY_LAYOUT_BUILDINGS_SCHEDULE_DIRECTION.md
+docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.3.md
+docs/design/gameplay/companions/COMPANIONS_DIRECTION.md
+docs/design/gameplay/pets/PETS_DIRECTION.md
+```
+
+Specs recomendadas futuras de social:
+
+```text
+spec_social_relationship_profile_contract_future.md
+spec_social_friendship_trust_runtime_future.md
+spec_social_gift_preferences_reactions_future.md
+spec_social_dialogue_conditions_memory_future.md
+spec_social_personal_quests_future.md
+spec_social_romance_route_runtime_future.md
+spec_social_poly_relationship_runtime_future.md
+spec_social_marriage_ceremony_state_future.md
+spec_social_partner_companion_unlock_future.md
+spec_social_partner_helper_farm_runtime_future.md
+spec_social_farm_visits_runtime_future.md
+spec_social_festivals_dates_birthdays_future.md
+spec_social_hud_log_feedback_future.md
+spec_social_save_load_state_future.md
+spec_social_balance_anti_exploit_future.md
+```
+
+Specs recomendadas futuras de main quest:
+
+```text
+spec_quest_main_state_contract_future.md
+spec_quest_main_act1_fonte_esquecimento_future.md
+spec_quest_main_fragmento_agua_future.md
+spec_quest_main_act2_cindar_arco_memoria_future.md
+spec_quest_main_fragmento_memoria_future.md
+spec_quest_main_act3_culto_pedra_negra_vida_future.md
+spec_quest_main_fragmento_vida_future.md
+spec_quest_main_act4_nivel_100_101_esperanca_future.md
+spec_quest_main_arquivista_silencio_boss_future.md
+spec_quest_main_final_choices_proteger_selar_usar_future.md
+spec_quest_main_fonte_progression_state_future.md
+spec_quest_main_luas_event_hooks_future.md
+spec_quest_main_city_memory_events_future.md
+```
+
+---
+
+# PARTE J — Regra anti-regressão
+
+## 15. Quando houver conflito
 
 Se houver conflito entre documentos:
 
@@ -904,6 +1094,9 @@ Magic Spells Actions é fonte canônica da lista enxuta de spells, SpellActionDa
 Magic Learning Unlocks Sources é fonte canônica para spell source, LearnableScroll, CastScroll, Tome, Wand, Staff/Weapon spell, Focus, NPC teaching, Fonte de Anya story unlock, knownSpellIds, ItemProvided e ConsumableProvided.
 Companions é fonte canônica do sistema de companions, companion eligibility, active companion, farm jobs, cave follow/leash, companion combat assist, downed/injury/recovery, bond, HUD e save/load.
 Pets é fonte canônica do sistema de pets, pet bond, pet mood/energy, pet food, pet home area, pet bed/bowl/toy, pet routine, pet farm alerts, pet cave follow/leash, pet treasure/trap hints, pet light interrupt, HUD e save/load.
+Social Relationship Romance é fonte canônica futura de friendship, trust, gift, romance, casamento, casamento poliamoroso consentido até 3 parceiros, partner companion unlock, partner helper e social memory.
+Quests Main Lore é fonte canônica da lore principal: Anya fragmentada e não restaurável por completo, Cindar como última sacerdotisa Nymiriana local, Fonte por fragmentos, Arco da Memória, Vaelrion Aelth-Silberharth, Sethra Veyl-Nocthar, Litania do Primeiro Retorno e Arquivista do Silêncio.
+Quests Main Progression Refinement é fonte canônica de progressão jogável da main quest: 4 atos, fragmentos Água/Memória/Vida/Esperança, Fonte como respawn/Água Viva/respec/purificação/decisão final e finais Proteger/Selar/Usar.
 Loot Crafting Economy é fonte canônica de fluxos de itens, loot tables, recipes, quality, rarity, shops, orders, shipping, storage, ItemStack, ItemInstance e economy balance.
 Economy Pricing Stock Refresh é fonte canônica de BaseValue, BuyPrice, SellPrice, ShopStockState, StockLineSO, RestockPolicySO, SellPoint, ShippingPriceProfileSO, ResourceRefreshProfileSO, anti-arbitrage, cave loot refresh e boss first-time/repeat reward.
 MaterialVulnerability deve existir em specs futuras de EnemyDataSO.
@@ -912,6 +1105,9 @@ Quality é diferente de Rarity.
 Tier é diferente de Quality e Rarity.
 Reputação é desbloqueio social/econômico, não moeda comum.
 Fruto de Mana, Água Viva da Fonte e Pedra Negra estabilizada não são commodities comuns.
+Mana pode ser plantado/cultivado em condições raras, mas não é crop comum, não é plantio em massa e não deve quebrar economia/cura/MP/atributos.
+Anya não pode ser restaurada por completo na main quest; o objetivo é proteger, selar ou usar os fragmentos restantes.
+Fonte de Anya evolui por fragmentos e não deve liberar Água Viva, respec, purificação ou decisão final cedo demais.
 Magia não é concedida automaticamente só por level ou skill point.
 Skill tree libera capacidade/domínio; fonte libera spell.
 LearnableScroll ensina permanentemente se pré-requisitos forem cumpridos.
@@ -932,6 +1128,10 @@ Companion não tem Breath/Fôlego.
 Companion não gera rolagem separada de loot por padrão.
 Companion equipment completo é futuro, não MVP.
 Romance/casamento não devem ser caminho obrigatório de poder.
+Romance homoafetivo é permitido para NPCs elegíveis.
+Casamento poliamoroso consentido é permitido até 3 parceiros totais, mas é feature futura e não entra nas specs atuais sem decisão de roadmap.
+Parceiros românticos/cônjuges podem virar companions futuros se elegíveis, mas baseline de caverna continua 1 companion ativo por run.
+Partner helper é futuro e deve ter orçamento global; 3 parceiros aumentam variedade, não produção linear.
 BaseValue é obrigatório para item vendável.
 Preço final é recalculável e não deve ser persistido como fonte primária.
 ShopSellToPlayerPrice deve ser maior que ShopBuyFromPlayerPrice salvo exceção limitada.
