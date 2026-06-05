@@ -46,6 +46,7 @@ Specs que envolvam UI, HUD, menus, modal, input routing, foco de UI, tooltip, in
 
 ```text
 docs/design/gameplay/ui_ux/UI_UX_FULL_GAMEPLAY_DIRECTION.md
+docs/design/gameplay/ui_ux/UI_UX_MENU_SCREEN_FLOWS_DIRECTION.md
 ```
 
 **Regra World/Time centralizada:**
@@ -884,6 +885,17 @@ docs/design/gameplay/quests/QUESTS_MAIN_LORE_DIRECTION.md
 docs/design/gameplay/quests/QUESTS_MAIN_PROGRESSION_REFINEMENT_DIRECTION.md
 ```
 
+### Specs de menu screen flows e submenus derivados
+
+Fontes obrigatórias:
+
+```text
+docs/design/gameplay/ui_ux/UI_UX_FULL_GAMEPLAY_DIRECTION.md
+docs/design/gameplay/ui_ux/UI_UX_MENU_SCREEN_FLOWS_DIRECTION.md
+```
+
+Specs que envolvam menus, submenus, drawers, screen flows, inventory screen, storage/chest screen, equipment screen, weapon/armor detail, item detail, tooltip expandido, repair/upgrade UI, skill tree screen, skill node detail, active slot assignment, spell detail, shop buy/sell screen, crafting screen, quest detail, social/NPC detail future, calendar day detail, Fonte menu, confirmation modal, empty state, error state, focus order ou menu navigation devem ler obrigatoriamente essas fontes.
+
 ---
 
 # PARTE H — Loot / Crafting / Economy
@@ -1283,4 +1295,21 @@ Senya = caos, magia, mutação, instabilidade.
 Nyx = noite, segredo, loja noturna, Pedra Negra, esquecimento.
 Mana pode depender de estação/lua/Água Viva/Fonte, mas nenhuma condição isolada basta.
 Quest obrigatória com tempo/lua precisa dar pista e controle razoável ao jogador.
+UI_UX_MENU_SCREEN_FLOWS_DIRECTION.md é fonte canônica de menus, submenus, drawers, screen flows, detail panels, comparison drawers, focus order, confirmation patterns, empty states e error states.
+UI_UX_FULL_GAMEPLAY_DIRECTION.md continua vencendo para princípios gerais de UI/UX, input routing, modal focus, HUD e feedback.
+Todo menu modal bloqueia WASD e input de gameplay.
+Diálogo não deixa o personagem andar.
+Shop Sell sempre mostra inventário vendável do jogador ou empty state explícito.
+Buy e Sell nunca usam a mesma lista de dados.
+Skill node sempre tem detail drawer antes de gastar ponto.
+Gastar SkillPoint exige confirmação visual clara.
+Active skill comprada não equipa automaticamente em slot cheio.
+Equipment compare nunca equipa por hover ou foco.
+Repair e Upgrade são ações diferentes.
+Quest/Key item não pode ser vendido/descartado por padrão.
+Tooltip curto não substitui detail drawer para informação complexa.
+Fonte Menu não mostra função ainda não desbloqueada por fragmento.
+Calendar não revela segredo antes da descoberta.
+Social future não transforma NPC em planilha.
+HUD final não mostra debug.
 ```
