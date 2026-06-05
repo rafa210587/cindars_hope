@@ -111,7 +111,21 @@ A document may be deleted ONLY if:
 
 ---
 
-## Batch 2 — Defer Until After Phase 2-3 Closeout
+## Batch 2 — Temporary Addendum Files (Incorporados em 2026-06-05)
+
+**Criteria:** Temporary addendum files created for migration that are now incorporated into canonical sources.
+
+**Status:** DELETED on 2026-06-05
+
+| Path | Status | Notes |
+|------|--------|-------|
+| docs/design/SPEC_SOURCE_MAP_WORLD_TIME_ADDENDUM.md | ✓ DELETED | Temporary migration addendum; content incorporated into SPEC_SOURCE_MAP.md (commit: World/Time centralization) |
+
+**Total:** 1 file successfully deleted in 2026-06-05.
+
+---
+
+## Batch 3 — Defer Until After Phase 2-3 Closeout
 
 **Criteria:** Content covered by SPEC_18-28 closeout, but source SPECS not yet promoted to implementados/.
 

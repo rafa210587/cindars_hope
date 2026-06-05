@@ -48,6 +48,14 @@ Specs que envolvam UI, HUD, menus, modal, input routing, foco de UI, tooltip, in
 docs/design/gameplay/ui_ux/UI_UX_FULL_GAMEPLAY_DIRECTION.md
 ```
 
+**Regra World/Time centralizada:**
+
+Specs que envolvam tempo, calendário, estações, clima, chuva, neve, tempestade, névoa, calor, frio, previsão, passagem de dia, sono, colapso por horário, day transition, festivais, eventos lunares, Alihana, Senya, Nyx, crops sazonais, crops lunares, Mana por estação/lua, Fonte reagindo a clima/lua, schedules dependentes de clima/lua ou eventos temporais devem ler obrigatoriamente:
+
+```text
+docs/design/gameplay/world/SEASONS_CALENDAR_WEATHER_LUNAR_DIRECTION.md
+```
+
 ---
 
 # PARTE A — Fazenda
@@ -90,6 +98,12 @@ Specs de fazenda que envolvam Fonte de Anya, Água Viva, fragmentos de Anya, Cin
 docs/design/gameplay/quests/QUESTS_LORE_WEAVING_BRIEF.md
 docs/design/gameplay/quests/QUESTS_MAIN_LORE_DIRECTION.md
 docs/design/gameplay/quests/QUESTS_MAIN_PROGRESSION_REFINEMENT_DIRECTION.md
+```
+
+Specs de fazenda que envolvam crops sazonais, chuva, irrigação, morte de planta por falta de água, clima, estufa, eventos sazonais, festivais agrícolas, fertilizante lunar, crops mágicas/lunares, Mana, Água Viva, Fonte reagindo a lua/clima ou day transition devem ler também:
+
+```text
+docs/design/gameplay/world/SEASONS_CALENDAR_WEATHER_LUNAR_DIRECTION.md
 ```
 
 Specs de fazenda **não devem implementar invasões, defesa contra inimigos, dano a crops/estruturas ou inimigos no mapa da fazenda agora**.
@@ -191,6 +205,19 @@ docs/design/gameplay/quests/QUESTS_MAIN_LORE_DIRECTION.md
 docs/design/gameplay/quests/QUESTS_MAIN_PROGRESSION_REFINEMENT_DIRECTION.md
 ```
 
+Specs de cidade que envolvam calendário público, quadro público, festivais, horários, portas por horário, lojas por horário, restock ligado a calendário, NPC schedules modificados por clima/lua, loja noturna, rumores, eventos de praça, aniversários futuros, evento de Alihana/Senya/Nyx, Jardim das Estátuas reagindo a lua ou cidade mudando por clima devem ler também:
+
+```text
+docs/design/gameplay/world/SEASONS_CALENDAR_WEATHER_LUNAR_DIRECTION.md
+```
+
+Regra:
+
+```text
+CITY_LAYOUT_BUILDINGS_SCHEDULE_DIRECTION.md vence para rotina individual de NPC, camas, waypoints, prédios, interiores e portas.
+SEASONS_CALENDAR_WEATHER_LUNAR_DIRECTION.md vence para condições globais de tempo, clima, estação, lua e festival que schedules consomem.
+```
+
 Specs de cidade **não devem implementar eventos hostis, defesa urbana, cultistas, monstros ou civis fugindo agora**.
 
 Specs de cidade **não devem implementar runtime completo de social/romance/casamento/poliamor na execução atual** sem nova decisão de roadmap. Devem apenas preparar hooks, IDs, anchors, schedules e compatibilidade futura quando necessário.
@@ -268,6 +295,12 @@ Specs de caverna que envolvam main quest, níveis 100/101, Arco da Memória, Cin
 docs/design/gameplay/quests/QUESTS_LORE_WEAVING_BRIEF.md
 docs/design/gameplay/quests/QUESTS_MAIN_LORE_DIRECTION.md
 docs/design/gameplay/quests/QUESTS_MAIN_PROGRESSION_REFINEMENT_DIRECTION.md
+```
+
+Specs de caverna que envolvam modificadores por clima/lua, eventos de Alihana/Senya/Nyx, Pedra Negra mais ativa em Nyx, caverna alterada por névoa/tempestade, lagos subterrâneos brilhando, inscrições reveladas, inimigos noturnos, criaturas caóticas, eventos de memória, boss gate condicionado por lua ou nível 100/101 usando alinhamento lunar devem ler também:
+
+```text
+docs/design/gameplay/world/SEASONS_CALENDAR_WEATHER_LUNAR_DIRECTION.md
 ```
 
 Specs de caverna que tocam runtime já existente devem ler também:
@@ -518,6 +551,14 @@ Specs de player que envolvam respawn na Fonte, respec pela Fonte, Água Viva, fr
 ```text
 docs/design/gameplay/quests/QUESTS_MAIN_LORE_DIRECTION.md
 docs/design/gameplay/quests/QUESTS_MAIN_PROGRESSION_REFINEMENT_DIRECTION.md
+```
+
+Specs que envolvam relógio, tempo rodando, pausa em UI modal, sono, colapso, recuperação diária, Cansaço por horário/clima, Fome por tempo, day transition, save/load de tempo, CurrentDay, CurrentSeason, CurrentYear, CurrentTime, CurrentWeather, TomorrowWeather, ActiveLunarEvent, FestivalState ou WeatherSeed devem ler:
+
+```text
+docs/design/gameplay/world/SEASONS_CALENDAR_WEATHER_LUNAR_DIRECTION.md
+docs/design/gameplay/ui_ux/UI_UX_FULL_GAMEPLAY_DIRECTION.md
+docs/design/gameplay/player/PLAYER_CORE_SYSTEMS_DIRECTION.md
 ```
 
 ---
@@ -875,6 +916,20 @@ docs/design/gameplay/quests/QUESTS_MAIN_LORE_DIRECTION.md
 docs/design/gameplay/quests/QUESTS_MAIN_PROGRESSION_REFINEMENT_DIRECTION.md
 ```
 
+Specs que envolvam restock diário/semanal/sazonal, preço por festival, demanda sazonal, mercador raro de Finan, loja noturna por Nyx, seed/crop raro por Alihana, item mágico instável por Senya, orders/encomendas por prazo ou SellPoint por day transition devem ler também:
+
+```text
+docs/design/gameplay/world/SEASONS_CALENDAR_WEATHER_LUNAR_DIRECTION.md
+docs/design/gameplay/loot_crafting_economy/ECONOMY_PRICING_STOCK_REFRESH_DIRECTION.md
+```
+
+Regra:
+
+```text
+SEASONS_CALENDAR_WEATHER_LUNAR_DIRECTION.md define quando eventos sazonais/climáticos/lunares podem solicitar variação.
+ECONOMY_PRICING_STOCK_REFRESH_DIRECTION.md vence para preço, BaseValue, restock, SellPoint, stock state e anti-arbitragem.
+```
+
 Usar para specs de:
 
 ```text
@@ -1071,6 +1126,53 @@ spec_quest_main_luas_event_hooks_future.md
 spec_quest_main_city_memory_events_future.md
 ```
 
+Specs de quests que envolvam condição temporal, calendário, estação, clima, previsão, festival, evento lunar, Alihana, Senya, Nyx, Fonte reagindo a lua/clima, Água Viva recarregando por lua, Mana florescendo por condição temporal, diário legível por Alihana, loja noturna por Nyx, ritual instável por Senya ou main quest condicionada por alinhamento lunar devem ler também:
+
+```text
+docs/design/gameplay/world/SEASONS_CALENDAR_WEATHER_LUNAR_DIRECTION.md
+docs/design/gameplay/quests/QUESTS_MAIN_LORE_DIRECTION.md
+docs/design/gameplay/quests/QUESTS_MAIN_PROGRESSION_REFINEMENT_DIRECTION.md
+```
+
+Regra:
+
+```text
+Quest obrigatória não deve depender de evento raro sem calendário, pista e forma razoável de esperar.
+```
+
+---
+
+# PARTE K — World / Time / Calendar / Weather / Lunar
+
+## Specs de tempo, calendário, clima e luas
+
+Fontes obrigatórias:
+
+```text
+docs/design/gameplay/world/SEASONS_CALENDAR_WEATHER_LUNAR_DIRECTION.md
+```
+
+Specs que envolvam tempo, calendário, estações, clima, chuva, neve, tempestade, névoa, calor, frio, previsão, passagem de dia, sono, colapso por horário, day transition, festivais, eventos lunares, Alihana, Senya, Nyx, crops sazonais, crops lunares, Mana por estação/lua, Fonte reagindo a clima/lua, schedules dependentes de clima/lua ou eventos temporais devem ler obrigatoriamente esta fonte.
+
+Specs futuras recomendadas:
+
+```text
+spec_time_clock_day_transition_runtime.md
+spec_calendar_season_year_runtime.md
+spec_weather_generation_forecast_runtime.md
+spec_rain_irrigation_crop_integration.md
+spec_weather_farm_pet_companion_reactions.md
+spec_lunar_cycle_event_runtime.md
+spec_lunar_fonte_mana_reactions_future.md
+spec_calendar_festivals_events_runtime.md
+spec_npc_schedule_weather_lunar_modifiers.md
+spec_shop_calendar_weather_lunar_modifiers.md
+spec_cave_weather_lunar_modifiers_future.md
+spec_calendar_ui_weather_lunar_display.md
+spec_time_save_load_state.md
+spec_calendar_quest_temporal_conditions.md
+```
+
 ---
 
 # PARTE J — Regra anti-regressão
@@ -1165,4 +1267,20 @@ WASD não move o personagem enquanto Dialogue, Inventory, Equipment, SkillTree, 
 HUD final não mostra Breath/Fôlego/BR.
 Buy/Sell UI deve separar inventário da loja e inventário vendável do jogador.
 Empty state de loja/inventário deve ser explícito.
+SEASONS_CALENDAR_WEATHER_LUNAR_DIRECTION.md é fonte canônica de tempo, calendário, estações, clima, chuva, neve, tempestade, névoa, eventos lunares, Alihana, Senya, Nyx, festivais e impactos sistêmicos globais.
+CITY_LAYOUT_BUILDINGS_SCHEDULE_DIRECTION.md continua vencendo para rotina individual de NPC.
+UI_UX_FULL_GAMEPLAY_DIRECTION.md continua vencendo para apresentação de relógio, calendário, clima, lua, notificações e feedback visual.
+ECONOMY_PRICING_STOCK_REFRESH_DIRECTION.md continua vencendo para preço, BaseValue, restock, SellPoint e anti-arbitragem.
+O jogo usa 4 estações por ano, 28 dias por estação, 112 dias por ano e 7 dias por semana.
+Dia jogável começa às 06:00.
+02:00 é limite padrão de colapso/sono forçado.
+Escala inicial recomendada: 1 hora in-game = 60 segundos reais.
+Tempo pausa em UI modal.
+Chuva molha áreas externas.
+As três luas são sistemas de gameplay, não decoração.
+Alihana = memória, sonhos, Fonte, Cindar, Água Viva.
+Senya = caos, magia, mutação, instabilidade.
+Nyx = noite, segredo, loja noturna, Pedra Negra, esquecimento.
+Mana pode depender de estação/lua/Água Viva/Fonte, mas nenhuma condição isolada basta.
+Quest obrigatória com tempo/lua precisa dar pista e controle razoável ao jogador.
 ```
