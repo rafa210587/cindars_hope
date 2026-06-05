@@ -9,6 +9,7 @@
 > - `docs/design/gameplay/quests/QUESTS_LORE_WEAVING_BRIEF.md`  
 > - `docs/design/gameplay/quests/QUESTS_MAIN_LORE_DIRECTION.md`  
 > - `docs/design/gameplay/social/SOCIAL_RELATIONSHIP_ROMANCE_DIRECTION.md`  
+> - `docs/design/gameplay/ui_ux/UI_UX_FULL_GAMEPLAY_DIRECTION.md`  
 > **Função:** traduzir a lore principal em atos, fragmentos, eventos, mecânicas, gates, sistemas afetados e regras para specs futuras.  
 > **Não é spec implementável.** Specs futuras devem quebrar isto em arquivos menores em `docs/specs/a_implementar/`.
 

@@ -381,7 +381,6 @@ FarmVisitRules[]
 BaseHP
 BaseMP
 BaseStamina
-BaseBreath
 Attributes
 StatusResistances[]
 StatusWeaknesses[]
