@@ -20,6 +20,26 @@ Read ONLY:
 3. The active spec (`docs/specs/a_implementar/spec_*.md`)
 4. Files explicitly listed in the spec scope
 
+## Spec Planning / Generation Reads
+
+For spec planning, wave planning, or spec generation tasks, also read:
+
+1. `docs/design/SPEC_SOURCE_MAP.md` — domain mapping and direction sources
+2. `docs/specs/SPEC_IMPLEMENTABLE_TEMPLATE.md` — SpecKit format and structure
+3. `docs/specs/SPEC_GENERATION_ROADMAP_MASTER.md` — macro roadmap of planned specs
+4. `docs/specs/SPEC_WAVE_EXECUTION_PROTOCOL.md` — execution phases, taxonomy, governance
+5. `docs/specs/SPEC_VALIDATION_MATRIX_MASTER.md` — validation requirements by change type
+6. `docs/specs/SPEC_REGISTRY_TO_IMPLEMENT.md` — list of specs to create
+
+## Spec Execution Reads (runtime/code changes)
+
+For spec execution (implement-spec, validate-spec, finish-spec), also read:
+
+1. `docs/specs/SPEC_WAVE_EXECUTION_PROTOCOL.md` — phases and promotion rules
+2. `docs/specs/SPEC_VALIDATION_MATRIX_MASTER.md` — validation levels and evidence requirements
+3. `.claude/rules/testing-quality-gate.md` — automated testing and human validation requirements
+4. `docs/validation/FINAL_HUMAN_VALIDATION_BY_WAVE.md` — human validation checklist (batch at wave-end)
+
 ## Conditional Reads (only if spec or prompt cites them)
 
 - A specific refinement

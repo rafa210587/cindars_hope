@@ -94,7 +94,7 @@ Record phase status using taxonomy:
 **If runtime/gameplay changes (Phase 2-3 required):**
 
 Before Phase 5 closeout, invoke `/gameplay-test-scenario` skill to:
-- [ ] Create human test scenario: `docs/05_VALIDATION/playmode/<spec_id>_human_test_scenario.md`
+- [ ] Create human test scenario: `docs/validation/playmode/<spec_id>_human_test_scenario.md`
 - [ ] Document in execution report Phase 3 section: how human tester will verify feature
 - [ ] Link test scenario file in report
 

@@ -160,25 +160,25 @@ A document may be deleted ONLY if:
 ```
 AGENTS.md                                            (governance)
 CLAUDE.md                                            (governance)
-docs/00_PROJECT/*                                    (governance hub)
-docs/validation/*                                    (evidence)
+docs/project/*                                       (governance hub)
+docs/validation/*                                    (evidence and validation checklists)
 docs/specs/implementados/*                           (implemented history, searchable)
 docs/refinements/implementados/*                     (refinement history)
 docs/release/MVP_ACCEPTANCE_REPORT.md                (release acceptance evidence)
 docs/backlog/post_mvp_backlog.md                     (active backlog)
 docs/architecture/CORE_CONTRACTS_EVENTS_SAVE_IDS_v1.1_FASE9C_DELTA.md  (active architecture)
 docs/amendments/*                                    (governance: critical amendments including FASE9F cave stable run)
-docs/operations/AGENT_EXECUTION_PROTOCOL.md         (governance: operational protocol)
-docs/operations/READING_MATRIX.md                    (governance: reading policy)
+docs/specs/SPEC_WAVE_EXECUTION_PROTOCOL.md          (canonical: execution governance and phases)
+docs/specs/SPEC_VALIDATION_MATRIX_MASTER.md         (canonical: validation requirements matrix)
+docs/specs/SPEC_IMPLEMENTABLE_TEMPLATE.md           (canonical: SpecKit format template)
+docs/validation/FINAL_HUMAN_VALIDATION_BY_WAVE.md   (canonical: wave-end human validation checklist)
 PROJECT_LOG.md                                       (historical record)
 docs/IMPLEMENTATION_STATUS.md                        (active status tracking)
 docs/specs/SPEC_EXECUTION_ORDER.md                   (execution dependency matrix)
 docs/specs/a_implementar/closeout_mvp/*              (active pending Phase 2-3)
-docs/05_VALIDATION/playmode/*                        (Phase 3 human test scenarios)
-docs/05_VALIDATION/current/LAST_VALIDATION_STATUS.md (current validation status)
 ```
 
-Total: 19+ protected categories. None are deletion candidates.
+Total: 19+ protected categories (updated with canonical specs docs). None are deletion candidates.
 
 ---
 

@@ -15,9 +15,12 @@ Produce a planning document for the next development wave. No implementation. No
 ## Required Reads
 
 1. `CLAUDE.md`
-2. `docs/project/CURRENT_STATE.md`
-3. `docs/project/ROADMAP.md`
-4. `docs/backlog/current_backlog.md`
+2. `docs/project/CURRENT_STATE.md` — active queue and blockers
+3. `docs/specs/SPEC_GENERATION_ROADMAP_MASTER.md` — macro roadmap of all planned specs and dependencies
+4. `docs/specs/SPEC_WAVE_EXECUTION_PROTOCOL.md` — execution phases, paralelization, batch size rules
+5. `docs/specs/SPEC_VALIDATION_MATRIX_MASTER.md` — validation requirements to plan for
+6. `docs/specs/SPEC_REGISTRY_TO_IMPLEMENT.md` — list of specs to plan and dependencies
+7. `docs/backlog/current_backlog.md` — operational backlog items
 
 ## Optional Reads
 
@@ -38,16 +41,24 @@ docs_old/**
 
 ## Procedure
 
-1. Read CURRENT_STATE.md to understand current blocking items
-2. Read ROADMAP.md to understand planned waves
-3. Read backlog to understand priorities
-4. Produce wave plan:
+1. Read CURRENT_STATE.md to understand blocking items and current queue
+2. Read SPEC_GENERATION_ROADMAP_MASTER.md — use this as primary source for waves/specs
+3. Read SPEC_WAVE_EXECUTION_PROTOCOL.md for:
+   - Paralelization rules (which lanes can run in parallel)
+   - Lock/checkpoint timing between waves
+   - Batch size and execution capacity constraints
+4. Read SPEC_VALIDATION_MATRIX_MASTER.md to understand validation costs (time, resources)
+5. Read SPEC_REGISTRY_TO_IMPLEMENT.md to cross-check spec list
+6. Produce wave plan:
    - Objectives of the wave
-   - Specs to create (IDs, titles, rough effort)
-   - Dependencies between proposed specs
+   - Specs to create (IDs, titles, rough effort, dependencies)
+   - Dependency graph between proposed specs and waves
    - Specs that must complete first (from CURRENT_STATE.md)
+   - Paralelization plan (which lanes, checkpoints)
+   - Validation plan (types and timing per change)
    - Risks and open questions
-5. Output planning document
+7. Output planning document
+8. Do NOT create specs or implement code — only plan.
 
 ---
 
