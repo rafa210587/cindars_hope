@@ -93,3 +93,45 @@ Após geração da batch 36 (~130 specs), o registry foi reconciliado. Specs est
 - ✓ **Nenhuma duplicata ou obsoleta encontrada**
 - ✓ **Nenhuma spec movida para implementados**
 - ✓ **Pronto para executar WAVE 00.04 após docs validation**
+
+---
+
+## Specs Antigas Absorvidas — Legacy Pre-Wave Cleanup (2026-06-07)
+
+Após a reconciliação das 154 specs novas wave-based, 7 specs antigas da era pré-wave (SPEC_10-17 MVP) foram movidas para histórico:
+
+### Moved to docs/specs/absorvidas/legacy_pre_wave_reconciliation/
+
+| Spec antiga | Status | Motivo | Specs novas que cobrem | Decisão |
+|---|---|---|---|---|
+| `spec_14a_cave_enemy_spawnplan_materialization_run_stability.md` | MOVED_ABSORBED | Cobertura completa por WAVE 06 (loot/drops) e WAVE 10 (bosses) | WAVE 06, WAVE 10 | Não executar |
+| `spec_14a_fix2_spawn_density_combat_feedback_damage_numbers.md` | MOVED_ABSORBED | Tuning de combat; coberto por WAVE 06 e WAVE 11 (UI hotbar) | WAVE 06, WAVE 11 | Não executar |
+| `spec_14b_cave_snapshot_replay_enemy_plan.md` | MOVED_ABSORBED | Snapshot/replay movido integralmente para WAVE 06 | WAVE 06 | Não executar |
+| `spec_cave_runtime_generation_checkpoints_boss_gates.md` | MOVED_ABSORBED | Cave runtime fatiado em WAVE 06 (procedural) e WAVE 10 (gates/bosses) | WAVE 06, WAVE 10 | Não executar |
+| `spec_combat_movement_projectiles_melee_visuals_runtime.md` | MOVED_ABSORBED | Combat movement/projectiles distribuído; WAVE 06/10 covers bosses; movimento pode ser gap em WAVE 25+ | WAVE 06, WAVE 10, (possível WAVE 25+) | Candidato a legacy gap se gap confirmado |
+| `spec_enemy_ai_roster_bestiary_faction_locks_runtime.md` | MOVED_ABSORBED | AI/roster/bestiary distribuído em WAVE 06 (AI), WAVE 22 (bestiary UI), WAVE 23 (pets); faction locks podem ser gap | WAVE 06, WAVE 22, WAVE 23 | Candidato a legacy gap se gap confirmado |
+| `spec_ui_ux_full_gameplay_inventory_hotbar_menus.md` | MOVED_ABSORBED | Cobertura completa por WAVE 04 (21 UI specs) e WAVE 11 (HUD/projections) | WAVE 04, WAVE 11 | Não executar |
+
+**Total absorvido:** 7 specs  
+**Crosswalk:** `docs/specs/absorvidas/legacy_pre_wave_reconciliation/LEGACY_SPECS_CROSSWALK.md`  
+**Review required:** 0 specs — todos têm cobertura clara
+
+### Contagem Atualizada Após Cleanup
+
+- ✓ **Specs antes de limpeza:** 154 em `a_implementar/` (154 novas wave-based + 7 antigas)
+- ✓ **Specs após limpeza:** 147 em `a_implementar/` (todas new wave-based)
+- ✓ **Specs absorvidas:** 7 em `absorvidas/legacy_pre_wave_reconciliation/`
+- ✓ **Fila ativa:** 147 specs (100% wave-based)
+
+### Status de Execução
+
+**Próxima execução permitida:**
+1. 00.04 Existing Implementation Audit (governance)
+2. WAVE 01 hardening (01.01-01.05 + 01Q quality gate) 
+3. WAVE 02-24 runtime/future em ordem por dependência
+
+**Bloqueado:**
+- Nenhuma spec antiga executável
+- WAVE 02+ bloqueado até 01Q completo
+- Future/mapped (WAVE 17-24) bloqueado por política
+- Pets (WAVE 23) bloqueado como HOLD/BLOCKED_SCOPE

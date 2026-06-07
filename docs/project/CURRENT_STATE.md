@@ -124,13 +124,13 @@
 ## Do NOT Execute
 
 ```
+- docs/specs/absorvidas/legacy_pre_wave_reconciliation/** (legacy specs — moved 2026-06-07)
 - docs/specs/a_implementar/reorg/SPEC_00-12  (CLOSED per README_STATUS.md)
-- docs/specs/a_implementar/spec_14a*.md      (covered by SPEC_24 closeout)
-- docs/specs/a_implementar/spec_14b*.md      (covered by SPEC_24 closeout)
-- docs/specs/a_implementar/spec_enemy_ai*.md (covered by SPEC_23 closeout)
-- docs/specs/a_implementar/spec_cave_runtime*.md (covered by SPEC_24, also in implementados)
 - SPEC_18-29 again  (already executed; Phase 0-1 complete)
 ```
+
+**Legacy specs moved (2026-06-07):** All 7 legacy specs from pre-wave era absorbed into new wave-based specs.  
+See `docs/specs/absorvidas/legacy_pre_wave_reconciliation/LEGACY_SPECS_CROSSWALK.md`
 
 ---
 

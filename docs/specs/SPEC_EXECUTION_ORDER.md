@@ -78,6 +78,30 @@ A spec 17A (visual scale / world scale / camera scale / sprite profiles) foi imp
 
 ---
 
+---
+
+## Legacy Specs Cleanup (2026-06-07)
+
+**Action:** 7 legacy specs from pre-wave era (SPEC_10-17 MVP) moved to `docs/specs/absorvidas/legacy_pre_wave_reconciliation/`.
+
+**Reason:** All legacy specs are fully absorbed into new wave-based specs; no execution needed.
+
+**Specs moved:**
+- `spec_14a_cave_enemy_spawnplan_materialization_run_stability.md` → covered by WAVE 06, 10
+- `spec_14a_fix2_spawn_density_combat_feedback_damage_numbers.md` → covered by WAVE 06, 11
+- `spec_14b_cave_snapshot_replay_enemy_plan.md` → covered by WAVE 06
+- `spec_cave_runtime_generation_checkpoints_boss_gates.md` → covered by WAVE 06, 10
+- `spec_combat_movement_projectiles_melee_visuals_runtime.md` → covered by WAVE 06, 10 (movement may be gap for WAVE 25+)
+- `spec_enemy_ai_roster_bestiary_faction_locks_runtime.md` → covered by WAVE 06, 22, 23
+- `spec_ui_ux_full_gameplay_inventory_hotbar_menus.md` → covered by WAVE 04, 11
+
+**Impact:** 
+- Specs in `a_implementar/` now 100% wave-based (147 specs)
+- No loss of functionality — all legacy features migrated to new wave specs
+- Reference in `LEGACY_SPECS_CROSSWALK.md` for traceability
+
+---
+
 ## Reconciliation Note (2026-06-07 BATCH_36 — Generated Specs)
 
 **Generated Specs Reconciliation:** ~130 specs generated post-refinement (BATCH 01-35).
