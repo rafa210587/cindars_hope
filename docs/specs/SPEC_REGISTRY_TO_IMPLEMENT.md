@@ -6,6 +6,8 @@ A antiga spec 00 de reconciliacao documental foi reclassificada como implementad
 
 | Ordem | Spec | Status | Dependencia | Observacao |
 |---|---|---|---|---|
+| 00.02 | [00_spec_wave_execution_protocol.md](a_implementar/00_spec_wave_execution_protocol.md) | A implementar - governanca | 00.01 roadmap master | Cria protocolo canônico de execução por waves, paralelização, locks, batch size, status e validação humana final deferida. |
+| 00.05 | [00_spec_validation_matrix_master.md](a_implementar/00_spec_validation_matrix_master.md) | A implementar - validacao/governanca | 00.01 roadmap master + Testing Quality Gate | Cria matriz master de validação por tipo de mudança, evidência mínima, status caps e relação com validação humana final. |
 | 01Q | [spec_test_harness_editmode_playmode_quality_gate.md](a_implementar/spec_test_harness_editmode_playmode_quality_gate.md) | A implementar - quality gate fundacional | 01 validacao Unity + rules/skills atuais | Deve ser executada antes das novas waves runtime para exigir EditMode tests, PlayMode/manual scenarios, regression tests e evidencia de risco residual. |
 | 13 | [spec_enemy_ai_roster_bestiary_faction_locks_runtime.md](a_implementar/spec_enemy_ai_roster_bestiary_faction_locks_runtime.md) | Implementado parcial - escopo residual ativo | 00-12 | Enemy chase/patrol AI completo. Pendente: ranged enemies, faction locks, bestiary UI. Bloqueia: 14, 15, 17. |
 | 14 | [spec_cave_runtime_generation_checkpoints_boss_gates.md](a_implementar/spec_cave_runtime_generation_checkpoints_boss_gates.md) | Implementado parcial - escopo residual ativo | 00-13 | Cave generation/runtime completo. Pendente: stable run guarantee, boss gates validation, confinement hardening. Bloqueia: 15, 17. |
