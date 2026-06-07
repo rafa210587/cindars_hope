@@ -1,17 +1,18 @@
-# Specs Ã¢â‚¬â€ Cindar's Hope
+# Specs – Cindar's Hope
 
-Ver tambÃƒÂ©m: `docs/specs/SPEC_SOURCE_OF_TRUTH.md`.
+Ver também: `docs/specs/SPEC_SOURCE_OF_TRUTH.md`.
 
 ## Estrutura
 
-- `docs/specs/implementados/`: specs consolidadas do que jÃƒÂ¡ existe no repo.
-- `docs/specs/a_implementar/`: specs futuras ou preparadas para implementaÃƒÂ§ÃƒÂ£o.
+- `docs/specs/implementados/`: specs consolidadas do que já existe no repo.
+- `docs/specs/a_implementar/`: specs futuras ou preparadas para implementação.
 - `docs/specs/SPEC_REGISTRY_IMPLEMENTED.md`: registry oficial das specs implementadas/parciais.
 - `docs/specs/SPEC_REGISTRY_TO_IMPLEMENT.md`: registry oficial das specs futuras.
-- `docs/refinements/implementados/`: refinamentos e PR waves jÃƒÂ¡ absorvidos.
-- `docs/refinements/a_implementar/`: refinamentos futuros ainda nÃƒÂ£o implementados.
-- `docs/specs/`: fonte unica oficial de specs.
-- `docs_old/`: histÃƒÂ³rico integral preservado.
+- `docs/specs/SPEC_GENERATION_ROADMAP_MASTER.md`: roadmap macro de geração das próximas specs; não é spec implementável.
+- `docs/refinements/implementados/`: refinamentos e PR waves já absorvidos.
+- `docs/refinements/a_implementar/`: refinamentos futuros ainda não implementados.
+- `docs/specs/`: fonte única oficial de specs.
+- `docs_old/`: histórico integral preservado.
 
 ## Regras de nomes
 
@@ -19,7 +20,7 @@ Ver tambÃƒÂ©m: `docs/specs/SPEC_SOURCE_OF_TRUTH.md`.
 - Toda spec futura deve ter prefixo `spec_`, exceto `README.md`.
 - Todo refinement implementado deve ter prefixo `ref_`.
 - Todo refinement futuro deve ter prefixo `ref_`.
-- A pasta raiz `spec/` foi absorvida e nÃƒÂ£o deve ser recriada.
+- A pasta raiz `spec/` foi absorvida e não deve ser recriada.
 
 ## Como implementar uma spec
 
