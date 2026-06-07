@@ -2,6 +2,7 @@
 
 > **Spec ID:** `01_spec_invalid_id_fallback_rules`  
 > **Status:** A implementar  
+> **Revision:** EXPANDED_01_05_CORRECTED  
 > **Wave:** WAVE 01 — Core IDs / Events / Save baseline  
 > **Priority:** P0  
 > **Type:** Runtime / Validation / Save / Data / Hardening  
@@ -33,6 +34,57 @@
 > - robust load validation for Waves 02+.  
 > **Scope:** define and implement minimal invalid ID fallback behavior for existing stable ID registries/save restore, without renaming IDs or changing save schema.  
 > **Out of scope:** broad content cleanup, ID renames without migration, new gameplay systems, UI error screens, schema migration, scene/prefab edits, or human Play Mode validation.
+
+## Source Map Compliance
+
+### Global sources read
+
+- docs/design/SPEC_SOURCE_MAP.md
+- docs/design/SPECIFICATION_PROCESS.md
+- docs/design/lore/VAALARA_GAME_CANON_DIRECTION_v1.0.md
+- docs/specs/SPEC_IMPLEMENTABLE_TEMPLATE.md
+- docs/specs/SPEC_WAVE_EXECUTION_PROTOCOL.md
+- docs/specs/SPEC_VALIDATION_MATRIX_MASTER.md
+- docs/specs/SPEC_EXISTING_IMPLEMENTATION_AUDIT.md
+- docs/project/CURRENT_STATE.md
+
+### Domain directions read
+
+- docs/specs/SPEC_GENERATION_ROADMAP_MASTER.md
+- docs/specs/SPEC_REGISTRY_TO_IMPLEMENT.md
+- docs/specs/SPEC_SOURCE_OF_TRUTH.md
+- docs/design/SPEC_SOURCE_MAP.md
+
+### Required interpretation
+
+```text
+Esta spec é derivada dos directions/refinements canônicos e do roadmap macro.
+Ela não substitui os directions.
+Ela transforma parte do refinement em contrato implementável, com escopo, locks, validações e quality gate.
+Quando houver divergência entre esta spec e os directions, o executor deve parar e registrar CONFLICT no execution report.
+```
+
+---
+
+## Direction / Refinement Coverage
+
+### Covered from directions
+
+- Stable ID registry, invalid ID fallback, hardening de contratos de IDs e referências.
+- Separação entre auditoria/residual/hardening e reescrita de sistemas canônicos.
+- Regras de não duplicação, validação por audit report e bloqueio de runtime dependente de IDs instáveis.
+
+### Deferred / future from directions
+
+- Migração massiva de todos os domínios para novo registry.
+- Reescrita de save/load ou GameEventBus.
+- Correção de todos os dados de conteúdo em massa.
+
+### Explicitly not redefined here
+
+- IDs finais de conteúdo.
+- Schema de save completo.
+- Arquitetura total de registries além do hardening especificado.
 
 ---
 
@@ -574,6 +626,196 @@ No save schema, scene, prefab or real data asset should need rollback.
 - [ ] T009 — Record unknown domains and residual risks.
 
 ---
+
+## 23A. Execution Readiness Matrix
+
+| Área | Pergunta obrigatória | Evidência esperada | Status se faltar |
+|---|---|---|---|
+| Fonte canônica | A execução leu Source Map e directions do domínio? | Lista de fontes no execution report. | PARTIAL |
+| Estado real do repo | Sistemas existentes foram auditados antes de criar novos? | Comandos `rg` e achados no report. | PARTIAL |
+| Não duplicação | Existe sistema equivalente já implementado/parcial? | Decisão REUSE/HARDEN/CREATE/DEFER. | BLOCKED se duplicar |
+| Escopo | A execução ficou dentro de stable IDs / invalid ID fallback? | Arquivos alterados e justificativa. | PARTIAL |
+| Save/load | Houve schema change? | Declaração explícita NO ou STOP se migration necessária. | BLOCKED se alterar sem migration |
+| Eventos | Publishers/subscribers/lifecycle foram mapeados? | Mapa de eventos e unsubscribe policy se houver. | PARTIAL |
+| UI/PlayMode | Há fluxo visual ou gameplay integrado? | Cenário final deferido documentado. | BUILD_VALIDATED no máximo se ausente |
+| Testes | Há lógica determinística nova? | EditMode test ou NOT RUN justificado. | PARTIAL |
+| Report | Execution report foi criado? | `docs/validation/01_spec_invalid_id_fallback_rules_execution_report.md`. | PARTIAL |
+
+---
+
+## 23B. Local Audit Checklist
+
+Antes de alterar qualquer arquivo, Claude Code/Codex deve rodar e registrar no execution report:
+
+```bash
+rg -n "StableId|Registry|ItemId|CropId|QuestId|InvalidId|Fallback|Save|GameSaveData|Migration" Assets/_Game/Scripts docs/design docs/specs
+rg -n "TODO|FIXME|HACK|PARTIAL|DEFERRED|BUILD_VALIDATED|ACCEPTED" docs/specs docs/validation docs/IMPLEMENTATION_STATUS.md docs/project/CURRENT_STATE.md
+```
+
+A execução deve classificar cada achado como:
+
+```text
+EXISTING_CANONICAL
+  Sistema já existe e deve ser reaproveitado/endurecido.
+
+EXISTING_PARTIAL
+  Sistema existe, mas precisa hardening/delta.
+
+MISSING_SAFE_TO_CREATE
+  Sistema não existe e criação é pequena, isolada e dentro do escopo.
+
+MISSING_BUT_DEFER
+  Sistema não existe, mas criação exigiria outro domínio/spec.
+
+CONFLICT
+  Há dois caminhos possíveis ou contrato divergente. Parar e reportar.
+```
+
+---
+
+## 23C. Functional Acceptance Scenarios
+
+### Scenario 1 — Happy path
+
+```text
+Given o sistema base relacionado a stable IDs / invalid ID fallback existe ou foi criado de forma mínima
+When o fluxo principal desta spec é executado
+Then o resultado segue o direction canônico
+And nenhum sistema paralelo é criado
+And o execution report registra evidência.
+```
+
+### Scenario 2 — Existing implementation is found
+
+```text
+Given existe implementação parcial ou completa no repo
+When a execução audita o estado real
+Then ela muda para REUSE_EXISTING ou HARDEN_EXISTING
+And não recria arquitetura paralela
+And documenta residual/future gaps.
+```
+
+### Scenario 3 — Missing dependency
+
+```text
+Given uma dependência runtime não existe no repo local
+When a execução encontra essa ausência
+Then ela não inventa uma solução massiva
+And marca como MISSING_BUT_DEFER ou cria apenas adapter/validator mínimo se seguro
+And registra risco residual.
+```
+
+### Scenario 4 — Save/load safety
+
+```text
+Given o fluxo envolve estado persistido direta ou indiretamente
+When save/load ocorre após a ação
+Then nenhum dado derivado de UI/debug substitui a fonte de verdade
+And nenhum UnityEngine.Object é persistido
+And schema change exige spec/migration separada.
+```
+
+### Scenario 5 — Final human validation deferred
+
+```text
+Given o fluxo exige interação visual, PlayMode ou gameplay integrado
+When a spec é concluída tecnicamente
+Then o report registra cenário final em vez de pedir validação humana imediata
+And o status máximo respeita SPEC_VALIDATION_MATRIX_MASTER.md.
+```
+
+---
+
+## 23D. Edge Cases and Failure Modes
+
+A execução deve cobrir ou registrar risco residual para:
+
+- Criar registry paralelo a sistema existente.
+- Transformar fallback em silently ignore para erro crítico.
+- Persistir Unity references.
+- Quebrar save antigo sem migration.
+- Normalizar ID inválido para conteúdo errado.
+- Alterar domínios além do hardening/residual.
+- Executar specs dependentes antes do hardening de IDs.
+- Promover para ACCEPTED apenas com compile.
+
+---
+
+## 23E. Minimum Execution Report Template
+
+```md
+# Execution Report — Invalid ID Fallback Rules Audit and Hardening
+
+## Summary
+- Spec:
+- Wave: WAVE 01
+- Branch:
+- Executor:
+- Date:
+- Final status:
+
+## Sources read
+- ...
+
+## Local audit
+- Commands executed:
+- Existing systems found:
+- Existing partial systems found:
+- Missing systems:
+- Conflicts:
+
+## Implementation decision
+- REUSE_EXISTING / HARDEN_EXISTING / CREATE_MINIMAL / DEFER
+- Justification:
+
+## Files changed
+- ...
+
+## Functional evidence
+- Happy path:
+- Existing implementation handling:
+- Missing dependency:
+- Edge cases:
+- Negative cases:
+
+## Validation
+- Docs validation:
+- C# build:
+- Unity compile:
+- EditMode tests:
+- PlayMode automated:
+- Final human scenario:
+
+## Testing Quality Gate
+- Changed deterministic logic:
+- Requires EditMode tests:
+- Requires PlayMode automated or final human scenario:
+- Requires regression test:
+- Human validation timing:
+- Minimum validation evidence for ACCEPTED:
+
+## Residual risks
+- ...
+
+## Next specs impacted
+- ...
+```
+
+---
+
+## 23F. Stop Conditions
+
+Parar a execução e registrar `BLOCKED` se ocorrer qualquer um destes casos:
+
+```text
+1. A implementação exigir alterar Packages/ ou ProjectSettings/.
+2. A implementação exigir scene/prefab/asset wiring fora do escopo.
+3. A implementação exigir mudança de save schema sem migration spec.
+4. A implementação exigir reescrever sistema canônico existente.
+5. A implementação criar conflito com 01Q, input focus, save ownership ou registry.
+6. A implementação executar WAVE 02+ em massa antes da 01Q ou exceção humana explícita.
+7. Não for possível decidir se sistema existente é canônico ou obsoleto.
+```
 
 ## 25. Validações obrigatórias
 

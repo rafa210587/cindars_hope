@@ -1,7 +1,60 @@
+## Source Map Compliance
+
+### Global sources read
+
+- docs/design/SPEC_SOURCE_MAP.md
+- docs/design/SPECIFICATION_PROCESS.md
+- docs/design/lore/VAALARA_GAME_CANON_DIRECTION_v1.0.md
+- docs/specs/SPEC_IMPLEMENTABLE_TEMPLATE.md
+- docs/specs/SPEC_WAVE_EXECUTION_PROTOCOL.md
+- docs/specs/SPEC_VALIDATION_MATRIX_MASTER.md
+- docs/specs/SPEC_EXISTING_IMPLEMENTATION_AUDIT.md
+- docs/project/CURRENT_STATE.md
+
+### Domain directions read
+
+- docs/design/gameplay/world/SEASONS_CALENDAR_WEATHER_LUNAR_DIRECTION.md
+- docs/design/gameplay/save_load/SAVE_LOAD_FULL_STATE_DIRECTION.md
+- docs/design/gameplay/ui_ux/UI_UX_FULL_GAMEPLAY_DIRECTION.md
+- docs/design/gameplay/ui_ux/UI_UX_MENU_SCREEN_FLOWS_DIRECTION.md
+
+### Required interpretation
+
+```text
+Esta spec é derivada dos directions/refinements canônicos e do roadmap macro.
+Ela não substitui os directions.
+Ela transforma parte do refinement em contrato implementável, com escopo, locks, validações e quality gate.
+Quando houver divergência entre esta spec e os directions, o executor deve parar e registrar CONFLICT no execution report.
+```
+
+---
+
+## Direction / Refinement Coverage
+
+### Covered from directions
+
+- Tempo, calendário, estação, clima, chuva, lua, festival, UI de calendário ou persistência desses estados conforme escopo da spec.
+- Regra de visibilidade: eventos conhecidos aparecem; eventos secretos não são revelados cedo.
+- Save/load e restore order para world state quando aplicável.
+
+### Deferred / future from directions
+
+- Minigames de festival.
+- Clima visual final, VFX/SFX e assets.
+- NPC schedules completos, aniversários/social completo e balance final de clima.
+
+### Explicitly not redefined here
+
+- Farm crop growth completo.
+- Quest runtime completo.
+- UI visual/prefab final.
+- Sistema social/romance/pets/companions.
+
 # SPEC — Calendar Festivals and Calendar Events Runtime
 
     > **Spec ID:** `02_spec_calendar_festivals_events_runtime`  
     > **Status:** A implementar  
+> **Revision:** EXPANDED_01_05_CORRECTED  
     > **Wave:** WAVE 02 — Time / Calendar / Weather / Lunar  
     > **Priority:** P2  
     > **Type:** Runtime / Calendar / Events / Festival Contracts / Validation  
@@ -408,7 +461,197 @@ docs/design/gameplay/quests/QUESTS_MAIN_PROGRESSION_REFINEMENT_DIRECTION.md
     - [ ] T007 — Run validations.
     - [ ] T008 — Create execution report.
 
-    ## 25. Validações obrigatórias
+## 23A. Execution Readiness Matrix
+
+| Área | Pergunta obrigatória | Evidência esperada | Status se faltar |
+|---|---|---|---|
+| Fonte canônica | A execução leu Source Map e directions do domínio? | Lista de fontes no execution report. | PARTIAL |
+| Estado real do repo | Sistemas existentes foram auditados antes de criar novos? | Comandos `rg` e achados no report. | PARTIAL |
+| Não duplicação | Existe sistema equivalente já implementado/parcial? | Decisão REUSE/HARDEN/CREATE/DEFER. | BLOCKED se duplicar |
+| Escopo | A execução ficou dentro de world/time/calendar/weather/lunar? | Arquivos alterados e justificativa. | PARTIAL |
+| Save/load | Houve schema change? | Declaração explícita NO ou STOP se migration necessária. | BLOCKED se alterar sem migration |
+| Eventos | Publishers/subscribers/lifecycle foram mapeados? | Mapa de eventos e unsubscribe policy se houver. | PARTIAL |
+| UI/PlayMode | Há fluxo visual ou gameplay integrado? | Cenário final deferido documentado. | BUILD_VALIDATED no máximo se ausente |
+| Testes | Há lógica determinística nova? | EditMode test ou NOT RUN justificado. | PARTIAL |
+| Report | Execution report foi criado? | `docs/validation/02_spec_calendar_festivals_events_runtime_execution_report.md`. | PARTIAL |
+
+---
+
+## 23B. Local Audit Checklist
+
+Antes de alterar qualquer arquivo, Claude Code/Codex deve rodar e registrar no execution report:
+
+```bash
+rg -n "Time|Clock|Calendar|Season|Weather|Rain|Irrigation|Lunar|Festival|DayTransition|Save" Assets/_Game/Scripts docs/design docs/specs
+rg -n "TODO|FIXME|HACK|PARTIAL|DEFERRED|BUILD_VALIDATED|ACCEPTED" docs/specs docs/validation docs/IMPLEMENTATION_STATUS.md docs/project/CURRENT_STATE.md
+```
+
+A execução deve classificar cada achado como:
+
+```text
+EXISTING_CANONICAL
+  Sistema já existe e deve ser reaproveitado/endurecido.
+
+EXISTING_PARTIAL
+  Sistema existe, mas precisa hardening/delta.
+
+MISSING_SAFE_TO_CREATE
+  Sistema não existe e criação é pequena, isolada e dentro do escopo.
+
+MISSING_BUT_DEFER
+  Sistema não existe, mas criação exigiria outro domínio/spec.
+
+CONFLICT
+  Há dois caminhos possíveis ou contrato divergente. Parar e reportar.
+```
+
+---
+
+## 23C. Functional Acceptance Scenarios
+
+### Scenario 1 — Happy path
+
+```text
+Given o sistema base relacionado a world/time/calendar/weather/lunar existe ou foi criado de forma mínima
+When o fluxo principal desta spec é executado
+Then o resultado segue o direction canônico
+And nenhum sistema paralelo é criado
+And o execution report registra evidência.
+```
+
+### Scenario 2 — Existing implementation is found
+
+```text
+Given existe implementação parcial ou completa no repo
+When a execução audita o estado real
+Then ela muda para REUSE_EXISTING ou HARDEN_EXISTING
+And não recria arquitetura paralela
+And documenta residual/future gaps.
+```
+
+### Scenario 3 — Missing dependency
+
+```text
+Given uma dependência runtime não existe no repo local
+When a execução encontra essa ausência
+Then ela não inventa uma solução massiva
+And marca como MISSING_BUT_DEFER ou cria apenas adapter/validator mínimo se seguro
+And registra risco residual.
+```
+
+### Scenario 4 — Save/load safety
+
+```text
+Given o fluxo envolve estado persistido direta ou indiretamente
+When save/load ocorre após a ação
+Then nenhum dado derivado de UI/debug substitui a fonte de verdade
+And nenhum UnityEngine.Object é persistido
+And schema change exige spec/migration separada.
+```
+
+### Scenario 5 — Final human validation deferred
+
+```text
+Given o fluxo exige interação visual, PlayMode ou gameplay integrado
+When a spec é concluída tecnicamente
+Then o report registra cenário final em vez de pedir validação humana imediata
+And o status máximo respeita SPEC_VALIDATION_MATRIX_MASTER.md.
+```
+
+---
+
+## 23D. Edge Cases and Failure Modes
+
+A execução deve cobrir ou registrar risco residual para:
+
+- Clima/lua/festival secreto revelado cedo.
+- Day transition duplicado ou fora de ordem.
+- Rain/Storm molhando estufa/interior indevidamente.
+- World state não persistido ou restaurado em ordem errada.
+- UI gerando estado em vez de consumir projection.
+- Runtime depender de human test por spec.
+- Mudança determinística sem EditMode test ou justificativa.
+- Execução de WAVE 02 antes da 01Q sem exceção humana explícita.
+
+---
+
+## 23E. Minimum Execution Report Template
+
+```md
+# Execution Report — Calendar Festivals and Calendar Events Runtime
+
+## Summary
+- Spec:
+- Wave: WAVE 02
+- Branch:
+- Executor:
+- Date:
+- Final status:
+
+## Sources read
+- ...
+
+## Local audit
+- Commands executed:
+- Existing systems found:
+- Existing partial systems found:
+- Missing systems:
+- Conflicts:
+
+## Implementation decision
+- REUSE_EXISTING / HARDEN_EXISTING / CREATE_MINIMAL / DEFER
+- Justification:
+
+## Files changed
+- ...
+
+## Functional evidence
+- Happy path:
+- Existing implementation handling:
+- Missing dependency:
+- Edge cases:
+- Negative cases:
+
+## Validation
+- Docs validation:
+- C# build:
+- Unity compile:
+- EditMode tests:
+- PlayMode automated:
+- Final human scenario:
+
+## Testing Quality Gate
+- Changed deterministic logic:
+- Requires EditMode tests:
+- Requires PlayMode automated or final human scenario:
+- Requires regression test:
+- Human validation timing:
+- Minimum validation evidence for ACCEPTED:
+
+## Residual risks
+- ...
+
+## Next specs impacted
+- ...
+```
+
+---
+
+## 23F. Stop Conditions
+
+Parar a execução e registrar `BLOCKED` se ocorrer qualquer um destes casos:
+
+```text
+1. A implementação exigir alterar Packages/ ou ProjectSettings/.
+2. A implementação exigir scene/prefab/asset wiring fora do escopo.
+3. A implementação exigir mudança de save schema sem migration spec.
+4. A implementação exigir reescrever sistema canônico existente.
+5. A implementação criar conflito com 01Q, input focus, save ownership ou registry.
+6. A implementação executar WAVE 02+ em massa antes da 01Q ou exceção humana explícita.
+7. Não for possível decidir se sistema existente é canônico ou obsoleto.
+```
+
+## 25. Validações obrigatórias
 
     ```powershell
     .\tools\docs\validate_docs.ps1
