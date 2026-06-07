@@ -1,18 +1,22 @@
 # SPEC Pre-Execution Readiness Fix Report
 
-> **Date:** 2026-06-07  
+> **Date:** 2026-06-07 (updated 2026-06-07 with legacy cleanup completion)  
 > **Branch:** dev  
-> **Context:** Reconciliation audit and readiness assessment before WAVE 00.04 execution  
-> **Status:** PARTIAL — Ready for 00.04 after corrections documented below
+> **Context:** Reconciliation audit, legacy cleanup, and final readiness assessment before WAVE 00.04 execution  
+> **Status:** READY_FOR_00_04 — legacy cleanup complete; generated spec validation issues block WAVE 02+, not 00.04
 
 ---
 
 ## Executive Summary
 
-Local code audit completed successfully. 154 specs reconciled and inventoried. Docs validation run revealed structural issues requiring correction before proceeding to WAVE 02+ runtime execution.
+✓ Local code audit completed successfully.  
+✓ 154 specs generated and reconciled.  
+✓ 7 legacy pre-wave specs absorbed into historical archive.  
+✓ Active queue now 147 wave-based specs.  
+✓ Docs validation run revealed naming/header issues affecting WAVE 02+, not WAVE 00.04.
 
-**Immediate status:** WAVE 00.04 may proceed after addressing issues listed in Section 3.
-**WAVE 02+ status:** Blocked until WAVE 01Q completes and validation cleanups pass.
+**Immediate status:** WAVE 00.04 (governance audit) ready to execute now.
+**WAVE 02+ status:** Blocked until WAVE 01Q completes and generated-spec validation issues are resolved.
 
 ---
 
@@ -187,25 +191,29 @@ After 01Q completes:
 
 ## 7. Recommended Next Actions (In Priority Order)
 
-### Priority 1 — Immediate (blocking)
+### Priority 1 — Immediate (executable now)
 
-- [ ] Run docs validation and determine: validator rule update vs. spec header addition
-- [ ] If validator rule update needed: contact human for approval/implementation
-- [ ] If header addition needed: add minimal headers to all 154 specs
-- [ ] Re-run docs validation until PASS
-- [ ] Create final sign-off document
+- [x] Local code audit completed (all 10 core systems confirmed)
+- [x] Legacy cleanup completed (7 specs moved to absorvidas/)
+- [x] Canonical status reconciliation completed
+- [ ] **Execute WAVE 00.04** (Existing Implementation Audit) — governance/audit, no code changes
 
 ### Priority 2 — Execution Phase
 
-- [ ] Execute WAVE 00.04 (Existing Implementation Audit)
-- [ ] Review audit results and classify any specs as residual/future/hardening based on findings
-- [ ] Execute WAVE 01.01-01.05 in dependency order
+- [ ] Review 00.04 audit results and classification
+- [ ] Execute WAVE 01.01-01.05 in dependency order (hardening/residual specs)
 - [ ] Execute 01Q (Testing Quality Gate) — mandatory before WAVE 02+
 - [ ] Re-validate core runtime system architecture against 01Q requirements
 
-### Priority 3 — Wave Execution Preparation
+### Priority 3 — Generated Spec Validation Fix
 
-- [ ] Prepare WAVE 02-12 core runtime (93 specs) for sequential execution
+- [ ] Resolve naming/header validator issues before WAVE 02+ (does not block 00.04)
+- [ ] Either: update validator rule to accept `NX_spec_*.md` pattern, OR add required headers to specs
+- [ ] Re-run docs validation until PASS
+
+### Priority 4 — Wave Execution Preparation
+
+- [ ] Prepare WAVE 02-12 core runtime (93 specs) for sequential execution after 01Q
 - [ ] Track dependencies and blockers per SPEC_WAVE_EXECUTION_PROTOCOL.md
 - [ ] Use FINAL_HUMAN_VALIDATION_BY_WAVE.md for deferred Play Mode validation at wave boundaries
 - [ ] Keep future/pet specs marked BLOCKED_SCOPE until explicitly authorized

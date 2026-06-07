@@ -22,15 +22,17 @@ docs/validation/FINAL_HUMAN_VALIDATION_BY_WAVE.md
 | 01.04 | [01_spec_save_section_ownership_registry.md](a_implementar/01_spec_save_section_ownership_registry.md) | A implementar - hardening/residual | 01.03 + save specs implementadas | Cria ou consolida ownership registry de save sections, owners, defaults, dependencies e migration responsibility sem migrar tudo para providers. |
 | 01.05 | [01_spec_save_provider_architecture_runtime.md](a_implementar/01_spec_save_provider_architecture_runtime.md) | A implementar - gradual/residual | 01.04 + save ownership registry | Consolida arquitetura incremental de save providers sem substituir SaveManager, sem schema change e sem migração massiva de sections. |
 | 01Q | [spec_test_harness_editmode_playmode_quality_gate.md](a_implementar/spec_test_harness_editmode_playmode_quality_gate.md) | A implementar - quality gate fundacional | 01 validacao Unity + rules/skills atuais | Deve ser executada antes das novas waves runtime para exigir EditMode tests, PlayMode/manual scenarios, regression tests e evidencia de risco residual. |
-| 13 | [spec_enemy_ai_roster_bestiary_faction_locks_runtime.md](a_implementar/spec_enemy_ai_roster_bestiary_faction_locks_runtime.md) | Implementado parcial - escopo residual ativo | 00-12 | Enemy chase/patrol AI completo. Pendente: ranged enemies, faction locks, bestiary UI. Bloqueia: 14, 15, 17. |
-| 14 | [spec_cave_runtime_generation_checkpoints_boss_gates.md](a_implementar/spec_cave_runtime_generation_checkpoints_boss_gates.md) | Implementado parcial - escopo residual ativo | 00-13 | Cave generation/runtime completo. Pendente: stable run guarantee, boss gates validation, confinement hardening. Bloqueia: 15, 17. |
-| 17 | [spec_ui_ux_full_gameplay_inventory_hotbar_menus.md](a_implementar/spec_ui_ux_full_gameplay_inventory_hotbar_menus.md) | Implementacao parcial - MVP gameplay em codigo | 00-16 implementadas/parciais | Shops/sell/inventory/equipment/attributes/skills e input modal MVP entregues; Canvas final, pause/options, cave/corpse/toasts e Play Mode ainda pendentes. |
 
 ---
 
 ## Specs Geradas Pós-Refinamento — Registry Reconciliado
 
-Após geração da batch 36 (~130 specs), o registry foi reconciliado. Specs estão todas presentes em `docs/specs/a_implementar/`, nenhuma foi movida para `implementados/` e nenhuma foi deletada.
+Após geração da batch 36 (154 specs) e limpeza de legacy (7 specs absorvidas), o registry foi reconciliado.
+- **Specs antes da limpeza:** 154 em `docs/specs/a_implementar/` (146 wave-based + 7 legacy + 1 README)
+- **Specs legacy absorvidas:** 7 movidas para `docs/specs/absorvidas/legacy_pre_wave_reconciliation/` (2026-06-07)
+- **Fila ativa após limpeza:** 147 specs wave-based em `docs/specs/a_implementar/`
+- **Review required:** 0
+- **Nenhuma spec movida para `implementados/`**
 
 ### WAVE 00 — Governança & Auditoria
 
@@ -81,18 +83,20 @@ Após geração da batch 36 (~130 specs), o registry foi reconciliado. Specs est
 
 **Total WAVE 17-24 + future:** ~32 specs future; 4 pets bloqueados
 
-### Resumo (Atualizado 2026-06-07)
+### Resumo (Atualizado 2026-06-07 pós-limpeza legacy)
 
-- ✓ **Total reconciliado:** 154 specs em `docs/specs/a_implementar/`
+- ✓ **Specs antes da limpeza:** 154 em `docs/specs/a_implementar/`
+- ✓ **Legacy specs absorvidas:** 7 em `docs/specs/absorvidas/legacy_pre_wave_reconciliation/`
+- ✓ **Fila ativa após limpeza:** 147 specs wave-based em `docs/specs/a_implementar/`
 - ✓ **Governança:** 1 spec (00.04)
 - ✓ **Hardening/Quality gate:** 8 specs (01.01-01Q)
 - ✓ **Core runtime:** 93 specs (02-12)
 - ✓ **Documentação/consolidação:** 2 specs (12)
 - ✓ **Future/mapeado:** ~32 specs (17-24 + future suffix)
 - ✓ **Pets bloqueados:** 4 (WAVE 23)
-- ✓ **Nenhuma duplicata ou obsoleta encontrada**
-- ✓ **Nenhuma spec movida para implementados**
-- ✓ **Pronto para executar WAVE 00.04 após docs validation**
+- ✓ **Review required:** 0
+- ✓ **Nenhuma spec ativa obsoleta**
+- ✓ **Status:** READY_FOR_00_04
 
 ---
 

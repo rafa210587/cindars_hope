@@ -38,11 +38,8 @@ A etapa 00 foi reclassificada como implementado documental parcial. As specs run
 | 10 | [spec_equipment_durability_environment_loot_runtime](implementados/spec_equipment_durability_environment_loot_runtime.md) | Implementado parcial | 00-09 | 11, 12, 13, 14, 17 | Damage e enemy tuning ficam instaveis sem stats/equipment finais. |
 | 11 | [spec_damage_status_elements_resistances_runtime](implementados/spec_damage_status_elements_resistances_runtime.md) | Implementado parcial | 00-10 | 12, 13, 14 | Armas, spells e IA podem duplicar formulas de dano. |
 | 12 | [spec_player_combat_weapons_spells_skill_actions_runtime](implementados/spec_player_combat_weapons_spells_skill_actions_runtime.md) | Implementado parcial | 00-11 | 13, 14, 16, 17 | Play Mode testing humano; UI consolidada em SPEC 17. |
-| 13 | [spec_enemy_ai_roster_bestiary_faction_locks_runtime](a_implementar/spec_enemy_ai_roster_bestiary_faction_locks_runtime.md) | Implementado parcial - escopo residual ativo | 00-12 | 14, 15, 17 | Cave generation pode distribuir inimigos sem regras finais. |
-| 14 | [spec_cave_runtime_generation_checkpoints_boss_gates](a_implementar/spec_cave_runtime_generation_checkpoints_boss_gates.md) | Implementado parcial - escopo residual ativo | 00-13 | 15, 17 | Entry/death pode quebrar replay se cave ainda rerollar. |
 | 15 | [spec_cave_entry_death_anya_corpse_recovery](implementados/spec_cave_entry_death_anya_corpse_recovery.md) | Implementado parcial em codigo - gaps de orquestracao/Anya/spawn/restore e Play Mode pendente | 00-14 | 16, 17 | Skill respec e UI podem criar fluxos sem falha/recovery definidos; nao tratar corpse/death como fechamento funcional completo. |
 | 16 | [spec_skill_trees_active_slots_respec_anya_runtime](implementados/spec_skill_trees_active_slots_respec_anya_runtime.md) | Implementado em codigo - compile/Unity e Play Mode humano pendentes | 00-15 | 17 | UI final pode expor skill tree incompleta ou sem persistencia validada em Play Mode. |
-| 17 | [spec_ui_ux_full_gameplay_inventory_hotbar_menus](a_implementar/spec_ui_ux_full_gameplay_inventory_hotbar_menus.md) | Implementacao parcial - MVP gameplay em codigo | 00-16 | Nenhuma | Restam superficies da spec ampla e Play Mode humano antes de promocao. |
 | 17C | [spec_ui_gameplay_closeout_skill_shop_prompts_actions_hud](implementados/spec_ui_gameplay_closeout_skill_shop_prompts_actions_hud.md) | Implementado completo - Play Mode validado 2026-05-26 | 15-17 | Nenhuma | U/K/L/buy/sell/save/load validados por humano sem erros. |
 | 17D | [spec_ui_gameplay_shop_injection_equipment_slot_picker_closeout](implementados/spec_ui_gameplay_shop_injection_equipment_slot_picker_closeout.md) | Implementado completo - Play Mode validado 2026-05-26 | 17C | Nenhuma | Slot picker L com Chest/RightHand/LeftHand/Accessory; filtro e Esc validados por humano. |
 | 17E | [spec_ui_gameplay_shop_session_lifecycle_npc_readiness_closeout](implementados/spec_ui_gameplay_shop_session_lifecycle_npc_readiness_closeout.md) | Implementado completo - Play Mode validado 2026-05-26 | 17D | Nenhuma | Lifecycle persistente e duas sessoes de shop validados por humano sem erros. |
@@ -104,23 +101,27 @@ A spec 17A (visual scale / world scale / camera scale / sprite profiles) foi imp
 
 ## Reconciliation Note (2026-06-07 BATCH_36 — Generated Specs)
 
-**Generated Specs Reconciliation:** ~130 specs generated post-refinement (BATCH 01-35).
+**Generated Specs Reconciliation (2026-06-07 post-cleanup):** 154 specs generated, 7 legacy absorbed, 147 active.
 
-- **Total generated:** ~130 specs in `docs/specs/a_implementar/`
-- **Core/Runtime (00-16):** ~10 hardening specs + ~75 WAVE 02-10 core runtime specs = ~85 specs
-- **Future Mapped (17-24):** ~30 specs marked `_future` suffix (endgame, social, automation, bestiary UI, research, etc.)
-- **HOLD/BLOCKED_SCOPE (Pets):** 4 pet/companion future specs in WAVE 23-24 — must not execute as core
-- **Duplicates/Obsolete:** None detected
-- **Registry Status:** Updated with generated specs; no specs moved to `implementados/`
+- **Specs antes da limpeza:** 154 em `docs/specs/a_implementar/` (146 wave-based + 7 legacy)
+- **Legacy specs absorvidas:** 7 movidas para `docs/specs/absorvidas/legacy_pre_wave_reconciliation/`
+- **Fila ativa após limpeza:** 147 specs wave-based em `docs/specs/a_implementar/`
+- **WAVE 00:** 1 governance spec (00.04 audit)
+- **WAVE 01:** 8 hardening/quality gate specs (01.01-01.05, 01.06, 01.07, 01Q)
+- **WAVE 02-12:** ~93 core runtime specs (blocked until 01Q)
+- **WAVE 17-24:** ~32 future/expansion specs (blocked by policy)
+- **HOLD/BLOCKED_SCOPE (Pets):** 4 pet/companion specs in WAVE 23 — explicit authorization required
+- **Review required:** 0
+- **Duplicates/Obsolete:** None in active queue
 
 **Execution Readiness:**
 
 ✓ Quality gate (01Q) ready before WAVE 02+ runtime
-✓ Core hardening specs (00-01) ready for execution
-✓ Runtime specs (02-10 + 13-17 partial) ready after quality gate
+✓ Governance/hardening specs (WAVE 00-01) ready for execution in order
+✓ Legacy cleanup complete — no obsolete specs in active queue
 ✓ Future specs (17-24) properly marked and blocked; will not execute
-✓ Pet/companion specs (23) marked as future — execution blocked until explicitly authorized
+✓ Pet/companion specs (23) marked as HOLD — execution blocked until explicitly authorized
 
-**Blockage Status:** NONE — ready to begin WAVE 00 (audit) and WAVE 01 (quality gate) immediately.
+**Blockage Status:** READY_FOR_00_04 only — execute WAVE 00.04 next. WAVE 02+ blocked until 01Q completes.
 
 See `docs/validation/SPEC_RECONCILIATION_BATCH_36_EXECUTION_REPORT.md` for full reconciliation audit.

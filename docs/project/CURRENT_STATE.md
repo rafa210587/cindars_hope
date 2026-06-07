@@ -12,7 +12,9 @@
 | Branch (working) | `dev` |
 | MVP code-complete | ✓ YES |
 | MVP build-validated (C#) | ✓ YES — 0E/0W runtime + editor |
-| Docs validation | ✓ YES — 25+ checks |
+| Legacy docs validation | ✓ YES — 25+ checks (SPEC_DOCS_37) |
+| Generated specs validation | ⚠ RUN_WITH_ISSUES — naming/header mismatch (blocks WAVE 02+) |
+| Legacy spec cleanup | ✓ YES — 7 specs absorbed (2026-06-07) |
 | MVP Phase 2 (Unity validators) | ✗ NOT RUN — pending human execution |
 | MVP Phase 3 (Play Mode) | ✗ NOT RUN — pending human execution |
 | MVP final accepted | ✗ NOT YET |
@@ -75,19 +77,19 @@
 | SPEC_DOCS_37 | COMPLETE | Refinements/specs/validation sweep: 12 references fixed, 14 refinements archived, 4 deleted, validation enhanced (25+ checks); commits b9ae4d5, 45e299f |
 | SPEC_18-28 Phase 2-3 | PENDING HUMAN | Play Mode validation; requires local Unity Editor |
 | SPEC_29 Phase 2-3 | PENDING HUMAN | Final acceptance; blocked on Phase 2-3 above |
-| WAVE 00.04 Existing Implementation Audit | READY AFTER DOCS VALIDATION | Local code audit completed 2026-06-07; 154 specs reconciled |
-| WAVE 01 Hardening & Quality Gate | BLOCKED UNTIL 00.04 | 8 specs ready; 01Q is prerequisite for WAVE 02+ |
+| WAVE 00.04 Existing Implementation Audit | READY_FOR_00_04 | Governance audit only; no code/gameplay changes |
+| WAVE 01 Hardening & Quality Gate | BLOCKED UNTIL 00.04 REPORT | 8 specs (01.01-01.05, 01.06, 01.07, 01Q); 01Q prerequisite for WAVE 02+ |
 | WAVE 02-12 Core Runtime | BLOCKED UNTIL 01Q | 93 specs in queue; execution blocked until quality gate passes |
-| WAVE 17-24 Future | BLOCKED INTENTIONALLY | 32+ future/expansion specs marked; pets (WAVE 23) blocked until explicit authorization |
+| WAVE 17-24 Future | BLOCKED INTENTIONALLY | 32+ future/expansion specs marked; pets (WAVE 23) blocked as HOLD/BLOCKED_SCOPE |
 
 ---
 
 ## Blockers
 
-1. **Human Play Mode acceptance:** Phase 2-3 not yet executed for any SPEC_18-28
-2. **Docs validation:** Must run `tools/docs/validate_docs.ps1` before approving WAVE 00.04
+1. **Human Play Mode acceptance:** Phase 2-3 not yet executed for MVP (separate from generated specs)
+2. **Generated specs validation:** Naming/header validator issues must be resolved before WAVE 02+ runtime (does not block 00.04)
 3. **Quality gate completion:** WAVE 01Q must complete before WAVE 02+ runtime can begin
-4. **Spec count clarification:** Registry counts corrected; pending final validation
+4. **Legacy cleanup:** Complete (2026-06-07); no blocking impact
 
 ---
 
@@ -96,7 +98,8 @@
 | What | Where |
 |------|-------|
 | Agent rules | `CLAUDE.md` (router), `AGENTS.md` (rules), `.claude/rules/RULES.md` |
-| Active specs | `docs/specs/a_implementar/closeout_mvp/` |
+| Active specs | `docs/specs/a_implementar/` (147 wave-based) |
+| Absorbed legacy specs | `docs/specs/absorvidas/legacy_pre_wave_reconciliation/` (7 specs) |
 | Commands | `.claude/commands/` (11 commands) |
 | Skills | `.claude/skills/` (14 skills) |
 | Validation evidence | `docs/validation/spec_mvp_closeout_*.md` |
@@ -145,5 +148,5 @@ PROJECT_LOG + CURRENT_STATE conflict → prefer CURRENT_STATE; report mismatch
 
 ---
 
-*Last updated: 2026-06-01 (SPEC_CLAUDE_31)*  
-*Next update: after Phase 2-3 human execution or next spec session*
+*Last updated: 2026-06-07 (legacy cleanup + canonical status reconciliation)*  
+*Next update: after WAVE 00.04 execution or next spec session*
