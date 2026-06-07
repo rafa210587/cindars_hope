@@ -106,6 +106,7 @@ Stop and report to human if:
 - Task would move a spec to `implementados/` without required evidence
 - Task would delete a document not in `DOCUMENT_DELETE_CANDIDATES.md`
 - Task would manually edit `.unity` / `.prefab` / `.asset` YAML without spec authorization
+- Runtime/code task lacks required Testing Quality Gate evidence or explicit justified residual risk
 - Context requires reading PROJECT_LOG without audit/reconciliation/regression justification
 
 ---
@@ -120,6 +121,7 @@ See `.claude/rules/RULES.md` for full list. Key non-negotiables:
 - No `CindarsHope.Debug` namespace
 - No spec promoted without evidence
 - No MVP/Play Mode PASS claim without evidence
+- Runtime/code changes require automated tests, Play Mode scenario, or documented Testing Quality Gate justification
 - Commits in Portuguese
 
 ---
@@ -133,4 +135,4 @@ See `.claude/rules/RULES.md` for full list. Key non-negotiables:
 
 ---
 
-*Updated: 2026-06-01 (SPEC_CLAUDE_31)*
+*Updated: 2026-06-07 (Testing Quality Gate)*
