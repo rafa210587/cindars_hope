@@ -20,11 +20,12 @@ These rules are project invariants. Skills explain workflows; hooks provide chec
 
 **Unity & Git Safety**
 11. [Unity Validation Honesty](./unity-validation-honesty.md) — no overstating validation results
-12. [Unity YAML Editing Policy](./unity-yaml-editing-policy.md) — no manual .unity/.prefab/.asset edits
-13. [Generated Asset Evidence](./generated-asset-evidence.md) — asset generation requires evidence
-14. [No Parallel Unity Batchmode](./no-parallel-unity-batchmode.md) — sequential Unity processes only
-15. [No Unsafe Git](./no-unsafe-git.md) — no push/reset/clean without per-instance authorization
-16. [Legacy Doc Paths Forbidden](./legacy-doc-paths-forbidden.md) — canonical paths only; no docs_old, numbered folders
+12. [Testing Quality Gate](./testing-quality-gate.md) — code changes require automated tests, Play Mode scenario, or documented residual risk
+13. [Unity YAML Editing Policy](./unity-yaml-editing-policy.md) — no manual .unity/.prefab/.asset edits
+14. [Generated Asset Evidence](./generated-asset-evidence.md) — asset generation requires evidence
+15. [No Parallel Unity Batchmode](./no-parallel-unity-batchmode.md) — sequential Unity processes only
+16. [No Unsafe Git](./no-unsafe-git.md) — no push/reset/clean without per-instance authorization
+17. [Legacy Doc Paths Forbidden](./legacy-doc-paths-forbidden.md) — canonical paths only; no docs_old, numbered folders
 
 ## Application
 
