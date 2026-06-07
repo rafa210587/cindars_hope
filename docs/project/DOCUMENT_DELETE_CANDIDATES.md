@@ -122,8 +122,9 @@ A document may be deleted ONLY if:
 | docs/design/SPEC_SOURCE_MAP_WORLD_TIME_ADDENDUM.md | ✓ DELETED | Temporary migration addendum; content incorporated into SPEC_SOURCE_MAP.md (commit: World/Time centralization) |
 | docs/design/SPEC_SOURCE_MAP_UI_MENU_FLOWS_ADDENDUM.md | ✓ DELETED | Temporary migration addendum; content incorporated into SPEC_SOURCE_MAP.md (commit: UI Menu Flows centralization) |
 | docs/design/SPEC_SOURCE_MAP_BESTIARY_ADDENDUM.md | ✓ DELETED | Temporary migration addendum; content incorporated into SPEC_SOURCE_MAP.md (commit: Bestiary/Knowledge Discovery centralization) |
+| docs/design/SPEC_SOURCE_MAP_QUEST_OBJECTIVE_EVENT_ADDENDUM.md | ✓ DELETED | Temporary migration addendum; content incorporated into SPEC_SOURCE_MAP.md (commit: Quest/Objective/Event System centralization) |
 
-**Total:** 3 files successfully deleted in 2026-06-05.
+**Total:** 4 files successfully deleted in 2026-06-05.
 
 ---
 
