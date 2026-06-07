@@ -182,6 +182,21 @@ Total: 19+ protected categories. None are deletion candidates.
 
 ---
 
+## Batch 4 — Redirect specs replaced by canonical governance docs ✓
+
+**Criteria:** Intermediate redirect files created during governance cleanup; canonical documents now exist directly in `docs/specs/`.
+
+**Status:** APPROVED FOR DELETION by human request on 2026-06-07.
+
+| Path | Type | Reason | Canonical Substitute | Status |
+|------|------|--------|----------------------|--------|
+| docs/specs/a_implementar/00_spec_wave_execution_protocol.md | redirect spec | Intermediate redirect; not an executable spec | docs/specs/SPEC_WAVE_EXECUTION_PROTOCOL.md | ✓ DELETED |
+| docs/specs/a_implementar/00_spec_validation_matrix_master.md | redirect spec | Intermediate redirect; not an executable spec | docs/specs/SPEC_VALIDATION_MATRIX_MASTER.md | ✓ DELETED |
+
+**Total:** 2 files successfully deleted on 2026-06-07.
+
+---
+
 ## Review Process
 
 Before deleting any candidate:

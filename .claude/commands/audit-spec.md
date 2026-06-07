@@ -15,7 +15,7 @@ Produce an audit matrix for the spec's domain. Identify what already exists in t
 ## Required Reads
 
 1. `CLAUDE.md`
-2. `docs/00_PROJECT/CURRENT_STATE.md`
+2. `docs/project/CURRENT_STATE.md`
 3. Target spec
 4. Relevant source files (search codebase for spec's domain)
 

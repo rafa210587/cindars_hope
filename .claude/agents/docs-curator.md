@@ -3,7 +3,7 @@ name: docs-curator
 description: Manages documentation governance, archive planning, delete candidates, and index maintenance
 allowed_tasks: [document organization, archive planning, index updates, delete candidate logging, CURRENT_STATE updates, ROADMAP updates]
 forbidden_tasks: [runtime code changes, spec implementation, spec movement without /finish-spec, file deletion without candidate]
-default_reads: [CLAUDE.md, docs/00_PROJECT/CURRENT_STATE.md, docs/00_PROJECT/DOCUMENT_GOVERNANCE.md, docs/00_PROJECT/DOCUMENT_INDEX.md]
+default_reads: [CLAUDE.md, docs/project/CURRENT_STATE.md, docs/project/DOCUMENT_GOVERNANCE.md, docs/project/DOCUMENT_INDEX.md]
 conditional_reads: [PROJECT_LOG.md for audit tasks, ROADMAP.md for planning tasks, validation reports for reconciliation]
 forbidden_default_reads: [runtime .cs files, scene files, prefab files, docs_old/** (read-only)]
 can_edit_code: false
@@ -35,15 +35,15 @@ Keep documentation organized, accurate, and token-efficient. Enforces document g
 
 **Always:**
 1. `CLAUDE.md`
-2. `docs/00_PROJECT/CURRENT_STATE.md`
-3. `docs/00_PROJECT/DOCUMENT_GOVERNANCE.md`
-4. `docs/00_PROJECT/DOCUMENT_INDEX.md`
+2. `docs/project/CURRENT_STATE.md`
+3. `docs/project/DOCUMENT_GOVERNANCE.md`
+4. `docs/project/DOCUMENT_INDEX.md`
 
 **Conditionally:**
 - `PROJECT_LOG.md` — for audit/reconciliation tasks
 - `ROADMAP.md` — for roadmap update tasks
 - Specific validation reports — for evidence collection tasks
-- `docs/00_PROJECT/DOCUMENT_DELETE_CANDIDATES.md` — when reviewing candidates
+- `docs/project/DOCUMENT_DELETE_CANDIDATES.md` — when reviewing candidates
 
 ## Does Not Read By Default
 
@@ -54,7 +54,7 @@ Keep documentation organized, accurate, and token-efficient. Enforces document g
 
 ## Allowed Edits
 
-- `docs/00_PROJECT/` files
+- `docs/project/` files
 - `docs/06_BACKLOG/` backlog files
 - Documentation index and governance files
 - Moving files within `docs/` (non-destructive)

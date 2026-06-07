@@ -13,7 +13,7 @@ Spec source: `docs/specs/`. Pasta raiz `specs/` e `spec/` removidas — nao recr
 Para tarefas de implementacao, ler somente:
 
 1. `AGENTS.md` ou `CLAUDE.md`
-2. `docs/00_PROJECT/CURRENT_STATE.md` — contexto de execucao primario (~80 linhas)
+2. `docs/project/CURRENT_STATE.md` — contexto de execucao primario (~80 linhas)
 3. A spec alvo
 4. Arquivos explicitamente citados pela spec
 5. O relatorio de validacao imediatamente anterior, somente se listado como dependencia
@@ -42,7 +42,7 @@ Nao ler por padrao:
 Leitura minima para qualquer tarefa de implementacao:
 
 1. `AGENTS.md` ou `CLAUDE.md`
-2. `docs/00_PROJECT/CURRENT_STATE.md`
+2. `docs/project/CURRENT_STATE.md`
 3. Spec ativa
 4. Arquivos citados pela spec
 

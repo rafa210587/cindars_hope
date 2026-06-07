@@ -15,9 +15,11 @@ Implement the spec within its declared scope. Validate. Generate execution repor
 ## Required Reads
 
 1. `CLAUDE.md`
-2. `docs/00_PROJECT/CURRENT_STATE.md`
-3. Target spec
-4. Files explicitly in spec scope
+2. `docs/project/CURRENT_STATE.md`
+3. `docs/specs/SPEC_WAVE_EXECUTION_PROTOCOL.md` — execution governance and phase taxonomy
+4. `docs/specs/SPEC_VALIDATION_MATRIX_MASTER.md` — validation requirements by change type
+5. Target spec
+6. Files explicitly in spec scope
 
 ## Optional Reads (only if spec cites them)
 
@@ -25,12 +27,18 @@ Implement the spec within its declared scope. Validate. Generate execution repor
 - An implemented dependency spec (only if directly referenced)
 - Prior validation report listed as dependency
 
+## Conditional Required Reads (if runtime/code changes)
+
+For specs that change runtime behavior or code:
+
+- `.claude/rules/testing-quality-gate.md` — mandatory testing requirements
+- `docs/validation/FINAL_HUMAN_VALIDATION_BY_WAVE.md` — human validation checklist and timing
+
 ## Do NOT Read By Default
 
 ```
 PROJECT_LOG.md
 docs/IMPLEMENTATION_STATUS.md
-docs/operations/AGENT_EXECUTION_PROTOCOL.md
 SPEC_EXECUTION_ORDER.md (full)
 ROADMAP.md
 memory/ (unless spec cites prior pattern)
@@ -100,6 +108,7 @@ Do NOT use just "COMPLETE". Use:
 | `UNITY_VALIDATED` | Unity validators PASS (Phase 2) |
 | `PLAYMODE_VALIDATED` | Play Mode checklist PASS (Phase 3) |
 | `ACCEPTED` | All required phases complete |
+| `DEFERRED_TO_FINAL_HUMAN_VALIDATION` | Code complete; Phase 3 human validation deferred to wave-end batch (per docs/validation/FINAL_HUMAN_VALIDATION_BY_WAVE.md) |
 | `PARTIAL` | Some phases done, some blocked |
 | `BLOCKED` | Blocker found; cannot continue |
 

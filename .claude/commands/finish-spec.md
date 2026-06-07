@@ -15,8 +15,14 @@ Check evidence, determine phase status, promote if eligible, update documentatio
 ## Required Reads
 
 1. `CLAUDE.md`
-2. Execution report for this spec: `docs/validation/<spec_id>_execution_report.md`
-3. The spec file itself (to check Phase 2-3 requirements)
+2. `docs/specs/SPEC_WAVE_EXECUTION_PROTOCOL.md` — phase taxonomy and promotion rules
+3. Execution report for this spec: `docs/validation/<spec_id>_execution_report.md`
+4. The spec file itself (to check Phase 2-3 requirements)
+
+## Conditional Required Reads
+
+- `docs/validation/FINAL_HUMAN_VALIDATION_BY_WAVE.md` — if runtime spec requires Phase 3 human validation
+- Human test scenario file: `docs/validation/playmode/<spec_id>_human_test_scenario.md` (if runtime)
 
 ## Do NOT Read By Default
 

@@ -15,14 +15,14 @@ Produce a planning document for the next development wave. No implementation. No
 ## Required Reads
 
 1. `CLAUDE.md`
-2. `docs/00_PROJECT/CURRENT_STATE.md`
-3. `docs/00_PROJECT/ROADMAP.md`
-4. `docs/06_BACKLOG/current_backlog.md`
+2. `docs/project/CURRENT_STATE.md`
+3. `docs/project/ROADMAP.md`
+4. `docs/backlog/current_backlog.md`
 
 ## Optional Reads
 
 - `docs/backlog/post_mvp_backlog.md`
-- `docs/00_PROJECT/DOCUMENT_INDEX.md`
+- `docs/project/DOCUMENT_INDEX.md`
 - Relevant architecture docs for the wave domain
 
 ## Do NOT Read By Default
@@ -53,7 +53,7 @@ docs_old/**
 
 ## Allowed Edits
 
-Optional: create `docs/00_PROJECT/ROADMAP.md` update or a wave planning document in `docs/backlog/`.
+Optional: create `docs/project/ROADMAP.md` update or a wave planning document in `docs/backlog/`.
 
 ## Forbidden Edits
 

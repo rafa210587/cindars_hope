@@ -2,11 +2,11 @@
 
 ## Rule
 
-Agents executing a spec must read only: CLAUDE.md (or AGENTS.md), `docs/00_PROJECT/CURRENT_STATE.md`, the active spec, and files explicitly cited by the spec. Do not read PROJECT_LOG.md, ROADMAP.md, full GDD, old refinements, archived specs, or unrelated validation reports by default.
+Agents executing a spec must read only: CLAUDE.md (or AGENTS.md), `docs/project/CURRENT_STATE.md`, the active spec, and files explicitly cited by the spec. Do not read PROJECT_LOG.md, ROADMAP.md, full GDD, old refinements, archived specs, or unrelated validation reports by default.
 
 ## Why
 
-Heavy default context (PROJECT_LOG.md ~500+ lines, full IMPLEMENTATION_STATUS.md, AGENT_EXECUTION_PROTOCOL.md) increases token cost and drift risk from stale historical data. CURRENT_STATE.md (~80 lines) contains all operationally relevant information for an execution task.
+Heavy default context (PROJECT_LOG.md ~500+ lines, full IMPLEMENTATION_STATUS.md) increases token cost and drift risk from stale historical data. CURRENT_STATE.md (~80 lines) contains all operationally relevant information for an execution task.
 
 ## Applies To
 

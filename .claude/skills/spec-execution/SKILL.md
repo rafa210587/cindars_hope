@@ -14,20 +14,28 @@ Task involves implementing or advancing a spec from `docs/specs/a_implementar/`.
 ## Required Reads
 
 1. `CLAUDE.md`
-2. `docs/00_PROJECT/CURRENT_STATE.md`
-3. Target spec
-4. Files explicitly in spec scope
+2. `docs/project/CURRENT_STATE.md`
+3. `docs/specs/SPEC_WAVE_EXECUTION_PROTOCOL.md` — execution phases and governance
+4. `docs/specs/SPEC_VALIDATION_MATRIX_MASTER.md` — validation requirements by change type
+5. Target spec
+6. Files explicitly in spec scope
 
 ## Do Not Read By Default
 
 ```
 PROJECT_LOG.md
 docs/IMPLEMENTATION_STATUS.md
-docs/operations/AGENT_EXECUTION_PROTOCOL.md
 SPEC_EXECUTION_ORDER.md (full — use CURRENT_STATE.md queue)
 ROADMAP.md
 memory/ (unless spec cites prior pattern)
 ```
+
+## Conditional Required Reads (runtime/code specs)
+
+If implementing a spec that changes runtime behavior or code:
+
+- `.claude/rules/testing-quality-gate.md` — testing requirements and evidence rules
+- `docs/validation/FINAL_HUMAN_VALIDATION_BY_WAVE.md` — human validation checklist
 
 ## Procedure
 
@@ -79,6 +87,7 @@ Record phase status using taxonomy:
 | `UNITY_VALIDATED` | Unity validators PASS |
 | `PLAYMODE_VALIDATED` | Play Mode checklist PASS |
 | `ACCEPTED` | All required phases complete |
+| `DEFERRED_TO_FINAL_HUMAN_VALIDATION` | Code complete; Phase 3 human validation deferred to wave-end batch (per FINAL_HUMAN_VALIDATION_BY_WAVE.md) |
 | `PARTIAL` | Some phases complete, some not |
 | `BLOCKED` | Cannot proceed |
 

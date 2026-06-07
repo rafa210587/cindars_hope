@@ -15,7 +15,7 @@ Identify root cause, fix minimally, validate, document. Do not refactor beyond t
 ## Required Reads
 
 1. `CLAUDE.md`
-2. `docs/00_PROJECT/CURRENT_STATE.md` — check if bug is a known blocker
+2. `docs/project/CURRENT_STATE.md` — check if bug is a known blocker
 3. Files directly related to the bug
 
 ## Optional Reads

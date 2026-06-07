@@ -6,7 +6,6 @@
 $HeavyDefaultReads = @(
     "PROJECT_LOG.md",
     "docs/IMPLEMENTATION_STATUS.md",
-    "docs/operations/AGENT_EXECUTION_PROTOCOL.md",
     "SPEC_EXECUTION_ORDER.md",
     "ROADMAP.md"
 )
@@ -58,7 +57,7 @@ if ($warnings.Count -gt 0) {
     }
     Write-Host ""
     Write-Host "  Rule: context-reading-policy.md"
-    Write-Host "  Use docs/00_PROJECT/CURRENT_STATE.md instead for execution context."
+    Write-Host "  Use docs/project/CURRENT_STATE.md instead for execution context."
     Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     Write-Host ""
     exit 1

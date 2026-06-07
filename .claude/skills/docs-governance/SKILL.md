@@ -18,14 +18,14 @@ when_to_use: Document organization, archive planning, delete candidates, roadmap
 ## Required Reads
 
 1. `CLAUDE.md`
-2. `docs/00_PROJECT/CURRENT_STATE.md`
-3. `docs/00_PROJECT/DOCUMENT_GOVERNANCE.md`
-4. `docs/00_PROJECT/DOCUMENT_INDEX.md`
+2. `docs/project/CURRENT_STATE.md`
+3. `docs/project/DOCUMENT_GOVERNANCE.md`
+4. `docs/project/DOCUMENT_INDEX.md`
 
 ## Optional Reads
 
-- `docs/00_PROJECT/DOCUMENT_DELETE_CANDIDATES.md` (if reviewing candidates)
-- `docs/00_PROJECT/HISTORY_LOG_POLICY.md` (if PROJECT_LOG work involved)
+- `docs/project/DOCUMENT_DELETE_CANDIDATES.md` (if reviewing candidates)
+- `docs/project/HISTORY_LOG_POLICY.md` (if PROJECT_LOG work involved)
 
 ## Do Not Read By Default
 

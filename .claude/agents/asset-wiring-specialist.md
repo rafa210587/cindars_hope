@@ -3,7 +3,7 @@ name: asset-wiring-specialist
 description: Specialist for Unity data wiring — ScriptableObject databases, prefab refs, scene creators, GameBootstrap, validators
 allowed_tasks: [database SO creation, prefab reference wiring, scene creator updates, validator extension, repair menu usage]
 forbidden_tasks: [gameplay logic changes, save schema changes, manual YAML editing without spec authorization, runtime feature implementation]
-default_reads: [CLAUDE.md, docs/00_PROJECT/CURRENT_STATE.md, active spec, relevant .cs files in scope]
+default_reads: [CLAUDE.md, docs/project/CURRENT_STATE.md, active spec, relevant .cs files in scope]
 conditional_reads: [GameBootstrap.cs, CombatDatabaseValidator.cs, relevant scene creators]
 forbidden_default_reads: [PROJECT_LOG.md, ROADMAP.md, scene YAML files, prefab YAML files]
 can_edit_code: true

@@ -15,8 +15,10 @@ Understand spec scope, dependencies, and risks. Deliver a concise plan. Do NOT i
 ## Required Reads
 
 1. `CLAUDE.md` — routing and stop conditions
-2. `docs/00_PROJECT/CURRENT_STATE.md` — active queue, blockers
-3. Target spec: `docs/specs/a_implementar/spec_<name>.md`
+2. `docs/project/CURRENT_STATE.md` — active queue, blockers
+3. `docs/specs/SPEC_WAVE_EXECUTION_PROTOCOL.md` — execution governance and phase taxonomy
+4. `docs/specs/SPEC_VALIDATION_MATRIX_MASTER.md` — validation requirements matrix
+5. Target spec: `docs/specs/a_implementar/spec_<name>.md`
 
 ## Optional Reads (only if spec cites them)
 
@@ -29,7 +31,6 @@ Understand spec scope, dependencies, and risks. Deliver a concise plan. Do NOT i
 ```
 PROJECT_LOG.md
 docs/IMPLEMENTATION_STATUS.md
-docs/operations/AGENT_EXECUTION_PROTOCOL.md
 memory/ (unless task cites prior pattern explicitly)
 SPEC_EXECUTION_ORDER.md (use CURRENT_STATE.md queue instead)
 ROADMAP.md
