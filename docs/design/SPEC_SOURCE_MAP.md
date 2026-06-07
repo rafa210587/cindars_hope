@@ -57,6 +57,14 @@ Specs que envolvam tempo, calendário, estações, clima, chuva, neve, tempestad
 docs/design/gameplay/world/SEASONS_CALENDAR_WEATHER_LUNAR_DIRECTION.md
 ```
 
+**Regra Save/Load full-state centralizada:**
+
+Specs que envolvam save/load, `GameSaveData`, `SaveManager`, migration, schema, backup, escrita segura, providers, save sections, capture/restore, restore order, save em caverna, save cross-scene, DTOs, IDs persistidos, defaults de seção, validação de save, preservação de seção fora de cena, UI state não persistível ou qualquer novo estado persistido devem ler obrigatoriamente:
+
+```text
+docs/design/gameplay/save_load/SAVE_LOAD_FULL_STATE_DIRECTION.md
+```
+
 ---
 
 # PARTE A — Fazenda
@@ -1187,6 +1195,115 @@ spec_calendar_quest_temporal_conditions.md
 
 ---
 
+# PARTE M — Save / Load / Full State
+
+## Specs de save/load e persistência full-state
+
+Fontes obrigatórias:
+
+```text
+docs/design/gameplay/save_load/SAVE_LOAD_FULL_STATE_DIRECTION.md
+```
+
+Specs que envolvam save/load, GameSaveData, SaveManager, migration, schema, backup, escrita segura, providers, save sections, capture/restore, restore order, save em caverna, save cross-scene, DTOs, IDs persistidos, defaults de seção, validação de save, preservação de seção fora de cena, UI state não persistível ou qualquer novo estado persistido devem ler obrigatoriamente esta fonte.
+
+## Specs de sistemas com estado persistido
+
+Specs que adicionem ou alterem estado persistido em player, inventory, equipment, hotbar, skill tree, active slots, farm, world, time/calendar/weather/lunar, economy, crafting, NPCs, quests, main progression, Fonte, cave, death/corpse recovery, bestiary, pets, companions ou social devem ler:
+
+```text
+docs/design/gameplay/save_load/SAVE_LOAD_FULL_STATE_DIRECTION.md
+```
+
+Regra:
+
+```text
+Nenhuma spec futura pode adicionar estado persistido sem declarar seção de save, dono, IDs usados, capture policy, preserve policy, restore order, migration necessária ou justificativa de não precisar, defaults e validação mínima.
+```
+
+## Regras por domínio
+
+**Tempo/calendário/clima/luas:**
+
+```text
+docs/design/gameplay/save_load/SAVE_LOAD_FULL_STATE_DIRECTION.md
+docs/design/gameplay/world/SEASONS_CALENDAR_WEATHER_LUNAR_DIRECTION.md
+```
+
+**Quests, main progression e Fonte:**
+
+```text
+docs/design/gameplay/save_load/SAVE_LOAD_FULL_STATE_DIRECTION.md
+docs/design/gameplay/quests/QUESTS_MAIN_LORE_DIRECTION.md
+docs/design/gameplay/quests/QUESTS_MAIN_PROGRESSION_REFINEMENT_DIRECTION.md
+```
+
+**Inventory, item instances e equipment:**
+
+```text
+docs/design/gameplay/save_load/SAVE_LOAD_FULL_STATE_DIRECTION.md
+docs/design/gameplay/equipment/EQUIPMENT_WEAPONS_ARMOR_MATERIALS_DIRECTION.md
+docs/design/gameplay/equipment/EQUIPMENT_MECHANICAL_BASELINES_DIRECTION.md
+docs/design/gameplay/ui_ux/UI_UX_MENU_SCREEN_FLOWS_DIRECTION.md
+```
+
+**Cave / death / corpse recovery:**
+
+```text
+docs/design/gameplay/save_load/SAVE_LOAD_FULL_STATE_DIRECTION.md
+docs/design/gameplay/cave/CAVE_DESIGN_DIRECTION.md
+```
+
+**Bestiary / knowledge discovery:**
+
+```text
+docs/design/gameplay/save_load/SAVE_LOAD_FULL_STATE_DIRECTION.md
+docs/design/gameplay/bestiary/BESTIARY_KNOWLEDGE_DISCOVERY_DIRECTION.md
+```
+
+**Pets, companions e social futuro:**
+
+```text
+docs/design/gameplay/save_load/SAVE_LOAD_FULL_STATE_DIRECTION.md
+docs/design/gameplay/pets/PETS_DIRECTION.md
+docs/design/gameplay/companions/COMPANIONS_DIRECTION.md
+docs/design/gameplay/social/SOCIAL_RELATIONSHIP_ROMANCE_DIRECTION.md
+```
+
+**UI/HUD/menus:**
+
+```text
+docs/design/gameplay/save_load/SAVE_LOAD_FULL_STATE_DIRECTION.md
+docs/design/gameplay/ui_ux/UI_UX_FULL_GAMEPLAY_DIRECTION.md
+docs/design/gameplay/ui_ux/UI_UX_MENU_SCREEN_FLOWS_DIRECTION.md
+```
+
+Regra:
+
+```text
+UI state não é gameplay state e não deve ser salvo no save principal.
+HUD deriva do runtime restaurado.
+Preferências de UI/acessibilidade podem ser salvas futuramente fora do gameplay save.
+```
+
+## Specs futuras recomendadas
+
+```text
+spec_save_provider_architecture_runtime.md
+spec_save_restore_order_contract_runtime.md
+spec_save_section_ownership_registry.md
+spec_save_time_calendar_weather_lunar_state_future.md
+spec_save_quest_main_fonte_state_future.md
+spec_save_item_instance_equipment_upgrade_state_future.md
+spec_save_pet_companion_social_state_future.md
+spec_save_bestiary_knowledge_state_future.md
+spec_save_cave_policy_checkpoint_future.md
+spec_save_playmode_validation_matrix.md
+spec_save_invalid_id_fallback_rules.md
+```
+
+---
+
 # PARTE J — Regra anti-regressão
 
 ## 15. Quando houver conflito
@@ -1312,4 +1429,25 @@ Fonte Menu não mostra função ainda não desbloqueada por fragmento.
 Calendar não revela segredo antes da descoberta.
 Social future não transforma NPC em planilha.
 HUD final não mostra debug.
+SAVE_LOAD_FULL_STATE_DIRECTION.md é fonte canônica de persistência full-state, capture/restore, providers, section ownership, restore order, cross-scene preservation e regras de save/load para specs futuras.
+Save/load não deve ser refeito do zero.
+SaveManager é o orquestrador atual.
+Provider architecture é alvo gradual, não refactor massivo imediato.
+Não trabalhar com números futuros de schema neste direction.
+Cada spec futura define migration se alterar payload persistido.
+Save em caverna continua permitido por enquanto.
+Política final de save em caverna será refinada depois.
+DTOs de save usam IDs e tipos simples.
+Não serializar referências Unity.
+UI state não é gameplay state e não deve ser salvo no save principal.
+HUD deriva do runtime restaurado.
+Salvar fora da cena de um sistema não pode apagar a seção desse sistema.
+Seção ausente em save legado precisa de default seguro ou migration.
+QuestState, MainProgression e FonteAnya devem ser seções separadas.
+Pet, Companion e Social futuro devem ser seções separadas.
+Bestiary knowledge futuro deve persistir conhecimento descoberto sem revelar spoiler.
+Fonte não deve ficar persistida apenas dentro de FarmSection.
+Schedules de NPC devem ser recalculados por tempo/clima/lua, não salvos como pathfinding transitório.
+Preço final calculado não é fonte primária de save.
+Migration falha não pode corromper save original.
 ```
