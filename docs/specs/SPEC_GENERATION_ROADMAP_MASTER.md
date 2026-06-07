@@ -50,6 +50,12 @@ Uso correto:
 O roadmap assume que os refinamentos/directions abaixo já existem e são fontes canônicas:
 
 ```text
+Governança / geração / execução:
+  docs/specs/SPEC_IMPLEMENTABLE_TEMPLATE.md
+  docs/specs/SPEC_WAVE_EXECUTION_PROTOCOL.md
+  docs/specs/SPEC_VALIDATION_MATRIX_MASTER.md
+  docs/validation/FINAL_HUMAN_VALIDATION_BY_WAVE.md
+
 UI/UX:
   docs/design/gameplay/ui_ux/UI_UX_FULL_GAMEPLAY_DIRECTION.md
   docs/design/gameplay/ui_ux/UI_UX_MENU_SCREEN_FLOWS_DIRECTION.md
@@ -87,7 +93,7 @@ Specs de quests/objectives/events precisam ler Quest/Objective/Event System.
 
 ```text
 Specs de governança/roadmap:
-  5
+  3
 
 Specs de fundação técnica:
   7
@@ -127,13 +133,13 @@ Estimativa total:
 
 ```text
 Núcleo / primeira grande execução:
-  ~92 specs
+  ~90 specs
 
 Explicitamente futuras:
   ~47 specs
 
 Total mapeado:
-  ~139 specs
+  ~137 specs
 ```
 
 Observação:
@@ -141,6 +147,7 @@ Observação:
 ```text
 O número total pode reduzir quando specs próximas forem consolidadas.
 O número pode aumentar se separarmos specs muito grandes por runtime, UI, data assets e save/load.
+Documentos canônicos de governança não entram como specs executáveis.
 ```
 
 ---
@@ -299,15 +306,24 @@ Não executar lote runtime de Waves 02+ sem Testing Quality Gate implementado ou
 
 Preparar a geração massiva de specs sem duplicar fontes nem quebrar rastreabilidade.
 
+## Documentos canônicos já existentes
+
+```text
+docs/specs/SPEC_GENERATION_ROADMAP_MASTER.md
+docs/specs/SPEC_IMPLEMENTABLE_TEMPLATE.md
+docs/specs/SPEC_WAVE_EXECUTION_PROTOCOL.md
+docs/specs/SPEC_VALIDATION_MATRIX_MASTER.md
+docs/validation/FINAL_HUMAN_VALIDATION_BY_WAVE.md
+```
+
+Esses documentos não são specs executáveis e não entram no registry como backlog de implementação.
+
 ## Specs
 
 | Ordem | Spec | Tipo | Status alvo | Depende de | Bloqueia |
 |---|---|---|---|---|---|
-| 00.01 | `00_spec_generation_roadmap_master.md` | governança | gerar agora | SPEC_SOURCE_MAP | todas |
-| 00.02 | `00_spec_wave_execution_protocol.md` | governança | gerar depois | 00.01 | execução por agentes |
-| 00.03 | `00_spec_source_map_numbering_cleanup.md` | governança | opcional antes das specs | 00.01 | limpeza documental |
-| 00.04 | `00_spec_existing_implementation_audit.md` | auditoria | gerar antes de runtime | 00.01 | evitar duplicação de código |
-| 00.05 | `00_spec_validation_matrix_master.md` | validação | gerar antes de runtime | 00.01 | critérios de aceite |
+| 00.03 | `00_spec_source_map_numbering_cleanup.md` | governança | opcional antes das specs | 00 docs canônicos | limpeza documental |
+| 00.04 | `00_spec_existing_implementation_audit.md` | auditoria | gerar antes de runtime | 00 docs canônicos | evitar duplicação de código |
 
 ## Regras
 
@@ -336,7 +352,7 @@ Criar a fundação técnica transversal para impedir specs isoladas e incompatí
 | 01Q | `spec_test_harness_editmode_playmode_quality_gate.md` | tooling/validation | núcleo bloqueante | 01.03, 01.04, rules/skills atuais | execução segura das Waves 02+ runtime |
 | 01.05 | `01_spec_save_provider_architecture_runtime.md` | runtime | núcleo gradual | 01.03, 01.04 | refactor controlado save |
 | 01.06 | `01_spec_invalid_id_fallback_rules.md` | runtime/validation | núcleo | 01.01, 01.03 | load robusto |
-| 01.07 | `01_spec_playmode_validation_baseline.md` | validação | núcleo | 00.05 | todas as waves runtime |
+| 01.07 | `01_spec_playmode_validation_baseline.md` | validação | núcleo | `SPEC_VALIDATION_MATRIX_MASTER.md`, 01Q | todas as waves runtime |
 
 ## Regras obrigatórias
 
@@ -798,8 +814,8 @@ Registrar specs futuras explicitamente fora da primeira entrega atual.
 | 12.04 | `12_spec_companion_active_cave_runtime_future.md` | future | futuro | 12.03, cave | 1 companion ativo |
 | 12.05 | `12_spec_companion_farm_job_runtime_future.md` | future | futuro | 12.03, farm | jobs limitados |
 | 12.06 | `12_spec_social_relationship_runtime_future.md` | future | futuro | NPC/dialogue/save | social base |
-| 12.07 | `12_spec_romance_marriage_polycule_runtime_future.md` | future | futuro | 12.06 | romance/poliamor |
-| 12.08 | `12_spec_partner_helper_runtime_future.md` | future | futuro | 12.06, 12.07, farm | helper limitado |
+| 12.07 | `12_spec_romance_marriage_polycule_runtime.md` | future | futuro | 12.06 | romance/poliamor |
+| 12.08 | `12_spec_partner_helper_runtime.md` | future | futuro | 12.06, 12.07, farm | helper limitado |
 | 12.09 | `12_spec_festival_activity_minigames_future.md` | future | futuro | calendar/UI | minigames |
 | 12.10 | `12_spec_bestiary_research_service_future.md` | future | futuro | bestiary/NPC | research service |
 | 12.11 | `12_spec_endgame_level_100_101_progression_future.md` | future | futuro | cave/main/bestiary | endgame |
@@ -824,9 +840,6 @@ Endgame não revela spoiler cedo.
 ### P0 — Criar primeiro
 
 ```text
-00_spec_generation_roadmap_master.md
-00_spec_wave_execution_protocol.md
-00_spec_validation_matrix_master.md
 01_spec_stable_ids_registry_runtime.md
 01_spec_game_event_contracts_runtime.md
 01_spec_save_restore_order_contract_runtime.md
@@ -932,21 +945,18 @@ política final de save em caverna.
 Gerar primeiro este lote, em ordem:
 
 ```text
-1. 00_spec_generation_roadmap_master.md
-2. 00_spec_wave_execution_protocol.md
-3. 00_spec_validation_matrix_master.md
-4. 01_spec_stable_ids_registry_runtime.md
-5. 01_spec_game_event_contracts_runtime.md
-6. 01_spec_save_restore_order_contract_runtime.md
-7. 01_spec_save_section_ownership_registry.md
-8. spec_test_harness_editmode_playmode_quality_gate.md
-9. 01_spec_invalid_id_fallback_rules.md
+1. 01_spec_stable_ids_registry_runtime.md
+2. 01_spec_game_event_contracts_runtime.md
+3. 01_spec_save_restore_order_contract_runtime.md
+4. 01_spec_save_section_ownership_registry.md
+5. spec_test_harness_editmode_playmode_quality_gate.md
+6. 01_spec_invalid_id_fallback_rules.md
 ```
 
 Motivo:
 
 ```text
-Sem IDs, eventos, save order, testing quality gate e validation matrix, qualquer spec de domínio pode nascer incompatível ou sem cobertura de testes.
+Sem IDs, eventos, save order e testing quality gate, qualquer spec de domínio pode nascer incompatível ou sem cobertura de testes.
 ```
 
 ---
@@ -998,8 +1008,7 @@ Nenhuma Wave 02+ runtime em massa é liberada antes da 01Q ou exceção humana e
 ```text
 Revisar nomes finais das specs antes de criá-las.
 Decidir se algumas specs devem ser consolidadas para reduzir volume.
-Atualizar docs/specs/README.md para apontar para este roadmap após aprovação.
-Atualizar docs/specs/SPEC_EXECUTION_ORDER.md depois que as specs forem realmente criadas.
+Atualizar docs/specs/SPEC_EXECUTION_ORDER.md depois que as specs forem realmente criadas e autorizadas para execução.
 Atualizar registries somente quando specs concretas existirem.
 Limpar numeração antiga do SPEC_SOURCE_MAP.md em uma passada documental separada.
 Após incorporar integralmente o Testing Quality Gate no roadmap master, revisar se `SPEC_GENERATION_ROADMAP_TESTING_QUALITY_GATE_ADDENDUM.md` pode ser movido para `docs/archive/documentation_reorg/` mediante aprovação humana.
