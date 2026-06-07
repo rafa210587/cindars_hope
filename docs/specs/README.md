@@ -10,7 +10,9 @@ Ver também: `docs/specs/SPEC_SOURCE_OF_TRUTH.md`.
 - `docs/specs/SPEC_REGISTRY_TO_IMPLEMENT.md`: registry oficial das specs futuras.
 - `docs/specs/SPEC_GENERATION_ROADMAP_MASTER.md`: roadmap macro de geração das próximas specs; não é spec implementável.
 - `docs/specs/SPEC_IMPLEMENTABLE_TEMPLATE.md`: template canônico para gerar novas specs implementáveis no padrão SpecKit/SDD.
-- `docs/specs/SPEC_GENERATION_ROADMAP_TESTING_QUALITY_GATE_ADDENDUM.md`: addendum do roadmap para exigir quality gate de testes antes das próximas specs runtime em massa.
+- `docs/specs/SPEC_WAVE_EXECUTION_PROTOCOL.md`: protocolo canônico de execução por waves, paralelização, locks e handoff para agentes; não é spec implementável.
+- `docs/specs/SPEC_VALIDATION_MATRIX_MASTER.md`: matriz canônica de validação por tipo de mudança, evidência mínima e status caps; não é spec implementável.
+- `docs/specs/SPEC_GENERATION_ROADMAP_TESTING_QUALITY_GATE_ADDENDUM.md`: addendum do roadmap para exigir quality gate de testes antes das próximas specs runtime em massa; candidato a arquivamento após validação humana.
 - `docs/refinements/implementados/`: refinamentos e PR waves já absorvidos.
 - `docs/refinements/a_implementar/`: refinamentos futuros ainda não implementados.
 - `docs/specs/`: fonte única oficial de specs.
@@ -20,6 +22,7 @@ Ver também: `docs/specs/SPEC_SOURCE_OF_TRUTH.md`.
 
 - Toda spec implementada deve ter prefixo `spec_`.
 - Toda spec futura deve ter prefixo `spec_`, exceto `README.md`.
+- Documentos canônicos de governança em `docs/specs/` podem usar prefixo `SPEC_` e não entram no registry como specs executáveis.
 - Todo refinement implementado deve ter prefixo `ref_`.
 - Todo refinement futuro deve ter prefixo `ref_`.
 - A pasta raiz `spec/` foi absorvida e não deve ser recriada.
@@ -28,25 +31,25 @@ Ver também: `docs/specs/SPEC_SOURCE_OF_TRUTH.md`.
 
 Antes de implementar:
 
-1. Ler `docs/operations/AGENT_EXECUTION_PROTOCOL.md`.
-2. Ler `docs/operations/READING_MATRIX.md`.
+1. Ler `CLAUDE.md`.
+2. Ler `docs/project/CURRENT_STATE.md`.
 3. Ler `docs/specs/SPEC_SOURCE_OF_TRUTH.md`.
-4. Ler a spec alvo em `docs/specs/a_implementar/spec_*.md` ou `docs/specs/implementados/spec_*.md`.
-5. Ler o refinement alvo em `docs/refinements/a_implementar/ref_*.md` ou `docs/refinements/implementados/ref_*.md`.
-6. Conferir `docs/specs/SPEC_EXECUTION_ORDER.md`.
-7. Ler `.claude/rules/testing-quality-gate.md` para qualquer spec que altere código/runtime.
-8. Ler registries, crosswalk e `docs_old/` somente quando o protocolo/matriz indicar.
+4. Ler `docs/specs/SPEC_WAVE_EXECUTION_PROTOCOL.md`.
+5. Ler `docs/specs/SPEC_VALIDATION_MATRIX_MASTER.md`.
+6. Ler a spec alvo em `docs/specs/a_implementar/spec_*.md` ou `docs/specs/implementados/spec_*.md`.
+7. Conferir `docs/specs/SPEC_EXECUTION_ORDER.md` somente quando a execução da spec/lote estiver autorizada.
+8. Ler `.claude/rules/testing-quality-gate.md` para qualquer spec que altere código/runtime.
+9. Ler registries, crosswalk, refinements e `docs_old/` somente quando o protocolo/matriz/spec indicar.
 
 Ao finalizar:
 
-1. Criar/atualizar `docs/specs/implementados/spec_*.md`.
-2. Criar/atualizar `docs/refinements/implementados/ref_*.md`.
-3. Atualizar os dois registries de specs.
-4. Atualizar os dois maps de refinements.
-5. Atualizar `docs/IMPLEMENTATION_STATUS.md`.
-6. Atualizar `PROJECT_LOG.md`.
-7. Rodar `tools/docs/validate_docs.ps1`.
-8. Registrar Testing Quality Gate em `docs/validation/<spec_id>_execution_report.md` para specs com código/runtime.
+1. Criar/atualizar `docs/specs/implementados/spec_*.md` apenas quando houver evidência de elegibilidade.
+2. Criar/atualizar `docs/refinements/implementados/ref_*.md` quando aplicável.
+3. Atualizar registries de specs quando aplicável.
+4. Atualizar maps de refinements quando aplicável.
+5. Atualizar `docs/IMPLEMENTATION_STATUS.md` e `PROJECT_LOG.md` apenas em fluxo de closeout autorizado.
+6. Rodar `tools/docs/validate_docs.ps1`.
+7. Registrar Testing Quality Gate em `docs/validation/<spec_id>_execution_report.md` para specs com código/runtime.
 
 ## Como gerar uma nova spec
 
