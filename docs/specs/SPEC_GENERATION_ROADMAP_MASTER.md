@@ -187,6 +187,37 @@ Uma spec deve apontar a fonte canônica e implementar só o recorte dela.
 Se a spec precisar alterar regra canônica, o direction e o SPEC_SOURCE_MAP.md devem ser atualizados antes.
 ```
 
+### 3.4 Testing Quality Gate obrigatório para specs runtime
+
+Toda nova spec runtime/gameplay deve conter seção obrigatória:
+
+```md
+## Testing Quality Gate
+
+- Changed deterministic logic: YES/NO
+- Requires EditMode tests: YES/NO
+- Requires PlayMode automated or human scenario: YES/NO
+- Requires regression test: YES/NO
+- Minimum validation evidence for ACCEPTED: <text>
+```
+
+Regras:
+
+```text
+Compile/build não é suficiente para ACCEPTED em spec runtime/gameplay.
+Mudança de lógica determinística exige EditMode tests quando praticável.
+Mudança de UI/cena/input/prefab exige PlayMode automatizado ou cenário humano.
+Bugfix exige regression test ou risco residual documentado.
+Sem teste obrigatório nem justificativa, status máximo é PARTIAL.
+Runtime/gameplay sem PlayMode/cenário humano fica no máximo BUILD_VALIDATED.
+```
+
+Bloqueio operacional:
+
+```text
+Nenhuma spec runtime das Waves 02+ deve ser executada em massa antes da implementação da 01Q ou antes de exceção humana explícita documentada.
+```
+
 ---
 
 ## 4. Waves e dependências
@@ -230,7 +261,7 @@ Grafo macro:
 
 ## 5. Paralelismo seguro
 
-Depois da WAVE 01, as lanes podem rodar em paralelo com integração por checkpoints.
+Depois da WAVE 01, incluindo a 01Q, as lanes podem rodar em paralelo com integração por checkpoints.
 
 ```text
 Lane A — World/Farm/Economy:
@@ -257,6 +288,7 @@ Não implementar save de sistema sem section ownership.
 Não implementar quest hook sem quest event contract.
 Não implementar weather/lunar modifier sem time/calendar contract.
 Não implementar bestiary discovery sem enemy/vulnerability contract.
+Não executar lote runtime de Waves 02+ sem Testing Quality Gate implementado ou exceção humana explícita.
 ```
 
 ---
@@ -301,6 +333,7 @@ Criar a fundação técnica transversal para impedir specs isoladas e incompatí
 | 01.02 | `01_spec_game_event_contracts_runtime.md` | runtime | núcleo | 01.01 | quest, farm, combat, bestiary |
 | 01.03 | `01_spec_save_restore_order_contract_runtime.md` | runtime | núcleo | 01.01 | todos os saves |
 | 01.04 | `01_spec_save_section_ownership_registry.md` | data/registry | núcleo | 01.03 | specs com estado persistido |
+| 01Q | `spec_test_harness_editmode_playmode_quality_gate.md` | tooling/validation | núcleo bloqueante | 01.03, 01.04, rules/skills atuais | execução segura das Waves 02+ runtime |
 | 01.05 | `01_spec_save_provider_architecture_runtime.md` | runtime | núcleo gradual | 01.03, 01.04 | refactor controlado save |
 | 01.06 | `01_spec_invalid_id_fallback_rules.md` | runtime/validation | núcleo | 01.01, 01.03 | load robusto |
 | 01.07 | `01_spec_playmode_validation_baseline.md` | validação | núcleo | 00.05 | todas as waves runtime |
@@ -314,6 +347,8 @@ Evento não substitui fonte primária de sistema.
 SaveManager continua orquestrador atual.
 Provider architecture é alvo gradual, não refactor massivo imediato.
 Restore order precisa ser explícito.
+A spec 01Q é fundacional para execução em massa.
+Enquanto ela não estiver implementada, specs runtime das Waves 02+ só podem ser executadas de forma isolada, com exceção humana explícita e risco residual documentado.
 ```
 
 ## Paralelismo
@@ -796,6 +831,7 @@ Endgame não revela spoiler cedo.
 01_spec_game_event_contracts_runtime.md
 01_spec_save_restore_order_contract_runtime.md
 01_spec_save_section_ownership_registry.md
+spec_test_harness_editmode_playmode_quality_gate.md
 01_spec_invalid_id_fallback_rules.md
 ```
 
@@ -903,13 +939,14 @@ Gerar primeiro este lote, em ordem:
 5. 01_spec_game_event_contracts_runtime.md
 6. 01_spec_save_restore_order_contract_runtime.md
 7. 01_spec_save_section_ownership_registry.md
-8. 01_spec_invalid_id_fallback_rules.md
+8. spec_test_harness_editmode_playmode_quality_gate.md
+9. 01_spec_invalid_id_fallback_rules.md
 ```
 
 Motivo:
 
 ```text
-Sem IDs, eventos, save order e validation matrix, qualquer spec de domínio pode nascer incompatível.
+Sem IDs, eventos, save order, testing quality gate e validation matrix, qualquer spec de domínio pode nascer incompatível ou sem cobertura de testes.
 ```
 
 ---
@@ -949,6 +986,9 @@ Não há spec de quest sem quest system.
 Não há spec de UI sem UI direction.
 Não há spec de bestiary sem spoiler control.
 Não há spec de time/lunar sem calendar source.
+Toda spec runtime futura tem seção Testing Quality Gate.
+Toda spec runtime declara EditMode/PlayMode/regression/justificativa.
+Nenhuma Wave 02+ runtime em massa é liberada antes da 01Q ou exceção humana explícita.
 ```
 
 ---
@@ -962,4 +1002,5 @@ Atualizar docs/specs/README.md para apontar para este roadmap após aprovação.
 Atualizar docs/specs/SPEC_EXECUTION_ORDER.md depois que as specs forem realmente criadas.
 Atualizar registries somente quando specs concretas existirem.
 Limpar numeração antiga do SPEC_SOURCE_MAP.md em uma passada documental separada.
+Após incorporar integralmente o Testing Quality Gate no roadmap master, revisar se `SPEC_GENERATION_ROADMAP_TESTING_QUALITY_GATE_ADDENDUM.md` pode ser movido para `docs/archive/documentation_reorg/` mediante aprovação humana.
 ```
