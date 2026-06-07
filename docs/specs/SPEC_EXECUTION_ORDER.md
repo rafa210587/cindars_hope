@@ -75,3 +75,28 @@ A spec 17E corrige o lifecycle das sessoes de shop: o `ShopManager` passa a pert
 A spec 17F corrige a higiene da stack de buy/sell com pop condicional, introduz nomes curtos e painel de detalhes e aplica scroll/layout responsivo. Fechada em 2026-05-26 com Play Mode humano validado sem erros.
 
 A spec 17A (visual scale / world scale / camera scale / sprite profiles) foi implementada em codigo em 2026-05-26: VisualScaleProfileSO (23 categorias), VisualScaleApplicator, CameraScaleConfigSO, CameraScaleController com SmoothDamp; cave corridors parametrizados (CorridorMinWidth/MaxWidth); Farm bounds 40x34 (~4x area anterior), Town bounds 36x30 (~4x area anterior); editor tool CreateDefaultScaleAssets; validator ValidateSpec17AScaleConfig. dotnet build runtime e editor: PASS 0 erros. Play Mode humano pendente.
+
+---
+
+## Reconciliation Note (2026-06-07 BATCH_36 — Generated Specs)
+
+**Generated Specs Reconciliation:** ~130 specs generated post-refinement (BATCH 01-35).
+
+- **Total generated:** ~130 specs in `docs/specs/a_implementar/`
+- **Core/Runtime (00-16):** ~10 hardening specs + ~75 WAVE 02-10 core runtime specs = ~85 specs
+- **Future Mapped (17-24):** ~30 specs marked `_future` suffix (endgame, social, automation, bestiary UI, research, etc.)
+- **HOLD/BLOCKED_SCOPE (Pets):** 4 pet/companion future specs in WAVE 23-24 — must not execute as core
+- **Duplicates/Obsolete:** None detected
+- **Registry Status:** Updated with generated specs; no specs moved to `implementados/`
+
+**Execution Readiness:**
+
+✓ Quality gate (01Q) ready before WAVE 02+ runtime
+✓ Core hardening specs (00-01) ready for execution
+✓ Runtime specs (02-10 + 13-17 partial) ready after quality gate
+✓ Future specs (17-24) properly marked and blocked; will not execute
+✓ Pet/companion specs (23) marked as future — execution blocked until explicitly authorized
+
+**Blockage Status:** NONE — ready to begin WAVE 00 (audit) and WAVE 01 (quality gate) immediately.
+
+See `docs/validation/SPEC_RECONCILIATION_BATCH_36_EXECUTION_REPORT.md` for full reconciliation audit.

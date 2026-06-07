@@ -25,3 +25,63 @@ docs/validation/FINAL_HUMAN_VALIDATION_BY_WAVE.md
 | 13 | [spec_enemy_ai_roster_bestiary_faction_locks_runtime.md](a_implementar/spec_enemy_ai_roster_bestiary_faction_locks_runtime.md) | Implementado parcial - escopo residual ativo | 00-12 | Enemy chase/patrol AI completo. Pendente: ranged enemies, faction locks, bestiary UI. Bloqueia: 14, 15, 17. |
 | 14 | [spec_cave_runtime_generation_checkpoints_boss_gates.md](a_implementar/spec_cave_runtime_generation_checkpoints_boss_gates.md) | Implementado parcial - escopo residual ativo | 00-13 | Cave generation/runtime completo. Pendente: stable run guarantee, boss gates validation, confinement hardening. Bloqueia: 15, 17. |
 | 17 | [spec_ui_ux_full_gameplay_inventory_hotbar_menus.md](a_implementar/spec_ui_ux_full_gameplay_inventory_hotbar_menus.md) | Implementacao parcial - MVP gameplay em codigo | 00-16 implementadas/parciais | Shops/sell/inventory/equipment/attributes/skills e input modal MVP entregues; Canvas final, pause/options, cave/corpse/toasts e Play Mode ainda pendentes. |
+
+---
+
+## Specs Geradas Pós-Refinamento — Registry Reconciliado
+
+Após geração da batch 36 (~130 specs), o registry foi reconciliado. Specs estão todas presentes em `docs/specs/a_implementar/`, nenhuma foi movida para `implementados/` e nenhuma foi deletada.
+
+### WAVE 00 — Governança & Auditoria
+
+| Ordem | Spec | Status | Wave | Observacao |
+|---|---|---|---|---|
+| 00.04 | `00_spec_existing_implementation_audit.md` | A implementar - auditoria/governanca | 00 | Audita estado real antes de specs runtime; bloqueia 01+ |
+
+### WAVE 01 — Hardening & Quality Gate
+
+| Ordem | Spec | Status | Wave | Observacao |
+|---|---|---|---|---|
+| 01.01-01.05 | `01_spec_*.md` (5 specs) | A implementar - hardening/residual | 01 | Estabiliza IDs, eventos, save contracts; bloqueia WAVE 02+ |
+| 01Q | `spec_test_harness_editmode_playmode_quality_gate.md` | A implementar - quality gate | 01 | Fundacional; deve executar antes de WAVE 02+ |
+
+### WAVE 02-10 — Core Runtime
+
+| Wave | Specs | Contagem | Status | Observacao |
+|---|---|---|---|---|
+| 02 | Time/Calendar/Weather/Lunar | ~8 | A implementar | Fundação de tempo; bloqueia WAVE 03+ |
+| 03 | Quest/Objective/Event | ~10 | A implementar | Sistema de quests; bloqueia WAVE 06+ |
+| 04 | UI Foundation | ~15 | A implementar | Modal/focus/HUD base |
+| 05 | Inventory/Equipment/Hotbar | ~12 | A implementar | Item instance, equipment, hotbar |
+| 06 | Economy/Crafting | ~8 | A implementar | Pricing, recipes, shops |
+| 07 | Farm/Crops/Tools | ~11 | A implementar | Plantio, colheita, ferramentas |
+| 08 | City/NPC/Dialogue | ~8 | A implementar | NPCs, diálogo, serviços |
+| 09 | Player/Skills/Magic | ~11 | A implementar | Atributos, skills, magia |
+| 10 | Cave/Combat/Enemies | ~12 | A implementar | Procedural cave, combat, AI |
+
+**Total WAVE 02-10:** ~85 specs core/runtime
+
+### WAVE 17-24 — Future Mapped
+
+| Wave | Specs | Contagem | Status | Observacao |
+|---|---|---|---|---|
+| 17 | Social/Romance | ~4 | Future mapped | Não executar agora |
+| 18 | UI Advanced | ~4 | Future mapped | Não executar agora |
+| 19 | Endgame Level 100-101 | ~4 | Future mapped | Não executar agora |
+| 20 | Mana/Lunar Deep | ~4 | Future mapped | Não executar agora |
+| 21 | Farm Automation | ~4 | Future mapped | Não executar agora |
+| 22 | Bestiary/Knowledge/Research | ~4 | Future mapped | Não executar agora |
+| 23 | Pets | 4 | **HOLD / BLOCKED_SCOPE** | **NÃO EXECUTAR** — pets bloqueados até explícita autorização |
+| 24 | Companions / Festival / Endgame | ~4 | Future mapped | Não executar agora |
+
+**Total WAVE 17-24:** ~30 specs future; 4 pets bloqueados
+
+### Resumo
+
+- ✓ **Total:** ~130 specs geradas + reconciliadas
+- ✓ **Core núcleo:** ~85 specs (WAVE 00-10)
+- ✓ **Futures:** ~30 specs (WAVE 17-24)
+- ✓ **Pets bloqueados:** 4 (WAVE 23)
+- ✓ **Nenhuma duplicata ou obsoleta**
+- ✓ **Nenhuma spec movida para implementados**
+- ✓ **Pronto para executar WAVE 00 + 01**
