@@ -20,6 +20,16 @@
 - `docs/refinements/a_implementar/pre_refinamentos/` - pre-refinamentos vivos.
 - `docs_old/` - historico preservado; nao editar como fonte ativa.
 
+## Arquivos ativos na raiz de docs/
+
+A raiz de `docs/` deve conter apenas:
+
+- `README.md` — este arquivo
+- `IMPLEMENTATION_STATUS.md` — status de implementacao ativa
+- `DOCS_OLD_TO_ACTIVE_CROSSWALK.md` — mapa de migracao de docs_old
+
+Auditorias antigas, handoffs concluidos, planos pontuais e templates historicos ficam em `docs/archive/`.
+
 ## Regra
 
 A pasta raiz `specs/` foi removida e nao deve ser recriada. A pasta raiz `spec/` tambem nao deve ser recriada.
