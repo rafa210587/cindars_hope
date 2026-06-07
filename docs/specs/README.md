@@ -9,6 +9,7 @@ Ver também: `docs/specs/SPEC_SOURCE_OF_TRUTH.md`.
 - `docs/specs/SPEC_REGISTRY_IMPLEMENTED.md`: registry oficial das specs implementadas/parciais.
 - `docs/specs/SPEC_REGISTRY_TO_IMPLEMENT.md`: registry oficial das specs futuras.
 - `docs/specs/SPEC_GENERATION_ROADMAP_MASTER.md`: roadmap macro de geração das próximas specs; não é spec implementável.
+- `docs/specs/SPEC_IMPLEMENTABLE_TEMPLATE.md`: template canônico para gerar novas specs implementáveis no padrão SpecKit/SDD.
 - `docs/specs/SPEC_GENERATION_ROADMAP_TESTING_QUALITY_GATE_ADDENDUM.md`: addendum do roadmap para exigir quality gate de testes antes das próximas specs runtime em massa.
 - `docs/refinements/implementados/`: refinamentos e PR waves já absorvidos.
 - `docs/refinements/a_implementar/`: refinamentos futuros ainda não implementados.
@@ -46,5 +47,18 @@ Ao finalizar:
 6. Atualizar `PROJECT_LOG.md`.
 7. Rodar `tools/docs/validate_docs.ps1`.
 8. Registrar Testing Quality Gate em `docs/validation/<spec_id>_execution_report.md` para specs com código/runtime.
+
+## Como gerar uma nova spec
+
+Antes de criar qualquer novo arquivo em `docs/specs/a_implementar/`:
+
+1. Ler `docs/design/SPEC_SOURCE_MAP.md`.
+2. Ler `docs/design/SPECIFICATION_PROCESS.md`.
+3. Ler `docs/specs/SPEC_IMPLEMENTABLE_TEMPLATE.md`.
+4. Ler `docs/specs/SPEC_GENERATION_ROADMAP_MASTER.md`.
+5. Ler as fontes canônicas do domínio.
+6. Validar estado real do repo.
+7. Declarar se a spec pode rodar em paralelo, com quais specs e quais arquivos/sistemas exigem lock.
+8. Não exigir validação humana intermediária; quando necessário, deixar cenário humano como `DEFERRED_TO_FINAL_VALIDATION`.
 
 Specs antigas continuam preservadas em `docs_old/` e rastreadas em `docs/DOCS_OLD_TO_ACTIVE_CROSSWALK.md`.
