@@ -9,6 +9,7 @@ Ver também: `docs/specs/SPEC_SOURCE_OF_TRUTH.md`.
 - `docs/specs/SPEC_REGISTRY_IMPLEMENTED.md`: registry oficial das specs implementadas/parciais.
 - `docs/specs/SPEC_REGISTRY_TO_IMPLEMENT.md`: registry oficial das specs futuras.
 - `docs/specs/SPEC_GENERATION_ROADMAP_MASTER.md`: roadmap macro de geração das próximas specs; não é spec implementável.
+- `docs/specs/SPEC_GENERATION_ROADMAP_TESTING_QUALITY_GATE_ADDENDUM.md`: addendum do roadmap para exigir quality gate de testes antes das próximas specs runtime em massa.
 - `docs/refinements/implementados/`: refinamentos e PR waves já absorvidos.
 - `docs/refinements/a_implementar/`: refinamentos futuros ainda não implementados.
 - `docs/specs/`: fonte única oficial de specs.
@@ -32,7 +33,8 @@ Antes de implementar:
 4. Ler a spec alvo em `docs/specs/a_implementar/spec_*.md` ou `docs/specs/implementados/spec_*.md`.
 5. Ler o refinement alvo em `docs/refinements/a_implementar/ref_*.md` ou `docs/refinements/implementados/ref_*.md`.
 6. Conferir `docs/specs/SPEC_EXECUTION_ORDER.md`.
-7. Ler registries, crosswalk e `docs_old/` somente quando o protocolo/matriz indicar.
+7. Ler `.claude/rules/testing-quality-gate.md` para qualquer spec que altere código/runtime.
+8. Ler registries, crosswalk e `docs_old/` somente quando o protocolo/matriz indicar.
 
 Ao finalizar:
 
@@ -43,5 +45,6 @@ Ao finalizar:
 5. Atualizar `docs/IMPLEMENTATION_STATUS.md`.
 6. Atualizar `PROJECT_LOG.md`.
 7. Rodar `tools/docs/validate_docs.ps1`.
+8. Registrar Testing Quality Gate em `docs/validation/<spec_id>_execution_report.md` para specs com código/runtime.
 
 Specs antigas continuam preservadas em `docs_old/` e rastreadas em `docs/DOCS_OLD_TO_ACTIVE_CROSSWALK.md`.
