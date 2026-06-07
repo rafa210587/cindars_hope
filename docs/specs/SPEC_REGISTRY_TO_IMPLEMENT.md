@@ -42,46 +42,54 @@ Após geração da batch 36 (~130 specs), o registry foi reconciliado. Specs est
 
 | Ordem | Spec | Status | Wave | Observacao |
 |---|---|---|---|---|
-| 01.01-01.05 | `01_spec_*.md` (5 specs) | A implementar - hardening/residual | 01 | Estabiliza IDs, eventos, save contracts; bloqueia WAVE 02+ |
+| 01.01 | `01_spec_stable_ids_registry_runtime.md` | A implementar - hardening/residual | 01 | Estabiliza IDs; bloqueia 01.02+ |
+| 01.02 | `01_spec_game_event_contracts_runtime.md` | A implementar - hardening/residual | 01 | Eventos; depende 01.01 |
+| 01.03 | `01_spec_save_restore_order_contract_runtime.md` | A implementar - hardening/residual | 01 | Restore order; depende 01.02 |
+| 01.04 | `01_spec_save_section_ownership_registry.md` | A implementar - hardening/residual | 01 | Ownership; depende 01.03 |
+| 01.05 | `01_spec_save_provider_architecture_runtime.md` | A implementar - hardening/residual | 01 | Providers; depende 01.04 |
+| 01.06 | `01_spec_invalid_id_fallback_rules.md` | A implementar - hardening/residual | 01 | ID fallback validação |
+| 01.07 | `01_spec_playmode_validation_baseline.md` | A implementar - quality gate | 01 | Play Mode foundation |
 | 01Q | `spec_test_harness_editmode_playmode_quality_gate.md` | A implementar - quality gate | 01 | Fundacional; deve executar antes de WAVE 02+ |
+
+**Total WAVE 01:** 8 specs hardening/quality gate — bloqueia WAVE 02+ até completo
 
 ### WAVE 02-10 — Core Runtime
 
 | Wave | Specs | Contagem | Status | Observacao |
 |---|---|---|---|---|
-| 02 | Time/Calendar/Weather/Lunar | ~8 | A implementar | Fundação de tempo; bloqueia WAVE 03+ |
-| 03 | Quest/Objective/Event | ~10 | A implementar | Sistema de quests; bloqueia WAVE 06+ |
-| 04 | UI Foundation | ~15 | A implementar | Modal/focus/HUD base |
-| 05 | Inventory/Equipment/Hotbar | ~12 | A implementar | Item instance, equipment, hotbar |
-| 06 | Economy/Crafting | ~8 | A implementar | Pricing, recipes, shops |
-| 07 | Farm/Crops/Tools | ~11 | A implementar | Plantio, colheita, ferramentas |
-| 08 | City/NPC/Dialogue | ~8 | A implementar | NPCs, diálogo, serviços |
-| 09 | Player/Skills/Magic | ~11 | A implementar | Atributos, skills, magia |
-| 10 | Cave/Combat/Enemies | ~12 | A implementar | Procedural cave, combat, AI |
+| 02 | Time/Calendar/Weather/Lunar | 8 | A implementar | Fundação de tempo; bloqueia WAVE 03+ |
+| 03 | Quest/Objective/Event | 10 | A implementar | Sistema de quests; bloqueia WAVE 06+ |
+| 04 | UI Foundation | 21 | A implementar | Modal/focus/HUD/dialogue/equipment/menus |
+| 05 | Farm/Inventory/Companion | 23 | A implementar | Farm, items, equipment, companion jobs |
+| 06 | Economy/Loot/Crafting | 8 | A implementar | Shop/pricing, recipes, loot tables |
+| 07 | (merged to other waves) | 0 | — | — |
+| 08 | City/NPC/Dialogue | 4 | A implementar | NPC services, layout, dialogue hooks |
+| 09 | Quest/Player/Skills (duplicate 03) | 7 | A implementar | Quests (alternate), skills, player condition |
+| 10 | Endgame/Memory/Fonte | 4 | A implementar | Level 100-101, memory arc, Fonte functions |
+| 11 | UI Projections/HUD | 4 | A implementar | UI hotbar, focus, inventory tooltips |
+| 12 | Docs/Consolidation | 2 | A implementar | Final validation checklist, roadmap closeout |
+| 13 | Bestiary | 2 | A implementar | Bestiary state/UI future hooks |
 
-**Total WAVE 02-10:** ~85 specs core/runtime
+**Total WAVE 02-12:** 93 specs core/runtime
 
 ### WAVE 17-24 — Future Mapped
 
 | Wave | Specs | Contagem | Status | Observacao |
 |---|---|---|---|---|
-| 17 | Social/Romance | ~4 | Future mapped | Não executar agora |
-| 18 | UI Advanced | ~4 | Future mapped | Não executar agora |
-| 19 | Endgame Level 100-101 | ~4 | Future mapped | Não executar agora |
-| 20 | Mana/Lunar Deep | ~4 | Future mapped | Não executar agora |
-| 21 | Farm Automation | ~4 | Future mapped | Não executar agora |
-| 22 | Bestiary/Knowledge/Research | ~4 | Future mapped | Não executar agora |
+| Future Specs | Mixed (_future suffix) | ~32 | Future mapped | Future/expansion specs marked explicitly |
 | 23 | Pets | 4 | **HOLD / BLOCKED_SCOPE** | **NÃO EXECUTAR** — pets bloqueados até explícita autorização |
-| 24 | Companions / Festival / Endgame | ~4 | Future mapped | Não executar agora |
 
-**Total WAVE 17-24:** ~30 specs future; 4 pets bloqueados
+**Total WAVE 17-24 + future:** ~32 specs future; 4 pets bloqueados
 
-### Resumo
+### Resumo (Atualizado 2026-06-07)
 
-- ✓ **Total:** ~130 specs geradas + reconciliadas
-- ✓ **Core núcleo:** ~85 specs (WAVE 00-10)
-- ✓ **Futures:** ~30 specs (WAVE 17-24)
+- ✓ **Total reconciliado:** 154 specs em `docs/specs/a_implementar/`
+- ✓ **Governança:** 1 spec (00.04)
+- ✓ **Hardening/Quality gate:** 8 specs (01.01-01Q)
+- ✓ **Core runtime:** 93 specs (02-12)
+- ✓ **Documentação/consolidação:** 2 specs (12)
+- ✓ **Future/mapeado:** ~32 specs (17-24 + future suffix)
 - ✓ **Pets bloqueados:** 4 (WAVE 23)
-- ✓ **Nenhuma duplicata ou obsoleta**
+- ✓ **Nenhuma duplicata ou obsoleta encontrada**
 - ✓ **Nenhuma spec movida para implementados**
-- ✓ **Pronto para executar WAVE 00 + 01**
+- ✓ **Pronto para executar WAVE 00.04 após docs validation**

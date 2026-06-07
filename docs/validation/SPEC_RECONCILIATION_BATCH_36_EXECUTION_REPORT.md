@@ -1,9 +1,9 @@
 # SPEC Reconciliation Batch 36 — Execution Report
 
-> **Date:** 2026-06-07  
+> **Date:** 2026-06-07 (updated 2026-06-07 with corrected status)  
 > **Branch:** dev  
 > **Executor:** Claude Code  
-> **Status:** READY_FOR_FIRST_RUNTIME_SPEC
+> **Status:** READY_FOR_01Q — pending docs validation
 
 ---
 
@@ -11,9 +11,9 @@
 
 ### Specifications Analyzed
 
-- **Total in `docs/specs/a_implementar/`:** ~130 specs (+ governance docs)
-- **Governance docs (non-executable):** 2 (00_spec_wave_execution_protocol.md, 00_spec_validation_matrix_master.md)
-- **Actual executable specs:** ~128 specs
+- **Total in `docs/specs/a_implementar/`:** 154 specs (+ governance docs)
+- **Governance docs (non-executable):** 3 (00_spec_wave_execution_protocol.md, 00_spec_validation_matrix_master.md, 00_spec_existing_implementation_audit.md)
+- **Actual executable specs:** 151 specs
 
 ### Classification
 
@@ -41,54 +41,73 @@
 
 ### Validation Results
 
-**Docs validation:** Not run (no changes to docs structure)
+**Docs validation:** NOT YET RUN — must complete before final sign-off
+
+**Local code audit:** ✓ COMPLETE — 2026-06-07
+- All 10 core systems confirmed present in codebase
+- GameEventBus, SaveManager, InventoryManager, GameTimeManager, CaveRuntimeMaterializer, EnemyBrain, ShopManager, EconomyManager, SkillTreeManager, BestiaryManager all found
 
 **Spec structure integrity:**
 - ✓ No duplicate specs detected
 - ✓ Naming convention consistent (`NX_spec_*.md` or `spec_*.md`)
 - ✓ Future specs properly marked with `_future` suffix
 - ✓ Pet/companion specs marked as HOLD/future
-- ✓ No specs created without spec file
+- ✓ 154 total specs in a_implementar (not ~130)
 
 **Registry reconciliation:**
-- ✓ SPEC_REGISTRY_TO_IMPLEMENT.md reflects existing specs
-- ✓ SPEC_EXECUTION_ORDER.md lists core sequence
+- ⚠ SPEC_REGISTRY_TO_IMPLEMENT.md reflects existing specs but uses approximate counts (~85, ~30) — requires clarification
+- ✓ SPEC_EXECUTION_ORDER.md lists core sequence correctly
 - ✓ No specs prematurely moved to `implementados/`
 
 ### Decision
 
-**Status:** `READY_FOR_FIRST_RUNTIME_SPEC`
+**Status:** `READY_FOR_01Q` — pending final docs validation run
 
-✓ First spec (00.04 existing implementation audit) can be executed
-✓ Core sequence (01-13 hardening+quality gate) can proceed
-✓ Runtime waves (02-10) ready for execution after quality gate
+✓ Local code audit completed — all core systems present
+✓ Spec reconciliation complete — 154 specs correctly inventoried
+✓ 00.04 (existing implementation audit) can proceed after docs validation
+✓ WAVE 01Q (quality gate) is prerequisite for WAVE 02+ runtime
 ✓ Future/pet specs properly marked and blocked
+⚠ Docs validation (tools/docs/validate_docs.ps1) must run before final sign-off
+⚠ SPEC_REGISTRY_TO_IMPLEMENT counts should be exact (not approximate) before WAVE 02+ execution
 
 ### Notes
 
-1. **Governance docs:** Remain as canonical references, not executable specs
-2. **Pet/Companion future:** Specs 23, 24 marked as future; must not execute as part of core
-3. **Parallel execution:** Use SPEC_WAVE_EXECUTION_PROTOCOL.md for lane coordination
-4. **Quality gate:** 01Q must execute before runtime waves 02+
-5. **Registry:** SPEC_REGISTRY_TO_IMPLEMENT.md updated with new specs structure
+1. **Governance docs:** Remain as canonical references; not executable (3 total)
+2. **Actual executable specs:** 151 specs (corrected from ~130 estimate)
+3. **Pet/Companion future:** WAVE 23-24 marked as future; must not execute as part of core
+4. **Parallel execution:** Use SPEC_WAVE_EXECUTION_PROTOCOL.md for lane coordination
+5. **Quality gate:** 01Q must execute before runtime waves 02+
+6. **Local code audit:** Complete — all core systems confirmed present
+7. **Docs validation:** Pending — must run tools/docs/validate_docs.ps1 before final approval
 
 ---
 
 ## Files Modified
 
-1. `docs/specs/SPEC_REGISTRY_TO_IMPLEMENT.md` — added sections for generated specs
-2. `docs/specs/SPEC_EXECUTION_ORDER.md` — added reconciliation note
-3. This report
+1. `docs/specs/SPEC_EXISTING_IMPLEMENTATION_AUDIT.md` — updated with local code audit results
+2. This report — corrected spec counts and status to READY_FOR_01Q
+
+## Files Needing Update (Task 4-7)
+
+1. `docs/specs/SPEC_REGISTRY_TO_IMPLEMENT.md` — counts should be exact, not approximate
+2. `docs/specs/SPEC_EXECUTION_ORDER.md` — reconciliation note confirmed accurate
+3. `docs/project/CURRENT_STATE.md` — update with current blockers and reconciliation status
+4. Run `tools/docs/validate_docs.ps1` — must PASS before approving next execution
 
 ## Next Steps
 
-1. Execute WAVE 00 (governance & audit)
-2. Execute WAVE 01 (quality gate & hardening)
-3. Proceed with WAVE 02+ runtime execution per SPEC_WAVE_EXECUTION_PROTOCOL.md
-4. Keep future/pet specs marked as BLOCKED_SCOPE until explicitly authorized
+1. ✓ Execute local code audit (COMPLETE)
+2. ✓ Count actual specs (COMPLETE — 154 found)
+3. ✓ Update SPEC_EXISTING_IMPLEMENTATION_AUDIT.md with audit results (COMPLETE)
+4. ⚠ Correct SPEC_RECONCILIATION_BATCH_36_EXECUTION_REPORT.md status (IN PROGRESS)
+5. ⚠ Update SPEC_REGISTRY_TO_IMPLEMENT.md counts (PENDING)
+6. ⚠ Update CURRENT_STATE.md (PENDING)
+7. ⚠ Run docs validation (PENDING)
+8. ⚠ Create SPEC_PRE_EXECUTION_READINESS_FIX_REPORT.md (PENDING)
 
 ---
 
-**Report Status: COMPLETE**
+**Report Status: PENDING FINAL APPROVAL**
 
-Generated by spec reconciliation audit — no specs created, moved, or deleted.
+Local code audit and spec reconciliation complete. Docs validation and final status update required before WAVE 00.04 execution.

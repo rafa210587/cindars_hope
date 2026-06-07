@@ -75,13 +75,19 @@
 | SPEC_DOCS_37 | COMPLETE | Refinements/specs/validation sweep: 12 references fixed, 14 refinements archived, 4 deleted, validation enhanced (25+ checks); commits b9ae4d5, 45e299f |
 | SPEC_18-28 Phase 2-3 | PENDING HUMAN | Play Mode validation; requires local Unity Editor |
 | SPEC_29 Phase 2-3 | PENDING HUMAN | Final acceptance; blocked on Phase 2-3 above |
-| FASE 10+ | BLOCKED | Blocked until Phase 2-3 or explicit human decision to skip |
+| WAVE 00.04 Existing Implementation Audit | READY AFTER DOCS VALIDATION | Local code audit completed 2026-06-07; 154 specs reconciled |
+| WAVE 01 Hardening & Quality Gate | BLOCKED UNTIL 00.04 | 8 specs ready; 01Q is prerequisite for WAVE 02+ |
+| WAVE 02-12 Core Runtime | BLOCKED UNTIL 01Q | 93 specs in queue; execution blocked until quality gate passes |
+| WAVE 17-24 Future | BLOCKED INTENTIONALLY | 32+ future/expansion specs marked; pets (WAVE 23) blocked until explicit authorization |
 
 ---
 
 ## Blockers
 
 1. **Human Play Mode acceptance:** Phase 2-3 not yet executed for any SPEC_18-28
+2. **Docs validation:** Must run `tools/docs/validate_docs.ps1` before approving WAVE 00.04
+3. **Quality gate completion:** WAVE 01Q must complete before WAVE 02+ runtime can begin
+4. **Spec count clarification:** Registry counts corrected; pending final validation
 
 ---
 

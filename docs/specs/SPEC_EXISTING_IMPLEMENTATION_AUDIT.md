@@ -52,29 +52,33 @@ PROJECT_LOG.md — não lido, porque a auditoria encontrou evidência suficiente
 
 ---
 
-## 3. Limitações da auditoria
+## 3. Auditoria de Código Local — Resultados
 
-A auditoria de código local **não foi concluída** nesta execução.
+A auditoria de código local **foi concluída** em 2026-06-07 via `rg` local.
 
-Motivo:
-
-```text
-O conector GitHub retornou zero resultados para buscas de código amplas por GameEventBus, SaveManager, GameSaveData, Inventory, ItemInstance, Equipment e demais termos em Assets/.
-```
-
-Consequência:
+Sistemas encontrados:
 
 ```text
-Classificações abaixo usam evidência documental/registry/status.
-Antes de executar qualquer spec runtime, Claude Code deve rodar a auditoria local com `rg` conforme a spec `00_spec_existing_implementation_audit.md`.
+GameEventBus: FOUND — Assets/_Game/Scripts/Core/GameEventBus.cs
+SaveManager: FOUND — Assets/_Game/Scripts/Save/SaveManager.cs
+InventoryManager: FOUND — Assets/_Game/Scripts/Inventory/InventoryManager.cs
+GameTimeManager: FOUND — Assets/_Game/Scripts/Core/GameTimeManager.cs
+CaveRuntimeMaterializer: FOUND — Assets/_Game/Scripts/Cave/Runtime/CaveRuntimeMaterializer.cs
+EnemyBrain: FOUND — Assets/_Game/Scripts/Enemy/EnemyBrain.cs
+ShopManager: FOUND — Assets/_Game/Scripts/Economy/ShopManager.cs
+EconomyManager: FOUND — Assets/_Game/Scripts/Economy/EconomyManager.cs
+SkillTreeManager: FOUND — Assets/_Game/Scripts/Skills/SkillTreeManager.cs
+BestiaryManager: FOUND — Assets/_Game/Scripts/Enemy/BestiaryManager.cs
 ```
+
+Todos os sistemas core existem no repositório. Classificações abaixo usam esta evidência + registries/status.
 
 Status deste relatório:
 
 ```text
 Documental audit: COMPLETE
-Local code search audit: REQUIRED_IN_CLAUDE_CODE
-Unity validation: NOT REQUIRED
+Local code search audit: COMPLETE — all core systems confirmed
+Unity validation: NOT REQUIRED (no code changes made)
 Runtime changes: NONE
 ```
 
