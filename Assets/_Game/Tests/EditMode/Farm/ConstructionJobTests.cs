@@ -86,7 +86,7 @@ namespace CindarsHope.Tests.EditMode.Farm
         }
 
         [Test]
-        public void DaysRemainingIsInitiallyEqual ToBuildTimeDays()
+        public void DaysRemainingIsInitiallyEqualToBuildTimeDays()
         {
             Assert.That(_job.DaysRemaining, Is.EqualTo(_workshop.BuildTimeDays));
         }
