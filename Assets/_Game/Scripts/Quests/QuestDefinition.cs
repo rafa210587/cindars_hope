@@ -5,12 +5,33 @@ namespace CindarsHope.Quests
     public class QuestDefinition
     {
         public string QuestId { get; set; }
+        public QuestCategory Category { get; set; } = QuestCategory.Side;
+        public string DisplayNameKey { get; set; }
+        public string HiddenDisplayNameKey { get; set; }
+        public string DescriptionKey { get; set; }
+        public int SpoilerTier { get; set; } = 0;
+        public List<string> StartConditionIds { get; set; } = new List<string>();
+        public List<string> AutoStartTriggerIds { get; set; } = new List<string>();
+        public List<string> StepIds { get; set; } = new List<string>();
+        public List<string> FailureRuleIds { get; set; } = new List<string>();
+        public List<string> ExpiryRuleIds { get; set; } = new List<string>();
+        public List<string> RewardIds { get; set; } = new List<string>();
+        public List<string> QuestFlagGrantIds { get; set; } = new List<string>();
+        public List<string> PrerequisiteQuestIds { get; set; } = new List<string>();
+        public List<string> BlockedByQuestIds { get; set; } = new List<string>();
+        public string RepeatPolicy { get; set; }
+        public bool Trackable { get; set; } = true;
+        public string JournalVisibilityPolicyId { get; set; }
+        public List<string> DebugTags { get; set; } = new List<string>();
+        // Legacy compat fields
         public string DisplayName { get; set; }
         public string Description { get; set; }
         public List<ObjectiveDefinition> Objectives { get; set; } = new List<ObjectiveDefinition>();
         public List<ConditionDefinition> Conditions { get; set; } = new List<ConditionDefinition>();
         public bool IsMainProgression { get; set; }
         public bool IsHidden { get; set; }
+
+        public bool CanExpire() => Category != QuestCategory.Main && ExpiryRuleIds.Count > 0;
     }
 
     public class ObjectiveDefinition
