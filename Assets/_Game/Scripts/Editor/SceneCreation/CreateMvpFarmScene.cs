@@ -769,15 +769,17 @@ namespace CindarsHope.Editor.SceneCreation
             var parent = new GameObject("FarmSceneFoundationZones");
             parent.transform.position = Vector3.zero;
 
+            // Reconciled layout v2 (2026-06-08): trees consolidated east, crops moved from portal area,
+            // house entrance moved from bounds edge, bounds reduced to 28x22.
             CreateFarmSceneZone(parent.transform, "Zone_PlayerSpawn", FarmSceneZoneType.PlayerSpawn, "farm_zone_player_spawn", new Vector3(0f, 0f, 0f), new Vector2(1.4f, 1.4f), new Color(0.2f, 0.45f, 0.95f, 0.65f));
-            CreateFarmSceneZone(parent.transform, "Zone_CropField", FarmSceneZoneType.CropField, "farm_zone_crop_field", new Vector3(-4.75f, 0.35f, 0f), new Vector2(5.2f, 4.6f), new Color(0.35f, 0.22f, 0.12f, 0.45f));
-            CreateFarmSceneZone(parent.transform, "Zone_ResourceTrees", FarmSceneZoneType.ResourceTrees, "farm_zone_resource_trees", new Vector3(7.5f, 1.2f, 0f), new Vector2(9.5f, 8f), new Color(0.14f, 0.48f, 0.18f, 0.35f));
-            CreateFarmSceneZone(parent.transform, "Zone_ResourceRocks", FarmSceneZoneType.ResourceRocks, "farm_zone_resource_rocks", new Vector3(-10.5f, 5.5f, 0f), new Vector2(4.5f, 3.5f), new Color(0.42f, 0.42f, 0.42f, 0.55f));
-            CreateFarmSceneZone(parent.transform, "Zone_Forage", FarmSceneZoneType.Forage, "farm_zone_forage", new Vector3(-9.5f, 0.5f, 0f), new Vector2(4.5f, 5.5f), new Color(0.45f, 0.64f, 0.25f, 0.4f));
+            CreateFarmSceneZone(parent.transform, "Zone_CropField", FarmSceneZoneType.CropField, "farm_zone_crop_field", new Vector3(1f, -2.25f, 0f), new Vector2(5.5f, 5.5f), new Color(0.35f, 0.22f, 0.12f, 0.45f));
+            CreateFarmSceneZone(parent.transform, "Zone_ResourceTrees", FarmSceneZoneType.ResourceTrees, "farm_zone_resource_trees", new Vector3(9.5f, 1.0f, 0f), new Vector2(10.0f, 13.0f), new Color(0.14f, 0.48f, 0.18f, 0.35f));
+            CreateFarmSceneZone(parent.transform, "Zone_ResourceRocks", FarmSceneZoneType.ResourceRocks, "farm_zone_resource_rocks", new Vector3(-9.0f, 5.0f, 0f), new Vector2(4.5f, 3.5f), new Color(0.42f, 0.42f, 0.42f, 0.55f));
+            CreateFarmSceneZone(parent.transform, "Zone_Forage", FarmSceneZoneType.Forage, "farm_zone_forage", new Vector3(-8.0f, -2.0f, 0f), new Vector2(4.5f, 4.5f), new Color(0.45f, 0.64f, 0.25f, 0.4f));
             CreateFarmSceneZone(parent.transform, "Zone_LakeFishing", FarmSceneZoneType.LakeFishing, "farm_zone_lake_fishing", new Vector3(7.8f, -2.8f, 0f), new Vector2(5.8f, 4.4f), new Color(0.18f, 0.44f, 0.82f, 0.5f));
-            CreateFarmSceneZone(parent.transform, "Zone_ShippingSellpoint", FarmSceneZoneType.ShippingSellpoint, "farm_zone_shipping_sellpoint", new Vector3(10.5f, 5.6f, 0f), new Vector2(2.2f, 2.2f), new Color(0.85f, 0.62f, 0.18f, 0.65f));
-            CreateFarmSceneZone(parent.transform, "Zone_Construction", FarmSceneZoneType.Construction, "farm_zone_construction", new Vector3(0f, 6.2f, 0f), new Vector2(5.5f, 3.2f), new Color(0.58f, 0.45f, 0.32f, 0.45f));
-            CreateFarmSceneZone(parent.transform, "Zone_HouseEntrance", FarmSceneZoneType.HouseEntrance, "farm_zone_house_entrance", new Vector3(-12.4f, -5.6f, 0f), new Vector2(2.2f, 1.6f), new Color(0.62f, 0.36f, 0.25f, 0.65f));
+            CreateFarmSceneZone(parent.transform, "Zone_ShippingSellpoint", FarmSceneZoneType.ShippingSellpoint, "farm_zone_shipping_sellpoint", new Vector3(3.5f, 7.5f, 0f), new Vector2(3.5f, 2.5f), new Color(0.85f, 0.62f, 0.18f, 0.65f));
+            CreateFarmSceneZone(parent.transform, "Zone_Construction", FarmSceneZoneType.Construction, "farm_zone_construction", new Vector3(-1.0f, 9.0f, 0f), new Vector2(6.0f, 3.0f), new Color(0.58f, 0.45f, 0.32f, 0.45f));
+            CreateFarmSceneZone(parent.transform, "Zone_HouseEntrance", FarmSceneZoneType.HouseEntrance, "farm_zone_house_entrance", new Vector3(-5.0f, -7.0f, 0f), new Vector2(2.5f, 2.0f), new Color(0.62f, 0.36f, 0.25f, 0.65f));
             CreateFarmSceneZone(parent.transform, "Zone_TownExit", FarmSceneZoneType.TownExit, "farm_zone_town_exit", new Vector3(-8.25f, -4.75f, 0f), new Vector2(1.6f, 2.4f), new Color(0.82f, 0.82f, 0.25f, 0.55f));
             CreateFarmSceneZone(parent.transform, "Zone_CaveEntrance", FarmSceneZoneType.CaveEntrance, "farm_zone_cave_entrance", new Vector3(-5.5f, 0f, 0f), new Vector2(1.8f, 2.4f), new Color(0.35f, 0.28f, 0.5f, 0.65f));
         }
@@ -900,12 +902,12 @@ namespace CindarsHope.Editor.SceneCreation
             }
 
             var parent = new GameObject("FarmPlots");
-            parent.transform.position = new Vector3(-4.75f, -1f, 0f);
+            parent.transform.position = new Vector3(1f, -1.5f, 0f);
             var registry = parent.AddComponent<FarmPlotRegistry>();
 
             const int gridSize = 3;
             const float spacing = 1.35f;
-            var startPosition = new Vector3(-spacing, 2.25f, 0f);
+            var startPosition = new Vector3(-spacing, spacing, 0f);
             var plots = new FarmPlot[gridSize * gridSize];
 
             for (var y = 0; y < gridSize; y++)
@@ -971,26 +973,28 @@ namespace CindarsHope.Editor.SceneCreation
             parent.transform.position = Vector3.zero;
             var registry = parent.AddComponent<TreeRegistry>();
 
+            // All 19 trees consolidated to east cluster (x: 6-13, y: -5 to +5.5)
+            // Trees 3-6 previously on west side (-8 to -6) moved here to align with Zone_ResourceTrees
             var trees = new TreeNode[19];
-            trees[0] = CreateTree(parent.transform, 0, new Vector3(6.5f, 3.5f, 0f), treeData, inventoryManager);
-            trees[1] = CreateTree(parent.transform, 1, new Vector3(7.5f, 1.5f, 0f), treeData, inventoryManager);
-            trees[2] = CreateTree(parent.transform, 2, new Vector3(6.25f, -0.75f, 0f), treeData, inventoryManager);
-            trees[3] = CreateTree(parent.transform, 3, new Vector3(-8.2f, 4.6f, 0f), treeData, inventoryManager);
-            trees[4] = CreateTree(parent.transform, 4, new Vector3(-6.4f, 3.2f, 0f), treeData, inventoryManager);
-            trees[5] = CreateTree(parent.transform, 5, new Vector3(-8.4f, 1.2f, 0f), treeData, inventoryManager);
-            trees[6] = CreateTree(parent.transform, 6, new Vector3(-7.6f, -3.1f, 0f), treeData, inventoryManager);
-            trees[7] = CreateTree(parent.transform, 7, new Vector3(-2.3f, 4.8f, 0f), treeData, inventoryManager);
-            trees[8] = CreateTree(parent.transform, 8, new Vector3(1.9f, 4.5f, 0f), treeData, inventoryManager);
-            trees[9] = CreateTree(parent.transform, 9, new Vector3(4.8f, 4.6f, 0f), treeData, inventoryManager);
-            trees[10] = CreateTree(parent.transform, 10, new Vector3(8.5f, 2.9f, 0f), treeData, inventoryManager);
-            trees[11] = CreateTree(parent.transform, 11, new Vector3(8.7f, -0.4f, 0f), treeData, inventoryManager);
-            trees[12] = CreateTree(parent.transform, 12, new Vector3(2.2f, -4.9f, 0f), treeData, inventoryManager);
-            trees[13] = CreateTree(parent.transform, 13, new Vector3(5.6f, 0.25f, 0f), treeData, inventoryManager);
-            trees[14] = CreateTree(parent.transform, 14, new Vector3(9.8f, 0.15f, 0f), treeData, inventoryManager);
-            trees[15] = CreateTree(parent.transform, 15, new Vector3(4.6f, -2.8f, 0f), treeData, inventoryManager);
-            trees[16] = CreateTree(parent.transform, 16, new Vector3(10.95f, -2.7f, 0f), treeData, inventoryManager);
-            trees[17] = CreateTree(parent.transform, 17, new Vector3(6.1f, -5.8f, 0f), treeData, inventoryManager);
-            trees[18] = CreateTree(parent.transform, 18, new Vector3(9.3f, -5.75f, 0f), treeData, inventoryManager);
+            trees[0]  = CreateTree(parent.transform, 0,  new Vector3(6.5f,  5.0f, 0f), treeData, inventoryManager);
+            trees[1]  = CreateTree(parent.transform, 1,  new Vector3(8.0f,  5.5f, 0f), treeData, inventoryManager);
+            trees[2]  = CreateTree(parent.transform, 2,  new Vector3(10.0f, 5.5f, 0f), treeData, inventoryManager);
+            trees[3]  = CreateTree(parent.transform, 3,  new Vector3(12.0f, 5.0f, 0f), treeData, inventoryManager);
+            trees[4]  = CreateTree(parent.transform, 4,  new Vector3(6.5f,  3.0f, 0f), treeData, inventoryManager);
+            trees[5]  = CreateTree(parent.transform, 5,  new Vector3(8.5f,  3.5f, 0f), treeData, inventoryManager);
+            trees[6]  = CreateTree(parent.transform, 6,  new Vector3(10.5f, 3.5f, 0f), treeData, inventoryManager);
+            trees[7]  = CreateTree(parent.transform, 7,  new Vector3(12.5f, 3.0f, 0f), treeData, inventoryManager);
+            trees[8]  = CreateTree(parent.transform, 8,  new Vector3(7.0f,  1.5f, 0f), treeData, inventoryManager);
+            trees[9]  = CreateTree(parent.transform, 9,  new Vector3(9.0f,  1.5f, 0f), treeData, inventoryManager);
+            trees[10] = CreateTree(parent.transform, 10, new Vector3(11.0f, 1.5f, 0f), treeData, inventoryManager);
+            trees[11] = CreateTree(parent.transform, 11, new Vector3(7.5f, -0.5f, 0f), treeData, inventoryManager);
+            trees[12] = CreateTree(parent.transform, 12, new Vector3(9.5f, -0.5f, 0f), treeData, inventoryManager);
+            trees[13] = CreateTree(parent.transform, 13, new Vector3(11.5f,-0.5f, 0f), treeData, inventoryManager);
+            trees[14] = CreateTree(parent.transform, 14, new Vector3(6.5f, -2.0f, 0f), treeData, inventoryManager);
+            trees[15] = CreateTree(parent.transform, 15, new Vector3(8.5f, -2.5f, 0f), treeData, inventoryManager);
+            trees[16] = CreateTree(parent.transform, 16, new Vector3(10.5f,-2.5f, 0f), treeData, inventoryManager);
+            trees[17] = CreateTree(parent.transform, 17, new Vector3(6.5f, -4.5f, 0f), treeData, inventoryManager);
+            trees[18] = CreateTree(parent.transform, 18, new Vector3(9.0f, -5.0f, 0f), treeData, inventoryManager);
 
             registry.Configure(trees);
             EditorUtility.SetDirty(registry);
@@ -1076,11 +1080,11 @@ namespace CindarsHope.Editor.SceneCreation
             var bounds = new GameObject("Bounds");
             bounds.transform.position = Vector3.zero;
 
-            // Farm: ~4x area (2x per axis) — was 20x17, now 40x34
-            CreateBound("Top", bounds.transform, new Vector2(0f, 17f), new Vector2(40f, 1f));
-            CreateBound("Bottom", bounds.transform, new Vector2(0f, -17f), new Vector2(40f, 1f));
-            CreateBound("Left", bounds.transform, new Vector2(-20.5f, 0f), new Vector2(1f, 34f));
-            CreateBound("Right", bounds.transform, new Vector2(20.5f, 0f), new Vector2(1f, 34f));
+            // Farm bounds: 28x22 (reconciled v2 — reduced from 40x34 to reduce empty space)
+            CreateBound("Top", bounds.transform, new Vector2(0f, 11f), new Vector2(28f, 1f));
+            CreateBound("Bottom", bounds.transform, new Vector2(0f, -11f), new Vector2(28f, 1f));
+            CreateBound("Left", bounds.transform, new Vector2(-14.5f, 0f), new Vector2(1f, 22f));
+            CreateBound("Right", bounds.transform, new Vector2(14.5f, 0f), new Vector2(1f, 22f));
         }
 
         private static void CreateBound(string name, Transform parent, Vector2 position, Vector2 size)

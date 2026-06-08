@@ -1,8 +1,65 @@
 # WAVE INTEGRATION 04 - Human Play Mode Checklist
 
-## Status
+## Status Update (2026-06-08)
 
-PENDING
+BLOCKED_PENDING_SCENE_REGENERATION -> CODE_READY_TO_REGENERATE
+
+Before running this checklist:
+1. Open Unity Editor
+2. Run: CindarsHope/Advanced/Legacy/Scenes/Create MVP FarmScene
+3. Confirm no Console errors
+4. Then execute the checklist below
+
+## Play Mode Checklist — WAVE_INTEGRATION_04+05 Reconciliation
+
+Precondition: CindarsHope/Advanced/Legacy/Scenes/Create MVP FarmScene has been run in Unity Editor.
+
+### Scene Opens
+- [ ] FarmScene opens without Unity Console errors
+- [ ] No missing script warnings
+- [ ] No broken PPtr references
+
+### Layout Readability
+- [ ] Player visible at center
+- [ ] CropField recognizable as distinct area (3x3 brown plots, center of map)
+- [ ] Trees clustered visibly on east side (no trees on west)
+- [ ] LakeFishing zone visible on east-center
+- [ ] Cave portal visible on left
+- [ ] Town portal visible on bottom-left
+- [ ] Zone markers do not overlap player spawn area
+- [ ] Debug overlay (if present) does not cover crop field
+
+### Player Movement
+- [ ] Player moves in all 4 directions
+- [ ] Camera follows player
+- [ ] Player does not clip through bounds
+
+### Crop Interaction (WAVE05 smoke loop on FarmPlot_00)
+- [ ] Walk player to FarmPlot_00 (first/closest plot)
+- [ ] Interact -> see option "Arar solo"
+- [ ] Plot changes to TilledDry state (color/visual change)
+- [ ] Interact -> see option "Molhar solo"
+- [ ] Plot changes to TilledWet state
+- [ ] Interact -> see option "Plantar" with seed_carrot
+- [ ] Plot changes to Planted state
+- [ ] Interact -> see option "Simular crescimento" (temporary smoke hook)
+- [ ] Plot changes to ReadyToHarvest state
+- [ ] Interact -> "Harvest" -> item_crop_carrot appears in inventory (or debug log)
+- [ ] No Unity Console errors during full smoke loop
+
+### Zone Navigation
+- [ ] Walk to town portal area (southwest) — zone visible
+- [ ] Walk to cave portal area (left) — zone visible
+- [ ] Walk toward east — trees visible in cluster
+- [ ] Lake area visible on east-center
+
+### Stop Play Mode
+- [ ] Exit Play Mode without corrupting scene
+- [ ] FarmScene.unity unchanged after Play Mode exit
+
+## Previous Status (archived)
+
+Status was PENDING
 
 ## Preconditions
 

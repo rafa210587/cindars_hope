@@ -188,3 +188,23 @@ No new WAVE_INTEGRATION_04 report/doc was listed as a docs validation failure.
 - Can start WAVE_INTEGRATION_05: YES after human Play Mode checklist passes or the human explicitly accepts residual Play Mode risk.
 - Blocking issues: None in C# build/static scene wiring.
 - Human Play Mode validation required: YES.
+
+## Post-WAVE05 Spatial Reconciliation (2026-06-08)
+
+Problem visual found: Trees scattered across west+east, crop field overlapping cave portal zone, house entrance near bounds edge, zone markers misaligned with objects.
+
+Status before: SCENE_REVERTED_TO_WAVE03 — FarmScene reverted to WAVE03 baseline after YAML corruption in WAVE04 zone wiring attempt.
+
+Layout new: See docs/validation/WAVE_INTEGRATION_04_FARMSCENE_ZONE_MAP.md (v2).
+
+Objects from WAVE05 preserved: FarmPlot.cs crop interactable code intact; CreateMvpFarmScene.cs WAVE04+05 code intact.
+
+Crop plots repositioned: FarmPlots parent moved from (-4.75, -1) to (1, -1.5) to separate from portals; placed inside updated Zone_CropField at (1, -2.25).
+
+References corrected: CreateMvpFarmScene correctly wires all FarmPlot refs (WAVE05 staminaManager, seedDatabase, inventoryManager, smoke hook on FarmPlot_00).
+
+Duplicated/removed: No duplicate crop system; FarmPlot reused as per WAVE05 decision.
+
+What depends on human action: Must run CindarsHope/Advanced/Legacy/Scenes/Create MVP FarmScene in Unity Editor to apply corrected layout.
+
+New WAVE04 status: CODE_READY_HUMAN_UNITY_SCENE_ACTION_REQUIRED

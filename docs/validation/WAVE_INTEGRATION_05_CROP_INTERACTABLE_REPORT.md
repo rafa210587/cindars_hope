@@ -114,3 +114,13 @@ Scene/Play Mode gate: BLOCKED until WAVE05 wiring is reapplied safely and Play M
 - Can start WAVE_INTEGRATION_06: NO.
 - Blocking issue: WAVE05 scene wiring was reverted after FarmScene YAML corruption.
 - Required next action: reapply WAVE05 plot wiring via Unity Editor/Inspector or safe Editor API; then run human Play Mode checklist.
+
+## Post-WAVE05 Spatial Reconciliation (2026-06-08)
+
+Problem visual: FarmPlots positioned adjacent to cave portal; trees overlapping crop zone.
+WAVE05 objects preserved: FarmPlot.cs code intact; CreateMvpFarmScene.cs wiring intact.
+Crop plots moved: FarmPlots parent moved to (1, -1.5); within Zone_CropField at (1, -2.25).
+Duplicate crop system: NONE — FarmPlot continues as sole crop interactable.
+Orphaned plots: NONE.
+New status: BUILD_VALIDATED_CODE_READY_SCENE_REVERTED (unchanged — scene still needs regeneration).
+Required human action: Run generator in Unity Editor; then validate Play Mode smoke loop on FarmPlot_00.

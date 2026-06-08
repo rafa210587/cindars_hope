@@ -2,7 +2,18 @@
 
 Date: 2026-06-08
 Target scene: `Assets/_Game/Scenes/FarmScene.unity`
-Status: BLOCKED_UNTIL_SAFE_SCENE_WIRING_REAPPLIED
+Status: CODE_READY_TO_REGENERATE
+
+## Status Update (2026-06-08)
+
+BLOCKED_PENDING_SCENE_REGENERATION -> CODE_READY_TO_REGENERATE
+
+Before running this checklist:
+1. Open Unity Editor
+2. Run: CindarsHope/Advanced/Legacy/Scenes/Create MVP FarmScene
+3. Confirm FarmScene.unity loads without Console errors
+4. Enter Play Mode
+5. Execute checklist items below (especially FarmPlot_00 smoke loop)
 
 ## Current state after hotfix
 
