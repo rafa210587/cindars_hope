@@ -38,38 +38,38 @@ Após geração da batch 36 (154 specs) e limpeza de legacy (7 specs absorvidas)
 
 | Ordem | Spec | Status | Wave | Observacao |
 |---|---|---|---|---|
-| 00.04 | `00_spec_existing_implementation_audit.md` | A implementar - auditoria/governanca | 00 | Audita estado real antes de specs runtime; bloqueia 01+ |
+| 00.04 | `00_spec_existing_implementation_audit.md` | **BUILD_VALIDATED** | 00 | ✓ Auditoria completa; commit ee1c0fb+ |
 
 ### WAVE 01 — Hardening & Quality Gate
 
 | Ordem | Spec | Status | Wave | Observacao |
 |---|---|---|---|---|
-| 01.01 | `01_spec_stable_ids_registry_runtime.md` | A implementar - hardening/residual | 01 | Estabiliza IDs; bloqueia 01.02+ |
-| 01.02 | `01_spec_game_event_contracts_runtime.md` | A implementar - hardening/residual | 01 | Eventos; depende 01.01 |
-| 01.03 | `01_spec_save_restore_order_contract_runtime.md` | A implementar - hardening/residual | 01 | Restore order; depende 01.02 |
-| 01.04 | `01_spec_save_section_ownership_registry.md` | A implementar - hardening/residual | 01 | Ownership; depende 01.03 |
-| 01.05 | `01_spec_save_provider_architecture_runtime.md` | A implementar - hardening/residual | 01 | Providers; depende 01.04 |
-| 01.06 | `01_spec_invalid_id_fallback_rules.md` | A implementar - hardening/residual | 01 | ID fallback validação |
-| 01.07 | `01_spec_playmode_validation_baseline.md` | A implementar - quality gate | 01 | Play Mode foundation |
-| 01Q | `spec_test_harness_editmode_playmode_quality_gate.md` | A implementar - quality gate | 01 | Fundacional; deve executar antes de WAVE 02+ |
+| 01.01 | `01_spec_stable_ids_registry_runtime.md` | **BUILD_VALIDATED** | 01 | ✓ IDs estabilizados; commit WAVE 01 |
+| 01.02 | `01_spec_game_event_contracts_runtime.md` | **BUILD_VALIDATED** | 01 | ✓ Event contracts; commit WAVE 01 |
+| 01.03 | `01_spec_save_restore_order_contract_runtime.md` | **BUILD_VALIDATED** | 01 | ✓ Restore order; commit WAVE 01 |
+| 01.04 | `01_spec_save_section_ownership_registry.md` | **BUILD_VALIDATED** | 01 | ✓ Ownership registry; commit WAVE 01 |
+| 01.05 | `01_spec_save_provider_architecture_runtime.md` | **BUILD_VALIDATED** | 01 | ✓ Providers; commit WAVE 01 |
+| 01.06 | `01_spec_invalid_id_fallback_rules.md` | **BUILD_VALIDATED** | 01 | ✓ ID fallback; commit WAVE 01 |
+| 01.07 | `01_spec_playmode_validation_baseline.md` | **BUILD_VALIDATED** | 01 | ✓ Play Mode baseline; commit WAVE 01 |
+| 01Q | `spec_test_harness_editmode_playmode_quality_gate.md` | **BUILD_VALIDATED** | 01 | ✓ Quality gate fundacional; commit WAVE 01 |
 
-**Total WAVE 01:** 8 specs hardening/quality gate — bloqueia WAVE 02+ até completo
+**Total WAVE 01:** 8 specs BUILD_VALIDATED — WAVE 02+ desbloqueado
 
 ### WAVE 02-10 — Core Runtime
 
 | Wave | Specs | Contagem | Status | Observacao |
 |---|---|---|---|---|
-| 02 | Time/Calendar/Weather/Lunar | 8 | A implementar | Fundação de tempo; bloqueia WAVE 03+ |
-| 03 | Quest/Objective/Event | 10 | A implementar | Sistema de quests; bloqueia WAVE 06+ |
-| 04 | UI Foundation | 21 | A implementar | Modal/focus/HUD/dialogue/equipment/menus |
-| 05 | Farm/Inventory/Companion | 23 | A implementar | Farm, items, equipment, companion jobs |
-| 06 | Economy/Loot/Crafting | 8 | A implementar | Shop/pricing, recipes, loot tables |
-| 07 | (merged to other waves) | 0 | — | — |
-| 08 | City/NPC/Dialogue | 4 | A implementar | NPC services, layout, dialogue hooks |
-| 09 | Quest/Player/Skills (duplicate 03) | 7 | A implementar | Quests (alternate), skills, player condition |
-| 10 | Endgame/Memory/Fonte | 4 | A implementar | Level 100-101, memory arc, Fonte functions |
-| 11 | UI Projections/HUD | 4 | A implementar | UI hotbar, focus, inventory tooltips |
-| 12 | Docs/Consolidation | 2 | A implementar | Final validation checklist, roadmap closeout |
+| 02 | Time/Calendar/Weather/Lunar | 8 | **BUILD_VALIDATED** | ✓ 7/8 BUILD_VALIDATED; 1 UI deferred; closeout WAVE_02 |
+| 03 | Quest/Objective/Event | 10 | **BUILD_VALIDATED** | ✓ 8/8 runtime BUILD_VALIDATED; 4 future blocked; closeout WAVE_03 |
+| 04 | UI Foundation | 21 | **BUILD_VALIDATED** | ✓ 14/14 reports; 3 BUILD_VALIDATED, 11 CONTRACT_ONLY; closeout WAVE_04 |
+| 05 | Farm/Inventory/Companion | 23 | **BUILD_VALIDATED** | ✓ 20/20 BUILD_VALIDATED; ~123 EditMode tests; closeout WAVE_05 |
+| 06 | Economy/Loot/Crafting | 8 | **BUILD_VALIDATED** | ✓ 8/8 BUILD_VALIDATED; ~75 EditMode tests; closeout WAVE_06 |
+| 07 | (merged to other waves) | 0 | — | DOES_NOT_EXIST — no 07_spec_*.md files found |
+| 08 | City/NPC/Dialogue | 4 | **BUILD_VALIDATED** | ✓ 4/4 BUILD_VALIDATED; ~61 EditMode tests; closeout WAVE_08 |
+| 09 | Quest/Player/Skills (duplicate 03) | 7 | **BUILD_VALIDATED** | ✓ 8/8 BUILD_VALIDATED; ~107 EditMode tests; closeout WAVE_09 |
+| 10 | Endgame/Memory/Fonte | 4 | **BUILD_VALIDATED** | ✓ 4/4 BUILD_VALIDATED; ~72 EditMode tests; closeout WAVE_10 |
+| 11 | UI Projections/HUD | 4 | **BUILD_VALIDATED** | ✓ 4/4 BUILD_VALIDATED; ~96 EditMode tests; closeout WAVE_11 |
+| 12 | Docs/Consolidation | 2 | IN_PROGRESS | Spec 1 in execution (2026-06-08) |
 | 13 | Bestiary | 2 | A implementar | Bestiary state/UI future hooks |
 
 **Total WAVE 02-12:** 93 specs core/runtime
@@ -127,15 +127,31 @@ Após a reconciliação das 154 specs novas wave-based, 7 specs antigas da era p
 - ✓ **Specs absorvidas:** 7 em `absorvidas/legacy_pre_wave_reconciliation/`
 - ✓ **Fila ativa:** 147 specs (100% wave-based)
 
-### Status de Execução
+### Status de Execução (Atualizado 2026-06-08)
 
-**Próxima execução permitida:**
-1. 00.04 Existing Implementation Audit (governance)
-2. WAVE 01 hardening (01.01-01.05 + 01Q quality gate) 
-3. WAVE 02-24 runtime/future em ordem por dependência
+**Waves executadas e BUILD_VALIDATED:**
+- ✓ WAVE 00 — Auditoria existente
+- ✓ WAVE 01 — Hardening/Quality Gate (8 specs)
+- ✓ WAVE 02 — Time/Calendar/Weather/Lunar (7/8 BUILD_VALIDATED)
+- ✓ WAVE 03 — Quest/Objective/Event (8/8 runtime BUILD_VALIDATED)
+- ✓ WAVE 04 — UI Foundation (14/14 reports; BUILD_VALIDATED + CONTRACT_ONLY)
+- ✓ WAVE 05 — Farm Gameplay Core (20/20 BUILD_VALIDATED; ~123 EditMode tests)
+- ✓ WAVE 06 — Economy/Loot/Crafting/Shop/Cave (8/8 BUILD_VALIDATED; ~75 EditMode tests)
+- (WAVE 07 NÃO EXISTE — sem specs 07_spec_*.md)
+- ✓ WAVE 08 — City/NPC/Dialogue/Services (4/4 BUILD_VALIDATED; ~61 EditMode tests)
+- ✓ WAVE 09 — Quest System (8/8 BUILD_VALIDATED; ~107 EditMode tests)
+- ✓ WAVE 10 — Main Progression/Fonte/Endgame (4/4 BUILD_VALIDATED; ~72 EditMode tests)
+- ✓ WAVE 11 — UI Projections/HUD/Input/Inventory/Menus (4/4 BUILD_VALIDATED; ~96 EditMode tests)
 
-**Bloqueado:**
-- Nenhuma spec antiga executável
-- WAVE 02+ bloqueado até 01Q completo
+**Em execução:**
+- WAVE 12 — Docs/Consolidation (2 specs, in progress 2026-06-08)
+
+**Próxima execução permitida após WAVE 12:**
+- WAVE 13 — Bestiary (2 specs)
+- WAVE 17-24 — Future Mapped (somente quando autorizado)
+
+**Permanentemente bloqueado:**
+- WAVE 23 (pets) — HOLD/BLOCKED_SCOPE
+- Specs com sufixo _future — NÃO EXECUTAR
 - Future/mapped (WAVE 17-24) bloqueado por política
 - Pets (WAVE 23) bloqueado como HOLD/BLOCKED_SCOPE

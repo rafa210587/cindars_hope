@@ -983,3 +983,165 @@ Exemplo:
 docs/validation/final/wave_07_human_validation_report.md
 docs/validation/final/full_game_human_validation_report.md
 ```
+
+---
+
+## Nota de Correção de Numeração — SPEC 12 (2026-06-08)
+
+As seções "WAVE 10 — Cave/Combat/Enemies/Death" e "WAVE 11 — Bestiary/Knowledge Discovery" acima foram geradas antes da execução real e referem-se ao CONTEÚDO correto mas com NUMERAÇÃO desatualizada. No plano de execução real:
+
+- WAVE 10 executada = **Main Progression / Fonte / Endgame** (level 100/101, FinalChoice, MemoryArc, BlackStone)
+- WAVE 11 executada = **UI Projections / HUD / Input Focus / Inventory / Shop menus**
+
+As seções corretas para validação humana dessas waves executadas estão abaixo.
+
+---
+
+# WAVE 10 (Executada) — Main Progression / Fonte / Endgame
+
+## Objetivo da validação humana
+
+Confirmar que level 100 gate, level 101 unlock, final choice, memory arc / BlackStone threats, e Fonte functions avançam e persistem sem spoilers indevidos.
+
+## Unity necessário
+
+```text
+SIM — requer FlowScene, cena principal, Fonte scene ou equivalente.
+```
+
+## Passos
+
+### W10.1 Level 100 gate
+
+1. Criar estado de save com nível próximo a 100 ou usar ferramenta de debug autorizada.
+2. Confirmar que level 100 gate aparece apenas quando requisito do fragmento de Life está presente.
+3. Tentar passar o gate sem Life fragment.
+4. Confirmar que bloqueio é visível e explícito.
+
+### W10.2 Level 101 unlock
+
+1. Completar requisito de Life fragment + Level 100 gate.
+2. Confirmar que opção de nível 101 fica disponível.
+3. Confirmar que nível 101 não fica disponível sem Hope fragment ou requisito final.
+4. Confirmar que o estado persiste após save/load.
+
+### W10.3 Final Choice
+
+1. Cumprir requisitos para FinalChoice (Hope fragment + Level 101 access + confirmação forte).
+2. Escolher uma das 3 opções (Protect / Seal / Use).
+3. Confirmar que o resultado é idempotente.
+4. Tentar escolher novamente após escolha feita.
+5. Confirmar bloqueio idempotente.
+6. Confirmar que save/load preserva o estado correto.
+
+### W10.4 Memory Arc / BlackStone spoiler gate
+
+1. Confirmar que MemoryArcState começa em Unknown.
+2. Avançar pelo ato 1 sem trigger de MemoryArc.
+3. Confirmar que termos/personagens do Memory Arc (Sethra, Vaelrion) não aparecem.
+4. Avançar até ato que desbloqueia MemoryArc.
+5. Confirmar desbloqueio incremental conforme ato.
+
+### W10.5 Fonte functions gate
+
+1. Acessar Fonte UI.
+2. Confirmar que Respec está oculto (antes do Memory fragment).
+3. Confirmar que Purification está oculta (antes do Life fragment).
+4. Confirmar que FinalChoice está oculta (antes de Hope/final route).
+5. Desbloquear fragmento e confirmar que a função correspondente aparece.
+
+## Critério de PASS
+
+```text
+Level 100/101 gates respeitam requisitos, FinalChoice é idempotente, Memory Arc respeita spoiler por ato, Fonte mostra apenas funções desbloqueadas.
+```
+
+---
+
+# WAVE 11 (Executada) — UI Projections / HUD / Input Focus / Inventory / Menus
+
+## Objetivo da validação humana
+
+Confirmar que HUD projections, input focus modal routing, inventário com proteções, equipment comparison e menus de shop/crafting/skill tree/Fonte funcionam sem permitir gameplay input atrás de modais e sem revelar itens proibidos como vendáveis.
+
+## Unity necessário
+
+```text
+SIM — requer cenas com HUD ativo, inventory UI, shop, crafting, Fonte menu, skill tree.
+```
+
+## Passos
+
+### W11.1 HUD projection
+
+1. Entrar em Play Mode.
+2. Observar HUD principal.
+3. Confirmar que hotbar mostra até 4 active skill slots.
+4. Confirmar que nenhum slot de Dash/Dodge/Block aparece no hotbar.
+5. Confirmar que debug info não aparece na HUD final (apenas em builds debug).
+6. Confirmar que notificações aparecem com prioridade correta e não excedem cap.
+
+### W11.2 Modal input blocking
+
+1. Abrir inventário.
+2. Tentar mover WASD enquanto inventário está aberto.
+3. Confirmar que jogador não se move.
+4. Fechar inventário.
+5. Confirmar que WASD volta a funcionar.
+6. Repetir para shop, crafting, skill tree, Fonte menu.
+
+### W11.3 Inventory proteções
+
+1. Tentar vender item de quest no shop.
+2. Confirmar que item não aparece como vendável ou mostra proteção explícita.
+3. Tentar descartar item de chave (key item).
+4. Confirmar bloqueio com mensagem clara.
+5. Tentar descartar item Unique.
+6. Confirmar que aparece confirmação forte.
+
+### W11.4 Equipment comparison
+
+1. Abrir inventário com item equipável.
+2. Selecionar item candidato.
+3. Ver comparação de stats.
+4. Confirmar que a comparação é preview only — item não é equipado automaticamente.
+5. Confirmar que stats corretos aparecem (AttackDelta, DefenseDelta).
+
+### W11.5 Shop Buy/Sell mode
+
+1. Abrir shop.
+2. Entrar no modo Buy.
+3. Confirmar que o estoque da loja aparece.
+4. Entrar no modo Sell.
+5. Confirmar que o inventário vendável do jogador aparece.
+6. Confirmar que itens de quest/chave não aparecem como vendáveis.
+7. Testar empty state — loja sem estoque deve mostrar mensagem, não tela em branco.
+
+### W11.6 Crafting menu
+
+1. Abrir crafting.
+2. Ver receita disponível vs. bloqueada.
+3. Tentar craftar receita sem materiais.
+4. Confirmar mensagem de ingrediente faltando com detalhes corretos.
+
+### W11.7 Skill tree menu
+
+1. Abrir skill tree.
+2. Confirmar 5 árvores/abas disponíveis.
+3. Ver active slots (máximo 4).
+4. Confirmar que Respec não aparece antes do Memory fragment.
+5. Tentar comprar node sem pré-requisito.
+6. Confirmar bloqueio com reason text.
+
+### W11.8 Fonte menu
+
+1. Abrir Fonte menu (se cena disponível).
+2. Confirmar que funções não desbloqueadas estão ocultas.
+3. Confirmar que Living Water básico aparece se desbloqueado.
+4. Confirmar que Respec/Purification/FinalChoice não aparecem antes dos fragmentos corretos.
+
+## Critério de PASS
+
+```text
+HUD não excede limites de slot nem mostra debug, input é bloqueado em todos modais, proteções de item funcionam, equipment comparison é preview-only, menus mostram estados corretos com spoiler gates respeitados.
+```
