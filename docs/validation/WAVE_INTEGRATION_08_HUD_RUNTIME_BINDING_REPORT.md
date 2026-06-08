@@ -169,7 +169,7 @@ No new MonoBehaviour scripts created. No Canvas/UIDocument created. No prefabs c
 |---|---|---|---|
 | Assembly-CSharp | PASS (0E/0W) | PASS (0E/0W) | PASS |
 | Assembly-CSharp-Editor | PASS (0E/3W) | PASS (0E/3W) | PASS |
-| Docs validation | EXPECTED_FAIL_LEGACY_ONLY | (not re-run) | EXPECTED_FAIL_LEGACY_ONLY |
+| Docs validation | EXPECTED_FAIL_LEGACY_ONLY | EXPECTED_FAIL_LEGACY_ONLY (confirmed) | EXPECTED_FAIL_LEGACY_ONLY |
 
 ---
 
