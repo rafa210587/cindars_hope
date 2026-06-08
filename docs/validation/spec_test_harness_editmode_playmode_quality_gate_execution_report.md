@@ -19,7 +19,7 @@ Spec 01Q completed: consolidated testing quality gate requirements. Testing qual
 - ✓ Status caps enforced: BUILD_VALIDATED (no tests), PARTIAL (partial tests), PLAYMODE_VALIDATED (with evidence)
 - ✓ Final human validation deferred to FINAL_HUMAN_VALIDATION_BY_WAVE.md per wave
 
-**Status:** `BUILD_VALIDATED` — Quality gate ready for WAVE 02+ execution.
+**Status:** `BUILD_VALIDATED` — Quality gate infrastructure defined. Tests created but NOT executed (blocker: pre-existing Assembly-CSharp-Editor compile errors).
 
 ---
 

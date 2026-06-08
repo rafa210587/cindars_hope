@@ -217,7 +217,197 @@ namespace CindarsHope.Save
                 MigrationOwner = "SaveManager"
             },
 
-            // ... (additional sections abbreviated in output)
+            new SaveSectionOwnership
+            {
+                SectionName = "SchemaVersion",
+                DtoType = "int",
+                OwnerDomain = "SaveManager",
+                CaptureOwner = "SaveManager",
+                RestoreOwner = "SaveManager",
+                DefaultBehavior = "Defaults to CurrentSchemaVersion if missing",
+                CanRestoreIndependently = true,
+                DependsOn = Array.Empty<string>(),
+                EnablesRestore = Array.Empty<string>(),
+                PostRestoreEvent = null,
+                RiskLevel = "LOW",
+                MigrationOwner = "SaveManager"
+            },
+
+            new SaveSectionOwnership
+            {
+                SectionName = "CurrentSceneName",
+                DtoType = "string",
+                OwnerDomain = "SaveManager",
+                CaptureOwner = "SaveManager",
+                RestoreOwner = "SaveManager",
+                DefaultBehavior = "Defaults to Farm scene if missing",
+                CanRestoreIndependently = true,
+                DependsOn = Array.Empty<string>(),
+                EnablesRestore = Array.Empty<string>(),
+                PostRestoreEvent = null,
+                RiskLevel = "LOW",
+                MigrationOwner = "SaveManager"
+            },
+
+            new SaveSectionOwnership
+            {
+                SectionName = "CurrentScenePath",
+                DtoType = "string",
+                OwnerDomain = "SaveManager",
+                CaptureOwner = "SaveManager",
+                RestoreOwner = "SaveManager",
+                DefaultBehavior = "Resolved via scene name if missing",
+                CanRestoreIndependently = false,
+                DependsOn = new[] { "CurrentSceneName" },
+                EnablesRestore = Array.Empty<string>(),
+                PostRestoreEvent = null,
+                RiskLevel = "LOW",
+                MigrationOwner = "SaveManager"
+            },
+
+            new SaveSectionOwnership
+            {
+                SectionName = "Crafting",
+                DtoType = "CraftingRuntimeSaveData",
+                OwnerDomain = "CraftingRuntime",
+                CaptureOwner = "CraftingRuntime",
+                RestoreOwner = "CraftingRuntime",
+                DefaultBehavior = "No active crafting jobs if missing",
+                CanRestoreIndependently = false,
+                DependsOn = new[] { "Inventory" },
+                EnablesRestore = Array.Empty<string>(),
+                PostRestoreEvent = null,
+                RiskLevel = "LOW",
+                MigrationOwner = "SaveManager"
+            },
+
+            new SaveSectionOwnership
+            {
+                SectionName = "Stamina",
+                DtoType = "StaminaSaveData",
+                OwnerDomain = "StaminaManager",
+                CaptureOwner = "StaminaManager",
+                RestoreOwner = "StaminaManager",
+                DefaultBehavior = "Full stamina if missing",
+                CanRestoreIndependently = true,
+                DependsOn = Array.Empty<string>(),
+                EnablesRestore = Array.Empty<string>(),
+                PostRestoreEvent = null,
+                RiskLevel = "LOW",
+                MigrationOwner = "SaveManager"
+            },
+
+            new SaveSectionOwnership
+            {
+                SectionName = "GameTime",
+                DtoType = "GameTimeSaveData",
+                OwnerDomain = "GameTimeManager",
+                CaptureOwner = "GameTimeManager",
+                RestoreOwner = "GameTimeManager",
+                DefaultBehavior = "Morning time if missing",
+                CanRestoreIndependently = false,
+                DependsOn = new[] { "CurrentDay" },
+                EnablesRestore = Array.Empty<string>(),
+                PostRestoreEvent = null,
+                RiskLevel = "LOW",
+                MigrationOwner = "SaveManager"
+            },
+
+            new SaveSectionOwnership
+            {
+                SectionName = "PlayerStatusEffects",
+                DtoType = "PlayerStatusEffectsSaveData",
+                OwnerDomain = "StatusEffectManager",
+                CaptureOwner = "StatusEffectManager",
+                RestoreOwner = "StatusEffectManager",
+                DefaultBehavior = "No active status effects if missing",
+                CanRestoreIndependently = false,
+                DependsOn = new[] { "Player" },
+                EnablesRestore = Array.Empty<string>(),
+                PostRestoreEvent = null,
+                RiskLevel = "MEDIUM",
+                MigrationOwner = "SaveManager"
+            },
+
+            new SaveSectionOwnership
+            {
+                SectionName = "EquipmentDurability",
+                DtoType = "EquipmentDurabilitySaveData",
+                OwnerDomain = "EquipmentManager.DurabilityTracker",
+                CaptureOwner = "EquipmentManager.DurabilityTracker",
+                RestoreOwner = "EquipmentManager.DurabilityTracker",
+                DefaultBehavior = "Full durability if missing",
+                CanRestoreIndependently = false,
+                DependsOn = new[] { "Equipment" },
+                EnablesRestore = Array.Empty<string>(),
+                PostRestoreEvent = null,
+                RiskLevel = "MEDIUM",
+                MigrationOwner = "SaveManager"
+            },
+
+            new SaveSectionOwnership
+            {
+                SectionName = "Npcs",
+                DtoType = "NpcManagerSaveData",
+                OwnerDomain = "NpcManager",
+                CaptureOwner = "NpcManager",
+                RestoreOwner = "NpcManager",
+                DefaultBehavior = "NPCs reset to default state if missing",
+                CanRestoreIndependently = false,
+                DependsOn = new[] { "CurrentDay" },
+                EnablesRestore = Array.Empty<string>(),
+                PostRestoreEvent = null,
+                RiskLevel = "MEDIUM",
+                MigrationOwner = "SaveManager"
+            },
+
+            new SaveSectionOwnership
+            {
+                SectionName = "ActiveSkillSlots",
+                DtoType = "ActiveSkillSlotsSaveData",
+                OwnerDomain = "ActiveSkillSlots",
+                CaptureOwner = "ActiveSkillSlots",
+                RestoreOwner = "ActiveSkillSlots",
+                DefaultBehavior = "All skill slots cleared if missing",
+                CanRestoreIndependently = false,
+                DependsOn = new[] { "Player", "Progression" },
+                EnablesRestore = Array.Empty<string>(),
+                PostRestoreEvent = null,
+                RiskLevel = "MEDIUM",
+                MigrationOwner = "SaveManager"
+            },
+
+            new SaveSectionOwnership
+            {
+                SectionName = "SkillTree",
+                DtoType = "SkillTreeSaveData",
+                OwnerDomain = "SkillTreeManager",
+                CaptureOwner = "SkillTreeManager",
+                RestoreOwner = "SkillTreeManager",
+                DefaultBehavior = "All skills locked if missing",
+                CanRestoreIndependently = false,
+                DependsOn = new[] { "Progression" },
+                EnablesRestore = Array.Empty<string>(),
+                PostRestoreEvent = null,
+                RiskLevel = "MEDIUM",
+                MigrationOwner = "SaveManager"
+            },
+
+            new SaveSectionOwnership
+            {
+                SectionName = "Bestiary",
+                DtoType = "BestiarySaveData",
+                OwnerDomain = "BestiaryManager",
+                CaptureOwner = "BestiaryManager",
+                RestoreOwner = "BestiaryManager",
+                DefaultBehavior = "Empty bestiary if missing",
+                CanRestoreIndependently = true,
+                DependsOn = Array.Empty<string>(),
+                EnablesRestore = Array.Empty<string>(),
+                PostRestoreEvent = null,
+                RiskLevel = "LOW",
+                MigrationOwner = "SaveManager"
+            },
         };
 
         /// <summary>

@@ -77,9 +77,9 @@
 | SPEC_DOCS_37 | COMPLETE | Refinements/specs/validation sweep: 12 references fixed, 14 refinements archived, 4 deleted, validation enhanced (25+ checks); commits b9ae4d5, 45e299f |
 | SPEC_18-28 Phase 2-3 | PENDING HUMAN | Play Mode validation; requires local Unity Editor |
 | SPEC_29 Phase 2-3 | PENDING HUMAN | Final acceptance; blocked on Phase 2-3 above |
-| WAVE 00.04 Existing Implementation Audit | READY_FOR_00_04 | Governance audit only; no code/gameplay changes |
-| WAVE 01 Hardening & Quality Gate | BLOCKED UNTIL 00.04 REPORT | 8 specs (01.01-01.05, 01.06, 01.07, 01Q); 01Q prerequisite for WAVE 02+ |
-| WAVE 02-12 Core Runtime | BLOCKED UNTIL 01Q | 93 specs in queue; execution blocked until quality gate passes |
+| WAVE 00.04 Existing Implementation Audit | COMPLETE / BUILD_VALIDATED | Governance audit only; no code/gameplay changes; commit ee1c0fb+ |
+| WAVE 01 Hardening & Quality Gate | COMPLETED_WITH_WARNINGS | 9 specs executed (00.04, 01.01-01.07, 01Q); all BUILD_VALIDATED; 36 EditMode tests created but not executed (blocker: 594 compile errors in editor scripts) |
+| WAVE 02-12 Core Runtime | **BLOCKED** | 93 specs in queue; blocked by: (1) Assembly-CSharp-Editor compile errors, (2) generated-spec validation issues, (3) final human validation not yet executed |
 | WAVE 17-24 Future | BLOCKED INTENTIONALLY | 32+ future/expansion specs marked; pets (WAVE 23) blocked as HOLD/BLOCKED_SCOPE |
 
 ---

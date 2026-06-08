@@ -1,19 +1,20 @@
-# SPEC Final Pre-Execution Canonical Status
+# SPEC Canonical Status — Post WAVE 01
 
 > **Date:** 2026-06-07  
 > **Branch:** dev  
-> **Status:** READY_FOR_00_04
+> **Status:** WAVE_01_COMPLETED_WITH_WARNINGS
 
 ---
 
 ## Executive Summary
 
-✓ All reconciliation complete  
-✓ Legacy cleanup complete (7 specs absorbed)  
-✓ Canonical docs aligned (SPEC_REGISTRY_TO_IMPLEMENT, SPEC_EXECUTION_ORDER, CURRENT_STATE, validation reports)  
-✓ No inconsistencies or blocking issues for WAVE 00.04 governance audit
+✓ WAVE 00.04 audit complete (BUILD_VALIDATED)  
+✓ WAVE 01.01-01.07, 01Q all complete (BUILD_VALIDATED)  
+✓ 36 EditMode tests created (StableIds 18 + GameEventBus 18)  
+⚠️ **Tests NOT executed** — Assembly-CSharp-Editor has 594 pre-existing compile errors  
+⚠️ **WAVE 02+ BLOCKED** — Cannot proceed until: (1) editor compile errors fixed, (2) generated-spec validation resolved, (3) final human validation completed
 
-**Next action:** Execute `docs/specs/a_implementar/00_spec_existing_implementation_audit.md`
+**Next action:** Resolve blockers before attempting WAVE 02 execution
 
 ---
 
