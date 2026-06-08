@@ -13,7 +13,7 @@ namespace CindarsHope.UI.Skills
 
         private void Update()
         {
-            if (!Input.GetKeyDown(KeyCode.U)) return;
+            if (!global::UnityEngine.Input.GetKeyDown(KeyCode.U)) return;
 
             var bootstrap = GameBootstrap.Instance;
             if (bootstrap == null) return;

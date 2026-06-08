@@ -108,7 +108,7 @@ namespace CindarsHope.UI
                 return;
             }
 
-            if (Input.GetKeyDown(KeyCode.O))
+            if (global::UnityEngine.Input.GetKeyDown(KeyCode.O))
             {
                 GrantDebugXp();
             }

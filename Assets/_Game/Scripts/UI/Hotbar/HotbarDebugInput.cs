@@ -16,12 +16,12 @@ namespace CindarsHope.UI.Hotbar
                 return;
             }
 
-            if (Input.GetKeyDown(KeyCode.Alpha1)) _saveManager.HotbarState.SelectSlot(0);
-            if (Input.GetKeyDown(KeyCode.Alpha2)) _saveManager.HotbarState.SelectSlot(1);
-            if (Input.GetKeyDown(KeyCode.Alpha3)) _saveManager.HotbarState.SelectSlot(2);
-            if (Input.GetKeyDown(KeyCode.Alpha4)) _saveManager.HotbarState.SelectSlot(3);
-            if (Input.GetKeyDown(KeyCode.Alpha5)) _saveManager.HotbarState.SelectSlot(4);
-            if (Input.GetKeyDown(KeyCode.Alpha6)) _saveManager.HotbarState.SelectSlot(5);
+            if (global::UnityEngine.Input.GetKeyDown(KeyCode.Alpha1)) _saveManager.HotbarState.SelectSlot(0);
+            if (global::UnityEngine.Input.GetKeyDown(KeyCode.Alpha2)) _saveManager.HotbarState.SelectSlot(1);
+            if (global::UnityEngine.Input.GetKeyDown(KeyCode.Alpha3)) _saveManager.HotbarState.SelectSlot(2);
+            if (global::UnityEngine.Input.GetKeyDown(KeyCode.Alpha4)) _saveManager.HotbarState.SelectSlot(3);
+            if (global::UnityEngine.Input.GetKeyDown(KeyCode.Alpha5)) _saveManager.HotbarState.SelectSlot(4);
+            if (global::UnityEngine.Input.GetKeyDown(KeyCode.Alpha6)) _saveManager.HotbarState.SelectSlot(5);
         }
 
         public void Configure(SaveManager saveManager)

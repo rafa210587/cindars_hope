@@ -59,12 +59,12 @@ namespace CindarsHope.UI.Skills
             // which SkillTreeInputHandler handles via the Canvas SkillTreePanel.
             if (GameplayInputRouter.IsActive) return;
 
-            if (Input.GetKeyDown(KeyCode.U))
+            if (global::UnityEngine.Input.GetKeyDown(KeyCode.U))
             {
                 Toggle();
             }
 
-            if (_isOpen && Input.GetKeyDown(KeyCode.Escape))
+            if (_isOpen && global::UnityEngine.Input.GetKeyDown(KeyCode.Escape))
             {
                 Close();
             }

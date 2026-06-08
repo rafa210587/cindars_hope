@@ -41,7 +41,7 @@ namespace CindarsHope.UI.Pause
         {
             if (!_isPaused) return;
 
-            if (UnityEngine.Input.GetKeyDown(KeyCode.Escape))
+            if (UnityEngine.global::UnityEngine.Input.GetKeyDown(KeyCode.Escape))
             {
                 Resume();
             }

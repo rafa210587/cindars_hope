@@ -71,7 +71,7 @@ namespace CindarsHope.UI
         {
             ResolveInventoryManager();
 
-            if (Input.GetKeyDown(KeyCode.I))
+            if (global::UnityEngine.Input.GetKeyDown(KeyCode.I))
             {
                 Toggle();
             }
@@ -81,7 +81,7 @@ namespace CindarsHope.UI
                 return;
             }
 
-            if (Input.GetKeyDown(KeyCode.Escape))
+            if (global::UnityEngine.Input.GetKeyDown(KeyCode.Escape))
             {
                 CloseOrBack();
                 return;
@@ -246,23 +246,23 @@ namespace CindarsHope.UI
                 return;
             }
 
-            if (Input.GetKeyDown(KeyCode.A))
+            if (global::UnityEngine.Input.GetKeyDown(KeyCode.A))
             {
                 _selectedSlotIndex = Mathf.Max(0, _selectedSlotIndex - 1);
             }
-            else if (Input.GetKeyDown(KeyCode.D))
+            else if (global::UnityEngine.Input.GetKeyDown(KeyCode.D))
             {
                 _selectedSlotIndex = Mathf.Min(capacity - 1, _selectedSlotIndex + 1);
             }
-            else if (Input.GetKeyDown(KeyCode.W))
+            else if (global::UnityEngine.Input.GetKeyDown(KeyCode.W))
             {
                 _selectedSlotIndex = Mathf.Max(0, _selectedSlotIndex - 6);
             }
-            else if (Input.GetKeyDown(KeyCode.S))
+            else if (global::UnityEngine.Input.GetKeyDown(KeyCode.S))
             {
                 _selectedSlotIndex = Mathf.Min(capacity - 1, _selectedSlotIndex + 6);
             }
-            else if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.E))
+            else if (global::UnityEngine.Input.GetKeyDown(KeyCode.Return) || global::UnityEngine.Input.GetKeyDown(KeyCode.Space) || global::UnityEngine.Input.GetKeyDown(KeyCode.E))
             {
                 _mode = PanelMode.Actions;
                 _selectedActionIndex = 0;
@@ -271,15 +271,15 @@ namespace CindarsHope.UI
 
         private void UpdateActionNavigation()
         {
-            if (Input.GetKeyDown(KeyCode.W))
+            if (global::UnityEngine.Input.GetKeyDown(KeyCode.W))
             {
                 _selectedActionIndex = Mathf.Max(0, _selectedActionIndex - 1);
             }
-            else if (Input.GetKeyDown(KeyCode.S))
+            else if (global::UnityEngine.Input.GetKeyDown(KeyCode.S))
             {
                 _selectedActionIndex = Mathf.Min(_actions.Length - 1, _selectedActionIndex + 1);
             }
-            else if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.E))
+            else if (global::UnityEngine.Input.GetKeyDown(KeyCode.Return) || global::UnityEngine.Input.GetKeyDown(KeyCode.Space) || global::UnityEngine.Input.GetKeyDown(KeyCode.E))
             {
                 ExecuteSelectedAction();
             }
@@ -287,7 +287,7 @@ namespace CindarsHope.UI
 
         private void UpdateDestroyConfirmation()
         {
-            if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.E))
+            if (global::UnityEngine.Input.GetKeyDown(KeyCode.Return) || global::UnityEngine.Input.GetKeyDown(KeyCode.Space) || global::UnityEngine.Input.GetKeyDown(KeyCode.E))
             {
                 if (_inventoryManager != null && _inventoryManager.DestroySlot(_selectedSlotIndex))
                 {
@@ -300,23 +300,23 @@ namespace CindarsHope.UI
 
         private void UpdateEquipmentSelectionNavigation()
         {
-            if (Input.GetKeyDown(KeyCode.A))
+            if (global::UnityEngine.Input.GetKeyDown(KeyCode.A))
             {
                 MoveSelectionToCompatible(-1);
             }
-            else if (Input.GetKeyDown(KeyCode.D))
+            else if (global::UnityEngine.Input.GetKeyDown(KeyCode.D))
             {
                 MoveSelectionToCompatible(1);
             }
-            else if (Input.GetKeyDown(KeyCode.W))
+            else if (global::UnityEngine.Input.GetKeyDown(KeyCode.W))
             {
                 MoveSelectionToCompatible(-6);
             }
-            else if (Input.GetKeyDown(KeyCode.S))
+            else if (global::UnityEngine.Input.GetKeyDown(KeyCode.S))
             {
                 MoveSelectionToCompatible(6);
             }
-            else if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.E))
+            else if (global::UnityEngine.Input.GetKeyDown(KeyCode.Return) || global::UnityEngine.Input.GetKeyDown(KeyCode.Space) || global::UnityEngine.Input.GetKeyDown(KeyCode.E))
             {
                 SelectEquipmentSlot(_selectedSlotIndex);
             }

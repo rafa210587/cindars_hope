@@ -45,20 +45,20 @@ namespace CindarsHope.UI.Dialogue
             if (!_isShowing)
                 return;
 
-            if (_choiceButtons.Count > 0 && (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow)))
+            if (_choiceButtons.Count > 0 && (global::UnityEngine.Input.GetKeyDown(KeyCode.W) || global::UnityEngine.Input.GetKeyDown(KeyCode.UpArrow)))
             {
                 SelectPreviousChoice();
             }
-            else if (_choiceButtons.Count > 0 && (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow)))
+            else if (_choiceButtons.Count > 0 && (global::UnityEngine.Input.GetKeyDown(KeyCode.S) || global::UnityEngine.Input.GetKeyDown(KeyCode.DownArrow)))
             {
                 SelectNextChoice();
             }
-            else if (_choiceButtons.Count > 0 && (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.E)))
+            else if (_choiceButtons.Count > 0 && (global::UnityEngine.Input.GetKeyDown(KeyCode.Return) || global::UnityEngine.Input.GetKeyDown(KeyCode.Space) || global::UnityEngine.Input.GetKeyDown(KeyCode.E)))
             {
                 ConfirmChoice();
             }
             else if (_choiceButtons.Count == 0
-                && (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.Escape)))
+                && (global::UnityEngine.Input.GetKeyDown(KeyCode.Return) || global::UnityEngine.Input.GetKeyDown(KeyCode.Space) || global::UnityEngine.Input.GetKeyDown(KeyCode.E) || global::UnityEngine.Input.GetKeyDown(KeyCode.Escape)))
             {
                 Hide();
             }

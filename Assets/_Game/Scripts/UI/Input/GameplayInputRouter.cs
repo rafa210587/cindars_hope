@@ -45,7 +45,7 @@ namespace CindarsHope.UI.Routing
             var currentModal = _modalManager != null ? _modalManager.CurrentModal : ModalType.None;
 
             // Esc: close current modal OR open pause
-            if (UnityEngine.Input.GetKeyDown(KeyCode.Escape))
+            if (UnityEngine.global::UnityEngine.Input.GetKeyDown(KeyCode.Escape))
             {
                 if (hasModal)
                 {
@@ -61,15 +61,15 @@ namespace CindarsHope.UI.Routing
             // Block all gameplay shortcuts while any modal is open
             if (hasModal) return;
 
-            if (UnityEngine.Input.GetKeyDown(KeyCode.I))
+            if (UnityEngine.global::UnityEngine.Input.GetKeyDown(KeyCode.I))
             {
                 GameEventBus.Publish(new InventoryPanelOpenedEvent());
             }
-            else if (UnityEngine.Input.GetKeyDown(KeyCode.K))
+            else if (UnityEngine.global::UnityEngine.Input.GetKeyDown(KeyCode.K))
             {
                 GameEventBus.Publish(new EquipmentPanelOpenedEvent());
             }
-            else if (UnityEngine.Input.GetKeyDown(KeyCode.U))
+            else if (UnityEngine.global::UnityEngine.Input.GetKeyDown(KeyCode.U))
             {
                 // Skill tree panel is already Canvas-based via SkillTreeInputHandler;
                 // publishing the event lets it respond without duplicate key handling.

@@ -53,19 +53,19 @@ namespace CindarsHope.UI.Cave
         {
             if (!_isOpen) return;
 
-            if (UnityEngine.Input.GetKeyDown(KeyCode.UpArrow) || UnityEngine.Input.GetKeyDown(KeyCode.W))
+            if (UnityEngine.global::UnityEngine.Input.GetKeyDown(KeyCode.UpArrow) || UnityEngine.global::UnityEngine.Input.GetKeyDown(KeyCode.W))
             {
                 _selectedIndex = (_selectedIndex - 1 + _checkpoints.Count) % _checkpoints.Count;
             }
-            else if (UnityEngine.Input.GetKeyDown(KeyCode.DownArrow) || UnityEngine.Input.GetKeyDown(KeyCode.S))
+            else if (UnityEngine.global::UnityEngine.Input.GetKeyDown(KeyCode.DownArrow) || UnityEngine.global::UnityEngine.Input.GetKeyDown(KeyCode.S))
             {
                 _selectedIndex = (_selectedIndex + 1) % _checkpoints.Count;
             }
-            else if (UnityEngine.Input.GetKeyDown(KeyCode.Return) || UnityEngine.Input.GetKeyDown(KeyCode.E))
+            else if (UnityEngine.global::UnityEngine.Input.GetKeyDown(KeyCode.Return) || UnityEngine.global::UnityEngine.Input.GetKeyDown(KeyCode.E))
             {
                 ConfirmSelection();
             }
-            else if (UnityEngine.Input.GetKeyDown(KeyCode.Escape))
+            else if (UnityEngine.global::UnityEngine.Input.GetKeyDown(KeyCode.Escape))
             {
                 Close();
             }

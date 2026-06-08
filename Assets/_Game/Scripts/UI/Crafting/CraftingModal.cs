@@ -30,7 +30,7 @@ namespace CindarsHope.UI.Crafting
         {
             if (!_isOpen)
             {
-                if (Input.GetKeyDown(_pocketCraftKey) && (_modalManager == null || !_modalManager.HasActiveModal))
+                if (global::UnityEngine.Input.GetKeyDown(_pocketCraftKey) && (_modalManager == null || !_modalManager.HasActiveModal))
                 {
                     Open(_runtime != null ? _runtime.GetPocketStation() : null);
                 }
@@ -38,29 +38,29 @@ namespace CindarsHope.UI.Crafting
                 return;
             }
 
-            if (Input.GetKeyDown(KeyCode.Escape))
+            if (global::UnityEngine.Input.GetKeyDown(KeyCode.Escape))
             {
                 Close();
                 return;
             }
 
-            if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))
+            if (global::UnityEngine.Input.GetKeyDown(KeyCode.W) || global::UnityEngine.Input.GetKeyDown(KeyCode.UpArrow))
             {
                 MoveSelection(-1);
             }
-            else if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow))
+            else if (global::UnityEngine.Input.GetKeyDown(KeyCode.S) || global::UnityEngine.Input.GetKeyDown(KeyCode.DownArrow))
             {
                 MoveSelection(1);
             }
-            else if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
+            else if (global::UnityEngine.Input.GetKeyDown(KeyCode.A) || global::UnityEngine.Input.GetKeyDown(KeyCode.LeftArrow))
             {
                 _selectedActionIndex = (_selectedActionIndex + Actions.Length - 1) % Actions.Length;
             }
-            else if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
+            else if (global::UnityEngine.Input.GetKeyDown(KeyCode.D) || global::UnityEngine.Input.GetKeyDown(KeyCode.RightArrow))
             {
                 _selectedActionIndex = (_selectedActionIndex + 1) % Actions.Length;
             }
-            else if (Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space))
+            else if (global::UnityEngine.Input.GetKeyDown(KeyCode.E) || global::UnityEngine.Input.GetKeyDown(KeyCode.Return) || global::UnityEngine.Input.GetKeyDown(KeyCode.Space))
             {
                 ExecuteSelectedAction();
             }

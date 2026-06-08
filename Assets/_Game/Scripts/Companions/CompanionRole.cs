@@ -20,7 +20,8 @@ namespace CindarsHope.Companions
         Unlocked,
         Scheduled,
         StoryOnly,
-        Unavailable
+        Unavailable,
+        LockedByReputation
     }
 
     public enum InjuryState

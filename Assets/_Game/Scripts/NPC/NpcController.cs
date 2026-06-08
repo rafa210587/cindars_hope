@@ -5,6 +5,7 @@ using CindarsHope.Interaction;
 using CindarsHope.UI.Dialogue;
 using CindarsHope.UI.Modal;
 using UnityEngine;
+using UIDialogueChoice = CindarsHope.UI.Dialogue.DialogueChoice;
 
 namespace CindarsHope.NPC
 {
@@ -118,7 +119,8 @@ namespace CindarsHope.NPC
 
             if (node.Choices != null && node.Choices.Count > 0)
             {
-                _dialogueModal.ShowWithChoices(text, node.Choices);
+                var uiChoices = ConvertChoices(node.Choices);
+                _dialogueModal.ShowWithChoices(text, uiChoices);
             }
             else
             {
@@ -126,7 +128,7 @@ namespace CindarsHope.NPC
             }
         }
 
-        private void HandleChoiceSelected(DialogueChoice choice)
+        private void HandleChoiceSelected(UIDialogueChoice choice)
         {
             if (!_isInteracting || _currentDialogueTree == null)
             {
@@ -184,6 +186,22 @@ namespace CindarsHope.NPC
         public void RestoreState(bool hasMet)
         {
             _hasMet = hasMet;
+        }
+
+        private List<UIDialogueChoice> ConvertChoices(List<DialogueChoice> npcChoices)
+        {
+            var result = new List<UIDialogueChoice>();
+            foreach (var npcChoice in npcChoices)
+            {
+                var uiChoice = new UIDialogueChoice
+                {
+                    Label = npcChoice.Label,
+                    ChoiceId = npcChoice.NextNodeId,
+                    IsEnabled = true
+                };
+                result.Add(uiChoice);
+            }
+            return result;
         }
 
         private void EndInteraction()

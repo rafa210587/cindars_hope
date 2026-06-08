@@ -56,17 +56,17 @@ namespace CindarsHope.UI.Character
 
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.K))
+            if (global::UnityEngine.Input.GetKeyDown(KeyCode.K))
             {
                 Toggle(PanelMode.Attributes);
             }
 
-            if (Input.GetKeyDown(KeyCode.L))
+            if (global::UnityEngine.Input.GetKeyDown(KeyCode.L))
             {
                 Toggle(PanelMode.Equipment);
             }
 
-            if (_isOpen && Input.GetKeyDown(KeyCode.Escape))
+            if (_isOpen && global::UnityEngine.Input.GetKeyDown(KeyCode.Escape))
             {
                 Close();
             }

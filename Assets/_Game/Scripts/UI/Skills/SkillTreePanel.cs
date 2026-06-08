@@ -71,20 +71,20 @@ namespace CindarsHope.UI.Skills
         private void HandleInput()
         {
             // Close
-            if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.U))
+            if (global::UnityEngine.Input.GetKeyDown(KeyCode.Escape) || global::UnityEngine.Input.GetKeyDown(KeyCode.U))
             {
                 CloseModal();
                 return;
             }
 
             // Switch tree tab
-            if (Input.GetKeyDown(KeyCode.Q))
+            if (global::UnityEngine.Input.GetKeyDown(KeyCode.Q))
             {
                 _currentTreeIndex = (_currentTreeIndex - 1 + TreeOrder.Length) % TreeOrder.Length;
                 _currentNodeIndex = 0;
                 RefreshDisplay();
             }
-            else if (Input.GetKeyDown(KeyCode.E))
+            else if (global::UnityEngine.Input.GetKeyDown(KeyCode.E))
             {
                 _currentTreeIndex = (_currentTreeIndex + 1) % TreeOrder.Length;
                 _currentNodeIndex = 0;
@@ -95,19 +95,19 @@ namespace CindarsHope.UI.Skills
             var nodes = GetCurrentNodes();
             if (nodes.Count == 0) return;
 
-            if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))
+            if (global::UnityEngine.Input.GetKeyDown(KeyCode.W) || global::UnityEngine.Input.GetKeyDown(KeyCode.UpArrow))
             {
                 _currentNodeIndex = (_currentNodeIndex - 1 + nodes.Count) % nodes.Count;
                 RefreshDisplay();
             }
-            else if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow))
+            else if (global::UnityEngine.Input.GetKeyDown(KeyCode.S) || global::UnityEngine.Input.GetKeyDown(KeyCode.DownArrow))
             {
                 _currentNodeIndex = (_currentNodeIndex + 1) % nodes.Count;
                 RefreshDisplay();
             }
 
             // Purchase
-            if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
+            if (global::UnityEngine.Input.GetKeyDown(KeyCode.Return) || global::UnityEngine.Input.GetKeyDown(KeyCode.KeypadEnter))
                 OnPurchaseClicked();
 
             // Assign to active slot
@@ -116,10 +116,10 @@ namespace CindarsHope.UI.Skills
                 var node = nodes[_currentNodeIndex];
                 if (node.SkillCategory == SkillCategory.EquippableSkill && _skillTreeManager.IsNodePurchased(node.SkillNodeId))
                 {
-                    if (Input.GetKeyDown(KeyCode.R)) AssignSlot(0, node.UnlockedSkillActionId);
-                    else if (Input.GetKeyDown(KeyCode.T)) AssignSlot(1, node.UnlockedSkillActionId);
-                    else if (Input.GetKeyDown(KeyCode.Y)) AssignSlot(2, node.UnlockedSkillActionId);
-                    else if (Input.GetKeyDown(KeyCode.G)) AssignSlot(3, node.UnlockedSkillActionId);
+                    if (global::UnityEngine.Input.GetKeyDown(KeyCode.R)) AssignSlot(0, node.UnlockedSkillActionId);
+                    else if (global::UnityEngine.Input.GetKeyDown(KeyCode.T)) AssignSlot(1, node.UnlockedSkillActionId);
+                    else if (global::UnityEngine.Input.GetKeyDown(KeyCode.Y)) AssignSlot(2, node.UnlockedSkillActionId);
+                    else if (global::UnityEngine.Input.GetKeyDown(KeyCode.G)) AssignSlot(3, node.UnlockedSkillActionId);
                 }
             }
         }
