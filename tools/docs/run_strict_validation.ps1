@@ -1,91 +1,146 @@
 #!/usr/bin/env pwsh
 <#
 .SYNOPSIS
-Run strict validation with explicit exit code gates.
+Run strict validation with PowerShell script failure gates.
 
 .DESCRIPTION
-Central validation command that prevents false "build pass" claims.
-All checks exit immediately on failure; filtering is forbidden.
+Central validation command with safe script invocation.
+All scripts must succeed; no secondary issues.
 
 .EXAMPLE
 .\run_strict_validation.ps1
 
 Exit codes:
   0 - All validations passed
-  1 - Any validation failed
+  1 - Any validation failed (build, quality, script exception, etc)
 #>
 
 $ErrorActionPreference = "Continue"
 
 Write-Host "STRICT_VALIDATION_HARNESS" -ForegroundColor Cyan
-Write-Host "=========================================" -ForegroundColor Cyan
+Write-Host "================================================" -ForegroundColor Cyan
 Write-Host ""
 
-$summary = @{
-    Status = "UNKNOWN"
-    DocsValidation = "NOT_RUN"
-    AssemblyCSharp = "NOT_RUN"
-    AssemblyCSharpEditor = "NOT_RUN"
-    QualityCheck = "NOT_RUN"
+# Helper function: safe script invocation
+function Invoke-SafeScript {
+    param(
+        [string]$Name,
+        [string]$ScriptPath,
+        [hashtable]$Parameters
+    )
+
+    Write-Host "=== $Name ===" -ForegroundColor Cyan
+
+    $previousExitCode = $LASTEXITCODE
+    $previousErrorAction = $ErrorActionPreference
+
+    try {
+        $ErrorActionPreference = "Stop"
+
+        if ($Parameters -and $Parameters.Count -gt 0) {
+            & $ScriptPath @Parameters
+        } else {
+            & $ScriptPath
+        }
+
+        $scriptSuccess = $?
+        $scriptExitCode = $LASTEXITCODE
+    } catch {
+        Write-Host ""
+        Write-Host "SCRIPT_EXCEPTION in ${Name}:" -ForegroundColor Red
+        Write-Host "  Message: $($_.Exception.Message)" -ForegroundColor Red
+        Write-Host ""
+        return 1
+    } finally {
+        $ErrorActionPreference = $previousErrorAction
+    }
+
+    # Check PowerShell status
+    if (-not $scriptSuccess) {
+        Write-Host ""
+        Write-Host "SCRIPT_FAILED_BY_POWERSHELL_STATUS: $Name" -ForegroundColor Red
+        Write-Host ""
+        return 1
+    }
+
+    # Check exit code
+    if ($null -ne $scriptExitCode -and $scriptExitCode -ne 0) {
+        Write-Host ""
+        Write-Host "SCRIPT_FAILED_BY_EXIT_CODE: $Name (exit $scriptExitCode)" -ForegroundColor Red
+        Write-Host ""
+        return $scriptExitCode
+    }
+
+    Write-Host "   PASS" -ForegroundColor Green
+    return 0
 }
 
-# Step 1: Docs validation
+# Step 1: Docs validation (allowed to be legacy-only)
+Write-Host ""
 Write-Host "1. Docs validation..." -ForegroundColor Yellow
-.\tools\docs\validate_docs.ps1 *>&1 | Out-Host
-if ($LASTEXITCODE -eq 0) {
-    Write-Host "   PASS: Docs validation" -ForegroundColor Green
-    $summary.DocsValidation = "PASS"
-} else {
-    Write-Host "   WARNING: Docs validation returned non-zero" -ForegroundColor Yellow
-    $summary.DocsValidation = "EXPECTED_FAIL_LEGACY_ONLY"
-}
 
-Write-Host ""
+$docsResult = Invoke-SafeScript -Name "docs validation" -ScriptPath ".\tools\docs\validate_docs.ps1"
+
+if ($docsResult -ne 0) {
+    Write-Host "   WARNING: Docs validation returned non-zero (may be legacy-only)" -ForegroundColor Yellow
+    $docsStatus = "EXPECTED_FAIL_LEGACY_ONLY"
+} else {
+    $docsStatus = "PASS"
+}
 
 # Step 2: Assembly-CSharp build
+Write-Host ""
 Write-Host "2. Assembly-CSharp build..." -ForegroundColor Yellow
+
 dotnet build .\Assembly-CSharp.csproj --no-restore
 if ($LASTEXITCODE -ne 0) {
-    Write-Host "FAIL: Assembly-CSharp build failed" -ForegroundColor Red
+    Write-Host ""
     Write-Host "STRICT_VALIDATION_RESULT: BUILD_FAILURE_ASSEMBLY_CSHARP" -ForegroundColor Red
     exit 1
 }
-Write-Host "   PASS: Assembly-CSharp" -ForegroundColor Green
-$summary.AssemblyCSharp = "PASS"
-
-Write-Host ""
+Write-Host "   PASS" -ForegroundColor Green
 
 # Step 3: Assembly-CSharp-Editor build
+Write-Host ""
 Write-Host "3. Assembly-CSharp-Editor build..." -ForegroundColor Yellow
+
 dotnet build .\Assembly-CSharp-Editor.csproj --no-restore
 if ($LASTEXITCODE -ne 0) {
-    Write-Host "FAIL: Assembly-CSharp-Editor build failed" -ForegroundColor Red
+    Write-Host ""
     Write-Host "STRICT_VALIDATION_RESULT: BUILD_FAILURE_ASSEMBLY_CSHARP_EDITOR" -ForegroundColor Red
     exit 1
 }
-Write-Host "   PASS: Assembly-CSharp-Editor" -ForegroundColor Green
-$summary.AssemblyCSharpEditor = "PASS"
+Write-Host "   PASS" -ForegroundColor Green
 
+# Step 4: Diff completeness check
 Write-Host ""
+Write-Host "4. Spec diff completeness..." -ForegroundColor Yellow
 
-# Step 4: Quality check
-Write-Host "4. Quality check..." -ForegroundColor Yellow
-.\tools\docs\check_spec_quality.ps1
-if ($LASTEXITCODE -ne 0) {
-    Write-Host "FAIL: Quality check failed" -ForegroundColor Red
+$diffResult = Invoke-SafeScript -Name "diff completeness" -ScriptPath ".\tools\docs\check_spec_diff_completeness.ps1"
+
+if ($diffResult -ne 0) {
+    Write-Host ""
+    Write-Host "STRICT_VALIDATION_RESULT: DIFF_COMPLETENESS_FAILURE" -ForegroundColor Red
+    exit 1
+}
+
+# Step 5: Quality check (cannot fail)
+Write-Host ""
+Write-Host "5. Spec quality check..." -ForegroundColor Yellow
+
+$qualityResult = Invoke-SafeScript -Name "quality check" -ScriptPath ".\tools\docs\check_spec_quality.ps1"
+
+if ($qualityResult -ne 0) {
+    Write-Host ""
     Write-Host "STRICT_VALIDATION_RESULT: QUALITY_CHECK_FAILURE" -ForegroundColor Red
     exit 1
 }
-Write-Host "   PASS: Quality check" -ForegroundColor Green
-$summary.QualityCheck = "PASS"
-
-Write-Host ""
 
 # All passed
-Write-Host "=========================================" -ForegroundColor Cyan
+Write-Host ""
+Write-Host "================================================" -ForegroundColor Cyan
 Write-Host "STRICT_VALIDATION_RESULT: VALIDATION_PASS" -ForegroundColor Green
 Write-Host "Exit code: 0" -ForegroundColor Green
 Write-Host ""
 
-$summary | ConvertTo-Json | Set-Content .\docs\validation\LAST_STRICT_VALIDATION_RESULT.json
 exit 0

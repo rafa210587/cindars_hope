@@ -81,7 +81,7 @@
 | WAVE 02 Time/Calendar/Lunar/Weather/Rain/Save/Festivals | COMPLETED_WITH_DEFERRED_UI | 7 of 8 specs BUILD_VALIDATED; 1 deferred (Spec 3 Calendar UI); all runtime systems complete |
 | WAVE 03 Quests/Objectives/Events | COMPLETED_WITH_DEFERRED_UI | 8 of 8 runtime specs BUILD_VALIDATED; 4 future specs blocked; quest system foundation complete; readiness check PASS |
 | WAVE 04 UI Foundation Phase 1 | PHASE1_COMPLETED_WITH_CONTRACT_ONLY_CORE | 14 of 14 specs have execution reports; 3 BUILD_VALIDATED (SPECS 1-2, 8), 11 CONTRACT_ONLY (SPECS 3-7,9,11-16); SPEC 8 fully reworked (10 focus states, modal stack, 47 tests); Assembly builds PASS; quality check PASS; docs validation PASS (legacy errors only) |
-| WAVE 05-12 Core Gameplay | READY_TO_START_STRICT_EXECUTION | WAVE 04 Phase 1 validated; WAVE 02-03 foundation ready; must use /execute-spec-strict or /loop-spec-batch-strict for integration specs |
+| WAVE 05-12 Core Gameplay | PAUSED_POST_HARNESS_AUDIT | Commit 401263f requires report/test review; harness hardening in progress; see WAVE_05_POST_HARNESS_COMMIT_AUDIT_401263f.md |
 | WAVE 17-24 Future | BLOCKED INTENTIONALLY | 32+ future/expansion specs marked; pets (WAVE 23) blocked as HOLD/BLOCKED_SCOPE |
 
 ---
@@ -153,5 +153,5 @@ PROJECT_LOG + CURRENT_STATE conflict → prefer CURRENT_STATE; report mismatch
 
 ---
 
-*Last updated: 2026-06-08 (WAVE 04 Phase 1 VALIDATED: Assembly builds + quality checks PASS; WAVE 05 READY)*  
-*Next update: after WAVE 05 integration phase begins*
+*Last updated: 2026-06-08 (Harness Hardening Phase 1: PowerShell Script Failure Gate, Diff Completeness Gate, Commit 401263f audit)*  
+*Next update: after 401263f audit resolved and WAVE 05 resumes*
