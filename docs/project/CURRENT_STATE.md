@@ -78,7 +78,8 @@
 | SPEC_29 Phase 2-3 | PENDING HUMAN | Final acceptance; blocked on Phase 2-3 above |
 | WAVE 00.04 Existing Implementation Audit | COMPLETE / BUILD_VALIDATED | Governance audit only; no code/gameplay changes; commit ee1c0fb+ |
 | WAVE 01 Hardening & Quality Gate | CODE_COMPLETE | 9 specs executed (00.04, 01.01-01.07, 01Q); BUILD_VALIDATED; 36 EditMode tests compile successfully (0E/0W) |
-| WAVE 02-12 Core Runtime | **PENDING_VALIDATION_GATE** | 93 specs in queue; blocked by: (1) generated-spec validation (naming/headers), (2) human validation deferred to final acceptance gate |
+| WAVE 02 Time/Calendar/Lunar/Weather | COMPLETED_WITH_PARTIAL_SCOPE | 4 of 8 specs BUILD_VALIDATED (Specs 1-2, 4, 7); 4 deferred (Specs 3, 5, 6, 8); core time/calendar/lunar/weather foundation complete; commit [wave_02_core] |
+| WAVE 03-12 Core Runtime | **READY_FOR_WAVE_03** | 89 remaining specs; WAVE 02 foundation enables WAVE 03+ (quests/events/etc) |
 | WAVE 17-24 Future | BLOCKED INTENTIONALLY | 32+ future/expansion specs marked; pets (WAVE 23) blocked as HOLD/BLOCKED_SCOPE |
 
 ---
@@ -150,5 +151,5 @@ PROJECT_LOG + CURRENT_STATE conflict → prefer CURRENT_STATE; report mismatch
 
 ---
 
-*Last updated: 2026-06-07 (legacy cleanup + canonical status reconciliation)*  
-*Next update: after WAVE 00.04 execution or next spec session*
+*Last updated: 2026-06-08 (WAVE 02 core foundation: time/calendar/lunar/weather)*  
+*Next update: after WAVE 02 deferred specs (3, 5, 6, 8) or WAVE 03 start*
