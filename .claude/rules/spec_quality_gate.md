@@ -18,6 +18,14 @@ Uma spec só pode ser `BUILD_VALIDATED` se houver evidência clara de que os cri
 - `DEFERRED_UI_VISUAL` — lógica pronta, visual/scene/prefab deferido
 - `NEEDS_REWORK` — P0/P1 spec não atende critério central
 - `BLOCKED` — não pode continuar sem Packages/ProjectSettings/scene/pets/future
+- `BLOCKED_BY_DEPENDENCY_PENDING` — **TEMP** aguardando resolução de dependência same-wave, não é falha final
+- `BLOCKED_BY_FORBIDDEN_SCOPE` — depende de specs future/pets/HOLD ou requer Packages/ProjectSettings/scene
+- `BLOCKED_BY_FUTURE_SCOPE` — depende de spec de wave futura
+- `BLOCKED_BY_PETS_SCOPE` — depende de pets spec
+- `BLOCKED_BY_WAVE_ORDER` — depende de spec de wave anterior não executada
+- `ENV_COMMAND_RETRY_REQUIRED` — comando Unix falhou em Windows, aguardando retry em PowerShell
+- `ENV_COMMAND_FAILURE` — retry em PowerShell também falhou (não é spec failure)
+- `EXPECTED_FAIL_LEGACY_ONLY` — falha esperada de docs/config legado, não impede execução
 
 ### Proibidos durante execução:
 - `ACCEPTED` — final acceptance só após todas as fases
@@ -25,6 +33,99 @@ Uma spec só pode ser `BUILD_VALIDATED` se houver evidência clara de que os cri
 - `PARTIAL` — ambíguo, use status específico
 - `COMPLETE` — ambíguo, use status específico
 - `PENDING` — ambíguo, use status específico
+
+---
+
+## Build passing is not enough, and command failure is not spec failure
+
+1. **A successful C# build does NOT mean a spec is implemented.** The spec's acceptance criteria must be met, not just compilation.
+
+2. **A failed command due to Unix syntax on Windows is NOT a spec failure.** The harness retries in PowerShell before classifying as `ENV_COMMAND_FAILURE`.
+
+3. **`BLOCKED_BY_DEPENDENCY_PENDING` is NOT a final blocker.** It means resolve dependencies first, then return to this spec.
+
+---
+
+## Quando Usar BLOCKED_BY_DEPENDENCY_PENDING
+
+Usar quando:
+- Spec atual depende de outra spec da mesma wave
+- Spec de dependência NÃO foi executada ainda
+- Dependência é do mesmo escopo (não future/pets/forbidden)
+
+Status:
+- Temporário (será resolvido automaticamente)
+- Não é falha final
+- Dependency chain é executado automaticamente
+- Retorna a spec original após resolução
+
+Exemplo: `companion_farm_job_board` depende de `farm_animals` que ainda não foi executada.
+
+---
+
+## Quando Usar BLOCKED_BY_FORBIDDEN_SCOPE
+
+Usar quando spec depende de:
+- Future wave spec (WAVE 06+)
+- Pets scope
+- Requer alteração de Packages/
+- Requer alteração de ProjectSettings/
+- Requer criação de scene/prefab/asset
+
+Status:
+- Final blocker
+- Não pode ser resolvido nesta wave
+- Para aqui, retorna ao user
+
+---
+
+## Quando Usar ENV_COMMAND_RETRY_REQUIRED
+
+Usar quando:
+- Comando Unix/Bash falhou em Windows
+- PowerShell equivalente ainda não foi tentado
+- Não é falha da spec, é falha de ambiente
+
+Status:
+- Temporário (durante execução)
+- Será retentado em PowerShell
+- Desaparece do report final
+
+---
+
+## Quando Usar ENV_COMMAND_FAILURE
+
+Usar quando:
+- Comando Unix falhou em Windows
+- PowerShell retry foi tentado
+- PowerShell retry também falhou
+- Erro é ambiental/infraestrutura, não spec
+
+Status:
+- Documenta no report
+- Não impede execução se não fundamental
+- Exemplo: "Unix head falhou, PowerShell Get-Content também falhou, mas pode continuar"
+
+Bloqueador final ONLY se:
+- Arquivo não encontrado
+- Permissão negada
+- Sistema essencial indisponível
+
+---
+
+## Quando Usar EXPECTED_FAIL_LEGACY_ONLY
+
+Usar quando:
+- Docs validation falha por legado (old files, old config)
+- Não é novo erro
+- Não impede execução
+- Documentado em prior wave/spec
+
+Status:
+- Não é falha crítica
+- Docs continue validando, just with warnings
+- Não para o loop
+- Report menciona: "Legacy warning from SPEC_X, previously documented"
 
 ---
 

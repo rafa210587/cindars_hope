@@ -214,6 +214,133 @@ if ($statusInflationIssues.Count -gt 0) {
 
 Write-Host ""
 
+# 6. Check for Unix/Bash commands in recent reports without retry
+Write-Host "6. Checking for Unix/Bash commands without PowerShell retry..." -ForegroundColor Yellow
+
+$bashCommandIssues = @()
+$bashPatterns = @('head ', 'tail ', ' ls ', 'find ', ' grep ', ' cat ', 'pwd', 'bash')
+
+# Get recently modified reports (from git status)
+$gitStatusFull = & git status --porcelain
+$recentReports = @()
+foreach ($line in $gitStatusFull) {
+    if ($line -match 'docs/validation.*execution_report.*\.md$') {
+        $file = $line.Substring(3).Trim()
+        if (Test-Path $file) {
+            $recentReports += $file
+        }
+    }
+}
+
+foreach ($report in $recentReports) {
+    if (-not $report) { continue }
+
+    if (-not (Test-Path $report)) { continue }
+
+    $content = Get-Content -Path $report -Raw
+
+    # Check for Unix commands
+    $hasBashCommand = $false
+    foreach ($pattern in $bashPatterns) {
+        if ($content -match [regex]::Escape($pattern)) {
+            $hasBashCommand = $true
+            break
+        }
+    }
+
+    if ($hasBashCommand) {
+        # Check if retry was documented
+        $hasRetry = $content -match 'PowerShell retry|ENV_COMMAND_RETRY_REQUIRED'
+
+        if (-not $hasRetry) {
+            $reportName = Split-Path -Leaf $report
+            $bashCommandIssues += "  - $reportName`: Unix command found, no PowerShell retry documented"
+        }
+    }
+}
+
+if ($bashCommandIssues.Count -gt 0) {
+    $issues += 'WARN: Unix/Bash commands without PowerShell retry'
+    $issues += $bashCommandIssues
+} else {
+    Write-Host "   PASS: No Unix/Bash commands without retry" -ForegroundColor Green
+}
+
+Write-Host ""
+
+# 7. Check for false environmental blockers
+Write-Host "7. Checking for false environmental blockers..." -ForegroundColor Yellow
+
+$falseBlockerIssues = @()
+$falseBlockerPatterns = @(
+    'Build validation commands not available in sandbox',
+    'Quality check script not available in sandbox',
+    'Git command execution unavailable',
+    'PowerShell execution not allowed'
+)
+
+foreach ($report in $reportFiles) {
+    $content = Get-Content -Path $report.FullName -Raw
+
+    foreach ($pattern in $falseBlockerPatterns) {
+        if ($content -match [regex]::Escape($pattern)) {
+            # Check if retry was documented
+            $hasRetry = $content -match 'PowerShell retry performed|ENV_COMMAND_FAILURE after retry'
+
+            if (-not $hasRetry) {
+                $falseBlockerIssues += "  - $($report.Name): false environmental blocker without retry evidence"
+            }
+        }
+    }
+}
+
+if ($falseBlockerIssues.Count -gt 0) {
+    $issues += 'WARN: False environmental blockers (missing retry evidence)'
+    $issues += $falseBlockerIssues
+} else {
+    Write-Host "   PASS: No false environmental blockers" -ForegroundColor Green
+}
+
+Write-Host ""
+
+# 8. Check for BLOCKED_BY_DEPENDENCY_PENDING without plan
+Write-Host "8. Checking for dependency pending specs..." -ForegroundColor Yellow
+
+$dependencyIssues = @()
+
+foreach ($report in $reportFiles) {
+    $content = Get-Content -Path $report.FullName -Raw
+
+    if ($content -match 'BLOCKED_BY_DEPENDENCY_PENDING') {
+        # Check if dependency plan exists
+        $planExists = $false
+
+        # Try to find wave from report path
+        if ($report.Name -match '05_spec') {
+            if (Test-Path 'docs/validation/WAVE_05_DEPENDENCY_RESOLUTION_PLAN.md') {
+                $planExists = $true
+            }
+        } elseif ($report.Name -match '04_spec') {
+            if (Test-Path 'docs/validation/WAVE_04_DEPENDENCY_RESOLUTION_PLAN.md') {
+                $planExists = $true
+            }
+        }
+
+        if (-not $planExists) {
+            $dependencyIssues += "  - $($report.Name): BLOCKED_BY_DEPENDENCY_PENDING but no dependency plan found"
+        }
+    }
+}
+
+if ($dependencyIssues.Count -gt 0) {
+    $issues += 'WARN: Dependency pending without resolution plan'
+    $issues += $dependencyIssues
+} else {
+    Write-Host "   PASS: All dependency pending specs have resolution plan" -ForegroundColor Green
+}
+
+Write-Host ""
+
 # Final summary
 Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor Cyan
 

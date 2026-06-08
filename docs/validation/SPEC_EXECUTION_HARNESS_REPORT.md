@@ -17,19 +17,25 @@ A set of:
 
 ---
 
-## Files Created
+## Files Created / Updated (Harness 2.0 — Dependency + PowerShell)
 
-| File | Purpose | Type |
-|---|---|---|
-| `.claude/rules/spec_quality_gate.md` | Define valid status values and when to use each | Rule (mandatory) |
-| `.claude/commands/execute-spec-strict.md` | Execute one spec with quality rigor | Command (manual + loop-safe) |
-| `docs/specs/SPEC_EXECUTION_REPORT_TEMPLATE_STRICT.md` | Mandatory report structure | Template |
-| `tools/docs/check_spec_quality.ps1` | Automated quality checks | Script (manual or pre-commit) |
-| `docs/validation/SPEC_EXECUTION_HARNESS_REPORT.md` | This file | Documentation |
+| File | Purpose | Type | When |
+|---|---|---|---|
+| `.claude/rules/spec_quality_gate.md` | Define valid status values and when to use each | Rule (mandatory) | 2026-06-08 |
+| `.claude/rules/windows_powershell_only.md` | PowerShell-only execution policy | Rule (NEW) | 2026-06-08 |
+| `.claude/rules/spec_dependency_resolution.md` | Same-wave dependency auto-resolution | Rule (NEW) | 2026-06-08 |
+| `.claude/commands/execute-spec-strict.md` | Execute one spec with quality rigor | Command (updated) | 2026-06-08 |
+| `.claude/commands/loop-spec-batch-strict.md` | Loop-safe batch execution | Command (updated) | 2026-06-08 |
+| `.claude/commands/resolve-spec-dependency-chain.md` | Dependency chain resolution reference | Reference (NEW) | 2026-06-08 |
+| `docs/specs/SPEC_EXECUTION_REPORT_TEMPLATE_STRICT.md` | Mandatory report structure | Template | – |
+| `tools/docs/check_spec_quality.ps1` | Automated quality checks | Script (updated) | 2026-06-08 |
+| `docs/validation/SPEC_EXECUTION_HARNESS_REPORT.md` | This file | Documentation | 2026-06-08 |
+| `docs/validation/WAVE_05_DEPENDENCY_RESOLUTION_PLAN.md` | Dependency resolution tracking | State file | Maintained |
+| `docs/validation/WAVE_05_BATCH_STATE.md` | Batch execution state | State file (NEW) | 2026-06-08 |
 
 ---
 
-## What This Harness Prevents
+## What This Harness Prevents (Harness 1.0)
 
 | Problem | Prevent How | Status |
 |---------|-------------|--------|
@@ -41,6 +47,85 @@ A set of:
 | `.claude/*.lock` committed | Quality script detects lock files | ✓ |
 | CONTRACT_ONLY treated as implementation complete | Explicit CONTRACT_ONLY status guides next steps | ✓ |
 | Loop drift (executing too many specs, ignoring blockers) | `/execute-spec-strict` stops after one spec; loop re-invokes | ✓ |
+
+## What This Harness Prevents (Harness 2.0 — NEW)
+
+| Problem | Prevent How | Status |
+|---------|-------------|--------|
+| Random spec pivots while dependencies are pending | Automatic same-wave dependency resolution; return-to-origin rule | ✓ |
+| Context loss when dependencies block | `BLOCKED_BY_DEPENDENCY_PENDING` is temporary; resolved automatically | ✓ |
+| Unix/Bash syntax errors on Windows | PowerShell-only policy; Unix-failure retry detection in quality script | ✓ |
+| False environmental blockers | Quality script detects "no sandbox" claims without retry evidence | ✓ |
+| Dependency chain execution gaps | `docs/validation/WAVE_*/DEPENDENCY_RESOLUTION_PLAN.md` tracks state | ✓ |
+| Cross-wave dependency leaks | Forbidden-scope check blocks future/pets/HOLD dependencies | ✓ |
+| Lost batch state | `docs/validation/WAVE_*/BATCH_STATE.md` persists across agent invocations | ✓ |
+
+---
+
+## Self-Resolution Capabilities (Harness 2.0)
+
+The harness now supports:
+
+1. **Same-wave dependency resolution**
+   - When spec A depends on spec B (same wave), automatically execute B first
+   - Return to A after B completes
+   - No user intervention needed
+
+2. **Dependency stack tracking**
+   - Maintained in `docs/validation/WAVE_<wave>_DEPENDENCY_RESOLUTION_PLAN.md`
+   - Updated with execution order and commit hashes
+   - Persists across agent invocations
+
+3. **Return-to-original-target behavior**
+   - After resolving dependency chain, always return to original spec
+   - Prevents random pivots to unrelated specs
+
+4. **PowerShell-only command policy**
+   - All commands use PowerShell syntax
+   - Unix/Bash commands are retried in PowerShell before failing
+   - False environmental blockers are detected by quality script
+
+5. **Environment command retry**
+   - `ENV_COMMAND_RETRY_REQUIRED` — Unix command failed, PowerShell retry pending
+   - `ENV_COMMAND_FAILURE` — PowerShell retry also failed (not a spec failure)
+   - Quality script checks for retry evidence
+
+6. **Failure taxonomy**
+   - `EXPECTED_FAIL_LEGACY_ONLY` — failure is from legacy config, not new code
+   - `BLOCKED_BY_DEPENDENCY_PENDING` — temporary, resolved automatically
+   - `BLOCKED_BY_FORBIDDEN_SCOPE` — final blocker (future/pets/requires Packages)
+
+7. **Batch state persistence**
+   - `docs/validation/WAVE_<wave>_BATCH_STATE.md` tracks:
+     - Current dependency stack
+     - Executed specs this batch
+     - Pending specs
+     - Next action
+   - Survives agent invocations and context loss
+
+### Dependency Resolution Example
+
+**Scenario:** User requests `companion_farm_job_board` (WAVE 05, not yet executed)
+
+```
+companion_farm_job_board (depends on farm_animals) → BLOCKED_BY_DEPENDENCY_PENDING
+  ↓ (automated resolution)
+farm_animals (depends on farm_buildings) → execute first
+  ↓
+farm_buildings (depends on farm_building_footprints) → execute next
+  ↓
+farm_building_footprints (depends on farm_level1_layout) → execute next
+  ↓
+farm_level1_layout (depends on farm_scale_tilemap) → execute next
+  ↓
+farm_scale_tilemap (no dependencies) → root, execute first
+```
+
+**Execution order:** `farm_scale_tilemap` → `farm_level1_layout` → `farm_building_footprints` → `farm_buildings` → `farm_animals` → `companion_farm_job_board`
+
+**Each returns:** `BUILD_VALIDATED` + commit + state update
+
+**Final result:** Original target (`companion_farm_job_board`) is ready to execute next
 
 ---
 

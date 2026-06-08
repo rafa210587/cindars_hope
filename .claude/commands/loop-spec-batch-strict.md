@@ -2,6 +2,27 @@
 
 Reference text for running a controlled batch of specs via `/loop`.
 
+## Mandatory Preflight (Windows / PowerShell)
+
+Before starting any batch loop:
+
+1. **Read mandatory rules:**
+   - `.claude/rules/windows_powershell_only.md`
+   - `.claude/rules/spec_dependency_resolution.md`
+   - `.claude/rules/spec_quality_gate.md`
+
+2. **Run PowerShell preflight:**
+   ```powershell
+   Set-Location 'D:\Projetos\Jogos\Cindars_hope\cindars_hope'
+   git status --short | Select-Object -First 50
+   git branch --show-current
+   ```
+
+3. **Verify:**
+   - ✓ Correct directory
+   - ✓ Correct branch (`dev`)
+   - ✓ Use PowerShell syntax only (no Unix/Bash commands)
+
 ## Usage
 
 Use this command text inside `/loop` to run a validated batch of specs.
@@ -17,6 +38,41 @@ Do not mark ACCEPTED.
 ```
 
 Replace `<WAVE>` with the target wave (e.g., `05`).
+
+## Dependency Chain Behavior Inside Loop
+
+If a spec finds a same-wave dependency:
+
+1. **Automatically resolve the chain** — do not ask user.
+2. **Mark current spec** as `BLOCKED_BY_DEPENDENCY_PENDING`.
+3. **Execute root dependency first** via `/execute-spec-strict`.
+4. **Continue upward** in dependency chain.
+5. **Return to original target** after all dependencies pass.
+6. **Do NOT count** `BLOCKED_BY_DEPENDENCY_PENDING` as final failure.
+7. **Do NOT pivot** to unrelated specs while chain is open.
+8. **Update batch state files:**
+   - `docs/validation/WAVE_<wave>_DEPENDENCY_RESOLUTION_PLAN.md`
+   - `docs/validation/WAVE_<wave>_BATCH_STATE.md`
+
+**Example:** If loop tries to execute `companion_farm_job_board` which depends on `farm_animals`, which depends on `farm_buildings`, etc., the loop will automatically resolve the entire chain before returning to `companion_farm_job_board`.
+
+Resolved depth does **not** count against the 10-spec max if all specs in chain resolve successfully.
+
+---
+
+## Windows Environment Rule
+
+All loop iterations must use **PowerShell syntax only**.
+
+If a `/execute-spec-strict` invocation uses Bash/Unix commands and fails:
+
+- **Do NOT mark the spec BLOCKED immediately.**
+- Mark as `ENV_COMMAND_RETRY_REQUIRED`.
+- Retry the step using PowerShell equivalent.
+- Only if PowerShell retry also fails, classify as `ENV_COMMAND_FAILURE`.
+- Environment command failure alone does not stop the loop.
+
+---
 
 ## Rules
 

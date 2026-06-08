@@ -42,6 +42,32 @@ Ou:
 - Não mover para implementados
 - Não alterar Packages/, ProjectSettings/, scenes, prefabs, assets
 
+## Mandatory Preflight (Windows / PowerShell)
+
+Before executing any spec:
+
+1. **Read mandatory rules:**
+   - `.claude/rules/windows_powershell_only.md`
+   - `.claude/rules/spec_dependency_resolution.md`
+   - `.claude/rules/spec_quality_gate.md`
+
+2. **Run PowerShell preflight:**
+   ```powershell
+   Set-Location 'D:\Projetos\Jogos\Cindars_hope\cindars_hope'
+   git status --short | Select-Object -First 50
+   git branch --show-current
+   ```
+
+3. **Verify:**
+   - ✓ Correct directory
+   - ✓ Correct branch (`dev`)
+   - ✓ Expected uncommitted state
+   - ✓ Use PowerShell syntax only (no Unix/Bash commands)
+
+If a command fails using Unix syntax, retry in PowerShell before treating as failure.
+
+---
+
 ## Fluxo Obrigatório
 
 ### 1. Leitura de Context (5 min)
@@ -69,6 +95,39 @@ Ler spec inteira. Extrair:
 - **Stop conditions:** quando parar com BLOCKED
 - **Arquivos permitidos:** allow-list de arquivos que podem ser alterados
 - **Arquivos proibidos:** no-change list (Packages, ProjectSettings, etc)
+
+### 3.5. Dependency Chain Check (5 min) — AUTOMATIC RESOLUTION
+
+**If spec depends on another unresolved spec in the same wave:**
+
+1. **Do NOT ask the user; resolve automatically.**
+2. Mark current spec as `BLOCKED_BY_DEPENDENCY_PENDING` (temporary status).
+3. Extract dependency chain from target spec (read `.claude/rules/spec_dependency_resolution.md`).
+4. Search same-wave specs in `docs/specs/a_implementar/<wave>_spec_*.md`.
+5. Build dependency DAG (directed acyclic graph).
+6. If dependency is **forbidden** (future/pets/HOLD/requires Packages/ProjectSettings/requires scene/prefab):
+   - Stop with `BLOCKED_BY_FORBIDDEN_SCOPE`
+   - Document reason
+7. If dependency is **same-wave and allowed**:
+   - Identify **root** (spec with no dependencies)
+   - Execute root first via `/execute-spec-strict`
+   - Continue upward until original spec is reached
+   - Do NOT pivot to unrelated specs
+8. Update `docs/validation/WAVE_<wave>_DEPENDENCY_RESOLUTION_PLAN.md`
+9. Update `docs/validation/WAVE_<wave>_BATCH_STATE.md`
+10. Return to original spec after chain is resolved
+
+**Required output clause in execution report:**
+```text
+## Dependency Chain
+
+Original target: <spec>
+Resolved chain: <spec1> → <spec2> → ... → <original>
+Root dependency: <spec>
+Forbidden dependencies: <none | listed>
+Depth: <N specs>
+Can continue original target: YES/NO
+```
 
 ### 4. Auditoria de Sistemas Existentes (10 min)
 
