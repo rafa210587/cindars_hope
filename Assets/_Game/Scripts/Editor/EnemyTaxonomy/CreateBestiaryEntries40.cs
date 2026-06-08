@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using CindarsHope.Combat;
 using CindarsHope.Enemy;
@@ -11,7 +11,7 @@ namespace CindarsHope.Editor.EnemyTaxonomy
     {
         private const string BestiaryFolder = "Assets/_Game/Data/Bestiary";
 
-        [MenuItem("CindarsHope/Advanced/Legacy/SPEC 13/Create Bestiary Entries 40")]
+        [MenuItem("CindarsHope/Archive/SPEC 13/Create Bestiary Entries 40")]
         public static void CreateEntries()
         {
             EnsureFolder(BestiaryFolder);

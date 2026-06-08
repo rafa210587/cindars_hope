@@ -17,7 +17,7 @@ namespace CindarsHope.Editor
     ///   - CindarsHope/Advanced/...                  (power-user sub-commands)
     ///
     /// Legacy validators and generators still exist as classes; their [MenuItem] attributes were
-    /// moved under CindarsHope/Advanced/Legacy/* so they are no longer the first thing a user sees.
+    /// moved under CindarsHope/Archive/* so they are no longer the first thing a user sees.
     /// </summary>
     public static class CindarsHopeProjectMaintenanceMenu
     {
@@ -143,7 +143,7 @@ namespace CindarsHope.Editor
             CindarsHope.Editor.EnemyTaxonomy.GenerateAndWireSpec13GAssets.GenerateAndWire();
         }
 
-        [MenuItem("CindarsHope/Advanced/Validate Registries", priority = 101)]
+        [MenuItem("CindarsHope/Validate/Validate Registries", priority = 40)]
         public static void ValidateRegistries()
         {
             int total = 0;
@@ -177,7 +177,7 @@ namespace CindarsHope.Editor
             Debug.Log($"ValidateRegistries: {total - problems}/{total} registries clean.");
         }
 
-        [MenuItem("CindarsHope/Advanced/Validate Cave Runtime", priority = 102)]
+        [MenuItem("CindarsHope/Validate/Validate Cave Runtime", priority = 41)]
         public static void ValidateCaveRuntime()
         {
             CindarsHope.Editor.Validation.ValidateSpec14AEnemyRuntimeIntegration.RunValidation();

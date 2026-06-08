@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using CindarsHope.Combat;
 using UnityEditor;
@@ -40,7 +40,7 @@ namespace CindarsHope.Editor.EnemyTaxonomy
             public bool IsBoss;
         }
 
-        [MenuItem("CindarsHope/Advanced/Legacy/SPEC 13/Create Canonical Enemy Roster")]
+        [MenuItem("CindarsHope/Archive/SPEC 13/Create Canonical Enemy Roster")]
         public static void CreateRoster()
         {
             EnsureFolder(RosterFolder);

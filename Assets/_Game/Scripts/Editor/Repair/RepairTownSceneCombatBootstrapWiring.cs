@@ -22,7 +22,7 @@ namespace CindarsHope.EditorTools.Repair
         private const string SpellDatabasePath = "Assets/_Game/Data/Combat/SpellDatabase.asset";
         private const string StatusEffectDatabasePath = "Assets/_Game/Data/Combat/StatusEffectDatabase.asset";
 
-        [MenuItem("CindarsHope/Repair/Scenes/Repair TownScene Combat Bootstrap Wiring")]
+        [MenuItem("CindarsHope/Archive/Repair/Repair TownScene Combat Bootstrap Wiring")]
         public static void Repair()
         {
             Debug.Log("RepairTownSceneCombatBootstrapWiring: Starting repair...");

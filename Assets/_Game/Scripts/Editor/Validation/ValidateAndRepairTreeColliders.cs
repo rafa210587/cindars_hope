@@ -10,7 +10,7 @@ namespace CindarsHope.Editor.Validation
         private const string FarmScenePath = "Assets/_Game/Scenes/FarmScene.unity";
         private const string TownScenePath = "Assets/_Game/Scenes/TownScene.unity";
 
-        [MenuItem("CindarsHope/Fix Tree Colliders", priority = 1)]
+        [MenuItem("CindarsHope/Advanced/Fix Tree Colliders", priority = 110)]
         public static void FixTreeColliders()
         {
             if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())

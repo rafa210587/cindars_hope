@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using CindarsHope.Camera;
 using CindarsHope.Core.Data;
 using CindarsHope.World.Scale;
@@ -13,7 +13,7 @@ namespace CindarsHope.Editor.ScaleSystem
         private const string CameraDataPath = "Assets/_Game/Data/Camera";
         private const string ConfigDataPath = "Assets/_Game/Data/Config";
 
-        [MenuItem("CindarsHope/Advanced/Legacy/Generate/Data/Create Default Scale Assets")]
+        [MenuItem("CindarsHope/Archive/Generate/Data/Create Default Scale Assets")]
         public static void CreateAll()
         {
             EnsureDirectory(ScaleDataPath);

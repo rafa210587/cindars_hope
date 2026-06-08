@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR
+#if UNITY_EDITOR
 using System;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.NPC;
@@ -23,7 +23,7 @@ namespace CindarsHope.EditorTools
             "Assets/_Game/Scenes/CaveScene.unity"
         };
 
-        [MenuItem("CindarsHope/Advanced/Legacy/Validation/Apply SPEC 17C Scene Wiring")]
+        [MenuItem("CindarsHope/Archive/Validation/Apply SPEC 17C Scene Wiring")]
         public static void ApplySceneWiring()
         {
             foreach (var scenePath in GameplayScenes)

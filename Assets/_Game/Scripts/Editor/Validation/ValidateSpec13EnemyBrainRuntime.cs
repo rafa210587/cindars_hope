@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using CindarsHope.Combat;
 using CindarsHope.Enemy;
@@ -37,7 +37,7 @@ namespace CindarsHope.Editor.Validation
             "actionset_enemy_gnome_gem_madcap",
         };
 
-        [MenuItem("CindarsHope/Advanced/Legacy/Validation/Validate SPEC 13D - EnemyBrain Runtime")]
+        [MenuItem("CindarsHope/Archive/Validation/Validate SPEC 13D - EnemyBrain Runtime")]
         public static void RunValidation()
         {
             var errors   = new List<string>();

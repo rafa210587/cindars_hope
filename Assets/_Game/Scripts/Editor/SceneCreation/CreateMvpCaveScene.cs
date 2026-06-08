@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using CindarsHope.Combat;
 using CindarsHope.Cave;
 using CindarsHope.Cave.Data;
@@ -52,7 +52,7 @@ namespace CindarsHope.Editor.SceneCreation
         private const string StatusEffectDatabasePath = "Assets/_Game/Data/Combat/StatusEffectDatabase.asset";
         private const string BuiltinSpritePath = "UI/Skin/UISprite.psd";
 
-        [MenuItem("CindarsHope/Advanced/Legacy/Scenes/Create MVP CaveScene")]
+        [MenuItem("CindarsHope/Create Scenes/Cave Scene", priority = 22)]
         public static void CreateSceneFromMenu()
         {
             if (EditorApplication.isPlayingOrWillChangePlaymode)

@@ -1,4 +1,4 @@
-﻿using CindarsHope.Core;
+using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Data;
 using CindarsHope.Core.Time;
@@ -43,7 +43,7 @@ namespace CindarsHope.Editor.SceneCreation
         private const string StatusEffectDatabasePath = "Assets/_Game/Data/Combat/StatusEffectDatabase.asset";
         private const string BuiltinSpritePath = "UI/Skin/UISprite.psd";
 
-        [MenuItem("CindarsHope/Advanced/Legacy/Scenes/Create MVP TownScene")]
+        [MenuItem("CindarsHope/Create Scenes/Town Scene", priority = 21)]
         public static void CreateSceneFromMenu()
         {
 

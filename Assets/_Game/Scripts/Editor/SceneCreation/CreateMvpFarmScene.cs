@@ -1,4 +1,4 @@
-﻿using CindarsHope.Core;
+using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Data;
 using CindarsHope.Core.Time;
@@ -46,7 +46,7 @@ namespace CindarsHope.Editor.SceneCreation
         private const string SpellDatabasePath = "Assets/_Game/Data/Combat/SpellDatabase.asset";
         private const string StatusEffectDatabasePath = "Assets/_Game/Data/Combat/StatusEffectDatabase.asset";
 
-        [MenuItem("CindarsHope/Advanced/Legacy/Scenes/Create MVP FarmScene")]
+        [MenuItem("CindarsHope/Create Scenes/Farm Scene", priority = 20)]
         public static void CreateSceneFromMenu()
         {
             if (EditorApplication.isPlayingOrWillChangePlaymode)

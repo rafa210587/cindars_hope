@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using CindarsHope.Combat;
 using CindarsHope.Craft.Data;
@@ -49,7 +49,7 @@ namespace CindarsHope.Editor.DataValidation
             "workshop_carpentry_basic"
         };
 
-        [MenuItem("CindarsHope/Advanced/Legacy/Validate/Validate MVP Data")]
+        [MenuItem("CindarsHope/Archive/Validate/Validate MVP Data")]
         public static void ValidateMvpData()
         {
             var errors = new List<string>();

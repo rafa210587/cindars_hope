@@ -19,7 +19,7 @@ namespace CindarsHope.EditorTools.Repair
         private const string SpellFireballPath = "Assets/_Game/Data/Combat/Spells/spell_fireball.asset";
         private const string ProjectileFireballPath = "Assets/_Game/Data/Combat/Prefabs/Projectile_Fireball.prefab";
 
-        [MenuItem("CindarsHope/Repair/Combat/Repair Projectile Prefab References")]
+        [MenuItem("CindarsHope/Archive/Repair/Repair Projectile Prefab References")]
         public static void Repair()
         {
             Debug.Log("RepairProjectilePrefabReferences: Starting repair...");

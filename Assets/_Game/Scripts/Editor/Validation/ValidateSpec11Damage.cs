@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR
+#if UNITY_EDITOR
 using CindarsHope.Combat;
 using CindarsHope.Core.Events;
 using UnityEditor;
@@ -8,7 +8,7 @@ namespace CindarsHope.Editor.Validation
 {
     public class ValidateSpec11Damage
     {
-        [MenuItem("CindarsHope/Advanced/Legacy/Validation/SPEC 11 - Damage Status Resistances")]
+        [MenuItem("CindarsHope/Archive/Validation/SPEC 11 - Damage Status Resistances")]
         public static void ValidateSpec11()
         {
             Debug.Log("=== SPEC 11 Validation: Damage Status Resistances ===");

@@ -14,7 +14,7 @@ namespace CindarsHope.Editor.Validation
         private const float RockZoneX = -9.0f, RockZoneY = 5.0f, RockZoneDist = 5f;
         private const float ForageZoneX = -8.0f, ForageZoneY = -2.0f, ForageZoneDist = 5f;
 
-        [MenuItem("CindarsHope/Repair and Validate/Validate Farm Resource Interactables")]
+        [MenuItem("CindarsHope/Validate/Validate Farm Resources", priority = 42)]
         public static void Validate()
         {
             int issues = 0;
@@ -28,7 +28,7 @@ namespace CindarsHope.Editor.Validation
             var interactables = Object.FindObjectsByType<FarmResourceInteractable>();
             if (interactables.Length == 0)
             {
-                Debug.LogWarning("[ValidateFarmResource] No FarmResourceInteractable found in scene. Run CindarsHope/Advanced/Legacy/Scenes/Create MVP FarmScene first.");
+                Debug.LogWarning("[ValidateFarmResource] No FarmResourceInteractable found in scene. Run CindarsHope/Archive/Scenes/Create MVP FarmScene first.");
                 return;
             }
 

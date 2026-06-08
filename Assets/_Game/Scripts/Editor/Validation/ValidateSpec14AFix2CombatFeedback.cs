@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using CindarsHope.Cave.Generation;
 using CindarsHope.Cave.Runtime;
@@ -15,7 +15,7 @@ namespace CindarsHope.Editor.Validation
         private const string EnemySpawnPacksFolder = "Assets/_Game/Data/EnemySpawn/Packs";
         private const string EnemyFactionLocksFolder = "Assets/_Game/Data/EnemySpawn/FactionLocks";
 
-        [MenuItem("CindarsHope/Advanced/Legacy/Validation/Validate SPEC 14A-FIX3 - Spawn Ecology and Combat Feedback")]
+        [MenuItem("CindarsHope/Archive/Validation/Validate SPEC 14A-FIX3 - Spawn Ecology and Combat Feedback")]
         public static void RunValidation()
         {
             var errors = new List<string>();

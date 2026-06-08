@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR
+#if UNITY_EDITOR
 using System.Collections.Generic;
 using System.IO;
 using CindarsHope.Core.Data;
@@ -17,7 +17,7 @@ namespace CindarsHope.Editor
         private const string ItemDatabasePath = "Assets/_Game/Data/Registries/ItemDatabase.asset";
         private const string RecipeDatabasePath = "Assets/_Game/Data/Registries/RecipeDatabase.asset";
         private const string PlayerDataPath = "Assets/_Game/Data/Config/PlayerData.asset";
-        [MenuItem("CindarsHope/Advanced/Legacy/Testing/Create Crafting Assets (Spec 07)")]
+        [MenuItem("CindarsHope/Archive/Testing/Create Crafting Assets (Spec 07)")]
         public static void CreateSpec07TestContent()
         {
             EnsureDirectory(RecipePath);

@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR
+#if UNITY_EDITOR
 using System.Collections.Generic;
 using System.Text;
 using CindarsHope.Core.Data;
@@ -16,7 +16,7 @@ namespace CindarsHope.EditorTools
         private const string PlayerDataPath = "Assets/_Game/Data/Config/PlayerData.asset";
         private const string ShopFolder = "Assets/_Game/Data/Economy";
 
-        [MenuItem("CindarsHope/Advanced/Legacy/Validation/Validate Item and Shop Data")]
+        [MenuItem("CindarsHope/Archive/Validation/Validate Item and Shop Data")]
         public static bool Run()
         {
             var errors = new List<string>();

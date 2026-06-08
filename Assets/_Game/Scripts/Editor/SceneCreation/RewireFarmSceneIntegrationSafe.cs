@@ -26,7 +26,7 @@ namespace CindarsHope.Editor.SceneCreation
         private const string BuiltinSpritePath = "UI/Skin/UISprite.psd";
         private const string ZoneParentName = "FarmSceneFoundationZones";
 
-        [MenuItem("CindarsHope/Integration/WAVE 04-05/Rewire FarmScene Safely")]
+        [MenuItem("CindarsHope/Archive/Integration/Rewire FarmScene Safely")]
         public static void Rewire()
         {
             if (EditorApplication.isPlayingOrWillChangePlaymode)

@@ -9,7 +9,7 @@ namespace CindarsHope.EditorTools.Validation
     /// </summary>
     public static class CombatValidationMenu
     {
-        [MenuItem("CindarsHope/Validate/Combat/Validate Projectile Prefabs")]
+        [MenuItem("CindarsHope/Advanced/Validate Projectile Prefabs", priority = 102)]
         public static void ValidateProjectilePrefabs()
         {
             var validator = new ProjectilePrefabValidator();
