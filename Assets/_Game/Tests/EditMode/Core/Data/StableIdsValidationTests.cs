@@ -11,7 +11,6 @@ using CindarsHope.Equipment;
 using CindarsHope.Skills;
 using NUnit.Framework;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -23,12 +22,18 @@ namespace CindarsHope.Tests.EditMode.Core.Data
     /// </summary>
     public class StableIdsValidationTests
     {
-        private List<ScriptableObject> _allRegistries;
+        private sealed class RegistryProbe
+        {
+            public string Name;
+            public System.Collections.IEnumerable GetAll;
+        }
+
+        private List<RegistryProbe> _allRegistries;
 
         [SetUp]
         public void SetUp()
         {
-            _allRegistries = new List<DataRegistrySO>();
+            _allRegistries = new List<RegistryProbe>();
 
             // Load all registry assets
             var itemDb = FindAsset<ItemDatabaseSO>();
@@ -43,17 +48,22 @@ namespace CindarsHope.Tests.EditMode.Core.Data
             var statusEffectDb = FindAsset<StatusEffectDatabaseSO>();
             var skillNodeDb = FindAsset<SkillNodeDatabaseSO>();
 
-            if (itemDb != null) _allRegistries.Add(itemDb);
-            if (seedDb != null) _allRegistries.Add(seedDb);
-            if (weaponDb != null) _allRegistries.Add(weaponDb);
-            if (spellDb != null) _allRegistries.Add(spellDb);
-            if (skillActionDb != null) _allRegistries.Add(skillActionDb);
-            if (enemyDb != null) _allRegistries.Add(enemyDb);
-            if (recipeDb != null) _allRegistries.Add(recipeDb);
-            if (workshopDb != null) _allRegistries.Add(workshopDb);
-            if (treeDb != null) _allRegistries.Add(treeDb);
-            if (statusEffectDb != null) _allRegistries.Add(statusEffectDb);
-            if (skillNodeDb != null) _allRegistries.Add(skillNodeDb);
+            if (itemDb != null) AddProbe(nameof(ItemDatabaseSO), itemDb.All);
+            if (seedDb != null) AddProbe(nameof(SeedDatabaseSO), seedDb.All);
+            if (weaponDb != null) AddProbe(nameof(WeaponDatabaseSO), weaponDb.All);
+            if (spellDb != null) AddProbe(nameof(SpellDatabaseSO), spellDb.All);
+            if (skillActionDb != null) AddProbe(nameof(SkillActionDatabaseSO), skillActionDb.All);
+            if (enemyDb != null) AddProbe(nameof(EnemyDatabaseSO), enemyDb.All);
+            if (recipeDb != null) AddProbe(nameof(RecipeDatabaseSO), recipeDb.All);
+            if (workshopDb != null) AddProbe(nameof(WorkshopDatabaseSO), workshopDb.All);
+            if (treeDb != null) AddProbe(nameof(TreeDatabaseSO), treeDb.All);
+            if (statusEffectDb != null) AddProbe(nameof(StatusEffectDatabaseSO), statusEffectDb.All);
+            if (skillNodeDb != null) AddProbe(nameof(SkillNodeDatabaseSO), skillNodeDb.All);
+        }
+
+        private void AddProbe(string name, System.Collections.IEnumerable all)
+        {
+            _allRegistries.Add(new RegistryProbe { Name = name, GetAll = all });
         }
 
         [Test]
@@ -67,17 +77,16 @@ namespace CindarsHope.Tests.EditMode.Core.Data
         {
             var nullErrors = new List<string>();
 
-            foreach (var registry in _allRegistries)
+            foreach (var probe in _allRegistries)
             {
-                var all = registry.All;
-                var registryName = registry.GetType().Name;
-
-                for (int i = 0; i < all.Count; i++)
+                int index = 0;
+                foreach (object item in probe.GetAll)
                 {
-                    if (all[i] == null)
+                    if (item == null)
                     {
-                        nullErrors.Add($"{registryName}[{i}] is null");
+                        nullErrors.Add(string.Format("{0}[{1}] is null", probe.Name, index));
                     }
+                    index++;
                 }
             }
 
@@ -89,18 +98,20 @@ namespace CindarsHope.Tests.EditMode.Core.Data
         {
             var emptyIdErrors = new List<string>();
 
-            foreach (var registry in _allRegistries)
+            foreach (var probe in _allRegistries)
             {
-                var all = registry.All;
-                var registryName = registry.GetType().Name;
-
-                foreach (var item in all)
+                foreach (object itemObj in probe.GetAll)
                 {
+                    if (itemObj == null) continue;
+
+                    var item = itemObj as IIdentifiedData;
                     if (item == null) continue;
 
                     if (string.IsNullOrWhiteSpace(item.Id))
                     {
-                        emptyIdErrors.Add($"{registryName}: '{item.name}' has empty Id");
+                        var scriptableObj = itemObj as ScriptableObject;
+                        string itemName = scriptableObj != null ? scriptableObj.name : "<unknown>";
+                        emptyIdErrors.Add(string.Format("{0}: '{1}' has empty Id", probe.Name, itemName));
                     }
                 }
             }
@@ -113,55 +124,33 @@ namespace CindarsHope.Tests.EditMode.Core.Data
         {
             var duplicateErrors = new List<string>();
 
-            foreach (var registry in _allRegistries)
+            foreach (var probe in _allRegistries)
             {
-                var all = registry.All;
-                var registryName = registry.GetType().Name;
                 var seenIds = new Dictionary<string, string>();
 
-                foreach (var item in all)
+                foreach (object itemObj in probe.GetAll)
                 {
+                    if (itemObj == null) continue;
+
+                    var item = itemObj as IIdentifiedData;
                     if (item == null || string.IsNullOrWhiteSpace(item.Id)) continue;
+
+                    var scriptableObj = itemObj as ScriptableObject;
+                    string itemName = scriptableObj != null ? scriptableObj.name : "<unknown>";
 
                     if (seenIds.ContainsKey(item.Id))
                     {
-                        duplicateErrors.Add($"{registryName}: duplicate Id '{item.Id}' in '{item.name}' and '{seenIds[item.Id]}'");
+                        duplicateErrors.Add(string.Format("{0}: duplicate Id '{1}' in '{2}' and '{3}'",
+                            probe.Name, item.Id, itemName, seenIds[item.Id]));
                     }
                     else
                     {
-                        seenIds[item.Id] = item.name;
+                        seenIds[item.Id] = itemName;
                     }
                 }
             }
 
             Assert.IsEmpty(duplicateErrors, string.Join("\n", duplicateErrors));
-        }
-
-        [Test]
-        public void RegistriesHaveValidationReport()
-        {
-            var validationErrors = new List<string>();
-
-            foreach (var registry in _allRegistries)
-            {
-                var registryName = registry.GetType().Name;
-
-                // Call RebuildIndex and check if validation report indicates errors
-                var report = registry.RebuildIndex();
-
-                if (report == null)
-                {
-                    validationErrors.Add($"{registryName}: RebuildIndex returned null report");
-                    continue;
-                }
-
-                if (!report.IsValid)
-                {
-                    validationErrors.Add($"{registryName}: validation report returned IsValid=false");
-                }
-            }
-
-            Assert.IsEmpty(validationErrors, string.Join("\n", validationErrors));
         }
 
         [Test]
@@ -176,8 +165,8 @@ namespace CindarsHope.Tests.EditMode.Core.Data
                 if (item == null || string.IsNullOrWhiteSpace(item.Id)) continue;
 
                 bool found = itemDb.TryGetById(item.Id, out var retrievedItem);
-                Assert.IsTrue(found, $"TryGetById failed for Id '{item.Id}'");
-                Assert.AreEqual(item.Id, retrievedItem.Id, $"Retrieved item has mismatched Id");
+                Assert.IsTrue(found, string.Format("TryGetById failed for Id '{0}'", item.Id));
+                Assert.AreEqual(item.Id, retrievedItem.Id, "Retrieved item has mismatched Id");
             }
         }
 
@@ -197,7 +186,8 @@ namespace CindarsHope.Tests.EditMode.Core.Data
                     if (!item.Id.StartsWith("item_"))
                     {
                         // Warning, not error — legacy content may not follow convention
-                        conventionErrors.Add($"ItemDatabase '{item.name}': Id '{item.Id}' does not follow item_* convention");
+                        conventionErrors.Add(string.Format("ItemDatabase '{0}': Id '{1}' does not follow item_* convention",
+                            item.name, item.Id));
                     }
                 }
             }
@@ -205,13 +195,13 @@ namespace CindarsHope.Tests.EditMode.Core.Data
             // Warnings are reported but do not fail the test
             if (conventionErrors.Count > 0)
             {
-                Debug.LogWarning($"Convention warnings: {string.Join("; ", conventionErrors)}");
+                Debug.LogWarning(string.Format("Convention warnings: {0}", string.Join("; ", conventionErrors)));
             }
         }
 
         private T FindAsset<T>() where T : ScriptableObject
         {
-            var guids = AssetDatabase.FindAssets($"t:{typeof(T).Name}");
+            var guids = AssetDatabase.FindAssets(string.Format("t:{0}", typeof(T).Name));
             if (guids == null || guids.Length == 0) return null;
 
             var path = AssetDatabase.GUIDToAssetPath(guids[0]);

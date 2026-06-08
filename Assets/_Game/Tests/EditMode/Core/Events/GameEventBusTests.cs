@@ -1,3 +1,4 @@
+using System;
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
 using NUnit.Framework;
