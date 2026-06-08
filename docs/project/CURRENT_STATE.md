@@ -86,6 +86,8 @@
 | WAVE 07 | DOES_NOT_EXIST | No 07_spec_*.md files found; skipped to WAVE 08 |
 | WAVE 08 City/NPC/Dialogue/Services | COMPLETED_WITH_KNOWN_LEGACY_GATES | 4/4 specs BUILD_VALIDATED; ~61 EditMode tests; Assembly-CSharp PASS; closeout: docs/validation/WAVE_08_CLOSEOUT_REPORT.md |
 | WAVE 09 Quest System | COMPLETED_WITH_KNOWN_LEGACY_GATES | 8/8 specs BUILD_VALIDATED; ~107 EditMode tests; Assembly-CSharp PASS; closeout: docs/validation/WAVE_09_CLOSEOUT_REPORT.md |
+| WAVE 10 Main Progression / Fonte / Endgame | COMPLETED_WITH_KNOWN_LEGACY_GATES | 4/4 specs BUILD_VALIDATED; ~72 EditMode tests; Assembly-CSharp PASS; closeout: docs/validation/WAVE_10_CLOSEOUT_REPORT.md |
+| WAVE 11 UI / HUD / Inventory / Shop projections | NEXT | 4 specs pending; UI contract/projection work |
 | WAVE 17-24 Future | BLOCKED INTENTIONALLY | 32+ future/expansion specs marked; pets (WAVE 23) blocked as HOLD/BLOCKED_SCOPE |
 
 ---
@@ -157,5 +159,5 @@ PROJECT_LOG + CURRENT_STATE conflict → prefer CURRENT_STATE; report mismatch
 
 ---
 
-*Last updated: 2026-06-08 (WAVE 09 execution complete — 8/8 specs RUNTIME_VALIDATED_WITH_KNOWN_LEGACY_GATES)*  
-*Next update: after WAVE 10 execution begins*
+*Last updated: 2026-06-08 (WAVE 10 execution complete — 4/4 specs RUNTIME_VALIDATED_WITH_KNOWN_LEGACY_GATES)*  
+*Next update: after WAVE 11 execution begins*
