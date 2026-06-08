@@ -208,21 +208,52 @@ Allowed status:
 - `FAIL` — not implemented, not documented defer
 - `NOT_APPLICABLE` — not relevant
 
-### 9. Validação (5 min)
+### 9. Validation (5 min) — STRICT VALIDATION TRUTH GATE
 
-Rodar:
+**Use central validation script:**
+
 ```powershell
-.\tools\docs\validate_docs.ps1
-dotnet build .\Assembly-CSharp.csproj --no-restore
-dotnet build .\Assembly-CSharp-Editor.csproj --no-restore
-.\tools\docs\check_spec_quality.ps1
+.\tools\docs\run_strict_validation.ps1
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "Strict validation failed. Do not commit."
+    exit 1
+}
 ```
 
-Expect results:
-- Docs validation: PASS or expected warnings
-- Assembly-CSharp: 0E
-- Assembly-CSharp-Editor: 0E
-- Quality check: PASS or expected FAIL (documented)
+**FORBIDDEN pattern:**
+```powershell
+❌ dotnet build ... | Select-String "error"
+❌ dotnet build ... 2>&1 | Select-String "error|Error"
+```
+
+These patterns filter output and lose `$LASTEXITCODE`, allowing false "build pass" claims.
+
+**Expected results:**
+- Docs validation: PASS or `EXPECTED_FAIL_LEGACY_ONLY`
+- Assembly-CSharp: PASS (exit code 0)
+- Assembly-CSharp-Editor: PASS (exit code 0)
+- Quality check: PASS (exit code 0)
+- Overall: `VALIDATION_PASS` (exit code 0)
+
+### 9.5. Document Validation Method in Report
+
+Every execution report must include:
+
+```text
+## Validation
+
+Validation method: run_strict_validation.ps1
+Exit code: 0
+Assembly-CSharp: PASS
+Assembly-CSharp-Editor: PASS
+Quality check: PASS
+Docs validation: PASS / EXPECTED_FAIL_LEGACY_ONLY
+Result artifact: docs/validation/LAST_STRICT_VALIDATION_RESULT.json
+```
+
+Do not claim build success without this evidence.
+
+---
 
 ### 10. Classificação Honesta de Status (5 min)
 

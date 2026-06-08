@@ -459,16 +459,31 @@ A: Harness doesn't retroactively invalidate prior work. WAVE 04 issues (missing 
 
 ---
 
+## Harness 3.0 — Strict Validation Truth Gate
+
+**Added 2026-06-08:**
+
+- `.claude/rules/build_validation_truth_gate.md` — Forbid filtered build validation patterns
+- `tools/docs/run_strict_validation.ps1` — Central validation with explicit exit-code gates
+- Updated 8 files (commands, rules, scripts) to require `run_strict_validation.ps1`
+
+**Key change:** Build success now requires `$LASTEXITCODE -eq 0`. Never infer success from filtered output like `dotnet build | Select-String "error"`.
+
+**Why:** The ConstructionJobTests hotfix (commit 53e9698) revealed that filtered output can hide real errors when `$LASTEXITCODE` is lost.
+
+---
+
 ## Sign-Off
 
 **Status:** READY  
 **Safe to use:** YES  
 **Blocks any existing workflow:** NO  
 **Recommended for:** All future spec execution (WAVE 05+)  
+**Mandatory for:** WAVE 05 batch, using `run_strict_validation.ps1`  
 **Optional integration:** Pre-commit hook (Phase 4)
 
 ---
 
 *Harness created: 2026-06-08*  
-*Designed for lightweight, manual-first, loop-safe spec execution*  
-*No mandatory automation; teams choose their own tempo*
+*Evolved: Harness 1.0 (deps) → 2.0 (PowerShell) → 3.0 (strict validation)*  
+*Designed for lightweight, manual-first, loop-safe spec execution with truth gates*

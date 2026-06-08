@@ -60,6 +60,29 @@ Resolved depth does **not** count against the 10-spec max if all specs in chain 
 
 ---
 
+## Strict Validation Truth Gate Rule
+
+**All loop iterations must use strict validation with explicit exit codes.**
+
+After each spec in the loop, run:
+
+```powershell
+.\tools\docs\run_strict_validation.ps1
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "Strict validation failed."
+    Stop the loop immediately
+}
+```
+
+**FORBIDDEN in the loop:**
+```powershell
+❌ dotnet build ... | Select-String "error"
+```
+
+If filtered output is used anywhere in the loop, the loop must stop and report `VALIDATION_SCRIPT_FAILURE`.
+
+---
+
 ## Windows Environment Rule
 
 All loop iterations must use **PowerShell syntax only**.

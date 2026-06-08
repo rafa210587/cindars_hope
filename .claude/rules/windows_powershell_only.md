@@ -66,6 +66,34 @@ Do not proceed without confirming:
 - ✓ Correct branch (`dev`)
 - ✓ Expected uncommitted state
 
+## PowerShell Exit Code Rule
+
+**When using PowerShell, always check `$LASTEXITCODE` after external commands.**
+
+Never rely on filtered output to infer success:
+
+```powershell
+# ❌ FORBIDDEN
+dotnet build ... | Select-String "error"
+# Exit code is lost; success/failure unknown
+
+# ✓ REQUIRED
+dotnet build ...
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "Build failed"
+    exit 1
+}
+```
+
+This applies to:
+- `dotnet build`
+- `dotnet test`
+- `git` commands
+- PowerShell scripts
+- Any external executable
+
+---
+
 ## Fallback Rule
 
 If an agent uses Unix syntax on Windows, the human executing the task may see failures. The execution report must document:

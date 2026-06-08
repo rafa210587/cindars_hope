@@ -341,6 +341,101 @@ if ($dependencyIssues.Count -gt 0) {
 
 Write-Host ""
 
+# 9. Check for forbidden build validation patterns
+Write-Host "9. Checking for forbidden build validation patterns..." -ForegroundColor Yellow
+
+$forbiddenPatterns = @(
+    'dotnet build.*Select-String',
+    'Select-String.*error',
+    '\| Select-String.*error',
+    '\| Out-String.*error'
+)
+
+$forbiddenIssues = @()
+
+# Check execution reports
+foreach ($report in $reportFiles) {
+    if (-not $report) { continue }
+    if (-not (Test-Path $report.FullName)) { continue }
+
+    $content = Get-Content -Path $report.FullName -Raw
+
+    # Check for filtered build patterns in code blocks
+    if ($content -match '```powershell') {
+        $codeBlocks = $content -split '```powershell'
+        for ($i = 1; $i -lt $codeBlocks.Count; $i += 2) {
+            $block = $codeBlocks[$i] -split '```' | Select-Object -First 1
+
+            foreach ($pattern in $forbiddenPatterns) {
+                if ($block -match $pattern) {
+                    $forbiddenIssues += "  - $($report.Name): forbidden pattern '$pattern' in code block"
+                }
+            }
+        }
+    }
+}
+
+# Check command/rule files for forbidden patterns
+$cmdFiles = Get-ChildItem -Path '.\.claude\commands\*.md', '.\.claude\rules\*.md' -ErrorAction SilentlyContinue
+foreach ($file in $cmdFiles) {
+    if (-not $file) { continue }
+
+    $content = Get-Content -Path $file.FullName -Raw
+
+    # Skip if file explicitly mentions "Forbidden pattern" section
+    if ($content -match 'Forbidden.*pattern|forbidden.*build') {
+        continue
+    }
+
+    foreach ($pattern in $forbiddenPatterns) {
+        if ($content -match $pattern) {
+            $forbiddenIssues += "  - $($file.Name): forbidden pattern '$pattern' (should use run_strict_validation.ps1)"
+        }
+    }
+}
+
+if ($forbiddenIssues.Count -gt 0) {
+    $issues += 'FAIL: Forbidden build validation patterns detected'
+    $issues += $forbiddenIssues
+    $exitCode = 1
+} else {
+    Write-Host "   PASS: No forbidden build validation patterns" -ForegroundColor Green
+}
+
+Write-Host ""
+
+# 10. Check for strict validation requirement in WAVE 05+ specs
+Write-Host "10. Checking for strict validation in WAVE 05+ execution reports..." -ForegroundColor Yellow
+
+$strictValidationIssues = @()
+
+foreach ($report in $reportFiles) {
+    # Check if this is a WAVE 05+ spec report
+    if ($report.Name -match '05_spec.*execution_report' -or `
+        $report.Name -match '06_spec.*execution_report' -or `
+        $report.Name -match '0[6-9]_spec.*execution_report') {
+
+        $content = Get-Content -Path $report.FullName -Raw
+
+        # Check if validation method is documented
+        if ($content -notmatch 'run_strict_validation') {
+            # Skip if status is BLOCKED, DEFERRED, or CONTRACT_ONLY (not applicable)
+            if ($content -notmatch 'BLOCKED|DEFERRED|CONTRACT_ONLY') {
+                $strictValidationIssues += "  - $($report.Name): WAVE 05+ but no 'run_strict_validation' cited"
+            }
+        }
+    }
+}
+
+if ($strictValidationIssues.Count -gt 0) {
+    $issues += 'WARN: WAVE 05+ specs should cite run_strict_validation.ps1'
+    $issues += $strictValidationIssues
+} else {
+    Write-Host "   PASS: WAVE 05+ specs properly cite strict validation" -ForegroundColor Green
+}
+
+Write-Host ""
+
 # Final summary
 Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor Cyan
 

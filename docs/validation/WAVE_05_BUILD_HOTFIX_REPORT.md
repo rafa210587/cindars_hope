@@ -87,7 +87,22 @@ Checks:
 
 ## Next Actions
 
-WAVE 05 batch execution can resume.
+**Before resuming WAVE 05:**
+
+1. Run strict validation harness (Harness 3.0):
+   ```powershell
+   .\tools\docs\run_strict_validation.ps1
+   ```
+   Expected: `VALIDATION_PASS` (exit code 0)
+
+2. Verify: `docs/validation/LAST_STRICT_VALIDATION_RESULT.json` exists
+
+3. Then proceed with WAVE 05 batch:
+   ```
+   /loop
+   Run /execute-spec-strict next --wave 05
+   Max specs: 10
+   ```
 
 **Next spec to execute:**
 ```
@@ -98,5 +113,16 @@ This spec depends on `farm_scale_tilemap`, which may trigger automatic dependenc
 
 ---
 
+## Harness Evolution
+
+| Version | Date | Issue | Solution |
+|---------|------|-------|----------|
+| 1.0 | 2026-06-08 | Dependency gaps | Auto-resolve same-wave deps |
+| 2.0 | 2026-06-08 | Unix/Windows mismatch | PowerShell-only + exit-code retry |
+| 3.0 | 2026-06-08 | False build pass | Forbid filtered output; require `$LASTEXITCODE` |
+
+---
+
 *Fixed by: Claude Haiku 4.5*  
-*Commit: fcfe6d0+ (hotfix applied)*
+*Commit: 53e9698 (hotfix applied)*  
+*Harness 3.0: Strict validation (pending)*

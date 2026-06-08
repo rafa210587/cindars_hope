@@ -129,6 +129,25 @@ Status:
 
 ---
 
+## Build Validation Truth Gate
+
+Build success is valid **only** when verified by explicit exit code.
+
+**Forbidden:**
+```powershell
+dotnet build ... | Select-String "error"
+```
+
+**Required:**
+```powershell
+.\tools\docs\run_strict_validation.ps1
+if ($LASTEXITCODE -ne 0) { /* failed */ }
+```
+
+A spec cannot be marked `BUILD_VALIDATED` unless `run_strict_validation.ps1` returned exit code 0.
+
+---
+
 ## Quando Usar BUILD_VALIDATED
 
 Usar **ONLY IF** todos forem verdadeiros:
@@ -140,11 +159,13 @@ Usar **ONLY IF** todos forem verdadeiros:
 5. ✓ Código criado/reutilizado atende todos os critérios centrais
 6. ✓ Spec Compliance Matrix preenchida com status OK (não DEFERRED ou FAIL)
 7. ✓ `.\tools\docs\validate_docs.ps1` — PASS
-8. ✓ `dotnet build .\Assembly-CSharp.csproj --no-restore` — 0E, 0W (build-related)
-9. ✓ `dotnet build .\Assembly-CSharp-Editor.csproj --no-restore` — 0E, pre-existing W only
-10. ✓ Nenhum arquivo proibido foi alterado (Packages, ProjectSettings, scenes, prefabs, assets)
-11. ✓ Testes, se criados, estão ONLY em `Assets/_Game/Tests/EditMode/**`, NEVER em `Assets/_Game/Scripts/**`
-12. ✓ Report contém seção "Honest status rationale" explicando por que o status não está inflado
+8. ✓ `.\tools\docs\run_strict_validation.ps1` — exit code 0, all checks PASS
+9. ✓ `Assembly-CSharp` — PASS (exit code 0)
+10. ✓ `Assembly-CSharp-Editor` — PASS (exit code 0)
+11. ✓ Nenhum arquivo proibido foi alterado (Packages, ProjectSettings, scenes, prefabs, assets)
+12. ✓ Testes, se criados, estão ONLY em `Assets/_Game/Tests/EditMode/**`, NEVER em `Assets/_Game/Scripts/**`
+13. ✓ Report contém seção "Honest status rationale" explicando por que o status não está inflado
+14. ✓ Report documenta validation method: `run_strict_validation.ps1`, exit code 0
 
 ---
 
