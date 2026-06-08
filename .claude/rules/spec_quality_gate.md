@@ -186,5 +186,75 @@ Todo `*_execution_report.md` deve conter:
 
 ---
 
-*Created: 2026-06-08 (Spec Quality Gate)*  
+## Loop Batch Policy — Up to 10 Specs
+
+`/loop` pode executar batches de até 10 specs via `/execute-spec-strict`, desde que:
+
+### Per-Spec Validation (não ao final do batch)
+
+1. **One spec per iteration** — cada ciclo do loop executa UMA spec exatamente
+2. **Individual report** — cada spec gera `*_execution_report.md` individual
+3. **Individual validation**:
+   - ✓ `docs validation` — PASS (no new errors)
+   - ✓ `dotnet build Assembly-CSharp` — 0E, 0W runtime
+   - ✓ `dotnet build Assembly-CSharp-Editor` — 0E, pre-existing W only
+   - ✓ `check_spec_quality.ps1` — PASS (no critical violations)
+4. **Individual commit** — cada spec bem-sucedida faz commit próprio ou para com status claro
+5. **Loop stop conditions** — parar IMEDIATAMENTE se:
+   - Status é `BLOCKED`
+   - Status é `NEEDS_REWORK`
+   - Status é `CONTRACT_ONLY_NEEDS_INTEGRATION` em spec fundacional
+   - Status é `DEFERRED_UI_VISUAL` em spec fundacional
+   - Build falha
+   - Docs validation tem erro novo
+   - Quality check falha criticamente
+   - Arquivo proibido foi alterado (Packages/, ProjectSettings/, scenes, prefabs, assets, runtime)
+   - Teste foi criado em pasta errada
+   - Report individual não existe
+   - Status está inflado (BUILD_VALIDATED sem evidence)
+
+### Batch Configuration
+
+| Wave Type | Recommended Max | Reason |
+|-----------|-----------------|--------|
+| New/unstable wave | 3 specs | Higher risk, need tight feedback loop |
+| Established wave (WAVE 02+) | 10 specs | Patterns known, lower failure rate |
+| Homogeneous specs (all UI VMs) | 10 specs | Same pattern repeated, easy to validate |
+| Never | >10 specs | Without external code review |
+
+### Batch Status Is NOT Wave Acceptance
+
+Completing 10 specs in a loop does NOT mean `ACCEPTED`.
+
+O batch pode produzir no máximo:
+- `BUILD_VALIDATED`
+- `BUILD_VALIDATED_WITH_WARNINGS`
+- `CONTRACT_ONLY`
+- `CONTRACT_ONLY_NEEDS_INTEGRATION`
+- `DEFERRED_UI_VISUAL`
+- `NEEDS_REWORK`
+- `BLOCKED`
+
+`ACCEPTED` e `PLAYMODE_VALIDATED` continuam proibidos durante implementation phase.
+
+### Loop Output Format
+
+Após cada spec no loop, output DEVE conter:
+
+```text
+SPEC_RESULT:
+Spec:
+Status:
+Docs validation:
+Assembly-CSharp:
+Assembly-CSharp-Editor:
+Quality check:
+Commit:
+Can continue next spec: YES/NO
+Can start next wave: NO (always no during loop)
+```
+
+---
+
+*Created: 2026-06-08 (Spec Quality Gate + Loop Batch Policy)*  
 *Applies to all agent-run spec execution tasks.*

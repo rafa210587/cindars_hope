@@ -62,13 +62,24 @@ Status: BUILD_VALIDATED
 
 Then manually review and decide next action.
 
-### Loop-Safe Execution (Multiple Specs)
+### Loop-Safe Execution (Multiple Specs: Up to 10 per batch)
 
+**Small batch (new/unstable wave):**
 ```text
 /loop
 Run /execute-spec-strict next --wave 04
-Max specs this session: 3
+Max specs this batch: 3
 Stop on: NEEDS_REWORK, BLOCKED, or quality check failure
+```
+
+**Large batch (established wave with known patterns):**
+```text
+/loop
+Run /execute-spec-strict next --wave 05
+Max specs this batch: 10
+Stop on: BLOCKED, NEEDS_REWORK, CONTRACT_ONLY_NEEDS_INTEGRATION on foundational spec, build failure, docs validation new failure, quality check failure
+Commit after each successful spec
+Do not start next wave in this loop
 ```
 
 Loop will:
@@ -76,6 +87,7 @@ Loop will:
 2. Wait for command to complete (one spec)
 3. Check if status allows continuing
 4. Re-invoke with `next` flag, or stop
+5. Repeat up to N times (3 or 10, depending on batch config)
 
 ### Manual Quality Check
 
@@ -327,10 +339,23 @@ This is intentional: harness enforces quality, not workflow. Teams choose their 
 
 ---
 
+## Loop Batch Policy Summary
+
+**Max specs per batch:**
+- **3 specs:** Recommended for new/unstable waves (WAVE 04 phase 1)
+- **10 specs:** Allowed for established waves with known patterns (WAVE 05+, homogeneous specs)
+- **Never >10:** Without external code review
+
+**Quality is enforced per-spec, not at batch end.** Each spec must pass all gates before continuing to the next.
+
+**See:** `.claude/rules/spec_quality_gate.md` → "Loop Batch Policy" section for detailed rules.
+
+---
+
 ## FAQ
 
 **Q: Does this harness require using `/loop`?**  
-A: No. Use `/execute-spec-strict` manually for one spec, or use `/loop` for multiple. Harness is agnostic.
+A: No. Use `/execute-spec-strict` manually for one spec, or use `/loop` for up to 10 specs. Harness is agnostic.
 
 **Q: Can I skip the execution report?**  
 A: No. Report is mandatory for any status. Even CONTRACT_ONLY needs a report.

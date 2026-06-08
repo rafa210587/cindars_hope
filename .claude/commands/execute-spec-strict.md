@@ -270,19 +270,63 @@ When BLOCKED:
 - Do NOT commit (unless report-only commit is meaningful)
 - Stop
 
-## Loop-Safe Usage
+## Loop-Safe Usage — Up to 10 Specs
 
-This command is safe in `/loop`:
+This command is safe in `/loop` for batches up to 10 specs:
+
+### Example: 10-Spec Batch
 
 ```text
-/loop 15m
-Run /execute-spec-strict next --wave 04.
-Max specs this session: 3.
-Stop on: NEEDS_REWORK, BLOCKED, or quality check failure.
-Do not proceed next wave until WAVE 04 reports created.
+/loop
+Run /execute-spec-strict next --wave 05.
+Max specs this batch: 10.
+Stop on: BLOCKED, NEEDS_REWORK, CONTRACT_ONLY_NEEDS_INTEGRATION on foundational spec, build failure, docs validation new failure, quality check failure.
+Commit after each successful spec.
+Do not start next wave in this loop.
+Do not mark ACCEPTED.
 ```
 
-The command itself won't loop; `/loop` will re-invoke it.
+### Rules
+
+1. **One spec per iteration** — each loop invocation executes exactly one spec
+2. **Max 10 per batch** — can re-invoke up to 10 times in the same `/loop`
+3. **Recommended max per wave:**
+   - 3 specs for new/unstable waves
+   - 10 specs for established waves with known patterns
+4. **Quality gates per spec** (not at end of batch):
+   - Docs validation PASS
+   - Assembly builds 0E
+   - Quality check PASS
+   - Status honest (no inflation)
+5. **Stop immediately on:**
+   - `BLOCKED` status
+   - `NEEDS_REWORK` status
+   - `CONTRACT_ONLY_NEEDS_INTEGRATION` on foundational spec
+   - Build failure
+   - Docs validation new error
+   - Quality check critical failure
+   - Forbidden file altered
+   - Report missing/incomplete
+
+### Output Format
+
+After each spec in the loop batch, output must be:
+
+```text
+SPEC_EXECUTION_RESULT
+──────────────────────
+Spec: <spec_id>
+Status: <BUILD_VALIDATED | BUILD_VALIDATED_WITH_WARNINGS | CONTRACT_ONLY | NEEDS_REWORK | BLOCKED>
+Acceptance criteria matched: <count>
+Execution report: <path>
+Compliance Matrix: <OK/DEFERRED/FAIL counts>
+Validations: Docs ✓ | Assembly-CSharp ✓ | Assembly-CSharp-Editor ✓ | Quality ✓
+Commit: <hash or NONE>
+Can continue next spec: <YES/NO + reason>
+Can start next wave: NO (always NO in loop batch)
+```
+
+The command itself won't loop; `/loop` will re-invoke it up to 10 times.
 
 ## Fallback for Manual Execution
 
