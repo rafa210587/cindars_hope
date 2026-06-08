@@ -55,11 +55,15 @@ namespace CindarsHope.Farm
 
         public static bool IsAnyActionMenuOpen => _activeMenuPlot != null;
 
+        private const int DefaultDeathThresholdDays = 3;
+
         public FarmPlotState State { get; private set; }
         public string PlantedSeedId { get; private set; }
         public int DaysGrown { get; private set; }
         public bool IsWatered => State == FarmPlotState.TilledWet || State == FarmPlotState.PlantedWet;
         public int RegrowRemainingDays { get; private set; }
+        public int DaysWithoutWater { get; private set; }
+        public int LastProcessedDay { get; private set; }
 
         public string InteractionPrompt
         {
@@ -103,6 +107,7 @@ namespace CindarsHope.Farm
                 PlantedSeedId = string.Empty;
                 DaysGrown = 0;
                 RegrowRemainingDays = 0;
+                DaysWithoutWater = 0;
             }
 
             UpdateVisual();
@@ -113,6 +118,7 @@ namespace CindarsHope.Farm
             PlantedSeedId = string.Empty;
             DaysGrown = 0;
             RegrowRemainingDays = 0;
+            DaysWithoutWater = 0;
             SetState(FarmPlotState.TilledDry);
         }
 
@@ -127,7 +133,9 @@ namespace CindarsHope.Farm
                 GrowthProgressDays = DaysGrown,
                 IsWatered = IsWatered,
                 RegrowRemainingDays = RegrowRemainingDays,
-                LastUpdatedDay = _currentDay
+                LastUpdatedDay = _currentDay,
+                DaysWithoutWater = DaysWithoutWater,
+                LastProcessedDay = LastProcessedDay
             };
         }
 
@@ -151,6 +159,8 @@ namespace CindarsHope.Farm
             DaysGrown = Mathf.Max(0, saveData.GrowthProgressDays > 0 ? saveData.GrowthProgressDays : saveData.DaysGrown);
             RegrowRemainingDays = Mathf.Max(0, saveData.RegrowRemainingDays);
             _currentDay = Mathf.Max(1, saveData.LastUpdatedDay);
+            DaysWithoutWater = Mathf.Max(0, saveData.DaysWithoutWater);
+            LastProcessedDay = Mathf.Max(0, saveData.LastProcessedDay);
 
             if (!IsPlantedState(restoredState) && restoredState != FarmPlotState.ReadyToHarvest)
             {
@@ -572,12 +582,29 @@ namespace CindarsHope.Farm
         {
             _currentDay = evt.DayNumber;
 
+            // Idempotency: skip if already processed this day
+            if (LastProcessedDay == _currentDay)
+                return;
+
+            LastProcessedDay = _currentDay;
+
             if (State == FarmPlotState.PlantedWet)
             {
+                DaysWithoutWater = 0;
                 AdvanceGrowth();
                 if (State == FarmPlotState.PlantedWet)
                 {
                     SetState(FarmPlotState.PlantedDry);
+                }
+            }
+            else if (State == FarmPlotState.PlantedDry)
+            {
+                DaysWithoutWater++;
+                if (DaysWithoutWater >= DefaultDeathThresholdDays)
+                {
+                    SetState(FarmPlotState.Dead);
+                    GameEventBus.Publish(new CropDiedEvent(PlantedSeedId, GetTilePosition(), _currentDay));
+                    Debug.Log($"FarmPlot {_plotIndex} crop '{PlantedSeedId}' died after {DaysWithoutWater} days without water.", this);
                 }
             }
             else if (State == FarmPlotState.TilledWet)

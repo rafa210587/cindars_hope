@@ -13,5 +13,7 @@ namespace CindarsHope.Farm
         public bool IsWatered;
         public int RegrowRemainingDays;
         public int LastUpdatedDay;
+        public int DaysWithoutWater;
+        public int LastProcessedDay;
     }
 }
