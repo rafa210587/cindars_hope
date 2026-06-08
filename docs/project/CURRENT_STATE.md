@@ -83,7 +83,7 @@
 | WAVE 04 UI Foundation Phase 1 | PHASE1_COMPLETED_WITH_CONTRACT_ONLY_CORE | 14 of 14 specs have execution reports; 3 BUILD_VALIDATED (SPECS 1-2, 8), 11 CONTRACT_ONLY (SPECS 3-7,9,11-16); SPEC 8 fully reworked (10 focus states, modal stack, 47 tests); Assembly builds PASS; quality check PASS; docs validation PASS (legacy errors only) |
 | WAVE 05 Farm Gameplay Core | COMPLETED_WITH_KNOWN_LEGACY_GATES | 20/20 specs executed; all BUILD_VALIDATED with RUNTIME_VALIDATED_WITH_KNOWN_LEGACY_GATES; ~123 EditMode tests; Assembly-CSharp PASS; closeout: docs/validation/WAVE_05_CLOSEOUT_REPORT.md |
 | WAVE 06 Economy/Loot/Crafting/Shop/Cave Foundation | COMPLETED_WITH_KNOWN_LEGACY_GATES | 8/8 specs executed; ~75 EditMode tests; Assembly-CSharp PASS; closeout: docs/validation/WAVE_06_CLOSEOUT_REPORT.md |
-| WAVE 07 Playable Scene Integration | WAVE_INTEGRATION_06A_CODE_READY_HUMAN_UNITY_SCENE_ACTION_REQUIRED | Scene architecture documented; manager audit complete; `SceneNames` contract created; FarmScene restored to WAVE03 baseline because WAVE04/WAVE05 scene wiring produced broken YAML/PPtr errors; layout reconciled in code (trees east, crop field moved, bounds reduced); resource interactables (Tree/Rock/Forage/Lake) added to CreateMvpFarmScene.cs; debug loadout provisioner created (WAVE_INTEGRATION_06A); human must run CreateMvpFarmScene generator, then Provision Farm Smoke Loadout in Play Mode, then execute Play Mode checklist |
+| WAVE 07 Playable Scene Integration | WAVE_INTEGRATION_07_CODE_READY_HUMAN_UNITY_SCENE_ACTION_REQUIRED | Scene architecture documented; manager audit complete; `SceneNames` contract created; FarmScene restored to WAVE03 baseline because WAVE04/WAVE05 scene wiring produced broken YAML/PPtr errors; layout reconciled in code (trees east, crop field moved, bounds reduced); resource interactables (Tree/Rock/Forage/Lake) added to CreateMvpFarmScene.cs; debug loadout provisioner created (WAVE_INTEGRATION_06A); economy loop wired via SellPoint (WAVE_INTEGRATION_07): CreateSellPoint() added to CreateScene() at Zone_ShippingSellpoint (3.5, 7.5); human must run CreateMvpFarmScene generator, then Provision Farm Smoke Loadout, then execute both 06A and 07 Play Mode checklists |
 | WAVE 08 City/NPC/Dialogue/Services | COMPLETED_WITH_KNOWN_LEGACY_GATES | 4/4 specs BUILD_VALIDATED; ~61 EditMode tests; Assembly-CSharp PASS; closeout: docs/validation/WAVE_08_CLOSEOUT_REPORT.md |
 | WAVE 09 Quest System | COMPLETED_WITH_KNOWN_LEGACY_GATES | 8/8 specs BUILD_VALIDATED; ~107 EditMode tests; Assembly-CSharp PASS; closeout: docs/validation/WAVE_09_CLOSEOUT_REPORT.md |
 | WAVE 10 Main Progression / Fonte / Endgame | COMPLETED_WITH_KNOWN_LEGACY_GATES | 4/4 specs BUILD_VALIDATED; ~72 EditMode tests; Assembly-CSharp PASS; closeout: docs/validation/WAVE_10_CLOSEOUT_REPORT.md |
@@ -104,7 +104,7 @@ Automation must ignore `docs/specs/a_implementar/features_futuras/` unless a hum
 
 ## WAVE 07 - Playable Scene Integration
 
-Status: WAVE_INTEGRATION_06A_CODE_READY_HUMAN_UNITY_SCENE_ACTION_REQUIRED
+Status: WAVE_INTEGRATION_07_CODE_READY_HUMAN_UNITY_SCENE_ACTION_REQUIRED
 
 Latest validation:
 - Assembly-CSharp: PASS (exit code 0, 0 warnings, 0 errors)
@@ -128,7 +128,12 @@ Latest validation:
 - Item use audit: STATIC_AUDIT_COMPLETE — see `docs/validation/WAVE_INTEGRATION_06A_DEBUG_LOADOUT_ITEM_USE_AUDIT.md`; WAVE_INTEGRATION_06B may be needed if tool IDs are absent
 - Human Play Mode checklist (06A): `docs/validation/WAVE_INTEGRATION_06A_HUMAN_PLAYMODE_CHECKLIST.md`
 - Human wiring instructions: CREATED (`docs/validation/WAVE_INTEGRATION_06_HUMAN_UNITY_RESOURCE_WIRING_INSTRUCTIONS.md`)
-- Can start WAVE_INTEGRATION_07: NO, blocked until human regenerates FarmScene and Play Mode checklist (06A) passes
+- Economy loop (WAVE_INTEGRATION_07): BUILD_VALIDATED_CODE_READY — REUSE_EXISTING_SHIPPING_RUNTIME strategy; SellPoint wired at Zone_ShippingSellpoint (3.5, 7.5); CreateSellPoint() added to CreateScene(); SellableItemPolicy confirmed: crops/materials/fish sellable; hoe/watering/pickaxe protected
+- WAVE_INTEGRATION_07 decision: CREATED (`docs/validation/WAVE_INTEGRATION_07_SHIPPING_ECONOMY_DECISION.md`)
+- WAVE_INTEGRATION_07 report: CREATED (`docs/validation/WAVE_INTEGRATION_07_SHIPPING_ECONOMY_REPORT.md`)
+- Human Play Mode checklist (07): `docs/validation/WAVE_INTEGRATION_07_HUMAN_PLAYMODE_CHECKLIST.md`
+- Human wiring instructions (07): `docs/validation/WAVE_INTEGRATION_07_HUMAN_UNITY_SHIPPING_WIRING_INSTRUCTIONS.md`
+- Can start WAVE_INTEGRATION_08: NO, blocked until human regenerates FarmScene and both 06A + 07 Play Mode checklists pass
 
 ---
 
@@ -199,5 +204,5 @@ PROJECT_LOG + CURRENT_STATE conflict → prefer CURRENT_STATE; report mismatch
 
 ---
 
-*Last updated: 2026-06-08 (WAVE_INTEGRATION_06A: debug loadout provisioner created; item use audit static-complete; 5 tool IDs unconfirmed; human must run CreateMvpFarmScene, provision loadout in Play Mode, and execute 06A checklist)*
-*Next update: after WAVE_INTEGRATION_06A Play Mode checklist passes (or WAVE_INTEGRATION_06B created if tool IDs are absent)*
+*Last updated: 2026-06-08 (WAVE_INTEGRATION_07: economy loop wired via existing SellPoint; CreateSellPoint() added to CreateScene() at (3.5, 7.5); BUILD_VALIDATED — human must regenerate FarmScene, run 06A provisioner, then execute both 06A and 07 Play Mode checklists)*
+*Next update: after WAVE_INTEGRATION_06A + 07 Play Mode checklists pass (or WAVE_INTEGRATION_06B created if tool IDs absent)*

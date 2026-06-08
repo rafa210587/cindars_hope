@@ -85,6 +85,7 @@ namespace CindarsHope.Editor.SceneCreation
             CreateFishingSpot(inventoryManager);
             CreateFarmSceneFoundationZones();
             CreateFarmResourceInteractables(inventoryManager);
+            CreateSellPoint(inventoryManager, playerManager);
             CreateDebugHud(
                 playerManager,
                 inventoryManager,
@@ -619,7 +620,7 @@ namespace CindarsHope.Editor.SceneCreation
         private static void CreateSellPoint(InventoryManager inventoryManager, PlayerManager playerManager)
         {
             var sellPointObject = new GameObject("SellPoint");
-            sellPointObject.transform.position = new Vector3(-4.75f, -1.75f, 0f);
+            sellPointObject.transform.position = new Vector3(3.5f, 7.5f, 0f);
             sellPointObject.transform.localScale = new Vector3(0.9f, 0.9f, 1f);
 
             var spriteRenderer = sellPointObject.AddComponent<SpriteRenderer>();
