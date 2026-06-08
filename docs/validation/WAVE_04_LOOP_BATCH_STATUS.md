@@ -16,7 +16,7 @@
 | 5 | 04_spec_ui_equipment_compare_runtime | BUILD_VALIDATED | CONTRACT_ONLY | 9773f7f |
 | 6 | 04_spec_ui_fonte_menu_flow_runtime | BUILD_VALIDATED | CONTRACT_ONLY | 9773f7f |
 | 7 | 04_spec_ui_hud_main_gameplay_runtime | BUILD_VALIDATED | CONTRACT_ONLY | 9773f7f |
-| 8 | 04_spec_ui_input_focus_modal_routing_runtime | BUILD_VALIDATED | NEEDS_REWORK | 9773f7f |
+| 8 | 04_spec_ui_input_focus_modal_routing_runtime | NEEDS_REWORK | BUILD_VALIDATED | 6be8e22 |
 | 9 | 04_spec_ui_inventory_items_tooltips_runtime | BUILD_VALIDATED | CONTRACT_ONLY | 9773f7f |
 | 10 | 04_spec_ui_menu_gamepad_navigation_future | BLOCKED_DEFERRED | BLOCKED_DEFERRED | — |
 

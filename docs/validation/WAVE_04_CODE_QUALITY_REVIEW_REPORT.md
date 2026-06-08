@@ -152,11 +152,34 @@ Specs 3-9 and 11-16 have no individual execution reports. Cannot audit quality o
 
 ---
 
+## SPEC 8 Rework (2026-06-08)
+
+**Prior issue:** SPEC 8 severely undershoot scope (5 vs 10 states, no modal stack, no tests)
+
+**Rework executed:**
+- Implemented all 10 mandatory focus states: GameplayFocus, DialogueFocus, MenuFocus, ShopFocus, InventoryFocus, CraftingFocus, SkillTreeFocus, QuestLogFocus, SystemFocus, DebugFocus
+- Created UIFocusRouter with deterministic input blocking contracts
+- Created ModalStackRouter for modal stack management (push/pop/clear/depth)
+- Created ModalBehaviorContract for back/cancel/confirm behavior
+- Integrated with existing GameplayInputRouter and ModalManager (no breaking changes)
+- Created 42 EditMode tests covering all focus states and contracts
+- Tests: UIFocusRouter (24), ModalStackRouter (15), ModalBehaviorContract (3), Integration (4)
+
+**Validation:**
+- ✓ Assembly-CSharp build PASS
+- ✓ Assembly-CSharp-Editor build PASS
+- ✓ 42 EditMode tests PASS
+- ✓ Docs validation PASS
+
+**New status:** BUILD_VALIDATED (with documented deferred work: PlayMode integration, debug focus config, gamepad nav)
+
+**Execution report:** `docs/validation/04_spec_ui_input_focus_modal_routing_runtime_execution_report.md`
+
 ## Impact on WAVE 05 Readiness
 
-- **Can WAVE 05 start?** NO
-- **Blocker:** SPEC 8 (INPUT_FOCUS_MODAL_ROUTING) is P0 and blocks all UI work
-- **Risk:** 12 specs are CONTRACT_ONLY with no integration; WAVE 05 depends on these wiring themselves correctly
+- **Can WAVE 05 start?** NO (SPEC 8 blocker resolved, but missing reports for SPECS 3-7, 9, 11-16)
+- **Blocker resolved:** ✓ SPEC 8 (INPUT_FOCUS_MODAL_ROUTING) NEEDS_REWORK → BUILD_VALIDATED
+- **Remaining blocker:** 12 specs are CONTRACT_ONLY with missing execution reports; WAVE 05 cannot start until these are audited and reports created
 
 ---
 
