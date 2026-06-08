@@ -8,6 +8,7 @@ using CindarsHope.Economy;
 using CindarsHope.Enemy;
 using CindarsHope.Equipment;
 using CindarsHope.Farm;
+using CindarsHope.Farm.Scene;
 using CindarsHope.Inventory;
 using CindarsHope.Interaction;
 using CindarsHope.Player;
@@ -81,6 +82,7 @@ namespace CindarsHope.Editor.SceneCreation
             CreateCraftingStations(craftingRuntime, craftingModal);
             CreateFarmPortals();
             CreateFishingSpot(inventoryManager);
+            CreateFarmSceneFoundationZones();
             CreateDebugHud(
                 playerManager,
                 inventoryManager,
@@ -760,6 +762,56 @@ namespace CindarsHope.Editor.SceneCreation
             var collider = triggerObject.AddComponent<BoxCollider2D>();
             collider.isTrigger = true;
             collider.size = size;
+        }
+
+        private static void CreateFarmSceneFoundationZones()
+        {
+            var parent = new GameObject("FarmSceneFoundationZones");
+            parent.transform.position = Vector3.zero;
+
+            CreateFarmSceneZone(parent.transform, "Zone_PlayerSpawn", FarmSceneZoneType.PlayerSpawn, "farm_zone_player_spawn", new Vector3(0f, 0f, 0f), new Vector2(1.4f, 1.4f), new Color(0.2f, 0.45f, 0.95f, 0.65f));
+            CreateFarmSceneZone(parent.transform, "Zone_CropField", FarmSceneZoneType.CropField, "farm_zone_crop_field", new Vector3(-4.75f, 0.35f, 0f), new Vector2(5.2f, 4.6f), new Color(0.35f, 0.22f, 0.12f, 0.45f));
+            CreateFarmSceneZone(parent.transform, "Zone_ResourceTrees", FarmSceneZoneType.ResourceTrees, "farm_zone_resource_trees", new Vector3(7.5f, 1.2f, 0f), new Vector2(9.5f, 8f), new Color(0.14f, 0.48f, 0.18f, 0.35f));
+            CreateFarmSceneZone(parent.transform, "Zone_ResourceRocks", FarmSceneZoneType.ResourceRocks, "farm_zone_resource_rocks", new Vector3(-10.5f, 5.5f, 0f), new Vector2(4.5f, 3.5f), new Color(0.42f, 0.42f, 0.42f, 0.55f));
+            CreateFarmSceneZone(parent.transform, "Zone_Forage", FarmSceneZoneType.Forage, "farm_zone_forage", new Vector3(-9.5f, 0.5f, 0f), new Vector2(4.5f, 5.5f), new Color(0.45f, 0.64f, 0.25f, 0.4f));
+            CreateFarmSceneZone(parent.transform, "Zone_LakeFishing", FarmSceneZoneType.LakeFishing, "farm_zone_lake_fishing", new Vector3(7.8f, -2.8f, 0f), new Vector2(5.8f, 4.4f), new Color(0.18f, 0.44f, 0.82f, 0.5f));
+            CreateFarmSceneZone(parent.transform, "Zone_ShippingSellpoint", FarmSceneZoneType.ShippingSellpoint, "farm_zone_shipping_sellpoint", new Vector3(10.5f, 5.6f, 0f), new Vector2(2.2f, 2.2f), new Color(0.85f, 0.62f, 0.18f, 0.65f));
+            CreateFarmSceneZone(parent.transform, "Zone_Construction", FarmSceneZoneType.Construction, "farm_zone_construction", new Vector3(0f, 6.2f, 0f), new Vector2(5.5f, 3.2f), new Color(0.58f, 0.45f, 0.32f, 0.45f));
+            CreateFarmSceneZone(parent.transform, "Zone_HouseEntrance", FarmSceneZoneType.HouseEntrance, "farm_zone_house_entrance", new Vector3(-12.4f, -5.6f, 0f), new Vector2(2.2f, 1.6f), new Color(0.62f, 0.36f, 0.25f, 0.65f));
+            CreateFarmSceneZone(parent.transform, "Zone_TownExit", FarmSceneZoneType.TownExit, "farm_zone_town_exit", new Vector3(-8.25f, -4.75f, 0f), new Vector2(1.6f, 2.4f), new Color(0.82f, 0.82f, 0.25f, 0.55f));
+            CreateFarmSceneZone(parent.transform, "Zone_CaveEntrance", FarmSceneZoneType.CaveEntrance, "farm_zone_cave_entrance", new Vector3(-5.5f, 0f, 0f), new Vector2(1.8f, 2.4f), new Color(0.35f, 0.28f, 0.5f, 0.65f));
+        }
+
+        private static void CreateFarmSceneZone(
+            Transform parent,
+            string name,
+            FarmSceneZoneType zoneType,
+            string stableId,
+            Vector3 position,
+            Vector2 size,
+            Color color)
+        {
+            var markerObject = new GameObject(name);
+            markerObject.transform.SetParent(parent);
+            markerObject.transform.position = position;
+            markerObject.transform.localScale = new Vector3(size.x, size.y, 1f);
+
+            var spriteRenderer = markerObject.AddComponent<SpriteRenderer>();
+            spriteRenderer.sprite = GetBuiltinSprite();
+            spriteRenderer.color = color;
+            spriteRenderer.sortingOrder = -5;
+            TrySetSortingLayer(spriteRenderer, "Ground", spriteRenderer.sortingOrder);
+
+            var collider = markerObject.AddComponent<BoxCollider2D>();
+            collider.isTrigger = true;
+            collider.size = Vector2.one;
+
+            var marker = markerObject.AddComponent<FarmSceneZoneMarker>();
+            var serializedMarker = new SerializedObject(marker);
+            serializedMarker.FindProperty("zoneType").enumValueIndex = (int)zoneType;
+            serializedMarker.FindProperty("stableId").stringValue = stableId;
+            serializedMarker.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(marker);
         }
 
         private static ItemPickupRegistry CreateItemPickups(InventoryManager inventoryManager)
