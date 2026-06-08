@@ -65,7 +65,7 @@ namespace CindarsHope.World
 
             if (_lunarService != null)
             {
-                _lunarService.CurrentCycle = LunarCycle.FromAbsoluteDay(_saveData.CurrentDay);
+                _lunarService.RestoreFromSaveData(_saveData.CurrentDay);
             }
         }
     }

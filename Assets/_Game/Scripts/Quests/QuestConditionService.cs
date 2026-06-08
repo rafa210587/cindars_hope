@@ -5,6 +5,11 @@ using UnityEngine;
 
 namespace CindarsHope.Quests
 {
+    public interface IQuestInventoryProvider
+    {
+        int GetItemCount(string itemId);
+    }
+
     public class QuestConditionService : MonoBehaviour
     {
         public bool EvaluateCondition(ConditionDefinition condition, QuestContext context)
@@ -37,7 +42,7 @@ namespace CindarsHope.Quests
     {
         public CindarsHope.Core.Time.TimeManager TimeManager { get; set; }
         public GameCalendarService CalendarService { get; set; }
-        public object InventoryManager { get; set; }
+        public IQuestInventoryProvider InventoryManager { get; set; }
         public System.Collections.Generic.HashSet<string> VisitedLocations { get; set; } = new System.Collections.Generic.HashSet<string>();
         public System.Collections.Generic.HashSet<string> MetNpcs { get; set; } = new System.Collections.Generic.HashSet<string>();
         public System.Collections.Generic.HashSet<string> TriggeredEvents { get; set; } = new System.Collections.Generic.HashSet<string>();

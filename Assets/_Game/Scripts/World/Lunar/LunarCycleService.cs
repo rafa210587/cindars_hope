@@ -32,6 +32,11 @@ namespace CindarsHope.World.Lunar
             Debug.Log("LunarCycleService initialized.");
         }
 
+        public void RestoreFromSaveData(int absoluteDay)
+        {
+            _currentCycle = LunarCycle.FromAbsoluteDay(absoluteDay);
+        }
+
         private void Update()
         {
             if (!_isInitialized || _timeManager == null)
