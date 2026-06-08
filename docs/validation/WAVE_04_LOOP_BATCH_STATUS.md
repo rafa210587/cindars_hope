@@ -2,7 +2,7 @@
 
 ## Batch
 - Wave: 04
-- Max specs: 3
+- Max specs: 10 (expanded from 3)
 - Started: 2026-06-08
 - Status: IN_PROGRESS
 
