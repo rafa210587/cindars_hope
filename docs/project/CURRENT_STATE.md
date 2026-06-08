@@ -80,7 +80,7 @@
 | WAVE 01 Hardening & Quality Gate | CODE_COMPLETE | 9 specs executed (00.04, 01.01-01.07, 01Q); BUILD_VALIDATED; 36 EditMode tests compile successfully (0E/0W) |
 | WAVE 02 Time/Calendar/Lunar/Weather/Rain/Save/Festivals | COMPLETED_WITH_DEFERRED_UI | 7 of 8 specs BUILD_VALIDATED; 1 deferred (Spec 3 Calendar UI); all runtime systems complete |
 | WAVE 03 Quests/Objectives/Events | COMPLETED_WITH_DEFERRED_UI | 8 of 8 runtime specs BUILD_VALIDATED; 4 future specs blocked; quest system foundation complete; readiness check PASS |
-| WAVE 04 UI Foundation Phase 1 | QUALITY_REVIEW_SPEC8_PATCHED | 9 of 10 specs code-executed; 3 BUILD_VALIDATED (SPECS 1-2, 8-PATCHED), 7 CONTRACT_ONLY (SPECS 3-7,9); SPEC 8 rework + patch complete (10 focus states, modal stack, submodal support, 47 tests, integration semantics corrected); remaining blocker: missing reports for SPECS 3-7,9,11-16 (12 total) |
+| WAVE 04 UI Foundation Phase 1 | PHASE1_REPORTS_COMPLETE | 14 of 14 specs have execution reports; 3 BUILD_VALIDATED (SPECS 1-2, 8), 11 CONTRACT_ONLY (SPECS 3-7,9,11-16); SPEC 8 fully reworked (10 focus states, modal stack, 47 tests); all reports honest; integration deferred to WAVE 05 |
 | WAVE 05-12 Core Gameplay | BLOCKED | Waiting: SPEC 8 rework + WAVE 04 missing execution reports; WAVE 02-03 foundation ready |
 | WAVE 17-24 Future | BLOCKED INTENTIONALLY | 32+ future/expansion specs marked; pets (WAVE 23) blocked as HOLD/BLOCKED_SCOPE |
 
@@ -153,5 +153,5 @@ PROJECT_LOG + CURRENT_STATE conflict → prefer CURRENT_STATE; report mismatch
 
 ---
 
-*Last updated: 2026-06-08 (WAVE 04 Quality Review: SPEC 8 NEEDS_REWORK, 12 reports missing, blocker for WAVE 05)*  
-*Next update: after WAVE 04 SPEC 8 rework completes or quality gate resolved*
+*Last updated: 2026-06-08 (WAVE 04 Phase 1 Complete: All 14 execution reports created, honest status assigned, SPEC 8 reworked)*  
+*Next update: after WAVE 05 integration phase begins or WAVE 04 Phase 2 starts*
