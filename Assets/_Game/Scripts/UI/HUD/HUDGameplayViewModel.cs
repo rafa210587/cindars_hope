@@ -1,31 +1,65 @@
+using System.Collections.Generic;
+using CindarsHope.UI.Notifications;
+
 namespace CindarsHope.UI.HUD
 {
-    /// <summary>
-    /// SPEC 04: Main gameplay HUD projection for health, mana, stamina, day/weather.
-    /// </summary>
-    public class HUDGameplayViewModel
+    // Main HUD projection — read-only, never source of truth for gameplay state
+    public class GameplayHudViewModel
     {
-        // Character state
-        public int HealthCurrent { get; set; }
-        public int HealthMax { get; set; }
-        public int ManaCurrent { get; set; }
-        public int ManaMax { get; set; }
-        public int StaminaCurrent { get; set; }
-        public int StaminaMax { get; set; }
+        // Core always-visible stats
+        public int Hp { get; set; }
+        public int MaxHp { get; set; }
+        public int Stamina { get; set; }
+        public int MaxStamina { get; set; }
 
-        // World state
+        // MP shown only when magic/build relevant
+        public bool ShowMp { get; set; }
+        public int Mp { get; set; }
+        public int MaxMp { get; set; }
+
+        // Compact secondary needs (shown when contextually relevant)
+        public float HungerCompact { get; set; }
+        public float FatigueCompact { get; set; }
+
+        // World state projection
         public string CurrentSeason { get; set; }
         public int DayOfSeason { get; set; }
         public string CurrentWeather { get; set; }
         public string CurrentLunarPhase { get; set; }
 
-        // Computed
-        public float HealthPercent => HealthMax > 0 ? (float)HealthCurrent / HealthMax : 1f;
-        public float ManaPercent => ManaMax > 0 ? (float)ManaCurrent / ManaMax : 1f;
-        public float StaminaPercent => StaminaMax > 0 ? (float)StaminaCurrent / StaminaMax : 1f;
+        // Hotbar
+        public List<HotbarSlotViewModel> HotbarSlots { get; set; } = new List<HotbarSlotViewModel>();
 
-        public bool IsHealthLow => HealthPercent < 0.25f;
-        public bool IsManaLow => ManaPercent < 0.25f;
+        // Active skill slots — CAPPED AT 4 (spec rule 23H)
+        public List<ActiveSkillSlotViewModel> ActiveSkillSlots { get; set; } = new List<ActiveSkillSlotViewModel>();
+
+        // Active tool or weapon display
+        public string ActiveToolOrWeapon { get; set; }
+
+        // Status effects and buffs
+        public List<StatusBuffProjection> StatusEffects { get; set; } = new List<StatusBuffProjection>();
+        public List<StatusBuffProjection> Buffs { get; set; } = new List<StatusBuffProjection>();
+
+        // Context prompts
+        public ContextPromptProjection ContextPrompt { get; set; }
+        public string QuestPrompt { get; set; }
+
+        // Future slots — optional, no runtime until companion/pet specs
+        public string CompanionProjection { get; set; }
+        public string PetProjection { get; set; }
+
+        // Debug: always false in final HUD
+        public bool DebugVisible { get; set; } = false;
+
+        // Computed helpers
+        public float HpPercent => MaxHp > 0 ? (float)Hp / MaxHp : 1f;
+        public float MpPercent => MaxMp > 0 ? (float)Mp / MaxMp : 1f;
+        public float StaminaPercent => MaxStamina > 0 ? (float)Stamina / MaxStamina : 1f;
+        public bool IsHpLow => HpPercent < 0.25f;
+        public bool IsMpLow => ShowMp && MpPercent < 0.25f;
         public bool IsStaminaLow => StaminaPercent < 0.25f;
     }
+
+    // Legacy alias — keeps backward compat for any compiled code referencing old name
+    public class HUDGameplayViewModel : GameplayHudViewModel { }
 }
