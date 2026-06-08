@@ -40,6 +40,7 @@ namespace CindarsHope.Save
         public ActiveSkillSlotsSaveData ActiveSkillSlots;
         public SkillTreeSaveData SkillTree;
         public BestiarySaveData Bestiary;
+        public CompanionManagerSaveData Companions;
     }
 
     [Serializable]
@@ -200,6 +201,29 @@ namespace CindarsHope.Save
         public string SlotTSkillActionId;
         public string SlotYSkillActionId;
         public string SlotGSkillActionId;
+    }
+
+    [Serializable]
+    public class CompanionManagerSaveData
+    {
+        public List<CompanionSaveEntry> Companions = new List<CompanionSaveEntry>();
+    }
+
+    [Serializable]
+    public class CompanionSaveEntry
+    {
+        public string CompanionId;
+        public string NpcId;
+        public int UnlockState;
+        public List<string> UnlockedRoles = new List<string>();
+        public List<string> UnlockedByQuestIds = new List<string>();
+        public int BondLevel;
+        public int TrustPoints;
+        public int Fatigue;
+        public int InjuryState;
+        public int LastInteractionDay;
+        public int JobRank;
+        public int CaveRank;
     }
 
 }
