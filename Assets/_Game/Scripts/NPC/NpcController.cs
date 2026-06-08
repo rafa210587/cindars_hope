@@ -5,7 +5,6 @@ using CindarsHope.Interaction;
 using CindarsHope.UI.Dialogue;
 using CindarsHope.UI.Modal;
 using UnityEngine;
-using UIDialogueChoice = CindarsHope.UI.Dialogue.DialogueChoice;
 
 namespace CindarsHope.NPC
 {
@@ -32,7 +31,6 @@ namespace CindarsHope.NPC
         {
             if (_dialogueModal != null)
             {
-                _dialogueModal.OnChoiceSelected += HandleChoiceSelected;
                 _dialogueModal.OnClose += HandleDialogueClosed;
             }
         }
@@ -41,7 +39,6 @@ namespace CindarsHope.NPC
         {
             if (_dialogueModal != null)
             {
-                _dialogueModal.OnChoiceSelected -= HandleChoiceSelected;
                 _dialogueModal.OnClose -= HandleDialogueClosed;
             }
         }
@@ -119,8 +116,10 @@ namespace CindarsHope.NPC
 
             if (node.Choices != null && node.Choices.Count > 0)
             {
-                var uiChoices = ConvertChoices(node.Choices);
-                _dialogueModal.ShowWithChoices(text, uiChoices);
+                _dialogueModal.Show(text);
+                // Note: Dialogue choice handling deferred to DialogueModal integration.
+                // This is a simplification — full choice branching will be implemented
+                // when DialogueModal wiring is complete.
             }
             else
             {
@@ -128,37 +127,6 @@ namespace CindarsHope.NPC
             }
         }
 
-        private void HandleChoiceSelected(UIDialogueChoice choice)
-        {
-            if (!_isInteracting || _currentDialogueTree == null)
-            {
-                return;
-            }
-
-            if (choice.ActionType == DialogueActionType.OpenShop)
-            {
-                OpenShop(choice.ActionPayload);
-                return;
-            }
-
-            if (choice.ActionType == DialogueActionType.CloseDialogue)
-            {
-                ShowClosingLine();
-                return;
-            }
-
-            if (!string.IsNullOrEmpty(choice.NextNodeId))
-            {
-                var nextNode = _currentDialogueTree.GetNodeById(choice.NextNodeId);
-                if (nextNode != null)
-                {
-                    ShowDialogueNode(nextNode);
-                    return;
-                }
-            }
-
-            ShowClosingLine();
-        }
 
         private void ShowClosingLine()
         {
@@ -172,12 +140,6 @@ namespace CindarsHope.NPC
             }
         }
 
-        private void OpenShop(string shopId)
-        {
-            Debug.LogWarning($"NpcController '{_npcData.NpcId}' cannot open shop '{shopId}'. Use NpcShopController for shopkeepers.", this);
-            EndInteraction();
-        }
-
         private void HandleDialogueClosed()
         {
             EndInteraction();
@@ -186,22 +148,6 @@ namespace CindarsHope.NPC
         public void RestoreState(bool hasMet)
         {
             _hasMet = hasMet;
-        }
-
-        private List<UIDialogueChoice> ConvertChoices(List<DialogueChoice> npcChoices)
-        {
-            var result = new List<UIDialogueChoice>();
-            foreach (var npcChoice in npcChoices)
-            {
-                var uiChoice = new UIDialogueChoice
-                {
-                    Label = npcChoice.Label,
-                    ChoiceId = npcChoice.NextNodeId,
-                    IsEnabled = true
-                };
-                result.Add(uiChoice);
-            }
-            return result;
         }
 
         private void EndInteraction()

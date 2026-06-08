@@ -1,5 +1,5 @@
 using NUnit.Framework;
-using CindarsHope.UI.Input;
+using CindarsHope.UI.InputRouting;
 using CindarsHope.UI.Modal;
 
 namespace CindarsHope.Tests.EditMode.UI

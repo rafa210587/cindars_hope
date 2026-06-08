@@ -1,6 +1,6 @@
 using CindarsHope.UI.Modal;
 
-namespace CindarsHope.UI.Input
+namespace CindarsHope.UI.InputRouting
 {
     /// <summary>
     /// SPEC 04: UI Focus State — 10 mandatory focus states per spec requirement.
