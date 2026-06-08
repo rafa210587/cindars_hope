@@ -1,19 +1,19 @@
 #if UNITY_EDITOR
 
 using CindarsHope.Farm;
-using UnityEditor;
+using CindarsHope.EditorTools.Validation;
 using UnityEngine;
 
 namespace CindarsHope.Editor.Validation
 {
     public class ValidateFarmScaleContract : IProjectValidator
     {
-        public string ValidatorName => "Farm Scale Contract";
-        public string ValidatorDescription => "Validates farm scale, tilemap, footbox, and camera dimensions against design contract.";
+        public string ValidatorId => "farm_scale_contract";
+        public string DisplayName => "Farm Scale Contract";
 
-        public ValidationReport Validate()
+        public ValidationReport Run()
         {
-            var report = new ValidationReport(ValidatorName);
+            var report = new ValidationReport();
 
             ValidateTileSize(report);
             ValidateCameraReference(report);
@@ -32,7 +32,8 @@ namespace CindarsHope.Editor.Validation
             {
                 report.AddIssue(new ValidationIssue
                 {
-                    Category = "Farm Scale",
+                    Area = "Farm Scale",
+                    Code = "TILE_SIZE_CONTRACT",
                     Message = $"Tile size contract hardened: {FarmScaleContract.TileSizePixels}px (32x32 = 1 world unit)",
                     Severity = ValidationSeverity.Info
                 });
@@ -41,7 +42,8 @@ namespace CindarsHope.Editor.Validation
             {
                 report.AddIssue(new ValidationIssue
                 {
-                    Category = "Farm Scale",
+                    Area = "Farm Scale",
+                    Code = "TILE_SIZE_MISMATCH",
                     Message = $"Tile size mismatch: expected {FarmScaleContract.TileSizePixels}px, check FarmScaleContract",
                     Severity = ValidationSeverity.Warning
                 });
@@ -60,7 +62,8 @@ namespace CindarsHope.Editor.Validation
 
             report.AddIssue(new ValidationIssue
             {
-                Category = "Farm Camera",
+                Area = "Farm Camera",
+                Code = "CAMERA_REFERENCE_CONTRACT",
                 Message = $"Camera reference contract: {refWidthMin}-{refWidthMax} tiles wide, {refHeightMin}-{refHeightMax} tiles tall (base zoom)",
                 Severity = ValidationSeverity.Info
             });
@@ -76,7 +79,8 @@ namespace CindarsHope.Editor.Validation
 
             report.AddIssue(new ValidationIssue
             {
-                Category = "Farm Layout",
+                Area = "Farm Layout",
+                Code = "FARM_LEVEL1_MIN_SIZE",
                 Message = $"Farm Level 1 minimum size: {minWidth}x{minHeight} tiles (larger than one screen)",
                 Severity = ValidationSeverity.Info
             });
@@ -94,7 +98,8 @@ namespace CindarsHope.Editor.Validation
 
             report.AddIssue(new ValidationIssue
             {
-                Category = "Player Collider",
+                Area = "Player Collider",
+                Code = "PLAYER_FOOTBOX_CONTRACT",
                 Message = $"Player visual: {visual.x}x{visual.y}px. Footbox: {footboxHeight}px from bottom. Pivot: bottom-center (0.5, 0). Sorting: by Y (feet position).",
                 Severity = ValidationSeverity.Info
             });
