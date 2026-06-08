@@ -22,7 +22,9 @@ namespace CindarsHope.Farm
             Plant,
             Harvest,
             Status,
-            AdvanceGrowth
+            AdvanceGrowth,
+            ClearDead,
+            Analyze
         }
 
         private readonly struct FarmMenuAction
@@ -88,6 +90,8 @@ namespace CindarsHope.Farm
                         return "Irrigado";
                     case FarmPlotState.ReadyToHarvest:
                         return "Colher";
+                    case FarmPlotState.Dead:
+                        return "Limpar";
                     case FarmPlotState.Blocked:
                         return "Bloqueado";
                     default:
@@ -391,9 +395,25 @@ namespace CindarsHope.Farm
                 case FarmPlotState.ReadyToHarvest:
                     _menuActions.Add(new FarmMenuAction(FarmMenuActionType.Harvest, "Colher"));
                     break;
+                case FarmPlotState.Dead:
+                    if (HasRequiredTool(ToolType.Hoe) || _temporarySequentialSliceMode)
+                    {
+                        _menuActions.Add(new FarmMenuAction(FarmMenuActionType.ClearDead, "Limpar solo"));
+                    }
+                    else
+                    {
+                        _feedback = "Hoe required to clear.";
+                    }
+
+                    break;
                 case FarmPlotState.Blocked:
                     _feedback = "Plot blocked.";
                     break;
+            }
+
+            if (State != FarmPlotState.Blocked)
+            {
+                _menuActions.Add(new FarmMenuAction(FarmMenuActionType.Analyze, "Analisar solo"));
             }
         }
 
@@ -457,6 +477,13 @@ namespace CindarsHope.Farm
                     break;
                 case FarmMenuActionType.AdvanceGrowth:
                     TryAdvanceTemporaryGrowth();
+                    break;
+                case FarmMenuActionType.ClearDead:
+                    TryClearDead();
+                    break;
+                case FarmMenuActionType.Analyze:
+                    ExecuteAnalyze();
+                    closeAfterAction = false;
                     break;
             }
 
@@ -678,6 +705,61 @@ namespace CindarsHope.Farm
 
             UpdateVisual();
             Debug.Log($"FarmPlot {_plotIndex} crop '{PlantedSeedId}' grew to {DaysGrown}/{seedData.GrowthDays} on day {DaysGrown}.", this);
+        }
+
+        private bool TryClearDead()
+        {
+            const int clearStaminaCost = 8;
+
+            if (State != FarmPlotState.Dead || (!HasRequiredTool(ToolType.Hoe) && !_temporarySequentialSliceMode))
+            {
+                PublishFeedback("Cannot clear this plot.");
+                return false;
+            }
+
+            if (!ValidateStamina(clearStaminaCost))
+            {
+                PublishFeedback("Not enough stamina to clear.");
+                return false;
+            }
+
+            if (!TrySpendStamina(clearStaminaCost))
+            {
+                PublishFeedback("Not enough stamina to clear.");
+                return false;
+            }
+
+            var clearedSeedId = PlantedSeedId;
+            SetState(FarmPlotState.TilledDry);
+            Debug.Log($"FarmPlot {_plotIndex} cleared dead crop '{clearedSeedId}'. Plot reset to TilledDry.", this);
+            PublishFeedback("Solo limpo.");
+            return true;
+        }
+
+        private void ExecuteAnalyze()
+        {
+            var sb = new System.Text.StringBuilder();
+            sb.Append($"Estado: {State}");
+
+            if (!string.IsNullOrWhiteSpace(PlantedSeedId))
+            {
+                sb.Append($" | Semente: {PlantedSeedId}");
+                sb.Append($" | Dias crescido: {DaysGrown}");
+            }
+
+            if (State == FarmPlotState.PlantedDry || State == FarmPlotState.Dead)
+            {
+                sb.Append($" | Dias sem agua: {DaysWithoutWater}");
+            }
+
+            if (IsWatered)
+            {
+                sb.Append(" | Irrigado");
+            }
+
+            _feedback = sb.ToString();
+            GameEventBus.Publish(new PlayerActionFeedbackEvent(_feedback));
+            Debug.Log($"FarmPlot {_plotIndex} analise: {_feedback}", this);
         }
 
         private bool TryHarvest()
