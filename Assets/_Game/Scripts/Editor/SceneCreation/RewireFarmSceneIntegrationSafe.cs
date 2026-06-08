@@ -105,7 +105,7 @@ namespace CindarsHope.Editor.SceneCreation
 
             var inventory = FindSceneObjects<InventoryManager>().FirstOrDefault();
             var stamina = FindSceneObjects<StaminaManager>().FirstOrDefault();
-            var seedDatabase = AssetDatabase.LoadAssetAtPath<SeedDatabaseSO>(SeedDatabasePath);
+            var seedDatabase = AssetDatabase.LoadAssetAtPath<CindarsHope.Farm.Data.SeedDatabaseSO>(SeedDatabasePath);
 
             for (var i = 0; i < plots.Length; i++)
             {
