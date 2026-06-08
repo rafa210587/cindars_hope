@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using CindarsHope.Core.Bootstrap;
 using CindarsHope.Farm;
 using CindarsHope.Farm.Data;
 using CindarsHope.Farm.Scene;
@@ -18,6 +19,10 @@ namespace CindarsHope.Editor.SceneCreation
     {
         private const string ScenePath = "Assets/_Game/Scenes/FarmScene.unity";
         private const string SeedDatabasePath = "Assets/_Game/Data/Registries/SeedDatabase.asset";
+        private const string ItemDatabasePath = "Assets/_Game/Data/Registries/ItemDatabase.asset";
+        private const string WeaponDatabasePath = "Assets/_Game/Data/Combat/WeaponDatabase.asset";
+        private const string SpellDatabasePath = "Assets/_Game/Data/Combat/SpellDatabase.asset";
+        private const string StatusEffectDatabasePath = "Assets/_Game/Data/Combat/StatusEffectDatabase.asset";
         private const string BuiltinSpritePath = "UI/Skin/UISprite.psd";
         private const string ZoneParentName = "FarmSceneFoundationZones";
 
@@ -39,6 +44,7 @@ namespace CindarsHope.Editor.SceneCreation
 
             RecreateZoneMarkers();
             RewirePlots();
+            RewireBootstrapRuntimeDatabases();
 
             EditorSceneManager.MarkSceneDirty(scene);
             EditorSceneManager.SaveScene(scene, ScenePath);
@@ -135,6 +141,24 @@ namespace CindarsHope.Editor.SceneCreation
                 registry.Configure(plots);
                 EditorUtility.SetDirty(registry);
             }
+        }
+
+        private static void RewireBootstrapRuntimeDatabases()
+        {
+            var bootstrap = FindSceneObjects<GameBootstrap>().FirstOrDefault();
+            if (bootstrap == null)
+            {
+                Debug.LogWarning("GameBootstrap not found. Combat databases were not rebound.");
+                return;
+            }
+
+            var serializedBootstrap = new SerializedObject(bootstrap);
+            SetRef(serializedBootstrap, "_itemDatabase", AssetDatabase.LoadAssetAtPath<Object>(ItemDatabasePath));
+            SetRef(serializedBootstrap, "_weaponDatabase", AssetDatabase.LoadAssetAtPath<Object>(WeaponDatabasePath));
+            SetRef(serializedBootstrap, "_spellDatabase", AssetDatabase.LoadAssetAtPath<Object>(SpellDatabasePath));
+            SetRef(serializedBootstrap, "_statusEffectDatabase", AssetDatabase.LoadAssetAtPath<Object>(StatusEffectDatabasePath));
+            serializedBootstrap.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(bootstrap);
         }
 
         private static IEnumerable<Zone> Zones()
