@@ -68,33 +68,39 @@
 
 ## Testing Status (Important)
 
-**EditMode tests created but NOT executed:**
-- 36 EditMode tests created (StableIds 18 + GameEventBus 18)
-- Tests CANNOT RUN: Assembly-CSharp-Editor.csproj has 594 pre-existing compile errors in scene creation scripts (unrelated to WAVE 01)
-- Test code is correct; execution blocked by build system
-- Justification documented in each spec's execution report
+**EditMode tests compiled and ready for execution:**
+- ✓ 36 EditMode tests compiled (StableIds 18 + GameEventBus 18)
+- ✓ Assembly-CSharp-Editor.csproj blocker resolved (added Assembly-CSharp reference)
+- ✓ CSharpProjectPostprocessor.cs created to auto-fix when Unity regenerates .csproj
+- Test code is correct and compiles with 0 errors
+- Tests ready for execution via Unity Test Runner
+- Full details in EDITMODE_TESTS_EXECUTION_REPORT.md
 
 ## WAVE 02+ Blocking Issues
 
 ⚠️ **WAVE 02 BLOCKED** — Cannot proceed until:
 
-1. **Assembly-CSharp-Editor compile errors fixed**
-   - 594 errors in scene creation editor scripts (CreateMvpCaveScene, CreateMvpTownScene, CreateMvpFarmScene)
-   - Blocks all EditMode test execution
-   - Test code is valid; infrastructure issue
+1. **Assembly-CSharp-Editor compile errors** ✓ RESOLVED
+   - Issue: 594 errors in editor scripts (CreateMvpTownScene, CreateMvpCaveScene, CreateMvpFarmScene)
+   - Root cause: Missing Assembly-CSharp reference in .csproj
+   - Fix applied: Added reference + AssetPostprocessor hook (commit 2f2aa7a)
+   - Result: Assembly-CSharp-Editor compiles with 0 errors
+   - EditMode tests now executable
 
-2. **Generated specs validation issues**
+2. **Generated specs validation issues** ⚠️ PENDING
    - Naming/header validator expects single `spec_` prefix, not wave-prefixed `NX_spec_*` pattern
    - Does not block WAVE 01 (docs-only); blocks WAVE 02+ (requires validation pass)
    - Resolution: Update validator rule OR add headers to generated specs
+   - Status: Still pending resolution
 
-3. **Final human validation not yet executed**
+3. **Final human validation not yet executed** ⚠️ PENDING
    - MVP Phase 2-3 (Unity validators + Play Mode) pending
    - FINAL_HUMAN_VALIDATION_BY_WAVE.md defines checklist but not yet completed
    - Required before WAVE 02+ runtime specs can be accepted
+   - Status: Still pending completion
 
 ---
 
-**Wave Status:** COMPLETE (BUILD_VALIDATED) with **critical blockers for WAVE 02+**  
+**Wave Status:** COMPLETE (BUILD_VALIDATED) with **2 remaining blockers for WAVE 02+** (down from 3)  
 
 *Execution summary created: 2026-06-07*

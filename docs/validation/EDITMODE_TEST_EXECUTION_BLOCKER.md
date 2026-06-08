@@ -2,8 +2,8 @@
 
 > **Date:** 2026-06-07  
 > **Context:** WAVE 01 specs created 36 EditMode tests that cannot run due to pre-existing infrastructure blocker  
-> **Status:** BLOCKED  
-> **Resolution Required Before:** Any WAVE 02+ test execution
+> **Status:** ✓ RESOLVED (2026-06-07)  
+> **Resolution:** Assembly-CSharp reference added via AssetPostprocessor hook
 
 ---
 
