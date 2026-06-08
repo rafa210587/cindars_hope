@@ -8,6 +8,7 @@ using CindarsHope.Economy;
 using CindarsHope.Enemy;
 using CindarsHope.Equipment;
 using CindarsHope.Farm;
+using CindarsHope.Farm.Integration;
 using CindarsHope.Farm.Scene;
 using CindarsHope.Inventory;
 using CindarsHope.Interaction;
@@ -83,6 +84,7 @@ namespace CindarsHope.Editor.SceneCreation
             CreateFarmPortals();
             CreateFishingSpot(inventoryManager);
             CreateFarmSceneFoundationZones();
+            CreateFarmResourceInteractables(inventoryManager);
             CreateDebugHud(
                 playerManager,
                 inventoryManager,
@@ -1206,6 +1208,131 @@ namespace CindarsHope.Editor.SceneCreation
 
             serializedInstaller.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(installer);
+        }
+
+        // WAVE_INTEGRATION_06: Farm resource interactables (Tree, Rock, Forage).
+        // LakeFishing uses existing FishingSpot at (7.8, -2.8) which already implements IInteractable.
+        // These adapters are TODO_INTEGRATION_NOT_FINAL — for smoke validation only.
+        // Final wiring must connect to TreeChopService / RockMiningService / FarmForageSpawnService.
+        private static void CreateFarmResourceInteractables(InventoryManager inventoryManager)
+        {
+            var parent = new GameObject("FarmResourceInteractables");
+            parent.transform.position = Vector3.zero;
+
+            // Zone_ResourceTrees: (9.5, 1.0) — place one smoke resource node near center of tree zone
+            CreateRockResource(parent.transform, inventoryManager, new Vector3(-9.0f, 4.5f, 0f));
+            CreateForageResource(parent.transform, inventoryManager, new Vector3(-8.0f, -2.5f, 0f));
+            CreateTreeResource(parent.transform, inventoryManager, new Vector3(7.5f, 3.5f, 0f));
+            // LakeFishing: FishingSpot at (7.8, -2.8) already implements IInteractable (prompt: "Pescar")
+            // No additional FarmResourceInteractable needed for the lake.
+        }
+
+        private static void CreateTreeResource(Transform parent, InventoryManager inventoryManager, Vector3 position)
+        {
+            var obj = new GameObject("TreeResource_01");
+            obj.transform.SetParent(parent);
+            obj.transform.position = position;
+            obj.transform.localScale = new Vector3(1.2f, 1.8f, 1f);
+
+            var sr = obj.AddComponent<SpriteRenderer>();
+            sr.sprite = GetBuiltinSprite();
+            sr.color = new Color(0.24f, 0.52f, 0.24f);
+            sr.sortingOrder = 2;
+            TrySetSortingLayer(sr, "Items", 2);
+
+            var col = obj.AddComponent<BoxCollider2D>();
+            col.isTrigger = true;
+            col.size = Vector2.one;
+
+            var vc = obj.AddComponent<FarmResourceVisualController>();
+            var serializedVc = new SerializedObject(vc);
+            serializedVc.FindProperty("_spriteRenderer").objectReferenceValue = sr;
+            serializedVc.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(vc);
+
+            var interactable = obj.AddComponent<FarmResourceInteractable>();
+            var serializedI = new SerializedObject(interactable);
+            serializedI.FindProperty("_resourceType").enumValueIndex = (int)FarmResourceInteractableType.Tree;
+            serializedI.FindProperty("_interactionPrompt").stringValue = "Cortar árvore";
+            serializedI.FindProperty("_visualController").objectReferenceValue = vc;
+            serializedI.FindProperty("_inventoryManager").objectReferenceValue = inventoryManager;
+            var rewardProp = serializedI.FindProperty("_reward");
+            rewardProp.FindPropertyRelative("_itemId").stringValue = "item_wood";
+            rewardProp.FindPropertyRelative("_amount").intValue = 2;
+            serializedI.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(interactable);
+        }
+
+        private static void CreateRockResource(Transform parent, InventoryManager inventoryManager, Vector3 position)
+        {
+            var obj = new GameObject("RockResource_01");
+            obj.transform.SetParent(parent);
+            obj.transform.position = position;
+            obj.transform.localScale = new Vector3(1.0f, 0.85f, 1f);
+
+            var sr = obj.AddComponent<SpriteRenderer>();
+            sr.sprite = GetBuiltinSprite();
+            sr.color = new Color(0.55f, 0.52f, 0.50f);
+            sr.sortingOrder = 2;
+            TrySetSortingLayer(sr, "Items", 2);
+
+            var col = obj.AddComponent<BoxCollider2D>();
+            col.isTrigger = true;
+            col.size = Vector2.one;
+
+            var vc = obj.AddComponent<FarmResourceVisualController>();
+            var serializedVc = new SerializedObject(vc);
+            serializedVc.FindProperty("_spriteRenderer").objectReferenceValue = sr;
+            serializedVc.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(vc);
+
+            var interactable = obj.AddComponent<FarmResourceInteractable>();
+            var serializedI = new SerializedObject(interactable);
+            serializedI.FindProperty("_resourceType").enumValueIndex = (int)FarmResourceInteractableType.Rock;
+            serializedI.FindProperty("_interactionPrompt").stringValue = "Minerar pedra";
+            serializedI.FindProperty("_visualController").objectReferenceValue = vc;
+            serializedI.FindProperty("_inventoryManager").objectReferenceValue = inventoryManager;
+            var rewardProp = serializedI.FindProperty("_reward");
+            rewardProp.FindPropertyRelative("_itemId").stringValue = "item_stone";
+            rewardProp.FindPropertyRelative("_amount").intValue = 2;
+            serializedI.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(interactable);
+        }
+
+        private static void CreateForageResource(Transform parent, InventoryManager inventoryManager, Vector3 position)
+        {
+            var obj = new GameObject("ForageResource_01");
+            obj.transform.SetParent(parent);
+            obj.transform.position = position;
+            obj.transform.localScale = new Vector3(0.9f, 0.9f, 1f);
+
+            var sr = obj.AddComponent<SpriteRenderer>();
+            sr.sprite = GetBuiltinSprite();
+            sr.color = new Color(0.52f, 0.68f, 0.25f);
+            sr.sortingOrder = 2;
+            TrySetSortingLayer(sr, "Items", 2);
+
+            var col = obj.AddComponent<BoxCollider2D>();
+            col.isTrigger = true;
+            col.size = Vector2.one;
+
+            var vc = obj.AddComponent<FarmResourceVisualController>();
+            var serializedVc = new SerializedObject(vc);
+            serializedVc.FindProperty("_spriteRenderer").objectReferenceValue = sr;
+            serializedVc.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(vc);
+
+            var interactable = obj.AddComponent<FarmResourceInteractable>();
+            var serializedI = new SerializedObject(interactable);
+            serializedI.FindProperty("_resourceType").enumValueIndex = (int)FarmResourceInteractableType.Forage;
+            serializedI.FindProperty("_interactionPrompt").stringValue = "Coletar ervas";
+            serializedI.FindProperty("_visualController").objectReferenceValue = vc;
+            serializedI.FindProperty("_inventoryManager").objectReferenceValue = inventoryManager;
+            var rewardProp = serializedI.FindProperty("_reward");
+            rewardProp.FindPropertyRelative("_itemId").stringValue = "item_herbs";
+            rewardProp.FindPropertyRelative("_amount").intValue = 1;
+            serializedI.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(interactable);
         }
 
         private static void EnsureFolder(string parentFolder, string childFolder)

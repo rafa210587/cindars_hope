@@ -83,7 +83,7 @@
 | WAVE 04 UI Foundation Phase 1 | PHASE1_COMPLETED_WITH_CONTRACT_ONLY_CORE | 14 of 14 specs have execution reports; 3 BUILD_VALIDATED (SPECS 1-2, 8), 11 CONTRACT_ONLY (SPECS 3-7,9,11-16); SPEC 8 fully reworked (10 focus states, modal stack, 47 tests); Assembly builds PASS; quality check PASS; docs validation PASS (legacy errors only) |
 | WAVE 05 Farm Gameplay Core | COMPLETED_WITH_KNOWN_LEGACY_GATES | 20/20 specs executed; all BUILD_VALIDATED with RUNTIME_VALIDATED_WITH_KNOWN_LEGACY_GATES; ~123 EditMode tests; Assembly-CSharp PASS; closeout: docs/validation/WAVE_05_CLOSEOUT_REPORT.md |
 | WAVE 06 Economy/Loot/Crafting/Shop/Cave Foundation | COMPLETED_WITH_KNOWN_LEGACY_GATES | 8/8 specs executed; ~75 EditMode tests; Assembly-CSharp PASS; closeout: docs/validation/WAVE_06_CLOSEOUT_REPORT.md |
-| WAVE 07 Playable Scene Integration | WAVE_INTEGRATION_04_05_SPATIAL_RECONCILIATION_CODE_READY_HUMAN_UNITY_SCENE_ACTION_REQUIRED | Scene architecture documented; manager audit complete; `SceneNames` contract created; FarmScene restored to WAVE03 baseline because WAVE04/WAVE05 scene wiring produced broken YAML/PPtr errors; layout reconciled in code (trees east, crop field moved, bounds reduced); human must run CreateMvpFarmScene generator in Unity Editor; WAVE06 blocked |
+| WAVE 07 Playable Scene Integration | WAVE_INTEGRATION_06_CODE_READY_HUMAN_UNITY_SCENE_ACTION_REQUIRED | Scene architecture documented; manager audit complete; `SceneNames` contract created; FarmScene restored to WAVE03 baseline because WAVE04/WAVE05 scene wiring produced broken YAML/PPtr errors; layout reconciled in code (trees east, crop field moved, bounds reduced); resource interactables (Tree/Rock/Forage/Lake) added to CreateMvpFarmScene.cs; human must run CreateMvpFarmScene generator in Unity Editor and execute Play Mode checklist |
 | WAVE 08 City/NPC/Dialogue/Services | COMPLETED_WITH_KNOWN_LEGACY_GATES | 4/4 specs BUILD_VALIDATED; ~61 EditMode tests; Assembly-CSharp PASS; closeout: docs/validation/WAVE_08_CLOSEOUT_REPORT.md |
 | WAVE 09 Quest System | COMPLETED_WITH_KNOWN_LEGACY_GATES | 8/8 specs BUILD_VALIDATED; ~107 EditMode tests; Assembly-CSharp PASS; closeout: docs/validation/WAVE_09_CLOSEOUT_REPORT.md |
 | WAVE 10 Main Progression / Fonte / Endgame | COMPLETED_WITH_KNOWN_LEGACY_GATES | 4/4 specs BUILD_VALIDATED; ~72 EditMode tests; Assembly-CSharp PASS; closeout: docs/validation/WAVE_10_CLOSEOUT_REPORT.md |
@@ -104,7 +104,7 @@ Automation must ignore `docs/specs/a_implementar/features_futuras/` unless a hum
 
 ## WAVE 07 - Playable Scene Integration
 
-Status: WAVE_INTEGRATION_04_05_SPATIAL_RECONCILIATION_CODE_READY_HUMAN_UNITY_SCENE_ACTION_REQUIRED
+Status: WAVE_INTEGRATION_06_CODE_READY_HUMAN_UNITY_SCENE_ACTION_REQUIRED
 
 Latest validation:
 - Assembly-CSharp: PASS (exit code 0, 0 warnings, 0 errors)
@@ -117,11 +117,15 @@ Latest validation:
 - FarmScene foundation zones: SCENE_REVERTED_TO_WAVE03 — code updated with corrected layout (`docs/validation/WAVE_INTEGRATION_04_FARMSCENE_REBUILD_REPORT.md` is historical; new layout in zone map v2)
 - FarmScene crop interactable slice: BUILD_VALIDATED_CODE_READY_SCENE_REVERTED (`docs/validation/WAVE_INTEGRATION_05_CROP_INTERACTABLE_REPORT.md`)
 - FarmScene spatial reconciliation: CODE_READY (`docs/validation/WAVE_INTEGRATION_04_05_SPATIAL_RECONCILIATION_REPORT.md`)
-- CreateMvpFarmScene.cs: UPDATED with corrected layout (trees consolidated east, crops moved away from portals, bounds reduced to 28x22, house entrance visible)
-- WAVE_INTEGRATION_05 decision: UPDATED (`docs/validation/WAVE_INTEGRATION_05_CROP_INTERACTABLE_DECISION.md`)
-- WAVE_INTEGRATION_05 hotfix: UPDATED (`docs/validation/WAVE_INTEGRATION_05_SCENE_CORRUPTION_HOTFIX_REPORT.md`)
-- Human Play Mode checklist: CODE_READY_TO_REGENERATE — run generator first, then execute checklist (`docs/validation/WAVE_INTEGRATION_05_HUMAN_PLAYMODE_CHECKLIST.md`)
-- Can start WAVE_INTEGRATION_06: NO, blocked until human regenerates FarmScene and Play Mode checklist passes
+- FarmScene resource interactables: CODE_READY_HUMAN_UNITY_SCENE_ACTION_REQUIRED (`docs/validation/WAVE_INTEGRATION_06_RESOURCE_INTERACTABLE_REPORT.md`)
+- Tree/Rock/Forage interactables: CODE_READY (FarmResourceInteractable.cs adapter; wired in CreateMvpFarmScene.cs)
+- LakeFishing interactable: EXISTING (FishingSpot.cs at (7.8, -2.8) fully implements IInteractable; no additional adapter needed)
+- Reward strategy: INVENTORY_REWARD via InventoryManager.AddItem (same path as FarmPlot harvest)
+- CreateMvpFarmScene.cs: UPDATED with resource interactable creation (TreeResource_01, RockResource_01, ForageResource_01)
+- WAVE_INTEGRATION_06 decision: CREATED (`docs/validation/WAVE_INTEGRATION_06_RESOURCE_INTERACTABLE_DECISION.md`)
+- Human Play Mode checklist: CODE_READY_TO_REGENERATE — run generator first, then execute checklist (`docs/validation/WAVE_INTEGRATION_06_HUMAN_PLAYMODE_CHECKLIST.md`)
+- Human wiring instructions: CREATED (`docs/validation/WAVE_INTEGRATION_06_HUMAN_UNITY_RESOURCE_WIRING_INSTRUCTIONS.md`)
+- Can start WAVE_INTEGRATION_07: NO, blocked until human regenerates FarmScene and Play Mode checklist passes
 
 ---
 
@@ -192,5 +196,5 @@ PROJECT_LOG + CURRENT_STATE conflict → prefer CURRENT_STATE; report mismatch
 
 ---
 
-*Last updated: 2026-06-08 (WAVE04+05 spatial reconciliation: layout corrected in code; human must run CreateMvpFarmScene generator in Unity Editor)*
-*Next update: after FarmScene regenerated in Unity Editor and Play Mode checklist passes*
+*Last updated: 2026-06-08 (WAVE_INTEGRATION_06: resource interactables code ready; Tree/Rock/Forage adapters + validator created; human must run CreateMvpFarmScene generator and execute Play Mode checklist)*
+*Next update: after FarmScene regenerated in Unity Editor and WAVE_INTEGRATION_06 Play Mode checklist passes*
