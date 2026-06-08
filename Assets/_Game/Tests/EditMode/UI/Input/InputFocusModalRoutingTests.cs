@@ -338,20 +338,23 @@ namespace CindarsHope.Tests.EditMode.UI
         }
 
         [Test]
-        public void HandleBackButton_ClosesTopModal()
+        public void HandleBackButton_ClosesOnlyTopModal()
         {
             _router.PushModal(UIFocusState.InventoryFocus);
             _router.PushModal(UIFocusState.ConfirmationFocus);
 
-            ModalBehaviorContract.HandleBackButton(_router, null);
+            var popped = ModalBehaviorContract.HandleBackButton(_router);
 
+            Assert.AreEqual(UIFocusState.ConfirmationFocus, popped);
             Assert.AreEqual(UIFocusState.InventoryFocus, _router.CurrentFocus);
+            Assert.IsTrue(_router.HasActiveModal, "Should still have inventory modal");
         }
 
         [Test]
-        public void HandleBackButton_EmptyStack_DoesNothing()
+        public void HandleBackButton_EmptyStack_ReturnsGameplayFocus()
         {
-            ModalBehaviorContract.HandleBackButton(_router, null);
+            var result = ModalBehaviorContract.HandleBackButton(_router);
+            Assert.AreEqual(UIFocusState.GameplayFocus, result);
             Assert.AreEqual(UIFocusState.GameplayFocus, _router.CurrentFocus);
         }
 
@@ -359,10 +362,62 @@ namespace CindarsHope.Tests.EditMode.UI
         public void HandleBackButton_LastModal_ReturnsToGameplay()
         {
             _router.PushModal(UIFocusState.InventoryFocus);
-            ModalBehaviorContract.HandleBackButton(_router, null);
+            var popped = ModalBehaviorContract.HandleBackButton(_router);
 
+            Assert.AreEqual(UIFocusState.InventoryFocus, popped);
             Assert.AreEqual(UIFocusState.GameplayFocus, _router.CurrentFocus);
             Assert.IsFalse(_router.HasActiveModal);
+        }
+
+        [Test]
+        public void OpenSubmodal_PushesConfirmationFocus()
+        {
+            _router.PushModal(UIFocusState.InventoryFocus);
+            ModalBehaviorContract.OpenSubmodal(UIFocusState.ConfirmationFocus, _router);
+
+            Assert.AreEqual(UIFocusState.ConfirmationFocus, _router.CurrentFocus);
+            Assert.AreEqual(2, _router.Depth);
+        }
+
+        [Test]
+        public void OpenSubmodal_PushesTooltipFocus()
+        {
+            _router.PushModal(UIFocusState.ShopFocus);
+            ModalBehaviorContract.OpenSubmodal(UIFocusState.TooltipFocus, _router);
+
+            Assert.AreEqual(UIFocusState.TooltipFocus, _router.CurrentFocus);
+            Assert.AreEqual(2, _router.Depth);
+        }
+
+        [Test]
+        public void OpenSubmodal_InvalidFocus_DoesNotPush()
+        {
+            _router.PushModal(UIFocusState.InventoryFocus);
+            ModalBehaviorContract.OpenSubmodal(UIFocusState.MenuFocus, _router);
+
+            Assert.AreEqual(UIFocusState.InventoryFocus, _router.CurrentFocus);
+            Assert.AreEqual(1, _router.Depth, "Invalid submodal should not be pushed");
+        }
+
+        [Test]
+        public void CloseSubmodal_ClosesConfirmation()
+        {
+            _router.PushModal(UIFocusState.InventoryFocus);
+            _router.PushModal(UIFocusState.ConfirmationFocus);
+            ModalBehaviorContract.CloseSubmodal(_router);
+
+            Assert.AreEqual(UIFocusState.InventoryFocus, _router.CurrentFocus);
+            Assert.AreEqual(1, _router.Depth);
+        }
+
+        [Test]
+        public void CloseSubmodal_NonSubmodalModal_DoesNotPop()
+        {
+            _router.PushModal(UIFocusState.InventoryFocus);
+            ModalBehaviorContract.CloseSubmodal(_router);
+
+            Assert.AreEqual(UIFocusState.InventoryFocus, _router.CurrentFocus);
+            Assert.AreEqual(1, _router.Depth, "Non-submodal should not be closed");
         }
     }
 

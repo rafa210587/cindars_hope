@@ -25,20 +25,23 @@ namespace CindarsHope.UI.Input
 
     /// <summary>
     /// SPEC 04: UI Focus Router — determines gameplay input blocking and modal focus rules.
-    /// Integrates with existing ModalManager to provide focus routing contract.
+    /// Provides contract mapping with ModalManager (GetFocusFromModalType) but maintains separate
+    /// focus state routing. Concrete runtime synchronization with ModalManager is deferred to
+    /// integration in concrete modal UI specs (Inventory, Shop, Dialogue, etc.).
     /// </summary>
     public static class UIFocusRouter
     {
         /// <summary>
         /// Returns true if this focus state blocks gameplay movement/combat/hotbar input.
-        /// Only GameplayFocus and DebugFocus (configurable) allow gameplay input.
+        /// Only GameplayFocus and DebugFocus allow gameplay input.
+        /// NOTE: DebugFocus policy is fixed (allows gameplay). Configuration deferred to future debug system spec.
         /// </summary>
         public static bool BlocksGameplayInput(UIFocusState focus)
         {
             return focus switch
             {
                 UIFocusState.GameplayFocus => false,
-                UIFocusState.DebugFocus => false, // Debug focus can allow gameplay input if configured
+                UIFocusState.DebugFocus => false, // Fixed policy: DebugFocus allows gameplay input. Config deferred.
                 _ => true // All modal focuses block gameplay input
             };
         }
@@ -173,20 +176,26 @@ namespace CindarsHope.UI.Input
     /// <summary>
     /// SPEC 04: Back/Cancel/Confirm Behavior Contract.
     /// Defines routing rules for modal closing and UI navigation.
+    /// NOTE: This contract is headless/adapter-only. Concrete runtime synchronization with
+    /// ModalManager (type checking, event publishing) is deferred to integration specs.
     /// </summary>
     public static class ModalBehaviorContract
     {
         /// <summary>
-        /// When Back/Cancel is pressed: if modal stack has items, close top modal.
-        /// Otherwise, no action (gameplay continues).
+        /// When Back/Cancel is pressed: if modal stack has items, pop top modal from router.
+        /// This restores the previous focus. Does NOT interact with ModalManager directly.
+        ///
+        /// Integration note: Concrete modal close on ModalManager (TryPopModal, event publish)
+        /// is handled by the ModalBase.CloseModal() that manages ModalManager lifecycle.
+        /// This contract only manages focus state routing.
         /// </summary>
-        public static void HandleBackButton(ModalStackRouter router, ModalManager manager)
+        public static UIFocusState HandleBackButton(ModalStackRouter router)
         {
             if (router?.HasActiveModal == true)
             {
-                router.PopModal();
-                manager?.ClearAllModals();
+                return router.PopModal();
             }
+            return UIFocusState.GameplayFocus; // No-op if already at gameplay
         }
 
         /// <summary>
@@ -199,14 +208,34 @@ namespace CindarsHope.UI.Input
         }
 
         /// <summary>
-        /// Submodal (Confirmation, Tooltip) does not become primary modal focus;
-        /// it sits above the current focus but does not change CurrentFocus.
+        /// Open a submodal (Confirmation, Tooltip) on the focus stack.
+        /// Submodals use the stack but semantically sit "above" the current modal.
+        ///
+        /// Contract: Only ConfirmationFocus and TooltipFocus are valid submodals.
+        /// Pushing a submodal changes CurrentFocus to the submodal type until it's popped.
         /// </summary>
-        public static void OpenSubmodal(string submodalType, ModalStackRouter router)
+        public static void OpenSubmodal(UIFocusState submodalFocus, ModalStackRouter router)
         {
-            // Submodals are rendered on top but don't change focus routing.
-            // They are closed by next action or explicit dismiss.
-            // Implementation: UI layer handles visibility; router doesn't track submodals.
+            if (submodalFocus == UIFocusState.ConfirmationFocus || submodalFocus == UIFocusState.TooltipFocus)
+            {
+                router?.PushModal(submodalFocus);
+            }
+            else
+            {
+                UnityEngine.Debug.LogWarning($"OpenSubmodal: {submodalFocus} is not a valid submodal type. Use ConfirmationFocus or TooltipFocus.");
+            }
+        }
+
+        /// <summary>
+        /// Close the current submodal if it is one of the valid submodal types.
+        /// </summary>
+        public static void CloseSubmodal(ModalStackRouter router)
+        {
+            var current = router?.CurrentFocus ?? UIFocusState.GameplayFocus;
+            if (current == UIFocusState.ConfirmationFocus || current == UIFocusState.TooltipFocus)
+            {
+                router?.PopModal();
+            }
         }
     }
 
