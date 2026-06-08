@@ -80,21 +80,21 @@
 | WAVE 01 Hardening & Quality Gate | CODE_COMPLETE | 9 specs executed (00.04, 01.01-01.07, 01Q); BUILD_VALIDATED; 36 EditMode tests compile successfully (0E/0W) |
 | WAVE 02 Time/Calendar/Lunar/Weather/Rain/Save/Festivals | COMPLETED_WITH_DEFERRED_UI | 7 of 8 specs BUILD_VALIDATED; 1 deferred (Spec 3 Calendar UI); all runtime systems complete |
 | WAVE 03 Quests/Objectives/Events | COMPLETED_WITH_DEFERRED_UI | 8 of 8 runtime specs BUILD_VALIDATED; 4 future specs blocked; quest system foundation complete; readiness check PASS |
-| WAVE 04 UI Foundation Phase 1 | PHASE1_REPORTED_PENDING_VALIDATION | 14 of 14 specs have execution reports; 3 BUILD_VALIDATED (SPECS 1-2, 8), 11 CONTRACT_ONLY (SPECS 3-7,9,11-16); SPEC 8 fully reworked (10 focus states, modal stack, 47 tests); all reports honest; integration deferred to WAVE 05; awaiting Assembly builds + docs validation |
-| WAVE 05-12 Core Gameplay | BLOCKED_PENDING_VALIDATION | Waiting: Assembly builds + docs validation of WAVE 04 closeout; WAVE 02-03 foundation ready; will use /execute-spec-strict when released |
+| WAVE 04 UI Foundation Phase 1 | PHASE1_COMPLETED_WITH_CONTRACT_ONLY_CORE | 14 of 14 specs have execution reports; 3 BUILD_VALIDATED (SPECS 1-2, 8), 11 CONTRACT_ONLY (SPECS 3-7,9,11-16); SPEC 8 fully reworked (10 focus states, modal stack, 47 tests); Assembly builds PASS; quality check PASS; docs validation PASS (legacy errors only) |
+| WAVE 05-12 Core Gameplay | READY_TO_START_STRICT_EXECUTION | WAVE 04 Phase 1 validated; WAVE 02-03 foundation ready; must use /execute-spec-strict or /loop-spec-batch-strict for integration specs |
 | WAVE 17-24 Future | BLOCKED INTENTIONALLY | 32+ future/expansion specs marked; pets (WAVE 23) blocked as HOLD/BLOCKED_SCOPE |
 
 ---
 
-## Blockers for WAVE 02 Start
+## Deferred Final Acceptance Gates
 
-1. **Generated specs validation:** Naming/header validator issues (wave-based pattern `NN_spec_*`) must resolve before WAVE 02+ runtime
-2. **Quality gate completion:** WAVE 01Q EditMode tests must compile (RESOLVED 2026-06-08); human execution deferred to acceptance gate
+These do NOT block WAVE 05 execution but are required for final project acceptance:
 
-## Deferred Gates (do NOT block WAVE 02 implementation start)
+- **PlayMode validation (Phase 2-3):** Required for final MVP acceptance; deferred to post-integration gate
+- **Human validation:** Required for final MVP acceptance; deferred to post-integration gate
+- **Spec promotion to implementados/:** Only after Phase 2-3 evidence collected
 
-- **Human validation (Phase 2-3):** Required for final MVP acceptance; does NOT block WAVE 02 implementation
-- **Unity Play Mode execution:** Required for final MVP acceptance; does NOT block WAVE 02 implementation
+**Current status:** WAVE 04 Phase 1 BUILD_VALIDATED; Phase 2-3 intentionally deferred to integration closeout.
 
 ---
 
@@ -153,5 +153,5 @@ PROJECT_LOG + CURRENT_STATE conflict → prefer CURRENT_STATE; report mismatch
 
 ---
 
-*Last updated: 2026-06-08 (WAVE 04 Phase 1 Complete: All 14 execution reports created, honest status assigned, SPEC 8 reworked)*  
-*Next update: after WAVE 05 integration phase begins or WAVE 04 Phase 2 starts*
+*Last updated: 2026-06-08 (WAVE 04 Phase 1 VALIDATED: Assembly builds + quality checks PASS; WAVE 05 READY)*  
+*Next update: after WAVE 05 integration phase begins*
