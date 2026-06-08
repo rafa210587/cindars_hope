@@ -83,7 +83,7 @@
 | WAVE 04 UI Foundation Phase 1 | PHASE1_COMPLETED_WITH_CONTRACT_ONLY_CORE | 14 of 14 specs have execution reports; 3 BUILD_VALIDATED (SPECS 1-2, 8), 11 CONTRACT_ONLY (SPECS 3-7,9,11-16); SPEC 8 fully reworked (10 focus states, modal stack, 47 tests); Assembly builds PASS; quality check PASS; docs validation PASS (legacy errors only) |
 | WAVE 05 Farm Gameplay Core | COMPLETED_WITH_KNOWN_LEGACY_GATES | 20/20 specs executed; all BUILD_VALIDATED with RUNTIME_VALIDATED_WITH_KNOWN_LEGACY_GATES; ~123 EditMode tests; Assembly-CSharp PASS; closeout: docs/validation/WAVE_05_CLOSEOUT_REPORT.md |
 | WAVE 06 Economy/Loot/Crafting/Shop/Cave Foundation | COMPLETED_WITH_KNOWN_LEGACY_GATES | 8/8 specs executed; ~75 EditMode tests; Assembly-CSharp PASS; closeout: docs/validation/WAVE_06_CLOSEOUT_REPORT.md |
-| WAVE 07 Playable Scene Integration | WAVE_INTEGRATION_05_BUILD_VALIDATED_SCENE_WIRED_WITH_TEMP_SMOKE_HOOK | Scene architecture documented; manager audit complete; `SceneNames` contract created; FarmScene player/camera/spawn/foundation zones and first crop interactable slice structurally wired; Play Mode deferred to human Unity action |
+| WAVE 07 Playable Scene Integration | WAVE_INTEGRATION_05_BUILD_VALIDATED_CODE_READY_SCENE_REVERTED | Scene architecture documented; manager audit complete; `SceneNames` contract created; FarmScene player/camera/spawn/foundation zones preserved from WAVE04; WAVE05 crop code ready but direct scene wiring reverted after FarmScene YAML corruption; Play Mode blocked until safe Unity scene wiring is reapplied |
 | WAVE 08 City/NPC/Dialogue/Services | COMPLETED_WITH_KNOWN_LEGACY_GATES | 4/4 specs BUILD_VALIDATED; ~61 EditMode tests; Assembly-CSharp PASS; closeout: docs/validation/WAVE_08_CLOSEOUT_REPORT.md |
 | WAVE 09 Quest System | COMPLETED_WITH_KNOWN_LEGACY_GATES | 8/8 specs BUILD_VALIDATED; ~107 EditMode tests; Assembly-CSharp PASS; closeout: docs/validation/WAVE_09_CLOSEOUT_REPORT.md |
 | WAVE 10 Main Progression / Fonte / Endgame | COMPLETED_WITH_KNOWN_LEGACY_GATES | 4/4 specs BUILD_VALIDATED; ~72 EditMode tests; Assembly-CSharp PASS; closeout: docs/validation/WAVE_10_CLOSEOUT_REPORT.md |
@@ -104,11 +104,11 @@ Automation must ignore `docs/specs/a_implementar/features_futuras/` unless a hum
 
 ## WAVE 07 - Playable Scene Integration
 
-Status: WAVE_INTEGRATION_05_BUILD_VALIDATED_SCENE_WIRED_WITH_TEMP_SMOKE_HOOK
+Status: WAVE_INTEGRATION_05_BUILD_VALIDATED_CODE_READY_SCENE_REVERTED
 
 Latest validation:
-- Assembly-CSharp: PASS (before/after dotnet build, exit code 0, 0 warnings, 0 errors)
-- Assembly-CSharp-Editor: PASS (before/after dotnet build, exit code 0, 3 pre-existing warnings, 0 errors)
+- Assembly-CSharp: PASS (WAVE05 reported dotnet build, exit code 0, 0 warnings, 0 errors)
+- Assembly-CSharp-Editor: PASS (WAVE05 reported dotnet build, exit code 0, 3 pre-existing warnings, 0 errors)
 - Docs validation: EXPECTED_FAIL_LEGACY_ONLY (exit code 1, pre-existing governance/doc errors only)
 - Scene inventory: CREATED (`docs/validation/WAVE_07_SCENE_INVENTORY.md`, 34 scenes found)
 - Scene architecture decision: DOCUMENTATION_ONLY_HUMAN_UNITY_ACTION_REQUIRED
@@ -116,10 +116,11 @@ Latest validation:
 - Player/camera/movement baseline: VALIDATED_STRUCTURAL (`docs/validation/WAVE_INTEGRATION_03_PLAYER_CAMERA_MOVEMENT_REPORT.md`)
 - FarmScene foundation zones: BUILD_VALIDATED_SCENE_WIRED (`docs/validation/WAVE_INTEGRATION_04_FARMSCENE_REBUILD_REPORT.md`)
 - FarmScene zone map: CREATED (`docs/validation/WAVE_INTEGRATION_04_FARMSCENE_ZONE_MAP.md`)
-- FarmScene crop interactable slice: BUILD_VALIDATED_SCENE_WIRED_WITH_TEMP_SMOKE_HOOK (`docs/validation/WAVE_INTEGRATION_05_CROP_INTERACTABLE_REPORT.md`)
-- WAVE_INTEGRATION_05 decision: CREATED (`docs/validation/WAVE_INTEGRATION_05_CROP_INTERACTABLE_DECISION.md`)
-- Human Play Mode checklist: PENDING (`docs/validation/WAVE_INTEGRATION_05_HUMAN_PLAYMODE_CHECKLIST.md`)
-- Can start WAVE_INTEGRATION_06: YES after human Play Mode checklist passes or human accepts residual Play Mode risk
+- FarmScene crop interactable slice: BUILD_VALIDATED_CODE_READY_SCENE_REVERTED (`docs/validation/WAVE_INTEGRATION_05_CROP_INTERACTABLE_REPORT.md`)
+- WAVE_INTEGRATION_05 decision: UPDATED (`docs/validation/WAVE_INTEGRATION_05_CROP_INTERACTABLE_DECISION.md`)
+- WAVE_INTEGRATION_05 hotfix: CREATED (`docs/validation/WAVE_INTEGRATION_05_SCENE_CORRUPTION_HOTFIX_REPORT.md`)
+- Human Play Mode checklist: BLOCKED until safe WAVE05 scene wiring is reapplied (`docs/validation/WAVE_INTEGRATION_05_HUMAN_PLAYMODE_CHECKLIST.md`)
+- Can start WAVE_INTEGRATION_06: NO, blocked until WAVE05 scene wiring is reapplied safely and human Play Mode checklist passes
 
 ---
 
@@ -190,5 +191,5 @@ PROJECT_LOG + CURRENT_STATE conflict → prefer CURRENT_STATE; report mismatch
 
 ---
 
-*Last updated: 2026-06-08 (WAVE_INTEGRATION_05 FarmScene crop interactable slice structurally wired)*
-*Next update: after WAVE_INTEGRATION_06 or human Unity Play Mode validation*
+*Last updated: 2026-06-08 (WAVE_INTEGRATION_05 code-ready scene wiring reverted after FarmScene corruption hotfix)*
+*Next update: after safe WAVE_INTEGRATION_05 Unity scene wiring and human Play Mode validation*
