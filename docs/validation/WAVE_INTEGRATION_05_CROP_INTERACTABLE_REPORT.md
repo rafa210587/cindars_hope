@@ -1,19 +1,25 @@
 # WAVE_INTEGRATION_05 Crop Interactable Report
 
 Date: 2026-06-08
-Status: BUILD_VALIDATED_SCENE_WIRED_WITH_TEMP_SMOKE_HOOK
+Status: BUILD_VALIDATED_CODE_READY_SCENE_REVERTED
 
 ## Summary
 
-FarmScene now has a first crop gameplay slice connected to real scene objects through the existing `FarmPlot` runtime.
+WAVE_INTEGRATION_05 code/runtime changes remain valid as a code-ready crop gameplay slice, but the direct `.unity` scene wiring was reverted after Unity detected a corrupted FarmScene YAML.
 
-Implemented:
-- Reused `FarmPlot` as the scene interactable.
-- Connected all 9 FarmScene plots to the scene `StaminaManager`.
-- Kept `FarmPlotRegistry` and `FarmSceneRuntimeReferenceInstaller` scene references intact.
-- Updated `CreateMvpFarmScene` so regenerated FarmScene plots keep the same stamina and temporary smoke wiring.
-- Fixed seed planting resolution so inventory item `item_seed_carrot` maps to runtime seed `seed_carrot`.
-- Enabled `_temporarySequentialSliceMode` on `FarmPlot_00` only, for WAVE05 smoke validation.
+Implemented and preserved:
+- Reused `FarmPlot` as the crop interactable runtime.
+- Updated `FarmPlot` so inventory item `item_seed_carrot` can resolve to runtime seed `seed_carrot` through `SeedDataSO.SeedItem.Id`.
+- Kept harvest on the real inventory path through `InventoryManager.AddItem(...)`.
+- Added a temporary smoke hook in code with `TODO_INTEGRATION_NOT_FINAL`.
+- Updated `CreateMvpFarmScene` so regenerated FarmScene plots can keep the same stamina and temporary smoke wiring.
+
+Reverted by hotfix:
+- `Assets/_Game/Scenes/FarmScene.unity`
+- `Assets/_Game/Scenes/TownScene.unity`
+- `Assets/_Game/Scenes/CaveScene.unity`
+
+Reason: direct scene YAML wiring produced an invalid scene file.
 
 Not implemented:
 - No new ScriptableObjects.
@@ -23,7 +29,7 @@ Not implemented:
 
 ## Runtime Path
 
-Expected smoke loop on `FarmPlot_00`:
+Expected smoke loop after safe Unity scene wiring is reapplied to `FarmPlot_00`:
 
 1. Interact with the plot.
 2. `Raw -> TilledDry` via Arar solo.
@@ -34,55 +40,77 @@ Expected smoke loop on `FarmPlot_00`:
 
 The temporary growth action is not final gameplay. It exists only because Play Mode smoke needs a complete local loop before the final equipment/tool/day-growth UX is validated.
 
+## Scene corruption detected
+
+Unity reported this while opening `Assets/_Game/Scenes/FarmScene.unity`:
+
+```text
+Unable to parse file Assets/_Game/Scenes/FarmScene.unity:
+[Parser Failure at line 7780: Expect ':' between key and value within mapping]
+
+Broken text PPtr in file Assets/_Game/Scenes/FarmScene.unity.
+Local file identifier 910400010 doesn't exist.
+
+Dangling components deleted by Unity:
+- Transform FileID 910400011
+- SpriteRenderer FileID 910400012
+- BoxCollider2D FileID 910400013
+- MonoBehaviour FileID 910400014
+```
+
+Classification:
+
+```text
+BLOCKED_AFTER_UNITY_OPEN_SCENE_PARSE
+```
+
+Resolution:
+- Do not save the corrupted scene.
+- Do not repair the YAML line manually.
+- Restore scene LFS pointers to the WAVE_INTEGRATION_04 validated commit.
+- Reapply WAVE05 scene wiring only through Unity Editor/Inspector or a safe Editor API generator.
+
 ## Design/Direction Compliance Matrix
 
 | Direction source | Rule | Result |
 |---|---|---|
 | `FARM_DESIGN_DIRECTION_v1.3.md` | Reuse existing farm base. | PASS: `FarmPlot` reused. |
 | `FARM_DESIGN_DIRECTION_v1.3.md` | Preserve crop states and watering/death concepts. | PASS: existing states and `DayStartedEvent` logic preserved. |
-| `FARM_DESIGN_DIRECTION_v1.3.md` | Provide visible crop/soil state feedback. | PASS_STRUCTURAL: existing sprite/color visual states remain wired. |
-| `FARM_LAYOUT_SCALE_BUILDINGS_DIRECTION.md` | Initial crop field belongs to Level 1 farm. | PASS: current FarmScene 3x3 plot cluster reused in crop field area. |
+| `FARM_DESIGN_DIRECTION_v1.3.md` | Provide visible crop/soil state feedback. | PASS_CODE_READY: existing sprite/color visual states remain in code; scene wiring needs safe Unity reapplication. |
+| `FARM_LAYOUT_SCALE_BUILDINGS_DIRECTION.md` | Initial crop field belongs to Level 1 farm. | PASS_CODE_READY: current WAVE04 FarmScene foundation preserved; WAVE05 wiring reverted. |
 | `FARM_DESIGN_DIRECTION_v1.3.md` | Do not treat Mana fruit as normal crop. | PASS: no Mana content added. |
 | Save constraints | Save simple IDs/state only. | PASS: no new Unity refs added to save DTOs. |
 
 ## Validation
 
 Assembly-CSharp:
-- PASS
+- PASS reported before hotfix.
 - Command: `dotnet build Assembly-CSharp.csproj --no-restore`
 - Result: 0 warnings, 0 errors
 
 Assembly-CSharp-Editor:
-- PASS
+- PASS reported before hotfix.
 - Command: `dotnet build Assembly-CSharp-Editor.csproj --no-restore`
 - Result: 3 pre-existing warnings, 0 errors
-- Warnings:
-  - `CreateEnemyActionsAndSets.ActionEntry.MinRange` CS0649
-  - `CreateEnemyActionsAndSets.ActionEntry.RequiresLos` CS0649
-  - `CSharpProjectPostprocessor.OnGeneratedCSProject` UNT0006
-
-Static scene checks:
-- FarmPlot names in FarmScene: 9
-- Temporary sequential mode enabled: 1
-- Temporary seed fields: 9
-- FarmScene plot stamina refs updated to scene `StaminaManager`.
-- FarmPlot seed/stamina/temp blocks: 9
-
-Unity validation: NOT RUN
-Reason: local Unity Editor Play Mode was not launched in this Codex turn.
-Command attempted: not attempted
-Residual risk: Unity compile/import and Play Mode interaction behavior not validated locally.
 
 Docs validation:
-- EXPECTED_FAIL_LEGACY_ONLY
-- Command: `powershell -ExecutionPolicy Bypass -File tools/docs/validate_docs.ps1`
-- Result: exit code 1
+- EXPECTED_FAIL_LEGACY_ONLY reported before hotfix.
 - Failures were pre-existing governance/doc issues around `spec_test_harness_editmode_playmode_quality_gate.md`, legacy recent validation report metadata, and two implemented specs citing amendments as canonical sources.
+
+Unity validation:
+- FAIL before hotfix due to scene parse corruption.
+- After hotfix, human must reopen Unity and validate that `FarmScene.unity` loads from the restored WAVE04 pointer.
 
 ## WAVE_INTEGRATION_07 Gate
 
-Inventory reward gate: PASS.
+Inventory reward gate: PASS_CODE_READY.
 
-Harvest is not feedback-only. The path uses `SeedDataSO.HarvestItems` and `InventoryManager.AddItem(...)`, with `Seed_Cenoura` producing `item_crop_carrot` x2.
+Harvest is not feedback-only. The code path uses `SeedDataSO.HarvestItems` and `InventoryManager.AddItem(...)`, with `Seed_Cenoura` producing `item_crop_carrot` x2.
 
-Play Mode gate: PENDING HUMAN.
+Scene/Play Mode gate: BLOCKED until WAVE05 wiring is reapplied safely and Play Mode checklist passes.
+
+## Decision
+
+- Can start WAVE_INTEGRATION_06: NO.
+- Blocking issue: WAVE05 scene wiring was reverted after FarmScene YAML corruption.
+- Required next action: reapply WAVE05 plot wiring via Unity Editor/Inspector or safe Editor API; then run human Play Mode checklist.
