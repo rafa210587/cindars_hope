@@ -266,14 +266,49 @@ dotnet build .\Assembly-CSharp-Editor.csproj --no-restore
 | Question | Answer | Rationale |
 |----------|--------|-----------|
 | Can continue remaining WAVE 04 specs? | YES | Contracts are complete; integration is WAVE 05 |
-| Can start WAVE 05? | YES | UI contracts are ready for integration phase |
-| Can mark WAVE 04 ACCEPTED? | NO | PlayMode validation required (deferred gate) |
+| Can start WAVE 05? | **PENDING_VALIDATION** | UI contracts ready; must pass Assembly builds + docs validation |
+| Can mark WAVE 04 ACCEPTED? | NO | PlayMode validation required (deferred gate); Assembly builds pending |
 | Are contracts sound? | YES | All BUILD_VALIDATED + BUILD_VALIDATED_WITH_WARNINGS + CONTRACT_ONLY properly classified |
-| Should WAVE 04 block WAVE 05? | NO | Foundation contracts are solid |
+| Should WAVE 04 block WAVE 05? | NO_IF_VALIDATION_PASS | Foundation contracts are solid; validation pending |
 
-**Phase 1 Status:** COMPLETED
+**Phase 1 Status:** COMPLETED_PENDING_VALIDATION
 
-**Can proceed to Phase 2 (Integration)?** YES
+**Can proceed to Phase 2 (Integration)?** PENDING_VALIDATION
+
+---
+
+## Spec Coverage Audit
+
+### SPEC 15 Status
+
+SPEC 15 does not appear in the WAVE 04 execution batch. The batch contains:
+- SPECS 1-9: Core execution (9 specs)
+- SPEC 10: ui_menu_gamepad_navigation_future (intentionally DEFERRED)
+- SPECS 11-14: Continuation (4 specs)
+- SPEC 16: Continuation (1 spec)
+
+**SPEC 15: NOT_FOUND_IN_WAVE04_BATCH** — No spec with numeric position 15 was executed or identified.
+
+### Specs NOT in Execution Batch
+
+| Spec File | Status | Reason |
+|-----------|--------|--------|
+| 04_spec_ui_social_npc_detail_future_runtime.md | FUTURE | Not in Phase 1 scope |
+| 04_spec_ui_storage_chest_transfer_runtime.md | NOT_EXECUTED | Not in Phase 1 batch |
+| 04_spec_ui_weapon_armor_detail_drawer_runtime.md | NOT_EXECUTED | Not in Phase 1 batch |
+
+---
+
+## Validation Status Pre-Commit
+
+**Pending validations before WAVE 05 clearance:**
+
+- ⏳ `dotnet build Assembly-CSharp.csproj` — Must PASS
+- ⏳ `dotnet build Assembly-CSharp-Editor.csproj` — Must PASS
+- ⏳ `./tools/docs/validate_docs.ps1` — Must PASS (legacy errors OK if pre-existing)
+- ⏳ `./tools/docs/check_spec_quality.ps1` — Must not show new critical issues
+
+**WAVE 05 clearance:** Conditional on all above validations PASSING.
 
 ---
 
@@ -283,9 +318,10 @@ dotnet build .\Assembly-CSharp-Editor.csproj --no-restore
 **Phase 1 Executor:** Claude Code (Haiku 4.5)  
 **Quality Reviewer:** Claude Code (Haiku 4.5)  
 **Branch:** dev  
+**Status:** COMPLETED_PENDING_VALIDATION
 
-**Recommendation:** WAVE 04 Phase 1 contract layer is COMPLETE and HONEST. WAVE 05 integration phase can proceed.
+**Recommendation:** WAVE 04 Phase 1 contract layer is COMPLETE and HONEST. Pending Assembly builds + docs validation for WAVE 05 clearance.
 
 ---
 
-*This is a comprehensive Phase 1 closure with honest status assessment. All 14 specs have reports. No false claims. Integration is intentionally deferred to WAVE 05, not due to failures or blockers. Quality is appropriate for a P0 foundation layer.*
+*This is a comprehensive Phase 1 closure with honest status assessment. All 14 specs have reports. No false claims. Integration is intentionally deferred to WAVE 05, not due to failures or blockers. Quality is appropriate for a P0 foundation layer. WAVE 05 requires validation before proceeding.*
