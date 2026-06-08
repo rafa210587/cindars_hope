@@ -29,29 +29,27 @@ namespace CindarsHope.Farm.Integration
         public void Interact(GameObject interactor)
         {
             if (!CanInteract(interactor))
+                return;
+
+            if (_inventoryManager == null || string.IsNullOrEmpty(_reward.ItemId))
             {
+                // TODO_INTEGRATION_NOT_FINAL — feedback-only fallback: inventory not wired or item id empty
+                Debug.LogWarning($"[FarmResource] {_resourceType}: cannot collect — inventory not wired or reward item id empty. Resource stays Available.", this);
                 return;
             }
 
-            _state = FarmResourceVisualState.Depleted;
-            _visualController?.Apply(_state);
-
-            if (_inventoryManager != null && !string.IsNullOrEmpty(_reward.ItemId))
+            var amount = _reward.ClampedAmount;
+            var added = _inventoryManager.AddItem(_reward.ItemId, amount);
+            if (added)
             {
-                var added = _inventoryManager.AddItem(_reward.ItemId, _reward.Amount);
-                if (added)
-                {
-                    Debug.Log($"[FarmResource] {_resourceType}: added {_reward.Amount}x {_reward.ItemId} to inventory.", this);
-                }
-                else
-                {
-                    Debug.LogWarning($"[FarmResource] {_resourceType}: inventory full — could not add {_reward.Amount}x {_reward.ItemId}.", this);
-                }
+                _state = FarmResourceVisualState.Depleted;
+                _visualController?.Apply(_state);
+                Debug.Log($"[FarmResource] {_resourceType}: added {amount}x {_reward.ItemId} to inventory.", this);
             }
             else
             {
-                // TODO_INTEGRATION_NOT_FINAL — feedback-only fallback when inventory not wired or item id empty
-                Debug.Log($"[FarmResource] {_resourceType}: depleted. Reward {_reward.ItemId} x{_reward.Amount} (inventory not wired or item id empty).", this);
+                // TODO_INTEGRATION_NOT_FINAL — AddItem returned false (inventory full or item not found); resource stays Available
+                Debug.LogWarning($"[FarmResource] {_resourceType}: AddItem returned false for {amount}x {_reward.ItemId}. Resource stays Available.", this);
             }
         }
 
@@ -65,5 +63,13 @@ namespace CindarsHope.Farm.Integration
         {
             _visualController?.Apply(_state);
         }
+
+#if UNITY_EDITOR
+        private void OnValidate()
+        {
+            if (_reward != null && _reward.Amount < 1)
+                Debug.LogWarning($"[FarmResource] {gameObject.name}: reward amount is {_reward.Amount} — must be >= 1. ClampedAmount will be used at runtime.", this);
+        }
+#endif
     }
 }

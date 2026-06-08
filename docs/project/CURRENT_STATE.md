@@ -117,8 +117,8 @@ Latest validation:
 - FarmScene foundation zones: SCENE_REVERTED_TO_WAVE03 — code updated with corrected layout (`docs/validation/WAVE_INTEGRATION_04_FARMSCENE_REBUILD_REPORT.md` is historical; new layout in zone map v2)
 - FarmScene crop interactable slice: BUILD_VALIDATED_CODE_READY_SCENE_REVERTED (`docs/validation/WAVE_INTEGRATION_05_CROP_INTERACTABLE_REPORT.md`)
 - FarmScene spatial reconciliation: CODE_READY (`docs/validation/WAVE_INTEGRATION_04_05_SPATIAL_RECONCILIATION_REPORT.md`)
-- FarmScene resource interactables: CODE_READY_HUMAN_UNITY_SCENE_ACTION_REQUIRED (`docs/validation/WAVE_INTEGRATION_06_RESOURCE_INTERACTABLE_REPORT.md`)
-- Tree/Rock/Forage interactables: CODE_READY (FarmResourceInteractable.cs adapter; wired in CreateMvpFarmScene.cs)
+- FarmScene resource interactables: CODE_READY_HUMAN_UNITY_SCENE_ACTION_REQUIRED — P1 hotfix applied (`docs/validation/WAVE_INTEGRATION_06_RESOURCE_INTERACTABLE_REPORT.md`)
+- Tree/Rock/Forage interactables: CODE_READY — depletion now only on AddItem success; ClampedAmount guard added; validator expanded
 - LakeFishing interactable: EXISTING (FishingSpot.cs at (7.8, -2.8) fully implements IInteractable; no additional adapter needed)
 - Reward strategy: INVENTORY_REWARD via InventoryManager.AddItem (same path as FarmPlot harvest)
 - CreateMvpFarmScene.cs: UPDATED with resource interactable creation (TreeResource_01, RockResource_01, ForageResource_01)

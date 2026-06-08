@@ -11,5 +11,6 @@ namespace CindarsHope.Farm.Integration
 
         public string ItemId => _itemId;
         public int Amount => _amount;
+        public int ClampedAmount => _amount < 1 ? 1 : _amount;
     }
 }

@@ -73,3 +73,11 @@ WAVE_INTEGRATION_07 gate: CODE_READY. Human must:
 
 Residual gate: Play Mode remains pending human Unity validation.
 Can start WAVE_INTEGRATION_07: NO, blocked until human regenerates FarmScene and Play Mode checklist passes.
+
+## P1 Hotfix Decision (2026-06-08)
+
+Bug: Resource depleted before confirming AddItem success.
+Decision: Only deplete resource after `AddItem` returns true. Stay Available on null inventory, empty itemId, or AddItem=false.
+Additional: Use `ClampedAmount` (min 1) instead of raw Amount.
+Validator: Expanded to check resourceType, amount, SpriteRenderer, Collider2D, zone proximity, smoke nodes.
+Status: No status change — BUILD_VALIDATED_CODE_READY_HUMAN_UNITY_SCENE_ACTION_REQUIRED.

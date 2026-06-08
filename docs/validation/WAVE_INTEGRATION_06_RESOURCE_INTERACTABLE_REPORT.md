@@ -145,6 +145,34 @@ Not ACCEPTED because:
 
 Can start WAVE_INTEGRATION_07: NO, blocked until human regenerates FarmScene and Play Mode checklist passes.
 
+## P1 Hotfix — Depletion Before AddItem Success (2026-06-08)
+
+Bug found: `FarmResourceInteractable.Interact()` set `_state = Depleted` and applied visual BEFORE confirming `AddItem` returned true. If inventory was null, itemId empty, or AddItem returned false, the resource was permanently depleted without reward.
+
+Fix applied:
+- If `_inventoryManager == null` or `_reward.ItemId` is empty → log warning, stay Available, return.
+- If `AddItem` returns false → log warning, stay Available, return.
+- Only set `Depleted` and apply visual after confirmed `AddItem == true`.
+- `FarmResourceReward.ClampedAmount` property added (returns `Mathf.Max(1, _amount)`).
+- `FarmResourceInteractable` uses `_reward.ClampedAmount` instead of raw `_reward.Amount`.
+- `OnValidate` added to `FarmResourceInteractable` to warn if amount < 1 in Inspector.
+
+Validator expanded (ValidateFarmResourceInteractables.cs):
+- resourceType != Unknown check
+- reward._amount >= 1 check
+- SpriteRenderer existence check (on object or visual controller)
+- Collider2D existence check
+- Zone proximity checks per resource type (Tree within TreeZone ±8u, Rock ±5u, Forage ±5u)
+- Smoke node presence checks (TreeResource_01, RockResource_01, ForageResource_01)
+- Residual: item IDs not validated against ItemDatabase (manual Play Mode check required)
+
+Build after hotfix:
+- Assembly-CSharp: PASS (exit code 0, 0 errors, 0 warnings)
+- Assembly-CSharp-Editor: PASS (exit code 0, 0 errors, 3 pre-existing warnings — unchanged)
+- Docs validation: EXPECTED_FAIL_LEGACY_ONLY (same pre-existing errors, no new errors)
+
+Status after hotfix: BUILD_VALIDATED_CODE_READY_HUMAN_UNITY_SCENE_ACTION_REQUIRED (unchanged — play mode not yet run)
+
 ## Inspector Wiring Required (Human Action in Unity Editor)
 
 - Run CreateMvpFarmScene generator — wires all fields automatically via SerializedObject
