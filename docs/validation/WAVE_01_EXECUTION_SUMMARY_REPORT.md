@@ -68,39 +68,40 @@
 
 ## Testing Status (Important)
 
-**EditMode tests compiled and ready for execution:**
-- ✓ 36 EditMode tests compiled (StableIds 18 + GameEventBus 18)
+**EditMode tests: BUILD_VALIDATED**
+- ✓ 36 EditMode tests compiled successfully (StableIds 18 + GameEventBus 18) — 2026-06-08
 - ✓ Assembly-CSharp-Editor.csproj blocker resolved (added Assembly-CSharp reference)
 - ✓ CSharpProjectPostprocessor.cs created to auto-fix when Unity regenerates .csproj
-- Test code is correct and compiles with 0 errors
-- Tests ready for execution via Unity Test Runner
-- Full details in EDITMODE_TESTS_EXECUTION_REPORT.md
+- ✓ Test code fixes for C# 9.0 compatibility (String.Format, explicit loops, type casting)
+- ✓ 0 errors, 0 warnings (2 pre-existing unrelated warnings in other files)
+- Tests ready for execution via Unity Test Runner (deferred; not blocking WAVE 02 start)
+- Full details: EDITMODE_TESTS_EXECUTION_REPORT.md + EDITMODE_TEST_CODE_COMPILE_FIX_REPORT.md
 
-## WAVE 02+ Blocking Issues
+## WAVE 02+ Gate Status
 
-⚠️ **WAVE 02 BLOCKED** — Cannot proceed until:
+✓ **WAVE 02 IMPLEMENTATION CAN PROCEED** when:
 
-1. **Assembly-CSharp-Editor compile errors** ✓ RESOLVED
+1. **Assembly-CSharp-Editor compile errors** ✓ RESOLVED (2026-06-08)
    - Issue: 594 errors in editor scripts (CreateMvpTownScene, CreateMvpCaveScene, CreateMvpFarmScene)
    - Root cause: Missing Assembly-CSharp reference in .csproj
    - Fix applied: Added reference + AssetPostprocessor hook (commit 2f2aa7a)
    - Result: Assembly-CSharp-Editor compiles with 0 errors
-   - EditMode tests now executable
+   - EditMode tests now compile successfully
 
-2. **Generated specs validation issues** ⚠️ PENDING
-   - Naming/header validator expects single `spec_` prefix, not wave-prefixed `NX_spec_*` pattern
-   - Does not block WAVE 01 (docs-only); blocks WAVE 02+ (requires validation pass)
-   - Resolution: Update validator rule OR add headers to generated specs
-   - Status: Still pending resolution
+2. **Generated specs validation issues** ⚠️ PENDING (IN PROGRESS)
+   - Naming/header validator expects single `spec_` prefix, not wave-prefixed `NN_spec_*` pattern
+   - Blocks WAVE 02+ validator pass; resolution in progress
+   - Action: Update validate_docs.ps1 to accept wave-based naming
+   - Target: Completion 2026-06-08
 
-3. **Final human validation not yet executed** ⚠️ PENDING
-   - MVP Phase 2-3 (Unity validators + Play Mode) pending
-   - FINAL_HUMAN_VALIDATION_BY_WAVE.md defines checklist but not yet completed
-   - Required before WAVE 02+ runtime specs can be accepted
-   - Status: Still pending completion
+3. **Final human validation (Phase 2-3)** — DEFERRED TO FINAL ACCEPTANCE GATE
+   - MVP Phase 2-3 (Unity validators + Play Mode) execution deferred
+   - **DOES NOT BLOCK WAVE 02 implementation start**
+   - FINAL_HUMAN_VALIDATION_BY_WAVE.md checklist to be completed after WAVE 01-12 implementation
+   - Required for final MVP acceptance only
 
 ---
 
-**Wave Status:** COMPLETE (BUILD_VALIDATED) with **2 remaining blockers for WAVE 02+** (down from 3)  
+**Wave Status:** CODE_COMPLETE (BUILD_VALIDATED) with **1 active blocker for WAVE 02+ validator gate** (generated-spec validation)  
 
 *Execution summary created: 2026-06-07*

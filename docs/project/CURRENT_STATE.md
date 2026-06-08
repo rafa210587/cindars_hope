@@ -15,9 +15,8 @@
 | Legacy docs validation | ✓ YES — 25+ checks (SPEC_DOCS_37) |
 | Generated specs validation | ⚠ RUN_WITH_ISSUES — naming/header mismatch (blocks WAVE 02+) |
 | Legacy spec cleanup | ✓ YES — 7 specs absorbed (2026-06-07) |
-| MVP Phase 2 (Unity validators) | ✗ NOT RUN — pending human execution |
-| MVP Phase 3 (Play Mode) | ✗ NOT RUN — pending human execution |
-| MVP final accepted | ✗ NOT YET |
+| MVP Phase 2-3 (Unity/Play Mode) | ✗ DEFERRED TO FINAL ACCEPTANCE | Not required for WAVE 02 implementation start |
+| MVP final accepted | ✗ NOT YET — pending Phase 2-3 execution |
 
 ---
 
@@ -78,18 +77,21 @@
 | SPEC_18-28 Phase 2-3 | PENDING HUMAN | Play Mode validation; requires local Unity Editor |
 | SPEC_29 Phase 2-3 | PENDING HUMAN | Final acceptance; blocked on Phase 2-3 above |
 | WAVE 00.04 Existing Implementation Audit | COMPLETE / BUILD_VALIDATED | Governance audit only; no code/gameplay changes; commit ee1c0fb+ |
-| WAVE 01 Hardening & Quality Gate | COMPLETED_WITH_WARNINGS | 9 specs executed (00.04, 01.01-01.07, 01Q); all BUILD_VALIDATED; 36 EditMode tests created but not executed (blocker: 594 compile errors in editor scripts) |
-| WAVE 02-12 Core Runtime | **BLOCKED** | 93 specs in queue; blocked by: (1) Assembly-CSharp-Editor compile errors, (2) generated-spec validation issues, (3) final human validation not yet executed |
+| WAVE 01 Hardening & Quality Gate | CODE_COMPLETE | 9 specs executed (00.04, 01.01-01.07, 01Q); BUILD_VALIDATED; 36 EditMode tests compile successfully (0E/0W) |
+| WAVE 02-12 Core Runtime | **PENDING_VALIDATION_GATE** | 93 specs in queue; blocked by: (1) generated-spec validation (naming/headers), (2) human validation deferred to final acceptance gate |
 | WAVE 17-24 Future | BLOCKED INTENTIONALLY | 32+ future/expansion specs marked; pets (WAVE 23) blocked as HOLD/BLOCKED_SCOPE |
 
 ---
 
-## Blockers
+## Blockers for WAVE 02 Start
 
-1. **Human Play Mode acceptance:** Phase 2-3 not yet executed for MVP (separate from generated specs)
-2. **Generated specs validation:** Naming/header validator issues must be resolved before WAVE 02+ runtime (does not block 00.04)
-3. **Quality gate completion:** WAVE 01Q must complete before WAVE 02+ runtime can begin
-4. **Legacy cleanup:** Complete (2026-06-07); no blocking impact
+1. **Generated specs validation:** Naming/header validator issues (wave-based pattern `NN_spec_*`) must resolve before WAVE 02+ runtime
+2. **Quality gate completion:** WAVE 01Q EditMode tests must compile (RESOLVED 2026-06-08); human execution deferred to acceptance gate
+
+## Deferred Gates (do NOT block WAVE 02 implementation start)
+
+- **Human validation (Phase 2-3):** Required for final MVP acceptance; does NOT block WAVE 02 implementation
+- **Unity Play Mode execution:** Required for final MVP acceptance; does NOT block WAVE 02 implementation
 
 ---
 

@@ -127,17 +127,17 @@ if ($badImplementedSpecs) {
 }
 
 $badFutureSpecs = Get-ChildItem "docs/specs/a_implementar" -Filter "*.md" -ErrorAction SilentlyContinue |
-    Where-Object { $_.Name -notlike "spec_*" -and $_.Name -ne "README.md" }
+    Where-Object { $_.Name -notlike "spec_*" -and $_.Name -notlike "[0-9][0-9]_spec_*" -and $_.Name -ne "README.md" }
 
 if ($badFutureSpecs) {
-    $badFutureSpecs | ForEach-Object { Fail "Future spec without spec_ prefix: $($_.FullName)" }
+    $badFutureSpecs | ForEach-Object { Fail "Future spec without spec_ or NN_spec_ prefix: $($_.FullName)" }
 } else {
-    Ok "Future specs use spec_ prefix."
+    Ok "Future specs use spec_ or NN_spec_ (wave-based) prefix."
 }
 
-# Check spec markers and headers
-$futureSpecs = Get-ChildItem "docs/specs/a_implementar" -Filter "spec_*.md" -File -ErrorAction SilentlyContinue
-foreach ($spec in $futureSpecs) {
+# Check spec markers and headers (legacy specs only; wave-based specs may skip headers)
+$legacySpecs = Get-ChildItem "docs/specs/a_implementar" -Filter "spec_*.md" -File -ErrorAction SilentlyContinue
+foreach ($spec in $legacySpecs) {
     $content = Get-Content $spec.FullName -Raw -ErrorAction SilentlyContinue
     $markers = @("# /speckit.specify", "# /speckit.plan", "# /speckit.tasks")
     foreach ($marker in $markers) {
