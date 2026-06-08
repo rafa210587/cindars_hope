@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using CindarsHope.Core;
+using CindarsHope.Core.Events;
 using CindarsHope.Interaction;
 using CindarsHope.Inventory;
 using CindarsHope.Player;
@@ -65,11 +67,15 @@ namespace CindarsHope.Economy
             if (totalGold <= 0)
             {
                 Debug.Log("SellPoint found no sellable items.", this);
+                GameEventBus.Publish(new PlayerActionFeedbackEvent("Nada para vender.", 2f));
                 return;
             }
 
             _playerManager.AddGold(totalGold);
             Debug.Log($"SellPoint sale complete. Earned {totalGold} gold.", this);
+            var feedbackMsg = $"Vendido! +{totalGold} ouro.";
+            GameEventBus.Publish(new PlayerActionFeedbackEvent(feedbackMsg, 3f));
+            GameEventBus.Publish(new EconomyTransactionCompletedEvent(true, "SellPoint", "all", 0, totalGold, feedbackMsg));
         }
 
         public void RebindRuntimeManagers(InventoryManager inventoryManager, PlayerManager playerManager)
