@@ -68,7 +68,7 @@ Após geração da batch 36 (154 specs) e limpeza de legacy (7 specs absorvidas)
 | 04 | UI Foundation | 21 | **BUILD_VALIDATED** | ✓ 14/14 reports; 3 BUILD_VALIDATED, 11 CONTRACT_ONLY; closeout WAVE_04 |
 | 05 | Farm/Inventory/Companion | 23 | **BUILD_VALIDATED** | ✓ 20/20 BUILD_VALIDATED; ~123 EditMode tests; closeout WAVE_05 |
 | 06 | Economy/Loot/Crafting | 8 | **BUILD_VALIDATED** | ✓ 8/8 BUILD_VALIDATED; ~75 EditMode tests; closeout WAVE_06 |
-| 07 | Playable Scene Integration | 2 integration gates executed | **WAVE_INTEGRATION_02_BUILD_VALIDATED** | 01 baseline + 02 scene architecture/manager audit complete; no scene/prefab visual changes |
+| 07 | Playable Scene Integration | 3 integration gates executed | **WAVE_INTEGRATION_03_BUILD_VALIDATED_SCENE_WIRED** | 01 baseline + 02 architecture/manager audit + 03 player/camera/movement structural validation complete; Play Mode deferred to human Unity action |
 | 08 | City/NPC/Dialogue | 4 | **BUILD_VALIDATED** | ✓ 4/4 BUILD_VALIDATED; ~61 EditMode tests; closeout WAVE_08 |
 | 09 | Quest/Player/Skills (duplicate 03) | 7 | **BUILD_VALIDATED** | ✓ 8/8 BUILD_VALIDATED; ~107 EditMode tests; closeout WAVE_09 |
 | 10 | Endgame/Memory/Fonte | 4 | **BUILD_VALIDATED** | ✓ 4/4 BUILD_VALIDATED; ~72 EditMode tests; closeout WAVE_10 |
@@ -77,7 +77,7 @@ Após geração da batch 36 (154 specs) e limpeza de legacy (7 specs absorvidas)
 | 13 | Bestiary | 4 | **BLOCKED_BY_FUTURE_SCOPE_MOVED_TO_FEATURES_FUTURAS** | All 4 specs moved to `a_implementar/features_futuras/`; do not execute without explicit human decision |
 
 **Total WAVE 02-12:** 93 specs core/runtime
-**WAVE 07:** WAVE_INTEGRATION_02_BUILD_VALIDATED (next WAVE_INTEGRATION_03 may use FarmScene as direct temporary player spawn target)
+**WAVE 07:** WAVE_INTEGRATION_03_BUILD_VALIDATED_SCENE_WIRED (next WAVE_INTEGRATION_04 may use FarmScene as direct temporary player spawn target after human accepts residual Play Mode risk)
 **Future specs moved out of active queue:** 53 files in `a_implementar/features_futuras/`
 
 ### Features futuras / Future mapped
@@ -203,6 +203,7 @@ Após a reconciliação das 154 specs novas wave-based, 7 specs antigas da era p
 - ✓ WAVE 06 — Economy/Loot/Crafting/Shop/Cave (8/8 BUILD_VALIDATED; ~75 EditMode tests)
 - WAVE 07.01 - Unity Clean Baseline + Scene Inventory (BUILD_VALIDATED; attached spec authorized by human; no scene/prefab/asset changes)
 - WAVE_INTEGRATION_02 - Scene Architecture e Persistent Managers (BUILD_VALIDATED; manager audit and architecture decision complete)
+- WAVE_INTEGRATION_03 - Player Spawn, Camera, and Movement Baseline (BUILD_VALIDATED_SCENE_WIRED; FarmScene structural wiring validated, Play Mode pending human Unity action)
 - ✓ WAVE 08 — City/NPC/Dialogue/Services (4/4 BUILD_VALIDATED; ~61 EditMode tests)
 - ✓ WAVE 09 — Quest System (8/8 BUILD_VALIDATED; ~107 EditMode tests)
 - ✓ WAVE 10 — Main Progression/Fonte/Endgame (4/4 BUILD_VALIDATED; ~72 EditMode tests)

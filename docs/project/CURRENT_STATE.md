@@ -83,7 +83,7 @@
 | WAVE 04 UI Foundation Phase 1 | PHASE1_COMPLETED_WITH_CONTRACT_ONLY_CORE | 14 of 14 specs have execution reports; 3 BUILD_VALIDATED (SPECS 1-2, 8), 11 CONTRACT_ONLY (SPECS 3-7,9,11-16); SPEC 8 fully reworked (10 focus states, modal stack, 47 tests); Assembly builds PASS; quality check PASS; docs validation PASS (legacy errors only) |
 | WAVE 05 Farm Gameplay Core | COMPLETED_WITH_KNOWN_LEGACY_GATES | 20/20 specs executed; all BUILD_VALIDATED with RUNTIME_VALIDATED_WITH_KNOWN_LEGACY_GATES; ~123 EditMode tests; Assembly-CSharp PASS; closeout: docs/validation/WAVE_05_CLOSEOUT_REPORT.md |
 | WAVE 06 Economy/Loot/Crafting/Shop/Cave Foundation | COMPLETED_WITH_KNOWN_LEGACY_GATES | 8/8 specs executed; ~75 EditMode tests; Assembly-CSharp PASS; closeout: docs/validation/WAVE_06_CLOSEOUT_REPORT.md |
-| WAVE 07 Playable Scene Integration | WAVE_INTEGRATION_02_BUILD_VALIDATED | Scene architecture documented; manager audit complete; `SceneNames` contract created; scenes/prefabs still deferred to human Unity action |
+| WAVE 07 Playable Scene Integration | WAVE_INTEGRATION_03_BUILD_VALIDATED_SCENE_WIRED | Scene architecture documented; manager audit complete; `SceneNames` contract created; FarmScene player/camera/spawn baseline structurally wired; Play Mode deferred to human Unity action |
 | WAVE 08 City/NPC/Dialogue/Services | COMPLETED_WITH_KNOWN_LEGACY_GATES | 4/4 specs BUILD_VALIDATED; ~61 EditMode tests; Assembly-CSharp PASS; closeout: docs/validation/WAVE_08_CLOSEOUT_REPORT.md |
 | WAVE 09 Quest System | COMPLETED_WITH_KNOWN_LEGACY_GATES | 8/8 specs BUILD_VALIDATED; ~107 EditMode tests; Assembly-CSharp PASS; closeout: docs/validation/WAVE_09_CLOSEOUT_REPORT.md |
 | WAVE 10 Main Progression / Fonte / Endgame | COMPLETED_WITH_KNOWN_LEGACY_GATES | 4/4 specs BUILD_VALIDATED; ~72 EditMode tests; Assembly-CSharp PASS; closeout: docs/validation/WAVE_10_CLOSEOUT_REPORT.md |
@@ -104,7 +104,7 @@ Automation must ignore `docs/specs/a_implementar/features_futuras/` unless a hum
 
 ## WAVE 07 - Playable Scene Integration
 
-Status: WAVE_INTEGRATION_02_BUILD_VALIDATED
+Status: WAVE_INTEGRATION_03_BUILD_VALIDATED_SCENE_WIRED
 
 Latest validation:
 - Assembly-CSharp: PASS (before/after dotnet build, exit code 0, 0 warnings, 0 errors)
@@ -113,7 +113,10 @@ Latest validation:
 - Scene inventory: CREATED (`docs/validation/WAVE_07_SCENE_INVENTORY.md`, 34 scenes found)
 - Scene architecture decision: DOCUMENTATION_ONLY_HUMAN_UNITY_ACTION_REQUIRED
 - Manager audit: VALIDATED (`docs/validation/WAVE_INTEGRATION_02_MANAGER_AUDIT.md`)
-- Can start WAVE_INTEGRATION_03: YES, using `Assets/_Game/Scenes/FarmScene.unity` as the direct temporary target
+- Player/camera/movement baseline: VALIDATED_STRUCTURAL (`docs/validation/WAVE_INTEGRATION_03_PLAYER_CAMERA_MOVEMENT_REPORT.md`)
+- Human Unity wiring instructions: CREATED (`docs/validation/WAVE_INTEGRATION_03_HUMAN_UNITY_WIRING_INSTRUCTIONS.md`)
+- Human Play Mode checklist: PENDING (`docs/validation/WAVE_INTEGRATION_03_HUMAN_PLAYMODE_CHECKLIST.md`)
+- Can start WAVE_INTEGRATION_04: YES after human accepts residual Play Mode risk, using `Assets/_Game/Scenes/FarmScene.unity` as the direct temporary target
 
 ---
 
@@ -184,5 +187,5 @@ PROJECT_LOG + CURRENT_STATE conflict → prefer CURRENT_STATE; report mismatch
 
 ---
 
-*Last updated: 2026-06-08 (WAVE_INTEGRATION_02 scene architecture and persistent manager audit complete)*
-*Next update: after WAVE_INTEGRATION_03 or human Unity validation*
+*Last updated: 2026-06-08 (WAVE_INTEGRATION_03 player/camera/movement baseline structurally validated)*
+*Next update: after WAVE_INTEGRATION_04 or human Unity Play Mode validation*
