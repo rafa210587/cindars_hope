@@ -23,9 +23,9 @@
 | Item | Count | Status |
 |------|-------|--------|
 | Total active specs | 147 | 100% wave-based in `a_implementar/` |
-| Wave 00 (governance) | 1 (00.04) | READY |
-| Wave 01 (hardening) | 8 (01.01-01.07, 01Q) | BLOCKED until 00.04 report |
-| Wave 02-12 (core runtime) | ~93 | BLOCKED until 01Q |
+| Wave 00 (governance) | 1 (00.04) | ✓ COMPLETE / BUILD_VALIDATED |
+| Wave 01 (hardening) | 8 (01.01-01.07, 01Q) | ✓ COMPLETE / BUILD_VALIDATED; EditMode tests compiled, execution pending |
+| Wave 02-12 (core runtime) | ~93 | **BLOCKED** by generated-spec validation + final human validation |
 | Wave 17-24 (future/mapped) | ~32 | BLOCKED by policy |
 | WAVE 23 pets | 4 | HOLD/BLOCKED_SCOPE |
 | Legacy specs absorbed | 7 | In `absorvidas/legacy_pre_wave_reconciliation/` |
@@ -36,11 +36,13 @@
 ## Allowed Now
 
 ```
-00_spec_existing_implementation_audit.md
-  Type: Governance / Audit
-  Scope: No code changes; documents implementation status
-  Blocking: WAVE 01 (depends on 00.04 report)
-  Duration: Estimated 1-2 days
+Execute WAVE 01 EditMode tests (36 tests compiled)
+  Via: Unity Test Runner (Window → General → Test Runner → EditMode)
+  Or: Unity batchmode with RunUnityEditModeTests.ps1
+  Expected: All 36 tests PASS
+  
+Do NOT execute WAVE 02+ runtime specs
+  Blocked by: (1) Generated-spec validation issues, (2) Final human validation Phase 2-3
 ```
 
 ---
@@ -48,12 +50,9 @@
 ## Blocked Until Noted Condition
 
 ```
-WAVE 01.01-01.07, 01Q
-  Blocked: Until 00.04 execution report
-  Type: Hardening/Quality gate
-  
 WAVE 02-12 (93 core runtime specs)
-  Blocked: Until 01Q execution report
+  Blocked: Until (1) generated-spec validation fixed, (2) final human validation Phase 2-3 complete
+  Status: Cannot proceed with WAVE 02 implementation
   
 Generated-spec validation issues (naming/header)
   Blocked: WAVE 02+ runtime

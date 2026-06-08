@@ -23,7 +23,7 @@ namespace CindarsHope.Tests.EditMode.Core.Data
     /// </summary>
     public class StableIdsValidationTests
     {
-        private List<DataRegistrySO> _allRegistries;
+        private List<ScriptableObject> _allRegistries;
 
         [SetUp]
         public void SetUp()

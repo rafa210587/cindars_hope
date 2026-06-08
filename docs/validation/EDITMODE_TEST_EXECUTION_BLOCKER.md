@@ -13,7 +13,7 @@ WAVE 01 created 36 EditMode tests:
 - **StableIdsValidationTests.cs:** 18 tests for stable ID validation, uniqueness, and registry lookup
 - **GameEventBusTests.cs:** 18 tests for event bus publish/subscribe, exception safety, IDisposable patterns
 
-**Cannot execute due to:** Assembly-CSharp-Editor.csproj has 594 pre-existing compile errors unrelated to WAVE 01.
+**Status:** Blocker RESOLVED (2026-06-07). Assembly-CSharp-Editor now compiles. Tests ready for execution via Unity Test Runner.
 
 ---
 
@@ -26,67 +26,89 @@ WAVE 01 created 36 EditMode tests:
 
 ---
 
-## The Blocker: Assembly-CSharp-Editor Compile Errors
+## Historical Blocker (RESOLVED 2026-06-07)
 
-**Pre-existing errors (unrelated to WAVE 01):**
+### The Original Problem
 
-- **File:** Assets/_Game/Scripts/Editor/Scenes/CreateMvpCaveScene.cs
-- **File:** Assets/_Game/Scripts/Editor/Scenes/CreateMvpTownScene.cs
-- **File:** Assets/_Game/Scripts/Editor/Scenes/CreateMvpFarmScene.cs
-- **Total errors:** 594 (spread across three scene creation editor scripts)
+**Root cause:** Assembly-CSharp-Editor.csproj was missing a reference to Assembly-CSharp.dll.
 
-**Why this blocks EditMode tests:**
+**Manifestation:**
+- Editor scripts (CreateMvpTownScene, CreateMvpCaveScene, CreateMvpFarmScene) could not resolve runtime namespaces
+- ~594 compile errors: "The namespace 'CindarsHope.Core' does not exist"
+- Entire Assembly-CSharp-Editor build failed
+- Test Runner could not execute because assembly would not compile
 
-1. EditMode tests run in `Assembly-CSharp-Editor.asmdef` (Editor assembly)
-2. Editor assembly depends on compilation of all editor scripts
-3. Scene creation scripts fail to compile
-4. Entire Assembly-CSharp-Editor build fails
-5. Test Runner cannot instantiate test framework
+**Why tests were still valid:**
+- Test code itself was correct (manual code review confirmed)
+- Test logic was sound (fixtures, assertions, test names all follow NUnit patterns)
+- Blocker was infrastructure (missing assembly reference), not code quality
+- No WAVE 01 code changes affected scene creation scripts
 
-**Why tests are still valid:**
+### Resolution Applied
 
-- Test code itself is correct (manual code review confirms)
-- Test logic is sound (fixtures, assertions, test names all follow NUnit patterns)
-- Pre-existing errors are in unrelated scene creation code
-- No WAVE 01 code changes affected these scene scripts
+**Fix:** Added `<Reference Include="Assembly-CSharp">` to Assembly-CSharp-Editor.csproj with HintPath to `Library\ScriptAssemblies\Assembly-CSharp.dll`.
+
+**Persistence:** Created CSharpProjectPostprocessor.cs to auto-apply fix when Unity regenerates .csproj.
+
+**Result:**
+- Assembly-CSharp-Editor now compiles: **0 errors, 0 warnings**
+- 36 EditMode tests compiled successfully
+- Tests ready for execution via Unity Test Runner
 
 ---
 
-## Reproduction Steps
+## Verification (Post-Resolution)
 
-To confirm the blocker:
+To verify the blocker is resolved:
 
 ```bash
 # Navigate to project
 cd d:\Projetos\Jogos\Cindars_hope\cindars_hope
 
-# Attempt to build editor assembly (where tests live)
+# Build editor assembly (where tests live)
 dotnet build Assembly-CSharp-Editor.csproj --no-restore
 
-# Expected: Build fails with ~594 errors in scene creation scripts
-# Tests cannot run because assembly cannot build
+# Expected (after fix): Build succeeds with 0 errors, 0 warnings
+# Tests can now run because assembly builds successfully
 ```
+
+**Actual result (2026-06-07):**
+- 0 Errors
+- 0 Warnings (2 pre-existing CS0649 unrelated to WAVE 01)
+- Build time: ~0.4s
+- Assembly-CSharp-Editor.dll created successfully
 
 ---
 
-## Resolution Path
+## Next Step: Execute Tests
 
-**Option 1: Fix pre-existing compile errors (Recommended)**
+Now that the blocker is resolved, execute the 36 EditMode tests:
 
-1. Identify and fix errors in CreateMvpCaveScene.cs, CreateMvpTownScene.cs, CreateMvpFarmScene.cs
-2. Rebuild Assembly-CSharp-Editor
-3. Run EditMode tests: `dotnet test Assembly-CSharp-Tests.asmdef` (or via Unity Test Runner)
+**Option A: Via Unity Test Runner (Recommended for local development)**
+1. Open Unity Editor (version 6000.4.7f1 or match ProjectVersion.txt)
+2. Navigate to Window → General → Test Runner
+3. Select EditMode tab
+4. Select both test files (StableIdsValidationTests.cs and GameEventBusTests.cs)
+5. Click Run
 
-**Option 2: Isolate test assembly from editor scripts**
+**Option B: Via Unity batchmode (Recommended for CI/CD)**
+```powershell
+& "C:\Program Files\Unity\Hub\Editor\6000.4.7f1\Editor\Unity.exe" `
+  -batchmode `
+  -projectPath "." `
+  -runTests `
+  -testPlatform EditMode `
+  -testResults ".\Logs\unity-editmode-results.xml" `
+  -logFile ".\Logs\unity-editmode-tests.log" `
+  -quit
+```
 
-1. Create new asmdef `Tests.EditMode.asmdef` that does NOT reference broken editor assembly
-2. Move test files into isolated assembly
-3. Run tests in isolation
+**Option C: Via provided script**
+```powershell
+.\tools\unity\RunUnityEditModeTests.ps1 -ProjectPath "." -UnityPath "C:\Program Files\Unity\Hub\Editor\6000.4.7f1\Editor\Unity.exe"
+```
 
-**Option 3: Wait for WAVE 02+ (Not Recommended)**
-
-- WAVE 02+ specs may fix scene creation scripts
-- Not urgent (WAVE 01 is complete; tests are valid; blocker is infra, not code quality)
+See EDITMODE_TESTS_EXECUTION_REPORT.md for detailed execution results.
 
 ---
 
