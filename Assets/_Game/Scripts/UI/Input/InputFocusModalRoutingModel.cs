@@ -16,6 +16,10 @@ namespace CindarsHope.UI.InputRouting
         CraftingFocus,
         SkillTreeFocus,
         QuestLogFocus,
+        SocialLogFocus,
+        CalendarFocus,
+        MapFocus,
+        FonteFocus,
         SystemFocus,
         DebugFocus,
         // Auxiliary substates (not primary modal focus):
@@ -62,7 +66,7 @@ namespace CindarsHope.UI.InputRouting
                 ModalType.Pause => UIFocusState.SystemFocus,
                 ModalType.Death or ModalType.CorpseRecovery => UIFocusState.SystemFocus,
                 ModalType.CharacterEquipment => UIFocusState.InventoryFocus,
-                ModalType.AnyaFountain => UIFocusState.ShopFocus,
+                ModalType.AnyaFountain => UIFocusState.FonteFocus,
                 ModalType.CaveCheckpoint => UIFocusState.SystemFocus,
                 _ => UIFocusState.GameplayFocus
             };
