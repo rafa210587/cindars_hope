@@ -81,3 +81,5 @@ CLAUDE.local.md
 .claude/settings.local.json
 .claude/.runtime/
 .claude/worktrees/
+.claude/*.lock
+.claude/scheduled_tasks.lock

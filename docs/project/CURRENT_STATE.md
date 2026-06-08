@@ -89,7 +89,7 @@
 | WAVE 10 Main Progression / Fonte / Endgame | COMPLETED_WITH_KNOWN_LEGACY_GATES | 4/4 specs BUILD_VALIDATED; ~72 EditMode tests; Assembly-CSharp PASS; closeout: docs/validation/WAVE_10_CLOSEOUT_REPORT.md |
 | WAVE 11 UI / HUD / Inventory / Shop projections | COMPLETED_WITH_KNOWN_LEGACY_GATES | 4/4 specs BUILD_VALIDATED; ~96 new EditMode tests; closeout: docs/validation/WAVE_11_CLOSEOUT_REPORT.md |
 | WAVE 12 Final Validation Docs / Reconciliation | COMPLETED_WITH_KNOWN_LEGACY_GATES | 2/2 docs specs BUILD_VALIDATED; closeout: docs/validation/WAVE_12_CLOSEOUT_REPORT.md |
-| WAVE 13 Bestiary | NEXT | 2 specs pending |
+| WAVE 13 Bestiary | BLOCKED_BY_FUTURE_SCOPE | 4 specs — all have `_future_` suffix; `Status: Future mapped`; do not execute |
 | WAVE 17-24 Future | BLOCKED INTENTIONALLY | 32+ future/expansion specs marked; pets (WAVE 23) blocked as HOLD/BLOCKED_SCOPE |
 
 ---
@@ -161,5 +161,5 @@ PROJECT_LOG + CURRENT_STATE conflict → prefer CURRENT_STATE; report mismatch
 
 ---
 
-*Last updated: 2026-06-08 (WAVE 12 execution complete — 2/2 docs specs BUILD_VALIDATED; total ~596 EditMode tests)*  
-*Next update: after WAVE 13 execution begins*
+*Last updated: 2026-06-08 (Governance reconciliation — WAVE 13 blocked as FUTURE_SCOPE; lock file removed from git; audit complete)*  
+*Next update: after human authorizes next executable wave*

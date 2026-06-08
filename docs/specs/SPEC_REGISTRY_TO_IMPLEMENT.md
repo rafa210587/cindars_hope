@@ -69,8 +69,8 @@ Após geração da batch 36 (154 specs) e limpeza de legacy (7 specs absorvidas)
 | 09 | Quest/Player/Skills (duplicate 03) | 7 | **BUILD_VALIDATED** | ✓ 8/8 BUILD_VALIDATED; ~107 EditMode tests; closeout WAVE_09 |
 | 10 | Endgame/Memory/Fonte | 4 | **BUILD_VALIDATED** | ✓ 4/4 BUILD_VALIDATED; ~72 EditMode tests; closeout WAVE_10 |
 | 11 | UI Projections/HUD | 4 | **BUILD_VALIDATED** | ✓ 4/4 BUILD_VALIDATED; ~96 EditMode tests; closeout WAVE_11 |
-| 12 | Docs/Consolidation | 2 | IN_PROGRESS | Spec 1 in execution (2026-06-08) |
-| 13 | Bestiary | 2 | A implementar | Bestiary state/UI future hooks |
+| 12 | Docs/Consolidation | 2 | **BUILD_VALIDATED** | ✓ 2/2 BUILD_VALIDATED; closeout WAVE_12 |
+| 13 | Bestiary | 4 | **BLOCKED_BY_FUTURE_SCOPE** | All 4 specs have `_future_` suffix; `Status: Future mapped`; do not execute |
 
 **Total WAVE 02-12:** 93 specs core/runtime
 
@@ -143,11 +143,11 @@ Após a reconciliação das 154 specs novas wave-based, 7 specs antigas da era p
 - ✓ WAVE 10 — Main Progression/Fonte/Endgame (4/4 BUILD_VALIDATED; ~72 EditMode tests)
 - ✓ WAVE 11 — UI Projections/HUD/Input/Inventory/Menus (4/4 BUILD_VALIDATED; ~96 EditMode tests)
 
-**Em execução:**
-- WAVE 12 — Docs/Consolidation (2 specs, in progress 2026-06-08)
+**Concluídas:**
+- ✓ WAVE 12 — Docs/Consolidation (2 specs, BUILD_VALIDATED 2026-06-08)
 
-**Próxima execução permitida após WAVE 12:**
-- WAVE 13 — Bestiary (2 specs)
+**Bloqueadas (requerem autorização humana explícita):**
+- WAVE 13 — Bestiary (4 specs — BLOCKED_BY_FUTURE_SCOPE; todos `_future_` suffix)
 - WAVE 17-24 — Future Mapped (somente quando autorizado)
 
 **Permanentemente bloqueado:**

@@ -78,6 +78,15 @@
 
 ## Next Wave
 
-**WAVE 13 — Bestiary** (2 specs pending)
-- `13_spec_bestiary_knowledge_discovery_runtime.md`
-- `13_spec_bestiary_ui_projections_runtime.md`
+**WAVE 13 — Bestiary** — BLOCKED_BY_FUTURE_SCOPE
+
+All 4 WAVE 13 specs contain `_future_` in their filenames and carry `Status: Future mapped`.
+They must not be executed without explicit human authorization.
+
+Blocked specs:
+- `13_spec_bestiary_knowledge_state_save_load_future_runtime.md`
+- `13_spec_bestiary_knowledge_ui_projection_future_runtime.md`
+- `13_spec_knowledge_discovery_event_runtime_future.md`
+- `13_spec_knowledge_research_npc_books_ruins_services_future_runtime.md`
+
+See: `docs/validation/WAVE_13_BLOCKED_FUTURE_SCOPE_REPORT.md`
