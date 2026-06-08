@@ -1,6 +1,10 @@
 # Registry de specs a implementar
 
-Fonte unica de specs futuras: `docs/specs/a_implementar/`. A pasta raiz `specs/` foi removida e nao deve ser recriada.
+Fonte unica de specs executaveis: `docs/specs/a_implementar/`.
+
+Specs futuras/future mapped ficam fora da fila executavel em `docs/specs/a_implementar/features_futuras/` e devem ser ignoradas por automacoes de implementacao.
+
+A pasta raiz `specs/` foi removida e nao deve ser recriada.
 
 A antiga spec 00 de reconciliacao documental foi reclassificada como implementada/parcial em `docs/specs/implementados/spec_docs_001_single_source_specs_refinements_reconciliation_parcial.md`. Ela nao deve ser executada novamente.
 
@@ -30,7 +34,7 @@ docs/validation/FINAL_HUMAN_VALIDATION_BY_WAVE.md
 Após geração da batch 36 (154 specs) e limpeza de legacy (7 specs absorvidas), o registry foi reconciliado.
 - **Specs antes da limpeza:** 154 em `docs/specs/a_implementar/` (146 wave-based + 7 legacy + 1 README)
 - **Specs legacy absorvidas:** 7 movidas para `docs/specs/absorvidas/legacy_pre_wave_reconciliation/` (2026-06-07)
-- **Fila ativa após limpeza:** 147 specs wave-based em `docs/specs/a_implementar/`
+- **Fila ativa após limpeza:** 94 specs executaveis em `docs/specs/a_implementar/` (future specs movidas para `features_futuras/`)
 - **Review required:** 0
 - **Nenhuma spec movida para `implementados/`**
 
@@ -64,39 +68,99 @@ Após geração da batch 36 (154 specs) e limpeza de legacy (7 specs absorvidas)
 | 04 | UI Foundation | 21 | **BUILD_VALIDATED** | ✓ 14/14 reports; 3 BUILD_VALIDATED, 11 CONTRACT_ONLY; closeout WAVE_04 |
 | 05 | Farm/Inventory/Companion | 23 | **BUILD_VALIDATED** | ✓ 20/20 BUILD_VALIDATED; ~123 EditMode tests; closeout WAVE_05 |
 | 06 | Economy/Loot/Crafting | 8 | **BUILD_VALIDATED** | ✓ 8/8 BUILD_VALIDATED; ~75 EditMode tests; closeout WAVE_06 |
-| 07 | (merged to other waves) | 0 | — | DOES_NOT_EXIST — no 07_spec_*.md files found |
+| 07 | (reserved gap) | 0 | **DOES_NOT_EXIST_RESERVED_GAP** | No 07_spec_*.md files found; do not execute |
 | 08 | City/NPC/Dialogue | 4 | **BUILD_VALIDATED** | ✓ 4/4 BUILD_VALIDATED; ~61 EditMode tests; closeout WAVE_08 |
 | 09 | Quest/Player/Skills (duplicate 03) | 7 | **BUILD_VALIDATED** | ✓ 8/8 BUILD_VALIDATED; ~107 EditMode tests; closeout WAVE_09 |
 | 10 | Endgame/Memory/Fonte | 4 | **BUILD_VALIDATED** | ✓ 4/4 BUILD_VALIDATED; ~72 EditMode tests; closeout WAVE_10 |
 | 11 | UI Projections/HUD | 4 | **BUILD_VALIDATED** | ✓ 4/4 BUILD_VALIDATED; ~96 EditMode tests; closeout WAVE_11 |
 | 12 | Docs/Consolidation | 2 | **BUILD_VALIDATED** | ✓ 2/2 BUILD_VALIDATED; closeout WAVE_12 |
-| 13 | Bestiary | 4 | **BLOCKED_BY_FUTURE_SCOPE** | All 4 specs have `_future_` suffix; `Status: Future mapped`; do not execute |
+| 13 | Bestiary | 4 | **BLOCKED_BY_FUTURE_SCOPE_MOVED_TO_FEATURES_FUTURAS** | All 4 specs moved to `a_implementar/features_futuras/`; do not execute without explicit human decision |
 
 **Total WAVE 02-12:** 93 specs core/runtime
+**WAVE 07:** DOES_NOT_EXIST_RESERVED_GAP
+**Future specs moved out of active queue:** 53 files in `a_implementar/features_futuras/`
 
-### WAVE 17-24 — Future Mapped
+### Features futuras / Future mapped
 
-| Wave | Specs | Contagem | Status | Observacao |
-|---|---|---|---|---|
-| Future Specs | Mixed (_future suffix) | ~32 | Future mapped | Future/expansion specs marked explicitly |
-| 23 | Pets | 4 | **HOLD / BLOCKED_SCOPE** | **NÃO EXECUTAR** — pets bloqueados até explícita autorização |
+Specs futuras foram movidas para:
 
-**Total WAVE 17-24 + future:** ~32 specs future; 4 pets bloqueados
+`docs/specs/a_implementar/features_futuras/`
+
+Elas nao fazem parte da fila executavel atual. Loop/batch execution must ignore `features_futuras`.
+
+| Spec |
+|---|
+| `03_spec_quest_anti_softlock_validation_future.md` |
+| `03_spec_quest_bestiary_discovery_objectives_future.md` |
+| `03_spec_quest_debug_validation_tools_future.md` |
+| `03_spec_quest_fonte_main_progression_hooks_future.md` |
+| `04_spec_ui_menu_gamepad_navigation_future.md` |
+| `04_spec_ui_social_npc_detail_future_runtime.md` |
+| `13_spec_bestiary_knowledge_state_save_load_future_runtime.md` |
+| `13_spec_bestiary_knowledge_ui_projection_future_runtime.md` |
+| `13_spec_knowledge_discovery_event_runtime_future.md` |
+| `13_spec_knowledge_research_npc_books_ruins_services_future_runtime.md` |
+| `14_spec_companion_cave_assist_brain_balance_future_runtime.md` |
+| `14_spec_companion_eligibility_recruitment_state_save_future_runtime.md` |
+| `14_spec_companion_farm_jobs_board_automation_future_runtime.md` |
+| `14_spec_companion_ui_hud_invite_visit_dialogue_hooks_future_runtime.md` |
+| `15_spec_calendar_public_board_forecast_secret_visibility_future_runtime.md` |
+| `15_spec_festival_event_minigames_seasonal_activities_future_runtime.md` |
+| `15_spec_seasonal_economy_restock_demand_modifiers_future_runtime.md` |
+| `15_spec_weather_lunar_cave_deep_modifiers_future_runtime.md` |
+| `16_spec_cave_final_save_restriction_policy_future_runtime.md` |
+| `16_spec_cave_snapshot_save_provider_restore_order_future_runtime.md` |
+| `16_spec_final_choice_cinematic_presentation_future_runtime.md` |
+| `16_spec_postgame_world_state_modifiers_endings_future_runtime.md` |
+| `17_spec_partner_helper_companion_bridge_future_runtime.md` |
+| `17_spec_social_dialogue_visits_personal_quest_hooks_future_runtime.md` |
+| `17_spec_social_gifts_preferences_limits_future_runtime.md` |
+| `17_spec_social_relationship_state_save_future_runtime.md` |
+| `18_spec_ui_dialogue_choice_confirmation_advanced_future_runtime.md` |
+| `18_spec_ui_localization_text_keys_icon_conventions_future_runtime.md` |
+| `18_spec_ui_notification_journal_feedback_history_future_runtime.md` |
+| `18_spec_ui_system_menu_options_accessibility_hooks_future_runtime.md` |
+| `19_spec_level_100_boss_gate_preconditions_future_runtime.md` |
+| `19_spec_level_101_encounters_rewards_anti_farm_future_runtime.md` |
+| `19_spec_level_101_fixed_sequence_chamber_runtime_future.md` |
+| `19_spec_level_101_ui_save_portal_handoff_future_runtime.md` |
+| `20_spec_dormant_mana_root_endgame_farm_future_runtime.md` |
+| `20_spec_living_water_mana_growth_conditions_future_runtime.md` |
+| `20_spec_mana_economy_crafting_magic_anti_exploit_future_runtime.md` |
+| `20_spec_mana_lunar_events_corruption_risk_future_runtime.md` |
+| `21_spec_farm_automation_plan_blueprint_scheduling_future_runtime.md` |
+| `21_spec_farm_automation_reports_risk_cost_balance_future_runtime.md` |
+| `21_spec_farm_automation_storage_io_idempotency_future_runtime.md` |
+| `21_spec_farm_full_automation_governor_future_runtime.md` |
+| `22_spec_bestiary_combat_hud_known_weakness_overlay_future_runtime.md` |
+| `22_spec_bestiary_compendium_knowledge_log_ui_future_runtime.md` |
+| `22_spec_knowledge_books_collections_documentation_achievements_future_runtime.md` |
+| `22_spec_research_service_npc_laboratory_knowledge_unlock_future_runtime.md` |
+| `23_spec_pet_cave_alerts_treasure_trap_light_support_future_runtime.md` |
+| `23_spec_pet_core_identity_bond_routine_save_future_runtime.md` |
+| `23_spec_pet_home_area_feeding_items_farm_hints_future_runtime.md` |
+| `23_spec_pet_hud_feedback_data_assets_economy_future_runtime.md` |
+| `24_spec_cave_weather_lunar_deep_modifiers_future_runtime.md` |
+| `24_spec_companion_advanced_party_equipment_tactical_ai_future_runtime.md` |
+| `24_spec_festival_minigames_event_framework_future_runtime.md` |
+
+**Total future moved:** 53 specs
+**Pets:** WAVE 23 remains HOLD / BLOCKED_SCOPE
 
 ### Resumo (Atualizado 2026-06-07 pós-limpeza legacy)
 
 - ✓ **Specs antes da limpeza:** 154 em `docs/specs/a_implementar/`
 - ✓ **Legacy specs absorvidas:** 7 em `docs/specs/absorvidas/legacy_pre_wave_reconciliation/`
-- ✓ **Fila ativa após limpeza:** 147 specs wave-based em `docs/specs/a_implementar/`
+- ✓ **Fila ativa após limpeza:** 94 specs executaveis em `docs/specs/a_implementar/` (future specs movidas para `features_futuras/`)
 - ✓ **Governança:** 1 spec (00.04)
 - ✓ **Hardening/Quality gate:** 8 specs (01.01-01Q)
 - ✓ **Core runtime:** 93 specs (02-12)
 - ✓ **Documentação/consolidação:** 2 specs (12)
-- ✓ **Future/mapeado:** ~32 specs (17-24 + future suffix)
+- ✓ **Future/mapeado:** 53 specs movidas para `docs/specs/a_implementar/features_futuras/`
 - ✓ **Pets bloqueados:** 4 (WAVE 23)
 - ✓ **Review required:** 0
 - ✓ **Nenhuma spec ativa obsoleta**
-- ✓ **Status:** READY_FOR_00_04
+- ✓ **Status:** ACTIVE_QUEUE_RECONCILED_FUTURE_MOVED
 
 ---
 
@@ -125,7 +189,7 @@ Após a reconciliação das 154 specs novas wave-based, 7 specs antigas da era p
 - ✓ **Specs antes de limpeza:** 154 em `a_implementar/` (154 novas wave-based + 7 antigas)
 - ✓ **Specs após limpeza:** 147 em `a_implementar/` (todas new wave-based)
 - ✓ **Specs absorvidas:** 7 em `absorvidas/legacy_pre_wave_reconciliation/`
-- ✓ **Fila ativa:** 147 specs (100% wave-based)
+- ✓ **Fila ativa:** 94 specs executaveis (future specs movidas para `features_futuras/`)
 
 ### Status de Execução (Atualizado 2026-06-08)
 
@@ -137,7 +201,7 @@ Após a reconciliação das 154 specs novas wave-based, 7 specs antigas da era p
 - ✓ WAVE 04 — UI Foundation (14/14 reports; BUILD_VALIDATED + CONTRACT_ONLY)
 - ✓ WAVE 05 — Farm Gameplay Core (20/20 BUILD_VALIDATED; ~123 EditMode tests)
 - ✓ WAVE 06 — Economy/Loot/Crafting/Shop/Cave (8/8 BUILD_VALIDATED; ~75 EditMode tests)
-- (WAVE 07 NÃO EXISTE — sem specs 07_spec_*.md)
+- (WAVE 07 NÃO EXISTE — DOES_NOT_EXIST_RESERVED_GAP; sem specs 07_spec_*.md)
 - ✓ WAVE 08 — City/NPC/Dialogue/Services (4/4 BUILD_VALIDATED; ~61 EditMode tests)
 - ✓ WAVE 09 — Quest System (8/8 BUILD_VALIDATED; ~107 EditMode tests)
 - ✓ WAVE 10 — Main Progression/Fonte/Endgame (4/4 BUILD_VALIDATED; ~72 EditMode tests)
@@ -147,11 +211,11 @@ Após a reconciliação das 154 specs novas wave-based, 7 specs antigas da era p
 - ✓ WAVE 12 — Docs/Consolidation (2 specs, BUILD_VALIDATED 2026-06-08)
 
 **Bloqueadas (requerem autorização humana explícita):**
-- WAVE 13 — Bestiary (4 specs — BLOCKED_BY_FUTURE_SCOPE; todos `_future_` suffix)
-- WAVE 17-24 — Future Mapped (somente quando autorizado)
+- WAVE 13 — Bestiary (4 specs — BLOCKED_BY_FUTURE_SCOPE_MOVED_TO_FEATURES_FUTURAS)
+- Features futuras / Future mapped em `docs/specs/a_implementar/features_futuras/` (somente quando autorizado)
 
 **Permanentemente bloqueado:**
 - WAVE 23 (pets) — HOLD/BLOCKED_SCOPE
-- Specs com sufixo _future — NÃO EXECUTAR
+- Specs com sufixo _future em `features_futuras/` — NÃO EXECUTAR
 - Future/mapped (WAVE 17-24) bloqueado por política
 - Pets (WAVE 23) bloqueado como HOLD/BLOCKED_SCOPE

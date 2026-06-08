@@ -83,14 +83,22 @@
 | WAVE 04 UI Foundation Phase 1 | PHASE1_COMPLETED_WITH_CONTRACT_ONLY_CORE | 14 of 14 specs have execution reports; 3 BUILD_VALIDATED (SPECS 1-2, 8), 11 CONTRACT_ONLY (SPECS 3-7,9,11-16); SPEC 8 fully reworked (10 focus states, modal stack, 47 tests); Assembly builds PASS; quality check PASS; docs validation PASS (legacy errors only) |
 | WAVE 05 Farm Gameplay Core | COMPLETED_WITH_KNOWN_LEGACY_GATES | 20/20 specs executed; all BUILD_VALIDATED with RUNTIME_VALIDATED_WITH_KNOWN_LEGACY_GATES; ~123 EditMode tests; Assembly-CSharp PASS; closeout: docs/validation/WAVE_05_CLOSEOUT_REPORT.md |
 | WAVE 06 Economy/Loot/Crafting/Shop/Cave Foundation | COMPLETED_WITH_KNOWN_LEGACY_GATES | 8/8 specs executed; ~75 EditMode tests; Assembly-CSharp PASS; closeout: docs/validation/WAVE_06_CLOSEOUT_REPORT.md |
-| WAVE 07 | DOES_NOT_EXIST | No 07_spec_*.md files found; skipped to WAVE 08 |
+| WAVE 07 | DOES_NOT_EXIST_RESERVED_GAP | No 07_spec_*.md files found in docs/specs; reserved numbering gap; must not be executed |
 | WAVE 08 City/NPC/Dialogue/Services | COMPLETED_WITH_KNOWN_LEGACY_GATES | 4/4 specs BUILD_VALIDATED; ~61 EditMode tests; Assembly-CSharp PASS; closeout: docs/validation/WAVE_08_CLOSEOUT_REPORT.md |
 | WAVE 09 Quest System | COMPLETED_WITH_KNOWN_LEGACY_GATES | 8/8 specs BUILD_VALIDATED; ~107 EditMode tests; Assembly-CSharp PASS; closeout: docs/validation/WAVE_09_CLOSEOUT_REPORT.md |
 | WAVE 10 Main Progression / Fonte / Endgame | COMPLETED_WITH_KNOWN_LEGACY_GATES | 4/4 specs BUILD_VALIDATED; ~72 EditMode tests; Assembly-CSharp PASS; closeout: docs/validation/WAVE_10_CLOSEOUT_REPORT.md |
 | WAVE 11 UI / HUD / Inventory / Shop projections | COMPLETED_WITH_KNOWN_LEGACY_GATES | 4/4 specs BUILD_VALIDATED; ~96 new EditMode tests; closeout: docs/validation/WAVE_11_CLOSEOUT_REPORT.md |
 | WAVE 12 Final Validation Docs / Reconciliation | COMPLETED_WITH_KNOWN_LEGACY_GATES | 2/2 docs specs BUILD_VALIDATED; closeout: docs/validation/WAVE_12_CLOSEOUT_REPORT.md |
-| WAVE 13 Bestiary | BLOCKED_BY_FUTURE_SCOPE | 4 specs — all have `_future_` suffix; `Status: Future mapped`; do not execute |
-| WAVE 17-24 Future | BLOCKED INTENTIONALLY | 32+ future/expansion specs marked; pets (WAVE 23) blocked as HOLD/BLOCKED_SCOPE |
+| WAVE 13 Bestiary | BLOCKED_BY_FUTURE_SCOPE_MOVED_TO_FEATURES_FUTURAS | 4 specs moved to `docs/specs/a_implementar/features_futuras/`; do not execute without explicit human decision |
+| WAVE 17-24 Future | BLOCKED INTENTIONALLY / MOVED_TO_FEATURES_FUTURAS | Future/expansion specs moved to `docs/specs/a_implementar/features_futuras/`; pets (WAVE 23) blocked as HOLD/BLOCKED_SCOPE |
+
+---
+
+## Future Specs Automation Rule
+
+Specs futuras foram movidas para `docs/specs/a_implementar/features_futuras/` e nao sao executaveis por loop automatico.
+
+Automation must ignore `docs/specs/a_implementar/features_futuras/` unless a human explicitly moves a spec back to `docs/specs/a_implementar/` and updates the registry.
 
 ---
 
