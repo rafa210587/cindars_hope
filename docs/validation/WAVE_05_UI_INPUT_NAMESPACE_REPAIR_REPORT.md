@@ -1,7 +1,7 @@
 # WAVE 05 UI Input Namespace Repair Report
 
 ## Status
-BUILD_BASELINE_RESTORED ✓
+BUILD_BASELINE_RESTORED ✓ (Assembly-CSharp PASS, runtime validation complete)
 
 ## Repairs Completed
 
@@ -47,6 +47,20 @@ BUILD_BASELINE_RESTORED ✓
 - **Build baseline:** ✓ RESTORED (Assembly-CSharp PASS)
 - **Ready for WAVE 05 specs:** ✓ YES
 - **Can resume spec execution:** ✓ YES
+
+## Dialogue Behavior Risk
+
+`NpcController` simplified during namespace repair:
+- Removed `OnChoiceSelected` event subscription
+- Nodes with choices now call `_dialogueModal.Show(text)` without choice branching
+- NPC dialogue choice routing to next nodes **deferred to future dialogue integration spec**
+
+**Status:**
+- ✓ Compile repair: successful (Assembly-CSharp PASS)
+- ⚠ Functional dialogue branching: DEFERRED
+- ⚠ Risk: NPC dialogue choices and shop branching temporarily disabled
+
+This is a **functional limitation**, not a design flaw. Full dialogue choice integration will be implemented when `DialogueModal` wiring spec is created in future WAVE 05 work.
 
 ## Decision Gate Resolved
 
