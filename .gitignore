@@ -22,6 +22,7 @@ crashlytics-build.properties
 *.sln
 *.suo
 *.tmp
+*.bak
 *.user
 *.userprefs
 *.pidb

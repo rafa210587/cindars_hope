@@ -68,7 +68,7 @@ Após geração da batch 36 (154 specs) e limpeza de legacy (7 specs absorvidas)
 | 04 | UI Foundation | 21 | **BUILD_VALIDATED** | ✓ 14/14 reports; 3 BUILD_VALIDATED, 11 CONTRACT_ONLY; closeout WAVE_04 |
 | 05 | Farm/Inventory/Companion | 23 | **BUILD_VALIDATED** | ✓ 20/20 BUILD_VALIDATED; ~123 EditMode tests; closeout WAVE_05 |
 | 06 | Economy/Loot/Crafting | 8 | **BUILD_VALIDATED** | ✓ 8/8 BUILD_VALIDATED; ~75 EditMode tests; closeout WAVE_06 |
-| 07 | (reserved gap) | 0 | **DOES_NOT_EXIST_RESERVED_GAP** | No 07_spec_*.md files found; do not execute |
+| 07 | Playable Scene Integration | 1 baseline gate executed | **07.01_BASELINE_COMPLETE** | Human-authorized attached 07.01 spec executed; no gameplay/scenes/assets changed; scene inventory created |
 | 08 | City/NPC/Dialogue | 4 | **BUILD_VALIDATED** | ✓ 4/4 BUILD_VALIDATED; ~61 EditMode tests; closeout WAVE_08 |
 | 09 | Quest/Player/Skills (duplicate 03) | 7 | **BUILD_VALIDATED** | ✓ 8/8 BUILD_VALIDATED; ~107 EditMode tests; closeout WAVE_09 |
 | 10 | Endgame/Memory/Fonte | 4 | **BUILD_VALIDATED** | ✓ 4/4 BUILD_VALIDATED; ~72 EditMode tests; closeout WAVE_10 |
@@ -77,7 +77,7 @@ Após geração da batch 36 (154 specs) e limpeza de legacy (7 specs absorvidas)
 | 13 | Bestiary | 4 | **BLOCKED_BY_FUTURE_SCOPE_MOVED_TO_FEATURES_FUTURAS** | All 4 specs moved to `a_implementar/features_futuras/`; do not execute without explicit human decision |
 
 **Total WAVE 02-12:** 93 specs core/runtime
-**WAVE 07:** DOES_NOT_EXIST_RESERVED_GAP
+**WAVE 07:** 07.01_BASELINE_COMPLETE (human-authorized attached spec; next 07.02 may start after manual Unity validation)
 **Future specs moved out of active queue:** 53 files in `a_implementar/features_futuras/`
 
 ### Features futuras / Future mapped
@@ -201,7 +201,7 @@ Após a reconciliação das 154 specs novas wave-based, 7 specs antigas da era p
 - ✓ WAVE 04 — UI Foundation (14/14 reports; BUILD_VALIDATED + CONTRACT_ONLY)
 - ✓ WAVE 05 — Farm Gameplay Core (20/20 BUILD_VALIDATED; ~123 EditMode tests)
 - ✓ WAVE 06 — Economy/Loot/Crafting/Shop/Cave (8/8 BUILD_VALIDATED; ~75 EditMode tests)
-- (WAVE 07 NÃO EXISTE — DOES_NOT_EXIST_RESERVED_GAP; sem specs 07_spec_*.md)
+- WAVE 07.01 - Unity Clean Baseline + Scene Inventory (BUILD_VALIDATED; attached spec authorized by human; no scene/prefab/asset changes)
 - ✓ WAVE 08 — City/NPC/Dialogue/Services (4/4 BUILD_VALIDATED; ~61 EditMode tests)
 - ✓ WAVE 09 — Quest System (8/8 BUILD_VALIDATED; ~107 EditMode tests)
 - ✓ WAVE 10 — Main Progression/Fonte/Endgame (4/4 BUILD_VALIDATED; ~72 EditMode tests)
