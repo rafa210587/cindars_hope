@@ -68,7 +68,7 @@ Após geração da batch 36 (154 specs) e limpeza de legacy (7 specs absorvidas)
 | 04 | UI Foundation | 21 | **BUILD_VALIDATED** | ✓ 14/14 reports; 3 BUILD_VALIDATED, 11 CONTRACT_ONLY; closeout WAVE_04 |
 | 05 | Farm/Inventory/Companion | 23 | **BUILD_VALIDATED** | ✓ 20/20 BUILD_VALIDATED; ~123 EditMode tests; closeout WAVE_05 |
 | 06 | Economy/Loot/Crafting | 8 | **BUILD_VALIDATED** | ✓ 8/8 BUILD_VALIDATED; ~75 EditMode tests; closeout WAVE_06 |
-| 07 | Playable Scene Integration | 4 integration gates executed | **WAVE_INTEGRATION_04_BUILD_VALIDATED_SCENE_WIRED** | 01 baseline + 02 architecture/manager audit + 03 player/camera/movement + 04 FarmScene foundation zones complete; Play Mode deferred to human Unity action |
+| 07 | Playable Scene Integration | 5 integration gates executed | **WAVE_INTEGRATION_05_BUILD_VALIDATED_SCENE_WIRED_WITH_TEMP_SMOKE_HOOK** | 01 baseline + 02 architecture/manager audit + 03 player/camera/movement + 04 FarmScene foundation zones + 05 crop interactable slice complete; Play Mode deferred to human Unity action |
 | 08 | City/NPC/Dialogue | 4 | **BUILD_VALIDATED** | ✓ 4/4 BUILD_VALIDATED; ~61 EditMode tests; closeout WAVE_08 |
 | 09 | Quest/Player/Skills (duplicate 03) | 7 | **BUILD_VALIDATED** | ✓ 8/8 BUILD_VALIDATED; ~107 EditMode tests; closeout WAVE_09 |
 | 10 | Endgame/Memory/Fonte | 4 | **BUILD_VALIDATED** | ✓ 4/4 BUILD_VALIDATED; ~72 EditMode tests; closeout WAVE_10 |
@@ -77,7 +77,7 @@ Após geração da batch 36 (154 specs) e limpeza de legacy (7 specs absorvidas)
 | 13 | Bestiary | 4 | **BLOCKED_BY_FUTURE_SCOPE_MOVED_TO_FEATURES_FUTURAS** | All 4 specs moved to `a_implementar/features_futuras/`; do not execute without explicit human decision |
 
 **Total WAVE 02-12:** 93 specs core/runtime
-**WAVE 07:** WAVE_INTEGRATION_04_BUILD_VALIDATED_SCENE_WIRED (next WAVE_INTEGRATION_05 may connect first farm interactables to `FarmSceneFoundationZones` stable IDs after human accepts residual Play Mode risk)
+**WAVE 07:** WAVE_INTEGRATION_05_BUILD_VALIDATED_SCENE_WIRED_WITH_TEMP_SMOKE_HOOK (next WAVE_INTEGRATION_06 may continue scene integration after human accepts residual Play Mode risk)
 **Future specs moved out of active queue:** 53 files in `a_implementar/features_futuras/`
 
 ### Features futuras / Future mapped
@@ -205,6 +205,7 @@ Após a reconciliação das 154 specs novas wave-based, 7 specs antigas da era p
 - WAVE_INTEGRATION_02 - Scene Architecture e Persistent Managers (BUILD_VALIDATED; manager audit and architecture decision complete)
 - WAVE_INTEGRATION_03 - Player Spawn, Camera, and Movement Baseline (BUILD_VALIDATED_SCENE_WIRED; FarmScene structural wiring validated, Play Mode pending human Unity action)
 - WAVE_INTEGRATION_04 - FarmScene Rebuild Foundation (BUILD_VALIDATED_SCENE_WIRED; FarmScene foundation zone markers added, Play Mode pending human Unity action)
+- WAVE_INTEGRATION_05 - Farm Interactables/Crops/Soil/Water/Harvest (BUILD_VALIDATED_SCENE_WIRED_WITH_TEMP_SMOKE_HOOK; existing FarmPlot runtime reused, first crop loop wired, Play Mode pending human Unity action)
 - ✓ WAVE 08 — City/NPC/Dialogue/Services (4/4 BUILD_VALIDATED; ~61 EditMode tests)
 - ✓ WAVE 09 — Quest System (8/8 BUILD_VALIDATED; ~107 EditMode tests)
 - ✓ WAVE 10 — Main Progression/Fonte/Endgame (4/4 BUILD_VALIDATED; ~72 EditMode tests)

@@ -21,7 +21,8 @@ namespace CindarsHope.Farm
             Water,
             Plant,
             Harvest,
-            Status
+            Status,
+            AdvanceGrowth
         }
 
         private readonly struct FarmMenuAction
@@ -29,12 +30,14 @@ namespace CindarsHope.Farm
             public readonly FarmMenuActionType Type;
             public readonly string Label;
             public readonly string SeedId;
+            public readonly string SeedItemId;
 
-            public FarmMenuAction(FarmMenuActionType type, string label, string seedId = "")
+            public FarmMenuAction(FarmMenuActionType type, string label, string seedId = "", string seedItemId = "")
             {
                 Type = type;
                 Label = label;
                 SeedId = seedId ?? string.Empty;
+                SeedItemId = seedItemId ?? string.Empty;
             }
         }
 
@@ -45,6 +48,9 @@ namespace CindarsHope.Farm
         [SerializeField] private InventoryManager _inventoryManager;
         [SerializeField] private SeedDatabaseSO _seedDatabase;
         [SerializeField] private Player.StaminaManager _staminaManager;
+        // TODO_INTEGRATION_NOT_FINAL: WAVE_INTEGRATION_05 smoke hook. Remove when final farm tool/equipment flow covers the whole crop loop.
+        [SerializeField] private bool _temporarySequentialSliceMode;
+        [SerializeField] private string _temporarySequentialSeedId = "seed_carrot";
 
         private readonly List<FarmMenuAction> _menuActions = new List<FarmMenuAction>();
         private Sprite _baseSprite;
@@ -340,7 +346,7 @@ namespace CindarsHope.Farm
             switch (State)
             {
                 case FarmPlotState.Raw:
-                    if (HasRequiredTool(ToolType.Hoe))
+                    if (HasRequiredTool(ToolType.Hoe) || _temporarySequentialSliceMode)
                     {
                         _menuActions.Add(new FarmMenuAction(FarmMenuActionType.Till, "Arar solo"));
                     }
@@ -351,7 +357,7 @@ namespace CindarsHope.Farm
 
                     break;
                 case FarmPlotState.TilledDry:
-                    if (HasRequiredTool(ToolType.WateringCan))
+                    if (HasRequiredTool(ToolType.WateringCan) || _temporarySequentialSliceMode)
                     {
                         _menuActions.Add(new FarmMenuAction(FarmMenuActionType.Water, "Molhar solo"));
                     }
@@ -362,7 +368,7 @@ namespace CindarsHope.Farm
                     AddPlantActions();
                     break;
                 case FarmPlotState.PlantedDry:
-                    if (HasRequiredTool(ToolType.WateringCan))
+                    if (HasRequiredTool(ToolType.WateringCan) || _temporarySequentialSliceMode)
                     {
                         _menuActions.Add(new FarmMenuAction(FarmMenuActionType.Water, "Molhar solo"));
                     }
@@ -373,7 +379,14 @@ namespace CindarsHope.Farm
 
                     break;
                 case FarmPlotState.PlantedWet:
-                    _menuActions.Add(new FarmMenuAction(FarmMenuActionType.Status, "Ja irrigado"));
+                    if (_temporarySequentialSliceMode)
+                    {
+                        _menuActions.Add(new FarmMenuAction(FarmMenuActionType.AdvanceGrowth, "Simular crescimento"));
+                    }
+                    else
+                    {
+                        _menuActions.Add(new FarmMenuAction(FarmMenuActionType.Status, "Ja irrigado"));
+                    }
                     break;
                 case FarmPlotState.ReadyToHarvest:
                     _menuActions.Add(new FarmMenuAction(FarmMenuActionType.Harvest, "Colher"));
@@ -399,7 +412,7 @@ namespace CindarsHope.Farm
                     continue;
                 }
 
-                if (!_seedDatabase.TryGetById(item.Key, out var seedData) || seedData == null)
+                if (!TryResolveSeedDataForItem(item.Key, out var seedData) || seedData == null)
                 {
                     continue;
                 }
@@ -407,12 +420,12 @@ namespace CindarsHope.Farm
                 var label = seedData.SeedItem != null && !string.IsNullOrWhiteSpace(seedData.SeedItem.DisplayName)
                     ? $"Plantar {seedData.SeedItem.DisplayName}"
                     : $"Plantar {item.Key}";
-                _menuActions.Add(new FarmMenuAction(FarmMenuActionType.Plant, label, item.Key));
+                _menuActions.Add(new FarmMenuAction(FarmMenuActionType.Plant, label, seedData.Id, item.Key));
             }
 
             if (_menuActions.Count == 0)
             {
-                _feedback = "No seeds in inventory.";
+                AddTemporaryPlantAction();
             }
         }
 
@@ -434,13 +447,16 @@ namespace CindarsHope.Farm
                     TryWater();
                     break;
                 case FarmMenuActionType.Plant:
-                    TryPlantSeed(action.SeedId);
+                    TryPlantSeed(action.SeedId, action.SeedItemId);
                     break;
                 case FarmMenuActionType.Harvest:
                     TryHarvest();
                     break;
                 case FarmMenuActionType.Status:
                     PublishFeedback("Plot already watered.");
+                    break;
+                case FarmMenuActionType.AdvanceGrowth:
+                    TryAdvanceTemporaryGrowth();
                     break;
             }
 
@@ -454,7 +470,7 @@ namespace CindarsHope.Farm
         {
             const int tillStaminaCost = 16;
 
-            if (State != FarmPlotState.Raw || !HasRequiredTool(ToolType.Hoe))
+            if (State != FarmPlotState.Raw || (!HasRequiredTool(ToolType.Hoe) && !_temporarySequentialSliceMode))
             {
                 PublishFeedback("Cannot till this plot.");
                 return false;
@@ -481,7 +497,7 @@ namespace CindarsHope.Farm
         {
             const int waterStaminaCost = 8;
 
-            if (!HasRequiredTool(ToolType.WateringCan))
+            if (!HasRequiredTool(ToolType.WateringCan) && !_temporarySequentialSliceMode)
             {
                 PublishFeedback("Watering Can required.");
                 return false;
@@ -521,7 +537,7 @@ namespace CindarsHope.Farm
             return false;
         }
 
-        private bool TryPlantSeed(string seedId)
+        private bool TryPlantSeed(string seedId, string seedItemId)
         {
             const int plantStaminaCost = 4;
 
@@ -543,7 +559,9 @@ namespace CindarsHope.Farm
                 return false;
             }
 
-            if (!_inventoryManager.HasItem(seedId))
+            var inventorySeedId = string.IsNullOrWhiteSpace(seedItemId) ? seedId : seedItemId;
+            var temporarySeedBypass = _temporarySequentialSliceMode && !_inventoryManager.HasItem(inventorySeedId);
+            if (!temporarySeedBypass && !_inventoryManager.HasItem(inventorySeedId))
             {
                 PublishFeedback("Seed not in inventory.");
                 return false;
@@ -555,7 +573,7 @@ namespace CindarsHope.Farm
                 return false;
             }
 
-            if (!_inventoryManager.RemoveItem(seedId, 1))
+            if (!temporarySeedBypass && !_inventoryManager.RemoveItem(inventorySeedId, 1))
             {
                 PublishFeedback("Could not consume seed.");
                 return false;
@@ -563,7 +581,11 @@ namespace CindarsHope.Farm
 
             if (!TrySpendStamina(plantStaminaCost))
             {
-                _inventoryManager.AddItem(seedId, 1);
+                if (!temporarySeedBypass)
+                {
+                    _inventoryManager.AddItem(inventorySeedId, 1);
+                }
+
                 PublishFeedback("Not enough stamina to plant.");
                 return false;
             }
@@ -576,6 +598,30 @@ namespace CindarsHope.Farm
             GameEventBus.Publish(new SeedPlantedEvent(seedId, GetTilePosition(), _currentDay));
             Debug.Log($"FarmPlot {_plotIndex} planted seed '{seedId}'.", this);
             return true;
+        }
+
+        private bool TryAdvanceTemporaryGrowth()
+        {
+            if (!_temporarySequentialSliceMode || State != FarmPlotState.PlantedWet)
+            {
+                PublishFeedback("Growth simulation unavailable.");
+                return false;
+            }
+
+            if (!TryGetPlantedSeedData(out var seedData))
+            {
+                PublishFeedback("Seed data unavailable.");
+                return false;
+            }
+
+            var maxSteps = Mathf.Max(1, seedData.GrowthDays + 1);
+            for (var step = 0; step < maxSteps && State == FarmPlotState.PlantedWet; step++)
+            {
+                AdvanceGrowth();
+            }
+
+            PublishFeedback(State == FarmPlotState.ReadyToHarvest ? "Crop ready for harvest." : "Crop growth simulated.");
+            return State == FarmPlotState.ReadyToHarvest;
         }
 
         private void OnDayStarted(DayStartedEvent evt)
@@ -804,6 +850,57 @@ namespace CindarsHope.Farm
             }
 
             return true;
+        }
+
+        private bool TryResolveSeedDataForItem(string seedItemId, out SeedDataSO seedData)
+        {
+            seedData = null;
+            if (string.IsNullOrWhiteSpace(seedItemId) || _seedDatabase == null)
+            {
+                return false;
+            }
+
+            if (_seedDatabase.TryGetById(seedItemId, out seedData) && seedData != null)
+            {
+                return true;
+            }
+
+            foreach (var candidate in _seedDatabase.All)
+            {
+                if (candidate == null || candidate.SeedItem == null)
+                {
+                    continue;
+                }
+
+                if (candidate.SeedItem.Id == seedItemId)
+                {
+                    seedData = candidate;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private void AddTemporaryPlantAction()
+        {
+            if (!_temporarySequentialSliceMode)
+            {
+                _feedback = "No seeds in inventory.";
+                return;
+            }
+
+            if (!_seedDatabase.TryGetById(_temporarySequentialSeedId, out var seedData) || seedData == null)
+            {
+                _feedback = "Temporary seed not registered.";
+                return;
+            }
+
+            var label = seedData.SeedItem != null && !string.IsNullOrWhiteSpace(seedData.SeedItem.DisplayName)
+                ? $"Plantar {seedData.SeedItem.DisplayName}"
+                : $"Plantar {seedData.Id}";
+            var seedItemId = seedData.SeedItem != null ? seedData.SeedItem.Id : string.Empty;
+            _menuActions.Add(new FarmMenuAction(FarmMenuActionType.Plant, label, seedData.Id, seedItemId));
         }
 
         private bool HasRequiredTool(ToolType toolType)

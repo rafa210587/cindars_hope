@@ -75,7 +75,7 @@ namespace CindarsHope.Editor.SceneCreation
             CreateFarmSpawnPoints(playerTransform);
             // Camera background is the uniform white playfield; do not create a giant
             // ground sprite because it reads as a horizon/central rectangle in MVP art.
-            var farmPlotRegistry = CreateFarmPlots(inventoryManager);
+            var farmPlotRegistry = CreateFarmPlots(inventoryManager, bootstrap.GetComponent<StaminaManager>());
             var treeRegistry = CreateTrees(inventoryManager);
             var itemPickupRegistry = CreateItemPickups(inventoryManager);
             var craftingModal = CreateCraftingUi(craftingRuntime, modalManager);
@@ -891,7 +891,7 @@ namespace CindarsHope.Editor.SceneCreation
             EditorUtility.SetDirty(debugHud);
         }
 
-        private static FarmPlotRegistry CreateFarmPlots(InventoryManager inventoryManager)
+        private static FarmPlotRegistry CreateFarmPlots(InventoryManager inventoryManager, StaminaManager staminaManager)
         {
             var seedDatabase = AssetDatabase.LoadAssetAtPath<SeedDatabaseSO>(SeedDatabasePath);
             if (seedDatabase == null)
@@ -913,7 +913,7 @@ namespace CindarsHope.Editor.SceneCreation
                 for (var x = 0; x < gridSize; x++)
                 {
                     var plotIndex = y * gridSize + x;
-                    plots[plotIndex] = CreateFarmPlot(parent.transform, plotIndex, startPosition + new Vector3(x * spacing, -y * spacing, 0f), inventoryManager, seedDatabase);
+                    plots[plotIndex] = CreateFarmPlot(parent.transform, plotIndex, startPosition + new Vector3(x * spacing, -y * spacing, 0f), inventoryManager, seedDatabase, staminaManager);
                 }
             }
 
@@ -922,7 +922,7 @@ namespace CindarsHope.Editor.SceneCreation
             return registry;
         }
 
-        private static FarmPlot CreateFarmPlot(Transform parent, int plotIndex, Vector3 position, InventoryManager inventoryManager, SeedDatabaseSO seedDatabase)
+        private static FarmPlot CreateFarmPlot(Transform parent, int plotIndex, Vector3 position, InventoryManager inventoryManager, SeedDatabaseSO seedDatabase, StaminaManager staminaManager)
         {
             var plotObject = new GameObject($"FarmPlot_{plotIndex:00}");
             plotObject.transform.SetParent(parent);
@@ -948,6 +948,9 @@ namespace CindarsHope.Editor.SceneCreation
             SetReference(serializedPlot, "_spriteRenderer", spriteRenderer);
             SetReference(serializedPlot, "_inventoryManager", inventoryManager);
             SetReference(serializedPlot, "_seedDatabase", seedDatabase);
+            SetReference(serializedPlot, "_staminaManager", staminaManager);
+            serializedPlot.FindProperty("_temporarySequentialSliceMode").boolValue = plotIndex == 0;
+            serializedPlot.FindProperty("_temporarySequentialSeedId").stringValue = "seed_carrot";
             serializedPlot.ApplyModifiedPropertiesWithoutUndo();
 
             farmPlot.Configure(plotIndex, inventoryManager, seedDatabase);
