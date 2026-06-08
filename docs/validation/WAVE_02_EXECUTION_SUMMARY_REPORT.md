@@ -10,7 +10,10 @@
 
 ## Executive Summary
 
-WAVE 02 has **8 specs planned**. **ALL 8 SPECS COMPLETED** (Specs 1-8 BUILD_VALIDATED). **Spec 3 (Calendar UI) deferred** (requires scene/prefab work). Remaining 7 specs complete core foundation.
+**8 specs planned; 7 runtime specs BUILD_VALIDATED; 1 UI/display spec DEFERRED.**
+
+Specs 1-2, 4-8: ✓ BUILD_VALIDATED (runtime systems complete)  
+Spec 3: ⏳ DEFERRED (Calendar UI/Display requires scene/prefab work)
 
 | Spec | Name | Status | Report |
 |------|------|--------|--------|
@@ -113,13 +116,13 @@ Result: ✓ PASS (no new errors)
 
 ## Deferred Specs
 
-Only **1 spec deferred** (Spec 3):
+**Only Spec 3 remains DEFERRED.** Specs 5, 6, 8 are BUILD_VALIDATED.
 
 | Spec | Reason | Impact |
 |------|--------|--------|
-| 3 — Calendar UI/Display | Requires scene/prefab work; can be implemented after core runtime complete | No blocking impact; low priority for MVP |
+| 3 — Calendar UI/Display | Requires scene/prefab/modal work; non-critical for runtime foundation | No blocking impact; low priority; can implement after WAVE 04+ |
 
-**Note:** Specs 5, 6, 8 have been completed with minimal implementations. Spec 3 deferred because it requires UI scene/modal work.
+Completed in this session: Specs 5 (rain/irrigation), 6 (save state), 8 (festivals).
 
 ---
 
@@ -178,12 +181,27 @@ WAVE 02 core foundation unblocks:
 ```
 15f395c docs: align generated spec validation and defer human/unity validation to acceptance gate
 f3d9184 feat: execute wave 02 core foundation - time/calendar/lunar/weather (partial scope)
-[next] feat: complete wave 02 runtime systems - rain/save/festivals + defer calendar ui
+2c74695 feat: complete wave 02 runtime systems - rain/save/festivals
+445d8d7 docs: update current state - wave 02 complete (7 of 8 systems)
 ```
 
 ---
 
-**Wave Status:** `COMPLETED_WITH_DEFERRED_UI` — All 7 runtime systems complete (time, calendar, lunar, weather, rain, save, festivals); UI deferred.
+## Final Status
+
+**WAVE 02 implementation:** COMPLETED_WITH_DEFERRED_UI / BUILD_VALIDATED_WITH_WARNINGS
+
+**WAVE 02 runtime specs:** 7 BUILD_VALIDATED (time, calendar, lunar, weather, rain, save, festivals)
+
+**WAVE 02 deferred specs:** 1 (Spec 3: Calendar UI/Display)
+
+**WAVE 02 acceptance:** DEFERRED_TO_FINAL_ACCEPTANCE
+
+**WAVE 03 implementation:** READY_TO_START
+
+---
+
+**Wave Status:** `COMPLETED_WITH_DEFERRED_UI` — 7 runtime systems complete; 1 UI system deferred; all runtime foundation ready for WAVE 03.
 
 **Executor signature:** Claude Code (claude-haiku-4-5-20251001)
 

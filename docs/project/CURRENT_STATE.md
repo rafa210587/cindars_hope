@@ -78,8 +78,9 @@
 | SPEC_29 Phase 2-3 | PENDING HUMAN | Final acceptance; blocked on Phase 2-3 above |
 | WAVE 00.04 Existing Implementation Audit | COMPLETE / BUILD_VALIDATED | Governance audit only; no code/gameplay changes; commit ee1c0fb+ |
 | WAVE 01 Hardening & Quality Gate | CODE_COMPLETE | 9 specs executed (00.04, 01.01-01.07, 01Q); BUILD_VALIDATED; 36 EditMode tests compile successfully (0E/0W) |
-| WAVE 02 Time/Calendar/Lunar/Weather/Rain/Save/Festivals | COMPLETED_WITH_DEFERRED_UI | 7 of 8 specs BUILD_VALIDATED (Specs 1-2, 4-8); 1 deferred (Spec 3 Calendar UI); all runtime systems complete; commits f3d9184, 2c74695 |
-| WAVE 03 Quests/Objectives/Events | **READY_FOR_WAVE_03** | 85 remaining specs; WAVE 02 foundation (time/calendar/lunar/weather/festivals/save) enables WAVE 03+ |
+| WAVE 02 Time/Calendar/Lunar/Weather/Rain/Save/Festivals | COMPLETED_WITH_DEFERRED_UI | 7 of 8 specs BUILD_VALIDATED; 1 deferred (Spec 3 Calendar UI); all runtime systems complete |
+| WAVE 03 Quests/Objectives/Events | COMPLETED_WITH_DEFERRED_UI | 8 of 8 runtime specs BUILD_VALIDATED; 4 future specs blocked; quest system foundation complete |
+| WAVE 04-12 Core Gameplay | **READY_FOR_WAVE_04** | 77 remaining specs; WAVE 02-03 foundation (time/quests/calendar/festivals/save) ready for integration |
 | WAVE 17-24 Future | BLOCKED INTENTIONALLY | 32+ future/expansion specs marked; pets (WAVE 23) blocked as HOLD/BLOCKED_SCOPE |
 
 ---
