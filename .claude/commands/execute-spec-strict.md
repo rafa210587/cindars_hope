@@ -1,0 +1,300 @@
+# /execute-spec-strict
+
+Execute exatamente UMA spec com qualidade rigorosa e pare.
+
+## Propósito
+
+Executar specs de forma leve e confiável:
+- Uma por vez
+- Com auditoria real de sistemas existentes
+- Com status honesto (não inflado)
+- Com execution report obrigatório
+- Sem obrigar projeto a usar `/loop`
+
+## Entrada Esperada
+
+```text
+/execute-spec-strict docs/specs/a_implementar/04_spec_ui_input_focus_modal_routing_runtime.md
+```
+
+Ou:
+
+```text
+/execute-spec-strict next --wave 04
+```
+
+Ou:
+
+```text
+/execute-spec-strict next --after 04_spec_ui_calendar_day_detail_runtime
+```
+
+## Restrições Obrigatórias
+
+- Executar uma única spec
+- Não executar próxima spec automaticamente
+- Não executar WAVE futura
+- Não executar future/mapped specs
+- Não executar pets
+- Não rodar Unity Test Runner
+- Não fazer PlayMode/human validation
+- Não marcar ACCEPTED
+- Não mover para implementados
+- Não alterar Packages/, ProjectSettings/, scenes, prefabs, assets
+
+## Fluxo Obrigatório
+
+### 1. Leitura de Context (5 min)
+
+Ler em ordem:
+1. `docs/project/CURRENT_STATE.md`
+2. `docs/specs/SPEC_WAVE_EXECUTION_PROTOCOL.md`
+3. `docs/specs/SPEC_VALIDATION_MATRIX_MASTER.md`
+4. `.claude/rules/spec_quality_gate.md`
+
+### 2. Identificação da Spec (2 min)
+
+Identificar arquivo `.md` alvo em `docs/specs/a_implementar/`.
+
+Confirmar que a spec não está em `implementados/` ou `absorvidas/`.
+
+### 3. Leitura Completa da Spec (10 min)
+
+Ler spec inteira. Extrair:
+
+- **Escopo:** o que a spec faz
+- **Fora de escopo:** o que NOT faz (listar explicitamente)
+- **Critérios de aceite:** acceptance criteria section
+- **Dependências:** specs/docs/systems de que depende
+- **Stop conditions:** quando parar com BLOCKED
+- **Arquivos permitidos:** allow-list de arquivos que podem ser alterados
+- **Arquivos proibidos:** no-change list (Packages, ProjectSettings, etc)
+
+### 4. Auditoria de Sistemas Existentes (10 min)
+
+Se a spec menciona sistema (GameplayInputRouter, ModalManager, InventoryManager, etc):
+
+Pesquisar:
+```powershell
+Get-ChildItem .\Assets\_Game\Scripts -Recurse -Filter *.cs | 
+  Select-String -Pattern "class (GameplayInputRouter|ModalManager|...)"
+```
+
+Documentar:
+- Existe?
+- Qual arquivo?
+- Qual contrato?
+- Reutilizar ou criar novo?
+
+### 5. Decisão de Estratégia (5 min)
+
+Decidir:
+
+- **REUSE_EXISTING** — sistem canônico existe, reutilizar
+- **HARDEN_EXISTING** — sistema existe parcial, completar
+- **ADAPTER** — sistema existe, criar adapter/wrapper mínimo
+- **CONTRACT_ONLY** — criar DTO/model/interface apenas
+- **DEFERRED_UI_VISUAL** — lógica pronta, UI deferred
+- **DEFERRED_INTEGRATION** — contrato pronto, integração futura
+- **BLOCKED** — parar aqui, não pode continuar
+
+Se decisão for BLOCKED, pular para seção "Stop" abaixo.
+
+### 6. Implementação Mínima (varies)
+
+Implementar a menor alteração segura para o escopo.
+
+Regras:
+- Sem scope creep
+- Sem abstrações prematuras
+- Sem comentários desnecessários
+- Testes EditMode se há lógica determinística
+- Testes ONLY em `Assets/_Game/Tests/EditMode/**`
+- Reutilizar existente quando possível
+
+### 7. Execution Report Individual (15 min)
+
+Criar ou atualizar:
+```text
+docs/validation/<spec_id>_execution_report.md
+```
+
+Usar template `docs/specs/SPEC_EXECUTION_REPORT_TEMPLATE_STRICT.md`.
+
+Preencher:
+- Status (um de spec_quality_gate.md)
+- Acceptance criteria extracted (tabela)
+- Existing systems audit
+- Scope executed
+- Out of scope respected
+- Files changed
+- Spec Compliance Matrix
+- Validation results
+- Honest status rationale
+- Remaining work
+
+### 8. Preenchimento da Compliance Matrix
+
+Na seção "Spec Compliance Matrix" do report, mapear:
+
+| Spec Requirement | Implementation Evidence | Status | Notes |
+|---|---|---|---|
+| (spec says this) | (code does this) | OK / DEFERRED / FAIL / NOT_APPLICABLE | (notes) |
+
+Allowed status:
+- `OK` — implemented
+- `OK_WITH_WARNINGS` — implemented, warnings documented
+- `CONTRACT_ONLY` — contract/DTO only
+- `DEFERRED` — explicit defer, documented
+- `FAIL` — not implemented, not documented defer
+- `NOT_APPLICABLE` — not relevant
+
+### 9. Validação (5 min)
+
+Rodar:
+```powershell
+.\tools\docs\validate_docs.ps1
+dotnet build .\Assembly-CSharp.csproj --no-restore
+dotnet build .\Assembly-CSharp-Editor.csproj --no-restore
+.\tools\docs\check_spec_quality.ps1
+```
+
+Expect results:
+- Docs validation: PASS or expected warnings
+- Assembly-CSharp: 0E
+- Assembly-CSharp-Editor: 0E
+- Quality check: PASS or expected FAIL (documented)
+
+### 10. Classificação Honesta de Status (5 min)
+
+Usar matriz em `.claude/rules/spec_quality_gate.md`.
+
+Honest status:
+- Se compliance matrix tem OK para critérios centrais + report + tests + no proibidos → BUILD_VALIDATED
+- Se critério central atendido + deferred noted → BUILD_VALIDATED_WITH_WARNINGS
+- Se só contrato criado → CONTRACT_ONLY
+- Se contrato + integração futura → CONTRACT_ONLY_NEEDS_INTEGRATION
+- Se critério central P0 não atendido → NEEDS_REWORK
+- Se não pode continuar → BLOCKED
+
+**Nunca inflar status. Melhor errar para baixo (CONTRACT_ONLY) que para cima (BUILD_VALIDATED falso).**
+
+### 11. Atualização de Docs Canônicas (5 min)
+
+Se status justificar, atualizar:
+- `docs/project/CURRENT_STATE.md` — listar spec com novo status
+- `docs/validation/WAVE_*_LOOP_BATCH_STATUS.md` — se relevante
+
+Não atualizar se status for CONTRACT_ONLY ou deferido.
+
+### 12. Commit (2 min)
+
+Fazer commit ONLY se:
+- Build/docs passaram
+- Quality check passou (ou falhou com warnings only, documentados)
+- Status está honesto
+- Nenhum arquivo proibido foi alterado
+
+Mensagem:
+```text
+feat: execute <spec_id> runtime [<priority>]
+
+<one-line summary of what changed>
+
+Status: <BUILD_VALIDATED / BUILD_VALIDATED_WITH_WARNINGS / CONTRACT_ONLY / NEEDS_REWORK / BLOCKED>
+
+Co-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com>
+```
+
+### 13. Parar
+
+Não executar próxima spec.
+Não loop automaticamente.
+
+## Saída Obrigatória
+
+Responder com:
+
+```text
+SPEC_EXECUTION_RESULT
+═══════════════════════════
+
+Spec:                           <spec_id>
+Status:                         <BUILD_VALIDATED | CONTRACT_ONLY | NEEDS_REWORK | BLOCKED>
+Acceptance criteria matched:    <Y/N + count>
+Existing systems audit:         <Y/N>
+Execution report created:       <Y/N + path>
+Spec Compliance Matrix:         <OK/DEFERRED/FAIL counts>
+
+Validation
+──────────
+Docs validation:                <PASS | FAIL>
+Assembly-CSharp build:          <PASS | FAIL>
+Assembly-CSharp-Editor build:   <PASS | FAIL>
+Quality check:                  <PASS | FAIL>
+
+Files Changed
+─────────────
+Count:                          <N>
+Tests in correct location:      <Y/N>
+Forbidden files altered:        <Y/N>
+
+Commit
+──────
+Commit hash:                    <hash or NONE>
+Message:                        <one-liner>
+
+Next Actions
+────────────
+Can continue next spec:         <Y/N + reason>
+Can start next wave:            <Y/N + reason>
+Remaining blockers:             <list or NONE>
+```
+
+## Stop Conditions
+
+**STOP IMMEDIATELY with status BLOCKED if:**
+
+1. Spec requires future/pets/mapped specs
+2. Spec requires scene/prefab/asset creation
+3. Spec requires Packages/ or ProjectSettings/ alteration
+4. Build fails with new errors
+5. Docs validation fails with new errors
+6. Quality check fails with critical errors (not warnings)
+7. P0 spec has status NEEDS_REWORK or BLOCKED
+8. Spec cannot be executed solo (requires parallel spec)
+
+When BLOCKED:
+- Create execution report with BLOCKED status
+- Document blocker in "Remaining work" section
+- Do NOT commit (unless report-only commit is meaningful)
+- Stop
+
+## Loop-Safe Usage
+
+This command is safe in `/loop`:
+
+```text
+/loop 15m
+Run /execute-spec-strict next --wave 04.
+Max specs this session: 3.
+Stop on: NEEDS_REWORK, BLOCKED, or quality check failure.
+Do not proceed next wave until WAVE 04 reports created.
+```
+
+The command itself won't loop; `/loop` will re-invoke it.
+
+## Fallback for Manual Execution
+
+If user runs `/execute-spec-strict` without argument:
+
+Ask user:
+1. Spec path?
+2. Or "next" with --wave and --after flags?
+
+Then proceed normally.
+
+---
+
+*Created: 2026-06-08 (Strict Spec Execution)*  
+*Safe to use in `/loop` but does not require it.*
