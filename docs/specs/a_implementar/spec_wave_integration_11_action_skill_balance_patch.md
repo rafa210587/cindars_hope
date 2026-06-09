@@ -1,5 +1,16 @@
 # WAVE_INTEGRATION_11 — Action Skill Balance Patch
 
+required_adrs: []
+required_game_rules: []
+
+Ordem de execucao: depois de `spec_wave_integration_11_skill_effects_gameplay_bridge.md`
+Depende de: `spec_wave_integration_11_skill_effects_gameplay_bridge.md`
+Bloqueia: WAVE12 ate BUILD_VALIDATED_WITH_SKILL_EFFECT_DEBT
+
+# /speckit.specify
+# /speckit.plan
+# /speckit.tasks
+
 > **Projeto:** Cindar's Hope  
 > **Aplica sobre:** `WAVE_INTEGRATION_11_skill_effects_gameplay_bridge_REVISED.md`  
 > **Tipo:** Patch obrigatório de catálogo, balanceamento de action skills e execução de efeitos  
@@ -659,7 +670,7 @@ Leia primeiro:
 - docs/validation/WAVE_INTEGRATION_10_SKILL_TREE_ACTIVE_EQUIP_REPORT.md
 - docs/validation/WAVE_INTEGRATION_10_SKILL_AUTHORING_MODEL.md
 - docs/project/CURRENT_STATE.md
-- docs/specs/a_implementar/WAVE_INTEGRATION_11_skill_effects_gameplay_bridge.md
+- docs/specs/a_implementar/spec_wave_integration_11_skill_effects_gameplay_bridge.md
 - este patch: WAVE_INTEGRATION_11 — Action Skill Balance Patch
 
 Regras:

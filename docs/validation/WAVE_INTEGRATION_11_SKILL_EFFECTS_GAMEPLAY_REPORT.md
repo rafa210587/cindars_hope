@@ -17,7 +17,7 @@ A WAVE_INTEGRATION_11 implementou o pipeline de execução de efeitos de skill:
 - Block: BLOCK_RUNTIME_DEFERRED
 
 O patch de balanceamento de action skills adicionou:
-- 13 novas action skills ao `DefaultSkillCatalog.cs` (3 Melee, 2 Magic, 5 Survival, 4 Crafting)
+- 14 novas action skills ao `DefaultSkillCatalog.cs` (3 Melee, 2 Magic, 5 Survival, 4 Crafting)
 - 14 novos EffectId mappings em `ActiveSkillExecutionController.SkillActionToEffectId`
 - `FeedbackOnlySkillEffectExecutor`: executor genérico de feedback para DEFERRED_RUNTIME_EFFECT
 - 14 registros de FeedbackOnlySkillEffectExecutor no registry
@@ -91,10 +91,19 @@ O patch de balanceamento de action skills adicionou:
 ## Validation Results (Build)
 
 ```text
-Assembly-CSharp: PASS (exit code 0, 2 warnings pré-existentes, 0 errors)
+Assembly-CSharp: PASS (exit code 0, 0 warnings, 0 errors)
 Assembly-CSharp-Editor: PASS (exit code 0, 7 warnings pré-existentes, 0 errors)
 Docs validation: EXPECTED_FAIL_LEGACY_ONLY (pre-existing governance errors only)
+Quality check: HARNESS_FAIL_PESTER_3_4_0_KNOWN_ISSUE
 ```
+
+Quality command attempted:
+
+```text
+powershell -ExecutionPolicy Bypass -File .\tools\docs\check_spec_quality.ps1
+```
+
+Result: exit code 1 before repository checks, with Pester 3.4.0 error `The Should command may only be used inside a Describe block.` This is a known harness issue already documented in WAVE 05 validation reports.
 
 ---
 
@@ -121,7 +130,7 @@ Residual risk: Novas action skills visíveis na skill tree mas efeitos são apen
 
 | File | Change |
 |---|---|
-| `Assets/_Game/Scripts/Skills/DefaultSkillCatalog.cs` | +13 nodes (3 Melee, 2 Magic, 5 Survival, 4 Crafting) |
+| `Assets/_Game/Scripts/Skills/DefaultSkillCatalog.cs` | +14 nodes (3 Melee, 2 Magic, 5 Survival, 4 Crafting) |
 | `Assets/_Game/Scripts/Skills/Runtime/Effects/ActiveSkillExecutionController.cs` | +14 SkillActionToEffectId mappings; RegisterFeedbackExecutors() method |
 | `Assets/_Game/Scripts/Skills/Runtime/Effects/FeedbackOnlySkillEffectExecutor.cs` | NEW — generic feedback executor |
 | `Assembly-CSharp.csproj` | +1 Compile Include entry for FeedbackOnlySkillEffectExecutor |

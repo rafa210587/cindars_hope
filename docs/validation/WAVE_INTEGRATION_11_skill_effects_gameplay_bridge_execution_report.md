@@ -2,7 +2,7 @@
 
 **Date:** 2026-06-08
 **Agent:** Spec Implementer
-**Spec:** `docs/specs/a_implementar/WAVE_INTEGRATION_11_skill_effects_gameplay_bridge.md`
+**Spec:** `docs/specs/a_implementar/spec_wave_integration_11_skill_effects_gameplay_bridge.md`
 **Status:** BUILD_VALIDATED
 
 ---
@@ -108,7 +108,7 @@ Assembly-CSharp: PASS (exit code 0, 2 pre-existing deprecation warnings for Find
 Assembly-CSharp-Editor: PASS (exit code 0, pre-existing warnings only, 0 new errors)
 
 Docs validation: EXPECTED_FAIL_LEGACY_ONLY
-- ERROR: `WAVE_INTEGRATION_11_skill_effects_gameplay_bridge.md` missing `spec_` prefix — pre-existing naming convention from wave naming, not introduced by this spec
+- RESOLVED: `spec_wave_integration_11_skill_effects_gameplay_bridge.md` now uses the required `spec_` prefix.
 - ERROR: `spec_test_harness_editmode_playmode_quality_gate.md` missing dependency headers — pre-existing spec, not modified
 - ERROR: Multiple old validation reports missing `validated_adrs`/`validated_game_rules` — pre-existing legacy reports not modified by this spec
 

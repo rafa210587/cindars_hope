@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
+using CindarsHope.Interaction;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -21,6 +22,7 @@ namespace CindarsHope.Skills.Runtime.Effects
     {
         // Numeric keys 1-4 map to active slot indices 0-3
         private static readonly KeyCode[] SlotInputKeys = { KeyCode.Alpha1, KeyCode.Alpha2, KeyCode.Alpha3, KeyCode.Alpha4 };
+        private static ActiveSkillExecutionController _instance;
 
         [SerializeField] private SkillTargetResolver _targetResolver;
 
@@ -80,22 +82,24 @@ namespace CindarsHope.Skills.Runtime.Effects
 
         private readonly SkillEffectRegistry _registry = new SkillEffectRegistry();
         private readonly float[] _slotCooldowns = new float[4];
+        private bool _bootstrapped;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void EnsureRuntimeInstance()
         {
-            var existing = Object.FindObjectOfType<ActiveSkillExecutionController>();
-            if (existing != null)
+            if (_instance != null)
                 return;
 
             var go = new GameObject("ActiveSkillExecutionController");
             DontDestroyOnLoad(go);
-            var controller = go.AddComponent<ActiveSkillExecutionController>();
-            controller.Bootstrap();
+            go.AddComponent<ActiveSkillExecutionController>();
         }
 
         private void Bootstrap()
         {
+            if (_bootstrapped)
+                return;
+
             // Register farm crop executor as vertical slice
             _registry.Register(new FarmCropSkillEffectExecutor());
 
@@ -112,6 +116,7 @@ namespace CindarsHope.Skills.Runtime.Effects
             }
 
             Debug.Log("[ActiveSkillExecutionController] Bootstrapped. Registered effect: farm.crop.water_skill + balance patch feedback executors.");
+            _bootstrapped = true;
         }
 
         private void RegisterFeedbackExecutors()
@@ -142,6 +147,15 @@ namespace CindarsHope.Skills.Runtime.Effects
 
         private void Awake()
         {
+            if (_instance != null && _instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            _instance = this;
+            DontDestroyOnLoad(gameObject);
+
             // Ensure resolver is present if created via inspector
             if (_targetResolver == null)
             {
@@ -153,6 +167,8 @@ namespace CindarsHope.Skills.Runtime.Effects
                     _targetResolver = resolverGo.AddComponent<SkillTargetResolver>();
                 }
             }
+
+            Bootstrap();
         }
 
         private void OnEnable()
@@ -163,6 +179,10 @@ namespace CindarsHope.Skills.Runtime.Effects
         private void OnDisable()
         {
             SceneManager.sceneLoaded -= OnSceneLoaded;
+            if (_instance == this)
+            {
+                _instance = null;
+            }
         }
 
         private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -173,11 +193,8 @@ namespace CindarsHope.Skills.Runtime.Effects
 
         private void Start()
         {
+            Bootstrap();
             WireInteractionSystem();
-
-            // Register farm crop executor if not already registered (handles scene reload)
-            if (!_registry.HasExecutor("farm.crop.water_skill"))
-                _registry.Register(new FarmCropSkillEffectExecutor());
         }
 
         private void WireInteractionSystem()
@@ -185,10 +202,12 @@ namespace CindarsHope.Skills.Runtime.Effects
             if (_targetResolver == null)
                 return;
 
-            // Find InteractionSystem on the player (loaded in current scene)
-            // NOTE: We use FindObjectOfType only during scene load wiring (editor-time equivalent).
-            // This is justified: InteractionSystem is a singleton attached to the player.
-            var interactionSystem = Object.FindObjectOfType<CindarsHope.Interaction.InteractionSystem>();
+            var playerObject = GameBootstrap.Instance?.PlayerManager != null
+                ? GameBootstrap.Instance.PlayerManager.gameObject
+                : null;
+            var interactionSystem = playerObject != null
+                ? playerObject.GetComponentInChildren<InteractionSystem>()
+                : null;
             if (interactionSystem != null)
             {
                 _targetResolver.SetInteractionSystem(interactionSystem);
@@ -287,7 +306,9 @@ namespace CindarsHope.Skills.Runtime.Effects
             }
 
             // Build context
-            var playerGo = GameObject.FindGameObjectWithTag("Player");
+            var playerGo = GameBootstrap.Instance?.PlayerManager != null
+                ? GameBootstrap.Instance.PlayerManager.gameObject
+                : null;
             var context = new SkillEffectContext
             {
                 SkillActionId = skillActionId,

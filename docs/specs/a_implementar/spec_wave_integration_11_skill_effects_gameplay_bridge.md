@@ -1,4 +1,15 @@
-# WAVE_INTEGRATION_11_skill_effects_gameplay_bridge.md
+# spec_wave_integration_11_skill_effects_gameplay_bridge.md
+
+required_adrs: []
+required_game_rules: []
+
+Ordem de execucao: WAVE_INTEGRATION_11
+Depende de: WAVE_INTEGRATION_10_skill_tree_ui_active_skill_equip
+Bloqueia: WAVE12 ate BUILD_VALIDATED_WITH_SKILL_EFFECT_DEBT
+
+# /speckit.specify
+# /speckit.plan
+# /speckit.tasks
 
 > **Projeto:** Cindar's Hope  
 > **Wave:** WAVE_INTEGRATION — Scene Wiring e Playable Runtime Bridge  
@@ -37,7 +48,7 @@ Esta spec **não** deve criar uma árvore de skills nova, nem refazer o sistema 
 Arquivo desta spec:
 
 ```text
-docs/specs/a_implementar/WAVE_INTEGRATION_11_skill_effects_gameplay_bridge.md
+docs/specs/a_implementar/spec_wave_integration_11_skill_effects_gameplay_bridge.md
 ```
 
 Padrão oficial:
