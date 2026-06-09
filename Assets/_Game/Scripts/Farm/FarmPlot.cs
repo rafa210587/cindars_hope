@@ -206,6 +206,32 @@ namespace CindarsHope.Farm
             _staminaManager = staminaManager;
         }
 
+        // WAVE_INTEGRATION_11: Public bridge for skill effect executors to water this plot.
+        // Bypasses tool requirement (_temporarySequentialSliceMode bypass) and stamina if no manager.
+        // TODO_INTEGRATION_NOT_FINAL: Stamina cost is always bypassed here for skill-triggered water.
+        // Final design should deduct stamina from the caster's StaminaManager passed via context.
+        public bool TryWaterViaSkill()
+        {
+            if (State == FarmPlotState.TilledDry)
+            {
+                SetState(FarmPlotState.TilledWet);
+                PublishFeedback("Soil watered by skill.");
+                return true;
+            }
+
+            if (State == FarmPlotState.PlantedDry)
+            {
+                SetState(FarmPlotState.PlantedWet);
+                PublishFeedback("Crop watered by skill.");
+                return true;
+            }
+
+            PublishFeedback("Plot cannot be watered in current state.");
+            return false;
+        }
+
+        public bool CanBeWatered => State == FarmPlotState.TilledDry || State == FarmPlotState.PlantedDry;
+
         public bool CanInteract(GameObject interactor)
         {
             return _activeMenuPlot == null || _activeMenuPlot == this;

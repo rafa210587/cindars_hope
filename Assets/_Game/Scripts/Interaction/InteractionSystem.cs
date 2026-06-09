@@ -31,6 +31,10 @@ namespace CindarsHope.Interaction
 
         public bool HasCandidate => GetBestCandidate() != null;
 
+        // WAVE_INTEGRATION_11: Exposes the current best interactable for skill effect targeting.
+        // Returns null if no valid candidate is in range.
+        public IInteractable GetCurrentInteractable() => GetBestCandidate();
+
         private readonly struct InteractionCandidate
         {
             public readonly IInteractable Interactable;

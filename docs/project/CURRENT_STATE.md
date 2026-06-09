@@ -145,7 +145,8 @@ Latest validation:
 - WAVE_INTEGRATION_10 decision: CREATED (`docs/validation/WAVE_INTEGRATION_10_SKILL_TREE_ACTIVE_EQUIP_DECISION.md`)
 - WAVE_INTEGRATION_10 report: CREATED (`docs/validation/WAVE_INTEGRATION_10_SKILL_TREE_ACTIVE_EQUIP_REPORT.md`)
 - Human Play Mode checklist (10): `docs/validation/WAVE_INTEGRATION_10_HUMAN_PLAYMODE_CHECKLIST.md`
-- Can start WAVE_INTEGRATION_11: YES; human must regenerate FarmScene and execute 06A + 07 + 08 + 09 + 10 Play Mode checklists
+- Can start WAVE_INTEGRATION_11: COMPLETE (BUILD_VALIDATED 2026-06-08); see WAVE_INTEGRATION_11_skill_effects_gameplay_bridge_execution_report.md
+- WAVE_INTEGRATION_11: BUILD_VALIDATED — Skill effects pipeline (ISkillEffectExecutor, SkillEffectRegistry, FarmCropSkillEffectExecutor), numeric 1-4 slot execution (ActiveSkillExecutionController), Dash (PlayerDashController: Space+direction, 3.5 tiles, 40 Stamina), Dodge (PlayerMovementAbilityController: double-tap, 1.5 tiles, 40 Stamina); Block deferred; human must regenerate FarmScene and execute 06A + 07 + 08 + 09 + 10 + 11 Play Mode checklists
 
 ---
 
@@ -216,5 +217,5 @@ PROJECT_LOG + CURRENT_STATE conflict → prefer CURRENT_STATE; report mismatch
 
 ---
 
-*Last updated: 2026-06-08 (WAVE_INTEGRATION_10: skill tree UI + active skill equip — REUSE_EXISTING_CONTROLLERS strategy; SkillTreeGameplayPanelController fully functional IMGUI singleton; fixed SkillTreeOpenedEvent subscription gap; DebugHud now shows active skill slots; ValidateSkillTreeRuntimeBinding.cs created; BUILD_VALIDATED_WITH_UI_DEBT; human must regenerate FarmScene and execute 06A + 07 + 08 + 09 + 10 checklists)*
-*Next update: after Play Mode checklists pass or WAVE_INTEGRATION_11 starts*
+*Last updated: 2026-06-08 (WAVE_INTEGRATION_11: skill effects gameplay bridge — ISkillEffectExecutor pipeline, SkillEffectRegistry, FarmCropSkillEffectExecutor, ActiveSkillExecutionController (1-4 keys), PlayerDashController (Space+dir, 3.5t, 40sp), PlayerMovementAbilityController (double-tap dodge, 1.5t, 40sp), GridMovementDisplacementResolver, DirectionalDoubleTapDetector; Block deferred; 13 new runtime files, 2 modified; both assemblies BUILD_VALIDATED; human must regenerate FarmScene and execute 06A-11 checklists)*
+*Next update: after Play Mode checklists 06A-11 pass or next WAVE_INTEGRATION spec starts*
