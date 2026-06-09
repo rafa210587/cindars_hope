@@ -5,6 +5,8 @@ using CindarsHope.Interaction;
 using CindarsHope.UI.Dialogue;
 using CindarsHope.UI.Modal;
 using UnityEngine;
+using NpcDialogueChoice = CindarsHope.NPC.DialogueChoice;
+using UiDialogueChoice = CindarsHope.UI.Dialogue.DialogueChoice;
 
 namespace CindarsHope.NPC
 {
@@ -22,6 +24,7 @@ namespace CindarsHope.NPC
         private bool _hasMet;
         private DialogueTreeSO _currentDialogueTree;
         private DialogueNode _currentNode;
+        private readonly Dictionary<string, NpcDialogueChoice> _choiceMap = new Dictionary<string, NpcDialogueChoice>();
 
         public string InteractionPrompt => $"Conversar com {_npcData?.DisplayName ?? "NPC"}";
         public NpcDataSO NpcData => _npcData;
@@ -32,6 +35,7 @@ namespace CindarsHope.NPC
             if (_dialogueModal != null)
             {
                 _dialogueModal.OnClose += HandleDialogueClosed;
+                _dialogueModal.OnChoiceSelected += HandleChoiceSelected;
             }
         }
 
@@ -40,6 +44,7 @@ namespace CindarsHope.NPC
             if (_dialogueModal != null)
             {
                 _dialogueModal.OnClose -= HandleDialogueClosed;
+                _dialogueModal.OnChoiceSelected -= HandleChoiceSelected;
             }
         }
 
@@ -116,10 +121,7 @@ namespace CindarsHope.NPC
 
             if (node.Choices != null && node.Choices.Count > 0)
             {
-                _dialogueModal.Show(text);
-                // Note: Dialogue choice handling deferred to DialogueModal integration.
-                // This is a simplification — full choice branching will be implemented
-                // when DialogueModal wiring is complete.
+                _dialogueModal.ShowWithChoices(text, BuildUiChoices(node.Choices));
             }
             else
             {
@@ -127,6 +129,63 @@ namespace CindarsHope.NPC
             }
         }
 
+
+        private List<UiDialogueChoice> BuildUiChoices(List<NpcDialogueChoice> choices)
+        {
+            _choiceMap.Clear();
+            var uiChoices = new List<UiDialogueChoice>();
+            for (var i = 0; i < choices.Count; i++)
+            {
+                var source = choices[i];
+                if (source == null)
+                {
+                    continue;
+                }
+
+                var choiceId = $"{_currentNode?.NodeId ?? "node"}_{i}";
+                _choiceMap[choiceId] = source;
+                uiChoices.Add(new UiDialogueChoice(source.Label, choiceId));
+            }
+
+            return uiChoices;
+        }
+
+        private void HandleChoiceSelected(UiDialogueChoice choice)
+        {
+            if (!_isInteracting || choice == null || !_choiceMap.TryGetValue(choice.ChoiceId, out var npcChoice))
+            {
+                return;
+            }
+
+            if (npcChoice.ActionType == DialogueActionType.CloseDialogue)
+            {
+                _dialogueModal?.Hide();
+                return;
+            }
+
+            if (npcChoice.ActionType == DialogueActionType.OpenShop)
+            {
+                Debug.LogWarning($"{nameof(NpcController)} received OpenShop choice for '{_npcData?.NpcId}', but this NPC is not a shop controller.", this);
+                _dialogueModal?.Hide();
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(npcChoice.NextNodeId))
+            {
+                _dialogueModal?.Hide();
+                return;
+            }
+
+            var nextNode = _currentDialogueTree != null ? _currentDialogueTree.GetNodeById(npcChoice.NextNodeId) : null;
+            if (nextNode == null)
+            {
+                Debug.LogWarning($"{nameof(NpcController)} could not resolve dialogue node '{npcChoice.NextNodeId}' for '{_npcData?.NpcId}'.", this);
+                _dialogueModal?.Hide();
+                return;
+            }
+
+            ShowDialogueNode(nextNode);
+        }
 
         private void ShowClosingLine()
         {
@@ -160,6 +219,7 @@ namespace CindarsHope.NPC
             _isInteracting = false;
             _currentNode = null;
             _currentDialogueTree = null;
+            _choiceMap.Clear();
             _wanderer?.SetInteractionPaused(false);
             GameEventBus.Publish(new NpcInteractionEndedEvent(_npcData.NpcId));
         }
