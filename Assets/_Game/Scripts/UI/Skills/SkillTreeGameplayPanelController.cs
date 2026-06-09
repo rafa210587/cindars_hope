@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
+using CindarsHope.Core.Events;
 using CindarsHope.Player.Progression;
 using CindarsHope.Skills;
 using CindarsHope.UI.Routing;
@@ -45,11 +47,27 @@ namespace CindarsHope.UI.Skills
             DontDestroyOnLoad(gameObject);
         }
 
+        private void OnEnable()
+        {
+            // WAVE_INTEGRATION_10: subscribe so GameplayInputRouter's U-key event opens this panel.
+            GameEventBus.Subscribe<SkillTreeOpenedEvent>(OnSkillTreeOpenedEvent);
+        }
+
         private void OnDisable()
         {
+            GameEventBus.Unsubscribe<SkillTreeOpenedEvent>(OnSkillTreeOpenedEvent);
             if (_isOpen)
             {
                 Close();
+            }
+        }
+
+        private void OnSkillTreeOpenedEvent(SkillTreeOpenedEvent _)
+        {
+            // Fired by GameplayInputRouter when it is active. Guard against double-open.
+            if (!_isOpen)
+            {
+                Toggle();
             }
         }
 

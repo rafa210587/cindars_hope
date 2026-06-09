@@ -83,7 +83,7 @@
 | WAVE 04 UI Foundation Phase 1 | PHASE1_COMPLETED_WITH_CONTRACT_ONLY_CORE | 14 of 14 specs have execution reports; 3 BUILD_VALIDATED (SPECS 1-2, 8), 11 CONTRACT_ONLY (SPECS 3-7,9,11-16); SPEC 8 fully reworked (10 focus states, modal stack, 47 tests); Assembly builds PASS; quality check PASS; docs validation PASS (legacy errors only) |
 | WAVE 05 Farm Gameplay Core | COMPLETED_WITH_KNOWN_LEGACY_GATES | 20/20 specs executed; all BUILD_VALIDATED with RUNTIME_VALIDATED_WITH_KNOWN_LEGACY_GATES; ~123 EditMode tests; Assembly-CSharp PASS; closeout: docs/validation/WAVE_05_CLOSEOUT_REPORT.md |
 | WAVE 06 Economy/Loot/Crafting/Shop/Cave Foundation | COMPLETED_WITH_KNOWN_LEGACY_GATES | 8/8 specs executed; ~75 EditMode tests; Assembly-CSharp PASS; closeout: docs/validation/WAVE_06_CLOSEOUT_REPORT.md |
-| WAVE 07 Playable Scene Integration | WAVE_INTEGRATION_09_BUILD_VALIDATED_WITH_UI_DEBT | Scene architecture documented; manager audit complete; FarmScene restored to WAVE03 baseline; resource interactables added; debug loadout provisioner (06A); economy loop wired via SellPoint (07); HUD feedback events wired (08); inventory/tooltip/equipment runtime binding (09): InventoryPanelController + CharacterEquipmentPanelController reused (RuntimeInitializeOnLoad), GameplayInputRouter added to CreateMvpFarmScene; human must run CreateMvpFarmScene generator and execute 06A + 07 + 08 + 09 Play Mode checklists |
+| WAVE 07 Playable Scene Integration | WAVE_INTEGRATION_10_BUILD_VALIDATED_WITH_UI_DEBT | Scene architecture documented; manager audit complete; FarmScene restored to WAVE03 baseline; resource interactables added; debug loadout provisioner (06A); economy loop wired via SellPoint (07); HUD feedback events wired (08); inventory/tooltip/equipment runtime binding (09): InventoryPanelController + CharacterEquipmentPanelController reused (RuntimeInitializeOnLoad), GameplayInputRouter added to CreateMvpFarmScene; human must run CreateMvpFarmScene generator and execute 06A + 07 + 08 + 09 Play Mode checklists |
 | WAVE 08 City/NPC/Dialogue/Services | COMPLETED_WITH_KNOWN_LEGACY_GATES | 4/4 specs BUILD_VALIDATED; ~61 EditMode tests; Assembly-CSharp PASS; closeout: docs/validation/WAVE_08_CLOSEOUT_REPORT.md |
 | WAVE 09 Quest System | COMPLETED_WITH_KNOWN_LEGACY_GATES | 8/8 specs BUILD_VALIDATED; ~107 EditMode tests; Assembly-CSharp PASS; closeout: docs/validation/WAVE_09_CLOSEOUT_REPORT.md |
 | WAVE 10 Main Progression / Fonte / Endgame | COMPLETED_WITH_KNOWN_LEGACY_GATES | 4/4 specs BUILD_VALIDATED; ~72 EditMode tests; Assembly-CSharp PASS; closeout: docs/validation/WAVE_10_CLOSEOUT_REPORT.md |
@@ -141,7 +141,11 @@ Latest validation:
 - WAVE_INTEGRATION_09 decision: CREATED (`docs/validation/WAVE_INTEGRATION_09_INVENTORY_TOOLTIP_EQUIPMENT_DECISION.md`)
 - WAVE_INTEGRATION_09 report: CREATED (`docs/validation/WAVE_INTEGRATION_09_INVENTORY_TOOLTIP_EQUIPMENT_REPORT.md`)
 - Human Play Mode checklist (09): `docs/validation/WAVE_INTEGRATION_09_HUMAN_PLAYMODE_CHECKLIST.md`
-- Can start WAVE_INTEGRATION_10: YES (code ready); human must regenerate FarmScene and execute 06A + 07 + 08 + 09 Play Mode checklists
+- Skill tree + active slot equip (WAVE_INTEGRATION_10): BUILD_VALIDATED_WITH_UI_DEBT — REUSE_EXISTING_CONTROLLERS strategy; SkillTreeGameplayPanelController (IMGUI singleton, RuntimeInitializeOnLoadMethod) already fully implemented (U key, open/close, 55 nodes/5 trees via DefaultSkillCatalog, purchase, active slot R/T/Y/G); fixed: GameplayInputRouter U→SkillTreeOpenedEvent now subscribed by panel (was gap); DebugHud now shows active skill slots (DrawActiveSkillSlots added); ValidateSkillTreeRuntimeBinding.cs created; Canvas SkillTreePanel/SkillTreeInputHandler deferred (prefab not wired); HUDGameplayViewModel.ActiveSkillSlots wiring deferred to WAVE_INTEGRATION_11
+- WAVE_INTEGRATION_10 decision: CREATED (`docs/validation/WAVE_INTEGRATION_10_SKILL_TREE_ACTIVE_EQUIP_DECISION.md`)
+- WAVE_INTEGRATION_10 report: CREATED (`docs/validation/WAVE_INTEGRATION_10_SKILL_TREE_ACTIVE_EQUIP_REPORT.md`)
+- Human Play Mode checklist (10): `docs/validation/WAVE_INTEGRATION_10_HUMAN_PLAYMODE_CHECKLIST.md`
+- Can start WAVE_INTEGRATION_11: YES; human must regenerate FarmScene and execute 06A + 07 + 08 + 09 + 10 Play Mode checklists
 
 ---
 
@@ -212,5 +216,5 @@ PROJECT_LOG + CURRENT_STATE conflict → prefer CURRENT_STATE; report mismatch
 
 ---
 
-*Last updated: 2026-06-08 (WAVE_INTEGRATION_09: inventory/tooltip/equipment runtime binding — InventoryPanelController + CharacterEquipmentPanelController reused (fully functional IMGUI, RuntimeInitializeOnLoad); GameplayInputRouter added to CreateMvpFarmScene.cs; ValidateInventoryRuntimeBinding.cs created; BUILD_VALIDATED_WITH_UI_DEBT; human must regenerate FarmScene and execute 06A + 07 + 08 + 09 checklists)*
-*Next update: after all four Play Mode checklists pass (or WAVE_INTEGRATION_06B created if tool IDs absent)*
+*Last updated: 2026-06-08 (WAVE_INTEGRATION_10: skill tree UI + active skill equip — REUSE_EXISTING_CONTROLLERS strategy; SkillTreeGameplayPanelController fully functional IMGUI singleton; fixed SkillTreeOpenedEvent subscription gap; DebugHud now shows active skill slots; ValidateSkillTreeRuntimeBinding.cs created; BUILD_VALIDATED_WITH_UI_DEBT; human must regenerate FarmScene and execute 06A + 07 + 08 + 09 + 10 checklists)*
+*Next update: after Play Mode checklists pass or WAVE_INTEGRATION_11 starts*

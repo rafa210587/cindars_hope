@@ -10,6 +10,7 @@ using CindarsHope.Player;
 using CindarsHope.Player.Progression;
 using CindarsHope.Core.Time;
 using CindarsHope.Save;
+using CindarsHope.Skills;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -182,6 +183,9 @@ namespace CindarsHope.UI
 
             GUILayout.Space(6f);
             DrawProgressionState();
+
+            GUILayout.Space(6f);
+            DrawActiveSkillSlots();
 
             GUILayout.Space(6f);
             DrawCaveSummary();
@@ -376,6 +380,28 @@ namespace CindarsHope.UI
             foreach (var item in _inventoryManager.Items)
             {
                 GUILayout.Label($"- {item.Key}: {item.Value}");
+            }
+        }
+
+        // WAVE_INTEGRATION_10: active skill slot display. Shows what is assigned to each of the
+        // 4 active slots (R/T/Y/G). Data comes from SkillTreeManager.State, which is authoritative.
+        private void DrawActiveSkillSlots()
+        {
+            var bootstrap = GameBootstrap.Instance;
+            var skillTreeManager = bootstrap?.SkillTreeManager;
+            if (skillTreeManager == null)
+            {
+                GUILayout.Label("Active Skills: SkillTreeManager not assigned");
+                return;
+            }
+
+            GUILayout.Label("Active Skills:");
+            var state = skillTreeManager.State;
+            string[] slotKeys = { "R", "T", "Y", "G" };
+            for (int i = 0; i < slotKeys.Length; i++)
+            {
+                var actionId = state.GetActiveSlotSkillActionId(i);
+                GUILayout.Label($"  [{slotKeys[i]}]: {(string.IsNullOrWhiteSpace(actionId) ? "vazio" : actionId)}");
             }
         }
 
