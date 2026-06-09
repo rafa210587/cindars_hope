@@ -202,6 +202,12 @@ namespace CindarsHope.Combat
 
             if (Input.GetKeyDown(KeyCode.Space))
             {
+                if (_playerController != null && _playerController.MoveInput.sqrMagnitude > 0.1f)
+                {
+                    UpdateDodgeState();
+                    return;
+                }
+
                 TryDodge();
             }
 

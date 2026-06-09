@@ -1,7 +1,7 @@
 # WAVE INTEGRATION 11 — Skill Action Slot Mapping
 
 **Date:** 2026-06-08
-**Status:** BUILD_VALIDATED_WITH_SKILL_EFFECT_DEBT
+**Status:** BUILD_VALIDATED_RUNTIME_INPUT_FIX_PENDING_HUMAN_PLAYMODE
 **Patch:** WAVE_INTEGRATION_11_ACTION_SKILL_BALANCE_PATCH
 
 ---
@@ -9,10 +9,14 @@
 ## Rules
 
 - Active slots count: 4
+- Active slot gameplay use keys: `1/2/3/4`
+- Skill Tree equip keys while UI is open: `R/T/Y/G`
+- Slot storage accepts canonical `SkillActionId`; runtime execution also tolerates `SkillNodeId` and resolves it to `UnlockedSkillActionId`.
 - Dash uses: Space + direction (NOT a skill slot)
 - Dodge uses: double tap directional (NOT a skill slot)
 - Block uses: Left Shift (NOT a skill slot)
 - Dash/Dodge/Block do not occupy active slots
+- Passive and capstone nodes are not valid active slot actions.
 
 ---
 
@@ -61,8 +65,8 @@
 
 | Action | Input | Source | Uses active slot? | Runtime system | Notes |
 |---|---|---|---:|---|---|
-| Dash | Space + direction | canonical direction | NO | PlayerDashController | costs 40 Stamina; 3.5 tiles; BUILD_VALIDATED |
-| Dodge | double tap directional | canonical direction | NO | PlayerMovementAbilityController | costs 40 Stamina; 1.5 tiles; BUILD_VALIDATED |
+| Dash | Space + direction | canonical direction/facing fallback | NO | PlayerDashController | costs 40 Stamina; 3.5 tiles; BUILD_VALIDATED_RUNTIME_BOUND |
+| Dodge | double tap directional | canonical direction | NO | PlayerMovementAbilityController | costs 40 Stamina; 1.5 tiles; BUILD_VALIDATED_RUNTIME_BOUND |
 | Block | Left Shift | canonical direction | NO | BLOCK_RUNTIME_DEFERRED | Melee/Block rank 1 unlocks; deferred to combat runtime |
 
 ---
@@ -75,8 +79,14 @@ ImplementNow values:
   BRIDGE         = debug mapping to farm.crop.water_skill for vertical slice demonstration
   NO             = EffectId registered in SkillActionToEffectId but no executor in registry (falls to "Deferred")
   YES            = fully implemented executor (only farm.crop.water_skill as of this patch)
+
+Runtime input fix:
+  ActiveSkillExecutionController now accepts either the stored SkillActionId or an accidental SkillNodeId,
+  revalidates the purchased/equippable node, and reports a clear blocked reason if the effect or executor
+  is still deferred.
 ```
 
 ---
 
 *Created: 2026-06-08 (WAVE_INTEGRATION_11_ACTION_SKILL_BALANCE_PATCH)*
+*Updated: 2026-06-09 (WAVE_INTEGRATION_11_RUNTIME_INPUT_FIX_PENDING_HUMAN_PLAYMODE)*

@@ -34,16 +34,21 @@ namespace CindarsHope.Player.Movement
         [SerializeField] private int _dodgeStaminaCost = 40;
 
         [SerializeField] private Rigidbody2D _rigidbody;
+        [SerializeField] private Collider2D _collider;
         [SerializeField] private PlayerController _playerController;
         [SerializeField] private StaminaManager _staminaManager;
 
         private readonly DirectionalDoubleTapDetector _doubleTapDetector = new DirectionalDoubleTapDetector();
         private float _lastDodgeTime = float.MinValue;
         private bool _isDodging;
+        private float _previousSpeedMultiplier = 1f;
+
+        public bool IsDodging => _isDodging;
 
         private void Start()
         {
             if (_rigidbody == null) _rigidbody = GetComponent<Rigidbody2D>();
+            if (_collider == null) _collider = GetComponent<Collider2D>();
             if (_playerController == null) _playerController = GetComponent<PlayerController>();
 
             var bootstrap = GameBootstrap.Instance;
@@ -63,9 +68,23 @@ namespace CindarsHope.Player.Movement
             }
         }
 
+        private void OnDisable()
+        {
+            if (_isDodging && _playerController != null)
+            {
+                _playerController.SpeedMultiplier = _previousSpeedMultiplier;
+            }
+
+            _isDodging = false;
+        }
+
         private void TryDodge(Vector2 direction)
         {
             if (_isDodging)
+                return;
+
+            var dashController = GetComponent<PlayerDashController>();
+            if (dashController != null && dashController.IsDashing)
                 return;
 
             if (Time.time - _lastDodgeTime < _dodgeCooldown)
@@ -91,7 +110,13 @@ namespace CindarsHope.Player.Movement
 
             Vector2 origin = transform.position;
             Vector2 target = GridMovementDisplacementResolver.Resolve(
-                origin, direction, _dodgeDistance, colliderRadius: 0.3f);
+                origin, direction, _dodgeDistance, colliderRadius: 0.3f, movingCollider: _collider);
+
+            if (_playerController != null)
+            {
+                _previousSpeedMultiplier = _playerController.SpeedMultiplier;
+                _playerController.SpeedMultiplier = 0f;
+            }
 
             float elapsed = 0f;
             while (elapsed < _dodgeDuration)
@@ -114,6 +139,11 @@ namespace CindarsHope.Player.Movement
                 transform.position = target;
 
             GameEventBus.Publish(new PlayerActionFeedbackEvent("Dodge!"));
+            if (_playerController != null)
+            {
+                _playerController.SpeedMultiplier = _previousSpeedMultiplier;
+            }
+
             _isDodging = false;
         }
     }

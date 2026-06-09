@@ -29,7 +29,8 @@ namespace CindarsHope.Skills
                 BuildTree("melee", "Melee", "Combate corpo a corpo: dual wield, two-handed, block, dodge, dash e leap.", index,
                     "melee_iron_grip","melee_guarded_stance","melee_dual_wield_flow","melee_offhand_cut",
                     "melee_two_handed_momentum","melee_guarded_block","melee_battle_dash","melee_leap_attack",
-                    "melee_whirl_cut","melee_dodge_training","melee_capstone_battle_rhythm"),
+                    "melee_whirl_cut","melee_dodge_training","melee.avanco_aco","melee.grito_desafio",
+                    "melee.investida_quebra_guarda","melee_capstone_battle_rhythm"),
                 BuildTree("ranged", "Ranged", "Arco: charge, pierce, multishot e mobilidade de arqueiro.", index,
                     "ranged_steady_hand","ranged_long_sight","ranged_quick_nock","ranged_charged_shot",
                     "ranged_line_piercer","ranged_multishot_fan","ranged_bleeding_arrow","ranged_kiting_steps",
@@ -37,15 +38,20 @@ namespace CindarsHope.Skills
                 BuildTree("magic", "Magic", "Magias elementais: Fire, Ice, Toxic, Lightning e Arcane.", index,
                     "magic_mana_well","magic_quick_channel","magic_arcane_edge","magic_fire_spark",
                     "magic_ice_bind","magic_toxic_cloud","magic_lightning_chain","magic_arcane_bolt_mastery",
-                    "magic_elemental_ward","magic_slowing_sigils","magic_capstone_elemental_confluence"),
+                    "magic_elemental_ward","magic_slowing_sigils","magic.chama_breve","magic.rajada_gelida",
+                    "magic_capstone_elemental_confluence"),
                 BuildTree("survival", "Survival", "Cave survival: resistencias ambientais e habilidades de sobrevivencia.", index,
                     "survival_cave_lungs","survival_hard_skin","survival_low_rations","survival_toxic_sense",
                     "survival_cold_habit","survival_heat_temper","survival_status_recovery","survival_safe_step",
-                    "survival_emergency_roll","survival_last_breath","survival_capstone_caveborn"),
+                    "survival_emergency_roll","survival_last_breath","survival.sinal_retirada","survival.isca_improvisada",
+                    "survival.kit_emergencia","survival.instinto_sobrevivencia","survival.campo_seguro",
+                    "survival_capstone_caveborn"),
                 BuildTree("crafting", "Crafting", "Crafting e reparo: melhorar bancadas, reparo e utilidade de campo.", index,
                     "crafting_fast_hands","crafting_repair_care","crafting_material_eye","crafting_field_patch",
                     "crafting_station_focus","crafting_pack_order","crafting_quick_repair","crafting_salvage_method",
-                    "crafting_durable_finish","crafting_shop_sense","crafting_capstone_master_artisan")
+                    "crafting_durable_finish","crafting_shop_sense","crafting.irrigador_portatil",
+                    "crafting.bomba_improvisada","crafting.mecanismo_campo","crafting.marca_eficiencia",
+                    "crafting_capstone_master_artisan")
             };
         }
 

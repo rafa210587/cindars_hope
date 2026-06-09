@@ -3,6 +3,8 @@ using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityInput = UnityEngine.Input;
 
 namespace CindarsHope.Player.Movement
 {
@@ -32,15 +34,54 @@ namespace CindarsHope.Player.Movement
         [SerializeField] private int _dashStaminaCost = 40;
 
         [SerializeField] private Rigidbody2D _rigidbody;
+        [SerializeField] private Collider2D _collider;
         [SerializeField] private PlayerController _playerController;
         [SerializeField] private StaminaManager _staminaManager;
 
         private float _lastDashTime = float.MinValue;
         private bool _isDashing;
+        private float _previousSpeedMultiplier = 1f;
+
+        public bool IsDashing => _isDashing;
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+        private static void EnsureRuntimeBinding()
+        {
+            BindToPlayer();
+            SceneManager.sceneLoaded -= HandleSceneLoaded;
+            SceneManager.sceneLoaded += HandleSceneLoaded;
+        }
+
+        private static void HandleSceneLoaded(Scene scene, LoadSceneMode mode)
+        {
+            BindToPlayer();
+        }
+
+        private static void BindToPlayer()
+        {
+            var playerObject = GameBootstrap.Instance?.PlayerManager != null
+                ? GameBootstrap.Instance.PlayerManager.gameObject
+                : null;
+            if (playerObject == null)
+            {
+                return;
+            }
+
+            if (playerObject.GetComponent<PlayerDashController>() == null)
+            {
+                playerObject.AddComponent<PlayerDashController>();
+            }
+
+            if (playerObject.GetComponent<PlayerMovementAbilityController>() == null)
+            {
+                playerObject.AddComponent<PlayerMovementAbilityController>();
+            }
+        }
 
         private void Start()
         {
             if (_rigidbody == null) _rigidbody = GetComponent<Rigidbody2D>();
+            if (_collider == null) _collider = GetComponent<Collider2D>();
             if (_playerController == null) _playerController = GetComponent<PlayerController>();
 
             var bootstrap = GameBootstrap.Instance;
@@ -54,20 +95,42 @@ namespace CindarsHope.Player.Movement
                 return;
 
             // Dash: Space + any directional input (W/A/S/D)
-            if (Input.GetKeyDown(KeyCode.Space))
+            if (UnityInput.GetKeyDown(KeyCode.Space))
             {
                 var moveInput = _playerController != null ? _playerController.MoveInput : Vector2.zero;
+                if (moveInput.sqrMagnitude <= 0.1f && _playerController != null)
+                {
+                    moveInput = _playerController.LastFacingDirection;
+                }
+
                 if (moveInput.sqrMagnitude > 0.1f)
                 {
                     TryDash(moveInput.normalized);
                 }
-                // If no directional input, fall through — let PlayerAttackController/PlayerDodgeController handle it
+                else
+                {
+                    GameEventBus.Publish(new PlayerActionFeedbackEvent("Dash bloqueado: nenhuma direcao disponivel."));
+                }
             }
+        }
+
+        private void OnDisable()
+        {
+            if (_isDashing && _playerController != null)
+            {
+                _playerController.SpeedMultiplier = _previousSpeedMultiplier;
+            }
+
+            _isDashing = false;
         }
 
         private void TryDash(Vector2 direction)
         {
             if (_isDashing)
+                return;
+
+            var dodgeController = GetComponent<PlayerMovementAbilityController>();
+            if (dodgeController != null && dodgeController.IsDodging)
                 return;
 
             if (Time.time - _lastDashTime < _dashCooldown)
@@ -93,7 +156,13 @@ namespace CindarsHope.Player.Movement
 
             Vector2 origin = transform.position;
             Vector2 target = GridMovementDisplacementResolver.Resolve(
-                origin, direction, _dashDistance, colliderRadius: 0.3f);
+                origin, direction, _dashDistance, colliderRadius: 0.3f, movingCollider: _collider);
+
+            if (_playerController != null)
+            {
+                _previousSpeedMultiplier = _playerController.SpeedMultiplier;
+                _playerController.SpeedMultiplier = 0f;
+            }
 
             float elapsed = 0f;
             while (elapsed < _dashDuration)
@@ -116,6 +185,10 @@ namespace CindarsHope.Player.Movement
                 transform.position = target;
 
             GameEventBus.Publish(new PlayerActionFeedbackEvent("Dash!"));
+            if (_playerController != null)
+            {
+                _playerController.SpeedMultiplier = _previousSpeedMultiplier;
+            }
             _isDashing = false;
         }
     }

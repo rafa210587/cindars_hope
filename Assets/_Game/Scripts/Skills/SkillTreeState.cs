@@ -45,7 +45,7 @@ namespace CindarsHope.Skills
             // We count by checking the treeId prefix convention in node IDs.
             int count = 0;
             foreach (var id in _purchased)
-                if (id.StartsWith(treeId + "_")) count++;
+                if (id.StartsWith(treeId + "_") || id.StartsWith(treeId + ".")) count++;
             return count;
         }
 

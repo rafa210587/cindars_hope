@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityInput = UnityEngine.Input;
 
 namespace CindarsHope.Player.Movement
 {
@@ -34,7 +35,7 @@ namespace CindarsHope.Player.Movement
         {
             for (int i = 0; i < _directionKeys.Length; i++)
             {
-                if (Input.GetKeyDown(_directionKeys[i]))
+                if (UnityInput.GetKeyDown(_directionKeys[i]))
                 {
                     float timeSinceLast = Time.time - _lastTapTime[i];
                     if (timeSinceLast <= DoubleTapWindow && timeSinceLast > 0.02f)

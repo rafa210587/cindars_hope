@@ -18,13 +18,45 @@ namespace CindarsHope.Player.Movement
             Vector2 direction,
             float maxDistance,
             float colliderRadius = 0.3f,
-            LayerMask? obstacleLayer = null)
+            LayerMask? obstacleLayer = null,
+            Collider2D movingCollider = null)
         {
             if (direction.sqrMagnitude < 0.001f)
                 return origin;
 
             direction = direction.normalized;
-            var layer = obstacleLayer ?? (LayerMask)LayerMask.GetMask("Default", "Ground", "Wall", "Obstacle");
+            var layer = obstacleLayer ?? (LayerMask)~0;
+
+            if (movingCollider != null)
+            {
+                var filter = new ContactFilter2D
+                {
+                    useTriggers = false,
+                    useLayerMask = true,
+                    layerMask = layer
+                };
+                var results = new RaycastHit2D[8];
+                var hitCount = movingCollider.Cast(direction, filter, results, maxDistance);
+                if (hitCount <= 0)
+                {
+                    return origin + direction * maxDistance;
+                }
+
+                var nearestDistance = maxDistance;
+                for (var i = 0; i < hitCount; i++)
+                {
+                    var colliderHit = results[i];
+                    if (colliderHit.collider == null || colliderHit.collider == movingCollider)
+                    {
+                        continue;
+                    }
+
+                    nearestDistance = Mathf.Min(nearestDistance, colliderHit.distance);
+                }
+
+                var colliderSafeDistance = Mathf.Max(0f, nearestDistance - colliderRadius * 0.5f);
+                return origin + direction * colliderSafeDistance;
+            }
 
             // Cast a circle sweep to find the furthest safe point
             var hit = Physics2D.CircleCast(

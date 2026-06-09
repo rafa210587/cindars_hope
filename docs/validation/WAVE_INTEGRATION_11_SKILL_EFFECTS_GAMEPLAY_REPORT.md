@@ -1,7 +1,7 @@
 # WAVE_INTEGRATION_11 — Skill Effects Gameplay Report
 
 **Date:** 2026-06-08
-**Status:** BUILD_VALIDATED_WITH_SKILL_EFFECT_DEBT
+**Status:** BUILD_VALIDATED_RUNTIME_INPUT_FIX_PENDING_HUMAN_PLAYMODE
 **Patch:** WAVE_INTEGRATION_11_ACTION_SKILL_BALANCE_PATCH
 
 ---
@@ -15,6 +15,13 @@ A WAVE_INTEGRATION_11 implementou o pipeline de execução de efeitos de skill:
 - Dash: `PlayerDashController` (Space + direção, 3.5 tiles, 40 Stamina)
 - Dodge: `PlayerMovementAbilityController` (double-tap, 1.5 tiles, 40 Stamina)
 - Block: BLOCK_RUNTIME_DEFERRED
+
+Runtime input fix (2026-06-09):
+- `DefaultSkillCatalog.BuildAllTrees()` now includes the 14 balance-patch action nodes, so they appear in actual Skill Tree UI lists.
+- `ActiveSkillExecutionController` resolves active slots containing either `SkillActionId` or `SkillNodeId`, then revalidates purchased/equippable node state before execution.
+- Active slot gameplay keys remain `1/2/3/4`; Skill Tree equip keys remain `R/T/Y/G` while the panel is open.
+- Dash and Dodge controllers now bind to `GameBootstrap.Instance.PlayerManager.gameObject` at runtime, so current FarmScene does not require scene edits for these controllers.
+- Dash/Dodge movement now uses the player's own `Collider2D.Cast` path to avoid self-hit and stop before blocking colliders.
 
 O patch de balanceamento de action skills adicionou:
 - 14 novas action skills ao `DefaultSkillCatalog.cs` (3 Melee, 2 Magic, 5 Survival, 4 Crafting)
@@ -50,7 +57,7 @@ O patch de balanceamento de action skills adicionou:
 | SkillTargetResolver | BUILD_VALIDATED | resolves targets per type |
 | FarmCropSkillEffectExecutor | BUILD_VALIDATED | farm.crop.water_skill — real effect |
 | FeedbackOnlySkillEffectExecutor | BUILD_VALIDATED | 14 effects — feedback only, DEFERRED |
-| ActiveSkillExecutionController | BUILD_VALIDATED | 1-4 keys, cooldown, feedback |
+| ActiveSkillExecutionController | BUILD_VALIDATED_RUNTIME_INPUT_FIX | 1-4 keys, cooldown, feedback, SkillActionId/SkillNodeId slot resolution |
 | SkillActionToEffectId | BUILD_VALIDATED | 32 mappings total |
 
 ---
@@ -59,8 +66,8 @@ O patch de balanceamento de action skills adicionou:
 
 | Ability | Controller | Status | Notes |
 |---|---|---|---|
-| Dash | PlayerDashController | BUILD_VALIDATED | Space+dir, 3.5t, 40sp, 1.0s cd |
-| Dodge | PlayerMovementAbilityController | BUILD_VALIDATED | double-tap, 1.5t, 40sp, 0.6s cd |
+| Dash | PlayerDashController | BUILD_VALIDATED_RUNTIME_BOUND | Space+dir/facing fallback, 3.5t, 40sp, 1.0s cd, runtime-bound to Player |
+| Dodge | PlayerMovementAbilityController | BUILD_VALIDATED_RUNTIME_BOUND | double-tap, 1.5t, 40sp, 0.6s cd, runtime-bound to Player |
 | Block | — | BLOCK_RUNTIME_DEFERRED | Left Shift; combat runtime pendente |
 
 ---
@@ -95,6 +102,7 @@ Assembly-CSharp: PASS (exit code 0, 0 warnings, 0 errors)
 Assembly-CSharp-Editor: PASS (exit code 0, 7 warnings pré-existentes, 0 errors)
 Docs validation: EXPECTED_FAIL_LEGACY_ONLY (pre-existing governance errors only)
 Quality check: HARNESS_FAIL_PESTER_3_4_0_KNOWN_ISSUE
+Unity Play Mode: NOT RUN (human validation required)
 ```
 
 Quality command attempted:
@@ -143,6 +151,24 @@ Residual risk: Novas action skills visíveis na skill tree mas efeitos são apen
 | `docs/validation/WAVE_INTEGRATION_11_HUMAN_PLAYMODE_CHECKLIST.md` | UPDATED — action balance section |
 | `docs/project/CURRENT_STATE.md` | UPDATED |
 
+## Files Changed (Runtime Input Fix)
+
+| File | Change |
+|---|---|
+| `Assets/_Game/Scripts/Skills/DefaultSkillCatalog.cs` | 14 balance-patch nodes added to actual tree lists |
+| `Assets/_Game/Scripts/Skills/SkillTreeState.cs` | purchased count accepts `treeId_` and `treeId.` node IDs |
+| `Assets/_Game/Scripts/Skills/Runtime/Effects/ActiveSkillExecutionController.cs` | runtime slot resolution, validation diagnostics, single feedback publish |
+| `Assets/_Game/Scripts/Player/Movement/PlayerDashController.cs` | runtime player binding, Space+direction/facing fallback, collider-cast movement |
+| `Assets/_Game/Scripts/Player/Movement/PlayerMovementAbilityController.cs` | runtime-bound by Dash controller, double-tap dodge collider-cast movement |
+| `Assets/_Game/Scripts/Player/Movement/DirectionalDoubleTapDetector.cs` | explicit Unity input alias |
+| `Assets/_Game/Scripts/Player/Movement/GridMovementDisplacementResolver.cs` | optional moving collider cast path |
+| `Assets/_Game/Scripts/Combat/PlayerAttackController.cs` | prevents legacy Space dodge from also firing on Space+direction Dash |
+| `Assets/_Game/Scripts/Editor/Validation/ValidateWave11RuntimeInputBinding.cs` | new runtime input binding validator |
+| `docs/validation/WAVE_INTEGRATION_11_RUNTIME_INPUT_FAILURE_AUDIT.md` | created |
+| `docs/validation/WAVE_INTEGRATION_11_RUNTIME_INPUT_FIX_REPORT.md` | created |
+| `docs/project/CURRENT_STATE.md` | updated |
+
 ---
 
 *Created: 2026-06-08 (WAVE_INTEGRATION_11_ACTION_SKILL_BALANCE_PATCH)*
+*Updated: 2026-06-09 (WAVE_INTEGRATION_11_RUNTIME_INPUT_FIX_PENDING_HUMAN_PLAYMODE)*

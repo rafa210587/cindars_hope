@@ -3,8 +3,10 @@ using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
 using CindarsHope.Interaction;
+using CindarsHope.Skills;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityInput = UnityEngine.Input;
 
 namespace CindarsHope.Skills.Runtime.Effects
 {
@@ -83,6 +85,9 @@ namespace CindarsHope.Skills.Runtime.Effects
         private readonly SkillEffectRegistry _registry = new SkillEffectRegistry();
         private readonly float[] _slotCooldowns = new float[4];
         private bool _bootstrapped;
+
+        public static bool TryGetEffectIdForValidation(string skillActionId, out string effectId)
+            => SkillActionToEffectId.TryGetValue(skillActionId, out effectId);
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void EnsureRuntimeInstance()
@@ -234,7 +239,7 @@ namespace CindarsHope.Skills.Runtime.Effects
             // Check numeric key input 1-4
             for (int slotIndex = 0; slotIndex < SlotInputKeys.Length; slotIndex++)
             {
-                if (Input.GetKeyDown(SlotInputKeys[slotIndex]))
+                if (UnityInput.GetKeyDown(SlotInputKeys[slotIndex]))
                 {
                     TryExecuteSlot(slotIndex);
                     break;
@@ -260,29 +265,13 @@ namespace CindarsHope.Skills.Runtime.Effects
                 return;
             }
 
-            var skillActionId = skillTreeManager.State.GetActiveSlotSkillActionId(slotIndex);
-            if (string.IsNullOrEmpty(skillActionId))
+            var rawSlotValue = skillTreeManager.State.GetActiveSlotSkillActionId(slotIndex);
+            if (!TryResolveEquippedSkillAction(skillTreeManager, rawSlotValue, out var skillActionId, out var nodeId, out var resolveMessage))
             {
-                PublishFeedback($"Slot {slotIndex + 1} vazio. Equipe uma skill na skill tree (U).");
-                return;
-            }
-
-            // Validate skill is purchased/unlocked
-            bool isUnlocked = false;
-            foreach (var node in skillTreeManager.NodeIndex.Values)
-            {
-                if (node.UnlockedSkillActionId == skillActionId
-                    && node.SkillCategory == CindarsHope.Skills.SkillCategory.EquippableSkill
-                    && skillTreeManager.IsNodePurchased(node.SkillNodeId))
-                {
-                    isUnlocked = true;
-                    break;
-                }
-            }
-
-            if (!isUnlocked)
-            {
-                PublishFeedback($"Skill '{skillActionId}' nao esta desbloqueada.");
+                PublishFeedback(string.IsNullOrWhiteSpace(resolveMessage)
+                    ? $"Slot {slotIndex + 1} vazio. Equipe uma skill na skill tree (U)."
+                    : resolveMessage);
+                Debug.Log($"[ActiveSkillExecutionController] Slot blocked. Slot={slotIndex}, RawSlotValue={rawSlotValue ?? "<empty>"}, Reason={resolveMessage}", this);
                 return;
             }
 
@@ -291,7 +280,7 @@ namespace CindarsHope.Skills.Runtime.Effects
             {
                 // TODO_INTEGRATION_NOT_FINAL: No effect defined for this skill action.
                 PublishFeedback($"Skill '{skillActionId}' sem efeito implementado. (Deferred)");
-                Debug.Log($"[ActiveSkillExecutionController] No effectId for skillActionId='{skillActionId}'. Deferred.");
+                Debug.Log($"[ActiveSkillExecutionController] No effectId. Slot={slotIndex}, RawSlotValue={rawSlotValue}, ResolvedSkillActionId={skillActionId}, NodeId={nodeId}. Deferred.", this);
                 return;
             }
 
@@ -301,7 +290,7 @@ namespace CindarsHope.Skills.Runtime.Effects
             {
                 // TODO_INTEGRATION_NOT_FINAL: Executor not registered for this effectId.
                 PublishFeedback($"Efeito '{effectId}' sem executor. (Deferred)");
-                Debug.Log($"[ActiveSkillExecutionController] No executor for effectId='{effectId}'. Deferred.");
+                Debug.Log($"[ActiveSkillExecutionController] No executor. Slot={slotIndex}, RawSlotValue={rawSlotValue}, ResolvedSkillActionId={skillActionId}, NodeId={nodeId}, EffectId={effectId}. Deferred.", this);
                 return;
             }
 
@@ -333,14 +322,104 @@ namespace CindarsHope.Skills.Runtime.Effects
                 // Apply cooldown on success
                 _slotCooldowns[slotIndex] = 1.5f; // TODO_INTEGRATION_NOT_FINAL: hardcoded 1.5s cooldown
                 PublishFeedback(result.FeedbackMessage);
-                GameEventBus.Publish(new PlayerActionFeedbackEvent(result.FeedbackMessage));
-                Debug.Log($"[ActiveSkillExecutionController] Skill executed. Slot={slotIndex}, SkillActionId={skillActionId}, EffectId={effectId}");
+                Debug.Log($"[ActiveSkillExecutionController] Skill executed. Slot={slotIndex}, RawSlotValue={rawSlotValue}, ResolvedSkillActionId={skillActionId}, NodeId={nodeId}, EffectId={effectId}, Executor={executor.GetType().Name}", this);
             }
             else
             {
                 PublishFeedback(result.FeedbackMessage);
-                Debug.Log($"[ActiveSkillExecutionController] Skill failed. Slot={slotIndex}, Reason={result.FailureReason}, Feedback={result.FeedbackMessage}");
+                Debug.Log($"[ActiveSkillExecutionController] Skill failed. Slot={slotIndex}, RawSlotValue={rawSlotValue}, ResolvedSkillActionId={skillActionId}, NodeId={nodeId}, EffectId={effectId}, Executor={executor.GetType().Name}, Reason={result.FailureReason}, Feedback={result.FeedbackMessage}", this);
             }
+        }
+
+        private static bool TryResolveEquippedSkillAction(
+            SkillTreeManager skillTreeManager,
+            string rawSlotValue,
+            out string skillActionId,
+            out string nodeId,
+            out string message)
+        {
+            skillActionId = string.Empty;
+            nodeId = string.Empty;
+            message = string.Empty;
+
+            if (skillTreeManager == null)
+            {
+                message = "SkillTreeManager nao disponivel.";
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(rawSlotValue))
+            {
+                message = string.Empty;
+                return false;
+            }
+
+            if (skillTreeManager.NodeIndex.TryGetValue(rawSlotValue, out var directNode))
+            {
+                nodeId = directNode.SkillNodeId;
+                if (!ResolvePurchasedEquippableNode(skillTreeManager, directNode, out skillActionId, out message))
+                {
+                    return false;
+                }
+
+                return true;
+            }
+
+            foreach (var candidate in skillTreeManager.NodeIndex.Values)
+            {
+                if (candidate == null || candidate.UnlockedSkillActionId != rawSlotValue)
+                {
+                    continue;
+                }
+
+                nodeId = candidate.SkillNodeId;
+                if (!ResolvePurchasedEquippableNode(skillTreeManager, candidate, out skillActionId, out message))
+                {
+                    return false;
+                }
+
+                return true;
+            }
+
+            message = $"Slot contem skill desconhecida '{rawSlotValue}'.";
+            return false;
+        }
+
+        private static bool ResolvePurchasedEquippableNode(
+            SkillTreeManager skillTreeManager,
+            SkillNodeDataSO node,
+            out string skillActionId,
+            out string message)
+        {
+            skillActionId = string.Empty;
+            message = string.Empty;
+
+            if (node == null)
+            {
+                message = "Skill node nao encontrado.";
+                return false;
+            }
+
+            if (node.SkillCategory != SkillCategory.EquippableSkill)
+            {
+                message = $"Skill '{node.SkillNodeId}' nao e equipavel.";
+                return false;
+            }
+
+            if (!skillTreeManager.IsNodePurchased(node.SkillNodeId))
+            {
+                message = $"Skill '{node.SkillNodeId}' nao esta comprada.";
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(node.UnlockedSkillActionId))
+            {
+                message = $"Skill '{node.SkillNodeId}' nao tem SkillActionId.";
+                return false;
+            }
+
+            skillActionId = node.UnlockedSkillActionId;
+            return true;
         }
 
         private void PublishFeedback(string message)
