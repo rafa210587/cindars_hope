@@ -153,7 +153,26 @@ namespace CindarsHope.UI.Skills
                 {
                     BuySelectedNode();
                 }
+                else if (global::UnityEngine.Input.GetKeyDown(KeyCode.R)) EquipSelectedNodeToSlot(0);
+                else if (global::UnityEngine.Input.GetKeyDown(KeyCode.T)) EquipSelectedNodeToSlot(1);
+                else if (global::UnityEngine.Input.GetKeyDown(KeyCode.Y)) EquipSelectedNodeToSlot(2);
+                else if (global::UnityEngine.Input.GetKeyDown(KeyCode.G)) EquipSelectedNodeToSlot(3);
             }
+        }
+
+        private void EquipSelectedNodeToSlot(int slotIndex)
+        {
+            var manager = GameBootstrap.Instance?.SkillTreeManager;
+            if (manager == null || string.IsNullOrEmpty(_selectedTreeId)) return;
+            if (!manager.TreeIndex.TryGetValue(_selectedTreeId, out var tree)) return;
+            if (_selectedNodeIndex < 0 || _selectedNodeIndex >= tree.Nodes.Count) return;
+            var node = tree.Nodes[_selectedNodeIndex];
+            if (!manager.IsNodePurchased(node.SkillNodeId)) return;
+            if (node.SkillCategory != SkillCategory.EquippableSkill) return;
+            if (string.IsNullOrEmpty(node.UnlockedSkillActionId)) return;
+            _feedback = manager.TryAssignActiveSlot(slotIndex, node.UnlockedSkillActionId)
+                ? $"Skill equipada em {SlotKeys[slotIndex]}."
+                : "Não foi possível equipar neste slot.";
         }
 
         private void EnterSelectedTree()
@@ -330,7 +349,7 @@ namespace CindarsHope.UI.Skills
             }
             GUILayout.Label($"Skill Tree - {tree.DisplayName}  [A/D] trocar arvore");
             GUILayout.EndHorizontal();
-            GUILayout.Label("[W/S] navegar nodes  [E] comprar node selecionado");
+            GUILayout.Label("[W/S] navegar  [E] comprar  [R/T/Y/G] equipar em slot");
             _scroll = GUILayout.BeginScrollView(_scroll, GUILayout.Height(390f));
             _currentTreeNodeCount = tree.Nodes.Count;
             for (var nodeIdx = 0; nodeIdx < tree.Nodes.Count; nodeIdx++)
@@ -365,6 +384,26 @@ namespace CindarsHope.UI.Skills
                 manager.TryPurchaseNode(node.SkillNodeId, progression?.Level ?? 1, out _feedback);
             }
             GUI.enabled = true;
+
+            if (purchased && node.SkillCategory == SkillCategory.EquippableSkill
+                && !string.IsNullOrEmpty(node.UnlockedSkillActionId))
+            {
+                GUILayout.Label("Equipar em slot:");
+                GUILayout.BeginHorizontal();
+                for (var i = 0; i < SlotKeys.Length; i++)
+                {
+                    var occupied = manager.State.GetActiveSlotSkillActionId(i) == node.UnlockedSkillActionId;
+                    var slotLabel = occupied ? $"{SlotKeys[i]} [OK]" : SlotKeys[i];
+                    if (GUILayout.Button(slotLabel, GUILayout.Width(65f)))
+                    {
+                        _selectedNodeIndex = nodeIdx;
+                        if (manager.TryAssignActiveSlot(i, node.UnlockedSkillActionId))
+                            _feedback = $"Skill equipada em {SlotKeys[i]}.";
+                    }
+                }
+                GUILayout.EndHorizontal();
+            }
+
             GUILayout.EndVertical();
         }
 
