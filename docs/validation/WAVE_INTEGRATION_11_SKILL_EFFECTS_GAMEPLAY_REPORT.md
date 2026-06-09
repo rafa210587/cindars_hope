@@ -1,7 +1,7 @@
 # WAVE_INTEGRATION_11 — Skill Effects Gameplay Report
 
 **Date:** 2026-06-08
-**Status:** BUILD_VALIDATED_MOVEMENT_RUNTIME_FIX_PENDING_HUMAN_PLAYMODE
+**Status:** COMPILE_VALIDATED_MOVEMENT_RUNTIME_FIX_PENDING_HUMAN_PLAYMODE
 **Patch:** WAVE_INTEGRATION_11_ACTION_SKILL_BALANCE_PATCH
 
 ---
@@ -72,9 +72,9 @@ O patch de balanceamento de action skills adicionou:
 
 | Ability | Controller | Status | Notes |
 |---|---|---|---|
-| Dash | PlayerDashController | BUILD_VALIDATED_PENDING_HUMAN_PLAYMODE | Space+dir/facing fallback, 3.5t, 40sp, 1.0s cd, runtime-bound to Player |
-| Dodge | PlayerDodgeController | BUILD_VALIDATED_PENDING_HUMAN_PLAYMODE | double-tap, 1.5t, 40sp, 0.6s cd, runtime-bound to Player |
-| Block | PlayerBlockController | BUILD_VALIDATED_PENDING_HUMAN_PLAYMODE_DAMAGE_REDUCTION_DEFERRED | Left Shift slow 0.5x, 10 stamina/s; damage reduction deferred |
+| Dash | PlayerDashController | COMPILE_VALIDATED_PENDING_HUMAN_PLAYMODE | Space+dir/facing fallback, 3.5t, 40sp, 1.0s cd, runtime-bound to Player |
+| Dodge | PlayerDodgeController | COMPILE_VALIDATED_PENDING_HUMAN_PLAYMODE | double-tap, 1.5t, 40sp, 0.6s cd, runtime-bound to Player |
+| Block | PlayerBlockController | COMPILE_VALIDATED_PENDING_HUMAN_PLAYMODE_DAMAGE_REDUCTION_DEFERRED | Left Shift slow 0.5x, 10 stamina/s; damage reduction deferred |
 
 ---
 
