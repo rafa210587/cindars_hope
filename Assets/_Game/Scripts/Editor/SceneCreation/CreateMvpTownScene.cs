@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Data;
@@ -746,6 +747,57 @@ namespace CindarsHope.Editor.SceneCreation
             };
         }
 
+        private static readonly TownNpcSpec[] RefinedCanonicalTownNpcSpecs =
+        {
+            new("npc_corvus", "NPC_Corvus_Temple", "Assets/_Game/Data/NPCs/Npc_Corvus.asset", "Assets/_Game/Data/Economy/Shop_Corvus.asset", new Vector3(-5.8f, 3.4f, 0f), new Color(0.82f, 0.76f, 0.58f), "Stationary/TemplePatrol", false),
+            new("npc_mara", "NPC_Mara_Registry", "Assets/_Game/Data/NPCs/Npc_Mara.asset", "Assets/_Game/Data/Economy/Shop_Mara.asset", new Vector3(-3.8f, 3.4f, 0f), new Color(0.44f, 0.56f, 0.72f), "Stationary/RegistryDesk", false),
+            new("npc_sylveth", "NPC_Sylveth_SeedVendor", "Assets/_Game/Data/NPCs/Npc_Sylveth.asset", "Assets/_Game/Data/Economy/Shop_Sylveth.asset", new Vector3(4.5f, 2f, 0f), new Color(0.42f, 0.72f, 0.34f), "ShopKeeperFixed/FarmVisit", false),
+            new("npc_brumdar", "NPC_Brumdar_Blacksmith", "Assets/_Game/Data/NPCs/Npc_Brumdar.asset", "Assets/_Game/Data/Economy/Shop_Brumdar.asset", new Vector3(-4.75f, 2.2f, 0f), new Color(0.64f, 0.45f, 0.3f), "ShopKeeperFixed", false),
+            new("npc_nimble", "NPC_Nimble_Workshop", "Assets/_Game/Data/NPCs/Npc_Nimble.asset", "Assets/_Game/Data/Economy/Shop_Nimble.asset", new Vector3(2.75f, -3.2f, 0f), new Color(0.72f, 0.58f, 0.32f), "Patrol/WorkshopDesk", true),
+            new("npc_gurd", "NPC_Gurd_ConstructionYard", "Assets/_Game/Data/NPCs/Npc_Gurd.asset", "Assets/_Game/Data/Economy/Shop_Gurd.asset", new Vector3(-1.8f, -3.3f, 0f), new Color(0.62f, 0.36f, 0.32f), "Patrol/HeavyWorkZone", true),
+            new("npc_hund", "NPC_Hund_GuardRoute", "Assets/_Game/Data/NPCs/Npc_Hund.asset", "Assets/_Game/Data/Economy/Shop_Hund.asset", new Vector3(-6.3f, 1.2f, 0f), new Color(0.38f, 0.48f, 0.58f), "Patrol/TownRoad", true),
+            new("npc_ozzra", "NPC_Ozzra_AlchemyLab", "Assets/_Game/Data/NPCs/Npc_Ozzra.asset", "Assets/_Game/Data/Economy/Shop_Ozzra.asset", new Vector3(6.4f, 1.25f, 0f), new Color(0.32f, 0.7f, 0.75f), "WanderWithinZone/Lab", true),
+            new("npc_gruta", "NPC_Gruta_Tavern", "Assets/_Game/Data/NPCs/Npc_Gruta.asset", "Assets/_Game/Data/Economy/Shop_Gruta.asset", new Vector3(1.8f, 3.4f, 0f), new Color(0.75f, 0.42f, 0.28f), "ShopKeeperFixed/TavernStage", false),
+            new("npc_zrix", "NPC_Zrix_CaveRoad", "Assets/_Game/Data/NPCs/Npc_Zrix.asset", "Assets/_Game/Data/Economy/Shop_Zrix.asset", new Vector3(5.75f, -1.75f, 0f), new Color(0.43f, 0.52f, 0.68f), "Patrol/CaveRoad", true),
+            new("npc_yael", "NPC_Yael_NightMarket", "Assets/_Game/Data/NPCs/Npc_Yael.asset", "Assets/_Game/Data/Economy/Shop_Yael.asset", new Vector3(6.3f, -3.3f, 0f), new Color(0.28f, 0.24f, 0.62f), "NightOnly/WanderHidden", true),
+            new("npc_thalindra", "NPC_Thalindra_Archive", "Assets/_Game/Data/NPCs/Npc_Thalindra.asset", "Assets/_Game/Data/Economy/Shop_Thalindra.asset", new Vector3(-6.2f, -0.5f, 0f), new Color(0.5f, 0.42f, 0.77f), "Stationary/ArchiveDesk", false),
+            new("npc_dagna", "NPC_Dagna_Quarry", "Assets/_Game/Data/NPCs/Npc_Dagna.asset", "Assets/_Game/Data/Economy/Shop_Dagna.asset", new Vector3(-6.4f, -2.6f, 0f), new Color(0.54f, 0.46f, 0.4f), "Patrol/QuarryRoad", true),
+            new("npc_pip", "NPC_Pip_TownEntrance", "Assets/_Game/Data/NPCs/Npc_Pip_Miudinho.asset", "Assets/_Game/Data/Economy/Shop_Pip.asset", new Vector3(-5f, 1f, 0f), new Color(0.38f, 0.72f, 0.86f), "WanderWithinZone", true),
+            new("npc_alaric", "NPC_Alaric_GuardPost", "Assets/_Game/Data/NPCs/Npc_Alaric.asset", string.Empty, new Vector3(-7.2f, 2.25f, 0f), new Color(0.36f, 0.46f, 0.72f), "Patrol/TownGate", true),
+            new("npc_mirela", "NPC_Mirela_Tailor", "Assets/_Game/Data/NPCs/Npc_Mirela.asset", "Assets/_Game/Data/Economy/Shop_Mirela.asset", new Vector3(3.75f, 3.25f, 0f), new Color(0.82f, 0.48f, 0.62f), "ShopKeeperFixed", false),
+            new("npc_renko", "NPC_Renko_GeneralMerchant", "Assets/_Game/Data/NPCs/Npc_Renko.asset", "Assets/_Game/Data/Economy/Shop_Renko.asset", new Vector3(0f, 3.25f, 0f), new Color(0.86f, 0.72f, 0.34f), "ShopKeeperFixed", false),
+            new("npc_eiran", "NPC_Eiran_AnimalYard", "Assets/_Game/Data/NPCs/Npc_Eiran.asset", "Assets/_Game/Data/Economy/Shop_Eiran.asset", new Vector3(6.1f, 0.05f, 0f), new Color(0.44f, 0.68f, 0.42f), "WanderWithinZone/AnimalArea", true),
+            new("npc_liora", "NPC_Liora_StatueGarden", "Assets/_Game/Data/NPCs/Npc_Liora.asset", string.Empty, new Vector3(0.85f, -0.4f, 0f), new Color(0.68f, 0.62f, 0.9f), "WanderWithinZone/EveningStage", true),
+            new("npc_orlan", "NPC_Orlan_Inn", "Assets/_Game/Data/NPCs/Npc_Orlan.asset", "Assets/_Game/Data/Economy/Shop_Orlan.asset", new Vector3(2.95f, 3.45f, 0f), new Color(0.66f, 0.56f, 0.42f), "ShopKeeperFixed", false),
+            new("npc_savra", "NPC_Savra_ForestGate", "Assets/_Game/Data/NPCs/Npc_Savra.asset", "Assets/_Game/Data/Economy/Shop_Savra.asset", new Vector3(7.15f, 1.85f, 0f), new Color(0.34f, 0.62f, 0.38f), "Patrol/HerbRoute", true),
+            new("npc_tovin", "NPC_Tovin_Registry", "Assets/_Game/Data/NPCs/Npc_Tovin.asset", "Assets/_Game/Data/Economy/Shop_Tovin.asset", new Vector3(-2.75f, 3.45f, 0f), new Color(0.58f, 0.64f, 0.72f), "Stationary/PermitDesk", false),
+            new("npc_maelor", "NPC_Maelor_NightRoute", "Assets/_Game/Data/NPCs/Npc_Maelor.asset", string.Empty, new Vector3(0f, -3.45f, 0f), new Color(0.22f, 0.24f, 0.32f), "NightOnly/WanderHidden", true),
+        };
+
+        private readonly struct TownNpcSpec
+        {
+            public TownNpcSpec(string npcId, string objectName, string npcDataPath, string shopDataPath, Vector3 position, Color color, string movementProfile, bool canWander)
+            {
+                NpcId = npcId;
+                ObjectName = objectName;
+                NpcDataPath = npcDataPath;
+                ShopDataPath = shopDataPath;
+                Position = position;
+                Color = color;
+                MovementProfile = movementProfile;
+                CanWander = canWander;
+            }
+
+            public string NpcId { get; }
+            public string ObjectName { get; }
+            public string NpcDataPath { get; }
+            public string ShopDataPath { get; }
+            public Vector3 Position { get; }
+            public Color Color { get; }
+            public string MovementProfile { get; }
+            public bool CanWander { get; }
+        }
+
         private static NpcManager CreateNpcs(
             Transform playerTransform,
             PlayerManager playerManager,
@@ -758,94 +810,63 @@ namespace CindarsHope.Editor.SceneCreation
             var parent = new GameObject("NPCs");
             parent.transform.position = Vector3.zero;
 
-            var pip = CreateDialogueNpc(
-                parent.transform,
-                "NPC_Pip_Miudinho",
-                new Vector3(-5f, 1f, 0f),
-                new Color(0.38f, 0.72f, 0.86f),
-                "Assets/_Game/Data/NPCs/Npc_Pip_Miudinho.asset",
-                modalManager,
-                shopUi.DialogueModal,
-                false);
-            var reception = pip.AddComponent<PipReceptionController>();
-            var serializedReception = new SerializedObject(reception);
-            SetReference(serializedReception, "_playerTransform", playerTransform);
-            serializedReception.ApplyModifiedPropertiesWithoutUndo();
+            var dialogueNpcs = new List<NpcController>();
+            var shopNpcs = new List<NpcShopController>();
 
-            var sylveth = CreateShopNpc(
-                parent.transform,
-                "NPC_Sylveth_SeedVendor",
-                new Vector3(4.5f, 2f, 0f),
-                new Color(0.42f, 0.72f, 0.34f),
-                "Assets/_Game/Data/NPCs/Npc_Sylveth.asset",
-                "Assets/_Game/Data/Economy/Shop_Seeds_Tools.asset",
-                playerManager,
-                inventoryManager,
-                itemDatabase,
-                shopManager,
-                modalManager,
-                shopUi);
-            var brumdar = CreateShopNpc(
-                parent.transform,
-                "NPC_Brumdar_Blacksmith",
-                new Vector3(-4.75f, 2.2f, 0f),
-                new Color(0.64f, 0.45f, 0.3f),
-                "Assets/_Game/Data/NPCs/Npc_Brumdar.asset",
-                "Assets/_Game/Data/Economy/Shop_Blacksmith.asset",
-                playerManager,
-                inventoryManager,
-                itemDatabase,
-                shopManager,
-                modalManager,
-                shopUi);
+            foreach (var spec in RefinedCanonicalTownNpcSpecs)
+            {
+                GameObject npcObject;
+                if (!string.IsNullOrWhiteSpace(spec.ShopDataPath))
+                {
+                    npcObject = CreateShopNpc(
+                        parent.transform,
+                        spec.ObjectName,
+                        spec.Position,
+                        spec.Color,
+                        spec.NpcDataPath,
+                        spec.ShopDataPath,
+                        spec.MovementProfile,
+                        playerManager,
+                        inventoryManager,
+                        itemDatabase,
+                        shopManager,
+                        modalManager,
+                        shopUi);
 
-            var renko = CreateShopNpc(
-                parent.transform,
-                "NPC_Renko_GeneralMerchant",
-                new Vector3(0f, 3.25f, 0f),
-                new Color(0.86f, 0.72f, 0.34f),
-                "Assets/_Game/Data/NPCs/Npc_Renko.asset",
-                "Assets/_Game/Data/Economy/Shop_General_Store.asset",
-                playerManager,
-                inventoryManager,
-                itemDatabase,
-                shopManager,
-                modalManager,
-                shopUi);
+                    var shopController = npcObject.GetComponent<NpcShopController>();
+                    if (shopController != null)
+                    {
+                        shopNpcs.Add(shopController);
+                    }
+                }
+                else
+                {
+                    npcObject = CreateDialogueNpc(
+                        parent.transform,
+                        spec.ObjectName,
+                        spec.Position,
+                        spec.Color,
+                        spec.NpcDataPath,
+                        modalManager,
+                        shopUi.DialogueModal,
+                        spec.CanWander,
+                        spec.MovementProfile);
 
-            var zrix = CreateShopNpc(
-                parent.transform,
-                "NPC_Zrix_CaveRumor",
-                new Vector3(5.75f, -1.75f, 0f),
-                new Color(0.43f, 0.52f, 0.68f),
-                "Assets/_Game/Data/NPCs/Npc_Zrix.asset",
-                "Assets/_Game/Data/Economy/Shop_Cave_Supplies.asset",
-                playerManager,
-                inventoryManager,
-                itemDatabase,
-                shopManager,
-                modalManager,
-                shopUi);
+                    var dialogueController = npcObject.GetComponent<NpcController>();
+                    if (dialogueController != null)
+                    {
+                        dialogueNpcs.Add(dialogueController);
+                    }
+                }
 
-            var thalindra = CreateDialogueNpc(
-                parent.transform,
-                "NPC_Thalindra_Library",
-                new Vector3(-6.2f, -0.5f, 0f),
-                new Color(0.5f, 0.42f, 0.77f),
-                "Assets/_Game/Data/NPCs/Npc_Thalindra.asset",
-                modalManager,
-                shopUi.DialogueModal,
-                false);
-
-            var nimble = CreateDialogueNpc(
-                parent.transform,
-                "NPC_Nimble_Workshop",
-                new Vector3(2.75f, -3.2f, 0f),
-                new Color(0.72f, 0.58f, 0.32f),
-                "Assets/_Game/Data/NPCs/Npc_Nimble.asset",
-                modalManager,
-                shopUi.DialogueModal,
-                false);
+                if (spec.NpcId == "npc_pip")
+                {
+                    var reception = npcObject.AddComponent<PipReceptionController>();
+                    var serializedReception = new SerializedObject(reception);
+                    SetReference(serializedReception, "_playerTransform", playerTransform);
+                    serializedReception.ApplyModifiedPropertiesWithoutUndo();
+                }
+            }
 
             var wanderer = CreateDialogueNpc(
                 parent.transform,
@@ -855,26 +876,20 @@ namespace CindarsHope.Editor.SceneCreation
                 "Assets/_Game/Data/NPCs/Npc_Vaalara_Wanderer_01.asset",
                 modalManager,
                 shopUi.DialogueModal,
-                true);
+                true,
+                "WanderWithinZone");
+            var wandererController = wanderer.GetComponent<NpcController>();
+            if (wandererController != null)
+            {
+                dialogueNpcs.Add(wandererController);
+            }
 
             var manager = parent.AddComponent<NpcManager>();
             var serializedManager = new SerializedObject(manager);
             SetReference(serializedManager, "_dialogueModal", shopUi.DialogueModal);
             SetReference(serializedManager, "_modalManager", modalManager);
-            SetReferences(
-                serializedManager,
-                "_npcs",
-                pip.GetComponent<NpcController>(),
-                thalindra.GetComponent<NpcController>(),
-                nimble.GetComponent<NpcController>(),
-                wanderer.GetComponent<NpcController>());
-            SetReferences(
-                serializedManager,
-                "_shopNpcs",
-                sylveth.GetComponent<NpcShopController>(),
-                brumdar.GetComponent<NpcShopController>(),
-                renko.GetComponent<NpcShopController>(),
-                zrix.GetComponent<NpcShopController>());
+            SetReferences(serializedManager, "_npcs", dialogueNpcs.ToArray());
+            SetReferences(serializedManager, "_shopNpcs", shopNpcs.ToArray());
             serializedManager.ApplyModifiedPropertiesWithoutUndo();
             return manager;
         }
@@ -894,6 +909,7 @@ namespace CindarsHope.Editor.SceneCreation
             Color color,
             string npcDataPath,
             string shopDataPath,
+            string movementProfile,
             PlayerManager playerManager,
             InventoryManager inventoryManager,
             ItemDatabaseSO itemDatabase,
@@ -932,7 +948,7 @@ namespace CindarsHope.Editor.SceneCreation
             SetReference(serialized, "_sellPanel", shopUi.SellPanel);
             SetReference(serialized, "_modalManager", modalManager);
             serialized.ApplyModifiedPropertiesWithoutUndo();
-            AddPlacementMarker(npcObject, npcData, "ShopKeeperFixed");
+            AddPlacementMarker(npcObject, npcData, movementProfile);
             return npcObject;
         }
 
@@ -944,7 +960,8 @@ namespace CindarsHope.Editor.SceneCreation
             string npcDataPath,
             ModalManager modalManager,
             DialogueModal dialogueModal,
-            bool canWander)
+            bool canWander,
+            string movementProfile)
         {
             var npcObject = new GameObject(objectName);
             npcObject.transform.SetParent(parent);
@@ -984,7 +1001,7 @@ namespace CindarsHope.Editor.SceneCreation
             }
 
             serializedController.ApplyModifiedPropertiesWithoutUndo();
-            AddPlacementMarker(npcObject, npcData, canWander ? "WanderWithinZone" : "Stationary");
+            AddPlacementMarker(npcObject, npcData, movementProfile);
             return npcObject;
         }
 
