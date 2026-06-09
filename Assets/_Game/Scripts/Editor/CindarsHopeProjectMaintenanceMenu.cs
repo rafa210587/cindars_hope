@@ -184,7 +184,7 @@ namespace CindarsHope.Editor
             CindarsHope.Editor.Validation.ValidateEnemyCaveSpawnCoverage.Validate();
         }
 
-        [MenuItem("CindarsHope/Advanced/Run PlayMode Smoke Validation", priority = 103)]
+        [MenuItem("CindarsHope/Archive/Advanced/Run PlayMode Smoke Validation")]
         public static void RunPlayModeSmokeValidation()
         {
             Debug.Log("PlayMode smoke: opening CaveScene + reporting current state.");
