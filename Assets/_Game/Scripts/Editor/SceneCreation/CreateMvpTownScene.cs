@@ -18,6 +18,7 @@ using CindarsHope.UI;
 using CindarsHope.UI.Dialogue;
 using CindarsHope.UI.Modal;
 using CindarsHope.UI.Shop;
+using CindarsHope.NPC.Runtime;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -771,25 +772,12 @@ namespace CindarsHope.Editor.SceneCreation
             SetReference(serializedReception, "_playerTransform", playerTransform);
             serializedReception.ApplyModifiedPropertiesWithoutUndo();
 
-            var weaponsShop = CreateShopNpc(
+            var sylveth = CreateShopNpc(
                 parent.transform,
-                "NPC_WeaponsArmorShop",
-                new Vector3(-3f, 2f, 0f),
-                new Color(0.64f, 0.45f, 0.3f),
-                "Assets/_Game/Data/NPCs/Npc_Shop_Weapons_Armor.asset",
-                "Assets/_Game/Data/Economy/Shop_Weapons_Armor.asset",
-                playerManager,
-                inventoryManager,
-                itemDatabase,
-                shopManager,
-                modalManager,
-                shopUi);
-            var seedsShop = CreateShopNpc(
-                parent.transform,
-                "NPC_SeedsToolsShop",
+                "NPC_Sylveth_SeedVendor",
                 new Vector3(4.5f, 2f, 0f),
                 new Color(0.42f, 0.72f, 0.34f),
-                "Assets/_Game/Data/NPCs/Npc_Shop_Seeds_Tools.asset",
+                "Assets/_Game/Data/NPCs/Npc_Sylveth.asset",
                 "Assets/_Game/Data/Economy/Shop_Seeds_Tools.asset",
                 playerManager,
                 inventoryManager,
@@ -797,6 +785,67 @@ namespace CindarsHope.Editor.SceneCreation
                 shopManager,
                 modalManager,
                 shopUi);
+            var brumdar = CreateShopNpc(
+                parent.transform,
+                "NPC_Brumdar_Blacksmith",
+                new Vector3(-4.75f, 2.2f, 0f),
+                new Color(0.64f, 0.45f, 0.3f),
+                "Assets/_Game/Data/NPCs/Npc_Brumdar.asset",
+                "Assets/_Game/Data/Economy/Shop_Blacksmith.asset",
+                playerManager,
+                inventoryManager,
+                itemDatabase,
+                shopManager,
+                modalManager,
+                shopUi);
+
+            var renko = CreateShopNpc(
+                parent.transform,
+                "NPC_Renko_GeneralMerchant",
+                new Vector3(0f, 3.25f, 0f),
+                new Color(0.86f, 0.72f, 0.34f),
+                "Assets/_Game/Data/NPCs/Npc_Renko.asset",
+                "Assets/_Game/Data/Economy/Shop_General_Store.asset",
+                playerManager,
+                inventoryManager,
+                itemDatabase,
+                shopManager,
+                modalManager,
+                shopUi);
+
+            var zrix = CreateShopNpc(
+                parent.transform,
+                "NPC_Zrix_CaveRumor",
+                new Vector3(5.75f, -1.75f, 0f),
+                new Color(0.43f, 0.52f, 0.68f),
+                "Assets/_Game/Data/NPCs/Npc_Zrix.asset",
+                "Assets/_Game/Data/Economy/Shop_Cave_Supplies.asset",
+                playerManager,
+                inventoryManager,
+                itemDatabase,
+                shopManager,
+                modalManager,
+                shopUi);
+
+            var thalindra = CreateDialogueNpc(
+                parent.transform,
+                "NPC_Thalindra_Library",
+                new Vector3(-6.2f, -0.5f, 0f),
+                new Color(0.5f, 0.42f, 0.77f),
+                "Assets/_Game/Data/NPCs/Npc_Thalindra.asset",
+                modalManager,
+                shopUi.DialogueModal,
+                false);
+
+            var nimble = CreateDialogueNpc(
+                parent.transform,
+                "NPC_Nimble_Workshop",
+                new Vector3(2.75f, -3.2f, 0f),
+                new Color(0.72f, 0.58f, 0.32f),
+                "Assets/_Game/Data/NPCs/Npc_Nimble.asset",
+                modalManager,
+                shopUi.DialogueModal,
+                false);
 
             var wanderer = CreateDialogueNpc(
                 parent.transform,
@@ -812,8 +861,20 @@ namespace CindarsHope.Editor.SceneCreation
             var serializedManager = new SerializedObject(manager);
             SetReference(serializedManager, "_dialogueModal", shopUi.DialogueModal);
             SetReference(serializedManager, "_modalManager", modalManager);
-            SetReferences(serializedManager, "_npcs", pip.GetComponent<NpcController>(), wanderer.GetComponent<NpcController>());
-            SetReferences(serializedManager, "_shopNpcs", weaponsShop.GetComponent<NpcShopController>(), seedsShop.GetComponent<NpcShopController>());
+            SetReferences(
+                serializedManager,
+                "_npcs",
+                pip.GetComponent<NpcController>(),
+                thalindra.GetComponent<NpcController>(),
+                nimble.GetComponent<NpcController>(),
+                wanderer.GetComponent<NpcController>());
+            SetReferences(
+                serializedManager,
+                "_shopNpcs",
+                sylveth.GetComponent<NpcShopController>(),
+                brumdar.GetComponent<NpcShopController>(),
+                renko.GetComponent<NpcShopController>(),
+                zrix.GetComponent<NpcShopController>());
             serializedManager.ApplyModifiedPropertiesWithoutUndo();
             return manager;
         }
@@ -855,7 +916,8 @@ namespace CindarsHope.Editor.SceneCreation
 
             var controller = npcObject.AddComponent<NpcShopController>();
             var serialized = new SerializedObject(controller);
-            SetReference(serialized, "_npcData", AssetDatabase.LoadAssetAtPath<NpcDataSO>(npcDataPath));
+            var npcData = AssetDatabase.LoadAssetAtPath<NpcDataSO>(npcDataPath);
+            SetReference(serialized, "_npcData", npcData);
             if (!string.IsNullOrWhiteSpace(shopDataPath))
             {
                 SetReference(serialized, "_shopData", AssetDatabase.LoadAssetAtPath<ShopDataSO>(shopDataPath));
@@ -870,6 +932,7 @@ namespace CindarsHope.Editor.SceneCreation
             SetReference(serialized, "_sellPanel", shopUi.SellPanel);
             SetReference(serialized, "_modalManager", modalManager);
             serialized.ApplyModifiedPropertiesWithoutUndo();
+            AddPlacementMarker(npcObject, npcData, "ShopKeeperFixed");
             return npcObject;
         }
 
@@ -898,7 +961,8 @@ namespace CindarsHope.Editor.SceneCreation
 
             var controller = npcObject.AddComponent<NpcController>();
             var serializedController = new SerializedObject(controller);
-            SetReference(serializedController, "_npcData", AssetDatabase.LoadAssetAtPath<NpcDataSO>(npcDataPath));
+            var npcData = AssetDatabase.LoadAssetAtPath<NpcDataSO>(npcDataPath);
+            SetReference(serializedController, "_npcData", npcData);
             SetReference(serializedController, "_dialogueModal", dialogueModal);
             SetReference(serializedController, "_modalManager", modalManager);
             SetReference(serializedController, "_collider", collider);
@@ -911,7 +975,7 @@ namespace CindarsHope.Editor.SceneCreation
                 body.constraints = RigidbodyConstraints2D.FreezeRotation;
                 var wanderer = npcObject.AddComponent<NpcWanderer>();
                 var serializedWanderer = new SerializedObject(wanderer);
-                SetReference(serializedWanderer, "_npcData", AssetDatabase.LoadAssetAtPath<NpcDataSO>(npcDataPath));
+                SetReference(serializedWanderer, "_npcData", npcData);
                 SetReference(serializedWanderer, "_rigidbody", body);
                 serializedWanderer.FindProperty("_wanderBoundsMin").vector2Value = new Vector2(-6f, -3.5f);
                 serializedWanderer.FindProperty("_wanderBoundsMax").vector2Value = new Vector2(6f, 3.5f);
@@ -920,6 +984,7 @@ namespace CindarsHope.Editor.SceneCreation
             }
 
             serializedController.ApplyModifiedPropertiesWithoutUndo();
+            AddPlacementMarker(npcObject, npcData, canWander ? "WanderWithinZone" : "Stationary");
             return npcObject;
         }
 
@@ -1129,6 +1194,23 @@ namespace CindarsHope.Editor.SceneCreation
             collider.size = Vector2.one;
 
             return pointObject;
+        }
+
+        private static void AddPlacementMarker(GameObject npcObject, NpcDataSO npcData, string movementProfile)
+        {
+            if (npcObject == null || npcData == null)
+            {
+                return;
+            }
+
+            var marker = npcObject.AddComponent<NpcScenePlacementMarker>();
+            marker.Configure(
+                npcData.NpcId,
+                string.IsNullOrWhiteSpace(npcData.DefaultSceneId) ? "TownScene" : npcData.DefaultSceneId,
+                npcData.DefaultPositionId,
+                movementProfile,
+                true);
+            EditorUtility.SetDirty(marker);
         }
 
         private static void FitBoxColliderToOpaqueSprite(BoxCollider2D collider, SpriteRenderer spriteRenderer)

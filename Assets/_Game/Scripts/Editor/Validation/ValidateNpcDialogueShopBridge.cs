@@ -1,22 +1,51 @@
 using System.Collections.Generic;
 using CindarsHope.Economy;
 using CindarsHope.NPC;
+using CindarsHope.NPC.Runtime;
 using CindarsHope.UI.Dialogue;
 using CindarsHope.UI.Modal;
 using CindarsHope.UI.Shop;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 
 namespace CindarsHope.Editor.Validation
 {
     public static class ValidateNpcDialogueShopBridge
     {
-        private const string PipNpcPath = "Assets/_Game/Data/NPCs/Npc_Pip_Miudinho.asset";
-        private const string WandererNpcPath = "Assets/_Game/Data/NPCs/Npc_Vaalara_Wanderer_01.asset";
-        private const string SeedsNpcPath = "Assets/_Game/Data/NPCs/Npc_Shop_Seeds_Tools.asset";
-        private const string WeaponsNpcPath = "Assets/_Game/Data/NPCs/Npc_Shop_Weapons_Armor.asset";
-        private const string SeedsShopPath = "Assets/_Game/Data/Economy/Shop_Seeds_Tools.asset";
-        private const string WeaponsShopPath = "Assets/_Game/Data/Economy/Shop_Weapons_Armor.asset";
+        private const string TownScenePath = "Assets/_Game/Scenes/TownScene.unity";
+
+        private static readonly ExpectedNpc[] ExpectedNpcs =
+        {
+            new("npc_pip_miudinho", "Assets/_Game/Data/NPCs/Npc_Pip_Miudinho.asset", true, false, string.Empty),
+            new("npc_sylveth", "Assets/_Game/Data/NPCs/Npc_Sylveth.asset", true, true, "shop_seeds_tools"),
+            new("npc_brumdar", "Assets/_Game/Data/NPCs/Npc_Brumdar.asset", true, true, "shop_blacksmith"),
+            new("npc_renko", "Assets/_Game/Data/NPCs/Npc_Renko.asset", true, true, "shop_general_store"),
+            new("npc_thalindra", "Assets/_Game/Data/NPCs/Npc_Thalindra.asset", true, false, string.Empty),
+            new("npc_zrix", "Assets/_Game/Data/NPCs/Npc_Zrix.asset", true, true, "shop_cave_supplies"),
+            new("npc_nimble", "Assets/_Game/Data/NPCs/Npc_Nimble.asset", true, false, string.Empty),
+        };
+
+        private static readonly ExpectedShop[] ExpectedShops =
+        {
+            new("shop_seeds_tools", "Assets/_Game/Data/Economy/Shop_Seeds_Tools.asset", "npc_sylveth"),
+            new("shop_blacksmith", "Assets/_Game/Data/Economy/Shop_Blacksmith.asset", "npc_brumdar"),
+            new("shop_general_store", "Assets/_Game/Data/Economy/Shop_General_Store.asset", "npc_renko"),
+            new("shop_cave_supplies", "Assets/_Game/Data/Economy/Shop_Cave_Supplies.asset", "npc_zrix"),
+        };
+
+        private static readonly string[] RequiredDocs =
+        {
+            "docs/validation/WAVE_INTEGRATION_12_RUNTIME_GAP_AUDIT.md",
+            "docs/validation/WAVE_INTEGRATION_12_NPC_CANONICAL_ROSTER.md",
+            "docs/validation/WAVE_INTEGRATION_12_NPC_PLACEMENT_MAP.md",
+            "docs/validation/WAVE_INTEGRATION_12_NPC_DIALOGUE_SETS.md",
+            "docs/validation/WAVE_INTEGRATION_12_NPC_MOVEMENT_SCHEDULES.md",
+            "docs/validation/WAVE_INTEGRATION_12_NPC_SHOP_SERVICES.md",
+            "docs/validation/WAVE_INTEGRATION_12_NPC_DIALOGUE_SHOP_REPORT.md",
+            "docs/validation/WAVE_INTEGRATION_12_NPC_DIALOGUE_SHOP_AUTHORING_MODEL.md",
+            "docs/validation/WAVE_INTEGRATION_12_HUMAN_PLAYMODE_CHECKLIST.md",
+        };
 
         [MenuItem("CindarsHope/Validate/Validate WAVE12 NPC Dialogue Shop Bridge", priority = 49)]
         public static void RunValidation()
@@ -25,12 +54,20 @@ namespace CindarsHope.Editor.Validation
             var issues = new List<string>();
 
             ValidateRuntimeTypes(passes, issues);
-            ValidateNpcData(PipNpcPath, requiresDialogueTree: true, requiresShop: false, passes, issues);
-            ValidateNpcData(WandererNpcPath, requiresDialogueTree: true, requiresShop: false, passes, issues);
-            ValidateNpcData(SeedsNpcPath, requiresDialogueTree: false, requiresShop: true, passes, issues);
-            ValidateNpcData(WeaponsNpcPath, requiresDialogueTree: false, requiresShop: true, passes, issues);
-            ValidateShopData(SeedsShopPath, "npc_shop_seeds_tools", passes, issues);
-            ValidateShopData(WeaponsShopPath, "npc_shop_weapons_armor", passes, issues);
+            ValidateRequiredDocs(passes, issues);
+
+            foreach (var expectedNpc in ExpectedNpcs)
+            {
+                ValidateNpcData(expectedNpc, passes, issues);
+            }
+
+            foreach (var expectedShop in ExpectedShops)
+            {
+                ValidateShopData(expectedShop, passes, issues);
+            }
+
+            ValidateForbiddenNpcClassPattern(passes, issues);
+            ValidateLoadedTownScene(passes, issues);
 
             Debug.Log("=== ValidateNpcDialogueShopBridge - DONE ===");
             Debug.Log($"PASS: {passes.Count}  FAIL: {issues.Count}");
@@ -48,6 +85,7 @@ namespace CindarsHope.Editor.Validation
             RequireType<NpcController>(passes, issues, nameof(NpcController));
             RequireType<NpcShopController>(passes, issues, nameof(NpcShopController));
             RequireType<NpcManager>(passes, issues, nameof(NpcManager));
+            RequireType<NpcScenePlacementMarker>(passes, issues, nameof(NpcScenePlacementMarker));
             RequireType<DialogueModal>(passes, issues, nameof(DialogueModal));
             RequireType<ShopMenuModal>(passes, issues, nameof(ShopMenuModal));
             RequireType<BuyPanel>(passes, issues, nameof(BuyPanel));
@@ -57,21 +95,19 @@ namespace CindarsHope.Editor.Validation
         }
 
         private static void ValidateNpcData(
-            string path,
-            bool requiresDialogueTree,
-            bool requiresShop,
+            ExpectedNpc expected,
             ICollection<string> passes,
             ICollection<string> issues)
         {
-            var npc = AssetDatabase.LoadAssetAtPath<NpcDataSO>(path);
+            var npc = AssetDatabase.LoadAssetAtPath<NpcDataSO>(expected.AssetPath);
             if (npc == null)
             {
-                issues.Add($"Missing NpcDataSO at {path}");
+                issues.Add($"Missing NpcDataSO at {expected.AssetPath}");
                 return;
             }
 
-            if (string.IsNullOrWhiteSpace(npc.NpcId)) issues.Add($"{path} has empty NpcId");
-            else passes.Add($"{path} has NpcId '{npc.NpcId}'");
+            if (npc.NpcId != expected.NpcId) issues.Add($"{expected.AssetPath} expected NpcId '{expected.NpcId}', found '{npc.NpcId}'");
+            else passes.Add($"{expected.AssetPath} has NpcId '{npc.NpcId}'");
 
             if (string.IsNullOrWhiteSpace(npc.DisplayName)) issues.Add($"{npc.NpcId} has empty DisplayName");
             else passes.Add($"{npc.NpcId} has DisplayName '{npc.DisplayName}'");
@@ -79,14 +115,14 @@ namespace CindarsHope.Editor.Validation
             if (string.IsNullOrWhiteSpace(npc.DefaultSceneId)) issues.Add($"{npc.NpcId} has empty DefaultSceneId");
             else passes.Add($"{npc.NpcId} has DefaultSceneId '{npc.DefaultSceneId}'");
 
-            if (requiresDialogueTree)
+            if (expected.RequiresDialogueTree)
             {
                 ValidateDialogueTree(npc, passes, issues);
             }
 
-            if (requiresShop)
+            if (expected.RequiresShop)
             {
-                if (string.IsNullOrWhiteSpace(npc.ShopId)) issues.Add($"{npc.NpcId} requires ShopId");
+                if (npc.ShopId != expected.ShopId) issues.Add($"{npc.NpcId} expected ShopId '{expected.ShopId}', found '{npc.ShopId}'");
                 else passes.Add($"{npc.NpcId} has ShopId '{npc.ShopId}'");
             }
         }
@@ -110,19 +146,19 @@ namespace CindarsHope.Editor.Validation
             else passes.Add($"{npc.NpcId} DialogueTree has {nodeCount} nodes");
         }
 
-        private static void ValidateShopData(string path, string expectedNpcId, ICollection<string> passes, ICollection<string> issues)
+        private static void ValidateShopData(ExpectedShop expected, ICollection<string> passes, ICollection<string> issues)
         {
-            var shop = AssetDatabase.LoadAssetAtPath<ShopDataSO>(path);
+            var shop = AssetDatabase.LoadAssetAtPath<ShopDataSO>(expected.AssetPath);
             if (shop == null)
             {
-                issues.Add($"Missing ShopDataSO at {path}");
+                issues.Add($"Missing ShopDataSO at {expected.AssetPath}");
                 return;
             }
 
-            if (string.IsNullOrWhiteSpace(shop.Id)) issues.Add($"{path} has empty shop Id");
-            else passes.Add($"{path} has shop Id '{shop.Id}'");
+            if (shop.Id != expected.ShopId) issues.Add($"{expected.AssetPath} expected shop Id '{expected.ShopId}', found '{shop.Id}'");
+            else passes.Add($"{expected.AssetPath} has shop Id '{shop.Id}'");
 
-            if (shop.NpcId != expectedNpcId) issues.Add($"{shop.Id} expected NpcId '{expectedNpcId}', found '{shop.NpcId}'");
+            if (shop.NpcId != expected.NpcId) issues.Add($"{shop.Id} expected NpcId '{expected.NpcId}', found '{shop.NpcId}'");
             else passes.Add($"{shop.Id} mapped to NpcId '{shop.NpcId}'");
 
             var stockCount = shop.Items != null ? shop.Items.Length : 0;
@@ -134,6 +170,111 @@ namespace CindarsHope.Editor.Validation
         {
             if (typeof(T) != null) passes.Add($"{label} type exists");
             else issues.Add($"{label} type missing");
+        }
+
+        private static void ValidateRequiredDocs(ICollection<string> passes, ICollection<string> issues)
+        {
+            foreach (var doc in RequiredDocs)
+            {
+                if (System.IO.File.Exists(doc)) passes.Add($"Required doc exists: {doc}");
+                else issues.Add($"Missing required doc: {doc}");
+            }
+        }
+
+        private static void ValidateForbiddenNpcClassPattern(ICollection<string> passes, ICollection<string> issues)
+        {
+            var files = System.IO.Directory.GetFiles("Assets/_Game/Scripts", "*Npc.cs", System.IO.SearchOption.AllDirectories);
+            foreach (var file in files)
+            {
+                var name = System.IO.Path.GetFileNameWithoutExtension(file);
+                if (name.StartsWith("Npc") || name.EndsWith("Controller") || name.EndsWith("Manager"))
+                {
+                    continue;
+                }
+
+                if (name.Contains("Pip") || name.Contains("Sylveth") || name.Contains("Brumdar") || name.Contains("Renko") || name.Contains("Thalindra") || name.Contains("Zrix") || name.Contains("Nimble"))
+                {
+                    issues.Add($"Forbidden class-per-NPC pattern found: {file}");
+                }
+            }
+
+            passes.Add("No prohibited WAVE12 class-per-NPC pattern detected by filename scan.");
+        }
+
+        private static void ValidateLoadedTownScene(ICollection<string> passes, ICollection<string> issues)
+        {
+            var scene = EditorSceneManager.GetActiveScene();
+            if (!scene.IsValid() || scene.path != TownScenePath)
+            {
+                passes.Add("TownScene scene-object validation skipped because TownScene is not the active loaded scene.");
+                return;
+            }
+
+            var found = new Dictionary<string, bool>();
+            foreach (var root in scene.GetRootGameObjects())
+            {
+                foreach (var marker in root.GetComponentsInChildren<NpcScenePlacementMarker>(includeInactive: true))
+                {
+                    if (marker == null || string.IsNullOrWhiteSpace(marker.NpcId))
+                    {
+                        continue;
+                    }
+
+                    found[marker.NpcId] = true;
+                    var hasDialogue = marker.GetComponent<NpcController>() != null;
+                    var hasShop = marker.GetComponent<NpcShopController>() != null;
+                    if (!hasDialogue && !hasShop)
+                    {
+                        issues.Add($"{marker.NpcId} has NpcScenePlacementMarker but no NPC interactable controller.");
+                    }
+
+                    var collider = marker.GetComponent<Collider2D>();
+                    if (collider == null || !collider.isTrigger)
+                    {
+                        issues.Add($"{marker.NpcId} has no trigger Collider2D for interaction.");
+                    }
+                }
+            }
+
+            foreach (var expectedNpc in ExpectedNpcs)
+            {
+                if (!found.ContainsKey(expectedNpc.NpcId))
+                {
+                    issues.Add($"Loaded TownScene missing placement marker for MVP NPC '{expectedNpc.NpcId}'.");
+                }
+            }
+        }
+
+        private readonly struct ExpectedNpc
+        {
+            public readonly string NpcId;
+            public readonly string AssetPath;
+            public readonly bool RequiresDialogueTree;
+            public readonly bool RequiresShop;
+            public readonly string ShopId;
+
+            public ExpectedNpc(string npcId, string assetPath, bool requiresDialogueTree, bool requiresShop, string shopId)
+            {
+                NpcId = npcId;
+                AssetPath = assetPath;
+                RequiresDialogueTree = requiresDialogueTree;
+                RequiresShop = requiresShop;
+                ShopId = shopId;
+            }
+        }
+
+        private readonly struct ExpectedShop
+        {
+            public readonly string ShopId;
+            public readonly string AssetPath;
+            public readonly string NpcId;
+
+            public ExpectedShop(string shopId, string assetPath, string npcId)
+            {
+                ShopId = shopId;
+                AssetPath = assetPath;
+                NpcId = npcId;
+            }
         }
     }
 }

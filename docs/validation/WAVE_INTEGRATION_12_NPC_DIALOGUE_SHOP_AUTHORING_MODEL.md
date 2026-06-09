@@ -2,131 +2,108 @@
 
 ## Status
 
-PARTIAL_COMPLETE_WITH_MERCHANT_DIALOGUE_TREE_DEBT
+COMPLETE_WITH_RUNTIME_PLACEHOLDER_DEBT
 
 ## Purpose
 
-This document explains how to add, modify and connect NPCs, dialogues and shops after WAVE_INTEGRATION_12.
+This document explains how to add, modify and connect NPCs, dialogues and shops after WAVE_INTEGRATION_12 without creating one class per NPC or parallel runtime systems.
 
-## NPC definition sources
-
-| Source | Type | Path | Editable by design? |
-|---|---|---|---|
-| Runtime NPC asset | ScriptableObject | `Assets/_Game/Data/NPCs/*.asset` | YES |
-| Canon roster status | Markdown | `docs/validation/WAVE_INTEGRATION_12_NPC_CANONICAL_ROSTER.md` | YES |
-| Pure NPC contract | C# data contract | `Assets/_Game/Scripts/NPC/NpcDefinition.cs` | NO |
-
-## Dialogue definition sources
+## NPC Definition Sources
 
 | Source | Type | Path | Editable by design? |
 |---|---|---|---|
-| Runtime dialogue tree | ScriptableObject | `Assets/_Game/Data/Dialogues/*.asset` | YES |
-| Dialogue coverage table | Markdown | `docs/validation/WAVE_INTEGRATION_12_NPC_DIALOGUE_SETS.md` | YES |
+| NPC runtime asset | ScriptableObject | `Assets/_Game/Data/NPCs/Npc_<Name>.asset` | Yes |
+| Pure NPC contract | C# data contract | `Assets/_Game/Scripts/NPC/NpcDefinition.cs` | Engineering |
+| Scene placement | Scene object marker | `NpcScenePlacementMarker` in `TownScene.unity` | Scene authoring |
 
-## Shop definition sources
+## Dialogue Definition Sources
 
 | Source | Type | Path | Editable by design? |
 |---|---|---|---|
-| Shop data | ScriptableObject | `Assets/_Game/Data/Economy/Shop_*.asset` | YES |
-| Item data | ScriptableObject | `Assets/_Game/Data/Items/*.asset` | YES |
-| Item registry | ScriptableObject | `Assets/_Game/Data/Registries/ItemDatabase.asset` | YES |
+| Dialogue tree | ScriptableObject | `Assets/_Game/Data/Dialogues/DialogueTree_<Name>.asset` | Yes |
+| Dialogue runtime | Generic controller | `NpcController`, `DialogueModal` | Engineering |
+
+## Shop Definition Sources
+
+| Source | Type | Path | Editable by design? |
+|---|---|---|---|
+| Shop stock/pricing | ScriptableObject | `Assets/_Game/Data/Economy/Shop_*.asset` | Yes |
+| Shop runtime | Generic controller/service | `NpcShopController`, `ShopManager`, `BuyPanel`, `SellPanel` | Engineering |
 
 ## Stable IDs
 
 | ID type | Format/rule | Used by save? | Notes |
 |---|---|---:|---|
-| NpcId | lower snake id, stable forever after scene/save use | YES | Existing Pip alias debt: `npc_pip_miudinho` vs canonical `npc_pip` |
-| DialogueId | `dialogue_<npc or service>` | NO currently | Stored in `DialogueTreeSO.Id` |
-| ShopId | `shop_<service>` | YES for shop stock | Stored in `ShopDataSO.Id` |
+| NpcId | `npc_<canonical_or_existing_stable_id>` | 1 | Do not use GameObject name as persistent ID |
+| DialogueId | `dialogue_<npc_or_service>` | 0 now | Used by `DialogueTreeSO.Id` |
+| ShopId | `shop_<service>` | 1 | Used by `ShopManager` sessions/stock |
+| PlacementId | `town_<location>_<npc>` | 0 now | Used by `NpcScenePlacementMarker` and docs |
 
-## How to add a new NPC
+## How To Add A New NPC
 
-1. Create an `NpcDataSO` under `Assets/_Game/Data/NPCs/`.
-2. Assign stable `NpcId`, `DisplayName`, `DefaultSceneId`, `DefaultPositionId`, `DefaultPosition`, `MovementMode`.
-3. Add a row to `WAVE_INTEGRATION_12_NPC_CANONICAL_ROSTER.md`.
-4. Add or update `CreateMvpTownScene.cs` if the NPC should be generated in TownScene.
-5. Use `NpcController` for dialogue NPCs and `NpcShopController` for merchant NPCs.
+1. Create or reuse one `NpcDataSO` under `Assets/_Game/Data/NPCs/`.
+2. Set `NpcId`, `DisplayName`, `DefaultSceneId`, `DefaultPositionId`, `DefaultPosition`, `MovementMode`, `DialogueTree`, and optional `ShopId`.
+3. Create one `DialogueTreeSO` under `Assets/_Game/Data/Dialogues/` with at least 10 nodes for MVP NPCs.
+4. If merchant, create/reuse one `ShopDataSO` and set `ShopDataSO.NpcId` to the NPC's stable `NpcId`.
+5. Place the NPC in `TownScene` using `NpcController` for dialogue-only NPCs or `NpcShopController` for merchants.
+6. Add `NpcScenePlacementMarker` with `NpcId`, `TownScene`, placement id, movement profile and reachable flag.
+7. Register the component in `NpcManager._npcs` or `_shopNpcs`.
 
-## How to avoid creating one class per NPC
+## How To Avoid One Class Per NPC
 
-Use data fields in `NpcDataSO`, `DialogueTreeSO`, and `ShopDataSO`. Create a new C# behavior only when the NPC has unique runtime logic that cannot be expressed as data.
+Use:
+- `NpcDataSO` for identity/content.
+- `DialogueTreeSO` for dialogue.
+- `ShopDataSO` for shop stock.
+- `NpcController` / `NpcShopController` for runtime interaction.
+- `NpcScenePlacementMarker` for scene evidence.
+- `NpcWanderer` or future schedule controllers for movement.
 
-## How to define NPC purpose and responsibilities
+Do not create `SylvethNpc.cs`, `BrumdarNpc.cs`, `Merchant01Npc.cs`, or other one-class-per-character runtime scripts.
 
-Update the roster row: `Role`, `Purpose`, and `Responsibilities`. Do not mark an NPC as MVP-ready if these are blank.
+## Minimum 10 Dialogue Entries
 
-## How to place an NPC in a scene
+Each MVP NPC must have:
+1. Greeting
+2. Role
+3. Place/town/farm/cave context
+4. Gameplay tip
+5. Non-spoiler rumor
+6. Time/weather/day placeholder if final runtime is not ready
+7. Shop/service note if applicable
+8. Future quest hook
+9. Repeat/fallback
+10. Goodbye/close
 
-Use the scene generator for persistent placement. For TownScene, add the object through `CreateMvpTownScene.CreateDialogueNpc` or `CreateShopNpc`, then regenerate the scene in Unity.
+## How Pricing And Inventory Work
 
-## How to define NPC movement/schedule
+`NpcShopController` opens `ShopMenuModal`, `BuyPanel`, and `SellPanel`. Those call `ShopManager`, which uses `ShopDataSO`, `ItemDatabaseSO`, `InventoryManager`, and `PlayerManager`. Do not calculate prices in UI and do not create a separate wallet/inventory.
 
-For MVP use `Stationary`, `ShopKeeperFixed`, or `WanderWithinZone`. For future schedules, add `NpcScheduleDefinition` data and document in `WAVE_INTEGRATION_12_NPC_MOVEMENT_SCHEDULES.md`.
+## How Focus/Modal Should Behave
 
-## How to attach dialogue to an NPC
+`DialogueModal`, `ShopMenuModal`, `BuyPanel`, and `SellPanel` use the existing `ModalManager`. Player movement and interaction should resume after close. Human Play Mode must confirm no stuck modal remains.
 
-1. Create a `DialogueTreeSO`.
-2. Ensure `StartNodeId` points to an existing `DialogueNode`.
-3. Add at least 10 entries/options for MVP NPCs.
-4. Assign the tree to `NpcDataSO.DialogueTree`.
+## Future Bridges
 
-## Minimum 10 dialogue entries/options per MVP NPC
+Relationship, reputation, romance, companion/pet, final quests, final daily schedules and final city simulation are future scope. WAVE12 only adds authoring-ready hooks and functional NPC/shop/dialogue runtime wiring.
 
-Dialogue NPCs should have 10 runtime nodes where possible. Merchant NPCs currently have documented 10-entry placeholders and runtime shop menu; merchant `DialogueTreeSO` consumption remains debt.
-
-## How to add a dialogue choice
-
-Add a `DialogueChoice` to a node:
-- `Label`: visible choice.
-- `NextNodeId`: next node for normal branching.
-- `ActionType`: `None`, `CloseDialogue`, or `OpenShop`.
-
-`NpcController` resolves `NextNodeId` and closes on `CloseDialogue`.
-
-## How to attach shop to an NPC
-
-1. Create or reuse `ShopDataSO`.
-2. Set `ShopDataSO.Id` and `ShopDataSO.NpcId`.
-3. Set matching `NpcDataSO.ShopId`.
-4. Use `NpcShopController` in scene and assign `ShopDataSO`, `ShopMenuModal`, `BuyPanel`, `SellPanel`, `ShopManager`, `InventoryManager`, `PlayerManager`, and `ItemDatabaseSO`.
-
-## How to add a shop item
-
-Add an entry to `ShopDataSO.Items` with `ItemId`, `BaseDailyStock`, `IsFiniteStock`, optional `BuyPriceOverride`, and optional unlock tag. Ensure the item exists in `ItemDatabase.asset`.
-
-## How pricing is resolved
-
-`ShopManager` uses item `BaseValue`, `BuyPriceMultiplier`, `SellPriceMultiplier`, and stock. Advanced pricing profiles remain future debt.
-
-## How inventory/gold is updated
-
-`BuyPanel` and `SellPanel` call `ShopManager.TryBuyItem` / `TrySellItem`, which update `PlayerManager` gold and `InventoryManager` inventory. No parallel wallet or inventory is allowed.
-
-## How focus/modal should behave
-
-Dialogue, shop menu, buy panel, and sell panel use `ModalManager`. Gameplay input should be blocked while `ModalManager.HasActiveModal` is true.
-
-## Future relationship/reputation/quest/schedule bridge
-
-Keep future hooks in docs and data IDs. Do not implement final relationship, romance, reputation, quest, or calendar schedule in this integration spec.
-
-## Validation checklist for new NPC authoring
+## Validation Checklist For New NPC Authoring
 
 - NpcId stable:
-- Role:
-- Purpose:
-- Responsibilities:
-- Placement:
+- DisplayName:
+- Purpose/responsibility:
+- Placement marker:
 - MovementProfile:
-- DialogueSet with >=10 entries:
-- ShopId/service if applicable:
-- Future hooks:
+- DialogueTree with >=10 nodes:
+- ShopDataSO + ShopId if merchant:
+- Registered in NpcManager:
+- No class-per-NPC runtime script:
 
-## Known debts
+## Known Debts
 
 | Debt | Impact | Required before |
 |---|---|---|
-| Merchant dialogue trees not consumed by `NpcShopController` | Merchant has opening/shop/closing but not 10 runtime choices | Final NPC dialogue acceptance |
-| `npc_pip_miudinho` alias differs from canonical `npc_pip` | Canon/runtime ID mismatch must not be silently renamed | Save/roster reconciliation |
-| Advanced pricing profile not fully consumed | Buy/sell uses current `ShopManager` multipliers only | Economy polish |
-| Human Play Mode not run | Static/build validation only | Next wave acceptance |
+| TEMPORARY_DIALOGUE_AUTHORING_PLACEHOLDER | Dialogue is functional but not final narrative | Narrative/content polish |
+| DAILY_SCHEDULE_DEFERRED | NPCs do not follow final calendar routines | City simulation wave |
+| Relationship/reputation deferred | No social progression impact | Social system wave |
+| Human Play Mode pending | Static/build checks cannot prove interaction feel | WAVE12 acceptance and WAVE13 continuation |

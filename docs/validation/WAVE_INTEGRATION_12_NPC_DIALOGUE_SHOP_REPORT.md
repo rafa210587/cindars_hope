@@ -2,300 +2,188 @@
 
 ## Status
 
-BUILD_VALIDATED_SCENE_WIRED_PENDING_HUMAN_PLAYMODE
+BUILD_VALIDATED_WITH_NPC_DIALOGUE_SHOP_DEBT_PENDING_HUMAN_PLAYMODE
 
 ## Summary
 
-WAVE_INTEGRATION_12 uses existing TownScene NPC/dialogue/shop wiring and strengthens the generic dialogue bridge. No scene YAML changes were made. Pip and the Vaalara Wanderer now have 10-node runtime dialogue trees. `NpcController` now routes `DialogueChoice` selections to `NextNodeId` and closes on `CloseDialogue`. Merchant NPCs use existing `NpcShopController`, `ShopMenuModal`, `BuyPanel`, `SellPanel`, `ShopManager`, `InventoryManager`, and `PlayerManager`.
+WAVE12 was corrected from a vertical slice to a fuller TownScene MVP roster. The TownScene now has 7 MVP NPCs selected from canonical playable-slice needs: town guide, seed/farm merchant, blacksmith/repair merchant, general merchant, library/quest hook NPC, cave rumor/supplies NPC and workshop/crafting NPC. Runtime uses existing generic `NpcController`, `NpcShopController`, `DialogueTreeSO`, `DialogueModal`, `ShopManager`, `BuyPanel`, `SellPanel`, `InventoryManager`, and `PlayerManager`; no one-class-per-NPC scripts or parallel dialogue/shop/inventory systems were created.
 
-## Source documents read
+## Source Documents Read
 
 | Document | Found | Notes |
-|---|---|---|
-| `AGENTS.md` | YES | Rules and code constraints |
-| `docs/project/CURRENT_STATE.md` | YES | WAVE11 baseline and pending human Play Mode |
-| Attached WAVE12 spec | YES | Materialized under `docs/specs/a_implementar/` |
-
-## Design/Direction references checked
-
-| Reference | Found | Used? | Notes |
-|---|---:|---:|---|
-| `docs/design/gameplay/city/CITY_NPC_ROSTER_SERVICES_DIRECTION_v1.1.md` | YES | YES | Canonical NPC roster/services |
-| `docs/design/gameplay/loot_crafting_economy/ECONOMY_PRICING_STOCK_REFRESH_DIRECTION.md` | YES | YES | Buy/sell/pricing/stock constraints |
-| `docs/specs/SPEC_REGISTRY_TO_IMPLEMENT.md` | YES | YES | Spec registry exists |
-| `docs/GDD_v2.6.md` | NO | NO | Reference not found |
-| `docs/FASE7_SPEC_MVP_FARM_v2.2.md` | NO | NO | Reference not found |
-| `docs/FASE6_FARM_backlog_v1.2.md` | NO | NO | Reference not found |
-| `docs/FASE6_INDEX_global_v1.2.md` | NO | NO | Reference not found |
-| `docs/CINDARS_HOPE_PROJECT_REFINEMENT_SKILL.md` | NO | NO | Reference not found |
-| `docs/validation/WAVE_07_PLAYABLE_SCENE_INTEGRATION_ROADMAP_MACRO.md` | NO | NO | Reference not found |
-| `docs/validation/PLAYABLE_SLICE_INTEGRATION_ROADMAP_MACRO.md` | NO | NO | Reference not found |
+|---|---:|---|
+| `AGENTS.md` | 1 | Rules and constraints |
+| Attached corrective WAVE12 request | 1 | Scope: fix WAVE12 only |
+| `docs/specs/a_implementar/spec_wave_integration_12_npc_placement_dialogue_shop_bridge.md` | 1 | Active materialized spec |
+| `docs/project/CURRENT_STATE.md` | 1 | Previous WAVE12 vertical-slice status |
+| `docs/validation/WAVE_INTEGRATION_12_NPC_DIALOGUE_SHOP_REPORT.md` | 1 | Prior report audited |
+| `docs/validation/WAVE_INTEGRATION_12_NPC_CANONICAL_ROSTER.md` | 1 | Updated |
+| `docs/validation/WAVE_INTEGRATION_12_NPC_DIALOGUE_SETS.md` | 1 | Updated |
+| `docs/validation/WAVE_INTEGRATION_12_NPC_MOVEMENT_SCHEDULES.md` | 1 | Updated |
+| `docs/validation/WAVE_INTEGRATION_12_NPC_SHOP_SERVICES.md` | 1 | Updated |
+| `docs/GDD_v2.6.md` | 0 | Reference not found |
+| `docs/FASE7_SPEC_MVP_FARM_v2.2.md` | 0 | Reference not found |
+| `docs/FASE6_FARM_backlog_v1.2.md` | 0 | Reference not found |
+| `docs/FASE6_INDEX_global_v1.2.md` | 0 | Reference not found |
+| `docs/DORNECIA_Guia_Completo.md` | 0 | Reference not found |
+| `docs/validation/WAVE_07_SCENE_INVENTORY.md` | 1 | Scene inventory reference |
+| `docs/validation/WAVE_INTEGRATION_02_SCENE_ARCHITECTURE.md` | 1 | Scene architecture reference |
+| `docs/validation/WAVE_INTEGRATION_03_PLAYER_CAMERA_MOVEMENT_REPORT.md` | 1 | Player/camera reference |
+| `docs/validation/WAVE_INTEGRATION_09_INVENTORY_TOOLTIP_EQUIPMENT_REPORT.md` | 1 | Modal/inventory reference |
 
 ## Preflight
 
 | Check | Result |
 |---|---|
+| `git fetch origin dev` | PASS |
 | Branch | dev |
-| Working tree | Clean before changes |
-| Fetch | `git fetch origin dev` PASS |
-| WAVE11 report | Found, not BLOCKED, build validated, human Play Mode pending |
-| Runtime build before | PASS, 0 warnings, 0 errors |
-| Editor build before | PASS, 7 pre-existing warnings, 0 errors |
+| Working tree | Dirty before changes: `Assets/_Game/Scenes/TownScene.unity` only |
+| Dirty tree classification | Existing user/local TownScene LFS scene change, preserved and completed |
+| Last commits | WAVE12 commit `378dcd1` on top |
 
-## Baseline gates from WAVE 11
+## Root Cause
 
-| Gate | Result | Evidence |
-|---|---|---|
-| WAVE11 exists | PASS | `WAVE_INTEGRATION_11_SKILL_EFFECTS_GAMEPLAY_REPORT.md` |
-| WAVE11 not blocked | PASS_WITH_HUMAN_DEBT | Status is build validated pending Play Mode |
-| Player/HUD/input/focus not broken by build | PASS_STATIC | Runtime/editor builds pass |
-| Human Play Mode | NOT RUN | Required before final acceptance |
-
-## Build validation
-
-| Target | Before | After | Result |
-|---|---|---|---|
-| Assembly-CSharp | PASS 0E/0W | PASS 0E/0W | PASS |
-| Assembly-CSharp-Editor | PASS 0E/7W legacy | PASS 0E/7W legacy | PASS |
-
-## Target scene
-
-| Field | Value |
-|---|---|
-| Scene | `Assets/_Game/Scenes/TownScene.unity` |
-| NPCs already present | Pip, Wanderer, Seeds/Tools merchant, Weapons/Armor merchant |
-| Shop UI already present | `ShopCanvas`, `DialogueModal`, `ShopMenuModal`, `BuyPanel`, `SellPanel` |
-| Scene changes | None |
-
-## Scene target decision
-
-| Strategy | Result | Reason |
-|---|---|---|
-| Reuse TownScene existing wiring | SELECTED | It already contains NPC/dialogue/shop runtime bridge |
-| Edit FarmScene | REJECTED | Social/commercial NPC scene exists in TownScene; no FarmScene changes required |
-
-## NPC runtime audit
-
-| System/File | Found | Evidence | Decision |
-|---|---:|---|---|
-| `NpcDataSO` | YES | `Assets/_Game/Scripts/NPC/NpcDataSO.cs` | Reuse |
-| `NpcController` | YES | Generic IInteractable dialogue controller | Updated choice bridge |
-| `NpcShopController` | YES | Generic IInteractable shop controller | Reuse |
-| `NpcManager` | YES | Saves NPC met/position state | Reuse |
-| `NpcWanderer` | YES | Wanderer movement | Reuse |
-
-## Dialogue runtime/UI audit
-
-| System/File | Found | Evidence | Decision |
-|---|---:|---|---|
-| `DialogueTreeSO` | YES | Runtime dialogue asset | Reuse |
-| `DialogueNode`/`DialogueChoice` | YES | Branching data | Reuse |
-| `DialogueModal` | YES | Supports `ShowWithChoices` and modal stack | Reuse |
-| `DialogueResolver` | YES | Pure contract | Not needed for scene bridge now |
-
-## Shop/economy/inventory audit
-
-| System/File | Found | Evidence | Decision |
-|---|---:|---|---|
-| `ShopDataSO` | YES | Existing shop stock assets | Reuse |
-| `ShopManager` | YES | Buy/sell/stock/gold/inventory API | Reuse |
-| `BuyPanel`/`SellPanel` | YES | UI calls `ShopManager` | Reuse |
-| `InventoryManager` | YES | Add/remove/has item | Reuse |
-| `PlayerManager` | YES | Gold spend/add | Reuse |
-
-## Input/focus/modal audit
-
-| System/File | Found | Evidence | Decision |
-|---|---:|---|---|
-| `ModalManager` | YES | Dialogue/shop/buy/sell modal types | Reuse |
-| `InteractionSystem` | YES | Blocks interaction while modal active | Reuse |
-| `PlayerController` modal block | YES | Prior WAVE09 evidence | Reuse |
+Prior WAVE12 reused existing TownScene wiring and expanded only a small vertical slice. It did not materialize the MVP/canonical playable-slice roster in TownScene. Corrective action added the missing MVP NPC data, dialogue trees, scene placement markers, shop ownership mappings and TownScene objects.
 
 ## Design/Direction Compliance Matrix
 
 | Direction source | Found? | Rule/constraint extracted | Impact on this spec | Applied? | Evidence |
 |---|---:|---|---|---:|---|
-| City roster direction | YES | Use functional classes, service roles, and canonical roster | Roster doc extracted full canonical set and marks MVP subset | YES | NPC roster doc |
-| City roster direction | YES | Pip is tutorial/commercial/explorer | Existing Pip bridge retained; alias debt documented | PARTIAL | `npc_pip_miudinho` |
-| Economy direction | YES | Buy/sell must use stock/pricing/gold/inventory | Reused `ShopManager` and `ShopDataSO` | YES | Shop services doc |
-| WAVE09 report | YES | Modal/focus must block gameplay input | Reused `ModalManager` | YES | Dialogue/shop UI |
-| WAVE11 report | YES | WAVE11 pending human Play Mode | WAVE12 remains pending human Play Mode | YES | Current status |
+| City NPC roster direction | 1 | Canonical city roster has functional classes and services | Select MVP subset from canonical/service needs | 1 | Roster doc |
+| City NPC roster direction | 1 | NPCs have roles, services and future social hooks | Purpose/responsibilities documented for each MVP NPC | 1 | Roster and authoring model |
+| Economy direction | 1 | Shop buy/sell uses stock/pricing/gold/inventory runtime | Reused `ShopManager` and `ShopDataSO` | 1 | Shop services doc |
+| WAVE09 report | 1 | Modal/focus blocks gameplay input | Reused `ModalManager` and existing UI panels | 1 | Runtime audit |
+| Corrective request | 1 | Do not execute WAVE13 or create final quest/social systems | Only WAVE12 NPC/dialogue/shop placement was changed | 1 | Scope/debt tables |
 
-## Integration strategy
-
-| Area | Strategy | Notes |
-|---|---|---|
-| NPC | Existing generic controllers | No one-class-per-NPC |
-| Dialogue | Existing `DialogueTreeSO` + `DialogueModal` | `NpcController` choice bridge fixed |
-| Shop | Existing `NpcShopController` | Buy/sell real via `ShopManager` |
-| Economy | Existing `ShopManager` | Advanced pricing debt remains |
-| Inventory | Existing `InventoryManager` | No parallel inventory |
-| Input/focus | Existing `ModalManager` | Human Play Mode needed |
-| UI | Canvas/UnityEngine.UI shop/dialogue | Existing TownScene |
-| Scene placement | Existing TownScene serialized objects | No scene edits |
-
-## Stable IDs
-
-| Entity | ID | Temporary? | Notes |
-|---|---|---:|---|
-| Pip runtime NPC | npc_pip_miudinho | 0 | Alias debt vs canonical `npc_pip` |
-| Wanderer runtime NPC | npc_vaalara_wanderer_01 | 0 | MVP placeholder lore NPC |
-| Seeds merchant | npc_shop_seeds_tools | 0 | Service NPC |
-| Weapons merchant | npc_shop_weapons_armor | 0 | Service NPC |
-| Seeds shop | shop_seeds_tools | 0 | Shop stock save key |
-| Weapons shop | shop_weapons_armor | 0 | Shop stock save key |
-
-## Canonical NPC roster
-
-Link:
-- `docs/validation/WAVE_INTEGRATION_12_NPC_CANONICAL_ROSTER.md`
+## Canonical NPC Roster Summary
 
 | Metric | Value |
 |---|---:|
-| Canon NPCs extracted | 23 |
-| MVP runtime NPCs placed | 4 |
-| Future-scope NPCs | 22 |
-| NPCs missing purpose | 0 for MVP |
-| NPCs missing movement | 0 for MVP |
-| NPCs missing dialogue coverage | 2 merchant runtime trees deferred |
+| MVP NPCs selected | 7 |
+| MVP NPCs placed in TownScene | 7 |
+| MVP NPCs with dialogue tree >=10 nodes | 7 |
+| MVP merchants with shop/service | 4 |
+| Existing temporary extras retained | 1 |
+| Future-scope NPCs documented | 16 |
 
-## Dialogue set coverage
+## Placement Map
 
-Link:
-- `docs/validation/WAVE_INTEGRATION_12_NPC_DIALOGUE_SETS.md`
+Link: `docs/validation/WAVE_INTEGRATION_12_NPC_PLACEMENT_MAP.md`
 
-| NpcId | Entries/options | >=10? | Temporary? | Notes |
-|---|---:|---:|---:|---|
-| npc_pip_miudinho | 10 runtime nodes | 1 | 1 | Some placeholder future quest/context lines |
-| npc_vaalara_wanderer_01 | 10 runtime nodes | 1 | 1 | Some placeholder future quest/context lines |
-| npc_shop_seeds_tools | 10 documented entries | 1 | 1 | Runtime uses opening/shop menu/closing; merchant tree debt |
-| npc_shop_weapons_armor | 10 documented entries | 1 | 1 | Runtime uses opening/shop menu/closing; merchant tree debt |
+## Dialogue Coverage
 
-## Movement schedule coverage
+Link: `docs/validation/WAVE_INTEGRATION_12_NPC_DIALOGUE_SETS.md`
 
-Link:
-- `docs/validation/WAVE_INTEGRATION_12_NPC_MOVEMENT_SCHEDULES.md`
+| NpcId | Entries/options | >=10? | Temporary? |
+|---|---:|---:|---:|
+| npc_pip_miudinho | 10 | 1 | 1 |
+| npc_sylveth | 10 | 1 | 1 |
+| npc_brumdar | 10 | 1 | 1 |
+| npc_renko | 10 | 1 | 1 |
+| npc_thalindra | 10 | 1 | 1 |
+| npc_zrix | 10 | 1 | 1 |
+| npc_nimble | 10 | 1 | 1 |
 
-| NpcId | MovementProfile | ImplementedNow | DeferredReason |
-|---|---|---:|---|
-| npc_pip_miudinho | Stationary | 1 | Final daily schedule deferred |
-| npc_vaalara_wanderer_01 | WanderWithinZone | 1 | Weather/time schedule deferred |
-| npc_shop_seeds_tools | ShopKeeperFixed | 1 | Opening hours deferred |
-| npc_shop_weapons_armor | ShopKeeperFixed | 1 | Opening hours deferred |
+## Movement Coverage
 
-## Shop/service coverage
+Link: `docs/validation/WAVE_INTEGRATION_12_NPC_MOVEMENT_SCHEDULES.md`
 
-Link:
-- `docs/validation/WAVE_INTEGRATION_12_NPC_SHOP_SERVICES.md`
+| MovementProfile | Count | Notes |
+|---|---:|---|
+| Stationary | 3 | Pip, Thalindra, Nimble |
+| ShopKeeperFixed | 4 | Sylveth, Brumdar, Renko, Zrix |
+| WanderWithinZone | 1 extra | Existing Wanderer retained |
 
-| NpcId | ShopId | ServiceType | Buy | Sell | Debt |
-|---|---|---|---:|---:|---|
-| npc_shop_seeds_tools | shop_seeds_tools | Seeds/tools/basic supplies | 1 | 1 | Advanced pricing profile |
-| npc_shop_weapons_armor | shop_weapons_armor | Weapons/armor/repair | 1 | 1 | Advanced pricing profile |
+## Shop/Service Coverage
 
-## Temporary/debt declaration
+Link: `docs/validation/WAVE_INTEGRATION_12_NPC_SHOP_SERVICES.md`
 
-| Item | Value |
-|---|---|
-| TODO_INTEGRATION_NOT_FINAL required | YES |
-| Temporary NPC data | Existing MVP placeholders |
-| Temporary dialogue data | YES, non-final narrative placeholders |
-| Temporary shop stock | NO for MVP stock, YES for balance finalization |
-| Shop economy debt | Advanced pricing profile not fully consumed |
-| Relationship/reputation deferred | YES |
-| Schedule deferred | YES |
-| Quest bridge deferred | YES |
-| Risk | Human Play Mode may reveal missing scene references |
+| NpcId | ShopId | ServiceType | Buy | Sell |
+|---|---|---|---:|---:|
+| npc_sylveth | shop_seeds_tools | SeedVendor | 1 | 1 |
+| npc_brumdar | shop_blacksmith | BlacksmithRepairUpgrade | 1 | 1 |
+| npc_renko | shop_general_store | GeneralMerchant | 1 | 1 |
+| npc_zrix | shop_cave_supplies | CaveRumorInfo | 1 | 1 |
 
-## NPC/dialogue/shop authoring model
-
-| Item | Result | Evidence |
-|---|---|---|
-| Authoring model created | YES | `WAVE_INTEGRATION_12_NPC_DIALOGUE_SHOP_AUTHORING_MODEL.md` |
-| NPC authoring documented | YES | Same |
-| Dialogue authoring documented | YES | Same |
-| Shop authoring documented | YES | Same |
-| Pricing/inventory documented | YES | Same |
-| Future relationship/quest/schedule bridge documented | YES | Same |
-
-## Code created
+## Runtime/Code Created
 
 | File | Reason |
 |---|---|
-| `Assets/_Game/Scripts/Editor/Validation/ValidateNpcDialogueShopBridge.cs` | Editor validation menu for WAVE12 bridge |
+| `Assets/_Game/Scripts/NPC/Runtime/NpcScenePlacementMarker.cs` | Stable scene placement authoring/validation adapter |
 
-## Code changed
-
-| File | Reason |
-|---|---|
-| `Assets/_Game/Scripts/NPC/NpcController.cs` | Wire dialogue choices to `ShowWithChoices`, `NextNodeId`, and close action |
-
-## Data changed
+## Runtime/Code Changed
 
 | File | Reason |
 |---|---|
-| `Assets/_Game/Data/Dialogues/DialogueTree_Pip.asset` | 10-node MVP dialogue coverage |
-| `Assets/_Game/Data/Dialogues/DialogueTree_Wanderer.asset` | 10-node MVP dialogue coverage |
+| `Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpTownScene.cs` | Regenerator now creates the 7-MVP NPC TownScene roster |
+| `Assets/_Game/Scripts/Editor/Validation/ValidateNpcDialogueShopBridge.cs` | Validator now checks MVP roster assets/docs/shops/scene markers |
 
-## Scene changes
+## Data Created/Changed
+
+| Area | Files |
+|---|---|
+| New NPC assets | `Npc_Sylveth`, `Npc_Brumdar`, `Npc_Renko`, `Npc_Thalindra`, `Npc_Zrix`, `Npc_Nimble` |
+| New dialogue trees | `DialogueTree_Sylveth`, `DialogueTree_Brumdar`, `DialogueTree_Renko`, `DialogueTree_Thalindra`, `DialogueTree_Zrix`, `DialogueTree_Nimble` |
+| Shop ownership | `Shop_Seeds_Tools`, `Shop_Blacksmith`, `Shop_General_Store`, `Shop_Cave_Supplies` |
+
+## Scene Changes
 
 | File/Object | Change | Reason |
 |---|---|---|
-| None | None | Existing TownScene wiring reused |
+| `Assets/_Game/Scenes/TownScene.unity` | Added/updated 7 MVP NPC scene objects and placement markers | Correct WAVE12 placement gap |
+| `NPCs/NpcManager` | Tracks dialogue NPCs and shop NPCs | Runtime capture/restore and interaction registry |
 
-## Human Unity actions required
+## Debts
 
-| Action | Required | Reason |
-|---|---:|---|
-| Run WAVE12 validator | 1 | Static Unity asset/scene confidence |
-| Human Play Mode checklist | 1 | Runtime interaction and transaction confirmation |
-| Scene regeneration | 0 | Current TownScene already wired |
+| Debt | Status |
+|---|---|
+| TEMPORARY_DIALOGUE_AUTHORING_PLACEHOLDER | Present for MVP dialogue text |
+| TODO_NARRATIVE_FINALIZATION | Present |
+| Daily schedule/calendar routine | Deferred |
+| Relationship/reputation/romance/companions/pets | Not implemented, out of scope |
+| Quest final content | Not implemented, out of scope |
+| Unity Play Mode | Pending human validation |
 
-## Acceptance criteria matrix
+## Build Validation
 
-| AC | Result | Evidence |
-|---|---|---|
-| AC-01 WAVE11 exists and not blocked | PASS_WITH_HUMAN_DEBT | WAVE11 build validated, pending Play Mode |
-| AC-02 runtime build before/after | PASS | dotnet builds |
-| AC-03 editor build before/after | PASS_WITH_LEGACY_WARNINGS | 7 warnings |
-| AC-04 design matrix | PASS | Decision/report |
-| AC-05 scene target defined | PASS | TownScene |
-| AC-06 NPC runtime audited | PASS | Audit table |
-| AC-07 dialogue runtime/UI audited | PASS | Audit table |
-| AC-08 shop/economy/inventory audited | PASS | Audit table |
-| AC-09 input/focus/modal audited | PASS | Audit table |
-| AC-10 NPC visible or human wiring clear | PASS_STATIC | TownScene objects exist |
-| AC-11 dialogue opens/closes or wiring clear | PASS_STATIC | `NpcController`, `DialogueModal`; human pending |
-| AC-12 shop opens/closes or debt explicit | PASS_STATIC | `NpcShopController`; human pending |
-| AC-13 buy/sell real or debt | PASS_STATIC | `ShopManager` APIs |
-| AC-14 stable IDs defined | PASS | Stable ID table |
-| AC-15 authoring model | PASS | Authoring doc |
-| AC-16 scene changes documented | PASS | No scene changes |
-| AC-17 human checklist | PASS | Checklist doc |
-| AC-18 final revalidation exists | PASS | Below |
-| AC-19 roster extracted | PASS | Roster doc |
-| AC-20 purposes/responsibilities | PASS | Roster doc |
-| AC-21 movement/schedules | PASS | Movement doc |
-| AC-22 dialogue coverage | PASS_WITH_MERCHANT_DEBT | Dialogue doc |
-| AC-23 shop service mapping | PASS | Shop services doc |
-| AC-24 generic/data-driven controllers | PASS | `NpcController`, `NpcShopController` |
+| Target | Result |
+|---|---|
+| Assembly-CSharp | PASS, 0 warnings, 0 errors |
+| Assembly-CSharp-Editor | PASS, 0 warnings, 0 errors |
+| Unity batchmode scene generation | NOT RUN - blocked by another Unity instance already open |
+| TownScene static YAML check | PASS - 7 MVP NPC names, 7 MVP NpcIds, 0 duplicate fileIDs |
+| Dialogue node static check | PASS - 10 node definitions in each new MVP dialogue tree |
+| `git diff --check` | PASS |
+| `tools/docs/validate_docs.ps1` | FAIL_KNOWN_LEGACY - existing `spec_test_harness_editmode_playmode_quality_gate.md`, old validation ADR/game-rule metadata, and old amendment citations |
+| `tools/docs/check_spec_quality.ps1` | FAIL_HARNESS - Pester `Should` used outside `Describe` |
 
 ## Final Design/Direction Revalidation
 
 | Check | Result | Evidence |
 |---|---|---|
-| All listed design/direction references checked | PASS_WITH_MISSING_REFERENCES_DOCUMENTED | Reference table |
+| All listed design/direction references checked | PASS_WITH_MISSING_REFERENCES_DOCUMENTED | Source table |
 | Applicable NPC/dialogue/shop rules extracted | PASS | Compliance matrix |
-| NPC placement rules applied | PASS_STATIC | TownScene existing placement |
-| Dialogue rules applied | PASS_WITH_MERCHANT_DEBT | Dialogue doc |
-| Shop/economy rules applied or deferred | PASS | Shop services doc |
-| Inventory rules applied or deferred | PASS | ShopManager/InventoryManager |
-| Input/focus/modal rules applied | PASS_STATIC | ModalManager reuse |
-| Stable ID rules applied | PASS_WITH_ALIAS_DEBT | Stable ID table |
-| No design conflict remains | PASS_WITH_DEBT | Pip alias documented, not silently renamed |
+| NPC placement rules applied | PASS_STATIC | Placement map and TownScene markers |
+| Dialogue rules applied | PASS_WITH_PLACEHOLDER_DEBT | Dialogue sets |
+| Shop/economy rules applied or deferred | PASS | Shop services |
+| Inventory rules applied or deferred | PASS | Existing ShopManager/InventoryManager |
+| Input/focus/modal rules applied | PASS_STATIC | Existing ModalManager/UI |
+| Stable ID rules applied | PASS | NpcDataSO + placement markers |
+| No design conflict remains | PASS_WITH_DEBT | Future systems deferred |
+
+## Completeness Revalidation Pass 2
+
+| Check | Result |
+|---|---|
+| WAVE13/WAVE14/WAVE15 not executed | PASS |
+| No final quest/social/reputation/romance/pets added | PASS |
+| No class per NPC created | PASS |
+| No parallel dialogue/shop/inventory runtime created | PASS |
+| TownScene has MVP NPCs by name | PASS_STATIC |
+| Each MVP NPC has >=10 dialogue nodes | PASS_STATIC |
+| Merchants use real shop runtime | PASS_STATIC |
 
 ## Decision
 
-- Can start next wave: NO
-- Blocking issues: Human Play Mode validation still required for WAVE11/WAVE12 acceptance.
-- Human Play Mode validation required: YES
+- Can continue WAVE13: NO until human Play Mode validates WAVE12, unless the human explicitly accepts the risk.
+- Human Play Mode validation required: YES.
