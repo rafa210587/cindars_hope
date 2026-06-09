@@ -62,7 +62,7 @@ namespace CindarsHope.Editor.Validation
             }
 
             // Check GameBootstrap exists
-            var bootstrap = Object.FindFirstObjectByType<GameBootstrap>();
+            var bootstrap = Object.FindAnyObjectByType<GameBootstrap>();
             if (bootstrap == null)
             {
                 Debug.LogError("ValidateInventoryRuntimeBinding: GameBootstrap not found in scene. Run CreateMvpFarmScene first.");
@@ -72,7 +72,6 @@ namespace CindarsHope.Editor.Validation
             // Check ModalManager is on bootstrap
             if (bootstrap != null)
             {
-                var modal = bootstrap.gameObject.GetComponent<UnityEngine.MonoBehaviour>();
                 // Use ModalManager reference via bootstrap
                 if (bootstrap.ModalManager == null)
                 {
@@ -86,7 +85,7 @@ namespace CindarsHope.Editor.Validation
             }
 
             // Check GameplayInputRouter exists in scene
-            var router = Object.FindFirstObjectByType<GameplayInputRouter>();
+            var router = Object.FindAnyObjectByType<GameplayInputRouter>();
             if (router == null)
             {
                 Debug.LogWarning(

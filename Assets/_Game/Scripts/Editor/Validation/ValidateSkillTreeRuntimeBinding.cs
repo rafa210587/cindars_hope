@@ -96,7 +96,7 @@ namespace CindarsHope.Editor.Validation
             }
 
             // 3. Verify SkillTreeManager is present in current loaded scene bootstrap
-            var bootstrap = Object.FindObjectOfType<CindarsHope.Core.Bootstrap.GameBootstrap>();
+            var bootstrap = Object.FindAnyObjectByType<CindarsHope.Core.Bootstrap.GameBootstrap>();
             if (bootstrap != null)
             {
                 var skillTreeMgr = bootstrap.GetComponent<SkillTreeManager>();
@@ -119,7 +119,7 @@ namespace CindarsHope.Editor.Validation
             // (only meaningful in Play Mode; in Edit Mode it won't exist via RuntimeInitializeOnLoad)
             if (Application.isPlaying)
             {
-                var panel = Object.FindObjectOfType<CindarsHope.UI.Skills.SkillTreeGameplayPanelController>();
+                var panel = Object.FindAnyObjectByType<CindarsHope.UI.Skills.SkillTreeGameplayPanelController>();
                 if (panel != null)
                     passes.Add("SkillTreeGameplayPanelController: singleton found in scene — PASS");
                 else

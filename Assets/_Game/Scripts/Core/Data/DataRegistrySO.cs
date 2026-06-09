@@ -10,8 +10,16 @@ namespace CindarsHope.Core.Data
 
         private readonly List<T> _validItems = new List<T>();
         private Dictionary<string, T> _itemsById = new Dictionary<string, T>();
+        private bool _indexBuilt;
 
-        public IReadOnlyCollection<T> All => _validItems;
+        public IReadOnlyCollection<T> All
+        {
+            get
+            {
+                EnsureIndex();
+                return _validItems;
+            }
+        }
 
         private void OnEnable()
         {
@@ -42,7 +50,7 @@ namespace CindarsHope.Core.Data
 
         private void EnsureIndex()
         {
-            if (_itemsById == null)
+            if (!_indexBuilt || _itemsById == null)
             {
                 RebuildIndex();
             }
@@ -55,6 +63,7 @@ namespace CindarsHope.Core.Data
 
             if (_items == null)
             {
+                _indexBuilt = true;
                 return;
             }
 
@@ -98,6 +107,8 @@ namespace CindarsHope.Core.Data
             {
                 Debug.LogWarning($"DataRegistry summary: {name} (type {typeName}). Valid={validCount}, Null={nullCount}, EmptyId={emptyIdCount}, Duplicate={duplicateCount}, TotalSlots={_items.Length}.", this);
             }
+
+            _indexBuilt = true;
         }
 
         private string ResolveRegistryAssetPath()
@@ -132,6 +143,7 @@ namespace CindarsHope.Core.Data
             {
                 so.ApplyModifiedProperties();
                 UnityEditor.EditorUtility.SetDirty(this);
+                RebuildIndex();
             }
             return removed;
         }
