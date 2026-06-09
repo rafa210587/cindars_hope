@@ -373,7 +373,6 @@ namespace CindarsHope.UI.Skills
                 GUI.backgroundColor = Color.yellow;
             }
             GUILayout.BeginVertical(GUI.skin.box);
-            GUI.backgroundColor = prevColor;
             GUILayout.Label($"{node.DisplayName} [{status}] - Custo: {node.SkillPointCost} SP");
             GUILayout.Label(node.Description);
             GUILayout.Label($"Requisitos: {FormatRequirements(node)}");
@@ -405,6 +404,7 @@ namespace CindarsHope.UI.Skills
             }
 
             GUILayout.EndVertical();
+            GUI.backgroundColor = prevColor;
         }
 
         private static bool RequirementsMet(SkillTreeManager manager, SkillNodeDataSO node, int level)
