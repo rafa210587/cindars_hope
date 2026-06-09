@@ -83,7 +83,7 @@
 | WAVE 04 UI Foundation Phase 1 | PHASE1_COMPLETED_WITH_CONTRACT_ONLY_CORE | 14 of 14 specs have execution reports; 3 BUILD_VALIDATED (SPECS 1-2, 8), 11 CONTRACT_ONLY (SPECS 3-7,9,11-16); SPEC 8 fully reworked (10 focus states, modal stack, 47 tests); Assembly builds PASS; quality check PASS; docs validation PASS (legacy errors only) |
 | WAVE 05 Farm Gameplay Core | COMPLETED_WITH_KNOWN_LEGACY_GATES | 20/20 specs executed; all BUILD_VALIDATED with RUNTIME_VALIDATED_WITH_KNOWN_LEGACY_GATES; ~123 EditMode tests; Assembly-CSharp PASS; closeout: docs/validation/WAVE_05_CLOSEOUT_REPORT.md |
 | WAVE 06 Economy/Loot/Crafting/Shop/Cave Foundation | COMPLETED_WITH_KNOWN_LEGACY_GATES | 8/8 specs executed; ~75 EditMode tests; Assembly-CSharp PASS; closeout: docs/validation/WAVE_06_CLOSEOUT_REPORT.md |
-| WAVE 07 Playable Scene Integration | WAVE_INTEGRATION_08_CODE_READY_HUMAN_UNITY_SCENE_ACTION_REQUIRED | Scene architecture documented; manager audit complete; FarmScene restored to WAVE03 baseline; resource interactables added; debug loadout provisioner (06A); economy loop wired via SellPoint (07); HUD feedback events wired (08): SellPoint now publishes PlayerActionFeedbackEvent + EconomyTransactionCompletedEvent → DebugHud shows sale feedback and economy state; human must run CreateMvpFarmScene generator and execute 06A + 07 + 08 Play Mode checklists |
+| WAVE 07 Playable Scene Integration | WAVE_INTEGRATION_09_BUILD_VALIDATED_WITH_UI_DEBT | Scene architecture documented; manager audit complete; FarmScene restored to WAVE03 baseline; resource interactables added; debug loadout provisioner (06A); economy loop wired via SellPoint (07); HUD feedback events wired (08); inventory/tooltip/equipment runtime binding (09): InventoryPanelController + CharacterEquipmentPanelController reused (RuntimeInitializeOnLoad), GameplayInputRouter added to CreateMvpFarmScene; human must run CreateMvpFarmScene generator and execute 06A + 07 + 08 + 09 Play Mode checklists |
 | WAVE 08 City/NPC/Dialogue/Services | COMPLETED_WITH_KNOWN_LEGACY_GATES | 4/4 specs BUILD_VALIDATED; ~61 EditMode tests; Assembly-CSharp PASS; closeout: docs/validation/WAVE_08_CLOSEOUT_REPORT.md |
 | WAVE 09 Quest System | COMPLETED_WITH_KNOWN_LEGACY_GATES | 8/8 specs BUILD_VALIDATED; ~107 EditMode tests; Assembly-CSharp PASS; closeout: docs/validation/WAVE_09_CLOSEOUT_REPORT.md |
 | WAVE 10 Main Progression / Fonte / Endgame | COMPLETED_WITH_KNOWN_LEGACY_GATES | 4/4 specs BUILD_VALIDATED; ~72 EditMode tests; Assembly-CSharp PASS; closeout: docs/validation/WAVE_10_CLOSEOUT_REPORT.md |
@@ -137,7 +137,11 @@ Latest validation:
 - WAVE_INTEGRATION_08 decision: CREATED (`docs/validation/WAVE_INTEGRATION_08_HUD_RUNTIME_BINDING_DECISION.md`)
 - WAVE_INTEGRATION_08 report: CREATED (`docs/validation/WAVE_INTEGRATION_08_HUD_RUNTIME_BINDING_REPORT.md`)
 - Human Play Mode checklist (08): `docs/validation/WAVE_INTEGRATION_08_HUMAN_PLAYMODE_CHECKLIST.md`
-- Can start WAVE_INTEGRATION_09: NO, blocked until human regenerates FarmScene and 06A + 07 + 08 Play Mode checklists pass
+- Inventory/tooltip/equipment binding (WAVE_INTEGRATION_09): BUILD_VALIDATED_WITH_UI_DEBT — REUSE_EXISTING_CONTROLLERS strategy; InventoryPanelController (IMGUI, I key, ModalManager push, shows real slots) and CharacterEquipmentPanelController (K/L keys, equipment/attributes) already fully implemented via RuntimeInitializeOnLoadMethod; GameplayInputRouter added to CreateMvpFarmScene.cs; tooltip is minimal (itemId+amount); equipment panel does not push ModalManager (UI debt); ValidateInventoryRuntimeBinding.cs created
+- WAVE_INTEGRATION_09 decision: CREATED (`docs/validation/WAVE_INTEGRATION_09_INVENTORY_TOOLTIP_EQUIPMENT_DECISION.md`)
+- WAVE_INTEGRATION_09 report: CREATED (`docs/validation/WAVE_INTEGRATION_09_INVENTORY_TOOLTIP_EQUIPMENT_REPORT.md`)
+- Human Play Mode checklist (09): `docs/validation/WAVE_INTEGRATION_09_HUMAN_PLAYMODE_CHECKLIST.md`
+- Can start WAVE_INTEGRATION_10: YES (code ready); human must regenerate FarmScene and execute 06A + 07 + 08 + 09 Play Mode checklists
 
 ---
 
@@ -208,5 +212,5 @@ PROJECT_LOG + CURRENT_STATE conflict → prefer CURRENT_STATE; report mismatch
 
 ---
 
-*Last updated: 2026-06-08 (WAVE_INTEGRATION_08: HUD feedback wired — SellPoint now publishes PlayerActionFeedbackEvent + EconomyTransactionCompletedEvent; DebugHud covers all mandatory HUD elements; BUILD_VALIDATED_WITH_UI_DEBT; human must regenerate FarmScene and execute 06A + 07 + 08 checklists)*
-*Next update: after all three Play Mode checklists pass (or WAVE_INTEGRATION_06B created if tool IDs absent)*
+*Last updated: 2026-06-08 (WAVE_INTEGRATION_09: inventory/tooltip/equipment runtime binding — InventoryPanelController + CharacterEquipmentPanelController reused (fully functional IMGUI, RuntimeInitializeOnLoad); GameplayInputRouter added to CreateMvpFarmScene.cs; ValidateInventoryRuntimeBinding.cs created; BUILD_VALIDATED_WITH_UI_DEBT; human must regenerate FarmScene and execute 06A + 07 + 08 + 09 checklists)*
+*Next update: after all four Play Mode checklists pass (or WAVE_INTEGRATION_06B created if tool IDs absent)*

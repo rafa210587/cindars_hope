@@ -28,6 +28,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using CindarsHope.UI.Hotbar;
 using CindarsHope.UI.Modal;
+using CindarsHope.UI.Routing;
 using CindarsHope.Editor.Validation;
 
 namespace CindarsHope.Editor.SceneCreation
@@ -86,6 +87,7 @@ namespace CindarsHope.Editor.SceneCreation
             CreateFarmSceneFoundationZones();
             CreateFarmResourceInteractables(inventoryManager);
             CreateSellPoint(inventoryManager, playerManager);
+            CreateGameplayInputRouter();
             CreateDebugHud(
                 playerManager,
                 inventoryManager,
@@ -873,6 +875,15 @@ namespace CindarsHope.Editor.SceneCreation
             pickup.Configure(pickupIndex, itemId, amount, inventoryManager);
             EditorUtility.SetDirty(pickup);
             return pickup;
+        }
+
+        // WAVE_INTEGRATION_09: GameplayInputRouter provides centralized I/K/Esc routing.
+        // InventoryPanelController and CharacterEquipmentPanelController auto-create via
+        // [RuntimeInitializeOnLoadMethod] - they do not need explicit scene wiring.
+        private static void CreateGameplayInputRouter()
+        {
+            var routerObject = new GameObject("GameplayInputRouter");
+            routerObject.AddComponent<GameplayInputRouter>();
         }
 
         private static void CreateDebugHud(
