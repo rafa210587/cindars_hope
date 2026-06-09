@@ -53,7 +53,7 @@ namespace CindarsHope.Equipment
                 return;
             }
 
-            if (Input.GetKeyDown(KeyCode.T))
+            if (Input.GetKeyDown(KeyCode.B))
             {
                 CycleDebugTool();
             }

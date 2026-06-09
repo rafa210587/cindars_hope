@@ -421,6 +421,7 @@ namespace CindarsHope.UI
             GUILayout.Label("U: skill trees");
             GUILayout.Label("1-6: hotbar slot");
             GUILayout.Label("H: consume food");
+            GUILayout.Label("B: cycle equipped tool");
             GUILayout.Label("Esc: close modal / back");
 
             GUILayout.Space(6f);
