@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using CindarsHope.Core.Data;
 using CindarsHope.Economy;
+using CindarsHope.Inventory.Data;
 using CindarsHope.NPC;
 using CindarsHope.NPC.Runtime;
 using UnityEditor;
@@ -14,6 +16,7 @@ namespace CindarsHope.Editor.Validation
     public static class ValidateRefinedCanonicalNpcTownPopulation
     {
         private const string TownScenePath = "Assets/_Game/Scenes/TownScene.unity";
+        private const string ItemDatabasePath = "Assets/_Game/Data/Registries/ItemDatabase.asset";
 
         private static readonly ExpectedNpc[] ExpectedNpcs =
         {
@@ -60,6 +63,12 @@ namespace CindarsHope.Editor.Validation
 
         private static void ValidateAssets(List<string> errors)
         {
+            var itemDatabase = AssetDatabase.LoadAssetAtPath<ItemDatabaseSO>(ItemDatabasePath);
+            if (itemDatabase == null)
+            {
+                errors.Add($"ItemDatabaseSO not found at '{ItemDatabasePath}'.");
+            }
+
             foreach (var expected in ExpectedNpcs)
             {
                 var npc = FindAssetById<NpcDataSO>(expected.NpcId, "Assets/_Game/Data/NPCs");
@@ -106,7 +115,41 @@ namespace CindarsHope.Editor.Validation
                         {
                             errors.Add($"{expected.ShopId} has no stock items.");
                         }
+                        else if (itemDatabase != null)
+                        {
+                            ValidateShopStock(expected, shop, itemDatabase, errors);
+                        }
                     }
+                }
+            }
+        }
+
+        private static void ValidateShopStock(ExpectedNpc expected, ShopDataSO shop, ItemDatabaseSO itemDatabase, List<string> errors)
+        {
+            for (var i = 0; i < shop.Items.Length; i++)
+            {
+                var entry = shop.Items[i];
+                if (entry == null)
+                {
+                    errors.Add($"{expected.ShopId} stock[{i}] is null.");
+                    continue;
+                }
+
+                if (string.IsNullOrWhiteSpace(entry.ItemId))
+                {
+                    errors.Add($"{expected.ShopId} stock[{i}] has empty ItemId.");
+                    continue;
+                }
+
+                if (!itemDatabase.TryGetById(entry.ItemId, out ItemDataSO itemData) || itemData == null)
+                {
+                    errors.Add($"{expected.ShopId} stock[{i}] item '{entry.ItemId}' is absent from ItemDatabaseSO.");
+                    continue;
+                }
+
+                if (entry.BuyPriceOverride <= 0 && itemData.BaseValue <= 0)
+                {
+                    errors.Add($"{expected.ShopId} stock[{i}] item '{entry.ItemId}' has no valid buy price.");
                 }
             }
         }
