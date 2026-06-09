@@ -126,18 +126,18 @@ namespace CindarsHope.Editor
                 "OK");
         }
 
-        [MenuItem("CindarsHope/Open Main Scenes/Cave", priority = 10)]
+        [MenuItem("CindarsHope/Archive/Open Scenes/Cave")]
         public static void OpenCaveScene() => OpenScene(CaveSceneAssetPath);
 
-        [MenuItem("CindarsHope/Open Main Scenes/Farm", priority = 11)]
+        [MenuItem("CindarsHope/Archive/Open Scenes/Farm")]
         public static void OpenFarmScene() => OpenScene(FarmSceneAssetPath);
 
-        [MenuItem("CindarsHope/Open Main Scenes/Town", priority = 12)]
+        [MenuItem("CindarsHope/Archive/Open Scenes/Town")]
         public static void OpenTownScene() => OpenScene(TownSceneAssetPath);
 
         // ── Advanced sub-menu ───────────────────────────────────────────────────
 
-        [MenuItem("CindarsHope/Advanced/Generate Runtime Assets", priority = 100)]
+        [MenuItem("CindarsHope/Archive/Advanced/Generate Runtime Assets")]
         public static void GenerateRuntimeAssets()
         {
             CindarsHope.Editor.EnemyTaxonomy.GenerateAndWireSpec13GAssets.GenerateAndWire();
