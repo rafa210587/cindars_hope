@@ -14,5 +14,16 @@ Status: PENDING_HUMAN_PLAYMODE
 | Movement | Wander NPCs move where wired; route/night schedules are explicit debt |  |  |
 | Close UI | Gameplay input returns |  |  |
 | Stop Play | Scene not corrupted |  |  |
+| Open TownScene | No ShopManager invalid price errors |  |  |
+| Press Play | No NpcShopController session creation errors |  |  |
+| Interact shop_tovin | Shop opens or advanced service debt explicit |  |  |
+| Interact shop_savra | Shop opens |  |  |
+| Interact shop_dagna | Shop opens |  |  |
+| Interact shop_thalindra | Shop opens or advanced service debt explicit |  |  |
+| Interact shop_yael | Shop opens |  |  |
+| Interact shop_ozzra | Shop opens |  |  |
+| Interact shop_gurd | Shop opens |  |  |
+| Interact shop_nimble | Shop opens or advanced service debt explicit |  |  |
+| Interact shop_mara | Shop opens |  |  |
 
 WAVE13 remains blocked until this checklist passes.
