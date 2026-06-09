@@ -50,6 +50,32 @@ namespace CindarsHope.Skills.Runtime.Effects
             { "skill_magic_lightning_chain", "combat.magic.lightning_chain" },
             { "skill_magic_elemental_ward", "combat.magic.elemental_ward" },
             { "skill_magic_slowing_sigils", "combat.magic.slowing_sigils" },
+
+            // ── Action Skill Balance Patch — WAVE_INTEGRATION_11_ACTION_SKILL_BALANCE_PATCH ──
+            // DEFERRED_RUNTIME_EFFECT: mapeamentos registrados no catálogo; executores feedback-only.
+            // TODO_INTEGRATION_NOT_FINAL: substituir por executores reais quando combat/utility runtime existir.
+
+            // Melee: novas action skills
+            { "skill_melee_avanco_aco", "melee.avanco_aco" },
+            { "skill_melee_grito_desafio", "melee.grito_desafio" },
+            { "skill_melee_investida_quebra_guarda", "melee.investida_quebra_guarda" },
+
+            // Magic: novas action skills
+            { "skill_magic_chama_breve", "magic.chama_breve" },
+            { "skill_magic_rajada_gelida", "magic.rajada_gelida" },
+
+            // Survival: novas action skills
+            { "skill_survival_sinal_retirada", "survival.sinal_retirada" },
+            { "skill_survival_isca_improvisada", "survival.isca_improvisada" },
+            { "skill_survival_kit_emergencia", "survival.kit_emergencia" },
+            { "skill_survival_instinto_sobrevivencia", "survival.instinto_sobrevivencia" },
+            { "skill_survival_campo_seguro", "survival.campo_seguro" },
+
+            // Crafting: novas action skills (crafting_quick_repair já mapeado acima via field_patch)
+            { "skill_crafting_irrigador_portatil", "crafting.irrigador_portatil" },
+            { "skill_crafting_bomba_improvisada", "crafting.bomba_improvisada" },
+            { "skill_crafting_mecanismo_campo", "crafting.mecanismo_campo" },
+            { "skill_crafting_marca_eficiencia", "crafting.marca_eficiencia" },
         };
 
         private readonly SkillEffectRegistry _registry = new SkillEffectRegistry();
@@ -73,6 +99,10 @@ namespace CindarsHope.Skills.Runtime.Effects
             // Register farm crop executor as vertical slice
             _registry.Register(new FarmCropSkillEffectExecutor());
 
+            // Register placeholder feedback executors for action skill balance patch.
+            // TODO_INTEGRATION_NOT_FINAL: substituir por executores reais quando combat/utility runtime existir.
+            RegisterFeedbackExecutors();
+
             // Attach target resolver
             if (_targetResolver == null)
             {
@@ -81,7 +111,33 @@ namespace CindarsHope.Skills.Runtime.Effects
                 _targetResolver = resolverGo.AddComponent<SkillTargetResolver>();
             }
 
-            Debug.Log("[ActiveSkillExecutionController] Bootstrapped. Registered effect: farm.crop.water_skill");
+            Debug.Log("[ActiveSkillExecutionController] Bootstrapped. Registered effect: farm.crop.water_skill + balance patch feedback executors.");
+        }
+
+        private void RegisterFeedbackExecutors()
+        {
+            // Melee action skills (DEFERRED_RUNTIME_EFFECT — feedback only)
+            _registry.Register(new FeedbackOnlySkillEffectExecutor("melee.avanco_aco", "Avanço de Aço ativado. (Efeito de combate pendente.)", SkillEffectCategory.Combat));
+            _registry.Register(new FeedbackOnlySkillEffectExecutor("melee.grito_desafio", "Grito de Desafio ativado. (Efeito de combate pendente.)", SkillEffectCategory.Combat));
+            _registry.Register(new FeedbackOnlySkillEffectExecutor("melee.investida_quebra_guarda", "Investida Quebra-Guarda ativada. (Efeito de combate pendente.)", SkillEffectCategory.Combat));
+
+            // Magic action skills (DEFERRED_RUNTIME_EFFECT — feedback only)
+            _registry.Register(new FeedbackOnlySkillEffectExecutor("magic.chama_breve", "Chama Breve lançada. (Efeito de combate pendente.)", SkillEffectCategory.Combat));
+            _registry.Register(new FeedbackOnlySkillEffectExecutor("magic.rajada_gelida", "Rajada Gélida lançada. (Efeito de combate pendente.)", SkillEffectCategory.Combat));
+
+            // Survival action skills (DEFERRED_RUNTIME_EFFECT — feedback only)
+            _registry.Register(new FeedbackOnlySkillEffectExecutor("survival.sinal_retirada", "Sinal de Retirada ativado. (Efeito de utilidade pendente.)", SkillEffectCategory.Utility));
+            _registry.Register(new FeedbackOnlySkillEffectExecutor("survival.isca_improvisada", "Isca Improvisada lançada. (Efeito de utilidade pendente.)", SkillEffectCategory.Utility));
+            _registry.Register(new FeedbackOnlySkillEffectExecutor("survival.kit_emergencia", "Kit de Emergência usado. (Efeito de utilidade pendente.)", SkillEffectCategory.Utility));
+            _registry.Register(new FeedbackOnlySkillEffectExecutor("survival.instinto_sobrevivencia", "Instinto de Sobrevivência ativado. (Efeito de utilidade pendente.)", SkillEffectCategory.Utility));
+            _registry.Register(new FeedbackOnlySkillEffectExecutor("survival.campo_seguro", "Campo Seguro criado. (Efeito de utilidade pendente.)", SkillEffectCategory.Utility));
+
+            // Crafting action skills (DEFERRED_RUNTIME_EFFECT — feedback only)
+            // crafting.irrigador_portatil usa farm.crop.water_skill como bridge real
+            _registry.Register(new FeedbackOnlySkillEffectExecutor("crafting.irrigador_portatil", "Irrigador Portátil usado. (Efeito de farm pendente.)", SkillEffectCategory.Farm));
+            _registry.Register(new FeedbackOnlySkillEffectExecutor("crafting.bomba_improvisada", "Bomba Improvisada lançada. (Efeito de combate pendente.)", SkillEffectCategory.Combat));
+            _registry.Register(new FeedbackOnlySkillEffectExecutor("crafting.mecanismo_campo", "Mecanismo de Campo ativado. (Efeito de utilidade pendente.)", SkillEffectCategory.Utility));
+            _registry.Register(new FeedbackOnlySkillEffectExecutor("crafting.marca_eficiencia", "Marca de Eficiência aplicada. (Efeito de utilidade pendente.)", SkillEffectCategory.Utility));
         }
 
         private void Awake()

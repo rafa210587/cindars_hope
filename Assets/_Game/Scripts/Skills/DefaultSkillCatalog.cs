@@ -161,6 +161,27 @@ namespace CindarsHope.Skills
                 SkillNodeType.Capstone, SkillCategory.CapstonePassive,
                 isCapstone: true, reqNodes: 8,
                 prereq: "melee_dodge_training"),
+
+            // ── MELEE: Action Skill Balance Patch (WAVE_INTEGRATION_11_ACTION_SKILL_BALANCE_PATCH) ──
+            // Adicionar sem remover. Nao altera IDs existentes.
+
+            Node("melee.avanco_aco", "melee", "Avanço de Aço",
+                "Avanço curto ofensivo até inimigo à frente seguido de golpe. Tier 2. Respeita colisão.",
+                SkillNodeType.UnlockSkillAction, SkillCategory.EquippableSkill,
+                prereq: "melee_iron_grip",
+                unlockAction: "skill_melee_avanco_aco"),
+
+            Node("melee.grito_desafio", "melee", "Grito de Desafio",
+                "Provoca inimigos próximos por curta duração; aumenta estabilidade contra stagger. Tier 3.",
+                SkillNodeType.UnlockSkillAction, SkillCategory.EquippableSkill,
+                prereq: "melee.avanco_aco",
+                unlockAction: "skill_melee_grito_desafio"),
+
+            Node("melee.investida_quebra_guarda", "melee", "Investida Quebra-Guarda",
+                "Avanço frontal curto com alto posture damage. Stagger maior se alvo estiver bloqueando. Tier 4.",
+                SkillNodeType.UnlockSkillAction, SkillCategory.EquippableSkill,
+                prereq: "melee.grito_desafio",
+                unlockAction: "skill_melee_investida_quebra_guarda"),
         };
 
         // ── RANGED ─────────────────────────────────────────────────────────────
@@ -303,6 +324,21 @@ namespace CindarsHope.Skills
                 isCapstone: true, reqNodes: 8,
                 prereq: "magic_slowing_sigils",
                 mods: new[] { Mod(SkillModifierType.AttackFlat, 1f), Mod(SkillModifierType.ManaRegenFlat, 1f) }),
+
+            // ── MAGIC: Action Skill Balance Patch (WAVE_INTEGRATION_11_ACTION_SKILL_BALANCE_PATCH) ──
+            // Adicionar sem remover. Nao altera IDs existentes.
+
+            Node("magic.chama_breve", "magic", "Chama Breve",
+                "Cone ou projétil curto de fogo. Dano moderado e chance de Burn. Tier 2.",
+                SkillNodeType.UnlockSpell, SkillCategory.EquippableSkill,
+                prereq: "magic_fire_spark",
+                unlockAction: "skill_magic_chama_breve"),
+
+            Node("magic.rajada_gelida", "magic", "Rajada Gélida",
+                "Rajada curta de gelo. Aplica Chill/slow leve por curta duração. Tier 3.",
+                SkillNodeType.UnlockSpell, SkillCategory.EquippableSkill,
+                prereq: "magic.chama_breve",
+                unlockAction: "skill_magic_rajada_gelida"),
         };
 
         // ── SURVIVAL ───────────────────────────────────────────────────────────
@@ -374,6 +410,39 @@ namespace CindarsHope.Skills
                 isCapstone: true, reqNodes: 8,
                 prereq: "survival_last_breath",
                 mods: new[] { Mod(SkillModifierType.ToxicResistanceBonus, 1f), Mod(SkillModifierType.ColdResistanceBonus, 1f), Mod(SkillModifierType.HeatResistanceBonus, 1f), Mod(SkillModifierType.MaxStaminaFlat, 5f) }),
+
+            // ── SURVIVAL: Action Skill Balance Patch (WAVE_INTEGRATION_11_ACTION_SKILL_BALANCE_PATCH) ──
+            // Adicionar sem remover. Nao altera IDs existentes.
+
+            Node("survival.sinal_retirada", "survival", "Sinal de Retirada",
+                "Buff curto de evasão: reduz custo de Stamina de movimento/Dodge e cansaço gerado. Tier 2.",
+                SkillNodeType.UnlockSkillAction, SkillCategory.EquippableSkill,
+                prereq: "survival_safe_step",
+                unlockAction: "skill_survival_sinal_retirada"),
+
+            Node("survival.isca_improvisada", "survival", "Isca Improvisada",
+                "Lança isca que distrai criaturas simples por segundos. Em boss: sem distração total. Tier 2.",
+                SkillNodeType.UnlockSkillAction, SkillCategory.EquippableSkill,
+                prereq: "survival_safe_step",
+                unlockAction: "skill_survival_isca_improvisada"),
+
+            Node("survival.kit_emergencia", "survival", "Kit de Emergência",
+                "Usa kit para recuperar pequena Stamina ou reduzir cansaço fora de combate. Tier 3.",
+                SkillNodeType.UnlockSkillAction, SkillCategory.EquippableSkill,
+                prereq: "survival.sinal_retirada",
+                unlockAction: "skill_survival_kit_emergencia"),
+
+            Node("survival.instinto_sobrevivencia", "survival", "Instinto de Sobrevivência",
+                "Revela brevemente recursos, perigos leves e interagíveis próximos. Tier 3.",
+                SkillNodeType.UnlockSkillAction, SkillCategory.EquippableSkill,
+                prereq: "survival.isca_improvisada",
+                unlockAction: "skill_survival_instinto_sobrevivencia"),
+
+            Node("survival.campo_seguro", "survival", "Campo Seguro",
+                "Zona fora de combate que reduz ganho de cansaço/fome e melhora recovery leve. Tier 4.",
+                SkillNodeType.UnlockSkillAction, SkillCategory.EquippableSkill,
+                prereq: "survival.kit_emergencia",
+                unlockAction: "skill_survival_campo_seguro"),
         };
 
         // ── CRAFTING ───────────────────────────────────────────────────────────
@@ -440,6 +509,34 @@ namespace CindarsHope.Skills
                 isCapstone: true, reqNodes: 8,
                 prereq: "crafting_durable_finish",
                 mods: new[] { Mod(SkillModifierType.CraftTimeReductionPercent, 0.15f), Mod(SkillModifierType.RepairEfficiencyBonus, 0.15f) }),
+
+            // ── CRAFTING: Action Skill Balance Patch (WAVE_INTEGRATION_11_ACTION_SKILL_BALANCE_PATCH) ──
+            // Adicionar sem remover. crafting_quick_repair (ID existente "Reparo Rápido") nao duplicado.
+            // Nao altera IDs existentes.
+
+            Node("crafting.irrigador_portatil", "crafting", "Irrigador Portátil",
+                "Rega grupo de crop plots próximos ou alvo selecionado. Consome Stamina/carga. Tier 3.",
+                SkillNodeType.UnlockSkillAction, SkillCategory.EquippableSkill,
+                prereq: "crafting_quick_repair",
+                unlockAction: "skill_crafting_irrigador_portatil"),
+
+            Node("crafting.bomba_improvisada", "crafting", "Bomba Improvisada",
+                "Arremessa bomba leve craftada. Dano baixo; útil para stagger e swarms. Consome carga. Tier 3.",
+                SkillNodeType.UnlockSkillAction, SkillCategory.EquippableSkill,
+                prereq: "crafting_quick_repair",
+                unlockAction: "skill_crafting_bomba_improvisada"),
+
+            Node("crafting.mecanismo_campo", "crafting", "Mecanismo de Campo",
+                "Dispositivo temporário: puxa item próximo ou ativa mecanismo leve. Tier 4.",
+                SkillNodeType.UnlockSkillAction, SkillCategory.EquippableSkill,
+                prereq: "crafting.irrigador_portatil",
+                unlockAction: "skill_crafting_mecanismo_campo"),
+
+            Node("crafting.marca_eficiencia", "crafting", "Marca de Eficiência",
+                "Buff curto: reduz custo Stamina de ações agrícolas/crafting próximas. Não acumula. Tier 4.",
+                SkillNodeType.UnlockSkillAction, SkillCategory.EquippableSkill,
+                prereq: "crafting.bomba_improvisada",
+                unlockAction: "skill_crafting_marca_eficiencia"),
         };
     }
 }

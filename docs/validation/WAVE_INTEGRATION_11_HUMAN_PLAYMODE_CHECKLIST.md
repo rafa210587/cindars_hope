@@ -113,6 +113,49 @@
 
 ---
 
+---
+
+## Section E: Action Skill Balance Checklist (WAVE_INTEGRATION_11_ACTION_SKILL_BALANCE_PATCH)
+
+### E1: Skill tree — active skills visible per tree
+
+| # | Action | Expected | Pass/Fail |
+|---|--------|----------|-----------|
+| E1.1 | Open skill tree (U), navigate to Melee | At least 5 active slot skills listed (offhand_cut, guarded_block, battle_dash, leap_attack, whirl_cut, + 3 novas) | |
+| E1.2 | Navigate to Ranged | 5 active slot skills listed | |
+| E1.3 | Navigate to Magic | At least 5 active slot skills listed (fire_spark, ice_bind, toxic_cloud, lightning_chain, elemental_ward, slowing_sigils + 2 novas) | |
+| E1.4 | Navigate to Survival | At least 5 active utility skills listed (emergency_roll, last_breath + 5 novas) | |
+| E1.5 | Navigate to Crafting | At least 5 active utility skills listed (field_patch, quick_repair + 4 novas) | |
+
+### E2: Equip and execute new action skill (feedback-only)
+
+| # | Action | Expected | Pass/Fail |
+|---|--------|----------|-----------|
+| E2.1 | Purchase and equip "Avanço de Aço" (Melee, Tier 2) in slot 1 | Slot 1 shows skill | |
+| E2.2 | Press 1 in-game | HUD shows "Avanço de Aço ativado. (Efeito de combate pendente.)" | |
+| E2.3 | Equip "Sinal de Retirada" (Survival, Tier 2) in slot 2 | Slot 2 shows skill | |
+| E2.4 | Press 2 in-game | HUD shows "Sinal de Retirada ativado. (Efeito de utilidade pendente.)" | |
+| E2.5 | Equip "Irrigador Portátil" (Crafting, Tier 3) in slot 3 | Slot 3 shows skill | |
+| E2.6 | Press 3 in-game | HUD shows "Irrigador Portátil usado. (Efeito de farm pendente.)" | |
+
+### E3: Verify Dash/Dodge/Block do not occupy active slot
+
+| # | Action | Expected | Pass/Fail |
+|---|--------|----------|-----------|
+| E3.1 | Open skill tree — check Dash node | Dash (PlayerDashController) is NOT in any active slot 1-4 | |
+| E3.2 | Press Space + direction | Dash fires via Space+dir; active slot 1-4 not consumed | |
+| E3.3 | Double-tap direction | Dodge fires; active slot 1-4 not consumed | |
+| E3.4 | Check if Block appears in active slot | Block NOT in slot; BLOCK_RUNTIME_DEFERRED is acceptable | |
+
+### E4: Passive skills cannot be equipped in active slot
+
+| # | Action | Expected | Pass/Fail |
+|---|--------|----------|-----------|
+| E4.1 | Try to equip "Pegada de Ferro" (Melee, Passive) in active slot | Not equippable (passive; EquippableSkill=false) | |
+| E4.2 | Try to equip capstone "Ritmo de Batalha" in active slot | Not equippable (CapstonePassive) | |
+
+---
+
 ## Result
 
 | Status | Date | Executor |
@@ -122,3 +165,4 @@
 ---
 
 *Checklist created: 2026-06-08 (WAVE_INTEGRATION_11)*
+*Updated: 2026-06-08 (WAVE_INTEGRATION_11_ACTION_SKILL_BALANCE_PATCH — Section E: Action Skill Balance)*

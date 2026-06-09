@@ -147,6 +147,7 @@ Latest validation:
 - Human Play Mode checklist (10): `docs/validation/WAVE_INTEGRATION_10_HUMAN_PLAYMODE_CHECKLIST.md`
 - Can start WAVE_INTEGRATION_11: COMPLETE (BUILD_VALIDATED 2026-06-08); see WAVE_INTEGRATION_11_skill_effects_gameplay_bridge_execution_report.md
 - WAVE_INTEGRATION_11: BUILD_VALIDATED — Skill effects pipeline (ISkillEffectExecutor, SkillEffectRegistry, FarmCropSkillEffectExecutor), numeric 1-4 slot execution (ActiveSkillExecutionController), Dash (PlayerDashController: Space+direction, 3.5 tiles, 40 Stamina), Dodge (PlayerMovementAbilityController: double-tap, 1.5 tiles, 40 Stamina); Block deferred; human must regenerate FarmScene and execute 06A + 07 + 08 + 09 + 10 + 11 Play Mode checklists
+- WAVE_INTEGRATION_11_ACTION_SKILL_BALANCE_PATCH: BUILD_VALIDATED_WITH_SKILL_EFFECT_DEBT (2026-06-08) — +13 nodes no DefaultSkillCatalog (3 Melee, 2 Magic, 5 Survival, 4 Crafting); FeedbackOnlySkillEffectExecutor para 14 novos EffectIds; 4 docs novos (BALANCE_ADDENDUM, SLOT_MAPPING, PASSIVE_MODIFIER_MAPPING, MOVEMENT_ACTIONS_MAPPING); catálogo total: 69 nodes / 34 active slot skills; Assembly-CSharp PASS; Assembly-CSharp-Editor PASS
 
 ---
 
@@ -217,5 +218,5 @@ PROJECT_LOG + CURRENT_STATE conflict → prefer CURRENT_STATE; report mismatch
 
 ---
 
-*Last updated: 2026-06-08 (WAVE_INTEGRATION_11: skill effects gameplay bridge — ISkillEffectExecutor pipeline, SkillEffectRegistry, FarmCropSkillEffectExecutor, ActiveSkillExecutionController (1-4 keys), PlayerDashController (Space+dir, 3.5t, 40sp), PlayerMovementAbilityController (double-tap dodge, 1.5t, 40sp), GridMovementDisplacementResolver, DirectionalDoubleTapDetector; Block deferred; 13 new runtime files, 2 modified; both assemblies BUILD_VALIDATED; human must regenerate FarmScene and execute 06A-11 checklists)*
+*Last updated: 2026-06-08 (WAVE_INTEGRATION_11_ACTION_SKILL_BALANCE_PATCH: +13 catalog nodes, FeedbackOnlySkillEffectExecutor, 4 new docs, 3 updated docs; total 69 nodes / 34 active slot skills; both assemblies BUILD_VALIDATED; WAVE10 preserved; no IDs changed; no skills removed)*
 *Next update: after Play Mode checklists 06A-11 pass or next WAVE_INTEGRATION spec starts*
