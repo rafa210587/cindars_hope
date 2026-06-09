@@ -21,6 +21,12 @@ namespace CindarsHope.UI.Skills
         private string _selectedTreeId = string.Empty;
         private string _feedback = string.Empty;
         private Vector2 _scroll;
+        // Keyboard navigation indices
+        private int _selectedHomeIndex;
+        private int _selectedNodeIndex;
+        // Cache for available tree count and node count in current tree
+        private int _availableTreeCount;
+        private int _currentTreeNodeCount;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void EnsureRuntimeInstance()
@@ -82,10 +88,159 @@ namespace CindarsHope.UI.Skills
                 Toggle();
             }
 
-            if (_isOpen && global::UnityEngine.Input.GetKeyDown(KeyCode.Escape))
+            if (!_isOpen)
             {
-                Close();
+                return;
             }
+
+            if (global::UnityEngine.Input.GetKeyDown(KeyCode.Escape))
+            {
+                if (!string.IsNullOrEmpty(_selectedTreeId))
+                {
+                    _selectedTreeId = string.Empty;
+                    _selectedNodeIndex = 0;
+                }
+                else
+                {
+                    Close();
+                }
+                return;
+            }
+
+            UpdateKeyboardNavigation();
+        }
+
+        private void UpdateKeyboardNavigation()
+        {
+            if (string.IsNullOrEmpty(_selectedTreeId))
+            {
+                // Home view: W/S navigate trees, A/D also navigate, E enters tree
+                if (global::UnityEngine.Input.GetKeyDown(KeyCode.W) || global::UnityEngine.Input.GetKeyDown(KeyCode.UpArrow)
+                    || global::UnityEngine.Input.GetKeyDown(KeyCode.A) || global::UnityEngine.Input.GetKeyDown(KeyCode.LeftArrow))
+                {
+                    _selectedHomeIndex = Mathf.Max(0, _selectedHomeIndex - 1);
+                }
+                else if (global::UnityEngine.Input.GetKeyDown(KeyCode.S) || global::UnityEngine.Input.GetKeyDown(KeyCode.DownArrow)
+                    || global::UnityEngine.Input.GetKeyDown(KeyCode.D) || global::UnityEngine.Input.GetKeyDown(KeyCode.RightArrow))
+                {
+                    var maxIndex = Mathf.Max(0, _availableTreeCount - 1);
+                    _selectedHomeIndex = Mathf.Min(maxIndex, _selectedHomeIndex + 1);
+                }
+                else if (global::UnityEngine.Input.GetKeyDown(KeyCode.E) || global::UnityEngine.Input.GetKeyDown(KeyCode.Return))
+                {
+                    EnterSelectedTree();
+                }
+            }
+            else
+            {
+                // Detail view: W/S navigate nodes, A/D navigate trees, E buys node
+                if (global::UnityEngine.Input.GetKeyDown(KeyCode.W) || global::UnityEngine.Input.GetKeyDown(KeyCode.UpArrow))
+                {
+                    _selectedNodeIndex = Mathf.Max(0, _selectedNodeIndex - 1);
+                }
+                else if (global::UnityEngine.Input.GetKeyDown(KeyCode.S) || global::UnityEngine.Input.GetKeyDown(KeyCode.DownArrow))
+                {
+                    var maxNode = Mathf.Max(0, _currentTreeNodeCount - 1);
+                    _selectedNodeIndex = Mathf.Min(maxNode, _selectedNodeIndex + 1);
+                }
+                else if (global::UnityEngine.Input.GetKeyDown(KeyCode.A) || global::UnityEngine.Input.GetKeyDown(KeyCode.LeftArrow))
+                {
+                    NavigateToAdjacentTree(-1);
+                }
+                else if (global::UnityEngine.Input.GetKeyDown(KeyCode.D) || global::UnityEngine.Input.GetKeyDown(KeyCode.RightArrow))
+                {
+                    NavigateToAdjacentTree(1);
+                }
+                else if (global::UnityEngine.Input.GetKeyDown(KeyCode.E) || global::UnityEngine.Input.GetKeyDown(KeyCode.Return))
+                {
+                    BuySelectedNode();
+                }
+            }
+        }
+
+        private void EnterSelectedTree()
+        {
+            var manager = GameBootstrap.Instance?.SkillTreeManager;
+            if (manager == null)
+            {
+                return;
+            }
+
+            var count = 0;
+            foreach (var treeId in TreeOrder)
+            {
+                if (!manager.TreeIndex.ContainsKey(treeId))
+                {
+                    continue;
+                }
+
+                if (count == _selectedHomeIndex)
+                {
+                    _selectedTreeId = treeId;
+                    _selectedNodeIndex = 0;
+                    _scroll = Vector2.zero;
+                    return;
+                }
+
+                count++;
+            }
+        }
+
+        private void NavigateToAdjacentTree(int direction)
+        {
+            var manager = GameBootstrap.Instance?.SkillTreeManager;
+            if (manager == null)
+            {
+                return;
+            }
+
+            // Build list of available trees
+            var available = new System.Collections.Generic.List<string>();
+            foreach (var treeId in TreeOrder)
+            {
+                if (manager.TreeIndex.ContainsKey(treeId))
+                {
+                    available.Add(treeId);
+                }
+            }
+
+            var currentIdx = available.IndexOf(_selectedTreeId);
+            if (currentIdx < 0)
+            {
+                return;
+            }
+
+            var newIdx = Mathf.Clamp(currentIdx + direction, 0, available.Count - 1);
+            if (newIdx != currentIdx)
+            {
+                _selectedTreeId = available[newIdx];
+                _selectedNodeIndex = 0;
+                _scroll = Vector2.zero;
+                _selectedHomeIndex = newIdx;
+            }
+        }
+
+        private void BuySelectedNode()
+        {
+            var manager = GameBootstrap.Instance?.SkillTreeManager;
+            var progression = GameBootstrap.Instance?.PlayerProgressionManager;
+            if (manager == null || string.IsNullOrEmpty(_selectedTreeId))
+            {
+                return;
+            }
+
+            if (!manager.TreeIndex.TryGetValue(_selectedTreeId, out var tree))
+            {
+                return;
+            }
+
+            if (_selectedNodeIndex < 0 || _selectedNodeIndex >= tree.Nodes.Count)
+            {
+                return;
+            }
+
+            var node = tree.Nodes[_selectedNodeIndex];
+            manager.TryPurchaseNode(node.SkillNodeId, progression?.Level ?? 1, out _feedback);
         }
 
         private void OnGUI()
@@ -131,6 +286,8 @@ namespace CindarsHope.UI.Skills
 
         private void DrawTreeHome(SkillTreeManager manager)
         {
+            GUILayout.Label("[W/S ou A/D] navegar  [E] entrar na arvore");
+            var rowIndex = 0;
             foreach (var treeId in TreeOrder)
             {
                 if (!manager.TreeIndex.TryGetValue(treeId, out var tree))
@@ -138,14 +295,24 @@ namespace CindarsHope.UI.Skills
                     continue;
                 }
 
+                var prevColor = GUI.backgroundColor;
+                if (rowIndex == _selectedHomeIndex)
+                {
+                    GUI.backgroundColor = Color.yellow;
+                }
                 if (GUILayout.Button(tree.DisplayName))
                 {
+                    _selectedHomeIndex = rowIndex;
                     _selectedTreeId = treeId;
+                    _selectedNodeIndex = 0;
                     _scroll = Vector2.zero;
                 }
+                GUI.backgroundColor = prevColor;
                 GUILayout.Label(tree.Description);
                 GUILayout.Space(4f);
+                rowIndex++;
             }
+            _availableTreeCount = rowIndex;
         }
 
         private void DrawTreeDetail(SkillTreeManager manager, PlayerProgressionManager progression)
@@ -157,36 +324,46 @@ namespace CindarsHope.UI.Skills
             }
 
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Voltar", GUILayout.Width(90f)))
+            if (GUILayout.Button("Voltar (Esc)", GUILayout.Width(110f)))
             {
                 _selectedTreeId = string.Empty;
+                _selectedNodeIndex = 0;
                 return;
             }
-            GUILayout.Label($"Skill Tree - {tree.DisplayName}");
+            GUILayout.Label($"Skill Tree - {tree.DisplayName}  [A/D] trocar arvore");
             GUILayout.EndHorizontal();
+            GUILayout.Label("[W/S] navegar nodes  [E] comprar node selecionado");
             _scroll = GUILayout.BeginScrollView(_scroll, GUILayout.Height(390f));
-            foreach (var node in tree.Nodes)
+            _currentTreeNodeCount = tree.Nodes.Count;
+            for (var nodeIdx = 0; nodeIdx < tree.Nodes.Count; nodeIdx++)
             {
-                DrawNode(manager, progression, node);
+                DrawNode(manager, progression, tree.Nodes[nodeIdx], nodeIdx);
             }
             GUILayout.EndScrollView();
             DrawActiveSlots(manager);
         }
 
-        private void DrawNode(SkillTreeManager manager, PlayerProgressionManager progression, SkillNodeDataSO node)
+        private void DrawNode(SkillTreeManager manager, PlayerProgressionManager progression, SkillNodeDataSO node, int nodeIdx)
         {
             var purchased = manager.IsNodePurchased(node.SkillNodeId);
             var requirementsMet = RequirementsMet(manager, node, progression?.Level ?? 1);
             var hasPoints = (progression?.UnspentSkillPoints ?? 0) >= node.SkillPointCost;
             var status = purchased ? "Comprado" : requirementsMet ? hasPoints ? "Disponível" : "Sem pontos" : "Bloqueado";
 
+            var prevColor = GUI.backgroundColor;
+            if (nodeIdx == _selectedNodeIndex)
+            {
+                GUI.backgroundColor = Color.yellow;
+            }
             GUILayout.BeginVertical(GUI.skin.box);
+            GUI.backgroundColor = prevColor;
             GUILayout.Label($"{node.DisplayName} [{status}] - Custo: {node.SkillPointCost} SP");
             GUILayout.Label(node.Description);
             GUILayout.Label($"Requisitos: {FormatRequirements(node)}");
             GUI.enabled = !purchased && requirementsMet && hasPoints;
             if (GUILayout.Button("Comprar"))
             {
+                _selectedNodeIndex = nodeIdx;
                 manager.TryPurchaseNode(node.SkillNodeId, progression?.Level ?? 1, out _feedback);
             }
             GUI.enabled = true;
@@ -259,6 +436,8 @@ namespace CindarsHope.UI.Skills
 
             _isOpen = true;
             _selectedTreeId = string.Empty;
+            _selectedHomeIndex = 0;
+            _selectedNodeIndex = 0;
             _feedback = string.Empty;
         }
 

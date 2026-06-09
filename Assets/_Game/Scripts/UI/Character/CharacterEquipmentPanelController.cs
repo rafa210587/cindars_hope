@@ -16,10 +16,40 @@ namespace CindarsHope.UI.Character
             Equipment
         }
 
+        // Attribute rows: Strength, Dexterity, Intelligence, Willpower, Constitution, Breath
+        private const int AttributeCount = 6;
+        // Equipment slots drawn in order: Chest, RightHand, LeftHand, Accessory
+        private static readonly EquipmentSlot[] EquipmentSlots =
+        {
+            EquipmentSlot.Chest,
+            EquipmentSlot.RightHand,
+            EquipmentSlot.LeftHand,
+            EquipmentSlot.Accessory,
+        };
+        private static readonly PlayerAttributeType[] AttributeTypes =
+        {
+            PlayerAttributeType.Strength,
+            PlayerAttributeType.Dexterity,
+            PlayerAttributeType.Intelligence,
+            PlayerAttributeType.Willpower,
+            PlayerAttributeType.Constitution,
+            PlayerAttributeType.Breath,
+        };
+        private static readonly string[] AttributeLabels =
+        {
+            "Strength",
+            "Dexterity",
+            "Intelligence",
+            "Willpower",
+            "Constitution",
+            "Breath",
+        };
+
         private static CharacterEquipmentPanelController _instance;
         private bool _isOpen;
         private PanelMode _mode;
         private string _feedback = string.Empty;
+        private int _selectedIndex;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void EnsureRuntimeInstance()
@@ -66,9 +96,81 @@ namespace CindarsHope.UI.Character
                 Toggle(PanelMode.Equipment);
             }
 
-            if (_isOpen && global::UnityEngine.Input.GetKeyDown(KeyCode.Escape))
+            if (!_isOpen)
+            {
+                return;
+            }
+
+            if (global::UnityEngine.Input.GetKeyDown(KeyCode.Escape))
             {
                 Close();
+                return;
+            }
+
+            UpdateKeyboardNavigation();
+        }
+
+        private void UpdateKeyboardNavigation()
+        {
+            var maxIndex = _mode == PanelMode.Attributes ? AttributeCount - 1 : EquipmentSlots.Length - 1;
+
+            if (global::UnityEngine.Input.GetKeyDown(KeyCode.W) || global::UnityEngine.Input.GetKeyDown(KeyCode.UpArrow))
+            {
+                _selectedIndex = Mathf.Max(0, _selectedIndex - 1);
+            }
+            else if (global::UnityEngine.Input.GetKeyDown(KeyCode.S) || global::UnityEngine.Input.GetKeyDown(KeyCode.DownArrow))
+            {
+                _selectedIndex = Mathf.Min(maxIndex, _selectedIndex + 1);
+            }
+            else if (global::UnityEngine.Input.GetKeyDown(KeyCode.E) || global::UnityEngine.Input.GetKeyDown(KeyCode.Return))
+            {
+                ExecuteSelectedAction();
+            }
+        }
+
+        private void ExecuteSelectedAction()
+        {
+            if (_mode == PanelMode.Attributes)
+            {
+                var progression = GameBootstrap.Instance?.PlayerProgressionManager;
+                if (progression == null || _selectedIndex >= AttributeTypes.Length)
+                {
+                    return;
+                }
+
+                _feedback = progression.TrySpendAttributePoint(AttributeTypes[_selectedIndex])
+                    ? $"{AttributeLabels[_selectedIndex]} aumentado."
+                    : "Sem Attribute Points disponiveis.";
+            }
+            else
+            {
+                if (_selectedIndex >= EquipmentSlots.Length)
+                {
+                    return;
+                }
+
+                var equipment = GameBootstrap.Instance?.EquipmentManager;
+                var inventory = GameBootstrap.Instance?.InventoryManager;
+                if (equipment == null || inventory == null)
+                {
+                    return;
+                }
+
+                var slot = EquipmentSlots[_selectedIndex];
+                var itemId = equipment.GetEquippedItem(slot);
+                if (!string.IsNullOrWhiteSpace(itemId))
+                {
+                    // Unequip if already equipped
+                    equipment.UnequipSlot(slot);
+                    inventory.ClearEquippedBinding(slot, itemId);
+                    _feedback = $"Slot {slot} desequipado.";
+                }
+                else
+                {
+                    // Open inventory for equipment selection
+                    var slotLabel = slot.ToString();
+                    OpenEquipmentSelection(slot, slotLabel);
+                }
             }
         }
 
@@ -117,12 +219,13 @@ namespace CindarsHope.UI.Character
 
             GUILayout.Label($"Level: {progression.Level}  XP: {progression.CurrentXp} / {progression.XpToNextLevel}");
             GUILayout.Label($"Attribute Points: {progression.UnspentAttributePoints}  Skill Points: {progression.UnspentSkillPoints}");
-            DrawAttribute(progression, PlayerAttributeType.Strength, "Strength", progression.Strength);
-            DrawAttribute(progression, PlayerAttributeType.Dexterity, "Dexterity", progression.Dexterity);
-            DrawAttribute(progression, PlayerAttributeType.Intelligence, "Intelligence", progression.Intelligence);
-            DrawAttribute(progression, PlayerAttributeType.Willpower, "Willpower", progression.Willpower);
-            DrawAttribute(progression, PlayerAttributeType.Constitution, "Constitution", progression.Constitution);
-            DrawAttribute(progression, PlayerAttributeType.Breath, "Breath", progression.Breath);
+            GUILayout.Label("[W/S] navegar  [E] gastar ponto");
+            DrawAttribute(progression, 0, PlayerAttributeType.Strength, "Strength", progression.Strength);
+            DrawAttribute(progression, 1, PlayerAttributeType.Dexterity, "Dexterity", progression.Dexterity);
+            DrawAttribute(progression, 2, PlayerAttributeType.Intelligence, "Intelligence", progression.Intelligence);
+            DrawAttribute(progression, 3, PlayerAttributeType.Willpower, "Willpower", progression.Willpower);
+            DrawAttribute(progression, 4, PlayerAttributeType.Constitution, "Constitution", progression.Constitution);
+            DrawAttribute(progression, 5, PlayerAttributeType.Breath, "Breath", progression.Breath);
         }
 
         private void DrawEquipment(EquipmentManager equipment, InventoryManager inventory)
@@ -133,34 +236,48 @@ namespace CindarsHope.UI.Character
                 return;
             }
 
-            DrawEquipmentSlot(equipment, inventory, EquipmentSlot.Chest, "Corpo + Cabeca / Armadura");
-            DrawEquipmentSlot(equipment, inventory, EquipmentSlot.RightHand, "Mao direita");
-            DrawEquipmentSlot(equipment, inventory, EquipmentSlot.LeftHand, "Mao esquerda");
-            DrawEquipmentSlot(equipment, inventory, EquipmentSlot.Accessory, "Lateral / Acessorio");
+            GUILayout.Label("[W/S] navegar  [E] equipar/desequipar");
+            DrawEquipmentSlot(equipment, inventory, 0, EquipmentSlot.Chest, "Corpo + Cabeca / Armadura");
+            DrawEquipmentSlot(equipment, inventory, 1, EquipmentSlot.RightHand, "Mao direita");
+            DrawEquipmentSlot(equipment, inventory, 2, EquipmentSlot.LeftHand, "Mao esquerda");
+            DrawEquipmentSlot(equipment, inventory, 3, EquipmentSlot.Accessory, "Lateral / Acessorio");
             GUILayout.Space(10f);
             GUILayout.Label("Stats derivados: bonus aplicados pelo equipamento/skills em runtime.");
         }
 
-        private void DrawAttribute(PlayerProgressionManager progression, PlayerAttributeType type, string label, int value)
+        private void DrawAttribute(PlayerProgressionManager progression, int rowIndex, PlayerAttributeType type, string label, int value)
         {
+            var prevColor = GUI.backgroundColor;
+            if (rowIndex == _selectedIndex)
+            {
+                GUI.backgroundColor = Color.yellow;
+            }
             GUILayout.BeginHorizontal();
             GUILayout.Label($"{label}: {value}", GUILayout.Width(180f));
             if (GUILayout.Button("+", GUILayout.Width(40f)))
             {
+                _selectedIndex = rowIndex;
                 _feedback = progression.TrySpendAttributePoint(type)
                     ? $"{label} aumentado."
                     : "Sem Attribute Points disponiveis.";
             }
             GUILayout.EndHorizontal();
+            GUI.backgroundColor = prevColor;
         }
 
-        private void DrawEquipmentSlot(EquipmentManager equipment, InventoryManager inventory, EquipmentSlot slot, string label)
+        private void DrawEquipmentSlot(EquipmentManager equipment, InventoryManager inventory, int rowIndex, EquipmentSlot slot, string label)
         {
             var itemId = equipment?.GetEquippedItem(slot);
+            var prevColor = GUI.backgroundColor;
+            if (rowIndex == _selectedIndex)
+            {
+                GUI.backgroundColor = Color.yellow;
+            }
             GUILayout.BeginHorizontal();
             GUILayout.Label($"{label}: {(string.IsNullOrWhiteSpace(itemId) ? "vazio" : itemId)}", GUILayout.Width(260f));
             if (GUILayout.Button(string.IsNullOrWhiteSpace(itemId) ? "Equipar" : "Trocar", GUILayout.Width(82f)))
             {
+                _selectedIndex = rowIndex;
                 OpenEquipmentSelection(slot, label);
             }
 
@@ -168,12 +285,14 @@ namespace CindarsHope.UI.Character
             GUI.enabled = !string.IsNullOrWhiteSpace(itemId);
             if (GUILayout.Button("Desequipar", GUILayout.Width(90f)))
             {
+                _selectedIndex = rowIndex;
                 equipment.UnequipSlot(slot);
                 inventory.ClearEquippedBinding(slot, itemId);
                 _feedback = $"{label} desequipado.";
             }
             GUI.enabled = previousEnabled;
             GUILayout.EndHorizontal();
+            GUI.backgroundColor = prevColor;
         }
 
         private void OpenEquipmentSelection(EquipmentSlot slot, string label)
@@ -206,6 +325,7 @@ namespace CindarsHope.UI.Character
                 else
                 {
                     _mode = mode;
+                    _selectedIndex = 0;
                     _feedback = string.Empty;
                 }
                 return;
@@ -219,6 +339,7 @@ namespace CindarsHope.UI.Character
 
             _feedback = string.Empty;
             _mode = mode;
+            _selectedIndex = 0;
             _isOpen = true;
         }
 
@@ -240,6 +361,7 @@ namespace CindarsHope.UI.Character
             }
 
             _mode = PanelMode.Equipment;
+            _selectedIndex = 0;
             _isOpen = true;
         }
 
