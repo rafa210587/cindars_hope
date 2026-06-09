@@ -79,11 +79,9 @@ namespace CindarsHope.UI.Skills
 
         private void Update()
         {
-            // Yield to GameplayInputRouter when active; it publishes SkillTreeOpenedEvent
-            // which SkillTreeInputHandler handles via the Canvas SkillTreePanel.
-            if (GameplayInputRouter.IsActive) return;
-
-            if (global::UnityEngine.Input.GetKeyDown(KeyCode.U))
+            // When GameplayInputRouter is active it publishes SkillTreeOpenedEvent on U,
+            // so only skip the direct U toggle to avoid double-open. Navigation must still run.
+            if (!GameplayInputRouter.IsActive && global::UnityEngine.Input.GetKeyDown(KeyCode.U))
             {
                 Toggle();
             }
