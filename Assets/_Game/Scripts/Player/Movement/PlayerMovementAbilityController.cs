@@ -38,7 +38,7 @@ namespace CindarsHope.Player.Movement
         [SerializeField] private PlayerController _playerController;
         [SerializeField] private StaminaManager _staminaManager;
 
-        private readonly DirectionalDoubleTapDetector _doubleTapDetector = new DirectionalDoubleTapDetector();
+        [SerializeField] private DirectionalDoubleTapDetector _doubleTapDetector;
         private float _lastDodgeTime = float.MinValue;
         private bool _isDodging;
         private float _previousSpeedMultiplier = 1f;
@@ -50,6 +50,8 @@ namespace CindarsHope.Player.Movement
             if (_rigidbody == null) _rigidbody = GetComponent<Rigidbody2D>();
             if (_collider == null) _collider = GetComponent<Collider2D>();
             if (_playerController == null) _playerController = GetComponent<PlayerController>();
+            if (_doubleTapDetector == null) _doubleTapDetector = GetComponent<DirectionalDoubleTapDetector>();
+            if (_doubleTapDetector == null) _doubleTapDetector = gameObject.AddComponent<DirectionalDoubleTapDetector>();
 
             var bootstrap = GameBootstrap.Instance;
             if (bootstrap != null && _staminaManager == null)
@@ -58,10 +60,13 @@ namespace CindarsHope.Player.Movement
 
         private void Update()
         {
+            if (GetComponent<PlayerDodgeController>() != null)
+                return;
+
             if (GameBootstrap.Instance?.ModalManager?.HasActiveModal == true)
                 return;
 
-            var doubleTapDir = _doubleTapDetector.UpdateAndCheckDoubleTap();
+            var doubleTapDir = _doubleTapDetector != null ? _doubleTapDetector.UpdateAndCheckDoubleTap() : null;
             if (doubleTapDir.HasValue)
             {
                 TryDodge(doubleTapDir.Value);

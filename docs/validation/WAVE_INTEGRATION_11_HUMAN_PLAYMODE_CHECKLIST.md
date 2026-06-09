@@ -1,14 +1,14 @@
 # WAVE_INTEGRATION_11 - Human Play Mode Checklist
 
 **Date:** 2026-06-09
-**Status:** PENDING_HUMAN_PLAYMODE_AFTER_RUNTIME_INPUT_FIX - Not run yet
+**Status:** PENDING_HUMAN_PLAYMODE_AFTER_MOVEMENT_RUNTIME_FIX - Not run yet
 
 ---
 
 ## Prerequisites
 
-- FarmScene open in Play Mode. Scene regeneration is not required for Dash/Dodge runtime input fix; controllers bind to Player at runtime.
-- Unity validators passed: Validate Skill Effects Bridge, Validate Dash Dodge Movement, Validate WAVE11 Runtime Input Binding.
+- FarmScene open in Play Mode. Scene regeneration is not required for Dash/Dodge/Block runtime input fix; controllers bind to Player at runtime.
+- Unity validators passed: Validate Skill Effects Bridge, Validate Dash Dodge Movement, Validate WAVE11 Runtime Input Binding, Validate WAVE11 Movement Actions Runtime.
 - Player has Stamina available (> 40).
 - At least one FarmPlot exists in scene in state TilledDry or PlantedDry.
 
@@ -109,6 +109,18 @@
 
 ---
 
+## Section C2: Block (Left Shift)
+
+| # | Action | Expected | Pass/Fail |
+|---|---|---|---|
+| C2.1 | Hold `Left Shift` while walking | Player movement speed is visibly reduced, not stopped | |
+| C2.2 | Release `Left Shift` | Player movement speed returns to normal | |
+| C2.3 | Hold `Left Shift` with stamina available | HUD shows "Block." on entry and stamina drains over time | |
+| C2.4 | Keep holding until stamina is insufficient | Block exits and HUD shows stamina feedback | |
+| C2.5 | Open any modal, then hold `Left Shift` | Block does not enter while modal is open | |
+
+---
+
 ## Section D: No Regressions
 
 | # | Check | Expected | Pass/Fail |
@@ -152,7 +164,7 @@
 | E3.1 | Open skill tree and check Dash node | Dash runtime action is not consumed by active slots 1-4 | |
 | E3.2 | Press `Space + direction` | Dash fires via movement runtime; active slot 1-4 not consumed | |
 | E3.3 | Double-tap direction | Dodge fires via movement runtime; active slot 1-4 not consumed | |
-| E3.4 | Check if Block appears in active slot | Block is not active runtime; BLOCK_RUNTIME_DEFERRED is acceptable | |
+| E3.4 | Hold `Left Shift` | Block fires via movement runtime slow; active slot 1-4 not consumed | |
 
 ### E4: Passive skills cannot be equipped in active slot
 
@@ -165,7 +177,7 @@
 
 | # | Action | Expected | Pass/Fail |
 |---|---|---|---|
-| E5.1 | Start Play Mode from current FarmScene without regenerating scene | Player receives PlayerDashController and PlayerMovementAbilityController at runtime | |
+| E5.1 | Start Play Mode from current FarmScene without regenerating scene | Player receives PlayerDashController, PlayerDodgeController, DirectionalDoubleTapDetector, PlayerBlockController and PlayerMovementDisplacementResolver at runtime | |
 | E5.2 | Execute menu `CindarsHope/Validate/Validate WAVE11 Runtime Input Binding` | Validator passes | |
 | E5.3 | Equip a new balance-patch action skill | New node is visible in its actual tree list | |
 
@@ -182,3 +194,4 @@
 *Checklist created: 2026-06-08 (WAVE_INTEGRATION_11)*
 *Updated: 2026-06-08 (WAVE_INTEGRATION_11_ACTION_SKILL_BALANCE_PATCH - Section E: Action Skill Balance)*
 *Updated: 2026-06-09 (WAVE_INTEGRATION_11_RUNTIME_INPUT_FIX_PENDING_HUMAN_PLAYMODE)*
+*Updated: 2026-06-09 (WAVE_INTEGRATION_11_MOVEMENT_ACTIONS_RUNTIME_FIX_PENDING_HUMAN_PLAYMODE)*

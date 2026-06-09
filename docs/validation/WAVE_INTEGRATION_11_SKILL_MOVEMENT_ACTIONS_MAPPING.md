@@ -1,8 +1,8 @@
 # WAVE INTEGRATION 11 - Skill Movement Actions Mapping
 
 **Date:** 2026-06-09
-**Status:** BUILD_VALIDATED_RUNTIME_INPUT_FIX_PENDING_HUMAN_PLAYMODE
-**Patch:** WAVE_INTEGRATION_11_RUNTIME_INPUT_FIX
+**Status:** BUILD_VALIDATED_MOVEMENT_RUNTIME_FIX_PENDING_HUMAN_PLAYMODE
+**Patch:** WAVE_INTEGRATION_11_MOVEMENT_ACTIONS_RUNTIME_FIX
 
 ---
 
@@ -10,9 +10,9 @@
 
 | Action | Base availability | Input | Skill tree interactions | Cost | Cooldown | Distance/rule | ImplementNow | Notes |
 |---|---|---|---|---|---|---|---:|---|
-| Dash | Desde tutorial/progressao inicial | Space + direction | Survival/melee_dodge_training melhora cooldown; Survival general melhora recovery | 40 Stamina | 1.0s | 3.5 tiles base | YES | PlayerDashController BUILD_VALIDATED_RUNTIME_BOUND; colisao via Collider2D.Cast; nao atravessa solidos com blocking colliders; bounds dependem de colliders de borda |
-| Dodge | Desde o comeco | double tap directional (< 0.25s) | Survival/melee_dodge_training melhora custo/recovery; survival.sinal_retirada reduz custo (DEFERRED_RUNTIME_EFFECT) | 40 Stamina | 0.6s | 1.5 tiles | YES | PlayerMovementAbilityController BUILD_VALIDATED_RUNTIME_BOUND; DirectionalDoubleTapDetector; colisao via Collider2D.Cast |
-| Block | Desbloqueado por Melee/melee_guarded_block rank 1 | Left Shift | melee_guarded_block melhora absorcao; Melee/Guarda Firme melhora (nao implementado) | Stamina drain ao segurar + ao receber impacto | n/a | Frontal damage reduction | NO | BLOCK_RUNTIME_DEFERRED - aguarda combat runtime; input/state pode ser preparado mas sem efeito real |
+| Dash | Desde tutorial/progressao inicial | Space + direction | Survival/melee_dodge_training melhora cooldown; Survival general melhora recovery | 40 Stamina | 1.0s | 3.5 tiles base | YES | PlayerDashController BUILD_VALIDATED_PENDING_HUMAN_PLAYMODE; colisao via PlayerMovementDisplacementResolver/Collider2D.Cast; nao ocupa active slot |
+| Dodge | Desde o comeco | double tap directional (< 0.25s) | Survival/melee_dodge_training melhora custo/recovery; survival.sinal_retirada reduz custo (DEFERRED_RUNTIME_EFFECT) | 40 Stamina | 0.6s | 1.5 tiles | YES | PlayerDodgeController BUILD_VALIDATED_PENDING_HUMAN_PLAYMODE; DirectionalDoubleTapDetector; colisao via PlayerMovementDisplacementResolver/Collider2D.Cast; nao ocupa active slot |
+| Block | Desde runtime basico de defesa | Left Shift | melee_guarded_block melhora absorcao futura; Melee/Guarda Firme melhora futura | 10 Stamina/s ao segurar | n/a | Slow de movimento 0.5x; reducao de dano deferred | YES | PlayerBlockController BUILD_VALIDATED_PENDING_HUMAN_PLAYMODE; slow funcional agora; combat damage reduction deferred |
 
 ---
 
@@ -20,7 +20,7 @@
 
 ```text
 Controller: PlayerDashController.cs
-Runtime binding: attached to GameBootstrap.Instance.PlayerManager.gameObject after scene load when missing
+Runtime binding: PlayerMovementActionRuntimeBootstrap attaches to GameBootstrap.Instance.PlayerManager.gameObject after scene load when missing
 Input: Space + WASD/Arrow; falls back to LastFacingDirection if no current MoveInput
 Cost: 40 Stamina (TODO_INTEGRATION_NOT_FINAL - valor final depende de refinement)
 Cooldown: 1.0s (TODO_INTEGRATION_NOT_FINAL)
@@ -38,8 +38,8 @@ Cooldown ativo: PlayerActionFeedbackEvent("Dash em cooldown (N.Ns).")
 ## Dodge - Detalhes
 
 ```text
-Controller: PlayerMovementAbilityController.cs (com DirectionalDoubleTapDetector)
-Runtime binding: attached together with PlayerDashController when missing
+Controller: PlayerDodgeController.cs (com DirectionalDoubleTapDetector)
+Runtime binding: PlayerMovementActionRuntimeBootstrap attaches to GameBootstrap.Instance.PlayerManager.gameObject after scene load when missing
 Input: double tap WASD/Arrow em < 0.25s (DOUBLE_TAP_WINDOW_PENDING - configuravel)
 Cost: 40 Stamina (TODO_INTEGRATION_NOT_FINAL)
 Cooldown: 0.6s (TODO_INTEGRATION_NOT_FINAL)
@@ -52,19 +52,17 @@ Stamina insuficiente: PlayerActionFeedbackEvent("Stamina insuficiente para dodge
 Cooldown ativo: PlayerActionFeedbackEvent("Dodge em cooldown (N.Ns).")
 ```
 
-## Block - Status
+## Block - Detalhes
 
 ```text
-Status: BLOCK_RUNTIME_DEFERRED_WITH_REASON
-Input previsto: Left Shift
-Reason: combat runtime (damage handling, shield state, posture system) nao existe nesta wave.
-Unlock: melee_guarded_block rank 1 (skill catalog presente)
-Effect previsto:
-  - reduz dano frontal por rank
-  - drena Stamina ao segurar e ao receber impacto
-  - melhora com Guarda Firme
-Residual risk: Block pode ser preparado como input state sem efeito real.
-               Sera implementado quando CombatManager/PostureSystem existir.
+Status: BLOCK_SLOW_RUNTIME_BUILD_VALIDATED_PENDING_HUMAN_PLAYMODE
+Controller: PlayerBlockController.cs
+Runtime binding: PlayerMovementActionRuntimeBootstrap attaches to GameBootstrap.Instance.PlayerManager.gameObject after scene load when missing
+Input: hold Left Shift
+Cost: 10 Stamina/s while held (TODO_INTEGRATION_NOT_FINAL)
+Slow: PlayerController.SpeedMultiplier * 0.5 while held (TODO_INTEGRATION_NOT_FINAL)
+Feedback: PlayerActionFeedbackEvent("Block.") and PlayerActionFeedbackEvent("Block released.")
+Deferred: frontal damage reduction remains deferred until combat runtime/posture integration.
 ```
 
 ---
@@ -91,10 +89,10 @@ Residual risk: Block pode ser preparado como input state sem efeito real.
 
 | Tree | SkillId | Interacao com Block | Status |
 |---|---|---|---|
-| melee | melee_guarded_block | Unlock de Block base (EquippableSkill) | BLOCK_RUNTIME_DEFERRED |
+| melee | melee_guarded_block | Futuro upgrade de absorcao/dano do Block; runtime basico de slow nao ocupa active slot | BLOCK_SLOW_RUNTIME_READY_DAMAGE_REDUCTION_DEFERRED |
 | melee | melee_guarded_stance | DefenseFlat +1 (afeta absorcao de dano quando Block existir) | PARTIAL |
 
 ---
 
 *Created: 2026-06-08 (WAVE_INTEGRATION_11_ACTION_SKILL_BALANCE_PATCH)*
-*Updated: 2026-06-09 (WAVE_INTEGRATION_11_RUNTIME_INPUT_FIX_PENDING_HUMAN_PLAYMODE)*
+*Updated: 2026-06-09 (WAVE_INTEGRATION_11_MOVEMENT_ACTIONS_RUNTIME_FIX_PENDING_HUMAN_PLAYMODE)*

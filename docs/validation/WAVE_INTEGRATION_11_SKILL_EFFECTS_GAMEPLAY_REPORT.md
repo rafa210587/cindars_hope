@@ -1,7 +1,7 @@
 # WAVE_INTEGRATION_11 — Skill Effects Gameplay Report
 
 **Date:** 2026-06-08
-**Status:** BUILD_VALIDATED_RUNTIME_INPUT_FIX_PENDING_HUMAN_PLAYMODE
+**Status:** BUILD_VALIDATED_MOVEMENT_RUNTIME_FIX_PENDING_HUMAN_PLAYMODE
 **Patch:** WAVE_INTEGRATION_11_ACTION_SKILL_BALANCE_PATCH
 
 ---
@@ -13,8 +13,8 @@ A WAVE_INTEGRATION_11 implementou o pipeline de execução de efeitos de skill:
 - Executor real: `FarmCropSkillEffectExecutor` (farm.crop.water_skill)
 - Controller: `ActiveSkillExecutionController` (teclas 1-4)
 - Dash: `PlayerDashController` (Space + direção, 3.5 tiles, 40 Stamina)
-- Dodge: `PlayerMovementAbilityController` (double-tap, 1.5 tiles, 40 Stamina)
-- Block: BLOCK_RUNTIME_DEFERRED
+- Dodge: `PlayerDodgeController` + `DirectionalDoubleTapDetector` (double-tap, 1.5 tiles, 40 Stamina)
+- Block: `PlayerBlockController` (Left Shift, slow 0.5x, 10 Stamina/s; damage reduction deferred)
 
 Runtime input fix (2026-06-09):
 - `DefaultSkillCatalog.BuildAllTrees()` now includes the 14 balance-patch action nodes, so they appear in actual Skill Tree UI lists.
@@ -22,6 +22,12 @@ Runtime input fix (2026-06-09):
 - Active slot gameplay keys remain `1/2/3/4`; Skill Tree equip keys remain `R/T/Y/G` while the panel is open.
 - Dash and Dodge controllers now bind to `GameBootstrap.Instance.PlayerManager.gameObject` at runtime, so current FarmScene does not require scene edits for these controllers.
 - Dash/Dodge movement now uses the player's own `Collider2D.Cast` path to avoid self-hit and stop before blocking colliders.
+
+Movement actions runtime fix (2026-06-09):
+- `PlayerMovementActionRuntimeBootstrap` now attaches Dash, Dodge, DirectionalDoubleTapDetector, Block and movement resolver to the Player without scene edits.
+- Dash remains `Space + direction`, 3.5 units, 40 Stamina, non-slot.
+- Dodge is now explicit `PlayerDodgeController`, double tap direction, 1.5 units, 40 Stamina, non-slot.
+- Block now works as a runtime movement slow while Left Shift is held; frontal damage reduction remains deferred.
 
 O patch de balanceamento de action skills adicionou:
 - 14 novas action skills ao `DefaultSkillCatalog.cs` (3 Melee, 2 Magic, 5 Survival, 4 Crafting)
@@ -66,9 +72,9 @@ O patch de balanceamento de action skills adicionou:
 
 | Ability | Controller | Status | Notes |
 |---|---|---|---|
-| Dash | PlayerDashController | BUILD_VALIDATED_RUNTIME_BOUND | Space+dir/facing fallback, 3.5t, 40sp, 1.0s cd, runtime-bound to Player |
-| Dodge | PlayerMovementAbilityController | BUILD_VALIDATED_RUNTIME_BOUND | double-tap, 1.5t, 40sp, 0.6s cd, runtime-bound to Player |
-| Block | — | BLOCK_RUNTIME_DEFERRED | Left Shift; combat runtime pendente |
+| Dash | PlayerDashController | BUILD_VALIDATED_PENDING_HUMAN_PLAYMODE | Space+dir/facing fallback, 3.5t, 40sp, 1.0s cd, runtime-bound to Player |
+| Dodge | PlayerDodgeController | BUILD_VALIDATED_PENDING_HUMAN_PLAYMODE | double-tap, 1.5t, 40sp, 0.6s cd, runtime-bound to Player |
+| Block | PlayerBlockController | BUILD_VALIDATED_PENDING_HUMAN_PLAYMODE_DAMAGE_REDUCTION_DEFERRED | Left Shift slow 0.5x, 10 stamina/s; damage reduction deferred |
 
 ---
 
@@ -82,7 +88,7 @@ O patch de balanceamento de action skills adicionou:
 2. SkillActionToEffectId mappings sem executor: 10+ combat effects (melee, ranged, magic).
    Esses retornam "Efeito X sem executor. (Deferred)" ao jogador.
 
-3. Block: BLOCK_RUNTIME_DEFERRED — aguarda CombatManager/PostureSystem.
+3. Block: movement slow is runtime-ready; combat damage reduction remains deferred until CombatManager/PostureSystem.
 
 4. Cooldown hardcoded: 1.5s todos os slots. Final value depende de SkillDefinition.
 
@@ -159,8 +165,11 @@ Residual risk: Novas action skills visíveis na skill tree mas efeitos são apen
 | `Assets/_Game/Scripts/Skills/SkillTreeState.cs` | purchased count accepts `treeId_` and `treeId.` node IDs |
 | `Assets/_Game/Scripts/Skills/Runtime/Effects/ActiveSkillExecutionController.cs` | runtime slot resolution, validation diagnostics, single feedback publish |
 | `Assets/_Game/Scripts/Player/Movement/PlayerDashController.cs` | runtime player binding, Space+direction/facing fallback, collider-cast movement |
-| `Assets/_Game/Scripts/Player/Movement/PlayerMovementAbilityController.cs` | runtime-bound by Dash controller, double-tap dodge collider-cast movement |
+| `Assets/_Game/Scripts/Player/Movement/PlayerMovementActionRuntimeBootstrap.cs` | runtime attaches movement controllers to Player |
+| `Assets/_Game/Scripts/Player/Movement/PlayerDodgeController.cs` | double-tap dodge collider-cast movement |
+| `Assets/_Game/Scripts/Player/Movement/PlayerBlockController.cs` | Left Shift block slow runtime |
 | `Assets/_Game/Scripts/Player/Movement/DirectionalDoubleTapDetector.cs` | explicit Unity input alias |
+| `Assets/_Game/Scripts/Player/Movement/PlayerMovementDisplacementResolver.cs` | shared Rigidbody2D/Collider2D displacement resolver |
 | `Assets/_Game/Scripts/Player/Movement/GridMovementDisplacementResolver.cs` | optional moving collider cast path |
 | `Assets/_Game/Scripts/Combat/PlayerAttackController.cs` | prevents legacy Space dodge from also firing on Space+direction Dash |
 | `Assets/_Game/Scripts/Editor/Validation/ValidateWave11RuntimeInputBinding.cs` | new runtime input binding validator |

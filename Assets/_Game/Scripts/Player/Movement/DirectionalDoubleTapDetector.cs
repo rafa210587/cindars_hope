@@ -9,7 +9,8 @@ namespace CindarsHope.Player.Movement
     //   Double tap window: 0.08s-0.14s (from input buffer spec)
     //
     // Usage: Call UpdateAndCheckDoubleTap() in Update(). Returns the double-tap direction if fired.
-    public sealed class DirectionalDoubleTapDetector
+    [DisallowMultipleComponent]
+    public sealed class DirectionalDoubleTapDetector : MonoBehaviour
     {
         // Design direction: double tap window 0.08s-0.14s
         private const float DoubleTapWindow = 0.25f; // slightly generous for MVP playability
@@ -17,14 +18,24 @@ namespace CindarsHope.Player.Movement
         private readonly KeyCode[] _directionKeys = { KeyCode.W, KeyCode.A, KeyCode.S, KeyCode.D,
             KeyCode.UpArrow, KeyCode.DownArrow, KeyCode.LeftArrow, KeyCode.RightArrow };
 
-        private readonly float[] _lastTapTime;
+        private float[] _lastTapTime;
         private readonly Vector2[] _directionVectors = {
             Vector2.up, Vector2.left, Vector2.down, Vector2.right,
             Vector2.up, Vector2.left, Vector2.down, Vector2.right
         };
 
-        public DirectionalDoubleTapDetector()
+        private void Awake()
         {
+            Initialize();
+        }
+
+        public void Initialize()
+        {
+            if (_lastTapTime != null && _lastTapTime.Length == _directionKeys.Length)
+            {
+                return;
+            }
+
             _lastTapTime = new float[_directionKeys.Length];
             for (int i = 0; i < _lastTapTime.Length; i++)
                 _lastTapTime[i] = float.MinValue;
@@ -33,6 +44,7 @@ namespace CindarsHope.Player.Movement
         // Call each Update(). Returns the double-tap direction if triggered, otherwise null.
         public Vector2? UpdateAndCheckDoubleTap()
         {
+            Initialize();
             for (int i = 0; i < _directionKeys.Length; i++)
             {
                 if (UnityInput.GetKeyDown(_directionKeys[i]))
