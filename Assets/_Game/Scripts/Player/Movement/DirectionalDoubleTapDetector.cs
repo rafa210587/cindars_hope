@@ -1,3 +1,4 @@
+using CindarsHope.Core.Bootstrap;
 using UnityEngine;
 
 namespace CindarsHope.Player.Movement
@@ -32,6 +33,14 @@ namespace CindarsHope.Player.Movement
         public Vector2? UpdateAndCheckDoubleTap()
         {
             Initialize();
+
+            // Clear accumulated taps while any modal is open to prevent stale double-tap on modal close.
+            if (GameBootstrap.Instance?.ModalManager?.HasActiveModal == true)
+            {
+                for (var i = 0; i < _lastTapTime.Length; i++)
+                    _lastTapTime[i] = float.MinValue;
+                return null;
+            }
 
             // Check per-axis using the input helper (legacy + new input system parity)
             for (var i = 0; i < 8; i++)

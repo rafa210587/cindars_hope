@@ -7,6 +7,7 @@ namespace CindarsHope.NPC
     {
         None,
         OpenShop,
+        OfferQuest,   // ActionPayload = questId
         CloseDialogue
     }
 

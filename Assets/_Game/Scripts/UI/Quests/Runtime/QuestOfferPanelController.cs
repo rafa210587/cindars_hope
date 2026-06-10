@@ -1,8 +1,10 @@
 using CindarsHope.Core;
+using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
 using CindarsHope.Quests;
 using CindarsHope.Quests.Rewards;
 using CindarsHope.Quests.Runtime;
+using CindarsHope.UI.Modal;
 using UnityEngine;
 
 namespace CindarsHope.UI.Quests.Runtime
@@ -70,6 +72,7 @@ namespace CindarsHope.UI.Quests.Runtime
             if (evt.Mode == QuestGiverInteractionMode.Offer)
             {
                 PopulateFromQuest(evt.QuestId);
+                GameBootstrap.Instance?.ModalManager?.PushModal(ModalType.QuestOffer);
                 _isOpen = true;
             }
             else if (evt.Mode == QuestGiverInteractionMode.TurnIn)
@@ -156,11 +159,13 @@ namespace CindarsHope.UI.Quests.Runtime
             if (accepted)
                 Debug.Log($"[QuestOfferPanelController] Quest accepted: {_pendingQuestId}");
 
+            GameBootstrap.Instance?.ModalManager?.TryPopModal(ModalType.QuestOffer, out _);
             _isOpen = false;
         }
 
         private void DeclineQuest()
         {
+            GameBootstrap.Instance?.ModalManager?.TryPopModal(ModalType.QuestOffer, out _);
             _isOpen = false;
         }
 

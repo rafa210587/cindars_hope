@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using CindarsHope.Core;
+using CindarsHope.Core.Bootstrap;
 using CindarsHope.NPC;
 using UnityEngine;
 using UnityEngine.UI;
@@ -77,7 +78,8 @@ namespace CindarsHope.UI.Dialogue
 
         public void ShowWithChoices(string dialogueText, List<DialogueChoice> choices)
         {
-            if (_modalManager != null && !_modalManager.PushModal(Modal.ModalType.Dialogue))
+            var mm = _modalManager ?? GameBootstrap.Instance?.ModalManager;
+            if (mm != null && !mm.PushModal(Modal.ModalType.Dialogue))
             {
                 Debug.LogWarning("DialogueModal rejected because another interactive modal is active.", this);
                 return;
@@ -122,7 +124,8 @@ namespace CindarsHope.UI.Dialogue
             gameObject.SetActive(false);
             _isShowing = false;
             ClearChoices();
-            _modalManager?.TryPopModal(Modal.ModalType.Dialogue, out _);
+            var mm = _modalManager ?? GameBootstrap.Instance?.ModalManager;
+            mm?.TryPopModal(Modal.ModalType.Dialogue, out _);
             OnClose?.Invoke();
         }
 

@@ -7,6 +7,7 @@ using CindarsHope.UI.Modal;
 using UnityEngine;
 using NpcDialogueChoice = CindarsHope.NPC.DialogueChoice;
 using UiDialogueChoice = CindarsHope.UI.Dialogue.DialogueChoice;
+using QuestGiverInteractionMode = CindarsHope.Core.Events.QuestGiverInteractionMode;
 
 namespace CindarsHope.NPC
 {
@@ -144,7 +145,10 @@ namespace CindarsHope.NPC
 
                 var choiceId = $"{_currentNode?.NodeId ?? "node"}_{i}";
                 _choiceMap[choiceId] = source;
-                uiChoices.Add(new UiDialogueChoice(source.Label, choiceId));
+                var label = source.ActionType == DialogueActionType.OfferQuest
+                    ? $"! {source.Label}"
+                    : source.Label;
+                uiChoices.Add(new UiDialogueChoice(label, choiceId));
             }
 
             return uiChoices;
@@ -154,6 +158,17 @@ namespace CindarsHope.NPC
         {
             if (!_isInteracting || choice == null || !_choiceMap.TryGetValue(choice.ChoiceId, out var npcChoice))
             {
+                return;
+            }
+
+            if (npcChoice.ActionType == DialogueActionType.OfferQuest)
+            {
+                var questId = npcChoice.ActionPayload ?? "";
+                _dialogueModal?.Hide();
+                GameEventBus.Publish(new QuestGiverInteractedEvent(
+                    _npcData.NpcId,
+                    questId,
+                    QuestGiverInteractionMode.Offer));
                 return;
             }
 

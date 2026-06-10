@@ -7,6 +7,7 @@ namespace CindarsHope.UI.Modal
     {
         None,
         Dialogue,
+        QuestOffer,
         ShopMenu,
         Buy,
         Sell,
