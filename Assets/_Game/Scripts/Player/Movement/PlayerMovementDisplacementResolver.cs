@@ -42,7 +42,11 @@ namespace CindarsHope.Player.Movement
             var target = ResolveTarget(origin, direction, distance);
             var previousSpeedMultiplier = _playerController != null ? _playerController.SpeedMultiplier : 1f;
 
-            if (_playerController != null) _playerController.SpeedMultiplier = 0f;
+            if (_playerController != null)
+            {
+                _playerController.SpeedMultiplier = 0f;
+                _playerController.IsBeingDisplaced = true;
+            }
 
             var elapsed = 0f;
             while (elapsed < duration)
@@ -55,7 +59,11 @@ namespace CindarsHope.Player.Movement
 
             MoveTo(target);
 
-            if (_playerController != null) _playerController.SpeedMultiplier = previousSpeedMultiplier;
+            if (_playerController != null)
+            {
+                _playerController.SpeedMultiplier = previousSpeedMultiplier;
+                _playerController.IsBeingDisplaced = false;
+            }
 
             _displacementRoutine = null;
             onComplete?.Invoke();

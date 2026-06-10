@@ -33,6 +33,7 @@ namespace CindarsHope.Player
 
         public Vector2 MoveInput { get; private set; }
         public float SpeedMultiplier { get; set; } = 1f;
+        public bool IsBeingDisplaced { get; set; }
         public Vector2 LastFacingDirection => _lastFacingDirection;
 
         private void Awake()
@@ -100,6 +101,8 @@ namespace CindarsHope.Player
                 LogMissingRigidbodyOnce();
                 return;
             }
+
+            if (IsBeingDisplaced) return;
 
             var previousPosition = _rigidbody.position;
             var speed = GetMoveSpeed();
