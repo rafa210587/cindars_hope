@@ -48,7 +48,7 @@ namespace CindarsHope.Editor.Validation
                 ("GetComponent<PlayerController>", "Bootstrap must check for PlayerController on the resolved object."),
                 ("GetComponentInChildren<PlayerController>", "Bootstrap must search children for PlayerController."),
                 ("Rigidbody2D", "Bootstrap must validate Rigidbody2D before attaching controllers."),
-                ("PlayerMovementActionBootstrap] Resolved PlayerController", "Bootstrap must log successful attach to the real PlayerController."));
+                ("PlayerMovementActionRuntimeBootstrap] Resolved PlayerController", "Bootstrap must log successful attach to the real PlayerController."));
 
             // Dash: canonical values and input helper
             ValidateFile("Assets/_Game/Scripts/Player/Movement/PlayerDashController.cs", errors,
