@@ -15,6 +15,8 @@ using CindarsHope.Farm;
 using CindarsHope.Inventory;
 using CindarsHope.NPC;
 using CindarsHope.Player;
+using CindarsHope.Quests.Runtime;
+using CindarsHope.Quests.Save;
 using CindarsHope.Player.Data;
 using CindarsHope.Player.Death;
 using CindarsHope.Player.Progression;
@@ -125,6 +127,7 @@ namespace CindarsHope.Save
                 var activeSkillSlotsSaveData = CaptureActiveSkillSlotsSaveData();
                 var skillTreeSaveData = CaptureSkillTreeSaveData();
                 var bestiarySaveData = CaptureBestiarySaveData();
+                var questSaveData = CaptureQuestSaveData(existingSaveData);
 
                 var playerData = CapturePlayerSaveData();
                 if (playerData != null && _manaManager != null)
@@ -162,7 +165,8 @@ namespace CindarsHope.Save
                     Npcs = npcSaveData,
                     ActiveSkillSlots = activeSkillSlotsSaveData,
                     SkillTree = skillTreeSaveData,
-                    Bestiary = bestiarySaveData
+                    Bestiary = bestiarySaveData,
+                    Quests = questSaveData
                 };
 
                 var savePath = SaveFilePath;
@@ -729,6 +733,21 @@ namespace CindarsHope.Save
                 saveData.Death.ActiveCorpse.LostEquipmentItems ??= new List<InventorySlotSaveData>();
             }
 
+            saveData.Quests ??= new QuestStateSectionSaveData();
+            saveData.Quests.QuestStates ??= new List<QuestStateSaveData>();
+            saveData.Quests.GlobalKnownHints ??= new List<string>();
+            foreach (var qr in saveData.Quests.QuestStates)
+            {
+                if (qr == null) continue;
+                qr.CompletedStepIds ??= new List<string>();
+                qr.FailedStepIds ??= new List<string>();
+                qr.ObjectiveStates ??= new List<QuestObjectiveStateSaveData>();
+                qr.KnownObjectiveIds ??= new List<string>();
+                qr.KnownHints ??= new List<string>();
+                qr.GrantedRewardIds ??= new List<string>();
+                qr.GrantedFlagIds ??= new List<string>();
+            }
+
             return true;
         }
 
@@ -997,6 +1016,7 @@ namespace CindarsHope.Save
             }
 
             RestoreDeathSaveData(saveData.Death);
+            RestoreQuestSaveData(saveData.Quests);
         }
 
         private static bool ShouldRepairStarterInventoryAfterRestore(InventorySaveData inventorySaveData)
@@ -1276,6 +1296,28 @@ namespace CindarsHope.Save
             {
                 Debug.LogWarning("[SaveManager] CorpseRecoveryManager not injected; active corpse from save data will not be restored", this);
             }
+        }
+
+        private static QuestStateSectionSaveData CaptureQuestSaveData(GameSaveData existingSaveData)
+        {
+            var liveSection = QuestRuntimeBootstrap.CaptureSaveData();
+            if (liveSection != null)
+            {
+                return liveSection;
+            }
+
+            // QuestService not yet initialized — preserve existing save section
+            return existingSaveData?.Quests ?? new QuestStateSectionSaveData();
+        }
+
+        private static void RestoreQuestSaveData(QuestStateSectionSaveData questData)
+        {
+            if (questData == null)
+            {
+                return;
+            }
+
+            QuestRuntimeBootstrap.RestoreFromSaveData(questData);
         }
 
         private void PublishSaveResult(bool wasSuccessful, string message)

@@ -5,6 +5,7 @@ using CindarsHope.Core.Events;
 using CindarsHope.Quests.Flags;
 using CindarsHope.Quests.Rewards;
 using CindarsHope.Quests.Save;
+using CindarsHope.Save;
 using UnityEngine;
 
 namespace CindarsHope.Quests.Runtime
@@ -273,6 +274,68 @@ namespace CindarsHope.Quests.Runtime
         }
 
         public QuestStateSection GetSaveSection() => _saveSection;
+
+        /// <summary>
+        /// Restores quest state from the serializable save DTO.
+        /// Clears current QuestStates and repopulates from save data.
+        /// GrantedRewardIds preserved to guarantee reward idempotency after load.
+        /// </summary>
+        public void RestoreFromSaveData(QuestStateSectionSaveData saveData)
+        {
+            if (saveData == null) return;
+
+            _saveSection.QuestStates.Clear();
+            _saveSection.GlobalKnownHints.Clear();
+
+            if (saveData.GlobalKnownHints != null)
+            {
+                _saveSection.GlobalKnownHints.AddRange(saveData.GlobalKnownHints);
+            }
+
+            foreach (var dto in saveData.QuestStates ?? new List<QuestStateSaveData>())
+            {
+                if (dto == null || string.IsNullOrWhiteSpace(dto.QuestId)) continue;
+
+                var record = new QuestStateRecord
+                {
+                    QuestId = dto.QuestId,
+                    State = dto.State,
+                    CurrentStepId = dto.CurrentStepId,
+                    CompletedStepIds = new List<string>(dto.CompletedStepIds ?? new List<string>()),
+                    FailedStepIds = new List<string>(dto.FailedStepIds ?? new List<string>()),
+                    KnownObjectiveIds = new List<string>(dto.KnownObjectiveIds ?? new List<string>()),
+                    KnownHints = new List<string>(dto.KnownHints ?? new List<string>()),
+                    StartedAtDay = dto.StartedAtDay,
+                    StartedAtTime = dto.StartedAtTime,
+                    CompletedAtDay = dto.CompletedAtDay > 0 ? (int?)dto.CompletedAtDay : null,
+                    Tracked = dto.Tracked,
+                    Discovered = dto.Discovered,
+                    FailureReason = dto.FailureReason,
+                    GrantedRewardIds = new List<string>(dto.GrantedRewardIds ?? new List<string>()),
+                    GrantedFlagIds = new List<string>(dto.GrantedFlagIds ?? new List<string>()),
+                    RepeatInstanceId = dto.RepeatInstanceId,
+                    ObjectiveStates = new List<QuestObjectiveStateRecord>()
+                };
+
+                foreach (var objDto in dto.ObjectiveStates ?? new List<QuestObjectiveStateSaveData>())
+                {
+                    if (objDto == null) continue;
+                    record.ObjectiveStates.Add(new QuestObjectiveStateRecord
+                    {
+                        ObjectiveId = objDto.ObjectiveId,
+                        CurrentProgress = objDto.CurrentProgress,
+                        RequiredProgress = objDto.RequiredProgress,
+                        IsCompleted = objDto.IsCompleted,
+                        IsFailed = objDto.IsFailed,
+                        IsKnown = objDto.IsKnown
+                    });
+                }
+
+                _saveSection.QuestStates.Add(record);
+            }
+
+            Debug.Log($"[QuestService] Restored {_saveSection.QuestStates.Count} quest records from save data.");
+        }
 
         // ─── Private helpers ───────────────────────────────────────────────────────
 

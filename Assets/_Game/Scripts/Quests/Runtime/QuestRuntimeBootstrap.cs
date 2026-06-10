@@ -1,7 +1,9 @@
 using System.Collections;
+using System.Collections.Generic;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Quests.Flags;
 using CindarsHope.Quests.Save;
+using CindarsHope.Save;
 using CindarsHope.UI.Quests.Runtime;
 using UnityEngine;
 
@@ -26,10 +28,89 @@ namespace CindarsHope.Quests.Runtime
     {
         private const int MaxBindAttempts = 120;
         private static QuestRuntimeBootstrap _instance;
+        private static QuestStateSectionSaveData _pendingSaveData;
 
         // Static accessors for other components (avoids Find/FindObjectOfType)
         public static QuestService QuestService { get; private set; }
         public static QuestRegistry QuestRegistry { get; private set; }
+
+        // ─── Save/Load Bridge ─────────────────────────────────────────────────────
+
+        public static QuestStateSectionSaveData CaptureSaveData()
+        {
+            if (QuestService == null)
+            {
+                return null;
+            }
+
+            var section = QuestService.GetSaveSection();
+            var dto = new QuestStateSectionSaveData
+            {
+                Version = section.Version,
+                GlobalKnownHints = new List<string>(section.GlobalKnownHints ?? new List<string>()),
+                QuestStates = new List<QuestStateSaveData>()
+            };
+
+            foreach (var record in section.QuestStates ?? new List<QuestStateRecord>())
+            {
+                if (record == null) continue;
+                var qDto = new QuestStateSaveData
+                {
+                    QuestId = record.QuestId,
+                    State = record.State,
+                    CurrentStepId = record.CurrentStepId,
+                    CompletedStepIds = new List<string>(record.CompletedStepIds ?? new List<string>()),
+                    FailedStepIds = new List<string>(record.FailedStepIds ?? new List<string>()),
+                    KnownObjectiveIds = new List<string>(record.KnownObjectiveIds ?? new List<string>()),
+                    KnownHints = new List<string>(record.KnownHints ?? new List<string>()),
+                    StartedAtDay = record.StartedAtDay,
+                    StartedAtTime = record.StartedAtTime,
+                    CompletedAtDay = record.CompletedAtDay ?? 0,
+                    Tracked = record.Tracked,
+                    Discovered = record.Discovered,
+                    FailureReason = record.FailureReason,
+                    GrantedRewardIds = new List<string>(record.GrantedRewardIds ?? new List<string>()),
+                    GrantedFlagIds = new List<string>(record.GrantedFlagIds ?? new List<string>()),
+                    RepeatInstanceId = record.RepeatInstanceId,
+                    ObjectiveStates = new List<QuestObjectiveStateSaveData>()
+                };
+                foreach (var obj in record.ObjectiveStates ?? new List<QuestObjectiveStateRecord>())
+                {
+                    if (obj == null) continue;
+                    qDto.ObjectiveStates.Add(new QuestObjectiveStateSaveData
+                    {
+                        ObjectiveId = obj.ObjectiveId,
+                        CurrentProgress = obj.CurrentProgress,
+                        RequiredProgress = obj.RequiredProgress,
+                        IsCompleted = obj.IsCompleted,
+                        IsFailed = obj.IsFailed,
+                        IsKnown = obj.IsKnown
+                    });
+                }
+                dto.QuestStates.Add(qDto);
+            }
+
+            return dto;
+        }
+
+        public static void RestoreFromSaveData(QuestStateSectionSaveData saveData)
+        {
+            if (saveData == null) return;
+
+            if (QuestService != null)
+            {
+                QuestService.RestoreFromSaveData(saveData);
+                return;
+            }
+
+            // QuestService not yet initialized — store pending for when Initialize() runs
+            _pendingSaveData = saveData;
+        }
+
+        public static void SetPendingSaveData(QuestStateSectionSaveData saveData)
+        {
+            _pendingSaveData = saveData;
+        }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void EnsureInstance()
@@ -107,6 +188,13 @@ namespace CindarsHope.Quests.Runtime
 
             // Build QuestService
             QuestService = new QuestService(QuestRegistry, saveSection, inventoryAccess, goldAccess, flagService);
+
+            // Apply pending save data from LoadGame (if LoadGame ran before Initialize)
+            if (_pendingSaveData != null)
+            {
+                QuestService.RestoreFromSaveData(_pendingSaveData);
+                _pendingSaveData = null;
+            }
 
             // Wire event bridge
             var bridge = new QuestProgressEventBridge(QuestService);

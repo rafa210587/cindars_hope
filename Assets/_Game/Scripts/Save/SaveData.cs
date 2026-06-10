@@ -41,6 +41,7 @@ namespace CindarsHope.Save
         public SkillTreeSaveData SkillTree;
         public BestiarySaveData Bestiary;
         public CompanionManagerSaveData Companions;
+        public QuestStateSectionSaveData Quests;
     }
 
     [Serializable]
@@ -226,4 +227,48 @@ namespace CindarsHope.Save
         public int CaveRank;
     }
 
+    // Quest save DTOs — [Serializable] with public fields for JsonUtility compatibility.
+    // QuestStateSection uses properties (not JsonUtility-compatible) so we maintain parallel
+    // serializable copies here and convert in SaveManager.
+
+    [Serializable]
+    public class QuestObjectiveStateSaveData
+    {
+        public string ObjectiveId;
+        public int CurrentProgress;
+        public int RequiredProgress;
+        public bool IsCompleted;
+        public bool IsFailed;
+        public bool IsKnown;
+    }
+
+    [Serializable]
+    public class QuestStateSaveData
+    {
+        public string QuestId;
+        public int State;
+        public string CurrentStepId;
+        public List<string> CompletedStepIds = new List<string>();
+        public List<string> FailedStepIds = new List<string>();
+        public List<QuestObjectiveStateSaveData> ObjectiveStates = new List<QuestObjectiveStateSaveData>();
+        public List<string> KnownObjectiveIds = new List<string>();
+        public List<string> KnownHints = new List<string>();
+        public int StartedAtDay;
+        public int StartedAtTime;
+        public int CompletedAtDay;
+        public bool Tracked;
+        public bool Discovered;
+        public string FailureReason;
+        public List<string> GrantedRewardIds = new List<string>();
+        public List<string> GrantedFlagIds = new List<string>();
+        public string RepeatInstanceId;
+    }
+
+    [Serializable]
+    public class QuestStateSectionSaveData
+    {
+        public int Version = 1;
+        public List<QuestStateSaveData> QuestStates = new List<QuestStateSaveData>();
+        public List<string> GlobalKnownHints = new List<string>();
+    }
 }
