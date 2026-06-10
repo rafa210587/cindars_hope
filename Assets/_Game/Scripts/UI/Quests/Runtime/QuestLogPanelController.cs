@@ -1,9 +1,11 @@
 using System.Linq;
 using CindarsHope.Core;
+using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
 using CindarsHope.Quests;
 using CindarsHope.Quests.Runtime;
 using CindarsHope.Quests.Save;
+using CindarsHope.UI.Modal;
 using UnityEngine;
 
 namespace CindarsHope.UI.Quests.Runtime
@@ -64,12 +66,16 @@ namespace CindarsHope.UI.Quests.Runtime
 
         public void Open()
         {
+            var mm = GameBootstrap.Instance?.ModalManager;
+            if (mm != null && !mm.PushModal(ModalType.QuestLog))
+                return;
             _isOpen = true;
         }
 
         public void Close()
         {
             _isOpen = false;
+            GameBootstrap.Instance?.ModalManager?.TryPopModal(ModalType.QuestLog, out _);
         }
 
         public bool IsOpen => _isOpen;

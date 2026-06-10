@@ -19,7 +19,8 @@ namespace CindarsHope.UI.Modal
         CharacterEquipment,
         Pause,
         Death,
-        CaveCheckpoint
+        CaveCheckpoint,
+        QuestLog
     }
 
     [DisallowMultipleComponent]

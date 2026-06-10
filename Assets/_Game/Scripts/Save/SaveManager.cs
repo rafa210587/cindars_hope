@@ -217,11 +217,13 @@ namespace CindarsHope.Save
 
                 ApplySaveData(saveData);
                 Debug.Log($"Game loaded from {savePath}.", this);
+                GameEventBus.Publish(new GameLoadedEvent(Slot, savePath, true, "Jogo carregado."));
                 return true;
             }
             catch (Exception exception)
             {
                 Debug.LogException(exception, this);
+                GameEventBus.Publish(new GameLoadedEvent(Slot, SaveFilePath, false, "Falha ao carregar save."));
                 return false;
             }
         }
@@ -846,6 +848,7 @@ namespace CindarsHope.Save
             yield return null;
 
             ApplySaveData(saveData);
+            GameEventBus.Publish(new GameLoadedEvent(Slot, SaveFilePath, true, "Jogo carregado."));
         }
 
         private void ApplySaveData(GameSaveData saveData)

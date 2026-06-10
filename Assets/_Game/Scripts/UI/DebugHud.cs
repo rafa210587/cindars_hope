@@ -77,6 +77,16 @@ namespace CindarsHope.UI
             GameEventBus.Subscribe<PlayerXpChangedEvent>(OnPlayerXpChanged);
             GameEventBus.Subscribe<PlayerLevelChangedEvent>(OnPlayerLevelChanged);
             GameEventBus.Subscribe<PlayerActionFeedbackEvent>(OnPlayerActionFeedback);
+            GameEventBus.Subscribe<GameSavedEvent>(OnGameSaved);
+            GameEventBus.Subscribe<GameLoadedEvent>(OnGameLoaded);
+            GameEventBus.Subscribe<QuestAcceptedEvent>(OnQuestAccepted);
+            GameEventBus.Subscribe<QuestObjectiveProgressedEvent>(OnQuestObjectiveProgressed);
+            GameEventBus.Subscribe<QuestReadyToCompleteEvent>(OnQuestReadyToComplete);
+            GameEventBus.Subscribe<QuestCompletedEvent>(OnQuestCompleted);
+            GameEventBus.Subscribe<QuestRewardClaimedEvent>(OnQuestRewardClaimed);
+            GameEventBus.Subscribe<CaveLevelEnteredEvent>(OnCaveLevelEntered);
+            GameEventBus.Subscribe<CaveExitedEvent>(OnCaveExited);
+            GameEventBus.Subscribe<EnemyKilledEvent>(OnEnemyKilled);
         }
 
         private void OnDisable()
@@ -91,6 +101,16 @@ namespace CindarsHope.UI
             GameEventBus.Unsubscribe<PlayerXpChangedEvent>(OnPlayerXpChanged);
             GameEventBus.Unsubscribe<PlayerLevelChangedEvent>(OnPlayerLevelChanged);
             GameEventBus.Unsubscribe<PlayerActionFeedbackEvent>(OnPlayerActionFeedback);
+            GameEventBus.Unsubscribe<GameSavedEvent>(OnGameSaved);
+            GameEventBus.Unsubscribe<GameLoadedEvent>(OnGameLoaded);
+            GameEventBus.Unsubscribe<QuestAcceptedEvent>(OnQuestAccepted);
+            GameEventBus.Unsubscribe<QuestObjectiveProgressedEvent>(OnQuestObjectiveProgressed);
+            GameEventBus.Unsubscribe<QuestReadyToCompleteEvent>(OnQuestReadyToComplete);
+            GameEventBus.Unsubscribe<QuestCompletedEvent>(OnQuestCompleted);
+            GameEventBus.Unsubscribe<QuestRewardClaimedEvent>(OnQuestRewardClaimed);
+            GameEventBus.Unsubscribe<CaveLevelEnteredEvent>(OnCaveLevelEntered);
+            GameEventBus.Unsubscribe<CaveExitedEvent>(OnCaveExited);
+            GameEventBus.Unsubscribe<EnemyKilledEvent>(OnEnemyKilled);
         }
 
         private void OnDestroy()
@@ -608,6 +628,46 @@ namespace CindarsHope.UI
             _currentActionFeedback = evt.Message ?? string.Empty;
             _actionFeedbackUntil = Time.time + evt.DurationSeconds;
         }
+
+        private void SetFeedback(string message, float duration = 4f)
+        {
+            _currentActionFeedback = message ?? string.Empty;
+            _actionFeedbackUntil = Time.time + duration;
+        }
+
+        private void OnGameSaved(GameSavedEvent evt) =>
+            SetFeedback(evt.WasSuccessful ? "Jogo salvo." : $"Falha ao salvar: {evt.Message}");
+
+        private void OnGameLoaded(GameLoadedEvent evt) =>
+            SetFeedback(evt.WasSuccessful ? "Jogo carregado." : $"Falha ao carregar: {evt.Message}");
+
+        private void OnQuestAccepted(QuestAcceptedEvent evt) =>
+            SetFeedback($"Quest aceita: {evt.QuestId}");
+
+        private void OnQuestObjectiveProgressed(QuestObjectiveProgressedEvent evt) =>
+            SetFeedback($"Objetivo: {evt.ObjectiveId} {evt.CurrentProgress}/{evt.RequiredProgress}");
+
+        private void OnQuestReadyToComplete(QuestReadyToCompleteEvent evt) =>
+            SetFeedback($"Pronto para entregar: {evt.QuestId}");
+
+        private void OnQuestCompleted(QuestCompletedEvent evt) =>
+            SetFeedback($"Quest concluída: {evt.QuestId}");
+
+        private void OnQuestRewardClaimed(QuestRewardClaimedEvent evt) =>
+            SetFeedback(evt.GoldGiven > 0
+                ? $"Recompensa: {evt.GoldGiven}g"
+                : $"Recompensa recebida: {evt.QuestId}");
+
+        private void OnCaveLevelEntered(CaveLevelEnteredEvent evt) =>
+            SetFeedback($"Entrando na caverna (nível {evt.CaveLevel})");
+
+        private void OnCaveExited(CaveExitedEvent evt) =>
+            SetFeedback($"Retornando à superfície → {evt.ReturnScene}");
+
+        private void OnEnemyKilled(EnemyKilledEvent evt) =>
+            SetFeedback(string.IsNullOrEmpty(evt.DropItemId)
+                ? $"Inimigo derrotado: {evt.EnemyId}"
+                : $"Inimigo derrotado: {evt.EnemyId} | Loot: {evt.DropItemId} x{evt.DropAmount}");
 
         private static PlayerProgressionManager GetProgressionManager()
         {
