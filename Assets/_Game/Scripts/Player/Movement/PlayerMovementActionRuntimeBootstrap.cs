@@ -42,20 +42,58 @@ namespace CindarsHope.Player.Movement
         {
             for (var attempt = 0; attempt < MaxBindAttempts; attempt++)
             {
-                var player = GameBootstrap.Instance?.PlayerManager;
-                if (player != null)
+                var playerController = ResolvePlayerController();
+                if (playerController != null)
                 {
-                    AttachControllers(player.gameObject);
+                    AttachControllers(playerController);
                     yield break;
                 }
 
                 yield return null;
             }
+
+            Debug.LogWarning("[PlayerMovementActionRuntimeBootstrap] Could not resolve PlayerController after max attempts. Dash/Dodge/Block will not be active.");
         }
 
-        private void AttachControllers(GameObject playerObject)
+        // Resolves the real PlayerController GameObject (not PlayerManager, which is data-only).
+        // Priority: GameBootstrap.PlayerManager children → scene search fallback.
+        private static PlayerController ResolvePlayerController()
         {
-            if (playerObject == null) return;
+            var bootstrap = GameBootstrap.Instance;
+            if (bootstrap != null)
+            {
+                var playerManager = bootstrap.PlayerManager;
+                if (playerManager != null)
+                {
+                    // PlayerController may be on the same GO or a child
+                    var pc = playerManager.GetComponent<PlayerController>();
+                    if (pc != null) return pc;
+
+                    pc = playerManager.GetComponentInChildren<PlayerController>(true);
+                    if (pc != null) return pc;
+
+                    pc = playerManager.GetComponentInParent<PlayerController>();
+                    if (pc != null) return pc;
+                }
+            }
+
+            // Fallback: find in scene (one-shot; only reached if bootstrap hierarchy has no PlayerController)
+#if UNITY_2023_1_OR_NEWER
+            return Object.FindAnyObjectByType<PlayerController>();
+#else
+            return Object.FindObjectOfType<PlayerController>();
+#endif
+        }
+
+        private void AttachControllers(PlayerController playerController)
+        {
+            var playerObject = playerController.gameObject;
+            var rb = playerObject.GetComponent<Rigidbody2D>();
+            if (rb == null)
+            {
+                Debug.LogError($"[PlayerMovementActionRuntimeBootstrap] PlayerController '{playerObject.name}' has no Rigidbody2D. Movement controllers will not be attached.", playerObject);
+                return;
+            }
 
             EnsureComponent<PlayerMovementDisplacementResolver>(playerObject);
             EnsureComponent<PlayerDashController>(playerObject);
@@ -65,7 +103,7 @@ namespace CindarsHope.Player.Movement
 
             if (!_loggedAttached)
             {
-                Debug.Log("[PlayerMovementActionRuntimeBootstrap] Dash/Dodge/Block controllers attached.", playerObject);
+                Debug.Log($"[PlayerMovementActionRuntimeBootstrap] Resolved PlayerController '{playerObject.name}' and attached movement action controllers.", playerObject);
                 _loggedAttached = true;
             }
         }
@@ -73,9 +111,7 @@ namespace CindarsHope.Player.Movement
         private static void EnsureComponent<T>(GameObject playerObject) where T : Component
         {
             if (playerObject.GetComponent<T>() == null)
-            {
                 playerObject.AddComponent<T>();
-            }
         }
     }
 }

@@ -6,12 +6,13 @@ using UnityEngine;
 namespace CindarsHope.Player.Movement
 {
     // Input: double tap directional. Does not occupy active skill slots.
+    // Combat Core §14: Dodge base 1.2–1.8 tiles, duration 0.28–0.45s, cooldown 0.45–0.90s, cost 40 stamina.
     [DisallowMultipleComponent]
     public sealed class PlayerDodgeController : MonoBehaviour
     {
-        // TODO_INTEGRATION_NOT_FINAL: final movement/stamina balance depends on combat tuning.
-        [SerializeField] private float _dodgeDistance = 1.5f;
-        [SerializeField] private float _dodgeDuration = 0.10f;
+        // BALANCE_FINAL_PENDING — top of base range per COMBAT_CORE_DIRECTION §14
+        [SerializeField] private float _dodgeDistance = 1.8f;
+        [SerializeField] private float _dodgeDuration = 0.32f;
         [SerializeField] private float _dodgeCooldown = 0.6f;
         [SerializeField] private int _dodgeStaminaCost = 40;
 
@@ -30,31 +31,20 @@ namespace CindarsHope.Player.Movement
 
             var bootstrap = GameBootstrap.Instance;
             if (bootstrap != null && _staminaManager == null)
-            {
                 _staminaManager = bootstrap.StaminaManager;
-            }
         }
 
         private void Update()
         {
-            if (GameBootstrap.Instance?.ModalManager?.HasActiveModal == true)
-            {
-                return;
-            }
+            if (GameBootstrap.Instance?.ModalManager?.HasActiveModal == true) return;
 
             var direction = _doubleTapDetector != null ? _doubleTapDetector.UpdateAndCheckDoubleTap() : null;
-            if (direction.HasValue)
-            {
-                TryDodge(direction.Value);
-            }
+            if (direction.HasValue) TryDodge(direction.Value);
         }
 
         private void TryDodge(Vector2 direction)
         {
-            if (_displacementResolver == null || _displacementResolver.IsDisplacing)
-            {
-                return;
-            }
+            if (_displacementResolver == null || _displacementResolver.IsDisplacing) return;
 
             if (Time.time - _lastDodgeTime < _dodgeCooldown)
             {
@@ -69,10 +59,10 @@ namespace CindarsHope.Player.Movement
             }
 
             _lastDodgeTime = Time.time;
+            Debug.Log($"[PlayerDodgeController] Dodge requested direction={direction} distance={_dodgeDistance} targetObject={gameObject.name}");
+
             if (!_displacementResolver.TryDisplace(direction, _dodgeDistance, _dodgeDuration, () =>
-            {
-                GameEventBus.Publish(new PlayerActionFeedbackEvent("Dodge!"));
-            }))
+                GameEventBus.Publish(new PlayerActionFeedbackEvent("Dodge!"))))
             {
                 GameEventBus.Publish(new PlayerActionFeedbackEvent("Dodge bloqueado: movimento indisponivel."));
             }

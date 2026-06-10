@@ -2,25 +2,17 @@ using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
 using UnityEngine;
-using UnityInput = UnityEngine.Input;
 
 namespace CindarsHope.Player.Movement
 {
-    // WAVE_INTEGRATION_11: Implements Dash as a forward movement ability.
-    // Design source: docs/design/gameplay/combat/COMBAT_CORE_DIRECTION.md §13
-    //   Input: Space + direction
-    //   Distance base: 3.2-4.0 tiles
-    //   Cost: 40 Stamina base
-    //   Cooldown: 0.75s-1.20s base
-    //   Does NOT occupy active skill slot.
-    //
     // Input: Space + direction. Does not occupy active skill slots.
+    // Combat Core §13: Dash base 3.2–4.0 tiles, duration 0.18–0.30s, cooldown 0.75–1.20s, cost 40 stamina.
     [DisallowMultipleComponent]
     public sealed class PlayerDashController : MonoBehaviour
     {
-        // TODO_INTEGRATION_NOT_FINAL: final movement/stamina balance depends on combat tuning.
-        [SerializeField] private float _dashDistance = 3.5f;
-        [SerializeField] private float _dashDuration = 0.14f;
+        // BALANCE_FINAL_PENDING — top of base range per COMBAT_CORE_DIRECTION §13
+        [SerializeField] private float _dashDistance = 4.0f;
+        [SerializeField] private float _dashDuration = 0.22f;
         [SerializeField] private float _dashCooldown = 1.0f;
         [SerializeField] private int _dashStaminaCost = 40;
 
@@ -44,30 +36,22 @@ namespace CindarsHope.Player.Movement
 
         private void Update()
         {
-            if (GameBootstrap.Instance?.ModalManager?.HasActiveModal == true)
-                return;
+            if (GameBootstrap.Instance?.ModalManager?.HasActiveModal == true) return;
+            if (!PlayerMovementActionInput.WasDashPressed()) return;
 
-            // Dash input: Space + direction.
-            if (UnityInput.GetKeyDown(KeyCode.Space))
-            {
-                var moveInput = ReadDirectionalInput();
-                if (moveInput.sqrMagnitude <= 0.1f && _playerController != null) moveInput = _playerController.LastFacingDirection;
+            var moveInput = PlayerMovementActionInput.GetMoveDirectionHeld();
+            if (moveInput.sqrMagnitude <= 0.1f && _playerController != null)
+                moveInput = _playerController.LastFacingDirection;
 
-                if (moveInput.sqrMagnitude > 0.1f)
-                {
-                    TryDash(moveInput.normalized);
-                }
-                else
-                {
-                    GameEventBus.Publish(new PlayerActionFeedbackEvent("Dash bloqueado: nenhuma direcao disponivel."));
-                }
-            }
+            if (moveInput.sqrMagnitude > 0.1f)
+                TryDash(moveInput.normalized);
+            else
+                GameEventBus.Publish(new PlayerActionFeedbackEvent("Dash bloqueado: nenhuma direcao disponivel."));
         }
 
         private void TryDash(Vector2 direction)
         {
-            if (_displacementResolver == null || _displacementResolver.IsDisplacing)
-                return;
+            if (_displacementResolver == null || _displacementResolver.IsDisplacing) return;
 
             if (Time.time - _lastDashTime < _dashCooldown)
             {
@@ -82,25 +66,13 @@ namespace CindarsHope.Player.Movement
             }
 
             _lastDashTime = Time.time;
+            Debug.Log($"[PlayerDashController] Dash requested direction={direction} distance={_dashDistance} targetObject={gameObject.name}");
+
             if (!_displacementResolver.TryDisplace(direction, _dashDistance, _dashDuration, () =>
-            {
-                GameEventBus.Publish(new PlayerActionFeedbackEvent("Dash!"));
-            }))
+                GameEventBus.Publish(new PlayerActionFeedbackEvent("Dash!"))))
             {
                 GameEventBus.Publish(new PlayerActionFeedbackEvent("Dash bloqueado: movimento indisponivel."));
             }
-        }
-
-        private static Vector2 ReadDirectionalInput()
-        {
-            var x = 0f;
-            var y = 0f;
-            if (UnityInput.GetKey(KeyCode.A) || UnityInput.GetKey(KeyCode.LeftArrow)) x -= 1f;
-            if (UnityInput.GetKey(KeyCode.D) || UnityInput.GetKey(KeyCode.RightArrow)) x += 1f;
-            if (UnityInput.GetKey(KeyCode.S) || UnityInput.GetKey(KeyCode.DownArrow)) y -= 1f;
-            if (UnityInput.GetKey(KeyCode.W) || UnityInput.GetKey(KeyCode.UpArrow)) y += 1f;
-            var direction = new Vector2(x, y);
-            return direction.sqrMagnitude > 1f ? direction.normalized : direction;
         }
     }
 }

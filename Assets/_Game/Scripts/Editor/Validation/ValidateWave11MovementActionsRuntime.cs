@@ -11,6 +11,7 @@ namespace CindarsHope.Editor.Validation
         private static readonly string[] RuntimeFiles =
         {
             "Assets/_Game/Scripts/Player/Movement/PlayerMovementActionRuntimeBootstrap.cs",
+            "Assets/_Game/Scripts/Player/Movement/PlayerMovementActionInput.cs",
             "Assets/_Game/Scripts/Player/Movement/PlayerDashController.cs",
             "Assets/_Game/Scripts/Player/Movement/PlayerDodgeController.cs",
             "Assets/_Game/Scripts/Player/Movement/DirectionalDoubleTapDetector.cs",
@@ -24,57 +25,78 @@ namespace CindarsHope.Editor.Validation
             var errors = Validate();
             if (errors.Count > 0)
             {
-                foreach (var error in errors)
-                {
-                    Debug.LogError(error);
-                }
-
+                foreach (var e in errors) Debug.LogError(e);
                 throw new InvalidOperationException($"ValidateWave11MovementActionsRuntime failed with {errors.Count} issue(s).");
             }
 
-            Debug.Log("ValidateWave11MovementActionsRuntime passed.");
+            Debug.Log("ValidateWave11MovementActionsRuntime PASS.");
         }
 
         public static IReadOnlyList<string> Validate()
         {
             var errors = new List<string>();
+
             foreach (var file in RuntimeFiles)
             {
                 if (!File.Exists(file))
-                {
                     errors.Add($"Missing runtime file: {file}");
-                }
             }
 
+            // Bootstrap must resolve PlayerController, not PlayerManager directly
+            ValidateFile("Assets/_Game/Scripts/Player/Movement/PlayerMovementActionRuntimeBootstrap.cs", errors,
+                ("ResolvePlayerController", "Bootstrap must use ResolvePlayerController(), not attach to PlayerManager.gameObject directly."),
+                ("GetComponent<PlayerController>", "Bootstrap must check for PlayerController on the resolved object."),
+                ("GetComponentInChildren<PlayerController>", "Bootstrap must search children for PlayerController."),
+                ("Rigidbody2D", "Bootstrap must validate Rigidbody2D before attaching controllers."),
+                ("PlayerMovementActionBootstrap] Resolved PlayerController", "Bootstrap must log successful attach to the real PlayerController."));
+
+            // Dash: canonical values and input helper
             ValidateFile("Assets/_Game/Scripts/Player/Movement/PlayerDashController.cs", errors,
-                ("Space", "Dash input must be Space + direction."),
-                ("ReadDirectionalInput", "Dash must read a direction."),
-                ("3.5f", "Dash distance must include base 3.5f."),
+                ("WasDashPressed", "Dash must use PlayerMovementActionInput.WasDashPressed()."),
+                ("GetMoveDirectionHeld", "Dash must use PlayerMovementActionInput.GetMoveDirectionHeld()."),
+                ("4.0f", "Dash distance must be 4.0f (Combat Core base top)."),
                 ("TrySpendStamina", "Dash must spend stamina."),
-                ("PlayerActionFeedbackEvent", "Dash must publish feedback."));
+                ("PlayerActionFeedbackEvent", "Dash must publish feedback."),
+                ("Dash requested direction=", "Dash must log direction, distance, and target object."));
 
+            // Dodge: canonical values
             ValidateFile("Assets/_Game/Scripts/Player/Movement/PlayerDodgeController.cs", errors,
-                ("double tap directional", "Dodge must document double tap directional input."),
-                ("1.5f", "Dodge distance must include base 1.5f."),
+                ("1.8f", "Dodge distance must be 1.8f (Combat Core base top)."),
+                ("0.32f", "Dodge duration must be 0.32f."),
                 ("TrySpendStamina", "Dodge must spend stamina."),
-                ("PlayerActionFeedbackEvent", "Dodge must publish feedback."));
+                ("PlayerActionFeedbackEvent", "Dodge must publish feedback."),
+                ("Dodge requested direction=", "Dodge must log direction, distance, and target object."));
 
+            // DoubleTap: correct arrow mapping (DownArrow→down, LeftArrow→left)
             ValidateFile("Assets/_Game/Scripts/Player/Movement/DirectionalDoubleTapDetector.cs", errors,
-                ("DoubleTapWindow = 0.25f", "Double tap detector must expose the base double tap window."),
-                ("KeyCode.W", "Double tap detector must support WASD."),
-                ("KeyCode.UpArrow", "Double tap detector must support arrows."));
+                ("DoubleTapWindow = 0.25f", "Double tap window must be 0.25f."),
+                ("Vector2.down, Vector2.left, Vector2.right", "Arrow mapping must be: Up=up, Down=down, Left=left, Right=right (index 4-7)."));
 
+            // Block: canonical values + input helper
             ValidateFile("Assets/_Game/Scripts/Player/Movement/PlayerBlockController.cs", errors,
-                ("LeftShift", "Block input must be Left Shift."),
-                ("_blockSlowMultiplier = 0.5f", "Block slow multiplier must be less than 1."),
+                ("IsBlockHeld", "Block must use PlayerMovementActionInput.IsBlockHeld()."),
+                ("0.45f", "Block slow multiplier must be 0.45f (35%-55% range mid-value)."),
+                ("18f", "Block stamina drain must be 18f/s (Combat Core canonical)."),
                 ("TrySpendStamina", "Block must drain or check stamina."),
-                ("PlayerActionFeedbackEvent", "Block must publish feedback."));
+                ("PlayerActionFeedbackEvent", "Block must publish feedback."),
+                ("Block started speedMultiplier=", "Block must log start with speed value."),
+                ("Block stopped speedMultiplier restored=", "Block must log stop with restored value."));
 
+            // Resolver: WaitForFixedUpdate + self-collision ignore
             ValidateFile("Assets/_Game/Scripts/Player/Movement/PlayerMovementDisplacementResolver.cs", errors,
-                ("Rigidbody2D", "Movement resolver must support Rigidbody2D."),
-                ("MovePosition", "Movement resolver must move the player."),
-                ("Collider2D", "Movement resolver must support collision."),
-                ("COLLISION_DETECTION_DEBT_NO_PLAYER_COLLIDER", "Movement resolver must document no-collider debt."));
+                ("WaitForFixedUpdate", "Resolver must use WaitForFixedUpdate to sync with physics."),
+                ("IsBeingDisplaced = true", "Resolver must set IsBeingDisplaced on PlayerController."),
+                ("ShouldIgnoreHit", "Resolver must use ShouldIgnoreHit() to filter self-collision."),
+                ("attachedRigidbody == _rigidbody", "Resolver must ignore hits sharing the same Rigidbody2D."),
+                ("MovePosition", "Resolver must call Rigidbody2D.MovePosition."),
+                ("COLLISION_DETECTION_DEBT_NO_PLAYER_COLLIDER", "Resolver must document no-collider debt."));
+
+            // Input helper: both paths present
+            ValidateFile("Assets/_Game/Scripts/Player/Movement/PlayerMovementActionInput.cs", errors,
+                ("WasDashPressed", "Input helper must expose WasDashPressed()."),
+                ("IsBlockHeld", "Input helper must expose IsBlockHeld()."),
+                ("GetMoveDirectionHeld", "Input helper must expose GetMoveDirectionHeld()."),
+                ("ENABLE_INPUT_SYSTEM", "Input helper must have #if ENABLE_INPUT_SYSTEM guard."));
 
             ValidateNoActiveSlotReferences(errors);
             return errors;
@@ -82,18 +104,12 @@ namespace CindarsHope.Editor.Validation
 
         private static void ValidateFile(string path, List<string> errors, params (string Text, string Message)[] requirements)
         {
-            if (!File.Exists(path))
-            {
-                return;
-            }
-
+            if (!File.Exists(path)) return;
             var text = File.ReadAllText(path);
-            foreach (var requirement in requirements)
+            foreach (var (txt, msg) in requirements)
             {
-                if (!text.Contains(requirement.Text))
-                {
-                    errors.Add($"{path}: {requirement.Message}");
-                }
+                if (!text.Contains(txt))
+                    errors.Add($"{path}: {msg}");
             }
         }
 
@@ -101,11 +117,7 @@ namespace CindarsHope.Editor.Validation
         {
             foreach (var file in RuntimeFiles)
             {
-                if (!File.Exists(file))
-                {
-                    continue;
-                }
-
+                if (!File.Exists(file)) continue;
                 var text = File.ReadAllText(file);
                 if (text.Contains("ActiveSkill", StringComparison.OrdinalIgnoreCase)
                     || text.Contains("ActiveSlot", StringComparison.OrdinalIgnoreCase)

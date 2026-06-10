@@ -2,17 +2,17 @@ using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
 using UnityEngine;
-using UnityInput = UnityEngine.Input;
 
 namespace CindarsHope.Player.Movement
 {
     // Input: hold Left Shift. Does not occupy active skill slots.
+    // Combat Core: block segurado 35%-55% da velocidade base, drain 18 Stamina/s.
     [DisallowMultipleComponent]
     public sealed class PlayerBlockController : MonoBehaviour
     {
-        // TODO_INTEGRATION_NOT_FINAL: final block slow/drain balance depends on combat tuning.
-        [SerializeField] private float _blockSlowMultiplier = 0.5f;
-        [SerializeField] private float _staminaDrainPerSecond = 10f;
+        // BALANCE_FINAL_PENDING — mid-range per COMBAT_CORE_DIRECTION (35%-55% = 0.45 multiplier)
+        [SerializeField] private float _blockSlowMultiplier = 0.45f;
+        [SerializeField] private float _staminaDrainPerSecond = 18f;
         [SerializeField] private PlayerController _playerController;
         [SerializeField] private StaminaManager _staminaManager;
 
@@ -29,9 +29,7 @@ namespace CindarsHope.Player.Movement
 
             var bootstrap = GameBootstrap.Instance;
             if (bootstrap != null && _staminaManager == null)
-            {
                 _staminaManager = bootstrap.StaminaManager;
-            }
         }
 
         private void Update()
@@ -42,16 +40,10 @@ namespace CindarsHope.Player.Movement
                 return;
             }
 
-            if (UnityInput.GetKey(KeyCode.LeftShift))
+            if (PlayerMovementActionInput.IsBlockHeld())
             {
-                if (!_isBlocking)
-                {
-                    TryStartBlock();
-                }
-                else
-                {
-                    DrainStamina();
-                }
+                if (!_isBlocking) TryStartBlock();
+                else DrainStamina();
             }
             else if (_isBlocking)
             {
@@ -61,10 +53,7 @@ namespace CindarsHope.Player.Movement
 
         private void OnDisable()
         {
-            if (_isBlocking)
-            {
-                StopBlock();
-            }
+            if (_isBlocking) StopBlock();
         }
 
         private void TryStartBlock()
@@ -77,29 +66,21 @@ namespace CindarsHope.Player.Movement
 
             _previousSpeedMultiplier = _playerController != null ? _playerController.SpeedMultiplier : 1f;
             if (_playerController != null)
-            {
                 _playerController.SpeedMultiplier = Mathf.Max(0.01f, _previousSpeedMultiplier * _blockSlowMultiplier);
-            }
 
             _isBlocking = true;
             _staminaDrainAccumulator = 0f;
+            Debug.Log($"[PlayerBlockController] Block started speedMultiplier={(_playerController != null ? _playerController.SpeedMultiplier : 0f):F2}");
             GameEventBus.Publish(new PlayerActionFeedbackEvent("Block."));
         }
 
         private void DrainStamina()
         {
-            if (_staminaManager == null)
-            {
-                // STAMINA_BLOCK_DEBT: block slow works without drain if no StaminaManager exists.
-                return;
-            }
+            if (_staminaManager == null) return; // STAMINA_BLOCK_DEBT
 
             _staminaDrainAccumulator += _staminaDrainPerSecond * Time.deltaTime;
             var spend = Mathf.FloorToInt(_staminaDrainAccumulator);
-            if (spend <= 0)
-            {
-                return;
-            }
+            if (spend <= 0) return;
 
             _staminaDrainAccumulator -= spend;
             if (!_staminaManager.TrySpendStamina(spend))
@@ -112,12 +93,11 @@ namespace CindarsHope.Player.Movement
         private void StopBlock()
         {
             if (_playerController != null)
-            {
                 _playerController.SpeedMultiplier = _previousSpeedMultiplier;
-            }
 
             _isBlocking = false;
             _staminaDrainAccumulator = 0f;
+            Debug.Log($"[PlayerBlockController] Block stopped speedMultiplier restored={_previousSpeedMultiplier:F2}");
             GameEventBus.Publish(new PlayerActionFeedbackEvent("Block released."));
         }
     }

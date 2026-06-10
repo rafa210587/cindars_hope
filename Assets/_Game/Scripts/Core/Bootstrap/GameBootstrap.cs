@@ -22,6 +22,8 @@ namespace CindarsHope.Core.Bootstrap
     [DisallowMultipleComponent]
     public class GameBootstrap : MonoBehaviour
     {
+        private const string CombatRuntimeDatabasesRegistryResourcePath = "CombatRuntimeDatabasesRegistry";
+
         private static GameBootstrap _instance;
 
         [SerializeField] private PlayerManager _playerManager;
@@ -130,6 +132,8 @@ namespace CindarsHope.Core.Bootstrap
 
         private void InitializeManagers()
         {
+            EnsureCombatRuntimeReferences();
+
             if (_playerManager != null)
             {
                 if (_playerData != null)
@@ -231,6 +235,11 @@ namespace CindarsHope.Core.Bootstrap
                 Debug.LogWarning("GameBootstrap is missing a StaminaManager reference.", this);
             }
 
+            if (_manaManager != null)
+            {
+                _manaManager.Initialize();
+            }
+
             if (_craftingManager != null)
             {
                 _craftingManager.Initialize();
@@ -287,6 +296,43 @@ namespace CindarsHope.Core.Bootstrap
                 StaminaManager = _staminaManager,
                 ManaManager = _manaManager
             };
+        }
+
+        private void EnsureCombatRuntimeReferences()
+        {
+            if (_weaponDatabase == null || _spellDatabase == null)
+            {
+                var combatRegistry = Resources.Load<CombatRuntimeDatabasesRegistrySO>(CombatRuntimeDatabasesRegistryResourcePath);
+                if (combatRegistry == null)
+                {
+                    Debug.LogError($"GameBootstrap: CombatRuntimeDatabasesRegistry not found at Resources/{CombatRuntimeDatabasesRegistryResourcePath}. Combat database fallback cannot run.", this);
+                }
+                else
+                {
+                    if (_weaponDatabase == null)
+                    {
+                        _weaponDatabase = combatRegistry.WeaponDatabase;
+                    }
+
+                    if (_spellDatabase == null)
+                    {
+                        _spellDatabase = combatRegistry.SpellDatabase;
+                    }
+                }
+            }
+
+            if (_manaManager != null)
+            {
+                return;
+            }
+
+            _manaManager = GetComponent<ManaManager>();
+            if (_manaManager != null)
+            {
+                return;
+            }
+
+            _manaManager = gameObject.AddComponent<ManaManager>();
         }
 
         private void EnsurePersistentBestiaryManager()
