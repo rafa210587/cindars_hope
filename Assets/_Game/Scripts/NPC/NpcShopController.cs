@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using CindarsHope.Economy;
 using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
@@ -7,10 +8,12 @@ using CindarsHope.Interaction;
 using CindarsHope.Inventory;
 using CindarsHope.Inventory.Data;
 using CindarsHope.Player;
+using CindarsHope.Quests.Runtime;
 using CindarsHope.UI.Dialogue;
 using CindarsHope.UI.Modal;
 using CindarsHope.UI.Shop;
 using UnityEngine;
+using UiDialogueChoice = CindarsHope.UI.Dialogue.DialogueChoice;
 
 namespace CindarsHope.NPC
 {
@@ -29,9 +32,12 @@ namespace CindarsHope.NPC
         [SerializeField] private SellPanel _sellPanel;
         [SerializeField] private ModalManager _modalManager;
 
+        private const string ThalindraQuestId = "quest_first_supplies_for_cindar";
+
         private bool _isInteracting;
         private bool _isClosing;
         private bool _isReady;
+        private bool _closingForQuestOffer;
 
         public string InteractionPrompt => $"Conversar com {_npcData?.DisplayName ?? "NPC"}";
         public NpcDataSO NpcData => _npcData;
@@ -166,6 +172,7 @@ namespace CindarsHope.NPC
             _isInteracting = false;
             _isClosing = false;
             _isReady = false;
+            _closingForQuestOffer = false;
         }
 
         private void Update()
@@ -228,7 +235,112 @@ namespace CindarsHope.NPC
         private void HandleOpeningClosed()
         {
             _dialogueModal.OnClose -= HandleOpeningClosed;
-            ShowShopMenuOrClose();
+            if (IsThalindra())
+                ShowThalindraQuestShopDialogue();
+            else
+                ShowShopMenuOrClose();
+        }
+
+        private bool IsThalindra()
+        {
+            if (_npcData == null) return false;
+            if (!string.IsNullOrEmpty(_npcData.NpcId) &&
+                _npcData.NpcId.Equals("npc_thalindra", System.StringComparison.OrdinalIgnoreCase))
+                return true;
+            return !string.IsNullOrEmpty(_npcData.DisplayName) &&
+                   _npcData.DisplayName.IndexOf("Thalindra", System.StringComparison.OrdinalIgnoreCase) >= 0;
+        }
+
+        private void ShowThalindraQuestShopDialogue()
+        {
+            if (!_isInteracting || _isClosing || _dialogueModal == null) return;
+
+            DetachDialogueChoiceHandler();
+            _dialogueModal.OnChoiceSelected += HandleThalindraChoice;
+            _dialogueModal.OnClose += HandleThalindraDialogueClosed;
+
+            // Determine quest label based on current state
+            var service = QuestRuntimeBootstrap.QuestService;
+            string questLabel;
+            if (service != null && service.CanTurnIn(ThalindraQuestId))
+                questLabel = "Entregar suprimentos";
+            else if (service == null || service.GetQuestState(ThalindraQuestId) == null)
+                questLabel = "! Qual é a tarefa?";
+            else
+                questLabel = null; // quest already accepted and not ready to turn in
+
+            var choices = new List<UiDialogueChoice>();
+            if (questLabel != null)
+                choices.Add(new UiDialogueChoice(questLabel, "quest"));
+            choices.Add(new UiDialogueChoice("Comprar", "buy"));
+            choices.Add(new UiDialogueChoice("Vender", "sell"));
+            choices.Add(new UiDialogueChoice("Adeus", "exit"));
+
+            _dialogueModal.ShowWithChoices("Como posso ajudar?", choices);
+        }
+
+        private void HandleThalindraChoice(UiDialogueChoice choice)
+        {
+            DetachDialogueChoiceHandler();
+            _dialogueModal.OnClose -= HandleThalindraDialogueClosed;
+            _dialogueModal.Hide();
+
+            if (choice == null) return;
+
+            switch (choice.ChoiceId)
+            {
+                case "quest":
+                    var service = QuestRuntimeBootstrap.QuestService;
+                    var mode = QuestGiverInteractionMode.Offer;
+                    if (service != null && service.CanTurnIn(ThalindraQuestId))
+                        mode = QuestGiverInteractionMode.TurnIn;
+                    else if (service != null && service.GetQuestState(ThalindraQuestId) != null)
+                        mode = QuestGiverInteractionMode.NoQuest;
+
+                    _closingForQuestOffer = true;
+                    CloseInteraction();
+                    GameEventBus.Publish(new QuestGiverInteractedEvent(_npcData.NpcId, ThalindraQuestId, mode));
+                    break;
+
+                case "buy":
+                    if (EnsureTransactionUiReady(ShopMenuOption.Buy))
+                    {
+                        _buyPanel.OnBackPressed -= HandlePanelBack;
+                        _buyPanel.OnBackPressed += HandlePanelBack;
+                        _buyPanel.Show(_shopData.Id);
+                    }
+                    else BeginCloseInteraction();
+                    break;
+
+                case "sell":
+                    if (EnsureTransactionUiReady(ShopMenuOption.Sell))
+                    {
+                        _sellPanel.OnBackPressed -= HandlePanelBack;
+                        _sellPanel.OnBackPressed += HandlePanelBack;
+                        _sellPanel.Show(_shopData.Id);
+                    }
+                    else BeginCloseInteraction();
+                    break;
+
+                case "exit":
+                default:
+                    BeginCloseInteraction();
+                    break;
+            }
+        }
+
+        private void HandleThalindraDialogueClosed()
+        {
+            DetachDialogueChoiceHandler();
+            _dialogueModal.OnClose -= HandleThalindraDialogueClosed;
+            BeginCloseInteraction();
+        }
+
+        private void DetachDialogueChoiceHandler()
+        {
+            if (_dialogueModal == null) return;
+            _dialogueModal.OnChoiceSelected -= HandleThalindraChoice;
+            _dialogueModal.OnClose -= HandleThalindraDialogueClosed;
         }
 
         private void ShowShopMenuOrClose()
@@ -374,7 +486,10 @@ namespace CindarsHope.NPC
 
         private void HandlePanelBack()
         {
-            ShowShopMenu();
+            if (IsThalindra())
+                ShowThalindraQuestShopDialogue();
+            else
+                ShowShopMenu();
         }
 
         private void BeginCloseInteraction()
@@ -428,9 +543,12 @@ namespace CindarsHope.NPC
         private void CloseInteraction()
         {
             DetachUiEvents();
-            _modalManager?.ClearAllModals();
+            // Skip ClearAllModals when handing off to QuestOfferPanel — it manages its own modal state.
+            if (!_closingForQuestOffer)
+                _modalManager?.ClearAllModals();
             _isInteracting = false;
             _isClosing = false;
+            _closingForQuestOffer = false;
             GameEventBus.Publish(new NpcInteractionEndedEvent(_npcData.NpcId));
         }
 
@@ -445,6 +563,7 @@ namespace CindarsHope.NPC
             {
                 _dialogueModal.OnClose -= HandleOpeningClosed;
                 _dialogueModal.OnClose -= HandleClosingClosed;
+                DetachDialogueChoiceHandler();
             }
 
             if (_shopMenuModal != null)

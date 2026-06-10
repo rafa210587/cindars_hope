@@ -1,27 +1,50 @@
 # Fix — Thalindra Quest Dialogue Wiring
 
-## Steps no Unity Editor
+## Status: RUNTIME_AUTO_WIRED_SHOP_CONTROLLER_FIXED
 
-1. Menu: CindarsHope -> Setup -> Create Thalindra Quest DialogueTree
-   - Gera: Assets/_Game/Data/NPC/Thalindra/DialogueTree_Thalindra_QuestOffer.asset
+## Root Cause (resolvido em código)
 
-2. Abrir TownScene -> selecionar GameObject npc_thalindra
+Thalindra usa `NpcShopController`, não `NpcController`. O fix anterior tentou
+conectar a quest via `NpcController.HandleChoiceSelected`, mas esse caminho não
+roda para Thalindra. O `NpcShopController` controlava o fluxo inteiro:
+`ShowOpeningDialogue()` → `ShowShopMenuOrClose()` → `ShowShopMenu()` (fixo: Comprar/Vender/Adeus).
 
-3. No NpcController:
-   - Campo "Dialogue Tree" -> arraste DialogueTree_Thalindra_QuestOffer.asset
+## Solução implementada
 
-4. Remover QuestGiverInteractable do npc_thalindra (se presente como componente separado)
-   - O quest offer agora passa pelo NpcController via OfferQuest choice
+`NpcShopController` agora detecta Thalindra por `_npcData.NpcId == "npc_thalindra"`
+(fallback: `DisplayName` contém "Thalindra"). Quando detectado:
 
-5. Press Play -> interagir com Thalindra -> dialogo aparece com opcoes:
-   - "! Qual e a tarefa?" -> abre painel de aceitacao de quest
-   - "Nao tenho tempo agora." -> fecha dialogo
+- `HandleOpeningClosed()` chama `ShowThalindraQuestShopDialogue()` em vez de `ShowShopMenu()`
+- `ShowThalindraQuestShopDialogue()` usa `DialogueModal.ShowWithChoices()` com:
+  - `"! Qual é a tarefa?"` (se quest não aceita) ou `"Entregar suprimentos"` (se pronta)
+  - `"Comprar"` → abre `BuyPanel`
+  - `"Vender"` → abre `SellPanel`
+  - `"Adeus"` → fecha interação
+- Voltar de Comprar/Vender retorna ao menu de escolhas (não ao ShopMenuModal)
+- Ao escolher quest: publica `QuestGiverInteractedEvent` sem `ClearAllModals` para preservar `QuestOfferPanel`
 
-6. Clicar "Aceitar" -> quest_first_supplies_for_cindar aceita
+## Não precisa de wiring manual
 
-## Verificacao do Modal Guard
+- Não precisa de DialogueTree asset
+- Não precisa de NpcController
+- Não precisa remover QuestGiverInteractable
 
-Apos o fix B, durante o dialogo ou o painel de quest offer:
-- Dash (Shift duplo) nao deve funcionar
-- Dodge (duplo tap direcional) nao deve funcionar
-- Ao fechar o dialogo/painel, aguardar ~0.3s para nao disparar dodge por duplo tap acumulado
+## Teste esperado no Unity Play Mode
+
+1. TownScene → Press Play → interagir com Thalindra
+2. Aparece diálogo com opções:
+   - `! Qual é a tarefa?`
+   - `Comprar`
+   - `Vender`
+   - `Adeus`
+3. Clicar `! Qual é a tarefa?` → abre `QuestOfferPanel` (IMGUI) com título/objetivos/recompensas
+4. Clicar `Aceitar` → quest `quest_first_supplies_for_cindar` aceita
+5. Ao retornar a Thalindra com objetivos completos → aparece `Entregar suprimentos` em vez de `! Qual é a tarefa?`
+6. Clicar `Comprar` → abre loja de compra → `Back` retorna ao menu de escolhas
+7. Clicar `Vender` → abre loja de venda → `Back` retorna ao menu de escolhas
+
+## Modal Guard (verificar em Play Mode)
+
+Durante o diálogo de escolhas ou o QuestOfferPanel:
+- Dash (Space + direcional) não deve funcionar
+- Dodge (duplo tap direcional) não deve funcionar
