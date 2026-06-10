@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
 using CindarsHope.Interaction;
+using CindarsHope.Quests.Runtime;
 using CindarsHope.UI.Dialogue;
 using CindarsHope.UI.Modal;
 using UnityEngine;
@@ -14,12 +15,17 @@ namespace CindarsHope.NPC
     [DisallowMultipleComponent]
     public class NpcController : MonoBehaviour, IInteractable
     {
+        private const string ThalindraNpcId = "npc_thalindra";
+        private const string FirstSuppliesQuestId = "quest_first_supplies_for_cindar";
+
         [SerializeField] private NpcDataSO _npcData;
         [SerializeField] private DialogueModal _dialogueModal;
         [SerializeField] private ModalManager _modalManager;
         [SerializeField] private Collider2D _collider;
         [SerializeField] private SpriteRenderer _spriteRenderer;
         [SerializeField] private NpcWanderer _wanderer;
+
+        private static DialogueTreeSO s_thalindraQuestDialogueTree;
 
         private bool _isInteracting;
         private bool _hasMet;
@@ -30,6 +36,11 @@ namespace CindarsHope.NPC
         public string InteractionPrompt => $"Conversar com {_npcData?.DisplayName ?? "NPC"}";
         public NpcDataSO NpcData => _npcData;
         public bool HasMet => _hasMet;
+
+        private void Awake()
+        {
+            EnsureComponents();
+        }
 
         private void OnEnable()
         {
@@ -64,9 +75,10 @@ namespace CindarsHope.NPC
             _wanderer?.SetInteractionPaused(true);
             GameEventBus.Publish(new NpcInteractionStartedEvent(_npcData.NpcId));
 
-            if (_npcData.DialogueTree != null)
+            var dialogueTree = ResolveDialogueTreeForInteraction();
+            if (dialogueTree != null)
             {
-                StartDialogueTree();
+                StartDialogueTree(dialogueTree);
             }
             else if (!string.IsNullOrEmpty(_npcData.OpeningLine))
             {
@@ -78,9 +90,126 @@ namespace CindarsHope.NPC
             }
         }
 
-        private void StartDialogueTree()
+        private DialogueTreeSO ResolveDialogueTreeForInteraction()
         {
-            _currentDialogueTree = _npcData.DialogueTree;
+            var authoredTree = _npcData != null ? _npcData.DialogueTree : null;
+            if (ShouldUseRuntimeThalindraQuestTree(authoredTree))
+            {
+                return GetOrCreateThalindraQuestDialogueTree();
+            }
+
+            return authoredTree;
+        }
+
+        private bool ShouldUseRuntimeThalindraQuestTree(DialogueTreeSO authoredTree)
+        {
+            if (_npcData == null || _npcData.NpcId != ThalindraNpcId)
+            {
+                return false;
+            }
+
+            return authoredTree == null || !DialogueTreeContainsQuestOffer(authoredTree, FirstSuppliesQuestId);
+        }
+
+        private static bool DialogueTreeContainsQuestOffer(DialogueTreeSO tree, string questId)
+        {
+            if (tree == null || tree.Nodes == null)
+            {
+                return false;
+            }
+
+            foreach (var node in tree.Nodes)
+            {
+                if (node?.Choices == null)
+                {
+                    continue;
+                }
+
+                foreach (var choice in node.Choices)
+                {
+                    if (choice != null
+                        && choice.ActionType == DialogueActionType.OfferQuest
+                        && choice.ActionPayload == questId)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        private static DialogueTreeSO GetOrCreateThalindraQuestDialogueTree()
+        {
+            if (s_thalindraQuestDialogueTree != null)
+            {
+                return s_thalindraQuestDialogueTree;
+            }
+
+            var tree = ScriptableObject.CreateInstance<DialogueTreeSO>();
+            tree.name = "Runtime_DialogueTree_Thalindra_QuestOffer";
+            tree.hideFlags = HideFlags.DontSave;
+            tree.Id = "dialogue_thalindra_quest_offer_runtime";
+            tree.StartNodeId = "node_greeting";
+            tree.Nodes = new List<DialogueNode>
+            {
+                new DialogueNode
+                {
+                    NodeId = "node_greeting",
+                    Text = "Cindar, preciso de materiais simples para estabilizar alguns reparos da cidade. Pode me ajudar?",
+                    Choices = new List<NpcDialogueChoice>
+                    {
+                        new NpcDialogueChoice
+                        {
+                            Label = "Qual é a tarefa?",
+                            NextNodeId = string.Empty,
+                            ActionType = DialogueActionType.OfferQuest,
+                            ActionPayload = FirstSuppliesQuestId
+                        },
+                        new NpcDialogueChoice
+                        {
+                            Label = "Por que esses suprimentos importam?",
+                            NextNodeId = "node_context",
+                            ActionType = DialogueActionType.None
+                        },
+                        new NpcDialogueChoice
+                        {
+                            Label = "Não tenho tempo agora.",
+                            NextNodeId = string.Empty,
+                            ActionType = DialogueActionType.CloseDialogue
+                        }
+                    }
+                },
+                new DialogueNode
+                {
+                    NodeId = "node_context",
+                    Text = "Madeira e pedra bastam por enquanto. Não é uma solução final, mas mantém as bancadas e passagens seguras até termos algo melhor.",
+                    Choices = new List<NpcDialogueChoice>
+                    {
+                        new NpcDialogueChoice
+                        {
+                            Label = "Certo, me diga a tarefa.",
+                            NextNodeId = string.Empty,
+                            ActionType = DialogueActionType.OfferQuest,
+                            ActionPayload = FirstSuppliesQuestId
+                        },
+                        new NpcDialogueChoice
+                        {
+                            Label = "Entendi. Volto depois.",
+                            NextNodeId = string.Empty,
+                            ActionType = DialogueActionType.CloseDialogue
+                        }
+                    }
+                }
+            };
+
+            s_thalindraQuestDialogueTree = tree;
+            return s_thalindraQuestDialogueTree;
+        }
+
+        private void StartDialogueTree(DialogueTreeSO dialogueTree)
+        {
+            _currentDialogueTree = dialogueTree;
             var startNode = _currentDialogueTree.GetNodeById(_currentDialogueTree.StartNodeId);
             if (startNode != null)
             {
@@ -164,11 +293,12 @@ namespace CindarsHope.NPC
             if (npcChoice.ActionType == DialogueActionType.OfferQuest)
             {
                 var questId = npcChoice.ActionPayload ?? "";
+                var mode = ResolveQuestInteractionMode(questId);
                 _dialogueModal?.Hide();
                 GameEventBus.Publish(new QuestGiverInteractedEvent(
                     _npcData.NpcId,
                     questId,
-                    QuestGiverInteractionMode.Offer));
+                    mode));
                 return;
             }
 
@@ -200,6 +330,29 @@ namespace CindarsHope.NPC
             }
 
             ShowDialogueNode(nextNode);
+        }
+
+        private static QuestGiverInteractionMode ResolveQuestInteractionMode(string questId)
+        {
+            if (string.IsNullOrWhiteSpace(questId))
+            {
+                return QuestGiverInteractionMode.NoQuest;
+            }
+
+            var service = QuestRuntimeBootstrap.QuestService;
+            if (service == null)
+            {
+                return QuestGiverInteractionMode.Offer;
+            }
+
+            if (service.CanTurnIn(questId))
+            {
+                return QuestGiverInteractionMode.TurnIn;
+            }
+
+            return service.GetQuestState(questId) == null
+                ? QuestGiverInteractionMode.Offer
+                : QuestGiverInteractionMode.NoQuest;
         }
 
         private void ShowClosingLine()
