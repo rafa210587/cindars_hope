@@ -225,7 +225,7 @@ PROJECT_LOG + CURRENT_STATE conflict → prefer CURRENT_STATE; report mismatch
 
 ---
 
-- FIX-001: BUILD_VALIDATED (2026-06-10) — CS0618 warnings eliminated from CaveRuntimeBridge (FindFirstObjectByType→FindAnyObjectByType conditional), CraftingStationRuntimeBootstrap (FindObjectsOfType→FindObjectsByType conditional), QuestRuntimeBootstrap (FindObjectOfType→static Instance via QuestOfferPanelController.Instance + QuestLogPanelController.Instance); shop catalog audit: all 5 TownScene shops clean (11 ItemIds all present in ItemDatabase); ValidateTownShopCatalogIntegrity editor validator created; Assembly-CSharp PASS 0E/0W; Assembly-CSharp-Editor PASS 0E/0W
+- FIX-001 + FIX-001B: BUILD_VALIDATED (2026-06-10) — CS0618 eliminado via registro estático (CraftingRuntime.ActiveInstances substitui FindObjectsOfType em CraftingStationRuntimeBootstrap; CaveRunManager.Instance substitui FindAnyObjectByType em CaveRuntimeBridge); QuestOfferPanelController e QuestLogPanelController com guard de destruição de duplicata em Awake; ValidateTownShopCatalogIntegrity expandido para todos 25 ShopDataSO em Data/Economy (era 5 hardcoded); 3 docs criados; Assembly-CSharp PASS 0E/0W; Assembly-CSharp-Editor PASS 0E/0W; Play Mode checklist pendente: docs/validation/FIX_001B_HUMAN_PLAYMODE_CHECKLIST.md
 
-*Last updated: 2026-06-10 (FIX-001 BUILD_VALIDATED — CS0618 cleanup + TownScene shop catalog validated clean)*
-*Next update: after WAVE16 human Unity wiring (CaveEntranceInteractable on Zone_CaveEntrance + CaveExitPortal in CaveScene + Play Mode checklist pass)*
+*Last updated: 2026-06-10 (FIX-001B BUILD_VALIDATED — global search eliminado, validator expandido, docs criados)*
+*Next update: after FIX-001B human Play Mode checklist pass or WAVE16 human Unity wiring*

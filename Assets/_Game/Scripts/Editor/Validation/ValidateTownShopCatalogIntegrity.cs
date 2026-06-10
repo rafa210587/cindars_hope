@@ -8,14 +8,24 @@ using UnityEngine;
 namespace CindarsHope.Editor.Validation
 {
     /// <summary>
-    /// FIX-001 — Town Shop Catalog Integrity Validator.
+    /// FIX-001B — Town Shop Catalog Integrity Validator (expanded scope).
     ///
-    /// Validates that the 5 core Town NPC shops (shop_thalindra, shop_corvus,
-    /// shop_savra, shop_mirela, shop_hund) are present and that every ItemId
-    /// in their catalogs exists in the ItemDatabaseSO.
+    /// Validates ALL ShopDataSO assets in Assets/_Game/Data/Economy:
+    ///   - Each shop has a non-empty Id
+    ///   - No duplicate shop Ids
+    ///   - Each shop has at least 1 stock item
+    ///   - Every ItemId in all catalogs exists in the ItemDatabaseSO
+    ///   - Every item has a valid price (BuyPriceOverride > 0 OR itemData.BaseValue > 0)
+    ///
+    /// This covers all 25 NPC shop assets including all NPCs referenced by
+    /// CreateMvpTownScene.RefinedCanonicalTownNpcSpecs and additional shop
+    /// assets (Blacksmith, Cave_Supplies, General_Store, Seeds_Tools, Weapons_Armor).
     ///
     /// Prevents regression of shop-catalog mismatch errors that caused
     /// Debug.LogError at ShopManager.InitializeShop() runtime.
+    ///
+    /// Previous scope (FIX-001): 5 hardcoded town shops.
+    /// Current scope (FIX-001B): ALL ShopDataSO assets in Data/Economy folder.
     ///
     /// Run via: CindarsHope/Validate/Validate Town Shop Catalog Integrity
     /// </summary>
@@ -23,15 +33,6 @@ namespace CindarsHope.Editor.Validation
     {
         private const string ItemDatabasePath = "Assets/_Game/Data/Registries/ItemDatabase.asset";
         private const string ShopFolder = "Assets/_Game/Data/Economy";
-
-        private static readonly string[] TownShopIds =
-        {
-            "shop_thalindra",
-            "shop_corvus",
-            "shop_savra",
-            "shop_mirela",
-            "shop_hund",
-        };
 
         [MenuItem("CindarsHope/Validate/Validate Town Shop Catalog Integrity")]
         public static void Run()
@@ -41,7 +42,7 @@ namespace CindarsHope.Editor.Validation
                 Debug.LogError(e);
 
             if (errors.Count == 0)
-                Debug.Log("ValidateTownShopCatalogIntegrity PASS: all 5 town shop catalogs are valid.");
+                Debug.Log($"ValidateTownShopCatalogIntegrity PASS: all shop catalogs in '{ShopFolder}' are valid.");
             else
                 throw new System.InvalidOperationException(
                     $"ValidateTownShopCatalogIntegrity failed with {errors.Count} issue(s).");
@@ -59,17 +60,30 @@ namespace CindarsHope.Editor.Validation
                 return errors;
             }
 
-            // Load all ShopDataSO assets
+            // Load ALL ShopDataSO assets in the Economy folder
             var allShops = LoadAllShops();
-            var shopById = allShops.ToDictionary(s => s.Id, s => s);
-
-            // Validate each required town shop
-            foreach (var requiredId in TownShopIds)
+            if (allShops.Count == 0)
             {
-                if (!shopById.TryGetValue(requiredId, out var shop))
+                errors.Add($"No ShopDataSO assets found in '{ShopFolder}'.");
+                return errors;
+            }
+
+            // Track duplicate Ids
+            var seenIds = new HashSet<string>();
+
+            // Validate each shop
+            foreach (var shop in allShops)
+            {
+                var path = AssetDatabase.GetAssetPath(shop);
+
+                // Id validation
+                if (string.IsNullOrWhiteSpace(shop.Id))
                 {
-                    errors.Add($"Required town shop '{requiredId}' not found in '{ShopFolder}'.");
-                    continue;
+                    errors.Add($"Shop at '{path}' has empty Id.");
+                }
+                else if (!seenIds.Add(shop.Id))
+                {
+                    errors.Add($"Duplicate shop Id '{shop.Id}' found at '{path}'.");
                 }
 
                 ValidateShopCatalog(shop, itemDatabase, errors);
@@ -97,10 +111,11 @@ namespace CindarsHope.Editor.Validation
             List<string> errors)
         {
             var path = AssetDatabase.GetAssetPath(shop);
+            var shopLabel = string.IsNullOrWhiteSpace(shop.Id) ? path : shop.Id;
 
             if (shop.Items == null || shop.Items.Length == 0)
             {
-                errors.Add($"Shop '{shop.Id}' at '{path}' has no stock items.");
+                errors.Add($"Shop '{shopLabel}' at '{path}' has no stock items.");
                 return;
             }
 
@@ -109,20 +124,20 @@ namespace CindarsHope.Editor.Validation
                 var entry = shop.Items[i];
                 if (entry == null)
                 {
-                    errors.Add($"Shop '{shop.Id}' stock[{i}] is null.");
+                    errors.Add($"Shop '{shopLabel}' stock[{i}] is null.");
                     continue;
                 }
 
                 if (string.IsNullOrWhiteSpace(entry.ItemId))
                 {
-                    errors.Add($"Shop '{shop.Id}' stock[{i}] has empty ItemId.");
+                    errors.Add($"Shop '{shopLabel}' stock[{i}] has empty ItemId.");
                     continue;
                 }
 
                 if (!itemDatabase.TryGetById(entry.ItemId, out var itemData) || itemData == null)
                 {
                     errors.Add(
-                        $"Shop '{shop.Id}' stock[{i}] ItemId '{entry.ItemId}' " +
+                        $"Shop '{shopLabel}' stock[{i}] ItemId '{entry.ItemId}' " +
                         $"is absent from ItemDatabaseSO at '{ItemDatabasePath}'. " +
                         "Add the item asset to the ItemDatabase registry to fix this.");
                     continue;
@@ -131,7 +146,7 @@ namespace CindarsHope.Editor.Validation
                 if (entry.BuyPriceOverride <= 0 && itemData.BaseValue <= 0)
                 {
                     errors.Add(
-                        $"Shop '{shop.Id}' stock[{i}] ItemId '{entry.ItemId}' has no valid price. " +
+                        $"Shop '{shopLabel}' stock[{i}] ItemId '{entry.ItemId}' has no valid price. " +
                         $"BaseValue={itemData.BaseValue}, BuyPriceOverride={entry.BuyPriceOverride}. " +
                         "Set either BaseValue on ItemDataSO or BuyPriceOverride on ShopDataSO.");
                 }

@@ -12,6 +12,13 @@ namespace CindarsHope.Craft
     {
         private const string PocketStationId = "player_pocket";
 
+        /// <summary>
+        /// Static registry of active CraftingRuntime instances.
+        /// Populated via OnEnable/OnDisable — avoids global scene searches.
+        /// CraftingStationRuntimeBootstrap reads from this list instead of FindObjectsOfType.
+        /// </summary>
+        public static readonly List<CraftingRuntime> ActiveInstances = new List<CraftingRuntime>();
+
         [SerializeField] private InventoryManager _inventoryManager;
         [SerializeField] private RecipeDatabaseSO _recipeDatabase;
         [SerializeField] private StaminaManager _staminaManager;
@@ -25,6 +32,17 @@ namespace CindarsHope.Craft
         private void Awake()
         {
             Initialize();
+        }
+
+        private void OnEnable()
+        {
+            if (!ActiveInstances.Contains(this))
+                ActiveInstances.Add(this);
+        }
+
+        private void OnDisable()
+        {
+            ActiveInstances.Remove(this);
         }
 
         public void Initialize()

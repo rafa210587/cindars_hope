@@ -15,6 +15,13 @@ namespace CindarsHope.Cave.Runtime
     [DisallowMultipleComponent]
     public sealed class CaveRunManager : MonoBehaviour
     {
+        /// <summary>
+        /// Static singleton for CaveRunManager.
+        /// Set in Awake, cleared in OnDestroy.
+        /// Avoids all global scene searches (no FindObjectOfType / FindAnyObjectByType).
+        /// </summary>
+        public static CaveRunManager Instance { get; private set; }
+
         [SerializeField] private string _defaultWorldSeed = "cindars_world_seed_001";
         [SerializeField] private int _currentCaveLevel = 1;
         [SerializeField] private int _deepestLayerReached = 1;
@@ -32,8 +39,19 @@ namespace CindarsHope.Cave.Runtime
 
         private void Awake()
         {
+            if (Instance != null && Instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+            Instance = this;
             RestoreCachedStateIfNeeded();
             InitializeIfNeeded();
+        }
+
+        private void OnDestroy()
+        {
+            if (Instance == this) Instance = null;
         }
 
         private void OnEnable()

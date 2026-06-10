@@ -98,15 +98,17 @@ namespace CindarsHope.Cave.Runtime
 
         private void PublishCaveExitedEvent(string returnScene, string returnSpawnId)
         {
-            // Try to read cave run state from the CaveRunManager in the current scene.
-            // CaveLevelRuntimeController holds a ref to CaveRunManager.
-            // Use FindAnyObjectByType (non-deprecated) once per exit — acceptable
-            // because it happens during scene-transition teardown (not per-frame).
-#if UNITY_2023_1_OR_NEWER
-            var runManager = Object.FindAnyObjectByType<CaveRunManager>();
-#else
-            var runManager = Object.FindObjectOfType<CaveRunManager>();
-#endif
+            // Read cave run state from CaveRunManager.Instance (static singleton).
+            // Avoids all global scene searches — no FindAnyObjectByType / FindObjectOfType.
+            var runManager = CaveRunManager.Instance;
+            if (runManager == null)
+            {
+                Debug.LogWarning(
+                    "[CaveRuntimeBridge] CaveRunManager.Instance is null when publishing CaveExitedEvent. " +
+                    "Cave run state will be empty. Check that CaveScene has a CaveRunManager component.",
+                    this);
+            }
+
             var caveRunSeed = runManager != null ? runManager.CaveRunSeed : string.Empty;
             var caveLevel = runManager != null ? runManager.CurrentCaveLevel : 0;
 
@@ -133,11 +135,8 @@ namespace CindarsHope.Cave.Runtime
             // Wait one frame for CaveScene's Awake/Start to complete.
             yield return null;
 
-#if UNITY_2023_1_OR_NEWER
-            var runManager = Object.FindAnyObjectByType<CaveRunManager>();
-#else
-            var runManager = Object.FindObjectOfType<CaveRunManager>();
-#endif
+            // Use CaveRunManager.Instance (static singleton) — no global scene search.
+            var runManager = CaveRunManager.Instance;
             if (runManager == null)
             {
                 Debug.LogWarning(

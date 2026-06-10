@@ -1,6 +1,6 @@
 # FIX-001 — Cleanup de Runtime Warnings e Alinhamento Town Shop Catalog
 
-Status: A_IMPLEMENTAR
+Status: IMPLEMENTADA_VIA_FIX001B
 Domínio: Integration / Runtime Quality / City / Economy
 Camada: MVP hardening
 
@@ -25,3 +25,15 @@ na TownScene causados por ItemId ausente no ItemDatabaseSO.
 - Novos NPCs além dos já referenciados
 - Edição manual de YAML .unity, .prefab ou .asset
 - Silenciar warnings com pragma
+
+## Hotfix: FIX-001B (2026-06-10)
+
+FIX-001 foi complementado por FIX-001B que:
+- Substituiu FindObjectsOfType em CraftingStationRuntimeBootstrap por CraftingRuntime.ActiveInstances (registro estático)
+- Substituiu FindAnyObjectByType em CaveRuntimeBridge por CaveRunManager.Instance (singleton)
+- Adicionou guard de destruição de duplicata em QuestOfferPanelController e QuestLogPanelController
+- Expandiu ValidateTownShopCatalogIntegrity para todos 25 ShopDataSO em Data/Economy
+- Criou docs: FIX_001_RUNTIME_WARNINGS_SHOP_CATALOG_DECISION.md, FIX_001_RUNTIME_WARNINGS_SHOP_CATALOG_REPORT.md, FIX_001B_HUMAN_PLAYMODE_CHECKLIST.md
+
+Assembly-CSharp: PASS (0E/0W) | Assembly-CSharp-Editor: PASS (0E/3W pre-existentes)
+Play Mode checklist: docs/validation/FIX_001B_HUMAN_PLAYMODE_CHECKLIST.md

@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Inventory;
 using CindarsHope.Player;
@@ -16,9 +17,9 @@ namespace CindarsHope.Craft
     /// Pattern: identical to PlayerMovementActionRuntimeBootstrap
     /// (MaxBindAttempts loop, DontDestroyOnLoad singleton, sceneLoaded rebind).
     ///
-    /// Does NOT use GameObject.Find or deprecated FindObjectOfType at runtime.
-    /// Uses Object.FindObjectsByType&lt;CraftingRuntime&gt;() once per scene load,
-    /// in the coroutine bind loop — not in gameplay Update.
+    /// Does NOT use GameObject.Find or any global scene search at runtime.
+    /// Uses CraftingRuntime.ActiveInstances (static registry) — no FindObjectsOfType,
+    /// no FindObjectsByType, no FindAnyObjectByType at any point.
     ///
     /// WAVE_INTEGRATION_14 — Crafting Station + Processing Jobs
     /// </summary>
@@ -64,16 +65,12 @@ namespace CindarsHope.Craft
                     continue;
                 }
 
-                // Find CraftingRuntime instances in the active scene.
-                // This is allowed in a bootstrap setup loop — not in gameplay Update.
-                // Use FindObjectsByType (non-deprecated Unity 2023.1+ API, active-only).
-#if UNITY_2023_1_OR_NEWER
-                var runtimes = Object.FindObjectsByType<CraftingRuntime>(FindObjectsInactive.Exclude);
-#else
-                var runtimes = Object.FindObjectsOfType<CraftingRuntime>();
-#endif
+                // Find CraftingRuntime instances via the static ActiveInstances registry.
+                // CraftingRuntime registers itself in OnEnable and unregisters in OnDisable.
+                // This avoids all global scene searches (no FindObjectsOfType / FindObjectsByType).
+                var runtimes = CraftingRuntime.ActiveInstances;
 
-                if (runtimes == null || runtimes.Length == 0)
+                if (runtimes == null || runtimes.Count == 0)
                 {
                     yield return null;
                     continue;
@@ -87,7 +84,7 @@ namespace CindarsHope.Craft
             Debug.Log("[CraftingStationRuntimeBootstrap] No CraftingRuntime found in scene. Crafting stations will not be active.");
         }
 
-        private static void BindRuntimes(CraftingRuntime[] runtimes, InventoryManager inventoryManager, StaminaManager staminaManager)
+        private static void BindRuntimes(List<CraftingRuntime> runtimes, InventoryManager inventoryManager, StaminaManager staminaManager)
         {
             if (inventoryManager == null)
             {
