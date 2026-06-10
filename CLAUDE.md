@@ -97,6 +97,10 @@ Use `.claude/skills/<name>/SKILL.md` when task matches:
 | `event-bus-pattern` | GameEventBus communication |
 | `non-regression-review` | Pre-closeout audit |
 | `cave-stable-run-guard` | Any cave procedural change |
+| `wave-integration-slice` | Any WAVE_INTEGRATION spec (scene binding, economy loop, HUD, NPC, skill effects, movement actions) |
+| `player-ability-runtime` | Adding any non-slot player ability (Dash, Dodge, Block, roll, blink, sprint) |
+| `npc-dialogue-authoring` | Creating or extending NPCs with dialogue, shop, or scene placement |
+| `scene-interactable-wiring` | Adding IInteractable objects (crops, resources, fishing, chests) to scenes |
 
 ---
 
