@@ -1,47 +1,57 @@
-# Fix — Thalindra Quest Dialogue Wiring
+﻿# Fix — Thalindra Quest Dialogue Wiring
 
 ## Status: RUNTIME_AUTO_WIRED_SHOP_CONTROLLER_FIXED
 
 ## Root Cause (resolvido em código)
 
-Thalindra usa `NpcShopController`, não `NpcController`. O fix anterior tentou
-conectar a quest via `NpcController.HandleChoiceSelected`, mas esse caminho não
-roda para Thalindra. O `NpcShopController` controlava o fluxo inteiro:
-`ShowOpeningDialogue()` → `ShowShopMenuOrClose()` → `ShowShopMenu()` (fixo: Comprar/Vender/Adeus).
+Thalindra usa `NpcShopController`, não `NpcController`. Tentativas anteriores
+conectaram a quest via `NpcController` e `QuestGiverInteractable`, mas esse caminho
+não roda quando o GameObject usa `NpcShopController`. O `NpcShopController` controlava
+o fluxo inteiro: `ShowOpeningDialogue()` → `ShowShopMenuOrClose()` → `ShowShopMenu()`
+(fixo: Comprar/Vender/Adeus).
 
-## Solução implementada
+## Solução implementada (NpcShopController)
 
-`NpcShopController` agora detecta Thalindra por `_npcData.NpcId == "npc_thalindra"`
+`NpcShopController` detecta Thalindra por `_npcData.NpcId == "npc_thalindra"`
 (fallback: `DisplayName` contém "Thalindra"). Quando detectado:
 
 - `HandleOpeningClosed()` chama `ShowThalindraQuestShopDialogue()` em vez de `ShowShopMenu()`
 - `ShowThalindraQuestShopDialogue()` usa `DialogueModal.ShowWithChoices()` com:
-  - `"! Qual é a tarefa?"` (se quest não aceita) ou `"Entregar suprimentos"` (se pronta)
-  - `"Comprar"` → abre `BuyPanel`
-  - `"Vender"` → abre `SellPanel`
-  - `"Adeus"` → fecha interação
+  - "! Qual é a tarefa?" — se quest não aceita
+  - "Entregar suprimentos" — se pronta para turn-in
+  - "Comprar" → abre BuyPanel
+  - "Vender" → abre SellPanel
+  - "Adeus" → fecha interação
 - Voltar de Comprar/Vender retorna ao menu de escolhas (não ao ShopMenuModal)
-- Ao escolher quest: publica `QuestGiverInteractedEvent` sem `ClearAllModals` para preservar `QuestOfferPanel`
+- Ao escolher quest: publica QuestGiverInteractedEvent sem ClearAllModals
+  para preservar QuestOfferPanel
+
+## Complementar (NpcController + QuestGiverInteractable)
+
+Os commits f6d5bb2 e 5bccb76 adicionaram fallback runtime em NpcController
+e QuestGiverInteractable para auto-wire de Thalindra. Esses caminhos rodam
+quando o NPC usa NpcController diretamente (sem shop). Para Thalindra, o caminho
+que importa é o NpcShopController (fix principal acima).
 
 ## Não precisa de wiring manual
 
 - Não precisa de DialogueTree asset
-- Não precisa de NpcController
+- Não precisa arrastar asset no Inspector
 - Não precisa remover QuestGiverInteractable
 
 ## Teste esperado no Unity Play Mode
 
 1. TownScene → Press Play → interagir com Thalindra
 2. Aparece diálogo com opções:
-   - `! Qual é a tarefa?`
-   - `Comprar`
-   - `Vender`
-   - `Adeus`
-3. Clicar `! Qual é a tarefa?` → abre `QuestOfferPanel` (IMGUI) com título/objetivos/recompensas
-4. Clicar `Aceitar` → quest `quest_first_supplies_for_cindar` aceita
-5. Ao retornar a Thalindra com objetivos completos → aparece `Entregar suprimentos` em vez de `! Qual é a tarefa?`
-6. Clicar `Comprar` → abre loja de compra → `Back` retorna ao menu de escolhas
-7. Clicar `Vender` → abre loja de venda → `Back` retorna ao menu de escolhas
+   - ! Qual é a tarefa?
+   - Comprar
+   - Vender
+   - Adeus
+3. Clicar "! Qual é a tarefa?" → abre QuestOfferPanel (IMGUI)
+4. Clicar "Aceitar" → quest quest_first_supplies_for_cindar aceita
+5. Ao retornar com objetivos completos → "Entregar suprimentos" no lugar de "! Qual é a tarefa?"
+6. "Comprar" → abre loja → "Back" retorna ao menu de escolhas
+7. "Vender" → abre loja → "Back" retorna ao menu de escolhas
 
 ## Modal Guard (verificar em Play Mode)
 
