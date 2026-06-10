@@ -60,8 +60,8 @@ namespace CindarsHope.Editor.Validation
 
                 var scene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Additive);
 
-                var gates = Object.FindObjectsByType<SceneTransitionGate>(FindObjectsSortMode.None);
-                var anchors = Object.FindObjectsByType<SceneSpawnAnchor>(FindObjectsSortMode.None);
+                var gates = Object.FindObjectsByType<SceneTransitionGate>(FindObjectsInactive.Exclude);
+                var anchors = Object.FindObjectsByType<SceneSpawnAnchor>(FindObjectsInactive.Exclude);
 
                 foreach (var gate in gates)
                 {

@@ -93,7 +93,7 @@ namespace CindarsHope.World.Scenes
         private bool TryResolveFromSceneSpawnAnchor(string spawnId, out Vector2 position)
         {
             position = Vector2.zero;
-            var anchors = FindObjectsByType<SceneSpawnAnchor>(FindObjectsSortMode.None);
+            var anchors = FindObjectsByType<SceneSpawnAnchor>(FindObjectsInactive.Exclude);
             foreach (var anchor in anchors)
             {
                 if (anchor.SpawnAnchorId == spawnId)
@@ -108,7 +108,7 @@ namespace CindarsHope.World.Scenes
         private bool TryResolveFromSceneSpawnPoint(string spawnId, out Vector2 position)
         {
             position = Vector2.zero;
-            var spawnPoints = FindObjectsByType<SceneSpawnPoint>(FindObjectsSortMode.None);
+            var spawnPoints = FindObjectsByType<SceneSpawnPoint>(FindObjectsInactive.Exclude);
             foreach (var sp in spawnPoints)
             {
                 if (sp.SpawnId == spawnId)
