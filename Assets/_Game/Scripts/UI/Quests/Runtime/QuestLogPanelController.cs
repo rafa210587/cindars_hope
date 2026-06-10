@@ -25,8 +25,21 @@ namespace CindarsHope.UI.Quests.Runtime
     /// </summary>
     public class QuestLogPanelController : MonoBehaviour
     {
+        /// <summary>Static instance to avoid FindObjectOfType at runtime.</summary>
+        public static QuestLogPanelController Instance { get; private set; }
+
         private bool _isOpen;
         private int _scrollY;
+
+        private void Awake()
+        {
+            if (Instance == null) Instance = this;
+        }
+
+        private void OnDestroy()
+        {
+            if (Instance == this) Instance = null;
+        }
 
         private void OnEnable()
         {

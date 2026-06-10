@@ -16,8 +16,8 @@ namespace CindarsHope.Craft
     /// Pattern: identical to PlayerMovementActionRuntimeBootstrap
     /// (MaxBindAttempts loop, DontDestroyOnLoad singleton, sceneLoaded rebind).
     ///
-    /// Does NOT use GameObject.Find or FindObjectOfType at runtime.
-    /// Uses Object.FindObjectsOfType&lt;CraftingRuntime&gt;() once per scene load,
+    /// Does NOT use GameObject.Find or deprecated FindObjectOfType at runtime.
+    /// Uses Object.FindObjectsByType&lt;CraftingRuntime&gt;() once per scene load,
     /// in the coroutine bind loop — not in gameplay Update.
     ///
     /// WAVE_INTEGRATION_14 — Crafting Station + Processing Jobs
@@ -66,9 +66,12 @@ namespace CindarsHope.Craft
 
                 // Find CraftingRuntime instances in the active scene.
                 // This is allowed in a bootstrap setup loop — not in gameplay Update.
-#pragma warning disable UNT0023
+                // Use FindObjectsByType (non-deprecated Unity 2023.1+ API, active-only).
+#if UNITY_2023_1_OR_NEWER
+                var runtimes = Object.FindObjectsByType<CraftingRuntime>(FindObjectsInactive.Exclude);
+#else
                 var runtimes = Object.FindObjectsOfType<CraftingRuntime>();
-#pragma warning restore UNT0023
+#endif
 
                 if (runtimes == null || runtimes.Length == 0)
                 {

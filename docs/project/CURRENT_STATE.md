@@ -225,5 +225,7 @@ PROJECT_LOG + CURRENT_STATE conflict → prefer CURRENT_STATE; report mismatch
 
 ---
 
-*Last updated: 2026-06-10 (WAVE_INTEGRATION_16: CODE_READY_HUMAN_UNITY_ACTION_REQUIRED_BUILD_VALIDATED — USE_EXISTING_CAVE_RUNTIME: CaveEntranceInteractable/CaveRuntimeBridge/CaveRunStartedEvent/CaveExitedEvent/ValidateWave16CaveEntranceRuntimeBridge created; 8 docs created; Assembly-CSharp PASS 0E/0W; Assembly-CSharp-Editor PASS 0E/0W)*
+- FIX-001: BUILD_VALIDATED (2026-06-10) — CS0618 warnings eliminated from CaveRuntimeBridge (FindFirstObjectByType→FindAnyObjectByType conditional), CraftingStationRuntimeBootstrap (FindObjectsOfType→FindObjectsByType conditional), QuestRuntimeBootstrap (FindObjectOfType→static Instance via QuestOfferPanelController.Instance + QuestLogPanelController.Instance); shop catalog audit: all 5 TownScene shops clean (11 ItemIds all present in ItemDatabase); ValidateTownShopCatalogIntegrity editor validator created; Assembly-CSharp PASS 0E/0W; Assembly-CSharp-Editor PASS 0E/0W
+
+*Last updated: 2026-06-10 (FIX-001 BUILD_VALIDATED — CS0618 cleanup + TownScene shop catalog validated clean)*
 *Next update: after WAVE16 human Unity wiring (CaveEntranceInteractable on Zone_CaveEntrance + CaveExitPortal in CaveScene + Play Mode checklist pass)*

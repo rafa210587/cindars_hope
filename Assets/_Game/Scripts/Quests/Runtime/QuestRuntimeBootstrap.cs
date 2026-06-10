@@ -120,16 +120,16 @@ namespace CindarsHope.Quests.Runtime
 
         private static void EnsureUiControllers()
         {
-            // QuestOfferPanelController
-            if (FindObjectOfType<QuestOfferPanelController>() == null)
+            // QuestOfferPanelController — use static Instance to avoid FindObjectOfType (CS0618)
+            if (QuestOfferPanelController.Instance == null)
             {
                 var offerGo = new GameObject("QuestOfferPanelController");
                 DontDestroyOnLoad(offerGo);
                 offerGo.AddComponent<QuestOfferPanelController>();
             }
 
-            // QuestLogPanelController + QuestLogRuntimeBinder
-            if (FindObjectOfType<QuestLogPanelController>() == null)
+            // QuestLogPanelController + QuestLogRuntimeBinder — use static Instance to avoid FindObjectOfType (CS0618)
+            if (QuestLogPanelController.Instance == null)
             {
                 var logGo = new GameObject("QuestLogPanelController");
                 DontDestroyOnLoad(logGo);

@@ -22,6 +22,9 @@ namespace CindarsHope.UI.Quests.Runtime
     /// </summary>
     public class QuestOfferPanelController : MonoBehaviour
     {
+        /// <summary>Static instance to avoid FindObjectOfType at runtime.</summary>
+        public static QuestOfferPanelController Instance { get; private set; }
+
         private bool _isOpen;
         private string _pendingQuestId;
         private string _giverNpcId;
@@ -32,6 +35,16 @@ namespace CindarsHope.UI.Quests.Runtime
         private string _questDescription = "";
         private string _objectiveSummary = "";
         private string _rewardSummary = "";
+
+        private void Awake()
+        {
+            if (Instance == null) Instance = this;
+        }
+
+        private void OnDestroy()
+        {
+            if (Instance == this) Instance = null;
+        }
 
         private void OnEnable()
         {

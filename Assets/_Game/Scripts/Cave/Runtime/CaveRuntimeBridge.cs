@@ -100,9 +100,13 @@ namespace CindarsHope.Cave.Runtime
         {
             // Try to read cave run state from the CaveRunManager in the current scene.
             // CaveLevelRuntimeController holds a ref to CaveRunManager.
-            // We use Object.FindFirstObjectByType once per exit — this is acceptable
+            // Use FindAnyObjectByType (non-deprecated) once per exit — acceptable
             // because it happens during scene-transition teardown (not per-frame).
-            var runManager = Object.FindFirstObjectByType<CaveRunManager>();
+#if UNITY_2023_1_OR_NEWER
+            var runManager = Object.FindAnyObjectByType<CaveRunManager>();
+#else
+            var runManager = Object.FindObjectOfType<CaveRunManager>();
+#endif
             var caveRunSeed = runManager != null ? runManager.CaveRunSeed : string.Empty;
             var caveLevel = runManager != null ? runManager.CurrentCaveLevel : 0;
 
@@ -129,7 +133,11 @@ namespace CindarsHope.Cave.Runtime
             // Wait one frame for CaveScene's Awake/Start to complete.
             yield return null;
 
-            var runManager = Object.FindFirstObjectByType<CaveRunManager>();
+#if UNITY_2023_1_OR_NEWER
+            var runManager = Object.FindAnyObjectByType<CaveRunManager>();
+#else
+            var runManager = Object.FindObjectOfType<CaveRunManager>();
+#endif
             if (runManager == null)
             {
                 Debug.LogWarning(
