@@ -64,6 +64,7 @@ Play Mode:                           PENDING HUMAN — checklist at docs/validat
 | `ModalManager` | REFERENCED via GameBootstrap | Not modified |
 | `GameBootstrap` | REFERENCED for ModalManager/SkillTreeManager | Not modified |
 | `PlayerMovementActionRuntimeBootstrap` | PATTERN COPIED | Not modified |
+| `CharacterEquipmentPanelController` | REVALIDATED | Equipment modal guard already implemented via `PushModal(ModalType.CharacterEquipment)` and `TryPopModal` |
 
 ---
 
@@ -157,6 +158,7 @@ Residual risk:                     Play Mode not verified — Bootstrap/views ma
 | No recreation of existing systems | DebugHud/ModalManager/GameBootstrap unchanged | ✓ OK |
 | FinalHudGuardValidator enforced | Used in ActiveSkillSlotsHudView.Refresh() | ✓ OK |
 | Views headless (visual wiring deferred) | All views have stub Refresh() | ✓ OK |
+| Equipment modal guard | Already implemented in `CharacterEquipmentPanelController` | ✓ OK — no MVP_PLUS_04 code patch required |
 
 ---
 
@@ -173,6 +175,7 @@ Status is `BUILD_VALIDATED_HUD_CANVAS_READY_PENDING_HUMAN_PLAYMODE` because:
 - No scene/prefab/asset edited ✓
 
 NOT `ACCEPTED` because:
+
 - Play Mode not executed — GameplayHudCanvas lifecycle not verified in Unity runtime
 - Canvas visual elements not wired (headless views)
 - Human Unity Editor wiring needed for actual visible HUD elements
@@ -205,7 +208,7 @@ NOT `ACCEPTED` because:
 ### Next Agent Specs (MVP+)
 
 ```
-MVP_PLUS_04: Equipment modal guard fix (trivial — CharacterEquipmentPanelController uses ModalManager)
+MVP_PLUS_04: Already satisfied — CharacterEquipmentPanelController now uses ModalManager PushModal/TryPopModal. Do not regenerate a duplicate fix spec.
 MVP_PLUS_02: Farm crafting integration
 MVP_PLUS_03: Cave enemy state persistence
 ```
@@ -232,7 +235,9 @@ MVP_PLUS_03: Cave enemy state persistence
 | Editor validator created | PASS | ValidateWave23UiHudCanvasFinalization.cs (27 checks) |
 | Play Mode checklist created | PASS | WAVE_INTEGRATION_23_HUMAN_PLAYMODE_CHECKLIST.md |
 | CURRENT_STATE updated | PASS | WAVE23 entry added |
+| Equipment modal guard rechecked | PASS | Existing `CharacterEquipmentPanelController` pushes/pops `ModalType.CharacterEquipment` |
 
 ---
 
 *Created: 2026-06-10 (WAVE23 — MVP+ 01)*
+*Updated: 2026-06-10 (reconciled MVP_PLUS_04 as already satisfied)*
