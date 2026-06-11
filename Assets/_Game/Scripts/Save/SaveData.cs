@@ -4,6 +4,7 @@ using CindarsHope.Craft;
 using CindarsHope.Enemy;
 using CindarsHope.Equipment;
 using CindarsHope.Farm;
+using CindarsHope.Farm.Runtime;
 using CindarsHope.Player;
 using CindarsHope.Player.Death;
 using CindarsHope.Player.Progression;
@@ -42,6 +43,7 @@ namespace CindarsHope.Save
         public BestiarySaveData Bestiary;
         public CompanionManagerSaveData Companions;
         public QuestStateSectionSaveData Quests;
+        public FarmDailyGoalsSaveData DailyGoals;
     }
 
     [Serializable]
