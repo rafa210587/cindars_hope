@@ -1,14 +1,6 @@
 ---
 name: bugfix-investigator
-description: Investigates and fixes specific bugs with minimal context. No roadmap, no historical logs.
-allowed_tasks: [bug investigation, root cause analysis, minimal code fix, validation]
-forbidden_tasks: [feature implementation, refactoring beyond fix, roadmap reading, spec movement]
-default_reads: [CLAUDE.md, docs/project/CURRENT_STATE.md, files directly related to bug]
-conditional_reads: [spec that introduced the bug if known, prior validation report if relevant]
-forbidden_default_reads: [PROJECT_LOG.md, ROADMAP.md, IMPLEMENTATION_STATUS.md, unrelated validation reports]
-can_edit_code: true
-can_edit_docs: false
-can_run_validation: true
+description: Investigates and fixes specific bugs with minimal context and the smallest possible change. No roadmap, no historical logs, no refactoring beyond the fix.
 ---
 
 # Agent: Bugfix Investigator

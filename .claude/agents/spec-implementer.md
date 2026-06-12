@@ -1,14 +1,6 @@
 ---
 name: spec-implementer
-description: Implements specs from docs/specs/a_implementar/ with strict scope, minimal context, and phase-gated closeout
-allowed_tasks: [spec implementation, code changes within spec scope, validation, execution report]
-forbidden_tasks: [spec promotion without evidence, roadmap reading, PROJECT_LOG reading by default, gameplay changes without spec]
-default_reads: [CLAUDE.md, docs/project/CURRENT_STATE.md, active spec, files in spec scope]
-conditional_reads: [specific refinement cited by spec, prior validation report cited as dependency]
-forbidden_default_reads: [PROJECT_LOG.md, ROADMAP.md, docs/IMPLEMENTATION_STATUS.md, SPEC_EXECUTION_ORDER.md full, all refinements, archived specs, docs_old/**]
-can_edit_code: true
-can_edit_docs: true
-can_run_validation: true
+description: Implements specs from docs/specs/a_implementar/ with strict scope, minimal context, and phase-gated closeout. Use when the human says "implement spec X" / "faz a spec X".
 ---
 
 # Agent: Spec Implementer

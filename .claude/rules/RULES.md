@@ -1,34 +1,42 @@
 # Cindar's Hope Agent Rules
 
-These rules are project invariants. Skills explain workflows; hooks provide checks; rules define what must not drift.
+Rules are project invariants (the *what must not drift*). Skills explain workflows; hooks enforce mechanically. Consolidated 2026-06-12 — absorbed rules remain as stubs to preserve historical links from docs/.
 
-## Rule Index
+## Active Rules
 
-**Context & Governance**
-1. [Context Reading Policy](./context-reading-policy.md) — minimal context; no PROJECT_LOG by default
-2. [Spec Promotion Requires Evidence](./spec-promotion-requires-evidence.md) — phase-gated closeout only
-3. [No Premature Acceptance Claims](./no-premature-acceptance-claims.md) — no MVP/Play Mode PASS without evidence
-4. [No Doc Delete Without Candidate](./no-doc-delete-without-candidate.md) — delete only from candidates list
-5. [Spec Source Of Truth](./spec-source-of-truth.md) — only `docs/specs/`
-6. [Decision and Game Rule Policy](./decision-and-game-rule-policy.md) — ADRs/game_rules canonical; amendments archived
+**Validation & Spec Lifecycle**
+1. [Validation Truth](./validation-truth.md) — exit code 0 or it didn't pass; script failure is never secondary; no premature acceptance claims; honest validation levels
+2. [Spec Quality Gate](./spec_quality_gate.md) — canonical status taxonomy; BUILD_VALIDATED checklist; promotion requires evidence; loop batch policy
+3. [Spec Dependency Resolution](./spec_dependency_resolution.md) — auto-resolve same-wave chains; return-to-origin; forbidden scopes
+4. [Testing Quality Gate](./testing-quality-gate.md) — code changes require automated tests, Play Mode scenario, or documented residual risk
 
 **Code Architecture**
-7. [No Runtime Global Search](./no-runtime-global-search.md) — no GameObject.Find at runtime
-8. [Event Bus Only Gameplay Communication](./event-bus-only-gameplay-communication.md) — GameEventBus required
-9. [Save DTO Simple Types Only](./save-dto-simple-types-only.md) — no Unity refs in save
-10. [Cave Stable Run](./cave-stable-run.md) — stable-run contract for cave procedural
+5. [Unity Architecture Invariants](./unity-architecture.md) — no runtime global search; GameEventBus only; save DTOs simple types + IDs; forbidden namespaces
+6. [Cave Stable Run](./cave-stable-run.md) — FASE9F stable-run contract for cave procedural
 
-**Unity & Git Safety**
-11. [Unity Validation Honesty](./unity-validation-honesty.md) — no overstating validation results
-12. [Testing Quality Gate](./testing-quality-gate.md) — code changes require automated tests, Play Mode scenario, or documented residual risk
-13. [Unity YAML Editing Policy](./unity-yaml-editing-policy.md) — no manual .unity/.prefab/.asset edits
-14. [Generated Asset Evidence](./generated-asset-evidence.md) — asset generation requires evidence
-15. [No Parallel Unity Batchmode](./no-parallel-unity-batchmode.md) — sequential Unity processes only
-16. [No Unsafe Git](./no-unsafe-git.md) — no push/reset/clean without per-instance authorization
-17. [Legacy Doc Paths Forbidden](./legacy-doc-paths-forbidden.md) — canonical paths only; no docs_old, numbered folders
+**Unity, Git & Environment Safety**
+7. [Unity Assets & Editor Safety](./unity-assets.md) — no manual YAML; generated asset evidence; no parallel batchmode
+8. [No Unsafe Git](./no-unsafe-git.md) — destructive git requires per-instance human authorization (enforced via permissions.ask)
+9. [Windows / PowerShell Only](./windows_powershell_only.md) — PowerShell syntax; exit code checks; env failure policy
+
+**Context & Docs**
+10. [Context Reading Policy](./context-reading-policy.md) — minimal context; no PROJECT_LOG by default
+11. [Docs Governance](./docs-governance.md) — canonical paths only; no delete without candidate; ADRs/game_rules canonical
+
+## Mechanical Enforcement (hooks in .claude/settings.json)
+
+| Hook | Event | Enforces |
+|------|-------|----------|
+| `pre-bash-guard.ps1` | PreToolUse (Bash/PowerShell) | no parallel Unity batchmode; no filtered `dotnet build` |
+| `protected-path-guard.ps1` | PreToolUse (Edit/Write) | docs_old/, legacy paths, root specs/, tests outside Tests/EditMode |
+| `runtime-code-guard.ps1` | PostToolUse (Edit/Write) | forbidden search APIs, forbidden namespaces, duplicate class names |
+| `detect-change-scope.ps1` + `stop-summary-check.ps1` | Stop | change-scope snapshot + adaptive closeout checklist; blocks stop on forbidden paths |
+| `permissions.ask` (settings.json) | — | per-instance human authorization: unsafe git, .unity/.prefab/.asset edits, Packages/, ProjectSettings/ |
+
+Manual hooks invoked by commands (not auto): `spec-promotion-guard`, `delete-guard`, `docs-status-honesty-check`, `test-scenario-required-guard`, `run-required-validations`, `check-csproj-includes`, `check-runtime-forbidden-search` (full-diff version), `check-cave-stable-run-scope`, `context-policy-check`, `decision-rule-reference-guard`, `post-edit-docs-validate`.
 
 ## Application
 
 - Apply these rules to every agent-run task in this repository.
-- If a requested task conflicts with a rule, pause and request explicit human authorization.
+- If a task conflicts with a rule, pause and request explicit human authorization.
 - If a rule is intentionally bypassed, record the reason in `PROJECT_LOG.md` and the relevant `docs/validation/*.md`.

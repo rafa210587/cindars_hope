@@ -1,367 +1,86 @@
 # Spec Quality Gate — Cindar's Hope
 
+Absorbs `spec-promotion-requires-evidence` (stub points here). Canonical status taxonomy lives in this file only.
+
 ## Regra Central
 
-**Build passing is not enough.**
-
-Uma spec só pode ser `BUILD_VALIDATED` se houver evidência clara de que os critérios centrais da spec foram implementados, auditados e documentados.
+**Build passing is not enough.** Uma spec só pode ser `BUILD_VALIDATED` com evidência de que os critérios centrais foram implementados, auditados e documentados. E command failure não é spec failure (ver Environment abaixo).
 
 ---
 
-## Status Permitidos
+## Status Taxonomy (canônica)
 
-### Aceitáveis durante execução:
-- `BUILD_VALIDATED` — critérios centrais atendidos, report criado, validações passaram
-- `BUILD_VALIDATED_WITH_WARNINGS` — núcleo implementado, integração/PlayMode deferida
-- `CONTRACT_ONLY` — apenas DTO/model/interface criado, sem integração
-- `CONTRACT_ONLY_NEEDS_INTEGRATION` — contrato criado, integração com sistema existente deferida
-- `DEFERRED_UI_VISUAL` — lógica pronta, visual/scene/prefab deferido
-- `NEEDS_REWORK` — P0/P1 spec não atende critério central
-- `BLOCKED` — não pode continuar sem Packages/ProjectSettings/scene/pets/future
-- `BLOCKED_BY_DEPENDENCY_PENDING` — **TEMP** aguardando resolução de dependência same-wave, não é falha final
-- `BLOCKED_BY_FORBIDDEN_SCOPE` — depende de specs future/pets/HOLD ou requer Packages/ProjectSettings/scene
-- `BLOCKED_BY_FUTURE_SCOPE` — depende de spec de wave futura
-- `BLOCKED_BY_PETS_SCOPE` — depende de pets spec
-- `BLOCKED_BY_WAVE_ORDER` — depende de spec de wave anterior não executada
-- `ENV_COMMAND_RETRY_REQUIRED` — comando Unix falhou em Windows, aguardando retry em PowerShell
-- `ENV_COMMAND_FAILURE` — retry em PowerShell também falhou (não é spec failure)
-- `EXPECTED_FAIL_LEGACY_ONLY` — falha esperada de docs/config legado, não impede execução
+### Durante execução (permitidos)
 
-### Proibidos durante execução:
-- `ACCEPTED` — final acceptance só após todas as fases
-- `PLAYMODE_VALIDATED` — PlayMode só em final gate
-- `PARTIAL` — ambíguo, use status específico
-- `COMPLETE` — ambíguo, use status específico
-- `PENDING` — ambíguo, use status específico
+| Status | Quando usar | Bloqueia próxima? |
+|--------|-------------|---|
+| `BUILD_VALIDATED` | Critérios centrais atendidos + report + validações exit 0 | não |
+| `BUILD_VALIDATED_WITH_WARNINGS` | Núcleo pronto; PlayMode/visual/integração deferida | não |
+| `CONTRACT_ONLY` | Só DTO/model/enum/interface; sem integração nem lógica operacional | não* |
+| `CONTRACT_ONLY_NEEDS_INTEGRATION` | Contrato pronto; integração com sistema real deferida | sim, se spec fundacional |
+| `DEFERRED_UI_VISUAL` | Lógica pronta; visual/scene/prefab fora de escopo | sim, se fundacional |
+| `NEEDS_REWORK` | P0/P1 não atende critério central; stub; ou criou sistema paralelo em vez de reusar | **sim** |
+| `BLOCKED` | Exige Packages/, ProjectSettings/, scene/prefab/asset, wave futura, pets, rewrite amplo | **sim** |
+| `BLOCKED_BY_DEPENDENCY_PENDING` | TEMP — aguardando dependência same-wave (não é falha; resolver e voltar) | não (resolve) |
+| `BLOCKED_BY_FORBIDDEN_SCOPE` / `_FUTURE_SCOPE` / `_PETS_SCOPE` / `_WAVE_ORDER` | Dependência fora de escopo permitido | **sim** |
+| `ENV_COMMAND_RETRY_REQUIRED` | Comando Unix falhou no Windows; retry PowerShell pendente | TEMP |
+| `ENV_COMMAND_FAILURE` | Retry PowerShell também falhou; falha ambiental, não da spec | só se fundamental |
+| `EXPECTED_FAIL_LEGACY_ONLY` | Falha esperada de docs/config legado, já documentada | não |
 
----
+### Proibidos durante execução
 
-## Build passing is not enough, and command failure is not spec failure
+`ACCEPTED`, `PLAYMODE_VALIDATED`, `PARTIAL`, `COMPLETE`, `PENDING` (ambíguos ou exigem fase final).
 
-1. **A successful C# build does NOT mean a spec is implemented.** The spec's acceptance criteria must be met, not just compilation.
+### Fases de promoção (closeout)
 
-2. **A failed command due to Unix syntax on Windows is NOT a spec failure.** The harness retries in PowerShell before classifying as `ENV_COMMAND_FAILURE`.
-
-3. **`BLOCKED_BY_DEPENDENCY_PENDING` is NOT a final blocker.** It means resolve dependencies first, then return to this spec.
+`AUDITED` → `CODE_COMPLETE` → `BUILD_VALIDATED` → `UNITY_VALIDATED` → `PLAYMODE_VALIDATED` → `ACCEPTED`. Nenhuma spec move para `implementados/` sem a evidência do nível exigido por ela; specs docs-only podem declarar Phase 2-3 `NOT IN SCOPE` e promover após `BUILD_VALIDATED`.
 
 ---
 
-## Quando Usar BLOCKED_BY_DEPENDENCY_PENDING
+## Checklist BUILD_VALIDATED (todos obrigatórios)
 
-Usar quando:
-- Spec atual depende de outra spec da mesma wave
-- Spec de dependência NÃO foi executada ainda
-- Dependência é do mesmo escopo (não future/pets/forbidden)
-
-Status:
-- Temporário (será resolvido automaticamente)
-- Não é falha final
-- Dependency chain é executado automaticamente
-- Retorna a spec original após resolução
-
-Exemplo: `companion_farm_job_board` depende de `farm_animals` que ainda não foi executada.
-
----
-
-## Quando Usar BLOCKED_BY_FORBIDDEN_SCOPE
-
-Usar quando spec depende de:
-- Future wave spec (WAVE 06+)
-- Pets scope
-- Requer alteração de Packages/
-- Requer alteração de ProjectSettings/
-- Requer criação de scene/prefab/asset
-
-Status:
-- Final blocker
-- Não pode ser resolvido nesta wave
-- Para aqui, retorna ao user
-
----
-
-## Quando Usar ENV_COMMAND_RETRY_REQUIRED
-
-Usar quando:
-- Comando Unix/Bash falhou em Windows
-- PowerShell equivalente ainda não foi tentado
-- Não é falha da spec, é falha de ambiente
-
-Status:
-- Temporário (durante execução)
-- Será retentado em PowerShell
-- Desaparece do report final
-
----
-
-## Quando Usar ENV_COMMAND_FAILURE
-
-Usar quando:
-- Comando Unix falhou em Windows
-- PowerShell retry foi tentado
-- PowerShell retry também falhou
-- Erro é ambiental/infraestrutura, não spec
-
-Status:
-- Documenta no report
-- Não impede execução se não fundamental
-- Exemplo: "Unix head falhou, PowerShell Get-Content também falhou, mas pode continuar"
-
-Bloqueador final ONLY se:
-- Arquivo não encontrado
-- Permissão negada
-- Sistema essencial indisponível
-
----
-
-## Quando Usar EXPECTED_FAIL_LEGACY_ONLY
-
-Usar quando:
-- Docs validation falha por legado (old files, old config)
-- Não é novo erro
-- Não impede execução
-- Documentado em prior wave/spec
-
-Status:
-- Não é falha crítica
-- Docs continue validando, just with warnings
-- Não para o loop
-- Report menciona: "Legacy warning from SPEC_X, previously documented"
-
----
-
-## Build Validation Truth Gate
-
-Build success is valid **only** when verified by explicit exit code.
-
-**Forbidden:**
-```powershell
-dotnet build ... | Select-String "error"
-```
-
-**Required:**
-```powershell
-.\tools\docs\run_strict_validation.ps1
-if ($LASTEXITCODE -ne 0) { /* failed */ }
-```
-
-A spec cannot be marked `BUILD_VALIDATED` unless `run_strict_validation.ps1` returned exit code 0.
-
----
-
-## Quando Usar BUILD_VALIDATED
-
-Usar **ONLY IF** todos forem verdadeiros:
-
-1. ✓ Execution report individual criado em `docs/validation/<spec_id>_execution_report.md`
-2. ✓ Spec inteira foi lida e compreendida
-3. ✓ Acceptance criteria foram extraídos e documentados
-4. ✓ Sistemas existentes foram auditados (não criados parallelos)
-5. ✓ Código criado/reutilizado atende todos os critérios centrais
-6. ✓ Spec Compliance Matrix preenchida com status OK (não DEFERRED ou FAIL)
-7. ✓ `.\tools\docs\validate_docs.ps1` — PASS
-8. ✓ `.\tools\docs\run_strict_validation.ps1` — exit code 0, all checks PASS
-9. ✓ `Assembly-CSharp` — PASS (exit code 0)
-10. ✓ `Assembly-CSharp-Editor` — PASS (exit code 0)
-11. ✓ Nenhum arquivo proibido foi alterado (Packages, ProjectSettings, scenes, prefabs, assets)
-12. ✓ Testes, se criados, estão ONLY em `Assets/_Game/Tests/EditMode/**`, NEVER em `Assets/_Game/Scripts/**`
-13. ✓ Report contém seção "Honest status rationale" explicando por que o status não está inflado
-14. ✓ Report documenta validation method: `run_strict_validation.ps1`, exit code 0
-
----
-
-## Quando Usar BUILD_VALIDATED_WITH_WARNINGS
-
-Usar quando:
-- Núcleo da spec foi implementado e testado
-- MAS há integração visual/PlayMode/human validation deferida
-- MAS há adapter ainda headless (não sincronizado com ModalManager/GameplayInputRouter/etc)
-- MAS há policy/config deferida
-
-Exemplos:
-- UI focus routing implementado, PlayMode integration deferred
-- Save provider structure created, PlayMode reload testing deferred
-- Event system wired, human scenario pending
-
----
-
-## Quando Usar CONTRACT_ONLY
-
-Usar quando foi criado apenas:
-- DTO (data transfer object)
-- Model / View-Model
-- Enum
-- Interface
-- Adapter headless (sem sincronização real)
-- Projection (read-only model)
-
-Características:
-- Compila
-- Pode ter testes EditMode
-- NÃO integra com sistema existente
-- NÃO tem lógica de negócio operacional
-- NÃO bloqueia próxima wave se a spec for fundacional
-
-Exemplo: `CalendarDayDetailModel.cs` sem integração com `GameCalendarService` é `CONTRACT_ONLY`.
-
----
-
-## Quando Usar CONTRACT_ONLY_NEEDS_INTEGRATION
-
-Usar quando:
-- Contrato implementado (DTO, model, interface)
-- Compila
-- MAS depende de integração futura com sistema real
-
-Exemplo: `EquipmentCompareViewModel` sem `EquipmentManager` wiring é `CONTRACT_ONLY_NEEDS_INTEGRATION`.
-
-Bloqueia próxima wave se a atual for fundacional.
-
----
-
-## Quando Usar DEFERRED_UI_VISUAL
-
-Usar quando:
-- Lógica de negócio está pronta
-- MAS parte visual/scene/prefab/canvas está fora de escopo
-
-Exemplo: Quest condition evaluation logic ready, but quest log UI screen deferred.
-
----
-
-## Quando Usar NEEDS_REWORK
-
-Usar quando:
-- P0 ou P1 spec não atende critério central
-- Implementação é stub/incompleta
-- Implementação criou sistema paralelo quando deveria reuser existente
-
-Exemplos:
-- Spec exige 10 focus states, código tem 5 → NEEDS_REWORK
-- Spec exige modal stack, código não tem stack → NEEDS_REWORK
-- Spec exige integração com ModalManager, código cria ModalStackRouter paralelo → NEEDS_REWORK
-
-Bloqueia próxima spec.
-
----
-
-## Quando Usar BLOCKED
-
-Usar quando continuar exigiria:
-- Alteração de Packages/
-- Alteração de ProjectSettings/
-- Criação de scene/prefab/asset
-- Execução de WAVE futura
-- Acesso a pets/future/mapped specs
-- Rewrite amplo de sistema existente
-- Unity Test Runner obrigatório (EditMode não o é)
-- PlayMode obrigatório em phase de implementation (deferred é OK)
-
-Bloqueia próxima spec.
+1. Execution report individual em `docs/validation/<spec_id>_execution_report.md`
+2. Spec lida por inteiro; acceptance criteria extraídos e documentados
+3. Sistemas existentes auditados (não criar paralelos — ver skill `system-reuse-audit`)
+4. Código atende todos os critérios centrais; Spec Compliance Matrix preenchida com OK
+5. `.\tools\docs\validate_docs.ps1` PASS e `.\tools\docs\run_strict_validation.ps1` exit 0
+6. `Assembly-CSharp` e `Assembly-CSharp-Editor` PASS (exit 0)
+7. Nenhum arquivo proibido alterado (Packages/, ProjectSettings/, scenes, prefabs, assets)
+8. Testes (se criados) só em `Assets/_Game/Tests/EditMode/**`
+9. Report com "Honest status rationale" + validation method documentado
 
 ---
 
 ## Proibições Absolutas
 
-- ❌ Marcar `BUILD_VALIDATED` sem report individual
-- ❌ Marcar `BUILD_VALIDATED` só porque compilou (build passing != spec fulfilled)
-- ❌ Commitar `.claude/*.lock` (operational artifact)
-- ❌ Criar `*Tests.cs` dentro de `Assets/_Game/Scripts/**` (must use `Assets/_Game/Tests/EditMode/**`)
-- ❌ Executar próxima spec se a atual for `NEEDS_REWORK` ou `BLOCKED`
-- ❌ Avançar wave se houver spec fundacional `CONTRACT_ONLY_NEEDS_INTEGRATION`
-- ❌ Mover para `implementados/` se status for:
-  - `CONTRACT_ONLY`
-  - `CONTRACT_ONLY_NEEDS_INTEGRATION`
-  - `DEFERRED_UI_VISUAL`
-  - `NEEDS_REWORK`
-  - `BLOCKED`
-  - `HOLD`
-  - `BLOCKED_SCOPE`
-  - Future/mapped
-  - Pets
+- ❌ `BUILD_VALIDATED` sem report individual ou só porque compilou
+- ❌ Commitar `.claude/*.lock`
+- ❌ `*Tests.cs` em `Assets/_Game/Scripts/**` (hook `protected-path-guard` bloqueia)
+- ❌ Executar próxima spec se atual é `NEEDS_REWORK`/`BLOCKED`
+- ❌ Avançar wave com spec fundacional `CONTRACT_ONLY_NEEDS_INTEGRATION`
+- ❌ Mover para `implementados/` com status `CONTRACT_ONLY*`, `DEFERRED_UI_VISUAL`, `NEEDS_REWORK`, `BLOCKED*`, `HOLD`, future, pets
 
 ---
 
-## Evidência Obrigatória em Todo Report
+## Evidência obrigatória em todo report
 
-Todo `*_execution_report.md` deve conter:
-
-1. **Acceptance criteria extracted** — tabela com critérios centrais e evidência
-2. **Existing systems audit** — quais sistemas foram encontrados/reutilizados/criados
-3. **Spec Compliance Matrix** — mapeamento spec requirement → implementation
-4. **Validation** — docs/build/editor/test results
-5. **Honest status rationale** — por que o status não está inflado
-6. **Remaining work** — o que ficou para fases futuras
+1. Acceptance criteria extraídos (tabela com evidência)
+2. Existing systems audit (encontrado/reutilizado/criado)
+3. Spec Compliance Matrix (requirement → implementation)
+4. Validation (docs/build/editor/test)
+5. Honest status rationale
+6. Remaining work
 
 ---
 
-## Matriz de Decisão: Qual Status Usar
+## Loop Batch Policy (até 10 specs)
 
-| Situação | Status | Motivo |
-|----------|--------|--------|
-| Código compila + spec critério central atendido + tests + report | BUILD_VALIDATED | Tudo feito |
-| Código compila + núcleo pronto + PlayMode/visual deferred | BUILD_VALIDATED_WITH_WARNINGS | Núcleo OK, UI deferred |
-| Apenas DTO/model/enum criado | CONTRACT_ONLY | Sem integração |
-| DTO criado + depende de integração futura | CONTRACT_ONLY_NEEDS_INTEGRATION | Contrato OK, integração deferred |
-| Lógica pronta + visual/scene deferred | DEFERRED_UI_VISUAL | Lógica OK, visual deferred |
-| P0/P1 com critério central não atendido | NEEDS_REWORK | Incompleto |
-| Não pode continuar sem Packages/scene/pets | BLOCKED | Bloqueado |
+- UMA spec por iteração; report individual; validação individual (docs PASS, Assembly-CSharp 0E, Editor 0E, quality check PASS); commit individual.
+- Máximo recomendado: 3 specs em wave nova/instável; 10 em wave estabelecida ou specs homogêneas; nunca >10 sem review externo.
+- Parar IMEDIATAMENTE se: `BLOCKED`, `NEEDS_REWORK`, fundacional `CONTRACT_ONLY_NEEDS_INTEGRATION`/`DEFERRED_UI_VISUAL`, build falha, docs com erro novo, quality check crítico, arquivo proibido alterado, teste em pasta errada, report ausente, status inflado.
+- Batch nunca produz `ACCEPTED` nem `PLAYMODE_VALIDATED`.
 
----
-
-## Loop Batch Policy — Up to 10 Specs
-
-`/loop` pode executar batches de até 10 specs via `/execute-spec-strict`, desde que:
-
-### Per-Spec Validation (não ao final do batch)
-
-1. **One spec per iteration** — cada ciclo do loop executa UMA spec exatamente
-2. **Individual report** — cada spec gera `*_execution_report.md` individual
-3. **Individual validation**:
-   - ✓ `docs validation` — PASS (no new errors)
-   - ✓ `dotnet build Assembly-CSharp` — 0E, 0W runtime
-   - ✓ `dotnet build Assembly-CSharp-Editor` — 0E, pre-existing W only
-   - ✓ `check_spec_quality.ps1` — PASS (no critical violations)
-4. **Individual commit** — cada spec bem-sucedida faz commit próprio ou para com status claro
-5. **Loop stop conditions** — parar IMEDIATAMENTE se:
-   - Status é `BLOCKED`
-   - Status é `NEEDS_REWORK`
-   - Status é `CONTRACT_ONLY_NEEDS_INTEGRATION` em spec fundacional
-   - Status é `DEFERRED_UI_VISUAL` em spec fundacional
-   - Build falha
-   - Docs validation tem erro novo
-   - Quality check falha criticamente
-   - Arquivo proibido foi alterado (Packages/, ProjectSettings/, scenes, prefabs, assets, runtime)
-   - Teste foi criado em pasta errada
-   - Report individual não existe
-   - Status está inflado (BUILD_VALIDATED sem evidence)
-
-### Batch Configuration
-
-| Wave Type | Recommended Max | Reason |
-|-----------|-----------------|--------|
-| New/unstable wave | 3 specs | Higher risk, need tight feedback loop |
-| Established wave (WAVE 02+) | 10 specs | Patterns known, lower failure rate |
-| Homogeneous specs (all UI VMs) | 10 specs | Same pattern repeated, easy to validate |
-| Never | >10 specs | Without external code review |
-
-### Batch Status Is NOT Wave Acceptance
-
-Completing 10 specs in a loop does NOT mean `ACCEPTED`.
-
-O batch pode produzir no máximo:
-- `BUILD_VALIDATED`
-- `BUILD_VALIDATED_WITH_WARNINGS`
-- `CONTRACT_ONLY`
-- `CONTRACT_ONLY_NEEDS_INTEGRATION`
-- `DEFERRED_UI_VISUAL`
-- `NEEDS_REWORK`
-- `BLOCKED`
-
-`ACCEPTED` e `PLAYMODE_VALIDATED` continuam proibidos durante implementation phase.
-
-### Loop Output Format
-
-Após cada spec no loop, output DEVE conter:
+### Output obrigatório por spec no loop
 
 ```text
 SPEC_RESULT:
@@ -378,5 +97,4 @@ Can start next wave: NO (always no during loop)
 
 ---
 
-*Created: 2026-06-08 (Spec Quality Gate + Loop Batch Policy)*  
-*Applies to all agent-run spec execution tasks.*
+*Updated: 2026-06-12 (consolidação do harness — versão íntegra anterior no git history)*

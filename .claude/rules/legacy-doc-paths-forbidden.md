@@ -1,43 +1,6 @@
-# Rule: Legacy Doc Paths Forbidden
+﻿# Rule: Legacy Doc Paths Forbidden (stub)
 
-## Rule
+> Consolidated into [.claude/rules/docs-governance.md](./docs-governance.md). This stub preserves the historical path referenced by docs/ (ADRs, validation reports).
 
-Legacy documentation paths must not be recreated or edited.
+**Invariant:** Never recreate or edit docs_old/ or docs/00_PROJECT..07_RELEASES. Canonical paths only.
 
-Forbidden patterns:
-- `docs_old/`
-- `docs/00_PROJECT/`
-- `docs/01_PRODUCT/`
-- `docs/02_ARCHITECTURE/`
-- `docs/03_SPECS/`
-- `docs/04_REFINEMENTS/`
-- `docs/05_VALIDATION/`
-- `docs/06_BACKLOG/`
-- `docs/07_RELEASES/`
-
-## Canonical Paths
-
-Use only:
-- `docs/project/`
-- `docs/specs/`
-- `docs/refinements/`
-- `docs/validation/`
-- `docs/backlog/`
-- `docs/architecture/`
-- `docs/decisions/`
-- `docs/game_rules/`
-- `docs/release/`
-
-## Why
-
-The project was consolidated during SPEC_DOCS_35-37.
-Legacy paths increase context drift and cause agents to read stale documents.
-
-## Validation
-
-- `tools/docs/validate_docs.ps1` checks for legacy folder creation
-- `.claude/hooks/doc-location-guard.ps1` warns on legacy path references
-
----
-
-*Created: 2026-06-01 (SPEC_DOCS_39)*

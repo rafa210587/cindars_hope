@@ -1,61 +1,44 @@
-# Pre-Bash Guard Hook
-# Blocks unsafe git and file operations before execution
+# Pre-Bash Guard Hook (PreToolUse: Bash|PowerShell)
+# Claude Code hook protocol: JSON via stdin; exit 0 = allow, exit 2 = block (stderr -> Claude).
+#
+# Blocks only patterns that are NEVER acceptable:
+#   1. Unity batchmode while another Unity instance is running (rule: no-parallel-unity-batchmode)
+#   2. dotnet build piped through filters that hide errors/exit code (rule: validation-truth)
+#
+# Destructive git (push/reset/clean/stash/rebase) is handled by permissions.ask in
+# .claude/settings.json, so the human authorizes per instance — do not duplicate here.
 
-# This hook is called before bash/powershell command execution
-# It inspects the command and blocks dangerous patterns
+$ErrorActionPreference = "Stop"
 
-param(
-    [string]$Command
-)
-
-# Blocked commands - destructive or unsafe
-$BlockedPatterns = @(
-    # Git operations
-    "git\s+push",
-    "git\s+reset\s+--hard",
-    "git\s+clean",
-    "git\s+stash",
-    "git\s+rebase",
-    "git\s+reset\s+--(hard|mixed|merge)",
-
-    # File operations
-    "rm\s+-rf",
-    "rm\s+-r",
-    "del\s+/s",
-    "del\s+/q",
-    "Remove-Item\s+.*-Recurse",
-    "Remove-Item\s+.*-Force",
-
-    # Destructive batch operations
-    "Clear-Content.*-Force",
-    "Set-Content.*\|\s*Select-Object"
-)
-
-# Check command against blocked patterns
-foreach ($pattern in $BlockedPatterns) {
-    if ($Command -match $pattern) {
-        Write-Error "🚫 Blocked unsafe command: $Command"
-        Write-Error "   Reason: Matches blocked pattern '$pattern'"
-        Write-Error ""
-        Write-Error "   Allowed alternatives:"
-        Write-Error "   - git status / git diff / git log (info only)"
-        Write-Error "   - git add / git commit (when intentional)"
-        Write-Error "   - Copy-Item / Move-Item (safe file ops)"
-        Write-Error ""
-        return $false
-    }
+try {
+    $raw = [Console]::In.ReadToEnd()
+    $data = $raw | ConvertFrom-Json
+}
+catch {
+    # Malformed input: do not block the tool because of hook failure
+    exit 0
 }
 
-if ($Command -match "Unity(\.exe)?['""]?\s+.*-batchmode" -or $Command -match "Unity\.exe.*-batchmode") {
+$command = $null
+if ($data -and $data.tool_input) { $command = $data.tool_input.command }
+if (-not $command) { exit 0 }
+
+# --- 1. No parallel Unity batchmode ---------------------------------------
+if ($command -match "Unity(\.exe)?['""]?\s+.*-batchmode" -or $command -match "Unity\.exe.*-batchmode") {
     $unityProcesses = Get-Process -Name "Unity" -ErrorAction SilentlyContinue
     if ($unityProcesses) {
-        Write-Error "Blocked Unity batchmode while another Unity process is running."
-        Write-Error "Reason: Unity cannot safely open the same project in multiple instances."
-        Write-Error "Running Unity processes: $($unityProcesses.Count)"
-        Write-Error "Close the existing Unity Editor or document validation as blocked."
-        return $false
+        [Console]::Error.WriteLine("BLOCKED: Unity batchmode while another Unity process is running ($($unityProcesses.Count) found).")
+        [Console]::Error.WriteLine("Rule: no-parallel-unity-batchmode. Close the Unity Editor or record the validation as BLOCKED with reason 'Unity lock'.")
+        exit 2
     }
 }
 
-# Command is safe
-return $true
+# --- 2. Build Validation Truth Gate ----------------------------------------
+# 'dotnet build | Select-String' (and similar filters) lose $LASTEXITCODE and hide errors.
+if ($command -match "dotnet\s+build[^|;]*\|\s*(Select-String|Out-String|Tee-Object|Out-Null|findstr)") {
+    [Console]::Error.WriteLine("BLOCKED: 'dotnet build' piped through an output filter. This loses the exit code and hides errors (rule: validation-truth / Build Validation Truth Gate).")
+    [Console]::Error.WriteLine("Required pattern: run 'dotnet build <proj> --no-restore' bare, then check `$LASTEXITCODE -ne 0`. Preferred: .\tools\docs\run_strict_validation.ps1")
+    exit 2
+}
+
+exit 0

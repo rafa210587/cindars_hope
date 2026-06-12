@@ -1,24 +1,6 @@
-# Rule: Spec Source Of Truth
+﻿# Rule: Spec Source Of Truth (stub)
 
-The only active source for specs is:
+> Consolidated into [.claude/rules/docs-governance.md](./docs-governance.md). This stub preserves the historical path referenced by docs/ (ADRs, validation reports).
 
-```text
-docs/specs/
-```
+**Invariant:** The only active spec source is docs/specs/. Never recreate root specs/ or spec/.
 
-## Prohibited
-
-- Recreating root `specs/`.
-- Recreating root `spec/`.
-- Treating `docs_old/**` as an active spec source.
-
-## Required
-
-Use:
-
-- `docs/specs/SPEC_EXECUTION_ORDER.md`
-- target spec under `docs/specs/a_implementar/`
-- implemented specs under `docs/specs/implementados/`
-- refinements under `docs/refinements/`
-
-When a spec is completed, update the relevant registry/status/log files according to the project execution protocol.

@@ -1,5 +1,8 @@
 # /execute-spec-strict
 
+> **NOTA DE RECONCILIAÇÃO (2026-06-12):** a fila wave-based foi executada e movida para executadas_build_validated/. A fila ativa é docs/specs/a_implementar/fable/. Exemplos com paths NN_spec_* abaixo são históricos.
+
+
 Execute exatamente UMA spec com qualidade rigorosa e pare.
 
 ## Propósito

@@ -1,30 +1,6 @@
-# Rule: No Runtime Global Search
+﻿# Rule: No Runtime Global Search (stub)
 
-Runtime gameplay code must not use global scene searches for wiring.
+> Consolidated into [.claude/rules/unity-architecture.md](./unity-architecture.md). This stub preserves the historical path referenced by docs/ (ADRs, validation reports).
 
-## Prohibited In Runtime
+**Invariant:** Runtime gameplay code must not use GameObject.Find / FindObjectOfType / FindObjectsOfType / FindObjectsByType. Use serialized refs, bootstrap injection, or explicit configuration.
 
-- `GameObject.Find(...)`
-- `FindObjectOfType(...)`
-- `FindObjectsOfType(...)`
-- `FindObjectsByType(...)`
-
-## Allowed
-
-- Editor-only tools under `Assets/_Game/Scripts/Editor/**`.
-- Serialized references.
-- Bootstrap references.
-- Explicit injection/configuration methods.
-- Local component access on the same object, such as `GetComponent<T>()`, when used narrowly.
-
-## Required Response
-
-If a runtime system lacks a reference, log a clear wiring error with:
-
-- scene;
-- GameObject;
-- component;
-- missing field;
-- affected id, when relevant.
-
-Do not mask missing wiring with silent scene searches.
