@@ -402,6 +402,171 @@ namespace CindarsHope.Quests.Runtime
                 }
             }
         }
+
+        /// <summary>
+        /// Called by QuestProgressEventBridge on CropHarvestedEvent.
+        /// WAVE_INTEGRATION_26: handles HarvestCrop objectives.
+        /// </summary>
+        public void OnCropHarvested(string seedId, string itemId)
+        {
+            var activeIds = _saveSection.QuestStates
+                .Where(q => (QuestStateStatus)q.State == QuestStateStatus.Active)
+                .Select(q => q.QuestId)
+                .ToList();
+
+            foreach (var id in activeIds)
+            {
+                if (!_registry.TryGetQuest(id, out _)) continue;
+                var objectives = _registry.GetObjectives(id);
+                foreach (var obj in objectives)
+                {
+                    if (obj.ObjectiveType != QuestObjectiveType.HarvestCrop) continue;
+                    // TargetId "any" matches all crops; otherwise match by seedId or itemId
+                    bool matches = obj.TargetId == "any" || obj.TargetId == seedId || obj.TargetId == itemId;
+                    if (matches) MarkObjectiveComplete(id, obj.ObjectiveId);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Called by QuestProgressEventBridge on EconomyTransactionCompletedEvent.
+        /// WAVE_INTEGRATION_26: handles SellItem objectives.
+        /// TransactionType "sell" and GoldDelta > 0 means a successful sale.
+        /// </summary>
+        public void OnItemSold(string itemId, string transactionType, int goldDelta)
+        {
+            // Only care about sell transactions that generated gold
+            if (transactionType != "sell" || goldDelta <= 0) return;
+
+            var activeIds = _saveSection.QuestStates
+                .Where(q => (QuestStateStatus)q.State == QuestStateStatus.Active)
+                .Select(q => q.QuestId)
+                .ToList();
+
+            foreach (var id in activeIds)
+            {
+                if (!_registry.TryGetQuest(id, out _)) continue;
+                var objectives = _registry.GetObjectives(id);
+                foreach (var obj in objectives)
+                {
+                    if (obj.ObjectiveType != QuestObjectiveType.SellItem) continue;
+                    // TargetId "any" matches any sold item; otherwise match specific item
+                    bool matches = obj.TargetId == "any" || obj.TargetId == itemId;
+                    if (matches) MarkObjectiveComplete(id, obj.ObjectiveId);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Called by QuestProgressEventBridge on NpcInteractionStartedEvent.
+        /// WAVE_INTEGRATION_26: handles TalkToNpc objectives.
+        /// </summary>
+        public void OnNpcTalkedTo(string npcId)
+        {
+            if (string.IsNullOrEmpty(npcId)) return;
+
+            var activeIds = _saveSection.QuestStates
+                .Where(q => (QuestStateStatus)q.State == QuestStateStatus.Active)
+                .Select(q => q.QuestId)
+                .ToList();
+
+            foreach (var id in activeIds)
+            {
+                if (!_registry.TryGetQuest(id, out _)) continue;
+                var objectives = _registry.GetObjectives(id);
+                foreach (var obj in objectives)
+                {
+                    if (obj.ObjectiveType == QuestObjectiveType.TalkToNpc && obj.TargetId == npcId)
+                        MarkObjectiveComplete(id, obj.ObjectiveId);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Called by QuestProgressEventBridge on CaveLevelEnteredEvent.
+        /// WAVE_INTEGRATION_26: handles ReachCaveDepth objectives.
+        /// </summary>
+        public void OnCaveLevelEntered(int caveLevel)
+        {
+            var levelStr = $"cave_level_{caveLevel}";
+
+            var activeIds = _saveSection.QuestStates
+                .Where(q => (QuestStateStatus)q.State == QuestStateStatus.Active)
+                .Select(q => q.QuestId)
+                .ToList();
+
+            foreach (var id in activeIds)
+            {
+                if (!_registry.TryGetQuest(id, out _)) continue;
+                var objectives = _registry.GetObjectives(id);
+                foreach (var obj in objectives)
+                {
+                    if (obj.ObjectiveType != QuestObjectiveType.ReachCaveDepth) continue;
+                    // TargetId "any" or matches cave_level_N
+                    bool matches = obj.TargetId == "any" || obj.TargetId == levelStr ||
+                                   (int.TryParse(obj.TargetId, out var lvl) && lvl <= caveLevel);
+                    if (matches) MarkObjectiveComplete(id, obj.ObjectiveId);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Called by QuestProgressEventBridge on EnemyKilledEvent.
+        /// WAVE_INTEGRATION_26: handles DefeatEnemy objectives.
+        /// </summary>
+        public void OnEnemyKilled(string enemyId)
+        {
+            if (string.IsNullOrEmpty(enemyId)) return;
+
+            var activeIds = _saveSection.QuestStates
+                .Where(q => (QuestStateStatus)q.State == QuestStateStatus.Active)
+                .Select(q => q.QuestId)
+                .ToList();
+
+            foreach (var id in activeIds)
+            {
+                if (!_registry.TryGetQuest(id, out _)) continue;
+                var objectives = _registry.GetObjectives(id);
+                foreach (var obj in objectives)
+                {
+                    if (obj.ObjectiveType != QuestObjectiveType.DefeatEnemy) continue;
+                    bool matches = obj.TargetId == "any" || obj.TargetId == enemyId;
+                    if (matches)
+                    {
+                        // Progress-based: increment current progress
+                        ProgressObjectiveCount(id, obj.ObjectiveId, 1);
+                    }
+                }
+            }
+        }
+
+        // ─── Private helpers (continued) ──────────────────────────────────────────
+
+        /// <summary>
+        /// Increments numeric progress for count-based objectives (DefeatEnemy, etc.).
+        /// </summary>
+        private void ProgressObjectiveCount(string questId, string objectiveId, int amount)
+        {
+            if (!_registry.TryGetQuest(questId, out var definition)) return;
+            var record = _saveSection.GetQuestState(questId);
+            if (record == null) return;
+
+            var obj = record.ObjectiveStates.FirstOrDefault(o => o.ObjectiveId == objectiveId);
+            if (obj == null || obj.IsCompleted) return;
+
+            var objectives = _registry.GetObjectives(questId);
+            var def = objectives.FirstOrDefault(o => o.ObjectiveId == objectiveId);
+            if (def == null) return;
+
+            obj.CurrentProgress = System.Math.Min(obj.CurrentProgress + amount, def.RequiredAmount);
+            GameEventBus.Publish(new QuestObjectiveProgressedEvent(questId, objectiveId, obj.CurrentProgress, obj.RequiredProgress));
+
+            if (obj.CurrentProgress >= def.RequiredAmount)
+            {
+                obj.IsCompleted = true;
+                EvaluateReadyToComplete(questId, record, definition);
+            }
+        }
     }
 
     /// <summary>

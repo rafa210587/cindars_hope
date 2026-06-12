@@ -86,8 +86,14 @@ namespace CindarsHope.Quests.Runtime
         // Rewards: Gold 50, QuestFlag "flag_first_town_supplies_delivered"
         // TurnIn: AtGiver (npc_thalindra)
         // ────────────────────────────────────────────────────────────────────────────
+        //
+        // WAVE_INTEGRATION_26 — Questline Expansion: chain of 3 quests with objective variety
+        // Quest 2: quest_tools_for_the_town — SellItem (economy), Giver npc_pip, prereq Q1
+        // Quest 3: quest_echo_from_the_cave — CaveLevelEntered, Giver npc_maelor, prereq Q2
+        // ────────────────────────────────────────────────────────────────────────────
         private void RegisterSmokeTestQuests()
         {
+            // ── Quest 1: Suprimentos para Cindar ──────────────────────────────────
             var supplyQuestObjectives = new List<QuestObjective>
             {
                 new QuestObjective
@@ -134,16 +140,118 @@ namespace CindarsHope.Quests.Runtime
             };
 
             Register(supplyQuest, supplyQuestObjectives, supplyRewards, QuestRuntimeIds.ThalindraId);
+
+            // ── Quest 2: Ferramentas para a Cidade ────────────────────────────────
+            // WAVE_INTEGRATION_26: SellItem economy objective; Giver: npc_pip
+            // Prerequisite: quest_first_supplies_for_cindar completed
+            var toolsQuestObjectives = new List<QuestObjective>
+            {
+                new QuestObjective
+                {
+                    ObjectiveId = "obj_sell_crop_x1",
+                    ObjectiveType = QuestObjectiveType.SellItem,
+                    TargetId = QuestRuntimeIds.AnyCropItemTarget,
+                    RequiredAmount = 1
+                }
+            };
+
+            var toolsQuest = new QuestDefinition
+            {
+                QuestId = QuestRuntimeIds.ToolsQuestId,
+                Category = QuestCategory.Side,
+                DisplayName = "Ferramentas para a Cidade",
+                Description = "Pip precisa de ouro para repor as ferramentas da cidade. Venda qualquer colheita ou recurso na banca de venda da fazenda.",
+                Trackable = true,
+                PrerequisiteQuestIds = new List<string> { QuestRuntimeIds.SupplyQuestId }
+            };
+
+            var toolsRewards = new List<QuestRewardDefinition>
+            {
+                new QuestRewardDefinition
+                {
+                    RewardId = "reward_tools_quest_gold",
+                    RewardType = QuestRewardType.Gold,
+                    Quantity = 30,
+                    IdempotencyPolicy = RewardIdempotencyPolicy.TrackByRewardId
+                },
+                new QuestRewardDefinition
+                {
+                    RewardId = "reward_tools_quest_flag",
+                    RewardType = QuestRewardType.QuestFlagGrant,
+                    GrantedFlagId = "flag_town_tools_funded",
+                    IdempotencyPolicy = RewardIdempotencyPolicy.TrackByFlagId
+                }
+            };
+
+            Register(toolsQuest, toolsQuestObjectives, toolsRewards, QuestRuntimeIds.PipId);
+
+            // ── Quest 3: Eco das Cavernas ─────────────────────────────────────────
+            // WAVE_INTEGRATION_26: Cave entry / exploration objective; Giver: npc_maelor
+            // Prerequisite: quest_tools_for_the_town completed
+            var caveQuestObjectives = new List<QuestObjective>
+            {
+                new QuestObjective
+                {
+                    ObjectiveId = "obj_enter_cave_level1",
+                    ObjectiveType = QuestObjectiveType.ReachCaveDepth,
+                    TargetId = QuestRuntimeIds.CaveLevel1Target,
+                    RequiredAmount = 1
+                }
+            };
+
+            var caveQuest = new QuestDefinition
+            {
+                QuestId = QuestRuntimeIds.CaveQuestId,
+                Category = QuestCategory.Side,
+                DisplayName = "Eco das Cavernas",
+                Description = "Maelor ouviu rumores de algo estranho nas cavernas próximas. Entre nas cavernas e investigue o primeiro andar.",
+                Trackable = true,
+                PrerequisiteQuestIds = new List<string> { QuestRuntimeIds.ToolsQuestId }
+            };
+
+            var caveRewards = new List<QuestRewardDefinition>
+            {
+                new QuestRewardDefinition
+                {
+                    RewardId = "reward_cave_quest_gold",
+                    RewardType = QuestRewardType.Gold,
+                    Quantity = 60,
+                    IdempotencyPolicy = RewardIdempotencyPolicy.TrackByRewardId
+                },
+                new QuestRewardDefinition
+                {
+                    RewardId = "reward_cave_quest_flag",
+                    RewardType = QuestRewardType.QuestFlagGrant,
+                    GrantedFlagId = "flag_cave_first_explored",
+                    IdempotencyPolicy = RewardIdempotencyPolicy.TrackByFlagId
+                }
+            };
+
+            Register(caveQuest, caveQuestObjectives, caveRewards, QuestRuntimeIds.MaelorId);
         }
     }
 
     /// <summary>
-    /// Stable quest and NPC ID constants for WAVE_INTEGRATION_15 smoke test quests.
+    /// Stable quest and NPC ID constants for WAVE_INTEGRATION_15 smoke test quests
+    /// and WAVE_INTEGRATION_26 questline expansion.
     /// </summary>
     public static class QuestRuntimeIds
     {
+        // Quest 1 (WAVE15)
         public const string SupplyQuestId = "quest_first_supplies_for_cindar";
         public const string ThalindraId = "npc_thalindra";
         public const string SmokeTestBoardId = "board_first_quest_01";
+
+        // Quest 2 (WAVE26)
+        public const string ToolsQuestId = "quest_tools_for_the_town";
+        public const string PipId = "npc_pip";
+        // Sentinel value: SellItem with this TargetId means "any item sold" (bridge checks GoldDelta > 0)
+        public const string AnyCropItemTarget = "any";
+
+        // Quest 3 (WAVE26)
+        public const string CaveQuestId = "quest_echo_from_the_cave";
+        public const string MaelorId = "npc_maelor";
+        // Cave level 1 entry target (matches CaveLevelEnteredEvent.CaveLevel == 1)
+        public const string CaveLevel1Target = "cave_level_1";
     }
 }
