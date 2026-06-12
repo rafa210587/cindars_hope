@@ -56,7 +56,6 @@ namespace CindarsHope.Editor.CaveData
             asset.EnvironmentTags = new[] { "underground" };
             asset.SizeProfileId = "size_huge";
             asset.MovementProfileId = "movement_slow_heavy";
-            asset.aiBehaviorId = "ai_boss_chaser";
             asset.maxHp = 200;
             asset.contactDamage = 12;
             asset.contactDamageCooldownSeconds = 1.0f;

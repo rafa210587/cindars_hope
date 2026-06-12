@@ -45,9 +45,6 @@ namespace CindarsHope.Combat
         public float detectionRadius = 5f;
         public float stopDistance = 0.55f;
 
-        [Header("Behavior")]
-        public string aiBehaviorId;
-
         [Header("Feedback")]
         public Color hitFlashColor = Color.red;
         public float hitFlashDuration = 0.12f;

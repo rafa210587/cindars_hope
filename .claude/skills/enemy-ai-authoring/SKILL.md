@@ -16,7 +16,7 @@ description: Author enemy AI behaviors, boss phases, pack coordination and enemy
 - **Packs/spawn**: `EnemySpawnPackSO`, `EnemySpawnProfileSO`, `EnemySpawnResolver` (ecology), `EnemyRoomSizeClass`.
 - Movement executors: `EnemyChaseController` / `EnemyPatrolController` (Combat/), contact damage separate.
 
-> **WARNING — orphan contract:** `AIBehaviorSO` (`Enemy/AIBehaviorSO.cs` + 3 assets in `Data/Enemy/AI/`) is referenced by NOTHING in runtime — only its editor initializer. Do not wire new behavior through it without a spec decision; either fable_04/05 integrates it deliberately or it should be retired (same pattern as the retired Scripts/Crafting). See skill `system-reuse-audit`.
+> **RESOLVED 2026-06-12:** the orphan `AIBehaviorSO` (+ `EnemyDataSO.aiBehaviorId` dead field and 3 generated assets) was RETIRED — fable_04/05/24 explicitly forbid parallel AI structures and build only on EnemyBrain (fable_05 defines its own `BossPhaseProfileSO`). If you encounter `aiBehaviorId` leftovers in old `.asset` YAML, Unity ignores them; do not recreate the field.
 
 ## Rules for new behaviors
 

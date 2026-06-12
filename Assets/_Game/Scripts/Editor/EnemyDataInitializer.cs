@@ -1,6 +1,5 @@
 #if UNITY_EDITOR
 using CindarsHope.Combat;
-using CindarsHope.Enemy.AI;
 using UnityEditor;
 using UnityEngine;
 
@@ -10,7 +9,6 @@ namespace CindarsHope.Editor
     public class EnemyDataInitializer
     {
         private const string EnemyPath = "Assets/_Game/Data/Enemy/";
-        private const string AIPath = "Assets/_Game/Data/Enemy/AI/";
         private const string InitKey = "EnemyDataInitialized";
 
         static EnemyDataInitializer()
@@ -25,7 +23,6 @@ namespace CindarsHope.Editor
         private static void GenerateDefaultEnemyData()
         {
             CreateEnemyFolders();
-            CreateAIBehaviors();
             CreateEnemies();
             AssetDatabase.SaveAssets();
         }
@@ -37,57 +34,22 @@ namespace CindarsHope.Editor
             {
                 AssetDatabase.CreateFolder("Assets/_Game/Data", "Enemy");
             }
-            if (!AssetDatabase.IsValidFolder(enemyDir + "/AI"))
-            {
-                AssetDatabase.CreateFolder(enemyDir, "AI");
-            }
-        }
-
-        private static void CreateAIBehaviors()
-        {
-            var behaviors = new[]
-            {
-                ("ai_patrol_basic", "Basic Patrol", AIType.Patrol),
-                ("ai_aggressive_melee", "Aggressive Melee", AIType.Aggressive),
-                ("ai_ranged_cautious", "Ranged Cautious", AIType.Ranged),
-            };
-
-            foreach (var (id, name, type) in behaviors)
-            {
-                CreateAIBehavior(id, name, type);
-            }
         }
 
         private static void CreateEnemies()
         {
             var enemies = new[]
             {
-                ("enemy_slime_basic", "Basic Slime", 1, 20, 3, 0, 10, EnemyDifficulty.Easy, "ai_patrol_basic"),
-                ("enemy_goblin_scout", "Goblin Scout", 5, 30, 5, 1, 20, EnemyDifficulty.Normal, "ai_aggressive_melee"),
-                ("enemy_orc_warrior", "Orc Warrior", 10, 50, 10, 3, 40, EnemyDifficulty.Hard, "ai_aggressive_melee"),
-                ("enemy_spider_ice", "Ice Spider", 12, 35, 8, 2, 35, EnemyDifficulty.Hard, "ai_ranged_cautious"),
+                ("enemy_slime_basic", "Basic Slime", 1, 20, 3, 0, 10, EnemyDifficulty.Easy),
+                ("enemy_goblin_scout", "Goblin Scout", 5, 30, 5, 1, 20, EnemyDifficulty.Normal),
+                ("enemy_orc_warrior", "Orc Warrior", 10, 50, 10, 3, 40, EnemyDifficulty.Hard),
+                ("enemy_spider_ice", "Ice Spider", 12, 35, 8, 2, 35, EnemyDifficulty.Hard),
             };
 
-            foreach (var (id, name, level, hp, dmg, def, xp, difficulty, aiBehavior) in enemies)
+            foreach (var (id, name, level, hp, dmg, def, xp, difficulty) in enemies)
             {
-                CreateEnemy(id, name, level, hp, dmg, def, xp, difficulty, aiBehavior);
+                CreateEnemy(id, name, level, hp, dmg, def, xp, difficulty);
             }
-        }
-
-        private static void CreateAIBehavior(string id, string name, AIType type)
-        {
-            var path = $"{AIPath}{id}.asset";
-            if (AssetDatabase.LoadAssetAtPath<AIBehaviorSO>(path) != null)
-            {
-                return;
-            }
-
-            var asset = ScriptableObject.CreateInstance<AIBehaviorSO>();
-            asset.Id = id;
-            asset.BehaviorName = name;
-            asset.Type = type;
-
-            AssetDatabase.CreateAsset(asset, path);
         }
 
         private static void CreateEnemy(
@@ -98,8 +60,7 @@ namespace CindarsHope.Editor
             int damage,
             int defense,
             int xpOverride,
-            EnemyDifficulty difficulty,
-            string aiBehavior)
+            EnemyDifficulty difficulty)
         {
             var path = $"{EnemyPath}{id}.asset";
             if (AssetDatabase.LoadAssetAtPath<EnemyDataSO>(path) != null)
@@ -117,7 +78,6 @@ namespace CindarsHope.Editor
             asset.defense = defense;
             asset.xpRewardOverride = xpOverride;
             asset.baseDifficulty = difficulty;
-            asset.aiBehaviorId = aiBehavior;
             asset.lootTableId = string.Empty;
 
             AssetDatabase.CreateAsset(asset, path);
