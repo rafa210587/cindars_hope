@@ -80,6 +80,13 @@ if ($scope -and ($scope.docsChanged -or $scope.unityRuntimeChanged -or $scope.pr
 
     Write-Host "   [ ] Non-regression: PASS / WARNING (run: /review-non-regression)"
     Write-Host "   [ ] Play Mode features: NOT RUN (sandboxed) - user tests later"
+
+    if ($scope.saveSystemChanged) {
+        Write-Host "   [ ] SAVE SYSTEM CHANGED: save tests updated (defaults, null section, invalid ID, round-trip) or justified (rule: testing-quality-gate; skill: save-section-provider)"
+    }
+    if ($scope.eventContractsChanged) {
+        Write-Host "   [ ] EVENT CONTRACTS CHANGED: GameEventBus contract tests cover new/changed events (rule: testing-quality-gate)"
+    }
     Write-Host ""
 
     Write-Host "If spec was implemented:"

@@ -41,6 +41,8 @@ $scope = @{
     "timestamp" = (Get-Date -Format "yyyy-MM-dd HH:mm:ss")
     "docsChanged" = $false
     "unityRuntimeChanged" = $false
+    "saveSystemChanged" = $false
+    "eventContractsChanged" = $false
     "projectSettingsChanged" = $false
     "forbiddenPathsChanged" = $false
     "rootSpecsRecreated" = $false
@@ -76,6 +78,16 @@ foreach ($file in $changedFiles) {
     # Check for ProjectSettings changes
     if ($file -match '^ProjectSettings/') {
         $scope.projectSettingsChanged = $true
+    }
+
+    # Save system / DTO changes (testing-quality-gate: save tests required)
+    if ($file -match '^Assets/_Game/Scripts/Save/' -or $file -match 'SaveData\.cs$' -or $file -match 'SectionProvider\.cs$') {
+        $scope.saveSystemChanged = $true
+    }
+
+    # Event bus contract changes (testing-quality-gate: contract tests required)
+    if ($file -match '^Assets/_Game/Scripts/Core/Events/') {
+        $scope.eventContractsChanged = $true
     }
 
     # Check for docs_old (always forbidden)
