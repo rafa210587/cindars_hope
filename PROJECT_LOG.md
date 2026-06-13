@@ -4,6 +4,31 @@
 
 ---
 
+## Sessao 2026-06-13 - Migracao da arvore canonica de specs para .specs (GOVERNANCA / DESVIO AUTORIZADO)
+
+**Foco:** Consolidar a redundancia entre `docs/specs/` (canonica) e `.specs/` (espelho de trabalho untracked) numa fonte unica, por diretriz do dono.
+
+### Desvio de regra (registrado conforme exige .claude/rules/RULES.md / docs-governance)
+
+- A regra `docs-governance` original cravava `docs/specs/` como a unica fonte ativa de specs.
+- O dono escolheu, ciente do custo (migracao de harness, contra a regra original), tornar `.specs/` a fonte canonica unica.
+- Decisao formalizada na **ADR-0015** (supersede a clausula docs/specs da docs-governance). Motivo: eliminar duas fontes de verdade que ja haviam derivado (10 specs fable executadas marcadas como feitas so no espelho untracked).
+
+### O que foi feito
+
+- Checkpoint commit `77b1cd95` (refinamento v3 + game_rules + ADRs + specs novas) antes da cirurgia.
+- `.specs/` scratch (243 copias redundantes) removida; arvore canonica relocada `docs/specs/` -> `.specs/` via rename de filesystem + git add: **337 renames puros (R100)**, historico preservado, `Assets/` intocado.
+- Replace global `docs/specs` -> `.specs`: **412 arquivos, 3279 ocorrencias, 0 em codigo (.cs), 0 residuais**.
+- Harness reescrito: `validate_docs.ps1` (agora exige `.specs/`), hooks (`detect-change-scope` regex `^\.specs/` corrigida do `.` literal), comandos, regras, CLAUDE.md, AGENTS.md.
+- Raiz `specs/`/`spec/` continua proibida; `docs/specs/` nao deve ser recriada.
+
+### Evidencia
+
+- `validate_docs.ps1` exit 0 apos a migracao (reconhece `.specs/` como fonte oficial).
+- Estrutura final: `.specs/a_implementar/` (a executar) + `.specs/implementados/` (executadas) + `.specs/_templates/` + governanca SPEC_*.md.
+
+---
+
 ## Sessao 2026-06-01 (SPEC_DOCS_39D/39E) - Harness Consistency Fixes and Reference Validation (GOVERNANCE)
 
 **Foco:** Fechar inconsistências residuais de harness (settings.json, hooks, regras) e validar que todas especificações referenciam ADRs/game_rules válidos.

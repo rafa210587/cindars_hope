@@ -21,7 +21,7 @@ If an ADR conflicts with a game rule:
 
 ---
 
-## Active Decisions (ADR-0001 to ADR-0014)
+## Active Decisions (ADR-0001 to ADR-0015)
 
 | ADR | Title | Theme | Status | Canonical Ref | Source |
 |---|---|---|---|---|---|
@@ -39,6 +39,7 @@ If an ADR conflicts with a game rule:
 | [ADR-0012](../decisions/ADR-0012-localization-string-table-from-p4.md) | Localization String Table from P4 | Tooling | accepted | docs/decisions/ADR-0012-* | FABLE_DECISOES_RESPOSTAS_v3.0 (4.7) |
 | [ADR-0013](../decisions/ADR-0013-input-keyboard-mouse-only-v1.md) | Input Keyboard/Mouse Only v1 | Tooling | accepted | docs/decisions/ADR-0013-* | FABLE_DECISOES_RESPOSTAS_v3.0 (4.5) |
 | [ADR-0014](../decisions/ADR-0014-single-difficulty-v1.md) | Single Difficulty v1 | Gameplay | accepted | docs/decisions/ADR-0014-* | FABLE_DECISOES_RESPOSTAS_v3.0 (4.6) |
+| [ADR-0015](../decisions/ADR-0015-canonical-specs-relocated-to-dotspecs.md) | Canonical Specs Relocated to .specs | Governance | accepted | .claude/rules/docs-governance.md | Owner directive 2026-06-13 |
 
 ---
 
