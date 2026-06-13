@@ -1,8 +1,8 @@
-﻿# REF — TOWN PR053 063
+# REF — TOWN PR053 063
 
 > Origem histórica: conteúdo absorvido durante reorganização documental.
 > Status: refinamento implementado absorvido.
-> Spec consolidada relacionada: `docs/specs/implementados/spec_town_001_town_scene_portais_npc_pip_comercio.md`
+> Spec consolidada relacionada: `.specs/implementados/spec_town_001_town_scene_portais_npc_pip_comercio.md`
 
 ---
 

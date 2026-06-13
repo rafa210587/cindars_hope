@@ -5,7 +5,7 @@ adr_id: ADR-0003
 title: Spec Lifecycle
 date: 2026-06-01
 source_documents:
-  - docs/specs/SPEC_EXECUTION_ORDER.md
+  - .specs/SPEC_EXECUTION_ORDER.md
   - docs/project/CURRENT_STATE.md
 supersedes: []
 superseded_by: []
@@ -28,7 +28,7 @@ Specs exist in multiple states: planned, in progress, code complete, validated, 
 
 **Specs follow a three-location lifecycle with phase gates.**
 
-1. **Location: `docs/specs/a_implementar/`** (in queue or in progress)
+1. **Location: `.specs/a_implementar/`** (in queue or in progress)
    - Phase 0: Audited but not started
    - Phase 1: Code written, not yet validated
 
@@ -38,7 +38,7 @@ Specs exist in multiple states: planned, in progress, code complete, validated, 
    - Phase 2: Unity Editor validators PASS (if applicable)
    - Phase 3: Play Mode checklist PASS (if applicable)
 
-3. **Location: `docs/specs/implementados/`** (accepted)
+3. **Location: `.specs/implementados/`** (accepted)
    - Only after all required phases for that spec complete
    - Marked with `status: accepted` in frontmatter
    - Evidence preserved in `docs/validation/` (never deleted)

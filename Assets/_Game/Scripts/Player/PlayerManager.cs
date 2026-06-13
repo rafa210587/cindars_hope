@@ -93,6 +93,21 @@ namespace CindarsHope.Player
             SetGold(CurrentGold + amount);
         }
 
+        // F18: máximo derivado (equipment/passivas) preservando a proporção corrente (floor 1).
+        public void SetMaxHP(int newMaxHP, bool preserveRatio = true)
+        {
+            newMaxHP = Mathf.Max(1, newMaxHP);
+            if (newMaxHP == MaxHP)
+            {
+                return;
+            }
+
+            var ratio = MaxHP > 0 ? (float)CurrentHP / MaxHP : 1f;
+            MaxHP = newMaxHP;
+            var newCurrent = preserveRatio ? Mathf.Max(1, Mathf.RoundToInt(newMaxHP * ratio)) : Mathf.Min(CurrentHP, newMaxHP);
+            SetHP(newCurrent);
+        }
+
         public void SetHP(int newHP)
         {
             MaxHP = Mathf.Max(1, MaxHP);

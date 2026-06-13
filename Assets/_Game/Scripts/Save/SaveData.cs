@@ -29,6 +29,8 @@ namespace CindarsHope.Save
         public PlayerProgressionSaveData Progression;
         public FarmSaveData Farm;
         public WorldSaveData World;
+        public FonteSaveData Fonte;
+        public CindarsHope.Cave.Runtime.CaveRunSaveData CaveRun;
         public CaveSaveData Cave;
         public DeathSaveData Death;
         public EconomySaveData Economy;
@@ -57,6 +59,19 @@ namespace CindarsHope.Save
         public int CurrentMana;
         public int MaxMana;
         public Vector2 PlayerPosition;
+        public float Fatigue;
+    }
+
+    // F17: estado da Fonte de Anya (seção aditiva; saves legados carregam com defaults).
+    [Serializable]
+    public class FonteSaveData
+    {
+        public int FonteState;
+        public List<int> UnlockedFunctions = new List<int>();
+        public bool LivingWaterUnlocked;
+        public int LivingWaterCharges;
+        public int LastGrantDay = -1;
+        public List<int> IntegratedFragments = new List<int>();
     }
 
     [Serializable]

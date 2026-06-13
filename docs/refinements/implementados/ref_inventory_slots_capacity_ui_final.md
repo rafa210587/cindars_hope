@@ -2,7 +2,7 @@
 
 > Status: Implementado parcial
 > Origem: validacao das specs implementadas/parciais
-> Spec relacionada: `docs/specs/implementados/spec_inventory_002_slots_capacity_ui_final.md`
+> Spec relacionada: `.specs/implementados/spec_inventory_002_slots_capacity_ui_final.md`
 > Objetivo: evoluir o inventory MVP por ID/stack agregada para inventario final com slots, multiplas stacks, capacidade, migration v1->v2 e painel de itens jogavel.
 
 ## Resultado da implementacao 2026-05-24
@@ -40,7 +40,7 @@ Evidencia principal:
 Assets/_Game/Scripts/Inventory/InventoryManager.cs
 Assets/_Game/Scripts/Inventory/Data/ItemDataSO.cs
 Assets/_Game/Scripts/Inventory/Data/ItemDatabaseSO.cs
-docs/specs/implementados/spec_inventory_001_inventario_itens_gold_e_stacks.md
+.specs/implementados/spec_inventory_001_inventario_itens_gold_e_stacks.md
 ```
 
 Tambem existe um refinement amplo de UI final:
@@ -242,7 +242,7 @@ Assets/_Game/Scripts/Inventory/UI/InventorySlotView.cs
 Assets/_Game/Scripts/Inventory/UI/InventoryActionMenu.cs
 Assets/_Game/Scripts/Save/SaveData.cs
 Assets/_Game/Scripts/Save/Migrations/**
-docs/specs/implementados/spec_inventory_001_inventario_itens_gold_e_stacks.md
+.specs/implementados/spec_inventory_001_inventario_itens_gold_e_stacks.md
 ```
 
 ---

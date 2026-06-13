@@ -37,7 +37,7 @@ This created confusion about where information should live, where to read from, 
 All documentation must use **canonical non-numbered folder structure:**
 
 - `docs/project/` — project governance (CURRENT_STATE.md, DOCUMENT_GOVERNANCE.md, DECISION_LOG.md, etc.)
-- `docs/specs/` — spec source (a_implementar/, implementados/, _templates/, SPEC_EXECUTION_ORDER.md)
+- `.specs/` — spec source (a_implementar/, implementados/, _templates/, SPEC_EXECUTION_ORDER.md)
 - `docs/refinements/` — refinement source (a_implementar/, implementados/, archived/, _templates/)
 - `docs/validation/` — validation evidence (current/, playmode/, _templates/, reports)
 - `docs/backlog/` — backlog tracking (current_backlog.md, post_mvp_backlog.md)

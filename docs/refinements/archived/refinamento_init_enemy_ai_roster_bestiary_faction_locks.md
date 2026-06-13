@@ -1,7 +1,7 @@
 # refinamento_init_enemy_ai_roster_bestiary_faction_locks
 
 > Status: Refinamento inicial a implementar
-> Spec futura relacionada: `docs/specs/a_implementar/spec_enemy_ai_roster_bestiary_faction_locks_runtime.md`
+> Spec futura relacionada: `.specs/a_implementar/spec_enemy_ai_roster_bestiary_faction_locks_runtime.md`
 > Objetivo: completar IA, roster 40+, bestiario, faction locks, ecologia, XP, telegraph, vulnerability windows, tamanhos de inimigos no mapa e pipeline data-driven para criar novos monstros.
 
 ---

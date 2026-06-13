@@ -1,7 +1,7 @@
 # refinamento_init_damage_status_elements_resistances
 
 > Status: Refinamento inicial a implementar
-> Spec futura relacionada: `docs/specs/a_implementar/spec_damage_status_elements_resistances_runtime.md`
+> Spec futura relacionada: `.specs/a_implementar/spec_damage_status_elements_resistances_runtime.md`
 > Objetivo: evoluir formula MVP de dano para pipeline completo com tipos de dano, defesa, resistencias por multiplicador, vulnerabilidade global, status, efeitos temporais e floating damage numbers.
 
 ---

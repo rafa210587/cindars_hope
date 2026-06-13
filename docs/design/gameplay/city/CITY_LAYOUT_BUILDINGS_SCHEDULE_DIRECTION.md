@@ -8,7 +8,7 @@
 > - `docs/design/gameplay/city/CITY_NPC_ROSTER_SERVICES_DIRECTION_v1.1.md`  
 > - `docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.3.md`  
 > **Função:** definir a cidade como espaço jogável: mapa, escala visual, zonas, prédios, interiores, moradores, camas, rotinas, colisão, pathfinding, cenas, props e roadmap.  
-> **Não é spec implementável.** Specs futuras devem ser quebradas em `docs/specs/a_implementar/`.
+> **Não é spec implementável.** Specs futuras devem ser quebradas em `.specs/a_implementar/`.
 
 ---
 

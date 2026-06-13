@@ -1,7 +1,7 @@
 # Refinement - Crafting queue, workstations, recipes e UI
 
 > Status: Implementado completo
-> Spec: `docs/specs/implementados/spec_crafting_queue_workstations_recipes_ui.md`
+> Spec: `.specs/implementados/spec_crafting_queue_workstations_recipes_ui.md`
 > Data: 2026-05-24
 
 ## Decisoes Consolidadas

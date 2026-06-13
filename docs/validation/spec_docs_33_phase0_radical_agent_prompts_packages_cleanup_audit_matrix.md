@@ -57,7 +57,7 @@ docs/agent_prompts/
 
 | File | Type | Status | Problems | Decision | Reason |
 |------|------|--------|----------|----------|--------|
-| SPEC_17B_ui-ux-full-gameplay_PROMPT.md | prompt | Old | SPEC_17B is implemented (in docs/specs/implementados/); prompt is historical artifact | **DELETE** | Spec complete; prompt no longer needed |
+| SPEC_17B_ui-ux-full-gameplay_PROMPT.md | prompt | Old | SPEC_17B is implemented (in .specs/implementados/); prompt is historical artifact | **DELETE** | Spec complete; prompt no longer needed |
 | SPEC_99_TEMPLATE_FINAL_HUMAN_VALIDATION_CHECKLIST.md | template | Historical | Generic template for agent; not part of current `.claude/` harness | **DELETE** | Replaced by `.claude/skills/` templates |
 
 #### implementados/ Subdirectory (22 files)
@@ -66,7 +66,7 @@ docs/agent_prompts/
 
 **Findings:**
 - Prompts for SPEC_01 through SPEC_17F (22 files)
-- Specs 01-17F are all implemented (in `docs/specs/implementados/`)
+- Specs 01-17F are all implemented (in `.specs/implementados/`)
 - These prompts appear to be historical — they were used to guide implementation but are not used by current harness
 - Current harness uses `.claude/commands/` and `.claude/skills/` for workflow, not external prompt files
 
@@ -143,7 +143,7 @@ docs/agent_packages/
 |----------|-------|
 | Type | Execution order/dependency tracking |
 | Content | Lists order in which packages should execute (P00, P12A, P12B) |
-| Problems | Execution order for legacy orchestration; superseded by `docs/specs/SPEC_EXECUTION_ORDER.md` |
+| Problems | Execution order for legacy orchestration; superseded by `.specs/SPEC_EXECUTION_ORDER.md` |
 | References | Not in current governance |
 | Decision | **DELETE** |
 | Reason | Replaced by spec execution order; legacy package orchestration not active |
@@ -273,11 +273,11 @@ These remain candidates from SPEC_DOCS_32 Phase 0:
 - docs/amendments/**
 - docs/validation/**
 - docs/05_VALIDATION/**
-- docs/specs/implementados/**
+- .specs/implementados/**
 - docs/refinements/implementados/**
-- docs/specs/a_implementar/closeout_mvp/**
+- .specs/a_implementar/closeout_mvp/**
 - docs/IMPLEMENTATION_STATUS.md
-- docs/specs/SPEC_EXECUTION_ORDER.md
+- .specs/SPEC_EXECUTION_ORDER.md
 - docs/00_PROJECT/**
 - AGENTS.md
 - CLAUDE.md

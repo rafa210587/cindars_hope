@@ -1,4 +1,4 @@
-#!/usr/bin/env pwsh
+﻿#!/usr/bin/env pwsh
 
 <#
 .SYNOPSIS
@@ -382,8 +382,11 @@ foreach ($file in $cmdFiles) {
 
     $content = Get-Content -Path $file.FullName -Raw
 
-    # Skip if file explicitly mentions "Forbidden pattern" section
-    if ($content -match 'Forbidden.*pattern|forbidden.*build') {
+    # Skip if file explicitly documents the patterns as forbidden examples
+    # (rule/command docs quote them as "FORBIDDEN" — they define the rule, they do
+    # not violate it). (?s) lets . span newlines; the old single-line regex never
+    # matched, so the rule docs were being flagged whenever the script ran at all.
+    if ($content -match '(?s)(Forbidden|FORBIDDEN|PROIBID).*(pattern|build|Select-String)') {
         continue
     }
 

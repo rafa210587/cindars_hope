@@ -1,6 +1,6 @@
 # Refinement implementado - Economy shop stock, pricing e UI
 
-> Spec relacionada: `docs/specs/implementados/spec_economy_shop_stock_pricing_ui.md`
+> Spec relacionada: `.specs/implementados/spec_economy_shop_stock_pricing_ui.md`
 > Origem absorvida: `docs/refinements/a_implementar/pre_refinamentos/refinamento_init_economy_shop_stock_pricing_ui.md`
 > Status: Implementado completo
 > Data: 2026-05-24

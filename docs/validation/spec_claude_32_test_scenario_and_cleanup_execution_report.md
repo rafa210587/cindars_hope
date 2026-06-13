@@ -115,7 +115,7 @@ Details:
 - ✓ Root folder 'spec/' does not exist
 - ✓ Root folder 'specs/' does not exist
 - ✓ docs_old/ exists
-- ✓ docs/specs/ exists as single official specs source
+- ✓ .specs/ exists as single official specs source
 - ✓ SPEC_EXECUTION_ORDER.md exists
 - ✓ pre_refinamentos/ exists
 - ✓ Found 14 live refinamento_init files in pre_refinamentos
@@ -182,7 +182,7 @@ Details:
 
 ## Applicable Rules Verified
 
-- ✓ [spec-source-of-truth](../.claude/rules/spec-source-of-truth.md) — All changes within `docs/specs/` and `.claude/` directories
+- ✓ [spec-source-of-truth](../.claude/rules/spec-source-of-truth.md) — All changes within `.specs/` and `.claude/` directories
 - ✓ [no-docs-old-edits](../.claude/rules/no-docs-old-edits.md) — No changes to `docs_old/`
 - ✓ [no-doc-delete-without-candidate](../.claude/rules/no-doc-delete-without-candidate.md) — Candidates organized; no deletion executed
 - ✓ [spec-promotion-requires-evidence](../.claude/rules/spec-promotion-requires-evidence.md) — Test scenario infrastructure now requires evidence

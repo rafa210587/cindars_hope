@@ -55,6 +55,13 @@ namespace CindarsHope.Combat
         private BowArrowAttackService _bowArrowService;
         private SpellCastService _spellCastService;
 
+        // F02: carga por mão (tap=light, hold=heavy, hold longo=charged) + stats derivados.
+        private readonly AttackChargeTracker _leftCharge = new AttackChargeTracker();
+        private readonly AttackChargeTracker _rightCharge = new AttackChargeTracker();
+        private PlayerCombatStatsProvider _statsProvider;
+        private SpriteRenderer _chargeTelegraphRenderer;
+        private Color _chargeTelegraphBaseColor = Color.white;
+
         private void Start()
         {
             if (_interactionSystem == null)
@@ -95,8 +102,46 @@ namespace CindarsHope.Combat
             RefreshItemResolver();
             _currentActionContext = new CombatActionContext();
 
+            // F02: provider de stats derivados (DerivedStatsCalculator WAVE 05, antes órfão).
+            // Base de Attack = Força do player; equipment dict entra quando F03 criar o registry.
+            var progression = bootstrap != null ? bootstrap.PlayerProgressionManager : null;
+            var skillTree = bootstrap != null ? bootstrap.SkillTreeManager : null;
+            _statsProvider = new PlayerCombatStatsProvider(
+                () => progression != null ? progression.Strength : 0,
+                () => skillTree != null ? skillTree.GetAllActivePassiveModifiers() : null);
+
+            // F03: scaling por atributo da arma.
+            _statsProvider.AttributeSource = attributeType =>
+            {
+                if (progression == null) return 0;
+                switch (attributeType)
+                {
+                    case Player.Progression.PlayerAttributeType.Strength: return progression.Strength;
+                    case Player.Progression.PlayerAttributeType.Dexterity: return progression.Dexterity;
+                    case Player.Progression.PlayerAttributeType.Intelligence: return progression.Intelligence;
+                    case Player.Progression.PlayerAttributeType.Willpower: return progression.Willpower;
+                    case Player.Progression.PlayerAttributeType.Constitution: return progression.Constitution;
+                    case Player.Progression.PlayerAttributeType.Breath: return progression.Breath;
+                    default: return 0;
+                }
+            };
+
+            if (_playerController != null)
+            {
+                _chargeTelegraphRenderer = _playerController.GetComponent<SpriteRenderer>();
+                if (_chargeTelegraphRenderer != null)
+                {
+                    _chargeTelegraphBaseColor = _chargeTelegraphRenderer.color;
+                }
+            }
+
             // SPEC_07: Initialize attack services
             RefreshServices();
+        }
+
+        private void OnDestroy()
+        {
+            _statsProvider?.Dispose();
         }
 
         private void OnEnable()
@@ -163,6 +208,9 @@ namespace CindarsHope.Combat
         {
             _bowArrowService = new BowArrowAttackService(_equipmentManager, _inventoryManager, _staminaManager, _itemDatabase, _itemResolver, _knockbackForce);
             _spellCastService = new SpellCastService(_manaManager, _equipmentManager, _itemResolver, _knockbackForce, _statusEffectDatabase);
+            // F02: serviços consomem o mesmo provider (dano derivado em projéteis).
+            if (_bowArrowService != null) _bowArrowService.StatsProvider = _statsProvider;
+            if (_spellCastService != null) _spellCastService.StatsProvider = _statsProvider;
         }
 
         private void Update()
@@ -181,24 +229,57 @@ namespace CindarsHope.Combat
             {
                 if (Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.E))
                     Debug.Log("CombatLog: PlayerAttackBlocked. Reason=ModalActive", this);
+                _leftCharge.Cancel();
+                _rightCharge.Cancel();
+                UpdateChargeTelegraph();
                 UpdateDodgeState();
                 return;
             }
 
+            // F01: Stun no player bloqueia ataques.
+            if (PlayerStatusReceiver.Instance != null && PlayerStatusReceiver.Instance.IsActionBlocked)
+            {
+                if (Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.E))
+                    Debug.Log("CombatLog: PlayerAttackBlocked. Reason=PlayerStunned", this);
+                _leftCharge.Cancel();
+                _rightCharge.Cancel();
+                UpdateChargeTelegraph();
+                UpdateDodgeState();
+                return;
+            }
+
+            // F02: tap=light, hold=heavy, hold longo=charged (release no KeyUp).
             if (Input.GetKeyDown(KeyCode.Q))
             {
-                TryAttackLeftHand();
+                _leftCharge.Begin(Time.time);
+            }
+
+            if (Input.GetKeyUp(KeyCode.Q) && _leftCharge.IsCharging)
+            {
+                var weight = _leftCharge.Release(Time.time);
+                TryAttackLeftHand(weight);
             }
 
             if (Input.GetKeyDown(KeyCode.E))
             {
                 if (_interactionSystem != null && _interactionSystem.HasCandidate)
                 {
+                    // Regressão protegida: E com candidato continua interagindo (charge não inicia).
                     Debug.Log("CombatLog: PlayerAttackBlocked. Reason=InteractionCandidatePresent (E used for interact)", this);
-                    return;
                 }
-                TryAttackRightHand();
+                else
+                {
+                    _rightCharge.Begin(Time.time);
+                }
             }
+
+            if (Input.GetKeyUp(KeyCode.E) && _rightCharge.IsCharging)
+            {
+                var weight = _rightCharge.Release(Time.time);
+                TryAttackRightHand(weight);
+            }
+
+            UpdateChargeTelegraph();
 
             if (Input.GetKeyDown(KeyCode.Space))
             {
@@ -214,16 +295,38 @@ namespace CindarsHope.Combat
             UpdateDodgeState();
         }
 
-        private void TryAttackLeftHand()
+        private void TryAttackLeftHand(AttackWeight weight = AttackWeight.Light)
         {
             var equippedItemId = _equipmentManager != null ? _equipmentManager.GetEquippedItem(EquipmentSlot.LeftHand) : null;
-            AttackWithSlot(EquipmentSlot.LeftHand, ref _lastLeftHandAttackTime, equippedItemId);
+            AttackWithSlot(EquipmentSlot.LeftHand, ref _lastLeftHandAttackTime, equippedItemId, weight);
         }
 
-        private void TryAttackRightHand()
+        private void TryAttackRightHand(AttackWeight weight = AttackWeight.Light)
         {
             var equippedItemId = _equipmentManager != null ? _equipmentManager.GetEquippedItem(EquipmentSlot.RightHand) : null;
-            AttackWithSlot(EquipmentSlot.RightHand, ref _lastRightHandAttackTime, equippedItemId);
+            AttackWithSlot(EquipmentSlot.RightHand, ref _lastRightHandAttackTime, equippedItemId, weight);
+        }
+
+        // F02: telegraph simples de carga — tinta o sprite conforme o peso acumulado.
+        private void UpdateChargeTelegraph()
+        {
+            if (_chargeTelegraphRenderer == null)
+            {
+                return;
+            }
+
+            var hold = Mathf.Max(_leftCharge.HoldSeconds(Time.time), _rightCharge.HoldSeconds(Time.time));
+            if (hold < AttackChargeRules.HeavyThresholdSeconds)
+            {
+                _chargeTelegraphRenderer.color = _chargeTelegraphBaseColor;
+                return;
+            }
+
+            var weight = AttackChargeRules.ResolveWeight(hold);
+            var tint = weight >= AttackWeight.ChargedShort
+                ? new Color(1f, 0.6f, 0.2f)
+                : new Color(1f, 0.85f, 0.5f);
+            _chargeTelegraphRenderer.color = Color.Lerp(_chargeTelegraphBaseColor, tint, 0.6f);
         }
 
         // SPEC_05: Delegated to EquippedItemResolver; kept here as wrapper for external callers
@@ -252,7 +355,7 @@ namespace CindarsHope.Combat
             return _itemResolver.LookupWeapon(weaponId);
         }
 
-        private void AttackWithSlot(EquipmentSlot slot, ref float lastAttackTime, string equippedItemId)
+        private void AttackWithSlot(EquipmentSlot slot, ref float lastAttackTime, string equippedItemId, AttackWeight weight = AttackWeight.Light)
         {
             if (_isDodging)
             {
@@ -317,7 +420,12 @@ namespace CindarsHope.Combat
                 return;
             }
 
+            // F02/F03: cooldown final via AttackSpeed derivado × ASPD da arma.
             float cooldown = CooldownHelper.CalculateWeaponCooldown(weapon);
+            if (_statsProvider != null)
+            {
+                cooldown = _statsProvider.FinalCooldown(cooldown, weapon);
+            }
 
             if (!CooldownHelper.IsCooldownExpired(lastAttackTime, cooldown))
             {
@@ -325,15 +433,17 @@ namespace CindarsHope.Combat
                 return;
             }
 
-            int staminaCost = Mathf.RoundToInt(weapon.StaminaCost);
+            // F03: custos canônicos POR ARMA quando autorados; senão razões F02.
+            int staminaCost = PlayerCombatStatsProvider.WeaponStaminaCost(weapon, weight);
             if (_staminaManager != null && !_staminaManager.TrySpendStamina(staminaCost))
             {
                 Debug.Log($"CombatLog: PlayerAttackBlocked. Reason=InsufficientStamina, Slot={slot}, StaminaCost={staminaCost}", this);
                 return;
             }
 
-            Debug.Log($"CombatLog: PlayerAttackStarted. Slot={slot}, Weapon={weapon.DisplayName}, BaseDamage={weapon.BaseDamage}, Range={weapon.Range:F2}, Type={weapon.Type}", this);
-            ExecuteWeaponAttack(weapon);
+            Debug.Log($"CombatLog: PlayerAttackStarted. Slot={slot}, Weapon={weapon.DisplayName}, BaseDamage={weapon.BaseDamage}, Weight={weight}, Range={weapon.Range:F2}, Type={weapon.Type}", this);
+            GameEventBus.Publish(new PlayerChargedAttackEvent((int)weight));
+            ExecuteWeaponAttack(weapon, weight);
             lastAttackTime = Time.time;
         }
 
@@ -382,7 +492,7 @@ namespace CindarsHope.Combat
             return slot == EquipmentSlot.LeftHand ? EquipmentSlot.RightHand : EquipmentSlot.LeftHand;
         }
 
-        private void ExecuteWeaponAttack(WeaponDataSO weapon)
+        private void ExecuteWeaponAttack(WeaponDataSO weapon, AttackWeight weight = AttackWeight.Light)
         {
             Vector2 direction = _playerController?.LastFacingDirection ?? Vector2.right;
 
@@ -392,14 +502,14 @@ namespace CindarsHope.Combat
             }
             else
             {
-                ExecuteMeleeAttack(weapon, direction);
+                ExecuteMeleeAttack(weapon, direction, weight);
             }
 
             if (_equipmentManager != null)
                 _equipmentManager.RegisterEquipmentUsage();
         }
 
-        private void ExecuteMeleeAttack(WeaponDataSO weapon, Vector2 direction)
+        private void ExecuteMeleeAttack(WeaponDataSO weapon, Vector2 direction, AttackWeight weight = AttackWeight.Light)
         {
             Vector2 attackCenter = (Vector2)transform.position + direction * 0.5f;
             var hitColliders = Physics2D.OverlapCircleAll(attackCenter, weapon.Range);
@@ -417,7 +527,19 @@ namespace CindarsHope.Combat
 
                 Debug.Log($"CombatLog: PlayerAttackHitCandidate. EnemyId={enemyHealth.EnemyId}, EnemyHP={enemyHealth.CurrentHp}/{enemyHealth.MaxHp}, Distance={Vector2.Distance(attackCenter, collider.transform.position):F2}", this);
 
-                var damageRequest = new DamageRequest(enemyHealth.EnemyId, weapon.BaseDamage)
+                // F02: dano final = (base + Attack derivado) × peso × crítico canônico.
+                // Janela de vulnerabilidade aberta (CoreExposed) GARANTE crítico (emenda).
+                var vulnerability = enemyHealth.GetComponent<CindarsHope.Enemy.EnemyVulnerabilityState>();
+                var guaranteedCrit = vulnerability != null && vulnerability.IsVulnerable;
+                var finalDamage = weapon.BaseDamage;
+                var isCrit = false;
+                if (_statsProvider != null)
+                {
+                    // F03: inclui scaling por atributo da arma.
+                    finalDamage = _statsProvider.FinalDamage(weapon, weight, guaranteedCrit, out isCrit);
+                }
+
+                var damageRequest = new DamageRequest(enemyHealth.EnemyId, finalDamage)
                 {
                     DamageType = weapon.DamageType,
                     SourcePosition = transform.position,
@@ -427,7 +549,15 @@ namespace CindarsHope.Combat
                 int hpBefore = enemyHealth.CurrentHp;
                 enemyHealth.TakeDamage(damageRequest);
                 hitEnemies++;
-                Debug.Log($"CombatLog: PlayerAttackDamageApplied. EnemyId={enemyHealth.EnemyId}, BaseDamage={weapon.BaseDamage}, HP={hpBefore}->{enemyHealth.CurrentHp}", this);
+
+                // F02: dano de posture por peso (quebra → stagger + CoreExposed).
+                var posture = enemyHealth.GetComponent<EnemyPostureState>();
+                if (posture != null)
+                {
+                    posture.ApplyPostureDamage(weapon.BaseDamage * AttackChargeRules.PostureMultiplier(weight));
+                }
+
+                Debug.Log($"CombatLog: PlayerAttackDamageApplied. EnemyId={enemyHealth.EnemyId}, BaseDamage={weapon.BaseDamage}, FinalDamage={finalDamage}, Weight={weight}, Crit={isCrit}, HP={hpBefore}->{enemyHealth.CurrentHp}", this);
             }
 
             if (hitEnemies == 0)

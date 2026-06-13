@@ -15,7 +15,7 @@ Check evidence, determine phase status, promote if eligible, update documentatio
 ## Required Reads
 
 1. `CLAUDE.md`
-2. `docs/specs/SPEC_WAVE_EXECUTION_PROTOCOL.md` — phase taxonomy and promotion rules
+2. `.specs/SPEC_WAVE_EXECUTION_PROTOCOL.md` — phase taxonomy and promotion rules
 3. Execution report for this spec: `docs/validation/<spec_id>_execution_report.md`
 4. The spec file itself (to check Phase 2-3 requirements)
 
@@ -111,7 +111,7 @@ Use `detect-change-scope.ps1` output (change-scope.json) to confirm scope.
 
 **If eligible:**
 
-1. Move spec: `docs/specs/a_implementar/<spec>.md` → `docs/specs/implementados/<spec>.md`
+1. Move spec: `.specs/a_implementar/<spec>.md` → `.specs/implementados/<spec>.md`
 2. Add evidence header to spec file:
    ```
    ---

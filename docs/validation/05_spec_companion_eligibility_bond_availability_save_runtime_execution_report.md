@@ -28,9 +28,9 @@
 
 ## Sources Read
 
-- `docs/specs/a_implementar/05_spec_companion_eligibility_bond_availability_save_runtime.md`
-- `docs/specs/SPEC_WAVE_EXECUTION_PROTOCOL.md`
-- `docs/specs/SPEC_VALIDATION_MATRIX_MASTER.md`
+- `.specs/a_implementar/05_spec_companion_eligibility_bond_availability_save_runtime.md`
+- `.specs/SPEC_WAVE_EXECUTION_PROTOCOL.md`
+- `.specs/SPEC_VALIDATION_MATRIX_MASTER.md`
 - `.claude/rules/spec_quality_gate.md`
 - `docs/project/CURRENT_STATE.md`
 - `docs/validation/WAVE_04_05_CANONICAL_STATUS.md`

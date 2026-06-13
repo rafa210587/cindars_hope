@@ -8,7 +8,7 @@
 
 | Type | Description | Examples |
 |------|-------------|---------|
-| `spec` | Executable contract defining a feature or task | docs/specs/a_implementar/*.md |
+| `spec` | Executable contract defining a feature or task | .specs/a_implementar/*.md |
 | `refinement` | Decision origin; not directly executable | docs/refinements/ |
 | `validation` | Evidence of what was executed and the result | docs/validation/ |
 | `architecture` | Technical structure and contracts | docs/architecture/ |
@@ -61,7 +61,7 @@
 - docs/product/GDD*.md
 - docs/refinements/ (unless spec is ambiguous)
 - docs/IMPLEMENTATION_STATUS.md
-- docs/specs/SPEC_EXECUTION_ORDER.md
+- .specs/SPEC_EXECUTION_ORDER.md
 - docs/validation/* (unless spec cites them)
 - All ADRs (read only those cited in spec)
 - All game_rules (read only those cited in spec)
@@ -75,8 +75,8 @@
 - PROJECT_LOG.md
 - docs/IMPLEMENTATION_STATUS.md
 - docs/validation/*
-- docs/specs/SPEC_EXECUTION_ORDER.md
-- docs/specs/implementados/*
+- .specs/SPEC_EXECUTION_ORDER.md
+- .specs/implementados/*
 ```
 
 ### Planning Agent (creating new specs)
@@ -93,9 +93,9 @@
 
 ## 4. Spec Rules
 
-1. Every spec must be in `docs/specs/a_implementar/` to be active
-2. Specs in `docs/specs/a_implementar/reorg/` marked CLOSED → do not execute
-3. Implemented specs go to `docs/specs/implementados/` with evidence
+1. Every spec must be in `.specs/a_implementar/` to be active
+2. Specs in `.specs/a_implementar/reorg/` marked CLOSED → do not execute
+3. Implemented specs go to `.specs/implementados/` with evidence
 4. Specs covered by closeout package → mark as superseded; move in SPEC_DOCS_31
 5. Never execute a spec from `docs_old/`
 6. Specs must be self-contained; agents should not need refinement to execute a spec

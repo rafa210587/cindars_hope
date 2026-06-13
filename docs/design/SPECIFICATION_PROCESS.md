@@ -92,7 +92,7 @@ Leitura das fontes obrigatórias
   ↓
 Revalidação do estado real do repo
   ↓
-Criação da spec em docs/specs/a_implementar/
+Criação da spec em .specs/a_implementar/
   ↓
 Implementação por Codex/Claude Code
   ↓
@@ -102,7 +102,7 @@ Validação Unity
   ↓
 Validação humana final
   ↓
-Registro em docs/specs/implementados/ e/ou refinements/implementados/
+Registro em .specs/implementados/ e/ou refinements/implementados/
 ```
 
 ---
@@ -390,9 +390,9 @@ docs/design/
  docs/design/SPECIFICATION_PROCESS.md
   como criar specs corretamente
 
- docs/specs/a_implementar/
+ .specs/a_implementar/
   specs pequenas e implementáveis
 
- docs/specs/implementados/
+ .specs/implementados/
   registro do que foi implementado
 ```

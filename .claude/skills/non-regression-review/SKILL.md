@@ -164,7 +164,7 @@ public class ItemManager : MonoBehaviour
 - [ ] Did not skip specs in dependency chain
 - [ ] Consulted SPEC_EXECUTION_ORDER.md before starting
 
-**Action:** Verify dependencies in `docs/specs/SPEC_EXECUTION_ORDER.md`.
+**Action:** Verify dependencies in `.specs/SPEC_EXECUTION_ORDER.md`.
 
 ### 8. Namespace Safety
 

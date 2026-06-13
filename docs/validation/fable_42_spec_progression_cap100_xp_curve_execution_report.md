@@ -1,6 +1,6 @@
 # Execution Report — fable_42_spec_progression_cap100_xp_curve
 
-> **Spec:** `docs/specs/a_implementar/fable/fable_42_spec_progression_cap100_xp_curve.md`
+> **Spec:** `.specs/a_implementar/fable/fable_42_spec_progression_cap100_xp_curve.md`
 > **Data:** 2026-06-12
 > **Status:** BUILD_VALIDATED
 > **Executor:** Claude (FABLE master plan — Batch 1, spec 5/42)

@@ -52,20 +52,20 @@ Key findings:
 
 | Path | Function Current | Risk | Action |
 |------|-----------------|------|--------|
-| docs/specs/a_implementar/closeout_mvp/SPEC_18-29 (11 files) | Closeout specs | HIGH | Phase 0-1 done; Phase 2-3 pending; do NOT move yet |
-| docs/specs/a_implementar/spec_ui_ux_full_gameplay*.md | Covered by SPEC_28 | HIGH | delete_candidate (future, after Phase 2-3) |
-| docs/specs/a_implementar/spec_cave_runtime*.md | Covered by SPEC_24 | HIGH | delete_candidate (future, after Phase 2-3) |
-| docs/specs/a_implementar/spec_enemy_ai*.md | Covered by SPEC_23 | HIGH | delete_candidate (future, after Phase 2-3) |
-| docs/specs/a_implementar/spec_combat_movement*.md | Outdated? | MEDIUM | delete_candidate (future) |
-| docs/specs/a_implementar/spec_14a*.md (3 files) | Cave enemy (SPEC_24 done) | HIGH | delete_candidate (future) |
-| docs/specs/a_implementar/spec_14b*.md | Cave snapshot (SPEC_24 done) | HIGH | delete_candidate (future) |
+| .specs/a_implementar/closeout_mvp/SPEC_18-29 (11 files) | Closeout specs | HIGH | Phase 0-1 done; Phase 2-3 pending; do NOT move yet |
+| .specs/a_implementar/spec_ui_ux_full_gameplay*.md | Covered by SPEC_28 | HIGH | delete_candidate (future, after Phase 2-3) |
+| .specs/a_implementar/spec_cave_runtime*.md | Covered by SPEC_24 | HIGH | delete_candidate (future, after Phase 2-3) |
+| .specs/a_implementar/spec_enemy_ai*.md | Covered by SPEC_23 | HIGH | delete_candidate (future, after Phase 2-3) |
+| .specs/a_implementar/spec_combat_movement*.md | Outdated? | MEDIUM | delete_candidate (future) |
+| .specs/a_implementar/spec_14a*.md (3 files) | Cave enemy (SPEC_24 done) | HIGH | delete_candidate (future) |
+| .specs/a_implementar/spec_14b*.md | Cave snapshot (SPEC_24 done) | HIGH | delete_candidate (future) |
 
 ### 1.5 spec (closed/superseded)
 
 | Path | Function Current | Risk | Action |
 |------|-----------------|------|--------|
-| docs/specs/a_implementar/reorg/SPEC_00-12 + READMEs (14 files) | CLOSED (README_STATUS says CLOSED) | HIGH — looks active | Mark in index as SUPERSEDED; do NOT move yet |
-| docs/specs/implementados/ (~60 files) | Historical implemented | LOW | Keep; no action |
+| .specs/a_implementar/reorg/SPEC_00-12 + READMEs (14 files) | CLOSED (README_STATUS says CLOSED) | HIGH — looks active | Mark in index as SUPERSEDED; do NOT move yet |
+| .specs/implementados/ (~60 files) | Historical implemented | LOW | Keep; no action |
 
 ### 1.6 refinement
 
@@ -149,7 +149,7 @@ docs/design/GDD_v2.7_FASE9C_DELTA.md
 ```
 PROJECT_LOG.md
 docs/IMPLEMENTATION_STATUS.md
-docs/specs/SPEC_EXECUTION_ORDER.md
+.specs/SPEC_EXECUTION_ORDER.md
 docs/validation/*
 ```
 
@@ -157,7 +157,7 @@ docs/validation/*
 ```
 docs/implementation_runs/*
 docs/refinements/implementados/*
-docs/specs/a_implementar/reorg/*  (CLOSED)
+.specs/a_implementar/reorg/*  (CLOSED)
 docs/roadmap/NEXT_WAVES_ROADMAP_v1.*
 docs/design/GDD_v2.6.md
 docs/architecture/ARCH_fase4_v2.2.md
@@ -173,12 +173,12 @@ docs/validation/SPEC06-17*
 
 ### superseded (do not execute again)
 ```
-docs/specs/a_implementar/reorg/SPEC_00-12 (CLOSED per README_STATUS.md)
-docs/specs/a_implementar/spec_14a_*.md  (covered by SPEC_24)
-docs/specs/a_implementar/spec_14b_*.md  (covered by SPEC_24)
-docs/specs/a_implementar/spec_enemy_ai*.md (covered by SPEC_23)
-docs/specs/a_implementar/spec_cave_runtime*.md (covered by SPEC_24)
-docs/specs/a_implementar/spec_ui_ux_full_gameplay*.md (covered by SPEC_28)
+.specs/a_implementar/reorg/SPEC_00-12 (CLOSED per README_STATUS.md)
+.specs/a_implementar/spec_14a_*.md  (covered by SPEC_24)
+.specs/a_implementar/spec_14b_*.md  (covered by SPEC_24)
+.specs/a_implementar/spec_enemy_ai*.md (covered by SPEC_23)
+.specs/a_implementar/spec_cave_runtime*.md (covered by SPEC_24)
+.specs/a_implementar/spec_ui_ux_full_gameplay*.md (covered by SPEC_28)
 ```
 
 ---
@@ -190,33 +190,33 @@ docs/specs/a_implementar/spec_ui_ux_full_gameplay*.md (covered by SPEC_28)
 | Path | Risk Reason |
 |------|-------------|
 | PROJECT_LOG.md (without header) | Agents might read entire history as current state |
-| docs/specs/a_implementar/reorg/ | Still in a_implementar; README_STATUS says CLOSED but path looks active |
-| docs/specs/a_implementar/spec_14a*.md | In a_implementar; covered by SPEC_24 closeout |
-| docs/specs/a_implementar/spec_14b*.md | In a_implementar; covered by SPEC_24 closeout |
-| docs/specs/a_implementar/spec_enemy_ai*.md | In a_implementar; covered by SPEC_23 closeout |
-| docs/specs/a_implementar/spec_cave_runtime*.md | In a_implementar; two copies (one in implementados already!) |
-| docs/specs/a_implementar/spec_ui_ux_full_gameplay*.md | In a_implementar; covered by SPEC_28 closeout |
+| .specs/a_implementar/reorg/ | Still in a_implementar; README_STATUS says CLOSED but path looks active |
+| .specs/a_implementar/spec_14a*.md | In a_implementar; covered by SPEC_24 closeout |
+| .specs/a_implementar/spec_14b*.md | In a_implementar; covered by SPEC_24 closeout |
+| .specs/a_implementar/spec_enemy_ai*.md | In a_implementar; covered by SPEC_23 closeout |
+| .specs/a_implementar/spec_cave_runtime*.md | In a_implementar; two copies (one in implementados already!) |
+| .specs/a_implementar/spec_ui_ux_full_gameplay*.md | In a_implementar; covered by SPEC_28 closeout |
 
 ### MEDIUM — can generate excess context or ambiguity
 
 | Path | Risk Reason |
 |------|-------------|
 | docs/IMPLEMENTATION_STATUS.md | 200+ lines; agents might read everything |
-| docs/specs/SPEC_EXECUTION_ORDER.md | Long; history mixed with current |
+| .specs/SPEC_EXECUTION_ORDER.md | Long; history mixed with current |
 | docs/design/GDD_v2.7_FASE9C_DELTA.md | Not labeled as planning-only |
 | docs/roadmap/NEXT_WAVES_ROADMAP_v1.0.md | Not labeled as planning-only |
 | docs/refinements/a_implementar/pre_refinamentos/ | 20 refinements; most covered by closeout |
 
 ### LOW — evidence, archive, reference
 
-Everything in `docs/validation/`, `docs/refinements/implementados/`, `docs/specs/implementados/`, `docs/backlog/FASE6_*`
+Everything in `docs/validation/`, `docs/refinements/implementados/`, `.specs/implementados/`, `docs/backlog/FASE6_*`
 
 ### KEEP — official source of truth
 
 ```
 AGENTS.md
 CLAUDE.md
-docs/specs/SPEC_EXECUTION_ORDER.md  (with governance header)
+.specs/SPEC_EXECUTION_ORDER.md  (with governance header)
 docs/IMPLEMENTATION_STATUS.md  (with governance header)
 docs/release/MVP_ACCEPTANCE_REPORT.md  (already reconciled)
 docs/backlog/post_mvp_backlog.md  (already reconciled)
@@ -258,7 +258,7 @@ docs/
 ```
 
 **Existing structure not moved:**
-- docs/specs/ → kept as-is; 03_SPECS is future home
+- .specs/ → kept as-is; 03_SPECS is future home
 - docs/refinements/ → kept as-is; 04_REFINEMENTS is future home
 - docs/validation/ → kept as-is; 05_VALIDATION is future overlay
 - docs/backlog/ → kept as-is; 06_BACKLOG is new parallel folder
@@ -269,12 +269,12 @@ docs/
 
 | Path | Type | Reason | Substitute | Risk to Delete |
 |------|------|--------|------------|----------------|
-| docs/specs/a_implementar/reorg/SPEC_00-12 (14 files) | spec (superseded) | CLOSED per README_STATUS | docs/validation/spec_arch_reorg_* | LOW after Phase 2-3 |
-| docs/specs/a_implementar/spec_14a*.md (3 files) | spec (superseded) | Covered by SPEC_24 | SPEC_24 closeout report | LOW after Phase 2-3 |
-| docs/specs/a_implementar/spec_14b*.md | spec (superseded) | Covered by SPEC_24 | SPEC_24 closeout report | LOW after Phase 2-3 |
-| docs/specs/a_implementar/spec_enemy_ai_roster*.md | spec (superseded) | Covered by SPEC_23 | SPEC_23 closeout report | LOW after Phase 2-3 |
-| docs/specs/a_implementar/spec_cave_runtime*.md | spec (superseded) | Covered by SPEC_24, copy in implementados | SPEC_24 closeout | LOW |
-| docs/specs/a_implementar/spec_ui_ux_full_gameplay*.md | spec (superseded) | Covered by SPEC_28 | SPEC_28 closeout | LOW after Phase 2-3 |
+| .specs/a_implementar/reorg/SPEC_00-12 (14 files) | spec (superseded) | CLOSED per README_STATUS | docs/validation/spec_arch_reorg_* | LOW after Phase 2-3 |
+| .specs/a_implementar/spec_14a*.md (3 files) | spec (superseded) | Covered by SPEC_24 | SPEC_24 closeout report | LOW after Phase 2-3 |
+| .specs/a_implementar/spec_14b*.md | spec (superseded) | Covered by SPEC_24 | SPEC_24 closeout report | LOW after Phase 2-3 |
+| .specs/a_implementar/spec_enemy_ai_roster*.md | spec (superseded) | Covered by SPEC_23 | SPEC_23 closeout report | LOW after Phase 2-3 |
+| .specs/a_implementar/spec_cave_runtime*.md | spec (superseded) | Covered by SPEC_24, copy in implementados | SPEC_24 closeout | LOW |
+| .specs/a_implementar/spec_ui_ux_full_gameplay*.md | spec (superseded) | Covered by SPEC_28 | SPEC_28 closeout | LOW after Phase 2-3 |
 | docs/roadmap/NEXT_WAVES_ROADMAP_v1.0.md | roadmap (old) | Superseded by v1.1 | ROADMAP.md new | LOW |
 | docs/implementation_runs/ (5 files) | historical_log | Overnight runs, not needed | PROJECT_LOG.md | LOW |
 | docs/architecture/ARCH_fase4_v2.2.md | architecture (old) | Superseded by v2.3 | v2.3 + CORE_CONTRACTS | LOW |
@@ -290,7 +290,7 @@ docs/
 | AGENTS.md | Add Context Reading Policy section | LOW |
 | PROJECT_LOG.md | Add historical-only header at top | LOW |
 | docs/IMPLEMENTATION_STATUS.md | Add governance note (already has SPEC_29B note) | LOW |
-| docs/specs/SPEC_EXECUTION_ORDER.md | Add governance header (already has SPEC_29B note) | LOW |
+| .specs/SPEC_EXECUTION_ORDER.md | Add governance header (already has SPEC_29B note) | LOW |
 
 ---
 
@@ -300,12 +300,12 @@ These specs are covered by closeout but NOT YET promoted to `implementados/` (pe
 
 | Old Spec Path | Covered by Closeout | Status |
 |---------------|---------------------|--------|
-| docs/specs/a_implementar/spec_enemy_ai_roster*.md | SPEC_23 | Delete candidate; keep until Phase 2-3 |
-| docs/specs/a_implementar/spec_cave_runtime*.md | SPEC_24 | Copy exists in implementados already |
-| docs/specs/a_implementar/spec_ui_ux_full_gameplay*.md | SPEC_28 | Delete candidate; keep until Phase 2-3 |
-| docs/specs/a_implementar/reorg/ (SPEC_00-12) | Architecture reorg done | CLOSED; delete candidate after audit |
+| .specs/a_implementar/spec_enemy_ai_roster*.md | SPEC_23 | Delete candidate; keep until Phase 2-3 |
+| .specs/a_implementar/spec_cave_runtime*.md | SPEC_24 | Copy exists in implementados already |
+| .specs/a_implementar/spec_ui_ux_full_gameplay*.md | SPEC_28 | Delete candidate; keep until Phase 2-3 |
+| .specs/a_implementar/reorg/ (SPEC_00-12) | Architecture reorg done | CLOSED; delete candidate after audit |
 
-Note: `docs/specs/implementados/spec_cave_runtime_generation_checkpoints_boss_gates.md` and `docs/specs/implementados/spec_cave_entry_death_anya_corpse_recovery.md` already exist — these were likely pre-promoted. Verify these are not the only copy before deleting `a_implementar` version.
+Note: `.specs/implementados/spec_cave_runtime_generation_checkpoints_boss_gates.md` and `.specs/implementados/spec_cave_entry_death_anya_corpse_recovery.md` already exist — these were likely pre-promoted. Verify these are not the only copy before deleting `a_implementar` version.
 
 ---
 
@@ -315,7 +315,7 @@ Note: `docs/specs/implementados/spec_cave_runtime_generation_checkpoints_boss_ga
 
 **Files to create (15):** docs/00_PROJECT/*, docs/03_SPECS/SPEC_TEMPLATE.md, docs/04_REFINEMENTS/*, docs/05_VALIDATION/*, docs/06_BACKLOG/current_backlog.md
 
-**Files to update (4):** AGENTS.md, PROJECT_LOG.md, docs/IMPLEMENTATION_STATUS.md (minor), docs/specs/SPEC_EXECUTION_ORDER.md (minor)
+**Files to update (4):** AGENTS.md, PROJECT_LOG.md, docs/IMPLEMENTATION_STATUS.md (minor), .specs/SPEC_EXECUTION_ORDER.md (minor)
 
 **Files NOT to touch:** All runtime, all validation reports, all existing specs
 

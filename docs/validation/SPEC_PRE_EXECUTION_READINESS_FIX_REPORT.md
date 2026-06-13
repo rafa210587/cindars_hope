@@ -112,7 +112,7 @@ All 10 core systems confirmed present:
 
 ### 3.2 Header Cleanup for Generated Specs
 
-**Affected files:** All 154 specs in `docs/specs/a_implementar/`
+**Affected files:** All 154 specs in `.specs/a_implementar/`
 
 **Missing headers to add:**
 
@@ -144,7 +144,7 @@ required_game_rules: []
 
 The quality gate spec itself exists and is ready:
 
-**File:** `docs/specs/a_implementar/spec_test_harness_editmode_playmode_quality_gate.md`
+**File:** `.specs/a_implementar/spec_test_harness_editmode_playmode_quality_gate.md`
 
 **Status:** A implementar — quality gate — required before WAVE 02+ runtime
 

@@ -28,10 +28,10 @@ The time/clock/day transition system **already exists as a canonical, functional
 
 - CLAUDE.md
 - docs/project/CURRENT_STATE.md
-- docs/specs/a_implementar/02_spec_time_clock_day_transition_runtime.md
+- .specs/a_implementar/02_spec_time_clock_day_transition_runtime.md
 - docs/design/gameplay/world/SEASONS_CALENDAR_WEATHER_LUNAR_DIRECTION.md
-- docs/specs/SPEC_WAVE_EXECUTION_PROTOCOL.md
-- docs/specs/SPEC_VALIDATION_MATRIX_MASTER.md
+- .specs/SPEC_WAVE_EXECUTION_PROTOCOL.md
+- .specs/SPEC_VALIDATION_MATRIX_MASTER.md
 - .claude/rules/testing-quality-gate.md
 
 ---

@@ -10,6 +10,9 @@ namespace CindarsHope.Combat
 {
     public class BowArrowAttackService
     {
+        // F02: provider de stats derivados (setado pelo PlayerAttackController; null-safe).
+        public PlayerCombatStatsProvider StatsProvider { get; set; }
+
         private readonly EquipmentManager _equipmentManager;
         private readonly InventoryManager _inventoryManager;
         private readonly StaminaManager _staminaManager;
@@ -56,12 +59,8 @@ namespace CindarsHope.Combat
                 return AttackResult.CreateError("ArrowRequiresBowInOtherHand");
             }
 
-            if (bowWeapon.ProjectilePrefab == null)
-            {
-                Debug.LogError($"CombatLog: PlayerAttackBlocked. Reason=BowHasNoProjectilePrefab, Weapon={bowWeapon.Id}");
-                return AttackResult.CreateError("BowHasNoProjectilePrefab");
-            }
-
+            // Null prefab is allowed: ProjectileSpawnService falls back to RuntimeProjectileFactory
+            // (procedural arrow visual) so archery works before art prefabs are authored.
             float cooldown = CooldownHelper.CalculateWeaponCooldown(bowWeapon);
             if (!CooldownHelper.IsCooldownExpired(lastAttackTime, cooldown))
             {
@@ -84,17 +83,25 @@ namespace CindarsHope.Combat
 
             _inventoryManager.RemoveItem(ammoItemData.Id, 1);
 
+            // F02/F18: dano final via stats derivados + bônus de arco (BowDamageBonus/BowRange).
+            var bowDamageBonus = StatsProvider != null ? Mathf.RoundToInt(StatsProvider.Current.BowDamageBonus) : 0;
+            var finalDamage = StatsProvider != null
+                ? StatsProvider.FinalDamage(bowWeapon.BaseDamage + bowDamageBonus, AttackWeight.Light, false, out _)
+                : bowWeapon.BaseDamage;
+            var finalRange = bowWeapon.Range + (StatsProvider != null ? Mathf.Max(0f, StatsProvider.Current.BowRange) : 0f);
+
             var spawnRequest = new ProjectileSpawnRequest(
                 bowWeapon.ProjectilePrefab,
                 spawnPosition,
                 direction,
                 bowWeapon.ProjectileSpeed,
-                bowWeapon.Range,
-                bowWeapon.BaseDamage,
+                finalRange,
+                finalDamage,
                 bowWeapon.DamageType,
                 _knockbackForce,
                 spawnOffset: 0.5f
             );
+            spawnRequest.VisualStyle = ProjectileVisualStyle.Arrow;
 
             var spawnResult = ProjectileSpawnService.SpawnProjectile(spawnRequest);
             if (!spawnResult.Success)

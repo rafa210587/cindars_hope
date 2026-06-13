@@ -54,8 +54,32 @@ namespace CindarsHope.Player
                 return false;
 
             ApplyConsumableEffects(itemData);
+
+            // F17: Água Viva — efeito especial (HP total + redução de fadiga). Caso único nomeado;
+            // F32 generaliza efeitos de consumível por dados.
+            if (itemData.Id == Fonte.FonteRuntimeService.LivingWaterItemId)
+            {
+                ApplyLivingWaterEffects();
+            }
+
             GameEventBus.Publish(new PlayerActionFeedbackEvent($"Consumed {itemData.DisplayName}"));
             return true;
+        }
+
+        private static void ApplyLivingWaterEffects()
+        {
+            var bootstrap = CindarsHope.Core.Bootstrap.GameBootstrap.Instance;
+            var playerManager = bootstrap != null ? bootstrap.PlayerManager : null;
+            if (playerManager != null)
+            {
+                playerManager.SetHP(playerManager.MaxHP);
+            }
+
+            var conditions = Conditions.PlayerConditionService.Instance;
+            if (conditions != null)
+            {
+                conditions.SetFatigue(Mathf.Max(0f, conditions.CurrentFatigue - 40f));
+            }
         }
 
         private void ApplyConsumableEffects(ItemDataSO itemData)

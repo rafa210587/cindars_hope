@@ -2,7 +2,7 @@
 
 > Status: Implementado documental parcial
 > Origem: `docs/refinements/a_implementar/pre_refinamentos/refinamento_init_tracking_documental_status_specs.md`
-> Spec relacionada: `docs/specs/implementados/spec_docs_001_single_source_specs_refinements_reconciliation_parcial.md`
+> Spec relacionada: `.specs/implementados/spec_docs_001_single_source_specs_refinements_reconciliation_parcial.md`
 
 ---
 
@@ -10,13 +10,13 @@
 
 O tracking documental foi reconciliado parcialmente:
 
-- `docs/specs/` passou a ser a fonte unica oficial de specs.
+- `.specs/` passou a ser a fonte unica oficial de specs.
 - A pasta raiz `specs/` foi removida e proibida.
-- Specs futuras foram consolidadas em `docs/specs/a_implementar/`.
-- Specs implementadas/parciais foram consolidadas em `docs/specs/implementados/`.
+- Specs futuras foram consolidadas em `.specs/a_implementar/`.
+- Specs implementadas/parciais foram consolidadas em `.specs/implementados/`.
 - Os 18 pre-refinamentos vivos foram movidos para `docs/refinements/a_implementar/pre_refinamentos/`.
 - Refinements legados foram registrados em `docs/refinements/REFINEMENT_MIGRATION_AUDIT.md`.
-- Root specs antigas foram registradas em `docs/specs/SPEC_MIGRATION_AUDIT.md`.
+- Root specs antigas foram registradas em `.specs/SPEC_MIGRATION_AUDIT.md`.
 
 ---
 
@@ -31,6 +31,6 @@ O tracking documental foi reconciliado parcialmente:
 
 ## 3. Regra futura
 
-Pre-refinamentos nao devem gerar specs paralelas se ja existir spec em `docs/specs/a_implementar/`.
+Pre-refinamentos nao devem gerar specs paralelas se ja existir spec em `.specs/a_implementar/`.
 
 A acao correta e enriquecer a spec existente e depois marcar o pre-refinamento como absorvido.

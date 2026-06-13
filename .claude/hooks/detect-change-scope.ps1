@@ -102,11 +102,11 @@ foreach ($file in $changedFiles) {
     }
 
     # Check for spec docs changes (not forbidden, but tracked)
-    if ($file -match '^docs/specs/') {
+    if ($file -match '^.specs/') {
         $scope.specDocsChanged = $true
 
         # Detect spec migration (a_implementar → implementados)
-        if ($file -match '^docs/specs/a_implementar/' -or $file -match '^docs/specs/implementados/') {
+        if ($file -match '^.specs/a_implementar/' -or $file -match '^.specs/implementados/') {
             $scope.specMigrationDetected = $true
         }
     }

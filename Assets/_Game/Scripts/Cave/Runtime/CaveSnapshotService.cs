@@ -48,7 +48,8 @@ namespace CindarsHope.Cave.Runtime
             CaveEnemySpawnPlan enemySpawnPlan,
             IReadOnlyList<CaveResourceNodeSnapshotEntry> resourceNodeStates,
             CaveFishingSpotSnapshotEntry fishingSpotState,
-            IEnumerable<string> depletedNodeIds)
+            IEnumerable<string> depletedNodeIds,
+            IEnumerable<EnemyHpRecord> enemyHpRecords = null)
         {
             if (generatedLevel == null)
             {
@@ -116,6 +117,7 @@ namespace CindarsHope.Cave.Runtime
 
             snapshot.SetFishingSpot(fishingSpotState ?? CreateFishingSpotHook(generatedLevel, caveWorldSeed, caveRunSeed));
             snapshot.SetEnemySpawnPlan(enemySpawnPlan);
+            snapshot.SetEnemyHpRecords(enemyHpRecords); // F13: fora do LayoutHash (estado mutável)
             snapshot.LayoutHash = CalculateLayoutHash(snapshot);
             return snapshot;
         }

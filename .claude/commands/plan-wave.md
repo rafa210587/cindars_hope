@@ -16,10 +16,10 @@ Produce a planning document for the next development wave. No implementation. No
 
 1. `CLAUDE.md`
 2. `docs/project/CURRENT_STATE.md` — active queue and blockers
-3. `docs/specs/SPEC_GENERATION_ROADMAP_MASTER.md` — macro roadmap of all planned specs and dependencies
-4. `docs/specs/SPEC_WAVE_EXECUTION_PROTOCOL.md` — execution phases, paralelization, batch size rules
-5. `docs/specs/SPEC_VALIDATION_MATRIX_MASTER.md` — validation requirements to plan for
-6. `docs/specs/SPEC_REGISTRY_TO_IMPLEMENT.md` — list of specs to plan and dependencies
+3. `.specs/SPEC_GENERATION_ROADMAP_MASTER.md` — macro roadmap of all planned specs and dependencies
+4. `.specs/SPEC_WAVE_EXECUTION_PROTOCOL.md` — execution phases, paralelization, batch size rules
+5. `.specs/SPEC_VALIDATION_MATRIX_MASTER.md` — validation requirements to plan for
+6. `.specs/SPEC_REGISTRY_TO_IMPLEMENT.md` — list of specs to plan and dependencies
 7. `docs/backlog/current_backlog.md` — operational backlog items
 
 ## Optional Reads

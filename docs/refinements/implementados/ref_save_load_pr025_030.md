@@ -1,8 +1,8 @@
-﻿# REF — SAVE LOAD PR025 030
+# REF — SAVE LOAD PR025 030
 
 > Origem histórica: conteúdo absorvido durante reorganização documental.
 > Status: refinamento implementado absorvido.
-> Spec consolidada relacionada: `docs/specs/implementados/spec_save_001_json_save_load_cross_scene.md`
+> Spec consolidada relacionada: `.specs/implementados/spec_save_001_json_save_load_cross_scene.md`
 
 ---
 

@@ -87,7 +87,7 @@ source_of_truth: false
 | Field | Current Value | Problem | Proposed | Action |
 |-------|--------------|---------|----------|--------|
 | `allowedTools.todovrite` | `"todovrite": true` | Typo: should be `todoWrite` (Claude Code tool name) | `"todoWrite": true` | Fix typo |
-| `documentation.sourceOfTruth` | `"docs/specs/"` | Good | Keep | Keep |
+| `documentation.sourceOfTruth` | `".specs/"` | Good | Keep | Keep |
 | `documentation.implementationStatus` | `"docs/IMPLEMENTATION_STATUS.md"` | Not removed, just de-prioritized | Keep as reference | Keep |
 | `documentation.projectLog` | `"PROJECT_LOG.md"` | Not removed, just de-prioritized | Keep + add policy link | Keep |
 | `documentation.operationalProtocol` | `"docs/operations/AGENT_EXECUTION_PROTOCOL.md"` | Outdated reference; CURRENT_STATE.md is new default | Add `currentState` field | Update |

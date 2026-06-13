@@ -10,9 +10,9 @@ Use when closing out a spec or refinement to move documentation files to impleme
 
 ## Rules
 
-1. **`docs/specs/` is sole source of truth.** Never recreate root-level `specs/` or `spec/`.
+1. **`.specs/` is sole source of truth.** Never recreate root-level `specs/` or `spec/`.
 2. **Future specs stay in `a_implementar/`.** Move only when implementation is complete and validated.
-3. **Completed specs move to `implementados/`.** File path: `docs/specs/implementados/spec_*.md`
+3. **Completed specs move to `implementados/`.** File path: `.specs/implementados/spec_*.md`
 4. **Future refinements in pre_refinements/.** Path: `docs/refinements/a_implementar/pre_refinamentos/ref_*.md`
 5. **Completed refinements move to `implementados/`.** Path: `docs/refinements/implementados/ref_*.md`
 6. **Registries must stay consistent.** Update after moving specs/refinements.
@@ -41,11 +41,11 @@ Spec 12 Implementation Evidence:
 
 ### 2. Move Spec File
 
-Move from `docs/specs/a_implementar/spec_*.md` to `docs/specs/implementados/spec_*.md`
+Move from `.specs/a_implementar/spec_*.md` to `.specs/implementados/spec_*.md`
 
 ```powershell
-Move-Item -Path "docs/specs/a_implementar/spec_12_player_combat.md" `
-          -Destination "docs/specs/implementados/spec_12_player_combat.md"
+Move-Item -Path ".specs/a_implementar/spec_12_player_combat.md" `
+          -Destination ".specs/implementados/spec_12_player_combat.md"
 ```
 
 ### 3. Update Spec File Header
@@ -81,8 +81,8 @@ Move-Item -Path "docs/refinements/a_implementar/pre_refinamentos/ref_spec12_*.md
 
 If these files exist, update them:
 
-- `docs/specs/SPEC_REGISTRY_IMPLEMENTED.md` — Add spec 12 to list
-- `docs/specs/SPEC_REGISTRY_TO_IMPLEMENT.md` — Remove spec 12 from list
+- `.specs/SPEC_REGISTRY_IMPLEMENTED.md` — Add spec 12 to list
+- `.specs/SPEC_REGISTRY_TO_IMPLEMENT.md` — Remove spec 12 from list
 - `docs/refinements/implementados/ref_implementados_map.md` — Add refinement if moved
 - `docs/refinements/a_implementar/ref_futuro_map.md` — Remove refinement if moved
 
@@ -166,7 +166,7 @@ abc1234 feat: spec 12 - player combat melee/ranged attacks
 
 ```powershell
 # 1. Move file
-Move-Item "docs/specs/a_implementar/spec_12_*.md" "docs/specs/implementados/"
+Move-Item ".specs/a_implementar/spec_12_*.md" ".specs/implementados/"
 
 # 2. Update header in moved file with evidence
 
@@ -222,8 +222,8 @@ Migration Summary
 ─────────────────
 
 Spec moved:
-  Source: docs/specs/a_implementar/spec_12_player_combat.md
-  Dest:   docs/specs/implementados/spec_12_player_combat.md
+  Source: .specs/a_implementar/spec_12_player_combat.md
+  Dest:   .specs/implementados/spec_12_player_combat.md
   Evidence header: ✓ Added
 
 Refinement (if applicable):

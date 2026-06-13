@@ -44,6 +44,7 @@ namespace CindarsHope.Farm.Integration
             {
                 _state = FarmResourceVisualState.Depleted;
                 _visualController?.Apply(_state);
+                RegisterForRefresh();
                 Debug.Log($"[FarmResource] {_resourceType}: added {amount}x {_reward.ItemId} to inventory.", this);
             }
             else
@@ -57,6 +58,48 @@ namespace CindarsHope.Farm.Integration
         {
             _state = FarmResourceVisualState.Available;
             _visualController?.Apply(_state);
+        }
+
+        // F15: registra o nó depletado no host de refresh (FarmResourceRefreshProcessor WAVE 05).
+        // Seed determinístico pela posição (estável por cena; sem GUID/timestamp).
+        private void RegisterForRefresh()
+        {
+            var runtime = Farm.Resources.FarmResourceRefreshRuntime.Instance;
+            if (runtime == null)
+            {
+                return;
+            }
+
+            var nodeId = Farm.Resources.FarmResourceRefreshRuntime.ResolveNodeId(_resourceType);
+            if (string.IsNullOrEmpty(nodeId))
+            {
+                return;
+            }
+
+            var tileX = Mathf.RoundToInt(transform.position.x);
+            var tileY = Mathf.RoundToInt(transform.position.y);
+            var weatherService = World.Weather.WorldWeatherService.Instance;
+            var currentDay = weatherService != null ? weatherService.CurrentDay : 1;
+
+            var state = new Farm.Resources.ResourceNodeInstanceState
+            {
+                NodeInstanceId = $"{nodeId}_{tileX}_{tileY}",
+                NodeId = nodeId,
+                TileX = tileX,
+                TileY = tileY,
+                CurrentState = Farm.Resources.ResourceNodeCurrentState.Harvested,
+                LastHarvestedDay = currentDay,
+                NextEligibleRefreshDay = -1,
+                RandomSeed = tileX * 73856093 ^ tileY * 19349663
+            };
+
+            // FixedDays: o processor exige NextEligibleRefreshDay definido pelo chamador.
+            if (nodeId == "farm_node_tree" || nodeId == "farm_node_rock")
+            {
+                state.NextEligibleRefreshDay = currentDay + 3;
+            }
+
+            runtime.RegisterDepletedNode(state, ResetResource);
         }
 
         private void Start()

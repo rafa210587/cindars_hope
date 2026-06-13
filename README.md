@@ -5,18 +5,18 @@ Jogo 2D em pixel art combinando simulacao de fazenda, exploracao, combate, comer
 ## Estado atual
 
 - Branch principal de desenvolvimento: `dev`.
-- Fonte unica oficial de specs: `docs/specs/`.
+- Fonte unica oficial de specs: `.specs/`.
 - A pasta raiz `specs/` foi removida e nao deve ser recriada.
 - A pasta raiz `spec/` tambem nao deve ser recriada.
 - Historico antigo preservado em `docs_old/`.
-- Specs implementadas/parciais: `docs/specs/implementados/`.
-- Specs futuras: `docs/specs/a_implementar/`.
-- Ordem oficial de execucao: `docs/specs/SPEC_EXECUTION_ORDER.md`.
+- Specs implementadas/parciais: `.specs/implementados/`.
+- Specs futuras: `.specs/a_implementar/`.
+- Ordem oficial de execucao: `.specs/SPEC_EXECUTION_ORDER.md`.
 - Pre-refinamentos vivos: `docs/refinements/a_implementar/pre_refinamentos/`.
 
 ## Estado implementado/parcial
 
-Resumo curto; detalhes em `docs/IMPLEMENTATION_STATUS.md` e `docs/specs/SPEC_REGISTRY_IMPLEMENTED.md`.
+Resumo curto; detalhes em `docs/IMPLEMENTATION_STATUS.md` e `.specs/SPEC_REGISTRY_IMPLEMENTED.md`.
 
 - Core/event bus/bootstrap: implementado/parcial.
 - Data/IDs/registries/ScriptableObjects: implementado.
@@ -32,7 +32,7 @@ Resumo curto; detalhes em `docs/IMPLEMENTATION_STATUS.md` e `docs/specs/SPEC_REG
 
 ## Specs futuras rastreadas
 
-A execucao futura deve seguir `docs/specs/SPEC_EXECUTION_ORDER.md`.
+A execucao futura deve seguir `.specs/SPEC_EXECUTION_ORDER.md`.
 
 Ordem atual:
 
@@ -85,8 +85,8 @@ docs_old/  # historico integral preservado
 
 Para implementar uma spec:
 
-1. ler a ordem oficial em `docs/specs/SPEC_EXECUTION_ORDER.md`;
-2. ler a spec alvo em `docs/specs/a_implementar/`;
+1. ler a ordem oficial em `.specs/SPEC_EXECUTION_ORDER.md`;
+2. ler a spec alvo em `.specs/a_implementar/`;
 3. ler o pre-refinamento relacionado, quando existir;
 4. ler specs implementadas dependentes diretamente citadas;
 5. atualizar tracking ao finalizar.
@@ -152,10 +152,10 @@ Checklist minimo:
 - `CLAUDE.md` - regras equivalentes para Claude/Codex.
 - `docs/README.md` - mapa da documentacao ativa.
 - `docs/IMPLEMENTATION_STATUS.md` - status curto de implementacao.
-- `docs/specs/SPEC_SOURCE_OF_TRUTH.md` - fonte de verdade das specs.
-- `docs/specs/SPEC_REGISTRY_IMPLEMENTED.md` - registry de specs implementadas/parciais.
-- `docs/specs/SPEC_REGISTRY_TO_IMPLEMENT.md` - registry de specs futuras.
-- `docs/specs/SPEC_EXECUTION_ORDER.md` - ordem oficial de execucao.
+- `.specs/SPEC_SOURCE_OF_TRUTH.md` - fonte de verdade das specs.
+- `.specs/SPEC_REGISTRY_IMPLEMENTED.md` - registry de specs implementadas/parciais.
+- `.specs/SPEC_REGISTRY_TO_IMPLEMENT.md` - registry de specs futuras.
+- `.specs/SPEC_EXECUTION_ORDER.md` - ordem oficial de execucao.
 - `docs/operations/AGENT_EXECUTION_PROTOCOL.md` - protocolo operacional para agentes.
 - `docs/operations/READING_MATRIX.md` - matriz de leitura por tipo de tarefa.
 

@@ -44,7 +44,7 @@ source_of_truth: true
 
 | File | Path | Status | Issue | Fix |
 |---|---|---|---|---|
-| SPEC_TEMPLATE.md | docs/specs/_templates/SPEC_TEMPLATE.md | EXISTS | Missing `required_adrs: []` and `required_game_rules: []` fields; outdated required_read paths; mentions "14/14 docs validation" | Add ADR/game_rules fields; update paths to canonical; update validation reference |
+| SPEC_TEMPLATE.md | .specs/_templates/SPEC_TEMPLATE.md | EXISTS | Missing `required_adrs: []` and `required_game_rules: []` fields; outdated required_read paths; mentions "14/14 docs validation" | Add ADR/game_rules fields; update paths to canonical; update validation reference |
 | VALIDATION_REPORT_TEMPLATE.md | docs/validation/_templates/VALIDATION_REPORT_TEMPLATE.md | EXISTS | Missing `validated_adrs: []` and `validated_game_rules: []` fields; uses "N/14" validation format | Add ADR/game_rules fields; update to "PASS/FAIL" format; add section for ADR/game_rule validation |
 
 ### 3. Harness Components (3 items)
@@ -77,7 +77,7 @@ source_of_truth: true
 | Old Path | New Path | Occurrences in Scope |
 |---|---|---|
 | docs/00_PROJECT/ | docs/project/ | DOCUMENT_GOVERNANCE.md (4x), templates (2x) |
-| docs/03_SPECS/ | docs/specs/ | None expected in active docs |
+| docs/03_SPECS/ | .specs/ | None expected in active docs |
 | docs/04_REFINEMENTS/ | docs/refinements/ | SPEC_TEMPLATE.md (1x) |
 | docs/05_VALIDATION/ | docs/validation/ | DOCUMENT_GOVERNANCE.md (2x) |
 | docs/06_BACKLOG/ | docs/backlog/ | DOCUMENT_GOVERNANCE.md (1x) |

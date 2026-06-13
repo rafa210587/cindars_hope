@@ -63,7 +63,7 @@ source_of_truth: true
 |------|--------|-------|
 | 36 | `docs/00_PROJECT/ROADMAP.md` | `docs/project/ROADMAP.md` |
 | 95 | `docs/05_VALIDATION/current/LAST_VALIDATION_STATUS.md` | `docs/validation/current/LAST_VALIDATION_STATUS.md` |
-| 96 | `docs/03_SPECS/SPEC_TEMPLATE.md` | `docs/specs/_templates/SPEC_TEMPLATE.md` |
+| 96 | `docs/03_SPECS/SPEC_TEMPLATE.md` | `.specs/_templates/SPEC_TEMPLATE.md` |
 | 97 | `docs/00_PROJECT/DOCUMENT_GOVERNANCE.md` | `docs/project/DOCUMENT_GOVERNANCE.md` |
 
 **Status:** ✓ COMPLETE
@@ -82,7 +82,7 @@ source_of_truth: true
 | 86 | `docs/00_PROJECT/HISTORY_LOG_POLICY.md` | `docs/project/HISTORY_LOG_POLICY.md` |
 | 87 | `docs/00_PROJECT/DOCUMENT_DELETE_CANDIDATES.md` | `docs/project/DOCUMENT_DELETE_CANDIDATES.md` |
 | 88 | `docs/00_PROJECT/DOCUMENT_INDEX.md` | `docs/project/DOCUMENT_INDEX.md` |
-| 89 | `docs/03_SPECS/SPEC_TEMPLATE.md` | `docs/specs/_templates/SPEC_TEMPLATE.md` |
+| 89 | `docs/03_SPECS/SPEC_TEMPLATE.md` | `.specs/_templates/SPEC_TEMPLATE.md` |
 | 90 | `docs/04_REFINEMENTS/REFINEMENT_TEMPLATE.md` | `docs/refinements/_templates/REFINEMENT_TEMPLATE.md` |
 | 91 | `docs/05_VALIDATION/VALIDATION_REPORT_TEMPLATE.md` | `docs/validation/_templates/VALIDATION_REPORT_TEMPLATE.md` |
 
@@ -110,7 +110,7 @@ foreach ($folder in $numberedFolders) {
 **Outcome:** ✓ PASS — No numbered folders found
 
 ### Required Template Files (3 checks)
-- `docs/specs/_templates/SPEC_TEMPLATE.md` ✓ PASS
+- `.specs/_templates/SPEC_TEMPLATE.md` ✓ PASS
 - `docs/refinements/_templates/REFINEMENT_TEMPLATE.md` ✓ PASS
 - `docs/validation/_templates/VALIDATION_REPORT_TEMPLATE.md` ✓ PASS
 
@@ -203,7 +203,7 @@ foreach ($folder in $numberedFolders) {
 
 ## Phase 6: Audit Batch 2 Specs
 
-**Location:** `docs/specs/a_implementar/`
+**Location:** `.specs/a_implementar/`
 
 ### Batch 2 Future Specs (8 files)
 
@@ -216,11 +216,11 @@ foreach ($folder in $numberedFolders) {
 | spec_combat_movement_projectiles_melee_visuals_runtime.md | Batch 2 | KEEP_UNTIL_PHASE_2_3 |
 | spec_enemy_ai_roster_bestiary_faction_locks_runtime.md | Batch 2 | KEEP_UNTIL_PHASE_2_3 |
 | spec_ui_ux_full_gameplay_inventory_hotbar_menus.md | Batch 2 | KEEP_UNTIL_PHASE_2_3 |
-| docs/specs/a_implementar/README.md | Meta | KEEP (reference) |
+| .specs/a_implementar/README.md | Meta | KEEP (reference) |
 
 **Outcome:** All 8 specs remain blocked until human Phase 2-3 decision
 
-### MVP Closeout Specs (12 files in docs/specs/a_implementar/closeout_mvp/)
+### MVP Closeout Specs (12 files in .specs/a_implementar/closeout_mvp/)
 
 | Spec | Phase 1 | Phase 2-3 | Decision |
 |------|---|---|---|
@@ -228,7 +228,7 @@ foreach ($folder in $numberedFolders) {
 
 **Outcome:** All 12 remain in a_implementar pending human Phase 2-3 validation
 
-### Reorg Specs (2 files in docs/specs/a_implementar/reorg/)
+### Reorg Specs (2 files in .specs/a_implementar/reorg/)
 
 | File | Status | Decision |
 |------|--------|----------|
@@ -289,12 +289,12 @@ OK: Root folder 'specs/' does not exist.
 OK: docs_old/ does not exist (legacy cleanup complete).
 OK: No numbered documentation folders found (consolidation complete).
 OK: docs/project/ exists as canonical governance folder.
-OK: docs/specs/ exists as single official specs source.
+OK: .specs/ exists as single official specs source.
 OK: SPEC_EXECUTION_ORDER.md exists.
 OK: docs/project/CURRENT_STATE.md exists.
 OK: docs/project/DOCUMENT_GOVERNANCE.md exists.
 OK: docs/project/DOCUMENT_INDEX.md exists.
-OK: docs/specs/_templates/SPEC_TEMPLATE.md exists.
+OK: .specs/_templates/SPEC_TEMPLATE.md exists.
 OK: docs/refinements/_templates/REFINEMENT_TEMPLATE.md exists.
 OK: docs/validation/_templates/VALIDATION_REPORT_TEMPLATE.md exists.
 OK: pre_refinamentos/ exists.
@@ -315,7 +315,7 @@ Docs validation PASSED.
 
 **Result:** 
 - ✓ 0 active references in docs/project/* (all fixed)
-- ✓ 0 active references in docs/specs/a_implementar/
+- ✓ 0 active references in .specs/a_implementar/
 - ✓ 0 active references in docs/refinements/
 - ✓ 123 references in validation/ (ACCEPTABLE — historical evidence in audit matrices and reports)
 
@@ -365,7 +365,7 @@ Docs validation PASSED.
 
 ### ✓ Canonical (verified)
 - docs/project/ (governance)
-- docs/specs/ (specs source)
+- .specs/ (specs source)
 - docs/refinements/ (refinements source)
 - docs/validation/ (validation evidence + current status)
 - docs/backlog/ (backlog tracking)

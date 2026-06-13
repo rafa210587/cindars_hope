@@ -4,7 +4,7 @@
 **Status:** BLOCKED_BY_FUTURE_SCOPE_MOVED_TO_FEATURES_FUTURAS  
 **Date:** 2026-06-08  
 **Branch:** dev  
-**Reason:** All 4 specs contain `_future_` in filenames, carry `Status: Future mapped`, and were moved to `docs/specs/a_implementar/features_futuras/`
+**Reason:** All 4 specs contain `_future_` in filenames, carry `Status: Future mapped`, and were moved to `.specs/a_implementar/features_futuras/`
 
 ---
 
@@ -12,10 +12,10 @@
 
 | Spec | File | Status | Reason |
 |------|------|--------|--------|
-| Bestiary Knowledge State Save/Load | `docs/specs/a_implementar/features_futuras/13_spec_bestiary_knowledge_state_save_load_future_runtime.md` | BLOCKED_BY_FUTURE_SCOPE_MOVED_TO_FEATURES_FUTURAS | `_future_` suffix; `Status: Future mapped` |
-| Bestiary Knowledge UI Projection | `docs/specs/a_implementar/features_futuras/13_spec_bestiary_knowledge_ui_projection_future_runtime.md` | BLOCKED_BY_FUTURE_SCOPE_MOVED_TO_FEATURES_FUTURAS | `_future_` suffix; `Status: Future mapped` |
-| Knowledge Discovery Event | `docs/specs/a_implementar/features_futuras/13_spec_knowledge_discovery_event_runtime_future.md` | BLOCKED_BY_FUTURE_SCOPE_MOVED_TO_FEATURES_FUTURAS | `_future_` suffix; `Status: Future mapped` |
-| Knowledge Research NPC/Books/Ruins | `docs/specs/a_implementar/features_futuras/13_spec_knowledge_research_npc_books_ruins_services_future_runtime.md` | BLOCKED_BY_FUTURE_SCOPE_MOVED_TO_FEATURES_FUTURAS | `_future_` suffix; `Status: Future mapped` |
+| Bestiary Knowledge State Save/Load | `.specs/a_implementar/features_futuras/13_spec_bestiary_knowledge_state_save_load_future_runtime.md` | BLOCKED_BY_FUTURE_SCOPE_MOVED_TO_FEATURES_FUTURAS | `_future_` suffix; `Status: Future mapped` |
+| Bestiary Knowledge UI Projection | `.specs/a_implementar/features_futuras/13_spec_bestiary_knowledge_ui_projection_future_runtime.md` | BLOCKED_BY_FUTURE_SCOPE_MOVED_TO_FEATURES_FUTURAS | `_future_` suffix; `Status: Future mapped` |
+| Knowledge Discovery Event | `.specs/a_implementar/features_futuras/13_spec_knowledge_discovery_event_runtime_future.md` | BLOCKED_BY_FUTURE_SCOPE_MOVED_TO_FEATURES_FUTURAS | `_future_` suffix; `Status: Future mapped` |
+| Knowledge Research NPC/Books/Ruins | `.specs/a_implementar/features_futuras/13_spec_knowledge_research_npc_books_ruins_services_future_runtime.md` | BLOCKED_BY_FUTURE_SCOPE_MOVED_TO_FEATURES_FUTURAS | `_future_` suffix; `Status: Future mapped` |
 
 **Total: 4/4 specs BLOCKED_BY_FUTURE_SCOPE_MOVED_TO_FEATURES_FUTURAS**
 
@@ -48,10 +48,10 @@ Filename evidence:
 All four filenames contain `_future_` — consistent with `SPEC_REGISTRY_TO_IMPLEMENT.md` marking them as `Future mapped`.
 
 Current paths:
-- `docs/specs/a_implementar/features_futuras/13_spec_bestiary_knowledge_state_save_load_future_runtime.md`
-- `docs/specs/a_implementar/features_futuras/13_spec_bestiary_knowledge_ui_projection_future_runtime.md`
-- `docs/specs/a_implementar/features_futuras/13_spec_knowledge_discovery_event_runtime_future.md`
-- `docs/specs/a_implementar/features_futuras/13_spec_knowledge_research_npc_books_ruins_services_future_runtime.md`
+- `.specs/a_implementar/features_futuras/13_spec_bestiary_knowledge_state_save_load_future_runtime.md`
+- `.specs/a_implementar/features_futuras/13_spec_bestiary_knowledge_ui_projection_future_runtime.md`
+- `.specs/a_implementar/features_futuras/13_spec_knowledge_discovery_event_runtime_future.md`
+- `.specs/a_implementar/features_futuras/13_spec_knowledge_research_npc_books_ruins_services_future_runtime.md`
 
 ---
 
@@ -60,9 +60,9 @@ Current paths:
 **Do NOT execute any WAVE 13 spec** without explicit human authorization that:
 
 1. Confirms these are no longer future/expansion scope
-2. Moves the selected spec(s) back to `docs/specs/a_implementar/`
+2. Moves the selected spec(s) back to `.specs/a_implementar/`
 3. Removes the `_future_` suffix or updates spec headers to remove `Status: Future mapped`
-4. Updates `docs/specs/SPEC_REGISTRY_TO_IMPLEMENT.md`
+4. Updates `.specs/SPEC_REGISTRY_TO_IMPLEMENT.md`
 5. Authorizes the specific spec(s) to execute
 
 ---

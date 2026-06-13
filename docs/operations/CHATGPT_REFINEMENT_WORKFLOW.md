@@ -69,8 +69,8 @@ ChatGPT não deve ser usado para executar código diretamente no Unity nem para 
 | Visão geral consolidada do jogo | `docs/design/` ou `docs/00_*` se o repo ainda usar documento-mãe no topo de docs |
 | Refinamento ainda não implementável | `docs/refinements/a_implementar/pre_refinamentos/` |
 | Refinamento aprovado e estável | `docs/refinements/a_implementar/` ou `docs/refinements/implementados/` conforme status |
-| Spec pronta para implementação | `docs/specs/a_implementar/` |
-| Spec implementada/parcial | `docs/specs/implementados/` |
+| Spec pronta para implementação | `.specs/a_implementar/` |
+| Spec implementada/parcial | `.specs/implementados/` |
 | Processo operacional | `docs/operations/` |
 | Arquitetura | `docs/architecture/` |
 | Design/lore/GDD | `docs/design/` |

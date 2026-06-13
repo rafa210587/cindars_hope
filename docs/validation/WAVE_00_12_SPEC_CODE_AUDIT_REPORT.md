@@ -18,7 +18,7 @@
 
 All errors are pre-existing legacy issues:
 - 9 old execution reports (arch_reorg era + mvp_closeout era) missing `validated_adrs` and `validated_game_rules` fields (required by newer doc governance, not by their era)
-- 2 implemented specs in `docs/specs/implementados/` still citing amendments as canonical sources
+- 2 implemented specs in `.specs/implementados/` still citing amendments as canonical sources
 - 1 spec (`spec_test_harness_editmode_playmode_quality_gate.md`) missing dependency headers
 - **Zero new errors introduced by WAVE 05–12 execution**
 

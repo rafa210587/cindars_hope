@@ -289,7 +289,7 @@ tools/docs/validate_docs.ps1
 - Root folder 'spec/' does not exist ✓
 - Root folder 'specs/' does not exist ✓
 - docs_old/ exists ✓
-- docs/specs/ exists as single official specs source ✓
+- .specs/ exists as single official specs source ✓
 - SPEC_EXECUTION_ORDER.md exists ✓
 - pre_refinamentos/ exists ✓
 - No refinement_init files outside pre_refinamentos ✓
@@ -552,7 +552,7 @@ Tempo Decorrido 00:00:00.63
 OK: Root folder 'spec/' does not exist.
 OK: Root folder 'specs/' does not exist.
 OK: docs_old/ exists.
-OK: docs/specs/ exists as single official specs source.
+OK: .specs/ exists as single official specs source.
 OK: SPEC_EXECUTION_ORDER.md exists.
 OK: pre_refinimentos/ exists.
 OK: No refinamento_init files outside pre_refinamentos.

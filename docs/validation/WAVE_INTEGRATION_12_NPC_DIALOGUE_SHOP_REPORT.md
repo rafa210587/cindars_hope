@@ -14,7 +14,7 @@ WAVE12 was corrected from a vertical slice to a fuller TownScene MVP roster. The
 |---|---:|---|
 | `AGENTS.md` | 1 | Rules and constraints |
 | Attached corrective WAVE12 request | 1 | Scope: fix WAVE12 only |
-| `docs/specs/a_implementar/spec_wave_integration_12_npc_placement_dialogue_shop_bridge.md` | 1 | Active materialized spec |
+| `.specs/a_implementar/spec_wave_integration_12_npc_placement_dialogue_shop_bridge.md` | 1 | Active materialized spec |
 | `docs/project/CURRENT_STATE.md` | 1 | Previous WAVE12 vertical-slice status |
 | `docs/validation/WAVE_INTEGRATION_12_NPC_DIALOGUE_SHOP_REPORT.md` | 1 | Prior report audited |
 | `docs/validation/WAVE_INTEGRATION_12_NPC_CANONICAL_ROSTER.md` | 1 | Updated |

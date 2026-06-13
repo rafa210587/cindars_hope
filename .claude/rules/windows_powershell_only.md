@@ -37,7 +37,7 @@ Use these instead:
 | find files | `find . -name '*.cs'` | `Get-ChildItem -Recurse -Filter *.cs` |
 | grep text | `grep -r "pattern" .` | `Select-String -Path . -Pattern "pattern" -Recurse` |
 | first lines of git | `git status \| head -20` | `git status --short \| Select-Object -First 20` |
-| all specs in wave | `ls docs/specs/a_implementar/fable/fable_*.md` | `Get-ChildItem .\docs\specs\a_implementar\fable\fable_*.md \| Sort-Object Name` |
+| all specs in wave | `ls .specs/a_implementar/fable/fable_*.md` | `Get-ChildItem .\.specs\a_implementar\fable\fable_*.md \| Sort-Object Name` |
 | check if file exists | `test -f path` | `Test-Path path` |
 | file content | `cat file.md` | `Get-Content file.md` |
 

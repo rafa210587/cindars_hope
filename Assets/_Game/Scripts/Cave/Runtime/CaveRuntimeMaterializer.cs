@@ -56,6 +56,7 @@ namespace CindarsHope.Cave.Runtime
         private CaveEnemySpawnPlan _lastEnemySpawnPlan;
         private CaveEnemySpawnPlan _snapshotEnemySpawnPlan;
         private IReadOnlyList<CaveResourceNodeSnapshotEntry> _snapshotResourceNodeStates;
+        private IReadOnlyList<EnemyHpRecord> _snapshotEnemyHpRecords;
         private readonly List<CaveResourceNodeSnapshotEntry> _lastResourceNodeSnapshots = new List<CaveResourceNodeSnapshotEntry>();
 
         public CaveExitPortal BackExitPortal => _backExitPortal;
@@ -75,11 +76,39 @@ namespace CindarsHope.Cave.Runtime
 
         public void MaterializeFromSnapshot(VisitedLevelSnapshot snapshot, CaveGeneratedLevel generatedLevel, CaveSpawnAnchor spawnAnchor = CaveSpawnAnchor.Entrance)
         {
+            _snapshotEnemyHpRecords = snapshot?.EnemyHpRecords;
             MaterializeInternal(
                 generatedLevel,
                 spawnAnchor,
                 snapshot?.EnemySpawnPlan,
                 snapshot?.ResourceNodeStates);
+        }
+
+        // F13: HP corrente por instância dos inimigos materializados (mortos inclusos, HP 0).
+        public List<EnemyHpRecord> CollectEnemyHpRecords()
+        {
+            var records = new List<EnemyHpRecord>();
+            foreach (var materializedObject in _materializedObjects)
+            {
+                if (materializedObject == null)
+                {
+                    continue;
+                }
+
+                var health = materializedObject.GetComponent<CindarsHope.Combat.EnemyHealth>();
+                if (health == null)
+                {
+                    continue;
+                }
+
+                records.Add(new EnemyHpRecord
+                {
+                    EnemyInstanceId = materializedObject.name,
+                    CurrentHp = health.CurrentHp
+                });
+            }
+
+            return records;
         }
 
         private void MaterializeInternal(
@@ -142,6 +171,7 @@ namespace CindarsHope.Cave.Runtime
             GameEventBus.Publish(new CaveRuntimeMaterializationCompleteEvent(generatedLevel));
             _snapshotEnemySpawnPlan = null;
             _snapshotResourceNodeStates = null;
+            _snapshotEnemyHpRecords = null;
         }
 
         private static Vector3 GridToWorld(Vector2Int gridPosition, CaveGeneratedLevel level)
@@ -793,6 +823,20 @@ namespace CindarsHope.Cave.Runtime
             enemyParent.transform.localPosition = Vector3.zero;
             _materializedObjects.Add(enemyParent);
 
+            // F13: índice de HP salvo por instância (morto permanece morto na run).
+            Dictionary<string, int> savedHpByInstance = null;
+            if (_snapshotEnemyHpRecords != null && _snapshotEnemyHpRecords.Count > 0)
+            {
+                savedHpByInstance = new Dictionary<string, int>();
+                foreach (var record in _snapshotEnemyHpRecords)
+                {
+                    if (record != null && !string.IsNullOrWhiteSpace(record.EnemyInstanceId))
+                    {
+                        savedHpByInstance[record.EnemyInstanceId] = record.CurrentHp;
+                    }
+                }
+            }
+
             foreach (var entry in _lastEnemySpawnPlan.Entries)
             {
                 if (entry == null || string.IsNullOrWhiteSpace(entry.EnemyId))
@@ -806,7 +850,23 @@ namespace CindarsHope.Cave.Runtime
                     continue;
                 }
 
+                var savedHp = int.MinValue;
+                var hasSavedHp = savedHpByInstance != null && savedHpByInstance.TryGetValue(entry.EnemyInstanceId, out savedHp);
+                if (hasSavedHp && savedHp <= 0)
+                {
+                    continue; // morto na run — não rematerializa (stable-run)
+                }
+
                 var enemyObject = CreateEnemyRuntimeObject(entry, enemyData, enemyParent.transform, generatedLevel.CaveLevel);
+
+                if (hasSavedHp)
+                {
+                    var enemyHealth = enemyObject.GetComponent<CindarsHope.Combat.EnemyHealth>();
+                    if (enemyHealth != null)
+                    {
+                        enemyHealth.RestoreHp(savedHp);
+                    }
+                }
                 _materializedObjects.Add(enemyObject);
                 _lastMaterializationResult.CreatedEnemies++;
 
@@ -991,6 +1051,14 @@ namespace CindarsHope.Cave.Runtime
             {
                 enemyObject.AddComponent<EnemyVulnerabilityState>();
             }
+
+            // F02: postura por dificuldade (quebra → stagger + CoreExposed).
+            var postureState = enemyObject.GetComponent<CindarsHope.Combat.EnemyPostureState>();
+            if (postureState == null)
+            {
+                postureState = enemyObject.AddComponent<CindarsHope.Combat.EnemyPostureState>();
+            }
+            postureState.Configure(enemyData.baseDifficulty);
 
             if (enemyObject.GetComponent<EnemyTelegraphController>() == null)
             {

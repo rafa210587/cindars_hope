@@ -37,7 +37,7 @@
 
 ### SPEC 01: Unity Compile Validation Protocol
 
-**Arquivo Spec Lido:** `docs/specs/implementados/spec_unity_compile_validation_protocol_and_scripts.md`  
+**Arquivo Spec Lido:** `.specs/implementados/spec_unity_compile_validation_protocol_and_scripts.md`  
 **Arquivo Refinement Lido:** `docs/refinements/implementados/ref_unity_compile_validation_protocol_and_scripts.md`
 
 **Status Documental Atual:** Implementado parcial (85%)
@@ -78,7 +78,7 @@
 
 ### SPEC 02: Save Schema Migration v2
 
-**Arquivo Spec Lido:** `docs/specs/implementados/spec_save_002_schema_migration_v2.md`  
+**Arquivo Spec Lido:** `.specs/implementados/spec_save_002_schema_migration_v2.md`  
 **Arquivo Refinement Lido:** `docs/refinements/implementados/ref_save_schema_migration_v2.md`
 
 **Status Documental Atual:** Implementado parcial (85%)
@@ -118,7 +118,7 @@
 
 ### SPEC 03: Inventory Slots/Capacity
 
-**Arquivo Spec Lido:** `docs/specs/implementados/spec_inventory_002_slots_capacity_ui_final.md`  
+**Arquivo Spec Lido:** `.specs/implementados/spec_inventory_002_slots_capacity_ui_final.md`  
 **Arquivo Refinement Lido:** `docs/refinements/implementados/ref_inventory_slots_capacity_ui_final.md`
 
 **Status Documental Atual:** Implementado parcial (80%)
@@ -162,7 +162,7 @@
 
 ### SPEC 04: Farm Irrigation/Soil/Planting
 
-**Arquivo Spec Lido:** `docs/specs/implementados/spec_farm_004_irrigacao_solo_planting_ui.md`  
+**Arquivo Spec Lido:** `.specs/implementados/spec_farm_004_irrigacao_solo_planting_ui.md`  
 **Arquivo Refinement Lido:** `docs/refinements/implementados/ref_farm_irrigacao_solo_planting_ui.md`
 
 **Status Documental Atual:** Implementado parcial (85%)
@@ -205,7 +205,7 @@
 
 ### SPEC 05: World Activities/Fishing/Trees/Loot
 
-**Arquivo Spec Lido:** `docs/specs/implementados/spec_world_002_activities_fishing_trees_pickups_loot.md`  
+**Arquivo Spec Lido:** `.specs/implementados/spec_world_002_activities_fishing_trees_pickups_loot.md`  
 **Arquivo Refinement Lido:** `docs/refinements/implementados/ref_world_activities_fishing_trees_pickups_loot.md`
 
 **Status Documental Atual:** Implementado parcial (80%)
@@ -248,7 +248,7 @@
 
 ### SPEC 06: Economy Shop Stock/Pricing/UI
 
-**Arquivo Spec Lido:** `docs/specs/a_implementar/spec_economy_shop_stock_pricing_ui.md`  
+**Arquivo Spec Lido:** `.specs/a_implementar/spec_economy_shop_stock_pricing_ui.md`  
 **Arquivo Refinement Lido:** `docs/refinements/a_implementar/pre_refinamentos/refinamento_init_economy_shop_stock_pricing_ui.md`
 
 **Status Documental Atual:** **A implementar** (Registrado em TO_IMPLEMENT)
@@ -296,7 +296,7 @@
 
 ### SPEC 07: Crafting Queue/Workstations/Recipes
 
-**Arquivo Spec Lido:** `docs/specs/a_implementar/spec_crafting_queue_workstations_recipes_ui.md`  
+**Arquivo Spec Lido:** `.specs/a_implementar/spec_crafting_queue_workstations_recipes_ui.md`  
 **Arquivo Refinement Lido:** `docs/refinements/a_implementar/pre_refinamentos/refinamento_init_crafting_queue_workstations_recipes_ui.md`
 
 **Status Documental Atual:** **A implementar**
@@ -344,7 +344,7 @@
 
 ### SPEC 08: Town NPC Dialogue
 
-**Arquivo Spec Lido:** `docs/specs/a_implementar/spec_town_npc_dialogue_schedule_quests.md`  
+**Arquivo Spec Lido:** `.specs/a_implementar/spec_town_npc_dialogue_schedule_quests.md`  
 **Arquivo Refinement Lido:** `docs/refinements/a_implementar/pre_refinamentos/refinamento_init_town_npc_dialogue_schedule_quests.md`
 
 **Status Documental Atual:** **A implementar**
@@ -399,7 +399,7 @@
 
 ### SPEC 09: Hunger/Stamina Status Balance
 
-**Arquivo Spec Lido:** `docs/specs/implementados/spec_hunger_stamina_status_balance.md`  
+**Arquivo Spec Lido:** `.specs/implementados/spec_hunger_stamina_status_balance.md`  
 **Arquivo Refinement Lido:** `docs/refinements/implementados/ref_hunger_stamina_status_balance.md`
 
 **Status Documental Atual:** **Implementado parcial (100% em escopo)**
@@ -465,7 +465,7 @@
 
 ### SPEC 10: Equipment Durability/Environment/Loot
 
-**Arquivo Spec Lido:** `docs/specs/a_implementar/spec_equipment_durability_environment_loot_runtime.md`  
+**Arquivo Spec Lido:** `.specs/a_implementar/spec_equipment_durability_environment_loot_runtime.md`  
 **Arquivo Refinement Lido:** `docs/refinements/a_implementar/pre_refinamentos/refinamento_init_equipment_durability_environment_loot.md`
 
 **Status Documental Atual:** **A implementar**
@@ -515,7 +515,7 @@
 
 ### SPEC 11: Damage/Status/Elements/Resistances
 
-**Arquivo Spec Lido:** `docs/specs/a_implementar/spec_damage_status_elements_resistances_runtime.md`  
+**Arquivo Spec Lido:** `.specs/a_implementar/spec_damage_status_elements_resistances_runtime.md`  
 **Arquivo Refinement Lido:** `docs/refinements/a_implementar/pre_refinamentos/refinamento_init_damage_status_elements_resistances.md`
 
 **Status Documental Atual:** **A implementar**
@@ -564,7 +564,7 @@
 
 ### SPEC 12: Player Combat/Weapons/Spells/Skills
 
-**Arquivo Spec Lido:** `docs/specs/a_implementar/spec_player_combat_weapons_spells_skill_actions_runtime.md`  
+**Arquivo Spec Lido:** `.specs/a_implementar/spec_player_combat_weapons_spells_skill_actions_runtime.md`  
 **Arquivo Refinement Lido:** `docs/refinements/a_implementar/pre_refinamentos/refinamento_init_player_combat_weapons_spells_skill_actions.md`
 
 **Status Documental Atual:** **A implementar**
@@ -619,7 +619,7 @@
 
 ### SPEC 13: Enemy AI/Roster/Bestiary
 
-**Arquivo Spec Lido:** `docs/specs/a_implementar/spec_enemy_ai_roster_bestiary_faction_locks_runtime.md`  
+**Arquivo Spec Lido:** `.specs/a_implementar/spec_enemy_ai_roster_bestiary_faction_locks_runtime.md`  
 **Arquivo Refinement Lido:** `docs/refinements/a_implementar/pre_refinamentos/refinamento_init_enemy_ai_roster_bestiary_faction_locks.md`
 
 **Status Documental Atual:** **A implementar**
@@ -678,7 +678,7 @@
 
 ### SPEC 14: Cave Runtime/Generation/Checkpoints/Boss Gates
 
-**Arquivo Spec Lido:** `docs/specs/a_implementar/spec_cave_runtime_generation_checkpoints_boss_gates.md`  
+**Arquivo Spec Lido:** `.specs/a_implementar/spec_cave_runtime_generation_checkpoints_boss_gates.md`  
 **Arquivo Refinement Lido:** `docs/refinements/a_implementar/pre_refinamentos/refinamento_init_cave_runtime_generation_checkpoints_boss_gates.md`
 
 **Status Documental Atual:** **A implementar**
@@ -735,7 +735,7 @@
 
 ### SPEC 15: Cave Entry/Death/Anya/Corpse Recovery
 
-**Arquivo Spec Lido:** `docs/specs/a_implementar/spec_cave_entry_death_anya_corpse_recovery.md`  
+**Arquivo Spec Lido:** `.specs/a_implementar/spec_cave_entry_death_anya_corpse_recovery.md`  
 **Arquivo Refinement Lido:** `docs/refinements/a_implementar/pre_refinamentos/refinamento_init_cave_entry_death_anya_corpse_recovery.md`
 
 **Status Documental Atual:** **A implementar**
@@ -784,7 +784,7 @@
 
 ### SPEC 16: Skill Trees/Active Slots/Respec/Anya
 
-**Arquivo Spec Lido:** `docs/specs/a_implementar/spec_skill_trees_active_slots_respec_anya_runtime.md`  
+**Arquivo Spec Lido:** `.specs/a_implementar/spec_skill_trees_active_slots_respec_anya_runtime.md`  
 **Arquivo Refinement Lido:** `docs/refinements/a_implementar/pre_refinamentos/refinamento_init_skill_trees_active_slots_respec_anya.md`
 
 **Status Documental Atual:** **A implementar**

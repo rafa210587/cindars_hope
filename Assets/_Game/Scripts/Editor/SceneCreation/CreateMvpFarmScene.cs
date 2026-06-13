@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using CindarsHope.Cave.Runtime;
 using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Data;
@@ -78,6 +80,9 @@ namespace CindarsHope.Editor.SceneCreation
             // Camera background is the uniform white playfield; do not create a giant
             // ground sprite because it reads as a horizon/central rectangle in MVP art.
             var farmPlotRegistry = CreateFarmPlots(inventoryManager, bootstrap.GetComponent<StaminaManager>());
+            CreateRainIrrigation(farmPlotRegistry);
+            CreateFarmBed();
+            CreateFonteAnya(bootstrap);
             var treeRegistry = CreateTrees(inventoryManager);
             var itemPickupRegistry = CreateItemPickups(inventoryManager);
             var craftingModal = CreateCraftingUi(craftingRuntime, modalManager);
@@ -85,6 +90,7 @@ namespace CindarsHope.Editor.SceneCreation
             CreateFarmPortals();
             CreateFishingSpot(inventoryManager);
             CreateFarmSceneFoundationZones();
+            CreateCaveEntrance();
             CreateFarmResourceInteractables(inventoryManager);
             CreateSellPoint(inventoryManager, playerManager);
             CreateGameplayInputRouter();
@@ -439,7 +445,8 @@ namespace CindarsHope.Editor.SceneCreation
             {
                 var dashController = player.AddComponent(dashControllerType);
                 var serializedDash = new SerializedObject(dashController);
-                SetReference(serializedDash, "_rigidbody", rigidbody);
+                // PlayerDashController has no _rigidbody field; it self-resolves
+                // _displacementResolver/_staminaManager in Start(). Only wire _playerController here.
                 SetReference(serializedDash, "_playerController", playerController);
                 serializedDash.ApplyModifiedPropertiesWithoutUndo();
                 EditorUtility.SetDirty(dashController);
@@ -578,15 +585,8 @@ namespace CindarsHope.Editor.SceneCreation
                 "town_from_farm",
                 "Ir para Cindar's Hope");
 
-            CreateScenePortal(
-                portals.transform,
-                "Portal_Farm_To_Cave",
-                new Vector3(-5.5f, 0f, 0f),
-                new Color(0.5f, 0.25f, 0.6f),
-                "CaveScene",
-                "Assets/_Game/Scenes/CaveScene.unity",
-                "cave_from_farm",
-                "Entrar na Caverna");
+            // Cave access moved to CaveEntranceInteractable (CreateCaveEntrance), which
+            // routes through SceneTransitionRouter with run-state validation (WAVE16).
         }
 
         private static void CreateScenePortal(
@@ -811,7 +811,7 @@ namespace CindarsHope.Editor.SceneCreation
             // Reconciled layout v2 (2026-06-08): trees consolidated east, crops moved from portal area,
             // house entrance moved from bounds edge, bounds reduced to 28x22.
             CreateFarmSceneZone(parent.transform, "Zone_PlayerSpawn", FarmSceneZoneType.PlayerSpawn, "farm_zone_player_spawn", new Vector3(0f, 0f, 0f), new Vector2(1.4f, 1.4f), new Color(0.2f, 0.45f, 0.95f, 0.65f));
-            CreateFarmSceneZone(parent.transform, "Zone_CropField", FarmSceneZoneType.CropField, "farm_zone_crop_field", new Vector3(1f, -2.25f, 0f), new Vector2(5.5f, 5.5f), new Color(0.35f, 0.22f, 0.12f, 0.45f));
+            CreateFarmSceneZone(parent.transform, "Zone_CropField", FarmSceneZoneType.CropField, "farm_zone_crop_field", new Vector3(1f, -2.25f, 0f), new Vector2(9.2f, 6.2f), new Color(0.35f, 0.22f, 0.12f, 0.45f));
             CreateFarmSceneZone(parent.transform, "Zone_ResourceTrees", FarmSceneZoneType.ResourceTrees, "farm_zone_resource_trees", new Vector3(9.5f, 1.0f, 0f), new Vector2(10.0f, 13.0f), new Color(0.14f, 0.48f, 0.18f, 0.35f));
             CreateFarmSceneZone(parent.transform, "Zone_ResourceRocks", FarmSceneZoneType.ResourceRocks, "farm_zone_resource_rocks", new Vector3(-9.0f, 5.0f, 0f), new Vector2(4.5f, 3.5f), new Color(0.42f, 0.42f, 0.42f, 0.55f));
             CreateFarmSceneZone(parent.transform, "Zone_Forage", FarmSceneZoneType.Forage, "farm_zone_forage", new Vector3(-8.0f, -2.0f, 0f), new Vector2(4.5f, 4.5f), new Color(0.45f, 0.64f, 0.25f, 0.4f));
@@ -960,6 +960,85 @@ namespace CindarsHope.Editor.SceneCreation
             EditorUtility.SetDirty(debugHud);
         }
 
+        // F17: Fonte de Anya física (bacia + água + pedestal) perto da casa, com interactable
+        // e wiring do respawn point no GameBootstrap (_anyaFountain).
+        private static void CreateFonteAnya(CindarsHope.Core.Bootstrap.GameBootstrap bootstrap)
+        {
+            var fonteRoot = new GameObject("FonteAnya");
+            fonteRoot.transform.position = new Vector3(-3.5f, -7.0f, 0f);
+
+            var pedestal = CreateFontePart(fonteRoot.transform, "Pedestal", new Vector3(0f, -0.15f, 0f), new Vector3(1.6f, 0.5f, 1f), new Color(0.55f, 0.55f, 0.6f), 1);
+            CreateFontePart(fonteRoot.transform, "Bacia", new Vector3(0f, 0.15f, 0f), new Vector3(1.3f, 0.55f, 1f), new Color(0.42f, 0.45f, 0.55f), 2);
+            CreateFontePart(fonteRoot.transform, "Agua", new Vector3(0f, 0.22f, 0f), new Vector3(1.0f, 0.35f, 1f), new Color(0.35f, 0.65f, 0.95f), 3);
+
+            var collider = fonteRoot.AddComponent<BoxCollider2D>();
+            collider.isTrigger = true;
+            collider.size = new Vector2(1.8f, 1.2f);
+
+            var fountain = fonteRoot.AddComponent<CindarsHope.Locations.AnyaFountain>();
+            fonteRoot.AddComponent<CindarsHope.Fonte.FonteInteractable>();
+
+            if (bootstrap != null)
+            {
+                var serializedBootstrap = new SerializedObject(bootstrap);
+                SetReference(serializedBootstrap, "_anyaFountain", fountain);
+                serializedBootstrap.ApplyModifiedPropertiesWithoutUndo();
+                EditorUtility.SetDirty(bootstrap);
+            }
+
+            EditorUtility.SetDirty(fonteRoot);
+        }
+
+        private static GameObject CreateFontePart(Transform parent, string name, Vector3 localPosition, Vector3 localScale, Color color, int sortingOrder)
+        {
+            var part = new GameObject(name);
+            part.transform.SetParent(parent);
+            part.transform.localPosition = localPosition;
+            part.transform.localScale = localScale;
+
+            var renderer = part.AddComponent<SpriteRenderer>();
+            renderer.sprite = GetBuiltinSprite();
+            renderer.color = color;
+            renderer.sortingOrder = sortingOrder;
+            TrySetSortingLayer(renderer, "Ground", sortingOrder);
+            return part;
+        }
+
+        // F16: cama na casa da fazenda (Zone_HouseEntrance) — dormir voluntário com confirmação.
+        private static void CreateFarmBed()
+        {
+            var bedObject = new GameObject("Bed");
+            bedObject.transform.position = new Vector3(-5.0f, -7.6f, 0f);
+            bedObject.transform.localScale = new Vector3(1.2f, 0.7f, 1f);
+
+            var spriteRenderer = bedObject.AddComponent<SpriteRenderer>();
+            spriteRenderer.sprite = GetBuiltinSprite();
+            spriteRenderer.color = new Color(0.55f, 0.30f, 0.45f);
+            spriteRenderer.sortingOrder = 2;
+            TrySetSortingLayer(spriteRenderer, "Ground", spriteRenderer.sortingOrder);
+
+            var collider = bedObject.AddComponent<BoxCollider2D>();
+            collider.isTrigger = true;
+            collider.size = Vector2.one;
+
+            bedObject.AddComponent<CindarsHope.World.BedInteractable>();
+            EditorUtility.SetDirty(bedObject);
+        }
+
+        // F15: liga a RainIrrigationIntegration (WAVE 02, antes órfã) ao registry real via runner.
+        private static void CreateRainIrrigation(FarmPlotRegistry farmPlotRegistry)
+        {
+            var rainObject = new GameObject("RainIrrigation");
+            var integration = rainObject.AddComponent<RainIrrigationIntegration>();
+            var runner = rainObject.AddComponent<RainIrrigationRunner>();
+
+            var serializedRunner = new SerializedObject(runner);
+            SetReference(serializedRunner, "_integration", integration);
+            SetReference(serializedRunner, "_plotRegistry", farmPlotRegistry);
+            serializedRunner.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(runner);
+        }
+
         private static FarmPlotRegistry CreateFarmPlots(InventoryManager inventoryManager, StaminaManager staminaManager)
         {
             var seedDatabase = AssetDatabase.LoadAssetAtPath<SeedDatabaseSO>(SeedDatabasePath);
@@ -969,24 +1048,35 @@ namespace CindarsHope.Editor.SceneCreation
             }
 
             var parent = new GameObject("FarmPlots");
-            parent.transform.position = new Vector3(1f, -1.5f, 0f);
+            parent.transform.position = new Vector3(1f, -2.25f, 0f);
             var registry = parent.AddComponent<FarmPlotRegistry>();
 
-            const int gridSize = 3;
+            // Two planting fields inside the enlarged Zone_CropField:
+            // main field 4x4 (16 plots) + east field 2x4 (8 plots) = 24 plots total.
             const float spacing = 1.35f;
-            var startPosition = new Vector3(-spacing, spacing, 0f);
-            var plots = new FarmPlot[gridSize * gridSize];
+            var plots = new List<FarmPlot>();
 
-            for (var y = 0; y < gridSize; y++)
+            var mainFieldOrigin = parent.transform.position + new Vector3(-3.4f, 2f, 0f);
+            for (var y = 0; y < 4; y++)
             {
-                for (var x = 0; x < gridSize; x++)
+                for (var x = 0; x < 4; x++)
                 {
-                    var plotIndex = y * gridSize + x;
-                    plots[plotIndex] = CreateFarmPlot(parent.transform, plotIndex, startPosition + new Vector3(x * spacing, -y * spacing, 0f), inventoryManager, seedDatabase, staminaManager);
+                    var plotIndex = plots.Count;
+                    plots.Add(CreateFarmPlot(parent.transform, plotIndex, mainFieldOrigin + new Vector3(x * spacing, -y * spacing, 0f), inventoryManager, seedDatabase, staminaManager));
                 }
             }
 
-            registry.Configure(plots);
+            var eastFieldOrigin = parent.transform.position + new Vector3(2.6f, 2f, 0f);
+            for (var y = 0; y < 4; y++)
+            {
+                for (var x = 0; x < 2; x++)
+                {
+                    var plotIndex = plots.Count;
+                    plots.Add(CreateFarmPlot(parent.transform, plotIndex, eastFieldOrigin + new Vector3(x * spacing, -y * spacing, 0f), inventoryManager, seedDatabase, staminaManager));
+                }
+            }
+
+            registry.Configure(plots.ToArray());
             EditorUtility.SetDirty(registry);
             return registry;
         }
@@ -1279,6 +1369,47 @@ namespace CindarsHope.Editor.SceneCreation
         // LakeFishing uses existing FishingSpot at (7.8, -2.8) which already implements IInteractable.
         // These adapters are TODO_INTEGRATION_NOT_FINAL — for smoke validation only.
         // Final wiring must connect to TreeChopService / RockMiningService / FarmForageSpawnService.
+        // ─── Cave entrance (WAVE16 wiring, now automated by the generator) ───
+        // Visible cave mouth on Zone_CaveEntrance with a CaveEntranceInteractable that
+        // routes FarmScene → CaveScene via SceneTransitionRouter. Closes DEBT-SCENE
+        // "CaveEntranceInteractable not placed" from the WAVE22 backlog.
+        private static void CreateCaveEntrance()
+        {
+            var entrance = new GameObject("CaveEntrance");
+            entrance.transform.position = new Vector3(-5.5f, 0f, 0f);
+
+            // Cave mouth visual: dark arch over a rock frame
+            var rockFrame = new GameObject("RockFrame");
+            rockFrame.transform.SetParent(entrance.transform);
+            rockFrame.transform.localPosition = Vector3.zero;
+            rockFrame.transform.localScale = new Vector3(2f, 2.2f, 1f);
+            var rockRenderer = rockFrame.AddComponent<SpriteRenderer>();
+            rockRenderer.sprite = GetBuiltinSprite();
+            rockRenderer.color = new Color(0.36f, 0.33f, 0.3f);
+            rockRenderer.sortingOrder = 1;
+            TrySetSortingLayer(rockRenderer, "Items", rockRenderer.sortingOrder);
+
+            var mouth = new GameObject("CaveMouth");
+            mouth.transform.SetParent(entrance.transform);
+            mouth.transform.localPosition = new Vector3(0f, -0.25f, 0f);
+            mouth.transform.localScale = new Vector3(1.1f, 1.4f, 1f);
+            var mouthRenderer = mouth.AddComponent<SpriteRenderer>();
+            mouthRenderer.sprite = GetBuiltinSprite();
+            mouthRenderer.color = new Color(0.08f, 0.06f, 0.1f);
+            mouthRenderer.sortingOrder = 2;
+            TrySetSortingLayer(mouthRenderer, "Items", mouthRenderer.sortingOrder);
+
+            var trigger = entrance.AddComponent<BoxCollider2D>();
+            trigger.isTrigger = true;
+            trigger.size = new Vector2(1.6f, 2f);
+
+            var interactable = entrance.AddComponent<CaveEntranceInteractable>();
+            var serializedInteractable = new SerializedObject(interactable);
+            serializedInteractable.FindProperty("_targetSpawnId").stringValue = "cave_from_farm";
+            serializedInteractable.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(interactable);
+        }
+
         private static void CreateFarmResourceInteractables(InventoryManager inventoryManager)
         {
             var parent = new GameObject("FarmResourceInteractables");

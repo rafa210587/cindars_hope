@@ -6,7 +6,7 @@
 
 Jogo 2D pixel art RPG + farm sim em Unity LTS / C#.
 Mundo: Vaalara, cidade Cindar's Hope, regiao Dornecia.
-Spec source: `docs/specs/`. Pasta raiz `specs/` e `spec/` removidas — nao recriar.
+Spec source: `.specs/`. Pasta raiz `specs/` e `spec/` removidas — nao recriar.
 
 ## Context Reading Policy
 
@@ -69,7 +69,7 @@ Residual risk: Unity compile not validated locally
 6. SEMPRE prefixar ScriptableObjects: `ItemDataSO`, `SeedDataSO`, `ToolDataSO`, `WeaponDataSO`, etc.
 7. SEMPRE prefixar eventos: `DayStartedEvent`, `ItemCraftedEvent`, `ToolEquippedEvent`, etc.
 8. SEMPRE commits em portugues.
-9. NUNCA implementar feature sem spec aprovada em `docs/specs/a_implementar/`.
+9. NUNCA implementar feature sem spec aprovada em `.specs/a_implementar/`.
 10. Sprites: SEMPRE importar com Filter Mode `Point`, Compression `None`, Generate Mip Maps `false`.
 11. Save deve persistir IDs e tipos simples, nunca referencias Unity.
 12. Nao usar `StreamingAssets` para save editavel; usar `Application.persistentDataPath`.

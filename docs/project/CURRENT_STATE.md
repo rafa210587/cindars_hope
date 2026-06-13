@@ -36,7 +36,7 @@
 - PROJECT_LOG.md  (use only for audit/reconciliation/regression)
 - docs/project/ROADMAP.md  (planning only)
 - docs/refinements/  (read only if spec is ambiguous)
-- docs/specs/a_implementar/reorg/  (CLOSED — do not execute)
+- .specs/a_implementar/reorg/  (CLOSED — do not execute)
 - docs/validation/spec_mvp_closeout_*  (evidence; read only if explicitly listed)
 - docs/IMPLEMENTATION_STATUS.md  (broad status; read only for audit)
 ```
@@ -89,16 +89,16 @@
 | WAVE 10 Main Progression / Fonte / Endgame | COMPLETED_WITH_KNOWN_LEGACY_GATES | 4/4 specs BUILD_VALIDATED; ~72 EditMode tests; Assembly-CSharp PASS; closeout: docs/validation/WAVE_10_CLOSEOUT_REPORT.md |
 | WAVE 11 UI / HUD / Inventory / Shop projections | COMPLETED_WITH_KNOWN_LEGACY_GATES | 4/4 specs BUILD_VALIDATED; ~96 new EditMode tests; closeout: docs/validation/WAVE_11_CLOSEOUT_REPORT.md |
 | WAVE 12 Final Validation Docs / Reconciliation | COMPLETED_WITH_KNOWN_LEGACY_GATES | 2/2 docs specs BUILD_VALIDATED; closeout: docs/validation/WAVE_12_CLOSEOUT_REPORT.md |
-| WAVE 13 Bestiary | BLOCKED_BY_FUTURE_SCOPE_MOVED_TO_FEATURES_FUTURAS | 4 specs moved to `docs/specs/a_implementar/features_futuras/`; do not execute without explicit human decision |
-| WAVE 17-24 Future | BLOCKED INTENTIONALLY / MOVED_TO_FEATURES_FUTURAS | Future/expansion specs moved to `docs/specs/a_implementar/features_futuras/`; pets (WAVE 23) blocked as HOLD/BLOCKED_SCOPE |
+| WAVE 13 Bestiary | BLOCKED_BY_FUTURE_SCOPE_MOVED_TO_FEATURES_FUTURAS | 4 specs moved to `.specs/a_implementar/features_futuras/`; do not execute without explicit human decision |
+| WAVE 17-24 Future | BLOCKED INTENTIONALLY / MOVED_TO_FEATURES_FUTURAS | Future/expansion specs moved to `.specs/a_implementar/features_futuras/`; pets (WAVE 23) blocked as HOLD/BLOCKED_SCOPE |
 
 ---
 
 ## Future Specs Automation Rule
 
-Specs futuras foram movidas para `docs/specs/a_implementar/features_futuras/` e nao sao executaveis por loop automatico.
+Specs futuras foram movidas para `.specs/a_implementar/features_futuras/` e nao sao executaveis por loop automatico.
 
-Automation must ignore `docs/specs/a_implementar/features_futuras/` unless a human explicitly moves a spec back to `docs/specs/a_implementar/` and updates the registry.
+Automation must ignore `.specs/a_implementar/features_futuras/` unless a human explicitly moves a spec back to `.specs/a_implementar/` and updates the registry.
 
 ---
 
@@ -185,15 +185,15 @@ These do NOT block WAVE 05 execution but are required for final project acceptan
 | What | Where |
 |------|-------|
 | Agent rules | `CLAUDE.md` (router), `AGENTS.md` (rules), `.claude/rules/RULES.md` |
-| Active specs | `docs/specs/a_implementar/` (147 wave-based) |
-| Absorbed legacy specs | `docs/specs/absorvidas/legacy_pre_wave_reconciliation/` (7 specs) |
+| Active specs | `.specs/a_implementar/` (147 wave-based) |
+| Absorbed legacy specs | `.specs/absorvidas/legacy_pre_wave_reconciliation/` (7 specs) |
 | Commands | `.claude/commands/` (11 commands) |
 | Skills | `.claude/skills/` (14 skills) |
 | Validation evidence | `docs/validation/spec_mvp_closeout_*.md` |
 | MVP acceptance | `docs/release/MVP_ACCEPTANCE_REPORT.md` |
 | Post-MVP backlog | `docs/backlog/post_mvp_backlog.md` |
 | Last validation status | `docs/validation/current/LAST_VALIDATION_STATUS.md` |
-| Spec template | `docs/specs/_templates/SPEC_TEMPLATE.md` |
+| Spec template | `.specs/_templates/SPEC_TEMPLATE.md` |
 | Document governance | `docs/project/DOCUMENT_GOVERNANCE.md` |
 | Decision log | `docs/project/DECISION_LOG.md` |
 | ADRs | `docs/decisions/` (9 ADRs, ADR-0001 to ADR-0009) |
@@ -214,13 +214,13 @@ These do NOT block WAVE 05 execution but are required for final project acceptan
 ## Do NOT Execute
 
 ```
-- docs/specs/absorvidas/legacy_pre_wave_reconciliation/** (legacy specs — moved 2026-06-07)
-- docs/specs/a_implementar/reorg/SPEC_00-12  (CLOSED per README_STATUS.md)
+- .specs/absorvidas/legacy_pre_wave_reconciliation/** (legacy specs — moved 2026-06-07)
+- .specs/a_implementar/reorg/SPEC_00-12  (CLOSED per README_STATUS.md)
 - SPEC_18-29 again  (already executed; Phase 0-1 complete)
 ```
 
 **Legacy specs moved (2026-06-07):** All 7 legacy specs from pre-wave era absorbed into new wave-based specs.  
-See `docs/specs/absorvidas/legacy_pre_wave_reconciliation/LEGACY_SPECS_CROSSWALK.md`
+See `.specs/absorvidas/legacy_pre_wave_reconciliation/LEGACY_SPECS_CROSSWALK.md`
 
 ---
 
@@ -238,7 +238,7 @@ PROJECT_LOG + CURRENT_STATE conflict → prefer CURRENT_STATE; report mismatch
 - FABLE_REDUNDANCY_SWEEP: COMPLETE (2026-06-12) — varredura profunda autorizada pelo humano; 16 arquivos DELETADOS via batch FABLE-2 do DOCUMENT_DELETE_CANDIDATES (build_logs.zip 8MB, CHECKLIST_PR001, validate_quick.py, BACKLOG.md raiz, compile log solto, FARM_DESIGN v1.0 superada, arquivo solto docs/validation/playmode, FIX_001 stale, 8 duplicatas 03_spec_quest_*); pasta playmode/ correta criada com o cenário humano dentro; MOJIBAKE reparado em 17 arquivos (12 da sessão + 5 históricos, incl. triplo-encoding no docs_33); SPEC_EXECUTION_ORDER reconciliado (fila histórica; ativa = fable/); CLAUDE.md tabelas completadas (+5 skills, +4 commands); paths mortos anotados em 2 commands + 1 rule; questionário marcado RESPONDIDO; hooks auditados (15/15 registrados, zero órfãos); docs validation exit 0
 - FABLE_CONTENT_CATALOGS: CANONIZED (2026-06-12) — questionário de decisões respondido pelo humano (registro vinculante: docs/design/FABLE_DECISOES_RESPOSTAS_v1.0.md); 6 catálogos canônicos gerados e registrados no SPEC_SOURCE_MAP (PARTE FABLE): BESTIARY (60 criaturas + 4 chefes finais com stat blocks; renomeações Veilkin/Gravedelver; dragão ancestral Ithryndor no 101), ITEM_CATALOG (~118 itens c/ BaseValue), QUEST_CATALOG (~86 quests, 5 fontes incl. secretas da caverna, XP escalado, +1 skill point/ato), BALANCE_CURVES (cap 100, XP 60×N^1.5, multiplicadores por tipo, TTK), SKILL_ACTION_MOVEMENT_TABLE, HUD_LAYOUT_SCENES (minimapa v1, abas, Town 48×42, Cave 55×55±, lotes da farm); docs validation exit 0; PRÓXIMO: gerar specs fable_21+ a partir dos catálogos + emendas F09/F14 (tamanhos/abas/responsivo)
 - FABLE_ADHERENCE_AUDIT_QUEUE_CLEANUP: COMPLETE (2026-06-12) — auditoria de código real (fable_00B) revelou sistemas das WAVES 02-11 ÓRFÃOS (DerivedStatsCalculator, RainIrrigation/Weather, FarmResourceRefresh, CropQuality/Fertilizer, FatigueSystem, Fonte sem corpo físico, City/Schedule duplicado de NPC/Schedule, CityServices); 6 specs corretivas geradas (fable_15-20, F15-17 = P0); fila limpa: 102 specs executadas movidas para a_implementar/executadas_build_validated/ (README + crosswalks; NÃO reexecutar); 02_spec_calendar_ui absorvida pela fable_20; docs validation ZERO ERROS exit 0 pela primeira vez (10 reports retro-preenchidos, 2 amendments marcados archived); run_strict_validation VALIDATION_PASS; delete candidates batch FABLE adicionado (playmode stray file, FIX_001 stale, duplicatas 03_quest) aguardando confirmação humana
-- FABLE_GAP_CLOSURE_SPECS: GENERATED_AWAITING_HUMAN_PROMOTION (2026-06-12) — gap analysis completa de docs/design/** (42 directions) vs. código; 14 specs densas SpecKit em `docs/specs/a_implementar/fable/` (F01-F14: status effects canônicos, weapon actions+derived stats, equipment baselines, threat/pack, boss phases, loot tables+vulnerabilidades, magic learning, spell shapes, biomas da caverna, main quest Ato 1, interiores/schedules da cidade, animais de fazenda, save debts, UI Canvas) + índice `fable_00_index_gap_analysis.md`; registradas no SPEC_REGISTRY_TO_IMPLEMENT.md (seção Lote FABLE); directions cobertas por features_futuras NÃO duplicadas; docs validation sem erros novos; quality check PASS
+- FABLE_GAP_CLOSURE_SPECS: GENERATED_AWAITING_HUMAN_PROMOTION (2026-06-12) — gap analysis completa de docs/design/** (42 directions) vs. código; 14 specs densas SpecKit em `.specs/a_implementar/fable/` (F01-F14: status effects canônicos, weapon actions+derived stats, equipment baselines, threat/pack, boss phases, loot tables+vulnerabilidades, magic learning, spell shapes, biomas da caverna, main quest Ato 1, interiores/schedules da cidade, animais de fazenda, save debts, UI Canvas) + índice `fable_00_index_gap_analysis.md`; registradas no SPEC_REGISTRY_TO_IMPLEMENT.md (seção Lote FABLE); directions cobertas por features_futuras NÃO duplicadas; docs validation sem erros novos; quality check PASS
 - GAMEPLAY_EXPANSION_SLICE: BUILD_VALIDATED_WITH_HUMAN_UNITY_ACTION_REQUIRED (2026-06-12) — pedido humano direto; projéteis runtime com visual procedural para arco/magia (RuntimeProjectileFactory/ProjectileVisualAnimator, fallback no ProjectileSpawnService); EnemyBrain com comportamentos Leaper/PhaseShortBlink/BurrowAmbush/Retreat/GuardHold-return e projéteis inimigos reais (EnemyProjectileBehaviour); densidade da caverna 16-32 inimigos com escala por profundidade (cap 44, determinístico); CaveWanderingMerchant (22%/nível, estável por run, ADR-0005); 21 skill executors reais (melee/projétil/restauro) com cooldown por skill; CreateMvpTownScene v2 (23 NPCs em distritos ±16x±12, praça central com estátua do guerreiro espada bastarda+escudo, 12 casas, 24 árvores, barracas por vendedor); TownNpcDialogueLibrary (23 NPCs × 13 nós) + menu RebuildTownNpcDialogues + opção "Conversar" em NpcShopController; CreateMvpFarmScene com 24 canteiros e CaveEntranceInteractable (fecha DEBT-SCENE WAVE16); 18 testes EditMode novos; HARNESS FIX: check_spec_quality.ps1 corrigido (BOM UTF-8 + regex de isenção multiline) — exceção Pester de 2026-06-08 resolvida na raiz; run_strict_validation.ps1 exit 0 VALIDATION_PASS; humano deve regenerar TownScene/FarmScene + rodar menu de diálogos + checklist: docs/validation/gameplay_expansion_2026_06_12_human_playmode_scenario.md; report: docs/validation/wave_gameplay_expansion_2026_06_12_execution_report.md
 - FIX-001 + FIX-001B: BUILD_VALIDATED (2026-06-10) — CS0618 eliminado via registro estático (CraftingRuntime.ActiveInstances substitui FindObjectsOfType em CraftingStationRuntimeBootstrap; CaveRunManager.Instance substitui FindAnyObjectByType em CaveRuntimeBridge); QuestOfferPanelController e QuestLogPanelController com guard de destruição de duplicata em Awake; ValidateTownShopCatalogIntegrity expandido para todos 25 ShopDataSO em Data/Economy (era 5 hardcoded); 3 docs criados; Assembly-CSharp PASS 0E/0W; Assembly-CSharp-Editor PASS 0E/0W; Play Mode checklist pendente: docs/validation/FIX_001B_HUMAN_PLAYMODE_CHECKLIST.md
 
@@ -247,7 +247,7 @@ PROJECT_LOG + CURRENT_STATE conflict → prefer CURRENT_STATE; report mismatch
 
 ## 2026-06-12 — FABLE_MASTER_PLAN_F21_F42
 
-- Plano mestre criado: `docs/specs/a_implementar/fable/fable_00C_master_execution_plan.md`
+- Plano mestre criado: `.specs/a_implementar/fable/fable_00C_master_execution_plan.md`
   (revisão F01-F20 ✅ todas válidas; 9 emendas vinculantes aplicadas em F01/F02/F03/F05/F06/F09/F12/F14/F20).
 - 22 specs novas F21-F42 geradas (catálogos canônicos → runtime/data/content).
 - Fila ativa = 42 specs em `fable/`; ordem e paralelismo no plano mestre (9 batches, checkpoints M1-M4).
@@ -296,7 +296,7 @@ PROJECT_LOG + CURRENT_STATE conflict → prefer CURRENT_STATE; report mismatch
 - Docs validation: zero erros.
 ## 2026-06-12 — .SPECS_MODELO_OPERACIONAL
 
-- Criada `.specs/` na raiz: espelho operacional de execução (fonte canônica segue docs/specs/).
+- Criada `.specs/` na raiz: espelho operacional de execução (fonte canônica segue .specs/).
   - `00_executadas/legado/` (94 specs históricas) + `00_executadas/fable/` (E01-E10).
   - `01_a_executar/` (E11-E47, arquivos prefixados Exx_ na ordem oficial do 00C PARTE E).
   - `README.md` = modelo operacional: executou (BUILD_VALIDATED) → MOVE Exx_*.md para

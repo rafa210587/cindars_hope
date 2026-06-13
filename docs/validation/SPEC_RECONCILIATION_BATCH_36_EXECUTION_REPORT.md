@@ -11,9 +11,9 @@
 
 ### Specifications Analyzed
 
-- **Specs before cleanup:** 154 in `docs/specs/a_implementar/` (146 wave-based + 7 legacy + 1 README)
-- **Legacy specs absorbed:** 7 moved to `docs/specs/absorvidas/legacy_pre_wave_reconciliation/` (2026-06-07)
-- **Active specs after cleanup:** 147 wave-based in `docs/specs/a_implementar/`
+- **Specs before cleanup:** 154 in `.specs/a_implementar/` (146 wave-based + 7 legacy + 1 README)
+- **Legacy specs absorbed:** 7 moved to `.specs/absorvidas/legacy_pre_wave_reconciliation/` (2026-06-07)
+- **Active specs after cleanup:** 147 wave-based in `.specs/a_implementar/`
 - **Governance docs (non-executable):** 3 (00_spec_wave_execution_protocol.md, 00_spec_validation_matrix_master.md, 00_spec_existing_implementation_audit.md)
 - **Total executable specs (new):** 147 (100% wave-based)
 
@@ -30,8 +30,8 @@
 ### Specs Present in Repository
 
 ✓ All governance docs exist:
-- `docs/specs/SPEC_WAVE_EXECUTION_PROTOCOL.md` (canonical)
-- `docs/specs/SPEC_VALIDATION_MATRIX_MASTER.md` (canonical)
+- `.specs/SPEC_WAVE_EXECUTION_PROTOCOL.md` (canonical)
+- `.specs/SPEC_VALIDATION_MATRIX_MASTER.md` (canonical)
 
 ✓ All core specs (00-01) present and structured
 
@@ -48,7 +48,7 @@
 - GameEventBus, SaveManager, InventoryManager, GameTimeManager, CaveRuntimeMaterializer, EnemyBrain, ShopManager, EconomyManager, SkillTreeManager, BestiaryManager all found
 
 **Legacy cleanup:** ✓ COMPLETE — 2026-06-07
-- 7 legacy pre-wave specs moved to `docs/specs/absorvidas/legacy_pre_wave_reconciliation/`
+- 7 legacy pre-wave specs moved to `.specs/absorvidas/legacy_pre_wave_reconciliation/`
 - All legacy features fully absorbed into new wave-based specs
 - 0 specs in review_required
 - Crosswalk documentation created
@@ -99,9 +99,9 @@
 
 ## Files Modified (2026-06-07)
 
-1. `docs/specs/SPEC_EXISTING_IMPLEMENTATION_AUDIT.md` — ✓ Updated with local code audit results
-2. `docs/specs/SPEC_REGISTRY_TO_IMPLEMENT.md` — ✓ Updated with cleanup details and exact counts
-3. `docs/specs/SPEC_EXECUTION_ORDER.md` — ✓ Updated with legacy cleanup note
+1. `.specs/SPEC_EXISTING_IMPLEMENTATION_AUDIT.md` — ✓ Updated with local code audit results
+2. `.specs/SPEC_REGISTRY_TO_IMPLEMENT.md` — ✓ Updated with cleanup details and exact counts
+3. `.specs/SPEC_EXECUTION_ORDER.md` — ✓ Updated with legacy cleanup note
 4. `docs/project/CURRENT_STATE.md` — ✓ Updated with status and blockers
 5. `docs/validation/SPEC_PRE_EXECUTION_READINESS_FIX_REPORT.md` — ✓ Updated with cleanup completion
 6. `docs/validation/SPEC_LEGACY_CLEANUP_REPORT.md` — ✓ Created with full crosswalk

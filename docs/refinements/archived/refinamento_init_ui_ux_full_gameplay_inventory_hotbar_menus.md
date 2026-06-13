@@ -1,7 +1,7 @@
 # refinamento_init_ui_ux_full_gameplay_inventory_hotbar_menus
 
 > Status: Refinamento inicial a implementar
-> Spec futura relacionada: `docs/specs/a_implementar/spec_ui_ux_full_gameplay_inventory_hotbar_menus.md`
+> Spec futura relacionada: `.specs/a_implementar/spec_ui_ux_full_gameplay_inventory_hotbar_menus.md`
 > Objetivo: completar UI/UX runtime real de gameplay: HUD, hotbar, inventory, equipment, crafting, skills, shop, cave/checkpoint/death/corpse, Anya, pause/options, modal stack, input routing e feedbacks.
 
 ---
@@ -16,10 +16,10 @@ Evidencias principais:
 Assets/_Game/Scripts/UI/DebugHud.cs
 Assets/_Game/Scripts/UI/MenuManager.cs
 Assets/_Game/Scripts/UI/MenuSystemDataSO.cs
-docs/specs/implementados/spec_ui_001_debug_hud_feedback_mvp.md
-docs/specs/implementados/spec_ui_002_hud_tools_hotbar_progression_debug.md
-docs/specs/implementados/spec_ui_menu_systems_final.md
-docs/specs/a_implementar/spec_fase9l_ui_ux_full_gameplay.md
+.specs/implementados/spec_ui_001_debug_hud_feedback_mvp.md
+.specs/implementados/spec_ui_002_hud_tools_hotbar_progression_debug.md
+.specs/implementados/spec_ui_menu_systems_final.md
+.specs/a_implementar/spec_fase9l_ui_ux_full_gameplay.md
 ```
 
 ---

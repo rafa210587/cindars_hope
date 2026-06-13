@@ -59,7 +59,7 @@ Run /review-non-regression
 ### Step 3: Update Documentation
 
 **If spec implemented:**
-- [ ] Move spec from `docs/specs/a_implementar/` to `docs/specs/implementados/`
+- [ ] Move spec from `.specs/a_implementar/` to `.specs/implementados/`
 - [ ] Add evidence header with commit, files, validations
 - [ ] Update registries (if they exist)
 
@@ -140,8 +140,8 @@ Include: All commits related to this task
 ### Changed Files
 
 ```
-docs/specs/a_implementar/spec_12_player_combat.md
-docs/specs/implementados/spec_12_player_combat.md
+.specs/a_implementar/spec_12_player_combat.md
+.specs/implementados/spec_12_player_combat.md
 Assets/Scripts/Runtime/Combat/PlayerCombatManager.cs
 Assets/Scripts/Runtime/Combat/WeaponDataSO.cs
 Assets/_Game/Data/Combat/weapons-basic.asset

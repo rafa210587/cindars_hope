@@ -156,7 +156,7 @@ source_of_truth: true
 | **In CLAUDE.md** | ✗ NOT REFERENCED |
 | **Assessment** | Archival material; contradicts new governance; validation script needs updating |
 | **Decision** | **DELETE** — But validate_docs.ps1 must be updated first |
-| **Reason** | New governance uses docs/project, docs/specs, etc.; docs_old contradicts context-reading-policy |
+| **Reason** | New governance uses docs/project, .specs, etc.; docs_old contradicts context-reading-policy |
 
 ---
 
@@ -181,7 +181,7 @@ source_of_truth: true
 | **File Count** | 3 files |
 | **Purpose** | Legacy templates directory |
 | **Assessment** | May contain spec/refinement/validation templates |
-| **Decision** | **MIGRATE then DELETE** — Move useful content to docs/specs/_templates, docs/refinements/_templates, docs/validation/_templates; then delete |
+| **Decision** | **MIGRATE then DELETE** — Move useful content to .specs/_templates, docs/refinements/_templates, docs/validation/_templates; then delete |
 | **Reason** | Content should be in canonical docs/ locations, not root |
 
 ---

@@ -68,6 +68,8 @@ namespace CindarsHope.Cave
                 return;
             }
 
+            RefreshSnapshotEnemyHpBeforeTransition();
+
             if (_mode == CaveExitMode.BackExit)
             {
                 HandleBackExit();
@@ -79,6 +81,15 @@ namespace CindarsHope.Cave
             else
             {
                 HandleSceneTransition();
+            }
+        }
+
+        // F13: HP dos inimigos persiste no snapshot do nível ao sair por qualquer portal.
+        private void RefreshSnapshotEnemyHpBeforeTransition()
+        {
+            if (_levelController != null)
+            {
+                _levelController.RefreshCurrentSnapshotEnemyHp();
             }
         }
 

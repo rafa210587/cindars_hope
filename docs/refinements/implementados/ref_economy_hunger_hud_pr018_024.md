@@ -1,8 +1,8 @@
-﻿# REF — ECONOMY HUNGER HUD PR018 024
+# REF — ECONOMY HUNGER HUD PR018 024
 
 > Origem histórica: conteúdo absorvido durante reorganização documental.
 > Status: refinamento implementado absorvido.
-> Spec consolidada relacionada: `docs/specs/implementados/spec_economy_001_compra_venda_gold_e_sellables.md`
+> Spec consolidada relacionada: `.specs/implementados/spec_economy_001_compra_venda_gold_e_sellables.md`
 
 ---
 

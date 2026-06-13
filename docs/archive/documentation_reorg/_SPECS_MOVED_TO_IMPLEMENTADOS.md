@@ -7,7 +7,7 @@ Este arquivo registra specs que foram movidas de `a_implementar/` para `implemen
 **Arquivo original:** `spec_equipment_durability_environment_loot_runtime.md`  
 **Status:** Movido para `implementados/`  
 **Data:** 2026-05-25  
-**Versão em implementados:** `docs/specs/implementados/spec_equipment_durability_environment_loot_runtime.md`
+**Versão em implementados:** `.specs/implementados/spec_equipment_durability_environment_loot_runtime.md`
 
 ### Motivo da movimentação
 
@@ -22,7 +22,7 @@ Este arquivo registra specs que foram movidas de `a_implementar/` para `implemen
 **Arquivo original:** `spec_damage_status_elements_resistances_runtime.md`  
 **Status:** Movido para `implementados/`  
 **Data:** 2026-05-25  
-**Versão em implementados:** `docs/specs/implementados/spec_damage_status_elements_resistances_runtime.md`
+**Versão em implementados:** `.specs/implementados/spec_damage_status_elements_resistances_runtime.md`
 
 ### Motivo da movimentação
 
@@ -34,4 +34,4 @@ Este arquivo registra specs que foram movidas de `a_implementar/` para `implemen
 
 ## Nota
 
-As versões detalhadas das especificações originais estão preservadas em `docs/specs/implementados/` com status "Implementado parcial". Este arquivo serve apenas como índice de histórico.
+As versões detalhadas das especificações originais estão preservadas em `.specs/implementados/` com status "Implementado parcial". Este arquivo serve apenas como índice de histórico.

@@ -1,6 +1,6 @@
 # Testing Quality Gate — Agent Operational Addendum
 
-> Applies to all agents implementing specs in `docs/specs/a_implementar/`.
+> Applies to all agents implementing specs in `.specs/a_implementar/`.
 
 ## Canonical rule
 

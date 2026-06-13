@@ -1,7 +1,7 @@
 # refinamento_init_skill_trees_active_slots_respec_anya
 
 > Status: Refinamento inicial a implementar
-> Spec futura relacionada: `docs/specs/a_implementar/spec_skill_trees_active_slots_respec_anya_runtime.md`
+> Spec futura relacionada: `.specs/a_implementar/spec_skill_trees_active_slots_respec_anya_runtime.md`
 > Objetivo: completar skill trees, skill points, active slots R/T/Y/G, skills passivas, skills equipaveis, capstones, save/load, modal de skill tree por tecla K e respec na Fonte de Anya. Inclui arvores expandidas de Melee, Ranged, Magic, Survival e Crafting.
 
 ---

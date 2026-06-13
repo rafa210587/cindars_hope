@@ -106,7 +106,7 @@ Note: `ValidateShopPriceData.cs` already provides broader validation (all shops 
 - `Assets/_Game/Scripts/Editor/Validation/ValidateTownShopCatalogIntegrity.cs` — NEW: town shop catalog integrity validator
 
 ### Docs
-- `docs/specs/a_implementar/FIX_001_runtime_warnings_town_shop_catalog_alignment.md` — spec file (created per user instructions)
+- `.specs/a_implementar/FIX_001_runtime_warnings_town_shop_catalog_alignment.md` — spec file (created per user instructions)
 - `docs/validation/FIX_001_execution_report.md` — this file
 - `docs/project/CURRENT_STATE.md` — updated with FIX-001 status
 

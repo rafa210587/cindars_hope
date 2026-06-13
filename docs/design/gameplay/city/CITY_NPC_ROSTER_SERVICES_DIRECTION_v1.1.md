@@ -5,7 +5,7 @@
 > **Depende de:** `docs/design/gameplay/city/CITY_DESIGN_DIRECTION_v1.2.md`  
 > **Canon obrigatório:** `docs/design/lore/VAALARA_GAME_CANON_DIRECTION_v1.0.md`  
 > **Fontes de referência:** `RACAS_DE_VAALARA_Guia_Completo.md`, `Deuses_de_Vaalara.md`, `DORNECIA_Guia_Completo.md`, `GDD_v2.6.md`  
-> **Não é spec implementável.** Specs futuras devem ser quebradas em `docs/specs/a_implementar/`.
+> **Não é spec implementável.** Specs futuras devem ser quebradas em `.specs/a_implementar/`.
 
 ---
 

@@ -228,6 +228,12 @@ namespace CindarsHope.UI
                 GUILayout.Label($"Day: {_timeManager.CurrentDay}");
             }
 
+            var weatherService = CindarsHope.World.Weather.WorldWeatherService.Instance;
+            if (weatherService != null)
+            {
+                GUILayout.Label($"Clima: {CindarsHope.World.Weather.WeatherGenerator.GetWeatherDescription(weatherService.CurrentWeather)}");
+            }
+
             GUILayout.Label($"Scene: {SceneManager.GetActiveScene().name}");
         }
 

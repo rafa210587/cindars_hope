@@ -1,8 +1,8 @@
-﻿# REF — CRAFTING PR046 052
+# REF — CRAFTING PR046 052
 
 > Origem histórica: conteúdo absorvido durante reorganização documental.
 > Status: refinamento implementado absorvido.
-> Spec consolidada relacionada: `docs/specs/implementados/spec_craft_001_crafting_mvp.md`
+> Spec consolidada relacionada: `.specs/implementados/spec_craft_001_crafting_mvp.md`
 
 ---
 

@@ -1,8 +1,8 @@
-﻿# REF — WORLD SHOP HARDENING PR031 045
+# REF — WORLD SHOP HARDENING PR031 045
 
 > Origem histórica: conteúdo absorvido durante reorganização documental.
 > Status: refinamento implementado absorvido.
-> Spec consolidada relacionada: `docs/specs/implementados/spec_farm_003_arvores_pesca_pickups_world_activities.md`
+> Spec consolidada relacionada: `.specs/implementados/spec_farm_003_arvores_pesca_pickups_world_activities.md`
 
 ---
 

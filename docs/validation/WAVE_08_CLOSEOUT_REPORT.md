@@ -78,4 +78,4 @@ Docs validation: EXPECTED_FAIL_LEGACY_ONLY (pre-existing)
 ## Next Wave
 
 WAVE 09: Quest System (8 specs)
-- `09_spec_quest_*.md` files in `docs/specs/a_implementar/`
+- `09_spec_quest_*.md` files in `.specs/a_implementar/`

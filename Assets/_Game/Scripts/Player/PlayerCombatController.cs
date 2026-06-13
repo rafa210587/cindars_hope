@@ -195,10 +195,8 @@ namespace CindarsHope.Player
 
         private void OnPlayerHit(PlayerHitEvent evt)
         {
-            if (_playerManager != null)
-            {
-                _playerManager.DamageHP(evt.DamageAmount);
-            }
+            // F03: caminho central com redução por Defense derivado (armadura funcional).
+            CindarsHope.Combat.PlayerDamageReceiver.ApplyDamage(_playerManager, evt.DamageAmount, "enemy_melee");
         }
     }
 }

@@ -1,7 +1,7 @@
 # ref_farm_irrigacao_solo_planting_ui
 
 > Status: Implementado parcial
-> Spec relacionada: `docs/specs/implementados/spec_farm_004_irrigacao_solo_planting_ui.md`
+> Spec relacionada: `.specs/implementados/spec_farm_004_irrigacao_solo_planting_ui.md`
 > Objetivo: completar o loop de plantio/solo/irrigacao/UX agricola alem do MVP atual.
 
 ## Resultado da implementacao 2026-05-24
@@ -33,7 +33,7 @@ Evidencia:
 Assets/_Game/Scripts/Farm/FarmPlot.cs
 Assets/_Game/Scripts/Farm/FarmPlotRegistry.cs
 Assets/_Game/Scripts/Farm/Data/SeedDataSO.cs
-docs/specs/implementados/spec_farm_002_plots_seeds_growth_harvest.md
+.specs/implementados/spec_farm_002_plots_seeds_growth_harvest.md
 ```
 
 ---

@@ -142,7 +142,7 @@
 ### 12. Tracking Documentation Inconsistencies ❌ → 🔄
 
 **Files:**
-- `docs/specs/SPEC_EXECUTION_ORDER.md`
+- `.specs/SPEC_EXECUTION_ORDER.md`
 - `docs/IMPLEMENTATION_STATUS.md`
 - `PROJECT_LOG.md`
 

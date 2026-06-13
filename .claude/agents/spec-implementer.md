@@ -1,6 +1,6 @@
 ---
 name: spec-implementer
-description: Implements specs from docs/specs/a_implementar/ with strict scope, minimal context, and phase-gated closeout. Use when the human says "implement spec X" / "faz a spec X".
+description: Implements specs from .specs/a_implementar/ with strict scope, minimal context, and phase-gated closeout. Use when the human says "implement spec X" / "faz a spec X".
 ---
 
 # Agent: Spec Implementer

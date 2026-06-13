@@ -36,9 +36,9 @@ All required sources confirmed:
 |--------|--------|
 | CLAUDE.md | ✓ Read |
 | docs/project/CURRENT_STATE.md | ✓ Read |
-| docs/specs/01_spec_game_event_contracts_runtime.md | ✓ Read (full) |
-| docs/specs/a_implementar/01_spec_stable_ids_registry_runtime.md | ✓ Referenced |
-| docs/specs/implementados/spec_core_001_event_bus_e_eventos_base.md | ✓ Referenced |
+| .specs/01_spec_game_event_contracts_runtime.md | ✓ Read (full) |
+| .specs/a_implementar/01_spec_stable_ids_registry_runtime.md | ✓ Referenced |
+| .specs/implementados/spec_core_001_event_bus_e_eventos_base.md | ✓ Referenced |
 | .claude/rules/testing-quality-gate.md | ✓ Referenced |
 
 #### GameEventBus Audit
@@ -329,7 +329,7 @@ Per spec scope, no existing code was altered:
 ✓ Assets/_Game/Scripts/Core/GameEventBus.cs — NOT MODIFIED (already correct)
 ✓ Assets/_Game/Scripts/Core/Events/** — NOT MODIFIED (60+ events already follow rules)
 ✓ SaveManager.cs — NOT MODIFIED (no save schema changes)
-✓ docs/specs/SPEC_EXECUTION_ORDER.md — NOT MODIFIED (no reordering)
+✓ .specs/SPEC_EXECUTION_ORDER.md — NOT MODIFIED (no reordering)
 ```
 
 Only addition: `GameEventBusTests.cs` (new test file)

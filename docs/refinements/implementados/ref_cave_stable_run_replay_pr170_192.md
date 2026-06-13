@@ -1,8 +1,8 @@
-﻿# REF — CAVE STABLE RUN REPLAY PR170 192
+# REF — CAVE STABLE RUN REPLAY PR170 192
 
 > Origem histórica: conteúdo absorvido durante reorganização documental.
 > Status: refinamento implementado absorvido.
-> Spec consolidada relacionada: `docs/specs/implementados/spec_cave_003_stable_run_snapshots_replay_parcial.md`
+> Spec consolidada relacionada: `.specs/implementados/spec_cave_003_stable_run_snapshots_replay_parcial.md`
 
 ---
 

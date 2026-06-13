@@ -10,14 +10,6 @@ namespace CindarsHope.Combat.Weapon
     {
         public static ProjectileSpawnResult SpawnProjectile(ProjectileSpawnRequest request)
         {
-            // Validate prefab
-            if (request.Prefab == null)
-            {
-                string errorMsg = "ProjectileSpawnService: Prefab is null";
-                Debug.LogError($"CombatLog: ProjectileSpawned. Success=False, ErrorCode=PrefabNull, Message={errorMsg}");
-                return ProjectileSpawnResult.CreateError("PrefabNull", errorMsg);
-            }
-
             // Validate direction
             if (request.Direction.sqrMagnitude < 0.001f)
             {
@@ -29,18 +21,30 @@ namespace CindarsHope.Combat.Weapon
             // Calculate spawn position
             Vector2 spawnPos = request.SourcePosition + request.Direction.normalized * request.SpawnOffset;
 
-            // Instantiate projectile
-            var projectile = Object.Instantiate(request.Prefab, spawnPos, Quaternion.identity);
+            // Instantiate authored prefab when available; otherwise build a runtime projectile
+            // with procedural visuals so bow/spell attacks never dead-end on missing art.
+            GameObject projectile;
+            if (request.Prefab != null)
+            {
+                projectile = Object.Instantiate(request.Prefab, spawnPos, Quaternion.identity);
+            }
+            else
+            {
+                projectile = RuntimeProjectileFactory.Create(request.VisualStyle, request.DamageType);
+                projectile.transform.position = spawnPos;
+            }
 
             // Get ProjectileBehaviour component
             var projectileBehaviour = projectile.GetComponent<ProjectileBehaviour>();
             if (projectileBehaviour == null)
             {
-                string errorMsg = $"ProjectileSpawnService: ProjectileBehaviour not found on projectile '{request.Prefab.name}'";
+                string errorMsg = $"ProjectileSpawnService: ProjectileBehaviour not found on projectile '{projectile.name}'";
                 Debug.LogError($"CombatLog: ProjectileSpawned. Success=False, ErrorCode=MissingProjectileBehaviour, Message={errorMsg}");
                 Object.Destroy(projectile);
                 return ProjectileSpawnResult.CreateError("MissingProjectileBehaviour", errorMsg);
             }
+
+            projectileBehaviour.SetMaxHits(request.MaxHits);
 
             // Initialize projectile with or without status effect
             if (request.StatusEffect != null && request.StatusApplyChance > 0f)

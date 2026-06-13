@@ -6,7 +6,7 @@ title: Save Data Contracts Simple DTOs
 date: 2026-06-01
 source_documents:
   - .claude/rules/save-dto-simple-types-only.md
-  - docs/specs/implementados/SPEC_10_FARM_PERSISTENCE.md
+  - .specs/implementados/SPEC_10_FARM_PERSISTENCE.md
   - docs/game_rules/save_rules.md
 supersedes: []
 superseded_by: []

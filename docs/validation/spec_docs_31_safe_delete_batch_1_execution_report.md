@@ -61,19 +61,19 @@ Created: `docs/validation/spec_docs_31_phase0_safe_delete_batch_1_audit_matrix.m
 
 #### Reorg Specifications (13 files)
 ```
-✓ docs/specs/a_implementar/reorg/SPEC_00_STRATEGY_SUBAGENTS.md
-✓ docs/specs/a_implementar/reorg/SPEC_01_WAVE0A_ARCHITECTURE_VALIDATOR_FOUNDATION.md
-✓ docs/specs/a_implementar/reorg/SPEC_02_WAVE0B_PROJECTILE_PREFAB_VALIDATOR.md
-✓ docs/specs/a_implementar/reorg/SPEC_03_WAVE0C_COMBAT_DATABASE_VALIDATORS.md
-✓ docs/specs/a_implementar/reorg/SPEC_04_WAVE1_LEGACY_COMBAT_QUARANTINE.md
-✓ docs/specs/a_implementar/reorg/SPEC_05_WAVE2A_COMBAT_SERVICE_EXTRACTION.md
-✓ docs/specs/a_implementar/reorg/SPEC_06_WAVE2B_PROJECTILE_SPAWN_SERVICE.md
-✓ docs/specs/a_implementar/reorg/SPEC_07_WAVE2C_BOW_ARROW_SPELL_SERVICES.md
-✓ docs/specs/a_implementar/reorg/SPEC_08_WAVE3_ITEM_EQUIPMENT_CONTRACTS.md
-✓ docs/specs/a_implementar/reorg/SPEC_09_WAVE4_STATUS_EFFECT_RUNTIME.md
-✓ docs/specs/a_implementar/reorg/SPEC_10_WAVE5_SAVE_PROVIDERS.md
-✓ docs/specs/a_implementar/reorg/SPEC_11_WAVE6_BOOTSTRAP_INSTALLERS.md
-✓ docs/specs/a_implementar/reorg/SPEC_12_WAVE7_ARCHITECTURE_CLOSEOUT_VALIDATION.md
+✓ .specs/a_implementar/reorg/SPEC_00_STRATEGY_SUBAGENTS.md
+✓ .specs/a_implementar/reorg/SPEC_01_WAVE0A_ARCHITECTURE_VALIDATOR_FOUNDATION.md
+✓ .specs/a_implementar/reorg/SPEC_02_WAVE0B_PROJECTILE_PREFAB_VALIDATOR.md
+✓ .specs/a_implementar/reorg/SPEC_03_WAVE0C_COMBAT_DATABASE_VALIDATORS.md
+✓ .specs/a_implementar/reorg/SPEC_04_WAVE1_LEGACY_COMBAT_QUARANTINE.md
+✓ .specs/a_implementar/reorg/SPEC_05_WAVE2A_COMBAT_SERVICE_EXTRACTION.md
+✓ .specs/a_implementar/reorg/SPEC_06_WAVE2B_PROJECTILE_SPAWN_SERVICE.md
+✓ .specs/a_implementar/reorg/SPEC_07_WAVE2C_BOW_ARROW_SPELL_SERVICES.md
+✓ .specs/a_implementar/reorg/SPEC_08_WAVE3_ITEM_EQUIPMENT_CONTRACTS.md
+✓ .specs/a_implementar/reorg/SPEC_09_WAVE4_STATUS_EFFECT_RUNTIME.md
+✓ .specs/a_implementar/reorg/SPEC_10_WAVE5_SAVE_PROVIDERS.md
+✓ .specs/a_implementar/reorg/SPEC_11_WAVE6_BOOTSTRAP_INSTALLERS.md
+✓ .specs/a_implementar/reorg/SPEC_12_WAVE7_ARCHITECTURE_CLOSEOUT_VALIDATION.md
 ```
 
 #### Old Roadmap (1 file)
@@ -109,8 +109,8 @@ Created: `docs/validation/spec_docs_31_phase0_safe_delete_batch_1_audit_matrix.m
 
 #### Reorg Markers
 ```
-✓ docs/specs/a_implementar/reorg/README_STATUS.md (historical marker)
-✓ docs/specs/a_implementar/reorg/README_EXECUTION_ORDER.md (historical marker)
+✓ .specs/a_implementar/reorg/README_STATUS.md (historical marker)
+✓ .specs/a_implementar/reorg/README_EXECUTION_ORDER.md (historical marker)
 ```
 
 Reason: These serve as historical documentation that "this folder contains closed specs; do not execute."
@@ -124,7 +124,7 @@ Reason: Validation evidence is protected per DOCUMENT_GOVERNANCE.md (Batch 3)
 
 #### Active Documentation
 ```
-✓ All docs/specs/implementados/* (active history)
+✓ All .specs/implementados/* (active history)
 ✓ All docs/refinements/implementados/* (active history)
 ✓ All governance documents (AGENTS.md, CLAUDE.md, CURRENT_STATE.md, etc.)
 ✓ All validation reports (docs/validation/*)
@@ -176,7 +176,7 @@ All checks passed:
 ✓ Root folder 'spec/' does not exist
 ✓ Root folder 'specs/' does not exist
 ✓ docs_old/ exists
-✓ docs/specs/ exists as single official specs source
+✓ .specs/ exists as single official specs source
 ✓ SPEC_EXECUTION_ORDER.md exists
 ✓ pre_refinamentos/ exists
 ✓ No refinement_init files outside pre_refinamentos
@@ -225,7 +225,7 @@ All checks passed:
 ✓ Batch 2 candidates excluded (6 deferred)
 ✓ Batch 3 protected categories untouched (19+ protected)
 ✓ Validation evidence preserved (14 spec_arch_reorg reports)
-✓ Implemented specs preserved (docs/specs/implementados/*)
+✓ Implemented specs preserved (.specs/implementados/*)
 ✓ Governance documents untouched (AGENTS.md, CLAUDE.md, etc.)
 ✓ No C# code modified
 ✓ No Unity files modified

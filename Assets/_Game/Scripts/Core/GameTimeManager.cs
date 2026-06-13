@@ -28,6 +28,32 @@ namespace CindarsHope.Core
         public float PhaseTimer => _phaseTimer;
         public bool IsInitialized => _isInitialized;
 
+        public float CurrentPhaseDurationSeconds
+        {
+            get
+            {
+                if (_timeBalance != null)
+                {
+                    return _currentPhase == GamePhaseChangedEvent.GamePhase.Day
+                        ? _timeBalance.DayDurationSeconds
+                        : _timeBalance.NightDurationSeconds;
+                }
+
+                return _currentPhase == GamePhaseChangedEvent.GamePhase.Day
+                    ? DefaultDayDurationSeconds
+                    : DefaultNightDurationSeconds;
+            }
+        }
+
+        public float CurrentPhaseNormalized
+        {
+            get
+            {
+                var duration = CurrentPhaseDurationSeconds;
+                return duration <= 0f ? 0f : Mathf.Clamp01(_phaseTimer / duration);
+            }
+        }
+
         private void OnEnable()
         {
             GameEventBus.Subscribe<DayStartedEvent>(HandleDayStarted);

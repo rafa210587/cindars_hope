@@ -149,13 +149,13 @@ Não.
 
 ## Passos
 
-1. Abrir `docs/specs/SPEC_GENERATION_ROADMAP_MASTER.md`.
+1. Abrir `.specs/SPEC_GENERATION_ROADMAP_MASTER.md`.
 2. Confirmar que as waves estão claras.
 3. Confirmar que a 01Q aparece como fundacional antes de execução em massa das Waves 02+.
-4. Abrir `docs/specs/SPEC_IMPLEMENTABLE_TEMPLATE.md`.
+4. Abrir `.specs/SPEC_IMPLEMENTABLE_TEMPLATE.md`.
 5. Confirmar que o template exige paralelização.
 6. Confirmar que o template não exige human test intermediário.
-7. Abrir `docs/specs/SPEC_REGISTRY_TO_IMPLEMENT.md`.
+7. Abrir `.specs/SPEC_REGISTRY_TO_IMPLEMENT.md`.
 8. Confirmar que specs futuras concretas aparecem apenas quando realmente criadas.
 
 ## Critério de PASS

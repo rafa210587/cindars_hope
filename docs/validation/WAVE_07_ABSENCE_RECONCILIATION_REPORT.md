@@ -6,8 +6,8 @@ DOES_NOT_EXIST_RESERVED_GAP
 ## Verification
 
 Searched:
-- `docs/specs/a_implementar/**/07_spec_*.md`
-- `docs/specs/**/07_spec_*.md`
+- `.specs/a_implementar/**/07_spec_*.md`
+- `.specs/**/07_spec_*.md`
 
 ## Result
 

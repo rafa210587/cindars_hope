@@ -87,7 +87,9 @@ namespace CindarsHope.Editor.SceneCreation
             CreateSpawnPoints(playerTransform);
             CreatePortals();
             var npcManager = CreateNpcs(playerTransform, playerManager, inventoryManager, itemDatabase, shopManager, modalManager, shopUi);
-            CreateTownCommerce();
+            CreateCentralPlaza();
+            CreateMarketStalls();
+            CreateHouses();
             CreateTownDecorations();
             CreateTownTrees();
             CreateDebugHud(playerManager, inventoryManager, hungerManager, interactionSystem, timeManager, saveManager);
@@ -509,8 +511,8 @@ namespace CindarsHope.Editor.SceneCreation
             var parent = new GameObject("SpawnPoints");
             parent.transform.position = Vector3.zero;
 
-            var defaultSpawn = CreateSpawnPoint(parent.transform, "town_default", new Vector3(0f, -2f, 0f));
-            var fromFarmSpawn = CreateSpawnPoint(parent.transform, "town_from_farm", new Vector3(0f, -5f, 0f));
+            var defaultSpawn = CreateSpawnPoint(parent.transform, "town_default", new Vector3(0f, -5f, 0f));
+            var fromFarmSpawn = CreateSpawnPoint(parent.transform, "town_from_farm", new Vector3(0f, -11.5f, 0f));
 
             var installer = parent.AddComponent<SceneSpawnInstaller>();
             var serializedInstaller = new SerializedObject(installer);
@@ -557,10 +559,11 @@ namespace CindarsHope.Editor.SceneCreation
             var portals = new GameObject("Portals");
             portals.transform.position = Vector3.zero;
 
+            // South gate: the road back to the farm leaves the town at the bottom wall.
             CreateScenePortal(
                 portals.transform,
                 "Portal_Town_To_Farm",
-                new Vector3(0f, -6f, 0f),
+                new Vector3(0f, -13.5f, 0f),
                 new Color(0.78f, 0.62f, 0.24f),
                 "FarmScene",
                 FarmScenePath,
@@ -608,29 +611,249 @@ namespace CindarsHope.Editor.SceneCreation
             EditorUtility.SetDirty(portal);
         }
 
+        // ─── Central plaza with the warrior statue ───────────────────────────
+        // Composite placeholder statue: pedestal + warrior body + bastard sword + round
+        // shield + plaque. All shapes are builtin-sprite placeholders to be replaced by art.
+        private static void CreateCentralPlaza()
+        {
+            var plaza = new GameObject("CentralPlaza");
+            plaza.transform.position = Vector3.zero;
+
+            // Plaza floor (large light slab under the statue, sorting below everything else)
+            var floor = new GameObject("PlazaFloor");
+            floor.transform.SetParent(plaza.transform);
+            floor.transform.position = Vector3.zero;
+            floor.transform.localScale = new Vector3(9f, 9f, 1f);
+            var floorRenderer = floor.AddComponent<SpriteRenderer>();
+            floorRenderer.sprite = GetBuiltinSprite();
+            floorRenderer.color = new Color(0.69f, 0.66f, 0.6f);
+            floorRenderer.sortingOrder = 0;
+            TrySetSortingLayer(floorRenderer, "Ground", floorRenderer.sortingOrder);
+
+            var statue = new GameObject("WarriorStatue");
+            statue.transform.SetParent(plaza.transform);
+            statue.transform.position = Vector3.zero;
+
+            // Pedestal (blocks movement)
+            var pedestal = CreateStatuePart(statue.transform, "Pedestal", new Vector3(0f, -0.6f, 0f), new Vector3(2.2f, 0.9f, 1f), new Color(0.45f, 0.45f, 0.5f), 2);
+            var pedestalCollider = pedestal.AddComponent<BoxCollider2D>();
+            pedestalCollider.isTrigger = false;
+            pedestalCollider.size = Vector2.one;
+
+            // Warrior body and head (weathered bronze)
+            CreateStatuePart(statue.transform, "WarriorBody", new Vector3(0f, 0.55f, 0f), new Vector3(0.9f, 1.6f, 1f), new Color(0.42f, 0.5f, 0.46f), 3);
+            CreateStatuePart(statue.transform, "WarriorHead", new Vector3(0f, 1.55f, 0f), new Vector3(0.5f, 0.5f, 1f), new Color(0.46f, 0.54f, 0.5f), 3);
+
+            // Bastard sword raised in the right hand (long thin blade + crossguard)
+            var sword = CreateStatuePart(statue.transform, "BastardSwordBlade", new Vector3(0.75f, 1.25f, 0f), new Vector3(0.14f, 2.3f, 1f), new Color(0.72f, 0.76f, 0.82f), 4);
+            sword.transform.rotation = Quaternion.Euler(0f, 0f, -12f);
+            var crossguard = CreateStatuePart(statue.transform, "BastardSwordCrossguard", new Vector3(0.66f, 0.45f, 0f), new Vector3(0.55f, 0.12f, 1f), new Color(0.55f, 0.5f, 0.35f), 4);
+            crossguard.transform.rotation = Quaternion.Euler(0f, 0f, -12f);
+
+            // Round shield resting on the left arm
+            CreateStatuePart(statue.transform, "Shield", new Vector3(-0.7f, 0.5f, 0f), new Vector3(0.85f, 0.95f, 1f), new Color(0.5f, 0.38f, 0.28f), 4);
+            CreateStatuePart(statue.transform, "ShieldBoss", new Vector3(-0.7f, 0.5f, 0f), new Vector3(0.3f, 0.35f, 1f), new Color(0.7f, 0.66f, 0.5f), 5);
+
+            // Plaque honoring the founder of Cindar's Hope
+            CreateStatuePart(statue.transform, "Plaque", new Vector3(0f, -1.15f, 0f), new Vector3(1.1f, 0.3f, 1f), new Color(0.75f, 0.68f, 0.4f), 3);
+
+            // Plaza benches and corner planters
+            CreateDecoration(plaza.transform, "PlazaBench_N", new Vector3(0f, 3.4f, 0f), new Vector3(1.6f, 0.45f, 1f), new Color(0.5f, 0.38f, 0.26f));
+            CreateDecoration(plaza.transform, "PlazaBench_S", new Vector3(0f, -3.4f, 0f), new Vector3(1.6f, 0.45f, 1f), new Color(0.5f, 0.38f, 0.26f));
+            CreateDecoration(plaza.transform, "PlazaBench_E", new Vector3(3.4f, 0f, 0f), new Vector3(0.45f, 1.6f, 1f), new Color(0.5f, 0.38f, 0.26f));
+            CreateDecoration(plaza.transform, "PlazaBench_W", new Vector3(-3.4f, 0f, 0f), new Vector3(0.45f, 1.6f, 1f), new Color(0.5f, 0.38f, 0.26f));
+            CreateDecoration(plaza.transform, "PlazaPlanter_NE", new Vector3(3.8f, 3.8f, 0f), new Vector3(0.8f, 0.8f, 1f), new Color(0.3f, 0.52f, 0.26f));
+            CreateDecoration(plaza.transform, "PlazaPlanter_NW", new Vector3(-3.8f, 3.8f, 0f), new Vector3(0.8f, 0.8f, 1f), new Color(0.3f, 0.52f, 0.26f));
+            CreateDecoration(plaza.transform, "PlazaPlanter_SE", new Vector3(3.8f, -3.8f, 0f), new Vector3(0.8f, 0.8f, 1f), new Color(0.3f, 0.52f, 0.26f));
+            CreateDecoration(plaza.transform, "PlazaPlanter_SW", new Vector3(-3.8f, -3.8f, 0f), new Vector3(0.8f, 0.8f, 1f), new Color(0.3f, 0.52f, 0.26f));
+        }
+
+        private static GameObject CreateStatuePart(Transform parent, string name, Vector3 localPosition, Vector3 scale, Color color, int sortingOrder)
+        {
+            var part = new GameObject(name);
+            part.transform.SetParent(parent);
+            part.transform.localPosition = localPosition;
+            part.transform.localScale = scale;
+
+            var renderer = part.AddComponent<SpriteRenderer>();
+            renderer.sprite = GetBuiltinSprite();
+            renderer.color = color;
+            renderer.sortingOrder = sortingOrder;
+            TrySetSortingLayer(renderer, "Items", renderer.sortingOrder);
+            return part;
+        }
+
+        // ─── Market stalls: one per shop NPC, placed just behind the vendor ──
+        private static void CreateMarketStalls()
+        {
+            var parent = new GameObject("MarketStalls");
+            parent.transform.position = Vector3.zero;
+
+            foreach (var spec in RefinedCanonicalTownNpcSpecs)
+            {
+                if (string.IsNullOrWhiteSpace(spec.ShopDataPath))
+                {
+                    continue;
+                }
+
+                var stall = new GameObject($"Stall_{spec.NpcId}");
+                stall.transform.SetParent(parent.transform);
+                stall.transform.position = spec.Position + new Vector3(0f, 1.15f, 0f);
+
+                // Counter (walkable in front, blocks behind)
+                var counter = new GameObject("Counter");
+                counter.transform.SetParent(stall.transform);
+                counter.transform.localPosition = Vector3.zero;
+                counter.transform.localScale = new Vector3(2.1f, 0.6f, 1f);
+                var counterRenderer = counter.AddComponent<SpriteRenderer>();
+                counterRenderer.sprite = GetBuiltinSprite();
+                counterRenderer.color = new Color(0.46f, 0.34f, 0.22f);
+                counterRenderer.sortingOrder = 1;
+                TrySetSortingLayer(counterRenderer, "Items", counterRenderer.sortingOrder);
+                var counterCollider = counter.AddComponent<BoxCollider2D>();
+                counterCollider.isTrigger = false;
+                counterCollider.size = Vector2.one;
+
+                // Awning tinted with the vendor color so each market is identifiable
+                var awning = new GameObject("Awning");
+                awning.transform.SetParent(stall.transform);
+                awning.transform.localPosition = new Vector3(0f, 0.75f, 0f);
+                awning.transform.localScale = new Vector3(2.4f, 0.5f, 1f);
+                var awningRenderer = awning.AddComponent<SpriteRenderer>();
+                awningRenderer.sprite = GetBuiltinSprite();
+                awningRenderer.color = Color.Lerp(spec.Color, Color.white, 0.25f);
+                awningRenderer.sortingOrder = 4;
+                TrySetSortingLayer(awningRenderer, "Items", awningRenderer.sortingOrder);
+            }
+        }
+
+        // ─── Houses: simple base+roof+door composites per resident district ──
+        private static readonly (string name, Vector3 position, Color baseColor)[] TownHouseSpecs =
+        {
+            ("House_Temple", new Vector3(-12f, 11.5f, 0f), new Color(0.78f, 0.74f, 0.62f)),
+            ("House_Registry", new Vector3(-8.5f, 11.5f, 0f), new Color(0.55f, 0.58f, 0.66f)),
+            ("House_MarketRow_A", new Vector3(-4.5f, 9.6f, 0f), new Color(0.55f, 0.42f, 0.3f)),
+            ("House_MarketRow_B", new Vector3(0f, 9.6f, 0f), new Color(0.6f, 0.46f, 0.32f)),
+            ("House_MarketRow_C", new Vector3(4.5f, 9.6f, 0f), new Color(0.52f, 0.4f, 0.3f)),
+            ("House_Inn", new Vector3(8.5f, 9.6f, 0f), new Color(0.62f, 0.5f, 0.36f)),
+            ("House_Blacksmith", new Vector3(-14.5f, 4.5f, 0f), new Color(0.4f, 0.34f, 0.3f)),
+            ("House_Archive", new Vector3(-11.5f, -5.5f, 0f), new Color(0.48f, 0.42f, 0.6f)),
+            ("House_Workshop", new Vector3(9.5f, -6f, 0f), new Color(0.56f, 0.46f, 0.3f)),
+            ("House_AnimalYard", new Vector3(14.5f, 10.5f, 0f), new Color(0.46f, 0.56f, 0.4f)),
+            ("House_AlchemyLab", new Vector3(14f, 1f, 0f), new Color(0.36f, 0.55f, 0.58f)),
+            ("House_GateKeeper", new Vector3(-7.5f, -11f, 0f), new Color(0.42f, 0.46f, 0.56f)),
+        };
+
+        private static void CreateHouses()
+        {
+            var parent = new GameObject("TownHouses");
+            parent.transform.position = Vector3.zero;
+
+            foreach (var (name, position, baseColor) in TownHouseSpecs)
+            {
+                CreateHouse(parent.transform, name, position, baseColor);
+            }
+        }
+
+        private static void CreateHouse(Transform parent, string name, Vector3 position, Color baseColor)
+        {
+            var house = new GameObject(name);
+            house.transform.SetParent(parent);
+            house.transform.position = position;
+
+            // Walls (blocking)
+            var body = new GameObject("Body");
+            body.transform.SetParent(house.transform);
+            body.transform.localPosition = Vector3.zero;
+            body.transform.localScale = new Vector3(2.6f, 1.8f, 1f);
+            var bodyRenderer = body.AddComponent<SpriteRenderer>();
+            bodyRenderer.sprite = GetBuiltinSprite();
+            bodyRenderer.color = baseColor;
+            bodyRenderer.sortingOrder = 2;
+            TrySetSortingLayer(bodyRenderer, "Items", bodyRenderer.sortingOrder);
+            var bodyCollider = body.AddComponent<BoxCollider2D>();
+            bodyCollider.isTrigger = false;
+            bodyCollider.size = Vector2.one;
+
+            // Roof
+            var roof = new GameObject("Roof");
+            roof.transform.SetParent(house.transform);
+            roof.transform.localPosition = new Vector3(0f, 1.2f, 0f);
+            roof.transform.localScale = new Vector3(3f, 0.7f, 1f);
+            var roofRenderer = roof.AddComponent<SpriteRenderer>();
+            roofRenderer.sprite = GetBuiltinSprite();
+            roofRenderer.color = Color.Lerp(baseColor, new Color(0.5f, 0.18f, 0.12f), 0.6f);
+            roofRenderer.sortingOrder = 3;
+            TrySetSortingLayer(roofRenderer, "Items", roofRenderer.sortingOrder);
+
+            // Door
+            var door = new GameObject("Door");
+            door.transform.SetParent(house.transform);
+            door.transform.localPosition = new Vector3(0f, -0.55f, 0f);
+            door.transform.localScale = new Vector3(0.5f, 0.75f, 1f);
+            var doorRenderer = door.AddComponent<SpriteRenderer>();
+            doorRenderer.sprite = GetBuiltinSprite();
+            doorRenderer.color = new Color(0.28f, 0.2f, 0.14f);
+            doorRenderer.sortingOrder = 3;
+            TrySetSortingLayer(doorRenderer, "Items", doorRenderer.sortingOrder);
+        }
+
         private static void CreateTownDecorations()
         {
             var decorations = new GameObject("TownDecorations");
             decorations.transform.position = Vector3.zero;
 
-            CreateDecoration(decorations.transform, "TownWell_Placeholder", new Vector3(-3.5f, 1f, 0f), new Vector3(1.2f, 1.2f, 1f), new Color(0.32f, 0.38f, 0.44f));
-            CreateDecoration(decorations.transform, "TownHouse_Placeholder", new Vector3(4f, 2f, 0f), new Vector3(2.2f, 1.6f, 1f), new Color(0.36f, 0.28f, 0.22f));
-            CreateDecoration(decorations.transform, "TownLamp_Placeholder", new Vector3(-5f, -2.5f, 0f), new Vector3(0.45f, 1.3f, 1f), new Color(0.83f, 0.66f, 0.31f));
+            CreateDecoration(decorations.transform, "TownWell", new Vector3(-5.5f, 4.5f, 0f), new Vector3(1.2f, 1.2f, 1f), new Color(0.32f, 0.38f, 0.44f));
+
+            // Street lamps along the main roads (plaza → gates and market row)
+            CreateDecoration(decorations.transform, "TownLamp_PlazaN", new Vector3(1.2f, 4.6f, 0f), new Vector3(0.4f, 1.3f, 1f), new Color(0.83f, 0.66f, 0.31f));
+            CreateDecoration(decorations.transform, "TownLamp_PlazaS", new Vector3(-1.2f, -4.6f, 0f), new Vector3(0.4f, 1.3f, 1f), new Color(0.83f, 0.66f, 0.31f));
+            CreateDecoration(decorations.transform, "TownLamp_MarketW", new Vector3(-7f, 5.5f, 0f), new Vector3(0.4f, 1.3f, 1f), new Color(0.83f, 0.66f, 0.31f));
+            CreateDecoration(decorations.transform, "TownLamp_MarketE", new Vector3(7f, 5.5f, 0f), new Vector3(0.4f, 1.3f, 1f), new Color(0.83f, 0.66f, 0.31f));
+            CreateDecoration(decorations.transform, "TownLamp_GateS", new Vector3(1.5f, -12f, 0f), new Vector3(0.4f, 1.3f, 1f), new Color(0.83f, 0.66f, 0.31f));
+            CreateDecoration(decorations.transform, "TownLamp_CaveRoad", new Vector3(10.5f, -1f, 0f), new Vector3(0.4f, 1.3f, 1f), new Color(0.83f, 0.66f, 0.31f));
+            CreateDecoration(decorations.transform, "TownLamp_NightMarket", new Vector3(7.5f, -9.5f, 0f), new Vector3(0.4f, 1.3f, 1f), new Color(0.6f, 0.45f, 0.75f));
+
+            // Night market tents (Yael's corner)
+            CreateDecoration(decorations.transform, "NightMarketTent_A", new Vector3(11.5f, -10.5f, 0f), new Vector3(1.8f, 1.1f, 1f), new Color(0.3f, 0.26f, 0.5f));
+            CreateDecoration(decorations.transform, "NightMarketTent_B", new Vector3(13f, -8.5f, 0f), new Vector3(1.6f, 1f, 1f), new Color(0.36f, 0.3f, 0.55f));
+
+            // Quarry and construction props
+            CreateDecoration(decorations.transform, "QuarryRocks", new Vector3(-14.5f, -3.5f, 0f), new Vector3(1.6f, 1.1f, 1f), new Color(0.5f, 0.48f, 0.46f));
+            CreateDecoration(decorations.transform, "ConstructionPile", new Vector3(5.5f, -8f, 0f), new Vector3(1.5f, 0.8f, 1f), new Color(0.6f, 0.5f, 0.34f));
+
+            // Animal pen fence (Eiran's yard)
+            CreateDecoration(decorations.transform, "AnimalPenFence_N", new Vector3(12f, 10f, 0f), new Vector3(4f, 0.25f, 1f), new Color(0.52f, 0.4f, 0.26f));
+            CreateDecoration(decorations.transform, "AnimalPenFence_S", new Vector3(12f, 7f, 0f), new Vector3(4f, 0.25f, 1f), new Color(0.52f, 0.4f, 0.26f));
         }
+
+        // Tree clusters along the perimeter, road edges, and district borders.
+        private static readonly Vector3[] TownTreePositions =
+        {
+            // West perimeter
+            new Vector3(-16.5f, 11f, 0f), new Vector3(-16f, 6.5f, 0f), new Vector3(-16.5f, -0.5f, 0f),
+            new Vector3(-16f, -6f, 0f), new Vector3(-16.5f, -11f, 0f),
+            // East perimeter
+            new Vector3(16.5f, 11.5f, 0f), new Vector3(16f, 5.5f, 0f), new Vector3(16.5f, -0.5f, 0f),
+            new Vector3(16f, -5.5f, 0f), new Vector3(16.5f, -11f, 0f),
+            // North band between districts
+            new Vector3(-6f, 12.5f, 0f), new Vector3(-1.5f, 12.8f, 0f), new Vector3(2.5f, 12.5f, 0f), new Vector3(6.5f, 12.8f, 0f),
+            // South band near the gate road
+            new Vector3(-10f, -12.5f, 0f), new Vector3(-3.5f, -12.8f, 0f), new Vector3(4f, -12.5f, 0f), new Vector3(13f, -12.5f, 0f),
+            // Inner garden clusters (statue garden + temple path)
+            new Vector3(-5.5f, -7.5f, 0f), new Vector3(5.5f, 3.5f, 0f), new Vector3(-5.5f, 2.5f, 0f),
+            new Vector3(4.8f, -3.6f, 0f), new Vector3(-10.5f, 5.8f, 0f), new Vector3(9.5f, 0.5f, 0f),
+        };
 
         private static void CreateTownTrees()
         {
             var parent = new GameObject("TownTrees");
             parent.transform.position = Vector3.zero;
 
-            CreateTownTree(parent.transform, 0, new Vector3(-8f, 5f, 0f));
-            CreateTownTree(parent.transform, 1, new Vector3(-8.5f, 0f, 0f));
-            CreateTownTree(parent.transform, 2, new Vector3(-7.6f, -4f, 0f));
-            CreateTownTree(parent.transform, 3, new Vector3(8f, 5f, 0f));
-            CreateTownTree(parent.transform, 4, new Vector3(8.4f, 0.2f, 0f));
-            CreateTownTree(parent.transform, 5, new Vector3(7.5f, -4f, 0f));
-            CreateTownTree(parent.transform, 6, new Vector3(0f, 5.5f, 0f));
-            CreateTownTree(parent.transform, 7, new Vector3(3.6f, -4.2f, 0f));
+            for (int i = 0; i < TownTreePositions.Length; i++)
+            {
+                CreateTownTree(parent.transform, i, TownTreePositions[i]);
+            }
         }
 
         private static void CreateTownTree(Transform parent, int treeIndex, Vector3 position)
@@ -747,36 +970,48 @@ namespace CindarsHope.Editor.SceneCreation
             };
         }
 
+        // District layout v2: NPCs spread across the full playfield (~±16 x ±12) so the town
+        // reads as neighborhoods — temple NW, market row N, plaza center, industry W,
+        // workshop SE, night market S, cave road E, animal yard NE, gate S.
         private static readonly TownNpcSpec[] RefinedCanonicalTownNpcSpecs =
         {
-            new("npc_corvus", "NPC_Corvus_Temple", "Assets/_Game/Data/NPCs/Npc_Corvus.asset", "Assets/_Game/Data/Economy/Shop_Corvus.asset", new Vector3(-5.8f, 3.4f, 0f), new Color(0.82f, 0.76f, 0.58f), "Stationary/TemplePatrol", false),
-            new("npc_mara", "NPC_Mara_Registry", "Assets/_Game/Data/NPCs/Npc_Mara.asset", "Assets/_Game/Data/Economy/Shop_Mara.asset", new Vector3(-3.8f, 3.4f, 0f), new Color(0.44f, 0.56f, 0.72f), "Stationary/RegistryDesk", false),
-            new("npc_sylveth", "NPC_Sylveth_SeedVendor", "Assets/_Game/Data/NPCs/Npc_Sylveth.asset", "Assets/_Game/Data/Economy/Shop_Sylveth.asset", new Vector3(4.5f, 2f, 0f), new Color(0.42f, 0.72f, 0.34f), "ShopKeeperFixed/FarmVisit", false),
-            new("npc_brumdar", "NPC_Brumdar_Blacksmith", "Assets/_Game/Data/NPCs/Npc_Brumdar.asset", "Assets/_Game/Data/Economy/Shop_Brumdar.asset", new Vector3(-4.75f, 2.2f, 0f), new Color(0.64f, 0.45f, 0.3f), "ShopKeeperFixed", false),
-            new("npc_nimble", "NPC_Nimble_Workshop", "Assets/_Game/Data/NPCs/Npc_Nimble.asset", "Assets/_Game/Data/Economy/Shop_Nimble.asset", new Vector3(2.75f, -3.2f, 0f), new Color(0.72f, 0.58f, 0.32f), "Patrol/WorkshopDesk", true),
-            new("npc_gurd", "NPC_Gurd_ConstructionYard", "Assets/_Game/Data/NPCs/Npc_Gurd.asset", "Assets/_Game/Data/Economy/Shop_Gurd.asset", new Vector3(-1.8f, -3.3f, 0f), new Color(0.62f, 0.36f, 0.32f), "Patrol/HeavyWorkZone", true),
-            new("npc_hund", "NPC_Hund_GuardRoute", "Assets/_Game/Data/NPCs/Npc_Hund.asset", "Assets/_Game/Data/Economy/Shop_Hund.asset", new Vector3(-6.3f, 1.2f, 0f), new Color(0.38f, 0.48f, 0.58f), "Patrol/TownRoad", true),
-            new("npc_ozzra", "NPC_Ozzra_AlchemyLab", "Assets/_Game/Data/NPCs/Npc_Ozzra.asset", "Assets/_Game/Data/Economy/Shop_Ozzra.asset", new Vector3(6.4f, 1.25f, 0f), new Color(0.32f, 0.7f, 0.75f), "WanderWithinZone/Lab", true),
-            new("npc_gruta", "NPC_Gruta_Tavern", "Assets/_Game/Data/NPCs/Npc_Gruta.asset", "Assets/_Game/Data/Economy/Shop_Gruta.asset", new Vector3(1.8f, 3.4f, 0f), new Color(0.75f, 0.42f, 0.28f), "ShopKeeperFixed/TavernStage", false),
-            new("npc_zrix", "NPC_Zrix_CaveRoad", "Assets/_Game/Data/NPCs/Npc_Zrix.asset", "Assets/_Game/Data/Economy/Shop_Zrix.asset", new Vector3(5.75f, -1.75f, 0f), new Color(0.43f, 0.52f, 0.68f), "Patrol/CaveRoad", true),
-            new("npc_yael", "NPC_Yael_NightMarket", "Assets/_Game/Data/NPCs/Npc_Yael.asset", "Assets/_Game/Data/Economy/Shop_Yael.asset", new Vector3(6.3f, -3.3f, 0f), new Color(0.28f, 0.24f, 0.62f), "NightOnly/WanderHidden", true),
-            new("npc_thalindra", "NPC_Thalindra_Archive", "Assets/_Game/Data/NPCs/Npc_Thalindra.asset", "Assets/_Game/Data/Economy/Shop_Thalindra.asset", new Vector3(-6.2f, -0.5f, 0f), new Color(0.5f, 0.42f, 0.77f), "Stationary/ArchiveDesk", false),
-            new("npc_dagna", "NPC_Dagna_Quarry", "Assets/_Game/Data/NPCs/Npc_Dagna.asset", "Assets/_Game/Data/Economy/Shop_Dagna.asset", new Vector3(-6.4f, -2.6f, 0f), new Color(0.54f, 0.46f, 0.4f), "Patrol/QuarryRoad", true),
-            new("npc_pip", "NPC_Pip_TownEntrance", "Assets/_Game/Data/NPCs/Npc_Pip_Miudinho.asset", "Assets/_Game/Data/Economy/Shop_Pip.asset", new Vector3(-5f, 1f, 0f), new Color(0.38f, 0.72f, 0.86f), "WanderWithinZone", true),
-            new("npc_alaric", "NPC_Alaric_GuardPost", "Assets/_Game/Data/NPCs/Npc_Alaric.asset", string.Empty, new Vector3(-7.2f, 2.25f, 0f), new Color(0.36f, 0.46f, 0.72f), "Patrol/TownGate", true),
-            new("npc_mirela", "NPC_Mirela_Tailor", "Assets/_Game/Data/NPCs/Npc_Mirela.asset", "Assets/_Game/Data/Economy/Shop_Mirela.asset", new Vector3(3.75f, 3.25f, 0f), new Color(0.82f, 0.48f, 0.62f), "ShopKeeperFixed", false),
-            new("npc_renko", "NPC_Renko_GeneralMerchant", "Assets/_Game/Data/NPCs/Npc_Renko.asset", "Assets/_Game/Data/Economy/Shop_Renko.asset", new Vector3(0f, 3.25f, 0f), new Color(0.86f, 0.72f, 0.34f), "ShopKeeperFixed", false),
-            new("npc_eiran", "NPC_Eiran_AnimalYard", "Assets/_Game/Data/NPCs/Npc_Eiran.asset", "Assets/_Game/Data/Economy/Shop_Eiran.asset", new Vector3(6.1f, 0.05f, 0f), new Color(0.44f, 0.68f, 0.42f), "WanderWithinZone/AnimalArea", true),
-            new("npc_liora", "NPC_Liora_StatueGarden", "Assets/_Game/Data/NPCs/Npc_Liora.asset", string.Empty, new Vector3(0.85f, -0.4f, 0f), new Color(0.68f, 0.62f, 0.9f), "WanderWithinZone/EveningStage", true),
-            new("npc_orlan", "NPC_Orlan_Inn", "Assets/_Game/Data/NPCs/Npc_Orlan.asset", "Assets/_Game/Data/Economy/Shop_Orlan.asset", new Vector3(2.95f, 3.45f, 0f), new Color(0.66f, 0.56f, 0.42f), "ShopKeeperFixed", false),
-            new("npc_savra", "NPC_Savra_ForestGate", "Assets/_Game/Data/NPCs/Npc_Savra.asset", "Assets/_Game/Data/Economy/Shop_Savra.asset", new Vector3(7.15f, 1.85f, 0f), new Color(0.34f, 0.62f, 0.38f), "Patrol/HerbRoute", true),
-            new("npc_tovin", "NPC_Tovin_Registry", "Assets/_Game/Data/NPCs/Npc_Tovin.asset", "Assets/_Game/Data/Economy/Shop_Tovin.asset", new Vector3(-2.75f, 3.45f, 0f), new Color(0.58f, 0.64f, 0.72f), "Stationary/PermitDesk", false),
-            new("npc_maelor", "NPC_Maelor_NightRoute", "Assets/_Game/Data/NPCs/Npc_Maelor.asset", string.Empty, new Vector3(0f, -3.45f, 0f), new Color(0.22f, 0.24f, 0.32f), "NightOnly/WanderHidden", true),
+            // Temple district (NW)
+            new("npc_corvus", "NPC_Corvus_Temple", "Assets/_Game/Data/NPCs/Npc_Corvus.asset", "Assets/_Game/Data/Economy/Shop_Corvus.asset", new Vector3(-12f, 9f, 0f), new Color(0.82f, 0.76f, 0.58f), "Stationary/TemplePatrol", false, 2f),
+            new("npc_mara", "NPC_Mara_Registry", "Assets/_Game/Data/NPCs/Npc_Mara.asset", "Assets/_Game/Data/Economy/Shop_Mara.asset", new Vector3(-9f, 9f, 0f), new Color(0.44f, 0.56f, 0.72f), "Stationary/RegistryDesk", false, 2f),
+            // Market row (N)
+            new("npc_tovin", "NPC_Tovin_Registry", "Assets/_Game/Data/NPCs/Npc_Tovin.asset", "Assets/_Game/Data/Economy/Shop_Tovin.asset", new Vector3(-6.5f, 7f, 0f), new Color(0.58f, 0.64f, 0.72f), "Stationary/PermitDesk", false, 2f),
+            new("npc_sylveth", "NPC_Sylveth_SeedVendor", "Assets/_Game/Data/NPCs/Npc_Sylveth.asset", "Assets/_Game/Data/Economy/Shop_Sylveth.asset", new Vector3(-3.5f, 7f, 0f), new Color(0.42f, 0.72f, 0.34f), "ShopKeeperFixed/FarmVisit", false, 2f),
+            new("npc_renko", "NPC_Renko_GeneralMerchant", "Assets/_Game/Data/NPCs/Npc_Renko.asset", "Assets/_Game/Data/Economy/Shop_Renko.asset", new Vector3(0f, 7f, 0f), new Color(0.86f, 0.72f, 0.34f), "ShopKeeperFixed", false, 2f),
+            new("npc_mirela", "NPC_Mirela_Tailor", "Assets/_Game/Data/NPCs/Npc_Mirela.asset", "Assets/_Game/Data/Economy/Shop_Mirela.asset", new Vector3(3.5f, 7f, 0f), new Color(0.82f, 0.48f, 0.62f), "ShopKeeperFixed", false, 2f),
+            new("npc_orlan", "NPC_Orlan_Inn", "Assets/_Game/Data/NPCs/Npc_Orlan.asset", "Assets/_Game/Data/Economy/Shop_Orlan.asset", new Vector3(6.5f, 7f, 0f), new Color(0.66f, 0.56f, 0.42f), "ShopKeeperFixed", false, 2f),
+            new("npc_gruta", "NPC_Gruta_Tavern", "Assets/_Game/Data/NPCs/Npc_Gruta.asset", "Assets/_Game/Data/Economy/Shop_Gruta.asset", new Vector3(9.5f, 6.5f, 0f), new Color(0.75f, 0.42f, 0.28f), "ShopKeeperFixed/TavernStage", false, 2.5f),
+            // Industry / blacksmith / quarry (W)
+            new("npc_brumdar", "NPC_Brumdar_Blacksmith", "Assets/_Game/Data/NPCs/Npc_Brumdar.asset", "Assets/_Game/Data/Economy/Shop_Brumdar.asset", new Vector3(-12f, 2.5f, 0f), new Color(0.64f, 0.45f, 0.3f), "ShopKeeperFixed", false, 2f),
+            new("npc_dagna", "NPC_Dagna_Quarry", "Assets/_Game/Data/NPCs/Npc_Dagna.asset", "Assets/_Game/Data/Economy/Shop_Dagna.asset", new Vector3(-12.5f, -2.5f, 0f), new Color(0.54f, 0.46f, 0.4f), "Patrol/QuarryRoad", true, 3f),
+            new("npc_hund", "NPC_Hund_GuardRoute", "Assets/_Game/Data/NPCs/Npc_Hund.asset", "Assets/_Game/Data/Economy/Shop_Hund.asset", new Vector3(-8f, 0f, 0f), new Color(0.38f, 0.48f, 0.58f), "Patrol/TownRoad", true, 5f),
+            new("npc_thalindra", "NPC_Thalindra_Archive", "Assets/_Game/Data/NPCs/Npc_Thalindra.asset", "Assets/_Game/Data/Economy/Shop_Thalindra.asset", new Vector3(-9f, -5f, 0f), new Color(0.5f, 0.42f, 0.77f), "Stationary/ArchiveDesk", false, 2f),
+            // South gate
+            new("npc_alaric", "NPC_Alaric_GuardPost", "Assets/_Game/Data/NPCs/Npc_Alaric.asset", string.Empty, new Vector3(-5f, -10f, 0f), new Color(0.36f, 0.46f, 0.72f), "Patrol/TownGate", true, 3.5f),
+            new("npc_pip", "NPC_Pip_TownEntrance", "Assets/_Game/Data/NPCs/Npc_Pip_Miudinho.asset", "Assets/_Game/Data/Economy/Shop_Pip.asset", new Vector3(-2.5f, -9f, 0f), new Color(0.38f, 0.72f, 0.86f), "WanderWithinZone", true, 3f),
+            // Workshop / construction (SE)
+            new("npc_nimble", "NPC_Nimble_Workshop", "Assets/_Game/Data/NPCs/Npc_Nimble.asset", "Assets/_Game/Data/Economy/Shop_Nimble.asset", new Vector3(7f, -5f, 0f), new Color(0.72f, 0.58f, 0.32f), "Patrol/WorkshopDesk", true, 2.5f),
+            new("npc_gurd", "NPC_Gurd_ConstructionYard", "Assets/_Game/Data/NPCs/Npc_Gurd.asset", "Assets/_Game/Data/Economy/Shop_Gurd.asset", new Vector3(4f, -6.5f, 0f), new Color(0.62f, 0.36f, 0.32f), "Patrol/HeavyWorkZone", true, 3f),
+            // Night market (S)
+            new("npc_yael", "NPC_Yael_NightMarket", "Assets/_Game/Data/NPCs/Npc_Yael.asset", "Assets/_Game/Data/Economy/Shop_Yael.asset", new Vector3(10f, -9f, 0f), new Color(0.28f, 0.24f, 0.62f), "NightOnly/WanderHidden", true, 3f),
+            new("npc_maelor", "NPC_Maelor_NightRoute", "Assets/_Game/Data/NPCs/Npc_Maelor.asset", string.Empty, new Vector3(0f, -11.5f, 0f), new Color(0.22f, 0.24f, 0.32f), "NightOnly/WanderHidden", true, 4f),
+            // Cave road / forest gate / alchemy (E)
+            new("npc_zrix", "NPC_Zrix_CaveRoad", "Assets/_Game/Data/NPCs/Npc_Zrix.asset", "Assets/_Game/Data/Economy/Shop_Zrix.asset", new Vector3(12f, -2f, 0f), new Color(0.43f, 0.52f, 0.68f), "Patrol/CaveRoad", true, 3.5f),
+            new("npc_savra", "NPC_Savra_ForestGate", "Assets/_Game/Data/NPCs/Npc_Savra.asset", "Assets/_Game/Data/Economy/Shop_Savra.asset", new Vector3(13.5f, 4.5f, 0f), new Color(0.34f, 0.62f, 0.38f), "Patrol/HerbRoute", true, 3f),
+            new("npc_ozzra", "NPC_Ozzra_AlchemyLab", "Assets/_Game/Data/NPCs/Npc_Ozzra.asset", "Assets/_Game/Data/Economy/Shop_Ozzra.asset", new Vector3(11f, 2.5f, 0f), new Color(0.32f, 0.7f, 0.75f), "WanderWithinZone/Lab", true, 2.5f),
+            // Animal yard (NE)
+            new("npc_eiran", "NPC_Eiran_AnimalYard", "Assets/_Game/Data/NPCs/Npc_Eiran.asset", "Assets/_Game/Data/Economy/Shop_Eiran.asset", new Vector3(12f, 8.5f, 0f), new Color(0.44f, 0.68f, 0.42f), "WanderWithinZone/AnimalArea", true, 3f),
+            // Statue garden (center)
+            new("npc_liora", "NPC_Liora_StatueGarden", "Assets/_Game/Data/NPCs/Npc_Liora.asset", string.Empty, new Vector3(2.5f, -1.5f, 0f), new Color(0.68f, 0.62f, 0.9f), "WanderWithinZone/EveningStage", true, 3f),
         };
 
         private readonly struct TownNpcSpec
         {
-            public TownNpcSpec(string npcId, string objectName, string npcDataPath, string shopDataPath, Vector3 position, Color color, string movementProfile, bool canWander)
+            public TownNpcSpec(string npcId, string objectName, string npcDataPath, string shopDataPath, Vector3 position, Color color, string movementProfile, bool canWander, float wanderRadius)
             {
                 NpcId = npcId;
                 ObjectName = objectName;
@@ -786,6 +1021,7 @@ namespace CindarsHope.Editor.SceneCreation
                 Color = color;
                 MovementProfile = movementProfile;
                 CanWander = canWander;
+                WanderRadius = wanderRadius;
             }
 
             public string NpcId { get; }
@@ -796,6 +1032,7 @@ namespace CindarsHope.Editor.SceneCreation
             public Color Color { get; }
             public string MovementProfile { get; }
             public bool CanWander { get; }
+            public float WanderRadius { get; }
         }
 
         private static NpcManager CreateNpcs(
@@ -850,7 +1087,8 @@ namespace CindarsHope.Editor.SceneCreation
                         modalManager,
                         shopUi.DialogueModal,
                         spec.CanWander,
-                        spec.MovementProfile);
+                        spec.MovementProfile,
+                        spec.WanderRadius);
 
                     var dialogueController = npcObject.GetComponent<NpcController>();
                     if (dialogueController != null)
@@ -871,13 +1109,14 @@ namespace CindarsHope.Editor.SceneCreation
             var wanderer = CreateDialogueNpc(
                 parent.transform,
                 "NPC_Vaalara_Wanderer_01",
-                new Vector3(0f, -1.5f, 0f),
+                new Vector3(-1.5f, 1.5f, 0f),
                 new Color(0.62f, 0.56f, 0.82f),
                 "Assets/_Game/Data/NPCs/Npc_Vaalara_Wanderer_01.asset",
                 modalManager,
                 shopUi.DialogueModal,
                 true,
-                "WanderWithinZone");
+                "WanderWithinZone",
+                6f);
             var wandererController = wanderer.GetComponent<NpcController>();
             if (wandererController != null)
             {
@@ -892,14 +1131,6 @@ namespace CindarsHope.Editor.SceneCreation
             SetReferences(serializedManager, "_shopNpcs", shopNpcs.ToArray());
             serializedManager.ApplyModifiedPropertiesWithoutUndo();
             return manager;
-        }
-
-        private static void CreateTownCommerce()
-        {
-            var parent = new GameObject("TownCommerce");
-            parent.transform.position = Vector3.zero;
-            CreateDecoration(parent.transform, "WeaponsStorePlaceholder", new Vector3(-3f, 3.1f, 0f), new Vector3(3.2f, 1.1f, 1f), new Color(0.42f, 0.31f, 0.24f));
-            CreateDecoration(parent.transform, "FarmStorePlaceholder", new Vector3(4.5f, 3.1f, 0f), new Vector3(3.2f, 1.1f, 1f), new Color(0.3f, 0.44f, 0.24f));
         }
 
         private static GameObject CreateShopNpc(
@@ -961,7 +1192,8 @@ namespace CindarsHope.Editor.SceneCreation
             ModalManager modalManager,
             DialogueModal dialogueModal,
             bool canWander,
-            string movementProfile)
+            string movementProfile,
+            float wanderRadius = 3f)
         {
             var npcObject = new GameObject(objectName);
             npcObject.transform.SetParent(parent);
@@ -994,8 +1226,17 @@ namespace CindarsHope.Editor.SceneCreation
                 var serializedWanderer = new SerializedObject(wanderer);
                 SetReference(serializedWanderer, "_npcData", npcData);
                 SetReference(serializedWanderer, "_rigidbody", body);
-                serializedWanderer.FindProperty("_wanderBoundsMin").vector2Value = new Vector2(-6f, -3.5f);
-                serializedWanderer.FindProperty("_wanderBoundsMax").vector2Value = new Vector2(6f, 3.5f);
+                // District-relative wander bounds: each NPC roams around its own home spot
+                // instead of one shared central rectangle, clamped to the town playfield.
+                float radius = Mathf.Max(1f, wanderRadius);
+                var boundsMin = new Vector2(
+                    Mathf.Max(-17f, position.x - radius),
+                    Mathf.Max(-13.5f, position.y - radius));
+                var boundsMax = new Vector2(
+                    Mathf.Min(17f, position.x + radius),
+                    Mathf.Min(13.5f, position.y + radius));
+                serializedWanderer.FindProperty("_wanderBoundsMin").vector2Value = boundsMin;
+                serializedWanderer.FindProperty("_wanderBoundsMax").vector2Value = boundsMax;
                 serializedWanderer.ApplyModifiedPropertiesWithoutUndo();
                 SetReference(serializedController, "_wanderer", wanderer);
             }

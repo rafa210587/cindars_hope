@@ -95,6 +95,26 @@ namespace CindarsHope.Player
             PublishStaminaChanged();
         }
 
+        // F18: bônus externo de regen (passivas derivadas) somado à taxa efetiva.
+        public float ExternalRegenBonus { get; set; }
+
+        // F18: máximo derivado preservando a proporção corrente (floor 1).
+        public void SetMaxStamina(int newMaxStamina, bool preserveRatio = true)
+        {
+            newMaxStamina = Mathf.Max(1, newMaxStamina);
+            if (newMaxStamina == _maxStamina)
+            {
+                return;
+            }
+
+            var ratio = _maxStamina > 0 ? (float)_currentStamina / _maxStamina : 1f;
+            _maxStamina = newMaxStamina;
+            _currentStamina = preserveRatio
+                ? Mathf.Max(1, Mathf.RoundToInt(newMaxStamina * ratio))
+                : Mathf.Min(_currentStamina, newMaxStamina);
+            PublishStaminaChanged();
+        }
+
         private void PublishStaminaChanged()
         {
             GameEventBus.Publish(new StaminaChangedEvent(_currentStamina, _maxStamina));
@@ -108,13 +128,13 @@ namespace CindarsHope.Player
         private float GetEffectiveRegenRate()
         {
             if (_hungerManager == null || _playerNeedsBalance == null)
-                return _regenRate;
+                return _regenRate + Mathf.Max(0f, ExternalRegenBonus);
 
             if (_playerNeedsBalance.IsZeroHunger(_hungerManager.CurrentHunger))
                 return _playerNeedsBalance.ZeroHungerRegenRate;
 
             float modifier = _playerNeedsBalance.GetStaminaRegenModifier(_hungerManager.CurrentHunger);
-            return _regenRate * modifier;
+            return _regenRate * modifier + Mathf.Max(0f, ExternalRegenBonus);
         }
     }
 }

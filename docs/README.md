@@ -12,10 +12,10 @@
 - `docs/amendments/` - amendments ativos.
 - `docs/validation/` - smoke tests e validacoes ativas.
 - `docs/backlog/` - backlog ativo e ideias futuras preservadas.
-- `docs/specs/` - fonte unica oficial de specs.
-- `docs/specs/implementados/` - specs consolidadas do que ja existe no repo.
-- `docs/specs/a_implementar/` - specs futuras no padrao SpecKit.
-- `docs/specs/SPEC_EXECUTION_ORDER.md` - ordem oficial de execucao.
+- `.specs/` - fonte unica oficial de specs.
+- `.specs/implementados/` - specs consolidadas do que ja existe no repo.
+- `.specs/a_implementar/` - specs futuras no padrao SpecKit.
+- `.specs/SPEC_EXECUTION_ORDER.md` - ordem oficial de execucao.
 - `docs/refinements/implementados/` - refinamentos, audits, handoffs e waves implementadas/parciais.
 - `docs/refinements/a_implementar/pre_refinamentos/` - pre-refinamentos vivos.
 - `docs_old/` - historico preservado; nao editar como fonte ativa.

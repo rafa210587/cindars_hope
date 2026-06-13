@@ -16,7 +16,7 @@ Execute the appropriate validation levels for what was changed. Record results h
 
 1. `CLAUDE.md`
 2. Target spec (to determine required validation levels)
-3. `docs/specs/SPEC_VALIDATION_MATRIX_MASTER.md` — validation levels required by change type
+3. `.specs/SPEC_VALIDATION_MATRIX_MASTER.md` — validation levels required by change type
 4. `docs/project/CURRENT_STATE.md` (for context on what changed)
 
 ## Do NOT Read By Default

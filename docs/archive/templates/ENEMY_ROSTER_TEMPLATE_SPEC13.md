@@ -109,4 +109,4 @@ lootTableId: loot_[ID]
 
 ## Nota
 
-Os 40 inimigos da spec estão documentados em `docs/specs/a_implementar/spec_enemy_ai_roster_bestiary_faction_locks_runtime.md` linhas 527-612, com tabela completa pronta para você refinar e expandir conforme Vaalara lore.
+Os 40 inimigos da spec estão documentados em `.specs/a_implementar/spec_enemy_ai_roster_bestiary_faction_locks_runtime.md` linhas 527-612, com tabela completa pronta para você refinar e expandir conforme Vaalara lore.

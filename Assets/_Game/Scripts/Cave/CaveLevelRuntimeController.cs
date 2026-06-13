@@ -239,7 +239,8 @@ namespace CindarsHope.Cave
                 _materializer != null ? _materializer.LastEnemySpawnPlan : null,
                 _materializer != null ? _materializer.LastResourceNodeSnapshots : null,
                 null,
-                _runManager.State.DepletedNodeIds);
+                _runManager.State.DepletedNodeIds,
+                _materializer != null ? _materializer.CollectEnemyHpRecords() : null);
 
             if (snapshot == null)
             {
@@ -257,6 +258,22 @@ namespace CindarsHope.Cave
                 $"  EnemySpawnPoints: {snapshot.EnemySpawnPointsList.Count}\n" +
                 $"  ResourceSpawnPoints: {snapshot.ResourceSpawnPointsList.Count}",
                 this);
+        }
+
+        // F13: regrava o HP corrente dos inimigos no snapshot do nível atual antes de sair
+        // do nível ou salvar o jogo (snapshot é capturado na entrada; HP muda durante o nível).
+        public void RefreshCurrentSnapshotEnemyHp()
+        {
+            if (CurrentGeneratedLevel == null || _materializer == null || _runManager == null)
+            {
+                return;
+            }
+
+            if (_runManager.State.VisitedLevelSnapshots.TryGetValue(CurrentGeneratedLevel.CaveLevel, out var snapshot)
+                && snapshot != null)
+            {
+                snapshot.SetEnemyHpRecords(_materializer.CollectEnemyHpRecords());
+            }
         }
 
         public void RestoreFromSnapshot(VisitedLevelSnapshot snapshot)

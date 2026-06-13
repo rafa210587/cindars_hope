@@ -95,7 +95,7 @@ Runtime:
 - Assets/_Game/Scripts/Editor/Validation/ValidateQuestGiverQuestLogRuntimeBinding.cs
 
 Documentation:
-- docs/specs/a_implementar/spec_wave_integration_15_quest_giver_quest_log_real.md
+- .specs/a_implementar/spec_wave_integration_15_quest_giver_quest_log_real.md
 - docs/validation/WAVE_INTEGRATION_15_*.md
 - docs/project/CURRENT_STATE.md
 

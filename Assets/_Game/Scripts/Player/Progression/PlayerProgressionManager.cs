@@ -29,13 +29,18 @@ namespace CindarsHope.Player.Progression
         private void OnEnable()
         {
             GameEventBus.Subscribe<EnemyKilledEvent>(OnEnemyKilled);
+            GameEventBus.Subscribe<CaveLevelEnteredEvent>(OnCaveLevelEntered);
+            GameEventBus.Subscribe<CropHarvestedEvent>(OnCropHarvested);
         }
 
         private void OnDisable()
         {
             GameEventBus.Unsubscribe<EnemyKilledEvent>(OnEnemyKilled);
+            GameEventBus.Unsubscribe<CaveLevelEnteredEvent>(OnCaveLevelEntered);
+            GameEventBus.Unsubscribe<CropHarvestedEvent>(OnCropHarvested);
         }
 
+        // F42: XP total é a fonte de verdade; nível/parcial derivados pela curva canônica.
         public void AddXp(int amount)
         {
             if (amount <= 0)
@@ -44,20 +49,18 @@ namespace CindarsHope.Player.Progression
             }
 
             NormalizeState();
-            _state.CurrentXp += amount;
+            int oldLevel = _state.Level;
+            _state.TotalXp += amount;
+            RecomputeDerivedProgression();
             GameEventBus.Publish(new PlayerXpChangedEvent(amount, _state.CurrentXp, _state.XpToNextLevel, _state.Level));
 
-            while (_state.Level < PlayerProgressionRules.MaxLevel && _state.CurrentXp >= _state.XpToNextLevel)
+            for (int reachedLevel = oldLevel + 1; reachedLevel <= _state.Level; reachedLevel++)
             {
-                int oldLevel = _state.Level;
-                _state.CurrentXp -= _state.XpToNextLevel;
-                _state.Level++;
-                int grantedAttributePoints = PlayerProgressionRules.CalculateAttributePointsGrantedOnLevelUp(_state.Level);
-                int grantedSkillPoints = PlayerProgressionRules.CalculateSkillPointsGrantedOnLevelUp(_state.Level);
+                int grantedAttributePoints = PlayerProgressionRules.CalculateAttributePointsGrantedOnLevelUp(reachedLevel);
+                int grantedSkillPoints = PlayerProgressionRules.CalculateSkillPointsGrantedOnLevelUp(reachedLevel);
                 _state.UnspentAttributePoints += grantedAttributePoints;
                 _state.UnspentSkillPoints += grantedSkillPoints;
-                _state.XpToNextLevel = PlayerProgressionRules.CalculateXpToNextLevel(_state.Level);
-                GameEventBus.Publish(new PlayerLevelChangedEvent(oldLevel, _state.Level, grantedAttributePoints, grantedSkillPoints));
+                GameEventBus.Publish(new PlayerLevelChangedEvent(reachedLevel - 1, reachedLevel, grantedAttributePoints, grantedSkillPoints));
             }
         }
 
@@ -119,6 +122,9 @@ namespace CindarsHope.Player.Progression
                 Level = _state.Level,
                 CurrentXp = _state.CurrentXp,
                 XpToNextLevel = _state.XpToNextLevel,
+                TotalXp = _state.TotalXp,
+                DeepestXpAwardedCaveLevel = _state.DeepestXpAwardedCaveLevel,
+                FirstHarvestXpSeedIds = new System.Collections.Generic.List<string>(_state.FirstHarvestXpSeedIds ?? new System.Collections.Generic.List<string>()),
                 UnspentAttributePoints = _state.UnspentAttributePoints,
                 UnspentSkillPoints = _state.UnspentSkillPoints,
                 Strength = _state.Strength,
@@ -145,7 +151,8 @@ namespace CindarsHope.Player.Progression
                 return 0;
             }
 
-            _state.CurrentXp = 0;
+            _state.TotalXp = System.Math.Max(0, _state.TotalXp - lostXp);
+            RecomputeDerivedProgression();
             GameEventBus.Publish(new PlayerXpChangedEvent(-lostXp, _state.CurrentXp, _state.XpToNextLevel, _state.Level));
             return lostXp;
         }
@@ -158,11 +165,68 @@ namespace CindarsHope.Player.Progression
             }
         }
 
+        // F42: fonte de XP — descoberta de nível novo da caverna (+15 × banda de dezena).
+        private void OnCaveLevelEntered(CaveLevelEnteredEvent evt)
+        {
+            NormalizeState();
+            if (evt.CaveLevel <= _state.DeepestXpAwardedCaveLevel)
+            {
+                return;
+            }
+
+            _state.DeepestXpAwardedCaveLevel = evt.CaveLevel;
+            var band = ((evt.CaveLevel - 1) / 10) + 1;
+            AddXp(15 * band);
+        }
+
+        // F42: fonte de XP — primeira colheita de cada cultivo (+10, idempotente por seedId).
+        private void OnCropHarvested(CropHarvestedEvent evt)
+        {
+            if (string.IsNullOrWhiteSpace(evt.SeedId))
+            {
+                return;
+            }
+
+            NormalizeState();
+            if (_state.FirstHarvestXpSeedIds.Contains(evt.SeedId))
+            {
+                return;
+            }
+
+            _state.FirstHarvestXpSeedIds.Add(evt.SeedId);
+            AddXp(10);
+        }
+
+        // F42: deriva nível/parcial/próximo do XP total (recompute idempotente, sem grants).
+        private void RecomputeDerivedProgression()
+        {
+            _state.Level = ProgressionCurve.LevelForTotalXp(_state.TotalXp);
+            _state.CurrentXp = ProgressionCurve.XpIntoCurrentLevel(_state.TotalXp);
+            _state.XpToNextLevel = PlayerProgressionRules.CalculateXpToNextLevel(_state.Level);
+        }
+
         private void NormalizeState()
         {
             if (_state == null)
             {
                 _state = new PlayerProgressionSaveData();
+            }
+
+            if (_state.FirstHarvestXpSeedIds == null)
+            {
+                _state.FirstHarvestXpSeedIds = new System.Collections.Generic.List<string>();
+            }
+
+            // F42: migração de save legado — TotalXp 0 com nível/parcial avançados.
+            // NÃO re-concede pontos (Unspent/atributos preservados como salvos).
+            if (_state.TotalXp <= 0 && (_state.Level > 1 || _state.CurrentXp > 0))
+            {
+                _state.TotalXp = ProgressionCurve.MigrateLegacy(_state.Level, _state.CurrentXp);
+            }
+
+            if (_state.TotalXp > 0 || _state.Level > 1)
+            {
+                RecomputeDerivedProgression();
             }
 
             _state.Level = Mathf.Clamp(_state.Level, 1, PlayerProgressionRules.MaxLevel);

@@ -23,9 +23,9 @@ Definir como executar specs de reorganização arquitetural sem degradar comport
 3. ✓ docs/IMPLEMENTATION_STATUS.md
 4. ✓ docs/operations/AGENT_EXECUTION_PROTOCOL.md
 5. ✓ docs/operations/READING_MATRIX.md
-6. ✓ docs/specs/a_implementar/reorg/README_EXECUTION_ORDER.md
-7. ✓ docs/specs/a_implementar/reorg/SPEC_00_STRATEGY_SUBAGENTS.md
-8. ✓ docs/specs/a_implementar/reorg/SPEC_01_WAVE0A_ARCHITECTURE_VALIDATOR_FOUNDATION.md
+6. ✓ .specs/a_implementar/reorg/README_EXECUTION_ORDER.md
+7. ✓ .specs/a_implementar/reorg/SPEC_00_STRATEGY_SUBAGENTS.md
+8. ✓ .specs/a_implementar/reorg/SPEC_01_WAVE0A_ARCHITECTURE_VALIDATOR_FOUNDATION.md
 
 ### Análise de contexto
 

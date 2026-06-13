@@ -1,6 +1,6 @@
 # Execution Report — fable_03_spec_equipment_mechanical_baselines_runtime
 
-> **Spec:** `docs/specs/a_implementar/fable/fable_03_spec_equipment_mechanical_baselines_runtime.md` (+ EMENDA 2026-06-12)
+> **Spec:** `.specs/a_implementar/fable/fable_03_spec_equipment_mechanical_baselines_runtime.md` (+ EMENDA 2026-06-12)
 > **Data:** 2026-06-12
 > **Status:** BUILD_VALIDATED
 > **Executor:** Claude (FABLE master plan — Batch 2, spec 8/42)

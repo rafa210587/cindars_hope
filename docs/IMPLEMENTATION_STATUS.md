@@ -5,7 +5,7 @@
 > Read this file only for: full implementation history, audit, or explicit human request.
 
 > Status: tracking reconciliado por validacao estatica de codigo em 2026-05-26.
-> Fonte oficial de specs: `docs/specs/`.
+> Fonte oficial de specs: `.specs/`.
 > A pasta raiz `specs/` foi removida e nao deve ser recriada.
 
 ## 1. Resumo executivo — SPEC_29 Consolidation (2026-06-01)
@@ -61,38 +61,38 @@ Principais conclusoes:
 | Area | Status real | Evidencia / observacao |
 |---|---|---|
 | Claude Code project structure (.claude/) | Implementado completo | `.claude/settings.json`, `.claude/commands/`, `.claude/skills/`, `.claude/agents/`, `.claude/hooks/` |
-| Governanca documental / fonte unica | Implementado documental parcial | `docs/specs/implementados/spec_docs_001_single_source_specs_refinements_reconciliation_parcial.md` |
-| Unity compile validation protocol | Implementado completo | `docs/specs/implementados/spec_unity_compile_validation_protocol_and_scripts.md` |
-| Core/event bus/bootstrap | Implementado parcial | `docs/specs/implementados/spec_core_001_event_bus_e_eventos_base.md`, `docs/specs/implementados/spec_core_002_bootstrap_managers_e_runtime_references.md` |
-| Data/IDs/registries | Implementado | `docs/specs/implementados/spec_data_001_ids_registries_e_scriptableobjects.md` |
-| Save/load JSON cross-scene | Implementado parcial | `docs/specs/implementados/spec_save_001_json_save_load_cross_scene.md` |
-| Save schema migration v2 | Implementado completo | `docs/specs/implementados/spec_save_002_schema_migration_v2.md` |
-| Inventory slots/capacidade/UI minima | Implementado completo | `docs/specs/implementados/spec_inventory_002_slots_capacity_ui_final.md` |
-| Farm irrigacao/solo/planting UI | Implementado completo | `docs/specs/implementados/spec_farm_004_irrigacao_solo_planting_ui.md` |
-| World activities/fishing/trees/loot | Implementado completo | `docs/specs/implementados/spec_world_002_activities_fishing_trees_pickups_loot.md` |
-| Farm loop/world activities | Implementado parcial | `docs/specs/implementados/spec_farm_001_farm_scene_movimento_interacao.md`, `docs/specs/implementados/spec_farm_002_plots_seeds_growth_harvest.md`, `docs/specs/implementados/spec_farm_003_arvores_pesca_pickups_world_activities.md` |
-| Game time / day-night cycles / hunger-stamina balance | Implementado completo | `docs/specs/implementados/spec_hunger_stamina_status_balance.md` |
-| Economy/hunger/crafting/town | Implementado parcial | `docs/specs/implementados/spec_economy_001_compra_venda_gold_e_sellables.md`, `docs/specs/implementados/spec_hunger_001_fome_comida_e_hp_por_fome.md`, `docs/specs/implementados/spec_craft_001_crafting_mvp.md`, `docs/specs/implementados/spec_town_001_town_scene_portais_npc_pip_comercio.md` |
-| Combat/damage/enemy stats | Implementado parcial | `docs/specs/implementados/spec_combat_001_slime_melee_contact_damage_drops.md`, `docs/specs/implementados/spec_combat_002_enemy_data_driven_stats.md`, `docs/specs/implementados/spec_damage_001_damage_formula_mvp.md` |
-| UI/tools/hotbar/progression debug | Implementado parcial | `docs/specs/implementados/spec_ui_001_debug_hud_e_feedback_mvp.md`, `docs/specs/implementados/spec_ui_002_hud_tools_hotbar_progression_debug.md`, `docs/specs/implementados/spec_tools_001_tools_equipment_hotbar_parcial.md`, `docs/specs/implementados/spec_progression_001_xp_level_atributos_parcial.md` |
-| Cave runtime/procedural/stable run/boss gates | Implementado em codigo - validacao Unity pendente | `docs/specs/implementados/spec_cave_001_cave_scene_portal_e_runtime_basico.md` ate `spec_cave_008_debug_skip_confinement_wall_distance_hardening.md` |
+| Governanca documental / fonte unica | Implementado documental parcial | `.specs/implementados/spec_docs_001_single_source_specs_refinements_reconciliation_parcial.md` |
+| Unity compile validation protocol | Implementado completo | `.specs/implementados/spec_unity_compile_validation_protocol_and_scripts.md` |
+| Core/event bus/bootstrap | Implementado parcial | `.specs/implementados/spec_core_001_event_bus_e_eventos_base.md`, `.specs/implementados/spec_core_002_bootstrap_managers_e_runtime_references.md` |
+| Data/IDs/registries | Implementado | `.specs/implementados/spec_data_001_ids_registries_e_scriptableobjects.md` |
+| Save/load JSON cross-scene | Implementado parcial | `.specs/implementados/spec_save_001_json_save_load_cross_scene.md` |
+| Save schema migration v2 | Implementado completo | `.specs/implementados/spec_save_002_schema_migration_v2.md` |
+| Inventory slots/capacidade/UI minima | Implementado completo | `.specs/implementados/spec_inventory_002_slots_capacity_ui_final.md` |
+| Farm irrigacao/solo/planting UI | Implementado completo | `.specs/implementados/spec_farm_004_irrigacao_solo_planting_ui.md` |
+| World activities/fishing/trees/loot | Implementado completo | `.specs/implementados/spec_world_002_activities_fishing_trees_pickups_loot.md` |
+| Farm loop/world activities | Implementado parcial | `.specs/implementados/spec_farm_001_farm_scene_movimento_interacao.md`, `.specs/implementados/spec_farm_002_plots_seeds_growth_harvest.md`, `.specs/implementados/spec_farm_003_arvores_pesca_pickups_world_activities.md` |
+| Game time / day-night cycles / hunger-stamina balance | Implementado completo | `.specs/implementados/spec_hunger_stamina_status_balance.md` |
+| Economy/hunger/crafting/town | Implementado parcial | `.specs/implementados/spec_economy_001_compra_venda_gold_e_sellables.md`, `.specs/implementados/spec_hunger_001_fome_comida_e_hp_por_fome.md`, `.specs/implementados/spec_craft_001_crafting_mvp.md`, `.specs/implementados/spec_town_001_town_scene_portais_npc_pip_comercio.md` |
+| Combat/damage/enemy stats | Implementado parcial | `.specs/implementados/spec_combat_001_slime_melee_contact_damage_drops.md`, `.specs/implementados/spec_combat_002_enemy_data_driven_stats.md`, `.specs/implementados/spec_damage_001_damage_formula_mvp.md` |
+| UI/tools/hotbar/progression debug | Implementado parcial | `.specs/implementados/spec_ui_001_debug_hud_e_feedback_mvp.md`, `.specs/implementados/spec_ui_002_hud_tools_hotbar_progression_debug.md`, `.specs/implementados/spec_tools_001_tools_equipment_hotbar_parcial.md`, `.specs/implementados/spec_progression_001_xp_level_atributos_parcial.md` |
+| Cave runtime/procedural/stable run/boss gates | Implementado em codigo - validacao Unity pendente | `.specs/implementados/spec_cave_001_cave_scene_portal_e_runtime_basico.md` ate `spec_cave_008_debug_skip_confinement_wall_distance_hardening.md` |
 | Overnight 2026-05-23 | Executado parcialmente | `PROJECT_LOG.md` (Sessao 2026-05-23 Overnight), `docs/refinements/implementados/ref_stabilizacao_overnight_specs_20260523.md` |
-| Economy/shop/stock/pricing/UI (Spec 06) | Implementado completo | `docs/specs/implementados/spec_economy_shop_stock_pricing_ui.md` |
-| Crafting queue/workstations/recipes/UI (Spec 07) | Implementado completo | `docs/specs/implementados/spec_crafting_queue_workstations_recipes_ui.md` |
-| Town NPC/dialogue/wanderer/save hooks (Spec 08) | Implementado completo | `docs/specs/implementados/spec_town_npc_dialogue_schedule_quests.md` |
-| Hunger/stamina/status/time (Spec 09) | Implementado completo | `docs/specs/implementados/spec_hunger_stamina_status_balance.md` |
-| Equipment/durability/environment/loot (Spec 10) | Implementado parcial | `docs/specs/implementados/spec_equipment_durability_environment_loot_runtime.md` |
-| Damage/status/elements/resistances (Spec 11) | Implementado parcial | `docs/specs/implementados/spec_damage_status_elements_resistances_runtime.md` |
-| Player Combat/weapons/spells/skill actions (Spec 12) | Implementado parcial | `docs/specs/implementados/spec_player_combat_weapons_spells_skill_actions_runtime.md` |
-| UI/Input/Shop/Sell Bugfix Bundle (Post-SPEC 12) | Implementado completo | `docs/specs/implementados/spec_bugfix_ui_input_shop_sell_bundle.md` |
-| Enemy AI/roster/bestiary/faction locks (Spec 13) | Implementado parcial | `docs/specs/implementados/spec_enemy_ai_roster_bestiary_faction_locks_runtime.md` |
-| Skill trees/active slots/respec Anya (Spec 16) | Implementado em codigo - Play Mode humano pendente | `docs/specs/implementados/spec_skill_trees_active_slots_respec_anya_runtime.md` |
-| UI Gameplay MVP: shops/sell/equipment/attributes/skills (Spec 17 incremento) | Implementado em codigo - Play Mode humano pendente; SPEC 17 ampla permanece aberta | `docs/specs/a_implementar/spec_ui_ux_full_gameplay_inventory_hotbar_menus.md`, `docs/validation/SPEC17_UI_GAMEPLAY_MVP_VALIDATION_20260526.md` |
-| UI Gameplay closeout: skills/shop/K-L/prompts/actions (Spec 17C) | Implementado completo - Play Mode humano validado 2026-05-26 | `docs/specs/implementados/spec_ui_gameplay_closeout_skill_shop_prompts_actions_hud.md`, `docs/validation/SPEC17C_CLOSEOUT_VALIDATION_20260526.md` |
-| UI Gameplay shop injection/equipment slot picker (Spec 17D) | Implementado completo - Play Mode humano validado 2026-05-26 | `docs/specs/implementados/spec_ui_gameplay_shop_injection_equipment_slot_picker_closeout.md`, `docs/validation/SPEC17D_CLOSEOUT_VALIDATION_20260526.md` |
-| UI Gameplay ShopSession lifecycle/readiness (Spec 17E) | Implementado completo - Play Mode humano validado 2026-05-26 | `docs/specs/implementados/spec_ui_gameplay_shop_session_lifecycle_npc_readiness_closeout.md`, `docs/validation/SPEC17E_SHOP_SESSION_FIX_VALIDATION_20260526.md` |
-| UI Gameplay shop modal/responsive/names (Spec 17F) | Implementado completo - Play Mode humano validado 2026-05-26 | `docs/specs/implementados/spec_ui_gameplay_shop_modal_stack_responsive_names_closeout.md`, `docs/validation/SPEC17F_SHOP_MODAL_UI_VALIDATION_20260526.md` |
-| Visual scale / world scale / camera profiles (Spec 17A) | Implementado em codigo completo (17A-FIX aplicado) - Play Mode humano pendente | `docs/specs/implementados/spec_visual_world_scale_camera_sprite_profiles.md` |
+| Economy/shop/stock/pricing/UI (Spec 06) | Implementado completo | `.specs/implementados/spec_economy_shop_stock_pricing_ui.md` |
+| Crafting queue/workstations/recipes/UI (Spec 07) | Implementado completo | `.specs/implementados/spec_crafting_queue_workstations_recipes_ui.md` |
+| Town NPC/dialogue/wanderer/save hooks (Spec 08) | Implementado completo | `.specs/implementados/spec_town_npc_dialogue_schedule_quests.md` |
+| Hunger/stamina/status/time (Spec 09) | Implementado completo | `.specs/implementados/spec_hunger_stamina_status_balance.md` |
+| Equipment/durability/environment/loot (Spec 10) | Implementado parcial | `.specs/implementados/spec_equipment_durability_environment_loot_runtime.md` |
+| Damage/status/elements/resistances (Spec 11) | Implementado parcial | `.specs/implementados/spec_damage_status_elements_resistances_runtime.md` |
+| Player Combat/weapons/spells/skill actions (Spec 12) | Implementado parcial | `.specs/implementados/spec_player_combat_weapons_spells_skill_actions_runtime.md` |
+| UI/Input/Shop/Sell Bugfix Bundle (Post-SPEC 12) | Implementado completo | `.specs/implementados/spec_bugfix_ui_input_shop_sell_bundle.md` |
+| Enemy AI/roster/bestiary/faction locks (Spec 13) | Implementado parcial | `.specs/implementados/spec_enemy_ai_roster_bestiary_faction_locks_runtime.md` |
+| Skill trees/active slots/respec Anya (Spec 16) | Implementado em codigo - Play Mode humano pendente | `.specs/implementados/spec_skill_trees_active_slots_respec_anya_runtime.md` |
+| UI Gameplay MVP: shops/sell/equipment/attributes/skills (Spec 17 incremento) | Implementado em codigo - Play Mode humano pendente; SPEC 17 ampla permanece aberta | `.specs/a_implementar/spec_ui_ux_full_gameplay_inventory_hotbar_menus.md`, `docs/validation/SPEC17_UI_GAMEPLAY_MVP_VALIDATION_20260526.md` |
+| UI Gameplay closeout: skills/shop/K-L/prompts/actions (Spec 17C) | Implementado completo - Play Mode humano validado 2026-05-26 | `.specs/implementados/spec_ui_gameplay_closeout_skill_shop_prompts_actions_hud.md`, `docs/validation/SPEC17C_CLOSEOUT_VALIDATION_20260526.md` |
+| UI Gameplay shop injection/equipment slot picker (Spec 17D) | Implementado completo - Play Mode humano validado 2026-05-26 | `.specs/implementados/spec_ui_gameplay_shop_injection_equipment_slot_picker_closeout.md`, `docs/validation/SPEC17D_CLOSEOUT_VALIDATION_20260526.md` |
+| UI Gameplay ShopSession lifecycle/readiness (Spec 17E) | Implementado completo - Play Mode humano validado 2026-05-26 | `.specs/implementados/spec_ui_gameplay_shop_session_lifecycle_npc_readiness_closeout.md`, `docs/validation/SPEC17E_SHOP_SESSION_FIX_VALIDATION_20260526.md` |
+| UI Gameplay shop modal/responsive/names (Spec 17F) | Implementado completo - Play Mode humano validado 2026-05-26 | `.specs/implementados/spec_ui_gameplay_shop_modal_stack_responsive_names_closeout.md`, `docs/validation/SPEC17F_SHOP_MODAL_UI_VALIDATION_20260526.md` |
+| Visual scale / world scale / camera profiles (Spec 17A) | Implementado em codigo completo (17A-FIX aplicado) - Play Mode humano pendente | `.specs/implementados/spec_visual_world_scale_camera_sprite_profiles.md` |
 | GameScaleConfigSO central config + valores reais 2x/3x/6x (17A-FIX) | Implementado - cave 160x96, boss 2.5x, arvores 3x, lago 6x, boss gates 15-90 no registry, enemy_meteor_ooze_king real | commit `bd06a3a` |
 | UI/UX infraestrutura 17B: input routing, pause, toasts, context hint, death screen, checkpoint menu (Spec 17B parcial) | Implementado em codigo - GameplayInputRouter, PauseMenuController, NotificationToastController, ContextHintController, DeathScreenController, CaveCheckpointSideMenuController; UIEvents.cs; ModalType Pause/Death/CaveCheckpoint; SkillTreeGameplayPanelController yield a GameplayInputRouter. Play Mode humano pendente. | branch `dev` 2026-05-27 |
 | SPEC 13A - Enemy taxonomy, profiles e contracts | Implementado em codigo - LoreTagline em EnemyDataSO; MinimumRoomSize em EnemySizeProfileSO; 4 novos VulnerabilityTriggerMode; CreateDefaultEnemyProfiles editor (16 factions, 6 size, 10 movement, 10 vuln); ValidateSpec13EnemyTaxonomyProfiles; 0 erros build. Assets gerados pelo menu Unity pendentes. | branch `dev` 2026-05-27 |

@@ -6,7 +6,7 @@ source_adrs:
   - ADR-0005
 source_documents:
   - docs/amendments/FASE9G_COMBAT_SYSTEM_AMENDMENT_v1.0.md
-  - docs/specs/implementados/SPEC_09_COMBAT_STATUS_EFFECTS.md
+  - .specs/implementados/SPEC_09_COMBAT_STATUS_EFFECTS.md
 last_reviewed: 2026-06-01
 ---
 

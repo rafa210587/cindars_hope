@@ -118,7 +118,7 @@ The following require active Unity editor:
 - [x] `docs/validation/spec_18_baseline_validation_and_spec_cleanup_execution_report.md` — This file
 
 ### Pending Creation
-- [ ] `docs/specs/a_implementar/reorg/README_STATUS.md` — Reorg closure declaration
+- [ ] `.specs/a_implementar/reorg/README_STATUS.md` — Reorg closure declaration
 
 ### Pending Update
 - [ ] `PROJECT_LOG.md` — Append SPEC_18 entry

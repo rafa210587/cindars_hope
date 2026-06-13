@@ -85,7 +85,7 @@ validated_game_rules: [cave_rules.md, combat_rules.md, documentation_rules.md, e
 ### ADR-0001: Canonical Documentation Structure
 
 **Status:** accepted  
-**Content:** Defines canonical folders (docs/project, docs/specs, docs/decisions, docs/game_rules, etc.); forbids numbered folders  
+**Content:** Defines canonical folders (docs/project, .specs, docs/decisions, docs/game_rules, etc.); forbids numbered folders  
 **Source:** SPEC_DOCS_35, SPEC_DOCS_36, SPEC_DOCS_37, validate_docs.ps1  
 **File:** `docs/decisions/ADR-0001-canonical-documentation-structure.md`
 

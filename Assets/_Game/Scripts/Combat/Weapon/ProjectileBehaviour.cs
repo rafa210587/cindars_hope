@@ -19,8 +19,10 @@ namespace CindarsHope.Combat.Weapon
         [SerializeField] private CindarsHope.Combat.StatusEffect.StatusEffectSO _statusEffect;
         [SerializeField] private float _statusApplyChance = 0f;
 
+        [SerializeField] private int _maxHits = 1;
+
         private Vector2 _spawnPosition;
-        private bool _hasHit;
+        private int _hitCount;
 
         private void Start()
         {
@@ -43,16 +45,25 @@ namespace CindarsHope.Combat.Weapon
 
         private void OnTriggerEnter2D(Collider2D collision)
         {
-            if (_hasHit)
+            if (_hitCount >= _maxHits)
                 return;
 
             var enemyHealth = collision.GetComponentInParent<EnemyHealth>() ?? collision.GetComponent<EnemyHealth>();
             if (enemyHealth != null)
             {
-                _hasHit = true;
+                _hitCount++;
                 HitEnemy(enemyHealth);
-                Destroy(gameObject);
+                if (_hitCount >= _maxHits)
+                {
+                    Destroy(gameObject);
+                }
             }
+        }
+
+        /// <summary>Allows piercing projectiles (line piercer skill). 1 = despawn on first hit.</summary>
+        public void SetMaxHits(int maxHits)
+        {
+            _maxHits = Mathf.Max(1, maxHits);
         }
 
         private void HitEnemy(EnemyHealth enemyHealth)

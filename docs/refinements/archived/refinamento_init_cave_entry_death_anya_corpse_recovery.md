@@ -2,7 +2,7 @@
 
 > Status: **IMPLEMENTADO** — 2026-05-25
 > ⚠️ **MOVIDO** — Versão ativa em: `docs/refinements/implementados/ref_cave_entry_death_anya_corpse_recovery.md`
-> Spec relacionada: `docs/specs/implementados/spec_cave_entry_death_anya_corpse_recovery.md`
+> Spec relacionada: `.specs/implementados/spec_cave_entry_death_anya_corpse_recovery.md`
 > Objetivo: completar fluxo de morte na cave, respawn na Fonte de Anya, corpse recovery do ultimo corpo, perda/recuperacao de itens/equipment/gold, perda de XP para inicio do nivel atual, integracao com redistribuicao de inimigos da cave e save/load.
 
 ---
@@ -16,7 +16,7 @@ Evidencias principais:
 ```text
 Assets/_Game/Scripts/Cave/CaveEntryDataSO.cs
 Assets/_Game/Scripts/Player/Death/**
-docs/specs/implementados/spec_fase9j_cave_entry_loadout_death_anya_corpse.md
+.specs/implementados/spec_fase9j_cave_entry_loadout_death_anya_corpse.md
 ```
 
 ---

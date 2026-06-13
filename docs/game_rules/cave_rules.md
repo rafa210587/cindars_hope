@@ -6,7 +6,7 @@ source_adrs:
   - ADR-0005
 source_documents:
   - docs/amendments/FASE9F_CAVE_STABLE_RUN_AND_REPLAY_AMENDMENT_v1.0.md
-  - docs/specs/a_implementar/closeout_mvp/SPEC_24_CAVE_RUNTIME_CHECKPOINTS_BOSS_GATES_CLOSEOUT.md
+  - .specs/a_implementar/closeout_mvp/SPEC_24_CAVE_RUNTIME_CHECKPOINTS_BOSS_GATES_CLOSEOUT.md
 last_reviewed: 2026-06-01
 ---
 

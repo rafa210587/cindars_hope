@@ -9,14 +9,18 @@ namespace CindarsHope.Skills.Runtime.Effects
         public bool CostSpent { get; private set; }
         public bool CooldownStarted { get; private set; }
 
-        public static SkillEffectResult Succeeded(string feedbackMessage, bool costSpent = false, bool cooldownStarted = false)
+        // Optional executor-suggested cooldown. <= 0 means "use the controller default".
+        public float CooldownSeconds { get; private set; }
+
+        public static SkillEffectResult Succeeded(string feedbackMessage, bool costSpent = false, bool cooldownStarted = false, float cooldownSeconds = 0f)
         {
             return new SkillEffectResult
             {
                 Success = true,
                 FeedbackMessage = feedbackMessage ?? "Skill applied.",
                 CostSpent = costSpent,
-                CooldownStarted = cooldownStarted
+                CooldownStarted = cooldownStarted,
+                CooldownSeconds = cooldownSeconds
             };
         }
 

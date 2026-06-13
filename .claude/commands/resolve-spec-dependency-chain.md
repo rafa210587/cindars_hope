@@ -1,6 +1,6 @@
 # /resolve-spec-dependency-chain
 
-> **NOTA DE RECONCILIAÇÃO (2026-06-12):** a fila wave-based foi executada e movida para executadas_build_validated/. A fila ativa é docs/specs/a_implementar/fable/. Exemplos com paths NN_spec_* abaixo são históricos.
+> **NOTA DE RECONCILIAÇÃO (2026-06-12):** a fila wave-based foi executada e movida para executadas_build_validated/. A fila ativa é .specs/a_implementar/fable/. Exemplos com paths NN_spec_* abaixo são históricos.
 
 
 Reference command for resolving same-wave spec dependencies.
@@ -16,7 +16,7 @@ This is called **automatically** by `/execute-spec-strict` and `/loop-spec-batch
 ## Manual Usage
 
 ```text
-/resolve-spec-dependency-chain docs/specs/a_implementar/05_spec_companion_farm_job_board_automation_runtime_execution.md
+/resolve-spec-dependency-chain .specs/a_implementar/05_spec_companion_farm_job_board_automation_runtime_execution.md
 ```
 
 ---
@@ -30,7 +30,7 @@ When `/execute-spec-strict <spec>` finds a same-wave dependency:
    - Read spec fully
    - Search for: `Depends on`, `Dependencies`, `Required systems`, `Required specs`, acceptance criteria
 3. **Search same-wave specs**:
-   - Query `docs/specs/a_implementar/<wave>_spec_*.md` files
+   - Query `.specs/a_implementar/<wave>_spec_*.md` files
    - Match extracted names to file paths
 4. **Build dependency chain**:
    - Create DAG (directed acyclic graph) of dependencies
@@ -101,7 +101,7 @@ spec_pets_companion_taming_system (pets scope)
 
 ```
 1. Read spec → found: "Depends on: farm_animals"
-2. Search docs/specs/a_implementar/05_spec_*.md → find farm_animals spec
+2. Search .specs/a_implementar/05_spec_*.md → find farm_animals spec
 3. Check farm_animals → found: "Depends on: farm_buildings"
 4. Check farm_buildings → found: "Depends on: farm_building_footprints"
 5. Check farm_building_footprints → found: "Depends on: farm_level1_layout"

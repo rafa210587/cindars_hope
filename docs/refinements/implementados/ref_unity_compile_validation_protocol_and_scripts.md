@@ -1,7 +1,7 @@
 # Refinement implementado - Unity compile validation protocol and scripts
 
 > Status: Implementado completo
-> Spec relacionada: `docs/specs/implementados/spec_unity_compile_validation_protocol_and_scripts.md`
+> Spec relacionada: `.specs/implementados/spec_unity_compile_validation_protocol_and_scripts.md`
 > Origem: `docs/refinements/a_implementar/pre_refinamentos/refinamento_init_scene_unity_validation_missing_scripts_prefabs.md`
 
 ## Resultado

@@ -124,7 +124,7 @@ These define agent behavior, not game behavior. Keep where they are but also ext
 
 ## 3. Specs Audit (Sample)
 
-### 3.1: Closeout MVP Specs (docs/specs/a_implementar/closeout_mvp/)
+### 3.1: Closeout MVP Specs (.specs/a_implementar/closeout_mvp/)
 
 | Spec | Contains Decisions | Contains Rules | Destination |
 |------|---|---|---|
@@ -133,7 +133,7 @@ These define agent behavior, not game behavior. Keep where they are but also ext
 
 **Outcome:** Decisions and rules in closeout specs are implementation-focused; extract game rules only where they define current behavior (e.g., inventory slots, skill tree slots, combat damage formula).
 
-### 3.2: Batch 2 Specs (docs/specs/a_implementar/)
+### 3.2: Batch 2 Specs (.specs/a_implementar/)
 
 | Spec | Status | Action |
 |------|--------|--------|
@@ -145,7 +145,7 @@ These define agent behavior, not game behavior. Keep where they are but also ext
 
 **Outcome:** Batch 2 is blocked; do not extract rules from Batch 2 until human Phase 2-3 completion.
 
-### 3.3: Implemented Specs (docs/specs/implementados/)
+### 3.3: Implemented Specs (.specs/implementados/)
 
 | Category | Count | Extract Rules | Destination |
 |----------|-------|---|---|
@@ -185,7 +185,7 @@ These define agent behavior, not game behavior. Keep where they are but also ext
 
 | ADR | Title | Decision | Source Documents |
 |---|---|---|---|
-| ADR-0001 | Canonical Documentation Structure | docs/specs/, docs/decisions/, docs/game_rules/ are canonical; numbered folders forbidden | SPEC_DOCS_35, SPEC_DOCS_36, SPEC_DOCS_37, validate_docs.ps1 |
+| ADR-0001 | Canonical Documentation Structure | .specs/, docs/decisions/, docs/game_rules/ are canonical; numbered folders forbidden | SPEC_DOCS_35, SPEC_DOCS_36, SPEC_DOCS_37, validate_docs.ps1 |
 | ADR-0002 | Agent Context Minimum | Agents read only CLAUDE.md, CURRENT_STATE.md, active spec, cited files | .claude/rules/context-reading-policy.md, CLAUDE.md, AGENTS.md |
 | ADR-0003 | Spec Lifecycle | Specs in a_implementar/implementados; closeout_mvp waits Phase 2-3; Batch 2 blocked | SPEC_EXECUTION_ORDER.md, CURRENT_STATE.md |
 | ADR-0004 | Validation Evidence and Phase Gates | Phase 0/1/2/3 distinguished; NOT_RUN explicit; validation evidence preserved | LAST_VALIDATION_STATUS.md, .claude/rules/spec-promotion-requires-evidence.md |

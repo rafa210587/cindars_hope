@@ -13,12 +13,12 @@ Validate documentation structure and consistency.
 
 ### 1. Spec Source of Truth
 
-- [ ] `docs/specs/` exists and contains specs
+- [ ] `.specs/` exists and contains specs
 - [ ] No root-level `specs/` or `spec/` directories exist
-- [ ] `docs/specs/a_implementar/` contains future specs
-- [ ] `docs/specs/implementados/` contains completed specs
-- [ ] `docs/specs/SPEC_EXECUTION_ORDER.md` exists (if applicable)
-- [ ] `docs/specs/SPEC_SOURCE_OF_TRUTH.md` exists or is not critical
+- [ ] `.specs/a_implementar/` contains future specs
+- [ ] `.specs/implementados/` contains completed specs
+- [ ] `.specs/SPEC_EXECUTION_ORDER.md` exists (if applicable)
+- [ ] `.specs/SPEC_SOURCE_OF_TRUTH.md` exists or is not critical
 
 ### 2. Refinement Structure
 
@@ -43,8 +43,8 @@ Validate documentation structure and consistency.
 
 ### 5. Registries & Maps (if they exist)
 
-- [ ] `docs/specs/SPEC_REGISTRY_IMPLEMENTED.md` consistent with `docs/specs/implementados/`
-- [ ] `docs/specs/SPEC_REGISTRY_TO_IMPLEMENT.md` consistent with `docs/specs/a_implementar/`
+- [ ] `.specs/SPEC_REGISTRY_IMPLEMENTED.md` consistent with `.specs/implementados/`
+- [ ] `.specs/SPEC_REGISTRY_TO_IMPLEMENT.md` consistent with `.specs/a_implementar/`
 - [ ] `docs/refinements/implementados/ref_implementados_map.md` consistent with folder
 - [ ] `docs/refinements/a_implementar/ref_futuro_map.md` consistent with folder
 - [ ] No duplicate IDs or specs listed twice
@@ -71,7 +71,7 @@ Run documentation validation:
 Status: PASS | WARNING | FAIL
 
 Spec Structure:
-  ✓ docs/specs/ is sole source of truth
+  ✓ .specs/ is sole source of truth
   ✓ No root specs/ or spec/
   ✓ a_implementar/ and implementados/ consistent
   ✓ SPEC_EXECUTION_ORDER.md coherent

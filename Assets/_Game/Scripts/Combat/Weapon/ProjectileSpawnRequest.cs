@@ -23,6 +23,12 @@ namespace CindarsHope.Combat.Weapon
         public CindarsHope.Combat.StatusEffect.StatusEffectSO StatusEffect { get; set; }
         public float StatusApplyChance { get; set; }
 
+        /// <summary>Visual archetype used when Prefab is null (runtime-built projectile).</summary>
+        public ProjectileVisualStyle VisualStyle { get; set; } = ProjectileVisualStyle.Auto;
+
+        /// <summary>How many enemies the projectile can hit before despawning (1 = no pierce).</summary>
+        public int MaxHits { get; set; } = 1;
+
         public ProjectileSpawnRequest()
         {
         }

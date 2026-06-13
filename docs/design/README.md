@@ -27,11 +27,11 @@ Não deixar documento antigo coexistindo na mesma pasta.
 Usar o histórico do Git como versionamento.
 ```
 
-Exceção: specs implementáveis em `docs/specs/` podem ter nomes específicos por entrega, porque representam unidades diferentes de implementação.
+Exceção: specs implementáveis em `.specs/` podem ter nomes específicos por entrega, porque representam unidades diferentes de implementação.
 
 ## Mapa e processo obrigatórios para criação de specs
 
-Antes de criar qualquer spec em `docs/specs/a_implementar/`, consultar:
+Antes de criar qualquer spec em `.specs/a_implementar/`, consultar:
 
 ```text
 docs/design/SPEC_SOURCE_MAP.md
@@ -61,8 +61,8 @@ Toda spec deve declarar uma seção:
 | Specification process | `docs/design/SPECIFICATION_PROCESS.md` | Definir o método obrigatório para transformar design em spec implementável. |
 | Pré-refinamento transitório | `docs/refinements/a_implementar/pre_refinamentos/` | Rascunhos vivos, análises e exploração de decisões antes de virar design consolidado ou spec. |
 | Refinamento implementado | `docs/refinements/implementados/` | Contexto histórico, auditorias, waves e decisões já absorvidas. |
-| Spec implementável | `docs/specs/a_implementar/` | Documento operacional para execução com escopo, dependências, arquivos permitidos/proibidos, critérios de aceite e validação. |
-| Spec implementada/parcial | `docs/specs/implementados/` | Registro do que já existe no repo e seu estado real. |
+| Spec implementável | `.specs/a_implementar/` | Documento operacional para execução com escopo, dependências, arquivos permitidos/proibidos, critérios de aceite e validação. |
+| Spec implementada/parcial | `.specs/implementados/` | Registro do que já existe no repo e seu estado real. |
 
 ## Regra principal
 
@@ -76,7 +76,7 @@ Quais mecanismos e funcionalidades compõem o sistema?
 Como ela se conecta a lore, progressão, economia, UI e save?
 ```
 
-Specs em `docs/specs/` respondem:
+Specs em `.specs/` respondem:
 
 ```text
 O que exatamente será implementado agora?
@@ -135,11 +135,11 @@ Consulta obrigatória a docs/design/SPEC_SOURCE_MAP.md
   ↓
 Consulta obrigatória a docs/design/SPECIFICATION_PROCESS.md
   ↓
-Spec quebrada em docs/specs/a_implementar/
+Spec quebrada em .specs/a_implementar/
   ↓
 Implementação
   ↓
-Registro em docs/specs/implementados/ e docs/refinements/implementados/
+Registro em .specs/implementados/ e docs/refinements/implementados/
 ```
 
 ## Estado atual

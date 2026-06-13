@@ -237,6 +237,8 @@ namespace CindarsHope.NPC
             _dialogueModal.OnClose -= HandleOpeningClosed;
             if (IsThalindra())
                 ShowThalindraQuestShopDialogue();
+            else if (_npcData != null && _npcData.DialogueTree != null)
+                ShowRootShopDialogue();
             else
                 ShowShopMenuOrClose();
         }
@@ -341,6 +343,183 @@ namespace CindarsHope.NPC
             if (_dialogueModal == null) return;
             _dialogueModal.OnChoiceSelected -= HandleThalindraChoice;
             _dialogueModal.OnClose -= HandleThalindraDialogueClosed;
+            _dialogueModal.OnChoiceSelected -= HandleRootShopChoice;
+            _dialogueModal.OnChoiceSelected -= HandleTreeChoice;
+            _dialogueModal.OnClose -= HandleTreeDialogueClosed;
+        }
+
+        // ─── Dialogue tree support for shop NPCs ─────────────────────────────
+        // Shop NPCs now expose their authored DialogueTreeSO ("Conversar") in addition
+        // to the buy/sell flow, so the expanded WAVE25 dialogue content is reachable.
+
+        private readonly Dictionary<string, DialogueChoice> _treeChoiceMap = new Dictionary<string, DialogueChoice>();
+
+        private void ShowRootShopDialogue()
+        {
+            if (!_isInteracting || _isClosing || _dialogueModal == null) return;
+
+            DetachDialogueChoiceHandler();
+            _dialogueModal.OnChoiceSelected += HandleRootShopChoice;
+            _dialogueModal.OnClose += HandleTreeDialogueClosed;
+
+            var choices = new List<UiDialogueChoice>
+            {
+                new UiDialogueChoice("Conversar", "talk"),
+                new UiDialogueChoice("Comprar", "buy"),
+                new UiDialogueChoice("Vender", "sell"),
+                new UiDialogueChoice("Adeus", "exit")
+            };
+
+            _dialogueModal.ShowWithChoices("Como posso ajudar?", choices);
+        }
+
+        private void HandleRootShopChoice(UiDialogueChoice choice)
+        {
+            DetachDialogueChoiceHandler();
+
+            if (choice == null)
+            {
+                BeginCloseInteraction();
+                return;
+            }
+
+            switch (choice.ChoiceId)
+            {
+                case "talk":
+                    var tree = _npcData != null ? _npcData.DialogueTree : null;
+                    var startNode = tree != null ? tree.GetNodeById(tree.StartNodeId) : null;
+                    if (startNode != null)
+                    {
+                        ShowTreeNode(startNode);
+                    }
+                    else
+                    {
+                        ShowRootShopDialogue();
+                    }
+                    break;
+
+                case "buy":
+                    _dialogueModal.Hide();
+                    if (EnsureTransactionUiReady(ShopMenuOption.Buy))
+                    {
+                        _buyPanel.OnBackPressed -= HandlePanelBack;
+                        _buyPanel.OnBackPressed += HandlePanelBack;
+                        _buyPanel.Show(_shopData.Id);
+                    }
+                    else BeginCloseInteraction();
+                    break;
+
+                case "sell":
+                    _dialogueModal.Hide();
+                    if (EnsureTransactionUiReady(ShopMenuOption.Sell))
+                    {
+                        _sellPanel.OnBackPressed -= HandlePanelBack;
+                        _sellPanel.OnBackPressed += HandlePanelBack;
+                        _sellPanel.Show(_shopData.Id);
+                    }
+                    else BeginCloseInteraction();
+                    break;
+
+                case "exit":
+                default:
+                    _dialogueModal.Hide();
+                    BeginCloseInteraction();
+                    break;
+            }
+        }
+
+        private void ShowTreeNode(DialogueNode node)
+        {
+            if (node == null || _dialogueModal == null)
+            {
+                ShowRootShopDialogue();
+                return;
+            }
+
+            string text = node.Text;
+            if (node.RandomLinePool != null && node.RandomLinePool.Count > 0)
+            {
+                text = node.RandomLinePool[Random.Range(0, node.RandomLinePool.Count)];
+            }
+
+            DetachDialogueChoiceHandler();
+            _dialogueModal.OnClose += HandleTreeDialogueClosed;
+
+            if (node.Choices != null && node.Choices.Count > 0)
+            {
+                _treeChoiceMap.Clear();
+                var uiChoices = new List<UiDialogueChoice>();
+                for (var i = 0; i < node.Choices.Count; i++)
+                {
+                    var source = node.Choices[i];
+                    if (source == null) continue;
+                    var choiceId = $"{node.NodeId}_{i}";
+                    _treeChoiceMap[choiceId] = source;
+                    uiChoices.Add(new UiDialogueChoice(source.Label, choiceId));
+                }
+
+                _dialogueModal.OnChoiceSelected += HandleTreeChoice;
+                _dialogueModal.ShowWithChoices(text, uiChoices);
+            }
+            else
+            {
+                _dialogueModal.Show(text);
+            }
+        }
+
+        private void HandleTreeChoice(UiDialogueChoice choice)
+        {
+            DetachDialogueChoiceHandler();
+
+            if (choice == null || !_treeChoiceMap.TryGetValue(choice.ChoiceId, out var npcChoice))
+            {
+                BeginCloseInteraction();
+                return;
+            }
+
+            switch (npcChoice.ActionType)
+            {
+                case DialogueActionType.OpenShop:
+                    _dialogueModal.Hide();
+                    if (EnsureTransactionUiReady(ShopMenuOption.Buy))
+                    {
+                        _buyPanel.OnBackPressed -= HandlePanelBack;
+                        _buyPanel.OnBackPressed += HandlePanelBack;
+                        _buyPanel.Show(_shopData.Id);
+                    }
+                    else BeginCloseInteraction();
+                    return;
+
+                case DialogueActionType.CloseDialogue:
+                    _dialogueModal.Hide();
+                    BeginCloseInteraction();
+                    return;
+            }
+
+            if (string.IsNullOrWhiteSpace(npcChoice.NextNodeId))
+            {
+                _dialogueModal.Hide();
+                BeginCloseInteraction();
+                return;
+            }
+
+            var tree = _npcData != null ? _npcData.DialogueTree : null;
+            var nextNode = tree != null ? tree.GetNodeById(npcChoice.NextNodeId) : null;
+            if (nextNode == null)
+            {
+                Debug.LogWarning($"{nameof(NpcShopController)} could not resolve dialogue node '{npcChoice.NextNodeId}' for '{_npcData?.NpcId}'.", this);
+                _dialogueModal.Hide();
+                BeginCloseInteraction();
+                return;
+            }
+
+            ShowTreeNode(nextNode);
+        }
+
+        private void HandleTreeDialogueClosed()
+        {
+            DetachDialogueChoiceHandler();
+            BeginCloseInteraction();
         }
 
         private void ShowShopMenuOrClose()

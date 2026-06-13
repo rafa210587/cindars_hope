@@ -1,8 +1,8 @@
-﻿# REF — TOOLS EQUIPMENT HOTBAR PROGRESSION DAMAGE PR101 130
+# REF — TOOLS EQUIPMENT HOTBAR PROGRESSION DAMAGE PR101 130
 
 > Origem histórica: conteúdo absorvido durante reorganização documental.
 > Status: refinamento implementado absorvido.
-> Spec consolidada relacionada: `docs/specs/implementados/spec_tools_001_tools_equipment_hotbar_parcial.md`
+> Spec consolidada relacionada: `.specs/implementados/spec_tools_001_tools_equipment_hotbar_parcial.md`
 
 ---
 

@@ -8,12 +8,12 @@
 > - `docs/design/lore/VAALARA_GAME_CANON_DIRECTION_v1.0.md`  
 > - `docs/game_rules/cave_rules.md`  
 > - `docs/decisions/ADR-0005-cave-stable-run-and-replay.md`  
-> - `docs/specs/a_implementar/spec_cave_runtime_generation_checkpoints_boss_gates.md`  
-> - `docs/specs/a_implementar/spec_enemy_ai_roster_bestiary_faction_locks_runtime.md`  
-> - `docs/specs/implementados/spec_cave_001_cave_scene_portal_e_runtime_basico.md` até `spec_cave_008_debug_skip_confinement_wall_distance_hardening.md`  
+> - `.specs/a_implementar/spec_cave_runtime_generation_checkpoints_boss_gates.md`  
+> - `.specs/a_implementar/spec_enemy_ai_roster_bestiary_faction_locks_runtime.md`  
+> - `.specs/implementados/spec_cave_001_cave_scene_portal_e_runtime_basico.md` até `spec_cave_008_debug_skip_confinement_wall_distance_hardening.md`  
 > - `docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_DIRECTION.md`  
 > **Função:** consolidar a visão de produto, regras, conteúdo e roadmap da caverna sem reimplementar o runtime já existente.  
-> **Não é spec implementável.** Specs futuras devem ser quebradas em `docs/specs/a_implementar/`.
+> **Não é spec implementável.** Specs futuras devem ser quebradas em `.specs/a_implementar/`.
 
 ---
 

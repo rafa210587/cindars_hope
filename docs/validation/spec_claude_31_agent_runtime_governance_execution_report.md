@@ -128,7 +128,7 @@ All C# editor files (*.cs under Assets/_Game/Scripts/Editor/)
 All Unity scene files (.unity)
 All Unity prefab files (.prefab)
 All Unity asset files (.asset)
-All existing docs/specs/ content (not moved, not deleted)
+All existing .specs/ content (not moved, not deleted)
 docs_old/** (preserved read-only)
 Assembly-CSharp.csproj / Assembly-CSharp-Editor.csproj
 ```

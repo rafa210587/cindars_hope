@@ -7,7 +7,7 @@
 > - `docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.3.md`  
 > - `docs/design/gameplay/city/CITY_LAYOUT_BUILDINGS_SCHEDULE_DIRECTION.md`  
 > **Função:** alinhar a fazenda à mesma escala visual da cidade: player 32x48 px, tile 32x32 px, footbox collider, construções proporcionais e tamanhos em tiles/pixels.  
-> **Não é spec implementável.** Specs futuras devem ser quebradas em `docs/specs/a_implementar/`.
+> **Não é spec implementável.** Specs futuras devem ser quebradas em `.specs/a_implementar/`.
 
 ---
 

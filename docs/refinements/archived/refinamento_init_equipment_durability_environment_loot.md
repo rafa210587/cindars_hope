@@ -1,7 +1,7 @@
 # refinamento_init_equipment_durability_environment_loot
 
 > Status: Refinamento inicial a implementar
-> Spec futura relacionada: `docs/specs/a_implementar/spec_equipment_durability_environment_loot_runtime.md`
+> Spec futura relacionada: `.specs/a_implementar/spec_equipment_durability_environment_loot_runtime.md`
 > Objetivo: completar equipment, durabilidade, HUD posicional, maos, resistencias ambientais e loot runtime.
 
 ---
@@ -18,7 +18,7 @@ Assets/_Game/Scripts/Equipment/EquipmentDataSO.cs
 Assets/_Game/Scripts/Equipment/DurabilityManager.cs
 Assets/_Game/Scripts/Equipment/EnvironmentalResistanceManager.cs
 Assets/_Game/Scripts/Loot/LootTableSO.cs
-docs/specs/implementados/spec_tools_001_tools_equipment_hotbar_parcial.md
+.specs/implementados/spec_tools_001_tools_equipment_hotbar_parcial.md
 ```
 
 ---

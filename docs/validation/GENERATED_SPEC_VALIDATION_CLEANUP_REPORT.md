@@ -38,7 +38,7 @@ This blocker prevented WAVE 02+ from proceeding with validator validation.
 
 **Before:**
 ```powershell
-$badFutureSpecs = Get-ChildItem "docs/specs/a_implementar" -Filter "*.md" -ErrorAction SilentlyContinue |
+$badFutureSpecs = Get-ChildItem ".specs/a_implementar" -Filter "*.md" -ErrorAction SilentlyContinue |
     Where-Object { $_.Name -notlike "spec_*" -and $_.Name -ne "README.md" }
 
 if ($badFutureSpecs) {
@@ -50,7 +50,7 @@ if ($badFutureSpecs) {
 
 **After:**
 ```powershell
-$badFutureSpecs = Get-ChildItem "docs/specs/a_implementar" -Filter "*.md" -ErrorAction SilentlyContinue |
+$badFutureSpecs = Get-ChildItem ".specs/a_implementar" -Filter "*.md" -ErrorAction SilentlyContinue |
     Where-Object { $_.Name -notlike "spec_*" -and $_.Name -notlike "[0-9][0-9]_spec_*" -and $_.Name -ne "README.md" }
 
 if ($badFutureSpecs) {
@@ -70,7 +70,7 @@ Updated comment to note that wave-based specs may skip headers (future/mapped sp
 
 ```powershell
 # Check spec markers and headers (legacy specs only; wave-based specs may skip headers)
-$legacySpecs = Get-ChildItem "docs/specs/a_implementar" -Filter "spec_*.md" -File -ErrorAction SilentlyContinue
+$legacySpecs = Get-ChildItem ".specs/a_implementar" -Filter "spec_*.md" -File -ErrorAction SilentlyContinue
 ```
 
 ---

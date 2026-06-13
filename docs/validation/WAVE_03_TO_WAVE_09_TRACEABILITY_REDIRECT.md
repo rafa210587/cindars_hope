@@ -10,7 +10,7 @@
 
 WAVE 03 included 8 quest-related specs (4 mapped to future, 4 runtime). During execution, the quest system architecture evolved, and the WAVE 03 specs were superseded by a fresh WAVE 09 wave that re-implemented the quest system from first principles with improved architecture.
 
-**Result:** WAVE 03 specs remain in `docs/specs/a_implementar/` but have no individual execution reports. WAVE 09 serves as the canonical execution evidence.
+**Result:** WAVE 03 specs remain in `.specs/a_implementar/` but have no individual execution reports. WAVE 09 serves as the canonical execution evidence.
 
 ---
 

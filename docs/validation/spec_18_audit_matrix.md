@@ -29,7 +29,7 @@
 |---------|-------|--------|
 | `PROJECT_LOG.md` | Registrar resumo de execucao | Apenas append de entrada SPEC_18 |
 | `docs/IMPLEMENTATION_STATUS.md` | Atualizar status real se mudou | Apenas correções de status factual |
-| `docs/specs/a_implementar/reorg/README_STATUS.md` | CRIAR — declarar reorg fechado | Arquivo novo |
+| `.specs/a_implementar/reorg/README_STATUS.md` | CRIAR — declarar reorg fechado | Arquivo novo |
 | `docs/validation/spec_mvp_closeout_18_baseline_validation_and_spec_cleanup_execution_report.md` | CRIAR — relatório de execucao | Arquivo novo |
 | `docs/backlog/reorg_architecture_residual_backlog.md` | Atualizar se itens foram resolvidos | Apenas updates de status residual existente |
 

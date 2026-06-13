@@ -16,7 +16,7 @@ SPEC 17C nao esta fechada porque os fluxos interativos finais exigidos devem ser
 - `MissingScriptScanner` valida as tres cenas gameplay e prefabs, falhando com caminho e indice exatos.
 - Actions HUD lista os atalhos vigentes, incluindo `I`, `K`, `L`, `U` e `Esc`; `J` foi ligado ao ataque principal.
 - Stubs de prompts SPEC 15/16 foram removidos de `docs/agent_prompts/a_executar/`.
-- Stubs de specs ja promovidas (10-12, 15 e 16) foram removidos de `docs/specs/a_implementar/`; os residuais de 13/14 foram alinhados no registry e na ordem.
+- Stubs de specs ja promovidas (10-12, 15 e 16) foram removidos de `.specs/a_implementar/`; os residuais de 13/14 foram alinhados no registry e na ordem.
 
 ## Gates automaticos
 

@@ -1,7 +1,7 @@
 # refinamento_init_inventory_slots_capacity_ui
 
 > Status: Refinamento inicial a implementar
-> Spec futura relacionada: `docs/specs/implementados/spec_inventory_002_slots_capacity_ui_final.md`
+> Spec futura relacionada: `.specs/implementados/spec_inventory_002_slots_capacity_ui_final.md`
 > Objetivo: completar inventory com slots formais, capacidade e UI final.
 
 ---

@@ -5,7 +5,7 @@
 > **Substitui como direção ativa:** `FARM_DESIGN_DIRECTION_v1.2.md`  
 > **Base de canon:** `docs/design/lore/VAALARA_GAME_CANON_DIRECTION_v1.0.md`  
 > **Função:** grande descrição de como a fazenda deve funcionar no jogo.  
-> **Não é spec implementável.** Specs futuras devem ser quebradas em `docs/specs/a_implementar/`.
+> **Não é spec implementável.** Specs futuras devem ser quebradas em `.specs/a_implementar/`.
 
 ---
 
@@ -1721,4 +1721,4 @@ docs/design/gameplay/farm/FARM_PETS_DIRECTION_v1.0.md
 docs/design/gameplay/combat_magic_progression/COMBAT_MAGIC_PROGRESSION_DESIGN_DIRECTION_v1.0.md
 ```
 
-Depois de consolidados, cada um deve alimentar specs menores em `docs/specs/a_implementar/`.
+Depois de consolidados, cada um deve alimentar specs menores em `.specs/a_implementar/`.

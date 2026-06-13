@@ -1,8 +1,8 @@
-﻿# REF — CORE FOUNDATION PR001 012
+# REF — CORE FOUNDATION PR001 012
 
 > Origem histórica: conteúdo absorvido durante reorganização documental.
 > Status: refinamento implementado absorvido.
-> Spec consolidada relacionada: `docs/specs/implementados/spec_core_001_event_bus_e_eventos_base.md`
+> Spec consolidada relacionada: `.specs/implementados/spec_core_001_event_bus_e_eventos_base.md`
 
 ---
 

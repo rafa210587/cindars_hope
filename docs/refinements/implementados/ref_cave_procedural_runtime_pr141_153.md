@@ -1,8 +1,8 @@
-﻿# REF — CAVE PROCEDURAL RUNTIME PR141 153
+# REF — CAVE PROCEDURAL RUNTIME PR141 153
 
 > Origem histórica: conteúdo absorvido durante reorganização documental.
 > Status: refinamento implementado absorvido.
-> Spec consolidada relacionada: `docs/specs/implementados/spec_cave_002_procedural_contracts_resources_parcial.md`
+> Spec consolidada relacionada: `.specs/implementados/spec_cave_002_procedural_contracts_resources_parcial.md`
 
 ---
 

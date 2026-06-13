@@ -147,7 +147,7 @@ All checks passed:
 ✓ Root folder 'spec/' does not exist
 ✓ Root folder 'specs/' does not exist
 ✓ docs_old/ exists
-✓ docs/specs/ exists as single official specs source
+✓ .specs/ exists as single official specs source
 ✓ SPEC_EXECUTION_ORDER.md exists
 ✓ pre_refinamentos/ exists
 ✓ No refinement_init files outside pre_refinamentos
@@ -201,9 +201,9 @@ All checks passed:
 ✓ All docs/amendments/ (critical amendments)  
 ✓ All docs/validation/ (evidence)  
 ✓ All docs/05_VALIDATION/ (Phase 3 test scenarios)  
-✓ All docs/specs/implementados/ (implemented history)  
+✓ All .specs/implementados/ (implemented history)  
 ✓ All docs/refinements/implementados/ (refinement history)  
-✓ docs/specs/a_implementar/closeout_mvp/ (pending Phase 2-3)  
+✓ .specs/a_implementar/closeout_mvp/ (pending Phase 2-3)  
 ✓ All Batch 2 candidates (blocked on Phase 2-3)  
 ✓ All governance docs (AGENTS.md, CLAUDE.md, CURRENT_STATE.md, etc.)  
 ✓ All operations READMEs and active documentation  

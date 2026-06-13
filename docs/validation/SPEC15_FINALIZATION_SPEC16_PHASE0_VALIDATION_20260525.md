@@ -95,7 +95,7 @@ Verificações realizadas antes de corrigir:
 | Arquivo | Ação |
 |---------|------|
 | `Assets/_Game/Scripts/Core/Events/PlayerProgressionEvents.cs` | Esvaziado (sem classes) |
-| `docs/specs/SPEC_EXECUTION_ORDER.md` | SPEC 15 = Implementado em código; SPEC 16 = A implementar |
+| `.specs/SPEC_EXECUTION_ORDER.md` | SPEC 15 = Implementado em código; SPEC 16 = A implementar |
 | `docs/IMPLEMENTATION_STATUS.md` | Status SPEC 15 e guardrail SPEC 16 |
 | `PROJECT_LOG.md` | Entrada de sessão |
 

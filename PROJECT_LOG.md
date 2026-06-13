@@ -267,7 +267,7 @@ Contexto padrão agora: `CURRENT_STATE.md` (não PROJECT_LOG.md). Promoção de 
 
 ### Resumo de Execucao
 
-**Phase 0 — Inventory Audit:** 140+ documentos inventariados. 28 candidatos para delete (SPEC_DOCS_31). Alto risco: `docs/specs/a_implementar/reorg/` parece ativo mas README_STATUS.md marca como CLOSED.
+**Phase 0 — Inventory Audit:** 140+ documentos inventariados. 28 candidatos para delete (SPEC_DOCS_31). Alto risco: `.specs/a_implementar/reorg/` parece ativo mas README_STATUS.md marca como CLOSED.
 
 **Deliverables criados:**
 - `docs/00_PROJECT/` — CURRENT_STATE.md, DOCUMENT_GOVERNANCE.md, HISTORY_LOG_POLICY.md, DOCUMENT_DELETE_CANDIDATES.md, DOCUMENT_INDEX.md, ROADMAP.md
@@ -279,7 +279,7 @@ Contexto padrão agora: `CURRENT_STATE.md` (não PROJECT_LOG.md). Promoção de 
 **Arquivos modificados:**
 - `AGENTS.md` — seção Context Reading Policy + regras de conflito
 - `PROJECT_LOG.md` — governance header
-- `docs/specs/SPEC_EXECUTION_ORDER.md` — governance header
+- `.specs/SPEC_EXECUTION_ORDER.md` — governance header
 - `docs/IMPLEMENTATION_STATUS.md` — governance header
 
 **Validacao:** docs PASS 14/14. Build NE (sem alteracoes C#). Unity NOT RUN (docs-only).
@@ -824,8 +824,8 @@ Contexto padrão agora: `CURRENT_STATE.md` (não PROJECT_LOG.md). Promoção de 
 **SPEC_18 Baseline Validation:**
 - ✓ Criada audit matrix: docs/validation/spec_18_audit_matrix.md
 - ✓ Criado execution report: docs/validation/spec_18_baseline_validation_and_spec_cleanup_execution_report.md
-- ✓ Criada declaracao de closure reorg: docs/specs/a_implementar/reorg/README_STATUS.md
-- ✓ Criado spec file: docs/specs/a_implementar/closeout_mvp/SPEC_18_BASELINE_VALIDATION_AND_SPEC_CLEANUP.md
+- ✓ Criada declaracao de closure reorg: .specs/a_implementar/reorg/README_STATUS.md
+- ✓ Criado spec file: .specs/a_implementar/closeout_mvp/SPEC_18_BASELINE_VALIDATION_AND_SPEC_CLEANUP.md
 
 **Validacoes Automatizadas (Phase 1 — EXECUTADO):**
 - dotnet restore Assembly-CSharp.csproj: PASS (43 ms)
@@ -3193,7 +3193,7 @@ IMPLEMENTATION_STATUS.md tinha conflito `<<<HEAD` vs `00562ddca`. Mantida versao
 
 ### Documentacao
 
-- spec migrada: `docs/specs/a_implementar/spec_visual_world_scale_camera_sprite_profiles.md` → `docs/specs/implementados/`
+- spec migrada: `.specs/a_implementar/spec_visual_world_scale_camera_sprite_profiles.md` → `.specs/implementados/`
 - prompt migrado: `docs/agent_prompts/a_executar/SPEC_17A_..._PROMPT.md` → `docs/agent_prompts/implementados/`
 - SPEC_EXECUTION_ORDER.md: entrada 17A adicionada
 - IMPLEMENTATION_STATUS.md: linha 17A adicionada
@@ -3207,13 +3207,13 @@ IMPLEMENTATION_STATUS.md tinha conflito `<<<HEAD` vs `00562ddca`. Mantida versao
 
 ### Resultado
 
-- Fechadas (migradas para `docs/specs/implementados/` + Play Mode validado sem erros):
+- Fechadas (migradas para `.specs/implementados/` + Play Mode validado sem erros):
   - `spec_ui_gameplay_closeout_skill_shop_prompts_actions_hud.md` (17C)
   - `spec_ui_gameplay_shop_injection_equipment_slot_picker_closeout.md` (17D)
   - `spec_ui_gameplay_shop_session_lifecycle_npc_readiness_closeout.md` (17E)
   - `spec_ui_gameplay_shop_modal_stack_responsive_names_closeout.md` (17F): codigo commitado nesta sessao, Play Mode validado logo em seguida
 
-- Mantida em `docs/specs/a_implementar/`:
+- Mantida em `.specs/a_implementar/`:
   - `spec_ui_ux_full_gameplay_inventory_hotbar_menus.md` (17 ampla): Canvas UGUI final, pause/options, cave/death/corpse/Anya/toasts, substituicao OnGUI nao-debug — ainda pendentes
 
 - Nao migradas por falta de evidencia: nenhuma.
@@ -3471,7 +3471,7 @@ Todos os 4 erros eram de SPEC 15 ou SPEC 16. Como Unity compila em Assembly-CSha
 - SaveV4ToV5Migration.cs: inicializa SkillTreeSaveData
 - GameBootstrap.cs: expoe SkillTreeManager
 - 14 novos eventos em SkillTreeEvents.cs
-- SPEC 16 spec movida para docs/specs/implementados/
+- SPEC 16 spec movida para .specs/implementados/
 - SPEC_EXECUTION_ORDER.md, IMPLEMENTATION_STATUS.md e PROJECT_LOG.md atualizados
 
 ### Pendentes
@@ -3509,7 +3509,7 @@ docs/validation/SPEC16_SKILL_TREES_VALIDATION_20260526.md
 ### Arquivos alterados
 
 - Assets/_Game/Scripts/Core/Events/PlayerProgressionEvents.cs (esvaziado - sem classes)
-- docs/specs/SPEC_EXECUTION_ORDER.md
+- .specs/SPEC_EXECUTION_ORDER.md
 - docs/IMPLEMENTATION_STATUS.md
 - PROJECT_LOG.md
 
@@ -3795,7 +3795,7 @@ Assets/_Game/Scripts/Economy/SellableItemPolicy.cs
 Assets/_Game/Scripts/Core/Bootstrap/GameBootstrap.cs
   - Added public ItemDatabaseSO ItemDatabase property (line 58)
 
-docs/specs/implementados/spec_bugfix_ui_input_shop_sell_bundle.md
+.specs/implementados/spec_bugfix_ui_input_shop_sell_bundle.md
   - Spec with SpecKit markers (/speckit.specify, /speckit.plan, /speckit.tasks)
   - Dependency headers (Ordem de execucao, Depende de, Bloqueia)
 
@@ -3923,8 +3923,8 @@ Events:
 - Assets/_Game/Scripts/Core/Events/ManaChangedEvent.cs (existing)
 
 Docs:
-- docs/specs/SPEC_EXECUTION_ORDER.md (SPEC 12 → implementados)
-- docs/specs/a_implementar/spec_player_combat_weapons_spells_skill_actions_runtime.md (placeholder)
+- .specs/SPEC_EXECUTION_ORDER.md (SPEC 12 → implementados)
+- .specs/a_implementar/spec_player_combat_weapons_spells_skill_actions_runtime.md (placeholder)
 ```
 
 ### Próximas Tarefas
@@ -4311,7 +4311,7 @@ Procedimento para Play Mode manual:
   - `Assets/_Game/Scripts/Inventory/InventoryManager.cs` — Adicao de metodo DropItem
   - `Assets/_Game/Scripts/UI/InventoryPanelController.cs` — Atualizacao de ExecuteDrop() e ExecuteUse()
   - `docs/agent_prompts/implementados/SPEC_03_inventory-slots-capacity_PROMPT.md` — Prompt movido de a_executar/
-  - `docs/specs/SPEC_REGISTRY_IMPLEMENTED.md` — Status atualizado para "Implementado completo"
+  - `.specs/SPEC_REGISTRY_IMPLEMENTED.md` — Status atualizado para "Implementado completo"
 
 ### Validacoes Executadas
 
@@ -4415,7 +4415,7 @@ Validações alternativas completadas:
   - `Assets/_Game/Scripts/Save/SaveData.cs` — Adicao de CurrentMana, MaxMana em PlayerSaveData + ActiveSkillSlotsSaveData class
   - `Assets/_Game/Scripts/Save/SaveManager.cs` — Atualizacao de CurrentSchemaVersion para 4 + registro da migracao
   - `docs/agent_prompts/implementados/SPEC_02_save-schema-migration_PROMPT.md` — Prompt movido de a_executar/
-  - `docs/specs/SPEC_REGISTRY_IMPLEMENTED.md` — Status atualizado para "Implementado completo"
+  - `.specs/SPEC_REGISTRY_IMPLEMENTED.md` — Status atualizado para "Implementado completo"
 
 ### Validacoes Executadas
 
@@ -4504,9 +4504,9 @@ Validações alternativas completadas:
 - Status: `Implementado completo`
 - Arquivos alterados:
   - `tools/docs/validate_docs.ps1` — Corrigido syntax error PowerShell
-  - `docs/specs/implementados/spec_unity_compile_validation_protocol_and_scripts.md` — Atualizado resultado de validacao, gaps reclassificados para futuro
+  - `.specs/implementados/spec_unity_compile_validation_protocol_and_scripts.md` — Atualizado resultado de validacao, gaps reclassificados para futuro
   - `docs/IMPLEMENTATION_STATUS.md` — Atualizacao de status
-  - `docs/specs/SPEC_EXECUTION_ORDER.md` — Atualizacao de status
+  - `.specs/SPEC_EXECUTION_ORDER.md` — Atualizacao de status
 
 ### Validacoes Executadas
 
@@ -5008,11 +5008,11 @@ Status: **SPEC 09 IMPLEMENTADA 100% (em escopo)**. SaveData v3 migration entregu
 
 ### Documentação atualizada:
 - ✅ docs/audits/SPECS_01_16_COMPLETENESS_AUDIT_20260524.md (SPEC 09 → Implementado parcial 100%)
-- ✅ docs/specs/SPEC_EXECUTION_ORDER.md (SPEC 09 → Implementado, desbloqueia SPEC 10)
+- ✅ .specs/SPEC_EXECUTION_ORDER.md (SPEC 09 → Implementado, desbloqueia SPEC 10)
 - ✅ docs/IMPLEMENTATION_STATUS.md (+ section Game Time/Hunger-Stamina)
 
 ### Pendente:
-- docs/specs/implementados/spec_hunger_stamina_status_balance.md (criação)
+- .specs/implementados/spec_hunger_stamina_status_balance.md (criação)
 - docs/refinements/implementados/ref_hunger_stamina_status_balance.md (criação)
 - SPEC_REGISTRY_IMPLEMENTED.md update
 - SPEC_REGISTRY_TO_IMPLEMENT.md update
@@ -5331,7 +5331,7 @@ Status: Implementado parcial.
 Escopo:
 - Criados `tools/unity/RunUnityCompileValidation.ps1` e `tools/unity/ScanUnityLogs.ps1`.
 - `AGENTS.md`, `CLAUDE.md` e `docs/operations/AGENT_EXECUTION_PROTOCOL.md` passam a exigir validacao Unity para tarefas runtime/Unity.
-- A antiga spec 01 de validacao Unity foi reclassificada como `docs/specs/implementados/spec_unity_compile_validation_protocol_and_scripts.md`.
+- A antiga spec 01 de validacao Unity foi reclassificada como `.specs/implementados/spec_unity_compile_validation_protocol_and_scripts.md`.
 - O pre-refinamento correspondente foi reclassificado como `docs/refinements/implementados/ref_unity_compile_validation_protocol_and_scripts.md`.
 
 Validacao:
@@ -5352,9 +5352,9 @@ Pendencias:
 
 ## Atualizacao 2026-05-23 - Validacao documental da fonte unica
 
-`tools/docs/validate_docs.ps1` foi executado apos a reconciliacao documental e falhou por regra desatualizada do proprio validador: o script ainda exige que a pasta raiz `specs/` exista como SpecKit operacional. Esta tarefa removeu `specs/` de proposito e consolidou a fonte unica em `docs/specs/`.
+`tools/docs/validate_docs.ps1` foi executado apos a reconciliacao documental e falhou por regra desatualizada do proprio validador: o script ainda exige que a pasta raiz `specs/` exista como SpecKit operacional. Esta tarefa removeu `specs/` de proposito e consolidou a fonte unica em `.specs/`.
 
-Resultado manual relevante: `Test-Path .\specs` retornou `False`; os 18 `refinamento_init_*.md` estao em `docs/refinements/a_implementar/pre_refinamentos/`; as instrucoes ativas de leitura usam `docs/specs/` e `docs/specs/SPEC_EXECUTION_ORDER.md`.
+Resultado manual relevante: `Test-Path .\specs` retornou `False`; os 18 `refinamento_init_*.md` estao em `docs/refinements/a_implementar/pre_refinamentos/`; as instrucoes ativas de leitura usam `.specs/` e `.specs/SPEC_EXECUTION_ORDER.md`.
 
 ---
 ## Atualizacao 2026-05-23 - Correcao de tracking pos-overnight
@@ -5365,7 +5365,7 @@ Estado real: PARTIAL - backend/data skeleton estabilizado + hotfixes runtime pos
 
 Nao tratar FASE9H/I/J/K/L como completas.
 
-As proximas implementacoes devem seguir somente `docs/specs/` e a ordem definida em `docs/specs/SPEC_EXECUTION_ORDER.md`.
+As proximas implementacoes devem seguir somente `.specs/` e a ordem definida em `.specs/SPEC_EXECUTION_ORDER.md`.
 
 ---
 ## AtualizaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o 2026-05-23 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â OVERNIGHT SPECS EXECUTION PARTIAL - RECLASSIFICADO (Waves 00-07)
@@ -5482,8 +5482,8 @@ Escopo:
 - `CLAUDE.md` sincronizado com o novo fluxo operacional.
 - `docs/operations/LLM_HANDOFF_INSTRUCTIONS.md` reescrito para o estado pÃƒÆ’Ã‚Â³s-reorganizaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o.
 - `README.md` atualizado para refletir specs implementadas/parciais e specs futuras atÃƒÆ’Ã‚Â© FASE9L.
-- `docs/specs/SPEC_SOURCE_OF_TRUTH.md` atualizado com o fluxo obrigatÃƒÆ’Ã‚Â³rio de spec futura para spec implementada.
-- `docs/specs/README.md` atualizado com regras de leitura e encerramento de implementaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o.
+- `.specs/SPEC_SOURCE_OF_TRUTH.md` atualizado com o fluxo obrigatÃƒÆ’Ã‚Â³rio de spec futura para spec implementada.
+- `.specs/README.md` atualizado com regras de leitura e encerramento de implementaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o.
 
 Testes:
 - ValidaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o documental por leitura dos arquivos atualizados.
@@ -5535,13 +5535,13 @@ Status: Implementado em branch `docs/reorganizar-specs-implementadas`.
 Escopo:
 - `docs/` antigo movido para `docs_old/`.
 - nova estrutura `docs/` criada.
-- specs implementadas normalizadas em `docs/specs/implementados/spec_*.md`.
-- specs futuras normalizadas em `docs/specs/a_implementar/spec_*.md`.
+- specs implementadas normalizadas em `.specs/implementados/spec_*.md`.
+- specs futuras normalizadas em `.specs/a_implementar/spec_*.md`.
 - refinamentos separados em `docs/refinements/`.
 - pasta raiz `spec/` absorvida e removida.
 - pasta raiz `specs/` era mantida como SpecKit operacional por feature naquele momento; foi removida na reconciliacao documental de 2026-05-23.
-- novo registry `docs/specs/SPEC_REGISTRY_IMPLEMENTED.md`.
-- novo registry `docs/specs/SPEC_REGISTRY_TO_IMPLEMENT.md`.
+- novo registry `.specs/SPEC_REGISTRY_IMPLEMENTED.md`.
+- novo registry `.specs/SPEC_REGISTRY_TO_IMPLEMENT.md`.
 - novo status `docs/IMPLEMENTATION_STATUS.md`.
 
 Testes:
@@ -5571,7 +5571,7 @@ PendÃƒÆ’Ã‚Âªncias:
 - RepositÃƒÆ’Ã‚Â³rio: `rafa210587/cindars_hope`.
 - Branch de trabalho: `dev`.
 - Branch default do GitHub: `main`.
-- A `dev` contÃƒÆ’Ã‚Â©m MVPs de Farm, Town, Crafting, Save/Load, Cave/Combat bÃƒÆ’Ã‚Â¡sico, HUD debug, transiÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes Farm/Town/Cave e docs/specs da FASE9E/FASE9F/FASE9G.
+- A `dev` contÃƒÆ’Ã‚Â©m MVPs de Farm, Town, Crafting, Save/Load, Cave/Combat bÃƒÆ’Ã‚Â¡sico, HUD debug, transiÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes Farm/Town/Cave e .specs da FASE9E/FASE9F/FASE9G.
 - `PROJECT_LOG.md` foi reduzido para handoff operacional curto.
 - O histÃƒÆ’Ã‚Â³rico completo anterior foi arquivado sem perda intencional em `docs/logs/PROJECT_LOG_ARCHIVE_2026-05-18_FULL_BEFORE_SPLIT.md`.
 - Tracking curto de capacidades/specs implementadas criado em `docs/IMPLEMENTATION_STATUS.md`.
@@ -5587,9 +5587,9 @@ PendÃƒÆ’Ã‚Âªncias:
 - `docs_old/FASE9E_SAVE_SCHEMA_MIGRATION_SPEC_v1.0.md`
 - `docs_old/FASE9E_PLAYER_LEVEL_UP_PROGRESSION_SPEC_v1.0.md`
 - `docs_old/FASE9F_CAVE_RESOURCES_ENCOUNTERS_SPEC_v1.0.md`
-- `docs/specs/a_implementar/spec_cave_runtime_generation_checkpoints_boss_gates.md` (absorvida de specs raiz removida)
+- `.specs/a_implementar/spec_cave_runtime_generation_checkpoints_boss_gates.md` (absorvida de specs raiz removida)
 - `docs_old/FASE9G_CAVE_BESTIARY_FACTION_LOCKS_PORTAL_ECOLOGY_SPEC_v1.0.md`
-- `docs/specs/a_implementar/spec_enemy_ai_roster_bestiary_faction_locks_runtime.md` (absorvida de specs raiz removida)
+- `.specs/a_implementar/spec_enemy_ai_roster_bestiary_faction_locks_runtime.md` (absorvida de specs raiz removida)
 - `docs/operations/SPEC_EVOLUTION_POLICY_v1.0.md`
 
 ## 16. Atualizacao 2026-05-20 - PR-170 a PR-192 FASE9F Cave Stable Run Replay Progression
@@ -6119,7 +6119,7 @@ Esse arquivo preserva o log operacional anterior inteiro antes da reduÃƒÆ’�
 ### AlteraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes
 
 - Criado `docs_old/FASE9G_CAVE_BESTIARY_FACTION_LOCKS_PORTAL_ECOLOGY_SPEC_v1.0.md`.
-- Criado historicamente `docs/specs/a_implementar/spec_enemy_ai_roster_bestiary_faction_locks_runtime.md` (absorvida de specs raiz removida); conteudo depois absorvido em `docs/specs/a_implementar/spec_enemy_ai_roster_bestiary_faction_locks_runtime.md`.
+- Criado historicamente `.specs/a_implementar/spec_enemy_ai_roster_bestiary_faction_locks_runtime.md` (absorvida de specs raiz removida); conteudo depois absorvido em `.specs/a_implementar/spec_enemy_ai_roster_bestiary_faction_locks_runtime.md`.
 - Atualizado `PROJECT_LOG.md` com decisÃƒÆ’Ã‚Âµes FASE9G e checklist futuro.
 - Spec inclui uso do Guia de RaÃƒÆ’Ã‚Â§as de Vaalara, Vaalara/Daromir/Elyndor, faction locks por subfaixa, bestiÃƒÆ’Ã‚Â¡rio amplo e 3 opÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes procedurais de boss/miniboss por marco.
 
@@ -7112,7 +7112,7 @@ Escopo:
 - Criado `tools/docs/validate_docs.ps1`.
 - Criado `tools/docs/promote_spec.ps1`.
 - Criados templates para spec implementada, refinement implementado e project log.
-- `AGENTS.md`, `CLAUDE.md`, `README.md`, `docs/specs/README.md` e `SPEC_SOURCE_OF_TRUTH.md` atualizados para leitura por camadas.
+- `AGENTS.md`, `CLAUDE.md`, `README.md`, `.specs/README.md` e `SPEC_SOURCE_OF_TRUTH.md` atualizados para leitura por camadas.
 - ReferÃƒÆ’Ã‚Âªncias curtas a caminhos antigos corrigidas em spec/refinement FASE9C e refinement FASE9F-B para permitir validaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o documental.
 - AlteraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes Unity jÃƒÆ’Ã‚Â¡ existentes no worktree foram incluÃƒÆ’Ã‚Â­das no escopo do commit por autorizaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o humana nesta sessÃƒÆ’Ã‚Â£o.
 
@@ -7141,7 +7141,7 @@ PrÃƒÆ’Ã‚Â³ximo passo recomendado:
 - `Assets/_Game/Scripts/UI/Dialogue/**`, `UI/Modal/**`, `UI/Shop/**` - fluxo modal exclusivo Comprar/Vender/Sair.
 - `Assets/_Game/Scenes/TownScene.unity` - shop UI, dois lojistas e Pip materializados por gerador Editor.
 - `Assets/_Game/Scenes/FarmScene.unity` - `SellPoint` e `SeedShopPoint` removidos como fluxo oficial.
-- `docs/specs/implementados/spec_economy_shop_stock_pricing_ui.md` e `docs/refinements/implementados/ref_economy_shop_stock_pricing_ui.md` - promocao documental.
+- `.specs/implementados/spec_economy_shop_stock_pricing_ui.md` e `docs/refinements/implementados/ref_economy_shop_stock_pricing_ui.md` - promocao documental.
 - `docs/validation/SPEC_06_ECONOMY_SHOP_VALIDATION_20260524.md` - auditoria e checklist final.
 - `docs/agent_prompts/implementados/SPEC_06_economy-shop-stock-pricing_PROMPT.md` - prompt encerrado.
 
@@ -7197,7 +7197,7 @@ Residual risk: input e layout visual dependem da validacao humana final.
 
 ### Specs/Refinements Lidos
 
-- `docs/specs/a_implementar/spec_crafting_queue_workstations_recipes_ui.md`
+- `.specs/a_implementar/spec_crafting_queue_workstations_recipes_ui.md`
 - `docs/refinements/a_implementar/pre_refinamentos/refinamento_init_crafting_queue_workstations_recipes_ui.md`
 - Spec implementada parcial preexistente reconciliada pelo codigo real.
 

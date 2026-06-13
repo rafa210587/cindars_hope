@@ -19,9 +19,9 @@ Legacy cleanup successfully completed. 7 specs from the pre-wave era (SPEC_10-17
 
 | Category | Count | Location |
 |----------|-------|----------|
-| New wave-based specs (00-24) | 146 | `docs/specs/a_implementar/` |
-| Legacy pre-wave specs (SPEC_10-17) | 7 | `docs/specs/a_implementar/` |
-| Other (README, etc.) | 1+ | `docs/specs/a_implementar/` |
+| New wave-based specs (00-24) | 146 | `.specs/a_implementar/` |
+| Legacy pre-wave specs (SPEC_10-17) | 7 | `.specs/a_implementar/` |
+| Other (README, etc.) | 1+ | `.specs/a_implementar/` |
 | **Total in a_implementar/** | **154** | Active queue (mixed) |
 
 ---
@@ -30,8 +30,8 @@ Legacy cleanup successfully completed. 7 specs from the pre-wave era (SPEC_10-17
 
 | Category | Count | Location |
 |----------|-------|----------|
-| New wave-based specs (00-24) | 147 | `docs/specs/a_implementar/` |
-| Legacy specs (archived) | 7 | `docs/specs/absorvidas/legacy_pre_wave_reconciliation/` |
+| New wave-based specs (00-24) | 147 | `.specs/a_implementar/` |
+| Legacy specs (archived) | 7 | `.specs/absorvidas/legacy_pre_wave_reconciliation/` |
 | Review required | 0 | — |
 | Legacy gaps identified for future | 2 | Documented in crosswalk |
 | **Total in a_implementar/** | **147** | Active queue (100% new) |
@@ -39,7 +39,7 @@ Legacy cleanup successfully completed. 7 specs from the pre-wave era (SPEC_10-17
 
 ---
 
-## Specs Moved to docs/specs/absorvidas/legacy_pre_wave_reconciliation/
+## Specs Moved to .specs/absorvidas/legacy_pre_wave_reconciliation/
 
 ### 1. spec_14a_cave_enemy_spawnplan_materialization_run_stability.md
 **Status:** MOVED_ABSORBED  
@@ -110,11 +110,11 @@ Legacy cleanup successfully completed. 7 specs from the pre-wave era (SPEC_10-17
 
 | File | Change | Status |
 |------|--------|--------|
-| `docs/specs/a_implementar/*.md` | 7 specs moved via git mv | ✓ Moved |
-| `docs/specs/absorvidas/legacy_pre_wave_reconciliation/` | 7 specs + crosswalk | ✓ Created |
-| `docs/specs/absorvidas/legacy_pre_wave_reconciliation/LEGACY_SPECS_CROSSWALK.md` | New file | ✓ Created |
-| `docs/specs/SPEC_REGISTRY_TO_IMPLEMENT.md` | Added cleanup section | ✓ Updated |
-| `docs/specs/SPEC_EXECUTION_ORDER.md` | Added legacy cleanup note | ✓ Updated |
+| `.specs/a_implementar/*.md` | 7 specs moved via git mv | ✓ Moved |
+| `.specs/absorvidas/legacy_pre_wave_reconciliation/` | 7 specs + crosswalk | ✓ Created |
+| `.specs/absorvidas/legacy_pre_wave_reconciliation/LEGACY_SPECS_CROSSWALK.md` | New file | ✓ Created |
+| `.specs/SPEC_REGISTRY_TO_IMPLEMENT.md` | Added cleanup section | ✓ Updated |
+| `.specs/SPEC_EXECUTION_ORDER.md` | Added legacy cleanup note | ✓ Updated |
 | `docs/project/CURRENT_STATE.md` | Updated "Do NOT Execute" | ✓ Updated |
 | This report | New validation document | ✓ Created |
 
@@ -168,7 +168,7 @@ Queue status: PURE — only new wave-based specs active
 
 ## Traceability
 
-**Crosswalk document:** `docs/specs/absorvidas/legacy_pre_wave_reconciliation/LEGACY_SPECS_CROSSWALK.md`
+**Crosswalk document:** `.specs/absorvidas/legacy_pre_wave_reconciliation/LEGACY_SPECS_CROSSWALK.md`
 
 All legacy specs have clear mapping:
 - Which new wave specs cover them

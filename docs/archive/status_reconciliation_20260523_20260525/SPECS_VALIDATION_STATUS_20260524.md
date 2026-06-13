@@ -4,7 +4,7 @@
 
 ## Executive Summary
 
-**All 16 specs have code-level implementations in `docs/specs/implementados/`.** 
+**All 16 specs have code-level implementations in `.specs/implementados/`.** 
 
 **C# Compilation Status: ✅ SUCCESS** - Assembly-CSharp.dll compiled without errors.
 
@@ -87,7 +87,7 @@ Test assets created for SPEC 08 have YAML serialization issues:
 ## Operational Notes
 
 **Compliance with CLAUDE.md:**
-- ✅ All specs reference official source: `docs/specs/SPEC_EXECUTION_ORDER.md`
+- ✅ All specs reference official source: `.specs/SPEC_EXECUTION_ORDER.md`
 - ✅ Validation via PowerShell: `tools/unity/RunUnityCompileValidation.ps1`
 - ✅ Scanned specs follow namespace conventions (no Debug namespace violations)
 - ✅ All changes documented in PROJECT_LOG.md

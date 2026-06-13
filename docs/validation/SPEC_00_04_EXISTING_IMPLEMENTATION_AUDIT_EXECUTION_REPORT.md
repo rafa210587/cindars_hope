@@ -13,8 +13,8 @@
 Spec 00.04 (Existing Implementation Audit) completed successfully as a documentational governance spec. All mandatory audit steps executed.
 
 **Output artifacts:**
-- `docs/specs/SPEC_EXISTING_IMPLEMENTATION_AUDIT.md` — primary audit report (updated 2026-06-07)
-- `docs/specs/absorvidas/legacy_pre_wave_reconciliation/LEGACY_SPECS_CROSSWALK.md` — legacy spec mapping
+- `.specs/SPEC_EXISTING_IMPLEMENTATION_AUDIT.md` — primary audit report (updated 2026-06-07)
+- `.specs/absorvidas/legacy_pre_wave_reconciliation/LEGACY_SPECS_CROSSWALK.md` — legacy spec mapping
 - Local code audit via `rg` — all 10 core systems confirmed present
 
 **Status:** BUILD_VALIDATED — all audit tasks complete; no blockers for WAVE 01
@@ -45,9 +45,9 @@ All 10 core systems confirmed present via `rg` grep:
 **Sources read:**
 - `docs/project/CURRENT_STATE.md` — MVP status, Phase 2-3 pending
 - `docs/IMPLEMENTATION_STATUS.md` — 40+ specs tracked
-- `docs/specs/SPEC_REGISTRY_IMPLEMENTED.md` — 40+ implemented/partial specs
-- `docs/specs/SPEC_REGISTRY_TO_IMPLEMENT.md` — 147 wave-based specs ready
-- `docs/specs/SPEC_GENERATION_ROADMAP_MASTER.md` — 12 waves mapped
+- `.specs/SPEC_REGISTRY_IMPLEMENTED.md` — 40+ implemented/partial specs
+- `.specs/SPEC_REGISTRY_TO_IMPLEMENT.md` — 147 wave-based specs ready
+- `.specs/SPEC_GENERATION_ROADMAP_MASTER.md` — 12 waves mapped
 - Related refinements, ADRs, game rules
 
 **Findings:**

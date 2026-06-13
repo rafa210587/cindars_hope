@@ -27,7 +27,7 @@ The Unity C# runtime assembly builds cleanly. The editor assembly builds with 3 
 | `AGENTS.md` | YES | Agent/code/governance rules read. |
 | Attached `07_spec_unity_clean_baseline_scene_inventory_playable_runtime.md` | YES | Active spec supplied by human attachment. |
 | `docs/project/CURRENT_STATE.md` | YES | Initially marked WAVE 07 as reserved gap; updated after human authorization and successful baseline. |
-| `docs/specs/SPEC_REGISTRY_TO_IMPLEMENT.md` | YES | Initially marked WAVE 07 as reserved gap; updated after human authorization and successful baseline. |
+| `.specs/SPEC_REGISTRY_TO_IMPLEMENT.md` | YES | Initially marked WAVE 07 as reserved gap; updated after human authorization and successful baseline. |
 | `docs/validation/WAVE_00_12_RECONCILIATION_AUDIT.md` | YES | Documents prior reserved-gap status and legacy warnings. |
 | `docs/validation/WAVE_00_12_SPEC_CODE_AUDIT_REPORT.md` | YES | Documents legacy docs validation issues and prior editor warnings/debt. |
 | `docs/validation/WAVE_07_ABSENCE_RECONCILIATION_REPORT.md` | YES | Documents prior WAVE 07 absence decision; superseded for 07.01 by explicit human authorization. |
@@ -61,8 +61,8 @@ The Unity C# runtime assembly builds cleanly. The editor assembly builds with 3 
 
 | Check | Result |
 |---|---|
-| Future/future-mapped specs directly under `docs/specs/a_implementar/` | PASS - command returned no matches. |
-| Future specs destination | PASS - prior report confirms future specs under `docs/specs/a_implementar/features_futuras/`. |
+| Future/future-mapped specs directly under `.specs/a_implementar/` | PASS - command returned no matches. |
+| Future specs destination | PASS - prior report confirms future specs under `.specs/a_implementar/features_futuras/`. |
 | WAVE 13 / pets execution | PASS - not executed. |
 
 ## Scene inventory
@@ -90,7 +90,7 @@ Scenes found: 34 total.
 |---|---|
 | `.gitignore` | Add missing `*.bak` operational artifact ignore pattern. |
 | `docs/project/CURRENT_STATE.md` | Record WAVE 07.01 baseline completion and current validation state. |
-| `docs/specs/SPEC_REGISTRY_TO_IMPLEMENT.md` | Reconcile WAVE 07 registry entry after explicit human authorization and successful 07.01 baseline. |
+| `.specs/SPEC_REGISTRY_TO_IMPLEMENT.md` | Reconcile WAVE 07 registry entry after explicit human authorization and successful 07.01 baseline. |
 | `docs/validation/WAVE_07_SCENE_INVENTORY.md` | Required scene inventory output. |
 | `docs/validation/WAVE_07_01_UNITY_CLEAN_BASELINE_SCENE_INVENTORY_REPORT.md` | Required execution report. |
 

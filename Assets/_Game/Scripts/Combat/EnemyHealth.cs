@@ -14,6 +14,7 @@ namespace CindarsHope.Combat
         [SerializeField] private EnemyDataSO _enemyData;
 
         private int _currentHp;
+        private bool _hpRestoredFromSnapshot;
         private CindarsHope.Combat.StatusEffect.StatusEffectManager _statusEffects = new CindarsHope.Combat.StatusEffect.StatusEffectManager();
 
         public int CurrentHp => _currentHp;
@@ -39,11 +40,29 @@ namespace CindarsHope.Combat
                 gameObject.AddComponent<CindarsHope.Combat.StatusEffect.EnemyStatusRuntimeTicker>();
         }
 
+        // F13: restaura HP salvo do snapshot da run (chamado APÓS Configure, antes do Start).
+        // O guard impede o Start de resetar o valor restaurado para o máximo.
+        public void RestoreHp(int savedHp)
+        {
+            if (_enemyData == null)
+            {
+                return;
+            }
+
+            _currentHp = Mathf.Clamp(savedHp, 0, _enemyData.maxHp);
+            _hpRestoredFromSnapshot = true;
+        }
+
         private void Start()
         {
             if (_enemyData == null)
             {
                 Debug.LogWarning($"EnemyHealth on '{name}' has no EnemyDataSO assigned.", this);
+                return;
+            }
+
+            if (_hpRestoredFromSnapshot)
+            {
                 return;
             }
 

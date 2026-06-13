@@ -1,7 +1,7 @@
 # refinamento_init_player_combat_weapons_spells_skill_actions
 
 > Status: Refinamento inicial a implementar
-> Spec futura relacionada: `docs/specs/a_implementar/spec_player_combat_weapons_spells_skill_actions_runtime.md`
+> Spec futura relacionada: `.specs/a_implementar/spec_player_combat_weapons_spells_skill_actions_runtime.md`
 > Objetivo: substituir punch hardcoded por combate data-driven com armas equipadas nas maos, unarmed fallback, uso Q/E, dodge simples, bow placeholder, magia basica, mana, active skill slots R/T/Y/G e integracao com damage/stamina/equipment.
 
 ---

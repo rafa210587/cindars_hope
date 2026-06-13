@@ -1,6 +1,6 @@
 # /execute-spec-strict
 
-> **NOTA DE RECONCILIAÇÃO (2026-06-12):** a fila wave-based foi executada e movida para executadas_build_validated/. A fila ativa é docs/specs/a_implementar/fable/. Exemplos com paths NN_spec_* abaixo são históricos.
+> **NOTA DE RECONCILIAÇÃO (2026-06-12):** a fila wave-based foi executada e movida para executadas_build_validated/. A fila ativa é .specs/a_implementar/fable/. Exemplos com paths NN_spec_* abaixo são históricos.
 
 
 Execute exatamente UMA spec com qualidade rigorosa e pare.
@@ -17,7 +17,7 @@ Executar specs de forma leve e confiável:
 ## Entrada Esperada
 
 ```text
-/execute-spec-strict docs/specs/a_implementar/04_spec_ui_input_focus_modal_routing_runtime.md
+/execute-spec-strict .specs/a_implementar/04_spec_ui_input_focus_modal_routing_runtime.md
 ```
 
 Ou:
@@ -77,13 +77,13 @@ If a command fails using Unix syntax, retry in PowerShell before treating as fai
 
 Ler em ordem:
 1. `docs/project/CURRENT_STATE.md`
-2. `docs/specs/SPEC_WAVE_EXECUTION_PROTOCOL.md`
-3. `docs/specs/SPEC_VALIDATION_MATRIX_MASTER.md`
+2. `.specs/SPEC_WAVE_EXECUTION_PROTOCOL.md`
+3. `.specs/SPEC_VALIDATION_MATRIX_MASTER.md`
 4. `.claude/rules/spec_quality_gate.md`
 
 ### 2. Identificação da Spec (2 min)
 
-Identificar arquivo `.md` alvo em `docs/specs/a_implementar/`.
+Identificar arquivo `.md` alvo em `.specs/a_implementar/`.
 
 Confirmar que a spec não está em `implementados/` ou `absorvidas/`.
 
@@ -106,7 +106,7 @@ Ler spec inteira. Extrair:
 1. **Do NOT ask the user; resolve automatically.**
 2. Mark current spec as `BLOCKED_BY_DEPENDENCY_PENDING` (temporary status).
 3. Extract dependency chain from target spec (read `.claude/rules/spec_dependency_resolution.md`).
-4. Search same-wave specs in `docs/specs/a_implementar/<wave>_spec_*.md`.
+4. Search same-wave specs in `.specs/a_implementar/<wave>_spec_*.md`.
 5. Build dependency DAG (directed acyclic graph).
 6. If dependency is **forbidden** (future/pets/HOLD/requires Packages/ProjectSettings/requires scene/prefab):
    - Stop with `BLOCKED_BY_FORBIDDEN_SCOPE`
@@ -181,7 +181,7 @@ Criar ou atualizar:
 docs/validation/<spec_id>_execution_report.md
 ```
 
-Usar template `docs/specs/SPEC_EXECUTION_REPORT_TEMPLATE_STRICT.md`.
+Usar template `.specs/SPEC_EXECUTION_REPORT_TEMPLATE_STRICT.md`.
 
 Preencher:
 - Status (um de spec_quality_gate.md)

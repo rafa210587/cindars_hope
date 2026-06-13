@@ -26,7 +26,7 @@
 
 ## Files Changed
 
-- `docs/specs/SPEC_REGISTRY_TO_IMPLEMENT.md` — updated:
+- `.specs/SPEC_REGISTRY_TO_IMPLEMENT.md` — updated:
   - WAVE 00 status: A implementar → BUILD_VALIDATED
   - WAVE 01 all 8 specs: A implementar → BUILD_VALIDATED
   - WAVE 02-11 summary table: A implementar → BUILD_VALIDATED (with spec counts and test counts)
@@ -37,7 +37,7 @@
 
 ## Scope Executed
 
-- `docs/specs/SPEC_REGISTRY_TO_IMPLEMENT.md` — reconciled with actual execution state (WAVE 00-11 all BUILD_VALIDATED)
+- `.specs/SPEC_REGISTRY_TO_IMPLEMENT.md` — reconciled with actual execution state (WAVE 00-11 all BUILD_VALIDATED)
 - No other registry files required updates; `SPEC_GENERATION_ROADMAP_MASTER.md`, `README.md`, `SPEC_SOURCE_OF_TRUTH.md` not changed (they are planning/governance docs, not execution status trackers)
 
 ---

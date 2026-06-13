@@ -7,7 +7,7 @@
 ## Project Identity
 
 2D pixel art RPG + farm sim in Unity LTS/C#. World: Vaalara / Cindar's Hope / Dornecia.
-Specs live in `docs/specs/`. Spec is the execution contract. Refinement is fallback only.
+Specs live in `.specs/`. Spec is the execution contract. Refinement is fallback only.
 
 ---
 
@@ -17,7 +17,7 @@ Read ONLY:
 
 1. `CLAUDE.md` (this file)
 2. `docs/project/CURRENT_STATE.md` — active queue, blockers, key paths (~80 lines)
-3. The active spec (`docs/specs/a_implementar/spec_*.md`)
+3. The active spec (`.specs/a_implementar/spec_*.md`)
 4. Files explicitly listed in the spec scope
 
 ## Spec Planning / Generation Reads
@@ -25,18 +25,18 @@ Read ONLY:
 For spec planning, wave planning, or spec generation tasks, also read:
 
 1. `docs/design/SPEC_SOURCE_MAP.md` — domain mapping and direction sources
-2. `docs/specs/SPEC_IMPLEMENTABLE_TEMPLATE.md` — SpecKit format and structure
-3. `docs/specs/SPEC_GENERATION_ROADMAP_MASTER.md` — macro roadmap of planned specs
-4. `docs/specs/SPEC_WAVE_EXECUTION_PROTOCOL.md` — execution phases, taxonomy, governance
-5. `docs/specs/SPEC_VALIDATION_MATRIX_MASTER.md` — validation requirements by change type
-6. `docs/specs/SPEC_REGISTRY_TO_IMPLEMENT.md` — list of specs to create
+2. `.specs/SPEC_IMPLEMENTABLE_TEMPLATE.md` — SpecKit format and structure
+3. `.specs/SPEC_GENERATION_ROADMAP_MASTER.md` — macro roadmap of planned specs
+4. `.specs/SPEC_WAVE_EXECUTION_PROTOCOL.md` — execution phases, taxonomy, governance
+5. `.specs/SPEC_VALIDATION_MATRIX_MASTER.md` — validation requirements by change type
+6. `.specs/SPEC_REGISTRY_TO_IMPLEMENT.md` — list of specs to create
 
 ## Spec Execution Reads (runtime/code changes)
 
 For spec execution (implement-spec, validate-spec, finish-spec), also read:
 
-1. `docs/specs/SPEC_WAVE_EXECUTION_PROTOCOL.md` — phases and promotion rules
-2. `docs/specs/SPEC_VALIDATION_MATRIX_MASTER.md` — validation levels and evidence requirements
+1. `.specs/SPEC_WAVE_EXECUTION_PROTOCOL.md` — phases and promotion rules
+2. `.specs/SPEC_VALIDATION_MATRIX_MASTER.md` — validation levels and evidence requirements
 3. `.claude/rules/testing-quality-gate.md` — automated testing and human validation requirements
 4. `docs/validation/FINAL_HUMAN_VALIDATION_BY_WAVE.md` — human validation checklist (batch at wave-end)
 
@@ -77,6 +77,10 @@ unrelated validation reports
 | `/bugfix` | Fix a specific bug |
 | `/docs-health` | Run docs validation only |
 | `/review-non-regression` | Audit diff for violations |
+| `/execute-spec-strict` | Strict single-spec execution with validation gates |
+| `/loop-spec-batch-strict` | Batch execution loop (use fable/ queue) |
+| `/resolve-spec-dependency-chain` | Resolve same-batch spec dependencies |
+| `/validate-unity` | Unity compile/log validation only |
 
 ---
 
@@ -101,6 +105,11 @@ Use `.claude/skills/<name>/SKILL.md` when task matches:
 | `player-ability-runtime` | Adding any non-slot player ability (Dash, Dodge, Block, roll, blink, sprint) |
 | `npc-dialogue-authoring` | Creating or extending NPCs with dialogue, shop, or scene placement |
 | `scene-interactable-wiring` | Adding IInteractable objects (crops, resources, fishing, chests) to scenes |
+| `decision-rule-extraction` | Creating/changing ADRs and game_rules from specs/refinements |
+| `docs-migration` | Moving specs/refinements to implementados/ with evidence |
+| `implementation-closeout` | Final checklist for closing any relevant task |
+| `unity-asset-generation` | Running Unity editor asset generators with evidence |
+| `unity-validation-triage` | Classifying Unity/dotnet/log validation failures |
 
 ---
 

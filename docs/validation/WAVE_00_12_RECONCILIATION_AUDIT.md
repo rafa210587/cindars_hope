@@ -68,7 +68,7 @@
 - No `07_spec_*.md` files found
 - Skipped without error
 - Reconciled status: DOES_NOT_EXIST_RESERVED_GAP
-- Verification scope: `docs/specs/a_implementar/**/07_spec_*.md` and `docs/specs/**/07_spec_*.md`
+- Verification scope: `.specs/a_implementar/**/07_spec_*.md` and `.specs/**/07_spec_*.md`
 - Automation rule: WAVE 07 must not be executed
 
 ### WAVE 08 — City/NPC/Dialogue/Services
@@ -176,12 +176,12 @@ Three temporary enum suffixes were introduced during WAVE 10 to avoid collision 
 
 **Correction applied:** All 4 WAVE 13 specs contain `_future_` in their filenames and carry `Status: Future mapped`. Per `spec_dependency_resolution.md` and `spec_quality_gate.md`, these are `BLOCKED_BY_FUTURE_SCOPE`.
 
-**Follow-up reconciliation (2026-06-08):** WAVE 13 specs were moved to `docs/specs/a_implementar/features_futuras/` and the status is now `BLOCKED_BY_FUTURE_SCOPE_MOVED_TO_FEATURES_FUTURAS`.
+**Follow-up reconciliation (2026-06-08):** WAVE 13 specs were moved to `.specs/a_implementar/features_futuras/` and the status is now `BLOCKED_BY_FUTURE_SCOPE_MOVED_TO_FEATURES_FUTURAS`.
 
 **Updated files:**
 - `docs/project/CURRENT_STATE.md` — WAVE 13 → BLOCKED_BY_FUTURE_SCOPE
 - `docs/validation/WAVE_12_CLOSEOUT_REPORT.md` — Next Wave section updated
-- `docs/specs/SPEC_REGISTRY_TO_IMPLEMENT.md` — WAVE 13 row updated
+- `.specs/SPEC_REGISTRY_TO_IMPLEMENT.md` — WAVE 13 row updated
 - `docs/validation/WAVE_13_BLOCKED_FUTURE_SCOPE_REPORT.md` — created
 
 ---

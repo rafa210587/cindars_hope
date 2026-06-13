@@ -24,8 +24,8 @@
 > - `docs/design/gameplay/social/SOCIAL_RELATIONSHIP_ROMANCE_DIRECTION.md`  
 > - `docs/design/gameplay/loot_crafting_economy/LOOT_CRAFTING_ECONOMY_DIRECTION.md`  
 > - `docs/design/gameplay/loot_crafting_economy/ECONOMY_PRICING_STOCK_REFRESH_DIRECTION.md`  
-> - `docs/specs/implementados/spec_save_001_json_save_load_cross_scene.md`  
-> - `docs/specs/implementados/spec_save_002_schema_migration_v2.md`  
+> - `.specs/implementados/spec_save_001_json_save_load_cross_scene.md`  
+> - `.specs/implementados/spec_save_002_schema_migration_v2.md`  
 > **Função:** definir o estado alvo de save/load full-state do jogo, a partir do save/load já existente no código, sem reimplementar do zero e sem travar números de versões futuras.  
 > **Não é spec implementável.** Specs futuras devem quebrar esta direção em specs de runtime, migrations e validações.
 

@@ -18,7 +18,7 @@
 > - `docs/design/gameplay/loot_crafting_economy/LOOT_CRAFTING_ECONOMY_DIRECTION.md`  
 > - `docs/design/gameplay/loot_crafting_economy/ECONOMY_PRICING_STOCK_REFRESH_DIRECTION.md`  
 > **Função:** centralizar regras de passagem de tempo, calendário, estações, clima, eventos lunares e impactos sistêmicos globais.  
-> **Não é spec implementável.** Specs futuras devem quebrar esta direção em arquivos menores em `docs/specs/a_implementar/`.
+> **Não é spec implementável.** Specs futuras devem quebrar esta direção em arquivos menores em `.specs/a_implementar/`.
 
 ---
 

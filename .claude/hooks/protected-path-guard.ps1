@@ -39,13 +39,13 @@ if ($path -match '(^|/)docs_old/') {
 
 # --- 2. Legacy numbered docs folders ----------------------------------------
 if ($path -match '(^|/)docs/0[0-7]_(PROJECT|PRODUCT|ARCHITECTURE|SPECS|REFINEMENTS|VALIDATION|BACKLOG|RELEASES)/') {
-    [Console]::Error.WriteLine("BLOCKED: '$path' uses a legacy numbered docs folder. Use canonical paths (docs/project/, docs/specs/, docs/validation/, ...). Rule: docs-governance / legacy-doc-paths-forbidden.")
+    [Console]::Error.WriteLine("BLOCKED: '$path' uses a legacy numbered docs folder. Use canonical paths (docs/project/, .specs/, docs/validation/, ...). Rule: docs-governance / legacy-doc-paths-forbidden.")
     exit 2
 }
 
 # --- 3. Root specs/ or spec/ ------------------------------------------------
 if ($path -match '^(specs|spec)/') {
-    [Console]::Error.WriteLine("BLOCKED: '$path' recreates a root specs/ folder. The only active spec source is docs/specs/. Rule: spec-lifecycle / spec-source-of-truth.")
+    [Console]::Error.WriteLine("BLOCKED: '$path' recreates a root specs/ folder. The only active spec source is .specs/. Rule: spec-lifecycle / spec-source-of-truth.")
     exit 2
 }
 

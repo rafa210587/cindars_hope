@@ -76,6 +76,24 @@ namespace CindarsHope.Player
             _currentMana = Mathf.Min(_currentMana, _maxMana);
         }
 
+        // F18: bônus externo de regen (passivas derivadas).
+        public float ExternalRegenBonus { get; set; }
+
+        // F18: máximo derivado preservando a proporção corrente (floor 0 permitido p/ mana).
+        public void SetMaxManaPreservingRatio(int newMaxMana)
+        {
+            newMaxMana = Mathf.Max(1, newMaxMana);
+            if (newMaxMana == _maxMana)
+            {
+                return;
+            }
+
+            var ratio = _maxMana > 0 ? (float)_currentMana / _maxMana : 1f;
+            _maxMana = newMaxMana;
+            _currentMana = Mathf.Clamp(Mathf.RoundToInt(newMaxMana * ratio), 0, newMaxMana);
+            PublishManaChanged();
+        }
+
         public ManaManagerSaveData CaptureSaveData()
         {
             return new ManaManagerSaveData { CurrentMana = _currentMana, MaxMana = _maxMana };
@@ -103,7 +121,7 @@ namespace CindarsHope.Player
             if (_modalManager != null && _modalManager.HasActiveModal)
                 return;
 
-            _regenAccumulator += _manaRegenPerSecond;
+            _regenAccumulator += _manaRegenPerSecond + Mathf.Max(0f, ExternalRegenBonus);
             if (_regenAccumulator >= 1f)
             {
                 int manaGain = Mathf.FloorToInt(_regenAccumulator);

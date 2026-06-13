@@ -2,7 +2,7 @@
 
 > Status: Reclassificado para implementado documental parcial
 > Refinement ativo: `docs/refinements/implementados/ref_docs_single_source_tracking_reconciliation_parcial.md`
-> Spec ativa: `docs/specs/implementados/spec_docs_001_single_source_specs_refinements_reconciliation_parcial.md`
+> Spec ativa: `.specs/implementados/spec_docs_001_single_source_specs_refinements_reconciliation_parcial.md`
 
 Este arquivo foi mantido apenas como ponte historica porque a remocao direta foi bloqueada pelo conector nesta rodada.
 

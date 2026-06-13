@@ -1,8 +1,8 @@
-﻿# REF — FARM LOOP PR013 017
+# REF — FARM LOOP PR013 017
 
 > Origem histórica: conteúdo absorvido durante reorganização documental.
 > Status: refinamento implementado absorvido.
-> Spec consolidada relacionada: `docs/specs/implementados/spec_farm_001_farm_scene_movimento_interacao.md`
+> Spec consolidada relacionada: `.specs/implementados/spec_farm_001_farm_scene_movimento_interacao.md`
 
 ---
 

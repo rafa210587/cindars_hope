@@ -77,8 +77,8 @@ Current state: `docs/00_PROJECT/DOCUMENT_DELETE_CANDIDATES.md` has 28 candidates
 ### Batch 1 — Safe Now (no active references)
 
 Candidates:
-- `docs/specs/a_implementar/reorg/SPEC_00.md` through `SPEC_12.md` (12 files, CLOSED per README_STATUS.md, never executed)
-- `docs/specs/a_implementar/reorg/SPEC_00_STRATEGY_SUBAGENTS.md`
+- `.specs/a_implementar/reorg/SPEC_00.md` through `SPEC_12.md` (12 files, CLOSED per README_STATUS.md, never executed)
+- `.specs/a_implementar/reorg/SPEC_00_STRATEGY_SUBAGENTS.md`
 - `docs/roadmap/NEXT_WAVES_ROADMAP_v1.0.md` (superseded by newer ROADMAP.md)
 - `docs/architecture/ARCH_fase4_v2.2.md` (old version)
 - `docs/design/GDD_v2.6.md` (old version, v2.7+ exists)
@@ -91,11 +91,11 @@ Candidates:
 ### Batch 2 — After Phase 2-3 (blocked on human validation)
 
 Candidates:
-- `docs/specs/a_implementar/spec_14a*.md` (covered by SPEC_24 closeout, not yet moved)
-- `docs/specs/a_implementar/spec_14b*.md` (covered by SPEC_24 closeout, not yet moved)
-- `docs/specs/a_implementar/spec_enemy_ai_roster_bestiary_faction_locks_runtime.md` (covered by SPEC_23, not yet moved)
-- `docs/specs/a_implementar/spec_cave_runtime_generation_checkpoints_boss_gates.md` (covered by SPEC_24, already in implementados but duplicate in a_implementar)
-- `docs/specs/a_implementar/spec_ui_ux_full_gameplay_inventory_hotbar_menus.md` (covered by SPEC_28, not yet moved)
+- `.specs/a_implementar/spec_14a*.md` (covered by SPEC_24 closeout, not yet moved)
+- `.specs/a_implementar/spec_14b*.md` (covered by SPEC_24 closeout, not yet moved)
+- `.specs/a_implementar/spec_enemy_ai_roster_bestiary_faction_locks_runtime.md` (covered by SPEC_23, not yet moved)
+- `.specs/a_implementar/spec_cave_runtime_generation_checkpoints_boss_gates.md` (covered by SPEC_24, already in implementados but duplicate in a_implementar)
+- `.specs/a_implementar/spec_ui_ux_full_gameplay_inventory_hotbar_menus.md` (covered by SPEC_28, not yet moved)
 
 **Risk:** MEDIUM — These ARE covered by SPEC_18-28 closeout, but SPEC_18-28 not yet promoted (Phase 2-3 pending). Deleting before promotion could create confusion. Defer until after Phase 2-3.
 
@@ -103,14 +103,14 @@ Candidates:
 
 Protected categories:
 - `docs/validation/*` — all validation reports are evidence
-- `docs/specs/implementados/*` — implemented specs are archive
+- `.specs/implementados/*` — implemented specs are archive
 - `docs/refinements/implementados/*` — implemented refinements are archive
-- `docs/specs/a_implementar/closeout_mvp/*` — active closeout specs
+- `.specs/a_implementar/closeout_mvp/*` — active closeout specs
 - `docs/amendments/*` — amendments are governance
 - `docs/operations/*` — operational protocol
 - `PROJECT_LOG.md` — historical record
 - `docs/IMPLEMENTATION_STATUS.md` — status tracking
-- `docs/specs/SPEC_EXECUTION_ORDER.md` — dependency matrix
+- `.specs/SPEC_EXECUTION_ORDER.md` — dependency matrix
 - `AGENTS.md`, `CLAUDE.md` — governance
 - `docs/00_PROJECT/*` — governance hub
 

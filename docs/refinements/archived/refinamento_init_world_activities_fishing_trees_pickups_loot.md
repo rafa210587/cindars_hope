@@ -1,7 +1,7 @@
 # refinamento_init_world_activities_fishing_trees_pickups_loot
 
 > Status: Refinamento inicial a implementar
-> Spec futura relacionada: `docs/specs/implementados/spec_world_002_activities_fishing_trees_pickups_loot.md`
+> Spec futura relacionada: `.specs/implementados/spec_world_002_activities_fishing_trees_pickups_loot.md`
 > Objetivo: completar atividades world com pesca, arvores e loot.
 
 ---

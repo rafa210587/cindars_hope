@@ -1,6 +1,6 @@
 # Execution Report — fable_13_spec_save_debt_closure_runtime
 
-> **Spec:** `docs/specs/a_implementar/fable/fable_13_spec_save_debt_closure_runtime.md`
+> **Spec:** `.specs/a_implementar/fable/fable_13_spec_save_debt_closure_runtime.md`
 > **Data:** 2026-06-12
 > **Status:** BUILD_VALIDATED
 > **Executor:** Claude (FABLE master plan — Batch 1, spec 4/42)

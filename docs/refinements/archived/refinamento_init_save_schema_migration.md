@@ -1,7 +1,7 @@
 # refinamento_init_save_schema_migration
 
 > Status: Refinamento inicial a implementar
-> Spec futura relacionada: `docs/specs/implementados/spec_save_002_schema_migration_v2.md`
+> Spec futura relacionada: `.specs/implementados/spec_save_002_schema_migration_v2.md`
 > Objetivo: criar contrato e migracao de save entre versoes do schema.
 
 ---

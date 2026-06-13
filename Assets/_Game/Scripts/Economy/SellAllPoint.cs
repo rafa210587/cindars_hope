@@ -31,6 +31,14 @@ namespace CindarsHope.Economy
             GameEventBus.Publish(new SellAllRequestedEvent(_sourceId));
         }
 
+        /// <summary>Runtime configuration for procedurally spawned sell points (cave wandering merchant).</summary>
+        public void ConfigureSource(string sourceId, string interactionPrompt)
+        {
+            _sourceId = sourceId;
+            _interactionPrompt = interactionPrompt;
+            EnsureComponents();
+        }
+
         private void Reset()
         {
             EnsureComponents();

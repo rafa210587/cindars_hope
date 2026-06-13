@@ -1,6 +1,6 @@
 # Execution Report — fable_27_spec_perfect_block_posture_runtime
 
-> **Spec:** `docs/specs/a_implementar/fable/fable_27_spec_perfect_block_posture_runtime.md`
+> **Spec:** `.specs/a_implementar/fable/fable_27_spec_perfect_block_posture_runtime.md`
 > **Data:** 2026-06-12
 > **Status:** BUILD_VALIDATED
 > **Executor:** Claude (FABLE master plan — Batch 2, spec 10/42)

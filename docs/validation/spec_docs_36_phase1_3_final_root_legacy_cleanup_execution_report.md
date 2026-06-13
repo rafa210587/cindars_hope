@@ -100,7 +100,7 @@ OK: Root folder 'spec/' does not exist.
 OK: Root folder 'specs/' does not exist.
 OK: docs_old/ does not exist (legacy cleanup complete).
 OK: docs/project/ exists as canonical governance folder.
-OK: docs/specs/ exists as single official specs source.
+OK: .specs/ exists as single official specs source.
 OK: SPEC_EXECUTION_ORDER.md exists.
 OK: docs/project/CURRENT_STATE.md exists.
 OK: docs/project/DOCUMENT_GOVERNANCE.md exists.
@@ -213,7 +213,7 @@ SPEC_DOCS_36 Phase 1-3: Final root and legacy folder cleanup
 
 ### Canonical (must exist)
 - ✓ docs/project/ (governance)
-- ✓ docs/specs/ (single official specs source)
+- ✓ .specs/ (single official specs source)
 - ✓ docs/refinements/ (single official refinements source)
 - ✓ docs/validation/ (validation reports and templates)
 - ✓ docs/backlog/ (backlog tracking)
@@ -224,8 +224,8 @@ SPEC_DOCS_36 Phase 1-3: Final root and legacy folder cleanup
 - ✓ docs/project/CURRENT_STATE.md (execution context)
 - ✓ docs/project/DOCUMENT_GOVERNANCE.md (governance rules)
 - ✓ docs/project/DOCUMENT_INDEX.md (documentation index)
-- ✓ docs/specs/SPEC_EXECUTION_ORDER.md (spec dependency matrix)
-- ✓ docs/specs/_templates/SPEC_TEMPLATE.md (spec template)
+- ✓ .specs/SPEC_EXECUTION_ORDER.md (spec dependency matrix)
+- ✓ .specs/_templates/SPEC_TEMPLATE.md (spec template)
 - ✓ docs/refinements/_templates/ (refinement templates)
 - ✓ docs/validation/_templates/ (validation report templates)
 

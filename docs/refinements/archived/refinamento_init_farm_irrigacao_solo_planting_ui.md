@@ -1,7 +1,7 @@
 # refinamento_init_farm_irrigacao_solo_planting_ui
 
 > Status: Refinamento inicial a implementar
-> Spec futura relacionada: `docs/specs/implementados/spec_farm_004_irrigacao_solo_planting_ui.md`
+> Spec futura relacionada: `.specs/implementados/spec_farm_004_irrigacao_solo_planting_ui.md`
 > Objetivo: completar sistema de farm com irrigacao, solo e plantio via UI.
 
 ---

@@ -127,7 +127,7 @@ Status: PASS
 
 Evidence:
   Changed files:
-    - docs/specs/implementados/spec_12_player_combat.md
+    - .specs/implementados/spec_12_player_combat.md
     - Assets/Scripts/Runtime/Combat/PlayerCombatManager.cs
     - Assets/_Game/Data/Combat/WeaponDataSO.cs
 

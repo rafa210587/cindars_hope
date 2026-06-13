@@ -34,6 +34,17 @@ namespace CindarsHope.Economy
             GameEventBus.Publish(new ItemPurchaseRequestedEvent(_itemId, _amount, _totalCost, _sourceId));
         }
 
+        /// <summary>Runtime configuration for procedurally spawned offer points (cave wandering merchant).</summary>
+        public void ConfigureOffer(string sourceId, string itemId, int amount, int totalCost, string interactionPrompt)
+        {
+            _sourceId = sourceId;
+            _itemId = itemId;
+            _amount = Mathf.Max(1, amount);
+            _totalCost = Mathf.Max(0, totalCost);
+            _interactionPrompt = interactionPrompt;
+            EnsureComponents();
+        }
+
         private void Reset()
         {
             EnsureComponents();

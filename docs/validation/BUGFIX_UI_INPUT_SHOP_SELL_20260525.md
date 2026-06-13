@@ -225,7 +225,7 @@ Multiple Unity instances cannot open the same project.
 
 - ✅ All 4 bugs implemented in code
 - ✅ Bugfix spec complies with SpecKit format
-- ✅ Spec moved to `docs/specs/implementados/`
+- ✅ Spec moved to `.specs/implementados/`
 - ✅ Scope detection PASS
 - ✅ No forbidden files modified
 - ✅ Code changes follow CLAUDE.md patterns
@@ -319,7 +319,7 @@ Assets/_Game/Scripts/UI/Shop/SellPanel.cs
 Assets/_Game/Scripts/Economy/SellableItemPolicy.cs
   - Rewrote from hardcoded whitelist to data-driven validation
 
-docs/specs/a_implementar/spec_bugfix_ui_input_shop_sell_bundle.md
+.specs/a_implementar/spec_bugfix_ui_input_shop_sell_bundle.md
   - Created and moved to implementados/
 
 docs/validation/BUGFIX_UI_INPUT_SHOP_SELL_20260525.md

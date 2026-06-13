@@ -856,7 +856,7 @@ som final de telegraphs
 Este amendment complementa:
 
 - `docs/FASE9G_CAVE_BESTIARY_FACTION_LOCKS_PORTAL_ECOLOGY_SPEC_v1.0.md`
-- `docs/specs/a_implementar/spec_enemy_ai_roster_bestiary_faction_locks_runtime.md`
+- `.specs/a_implementar/spec_enemy_ai_roster_bestiary_faction_locks_runtime.md`
 
 Não altera destrutivamente a FASE9G v1.0.
 

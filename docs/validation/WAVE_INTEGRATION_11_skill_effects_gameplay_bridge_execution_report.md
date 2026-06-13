@@ -2,7 +2,7 @@
 
 **Date:** 2026-06-08
 **Agent:** Spec Implementer
-**Spec:** `docs/specs/a_implementar/spec_wave_integration_11_skill_effects_gameplay_bridge.md`
+**Spec:** `.specs/a_implementar/spec_wave_integration_11_skill_effects_gameplay_bridge.md`
 **Status:** BUILD_VALIDATED
 
 ---

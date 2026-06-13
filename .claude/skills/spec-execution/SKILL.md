@@ -2,21 +2,21 @@
 name: spec-execution
 description: Execute a spec respecting scope, permitted files, mandatory validations, and phase-gated closeout
 version: 2.0
-when_to_use: Implementing any spec from docs/specs/a_implementar/
+when_to_use: Implementing any spec from .specs/a_implementar/
 ---
 
 # Spec Execution Skill
 
 ## Use When
 
-Task involves implementing or advancing a spec from `docs/specs/a_implementar/`.
+Task involves implementing or advancing a spec from `.specs/a_implementar/`.
 
 ## Required Reads
 
 1. `CLAUDE.md`
 2. `docs/project/CURRENT_STATE.md`
-3. `docs/specs/SPEC_WAVE_EXECUTION_PROTOCOL.md` — execution phases and governance
-4. `docs/specs/SPEC_VALIDATION_MATRIX_MASTER.md` — validation requirements by change type
+3. `.specs/SPEC_WAVE_EXECUTION_PROTOCOL.md` — execution phases and governance
+4. `.specs/SPEC_VALIDATION_MATRIX_MASTER.md` — validation requirements by change type
 5. Target spec
 6. Files explicitly in spec scope
 

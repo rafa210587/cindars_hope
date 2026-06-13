@@ -1,6 +1,6 @@
 # Execution Report — fable_01_spec_status_effects_canonical_set_runtime
 
-> **Spec:** `docs/specs/a_implementar/fable/fable_01_spec_status_effects_canonical_set_runtime.md` (+ EMENDA 2026-06-12)
+> **Spec:** `.specs/a_implementar/fable/fable_01_spec_status_effects_canonical_set_runtime.md` (+ EMENDA 2026-06-12)
 > **Data:** 2026-06-12
 > **Status:** BUILD_VALIDATED
 > **Executor:** Claude (FABLE master plan — Batch 2, spec 6/42)

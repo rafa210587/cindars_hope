@@ -17,7 +17,7 @@ No scene, prefab, ScriptableObject, package, ProjectSettings, gameplay, HUD, inv
 | `AGENTS.md` | YES | Project rules and forbidden runtime search APIs. |
 | Attached `WAVE_INTEGRATION_03_player_spawn_camera_movement_baseline.md` | YES | Active spec supplied by human. |
 | `docs/project/CURRENT_STATE.md` | YES | Confirms WAVE_INTEGRATION_02 state. |
-| `docs/specs/SPEC_REGISTRY_TO_IMPLEMENT.md` | YES | Updated with WAVE_INTEGRATION_03 result. |
+| `.specs/SPEC_REGISTRY_TO_IMPLEMENT.md` | YES | Updated with WAVE_INTEGRATION_03 result. |
 | `docs/validation/WAVE_INTEGRATION_02_SCENE_ARCHITECTURE.md` | YES | Defines `FarmScene` as WAVE_INTEGRATION_03 target. |
 | `docs/validation/WAVE_INTEGRATION_02_SCENE_ARCHITECTURE_DECISION.md` | YES | Confirms scene/prefab work was deferred to human Unity action. |
 | `docs/validation/WAVE_INTEGRATION_02_MANAGER_AUDIT.md` | YES | Confirms existing manager architecture. |
@@ -153,8 +153,8 @@ Residual risk: Play Mode visual behavior and Console state not validated locally
 
 `tools/docs/validate_docs.ps1` returned exit code 1 with known legacy-only failures outside this spec scope:
 
-- `docs/specs/a_implementar/spec_test_harness_editmode_playmode_quality_gate.md` missing dependency headers: `Ordem de execucao`, `Depende de`, `Bloqueia`.
-- `docs/specs/a_implementar/spec_test_harness_editmode_playmode_quality_gate.md` missing `required_adrs` and `required_game_rules`.
+- `.specs/a_implementar/spec_test_harness_editmode_playmode_quality_gate.md` missing dependency headers: `Ordem de execucao`, `Depende de`, `Bloqueia`.
+- `.specs/a_implementar/spec_test_harness_editmode_playmode_quality_gate.md` missing `required_adrs` and `required_game_rules`.
 - Older validation reports missing `validated_adrs` and `validated_game_rules`.
 - Two implemented specs cite amendments as canonical sources.
 

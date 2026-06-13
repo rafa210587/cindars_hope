@@ -101,7 +101,7 @@ MVP_PLUS_04_equipment_modal_guard_fix  (trivial, independente)
 |---|---|
 | Sempre | CLAUDE.md, docs/project/CURRENT_STATE.md |
 | Para debug/wiring | docs/validation/WAVE_INTEGRATION_XX_HUMAN_UNITY_*_INSTRUCTIONS.md |
-| Para nova spec | docs/design/SPEC_SOURCE_MAP.md, docs/specs/SPEC_IMPLEMENTABLE_TEMPLATE.md |
+| Para nova spec | docs/design/SPEC_SOURCE_MAP.md, .specs/SPEC_IMPLEMENTABLE_TEMPLATE.md |
 | Para debt specific | docs/validation/WAVE_INTEGRATION_22_CANONICAL_DEBT_REGISTER.md |
 | Para próxima spec | docs/validation/WAVE_INTEGRATION_22_NEXT_SPEC_CANDIDATE_MATRIX.md |
 | Para roadmap | docs/validation/WAVE_INTEGRATION_22_NEXT_ROADMAP_PROPOSAL.md |

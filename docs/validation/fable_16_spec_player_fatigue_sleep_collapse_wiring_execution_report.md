@@ -1,6 +1,6 @@
 # Execution Report — fable_16_spec_player_fatigue_sleep_collapse_wiring
 
-> **Spec:** `docs/specs/a_implementar/fable/fable_16_spec_player_fatigue_sleep_collapse_wiring.md`
+> **Spec:** `.specs/a_implementar/fable/fable_16_spec_player_fatigue_sleep_collapse_wiring.md`
 > **Data:** 2026-06-12
 > **Status:** BUILD_VALIDATED
 > **Executor:** Claude (FABLE master plan — Batch 0, spec 2/42)

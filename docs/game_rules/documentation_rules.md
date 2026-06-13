@@ -23,7 +23,7 @@ Defines canonical folder structure, file organization, and source locations for 
 
 - **Rule:** All project documentation must exist under `docs/` with these canonical subfolders:
   - `docs/project/` — key files (CURRENT_STATE, ROADMAP, etc.)
-  - `docs/specs/` — spec documents (a_implementar/, implementados/, closeout_mvp/)
+  - `.specs/` — spec documents (a_implementar/, implementados/, closeout_mvp/)
   - `docs/refinements/` — refinement documents (a_implementar/, implementados/, archived/)
   - `docs/validation/` — validation reports and evidence
   - `docs/decisions/` — Architecture Decision Records
@@ -40,13 +40,13 @@ Defines canonical folder structure, file organization, and source locations for 
 ### Rule: Spec Locations
 
 - **Rule:** 
-  - Active specs: `docs/specs/a_implementar/` with prefix `SPEC_*_*`
-  - Completed specs: `docs/specs/implementados/` (moved after acceptance)
-  - MVP closeout specs: `docs/specs/a_implementar/closeout_mvp/` or `implementados/closeout_mvp/`
+  - Active specs: `.specs/a_implementar/` with prefix `SPEC_*_*`
+  - Completed specs: `.specs/implementados/` (moved after acceptance)
+  - MVP closeout specs: `.specs/a_implementar/closeout_mvp/` or `implementados/closeout_mvp/`
   
 - **Must NOT:** Mix specs in other folders; do not treat refinements as specs
 - **File naming:** `SPEC_NN_NAME.md` pattern (e.g., `SPEC_01_CORE_BOOTSTRAP.md`)
-- **Source of truth:** Only `docs/specs/` contains active/historical specs
+- **Source of truth:** Only `.specs/` contains active/historical specs
 
 ### Rule: Refinement Locations
 
@@ -108,7 +108,7 @@ Defines canonical folder structure, file organization, and source locations for 
 
 ```
 ✓ docs/project/
-✓ docs/specs/
+✓ .specs/
 ✓ docs/refinements/
 ✓ docs/validation/
 ```

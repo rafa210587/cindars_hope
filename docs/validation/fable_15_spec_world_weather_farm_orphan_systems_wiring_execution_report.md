@@ -1,6 +1,6 @@
 # Execution Report — fable_15_spec_world_weather_farm_orphan_systems_wiring
 
-> **Spec:** `docs/specs/a_implementar/fable/fable_15_spec_world_weather_farm_orphan_systems_wiring.md`
+> **Spec:** `.specs/a_implementar/fable/fable_15_spec_world_weather_farm_orphan_systems_wiring.md`
 > **Data:** 2026-06-12
 > **Status:** BUILD_VALIDATED
 > **Executor:** Claude (FABLE master plan — Batch 0, spec 1/42)

@@ -1,8 +1,8 @@
-﻿# REF — CROSS SCENE HARDENING PR065
+# REF — CROSS SCENE HARDENING PR065
 
 > Origem histórica: conteúdo absorvido durante reorganização documental.
 > Status: refinamento implementado absorvido.
-> Spec consolidada relacionada: `docs/specs/implementados/spec_core_002_bootstrap_managers_e_runtime_references.md`
+> Spec consolidada relacionada: `.specs/implementados/spec_core_002_bootstrap_managers_e_runtime_references.md`
 
 ---
 

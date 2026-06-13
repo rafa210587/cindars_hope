@@ -35,9 +35,9 @@ All required sources confirmed:
 |--------|--------|
 | CLAUDE.md | ✓ Read |
 | docs/project/CURRENT_STATE.md | ✓ Read |
-| docs/specs/01_spec_stable_ids_registry_runtime.md | ✓ Read (full) |
-| docs/specs/SPEC_WAVE_EXECUTION_PROTOCOL.md | ✓ Referenced |
-| docs/specs/SPEC_VALIDATION_MATRIX_MASTER.md | ✓ Referenced |
+| .specs/01_spec_stable_ids_registry_runtime.md | ✓ Read (full) |
+| .specs/SPEC_WAVE_EXECUTION_PROTOCOL.md | ✓ Referenced |
+| .specs/SPEC_VALIDATION_MATRIX_MASTER.md | ✓ Referenced |
 | docs/design/SPEC_SOURCE_MAP.md | ✓ Referenced |
 | .claude/rules/testing-quality-gate.md | ✓ Referenced |
 
@@ -281,7 +281,7 @@ Per spec scope, no existing assets or core code was altered:
 ✓ Assets/_Game/Data/** — NOT MODIFIED (all IDs audited as-is)
 ✓ Assets/_Game/Scripts/*DatabaseSO.cs — NOT MODIFIED (18 registries preserved)
 ✓ SaveManager.cs — NOT MODIFIED (no save schema changes)
-✓ docs/specs/SPEC_EXECUTION_ORDER.md — NOT MODIFIED (no reordering)
+✓ .specs/SPEC_EXECUTION_ORDER.md — NOT MODIFIED (no reordering)
 ```
 
 Only addition: `StableIdsValidationTests.cs` (new test file)

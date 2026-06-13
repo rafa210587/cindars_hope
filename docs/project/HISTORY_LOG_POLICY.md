@@ -41,7 +41,7 @@ Do **not** read PROJECT_LOG.md when:
 | Current project status | `docs/00_PROJECT/CURRENT_STATE.md` |
 | Last validation result | `docs/05_VALIDATION/current/LAST_VALIDATION_STATUS.md` |
 | Active spec queue | `docs/00_PROJECT/CURRENT_STATE.md` |
-| Spec status | `docs/specs/SPEC_EXECUTION_ORDER.md` |
+| Spec status | `.specs/SPEC_EXECUTION_ORDER.md` |
 | Implementation context | `docs/IMPLEMENTATION_STATUS.md` (audit only) |
 
 ---

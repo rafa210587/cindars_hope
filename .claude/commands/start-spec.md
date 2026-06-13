@@ -16,9 +16,9 @@ Understand spec scope, dependencies, and risks. Deliver a concise plan. Do NOT i
 
 1. `CLAUDE.md` — routing and stop conditions
 2. `docs/project/CURRENT_STATE.md` — active queue, blockers
-3. `docs/specs/SPEC_WAVE_EXECUTION_PROTOCOL.md` — execution governance and phase taxonomy
-4. `docs/specs/SPEC_VALIDATION_MATRIX_MASTER.md` — validation requirements matrix
-5. Target spec: `docs/specs/a_implementar/spec_<name>.md`
+3. `.specs/SPEC_WAVE_EXECUTION_PROTOCOL.md` — execution governance and phase taxonomy
+4. `.specs/SPEC_VALIDATION_MATRIX_MASTER.md` — validation requirements matrix
+5. Target spec: `.specs/a_implementar/spec_<name>.md`
 
 ## Optional Reads (only if spec cites them)
 

@@ -31,9 +31,9 @@
 ## Sources Read
 
 ### Spec dependencies
-- ✓ `docs/specs/a_implementar/04_spec_ui_input_focus_modal_routing_runtime.md` (full)
-- ✓ `docs/specs/SPEC_WAVE_EXECUTION_PROTOCOL.md` (phases)
-- ✓ `docs/specs/SPEC_VALIDATION_MATRIX_MASTER.md` (quality gates)
+- ✓ `.specs/a_implementar/04_spec_ui_input_focus_modal_routing_runtime.md` (full)
+- ✓ `.specs/SPEC_WAVE_EXECUTION_PROTOCOL.md` (phases)
+- ✓ `.specs/SPEC_VALIDATION_MATRIX_MASTER.md` (quality gates)
 - ✓ `docs/design/gameplay/ui_ux/UI_UX_FULL_GAMEPLAY_DIRECTION.md` (gameplay direction)
 - ✓ `docs/design/gameplay/ui_ux/UI_UX_MENU_SCREEN_FLOWS_DIRECTION.md` (menu flows)
 

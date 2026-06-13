@@ -842,7 +842,7 @@ InitializeSkillSystem();
 
 ### Phase 10.1: Update Spec Status
 
-**File:** `docs/specs/implementados/spec_skill_trees_active_slots_respec_anya_runtime.md`
+**File:** `.specs/implementados/spec_skill_trees_active_slots_respec_anya_runtime.md`
 
 **Actions:**
 - [ ] Move spec from a_implementar to implementados

@@ -1,7 +1,7 @@
 # refinamento_init_cave_runtime_generation_checkpoints_boss_gates
 
 > Status: Refinamento inicial a implementar
-> Spec futura relacionada: `docs/specs/a_implementar/spec_cave_runtime_generation_checkpoints_boss_gates.md`
+> Spec futura relacionada: `.specs/a_implementar/spec_cave_runtime_generation_checkpoints_boss_gates.md`
 > Objetivo: completar cave runtime, 100 niveis macro, snapshots/replay, checkpoint portals, menu lateral, boss gates, boss AI inicial, confinement, materializacao, camera bounds, enemy spawn plan estavel, respawn de inimigos comuns, controle de drops de boss e save/load.
 
 ---
@@ -16,13 +16,13 @@ Evidencias principais:
 Assets/_Game/Scripts/Cave/Runtime/CaveRunManager.cs
 Assets/_Game/Scripts/Cave/Runtime/CaveRuntimeMaterializer.cs
 Assets/_Game/Scripts/Cave/**
-docs/specs/implementados/spec_cave_002_procedural_resources_parcial.md
-docs/specs/implementados/spec_cave_003_stable_run_snapshots_replay_parcial.md
-docs/specs/implementados/spec_cave_004_boss_gates_checkpoints_confinement_parcial.md
-docs/specs/implementados/spec_cave_005_visual_runtime_materializer_camera_enemy_visuals_parcial.md
-docs/specs/implementados/spec_cave_006_spawn_anchor_safe_positioning_parcial.md
-docs/specs/implementados/spec_cave_007_snapshot_replay_full_layout_parcial.md
-docs/specs/implementados/spec_cave_008_debug_skip_confinement_wall_distance_parcial.md
+.specs/implementados/spec_cave_002_procedural_resources_parcial.md
+.specs/implementados/spec_cave_003_stable_run_snapshots_replay_parcial.md
+.specs/implementados/spec_cave_004_boss_gates_checkpoints_confinement_parcial.md
+.specs/implementados/spec_cave_005_visual_runtime_materializer_camera_enemy_visuals_parcial.md
+.specs/implementados/spec_cave_006_spawn_anchor_safe_positioning_parcial.md
+.specs/implementados/spec_cave_007_snapshot_replay_full_layout_parcial.md
+.specs/implementados/spec_cave_008_debug_skip_confinement_wall_distance_parcial.md
 ```
 
 ---

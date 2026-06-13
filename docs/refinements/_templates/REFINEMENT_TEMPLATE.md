@@ -63,7 +63,7 @@ When this refinement becomes a spec, the spec must:
 
 ## Related
 
-- Spec this produced: `docs/specs/a_implementar/<spec>.md`
+- Spec this produced: `.specs/a_implementar/<spec>.md`
 - Related refinements: `<path>`
 - Amendments that apply: `docs/amendments/`
 

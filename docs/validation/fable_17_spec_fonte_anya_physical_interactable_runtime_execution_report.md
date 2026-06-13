@@ -1,6 +1,6 @@
 # Execution Report — fable_17_spec_fonte_anya_physical_interactable_runtime
 
-> **Spec:** `docs/specs/a_implementar/fable/fable_17_spec_fonte_anya_physical_interactable_runtime.md`
+> **Spec:** `.specs/a_implementar/fable/fable_17_spec_fonte_anya_physical_interactable_runtime.md`
 > **Data:** 2026-06-12
 > **Status:** BUILD_VALIDATED
 > **Executor:** Claude (FABLE master plan — Batch 0, spec 3/42)

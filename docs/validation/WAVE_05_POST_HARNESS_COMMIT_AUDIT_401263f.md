@@ -86,7 +86,7 @@ Either:
 
 2. **Option B: Revert commit and re-execute via harness**
    - `git revert 401263f`
-   - Execute via `/execute-spec-strict docs/specs/a_implementar/05_spec_farm_animals_housing_feeding_care_runtime.md`
+   - Execute via `/execute-spec-strict .specs/a_implementar/05_spec_farm_animals_housing_feeding_care_runtime.md`
    - Let harness generate report
    - Commit with proper message
 

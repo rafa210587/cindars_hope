@@ -20,7 +20,7 @@ A branch adiciona principalmente:
 
 A `dev` atual ja possui a reorganizacao documental nova, com:
 
-- `docs/specs/` como fonte unica;
+- `.specs/` como fonte unica;
 - specs normalizadas com prefixo `spec_`;
 - registries atuais;
 - `SPEC_EXECUTION_ORDER.md`;
@@ -39,7 +39,7 @@ Foram absorvidos detalhes mais objetivos da branch historica nas specs normaliza
 Destino:
 
 ```text
-docs/specs/implementados/spec_cave_002_procedural_contracts_resources_parcial.md
+.specs/implementados/spec_cave_002_procedural_contracts_resources_parcial.md
 ```
 
 Conteudo absorvido:
@@ -54,7 +54,7 @@ Conteudo absorvido:
 Destino:
 
 ```text
-docs/specs/implementados/spec_cave_003_stable_run_snapshots_replay_parcial.md
+.specs/implementados/spec_cave_003_stable_run_snapshots_replay_parcial.md
 ```
 
 Conteudo absorvido:
@@ -69,7 +69,7 @@ Conteudo absorvido:
 Destino:
 
 ```text
-docs/specs/implementados/spec_cave_004_boss_gates_checkpoints_confinement_parcial.md
+.specs/implementados/spec_cave_004_boss_gates_checkpoints_confinement_parcial.md
 ```
 
 Conteudo absorvido:
@@ -91,7 +91,7 @@ Nao foi absorvido o formato antigo de:
 - handoff antigo de reorganizacao;
 - `docs_old` antigo adicionado pela branch.
 
-Motivo: a `dev` atual ja possui estrutura documental mais nova e fonte unica em `docs/specs/`.
+Motivo: a `dev` atual ja possui estrutura documental mais nova e fonte unica em `.specs/`.
 
 ---
 
@@ -105,7 +105,7 @@ Apos esta auditoria, a branch pode ser deletada com seguranca operacional, pois 
 
 ## 5. Escopo desta auditoria
 
-Alterados somente documentos em `docs/specs/`.
+Alterados somente documentos em `.specs/`.
 
 Nao foram alterados:
 

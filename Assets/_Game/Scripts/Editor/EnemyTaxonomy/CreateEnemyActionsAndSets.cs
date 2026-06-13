@@ -191,7 +191,7 @@ namespace CindarsHope.Editor.EnemyTaxonomy
                 new ActionEntry { Id="action_cave_bat_screech_dart", DisplayName="Screech Dart",
                     ActionType=R, DamageTypeId="physical", BaseDamage=3,
                     Range=3.0f, Cooldown=2.0f, Windup=0.35f, Recover=0.3f, ProjectileSpeed=5.0f,
-                    StatusIds=new[]{"status_bleed_minor"}, StatusChance=0.6f,
+                    StatusIds=new[]{"status_bleed"}, StatusChance=0.6f,
                     TelegraphId=TRP, TriggersVuln=true, VulnTrigger=APV, IsInterruptible=true, MaxTargets=1 },
 
                 // 4. enemy_goblin_grashnaar_scavenger
@@ -218,7 +218,7 @@ namespace CindarsHope.Editor.EnemyTaxonomy
                 new ActionEntry { Id="action_mossling_spore_puff", DisplayName="Spore Puff",
                     ActionType=A, DamageTypeId="toxic", BaseDamage=4,
                     Range=1.5f, AreaRadius=1.0f, Cooldown=3.0f, Windup=0.5f, Recover=0.5f,
-                    StatusIds=new[]{"status_poison_minor"}, StatusChance=0.8f,
+                    StatusIds=new[]{"status_poison"}, StatusChance=0.8f,
                     TelegraphId=TAP, TriggersVuln=true, VulnTrigger=AAR, IsInterruptible=false, MaxTargets=3 },
                 new ActionEntry { Id="action_mossling_body_bump", DisplayName="Body Bump",
                     ActionType=M, DamageTypeId="physical", BaseDamage=3,
@@ -235,7 +235,7 @@ namespace CindarsHope.Editor.EnemyTaxonomy
                 new ActionEntry { Id="action_blackroot_thorn_shot", DisplayName="Thorn Shot",
                     ActionType=R, DamageTypeId="toxic", BaseDamage=4,
                     Range=3.0f, Cooldown=2.5f, Windup=0.4f, Recover=0.35f, ProjectileSpeed=4.0f,
-                    StatusIds=new[]{"status_slow_minor"}, StatusChance=0.7f,
+                    StatusIds=new[]{"status_slow"}, StatusChance=0.7f,
                     TelegraphId=TRP, TriggersVuln=true, VulnTrigger=APV, IsInterruptible=true, MaxTargets=1 },
 
                 // ── BAND 2 ─────────────────────────────────────────────────────────
@@ -249,14 +249,14 @@ namespace CindarsHope.Editor.EnemyTaxonomy
                 new ActionEntry { Id="action_spore_imp_spore_bolt", DisplayName="Spore Bolt",
                     ActionType=C, DamageTypeId="toxic", BaseDamage=5,
                     Range=3.5f, Cooldown=2.0f, Windup=0.5f, Recover=0.4f, ProjectileSpeed=4.0f,
-                    StatusIds=new[]{"status_poison_minor"}, StatusChance=0.8f,
+                    StatusIds=new[]{"status_poison"}, StatusChance=0.8f,
                     TelegraphId=TCS, TriggersVuln=true, VulnTrigger=AC, IsInterruptible=true, MaxTargets=1 },
 
                 // 10. enemy_rootsnare
                 new ActionEntry { Id="action_rootsnare_emerge_grab", DisplayName="Emerge Grab",
                     ActionType=B, DamageTypeId="physical", BaseDamage=8,
                     Range=1.0f, Cooldown=4.0f, Windup=0.6f, Recover=0.6f,
-                    StatusIds=new[]{"status_root_minor"}, StatusChance=0.85f,
+                    StatusIds=new[]{"status_root"}, StatusChance=0.85f,
                     TelegraphId=TBE, TriggersVuln=true, VulnTrigger=ABE, IsInterruptible=false, MaxTargets=1 },
 
                 // 11. enemy_hollow_stagling
@@ -269,7 +269,7 @@ namespace CindarsHope.Editor.EnemyTaxonomy
                 new ActionEntry { Id="action_urudakh_trip_snare", DisplayName="Trip Snare",
                     ActionType=R, DamageTypeId="physical", BaseDamage=5,
                     Range=3.0f, Cooldown=3.0f, Windup=0.4f, Recover=0.4f, ProjectileSpeed=4.0f,
-                    StatusIds=new[]{"status_slow_minor"}, StatusChance=0.85f,
+                    StatusIds=new[]{"status_slow"}, StatusChance=0.85f,
                     TelegraphId=TRP, TriggersVuln=true, VulnTrigger=APV, IsInterruptible=true, MaxTargets=1 },
                 new ActionEntry { Id="action_urudakh_scrap_throw", DisplayName="Scrap Throw",
                     ActionType=R, DamageTypeId="physical", BaseDamage=6,
@@ -287,7 +287,7 @@ namespace CindarsHope.Editor.EnemyTaxonomy
                 new ActionEntry { Id="action_orc_nyx_shadow_emerge", DisplayName="Shadow Emerge",
                     ActionType=B, DamageTypeId="arcane", BaseDamage=9,
                     Range=1.0f, Cooldown=4.0f, Windup=0.55f, Recover=0.55f,
-                    StatusIds=new[]{"status_slow_minor"}, StatusChance=0.7f,
+                    StatusIds=new[]{"status_slow"}, StatusChance=0.7f,
                     TelegraphId=TBE, TriggersVuln=true, VulnTrigger=ABE, IsInterruptible=false, MaxTargets=1 },
                 new ActionEntry { Id="action_orc_nyx_claw", DisplayName="Shadow Claw",
                     ActionType=M, DamageTypeId="physical", BaseDamage=8,
@@ -314,7 +314,7 @@ namespace CindarsHope.Editor.EnemyTaxonomy
                 new ActionEntry { Id="action_nyx_moth_arcane_flutter", DisplayName="Arcane Flutter",
                     ActionType=C, DamageTypeId="arcane", BaseDamage=6,
                     Range=3.5f, Cooldown=2.5f, Windup=0.5f, Recover=0.4f, ProjectileSpeed=4.5f,
-                    StatusIds=new[]{"status_slow_minor"}, StatusChance=0.7f,
+                    StatusIds=new[]{"status_slow"}, StatusChance=0.7f,
                     TelegraphId=TCS, TriggersVuln=true, VulnTrigger=AC, IsInterruptible=true, MaxTargets=1 },
 
                 // ── BAND 3 ─────────────────────────────────────────────────────────
@@ -323,19 +323,19 @@ namespace CindarsHope.Editor.EnemyTaxonomy
                 new ActionEntry { Id="action_frost_gnawer_cold_bite", DisplayName="Cold Bite",
                     ActionType=M, DamageTypeId="ice", BaseDamage=10,
                     Range=0.8f, Cooldown=2.0f, Windup=0.35f, Recover=0.35f,
-                    StatusIds=new[]{"status_chill_minor"}, StatusChance=0.75f,
+                    StatusIds=new[]{"status_chill"}, StatusChance=0.75f,
                     TelegraphId=TFM, TriggersVuln=true, VulnTrigger=AAR, IsInterruptible=true, MaxTargets=1 },
 
                 // 18. enemy_duergar_frostdelver
                 new ActionEntry { Id="action_duergar_frostdelver_pick_swing", DisplayName="Frost Pick Swing",
                     ActionType=M, DamageTypeId="physical", BaseDamage=12,
                     Range=1.0f, Cooldown=2.0f, Windup=0.4f, Recover=0.4f,
-                    StatusIds=new[]{"status_chill_minor"}, StatusChance=0.6f,
+                    StatusIds=new[]{"status_chill"}, StatusChance=0.6f,
                     TelegraphId=TFM, TriggersVuln=true, VulnTrigger=AAR, IsInterruptible=true, MaxTargets=1 },
                 new ActionEntry { Id="action_duergar_frostdelver_ice_chip", DisplayName="Ice Chip",
                     ActionType=R, DamageTypeId="ice", BaseDamage=8,
                     Range=3.0f, Cooldown=2.5f, Windup=0.4f, Recover=0.35f, ProjectileSpeed=5.0f,
-                    StatusIds=new[]{"status_chill_minor"}, StatusChance=0.7f,
+                    StatusIds=new[]{"status_chill"}, StatusChance=0.7f,
                     TelegraphId=TRP, TriggersVuln=true, VulnTrigger=APV, IsInterruptible=true, MaxTargets=1 },
 
                 // 19. enemy_duergar_shieldbreaker
@@ -363,7 +363,7 @@ namespace CindarsHope.Editor.EnemyTaxonomy
                 new ActionEntry { Id="action_glassbone_shard_throw", DisplayName="Bone Shard Throw",
                     ActionType=R, DamageTypeId="ice", BaseDamage=11,
                     Range=4.0f, Cooldown=2.5f, Windup=0.4f, Recover=0.4f, ProjectileSpeed=5.5f,
-                    StatusIds=new[]{"status_bleed_minor"}, StatusChance=0.65f,
+                    StatusIds=new[]{"status_bleed"}, StatusChance=0.65f,
                     TelegraphId=TRP, TriggersVuln=true, VulnTrigger=APV, IsInterruptible=true, MaxTargets=1 },
 
                 // 22. enemy_cold_cult_acolyte
@@ -377,7 +377,7 @@ namespace CindarsHope.Editor.EnemyTaxonomy
                 new ActionEntry { Id="action_crystal_leaper_shatter_jump", DisplayName="Shatter Jump",
                     ActionType=L, DamageTypeId="ice", BaseDamage=13,
                     Range=2.5f, Cooldown=3.0f, Windup=0.45f, Recover=0.5f,
-                    StatusIds=new[]{"status_chill_minor"}, StatusChance=0.7f,
+                    StatusIds=new[]{"status_chill"}, StatusChance=0.7f,
                     TelegraphId=TLP, TriggersVuln=true, VulnTrigger=AAR, IsInterruptible=false, MaxTargets=1 },
 
                 // 24. enemy_frost_wailer
@@ -389,7 +389,7 @@ namespace CindarsHope.Editor.EnemyTaxonomy
                 new ActionEntry { Id="action_frost_wailer_cold_bolt", DisplayName="Cold Bolt",
                     ActionType=C, DamageTypeId="ice", BaseDamage=10,
                     Range=4.0f, Cooldown=2.5f, Windup=0.55f, Recover=0.45f, ProjectileSpeed=5.0f,
-                    StatusIds=new[]{"status_chill_minor"}, StatusChance=0.75f,
+                    StatusIds=new[]{"status_chill"}, StatusChance=0.75f,
                     TelegraphId=TCS, TriggersVuln=true, VulnTrigger=AC, IsInterruptible=true, MaxTargets=1 },
 
                 // ── BAND 4 ─────────────────────────────────────────────────────────
@@ -398,12 +398,12 @@ namespace CindarsHope.Editor.EnemyTaxonomy
                 new ActionEntry { Id="action_ember_tick_burning_bite", DisplayName="Burning Bite",
                     ActionType=M, DamageTypeId="fire", BaseDamage=10,
                     Range=0.6f, Cooldown=1.5f, Windup=0.25f, Recover=0.3f,
-                    StatusIds=new[]{"status_burn_minor"}, StatusChance=0.7f,
+                    StatusIds=new[]{"status_burn"}, StatusChance=0.7f,
                     TelegraphId=TFM, TriggersVuln=true, VulnTrigger=AAR, IsInterruptible=true, MaxTargets=1 },
                 new ActionEntry { Id="action_ember_tick_death_pop", DisplayName="Death Pop (Hook)",
                     ActionType=A, DamageTypeId="fire", BaseDamage=12,
                     Range=0f, AreaRadius=1.0f, Cooldown=999f, Windup=0.2f, Recover=0.5f,
-                    StatusIds=new[]{"status_burn_minor"}, StatusChance=0.8f,
+                    StatusIds=new[]{"status_burn"}, StatusChance=0.8f,
                     TelegraphId=TAP, TriggersVuln=false, IsInterruptible=false, MaxTargets=3,
                     // Death-trigger activation is SPEC 13D; cooldown=999 keeps it inactive in normal combat
                     },
@@ -412,7 +412,7 @@ namespace CindarsHope.Editor.EnemyTaxonomy
                 new ActionEntry { Id="action_ash_crawler_hot_lunge", DisplayName="Hot Lunge",
                     ActionType=M, DamageTypeId="fire", BaseDamage=12,
                     Range=1.0f, Cooldown=2.0f, Windup=0.35f, Recover=0.35f,
-                    StatusIds=new[]{"status_burn_minor"}, StatusChance=0.65f,
+                    StatusIds=new[]{"status_burn"}, StatusChance=0.65f,
                     TelegraphId=TFM, TriggersVuln=true, VulnTrigger=DCW, IsInterruptible=true, MaxTargets=1 },
 
                 // 27. enemy_orc_kaand_berserker
@@ -435,7 +435,7 @@ namespace CindarsHope.Editor.EnemyTaxonomy
                 new ActionEntry { Id="action_orc_kaand_heat_pulse", DisplayName="Heat Pulse",
                     ActionType=A, DamageTypeId="fire", BaseDamage=10,
                     Range=1.8f, AreaRadius=1.5f, Cooldown=4.0f, Windup=0.55f, Recover=0.5f,
-                    StatusIds=new[]{"status_burn_minor"}, StatusChance=0.75f,
+                    StatusIds=new[]{"status_burn"}, StatusChance=0.75f,
                     TelegraphId=TAP, TriggersVuln=true, VulnTrigger=AC, IsInterruptible=false, MaxTargets=4 },
 
                 // 29. enemy_lava_bulwark
@@ -447,14 +447,14 @@ namespace CindarsHope.Editor.EnemyTaxonomy
                 new ActionEntry { Id="action_lava_bulwark_heat_wave", DisplayName="Heat Wave",
                     ActionType=A, DamageTypeId="fire", BaseDamage=12,
                     Range=2.0f, AreaRadius=2.0f, Cooldown=5.0f, Windup=0.7f, Recover=0.65f,
-                    StatusIds=new[]{"status_burn_minor"}, StatusChance=0.7f,
+                    StatusIds=new[]{"status_burn"}, StatusChance=0.7f,
                     TelegraphId=TAP, TriggersVuln=true, VulnTrigger=AAR, IsInterruptible=false, MaxTargets=5 },
 
                 // 30. enemy_cinder_spitter
                 new ActionEntry { Id="action_cinder_spitter_ember_spit", DisplayName="Ember Spit",
                     ActionType=R, DamageTypeId="fire", BaseDamage=12,
                     Range=4.0f, Cooldown=2.0f, Windup=0.4f, Recover=0.4f, ProjectileSpeed=5.5f,
-                    StatusIds=new[]{"status_burn_minor"}, StatusChance=0.7f,
+                    StatusIds=new[]{"status_burn"}, StatusChance=0.7f,
                     TelegraphId=TRP, TriggersVuln=true, VulnTrigger=APV, IsInterruptible=true, MaxTargets=1 },
 
                 // 31. enemy_scorched_cultist
@@ -466,7 +466,7 @@ namespace CindarsHope.Editor.EnemyTaxonomy
                 new ActionEntry { Id="action_scorched_cultist_ember_circle", DisplayName="Ember Circle",
                     ActionType=A, DamageTypeId="fire", BaseDamage=10,
                     Range=2.0f, AreaRadius=1.8f, Cooldown=4.5f, Windup=0.6f, Recover=0.55f,
-                    StatusIds=new[]{"status_burn_minor"}, StatusChance=0.75f,
+                    StatusIds=new[]{"status_burn"}, StatusChance=0.75f,
                     TelegraphId=TAP, TriggersVuln=true, VulnTrigger=AC, IsInterruptible=false, MaxTargets=4 },
 
                 // 32. enemy_furnace_warden
@@ -498,7 +498,7 @@ namespace CindarsHope.Editor.EnemyTaxonomy
                 new ActionEntry { Id="action_gnome_gem_madcap_prism_bolt", DisplayName="Prism Bolt",
                     ActionType=C, DamageTypeId="arcane", BaseDamage=16,
                     Range=4.5f, Cooldown=3.0f, Windup=0.65f, Recover=0.5f, ProjectileSpeed=5.5f,
-                    StatusIds=new[]{"status_confuse_minor"}, StatusChance=0.65f,
+                    StatusIds=new[]{"status_confusion_lite"}, StatusChance=0.65f,
                     TelegraphId=TCS, TriggersVuln=true, VulnTrigger=AC, IsInterruptible=false, MaxTargets=1 },
                 new ActionEntry { Id="action_gnome_gem_madcap_gem_burst", DisplayName="Gem Burst",
                     ActionType=A, DamageTypeId="arcane", BaseDamage=12,
@@ -509,12 +509,12 @@ namespace CindarsHope.Editor.EnemyTaxonomy
                 new ActionEntry { Id="action_gnomorin_rune_tinker_rune_dart", DisplayName="Rune Dart",
                     ActionType=R, DamageTypeId="arcane", BaseDamage=14,
                     Range=4.0f, Cooldown=2.5f, Windup=0.45f, Recover=0.4f, ProjectileSpeed=5.5f,
-                    StatusIds=new[]{"status_slow_minor"}, StatusChance=0.7f,
+                    StatusIds=new[]{"status_slow"}, StatusChance=0.7f,
                     TelegraphId=TRP, TriggersVuln=true, VulnTrigger=APV, IsInterruptible=true, MaxTargets=1 },
                 new ActionEntry { Id="action_gnomorin_rune_tinker_pressure_glyph", DisplayName="Pressure Glyph",
                     ActionType=A, DamageTypeId="arcane", BaseDamage=10,
                     Range=2.0f, AreaRadius=1.5f, Cooldown=4.0f, Windup=0.55f, Recover=0.5f,
-                    StatusIds=new[]{"status_slow_minor"}, StatusChance=0.7f,
+                    StatusIds=new[]{"status_slow"}, StatusChance=0.7f,
                     TelegraphId=TAP, TriggersVuln=true, VulnTrigger=AC, IsInterruptible=false, MaxTargets=4 },
 
                 // 37. enemy_sealed_knight
@@ -560,7 +560,7 @@ namespace CindarsHope.Editor.EnemyTaxonomy
                 new ActionEntry { Id="action_oathless_shade_oathless_cry", DisplayName="Oathless Cry",
                     ActionType=A, DamageTypeId="arcane", BaseDamage=14,
                     Range=2.5f, AreaRadius=2.5f, Cooldown=5.0f, Windup=0.65f, Recover=0.6f,
-                    StatusIds=new[]{"status_slow_minor"}, StatusChance=0.8f,
+                    StatusIds=new[]{"status_slow"}, StatusChance=0.8f,
                     TelegraphId=TAP, TriggersVuln=true, VulnTrigger=AC, IsInterruptible=false, MaxTargets=5 },
 
                 // ── BAND 6 – DEEP (71-85) ──────────────────────────────────────────
@@ -579,7 +579,7 @@ namespace CindarsHope.Editor.EnemyTaxonomy
                 new ActionEntry { Id="action_drow_arcane_adept_shadow_bolt", DisplayName="Shadow Bolt",
                     ActionType=C, DamageTypeId="arcane", BaseDamage=22,
                     Range=4.5f, Cooldown=2.5f, Windup=0.55f, Recover=0.5f, ProjectileSpeed=5.5f,
-                    StatusIds=new[]{"status_slow_minor"}, StatusChance=0.7f,
+                    StatusIds=new[]{"status_slow"}, StatusChance=0.7f,
                     TelegraphId=TCS, TriggersVuln=true, VulnTrigger=AC, IsInterruptible=false, MaxTargets=1 },
 
                 // 43. enemy_drow_shadow_warden
@@ -603,7 +603,7 @@ namespace CindarsHope.Editor.EnemyTaxonomy
                 new ActionEntry { Id="action_abyssal_riftstalker_rift_claw", DisplayName="Rift Claw",
                     ActionType=M, DamageTypeId="arcane", BaseDamage=24,
                     Range=1.0f, Cooldown=2.0f, Windup=0.4f, Recover=0.35f,
-                    StatusIds=new[]{"status_slow_minor"}, StatusChance=0.6f,
+                    StatusIds=new[]{"status_slow"}, StatusChance=0.6f,
                     TelegraphId=TFM, TriggersVuln=true, VulnTrigger=AAR, IsInterruptible=true, MaxTargets=1 },
 
                 // 46. enemy_shadow_sentinel
@@ -621,7 +621,7 @@ namespace CindarsHope.Editor.EnemyTaxonomy
                 new ActionEntry { Id="action_void_spitter_void_bolt", DisplayName="Void Bolt",
                     ActionType=R, DamageTypeId="arcane", BaseDamage=20,
                     Range=4.5f, Cooldown=2.0f, Windup=0.4f, Recover=0.4f, ProjectileSpeed=5.5f,
-                    StatusIds=new[]{"status_slow_minor"}, StatusChance=0.65f,
+                    StatusIds=new[]{"status_slow"}, StatusChance=0.65f,
                     TelegraphId=TRP, TriggersVuln=true, VulnTrigger=APV, IsInterruptible=true, MaxTargets=1 },
 
                 // 48. enemy_abyssal_void_reaver
@@ -674,7 +674,7 @@ namespace CindarsHope.Editor.EnemyTaxonomy
                 new ActionEntry { Id="action_corrupted_draconic_spawn_toxic_roar", DisplayName="Toxic Roar",
                     ActionType=A, DamageTypeId="poison", BaseDamage=28,
                     Range=2.5f, AreaRadius=2.5f, Cooldown=5.0f, Windup=0.75f, Recover=0.7f,
-                    StatusIds=new[]{"status_poison_minor"}, StatusChance=0.9f,
+                    StatusIds=new[]{"status_poison"}, StatusChance=0.9f,
                     TelegraphId=TAP, TriggersVuln=true, VulnTrigger=AEP, IsInterruptible=false, MaxTargets=5 },
 
                 // 54. enemy_corrupted_lich_shard
@@ -741,12 +741,12 @@ namespace CindarsHope.Editor.EnemyTaxonomy
                 new ActionEntry { Id="action_draconic_ashspitter_ash_spit", DisplayName="Ash Spit",
                     ActionType=R, DamageTypeId="fire", BaseDamage=30,
                     Range=4.5f, Cooldown=2.0f, Windup=0.45f, Recover=0.4f, ProjectileSpeed=5.5f,
-                    StatusIds=new[]{"status_burn_minor"}, StatusChance=0.75f,
+                    StatusIds=new[]{"status_burn"}, StatusChance=0.75f,
                     TelegraphId=TRP, TriggersVuln=true, VulnTrigger=APV, IsInterruptible=true, MaxTargets=1 },
                 new ActionEntry { Id="action_draconic_ashspitter_ember_cloud", DisplayName="Ember Cloud",
                     ActionType=A, DamageTypeId="fire", BaseDamage=26,
                     Range=2.0f, AreaRadius=1.8f, Cooldown=4.5f, Windup=0.6f, Recover=0.55f,
-                    StatusIds=new[]{"status_burn_minor"}, StatusChance=0.8f,
+                    StatusIds=new[]{"status_burn"}, StatusChance=0.8f,
                     TelegraphId=TAP, TriggersVuln=true, VulnTrigger=AAR, IsInterruptible=false, MaxTargets=4 },
             };
         }

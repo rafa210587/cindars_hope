@@ -47,7 +47,7 @@ if ($scope -and ($scope.forbiddenPathsChanged -or $scope.rootSpecsRecreated)) {
         [Console]::Error.WriteLine("STOP-GUARD: changes detected in forbidden paths (docs_old/, specs/, spec/). Revert or move them to canonical paths before finishing (rule: docs-governance).")
     }
     if ($scope.rootSpecsRecreated) {
-        [Console]::Error.WriteLine("STOP-GUARD: root specs/ or spec/ directory was created. The only spec source is docs/specs/ - remove it before finishing (rule: spec-lifecycle).")
+        [Console]::Error.WriteLine("STOP-GUARD: root specs/ or spec/ directory was created. The only spec source is .specs/ - remove it before finishing (rule: spec-lifecycle).")
     }
     exit 2
 }
@@ -90,7 +90,7 @@ if ($scope -and ($scope.docsChanged -or $scope.unityRuntimeChanged -or $scope.pr
     Write-Host ""
 
     Write-Host "If spec was implemented:"
-    Write-Host "   [ ] Spec moved to docs/specs/implementados/ (only via /finish-spec eligibility)"
+    Write-Host "   [ ] Spec moved to .specs/implementados/ (only via /finish-spec eligibility)"
     Write-Host "   [ ] Evidence header added (commit, files, validations)"
     Write-Host "   [ ] PROJECT_LOG.md updated"
     Write-Host "   [ ] IMPLEMENTATION_STATUS.md updated"

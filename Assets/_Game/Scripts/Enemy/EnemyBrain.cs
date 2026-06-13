@@ -24,11 +24,27 @@ namespace CindarsHope.Enemy
 
         [Header("Tuning")]
         [SerializeField] private float _decisionTickSeconds = 0.3f;
+        [SerializeField] private float _lowHealthRetreatThreshold = 0.25f;
+        [SerializeField] private float _retreatDurationSeconds = 2.5f;
+        [SerializeField] private float _leapCooldownSeconds = 3.5f;
+        [SerializeField] private float _leapSpeedMultiplier = 3.2f;
+        [SerializeField] private float _blinkCooldownSeconds = 5f;
+        [SerializeField] private float _burrowSpeedMultiplier = 1.7f;
+        [SerializeField] private float _burrowEmergeDistance = 1.4f;
 
         // State machine
         private EnemyBrainState _currentState = EnemyBrainState.Idle;
         private float _decisionTimer;
         private float _patrolDirectionTimer;
+        private Vector2 _spawnAnchor;
+        private float _retreatEndTime;
+        private float _nextLeapTime;
+        private float _nextBlinkTime;
+        private bool _isLeaping;
+        private float _leapEndTime;
+        // Alternates per spawned brain so phase enemies do not all flank the same side.
+        private static float s_nextBlinkFlankSide = 1f;
+        private float _blinkFlankSide = 1f;
 
         // Target
         private GameObject _playerTarget;
@@ -47,8 +63,63 @@ namespace CindarsHope.Enemy
         // CindarsHope.Enemy.EnemyHealth via same-namespace resolution, which never got Configure'd.
         private CindarsHope.Combat.EnemyHealth _health;
         private EnemyVulnerabilityState _vulnerabilityState;
+        private SpriteRenderer _spriteRenderer;
+        private float _spriteBaseAlpha = 1f;
 
         public EnemyBrainState CurrentState => _currentState;
+
+        // F01: modificadores externos aplicados por status effects (Chill/Slow/Root/Fear/ConfusionLite).
+        private float _externalSpeedMultiplier = 1f;
+        private float _externalSpeedUntil;
+        private float _externalInvertUntil;
+        private float _forcedRetreatUntil;
+
+        /// <summary>
+        /// F01 — override externo de comportamento usado pelo EnemyStatusRuntimeTicker.
+        /// speedMultiplier 0 = Root/Stun; invert = ConfusionLite; forceRetreat = Fear.
+        /// </summary>
+        public void ApplyExternalBehaviorOverride(float speedMultiplier, float speedSeconds, bool invertMovement, float invertSeconds, bool forceRetreat, float retreatSeconds)
+        {
+            var now = Time.time;
+            if (speedSeconds > 0f)
+            {
+                _externalSpeedMultiplier = Mathf.Clamp(speedMultiplier, 0f, 2f);
+                _externalSpeedUntil = now + Mathf.Min(speedSeconds, 10f);
+            }
+
+            if (invertMovement && invertSeconds > 0f)
+            {
+                _externalInvertUntil = now + Mathf.Min(invertSeconds, 10f);
+            }
+
+            // Fear não interrompe windup/recover (mitigação de risco da spec) — EvaluateState respeita.
+            if (forceRetreat && retreatSeconds > 0f)
+            {
+                _forcedRetreatUntil = now + Mathf.Min(retreatSeconds, 10f);
+            }
+        }
+
+        private float ExternalSpeedFactor()
+        {
+            return Time.time < _externalSpeedUntil ? _externalSpeedMultiplier : 1f;
+        }
+
+        // F02: stagger por quebra de postura — entra em Stunned e sai sozinho.
+        private float _stunUntil;
+
+        public void ApplyStun(float seconds)
+        {
+            if (seconds <= 0f)
+            {
+                return;
+            }
+
+            _stunUntil = Mathf.Max(_stunUntil, Time.time + Mathf.Min(seconds, 5f));
+            _currentState = EnemyBrainState.Stunned;
+            _pendingAction = null;
+            _telegraph?.EndTelegraph();
+            StopMovement();
+        }
 
         // SPEC 14A-FIX6: Public state for real runtime resolution checks
         public bool HasResolvedActionSet => _activeActionSet != null && _activeActionSet.ActionIds != null && _activeActionSet.ActionIds.Length > 0;
@@ -71,6 +142,7 @@ namespace CindarsHope.Enemy
             _telegraph = GetComponent<EnemyTelegraphController>();
             _health = GetComponent<EnemyHealth>();
             _vulnerabilityState = GetComponent<EnemyVulnerabilityState>();
+            _spriteRenderer = GetComponent<SpriteRenderer>();
         }
 
         private void OnEnable()
@@ -80,11 +152,18 @@ namespace CindarsHope.Enemy
             _actionResolved = false;
             _pendingAction = null;
             _currentState = EnemyBrainState.Idle;
+            _spawnAnchor = transform.position;
+            _isLeaping = false;
+            _blinkFlankSide = s_nextBlinkFlankSide;
+            s_nextBlinkFlankSide = -s_nextBlinkFlankSide;
 
             _playerTarget = GameBootstrap.Instance?.PlayerManager?.gameObject;
 
             if (_vulnerabilityState != null)
                 _vulnerabilityState.Initialize(_enemyData?.enemyId);
+
+            if (_spriteRenderer != null)
+                _spriteBaseAlpha = _spriteRenderer.color.a;
 
             InitActionSet();
 
@@ -95,6 +174,7 @@ namespace CindarsHope.Enemy
         private void OnDisable()
         {
             StopMovement();
+            SetSubmergedVisual(false);
         }
 
         private void InitActionSet()
@@ -120,6 +200,17 @@ namespace CindarsHope.Enemy
         {
             if (_currentState == EnemyBrainState.Dead) return;
 
+            // F02: saída do stagger (Stunned não é avaliado pelo EvaluateState).
+            if (_currentState == EnemyBrainState.Stunned)
+            {
+                if (Time.time < _stunUntil)
+                {
+                    return;
+                }
+
+                _currentState = EnemyBrainState.Alert;
+            }
+
             _decisionTimer -= Time.deltaTime;
             if (_decisionTimer <= 0f)
             {
@@ -129,6 +220,12 @@ namespace CindarsHope.Enemy
 
             TickActionTimers();
             ExecuteMovement();
+
+            // F01: ConfusionLite inverte o movimento resultante (ponto único pós-estado).
+            if (Time.time < _externalInvertUntil && _rb != null)
+            {
+                _rb.linearVelocity = -_rb.linearVelocity;
+            }
         }
 
         // ─── State Evaluation ─────────────────────────────────────────────────
@@ -144,6 +241,22 @@ namespace CindarsHope.Enemy
             bool inDetect = dist <= DetectionRange();
             bool inLeash = dist <= LeashRange();
 
+            // F01: Fear externo força Retreat (fora de windup/recover — guard acima já retornou).
+            if (Time.time < _forcedRetreatUntil && _currentState != EnemyBrainState.Retreat)
+            {
+                _currentState = EnemyBrainState.Retreat;
+                _retreatEndTime = Mathf.Max(_retreatEndTime, _forcedRetreatUntil);
+                return;
+            }
+
+            // Skittish roles break off and flee when badly hurt, regardless of current state.
+            if (_currentState != EnemyBrainState.Retreat && ShouldRetreatAtLowHealth() && inLeash)
+            {
+                _currentState = EnemyBrainState.Retreat;
+                _retreatEndTime = Time.time + _retreatDurationSeconds;
+                return;
+            }
+
             switch (_currentState)
             {
                 case EnemyBrainState.Idle:
@@ -151,11 +264,32 @@ namespace CindarsHope.Enemy
                     break;
 
                 case EnemyBrainState.Patrol:
-                    if (inDetect) _currentState = EnemyBrainState.Chase;
+                    if (inDetect) _currentState = ResolveEngageState(dist);
                     break;
 
                 case EnemyBrainState.Alert:
-                    _currentState = inDetect ? EnemyBrainState.Chase : EnemyBrainState.Patrol;
+                    _currentState = inDetect ? ResolveEngageState(dist) : EnemyBrainState.Patrol;
+                    break;
+
+                case EnemyBrainState.Retreat:
+                    if (Time.time >= _retreatEndTime)
+                        _currentState = inDetect ? ResolveEngageState(dist) : EnemyBrainState.Patrol;
+                    break;
+
+                case EnemyBrainState.Burrow:
+                    if (!inLeash)
+                    {
+                        SetSubmergedVisual(false);
+                        _currentState = EnemyBrainState.Patrol;
+                        break;
+                    }
+
+                    if (dist <= _burrowEmergeDistance)
+                    {
+                        SetSubmergedVisual(false);
+                        _currentState = EnemyBrainState.Chase;
+                        TryBeginAction(dist);
+                    }
                     break;
 
                 case EnemyBrainState.Chase:
@@ -170,6 +304,32 @@ namespace CindarsHope.Enemy
                     TryBeginAction(dist);
                     break;
             }
+        }
+
+        // Burrowers approach hidden underground; everyone else goes straight to Chase.
+        private EnemyBrainState ResolveEngageState(float dist)
+        {
+            var moveType = _movementProfile?.MovementType ?? EnemyMovementType.GroundChase;
+            bool canBurrow = moveType == EnemyMovementType.BurrowAmbush || (_movementProfile != null && _movementProfile.CanBurrow);
+            if (canBurrow && dist > _burrowEmergeDistance * 2f)
+            {
+                SetSubmergedVisual(true);
+                return EnemyBrainState.Burrow;
+            }
+
+            return EnemyBrainState.Chase;
+        }
+
+        private bool ShouldRetreatAtLowHealth()
+        {
+            if (_health == null || _enemyData == null || _health.MaxHp <= 0)
+                return false;
+
+            var role = _enemyData.PrimaryRole;
+            if (role != EnemyRole.Swarm && role != EnemyRole.Ranged && role != EnemyRole.Caster)
+                return false;
+
+            return (float)_health.CurrentHp / _health.MaxHp <= _lowHealthRetreatThreshold;
         }
 
         private void TryBeginAction(float dist)
@@ -279,6 +439,38 @@ namespace CindarsHope.Enemy
             if (!System.Enum.TryParse<DamageType>(_pendingAction.DamageType, true, out var dmgType))
                 dmgType = DamageType.Physical;
 
+            // Ranged and cast actions fire a real dodgeable projectile instead of
+            // instant damage — the player can outplay them with movement.
+            bool isProjectileAction = _pendingAction.ActionType == EnemyActionType.RangedProjectile
+                || _pendingAction.ActionType == EnemyActionType.CastProjectile;
+            if (isProjectileAction)
+            {
+                float speed = _pendingAction.ProjectileSpeed > 0f ? _pendingAction.ProjectileSpeed : 5f;
+                EnemyProjectileBehaviour.SpawnTowards(
+                    transform.position,
+                    DirectionToPlayer(),
+                    speed,
+                    Mathf.Max(_pendingAction.Range, 2f),
+                    _pendingAction.BaseDamage,
+                    dmgType,
+                    _enemyData?.contactKnockbackForce ?? 0f,
+                    _enemyData?.enemyId ?? "enemy",
+                    _enemyData?.DisplayName ?? "Enemy");
+                return;
+            }
+
+            // Melee/area resolution: the player may have moved during windup. Re-check
+            // distance with a small grace margin so dodging the telegraph actually works.
+            float dist = DistanceToPlayer();
+            float effectiveRange = _pendingAction.ActionType == EnemyActionType.AreaPulse && _pendingAction.AreaRadius > 0f
+                ? _pendingAction.AreaRadius
+                : _pendingAction.Range;
+            if (dist > effectiveRange * 1.2f)
+            {
+                Debug.Log($"CombatLog: EnemyActionMissed. EnemyId={_enemyData?.enemyId}, ActionId={_pendingAction.ActionId}, Distance={dist:F2}, Range={effectiveRange:F2}");
+                return;
+            }
+
             var request = new DamageRequest(
                 targetId: "player",
                 baseDamage: _pendingAction.BaseDamage,
@@ -291,7 +483,36 @@ namespace CindarsHope.Enemy
 
             var result = DamageCalculator.Calculate(request, _enemyData?.defense ?? 0);
             if (result.FinalDamage > 0)
-                GameEventBus.Publish(new PlayerHitEvent(result.FinalDamage));
+            {
+                // F27: caminho central com atacante (perfect block reflete postura neste GO).
+                var playerManager = GameBootstrap.Instance?.PlayerManager;
+                var applied = CindarsHope.Combat.PlayerDamageReceiver.ApplyDamage(
+                    playerManager, result.FinalDamage, _enemyData?.enemyId ?? "enemy", dmgType, gameObject);
+                if (applied > 0)
+                {
+                    ApplyActionStatusesToPlayer(_pendingAction);
+                }
+            }
+        }
+
+        // F01: EnemyActionSO.StatusApplicationIds aplicados no player via PlayerStatusReceiver.
+        private static void ApplyActionStatusesToPlayer(EnemyActionSO action)
+        {
+            if (action == null || action.StatusApplicationIds == null || action.StatusApplicationIds.Length == 0)
+            {
+                return;
+            }
+
+            var receiver = CindarsHope.Combat.StatusEffect.PlayerStatusReceiver.Instance;
+            if (receiver == null)
+            {
+                return;
+            }
+
+            foreach (var statusId in action.StatusApplicationIds)
+            {
+                receiver.TryApplyFromEnemyAction(statusId, action.StatusApplyChance);
+            }
         }
 
         private void TryOpenVulnerabilityWindow(VulnerabilityTriggerMode trigger)
@@ -336,6 +557,14 @@ namespace CindarsHope.Enemy
         {
             if (_rb == null) return;
 
+            if (_isLeaping)
+            {
+                if (Time.time >= _leapEndTime)
+                    _isLeaping = false;
+                else
+                    return; // leap velocity is in flight; do not override it
+            }
+
             switch (_currentState)
             {
                 case EnemyBrainState.Patrol:
@@ -347,10 +576,18 @@ namespace CindarsHope.Enemy
                 case EnemyBrainState.Kite:
                     MoveKite();
                     break;
+                case EnemyBrainState.Retreat:
+                    MoveRetreat();
+                    break;
+                case EnemyBrainState.Burrow:
+                    MoveBurrow();
+                    break;
                 case EnemyBrainState.AttackWindup:
                 case EnemyBrainState.AttackRecover:
-                case EnemyBrainState.GuardHold:
                     StopMovement();
+                    break;
+                case EnemyBrainState.GuardHold:
+                    MoveGuardHold();
                     break;
             }
         }
@@ -370,9 +607,84 @@ namespace CindarsHope.Enemy
                 case EnemyMovementType.TankSlowPush:
                     speed = Mathf.Min(speed, 1.5f);
                     break;
+                case EnemyMovementType.Leaper:
+                    if (TryLeap(speed))
+                        return;
+                    break;
+                case EnemyMovementType.PhaseShortBlink:
+                    if (TryBlink())
+                        return;
+                    break;
             }
 
             _rb.linearVelocity = DirectionToPlayer() * speed;
+        }
+
+        // Leapers lunge in a fast burst when the player is in the mid-range band.
+        private bool TryLeap(float baseSpeed)
+        {
+            if (Time.time < _nextLeapTime)
+                return false;
+
+            float dist = DistanceToPlayer();
+            float attackRange = _movementProfile?.AttackRange ?? 1.5f;
+            if (dist < attackRange || dist > attackRange * 3.5f)
+                return false;
+
+            _isLeaping = true;
+            _leapEndTime = Time.time + 0.35f;
+            _nextLeapTime = Time.time + _leapCooldownSeconds;
+            _rb.linearVelocity = DirectionToPlayer() * baseSpeed * _leapSpeedMultiplier;
+            GameEventBus.Publish(new EnemyTelegraphStartedEvent(_enemyData?.enemyId, transform.position));
+            return true;
+        }
+
+        // Phase enemies blink to the player's flank instead of walking the gap.
+        private bool TryBlink()
+        {
+            if (Time.time < _nextBlinkTime || _playerTarget == null)
+                return false;
+
+            float dist = DistanceToPlayer();
+            float preferred = Mathf.Max(_movementProfile?.PreferredDistance ?? 1f, 0.9f);
+            if (dist < preferred * 2.5f)
+                return false;
+
+            _nextBlinkTime = Time.time + _blinkCooldownSeconds;
+            Vector2 toPlayer = DirectionToPlayer();
+            Vector2 flank = Vector2.Perpendicular(toPlayer) * _blinkFlankSide;
+            Vector2 destination = (Vector2)_playerTarget.transform.position - toPlayer * preferred + flank * 0.5f;
+            _rb.position = destination;
+            _rb.linearVelocity = Vector2.zero;
+            GameEventBus.Publish(new EnemyTelegraphStartedEvent(_enemyData?.enemyId, destination));
+            return true;
+        }
+
+        private void MoveBurrow()
+        {
+            if (_playerTarget == null) return;
+            _rb.linearVelocity = DirectionToPlayer() * (MoveSpeed() * _burrowSpeedMultiplier);
+        }
+
+        private void MoveRetreat()
+        {
+            if (_playerTarget == null)
+            {
+                StopMovement();
+                return;
+            }
+
+            _rb.linearVelocity = -DirectionToPlayer() * (MoveSpeed() * 1.25f);
+        }
+
+        // Guards hold their post: drift back to the spawn anchor when displaced.
+        private void MoveGuardHold()
+        {
+            Vector2 toAnchor = _spawnAnchor - (Vector2)transform.position;
+            if (toAnchor.sqrMagnitude > 0.36f)
+                _rb.linearVelocity = toAnchor.normalized * (MoveSpeed() * 0.6f);
+            else
+                StopMovement();
         }
 
         private void MoveKite()
@@ -398,7 +710,22 @@ namespace CindarsHope.Enemy
             if (_patrolDirectionTimer > 0f) return;
 
             _patrolDirectionTimer = Random.Range(1.5f, 3.5f);
-            _rb.linearVelocity = Random.insideUnitCircle.normalized * (MoveSpeed() * 0.4f);
+
+            // Anchor patrol to the spawn point so idle enemies stay in their room
+            // instead of drifting across the level over time.
+            float wanderRadius = Mathf.Max(_movementProfile?.WanderRadius ?? 5f, 1f);
+            Vector2 fromAnchor = (Vector2)transform.position - _spawnAnchor;
+            Vector2 direction;
+            if (fromAnchor.sqrMagnitude > wanderRadius * wanderRadius)
+            {
+                direction = (-fromAnchor).normalized;
+            }
+            else
+            {
+                direction = Random.insideUnitCircle.normalized;
+            }
+
+            _rb.linearVelocity = direction * (MoveSpeed() * 0.4f);
         }
 
         private void MoveSwarmErratic(float speed)
@@ -418,6 +745,14 @@ namespace CindarsHope.Enemy
                 _rb.linearVelocity = Vector2.zero;
         }
 
+        private void SetSubmergedVisual(bool submerged)
+        {
+            if (_spriteRenderer == null) return;
+            var color = _spriteRenderer.color;
+            color.a = submerged ? _spriteBaseAlpha * 0.25f : _spriteBaseAlpha;
+            _spriteRenderer.color = color;
+        }
+
         // ─── Helpers ──────────────────────────────────────────────────────────
 
         private float DistanceToPlayer() =>
@@ -432,7 +767,7 @@ namespace CindarsHope.Enemy
 
         private float DetectionRange() => _movementProfile?.DetectionRange ?? _enemyData?.detectionRadius ?? 10f;
         private float LeashRange() => _movementProfile?.LeashRange ?? (DetectionRange() * 3f);
-        private float MoveSpeed() => _movementProfile?.MoveSpeed ?? _enemyData?.moveSpeed ?? 2f;
+        private float MoveSpeed() => (_movementProfile?.MoveSpeed ?? _enemyData?.moveSpeed ?? 2f) * ExternalSpeedFactor();
 
         // ─── Public API ───────────────────────────────────────────────────────
 

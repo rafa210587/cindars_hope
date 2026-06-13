@@ -54,10 +54,10 @@ source_of_truth: true
 | **Exists** | ✓ YES |
 | **Files** | 1 (SPEC_TEMPLATE.md) |
 | **Purpose** | Spec template |
-| **Assessment** | Useful template; should be in docs/specs/_templates/ |
-| **Decision** | **MOVE** — Migrate to docs/specs/_templates/ |
-| **Canonical Destination** | docs/specs/_templates/SPEC_TEMPLATE.md |
-| **Action** | Create docs/specs/_templates/ if not exists; move SPEC_TEMPLATE.md |
+| **Assessment** | Useful template; should be in .specs/_templates/ |
+| **Decision** | **MOVE** — Migrate to .specs/_templates/ |
+| **Canonical Destination** | .specs/_templates/SPEC_TEMPLATE.md |
+| **Action** | Create .specs/_templates/ if not exists; move SPEC_TEMPLATE.md |
 
 ---
 
@@ -151,7 +151,7 @@ source_of_truth: true
 
 ---
 
-### 2.2: docs/specs/ (target for docs/03_SPECS/)
+### 2.2: .specs/ (target for docs/03_SPECS/)
 
 | Property | Value |
 |----------|-------|
@@ -232,7 +232,7 @@ Locations to check:
 | docs/00_PROJECT/DOCUMENT_DELETE_CANDIDATES.md | docs/project/DOCUMENT_DELETE_CANDIDATES.md | MOVE | Create docs/project/; move file |
 | docs/00_PROJECT/HISTORY_LOG_POLICY.md | docs/project/HISTORY_LOG_POLICY.md | MOVE | Create docs/project/; move file |
 | docs/00_PROJECT/ROADMAP.md | docs/project/ROADMAP.md | MOVE | Create docs/project/; move file |
-| docs/03_SPECS/SPEC_TEMPLATE.md | docs/specs/_templates/SPEC_TEMPLATE.md | MOVE | Create _templates/; move file |
+| docs/03_SPECS/SPEC_TEMPLATE.md | .specs/_templates/SPEC_TEMPLATE.md | MOVE | Create _templates/; move file |
 | docs/04_REFINEMENTS/REFINEMENT_TEMPLATE.md | docs/refinements/_templates/REFINEMENT_TEMPLATE.md | MOVE | Create _templates/; move file |
 | docs/04_REFINEMENTS/README.md | docs/refinements/README.md | MOVE | Move if useful |
 | docs/05_VALIDATION/LAST_VALIDATION_STATUS.md | docs/validation/current/LAST_VALIDATION_STATUS.md | MOVE | Preserve current/ structure |
@@ -268,14 +268,14 @@ Files that will need reference updates:
 3. **docs/project/CURRENT_STATE.md** (after move)
    - Update internal references
    - Point to docs/project/* instead of docs/00_PROJECT/*
-   - Point to docs/specs/ instead of docs/03_SPECS/
+   - Point to .specs/ instead of docs/03_SPECS/
 
 4. **docs/project/DOCUMENT_INDEX.md** (after move)
    - Update all path references
    - Remove numbered folder references
 
-5. **docs/specs/SPEC_EXECUTION_ORDER.md**
-   - Update template reference to docs/specs/_templates/SPEC_TEMPLATE.md
+5. **.specs/SPEC_EXECUTION_ORDER.md**
+   - Update template reference to .specs/_templates/SPEC_TEMPLATE.md
 
 6. **README.md** (root)
    - Update any numbered folder references
@@ -286,7 +286,7 @@ Files that will need reference updates:
 
 8. **.claude/commands/**
    - Update all start-spec, implement-spec, finish-spec, etc.
-   - Point to docs/specs/ instead of docs/03_SPECS/
+   - Point to .specs/ instead of docs/03_SPECS/
    - Point to docs/project/CURRENT_STATE.md instead of docs/00_PROJECT/
 
 9. **.claude/skills/**
@@ -315,13 +315,13 @@ Files that will need reference updates:
 
 1. **Create canonical folders** (if not exist)
    - docs/project/
-   - docs/specs/_templates/
+   - .specs/_templates/
    - docs/refinements/_templates/
    - docs/validation/_templates/
 
 2. **Move files** (using git mv)
    - All docs/00_PROJECT/* → docs/project/*
-   - SPEC_TEMPLATE.md → docs/specs/_templates/
+   - SPEC_TEMPLATE.md → .specs/_templates/
    - REFINEMENT_TEMPLATE.md → docs/refinements/_templates/
    - docs/04_REFINEMENTS/README.md → docs/refinements/README.md
    - docs/05_VALIDATION/* → docs/validation/* (to subdirectories)
@@ -375,7 +375,7 @@ Files that will need reference updates:
 - docs/05_VALIDATION/ does not exist
 - docs/06_BACKLOG/ does not exist
 - docs/project/ exists with all 6 governance files
-- docs/specs/_templates/SPEC_TEMPLATE.md exists
+- .specs/_templates/SPEC_TEMPLATE.md exists
 - docs/refinements/_templates/REFINEMENT_TEMPLATE.md exists
 - docs/validation/current/LAST_VALIDATION_STATUS.md exists
 - docs/validation/_templates/VALIDATION_REPORT_TEMPLATE.md exists

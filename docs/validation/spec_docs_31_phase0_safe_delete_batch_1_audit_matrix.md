@@ -27,7 +27,7 @@ source_of_truth: true
 
 ### Batch 1.1: Reorg Specs (SPEC_00 through SPEC_12)
 
-**Files:** 13 specs in `docs/specs/a_implementar/reorg/`
+**Files:** 13 specs in `.specs/a_implementar/reorg/`
 
 | File | Exists | In Candidates | Substituto | References Found | Decision | Motivo |
 |------|--------|---------------|-----------|------------------|----------|--------|
@@ -48,7 +48,7 @@ source_of_truth: true
 **Subtotal:** 13 files; all DELETE
 
 **Notes:** 
-- These 13 specs are marked CLOSED in `docs/specs/a_implementar/reorg/README_STATUS.md`
+- These 13 specs are marked CLOSED in `.specs/a_implementar/reorg/README_STATUS.md`
 - grep search for `SPEC_0[0-9]\.md` and `SPEC_1[0-2]\.md` found NO references in active documentation
 - Only references found: DOCUMENT_DELETE_CANDIDATES.md (itself) and SPEC_CLAUDE_32 audit matrix (expected)
 - README_STATUS.md and README_EXECUTION_ORDER.md will be KEPT (useful historical markers)
@@ -58,7 +58,7 @@ source_of_truth: true
 
 ### Batch 1.2: Strategy Document
 
-**File:** `docs/specs/a_implementar/reorg/SPEC_00_STRATEGY_SUBAGENTS.md`
+**File:** `.specs/a_implementar/reorg/SPEC_00_STRATEGY_SUBAGENTS.md`
 
 | File | Exists | In Candidates | Substituto | References Found | Decision | Motivo |
 |------|--------|---------------|-----------|------------------|----------|--------|

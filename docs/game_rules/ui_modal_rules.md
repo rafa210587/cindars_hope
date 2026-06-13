@@ -4,8 +4,8 @@ status: accepted
 domain: ui-ux
 source_adrs: []
 source_documents:
-  - docs/specs/implementados/SPEC_28_UI_UX_FULL_GAMEPLAY_CLOSEOUT.md
-  - docs/specs/implementados/SPEC_17_MODAL_SYSTEM.md
+  - .specs/implementados/SPEC_28_UI_UX_FULL_GAMEPLAY_CLOSEOUT.md
+  - .specs/implementados/SPEC_17_MODAL_SYSTEM.md
 last_reviewed: 2026-06-01
 ---
 

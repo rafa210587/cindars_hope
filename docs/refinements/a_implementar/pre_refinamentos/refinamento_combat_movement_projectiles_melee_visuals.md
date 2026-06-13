@@ -1,7 +1,7 @@
 # refinamento_combat_movement_projectiles_melee_visuals
 
 > Status: Refinamento detalhado a implementar
-> Spec futura relacionada: `docs/specs/a_implementar/spec_combat_movement_projectiles_melee_visuals_runtime.md`
+> Spec futura relacionada: `.specs/a_implementar/spec_combat_movement_projectiles_melee_visuals_runtime.md`
 > Ordem de execucao: 18
 > Depende de: SPEC 09, SPEC 10, SPEC 11, SPEC 12, SPEC 16 e SPEC 17/input-modal closeout quando aplicavel
 > Objetivo: evoluir o combate runtime com projeteis visuais, magias visuais com status, ataques melee com animacao/hitbox e movimentos de dash/dodge com stamina, cooldown, colisao, input lock e loadout inicial de teste.
@@ -115,7 +115,7 @@ Este documento guarda contexto, decisoes e regras de design.
 A spec executavel fica em:
 
 ```text
-docs/specs/a_implementar/spec_combat_movement_projectiles_melee_visuals_runtime.md
+.specs/a_implementar/spec_combat_movement_projectiles_melee_visuals_runtime.md
 ```
 
 Separacao:

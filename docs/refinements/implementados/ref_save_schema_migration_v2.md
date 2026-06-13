@@ -1,7 +1,7 @@
 # Refinement implementado - Save schema migration v2
 
 > Status: Implementado parcial
-> Spec relacionada: `docs/specs/implementados/spec_save_002_schema_migration_v2.md`
+> Spec relacionada: `.specs/implementados/spec_save_002_schema_migration_v2.md`
 > Origem: `docs/refinements/a_implementar/pre_refinamentos/refinamento_init_save_schema_migration_v2.md`
 
 ## Resultado

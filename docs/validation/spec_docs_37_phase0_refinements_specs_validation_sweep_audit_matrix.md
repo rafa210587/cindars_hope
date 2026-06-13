@@ -11,7 +11,7 @@ source_of_truth: true
 
 # Phase 0 Audit Matrix — SPEC_DOCS_37: Final Refinements, Specs and Validation Sweep
 
-> Comprehensive classification of docs/refinements/a_implementar/pre_refinamentos, docs/specs/a_implementar (Batch 2), and docs/validation structure before final consolidation sweep.
+> Comprehensive classification of docs/refinements/a_implementar/pre_refinamentos, .specs/a_implementar (Batch 2), and docs/validation structure before final consolidation sweep.
 
 ---
 
@@ -77,7 +77,7 @@ source_of_truth: true
 
 ---
 
-## 2. Specs a_implementar Audit (docs/specs/a_implementar/)
+## 2. Specs a_implementar Audit (.specs/a_implementar/)
 
 ### 2.1: Batch 2 — Future Specs (Blocked Until Phase 2-3)
 
@@ -90,13 +90,13 @@ source_of_truth: true
 | spec_combat_movement_projectiles_melee_visuals_runtime.md | Spec | Combat | Post-MVP enhancement; not in MVP scope | Batch 2 | KEEP_UNTIL_PHASE_2_3 |
 | spec_enemy_ai_roster_bestiary_faction_locks_runtime.md | Spec | Enemy AI | Covered by SPEC_23 MVP closeout | Batch 2 | KEEP_UNTIL_PHASE_2_3 |
 | spec_ui_ux_full_gameplay_inventory_hotbar_menus.md | Spec | UI/UX | Covered by SPEC_28 MVP closeout | Batch 2 | KEEP_UNTIL_PHASE_2_3 |
-| docs/specs/a_implementar/README.md | Meta | — | Describes Batch 1/2 organization | Doc | KEEP (reference) |
+| .specs/a_implementar/README.md | Meta | — | Describes Batch 1/2 organization | Doc | KEEP (reference) |
 
 **Status:** All 8 specs blocked pending Phase 2-3 human validation. Do not promote or delete until human decision.
 
 ---
 
-### 2.2: MVP Closeout Specs (docs/specs/a_implementar/closeout_mvp/)
+### 2.2: MVP Closeout Specs (.specs/a_implementar/closeout_mvp/)
 
 | File | Spec | Phase 1 Status | Phase 2-3 Status | Decision |
 |------|------|---|---|----------|
@@ -118,7 +118,7 @@ source_of_truth: true
 
 ---
 
-### 2.3: Reorg Specs (docs/specs/a_implementar/reorg/)
+### 2.3: Reorg Specs (.specs/a_implementar/reorg/)
 
 | File | Status | Reason | Decision |
 |------|--------|--------|----------|
@@ -195,7 +195,7 @@ source_of_truth: true
 |------|---------|-----------|--------------|-----|
 | docs/project/CURRENT_STATE.md | 36 | `docs/00_PROJECT/ROADMAP.md` | `docs/project/ROADMAP.md` | UPDATE_ONLY |
 | docs/project/CURRENT_STATE.md | 95 | `docs/05_VALIDATION/current/LAST_VALIDATION_STATUS.md` | `docs/validation/current/LAST_VALIDATION_STATUS.md` | UPDATE_ONLY |
-| docs/project/CURRENT_STATE.md | 96 | `docs/03_SPECS/SPEC_TEMPLATE.md` | `docs/specs/_templates/SPEC_TEMPLATE.md` | UPDATE_ONLY |
+| docs/project/CURRENT_STATE.md | 96 | `docs/03_SPECS/SPEC_TEMPLATE.md` | `.specs/_templates/SPEC_TEMPLATE.md` | UPDATE_ONLY |
 | docs/project/CURRENT_STATE.md | 97 | `docs/00_PROJECT/DOCUMENT_GOVERNANCE.md` | `docs/project/DOCUMENT_GOVERNANCE.md` | UPDATE_ONLY |
 | docs/project/DOCUMENT_DELETE_CANDIDATES.md | Multiple (historical) | References to deleted files in Batch 1-1D | Historical context | HISTORICAL (no change needed) |
 
@@ -210,7 +210,7 @@ source_of_truth: true
 **Results:** 5 files found; 4 require updates (Task 1).
 
 **No references found in:**
-- docs/specs/a_implementar/
+- .specs/a_implementar/
 - docs/refinements/a_implementar/
 - docs/validation/ (except historical in DOCUMENT_DELETE_CANDIDATES.md)
 - AGENTS.md
@@ -249,7 +249,7 @@ source_of_truth: true
 | Require docs/project/CURRENT_STATE.md | ✓ YES | ✓ YES | KEEP |
 | Require docs/project/DOCUMENT_GOVERNANCE.md | ✓ YES | ✓ YES | KEEP |
 | Require docs/project/DOCUMENT_INDEX.md | ✓ YES | ✓ YES | KEEP |
-| Require docs/specs/_templates/SPEC_TEMPLATE.md | ✗ NO | ✓ YES | ADD |
+| Require .specs/_templates/SPEC_TEMPLATE.md | ✗ NO | ✓ YES | ADD |
 | Require docs/refinements/_templates/REFINEMENT_TEMPLATE.md | ✗ NO | ✓ YES | ADD |
 | Require docs/validation/_templates/VALIDATION_REPORT_TEMPLATE.md | ✗ NO | ✓ YES | ADD |
 | Don't require pre_refinamentos folder | ✓ YES | ✓ YES | KEEP |
@@ -267,7 +267,7 @@ source_of_truth: true
 | T-3: Create LAST_VALIDATION_STATUS.md | docs/validation/current/ | 1 file to create | CREATE_IF_MISSING |
 | T-4: Delete root status files | Root directory | 0 files (all deleted in SPEC_DOCS_36) | CLEAN |
 | T-5: Audit pre_refinements | docs/refinements/a_implementar/pre_refinamentos/ | 14 MOVE, 1 KEEP, 4 DELETE | T-5 EXECUTION |
-| T-6: Audit Batch 2 specs | docs/specs/a_implementar/ | 8 KEEP_UNTIL_PHASE_2_3 | BLOCKED_UNTIL_PHASE_2_3 |
+| T-6: Audit Batch 2 specs | .specs/a_implementar/ | 8 KEEP_UNTIL_PHASE_2_3 | BLOCKED_UNTIL_PHASE_2_3 |
 | T-7: Audit validation | docs/validation/ | 92 PRESERVE, 3 KEEP, 1 CREATE | VERIFY_STRUCTURE |
 | T-8: Final validation | validate_docs.ps1 + grep | Expect PASS + 0 old refs in active docs | EXECUTE_LAST |
 

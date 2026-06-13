@@ -4,8 +4,8 @@
 > **Local:** `docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_DIRECTION.md`  
 > **Depende de:**  
 > - `docs/design/gameplay/cave/CAVE_DESIGN_DIRECTION.md`  
-> - `docs/specs/a_implementar/spec_enemy_ai_roster_bestiary_faction_locks_runtime.md`  
-> - `docs/specs/a_implementar/spec_cave_runtime_generation_checkpoints_boss_gates.md`  
+> - `.specs/a_implementar/spec_enemy_ai_roster_bestiary_faction_locks_runtime.md`  
+> - `.specs/a_implementar/spec_cave_runtime_generation_checkpoints_boss_gates.md`  
 > - `docs/design/lore/VAALARA_GAME_CANON_DIRECTION_v1.0.md`  
 > **Função:** detalhar criaturas, bosses, packs, comportamento, ataques, atributos reais, scaling, XP, recursos, tesouros e função de gameplay.  
 > **Não é spec implementável.** Specs futuras devem converter estes dados em `EnemyDataSO`, `EnemyActionSO`, `EnemyActionSetSO`, `EnemySpawnProfileSO`, `EnemySpawnPackSO`, `LootTableSO` e bestiary entries.

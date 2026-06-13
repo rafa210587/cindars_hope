@@ -17,7 +17,7 @@ No crop, chopping, mining, fishing, shipping, inventory, HUD, NPC, shop, craftin
 | `AGENTS.md` | YES | Project rules and scene-change constraints. |
 | Attached `WAVE_INTEGRATION_04_farmscene_rebuild_foundation.md` | YES | Active spec supplied by human. |
 | `docs/project/CURRENT_STATE.md` | YES | Confirmed WAVE_INTEGRATION_03 baseline and WAVE 07 state. |
-| `docs/specs/SPEC_REGISTRY_TO_IMPLEMENT.md` | YES | Updated with WAVE_INTEGRATION_04 result. |
+| `.specs/SPEC_REGISTRY_TO_IMPLEMENT.md` | YES | Updated with WAVE_INTEGRATION_04 result. |
 | `docs/validation/WAVE_INTEGRATION_01_UNITY_CLEAN_BASELINE_SCENE_INVENTORY_REPORT.md` | NO | File not found. |
 | `docs/validation/WAVE_07_01_UNITY_CLEAN_BASELINE_SCENE_INVENTORY_REPORT.md` | YES | Prior clean baseline/inventory context. |
 | `docs/validation/WAVE_07_SCENE_INVENTORY.md` | YES | Confirms FarmScene exists as active target. |
@@ -160,8 +160,8 @@ Residual risk: Unity scene deserialization, Play Mode visual behavior, camera fr
 
 `tools/docs/validate_docs.ps1` returned exit code 1 with known legacy-only failures outside this spec scope:
 
-- `docs/specs/a_implementar/spec_test_harness_editmode_playmode_quality_gate.md` missing dependency headers: `Ordem de execucao`, `Depende de`, `Bloqueia`.
-- `docs/specs/a_implementar/spec_test_harness_editmode_playmode_quality_gate.md` missing `required_adrs` and `required_game_rules`.
+- `.specs/a_implementar/spec_test_harness_editmode_playmode_quality_gate.md` missing dependency headers: `Ordem de execucao`, `Depende de`, `Bloqueia`.
+- `.specs/a_implementar/spec_test_harness_editmode_playmode_quality_gate.md` missing `required_adrs` and `required_game_rules`.
 - Older validation reports missing `validated_adrs` and `validated_game_rules`.
 - Two implemented specs cite amendments as canonical sources.
 

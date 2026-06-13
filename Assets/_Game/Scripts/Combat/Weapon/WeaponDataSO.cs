@@ -31,6 +31,26 @@ namespace CindarsHope.Combat.Weapon
         public GameObject ProjectilePrefab;
         public float ProjectileSpeed = 10f;
 
+        // F03 (emenda): campos canônicos EQUIPMENT_MECHANICAL_BASELINES §2.
+        // Defaults NEUTROS — assets antigos se comportam igual até o gerador rodar.
+        [Header("Canonical Baselines (F03)")]
+        public CindarsHope.Player.Progression.PlayerAttributeType PrimaryAttribute = CindarsHope.Player.Progression.PlayerAttributeType.Strength;
+        [Range(0f, 2f)] public float PrimaryAttributeWeight = 0f;
+        public CindarsHope.Player.Progression.PlayerAttributeType SecondaryAttribute = CindarsHope.Player.Progression.PlayerAttributeType.Dexterity;
+        [Range(0f, 2f)] public float SecondaryAttributeWeight = 0f;
+        public float BaseLightStaminaCost = 0f;   // 0 = usar StaminaCost × razões globais (F02)
+        public float BaseHeavyStaminaCost = 0f;
+        public float BaseChargedStaminaCost = 0f;
+        [Range(0f, 3f)] public float PostureDamageModifier = 1f;
+        [Range(1f, 3f)] public float CritDamageModifier = 1.5f;
+        public WeaponWeightClass WeightClass = WeaponWeightClass.Medium;
+        public string[] MaterialTagsApplied = new string[0];
+        public string[] StatusTagsApplied = new string[0];
+        public string AllowedAmmoType = string.Empty;
+        public DamageType[] AllowedDamageTypes = new DamageType[0];
+        public string DefaultActionSet = string.Empty;
+        public string ChargedEffectProfileId = string.Empty;
+
         string IIdentifiedData.Id => Id;
 
         private void OnValidate()
@@ -52,5 +72,13 @@ namespace CindarsHope.Combat.Weapon
         Bow,
         Staff,
         Dagger
+    }
+
+    // F03: classe de peso canônica (afeta feel/knockback futuro).
+    public enum WeaponWeightClass
+    {
+        Light = 0,
+        Medium = 1,
+        Heavy = 2
     }
 }

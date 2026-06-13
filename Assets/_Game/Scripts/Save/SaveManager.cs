@@ -166,7 +166,10 @@ namespace CindarsHope.Save
                     ActiveSkillSlots = activeSkillSlotsSaveData,
                     SkillTree = skillTreeSaveData,
                     Bestiary = bestiarySaveData,
-                    Quests = questSaveData
+                    Quests = questSaveData,
+                    Fonte = CaptureFonteSaveData(),
+                    CaveRun = CaptureCaveRunSaveData(),
+                    DailyGoals = CaptureFarmDailyGoalsSaveData()
                 };
 
                 var savePath = SaveFilePath;
@@ -416,7 +419,82 @@ namespace CindarsHope.Save
                 Debug.LogWarning("SaveManager saved without Player Transform. PlayerPosition fallback is zero.", this);
             }
 
-            return _playerManager.CaptureSaveData(currentHunger, maxHunger, playerPosition);
+            var playerData = _playerManager.CaptureSaveData(currentHunger, maxHunger, playerPosition);
+
+            // F16: fadiga persistida via serviço runtime (campo aditivo; default 0 em saves legados).
+            var conditionService = Player.Conditions.PlayerConditionService.Instance;
+            if (playerData != null && conditionService != null)
+            {
+                playerData.Fatigue = conditionService.CurrentFatigue;
+            }
+
+            return playerData;
+        }
+
+        // F17: seção da Fonte de Anya via serviço runtime (null-safe; default = Fonte dormante).
+        private FonteSaveData CaptureFonteSaveData()
+        {
+            var fonte = Fonte.FonteRuntimeService.Instance;
+            if (fonte == null)
+            {
+                return new FonteSaveData();
+            }
+
+            var data = new FonteSaveData
+            {
+                FonteState = (int)fonte.Section.FonteState,
+                LivingWaterUnlocked = fonte.Section.LivingWater.Unlocked,
+                LivingWaterCharges = fonte.Section.LivingWater.CurrentCharges,
+                LastGrantDay = fonte.LastGrantDay
+            };
+
+            foreach (var fn in fonte.Section.UnlockedFunctions)
+            {
+                data.UnlockedFunctions.Add((int)fn);
+            }
+
+            foreach (var fragment in fonte.Progression.FragmentStates)
+            {
+                if (fragment.IsIntegrated())
+                {
+                    data.IntegratedFragments.Add((int)fragment.FragmentType);
+                }
+            }
+
+            return data;
+        }
+
+        // F13: run da caverna sobrevive a fechar o jogo (CAVE_RUN_SAVE_LOAD_DEBT).
+        // Fonte do estado: CaveRunManager vivo (cena de caverna) ou cache do bootstrap.
+        private Cave.Runtime.CaveRunSaveData CaptureCaveRunSaveData()
+        {
+            var bootstrap = Core.Bootstrap.GameBootstrap.Instance;
+            if (bootstrap == null)
+            {
+                return new Cave.Runtime.CaveRunSaveData { HasActiveRun = false };
+            }
+
+            var runManager = bootstrap.CaveRunManager;
+            if (runManager != null)
+            {
+                // Regrava HP dos inimigos do nível corrente antes de capturar.
+                var levelController = runManager.GetComponent<Cave.CaveLevelRuntimeController>();
+                if (levelController != null)
+                {
+                    levelController.RefreshCurrentSnapshotEnemyHp();
+                }
+
+                return Cave.Runtime.CaveRunSaveMapper.ToSaveData(runManager.State);
+            }
+
+            return Cave.Runtime.CaveRunSaveMapper.ToSaveData(bootstrap.CachedCaveRunState);
+        }
+
+        // F13: wiring do DTO que a WAVE 24 criou sem ligação (SAVE_LOAD_DAILY_GOAL_DEBT).
+        private Farm.Runtime.FarmDailyGoalsSaveData CaptureFarmDailyGoalsSaveData()
+        {
+            var service = Farm.Runtime.FarmDailyGoalService.Instance;
+            return service != null ? service.CaptureSaveData() : new Farm.Runtime.FarmDailyGoalsSaveData();
         }
 
         private InventorySaveData CaptureInventorySaveData()
@@ -874,6 +952,42 @@ namespace CindarsHope.Save
             if (saveData.Player != null && _hungerManager != null)
             {
                 _hungerManager.RestoreFromSaveData(saveData.Player.CurrentHunger, saveData.Player.MaxHunger);
+            }
+
+            // F16: restaura fadiga (saves legados carregam com 0).
+            if (saveData.Player != null && Player.Conditions.PlayerConditionService.Instance != null)
+            {
+                Player.Conditions.PlayerConditionService.Instance.SetFatigue(saveData.Player.Fatigue);
+            }
+
+            // F17: restaura a Fonte (saves legados = seção nula → Fonte dormante padrão).
+            if (saveData.Fonte != null && Fonte.FonteRuntimeService.Instance != null)
+            {
+                Fonte.FonteRuntimeService.Instance.RestoreFromSave(
+                    saveData.Fonte.FonteState,
+                    saveData.Fonte.UnlockedFunctions,
+                    saveData.Fonte.LivingWaterUnlocked,
+                    saveData.Fonte.LivingWaterCharges,
+                    saveData.Fonte.LastGrantDay,
+                    saveData.Fonte.IntegratedFragments);
+            }
+
+            // F13: restaura a run da caverna via cache do bootstrap (CaveRunManager consome ao entrar).
+            if (saveData.CaveRun != null && saveData.CaveRun.HasActiveRun)
+            {
+                var bootstrap = Core.Bootstrap.GameBootstrap.Instance;
+                var restoredRun = Cave.Runtime.CaveRunSaveMapper.FromSaveData(saveData.CaveRun);
+                if (bootstrap != null && restoredRun != null)
+                {
+                    bootstrap.SetCachedCaveRunState(restoredRun);
+                    Debug.Log($"SaveManager: cave run restaurada (nível {restoredRun.CurrentCaveLevel}, seed {restoredRun.CaveRunSeed}).", this);
+                }
+            }
+
+            // F13: restaura metas diárias (DTO existia desde WAVE 24 sem wiring).
+            if (saveData.DailyGoals != null && Farm.Runtime.FarmDailyGoalService.Instance != null)
+            {
+                Farm.Runtime.FarmDailyGoalService.Instance.RestoreFromSaveData(saveData.DailyGoals);
             }
             else
             {

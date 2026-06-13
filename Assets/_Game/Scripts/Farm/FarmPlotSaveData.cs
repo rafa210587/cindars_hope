@@ -15,5 +15,7 @@ namespace CindarsHope.Farm
         public int LastUpdatedDay;
         public int DaysWithoutWater;
         public int LastProcessedDay;
+        public string FertilizerId;
+        public int WateredDaysCount;
     }
 }

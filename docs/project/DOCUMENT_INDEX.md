@@ -20,8 +20,8 @@
 
 | Location | Status |
 |----------|--------|
-| `docs/specs/a_implementar/closeout_mvp/SPEC_18-29` | Phase 0-1 done; Phase 2-3 pending human |
-| `docs/specs/a_implementar/closeout_mvp/README_EXECUTION_ORDER.md` | Execution order for closeout package |
+| `.specs/a_implementar/closeout_mvp/SPEC_18-29` | Phase 0-1 done; Phase 2-3 pending human |
+| `.specs/a_implementar/closeout_mvp/README_EXECUTION_ORDER.md` | Execution order for closeout package |
 
 ---
 
@@ -42,7 +42,7 @@
 |----------|---------|
 | `PROJECT_LOG.md` | Session-by-session historical log |
 | `docs/IMPLEMENTATION_STATUS.md` | Broad implementation status |
-| `docs/specs/SPEC_EXECUTION_ORDER.md` | Spec registry and dependency order |
+| `.specs/SPEC_EXECUTION_ORDER.md` | Spec registry and dependency order |
 | `docs/backlog/reorg_architecture_residual_backlog.md` | Reorg residuals |
 
 ---
@@ -110,7 +110,7 @@
 | `docs/project/HISTORY_LOG_POLICY.md` | When to read PROJECT_LOG.md |
 | `docs/project/DOCUMENT_DELETE_CANDIDATES.md` | Candidates for future deletion |
 | `docs/project/DOCUMENT_INDEX.md` | This file |
-| `docs/specs/_templates/SPEC_TEMPLATE.md` | Template for new specs |
+| `.specs/_templates/SPEC_TEMPLATE.md` | Template for new specs |
 | `docs/refinements/_templates/REFINEMENT_TEMPLATE.md` | Template for new refinements |
 | `docs/validation/_templates/VALIDATION_REPORT_TEMPLATE.md` | Template for validation reports |
 
@@ -120,18 +120,18 @@
 
 | Location | Status |
 |----------|--------|
-| `docs/specs/a_implementar/reorg/` | README_STATUS.md preserved as historical marker; SPEC_00-12 and SPEC_00_STRATEGY_SUBAGENTS deleted in SPEC_DOCS_31 |
-| `docs/specs/a_implementar/spec_14a*.md` | Covered by SPEC_24 — do not execute (Batch 2 candidates) |
-| `docs/specs/a_implementar/spec_14b*.md` | Covered by SPEC_24 — do not execute (Batch 2 candidates) |
-| `docs/specs/a_implementar/spec_enemy_ai*.md` | Covered by SPEC_23 — do not execute (Batch 2 candidates) |
-| `docs/specs/a_implementar/spec_cave_runtime*.md` | Covered by SPEC_24, copy in implementados (Batch 2 candidates) |
-| `docs/specs/a_implementar/spec_ui_ux_full_gameplay*.md` | Covered by SPEC_28 — do not execute (Batch 2 candidates) |
+| `.specs/a_implementar/reorg/` | README_STATUS.md preserved as historical marker; SPEC_00-12 and SPEC_00_STRATEGY_SUBAGENTS deleted in SPEC_DOCS_31 |
+| `.specs/a_implementar/spec_14a*.md` | Covered by SPEC_24 — do not execute (Batch 2 candidates) |
+| `.specs/a_implementar/spec_14b*.md` | Covered by SPEC_24 — do not execute (Batch 2 candidates) |
+| `.specs/a_implementar/spec_enemy_ai*.md` | Covered by SPEC_23 — do not execute (Batch 2 candidates) |
+| `.specs/a_implementar/spec_cave_runtime*.md` | Covered by SPEC_24, copy in implementados (Batch 2 candidates) |
+| `.specs/a_implementar/spec_ui_ux_full_gameplay*.md` | Covered by SPEC_28 — do not execute (Batch 2 candidates) |
 
 ---
 
 ## Implemented Specs (historical reference)
 
-Located in `docs/specs/implementados/` — ~60 files covering SPEC_00-17F.
+Located in `.specs/implementados/` — ~60 files covering SPEC_00-17F.
 
 ---
 

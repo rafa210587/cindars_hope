@@ -9,7 +9,7 @@
 
 ## 1. Regra principal
 
-Toda spec em `docs/specs/a_implementar/` deve declarar:
+Toda spec em `.specs/a_implementar/` deve declarar:
 
 ```md
 ## Fontes obrigatórias lidas
@@ -331,16 +331,16 @@ docs/design/gameplay/world/SEASONS_CALENDAR_WEATHER_LUNAR_DIRECTION.md
 Specs de caverna que tocam runtime já existente devem ler também:
 
 ```text
-docs/specs/a_implementar/spec_cave_runtime_generation_checkpoints_boss_gates.md
-docs/specs/a_implementar/spec_enemy_ai_roster_bestiary_faction_locks_runtime.md
-docs/specs/implementados/spec_cave_001_cave_scene_portal_e_runtime_basico.md
-docs/specs/implementados/spec_cave_002_procedural_contracts_resources_parcial.md
-docs/specs/implementados/spec_cave_003_stable_run_snapshots_replay_parcial.md
-docs/specs/implementados/spec_cave_004_boss_gates_checkpoints_confinement_parcial.md
-docs/specs/implementados/spec_cave_005_visual_runtime_camera_enemy_visuals.md
-docs/specs/implementados/spec_cave_006_spawn_anchor_safe_positioning.md
-docs/specs/implementados/spec_cave_007_snapshot_replay_full_layout_hardening.md
-docs/specs/implementados/spec_cave_008_debug_skip_confinement_wall_distance_hardening.md
+.specs/a_implementar/spec_cave_runtime_generation_checkpoints_boss_gates.md
+.specs/a_implementar/spec_enemy_ai_roster_bestiary_faction_locks_runtime.md
+.specs/implementados/spec_cave_001_cave_scene_portal_e_runtime_basico.md
+.specs/implementados/spec_cave_002_procedural_contracts_resources_parcial.md
+.specs/implementados/spec_cave_003_stable_run_snapshots_replay_parcial.md
+.specs/implementados/spec_cave_004_boss_gates_checkpoints_confinement_parcial.md
+.specs/implementados/spec_cave_005_visual_runtime_camera_enemy_visuals.md
+.specs/implementados/spec_cave_006_spawn_anchor_safe_positioning.md
+.specs/implementados/spec_cave_007_snapshot_replay_full_layout_hardening.md
+.specs/implementados/spec_cave_008_debug_skip_confinement_wall_distance_hardening.md
 ```
 
 Specs recomendadas futuras:

@@ -1,6 +1,6 @@
 # Execution Report — fable_02_spec_combat_weapon_actions_derived_stats_runtime
 
-> **Spec:** `docs/specs/a_implementar/fable/fable_02_spec_combat_weapon_actions_derived_stats_runtime.md` (+ EMENDA 2026-06-12)
+> **Spec:** `.specs/a_implementar/fable/fable_02_spec_combat_weapon_actions_derived_stats_runtime.md` (+ EMENDA 2026-06-12)
 > **Data:** 2026-06-12
 > **Status:** BUILD_VALIDATED
 > **Executor:** Claude (FABLE master plan — Batch 2, spec 7/42)

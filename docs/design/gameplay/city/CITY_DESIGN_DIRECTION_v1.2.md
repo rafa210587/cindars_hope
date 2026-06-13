@@ -5,7 +5,7 @@
 > **Base de canon obrigatória:** `docs/design/lore/VAALARA_GAME_CANON_DIRECTION_v1.0.md`  
 > **Roster ativo:** `docs/design/gameplay/city/CITY_NPC_ROSTER_SERVICES_DIRECTION_v1.1.md`  
 > **Função:** grande descrição de como a cidade de Cindar's Hope deve funcionar no jogo.  
-> **Não é spec implementável.** Specs futuras devem ser quebradas em `docs/specs/a_implementar/`.
+> **Não é spec implementável.** Specs futuras devem ser quebradas em `.specs/a_implementar/`.
 
 ---
 

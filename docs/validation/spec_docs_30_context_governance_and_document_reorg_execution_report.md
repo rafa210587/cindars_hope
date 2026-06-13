@@ -26,7 +26,7 @@ source_of_truth: false
 - [x] docs/06_BACKLOG/ operational backlog created
 - [x] AGENTS.md Context Reading Policy section added
 - [x] PROJECT_LOG.md governance header added
-- [x] docs/specs/SPEC_EXECUTION_ORDER.md governance header added
+- [x] .specs/SPEC_EXECUTION_ORDER.md governance header added
 - [x] docs/IMPLEMENTATION_STATUS.md governance header added
 - [x] tools/docs/validate_docs.ps1
 
@@ -92,7 +92,7 @@ Files modified:
 ```
 AGENTS.md — added Context Reading Policy section and conflict resolution rules
 PROJECT_LOG.md — added governance header at top
-docs/specs/SPEC_EXECUTION_ORDER.md — added governance header
+.specs/SPEC_EXECUTION_ORDER.md — added governance header
 docs/IMPLEMENTATION_STATUS.md — added governance header
 ```
 
@@ -100,8 +100,8 @@ Files NOT changed (protected):
 ```
 All C# runtime files (*.cs under Assets/_Game/Scripts/)
 All C# editor files (*.cs under Assets/_Game/Scripts/Editor/)
-All existing docs/specs/a_implementar/ specs (not moved, not deleted)
-All existing docs/specs/implementados/ specs (not modified)
+All existing .specs/a_implementar/ specs (not moved, not deleted)
+All existing .specs/implementados/ specs (not modified)
 docs_old/** (preserved read-only)
 Assembly-CSharp.csproj / Assembly-CSharp-Editor.csproj
 ```
@@ -140,7 +140,7 @@ SPEC_DOCS_30 introduced a documentation governance system to reduce agent contex
 **Governance headers added to existing files:**
 - `AGENTS.md` — Context Reading Policy section with conflict resolution rules
 - `PROJECT_LOG.md` — "Historical log only. Do not use as default execution context."
-- `docs/specs/SPEC_EXECUTION_ORDER.md` — "Dependency registry. Read only target spec row."
+- `.specs/SPEC_EXECUTION_ORDER.md` — "Dependency registry. Read only target spec row."
 - `docs/IMPLEMENTATION_STATUS.md` — "Agents executing a spec should NOT read this full file."
 
 **Not done (deferred to SPEC_DOCS_31):**

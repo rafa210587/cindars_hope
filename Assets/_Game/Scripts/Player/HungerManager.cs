@@ -163,11 +163,20 @@ namespace CindarsHope.Player
             ApplyHungerDamage(starvationDamage, "Starvation tick");
         }
 
+        // F18: redução de drain derivada (passivas/equipment). 1 = sem redução; clamp 0.25.
+        public float DrainMultiplier { get; set; } = 1f;
+
         private void LoseHunger(int amount)
         {
             if (amount <= 0 || CurrentHunger <= 0)
             {
                 return;
+            }
+
+            // F18: aplica a redução derivada preservando drain mínimo de 1 por tick.
+            if (DrainMultiplier < 1f)
+            {
+                amount = Mathf.Max(1, Mathf.CeilToInt(amount * Mathf.Clamp(DrainMultiplier, 0.25f, 1f)));
             }
 
             var previousHunger = CurrentHunger;

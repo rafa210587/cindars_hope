@@ -9,8 +9,8 @@
 - `docs/` antigo movido para `docs_old/`.
 - Nova estrutura `docs/` criada para documentação ativa.
 - `docs_old/` preservado como histórico integral.
-- Specs implementadas normalizadas em `docs/specs/implementados/spec_*.md`.
-- Specs futuras normalizadas em `docs/specs/a_implementar/spec_*.md`.
+- Specs implementadas normalizadas em `.specs/implementados/spec_*.md`.
+- Specs futuras normalizadas em `.specs/a_implementar/spec_*.md`.
 - Refinamentos implementados separados em `docs/refinements/implementados/ref_*.md`.
 - Refinamentos futuros separados em `docs/refinements/a_implementar/ref_*.md`.
 - Documentos ativos copiados para `docs/design`, `docs/architecture`, `docs/operations`, `docs/roadmap`, `docs/amendments`, `docs/validation` e `docs/backlog`.
@@ -48,8 +48,8 @@
 Arquivos principais:
 
 - `docs/DOCS_OLD_TO_ACTIVE_CROSSWALK.md`
-- `docs/specs/SPEC_REGISTRY_IMPLEMENTED.md`
-- `docs/specs/SPEC_REGISTRY_TO_IMPLEMENT.md`
+- `.specs/SPEC_REGISTRY_IMPLEMENTED.md`
+- `.specs/SPEC_REGISTRY_TO_IMPLEMENT.md`
 - `docs/refinements/implementados/ref_implementados_map.md`
 - `docs/refinements/a_implementar/ref_futuro_map.md`
 

@@ -22,7 +22,7 @@ if (Test-Path "spec") {
 }
 
 if (Test-Path "specs") {
-    Fail "Root folder 'specs/' must not exist. Use docs/specs/ as the single official specs source."
+    Fail "Root folder 'specs/' must not exist. Use .specs/ as the single official specs source."
 } else {
     Ok "Root folder 'specs/' does not exist."
 }
@@ -50,14 +50,14 @@ if (-not (Test-Path "docs/project")) {
     Ok "docs/project/ exists as canonical governance folder."
 }
 
-if (-not (Test-Path "docs/specs")) {
-    Fail "docs/specs/ must exist as the single official specs source."
+if (-not (Test-Path ".specs")) {
+    Fail ".specs/ must exist as the single official specs source."
 } else {
-    Ok "docs/specs/ exists as single official specs source."
+    Ok ".specs/ exists as single official specs source."
 }
 
-if (-not (Test-Path "docs/specs/SPEC_EXECUTION_ORDER.md")) {
-    Fail "docs/specs/SPEC_EXECUTION_ORDER.md must exist."
+if (-not (Test-Path ".specs/SPEC_EXECUTION_ORDER.md")) {
+    Fail ".specs/SPEC_EXECUTION_ORDER.md must exist."
 } else {
     Ok "SPEC_EXECUTION_ORDER.md exists."
 }
@@ -81,10 +81,10 @@ if (-not (Test-Path "docs/project/DOCUMENT_INDEX.md")) {
 }
 
 # Check for required template files
-if (-not (Test-Path "docs/specs/_templates/SPEC_TEMPLATE.md")) {
-    Fail "docs/specs/_templates/SPEC_TEMPLATE.md must exist as spec template."
+if (-not (Test-Path ".specs/_templates/SPEC_TEMPLATE.md")) {
+    Fail ".specs/_templates/SPEC_TEMPLATE.md must exist as spec template."
 } else {
-    Ok "docs/specs/_templates/SPEC_TEMPLATE.md exists."
+    Ok ".specs/_templates/SPEC_TEMPLATE.md exists."
 }
 
 if (-not (Test-Path "docs/refinements/_templates/REFINEMENT_TEMPLATE.md")) {
@@ -117,7 +117,7 @@ $initRefsInsidePre = Get-ChildItem "docs/refinements/a_implementar/pre_refinamen
 $count = if ($initRefsInsidePre) { $initRefsInsidePre.Count } else { 0 }
 Ok "Found $count live refinamento_init files in pre_refinamentos; completed refinements may be promoted out of this folder."
 
-$badImplementedSpecs = Get-ChildItem "docs/specs/implementados" -Filter "*.md" -ErrorAction SilentlyContinue |
+$badImplementedSpecs = Get-ChildItem ".specs/implementados" -Filter "*.md" -ErrorAction SilentlyContinue |
     Where-Object { $_.Name -notlike "spec_*" -and $_.Name -ne "README.md" }
 
 if ($badImplementedSpecs) {
@@ -126,7 +126,7 @@ if ($badImplementedSpecs) {
     Ok "Implemented specs use spec_ prefix."
 }
 
-$badFutureSpecs = Get-ChildItem "docs/specs/a_implementar" -Filter "*.md" -ErrorAction SilentlyContinue |
+$badFutureSpecs = Get-ChildItem ".specs/a_implementar" -Filter "*.md" -ErrorAction SilentlyContinue |
     Where-Object { $_.Name -notlike "spec_*" -and $_.Name -notlike "[0-9][0-9]_spec_*" -and $_.Name -ne "README.md" }
 
 if ($badFutureSpecs) {
@@ -136,7 +136,7 @@ if ($badFutureSpecs) {
 }
 
 # Check spec markers and headers (legacy specs only; wave-based specs may skip headers)
-$legacySpecs = Get-ChildItem "docs/specs/a_implementar" -Filter "spec_*.md" -File -ErrorAction SilentlyContinue
+$legacySpecs = Get-ChildItem ".specs/a_implementar" -Filter "spec_*.md" -File -ErrorAction SilentlyContinue
 foreach ($spec in $legacySpecs) {
     $content = Get-Content $spec.FullName -Raw -ErrorAction SilentlyContinue
     $markers = @("# /speckit.specify", "# /speckit.plan", "# /speckit.tasks")
@@ -264,7 +264,7 @@ if ($badGameRules) {
 }
 
 # Check 5: Active specs (a_implementar) have required_adrs and required_game_rules fields with proper format
-$activeSpecFiles = Get-ChildItem "docs/specs/a_implementar" -Filter "spec_*.md" -File -ErrorAction SilentlyContinue
+$activeSpecFiles = Get-ChildItem ".specs/a_implementar" -Filter "spec_*.md" -File -ErrorAction SilentlyContinue
 $specFieldErrors = 0
 $specRefErrors = 0
 
@@ -340,7 +340,7 @@ if ($valReports) {
 
 # Check 7: No specs cite amendments as canonical sources
 $amendmentPattern = 'docs/amendments/[^/]+\.md(?!\s*.*\(archived|historical)'
-$specsWithBadAmendRefs = Get-ChildItem "docs/specs" -Recurse -Filter "*.md" -File -ErrorAction SilentlyContinue |
+$specsWithBadAmendRefs = Get-ChildItem ".specs" -Recurse -Filter "*.md" -File -ErrorAction SilentlyContinue |
     Where-Object { (Get-Content $_.FullName -Raw) -match $amendmentPattern }
 if ($specsWithBadAmendRefs) {
     $specsWithBadAmendRefs | ForEach-Object { Fail "Spec cites amendment as canonical (not archived): $($_.FullName)" }

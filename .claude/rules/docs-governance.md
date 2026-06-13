@@ -9,9 +9,9 @@ No doc file may be deleted unless it appears in `docs/project/DOCUMENT_DELETE_CA
 ## 2. Canonical paths only
 
 Forbidden (never recreate or edit): `docs_old/`, `docs/00_PROJECT/` … `docs/07_RELEASES/`.
-Canonical: `docs/project/`, `docs/specs/`, `docs/refinements/`, `docs/validation/`, `docs/backlog/`, `docs/architecture/`, `docs/decisions/`, `docs/game_rules/`, `docs/release/`.
+Canonical: `docs/project/`, `.specs/`, `docs/refinements/`, `docs/validation/`, `docs/backlog/`, `docs/architecture/`, `docs/decisions/`, `docs/game_rules/`, `docs/release/`.
 
-The only active spec source is `docs/specs/` (queue in `a_implementar/`, done in `implementados/`). Never recreate root `specs/` or `spec/`.
+The only active spec source is `.specs/` (queue in `a_implementar/`, done in `implementados/`). Never recreate root `specs/` or `spec/`.
 
 ## 3. ADRs and game_rules are canonical
 

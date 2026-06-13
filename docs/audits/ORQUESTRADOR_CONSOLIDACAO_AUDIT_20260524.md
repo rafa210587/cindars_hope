@@ -203,7 +203,7 @@ Status: ✅ Updated to exclude runtime artifacts
 ## Validation Readiness
 
 ### Pre-commit Checks Available
-- ✅ `python .\orquestrador\run_orquestrador.py --mode spec --input-dir ".\docs\specs\a_implementar" --dry-run`
+- ✅ `python .\orquestrador\run_orquestrador.py --mode spec --input-dir ".\.specs\a_implementar" --dry-run`
 - ✅ `python .\orquestrador\run_orquestrador.py --mode prompt --input-dir ".\docs\agent_prompts\a_executar" --dry-run`
 - ✅ `.\tools\docs\validate_docs.ps1`
 - ✅ `.\tools\unity\RunUnityCompileValidation.ps1`

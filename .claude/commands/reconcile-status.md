@@ -23,7 +23,7 @@ Find and document discrepancies between: execution reports, CURRENT_STATE.md, PR
 
 - `PROJECT_LOG.md` — for timeline of events
 - `docs/IMPLEMENTATION_STATUS.md` — for spec status claims
-- `docs/specs/SPEC_EXECUTION_ORDER.md` — for dependency graph
+- `.specs/SPEC_EXECUTION_ORDER.md` — for dependency graph
 - Specific validation reports in scope
 
 ---

@@ -1,7 +1,7 @@
 # REF IMPLEMENTADO - Town NPC dialogue, schedule e quests
 
 > Status: Implementado completo
-> Spec: `docs/specs/implementados/spec_town_npc_dialogue_schedule_quests.md`
+> Spec: `.specs/implementados/spec_town_npc_dialogue_schedule_quests.md`
 > Origem: `docs/refinements/a_implementar/pre_refinamentos/refinamento_init_town_npc_dialogue_schedule_quests.md`
 > Data: 2026-05-24
 

@@ -52,7 +52,7 @@ SPEC 10 extends equipment system with durability tracking, repair kits MVP, even
 Command: .\tools\docs\validate_docs.ps1
 Result: PASS
 - No spec/ or specs/ root folders found (correct)
-- docs/specs/ exists as single source (correct)
+- .specs/ exists as single source (correct)
 - SPEC_EXECUTION_ORDER.md validated (correct)
 ```
 

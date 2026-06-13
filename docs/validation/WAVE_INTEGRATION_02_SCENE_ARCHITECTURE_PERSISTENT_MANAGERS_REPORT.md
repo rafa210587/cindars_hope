@@ -17,14 +17,14 @@ This spec created a minimal `SceneNames` contract because no equivalent scene-na
 | `AGENTS.md` | YES | Project implementation and git rules. |
 | Attached `WAVE_INTEGRATION_02_scene_architecture_persistent_managers.md` | YES | Active spec supplied by human attachment. |
 | `docs/project/CURRENT_STATE.md` | YES | Confirms WAVE 07.01 baseline complete before this spec. |
-| `docs/specs/SPEC_REGISTRY_TO_IMPLEMENT.md` | YES | Updated to reflect WAVE_INTEGRATION_02 status. |
+| `.specs/SPEC_REGISTRY_TO_IMPLEMENT.md` | YES | Updated to reflect WAVE_INTEGRATION_02 status. |
 | `docs/validation/WAVE_07_01_UNITY_CLEAN_BASELINE_SCENE_INVENTORY_REPORT.md` | YES | Baseline dependency evidence. |
 | `docs/validation/WAVE_07_SCENE_INVENTORY.md` | YES | Scene inventory dependency. |
 | `docs/validation/WAVE_00_12_RECONCILIATION_AUDIT.md` | YES | Legacy status/warnings context. |
 | `docs/validation/WAVE_00_12_SPEC_CODE_AUDIT_REPORT.md` | YES | Legacy docs validation debt context. |
 | `docs/validation/EDITOR_VALIDATION_CONTRACT_HOTFIX_REPORT.md` | NO | Missing in repo. |
 | `docs/validation/FUTURE_SPECS_MOVE_TO_FEATURES_FUTURAS_REPORT.md` | YES | Confirms future specs are out of active queue. |
-| `docs/specs/a_implementar/features_futuras/README.md` | YES | Confirms future specs execution policy. |
+| `.specs/a_implementar/features_futuras/README.md` | YES | Confirms future specs execution policy. |
 | `docs/design/` | YES | Folder exists. |
 | `docs/directions/` | NO | Design/directions folder not found: `docs/directions` |
 | `docs/design_directions/` | NO | Design/directions folder not found: `docs/design_directions` |

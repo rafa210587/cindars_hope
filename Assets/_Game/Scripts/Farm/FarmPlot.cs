@@ -24,7 +24,8 @@ namespace CindarsHope.Farm
             Status,
             AdvanceGrowth,
             ClearDead,
-            Analyze
+            Analyze,
+            Fertilize
         }
 
         private readonly struct FarmMenuAction
@@ -72,6 +73,10 @@ namespace CindarsHope.Farm
         public int RegrowRemainingDays { get; private set; }
         public int DaysWithoutWater { get; private set; }
         public int LastProcessedDay { get; private set; }
+        public string FertilizerId { get; private set; } = string.Empty;
+        public int WateredDaysCount { get; private set; }
+
+        public string PlotId => $"plot_{_plotIndex}";
 
         public string InteractionPrompt
         {
@@ -118,6 +123,7 @@ namespace CindarsHope.Farm
                 DaysGrown = 0;
                 RegrowRemainingDays = 0;
                 DaysWithoutWater = 0;
+                WateredDaysCount = 0;
             }
 
             UpdateVisual();
@@ -145,7 +151,9 @@ namespace CindarsHope.Farm
                 RegrowRemainingDays = RegrowRemainingDays,
                 LastUpdatedDay = _currentDay,
                 DaysWithoutWater = DaysWithoutWater,
-                LastProcessedDay = LastProcessedDay
+                LastProcessedDay = LastProcessedDay,
+                FertilizerId = FertilizerId,
+                WateredDaysCount = WateredDaysCount
             };
         }
 
@@ -171,6 +179,12 @@ namespace CindarsHope.Farm
             _currentDay = Mathf.Max(1, saveData.LastUpdatedDay);
             DaysWithoutWater = Mathf.Max(0, saveData.DaysWithoutWater);
             LastProcessedDay = Mathf.Max(0, saveData.LastProcessedDay);
+            WateredDaysCount = Mathf.Max(0, saveData.WateredDaysCount);
+            FertilizerId = string.IsNullOrWhiteSpace(saveData.FertilizerId) ? string.Empty : saveData.FertilizerId;
+            if (!string.IsNullOrEmpty(FertilizerId))
+            {
+                FarmFertilityRuntime.RestoreModifier(PlotId, FertilizerId, _currentDay);
+            }
 
             if (!IsPlantedState(restoredState) && restoredState != FarmPlotState.ReadyToHarvest)
             {
@@ -231,6 +245,62 @@ namespace CindarsHope.Farm
         }
 
         public bool CanBeWatered => State == FarmPlotState.TilledDry || State == FarmPlotState.PlantedDry;
+
+        /// <summary>
+        /// Rega silenciosa pela chuva (RainIrrigationRunner). Sem custo de stamina/ferramenta;
+        /// o runner publica um feedback agregado único.
+        /// </summary>
+        public bool TryWaterFromRain()
+        {
+            if (State == FarmPlotState.TilledDry)
+            {
+                SetState(FarmPlotState.TilledWet);
+                return true;
+            }
+
+            if (State == FarmPlotState.PlantedDry)
+            {
+                SetState(FarmPlotState.PlantedWet);
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Monta a entrada de qualidade da colheita a partir do histórico do canteiro.
+        /// SeasonMatch fica true enquanto SeedDataSO não declara estação (decisão documentada na F15).
+        /// </summary>
+        internal static Crops.CropQualityInput BuildQualityInput(int wateredDaysCount, int daysGrown, bool fertilizerApplied)
+        {
+            var consistency = daysGrown <= 0
+                ? 100
+                : Mathf.Clamp(Mathf.RoundToInt(wateredDaysCount * 100f / daysGrown), 0, 100);
+
+            return new Crops.CropQualityInput
+            {
+                WateringConsistencyScore = consistency,
+                SeasonMatch = true,
+                FertilizerApplied = fertilizerApplied,
+                IsQualityEnabled = true
+            };
+        }
+
+        /// <summary>Unidades extras por tier de qualidade (até itens _silver/_gold existirem — F32).</summary>
+        internal static int GetQualityBonusUnits(Crops.CropQualityTier tier)
+        {
+            switch (tier)
+            {
+                case Crops.CropQualityTier.Good:
+                    return 1;
+                case Crops.CropQualityTier.Excellent:
+                case Crops.CropQualityTier.Rare:
+                case Crops.CropQualityTier.Arcane:
+                    return 2;
+                default:
+                    return 0;
+            }
+        }
 
         public bool CanInteract(GameObject interactor)
         {
@@ -407,8 +477,10 @@ namespace CindarsHope.Farm
                         _feedback = "Watering Can required.";
                     }
 
+                    AddFertilizeActions();
                     break;
                 case FarmPlotState.PlantedWet:
+                    AddFertilizeActions();
                     if (_temporarySequentialSliceMode)
                     {
                         _menuActions.Add(new FarmMenuAction(FarmMenuActionType.AdvanceGrowth, "Simular crescimento"));
@@ -441,6 +513,61 @@ namespace CindarsHope.Farm
             {
                 _menuActions.Add(new FarmMenuAction(FarmMenuActionType.Analyze, "Analisar solo"));
             }
+        }
+
+        private void AddFertilizeActions()
+        {
+            if (_inventoryManager == null || FarmFertilityRuntime.HasActiveFertilizer(PlotId))
+            {
+                return;
+            }
+
+            foreach (var definition in FarmFertilityRuntime.Definitions.Values)
+            {
+                if (definition == null || definition.IsEndgameReserved)
+                {
+                    continue;
+                }
+
+                if (!_inventoryManager.HasItem(definition.FertilizerId))
+                {
+                    continue;
+                }
+
+                _menuActions.Add(new FarmMenuAction(FarmMenuActionType.Fertilize, $"Aplicar {definition.DisplayName}", definition.FertilizerId));
+            }
+        }
+
+        private bool TryFertilize(string fertilizerId)
+        {
+            if (string.IsNullOrWhiteSpace(fertilizerId) || _inventoryManager == null)
+            {
+                PublishFeedback("Fertilizante indisponivel.");
+                return false;
+            }
+
+            if (!_inventoryManager.HasItem(fertilizerId))
+            {
+                PublishFeedback("Fertilizante nao esta no inventario.");
+                return false;
+            }
+
+            var result = FarmFertilityRuntime.TryApply(PlotId, fertilizerId, _currentDay);
+            if (!result.Success)
+            {
+                PublishFeedback($"Nao foi possivel fertilizar ({result.FailureReason}).");
+                return false;
+            }
+
+            if (!_inventoryManager.RemoveItem(fertilizerId, 1))
+            {
+                PublishFeedback("Nao foi possivel consumir o fertilizante.");
+                return false;
+            }
+
+            FertilizerId = fertilizerId;
+            PublishFeedback("Solo fertilizado.");
+            return true;
         }
 
         private void AddPlantActions()
@@ -510,6 +637,9 @@ namespace CindarsHope.Farm
                 case FarmMenuActionType.Analyze:
                     ExecuteAnalyze();
                     closeAfterAction = false;
+                    break;
+                case FarmMenuActionType.Fertilize:
+                    TryFertilize(action.SeedId);
                     break;
             }
 
@@ -690,6 +820,7 @@ namespace CindarsHope.Farm
             if (State == FarmPlotState.PlantedWet)
             {
                 DaysWithoutWater = 0;
+                WateredDaysCount++;
                 AdvanceGrowth();
                 if (State == FarmPlotState.PlantedWet)
                 {
@@ -838,6 +969,15 @@ namespace CindarsHope.Farm
             var harvestedSeedId = PlantedSeedId;
             var tilePosition = GetTilePosition();
 
+            // Qualidade pela consistência de rega + fertilizante (CropQualityResolver WAVE 05,
+            // antes órfão). Bônus = unidades extras até existirem itens _silver/_gold (F32).
+            var fertilizerModifier = FarmFertilityRuntime.GetModifier(PlotId);
+            var fertilizerActive = fertilizerModifier != null && fertilizerModifier.IsActive;
+            var quality = Crops.CropQualityResolver.Resolve(BuildQualityInput(WateredDaysCount, DaysGrown, fertilizerActive));
+            var qualityBonusUnits = GetQualityBonusUnits(quality);
+            var yieldModifier = fertilizerActive ? fertilizerModifier.YieldModifierSnapshot : 0f;
+            var qualityBonusPending = qualityBonusUnits > 0;
+
             for (var i = 0; i < pairCount; i++)
             {
                 var harvestItem = seedData.HarvestItems[i];
@@ -846,6 +986,17 @@ namespace CindarsHope.Farm
                 if (harvestItem == null || amount <= 0)
                 {
                     continue;
+                }
+
+                if (yieldModifier > 0f)
+                {
+                    amount += Mathf.FloorToInt(amount * yieldModifier);
+                }
+
+                if (qualityBonusPending)
+                {
+                    amount += qualityBonusUnits;
+                    qualityBonusPending = false;
                 }
 
                 if (!_inventoryManager.AddItem(harvestItem.Id, amount))
@@ -864,6 +1015,22 @@ namespace CindarsHope.Farm
                 Debug.LogWarning($"FarmPlot {_plotIndex} harvest produced no items and plot will remain ready.", this);
                 return false;
             }
+
+            if (fertilizerActive)
+            {
+                FarmFertilityRuntime.ConsumeOnHarvest(PlotId);
+                if (!FarmFertilityRuntime.HasActiveFertilizer(PlotId))
+                {
+                    FertilizerId = string.Empty;
+                }
+            }
+
+            if (quality > Crops.CropQualityTier.Normal)
+            {
+                PublishFeedback($"Colheita de qualidade: {quality}.");
+            }
+
+            WateredDaysCount = 0;
 
             if (seedData.RegrowDays > 0)
             {

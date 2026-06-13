@@ -132,8 +132,8 @@ Validated with `rg`:
 rg "spec_enemy_ai_roster_bestiary_faction_locks_runtime|
    spec_cave_runtime_generation_checkpoints_boss_gates|
    spec_ui_ux_full_gameplay_inventory_hotbar_menus"
-   docs/specs/SPEC_REGISTRY_TO_IMPLEMENT.md
-   docs/specs/SPEC_EXECUTION_ORDER.md
+   .specs/SPEC_REGISTRY_TO_IMPLEMENT.md
+   .specs/SPEC_EXECUTION_ORDER.md
    docs/project/CURRENT_STATE.md
 ```
 
@@ -142,7 +142,7 @@ rg "spec_enemy_ai_roster_bestiary_faction_locks_runtime|
 ```
 rg "~130|Blockage Status: NONE|READY_FOR_01Q — pending|
    Docs validation: NOT YET RUN|READY_AFTER_DOCS"
-   docs/specs docs/project docs/validation
+   .specs docs/project docs/validation
 ```
 
 **Result:** 0 inconsistent statuses (all updated to canonical)

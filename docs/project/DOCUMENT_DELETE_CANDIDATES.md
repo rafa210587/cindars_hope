@@ -26,8 +26,8 @@ A document may be deleted ONLY if:
 
 | Path | Status | Notes |
 |------|--------|-------|
-| docs/specs/a_implementar/reorg/SPEC_00 through SPEC_12 (13 files) | ✓ DELETED | CLOSED per README_STATUS.md; validation evidence preserved |
-| docs/specs/a_implementar/reorg/SPEC_00_STRATEGY_SUBAGENTS.md | ✓ DELETED | CLOSED |
+| .specs/a_implementar/reorg/SPEC_00 through SPEC_12 (13 files) | ✓ DELETED | CLOSED per README_STATUS.md; validation evidence preserved |
+| .specs/a_implementar/reorg/SPEC_00_STRATEGY_SUBAGENTS.md | ✓ DELETED | CLOSED |
 | docs/roadmap/NEXT_WAVES_ROADMAP_v1.0.md | ✓ DELETED | Superseded by v1.1 + current ROADMAP.md |
 | docs/architecture/ARCH_fase4_v2.2.md | ✓ DELETED | Superseded by v2.3 FASE9C_DELTA |
 | docs/design/GDD_v2.6.md | ✓ DELETED | Superseded by v2.7 FASE9C_DELTA |
@@ -138,12 +138,12 @@ A document may be deleted ONLY if:
 
 | Path | Type | Reason | Covered By | Status |
 |------|------|--------|------------|--------|
-| docs/specs/a_implementar/spec_14a_cave_enemy_spawnplan_materialization_run_stability.md | spec (superseded) | Covered by SPEC_24 closeout | SPEC_24 | blocked |
-| docs/specs/a_implementar/spec_14a_fix2_spawn_density_combat_feedback_damage_numbers.md | spec (superseded) | Covered by SPEC_24 closeout | SPEC_24 | blocked |
-| docs/specs/a_implementar/spec_14b_cave_snapshot_replay_enemy_plan.md | spec (superseded) | Covered by SPEC_24 closeout | SPEC_24 | blocked |
-| docs/specs/a_implementar/spec_enemy_ai_roster_bestiary_faction_locks_runtime.md | spec (superseded) | Covered by SPEC_23 closeout; duplicate exists in implementados | SPEC_23 | blocked |
-| docs/specs/a_implementar/spec_cave_runtime_generation_checkpoints_boss_gates.md | spec (superseded) | Covered by SPEC_24 closeout; duplicate exists in implementados | SPEC_24 | blocked |
-| docs/specs/a_implementar/spec_ui_ux_full_gameplay_inventory_hotbar_menus.md | spec (superseded) | Covered by SPEC_28 closeout | SPEC_28 | blocked |
+| .specs/a_implementar/spec_14a_cave_enemy_spawnplan_materialization_run_stability.md | spec (superseded) | Covered by SPEC_24 closeout | SPEC_24 | blocked |
+| .specs/a_implementar/spec_14a_fix2_spawn_density_combat_feedback_damage_numbers.md | spec (superseded) | Covered by SPEC_24 closeout | SPEC_24 | blocked |
+| .specs/a_implementar/spec_14b_cave_snapshot_replay_enemy_plan.md | spec (superseded) | Covered by SPEC_24 closeout | SPEC_24 | blocked |
+| .specs/a_implementar/spec_enemy_ai_roster_bestiary_faction_locks_runtime.md | spec (superseded) | Covered by SPEC_23 closeout; duplicate exists in implementados | SPEC_23 | blocked |
+| .specs/a_implementar/spec_cave_runtime_generation_checkpoints_boss_gates.md | spec (superseded) | Covered by SPEC_24 closeout; duplicate exists in implementados | SPEC_24 | blocked |
+| .specs/a_implementar/spec_ui_ux_full_gameplay_inventory_hotbar_menus.md | spec (superseded) | Covered by SPEC_28 closeout | SPEC_28 | blocked |
 
 **Total:** 6 files. Safe after Phase 2-3 completion.
 
@@ -162,20 +162,20 @@ AGENTS.md                                            (governance)
 CLAUDE.md                                            (governance)
 docs/project/*                                       (governance hub)
 docs/validation/*                                    (evidence and validation checklists)
-docs/specs/implementados/*                           (implemented history, searchable)
+.specs/implementados/*                           (implemented history, searchable)
 docs/refinements/implementados/*                     (refinement history)
 docs/release/MVP_ACCEPTANCE_REPORT.md                (release acceptance evidence)
 docs/backlog/post_mvp_backlog.md                     (active backlog)
 docs/architecture/CORE_CONTRACTS_EVENTS_SAVE_IDS_v1.1_FASE9C_DELTA.md  (active architecture)
 docs/amendments/*                                    (governance: critical amendments including FASE9F cave stable run)
-docs/specs/SPEC_WAVE_EXECUTION_PROTOCOL.md          (canonical: execution governance and phases)
-docs/specs/SPEC_VALIDATION_MATRIX_MASTER.md         (canonical: validation requirements matrix)
-docs/specs/SPEC_IMPLEMENTABLE_TEMPLATE.md           (canonical: SpecKit format template)
+.specs/SPEC_WAVE_EXECUTION_PROTOCOL.md          (canonical: execution governance and phases)
+.specs/SPEC_VALIDATION_MATRIX_MASTER.md         (canonical: validation requirements matrix)
+.specs/SPEC_IMPLEMENTABLE_TEMPLATE.md           (canonical: SpecKit format template)
 docs/validation/FINAL_HUMAN_VALIDATION_BY_WAVE.md   (canonical: wave-end human validation checklist)
 PROJECT_LOG.md                                       (historical record)
 docs/IMPLEMENTATION_STATUS.md                        (active status tracking)
-docs/specs/SPEC_EXECUTION_ORDER.md                   (execution dependency matrix)
-docs/specs/a_implementar/closeout_mvp/*              (active pending Phase 2-3)
+.specs/SPEC_EXECUTION_ORDER.md                   (execution dependency matrix)
+.specs/a_implementar/closeout_mvp/*              (active pending Phase 2-3)
 ```
 
 Total: 19+ protected categories (updated with canonical specs docs). None are deletion candidates.
@@ -184,14 +184,14 @@ Total: 19+ protected categories (updated with canonical specs docs). None are de
 
 ## Batch 4 — Redirect specs replaced by canonical governance docs ✓
 
-**Criteria:** Intermediate redirect files created during governance cleanup; canonical documents now exist directly in `docs/specs/`.
+**Criteria:** Intermediate redirect files created during governance cleanup; canonical documents now exist directly in `.specs/`.
 
 **Status:** APPROVED FOR DELETION by human request on 2026-06-07.
 
 | Path | Type | Reason | Canonical Substitute | Status |
 |------|------|--------|----------------------|--------|
-| docs/specs/a_implementar/00_spec_wave_execution_protocol.md | redirect spec | Intermediate redirect; not an executable spec | docs/specs/SPEC_WAVE_EXECUTION_PROTOCOL.md | ✓ DELETED |
-| docs/specs/a_implementar/00_spec_validation_matrix_master.md | redirect spec | Intermediate redirect; not an executable spec | docs/specs/SPEC_VALIDATION_MATRIX_MASTER.md | ✓ DELETED |
+| .specs/a_implementar/00_spec_wave_execution_protocol.md | redirect spec | Intermediate redirect; not an executable spec | .specs/SPEC_WAVE_EXECUTION_PROTOCOL.md | ✓ DELETED |
+| .specs/a_implementar/00_spec_validation_matrix_master.md | redirect spec | Intermediate redirect; not an executable spec | .specs/SPEC_VALIDATION_MATRIX_MASTER.md | ✓ DELETED |
 
 **Total:** 2 files successfully deleted on 2026-06-07.
 
@@ -217,8 +217,8 @@ Before deleting any candidate:
 | Path | Motivo | Substituto canonico |
 |------|--------|---------------------|
 | docs/validation/playmode | ARQUIVO solto sem extensao (template salvo errado); bloqueia a pasta convencional de cenarios | copia preservada em docs/validation/_templates/HUMAN_TEST_SCENARIO_TEMPLATE_FROM_STRAY_PLAYMODE_FILE.md |
-| docs/specs/a_implementar/executadas_build_validated/FIX_001_runtime_warnings_town_shop_catalog_alignment.md | FIX-001/001B ja executados e reportados (CURRENT_STATE 2026-06-10); spec stale com naming fora do padrao | reports FIX_001B em docs/validation/ |
-| docs/specs/a_implementar/executadas_build_validated/03_spec_quest_*.md (8 arquivos) | duplicata literal da serie 09_spec_quest_* (WAVE 09 foi a executada) | serie 09_spec_quest_* + reports WAVE 09 |
+| .specs/a_implementar/executadas_build_validated/FIX_001_runtime_warnings_town_shop_catalog_alignment.md | FIX-001/001B ja executados e reportados (CURRENT_STATE 2026-06-10); spec stale com naming fora do padrao | reports FIX_001B em docs/validation/ |
+| .specs/a_implementar/executadas_build_validated/03_spec_quest_*.md (8 arquivos) | duplicata literal da serie 09_spec_quest_* (WAVE 09 foi a executada) | serie 09_spec_quest_* + reports WAVE 09 |
 
 ---
 

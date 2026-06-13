@@ -1,7 +1,7 @@
 # refinamento_init_unity_compile_validation_protocol
 
 > Status: Refinamento inicial a implementar
-> Spec futura relacionada: `docs/specs/implementados/spec_unity_compile_validation_protocol_and_scripts.md`
+> Spec futura relacionada: `.specs/implementados/spec_unity_compile_validation_protocol_and_scripts.md`
 > Objetivo: validacao minima de compilacao Unity em batchmode.
 
 ---

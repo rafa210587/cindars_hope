@@ -9,6 +9,9 @@ namespace CindarsHope.Combat
 {
     public class SpellCastService
     {
+        // F02: provider de stats derivados (setado pelo PlayerAttackController; null-safe).
+        public PlayerCombatStatsProvider StatsProvider { get; set; }
+
         private readonly ManaManager _manaManager;
         private readonly EquipmentManager _equipmentManager;
         private readonly EquippedItemResolver _itemResolver;
@@ -56,12 +59,8 @@ namespace CindarsHope.Combat
                 return AttackResult.CreateError("InsufficientMana");
             }
 
-            if (spellData.ProjectilePrefab == null)
-            {
-                Debug.LogError($"CombatLog: PlayerAttackBlocked. Reason=SpellHasNoProjectilePrefab, SpellId={spellData.Id}");
-                return AttackResult.CreateError("SpellHasNoProjectilePrefab");
-            }
-
+            // Null prefab is allowed: ProjectileSpawnService falls back to RuntimeProjectileFactory
+            // (procedural magic bolt tinted by damage type) so spells work before art is authored.
             CindarsHope.Combat.StatusEffect.StatusEffectSO statusEffect = null;
             if (!string.IsNullOrEmpty(spellData.StatusEffectId))
             {
@@ -71,19 +70,25 @@ namespace CindarsHope.Combat
                     statusEffect = Resources.Load<CindarsHope.Combat.StatusEffect.StatusEffectSO>(spellData.StatusEffectId);
             }
 
+            // F02: dano final via stats derivados (projéteis disparam como golpe leve).
+            var finalDamage = StatsProvider != null
+                ? StatsProvider.FinalDamage(spellData.BaseDamage, AttackWeight.Light, false, out _)
+                : spellData.BaseDamage;
+
             var spawnRequest = new ProjectileSpawnRequest(
                 spellData.ProjectilePrefab,
                 spawnPosition,
                 direction,
                 spellData.ProjectileSpeed,
                 spellData.Range,
-                spellData.BaseDamage,
+                finalDamage,
                 spellData.DamageType,
                 _knockbackForce,
                 spawnOffset: 0.5f,
                 statusEffect: statusEffect,
                 statusApplyChance: spellData.StatusApplyChance
             );
+            spawnRequest.VisualStyle = ProjectileVisualStyle.MagicBolt;
 
             var spawnResult = ProjectileSpawnService.SpawnProjectile(spawnRequest);
             if (!spawnResult.Success)

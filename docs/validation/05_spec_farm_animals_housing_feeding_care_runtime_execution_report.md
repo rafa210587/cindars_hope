@@ -82,7 +82,7 @@ Assets/_Game/Tests/EditMode/Farm/FarmAnimalCareTests.cs               (370 lines
 - Packages/, ProjectSettings/ ✓
 - *.unity, *.prefab, *.asset files ✓
 - Assets/_Game/Scripts/Pets/** ✓
-- docs/specs/SPEC_EXECUTION_ORDER.md ✓
+- .specs/SPEC_EXECUTION_ORDER.md ✓
 
 ---
 

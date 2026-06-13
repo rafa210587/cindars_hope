@@ -4,7 +4,7 @@ status: accepted
 domain: gameplay-life-death
 source_adrs: []
 source_documents:
-  - docs/specs/implementados/SPEC_25_DEATH_ANYA_CORPSE_CLOSEOUT.md
+  - .specs/implementados/SPEC_25_DEATH_ANYA_CORPSE_CLOSEOUT.md
 last_reviewed: 2026-06-01
 ---
 

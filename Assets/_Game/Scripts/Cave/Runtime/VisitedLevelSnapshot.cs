@@ -32,6 +32,8 @@ namespace CindarsHope.Cave.Runtime
         [SerializeField] public List<string> Warnings = new();
         [SerializeField] public SerializedEnemyRedistributionState RedistributionState = new();
         [SerializeField] public SerializedEnemyRespawnState RespawnState = new();
+        // F13: HP por instância (aditivo; estado mutável — fica FORA do LayoutHash).
+        [SerializeField] public List<EnemyHpRecord> EnemyHpRecords = new();
 
         int IVisitedLevelSnapshot.CaveLevel => CaveLevel;
         string IVisitedLevelSnapshot.SnapshotId => SnapshotId;
@@ -225,6 +227,23 @@ namespace CindarsHope.Cave.Runtime
             return plan;
         }
 
+        public void SetEnemyHpRecords(IEnumerable<EnemyHpRecord> records)
+        {
+            EnemyHpRecords.Clear();
+            if (records == null)
+            {
+                return;
+            }
+
+            foreach (var record in records)
+            {
+                if (record != null && !string.IsNullOrWhiteSpace(record.EnemyInstanceId))
+                {
+                    EnemyHpRecords.Add(record);
+                }
+            }
+        }
+
         public void SetFishingSpot(CaveFishingSpotSnapshotEntry fishingSpot)
         {
             FishingSpotState = fishingSpot ?? new CaveFishingSpotSnapshotEntry();
@@ -289,6 +308,14 @@ namespace CindarsHope.Cave.Runtime
             : base(caveLevel, biomeId, layoutHash, caveWorldSeed, caveRunSeed)
         {
         }
+    }
+
+    // F13: registro de HP por instância de inimigo (0 = morto, não rematerializa na run).
+    [Serializable]
+    public sealed class EnemyHpRecord
+    {
+        public string EnemyInstanceId = string.Empty;
+        public int CurrentHp;
     }
 
     [Serializable]

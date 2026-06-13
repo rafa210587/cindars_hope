@@ -107,6 +107,14 @@ namespace CindarsHope.Editor
             {
                 CreateItemDataSO(id, name, ItemCategory.Material, ConsumableSubtype.None, 99, 0, 0, false);
             }
+
+            // F15: fertilizantes consumidos pelo FarmPlot via FertilizerApplicationService.
+            // IDs casam com FertilizerDefinition.GetDefaults().
+            CreateItemDataSO("fertilizer_simple", "Fertilizante Simples", ItemCategory.Material, ConsumableSubtype.None, 99, 25, 0, true);
+            CreateItemDataSO("fertilizer_improved", "Fertilizante Melhorado", ItemCategory.Material, ConsumableSubtype.None, 99, 60, 0, true);
+
+            // F17: Água Viva da Fonte (BV 0 — anti-exploit de venda em massa, canon WAVE 10).
+            CreateItemDataSO("item_consumable_agua_viva", "Agua Viva", ItemCategory.Consumable, ConsumableSubtype.Potion, 3, 0, 20, true);
         }
 
         private static void CreateRepairKits()

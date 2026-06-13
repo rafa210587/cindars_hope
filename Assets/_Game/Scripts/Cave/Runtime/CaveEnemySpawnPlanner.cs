@@ -9,9 +9,12 @@ namespace CindarsHope.Cave.Runtime
 {
     public sealed class CaveEnemySpawnPlanner
     {
-        private const int DefaultMaxEnemies = 24;
-        private const int MinEnemiesPerLevel = 14;
-        private const int MaxEnemiesPerLevel = 24;
+        private const int DefaultMaxEnemies = 32;
+        private const int MinEnemiesPerLevel = 16;
+        private const int MaxEnemiesPerLevel = 32;
+        // Depth scaling: +1 enemy on min every 12 levels, +1 on max every 8 levels,
+        // hard-capped so deep floors stay dense but playable.
+        private const int DepthScalingHardCap = 44;
         private const int MinDistanceFromEntrance = 5;
         private const int MinDistanceFromExit = 2;
         private const int MinDistanceBetweenEnemies = 2;
@@ -54,7 +57,7 @@ namespace CindarsHope.Cave.Runtime
                 return plan;
             }
 
-            var targetEnemyCount = ResolveTargetEnemyCount(levelSeed, maxEnemies);
+            var targetEnemyCount = ResolveTargetEnemyCount(levelSeed, maxEnemies, generatedLevel.CaveLevel);
             var requestMaxEnemies = Math.Max(1, Math.Min(targetEnemyCount, spawnPoints.Count));
 
             var resolver = new EnemySpawnResolver(profiles, packs, factionLocks);
@@ -285,11 +288,18 @@ namespace CindarsHope.Cave.Runtime
             return result;
         }
 
-        private static int ResolveTargetEnemyCount(int levelSeed, int configuredMaxEnemies)
+        // Deterministic per-level enemy count that grows with cave depth. Scene-serialized
+        // _maxEnemiesPerLevel values from older scenes are treated as a base and still get
+        // the depth bonus, so density increases without scene regeneration.
+        internal static int ResolveTargetEnemyCount(int levelSeed, int configuredMaxEnemies, int caveLevel)
         {
-            var upperBound = Math.Max(MinEnemiesPerLevel, Math.Min(MaxEnemiesPerLevel, configuredMaxEnemies));
-            var range = Math.Max(1, upperBound - MinEnemiesPerLevel + 1);
-            return MinEnemiesPerLevel + Math.Abs(levelSeed % range);
+            var depth = Math.Max(0, caveLevel);
+            var minBound = Math.Min(DepthScalingHardCap, MinEnemiesPerLevel + depth / 12);
+            var maxBase = Math.Max(MaxEnemiesPerLevel, configuredMaxEnemies);
+            var maxBound = Math.Min(DepthScalingHardCap, maxBase + depth / 8);
+            var upperBound = Math.Max(minBound, maxBound);
+            var range = Math.Max(1, upperBound - minBound + 1);
+            return minBound + Math.Abs(levelSeed % range);
         }
 
         private static string ResolveFactionId(

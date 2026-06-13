@@ -11,7 +11,7 @@
 A set of:
 1. **Rule** (`.claude/rules/spec_quality_gate.md`) — when to use each status
 2. **Command** (`.claude/commands/execute-spec-strict.md`) — how to execute specs safely
-3. **Report template** (`docs/specs/SPEC_EXECUTION_REPORT_TEMPLATE_STRICT.md`) — mandatory evidence format
+3. **Report template** (`.specs/SPEC_EXECUTION_REPORT_TEMPLATE_STRICT.md`) — mandatory evidence format
 4. **Quality script** (`tools/docs/check_spec_quality.ps1`) — automated validation
 5. **This documentation** — integration guide
 
@@ -27,7 +27,7 @@ A set of:
 | `.claude/commands/execute-spec-strict.md` | Execute one spec with quality rigor | Command (updated) | 2026-06-08 |
 | `.claude/commands/loop-spec-batch-strict.md` | Loop-safe batch execution | Command (updated) | 2026-06-08 |
 | `.claude/commands/resolve-spec-dependency-chain.md` | Dependency chain resolution reference | Reference (NEW) | 2026-06-08 |
-| `docs/specs/SPEC_EXECUTION_REPORT_TEMPLATE_STRICT.md` | Mandatory report structure | Template | – |
+| `.specs/SPEC_EXECUTION_REPORT_TEMPLATE_STRICT.md` | Mandatory report structure | Template | – |
 | `tools/docs/check_spec_quality.ps1` | Automated quality checks | Script (updated) | 2026-06-08 |
 | `docs/validation/SPEC_EXECUTION_HARNESS_REPORT.md` | This file | Documentation | 2026-06-08 |
 | `docs/validation/WAVE_05_DEPENDENCY_RESOLUTION_PLAN.md` | Dependency resolution tracking | State file | Maintained |
@@ -134,7 +134,7 @@ farm_scale_tilemap (no dependencies) → root, execute first
 ### Manual Execution (Single Spec)
 
 ```text
-/execute-spec-strict docs/specs/a_implementar/04_spec_ui_calendar_day_detail_runtime.md
+/execute-spec-strict .specs/a_implementar/04_spec_ui_calendar_day_detail_runtime.md
 ```
 
 Output:

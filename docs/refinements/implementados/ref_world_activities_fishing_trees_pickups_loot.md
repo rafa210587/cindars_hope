@@ -1,7 +1,7 @@
 # ref_world_activities_fishing_trees_pickups_loot
 
 > Status: Implementado parcial
-> Spec relacionada: `docs/specs/implementados/spec_world_002_activities_fishing_trees_pickups_loot.md`
+> Spec relacionada: `.specs/implementados/spec_world_002_activities_fishing_trees_pickups_loot.md`
 > Objetivo: completar arvores, pesca, pickups persistentes e loot tables de atividades do mundo.
 
 ## Resultado da implementacao 2026-05-24
@@ -31,8 +31,8 @@ Evidencia:
 Assets/_Game/Scripts/World/**
 Assets/_Game/Scripts/Fishing/**
 Assets/_Game/Scripts/Save/SaveManager.cs
-docs/specs/implementados/spec_farm_003_arvores_pesca_pickups_world_activities.md
-docs/specs/implementados/spec_world_001_pickups_persistentes_save_load.md
+.specs/implementados/spec_farm_003_arvores_pesca_pickups_world_activities.md
+.specs/implementados/spec_world_001_pickups_persistentes_save_load.md
 ```
 
 ---

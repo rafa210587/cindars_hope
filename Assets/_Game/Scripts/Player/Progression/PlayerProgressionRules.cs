@@ -8,8 +8,16 @@ namespace CindarsHope.Player.Progression
         public const int MaxLevel = 100;
         public const int SkillPointIntervalLevels = 2;
 
+        // F42: rollback de segurança — true volta à curva por bandas pré-canônica.
+        public static bool UseLegacyCurve = false;
+
         public static int CalculateXpToNextLevel(int level)
         {
+            if (!UseLegacyCurve)
+            {
+                return ProgressionCurve.XpForNext(level);
+            }
+
             level = Mathf.Clamp(level, 1, MaxLevel);
             int levelBand = (level - 1) / 10;
             int levelMultiplier = 50 + levelBand * 10;

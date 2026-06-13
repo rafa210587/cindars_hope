@@ -10,7 +10,7 @@ $warningCount = 0
 $errorCount = 0
 
 # Find changed specs in a_implementar
-$specs = Get-ChildItem -Path "docs/specs/a_implementar" -Filter "*.md" -Recurse | Select-Object -ExpandProperty FullName
+$specs = Get-ChildItem -Path ".specs/a_implementar" -Filter "*.md" -Recurse | Select-Object -ExpandProperty FullName
 
 foreach ($spec in $specs) {
     $content = Get-Content -Path $spec -Raw
@@ -29,7 +29,7 @@ foreach ($spec in $specs) {
 }
 
 # Find any document outside templates that creates canonical rules
-$activeDocs = Get-ChildItem -Path "docs/specs/a_implementar", "docs/specs/implementados", "docs/project", "docs/refinements" -Filter "*.md" -Recurse 2>$null | Select-Object -ExpandProperty FullName
+$activeDocs = Get-ChildItem -Path ".specs/a_implementar", ".specs/implementados", "docs/project", "docs/refinements" -Filter "*.md" -Recurse 2>$null | Select-Object -ExpandProperty FullName
 foreach ($doc in $activeDocs) {
     $content = Get-Content -Path $doc -Raw
 

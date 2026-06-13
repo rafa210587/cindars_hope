@@ -4,8 +4,8 @@ status: accepted
 domain: farming-gameplay
 source_adrs: []
 source_documents:
-  - docs/specs/implementados/SPEC_10_FARM_PERSISTENCE.md
-  - docs/specs/implementados/SPEC_12_FARMING_SYSTEM_CLOSEOUT.md
+  - .specs/implementados/SPEC_10_FARM_PERSISTENCE.md
+  - .specs/implementados/SPEC_12_FARMING_SYSTEM_CLOSEOUT.md
 last_reviewed: 2026-06-01
 ---
 

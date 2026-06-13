@@ -1,7 +1,7 @@
 # Refinamento: Cave Entry, Death, Anya e Corpse Recovery
 
 > Status: **IMPLEMENTADO** — 2026-05-25
-> Spec relacionada: `docs/specs/implementados/spec_cave_entry_death_anya_corpse_recovery.md`
+> Spec relacionada: `.specs/implementados/spec_cave_entry_death_anya_corpse_recovery.md`
 > Fonte original: `docs/refinements/a_implementar/pre_refinamentos/refinamento_init_cave_entry_death_anya_corpse_recovery.md`
 
 ---
