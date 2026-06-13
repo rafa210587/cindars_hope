@@ -6,7 +6,6 @@ using CindarsHope.World.Data;
 using CindarsHope.Craft.Data;
 using CindarsHope.Combat.Weapon;
 using CindarsHope.Combat.Magic;
-using CindarsHope.Combat.Skills;
 using CindarsHope.Equipment;
 using CindarsHope.Skills;
 using NUnit.Framework;

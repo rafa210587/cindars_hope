@@ -67,9 +67,8 @@ namespace CindarsHope.Editor.Validation
             CheckScript(results, ref passed,
                 "Assets/_Game/Scripts/Core/Events/DailyGoalCompletedEvent.cs",
                 "DailyGoalCompletedEvent");
-            CheckScript(results, ref passed,
-                "Assets/_Game/Scripts/Core/Events/CropWateredEvent.cs",
-                "CropWateredEvent");
+            // CropWateredEvent check removed 2026-06-13: the event was retired
+            // (never published nor subscribed anywhere; dead contract from WAVE24).
 
             // Check: sistemas core NÃO foram duplicados
             CheckNoDuplicate(results, ref passed,

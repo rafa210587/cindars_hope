@@ -45,15 +45,6 @@ namespace CindarsHope.Core.Events
         }
     }
 
-    public class EnemyDespawnedEvent
-    {
-        public string EnemyId;
-        public EnemyDespawnedEvent(string enemyId)
-        {
-            EnemyId = enemyId;
-        }
-    }
-
     public class EnemyActionStartedEvent
     {
         public string EnemyId;
@@ -110,17 +101,6 @@ namespace CindarsHope.Core.Events
         }
     }
 
-    public class EnemyXPGrantedEvent
-    {
-        public string EnemyId;
-        public int XPAmount;
-        public EnemyXPGrantedEvent(string enemyId, int xpAmount)
-        {
-            EnemyId = enemyId;
-            XPAmount = xpAmount;
-        }
-    }
-
     public class EnemyLootRolledEvent
     {
         public string EnemyId;
@@ -131,17 +111,6 @@ namespace CindarsHope.Core.Events
             EnemyId = enemyId;
             ItemId = itemId;
             Amount = amount;
-        }
-    }
-
-    public class EnemyRespawnScheduledEvent
-    {
-        public string EnemyId;
-        public int GameDayAtRespawn;
-        public EnemyRespawnScheduledEvent(string enemyId, int gameDay)
-        {
-            EnemyId = enemyId;
-            GameDayAtRespawn = gameDay;
         }
     }
 

@@ -1,6 +1,5 @@
 #if UNITY_EDITOR
 using CindarsHope.Combat.Magic;
-using CindarsHope.Combat.Skills;
 using CindarsHope.Combat.Weapon;
 using UnityEditor;
 using UnityEngine;
@@ -12,7 +11,6 @@ namespace CindarsHope.Editor
     {
         private const string WeaponPath = "Assets/_Game/Data/Combat/Weapons/";
         private const string SpellPath = "Assets/_Game/Data/Combat/Spells/";
-        private const string SkillPath = "Assets/_Game/Data/Combat/Skills/";
         private const string InitKey = "CombatDataInitialized";
 
         static CombatDataInitializer()
@@ -29,7 +27,10 @@ namespace CindarsHope.Editor
             CreateCombatFolders();
             CreateWeapons();
             CreateSpells();
-            CreateSkills();
+            // CreateSkills retired 2026-06-13: it generated assets of the dead
+            // CindarsHope.Combat.Skills.SkillActionSO type, incompatible with the live
+            // SkillActionDatabaseSO (CindarsHope.Skills). Live catalog generation
+            // belongs to fable_29 (canonical skill catalog migration).
             AssetDatabase.SaveAssets();
         }
 
@@ -44,8 +45,6 @@ namespace CindarsHope.Editor
                 AssetDatabase.CreateFolder(combatDir, "Weapons");
             if (!AssetDatabase.IsValidFolder(combatDir + "/Spells"))
                 AssetDatabase.CreateFolder(combatDir, "Spells");
-            if (!AssetDatabase.IsValidFolder(combatDir + "/Skills"))
-                AssetDatabase.CreateFolder(combatDir, "Skills");
         }
 
         private static void CreateWeapons()
@@ -75,21 +74,6 @@ namespace CindarsHope.Editor
             foreach (var (id, name, type, dmg, mana, cd, intel, will) in spells)
             {
                 CreateSpell(id, name, type, dmg, mana, cd, intel, will);
-            }
-        }
-
-        private static void CreateSkills()
-        {
-            var skills = new[]
-            {
-                ("skill_slash", "Slash", SkillActionType.Melee, 10, 15, 0, 400, 1),
-                ("skill_power_strike", "Power Strike", SkillActionType.Melee, 20, 30, 0, 600, 3),
-                ("skill_dodge", "Dodge", SkillActionType.Dash, 0, 20, 0, 300, 1),
-            };
-
-            foreach (var (id, name, type, dmg, stamina, mana, cd, level) in skills)
-            {
-                CreateSkill(id, name, type, dmg, stamina, mana, cd, level);
             }
         }
 
@@ -134,25 +118,6 @@ namespace CindarsHope.Editor
             AssetDatabase.CreateAsset(asset, path);
         }
 
-        private static void CreateSkill(string id, string name, SkillActionType type, int dmg, int stamina, int mana, int cd, int level)
-        {
-            var path = $"{SkillPath}{id}.asset";
-            if (AssetDatabase.LoadAssetAtPath<SkillActionSO>(path) != null)
-                return;
-
-            var asset = ScriptableObject.CreateInstance<SkillActionSO>();
-            asset.Id = id;
-            asset.ActionName = name;
-            asset.Description = $"Skill: {name}";
-            asset.Type = type;
-            asset.BaseDamage = dmg;
-            asset.StaminaCost = stamina;
-            asset.ManaCost = mana;
-            asset.CooldownMs = cd;
-            asset.RequiredLevel = level;
-
-            AssetDatabase.CreateAsset(asset, path);
-        }
     }
 }
 #endif

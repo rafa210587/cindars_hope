@@ -250,6 +250,12 @@ namespace CindarsHope.Cave.Runtime
             return !string.IsNullOrWhiteSpace(nodeInstanceId) && _state.DepletedNodeIds.Contains(nodeInstanceId);
         }
 
+        /// <summary>
+        /// KO/death path required by the cave stable-run contract (seed reroll on defeat)
+        /// and sole publisher of CavePlayerDefeatedEvent (DeathScreenController listens).
+        /// WIRING PENDING (audit 2026-06-13): no caller yet — the death flow must invoke
+        /// this on cave defeat. Do not delete.
+        /// </summary>
         public void HandlePlayerDefeated()
         {
             InitializeIfNeeded();
@@ -305,12 +311,6 @@ namespace CindarsHope.Cave.Runtime
                 Debug.Log($"CaveRunManager: Boss gate '{gate.Id}' defeated. Advancing {currentLevel}->{targetLevel} permitted.", this);
             }
             return true;
-        }
-
-        public bool CheckBossGate(int targetLevel)
-        {
-            InitializeIfNeeded();
-            return CanAdvanceToLevel(_state.CurrentCaveLevel, targetLevel, true);
         }
 
         public bool IsBossDefeated(string bossGateId)

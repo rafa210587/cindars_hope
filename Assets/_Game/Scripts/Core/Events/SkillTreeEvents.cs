@@ -14,16 +14,6 @@ namespace CindarsHope.Core.Events
         }
     }
 
-    public readonly struct SkillNodePurchaseRequestedEvent
-    {
-        public string NodeId { get; }
-
-        public SkillNodePurchaseRequestedEvent(string nodeId)
-        {
-            NodeId = nodeId;
-        }
-    }
-
     public readonly struct SkillNodePurchasedEvent
     {
         public string NodeId { get; }
@@ -47,38 +37,6 @@ namespace CindarsHope.Core.Events
         {
             NodeId = nodeId;
             Reason = reason;
-        }
-    }
-
-    public readonly struct SkillPassiveAppliedEvent
-    {
-        public string NodeId { get; }
-
-        public SkillPassiveAppliedEvent(string nodeId)
-        {
-            NodeId = nodeId;
-        }
-    }
-
-    public readonly struct SkillPassiveRemovedEvent
-    {
-        public string NodeId { get; }
-
-        public SkillPassiveRemovedEvent(string nodeId)
-        {
-            NodeId = nodeId;
-        }
-    }
-
-    public readonly struct ActiveSkillSlotAssignRequestedEvent
-    {
-        public string SkillActionId { get; }
-        public int SlotIndex { get; }
-
-        public ActiveSkillSlotAssignRequestedEvent(string skillActionId, int slotIndex)
-        {
-            SkillActionId = skillActionId;
-            SlotIndex = slotIndex;
         }
     }
 

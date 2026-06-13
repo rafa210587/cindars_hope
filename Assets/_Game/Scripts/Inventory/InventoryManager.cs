@@ -572,17 +572,6 @@ namespace CindarsHope.Inventory
             return $"equipment-slot:{equipmentSlot}";
         }
 
-        public bool ExpandCapacity(int newCapacity)
-        {
-            if (newCapacity <= Capacity || newCapacity > MaxCapacity)
-            {
-                return false;
-            }
-
-            EnsureCapacity(newCapacity);
-            return true;
-        }
-
         public bool DropItem(int slotIndex, Vector3 dropPosition)
         {
             if (!TryGetSlot(slotIndex, out var slot) || slot.IsEmpty)

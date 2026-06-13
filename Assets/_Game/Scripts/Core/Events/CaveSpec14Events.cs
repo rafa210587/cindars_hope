@@ -41,28 +41,6 @@ namespace CindarsHope.Core.Events
         }
     }
 
-    public readonly struct CaveCheckpointTeleportRequestedEvent
-    {
-        public readonly int DestinationLevel;
-
-        public CaveCheckpointTeleportRequestedEvent(int destinationLevel)
-        {
-            DestinationLevel = destinationLevel;
-        }
-    }
-
-    public readonly struct CaveCheckpointTeleportCompletedEvent
-    {
-        public readonly int DestinationLevel;
-        public readonly bool Success;
-
-        public CaveCheckpointTeleportCompletedEvent(int destinationLevel, bool success)
-        {
-            DestinationLevel = destinationLevel;
-            Success = success;
-        }
-    }
-
     // Enemy Respawn and Redistribution Events
     public readonly struct CaveEnemyRespawnScheduledEvent
     {
@@ -104,54 +82,4 @@ namespace CindarsHope.Core.Events
         }
     }
 
-    // Debug Events
-    public readonly struct CaveDebugSkipUsedEvent
-    {
-        public readonly string Action;
-        public readonly int TargetLevel;
-
-        public CaveDebugSkipUsedEvent(string action, int targetLevel)
-        {
-            Action = action;
-            TargetLevel = targetLevel;
-        }
-    }
-
-    // Level Snapshot Events
-    public readonly struct CaveLevelSnapshotCreatedEvent
-    {
-        public readonly int CaveLevel;
-        public readonly string LayoutHash;
-
-        public CaveLevelSnapshotCreatedEvent(int caveLevel, string layoutHash)
-        {
-            CaveLevel = caveLevel;
-            LayoutHash = layoutHash;
-        }
-    }
-
-    public readonly struct CaveLevelSnapshotLoadedEvent
-    {
-        public readonly int CaveLevel;
-        public readonly string LayoutHash;
-
-        public CaveLevelSnapshotLoadedEvent(int caveLevel, string layoutHash)
-        {
-            CaveLevel = caveLevel;
-            LayoutHash = layoutHash;
-        }
-    }
-
-    // Level Transition Events
-    public readonly struct CaveLevelTransitionBlockedEvent
-    {
-        public readonly int BlockedLevel;
-        public readonly string Reason;
-
-        public CaveLevelTransitionBlockedEvent(int blockedLevel, string reason)
-        {
-            BlockedLevel = blockedLevel;
-            Reason = reason;
-        }
-    }
 }

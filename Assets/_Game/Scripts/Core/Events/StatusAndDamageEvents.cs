@@ -96,30 +96,6 @@
         }
     }
 
-    public class DamageBlockedEvent
-    {
-        public string TargetId { get; }
-        public int BlockedAmount { get; }
-
-        public DamageBlockedEvent(string targetId, int blockedAmount)
-        {
-            TargetId = targetId ?? string.Empty;
-            BlockedAmount = blockedAmount;
-        }
-    }
-
-    public class DamageImmuneEvent
-    {
-        public string TargetId { get; }
-        public string DamageType { get; }
-
-        public DamageImmuneEvent(string targetId, string damageType)
-        {
-            TargetId = targetId ?? string.Empty;
-            DamageType = damageType ?? string.Empty;
-        }
-    }
-
     public class VulnerabilityWindowStartedEvent
     {
         public string TargetId { get; }

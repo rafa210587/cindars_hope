@@ -15,7 +15,8 @@ namespace CindarsHope.Editor.Validation
 
             var passed = true;
             passed &= ValidateDamageCalculator();
-            passed &= ValidateStatusEffectManager();
+            // Legacy root Combat/StatusEffectManager retired 2026-06-13 (live system:
+            // Combat/StatusEffect/* validated by StatusEffectCanonicalTests + CombatDatabaseValidator).
             passed &= ValidateFloatingDamageNumbers();
             passed &= ValidateDamageEvents();
             passed &= ValidateResistanceProfile();
@@ -40,19 +41,6 @@ namespace CindarsHope.Editor.Validation
             }
 
             Debug.LogError("✗ DamageCalculator.cs missing or incomplete");
-            return false;
-        }
-
-        private static bool ValidateStatusEffectManager()
-        {
-            var script = AssetDatabase.LoadAssetAtPath<MonoScript>("Assets/_Game/Scripts/Combat/StatusEffectManager.cs");
-            if (script != null && script.text.Contains("ApplyStatus") && script.text.Contains("RemoveStatus") && script.text.Contains("UpdateAllStatuses"))
-            {
-                Debug.Log("✓ StatusEffectManager.cs exists with apply/remove/update");
-                return true;
-            }
-
-            Debug.LogError("✗ StatusEffectManager.cs missing or incomplete");
             return false;
         }
 

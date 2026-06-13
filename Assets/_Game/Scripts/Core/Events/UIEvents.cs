@@ -12,17 +12,7 @@ namespace CindarsHope.Core.Events
 
     public struct InventoryPanelOpenedEvent { }
 
-    public struct InventoryPanelClosedEvent { }
-
     public struct EquipmentPanelOpenedEvent { }
-
-    public struct EquipmentPanelClosedEvent { }
-
-    public struct CraftingPanelOpenedEvent { }
-
-    public struct CraftingPanelClosedEvent { }
-
-    public struct SkillTreePanelClosedEvent { }
 
     public struct CheckpointMenuOpenedEvent { }
 
@@ -33,10 +23,4 @@ namespace CindarsHope.Core.Events
     public struct DeathScreenClosedEvent { }
 
     public struct ModalCloseRequestedEvent { }
-
-    public struct DebugHudToggledEvent
-    {
-        public bool IsEnabled;
-        public DebugHudToggledEvent(bool isEnabled) { IsEnabled = isEnabled; }
-    }
 }
