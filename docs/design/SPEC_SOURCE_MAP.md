@@ -1569,6 +1569,33 @@ spec_quest_anti_softlock_validation_future.md
 
 ---
 
+# PARTE FABLE — Catálogos canonizados (2026-06-12)
+
+Decisões humanas vinculantes: `docs/design/FABLE_DECISOES_RESPOSTAS_v1.0.md`.
+Novos documentos canônicos de catálogo (em conflito de MODELO, a direction-mãe vence;
+em conflito de LISTA/NÚMERO, o catálogo vence):
+
+```text
+docs/design/gameplay/cave/CAVE_BESTIARY_CATALOG_DIRECTION_v1.0.md
+  60 criaturas + 4 chefes finais, stat blocks, renomeações (Veilkin/Gravedelver).
+docs/design/gameplay/loot_crafting_economy/ITEM_CATALOG_DIRECTION_v1.0.md
+  ~118 itens nominais com BaseValue; qualidade de crops como itens separados.
+docs/design/gameplay/quests/QUEST_CATALOG_DIRECTION_v1.0.md
+  ~86 quests (5 fontes, incl. secretas da caverna), conexões, XP escalado.
+docs/design/gameplay/combat/BALANCE_CURVES_DIRECTION_v1.0.md
+  level cap 100, curva de XP, multiplicadores por tipo, TTK, validação de dano.
+docs/design/gameplay/combat/SKILL_ACTION_MOVEMENT_TABLE_DIRECTION_v1.0.md
+  execução física das skills ativas (telegraph/lunge/shape/recovery).
+docs/design/gameplay/ui_ux/HUD_LAYOUT_SCENES_DIRECTION_v1.0.md
+  layout HUD/minimapa/abas; cenas (Town 48×42, Cave 55×55±, lotes da farm).
+docs/design/gameplay/FABLE_SYSTEMS_DEEPENING_DIRECTION_v1.0.md (v1.1)
+  síntese do corpus + gaps de definição restantes.
+```
+
+Specs que toquem bestiário/itens/quests/balance/HUD/cenas devem ler o catálogo correspondente.
+
+---
+
 # PARTE J — Regra anti-regressão
 
 ## 15. Quando houver conflito

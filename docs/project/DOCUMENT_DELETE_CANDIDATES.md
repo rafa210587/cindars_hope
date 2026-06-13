@@ -207,3 +207,35 @@ Before deleting any candidate:
 4. Commits with clear message explaining deletion
 
 *Created: 2026-06-01 (SPEC_DOCS_30)*
+
+---
+
+## Batch FABLE — Candidatos adicionados 2026-06-12 (triagem fable_00B)
+
+**Status:** AGUARDANDO CONFIRMACAO HUMANA ("delete this candidate" por item)
+
+| Path | Motivo | Substituto canonico |
+|------|--------|---------------------|
+| docs/validation/playmode | ARQUIVO solto sem extensao (template salvo errado); bloqueia a pasta convencional de cenarios | copia preservada em docs/validation/_templates/HUMAN_TEST_SCENARIO_TEMPLATE_FROM_STRAY_PLAYMODE_FILE.md |
+| docs/specs/a_implementar/executadas_build_validated/FIX_001_runtime_warnings_town_shop_catalog_alignment.md | FIX-001/001B ja executados e reportados (CURRENT_STATE 2026-06-10); spec stale com naming fora do padrao | reports FIX_001B em docs/validation/ |
+| docs/specs/a_implementar/executadas_build_validated/03_spec_quest_*.md (8 arquivos) | duplicata literal da serie 09_spec_quest_* (WAVE 09 foi a executada) | serie 09_spec_quest_* + reports WAVE 09 |
+
+---
+
+## Batch FABLE-2 — Varredura de redundância 2026-06-12 (AUTORIZADO E EXECUTADO)
+
+**Autorização humana:** mensagem de 2026-06-12 "remova tudo o que já não faz mais sentido pro projeto".
+
+| Path | Motivo | Substituto canônico | Status |
+|------|--------|---------------------|--------|
+| build_logs.zip (raiz) | artefato de build de 8MB rastreado no git | logs regeneráveis | DELETED |
+| CHECKLIST_PR001.md (raiz) | checklist da era FASE8 pré-spec-governance, mojibake | fluxo /implement-spec | DELETED |
+| validate_quick.py (raiz) | validador python obsoleto (checa estrutura antiga); viola windows_powershell_only | tools/docs/validate_docs.ps1 (25+ checks) | DELETED |
+| BACKLOG.md (raiz) | backlog da era SPEC 14; zero referências vivas | docs/backlog/post_mvp_backlog.md + current_backlog.md | DELETED |
+| docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.0.md | superada pela v1.3 (SPEC_SOURCE_MAP só manda v1.3); zero referências | FARM_DESIGN_DIRECTION_v1.3.md | DELETED |
+| compile_check_waves_08_12.log (raiz, untracked) | log solto de validação antiga | docs/validation/ | DELETED |
+
+### Batch FABLE (anterior) — agora autorizado e executado
+| docs/validation/playmode (ARQUIVO solto) | DELETED — pasta playmode/ correta criada; cenário movido para dentro |
+| executadas_build_validated/FIX_001_runtime_warnings_town_shop_catalog_alignment.md | DELETED — FIX-001/001B executados |
+| executadas_build_validated/03_spec_quest_*.md (8 arquivos) | DELETED — duplicatas literais da série 09 (WAVE 09 foi a executada) |

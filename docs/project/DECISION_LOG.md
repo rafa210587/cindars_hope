@@ -21,7 +21,7 @@ If an ADR conflicts with a game rule:
 
 ---
 
-## Active Decisions (ADR-0001 to ADR-0009)
+## Active Decisions (ADR-0001 to ADR-0014)
 
 | ADR | Title | Theme | Status | Canonical Ref | Source |
 |---|---|---|---|---|---|
@@ -34,6 +34,11 @@ If an ADR conflicts with a game rule:
 | [ADR-0007](../decisions/ADR-0007-event-bus-gameplay-communication.md) | Event Bus Gameplay Communication | Architecture | accepted | docs/decisions/ADR-0007-* | .claude/rules/event-bus-only-gameplay-communication.md |
 | [ADR-0008](../decisions/ADR-0008-unity-yaml-editing-policy.md) | Unity Scene/Asset YAML Editing Policy | Tooling | accepted | docs/decisions/ADR-0008-* | .claude/rules/unity-yaml-editing-policy.md |
 | [ADR-0009](../decisions/ADR-0009-mvp-acceptance-phase-2-3.md) | MVP Acceptance Requires Phase 2-3 | Validation | accepted | docs/decisions/ADR-0009-* | .claude/rules/no-premature-acceptance-claims.md |
+| [ADR-0010](../decisions/ADR-0010-fable-skill-and-inventory-rules-reconciliation.md) | FABLE Skill & Inventory Rules Reconciliation | Gameplay | accepted | docs/game_rules/skill_tree_rules.md, inventory_equipment_rules.md | FABLE_DECISOES_RESPOSTAS_v3.0 (1.8, 2.12) |
+| [ADR-0011](../decisions/ADR-0011-pixel-art-scale-32px-per-tile.md) | Pixel Art Scale 32px/Tile | Art | accepted | docs/decisions/ADR-0011-* | FABLE_DECISOES_RESPOSTAS_v3.0 (4.3) |
+| [ADR-0012](../decisions/ADR-0012-localization-string-table-from-p4.md) | Localization String Table from P4 | Tooling | accepted | docs/decisions/ADR-0012-* | FABLE_DECISOES_RESPOSTAS_v3.0 (4.7) |
+| [ADR-0013](../decisions/ADR-0013-input-keyboard-mouse-only-v1.md) | Input Keyboard/Mouse Only v1 | Tooling | accepted | docs/decisions/ADR-0013-* | FABLE_DECISOES_RESPOSTAS_v3.0 (4.5) |
+| [ADR-0014](../decisions/ADR-0014-single-difficulty-v1.md) | Single Difficulty v1 | Gameplay | accepted | docs/decisions/ADR-0014-* | FABLE_DECISOES_RESPOSTAS_v3.0 (4.6) |
 
 ---
 
@@ -96,6 +101,14 @@ All game-specific rules are in `docs/game_rules/`. Key documents:
 - [skill_tree_rules.md](../game_rules/skill_tree_rules.md) — Points, slots, respec
 - [ui_modal_rules.md](../game_rules/ui_modal_rules.md) — Modal stack, input blocking
 - [death_anya_corpse_rules.md](../game_rules/death_anya_corpse_rules.md) — Death flow, recovery
+- [player_rules.md](../game_rules/player_rules.md) — Level/XP curve, derived stats, vitals, fatigue
+- [economy_rules.md](../game_rules/economy_rules.md) — Pricing, shop stock refresh, money sources/sinks
+- [quest_rules.md](../game_rules/quest_rules.md) — Objectives/events, conditions, reward idempotency, flags
+- [npc_rules.md](../game_rules/npc_rules.md) — NPC data, schedules, dialogue, friendship, gifts, services
+- [time_rules.md](../game_rules/time_rules.md) — Calendar, seasons, day transitions, weather, lunar cycle
+- [city_rules.md](../game_rules/city_rules.md) — Cindar's Hope footprint, districts, interiors, landmarks
+- [fonte_rules.md](../game_rules/fonte_rules.md) — Fonte state, fragment-driven unlocks, final-choice gating
+- [ui_rules.md](../game_rules/ui_rules.md) — Gameplay HUD overlays, floating combat feedback (non-modal)
 
 ---
 
@@ -127,5 +140,5 @@ All game-specific rules are in `docs/game_rules/`. Key documents:
 
 ---
 
-*Last Updated: 2026-06-01 (SPEC_DOCS_38)*  
+*Last Updated: 2026-06-13 (Refinamento v3 — ADR-0010..0014 adicionados; skill_tree_rules.md e inventory_equipment_rules.md reconciliados com o código FABLE pela ADR-0010)*  
 *Source of Truth: docs/decisions/ (ADRs) and docs/game_rules/ (rules)*

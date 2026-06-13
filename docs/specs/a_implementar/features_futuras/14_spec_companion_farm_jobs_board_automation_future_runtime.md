@@ -1,827 +1,649 @@
-# SPEC — Companion Farm Jobs Board Automation Future Runtime
+# SPEC — Companion Farm Jobs: Board, Automação Diária e Toggle de Fertilizante (WAVE 14, runtime gated)
 
-> **Spec ID:** `14_spec_companion_farm_jobs_board_automation_future_runtime`  
-> **Status:** A implementar / Future mapped  
-> **Wave:** WAVE 14 — Companions / Jobs / Cave Assist / Future Social Hooks  
-> **Priority:** P1  
-> **Type:** Runtime / Future / Farm Automation / Companion Jobs  
-> **Domain:** Companion / Farm Jobs / Job Board / Automation Limits / Output Rules  
-> **Parallelizable:** NO  
-> **Parallel group:** WAVE_14_COMPANIONS_FUTURE  
-> **Can run with:** N/A  
-> **Must not run with:** qualquer spec que altere farm crop runtime, inventory/storage backend, city schedule, save migration, pet jobs, UI prefab/job board layout ou economy balance final.  
-> **Repo lock scope:** `Assets/_Game/Scripts/Companions/**`, `Assets/_Game/Scripts/Farm/**`, `Assets/_Game/Scripts/Inventory/**`, `Assets/_Game/Tests/EditMode/Companions/**`, `docs/validation/14_spec_companion_farm_jobs_board_automation_future_runtime_execution_report.md`  
-> **Depends on:**  
-  - `docs/design/SPEC_SOURCE_MAP.md`
-  - `docs/design/SPECIFICATION_PROCESS.md`
-  - `docs/design/lore/VAALARA_GAME_CANON_DIRECTION_v1.0.md`
-  - `docs/specs/SPEC_IMPLEMENTABLE_TEMPLATE.md`
-  - `docs/specs/SPEC_WAVE_EXECUTION_PROTOCOL.md`
-  - `docs/specs/SPEC_VALIDATION_MATRIX_MASTER.md`
-  - `docs/specs/SPEC_EXISTING_IMPLEMENTATION_AUDIT.md`
-  - `docs/project/CURRENT_STATE.md`
-  - `docs/design/gameplay/companions/COMPANIONS_DIRECTION.md`
-  - `docs/design/gameplay/pets/PETS_DIRECTION.md`
-  - `docs/design/gameplay/city/CITY_NPC_ROSTER_SERVICES_DIRECTION_v1.1.md`
-  - `docs/design/gameplay/city/CITY_LAYOUT_BUILDINGS_SCHEDULE_DIRECTION.md`
-  - `docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.3.md`
-  - `docs/design/gameplay/farm/FARM_LAYOUT_SCALE_BUILDINGS_DIRECTION.md`
-  - `docs/design/gameplay/player/PLAYER_CORE_SYSTEMS_DIRECTION.md`
-  - `docs/design/gameplay/player/PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md`
-  - `docs/design/gameplay/player/PLAYER_SKILL_TREES_DIRECTION.md`
-  - `docs/design/gameplay/combat/COMBAT_CORE_DIRECTION.md`
-  - `docs/design/gameplay/combat/STATUS_EFFECTS_DIRECTION.md`
-  - `docs/design/gameplay/enemies/ENEMY_BEHAVIORS_DIRECTION.md`
-  - `docs/design/gameplay/cave/CAVE_DESIGN_DIRECTION.md`
-  - `docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_DIRECTION.md`
-  - `docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_ENEMY_BEHAVIOR_ADAPTER.md`
-  - `docs/design/gameplay/cave/CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md`
-  - `docs/design/gameplay/equipment/EQUIPMENT_WEAPONS_ARMOR_MATERIALS_DIRECTION.md`
-  - `docs/design/gameplay/equipment/EQUIPMENT_MECHANICAL_BASELINES_DIRECTION.md`
-  - `docs/design/gameplay/equipment/EQUIPMENT_ENEMY_VULNERABILITY_ADAPTER.md`
-  - `docs/design/gameplay/magic/MAGIC_SPELLS_ACTIONS_DIRECTION.md`
-  - `docs/design/gameplay/magic/MAGIC_LEARNING_UNLOCKS_SOURCES_DIRECTION.md`
-  - `docs/design/gameplay/loot_crafting_economy/LOOT_CRAFTING_ECONOMY_DIRECTION.md`
-  - `docs/design/gameplay/loot_crafting_economy/ECONOMY_PRICING_STOCK_REFRESH_DIRECTION.md`
-  - `docs/design/gameplay/quests/QUEST_OBJECTIVE_EVENT_SYSTEM_DIRECTION.md`
-  - `docs/design/gameplay/quests/QUESTS_MAIN_LORE_DIRECTION.md`
-  - `docs/design/gameplay/quests/QUESTS_MAIN_PROGRESSION_REFINEMENT_DIRECTION.md`
-  - `docs/design/gameplay/save_load/SAVE_LOAD_FULL_STATE_DIRECTION.md`
-  - `docs/design/gameplay/ui_ux/UI_UX_FULL_GAMEPLAY_DIRECTION.md`
-  - `docs/design/gameplay/ui_ux/UI_UX_MENU_SCREEN_FLOWS_DIRECTION.md`
-  - `docs/design/gameplay/bestiary/BESTIARY_KNOWLEDGE_DISCOVERY_DIRECTION.md`
-> **Blocks:**  
-  - job board UI;
-  - farm automation validations;
-  - companion relationship/job rank;
-  - economy anti-exploit;
-  - day transition jobs.
-> **Scope:** definir/endurecer jobs de fazenda por companion com board, área marcada, ferramenta/estação, stamina, horários, output/failure rules e limites anti-automação.  
-> **Out of scope:** crop/animal/process runtime rewrite, visual board UI, pet jobs, full economy balance, save migration.
+> **Spec ID:** `14_spec_companion_farm_jobs_board_automation_future_runtime`
+> **Status:** A implementar / SPEC-READY (contrato destravado; execução de runtime GATED na WAVE 14 — decisão 3.12 do Refinamento v3)
+> **Wave:** WAVE 14 — Companions / Jobs / Cave Assist / Future Social Hooks
+> **Priority:** P1
+> **Type:** Runtime / Farm Automation / Companion Jobs
+> **Domain:** Companion / Farm Jobs / Job Board / Automation Limits / Output Rules
+> **Parallelizable:** NO
+> **Parallel group:** WAVE_14_COMPANIONS_FUTURE
+> **Can run with:** N/A (cruza Farm, Inventory, Economy, Save, Time — lock amplo)
+> **Must not run with:** qualquer spec que reescreva o backend de crop/animal/process da fazenda, o backend de inventory/storage, a city schedule, uma save migration, pet jobs, o layout/prefab da UI do board ou o balanceamento final de economia.
+> **Repo lock scope:**
+> - `Assets/_Game/Scripts/Companions/**` (jobs/board — REUSE/HARDEN, ver Estado atual do repo)
+> - `Assets/_Game/Scripts/Companions/FarmJobs/**` (subpasta nova, se a Fase 0 confirmar que consolidar lá é mais limpo que manter na raiz Companions/)
+> - `Assets/_Game/Scripts/Save/Providers/**` (CompanionSaveSectionProvider — precedente HotbarSectionProvider)
+> - `Assets/_Game/Tests/EditMode/Companions/**`
+> - `docs/validation/14_spec_companion_farm_jobs_board_automation_future_runtime_execution_report.md`
+> **Depends on:**
+> - `14_spec_companion_eligibility_recruitment_state_save_future_runtime` (DONA do round-trip de save / `CompanionSaveSectionProvider`; esta spec PRECISA do provider para persistir `JobBoardState`/assignments — se a sibling ainda não o criou, esta spec pode criá-lo seguindo o precedente `HotbarSectionProvider`, em coordenação, sem duplicar)
+> - `CompanionFarmJobType` / `CompanionFarmJobDefinition` / `CompanionFarmJobAssignment` / `JobBoardState` / `CompanionJobBoardService` (EXISTENTES — REUSE/HARDEN, não recriar; ver Estado atual do repo)
+> - `CompanionAvailabilityResolver` + `CompanionBondState` (EXISTENTES — fonte de disponibilidade, fadiga, injury, JobRank)
+> - GameEventBus (existente — canal único de comunicação de gameplay; ADR-0007)
+> - Backend de Farm/Inventory/Economy (EXISTENTE — esta spec lê estado real, não reescreve)
+> **Blocks:**
+> - job board UI (layout/prefab — `14_spec_companion_ui_hud_invite_visit_dialogue_hooks_future_runtime`)
+> - validações finais de farm automation
+> - companion relationship / job rank progression (consumidores de `RelationshipGain`/`JobRank`)
+> - economy anti-exploit final
+> - day-transition jobs (gancho de automação diária no avanço de dia)
+> **Scope:** endurecer (HARDEN) o runtime EXISTENTE dos 9 jobs de fazenda por companion — board + atribuição (assignment) + automação diária + execução com validação dry-run + output/rendimento derivado de estado real + fadiga por trabalho + múltiplos companions na fazenda — e ADICIONAR o **toggle de auto-fertilização por job de Planter (default OFF)** que consome fertilizante do storage AUTORIZADO (decisão 3.8/5.5), tudo com round-trip de save via `CompanionSaveSectionProvider`.
+> **Out of scope:** reescrita do backend de crop/animal/process; reescrita do backend de inventory/storage; pet jobs; sistema de relacionamento/romance/spouse completo; tuning final de economia; layout/prefab visual do board; save migration de schema.
+
+required_adrs: [ADR-0006, ADR-0007]
+required_game_rules: [farm_rules.md, save_rules.md, event_rules.md]
+
+---
+
+# EMENDA 2026-06-13-V3 (Refinamento v3) — vinculante
+
+> **Fonte vinculante:** `docs/design/FABLE_DECISOES_RESPOSTAS_v3.0.md`, BLOCO 3 (decisões 3.8, 3.11, 3.12) e BLOCO 5 (decisão 5.5).
+> **Direction emendada:** `docs/design/gameplay/companions/COMPANIONS_DIRECTION.md` → seções **V3.7** (fertilizante, decisão 3.8, linhas 1577-1588) e **V3.8** (Bond/JobRank, decisão 3.11, linhas 1590-1600).
+> **Catálogo de papéis (artefato A7):** `docs/design/gameplay/companions/COMPANION_ROLES_CATALOG_v1.0.md` → §3.8 FarmWorker/Plantador/Colhedor (linhas 374-402), §3.10 Miner (linhas 437-464), §3.11 AnimalCaretaker, §3.12 Crafter/Builder.
+
+Esta spec deixou de ser "future mapped" e passou a **SPEC-READY** (decisão 3.12): contrato destravado; execução de runtime gated na **WAVE 14**. Decisões v3 que esta spec DEVE refletir:
+
+```text
+3.8 — Fertilizante raro automático: TOGGLE por job de Planter, DEFAULT OFF (executa o SIM da 5.5).
+        Adicionar ao CompanionFarmJobDefinition do job de Planter (CompanionFarmJobType.Planter)
+        um toggle de auto-fertilização (default OFF). Quando LIGADO, consome fertilizante do
+        STORAGE AUTORIZADO do job (§9 storage access policy) — NUNCA cria do nada (§8 output
+        rules), NUNCA acessa inventário do jogador sem comando. Sem fertilizante no storage
+        autorizado, o job planta SEM fertilizar (NÃO falha por isso). Cobrir por EditMode test.
+
+3.11 — Bond 0-5 e JobRank separados: qualidade/output do job pode escalar por Bond e por JobRank
+        (trilhas DISTINTAS; o código já tem CompanionBondState.BondLevel e .JobRank, e
+        CompanionSaveEntry.BondLevel/.JobRank/.CaveRank). Os caps de automação (capacidade do
+        board / stamina / tempo / DailyLimit) continuam valendo INDEPENDENTE de bond/rank.
+
+3.12 — Manter WAVE 14; execução gated. A spec fica DENSA e pronta, mas permanece em
+        features_futuras/ até a WAVE 14 ou decisão humana explícita de antecipar.
+```
+
+Notas de reconciliação de código (re-auditoria 2026-06-13, COMPANIONS_DIRECTION V3.9):
+
+```text
+- Os 9 jobs de fazenda JÁ ESTÃO implementados como contratos C# puros (CompanionFarmJobType
+  com 9 valores; CompanionFarmJobDefinition; CompanionFarmJobAssignment; JobBoardState;
+  CompanionJobBoardService com ValidateJobExecution/RecordJobExecution). O executor deve
+  REUSE/HARDEN — NÃO recriar enum, definition, assignment, board nem service.
+- O round-trip de save (CompanionSaveSectionProvider, precedente HotbarSectionProvider) é
+  dívida compartilhada com a sibling de eligibility/state/save (acréscimo #3 / V3.9.1). Esta
+  spec persiste o JobBoardState/assignments por esse provider; se a sibling ainda não o criou,
+  criar aqui SEM duplicar (um único provider de companions).
+- Romance/Spouse continuam FLAGS de elegibilidade (CompanionEligibilityFlags.CanBeRomanceCompanion/
+  CanBeSpouseCompanion) e NÃO papéis no enum CompanionRole (acréscimo #4). Esta spec NÃO toca esse enum.
+```
 
 ---
 
 # /speckit.specify
 
-## 1. Contexto
+## Contexto
 
-Companions podem ajudar em jobs da fazenda, mas devem reduzir repetição sem remover planejamento. Jobs exigem área marcada, ferramenta/estação, limites de tempo/stamina e não podem criar item do nada.
+Decisão 3.12 (`docs/design/FABLE_DECISOES_RESPOSTAS_v3.0.md`, BLOCO 3): as quatro specs
+`14_spec_companion_*` deixam de ser "future mapped" e viram **spec-ready**, com execução de
+runtime gated na WAVE 14. Companion, neste canon, é um **NPC da cidade com vínculo** (não
+animal, não summon): 1 ativo na caverna, mas **múltiplos** podem trabalhar em jobs de fazenda
+simultaneamente. Cada papel (`COMPANION_ROLES_CATALOG_v1.0.md`) entrega bônus de combate +
+bônus fora de combate + um conjunto de ações; os papéis de fazenda relevantes a esta spec são
+FarmWorker/Plantador/Colhedor (§3.8), Miner (§3.10), AnimalCaretaker (§3.11) e Crafter/Builder
+(§3.12).
 
-Esta spec cria o runtime futuro de job contracts, não o visual final do board.
+A re-auditoria de 2026-06-13 confirmou que o **núcleo de jobs já existe como código C# puro e
+testável** (ver Estado atual do repo). Portanto esta spec NÃO cria o sistema do zero: ela
+**endurece** (HARDEN) o que existe, fecha lacunas confirmadas (round-trip de save; output
+derivado de estado real; automação diária no avanço de dia; múltiplos companions; toggle de
+fertilizante da decisão 3.8) e ancora tudo nas invariantes do projeto (sem `GameObject.Find`/
+`FindObjectOfType`, comunicação por `GameEventBus`, save DTOs com tipos simples + IDs).
 
----
+## Problema
 
-## 2. Problema
-
-Sem job rules:
-
-```text
-companion planta/colhe tudo sozinho no early game;
-job cria item sem world state real;
-storage é acessado sem permissão;
-job ignora clima/season/horário/ferramenta;
-companion trabalha com stamina infinita;
-output gera economia infinita;
-pet vira worker sem spec;
-NPC teleporta para fazenda sem agenda.
-```
-
----
-
-## 3. Objetivo
-
-Criar/endurecer:
+Companions podem ajudar em jobs da fazenda, mas devem **reduzir repetição sem remover
+planejamento**. Hoje os contratos C# existem mas há lacunas e riscos não fechados:
 
 ```text
-CompanionFarmJobDefinition;
-CompanionJobType;
-CompanionJobAssignment;
-CompanionJobBoardState;
-AllowedArea;
-AllowedToolOrStation;
-StaminaBudget;
-OutputRules;
-FailureRules;
-JobExecutionResult;
-JobAutomationValidator.
+- o JobBoardState e os assignments NÃO têm round-trip de save (nenhum CompanionSaveSectionProvider);
+  ao recarregar, a programação diária some;
+- a automação diária (gancho no avanço de dia) não está ligada ao reset/execução de jobs;
+- output/rendimento precisa ser DERIVADO do estado real do mundo (seed real, crop maduro real,
+  nó de recurso real) — sem isso, o companion poderia "criar item do nada";
+- o toggle de fertilizante raro automático (decisão 3.8) NÃO existe no CompanionFarmJobDefinition;
+- múltiplos companions na fazenda precisam de caps de board (capacidade/stamina/tempo) que não
+  estourem economia;
+- duplicação de output no day transition / após reload (idempotência) não está testada.
 ```
 
----
+Sem fechar isso: companion planta/colhe tudo sozinho no early game; job cria item sem world
+state real; storage é acessado sem permissão; job ignora clima/season/horário/ferramenta;
+companion trabalha com stamina infinita; output gera economia infinita; e o board não persiste.
 
-## 4. Regras de design
+## Objetivo
+
+Ao final desta spec o runtime EXISTENTE de jobs de fazenda deve, dentro do escopo gated da WAVE 14:
 
 ```text
-Companion de fazenda reduz repetição, não remove planejamento.
-Jobs exigem área marcada, ferramenta/estação e limites.
-Early game companion faz pouco e ensina.
-Mid/late melhora automação controlada.
-Companion não cria item do nada.
-Companion não coleta recurso fora do estado real do mundo.
-Job board limita automação e mostra tempo/custo/resultado esperado.
+1. REUSE/HARDEN os contratos existentes (CompanionFarmJobType[9], CompanionFarmJobDefinition,
+   CompanionFarmJobAssignment, JobBoardState, CompanionJobBoardService) — sem recriar.
+2. Atribuir job com área marcada, ferramenta/estação, horário, StaminaBudget e DailyLimit, com
+   resultado esperado previsível; suportar MÚLTIPLOS companions na fazenda.
+3. Executar via VALIDAÇÃO dry-run primeiro (ValidateJobExecution já existe) e só então aplicar
+   o efeito, derivando OUTPUT do estado real do mundo (seed/crop/nó reais; nunca "do nada").
+4. Aplicar fadiga por trabalho (FatigueGain) em CompanionBondState.Fatigue; respeitar o gate de
+   fadiga já existente (CompanionAvailabilityResolver: Fatigue > 80 = indisponível).
+5. ADICIONAR o toggle de auto-fertilização por job de Planter (default OFF) que consome
+   fertilizante do storage AUTORIZADO; sem fertilizante = planta sem fertilizar (não falha).
+6. Resetar a programação diária no avanço de dia (RepeatPolicy) com IDEMPOTÊNCIA (sem duplicar
+   output após reload/transição de dia).
+7. Persistir JobBoardState/assignments por CompanionSaveSectionProvider (precedente
+   HotbarSectionProvider) — DTOs simples + IDs, sem refs Unity (ADR-0006).
+8. Comunicar marcos (job atribuído/concluído) APENAS via GameEventBus (ADR-0007), com unsubscribe.
 ```
 
----
+Tudo gated: a spec fica densa e pronta, mas permanece em `features_futuras/` (decisão 3.12).
 
-## 5. User stories / engineering stories
+## Fontes obrigatórias lidas
 
 ```text
-Como jogador, quero atribuir job com área, tempo, ferramenta e resultado esperado.
-Como farm, quero validar se crop/item/estação existem.
-Como companion, quero consumir stamina/fatigue e respeitar vínculo/job rank.
-Como economy, quero impedir output infinito.
-Como save/load, quero preservar job do dia sem duplicar resultado.
+docs/design/FABLE_DECISOES_RESPOSTAS_v3.0.md (BLOCO 3: 3.8/3.11/3.12; BLOCO 5: 5.5)
+docs/design/gameplay/companions/COMPANIONS_DIRECTION.md (V3.7 linhas 1577-1588; V3.8 linhas 1590-1600; V3.9.1 round-trip de save)
+docs/design/gameplay/companions/COMPANION_ROLES_CATALOG_v1.0.md (§3.8 FarmWorker linhas 374-402; §3.10 Miner linhas 437-464; §3.11/§3.12)
+docs/design/SPEC_SOURCE_MAP.md (mapeamento de domínio companion → COMPANIONS_DIRECTION)
+docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.3.md (estado real de crop; ciclo diário)
+docs/game_rules/farm_rules.md (layout de plots; ciclo de crescimento; reset diário; storage da fazenda separado da inventory; persistência)
+docs/game_rules/save_rules.md (DTOs simples + IDs; sem refs Unity; resolução no load)
+docs/game_rules/event_rules.md (comunicação só via GameEventBus; unsubscribe)
+docs/decisions/ADR-0006-save-data-contracts-simple-dtos.md
+docs/decisions/ADR-0007-event-bus-gameplay-communication.md
+.claude/skills/save-section-provider/SKILL.md (padrão HotbarSectionProvider)
+.claude/skills/economy-balance-tuning/SKILL.md (anti-exploit de output)
+.claude/rules/testing-quality-gate.md
+.claude/rules/unity-architecture.md
 ```
 
----
-
-## 6. Escopo
-
-Inclui:
+## Estado atual do repo
 
 ```text
-farm job definitions;
-job board state;
-assignment rules;
-allowed area/tool/station;
-time/stamina/fatigue;
-output/failure rules;
-storage access policy;
-anti-economy exploit;
-tests.
+EXISTE e NÃO RECRIAR (confirmado pela re-auditoria 2026-06-13 — REUSE/HARDEN):
+- Assets/_Game/Scripts/Companions/CompanionFarmJobType.cs:3-14 — enum com OS 9 JOBS:
+  Planter(0), Waterer(1), Harvester(2), Lumberjack(3), Fisherman(4), AnimalCaretaker(5),
+  Crafter(6), Organizer(7), Miner(8). NÃO alterar a ordem nem os valores (estável p/ save);
+  adições só no FIM, se a Fase 0 justificar.
+- Assets/_Game/Scripts/Companions/CompanionFarmJobDefinition.cs — já carrega:
+  - AllowedArea (AreaId, GridX/Y, SizeX/Y) — linhas 5-12;
+  - AllowedResources (AllowedItemIds, ForbiddenItemIds, MaxDailyConsumption) — linhas 14-19;
+  - OutputRules (DestinationStorageId, AllowedOutputItemIds, AutoSell=false) — linhas 21-26;
+  - CompanionFarmJobDefinition (JobId, JobType, RequiredToolOrStation, StartTimeHour, EndTimeHour,
+    StaminaBudgetPerDay, RelationshipGainPerJob, FatigueGainPerJob, Area, Resources, OutputRules,
+    DailyLimit=3, Priority=1) — linhas 28-49;
+  - helpers CanExecuteAtTime (51-54), IsItemAllowed (56-65), CanOutputItem (67-73).
+  O toggle de fertilizante (3.8) é um ACRÉSCIMO de campo aqui (default OFF) — não recriar a classe.
+- Assets/_Game/Scripts/Companions/CompanionFarmJobAssignment.cs — JobAssignmentStatus
+  (Assigned/InProgress/Completed/Failed/Paused/Cancelled, linhas 3-11) e CompanionFarmJobAssignment
+  (AssignmentId, CompanionId, JobId, IsActive, ExecutionCount, FailureCount, Status,
+  StaminaUsedToday, CurrentDay; ResetDaily(); CanExecuteMoreToday(dailyLimit);
+  HasStaminaForJob(budget, stamina)) — linhas 13-54. REUSE.
+- Assets/_Game/Scripts/Companions/JobBoardState.cs — AvailableJobs, CompanionAssignments
+  (Dictionary companionId -> List<assignment> — SUPORTA múltiplos companions), CurrentDay;
+  AddJob/AssignJobToCompanion/GetCompanionAssignments/GetJobDefinition/ResetDailyState. REUSE.
+- Assets/_Game/Scripts/Companions/CompanionJobBoardService.cs — JobExecutionResult enum
+  (Success/InsufficientStamina/AreaRestrictionViolation/TimeWindowClosed/DailyLimitExceeded/
+  CompanionUnavailable/JobNotFound/ResourceRestrictionViolation, linhas 6-16) e o serviço com
+  ValidateJobExecution (33-61, DRY-RUN), RecordJobExecution (63-84), GetActiveJobsForCompanion
+  (86-90), DeactivateJobAssignment (92-101), RegisterCompanionStamina (28-30). REUSE/HARDEN.
+- Assets/_Game/Scripts/Companions/CompanionAvailabilityResolver.cs — ResolveAvailability já gate
+  por injury (Incapacitated) e FADIGA (Fatigue > 80, linha 31). REUSE para "companion disponível".
+- Assets/_Game/Scripts/Companions/CompanionBondState.cs — BondLevel, Fatigue, InjuryState,
+  JobRank, CaveRank (campos já distintos; decisão 3.11). REUSE como fonte de bond/rank/fatigue.
+- Assets/_Game/Scripts/Save/SaveData.cs:225-245 — CompanionManagerSaveData { List<CompanionSaveEntry> }
+  e CompanionSaveEntry (CompanionId, NpcId, UnlockState, UnlockedRoles, UnlockedByQuestIds,
+  BondLevel, TrustPoints, Fatigue, InjuryState, LastInteractionDay, JobRank, CaveRank). DTO simples.
+- Assets/_Game/Scripts/Save/ISaveSectionProvider.cs + Save/Providers/HotbarSectionProvider.cs —
+  PRECEDENTE EXATO do provider a criar (Capture(GameSaveData)/Restore(object), ProviderId).
+- GameEventBus (Publish/Subscribe) — canal único de gameplay (ADR-0007). Backend de Farm/
+  Inventory/Economy — fonte do ESTADO REAL (crops, seeds, nós de recurso, storage).
+
+NÃO EXISTE (lacunas confirmadas — escopo de HARDEN/ADD desta spec):
+- CompanionSaveSectionProvider para companions (só HotbarSectionProvider existe). O JobBoardState/
+  assignments NÃO têm round-trip de save hoje.
+- Campo/toggle de auto-fertilização no CompanionFarmJobDefinition (decisão 3.8) — ausente.
+- Gancho de automação diária: ResetDailyState existe em JobBoardState, mas não há serviço que o
+  acione no avanço de dia nem que execute os jobs com IDEMPOTÊNCIA após reload.
+- Derivação de OUTPUT a partir do estado real do mundo (a CanOutputItem só valida lista de IDs;
+  falta o passo que consome seed real / exige crop maduro real / exige nó real).
+- Eventos de marco (CompanionJobAssignedEvent / CompanionJobCompletedEvent) no GameEventBus.
+
+AUDITAR Fase 0 (registrar achados no execution report, classificando EXISTING_CANONICAL/
+EXISTING_PARTIAL/MISSING_SAFE_TO_CREATE/MISSING_BUT_DEFER/CONFLICT):
+- como obter o ESTADO REAL de crop/seed/nó de recurso e do storage da fazenda SEM GameObject.Find/
+  FindObjectOfType (via interface/adapter injetado, GameBootstrap ou serialized ref);
+- onde fica o "fertilizante raro" como item/ID e qual storage é o "autorizado" do job de Planter;
+- de qual sinal vem o avanço de dia (evento de day transition já publicado?) para acionar o reset/
+  execução diária — consumir o existente, NÃO inventar relógio;
+- se a sibling 14_spec_companion_eligibility_recruitment_state_save_* já criou o
+  CompanionSaveSectionProvider; se sim, ESTENDER (não duplicar); se não, criar aqui.
 ```
 
-Não inclui:
+## Engineering stories
 
 ```text
-board prefab/layout;
-crop/animal/process backend rewrite;
-pet jobs;
-full relationship system;
-final economy tuning.
+Como jogador, quero atribuir a um companion um job com área marcada, horário, ferramenta/estação,
+  StaminaBudget e DailyLimit, e ver o resultado esperado (tempo/custo/output) antes de confirmar.
+Como jogador, quero ligar/desligar a auto-fertilização no job de Planter (default OFF), sabendo
+  que ela só consome fertilizante do storage autorizado e nunca do meu inventário.
+Como jogador, quero atribuir jobs a VÁRIOS companions na fazenda ao mesmo tempo, limitado pela
+  capacidade do board, sem que isso quebre a economia.
+Como sistema de fazenda, quero validar (dry-run) se crop/seed/estação/nó existem no estado REAL
+  antes de produzir qualquer output.
+Como companion, quero consumir stamina/fadiga e respeitar vínculo (Bond) / JobRank, ficando
+  indisponível quando minha fadiga passa do limite existente (> 80).
+Como economia, quero impedir output infinito: caps de board, DailyLimit, StaminaBudget, sem
+  auto-sell e sem shipping por padrão.
+Como save/load, quero preservar a programação do dia (board + assignments) por um SaveSectionProvider
+  e NÃO duplicar output após reload nem na transição de dia (idempotência).
+Como arquitetura, quero comunicação só por GameEventBus e DTOs de save com tipos simples + IDs.
 ```
 
-## Source Map Compliance
-
-### Global sources read
-
-- docs/design/SPEC_SOURCE_MAP.md
-- docs/design/SPECIFICATION_PROCESS.md
-- docs/design/lore/VAALARA_GAME_CANON_DIRECTION_v1.0.md
-- docs/specs/SPEC_IMPLEMENTABLE_TEMPLATE.md
-- docs/specs/SPEC_WAVE_EXECUTION_PROTOCOL.md
-- docs/specs/SPEC_VALIDATION_MATRIX_MASTER.md
-- docs/specs/SPEC_EXISTING_IMPLEMENTATION_AUDIT.md
-- docs/project/CURRENT_STATE.md
-
-### Domain directions read
-
-- docs/design/gameplay/companions/COMPANIONS_DIRECTION.md
-- docs/design/gameplay/pets/PETS_DIRECTION.md
-- docs/design/gameplay/city/CITY_NPC_ROSTER_SERVICES_DIRECTION_v1.1.md
-- docs/design/gameplay/city/CITY_LAYOUT_BUILDINGS_SCHEDULE_DIRECTION.md
-- docs/design/gameplay/farm/FARM_DESIGN_DIRECTION_v1.3.md
-- docs/design/gameplay/farm/FARM_LAYOUT_SCALE_BUILDINGS_DIRECTION.md
-- docs/design/gameplay/player/PLAYER_CORE_SYSTEMS_DIRECTION.md
-- docs/design/gameplay/player/PLAYER_DERIVED_ATTRIBUTES_DIRECTION.md
-- docs/design/gameplay/player/PLAYER_SKILL_TREES_DIRECTION.md
-- docs/design/gameplay/combat/COMBAT_CORE_DIRECTION.md
-- docs/design/gameplay/combat/STATUS_EFFECTS_DIRECTION.md
-- docs/design/gameplay/enemies/ENEMY_BEHAVIORS_DIRECTION.md
-- docs/design/gameplay/cave/CAVE_DESIGN_DIRECTION.md
-- docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_DIRECTION.md
-- docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_ENEMY_BEHAVIOR_ADAPTER.md
-- docs/design/gameplay/cave/CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md
-- docs/design/gameplay/equipment/EQUIPMENT_WEAPONS_ARMOR_MATERIALS_DIRECTION.md
-- docs/design/gameplay/equipment/EQUIPMENT_MECHANICAL_BASELINES_DIRECTION.md
-- docs/design/gameplay/equipment/EQUIPMENT_ENEMY_VULNERABILITY_ADAPTER.md
-- docs/design/gameplay/magic/MAGIC_SPELLS_ACTIONS_DIRECTION.md
-- docs/design/gameplay/magic/MAGIC_LEARNING_UNLOCKS_SOURCES_DIRECTION.md
-- docs/design/gameplay/loot_crafting_economy/LOOT_CRAFTING_ECONOMY_DIRECTION.md
-- docs/design/gameplay/loot_crafting_economy/ECONOMY_PRICING_STOCK_REFRESH_DIRECTION.md
-- docs/design/gameplay/quests/QUEST_OBJECTIVE_EVENT_SYSTEM_DIRECTION.md
-- docs/design/gameplay/quests/QUESTS_MAIN_LORE_DIRECTION.md
-- docs/design/gameplay/quests/QUESTS_MAIN_PROGRESSION_REFINEMENT_DIRECTION.md
-- docs/design/gameplay/save_load/SAVE_LOAD_FULL_STATE_DIRECTION.md
-- docs/design/gameplay/ui_ux/UI_UX_FULL_GAMEPLAY_DIRECTION.md
-- docs/design/gameplay/ui_ux/UI_UX_MENU_SCREEN_FLOWS_DIRECTION.md
-- docs/design/gameplay/bestiary/BESTIARY_KNOWLEDGE_DISCOVERY_DIRECTION.md
-
-### Required interpretation
+## Escopo
 
 ```text
-Esta spec deriva de COMPANIONS_DIRECTION.
-Ela não redefine NPC concreto, romance/casamento detalhado, pet, enemy AI, loot tables, fórmula final de dano/HP/MP/Stamina, layout de fazenda/cidade/caverna ou stats de monstros.
-Ela deve respeitar que Pet é sistema separado e está explicitamente deferido.
-Ela deve preservar a regra: companion ajuda, mas não joga pelo jogador.
-Quando houver conflito com roster de cidade, farm, combat, enemy behavior, cave balance, pets ou economy directions, o executor deve parar e registrar CONFLICT.
+Inclui (REUSE/HARDEN + ADD — sempre o menor conjunto seguro de arquivos):
+- HARDEN do CompanionJobBoardService: pipeline "ValidateJobExecution (dry-run) -> aplicar efeito
+  derivado do estado real -> RecordJobExecution", com idempotência por (CompanionId, JobId, dia,
+  ExecutionCount). Não duplicar a lógica de validação já existente; estendê-la.
+- DERIVAÇÃO de output do estado real do mundo via um adapter/porta injetada (interface) que
+  expõe: existe seed real? crop maduro na área? nó de recurso real/não-depletado? capacidade do
+  storage autorizado? — implementação concreta liga ao backend de Farm/Inventory (sem busca global).
+- TOGGLE de auto-fertilização (decisão 3.8): campo bool no CompanionFarmJobDefinition (DEFAULT
+  OFF) específico do job de Planter (CompanionFarmJobType.Planter); quando ON, consome fertilizante
+  do storage AUTORIZADO; sem fertilizante = planta sem fertilizar (NÃO falha). EditMode test
+  cobrindo ON-com-fertilizante / ON-sem-fertilizante / OFF.
+- AUTOMAÇÃO diária: serviço que consome o sinal de avanço de dia EXISTENTE (Fase 0) e chama
+  JobBoardState.ResetDailyState + executa os assignments com RepeatPolicy aplicável, idempotente.
+- MÚLTIPLOS companions: o board já usa Dictionary companionId -> assignments; HARDEN os caps
+  (capacidade do board / soma de stamina / janela de tempo) para que N companions não estourem
+  economia. Caps valem INDEPENDENTE de Bond/JobRank (decisão 3.11); Bond/JobRank só modulam
+  QUALIDADE/output, nunca removem os caps.
+- FADIGA por trabalho: aplicar FatigueGainPerJob em CompanionBondState.Fatigue no sucesso; o gate
+  de indisponibilidade por fadiga (> 80) já existe no resolver — respeitar, não duplicar.
+- SAVE: CompanionSaveSectionProvider (precedente HotbarSectionProvider) com DTO simples para
+  JobBoardState/assignments (IDs + tipos simples; sem refs Unity). Round-trip capture/restore.
+- EVENTOS: CompanionJobAssignedEvent / CompanionJobCompletedEvent no GameEventBus (Publish no
+  serviço; consumidores externos fazem Subscribe/unsubscribe).
+- EditMode tests: assignment válido; missing tool/station; missing input/seed; área/recurso
+  inválido; janela de horário fechada; DailyLimit/capacidade do board; StaminaBudget; storage
+  policy; output derivado de estado real; idempotência após reload/day transition; sem auto-sell;
+  toggle de fertilizante (3 casos); múltiplos companions dentro do cap; round-trip do provider.
 ```
 
----
-
-## Direction / Refinement Coverage
-
-### Covered from directions
-
-- Farm jobs devem ser explícitos com JobId, CompanionId, JobType, AllowedArea, AllowedToolOrStation, StartTime, EndTime, StaminaBudget, OutputRules, FailureRules, RelationshipGain e FatigueGain.
-- Job board atribui tarefa, limita automação, mostra tempo/custo, mostra resultado esperado, evita que NPC faça tudo sem comando e permite planejamento diário.
-- Novos tipos de job abrem com relação, construção, tool upgrades ou progresso.
-- Companion deve respeitar área marcada, horário, ferramenta, stamina diária, vínculo/job, storage autorizado, estações construídas, clima/season.
-- Companion não deve criar item do nada nem coletar recurso fora do estado real do mundo.
-- Companion de fazenda deve reduzir repetição, não remover planejamento.
-
-### Deferred / future from directions
-
-- Pet jobs.
-- Farm defense/invasões.
-- Full worker/helper hired system.
-- Board visual final.
-- Animal product final system.
-- Economy tuning final.
-
-### Explicitly not redefined here
-
-- Farm crop/animal/product state.
-- Inventory/storage backend.
-- City schedule and NPC movement.
-- Relationship system.
-- Pet system.
-- Save migration.
-
-## 7. Modelo de domínio
-
-### 7.1 CompanionJobType
+## Fora de escopo
 
 ```text
-Plant
-Harvest
-ChopMarkedTrees
-MineMarkedRocks
-AnimalCareFuture
-OperateWorkshop
-AlchemyProcessing
-BuildAssist
-ForageMarkedArea
-CleanFarmArea
+- Reescrita do backend de crop/animal/process da fazenda (esta spec LÊ o estado real via adapter);
+- Reescrita do backend de inventory/storage (LÊ/grava só via storage autorizado do job);
+- Pet jobs (Pets é sistema separado/deferido — NÃO criar pet runtime/save/HUD/assets);
+- Sistema de relacionamento/romance/spouse completo (Romance/Spouse são FLAGS de elegibilidade,
+  NÃO papéis — não tocar CompanionRole nem CompanionEligibilityFlags semanticamente);
+- Tuning final de economia (preços/curvas finais ficam para spec de economy balance);
+- AnimalCaretaker (job 5): requer sistema de animais futuro — BLOQUEADO agora salvo se o backend
+  estiver disponível na Fase 0; caso ausente, retorna SkippedUnavailable (não falha o board);
+- Layout/prefab visual do job board e qualquer .unity/.prefab/.asset;
+- Save migration de schema (se um novo estado persistido EXIGIR migration, PARAR e reportar);
+- Mudança de relógio/day-cycle (apenas CONSUMIR o sinal de avanço de dia existente).
 ```
 
-### 7.2 CompanionFarmJobDefinition
+## Regras de não duplicação
 
 ```text
-JobType
-RequiredRole
-RequiredUnlockFlags[]
-RequiredBuildingIds[]
-RequiredToolTags[]
-RequiredStationTags[]
-AllowedSeasonPolicy
-AllowedWeatherPolicy
-BaseDuration
-BaseStaminaCost
-BaseFatigueGain
-OutputPolicyId
-FailurePolicyId
-CanRunEarlyGame
+- NÃO recriar CompanionFarmJobType / CompanionFarmJobDefinition / CompanionFarmJobAssignment /
+  JobBoardState / CompanionJobBoardService — todos existem; HARDEN/estender no lugar.
+- NÃO criar um segundo enum de resultado de job (JobExecutionResult já existe) nem um segundo
+  board/serviço de jobs.
+- NÃO criar um segundo SaveSectionProvider de companions — um único CompanionSaveSectionProvider
+  (estender o da sibling se já existir).
+- NÃO criar canal de comunicação fora do GameEventBus (ADR-0007 / event_rules.md).
+- NÃO recriar o gate de fadiga (CompanionAvailabilityResolver já o tem); reutilizar.
+- NÃO inventar evento de day-cycle/relógio; consumir o existente (Fase 0).
+- NÃO adicionar Romance/Spouse ao enum CompanionRole (permanecem flags).
 ```
 
-### 7.3 CompanionJobAssignment
+## Critérios de aceite
 
-```text
-AssignmentId
-CompanionId
-JobType
-AllowedAreaId
-AllowedToolOrStationId optional
-StorageAccessPolicyId
-StartTime
-EndTime
-StaminaBudget
-Priority
-RepeatPolicy: None | DailyUntilCanceled | ManualOnly
-AssignedDay
-```
+### CA-1 — Atribuição validada e múltiplos companions sob cap
+- Um job só é atribuído/executado se passar a validação dry-run existente (`ValidateJobExecution`):
+  companion disponível, job existente, dentro da janela de horário, abaixo do DailyLimit, com
+  StaminaBudget suficiente, dentro da área/recurso permitidos. Múltiplos companions podem ter
+  assignments simultâneos, mas a soma respeita a capacidade do board / stamina / tempo.
+- Evidência: EditMode tests (válido; missing tool; missing input; área/recurso inválido; janela
+  fechada; DailyLimit; capacidade do board com N companions). Spec Compliance Matrix.
 
-### 7.4 CompanionJobBoardState
+### CA-2 — Output derivado de estado real (sem "item do nada")
+- Plantar consome SEED real; colher exige crop MADURO na área permitida; minerar/cortar exige nó/
+  árvore real e não-depletado; processar exige input real + estação construída. Sem o pré-requisito
+  real, o resultado é Skipped* (não produz). Nenhum job cria item do nada, faz auto-sell ou abre
+  shipping por padrão (`OutputRules.AutoSell == false`).
+- Evidência: EditMode tests de derivação (seed ausente -> SkippedMissingInput; crop imaturo ->
+  SkippedUnavailable; nó depletado -> Skipped; AutoSell sempre false).
 
-```text
-UnlockedJobTypes[]
-Assignments[]
-DailyCapacity
-UsedCapacity
-BoardLevel
-AutomationLimitPolicy
-Warnings[]
-```
+### CA-3 — Toggle de auto-fertilização (decisão 3.8)
+- O job de Planter tem um toggle de auto-fertilização com DEFAULT OFF. Quando ON, consome
+  fertilizante do storage AUTORIZADO do job; sem fertilizante no storage autorizado, o job planta
+  SEM fertilizar e NÃO falha. Nunca acessa o inventário do jogador sem comando; nunca cria
+  fertilizante do nada.
+- Evidência: EditMode tests (OFF = não consome; ON + fertilizante = consome e fertiliza; ON sem
+  fertilizante = planta sem fertilizar, status não-falho). Cross-ref a V3.7 (linhas 1582-1588).
 
-### 7.5 JobExecutionResult
+### CA-4 — Fadiga, Bond e JobRank
+- Sucesso de job aplica FatigueGainPerJob em CompanionBondState.Fatigue; com Fatigue > 80 o
+  companion fica indisponível (gate existente do resolver). Bond/JobRank modulam QUALIDADE/output
+  mas NÃO removem caps de automação (decisão 3.11).
+- Evidência: EditMode tests (fadiga acumula e bloqueia disponibilidade; caps independem de Bond/
+  JobRank).
 
-```text
-Success
-PartialSuccess
-Failed
-SkippedUnavailable
-SkippedMissingTool
-SkippedMissingInput
-SkippedBadWeather
-Outputs[]
-InputsConsumed[]
-StaminaUsed
-FatigueGained
-RelationshipGain
-Warnings[]
-```
+### CA-5 — Automação diária idempotente + round-trip de save
+- No avanço de dia, o board reseta o estado diário (ResetDailyState) e executa os assignments
+  conforme RepeatPolicy, SEM duplicar output após reload ou transição de dia. O JobBoardState/
+  assignments persistem por CompanionSaveSectionProvider (DTO simples + IDs; sem refs Unity), com
+  round-trip capture/restore.
+- Evidência: EditMode tests (idempotência no day transition; idempotência após reload; round-trip
+  do provider) + ADR-0006 (DTO simples).
 
----
-
-## 8. Output rules
-
-```text
-Output must be derived from real farm world/inventory state.
-Planting consumes real seeds.
-Harvesting requires mature crop in allowed area.
-Processing consumes real input and built station.
-Chopping/mining requires marked tree/rock or allowed area resource.
-AnimalCareFuture requires future animal system and is blocked now unless available.
-No job creates item from nothing.
-No job auto-sells.
-No job opens shipping by default.
-```
-
----
-
-## 9. Storage access policy
-
-```text
-NoStorageAccess:
-  job cannot consume/store items.
-
-LimitedInputChest:
-  can consume inputs from assigned chest/area only.
-
-LimitedOutputChest:
-  can deposit outputs in assigned chest only.
-
-FarmSharedStorageFuture:
-  requires explicit farm storage system.
-
-Never access player inventory without explicit command.
-```
-
----
-
-## 10. Automation progression
-
-```text
-BoardLevel 0:
-  no jobs or tutorial placeholder.
-
-BoardLevel 1:
-  simple daily manual job, small area.
-
-BoardLevel 2:
-  more job types, small repeat.
-
-BoardLevel 3:
-  larger area and better output.
-
-Late:
-  still bounded by stamina/time/capacity.
-```
-
----
-
-## 11. Criteria
-
-```text
-Farm job contracts exist.
-Job assignment requires area/tool/station/time/stamina.
-Output derives from real state.
-Job board caps automation.
-No pet job.
-No infinite output/economy.
-Tests cover valid assignment, missing tool, missing input, bad weather/season, storage policy, output derivation, daily cap and no auto-sell.
-```
+### CA-6 — Comunicação só por GameEventBus
+- Marcos (job atribuído / concluído) publicam `CompanionJobAssignedEvent` /
+  `CompanionJobCompletedEvent` no GameEventBus; nenhuma chamada direta MonoBehaviour->MonoBehaviour
+  de gameplay; subscribers fazem unsubscribe no OnDisable.
+- Evidência: EditMode test do publish/contrato dos eventos + nota de unsubscribe (ADR-0007 /
+  event_rules.md).
 
 ---
 
 # /speckit.plan
 
-## 12. Arquitetura alvo
+## Arquitetura alvo
 
 ```text
-Assets/_Game/Scripts/Companions/FarmJobs/CompanionJobType.cs
-Assets/_Game/Scripts/Companions/FarmJobs/CompanionFarmJobDefinition.cs
-Assets/_Game/Scripts/Companions/FarmJobs/CompanionJobAssignment.cs
-Assets/_Game/Scripts/Companions/FarmJobs/CompanionJobBoardState.cs
-Assets/_Game/Scripts/Companions/FarmJobs/CompanionJobExecutionService.cs
-Assets/_Game/Scripts/Companions/FarmJobs/CompanionJobAutomationValidator.cs
-Assets/_Game/Tests/EditMode/Companions/CompanionFarmJobsTests.cs
-```
+EXISTENTES — HARDEN/estender (NÃO recriar):
+Assets/_Game/Scripts/Companions/CompanionFarmJobType.cs            (enum 9 jobs — estável)
+Assets/_Game/Scripts/Companions/CompanionFarmJobDefinition.cs      (+ toggle auto-fertilização Planter, default OFF)
+Assets/_Game/Scripts/Companions/CompanionFarmJobAssignment.cs      (reuse; idempotência por ExecutionCount/dia)
+Assets/_Game/Scripts/Companions/JobBoardState.cs                   (reuse; caps de capacidade)
+Assets/_Game/Scripts/Companions/CompanionJobBoardService.cs        (HARDEN: pipeline validate->aplicar->record; eventos)
+Assets/_Game/Scripts/Companions/CompanionAvailabilityResolver.cs   (reuse; gate de fadiga > 80)
+Assets/_Game/Scripts/Companions/CompanionBondState.cs              (reuse; Fatigue/Bond/JobRank)
 
-Consolidar existentes se houver.
+NOVOS (apenas se a Fase 0 confirmar ausência e que consolidar é mais limpo):
+Assets/_Game/Scripts/Companions/FarmJobs/IFarmWorldStateAdapter.cs           (porta p/ estado real — sem busca global)
+Assets/_Game/Scripts/Companions/FarmJobs/CompanionFarmJobAutomationService.cs(automação diária idempotente; consome day transition)
+Assets/_Game/Scripts/Companions/FarmJobs/CompanionFarmJobEvents.cs           (CompanionJobAssignedEvent/CompanionJobCompletedEvent)
+Assets/_Game/Scripts/Save/Providers/CompanionSaveSectionProvider.cs          (round-trip; precedente HotbarSectionProvider; estender se a sibling já criou)
+Assets/_Game/Tests/EditMode/Companions/CompanionFarmJobsTests.cs             (testes)
 
----
+DTO de save (em SaveData.cs, tipos simples + IDs — sem refs Unity):
+  estado do board/assignments persistível (estender CompanionManagerSaveData OU DTO dedicado,
+  decidido na Fase 0 sem quebrar o schema existente; se exigir migration, PARAR e reportar).
 
-## 13. Arquivos permitidos
-
-```text
-Assets/_Game/Scripts/Companions/**
-Assets/_Game/Scripts/Farm/**
-Assets/_Game/Scripts/Inventory/**
-Assets/_Game/Scripts/Economy/**
-Assets/_Game/Scripts/Save/**
-Assets/_Game/Scripts/Editor/Validation/**
-Assets/_Game/Tests/EditMode/Companions/**
 docs/validation/14_spec_companion_farm_jobs_board_automation_future_runtime_execution_report.md
 ```
 
----
+## Contratos
 
-## 14. Arquivos proibidos
+### Data contracts (ADR-0006 / save_rules.md)
+- DTO de save do board: SOMENTE tipos simples + IDs (string JobId/CompanionId/AssignmentId/
+  AreaId/StorageId; int dia/contadores/stamina; bool toggle de fertilizante; enums como int;
+  List de DTOs simples). PROIBIDO qualquer ref Unity (GameObject/Transform/MonoBehaviour/SO/Sprite).
+- Toggle de auto-fertilização: bool no CompanionFarmJobDefinition, DEFAULT OFF, semântica restrita
+  ao job de Planter; persistido como bool.
+- `OutputRules.AutoSell` permanece `false` por padrão (linha 25) e esta spec não o liga.
+
+### Runtime contracts
+- `CompanionJobBoardService`: manter `ValidateJobExecution` como DRY-RUN puro; o efeito (consumo de
+  seed/input, produção de output, fadiga) só após validação OK; `RecordJobExecution` registra
+  contadores. Idempotência: não reaplicar efeito para o mesmo (CompanionId, JobId, dia) além do
+  ExecutionCount permitido.
+- `IFarmWorldStateAdapter` (porta): consultas read-only ao estado real (existe seed X? crop maduro
+  na área Y? nó não-depletado? capacidade do storage autorizado?) e comandos mínimos autorizados
+  (consumir seed/input do storage autorizado; depositar output no storage autorizado). Implementação
+  concreta injetada via GameBootstrap/serialized ref — NUNCA GameObject.Find/FindObjectOfType.
+- `CompanionFarmJobAutomationService`: assina o evento de avanço de dia existente; chama
+  ResetDailyState + executa assignments idempotentemente; unsubscribe no descarte.
+
+### Event contracts (ADR-0007 / event_rules.md)
+- Adiciona: `CompanionJobAssignedEvent`, `CompanionJobCompletedEvent` (structs simples — IDs +
+  resultado + outputs como IDs/contagens). Consome (sem alterar): o evento de day transition
+  existente. Requer unsubscribe nos OnDisable dos subscribers.
+
+### Save/UI contracts
+- Save: round-trip via CompanionSaveSectionProvider (ProviderId "companions" — coordenar com a
+  sibling para um único provider). UI: esta spec NÃO cria o board visual (é da sibling de UI);
+  apenas expõe o estado consumível.
+
+## Sistemas afetados
 
 ```text
-Packages/**
-ProjectSettings/**
-Assets/**/*.unity
-Assets/**/*.prefab
-Assets/**/*.asset
-Assets/_Game/Scripts/Pets/**
-docs/specs/SPEC_EXECUTION_ORDER.md
-docs/specs/implementados/**
-docs/refinements/implementados/**
-docs/project/CURRENT_STATE.md
-PROJECT_LOG.md
+Companion jobs/board (HARDEN), Save providers (provider novo), Event bus (2 eventos novos),
+Farm/Inventory (LEITURA de estado real via adapter), Economy (caps anti-exploit). NÃO tocados:
+backend de crop/inventory/storage, pet, romance/spouse, relógio/day-cycle, CompanionRole enum.
 ```
 
----
-
-## 15. Estratégia
+## Arquivos permitidos
 
 ```text
-1. Auditar farm automation/job systems.
-2. Consolidar job definition/assignment/board.
-3. Implementar execution service with dry-run validation.
-4. Enforce output real-state and storage policy.
-5. Criar tests.
-6. Criar report.
+Assets/_Game/Scripts/Companions/**            (HARDEN dos contratos existentes)
+Assets/_Game/Scripts/Companions/FarmJobs/**   (adapter/automation/eventos novos, se Fase 0 confirmar)
+Assets/_Game/Scripts/Save/Providers/**        (CompanionSaveSectionProvider)
+Assets/_Game/Scripts/Save/SaveData.cs         (DTO simples do board — SEM migration; se exigir, PARAR)
+Assets/_Game/Tests/EditMode/Companions/**     (testes)
+docs/validation/14_spec_companion_farm_jobs_board_automation_future_runtime_execution_report.md
+csproj includes (Assembly-CSharp / Assembly-CSharp-Editor)
 ```
 
----
-
-## 16. Paralelização
-
-- Parallelizable: NO
-- Must not run with:
-  - farm crop/runtime rewrite;
-  - inventory/storage rewrite;
-  - save migration;
-  - companion state foundation;
-  - pet runtime.
-- Reason: jobs cross farm, inventory, economy, schedule and save.
-
----
-
-## 17. Impacto save/load
+## Arquivos proibidos
 
 ```text
-Does this change save schema? SHOULD BE NO if Companion/Farm job state exists; otherwise STOP.
-Does this add save section? NO unless dedicated migration is approved.
-Does this require migration? NO unless new job state is persisted without existing section; then STOP.
-Does this persist Unity references? NO.
+Packages/** ; ProjectSettings/**
+Assets/**/*.unity ; Assets/**/*.prefab ; Assets/**/*.asset (manuais)
+Assets/_Game/Scripts/Pets/** (pet é sistema separado/deferido)
+CompanionRole.cs (não adicionar Romance/Spouse ao enum — permanecem flags)
+Backend de crop/animal/process e de inventory/storage (LER via adapter, não reescrever)
+docs/specs/SPEC_EXECUTION_ORDER.md ; docs/specs/implementados/** ; docs/refinements/implementados/**
+docs/project/CURRENT_STATE.md ; PROJECT_LOG.md ; índices compartilhados (SPEC_REGISTRY, fable_00C, GAME_RULES_INDEX, DECISION_LOG, .specs)
 ```
 
----
+## Estratégia de implementação
 
-## 18. Impacto eventos
-
-```text
-Adds events: CONDITIONAL, e.g. CompanionJobAssignedEvent, CompanionJobCompletedEvent.
-Changes events: SHOULD BE NO.
-Requires unsubscribe pattern: YES if subscribers are created.
+```md
+### Fase 0 — Auditar (registrar no report, classificar achados): contratos existentes (confirmados);
+   sinal de avanço de dia existente; fonte do estado real de crop/seed/nó e do storage autorizado;
+   ID do fertilizante raro; se a sibling já criou CompanionSaveSectionProvider; AnimalCaretaker
+   (backend de animais existe? se não, job 5 = SkippedUnavailable). Decidir REUSE/HARDEN/CREATE/DEFER.
+### Fase 1 — Toggle de auto-fertilização no CompanionFarmJobDefinition (bool, default OFF, só Planter) + testes (3 casos).
+### Fase 2 — IFarmWorldStateAdapter (porta read-only + comandos mínimos autorizados) + derivação de output do estado real; HARDEN do pipeline no CompanionJobBoardService (validate dry-run -> aplicar -> record; idempotência) + testes.
+### Fase 3 — CompanionFarmJobAutomationService (consome day transition; ResetDailyState + execução idempotente; múltiplos companions sob cap; fadiga) + testes.
+### Fase 4 — Eventos (CompanionJobAssignedEvent/CompanionJobCompletedEvent) no GameEventBus + teste de contrato/unsubscribe.
+### Fase 5 — CompanionSaveSectionProvider + DTO simples do board (sem migration) + round-trip tests.
+### Fase 6 — csproj; validações; execution report (Spec Compliance Matrix; Testing Quality Gate; cenário final deferido para FINAL_HUMAN_VALIDATION_BY_WAVE).
 ```
 
----
+## Paralelização
 
-## 19. Impacto UI/Unity
+- Parallelizable: NO — jobs cruzam Farm, Inventory, Economy, Time e Save (lock amplo).
+- Parallel group: WAVE_14_COMPANIONS_FUTURE.
+- Must not run with: reescrita de crop/farm runtime; reescrita de inventory/storage; save migration;
+  fundação de companion state; pet runtime; UI/prefab do board; economy balance final.
+- Shared files/systems que exigem lock: `Companions/**`, `Save/Providers/**`, `SaveData.cs`,
+  GameEventBus (2 eventos novos).
+- Reason: HARDEN cruza múltiplos domínios e o save; precisa de janela exclusiva na WAVE 14.
+
+## Impacto em save/load
 
 ```text
-Changes UI: NO final; exposes job board state.
-Changes scenes/prefabs/assets: NO.
-Requires PlayMode/final human scenario: YES, DEFERRED for board/job visual flow.
+Does this change save schema? PREFERENCIALMENTE NO — persistir o board reusando/estendendo
+  CompanionManagerSaveData com tipos simples + IDs. Se um novo estado EXIGIR uma seção/migration
+  nova, PARAR e reportar (stop condition) — não inventar migration sem spec de migration.
+Does this add a save section? NO por padrão (usa CompanionSaveSectionProvider sobre DTO existente);
+  só com migration aprovada.
+Does this require migration? NO; se exigir, STOP.
+Does this persist Unity references? NO (ADR-0006 / save_rules.md — só IDs e tipos simples).
 ```
 
----
-
-## 20. Riscos
+## Impacto em eventos
 
 ```text
-Risco: output duplicates on day transition.
-Mitigação: idempotency tests.
+Adds events: YES — CompanionJobAssignedEvent, CompanionJobCompletedEvent (structs simples).
+Changes existing events: NO. Consome (sem alterar) o evento de avanço de dia existente.
+Requires unsubscribe pattern: YES (automation service + subscribers em OnDisable).
+```
 
-Risco: storage/inventory systems missing.
-Mitigação: DEFER or adapter only.
+## Impacto em UI/Unity
 
-Risco: job automates too much.
-Mitigação: board capacity/stamina/time caps.
+```text
+Changes UI: NO final — apenas expõe estado para o board (UI é da sibling de UI/HUD).
+Changes scenes: NO. Changes prefabs: NO. Changes ScriptableObjects/assets: NO.
+Requires Play Mode final validation: YES, DEFERIDO — fluxo visual do board / atribuição /
+  automação ao dormir; registrar em docs/validation/FINAL_HUMAN_VALIDATION_BY_WAVE.md.
+Human validation timing: DEFERRED_TO_FINAL_VALIDATION (não pedir validação humana por spec).
+```
+
+## Riscos técnicos
+
+```text
+Risco: output duplicado no day transition / após reload.
+  Mitigação: idempotência por (CompanionId, JobId, dia, ExecutionCount); ResetDailyState no
+  avanço de dia; EditMode tests de idempotência (day transition + reload).
+Risco: companion "cria item do nada".
+  Mitigação: output SEMPRE derivado do estado real via IFarmWorldStateAdapter; sem pré-requisito
+  real -> Skipped*; testes de seed/crop/nó ausentes.
+Risco: acesso indevido ao inventário do jogador (fertilizante).
+  Mitigação: consumo só do storage AUTORIZADO; sem fertilizante = planta sem fertilizar; nunca
+  inventário do jogador sem comando (decisão 3.8 / V3.7); teste dos 3 casos.
+Risco: economia infinita com N companions.
+  Mitigação: caps de capacidade do board / StaminaBudget / DailyLimit / janela de horário,
+  INDEPENDENTES de Bond/JobRank; AutoSell sempre false; teste de cap com múltiplos companions.
+Risco: tentação de reescrever backend de farm/inventory ou recriar os contratos existentes.
+  Mitigação: adapter read-only + Estado atual do repo fixa REUSE/HARDEN; anti-regressão proíbe.
+Risco: busca global para achar farm/storage/câmera de estado.
+  Mitigação: adapter injetado via GameBootstrap/serialized ref; sem GameObject.Find/FindObjectOfType.
+Risco: migration de save acidental.
+  Mitigação: DTO simples sobre seção existente; se exigir migration -> STOP/BLOCKED.
+Risco: AnimalCaretaker sem backend de animais.
+  Mitigação: job 5 retorna SkippedUnavailable (não falha o board); DEFER documentado.
+```
+
+## Rollback
+
+```text
+Remover o adapter, o automation service, os 2 eventos, o provider e o DTO do board, e reverter o
+campo de toggle no CompanionFarmJobDefinition desliga a camada de automação/save. Os contratos
+preexistentes (enum/definition/assignment/board/service) permanecem intactos. Nenhuma migration
+foi feita, então nenhum save legado é invalidado. As specs siblings perdem o gancho de automação/
+save mas seguem com seus próprios escopos.
 ```
 
 ---
 
 # /speckit.tasks
 
-## 21. Tasks
-
-- [ ] T001 — Ler fontes.
-- [ ] T002 — Auditar farm job systems.
-- [ ] T003 — Consolidar job contracts.
-- [ ] T004 — Implementar validation/execution.
-- [ ] T005 — Criar tests.
-- [ ] T006 — Rodar validações.
-- [ ] T007 — Criar report.
-
-## 23A. Execution Readiness Matrix
-
-| Área | Pergunta obrigatória | Evidência esperada | Status se faltar |
-|---|---|---|---|
-| Fonte canônica | Executor leu Companions, Pets, City, Farm, Combat, Cave, Economy, UI e Save directions? | Lista no execution report. | PARTIAL |
-| Estado real do repo | Sistemas existentes relacionados a companion farm jobs/job board automation foram auditados antes de criar novos? | Comandos `rg` e achados. | PARTIAL |
-| Não duplicação | Existe sistema equivalente já implementado/parcial? | REUSE/HARDEN/CREATE/DEFER. | BLOCKED se duplicar |
-| Companion ajuda | Companion não joga pelo jogador, não substitui build e não é obrigatório para terminar o jogo? | Tests/checklist. | PARTIAL |
-| Pet separado | Pet não foi implementado nem tratado como companion? | Checklist explícito. | BLOCKED se violar |
-| Romance separado | Romance/casamento profundo não foi implementado? | Checklist explícito. | BLOCKED se violar |
-| Balance | Companion não tanka boss, não cura infinito, não farma loot e respeita active combat budget? | Tests/checklist. | PARTIAL |
-| Save/load | Houve alteração de schema? | Declaração NO ou STOP se migration necessária. | BLOCKED se alterar sem migration |
-| UI/PlayMode | Há fluxo visual/gameplay integrado? | Cenário final deferido documentado. | BUILD_VALIDATED no máximo se ausente |
-| Testes | Lógica determinística nova tem EditMode tests quando praticável? | Test list. | PARTIAL |
-| Report | Execution report criado? | `docs/validation/14_spec_companion_farm_jobs_board_automation_future_runtime_execution_report.md`. | PARTIAL |
-
----
-
-## 23B. Local Audit Checklist
-
-Antes de alterar qualquer arquivo, Claude Code/Codex deve rodar e registrar no execution report:
-
-```bash
-rg -n "CompanionJob|FarmJob|JobBoard|AllowedArea|StaminaBudget|OutputRules|StorageAccess|FatigueGain|AnimalCaretaker|Pet" Assets/_Game/Scripts docs/design docs/specs
-rg -n "Companion|FarmCompanion|CaveCompanion|CompanionJob|CompanionBrain|CompanionState|CompanionSave|Relationship|Romance|Spouse|Pet|Breath|Folego|Boss|ActiveCombatBudget|JobBoard" Assets/_Game/Scripts docs/design docs/specs
-rg -n "TODO|FIXME|HACK|PARTIAL|DEFERRED|BUILD_VALIDATED|ACCEPTED" docs/specs docs/validation docs/IMPLEMENTATION_STATUS.md docs/project/CURRENT_STATE.md
-```
-
-Classificar achados:
-
-```text
-EXISTING_CANONICAL
-EXISTING_PARTIAL
-MISSING_SAFE_TO_CREATE
-MISSING_BUT_DEFER
-CONFLICT
-```
-
----
-
-## 23C. Functional Acceptance Scenarios
-
-### Scenario 1 — Happy path
-
-```text
-Given companion elegível/desbloqueado/disponível
-When o jogador usa o fluxo desta spec
-Then companion oferece ajuda limitada e explícita
-And não substitui o jogador
-And não ativa pet runtime
-And não cria romance/casamento profundo.
-```
-
-### Scenario 2 — Existing partial implementation
-
-```text
-Given já existe implementação parcial no repo
-When a execução audita o sistema
-Then ela escolhe HARDEN_EXISTING em vez de recriar do zero
-And registra divergências do direction
-And altera apenas o menor conjunto seguro de arquivos.
-```
-
-### Scenario 3 — Balance guardrail
-
-```text
-Given companion está em job/fazenda/caverna/combate
-When o sistema calcula ajuda, ação ou output
-Then há limite por stamina/tempo/cooldown/área/ferramenta/vínculo/capacidade
-And companion não gera recurso, cura, loot, dano ou progressão infinita.
-```
-
-### Scenario 4 — Pet/romance separation
-
-```text
-Given NPC companion, pet future ou romance candidate
-When a spec cria contratos de companion
-Then pet permanece sistema separado/deferido
-And romance/casamento detalhado fica fora do escopo
-And spouse não vira combat companion automaticamente.
-```
-
-### Scenario 5 — Final human validation deferred
-
-```text
-Given o fluxo exige inspeção visual/gameplay de convite, job board, cave entry, HUD ou companion behavior
-When a implementação técnica terminar
-Then o report registra cenário final em docs/validation/FINAL_HUMAN_VALIDATION_BY_WAVE.md
-And não pede validação humana imediata por spec.
-```
-
----
-
-## 23D. Edge Cases and Failure Modes
-
-A execução deve cobrir ou registrar risco residual para:
-
-- Job creates item from nothing.
-- Job consumes player inventory without consent.
-- Job ignores area/tool/station.
-- Job runs with infinite stamina/time.
-- Job repeats output after reload/day transition.
-- Job auto-sells/shipping items.
-- Pet job added accidentally.
-- Automation removes planning.
-
----
-
-## 23E. Minimum Execution Report Template
+## Tasks
 
 ```md
-# Execution Report — Companion Farm Jobs Board Automation Future Runtime
-
-## Summary
-- Spec:
-- Branch:
-- Executor:
-- Date:
-- Final status:
-
-## Sources read
-- ...
-
-## Local audit
-- Commands executed:
-- Existing systems found:
-- Existing partial systems found:
-- Missing systems:
-- Conflicts:
-
-## Companion compliance
-- Companion helps but does not play for player:
-- No pet runtime:
-- No romance/deep marriage:
-- No Breath/Folego:
-- Active combat budget respected:
-- Boss guardrails:
-- Farm automation limits:
-- Save/load safe:
-
-## Implementation decision
-- REUSE_EXISTING / HARDEN_EXISTING / CREATE_MINIMAL / DEFER
-- Justification:
-
-## Files changed
-- ...
-
-## Functional evidence
-- Happy path:
-- Existing partial implementation:
-- Balance guardrail:
-- Pet/romance separation:
-- Save/load:
-- UI/final scenario:
-
-## Validation
-- Docs validation:
-- C# build:
-- Unity compile:
-- EditMode tests:
-- PlayMode automated:
-- Final human scenario:
-
-## Testing Quality Gate
-- Changed deterministic logic:
-- Requires EditMode tests:
-- Requires PlayMode automated or final human scenario:
-- Requires regression test:
-- Human validation timing:
-- Minimum validation evidence for ACCEPTED:
-
-## Residual risks
-- ...
-
-## Next specs impacted
-- ...
+- [ ] T001 — Fase 0: auditar contratos existentes (confirmados); sinal de avanço de dia; fonte do
+       estado real (crop/seed/nó/storage); ID do fertilizante raro; provider da sibling; backend de
+       animais (AnimalCaretaker). Classificar EXISTING_CANONICAL/PARTIAL/MISSING_SAFE/DEFER/CONFLICT.
+- [ ] T002 — Toggle de auto-fertilização no CompanionFarmJobDefinition (bool, default OFF, só Planter) + EditMode tests (OFF / ON+fert / ON sem fert).
+- [ ] T003 — IFarmWorldStateAdapter + derivação de output de estado real; HARDEN do pipeline no CompanionJobBoardService (validate dry-run -> aplicar -> record; idempotência) + tests.
+- [ ] T004 — CompanionFarmJobAutomationService (consome day transition; ResetDailyState + execução idempotente; múltiplos companions sob cap; fadiga) + tests.
+- [ ] T005 — Eventos CompanionJobAssignedEvent/CompanionJobCompletedEvent no GameEventBus + teste de contrato/unsubscribe.
+- [ ] T006 — CompanionSaveSectionProvider + DTO simples do board (sem migration; se exigir, STOP) + round-trip tests.
+- [ ] T007 — csproj; run_strict_validation; execution report (Spec Compliance Matrix, Testing Quality Gate, cenário final deferido a FINAL_HUMAN_VALIDATION_BY_WAVE).
 ```
 
----
-
-## 23F. Stop Conditions
-
-Parar a execução e registrar `BLOCKED` se ocorrer qualquer um destes casos:
-
-```text
-1. A implementação exigir alterar Packages/ ou ProjectSettings/.
-2. A implementação exigir scene/prefab/asset wiring fora do escopo.
-3. A implementação exigir save migration sem spec de migration.
-4. A implementação criar pet runtime, pet save, pet HUD ou pet data assets.
-5. A implementação criar romance/casamento profundo ou spouse system.
-6. A implementação tornar companion obrigatório para terminar main quest.
-7. A implementação permitir companion tankar boss, curar infinito, matar boss sozinho ou farmar enemies sem jogador ativo.
-8. A implementação permitir companion gerar loot/recurso/economia infinita.
-9. A implementação adicionar Breath/Fôlego como recurso de companion.
-10. A implementação tratar classes de D&D como papéis mecânicos de companion.
-11. Não for possível decidir se sistema existente é canônico ou obsoleto.
-```
-
-
-
-## 25. Validações obrigatórias
-
-Docs:
+## Validações obrigatórias
 
 ```powershell
 .\tools\docs\validate_docs.ps1
-```
-
-Busca local mínima:
-
-```bash
-rg -n "Companion|FarmCompanion|CaveCompanion|CompanionJob|CompanionBrain|CompanionState|Relationship|Romance|Spouse|Pet|Breath|Folego|Boss|ActiveCombatBudget" Assets/_Game/Scripts docs/design docs/specs
-```
-
-C# runtime/editor quando houver alteração C#:
-
-```powershell
 dotnet build .\Assembly-CSharp.csproj --no-restore
+if ($LASTEXITCODE -ne 0) { Write-Host "Assembly-CSharp build FAILED"; exit 1 }
 dotnet build .\Assembly-CSharp-Editor.csproj --no-restore
+if ($LASTEXITCODE -ne 0) { Write-Host "Assembly-CSharp-Editor build FAILED"; exit 1 }
+.\tools\docs\run_strict_validation.ps1
+if ($LASTEXITCODE -ne 0) { Write-Host "Strict validation FAILED"; exit 1 }
 ```
 
-Unity compile quando houver alteração Unity C#:
+Unity compile (quando houver alteração Unity C#) — sequencial, nunca paralelo:
 
 ```powershell
 .\tools\unity\RunUnityCompileValidation.ps1 -ProjectPath "." -LogFile ".\Logs\unity-compile-validation.log"
 .\tools\unity\ScanUnityLogs.ps1 -LogFile ".\Logs\unity-compile-validation.log"
 ```
 
-EditMode tests quando lógica determinística for criada/alterada:
+Busca local mínima de não-duplicação (registrar saída no report):
 
-```text
-Unity Test Runner — EditMode, ou comando local equivalente disponível no repo.
+```powershell
+Select-String -Path "Assets\_Game\Scripts\*","docs\design\*","docs\specs\*" -Pattern "CompanionFarmJob|JobBoard|AllowedArea|StaminaBudget|OutputRules|StorageAccess|FatigueGain|AnimalCaretaker|ISaveSectionProvider|fertiliz" -Recurse
 ```
 
-PlayMode/final human validation:
+## Testing Quality Gate
 
 ```text
-Não pedir validação humana por spec.
-Quando houver cenário visual/gameplay de companion invite, job board, cave entry, HUD, combat assist ou farm jobs, registrar em execution report e vincular a docs/validation/FINAL_HUMAN_VALIDATION_BY_WAVE.md.
+Changed runtime code: YES
+Changed deterministic logic: YES (validação/execução/output/cap/idempotência/toggle de fertilizante — tudo C# determinístico)
+Changed Unity scene/prefab/asset wiring: NO (adapter injetado via bootstrap é wiring humano de cena, não edição YAML por agente)
+Automated tests added/updated: YES (EditMode — assignment válido; missing tool/input; área/recurso; janela; DailyLimit/cap; StaminaBudget; storage policy; output de estado real; idempotência day-transition+reload; sem auto-sell; toggle de fertilizante 3 casos; múltiplos companions sob cap; round-trip do provider)
+Automated tests command: Unity Test Runner — EditMode (ou comando local equivalente do repo)
+Manual Play Mode scenario: DEFERRED — fluxo visual do board/atribuição/automação ao dormir → docs/validation/FINAL_HUMAN_VALIDATION_BY_WAVE.md (não pedir validação humana por spec)
+Justification if no automated tests: N/A (lógica determinística tem EditMode tests)
+Residual risk: derivação de output depende do backend real de farm/inventory (adapter); até a WAVE 14 ligar o adapter concreto, a parte de estado-real fica coberta por testes com fake adapter, e o fluxo integrado é DEFERIDO ao Play Mode final. AnimalCaretaker DEFERIDO até existir backend de animais.
 ```
 
----
-
-## 26. Testing Quality Gate
-
-- Changed deterministic logic: YES, job validation/execution/output/cap logic is deterministic.
-- Requires EditMode tests: YES for assignment/missing-tool/missing-input/weather/storage/output/cap/idempotency tests.
-- Requires PlayMode automated or final human scenario: YES, DEFERRED for job board and farm job visual validation.
-- Requires regression test: YES if fixing existing farm job automation bug; otherwise NO.
-- Human validation timing: DEFERRED_TO_FINAL_VALIDATION se houver UI/gameplay integrado; caso contrário NOT REQUIRED.
-- Minimum validation evidence for ACCEPTED: docs validation PASS; C# build PASS if C# changed; EditMode tests PASS or NOT RUN justified; no output from nothing; automation capped.
-
----
-
-## 27. Definition of Done
+## Definition of Done
 
 ```text
-Spec executada sem alterar arquivos proibidos.
-Contratos/data/runtime implementados apenas dentro do escopo.
-Execution report criado em docs/validation/14_spec_companion_farm_jobs_board_automation_future_runtime_execution_report.md.
-Fonte/direction coverage preservado.
-Validações obrigatórias PASS ou NOT RUN com motivo, impacto e mitigação.
-Sem promoção indevida para ACCEPTED apenas por compile.
+Contratos existentes REUSADOS/ENDURECIDOS (não recriados); toggle de auto-fertilização do Planter
+(default OFF, consome só storage autorizado, sem fertilizante = planta sem fertilizar) implementado;
+output sempre derivado de estado real (sem item do nada, sem auto-sell); caps de automação
+independentes de Bond/JobRank; fadiga aplicada e gate de fadiga > 80 respeitado; automação diária
+idempotente (day transition + reload); round-trip de save via CompanionSaveSectionProvider (DTO
+simples + IDs, sem refs Unity, sem migration); comunicação só por GameEventBus com unsubscribe;
+builds Assembly-CSharp e Assembly-CSharp-Editor exit 0; run_strict_validation exit 0; execution
+report com Spec Compliance Matrix + Testing Quality Gate + cenário final deferido; sem claim
+ACCEPTED/PLAYMODE_VALIDATED (máximo BUILD_VALIDATED nesta fase gated); arquivos proibidos intactos;
+spec PERMANECE em features_futuras/ (decisão 3.12 — execução gated).
 ```
 
----
-
-## 28. Anti-regressão
+## Anti-regressão
 
 ```text
-Não implementar Pet runtime.
-Não implementar romance/casamento profundo.
-Não adicionar Breath/Fôlego.
-Não usar classes de D&D como papéis mecânicos.
-Não tornar companion obrigatório.
-Não deixar companion jogar pelo jogador.
-Não gerar loot/economia infinita.
-Não pedir human test por spec.
-Não executar runtime em massa antes da 01Q ou exceção humana explícita.
-Não alterar SPEC_EXECUTION_ORDER.md.
+- Não recriar CompanionFarmJobType/Definition/Assignment/JobBoardState/CompanionJobBoardService
+  (existem — HARDEN/estender). Não criar segundo board/serviço/enum de resultado.
+- Não reescrever backend de crop/animal/process nem de inventory/storage (ler via adapter).
+- Não criar pet runtime/save/HUD/assets. Não criar romance/casamento profundo/spouse.
+- Não adicionar Romance/Spouse ao enum CompanionRole (permanecem flags de elegibilidade).
+- Output sempre de estado real; nunca criar item do nada; AutoSell permanece false; sem shipping
+  por padrão; sem economia/loot infinito; caps independem de Bond/JobRank.
+- Companion ajuda, não joga pelo jogador, e não é obrigatório para terminar o jogo; respeita active
+  combat budget na fazenda (papéis de fazenda têm bônus de combate mínimo — ROLES_CATALOG §3.8).
+- Sem GameObject.Find/FindObjectOfType em runtime (adapter injetado). Comunicação só por GameEventBus.
+- Save com DTOs simples + IDs, sem refs Unity, sem migration acidental (se exigir migration, STOP).
+- Não pedir human test por spec; cenário final em FINAL_HUMAN_VALIDATION_BY_WAVE.md.
+- Não alterar SPEC_EXECUTION_ORDER.md, CURRENT_STATE.md, PROJECT_LOG nem índices compartilhados.
+- Cross-ref vivo com as 3 siblings: eligibility/state/save (round-trip/provider compartilhado),
+  cave assist/brain/balance (1 companion ativo na caverna; combat budget), e UI/HUD/invite/visit/
+  dialogue (board visual). Não invadir o escopo delas.
 ```
 
----
+## Stop Conditions (PARAR e registrar BLOCKED)
 
-## 29. Notas para execução posterior
-
-Esta spec é future/mapped. Deve ser executada apenas quando City/NPC, Farm, Cave, Combat, Save, UI e Quest estiverem estáveis ou quando houver decisão humana explícita de antecipar Companions.
+```text
+1. Exigir alterar Packages/ ou ProjectSettings/.
+2. Exigir scene/prefab/asset wiring fora do escopo (edição YAML por agente).
+3. Exigir save migration sem spec de migration dedicada.
+4. Criar pet runtime/save/HUD/assets.
+5. Criar romance/casamento profundo ou spouse system, ou mover Romance/Spouse para CompanionRole.
+6. Tornar companion obrigatório para terminar a main quest.
+7. Permitir companion tankar boss, curar infinito, matar boss sozinho ou farmar sem jogador ativo.
+8. Permitir companion gerar loot/recurso/economia infinita ou item do nada.
+9. Adicionar Breath/Fôlego como recurso de companion.
+10. Tratar classes de D&D como papéis mecânicos de companion.
+11. Não conseguir decidir se um sistema existente é canônico ou obsoleto (CONFLICT).
+```

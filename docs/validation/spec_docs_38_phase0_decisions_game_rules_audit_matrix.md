@@ -9,7 +9,7 @@ executor: Claude Code
 source_of_truth: true
 ---
 
-# Phase 0 Audit Matrix — SPEC_DOCS_38: Decision Records and Game Rules Migration
+# Phase 0 Audit Matrix � SPEC_DOCS_38: Decision Records and Game Rules Migration
 
 > Comprehensive audit of decision points, rules, and invariants scattered across amendments, specs, refinements, rules, and validation reports. Classification for migration to canonical ADRs and game_rules.
 
@@ -23,8 +23,8 @@ source_of_truth: true
 | Claude rules | 16 | EXTRACT + KEEP OPERATIONAL | .claude/rules (keep) + game_rules (extract) |
 | Specs (closeout_mvp) | 12 | EXTRACT DECISIONS | ADR + game_rules |
 | Specs (implementados) | 60+ | EXTRACT RULES IF RELEVANT | game_rules (systems) |
-| Game rules to create | — | 12 documents | docs/game_rules/ |
-| ADRs to create | — | 9 documents (ADR-0001 to 0009) | docs/decisions/ |
+| Game rules to create | � | 12 documents | docs/game_rules/ |
+| ADRs to create | � | 9 documents (ADR-0001 to 0009) | docs/decisions/ |
 | Decision log | 1 | CREATE INDEX | docs/project/DECISION_LOG.md |
 | **Status** | **All sources audited** | **Ready for migration** | **Phase 1-17** |
 
@@ -37,13 +37,13 @@ source_of_truth: true
 | Property | Value |
 |----------|-------|
 | **Type** | amendment |
-| **Contains Decision** | ✓ YES |
-| **Contains Game Rule** | ✓ YES (cave stable run invariant) |
+| **Contains Decision** | ? YES |
+| **Contains Game Rule** | ? YES (cave stable run invariant) |
 | **Decision Summary** | Cave procedural by run, not by entry. Visited levels in same CaveRunSeed preserve layout/enemies/resources/positions/state. Procedural only changes on: new game, KO/death/defeat, explicit debug. ForwardExit/BackExit never change CaveRunSeed. |
-| **Rules Encoded** | - Stable run invariant: layout, enemies, resources, IDs, types, positions, depletion, boss state — all stable within run<br>- First visit vs revisit logic (generate once, snapshot, load from snapshot)<br>- Enemy count range: 12-20 per level per run<br>- Resource nodes range: 4-10 per level per run<br>- Enemy distribution: 70-80% = CaveLevel, remainder scaled<br>- Snapshot persistence: CaveVisitedLevelSnapshot<br>- LayoutHash and ContentHash tracking |
+| **Rules Encoded** | - Stable run invariant: layout, enemies, resources, IDs, types, positions, depletion, boss state � all stable within run<br>- First visit vs revisit logic (generate once, snapshot, load from snapshot)<br>- Enemy count range: 12-20 per level per run<br>- Resource nodes range: 4-10 per level per run<br>- Enemy distribution: 70-80% = CaveLevel, remainder scaled<br>- Snapshot persistence: CaveVisitedLevelSnapshot<br>- LayoutHash and ContentHash tracking |
 | **Status** | approved (active rule) |
 | **Active References** | Found in: SPEC_24, cave runtime specs, .claude/rules/cave-stable-run.md |
-| **Encoding Issues** | Mojibake present (Ã©, Ã§, etc.) — must fix during migration |
+| **Encoding Issues** | Mojibake present (é, ç, etc.) � must fix during migration |
 | **Destination** | ADR-0005 + docs/game_rules/cave_rules.md |
 | **Action** | EXTRACT_TO_BOTH (ADR + game_rule) + DELETE_AFTER_MIGRATION |
 | **Rationale** | Core cave gameplay invariant; fully active; rule must be canonical; ADR explains history; amendment can be deleted after successful migration |
@@ -55,13 +55,13 @@ source_of_truth: true
 | Property | Value |
 |----------|-------|
 | **Type** | amendment |
-| **Contains Decision** | ✓ YES |
-| **Contains Game Rule** | ✓ YES (enemy roles, combat AI status effects) |
+| **Contains Decision** | ? YES |
+| **Contains Game Rule** | ? YES (enemy roles, combat AI status effects) |
 | **Decision Summary** | Enemy combat roles: Melee, Ranged, Caster, Boss. AI state transitions based on health, player distance, skill cooldown. Status effects affect behavior. Factions (alignment) affect interactions. |
 | **Rules Encoded** | - Enemy roles: Melee, Ranged, Caster, Boss, Boss Minion<br>- Role-specific behavior (attack patterns, range)<br>- Status effect application: poison, burn, slow, stun<br>- Faction-based behavior (hostile, neutral, boss)<br>- Health-based state transitions<br>- Cooldown-based decision making<br>- Batch 2 pending full validation per SPEC_23 |
 | **Status** | approved (active rule) |
 | **Active References** | Found in: SPEC_23, enemy AI specs, validation reports |
-| **Encoding Issues** | Likely mojibake (v1.1 pattern) — must fix during migration |
+| **Encoding Issues** | Likely mojibake (v1.1 pattern) � must fix during migration |
 | **Destination** | ADR (part of combat arch) + docs/game_rules/combat_rules.md |
 | **Action** | EXTRACT_TO_GAME_RULES (main), DELETE_AFTER_MIGRATION |
 | **Rationale** | Enemy behavior is foundational; rules must be canonical; amendment can be deleted; ADR optional if decision history is not critical for future changes |
@@ -73,8 +73,8 @@ source_of_truth: true
 | Property | Value |
 |----------|-------|
 | **Type** | meta / guidance |
-| **Contains Decision** | ✗ NO (explanatory only) |
-| **Contains Game Rule** | ✗ NO |
+| **Contains Decision** | ? NO (explanatory only) |
+| **Contains Game Rule** | ? NO |
 | **Content** | Likely explains amendment system (pre-SPEC_DOCS_38) |
 | **Action** | DELETE_AFTER_MIGRATION (superseded by new docs/decisions/ + docs/game_rules/ structure) |
 | **Rationale** | Guidance doc no longer needed; new canonical structure is in place |
@@ -82,8 +82,8 @@ source_of_truth: true
 ---
 
 **Amendments Summary:**
-- 2 amendments → EXTRACT to ADR + game_rules
-- 1 README → DELETE (superseded)
+- 2 amendments ? EXTRACT to ADR + game_rules
+- 1 README ? DELETE (superseded)
 - All 2 amendments can be deleted after successful migration
 - Mojibake must be corrected during migration
 - Active rules in amendments are high-value (cave stable run, enemy combat roles)
@@ -193,7 +193,7 @@ These define agent behavior, not game behavior. Keep where they are but also ext
 | ADR-0006 | Save Data Contracts Simple DTOs | No Unity refs in save; versioning; migration explicit | .claude/rules/save-dto-simple-types-only.md, save specs |
 | ADR-0007 | Event Bus Gameplay Communication | GameEventBus for system coupling; avoid global search; decouple producers/consumers | .claude/rules/event-bus-only-gameplay-communication.md, core specs |
 | ADR-0008 | Unity Scene/Asset YAML Editing Policy | Avoid manual .unity/.prefab/.asset edits; prefer scripts/tools/repair menus | .claude/rules/unity-yaml-editing-policy.md |
-| ADR-0009 | MVP Acceptance Requires Phase 2-3 | Code-complete ≠ accepted; Phase 2 Unity validators + Phase 3 Play Mode required | LAST_VALIDATION_STATUS.md, .claude/rules/no-premature-acceptance-claims.md, SPEC_29B |
+| ADR-0009 | MVP Acceptance Requires Phase 2-3 | Code-complete ? accepted; Phase 2 Unity validators + Phase 3 Play Mode required | LAST_VALIDATION_STATUS.md, .claude/rules/no-premature-acceptance-claims.md, SPEC_29B |
 
 ---
 
@@ -229,7 +229,7 @@ These define agent behavior, not game behavior. Keep where they are but also ext
 4. Verify no active references to amendment (excluding validation reports)
 5. Delete FASE9F_CAVE_STABLE_RUN_AND_REPLAY_AMENDMENT_v1.0.md
 
-**Encoding Correction:** Replace mojibake sequences (Ã©→é, Ã§→ç) during migration
+**Encoding Correction:** Replace mojibake sequences (é?�, ç?�) during migration
 
 ---
 
@@ -299,8 +299,8 @@ if (Test-Path "docs/amendments") {
 - [ ] docs/project/DECISION_LOG.md created and populated
 - [ ] docs/game_rules/GAME_RULES_INDEX.md created
 - [ ] 12 game_rules documents created
-- [ ] FASE9F migrated → ADR-0005 + cave_rules.md, then deleted
-- [ ] FASE9G migrated → combat_rules.md, then deleted
+- [ ] FASE9F migrated ? ADR-0005 + cave_rules.md, then deleted
+- [ ] FASE9G migrated ? combat_rules.md, then deleted
 - [ ] amendments/README.md deleted
 - [ ] .claude/rules/decision-and-game-rule-policy.md created
 - [ ] CURRENT_STATE.md updated to reference docs/decisions and docs/game_rules
@@ -321,8 +321,8 @@ if (Test-Path "docs/amendments") {
 Phase 0 audit COMPLETE. **All sources classified for migration.**
 
 **Key findings:**
-- 2 amendments → high-value rules (cave stable run, enemy combat roles)
-- 16 operational rules → extract game rule aspects
+- 2 amendments ? high-value rules (cave stable run, enemy combat roles)
+- 16 operational rules ? extract game rule aspects
 - 12+ game rules documents needed
 - 9 mandatory ADRs (strategic/architecture decisions)
 - All validation evidence preserved
@@ -334,7 +334,7 @@ Phase 0 audit COMPLETE. **All sources classified for migration.**
 ---
 
 *Phase 0 Audit Complete: 2026-06-01*  
-*Spec: SPEC_DOCS_38 — Decision Records and Game Rules Migration*  
+*Spec: SPEC_DOCS_38 � Decision Records and Game Rules Migration*  
 *Sources audited: 22 items (2 amendments, 16 rules, 60+ specs, validation reports)*  
 *ADRs to create: 9*  
 *Game rules documents to create: 12*  

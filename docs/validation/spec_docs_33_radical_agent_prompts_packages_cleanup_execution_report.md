@@ -1,4 +1,7 @@
 ---
+
+validated_adrs: [] <!-- retro-preenchido 2026-06-12: report anterior ? pol?tica ADR (SPEC_DOCS_38) -->
+validated_game_rules: [] <!-- retro-preenchido 2026-06-12 -->
 doc_type: validation
 status: evidence
 spec_id: SPEC_DOCS_33
@@ -9,7 +12,7 @@ executor: Claude Code
 source_of_truth: true
 ---
 
-# Execution Report — SPEC_DOCS_33: Radical Agent Prompts & Packages Cleanup
+# Execution Report ? SPEC_DOCS_33: Radical Agent Prompts & Packages Cleanup
 
 **Status:** COMPLETE
 
@@ -45,21 +48,21 @@ Created: `docs/validation/spec_docs_33_phase0_radical_agent_prompts_packages_cle
 **Deleted:**
 ```
 docs/agent_prompts/a_executar/
-  ├── .gitkeep
-  ├── SPEC_17B_ui-ux-full-gameplay_PROMPT.md
-  └── SPEC_99_TEMPLATE_FINAL_HUMAN_VALIDATION_CHECKLIST.md
+  +-- .gitkeep
+  +-- SPEC_17B_ui-ux-full-gameplay_PROMPT.md
+  +-- SPEC_99_TEMPLATE_FINAL_HUMAN_VALIDATION_CHECKLIST.md
 
 docs/agent_prompts/bloqueados/
-  └── .gitkeep
+  +-- .gitkeep
 
 docs/agent_prompts/executados/
-  └── .gitkeep
+  +-- .gitkeep
 
 docs/agent_prompts/implementados/ (22 files)
-  ├── SPEC_01_unity-validation-protocol_PROMPT.md
-  ├── SPEC_02_save-schema-migration_PROMPT.md
-  ├── ... (through SPEC_17F)
-  └── SPEC_17F_shop-modal-responsive-names_PROMPT.md
+  +-- SPEC_01_unity-validation-protocol_PROMPT.md
+  +-- SPEC_02_save-schema-migration_PROMPT.md
+  +-- ... (through SPEC_17F)
+  +-- SPEC_17F_shop-modal-responsive-names_PROMPT.md
 ```
 
 **Reason:** Historical prompts from Codex agent runs for implemented specs. Specs now use current `.claude/commands/` and `.claude/skills/` harness, not external prompt files.
@@ -71,12 +74,12 @@ docs/agent_prompts/implementados/ (22 files)
 **Deleted:**
 ```
 docs/agent_packages/
-  ├── README.md
-  ├── PACKAGE_TEMPLATE.md
-  ├── PACKAGE_EXECUTION_ORDER.md
-  ├── P00_registry_gate.md
-  ├── P12A_input_hands_attack.md
-  └── P12B_mana_spells_arcane_bolt.md
+  +-- README.md
+  +-- PACKAGE_TEMPLATE.md
+  +-- PACKAGE_EXECUTION_ORDER.md
+  +-- P00_registry_gate.md
+  +-- P12A_input_hands_attack.md
+  +-- P12B_mana_spells_arcane_bolt.md
 ```
 
 **Reason:** Legacy orchestration system packages for old Codex agent coordinator. Current harness (SPEC_CLAUDE_31) uses `.claude/commands/` flow, not package-based orchestration.
@@ -88,12 +91,12 @@ docs/agent_packages/
 **Deleted from SPEC_DOCS_32 Audit:**
 
 1. **docs/operations/LLM_HANDOFF_INSTRUCTIONS.md**
-   - Mojibake corruption (Ã¢â‚¬â€ characters)
+   - Mojibake corruption (�? characters)
    - Contradicts CLAUDE.md context reading policy
    - Handoff protocol superseded by CLAUDE.md
 
 2. **docs/operations/READING_MATRIX.md**
-   - Mojibake corruption (Ã‚, ÃƒÂ¡ patterns)
+   - Mojibake corruption (�, á patterns)
    - References obsolete spec registries (SPEC_REGISTRY_IMPLEMENTED, etc.)
    - Contradicts current CURRENT_STATE.md reading policy
 
@@ -125,7 +128,7 @@ docs/agent_packages/
 1. **docs/00_PROJECT/DOCUMENT_DELETE_CANDIDATES.md**
    - Added Batch 1B section documenting 39 deleted files
    - Organized by category (operations, agent prompts/packages, roadmap, backlog)
-   - Marked all as "✓ DELETED on 2026-06-01"
+   - Marked all as "? DELETED on 2026-06-01"
 
 2. **PROJECT_LOG.md**
    - Added SPEC_DOCS_33 session entry (reverse chronological, at top)
@@ -141,27 +144,27 @@ Command: .\tools\docs\validate_docs.ps1
 Result: PASSED (14/14 checks)
 
 All checks passed:
-✓ Root folder 'spec/' does not exist
-✓ Root folder 'specs/' does not exist
-✓ docs_old/ exists
-✓ docs/specs/ exists as single official specs source
-✓ SPEC_EXECUTION_ORDER.md exists
-✓ pre_refinamentos/ exists
-✓ No refinement_init files outside pre_refinamentos
-✓ Found 14 live refinement_init files
-✓ Implemented specs use spec_ prefix
-✓ Future specs use spec_ prefix
-✓ Implemented refinements use ref_ prefix
-✓ Future refinements use ref_ prefix
-✓ No template placeholders found
-✓ Mojibake check skipped
+? Root folder 'spec/' does not exist
+? Root folder 'specs/' does not exist
+? docs_old/ exists
+? docs/specs/ exists as single official specs source
+? SPEC_EXECUTION_ORDER.md exists
+? pre_refinamentos/ exists
+? No refinement_init files outside pre_refinamentos
+? Found 14 live refinement_init files
+? Implemented specs use spec_ prefix
+? Future specs use spec_ prefix
+? Implemented refinements use ref_ prefix
+? Future refinements use ref_ prefix
+? No template placeholders found
+? Mojibake check skipped
 ```
 
 ### Code Integrity Check
-- No C# files modified: ✓
-- No Unity files modified: ✓
-- No save schema changes: ✓
-- No runtime altered: ✓
+- No C# files modified: ?
+- No Unity files modified: ?
+- No save schema changes: ?
+- No runtime altered: ?
 
 ---
 
@@ -172,7 +175,7 @@ All checks passed:
 | Phase 0 (Audit) | COMPLETE | spec_docs_33_phase0_radical_agent_prompts_packages_cleanup_audit_matrix.md |
 | Phase 1 (Deletion) | COMPLETE | 39 files deleted via git rm |
 | Phase 2 (Documentation update) | COMPLETE | DOCUMENT_DELETE_CANDIDATES.md + PROJECT_LOG.md updated |
-| Phase 3 (Validation) | PASS | docs validation 14/14 ✓ |
+| Phase 3 (Validation) | PASS | docs validation 14/14 ? |
 
 ---
 
@@ -193,41 +196,41 @@ All checks passed:
 
 ## Files Preserved (NOT Deleted)
 
-✓ All docs/amendments/ (critical amendments)  
-✓ All docs/validation/ (evidence)  
-✓ All docs/05_VALIDATION/ (Phase 3 test scenarios)  
-✓ All docs/specs/implementados/ (implemented history)  
-✓ All docs/refinements/implementados/ (refinement history)  
-✓ docs/specs/a_implementar/closeout_mvp/ (pending Phase 2-3)  
-✓ All Batch 2 candidates (blocked on Phase 2-3)  
-✓ All governance docs (AGENTS.md, CLAUDE.md, etc.)  
-✓ All operations READMEs and active documentation  
+? All docs/amendments/ (critical amendments)  
+? All docs/validation/ (evidence)  
+? All docs/05_VALIDATION/ (Phase 3 test scenarios)  
+? All docs/specs/implementados/ (implemented history)  
+? All docs/refinements/implementados/ (refinement history)  
+? docs/specs/a_implementar/closeout_mvp/ (pending Phase 2-3)  
+? All Batch 2 candidates (blocked on Phase 2-3)  
+? All governance docs (AGENTS.md, CLAUDE.md, etc.)  
+? All operations READMEs and active documentation  
 
 ---
 
 ## Residual Risks
 
-1. **Codex-related files still in docs/operations/** — CODEX_SPEC_EXECUTION_HARNESS.md and CODEX_ORCHESTRATION_PROMPT.md remain (flagged for investigation in SPEC_DOCS_32). These may be old Codex artifacts or still-in-use. Recommend investigation in future SPEC_DOCS_34.
+1. **Codex-related files still in docs/operations/** ? CODEX_SPEC_EXECUTION_HARNESS.md and CODEX_ORCHESTRATION_PROMPT.md remain (flagged for investigation in SPEC_DOCS_32). These may be old Codex artifacts or still-in-use. Recommend investigation in future SPEC_DOCS_34.
 
-2. **orquestrador/ directory at root** — Python orchestrator tool (19 files) may be related to old Codex system. Not investigated in this spec. Recommend audit in future SPEC_DOCS_34.
+2. **orquestrador/ directory at root** ? Python orchestrator tool (19 files) may be related to old Codex system. Not investigated in this spec. Recommend audit in future SPEC_DOCS_34.
 
-3. **Orphaned delta files** — ARCH_fase4_v2.3_FASE9C_DELTA.md and GDD_v2.7_FASE9C_DELTA.md remain (flagged for investigation in SPEC_DOCS_32). Recommend consolidation or deletion in future spec.
+3. **Orphaned delta files** ? ARCH_fase4_v2.3_FASE9C_DELTA.md and GDD_v2.7_FASE9C_DELTA.md remain (flagged for investigation in SPEC_DOCS_32). Recommend consolidation or deletion in future spec.
 
 ---
 
 ## Compliance Checklist
 
-✓ Phase 0 audit matrix created before deletion  
-✓ Agent_prompts and agent_packages explicitly audited  
-✓ Only approved candidates deleted  
-✓ No Batch 2 candidates deleted  
-✓ No validation evidence deleted  
-✓ No runtime altered  
-✓ No assets/scenes/prefabs altered  
-✓ Documentation updated (2 files)  
-✓ Docs validation PASS (14/14)  
-✓ Execution report created  
-✓ PROJECT_LOG.md updated  
+? Phase 0 audit matrix created before deletion  
+? Agent_prompts and agent_packages explicitly audited  
+? Only approved candidates deleted  
+? No Batch 2 candidates deleted  
+? No validation evidence deleted  
+? No runtime altered  
+? No assets/scenes/prefabs altered  
+? Documentation updated (2 files)  
+? Docs validation PASS (14/14)  
+? Execution report created  
+? PROJECT_LOG.md updated  
 
 ---
 
@@ -239,9 +242,9 @@ All checks passed:
    - Orphaned delta files (consolidate or delete)
    - SPECKIT_DRIFT_CONTROL.md (absorb rules or delete)
 
-2. **Governance cleanup complete** — Agent_prompts and agent_packages Codex artifacts removed. Repository noise significantly reduced.
+2. **Governance cleanup complete** ? Agent_prompts and agent_packages Codex artifacts removed. Repository noise significantly reduced.
 
-3. **Phase 2-3 pending** — Continue Phase 2-3 human acceptance testing for SPEC_18-28 when ready.
+3. **Phase 2-3 pending** ? Continue Phase 2-3 human acceptance testing for SPEC_18-28 when ready.
 
 ---
 
@@ -252,6 +255,6 @@ SPEC_DOCS_33 successfully executed cleanup of 39 legacy documentation files, pri
 ---
 
 *Execution complete: 2026-06-01*  
-*Spec: SPEC_DOCS_33 — Radical Agent Prompts & Packages Cleanup*  
+*Spec: SPEC_DOCS_33 ? Radical Agent Prompts & Packages Cleanup*  
 *Total deletions: 39 files*  
 *Next audit: SPEC_DOCS_34 (Codex files, orquestrador, deltas)*

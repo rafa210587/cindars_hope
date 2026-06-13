@@ -1,4 +1,4 @@
-﻿# SPEC FUTURA — FASE9H Loot, Crafting, Equipment, Durability e Environment
+# SPEC FUTURA — FASE9H Loot, Crafting, Equipment, Durability e Environment
 
 > Origem histórica: `docs_old/FASE9H_CAVE_LOOT_CRAFTING_EQUIPMENT_PROGRESSION_SPEC_v1.0.md`
 > Status: A implementar
@@ -951,7 +951,7 @@ Complementa:
 - `docs_old/FASE9E_PLAYER_LEVEL_UP_PROGRESSION_SPEC_v1.0.md`
 - `docs_old/FASE9F_CAVE_RESOURCES_ENCOUNTERS_SPEC_v1.0.md`
 - `docs_old/FASE9G_CAVE_BESTIARY_FACTION_LOCKS_PORTAL_ECOLOGY_SPEC_v1.0.md`
-- `docs/amendments/FASE9G_AMENDMENT_ENEMY_COMBAT_ROLES_AI_STATUS_v1.1.md`
+- `docs/amendments/FASE9G_AMENDMENT_ENEMY_COMBAT_ROLES_AI_STATUS_v1.1.md (archived — canônico atual: docs/decisions/ + docs/game_rules/)`
 
 Não altera specs antigas destrutivamente.
 

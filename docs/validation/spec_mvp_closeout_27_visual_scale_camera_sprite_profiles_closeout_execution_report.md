@@ -1,5 +1,8 @@
 # SPEC_27 — Visual Scale, Camera, Sprite Profiles Closeout — Execution Report
 
+validated_adrs: [] <!-- retro-preenchido 2026-06-12: report anterior � pol�tica ADR (SPEC_DOCS_38) -->
+validated_game_rules: [] <!-- retro-preenchido 2026-06-12 -->
+
 **Date:** 2026-06-01  
 **Spec ID:** spec_mvp_closeout_27_visual_scale_camera_sprite_profiles_closeout  
 **Executor:** Claude Code (Haiku mode)  

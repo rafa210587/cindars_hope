@@ -1,5 +1,8 @@
 # SPEC_07B Execution Report - Bow Direct Weapon and Stamina Rebind Fix
 
+validated_adrs: [] <!-- retro-preenchido 2026-06-12: report anterior � pol�tica ADR (SPEC_DOCS_38) -->
+validated_game_rules: [] <!-- retro-preenchido 2026-06-12 -->
+
 **Date:** 2026-06-01  
 **Branch:** dev  
 **Executor:** Claude Code (Haiku mode)  

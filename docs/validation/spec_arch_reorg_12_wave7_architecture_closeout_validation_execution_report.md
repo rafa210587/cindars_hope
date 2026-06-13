@@ -1,5 +1,8 @@
 # SPEC_12 Execution Report - Wave 7 Architecture Closeout Validation
 
+validated_adrs: [] <!-- retro-preenchido 2026-06-12: report anterior � pol�tica ADR (SPEC_DOCS_38) -->
+validated_game_rules: [] <!-- retro-preenchido 2026-06-12 -->
+
 **Date:** 2026-06-01  
 **Branch:** dev  
 **Executor:** Claude Code (Haiku mode)  

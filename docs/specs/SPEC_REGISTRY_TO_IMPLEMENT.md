@@ -223,3 +223,185 @@ Após a reconciliação das 154 specs novas wave-based, 7 specs antigas da era p
 - Specs com sufixo _future em `features_futuras/` — NÃO EXECUTAR
 - Future/mapped (WAVE 17-24) bloqueado por política
 - Pets (WAVE 23) bloqueado como HOLD/BLOCKED_SCOPE
+
+---
+
+## Lote FABLE — Gap Closure (gerado 2026-06-12)
+
+Specs densas geradas por gap analysis completa de `docs/design/**` (42 directions) contra o
+código real. Local: `docs/specs/a_implementar/fable/` (subpasta — fora da fila executável
+automática até promoção humana). Índice e análise: `fable/fable_00_index_gap_analysis.md`.
+
+| Ordem | Spec | Bloco | Prioridade | Lacuna que fecha |
+|---|---|---|---|---|
+| F01 | `fable/fable_01_spec_status_effects_canonical_set_runtime.md` | A combate | P1 | 6 status canônicos faltantes + aplicação em skills/spells |
+| F02 | `fable/fable_02_spec_combat_weapon_actions_derived_stats_runtime.md` | A combate | P1 | light/heavy/charged + stagger + DerivedStats no dano real |
+| F03 | `fable/fable_03_spec_equipment_mechanical_baselines_runtime.md` | A combate | P1 | ASPD/scaling/charged por arma + armadura reduzindo dano |
+| F04 | `fable/fable_04_spec_enemy_threat_pack_coordination_runtime.md` | B inimigos | P2 | threat memory + pack alert + leash coletivo |
+| F05 | `fable/fable_05_spec_cave_boss_phase_ai_runtime.md` | B inimigos | P2 | IA de fases de boss (thresholds/action sets/adds) |
+| F06 | `fable/fable_06_spec_enemy_loot_tables_vulnerability_tags_runtime.md` | A/B | P2 | loot tables por família + matching de vulnerabilidade |
+| F07 | `fable/fable_07_spec_magic_learning_unlock_sources_runtime.md` | C magia | P2 | knownSpellIds + scrolls/tomes/wands (seção de save) |
+| F08 | `fable/fable_08_spec_magic_spell_shapes_targeting_runtime.md` | C magia | P2 | spell shapes (cone/nova/self/barrier) + cast time |
+| F09 | `fable/fable_09_spec_cave_biome_layout_variety_runtime.md` | D mundo | P2 | layout por bioma + hazards + salas de tesouro (ADR-0005) |
+| F10 | `fable/fable_10_spec_main_quest_act1_playable_runtime.md` | E conteúdo | P1 | Ato 1 da main quest jogável (Fragmento da Água) |
+| F11 | `fable/fable_11_spec_city_interiors_doors_schedule_anchors_scene.md` | D mundo | P2 | TIME_BLOCK_DEBT + SCENE_WIRING_DEBT (WI-25) + portas/interiores |
+| F12 | `fable/fable_12_spec_farm_animals_runtime_scene_integration.md` | D mundo | P2 | animais de fazenda ponta a ponta (seção de save) |
+| F13 | `fable/fable_13_spec_save_debt_closure_runtime.md` | F fundação | P1 | CAVE_ENEMY_HP + DAILY_GOALS + CAVE_RUN save debts |
+| F14 | `fable/fable_14_spec_ui_canvas_screens_integration_runtime.md` | F fundação | P1 | 4 telas IMGUI → Canvas (destrava specs 04_ CONTRACT_ONLY) |
+
+Regras do lote: F13 e specs com seção de save (F07/F12) nunca em paralelo entre si;
+F02/F03/F05/F06/F08/F14 sem paralelismo (locks centrais). Directions cobertas por
+`features_futuras/` (bestiary, companions, pets, social, nível 100/101, mana, automação,
+festivais) NÃO foram duplicadas — ver tabela no índice fable_00.
+
+### Corretivas de Aderência (auditoria fable_00B, 2026-06-12)
+
+Auditoria de código real revelou sistemas das WAVES 02-11 **órfãos** (testados, jamais
+instanciados). Specs corretivas de wiring:
+
+| # | Spec | Fecha |
+|---|---|---|
+| F15 | `fable/fable_15_spec_world_weather_farm_orphan_systems_wiring.md` | P0 — clima/chuva/refresh/qualidade/fertilizante ligados |
+| F16 | `fable/fable_16_spec_player_fatigue_sleep_collapse_wiring.md` | P0 — fadiga/sono/colapso 02:00 + cama |
+| F17 | `fable/fable_17_spec_fonte_anya_physical_interactable_runtime.md` | P0 — Fonte física + respawn + Água Viva |
+| F18 | `fable/fable_18_spec_derived_stats_vitals_application_runtime.md` | P1 — vitals/resistências derivados aplicados |
+| F19 | `fable/fable_19_spec_city_services_schedule_reconciliation.md` | P1 — dedup schedule (City/ vs NPC/) + licenças vivas |
+| F20 | `fable/fable_20_spec_calendar_clock_hud_day_detail_ui.md` | P2 — refatoração da 02_spec_calendar_ui (absorvida) |
+
+### Triagem da fila (2026-06-12)
+
+- **102 specs executadas/absorvidas** movidas do nível raiz para
+  `a_implementar/executadas_build_validated/` (README com estado e crosswalks). NÃO reexecutar.
+- Fila executável atual = `fable/` (F01-F20, após promoção humana) + `features_futuras/` (bloqueadas).
+- Análise completa: `fable/fable_00B_adherence_audit_queue_triage.md`.
+- Docs validation: **exit 0, zero erros** (10 reports retro-preenchidos; 2 citações de
+  amendment marcadas archived; FIX_001/test_harness fora do nível raiz).
+
+
+### Expansão F21-F42 + Plano Mestre de Execução (2026-06-12)
+
+Pós-canonização dos 6 catálogos FABLE, geradas 22 specs novas e o plano mestre
+`fable/fable_00C_master_execution_plan.md` (revisão F01-F20 com 9 emendas vinculantes,
+ordem global em 9 batches, matriz de paralelismo, protocolo por spec, checkpoints M1-M4).
+
+| # | Spec | Fecha |
+|---|---|---|
+| F21 | `fable/fable_21_spec_bestiary_knowledge_runtime.md` | conhecimento por descoberta + save |
+| F22 | `fable/fable_22_spec_essence_tempering_forge.md` | têmpera elemental permanente (Brumdar) |
+| F23 | `fable/fable_23_spec_accessories_relics_runtime.md` | 3 slots + 12 acessórios + 4 relíquias |
+| F24 | `fable/fable_24_spec_enemy_moves_elite_affixes_runtime.md` | 12 Moves canônicos faltantes + elites |
+| F25 | `fable/fable_25_spec_npc_unique_services_runtime.md` | 8 serviços únicos por NPC |
+| F26 | `fable/fable_26_spec_friendship_state_contract.md` | amizade níveis 0-5 + save |
+| F27 | `fable/fable_27_spec_perfect_block_posture_runtime.md` | perfect block + CoreExposed |
+| F28 | `fable/fable_28_spec_dialogue_conditions_pools.md` | falas condicionais (estação/clima/amizade) |
+| F29 | `fable/fable_29_spec_canonical_skill_catalog_migration.md` | ~70 skills canônicas + migração (SOLO) |
+| F30 | `fable/fable_30_spec_catalog_consistency_validator.md` | validador editor de catálogos |
+| F31 | `fable/fable_31_spec_magic_items_unidentified_runtime.md` | itens mágicos não-identificados |
+| F32 | `fable/fable_32_spec_item_catalog_data_expansion.md` | ItemDatabase = catálogo (~118) |
+| F33 | `fable/fable_33_spec_bestiary_data_expansion_60_creatures.md` | 60 criaturas + 4 bosses finais |
+| F34 | `fable/fable_34_spec_quest_sources_infrastructure.md` | 5 fontes de quest + XP escalado |
+| F35 | `fable/fable_35_spec_npc_side_quest_chains.md` | 12 cadeias de side quest |
+| F36 | `fable/fable_36_spec_main_quest_acts_2_4.md` | main quest atos 2-4 |
+| F37 | `fable/fable_37_spec_festivals_lunar_events_runtime.md` | festivais + picos lunares + eventos |
+| F38 | `fable/fable_38_spec_minimap_v1_runtime.md` | minimapa v1 (fog-of-war na caverna) |
+| F39 | `fable/fable_39_spec_inferred_player_class_runtime.md` | classe inferida + títulos |
+| F40 | `fable/fable_40_spec_town_48x42_relayout.md` | cidade 48×42 distritos canônicos |
+| F41 | `fable/fable_41_spec_farm_lot_expansions.md` | lotes compráveis da fazenda |
+| F42 | `fable/fable_42_spec_progression_cap100_xp_curve.md` | cap 100 + curva XP (SOLO, P0) |
+
+Ordem linear de execução (fable_00C PARTE C):
+`F15 F16 F17 | F13 F42 | F01 F02 F03 F18 F27 | F04 F24 F05 | F07 F08 F31 |
+F30 F32 F06 F33 F22 F23 | F19 F11 F09 F40 F41 F12 F37 |
+F29 F39 F25 F28 F26 F34 F35 F10 F36 | F14 F20 F38` — 42 specs.
+### Specs finais F43-F47 + enumeração de execução (2026-06-12)
+
+Fechamento da geração: 5 specs finais para os gaps aprovados que estavam anotados como
+"futuros" + todas as F21-F42 expandidas ao formato SpecKit denso (≈300 linhas cada).
+
+| # | Spec | Fecha |
+|---|---|---|
+| F43 | `fable/fable_43_spec_endgame_act5_final_bosses_choice.md` | endgame: Ato 5, 4 bosses finais, escolha Proteger/Selar/Usar |
+| F44 | `fable/fable_44_spec_cave_save_completion_policy.md` | snapshot multi-nível no save + política de save em boss |
+| F45 | `fable/fable_45_spec_bestiary_ui_full_codex.md` | aba Bestiário completa (codex com fichas/spoiler tiers) |
+| F46 | `fable/fable_46_spec_romance_foundation_runtime.md` | romance: candidatos canônicos, bi, poliamor 2, gates |
+| F47 | `fable/fable_47_spec_derived_stats_followups_closeout.md` | PlayerSpeedComposer + craft/repair hooks + duração por resistência |
+
+ORDEM DE EXECUÇÃO OFICIAL: `fable/fable_00C_master_execution_plan.md` PARTE E —
+enumeração E01-E47 (E01-E10 já BUILD_VALIDATED), grupos paralelos P1-P5, save specs
+nunca simultâneas, E33 (skills) solo total.
+### Auditorias de reconstrutibilidade/completude → F48-F60 + retro-specs (2026-06-12)
+
+3 auditorias paralelas (código↔specs; design↔specs ×2) acharam gaps. Gerados:
+
+| # | Spec | Fecha |
+|---|---|---|
+| F48 | `fable/fable_48_spec_bow_ammo_elemental_arrows_runtime.md` | munição de arco + flechas elementais (GAP-ALTA) |
+| F49 | `fable/fable_49_spec_high_tier_gear_crafting_upgrades.md` | craft Mithril+ / upgrades +1..+3 (GAP-ALTA) |
+| F50 | `fable/fable_50_spec_fishing_v2_lakes_tables.md` | pesca v2: tabelas bioma/estação/clima (GAP-ALTA) |
+| F51 | `fable/fable_51_spec_zrix_cave_contracts.md` | contratos do Zrix cc_* (GAP-ALTA) |
+| F52 | `fable/fable_52_spec_cave_secret_quests_goblin_visitor.md` | 8 scq_* + goblin visitante (GAP-ALTA) |
+| F53 | `fable/fable_53_spec_festival_quests.md` | 8 fq_* (GAP-ALTA) |
+| F54 | `fable/fable_54_spec_forage_shipping_overnight_runtime.md` | forrageio sazonal + shipping noturno |
+| F55 | `fable/fable_55_spec_farm_processing_greenhouse.md` | queijaria/barril + estufa mínima |
+| F56 | `fable/fable_56_spec_system_tab_title_flow.md` | aba Sistema + título/new game |
+| F57 | `fable/fable_57_spec_living_city_birthdays_inn_reputation_adr.md` | aniversários + estalagem + ADR reputação |
+| F58 | `fable/fable_58_spec_audio_sfx_hooks.md` | AudioManager + hooks por evento |
+| F59 | `fable/fable_59_spec_combat_telemetry_playmode.md` | telemetria TTK/stamina vs BALANCE parte G |
+| F60 | `fable/fable_60_spec_cave_traps_by_biome_tier.md` | armadilhas determinísticas por bioma/tier |
+
+Emendas: F21 (+1 skill point por 10 entradas Estudadas, máx 5) e F34 (QuestSource.CaveContract).
+Retro-specs: `implementados/spec_retro_01..09` documentam o código sem spec (slice 2026-06-12
++ WI-17..26) para reconstrutibilidade. Ordem/janelas: fable_00C PARTE F. Placar: 60 funcionais
+(10 executadas), 9 retro, fundação+legado migrados para .specs/.
+### Auditorias de MVP/shipping → F61-F67 + Refinamento v2 (2026-06-12)
+
+| # | Spec | Fecha |
+|---|---|---|
+| F61 | `fable/fable_61_spec_build_standalone_windows.md` | build standalone + cenas no EditorBuildSettings (BLOQUEADOR) |
+| F62 | `fable/fable_62_spec_onboarding_control_hints.md` | hints contextuais de controles + tutorial de combate (BLOQUEIA MVP) |
+| F63 | `fable/fable_63_spec_new_game_intro_hook.md` | intro do New Game + carta→Corvus (texto gated por lore) |
+| F64 | `fable/fable_64_spec_death_screen_canvas_corpse_messaging.md` | tela de morte Canvas explicando corpse recovery |
+| F65 | `fable/fable_65_spec_daily_goals_closeout_reward_hud.md` | recompensa + HUD de metas (fecha débitos WI-24) |
+| F66 | `fable/fable_66_spec_code_debt_cleanup_slice_mode.md` | slice mode, CaveDeathResolver TODOs, PlayerHitEvent, STAMINA_BLOCK_DEBT |
+| F67 | `fable/fable_67_spec_canonical_governance_input_map_adr.md` | input map game_rule + ADR densidade + re-mapa refinamentos |
+
+Emendas: F34-C (PREREQUISITE_UI_DEBT), F20-C (widget XP/nível + toast level up).
+
+### Refinamento v2 RESPONDIDO → F68-F70 + 18 emendas EMENDA-D (2026-06-12)
+
+| # | Spec | Fecha |
+|---|---|---|
+| F68 | `fable/fable_68_spec_world_god_marks_altars.md` | Marcas dos Deuses: 11 altares com bônus diário em caverna/cidade/fazenda (decisão 3.4; catálogo no apêndice A.5 do doc de decisões) |
+| F69 | `fable/fable_69_spec_combat_sprint_runtime.md` | sprint em combate 3.8-4.2 tiles/s a 8 stamina/s (decisão 6.5-A; após F47) |
+| F70 | `fable/fable_70_spec_npc_side_quest_chains_wave2.md` | 2ª leva de cadeias side: 11 NPCs, ~33 quests (decisão 8.3; após F35) |
+
+Decisões vinculantes: `docs/design/FABLE_DECISOES_RESPOSTAS_v2.0.md` (+ APÊNDICE LORE A.1-A.5).
+Emendas EMENDA-D: F08/F11/F12/F14/F20/F21/F37/F41/F43/F45/F46/F49/F50/F56/F61/F63/F66.
+MVP = LOTE INTEIRO (decisão 7.6). Placar: 70 funcionais (10 executadas) + 9 retro.
+
+### Refinamento v3 RESPONDIDO → fable_71 + ADR-0010..0014 + emendas EMENDA-V3 (2026-06-13)
+
+| # | Spec/Artefato | Fecha |
+|---|---|---|
+| F71 | `fable/fable_71_spec_combat_feel_pass.md` | hit-stop + screen shake + HudSuppressionChangedEvent (números de dano já existem) |
+
+Decisões vinculantes: `docs/design/FABLE_DECISOES_RESPOSTAS_v3.0.md` (skills/itens/companions/boas práticas).
+ADRs novos: ADR-0010 (reconcilia skill_tree_rules+inventory_equipment_rules com código FABLE), ADR-0011
+(arte 32px/tile), ADR-0012 (localização P4), ADR-0013 (input teclado/mouse v1), ADR-0014 (dificuldade única).
+Novos docs de design: SKILL_NUMERIC_ADDENDUM_v1.0, NPC_GIFT_TASTE_MATRIX_v1.0, COMPANION_ROLES_CATALOG_v1.0.
+Emendas EMENDA-V3: F03/F14/F26/F29/F32/F42/F43/F56/F58 + COMPANIONS_DIRECTION + 4 specs 14_companion spec-ready.
+Placar: 71 funcionais (10 executadas, 61 a executar E11-E71) + 9 retro. Ordem: fable_00C PARTE I.
+
+### Cobertura de design v3 → fable_72/73 + companions densas (2026-06-13)
+
+| # | Spec | Fecha |
+|---|---|---|
+| F72 | `fable/fable_72_spec_npc_gift_giving_taste_runtime.md` | dar presente + reação por gosto por NPC (reusa F26 + NPC_GIFT_TASTE_MATRIX) |
+| F73 | `fable/fable_73_spec_localization_string_table_runtime.md` | tabela id→string desde a P4 (ADR-0012) |
+
+Companions: as 4 specs `features_futuras/14_spec_companion_*` foram ELEVADAS de esqueleto a SpecKit
+denso (cave-assist/brain, eligibility/recruitment/save+provider, farm-jobs/board, ui/hud) refletindo
+o COMPANION_ROLES_CATALOG e as decisões v3 bloco 3 — seguem WAVE 14 (gated), fora do lote v1.
+Game_rules NÃO viram spec (regras consumidas; domínios já cobertos). Placar lote v1: 73 funcionais
+(10 executadas, 63 a executar E11-E73) + 9 retro. Ordem: fable_00C PARTE J.
+Ordem/janelas: fable_00C PARTE H e .specs/README.md.

@@ -1,4 +1,7 @@
 ---
+
+validated_adrs: [] <!-- retro-preenchido 2026-06-12: report anterior � pol�tica ADR (SPEC_DOCS_38) -->
+validated_game_rules: [] <!-- retro-preenchido 2026-06-12 -->
 doc_type: validation
 status: evidence
 spec_id: SPEC_DOCS_37

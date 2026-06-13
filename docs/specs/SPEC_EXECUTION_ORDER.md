@@ -1,5 +1,8 @@
 # SPEC EXECUTION ORDER
 
+> **RECONCILIAÇÃO 2026-06-12:** a fila wave-based abaixo foi EXECUTADA (BUILD_VALIDATED) e movida para `docs/specs/a_implementar/executadas_build_validated/`. A fila executável atual é `docs/specs/a_implementar/fable/` (ver SPEC_REGISTRY_TO_IMPLEMENT, Lote FABLE). O conteúdo abaixo é registro histórico.
+
+
 > **Dependency registry and execution sequence.**
 > Agents implementing a spec: read ONLY the row for the target spec and its direct dependencies.
 > Do not read the full file as part of minimum context — use `docs/00_PROJECT/CURRENT_STATE.md` instead.

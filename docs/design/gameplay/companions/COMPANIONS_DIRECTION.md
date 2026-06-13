@@ -1051,9 +1051,13 @@ Não criar builds paralelas complexas antes do player core estar sólido.
 
 # PARTE P — Equipamentos de companion
 
-## 45. Direção inicial
+> **ALTERADO PELA EMENDA 2026-06-13-V3 (decisão 3.4, OVERRIDE).** O texto original abaixo dizia que equipment de companion era "futuro/não-MVP". A decisão 3.4 (vinculante) move equipment (arma + acessório) para o **sistema base**. As §45 e §46 abaixo ficam marcadas como SUPERSEDED; a regra canônica vigente está na seção "EMENDA 2026-06-13-V3 → 3.4 Equipment no sistema base" no fim deste documento.
 
-No MVP/direção inicial:
+## 45. Direção inicial ~~(SUPERSEDED pela EMENDA 2026-06-13-V3 / decisão 3.4)~~
+
+> **SUPERSEDED 2026-06-13-V3 (3.4):** a afirmação "companion não precisa de equipment completo / equipment é futuro" deixa de valer. Companion equipa **arma + acessório** no sistema base. Mantido aqui apenas como registro histórico; ver emenda no fim do documento.
+
+No MVP/direção inicial (texto histórico):
 
 ```text
 Companion não precisa de equipment completo.
@@ -1061,9 +1065,11 @@ Companion pode ter equipamento autorado/narrativo.
 Stats podem escalar por progressão/vínculo, não por inventário completo.
 ```
 
-## 46. Futuro
+## 46. Futuro ~~(SUPERSEDED pela EMENDA 2026-06-13-V3 / decisão 3.4)~~
 
-Se equipment de companion existir:
+> **SUPERSEDED 2026-06-13-V3 (3.4):** equipment de companion deixa de ser "futuro". O conjunto de slots base (arma + acessório) e as regras de recusa por personalidade/classe migram para a emenda no fim do documento. Item único de companion por quest pessoal permanece válido como recompensa.
+
+Se equipment de companion existir (texto histórico):
 
 ```text
 slots limitados;
@@ -1073,11 +1079,13 @@ alguns NPCs podem recusar tipos de gear por personalidade/classe;
 item único de companion pode vir de quest pessoal;
 ```
 
-Regra:
+Regra (texto histórico — SUPERSEDED):
 
 ```text
 Specs atuais não devem criar inventário completo de companion sem decisão explícita.
 ```
+
+> **Regra vigente (EMENDA 2026-06-13-V3 / 3.4):** o sistema base implementa **arma + acessório** por companion (2 slots), sem inventário completo. Ver emenda no fim do documento para o contrato exato.
 
 ---
 
@@ -1435,4 +1443,206 @@ Definir quest flags de companion em QUESTS_MAIN_PROGRESSION_DIRECTION.md.
 Validar DPS/healing de companion contra Cave Combat Balance.
 Validar farm job output contra economia/fazenda.
 Validar save/load de companion em cave snapshot/replay.
+```
+
+---
+
+# EMENDA 2026-06-13-V3 (Refinamento v3)
+
+> **Fonte vinculante:** `docs/design/FABLE_DECISOES_RESPOSTAS_v3.0.md`, BLOCO 3 (decisões 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 3.8, 3.11, 3.12) + acréscimos #3 e #4 da re-auditoria de código de 2026-06-13.
+> **Catálogo de papéis associado (artefato A7):** `docs/design/gameplay/companions/COMPANION_ROLES_CATALOG_v1.0.md` — define, por papel, bônus (combate + fora de combate) e conjunto de ações. As decisões abaixo devem ser lidas em conjunto com esse catálogo; em conflito de papel/ação, o catálogo é a fonte detalhada e esta emenda fixa as regras de sistema.
+> **Natureza:** esta emenda **adiciona** regras e **supersede** trechos pontuais marcados (PARTE P §45-46). Todo o texto anterior do documento permanece como registro; quando uma decisão v3 conflita com texto antigo, a decisão v3 vence (documento mais novo, conforme cabeçalho da v3.0).
+> **Escopo de implementação:** as specs `14_spec_companion_*` permanecem **gated na WAVE 14** (decisão 3.12). Esta emenda destrava o **contrato** (specs viram spec-ready), não antecipa a execução de runtime.
+
+## V3.1 — Comandos e Stances (decisões 3.2 e 3.3)
+
+A direção original (PARTE J) descreve estados de IA, mas não fixava o conjunto de **comandos do jogador** nem o conjunto de **stances**. A v3 fecha ambos.
+
+### Comandos do jogador (3 comandos diretos)
+
+```text
+Ficar / Esperar
+  companion permanece na posição atual; não segue; mantém a stance vigente para autodefesa.
+
+Seguir
+  companion acompanha o jogador respeitando FollowDistance, leash e safe spawn (PARTE I/J).
+
+Atacar alvo marcado
+  o jogador marca um inimigo; o companion prioriza esse alvo dentro dos limites da stance,
+  do leash e do active combat budget (PARTE K). Não puxa pack novo para alcançar o alvo.
+```
+
+### Stances de combate (3 universais + 1 modo de papel)
+
+```text
+Agressivo
+  ataca qualquer inimigo dentro de um raio de até 12 tiles do jogador.
+
+Passivo
+  não ataca ninguém; só executa comandos diretos (ex.: Atacar alvo marcado continua válido
+  como comando explícito) e ações de autopreservação/retreat.
+
+Defensivo (DEFAULT)
+  só ataca quem chega a <= 4 tiles do jogador OU quem ataca o jogador.
+  É a stance padrão ao ativar um companion.
+
+Suporter (modo de papel, NÃO é 4a stance universal)
+  disponível apenas para papéis de suporte (cura/buff/Healer/Alchemist/MusicianSupport e afins
+  no catálogo de papéis). Quando ativo, o companion prioriza cura/buff/limpeza de status conforme
+  as regras de cura/suporte da PARTE K (MP, cooldown, range, cast, limite por combate/run).
+```
+
+Reconciliação (3.3 × 3.2, conforme `FABLE_DECISOES_RESPOSTAS_v3.0.md` "Ambiguidades interpretadas" #1):
+
+```text
+Existem 3 stances universais: Agressivo, Defensivo (default), Passivo.
+Suporter é um MODO exposto apenas por papéis de suporte, não uma stance disponível a todos.
+Raios (12 tiles agressivo / 4 tiles defensivo) são budget de design; o tuning final valida
+contra Cave Combat Balance e leash.
+```
+
+## V3.2 — Papéis de companion (decisões 3.1 e 3.3)
+
+```text
+Há mais papéis do que os 3 inicialmente propostos.
+O conjunto canônico de papéis, com bônus (combate + fora de combate) e ações por papel,
+vive no Catálogo de Papéis de Companion (artefato A7):
+  docs/design/gameplay/companions/COMPANION_ROLES_CATALOG_v1.0.md
+O número de companions iniciais para o MVP será fixado DEPOIS do catálogo (decisão 3.1).
+As listas de roles da PARTE D (§9-§11) continuam válidas como inventário de papéis;
+o catálogo as detalha e o modo Suporter (V3.1) marca quais papéis expõem cura/buff.
+```
+
+## V3.3 — Equipment no sistema base (decisão 3.4, OVERRIDE — conflita com PARTE P §45-46)
+
+> Esta seção **supersede** as §45 e §46 (marcadas como SUPERSEDED no corpo do documento).
+
+```text
+Companion equipa ARMA + ACESSÓRIO no SISTEMA BASE (2 slots), não como recurso futuro.
+Não é inventário completo: apenas os 2 slots (sem microgerenciamento excessivo).
+Equipment não deve transformar o companion em segundo player; os limites de DPS/healing/budget
+  da PARTE K continuam valendo mesmo com gear equipado.
+Alguns NPCs podem recusar tipos de gear por personalidade/classe (regra histórica preservada).
+Item único de companion pode vir de quest pessoal (regra histórica preservada).
+```
+
+Implicação para as specs 14_*:
+
+```text
+A spec de eligibility/state/save deve poder persistir os 2 slots de equipment do companion
+  (apenas IDs estáveis, nunca referência Unity — ver V3.6).
+A spec de cave assist/brain/balance deve considerar o gear ao calcular contribuição, sem
+  estourar os limites de DPS/budget.
+```
+
+## V3.4 — Derrota do companion: Downed → resgate → Retreat → Injured (decisão 3.5)
+
+Detalha/confirma a PARTE M (§36-§38):
+
+```text
+HP do companion chega a 0 -> Downed.
+Abre-se uma janela de resgate (o jogador pode resgatar).
+Se NÃO resgatado dentro da janela -> Retreat automático (o companion sai por conta própria).
+Após Downed/Retreat -> Injured por 1-2 dias (indisponível até recuperação).
+Sem permadeath no combate base (ver V3.5 para a exceção narrativa).
+```
+
+## V3.5 — Player derrotado com companion ativo: revive 30% (decisão 3.6, CUSTOM)
+
+Regra nova (não existia na direção original):
+
+```text
+Quando o PLAYER é derrotado e há um companion ativo:
+  o companion TENTA REVIVER o player com 30% de chance.
+  Se conseguir: o player volta (ressuscita no local conforme regra de revive do combate).
+  Se falhar: o companion ESCAPA e volta Injured por 1 dia (não morre no combate base).
+A chance base é 30%; modificadores de papel/bond/perk podem ajustá-la no catálogo/balance profile,
+  mas a revive nunca vira garantia (não pode chegar a 100% no sistema base).
+```
+
+## V3.6 — Permadeath apenas em eventos narrativos + Fonte de Anya (decisão 3.7, OVERRIDE)
+
+Reconcilia 3.7 (B) com 3.5 (A), conforme `FABLE_DECISOES_RESPOSTAS_v3.0.md` "Conflitos a reconciliar" #2. Supersede a frase da PARTE M §37 ("Permadeath, se existir, é evento narrativo único/futuro") tornando-a explícita e vinculante:
+
+```text
+Combate base: SEM permadeath. Companion derrotado vira Injured (V3.4).
+Permadeath EXISTE, porém APENAS em eventos narrativos específicos e roteirizados (scripted).
+  Esses eventos devem ser marcados explicitamente como permadeath-capable; nenhum combate
+  procedural/aleatório de caverna pode matar permanentemente um companion.
+Fonte de Anya: pode RESSUSCITAR um companion morto em evento narrativo, com CUSTO PROGRESSIVO
+  ("Ressurreição Dolorosa") — cada ressurreição custa mais, evitando reset grátis (preserva
+  a regra da PARTE M §38: a Fonte não vira reset infinito).
+```
+
+## V3.7 — Fertilizante raro automático: toggle por job Planter, default OFF (decisão 3.8)
+
+Detalha a PARTE G (jobs de fazenda) e a PARTE U (CompanionJobProfileSO):
+
+```text
+O job de Planter pode aplicar fertilizante raro automaticamente.
+Isso é um TOGGLE por job (granularidade: por job de Planter), com DEFAULT OFF.
+Quando ligado, consome fertilizante do storage AUTORIZADO do job (nunca cria do nada,
+  nunca acessa inventário do jogador sem comando — preserva a PARTE G §19 e a storage policy
+  da spec de farm jobs).
+Sem fertilizante disponível no storage autorizado -> o job planta sem fertilizar (não falha por isso).
+```
+
+## V3.8 — Vínculo: Bond 0-5 com perks em 2 e 4 (decisão 3.11)
+
+Detalha a PARTE N (§39-§41):
+
+```text
+CompanionBondLevel vai de 0 a 5.
+Perk passivo concedido nos níveis 2 e 4 (1 perk passivo por marco; 2 perks no total ao chegar a 4).
+JobRank e CaveRank são trilhas SEPARADAS do bond (a estrutura já existe no código: CompanionSaveEntry
+  tem BondLevel, JobRank e CaveRank distintos).
+Os perks de bond seguem o modelo simples da PARTE O (§42): pequenos, legíveis, sem árvore grande.
+```
+
+## V3.9 — Reconciliações de código (acréscimos #3 e #4 da re-auditoria 2026-06-13)
+
+> Estes itens não vêm de uma decisão A/B/C do dono, mas da re-auditoria de código que a v3.0 incorporou. Ficam registrados aqui para que as specs 14_* fechem a dívida.
+
+### V3.9.1 — CompanionManagerSaveData precisa de SaveSectionProvider (acréscimo #3)
+
+```text
+Estado atual do código (verificado 2026-06-13):
+  CompanionManagerSaveData existe como DTO embutido em SaveData (campo SaveData.Companions),
+  com CompanionSaveEntry (CompanionId, NpcId, UnlockState, UnlockedRoles, UnlockedByQuestIds,
+  BondLevel, TrustPoints, Fatigue, InjuryState, LastInteractionDay, JobRank, CaveRank).
+  NÃO existe um ISaveSectionProvider dedicado para companions (apenas HotbarSectionProvider
+  existe em Assets/_Game/Scripts/Save/Providers/).
+Dívida a fechar:
+  a spec de eligibility/state/save (14_spec_companion_eligibility_recruitment_state_save_*)
+  deve criar um CompanionSaveSectionProvider seguindo o precedente HotbarSectionProvider,
+  garantindo round-trip (capture/restore) do estado de companion — hoje o DTO existe mas o
+  round-trip via provider não está fechado.
+  Regra de save mantida: apenas IDs estáveis e tipos simples; sem referência Unity.
+```
+
+### V3.9.2 — Romance/Spouse em flags mas não no enum CompanionRole (acréscimo #4)
+
+```text
+Estado atual do código (verificado 2026-06-13):
+  CompanionEligibilityFlags tem os bools CanBeRomanceCompanion e CanBeSpouseCompanion.
+  O enum CompanionRole tem apenas None/FarmCompanion/CaveCompanion/QuestCompanion/SocialCompanion.
+  Ou seja, Romance/Spouse existem como ELEGIBILIDADE mas não como PAPEL mecânico.
+Reconciliação canônica (registrada aqui; detalhe no Catálogo de Papéis A7):
+  Romance e Spouse permanecem ELEGIBILIDADES (flags), NÃO papéis de combate/job.
+  Isto é coerente com a PARTE A/R: "nem todo romance vira companion de combate" e
+  "nem todo spouse deve ser combat companion".
+  Portanto NÃO se deve adicionar Romance/Spouse ao enum CompanionRole como papel mecânico;
+  o catálogo de papéis e a spec de eligibility devem documentar que Romance/Spouse são gates
+  de elegibilidade/social, e que combate/job derivam de PrimaryRole/SecondaryRole (papéis reais).
+  Se uma futura decisão quiser papel social mecânico, será uma decisão explícita à parte.
+```
+
+## V3.10 — Status das specs 14_* (decisão 3.12)
+
+```text
+Manter WAVE 14 como wave de implementação dos companions.
+Este refinamento converte as specs 14_spec_companion_* de "future mapped" para SPEC-READY:
+  o contrato/escopo está destravado e validável; a EXECUÇÃO de runtime segue gated na WAVE 14.
+Cada uma das 4 specs recebe um bloco "EMENDA 2026-06-13-V3" apontando para as decisões 3.x
+  aplicáveis e para o Catálogo de Papéis (A7).
 ```

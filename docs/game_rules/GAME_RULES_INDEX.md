@@ -21,6 +21,14 @@
 | UI/Modal | [ui_modal_rules.md](ui_modal_rules.md) | — | ✓ | Modal stack, Esc behavior, input blocking, hud/inventory/shop |
 | Death/Respawn | [death_anya_corpse_rules.md](death_anya_corpse_rules.md) | — | ✓ | Death flow, corpse recovery, Anya respawn/respec, constraints |
 | Farming | [farm_rules.md](farm_rules.md) | — | ✓ | Crop growth, daily cycles, farm storage, economy |
+| Player Progression | [player_rules.md](player_rules.md) | ADR-0010 | ✓ | Level/XP curve, derived stats, vitals, fatigue thresholds |
+| Economy | [economy_rules.md](economy_rules.md) | ADR-0006, ADR-0007, ADR-0010 | ✓ | Pricing, shop stock refresh, money sources/sinks, sell/buy points |
+| Quests | [quest_rules.md](quest_rules.md) | ADR-0006, ADR-0007, ADR-0010 | ✓ | Objectives/events, conditions, reward idempotency, quest flags |
+| NPCs/Social | [npc_rules.md](npc_rules.md) | ADR-0006, ADR-0007, ADR-0010 | ✓ | NPC data, schedules, dialogue layers, friendship, gifts, services |
+| World/Time | [time_rules.md](time_rules.md) | ADR-0006, ADR-0007 | ✓ | Calendar, seasons, day transitions, weather, lunar cycle |
+| City | [city_rules.md](city_rules.md) | — | ✓ | Cindar's Hope footprint, districts, interiors, doors, landmarks |
+| Fonte de Anya | [fonte_rules.md](fonte_rules.md) | ADR-0006, ADR-0007 | ✓ | Fonte state, fragment-driven function unlocks, final-choice gating |
+| UI/HUD (non-modal) | [ui_rules.md](ui_rules.md) | ADR-0007 | ✓ | Gameplay HUD overlays, vitals/clock/quest tracker, floating combat feedback |
 
 ---
 

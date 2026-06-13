@@ -1,54 +1,54 @@
-# FASE9G Amendment v1.1 â€” Enemy Combat Roles, AI, Status & Movesets
+# FASE9G Amendment v1.1 — Enemy Combat Roles, AI, Status & Movesets
 
-> **Status:** amendment aprovado para orientar prÃ³ximas waves.
+> **Status:** amendment aprovado para orientar próximas waves.
 > **Tipo:** complemento da `FASE9G_CAVE_BESTIARY_FACTION_LOCKS_PORTAL_ECOLOGY_SPEC_v1.0`.
-> **NÃ£o substitui:** FASE9G v1.0.
-> **Objetivo:** detalhar como criaturas, elites, minibosses e bosses da cave lutam, se movem, aplicam status, usam armas elementais, escalam por nÃ­vel e respeitam legibilidade/balance do combate action.
+> **Não substitui:** FASE9G v1.0.
+> **Objetivo:** detalhar como criaturas, elites, minibosses e bosses da cave lutam, se movem, aplicam status, usam armas elementais, escalam por nível e respeitam legibilidade/balance do combate action.
 
 ---
 
-## 1. AvaliaÃ§Ã£o de qualidade e hardening aplicado
+## 1. Avaliação de qualidade e hardening aplicado
 
-O rascunho base estava bom em cobertura de criaturas e intenÃ§Ã£o de combate, mas precisava de hardening em quatro pontos:
+O rascunho base estava bom em cobertura de criaturas e intenção de combate, mas precisava de hardening em quatro pontos:
 
-1. **Legibilidade do combate:** muitos inimigos com status/mecÃ¢nicas poderiam virar caos visual se nÃ£o houver telegraph, cooldown e limite de simultaneidade.
-2. **Status stacking:** permitir mÃºltiplos status Ã© bom, mas precisa de regras de orÃ§amento por tipo de inimigo.
-3. **Aerial/flying behavior:** drakes, bats e wyverns precisam de fallback terrestre e limites de colisÃ£o/pathing.
-4. **Boss/miniboss:** trÃªs fases e duas mecÃ¢nicas sÃ£o bons, mas precisam de regra mÃ­nima de fase, telegraph e janela de resposta do jogador.
+1. **Legibilidade do combate:** muitos inimigos com status/mecânicas poderiam virar caos visual se não houver telegraph, cooldown e limite de simultaneidade.
+2. **Status stacking:** permitir múltiplos status é bom, mas precisa de regras de orçamento por tipo de inimigo.
+3. **Aerial/flying behavior:** drakes, bats e wyverns precisam de fallback terrestre e limites de colisão/pathing.
+4. **Boss/miniboss:** três fases e duas mecânicas são bons, mas precisam de regra mínima de fase, telegraph e janela de resposta do jogador.
 
 Este amendment adiciona:
 
 - contratos de `MovementPatternId`, `CombatBehaviorId`, `StatusId`, `DamageType` e `EnemyCombatProfile`;
-- orÃ§amento de status por tier;
+- orçamento de status por tier;
 - regras de telegraph/cooldown;
 - regras de spawn composition por sala;
 - regras para armas elementais e drops;
-- matriz de movimento/comportamento por famÃ­lia de criatura;
+- matriz de movimento/comportamento por família de criatura;
 - movesets de minibosses e bosses;
-- critÃ©rios de aceite para implementaÃ§Ã£o futura.
+- critérios de aceite para implementação futura.
 
 ---
 
-## 2. DecisÃµes fechadas
+## 2. Decisões fechadas
 
 ```text
-D1: Combate da cave deve ser action RPG simples, com padrÃµes legÃ­veis, movimentaÃ§Ã£o ativa e fases.
+D1: Combate da cave deve ser action RPG simples, com padrões legíveis, movimentação ativa e fases.
 D2: Inimigos podem ter mais de 1 status principal.
 D3: Bosses devem ter 3 fases na spec.
-D4: Minibosses devem ter 2 mecÃ¢nicas especiais.
-D5: Fear, Curse, Blind, Chill e outros status entram jÃ¡ como IDs de contrato.
-D6: Humanoides podem usar armas elementais jÃ¡ no MVP/near-MVP.
-D7: Armas elementais tÃªm chance baixa de drop.
-D8: Wyverns/Drakes variam por tipo: alguns aÃ©reos, alguns terrestres/dash, alguns hÃ­bridos.
+D4: Minibosses devem ter 2 mecânicas especiais.
+D5: Fear, Curse, Blind, Chill e outros status entram já como IDs de contrato.
+D6: Humanoides podem usar armas elementais já no MVP/near-MVP.
+D7: Armas elementais têm chance baixa de drop.
+D8: Wyverns/Drakes variam por tipo: alguns aéreos, alguns terrestres/dash, alguns híbridos.
 D9: Toda criatura precisa ter MovementPattern + CombatBehavior + StatusProfile.
-D10: Toda mecÃ¢nica forte precisa de telegraph ou janela de resposta.
+D10: Toda mecânica forte precisa de telegraph ou janela de resposta.
 ```
 
 ---
 
-## 3. Hardening rules obrigatÃ³rias
+## 3. Hardening rules obrigatórias
 
-### H1 â€” Telegraph obrigatÃ³rio
+### H1 — Telegraph obrigatório
 
 Todo ataque especial deve ter aviso visual/temporal antes de aplicar dano/status.
 
@@ -56,18 +56,18 @@ Exemplos:
 
 ```text
 charge attack -> windup curto antes da investida
-ground pool -> marca no chÃ£o antes de ativar
+ground pool -> marca no chão antes de ativar
 beam attack -> linha/olho carregando antes do raio
-boss slam -> animaÃ§Ã£o/flash antes do impacto
+boss slam -> animação/flash antes do impacto
 ```
 
-### H2 â€” Cooldown mÃ­nimo por comportamento especial
+### H2 — Cooldown mínimo por comportamento especial
 
-Ataques especiais nÃ£o podem ser spammados.
+Ataques especiais não podem ser spammados.
 
-SugestÃ£o inicial:
+Sugestão inicial:
 
-| Behavior | Cooldown mÃ­nimo |
+| Behavior | Cooldown mínimo |
 |---|---:|
 | charge/leap | 2.0s |
 | web/root/trap | 3.0s |
@@ -76,37 +76,37 @@ SugestÃ£o inicial:
 | beam/rotating beam | 5.0s |
 | boss phase skill | 6.0s |
 
-### H3 â€” Status budget por tier
+### H3 — Status budget por tier
 
 | Tier | Status ativos permitidos no design |
 |---|---:|
-| Common | 0â€“2 |
-| Strong | 1â€“2 |
-| Elite | 1â€“3 |
-| Miniboss | 2â€“4 |
+| Common | 0–2 |
+| Strong | 1–2 |
+| Elite | 1–3 |
+| Miniboss | 2–4 |
 | Boss | 3+ por fases |
 
-Regra: nÃ£o significa que todos aplicam tudo ao mesmo tempo. Cada status deve ter chance/cooldown/duraÃ§Ã£o.
+Regra: não significa que todos aplicam tudo ao mesmo tempo. Cada status deve ter chance/cooldown/duração.
 
-### H4 â€” Spawn composition budget
+### H4 — Spawn composition budget
 
-Para evitar salas injustas, cada encounter deve respeitar composiÃ§Ã£o mÃ¡xima.
+Para evitar salas injustas, cada encounter deve respeitar composição máxima.
 
-SugestÃ£o por sala comum:
+Sugestão por sala comum:
 
 ```text
-atÃ© 1 Elite
-atÃ© 1 Controller pesado
-atÃ© 1 Caster forte
-atÃ© 2 Ranged
-atÃ© 4â€“8 Grunts/Swarm, conforme nÃ­vel
+até 1 Elite
+até 1 Controller pesado
+até 1 Caster forte
+até 2 Ranged
+até 4–8 Grunts/Swarm, conforme nível
 ```
 
 Miniboss room:
 
 ```text
 1 Miniboss
-0â€“2 elites menores
+0–2 elites menores
 adds controlados por fase ou cooldown
 ```
 
@@ -114,32 +114,32 @@ Boss arena:
 
 ```text
 1 Boss
-adds apenas em fases especÃ­ficas
-limite de adds simultÃ¢neos
+adds apenas em fases específicas
+limite de adds simultâneos
 ```
 
-### H5 â€” No unavoidable chain control
+### H5 — No unavoidable chain control
 
-Status de controle forte nÃ£o podem encadear sem janela de recuperaÃ§Ã£o.
+Status de controle forte não podem encadear sem janela de recuperação.
 
 ```text
-root + stun + freeze + fear nÃ£o devem manter jogador sem aÃ§Ã£o continuamente.
+root + stun + freeze + fear não devem manter jogador sem ação continuamente.
 ```
 
-### H6 â€” Aerial fallback
+### H6 — Aerial fallback
 
-Toda criatura aÃ©rea deve ter fallback se o path/arena nÃ£o suportar voo real.
+Toda criatura aérea deve ter fallback se o path/arena não suportar voo real.
 
 ```text
-Flying real disponÃ­vel -> usar move_flying_swoop/move_flying_circle.
+Flying real disponível -> usar move_flying_swoop/move_flying_circle.
 Sem suporte -> usar dash terrestre, leap ou projectile placeholder.
 ```
 
-### H7 â€” DamageCalculator Ãºnico
+### H7 — DamageCalculator único
 
-Todo dano deve passar pelo `DamageCalculator` definido na FASE9E. NÃ£o criar dano paralelo.
+Todo dano deve passar pelo `DamageCalculator` definido na FASE9E. Não criar dano paralelo.
 
-### H8 â€” Sem hardcode de status solto
+### H8 — Sem hardcode de status solto
 
 Status devem ser referenciados por `StatusId`, resolvidos por data/SO/registry quando implementado.
 
@@ -151,16 +151,16 @@ Status devem ser referenciados por `StatusId`, resolvidos por data/SO/registry q
 |---|---|---|
 | `status_burn` | DoT | dano Fire por tempo |
 | `status_poison` | DoT | dano Poison por tempo |
-| `status_bleed` | DoT fÃ­sico | dano fÃ­sico por tempo, futuro |
-| `status_chill` | slow | reduz movimento/aÃ§Ã£o |
+| `status_bleed` | DoT físico | dano físico por tempo, futuro |
+| `status_chill` | slow | reduz movimento/ação |
 | `status_freeze` | hard CC | imobiliza curto, futuro |
-| `status_fear` | controle | forÃ§a recuo/desorganizaÃ§Ã£o, futuro |
-| `status_blind` | debuff | reduz precisÃ£o/percepÃ§Ã£o, futuro |
-| `status_curse` | debuff | reduz atributo/resistÃªncia |
+| `status_fear` | controle | força recuo/desorganização, futuro |
+| `status_blind` | debuff | reduz precisão/percepção, futuro |
+| `status_curse` | debuff | reduz atributo/resistência |
 | `status_shadow_mark` | debuff | aumenta dano Shadow recebido |
 | `status_arcane_mark` | debuff | aumenta dano Arcane recebido |
-| `status_corruption` | DoT/debuff | dano e reduÃ§Ã£o futura de cura |
-| `status_stun` | hard CC | interrupÃ§Ã£o curta |
+| `status_corruption` | DoT/debuff | dano e redução futura de cura |
+| `status_stun` | hard CC | interrupção curta |
 | `status_knockback` | displacement | empurra |
 | `status_root` | controle | prende no lugar |
 | `status_webbed` | controle | slow/root por teia |
@@ -168,7 +168,7 @@ Status devem ser referenciados por `StatusId`, resolvidos por data/SO/registry q
 | `status_enrage` | buff | aumenta dano/velocidade |
 | `status_lifesteal` | buff | cura pequena ao causar dano |
 | `status_silence` | debuff | impede magia, futuro |
-| `status_confusion` | controle | movimento/aÃ§Ã£o errÃ¡tica, futuro |
+| `status_confusion` | controle | movimento/ação errática, futuro |
 
 ---
 
@@ -180,12 +180,12 @@ Status devem ser referenciados por `StatusId`, resolvidos por data/SO/registry q
 | `Fire` | fogo, magma, brasa |
 | `Ice` | gelo, geada, cristal frio |
 | `Poison` | veneno, fungo, aranha |
-| `Shadow` | Nyx, mortos, drows, escuridÃ£o |
+| `Shadow` | Nyx, mortos, drows, escuridão |
 | `Arcane` | Elyndor, portais, magia pura |
 | `Lightning` | draconatos, runas, storm |
-| `Acid` | ruÃ­na, draconatos, oozes |
+| `Acid` | ruína, draconatos, oozes |
 | `Corruption` | Pedra Negra, Veyraath |
-| `Thunder` | martelo rÃºnico, julgamento, choque |
+| `Thunder` | martelo rúnico, julgamento, choque |
 
 MVP pode implementar subset, mas os IDs devem estar reservados.
 
@@ -193,39 +193,39 @@ MVP pode implementar subset, mas os IDs devem estar reservados.
 
 ## 6. MovementPatternIds
 
-| MovementPatternId | DescriÃ§Ã£o |
+| MovementPatternId | Descrição |
 |---|---|
-| `move_idle_guard` | guarda posiÃ§Ã£o atÃ© aggro |
+| `move_idle_guard` | guarda posição até aggro |
 | `move_direct_chase` | persegue em linha direta |
 | `move_slow_heavy_chase` | persegue lentamente com massa alta |
-| `move_fast_chase` | perseguiÃ§Ã£o rÃ¡pida |
-| `move_hop_chase` | avanÃ§a em pulos |
-| `move_erratic_hop` | pulo irregular/imprevisÃ­vel |
+| `move_fast_chase` | perseguição rápida |
+| `move_hop_chase` | avança em pulos |
+| `move_erratic_hop` | pulo irregular/imprevisível |
 | `move_pack_circle` | tenta circular o jogador em grupo |
 | `move_hit_and_run` | aproxima, ataca, recua |
-| `move_ranged_keep_distance` | mantÃ©m distÃ¢ncia ideal |
+| `move_ranged_keep_distance` | mantém distância ideal |
 | `move_backline_caster` | recua e conjura |
 | `move_patrol_route` | patrulha pontos |
-| `move_ambush_stationary` | fica oculto atÃ© trigger |
-| `move_burrow_ambush` | emerge do chÃ£o |
+| `move_ambush_stationary` | fica oculto até trigger |
+| `move_burrow_ambush` | emerge do chão |
 | `move_wall_ceiling_drop` | cai de parede/teto |
 | `move_flying_swoop` | voo com mergulho |
 | `move_flying_circle` | orbita e ataca de longe |
 | `move_short_blink` | teleporte curto |
 | `move_phase_shift` | atravessa/evade por fase |
-| `move_guard_node` | defende node/baÃº/portal |
-| `move_guard_position` | defende regiÃ£o ou aliado |
+| `move_guard_node` | defende node/baú/portal |
+| `move_guard_position` | defende região ou aliado |
 | `move_boss_arena` | movimento por fases em arena |
 | `move_dash_line` | investida reta |
 | `move_dash_arc` | dash em arco |
 | `move_summoner_keepaway` | foge e invoca |
-| `move_stationary_turret` | quase parado, ataca Ã  distÃ¢ncia |
+| `move_stationary_turret` | quase parado, ataca à distância |
 
 ---
 
 ## 7. CombatBehaviorIds
 
-| CombatBehaviorId | DescriÃ§Ã£o |
+| CombatBehaviorId | Descrição |
 |---|---|
 | `ai_contact_damage` | dano por contato |
 | `ai_basic_melee` | ataque melee simples |
@@ -233,10 +233,10 @@ MVP pode implementar subset, mas os IDs devem estar reservados.
 | `ai_charge_attack` | investida telegrafada |
 | `ai_leap_attack` | salto/impacto |
 | `ai_bite_and_retreat` | morde e recua |
-| `ai_ranged_projectile` | projÃ©til simples |
-| `ai_spread_projectile` | vÃ¡rios projÃ©teis |
-| `ai_arc_projectile` | projÃ©til em arco |
-| `ai_ground_pool` | cria poÃ§a/Ã¡rea |
+| `ai_ranged_projectile` | projétil simples |
+| `ai_spread_projectile` | vários projéteis |
+| `ai_arc_projectile` | projétil em arco |
+| `ai_ground_pool` | cria poça/área |
 | `ai_trap_place` | coloca armadilha |
 | `ai_web_shot` | teia/slow/root |
 | `ai_root` | prende por raiz |
@@ -246,15 +246,15 @@ MVP pode implementar subset, mas os IDs devem estar reservados.
 | `ai_heal_or_lifesteal` | cura ou rouba vida |
 | `ai_shield_guard` | bloqueia/reduz dano |
 | `ai_breath_cone` | cone elemental |
-| `ai_tail_sting` | ferrÃ£o/cauda |
-| `ai_flying_dive` | mergulho aÃ©reo |
+| `ai_tail_sting` | ferrão/cauda |
+| `ai_flying_dive` | mergulho aéreo |
 | `ai_blink_strike` | teleporta e ataca |
 | `ai_beam_attack` | raio/olhar |
-| `ai_rotating_beams` | beams em rotaÃ§Ã£o |
+| `ai_rotating_beams` | beams em rotação |
 | `ai_area_slam` | pancada AoE |
 | `ai_shockwave` | onda de choque |
 | `ai_boss_phase_switch` | troca fase por HP |
-| `ai_boss_minion_wave` | fase de invocaÃ§Ã£o |
+| `ai_boss_minion_wave` | fase de invocação |
 | `ai_boss_enrage` | fase final agressiva |
 
 ---
@@ -298,13 +298,13 @@ EffectiveEnemyLevel = CaveLevel + EnemyLevelOffset
 | MiniBoss | +4 |
 | Boss | +5 |
 
-FÃ³rmulas alvo:
+Fórmulas alvo:
 
 ```text
-HP = BaseHP + EffectiveEnemyLevel Ã— HPGrowth Ã— RoleHpMultiplier
-Damage = BaseDamage + EffectiveEnemyLevel Ã— DamageGrowth Ã— RoleDamageMultiplier
+HP = BaseHP + EffectiveEnemyLevel × HPGrowth × RoleHpMultiplier
+Damage = BaseDamage + EffectiveEnemyLevel × DamageGrowth × RoleDamageMultiplier
 Defense = BaseDefense + floor(EffectiveEnemyLevel / 5)
-XP = EffectiveEnemyLevel Ã— DifficultyMultiplier
+XP = EffectiveEnemyLevel × DifficultyMultiplier
 ```
 
 Multiplicadores de HP:
@@ -340,9 +340,9 @@ Multiplicadores de dano:
 
 ---
 
-## 10. ResistÃªncias e vulnerabilidades por famÃ­lia
+## 10. Resistências e vulnerabilidades por família
 
-| FamÃ­lia | ResistÃªncia | Vulnerabilidade |
+| Família | Resistência | Vulnerabilidade |
 |---|---|---|
 | Oozes | Poison | Fire ou Ice por subtipo |
 | Fire creatures | Fire | Ice |
@@ -354,13 +354,13 @@ Multiplicadores de dano:
 | Draconic Fire | Fire | Ice |
 | Draconic Acid | Acid | Lightning futuro |
 | Blackstone | Shadow/Corruption | Arcane/Light futuro |
-| Beasts | nenhuma padrÃ£o | depende do subtipo |
+| Beasts | nenhuma padrão | depende do subtipo |
 
 ---
 
 # 11. Combat matrix por faixa
 
-## 11.1 NÃ­veis 1â€“10 â€” Local Caves
+## 11.1 Níveis 1–10 — Local Caves
 
 | Criatura | Role | Movimento | Comportamento | Status/Dano |
 |---|---|---|---|---|
@@ -390,7 +390,7 @@ Multiplicadores de dano:
 | Spore Toad | Controller | `move_idle_guard` | `ai_ground_pool`, `ai_debuff_player` | Poison |
 | Razor Mole | Burrower | `move_burrow_ambush` | `ai_charge_attack` | Physical, `status_bleed` futuro |
 
-## 11.2 NÃ­veis 11â€“15 â€” Meteor-Touched Threshold
+## 11.2 Níveis 11–15 — Meteor-Touched Threshold
 
 | Criatura | Role | Movimento | Comportamento | Status/Dano |
 |---|---|---|---|---|
@@ -417,11 +417,11 @@ Multiplicadores de dano:
 
 | Boss | Movimento | Fase 1 | Fase 2 | Fase 3 | Status |
 |---|---|---|---|---|---|
-| Meteor Ooze King | `move_boss_arena`, `move_erratic_hop` | contact + jump | invoca slimes | projÃ©teis meteÃ³ricos + pools | `status_arcane_mark`, slow, `status_knockback` |
+| Meteor Ooze King | `move_boss_arena`, `move_erratic_hop` | contact + jump | invoca slimes | projéteis meteóricos + pools | `status_arcane_mark`, slow, `status_knockback` |
 | Goblin Bloodfang Butcher | `move_dash_arc` | melee combos | chama goblins | enrage + bleed strikes | `status_bleed`, `status_enrage` |
 | Kobold Tunnel Tyrant | `move_guard_node` | traps + sling | chama kobolds | cave-in/shockwave | `status_stun`, `status_knockback` |
 
-## 11.3 NÃ­veis 16â€“30 â€” Underground Forest
+## 11.3 Níveis 16–30 — Underground Forest
 
 | Criatura | Role | Movimento | Comportamento | Status/Dano |
 |---|---|---|---|---|
@@ -458,7 +458,7 @@ Multiplicadores de dano:
 
 ### Minibosses 20/25
 
-| Miniboss | MecÃ¢nica 1 | MecÃ¢nica 2 |
+| Miniboss | Mecânica 1 | Mecânica 2 |
 |---|---|---|
 | Owlbear Matriarch | leap slam | rage roar / adds |
 | Goblin Trap-King | coloca traps | chama goblins ranged |
@@ -475,7 +475,7 @@ Multiplicadores de dano:
 | Fungal Brood Sovereign | poison pools | spore summons | poison nova |
 | Orc Root-Reaver Warchief | melee combos | warcry buffs | enrage + charge |
 
-## 11.4 NÃ­veis 31â€“45 â€” Frost / Deep Subterranean
+## 11.4 Níveis 31–45 — Frost / Deep Subterranean
 
 | Criatura | Role | Movimento | Comportamento | Status/Dano |
 |---|---|---|---|---|
@@ -508,7 +508,7 @@ Multiplicadores de dano:
 
 ### Minibosses 35/40
 
-| Miniboss | MecÃ¢nica 1 | MecÃ¢nica 2 |
+| Miniboss | Mecânica 1 | Mecânica 2 |
 |---|---|---|
 | Black-Anvil Smith | armor aura | forge slam |
 | Drow Frostblade Captain | blink slash | chill cone |
@@ -525,7 +525,7 @@ Multiplicadores de dano:
 | Drow Frostblade Matriarch | frost blade combos | shadow blink adds | arena darkness + frost lines |
 | Frost Wight Commander | undead melee | skeleton waves | curse field + chill nova |
 
-## 11.5 NÃ­veis 46â€“60 â€” Fire / Warbands / Draconic
+## 11.5 Níveis 46–60 — Fire / Warbands / Draconic
 
 | Criatura | Role | Movimento | Comportamento | Status/Dano |
 |---|---|---|---|---|
@@ -542,7 +542,7 @@ Multiplicadores de dano:
 | Acid-Breath Marauder | Brute | `move_direct_chase` | `ai_breath_cone`, melee | Acid |
 | Kobold Dragon-Acolyte | Caster | `move_backline_caster` | `ai_ranged_projectile`, `ai_buff_allies` | Fire/Arcane |
 | Drake Whelp | Skirmisher | `move_dash_line` | `ai_bite_and_retreat`, spit | Fire/Physical |
-| Fire Drake | Elite | `move_dash_arc` ou `move_flying_swoop` por variaÃ§Ã£o | `ai_breath_cone`, `ai_charge_attack` | Fire, `status_burn` |
+| Fire Drake | Elite | `move_dash_arc` ou `move_flying_swoop` por variação | `ai_breath_cone`, `ai_charge_attack` | Fire, `status_burn` |
 | Magma Ooze | Controller | `move_slow_heavy_chase` | `ai_ground_pool` | Fire, `status_burn` |
 | Ember Bat | Flyer | `move_flying_swoop` | `ai_flying_dive` | Fire, `status_burn` |
 | Living Ember | Swarm | `move_erratic_hop` | `ai_contact_damage` | Fire |
@@ -554,7 +554,7 @@ Multiplicadores de dano:
 
 ### Minibosses 50/55
 
-| Miniboss | MecÃ¢nica 1 | MecÃ¢nica 2 |
+| Miniboss | Mecânica 1 | Mecânica 2 |
 |---|---|---|
 | Gnoll Packlord | pack buff | bleed charge |
 | Orc Flamecaller | fire zones | ally enrage |
@@ -571,7 +571,7 @@ Multiplicadores de dano:
 | Gnoll Ash-Pack Prophet | pack waves | fire/fear howl | enrage pack + ash zones |
 | Ruinblood Tyrant | acid/fire breath | summons acolytes | corruption aura + melee rage |
 
-## 11.6 NÃ­veis 61â€“75 â€” Elyndor Ruins
+## 11.6 Níveis 61–75 — Elyndor Ruins
 
 | Criatura | Role | Movimento | Comportamento | Status/Dano |
 |---|---|---|---|---|
@@ -606,7 +606,7 @@ Multiplicadores de dano:
 
 ### Minibosses 65/70
 
-| Miniboss | MecÃ¢nica 1 | MecÃ¢nica 2 |
+| Miniboss | Mecânica 1 | Mecânica 2 |
 |---|---|---|
 | Eye of the Broken Gate | beam rotation | portal adds |
 | Ninrorin Broken Planewalker | blink strike | arcane mark |
@@ -623,7 +623,7 @@ Multiplicadores de dano:
 | Observador do Arco Partido | eye beams | portal pulls | rotating beams + blind |
 | Ninrorin Gate-Sealer | arcane duel | seal zones | portal storm |
 
-## 11.7 NÃ­veis 76â€“90 â€” Shadow Abyss
+## 11.7 Níveis 76–90 — Shadow Abyss
 
 | Criatura | Role | Movimento | Comportamento | Status/Dano |
 |---|---|---|---|---|
@@ -655,7 +655,7 @@ Multiplicadores de dano:
 
 ### Minibosses 80/85
 
-| Miniboss | MecÃ¢nica 1 | MecÃ¢nica 2 |
+| Miniboss | Mecânica 1 | Mecânica 2 |
 |---|---|---|
 | Vampire Spawn Lord | lifesteal combo | bat swarm |
 | Nyx-Bound Cave Prophet | fear field | shadow summons |
@@ -672,7 +672,7 @@ Multiplicadores de dano:
 | Bloodbound Court Patriarch/Matriarch | melee lifesteal | vampire adds | blood/shadow arena |
 | Prophet of the Moonless Gate | fear/shadow | orc/shadow adds | moonless curse storm |
 
-## 11.8 NÃ­veis 91â€“99 â€” Corrupted Core
+## 11.8 Níveis 91–99 — Corrupted Core
 
 | Criatura | Role | Movimento | Comportamento | Status/Dano |
 |---|---|---|---|---|
@@ -689,7 +689,7 @@ Multiplicadores de dano:
 | Grey Scale Inquisitor | Caster/Tank | `move_backline_caster` | judgment beam | Thunder/Arcane |
 | Broken Elyndor Golem | Miniboss | `move_slow_heavy_chase` | slam + beam | Physical/Arcane |
 | Lich Fragment | Caster | `move_backline_caster` | projectile + summon | Shadow/Arcane |
-| Cavaleiro do PortÃ£o Morto | Tank Elite | `move_guard_position` | melee + curse | Physical/Shadow |
+| Cavaleiro do Portão Morto | Tank Elite | `move_guard_position` | melee + curse | Physical/Shadow |
 | Wight Commander | Elite | `move_phase_shift` | undead command | Shadow/Curse |
 | Spectral Scholar | Caster | `move_phase_shift` | arcane projectile | Arcane/Shadow |
 | Blackstone Horror | Elite | `move_erratic_hop` | pools + slam | Corruption |
@@ -704,7 +704,7 @@ Multiplicadores de dano:
 
 ### Minibosses 94/97
 
-| Miniboss | MecÃ¢nica 1 | MecÃ¢nica 2 |
+| Miniboss | Mecânica 1 | Mecânica 2 |
 |---|---|---|
 | Blackstone Drake | corruption breath | ground/aerial dash by variant |
 | Fallen Judge of Kanthor | thunder judgment | shield phase |
@@ -721,7 +721,7 @@ Multiplicadores de dano:
 | Blackstone Drake Sovereign | ground breath | aerial dive | corruption storm |
 | Council of Broken Arches | construct/caster phase | eye/portal phase | mixed arcane collapse |
 
-## 11.9 Level 100 â€” Arco Central de Elyndor
+## 11.9 Level 100 — Arco Central de Elyndor
 
 | Final Boss | Movimento | Fase 1 | Fase 2 | Fase 3 |
 |---|---|---|---|---|
@@ -769,16 +769,16 @@ Humanoides podem usar armas elementais com chance baixa.
 Hardening:
 
 ```text
-Drop inicial pode ser versÃ£o danificada/quebrada.
+Drop inicial pode ser versão danificada/quebrada.
 Arma pode exigir reparo/refino/crafting para uso pleno.
 Chance final deve passar por balance posterior.
 ```
 
 ---
 
-# 13. CritÃ©rios de aceite
+# 13. Critérios de aceite
 
-## CA1 â€” Todo inimigo tem perfil de combate
+## CA1 — Todo inimigo tem perfil de combate
 
 Cada inimigo da FASE9G deve possuir ou herdar:
 
@@ -791,35 +791,35 @@ StatusIds
 Resistance/Vulnerability profile
 ```
 
-## CA2 â€” Todo ataque especial tem telegraph
+## CA2 — Todo ataque especial tem telegraph
 
 Ataques especiais precisam de telegraph ou janela clara de resposta.
 
-## CA3 â€” Status nÃ£o encadeiam controle injusto
+## CA3 — Status não encadeiam controle injusto
 
-ImplementaÃ§Ã£o deve evitar chain control sem recovery window.
+Implementação deve evitar chain control sem recovery window.
 
-## CA4 â€” Boss tem 3 fases na spec
+## CA4 — Boss tem 3 fases na spec
 
 Cada boss candidate precisa ter 3 fases definidas.
 
-## CA5 â€” Miniboss tem 2 mecÃ¢nicas
+## CA5 — Miniboss tem 2 mecânicas
 
-Cada miniboss precisa ter 2 mecÃ¢nicas especiais definidas.
+Cada miniboss precisa ter 2 mecânicas especiais definidas.
 
-## CA6 â€” Aerial fallback existe
+## CA6 — Aerial fallback existe
 
-Criaturas aÃ©reas precisam de fallback terrestre/placeholder quando a arena/pathing nÃ£o suportar voo real.
+Criaturas aéreas precisam de fallback terrestre/placeholder quando a arena/pathing não suportar voo real.
 
-## CA7 â€” Armas elementais sÃ£o data-driven
+## CA7 — Armas elementais são data-driven
 
-Affixes e drops elementais nÃ£o devem ser hardcoded em inimigos individuais.
+Affixes e drops elementais não devem ser hardcoded em inimigos individuais.
 
-## CA8 â€” DamageCalculator Ãºnico
+## CA8 — DamageCalculator único
 
 Todo dano/status usa o fluxo do DamageCalculator/Status system definido nas specs anteriores.
 
-## CA9 â€” Debug futuro
+## CA9 — Debug futuro
 
 Quando implementado, DebugHud deve conseguir mostrar:
 
@@ -838,12 +838,12 @@ DamageTypes
 Fora deste amendment:
 
 ```text
-IA final de produÃ§Ã£o
-animaÃ§Ãµes finais
+IA final de produção
+animações finais
 balance final de dano/HP
 arte/sprites finais
 sistema completo de dodge do player
-sistema completo de hitbox/hurtbox avanÃ§ado
+sistema completo de hitbox/hurtbox avançado
 bosses finais totalmente implementados
 VFX final de status
 som final de telegraphs
@@ -858,9 +858,9 @@ Este amendment complementa:
 - `docs/FASE9G_CAVE_BESTIARY_FACTION_LOCKS_PORTAL_ECOLOGY_SPEC_v1.0.md`
 - `docs/specs/a_implementar/spec_enemy_ai_roster_bestiary_faction_locks_runtime.md`
 
-NÃ£o altera destrutivamente a FASE9G v1.0.
+Não altera destrutivamente a FASE9G v1.0.
 
-ImplementaÃ§Ã£o futura deve tratar este amendment como fonte para:
+Implementação futura deve tratar este amendment como fonte para:
 
 - EnemyCombatProfile data;
 - AI behavior selection;

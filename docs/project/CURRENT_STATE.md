@@ -235,7 +235,142 @@ PROJECT_LOG + CURRENT_STATE conflict → prefer CURRENT_STATE; report mismatch
 
 ---
 
+- FABLE_REDUNDANCY_SWEEP: COMPLETE (2026-06-12) — varredura profunda autorizada pelo humano; 16 arquivos DELETADOS via batch FABLE-2 do DOCUMENT_DELETE_CANDIDATES (build_logs.zip 8MB, CHECKLIST_PR001, validate_quick.py, BACKLOG.md raiz, compile log solto, FARM_DESIGN v1.0 superada, arquivo solto docs/validation/playmode, FIX_001 stale, 8 duplicatas 03_spec_quest_*); pasta playmode/ correta criada com o cenário humano dentro; MOJIBAKE reparado em 17 arquivos (12 da sessão + 5 históricos, incl. triplo-encoding no docs_33); SPEC_EXECUTION_ORDER reconciliado (fila histórica; ativa = fable/); CLAUDE.md tabelas completadas (+5 skills, +4 commands); paths mortos anotados em 2 commands + 1 rule; questionário marcado RESPONDIDO; hooks auditados (15/15 registrados, zero órfãos); docs validation exit 0
+- FABLE_CONTENT_CATALOGS: CANONIZED (2026-06-12) — questionário de decisões respondido pelo humano (registro vinculante: docs/design/FABLE_DECISOES_RESPOSTAS_v1.0.md); 6 catálogos canônicos gerados e registrados no SPEC_SOURCE_MAP (PARTE FABLE): BESTIARY (60 criaturas + 4 chefes finais com stat blocks; renomeações Veilkin/Gravedelver; dragão ancestral Ithryndor no 101), ITEM_CATALOG (~118 itens c/ BaseValue), QUEST_CATALOG (~86 quests, 5 fontes incl. secretas da caverna, XP escalado, +1 skill point/ato), BALANCE_CURVES (cap 100, XP 60×N^1.5, multiplicadores por tipo, TTK), SKILL_ACTION_MOVEMENT_TABLE, HUD_LAYOUT_SCENES (minimapa v1, abas, Town 48×42, Cave 55×55±, lotes da farm); docs validation exit 0; PRÓXIMO: gerar specs fable_21+ a partir dos catálogos + emendas F09/F14 (tamanhos/abas/responsivo)
+- FABLE_ADHERENCE_AUDIT_QUEUE_CLEANUP: COMPLETE (2026-06-12) — auditoria de código real (fable_00B) revelou sistemas das WAVES 02-11 ÓRFÃOS (DerivedStatsCalculator, RainIrrigation/Weather, FarmResourceRefresh, CropQuality/Fertilizer, FatigueSystem, Fonte sem corpo físico, City/Schedule duplicado de NPC/Schedule, CityServices); 6 specs corretivas geradas (fable_15-20, F15-17 = P0); fila limpa: 102 specs executadas movidas para a_implementar/executadas_build_validated/ (README + crosswalks; NÃO reexecutar); 02_spec_calendar_ui absorvida pela fable_20; docs validation ZERO ERROS exit 0 pela primeira vez (10 reports retro-preenchidos, 2 amendments marcados archived); run_strict_validation VALIDATION_PASS; delete candidates batch FABLE adicionado (playmode stray file, FIX_001 stale, duplicatas 03_quest) aguardando confirmação humana
+- FABLE_GAP_CLOSURE_SPECS: GENERATED_AWAITING_HUMAN_PROMOTION (2026-06-12) — gap analysis completa de docs/design/** (42 directions) vs. código; 14 specs densas SpecKit em `docs/specs/a_implementar/fable/` (F01-F14: status effects canônicos, weapon actions+derived stats, equipment baselines, threat/pack, boss phases, loot tables+vulnerabilidades, magic learning, spell shapes, biomas da caverna, main quest Ato 1, interiores/schedules da cidade, animais de fazenda, save debts, UI Canvas) + índice `fable_00_index_gap_analysis.md`; registradas no SPEC_REGISTRY_TO_IMPLEMENT.md (seção Lote FABLE); directions cobertas por features_futuras NÃO duplicadas; docs validation sem erros novos; quality check PASS
+- GAMEPLAY_EXPANSION_SLICE: BUILD_VALIDATED_WITH_HUMAN_UNITY_ACTION_REQUIRED (2026-06-12) — pedido humano direto; projéteis runtime com visual procedural para arco/magia (RuntimeProjectileFactory/ProjectileVisualAnimator, fallback no ProjectileSpawnService); EnemyBrain com comportamentos Leaper/PhaseShortBlink/BurrowAmbush/Retreat/GuardHold-return e projéteis inimigos reais (EnemyProjectileBehaviour); densidade da caverna 16-32 inimigos com escala por profundidade (cap 44, determinístico); CaveWanderingMerchant (22%/nível, estável por run, ADR-0005); 21 skill executors reais (melee/projétil/restauro) com cooldown por skill; CreateMvpTownScene v2 (23 NPCs em distritos ±16x±12, praça central com estátua do guerreiro espada bastarda+escudo, 12 casas, 24 árvores, barracas por vendedor); TownNpcDialogueLibrary (23 NPCs × 13 nós) + menu RebuildTownNpcDialogues + opção "Conversar" em NpcShopController; CreateMvpFarmScene com 24 canteiros e CaveEntranceInteractable (fecha DEBT-SCENE WAVE16); 18 testes EditMode novos; HARNESS FIX: check_spec_quality.ps1 corrigido (BOM UTF-8 + regex de isenção multiline) — exceção Pester de 2026-06-08 resolvida na raiz; run_strict_validation.ps1 exit 0 VALIDATION_PASS; humano deve regenerar TownScene/FarmScene + rodar menu de diálogos + checklist: docs/validation/gameplay_expansion_2026_06_12_human_playmode_scenario.md; report: docs/validation/wave_gameplay_expansion_2026_06_12_execution_report.md
 - FIX-001 + FIX-001B: BUILD_VALIDATED (2026-06-10) — CS0618 eliminado via registro estático (CraftingRuntime.ActiveInstances substitui FindObjectsOfType em CraftingStationRuntimeBootstrap; CaveRunManager.Instance substitui FindAnyObjectByType em CaveRuntimeBridge); QuestOfferPanelController e QuestLogPanelController com guard de destruição de duplicata em Awake; ValidateTownShopCatalogIntegrity expandido para todos 25 ShopDataSO em Data/Economy (era 5 hardcoded); 3 docs criados; Assembly-CSharp PASS 0E/0W; Assembly-CSharp-Editor PASS 0E/0W; Play Mode checklist pendente: docs/validation/FIX_001B_HUMAN_PLAYMODE_CHECKLIST.md
 
-*Last updated: 2026-06-11 (WAVE_INTEGRATION_25 BUILD_VALIDATED_WITH_SCENE_WIRING_DEBT_AND_TIME_BLOCK_DEBT_PENDING_HUMAN_PLAYMODE — NPC schedule service, dialogue/roster registries, 9 audit matrices)*
-*Next update: after human Play Mode execution (WAVE25 checklist) or next MVP+ spec*
+*Last updated: 2026-06-13 (Refinamento v3 + dívida de game_rules fechada + cobertura de design (fable_72/73, companions densas) — 73 specs, fable_71, ADR-0010..0014, 2 game_rules reconciliados; Refinamento v2 respondido — 70 specs, F68-F70 geradas, 18 emendas; GAMEPLAY_EXPANSION_SLICE BUILD_VALIDATED_WITH_HUMAN_UNITY_ACTION_REQUIRED — projéteis, enemy behaviors, densidade, mercador errante, skills reais, town/farm scene v2, diálogos 23×13, harness quality check consertado)*
+*Next update: after human Unity actions (scene regen + dialogue rebuild) and Play Mode checklist execution*
+
+## 2026-06-12 — FABLE_MASTER_PLAN_F21_F42
+
+- Plano mestre criado: `docs/specs/a_implementar/fable/fable_00C_master_execution_plan.md`
+  (revisão F01-F20 ✅ todas válidas; 9 emendas vinculantes aplicadas em F01/F02/F03/F05/F06/F09/F12/F14/F20).
+- 22 specs novas F21-F42 geradas (catálogos canônicos → runtime/data/content).
+- Fila ativa = 42 specs em `fable/`; ordem e paralelismo no plano mestre (9 batches, checkpoints M1-M4).
+- Próxima ação: execução sequencial começando por F15 (corretiva P0 wiring clima/farm).
+## 2026-06-12 — FABLE_EXECUTION_BATCH_0_DONE
+
+- F15 (clima/chuva/refresh/qualidade/fertilizante): BUILD_VALIDATED — 5 módulos órfãos ligados.
+- F16 (fadiga/sono/colapso 02:00 + cama): BUILD_VALIDATED — Player/Conditions hospedado.
+- F17 (Fonte de Anya física + respawn + Água Viva): BUILD_VALIDATED — wiring do _anyaFountain completa o respawn.
+- Cada spec: run_strict_validation exit 0 + report individual em docs/validation/fable_1X_*.md.
+- Pendência humana acumulada: regenerar FarmScene no Unity (RainIrrigation + cama + Fonte) e rodar Test Runner EditMode.
+- Próxima: F13 (BATCH 1 — save schema, SOLO).
+## 2026-06-12 — FABLE_EXECUTION_BATCH_1_DONE
+
+- F13 (save debt closure: cave run + enemy HP + daily goals): BUILD_VALIDATED.
+- F42 (progressão: curva canônica 60×N^1.5, cap 100, TotalXp fonte de verdade, migração, 4 fontes de XP): BUILD_VALIDATED.
+- Acumulado: 5/42 specs executadas (F15 F16 F17 F13 F42), todas com strict validation exit 0 + report individual.
+- Próxima: BATCH 2 — F01 (status effects) → F02 (combat actions) → F03 (equipment baselines) → F18 (derived vitals) → F27 (perfect block).
+## 2026-06-12 — FABLE_EXECUTION_BATCH_2_PROGRESS
+
+- F01 (13 status canônicos + semântica + gerador/validator + wiring skills/actions): BUILD_VALIDATED.
+- F02 (light/heavy/charged canônicos + crítico canon + DerivedStats no dano/cooldown + posture/stagger): BUILD_VALIDATED.
+- Acumulado: 7/42 (F15 F16 F17 F13 F42 F01 F02). Próximas no BATCH 2: F03 → F18 → F27.
+- Pendência Unity acumulada: regenerar FarmScene; rodar Generate Canonical Status Effects + validator; Test Runner EditMode.
+## 2026-06-12 — FABLE_EXECUTION_BATCH_2_DONE (CHECKPOINT M1)
+
+- F03 (baselines canônicos por arma + armadura funcional via PlayerDamageReceiver): BUILD_VALIDATED.
+- F18 (vitals derivados: MaxHP/Stamina/Mana proporção, regens, resistências, fome): BUILD_VALIDATED.
+- F27 (perfect block 0.15s + anti-spam + mitigação 50% + reflexo de postura + guard break): BUILD_VALIDATED.
+- ACUMULADO: 10/42 specs (F15 F16 F17 | F13 F42 | F01 F02 F03 F18 F27) — todas strict validation exit 0 + report individual.
+- CHECKPOINT M1 (humano) — pendências Unity antes do BATCH 3:
+  1. Regenerar FarmScene (RainIrrigation + cama + Fonte de Anya + wiring _anyaFountain).
+  2. Rodar CindarsHope/Combat/Generate Canonical Status Effects + Validate Status Effect Database.
+  3. Rodar CindarsHope/Combat/Apply Weapon Mechanical Baselines.
+  4. Unity Test Runner EditMode (≈70 testes novos das 10 specs).
+- Próxima (após M1): BATCH 3 — F04 (enemy actions) → F24 (12 Moves + elites) → F05 (boss phases).
+## 2026-06-12 — FABLE_SPEC_GENERATION_COMPLETE (47 specs)
+
+- Geração de specs CONCLUÍDA: F01-F47 todas em formato SpecKit denso em `a_implementar/fable/`.
+  - F21-F26, F28-F41 expandidas de compactas para densas (~300 linhas cada, 4 subagents).
+  - F43-F47 criadas (endgame, save multi-nível, bestiário codex, romance, follow-ups stats).
+- Ordem de execução oficial: fable_00C PARTE E — enumeração E01-E47 com dependências,
+  locks e grupos paralelos P1-P5. E01-E10 já executadas (BUILD_VALIDATED).
+- EXECUÇÃO PAUSADA por ordem do humano até autorização (checkpoint M1 pendente: regenerar
+  FarmScene, rodar 3 geradores de combat data, Test Runner EditMode).
+- Docs validation: zero erros.
+## 2026-06-12 — .SPECS_MODELO_OPERACIONAL
+
+- Criada `.specs/` na raiz: espelho operacional de execução (fonte canônica segue docs/specs/).
+  - `00_executadas/legado/` (94 specs históricas) + `00_executadas/fable/` (E01-E10).
+  - `01_a_executar/` (E11-E47, arquivos prefixados Exx_ na ordem oficial do 00C PARTE E).
+  - `README.md` = modelo operacional: executou (BUILD_VALIDATED) → MOVE Exx_*.md para
+    00_executadas/fable/ e atualiza o placar (hoje: 10/47).
+## 2026-06-12 — AUDITORIA_COMPLETUDE_F48_F60_RETRO
+
+- 3 auditorias (reconstrutibilidade código↔specs + completude design↔specs ×2):
+  slice 2026-06-12 e WI-17..26 não tinham spec; ~24 quests do catálogo sem dono;
+  munição de arco, craft tier alto, pesca, armadilhas, áudio, telemetria, aba Sistema sem spec.
+- Gerados: F48-F60 (13 funcionais), spec_retro_01..09 (reconstrutibilidade), emendas F21/F34.
+- .specs/ agora REFAZ o projeto inteiro: fundacao/ (66) + legado/ (94) + retro/ (9) + fable.
+- Placar oficial: 60 specs funcionais — 10 executadas (E01-E10), 50 a executar (E11-E60).
+- Ordem/janelas: fable_00C PARTES E+F; espelho .specs/README.md.
+## 2026-06-12 — AUDITORIA_MVP_SHIPPING_F61_F67_REFINAMENTO_V2
+
+- 3 auditorias finais: build standalone INEXISTENTE (zero cenas no EditorBuildSettings),
+  onboarding/intro/tela de morte sem spec, ~30 decisões humanas em aberto nos próprios docs.
+- Gerados: F61-F67 (build, onboarding, intro, death screen, daily goals closeout, débitos,
+  governança) + emendas F34-C/F20-C + docs/design/FABLE_REFINAMENTO_V2_PERGUNTAS.md.
+- PLACAR: 67 specs funcionais (10 executadas, 57 a executar E11-E67) + 9 retro + fundação/legado.
+- AGUARDANDO: respostas do Refinamento v2 (blocos 1-4 e 7 travam F36/F43/F46/F56/F63 e o
+  corte oficial do MVP — proposta de caminho crítico na 00C PARTE G.3).
+- E67 (governança docs-only) pode ser executada imediatamente, sem dependências.
+## 2026-06-12 — REFINAMENTO_V2_RESPONDIDO_F68_F70
+
+- Dono respondeu o Refinamento v2 INTEIRO → `docs/design/FABLE_DECISOES_RESPOSTAS_v2.0.md`
+  (VINCULANTE; inclui APÊNDICE LORE A.1-A.5: nymirianos, Cindar fundadora, Raiz Primeva de
+  Mana, regra "USAR amplifica só o liberado", catálogo das 11 Marcas dos Deuses).
+- Decisões-chave: MVP = LOTE INTEIRO (7.6 "Faça tudo"); 3 slots + backup rolling (7.4);
+  Fonte começa Dormant (5.2-B); kit canônico + baú narrativo (2.1/2.2); criação de
+  personagem nome+M/F/Neutro+tints (1.1-1.3); morte permanente de animais (5.1-A);
+  estações Semeio/Brasa/Véu/Gelo (6.1-A); nível 101 = CaveScene especial (4.5-B);
+  painel 9 abas com Social + busca no inventário (7.7); sprint em combate aprovado (6.5-A).
+- 18 emendas EMENDA-D propagadas: F08/F11/F12/F14/F20/F21/F37/F41/F43/F45/F46/F49/F50/
+  F56/F61/F63/F66 (+ cópias .specs).
+- Gerados: F68 (Marcas dos Deuses), F69 (sprint em combate), F70 (2ª leva side quests,
+  11 NPCs/~33 quests). Lore consolidada destrava textos de F36/F43/F63.
+- PLACAR FINAL DA GERAÇÃO: 70 specs funcionais (10 executadas, 60 a executar E11-E70)
+  + 9 retro + fundação/legado. Ordem/janelas: 00C PARTE H; espelho .specs/README.md.
+- EXECUÇÃO DO LOTE: aguarda autorização humana. Checkpoint M1 no Unity segue PENDENTE.
+## 2026-06-13 — REFINAMENTO_V3_RESPONDIDO + RE-AUDITORIA_DE_CÓDIGO
+
+- Dono respondeu o Refinamento v3 INTEIRO (skills/itens/companions/boas práticas) →
+  `docs/design/FABLE_DECISOES_RESPOSTAS_v3.0.md` (VINCULANTE).
+- Re-auditoria de código (`reaudit-code-v3`, 7 agentes) corrigiu 3 premissas: números de dano
+  flutuantes JÁ existem e estão wired; inventário já é 30 slots; 21 executores de skill reais +
+  catálogo cresceu p/ 69 nós. Achou 5 itens novos (2 sistemas de slot paralelos 1-4 vs R/T/Y/G;
+  NpcGiftPreferences morta; save de companion sem provider; Romance/Spouse fora do enum;
+  skill point 1/2 níveis). Confirmou 7 game_rules obsoletos (stop condition latente).
+- GERADO (workflow gen-v3-amendments, 10 artefatos, validate_docs exit 0):
+  ADR-0010 + reescrita de skill_tree_rules.md e inventory_equipment_rules.md;
+  ADR-0011..0014 (arte 32px, localização P4, input v1, dificuldade única);
+  SKILL_NUMERIC_ADDENDUM_v1.0 (dano/cd/custo + prereqs + capstones);
+  NPC_GIFT_TASTE_MATRIX_v1.0 (gostos por NPC); COMPANION_ROLES_CATALOG_v1.0 (bônus+ações);
+  fable_71 (combat feel pass); emendas EMENDA-V3 em F03/F14/F26/F29/F32/F42/F43/F56/F58 +
+  COMPANIONS_DIRECTION + 4 specs 14_companion convertidas para spec-ready.
+- PLACAR: 71 specs funcionais (10 executadas, 61 a executar E11-E71) + 9 retro; 14 ADRs.
+- LATENTE (registrado, não bloqueante; validate_docs verde): economy_rules.md e outros
+  game_rules citados por ~6 specs ainda não existem em docs/game_rules/ — decidir criar ou
+  normalizar referências antes/durante a execução.
+## 2026-06-13 — DÍVIDA DE GOVERNANÇA FECHADA + COBERTURA DE DESIGN v3
+
+- 8 game_rules faltantes CRIADOS (completos/descritivos, ancorados em direction+código+decisões):
+  economy/player/quest/npc/time/city/fonte/ui_rules. Agora docs/game_rules/ = 20 regras; a
+  referência required_game_rules das specs resolve de fato (não só no formato). Índices
+  (GAME_RULES_INDEX, DECISION_LOG) atualizados. validate_docs exit 0.
+- COBERTURA DE DESIGN v3: o design novo de FEATURE que só tinha direction virou spec densa —
+  fable_72 (presentes por NPC, reusa F26 + matriz de gostos) e fable_73 (localização id→string,
+  ADR-0012) entram no lote v1; as 4 specs de companion (features_futuras/14_*) foram elevadas de
+  esqueleto a SpecKit denso (combate/brain, recrutamento+save provider, farm jobs, UI/HUD)
+  refletindo o COMPANION_ROLES_CATALOG e as decisões v3 — seguem WAVE 14 (gated). game_rules não
+  viram spec (regras consumidas; domínios já cobertos).
+- PLACAR lote v1: 73 specs funcionais (10 executadas, 63 a executar E11-E73) + 9 retro; 14 ADRs;
+  20 game_rules; 4 specs companion densas WAVE 14. Ordem: fable_00C PARTE J.
+- LATENTE adicional (economy): dois caminhos de economia vivos no código (SellAll por BaseValue
+  cheio vs Economy/Pricing services) — registrado em economy_rules.md como Open Question para spec
+  de convergência. Não bloqueia.
