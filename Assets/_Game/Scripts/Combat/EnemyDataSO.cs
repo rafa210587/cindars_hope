@@ -79,8 +79,24 @@ namespace CindarsHope.Combat
         [Header("Bestiary")]
         public string BestiaryEntryId;
 
+        // fable_33 (aditivo, save-safe): campos da ficha canônica do CAVE_BESTIARY_CATALOG.
+        // Defaults preservam assets existentes (SpoilerTier=0, BestiarySize=Medium, Notes vazio).
+        [Tooltip("Bestiary spoiler tier (CAVE_BESTIARY_CATALOG §2.5): commons 0-1, minibosses 2, " +
+                 "gate bosses 3, the Four of level 101 = 4. Drives BESTIARY_KNOWLEDGE reveal gating (F21).")]
+        [Range(0, 4)] public int SpoilerTier = 0;
+
+        [Tooltip("Natural fantasy size class (D&D-style) from the catalog ficha. Drives the placeholder " +
+                 "transform scale. Colliders still follow the SPEC 13 SizeProfileId, never this visual class.")]
+        public BestiarySizeClass BestiarySize = BestiarySizeClass.Medium;
+
+        [TextArea(1, 3)]
+        [Tooltip("Dormant behaviour documented per fable_33: special ficha behaviours not covered by the " +
+                 "22 canonical Moves are recorded here (INFO-level), never a new Move nor a parallel brain.")]
+        public string Notes;
+
         private void OnValidate()
         {
+            SpoilerTier = Mathf.Clamp(SpoilerTier, 0, 4);
             VisualScale = Mathf.Max(0.1f, VisualScale);
             maxHp = Mathf.Max(1, maxHp);
             contactDamage = Mathf.Max(0, contactDamage);
@@ -126,5 +142,22 @@ namespace CindarsHope.Combat
         Elite,
         MiniBoss,
         Boss
+    }
+
+    /// <summary>
+    /// fable_33 — natural fantasy size classes from CAVE_BESTIARY_CATALOG §2.1, used as the
+    /// placeholder visual scale hint on the bestiary ficha. Additive enum (append only, save-safe):
+    /// new values MUST be added at the end so serialized indices never shift.
+    /// Tile footprints (catalog): Tiny 0.5×0.5, Small 0.75×0.75, Medium 1×1, Large 2×2,
+    /// Huge 3×3, Gargantuan 4×4. Minibosses get ×1.5 visual, bosses ×2.5 (applied by the generator).
+    /// </summary>
+    public enum BestiarySizeClass
+    {
+        Tiny,
+        Small,
+        Medium,
+        Large,
+        Huge,
+        Gargantuan
     }
 }
