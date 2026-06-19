@@ -22,6 +22,12 @@ namespace CindarsHope.Equipment
         private EquipmentDurabilityTracker _durabilityTracker;
         private Dictionary<EquipmentSlot, string> _slots = new(); // itemInstanceId per slot
 
+        // fable_22: registro de infusões de têmpera por instância (paralelo à durabilidade).
+        // Capturado/restaurado de forma aditiva no DTO de equipment; exposto à leitura de combate
+        // pelo acessor estático WeaponInfusionRegistry.Active.
+        private CindarsHope.Economy.WeaponInfusionRegistry _infusionRegistry;
+        public CindarsHope.Economy.WeaponInfusionRegistry InfusionRegistry => _infusionRegistry;
+
         // Legacy properties - deprecated, use GetEquippedItem() instead
         public string EquippedToolId => _equippedToolId;
         public ToolType EquippedToolType => _equippedToolType;
@@ -34,6 +40,14 @@ namespace CindarsHope.Equipment
             {
                 _durabilityTracker = new EquipmentDurabilityTracker();
             }
+
+            // fable_22: cria o registro de infusões e o publica como acessor único para o ponto de
+            // leitura de combate (sem busca global). DontDestroyOnLoad: o último Awake vence.
+            if (_infusionRegistry == null)
+            {
+                _infusionRegistry = new CindarsHope.Economy.WeaponInfusionRegistry();
+            }
+            CindarsHope.Economy.WeaponInfusionRegistry.Active = _infusionRegistry;
         }
 
         private void OnEnable()
@@ -254,6 +268,12 @@ namespace CindarsHope.Equipment
                 });
             }
 
+            // fable_22: persiste infusões de têmpera de forma aditiva (defaults vazios em saves antigos).
+            if (_infusionRegistry != null)
+            {
+                data.Infusions = _infusionRegistry.CaptureSaveData();
+            }
+
             return data;
         }
 
@@ -265,6 +285,7 @@ namespace CindarsHope.Equipment
                 _equippedToolType = ToolType.None;
                 _equippedToolTier = ToolTier.None;
                 _slots.Clear();
+                _infusionRegistry?.ClearAll();
                 return;
             }
 
@@ -279,6 +300,14 @@ namespace CindarsHope.Equipment
                     _slots[slotData.SlotType] = slotData.ItemInstanceId;
                 }
             }
+
+            // fable_22: restaura infusões (lista null em save legado => registro vazio, sem migration).
+            if (_infusionRegistry == null)
+            {
+                _infusionRegistry = new CindarsHope.Economy.WeaponInfusionRegistry();
+                CindarsHope.Economy.WeaponInfusionRegistry.Active = _infusionRegistry;
+            }
+            _infusionRegistry.RestoreFromSaveData(saveData.Infusions);
         }
 
         private void HandleInventoryChanged(InventoryChangedEvent evt)

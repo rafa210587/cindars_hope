@@ -483,7 +483,8 @@ namespace CindarsHope.Combat
 
             Debug.Log($"CombatLog: PlayerAttackStarted. Slot={slot}, Weapon={weapon.DisplayName}, BaseDamage={weapon.BaseDamage}, Weight={weight}, Range={weapon.Range:F2}, Type={weapon.Type}", this);
             GameEventBus.Publish(new PlayerChargedAttackEvent((int)weight));
-            ExecuteWeaponAttack(weapon, weight);
+            // fable_22: passa a instância equipada para o ponto único de tags (infusão de têmpera).
+            ExecuteWeaponAttack(weapon, weight, equippedItemId);
             lastAttackTime = Time.time;
         }
 
@@ -554,7 +555,7 @@ namespace CindarsHope.Combat
             return slot == EquipmentSlot.LeftHand ? EquipmentSlot.RightHand : EquipmentSlot.LeftHand;
         }
 
-        private void ExecuteWeaponAttack(WeaponDataSO weapon, AttackWeight weight = AttackWeight.Light)
+        private void ExecuteWeaponAttack(WeaponDataSO weapon, AttackWeight weight = AttackWeight.Light, string equippedItemId = null)
         {
             Vector2 direction = _playerController?.LastFacingDirection ?? Vector2.right;
 
@@ -564,14 +565,46 @@ namespace CindarsHope.Combat
             }
             else
             {
-                ExecuteMeleeAttack(weapon, direction, weight);
+                ExecuteMeleeAttack(weapon, direction, weight, equippedItemId);
             }
 
             if (_equipmentManager != null)
                 _equipmentManager.RegisterEquipmentUsage();
         }
 
-        private void ExecuteMeleeAttack(WeaponDataSO weapon, Vector2 direction, AttackWeight weight = AttackWeight.Light)
+        // fable_22: resolve as tags efetivas da arma para o matching F06 = tags base do WeaponDataSO
+        // + (se houver) a tag de gume canônica da INFUSÃO de têmpera da instância equipada. Ponto
+        // ÚNICO de injeção da tag de infusão; nenhum multiplicador paralelo é criado (a tag entra
+        // no matching como qualquer outra). Óleo SUPRIME a têmpera: ver ResolveActiveWeaponTags.
+        private string[] ResolveWeaponMaterialTags(WeaponDataSO weapon, string equippedItemId)
+        {
+            var baseTags = weapon != null ? weapon.MaterialTagsApplied : null;
+            string edgeTag = ResolveInfusionEdgeTag(equippedItemId);
+            if (string.IsNullOrEmpty(edgeTag))
+            {
+                return baseTags;
+            }
+
+            int baseLen = baseTags?.Length ?? 0;
+            var combined = new string[baseLen + 1];
+            if (baseLen > 0)
+            {
+                System.Array.Copy(baseTags, combined, baseLen);
+            }
+            combined[baseLen] = edgeTag;
+            return combined;
+        }
+
+        // fable_22: tag de gume da infusão da instância equipada, ou null se sem têmpera. Lê do
+        // acessor único WeaponInfusionRegistry.Active (sem busca global de cena).
+        private static string ResolveInfusionEdgeTag(string equippedItemId)
+        {
+            if (string.IsNullOrEmpty(equippedItemId)) return null;
+            var registry = CindarsHope.Economy.WeaponInfusionRegistry.Active;
+            return registry != null ? registry.GetEdgeTag(equippedItemId) : null;
+        }
+
+        private void ExecuteMeleeAttack(WeaponDataSO weapon, Vector2 direction, AttackWeight weight = AttackWeight.Light, string equippedItemId = null)
         {
             Vector2 attackCenter = (Vector2)transform.position + direction * 0.5f;
             var hitColliders = Physics2D.OverlapCircleAll(attackCenter, weapon.Range);
@@ -607,7 +640,8 @@ namespace CindarsHope.Combat
                     SourcePosition = transform.position,
                     KnockbackForce = _knockbackForce,
                     // fable_06: tags de material da arma (ex.: prata) para matching de vulnerabilidade.
-                    WeaponMaterialTags = weapon.MaterialTagsApplied
+                    // fable_22: + tag de gume da têmpera (FireEdge/...) quando a instância está infundida.
+                    WeaponMaterialTags = ResolveWeaponMaterialTags(weapon, equippedItemId)
                 };
 
                 int hpBefore = enemyHealth.CurrentHp;

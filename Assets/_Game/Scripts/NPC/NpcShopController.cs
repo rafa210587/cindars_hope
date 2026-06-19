@@ -366,11 +366,29 @@ namespace CindarsHope.NPC
             {
                 new UiDialogueChoice("Conversar", "talk"),
                 new UiDialogueChoice("Comprar", "buy"),
-                new UiDialogueChoice("Vender", "sell"),
-                new UiDialogueChoice("Adeus", "exit")
+                new UiDialogueChoice("Vender", "sell")
             };
 
+            // fable_22 (CA-3): opção "Temperar" só no Brumdar e só com o gate aberto
+            // (sq_brumdar_3_done + Ato 1). Fail-closed: sem resolver de gate, a opção não aparece.
+            if (IsBrumdar() && CindarsHope.Economy.TemperingForgeAccess.IsGateOpen())
+            {
+                choices.Add(new UiDialogueChoice("Temperar", "temper"));
+            }
+
+            choices.Add(new UiDialogueChoice("Adeus", "exit"));
+
             _dialogueModal.ShowWithChoices("Como posso ajudar?", choices);
+        }
+
+        private bool IsBrumdar()
+        {
+            if (_npcData == null) return false;
+            if (!string.IsNullOrEmpty(_npcData.NpcId) &&
+                _npcData.NpcId.Equals("npc_brumdar", System.StringComparison.OrdinalIgnoreCase))
+                return true;
+            return !string.IsNullOrEmpty(_npcData.DisplayName) &&
+                   _npcData.DisplayName.IndexOf("Brumdar", System.StringComparison.OrdinalIgnoreCase) >= 0;
         }
 
         private void HandleRootShopChoice(UiDialogueChoice choice)
@@ -418,6 +436,23 @@ namespace CindarsHope.NPC
                         _sellPanel.Show(_shopData.Id);
                     }
                     else BeginCloseInteraction();
+                    break;
+
+                case "temper":
+                    // fable_22: abre a UI de têmpera se ligada (wiring de cena/Play Mode); senão
+                    // sinaliza disponibilidade da forja por toast. Re-checa o gate por segurança.
+                    _dialogueModal.Hide();
+                    if (CindarsHope.Economy.TemperingForgeAccess.IsGateOpen()
+                        && CindarsHope.Economy.TemperingForgeAccess.HasForgeUi)
+                    {
+                        CindarsHope.Economy.TemperingForgeAccess.OpenForgeUi();
+                    }
+                    else
+                    {
+                        GameEventBus.Publish(new PlayerActionFeedbackEvent(
+                            "A forja de tempera do Brumdar esta disponivel."));
+                    }
+                    BeginCloseInteraction();
                     break;
 
                 case "exit":

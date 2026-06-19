@@ -206,6 +206,9 @@ namespace CindarsHope.Save
     {
         public string EquippedToolId;
         public List<EquipmentSlotSaveData> Slots = new List<EquipmentSlotSaveData>();
+        // fable_22 (aditivo): infusões de têmpera por instância de arma/ferramenta. Default VAZIO =>
+        // saves legados carregam sem têmpera, sem migration. Strings/ints simples (sem refs Unity).
+        public List<WeaponInfusionSaveData> Infusions = new List<WeaponInfusionSaveData>();
     }
 
     [Serializable]
@@ -213,6 +216,16 @@ namespace CindarsHope.Save
     {
         public EquipmentSlot SlotType;
         public string ItemInstanceId;
+    }
+
+    // fable_22: entrada aditiva de infusão (itemInstanceId → element/tier). Tipos simples, sem
+    // refs Unity, compatível com JsonUtility. Ausência da entrada = arma sem têmpera.
+    [Serializable]
+    public class WeaponInfusionSaveData
+    {
+        public string ItemInstanceId;
+        public string InfusionElement; // estável: fire/ice/toxic/lightning/arcane/void
+        public int InfusionTier;        // 0 = sem; 1 ou 2
     }
 
     [Serializable]
