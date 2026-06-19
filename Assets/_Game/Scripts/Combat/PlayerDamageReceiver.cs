@@ -37,6 +37,15 @@ namespace CindarsHope.Combat
                 return 0;
             }
 
+            // fable_08: barreira arcana absorve ANTES de block/defesa/resistência (ordem documentada;
+            // risco de dupla mitigação com Defense mitigado por teste). Dano totalmente absorvido = 0.
+            rawDamage = Magic.PlayerBarrierState.AbsorbIncoming(rawDamage, Time.time);
+            if (rawDamage <= 0)
+            {
+                Debug.Log($"CombatLog: PlayerDamageFullyAbsorbedByBarrier. Source={sourceId}");
+                return 0;
+            }
+
             // F27: block intercepta ANTES de defesa/resistência.
             var block = Player.Movement.PlayerBlockController.ActiveInstance;
             if (block != null && block.IsBlocking)

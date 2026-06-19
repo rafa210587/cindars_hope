@@ -55,6 +55,9 @@ namespace CindarsHope.Combat
         private BowArrowAttackService _bowArrowService;
         private SpellCastService _spellCastService;
 
+        // fable_08: gerencia janela de cast time + interrupt (criado em Start no player).
+        private CindarsHope.Combat.Magic.SpellCastRoutine _spellCastRoutine;
+
         // F02: carga por mão (tap=light, hold=heavy, hold longo=charged) + stats derivados.
         private readonly AttackChargeTracker _leftCharge = new AttackChargeTracker();
         private readonly AttackChargeTracker _rightCharge = new AttackChargeTracker();
@@ -137,6 +140,16 @@ namespace CindarsHope.Combat
 
             // SPEC_07: Initialize attack services
             RefreshServices();
+
+            // fable_08: rotina de cast time/interrupt fica no GameObject do player (mesmo telegraph
+            // renderer da carga). Anexa ao PlayerController quando houver; senão neste GameObject.
+            var routineHost = _playerController != null ? _playerController.gameObject : gameObject;
+            _spellCastRoutine = routineHost.GetComponent<CindarsHope.Combat.Magic.SpellCastRoutine>();
+            if (_spellCastRoutine == null)
+            {
+                _spellCastRoutine = routineHost.AddComponent<CindarsHope.Combat.Magic.SpellCastRoutine>();
+            }
+            _spellCastRoutine.Configure(_chargeTelegraphRenderer);
         }
 
         private void OnDestroy()
@@ -210,7 +223,34 @@ namespace CindarsHope.Combat
             _spellCastService = new SpellCastService(_manaManager, _equipmentManager, _itemResolver, _knockbackForce, _statusEffectDatabase);
             // F02: serviços consomem o mesmo provider (dano derivado em projéteis).
             if (_bowArrowService != null) _bowArrowService.StatsProvider = _statsProvider;
-            if (_spellCastService != null) _spellCastService.StatsProvider = _statsProvider;
+            if (_spellCastService != null)
+            {
+                _spellCastService.StatsProvider = _statsProvider;
+                // fable_08: alvos de SelfRestore + spellbook (fable_07).
+                _spellCastService.PlayerManager = GameBootstrap.Instance?.PlayerManager;
+                _spellCastService.StaminaManager = _staminaManager;
+                _spellCastService.Spellbook = CindarsHope.Magic.PlayerSpellbook.Instance;
+                // fable_08 EMENDA 6.6-A: auto-target via QUERY de Physics2D (inimigos no raio),
+                // NÃO FindObjectsByType (rule unity-architecture). Devolve posições de EnemyHealth.
+                _spellCastService.EnemyPositionQuery = QueryEnemyPositions;
+            }
+        }
+
+        // fable_08: posições de inimigos vivos dentro do raio, para auto-target/área. Usa
+        // OverlapCircleAll (mesma query do melee) — busca de física, não de objeto global.
+        private System.Collections.Generic.IReadOnlyList<UnityEngine.Vector2> QueryEnemyPositions(UnityEngine.Vector2 center, float radius)
+        {
+            var positions = new System.Collections.Generic.List<UnityEngine.Vector2>();
+            var hits = Physics2D.OverlapCircleAll(center, Mathf.Max(0.1f, radius));
+            var seen = new System.Collections.Generic.HashSet<EnemyHealth>();
+            foreach (var col in hits)
+            {
+                if (col == null) continue;
+                var enemy = col.GetComponentInParent<EnemyHealth>() ?? col.GetComponent<EnemyHealth>();
+                if (enemy == null || enemy.IsDead || !seen.Add(enemy)) continue;
+                positions.Add(enemy.transform.position);
+            }
+            return positions;
         }
 
         private void Update()
@@ -470,9 +510,31 @@ namespace CindarsHope.Combat
                 return;
             }
             Vector2 direction = _playerController?.LastFacingDirection ?? Vector2.right;
-            var result = _spellCastService.TryCast(slot, itemData, lastAttackTime, direction, transform.position);
-            if (result.Success)
-                lastAttackTime = Time.time;
+
+            // fable_08: valida/reserva (cooldown, mana, conhecimento). Em sucesso a rotina cuida da
+            // janela de cast time + interrupt; cast 0s resolve imediatamente dentro do BeginCast.
+            var begin = _spellCastService.TryBeginCast(slot, itemData, lastAttackTime, direction, transform.position, out var plan);
+            if (!begin.Success || plan == null)
+            {
+                return;
+            }
+
+            if (_spellCastRoutine != null)
+            {
+                if (!_spellCastRoutine.BeginCast(_spellCastService, plan))
+                {
+                    // Já conjurando outra magia: reembolsa a mana reservada deste plano.
+                    _spellCastService.RefundCast(plan);
+                    return;
+                }
+            }
+            else
+            {
+                // Fallback sem rotina (não deveria ocorrer em cena): resolve direto.
+                _spellCastService.ResolveCast(plan);
+            }
+
+            lastAttackTime = Time.time;
         }
 
         // SPEC_05: Delegated to EquippedItemResolver
