@@ -29,6 +29,18 @@ namespace CindarsHope.Player.Movement
 #endif
         }
 
+        // fable_69: sprint em combate é segurado em Left Ctrl (tecla livre no input_map F67;
+        // sem conflito com Space=dodge, Left Shift=block, duplo-toque=dash direcional).
+        public static bool IsSprintHeld()
+        {
+#if ENABLE_INPUT_SYSTEM
+            var kb = Keyboard.current;
+            return kb != null && kb.leftCtrlKey.isPressed;
+#else
+            return Input.GetKey(KeyCode.LeftControl);
+#endif
+        }
+
         public static Vector2 GetMoveDirectionHeld()
         {
             float x = 0f, y = 0f;

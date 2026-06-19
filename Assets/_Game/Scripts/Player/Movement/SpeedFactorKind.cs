@@ -30,6 +30,14 @@ namespace CindarsHope.Player.Movement
         DerivedMoveSpeed = 5,
 
         /// <summary>Compat: escrita via setter público legado de SpeedMultiplier (warning DEV).</summary>
-        Legacy = 6
+        Legacy = 6,
+
+        /// <summary>
+        /// fable_69 — mobilidade em combate. Fora de combate: ausente (neutro 1.0). Em combate
+        /// sem sprint: penalidade canônica (~0.9 → 3.4-3.8 tiles/s). Em combate com sprint
+        /// segurado e stamina: 1.0 (restaura a faixa de fora-de-combate, 3.8-4.2). Único dono
+        /// deste fator é o PlayerSprintController; ninguém escreve direto no SpeedMultiplier.
+        /// </summary>
+        CombatMobility = 7
     }
 }
