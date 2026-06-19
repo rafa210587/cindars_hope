@@ -4,6 +4,7 @@ status: accepted
 domain: cave-gameplay
 source_adrs:
   - ADR-0005
+  - ADR-0016
 source_documents:
   - docs/amendments/FASE9F_CAVE_STABLE_RUN_AND_REPLAY_AMENDMENT_v1.0.md
   - .specs/a_implementar/closeout_mvp/SPEC_24_CAVE_RUNTIME_CHECKPOINTS_BOSS_GATES_CLOSEOUT.md
@@ -47,11 +48,17 @@ Defines cave procedural generation, stable run behavior, snapshot persistence, a
 
 ### Rule: Enemy Count Range per Level per Run
 
-- **Rule:** First visit to a CaveLevel in a run: generate 12-20 enemies (random)
+- **Rule:** First visit to a CaveLevel in a run: generate **16-32 enemies** (deterministic
+  from the level seed), with **depth scaling** (min +1 every 12 levels, max +1 every 8
+  levels) and a **hard cap of 44** enemies per level. This reflects the live
+  `CaveEnemySpawnPlanner` (constants `MinEnemiesPerLevel=16`, `MaxEnemiesPerLevel=32`,
+  `DepthScalingHardCap=44`; `ResolveTargetEnemyCount`).
 - **Applies to:** Enemy composition, spawn counts
 - **Must NOT:** Re-roll on revisit (load snapshot instead)
 - **Validation:** Enemy count stable within run; only changes on new game/death/debug
-- **Source:** FASE9F Amendment, SPEC_24
+- **Source:** ADR-0016 (canonical density), ADR-0005 (stable-run invariant), FASE9F Amendment, SPEC_24
+- **Note:** The earlier 12-20 value was the SPEC_24 plan; superseded by ADR-0016 to match
+  shipping code accepted in the 2026-06-12 gameplay-expansion slice.
 
 ### Rule: Resource Node Range per Level per Run
 
@@ -114,6 +121,7 @@ Defines cave procedural generation, stable run behavior, snapshot persistence, a
 ## Related ADRs
 
 - [ADR-0005: Cave Stable Run and Replay](../decisions/ADR-0005-cave-stable-run-and-replay.md)
+- [ADR-0016: Cave Enemy Density and Depth Scaling](../decisions/ADR-0016-cave-enemy-density-depth-scaling.md) (canonical enemy count: 16-32, cap 44, depth scaling)
 - [ADR-0006: Save Data Contracts Simple DTOs](../decisions/ADR-0006-save-data-contracts-simple-dtos.md) (snapshot persistence)
 - [ADR-0007: Event Bus Gameplay Communication](../decisions/ADR-0007-event-bus-gameplay-communication.md) (cave events if needed)
 

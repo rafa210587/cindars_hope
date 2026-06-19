@@ -8,7 +8,8 @@ source_documents:
   - docs/amendments/FASE9F_CAVE_STABLE_RUN_AND_REPLAY_AMENDMENT_v1.0.md
   - SPEC_24
 supersedes: []
-superseded_by: []
+superseded_by:
+  - ADR-0016 (partial — only the §Ranges "Enemies per level per run" value)
 applies_to:
   - cave-procedural-generation
   - gameplay-save-load
@@ -46,7 +47,7 @@ Procedural changes only on:
 
 ### Ranges
 
-- Enemies per level per run: 12-20 (random on first visit, fixed on revisits)
+- Enemies per level per run: ~~12-20~~ → **superseded by [ADR-0016](./ADR-0016-cave-enemy-density-depth-scaling.md): 16-32, hard cap 44, depth scaling** (random on first visit, fixed on revisits). The 12-20 value was the SPEC_24 plan; the shipping `CaveEnemySpawnPlanner` density was accepted in the 2026-06-12 gameplay-expansion slice.
 - Resource nodes per level per run: 4-10 (random on first visit, fixed on revisits)
 
 ## Implementation

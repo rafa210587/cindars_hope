@@ -29,6 +29,7 @@
 | City | [city_rules.md](city_rules.md) | — | ✓ | Cindar's Hope footprint, districts, interiors, doors, landmarks |
 | Fonte de Anya | [fonte_rules.md](fonte_rules.md) | ADR-0006, ADR-0007 | ✓ | Fonte state, fragment-driven function unlocks, final-choice gating |
 | UI/HUD (non-modal) | [ui_rules.md](ui_rules.md) | ADR-0007 | ✓ | Gameplay HUD overlays, vitals/clock/quest tracker, floating combat feedback |
+| Input/Controls | [input_map.md](input_map.md) | ADR-0013 | ✓ | Canonical keyboard map (gameplay/panels/debug), consult-and-update rule, collision findings |
 
 ---
 

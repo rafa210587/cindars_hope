@@ -239,3 +239,18 @@ Before deleting any candidate:
 | docs/validation/playmode (ARQUIVO solto) | DELETED — pasta playmode/ correta criada; cenário movido para dentro |
 | executadas_build_validated/FIX_001_runtime_warnings_town_shop_catalog_alignment.md | DELETED — FIX-001/001B executados |
 | executadas_build_validated/03_spec_quest_*.md (8 arquivos) | DELETED — duplicatas literais da série 09 (WAVE 09 foi a executada) |
+
+---
+
+## Batch FABLE-67 — Pre-refinamentos v1.0 superados (candidatados 2026-06-19)
+
+**Criteria:** Documento v1.0 superado por v1.1 correspondente vigente na mesma pasta; convivência confunde leitura de direção. Arquivamento por processo — NUNCA deletar direto.
+
+**Status:** AGUARDANDO CONFIRMACAO HUMANA ("delete this candidate" por item). Cabeçalho de cada arquivo marcado `status: delete_candidate` + superseded-by; nenhuma deleção no diff de fable_67.
+
+| Path | Motivo | Substituto canônico (vigente) |
+|------|--------|-------------------------------|
+| docs/refinements/a_implementar/pre_refinamentos/PRE_REFINAMENTO_FARM_ESTRUTURA_ATIVIDADES_RECURSOS_v1.0.md | Superada pela v1.1 (roadmap progressivo, mineração, Fruto Mana); v1.0 mantém apenas linguagem MVP/V2/FULL aposentada | PRE_REFINAMENTO_FARM_ESTRUTURA_ATIVIDADES_RECURSOS_v1.1.md |
+| docs/refinements/a_implementar/pre_refinamentos/PRE_REFINAMENTO_VISAO_GERAL_JOGO_v1.0.md | Superada pela v1.1 (decisões de lore, farm, cidade, caverna, companions, progressão, UI/UX) | PRE_REFINAMENTO_VISAO_GERAL_JOGO_v1.1.md |
+
+> Nota (diff v1.0 × v1.1): a v1.1 de cada documento é declaradamente derivada da v1.0 ("Origem: ...v1.0... + refinamento do Rafa"), ou seja absorve o conteúdo da v1.0 e adiciona decisões novas. Não foi identificado bloco único da v1.0 ausente na v1.1; mesmo assim a deleção final permanece decisão humana.

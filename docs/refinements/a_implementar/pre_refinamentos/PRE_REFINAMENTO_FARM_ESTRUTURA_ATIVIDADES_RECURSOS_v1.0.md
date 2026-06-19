@@ -1,5 +1,6 @@
 # Cindar's Hope — Pré-refinamento FARM: Estrutura, Atividades, Construções e Recursos v1.0
 
+> **status: delete_candidate** — superseded-by `PRE_REFINAMENTO_FARM_ESTRUTURA_ATIVIDADES_RECURSOS_v1.1.md` (vigente). Mantido como histórico; candidatado à deleção em `docs/project/DOCUMENT_DELETE_CANDIDATES.md` (fable_67, 2026-06-19). Decisão final de deleção é humana.  
 > **Status:** pré-refinamento para discussão e evolução documental  
 > **Origem:** `PRE_REFINAMENTO_VISAO_GERAL_JOGO_v1.1.md` + specs implementadas/parciais de Farm, World Activities, Inventory, Crafting e Economy  
 > **Destino:** `docs/refinements/a_implementar/pre_refinamentos/PRE_REFINAMENTO_FARM_ESTRUTURA_ATIVIDADES_RECURSOS_v1.0.md`  
