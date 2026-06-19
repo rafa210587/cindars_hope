@@ -12,6 +12,10 @@ namespace CindarsHope.Combat
         // F02: provider de stats derivados (setado pelo PlayerAttackController; null-safe).
         public PlayerCombatStatsProvider StatsProvider { get; set; }
 
+        // fable_07: estado de conhecimento arcano (null-safe). Setado pelo wiring quando disponível.
+        // O fluxo de cast por ITEM EQUIPADO NÃO depende disto (preservado 100% — ver CanCast).
+        public CindarsHope.Magic.PlayerSpellbook Spellbook { get; set; }
+
         private readonly ManaManager _manaManager;
         private readonly EquipmentManager _equipmentManager;
         private readonly EquippedItemResolver _itemResolver;
@@ -32,6 +36,28 @@ namespace CindarsHope.Combat
             _statusEffectDatabase = statusEffectDatabase;
         }
 
+        /// <summary>
+        /// fable_07 — castabilidade por ESTADO DE CONHECIMENTO de uma spellId:
+        /// conhecida permanentemente (spellbook) OU concedida por item equipado.
+        /// Não checa mana/cooldown (isso é do TryCast). Quando não há spellbook, devolve true
+        /// (compat: sem estado de conhecimento, a única gate é o item equipado, como hoje).
+        /// </summary>
+        public bool CanCast(string spellId)
+        {
+            if (string.IsNullOrEmpty(spellId))
+            {
+                return false;
+            }
+
+            // Sem spellbook wired: comportamento legado (a posse do item equipado é a única condição).
+            if (Spellbook == null)
+            {
+                return true;
+            }
+
+            return Spellbook.CanCast(spellId);
+        }
+
         public AttackResult TryCast(
             EquipmentSlot slot,
             ItemDataSO itemData,
@@ -45,6 +71,10 @@ namespace CindarsHope.Combat
                 Debug.LogError($"CombatLog: PlayerAttackBlocked. Reason=SpellNotResolved, ItemId={itemData.Id}, SpellId='{itemData.SpellId}'");
                 return AttackResult.CreateError("SpellNotResolved");
             }
+
+            // fable_07: a magia do item equipado fica disponível como fonte EquippedItem ENQUANTO
+            // equipada, sem adicionar a knownSpellIds (CA-3: cast por item equipado inalterado).
+            Spellbook?.SetEquipmentGrantedSpell(spellData.Id);
 
             float cooldown = Mathf.Max(0.1f, spellData.CooldownSeconds);
             if (!CooldownHelper.IsCooldownExpired(lastAttackTime, cooldown))

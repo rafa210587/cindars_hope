@@ -70,6 +70,8 @@ namespace CindarsHope.Save
 
         private readonly HotbarState _hotbarState = new HotbarState();
         private ISaveSectionProvider _hotbarProvider;
+        // fable_07: provider do grimório (padrão HotbarSectionProvider; fonte = PlayerSpellbook.Instance).
+        private ISaveSectionProvider _spellbookProvider;
         private readonly SaveMigrationRegistry _migrationRegistry = new SaveMigrationRegistry(new ISaveMigration[]
         {
             new InventorySlotsV1ToV2Migration(),
@@ -93,6 +95,8 @@ namespace CindarsHope.Save
 
             // SPEC_10: Initialize save providers
             _hotbarProvider = new HotbarSectionProvider(_hotbarState);
+            // fable_07: provider do grimório (resolve PlayerSpellbook.Instance no momento de capture/restore).
+            _spellbookProvider = new SpellbookSectionProvider();
 
             if (string.IsNullOrWhiteSpace(_hotbarState.GetSlotItemId(0)))
             {
@@ -141,6 +145,11 @@ namespace CindarsHope.Save
                     ? (_hotbarProvider.Capture(existingSaveData) as HotbarSaveData)
                     : _hotbarState.CaptureSaveData();
 
+                // fable_07: captura do grimório via provider (fonte PlayerSpellbook.Instance; fallback ao save).
+                var spellbookSaveData = _spellbookProvider != null
+                    ? (_spellbookProvider.Capture(existingSaveData) as CindarsHope.Magic.SpellbookSaveData)
+                    : (existingSaveData?.Spellbook ?? new CindarsHope.Magic.SpellbookSaveData());
+
                 var saveData = new GameSaveData
                 {
                     SchemaVersion = CurrentSchemaVersion,
@@ -169,7 +178,8 @@ namespace CindarsHope.Save
                     Quests = questSaveData,
                     Fonte = CaptureFonteSaveData(),
                     CaveRun = CaptureCaveRunSaveData(),
-                    DailyGoals = CaptureFarmDailyGoalsSaveData()
+                    DailyGoals = CaptureFarmDailyGoalsSaveData(),
+                    Spellbook = spellbookSaveData
                 };
 
                 var savePath = SaveFilePath;
@@ -1038,6 +1048,10 @@ namespace CindarsHope.Save
                     (slot, id) => _hotbarState.SetSlot(slot, id),
                     HotbarState.SlotCount);
             }
+
+            // fable_07: restaura o grimório APÓS o inventário (contrato de ordem da spec).
+            // Seção nula (saves legados) = grimório vazio. Fonte: PlayerSpellbook.Instance.
+            _spellbookProvider?.Restore(saveData.Spellbook);
 
             if (_progressionManager != null)
             {

@@ -46,6 +46,9 @@ namespace CindarsHope.Save
         public CompanionManagerSaveData Companions;
         public QuestStateSectionSaveData Quests;
         public FarmDailyGoalsSaveData DailyGoals;
+        // fable_07: grimório (knownSpellIds + progresso de tomo). Seção aditiva sem migration:
+        // saves legados (sem o campo) carregam com grimório vazio.
+        public CindarsHope.Magic.SpellbookSaveData Spellbook;
     }
 
     [Serializable]
