@@ -219,7 +219,7 @@ namespace CindarsHope.Combat
         // SPEC_07: Recreate attack services after resolver or database rebind.
         private void RefreshServices()
         {
-            _bowArrowService = new BowArrowAttackService(_equipmentManager, _inventoryManager, _staminaManager, _itemDatabase, _itemResolver, _knockbackForce);
+            _bowArrowService = new BowArrowAttackService(_equipmentManager, _inventoryManager, _staminaManager, _itemDatabase, _itemResolver, _knockbackForce, _statusEffectDatabase);
             _spellCastService = new SpellCastService(_manaManager, _equipmentManager, _itemResolver, _knockbackForce, _statusEffectDatabase);
             // F02: serviços consomem o mesmo provider (dano derivado em projéteis).
             if (_bowArrowService != null) _bowArrowService.StatsProvider = _statsProvider;

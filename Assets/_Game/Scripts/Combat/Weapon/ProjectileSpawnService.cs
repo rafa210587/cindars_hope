@@ -45,6 +45,9 @@ namespace CindarsHope.Combat.Weapon
             }
 
             projectileBehaviour.SetMaxHits(request.MaxHits);
+            // fable_48: tags de material/elemento da munição (flecha) anexadas ANTES do Initialize;
+            // viajam ao DamageRequest no impacto (matching de vulnerabilidade F06). Null = sem tags.
+            projectileBehaviour.SetAppliedTags(request.AppliedTags);
 
             // Initialize projectile with or without status effect
             if (request.StatusEffect != null && request.StatusApplyChance > 0f)

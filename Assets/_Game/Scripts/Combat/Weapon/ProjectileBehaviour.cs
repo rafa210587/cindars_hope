@@ -21,6 +21,10 @@ namespace CindarsHope.Combat.Weapon
 
         [SerializeField] private int _maxHits = 1;
 
+        // fable_48 (aditivo): tags de material/elemento da munição (ex.: "Silver"/"Fire"). Anexadas
+        // ao DamageRequest no impacto para o matching de vulnerabilidade F06. Null => sem tags.
+        private string[] _appliedTags;
+
         private Vector2 _spawnPosition;
         private int _hitCount;
 
@@ -66,13 +70,26 @@ namespace CindarsHope.Combat.Weapon
             _maxHits = Mathf.Max(1, maxHits);
         }
 
+        /// <summary>
+        /// fable_48 — anexa tags de material/elemento da munição (ex.: flecha "Silver"/"Fire"),
+        /// propagadas ao DamageRequest no impacto para o matching de vulnerabilidade F06. Aditivo;
+        /// chamado pelo ProjectileSpawnService. Null/vazio mantém o comportamento sem tags.
+        /// </summary>
+        public void SetAppliedTags(string[] appliedTags)
+        {
+            _appliedTags = appliedTags;
+        }
+
         private void HitEnemy(EnemyHealth enemyHealth)
         {
             var damageRequest = new DamageRequest(enemyHealth.EnemyId, _baseDamage)
             {
                 DamageType = _damageType,
                 SourcePosition = transform.position,
-                KnockbackForce = _knockbackForce
+                KnockbackForce = _knockbackForce,
+                // fable_48: tags da flecha viajam até o matching F06 (bônus só com vulnerabilidade
+                // declarada). Null/vazio para magias/projéteis sem tags (comportamento inalterado).
+                WeaponMaterialTags = _appliedTags
             };
 
             var result = DamageCalculator.Calculate(damageRequest);
