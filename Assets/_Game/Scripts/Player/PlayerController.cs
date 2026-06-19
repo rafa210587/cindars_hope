@@ -3,6 +3,7 @@ using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
 using CindarsHope.Farm;
 using CindarsHope.Player.Data;
+using CindarsHope.Player.Movement;
 using UnityEngine;
 // PR-010 keeps the legacy keyboard fallback so movement works without changing
 // Packages/ProjectSettings. PlayerInputActions.inputactions is the contract for
@@ -31,8 +32,56 @@ namespace CindarsHope.Player
         private bool _loggedMissingRigidbody;
         private Vector2 _lastFacingDirection = Vector2.right;
 
+        // fable_47: a velocidade é o produto de fatores nomeados (composer), não um mutável
+        // disputado. Os 5 escritores (displacement/dash/block/exhausted/status) usam SetFactor/
+        // ClearFactor no composer abaixo; nada mais escreve direto.
+        private readonly PlayerSpeedComposer _speedComposer = new PlayerSpeedComposer();
+        private bool _loggedLegacySpeedSetter;
+
+        // fable_47: auto-registro (sem global search) para o PlayerVitalsApplier (F18) empurrar
+        // o fator DerivedMoveSpeed no composer pelo mesmo evento de invalidação de equipamento.
+        private static PlayerController _activeInstance;
+
         public Vector2 MoveInput { get; private set; }
-        public float SpeedMultiplier { get; set; } = 1f;
+
+        /// <summary>fable_47: O caminho de velocidade. Os sistemas devem usar este composer.</summary>
+        public PlayerSpeedComposer SpeedComposer => _speedComposer;
+
+        /// <summary>fable_47: instância ativa para empurrar o fator derivado (F18) sem FindObjectOfType.</summary>
+        public static PlayerController ActiveInstance => _activeInstance;
+
+        /// <summary>Velocidade base configurada (PlayerDataSO ou fallback) — referência do fator derivado.</summary>
+        public float BaseMoveSpeed => GetMoveSpeed();
+
+        /// <summary>
+        /// Velocidade efetiva (produto dos fatores). Setter mantido por compatibilidade:
+        /// escreve o fator <see cref="SpeedFactorKind.Legacy"/> (1 → limpa) e emite warning DEV,
+        /// pois todo escritor canônico deve usar o composer. Sem call sites externos restantes
+        /// após a migração fable_47.
+        /// </summary>
+        public float SpeedMultiplier
+        {
+            get => _speedComposer.Value;
+            set
+            {
+                if (!_loggedLegacySpeedSetter)
+                {
+                    Debug.LogWarning($"{nameof(PlayerController)} on '{name}': SpeedMultiplier setter legado usado (fable_47). " +
+                        "Use SpeedComposer.SetFactor/ClearFactor. Valor roteado para o fator Legacy.");
+                    _loggedLegacySpeedSetter = true;
+                }
+
+                if (Mathf.Approximately(value, 1f))
+                {
+                    _speedComposer.ClearFactor(SpeedFactorKind.Legacy);
+                }
+                else
+                {
+                    _speedComposer.SetFactor(SpeedFactorKind.Legacy, value);
+                }
+            }
+        }
+
         public bool IsBeingDisplaced { get; set; }
         public Vector2 LastFacingDirection => _lastFacingDirection;
 
@@ -60,6 +109,10 @@ namespace CindarsHope.Player
 #if ENABLE_INPUT_SYSTEM
             _moveAction?.Enable();
 #endif
+            _activeInstance = this;
+            // fable_47: aplica imediatamente o fator derivado já calculado (caso o applier
+            // tenha rodado antes deste controller existir, ex.: troca de cena).
+            PlayerVitalsApplier.Instance?.ReapplyDerivedMoveSpeed();
         }
 
         private void OnDisable()
@@ -68,6 +121,10 @@ namespace CindarsHope.Player
             _moveAction?.Disable();
 #endif
             MoveInput = Vector2.zero;
+            if (_activeInstance == this)
+            {
+                _activeInstance = null;
+            }
         }
 
         private void Reset()

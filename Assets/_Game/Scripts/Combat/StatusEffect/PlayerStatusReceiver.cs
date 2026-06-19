@@ -1,6 +1,7 @@
 using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
+using CindarsHope.Player.Movement;
 using UnityEngine;
 
 namespace CindarsHope.Combat.StatusEffect
@@ -14,14 +15,11 @@ namespace CindarsHope.Combat.StatusEffect
     public class PlayerStatusReceiver : MonoBehaviour
     {
         private const string PlayerTargetId = "player";
-        private const float MinSpeedFloor = 0.5f; // composto com fadiga (F16) — floor documentado
 
         private static PlayerStatusReceiver _instance;
 
         private Player.StatusEffectManager _playerStatusManager;
         private Player.PlayerController _playerController;
-        private bool _speedPenaltyApplied;
-        private float _appliedSpeedFactor = 1f;
 
         public static PlayerStatusReceiver Instance => _instance;
 
@@ -61,7 +59,12 @@ namespace CindarsHope.Combat.StatusEffect
             float durationSeconds = 3f;
             if (database != null && database.TryGetById(statusEffectId, out var effect) && effect != null)
             {
-                durationSeconds = Mathf.Clamp(effect.DurationTurns, 1, 30);
+                // F01: clamp canônico 1–30s da duração base.
+                var baseSeconds = Mathf.Clamp(effect.DurationTurns, 1, 30);
+                // fable_47 (follow-up 3): resistência do eixo correto encurta a duração
+                // (duração × (1 − min(0.5, resist × 0.02))), preservando o clamp 1–30s.
+                var resistance = ResistanceForStatus(effect.Type);
+                durationSeconds = CindarsHope.Player.DerivedFollowupFormulas.ApplyStatusDurationReduction(baseSeconds, resistance, 1f, 30f);
             }
 
             if (!_playerStatusManager.TryAddEffect(statusEffectId, durationSeconds))
@@ -97,7 +100,9 @@ namespace CindarsHope.Combat.StatusEffect
             ApplyMovementSemantics();
         }
 
-        // Velocidade: menor fator entre os status ativos; composição multiplicativa reversível.
+        // fable_47: velocidade via fator nomeado Status no composer (menor fator entre os status
+        // ativos). Root/Stun zeram; slow não-letal é pisado em MinSpeedFloor pelo próprio composer.
+        // Sem snapshot/restore: limpar o fator não corrompe block/exhausted simultâneos.
         private void ApplyMovementSemantics()
         {
             if (_playerController == null)
@@ -105,49 +110,63 @@ namespace CindarsHope.Combat.StatusEffect
                 return;
             }
 
+            var factor = ComputeStatusSpeedFactor();
+            if (factor >= 1f)
+            {
+                _playerController.SpeedComposer.ClearFactor(SpeedFactorKind.Status);
+            }
+            else
+            {
+                _playerController.SpeedComposer.SetFactor(SpeedFactorKind.Status, factor);
+            }
+        }
+
+        /// <summary>Menor fator de velocidade entre os status ativos (0 se Root/Stun).</summary>
+        private float ComputeStatusSpeedFactor()
+        {
+            if (HasStatusOfType(StatusEffectType.Root) || HasStatusOfType(StatusEffectType.Stun))
+            {
+                return 0f;
+            }
+
             var factor = 1f;
             factor = Mathf.Min(factor, FactorOfType(StatusEffectType.Chill));
             factor = Mathf.Min(factor, FactorOfType(StatusEffectType.Slow));
             factor = Mathf.Min(factor, FactorOfType(StatusEffectType.ColdStress));
-            if (HasStatusOfType(StatusEffectType.Root) || HasStatusOfType(StatusEffectType.Stun))
-            {
-                factor = 0f;
-            }
-
-            if (Mathf.Approximately(factor, _appliedSpeedFactor))
-            {
-                return;
-            }
-
-            // Reverte o fator anterior e aplica o novo (auto-expira quando status some).
-            if (_speedPenaltyApplied && _appliedSpeedFactor > 0f)
-            {
-                _playerController.SpeedMultiplier = Mathf.Max(MinSpeedFloor, _playerController.SpeedMultiplier / _appliedSpeedFactor);
-            }
-            else if (_speedPenaltyApplied)
-            {
-                _playerController.SpeedMultiplier = 1f;
-            }
-
-            if (factor < 1f)
-            {
-                _playerController.SpeedMultiplier = factor <= 0f
-                    ? 0f
-                    : Mathf.Max(MinSpeedFloor * factor, _playerController.SpeedMultiplier * factor);
-                _speedPenaltyApplied = true;
-            }
-            else
-            {
-                _speedPenaltyApplied = false;
-            }
-
-            _appliedSpeedFactor = factor;
+            return factor;
         }
 
         private float FactorOfType(StatusEffectType type)
         {
             var effect = FindActiveOfType(type);
             return effect != null ? StatusEffectSemantics.GetMoveSpeedFactor(effect) : 1f;
+        }
+
+        /// <summary>
+        /// Eixo de resistência (F18) para encurtar a duração do status (fable_47 follow-up 3).
+        /// Reutiliza o mapeamento canônico de DoT (StatusEffectSemantics.GetDamageType) e adiciona
+        /// Chill→Ice (Chill não é DoT, mas é gelo para fins de resistência, conforme a spec).
+        /// </summary>
+        public static DamageType ResistanceAxisFor(StatusEffectType type)
+        {
+            if (type == StatusEffectType.Chill)
+            {
+                return DamageType.Ice;
+            }
+
+            return StatusEffectSemantics.GetDamageType(type);
+        }
+
+        /// <summary>Resistência atual do player no eixo do status, via fonte única F18.</summary>
+        private static int ResistanceForStatus(StatusEffectType type)
+        {
+            var source = CindarsHope.Combat.PlayerDamageReceiver.ResistanceSource;
+            if (source == null)
+            {
+                return 0;
+            }
+
+            return Mathf.Max(0, source(ResistanceAxisFor(type)));
         }
 
         private bool HasStatusOfType(StatusEffectType type)

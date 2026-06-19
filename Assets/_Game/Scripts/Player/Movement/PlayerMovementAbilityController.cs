@@ -41,7 +41,6 @@ namespace CindarsHope.Player.Movement
         [SerializeField] private DirectionalDoubleTapDetector _doubleTapDetector;
         private float _lastDodgeTime = float.MinValue;
         private bool _isDodging;
-        private float _previousSpeedMultiplier = 1f;
 
         public bool IsDodging => _isDodging;
 
@@ -75,9 +74,10 @@ namespace CindarsHope.Player.Movement
 
         private void OnDisable()
         {
+            // fable_47: limpar o fator evita dodge "preso" se desabilitado no meio do movimento.
             if (_isDodging && _playerController != null)
             {
-                _playerController.SpeedMultiplier = _previousSpeedMultiplier;
+                _playerController.SpeedComposer.ClearFactor(SpeedFactorKind.Dash);
             }
 
             _isDodging = false;
@@ -119,8 +119,7 @@ namespace CindarsHope.Player.Movement
 
             if (_playerController != null)
             {
-                _previousSpeedMultiplier = _playerController.SpeedMultiplier;
-                _playerController.SpeedMultiplier = 0f;
+                _playerController.SpeedComposer.SetFactor(SpeedFactorKind.Dash, 0f);
             }
 
             float elapsed = 0f;
@@ -146,7 +145,7 @@ namespace CindarsHope.Player.Movement
             GameEventBus.Publish(new PlayerActionFeedbackEvent("Dodge!"));
             if (_playerController != null)
             {
-                _playerController.SpeedMultiplier = _previousSpeedMultiplier;
+                _playerController.SpeedComposer.ClearFactor(SpeedFactorKind.Dash);
             }
 
             _isDodging = false;

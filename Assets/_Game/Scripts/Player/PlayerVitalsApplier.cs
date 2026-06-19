@@ -28,6 +28,12 @@ namespace CindarsHope.Player
 
         public static PlayerVitalsApplier Instance => _instance;
 
+        /// <summary>fable_47 (follow-up 2): redução de tempo de craft derivada (F18). Consumida por CraftingRuntime.</summary>
+        public static System.Func<float> CraftTimeReductionSource;
+
+        /// <summary>fable_47 (follow-up 2): bônus de eficiência de reparo derivado (F18). Consumido por EquipmentManager.</summary>
+        public static System.Func<float> RepairEfficiencyBonusSource;
+
         private sealed class SkillTreeManagerRef
         {
             public CindarsHope.Skills.SkillTreeManager Manager;
@@ -101,6 +107,38 @@ namespace CindarsHope.Player
 
             // F18: resistências alimentam o redutor central (F03).
             CindarsHope.Combat.PlayerDamageReceiver.ResistanceSource = type => ResistanceFor(_lastStats, type);
+
+            // fable_47 (follow-up 2): expõe craft/repair derivados como fontes únicas (padrão F18).
+            CraftTimeReductionSource = () => PlayerVitalsApplier.Instance?._lastStats?.CraftTimeReduction ?? 0f;
+            RepairEfficiencyBonusSource = () => PlayerVitalsApplier.Instance?._lastStats?.RepairEfficiencyBonus ?? 0f;
+
+            // fable_47 (follow-up 1): MoveSpeed derivado vira fator no composer do player.
+            ReapplyDerivedMoveSpeed();
+        }
+
+        /// <summary>
+        /// fable_47 — empurra o fator DerivedMoveSpeed para o composer do PlayerController ativo
+        /// (auto-registrado, sem global search). Idempotente: limpa o fator quando não há bônus.
+        /// Chamado no mesmo evento de invalidação (EquipmentSlotChangedEvent) e quando um novo
+        /// PlayerController entra em cena.
+        /// </summary>
+        public void ReapplyDerivedMoveSpeed()
+        {
+            var controller = CindarsHope.Player.PlayerController.ActiveInstance;
+            if (controller == null || _lastStats == null)
+            {
+                return;
+            }
+
+            var factor = DerivedFollowupFormulas.DerivedMoveSpeedFactor(_lastStats.MoveSpeed, controller.BaseMoveSpeed);
+            if (Mathf.Approximately(factor, 1f))
+            {
+                controller.SpeedComposer.ClearFactor(CindarsHope.Player.Movement.SpeedFactorKind.DerivedMoveSpeed);
+            }
+            else
+            {
+                controller.SpeedComposer.SetFactor(CindarsHope.Player.Movement.SpeedFactorKind.DerivedMoveSpeed, factor);
+            }
         }
 
         private void Awake()

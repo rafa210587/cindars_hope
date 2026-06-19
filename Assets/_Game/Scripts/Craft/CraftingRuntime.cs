@@ -121,7 +121,12 @@ namespace CindarsHope.Craft
                 return false;
             }
 
-            return station.TryStartCraft(recipe, _inventoryManager, out failureReason, _staminaManager);
+            // fable_47 (follow-up 2): CraftTimeReduction derivada (F18) reduz a duração efetiva do
+            // job. Fonte única exposta pelo PlayerVitalsApplier; multiplicador puro e testável.
+            var reduction = PlayerVitalsApplier.CraftTimeReductionSource?.Invoke() ?? 0f;
+            var craftTimeMultiplier = DerivedFollowupFormulas.CraftTimeMultiplier(reduction);
+
+            return station.TryStartCraft(recipe, _inventoryManager, out failureReason, _staminaManager, craftTimeMultiplier);
         }
 
         public bool TryCollect(CraftingStation station, out string failureReason)

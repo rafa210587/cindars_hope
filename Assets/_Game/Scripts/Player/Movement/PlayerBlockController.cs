@@ -46,7 +46,6 @@ namespace CindarsHope.Player.Movement
         private static PlayerBlockController _activeInstance;
 
         private bool _isBlocking;
-        private float _previousSpeedMultiplier = 1f;
         private float _staminaDrainAccumulator;
         // F27: estado da janela perfeita.
         private float _blockStartTime = -10f;
@@ -127,9 +126,10 @@ namespace CindarsHope.Player.Movement
                 return;
             }
 
-            _previousSpeedMultiplier = _playerController != null ? _playerController.SpeedMultiplier : 1f;
+            // fable_47: fator nomeado Block (×_blockSlowMultiplier). Compõe com Exhausted/Status
+            // sem corromper os outros fatores ao soltar o block.
             if (_playerController != null)
-                _playerController.SpeedMultiplier = Mathf.Max(0.01f, _previousSpeedMultiplier * _blockSlowMultiplier);
+                _playerController.SpeedComposer.SetFactor(SpeedFactorKind.Block, Mathf.Max(0.01f, _blockSlowMultiplier));
 
             _isBlocking = true;
             _staminaDrainAccumulator = 0f;
@@ -159,12 +159,12 @@ namespace CindarsHope.Player.Movement
         private void StopBlock()
         {
             if (_playerController != null)
-                _playerController.SpeedMultiplier = _previousSpeedMultiplier;
+                _playerController.SpeedComposer.ClearFactor(SpeedFactorKind.Block);
 
             _isBlocking = false;
             _staminaDrainAccumulator = 0f;
             _lastBlockEndTime = Time.time; // F27: âncora do cooldown anti-spam
-            Debug.Log($"[PlayerBlockController] Block stopped speedMultiplier restored={_previousSpeedMultiplier:F2}");
+            Debug.Log("[PlayerBlockController] Block stopped — fator Block removido do composer.");
             GameEventBus.Publish(new PlayerActionFeedbackEvent("Block released."));
         }
     }

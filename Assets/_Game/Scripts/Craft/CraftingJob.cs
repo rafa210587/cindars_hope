@@ -24,6 +24,15 @@ namespace CindarsHope.Craft
         public float RemainingSeconds { get; set; }
 
         public CraftingJob(string stationInstanceId, RecipeDataSO recipe)
+            : this(stationInstanceId, recipe, 1f)
+        {
+        }
+
+        /// <summary>
+        /// fable_47 (follow-up 2): craftTimeMultiplier aplica CraftTimeReduction derivada (F18)
+        /// no ÚNICO ponto de criação do job. 1f = sem alteração (caminho padrão/save-load).
+        /// </summary>
+        public CraftingJob(string stationInstanceId, RecipeDataSO recipe, float craftTimeMultiplier)
         {
             JobId = Guid.NewGuid().ToString();
             StationInstanceId = stationInstanceId;
@@ -33,7 +42,7 @@ namespace CindarsHope.Craft
             OutputAmount = recipe.OutputAmount;
             IngredientsConsumed = CaptureIngredients(recipe.Ingredients);
             Status = CraftingJobStatus.InProgress;
-            RemainingSeconds = recipe.CraftTimeSeconds;
+            RemainingSeconds = UnityEngine.Mathf.Max(0f, recipe.CraftTimeSeconds * craftTimeMultiplier);
         }
 
         public CraftingJob(CraftingJobSaveData saveData, RecipeDataSO recipe)

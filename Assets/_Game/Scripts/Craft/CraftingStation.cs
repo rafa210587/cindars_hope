@@ -63,7 +63,7 @@ namespace CindarsHope.Craft
             return true;
         }
 
-        public bool TryStartCraft(RecipeDataSO recipe, InventoryManager inventory, out string failureReason, StaminaManager staminaManager = null)
+        public bool TryStartCraft(RecipeDataSO recipe, InventoryManager inventory, out string failureReason, StaminaManager staminaManager = null, float craftTimeMultiplier = 1f)
         {
             if (!CanStartCraft(recipe, out failureReason) || !ValidateIngredients(recipe, inventory, out failureReason))
             {
@@ -103,7 +103,8 @@ namespace CindarsHope.Craft
                 return true;
             }
 
-            _job = new CraftingJob(StationInstanceId, recipe);
+            // fable_47 (follow-up 2): aplica o multiplicador de tempo de craft no ponto único.
+            _job = new CraftingJob(StationInstanceId, recipe, craftTimeMultiplier);
             GameEventBus.Publish(new CraftingJobStartedEvent(StationInstanceId, recipe.Id, _job.JobId));
             failureReason = string.Empty;
             return true;

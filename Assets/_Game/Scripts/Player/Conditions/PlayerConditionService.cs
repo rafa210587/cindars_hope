@@ -1,6 +1,7 @@
 using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
+using CindarsHope.Player.Movement;
 using UnityEngine;
 
 namespace CindarsHope.Player.Conditions
@@ -293,14 +294,16 @@ namespace CindarsHope.Player.Conditions
                 return;
             }
 
-            // Multiplicador composto com os demais sistemas; floor 0.5 documentado na F16.
+            // fable_47: fator nomeado Exhausted (×0.85). Substitui o multiply/divide in-place com
+            // floor 0.5 (F16) que corrompia o mutável compartilhado quando block/status atuavam
+            // simultaneamente. O produto do composer compõe corretamente sem corrida.
             if (shouldApply)
             {
-                _playerController.SpeedMultiplier = Mathf.Max(0.5f, _playerController.SpeedMultiplier * ExhaustedSpeedMultiplier);
+                _playerController.SpeedComposer.SetFactor(SpeedFactorKind.Exhausted, ExhaustedSpeedMultiplier);
             }
             else
             {
-                _playerController.SpeedMultiplier = Mathf.Max(0.5f, _playerController.SpeedMultiplier / ExhaustedSpeedMultiplier);
+                _playerController.SpeedComposer.ClearFactor(SpeedFactorKind.Exhausted);
             }
 
             _speedPenaltyApplied = shouldApply;

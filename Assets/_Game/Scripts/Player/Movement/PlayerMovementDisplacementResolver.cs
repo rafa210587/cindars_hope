@@ -47,10 +47,10 @@ namespace CindarsHope.Player.Movement
                 yield break;
             }
 
-            var previousSpeedMultiplier = _playerController != null ? _playerController.SpeedMultiplier : 1f;
+            // fable_47: fator nomeado em vez de snapshot/restore do mutável compartilhado.
             if (_playerController != null)
             {
-                _playerController.SpeedMultiplier = 0f;
+                _playerController.SpeedComposer.SetFactor(SpeedFactorKind.Displacement, 0f);
                 _playerController.IsBeingDisplaced = true;
             }
 
@@ -70,7 +70,7 @@ namespace CindarsHope.Player.Movement
 
             if (_playerController != null)
             {
-                _playerController.SpeedMultiplier = previousSpeedMultiplier;
+                _playerController.SpeedComposer.ClearFactor(SpeedFactorKind.Displacement);
                 _playerController.IsBeingDisplaced = false;
             }
 
