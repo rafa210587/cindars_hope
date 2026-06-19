@@ -1126,6 +1126,22 @@ namespace CindarsHope.Cave.Runtime
                 brain.Configure(enemyData, movementProfile);
             }
 
+            // fable_24: apply the deterministic named-elite affix (decided by the planner per slot,
+            // cave-stable-run / ADR-0005). Frenzied/Vampiric/Volatile/Warded take effect in the brain;
+            // the prefixed name is recorded back on the entry for the floating label / loot (F06).
+            var eliteAffix = entry?.EliteAffix ?? CindarsHope.Enemy.EliteAffix.None;
+            if (eliteAffix != CindarsHope.Enemy.EliteAffix.None)
+            {
+                brain.ConfigureElite(eliteAffix);
+                if (entry != null && string.IsNullOrEmpty(entry.EliteDisplayName))
+                {
+                    entry.EliteDisplayName = CindarsHope.Enemy.EliteAffixRules.BuildEliteDisplayName(eliteAffix, enemyData.DisplayName);
+                }
+
+                Debug.Log($"CombatLog: EliteSpawned. EnemyId={enemyData.enemyId}, Affix={eliteAffix}, " +
+                          $"Name={entry?.EliteDisplayName}, InstanceId={entry?.EnemyInstanceId}, CaveLevel={caveLevel}.", enemyObject);
+            }
+
             // EnemyChaseController: legacy fallback only when enemyData has NO MovementProfileId
             // AND no profile resolved. When MovementProfileId IS set but resolution failed, do NOT
             // silently fall through to LegacyChase — log error and leave the brain in charge so

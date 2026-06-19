@@ -33,5 +33,11 @@ namespace CindarsHope.Cave.Runtime
         public bool IsElite;
         public string SizeClass = string.Empty;
         public string FactionId = string.Empty;
+
+        // fable_24: named-elite affix decided deterministically per slot by the planner
+        // (StableHash, 8% from level 6+). EliteAffix.None when the slot is not a named elite.
+        // EliteDisplayName carries the prefixed name for the floating label (e.g. "Frenzied Wisp").
+        public Enemy.EliteAffix EliteAffix = Enemy.EliteAffix.None;
+        public string EliteDisplayName = string.Empty;
     }
 }

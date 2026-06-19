@@ -181,6 +181,23 @@ namespace CindarsHope.Core.Events
         }
     }
 
+    // fable_24: a RetreatAndCall enemy (or a flanker whose leader just died) calls for help.
+    // Allies within Radius of Position should regroup toward the caller. Additive event; the pack
+    // coordinator and brains consume it. EmitterId is the calling enemy's type id (telemetry).
+    public class EnemyCallForHelpEvent
+    {
+        public string EmitterId;
+        public Vector2 Position;
+        public float Radius;
+
+        public EnemyCallForHelpEvent(string emitterId, Vector2 position, float radius)
+        {
+            EmitterId = emitterId ?? string.Empty;
+            Position = position;
+            Radius = radius;
+        }
+    }
+
     public class EnemySpawnPackSelectedEvent
     {
         public int CaveLevel;

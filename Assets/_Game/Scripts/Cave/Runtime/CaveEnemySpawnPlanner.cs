@@ -137,6 +137,18 @@ namespace CindarsHope.Cave.Runtime
                     worldSeed,
                     runSeed);
 
+                // fable_24: deterministic named-elite decision per slot. Independent of the
+                // resolver's own elite flag (selection.IsElite) — this is the seeded 8%-from-level-6
+                // overlay required by spec CA-3. Same CaveRunSeed/level/slot/enemy → same affix on
+                // every revisit (ADR-0005 / cave-stable-run). No GUID/timestamp/unseeded Random.
+                bool isNamedElite = Enemy.EliteAffixRules.TryResolveElite(
+                    worldSeed,
+                    runSeed,
+                    generatedLevel.CaveLevel,
+                    i,
+                    selection.EnemyId ?? string.Empty,
+                    out var eliteAffix);
+
                 plan.Entries.Add(new CaveEnemySpawnPlanEntry
                 {
                     EnemyInstanceId = instanceId,
@@ -147,9 +159,13 @@ namespace CindarsHope.Cave.Runtime
                     WorldPosition = GridToWorld(point, generatedLevel),
                     RoomId = roomId,
                     SpawnIndex = i,
-                    IsElite = selection.IsElite,
+                    // Keep the resolver's intrinsic elite flag, OR-ed with the seeded named-elite roll.
+                    IsElite = selection.IsElite || isNamedElite,
                     SizeClass = selection.SizeClass ?? string.Empty,
-                    FactionId = ResolveFactionId(selection, profilesBySpawnProfile, profilesByEnemy)
+                    FactionId = ResolveFactionId(selection, profilesBySpawnProfile, profilesByEnemy),
+                    EliteAffix = eliteAffix
+                    // EliteDisplayName is resolved at materialization, where the EnemyDataSO
+                    // (and its DisplayName) is available — the planner only knows the EnemyId.
                 });
             }
 

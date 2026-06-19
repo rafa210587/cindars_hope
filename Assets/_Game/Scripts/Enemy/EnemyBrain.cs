@@ -113,6 +113,27 @@ namespace CindarsHope.Enemy
             return Time.time < _externalSpeedUntil ? _externalSpeedMultiplier : 1f;
         }
 
+        // fable_24: named-elite affix (decided deterministically at spawn-plan time by the planner).
+        private EliteAffix _eliteAffix = EliteAffix.None;
+        private bool _wardedStatusConsumed;          // Warded resists exactly the FIRST status applied
+        private bool _volatileExploded;              // Volatile fires its death explosion once
+        private float _attackCadenceFactor = 1f;     // Frenzied shortens windup/recover (<1 = faster)
+
+        // fable_24: move-specific runtime for the 12 new moves.
+        private float _moveDecisionTimer;            // orbit/strafe re-aim cadence
+        private float _orbitSign = 1f;               // CircleStrafe/FloatingOrbit rotation direction
+        private bool _chargeTelegraphActive;
+        private float _chargeTelegraphStart;
+        private Vector2 _chargeLockedDirection;      // ChargeLine locks aim at telegraph time (no homing)
+        private bool _isCharging;
+        private float _chargeEndTime;
+        private float _nextChargeTime;
+        private bool _mimicActivated;                // TreasureIdleAmbush stays disguised until activated
+        private float _flankerNoLeaderSince = -1f;   // timestamp the flanker last lacked a leader
+        private float _nextCallForHelpTime;          // RetreatAndCall call-for-help throttle
+        private Vector2 _anchorPoint;                // ProtectAnchor / BossArenaControl leash centre
+        private float _anchorLeashTiles = EnemyMoveLogic.DefaultAnchorLeashTiles;
+
         // F02: stagger por quebra de postura — entra em Stunned e sai sozinho.
         private float _stunUntil;
 
@@ -136,6 +157,28 @@ namespace CindarsHope.Enemy
         public bool HasResolvedMovementProfile => _movementProfile != null;
         public bool HasResolvedVulnerabilityProfile => _vulnerabilityProfile != null;
         public EnemyMovementType MovementType => _movementProfile?.MovementType ?? EnemyMovementType.GroundChase;
+
+        // fable_24: the move actually driving behaviour this tick. Floaters alternate primary
+        // FloatingSlow ↔ MoveSecondary (FloatingOrbit) once engaged, if a secondary is configured.
+        private EnemyMovementType EffectiveMove
+        {
+            get
+            {
+                var primary = MovementType;
+                if (primary == EnemyMovementType.FloatingSlow
+                    && _enemyData != null
+                    && _enemyData.MoveSecondary == EnemyMovementType.FloatingOrbit
+                    && (_currentState == EnemyBrainState.Chase || _currentState == EnemyBrainState.Kite))
+                {
+                    return EnemyMovementType.FloatingOrbit;
+                }
+
+                return primary;
+            }
+        }
+
+        public EliteAffix CurrentEliteAffix => _eliteAffix;
+        public bool IsElite => _eliteAffix != EliteAffix.None;
         public string ResolvedActionSetId => _activeActionSet?.ActionSetId ?? string.Empty;
         public string ResolvedMovementProfileId => _movementProfile?.MovementProfileId ?? string.Empty;
         public string ResolvedVulnerabilityProfileId => _vulnerabilityProfile?.VulnerabilityProfileId ?? string.Empty;
@@ -171,6 +214,19 @@ namespace CindarsHope.Enemy
             _threatState.SetMemorySeconds(EnemyThreatState.ResolveMemorySeconds(MovementType));
             _packEngagedAnnounced = false;
             _threatExpiredLogged = false;
+
+            // fable_24: reset move/elite transient runtime on (re)spawn. The elite affix itself is
+            // re-applied by the materializer via ConfigureElite after this; clear the one-shot flags.
+            _wardedStatusConsumed = false;
+            _volatileExploded = false;
+            _mimicActivated = false;
+            _isCharging = false;
+            _chargeTelegraphActive = false;
+            _flankerNoLeaderSince = -1f;
+            _orbitSign = s_nextBlinkFlankSide; // reuse the alternating side so packs spread out
+            _anchorPoint = transform.position;
+            if (_movementProfile != null && _movementProfile.WanderRadius > 0f)
+                _anchorLeashTiles = _movementProfile.WanderRadius;
 
             _playerTarget = GameBootstrap.Instance?.PlayerManager?.gameObject;
 
@@ -214,6 +270,16 @@ namespace CindarsHope.Enemy
         private void Update()
         {
             if (_currentState == EnemyBrainState.Dead) return;
+
+            // fable_24: Volatile elites explode once when they die. Damage usually flows straight
+            // through EnemyHealth (not EnemyBrain.TakeDamage), so detect the death transition here
+            // and fire the telegraphed blast before the object is recycled.
+            if (_eliteAffix == EliteAffix.Volatile && _health != null && _health.IsDead)
+            {
+                TriggerVolatileDeathExplosion();
+                _currentState = EnemyBrainState.Dead;
+                return;
+            }
 
             // F02: saída do stagger (Stunned não é avaliado pelo EvaluateState).
             if (_currentState == EnemyBrainState.Stunned)
@@ -429,7 +495,8 @@ namespace CindarsHope.Enemy
         private void BeginAction(EnemyActionSO action)
         {
             _pendingAction = action;
-            _actionTimer = action.WindupSeconds;
+            // fable_24: Frenzied elites attack 30% faster — scale the windup (cadence factor <1).
+            _actionTimer = action.WindupSeconds * _attackCadenceFactor;
             _actionResolved = false;
             _currentState = EnemyBrainState.AttackWindup;
 
@@ -452,7 +519,8 @@ namespace CindarsHope.Enemy
                     TryOpenVulnerabilityWindow(VulnerabilityTriggerMode.AfterCast);
                     TryOpenVulnerabilityWindow(VulnerabilityTriggerMode.AfterProjectileVolley);
 
-                    _actionTimer = _pendingAction?.RecoverSeconds ?? 0.5f;
+                    // fable_24: Frenzied also shortens recovery (same cadence factor as windup).
+                    _actionTimer = (_pendingAction?.RecoverSeconds ?? 0.5f) * _attackCadenceFactor;
                     _currentState = EnemyBrainState.AttackRecover;
                 }
             }
@@ -537,6 +605,7 @@ namespace CindarsHope.Enemy
                 if (applied > 0)
                 {
                     ApplyActionStatusesToPlayer(_pendingAction);
+                    ApplyVampiricLifesteal(applied);
                 }
             }
         }
@@ -611,6 +680,20 @@ namespace CindarsHope.Enemy
                     return; // leap velocity is in flight; do not override it
             }
 
+            // fable_24: ChargeLine investida overrides normal movement while in flight (straight line).
+            if (_isCharging)
+            {
+                if (Time.time >= _chargeEndTime)
+                {
+                    _isCharging = false;
+                }
+                else
+                {
+                    _rb.linearVelocity = EnemyMoveLogic.ResolveChargeVelocity(_chargeLockedDirection, MoveSpeed() * 3.2f);
+                    return;
+                }
+            }
+
             switch (_currentState)
             {
                 case EnemyBrainState.Patrol:
@@ -640,6 +723,12 @@ namespace CindarsHope.Enemy
 
         private void MoveChase()
         {
+            // fable_24: dispatch the new moves first; they fully own the chase velocity for their tick.
+            if (TryMoveNewBehaviour())
+            {
+                return;
+            }
+
             var moveType = _movementProfile?.MovementType ?? EnemyMovementType.GroundChase;
             float speed = MoveSpeed();
 
@@ -683,6 +772,277 @@ namespace CindarsHope.Enemy
             }
 
             _rb.linearVelocity = DirectionToPlayer() * speed;
+        }
+
+        // ─── fable_24: the 12 new moves ───────────────────────────────────────
+        // Returns true when one of the new moves handled this tick's velocity (so MoveChase stops).
+        private bool TryMoveNewBehaviour()
+        {
+            float speed = MoveSpeed();
+            switch (EffectiveMove)
+            {
+                case EnemyMovementType.CircleStrafe:
+                case EnemyMovementType.FloatingOrbit:
+                    MoveOrbit(speed);
+                    return true;
+
+                case EnemyMovementType.FloatingSlow:
+                    MoveFloatingSlow(speed);
+                    return true;
+
+                case EnemyMovementType.ChargeLine:
+                    MoveChargeLine(speed);
+                    return true;
+
+                case EnemyMovementType.RetreatAndCall:
+                    MoveRetreatAndCall(speed);
+                    return true;
+
+                case EnemyMovementType.HazardLure:
+                    // Lure the player by backing away (toward a hazard the level designer placed);
+                    // straight retreat reuses the existing retreat vector (no pathfinding).
+                    MoveRetreat();
+                    return true;
+
+                case EnemyMovementType.TreasureIdleAmbush:
+                    MoveMimicAmbush(speed);
+                    return true;
+
+                case EnemyMovementType.ProtectAnchor:
+                case EnemyMovementType.BossArenaControl:
+                    MoveAnchoredChase(speed);
+                    return true;
+
+                case EnemyMovementType.PackFlanker:
+                    MovePackFlanker(speed);
+                    return true;
+
+                case EnemyMovementType.PackLeader:
+                    // Leader chases normally; its death (handled via pack alert) turns flankers to
+                    // RetreatAndCall. No special steering here — fall through to default chase.
+                    return false;
+
+                default:
+                    return false;
+            }
+        }
+
+        // CircleStrafe / FloatingOrbit: hold firing distance and orbit the player.
+        private void MoveOrbit(float speed)
+        {
+            if (_playerTarget == null)
+            {
+                StopMovement();
+                return;
+            }
+
+            float preferred = Mathf.Max(_movementProfile?.PreferredDistance ?? 4f, 1f);
+            float dist = DistanceToPlayer();
+            Vector2 toPlayer = DirectionToPlayer();
+            Vector2 tangent = Vector2.Perpendicular(toPlayer) * _orbitSign;
+
+            // Blend a radial correction (keep ~preferred distance) with the tangential orbit.
+            float radialError = dist - preferred;
+            Vector2 radial = toPlayer * Mathf.Clamp(radialError, -1f, 1f);
+            _rb.linearVelocity = (tangent + radial).normalized * speed;
+        }
+
+        // FloatingSlow: hover toward the player at reduced speed, ignoring floor obstacles (no burrow).
+        private void MoveFloatingSlow(float speed)
+        {
+            if (_playerTarget == null)
+            {
+                StopMovement();
+                return;
+            }
+
+            _rb.linearVelocity = DirectionToPlayer() * (speed * 0.6f);
+        }
+
+        // ChargeLine: telegraph a straight line, lock the aim, then charge straight (dodgeable).
+        private void MoveChargeLine(float speed)
+        {
+            if (_playerTarget == null)
+            {
+                StopMovement();
+                return;
+            }
+
+            bool offCooldown = Time.time >= _nextChargeTime;
+
+            if (!_chargeTelegraphActive && offCooldown && !_isCharging)
+            {
+                // Begin telegraph: lock direction now so the player can sidestep the committed line.
+                _chargeTelegraphActive = true;
+                _chargeTelegraphStart = Time.time;
+                _chargeLockedDirection = DirectionToPlayer();
+                _telegraph?.StartTelegraph(Color.red);
+                GameEventBus.Publish(new EnemyTelegraphStartedEvent(_enemyData?.enemyId, transform.position));
+                StopMovement();
+                return;
+            }
+
+            if (_chargeTelegraphActive)
+            {
+                float elapsed = Time.time - _chargeTelegraphStart;
+                float telegraphDuration = EnemyMoveLogic.CommonWindupSeconds;
+                StopMovement(); // hold still during the windup
+                if (EnemyMoveLogic.ShouldChargeLineFire(true, elapsed, telegraphDuration, offCooldown))
+                {
+                    _chargeTelegraphActive = false;
+                    _isCharging = true;
+                    _chargeEndTime = Time.time + 0.4f;
+                    _nextChargeTime = Time.time + 3f;
+                    _telegraph?.EndTelegraph();
+                }
+                return;
+            }
+
+            // Between charges: close in at normal speed.
+            _rb.linearVelocity = DirectionToPlayer() * speed;
+        }
+
+        // RetreatAndCall: flee and periodically emit EnemyCallForHelpEvent so allies regroup.
+        private void MoveRetreatAndCall(float speed)
+        {
+            if (_playerTarget == null)
+            {
+                StopMovement();
+                return;
+            }
+
+            _rb.linearVelocity = -DirectionToPlayer() * (speed * 1.15f);
+            EmitCallForHelp();
+        }
+
+        // TreasureIdleAmbush (mimic): stay disguised and immobile until the player is < 2 tiles.
+        private void MoveMimicAmbush(float speed)
+        {
+            if (!_mimicActivated)
+            {
+                if (EnemyMoveLogic.ShouldMimicActivate(DistanceToPlayer()))
+                {
+                    _mimicActivated = true;
+                    GameEventBus.Publish(new EnemyTelegraphStartedEvent(_enemyData?.enemyId, transform.position));
+                }
+                else
+                {
+                    StopMovement();
+                    return;
+                }
+            }
+
+            // Once sprung, behave like a chaser.
+            if (_playerTarget != null)
+            {
+                _rb.linearVelocity = DirectionToPlayer() * speed;
+            }
+        }
+
+        // ProtectAnchor / BossArenaControl: chase, but never leave the leash radius of the anchor.
+        private void MoveAnchoredChase(float speed)
+        {
+            if (_playerTarget == null)
+            {
+                ReturnToAnchor(speed);
+                return;
+            }
+
+            Vector2 desired = (Vector2)transform.position + DirectionToPlayer();
+            Vector2 clamped = EnemyMoveLogic.ClampToAnchor(desired, _anchorPoint, _anchorLeashTiles);
+
+            if (EnemyMoveLogic.IsBeyondAnchorLeash((Vector2)transform.position, _anchorPoint, _anchorLeashTiles))
+            {
+                ReturnToAnchor(speed);
+                return;
+            }
+
+            Vector2 step = clamped - (Vector2)transform.position;
+            _rb.linearVelocity = step.sqrMagnitude > 0.0001f ? step.normalized * speed : Vector2.zero;
+        }
+
+        private void ReturnToAnchor(float speed)
+        {
+            Vector2 toAnchor = _anchorPoint - (Vector2)transform.position;
+            _rb.linearVelocity = toAnchor.sqrMagnitude > 0.09f ? toAnchor.normalized * speed : Vector2.zero;
+        }
+
+        // PackFlanker: only engage while a living leader is in range; otherwise hold, then after a
+        // timeout fall back to a plain chase (no deadlock). Leader presence comes from the pack
+        // coordinator (no scene search).
+        private void MovePackFlanker(float speed)
+        {
+            bool leaderAlive = PackLeaderInRange(out float distToLeader, out float awareness);
+            if (EnemyMoveLogic.ShouldFlankerEngage(leaderAlive, distToLeader, awareness))
+            {
+                _flankerNoLeaderSince = -1f;
+                if (_playerTarget != null)
+                {
+                    // Flank: approach offset to the side of the player instead of head-on.
+                    Vector2 toPlayer = DirectionToPlayer();
+                    Vector2 flank = Vector2.Perpendicular(toPlayer) * _orbitSign;
+                    _rb.linearVelocity = (toPlayer + flank * 0.5f).normalized * speed;
+                }
+                return;
+            }
+
+            // No leader in range — start/continue the fallback timer.
+            if (_flankerNoLeaderSince < 0f)
+            {
+                _flankerNoLeaderSince = Time.time;
+            }
+
+            if (EnemyMoveLogic.ShouldFlankerFallbackToChase(Time.time - _flankerNoLeaderSince) && _playerTarget != null)
+            {
+                _rb.linearVelocity = DirectionToPlayer() * speed; // act as GroundChase
+            }
+            else
+            {
+                StopMovement(); // hold, waiting for a leader
+            }
+        }
+
+        // Pack leader lookup via the coordinator anchor as a stand-in for leader position (no scene
+        // search). A pack with at least one living member is treated as having a leader in range when
+        // the anchor is within awareness radius. Solo enemies (no pack) report no leader.
+        private bool PackLeaderInRange(out float distanceToLeader, out float awarenessRadius)
+        {
+            awarenessRadius = Mathf.Max(_movementProfile?.DetectionRange ?? 10f, 1f);
+            distanceToLeader = float.MaxValue;
+
+            if (_packCoordinator == null || string.IsNullOrWhiteSpace(_packId))
+            {
+                return false;
+            }
+
+            // A living pack still has members registered; use the deterministic anchor as the leader
+            // reference point (centroid of the pack's spawn — stable run / ADR-0005).
+            if (_packCoordinator.MemberCount(_packId) <= 1)
+            {
+                return false;
+            }
+
+            Vector2 anchor = _packCoordinator.GetAnchor(_packId);
+            distanceToLeader = Vector2.Distance(transform.position, anchor);
+            return true;
+        }
+
+        private void EmitCallForHelp()
+        {
+            if (Time.time < _nextCallForHelpTime)
+            {
+                return;
+            }
+
+            _nextCallForHelpTime = Time.time + 2f;
+            float radius = Mathf.Max(_movementProfile?.DetectionRange ?? 8f, 4f);
+            GameEventBus.Publish(new EnemyCallForHelpEvent(_enemyData?.enemyId, transform.position, radius));
+
+            // If part of a pack, also wake siblings directly (same path as fable_04 pack alert).
+            if (_packCoordinator != null && !string.IsNullOrWhiteSpace(_packId))
+            {
+                _packCoordinator.Alert(_packId, transform.position);
+            }
         }
 
         // fable_04: walk toward the remembered position; once reached, drop velocity so the next
@@ -768,6 +1128,12 @@ namespace CindarsHope.Enemy
 
         private void MoveKite()
         {
+            // fable_24: orbit/strafe and other new moves own their steering even in the Kite state.
+            if (TryMoveNewBehaviour())
+            {
+                return;
+            }
+
             if (_playerTarget == null) return;
 
             float speed = MoveSpeed();
@@ -904,6 +1270,129 @@ namespace CindarsHope.Enemy
                 _vulnerabilityState.Initialize(_enemyData?.enemyId);
 
             InitActionSet();
+        }
+
+        // ─── fable_24: elite affix runtime ────────────────────────────────────
+
+        /// <summary>
+        /// Apply a named-elite affix to this brain. Called by the materializer right after spawn
+        /// configuration, using the affix the planner decided deterministically per slot
+        /// (cave-stable-run / ADR-0005). Frenzied speeds up the action cadence immediately;
+        /// Vampiric/Volatile/Warded take effect during damage/death/status handling.
+        /// </summary>
+        public void ConfigureElite(EliteAffix affix)
+        {
+            _eliteAffix = affix;
+            _attackCadenceFactor = EliteAffixRules.ResolveAttackCadenceFactor(affix);
+            _wardedStatusConsumed = false;
+            _volatileExploded = false;
+        }
+
+        /// <summary>
+        /// Warded resists exactly the FIRST status applied to it. Returns true if the incoming status
+        /// should be IGNORED (consumed the ward). EnemyStatusReceiver/ticker calls this before applying.
+        /// </summary>
+        public bool ShouldResistIncomingStatus()
+        {
+            if (!EliteAffixRules.ResistsFirstStatus(_eliteAffix) || _wardedStatusConsumed)
+            {
+                return false;
+            }
+
+            _wardedStatusConsumed = true;
+            Debug.Log($"CombatLog: EliteWardedResistedStatus. EnemyId={_enemyData?.enemyId}, Affix=Warded.", this);
+            return true;
+        }
+
+        // Vampiric elites heal 25% of damage dealt (melee/area path, where the applied amount is known).
+        private void ApplyVampiricLifesteal(int damageDealt)
+        {
+            int heal = EliteAffixRules.ResolveLifestealHeal(_eliteAffix, damageDealt);
+            if (heal <= 0 || _health == null || _health.MaxHp <= 0)
+            {
+                return;
+            }
+
+            _health.RestoreHp(Mathf.Min(_health.MaxHp, _health.CurrentHp + heal));
+            Debug.Log($"CombatLog: EliteVampiricHeal. EnemyId={_enemyData?.enemyId}, Heal={heal}, HP={_health.CurrentHp}/{_health.MaxHp}.", this);
+        }
+
+        /// <summary>
+        /// fable_24 — Volatile elites explode once on death after a telegraphed delay. The explosion
+        /// damage is capped at 25% of the player's maxHP (anti one-shot, spec risk mitigation). Called
+        /// by the death path; safe to call on non-Volatile (no-op). Telegraph uses the existing
+        /// EnemyTelegraphStartedEvent so the player can read the windup before the blast.
+        /// </summary>
+        public void TriggerVolatileDeathExplosion()
+        {
+            if (!EliteAffixRules.ExplodesOnDeath(_eliteAffix) || _volatileExploded)
+            {
+                return;
+            }
+
+            _volatileExploded = true;
+            int playerMaxHp = GameBootstrap.Instance?.PlayerManager?.MaxHP ?? 0;
+            int raw = Mathf.Max(1, (_enemyData?.contactDamage ?? 1) * 3);
+            int damage = EliteAffixRules.ResolveVolatileExplosionDamage(raw, playerMaxHp);
+
+            // The host enemy is about to be deactivated by EnemyHealth.Die(); run the telegraph +
+            // blast on a DETACHED runner (same survival pattern as enemy projectiles) so the windup
+            // resolves even though this GameObject is gone. Player can still dodge by leaving the radius.
+            EnemyVolatileExplosionRunner.Spawn(
+                transform.position,
+                EliteAffixRules.VolatileExplosionTelegraphSeconds,
+                damage,
+                _enemyData?.enemyId ?? "enemy");
+
+            GameEventBus.Publish(new EnemyTelegraphStartedEvent(_enemyData?.enemyId, transform.position));
+            Debug.Log($"CombatLog: EliteVolatileExploding. EnemyId={_enemyData?.enemyId}, Damage={damage}, CapMaxHp={playerMaxHp}, Telegraph={EliteAffixRules.VolatileExplosionTelegraphSeconds:F2}s.", this);
+        }
+
+        // ─── fable_24: boss primitives (fable_05 orchestrates full phases) ─────
+
+        /// <summary>
+        /// BossArenaControl primitive: lock this enemy's leash to an explicit arena centre + radius.
+        /// fable_05 sets the arena bounds; the brain enforces "cannot leave the arena" via the same
+        /// anchor-leash code used by ProtectAnchor. Idempotent; safe to call on phase entry.
+        /// </summary>
+        public void SetArenaLeash(Vector2 arenaCenter, float arenaRadiusTiles)
+        {
+            _anchorPoint = arenaCenter;
+            _anchorLeashTiles = Mathf.Max(1f, arenaRadiusTiles);
+        }
+
+        /// <summary>
+        /// BossPhaseShift primitive: swap the active ActionSet (and optionally the movement profile)
+        /// on an external trigger. fable_05 calls this at each phase threshold; the brain just rebinds
+        /// — it does NOT decide phase order or thresholds (that is fable_05's job). The movement type
+        /// switch is honoured immediately (next tick uses the new profile's MovementType).
+        /// </summary>
+        public void ShiftPhase(EnemyActionSetSO newActionSet, EnemyMovementProfileSO newMovementProfile = null)
+        {
+            if (newActionSet != null)
+            {
+                _activeActionSet = newActionSet;
+                _actionCooldowns.Clear();
+                if (_actionDatabase != null)
+                {
+                    foreach (var actionId in newActionSet.ActionIds)
+                    {
+                        if (_actionDatabase.TryGetById(actionId, out var action))
+                            _actionCooldowns[actionId] = new EnemyActionRuntime(actionId, action.CooldownSeconds);
+                    }
+                }
+            }
+
+            if (newMovementProfile != null)
+            {
+                _movementProfile = newMovementProfile;
+            }
+
+            // Interrupt any pending action so the new phase starts clean (telegraph cleared).
+            _pendingAction = null;
+            _telegraph?.EndTelegraph();
+            _currentState = EnemyBrainState.Alert;
+            GameEventBus.Publish(new EnemyActionResolvedEvent(_enemyData?.enemyId, "phase_shift"));
         }
 
         // ─── fable_04: threat / pack coordination ─────────────────────────────

@@ -40,6 +40,11 @@ namespace CindarsHope.Combat
         [Tooltip("Primary damage type hint for this enemy (e.g. 'physical', 'fire'). Full per-action typing lives in EnemyActionSO.")]
         public string PrimaryDamageTypeId;
 
+        [Header("Movement Secondary (fable_24)")]
+        [Tooltip("Optional secondary move. Floaters alternate primary FloatingSlow ↔ this (e.g. FloatingOrbit) in combat. " +
+                 "Default GroundChase = no secondary behaviour (treated as 'unset'). Additive field — does not change existing assets.")]
+        public EnemyMovementType MoveSecondary = EnemyMovementType.GroundChase;
+
         [Header("Movement (Legacy fallback)")]
         public float moveSpeed = 1.2f;
         public float detectionRadius = 5f;
