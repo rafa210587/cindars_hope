@@ -13,7 +13,9 @@
 | MVP code-complete | ✓ YES |
 | MVP build-validated (C#) | ✓ YES — 0E/0W runtime + editor |
 | Legacy docs validation | ✓ YES — 25+ checks (SPEC_DOCS_37) |
-| Generated specs validation | ⚠ RUN_WITH_ISSUES — naming/header mismatch (blocks WAVE 02+) |
+| Specs validation (docs) | ✓ PASS — `validate_docs.ps1` exit 0; fonte canônica em `.specs/` (ADR-0015) |
+| Spec set v1 (FABLE) | ✓ GERADO — 73 specs funcionais: 10 BUILD_VALIDATED (E01-E10) + 63 a executar (E11-E73); +4 companion densas WAVE 14 |
+| Refinamentos v1/v2/v3 | ✓ RESPONDIDOS — restam só decisões de calibragem em aberto (defaults registrados; ver abaixo) |
 | Legacy spec cleanup | ✓ YES — 7 specs absorbed (2026-06-07) |
 | MVP Phase 2-3 (Unity/Play Mode) | ✗ DEFERRED TO FINAL ACCEPTANCE | Not required for WAVE 02 implementation start |
 | MVP final accepted | ✗ NOT YET — pending Phase 2-3 execution |

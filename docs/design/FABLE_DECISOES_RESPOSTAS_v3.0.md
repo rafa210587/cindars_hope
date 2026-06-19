@@ -52,7 +52,7 @@
 
 | # | Decisão |
 |---|---------|
-| 3.1 | **(CUSTOM)** — Há **mais papéis** do que os 3 propostos. → consolidar TODOS os papéis dos refinamentos/`COMPANIONS_DIRECTION` num **Catálogo de Papéis de Companion**, e para CADA papel definir explicitamente: **bônus** (combate + fora de combate) e **conjunto de ações**. O número de companions iniciais será fixado depois do catálogo. |
+| 3.1 | **(CUSTOM)** — Há **mais papéis** do que os 3 propostos. → consolidar TODOS os papéis dos refinamentos/`COMPANIONS_DIRECTION` num **Catálogo de Papéis de Companion**, e para CADA papel definir explicitamente: **bônus** (combate + fora de combate) e **conjunto de ações**. **RESPOSTA FINAL (2026-06-19): NÃO há companion inicial — todos são CONQUISTADOS** (recrutados via relação + quest; recruitment-gated, como já é canônico). O "Explorador" da quest da guilda é o primeiro a ser GANHO, não um brinde de início. Nenhuma spec/cena deve dar companion no New Game. |
 | 3.2 | **(CUSTOM)** — **Comandos:** Ficar/Esperar · Seguir · Atacar alvo marcado. **Stances:** Agressivo (ataca tudo num raio de até **12 tiles** do jogador) · Passivo (não ataca ninguém) · **Defensivo (default)** (só ataca quem chega a **≤4 tiles** do jogador ou que ataca o jogador) · Suporter (cura/buff — para papéis de suporte). |
 | 3.3 | **B ★ (reconciliado com 3.2)** — 3 stances de combate (Agressivo/Defensivo/Passivo) + **Suporter** como modo dos papéis de suporte. |
 | 3.4 | **C (OVERRIDE — conflita com COMPANIONS_DIRECTION §45-46)** — Companion equipa **arma + acessório** no **sistema base**. → **EMENDAR a direction** (equipment deixa de ser "futuro"). Companions seguem na WAVE 14. |
