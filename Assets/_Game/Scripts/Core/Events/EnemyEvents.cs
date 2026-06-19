@@ -165,6 +165,22 @@ namespace CindarsHope.Core.Events
         }
     }
 
+    // fable_04: a pack engaged or lost a member; survivors of the same PackId are alerted toward
+    // the position. Telemetry/HUD hook only — coordination itself happens via EnemyBrain.OnPackAlert.
+    public class EnemyPackAlertedEvent
+    {
+        public string PackId;
+        public Vector2 Position;
+        public int MemberCount;
+
+        public EnemyPackAlertedEvent(string packId, Vector2 position, int memberCount)
+        {
+            PackId = packId ?? string.Empty;
+            Position = position;
+            MemberCount = memberCount;
+        }
+    }
+
     public class EnemySpawnPackSelectedEvent
     {
         public int CaveLevel;

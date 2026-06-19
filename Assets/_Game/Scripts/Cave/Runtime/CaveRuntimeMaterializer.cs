@@ -51,6 +51,9 @@ namespace CindarsHope.Cave.Runtime
         private GameObject _generatedRuntimeRoot;
         private CaveExitPortal _backExitPortal;
         private CaveExitPortal _forwardExitPortal;
+        // fable_04: pack coordinator lives under the generated root, so it is destroyed/recreated
+        // with each materialization (no stale aggro across levels; no scene search).
+        private EnemyPackCoordinator _packCoordinator;
         private List<GameObject> _materializedObjects = new List<GameObject>();
         private readonly CaveEnemySpawnPlanner _enemySpawnPlanner = new CaveEnemySpawnPlanner();
         private CaveEnemySpawnPlan _lastEnemySpawnPlan;
@@ -823,6 +826,13 @@ namespace CindarsHope.Cave.Runtime
             enemyParent.transform.localPosition = Vector3.zero;
             _materializedObjects.Add(enemyParent);
 
+            // fable_04: single pack coordinator per materialized level, parented to the enemy root.
+            var coordinatorGO = new GameObject("EnemyPackCoordinator");
+            coordinatorGO.transform.SetParent(enemyParent.transform);
+            coordinatorGO.transform.localPosition = Vector3.zero;
+            _packCoordinator = coordinatorGO.AddComponent<EnemyPackCoordinator>();
+            _materializedObjects.Add(coordinatorGO);
+
             // F13: índice de HP salvo por instância (morto permanece morto na run).
             Dictionary<string, int> savedHpByInstance = null;
             if (_snapshotEnemyHpRecords != null && _snapshotEnemyHpRecords.Count > 0)
@@ -1089,6 +1099,15 @@ namespace CindarsHope.Cave.Runtime
                 brain = enemyObject.AddComponent<EnemyBrain>();
             }
 
+            // fable_04: register the brain with the pack coordinator before configuring it, so the
+            // spawn position contributes to the deterministic pack anchor. PackId comes from the
+            // (deterministic) spawn plan entry; solo enemies have an empty PackId (no coordination).
+            var packId = entry?.PackId;
+            if (_packCoordinator != null && !string.IsNullOrWhiteSpace(packId))
+            {
+                _packCoordinator.Register(packId, brain, entry.WorldPosition);
+            }
+
             bool hasFullDatabases = _actionSetDatabase != null && _actionDatabase != null && _telegraphDatabase != null;
             if (hasFullDatabases)
             {
@@ -1098,7 +1117,9 @@ namespace CindarsHope.Cave.Runtime
                     _actionSetDatabase,
                     _actionDatabase,
                     _telegraphDatabase,
-                    vulnerabilityProfile);
+                    vulnerabilityProfile,
+                    _packCoordinator,
+                    packId);
             }
             else
             {
@@ -1275,6 +1296,9 @@ namespace CindarsHope.Cave.Runtime
                 }
             }
             _materializedObjects.Clear();
+            // fable_04: coordinator GO was just destroyed; drop the reference so the next
+            // materialization rebuilds it instead of touching a destroyed object.
+            _packCoordinator = null;
         }
 
         private void OnDestroy()

@@ -49,6 +49,15 @@ namespace CindarsHope.Enemy
         // Target
         private GameObject _playerTarget;
 
+        // fable_04: threat/aggro memory + pack coordination.
+        private readonly EnemyThreatState _threatState = new EnemyThreatState();
+        // Internal feature flag (rollback): disabling reverts to instant-distance leash behaviour.
+        private bool _threatMemoryEnabled = true;
+        private EnemyPackCoordinator _packCoordinator;
+        private string _packId;
+        private bool _packEngagedAnnounced;
+        private bool _threatExpiredLogged;
+
         // Action runtime
         private EnemyActionSetSO _activeActionSet;
         private readonly Dictionary<string, EnemyActionRuntime> _actionCooldowns = new Dictionary<string, EnemyActionRuntime>();
@@ -157,6 +166,12 @@ namespace CindarsHope.Enemy
             _blinkFlankSide = s_nextBlinkFlankSide;
             s_nextBlinkFlankSide = -s_nextBlinkFlankSide;
 
+            // fable_04: reset transient aggro on (re)spawn; memory window follows movement type.
+            _threatState.Clear();
+            _threatState.SetMemorySeconds(EnemyThreatState.ResolveMemorySeconds(MovementType));
+            _packEngagedAnnounced = false;
+            _threatExpiredLogged = false;
+
             _playerTarget = GameBootstrap.Instance?.PlayerManager?.gameObject;
 
             if (_vulnerabilityState != null)
@@ -241,6 +256,14 @@ namespace CindarsHope.Enemy
             bool inDetect = dist <= DetectionRange();
             bool inLeash = dist <= LeashRange();
 
+            // fable_04: while the player is in range, refresh threat memory and (once) wake the pack.
+            if (_threatMemoryEnabled && inDetect && _playerTarget != null)
+            {
+                _threatState.NoticeTarget(_playerTarget.transform.position, Time.time);
+                _threatExpiredLogged = false;
+                AnnouncePackEngagementOnce();
+            }
+
             // F01: Fear externo força Retreat (fora de windup/recover — guard acima já retornou).
             if (Time.time < _forcedRetreatUntil && _currentState != EnemyBrainState.Retreat)
             {
@@ -268,7 +291,14 @@ namespace CindarsHope.Enemy
                     break;
 
                 case EnemyBrainState.Alert:
-                    _currentState = inDetect ? ResolveEngageState(dist) : EnemyBrainState.Patrol;
+                    // fable_04: an alerted enemy chases the last known position until threat
+                    // memory expires, even if it never personally saw the player (pack alert).
+                    if (inDetect)
+                        _currentState = ResolveEngageState(dist);
+                    else if (HasActiveThreat())
+                        _currentState = EnemyBrainState.Chase;
+                    else
+                        _currentState = EnemyBrainState.Patrol;
                     break;
 
                 case EnemyBrainState.Retreat:
@@ -298,6 +328,22 @@ namespace CindarsHope.Enemy
                 case EnemyBrainState.CastPrepare:
                     if (!inLeash)
                     {
+                        // fable_04: do not give up the instant the player crosses the leash edge.
+                        // Keep pursuing the last known position while threat memory is valid; only
+                        // disengage once it expires. Disengage is collective when the enemy belongs
+                        // to a pack and the WHOLE pack is beyond leash (reset together + heal).
+                        if (HasActiveThreat())
+                        {
+                            break; // remain engaged, MoveChase will pursue LastKnownPosition
+                        }
+
+                        LogThreatExpiredOnce();
+
+                        if (TryCollectivePackLeashReset())
+                        {
+                            break;
+                        }
+
                         _currentState = EnemyBrainState.Patrol;
                         break;
                     }
@@ -594,10 +640,29 @@ namespace CindarsHope.Enemy
 
         private void MoveChase()
         {
-            if (_playerTarget == null) return;
-
             var moveType = _movementProfile?.MovementType ?? EnemyMovementType.GroundChase;
             float speed = MoveSpeed();
+
+            // fable_04: if the player slipped out of detection range but threat memory is still
+            // valid, pursue the last known position instead of stopping. Special movement (leap,
+            // blink, swarm jitter) only triggers when the player is actually visible/in range.
+            bool playerVisible = _playerTarget != null && DistanceToPlayer() <= DetectionRange();
+            if (!playerVisible)
+            {
+                if (_threatMemoryEnabled && HasActiveThreat())
+                {
+                    MoveTowardLastKnownPosition(speed);
+                }
+                else if (_playerTarget == null)
+                {
+                    StopMovement();
+                }
+                else
+                {
+                    _rb.linearVelocity = DirectionToPlayer() * speed;
+                }
+                return;
+            }
 
             switch (moveType)
             {
@@ -618,6 +683,20 @@ namespace CindarsHope.Enemy
             }
 
             _rb.linearVelocity = DirectionToPlayer() * speed;
+        }
+
+        // fable_04: walk toward the remembered position; once reached, drop velocity so the next
+        // decision tick can resolve back to Patrol when the memory finally expires (legible reset).
+        private void MoveTowardLastKnownPosition(float speed)
+        {
+            Vector2 toTarget = _threatState.LastKnownPosition - (Vector2)transform.position;
+            if (toTarget.sqrMagnitude <= 0.09f)
+            {
+                StopMovement();
+                return;
+            }
+
+            _rb.linearVelocity = toTarget.normalized * speed;
         }
 
         // Leapers lunge in a fast burst when the player is in the mid-range band.
@@ -800,7 +879,9 @@ namespace CindarsHope.Enemy
             EnemyActionSetDatabaseSO actionSetDatabase,
             EnemyActionDatabaseSO actionDatabase,
             EnemyTelegraphProfileDatabaseSO telegraphDatabase,
-            EnemyVulnerabilityProfileSO vulnerabilityProfile)
+            EnemyVulnerabilityProfileSO vulnerabilityProfile,
+            EnemyPackCoordinator packCoordinator = null,
+            string packId = null)
         {
             _enemyData = enemyData;
             _movementProfile = movementProfile;
@@ -809,13 +890,124 @@ namespace CindarsHope.Enemy
             _telegraphDatabase = telegraphDatabase;
             _vulnerabilityProfile = vulnerabilityProfile;
 
+            // fable_04: pack wiring injected by the materializer (no scene search).
+            _packCoordinator = packCoordinator;
+            _packId = string.IsNullOrWhiteSpace(packId) ? null : packId;
+
             if (_movementProfile != null && _movementProfile.DecisionTickSeconds > 0f)
                 _decisionTickSeconds = _movementProfile.DecisionTickSeconds;
+
+            // Memory window depends on movement type, which is now resolved.
+            _threatState.SetMemorySeconds(EnemyThreatState.ResolveMemorySeconds(MovementType));
 
             if (_vulnerabilityState != null)
                 _vulnerabilityState.Initialize(_enemyData?.enemyId);
 
             InitActionSet();
+        }
+
+        // ─── fable_04: threat / pack coordination ─────────────────────────────
+
+        public string PackId => _packId;
+
+        /// <summary>Test/runtime hook: true while threat memory keeps this enemy engaged.</summary>
+        public bool HasActiveThreat()
+        {
+            return _threatMemoryEnabled && _threatState.HasThreat(Time.time);
+        }
+
+        public Vector2 LastKnownTargetPosition => _threatState.LastKnownPosition;
+
+        /// <summary>Rollback switch (spec): disabling reverts to instant-distance leash behaviour.</summary>
+        public void SetThreatMemoryEnabled(bool enabled) => _threatMemoryEnabled = enabled;
+
+        /// <summary>
+        /// External alert from the pack coordinator: a sibling engaged or died. Wake up toward the
+        /// reported position so the whole pack converges within one decision tick (CA-2), unless
+        /// busy attacking or stunned. Seeds threat memory so the alert outlives the trigger.
+        /// </summary>
+        public void OnPackAlert(Vector2 position)
+        {
+            if (!_threatMemoryEnabled)
+            {
+                return;
+            }
+
+            if (_currentState == EnemyBrainState.Dead ||
+                _currentState == EnemyBrainState.AttackWindup ||
+                _currentState == EnemyBrainState.AttackRecover ||
+                _currentState == EnemyBrainState.Stunned)
+            {
+                // Still remember the threat; the state will resolve after the action/stun ends.
+                _threatState.NoticeTarget(position, Time.time);
+                return;
+            }
+
+            _threatState.NoticeTarget(position, Time.time);
+            _threatExpiredLogged = false;
+            if (_currentState == EnemyBrainState.Idle || _currentState == EnemyBrainState.Patrol)
+            {
+                _currentState = EnemyBrainState.Alert;
+            }
+        }
+
+        // First time this enemy detects the player, alert its pack so siblings engage together.
+        private void AnnouncePackEngagementOnce()
+        {
+            if (_packEngagedAnnounced || _packCoordinator == null || string.IsNullOrWhiteSpace(_packId))
+            {
+                return;
+            }
+
+            _packEngagedAnnounced = true;
+            _packCoordinator.Alert(_packId, _threatState.LastKnownPosition);
+        }
+
+        private void LogThreatExpiredOnce()
+        {
+            if (_threatExpiredLogged)
+            {
+                return;
+            }
+
+            _threatExpiredLogged = true;
+            Debug.Log($"CombatLog: EnemyThreatExpired. EnemyId={_enemyData?.enemyId}, PackId={_packId ?? "none"}.", this);
+        }
+
+        // Collective leash: only reset when the WHOLE pack is beyond leash. Resets to Patrol and
+        // heals to full at the deterministic pack anchor (CA-3). Solo enemies (no pack) return false.
+        private bool TryCollectivePackLeashReset()
+        {
+            if (_packCoordinator == null || string.IsNullOrWhiteSpace(_packId))
+            {
+                return false;
+            }
+
+            if (!_packCoordinator.IsWholePackBeyondLeash(_packId, LeashRange()))
+            {
+                return false;
+            }
+
+            ResetToAnchorAndHeal(_packCoordinator.GetAnchor(_packId));
+            return true;
+        }
+
+        // Reset this enemy to Patrol at the pack anchor and restore HP to full (heal on leash reset).
+        // HP restore uses EnemyHealth's existing clamped RestoreHp API (no new save coupling).
+        private void ResetToAnchorAndHeal(Vector2 anchor)
+        {
+            _threatState.Clear();
+            _packEngagedAnnounced = false;
+            _currentState = EnemyBrainState.Patrol;
+            StopMovement();
+            _spawnAnchor = anchor;
+
+            if (_health != null && _health.MaxHp > 0)
+            {
+                _health.RestoreHp(_health.MaxHp);
+            }
+
+            Debug.Log($"CombatLog: EnemyPackLeashReset. EnemyId={_enemyData?.enemyId}, PackId={_packId}, Anchor=({anchor.x:F2},{anchor.y:F2}).", this);
         }
 
         public void SetState(EnemyBrainState newState) => _currentState = newState;
