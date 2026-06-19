@@ -65,13 +65,23 @@ namespace CindarsHope.Combat.Weapon
 
     public enum WeaponType
     {
-        None,
-        Sword,
-        Spear,
-        Axe,
-        Bow,
-        Staff,
-        Dagger
+        // Legacy ordinal values are pinned explicitly so they can NEVER drift in saves/assets
+        // serialized by integer (these were implicit None=0..Dagger=6 before fable_32).
+        None = 0,
+        Sword = 1,
+        Spear = 2,
+        Axe = 3,
+        Bow = 4,
+        Staff = 5,
+        Dagger = 6,
+
+        // fable_32 (EMENDA V3.3, decisao 2.7): new weapon TYPES for the canonical catalog
+        // (hammer / wand / tool-as-weapon). Appended with explicit HIGH values so they never
+        // collide with or shift Sword..Dagger. The combat-side baselines for these types are
+        // owned by fable_03 (EQUIPMENT_MECHANICAL_BASELINES); here they are taxonomy only.
+        Hammer = 100,
+        Wand = 101,
+        Tool = 102
     }
 
     // F03: classe de peso canônica (afeta feel/knockback futuro).

@@ -22,7 +22,19 @@ namespace CindarsHope.Inventory.Data
         MonsterDrop = 107,
         Quest = 108,
         KeyItem = 109,
-        Furniture = 110
+        Furniture = 110,
+
+        // fable_32 (EMENDA V3.3, decisao 2.7): item-taxonomy categories for the canonical
+        // catalog. Appended with explicit high values; existing values (Seed=0..Furniture=110)
+        // are NOT renumbered (save-safe — Unity serializes enums by integer).
+        // NOTE: Tool already exists (value 4) and is NOT duplicated here. "Armor" is the item
+        // CATEGORY (taxonomy), distinct from the EquipmentSlot/EquipmentDataSO mechanics.
+        Armor = 111,
+        Shield = 112,
+        Accessory = 113,
+        Relic = 114,
+        Essence = 115,
+        AnimalProduct = 116
     }
 
     public enum ConsumableSubtype
