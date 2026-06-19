@@ -40,6 +40,17 @@ namespace CindarsHope.Inventory.Data
         // LearnableScroll: nó da skill tree exigido como pré-requisito de domínio (vazio = sem pré-requisito).
         public string RequiredSkillNodeId;
 
+        // fable_31: itens mágicos não-identificados (campos aditivos, defaults neutros — backward compatible).
+        // IsUnidentified=false e IdentifiedItemId/PassiveFlag vazios mantêm 100% o comportamento legado.
+        // Padrão PAR DE ITENS: o item "não-identificado" aponta para o item real via IdentifiedItemId;
+        // identificar = swap 1:1 no inventário (sem metadata de instância, sem schema novo de save).
+        public bool IsUnidentified;
+        // ID do item real revelado ao identificar (o "par"). Só lido quando IsUnidentified=true.
+        public string IdentifiedItemId;
+        // Nome do hook contínuo (passiveFlag) ativado pela PRESENÇA do item no inventário (ItemPassiveTracker).
+        // Vazio = item sem efeito passivo. Ex.: pendant->HUD HP, lantern->reveal, pouch->+slots, candle->luz.
+        public string PassiveFlag;
+
         string IIdentifiedData.Id => Id;
 
         private void OnValidate()
