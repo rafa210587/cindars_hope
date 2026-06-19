@@ -1057,6 +1057,30 @@ namespace CindarsHope.Cave.Runtime
             }
             enemyHealth.Configure(enemyData);
 
+            // fable_06: liga o contexto de loot estável (ADR-0005). EnemyInstanceId já é determinístico
+            // por (worldSeed|runSeed|level|room|index|enemyId); combinado com CaveRunSeed dá um seed de
+            // loot reproduzível na MESMA run e divergente entre runs.
+            enemyHealth.ConfigureLootContext(
+                entry != null ? entry.EnemyInstanceId : string.Empty,
+                _caveRunManager != null ? _caveRunManager.CaveRunSeed : string.Empty);
+
+            // fable_06: liga a matriz de vulnerabilidade (Element/Material/Status) para o EnemyHealth
+            // aplicar o multiplicador de família no dano recebido. Prefere o perfil de MATRIZ por
+            // família (VulnerabilityMatrixProfileId); cai no perfil de janela (role) se ausente.
+            EnemyVulnerabilityProfileSO matrixProfile = vulnerabilityProfile;
+            if (!string.IsNullOrEmpty(enemyData.VulnerabilityMatrixProfileId) && _vulnerabilityProfileDatabase != null)
+            {
+                if (_vulnerabilityProfileDatabase.TryGetById(enemyData.VulnerabilityMatrixProfileId, out var resolvedMatrix) && resolvedMatrix != null)
+                {
+                    matrixProfile = resolvedMatrix;
+                }
+                else
+                {
+                    Debug.LogError($"CombatLog: ProfileResolveFailed. EnemyId={enemyData.enemyId}, ProfileType=VulnerabilityMatrixProfile, ProfileId={enemyData.VulnerabilityMatrixProfileId}, Reason=IdNotFoundInDatabase.", this);
+                }
+            }
+            enemyHealth.ConfigureVulnerabilityMatrix(matrixProfile);
+
             if (enemyObject.GetComponent<EnemyVulnerabilityState>() == null)
             {
                 enemyObject.AddComponent<EnemyVulnerabilityState>();

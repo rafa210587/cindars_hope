@@ -9,7 +9,8 @@ namespace CindarsHope.Combat
             int defense = 0,
             CombatResistanceProfile resistanceProfile = null,
             float vulnerabilityMultiplier = 1f,
-            float statusReceivedDamageMultiplier = 1f)
+            float statusReceivedDamageMultiplier = 1f,
+            float elementMaterialMultiplier = 1f)
         {
             if (request == null)
                 request = new DamageRequest();
@@ -19,6 +20,10 @@ namespace CindarsHope.Combat
             result.Defense = Mathf.Max(0, defense);
             result.VulnerabilityMultiplier = Mathf.Max(0f, vulnerabilityMultiplier);
             result.StatusReceivedDamageMultiplier = Mathf.Max(0f, statusReceivedDamageMultiplier);
+
+            // fable_06: multiplicador de elemento/material da família (perfil de vulnerabilidade
+            // do inimigo). Default 1.0 = neutro (assets antigos / chamadores legados inalterados).
+            float elementMaterialMult = Mathf.Max(0f, elementMaterialMultiplier);
 
             // Raw damage: BaseDamage + AttributeBonus + SourceFlatBonus
             int rawDamage = result.BaseDamage + result.AttributeBonus + result.SourceFlatBonus;
@@ -70,15 +75,26 @@ namespace CindarsHope.Combat
                 return result;
             }
 
-            // Apply vulnerability multiplier
+            // Apply vulnerability multiplier (timed window)
             float vulnerabilityAdjustedDamage = elementAdjustedDamage * result.VulnerabilityMultiplier;
             if (vulnerabilityMultiplier > 1f && !Mathf.Approximately(vulnerabilityMultiplier, 1f))
             {
                 result.WasVulnerable = true;
             }
 
+            // fable_06: ordem canônica documentada =
+            //   resistance → vulnerability window → element/material → status.
+            // Element/material vem do EnemyVulnerabilityProfileSO (eixos ElementMultipliers /
+            // MaterialMultipliers). Aplicado APÓS a janela e ANTES do status para não inflar a
+            // janela temporária com o bônus permanente da família.
+            float elementMaterialAdjustedDamage = vulnerabilityAdjustedDamage * elementMaterialMult;
+            if (elementMaterialMult > 1f && !Mathf.Approximately(elementMaterialMult, 1f))
+            {
+                result.WasVulnerable = true;
+            }
+
             // Apply status received damage multiplier
-            float statusAdjustedDamage = vulnerabilityAdjustedDamage * result.StatusReceivedDamageMultiplier;
+            float statusAdjustedDamage = elementMaterialAdjustedDamage * result.StatusReceivedDamageMultiplier;
 
             // Round to integer and apply minimum damage rule
             int finalDamage = Mathf.RoundToInt(statusAdjustedDamage);
@@ -94,6 +110,7 @@ namespace CindarsHope.Combat
             result.DebugBreakdown = $"Raw={rawDamage},Attr={result.AttributeBonus},SrcFlat={result.SourceFlatBonus}," +
                 $"Defense={result.Defense},Mitigated={mitigatedDamage},ResistMult={result.CombatResistanceMultiplier:F2}," +
                 $"ElemAdj={elementAdjustedDamage:F1},VulnMult={result.VulnerabilityMultiplier:F2}," +
+                $"ElemMatMult={elementMaterialMult:F2}," +
                 $"StatusMult={result.StatusReceivedDamageMultiplier:F2},Final={result.FinalDamage}," +
                 $"Immune={result.WasImmune},Vulnerable={result.WasVulnerable}";
 

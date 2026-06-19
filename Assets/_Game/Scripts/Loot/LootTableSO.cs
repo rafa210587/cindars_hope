@@ -1,14 +1,38 @@
 using System;
+using CindarsHope.Core.Data;
 using CindarsHope.Equipment;
 using UnityEngine;
 
 namespace CindarsHope.Loot
 {
     [CreateAssetMenu(fileName = "LootTable", menuName = "CindarsHope/Data/Loot Table")]
-    public class LootTableSO : ScriptableObject
+    public class LootTableSO : ScriptableObject, IIdentifiedData
     {
+        // fable_06 (aditivo): id estável da tabela (= EnemyDataSO.lootTableId). Permite indexar a
+        // tabela num LootTableDatabaseSO sem FindObjectOfType. Vazio em assets legados (sem dano).
+        public string TableId;
+
         public LootTableEntry[] Entries;
         public EquipmentLootEntry[] EquipmentEntries;
+
+        string IIdentifiedData.Id => TableId;
+
+        // fable_06 (aditivo, defaults neutros): metadados de tabela por família de inimigo.
+        // FamilyId é puramente informativo/diagnóstico (ex.: "beast", "undead"). Não muda o
+        // comportamento legado de TryRoll; consumido por EnemyLootResolver para logs e validator.
+        [Header("Enemy Family Table (fable_06)")]
+        [Tooltip("Família-base do catálogo a que esta tabela pertence (informativo). Ex.: beast, undead, construct.")]
+        public string FamilyId;
+
+        [Tooltip("Drops garantidos (rolam SEMPRE, antes das entradas ponderadas). Use para o material " +
+                 "comum da família. DropChance é ignorado aqui — sempre cai dentro do MinAmount..MaxAmount.")]
+        public LootTableEntry[] GuaranteedEntries = new LootTableEntry[0];
+
+        [Tooltip("Essência elemental da banda (canon ITEM_CATALOG §10): 8% comum / +25% elite / 100% miniboss/boss. " +
+                 "Vazio = sem essência nesta família.")]
+        public string EssenceItemId;
+        [Range(0f, 1f)] public float EssenceCommonChance = 0.08f;
+        [Range(0f, 1f)] public float EssenceEliteBonusChance = 0.25f;
 
         public bool TryRoll(out string itemId, out int amount)
         {
@@ -122,6 +146,14 @@ namespace CindarsHope.Loot
         public int MaxAmount = 1;
         public int Weight = 1;
         public string[] RequiredTags;
+
+        // fable_06 (aditivo): chance independente de a entrada dropar quando selecionada/garantida.
+        // Default 1.0 = sempre dropa (preserva o comportamento ponderado legado de TryRoll, que
+        // ignora este campo). EnemyLootResolver respeita DropChance para drops raros por família.
+        [Range(0f, 1f)] public float DropChance = 1f;
+
+        // fable_06 (aditivo): marca um drop como raro (apenas diagnóstico/validator/log).
+        public bool IsRare;
     }
 
     [Serializable]

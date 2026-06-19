@@ -36,6 +36,10 @@ namespace CindarsHope.Combat
         public string MovementProfileId;
         public string ActionSetId;
         public string VulnerabilityProfileId;
+        // fable_06 (aditivo): perfil de MATRIZ de vulnerabilidade por família (Element/Material/Status).
+        // Separado de VulnerabilityProfileId (que carrega a JANELA temporal por papel/role). Vazio =>
+        // sem matriz de família (neutro); o materializer cai no VulnerabilityProfileId como fallback.
+        public string VulnerabilityMatrixProfileId;
         public string CombatResistanceProfileId;
         [Tooltip("Primary damage type hint for this enemy (e.g. 'physical', 'fire'). Full per-action typing lives in EnemyActionSO.")]
         public string PrimaryDamageTypeId;

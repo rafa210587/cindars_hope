@@ -17,6 +17,14 @@ namespace CindarsHope.Combat
         private bool _hpRestoredFromSnapshot;
         private CindarsHope.Combat.StatusEffect.StatusEffectManager _statusEffects = new CindarsHope.Combat.StatusEffect.StatusEffectManager();
 
+        // fable_06: contexto de loot determinístico (ADR-0005). Setado pelo materializer da caverna
+        // APÓS Configure. Vazio => caminho legado (dropItemId fixo) no EnemyDropSpawner.
+        private string _enemyInstanceId = string.Empty;
+        private string _caveRunSeed = string.Empty;
+
+        // fable_06: perfil de vulnerabilidade (matriz Element/Material/Status). Null => neutro.
+        private EnemyVulnerabilityProfileSO _vulnerabilityProfile;
+
         public int CurrentHp => _currentHp;
         public int MaxHp => _enemyData != null ? _enemyData.maxHp : 0;
         public string EnemyId => _enemyData != null ? _enemyData.enemyId : string.Empty;
@@ -38,6 +46,20 @@ namespace CindarsHope.Combat
 
             if (GetComponent<CindarsHope.Combat.StatusEffect.EnemyStatusRuntimeTicker>() == null)
                 gameObject.AddComponent<CindarsHope.Combat.StatusEffect.EnemyStatusRuntimeTicker>();
+        }
+
+        // fable_06: liga o contexto de loot estável (instance id + run seed da caverna). Aditivo;
+        // chamado pelo CaveRuntimeMaterializer após Configure. Sem isto, o drop usa o caminho legado.
+        public void ConfigureLootContext(string enemyInstanceId, string caveRunSeed)
+        {
+            _enemyInstanceId = enemyInstanceId ?? string.Empty;
+            _caveRunSeed = caveRunSeed ?? string.Empty;
+        }
+
+        // fable_06: liga a matriz de vulnerabilidade (Element/Material/Status). Aditivo; null = neutro.
+        public void ConfigureVulnerabilityMatrix(EnemyVulnerabilityProfileSO profile)
+        {
+            _vulnerabilityProfile = profile;
         }
 
         // F13: restaura HP salvo do snapshot da run (chamado APÓS Configure, antes do Start).
@@ -117,7 +139,14 @@ namespace CindarsHope.Combat
                 ? vulnerabilityState.Multiplier
                 : 1f;
 
-            var damageResult = DamageCalculator.Calculate(request, _enemyData.defense, null, vulnerabilityMultiplier);
+            // fable_06: multiplicador de elemento/material da família (matriz do perfil do inimigo).
+            // 1.0 quando não há perfil ou tags casadas (neutro). Ordem aplicada no DamageCalculator:
+            // resistance → vulnerability window → element/material → status.
+            float elementMaterialMultiplier = VulnerabilityMatcher.GetDamageMultiplier(
+                _vulnerabilityProfile, request.DamageType, request.WeaponMaterialTags);
+
+            var damageResult = DamageCalculator.Calculate(
+                request, _enemyData.defense, null, vulnerabilityMultiplier, 1f, elementMaterialMultiplier);
             if (damageResult.FinalDamage <= 0)
             {
                 return;
@@ -173,12 +202,23 @@ namespace CindarsHope.Combat
                 bossReporter.ReportDefeatedFromOwner(transform.position);
             }
 
+            // fable_06: seed de loot estável por run/instância (ADR-0005). Vazio quando não há
+            // contexto de caverna (ex.: inimigo de smoke test fora de run) => loot resolver usa o
+            // seed 0 mas o spawner cai no caminho legado se não houver lootTableId.
+            int lootSeed = CindarsHope.Loot.EnemyLootResolver.BuildLootSeed(_caveRunSeed, _enemyInstanceId);
+            bool isMinibossOrBoss = _enemyData.IsMiniBoss || _enemyData.IsBoss;
+
             GameEventBus.Publish(new EnemyKilledEvent(
                 _enemyData.enemyId,
                 _enemyData.dropItemId,
                 _enemyData.dropAmount,
                 transform.position,
-                xpReward));
+                xpReward,
+                _enemyInstanceId,
+                _enemyData.lootTableId,
+                lootSeed,
+                _enemyData.IsElite,
+                isMinibossOrBoss));
 
             gameObject.SetActive(false);
         }

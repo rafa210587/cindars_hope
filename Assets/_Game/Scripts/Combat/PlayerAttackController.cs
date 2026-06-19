@@ -605,7 +605,9 @@ namespace CindarsHope.Combat
                 {
                     DamageType = weapon.DamageType,
                     SourcePosition = transform.position,
-                    KnockbackForce = _knockbackForce
+                    KnockbackForce = _knockbackForce,
+                    // fable_06: tags de material da arma (ex.: prata) para matching de vulnerabilidade.
+                    WeaponMaterialTags = weapon.MaterialTagsApplied
                 };
 
                 int hpBefore = enemyHealth.CurrentHp;

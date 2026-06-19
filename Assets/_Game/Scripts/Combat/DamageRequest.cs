@@ -12,6 +12,10 @@ namespace CindarsHope.Combat
         public int SourceFlatBonus { get; set; }
         public bool CanTriggerVulnerability { get; set; } = true;
         public string[] StatusApplicationRules { get; set; }
+        // fable_06 (aditivo): tags de material da arma do atacante (ex.: "silver", "hammer").
+        // Casadas contra EnemyVulnerabilityProfileSO.MaterialMultipliers no EnemyHealth.
+        // Null/vazio => sem bônus de material (neutro). Não muda chamadores legados.
+        public string[] WeaponMaterialTags { get; set; }
         public bool IsDamageOverTimeTick { get; set; }
         public int Amount => BaseDamage;
         public float KnockbackForce { get; set; }
