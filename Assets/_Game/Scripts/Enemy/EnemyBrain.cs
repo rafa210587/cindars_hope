@@ -137,6 +137,10 @@ namespace CindarsHope.Enemy
         // F02: stagger por quebra de postura — entra em Stunned e sai sozinho.
         private float _stunUntil;
 
+        // fable_05: per-phase multipliers driven by BossBrainController (1 = unchanged / non-boss).
+        private float _phaseMoveSpeedMultiplier = 1f;
+        private float _phaseDamageMultiplier = 1f;
+
         public void ApplyStun(float seconds)
         {
             if (seconds <= 0f)
@@ -560,12 +564,14 @@ namespace CindarsHope.Enemy
             if (isProjectileAction)
             {
                 float speed = _pendingAction.ProjectileSpeed > 0f ? _pendingAction.ProjectileSpeed : 5f;
+                // fable_05: per-phase damage multiplier folds into the action's base damage.
+                int projectileDamage = Mathf.Max(0, Mathf.RoundToInt(_pendingAction.BaseDamage * _phaseDamageMultiplier));
                 EnemyProjectileBehaviour.SpawnTowards(
                     transform.position,
                     DirectionToPlayer(),
                     speed,
                     Mathf.Max(_pendingAction.Range, 2f),
-                    _pendingAction.BaseDamage,
+                    projectileDamage,
                     dmgType,
                     _enemyData?.contactKnockbackForce ?? 0f,
                     _enemyData?.enemyId ?? "enemy",
@@ -585,9 +591,11 @@ namespace CindarsHope.Enemy
                 return;
             }
 
+            // fable_05: per-phase damage multiplier folds into the action's base damage.
+            int meleeDamage = Mathf.Max(0, Mathf.RoundToInt(_pendingAction.BaseDamage * _phaseDamageMultiplier));
             var request = new DamageRequest(
                 targetId: "player",
-                baseDamage: _pendingAction.BaseDamage,
+                baseDamage: meleeDamage,
                 damageType: dmgType,
                 sourceId: _enemyData?.enemyId ?? "enemy"
             );
@@ -1212,7 +1220,7 @@ namespace CindarsHope.Enemy
 
         private float DetectionRange() => _movementProfile?.DetectionRange ?? _enemyData?.detectionRadius ?? 10f;
         private float LeashRange() => _movementProfile?.LeashRange ?? (DetectionRange() * 3f);
-        private float MoveSpeed() => (_movementProfile?.MoveSpeed ?? _enemyData?.moveSpeed ?? 2f) * ExternalSpeedFactor();
+        private float MoveSpeed() => (_movementProfile?.MoveSpeed ?? _enemyData?.moveSpeed ?? 2f) * ExternalSpeedFactor() * _phaseMoveSpeedMultiplier;
 
         // ─── Public API ───────────────────────────────────────────────────────
 
@@ -1394,6 +1402,44 @@ namespace CindarsHope.Enemy
             _currentState = EnemyBrainState.Alert;
             GameEventBus.Publish(new EnemyActionResolvedEvent(_enemyData?.enemyId, "phase_shift"));
         }
+
+        /// <summary>
+        /// fable_05 contract: swap the active ActionSet by id, resolving it through the brain's own
+        /// action-set database. Thin wrapper over <see cref="ShiftPhase"/> so boss phases have the
+        /// named entry point the spec asks for WITHOUT a second swap mechanism. Returns true when the
+        /// id resolved and the swap was applied; false (no-op) when the id is empty/unknown so the
+        /// caller can keep the current set. Safe to call in any state (ShiftPhase clears pending action).
+        /// </summary>
+        public bool SwapActionSet(string actionSetId)
+        {
+            if (string.IsNullOrWhiteSpace(actionSetId) || _actionSetDatabase == null)
+            {
+                return false;
+            }
+
+            if (!_actionSetDatabase.TryGetById(actionSetId, out var actionSet) || actionSet == null)
+            {
+                Debug.LogWarning($"CombatLog: BossSwapActionSetMissing. EnemyId={_enemyData?.enemyId}, ActionSetId={actionSetId}.", this);
+                return false;
+            }
+
+            ShiftPhase(actionSet);
+            return true;
+        }
+
+        /// <summary>
+        /// fable_05: per-phase move/damage multipliers applied by the BossBrainController. The brain
+        /// folds these into MoveSpeed()/external damage scaling so a single boss reads differently per
+        /// phase without a parallel stat system. Idempotent; safe to re-apply on phase entry.
+        /// </summary>
+        public void ApplyPhaseMultipliers(float moveSpeedMultiplier, float damageMultiplier)
+        {
+            _phaseMoveSpeedMultiplier = moveSpeedMultiplier > 0f ? moveSpeedMultiplier : 1f;
+            _phaseDamageMultiplier = damageMultiplier > 0f ? damageMultiplier : 1f;
+        }
+
+        /// <summary>fable_05: current damage multiplier from the active boss phase (1 when no phase).</summary>
+        public float PhaseDamageMultiplier => _phaseDamageMultiplier;
 
         // ─── fable_04: threat / pack coordination ─────────────────────────────
 

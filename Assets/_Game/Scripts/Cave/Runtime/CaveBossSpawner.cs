@@ -3,6 +3,7 @@ using CindarsHope.Cave.Data;
 using CindarsHope.Cave.Generation;
 using CindarsHope.Combat;
 using CindarsHope.Core.Data;
+using CindarsHope.Enemy;
 using UnityEngine;
 
 namespace CindarsHope.Cave.Runtime
@@ -15,8 +16,14 @@ namespace CindarsHope.Cave.Runtime
         [SerializeField] private EnemyDataSO _fallbackEnemyData;
         [SerializeField] private GameScaleConfigSO _scaleConfig;
 
+        // fable_05: optional boss-phase wiring. When a profile exists for the boss, the spawner adds an
+        // EnemyBrain + BossBrainController; bosses without a profile keep the simple behaviour below.
+        [SerializeField] private BossPhaseProfileRegistrySO _bossPhaseProfileRegistry;
+        [SerializeField] private CombatRuntimeDatabasesRegistrySO _combatDatabases;
+
         private GameObject _spawnedBoss;
         private Transform _playerTarget;
+        private readonly System.Collections.Generic.List<GameObject> _spawnedAdds = new System.Collections.Generic.List<GameObject>();
 
         public void SpawnBossForLevel(CaveGeneratedLevel generatedLevel, GameObject generatedRuntimeRoot, Transform playerTarget = null)
         {
@@ -117,6 +124,10 @@ namespace CindarsHope.Cave.Runtime
                 generatedLevel.CaveLevel,
                 bossGate.CheckpointUnlockedOnDefeat,
                 spawnPos);
+
+            // fable_05: attach data-driven phases when a profile exists for this boss. No profile =>
+            // the boss keeps the EnemyChaseController-only behaviour wired above (anti-regression).
+            TryAttachBossPhaseController(bossEnemyData, generatedLevel, generatedRuntimeRoot, bossGridPos);
 
             var strategy = "Unknown";
             var distToExit = Vector2Int.Distance(bossGridPos, generatedLevel.Exit);
@@ -299,6 +310,170 @@ namespace CindarsHope.Cave.Runtime
 #endif
         }
 
+        // ─── fable_05: boss phase wiring ──────────────────────────────────────
+
+        private void TryAttachBossPhaseController(
+            EnemyDataSO bossEnemyData,
+            CaveGeneratedLevel generatedLevel,
+            GameObject generatedRuntimeRoot,
+            Vector2Int bossGridPos)
+        {
+            if (_bossPhaseProfileRegistry == null || _spawnedBoss == null)
+            {
+                return;
+            }
+
+            var profile = _bossPhaseProfileRegistry.GetProfileForBoss(bossEnemyData.enemyId);
+            if (profile == null || !profile.HasPhases)
+            {
+                return; // no profile for this boss -> simple behaviour (anti-regression)
+            }
+
+            var databases = ResolveCombatDatabases();
+            if (databases == null)
+            {
+                Debug.LogWarning($"CaveBossSpawner: Boss '{bossEnemyData.enemyId}' has a phase profile but no CombatRuntimeDatabasesRegistry to wire the brain. Phases skipped.", this);
+                return;
+            }
+
+            // Add the brain stack so action-set swaps work. The boss already has EnemyHealth/Rigidbody2D;
+            // EnemyBrain drives phase action sets while EnemyChaseController (already attached) handles
+            // base pursuit. The vulnerability state lets transitions open windows (CA-2).
+            if (_spawnedBoss.GetComponent<EnemyVulnerabilityState>() == null)
+            {
+                _spawnedBoss.AddComponent<EnemyVulnerabilityState>();
+            }
+
+            if (_spawnedBoss.GetComponent<EnemyTelegraphController>() == null)
+            {
+                _spawnedBoss.AddComponent<EnemyTelegraphController>();
+            }
+
+            var brain = _spawnedBoss.GetComponent<EnemyBrain>();
+            if (brain == null)
+            {
+                brain = _spawnedBoss.AddComponent<EnemyBrain>();
+            }
+
+            // Hand pursuit to the brain: disable the simple chase controller so the two do not fight
+            // over the Rigidbody2D velocity. EnemyChaseController stays for non-profile bosses.
+            var chase = _spawnedBoss.GetComponent<EnemyChaseController>();
+            if (chase != null)
+            {
+                chase.enabled = false;
+            }
+
+            EnemyMovementProfileSO movementProfile = null;
+            if (databases.MovementProfileDatabase != null && !string.IsNullOrWhiteSpace(bossEnemyData.MovementProfileId))
+            {
+                databases.MovementProfileDatabase.TryGetById(bossEnemyData.MovementProfileId, out movementProfile);
+            }
+
+            EnemyVulnerabilityProfileSO vulnerabilityProfile = null;
+            if (databases.VulnerabilityProfileDatabase != null && !string.IsNullOrWhiteSpace(bossEnemyData.VulnerabilityProfileId))
+            {
+                databases.VulnerabilityProfileDatabase.TryGetById(bossEnemyData.VulnerabilityProfileId, out vulnerabilityProfile);
+            }
+
+            brain.ConfigureRuntime(
+                bossEnemyData,
+                movementProfile,
+                databases.ActionSetDatabase,
+                databases.ActionDatabase,
+                databases.TelegraphDatabase,
+                vulnerabilityProfile);
+
+            var controller = _spawnedBoss.GetComponent<BossBrainController>();
+            if (controller == null)
+            {
+                controller = _spawnedBoss.AddComponent<BossBrainController>();
+            }
+
+            var worldSeed = _caveRunManager != null ? _caveRunManager.CaveWorldSeed : string.Empty;
+            var runSeed = _caveRunManager != null ? _caveRunManager.CaveRunSeed : string.Empty;
+
+            controller.Configure(
+                profile,
+                worldSeed,
+                runSeed,
+                generatedLevel.CaveLevel,
+                bossEnemyData.enemyId,
+                spawnAddCallback: (addEnemyId, world) => SpawnAdd(addEnemyId, world, generatedRuntimeRoot),
+                walkableTilesProvider: () => new System.Collections.Generic.List<Vector2Int>(generatedLevel.WalkableTiles),
+                bossTileProvider: () => bossGridPos,
+                gridToWorld: tile => GridToWorld(tile, generatedLevel),
+                movementProfileDatabase: databases.MovementProfileDatabase);
+
+            Debug.Log($"CaveBossSpawner: Boss phase controller attached. BossId={bossEnemyData.enemyId}, ProfileId={profile.ProfileId}, Phases={profile.Phases.Length}.", this);
+        }
+
+        private CombatRuntimeDatabasesRegistrySO ResolveCombatDatabases()
+        {
+            if (_combatDatabases != null)
+            {
+                return _combatDatabases;
+            }
+
+            // SPEC 14A-FIX10 pattern: the registry is resource-loadable so missing inspector wiring is
+            // not a single point of failure.
+            _combatDatabases = UnityEngine.Resources.Load<CombatRuntimeDatabasesRegistrySO>("CombatRuntimeDatabasesRegistry");
+            return _combatDatabases;
+        }
+
+        // Boss-owned add spawn path (CA-3). Reuses the same minimal enemy construction the boss uses for
+        // itself; deterministic positions are resolved by BossPhaseLogic before this is called.
+        private void SpawnAdd(string addEnemyId, Vector3 world, GameObject generatedRuntimeRoot)
+        {
+            var addData = GetBossEnemyData(addEnemyId);
+            if (addData == null)
+            {
+                Debug.LogWarning($"CaveBossSpawner: Boss add enemy data not found for '{addEnemyId}'. Skipping add.", this);
+                return;
+            }
+
+            var add = new GameObject($"BossAdd_{addData.DisplayName}");
+            add.transform.position = world;
+            add.transform.parent = generatedRuntimeRoot != null ? generatedRuntimeRoot.transform : _spawnedBoss?.transform;
+
+            var spriteRenderer = add.AddComponent<SpriteRenderer>();
+            spriteRenderer.sprite = addData.Icon != null ? addData.Icon : GetBuiltinSprite();
+            spriteRenderer.color = addData.Icon != null ? Color.white : new Color(0.85f, 0.23f, 0.23f);
+            spriteRenderer.sortingOrder = 3;
+
+            var collider = add.AddComponent<CircleCollider2D>();
+            collider.radius = 0.4f;
+
+            var rigidbody = add.AddComponent<Rigidbody2D>();
+            rigidbody.gravityScale = 0;
+            rigidbody.constraints = RigidbodyConstraints2D.FreezeRotation;
+
+            var enemyHealth = add.AddComponent<EnemyHealth>();
+            enemyHealth.Configure(addData);
+
+            add.AddComponent<KnockbackController>();
+            add.AddComponent<HitFlashController>();
+
+            var chaseController = add.AddComponent<EnemyChaseController>();
+            chaseController.ConfigureFromData(addData);
+            if (_playerTarget != null)
+            {
+                chaseController.RebindTarget(_playerTarget);
+            }
+
+            var triggerChild = new GameObject("ContactDamageTrigger");
+            triggerChild.transform.SetParent(add.transform);
+            triggerChild.transform.localPosition = Vector3.zero;
+
+            var triggerCollider = triggerChild.AddComponent<CircleCollider2D>();
+            triggerCollider.radius = 0.5f;
+            triggerCollider.isTrigger = true;
+
+            var contactDamage = triggerChild.AddComponent<EnemyContactDamage>();
+            contactDamage.Configure(addData, triggerCollider);
+
+            _spawnedAdds.Add(add);
+        }
+
         public void CleanupBoss()
         {
             if (_spawnedBoss != null)
@@ -306,6 +481,15 @@ namespace CindarsHope.Cave.Runtime
                 Destroy(_spawnedBoss);
                 _spawnedBoss = null;
             }
+
+            foreach (var add in _spawnedAdds)
+            {
+                if (add != null)
+                {
+                    Destroy(add);
+                }
+            }
+            _spawnedAdds.Clear();
         }
 
         private void OnDestroy()

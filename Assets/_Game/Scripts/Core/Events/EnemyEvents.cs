@@ -198,6 +198,21 @@ namespace CindarsHope.Core.Events
         }
     }
 
+    // fable_05: a cave boss crossed into a new phase (HP threshold). phaseIndex is 0-based into the
+    // BossPhaseProfileSO.Phases array. HUD/telemetry hook only — the phase logic lives in
+    // BossBrainController; this event just announces the transition (CA-1).
+    public class BossPhaseChangedEvent
+    {
+        public string BossId;
+        public int PhaseIndex;
+
+        public BossPhaseChangedEvent(string bossId, int phaseIndex)
+        {
+            BossId = bossId ?? string.Empty;
+            PhaseIndex = phaseIndex;
+        }
+    }
+
     public class EnemySpawnPackSelectedEvent
     {
         public int CaveLevel;
