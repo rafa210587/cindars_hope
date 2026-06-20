@@ -94,6 +94,8 @@ namespace CindarsHope.Editor.SceneCreation
             CreateFarmSceneFoundationZones();
             CreateCaveEntrance();
             CreateFarmResourceInteractables(inventoryManager);
+            CreateForagePoints();   // fable_54: forrageio sazonal real (substitui o smoke)
+            CreateShippingBin();    // fable_54: caixa de envio overnight
             CreateFarmExpansionLots(inventoryManager, bootstrap.GetComponent<StaminaManager>(), seedDatabaseForLots: null);
             CreateAnimalHousings(inventoryManager);
             CreateProcessingAndGreenhouse(inventoryManager, bootstrap.GetComponent<StaminaManager>());
@@ -1569,10 +1571,11 @@ namespace CindarsHope.Editor.SceneCreation
             EditorUtility.SetDirty(installer);
         }
 
-        // WAVE_INTEGRATION_06: Farm resource interactables (Tree, Rock, Forage).
+        // WAVE_INTEGRATION_06: Farm resource interactables (Tree, Rock).
         // LakeFishing uses existing FishingSpot at (7.8, -2.8) which already implements IInteractable.
-        // These adapters are TODO_INTEGRATION_NOT_FINAL — for smoke validation only.
-        // Final wiring must connect to TreeChopService / RockMiningService / FarmForageSpawnService.
+        // Tree/Rock adapters remain TODO_INTEGRATION_NOT_FINAL — for smoke validation only.
+        // fable_54: Forage is now FINAL — CreateForagePoints wires ForagePointInteractable to
+        // FarmForageRuntimeService (seasonal forage). Tree/Rock final wiring is still pending.
         // ─── Cave entrance (WAVE16 wiring, now automated by the generator) ───
         // Visible cave mouth on Zone_CaveEntrance with a CaveEntranceInteractable that
         // routes FarmScene → CaveScene via SceneTransitionRouter. Closes DEBT-SCENE
@@ -1621,10 +1624,97 @@ namespace CindarsHope.Editor.SceneCreation
 
             // Zone_ResourceTrees: (9.5, 1.0) — place one smoke resource node near center of tree zone
             CreateRockResource(parent.transform, inventoryManager, new Vector3(-9.0f, 4.5f, 0f));
-            CreateForageResource(parent.transform, inventoryManager, new Vector3(-8.0f, -2.5f, 0f));
+            // fable_54: o smoke ForageResource_01 (reward fixo item_herbs) foi SUBSTITUIDO pelos
+            // pontos reais de forrageio sazonal ligados ao FarmForageRuntimeService (CreateForagePoints).
+            // Os dois NAO coexistem (anti-regressao). CreateForageResource() permanece como helper
+            // morto e nao e mais chamado.
             CreateTreeResource(parent.transform, inventoryManager, new Vector3(7.5f, 3.5f, 0f));
             // LakeFishing: FishingSpot at (7.8, -2.8) already implements IInteractable (prompt: "Pescar")
             // No additional FarmResourceInteractable needed for the lake.
+        }
+
+        // fable_54: pontos reais de forrageio sazonal na Zone_Forage (-8,-2). IDs estaveis
+        // farm_forage_01..06; o FarmForageRuntimeService (bootstrap) seleciona deterministicamente
+        // quais ficam ativos por dia/estacao e (re)spawna por politica. Refs serializadas; SEM Find.
+        private static void CreateForagePoints()
+        {
+            var parent = new GameObject("FarmForagePoints");
+            parent.transform.position = Vector3.zero;
+
+            // 6 pontos espalhados dentro da Zone_Forage (centro (-8,-2), tamanho ~4.5x4.5).
+            var positions = new[]
+            {
+                new Vector3(-9.5f, -1.0f, 0f),
+                new Vector3(-8.0f, -1.0f, 0f),
+                new Vector3(-6.6f, -1.2f, 0f),
+                new Vector3(-9.4f, -3.0f, 0f),
+                new Vector3(-8.0f, -3.1f, 0f),
+                new Vector3(-6.7f, -2.9f, 0f),
+            };
+
+            for (var i = 0; i < positions.Length; i++)
+            {
+                CreateForagePoint(parent.transform, $"farm_forage_{(i + 1):00}", positions[i]);
+            }
+        }
+
+        private static void CreateForagePoint(Transform parent, string spawnId, Vector3 position)
+        {
+            var obj = new GameObject($"ForagePoint_{spawnId}");
+            obj.transform.SetParent(parent);
+            obj.transform.position = position;
+            obj.transform.localScale = new Vector3(0.85f, 0.85f, 1f);
+
+            var sr = obj.AddComponent<SpriteRenderer>();
+            sr.sprite = GetBuiltinSprite();
+            sr.color = new Color(0.5f, 0.72f, 0.3f);
+            sr.sortingOrder = 2;
+            TrySetSortingLayer(sr, "Items", 2);
+
+            var col = obj.AddComponent<BoxCollider2D>();
+            col.isTrigger = true;
+            col.size = Vector2.one;
+
+            var vc = obj.AddComponent<FarmResourceVisualController>();
+            var serializedVc = new SerializedObject(vc);
+            serializedVc.FindProperty("_spriteRenderer").objectReferenceValue = sr;
+            serializedVc.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(vc);
+
+            var interactable = obj.AddComponent<CindarsHope.Farm.Forage.ForagePointInteractable>();
+            var serializedI = new SerializedObject(interactable);
+            serializedI.FindProperty("_spawnId").stringValue = spawnId;
+            serializedI.FindProperty("_zoneId").stringValue = "farm_zone_forage";
+            serializedI.FindProperty("_interactionPrompt").stringValue = "Coletar forrageio";
+            serializedI.FindProperty("_visualController").objectReferenceValue = vc;
+            serializedI.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(interactable);
+        }
+
+        // fable_54: caixa de envio FISICA na Zone_ShippingSellpoint (3.5,7.5). Interagir deposita os
+        // itens vendaveis para venda overnight (ShippingBinRuntimeService). Canal ADICIONAL ao
+        // SellPoint imediato (que permanece intacto). ID estavel farm_shipping_bin_01.
+        private static void CreateShippingBin()
+        {
+            var obj = new GameObject("ShippingBin_farm_shipping_bin_01");
+            obj.transform.position = new Vector3(3.5f, 7.5f, 0f);
+            obj.transform.localScale = new Vector3(1.4f, 1.1f, 1f);
+
+            var sr = obj.AddComponent<SpriteRenderer>();
+            sr.sprite = GetBuiltinSprite();
+            sr.color = new Color(0.78f, 0.58f, 0.22f);
+            sr.sortingOrder = 2;
+            TrySetSortingLayer(sr, "Items", 2);
+
+            var col = obj.AddComponent<BoxCollider2D>();
+            col.isTrigger = true;
+            col.size = new Vector2(1.3f, 1.1f);
+
+            var interactable = obj.AddComponent<CindarsHope.Farm.Shipping.ShippingBinInteractable>();
+            var serializedI = new SerializedObject(interactable);
+            serializedI.FindProperty("_interactionPrompt").stringValue = "Depositar para envio";
+            serializedI.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(interactable);
         }
 
         private static void CreateTreeResource(Transform parent, InventoryManager inventoryManager, Vector3 position)
@@ -1699,41 +1789,9 @@ namespace CindarsHope.Editor.SceneCreation
             EditorUtility.SetDirty(interactable);
         }
 
-        private static void CreateForageResource(Transform parent, InventoryManager inventoryManager, Vector3 position)
-        {
-            var obj = new GameObject("ForageResource_01");
-            obj.transform.SetParent(parent);
-            obj.transform.position = position;
-            obj.transform.localScale = new Vector3(0.9f, 0.9f, 1f);
-
-            var sr = obj.AddComponent<SpriteRenderer>();
-            sr.sprite = GetBuiltinSprite();
-            sr.color = new Color(0.52f, 0.68f, 0.25f);
-            sr.sortingOrder = 2;
-            TrySetSortingLayer(sr, "Items", 2);
-
-            var col = obj.AddComponent<BoxCollider2D>();
-            col.isTrigger = true;
-            col.size = Vector2.one;
-
-            var vc = obj.AddComponent<FarmResourceVisualController>();
-            var serializedVc = new SerializedObject(vc);
-            serializedVc.FindProperty("_spriteRenderer").objectReferenceValue = sr;
-            serializedVc.ApplyModifiedPropertiesWithoutUndo();
-            EditorUtility.SetDirty(vc);
-
-            var interactable = obj.AddComponent<FarmResourceInteractable>();
-            var serializedI = new SerializedObject(interactable);
-            serializedI.FindProperty("_resourceType").enumValueIndex = (int)FarmResourceInteractableType.Forage;
-            serializedI.FindProperty("_interactionPrompt").stringValue = "Coletar ervas";
-            serializedI.FindProperty("_visualController").objectReferenceValue = vc;
-            serializedI.FindProperty("_inventoryManager").objectReferenceValue = inventoryManager;
-            var rewardProp = serializedI.FindProperty("_reward");
-            rewardProp.FindPropertyRelative("_itemId").stringValue = "item_herbs";
-            rewardProp.FindPropertyRelative("_amount").intValue = 1;
-            serializedI.ApplyModifiedPropertiesWithoutUndo();
-            EditorUtility.SetDirty(interactable);
-        }
+        // fable_54: CreateForageResource (smoke ForageResource_01, reward fixo item_herbs) foi
+        // REMOVIDO — substituido por CreateForagePoints + ForagePointInteractable +
+        // FarmForageRuntimeService. Os dois caminhos NAO coexistem (anti-regressao).
 
         // fable_41 — 3 lotes de expansão (norte/leste/oeste, HUD_LAYOUT_SCENES §4). Cada lote nasce
         // CERCADO com placa "à venda" e o conteúdo interno GERADO mas DESATIVADO. As referências

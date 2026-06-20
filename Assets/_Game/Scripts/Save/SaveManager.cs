@@ -945,6 +945,30 @@ namespace CindarsHope.Save
                 farmSaveData.Processing = existingSaveData?.Farm?.Processing ?? new Farm.Processing.FarmProcessingSaveData();
             }
 
+            // fable_54: batch de envio pendente (dono ShippingBinRuntimeService, DontDestroyOnLoad,
+            // independente de cena). Sempre sobrescreve com o estado vivo; serviço ausente = preserva.
+            var shippingBin = Farm.Shipping.ShippingBinRuntimeService.Instance;
+            if (shippingBin != null)
+            {
+                farmSaveData.PendingShipping = shippingBin.CaptureSaveData();
+            }
+            else if (farmSaveData.PendingShipping == null)
+            {
+                farmSaveData.PendingShipping = existingSaveData?.Farm?.PendingShipping ?? new Farm.Shipping.PendingShippingSaveData();
+            }
+
+            // fable_54: estado dos pontos de forrageio do dia (dono FarmForageRuntimeService,
+            // DontDestroyOnLoad). Sempre sobrescreve com o estado vivo; serviço ausente = preserva.
+            var forageService = Farm.Forage.FarmForageRuntimeService.Instance;
+            if (forageService != null)
+            {
+                farmSaveData.ForageSpawns = forageService.CaptureSaveData();
+            }
+            else if (farmSaveData.ForageSpawns == null)
+            {
+                farmSaveData.ForageSpawns = existingSaveData?.Farm?.ForageSpawns ?? new Farm.Forage.ForageSpawnsSaveData();
+            }
+
             return farmSaveData;
         }
 
@@ -1091,6 +1115,21 @@ namespace CindarsHope.Save
             if (Farm.Processing.FarmProcessingStationService.Instance != null)
             {
                 Farm.Processing.FarmProcessingStationService.Instance.RestoreFromSaveData(saveData.Farm?.Processing);
+            }
+
+            // fable_54: restaura o batch de envio pendente. Campo aditivo na seção farm; ausente em
+            // save legado ⇒ Restore(null) = lista vazia = nenhum batch pendente (CA-4). Pagamento
+            // acontece no próximo DayStarted da manhã correta.
+            if (Farm.Shipping.ShippingBinRuntimeService.Instance != null)
+            {
+                Farm.Shipping.ShippingBinRuntimeService.Instance.RestoreFromSaveData(saveData.Farm?.PendingShipping);
+            }
+
+            // fable_54: restaura o estado dos pontos de forrageio do dia. Campo aditivo na seção farm;
+            // ausente em save legado ⇒ Restore(null) = sem spawns (regeneram no próximo DayStarted).
+            if (Farm.Forage.FarmForageRuntimeService.Instance != null)
+            {
+                Farm.Forage.FarmForageRuntimeService.Instance.RestoreFromSaveData(saveData.Farm?.ForageSpawns);
             }
 
             if (saveData.Player != null && _playerTransform != null)

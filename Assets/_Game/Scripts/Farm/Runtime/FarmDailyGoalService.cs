@@ -78,6 +78,17 @@ namespace CindarsHope.Farm.Runtime
         }
 
         /// <summary>
+        /// fable_54 (hook aditivo): progride a meta diária de COLHEITA por uma fonte externa
+        /// (ex.: depósito na caixa de envio conta como colheita entregue — WI-24). Idempotente
+        /// quanto à conclusão (não passa de Completed). Sem segundo caminho de meta: reusa AddProgress.
+        /// </summary>
+        public void ProgressHarvestGoal(int amount)
+        {
+            if (amount <= 0) return;
+            AddProgress(GoalFirstHarvest, amount);
+        }
+
+        /// <summary>
         /// Lê snapshot das metas atuais (somente leitura para UI).
         /// </summary>
         public IReadOnlyList<FarmDailyGoalState> GetCurrentGoals()
