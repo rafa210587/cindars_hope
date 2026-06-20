@@ -1,32 +1,32 @@
 ---
 name: ability-effect-composition
-description: Design a composable ability/effect/modifier system — abilities built from small reusable effects (damage, heal, apply status, knockback) with validation/cost/cooldown/execution separated. Use when designing how abilities/spells/status effects COMPOSE, not when wiring existing combat data assets.
+description: Projeta um sistema componível de ability/effect/modifier — abilities construídas a partir de effects pequenos e reutilizáveis (damage, heal, apply status, knockback) com validation/cost/cooldown/execution separados. Use ao projetar como abilities/spells/status effects se COMPÕEM, não ao fazer wiring de assets de combat data já existentes.
 ---
 
-# Skill: Ability & Effect Composition
+# Skill: Composição de Ability e Effect
 
-This is the **design** counterpart to two wiring skills: `combat-data-wiring` (populating `WeaponDatabase`/`SpellDatabase`/`StatusEffectDatabase`) and `player-ability-runtime` (non-slot movement abilities like dash/block). Reach for this skill when the question is "how should abilities be *built up from reusable pieces*" so a designer can author a new spell without new code.
+Esta é a contraparte de **design** de duas skills de wiring: `combat-data-wiring` (popular `WeaponDatabase`/`SpellDatabase`/`StatusEffectDatabase`) e `player-ability-runtime` (abilities de movimento sem slot, como dash/block). Use esta skill quando a pergunta for "como as abilities devem ser *construídas a partir de peças reutilizáveis*" para que um designer consiga criar uma nova spell sem código novo.
 
-## Procedure
+## Procedimento
 
-1. **Separate data from runtime state.** The ability *definition* (id, cost, cooldown, effect list) is data (ScriptableObject, rule `data-driven-content`); the *runtime* (cooldown remaining, charges) is per-instance state.
-2. **Model the execution context explicitly.** Caster id, target id(s), position, time, and **seed** travel in a context object — not pulled from globals. The seed makes outcomes deterministic and replayable (skill `rng-and-determinism`).
-3. **Split the pipeline.** `CanExecute` (validation: target valid? in range?) → cost check → cooldown check → execute → apply effects. Each stage can fail as a category-1 expected failure (rule `error-handling-resilience`): return `bool` + `FailureReason`, surface via HUD event (skill `game-feel-checklist`), never throw.
-4. **Effects are small and composable.** `IAbilityEffect.Apply(context)` units: deal damage, heal, apply status, knockback, spawn projectile. An ability is an ordered list of effects. Variation comes from new data, not new ability classes.
-5. **Modifiers/buffs are decorators.** Buffs/debuffs/affixes wrap or adjust effect parameters (rule `gameplay-design-patterns`, Decorator) and route through `StatusEffectDatabase`. Define stacking and expiry rules up front.
-6. **Deterministic effect order.** When order matters (DoT before death check, shield before damage), make it explicit and stable — don't depend on dictionary/iteration order.
-7. **Emit domain events.** Each effect publishes `GameEventBus` events (`StatusAndDamageEvents`, hit/feedback events) so VFX/SFX/HUD react without combat code touching presentation (rule `event-bus-only-gameplay-communication`).
+1. **Separe data de runtime state.** A *definition* da ability (id, cost, cooldown, lista de effects) é data (ScriptableObject, rule `data-driven-content`); o *runtime* (cooldown remaining, charges) é state por instância.
+2. **Modele o execution context explicitamente.** Caster id, target id(s), position, time e **seed** viajam num context object — não puxados de globals. O seed torna os resultados determinísticos e replayable (skill `rng-and-determinism`).
+3. **Divida o pipeline.** `CanExecute` (validation: target válido? in range?) → cost check → cooldown check → execute → apply effects. Cada estágio pode falhar como um expected failure de categoria 1 (rule `error-handling-resilience`): retorne `bool` + `FailureReason`, exponha via HUD event (skill `game-feel-checklist`), nunca lance exceção.
+4. **Effects são pequenos e componíveis.** Unidades `IAbilityEffect.Apply(context)`: deal damage, heal, apply status, knockback, spawn projectile. Uma ability é uma lista ordenada de effects. A variação vem de data nova, não de classes de ability novas.
+5. **Modifiers/buffs são decorators.** Buffs/debuffs/affixes envolvem ou ajustam os parâmetros de effect (rule `gameplay-design-patterns`, Decorator) e passam por `StatusEffectDatabase`. Defina as regras de stacking e expiry de antemão.
+6. **Ordem de effect determinística.** Quando a ordem importa (DoT antes do death check, shield antes do damage), torne-a explícita e estável — não dependa da ordem de dictionary/iteration.
+7. **Emita domain events.** Cada effect publica events do `GameEventBus` (`StatusAndDamageEvents`, events de hit/feedback) para que VFX/SFX/HUD reajam sem o código de combat tocar em presentation (rule `event-bus-only-gameplay-communication`).
 
-## Output
+## Saída esperada
 
 - Data model: `AbilityDefinition` (id, cost, cooldown, `IReadOnlyList<IAbilityEffect>`) + runtime state.
 - Execution context (caster/target/position/time/seed).
-- Pipeline with explicit failure points and reasons.
-- Effect/modifier interfaces and the stacking/expiry policy.
-- Events published for presentation.
+- Pipeline com pontos de falha e reasons explícitos.
+- Interfaces de effect/modifier e a política de stacking/expiry.
+- Events publicados para presentation.
 - EditMode tests (skill `editmode-test-authoring`).
 
-## Save & test expectations
+## Interação com save e testes
 
-- Persist the **outcome** (cooldowns remaining, active status ids + remaining duration) as simple types/ids — never effect objects (rule `unity-architecture`; skill `save-load-pattern`).
-- Tests: cooldown gates re-use; cost is consumed only on success; same context+seed → identical effect outcome twice; status stacking/expiry; effect order deterministic; reload restores cooldowns/statuses without re-applying their on-apply effects (idempotency).
+- Persista o **outcome** (cooldowns remaining, status ids ativos + remaining duration) como simple types/ids — nunca effect objects (rule `unity-architecture`; skill `save-load-pattern`).
+- Testes: cooldown gates barram reuso; cost é consumido apenas no sucesso; mesmo context+seed → outcome de effect idêntico duas vezes; stacking/expiry de status; ordem de effect determinística; reload restaura cooldowns/statuses sem reaplicar seus effects de on-apply (idempotency).

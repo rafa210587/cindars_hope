@@ -1,13 +1,13 @@
 ---
 name: object-pooling-pattern
-description: Introduce object pooling for high-churn spawns (projectiles, floating damage text, drops, enemy waves) without breaking existing spawn service contracts. Use when touching ProjectileSpawnService, spawners, or any code flagged by performance-auditor for Instantiate/Destroy churn.
+description: Introduz object pooling para spawns de alto churn (projectiles, floating damage text, drops, enemy waves) sem quebrar os contratos dos spawn services existentes. Use ao tocar em ProjectileSpawnService, spawners, ou qualquer código sinalizado pelo performance-auditor por churn de Instantiate/Destroy.
 ---
 
 # Skill: Object Pooling Pattern
 
-**Project baseline:** there is NO pooling anywhere yet. `ProjectileSpawnService.SpawnProjectile()` does `Object.Instantiate(prefab)` / `Object.Destroy()` per shot; `CaveEnemySpawner` instantiates waves. Bow/spell combat makes this per-attack GC churn.
+**Baseline do projeto:** ainda NÃO há pooling em lugar nenhum. `ProjectileSpawnService.SpawnProjectile()` faz `Object.Instantiate(prefab)` / `Object.Destroy()` por shot; `CaveEnemySpawner` instancia waves. O combat de bow/spell torna isso GC churn por ataque.
 
-## Pool contract
+## Contrato do pool
 
 ```csharp
 namespace CindarsHope.Core.Pooling
@@ -36,17 +36,17 @@ namespace CindarsHope.Core.Pooling
 }
 ```
 
-## Non-negotiable rules when pooling in this project
+## Regras inegociáveis ao fazer pooling neste projeto
 
-1. **Full state reset on Get or Release.** Pooled `ProjectileBehaviour` must re-run the equivalent of `Initialize(...)`: direction, speed, range traveled, damage, status effect, **hit counter (`SetMaxHits`) and any per-flight accumulators**. A pooled projectile that remembers old hits is a gameplay bug, not a perf bug.
-2. **Replace `Destroy(this.gameObject)` with `Release` via callback/event** — the projectile must not know the pool; the spawn service owns it. Keep `ProjectileSpawnResult`/`ProjectileSpawnRequest` contracts unchanged so callers (BowArrowAttackService, SpellCastService) are untouched.
-3. **No global search to find the pool** (rule: unity-architecture). The pool lives in/under GameBootstrap and is injected into the spawn service.
-4. **Trail/particle hygiene:** call `TrailRenderer.Clear()` / `ParticleSystem.Clear()` on reuse, or the projectile teleport-streaks across the screen.
-5. **Physics hygiene:** zero `Rigidbody2D.velocity`/`angularVelocity` on Release; re-enable colliders if disabled on impact.
-6. **Don't pool one-shots** (boss intro FX, one-per-day objects). Pool only per-attack/per-wave churn.
-7. **Cap + prewarm:** prewarm typical burst size (e.g., 8 projectiles); allow growth; never hard-fail on empty pool.
+1. **Reset completo de state no Get ou Release.** Um `ProjectileBehaviour` poolado deve re-executar o equivalente a `Initialize(...)`: direction, speed, range traveled, damage, status effect, **hit counter (`SetMaxHits`) e quaisquer acumuladores per-flight**. Um projectile poolado que lembra hits antigos é um bug de gameplay, não de perf.
+2. **Substitua `Destroy(this.gameObject)` por `Release` via callback/event** — o projectile não pode conhecer o pool; o spawn service é dono dele. Mantenha os contratos `ProjectileSpawnResult`/`ProjectileSpawnRequest` inalterados para que os callers (BowArrowAttackService, SpellCastService) fiquem intocados.
+3. **Sem global search para achar o pool** (rule: unity-architecture). O pool vive em/sob o GameBootstrap e é injetado no spawn service.
+4. **Higiene de trail/particle:** chame `TrailRenderer.Clear()` / `ParticleSystem.Clear()` no reuse, ou o projectile faz teleport-streak pela tela.
+5. **Higiene de physics:** zere `Rigidbody2D.velocity`/`angularVelocity` no Release; re-habilite os colliders se foram desabilitados no impact.
+6. **Não poole one-shots** (boss intro FX, objetos one-per-day). Poole só o churn per-attack/per-wave.
+7. **Cap + prewarm:** faça prewarm do tamanho típico de burst (ex.: 8 projectiles); permita growth; nunca hard-fail num pool vazio.
 
-## Validation
+## Validação
 
-- EditMode: pool Get/Release/reuse state-reset tests (pure C# part).
-- Play Mode human scenario: fire 50+ arrows/spells, verify no stale trails, no double-hit from recycled projectiles, profiler shows no per-shot GC alloc (skill: gameplay-test-scenario).
+- EditMode: testes de Get/Release/reuse com reset de state (a parte de C# puro).
+- Play Mode human scenario: dispare 50+ arrows/spells, verifique que não há stale trails, nenhum double-hit de projectile reciclado, e que o profiler mostra zero GC alloc por shot (skill: gameplay-test-scenario).

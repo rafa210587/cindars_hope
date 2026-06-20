@@ -1,37 +1,37 @@
 ---
 name: enemy-ai-authoring
-description: Author enemy AI behaviors, boss phases, pack coordination and enemy moves using the live EnemyBrain + action/telegraph database pattern. Use for fable_04 (threat/pack coordination), fable_05 (cave boss phase AI), fable_24 (enemy moves/elite affixes) or any enemy behavior change.
+description: Cria enemy AI behaviors, boss phases, pack coordination e enemy moves usando o pattern vivo de EnemyBrain + action/telegraph database. Use para fable_04 (threat/pack coordination), fable_05 (cave boss phase AI), fable_24 (enemy moves/elite affixes) ou qualquer mudança de enemy behavior.
 ---
 
-# Skill: Enemy AI Authoring
+# Skill: Autoria de Enemy AI
 
-## The LIVE system (use this)
+## O sistema VIVO (use este)
 
-`EnemyBrain` (`Assets/_Game/Scripts/Enemy/EnemyBrain.cs`) is the runtime brain:
+`EnemyBrain` (`Assets/_Game/Scripts/Enemy/EnemyBrain.cs`) é o brain de runtime:
 
-- **Informal state machine**: `EnemyBrainState` enum (Idle/patrol/chase/retreat...), decisions on a tick (`_decisionTickSeconds` = 0.3s default), NOT per-frame.
-- **Data-driven actions**: `EnemyActionSetDatabaseSO` → `EnemyActionSetSO` → `EnemyActionSO` (SPEC 13D), with per-action cooldowns tracked in `EnemyActionRuntime`.
-- **Telegraphs**: `EnemyTelegraphProfileDatabaseSO` + `EnemyTelegraphController` — attacks announce before they hit.
+- **State machine informal**: enum `EnemyBrainState` (Idle/patrol/chase/retreat...), decisões num tick (`_decisionTickSeconds` = 0.3s default), NÃO por frame.
+- **Actions data-driven**: `EnemyActionSetDatabaseSO` → `EnemyActionSetSO` → `EnemyActionSO` (SPEC 13D), com cooldowns por action rastreados em `EnemyActionRuntime`.
+- **Telegraphs**: `EnemyTelegraphProfileDatabaseSO` + `EnemyTelegraphController` — ataques se anunciam antes de acertar.
 - **Profiles**: `EnemyDataSO` (stats), `EnemyMovementProfileSO`, `EnemyVulnerabilityProfileSO` (14A-FIX4).
 - **Packs/spawn**: `EnemySpawnPackSO`, `EnemySpawnProfileSO`, `EnemySpawnResolver` (ecology), `EnemyRoomSizeClass`.
-- Movement executors: `EnemyChaseController` / `EnemyPatrolController` (Combat/), contact damage separate.
+- Executores de movimento: `EnemyChaseController` / `EnemyPatrolController` (Combat/), contact damage à parte.
 
-> **RESOLVED 2026-06-12:** the orphan `AIBehaviorSO` (+ `EnemyDataSO.aiBehaviorId` dead field and 3 generated assets) was RETIRED — fable_04/05/24 explicitly forbid parallel AI structures and build only on EnemyBrain (fable_05 defines its own `BossPhaseProfileSO`). If you encounter `aiBehaviorId` leftovers in old `.asset` YAML, Unity ignores them; do not recreate the field.
+> **RESOLVED 2026-06-12:** o órfão `AIBehaviorSO` (+ o dead field `EnemyDataSO.aiBehaviorId` e 3 assets gerados) foi RETIRED — fable_04/05/24 proíbem explicitamente estruturas de AI paralelas e constroem apenas sobre EnemyBrain (fable_05 define seu próprio `BossPhaseProfileSO`). Se você encontrar restos de `aiBehaviorId` em YAML `.asset` antigo, o Unity os ignora; não recrie o field.
 
-## Rules for new behaviors
+## Regras para novos behaviors
 
-1. **New behavior = data first.** Prefer a new `EnemyActionSO` + entry in an action set over new hardcoded branches in EnemyBrain. Tuning values live in SOs/profiles, never as magic numbers (`_leapCooldownSeconds`-style serialized tuning is the existing idiom for brain-level params).
-2. **Every damaging action needs a telegraph** (profile in the telegraph database) — windup the player can read. No telegraph = NEEDS_REWORK for combat fairness.
-3. **Decisions on the tick, reactions on events.** Don't add per-frame logic to the brain; the 0.3s decision tick is the budget. Physics stays in the movement controllers.
-4. **Boss phases (fable_05)**: model each phase as an explicit state with entry conditions on health thresholds (e.g., 100/60/30%), one-way transitions (no phase regression unless spec says so), per-phase action set swap (`_activeActionSet`), and a telegraphed phase-transition moment (invulnerable window + visual cue). Persist current phase in the cave snapshot if the boss can be left mid-fight (rule: cave-stable-run).
-5. **Pack coordination (fable_04)**: coordination via shared deterministic data (spawn-pack roles, seeded flank side — the existing `s_nextBlinkFlankSide` alternation is the precedent), NOT via enemies searching the scene for each other (rule: unity-architecture). Pack composition comes seeded from the spawn resolver (rule: cave-stable-run — same level, same pack).
-6. **Determinism**: any random choice that affects a saved/revisited cave level uses the seeded RNG pattern (skill: rng-and-determinism). Visual jitter may use UnityEngine.Random.
+1. **Novo behavior = data primeiro.** Prefira um novo `EnemyActionSO` + entry num action set a novos branches hardcoded no EnemyBrain. Valores de tuning vivem em SOs/profiles, nunca como magic numbers (tuning serializado estilo `_leapCooldownSeconds` é o idiom existente para params de nível brain).
+2. **Toda damaging action precisa de um telegraph** (profile no telegraph database) — um windup que o player consegue ler. Sem telegraph = NEEDS_REWORK por fairness de combat.
+3. **Decisões no tick, reações em events.** Não adicione logic por frame no brain; o decision tick de 0.3s é o budget. Physics fica nos movement controllers.
+4. **Boss phases (fable_05)**: modele cada phase como um state explícito com entry conditions em health thresholds (ex.: 100/60/30%), transitions de via única (sem regressão de phase a menos que a spec diga), swap de action set por phase (`_activeActionSet`) e um momento telegrafado de phase-transition (janela de invulnerabilidade + visual cue). Persista a phase atual no cave snapshot se o boss pode ser deixado no meio da luta (rule: cave-stable-run).
+5. **Pack coordination (fable_04)**: coordenação via dados determinísticos compartilhados (roles de spawn-pack, flank side seeded — a alternância existente `s_nextBlinkFlankSide` é o precedente), NÃO via enemies procurando uns aos outros na scene (rule: unity-architecture). A composição do pack vem seeded do spawn resolver (rule: cave-stable-run — mesmo level, mesmo pack).
+6. **Determinism**: qualquer escolha random que afete um cave level saved/revisitado usa o pattern de seeded RNG (skill: rng-and-determinism). Visual jitter pode usar UnityEngine.Random.
 
-## Testability
+## Testes
 
-EnemyBrain is a MonoBehaviour — extract decision RULES into pure C# (e.g., a phase-threshold resolver, action-eligibility evaluator) so fable_04/05 logic gets EditMode tests (skill: editmode-test-authoring): phase entry at exact thresholds, no phase regression, action cooldown gating, pack role assignment determinism. Live chase/feel behavior goes to a human Play Mode scenario (skill: gameplay-test-scenario).
+EnemyBrain é um MonoBehaviour — extraia as RULES de decisão para C# puro (ex.: um phase-threshold resolver, action-eligibility evaluator) para que a logic de fable_04/05 ganhe EditMode tests (skill: editmode-test-authoring): entry de phase nos thresholds exatos, sem regressão de phase, gating de action cooldown, determinismo da atribuição de pack role. Behavior vivo de chase/feel vai para um human Play Mode scenario (skill: gameplay-test-scenario).
 
-## Closeout
+## Fechamento
 
-- Validator coverage for new action/telegraph entries (skill: editor-validator-authoring): every action in a set exists in the action database; every action with damage has a telegraph profile.
-- Asset generation evidence for new SO assets (rule: unity-assets).
+- Cobertura de validator para novas entries de action/telegraph (skill: editor-validator-authoring): toda action num set existe no action database; toda action com damage tem um telegraph profile.
+- Evidência de asset generation para novos SO assets (rule: unity-assets).

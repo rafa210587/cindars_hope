@@ -1,37 +1,37 @@
 ---
 name: monobehaviour-decomposition
-description: Safely decompose a large/god MonoBehaviour that mixes input, rules, UI, audio, save and animation into a thin adapter + pure-C# core, incrementally and without breaking scenes/prefabs. Use when a MonoBehaviour has grown to mix several responsibilities or is hard to test.
+description: Decompõe com segurança um MonoBehaviour grande/god que mistura input, rules, UI, audio, save e animation em um adapter fino + core em C# puro, de forma incremental e sem quebrar scenes/prefabs. Use quando um MonoBehaviour cresceu a ponto de misturar várias responsabilidades ou está difícil de testar.
 ---
 
-# Skill: MonoBehaviour Decomposition
+# Skill: Decomposição de MonoBehaviour
 
-The project's house style is a thin `MonoBehaviour` adapter over a pure-C# core (skill `ui-projection-pattern`, rule `gameplay-design-patterns`). This skill gets an existing god-`MonoBehaviour` to that shape **without** breaking scene/prefab serialization or changing behavior by accident.
+O house style do projeto é um adapter `MonoBehaviour` fino sobre um core em C# puro (skill `ui-projection-pattern`, rule `gameplay-design-patterns`). Esta skill leva um god-`MonoBehaviour` existente até esse formato **sem** quebrar a serialization de scene/prefab nem mudar comportamento por acidente.
 
-## Hard constraints (read before extracting)
+## Restrições rígidas (ler antes de extrair)
 
-- **Don't reorder or rename `[SerializeField]` fields casually** — that breaks Inspector wiring in scenes/prefabs, and `.unity`/`.prefab` YAML edits are gated (rule `unity-assets`, `permissions.ask`). Keep serialized fields where they are; move *logic*, not field declarations, in the first passes.
-- **Run skill `system-reuse-audit` first.** The extracted core may already exist (e.g., a service/projection). Extracting into a duplicate trips the `runtime-code-guard` duplicate-class check and creates a parallel system.
+- **Não reordene nem renomeie campos `[SerializeField]` despreocupadamente** — isso quebra o wiring do Inspector em scenes/prefabs, e edições de YAML `.unity`/`.prefab` são gated (rule `unity-assets`, `permissions.ask`). Mantenha os serialized fields onde estão; mova *logic*, não declarações de campo, nas primeiras passadas.
+- **Rode a skill `system-reuse-audit` primeiro.** O core extraído pode já existir (ex.: um service/projection). Extrair para um duplicado dispara o duplicate-class check do `runtime-code-guard` e cria um sistema paralelo.
 
-## Procedure
+## Procedimento
 
-1. **Read the whole file first.** List every responsibility present: input, domain rule, presentation/UI, audio, animation, persistence, networking, engine lifecycle.
-2. **Draw the seam.** Mark what is *pure rule* (no `UnityEngine`) vs *engine adapter* (input, components, prefabs, physics). The pure part is the extraction target.
-3. **Extract pure C# first, smallest cohesive piece.** Move a rule into a plain class the `MonoBehaviour` owns and delegates to. No scene change, public API stable, behavior identical.
-4. **Route cross-system calls through the bus.** If the god object was calling other gameplay objects directly, replace with `GameEventBus` publish/subscribe (rule `event-bus-only-gameplay-communication`) — this is usually the biggest coupling win.
-5. **One step, one validation.** After each extraction: compile (skill `unity-validation`), and run the EditMode test you just added for the extracted core. Don't batch five extractions before validating.
-6. **Add tests as you go.** Each extracted pure class gets EditMode coverage (skill `editmode-test-authoring`) — that coverage is the proof the refactor preserved behavior.
-7. **Stop at the seam.** Leave the `MonoBehaviour` as a thin adapter: read input → call core → apply results / publish events / drive visuals. Don't gold-plate the parts you didn't need to touch (rule `00-operational-discipline`).
+1. **Leia o arquivo inteiro primeiro.** Liste cada responsabilidade presente: input, domain rule, presentation/UI, audio, animation, persistence, networking, engine lifecycle.
+2. **Desenhe a costura (seam).** Marque o que é *pure rule* (sem `UnityEngine`) vs *engine adapter* (input, components, prefabs, physics). A parte pura é o alvo da extração.
+3. **Extraia C# puro primeiro, a menor peça coesa.** Mova uma rule para uma classe plana que o `MonoBehaviour` possui e delega. Sem mudança de scene, API pública estável, comportamento idêntico.
+4. **Roteie chamadas cross-system pelo bus.** Se o god object chamava outros objetos de gameplay diretamente, substitua por publish/subscribe via `GameEventBus` (rule `event-bus-only-gameplay-communication`) — geralmente esse é o maior ganho de desacoplamento.
+5. **Um passo, uma validação.** Após cada extração: compile (skill `unity-validation`) e rode o EditMode test que você acabou de adicionar para o core extraído. Não acumule cinco extrações antes de validar.
+6. **Adicione testes conforme avança.** Cada classe pura extraída ganha cobertura EditMode (skill `editmode-test-authoring`) — essa cobertura é a prova de que o refactor preservou comportamento.
+7. **Pare na costura.** Deixe o `MonoBehaviour` como um adapter fino: ler input → chamar core → aplicar resultados / publicar events / dirigir visuals. Não faça gold-plating nas partes que você não precisou tocar (rule `00-operational-discipline`).
 
-## Output
+## Saída esperada
 
-- Responsibility inventory (before).
-- Extraction plan in safe order (pure rule → bus wiring → adapter slim-down).
-- New class/projection structure (target shape).
-- Validation + EditMode test after each step.
-- Residual risk: any serialized-field move deferred, any behavior intentionally changed (must be explicit), Play Mode re-check if scene wiring was touched (skill `gameplay-test-scenario`).
+- Inventário de responsabilidades (antes).
+- Plano de extração em ordem segura (pure rule → bus wiring → emagrecer o adapter).
+- Estrutura de nova classe/projection (formato alvo).
+- Validação + EditMode test após cada passo.
+- Residual risk: qualquer movimentação de serialized-field adiada, qualquer comportamento mudado intencionalmente (deve ser explícito), re-check de Play Mode se o wiring de scene foi tocado (skill `gameplay-test-scenario`).
 
-## Do not
+## Não fazer
 
-- Mix this refactor with a feature change in the same commit (rule `00-operational-discipline`).
-- Rewrite the whole class at once — incremental, behavior-preserving steps only.
-- Introduce `FindObjectOfType`/`GameObject.Find` to "simplify" wiring (rule `unity-architecture`).
+- Misturar este refactor com uma mudança de feature no mesmo commit (rule `00-operational-discipline`).
+- Reescrever a classe inteira de uma vez — só passos incrementais que preservam comportamento.
+- Introduzir `FindObjectOfType`/`GameObject.Find` para "simplificar" o wiring (rule `unity-architecture`).

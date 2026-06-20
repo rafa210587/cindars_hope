@@ -1,106 +1,106 @@
 ---
 name: gameplay-test-scenario
-description: Generate human test scenario for gameplay/runtime implementation. Required for Phase 3 closeout.
-version: 1.0
-when_to_use: After implementing any spec that changes gameplay, UI, combat, save, cave, farm, shop, equipment, skill tree, or asset behavior
+description: Gera um human test scenario para implementação de gameplay/runtime. Exigido para o closeout de Phase 3. Use depois de implementar qualquer spec que mude comportamento de gameplay, UI, combat, save, cave, farm, shop, equipment, skill tree ou asset.
 ---
 
-# Gameplay Test Scenario Skill
+# Skill: Cenário de Teste de Gameplay
 
-## Use When
+Testes automatizados verificam "compila e não crasha?"; o human test scenario verifica "está com o feel certo e funciona como pretendido?". Os dois são necessários — esta skill cobre o segundo.
 
-Spec implementation touches:
-- Game behavior (combat, movement, animation)
+## Quando usar
+
+A implementação da spec toca:
+- Comportamento de jogo (combat, movement, animation)
 - UI state (modals, hotbar, inventory, equipment)
-- Save/load mechanics
-- Cave procedural generation or runtime
-- Farm/shop economy
-- Event publishing or gameplay communication
-- ScriptableObject-based data that affects gameplay
+- Mecânicas de save/load
+- Geração procedural ou runtime da cave
+- Economy de farm/shop
+- Event publishing ou comunicação de gameplay
+- Dados baseados em ScriptableObject que afetam o gameplay
 
-## Do NOT Use When
+## Quando NÃO usar
 
-- Spec is docs-only (no gameplay changes)
-- Spec is pure code refactor (no behavior change)
-- Spec is pure asset wiring (no gameplay behavior change) — maybe; unclear
+- Spec é docs-only (sem mudanças de gameplay)
+- Spec é refactor puro de código (sem mudança de comportamento)
+- Spec é wiring puro de asset (sem mudança de comportamento de gameplay) — talvez; incerto
 
-## Procedure
+## Procedimento
 
-After implementation complete, before `/finish-spec`:
+Depois da implementação completa, antes do `/finish-spec`:
 
-### 1. Analyze What Changed
+### 1. Analise o que mudou
 
-From execution report:
-- What gameplay files were modified?
-- What was the objective of the change?
-- What new behavior should exist?
-- What existing behavior might have regressed?
+A partir do execution report:
+- Quais arquivos de gameplay foram modificados?
+- Qual era o objetivo da mudança?
+- Que novo comportamento deve existir?
+- Que comportamento existente pode ter sofrido regressão?
 
-### 2. Create Human Test Scenario
+### 2. Crie o human test scenario
 
-Write file: `docs/05_VALIDATION/playmode/<spec_id>_human_test_scenario.md`
+Escreva o arquivo: `docs/05_VALIDATION/playmode/<spec_id>_human_test_scenario.md`
 
-Use template: `docs/05_VALIDATION/playmode/PLAYMODE_TEST_SCENARIO_TEMPLATE.md`
+Use o template: `docs/05_VALIDATION/playmode/PLAYMODE_TEST_SCENARIO_TEMPLATE.md`
 
-### 3. Document Each Section
+### 3. Documente cada seção
 
-**Feature Summary:** 1-2 sentences of what the human should test
+**Feature Summary:** 1-2 frases do que o humano deve testar
 
-**Scenes:** Which scenes to load / create for testing (e.g., "Town with player at shop")
+**Scenes:** Quais scenes carregar / criar para o teste (ex.: "Town com player no shop")
 
-**Required Initial State:** What save game state or setup is needed
-- Inventory items
-- Character stats
-- Game progression flags
-- Map state
+**Required Initial State:** Que save game state ou setup é necessário
+- Items de inventory
+- Stats de character
+- Flags de game progression
+- Estado do map
 
-**Scenario 1 — Happy Path:** The main feature working correctly
-- Step-by-step instructions
-- Expected visual/audio result
-- Expected logs (none/some/specific)
+**Scenario 1 — Happy Path:** A feature principal funcionando corretamente
+- Instruções passo a passo
+- Resultado visual/áudio esperado
+- Logs esperados (none/some/specific)
 
-**Scenario 2 — Negative/Edge Path:** Error cases, boundary conditions
-- What could go wrong?
-- How to trigger the error?
-- Expected behavior (graceful fail? warning log?)
+**Scenario 2 — Negative/Edge Path:** Casos de erro, condições de boundary
+- O que pode dar errado?
+- Como disparar o erro?
+- Comportamento esperado (graceful fail? warning log?)
 
-**Scenario 3 — Save/Load:** If spec touches save/persistence
-- Perform action in Scenario 1
-- Save game
-- Load game
-- Verify state persisted correctly
+**Scenario 3 — Save/Load:** Se a spec toca save/persistence
+- Execute a ação do Scenario 1
+- Salve o jogo
+- Carregue o jogo
+- Verifique que o state persistiu corretamente
 
-**Expected Results:** Summary of what should happen
-- Game does not crash
-- No unexpected errors
-- Correct visual/audio feedback
-- Correct state changes
-- Correct save persistence
+**Expected Results:** Resumo do que deve acontecer
+- O jogo não crasha
+- Sem errors inesperados
+- Feedback visual/áudio correto
+- Mudanças de state corretas
+- Persistência de save correta
 
-**Console Expectations:** What should (and should NOT) appear in logs
-- Expected warnings: none / list them
-- Expected errors: none / list them
-- Forbidden errors: any console ERROR is a fail
+**Console Expectations:** O que deve (e o que NÃO deve) aparecer nos logs
+- Warnings esperados: none / liste-os
+- Errors esperados: none / liste-os
+- Errors proibidos: qualquer console ERROR é um fail
 
 **Pass/Fail Checklist:**
-- [ ] Feature executes without crash
-- [ ] Expected logs appear
-- [ ] Forbidden logs do not appear
-- [ ] Visual feedback correct
-- [ ] Save/load (if applicable) works
-- [ ] No regressions in other features
+- [ ] Feature executa sem crash
+- [ ] Logs esperados aparecem
+- [ ] Logs proibidos não aparecem
+- [ ] Feedback visual correto
+- [ ] Save/load (se aplicável) funciona
+- [ ] Sem regressões em outras features
 
-**Notes:** Anything special
-- Known limitations
-- Skip Scenario 3 if save not tested
+**Notes:** Qualquer coisa especial
+- Limitações conhecidas
+- Pule o Scenario 3 se o save não for testado
 - Tested on: Mac / Windows / both
-- Requires debug mode or specific settings
+- Requer debug mode ou settings específicos
 
-### 4. Reference in Execution Report
+### 4. Referencie no Execution Report
 
-In `docs/validation/<spec_id>_execution_report.md`:
+Em `docs/validation/<spec_id>_execution_report.md`:
 
-Add section:
+Adicione a seção:
 ```
 ## How to Test
 
@@ -111,37 +111,37 @@ Tester: [human] (not automated)
 Status: [NOT RUN until Phase 3]
 ```
 
-### 5. Link from `/finish-spec` Output
+### 5. Link a partir do output do `/finish-spec`
 
-When `/finish-spec` processes a runtime spec:
-- Check for test scenario file
-- If found: reference it in Output under "Expected Gameplay Behavior"
-- If not found: error (if runtime changed) or warning (if unclear)
+Quando o `/finish-spec` processa uma runtime spec:
+- Verifique se existe arquivo de test scenario
+- Se encontrado: referencie-o no Output em "Expected Gameplay Behavior"
+- Se não encontrado: error (se runtime mudou) ou warning (se incerto)
 
-## Rules
+## Regras
 
-- Do NOT skip for "simple" changes — humans are the final judge
-- Test scenario is written IN ENGLISH or PORTUGUESE depending on spec language
-- Each scenario should take 1-5 minutes to execute
-- Be specific: "click inventory" not "explore menu"
-- Include debug helpers needed (cheat codes, spawn items, etc.)
-- Console errors block Phase 3 PASS
+- NÃO pule para mudanças "simples" — humanos são o juiz final
+- O test scenario é escrito EM INGLÊS ou PORTUGUÊS dependendo do idioma da spec
+- Cada scenario deve levar de 1 a 5 minutos para executar
+- Seja específico: "click inventory" e não "explore menu"
+- Inclua os debug helpers necessários (cheat codes, spawn items, etc.)
+- Console errors bloqueiam o PASS de Phase 3
 
-## Validation
+## Validação
 
-After human tests:
-- Fill in Pass/Fail Checklist
-- Record date and tester name
-- If any FAIL: loop back to debugging
-- If all PASS: ready for Phase 3 signoff
+Depois dos testes humanos:
+- Preencha o Pass/Fail Checklist
+- Registre a data e o nome do tester
+- Se houver qualquer FAIL: volte ao debugging
+- Se tudo PASS: pronto para o signoff de Phase 3
 
-## Stop Conditions
+## Quando parar e reportar
 
-- Cannot identify what to test (spec objective unclear)
-- Test would require modifying spec scope (e.g., "build 50 items to test")
-- Test scenario would take >30 minutes (break into smaller steps)
+- Não dá para identificar o que testar (objetivo da spec incerto)
+- O teste exigiria modificar o escopo da spec (ex.: "build 50 items to test")
+- O test scenario levaria >30 minutos (quebre em passos menores)
 
-## Output Example
+## Exemplo de saída
 
 ```markdown
 # Human Test Scenario — SPEC_18 Hotbar Management
@@ -214,12 +214,3 @@ Expected logs: none
 - Date: 2026-06-01
 - Known limitation: hotbar UI does not yet support drag-reorder (future SPEC)
 ```
-
----
-
-## Key Difference from Automated Tests
-
-Automated tests check: "does it compile and not crash?"
-Human test scenario checks: "does it feel right and work as intended?"
-
-Both are needed. This skill covers the latter.

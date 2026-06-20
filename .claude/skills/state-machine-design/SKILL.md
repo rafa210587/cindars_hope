@@ -1,35 +1,35 @@
 ---
 name: state-machine-design
-description: Design a finite state machine for player, enemy, boss, UI flow or game flow when there are many states/transitions/phases or conflicting boolean flags. Produces a pure-C# (EditMode-testable) FSM with Enter/Tick/Exit and an explicit invalid-transition policy. Use before adding "just one more bool" to a system that already juggles several.
+description: Projeta uma finite state machine para player, enemy, boss, UI flow ou game flow quando há muitos states/transitions/phases ou boolean flags conflitantes. Produz uma FSM em C# puro (testável em EditMode) com Enter/Tick/Exit e uma invalid-transition policy explícita. Use antes de adicionar "só mais um bool" a um sistema que já malabariza vários.
 ---
 
 # Skill: State Machine Design
 
-Use this when a system is starting to track state with several booleans (`isAttacking`, `isStunned`, `canMove`, `isDead`...) that can contradict each other. Distinct from skill `enemy-ai-authoring` (which authors *AI behaviors/moves/affixes* on top of the live `EnemyBrain`): this skill is about the **state structure itself**.
+Use isto quando um sistema começa a rastrear estado com vários booleans (`isAttacking`, `isStunned`, `canMove`, `isDead`...) que podem se contradizer. Distinta da skill `enemy-ai-authoring` (que autora *AI behaviors/moves/affixes* sobre o `EnemyBrain` vivo): esta skill é sobre a **estrutura de estado em si**.
 
-## When NOT to use
+## Quando NÃO usar
 
-- One or two genuinely independent flags → leave them; an FSM adds ceremony.
-- Boss *phase* behavior on the existing brain → use `enemy-ai-authoring` (precedent: `BossPhaseLogic`); apply this skill only if the phase wiring itself is a flag tangle.
+- Um ou dois flags genuinamente independentes → deixe-os; uma FSM adiciona cerimônia.
+- Comportamento de boss *phase* no brain existente → use `enemy-ai-authoring` (precedente: `BossPhaseLogic`); aplique esta skill só se o wiring da phase em si for um emaranhado de flags.
 
-## Procedure
+## Procedimento
 
-1. **Enumerate states.** List every state explicitly (an `enum` or one class per state). If two booleans can't be true at once, they are one state machine, not two flags.
-2. **Enumerate transitions and their triggers.** For each state, what events/conditions leave it and to where. Triggers come from input, AI, timers, or `GameEventBus` events — not from another system poking a field.
-3. **Separate per-state data from shared data.** Per-state timers/counters live with the state; shared context (stats, refs) is passed in.
-4. **Enter / Tick / Exit.** Each state implements entry side-effects, per-step logic (take `deltaTime`), and cleanup. Cleanup in `Exit` prevents leaked timers/subscriptions.
-5. **Define the invalid-transition policy.** Ignore + log, clamp to a safe state, or throw in dev (rule `error-handling-resilience`, category 4). Decide it; don't leave it implicit.
-6. **Keep the machine pure.** The FSM is plain C# (no `UnityEngine`); the `MonoBehaviour` feeds it input/`deltaTime` and reacts to its emitted domain events (rule `gameplay-design-patterns`). This is what makes it testable.
-7. **Emit domain events, don't call presentation.** State changes publish via `GameEventBus`; VFX/SFX/anim/HUD subscribe (skill `game-feel-checklist`). The FSM never calls UI/audio directly.
+1. **Enumere os states.** Liste cada state explicitamente (um `enum` ou uma classe por state). Se dois booleans não podem ser true ao mesmo tempo, eles são uma state machine, não dois flags.
+2. **Enumere as transitions e seus triggers.** Para cada state, quais events/conditions o deixam e para onde. Triggers vêm de input, AI, timers ou events do `GameEventBus` — não de outro sistema cutucando um field.
+3. **Separe dados por-state de dados compartilhados.** Timers/counters por-state ficam com o state; o contexto compartilhado (stats, refs) é passado por parâmetro.
+4. **Enter / Tick / Exit.** Cada state implementa side-effects de entrada, lógica por-step (recebe `deltaTime`) e cleanup. O cleanup no `Exit` previne timers/subscriptions vazados.
+5. **Defina a invalid-transition policy.** Ignore + log, clamp para um state seguro, ou throw em dev (rule `error-handling-resilience`, categoria 4). Decida-a; não deixe implícita.
+6. **Mantenha a machine pura.** A FSM é C# puro (sem `UnityEngine`); o `MonoBehaviour` alimenta nela input/`deltaTime` e reage aos domain events que ela emite (rule `gameplay-design-patterns`). É isso que a torna testável.
+7. **Emita domain events, não chame presentation.** As mudanças de state publicam via `GameEventBus`; VFX/SFX/anim/HUD fazem subscribe (skill `game-feel-checklist`). A FSM nunca chama UI/audio diretamente.
 
-## Output
+## Saída esperada
 
-- State list + transition table (from → trigger → to).
-- Interfaces/classes (`IState` with Enter/Tick/Exit, a small `StateMachine` driver).
-- Invalid-transition policy, stated.
-- Which events the machine publishes for presentation.
-- EditMode tests (skill `editmode-test-authoring`): valid transitions land in the expected state; invalid transitions follow the policy; Enter/Exit side-effects fire once; deterministic given the same inputs.
+- Lista de states + transition table (from → trigger → to).
+- Interfaces/classes (`IState` com Enter/Tick/Exit, um pequeno driver `StateMachine`).
+- Invalid-transition policy, declarada.
+- Quais events a machine publica para presentation.
+- EditMode tests (skill `editmode-test-authoring`): transitions válidas chegam ao state esperado; transitions inválidas seguem a policy; side-effects de Enter/Exit disparam uma vez; determinístico dados os mesmos inputs.
 
-## Save interaction
+## Interação com save
 
-If the state survives a reload, persist a **stable state id** (string/enum), never the state object — resolve back to the state on load (rule `unity-architecture` save DTOs; skill `save-load-pattern`). Persist the outcome/which-state, not transient per-tick timers unless the design requires it.
+Se o state sobrevive a um reload, persista um **stable state id** (string/enum), nunca o state object — resolva de volta para o state no load (rule `unity-architecture` save DTOs; skill `save-load-pattern`). Persista o outcome/qual-state, não os timers transientes por-tick, a menos que o design exija.

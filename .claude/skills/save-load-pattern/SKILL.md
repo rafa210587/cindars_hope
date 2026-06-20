@@ -1,7 +1,6 @@
 ---
 name: save-load-pattern
-description: Implement save/load with IDs, simple types, and no Unity refs
-version: 1.0
+description: Implementa save/load com IDs, simple types e sem Unity refs. Use em qualquer tarefa que crie ou altere persistência de dados (save DTOs, sections, migrations, round-trip de estado).
 ---
 
 # Save/Load Data Pattern

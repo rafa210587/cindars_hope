@@ -1,29 +1,28 @@
 ---
 name: event-bus-pattern
-description: Implement gameplay communication via GameEventBus instead of direct calls
-version: 1.0
+description: Implementa comunicação entre sistemas de gameplay via GameEventBus em vez de chamadas diretas. Use sempre que a tarefa envolver comunicação entre sistemas (combat, farming, inventory, UI state, NPC, cave, day cycle, economy), publicação de eventos ou desacoplamento de sistemas.
 ---
 
-# Event Bus Pattern
+# Skill: Padrão Event Bus
 
-Use when the task involves communication between gameplay systems, events, or decoupling systems.
+Use quando a tarefa envolver comunicação entre sistemas de gameplay, eventos ou desacoplamento de sistemas.
 
-## Core Rule
+## Regra central
 
-**NEVER** direct MonoBehaviour-to-MonoBehaviour calls for gameplay logic.  
-**ALWAYS** use `GameEventBus.Publish()` and `Subscribe()`.
+**NUNCA** faça chamadas diretas MonoBehaviour-to-MonoBehaviour para lógica de gameplay.
+**SEMPRE** use `GameEventBus.Publish()` e `Subscribe()`.
 
-## Why?
+## Por que existe
 
-- Decouples systems (one change doesn't break others)
-- Avoids circular dependencies
-- Enables testing without full game setup
-- Supports multiple subscribers to same event
-- Clear event-driven architecture
+- Desacopla sistemas (uma mudança não quebra as outras)
+- Evita dependências circulares
+- Permite testar sem montar o jogo inteiro
+- Suporta múltiplos subscribers para o mesmo evento
+- Arquitetura event-driven clara
 
-## Event Definition Pattern
+## Padrão de definição de evento
 
-### Event Class Structure
+### Estrutura da classe de evento
 
 ```csharp
 namespace CindarsHope.Runtime.Events
@@ -52,7 +51,7 @@ namespace CindarsHope.Runtime.Events
 }
 ```
 
-### Naming Convention
+### Convenção de nomenclatura
 
 ```
 [Noun][Verb]Event
@@ -65,7 +64,7 @@ EnemyDefeatedEvent
 LootPickedEvent
 ```
 
-### ❌ DO NOT
+### ❌ NÃO faça
 
 ```csharp
 // Wrong: Carrying references
@@ -83,9 +82,9 @@ public class DamageAppliedEvent
 }
 ```
 
-## Publishing Events
+## Publicando eventos
 
-### Pattern
+### Padrão
 
 ```csharp
 public class PlayerCombat : MonoBehaviour
@@ -108,7 +107,7 @@ public class PlayerCombat : MonoBehaviour
 }
 ```
 
-### ❌ DO NOT
+### ❌ NÃO faça
 
 ```csharp
 // Wrong: Direct call
@@ -126,9 +125,9 @@ eventBus.Publish(new DamageAppliedEvent
 });
 ```
 
-## Subscribing to Events
+## Inscrevendo-se em eventos
 
-### Pattern
+### Padrão
 
 ```csharp
 public class EnemyHealth : MonoBehaviour
@@ -166,15 +165,15 @@ public class EnemyHealth : MonoBehaviour
 }
 ```
 
-### Rules
+### Regras
 
-- [ ] Subscribe in `Start()` or `Awake()`
-- [ ] **ALWAYS** unsubscribe in `OnDisable()` or `OnDestroy()`
-- [ ] Check event.targetId or similar to filter (not all events for you)
-- [ ] Keep listener logic lightweight (don't loop or do heavy work)
-- [ ] Use correct event type in Subscribe/Unsubscribe
+- [ ] Subscribe em `Start()` ou `Awake()`
+- [ ] **SEMPRE** faça Unsubscribe em `OnDisable()` ou `OnDestroy()`
+- [ ] Cheque event.targetId ou similar para filtrar (nem todos os eventos são para você)
+- [ ] Mantenha a lógica do listener leve (não faça loop nem trabalho pesado)
+- [ ] Use o tipo de evento correto em Subscribe/Unsubscribe
 
-### ❌ DO NOT
+### ❌ NÃO faça
 
 ```csharp
 // Wrong: No unsubscribe
@@ -198,9 +197,9 @@ private void OnItemUsed(ItemUsedEvent evt)
 }
 ```
 
-## Complex Event Chains
+## Cadeias complexas de eventos
 
-### Pattern: Event Triggers Another Event
+### Padrão: um evento dispara outro evento
 
 ```csharp
 public class StatusEffectManager : MonoBehaviour
@@ -233,8 +232,8 @@ public class StatusEffectManager : MonoBehaviour
 }
 ```
 
-### ✅ OK: Event triggers other logic
-### ❌ NOT OK: Event triggers direct system call
+### ✅ OK: evento dispara outra lógica
+### ❌ NÃO OK: evento dispara chamada direta de sistema
 
 ```csharp
 // ❌ WRONG
@@ -253,9 +252,9 @@ private void OnDamageApplied(DamageAppliedEvent evt)
 }
 ```
 
-## Common Events Library
+## Biblioteca de eventos comuns
 
-Reference common events (if they exist in `Assets/Scripts/Runtime/Events/`):
+Referência de eventos comuns (se existirem em `Assets/Scripts/Runtime/Events/`):
 
 ```
 DayStartedEvent
@@ -273,9 +272,9 @@ PlayerHungerChangedEvent
 PlayerStaminaChangedEvent
 ```
 
-## Injection Pattern (Bootstrap)
+## Padrão de injeção (Bootstrap)
 
-Events are typically available via:
+Eventos normalmente ficam disponíveis via:
 
 ```csharp
 public class PlayerCombat : MonoBehaviour
@@ -290,7 +289,7 @@ public class PlayerCombat : MonoBehaviour
 }
 ```
 
-Or via Bootstrap:
+Ou via Bootstrap:
 
 ```csharp
 public class GameBootstrap : MonoBehaviour
@@ -306,7 +305,7 @@ public class GameBootstrap : MonoBehaviour
 }
 ```
 
-## Testing Pattern
+## Padrão de teste
 
 ```csharp
 [Test]
@@ -326,37 +325,37 @@ public void DamageEvent_TriggersTakeDamage()
 }
 ```
 
-## Audit Checklist
+## Checklist de auditoria
 
-Before finalizing event-driven code:
+Antes de finalizar código event-driven:
 
-- [ ] No `GetComponent<>()` for other systems in logic
-- [ ] No `FindObjectOfType<>()` anywhere
-- [ ] All gameplay communication via `eventBus.Publish()`
-- [ ] All event subscribers call `Unsubscribe()` in `OnDisable`/`OnDestroy`
-- [ ] Events carry IDs and primitives, not references
-- [ ] Event names follow `[Noun][Verb]Event` pattern
-- [ ] Each event handler filters by ID (e.g., targetId)
-- [ ] No circular event chains (A publishes B, B publishes A)
+- [ ] Nenhum `GetComponent<>()` para outros sistemas dentro da lógica
+- [ ] Nenhum `FindObjectOfType<>()` em lugar algum
+- [ ] Toda comunicação de gameplay via `eventBus.Publish()`
+- [ ] Todos os subscribers de evento chamam `Unsubscribe()` em `OnDisable`/`OnDestroy`
+- [ ] Eventos carregam IDs e primitivos, não referências
+- [ ] Nomes de evento seguem o padrão `[Noun][Verb]Event`
+- [ ] Cada handler de evento filtra por ID (ex.: targetId)
+- [ ] Sem cadeias circulares de evento (A publica B, B publica A)
 
-## Common Mistakes
+## Erros comuns
 
-❌ Direct call instead of publish:
+❌ Chamada direta em vez de publish:
 ```csharp
 GetComponent<PlayerStats>().AddExperience(100); // WRONG!
 ```
 
-❌ Forgetting unsubscribe:
+❌ Esquecer o unsubscribe:
 ```csharp
 eventBus.Subscribe(...); // Missing OnDisable unsubscribe
 ```
 
-❌ Carrying references:
+❌ Carregar referências:
 ```csharp
 public class DamageEvent { public MonoBehaviour source; } // WRONG!
 ```
 
-❌ Not filtering by ID:
+❌ Não filtrar por ID:
 ```csharp
 private void OnDamage(DamageAppliedEvent evt)
 {
@@ -364,12 +363,12 @@ private void OnDamage(DamageAppliedEvent evt)
 }
 ```
 
-## Integration
+## Relacionados
 
-- **Spec Execution** → Uses this if gameplay communication in scope
-- **Non-Regression Review** → Audits for direct calls (violations)
-- **Implementation Closeout** → Validates event pattern in audit
+- **Spec Execution** → usa esta skill se houver comunicação de gameplay no escopo
+- **Non-Regression Review** → audita chamadas diretas (violações)
+- **Implementation Closeout** → valida o padrão de evento na auditoria
 
 ---
 
-**Event bus is mandatory for all gameplay communication. No direct calls.**
+**O event bus é obrigatório para toda comunicação de gameplay. Sem chamadas diretas.**

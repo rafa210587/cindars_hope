@@ -1,29 +1,29 @@
 ---
 name: ui-modal-stack
-description: Implement and validate modal UI using ModalManager stack, input blocking, and Esc-close behavior
-version: 1.0
-when_to_use: Any task touching modal UI, inventory screen, shop, equipment, skill tree, pause, death screen, Anya UI
+description: Implementa e valida UI modal usando o stack do ModalManager, input blocking e comportamento de Esc-close. Use em qualquer tarefa que toque UI modal, inventory screen, shop, equipment, skill tree, pause, death screen ou Anya UI.
 ---
 
-# UI Modal Stack Skill
+# Skill: UI Modal Stack
 
-## Use When
+Esta skill cobre a implementação e validação de UI modal sobre o stack do `ModalManager`, garantindo input blocking e fechamento por Esc.
 
-Task touches:
+## Quando usar
+
+A tarefa toca:
 - `ModalManager` (push/pop/clear)
-- Inventory, equipment, shop, skill tree panels
+- Panels de inventory, equipment, shop, skill tree
 - Pause screen, death screen
-- Anya cutscene/conversation UI
-- Input blocking during modal open
-- Esc key closing top modal
+- UI de cutscene/conversa da Anya
+- Input blocking enquanto o modal está aberto
+- Tecla Esc fechando o modal do topo
 
-## Required Reads
+## Leitura mínima
 
 1. `CLAUDE.md`
-2. Target spec
-3. `Assets/_Game/Scripts/UI/` — ModalManager and relevant panels
+2. Spec alvo
+3. `Assets/_Game/Scripts/UI/` — ModalManager e panels relevantes
 
-## Do Not Read By Default
+## Não ler por padrão
 
 ```
 All scene files
@@ -31,9 +31,9 @@ All prefab files
 Unrelated UI scripts
 ```
 
-## Core Invariants
+## Invariantes centrais
 
-### Esc Always Closes Top Modal
+### Esc sempre fecha o modal do topo
 
 ```csharp
 // ModalManager must handle Esc to pop top modal
@@ -44,15 +44,15 @@ void Update()
 }
 ```
 
-### Input Blocked During Modal
+### Input bloqueado enquanto o modal está aberto
 
-When any modal is open:
-- Player movement must be disabled
-- Attack input must be disabled
+Quando qualquer modal está aberto:
+- O movimento do player deve ser desabilitado
+- O input de attack deve ser desabilitado
 - Use `GameEventBus.Publish(new ModalOpenedEvent())` / `ModalClosedEvent()`
-- Player input handlers subscribe and disable themselves
+- Os input handlers do player fazem subscribe e se desabilitam
 
-### Stack Behavior
+### Comportamento do stack
 
 ```csharp
 // Open
@@ -65,30 +65,30 @@ ModalManager.Instance.Pop();
 ModalManager.Instance.Clear();
 ```
 
-### No Modal Mismatch
+### Sem modal mismatch
 
-- Never `Push` without a corresponding `Pop` path
-- Closing the game/scene must call `Clear()`
-- Each modal must have exactly one "close" trigger (Esc, X button, or explicit close call)
+- Nunca `Push` sem um caminho de `Pop` correspondente
+- Fechar o game/scene deve chamar `Clear()`
+- Cada modal deve ter exatamente um trigger de "close" (Esc, botão X, ou chamada explícita de close)
 
-## Validation Checklist (Play Mode — Phase 3)
+## Validação (checklist de Play Mode — Phase 3)
 
-Manual checks:
-- [ ] Esc closes the top-most modal only
-- [ ] Player cannot move while modal is open
-- [ ] Player cannot attack while modal is open
-- [ ] Opening nested modals (e.g., shop from inventory) works correctly
-- [ ] Closing nested modal returns to parent, not main game
-- [ ] Scene transition clears all modals
+Checks manuais:
+- [ ] Esc fecha somente o modal mais ao topo
+- [ ] O player não consegue se mover enquanto o modal está aberto
+- [ ] O player não consegue atacar enquanto o modal está aberto
+- [ ] Abrir modals aninhados (ex.: shop a partir do inventory) funciona corretamente
+- [ ] Fechar um modal aninhado retorna ao parent, não ao game principal
+- [ ] A transição de scene limpa todos os modals
 
-## Common Regressions
+## Regressões comuns
 
-- Modal opens but never pops (infinite input block)
-- Player can still move while inventory is open
-- Esc closes all modals instead of just the top one
-- Missing `GameEventBus.Publish(new ModalClosedEvent())` on pop
+- O modal abre mas nunca dá pop (input block infinito)
+- O player ainda consegue se mover com o inventory aberto
+- Esc fecha todos os modals em vez de só o do topo
+- `GameEventBus.Publish(new ModalClosedEvent())` ausente no pop
 
-## Stop Conditions
+## Quando parar e reportar
 
-- `ModalManager` uses `FindObjectOfType` — violates no-global-search rule
-- Modal state persists across scene loads without explicit clear
+- O `ModalManager` usa `FindObjectOfType` — viola a regra no-global-search
+- O state do modal persiste entre scene loads sem clear explícito

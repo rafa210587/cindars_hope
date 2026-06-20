@@ -1,23 +1,22 @@
 ---
 name: implementation-closeout
-description: Final checklist for closing any relevant task with validations and documentation
-version: 1.0
+description: Checklist final para fechar qualquer tarefa relevante com validações e documentation. Use ao final de uma spec, bugfix com impacto de gameplay, docs migration, ou refactoring/estabilização significativos.
 ---
 
-# Implementation Closeout Skill
+# Skill: Implementation Closeout
 
-Use at the end of any significant task to ensure all validations, documentation, and logging are complete.
+Use no fim de qualquer tarefa significativa para garantir que todas as validações, documentation e logging estão completos.
 
-## When to Use
+## Quando usar
 
-- After implementing a spec
-- After fixing a bug with gameplay impact
-- After migrating documentation
-- After significant refactoring or stabilization work
+- Após implementar uma spec
+- Após corrigir um bug com impacto de gameplay
+- Após migrar documentation
+- Após refactoring ou trabalho de estabilização significativos
 
-## Mandatory Closeout Steps
+## Passos obrigatórios de closeout
 
-### Step 1: Verify Scope
+### Step 1: Verificar Scope
 
 ```powershell
 git diff --name-only
@@ -25,21 +24,21 @@ git status
 ```
 
 **Checklist:**
-- [ ] All changes are within task scope
-- [ ] No accidental edits outside permitted files
-- [ ] No `docs_old/**` edits
-- [ ] No root `specs/` or `spec/` created
-- [ ] Branch is current
+- [ ] Todas as mudanças estão dentro do scope da tarefa
+- [ ] Nenhuma edição acidental fora dos arquivos permitidos
+- [ ] Nenhuma edição em `docs_old/**`
+- [ ] Nenhum `specs/` ou `spec/` no root criado
+- [ ] Branch está atualizada
 
-### Step 2: Run All Applicable Validations
+### Step 2: Rodar todas as validações aplicáveis
 
-**Docs validation (mandatory for all tasks):**
+**Docs validation (obrigatória para todas as tarefas):**
 ```powershell
 .\tools\docs\validate_docs.ps1
 ```
-- [ ] Result: PASS ✅ or preexisting WARNING ⚠️
+- [ ] Resultado: PASS ✅ ou WARNING ⚠️ preexistente
 
-**Unity compile validation (if runtime changed):**
+**Unity compile validation (se runtime mudou):**
 ```powershell
 .\tools\unity\RunUnityCompileValidation.ps1 `
   -UnityEditorPath "..." -ProjectPath "." `
@@ -48,29 +47,29 @@ git status
 .\tools\unity\ScanUnityLogs.ps1 `
   -LogFile ".\Logs\unity-compile-validation.log"
 ```
-- [ ] Result: PASS ✅ or NOT RUN with documented reason
+- [ ] Resultado: PASS ✅ ou NOT RUN com razão documentada
 
 **Non-regression review:**
 ```
 Run /review-non-regression
 ```
-- [ ] Result: PASS ✅ or acceptable WARNING ⚠️
+- [ ] Resultado: PASS ✅ ou WARNING ⚠️ aceitável
 
-### Step 3: Update Documentation
+### Step 3: Atualizar Documentation
 
-**If spec implemented:**
-- [ ] Move spec from `.specs/a_implementar/` to `.specs/implementados/`
-- [ ] Add evidence header with commit, files, validations
-- [ ] Update registries (if they exist)
+**Se implementou uma spec:**
+- [ ] Mova a spec de `.specs/a_implementar/` para `.specs/implementados/`
+- [ ] Adicione header de evidência com commit, files, validations
+- [ ] Atualize registries (se existirem)
 
-**If refinement completed:**
-- [ ] Move from `docs/refinements/a_implementar/` to `docs/refinements/implementados/`
+**Se completou um refinement:**
+- [ ] Mova de `docs/refinements/a_implementar/` para `docs/refinements/implementados/`
 
-**Always:**
-- [ ] Update `docs/IMPLEMENTATION_STATUS.md` with evidence (spec file or validated logs)
-- [ ] Update `PROJECT_LOG.md` with entry (date, objective, deliverables, validations)
+**Sempre:**
+- [ ] Atualize `docs/IMPLEMENTATION_STATUS.md` com evidência (spec file ou logs validados)
+- [ ] Atualize `PROJECT_LOG.md` com entry (data, objetivo, deliverables, validations)
 
-### Step 4: Prepare Delivery Report
+### Step 4: Preparar Delivery Report
 
 **Changed files:**
 ```
@@ -83,48 +82,48 @@ From: git log --oneline -10
 Include: All commits related to this task
 ```
 
-**Technical summary** (1-3 sentences):
-- What was implemented or fixed
-- Scope boundaries
-- Key decisions (if any)
+**Resumo técnico** (1-3 frases):
+- O que foi implementado ou corrigido
+- Limites de scope
+- Decisões-chave (se houver)
 
-**Validations executed:**
+**Validações executadas:**
 - [ ] Docs validation: PASS / WARNING / FAIL / NOT RUN
 - [ ] Unity compile: PASS / FAIL / NOT RUN
 - [ ] Log scan: PASS / FAIL / NOT RUN
 - [ ] Non-regression: PASS / WARNING / FAIL
 - [ ] Play Mode: NOT RUN (reason: sandboxed environment)
 
-**Validations not executed** (if any):
-- Reason (sandbox, permissions, timeout, etc.)
-- Residual risk (what could break)
+**Validações não executadas** (se houver):
+- Razão (sandbox, permissions, timeout, etc.)
+- Residual risk (o que poderia quebrar)
 
-**Pending items** (if any):
-- List what wasn't completed
-- Reason
-- Blocking next spec?
+**Itens pendentes** (se houver):
+- Liste o que não foi completado
+- Razão
+- Bloqueia a próxima spec?
 
-**Residual risks** (if any):
-- Missing validations
-- Features that can't be tested here
-- Known gotchas
+**Residual risks** (se houver):
+- Validações ausentes
+- Features que não podem ser testadas aqui
+- Gotchas conhecidos
 
-**Next recommended step:**
-- Which spec next?
-- Any dependency blocker?
-- Any follow-up task?
+**Próximo passo recomendado:**
+- Qual spec vem a seguir?
+- Algum dependency blocker?
+- Alguma follow-up task?
 
-### Step 5: Do NOT
+### Step 5: NÃO fazer
 
-- [ ] Execute `git push` (user approval required)
-- [ ] Open PR/MR (user approval required)
-- [ ] Merge branches (user approval required)
-- [ ] Mark task as "complete" in external systems without user confirmation
-- [ ] Hide validation failures
-- [ ] Claim compliance without evidence
-- [ ] Commit changes to PROJECT_LOG without updating it
+- [ ] Executar `git push` (requer aprovação do usuário)
+- [ ] Abrir PR/MR (requer aprovação do usuário)
+- [ ] Fazer merge de branches (requer aprovação do usuário)
+- [ ] Marcar a tarefa como "complete" em sistemas externos sem confirmação do usuário
+- [ ] Esconder falhas de validação
+- [ ] Declarar compliance sem evidência
+- [ ] Commitar mudanças no PROJECT_LOG sem atualizá-lo
 
-## Output Format Template
+## Template de formato de saída
 
 ```markdown
 ## Closeout Report — [SPEC Name]
@@ -198,7 +197,7 @@ def5678 fix: event bus pattern in attack delivery
 Delivered for user review. Ready for merge pending user approval.
 ```
 
-## Abbreviated Format (For Smaller Tasks)
+## Formato abreviado (para tarefas menores)
 
 ```markdown
 ## Closeout — Bug Fix: [Issue]
@@ -218,38 +217,38 @@ Delivered for user review. Ready for merge pending user approval.
 **Next:** [if applicable]
 ```
 
-## Red Flags (Do NOT Deliver)
+## Red Flags (NÃO entregar)
 
-- ❌ Validation shows FAIL and hasn't been fixed
-- ❌ Changes outside task scope and not acknowledged
-- ❌ Non-regression shows FAIL
-- ❌ Spec marked as implemented without evidence
-- ❌ Documentation not updated
-- ❌ PROJECT_LOG not updated for significant task
+- ❌ Validação mostra FAIL e não foi corrigida
+- ❌ Mudanças fora do scope da tarefa e não reconhecidas
+- ❌ Non-regression mostra FAIL
+- ❌ Spec marcada como implementada sem evidência
+- ❌ Documentation não atualizada
+- ❌ PROJECT_LOG não atualizado para tarefa significativa
 
 ## Checklisting
 
-Before delivering report:
+Antes de entregar o report:
 
-- [ ] All changed files listed
-- [ ] All applicable validations run and documented
-- [ ] Non-regression audit complete
-- [ ] Docs updated and validated
-- [ ] PROJECT_LOG updated
-- [ ] IMPLEMENTATION_STATUS updated (if spec/capability)
-- [ ] Summary is accurate
-- [ ] No hidden failures
-- [ ] No claims without evidence
-- [ ] Next step recommended
+- [ ] Todos os changed files listados
+- [ ] Todas as validações aplicáveis rodadas e documentadas
+- [ ] Non-regression audit completa
+- [ ] Docs atualizados e validados
+- [ ] PROJECT_LOG atualizado
+- [ ] IMPLEMENTATION_STATUS atualizado (se spec/capability)
+- [ ] Summary preciso
+- [ ] Nenhuma falha escondida
+- [ ] Nenhuma claim sem evidência
+- [ ] Próximo passo recomendado
 
-## Integration
+## Relacionados
 
-- **Spec Execution** → Calls this at Phase 4
-- **Finish-Spec** → Depends on this for final report
-- **Non-Regression Review** → Provides audit input
-- **Docs Migration** → Updates docs for this skill to use
-- **Unity Validation** → Provides validation evidence
+- **Spec Execution** → Chama esta no Phase 4
+- **Finish-Spec** → Depende desta para o report final
+- **Non-Regression Review** → Fornece o input da auditoria
+- **Docs Migration** → Atualiza os docs para esta skill usar
+- **Unity Validation** → Fornece a evidência de validação
 
 ---
 
-**Closeout is NOT complete until the report is generated and delivered to user.**
+**O closeout NÃO está completo até o report ser gerado e entregue ao usuário.**

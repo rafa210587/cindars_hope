@@ -1,18 +1,18 @@
-# Spec Execution — Testing Quality Gate Addendum
+# Spec Execution — Addendum do Testing Quality Gate
 
-> Applies to every implementation task using `spec-execution`.
+> Aplica-se a toda tarefa de implementação que usa `spec-execution`.
 
-## Rule source
+## Fonte da regra
 
-Read and follow:
+Leia e siga:
 
 ```text
 .claude/rules/testing-quality-gate.md
 ```
 
-## Required report block
+## Bloco obrigatório no report
 
-Every code-changing spec execution report must include:
+Todo execution report de spec que muda código deve incluir:
 
 ```text
 Testing Quality Gate
@@ -27,7 +27,7 @@ Justification if no automated tests: <text or N/A>
 Residual risk: <text>
 ```
 
-## Status limits
+## Limites de status
 
 ```text
 Runtime/gameplay spec without Play Mode automated or human scenario:
@@ -40,7 +40,7 @@ Bugfix without regression test or explicit residual risk:
   max status PARTIAL.
 ```
 
-## Minimum expectations
+## Expectativas mínimas
 
 ```text
 Pure deterministic logic:
@@ -59,6 +59,6 @@ Economy/combat/status/skills:
   formula and rule tests when logic is deterministic.
 ```
 
-## Closeout rule
+## Regra de fechamento
 
-Do not report `ACCEPTED` unless required build, Unity, automated test, Play Mode/manual scenario, and residual-risk evidence are present for the type of change.
+Não reporte `ACCEPTED` a menos que a evidência exigida de build, Unity, automated test, Play Mode/manual scenario e residual risk esteja presente para o tipo de mudança.

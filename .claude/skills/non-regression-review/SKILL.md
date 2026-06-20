@@ -1,34 +1,33 @@
 ---
 name: non-regression-review
-description: Audit implementation diff for architectural violations and regression risks
-version: 1.0
+description: Audita o diff de uma implementação em busca de violações arquiteturais e riscos de regressão (forbidden search APIs, breach de scope, Unity refs em save DTOs, claims de status falsos). Use após implementar uma spec, antes do closeout, ou quando scope/rules mudaram de forma significativa.
 ---
 
-# Non-Regression Review Skill
+# Skill: Non-Regression Review
 
-Use to audit changes for violations of project rules and architectural patterns.
+Use para auditar mudanças em busca de violações das rules do projeto e dos patterns arquiteturais.
 
-## When to Review
+## Quando usar
 
-- After implementation of spec
-- Before task closeout
-- Whenever significant scope or rules changed
-- As sanity check before user approval
+- Após a implementação de uma spec
+- Antes do closeout da tarefa
+- Sempre que scope ou rules mudaram de forma significativa
+- Como sanity check antes da aprovação do usuário
 
-## Mandatory Audit Items
+## Itens obrigatórios de auditoria
 
-### 1. File & Directory Structure
+### 1. Estrutura de File & Directory
 
 ```
 Check git diff --name-only for:
 ```
 
-- [ ] No creation of root-level `specs/` directory
-- [ ] No creation of root-level `spec/` directory
-- [ ] No edits to `docs_old/**` (archive only)
-- [ ] All changes within permitted scope
+- [ ] Nenhuma criação de diretório `specs/` no root
+- [ ] Nenhuma criação de diretório `spec/` no root
+- [ ] Nenhuma edição em `docs_old/**` (apenas archive)
+- [ ] Todas as mudanças dentro do scope permitido
 
-**Action:** If violated, undo changes and re-implement within scope.
+**Action:** Se violado, desfaça as mudanças e reimplemente dentro do scope.
 
 ### 2. Git Safety
 
@@ -36,26 +35,26 @@ Check git diff --name-only for:
 Check git log and git status:
 ```
 
-- [ ] No `git push` executed (future push awaits user approval)
-- [ ] No `git reset --hard` executed
-- [ ] No `git clean` executed
-- [ ] No `git stash` executed
-- [ ] Branch clean or only has intended commits
+- [ ] Nenhum `git push` executado (push futuro aguarda aprovação do usuário)
+- [ ] Nenhum `git reset --hard` executado
+- [ ] Nenhum `git clean` executado
+- [ ] Nenhum `git stash` executado
+- [ ] Branch limpa ou só com os commits pretendidos
 
-**Action:** Restore from backup if destructive op executed.
+**Action:** Restaure do backup se uma operação destrutiva foi executada.
 
-### 3. Runtime/Gameplay Safety (if C# changed)
+### 3. Runtime/Gameplay Safety (se C# mudou)
 
 ```
 Grep for violations:
 ```
 
-- [ ] No `GameObject.Find()` calls (use GameEventBus or Bootstrap references)
-- [ ] No `FindObjectOfType()` calls
-- [ ] No `FindObjectsByType()` calls
-- [ ] No direct MonoBehaviour-to-MonoBehaviour calls (use GameEventBus.Publish/Subscribe)
+- [ ] Nenhuma chamada `GameObject.Find()` (use GameEventBus ou refs do Bootstrap)
+- [ ] Nenhuma chamada `FindObjectOfType()`
+- [ ] Nenhuma chamada `FindObjectsByType()`
+- [ ] Nenhuma chamada direta MonoBehaviour-to-MonoBehaviour (use GameEventBus.Publish/Subscribe)
 
-**Pattern violation example:**
+**Exemplo de violação de pattern:**
 ```csharp
 // ❌ WRONG
 var enemy = FindObjectOfType<EnemyHealth>();
@@ -69,21 +68,21 @@ GameEventBus.Publish(new DamageAppliedEvent
 });
 ```
 
-**Action:** Refactor to use GameEventBus.
+**Action:** Refatore para usar GameEventBus.
 
 ### 4. Save Data Safety
 
-- [ ] Save does NOT serialize `ScriptableObject` refs
-- [ ] Save does NOT serialize `GameObject` refs
-- [ ] Save does NOT serialize `Transform` refs
-- [ ] Save does NOT serialize `MonoBehaviour` refs
-- [ ] Save does NOT serialize `Sprite` refs
-- [ ] Save does NOT serialize `Collider` refs
-- [ ] Save does NOT serialize `Rigidbody` refs
-- [ ] Save uses IDs and simple types (int, string, float, bool)
-- [ ] Save uses `Application.persistentDataPath` (not `StreamingAssets`)
+- [ ] O save NÃO serializa refs de `ScriptableObject`
+- [ ] O save NÃO serializa refs de `GameObject`
+- [ ] O save NÃO serializa refs de `Transform`
+- [ ] O save NÃO serializa refs de `MonoBehaviour`
+- [ ] O save NÃO serializa refs de `Sprite`
+- [ ] O save NÃO serializa refs de `Collider`
+- [ ] O save NÃO serializa refs de `Rigidbody`
+- [ ] O save usa IDs e simple types (int, string, float, bool)
+- [ ] O save usa `Application.persistentDataPath` (não `StreamingAssets`)
 
-**Pattern violation example:**
+**Exemplo de violação de pattern:**
 ```csharp
 // ❌ WRONG
 [System.Serializable]
@@ -102,15 +101,15 @@ class ItemSaveData
 }
 ```
 
-**Action:** Refactor save structure to use IDs only.
+**Action:** Refatore a estrutura de save para usar apenas IDs.
 
-### 5. Game Data in Code
+### 5. Game Data em código
 
-- [ ] No hardcoded balancing numbers in MonoBehaviour
-- [ ] All game data in ScriptableObject with proper prefix (ItemDataSO, WeaponDataSO, etc.)
-- [ ] ScriptableObjects properly referenced from `Assets/_Game/Data/`
+- [ ] Nenhum número de balancing hardcoded em MonoBehaviour
+- [ ] Todo game data em ScriptableObject com o prefix correto (ItemDataSO, WeaponDataSO, etc.)
+- [ ] ScriptableObjects referenciados corretamente a partir de `Assets/_Game/Data/`
 
-**Pattern violation example:**
+**Exemplo de violação de pattern:**
 ```csharp
 // ❌ WRONG
 public class PlayerHealth : MonoBehaviour
@@ -126,16 +125,16 @@ public class PlayerHealth : MonoBehaviour
 }
 ```
 
-**Action:** Move data to ScriptableObject.
+**Action:** Mova o data para ScriptableObject.
 
-### 6. Event Bus Usage
+### 6. Uso do Event Bus
 
-- [ ] Gameplay communication uses `GameEventBus.Publish()`
-- [ ] All event subscribers have `Unsubscribe()` in `OnDisable` or `OnDestroy`
-- [ ] Events have proper prefix: `*Event` (DayStartedEvent, ItemCraftedEvent, etc.)
-- [ ] Events carry payload, not references to systems
+- [ ] Comunicação de gameplay usa `GameEventBus.Publish()`
+- [ ] Todos os subscribers de event têm `Unsubscribe()` em `OnDisable` ou `OnDestroy`
+- [ ] Events têm o prefix correto: `*Event` (DayStartedEvent, ItemCraftedEvent, etc.)
+- [ ] Events carregam payload, não refs a sistemas
 
-**Pattern violation example:**
+**Exemplo de violação de pattern:**
 ```csharp
 // ❌ WRONG
 public class ItemManager : MonoBehaviour
@@ -156,33 +155,33 @@ public class ItemManager : MonoBehaviour
 }
 ```
 
-**Action:** Refactor to publish events.
+**Action:** Refatore para publicar events.
 
 ### 7. Spec Execution Order
 
-- [ ] Did not implement specs ahead of SPEC_EXECUTION_ORDER.md blockers
-- [ ] Did not skip specs in dependency chain
-- [ ] Consulted SPEC_EXECUTION_ORDER.md before starting
+- [ ] Não implementou specs à frente dos blockers de SPEC_EXECUTION_ORDER.md
+- [ ] Não pulou specs na dependency chain
+- [ ] Consultou SPEC_EXECUTION_ORDER.md antes de começar
 
-**Action:** Verify dependencies in `.specs/SPEC_EXECUTION_ORDER.md`.
+**Action:** Verifique as dependencies em `.specs/SPEC_EXECUTION_ORDER.md`.
 
 ### 8. Namespace Safety
 
-- [ ] No namespace called `CindarsHope.Debug` created
-- [ ] Used alternatives: `CindarsHope.Runtime`, `CindarsHope.DebugTools`, `CindarsHope.Diagnostics`, or `CindarsHope.Editor`
+- [ ] Nenhum namespace chamado `CindarsHope.Debug` criado
+- [ ] Usou as alternativas: `CindarsHope.Runtime`, `CindarsHope.DebugTools`, `CindarsHope.Diagnostics`, ou `CindarsHope.Editor`
 
-**Action:** Rename any forbidden namespaces.
+**Action:** Renomeie qualquer namespace proibido.
 
-### 9. Status & Documentation Integrity
+### 9. Integridade de Status & Documentation
 
-- [ ] No spec marked as implemented without evidence in repo
-- [ ] IMPLEMENTATION_STATUS.md claims match actual code/asset state
-- [ ] PROJECT_LOG.md updated when task was significant
-- [ ] No orphaned entries in registries
+- [ ] Nenhuma spec marcada como implementada sem evidência no repo
+- [ ] Claims de IMPLEMENTATION_STATUS.md batem com o estado real de code/asset
+- [ ] PROJECT_LOG.md atualizado quando a tarefa foi significativa
+- [ ] Nenhuma entry órfã em registries
 
-**Action:** Provide evidence or remove claim.
+**Action:** Forneça evidência ou remova a claim.
 
-## Audit Output Format
+## Formato de saída da auditoria
 
 ```text
 Non-Regression Audit Report
@@ -237,7 +236,7 @@ Residual risk:
   (if any)
 ```
 
-## Examples
+## Exemplos
 
 ### PASS
 
@@ -289,16 +288,16 @@ Residual risk:
   CRITICAL: Task cannot proceed to closeout until these are fixed.
 ```
 
-## Rules
+## Regras
 
-- [ ] Do NOT claim PASS without checking all 9 items
-- [ ] Do NOT ignore WARNING (early signs of larger problems)
-- [ ] Do NOT accept FAIL without fixing
-- [ ] Do NOT hide violations in summary
-- [ ] Do NOT claim compliance without evidence
+- [ ] NÃO declare PASS sem checar todos os 9 itens
+- [ ] NÃO ignore WARNING (sinais precoces de problemas maiores)
+- [ ] NÃO aceite FAIL sem corrigir
+- [ ] NÃO esconda violações no summary
+- [ ] NÃO declare compliance sem evidência
 
-## Integration
+## Relacionados
 
-- **Spec Execution** → Calls this before Phase 4: Closeout
-- **Implementation Closeout** → Requires PASS/WARNING/FAIL result
-- **Finish-Spec** → Cannot complete without this audit
+- **Spec Execution** → Chama esta antes do Phase 4: Closeout
+- **Implementation Closeout** → Requer um resultado PASS/WARNING/FAIL
+- **Finish-Spec** → Não pode completar sem esta auditoria

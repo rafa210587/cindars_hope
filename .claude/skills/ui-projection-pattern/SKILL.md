@@ -1,13 +1,13 @@
 ---
 name: ui-projection-pattern
-description: Build UI using the project's projection/ViewModel convention — pure C# state projections with enums + computed properties, thin MonoBehaviour views, EditMode tests. Use for any new screen, HUD element or panel (fable_14 UI canvas integration, fable_20 calendar HUD, fable_38 minimap).
+description: Constrói UI usando a convenção de projection/ViewModel do projeto — projections de estado em C# puro com enums + computed properties, views MonoBehaviour finas, EditMode tests. Use para qualquer nova tela, elemento de HUD ou panel (fable_14 UI canvas integration, fable_20 calendar HUD, fable_38 minimap).
 ---
 
-# Skill: UI Projection Pattern
+# Skill: Padrão de Projection de UI
 
-The project's UI follows MVVM-lite ("projections", WAVE 04/11): 20+ ViewModels with ~96 EditMode tests. Follow this convention for every new screen.
+A UI do projeto segue MVVM-lite ("projections", WAVE 04/11): 20+ ViewModels com ~96 EditMode tests. Siga esta convenção para toda nova tela.
 
-## The pattern (from CraftingRecipeViewModel and siblings)
+## O padrão (de CraftingRecipeViewModel e similares)
 
 ```csharp
 namespace CindarsHope.UI.<Area>
@@ -32,25 +32,25 @@ namespace CindarsHope.UI.<Area>
 }
 ```
 
-Layers:
+Camadas:
 
-| Layer | Type | Lives in | Tested by |
+| Camada | Tipo | Vive em | Testado por |
 |---|---|---|---|
 | ViewModel / Projection / Model | pure C# class | `Scripts/UI/<Area>/` | EditMode (`Tests/EditMode/UI/<Area>/`) |
-| Builder/Service that fills the VM from game state | pure C# | same area | EditMode |
-| View (panel controller, Text/Image binding) | MonoBehaviour | same area | human Play Mode scenario |
+| Builder/Service que preenche o VM a partir do game state | pure C# | mesma área | EditMode |
+| View (panel controller, binding de Text/Image) | MonoBehaviour | mesma área | cenário humano de Play Mode |
 
-## Rules
+## Regras
 
-1. **ViewModel = zero Unity UI dependencies.** Only domain usings (e.g., `CindarsHope.Craft.Data`). Sprites/colors resolve in the View by ID/state.
-2. **State enum over booleans.** One enum captures mutually-exclusive states; computed bools derive from it. Prevents impossible combinations (locked AND craftable).
-3. **Every disabled/locked/error state carries a reason string** the view can show (existing convention: `StateDescription`, `LockReason`). No silently disabled buttons.
-4. **Views rebuild from events, never poll.** Subscribe to GameEventBus events (skill: event-bus-pattern), rebuild the VM, rebind. Unsubscribe on disable.
-5. **Modal screens** go through the ModalManager stack + input focus routing (skill: ui-modal-stack; `InputFocusModalRoutingModel` is itself a tested projection).
-6. **Empty/error/confirmation states** are part of the VM design from day one (existing precedent: SPEC 04 empty/error/confirmation patterns; tests like `MenuProjectionTests`).
+1. **ViewModel = zero dependências de Unity UI.** Apenas usings de domínio (ex.: `CindarsHope.Craft.Data`). Sprites/cores resolvem na View por ID/state.
+2. **State enum em vez de booleans.** Um enum captura estados mutuamente exclusivos; computed bools derivam dele. Previne combinações impossíveis (locked AND craftable).
+3. **Todo estado disabled/locked/error carrega uma reason string** que a view pode mostrar (convenção existente: `StateDescription`, `LockReason`). Sem botões silenciosamente desabilitados.
+4. **Views fazem rebuild a partir de events, nunca poll.** Faça subscribe aos events do GameEventBus (skill: event-bus-pattern), refaça o rebuild do VM, refaça o rebind. Faça unsubscribe no disable.
+5. **Telas modais** passam pelo stack do ModalManager + roteamento de input focus (skill: ui-modal-stack; `InputFocusModalRoutingModel` é ele próprio uma projection testada).
+6. **Estados empty/error/confirmation** fazem parte do design do VM desde o dia um (precedente existente: padrões empty/error/confirmation da SPEC 04; testes como `MenuProjectionTests`).
 
-## Mandatory tests (skill: editmode-test-authoring)
+## Testes obrigatórios (skill: editmode-test-authoring)
 
-For each VM/projection: state derivation per game-state input (one test per state), computed property consistency, reason populated for every non-actionable state, empty-collection projection. Precedents: `CraftingRecipeViewModelTests`, `MenuProjectionTests`, `InventoryEquipmentTooltipTests`, `HudNotificationDebugProjectionTests`.
+Para cada VM/projection: derivação de state por input de game-state (um teste por state), consistência de computed property, reason preenchida para todo state não-acionável, projection de coleção vazia. Precedentes: `CraftingRecipeViewModelTests`, `MenuProjectionTests`, `InventoryEquipmentTooltipTests`, `HudNotificationDebugProjectionTests`.
 
-The View (MonoBehaviour) gets a human scenario covering open/close, Esc, focus, input blocking (rule: testing-quality-gate UI section).
+A View (MonoBehaviour) ganha um cenário humano cobrindo open/close, Esc, focus, input blocking (rule: testing-quality-gate seção UI).

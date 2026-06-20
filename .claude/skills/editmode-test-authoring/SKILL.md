@@ -1,21 +1,21 @@
 ---
 name: editmode-test-authoring
-description: Write EditMode tests following the project's existing conventions (62 tests, NUnit, domain folders). Use whenever the Testing Quality Gate requires automated tests for deterministic logic — save DTOs, quest conditions, economy pricing, combat formulas, calendar, crafting timing.
+description: Escreve EditMode tests seguindo as convenções existentes do projeto (62 tests, NUnit, domain folders). Use sempre que o Testing Quality Gate exigir testes automatizados para deterministic logic — save DTOs, quest conditions, economy pricing, combat formulas, calendar, crafting timing.
 ---
 
 # Skill: EditMode Test Authoring
 
-## Where tests live (mandatory)
+## Onde os testes vivem (obrigatório)
 
 ```
 Assets/_Game/Tests/EditMode/<Domain>/<Thing>Tests.cs
 ```
 
-Existing domains: City, Combat, Companions, Core (Data/Events), Economy, Farm, Fonte, MainProgression, Player, Quests, UI (Calendar/Crafting/Dialogue/Input), World (Calendar).
+Domains existentes: City, Combat, Companions, Core (Data/Events), Economy, Farm, Fonte, MainProgression, Player, Quests, UI (Calendar/Crafting/Dialogue/Input), World (Calendar).
 
-NEVER under `Assets/_Game/Scripts/**` — the `protected-path-guard` hook blocks it and the spec_quality_gate forbids it.
+NUNCA sob `Assets/_Game/Scripts/**` — o hook `protected-path-guard` bloqueia isso e o spec_quality_gate proíbe.
 
-## Template (matches existing 62 tests)
+## Template (bate com os 62 tests existentes)
 
 ```csharp
 using NUnit.Framework;
@@ -46,24 +46,24 @@ namespace CindarsHope.Tests.EditMode.<Domain>
 }
 ```
 
-## Test family conventions already used in the project
+## Convenções de test family já usadas no projeto
 
-| Suffix | Tests | Example |
+| Suffix | Testes | Exemplo |
 |---|---|---|
-| `*ContractTests` | DTO/interface shape, default values | `LootTableContractTests`, `QuestDefinitionContractTests` |
-| `*IdempotencyTests` | applying twice = applying once | `QuestRewardIdempotencyTests` |
-| `*ValidationTests` | data integrity across catalogs | `EconomyAntiArbitrageValidationTests`, `StableIdsValidationTests` |
-| `*WiringTests` | registration completeness | `FatigueWiringTests`, `OrphanSystemsWiringTests` |
-| `*SaveLoadTests` | round-trip + null/missing section | `QuestSaveLoadTests` |
+| `*ContractTests` | shape de DTO/interface, valores default | `LootTableContractTests`, `QuestDefinitionContractTests` |
+| `*IdempotencyTests` | aplicar duas vezes = aplicar uma vez | `QuestRewardIdempotencyTests` |
+| `*ValidationTests` | integridade de dados across catalogs | `EconomyAntiArbitrageValidationTests`, `StableIdsValidationTests` |
+| `*WiringTests` | completude do registro | `FatigueWiringTests`, `OrphanSystemsWiringTests` |
+| `*SaveLoadTests` | round-trip + section null/missing | `QuestSaveLoadTests` |
 
-## Rules
+## Regras
 
-- Test pure C# services/DTOs — no scene objects, no MonoBehaviour, no Unity lifecycle.
-- One behavior per test; helper factories for state setup; no shared mutable state between tests.
-- Save-related tests must cover: defaults, null/missing section fallback, invalid ID fallback, idempotency after reload.
-- Regression tests (bugfix): record evidence that it fails before the fix and passes after.
+- Teste C# puro de services/DTOs — sem scene objects, sem MonoBehaviour, sem Unity lifecycle.
+- Um comportamento por test; helper factories para o setup do state; sem shared mutable state entre tests.
+- Testes ligados a save devem cobrir: defaults, fallback de section null/missing, fallback de invalid ID, idempotency depois do reload.
+- Regression tests (bugfix): registre evidência de que falha antes do fix e passa depois.
 
-## Run & evidence
+## Validação
 
 ```powershell
 dotnet build .\Assembly-CSharp.csproj --no-restore
@@ -71,4 +71,4 @@ if ($LASTEXITCODE -ne 0) { exit 1 }
 .\tools\unity\RunUnityEditModeTests.ps1
 ```
 
-Report block (Testing Quality Gate format) goes in the execution report. Never claim "tests passed" without runner output (rule: validation-truth).
+O report block (formato Testing Quality Gate) vai no execution report. Nunca afirme "tests passed" sem o output do runner (rule: validation-truth).

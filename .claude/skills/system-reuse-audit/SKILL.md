@@ -1,19 +1,19 @@
 ---
 name: system-reuse-audit
-description: Pre-creation audit — before creating any new manager, service, SO type or system, verify nothing equivalent already exists. Use at Phase 0 of every spec and whenever about to create a class whose name/concept may already exist.
+description: Auditoria pré-criação — antes de criar qualquer novo manager, service, SO type ou system, verifique que nada equivalente já existe. Use no Phase 0 de toda spec e sempre que estiver prestes a criar uma classe cujo nome/conceito pode já existir.
 ---
 
 # Skill: System Reuse Audit
 
-## Why this skill exists (real incidents in this repo)
+## Por que existe (incidentes reais neste repo)
 
-- `Scripts/Craft/` (CraftingManager, RecipeDataSO, RecipeDatabaseSO — 12 files) and `Scripts/Crafting/` (CraftingService, RecipeDefinition, RecipeType — 5 files) are TWO parallel crafting systems.
-- `StatusEffectSO` exists twice: `Combat/StatusEffectSO.cs` and `Combat/StatusEffect/StatusEffectSO.cs`.
-- `SkillActionSO` exists twice: `Combat/Skills/SkillActionSO.cs` and `Skills/SkillActionSO.cs`.
+- `Scripts/Craft/` (CraftingManager, RecipeDataSO, RecipeDatabaseSO — 12 arquivos) e `Scripts/Crafting/` (CraftingService, RecipeDefinition, RecipeType — 5 arquivos) são DOIS sistemas de crafting paralelos.
+- `StatusEffectSO` existe duas vezes: `Combat/StatusEffectSO.cs` e `Combat/StatusEffect/StatusEffectSO.cs`.
+- `SkillActionSO` existe duas vezes: `Combat/Skills/SkillActionSO.cs` e `Skills/SkillActionSO.cs`.
 
-`spec_quality_gate` marks "criou sistema paralelo quando deveria reusar" as `NEEDS_REWORK`. The `runtime-code-guard` hook flags duplicate class names at Write time — this skill is the audit you run BEFORE writing.
+`spec_quality_gate` marca "criou sistema paralelo quando deveria reusar" como `NEEDS_REWORK`. O hook `runtime-code-guard` sinaliza nomes de classe duplicados no momento do Write — esta skill é a auditoria que você roda ANTES de escrever.
 
-## Audit procedure (5 minutes, before creating anything)
+## Procedimento de auditoria (5 minutos, antes de criar qualquer coisa)
 
 ```powershell
 # 1. Exact name and near-names
@@ -26,16 +26,16 @@ git grep -lE "<synonym1>|<synonym2>" -- "Assets/_Game/Scripts/*.cs"
 Get-ChildItem Assets\_Game\Scripts -Directory
 ```
 
-## Decision matrix
+## Matriz de decisão
 
-| Finding | Action |
+| Achado | Ação |
 |---|---|
-| Same concept, active system | **Reuse/extend it.** Wire your spec into it. |
-| Same concept, two existing systems (e.g., Craft vs Crafting) | **STOP — report to human.** Do not pick one silently and do not add a third. |
-| Similar name, different concept | Rename YOUR new type to remove ambiguity. |
-| Nothing found | Create, following domain conventions (`<Thing>DataSO`, service in domain folder). |
+| Mesmo conceito, sistema ativo | **Reuse/estenda.** Faça o wiring da sua spec nele. |
+| Mesmo conceito, dois sistemas existentes (ex.: Craft vs Crafting) | **PARE — reporte ao humano.** Não escolha um silenciosamente e não adicione um terceiro. |
+| Nome similar, conceito diferente | Renomeie o SEU novo tipo para remover a ambiguidade. |
+| Nada encontrado | Crie, seguindo as convenções de domínio (`<Thing>DataSO`, service na pasta do domínio). |
 
-## Required evidence in the execution report
+## Evidência obrigatória no execution report
 
 ```text
 ## Existing Systems Audit
@@ -45,4 +45,4 @@ Created new: <list + one-line justification each>
 Conflicts reported to human: <none | list>
 ```
 
-A `BUILD_VALIDATED` claim without this section is invalid (spec_quality_gate checklist item 3).
+Uma reivindicação `BUILD_VALIDATED` sem esta seção é inválida (item 3 do checklist do spec_quality_gate).

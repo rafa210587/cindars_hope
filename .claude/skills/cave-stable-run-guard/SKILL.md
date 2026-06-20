@@ -1,27 +1,26 @@
 ---
 name: cave-stable-run-guard
-description: Guardrails for cave procedural/runtime edits under the FASE9F stable run rule
-version: 1.0
+description: Guardrails para edits procedurais/runtime da cave sob a regra de stable run da FASE9F. Use antes de editar qualquer código de procedural, materialization, runtime state, snapshot, spawn, resource node, exit, checkpoint ou save da cave.
 ---
 
-# Cave Stable Run Guard
+# Skill: Guard de Stable Run da Cave
 
-Use this skill before editing any cave procedural, materialization, runtime state, snapshot, spawn, resource node, exit, checkpoint, or save code.
+Dentro do mesmo `CaveRunSeed`, um `CaveLevel` já visitado não pode re-rolar layout, inimigos nem resource nodes; use sempre seeds determinísticos e IDs estáveis.
 
-## Mandatory Reading
+## Leitura mínima
 
-Read these first:
+Leia estes primeiro:
 
 - `docs/amendments/FASE9F_CAVE_STABLE_RUN_AND_REPLAY_AMENDMENT_v1.0.md`
 - `docs/roadmap/FASE9F_CAVE_STABLE_RUN_ROADMAP_PR170_192.md`
 - `docs/refinements/implementados/ref_pr170_192_cave_stable_run_pre_implementation_audit.md`
 
-## Core Rule
+## Regra central
 
-Within the same `CaveRunSeed`, a previously visited `CaveLevel` must keep:
+Dentro do mesmo `CaveRunSeed`, um `CaveLevel` visitado anteriormente deve manter:
 
 - layout;
-- entrance and exit;
+- entrance e exit;
 - enemy composition;
 - enemy count;
 - enemy positions;
@@ -30,42 +29,42 @@ Within the same `CaveRunSeed`, a previously visited `CaveLevel` must keep:
 - resource node count;
 - resource node positions;
 - depleted node state;
-- boss/miniboss state when applicable.
+- boss/miniboss state quando aplicável.
 
-Procedural content may change only on:
+O conteúdo procedural só pode mudar em:
 
 - new game;
 - KO/death/defeat;
 - explicit debug run regeneration.
 
-`ForwardExit` and `BackExit` must not change `CaveRunSeed`.
+`ForwardExit` e `BackExit` não podem mudar o `CaveRunSeed`.
 
-## Implementation Checklist
+## Checklist de implementação
 
-- [ ] Do not reroll visited level content on re-entry.
-- [ ] Keep seeds deterministic: `CaveWorldSeed + CaveRunSeed + CaveLevel + stable salt`.
-- [ ] Use stable IDs for runtime content; do not generate random GUIDs for stable run content.
-- [ ] Save only IDs/simple DTO data.
-- [ ] Do not serialize `GameObject`, `Transform`, `MonoBehaviour`, `ScriptableObject`, `Sprite`, `Collider`, or `Rigidbody`.
-- [ ] Materializer should materialize from generated/snapshot data, not silently invent gameplay content.
-- [ ] If full snapshot support is out of scope, explicitly document that limitation.
+- [ ] Não re-rolar o conteúdo de um level visitado ao re-entrar.
+- [ ] Manter os seeds determinísticos: `CaveWorldSeed + CaveRunSeed + CaveLevel + stable salt`.
+- [ ] Usar IDs estáveis para runtime content; não gerar GUIDs aleatórios para stable run content.
+- [ ] Salvar apenas IDs/dados de DTO simples.
+- [ ] Não serializar `GameObject`, `Transform`, `MonoBehaviour`, `ScriptableObject`, `Sprite`, `Collider` ou `Rigidbody`.
+- [ ] O materializer deve materializar a partir de dados gerados/snapshot, não inventar gameplay content silenciosamente.
+- [ ] Se o suporte completo a snapshot estiver fora de escopo, documentar essa limitação explicitamente.
 
-## Red Flags
+## Red flags
 
-Stop and re-check scope if the change:
+Pare e reveja o escopo se a mudança:
 
-- changes `CaveRunSeed` on portal use;
-- adds `Guid.NewGuid()` or timestamp to enemy/resource instance IDs;
-- calls random without a deterministic seed;
-- modifies cave save schema without migration;
-- adds respawn/redistribution/boss completion when the spec excludes it;
-- uses runtime scene search to wire cave systems.
+- muda `CaveRunSeed` no uso de portal;
+- adiciona `Guid.NewGuid()` ou timestamp a IDs de instância de enemy/resource;
+- chama random sem um seed determinístico;
+- modifica o save schema da cave sem migration;
+- adiciona respawn/redistribution/boss completion quando a spec exclui isso;
+- usa runtime scene search para fazer wiring de sistemas da cave.
 
-## Closeout Notes
+## Fechamento
 
-When closing a cave task, report:
+Ao fechar uma tarefa de cave, reporte:
 
-- how run stability is preserved;
-- whether first-visit vs revisit behavior changed;
-- whether snapshot/save was changed;
-- what remains for the next SPEC 14 slice.
+- como a estabilidade do run é preservada;
+- se o comportamento de first-visit vs revisit mudou;
+- se o snapshot/save foi alterado;
+- o que resta para a próxima slice da SPEC 14.

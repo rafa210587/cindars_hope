@@ -1,37 +1,37 @@
 ---
 name: scene-interactable-wiring
-description: Add a new IInteractable object to a scene using CreateScene editor scripts, reward strategy, and depletion guard
-version: 1.0
-when_to_use: Any task adding crops, resources, fishing spots, chests, or other interactable objects to FarmScene, CaveScene, or TownScene
+description: Adiciona um novo objeto IInteractable a uma scene usando CreateScene editor scripts, reward strategy e depletion guard. Use em qualquer tarefa que adicione crops, resources, fishing spots, chests ou outros objetos interativos em FarmScene, CaveScene ou TownScene.
 ---
 
-# Scene Interactable Wiring Skill
+# Skill: Wiring de Interactable em Scene
 
-## Use When
+Esta skill cobre a adição de objetos `IInteractable` a uma scene seguindo o padrão de CreateScene editor scripts, com reward strategy e depletion guard.
 
-Task requires:
-- Adding a new interactable object type (tree, rock, forage, chest, spring, fishing spot)
-- Wiring reward delivery for player interaction (item drop, currency, XP)
-- Adding depletion state (resource depletes after harvest, respawns after time)
-- Registering interactable in a CreateScene editor script
+## Quando usar
 
-## Do NOT Use When
+A tarefa exige:
+- Adicionar um novo tipo de objeto interativo (tree, rock, forage, chest, spring, fishing spot)
+- Fazer o wiring da entrega de reward para interação do player (item drop, currency, XP)
+- Adicionar depletion state (resource deplete após harvest, respawna depois de um tempo)
+- Registrar um interactable em um CreateScene editor script
 
-- Interactable is NPC dialogue/shop → use `npc-dialogue-authoring`
-- Interactable is a UI modal → use `ui-modal-stack`
-- Change is purely to ScriptableObject data (no runtime behavior) → use `combat-data-wiring` or `bootstrap-wiring`
+## Quando NÃO usar
 
-## Required Reads
+- Interactable é NPC dialogue/shop → use `npc-dialogue-authoring`
+- Interactable é um UI modal → use `ui-modal-stack`
+- A mudança é puramente em dados de ScriptableObject (sem comportamento runtime) → use `combat-data-wiring` ou `bootstrap-wiring`
+
+## Leitura mínima
 
 1. `CLAUDE.md`
-2. Target spec
-3. Relevant prior interactable report (e.g., `docs/validation/WAVE_INTEGRATION_06_RESOURCE_INTERACTABLE_REPORT.md`)
+2. Spec alvo
+3. Report de interactable anterior relevante (ex.: `docs/validation/WAVE_INTEGRATION_06_RESOURCE_INTERACTABLE_REPORT.md`)
 
 ---
 
-## Core Architecture
+## Arquitetura central
 
-### IInteractable Contract
+### Contrato IInteractable
 
 ```csharp
 public interface IInteractable
@@ -42,25 +42,25 @@ public interface IInteractable
 }
 ```
 
-**Always implement this interface.** Do not create parallel interaction systems.
+**Sempre implemente esta interface.** Não crie sistemas de interação paralelos.
 
-### Existing interactables to reuse or extend
+### Interactables existentes para reusar ou estender
 
-| Type | Class | File |
+| Tipo | Classe | Arquivo |
 |------|-------|------|
 | Crop | `FarmPlot` | `Assets/_Game/Scripts/Farm/FarmPlot.cs` |
 | Tree | `TreeResourceInteractable` | `Assets/_Game/Scripts/Farm/Interactables/` |
-| Rock | `RockResourceInteractable` | same |
-| Forage | `ForageResourceInteractable` | same |
+| Rock | `RockResourceInteractable` | mesmo |
+| Forage | `ForageResourceInteractable` | mesmo |
 | Fishing | `FishingSpot` | `Assets/_Game/Scripts/Farm/FishingSpot.cs` |
 
-If the new type is structurally identical to one of these, **extend** it (via subclass or config parameter). Do NOT create a parallel class.
+Se o novo tipo for estruturalmente idêntico a um destes, **estenda** ele (via subclass ou config parameter). NÃO crie uma classe paralela.
 
 ---
 
-## Reward Strategy
+## Reward strategy
 
-### Canonical reward path
+### Caminho canônico de reward
 
 ```csharp
 // Always go through InventoryManager.AddItem
@@ -75,20 +75,20 @@ if (added)
 }
 ```
 
-**Rule**: Depletion happens ONLY on `AddItem` success. If the inventory is full or item ID is invalid, the resource is NOT depleted — player can try again.
+**Regra**: A depletion acontece SOMENTE no sucesso do `AddItem`. Se o inventory estiver cheio ou o item ID for inválido, o resource NÃO deplete — o player pode tentar de novo.
 
-### ClampedAmount guard
+### Guard de ClampedAmount
 
 ```csharp
 var actualAmount = Mathf.Clamp(amount, 1, maxStack);
 var added = inventory.AddItem(itemId, actualAmount);
 ```
 
-Always clamp amount. Never pass unclamped values.
+Sempre faça clamp do amount. Nunca passe valores sem clamp.
 
 ---
 
-## Depletion State
+## Depletion state
 
 ```csharp
 public bool IsDepleted { get; private set; }
@@ -112,7 +112,7 @@ private IEnumerator RespawnAfterDelay(float seconds)
 }
 ```
 
-Respawn time is `TODO_INTEGRATION_NOT_FINAL` unless spec defines it.
+O respawn time é `TODO_INTEGRATION_NOT_FINAL` a menos que a spec o defina.
 
 ---
 
@@ -129,9 +129,9 @@ private void PublishFeedback(string itemId, int amount)
 
 ---
 
-## CreateScene Wiring (NOT scene YAML)
+## Wiring via CreateScene (NÃO scene YAML)
 
-**Never edit `.unity` YAML directly.** Register new interactables in the relevant `CreateScene` editor script:
+**Nunca edite o YAML do `.unity` diretamente.** Registre novos interactables no CreateScene editor script relevante:
 
 ```csharp
 // In CreateMvpFarmScene.cs (or equivalent)
@@ -153,30 +153,30 @@ private void CreateTreeResource(string name, Vector2 position)
 }
 ```
 
-After adding to CreateScene, document in wiring instructions:
+Depois de adicionar ao CreateScene, documente nas wiring instructions:
 ```
 docs/validation/WAVE_INTEGRATION_<N>_HUMAN_UNITY_<SLUG>_WIRING_INSTRUCTIONS.md
 ```
 
 ---
 
-## When to Reuse FishingSpot vs. Create New
+## Quando reusar FishingSpot vs. criar nova
 
-Use existing `FishingSpot.cs` if:
-- Interaction is "stand near water and press interact"
-- Reward is fish items
-- Position is a fixed water-adjacent point
+Use o `FishingSpot.cs` existente se:
+- A interação é "ficar perto da água e apertar interact"
+- O reward são itens de peixe (fish)
+- A posição é um ponto fixo adjacente à água
 
-Create new class if:
-- Interaction mechanic is fundamentally different (minigame, timed, etc.)
-- Reward type is completely different
-- Spec explicitly requires new class
+Crie uma nova classe se:
+- A mecânica de interação é fundamentalmente diferente (minigame, com timing, etc.)
+- O tipo de reward é completamente diferente
+- A spec exige explicitamente uma nova classe
 
 ---
 
-## Interaction Trigger (Player side)
+## Interaction trigger (lado do Player)
 
-The player interaction system reads `IInteractable.CanInteract` and calls `Interact()`. Verify the player has:
+O sistema de interação do player lê `IInteractable.CanInteract` e chama `Interact()`. Verifique que o player tem:
 ```csharp
 // PlayerInteractionController or equivalent
 if (_nearbyInteractable != null && _nearbyInteractable.CanInteract)
@@ -186,14 +186,14 @@ if (_nearbyInteractable != null && _nearbyInteractable.CanInteract)
 }
 ```
 
-If the player interaction controller doesn't exist yet → document:
+Se o player interaction controller ainda não existe → documente:
 ```
 PLAYER_INTERACTION_CONTROLLER_DEBT
 ```
 
 ---
 
-## Debt Tags
+## Debt tags
 
 ```
 TODO_INTEGRATION_NOT_FINAL
@@ -205,7 +205,7 @@ INTERACTABLE_ANIMATION_DEFERRED  — no depletion visual yet
 
 ---
 
-## Validation
+## Validação
 
 ```powershell
 dotnet build .\Assembly-CSharp.csproj --no-restore
@@ -214,26 +214,26 @@ dotnet build .\Assembly-CSharp-Editor.csproj --no-restore
 if ($LASTEXITCODE -ne 0) { Write-Host "EDITOR BUILD FAILED"; exit 1 }
 ```
 
-Human Play Mode checklist must cover:
-- Walk up to interactable → prompt appears
-- Press interact key → item added to inventory
-- Resource depletes after harvest
-- Trying to interact with depleted resource → nothing happens
-- If respawn configured → resource reappears after delay
-- Full inventory → resource NOT depleted
+O checklist humano de Play Mode deve cobrir:
+- Andar até o interactable → o prompt aparece
+- Apertar a tecla de interact → item adicionado ao inventory
+- Resource deplete após o harvest
+- Tentar interagir com resource depletado → nada acontece
+- Se respawn configurado → resource reaparece após o delay
+- Inventory cheio → resource NÃO deplete
 
 ---
 
-## Common Regressions
+## Regressões comuns
 
-- Depleting on `AddItem` call, not on `AddItem` success → item lost if inventory full
-- Forgetting `ClampedAmount` guard → stack overflow on `AddItem`
-- Creating new interaction controller instead of implementing `IInteractable`
-- Editing scene YAML instead of CreateScene script
-- Not publishing feedback event → player has no indication of what happened
+- Depletar na chamada do `AddItem`, e não no sucesso do `AddItem` → item perdido se o inventory estiver cheio
+- Esquecer o guard de `ClampedAmount` → stack overflow no `AddItem`
+- Criar um novo interaction controller em vez de implementar `IInteractable`
+- Editar o scene YAML em vez do CreateScene script
+- Não publicar o feedback event → o player não tem indicação do que aconteceu
 
-## Stop Conditions
+## Quando parar e reportar
 
-- Scene YAML must be edited and no CreateScene script exists → `CODE_READY_HUMAN_UNITY_SCENE_ACTION_REQUIRED`
-- New interactable type requires new physics layer or tilemap → `BLOCKED` (requires ProjectSettings)
-- Spec requires save/load of depletion state → use `save-load-pattern` skill in addition
+- O scene YAML precisa ser editado e não existe CreateScene script → `CODE_READY_HUMAN_UNITY_SCENE_ACTION_REQUIRED`
+- O novo tipo de interactable exige um novo physics layer ou tilemap → `BLOCKED` (exige ProjectSettings)
+- A spec exige save/load do depletion state → use também a skill `save-load-pattern`

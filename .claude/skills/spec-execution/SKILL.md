@@ -1,26 +1,26 @@
 ---
 name: spec-execution
-description: Execute a spec respecting scope, permitted files, mandatory validations, and phase-gated closeout
-version: 2.0
-when_to_use: Implementing any spec from .specs/a_implementar/
+description: Executa uma spec respeitando scope, arquivos permitidos, validações obrigatórias e closeout phase-gated. Use ao implementar qualquer spec de .specs/a_implementar/.
 ---
 
-# Spec Execution Skill
+# Skill: Execução de Spec
 
-## Use When
+Esta skill cobre a implementação e o avanço de uma spec da fila `.specs/a_implementar/`, do Phase 0 ao closeout.
 
-Task involves implementing or advancing a spec from `.specs/a_implementar/`.
+## Quando usar
 
-## Required Reads
+A tarefa envolve implementar ou avançar uma spec de `.specs/a_implementar/`.
+
+## Leitura mínima
 
 1. `CLAUDE.md`
 2. `docs/project/CURRENT_STATE.md`
-3. `.specs/SPEC_WAVE_EXECUTION_PROTOCOL.md` — execution phases and governance
-4. `.specs/SPEC_VALIDATION_MATRIX_MASTER.md` — validation requirements by change type
-5. Target spec
-6. Files explicitly in spec scope
+3. `.specs/SPEC_WAVE_EXECUTION_PROTOCOL.md` — execution phases e governança
+4. `.specs/SPEC_VALIDATION_MATRIX_MASTER.md` — requisitos de validação por tipo de mudança
+5. Spec alvo
+6. Arquivos explicitamente no scope da spec
 
-## Do Not Read By Default
+## Não ler por padrão
 
 ```
 PROJECT_LOG.md
@@ -30,86 +30,86 @@ ROADMAP.md
 memory/ (unless spec cites prior pattern)
 ```
 
-## Conditional Required Reads (runtime/code specs)
+## Leitura mínima condicional (specs de runtime/código)
 
-If implementing a spec that changes runtime behavior or code:
+Se for implementar uma spec que muda comportamento runtime ou código:
 
-- `.claude/rules/testing-quality-gate.md` — testing requirements and evidence rules
-- `docs/validation/FINAL_HUMAN_VALIDATION_BY_WAVE.md` — human validation checklist
+- `.claude/rules/testing-quality-gate.md` — requisitos de testing e regras de evidência
+- `docs/validation/FINAL_HUMAN_VALIDATION_BY_WAVE.md` — checklist de human validation
 
-## Procedure
+## Procedimento
 
-### Phase 0: Preparation
+### Phase 0: Preparação
 
-1. Read CURRENT_STATE.md — check for blockers
-2. Read target spec — identify scope, dependencies, validation requirements
-3. Check if dependencies are resolved
-4. Identify applicable sub-skills (see below)
-5. If blocked: stop and report
+1. Leia o CURRENT_STATE.md — cheque por blockers
+2. Leia a spec alvo — identifique scope, dependencies, requisitos de validação
+3. Cheque se as dependencies estão resolvidas
+4. Identifique as sub-skills aplicáveis (veja abaixo)
+5. Se bloqueado: pare e reporte
 
 ### Phase 1: Scope Lock
 
-- [ ] Permitted files listed
-- [ ] Forbidden files listed (docs_old, root specs, files outside spec scope)
-- [ ] Mandatory validations identified
-- [ ] Phase 2-3 requirement determined (does spec need Unity validators / Play Mode?)
+- [ ] Arquivos permitidos listados
+- [ ] Arquivos proibidos listados (docs_old, root specs, arquivos fora do scope da spec)
+- [ ] Validações obrigatórias identificadas
+- [ ] Requisito de Phase 2-3 determinado (a spec precisa de Unity validators / Play Mode?)
 
-### Phase 2: Implementation
+### Phase 2: Implementação
 
-- [ ] Implement per spec exactly
-- [ ] No scope amplification
-- [ ] No forbidden pattern introduction (GameObject.Find, direct gameplay calls)
-- [ ] Commit frequently in Portuguese
-- [ ] Do NOT move spec to implementados/ yet
+- [ ] Implemente exatamente conforme a spec
+- [ ] Sem amplificação de scope
+- [ ] Sem introdução de pattern proibido (GameObject.Find, chamadas diretas de gameplay)
+- [ ] Faça commit com frequência em português
+- [ ] NÃO mova a spec para implementados/ ainda
 
-### Phase 3: Validation
+### Phase 3: Validação
 
-Run `/validate-spec`:
-- [ ] Docs validation (if docs changed)
-- [ ] C# runtime build (if .cs changed)
-- [ ] C# editor build (if editor .cs changed)
-- [ ] Record NOT RUN with reason for Phase 4-5
+Rode `/validate-spec`:
+- [ ] Docs validation (se docs mudaram)
+- [ ] C# runtime build (se .cs mudou)
+- [ ] C# editor build (se editor .cs mudou)
+- [ ] Registre NOT RUN com o motivo para Phase 4-5
 
-Run `/review-non-regression`:
-- [ ] No forbidden patterns
-- [ ] No out-of-scope file edits
-- [ ] No Unity refs in save
+Rode `/review-non-regression`:
+- [ ] Sem patterns proibidos
+- [ ] Sem edições de arquivos fora de scope
+- [ ] Sem Unity refs no save
 
 ### Phase 4: Execution Report & Test Scenario
 
-Create `docs/validation/<spec_id>_execution_report.md`.
+Crie `docs/validation/<spec_id>_execution_report.md`.
 
-Record phase status using taxonomy:
+Registre o status de fase usando a taxonomy:
 
-| Status | Meaning |
+| Status | Significado |
 |--------|---------|
 | `BUILD_VALIDATED` | dotnet build + docs PASS |
 | `UNITY_VALIDATED` | Unity validators PASS |
 | `PLAYMODE_VALIDATED` | Play Mode checklist PASS |
-| `ACCEPTED` | All required phases complete |
-| `DEFERRED_TO_FINAL_HUMAN_VALIDATION` | Code complete; Phase 3 human validation deferred to wave-end batch (per FINAL_HUMAN_VALIDATION_BY_WAVE.md) |
-| `PARTIAL` | Some phases complete, some not |
-| `BLOCKED` | Cannot proceed |
+| `ACCEPTED` | Todas as fases obrigatórias completas |
+| `DEFERRED_TO_FINAL_HUMAN_VALIDATION` | Código completo; Phase 3 human validation adiada para o batch de fim de wave (conforme FINAL_HUMAN_VALIDATION_BY_WAVE.md) |
+| `PARTIAL` | Algumas fases completas, outras não |
+| `BLOCKED` | Não é possível prosseguir |
 
-**If runtime/gameplay changes (Phase 2-3 required):**
+**Se houver mudanças de runtime/gameplay (Phase 2-3 obrigatória):**
 
-Before Phase 5 closeout, invoke `/gameplay-test-scenario` skill to:
-- [ ] Create human test scenario: `docs/validation/playmode/<spec_id>_human_test_scenario.md`
-- [ ] Document in execution report Phase 3 section: how human tester will verify feature
-- [ ] Link test scenario file in report
+Antes do closeout da Phase 5, invoque a skill `/gameplay-test-scenario` para:
+- [ ] Criar o human test scenario: `docs/validation/playmode/<spec_id>_human_test_scenario.md`
+- [ ] Documentar na seção Phase 3 do execution report: como o tester humano vai verificar a feature
+- [ ] Linkar o arquivo de test scenario no report
 
-Without test scenario evidence for runtime specs, closeout status maxes at `BUILD_VALIDATED`.
+Sem evidência de test scenario para specs de runtime, o status de closeout fica limitado a `BUILD_VALIDATED`.
 
 ### Phase 5: Closeout (via /finish-spec)
 
-DO NOT auto-move spec to implementados/.
+NÃO mova a spec para implementados/ automaticamente.
 
-Call `/finish-spec` which checks promotion eligibility:
-- Docs-only spec: promote after `BUILD_VALIDATED`
-- Code spec (no gameplay): promote after `BUILD_VALIDATED`
-- Runtime/gameplay spec: promote only after `ACCEPTED` (Phase 2-3 required)
+Chame `/finish-spec`, que checa a elegibilidade de promoção:
+- Spec docs-only: promove após `BUILD_VALIDATED`
+- Spec de código (sem gameplay): promove após `BUILD_VALIDATED`
+- Spec de runtime/gameplay: promove só após `ACCEPTED` (Phase 2-3 obrigatória)
 
-## Validation
+## Validação
 
 ```powershell
 # Docs
@@ -122,32 +122,32 @@ dotnet build .\Assembly-CSharp.csproj --no-restore
 dotnet build .\Assembly-CSharp-Editor.csproj --no-restore
 ```
 
-## Common Regressions
+## Regressões comuns
 
-- Moving spec to implementados/ before Phase 2-3 evidence collected
-- Claiming ACCEPTED based on Phase 1 build only
-- Reading PROJECT_LOG.md as default context
-- Amplifying scope beyond spec
+- Mover a spec para implementados/ antes de coletar a evidência de Phase 2-3
+- Reivindicar ACCEPTED com base apenas no build da Phase 1
+- Ler o PROJECT_LOG.md como contexto padrão
+- Amplificar o scope além da spec
 
-## Stop Conditions
+## Quando parar e reportar
 
-- Spec and CURRENT_STATE.md conflict
-- Spec scope is ambiguous after careful reading
-- Dependency blocked (per CURRENT_STATE.md)
-- Mandatory validation fails with no documented path forward
-- Any forbidden file would be modified
+- A spec e o CURRENT_STATE.md conflitam
+- O scope da spec está ambíguo após leitura cuidadosa
+- Dependency bloqueada (conforme CURRENT_STATE.md)
+- Validação obrigatória falha sem caminho documentado para seguir
+- Qualquer arquivo proibido seria modificado
 
-## Output
+## Saída esperada
 
-Execution report at `docs/validation/<spec_id>_execution_report.md` + commit history.
+Execution report em `docs/validation/<spec_id>_execution_report.md` + histórico de commits.
 
-## Applicable Sub-Skills
+## Sub-skills aplicáveis
 
-- `gameplay-test-scenario` — if runtime/gameplay changes (creates Phase 3 test plan)
-- `unity-validation` — if runtime changes
-- `save-load-pattern` — if persistence in scope
-- `event-bus-pattern` — if gameplay communication in scope
-- `bootstrap-wiring` — if manager wiring in scope
-- `non-regression-review` — before closeout
-- `docs-migration` — when promoting eligible spec
-- `implementation-closeout` — final checklist
+- `gameplay-test-scenario` — se houver mudanças de runtime/gameplay (cria o test plan da Phase 3)
+- `unity-validation` — se houver mudanças de runtime
+- `save-load-pattern` — se persistência estiver no scope
+- `event-bus-pattern` — se comunicação de gameplay estiver no scope
+- `bootstrap-wiring` — se manager wiring estiver no scope
+- `non-regression-review` — antes do closeout
+- `docs-migration` — ao promover uma spec elegível
+- `implementation-closeout` — checklist final

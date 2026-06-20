@@ -1,40 +1,41 @@
 ---
 name: npc-dialogue-authoring
-description: Create NpcDataSO, DialogueTreeSO, NpcScenePlacementMarker, and shop/service data for one or more NPCs
-version: 1.0
-when_to_use: Any task creating or extending NPCs with dialogue, shop services, or scene placement in TownScene or other city scenes
+description: Cria NpcDataSO, DialogueTreeSO, NpcScenePlacementMarker e dados de shop/service para um ou mais NPCs. Use em qualquer tarefa que crie ou estenda NPCs com dialogue, shop services ou scene placement na TownScene ou em outras city scenes.
 ---
 
-# NPC Dialogue Authoring Skill
+# Skill: Autoria de Dialogue de NPC
 
-## Use When
+Use os assets canônicos do projeto (NpcDataSO, DialogueTreeSO, NpcScenePlacementMarker) e reutilize o `ShopManager` do `GameBootstrap` — nunca crie sistemas paralelos nem edite scene YAML à mão.
 
-Task requires:
-- Creating new NPCs (name, zone, purpose, dialogue)
-- Wiring NPC shop or service (buy/sell panels, service modals)
-- Placing NPCs in a scene (marker approach, not direct YAML)
-- Extending existing NPC dialogue sets
-- Auditing NPC roster completeness
+## Quando usar
 
-## Required Reads
+A tarefa exige:
+- Criar novos NPCs (name, zone, purpose, dialogue)
+- Fazer wiring de shop ou service de NPC (buy/sell panels, service modals)
+- Posicionar NPCs numa scene (marker approach, não YAML direto)
+- Estender dialogue sets de NPCs existentes
+- Auditar a completude do roster de NPCs
+
+## Leitura mínima
 
 1. `CLAUDE.md`
-2. Target spec
-3. Canonical roster doc for the relevant wave (e.g., `docs/validation/WAVE_INTEGRATION_12C_REFINED_NPC_CANONICAL_ROSTER.md`)
-4. `docs/validation/WAVE_INTEGRATION_12C_REFINED_NPC_SHOP_SERVICES.md` (service definitions)
+2. Spec alvo
+3. Doc canônico de roster da wave relevante (ex.: `docs/validation/WAVE_INTEGRATION_12C_REFINED_NPC_CANONICAL_ROSTER.md`)
+4. `docs/validation/WAVE_INTEGRATION_12C_REFINED_NPC_SHOP_SERVICES.md` (definições de service)
 
-Do NOT read by default:
-- Full GDD NPC chapters
-- All prior wave NPC docs
-- Unrelated dialogue sets
+## Não ler por padrão
+
+- Capítulos de NPC do GDD completo
+- Todos os docs de NPC de waves anteriores
+- Dialogue sets não relacionados
 
 ---
 
-## NPC Data Model
+## Data model de NPC
 
 ### NpcDataSO
 
-Canonical fields:
+Campos canônicos:
 ```csharp
 npcId        string   — kebab-case, e.g. "npc_sylveth_blacksmith"
 displayName  string   — "Sylveth"
@@ -43,7 +44,7 @@ serviceType  enum     — Shop / Service / DialogueOnly
 movementProfile string — "stationary" / "patrol_zone" / "wanders"
 ```
 
-Naming convention:
+Convenção de naming:
 ```
 npc_<name>_<role>
 npc_sylveth_blacksmith
@@ -53,7 +54,7 @@ npc_brumdar_tavern
 
 ### DialogueTreeSO
 
-Minimum 10 nodes per NPC. Structure:
+Mínimo de 10 nodes por NPC. Estrutura:
 ```
 node_0: greeting (always)
 node_1: about_self
@@ -62,7 +63,7 @@ node_3–node_N: service / lore / quest hints / weather / day cycle
 node_last: farewell
 ```
 
-Node types:
+Tipos de node:
 ```
 GREETING     — opening line, shown first
 ABOUT        — backstory / role
@@ -72,21 +73,21 @@ LORE         — world lore (optional)
 FAREWELL     — closing line
 ```
 
-**Minimum node count**: 10 (hard requirement from WAVE_INTEGRATION_12C).
+**Contagem mínima de nodes**: 10 (requisito rígido de WAVE_INTEGRATION_12C).
 
 ---
 
-## Shop / Service Wiring
+## Wiring de shop / service
 
-### NPC categories
+### Categorias de NPC
 
 | Type | Wiring |
 |------|--------|
 | Full shop (buy+sell) | `NpcShopController` + `ShopMenuModal` + `BuyPanel` + `SellPanel` |
-| Service only | `NpcShopController` + service modal (advanced — may be debt) |
-| Dialogue-only | No shop wiring; dialogue nodes explain why no shop |
+| Service only | `NpcShopController` + service modal (avançado — pode ser debt) |
+| Dialogue-only | Sem wiring de shop; dialogue nodes explicam por que não há shop |
 
-### Shop wiring pattern (reuse existing)
+### Pattern de wiring de shop (reusar o existente)
 
 ```csharp
 // NpcShopController.Start() resolves ShopManager via bootstrap
@@ -95,22 +96,22 @@ if (bootstrap != null)
     _shopManager = bootstrap.ShopManager;
 ```
 
-Do NOT create a new ShopManager. Reuse `GameBootstrap.Instance.ShopManager`.
+Não crie um novo `ShopManager`. Reutilize `GameBootstrap.Instance.ShopManager`.
 
-### Service NPCs with advanced UI (debt pattern)
+### Service NPCs com UI avançada (pattern de debt)
 
-If service UI (e.g., blacksmith upgrade modal, inn rest modal) is not yet implemented:
+Se a UI de service (ex.: blacksmith upgrade modal, inn rest modal) ainda não foi implementada:
 ```
 SHOP_RUNTIME_BASIC_WITH_ADVANCED_SERVICE_DEBT
 ```
 
-Wire as basic shop (if they buy/sell items) and document the advanced service debt explicitly.
+Faça o wiring como basic shop (se eles compram/vendem items) e documente o debt do service avançado explicitamente.
 
 ---
 
-## Scene Placement (Marker approach)
+## Scene placement (marker approach)
 
-**Never edit scene YAML directly.** Use `NpcScenePlacementMarker`:
+**Nunca edite o scene YAML diretamente.** Use `NpcScenePlacementMarker`:
 
 ```csharp
 // NpcScenePlacementMarker.cs — existing component
@@ -118,12 +119,12 @@ Wire as basic shop (if they buy/sell items) and document the advanced service de
 // The scene creator (CreateMvpTownScene, etc.) reads markers to place NPCs
 ```
 
-Document intended positions in placement map doc:
+Documente as posições pretendidas no doc de placement map:
 ```
 docs/validation/WAVE_INTEGRATION_<N>_NPC_PLACEMENT_MAP.md
 ```
 
-Format:
+Formato:
 ```
 | NPC | Zone | Position | Facing | Service |
 |-----|------|----------|--------|---------|
@@ -132,46 +133,46 @@ Format:
 
 ---
 
-## Authoring Docs Required
+## Docs de autoria exigidos
 
-| Doc | When required |
+| Doc | Quando é exigido |
 |-----|---------------|
-| `WAVE_INTEGRATION_<N>_NPC_CANONICAL_ROSTER.md` | New batch of NPCs |
-| `WAVE_INTEGRATION_<N>_NPC_DIALOGUE_SETS.md` | Dialogue content for all new NPCs |
-| `WAVE_INTEGRATION_<N>_NPC_SHOP_SERVICES.md` | Shop/service definitions |
-| `WAVE_INTEGRATION_<N>_NPC_PLACEMENT_MAP.md` | Scene positions |
-| `WAVE_INTEGRATION_<N>_NPC_MOVEMENT_SCHEDULES.md` | Patrol/wander profiles (if any) |
+| `WAVE_INTEGRATION_<N>_NPC_CANONICAL_ROSTER.md` | Novo batch de NPCs |
+| `WAVE_INTEGRATION_<N>_NPC_DIALOGUE_SETS.md` | Conteúdo de dialogue para todos os novos NPCs |
+| `WAVE_INTEGRATION_<N>_NPC_SHOP_SERVICES.md` | Definições de shop/service |
+| `WAVE_INTEGRATION_<N>_NPC_PLACEMENT_MAP.md` | Posições na scene |
+| `WAVE_INTEGRATION_<N>_NPC_MOVEMENT_SCHEDULES.md` | Perfis de patrol/wander (se houver) |
 
 ---
 
-## Movement Profiles
+## Movement profiles
 
-Use these canonical profiles (do not invent new ones):
+Use estes perfis canônicos (não invente novos):
 
 | Profile | Behavior |
 |---------|----------|
-| `stationary` | Fixed position, faces player on interact |
-| `patrol_zone` | Walks back and forth within a zone rect |
-| `wanders` | Random walks within zone bounds |
+| `stationary` | Posição fixa, vira para o player ao interagir |
+| `patrol_zone` | Anda de um lado para o outro dentro de um zone rect |
+| `wanders` | Random walks dentro dos bounds da zone |
 
-Full NPC schedules (time-of-day, day-of-week) are deferred:
+Schedules completos de NPC (time-of-day, day-of-week) ficam deferidos:
 ```
 NPC_SCHEDULE_DEFERRED_TO_NPC_SOCIAL_SYSTEM
 ```
 
 ---
 
-## Dialogue Quality Rules
+## Regras de qualidade de dialogue
 
-- No placeholder text (`...`, `TODO`, `test dialogue`)
-- Each NPC voice must match their role and zone
-- At least one node references the current in-game context (season, economy, player progress hint)
-- `FAREWELL` node is always present
-- `GREETING` node is always first
+- Sem placeholder text (`...`, `TODO`, `test dialogue`)
+- A voz de cada NPC deve combinar com seu role e sua zone
+- Pelo menos um node referencia o contexto atual in-game (season, economy, dica de progress do player)
+- Node `FAREWELL` sempre presente
+- Node `GREETING` sempre primeiro
 
 ---
 
-## What is Out of Scope (document as debt)
+## Fora de escopo (documentar como debt)
 
 ```
 NPC_QUEST_RELATIONSHIP_DEFERRED     — quest unlock via NPC
@@ -183,7 +184,7 @@ NPC_ADVANCED_SERVICE_UI_DEFERRED    — blacksmith upgrade, inn rest, etc.
 
 ---
 
-## Validation
+## Validação
 
 ```powershell
 dotnet build .\Assembly-CSharp.csproj --no-restore
@@ -192,25 +193,25 @@ dotnet build .\Assembly-CSharp-Editor.csproj --no-restore
 if ($LASTEXITCODE -ne 0) { Write-Host "EDITOR BUILD FAILED"; exit 1 }
 ```
 
-Human Play Mode checklist must cover:
-- Interact with each new NPC → dialogue opens
-- Dialogue has ≥10 nodes, no placeholder text
-- Shop NPCs → BuyPanel and/or SellPanel opens
-- Dialogue-only NPCs → no shop UI opens
-- Close dialogue with Esc / Back
+O checklist humano de Play Mode deve cobrir:
+- Interagir com cada novo NPC → dialogue abre
+- Dialogue tem ≥10 nodes, sem placeholder text
+- Shop NPCs → BuyPanel e/ou SellPanel abre
+- Dialogue-only NPCs → nenhuma shop UI abre
+- Fechar dialogue com Esc / Back
 
 ---
 
-## Common Regressions
+## Regressões comuns
 
-- Fewer than 10 dialogue nodes → spec violation
-- Creating a new ShopManager instead of reusing bootstrap
-- Directly editing TownScene.unity YAML → scene corruption risk
-- Inventing new movement profiles not in the canonical list
-- Missing NPC_ADVANCED_SERVICE_UI_DEFERRED tag for service NPCs without full UI
+- Menos de 10 dialogue nodes → violação de spec
+- Criar um novo `ShopManager` em vez de reutilizar o bootstrap
+- Editar diretamente o YAML de TownScene.unity → risco de corromper a scene
+- Inventar novos movement profiles fora da lista canônica
+- Faltar a tag NPC_ADVANCED_SERVICE_UI_DEFERRED para service NPCs sem UI completa
 
-## Stop Conditions
+## Quando parar e reportar
 
-- Spec requires romance/companion/quest systems → `BLOCKED`, out of scope
-- NpcDataSO schema changed and breaks existing wired NPCs → stop, report
-- Scene YAML must be edited manually and CreateScene approach is not available → `CODE_READY_HUMAN_UNITY_SCENE_ACTION_REQUIRED`
+- Spec exige sistemas de romance/companion/quest → `BLOCKED`, fora de escopo
+- Schema de NpcDataSO mudou e quebra NPCs já wired → parar, reportar
+- O scene YAML precisa ser editado manualmente e o CreateScene approach não está disponível → `CODE_READY_HUMAN_UNITY_SCENE_ACTION_REQUIRED`

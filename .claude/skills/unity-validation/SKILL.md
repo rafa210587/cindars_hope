@@ -1,39 +1,38 @@
 ---
 name: unity-validation
-description: Validate Unity compile, logs, scenes, prefabs, and residual risks
-version: 1.0
+description: Valida compile do Unity, logs, scenes, prefabs e residual risks. Use quando a tarefa altera runtime C#, scenes, prefabs, assets ou ProjectSettings.
 ---
 
-# Unity Validation Skill
+# Skill: Validação do Unity
 
-Use when the task alters C# runtime, scenes, prefabs, assets, or ProjectSettings.
+Use quando a tarefa altera runtime C#, scenes, prefabs, assets ou ProjectSettings.
 
-## When to Validate
+## Quando validar
 
-- **Always:** If any `.cs` file changed
-- **Always:** If any scene or prefab modified
-- **Always:** If any asset setting changed (sprite import, scriptable object, etc.)
-- **Always:** If any ProjectSettings altered
-- **Optional:** For pure documentation tasks (skip unless integrated with runtime task)
+- **Sempre:** Se qualquer arquivo `.cs` mudou
+- **Sempre:** Se qualquer scene ou prefab foi modificado
+- **Sempre:** Se qualquer asset setting mudou (sprite import, scriptable object, etc.)
+- **Sempre:** Se qualquer ProjectSettings foi alterado
+- **Opcional:** Para tarefas puramente de documentação (pule, a menos que integrada a uma tarefa de runtime)
 
-## Validation Steps
+## Passos de validação
 
-### Step 1: Docs Validation (mandatory for all tasks)
+### Passo 1: Docs Validation (obrigatório para todas as tarefas)
 
 ```powershell
 .\tools\docs\validate_docs.ps1
 ```
 
-**Expected outcomes:**
-- ✅ PASS: All docs consistent
-- ⚠️ WARNING: Minor issues (preexisting, acceptable)
-- ❌ FAIL: Breaking docs issues (must fix)
+**Resultados esperados:**
+- ✅ PASS: Todos os docs consistentes
+- ⚠️ WARNING: Problemas menores (preexistentes, aceitáveis)
+- ❌ FAIL: Problemas de docs que quebram (precisam ser corrigidos)
 
-**Action:**
-- If PASS or WARNING: Continue
-- If FAIL: Fix docs, re-run, then continue
+**Ação:**
+- Se PASS ou WARNING: Continue
+- Se FAIL: Corrija os docs, rode de novo, depois continue
 
-### Step 2: Unity Compile Validation (if runtime task)
+### Passo 2: Unity Compile Validation (se tarefa de runtime)
 
 ```powershell
 .\tools\unity\RunUnityCompileValidation.ps1 `
@@ -42,38 +41,38 @@ Use when the task alters C# runtime, scenes, prefabs, assets, or ProjectSettings
   -LogFile ".\Logs\unity-compile-validation.log"
 ```
 
-**Expected outcomes:**
-- ✅ PASS: "Tundra build success" in log
-- ⚠️ WARNING: Assembly warnings (preexisting, acceptable)
-- ❌ FAIL: New C# errors (must fix)
+**Resultados esperados:**
+- ✅ PASS: "Tundra build success" no log
+- ⚠️ WARNING: Warnings de assembly (preexistentes, aceitáveis)
+- ❌ FAIL: Novos erros de C# (precisam ser corrigidos)
 
-**If Unity path unknown:**
-- Check: `$env:UNITY_EDITOR_PATH`
-- Or list: `ls "C:\Program Files\Unity\Hub\Editor\"`
-- Or search: `Get-ChildItem -Path "C:\Program Files\Unity" -Recurse -Filter "Unity.exe" | Select-Object -First 3`
-- Register in `.claude/settings.local.json` for future runs
+**Se o path do Unity for desconhecido:**
+- Cheque: `$env:UNITY_EDITOR_PATH`
+- Ou liste: `ls "C:\Program Files\Unity\Hub\Editor\"`
+- Ou busque: `Get-ChildItem -Path "C:\Program Files\Unity" -Recurse -Filter "Unity.exe" | Select-Object -First 3`
+- Registre em `.claude/settings.local.json` para execuções futuras
 
-**If cannot run:**
-- Document: `Reason: [sandbox|permissions|timeout|missing]`
-- Register in closeout as NOT RUN with residual risk
+**Se não conseguir rodar:**
+- Documente: `Reason: [sandbox|permissions|timeout|missing]`
+- Registre no closeout como NOT RUN com residual risk
 
-### Step 3: Log Scanner (if Step 2 succeeded)
+### Passo 3: Log Scanner (se o Passo 2 teve sucesso)
 
 ```powershell
 .\tools\unity\ScanUnityLogs.ps1 `
   -LogFile ".\Logs\unity-compile-validation.log"
 ```
 
-**Expected outcomes:**
-- ✅ PASS: No new C# errors introduced
-- ⚠️ WARNING: Preexisting Assembly firstpass warnings (acceptable)
-- ❌ FAIL: New errors found (must fix)
+**Resultados esperados:**
+- ✅ PASS: Nenhum novo erro de C# introduzido
+- ⚠️ WARNING: Warnings preexistentes de Assembly firstpass (aceitáveis)
+- ❌ FAIL: Novos erros encontrados (precisam ser corrigidos)
 
-**Action:**
-- If PASS or WARNING: Validation complete
-- If FAIL: Identify errors, fix in code, re-run Step 2 and 3
+**Ação:**
+- Se PASS ou WARNING: Validação completa
+- Se FAIL: Identifique os erros, corrija no código, rode de novo Passo 2 e 3
 
-## Validation Report Format
+## Formato do relatório de validação
 
 ```text
 Validation Summary
@@ -93,26 +92,26 @@ Log scan:        ✅ PASS
 Overall: ✅ READY FOR CLOSEOUT
 ```
 
-## Error Handling
+## Tratamento de erros
 
-### Compilation Errors
+### Erros de compilação
 
-If Step 2 shows compilation errors:
+Se o Passo 2 mostra erros de compilação:
 
-1. **Read error message:** `file.cs:line: error CS####: message`
-2. **Categorize error:**
-   - **Missing using directive** → Add to file
-   - **Type mismatch** → Fix type or cast
-   - **Missing method** → Implement or use correct method name
-   - **Namespace conflict** → Resolve naming
-3. **Fix in code**
-4. **Re-run validation**
+1. **Leia a mensagem de erro:** `file.cs:line: error CS####: message`
+2. **Categorize o erro:**
+   - **Missing using directive** → Adicione ao arquivo
+   - **Type mismatch** → Corrija o tipo ou faça cast
+   - **Missing method** → Implemente ou use o nome de método correto
+   - **Namespace conflict** → Resolva o naming
+3. **Corrija no código**
+4. **Rode a validação de novo**
 
-### Validation Cannot Run
+### Validação não consegue rodar
 
-If the validation script cannot execute due to environment:
+Se o script de validação não consegue executar por causa do ambiente:
 
-**Document in closeout:**
+**Documente no closeout:**
 
 ```text
 Unity validation: NOT RUN
@@ -122,27 +121,27 @@ Residual risk: Unity compile not validated locally. Features may break on manual
 Mitigation: User must validate in Unity Editor before production build.
 ```
 
-## Rules
+## Regras
 
-- [ ] Do NOT skip docs validation even if only code changed
-- [ ] Do NOT claim "compile success" without running Step 2
-- [ ] Do NOT ignore Step 3 output if errors are listed
-- [ ] Do NOT fix errors silently without re-running validation
-- [ ] Do NOT hide validation failures in final report
-- [ ] Do NOT declare validated without evidence (log file)
+- [ ] NÃO pule a docs validation mesmo que só o código tenha mudado
+- [ ] NÃO declare "compile success" sem rodar o Passo 2
+- [ ] NÃO ignore a saída do Passo 3 se houver erros listados
+- [ ] NÃO corrija erros silenciosamente sem rodar a validação de novo
+- [ ] NÃO esconda falhas de validação no relatório final
+- [ ] NÃO declare validado sem evidência (arquivo de log)
 
-## Success Criteria
+## Critérios de sucesso
 
-- ✅ Docs validation: PASS or preexisting WARNING
-- ✅ Unity compile: PASS or NOT RUN with documented reason
-- ✅ Log scan: PASS or NOT RUN with documented reason
-- ✅ All failures fixed before closeout
-- ✅ Evidence (log files) preserved for audit
+- ✅ Docs validation: PASS ou WARNING preexistente
+- ✅ Unity compile: PASS ou NOT RUN com reason documentada
+- ✅ Log scan: PASS ou NOT RUN com reason documentada
+- ✅ Todas as falhas corrigidas antes do closeout
+- ✅ Evidência (arquivos de log) preservada para auditoria
 
-## Integration with Other Skills
+## Relacionados
 
-- **Spec Execution** → Calls this skill if runtime task
-- **Implementation Closeout** → Requires validation results
-- **Non-Regression Review** → Audits diff separately (doesn't replace this)
+- **Spec Execution** → Chama esta skill se for tarefa de runtime
+- **Implementation Closeout** → Exige os resultados de validação
+- **Non-Regression Review** → Audita o diff separadamente (não substitui esta)
 
-**Next:** If validation passes, proceed to `/finish-spec` for task closeout.
+**Próximo:** Se a validação passa, siga para `/finish-spec` para o closeout da tarefa.

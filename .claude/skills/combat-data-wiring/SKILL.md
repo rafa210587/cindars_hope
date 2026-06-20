@@ -1,39 +1,39 @@
 ---
 name: combat-data-wiring
-description: Wire combat data assets — WeaponDatabase, SpellDatabase, StatusEffectDatabase, projectile prefabs
-version: 1.0
-when_to_use: Any task touching combat ScriptableObject databases, spell/weapon/status effect IDs, or projectile wiring
+description: Faz wiring de combat data assets — WeaponDatabase, SpellDatabase, StatusEffectDatabase, projectile prefabs. Use em qualquer tarefa que toque combat ScriptableObject databases, spell/weapon/status effect IDs, ou wiring de projectile.
 ---
 
-# Combat Data Wiring Skill
+# Skill: Wiring de Combat Data
 
-## Use When
+Todas as combat databases herdam de `DataRegistrySO<T>` e são wired no `GameBootstrap`; adicione lookup via database mantendo o fallback de `Resources.Load` para compatibilidade retroativa.
 
-Task touches:
+## Quando usar
+
+A tarefa toca:
 - `WeaponDatabaseSO`, `SpellDatabaseSO`, `StatusEffectDatabaseSO`
 - `WeaponDataSO`, `SpellDataSO`, `StatusEffectSO`
-- Projectile prefab references (`ProjectilePrefab`)
+- Referências de projectile prefab (`ProjectilePrefab`)
 - `CombatDatabaseValidator`
-- `SpellCastService` database lookup
-- `EnemyStatusRuntimeTicker` burn SO lookup
+- Lookup de database do `SpellCastService`
+- Lookup de burn SO do `EnemyStatusRuntimeTicker`
 
-## Required Reads
+## Leitura mínima
 
 1. `CLAUDE.md`
-2. Target spec
-3. `Assets/_Game/Scripts/Core/Data/` — existing database SOs
+2. Spec alvo
+3. `Assets/_Game/Scripts/Core/Data/` — database SOs existentes
 4. `Assets/_Game/Scripts/Editor/Validation/CombatDatabaseValidator.cs`
 
 ## Pattern: DataRegistrySO
 
-All combat databases inherit from `DataRegistrySO<T>`:
+Todas as combat databases herdam de `DataRegistrySO<T>`:
 
 ```csharp
 [CreateAssetMenu(fileName = "WeaponDatabase", menuName = "CindarsHope/Database/Weapons")]
 public class WeaponDatabaseSO : DataRegistrySO<WeaponDataSO> { }
 ```
 
-Consumers use:
+Os consumers usam:
 ```csharp
 if (_database.TryGetById(id, out var so))
     // use so
@@ -41,9 +41,9 @@ else
     // fallback or warn
 ```
 
-## Pattern: Resources.Load Fallback
+## Pattern: fallback de Resources.Load
 
-When adding database lookup to a service that previously used Resources.Load:
+Ao adicionar lookup via database a um service que antes usava Resources.Load:
 
 ```csharp
 // Try database first; fall back to Resources.Load for backward compat
@@ -53,20 +53,20 @@ else
     result = Resources.Load<T>(id);
 ```
 
-This is backward-compatible and safe.
+Isso é backward-compatible e seguro.
 
-## Pattern: New Database SO
+## Pattern: novo database SO
 
-1. Create `<TypeName>DatabaseSO.cs` in `Assets/_Game/Scripts/Core/Data/`
-2. Inherit from `DataRegistrySO<<TypeSO>>`
-3. Add namespace `CindarsHope.Core.Data`
-4. Add `[SerializeField]` field + public property to `GameBootstrap.cs`
-5. Add entry to `Assembly-CSharp.csproj`
-6. Add validator check in `CombatDatabaseValidator`
+1. Crie `<TypeName>DatabaseSO.cs` em `Assets/_Game/Scripts/Core/Data/`
+2. Herde de `DataRegistrySO<<TypeSO>>`
+3. Adicione o namespace `CindarsHope.Core.Data`
+4. Adicione um campo `[SerializeField]` + public property em `GameBootstrap.cs`
+5. Adicione a entry em `Assembly-CSharp.csproj`
+6. Adicione o check do validator em `CombatDatabaseValidator`
 
-## Validator: Adding New Database Check
+## Validator: adicionando check de novo database
 
-In `CombatDatabaseValidator.ValidateX()`:
+Em `CombatDatabaseValidator.ValidateX()`:
 
 ```csharp
 var db = AssetDatabase.LoadAssetAtPath<DatabaseSO>(DatabasePath);
@@ -80,9 +80,9 @@ if (db == null)
 // then check entries...
 ```
 
-Use `Warning` for missing asset (not created yet), `Error` for ID not found in existing DB.
+Use `Warning` para asset ausente (ainda não criado), `Error` para ID não encontrado num DB existente.
 
-## Validation
+## Validação
 
 ```powershell
 dotnet build .\Assembly-CSharp.csproj --no-restore
@@ -91,14 +91,14 @@ dotnet build .\Assembly-CSharp-Editor.csproj --no-restore
 
 Phase 2 (Unity): `CindarsHope/Validate/Combat/Validate Combat Databases`
 
-## Common Regressions
+## Regressões comuns
 
-- Forgetting to add new .cs to Assembly-CSharp.csproj
-- Using `Resources.Load` without fallback guard when database may not be assigned yet
-- Adding `Error` severity for missing asset when Inspector wiring is the expected next step
-- Not testing `TryGetById` null path
+- Esquecer de adicionar o novo .cs ao Assembly-CSharp.csproj
+- Usar `Resources.Load` sem fallback guard quando o database ainda pode não estar atribuído
+- Adicionar severity `Error` para asset ausente quando o wiring no Inspector é o próximo passo esperado
+- Não testar o null path de `TryGetById`
 
-## Stop Conditions
+## Quando parar e reportar
 
-- `DataRegistrySO<T>` not found in codebase — check namespace
-- `CombatDatabaseValidator.cs` outside spec scope — document as NOT updated
+- `DataRegistrySO<T>` não encontrado na codebase — verifique o namespace
+- `CombatDatabaseValidator.cs` fora do escopo da spec — documentar como NOT updated

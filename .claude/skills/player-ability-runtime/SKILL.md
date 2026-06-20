@@ -1,38 +1,38 @@
 ---
 name: player-ability-runtime
-description: Add a non-slot player ability (Dash, Dodge, Block, roll, teleport, etc.) with correct FixedUpdate/physics wiring
-version: 1.0
-when_to_use: Any task adding a new non-slot player ability that moves or modifies the player at runtime
+description: Adiciona uma player ability non-slot (Dash, Dodge, Block, roll, teleport, etc.) com wiring correto de FixedUpdate/physics. Use em qualquer tarefa que adicione uma nova player ability non-slot que mova ou modifique o player em runtime.
 ---
 
-# Player Ability Runtime Skill
+# Skill: Player Ability em Runtime
 
-## Use When
+Anexe ability controllers ao GameObject do player via o bootstrap existente e respeite a regra de conflito de FixedUpdate — esquecer `IsBeingDisplaced` foi o bug original que deixava o player parado.
 
-Task adds or fixes a player ability that:
-- Is triggered by input (key down / hold / double-tap)
-- Moves the player or changes movement speed
-- Is **not** an active skill slot (1–4 keys)
-- Runs at runtime (not editor-only)
+## Quando usar
 
-Examples: Dash, Dodge, Block, roll, sprint toggle, teleport, blink.
+A tarefa adiciona ou conserta uma player ability que:
+- É disparada por input (key down / hold / double-tap)
+- Move o player ou muda a movement speed
+- **Não** é um active skill slot (teclas 1–4)
+- Roda em runtime (não editor-only)
 
-## Required Reads
+Exemplos: Dash, Dodge, Block, roll, sprint toggle, teleport, blink.
+
+## Leitura mínima
 
 1. `CLAUDE.md`
-2. Target spec
-3. `Assets/_Game/Scripts/Player/PlayerController.cs` — current SpeedMultiplier, IsBeingDisplaced, FixedUpdate
-4. `Assets/_Game/Scripts/Player/Movement/PlayerMovementDisplacementResolver.cs` — TryDisplace API
+2. Spec alvo
+3. `Assets/_Game/Scripts/Player/PlayerController.cs` — SpeedMultiplier atual, IsBeingDisplaced, FixedUpdate
+4. `Assets/_Game/Scripts/Player/Movement/PlayerMovementDisplacementResolver.cs` — API TryDisplace
 
 ---
 
-## Core Architecture
+## Arquitetura central
 
-### Component Attachment
+### Attachment de component
 
-All ability controllers are attached to the player's GameObject via a `RuntimeInitializeOnLoadMethod` bootstrap.
+Todos os ability controllers são anexados ao GameObject do player via um bootstrap `RuntimeInitializeOnLoadMethod`.
 
-**Reuse `PlayerMovementActionRuntimeBootstrap` if it already exists.** Only create a new bootstrap if it is truly a different lifecycle (e.g., combat system bootstrap).
+**Reutilize `PlayerMovementActionRuntimeBootstrap` se ele já existir.** Só crie um novo bootstrap se for realmente um lifecycle diferente (ex.: bootstrap do combat system).
 
 ```csharp
 private void AttachControllers(GameObject playerObject)
@@ -49,11 +49,11 @@ private void AttachControllers(GameObject playerObject)
 
 ---
 
-## The FixedUpdate Conflict Rule
+## A regra de conflito de FixedUpdate
 
-**Critical**: Any ability that calls `Rigidbody2D.MovePosition()` from a coroutine (Update cadence) WILL be overwritten by `PlayerController.FixedUpdate` unless `IsBeingDisplaced` is set.
+**Crítico**: qualquer ability que chame `Rigidbody2D.MovePosition()` a partir de uma coroutine (cadência de Update) SERÁ sobrescrita por `PlayerController.FixedUpdate`, a menos que `IsBeingDisplaced` esteja setado.
 
-### Why it breaks
+### Por que quebra
 
 ```
 Frame N:
@@ -65,9 +65,9 @@ Frame N+1:
   Physics → applies current_pos2 → player never moves
 ```
 
-### Required fix pattern
+### Pattern de fix obrigatório
 
-In `PlayerController`:
+Em `PlayerController`:
 ```csharp
 public bool IsBeingDisplaced { get; set; }
 
@@ -79,7 +79,7 @@ private void FixedUpdate()
 }
 ```
 
-In `PlayerMovementDisplacementResolver.DisplaceRoutine`:
+Em `PlayerMovementDisplacementResolver.DisplaceRoutine`:
 ```csharp
 if (_playerController != null)
 {
@@ -96,7 +96,7 @@ if (_playerController != null)
 
 ---
 
-## Ability Controller Template
+## Template de ability controller
 
 ```csharp
 [DisallowMultipleComponent]
@@ -170,9 +170,9 @@ public sealed class PlayerXController : MonoBehaviour
 
 ---
 
-## Input Patterns
+## Padrões de input
 
-### One-shot key press (Dash)
+### Key press one-shot (Dash)
 
 ```csharp
 if (Input.GetKeyDown(KeyCode.Space))
@@ -186,7 +186,7 @@ if (Input.GetKeyDown(KeyCode.Space))
 
 ### Double-tap detection (Dodge)
 
-Use `DirectionalDoubleTapDetector.UpdateAndCheckDoubleTap()` — already exists. Do not create a parallel detector.
+Use `DirectionalDoubleTapDetector.UpdateAndCheckDoubleTap()` — já existe. Não crie um detector paralelo.
 
 ### Hold key (Block, sprint)
 
@@ -207,9 +207,9 @@ private void Update()
 
 ---
 
-## Speed Modification (Block / slow)
+## Modificação de speed (Block / slow)
 
-Use `PlayerMovementSlowState` if it exists. Otherwise:
+Use `PlayerMovementSlowState` se existir. Caso contrário:
 
 ```csharp
 // Activate
@@ -219,13 +219,13 @@ if (_playerController != null) _playerController.SpeedMultiplier *= _slowMultipl
 if (_playerController != null) _playerController.SpeedMultiplier = _previousMultiplier;
 ```
 
-Store `_previousMultiplier = _playerController.SpeedMultiplier` before activation.
+Guarde `_previousMultiplier = _playerController.SpeedMultiplier` antes de ativar.
 
 ---
 
-## Stamina Integration
+## Integração com stamina
 
-Always optional and graceful:
+Sempre opcional e graceful:
 
 ```csharp
 // One-shot cost
@@ -239,7 +239,7 @@ if (_staminaManager != null)
 }
 ```
 
-If `StaminaManager` or its API is absent → document debt:
+Se `StaminaManager` ou sua API estiver ausente → documente o debt:
 ```
 STAMINA_MOVEMENT_ACTION_DEBT
 ```
@@ -248,20 +248,20 @@ STAMINA_MOVEMENT_ACTION_DEBT
 
 ## Feedback
 
-Always publish, even if no HUD consumer exists yet:
+Sempre publique, mesmo que ainda não exista um consumer de HUD:
 
 ```csharp
 GameEventBus.Publish(new PlayerActionFeedbackEvent("Dash!"));
 ```
 
-If HUD doesn't show it yet → document debt:
+Se o HUD ainda não exibir → documente o debt:
 ```
 HUD_FEEDBACK_CONSUMER_DEBT
 ```
 
 ---
 
-## Debt Tags (use in comments + report)
+## Debt tags (usar em comentários + report)
 
 ```
 TODO_INTEGRATION_NOT_FINAL
@@ -275,7 +275,7 @@ BOUNDS_FINAL_DEFERRED_IF_NO_BOUND_SYSTEM
 
 ---
 
-## Validation
+## Validação
 
 ```powershell
 dotnet build .\Assembly-CSharp.csproj --no-restore
@@ -284,25 +284,25 @@ dotnet build .\Assembly-CSharp-Editor.csproj --no-restore
 if ($LASTEXITCODE -ne 0) { Write-Host "EDITOR BUILD FAILED"; exit 1 }
 ```
 
-Human Play Mode checklist must cover:
-- Ability executes (player actually moves / state changes)
-- Modal guard blocks execution
-- Cooldown prevents spam
-- Stamina consumed or debt explicit
-- Collision respected or debt explicit
+O checklist humano de Play Mode deve cobrir:
+- Ability executa (o player de fato move / o state muda)
+- Modal guard bloqueia a execução
+- Cooldown impede spam
+- Stamina consumida ou debt explícito
+- Collision respeitada ou debt explícito
 
 ---
 
-## Common Regressions
+## Regressões comuns
 
-- Not setting `IsBeingDisplaced = true` → player doesn't move (the original bug)
-- Not restoring `SpeedMultiplier` after displacement → player stuck at 0 speed
-- Not restoring `IsBeingDisplaced = false` on exception/early exit → player frozen forever
-- Creating a second `DirectionalDoubleTapDetector` instead of reusing existing
-- Adding ability to active slot (1–4 keys) — these are NON-SLOT actions
+- Não setar `IsBeingDisplaced = true` → o player não move (o bug original)
+- Não restaurar `SpeedMultiplier` depois do displacement → player travado em speed 0
+- Não restaurar `IsBeingDisplaced = false` em exception/early exit → player congelado para sempre
+- Criar um segundo `DirectionalDoubleTapDetector` em vez de reutilizar o existente
+- Adicionar a ability a um active slot (teclas 1–4) — estas são ações NON-SLOT
 
-## Stop Conditions
+## Quando parar e reportar
 
-- Moving player requires rewriting `PlayerController` core → stop, report
-- No `Rigidbody2D` or `transform` reachable → `BLOCKED`
-- Ability conflicts with existing non-slot action (same input key) → stop, report conflict
+- Mover o player exige reescrever o core de `PlayerController` → parar, reportar
+- Nenhum `Rigidbody2D` ou `transform` alcançável → `BLOCKED`
+- Ability conflita com uma ação non-slot existente (mesma input key) → parar, reportar o conflito

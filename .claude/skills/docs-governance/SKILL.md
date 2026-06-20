@@ -1,33 +1,31 @@
 ---
 name: docs-governance
-description: Organize, archive, index, and maintain documentation governance. Does not touch runtime code.
-version: 1.0
-when_to_use: Document organization, archive planning, delete candidates, roadmap cleanup, index updates
+description: Organiza, arquiva, indexa e mantém a governança da documentação, sem tocar em runtime code. Use para organização de documentos, planejamento de arquivamento, delete candidates, limpeza de roadmap e atualização de índices (CURRENT_STATE.md, DOCUMENT_INDEX.md).
 ---
 
-# Docs Governance Skill
+# Skill: Governança de Documentação
 
-## Use When
+## Quando usar
 
-- Organizing documentation structure
-- Identifying and logging delete candidates
-- Moving files to archive
-- Updating CURRENT_STATE.md or DOCUMENT_INDEX.md
-- Cleaning up superseded specs/refinements
+- Organizar a estrutura da documentação
+- Identificar e registrar delete candidates
+- Mover arquivos para o archive
+- Atualizar CURRENT_STATE.md ou DOCUMENT_INDEX.md
+- Limpar specs/refinements superseded
 
-## Required Reads
+## Leitura mínima
 
 1. `CLAUDE.md`
 2. `docs/project/CURRENT_STATE.md`
 3. `docs/project/DOCUMENT_GOVERNANCE.md`
 4. `docs/project/DOCUMENT_INDEX.md`
 
-## Optional Reads
+## Leitura opcional
 
-- `docs/project/DOCUMENT_DELETE_CANDIDATES.md` (if reviewing candidates)
-- `docs/project/HISTORY_LOG_POLICY.md` (if PROJECT_LOG work involved)
+- `docs/project/DOCUMENT_DELETE_CANDIDATES.md` (se estiver revisando candidates)
+- `docs/project/HISTORY_LOG_POLICY.md` (se houver trabalho no PROJECT_LOG)
 
-## Do Not Read By Default
+## Não ler por padrão
 
 ```
 PROJECT_LOG.md (unless audit scope)
@@ -35,63 +33,63 @@ ROADMAP.md (unless roadmap cleanup)
 Runtime code files
 ```
 
-## Procedure
+## Procedimento
 
-### For Delete Candidate Review
+### Para revisão de delete candidate
 
-1. Read DOCUMENT_DELETE_CANDIDATES.md
-2. Verify each candidate still exists
-3. Check if any active spec, current_state, or validation report references the candidate
-4. If referenced: mark as "cannot delete yet; referenced by X"
-5. If unreferenced: confirm deletion readiness
-6. Do NOT delete without explicit human authorization
+1. Leia DOCUMENT_DELETE_CANDIDATES.md
+2. Verifique se cada candidate ainda existe
+3. Cheque se alguma spec ativa, current_state ou validation report referencia o candidate
+4. Se referenciado: marque como "cannot delete yet; referenced by X"
+5. Se não referenciado: confirme que está pronto para deleção
+6. NÃO delete sem autorização humana explícita
 
-### For Doc Move / Archive
+### Para mover/arquivar documento
 
-1. Identify source and destination
-2. Verify destination folder exists
-3. Move file (git mv preferred for history preservation)
-4. Update DOCUMENT_INDEX.md entry
-5. Update any files that referenced the old path
-6. Run docs validation
+1. Identifique a origem e o destino
+2. Verifique se a pasta de destino existe
+3. Mova o arquivo (git mv preferido para preservar histórico)
+4. Atualize a entrada em DOCUMENT_INDEX.md
+5. Atualize quaisquer arquivos que referenciavam o caminho antigo
+6. Rode a docs validation
 
-### For CURRENT_STATE.md Update
+### Para atualizar CURRENT_STATE.md
 
-1. Read current CURRENT_STATE.md
-2. Identify stale or missing information
-3. Update minimally — keep file under ~100 lines
-4. Verify nothing was accidentally removed
+1. Leia o CURRENT_STATE.md atual
+2. Identifique informação obsoleta ou ausente
+3. Atualize de forma mínima — mantenha o arquivo abaixo de ~100 linhas
+4. Verifique que nada foi removido acidentalmente
 
-### For DOCUMENT_INDEX.md Update
+### Para atualizar DOCUMENT_INDEX.md
 
-1. Audit new files in `docs/` not yet indexed
-2. Add entries with correct function and link
-3. Remove entries for deleted files
+1. Audite novos arquivos em `docs/` ainda não indexados
+2. Adicione entradas com a função e o link corretos
+3. Remova entradas de arquivos deletados
 
-## Rules
+## Regras
 
-- Do NOT delete without `DOCUMENT_DELETE_CANDIDATES.md` entry and human authorization
-- Do NOT move specs to `implementados/` from this skill (use `/finish-spec`)
-- Always run `tools/docs/validate_docs.ps1` after any doc changes
-- CURRENT_STATE.md must stay under ~100 lines
-- Do NOT edit runtime files
+- NÃO delete sem entrada em `DOCUMENT_DELETE_CANDIDATES.md` e autorização humana
+- NÃO mova specs para `implementados/` a partir desta skill (use `/finish-spec`)
+- Sempre rode `tools/docs/validate_docs.ps1` após qualquer mudança em docs
+- CURRENT_STATE.md deve permanecer abaixo de ~100 linhas
+- NÃO edite runtime files
 
-## Validation
+## Validação
 
 ```powershell
 .\tools\docs\validate_docs.ps1
 ```
 
-Expected: PASS 14/14
+Esperado: PASS 14/14
 
-## Common Regressions
+## Regressões comuns
 
-- Accidentally deleting a file referenced by an active spec
-- Marking a spec as superseded when it has active dependencies
-- Making CURRENT_STATE.md too long (defeats token-efficiency purpose)
+- Deletar acidentalmente um arquivo referenciado por uma spec ativa
+- Marcar uma spec como superseded quando ela tem dependências ativas
+- Deixar o CURRENT_STATE.md longo demais (anula o propósito de token-efficiency)
 
-## Stop Conditions
+## Quando parar e reportar
 
-- A file to be deleted is referenced by an active spec or CURRENT_STATE.md
-- A move would break a path referenced in any governance file
-- Docs validation fails after changes
+- Um arquivo a ser deletado é referenciado por uma spec ativa ou pelo CURRENT_STATE.md
+- Uma movimentação quebraria um caminho referenciado em algum arquivo de governança
+- A docs validation falha após as mudanças

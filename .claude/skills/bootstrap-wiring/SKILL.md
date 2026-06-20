@@ -1,28 +1,26 @@
 ---
 name: bootstrap-wiring
-description: Wire new managers, databases, and services into GameBootstrap with serialized refs and scene repair
-version: 1.0
-when_to_use: Any task that adds a new manager, database SO, or service requiring GameBootstrap wiring
+description: Faz o wiring de novos managers, databases e services no GameBootstrap com serialized refs e scene repair. Use em qualquer tarefa que adicione um novo manager, database SO ou service que precise de wiring no GameBootstrap.
 ---
 
-# Bootstrap Wiring Skill
+# Skill: Wiring de Bootstrap
 
-## Use When
+## Quando usar
 
-Task touches:
-- `GameBootstrap.cs` (adding fields or properties)
-- Manager instantiation / injection
-- ScriptableObject database references
+A tarefa toca em:
+- `GameBootstrap.cs` (adicionar fields ou properties)
+- Instanciação / injeção de manager
+- Referências de ScriptableObject database
 - Scene creators (`FarmSceneCreator`, `TownSceneCreator`, `CaveSceneCreator`)
-- Any new system that other systems access via `GameBootstrap.Instance`
+- Qualquer novo sistema que outros sistemas acessem via `GameBootstrap.Instance`
 
-## Required Reads
+## Leitura mínima
 
 1. `CLAUDE.md`
-2. Target spec
-3. `Assets/_Game/Scripts/Core/Bootstrap/GameBootstrap.cs` (current state)
+2. Spec alvo
+3. `Assets/_Game/Scripts/Core/Bootstrap/GameBootstrap.cs` (estado atual)
 
-## Do Not Read By Default
+## Não ler por padrão
 
 ```
 All scenes
@@ -30,21 +28,21 @@ All prefabs
 Full architecture docs
 ```
 
-## Procedure
+## Procedimento
 
-### Adding a New Database or Manager to Bootstrap
+### Adicionando um novo Database ou Manager ao Bootstrap
 
-1. Add `[SerializeField] private <TypeSO> _<field>;` after related existing field
-2. Add `public <TypeSO> <Property> => _<field>;` after related existing property
-3. Commit: the Inspector field will be null until wired in Unity Editor
-4. Add note to execution report:
+1. Adicione `[SerializeField] private <TypeSO> _<field>;` depois do field existente relacionado
+2. Adicione `public <TypeSO> <Property> => _<field>;` depois da property existente relacionada
+3. Commit: o field do Inspector ficará null até o wiring ser feito no Unity Editor
+4. Adicione uma nota ao execution report:
    ```
    Inspector wiring required: assign <TypeSO>.asset in GameBootstrap inspector
    ```
 
-### Consumer Wiring (accessing from a MonoBehaviour)
+### Wiring de Consumer (acesso a partir de um MonoBehaviour)
 
-Preferred pattern:
+Padrão preferido:
 ```csharp
 private void Start()
 {
@@ -55,56 +53,56 @@ private void Start()
 }
 ```
 
-**NEVER use:**
+**NUNCA use:**
 ```csharp
 // PROHIBITED
 var bootstrap = FindObjectOfType<GameBootstrap>();
 var bootstrap = GameObject.Find("Bootstrap").GetComponent<GameBootstrap>();
 ```
 
-### Scene Creator Updates
+### Atualizações de Scene Creator
 
-If a scene creator needs the new manager:
-1. Find the scene creator for the relevant scene
-2. Add the lookup after GameBootstrap resolve
-3. Use repair menu `CindarsHope/Repair and Validate Project` to apply
+Se um scene creator precisar do novo manager:
+1. Encontre o scene creator da scene relevante
+2. Adicione o lookup depois do resolve do GameBootstrap
+3. Use o repair menu `CindarsHope/Repair and Validate Project` para aplicar
 
 ### Editor Validators
 
-If a validator needs to check the new wiring:
-1. Find `CombatDatabaseValidator` or similar
-2. Add null check and `report.AddIssue(...)` for missing asset
-3. Use `ValidationSeverity.Warning` for assets not yet created (expected until Inspector wired)
+Se um validator precisar checar o novo wiring:
+1. Encontre `CombatDatabaseValidator` ou similar
+2. Adicione null check e `report.AddIssue(...)` para o asset ausente
+3. Use `ValidationSeverity.Warning` para assets ainda não criados (esperado até o wiring no Inspector)
 
-## Rules
+## Regras
 
-- No `GameObject.Find()` or `FindObjectOfType()` — ever
-- Serialized refs only
-- Null-check at consumer with clear LogWarning including scene/component/field context
-- Inspector wiring is human responsibility; document in execution report
+- Sem `GameObject.Find()` ou `FindObjectOfType()` — nunca
+- Apenas serialized refs
+- Null-check no consumer com LogWarning claro incluindo contexto de scene/component/field
+- O wiring no Inspector é responsabilidade humana; documente no execution report
 
-## Validation
+## Validação
 
-After wiring C#:
+Depois do wiring em C#:
 ```powershell
 dotnet build .\Assembly-CSharp.csproj --no-restore
 dotnet build .\Assembly-CSharp-Editor.csproj --no-restore
 ```
 
-Expected: 0 errors. New field starts as null — that is expected.
+Esperado: 0 errors. O novo field começa como null — isso é esperado.
 
-Unity validator (Phase 2, if spec requires):
+Unity validator (Phase 2, se a spec exigir):
 - `CindarsHope/Validate/Combat/Validate Combat Databases`
-- Will show warning for unwired assets
+- Vai mostrar warning para assets sem wiring
 
-## Common Regressions
+## Regressões comuns
 
-- Using `FindObjectOfType<GameBootstrap>()` in consumer
-- Adding field but forgetting to add property
-- Not documenting Inspector wiring requirement
-- Adding to wrong scene creator
+- Usar `FindObjectOfType<GameBootstrap>()` no consumer
+- Adicionar o field mas esquecer de adicionar a property
+- Não documentar o requisito de wiring no Inspector
+- Adicionar ao scene creator errado
 
-## Stop Conditions
+## Quando parar e reportar
 
-- `GameBootstrap.cs` is outside spec scope → stop, report
-- Scene YAML would need manual edit → use repair menu instead
+- `GameBootstrap.cs` está fora do escopo da spec → pare, reporte
+- Scene YAML precisaria de edição manual → use o repair menu no lugar

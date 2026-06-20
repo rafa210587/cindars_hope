@@ -1,36 +1,35 @@
 ---
 name: docs-migration
-description: Move specs and refinements from a_implementar/ to implementados/ with evidence
-version: 1.0
+description: Move specs e refinements de a_implementar/ para implementados/ com evidência (header de evidence, registries, IMPLEMENTATION_STATUS, PROJECT_LOG, docs validation). Use ao fazer o closeout de uma spec ou refinement implementado e validado.
 ---
 
-# Docs Migration Skill
+# Skill: Docs Migration
 
-Use when closing out a spec or refinement to move documentation files to implementados/ folders.
+Use ao fechar uma spec ou refinement para mover os arquivos de documentation para as pastas implementados/.
 
-## Rules
+## Regras
 
-1. **`.specs/` is sole source of truth.** Never recreate root-level `specs/` or `spec/`.
-2. **Future specs stay in `a_implementar/`.** Move only when implementation is complete and validated.
-3. **Completed specs move to `implementados/`.** File path: `.specs/implementados/spec_*.md`
-4. **Future refinements in pre_refinements/.** Path: `docs/refinements/a_implementar/pre_refinamentos/ref_*.md`
-5. **Completed refinements move to `implementados/`.** Path: `docs/refinements/implementados/ref_*.md`
-6. **Registries must stay consistent.** Update after moving specs/refinements.
-7. **IMPLEMENTATION_STATUS.md must reflect reality.** No claims without evidence.
-8. **PROJECT_LOG.md must be updated.** Date, spec, and deliverables recorded.
+1. **`.specs/` é a única source of truth.** Nunca recrie `specs/` ou `spec/` no root.
+2. **Specs futuras ficam em `a_implementar/`.** Mova só quando a implementação estiver completa e validada.
+3. **Specs completas vão para `implementados/`.** File path: `.specs/implementados/spec_*.md`
+4. **Refinements futuros em pre_refinements/.** Path: `docs/refinements/a_implementar/pre_refinamentos/ref_*.md`
+5. **Refinements completos vão para `implementados/`.** Path: `docs/refinements/implementados/ref_*.md`
+6. **Registries devem permanecer consistentes.** Atualize após mover specs/refinements.
+7. **IMPLEMENTATION_STATUS.md deve refletir a realidade.** Nenhuma claim sem evidência.
+8. **PROJECT_LOG.md deve ser atualizado.** Data, spec e deliverables registrados.
 
-## Migration Steps
+## Passos de migration
 
-### 1. Verify Evidence
+### 1. Verificar evidência
 
-Before moving a spec to implementados/:
+Antes de mover uma spec para implementados/:
 
-- [ ] Code changes exist in repo (checked via `git diff` or `git log`)
-- [ ] Validation passed (docs, Unity compile, log scan) OR documented as NOT RUN
-- [ ] No gaps left in CLAUDE.md rules compliance
-- [ ] Non-regression audit passed (PASS or acceptable WARNING)
+- [ ] Mudanças de código existem no repo (checado via `git diff` ou `git log`)
+- [ ] Validação passou (docs, Unity compile, log scan) OU documentada como NOT RUN
+- [ ] Nenhum gap deixado na compliance com as rules do CLAUDE.md
+- [ ] Non-regression audit passou (PASS ou WARNING aceitável)
 
-**Example evidence:**
+**Exemplo de evidência:**
 ```
 Spec 12 Implementation Evidence:
 ✓ Commit: "feat: spec 12 - player combat melee/ranged attacks"
@@ -39,18 +38,18 @@ Spec 12 Implementation Evidence:
 ✓ Non-regression: PASS
 ```
 
-### 2. Move Spec File
+### 2. Mover o spec file
 
-Move from `.specs/a_implementar/spec_*.md` to `.specs/implementados/spec_*.md`
+Mova de `.specs/a_implementar/spec_*.md` para `.specs/implementados/spec_*.md`
 
 ```powershell
 Move-Item -Path ".specs/a_implementar/spec_12_player_combat.md" `
           -Destination ".specs/implementados/spec_12_player_combat.md"
 ```
 
-### 3. Update Spec File Header
+### 3. Atualizar o header do spec file
 
-Add implementation evidence header to moved spec:
+Adicione header de implementation evidence à spec movida:
 
 ```markdown
 ---
@@ -68,25 +67,25 @@ evidence:
 [rest of original spec content]
 ```
 
-### 4. Move Related Refinement (if applicable)
+### 4. Mover o refinement relacionado (se aplicável)
 
-If spec references a pre-refinement:
+Se a spec referencia um pre-refinement:
 
 ```powershell
 Move-Item -Path "docs/refinements/a_implementar/pre_refinamentos/ref_spec12_*.md" `
           -Destination "docs/refinements/implementados/ref_spec12_*.md"
 ```
 
-### 5. Update Registries (if they exist)
+### 5. Atualizar registries (se existirem)
 
-If these files exist, update them:
+Se estes arquivos existirem, atualize-os:
 
-- `.specs/SPEC_REGISTRY_IMPLEMENTED.md` — Add spec 12 to list
-- `.specs/SPEC_REGISTRY_TO_IMPLEMENT.md` — Remove spec 12 from list
-- `docs/refinements/implementados/ref_implementados_map.md` — Add refinement if moved
-- `docs/refinements/a_implementar/ref_futuro_map.md` — Remove refinement if moved
+- `.specs/SPEC_REGISTRY_IMPLEMENTED.md` — Adicionar spec 12 à lista
+- `.specs/SPEC_REGISTRY_TO_IMPLEMENT.md` — Remover spec 12 da lista
+- `docs/refinements/implementados/ref_implementados_map.md` — Adicionar refinement se movido
+- `docs/refinements/a_implementar/ref_futuro_map.md` — Remover refinement se movido
 
-**Example update:**
+**Exemplo de atualização:**
 
 ```markdown
 ## Specs Implemented
@@ -97,21 +96,21 @@ If these files exist, update them:
 - Spec 12: Player Combat ✅ Implemented 2026-05-26
 ```
 
-### 6. Update IMPLEMENTATION_STATUS.md
+### 6. Atualizar IMPLEMENTATION_STATUS.md
 
-Add or update capability entry with evidence:
+Adicione ou atualize a entry de capability com evidência:
 
 ```markdown
 | Player Combat/Weapons/Spells | Implementado | spec_player_combat_melee_ranged.md, commit abc1234 |
 ```
 
-**Rule:** Only add if:
-- Spec moved to implementados/ OR
-- Validated code exists with evidence
+**Regra:** Só adicione se:
+- Spec movida para implementados/ OU
+- Código validado existe com evidência
 
-### 7. Update PROJECT_LOG.md
+### 7. Atualizar PROJECT_LOG.md
 
-Add entry at top:
+Adicione entry no topo:
 
 ```markdown
 ## Sessão 2026-05-26 (NN) - Implementar SPEC 12 (Player Combat)
@@ -148,21 +147,21 @@ abc1234 feat: spec 12 - player combat melee/ranged attacks
 - Blocked? Status?
 ```
 
-### 8. Run Docs Validation
+### 8. Rodar Docs Validation
 
 ```powershell
 .\tools\docs\validate_docs.ps1
 ```
 
-**Expected:** PASS or preexisting WARNING
+**Esperado:** PASS ou WARNING preexistente
 
 **Action:**
-- If PASS: Proceed to completion
-- If FAIL: Fix docs issues, re-run, then proceed
+- Se PASS: Prossiga para a conclusão
+- Se FAIL: Corrija os problemas de docs, rode de novo, e então prossiga
 
-## Common Patterns
+## Patterns comuns
 
-### Single Spec Migration (Most Common)
+### Migration de spec única (mais comum)
 
 ```powershell
 # 1. Move file
@@ -180,7 +179,7 @@ Move-Item ".specs/a_implementar/spec_12_*.md" ".specs/implementados/"
 .\tools\docs\validate_docs.ps1
 ```
 
-### Spec + Related Refinement
+### Spec + Refinement relacionado
 
 ```powershell
 # Same as above, plus:
@@ -192,30 +191,30 @@ Move-Item "docs/refinements/a_implementar/pre_refinamentos/ref_spec12_*.md" `
 # Update refinement maps
 ```
 
-## Audit Checklist
+## Checklist de auditoria
 
-Before finalizing migration:
+Antes de finalizar a migration:
 
-- [ ] Spec file exists in implementados/ (not in a_implementar/)
-- [ ] Refinement file exists in implementados/ (if applicable)
-- [ ] Evidence headers added to moved files
-- [ ] Registries updated and consistent
-- [ ] IMPLEMENTATION_STATUS.md reflects new state
-- [ ] PROJECT_LOG.md has entry with date and deliverables
+- [ ] Spec file existe em implementados/ (não em a_implementar/)
+- [ ] Refinement file existe em implementados/ (se aplicável)
+- [ ] Headers de evidência adicionados aos arquivos movidos
+- [ ] Registries atualizados e consistentes
+- [ ] IMPLEMENTATION_STATUS.md reflete o novo estado
+- [ ] PROJECT_LOG.md tem entry com data e deliverables
 - [ ] Docs validation: PASS
-- [ ] No broken links in moved files
-- [ ] No orphaned references to a_implementar/ specs
+- [ ] Nenhum link quebrado nos arquivos movidos
+- [ ] Nenhuma referência órfã a specs de a_implementar/
 
-## Red Flags (Do NOT Migrate)
+## Red Flags (NÃO migrar)
 
-- ❌ No code changes exist for spec (claim without evidence)
-- ❌ Validation shows FAIL and not fixed
-- ❌ Non-regression shows FAIL
-- ❌ Spec scope amplified beyond what was implemented
-- ❌ Save references changed without schema migration documented
-- ❌ Validation not run and cannot document reason
+- ❌ Nenhuma mudança de código existe para a spec (claim sem evidência)
+- ❌ Validação mostra FAIL e não corrigida
+- ❌ Non-regression mostra FAIL
+- ❌ Scope da spec amplificado além do que foi implementado
+- ❌ Save references mudaram sem schema migration documentada
+- ❌ Validação não rodada e sem como documentar a razão
 
-## Output Format
+## Saída esperada
 
 ```text
 Migration Summary
@@ -243,8 +242,8 @@ Documentation updated:
 Status: READY FOR CLOSEOUT
 ```
 
-## Integration
+## Relacionados
 
-- **Spec Execution Skill** → Calls this at Phase 4: Closeout
-- **Implementation Closeout** → Depends on this for final docs state
-- **Docs Health Check** → Verifies registries remain consistent after migration
+- **Spec Execution Skill** → Chama esta no Phase 4: Closeout
+- **Implementation Closeout** → Depende desta para o estado final de docs
+- **Docs Health Check** → Verifica que os registries permanecem consistentes após a migration

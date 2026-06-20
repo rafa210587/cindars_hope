@@ -1,27 +1,25 @@
 ---
 name: wave-integration-slice
-description: Protocol for WAVE_INTEGRATION specs — audit existing systems, decide reuse vs. new, implement, document, and produce human checklist
-version: 1.0
-when_to_use: Any WAVE_INTEGRATION spec (scene integration, runtime binding, NPC wiring, HUD binding, economy loop, skill effects, movement actions)
+description: Protocolo para specs de WAVE_INTEGRATION — auditar sistemas existentes, decidir reuse vs. new, implementar, documentar e produzir checklist humano. Use em qualquer spec WAVE_INTEGRATION (scene integration, runtime binding, NPC wiring, HUD binding, economy loop, skill effects, movement actions).
 ---
 
-# Wave Integration Slice Skill
+# Skill: Slice de Wave Integration
 
-## Use When
+## Quando usar
 
-Task is a `WAVE_INTEGRATION_*` spec covering:
+A tarefa é uma spec `WAVE_INTEGRATION_*` cobrindo:
 - Scene runtime binding (HUD, inventory, equipment)
-- Economy/shipping loop wiring
+- Wiring de loop de economy/shipping
 - NPC dialogue/shop runtime
 - Skill effects / active slot binding
 - Player movement/ability runtime
-- Resource interactable wiring
-- Any "make the code actually run in a scene" slice
+- Wiring de resource interactable
+- Qualquer slice de "fazer o código realmente rodar numa scene"
 
-## Do NOT Use When
+## Quando NÃO usar
 
-- Spec is a pure WAVE (farm, cave, quest, calendar) with no scene integration
-- Spec is docs-only or asset-only
+- A spec é uma WAVE pura (farm, cave, quest, calendar) sem scene integration
+- A spec é docs-only ou asset-only
 
 ---
 
@@ -33,27 +31,27 @@ git status --short | Select-Object -First 20
 git branch --show-current   # must be dev
 ```
 
-Confirm:
+Confirme:
 - Branch = `dev`
-- Working tree clean (or only expected files)
+- Working tree limpa (ou só arquivos esperados)
 
 ---
 
-## Phase 1 — Audit Existing Systems
+## Phase 1 — Auditar sistemas existentes
 
-Before writing a single line of code, audit what already exists.
+Antes de escrever uma única linha de código, audite o que já existe.
 
-Read:
-1. The spec
-2. `docs/project/CURRENT_STATE.md` (WAVE_INTEGRATION section)
-3. The immediately prior WAVE_INTEGRATION report (if listed as dependency)
+Leia:
+1. A spec
+2. `docs/project/CURRENT_STATE.md` (seção WAVE_INTEGRATION)
+3. O relatório de WAVE_INTEGRATION imediatamente anterior (se listado como dependência)
 
-Create audit doc:
+Crie o doc de auditoria:
 ```
-docs/validation/WAVE_INTEGRATION_<N>_<SLUG>_RUNTIME_AUDIT.md (optional if simple)
+docs/validation/WAVE_INTEGRATION_<N>_<SLUG>_RUNTIME_AUDIT.md (opcional se simples)
 ```
 
-Answer these questions in the audit:
+Responda estas perguntas na auditoria:
 ```
 System X already exists?        YES / NO / PARTIAL
 Controllers already attached?   YES / NO
@@ -65,18 +63,18 @@ Scene creator updated?          YES / NO
 Debt from prior wave?           list it
 ```
 
-**Reuse-first rule**: If the system already exists and works, extend it. Do NOT create a parallel system.
+**Regra reuse-first**: Se o sistema já existe e funciona, estenda-o. NÃO crie um sistema paralelo.
 
 ---
 
-## Phase 2 — Decision Doc
+## Phase 2 — Doc de decisão
 
-Create:
+Crie:
 ```
 docs/validation/WAVE_INTEGRATION_<N>_<SLUG>_DECISION.md
 ```
 
-Structure:
+Estrutura:
 ```markdown
 # WAVE_INTEGRATION_<N> — <Title> Decision
 
@@ -98,9 +96,9 @@ REUSE_EXISTING_<SYSTEM> / NEW_SYSTEM / EXTEND_EXISTING
 
 ---
 
-## Phase 3 — Implementation
+## Phase 3 — Implementação
 
-### Runtime Bootstrap Pattern (when attaching to player/scene at runtime)
+### Padrão de Runtime Bootstrap (ao anexar ao player/scene em runtime)
 
 ```csharp
 [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -113,19 +111,19 @@ private static void EnsureInstance()
 }
 ```
 
-Re-bind on scene load:
+Refaça o bind no scene load:
 ```csharp
 private void OnEnable() => SceneManager.sceneLoaded += HandleSceneLoaded;
 private void OnDisable() => SceneManager.sceneLoaded -= HandleSceneLoaded;
 ```
 
-### Modal Guard (always required for input-driven runtime)
+### Modal Guard (sempre exigido para runtime dirigido por input)
 
 ```csharp
 if (GameBootstrap.Instance?.ModalManager?.HasActiveModal == true) return;
 ```
 
-### Graceful Optional Dependencies
+### Dependências opcionais graciosas
 
 ```csharp
 // Stamina — optional
@@ -141,7 +139,7 @@ if (_staminaManager != null && !_staminaManager.TrySpendStamina(cost))
 }
 ```
 
-### Debt Tags (use in code comments and reports)
+### Debt Tags (use em comentários de código e relatórios)
 
 ```
 TODO_INTEGRATION_NOT_FINAL
@@ -155,20 +153,20 @@ BLOCK_DAMAGE_REDUCTION_DEFERRED_TO_COMBAT_RUNTIME
 
 ## Phase 4 — Docs
 
-### Required docs (always)
+### Docs obrigatórios (sempre)
 
 | Doc | Path |
 |-----|------|
 | Report | `docs/validation/WAVE_INTEGRATION_<N>_<SLUG>_REPORT.md` |
 | Human checklist | `docs/validation/WAVE_INTEGRATION_<N>_HUMAN_PLAYMODE_CHECKLIST.md` |
 
-### Optional docs (when Unity wiring is required)
+### Docs opcionais (quando wiring no Unity é necessário)
 
 | Doc | Path |
 |-----|------|
 | Wiring instructions | `docs/validation/WAVE_INTEGRATION_<N>_HUMAN_UNITY_<SLUG>_WIRING_INSTRUCTIONS.md` |
 
-### Report structure
+### Estrutura do report
 
 ```markdown
 # WAVE_INTEGRATION_<N> — <Title> Report
@@ -199,7 +197,7 @@ REUSE_EXISTING_X
 ## Can continue to next WAVE_INTEGRATION: YES / NO
 ```
 
-### Human checklist structure
+### Estrutura do human checklist
 
 ```markdown
 | Step | Expected result | Pass/Fail | Notes |
@@ -223,13 +221,13 @@ dotnet build .\Assembly-CSharp-Editor.csproj --no-restore
 if ($LASTEXITCODE -ne 0) { Write-Host "EDITOR BUILD FAILED"; exit 1 }
 ```
 
-Expected: 0 errors. Pre-existing editor warnings are acceptable.
+Esperado: 0 erros. Warnings de editor preexistentes são aceitáveis.
 
 ---
 
-## Phase 6 — CURRENT_STATE Update
+## Phase 6 — Atualizar CURRENT_STATE
 
-Update the WAVE_INTEGRATION section in `docs/project/CURRENT_STATE.md`:
+Atualize a seção WAVE_INTEGRATION em `docs/project/CURRENT_STATE.md`:
 
 ```
 - WAVE_INTEGRATION_<N>: <STATUS> (<date>) — <one-line summary>; human must execute checklist before ACCEPTED/WAVE_INTEGRATION_<N+1> continuation
@@ -237,28 +235,28 @@ Update the WAVE_INTEGRATION section in `docs/project/CURRENT_STATE.md`:
 
 ---
 
-## Status Taxonomy for Integration Work
+## Status Taxonomy para trabalho de integração
 
-| Status | Meaning |
-|--------|---------|
-| `BUILD_VALIDATED` | Code compiles, logic complete, no deferred debt |
-| `BUILD_VALIDATED_WITH_UI_DEBT` | Core wired, UI/visual/PlayMode deferred |
-| `BUILD_VALIDATED_PENDING_HUMAN_PLAYMODE` | Code complete, human hasn't tested yet |
-| `CODE_READY_HUMAN_UNITY_SCENE_ACTION_REQUIRED` | Needs Unity Editor scene action |
-| `BLOCKED` | Cannot continue without scene/Packages/forbidden scope |
+| Status | Significado |
+|--------|-------------|
+| `BUILD_VALIDATED` | Código compila, lógica completa, sem debt deferido |
+| `BUILD_VALIDATED_WITH_UI_DEBT` | Núcleo conectado, UI/visual/PlayMode deferido |
+| `BUILD_VALIDATED_PENDING_HUMAN_PLAYMODE` | Código completo, humano ainda não testou |
+| `CODE_READY_HUMAN_UNITY_SCENE_ACTION_REQUIRED` | Precisa de ação de scene no Unity Editor |
+| `BLOCKED` | Não pode continuar sem scene/Packages/escopo proibido |
 
 ---
 
-## Common Regressions
+## Regressões comuns
 
-- Creating a new system when an existing one should be extended
-- Not checking modal guard for input-driven actions
-- Calling `MovePosition` from coroutine without `IsBeingDisplaced` flag (see `player-ability-runtime`)
-- Committing scene files that Unity auto-modified
-- Missing wiring instructions when human Unity action is required
+- Criar um novo sistema quando um existente deveria ser estendido
+- Não checar o modal guard para ações dirigidas por input
+- Chamar `MovePosition` de coroutine sem a flag `IsBeingDisplaced` (ver `player-ability-runtime`)
+- Commitar arquivos de scene que o Unity auto-modificou
+- Faltar wiring instructions quando ação humana no Unity é necessária
 
-## Stop Conditions
+## Quando parar e reportar
 
-- Spec requires scene YAML edit → document as `CODE_READY_HUMAN_UNITY_SCENE_ACTION_REQUIRED`, stop
-- Spec requires Packages/ or ProjectSettings/ → `BLOCKED`
-- Reuse-first audit finds parallel system already being built → stop and report conflict
+- Spec exige edição de scene YAML → documente como `CODE_READY_HUMAN_UNITY_SCENE_ACTION_REQUIRED`, pare
+- Spec exige Packages/ ou ProjectSettings/ → `BLOCKED`
+- Auditoria reuse-first encontra sistema paralelo já sendo construído → pare e reporte o conflito

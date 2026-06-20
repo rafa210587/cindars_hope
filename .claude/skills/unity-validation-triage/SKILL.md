@@ -1,31 +1,30 @@
 ---
 name: unity-validation-triage
-description: Classify Unity, dotnet, and log validation failures without hiding real compile errors
-version: 1.0
+description: Classifica falhas de validação do Unity, dotnet e log scanning sem esconder erros reais de compile. Use sempre que Unity batchmode, dotnet build ou Unity log scanning falhar.
 ---
 
-# Unity Validation Triage
+# Skill: Triagem de Validação do Unity
 
-Use this skill whenever Unity batchmode, `dotnet build`, or Unity log scanning fails.
+Use esta skill sempre que Unity batchmode, `dotnet build` ou Unity log scanning falhar.
 
-## Goal
+## Objetivo
 
-Separate code failures from environment/tooling failures before reporting status.
+Separar falhas de código de falhas de ambiente/tooling antes de reportar o status.
 
-## Required Inputs
+## Inputs obrigatórios
 
-- Command attempted.
+- Comando tentado.
 - Exit code.
-- Log file path, when present.
-- Key output lines.
-- Whether `dotnet build .\Assembly-CSharp.csproj --no-restore` was attempted.
-- Whether `dotnet build .\Assembly-CSharp-Editor.csproj --no-restore` was attempted.
+- Path do arquivo de log, quando presente.
+- Linhas-chave de output.
+- Se `dotnet build .\Assembly-CSharp.csproj --no-restore` foi tentado.
+- Se `dotnet build .\Assembly-CSharp-Editor.csproj --no-restore` foi tentado.
 
-## Classification Rules
+## Regras de classificação
 
-### Real Compile Failure
+### Falha real de compile
 
-Treat as code failure if any current log contains:
+Trate como falha de código se qualquer log atual contém:
 
 ```text
 error CS
@@ -33,44 +32,44 @@ error Unity
 error NETSDK
 ```
 
-Exception: `NETSDK1004 project.assets.json not found` is a restore/setup issue if fixed by `dotnet restore`.
+Exceção: `NETSDK1004 project.assets.json not found` é um problema de restore/setup se for corrigido por `dotnet restore`.
 
-Action:
+Ação:
 
-1. Fix the code.
-2. Re-run the same validation.
-3. Do not close the spec while real compile errors remain.
+1. Corrija o código.
+2. Rode de novo a mesma validação.
+3. Não feche a spec enquanto erros reais de compile permanecerem.
 
-### Local `.csproj` Drift
+### Drift de `.csproj` local
 
-Likely if `dotnet build` reports missing types for files just added, and Unity has not regenerated the project files.
+Provável se `dotnet build` reporta tipos ausentes para arquivos recém-adicionados, e o Unity não regenerou os project files.
 
-Action:
+Ação:
 
-1. Check whether the new `.cs` file is listed in `Assembly-CSharp.csproj` or `Assembly-CSharp-Editor.csproj`.
-2. Add local compile includes only when needed for validation in this repo.
-3. Re-run `dotnet build`.
-4. Mention `.csproj` drift in validation notes if touched.
+1. Cheque se o novo arquivo `.cs` está listado em `Assembly-CSharp.csproj` ou `Assembly-CSharp-Editor.csproj`.
+2. Adicione compile includes locais só quando necessário para validação neste repo.
+3. Rode de novo `dotnet build`.
+4. Mencione o drift de `.csproj` nas notas de validação se tocado.
 
-### Unity Already Open
+### Unity já aberto
 
-Likely if log/output contains:
+Provável se o log/output contém:
 
 ```text
 another Unity instance is running with this project open
 Multiple Unity instances cannot open the same project
 ```
 
-Action:
+Ação:
 
-1. Do not call this a compile failure.
-2. Record Unity validation as blocked by editor lock.
-3. If authorized by the human/project protocol, close stale Unity and rerun.
-4. Otherwise leave Play Mode/Editor validation pending.
+1. Não chame isso de falha de compile.
+2. Registre a Unity validation como bloqueada por editor lock.
+3. Se autorizado pelo protocolo humano/de projeto, feche o Unity obsoleto e rode de novo.
+4. Caso contrário, deixe a validação de Play Mode/Editor pendente.
 
-### License / Hub / Package Noise
+### Ruído de License / Hub / Package
 
-Do not call failure a code compile failure if the log has no `error CS` and only contains:
+Não chame a falha de falha de compile de código se o log não tem `error CS` e contém apenas:
 
 ```text
 license
@@ -80,15 +79,15 @@ EditorTests.dll not valid
 Package tests assembly not valid
 ```
 
-Action:
+Ação:
 
-1. Record as environment/tooling blocker.
-2. Prefer `dotnet build` as compile fallback.
-3. Keep Unity Play Mode validation pending.
+1. Registre como blocker de ambiente/tooling.
+2. Prefira `dotnet build` como fallback de compile.
+3. Mantenha a Unity Play Mode validation pendente.
 
 ### Sandbox / Permission
 
-Likely if output contains:
+Provável se o output contém:
 
 ```text
 Access to the path is denied
@@ -96,12 +95,12 @@ couldn't create signal pipe
 cannot write Temp\obj
 ```
 
-Action:
+Ação:
 
-1. Re-run the same necessary command with approved escalation if policy allows.
-2. If still blocked, record exact path and command.
+1. Rode de novo o mesmo comando necessário com escalação aprovada, se a política permitir.
+2. Se ainda bloqueado, registre o path e o comando exatos.
 
-## Reporting Template
+## Template de reporte
 
 ```text
 Validation triage:
@@ -112,9 +111,9 @@ Validation triage:
 - Follow-up: <fixed/rerun/pending>
 ```
 
-## Rules
+## Regras
 
-- Do not flatten all validation failures into "build failed".
-- Do not claim Unity compile passed from `dotnet build` alone.
-- Do not ignore `error CS`.
-- Do not hide blocked Unity validation; document it as pending.
+- Não achate todas as falhas de validação em "build failed".
+- Não declare que o Unity compile passou só a partir de `dotnet build`.
+- Não ignore `error CS`.
+- Não esconda Unity validation bloqueada; documente-a como pendente.

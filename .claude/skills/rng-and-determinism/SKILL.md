@@ -1,34 +1,32 @@
 ---
 name: rng-and-determinism
-description: Use seeded, per-system RNG for any randomness that touches saves, loot, weather, spawns or generation. Generalizes the FASE9F cave stable-run pattern to all systems. Use whenever adding or changing randomness anywhere in gameplay.
+description: Usa RNG seeded por sistema para qualquer randomness que toque saves, loot, weather, spawns ou generation. Generaliza o padrão de stable-run da cave (FASE9F) para todos os sistemas. Use sempre que adicionar ou mudar randomness em qualquer ponto do gameplay.
 ---
 
-# Skill: RNG and Determinism
+# Skill: RNG e Determinism
 
-## The project precedent (cave stable-run, FASE9F)
+O precedente do projeto está na geração da cave (stable-run, FASE9F): seeds determinísticos derivados de `CaveWorldSeed + CaveRunSeed + CaveLevel + stable salt`; revisits nunca fazem reroll; o seed só muda em new game / KO / comando explícito de debug (rule: cave-stable-run). **Aplique a mesma disciplina em todos os outros sistemas.**
 
-Cave generation already follows the right pattern: deterministic seeds derived from `CaveWorldSeed + CaveRunSeed + CaveLevel + stable salt`; revisits never reroll; seed changes only on new game / KO / explicit debug command (rule: cave-stable-run). **Apply the same discipline everywhere else.**
+## Regras para qualquer novo randomness
 
-## Rules for any new randomness
-
-1. **Never `UnityEngine.Random` (global state) in systems whose outcome is saved or revisited** — loot rolls, weather generation, spawn composition, quality rolls, NPC schedule variation. Global state means any other system's call reorders your results.
-2. **One `System.Random` per system per scope**, seeded from stable components:
+1. **Nunca use `UnityEngine.Random` (global state) em sistemas cujo outcome é salvo ou revisitado** — loot rolls, weather generation, spawn composition, quality rolls, variação de NPC schedule. Global state significa que a chamada de qualquer outro sistema reordena os seus resultados.
+2. **Um `System.Random` por sistema por escopo**, seeded a partir de componentes estáveis:
    ```csharp
    int seed = StableHash(worldSeed, "loot", enemyId, dayNumber);   // order-insensitive system salt
    var rng = new System.Random(seed);
    ```
-   Use a deterministic string hash (e.g., FNV-1a over the composed key) — **not** `string.GetHashCode()` (varies per runtime/process) and never GUIDs/timestamps for stable IDs (rule: cave-stable-run).
-3. **Same trigger, same result:** reopening the same chest, re-entering the same cave level, re-rolling the same day's weather after reload must produce identical outcomes. If a reroll IS the design (daily shop stock), the day number belongs in the seed.
-4. **Roll at decision time, persist the OUTCOME** in save data — don't persist the RNG state and don't re-roll on load.
-5. **Visual-only randomness is exempt** (particle jitter, idle animation offsets): `UnityEngine.Random` is fine there — outcomes are never saved or gameplay-relevant.
-6. **Telegraph high-stakes RNG:** rare-drop or critical chances that gate progression should be inspectable in design docs (drop table percentages in the loot SO, validated by the catalog validator), never buried as magic numbers in code.
+   Use um string hash determinístico (ex.: FNV-1a sobre a chave composta) — **não** `string.GetHashCode()` (varia por runtime/process) e nunca GUIDs/timestamps para stable IDs (rule: cave-stable-run).
+3. **Mesmo trigger, mesmo resultado:** reabrir o mesmo chest, reentrar no mesmo cave level, refazer o reroll do weather do mesmo dia depois do reload deve produzir outcomes idênticos. Se o reroll FOR o design (daily shop stock), o day number entra no seed.
+4. **Faça o roll no momento da decisão e persista o OUTCOME** no save data — não persista o RNG state e não faça reroll no load.
+5. **Randomness visual-only é exceção** (particle jitter, offsets de idle animation): `UnityEngine.Random` está ok ali — os outcomes nunca são salvos nem relevantes para o gameplay.
+6. **Telegraph para RNG de alto risco:** chances de rare-drop ou critical que gateiam progressão devem ser inspecionáveis nos design docs (percentuais da drop table no loot SO, validados pelo catalog validator), nunca enterradas como magic numbers no código.
 
-## Tests (skill: editmode-test-authoring)
+## Testes (skill: editmode-test-authoring)
 
-- Same seed inputs → identical sequence/outcome (twice in the same test).
-- Different salt per system → different sequences (no cross-system correlation).
-- Outcome persisted: save→load→same result without re-rolling.
+- Mesmos inputs de seed → sequência/outcome idênticos (duas vezes no mesmo teste).
+- Salt diferente por sistema → sequências diferentes (sem correlação cross-system).
+- Outcome persistido: save→load→mesmo resultado sem reroll.
 
-## Applies directly to upcoming fable specs
+## Onde se aplica
 
-fable_09 (cave biome layout variety — MUST stay inside stable-run contract), fable_06/24 (loot tables, affixes), fable_31 (unidentified magic items), fable_37 (festivals/lunar events).
+fable_09 (variedade de cave biome layout — DEVE permanecer dentro do stable-run contract), fable_06/24 (loot tables, affixes), fable_31 (unidentified magic items), fable_37 (festivals/lunar events).
