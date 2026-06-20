@@ -118,10 +118,74 @@ namespace CindarsHope.Editor.SceneCreation
             EditorSceneManager.MarkSceneDirty(scene);
             EditorSceneManager.SaveScene(scene, ScenePath);
             AssetDatabase.Refresh();
-            
+
+            // fable_40 (CA-1): element-count audit — before (canonical baseline) = after (in scene).
+            LogRelayoutElementCountAudit(scene);
+
             var sceneAsset = AssetDatabase.LoadAssetAtPath<SceneAsset>(ScenePath);
             Selection.activeObject = sceneAsset;
-            Debug.Log($"MVP TownScene created at {ScenePath}.");
+            Debug.Log($"MVP TownScene created at {ScenePath} (48x42 relayout — fable_40).");
+        }
+
+        // fable_40 (CA-1): proves the 48×42 relayout dropped no element. The "before" baseline is
+        // the canonical spec count (the relayout repositions, never removes); the "after" is what
+        // the saved scene actually contains. Any mismatch is logged as an error (relayout regression).
+        private static void LogRelayoutElementCountAudit(UnityEngine.SceneManagement.Scene scene)
+        {
+            int npcExpected = RefinedCanonicalTownNpcSpecs.Length + 1; // +1 wanderer
+            int houseExpected = TownHouseSpecs.Length;
+            int treeExpected = TownTreePositions.Length;
+            int shopExpected = 0;
+            foreach (var s in RefinedCanonicalTownNpcSpecs)
+            {
+                if (!string.IsNullOrWhiteSpace(s.ShopDataPath)) shopExpected++;
+            }
+
+            int npcActual = 0, houseActual = 0, treeActual = 0, stallActual = 0,
+                anchorActual = 0, spawnActual = 0;
+            bool lakeFound = false, hallFound = false, muralFound = false, boardFound = false;
+
+            foreach (var root in scene.GetRootGameObjects())
+            {
+                foreach (var t in root.GetComponentsInChildren<Transform>(true))
+                {
+                    string n = t.gameObject.name;
+                    if (n.StartsWith("NPC_")) npcActual++;
+                    else if (n.StartsWith("House_")) houseActual++;
+                    else if (n.StartsWith("TownTree_")) treeActual++;
+                    else if (n.StartsWith("Stall_")) stallActual++;
+                    else if (n.StartsWith("Anchor_npc_")) anchorActual++;
+                    else if (n.StartsWith("Spawn_")) spawnActual++;
+                    if (n == "LakeWater") lakeFound = true;
+                    if (n == "TownHallBuilding") hallFound = true;
+                    if (n == "TownHallMural") muralFound = true;
+                    if (n == "WarriorStatue") boardFound = true;
+                }
+            }
+
+            Debug.Log(
+                "[fable_40] Town 48x42 relayout element-count audit (before=canonical | after=scene):\n" +
+                $"  NPCs:    before={npcExpected} after={npcActual}\n" +
+                $"  Houses:  before={houseExpected} after={houseActual}\n" +
+                $"  Trees:   before={treeExpected} after={treeActual}\n" +
+                $"  Stalls:  before={shopExpected} after={stallActual}\n" +
+                $"  Anchors: before={npcExpected * 3} after={anchorActual} (work/social/home)\n" +
+                $"  Spawns:  before={TownDistrictLayout.StableSpawnIds.Length} after={spawnActual}\n" +
+                $"  New districts: lake/park={lakeFound} townHall={hallFound} mural={muralFound}\n" +
+                $"  Landmark statue present={boardFound}\n" +
+                $"  Footprint: {TownDistrictLayout.WidthTiles}x{TownDistrictLayout.HeightTiles} " +
+                $"(bounds +/-{TownDistrictLayout.HalfWidth}/+/-{TownDistrictLayout.HalfHeight})");
+
+            bool ok = npcActual == npcExpected && houseActual == houseExpected &&
+                      treeActual == treeExpected && stallActual == shopExpected &&
+                      anchorActual == npcExpected * 3 &&
+                      spawnActual == TownDistrictLayout.StableSpawnIds.Length &&
+                      lakeFound && hallFound && muralFound && boardFound;
+            if (!ok)
+            {
+                Debug.LogError("[fable_40] RELAYOUT REGRESSION: element count before != after, " +
+                               "or a required new district/landmark is missing. See the audit above.");
+            }
         }
 
         private static GameBootstrap CreateBootstrap()
@@ -475,11 +539,17 @@ namespace CindarsHope.Editor.SceneCreation
             var bounds = new GameObject("Bounds");
             bounds.transform.position = Vector3.zero;
 
-            // Town: ~4x area (2x per axis) — was 18x15, now 36x30
-            CreateBound("Top", bounds.transform, new Vector2(0f, 15f), new Vector2(36f, 1f));
-            CreateBound("Bottom", bounds.transform, new Vector2(0f, -15f), new Vector2(36f, 1f));
-            CreateBound("Left", bounds.transform, new Vector2(-18.5f, 0f), new Vector2(1f, 30f));
-            CreateBound("Right", bounds.transform, new Vector2(18.5f, 0f), new Vector2(1f, 30f));
+            // fable_40: canonical 48×42 footprint (bounds −24..24 / −21..21, city_rules Rule 1).
+            // Border colliders sit half a tile outside the playfield so the perimeter is
+            // intransponível (CA-4); each spans the full canonical width/height + overlap.
+            float w = TownDistrictLayout.WidthTiles;   // 48
+            float h = TownDistrictLayout.HeightTiles;  // 42
+            float halfW = TownDistrictLayout.HalfWidth;  // 24
+            float halfH = TownDistrictLayout.HalfHeight; // 21
+            CreateBound("Top", bounds.transform, new Vector2(0f, halfH + 0.5f), new Vector2(w + 1f, 1f));
+            CreateBound("Bottom", bounds.transform, new Vector2(0f, -(halfH + 0.5f)), new Vector2(w + 1f, 1f));
+            CreateBound("Left", bounds.transform, new Vector2(-(halfW + 0.5f), 0f), new Vector2(1f, h + 1f));
+            CreateBound("Right", bounds.transform, new Vector2(halfW + 0.5f, 0f), new Vector2(1f, h + 1f));
         }
 
         private static void CreateBound(string name, Transform parent, Vector2 position, Vector2 size)
@@ -517,8 +587,9 @@ namespace CindarsHope.Editor.SceneCreation
             var parent = new GameObject("SpawnPoints");
             parent.transform.position = Vector3.zero;
 
-            var defaultSpawn = CreateSpawnPoint(parent.transform, "town_default", new Vector3(0f, -5f, 0f));
-            var fromFarmSpawn = CreateSpawnPoint(parent.transform, "town_from_farm", new Vector3(0f, -11.5f, 0f));
+            // fable_40: spawn IDs are frozen (CA-4); only positions move into the 48×42 footprint.
+            var defaultSpawn = CreateSpawnPoint(parent.transform, "town_default", TownDistrictLayout.Reposition(new Vector3(0f, -5f, 0f)));
+            var fromFarmSpawn = CreateSpawnPoint(parent.transform, "town_from_farm", TownDistrictLayout.Reposition(new Vector3(0f, -11.5f, 0f)));
 
             var installer = parent.AddComponent<SceneSpawnInstaller>();
             var serializedInstaller = new SerializedObject(installer);
@@ -566,10 +637,11 @@ namespace CindarsHope.Editor.SceneCreation
             portals.transform.position = Vector3.zero;
 
             // South gate: the road back to the farm leaves the town at the bottom wall.
+            // fable_40: portal moved to the new south perimeter; target scene/spawn IDs frozen.
             CreateScenePortal(
                 portals.transform,
                 "Portal_Town_To_Farm",
-                new Vector3(0f, -13.5f, 0f),
+                new Vector3(0f, -(TownDistrictLayout.HalfHeight - 2f), 0f),
                 new Color(0.78f, 0.62f, 0.24f),
                 "FarmScene",
                 FarmScenePath,
@@ -704,7 +776,7 @@ namespace CindarsHope.Editor.SceneCreation
 
                 var stall = new GameObject($"Stall_{spec.NpcId}");
                 stall.transform.SetParent(parent.transform);
-                stall.transform.position = spec.Position + new Vector3(0f, 1.15f, 0f);
+                stall.transform.position = spec.LayoutPosition + new Vector3(0f, 1.15f, 0f);
 
                 // Counter (walkable in front, blocks behind)
                 var counter = new GameObject("Counter");
@@ -755,9 +827,10 @@ namespace CindarsHope.Editor.SceneCreation
             var parent = new GameObject("TownHouses");
             parent.transform.position = Vector3.zero;
 
+            // fable_40: every house repositioned into the canonical 48×42 footprint.
             foreach (var (name, position, baseColor) in TownHouseSpecs)
             {
-                CreateHouse(parent.transform, name, position, baseColor);
+                CreateHouse(parent.transform, name, TownDistrictLayout.Reposition(position), baseColor);
             }
         }
 
@@ -806,9 +879,10 @@ namespace CindarsHope.Editor.SceneCreation
 
         // ─── fable_11: schedule anchors (work/social/home per NPC) ───────────────────────────────
         // Canonical social hubs by archetype: tavern (Gruta's corner), plaza center, night market.
-        private static readonly Vector3 TavernSocialAnchor = new Vector3(9.5f, 5.2f, 0f);
-        private static readonly Vector3 PlazaSocialAnchor = new Vector3(0f, -1.5f, 0f);
-        private static readonly Vector3 NightMarketAnchor = new Vector3(11f, -9.5f, 0f);
+        // Legacy authoring coordinates — repositioned into the 48×42 footprint at use (fable_40).
+        private static readonly Vector3 TavernSocialAnchorLegacy = new Vector3(9.5f, 5.2f, 0f);
+        private static readonly Vector3 PlazaSocialAnchorLegacy = new Vector3(0f, -1.5f, 0f);
+        private static readonly Vector3 NightMarketAnchorLegacy = new Vector3(11f, -9.5f, 0f);
 
         private static void CreateNpcScheduleAnchors()
         {
@@ -824,20 +898,22 @@ namespace CindarsHope.Editor.SceneCreation
                 var archetype = NpcScheduleBlockResolver.ArchetypeFromMovementProfile(
                     spec.MovementProfile, !string.IsNullOrWhiteSpace(spec.ShopDataPath));
 
-                // Work = current stall/post position.
+                // Work = current stall/post position (canonical 48×42 footprint).
                 CreateScheduleAnchor(parent.transform, spec.NpcId,
-                    NpcScheduleBlockResolver.WorkAnchorSuffix, spec.Position);
+                    NpcScheduleBlockResolver.WorkAnchorSuffix, spec.LayoutPosition);
 
-                // Social = archetype-appropriate hub.
-                Vector3 social = archetype == NpcScheduleArchetype.Night ? NightMarketAnchor
-                    : (spec.Position.y > 3f ? TavernSocialAnchor : PlazaSocialAnchor);
+                // Social = archetype-appropriate hub (repositioned into the 48×42 footprint).
+                // The archetype branch keys off the legacy authoring grid (classification only).
+                Vector3 socialLegacy = archetype == NpcScheduleArchetype.Night ? NightMarketAnchorLegacy
+                    : (spec.Position.y > 3f ? TavernSocialAnchorLegacy : PlazaSocialAnchorLegacy);
                 CreateScheduleAnchor(parent.transform, spec.NpcId,
-                    NpcScheduleBlockResolver.SocialAnchorSuffix, social);
+                    NpcScheduleBlockResolver.SocialAnchorSuffix, TownDistrictLayout.Reposition(socialLegacy));
 
                 // Home = a house door (cycled across the 12 houses), nudged just below the door.
+                // houseDoorPositions are already in the 48×42 footprint (HouseDoorPositions).
                 var home = houseCount > 0
                     ? houseDoorPositions[index % houseCount] + new Vector3(0f, -0.9f, 0f)
-                    : spec.Position;
+                    : spec.LayoutPosition;
                 CreateScheduleAnchor(parent.transform, spec.NpcId,
                     NpcScheduleBlockResolver.HomeAnchorSuffix, home);
 
@@ -880,9 +956,12 @@ namespace CindarsHope.Editor.SceneCreation
             int doorCount = 0;
             for (int i = 0; i < TownHouseSpecs.Length; i++)
             {
-                var (houseName, housePosition, _) = TownHouseSpecs[i];
+                var (houseName, legacyHousePosition, _) = TownHouseSpecs[i];
+                // fable_40: the exterior of the house moved into the 48×42 footprint; the
+                // interior band (y>+40, fable_11) is preserved unchanged.
+                var housePosition = TownDistrictLayout.Reposition(legacyHousePosition);
 
-                // Interior center for this house in the off-playfield band.
+                // Interior center for this house in the off-playfield band (preserved offsets).
                 int row = i / InteriorsPerRow;
                 int col = i % InteriorsPerRow;
                 var interiorCenter = new Vector3(
@@ -987,21 +1066,25 @@ namespace CindarsHope.Editor.SceneCreation
         }
 
         // Door anchor (just below each house body) used as the home schedule anchor target.
+        // fable_40: positions are in the canonical 48×42 footprint (repositioned).
         private static List<Vector3> HouseDoorPositions()
         {
             var list = new List<Vector3>(TownHouseSpecs.Length);
             foreach (var (_, position, _) in TownHouseSpecs)
             {
-                list.Add(position);
+                list.Add(TownDistrictLayout.Reposition(position));
             }
             return list;
         }
 
         // Nearest shop NPC to a house (within ~4 units) so its door gates by that vendor's hours.
-        private static string NpcIdNearestHouse(Vector3 housePosition)
+        // fable_40: both sides compared in the relayout footprint; the gate radius scales with
+        // the relayout so vendors stay matched to their nearest house after repositioning.
+        private static string NpcIdNearestHouse(Vector3 layoutHousePosition)
         {
             string nearestId = null;
-            float bestSqr = 16f; // 4 units squared
+            float gate = 4f * TownDistrictLayout.RelayoutScale;
+            float bestSqr = gate * gate;
             foreach (var spec in RefinedCanonicalTownNpcSpecs)
             {
                 if (string.IsNullOrWhiteSpace(spec.ShopDataPath))
@@ -1009,7 +1092,7 @@ namespace CindarsHope.Editor.SceneCreation
                     continue;
                 }
 
-                float sqr = (spec.Position - housePosition).sqrMagnitude;
+                float sqr = (spec.LayoutPosition - layoutHousePosition).sqrMagnitude;
                 if (sqr < bestSqr)
                 {
                     bestSqr = sqr;
@@ -1034,28 +1117,83 @@ namespace CindarsHope.Editor.SceneCreation
             var decorations = new GameObject("TownDecorations");
             decorations.transform.position = Vector3.zero;
 
-            CreateDecoration(decorations.transform, "TownWell", new Vector3(-5.5f, 4.5f, 0f), new Vector3(1.2f, 1.2f, 1f), new Color(0.32f, 0.38f, 0.44f));
+            // fable_40: all town-wide props repositioned into the 48×42 footprint via R().
+            Vector3 R(float x, float y) => TownDistrictLayout.Reposition(new Vector3(x, y, 0f));
+
+            CreateDecoration(decorations.transform, "TownWell", R(-5.5f, 4.5f), new Vector3(1.2f, 1.2f, 1f), new Color(0.32f, 0.38f, 0.44f));
 
             // Street lamps along the main roads (plaza → gates and market row)
-            CreateDecoration(decorations.transform, "TownLamp_PlazaN", new Vector3(1.2f, 4.6f, 0f), new Vector3(0.4f, 1.3f, 1f), new Color(0.83f, 0.66f, 0.31f));
-            CreateDecoration(decorations.transform, "TownLamp_PlazaS", new Vector3(-1.2f, -4.6f, 0f), new Vector3(0.4f, 1.3f, 1f), new Color(0.83f, 0.66f, 0.31f));
-            CreateDecoration(decorations.transform, "TownLamp_MarketW", new Vector3(-7f, 5.5f, 0f), new Vector3(0.4f, 1.3f, 1f), new Color(0.83f, 0.66f, 0.31f));
-            CreateDecoration(decorations.transform, "TownLamp_MarketE", new Vector3(7f, 5.5f, 0f), new Vector3(0.4f, 1.3f, 1f), new Color(0.83f, 0.66f, 0.31f));
-            CreateDecoration(decorations.transform, "TownLamp_GateS", new Vector3(1.5f, -12f, 0f), new Vector3(0.4f, 1.3f, 1f), new Color(0.83f, 0.66f, 0.31f));
-            CreateDecoration(decorations.transform, "TownLamp_CaveRoad", new Vector3(10.5f, -1f, 0f), new Vector3(0.4f, 1.3f, 1f), new Color(0.83f, 0.66f, 0.31f));
-            CreateDecoration(decorations.transform, "TownLamp_NightMarket", new Vector3(7.5f, -9.5f, 0f), new Vector3(0.4f, 1.3f, 1f), new Color(0.6f, 0.45f, 0.75f));
+            CreateDecoration(decorations.transform, "TownLamp_PlazaN", R(1.2f, 4.6f), new Vector3(0.4f, 1.3f, 1f), new Color(0.83f, 0.66f, 0.31f));
+            CreateDecoration(decorations.transform, "TownLamp_PlazaS", R(-1.2f, -4.6f), new Vector3(0.4f, 1.3f, 1f), new Color(0.83f, 0.66f, 0.31f));
+            CreateDecoration(decorations.transform, "TownLamp_MarketW", R(-7f, 5.5f), new Vector3(0.4f, 1.3f, 1f), new Color(0.83f, 0.66f, 0.31f));
+            CreateDecoration(decorations.transform, "TownLamp_MarketE", R(7f, 5.5f), new Vector3(0.4f, 1.3f, 1f), new Color(0.83f, 0.66f, 0.31f));
+            CreateDecoration(decorations.transform, "TownLamp_GateS", R(1.5f, -12f), new Vector3(0.4f, 1.3f, 1f), new Color(0.83f, 0.66f, 0.31f));
+            CreateDecoration(decorations.transform, "TownLamp_CaveRoad", R(10.5f, -1f), new Vector3(0.4f, 1.3f, 1f), new Color(0.83f, 0.66f, 0.31f));
+            CreateDecoration(decorations.transform, "TownLamp_NightMarket", R(7.5f, -9.5f), new Vector3(0.4f, 1.3f, 1f), new Color(0.6f, 0.45f, 0.75f));
 
             // Night market tents (Yael's corner)
-            CreateDecoration(decorations.transform, "NightMarketTent_A", new Vector3(11.5f, -10.5f, 0f), new Vector3(1.8f, 1.1f, 1f), new Color(0.3f, 0.26f, 0.5f));
-            CreateDecoration(decorations.transform, "NightMarketTent_B", new Vector3(13f, -8.5f, 0f), new Vector3(1.6f, 1f, 1f), new Color(0.36f, 0.3f, 0.55f));
+            CreateDecoration(decorations.transform, "NightMarketTent_A", R(11.5f, -10.5f), new Vector3(1.8f, 1.1f, 1f), new Color(0.3f, 0.26f, 0.5f));
+            CreateDecoration(decorations.transform, "NightMarketTent_B", R(13f, -8.5f), new Vector3(1.6f, 1f, 1f), new Color(0.36f, 0.3f, 0.55f));
 
             // Quarry and construction props
-            CreateDecoration(decorations.transform, "QuarryRocks", new Vector3(-14.5f, -3.5f, 0f), new Vector3(1.6f, 1.1f, 1f), new Color(0.5f, 0.48f, 0.46f));
-            CreateDecoration(decorations.transform, "ConstructionPile", new Vector3(5.5f, -8f, 0f), new Vector3(1.5f, 0.8f, 1f), new Color(0.6f, 0.5f, 0.34f));
+            CreateDecoration(decorations.transform, "QuarryRocks", R(-14.5f, -3.5f), new Vector3(1.6f, 1.1f, 1f), new Color(0.5f, 0.48f, 0.46f));
+            CreateDecoration(decorations.transform, "ConstructionPile", R(5.5f, -8f), new Vector3(1.5f, 0.8f, 1f), new Color(0.6f, 0.5f, 0.34f));
 
             // Animal pen fence (Eiran's yard)
-            CreateDecoration(decorations.transform, "AnimalPenFence_N", new Vector3(12f, 10f, 0f), new Vector3(4f, 0.25f, 1f), new Color(0.52f, 0.4f, 0.26f));
-            CreateDecoration(decorations.transform, "AnimalPenFence_S", new Vector3(12f, 7f, 0f), new Vector3(4f, 0.25f, 1f), new Color(0.52f, 0.4f, 0.26f));
+            CreateDecoration(decorations.transform, "AnimalPenFence_N", R(12f, 10f), new Vector3(4f, 0.25f, 1f), new Color(0.52f, 0.4f, 0.26f));
+            CreateDecoration(decorations.transform, "AnimalPenFence_S", R(12f, 7f), new Vector3(4f, 0.25f, 1f), new Color(0.52f, 0.4f, 0.26f));
+
+            // ── fable_40 new districts (CA-3): lake/park SW + town hall NE with mural ──
+            CreateLakeParkDistrict(decorations.transform);
+            CreateTownHallDistrict(decorations.transform);
+        }
+
+        // ── fable_40: lake / park district (SW) — water body + park benches (new) ──
+        private static void CreateLakeParkDistrict(Transform parent)
+        {
+            var district = new GameObject("District_LakePark_SW");
+            district.transform.SetParent(parent);
+            district.transform.position = Vector3.zero;
+
+            // Water body (decorative, blue, large slab under the park).
+            var lake = new GameObject("LakeWater");
+            lake.transform.SetParent(district.transform);
+            lake.transform.position = TownDistrictLayout.LakeCenter;
+            lake.transform.localScale = new Vector3(6f, 4.5f, 1f);
+            var lakeRenderer = lake.AddComponent<SpriteRenderer>();
+            lakeRenderer.sprite = GetBuiltinSprite();
+            lakeRenderer.color = new Color(0.27f, 0.45f, 0.62f);
+            lakeRenderer.sortingOrder = 0;
+            TrySetSortingLayer(lakeRenderer, "Ground", lakeRenderer.sortingOrder);
+
+            CreateDecoration(district.transform, "ParkBench_W", TownDistrictLayout.LakeBenchWest, new Vector3(1.4f, 0.4f, 1f), new Color(0.5f, 0.38f, 0.26f));
+            CreateDecoration(district.transform, "ParkBench_E", TownDistrictLayout.LakeBenchEast, new Vector3(1.4f, 0.4f, 1f), new Color(0.5f, 0.38f, 0.26f));
+        }
+
+        // ── fable_40: town hall district (NE) — building + mural on the wall (new) ──
+        // The public board/calendar stays in the plaza (CA-3); the mural moves here.
+        private static void CreateTownHallDistrict(Transform parent)
+        {
+            var district = new GameObject("District_TownHall_NE");
+            district.transform.SetParent(parent);
+            district.transform.position = Vector3.zero;
+
+            // Town hall building body (blocking).
+            var hall = new GameObject("TownHallBuilding");
+            hall.transform.SetParent(district.transform);
+            hall.transform.position = TownDistrictLayout.TownHallCenter;
+            hall.transform.localScale = new Vector3(4.5f, 3.2f, 1f);
+            var hallRenderer = hall.AddComponent<SpriteRenderer>();
+            hallRenderer.sprite = GetBuiltinSprite();
+            hallRenderer.color = new Color(0.6f, 0.58f, 0.52f);
+            hallRenderer.sortingOrder = 2;
+            TrySetSortingLayer(hallRenderer, "Items", hallRenderer.sortingOrder);
+            var hallCollider = hall.AddComponent<BoxCollider2D>();
+            hallCollider.isTrigger = false;
+            hallCollider.size = Vector2.one;
+
+            // Mural on the south wall of the town hall (F34 anchor — interactable wired later).
+            CreateDecoration(district.transform, "TownHallMural", TownDistrictLayout.TownHallMural, new Vector3(3.2f, 0.9f, 1f), new Color(0.7f, 0.55f, 0.4f));
         }
 
         // Tree clusters along the perimeter, road edges, and district borders.
@@ -1091,7 +1229,8 @@ namespace CindarsHope.Editor.SceneCreation
         {
             var treeObject = new GameObject($"TownTree_{treeIndex:00}");
             treeObject.transform.SetParent(parent);
-            treeObject.transform.position = position;
+            // fable_40: tree clusters repositioned into the 48×42 footprint.
+            treeObject.transform.position = TownDistrictLayout.Reposition(position);
             treeObject.transform.localScale = new Vector3(3f, 3f, 1f);
 
             var spriteRenderer = treeObject.AddComponent<SpriteRenderer>();
@@ -1259,7 +1398,15 @@ namespace CindarsHope.Editor.SceneCreation
             public string ObjectName { get; }
             public string NpcDataPath { get; }
             public string ShopDataPath { get; }
+
+            /// <summary>Legacy authoring position (36×30 grid). Use <see cref="LayoutPosition"/>
+            /// for placement so the element lands in the canonical 48×42 footprint (fable_40).</summary>
             public Vector3 Position { get; }
+
+            /// <summary>Canonical 48×42 position (legacy position repositioned by the district
+            /// layout). Single source of truth so no spec reader misses the relayout.</summary>
+            public Vector3 LayoutPosition => TownDistrictLayout.Reposition(Position);
+
             public Color Color { get; }
             public string MovementProfile { get; }
             public bool CanWander { get; }
@@ -1289,7 +1436,7 @@ namespace CindarsHope.Editor.SceneCreation
                     npcObject = CreateShopNpc(
                         parent.transform,
                         spec.ObjectName,
-                        spec.Position,
+                        spec.LayoutPosition,
                         spec.Color,
                         spec.NpcDataPath,
                         spec.ShopDataPath,
@@ -1312,7 +1459,7 @@ namespace CindarsHope.Editor.SceneCreation
                     npcObject = CreateDialogueNpc(
                         parent.transform,
                         spec.ObjectName,
-                        spec.Position,
+                        spec.LayoutPosition,
                         spec.Color,
                         spec.NpcDataPath,
                         modalManager,
@@ -1340,7 +1487,7 @@ namespace CindarsHope.Editor.SceneCreation
             var wanderer = CreateDialogueNpc(
                 parent.transform,
                 "NPC_Vaalara_Wanderer_01",
-                new Vector3(-1.5f, 1.5f, 0f),
+                TownDistrictLayout.Reposition(new Vector3(-1.5f, 1.5f, 0f)),
                 new Color(0.62f, 0.56f, 0.82f),
                 "Assets/_Game/Data/NPCs/Npc_Vaalara_Wanderer_01.asset",
                 modalManager,
@@ -1459,13 +1606,16 @@ namespace CindarsHope.Editor.SceneCreation
                 SetReference(serializedWanderer, "_rigidbody", body);
                 // District-relative wander bounds: each NPC roams around its own home spot
                 // instead of one shared central rectangle, clamped to the town playfield.
+                // fable_40: clamp to the canonical 48×42 interior (1 tile inside the perimeter).
                 float radius = Mathf.Max(1f, wanderRadius);
+                float clampX = TownDistrictLayout.HalfWidth - 1f;   // 23
+                float clampY = TownDistrictLayout.HalfHeight - 1f;  // 20
                 var boundsMin = new Vector2(
-                    Mathf.Max(-17f, position.x - radius),
-                    Mathf.Max(-13.5f, position.y - radius));
+                    Mathf.Max(-clampX, position.x - radius),
+                    Mathf.Max(-clampY, position.y - radius));
                 var boundsMax = new Vector2(
-                    Mathf.Min(17f, position.x + radius),
-                    Mathf.Min(13.5f, position.y + radius));
+                    Mathf.Min(clampX, position.x + radius),
+                    Mathf.Min(clampY, position.y + radius));
                 serializedWanderer.FindProperty("_wanderBoundsMin").vector2Value = boundsMin;
                 serializedWanderer.FindProperty("_wanderBoundsMax").vector2Value = boundsMax;
                 serializedWanderer.ApplyModifiedPropertiesWithoutUndo();
