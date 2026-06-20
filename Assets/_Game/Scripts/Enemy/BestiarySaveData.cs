@@ -6,6 +6,12 @@ namespace CindarsHope.Enemy
     public class BestiarySaveData
     {
         public List<BestiaryEntrySaveData> Entries = new List<BestiaryEntrySaveData>();
+
+        // fable_21 — discovery-knowledge layer appended to the same section (no second save path).
+        // Backward-compatible: a legacy save without these fields deserializes to an empty list and
+        // zero milestones, so the knowledge codex loads empty with no error.
+        public List<BestiaryKnowledgeEntrySaveData> Knowledge = new List<BestiaryKnowledgeEntrySaveData>();
+        public int KnowledgeMilestonesGranted;
     }
 
     [System.Serializable]

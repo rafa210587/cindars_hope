@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using CindarsHope.Combat;
+using CindarsHope.Combat.Bestiary;
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
 using UnityEngine;
@@ -11,7 +12,23 @@ namespace CindarsHope.Enemy
     {
         private readonly Dictionary<string, BestiaryEntry> _entries = new Dictionary<string, BestiaryEntry>();
 
+        // fable_21 — discovery-knowledge layer hosted here (no new manager on the bootstrap).
+        private readonly EnemyKnowledgeService _knowledge = new EnemyKnowledgeService();
+
+        // SpoilerTier / boss lookups built once from the canonical catalog (read-only consumption;
+        // the bestiary REVEALS catalog data, never authors it).
+        private static Dictionary<string, int> _spoilerTierById;
+        private static HashSet<string> _bossIds;
+
         public int EntryCount => _entries.Count;
+
+        /// <summary>fable_21 — the discovery-knowledge service hosted by this manager (F14/F22/F25 consume it).</summary>
+        public EnemyKnowledgeService Knowledge => _knowledge;
+
+        private void Awake()
+        {
+            WireKnowledgeSources();
+        }
 
         private void OnEnable()
         {
@@ -21,6 +38,7 @@ namespace CindarsHope.Enemy
             GameEventBus.Subscribe<DamageAppliedEvent>(OnDamageApplied);
             GameEventBus.Subscribe<EnemyKilledEvent>(OnEnemyKilled);
             GameEventBus.Subscribe<EnemyLootRolledEvent>(OnEnemyLootRolled);
+            GameEventBus.Subscribe<EnemyActionStartedEvent>(OnEnemyActionStarted);
         }
 
         private void OnDisable()
@@ -31,6 +49,41 @@ namespace CindarsHope.Enemy
             GameEventBus.Unsubscribe<DamageAppliedEvent>(OnDamageApplied);
             GameEventBus.Unsubscribe<EnemyKilledEvent>(OnEnemyKilled);
             GameEventBus.Unsubscribe<EnemyLootRolledEvent>(OnEnemyLootRolled);
+            GameEventBus.Unsubscribe<EnemyActionStartedEvent>(OnEnemyActionStarted);
+        }
+
+        private void WireKnowledgeSources()
+        {
+            EnsureCatalogLookup();
+            _knowledge.SpoilerTierSource = id =>
+                id != null && _spoilerTierById.TryGetValue(id, out var tier) ? tier : 0;
+            _knowledge.IsBossSource = id => id != null && _bossIds.Contains(id);
+            // SkillPointGrantSink / QuestFlagSource are wired by higher-level bootstrap when available;
+            // the milestone event (BestiaryMilestoneReachedEvent) is the canonical bus path regardless.
+        }
+
+        private static void EnsureCatalogLookup()
+        {
+            if (_spoilerTierById != null && _bossIds != null)
+            {
+                return;
+            }
+
+            _spoilerTierById = new Dictionary<string, int>();
+            _bossIds = new HashSet<string>();
+            foreach (var def in CanonicalBestiaryCatalog.All)
+            {
+                if (string.IsNullOrWhiteSpace(def.EnemyId))
+                {
+                    continue;
+                }
+
+                _spoilerTierById[def.EnemyId] = def.SpoilerTier;
+                if (def.IsBoss)
+                {
+                    _bossIds.Add(def.EnemyId);
+                }
+            }
         }
 
         public BestiaryEntry GetEntry(string enemyId)
@@ -56,12 +109,20 @@ namespace CindarsHope.Enemy
                 }
             }
 
+            // fable_21 — persist the discovery-knowledge layer in the same section.
+            data.Knowledge = _knowledge.CaptureKnowledge();
+            data.KnowledgeMilestonesGranted = _knowledge.CaptureMilestonesGranted();
+
             return data;
         }
 
         public void RestoreFromSaveData(BestiarySaveData saveData)
         {
             _entries.Clear();
+
+            // fable_21 — legacy saves (no Knowledge field) restore to an empty codex with no error.
+            _knowledge.RestoreKnowledge(saveData?.Knowledge, saveData?.KnowledgeMilestonesGranted ?? 0);
+
             if (saveData?.Entries == null)
             {
                 return;
@@ -112,11 +173,24 @@ namespace CindarsHope.Enemy
         private void OnEnemySpawned(EnemySpawnedEvent evt)
         {
             RegisterEnemySeen(evt?.EnemyId, evt?.CaveLevel ?? 0);
+            _knowledge.RecordSighting(evt?.EnemyId);
         }
 
         private void OnEnemySeen(EnemySeenEvent evt)
         {
             RegisterEnemySeen(evt?.EnemyId, evt?.CaveLevel ?? 0);
+            _knowledge.RecordSighting(evt?.EnemyId);
+        }
+
+        private void OnEnemyActionStarted(EnemyActionStartedEvent evt)
+        {
+            if (evt == null || string.IsNullOrWhiteSpace(evt.EnemyId) || string.IsNullOrWhiteSpace(evt.ActionId))
+            {
+                return;
+            }
+
+            // The action being telegraphed is observed (behavior threshold: same action 3x).
+            _knowledge.RecordActionSeen(evt.EnemyId, evt.ActionId);
         }
 
         private void OnEnemyDamaged(EnemyDamagedEvent evt)
@@ -147,7 +221,10 @@ namespace CindarsHope.Enemy
             }
 
             var damageTypeId = result.DamageType.ToString();
-            if (result.WasImmune || result.CombatResistanceMultiplier < 1f)
+            bool resisted = result.WasImmune || result.CombatResistanceMultiplier < 1f;
+            bool effective = result.WasVulnerable || result.CombatResistanceMultiplier > 1f;
+
+            if (resisted)
             {
                 changed |= AddUnique(entry.ResistancesDiscovered, damageTypeId);
             }
@@ -160,6 +237,17 @@ namespace CindarsHope.Enemy
             {
                 entry.VulnerabilityWindowDiscovered = true;
                 changed = true;
+            }
+
+            // fable_21 — feed the discovery-knowledge counters (axis = canonical damage-type string).
+            var axis = ElementAxis(result.DamageType);
+            if (resisted)
+            {
+                _knowledge.RecordResistedHit(result.TargetId);
+            }
+            else if (effective)
+            {
+                _knowledge.RecordEffectiveHit(result.TargetId, axis);
             }
 
             if (changed)
@@ -184,7 +272,15 @@ namespace CindarsHope.Enemy
                 AddUnique(entry.DropsDiscovered, evt.DropItemId);
             }
 
+            _knowledge.RecordKill(evt.EnemyId);
+
             PublishUpdated(entry, "KillCount");
+        }
+
+        private static string ElementAxis(DamageType damageType)
+        {
+            // Stable lowercase axis name (matches catalog PrimaryDamageTypeId convention).
+            return damageType.ToString().ToLowerInvariant();
         }
 
         private void OnEnemyLootRolled(EnemyLootRolledEvent evt)
