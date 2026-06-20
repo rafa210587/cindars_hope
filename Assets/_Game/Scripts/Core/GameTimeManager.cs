@@ -54,6 +54,30 @@ namespace CindarsHope.Core
             }
         }
 
+        /// <summary>
+        /// fable_11 — derived hour-of-day [0..23] for NPC schedule block resolution. There is no
+        /// minute-accurate clock in the MVP time system, so the hour is mapped from the existing
+        /// Day/Night phase plus its normalized progress: the Day phase spans 06:00→18:00 and the
+        /// Night phase spans 18:00→06:00 (wrapping midnight). This lets <c>NpcScheduleService</c>
+        /// consume an hour (per city_rules.md Rule 6) without introducing a new clock or save field.
+        /// </summary>
+        public int CurrentHourOfDay
+        {
+            get
+            {
+                var t = Mathf.Clamp01(CurrentPhaseNormalized);
+                if (_currentPhase == GamePhaseChangedEvent.GamePhase.Day)
+                {
+                    // 06:00 (t=0) .. 18:00 (t=1)
+                    return Mathf.Clamp(6 + Mathf.FloorToInt(t * 12f), 6, 17);
+                }
+
+                // Night: 18:00 (t=0) .. 30:00==06:00 (t=1), wrap into [0..23].
+                var raw = 18 + Mathf.FloorToInt(t * 12f);
+                return raw % 24;
+            }
+        }
+
         private void OnEnable()
         {
             GameEventBus.Subscribe<DayStartedEvent>(HandleDayStarted);

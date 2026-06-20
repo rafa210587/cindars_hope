@@ -14,6 +14,10 @@ namespace CindarsHope.NPC.Schedule
     public class NpcScheduleBlock
     {
         public NpcTimeBlock TimeBlock;
+
+        /// <summary>fable_11 (CA-1) — canonical Work/Social/Home/Night runtime block this entry covers.</summary>
+        public NpcRuntimeBlock RuntimeBlock;
+
         public string AnchorId;
         public string SceneId;
         public string ActivityLabel;

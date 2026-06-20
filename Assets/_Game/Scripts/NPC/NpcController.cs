@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
 using CindarsHope.Interaction;
+using CindarsHope.NPC.Schedule;
 using CindarsHope.Quests.Runtime;
 using CindarsHope.UI.Dialogue;
 using CindarsHope.UI.Modal;
@@ -33,9 +34,15 @@ namespace CindarsHope.NPC
         private DialogueNode _currentNode;
         private readonly Dictionary<string, NpcDialogueChoice> _choiceMap = new Dictionary<string, NpcDialogueChoice>();
 
-        public string InteractionPrompt => $"Conversar com {_npcData?.DisplayName ?? "NPC"}";
+        public string InteractionPrompt =>
+            IsUnavailableBySchedule()
+                ? NpcScheduleAvailabilityGate.UnavailablePrompt(_npcData)
+                : $"Conversar com {_npcData?.DisplayName ?? "NPC"}";
         public NpcDataSO NpcData => _npcData;
         public bool HasMet => _hasMet;
+
+        private bool IsUnavailableBySchedule() =>
+            NpcScheduleAvailabilityGate.IsUnavailable(_npcData);
 
         private void Awake()
         {
@@ -69,6 +76,14 @@ namespace CindarsHope.NPC
         {
             if (!CanInteract(interactor))
                 return;
+
+            // fable_11 (CA-4): NPC at Home/Night is not available for dialogue — show the honest
+            // reason instead of opening the conversation.
+            if (IsUnavailableBySchedule())
+            {
+                NpcScheduleAvailabilityGate.PublishUnavailableFeedback(_npcData);
+                return;
+            }
 
             _isInteracting = true;
             _hasMet = true;

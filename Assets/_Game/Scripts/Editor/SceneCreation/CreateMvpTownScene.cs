@@ -10,6 +10,8 @@ using CindarsHope.Enemy;
 using CindarsHope.Inventory;
 using CindarsHope.Interaction;
 using CindarsHope.NPC;
+using CindarsHope.NPC.Schedule;
+using CindarsHope.World;
 using CindarsHope.Player;
 using CindarsHope.Player.Data;
 using CindarsHope.Save;
@@ -90,6 +92,10 @@ namespace CindarsHope.Editor.SceneCreation
             CreateCentralPlaza();
             CreateMarketStalls();
             CreateHouses();
+            // fable_11: schedule anchors (work/social/home per NPC), minimal interiors (y>+40) and
+            // functional house doors. Must run after NPCs + houses exist.
+            CreateNpcScheduleAnchors();
+            CreateHouseInteriorsAndDoors();
             CreateTownDecorations();
             CreateTownTrees();
             CreateDebugHud(playerManager, inventoryManager, hungerManager, interactionSystem, timeManager, saveManager);
@@ -796,6 +802,231 @@ namespace CindarsHope.Editor.SceneCreation
             doorRenderer.color = new Color(0.28f, 0.2f, 0.14f);
             doorRenderer.sortingOrder = 3;
             TrySetSortingLayer(doorRenderer, "Items", doorRenderer.sortingOrder);
+        }
+
+        // ─── fable_11: schedule anchors (work/social/home per NPC) ───────────────────────────────
+        // Canonical social hubs by archetype: tavern (Gruta's corner), plaza center, night market.
+        private static readonly Vector3 TavernSocialAnchor = new Vector3(9.5f, 5.2f, 0f);
+        private static readonly Vector3 PlazaSocialAnchor = new Vector3(0f, -1.5f, 0f);
+        private static readonly Vector3 NightMarketAnchor = new Vector3(11f, -9.5f, 0f);
+
+        private static void CreateNpcScheduleAnchors()
+        {
+            var parent = new GameObject("NpcScheduleAnchors");
+            parent.transform.position = Vector3.zero;
+
+            var houseDoorPositions = HouseDoorPositions();
+            int houseCount = houseDoorPositions.Count;
+            int index = 0;
+
+            foreach (var spec in RefinedCanonicalTownNpcSpecs)
+            {
+                var archetype = NpcScheduleBlockResolver.ArchetypeFromMovementProfile(
+                    spec.MovementProfile, !string.IsNullOrWhiteSpace(spec.ShopDataPath));
+
+                // Work = current stall/post position.
+                CreateScheduleAnchor(parent.transform, spec.NpcId,
+                    NpcScheduleBlockResolver.WorkAnchorSuffix, spec.Position);
+
+                // Social = archetype-appropriate hub.
+                Vector3 social = archetype == NpcScheduleArchetype.Night ? NightMarketAnchor
+                    : (spec.Position.y > 3f ? TavernSocialAnchor : PlazaSocialAnchor);
+                CreateScheduleAnchor(parent.transform, spec.NpcId,
+                    NpcScheduleBlockResolver.SocialAnchorSuffix, social);
+
+                // Home = a house door (cycled across the 12 houses), nudged just below the door.
+                var home = houseCount > 0
+                    ? houseDoorPositions[index % houseCount] + new Vector3(0f, -0.9f, 0f)
+                    : spec.Position;
+                CreateScheduleAnchor(parent.transform, spec.NpcId,
+                    NpcScheduleBlockResolver.HomeAnchorSuffix, home);
+
+                index++;
+            }
+
+            Debug.Log($"[fable_11] Created schedule anchors for {index} NPC(s) " +
+                      $"({index * 3} anchors: work/social/home).");
+        }
+
+        private static void CreateScheduleAnchor(Transform parent, string npcId, string suffix, Vector3 position)
+        {
+            var anchorId = $"npc_{npcId}_{suffix}";
+            var go = new GameObject($"Anchor_{anchorId}");
+            go.transform.SetParent(parent);
+            go.transform.position = position;
+
+            var anchor = go.AddComponent<NpcScheduleAnchor>();
+            var serialized = new SerializedObject(anchor);
+            SetSerializedString(serialized, "_anchorId", anchorId);
+            SetSerializedString(serialized, "_npcId", npcId);
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(anchor);
+        }
+
+        // ─── fable_11: minimal interiors (off-playfield band y > +40) + functional house doors ────
+        private const float InteriorBandBaseY = 44f;
+        private const float InteriorSpacingX = 12f;
+        private const float InteriorSpacingY = 9f;
+        private const int InteriorsPerRow = 4;
+
+        private static void CreateHouseInteriorsAndDoors()
+        {
+            var interiorsParent = new GameObject("HouseInteriors");
+            interiorsParent.transform.position = Vector3.zero;
+            var doorsParent = new GameObject("HouseDoors");
+            doorsParent.transform.position = Vector3.zero;
+
+            // Map shop NPCs to their nearest house so a closed-shop door blocks at that house.
+            int doorCount = 0;
+            for (int i = 0; i < TownHouseSpecs.Length; i++)
+            {
+                var (houseName, housePosition, _) = TownHouseSpecs[i];
+
+                // Interior center for this house in the off-playfield band.
+                int row = i / InteriorsPerRow;
+                int col = i % InteriorsPerRow;
+                var interiorCenter = new Vector3(
+                    (col - (InteriorsPerRow - 1) * 0.5f) * InteriorSpacingX,
+                    InteriorBandBaseY + row * InteriorSpacingY,
+                    0f);
+
+                var exteriorDoorPos = housePosition + new Vector3(0f, -0.55f, 0f);
+                var interiorExitPos = interiorCenter + new Vector3(0f, -2.0f, 0f);
+                var interiorEntryPos = interiorCenter + new Vector3(0f, -1.4f, 0f);
+                var exteriorReturnPos = housePosition + new Vector3(0f, -1.4f, 0f);
+
+                BuildMinimalInterior(interiorsParent.transform, houseName, interiorCenter);
+
+                // Exterior door on the house → teleports into the interior.
+                var linkedNpcId = NpcIdNearestHouse(housePosition);
+                var isShopDoor = linkedNpcId != null;
+                CreateDoor(doorsParent.transform, $"Door_{houseName}_Exterior",
+                    exteriorDoorPos, interiorEntryPos, "Entrar", linkedNpcId, isShopDoor);
+                doorCount++;
+
+                // Interior return door → teleports back outside.
+                CreateDoor(doorsParent.transform, $"Door_{houseName}_Interior",
+                    interiorExitPos, exteriorReturnPos, "Sair", null, false);
+                doorCount++;
+            }
+
+            Debug.Log($"[fable_11] Created {TownHouseSpecs.Length} interiors and {doorCount} paired doors.");
+        }
+
+        private static void BuildMinimalInterior(Transform parent, string houseName, Vector3 center)
+        {
+            var interior = new GameObject($"Interior_{houseName}");
+            interior.transform.SetParent(parent);
+            interior.transform.position = center;
+
+            // Floor (6x5 tiles) — decorative.
+            var floor = new GameObject("Floor");
+            floor.transform.SetParent(interior.transform);
+            floor.transform.localPosition = Vector3.zero;
+            floor.transform.localScale = new Vector3(6f, 5f, 1f);
+            var floorRenderer = floor.AddComponent<SpriteRenderer>();
+            floorRenderer.sprite = GetBuiltinSprite();
+            floorRenderer.color = new Color(0.34f, 0.28f, 0.22f);
+            floorRenderer.sortingOrder = 0;
+            TrySetSortingLayer(floorRenderer, "Items", floorRenderer.sortingOrder);
+
+            // Interior bounds (own colliders so the playfield camera/bounds are unaffected).
+            CreateInteriorWall(interior.transform, "Wall_Top", new Vector3(0f, 2.6f, 0f), new Vector2(6.4f, 0.4f));
+            CreateInteriorWall(interior.transform, "Wall_Bottom", new Vector3(0f, -2.6f, 0f), new Vector2(6.4f, 0.4f));
+            CreateInteriorWall(interior.transform, "Wall_Left", new Vector3(-3.2f, 0f, 0f), new Vector2(0.4f, 5.2f));
+            CreateInteriorWall(interior.transform, "Wall_Right", new Vector3(3.2f, 0f, 0f), new Vector2(0.4f, 5.2f));
+
+            // Bed + table placeholders.
+            CreateInteriorProp(interior.transform, "Bed", new Vector3(-2f, 1.4f, 0f), new Vector3(1.6f, 1f, 1f), new Color(0.5f, 0.36f, 0.5f));
+            CreateInteriorProp(interior.transform, "Table", new Vector3(1.6f, -0.4f, 0f), new Vector3(1.2f, 0.8f, 1f), new Color(0.46f, 0.34f, 0.22f));
+        }
+
+        private static void CreateInteriorWall(Transform parent, string name, Vector3 localPos, Vector2 size)
+        {
+            var wall = new GameObject(name);
+            wall.transform.SetParent(parent);
+            wall.transform.localPosition = localPos;
+            var collider = wall.AddComponent<BoxCollider2D>();
+            collider.isTrigger = false;
+            collider.size = size;
+        }
+
+        private static void CreateInteriorProp(Transform parent, string name, Vector3 localPos, Vector3 scale, Color color)
+        {
+            var prop = new GameObject(name);
+            prop.transform.SetParent(parent);
+            prop.transform.localPosition = localPos;
+            prop.transform.localScale = scale;
+            var renderer = prop.AddComponent<SpriteRenderer>();
+            renderer.sprite = GetBuiltinSprite();
+            renderer.color = color;
+            renderer.sortingOrder = 1;
+            TrySetSortingLayer(renderer, "Items", renderer.sortingOrder);
+        }
+
+        private static void CreateDoor(
+            Transform parent,
+            string name,
+            Vector3 doorPosition,
+            Vector3 teleportTarget,
+            string label,
+            string linkedNpcId,
+            bool isShopDoor)
+        {
+            var door = new GameObject(name);
+            door.transform.SetParent(parent);
+            door.transform.position = doorPosition;
+
+            var trigger = door.AddComponent<BoxCollider2D>();
+            trigger.isTrigger = true;
+            trigger.size = new Vector2(0.8f, 0.9f);
+
+            var interactable = door.AddComponent<DoorInteractable>();
+            interactable.Configure(teleportTarget, label, linkedNpcId, isShopDoor);
+            EditorUtility.SetDirty(interactable);
+        }
+
+        // Door anchor (just below each house body) used as the home schedule anchor target.
+        private static List<Vector3> HouseDoorPositions()
+        {
+            var list = new List<Vector3>(TownHouseSpecs.Length);
+            foreach (var (_, position, _) in TownHouseSpecs)
+            {
+                list.Add(position);
+            }
+            return list;
+        }
+
+        // Nearest shop NPC to a house (within ~4 units) so its door gates by that vendor's hours.
+        private static string NpcIdNearestHouse(Vector3 housePosition)
+        {
+            string nearestId = null;
+            float bestSqr = 16f; // 4 units squared
+            foreach (var spec in RefinedCanonicalTownNpcSpecs)
+            {
+                if (string.IsNullOrWhiteSpace(spec.ShopDataPath))
+                {
+                    continue;
+                }
+
+                float sqr = (spec.Position - housePosition).sqrMagnitude;
+                if (sqr < bestSqr)
+                {
+                    bestSqr = sqr;
+                    nearestId = spec.NpcId;
+                }
+            }
+
+            return nearestId;
+        }
+
+        private static void SetSerializedString(SerializedObject serialized, string propertyName, string value)
+        {
+            var prop = serialized.FindProperty(propertyName);
+            if (prop != null)
+            {
+                prop.stringValue = value;
+            }
         }
 
         private static void CreateTownDecorations()

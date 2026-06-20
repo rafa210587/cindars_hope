@@ -7,6 +7,7 @@ using CindarsHope.Core.Events;
 using CindarsHope.Interaction;
 using CindarsHope.Inventory;
 using CindarsHope.Inventory.Data;
+using CindarsHope.NPC.Schedule;
 using CindarsHope.Player;
 using CindarsHope.Quests.Runtime;
 using CindarsHope.UI.Dialogue;
@@ -39,7 +40,10 @@ namespace CindarsHope.NPC
         private bool _isReady;
         private bool _closingForQuestOffer;
 
-        public string InteractionPrompt => $"Conversar com {_npcData?.DisplayName ?? "NPC"}";
+        public string InteractionPrompt =>
+            NpcScheduleAvailabilityGate.IsUnavailable(_npcData)
+                ? NpcScheduleAvailabilityGate.UnavailablePrompt(_npcData)
+                : $"Conversar com {_npcData?.DisplayName ?? "NPC"}";
         public NpcDataSO NpcData => _npcData;
         public bool HasMet { get; private set; }
 
@@ -208,6 +212,14 @@ namespace CindarsHope.NPC
 
         public void Interact(GameObject interactor)
         {
+            // fable_11 (CA-4): if the vendor is unavailable by schedule (e.g. at home at night, or a
+            // night vendor during the day), do not open the shop — show the honest reason instead.
+            if (NpcScheduleAvailabilityGate.IsUnavailable(_npcData))
+            {
+                NpcScheduleAvailabilityGate.PublishUnavailableFeedback(_npcData);
+                return;
+            }
+
             if (!CanInteract(interactor) || !TryEnsureShopInitialized("Interact"))
             {
                 return;
