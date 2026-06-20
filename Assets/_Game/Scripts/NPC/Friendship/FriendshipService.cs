@@ -2,6 +2,7 @@ using CindarsHope.Core;
 using CindarsHope.Core.Events;
 using CindarsHope.Items;
 using CindarsHope.Localization;
+using CindarsHope.NPC.Social;
 using UnityEngine;
 
 namespace CindarsHope.NPC.Friendship
@@ -122,10 +123,29 @@ namespace CindarsHope.NPC.Friendship
 
             var taste = GiftTasteClassifier.Classify(preferences, item);
             int limit = preferences != null ? preferences.DailyGiftLimit : 1;
-            var result = _state.RegisterGift(npcId, taste, _currentDay, limit);
+
+            // fable_57: presente entregue NO DIA do aniversário do NPC vale x2 (multiplicador aditivo
+            // DENTRO do fluxo de presente — sem segundo caminho de pontos). O cap diário é checado
+            // dentro de RegisterGift ANTES do multiplicador, então o 2º presente do dia segue recusado.
+            bool isBirthday = NpcBirthdayService.IsBirthdayToday(npcId, _currentDay);
+            int multiplier = isBirthday ? NpcBirthdayService.BirthdayGiftMultiplier : 1;
+
+            var result = _state.RegisterGift(npcId, taste, _currentDay, limit, multiplier);
             if (result.Accepted)
             {
                 PublishIfLevelChanged(npcId, result.Apply);
+
+                // Toast de aniversário só quando o presente foi de fato aceito (não fura o cap) e é
+                // o dia certo. Nome de exibição vem do roster; fallback = id (LocalizationService-friendly).
+                if (isBirthday)
+                {
+                    string displayName = npcId;
+                    if (NpcTownRosterRegistry.TryGet(npcId, out var entry) && !string.IsNullOrEmpty(entry.DisplayName))
+                    {
+                        displayName = entry.DisplayName;
+                    }
+                    GameEventBus.Publish(new NpcBirthdayGiftEvent(npcId, displayName));
+                }
             }
             return result;
         }

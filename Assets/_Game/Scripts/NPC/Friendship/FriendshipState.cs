@@ -166,8 +166,13 @@ namespace CindarsHope.NPC.Friendship
         /// Presenteia: classifica o item pelo gosto do NPC, aplica o delta (com clamp) e marca o dia.
         /// O caller já deve ter validado ItemTag.Giftable (recusa silenciosa fora daqui).
         /// Acima do DailyGiftLimit no mesmo dia ⇒ recusa amigável (Accepted=false, sem ganho/perda).
+        ///
+        /// fable_57: <paramref name="pointsMultiplier"/> (≥1; default 1) multiplica os pontos do
+        /// presente — usado pelo aniversário do NPC (×2). O cap diário é checado ANTES do
+        /// multiplicador, logo um 2º presente no mesmo dia continua sendo recusado mesmo no
+        /// aniversário (o multiplicador NÃO fura o cap). Multiplicador inválido (≤0) é tratado como 1.
         /// </summary>
-        public GiftResult RegisterGift(string npcId, GiftTaste taste, int currentDay, int dailyGiftLimit)
+        public GiftResult RegisterGift(string npcId, GiftTaste taste, int currentDay, int dailyGiftLimit, int pointsMultiplier = 1)
         {
             if (string.IsNullOrEmpty(npcId))
             {
@@ -181,11 +186,12 @@ namespace CindarsHope.NPC.Friendship
             // futuro; o contrato atual é 1 presente relevante por dia por NPC.)
             if (limit <= 1 && entry.LastGiftDay == currentDay)
             {
-                return new GiftResult(false, taste, Noop(npcId)); // cap diário atingido
+                return new GiftResult(false, taste, Noop(npcId)); // cap diário atingido (mesmo no aniversário)
             }
 
             entry.LastGiftDay = currentDay;
-            var apply = AddPoints(npcId, GiftTasteClassifier.DeltaFor(taste));
+            int multiplier = pointsMultiplier > 0 ? pointsMultiplier : 1;
+            var apply = AddPoints(npcId, GiftTasteClassifier.DeltaFor(taste) * multiplier);
             return new GiftResult(true, taste, apply);
         }
 

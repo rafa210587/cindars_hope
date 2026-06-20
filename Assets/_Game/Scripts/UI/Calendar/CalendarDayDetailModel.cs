@@ -25,6 +25,10 @@ namespace CindarsHope.UI.Calendar
         public List<OrderDeadlineProjection> ExpiringOrders { get; set; } = new List<OrderDeadlineProjection>();
         public List<QuestWaitingConditionProjection> QuestWaitingConditions { get; set; } = new List<QuestWaitingConditionProjection>();
 
+        // fable_57: aniversários de NPC do dia (entrada aditiva do mesmo tipo de projection de evento;
+        // não é sistema novo). Vazio quando ninguém faz aniversário no dia.
+        public List<NpcBirthdayProjection> Birthdays { get; set; } = new List<NpcBirthdayProjection>();
+
         public bool ShopIsOpen { get; set; }
         public bool ShopOpenKnown { get; set; }
 
@@ -53,5 +57,12 @@ namespace CindarsHope.UI.Calendar
         public string DisplayName { get; set; }
         public string ConditionHint { get; set; }
         public bool IsPartiallyKnown { get; set; }
+    }
+
+    /// <summary>fable_57 — aniversário de um NPC numa data (entrada de calendário, spoiler-safe).</summary>
+    public class NpcBirthdayProjection
+    {
+        public string NpcId { get; set; }
+        public string DisplayName { get; set; }
     }
 }

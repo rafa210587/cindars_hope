@@ -21,7 +21,7 @@ If an ADR conflicts with a game rule:
 
 ---
 
-## Active Decisions (ADR-0001 to ADR-0015)
+## Active Decisions (ADR-0001 to ADR-0017)
 
 | ADR | Title | Theme | Status | Canonical Ref | Source |
 |---|---|---|---|---|---|
@@ -40,6 +40,8 @@ If an ADR conflicts with a game rule:
 | [ADR-0013](../decisions/ADR-0013-input-keyboard-mouse-only-v1.md) | Input Keyboard/Mouse Only v1 | Tooling | accepted | docs/decisions/ADR-0013-* | FABLE_DECISOES_RESPOSTAS_v3.0 (4.5) |
 | [ADR-0014](../decisions/ADR-0014-single-difficulty-v1.md) | Single Difficulty v1 | Gameplay | accepted | docs/decisions/ADR-0014-* | FABLE_DECISOES_RESPOSTAS_v3.0 (4.6) |
 | [ADR-0015](../decisions/ADR-0015-canonical-specs-relocated-to-dotspecs.md) | Canonical Specs Relocated to .specs | Governance | accepted | .claude/rules/docs-governance.md | Owner directive 2026-06-13 |
+| [ADR-0016](../decisions/ADR-0016-cave-enemy-density-depth-scaling.md) | Cave Enemy Density and Depth Scaling | Gameplay | accepted | docs/game_rules/cave_rules.md | fable_67 |
+| [ADR-0017](../decisions/ADR-0017-reputation-absorbed-by-friendship.md) | Reputation Absorbed by Friendship | Gameplay | proposed | docs/decisions/ADR-0017-* | fable_57 |
 
 ---
 

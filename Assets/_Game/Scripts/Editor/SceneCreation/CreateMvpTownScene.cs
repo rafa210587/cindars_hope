@@ -5,6 +5,7 @@ using CindarsHope.Core.Data;
 using CindarsHope.Core.Time;
 using CindarsHope.Craft;
 using CindarsHope.Craft.Data;
+using CindarsHope.City;
 using CindarsHope.Economy;
 using CindarsHope.Enemy;
 using CindarsHope.Inventory;
@@ -1024,7 +1025,21 @@ namespace CindarsHope.Editor.SceneCreation
             CreateInteriorWall(interior.transform, "Wall_Right", new Vector3(3.2f, 0f, 0f), new Vector2(0.4f, 5.2f));
 
             // Bed + table placeholders.
-            CreateInteriorProp(interior.transform, "Bed", new Vector3(-2f, 1.4f, 0f), new Vector3(1.6f, 1f, 1f), new Color(0.5f, 0.36f, 0.5f));
+            // fable_57: a cama da estalagem (House_Inn) é uma CAMA DE HÓSPEDE interagível e paga
+            // (InnBedPaymentGate → diária → fluxo de dormir da F16). As demais casas mantêm a cama
+            // decorativa (jogador não usa camas de NPC — CITY_LAYOUT §26).
+            var bedProp = CreateInteriorProp(interior.transform, "Bed", new Vector3(-2f, 1.4f, 0f), new Vector3(1.6f, 1f, 1f), new Color(0.5f, 0.36f, 0.5f));
+            if (houseName == "House_Inn")
+            {
+                bedProp.name = "GuestBed_Inn";
+                var trigger = bedProp.AddComponent<BoxCollider2D>();
+                trigger.isTrigger = true;
+                trigger.size = new Vector2(1.6f, 1.0f);
+
+                var gate = bedProp.AddComponent<InnBedPaymentGate>();
+                gate.Configure(InnLodgingPaymentResolver.DefaultNightlyRate);
+                EditorUtility.SetDirty(gate);
+            }
             CreateInteriorProp(interior.transform, "Table", new Vector3(1.6f, -0.4f, 0f), new Vector3(1.2f, 0.8f, 1f), new Color(0.46f, 0.34f, 0.22f));
         }
 
@@ -1038,7 +1053,7 @@ namespace CindarsHope.Editor.SceneCreation
             collider.size = size;
         }
 
-        private static void CreateInteriorProp(Transform parent, string name, Vector3 localPos, Vector3 scale, Color color)
+        private static GameObject CreateInteriorProp(Transform parent, string name, Vector3 localPos, Vector3 scale, Color color)
         {
             var prop = new GameObject(name);
             prop.transform.SetParent(parent);
@@ -1049,6 +1064,7 @@ namespace CindarsHope.Editor.SceneCreation
             renderer.color = color;
             renderer.sortingOrder = 1;
             TrySetSortingLayer(renderer, "Items", renderer.sortingOrder);
+            return prop;
         }
 
         private static void CreateDoor(

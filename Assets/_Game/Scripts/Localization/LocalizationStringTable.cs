@@ -90,6 +90,10 @@ namespace CindarsHope.Localization
             // fable_26: rotulo da linha de cabecalho do Conversar ("Amizade: nivel N"). Texto novo
             // voltado ao jogador declarado aqui via LocalizationService (ADR-0012 / decisao 4.7).
             yield return new LocalizationEntry("ui.friendship.level_label", "Amizade: nivel");
+            // fable_57: textos novos voltados ao jogador (toast de aniversario + label da diaria da
+            // estalagem) declarados aqui via LocalizationService (ADR-0012). {0} = nome do NPC.
+            yield return new LocalizationEntry("ui.birthday.gift_toast", "Hoje e aniversario de {0}!");
+            yield return new LocalizationEntry("ui.inn.sleep_prompt", "Dormir na estalagem");
         }
 
         /// <summary>Number of resolvable keys currently in the table.</summary>
