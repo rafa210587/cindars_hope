@@ -93,6 +93,7 @@ namespace CindarsHope.Editor.SceneCreation
             CreateFishingSpot(inventoryManager);
             CreateFarmSceneFoundationZones();
             CreateCaveEntrance();
+            CreateZrixContractBoard(); // fable_51: Zrix's cave-contract board at the cave mouth
             CreateFarmResourceInteractables(inventoryManager);
             CreateForagePoints();   // fable_54: forrageio sazonal real (substitui o smoke)
             CreateShippingBin();    // fable_54: caixa de envio overnight
@@ -1614,6 +1615,53 @@ namespace CindarsHope.Editor.SceneCreation
             var serializedInteractable = new SerializedObject(interactable);
             serializedInteractable.FindProperty("_targetSpawnId").stringValue = "cave_from_farm";
             serializedInteractable.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(interactable);
+        }
+
+        // fable_51: Zrix's cave-contract board, mounted at the cave mouth. It is ANOTHER ACCESS
+        // POINT with the CaveContract source — NOT a second quest system. It reuses the existing
+        // QuestBoardInteractable, posting the 8 canonical cc_* ids (6 milestones + 2 weeklies).
+        // The 1x milestones are offered/rotated by CaveContractService (QuestRuntimeBootstrap);
+        // this board just lets the player accept/turn them in via the existing F34 quest flow.
+        private static void CreateZrixContractBoard()
+        {
+            var board = new GameObject("Board_Zrix");
+            board.transform.position = new Vector3(-7.0f, 0.2f, 0f);
+
+            var sign = board.AddComponent<SpriteRenderer>();
+            sign.sprite = GetBuiltinSprite();
+            sign.color = new Color(0.30f, 0.22f, 0.42f); // draconato-purple board
+            sign.sortingOrder = 2;
+            TrySetSortingLayer(sign, "Items", sign.sortingOrder);
+            board.transform.localScale = new Vector3(0.9f, 1.1f, 1f);
+
+            var trigger = board.AddComponent<BoxCollider2D>();
+            trigger.isTrigger = true;
+            trigger.size = new Vector2(1.2f, 1.6f);
+
+            var postedIds = new List<string>();
+            foreach (var depth in CindarsHope.Quests.CaveContracts.CaveContractCatalog.MilestoneDepths)
+            {
+                postedIds.Add(CindarsHope.Quests.CaveContracts.CaveContractCatalog.MilestoneId(depth));
+            }
+            // Week 0 weekly instance ids (the board re-resolves whatever is active at interact time).
+            postedIds.Add(CindarsHope.Quests.CaveContracts.CaveContractCatalog.WeeklyInstanceId(
+                CindarsHope.Quests.CaveContracts.CaveContractCatalog.BossRematchId, 0));
+            postedIds.Add(CindarsHope.Quests.CaveContracts.CaveContractCatalog.WeeklyInstanceId(
+                CindarsHope.Quests.CaveContracts.CaveContractCatalog.NoHitFloorId, 0));
+
+            var interactable = board.AddComponent<CindarsHope.Quests.Runtime.QuestBoardInteractable>();
+            var so = new SerializedObject(interactable);
+            so.FindProperty("_boardId").stringValue = "board_zrix_cave_contracts";
+            so.FindProperty("_interactionPrompt").stringValue =
+                CindarsHope.Localization.LocalizationService.Get("interact.zrix_board.prompt");
+            var arr = so.FindProperty("_postedQuestIds");
+            arr.arraySize = postedIds.Count;
+            for (int i = 0; i < postedIds.Count; i++)
+            {
+                arr.GetArrayElementAtIndex(i).stringValue = postedIds[i];
+            }
+            so.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(interactable);
         }
 

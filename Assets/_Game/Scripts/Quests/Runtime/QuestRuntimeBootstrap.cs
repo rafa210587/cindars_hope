@@ -228,6 +228,18 @@ namespace CindarsHope.Quests.Runtime
             GameEventBus.Subscribe<DayStartedEvent>(OnDayStarted);
             _boardWired = true;
 
+            // fable_51 — Zrix cave contracts: offer the 6 depth milestones once + rotate the 2
+            // weeklies deterministically; rides the SAME quest flow (no second system).
+            _caveContractService = new CindarsHope.Quests.CaveContracts.CaveContractService(
+                QuestService,
+                worldSeedProvider: () => BoardSeed,
+                playerLevelProvider: () => _progressionManager != null ? _progressionManager.Level : 1,
+                playerBandProvider: PlayerCaveBand);
+            _caveContractService.Unsubscribe();
+            _caveContractService.Subscribe();
+            _caveContractService.OfferMilestones();
+            CaveContractService = _caveContractService;
+
             // UI controllers
             EnsureUiControllers();
 
@@ -240,6 +252,24 @@ namespace CindarsHope.Quests.Runtime
         private CindarsHope.Player.Progression.PlayerProgressionManager _progressionManager;
         private bool _boardWired;
         private int _lastBoardDay = -1;
+
+        // fable_51 — Zrix cave contracts orchestrator (rides the same quest flow).
+        private CindarsHope.Quests.CaveContracts.CaveContractService _caveContractService;
+
+        /// <summary>fable_51 — exposed for the Zrix board projection / tests (avoids Find).</summary>
+        public static CindarsHope.Quests.CaveContracts.CaveContractService CaveContractService { get; private set; }
+
+        /// <summary>
+        /// fable_51 — the player's current cave band [min,max] for the weekly no-hit target.
+        /// MVP heuristic from player level (deeper as you level). Deterministic; no Unity Random.
+        /// </summary>
+        private (int Min, int Max) PlayerCaveBand()
+        {
+            int level = _progressionManager != null ? _progressionManager.Level : 1;
+            int center = 1 + level; // shallow early; grows with level
+            int min = center < 1 ? 1 : center;
+            return (min, min + 4);
+        }
 
         /// <summary>fable_34 — the board seed: a stable salt so rotation depends only on the day.</summary>
         private const string BoardSeed = "cindars_hope_notice_board";
@@ -287,6 +317,9 @@ namespace CindarsHope.Quests.Runtime
                 GameEventBus.Unsubscribe<DayStartedEvent>(OnDayStarted);
                 _boardWired = false;
             }
+
+            // fable_51 — unsubscribe the cave contracts orchestrator from the bus.
+            _caveContractService?.Unsubscribe();
         }
 
         private static void EnsureUiControllers()

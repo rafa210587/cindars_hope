@@ -38,6 +38,15 @@ namespace CindarsHope.Quests
 
         /// <summary>Day (StableHash bucket) this instance was generated for. 0 = not day-bound.</summary>
         public int GeneratedForDay { get; set; }
+
+        /// <summary>
+        /// fable_51 — optional non-gold rewards (item / quest flag) granted on turn-in through the
+        /// SAME single reward flow (<see cref="CindarsHope.Quests.Rewards.QuestRewardApplicator"/>).
+        /// Empty for plain board contracts (which only grant scaled gold + XP). Cave contracts use
+        /// this for "map segment" flags/items, guaranteed boss essences, and no-hit title + charm.
+        /// Idempotency is carried by each reward's RewardId (board contracts) / GrantedFlagId.
+        /// </summary>
+        public System.Collections.Generic.List<CindarsHope.Quests.Rewards.QuestRewardDefinition> AdditionalRewards { get; set; }
     }
 
     /// <summary>

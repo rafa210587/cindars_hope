@@ -128,6 +128,15 @@ namespace CindarsHope.Localization
             yield return new LocalizationEntry("ui.class.bond_hunter", "Voz Montesa");
             yield return new LocalizationEntry("ui.class.bond_mystic", "Voz Tecela");
             yield return new LocalizationEntry("ui.class.bond_farmer", "Voz da Terra");
+            // fable_51: textos novos voltados ao jogador para o quadro de contratos do Zrix
+            // (entrada da caverna). Declarados aqui via LocalizationService (ADR-0012 / fable_73).
+            yield return new LocalizationEntry("interact.zrix_board.prompt", "Ver contratos do Zrix");
+            yield return new LocalizationEntry("contract.cave.milestone.title", "Primeiro a Profundidade");
+            yield return new LocalizationEntry("contract.cave.milestone.desc", "Zrix paga bem a quem desce mais fundo do que ninguem.");
+            yield return new LocalizationEntry("contract.cave.boss_rematch.title", "Revanche de Portao");
+            yield return new LocalizationEntry("contract.cave.boss_rematch.desc", "Volte e derrube de novo um chefe ja batido. A essencia e garantida.");
+            yield return new LocalizationEntry("contract.cave.no_hit.title", "Sem Um Arranhao");
+            yield return new LocalizationEntry("contract.cave.no_hit.desc", "Limpe um nivel inteiro sem tomar dano. Prove sua maestria.");
         }
 
         /// <summary>Number of resolvable keys currently in the table.</summary>

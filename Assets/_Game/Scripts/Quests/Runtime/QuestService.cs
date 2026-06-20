@@ -337,6 +337,16 @@ namespace CindarsHope.Quests.Runtime
                 });
             }
 
+            // fable_51 — additive non-gold rewards (item / flag) flow through the SAME applicator;
+            // no parallel reward system. Used by cave contracts (map segment, boss essence, title, charm).
+            if (instance.AdditionalRewards != null)
+            {
+                foreach (var extra in instance.AdditionalRewards)
+                {
+                    if (extra != null && !string.IsNullOrEmpty(extra.RewardId)) rewards.Add(extra);
+                }
+            }
+
             _registry.Register(definition, new List<QuestObjective> { objective }, rewards, instance.QuestTemplateId);
             return instance.QuestId;
         }
@@ -529,13 +539,18 @@ namespace CindarsHope.Quests.Runtime
 
         // ─── Private helpers ───────────────────────────────────────────────────────
 
-        // fable_34 — board template kind → objective type. The instance already carries the
-        // template id; map by id prefix (bd_cull/bd_gather/bd_delivery) with a Collect default.
+        // fable_34/fable_51 — template id → objective type. The instance carries the template id;
+        // map by id prefix. Board: bd_cull/bd_gather/bd_delivery. Cave contracts (fable_51):
+        // cc_depth_* reach a depth; cc_boss_rematch defeats a boss band; cc_no_hit_floor has no
+        // count-based objective (completion is driven by NoHitFloorTracker via CompleteCaveContract).
         private static QuestObjectiveType ObjectiveTypeForSource(QuestInstance instance)
         {
             var template = instance.QuestTemplateId ?? string.Empty;
             if (template.StartsWith("bd_cull")) return QuestObjectiveType.DefeatEnemy;
             if (template.StartsWith("bd_delivery")) return QuestObjectiveType.DeliverItem;
+            if (template.StartsWith("cc_depth")) return QuestObjectiveType.ReachCaveDepth;
+            if (template.StartsWith("cc_boss_rematch")) return QuestObjectiveType.DefeatEnemy;
+            if (template.StartsWith("cc_no_hit")) return QuestObjectiveType.CompleteCaveRun;
             return QuestObjectiveType.CollectItem; // bd_gather and any other gather-like template
         }
 
