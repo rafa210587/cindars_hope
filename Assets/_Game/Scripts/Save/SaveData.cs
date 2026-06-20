@@ -49,6 +49,9 @@ namespace CindarsHope.Save
         // fable_07: grimório (knownSpellIds + progresso de tomo). Seção aditiva sem migration:
         // saves legados (sem o campo) carregam com grimório vazio.
         public CindarsHope.Magic.SpellbookSaveData Spellbook;
+        // fable_41: posse dos lotes de expansão da fazenda (domínio farm). Campo ADITIVO, só IDs
+        // (ADR-0006). Ausente em save legado = lista vazia = todos os lotes Locked (CA-4). Sem migração.
+        public CindarsHope.Farm.Lots.FarmLotsSaveData FarmLots;
     }
 
     [Serializable]

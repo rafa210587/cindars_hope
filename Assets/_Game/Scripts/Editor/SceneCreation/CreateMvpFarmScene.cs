@@ -11,6 +11,7 @@ using CindarsHope.Enemy;
 using CindarsHope.Equipment;
 using CindarsHope.Farm;
 using CindarsHope.Farm.Integration;
+using CindarsHope.Farm.Lots;
 using CindarsHope.Farm.Scene;
 using CindarsHope.Inventory;
 using CindarsHope.Interaction;
@@ -92,6 +93,7 @@ namespace CindarsHope.Editor.SceneCreation
             CreateFarmSceneFoundationZones();
             CreateCaveEntrance();
             CreateFarmResourceInteractables(inventoryManager);
+            CreateFarmExpansionLots(inventoryManager, bootstrap.GetComponent<StaminaManager>(), seedDatabaseForLots: null);
             CreateSellPoint(inventoryManager, playerManager);
             CreateGameplayInputRouter();
             CreateActiveSkillExecutionController();
@@ -1526,6 +1528,193 @@ namespace CindarsHope.Editor.SceneCreation
             serializedI.FindProperty("_inventoryManager").objectReferenceValue = inventoryManager;
             var rewardProp = serializedI.FindProperty("_reward");
             rewardProp.FindPropertyRelative("_itemId").stringValue = "item_herbs";
+            rewardProp.FindPropertyRelative("_amount").intValue = 1;
+            serializedI.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(interactable);
+        }
+
+        // fable_41 — 3 lotes de expansão (norte/leste/oeste, HUD_LAYOUT_SCENES §4). Cada lote nasce
+        // CERCADO com placa "à venda" e o conteúdo interno GERADO mas DESATIVADO. As referências
+        // (cerca, placa, conteúdo) são serializadas em FarmLotSceneBinding e o FarmLotService é wired
+        // a esse binding — o destravamento em runtime liga/desliga GameObjects por referência direta,
+        // SEM nenhum GameObject.Find/FindObjectOfType. Decisão 5.3: gated só por compra (sem caverna).
+        private static void CreateFarmExpansionLots(
+            InventoryManager inventoryManager,
+            StaminaManager staminaManager,
+            SeedDatabaseSO seedDatabaseForLots)
+        {
+            var root = new GameObject("FarmExpansionLots");
+            root.transform.position = Vector3.zero;
+
+            var binding = root.AddComponent<FarmLotSceneBinding>();
+
+            // Posições nas bordas da fazenda inicial (bounds ~28x22 centrada). Placeholders de arte.
+            CreateExpansionLot(root.transform, binding, FarmLotId.North, new Vector3(1f, 11.5f, 0f),
+                new Color(0.45f, 0.62f, 0.30f, 0.30f), LotContentKind.PlantingPlots, inventoryManager, staminaManager, seedDatabaseForLots);
+            CreateExpansionLot(root.transform, binding, FarmLotId.East, new Vector3(13.5f, 1.0f, 0f),
+                new Color(0.62f, 0.55f, 0.30f, 0.30f), LotContentKind.Pasture, inventoryManager, staminaManager, seedDatabaseForLots);
+            CreateExpansionLot(root.transform, binding, FarmLotId.West, new Vector3(-12.5f, 1.0f, 0f),
+                new Color(0.40f, 0.55f, 0.25f, 0.30f), LotContentKind.Orchard, inventoryManager, staminaManager, seedDatabaseForLots);
+
+            EditorUtility.SetDirty(binding);
+
+            // FarmLotService dono do estado + wired ao binding (sem Find). O RuntimeBootstrap não
+            // duplica porque encontra esta instância presente na cena.
+            var serviceObject = new GameObject("FarmLotService");
+            var service = serviceObject.AddComponent<FarmLotService>();
+            var serializedService = new SerializedObject(service);
+            SetReference(serializedService, "_sceneBinding", binding);
+            serializedService.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(service);
+        }
+
+        private enum LotContentKind { PlantingPlots, Pasture, Orchard }
+
+        private static void CreateExpansionLot(
+            Transform parent,
+            FarmLotSceneBinding binding,
+            string lotId,
+            Vector3 center,
+            Color tint,
+            LotContentKind contentKind,
+            InventoryManager inventoryManager,
+            StaminaManager staminaManager,
+            SeedDatabaseSO seedDatabaseForLots)
+        {
+            var lotRoot = new GameObject($"Lot_{lotId}");
+            lotRoot.transform.SetParent(parent);
+            lotRoot.transform.position = center;
+
+            // ── Cerca (raiz visível enquanto Locked) ───────────────────────────────────
+            var fenceRoot = new GameObject("FenceRoot");
+            fenceRoot.transform.SetParent(lotRoot.transform);
+            fenceRoot.transform.localPosition = Vector3.zero;
+
+            var fenceSprite = fenceRoot.AddComponent<SpriteRenderer>();
+            fenceSprite.sprite = GetBuiltinSprite();
+            fenceSprite.color = tint;
+            fenceSprite.sortingOrder = -4;
+            fenceRoot.transform.localScale = new Vector3(7f, 6f, 1f);
+            TrySetSortingLayer(fenceSprite, "Ground", fenceSprite.sortingOrder);
+
+            // ── Placa interactable informativa (filha da cerca; some junto ao destravar) ─
+            var sign = new GameObject("LotSign");
+            sign.transform.SetParent(fenceRoot.transform);
+            sign.transform.localScale = new Vector3(0.18f, 0.28f, 1f);
+            sign.transform.localPosition = new Vector3(0f, -0.42f, 0f);
+
+            var signSprite = sign.AddComponent<SpriteRenderer>();
+            signSprite.sprite = GetBuiltinSprite();
+            signSprite.color = new Color(0.85f, 0.78f, 0.45f);
+            signSprite.sortingOrder = 2;
+            TrySetSortingLayer(signSprite, "Items", signSprite.sortingOrder);
+
+            var signCollider = sign.AddComponent<BoxCollider2D>();
+            signCollider.isTrigger = true;
+            signCollider.size = Vector2.one;
+
+            var signInteractable = sign.AddComponent<FarmLotSignInteractable>();
+            signInteractable.EditorSetLotId(lotId);
+            EditorUtility.SetDirty(signInteractable);
+
+            // ── Conteúdo interno gerado DESATIVADO (ativa só no destravamento) ──────────
+            var contentRoot = new GameObject("ContentRoot");
+            contentRoot.transform.SetParent(lotRoot.transform);
+            contentRoot.transform.localPosition = Vector3.zero;
+
+            switch (contentKind)
+            {
+                case LotContentKind.PlantingPlots:
+                    CreateLotPlantingPlots(contentRoot.transform, inventoryManager, staminaManager, seedDatabaseForLots);
+                    break;
+                case LotContentKind.Pasture:
+                    CreateLotPasture(contentRoot.transform);
+                    break;
+                case LotContentKind.Orchard:
+                    CreateLotOrchard(contentRoot.transform, inventoryManager);
+                    break;
+            }
+
+            contentRoot.SetActive(false); // CA-1: conteúdo inativo até a compra.
+
+            binding.EditorAddLot(lotId, fenceRoot, sign, contentRoot);
+        }
+
+        // Norte: 12 plots extras (placeholders FarmPlot, fora do registry inicial; inativos até compra).
+        private static void CreateLotPlantingPlots(Transform parent, InventoryManager inventoryManager, StaminaManager staminaManager, SeedDatabaseSO seedDatabaseForLots)
+        {
+            var seedDatabase = seedDatabaseForLots ?? AssetDatabase.LoadAssetAtPath<SeedDatabaseSO>(SeedDatabasePath);
+            for (int i = 0; i < 12; i++)
+            {
+                var col = i % 4;
+                var rowIndex = i / 4;
+                var pos = parent.position + new Vector3(-1.5f + col * 1.0f, -1.0f + rowIndex * 1.0f, 0f);
+                // Índices 100+ para não colidir com os plots iniciais (0..23).
+                CreateFarmPlot(parent, 100 + i, pos, inventoryManager, seedDatabase, staminaManager);
+            }
+        }
+
+        // Leste: pasto do 2º abrigo (marcador placeholder; abrigos = F12, fora de escopo).
+        private static void CreateLotPasture(Transform parent)
+        {
+            var pasture = new GameObject("PastureMarker");
+            pasture.transform.SetParent(parent);
+            pasture.transform.localPosition = Vector3.zero;
+            pasture.transform.localScale = new Vector3(5f, 4f, 1f);
+
+            var sr = pasture.AddComponent<SpriteRenderer>();
+            sr.sprite = GetBuiltinSprite();
+            sr.color = new Color(0.55f, 0.70f, 0.35f, 0.5f);
+            sr.sortingOrder = -3;
+            TrySetSortingLayer(sr, "Ground", sr.sortingOrder);
+        }
+
+        // Oeste: pomar de 4 árvores frutíferas sazonais (interactable; padrão de resource node).
+        private static void CreateLotOrchard(Transform parent, InventoryManager inventoryManager)
+        {
+            var nodeIds = FarmOrchardCatalog.NodeIds;
+            var prompts = new[] { "Colher maca", "Colher cereja", "Colher pera", "Colher ameixa" };
+            var fruits = new[] { "item_crop_apple", "item_crop_cherry", "item_crop_pear", "item_crop_plum" };
+
+            for (int i = 0; i < nodeIds.Count; i++)
+            {
+                var pos = parent.position + new Vector3(-1.5f + (i % 2) * 3.0f, -1.0f + (i / 2) * 2.0f, 0f);
+                CreateOrchardTree(parent, inventoryManager, pos, prompts[i], fruits[i], i);
+            }
+        }
+
+        private static void CreateOrchardTree(Transform parent, InventoryManager inventoryManager, Vector3 position, string prompt, string fruitItemId, int index)
+        {
+            var obj = new GameObject($"OrchardTree_{index:00}");
+            obj.transform.SetParent(parent);
+            obj.transform.position = position;
+            obj.transform.localScale = new Vector3(1.0f, 1.4f, 1f);
+
+            var sr = obj.AddComponent<SpriteRenderer>();
+            sr.sprite = GetBuiltinSprite();
+            sr.color = new Color(0.30f, 0.52f, 0.25f);
+            sr.sortingOrder = 2;
+            TrySetSortingLayer(sr, "Items", 2);
+
+            var col = obj.AddComponent<BoxCollider2D>();
+            col.isTrigger = true;
+            col.size = Vector2.one;
+
+            var vc = obj.AddComponent<FarmResourceVisualController>();
+            var serializedVc = new SerializedObject(vc);
+            serializedVc.FindProperty("_spriteRenderer").objectReferenceValue = sr;
+            serializedVc.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(vc);
+
+            // Reusa o adaptador de resource node existente (sem segundo padrão de colheita).
+            var interactable = obj.AddComponent<FarmResourceInteractable>();
+            var serializedI = new SerializedObject(interactable);
+            serializedI.FindProperty("_resourceType").enumValueIndex = (int)FarmResourceInteractableType.Forage;
+            serializedI.FindProperty("_interactionPrompt").stringValue = prompt;
+            serializedI.FindProperty("_visualController").objectReferenceValue = vc;
+            serializedI.FindProperty("_inventoryManager").objectReferenceValue = inventoryManager;
+            var rewardProp = serializedI.FindProperty("_reward");
+            rewardProp.FindPropertyRelative("_itemId").stringValue = fruitItemId;
             rewardProp.FindPropertyRelative("_amount").intValue = 1;
             serializedI.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(interactable);

@@ -713,7 +713,9 @@ namespace CindarsHope.Editor.Items
                 ("item_key_contract_farm_registry", "Farm Registry Contract"),
                 ("item_key_lot_deed_north", "North Lot Deed"),
                 ("item_key_lot_deed_east", "East Lot Deed"),
-                ("item_key_lot_deed_south", "South Lot Deed"),
+                // fable_41: lote Oeste = pomar (HUD_LAYOUT_SCENES §4). Id reconciliado de _south → _west
+                // para casar com FarmLotId.West / FarmLotCatalog (3 lotes: norte/leste/oeste).
+                ("item_key_lot_deed_west", "West Lot Deed"),
                 ("item_key_warchief_crest", "Warchief Crest"),
                 ("item_key_orc_warbanner", "Orc Warbanner"),
                 ("item_key_nymirian_engraving", "Nymirian Engraving"),

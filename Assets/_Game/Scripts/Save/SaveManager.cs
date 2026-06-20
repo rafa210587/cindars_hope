@@ -189,7 +189,8 @@ namespace CindarsHope.Save
                     Fonte = CaptureFonteSaveData(),
                     CaveRun = CaptureCaveRunSaveData(),
                     DailyGoals = CaptureFarmDailyGoalsSaveData(),
-                    Spellbook = spellbookSaveData
+                    Spellbook = spellbookSaveData,
+                    FarmLots = CaptureFarmLotsSaveData()
                 };
 
                 var savePath = SaveFilePath;
@@ -535,6 +536,14 @@ namespace CindarsHope.Save
         {
             var service = Farm.Runtime.FarmDailyGoalService.Instance;
             return service != null ? service.CaptureSaveData() : new Farm.Runtime.FarmDailyGoalsSaveData();
+        }
+
+        // fable_41: posse dos lotes de expansão (campo aditivo na seção farm). Independe da cena
+        // ativa (lotes são domínio global), então captura incondicional pelo serviço singleton.
+        private Farm.Lots.FarmLotsSaveData CaptureFarmLotsSaveData()
+        {
+            var service = Farm.Lots.FarmLotService.Instance;
+            return service != null ? service.CaptureSaveData() : new Farm.Lots.FarmLotsSaveData();
         }
 
         private InventorySaveData CaptureInventorySaveData()
@@ -1032,6 +1041,13 @@ namespace CindarsHope.Save
             else
             {
                 Debug.LogWarning("SaveManager skipped hunger restore because save data or HungerManager is missing.", this);
+            }
+
+            // fable_41: restaura a posse dos lotes. saveData.FarmLots ausente (legado) ⇒ o serviço
+            // recebe null e mantém TODOS os lotes Locked (CA-4), sem erro.
+            if (Farm.Lots.FarmLotService.Instance != null)
+            {
+                Farm.Lots.FarmLotService.Instance.RestoreFromSaveData(saveData.FarmLots);
             }
 
             if (saveData.Player != null && _playerTransform != null)
