@@ -34,6 +34,9 @@ namespace CindarsHope.Cave.Runtime
         [SerializeField] public SerializedEnemyRespawnState RespawnState = new();
         // F13: HP por instância (aditivo; estado mutável — fica FORA do LayoutHash).
         [SerializeField] public List<EnemyHpRecord> EnemyHpRecords = new();
+        // fable_09: baús de tesouro JÁ ABERTOS neste nível/run (aditivo; estado mutável — FORA do
+        // LayoutHash, mesmo padrão de DepletedResourceNodeIds/EnemyHpRecords). Revisita mostra aberto.
+        [SerializeField] public List<string> OpenedChestIds = new();
 
         int IVisitedLevelSnapshot.CaveLevel => CaveLevel;
         string IVisitedLevelSnapshot.SnapshotId => SnapshotId;
@@ -118,6 +121,21 @@ namespace CindarsHope.Cave.Runtime
                     resourceNodeState.IsDepleted = true;
                 }
             }
+        }
+
+        // fable_09: marca um baú de tesouro como aberto (idempotente). Estado mutável fora do LayoutHash.
+        public void MarkChestOpened(string chestId)
+        {
+            if (!string.IsNullOrWhiteSpace(chestId) && !OpenedChestIds.Contains(chestId))
+            {
+                OpenedChestIds.Add(chestId);
+            }
+        }
+
+        // fable_09: consulta se um baú já foi aberto nesta run (cave-stable-run).
+        public bool IsChestOpened(string chestId)
+        {
+            return !string.IsNullOrWhiteSpace(chestId) && OpenedChestIds.Contains(chestId);
         }
 
         public void SetEnemySpawnPlan(CaveLevelEnemyPlan plan)

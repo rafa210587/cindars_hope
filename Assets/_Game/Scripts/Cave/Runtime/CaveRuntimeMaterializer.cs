@@ -47,6 +47,8 @@ namespace CindarsHope.Cave.Runtime
         [SerializeField] private int _minResourceNodes = 1;
         [SerializeField] private int _maxResourceNodes = 4;
         [SerializeField] private int _maxEnemiesPerLevel = 24;
+        // fable_09: prefab opcional do tile de hazard (fallback procedural quando ausente).
+        [SerializeField] private SpriteRenderer _hazardTilePrefab;
 
         private GameObject _generatedRuntimeRoot;
         private CaveExitPortal _backExitPortal;
@@ -61,6 +63,11 @@ namespace CindarsHope.Cave.Runtime
         private IReadOnlyList<CaveResourceNodeSnapshotEntry> _snapshotResourceNodeStates;
         private IReadOnlyList<EnemyHpRecord> _snapshotEnemyHpRecords;
         private readonly List<CaveResourceNodeSnapshotEntry> _lastResourceNodeSnapshots = new List<CaveResourceNodeSnapshotEntry>();
+        // fable_09: baús abertos conhecidos do snapshot (entrada) + os abertos nesta sessão de nível.
+        private IReadOnlyList<string> _snapshotOpenedChestIds;
+        private readonly HashSet<string> _openedChestIds = new HashSet<string>();
+        private Vector2Int _lastPlayerSpawnGrid;
+        private CaveHazardPlan _lastHazardPlan;
 
         public CaveExitPortal BackExitPortal => _backExitPortal;
         public CaveExitPortal ForwardExitPortal => _forwardExitPortal;
@@ -71,6 +78,9 @@ namespace CindarsHope.Cave.Runtime
         public CaveRuntimeMaterializationResult LastMaterializationResult => _lastMaterializationResult;
         public CaveEnemySpawnPlan LastEnemySpawnPlan => _lastEnemySpawnPlan;
         public IReadOnlyList<CaveResourceNodeSnapshotEntry> LastResourceNodeSnapshots => _lastResourceNodeSnapshots;
+        // fable_09: baús abertos (snapshot de entrada + abertos nesta sessão) para persistência.
+        public IReadOnlyCollection<string> OpenedChestIds => _openedChestIds;
+        public CaveHazardPlan LastHazardPlan => _lastHazardPlan;
 
         public void Materialize(CaveGeneratedLevel generatedLevel, CaveSpawnAnchor spawnAnchor = CaveSpawnAnchor.Entrance)
         {
@@ -80,6 +90,7 @@ namespace CindarsHope.Cave.Runtime
         public void MaterializeFromSnapshot(VisitedLevelSnapshot snapshot, CaveGeneratedLevel generatedLevel, CaveSpawnAnchor spawnAnchor = CaveSpawnAnchor.Entrance)
         {
             _snapshotEnemyHpRecords = snapshot?.EnemyHpRecords;
+            _snapshotOpenedChestIds = snapshot?.OpenedChestIds; // fable_09: revisita mostra baú aberto
             MaterializeInternal(
                 generatedLevel,
                 spawnAnchor,
@@ -141,6 +152,19 @@ namespace CindarsHope.Cave.Runtime
             _snapshotResourceNodeStates = resourceNodeStateOverride;
             _lastResourceNodeSnapshots.Clear();
 
+            // fable_09: o conjunto de baús abertos começa do snapshot (revisita) e cresce nesta sessão.
+            _openedChestIds.Clear();
+            if (_snapshotOpenedChestIds != null)
+            {
+                foreach (var chestId in _snapshotOpenedChestIds)
+                {
+                    if (!string.IsNullOrWhiteSpace(chestId))
+                    {
+                        _openedChestIds.Add(chestId);
+                    }
+                }
+            }
+
             _lastMaterializationResult = new CaveRuntimeMaterializationResult();
 
             // Create root hierarchy
@@ -153,19 +177,25 @@ namespace CindarsHope.Cave.Runtime
             MaterializeResourceNodes(generatedLevel);
             MaterializeEnemies(generatedLevel);
 
+            // fable_09: spawn grid do player (mesmo determinismo do anchor) — usado para manter
+            // hazards longe do ponto de chegada do player. Resolvido mesmo sem _playerTransform.
+            var anchorGrid = ResolveAnchorPosition(spawnAnchor, generatedLevel);
+            _lastPlayerSpawnGrid = ResolvePlayerSpawnGrid(anchorGrid, spawnAnchor, generatedLevel);
+
             // Resolve safe spawn position based on anchor
             if (_playerTransform != null)
             {
-                var anchorGridPos = ResolveAnchorPosition(spawnAnchor, generatedLevel);
-                var safeSpawnGrid = ResolvePlayerSpawnGrid(anchorGridPos, spawnAnchor, generatedLevel);
-                _playerTransform.position = GridToWorld(safeSpawnGrid, generatedLevel);
+                _playerTransform.position = GridToWorld(_lastPlayerSpawnGrid, generatedLevel);
 
                 Debug.Log(
-                    $"CaveRuntimeMaterializer: Player spawned at anchor {spawnAnchor}. AnchorGrid: {anchorGridPos}, ResolvedGrid: {safeSpawnGrid}, WorldPos: {_playerTransform.position}",
+                    $"CaveRuntimeMaterializer: Player spawned at anchor {spawnAnchor}. AnchorGrid: {anchorGrid}, ResolvedGrid: {_lastPlayerSpawnGrid}, WorldPos: {_playerTransform.position}",
                     this);
 
                 RepositionCamera();
             }
+
+            // fable_09: hazards + sala de tesouro DETERMINÍSTICOS (após inimigos, para realocar guardiões).
+            MaterializeHazardsAndTreasure(generatedLevel);
 
             Debug.Log(
                 $"CaveRuntimeMaterializer: Materialized level {generatedLevel.CaveLevel}. Floor: {_lastMaterializationResult.CreatedFloorTiles}, Walls: {_lastMaterializationResult.CreatedWallTiles}, Resources: {_lastMaterializationResult.CreatedResourceNodes}, Enemies: {_lastMaterializationResult.CreatedEnemies}. BackExit: {_lastMaterializationResult.BackExitPosition}, ForwardExit: {_lastMaterializationResult.ForwardExitPosition}. SpawnAnchor: {spawnAnchor}",
@@ -175,6 +205,7 @@ namespace CindarsHope.Cave.Runtime
             _snapshotEnemySpawnPlan = null;
             _snapshotResourceNodeStates = null;
             _snapshotEnemyHpRecords = null;
+            _snapshotOpenedChestIds = null;
         }
 
         private static Vector3 GridToWorld(Vector2Int gridPosition, CaveGeneratedLevel level)
@@ -895,6 +926,170 @@ namespace CindarsHope.Cave.Runtime
             Debug.Log(
                 $"CaveRuntimeMaterializer: Materialized {_lastMaterializationResult.CreatedEnemies} enemies for level {generatedLevel.CaveLevel}. Seed={_lastEnemySpawnPlan.LevelSeed}. LayoutHash={_lastEnemySpawnPlan.LayoutHash}.",
                 this);
+        }
+
+        // fable_09: materializa hazards de tile e a sala de tesouro (baú + guardiões realocados),
+        // tudo DETERMINÍSTICO por StableHash (cave-stable-run / ADR-0005). Roda após inimigos para
+        // poder mover guardiões já materializados para a sala do baú.
+        private void MaterializeHazardsAndTreasure(CaveGeneratedLevel generatedLevel)
+        {
+            var worldSeed = _caveRunManager != null ? _caveRunManager.CaveWorldSeed : string.Empty;
+            var runSeed = _caveRunManager != null ? _caveRunManager.CaveRunSeed : string.Empty;
+
+            _lastHazardPlan = CaveHazardPlanner.BuildPlan(generatedLevel, worldSeed, runSeed, _lastPlayerSpawnGrid);
+
+            MaterializeHazards(generatedLevel, _lastHazardPlan);
+            MaterializeTreasureRoom(generatedLevel, _lastHazardPlan);
+        }
+
+        private void MaterializeHazards(CaveGeneratedLevel generatedLevel, CaveHazardPlan plan)
+        {
+            if (plan == null || plan.Hazards.Count == 0)
+            {
+                return;
+            }
+
+            var hazardParent = new GameObject("GeneratedHazards");
+            hazardParent.transform.SetParent(_generatedRuntimeRoot.transform);
+            hazardParent.transform.localPosition = Vector3.zero;
+            _materializedObjects.Add(hazardParent);
+
+            foreach (var hazard in plan.Hazards)
+            {
+                var worldPos = GridToWorld(hazard.GridPosition, generatedLevel);
+                SpriteRenderer spriteRenderer;
+                GameObject hazardGO;
+
+                if (_hazardTilePrefab != null)
+                {
+                    spriteRenderer = Instantiate(_hazardTilePrefab, worldPos, Quaternion.identity, hazardParent.transform);
+                    hazardGO = spriteRenderer.gameObject;
+                }
+                else
+                {
+                    hazardGO = new GameObject(hazard.HazardId);
+                    hazardGO.transform.SetParent(hazardParent.transform);
+                    hazardGO.transform.position = worldPos;
+                    spriteRenderer = hazardGO.AddComponent<SpriteRenderer>();
+                    spriteRenderer.sprite = GetBuiltinSprite();
+                }
+
+                hazardGO.name = hazard.HazardId;
+                spriteRenderer.sortingOrder = 1;
+
+                var trigger = hazardGO.GetComponent<BoxCollider2D>();
+                if (trigger == null)
+                {
+                    trigger = hazardGO.AddComponent<BoxCollider2D>();
+                }
+                trigger.size = Vector2.one;
+                trigger.isTrigger = true;
+
+                var hazardTile = hazardGO.GetComponent<CaveHazardTile>();
+                if (hazardTile == null)
+                {
+                    hazardTile = hazardGO.AddComponent<CaveHazardTile>();
+                }
+                hazardTile.Configure(hazard.HazardId, hazard.Kind, spriteRenderer);
+
+                _materializedObjects.Add(hazardGO);
+            }
+
+            Debug.Log($"CaveRuntimeMaterializer: materialized {plan.Hazards.Count} hazard(s) for level {generatedLevel.CaveLevel}.", this);
+        }
+
+        private void MaterializeTreasureRoom(CaveGeneratedLevel generatedLevel, CaveHazardPlan plan)
+        {
+            if (plan == null || !plan.HasTreasureRoom)
+            {
+                return;
+            }
+
+            var treasure = plan.TreasureRoom;
+
+            // Realoca até 2 guardiões já materializados (menor SpawnIndex) para as âncoras do baú,
+            // sem criar inimigos novos (regra de não duplicação). Cave-stable-run: o plano é estável.
+            RelocateGuardians(treasure, generatedLevel);
+
+            var treasureParent = new GameObject("GeneratedTreasure");
+            treasureParent.transform.SetParent(_generatedRuntimeRoot.transform);
+            treasureParent.transform.localPosition = Vector3.zero;
+            _materializedObjects.Add(treasureParent);
+
+            var worldPos = GridToWorld(treasure.ChestGridPosition, generatedLevel);
+            var chestGO = new GameObject(treasure.ChestId);
+            chestGO.transform.SetParent(treasureParent.transform);
+            chestGO.transform.position = worldPos;
+
+            var spriteRenderer = chestGO.AddComponent<SpriteRenderer>();
+            spriteRenderer.sprite = GetBuiltinSprite();
+            spriteRenderer.sortingOrder = 2;
+
+            var collider = chestGO.AddComponent<CircleCollider2D>();
+            collider.radius = 0.45f;
+            collider.isTrigger = true;
+
+            var alreadyOpened = _openedChestIds.Contains(treasure.ChestId);
+            var chest = chestGO.AddComponent<TreasureChestInteractable>();
+            chest.Configure(
+                treasure.ChestId,
+                generatedLevel.CaveLevel,
+                treasure.LootSeed,
+                alreadyOpened,
+                _inventoryManager,
+                spriteRenderer,
+                RegisterOpenedChest);
+
+            _materializedObjects.Add(chestGO);
+            Debug.Log(
+                $"CaveRuntimeMaterializer: materialized treasure chest '{treasure.ChestId}' (opened={alreadyOpened}) for level {generatedLevel.CaveLevel}.",
+                this);
+        }
+
+        private void RelocateGuardians(CaveTreasureRoomPlacement treasure, CaveGeneratedLevel generatedLevel)
+        {
+            if (treasure.GuardianGridPositions == null || treasure.GuardianGridPositions.Count == 0)
+            {
+                return;
+            }
+
+            if (_lastEnemySpawnPlan == null || _lastEnemySpawnPlan.Entries == null || _lastEnemySpawnPlan.Entries.Count == 0)
+            {
+                return;
+            }
+
+            // Guardiões = primeiros inimigos por SpawnIndex (estável). Move o GameObject e o registro.
+            var guardianEntries = new List<CaveEnemySpawnPlanEntry>(_lastEnemySpawnPlan.Entries);
+            guardianEntries.Sort((a, b) => a.SpawnIndex.CompareTo(b.SpawnIndex));
+
+            var count = Mathf.Min(treasure.GuardianGridPositions.Count, guardianEntries.Count);
+            for (var i = 0; i < count; i++)
+            {
+                var entry = guardianEntries[i];
+                var targetGrid = treasure.GuardianGridPositions[i];
+                var targetWorld = GridToWorld(targetGrid, generatedLevel);
+
+                entry.GridPosition = targetGrid;
+                entry.WorldPosition = targetWorld;
+
+                // Move o GameObject correspondente (nome == EnemyInstanceId).
+                foreach (var obj in _materializedObjects)
+                {
+                    if (obj != null && obj.name == entry.EnemyInstanceId)
+                    {
+                        obj.transform.position = targetWorld;
+                        break;
+                    }
+                }
+            }
+        }
+
+        private void RegisterOpenedChest(string chestId)
+        {
+            if (!string.IsNullOrWhiteSpace(chestId))
+            {
+                _openedChestIds.Add(chestId);
+            }
         }
 
         private void LogEnemySpawnWiringWarning(CaveGeneratedLevel generatedLevel, string cause)

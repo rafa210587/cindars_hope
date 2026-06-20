@@ -14,26 +14,43 @@ namespace CindarsHope.Cave.Generation
             int caveLevel,
             string caveWorldSeed,
             string caveRunSeed,
-            string biomeId)
+            string biomeId,
+            CaveBiomeLayoutProfile layoutProfile = null)
         {
             if (config == null)
             {
                 throw new ArgumentNullException(nameof(config));
             }
 
-            var width = Mathf.Max(8, config.TargetWidth);
-            var height = Mathf.Max(8, config.TargetHeight);
+            // fable_09: quando um perfil de banda é fornecido, o tamanho do mapa oscila de forma
+            // DETERMINÍSTICA por (worldSeed|runSeed|level|"size") (EMENDA Q12.1: 55 base, ~20% 42,
+            // ~20% 65). Sem perfil, mantém o tamanho do config (rollback / comportamento anterior).
+            int width;
+            int height;
+            if (layoutProfile != null)
+            {
+                var side = CaveBiomeLayoutProfile.ResolveMapSize(caveWorldSeed, caveRunSeed, caveLevel);
+                width = Mathf.Max(8, side);
+                height = Mathf.Max(8, side);
+            }
+            else
+            {
+                width = Mathf.Max(8, config.TargetWidth);
+                height = Mathf.Max(8, config.TargetHeight);
+            }
+
             var random = new System.Random(BuildSeed(caveWorldSeed, caveRunSeed, caveLevel));
             var generated = new CaveGeneratedLevel
             {
                 CaveLevel = Mathf.Max(1, caveLevel),
                 BiomeId = biomeId ?? string.Empty,
+                LayoutProfileBandId = layoutProfile != null ? layoutProfile.BandId : string.Empty,
                 Width = width,
                 Height = height
             };
 
-            GenerateRooms(config, random, generated);
-            ConnectRooms(config, random, generated);
+            GenerateRooms(config, random, generated, layoutProfile);
+            ConnectRooms(config, random, generated, layoutProfile);
             PlaceEntranceAndExit(generated);
             PlaceGenerationPoints(config, random, generated);
             BuildWalls(generated);
@@ -41,15 +58,32 @@ namespace CindarsHope.Cave.Generation
             return generated;
         }
 
-        private static void GenerateRooms(CaveGenerationConfigSO config, System.Random random, CaveGeneratedLevel generated)
+        private static void GenerateRooms(CaveGenerationConfigSO config, System.Random random, CaveGeneratedLevel generated, CaveBiomeLayoutProfile layoutProfile)
         {
-            var targetRooms = random.Next(config.MinRooms, config.MaxRooms + 1);
+            // fable_09: o perfil reparametriza contagem (re-escalada por área) e tamanho das salas;
+            // o ALGORITMO é o mesmo (sem reescrita). Sem perfil → valores do config.
+            int minRooms = config.MinRooms;
+            int maxRooms = config.MaxRooms;
+            int minRoomWidth = config.MinRoomWidth;
+            int maxRoomWidth = config.MaxRoomWidth;
+            int minRoomHeight = config.MinRoomHeight;
+            int maxRoomHeight = config.MaxRoomHeight;
+            if (layoutProfile != null)
+            {
+                layoutProfile.ResolveScaledRoomCount(generated.Width, generated.Height, out minRooms, out maxRooms);
+                minRoomWidth = layoutProfile.RoomMinWidth;
+                maxRoomWidth = layoutProfile.RoomMaxWidth;
+                minRoomHeight = layoutProfile.RoomMinHeight;
+                maxRoomHeight = layoutProfile.RoomMaxHeight;
+            }
+
+            var targetRooms = random.Next(minRooms, maxRooms + 1);
             var attempts = Mathf.Max(targetRooms * PlacementAttemptsMultiplier, targetRooms);
 
             for (var attempt = 0; attempt < attempts && generated.Rooms.Count < targetRooms; attempt++)
             {
-                var roomWidth = random.Next(config.MinRoomWidth, config.MaxRoomWidth + 1);
-                var roomHeight = random.Next(config.MinRoomHeight, config.MaxRoomHeight + 1);
+                var roomWidth = random.Next(minRoomWidth, maxRoomWidth + 1);
+                var roomHeight = random.Next(minRoomHeight, maxRoomHeight + 1);
                 var maxX = Mathf.Max(2, generated.Width - roomWidth - 2);
                 var maxY = Mathf.Max(2, generated.Height - roomHeight - 2);
                 var room = new CaveRoom(
@@ -75,11 +109,14 @@ namespace CindarsHope.Cave.Generation
             }
         }
 
-        private static void ConnectRooms(CaveGenerationConfigSO config, System.Random random, CaveGeneratedLevel generated)
+        private static void ConnectRooms(CaveGenerationConfigSO config, System.Random random, CaveGeneratedLevel generated, CaveBiomeLayoutProfile layoutProfile)
         {
             generated.Rooms.Sort((a, b) => a.Center.x == b.Center.x ? a.Center.y.CompareTo(b.Center.y) : a.Center.x.CompareTo(b.Center.x));
 
-            var corridorWidth = ResolveCorridorWidth(config, random);
+            var corridorWidth = ResolveCorridorWidth(config, random, layoutProfile);
+            var extraConnectionChance = layoutProfile != null
+                ? Mathf.Clamp(layoutProfile.ExtraConnectionChancePercent, 0, 100)
+                : config.ExtraConnectionChancePercent;
 
             for (var i = 1; i < generated.Rooms.Count; i++)
             {
@@ -90,7 +127,7 @@ namespace CindarsHope.Cave.Generation
             {
                 for (var j = i + 2; j < generated.Rooms.Count; j++)
                 {
-                    if (random.Next(0, 100) >= config.ExtraConnectionChancePercent)
+                    if (random.Next(0, 100) >= extraConnectionChance)
                     {
                         continue;
                     }
@@ -100,10 +137,10 @@ namespace CindarsHope.Cave.Generation
             }
         }
 
-        private static int ResolveCorridorWidth(CaveGenerationConfigSO config, System.Random random)
+        private static int ResolveCorridorWidth(CaveGenerationConfigSO config, System.Random random, CaveBiomeLayoutProfile layoutProfile)
         {
-            var min = Mathf.Max(1, config.CorridorMinWidth);
-            var max = Mathf.Max(min, config.CorridorMaxWidth);
+            var min = Mathf.Max(1, layoutProfile != null ? layoutProfile.CorridorMinWidth : config.CorridorMinWidth);
+            var max = Mathf.Max(min, layoutProfile != null ? layoutProfile.CorridorMaxWidth : config.CorridorMaxWidth);
             return min == max ? min : random.Next(min, max + 1);
         }
 

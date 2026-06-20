@@ -9,6 +9,9 @@ namespace CindarsHope.Cave.Generation
     {
         public int CaveLevel;
         public string BiomeId;
+        // fable_09: banda do perfil de layout aplicado (stone/fungal/ice/fire/ruins/deep/void).
+        // Informativo; a mudança estrutural (dimensões/salas) já entra no LayoutHash.
+        public string LayoutProfileBandId = string.Empty;
         public int Width;
         public int Height;
         public string LayoutHash;

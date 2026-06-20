@@ -183,12 +183,18 @@ namespace CindarsHope.Cave
                 }
             }
 
+            // fable_09: perfil de layout por banda (estático em código) parametriza a geração
+            // (tamanho/salas/corredor) de forma determinística por seed. Sem perfil, o gerador
+            // mantém o comportamento anterior (rollback).
+            var layoutProfile = CaveBiomeLayoutProfile.ForLevel(_runManager.CurrentCaveLevel);
+
             CurrentGeneratedLevel = _generator.Generate(
                 _generationConfig,
                 _runManager.CurrentCaveLevel,
                 _runManager.CaveWorldSeed,
                 _runManager.CaveRunSeed,
-                _defaultBiomeId);
+                _defaultBiomeId,
+                layoutProfile);
 
             CurrentGeneratedLevel.ComputeLayoutHash();
 
@@ -240,7 +246,8 @@ namespace CindarsHope.Cave
                 _materializer != null ? _materializer.LastResourceNodeSnapshots : null,
                 null,
                 _runManager.State.DepletedNodeIds,
-                _materializer != null ? _materializer.CollectEnemyHpRecords() : null);
+                _materializer != null ? _materializer.CollectEnemyHpRecords() : null,
+                _materializer != null ? _materializer.OpenedChestIds : null); // fable_09
 
             if (snapshot == null)
             {
@@ -273,6 +280,26 @@ namespace CindarsHope.Cave
                 && snapshot != null)
             {
                 snapshot.SetEnemyHpRecords(_materializer.CollectEnemyHpRecords());
+            }
+        }
+
+        // fable_09: regrava os baús abertos no snapshot do nível atual antes de sair/salvar
+        // (snapshot é capturado na entrada; o jogador pode abrir baús durante o nível). Mesmo
+        // padrão de RefreshCurrentSnapshotEnemyHp — estado mutável fora do LayoutHash.
+        public void RefreshCurrentSnapshotOpenedChests()
+        {
+            if (CurrentGeneratedLevel == null || _materializer == null || _runManager == null)
+            {
+                return;
+            }
+
+            if (_runManager.State.VisitedLevelSnapshots.TryGetValue(CurrentGeneratedLevel.CaveLevel, out var snapshot)
+                && snapshot != null)
+            {
+                foreach (var chestId in _materializer.OpenedChestIds)
+                {
+                    snapshot.MarkChestOpened(chestId);
+                }
             }
         }
 

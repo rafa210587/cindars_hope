@@ -85,11 +85,13 @@ namespace CindarsHope.Cave
         }
 
         // F13: HP dos inimigos persiste no snapshot do nível ao sair por qualquer portal.
+        // fable_09: baús abertos também persistem ao sair (revisita mostra baú aberto — CA-3).
         private void RefreshSnapshotEnemyHpBeforeTransition()
         {
             if (_levelController != null)
             {
                 _levelController.RefreshCurrentSnapshotEnemyHp();
+                _levelController.RefreshCurrentSnapshotOpenedChests();
             }
         }
 
