@@ -11,6 +11,10 @@ namespace CindarsHope.Farm.Fishing
         public int FatigueCostApplied { get; set; }
         public bool InventoryFull { get; set; }
 
+        // fable_50 (aditivo, default 0): qualidade resolvida pela tabela/minigame (0..3). Preserva
+        // compatibilidade — chamadores legados ignoram o campo.
+        public int Quality { get; set; }
+
         public static FishCatchResult Fail(string reason) =>
             new FishCatchResult { Success = false, FailureReason = reason };
     }
