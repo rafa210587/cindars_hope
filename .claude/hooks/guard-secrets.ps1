@@ -1,12 +1,12 @@
 # Guard Secrets Hook (PreToolUse: Edit|Write)
-# Claude Code hook protocol: JSON via stdin; exit 0 = allow, exit 2 = block (stderr -> Claude).
+# Protocolo de hook do Claude Code: JSON via stdin; exit 0 = allow, exit 2 = block (stderr -> Claude).
 #
-# Blocks writing/editing content that looks like a REAL secret (cloud keys, private keys,
-# provider tokens, hardcoded passwords). Defensive: any parse/shape ambiguity -> exit 0
-# (never block the tool because of a hook failure).
+# Bloqueia escrita/edicao de conteudo que pareca um secret REAL (cloud keys, private keys,
+# provider tokens, passwords hardcoded). Defensivo: qualquer ambiguidade de parse/formato -> exit 0
+# (nunca bloqueia a tool por causa de uma falha do hook).
 #
-# Scope: only the NEW content being written (Write.content / Edit.new_string), so editing a
-# legacy file that already contains a match does not produce noise.
+# Scope: apenas o conteudo NOVO sendo escrito (Write.content / Edit.new_string), entao editar um
+# arquivo legado que ja contem um match nao gera ruido.
 # Rule: security-and-files (no secrets in code, configs or logs).
 
 $ErrorActionPreference = "Stop"
@@ -26,7 +26,7 @@ $newString = [string]$data.tool_input.new_string
 $combined = "$content`n$newString"
 if ([string]::IsNullOrWhiteSpace($combined)) { exit 0 }
 
-# Pattern -> human label, so the block message is actionable.
+# Pattern -> label legivel, para que a mensagem de block seja acionavel.
 $patterns = [ordered]@{
     'AKIA[0-9A-Z]{16}'                                                      = 'AWS access key id'
     'ASIA[0-9A-Z]{16}'                                                      = 'AWS temporary access key id'

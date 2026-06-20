@@ -1,15 +1,15 @@
 # Runtime Code Guard Hook (PostToolUse: Edit|Write)
 # Claude Code hook protocol: JSON via stdin; exit 0 = silent, exit 2 = feedback to Claude (stderr).
-# PostToolUse cannot undo the edit — exit 2 here means "fix this before closing the task".
+# PostToolUse nao consegue desfazer o edit - exit 2 aqui significa "corrija isto antes de fechar a tarefa".
 #
-# Checks ONLY the newly written content (Edit.new_string / Write.content), so editing a
-# legacy file that already contains violations does not produce noise.
+# Verifica APENAS o conteudo recem-escrito (Edit.new_string / Write.content), entao editar um
+# arquivo legado que ja contem violacoes nao gera ruido.
 #
-#   1. Forbidden runtime scene search APIs in Assets/_Game/Scripts (not Editor/)
+#   1. APIs de runtime scene search proibidas em Assets/_Game/Scripts (nao Editor/)
 #      (rule: unity-architecture / no-runtime-global-search)
-#   2. Forbidden namespaces CindarsHope.Debug / CindarsHope.Temp
-#   3. Duplicate class name on new file Write (prevents parallel systems like
-#      Craft/ vs Crafting/, duplicated StatusEffectSO / SkillActionSO)
+#   2. Namespaces proibidos CindarsHope.Debug / CindarsHope.Temp
+#   3. Nome de classe duplicado em Write de novo arquivo (previne sistemas paralelos como
+#      Craft/ vs Crafting/, StatusEffectSO / SkillActionSO duplicados)
 
 $ErrorActionPreference = "Stop"
 
@@ -42,9 +42,9 @@ if (-not $newContent) { exit 0 }
 
 $problems = @()
 
-# --- 1. Forbidden runtime scene search APIs ---------------------------------
+# --- 1. APIs de runtime scene search proibidas ---------------------------------
 if ($isRuntime) {
-    # [(<] also catches the generic form FindObjectOfType<T>()
+    # [(<] tambem captura a forma generica FindObjectOfType<T>()
     $searchPatterns = 'GameObject\.Find\s*\(', 'FindObjectOfType\s*[(<]', 'FindObjectsOfType\s*[(<]', 'FindObjectsByType\s*[(<]'
     foreach ($p in $searchPatterns) {
         if ($newContent -match $p) {
@@ -53,12 +53,12 @@ if ($isRuntime) {
     }
 }
 
-# --- 2. Forbidden namespaces -------------------------------------------------
+# --- 2. Namespaces proibidos -------------------------------------------------
 if ($newContent -match 'namespace\s+CindarsHope\.(Debug|Temp)\b') {
     $problems += "Forbidden namespace CindarsHope.Debug/CindarsHope.Temp added to '$path'."
 }
 
-# --- 3. Duplicate class names on new Write ----------------------------------
+# --- 3. Nomes de classe duplicados em novo Write ----------------------------
 if ($isWrite -and $path -match '^Assets/_Game/(Scripts|Tests)/') {
     $classMatches = [regex]::Matches($newContent, '(?m)^\s*(?:public|internal)?\s*(?:sealed|abstract|static|partial)?\s*class\s+([A-Za-z_]\w+)')
     foreach ($m in $classMatches) {

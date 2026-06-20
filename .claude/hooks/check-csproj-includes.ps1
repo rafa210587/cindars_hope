@@ -1,6 +1,6 @@
-# Check local Unity csproj includes for changed C# files.
-# This repo uses dotnet build as a compile fallback, so newly added scripts must
-# appear in the generated csproj files when Unity has not regenerated them yet.
+# Verifica os includes locais dos csproj do Unity para os arquivos C# alterados.
+# Este repo usa dotnet build como fallback de compile, entao scripts recem-adicionados precisam
+# aparecer nos csproj gerados quando o Unity ainda nao os regenerou.
 
 param(
     [switch]$FailOnMissing

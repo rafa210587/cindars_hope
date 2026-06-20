@@ -1,10 +1,10 @@
 # Stop Summary Check Hook (Stop)
-# Claude Code hook protocol: JSON via stdin; exit 0 = allow stop, exit 2 = block stop (stderr -> Claude).
-# Intelligent checklist that adapts to the type of changes made.
-# Reads change-scope.json (written by detect-change-scope.ps1, which runs first in the Stop event).
-# NOTE: ASCII-only on purpose - PowerShell 5.1 misparses UTF-8 scripts without BOM.
+# Protocolo de hook do Claude Code: JSON via stdin; exit 0 = allow stop, exit 2 = block stop (stderr -> Claude).
+# Checklist inteligente que se adapta ao tipo de mudancas feitas.
+# Le change-scope.json (escrito por detect-change-scope.ps1, que roda primeiro no evento Stop).
+# NOTA: ASCII-only de proposito - PowerShell 5.1 interpreta errado scripts UTF-8 sem BOM.
 
-# Consume stdin and honor stop_hook_active to avoid infinite stop loops
+# Consome stdin e respeita stop_hook_active para evitar loops infinitos de stop
 try {
     $hookInput = [Console]::In.ReadToEnd() | ConvertFrom-Json
     if ($hookInput -and $hookInput.stop_hook_active) {
@@ -12,24 +12,24 @@ try {
     }
 }
 catch {
-    # No/malformed stdin: continue as informational hook
+    # Sem stdin ou stdin malformado: continua como hook informativo
 }
 
-# Check if there were any changes at all
+# Verifica se houve alguma mudanca
 try {
     $changedFiles = @(git diff --name-only 2>$null)
 }
 catch {
-    # If git fails, just skip (e.g., in non-repo context)
+    # Se o git falhar, apenas pula (ex.: contexto fora de repo)
     exit 0
 }
 
 if ($changedFiles.Count -eq 0 -and -not (git status --porcelain 2>$null)) {
-    # No changes - skip this hook
+    # Sem mudancas - pula este hook
     exit 0
 }
 
-# Read scope if it exists
+# Le o scope se ele existir
 $scopeFile = ".\.claude\.runtime\change-scope.json"
 $scope = $null
 if (Test-Path $scopeFile) {
@@ -37,11 +37,11 @@ if (Test-Path $scopeFile) {
         $scope = Get-Content $scopeFile -Raw | ConvertFrom-Json
     }
     catch {
-        # Ignore parse errors
+        # Ignora erros de parse
     }
 }
 
-# Forbidden paths: block the stop so Claude addresses the violation before finishing
+# Paths proibidos: bloqueia o stop para Claude tratar a violacao antes de finalizar
 if ($scope -and ($scope.forbiddenPathsChanged -or $scope.rootSpecsRecreated)) {
     if ($scope.forbiddenPathsChanged) {
         [Console]::Error.WriteLine("STOP-GUARD: changes detected in forbidden paths (docs_old/, specs/, spec/). Revert or move them to canonical paths before finishing (rule: docs-governance).")
@@ -58,7 +58,7 @@ Write-Host "Changes detected. Closeout checklist:"
 Write-Host "==================================================="
 Write-Host ""
 
-# Adaptive checklist based on scope
+# Checklist adaptativo baseado no scope
 if ($scope -and ($scope.docsChanged -or $scope.unityRuntimeChanged -or $scope.projectSettingsChanged)) {
     Write-Host "Changes detected in:"
     if ($scope.docsChanged) { Write-Host "   - Documentation" }

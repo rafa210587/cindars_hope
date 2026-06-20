@@ -1,13 +1,13 @@
-# Spec Promotion Guard Hook
-# Warns when a spec is being moved to implementados/ without a corresponding execution report.
-# Disabled by default. Run manually before /finish-spec operations.
+# Hook Spec Promotion Guard
+# Avisa quando uma spec esta sendo movida para implementados/ sem o execution report correspondente.
+# Desativado por padrao. Rodar manualmente antes de operacoes de /finish-spec.
 
 param(
     [string]$SpecFile = ""
 )
 
 if ($SpecFile -eq "") {
-    # Try to detect from git diff if no argument
+    # Tenta detectar pelo git diff se nao houver argumento
     try {
         $movedFiles = git diff --name-status HEAD 2>$null | Where-Object {
             $_ -match "^R" -and $_ -match "implementados"
@@ -34,16 +34,16 @@ if ($movedFiles.Count -eq 0) {
 $violations = @()
 
 foreach ($move in $movedFiles) {
-    # Extract spec ID from path
+    # Extrai o spec ID do path
     if ($move -match "(spec_[\w_]+)") {
         $specId = $matches[1]
 
-        # Check for execution report
+        # Verifica se ha execution report
         $reportPattern = "docs/validation/$specId*_execution_report.md"
         $reportExists = Test-Path $reportPattern -ErrorAction SilentlyContinue
 
         if (-not $reportExists) {
-            # Also check docs/validation/ directory
+            # Verifica tambem o diretorio docs/validation/
             $reports = Get-ChildItem "docs/validation/" -Filter "*${specId}*execution_report*" -ErrorAction SilentlyContinue
             $reportExists = ($null -ne $reports -and $reports.Count -gt 0)
         }
@@ -56,19 +56,19 @@ foreach ($move in $movedFiles) {
 
 if ($violations.Count -gt 0) {
     Write-Host ""
-    Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    Write-Host "Spec Promotion Guard — WARNINGS"
-    Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    Write-Host "==================================================="
+    Write-Host "Spec Promotion Guard - WARNINGS"
+    Write-Host "==================================================="
     foreach ($v in $violations) {
         Write-Host $v
     }
     Write-Host ""
     Write-Host "  Rule: spec-promotion-requires-evidence.md"
     Write-Host "  Create execution report before promoting spec."
-    Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    Write-Host "==================================================="
     Write-Host ""
     exit 1
 }
 
-Write-Host "Spec Promotion Guard: PASS — execution reports found for promoted specs."
+Write-Host "Spec Promotion Guard: PASS - execution reports found for promoted specs."
 exit 0

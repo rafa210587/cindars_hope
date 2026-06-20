@@ -1,15 +1,15 @@
 # Guard Large Files Hook (PreToolUse: Edit|Write)
-# Claude Code hook protocol: JSON via stdin; exit 0 = allow, exit 2 = block (stderr -> Claude).
+# Protocolo de hook do Claude Code: JSON via stdin; exit 0 = allow, exit 2 = block (stderr -> Claude).
 #
-# Blocks a single Write that would create a very large text file (default > 1 MB), which is
-# almost always an accident (dumped data, generated blob, pasted log) rather than source.
-# Defensive: any parse/shape ambiguity -> exit 0.
+# Bloqueia um unico Write que criaria um arquivo de texto muito grande (default > 1 MB), o que
+# quase sempre e um acidente (dump de dados, blob gerado, log colado) e nao codigo-fonte.
+# Defensivo: qualquer ambiguidade de parse/formato -> exit 0.
 #
-# Only inspects Write.content (a full-file write). Edit.new_string (incremental) is not gated.
+# Inspeciona apenas Write.content (write de arquivo inteiro). Edit.new_string (incremental) nao e gated.
 
 $ErrorActionPreference = "Stop"
 
-$maxBytes = 1MB   # adjust here if a legitimate generated file needs more
+$maxBytes = 1MB   # ajuste aqui se um arquivo gerado legitimo precisar de mais
 
 try {
     $raw = [Console]::In.ReadToEnd()

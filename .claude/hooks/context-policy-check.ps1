@@ -1,8 +1,8 @@
 # Context Policy Check Hook
-# Warns when an execution plan includes heavy historical reads without justification.
-# Disabled by default. Run manually via /validate-spec or explicit invocation.
+# Avisa quando um plano de execucao inclui leituras historicas pesadas sem justificativa.
+# Desabilitado por padrao. Rode manualmente via /validate-spec ou invocacao explicita.
 
-# Heavy files that should not be default reads in implementation tasks
+# Arquivos pesados que nao devem ser leituras padrao em tarefas de implementacao
 $HeavyDefaultReads = @(
     "PROJECT_LOG.md",
     "docs/IMPLEMENTATION_STATUS.md",
@@ -10,7 +10,7 @@ $HeavyDefaultReads = @(
     "ROADMAP.md"
 )
 
-# Justification keywords that make heavy reads acceptable
+# Palavras-chave de justificativa que tornam as leituras pesadas aceitaveis
 $AcceptedJustifications = @(
     "audit",
     "reconciliation",
@@ -49,19 +49,19 @@ foreach ($heavyFile in $HeavyDefaultReads) {
 
 if ($warnings.Count -gt 0) {
     Write-Host ""
-    Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    Write-Host "Context Policy Check — WARNINGS"
-    Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    Write-Host "==================================================="
+    Write-Host "Context Policy Check - WARNINGS"
+    Write-Host "==================================================="
     foreach ($w in $warnings) {
         Write-Host "  $w"
     }
     Write-Host ""
     Write-Host "  Rule: context-reading-policy.md"
     Write-Host "  Use docs/project/CURRENT_STATE.md instead for execution context."
-    Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    Write-Host "==================================================="
     Write-Host ""
     exit 1
 }
 
-Write-Host "Context Policy Check: PASS — no heavy default reads detected."
+Write-Host "Context Policy Check: PASS - no heavy default reads detected."
 exit 0

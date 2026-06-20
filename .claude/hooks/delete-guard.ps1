@@ -1,11 +1,11 @@
 # Delete Guard Hook
-# Warns when a task plan or git diff includes doc file deletions
-# without the file appearing in DOCUMENT_DELETE_CANDIDATES.md.
-# Disabled by default. Run manually before any bulk delete operations.
+# Avisa quando um plano de tarefa ou git diff inclui delecoes de arquivos de doc
+# sem que o arquivo apareca em DOCUMENT_DELETE_CANDIDATES.md.
+# Desabilitado por padrao. Rode manualmente antes de qualquer operacao de delete em lote.
 
 $CandidatesFile = "docs/00_PROJECT/DOCUMENT_DELETE_CANDIDATES.md"
 
-# Get files staged for deletion
+# Pega os arquivos marcados (staged) para delecao
 try {
     $deletedFiles = @(git diff --cached --name-status 2>$null) | Where-Object {
         $_ -match "^D\s"
@@ -17,7 +17,7 @@ catch {
     $deletedFiles = @()
 }
 
-# Also check for Remove-Item in recent commands (heuristic)
+# Tambem verifica Remove-Item em comandos recentes (heuristica)
 $docDeletions = $deletedFiles | Where-Object {
     $_ -match "^docs/" -or $_ -match "^AGENTS\.md" -or $_ -match "^CLAUDE\.md" -or $_ -match "^PROJECT_LOG\.md"
 }
@@ -27,10 +27,10 @@ if ($docDeletions.Count -eq 0) {
     exit 0
 }
 
-# Check candidates file
+# Verifica o arquivo de candidates
 if (-not (Test-Path $CandidatesFile)) {
     Write-Host ""
-    Write-Host "Delete Guard: CANDIDATES FILE MISSING — $CandidatesFile not found!"
+    Write-Host "Delete Guard: CANDIDATES FILE MISSING - $CandidatesFile not found!"
     Write-Host "  No doc file deletions are authorized without this file."
     foreach ($f in $docDeletions) {
         Write-Host "  Blocked deletion: $f"
@@ -50,19 +50,19 @@ foreach ($file in $docDeletions) {
 
 if ($violations.Count -gt 0) {
     Write-Host ""
-    Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    Write-Host "Delete Guard — VIOLATIONS"
-    Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    Write-Host "==================================================="
+    Write-Host "Delete Guard - VIOLATIONS"
+    Write-Host "==================================================="
     foreach ($v in $violations) {
         Write-Host $v
     }
     Write-Host ""
     Write-Host "  Rule: no-doc-delete-without-candidate.md"
     Write-Host "  Add file to DOCUMENT_DELETE_CANDIDATES.md first."
-    Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    Write-Host "==================================================="
     Write-Host ""
     exit 1
 }
 
-Write-Host "Delete Guard: PASS — all deleted files are in candidates list."
+Write-Host "Delete Guard: PASS - all deleted files are in candidates list."
 exit 0

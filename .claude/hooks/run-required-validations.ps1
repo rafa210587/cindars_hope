@@ -1,6 +1,6 @@
-# Run Required Validations Hook
-# Reads change-scope.json and runs appropriate validations
-# Only runs validations that are actually needed
+# Hook Run Required Validations
+# Le change-scope.json e roda as validacoes apropriadas
+# So roda as validacoes que sao de fato necessarias
 
 param(
     [switch]$Force
@@ -9,13 +9,13 @@ param(
 $runtimeDir = ".\.claude\.runtime"
 $scopeFile = "$runtimeDir/change-scope.json"
 
-# Check if scope file exists
+# Verifica se o scope file existe
 if (-not (Test-Path $scopeFile)) {
     Write-Host "ALERT: No scope file found. Run detect-change-scope first or use /implement-spec."
     exit 0
 }
 
-# Read scope
+# Le o scope
 $scope = Get-Content $scopeFile -Raw | ConvertFrom-Json
 
 Write-Host ""
@@ -65,7 +65,7 @@ if ($scope.unityRuntimeChanged -or $scope.projectSettingsChanged) {
 
     $unityExePath = "C:\Program Files\Unity\Hub\Editor\6000.4.7f1\Editor\Unity.exe"
 
-    # Check for local override
+    # Verifica se ha override local
     if (Test-Path ".\.claude\settings.local.json") {
         try {
             $localSettings = Get-Content ".\.claude\settings.local.json" -Raw | ConvertFrom-Json
@@ -74,7 +74,7 @@ if ($scope.unityRuntimeChanged -or $scope.projectSettingsChanged) {
             }
         }
         catch {
-            # Ignore parse errors
+            # Ignora erros de parse
         }
     }
 
@@ -162,7 +162,7 @@ else {
 
 Write-Host ""
 
-# Build validation results JSON
+# Monta o JSON de resultados de validacao
 $validationJson = @{
     "timestamp" = (Get-Date -Format "yyyy-MM-dd HH:mm:ss")
     "docs" = @{
@@ -202,7 +202,7 @@ $validationJson = @{
     "overall" = if ($validationsPassed) { "PASS" } else { "FAIL" }
 }
 
-# Save validation results
+# Salva os resultados de validacao
 $resultsPath = "$runtimeDir\validation-results.json"
 $validationJson | ConvertTo-Json -Depth 10 | Out-File -FilePath $resultsPath -Encoding UTF8 -Force
 Write-Host "[SAVE] Validation results saved: $resultsPath"

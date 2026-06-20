@@ -1,5 +1,5 @@
-# Warn when cave runtime/procedural files changed.
-# This is intentionally non-blocking; it reminds the agent to apply the FASE9F guardrails.
+# Avisa quando arquivos de runtime/procedural da cave foram alterados.
+# Isto e intencionalmente nao-bloqueante; lembra o agent de aplicar os guardrails da FASE9F.
 
 param(
     [switch]$FailOnMissingValidationDoc

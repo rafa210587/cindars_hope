@@ -1,6 +1,6 @@
-# Docs Status Honesty Check Hook
-# Scans recently modified doc files for prohibited premature acceptance claims.
-# Disabled by default. Run manually before finish-spec or on doc file changes.
+# Hook Docs Status Honesty Check
+# Varre arquivos de doc modificados recentemente em busca de claims proibidos de aceitacao prematura.
+# Desativado por padrao. Rodar manualmente antes do finish-spec ou em mudancas de arquivos de doc.
 
 $ProhibitedPhrases = @(
     "MVP accepted",
@@ -13,7 +13,7 @@ $ProhibitedPhrases = @(
     "fully accepted"
 )
 
-# Evidence markers that make the phrase acceptable
+# Marcadores de evidence que tornam a frase aceitavel
 $EvidenceMarkers = @(
     "evidence:",
     "executor:",
@@ -22,7 +22,7 @@ $EvidenceMarkers = @(
     "validator.*PASS"
 )
 
-# Get recently changed doc files
+# Pega os arquivos de doc alterados recentemente
 try {
     $changedFiles = @(git diff --name-only HEAD 2>$null) + @(git diff --cached --name-only 2>$null)
     $changedFiles = $changedFiles | Where-Object { $_ -match "\.(md|txt)$" } | Sort-Object -Unique
@@ -46,7 +46,7 @@ foreach ($file in $changedFiles) {
 
     foreach ($phrase in $ProhibitedPhrases) {
         if ($content -match $phrase) {
-            # Check for evidence markers nearby
+            # Verifica se ha marcadores de evidence por perto
             $hasEvidence = $false
             foreach ($marker in $EvidenceMarkers) {
                 if ($content -match $marker) {
@@ -55,7 +55,7 @@ foreach ($file in $changedFiles) {
                 }
             }
             if (-not $hasEvidence) {
-                $violations += "  $file : '$phrase' — no evidence markers found"
+                $violations += "  $file : '$phrase' - no evidence markers found"
             }
         }
     }
@@ -63,19 +63,19 @@ foreach ($file in $changedFiles) {
 
 if ($violations.Count -gt 0) {
     Write-Host ""
-    Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    Write-Host "Docs Status Honesty Check — VIOLATIONS"
-    Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    Write-Host "==================================================="
+    Write-Host "Docs Status Honesty Check - VIOLATIONS"
+    Write-Host "==================================================="
     foreach ($v in $violations) {
         Write-Host $v
     }
     Write-Host ""
     Write-Host "  Rule: no-premature-acceptance-claims.md"
     Write-Host "  Add evidence before making this claim, or use honest phase status."
-    Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    Write-Host "==================================================="
     Write-Host ""
     exit 1
 }
 
-Write-Host "Docs Status Honesty Check: PASS — no premature claims detected."
+Write-Host "Docs Status Honesty Check: PASS - no premature claims detected."
 exit 0

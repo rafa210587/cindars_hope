@@ -1,12 +1,12 @@
 # Pre-Bash Guard Hook (PreToolUse: Bash|PowerShell)
 # Claude Code hook protocol: JSON via stdin; exit 0 = allow, exit 2 = block (stderr -> Claude).
 #
-# Blocks only patterns that are NEVER acceptable:
-#   1. Unity batchmode while another Unity instance is running (rule: no-parallel-unity-batchmode)
-#   2. dotnet build piped through filters that hide errors/exit code (rule: validation-truth)
+# Bloqueia apenas patterns que NUNCA sao aceitaveis:
+#   1. Unity batchmode enquanto outra instancia do Unity esta rodando (rule: no-parallel-unity-batchmode)
+#   2. dotnet build encadeado por filtros que escondem erros/exit code (rule: validation-truth)
 #
-# Destructive git (push/reset/clean/stash/rebase) is handled by permissions.ask in
-# .claude/settings.json, so the human authorizes per instance — do not duplicate here.
+# Git destrutivo (push/reset/clean/stash/rebase) e tratado por permissions.ask em
+# .claude/settings.json, entao o humano autoriza por instancia - nao duplicar aqui.
 
 $ErrorActionPreference = "Stop"
 
@@ -15,7 +15,7 @@ try {
     $data = $raw | ConvertFrom-Json
 }
 catch {
-    # Malformed input: do not block the tool because of hook failure
+    # Input malformado: nao bloquear a tool por causa de falha do hook
     exit 0
 }
 
@@ -34,7 +34,7 @@ if ($command -match "Unity(\.exe)?['""]?\s+.*-batchmode" -or $command -match "Un
 }
 
 # --- 2. Build Validation Truth Gate ----------------------------------------
-# 'dotnet build | Select-String' (and similar filters) lose $LASTEXITCODE and hide errors.
+# 'dotnet build | Select-String' (e filtros similares) perdem $LASTEXITCODE e escondem erros.
 if ($command -match "dotnet\s+build[^|;]*\|\s*(Select-String|Out-String|Tee-Object|Out-Null|findstr)") {
     [Console]::Error.WriteLine("BLOCKED: 'dotnet build' piped through an output filter. This loses the exit code and hides errors (rule: validation-truth / Build Validation Truth Gate).")
     [Console]::Error.WriteLine("Required pattern: run 'dotnet build <proj> --no-restore' bare, then check `$LASTEXITCODE -ne 0`. Preferred: .\tools\docs\run_strict_validation.ps1")

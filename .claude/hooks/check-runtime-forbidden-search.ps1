@@ -1,4 +1,4 @@
-# Check runtime scripts for prohibited scene search APIs.
+# Verifica scripts de runtime em busca de scene search APIs proibidas.
 
 param(
     [switch]$FailOnViolation

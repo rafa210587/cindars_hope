@@ -1,12 +1,12 @@
-# Post-Edit Docs Validate Hook
-# Reminds about docs validation after editing documentation files
-# Non-blocking - informational only
+# Hook Post-Edit Docs Validate
+# Lembra de rodar a validacao de docs depois de editar arquivos de documentacao
+# Nao-bloqueante - apenas informativo
 
 param(
     [string[]]$EditedFiles
 )
 
-# Check if any docs were edited
+# Verifica se algum doc foi editado
 $DocsPatterns = @(
     "docs/",
     "PROJECT_LOG.md",
@@ -29,20 +29,20 @@ foreach ($file in $EditedFiles) {
 
 if ($DocsEdited) {
     Write-Host ""
-    Write-Host "📋 Reminder: Documentation files were edited"
+    Write-Host "Lembrete: arquivos de documentacao foram editados"
     Write-Host ""
-    Write-Host "   Before finishing this task, run:"
+    Write-Host "   Antes de finalizar esta tarefa, rode:"
     Write-Host "   .\tools\docs\validate_docs.ps1"
     Write-Host ""
-    Write-Host "   This validates:"
-    Write-Host "   - Broken links"
-    Write-Host "   - Registry consistency"
+    Write-Host "   Isto valida:"
+    Write-Host "   - Links quebrados"
+    Write-Host "   - Consistencia de registry"
     Write-Host "   - YAML frontmatter"
-    Write-Host "   - Schema compliance"
+    Write-Host "   - Conformidade de schema"
     Write-Host ""
-    Write-Host "   ℹ️  This is a reminder, not a blocker."
+    Write-Host "   Isto e um lembrete, nao um bloqueio."
     Write-Host ""
 }
 
-# Always return success (non-blocking)
+# Sempre retorna sucesso (nao-bloqueante)
 return $true

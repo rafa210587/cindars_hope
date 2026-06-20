@@ -1,18 +1,18 @@
 # Detect Change Scope Hook
-# Analyzes git diff and determines what type of changes were made
-# Outputs: .claude/.runtime/change-scope.json
+# Analisa o git diff e determina que tipo de mudancas foram feitas
+# Saida: .claude/.runtime/change-scope.json
 
 param(
     [switch]$Force
 )
 
-# Create runtime directory if it doesn't exist
+# Cria o diretorio de runtime se ele nao existir
 $runtimeDir = ".\.claude\.runtime"
 if (-not (Test-Path $runtimeDir)) {
     New-Item -ItemType Directory -Path $runtimeDir -Force | Out-Null
 }
 
-# Get changed files
+# Pega os arquivos alterados
 $changedFiles = @()
 try {
     $gitDiff = git diff --name-only 2>$null
@@ -24,7 +24,7 @@ catch {
     Write-Warning "Could not read git diff"
 }
 
-# Also check for untracked files that were staged
+# Tambem verifica arquivos untracked que foram staged
 try {
     $gitStatus = git status --porcelain 2>$null
     if ($gitStatus) {
@@ -33,10 +33,10 @@ try {
     }
 }
 catch {
-    # Ignore
+    # Ignora
 }
 
-# Initialize flags
+# Inicializa as flags
 $scope = @{
     "timestamp" = (Get-Date -Format "yyyy-MM-dd HH:mm:ss")
     "docsChanged" = $false
@@ -54,79 +54,79 @@ $scope = @{
     "changedFiles" = @()
 }
 
-# Analyze each changed file
+# Analisa cada arquivo alterado
 foreach ($file in $changedFiles) {
-    # Normalize path separators
+    # Normaliza os separadores de path
     $file = $file -replace '\\', '/'
 
-    # Skip empty lines
+    # Pula linhas vazias
     if (-not $file) { continue }
 
     $scope.changedFiles += $file
 
-    # Check for docs changes
+    # Verifica mudancas em docs
     if ($file -match '^docs/|^CLAUDE\.md$|^AGENTS\.md$|^PROJECT_LOG\.md$|^\.gitignore$') {
         $scope.docsChanged = $true
     }
 
-    # Check for Unity runtime changes
+    # Verifica mudancas no Unity runtime
     if ($file -match '^Assets/.*\.(cs|unity|prefab|asset)$' -or
         $file -match '^Packages/') {
         $scope.unityRuntimeChanged = $true
     }
 
-    # Check for ProjectSettings changes
+    # Verifica mudancas em ProjectSettings
     if ($file -match '^ProjectSettings/') {
         $scope.projectSettingsChanged = $true
     }
 
-    # Save system / DTO changes (testing-quality-gate: save tests required)
+    # Mudancas de save system / DTO (testing-quality-gate: save tests required)
     if ($file -match '^Assets/_Game/Scripts/Save/' -or $file -match 'SaveData\.cs$' -or $file -match 'SectionProvider\.cs$') {
         $scope.saveSystemChanged = $true
     }
 
-    # Event bus contract changes (testing-quality-gate: contract tests required)
+    # Mudancas de contrato do event bus (testing-quality-gate: contract tests required)
     if ($file -match '^Assets/_Game/Scripts/Core/Events/') {
         $scope.eventContractsChanged = $true
     }
 
-    # Check for docs_old (always forbidden)
+    # Verifica docs_old (sempre proibido)
     if ($file -match '^docs_old/') {
         $scope.forbiddenPathsChanged = $true
     }
 
-    # Check for root specs recreation (always forbidden)
+    # Verifica recriacao de root specs (sempre proibido)
     if ($file -match '^specs/' -or $file -match '^spec/') {
         $scope.rootSpecsRecreated = $true
         $scope.forbiddenPathsChanged = $true
     }
 
-    # Check for spec docs changes (not forbidden, but tracked)
+    # Verifica mudancas em spec docs (nao proibido, mas rastreado)
     if ($file -match '^\.specs/') {
         $scope.specDocsChanged = $true
 
-        # Detect spec migration (a_implementar → implementados)
+        # Detecta migracao de spec (a_implementar -> implementados)
         if ($file -match '^\.specs/a_implementar/' -or $file -match '^\.specs/implementados/') {
             $scope.specMigrationDetected = $true
         }
     }
 
-    # Check for refinement docs changes (not forbidden, but tracked)
+    # Verifica mudancas em refinement docs (nao proibido, mas rastreado)
     if ($file -match '^docs/refinements/') {
         $scope.refinementDocsChanged = $true
 
-        # Detect refinement migration
+        # Detecta migracao de refinement
         if ($file -match '^docs/refinements/(a_implementar/pre_refinamentos|implementados)') {
             $scope.refinementMigrationDetected = $true
         }
     }
 }
 
-# Save to JSON
+# Salva em JSON
 $jsonPath = "$runtimeDir/change-scope.json"
 $scope | ConvertTo-Json | Out-File -FilePath $jsonPath -Encoding UTF8 -Force
 
-# Display summary
+# Exibe o resumo
 Write-Host "[SCOPE] Change Scope Detected:"
 Write-Host ""
 Write-Host "  Files changed: $($scope.changedFileCount)"

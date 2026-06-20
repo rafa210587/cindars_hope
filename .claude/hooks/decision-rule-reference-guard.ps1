@@ -1,5 +1,5 @@
 # Hook: decision-rule-reference-guard
-# Warn if specs cite amendments as canonical or omit required ADR/game_rules fields
+# Avisa se specs citam amendments como canonico ou omitem campos required de ADR/game_rules
 
 param(
     [switch]$FailOnWarning,
@@ -9,31 +9,31 @@ param(
 $warningCount = 0
 $errorCount = 0
 
-# Find changed specs in a_implementar
+# Encontra specs alteradas em a_implementar
 $specs = Get-ChildItem -Path ".specs/a_implementar" -Filter "*.md" -Recurse | Select-Object -ExpandProperty FullName
 
 foreach ($spec in $specs) {
     $content = Get-Content -Path $spec -Raw
 
-    # Check 1: Spec cites amendments as canonical source
+    # Check 1: Spec cita amendments como fonte canonica
     if ($content -match 'docs/amendments/' -and $content -notmatch 'archived|historical') {
         Write-Warning "[$spec] References amendment as active source (not archived): check if content should be migrated to ADRs/game_rules"
         $warningCount++
     }
 
-    # Check 2: Spec missing required_adrs and required_game_rules fields
+    # Check 2: Spec sem os campos required_adrs e required_game_rules
     if ($content -notmatch 'required_adrs:' -or $content -notmatch 'required_game_rules:') {
         Write-Warning "[$spec] Missing required_adrs or required_game_rules fields in frontmatter"
         $warningCount++
     }
 }
 
-# Find any document outside templates that creates canonical rules
+# Encontra qualquer documento fora de templates que crie regras canonicas
 $activeDocs = Get-ChildItem -Path ".specs/a_implementar", ".specs/implementados", "docs/project", "docs/refinements" -Filter "*.md" -Recurse 2>$null | Select-Object -ExpandProperty FullName
 foreach ($doc in $activeDocs) {
     $content = Get-Content -Path $doc -Raw
 
-    # Check 3: Rule defined outside canonical locations
+    # Check 3: Rule definida fora dos locais canonicos
     if ($content -match '##\s+(Rule|Current|Canonical)' -and
         $doc -notmatch 'docs/decisions/' -and
         $doc -notmatch 'docs/game_rules/' -and
@@ -43,7 +43,7 @@ foreach ($doc in $activeDocs) {
     }
 }
 
-# Check 4: Archived amendments cited outside validation history
+# Check 4: Amendments arquivados citados fora do historico de validation
 $refDocs = @("docs/project/CURRENT_STATE.md", "docs/project/DOCUMENT_INDEX.md", "docs/project/DOCUMENT_GOVERNANCE.md", "docs/project/DECISION_LOG.md")
 foreach ($doc in $refDocs) {
     if (Test-Path $doc) {
@@ -55,7 +55,7 @@ foreach ($doc in $refDocs) {
     }
 }
 
-# Report results
+# Reporta resultados
 Write-Host ""
 Write-Host "Decision/Game Rule Reference Guard Results:"
 Write-Host "  Warnings: $warningCount"
