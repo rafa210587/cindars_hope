@@ -857,6 +857,9 @@ namespace CindarsHope.Save
 
             saveData.Farm.Plots ??= new List<FarmPlotSaveData>();
             saveData.Farm.Trees ??= new List<TreeSaveData>();
+            // fable_55: save legado sem o campo aditivo carrega com seção de processamento vazia.
+            saveData.Farm.Processing ??= new Farm.Processing.FarmProcessingSaveData();
+            saveData.Farm.Processing.Jobs ??= new List<Farm.Processing.FarmProcessingJobSaveData>();
             saveData.World.Pickups ??= new List<ItemPickupSaveData>();
             saveData.World.Trees ??= new List<TreeSaveData>();
             saveData.Npcs.Npcs ??= new List<NpcSaveData>();
@@ -915,17 +918,34 @@ namespace CindarsHope.Save
         private FarmSaveData CaptureFarmSaveData(GameSaveData existingSaveData)
         {
             var activeScene = SceneManager.GetActiveScene();
+            FarmSaveData farmSaveData;
             if (activeScene.name == FarmSceneName && _farmPlotRegistry != null)
             {
-                return _farmPlotRegistry.CaptureSaveData();
+                farmSaveData = _farmPlotRegistry.CaptureSaveData();
             }
-
-            if (existingSaveData?.Farm != null)
+            else if (existingSaveData?.Farm != null)
             {
-                return existingSaveData.Farm;
+                farmSaveData = existingSaveData.Farm;
+            }
+            else
+            {
+                farmSaveData = new FarmSaveData();
             }
 
-            return new FarmSaveData();
+            // fable_55: jobs de processamento são donos do FarmProcessingStationService (DontDestroyOnLoad,
+            // independente de cena). Sempre sobrescreve o campo aditivo com o estado vivo do serviço;
+            // serviço ausente = preserva o que já existia (ou vazio).
+            var processingService = Farm.Processing.FarmProcessingStationService.Instance;
+            if (processingService != null)
+            {
+                farmSaveData.Processing = processingService.CaptureSaveData();
+            }
+            else if (farmSaveData.Processing == null)
+            {
+                farmSaveData.Processing = existingSaveData?.Farm?.Processing ?? new Farm.Processing.FarmProcessingSaveData();
+            }
+
+            return farmSaveData;
         }
 
         private WorldSaveData CaptureWorldSaveData(GameSaveData existingSaveData)
@@ -1064,6 +1084,13 @@ namespace CindarsHope.Save
             if (Farm.Animals.FarmAnimalRegistry.Instance != null)
             {
                 Farm.Animals.FarmAnimalRegistry.Instance.RestoreFromSaveData(saveData.FarmAnimals);
+            }
+
+            // fable_55: restaura os jobs de processamento (queijaria/barril). Campo aditivo na seção
+            // farm; ausente em save legado ⇒ Restore(null) = nenhuma estação em producao (CA-5).
+            if (Farm.Processing.FarmProcessingStationService.Instance != null)
+            {
+                Farm.Processing.FarmProcessingStationService.Instance.RestoreFromSaveData(saveData.Farm?.Processing);
             }
 
             if (saveData.Player != null && _playerTransform != null)

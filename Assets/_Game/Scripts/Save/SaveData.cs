@@ -114,6 +114,10 @@ namespace CindarsHope.Save
     {
         public List<FarmPlotSaveData> Plots = new List<FarmPlotSaveData>();
         public List<TreeSaveData> Trees = new List<TreeSaveData>();
+
+        // fable_55: jobs de processamento ativos (queijaria/barril). Campo ADITIVO na seção farm;
+        // só IDs/ints (ADR-0006). Ausente em save legado = sem jobs (CA-5). Dono: FarmProcessingStationService.
+        public CindarsHope.Farm.Processing.FarmProcessingSaveData Processing = new CindarsHope.Farm.Processing.FarmProcessingSaveData();
     }
 
     [Serializable]

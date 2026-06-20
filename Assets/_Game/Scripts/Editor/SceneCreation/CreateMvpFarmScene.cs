@@ -96,6 +96,7 @@ namespace CindarsHope.Editor.SceneCreation
             CreateFarmResourceInteractables(inventoryManager);
             CreateFarmExpansionLots(inventoryManager, bootstrap.GetComponent<StaminaManager>(), seedDatabaseForLots: null);
             CreateAnimalHousings(inventoryManager);
+            CreateProcessingAndGreenhouse(inventoryManager, bootstrap.GetComponent<StaminaManager>());
             CreateSellPoint(inventoryManager, playerManager);
             CreateGameplayInputRouter();
             CreateActiveSkillExecutionController();
@@ -1364,6 +1365,129 @@ namespace CindarsHope.Editor.SceneCreation
 
             var releaseHandler = root.AddComponent<AnimalReleaseHandler>();
             releaseHandler.Configure(housingId, housingType, capacity, null, inventoryManager);
+        }
+
+        // fable_55: 2 estações de processamento físicas (queijaria/barril) + estufa mínima com 4
+        // canteiros. Superfície de job única = FarmProcessingStationService (por dias). Refs
+        // serializadas; sem GameObject.Find. Estufa = zona pequena sempre presente (decisão Fase 0).
+        private static void CreateProcessingAndGreenhouse(InventoryManager inventoryManager, StaminaManager staminaManager)
+        {
+            var root = new GameObject("FarmProcessing");
+            root.transform.position = Vector3.zero;
+
+            // Serviço dono dos jobs (DontDestroyOnLoad via singleton em runtime).
+            var serviceObject = new GameObject("FarmProcessingStationService");
+            serviceObject.transform.SetParent(root.transform);
+            var service = serviceObject.AddComponent<CindarsHope.Farm.Processing.FarmProcessingStationService>();
+            var serializedService = new SerializedObject(service);
+            serializedService.FindProperty("_inventoryManager").objectReferenceValue = inventoryManager;
+            serializedService.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(service);
+
+            // Estação 1 — Queijaria (zona de construção, lado norte da fazenda).
+            CreateProcessingStation(
+                root.transform, service,
+                "Station_CheesePress", "Queijaria",
+                CindarsHope.Farm.Processing.ProcessingRecipeCatalog.StationCheesePressId,
+                new Vector3(3.2f, 9.0f, 0f), new Color(0.92f, 0.86f, 0.55f));
+
+            // Estação 2 — Barril de Vinho.
+            CreateProcessingStation(
+                root.transform, service,
+                "Station_WineBarrel", "Barril de Vinho",
+                CindarsHope.Farm.Processing.ProcessingRecipeCatalog.StationWineBarrelId,
+                new Vector3(4.6f, 9.0f, 0f), new Color(0.55f, 0.18f, 0.22f));
+
+            CreateGreenhouse(root.transform, inventoryManager, staminaManager);
+        }
+
+        private static void CreateProcessingStation(
+            Transform parent,
+            CindarsHope.Farm.Processing.FarmProcessingStationService service,
+            string objectName,
+            string displayName,
+            string stationId,
+            Vector3 position,
+            Color bodyColor)
+        {
+            var obj = new GameObject(objectName);
+            obj.transform.SetParent(parent);
+            obj.transform.position = position;
+            obj.transform.localScale = new Vector3(1.2f, 1.2f, 1f);
+
+            var sr = obj.AddComponent<SpriteRenderer>();
+            sr.sprite = GetBuiltinSprite();
+            sr.color = bodyColor;
+            sr.sortingOrder = 2;
+            TrySetSortingLayer(sr, "Items", 2);
+
+            var col = obj.AddComponent<BoxCollider2D>();
+            col.isTrigger = true;
+            col.size = new Vector2(1.4f, 1.4f);
+
+            var interactable = obj.AddComponent<CindarsHope.Farm.Processing.ProcessingStationInteractable>();
+            var serializedInteractable = new SerializedObject(interactable);
+            serializedInteractable.FindProperty("_stationId").stringValue = stationId;
+            serializedInteractable.FindProperty("_service").objectReferenceValue = service;
+            serializedInteractable.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(interactable);
+
+            if (sr.sprite == null)
+            {
+                Debug.LogWarning($"{objectName} ({displayName}) placeholder SpriteRenderer created without sprite. Replace with station art in a future art PR.");
+            }
+        }
+
+        // Estufa mínima: zona pequena sempre presente com 4 canteiros FarmPlot registrados no
+        // GreenhouseRuntimeHost (instancia o GreenhouseContextProvider órfão). Os canteiros usam
+        // índices 200+ (não colidem com os iniciais 0..23 nem com os lotes 100+).
+        private static void CreateGreenhouse(Transform parent, InventoryManager inventoryManager, StaminaManager staminaManager)
+        {
+            var seedDatabase = AssetDatabase.LoadAssetAtPath<SeedDatabaseSO>(SeedDatabasePath);
+
+            var greenhouseRoot = new GameObject("Greenhouse");
+            greenhouseRoot.transform.SetParent(parent);
+            greenhouseRoot.transform.position = new Vector3(-9.5f, 8.0f, 0f);
+
+            // Piso/estrutura da estufa (visual placeholder translúcido).
+            var floor = new GameObject("GreenhouseFloor");
+            floor.transform.SetParent(greenhouseRoot.transform);
+            floor.transform.localPosition = Vector3.zero;
+            floor.transform.localScale = new Vector3(5f, 4f, 1f);
+            var floorSr = floor.AddComponent<SpriteRenderer>();
+            floorSr.sprite = GetBuiltinSprite();
+            floorSr.color = new Color(0.70f, 0.90f, 0.80f, 0.45f);
+            floorSr.sortingOrder = -2;
+            TrySetSortingLayer(floorSr, "Ground", floorSr.sortingOrder);
+
+            const int greenhouseBaseIndex = 200;
+            var plotIds = new string[4];
+            const float spacing = 1.2f;
+            var origin = greenhouseRoot.transform.position + new Vector3(-0.9f, 0.8f, 0f);
+            for (var i = 0; i < 4; i++)
+            {
+                var x = i % 2;
+                var y = i / 2;
+                var plotIndex = greenhouseBaseIndex + i;
+                var pos = origin + new Vector3(x * spacing, -y * spacing, 0f);
+                var plot = CreateFarmPlot(greenhouseRoot.transform, plotIndex, pos, inventoryManager, seedDatabase, staminaManager);
+                plotIds[i] = plot.PlotId; // "plot_200".."plot_203"
+            }
+
+            // Host instancia o GreenhouseContextProvider e registra os 4 canteiros (refs do gerador).
+            var hostObject = new GameObject("GreenhouseRuntimeHost");
+            hostObject.transform.SetParent(greenhouseRoot.transform);
+            var host = hostObject.AddComponent<CindarsHope.Farm.Watering.GreenhouseRuntimeHost>();
+            var serializedHost = new SerializedObject(host);
+            var idsProperty = serializedHost.FindProperty("_greenhousePlotIds");
+            idsProperty.arraySize = plotIds.Length;
+            for (var i = 0; i < plotIds.Length; i++)
+            {
+                idsProperty.GetArrayElementAtIndex(i).stringValue = plotIds[i];
+            }
+            serializedHost.FindProperty("_unlockedByDefault").boolValue = true;
+            serializedHost.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(host);
         }
 
         private static Sprite GetBuiltinSprite()

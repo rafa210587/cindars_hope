@@ -78,10 +78,19 @@ namespace CindarsHope.Farm
                 return 0;
             }
 
+            var greenhouse = Watering.GreenhouseRuntimeHost.Instance;
+
             var watered = 0;
             foreach (var plot in _plotRegistry.Plots)
             {
                 if (plot == null || !ShouldWaterState(plot.State, percent))
+                {
+                    continue;
+                }
+
+                // fable_55: a chuva NÃO rega os canteiros da estufa (IsRainExcluded). Canteiro
+                // comum segue regado normalmente (regressão preservada).
+                if (greenhouse != null && greenhouse.IsRainExcluded(plot.PlotId))
                 {
                     continue;
                 }

@@ -51,6 +51,9 @@ namespace CindarsHope.Farm
         [SerializeField] private InventoryManager _inventoryManager;
         [SerializeField] private SeedDatabaseSO _seedDatabase;
         [SerializeField] private Player.StaminaManager _staminaManager;
+        // fable_55: calendário para o gate de estação no plantio (ponto único). Opcional: ausente
+        // = sem informação de estação = plantio liberado (não bloquear sem dado).
+        [SerializeField] private World.Calendar.GameCalendarService _calendarService;
         // TODO_INTEGRATION_NOT_FINAL: WAVE_INTEGRATION_05 smoke hook. Remove when final farm tool/equipment flow covers the whole crop loop.
         [SerializeField] private bool _temporarySequentialSliceMode;
         [SerializeField] private string _temporarySequentialSeedId = "seed_carrot";
@@ -742,6 +745,16 @@ namespace CindarsHope.Farm
                 return false;
             }
 
+            // fable_55: ponto ÚNICO de validação de estação. Canteiro comum recusa semente fora de
+            // estação; canteiro da estufa (GreenhouseContextProvider.CanOverrideSeason) ignora a
+            // estação. Sementes sem SeasonTags / sem calendário continuam plantáveis (regressão
+            // segura — diff mínimo).
+            if (!IsSeasonAllowedForSeed(seedData))
+            {
+                PublishFeedback("Fora de estacao para esta semente.");
+                return false;
+            }
+
             var inventorySeedId = string.IsNullOrWhiteSpace(seedItemId) ? seedId : seedItemId;
             var temporarySeedBypass = _temporarySequentialSliceMode && !_inventoryManager.HasItem(inventorySeedId);
             if (!temporarySeedBypass && !_inventoryManager.HasItem(inventorySeedId))
@@ -1176,6 +1189,32 @@ namespace CindarsHope.Farm
                 : $"Plantar {seedData.Id}";
             var seedItemId = seedData.SeedItem != null ? seedData.SeedItem.Id : string.Empty;
             _menuActions.Add(new FarmMenuAction(FarmMenuActionType.Plant, label, seedData.Id, seedItemId));
+        }
+
+        // fable_55: gate de estação no ponto único de plantio. Consulta o GreenhouseRuntimeHost
+        // (override de estação na estufa) e o calendário (estação atual). Sem GameObject.Find:
+        // GreenhouseRuntimeHost.Instance é singleton de runtime; _calendarService é ref serializada.
+        private bool IsSeasonAllowedForSeed(SeedDataSO seedData)
+        {
+            var canOverride = false;
+            var greenhouse = Watering.GreenhouseRuntimeHost.Instance;
+            if (greenhouse != null)
+            {
+                canOverride = greenhouse.CanOverrideSeason(PlotId);
+            }
+
+            var currentSeason = ResolveCurrentSeasonName();
+            return FarmSeasonGate.IsPlantingAllowed(seedData != null ? seedData.SeasonTags : null, currentSeason, canOverride);
+        }
+
+        private string ResolveCurrentSeasonName()
+        {
+            if (_calendarService == null || !_calendarService.IsInitialized)
+            {
+                return string.Empty;
+            }
+
+            return _calendarService.CurrentDate.CurrentSeason.ToString();
         }
 
         private bool HasRequiredTool(ToolType toolType)
