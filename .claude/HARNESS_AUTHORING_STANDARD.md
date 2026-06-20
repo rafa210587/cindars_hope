@@ -1,8 +1,8 @@
 # Padrão de Autoria do Harness — Cindar's Hope
 
-> Fonte de verdade para escrever e padronizar **skills, commands, rules e hooks** em `.claude/`.
+> Fonte de verdade para escrever e padronizar **skills, commands, rules, hooks e agents** em `.claude/`.
 > Idioma da prosa: **português (PT-BR)**. Termos técnicos, conceitos e identificadores: **inglês** (ver glossário).
-> Agents (`.claude/agents/`) estão **fora** deste padrão de tradução (mantidos em inglês).
+> Em agents, preserve `name` e `tools` no frontmatter (são funcionais); traduza só a prosa.
 
 ---
 
@@ -90,6 +90,12 @@ Use estes títulos quando o conteúdo se encaixar. Não force seções vazias; p
 - **Traduzir SOMENTE:** linhas de comentário `#` e o texto human-readable dentro de mensagens (`Write-Error`, `[Console]::Error.WriteLine`, `Write-Host`).
 - **NÃO alterar:** lógica, nomes de variáveis, regex, cmdlets, exit codes, chaves de JSON, fluxo de controle, strings que são identificadores/paths/regras (ex.: manter `Rule: validation-truth`).
 - O comportamento deve ser idêntico. Todo hook é **re-testado** depois (parse + smoke test).
+
+### Agents (`.claude/agents/<name>.md`)
+
+- Frontmatter: manter `name` (inalterado, inglês) **e** `tools` (inalterado — é funcional); traduzir `description` para PT (com gatilhos, termos em inglês).
+- Título: `# Agent: <Título em PT>`.
+- Corpo: traduzir a prosa (Role/Capability/Why/Checklist/Output/Rules) e cabeçalhos pelo mapa §4. Manter identificadores, paths, refs `(skill:/rule:)`, blocos de código e tokens de status. Output Format / report templates: manter os labels canônicos em inglês.
 
 ## 6. Checklist de qualidade (pós-edição, por arquivo)
 
