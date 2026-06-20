@@ -1,31 +1,31 @@
 # /loop-spec-batch-strict
 
-Reference text for running a controlled batch of specs via `/loop`.
+Texto de referência para rodar um batch controlado de specs via `/loop`.
 
-## Mandatory Preflight (Windows / PowerShell)
+## Preflight Obrigatório (Windows / PowerShell)
 
-Before starting any batch loop:
+Antes de iniciar qualquer batch loop:
 
-1. **Read mandatory rules:**
+1. **Leia as rules obrigatórias:**
    - `.claude/rules/windows_powershell_only.md`
    - `.claude/rules/spec_dependency_resolution.md`
    - `.claude/rules/spec_quality_gate.md`
 
-2. **Run PowerShell preflight:**
+2. **Rode o preflight PowerShell:**
    ```powershell
    Set-Location 'D:\Projetos\Jogos\Cindars_hope\cindars_hope'
    git status --short | Select-Object -First 50
    git branch --show-current
    ```
 
-3. **Verify:**
-   - ✓ Correct directory
-   - ✓ Correct branch (`dev`)
-   - ✓ Use PowerShell syntax only (no Unix/Bash commands)
+3. **Verifique:**
+   - ✓ Diretório correto
+   - ✓ Branch correto (`dev`)
+   - ✓ Use apenas sintaxe PowerShell (sem comandos Unix/Bash)
 
-## Usage
+## Uso
 
-Use this command text inside `/loop` to run a validated batch of specs.
+Use este texto de command dentro de `/loop` para rodar um batch validado de specs.
 
 ```text
 /loop
@@ -37,34 +37,34 @@ Do not start next wave in this loop.
 Do not mark ACCEPTED.
 ```
 
-Replace `<WAVE>` with the target wave (e.g., `05`).
+Substitua `<WAVE>` pela wave alvo (ex.: `05`).
 
-## Dependency Chain Behavior Inside Loop
+## Comportamento da Dependency Chain Dentro do Loop
 
-If a spec finds a same-wave dependency:
+Se uma spec encontra uma dependência same-wave:
 
-1. **Automatically resolve the chain** — do not ask user.
-2. **Mark current spec** as `BLOCKED_BY_DEPENDENCY_PENDING`.
-3. **Execute root dependency first** via `/execute-spec-strict`.
-4. **Continue upward** in dependency chain.
-5. **Return to original target** after all dependencies pass.
-6. **Do NOT count** `BLOCKED_BY_DEPENDENCY_PENDING` as final failure.
-7. **Do NOT pivot** to unrelated specs while chain is open.
-8. **Update batch state files:**
+1. **Resolva a chain automaticamente** — não pergunte ao usuário.
+2. **Marque a spec atual** como `BLOCKED_BY_DEPENDENCY_PENDING`.
+3. **Execute a root dependency primeiro** via `/execute-spec-strict`.
+4. **Continue para cima** na dependency chain.
+5. **Volte para a spec alvo original** depois que todas as dependências passarem.
+6. **NÃO conte** `BLOCKED_BY_DEPENDENCY_PENDING` como falha final.
+7. **NÃO pivote** para specs não relacionadas enquanto a chain estiver aberta.
+8. **Atualize os arquivos de batch state:**
    - `docs/validation/WAVE_<wave>_DEPENDENCY_RESOLUTION_PLAN.md`
    - `docs/validation/WAVE_<wave>_BATCH_STATE.md`
 
-**Example:** If loop tries to execute `companion_farm_job_board` which depends on `farm_animals`, which depends on `farm_buildings`, etc., the loop will automatically resolve the entire chain before returning to `companion_farm_job_board`.
+**Exemplo:** se o loop tenta executar `companion_farm_job_board`, que depende de `farm_animals`, que depende de `farm_buildings`, etc., o loop vai resolver a chain inteira automaticamente antes de voltar para `companion_farm_job_board`.
 
-Resolved depth does **not** count against the 10-spec max if all specs in chain resolve successfully.
+A profundidade resolvida **não** conta contra o máximo de 10 specs se todas as specs da chain resolverem com sucesso.
 
 ---
 
-## Strict Validation Truth Gate Rule
+## Regra do Strict Validation Truth Gate
 
-**All loop iterations must use strict validation with explicit exit codes.**
+**Todas as iterações do loop devem usar strict validation com exit codes explícitos.**
 
-After each spec in the loop, run:
+Depois de cada spec no loop, rode:
 
 ```powershell
 .\tools\docs\run_strict_validation.ps1
@@ -74,82 +74,82 @@ if ($LASTEXITCODE -ne 0) {
 }
 ```
 
-**FORBIDDEN in the loop:**
+**PROIBIDO no loop:**
 ```powershell
 ❌ dotnet build ... | Select-String "error"
 ```
 
-If filtered output is used anywhere in the loop, the loop must stop and report `VALIDATION_SCRIPT_FAILURE`.
+Se output filtrado for usado em qualquer ponto do loop, o loop deve parar e reportar `VALIDATION_SCRIPT_FAILURE`.
 
 ---
 
-## Windows Environment Rule
+## Regra de Ambiente Windows
 
-All loop iterations must use **PowerShell syntax only**.
+Todas as iterações do loop devem usar **apenas sintaxe PowerShell**.
 
-If a `/execute-spec-strict` invocation uses Bash/Unix commands and fails:
+Se uma invocação de `/execute-spec-strict` usar comandos Bash/Unix e falhar:
 
-- **Do NOT mark the spec BLOCKED immediately.**
-- Mark as `ENV_COMMAND_RETRY_REQUIRED`.
-- Retry the step using PowerShell equivalent.
-- Only if PowerShell retry also fails, classify as `ENV_COMMAND_FAILURE`.
-- Environment command failure alone does not stop the loop.
+- **NÃO marque a spec BLOCKED imediatamente.**
+- Marque como `ENV_COMMAND_RETRY_REQUIRED`.
+- Refaça o passo usando o equivalente PowerShell.
+- Só se o retry PowerShell também falhar, classifique como `ENV_COMMAND_FAILURE`.
+- Falha de comando de ambiente, sozinha, não para o loop.
 
 ---
 
-## Rules
+## Regras
 
-### Per-Spec Validation (NOT at end of batch)
+### Validação Por Spec (NÃO no fim do batch)
 
-1. **One spec per iteration** — each `/loop` cycle executes exactly ONE spec
-2. **Max 10 specs per batch** — loop can re-invoke `/execute-spec-strict` up to 10 times
-3. **Max recommended per wave:**
-   - 3 specs for new/unstable waves (WAVE 04 phase 1)
-   - 10 specs for established waves with known patterns (WAVE 05+)
-   - Never >10 without external code review
+1. **Uma spec por iteração** — cada ciclo de `/loop` executa exatamente UMA spec
+2. **Máximo 10 specs por batch** — o loop pode re-invocar `/execute-spec-strict` até 10 vezes
+3. **Máximo recomendado por wave:**
+   - 3 specs para waves novas/instáveis (WAVE 04 fase 1)
+   - 10 specs para waves estabelecidas com patterns conhecidos (WAVE 05+)
+   - Nunca >10 sem code review externo
 
-### Quality Gates Per Spec
+### Quality Gates Por Spec
 
-Each spec MUST pass before continuing to the next:
+Cada spec DEVE passar antes de continuar para a próxima:
 
-- ✓ `docs validation` PASS (no new errors)
-- ✓ `dotnet build Assembly-CSharp` — 0 errors
-- ✓ `dotnet build Assembly-CSharp-Editor` — 0 errors
-- ✓ `./tools/docs/check_spec_quality.ps1` PASS (no critical failures)
-- ✓ Status is honest (not inflated)
-- ✓ Execution report created and complete
-- ✓ No forbidden files altered (Packages/, ProjectSettings/, scenes, prefabs, assets, runtime)
+- ✓ `docs validation` PASS (sem novos erros)
+- ✓ `dotnet build Assembly-CSharp` — 0 erros
+- ✓ `dotnet build Assembly-CSharp-Editor` — 0 erros
+- ✓ `./tools/docs/check_spec_quality.ps1` PASS (sem falhas críticas)
+- ✓ Status honesto (não inflado)
+- ✓ Execution report criado e completo
+- ✓ Nenhum arquivo proibido alterado (Packages/, ProjectSettings/, scenes, prefabs, assets, runtime)
 
-### Stop Conditions (Immediate)
+### Stop Conditions (Imediatas)
 
-Stop the loop IMMEDIATELY if:
+Pare o loop IMEDIATAMENTE se:
 
-- Status is `BLOCKED`
-- Status is `NEEDS_REWORK`
-- Status is `CONTRACT_ONLY_NEEDS_INTEGRATION` for a foundational spec
-- Status is `DEFERRED_UI_VISUAL` for a foundational spec
-- Build fails with new errors
-- Docs validation fails with new errors
-- Quality check fails critically (not just warnings)
-- Forbidden file was altered
-- Execution report is missing or incomplete
-- Status is inflated (e.g., `BUILD_VALIDATED` without evidence)
+- Status é `BLOCKED`
+- Status é `NEEDS_REWORK`
+- Status é `CONTRACT_ONLY_NEEDS_INTEGRATION` para uma spec fundacional
+- Status é `DEFERRED_UI_VISUAL` para uma spec fundacional
+- Build falha com novos erros
+- Docs validation falha com novos erros
+- Quality check falha criticamente (não apenas warnings)
+- Arquivo proibido foi alterado
+- Execution report está ausente ou incompleto
+- Status está inflado (ex.: `BUILD_VALIDATED` sem evidência)
 
-### Per-Spec Commit
+### Commit Por Spec
 
-After each spec:
+Depois de cada spec:
 
-- If status allows continuing (BUILD_VALIDATED, CONTRACT_ONLY, etc.):
-  - Create commit: `feat: execute <spec_id> [<priority>]`
-  - Continue to next spec
-- If status blocks (BLOCKED, NEEDS_REWORK):
-  - Document reason in execution report
-  - Stop immediately
-  - Do NOT commit (unless documentation-only)
+- Se o status permite continuar (BUILD_VALIDATED, CONTRACT_ONLY, etc.):
+  - Crie o commit: `feat: execute <spec_id> [<priority>]`
+  - Continue para a próxima spec
+- Se o status bloqueia (BLOCKED, NEEDS_REWORK):
+  - Documente o motivo no execution report
+  - Pare imediatamente
+  - NÃO faça commit (a não ser que seja documentation-only)
 
-## Required Output Format
+## Formato de Saída Obrigatório
 
-After each spec in the batch, output MUST include:
+Depois de cada spec no batch, a saída DEVE incluir:
 
 ```text
 SPEC_EXECUTION_RESULT
@@ -186,14 +186,14 @@ Can start next wave:           NO (always NO in batch loop)
 Remaining blockers:            <list or NONE>
 ```
 
-## Batch Status Is NOT Wave Acceptance
+## Batch Status NÃO É Wave Acceptance
 
-Completing a 10-spec batch does NOT mean:
-- `ACCEPTED` (still forbidden)
-- `PLAYMODE_VALIDATED` (still forbidden)
-- Wave is ready to release (still requires further phases)
+Concluir um batch de 10 specs NÃO significa:
+- `ACCEPTED` (ainda proibido)
+- `PLAYMODE_VALIDATED` (ainda proibido)
+- Wave pronta para release (ainda exige fases posteriores)
 
-A batch can only produce:
+Um batch só pode produzir:
 - `BUILD_VALIDATED`
 - `BUILD_VALIDATED_WITH_WARNINGS`
 - `CONTRACT_ONLY`
@@ -202,7 +202,7 @@ A batch can only produce:
 - `NEEDS_REWORK`
 - `BLOCKED`
 
-## Batch Example: WAVE 05 Phase 1
+## Exemplo de Batch: WAVE 05 Fase 1
 
 ```text
 /loop
@@ -214,33 +214,33 @@ Do not start next wave in this loop.
 Do not mark ACCEPTED.
 ```
 
-This will execute up to 10 WAVE 05 specs, each with full validation.
+Isto vai executar até 10 specs da WAVE 05, cada uma com validação completa.
 
-If WAVE 05 SPEC 1 is `NEEDS_REWORK`, stop immediately.
-If WAVE 05 SPEC 5 is `BLOCKED`, stop immediately.
-Continue only if each spec passes its per-spec gates.
+Se WAVE 05 SPEC 1 for `NEEDS_REWORK`, pare imediatamente.
+Se WAVE 05 SPEC 5 for `BLOCKED`, pare imediatamente.
+Continue apenas se cada spec passar nos seus gates por spec.
 
 ## Loop Fallback
 
-If the loop encounters an error (e.g., network timeout, file system issue):
+Se o loop encontrar um erro (ex.: network timeout, problema de file system):
 
-1. Check the status of the last spec that ran
-2. If it completed validation and report exists: safe to retry `/execute-spec-strict next --wave <WAVE>`
-3. If it failed mid-execution: review execution report for errors before retrying
+1. Cheque o status da última spec que rodou
+2. Se ela completou a validação e o report existe: é seguro refazer `/execute-spec-strict next --wave <WAVE>`
+3. Se ela falhou no meio da execução: revise o execution report em busca de erros antes de refazer
 
-## When to Use
+## Quando usar
 
-- Recommended for batches of homogeneous specs (e.g., all UI view models)
-- Recommended for established waves (WAVE 02+) after phase 1 is stable
-- Use 3-spec batches for new waves (WAVE 04, WAVE 05 phase 1)
-- Use 10-spec batches for well-understood patterns (UI VMs, DTO creation)
+- Recomendado para batches de specs homogêneas (ex.: todas as UI view models)
+- Recomendado para waves estabelecidas (WAVE 02+) depois que a fase 1 está estável
+- Use batches de 3 specs para waves novas (WAVE 04, WAVE 05 fase 1)
+- Use batches de 10 specs para patterns bem entendidos (UI VMs, criação de DTO)
 
-## When NOT to Use
+## Quando NÃO usar
 
-- Do NOT use for P0 specs in new waves (use 1-spec execution first)
-- Do NOT use if any foundational spec is undecided (blocked, needs rework)
-- Do NOT use if batch contains mixed patterns (some UI, some systems, some logic)
-- Do NOT use if previous wave had critical failures
+- NÃO use para specs P0 em waves novas (use execução de 1 spec primeiro)
+- NÃO use se qualquer spec fundacional estiver indefinida (blocked, needs rework)
+- NÃO use se o batch contém patterns mistos (algumas UI, alguns systems, alguma lógica)
+- NÃO use se a wave anterior teve falhas críticas
 
 ---
 

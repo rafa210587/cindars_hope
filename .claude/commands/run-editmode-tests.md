@@ -16,7 +16,7 @@ Get-Process -Name "Unity" -ErrorAction SilentlyContinue
 - Se houver processo Unity rodando: **NÃO rodar** (rule: unity-assets / no-parallel-unity-batchmode). Reportar `NOT RUN — Unity lock` e parar.
 - Compile fallback primeiro: `dotnet build .\Assembly-CSharp.csproj --no-restore` com `$LASTEXITCODE -eq 0`. Se falhar, os testes nem compilam — reportar FAIL de compile e parar.
 
-## Execução
+## Procedimento
 
 ```powershell
 .\tools\unity\RunUnityEditModeTests.ps1
@@ -25,7 +25,7 @@ if ($LASTEXITCODE -ne 0) { Write-Host "TESTS FAILED (exit $LASTEXITCODE)" }
 
 Aguardar o término (batchmode é sequencial, um log por execução). Ler o log/result file que o script produzir.
 
-## Report obrigatório
+## Saída esperada
 
 ```text
 EditMode Tests

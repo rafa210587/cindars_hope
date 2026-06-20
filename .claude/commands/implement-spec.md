@@ -2,7 +2,7 @@
 
 > **DEPRECATED 2026-06-12.** Este command foi substituído por `/execute-spec-strict`, que cobre o mesmo fluxo com gates de validação mais rigorosos (run_strict_validation, status taxonomy, dependency resolution). Manter dois caminhos de execução permitia escolher o mais frouxo.
 
-**Arguments:** `$ARGUMENTS` — spec number or filename
+**Argumentos:** `$ARGUMENTS` — número ou nome de arquivo da spec
 
 ## Ação
 

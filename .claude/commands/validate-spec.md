@@ -1,25 +1,25 @@
 # /validate-spec
 
-Run validations after implementation. Records each level separately. Always documents NOT RUN with reason.
+Roda as validações após a implementação. Registra cada nível separadamente. Sempre documenta NOT RUN com motivo.
 
-**Arguments:** `$ARGUMENTS` — spec ID or name (used to identify what changed)
-
----
-
-## Objective
-
-Execute the appropriate validation levels for what was changed. Record results honestly.
+**Arguments:** `$ARGUMENTS` — ID ou nome da spec (usado para identificar o que mudou)
 
 ---
 
-## Required Reads
+## Objetivo
+
+Executar os validation levels adequados ao que foi mudado. Registrar os resultados com honestidade.
+
+---
+
+## Leitura mínima
 
 1. `CLAUDE.md`
-2. Target spec (to determine required validation levels)
-3. `.specs/SPEC_VALIDATION_MATRIX_MASTER.md` — validation levels required by change type
-4. `docs/project/CURRENT_STATE.md` (for context on what changed)
+2. Spec alvo (para determinar os validation levels exigidos)
+3. `.specs/SPEC_VALIDATION_MATRIX_MASTER.md` — validation levels exigidos por tipo de mudança
+4. `docs/project/CURRENT_STATE.md` (para contexto do que mudou)
 
-## Do NOT Read By Default
+## Não ler por padrão
 
 ```
 PROJECT_LOG.md
@@ -29,54 +29,54 @@ full IMPLEMENTATION_STATUS.md
 
 ---
 
-## Validation Levels (execute only what applies)
+## Níveis de validação (executar apenas o que se aplica)
 
-### Level 1 — Docs Validation (if any .md files changed)
+### Nível 1 — Validação de docs (se algum arquivo .md mudou)
 
 ```powershell
 .\tools\docs\validate_docs.ps1
 ```
 
-Expected: PASS 14/14
+Esperado: PASS 14/14
 
-### Level 2 — C# Runtime Build (if any .cs files in Assets/ changed)
+### Nível 2 — C# Runtime Build (se algum .cs em Assets/ mudou)
 
 ```powershell
 dotnet restore .\Assembly-CSharp.csproj
 dotnet build .\Assembly-CSharp.csproj --no-restore
 ```
 
-Expected: 0 errors, 0 new warnings
+Esperado: 0 errors, 0 new warnings
 
-### Level 3 — C# Editor Build (if any editor .cs files changed)
+### Nível 3 — C# Editor Build (se algum editor .cs mudou)
 
 ```powershell
 dotnet restore .\Assembly-CSharp-Editor.csproj
 dotnet build .\Assembly-CSharp-Editor.csproj --no-restore
 ```
 
-Expected: 0 errors (pre-existing warnings acceptable)
+Esperado: 0 errors (warnings preexistentes são aceitáveis)
 
-### Level 4 — Unity Validators (Phase 2 — requires local Unity Editor)
+### Nível 4 — Unity Validators (Phase 2 — exige Unity Editor local)
 
 ```
 CindarsHope/Repair and Validate Project
 CindarsHope/Validate/Combat/Validate Combat Databases
 ```
 
-Result: PASS / FAIL / NOT RUN
+Resultado: PASS / FAIL / NOT RUN
 
-### Level 5 — Play Mode (Phase 3 — requires human in Unity Editor)
+### Nível 5 — Play Mode (Phase 3 — exige humano no Unity Editor)
 
-Per checklist in the spec's execution report.
+Conforme o checklist no execution report da spec.
 
-Result: PASS / FAIL / NOT RUN
+Resultado: PASS / FAIL / NOT RUN
 
 ---
 
-## NOT RUN Documentation
+## Documentação de NOT RUN
 
-If a validation level cannot run, record:
+Se um validation level não puder rodar, registre:
 
 ```
 <Level>: NOT RUN
@@ -87,7 +87,7 @@ Residual risk: <what is unvalidated>
 
 ---
 
-## Output Format
+## Saída esperada
 
 ```
 Validation Results — <SPEC_ID>
@@ -105,8 +105,8 @@ NE = Not Executed (not applicable for this change type)
 
 ---
 
-## Stop Conditions
+## Quando parar e reportar
 
-- Any C# build error: stop, report, do not claim BUILD_VALIDATED
-- Docs validation failure: stop, report
-- If Level 4-5 are NOT RUN: explicitly record and do NOT claim UNITY_VALIDATED or ACCEPTED
+- Qualquer C# build error: pare, reporte, não alegue BUILD_VALIDATED
+- Falha de docs validation: pare, reporte
+- Se Level 4-5 forem NOT RUN: registre explicitamente e NÃO alegue UNITY_VALIDATED ou ACCEPTED

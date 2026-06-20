@@ -3,17 +3,17 @@
 > **NOTA DE RECONCILIAÇÃO (2026-06-12):** a fila wave-based foi executada e movida para executadas_build_validated/. A fila ativa é .specs/a_implementar/fable/. Exemplos com paths NN_spec_* abaixo são históricos.
 
 
-Reference command for resolving same-wave spec dependencies.
+Command de referência para resolver dependências de spec na mesma wave.
 
-## Purpose
+## Propósito
 
-Extract and resolve a spec's dependency chain before proceeding with its execution.
+Extrair e resolver a dependency chain de uma spec antes de prosseguir com sua execução.
 
-This is called **automatically** by `/execute-spec-strict` and `/loop-spec-batch-strict` when a same-wave dependency is found. It is **not** a user-facing command, but a reference for understanding the resolution flow.
+Isto é chamado **automaticamente** por `/execute-spec-strict` e `/loop-spec-batch-strict` quando uma dependência same-wave é encontrada. **Não** é um command voltado ao usuário, e sim uma referência para entender o fluxo de resolução.
 
 ---
 
-## Manual Usage
+## Uso manual
 
 ```text
 /resolve-spec-dependency-chain .specs/a_implementar/05_spec_companion_farm_job_board_automation_runtime_execution.md
@@ -21,35 +21,35 @@ This is called **automatically** by `/execute-spec-strict` and `/loop-spec-batch
 
 ---
 
-## Automatic Flow (Inside `/execute-spec-strict` or `/loop`)
+## Fluxo automático (dentro de `/execute-spec-strict` ou `/loop`)
 
-When `/execute-spec-strict <spec>` finds a same-wave dependency:
+Quando `/execute-spec-strict <spec>` encontra uma dependência same-wave:
 
-1. **Mark current spec** as `BLOCKED_BY_DEPENDENCY_PENDING`.
-2. **Extract dependencies** from spec:
-   - Read spec fully
-   - Search for: `Depends on`, `Dependencies`, `Required systems`, `Required specs`, acceptance criteria
-3. **Search same-wave specs**:
-   - Query `.specs/a_implementar/<wave>_spec_*.md` files
-   - Match extracted names to file paths
-4. **Build dependency chain**:
-   - Create DAG (directed acyclic graph) of dependencies
-   - Identify root (spec with no dependencies)
-5. **Execute root first**:
-   - Call `/execute-spec-strict <root_spec_path>`
-   - Wait for result
-6. **Propagate upward**:
-   - After root completes, execute next spec in chain
-   - Continue until original spec is reached
-7. **Return to original**:
-   - After chain is resolved, execute original target spec
-   - Don't pivot to unrelated specs
+1. **Marque a spec atual** como `BLOCKED_BY_DEPENDENCY_PENDING`.
+2. **Extraia as dependências** da spec:
+   - Leia a spec por inteiro
+   - Procure por: `Depends on`, `Dependencies`, `Required systems`, `Required specs`, acceptance criteria
+3. **Procure specs same-wave**:
+   - Consulte os arquivos `.specs/a_implementar/<wave>_spec_*.md`
+   - Case os nomes extraídos com os paths dos arquivos
+4. **Construa a dependency chain**:
+   - Crie um DAG (directed acyclic graph) das dependências
+   - Identifique a root (spec sem dependências)
+5. **Execute a root primeiro**:
+   - Chame `/execute-spec-strict <root_spec_path>`
+   - Aguarde o resultado
+6. **Propague para cima**:
+   - Depois que a root concluir, execute a próxima spec da chain
+   - Continue até alcançar a spec original
+7. **Volte para a original**:
+   - Depois que a chain for resolvida, execute a spec alvo original
+   - Não pivote para specs não relacionadas
 
 ---
 
-## Dependency Chain Output
+## Saída da dependency chain
 
-Every dependency resolution must produce:
+Toda resolução de dependência deve produzir:
 
 ```text
 DEPENDENCY_RESOLUTION_RESULT
@@ -70,22 +70,22 @@ Stop reason:             [none | forbidden scope | future wave | pets | blocked]
 
 ---
 
-## Required Files Updated
+## Arquivos obrigatórios atualizados
 
 1. **`docs/validation/WAVE_<wave>_DEPENDENCY_RESOLUTION_PLAN.md`**
-   - Add row for each resolved spec
-   - Update `Status` and `Commit` after execution
+   - Adicione uma linha para cada spec resolvida
+   - Atualize `Status` e `Commit` após a execução
 
 2. **`docs/validation/WAVE_<wave>_BATCH_STATE.md`**
-   - Update `Current Dependency Stack`
-   - Move specs to `Executed This Batch` after completion
-   - Update `Next Action`
+   - Atualize `Current Dependency Stack`
+   - Mova specs para `Executed This Batch` após a conclusão
+   - Atualize `Next Action`
 
 ---
 
-## Forbidden Scope Examples
+## Exemplos de forbidden scope
 
-Stop resolution if dependency is:
+Pare a resolução se a dependência for:
 
 ```text
 future_spec_companion_deep_romance_romance_system_design (WAVE 06+)
@@ -95,9 +95,9 @@ spec_pets_companion_taming_system (pets scope)
 
 ---
 
-## Same-Wave Resolution Example
+## Exemplo de resolução same-wave
 
-**Scenario:** User executes `companion_farm_job_board`.
+**Cenário:** o usuário executa `companion_farm_job_board`.
 
 ```
 1. Read spec → found: "Depends on: farm_animals"
@@ -123,9 +123,9 @@ Pivot to unrelated: NO ✓
 
 ---
 
-## Policy: Never Implicit Multi-Wave Jumps
+## Política: nunca saltos multi-wave implícitos
 
-If resolving dependencies would require executing future waves:
+Se resolver as dependências exigiria executar waves futuras:
 
 ```text
 STOP immediately.
@@ -136,9 +136,9 @@ Action: Return to user; cannot auto-resolve across waves.
 
 ---
 
-## Policy: No Zombie Partial Chains
+## Política: sem zombie partial chains
 
-If resolution fails midway:
+Se a resolução falhar no meio do caminho:
 
 ```text
 Partially resolved: farm_scale_tilemap ✓, farm_level1_layout ✓

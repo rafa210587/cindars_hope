@@ -1,71 +1,71 @@
 # /docs-health
 
-Validate documentation structure and consistency.
+Valida a estrutura e a consistência da documentação.
 
-## When to Run
+## Quando usar
 
-- After moving specs or refinements to implementados/
-- After updating status files
-- After altering PROJECT_LOG.md or IMPLEMENTATION_STATUS.md
-- As part of general health check
+- Depois de mover specs ou refinements para implementados/
+- Depois de atualizar status files
+- Depois de alterar PROJECT_LOG.md ou IMPLEMENTATION_STATUS.md
+- Como parte de um health check geral
 
-## Mandatory Checks
+## Checks obrigatórios
 
 ### 1. Spec Source of Truth
 
-- [ ] `.specs/` exists and contains specs
-- [ ] No root-level `specs/` or `spec/` directories exist
-- [ ] `.specs/a_implementar/` contains future specs
-- [ ] `.specs/implementados/` contains completed specs
-- [ ] `.specs/SPEC_EXECUTION_ORDER.md` exists (if applicable)
-- [ ] `.specs/SPEC_SOURCE_OF_TRUTH.md` exists or is not critical
+- [ ] `.specs/` existe e contém specs
+- [ ] Nenhum diretório `specs/` ou `spec/` no root
+- [ ] `.specs/a_implementar/` contém specs futuras
+- [ ] `.specs/implementados/` contém specs concluídas
+- [ ] `.specs/SPEC_EXECUTION_ORDER.md` existe (se aplicável)
+- [ ] `.specs/SPEC_SOURCE_OF_TRUTH.md` existe ou não é crítico
 
 ### 2. Refinement Structure
 
-- [ ] `docs/refinements/a_implementar/pre_refinamentos/` contains future refinements
-- [ ] `docs/refinements/implementados/` contains completed refinements
-- [ ] Maps are internally consistent
+- [ ] `docs/refinements/a_implementar/pre_refinamentos/` contém refinements futuros
+- [ ] `docs/refinements/implementados/` contém refinements concluídos
+- [ ] Os maps são internamente consistentes
 
 ### 3. Active Documentation
 
-- [ ] `docs/design/` exists (design specs)
-- [ ] `docs/architecture/` exists (architecture)
-- [ ] `docs/operations/` exists (operational docs)
-- [ ] `docs_old/` preserved but not edited
-- [ ] `docs/IMPLEMENTATION_STATUS.md` tracks current state
+- [ ] `docs/design/` existe (design specs)
+- [ ] `docs/architecture/` existe (architecture)
+- [ ] `docs/operations/` existe (docs operacionais)
+- [ ] `docs_old/` preservado mas não editado
+- [ ] `docs/IMPLEMENTATION_STATUS.md` rastreia o estado atual
 
 ### 4. Status & Tracking
 
-- [ ] `docs/IMPLEMENTATION_STATUS.md` entries have evidence (spec file or validated log)
-- [ ] `PROJECT_LOG.md` has recent entry when task was significant
-- [ ] No orphaned capacity entries (claimed but no spec file)
-- [ ] No contradictions between IMPLEMENTATION_STATUS and actual spec state
+- [ ] Entradas de `docs/IMPLEMENTATION_STATUS.md` têm evidência (spec file ou log validado)
+- [ ] `PROJECT_LOG.md` tem entrada recente quando a tarefa foi significativa
+- [ ] Nenhuma capacity entry órfã (declarada mas sem spec file)
+- [ ] Nenhuma contradição entre IMPLEMENTATION_STATUS e o estado real das specs
 
-### 5. Registries & Maps (if they exist)
+### 5. Registries & Maps (se existirem)
 
-- [ ] `.specs/SPEC_REGISTRY_IMPLEMENTED.md` consistent with `.specs/implementados/`
-- [ ] `.specs/SPEC_REGISTRY_TO_IMPLEMENT.md` consistent with `.specs/a_implementar/`
-- [ ] `docs/refinements/implementados/ref_implementados_map.md` consistent with folder
-- [ ] `docs/refinements/a_implementar/ref_futuro_map.md` consistent with folder
-- [ ] No duplicate IDs or specs listed twice
+- [ ] `.specs/SPEC_REGISTRY_IMPLEMENTED.md` consistente com `.specs/implementados/`
+- [ ] `.specs/SPEC_REGISTRY_TO_IMPLEMENT.md` consistente com `.specs/a_implementar/`
+- [ ] `docs/refinements/implementados/ref_implementados_map.md` consistente com a pasta
+- [ ] `docs/refinements/a_implementar/ref_futuro_map.md` consistente com a pasta
+- [ ] Nenhum ID duplicado ou spec listada duas vezes
 
 ### 6. Links & References
 
-- [ ] Links in docs point to existing files (check file paths)
-- [ ] No broken cross-references between specs/refinements
-- [ ] No references to removed or archived documents
+- [ ] Links nos docs apontam para arquivos existentes (verificar file paths)
+- [ ] Nenhum cross-reference quebrado entre specs/refinements
+- [ ] Nenhuma referência a documentos removidos ou arquivados
 
 ### 7. Tools Validation Script
 
-Run documentation validation:
+Rode a validação de documentação:
 
 ```powershell
 .\tools\docs\validate_docs.ps1
 ```
 
-**Expected:** PASS (or list specific issues to fix)
+**Esperado:** PASS (ou lista de issues específicos a corrigir)
 
-## Output Format
+## Saída esperada
 
 ```text
 Status: PASS | WARNING | FAIL
@@ -110,7 +110,7 @@ Residual risk:
   [if any]
 ```
 
-## Examples
+## Exemplos
 
 ### PASS
 
@@ -163,12 +163,12 @@ Residual risk:
 
 ---
 
-## Do NOT
+## Não faça
 
-- Claim PASS without running `tools/docs/validate_docs.ps1`
-- Ignore WARNING level issues (they can become bugs)
-- Leave FAIL state unresolved
-- Edit docs_old/** (it's archive only)
-- Create root-level specs/ or spec/
+- Alegar PASS sem rodar `tools/docs/validate_docs.ps1`
+- Ignorar issues de nível WARNING (elas podem virar bugs)
+- Deixar um estado FAIL sem resolução
+- Editar docs_old/** (é apenas archive)
+- Criar `specs/` ou `spec/` no root
 
-**Health check is complete. Status determines if task can proceed.**
+**O health check está completo. O Status determina se a tarefa pode prosseguir.**

@@ -1,30 +1,30 @@
 # /finish-spec
 
-Phase-aware closeout with human test scenario requirement. Promotes spec to `implementados/` only when required evidence exists.
+Closeout phase-aware com requisito de human test scenario. Promove a spec para `implementados/` somente quando a evidência exigida existe.
 
-**Arguments:** `$ARGUMENTS` — spec ID (used to find execution report and determine promotion eligibility)
-
----
-
-## Objective
-
-Check evidence, determine phase status, promote if eligible, update documentation.
+**Argumentos:** `$ARGUMENTS` — ID da spec (usado para localizar o execution report e determinar a elegibilidade de promoção)
 
 ---
 
-## Required Reads
+## Objetivo
+
+Checar evidência, determinar o status de fase, promover se elegível, atualizar a documentação.
+
+---
+
+## Leitura mínima
 
 1. `CLAUDE.md`
-2. `.specs/SPEC_WAVE_EXECUTION_PROTOCOL.md` — phase taxonomy and promotion rules
-3. Execution report for this spec: `docs/validation/<spec_id>_execution_report.md`
-4. The spec file itself (to check Phase 2-3 requirements)
+2. `.specs/SPEC_WAVE_EXECUTION_PROTOCOL.md` — taxonomia de fases e regras de promoção
+3. Execution report desta spec: `docs/validation/<spec_id>_execution_report.md`
+4. O próprio arquivo da spec (para checar requisitos de Phase 2-3)
 
-## Conditional Required Reads
+## Leitura condicional obrigatória
 
-- `docs/validation/FINAL_HUMAN_VALIDATION_BY_WAVE.md` — if runtime spec requires Phase 3 human validation
-- Human test scenario file: `docs/validation/playmode/<spec_id>_human_test_scenario.md` (if runtime)
+- `docs/validation/FINAL_HUMAN_VALIDATION_BY_WAVE.md` — se a spec de runtime exige validação humana de Phase 3
+- Arquivo de human test scenario: `docs/validation/playmode/<spec_id>_human_test_scenario.md` (se runtime)
 
-## Do NOT Read By Default
+## Não ler por padrão
 
 ```
 PROJECT_LOG.md (full)
@@ -34,85 +34,85 @@ SPEC_EXECUTION_ORDER.md (full)
 
 ---
 
-## Promotion Eligibility
+## Elegibilidade de promoção
 
-### Docs-only spec (no C#, no Unity)
+### Spec docs-only (sem C#, sem Unity)
 
-Required: `BUILD_VALIDATED` (docs PASS)
-→ No test scenario required.
-→ May promote after docs validation passes.
+Exigido: `BUILD_VALIDATED` (docs PASS)
+→ Nenhum test scenario exigido.
+→ Pode promover depois que a docs validation passar.
 
-### Code spec (C# changes, no Unity game objects)
+### Spec de código (mudanças em C#, sem game objects do Unity)
 
-Required: `BUILD_VALIDATED` (dotnet build 0E/0W + docs PASS)
-→ If spec changes purely mechanical logic (no UI, event, combat, save): Phase 3 optional.
-→ If spec changes UI state or event publishing: human test scenario required.
-→ May promote after Phase 1-2 validation passes + test scenario (if needed).
+Exigido: `BUILD_VALIDATED` (dotnet build 0E/0W + docs PASS)
+→ Se a spec muda lógica puramente mecânica (sem UI, event, combat, save): Phase 3 opcional.
+→ Se a spec muda UI state ou event publishing: human test scenario exigido.
+→ Pode promover depois que a validação de Phase 1-2 passar + test scenario (se necessário).
 
-### Runtime spec (touches gameplay, scene, prefab, ScriptableObject behavior)
+### Spec de runtime (toca em gameplay, scene, prefab, comportamento de ScriptableObject)
 
-Required minimum: `BUILD_VALIDATED` or `UNITY_VALIDATED` (evidence of applicable phases)
+Mínimo exigido: `BUILD_VALIDATED` ou `UNITY_VALIDATED` (evidência das fases aplicáveis)
 
-**Promotion rules:**
+**Regras de promoção:**
 
-- If Phase 2 (Unity validators) not run: promote only if `BUILD_VALIDATED` and no phase gaps documented.
-- If Phase 2 (Unity validators) passed: may promote to `UNITY_VALIDATED`.
-- If Phase 3 (Play Mode human validation) needed:
-  - **Option A:** Complete Phase 3 now → promote to `ACCEPTED`.
-  - **Option B:** Defer Phase 3 to wave-end batch → promote to `DEFERRED_TO_FINAL_HUMAN_VALIDATION` if Phase 1-2 evidence complete + spec/report includes reference to final validation checklist in `docs/validation/FINAL_HUMAN_VALIDATION_BY_WAVE.md`.
-- Do NOT promote without evidence of Phase 1-2 applicable to the change type (per SPEC_VALIDATION_MATRIX_MASTER.md).
+- Se Phase 2 (Unity validators) não foi rodada: promover só se `BUILD_VALIDATED` e nenhuma lacuna de fase documentada.
+- Se Phase 2 (Unity validators) passou: pode promover para `UNITY_VALIDATED`.
+- Se Phase 3 (Play Mode human validation) é necessária:
+  - **Opção A:** completar Phase 3 agora → promover para `ACCEPTED`.
+  - **Opção B:** deferir Phase 3 para o batch de fim de wave → promover para `DEFERRED_TO_FINAL_HUMAN_VALIDATION` se a evidência de Phase 1-2 estiver completa + a spec/report incluir referência ao checklist de validação final em `docs/validation/FINAL_HUMAN_VALIDATION_BY_WAVE.md`.
+- NÃO promover sem evidência de Phase 1-2 aplicável ao tipo de mudança (conforme SPEC_VALIDATION_MATRIX_MASTER.md).
 
 **Human test scenarios:**
 
-- Per-spec human test scenario is **optional**, not mandatory.
-- If per-spec scenario created: store at `docs/validation/playmode/<spec_id>_human_test_scenario.md` and reference in execution report.
-- For wave-end batch validation: use `docs/validation/FINAL_HUMAN_VALIDATION_BY_WAVE.md` checklist instead.
+- O human test scenario por spec é **opcional**, não obrigatório.
+- Se um scenario por spec for criado: armazene em `docs/validation/playmode/<spec_id>_human_test_scenario.md` e referencie no execution report.
+- Para validação em batch de fim de wave: use o checklist `docs/validation/FINAL_HUMAN_VALIDATION_BY_WAVE.md` no lugar.
 
-#### Scope Detection
+#### Detecção de escopo
 
-Runtime scope includes:
+O escopo de runtime inclui:
 
-- Any change to gameplay behavior (movement, combat, interaction, progression)
-- Any UI state change (hotbar, inventory, menus, modals)
-- Any save/load persistence logic
-- Cave procedural generation or snapshot runtime
-- Event publishing or event handler changes
-- ScriptableObject-based data that affects gameplay at runtime
-- Farm, shop, or economy mechanics
-- Equipment, skill tree, or character progression
+- Qualquer mudança em comportamento de gameplay (movement, combat, interaction, progression)
+- Qualquer mudança de UI state (hotbar, inventory, menus, modals)
+- Qualquer lógica de persistência save/load
+- Cave procedural generation ou snapshot runtime
+- Event publishing ou mudanças em event handler
+- Dados baseados em ScriptableObject que afetam o gameplay em runtime
+- Mecânicas de farm, shop ou economy
+- Equipment, skill tree ou character progression
 
-Use `detect-change-scope.ps1` output (change-scope.json) to confirm scope.
-
----
-
-## Promotion Checklist
-
-- [ ] Execution report exists in `docs/validation/`
-- [ ] Phase 1 (build + docs) evidence collected or NOT RUN documented
-- [ ] Phase 2 (Unity) evidence collected OR NOT RUN documented (if applicable)
-- [ ] Phase 3 (Play Mode) evidence collected OR deferred to wave-end batch (with reference to FINAL_HUMAN_VALIDATION_BY_WAVE.md)
-- [ ] Scope type determined (docs-only / code non-gameplay / runtime-gameplay)
-- [ ] Promotion eligibility confirmed per above rules
-
-**If NOT eligible:** Update execution report status to current phase level. Stop. Do not promote.
-
-**If Phase 3 deferred:** Status becomes `DEFERRED_TO_FINAL_HUMAN_VALIDATION`. Ensure execution report references `docs/validation/FINAL_HUMAN_VALIDATION_BY_WAVE.md` and notes which wave/domain will validate this spec.
+Use a saída de `detect-change-scope.ps1` (change-scope.json) para confirmar o escopo.
 
 ---
 
-## Closeout Steps (when eligible)
+## Checklist de promoção
 
-**Before moving files (if runtime/gameplay spec):**
+- [ ] Execution report existe em `docs/validation/`
+- [ ] Evidência de Phase 1 (build + docs) coletada ou NOT RUN documentado
+- [ ] Evidência de Phase 2 (Unity) coletada OU NOT RUN documentado (se aplicável)
+- [ ] Evidência de Phase 3 (Play Mode) coletada OU deferida para o batch de fim de wave (com referência a FINAL_HUMAN_VALIDATION_BY_WAVE.md)
+- [ ] Tipo de escopo determinado (docs-only / code non-gameplay / runtime-gameplay)
+- [ ] Elegibilidade de promoção confirmada conforme as regras acima
 
-- If Phase 3 (Play Mode) completed with evidence: confirm execution report references results.
-- If Phase 3 deferred to wave-end: confirm execution report references `docs/validation/FINAL_HUMAN_VALIDATION_BY_WAVE.md`.
-- If per-spec human test scenario created: confirm it's stored at `docs/validation/playmode/<spec_id>_human_test_scenario.md` and referenced in report (optional).
-- If Phase 3 not yet documented: update execution report status to `BUILD_VALIDATED` or `UNITY_VALIDATED` (depending on Phase 2 evidence) and mark promotion status accordingly.
+**Se NÃO elegível:** atualize o status do execution report para o nível de fase atual. Pare. Não promova.
 
-**If eligible:**
+**Se Phase 3 deferida:** o status passa a ser `DEFERRED_TO_FINAL_HUMAN_VALIDATION`. Garanta que o execution report referencie `docs/validation/FINAL_HUMAN_VALIDATION_BY_WAVE.md` e anote qual wave/domínio vai validar esta spec.
 
-1. Move spec: `.specs/a_implementar/<spec>.md` → `.specs/implementados/<spec>.md`
-2. Add evidence header to spec file:
+---
+
+## Passos de closeout (quando elegível)
+
+**Antes de mover arquivos (se for spec de runtime/gameplay):**
+
+- Se Phase 3 (Play Mode) foi concluída com evidência: confirme que o execution report referencia os resultados.
+- Se Phase 3 foi deferida para o fim de wave: confirme que o execution report referencia `docs/validation/FINAL_HUMAN_VALIDATION_BY_WAVE.md`.
+- Se um human test scenario por spec foi criado: confirme que está armazenado em `docs/validation/playmode/<spec_id>_human_test_scenario.md` e referenciado no report (opcional).
+- Se Phase 3 ainda não foi documentada: atualize o status do execution report para `BUILD_VALIDATED` ou `UNITY_VALIDATED` (dependendo da evidência de Phase 2) e marque o status de promoção conforme isso.
+
+**Se elegível:**
+
+1. Mova a spec: `.specs/a_implementar/<spec>.md` → `.specs/implementados/<spec>.md`
+2. Adicione o header de evidência ao arquivo da spec:
    ```
    ---
    status: implemented
@@ -122,14 +122,14 @@ Use `detect-change-scope.ps1` output (change-scope.json) to confirm scope.
    human_test_scenario: docs/validation/playmode/<spec_id>_human_test_scenario.md (if runtime)
    ---
    ```
-3. If refinement exists: move from `docs/refinements/a_implementar/` to `docs/refinements/implementados/`
-4. Update `PROJECT_LOG.md` — add short entry
-5. Update `docs/IMPLEMENTATION_STATUS.md` — update spec status
-6. Run `tools/docs/validate_docs.ps1` — must PASS
+3. Se existir refinement: mova de `docs/refinements/a_implementar/` para `docs/refinements/implementados/`
+4. Atualize `PROJECT_LOG.md` — adicione uma entrada curta
+5. Atualize `docs/IMPLEMENTATION_STATUS.md` — atualize o status da spec
+6. Rode `tools/docs/validate_docs.ps1` — deve dar PASS
 
 ---
 
-## Output Format
+## Saída esperada
 
 ```markdown
 ## Closeout — <SPEC_ID>
@@ -178,24 +178,24 @@ Use `detect-change-scope.ps1` output (change-scope.json) to confirm scope.
 
 ---
 
-## Rules
+## Regras
 
-- DO NOT promote without execution report
-- DO NOT claim ACCEPTED without Phase 2-3 evidence if spec requires it
-- DO NOT promote runtime/gameplay spec without human test scenario file
-- DO NOT skip docs validation after moving files
-- DO NOT push or open PR
+- NÃO promova sem execution report
+- NÃO afirme ACCEPTED sem evidência de Phase 2-3 se a spec exigir
+- NÃO promova spec de runtime/gameplay sem arquivo de human test scenario
+- NÃO pule a docs validation depois de mover arquivos
+- NÃO faça push nem abra PR
 
-## Usage Notes
+## Notas de uso
 
-**Determine spec type before running this command:**
-- Use `detect-change-scope.ps1` to generate `change-scope.json`
-- Read execution report to understand what changed
-- Check Phase 2-3 validator output for Unity compile/Play Mode results
-- If runtime changed and Phase 3 missing: update report to `BUILD_VALIDATED` and stop
+**Determine o tipo da spec antes de rodar este command:**
+- Use `detect-change-scope.ps1` para gerar `change-scope.json`
+- Leia o execution report para entender o que mudou
+- Cheque a saída dos validators de Phase 2-3 quanto a resultados de Unity compile/Play Mode
+- Se runtime mudou e Phase 3 está ausente: atualize o report para `BUILD_VALIDATED` e pare
 
-**Test scenario creation:**
-- For runtime specs: invoke `/gameplay-test-scenario` skill before `/finish-spec`
-- Human tester must follow scenario steps and record results
-- Test scenario evidence goes into Phase 3 section of execution report
-- Without test scenario evidence, promote status is `BUILD_VALIDATED` max, not `ACCEPTED`
+**Criação de test scenario:**
+- Para specs de runtime: invoque a skill `/gameplay-test-scenario` antes de `/finish-spec`
+- O tester humano deve seguir os passos do scenario e registrar os resultados
+- A evidência do test scenario entra na seção Phase 3 do execution report
+- Sem evidência de test scenario, o status de promoção é no máximo `BUILD_VALIDATED`, não `ACCEPTED`

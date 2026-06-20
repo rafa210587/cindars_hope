@@ -1,87 +1,87 @@
 # /start-spec
 
-Use when preparing to implement a spec. Delivers an execution plan without touching code.
+Use ao preparar a implementação de uma spec. Entrega um plano de execução sem tocar em código.
 
-**Arguments:** `$ARGUMENTS` — spec number or filename (e.g., `spec_09` or `spec_09_status_effect_database`)
-
----
-
-## Objective
-
-Understand spec scope, dependencies, and risks. Deliver a concise plan. Do NOT implement.
+**Argumentos:** `$ARGUMENTS` — número ou nome de arquivo da spec (ex.: `spec_09` ou `spec_09_status_effect_database`)
 
 ---
 
-## Required Reads
+## Objetivo
 
-1. `CLAUDE.md` — routing and stop conditions
-2. `docs/project/CURRENT_STATE.md` — active queue, blockers
-3. `.specs/SPEC_WAVE_EXECUTION_PROTOCOL.md` — execution governance and phase taxonomy
-4. `.specs/SPEC_VALIDATION_MATRIX_MASTER.md` — validation requirements matrix
-5. Target spec: `.specs/a_implementar/spec_<name>.md`
+Entender o escopo, as dependências e os riscos da spec. Entregar um plano conciso. NÃO implementar.
 
-## Optional Reads (only if spec cites them)
+---
 
-- A specific refinement listed in the spec's `depends_on` or `required_read` frontmatter
-- An implemented spec listed as a dependency
-- A specific architecture document referenced by the spec
+## Leitura mínima
 
-## Do NOT Read By Default
+1. `CLAUDE.md` — roteamento e stop conditions
+2. `docs/project/CURRENT_STATE.md` — fila ativa, blockers
+3. `.specs/SPEC_WAVE_EXECUTION_PROTOCOL.md` — governança de execução e taxonomia de fases
+4. `.specs/SPEC_VALIDATION_MATRIX_MASTER.md` — matriz de requisitos de validação
+5. Spec alvo: `.specs/a_implementar/spec_<name>.md`
+
+## Leitura opcional (só se a spec citar)
+
+- Um refinement específico listado no frontmatter `depends_on` ou `required_read` da spec
+- Uma spec implementada listada como dependência
+- Um documento de arquitetura específico referenciado pela spec
+
+## Não ler por padrão
 
 ```
 PROJECT_LOG.md
 docs/IMPLEMENTATION_STATUS.md
-memory/ (unless task cites prior pattern explicitly)
-SPEC_EXECUTION_ORDER.md (use CURRENT_STATE.md queue instead)
+memory/ (a não ser que a tarefa cite um pattern anterior explicitamente)
+SPEC_EXECUTION_ORDER.md (use a fila de CURRENT_STATE.md no lugar)
 ROADMAP.md
 ```
 
 ---
 
-## Procedure
+## Procedimento
 
-1. Read required files (above)
-2. From the spec, identify:
-   - Objective and deliverables
-   - Scope: permitted files, forbidden files
-   - Dependencies: blocked? ready?
-   - Mandatory validations (docs, build, Unity, Play Mode)
-   - Applicable skills from `.claude/skills/`
-   - Phase 2-3 requirements (does this spec need Unity validators or Play Mode?)
-3. Deliver plan (see output format)
-4. Stop. Wait for human confirmation before implementing.
-
----
-
-## Allowed Edits
-
-None. This command is read-only.
+1. Leia os arquivos obrigatórios (acima)
+2. A partir da spec, identifique:
+   - Objetivo e entregáveis
+   - Escopo: arquivos permitidos, arquivos proibidos
+   - Dependências: blocked? ready?
+   - Validações obrigatórias (docs, build, Unity, Play Mode)
+   - Skills aplicáveis de `.claude/skills/`
+   - Requisitos de Phase 2-3 (esta spec precisa de Unity validators ou Play Mode?)
+3. Entregue o plano (ver formato de saída)
+4. Pare. Aguarde confirmação humana antes de implementar.
 
 ---
 
-## Forbidden Edits
+## Edições permitidas
 
-- No code changes
-- No spec movement
-- No status updates
+Nenhuma. Este command é read-only.
 
 ---
 
-## Validation
+## Edições proibidas
 
-None needed. This command does not change files.
-
----
-
-## Stop Conditions
-
-- Spec and CURRENT_STATE conflict (e.g., spec says dependency is done but CURRENT_STATE says blocked)
-- Spec is not in `a_implementar/` — may have been moved or was never there
-- Spec ID not found
+- Sem mudanças de código
+- Sem mover spec
+- Sem atualizar status
 
 ---
 
-## Output Format
+## Validação
+
+Nenhuma necessária. Este command não altera arquivos.
+
+---
+
+## Quando parar e reportar
+
+- Spec e CURRENT_STATE conflitam (ex.: spec diz que a dependência está done mas CURRENT_STATE diz blocked)
+- Spec não está em `a_implementar/` — pode ter sido movida ou nunca esteve lá
+- ID da spec não encontrado
+
+---
+
+## Saída esperada
 
 ```
 Spec: <SPEC_ID> — <Title>

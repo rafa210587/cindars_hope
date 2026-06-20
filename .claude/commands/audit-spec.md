@@ -1,30 +1,30 @@
 # /audit-spec
 
-Use for Phase 0 audit: map what exists, what is missing, risks, and smallest safe delta. Does NOT implement.
+Use para o audit de Phase 0: mapear o que existe, o que está ausente, os riscos e o menor delta seguro. NÃO implementa.
 
-**Arguments:** `$ARGUMENTS` — spec number or filename
-
----
-
-## Objective
-
-Produce an audit matrix for the spec's domain. Identify what already exists in the codebase vs. what the spec requires. Find the minimum change needed.
+**Arguments:** `$ARGUMENTS` — número da spec ou nome do arquivo
 
 ---
 
-## Required Reads
+## Objetivo
+
+Produzir uma audit matrix para o domínio da spec. Identificar o que já existe na codebase vs. o que a spec exige. Encontrar a mudança mínima necessária.
+
+---
+
+## Leitura mínima
 
 1. `CLAUDE.md`
 2. `docs/project/CURRENT_STATE.md`
-3. Target spec
-4. Relevant source files (search codebase for spec's domain)
+3. Spec alvo
+4. Source files relevantes (buscar na codebase pelo domínio da spec)
 
-## Optional Reads
+## Leitura opcional
 
-- Prior validation reports listed as dependencies
-- Architecture docs cited by the spec
+- Prior validation reports listados como dependências
+- Architecture docs citados pela spec
 
-## Do NOT Read By Default
+## Não ler por padrão
 
 ```
 PROJECT_LOG.md
@@ -36,41 +36,41 @@ all refinements
 
 ---
 
-## Procedure
+## Procedimento
 
-1. Read spec and CURRENT_STATE.md
-2. Search codebase for:
-   - Classes/files the spec will create
-   - Classes/files the spec will modify
-   - Existing implementations of the same concern
-3. Classify findings:
-   - `ALREADY_EXISTS` — spec requirement is already met
-   - `PARTIAL` — exists but incomplete per spec
-   - `MISSING` — does not exist yet
-   - `CONFLICT` — existing code contradicts spec requirement
-4. Identify risks and the smallest safe delta
-5. Output audit matrix (see format)
-
----
-
-## Allowed Edits
-
-Only one: create audit matrix at `docs/validation/<spec_id>_phase0_audit_matrix.md`
+1. Leia a spec e o CURRENT_STATE.md
+2. Busque na codebase por:
+   - Classes/files que a spec vai criar
+   - Classes/files que a spec vai modificar
+   - Implementações existentes da mesma responsabilidade
+3. Classifique os achados:
+   - `ALREADY_EXISTS` — requisito da spec já está atendido
+   - `PARTIAL` — existe mas incompleto em relação à spec
+   - `MISSING` — ainda não existe
+   - `CONFLICT` — código existente contradiz o requisito da spec
+4. Identifique riscos e o menor delta seguro
+5. Produza a audit matrix (ver formato)
 
 ---
 
-## Forbidden Edits
+## Edições permitidas
 
-- No code changes
-- No spec movement
-- No status updates
-- No other documentation changes
+Apenas uma: criar a audit matrix em `docs/validation/<spec_id>_phase0_audit_matrix.md`
 
 ---
 
-## Output Format
+## Edições proibidas
 
-Create `docs/validation/<spec_id>_phase0_audit_matrix.md`:
+- Nenhuma mudança de código
+- Nenhuma movimentação de spec
+- Nenhuma atualização de status
+- Nenhuma outra mudança de documentação
+
+---
+
+## Saída esperada
+
+Crie `docs/validation/<spec_id>_phase0_audit_matrix.md`:
 
 ```markdown
 # Phase 0 Audit — <SPEC_ID>

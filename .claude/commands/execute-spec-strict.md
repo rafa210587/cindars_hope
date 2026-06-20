@@ -45,29 +45,29 @@ Ou:
 - Não mover para implementados
 - Não alterar Packages/, ProjectSettings/, scenes, prefabs, assets
 
-## Mandatory Preflight (Windows / PowerShell)
+## Preflight Obrigatório (Windows / PowerShell)
 
-Before executing any spec:
+Antes de executar qualquer spec:
 
-1. **Read mandatory rules:**
+1. **Leia as rules obrigatórias:**
    - `.claude/rules/windows_powershell_only.md`
    - `.claude/rules/spec_dependency_resolution.md`
    - `.claude/rules/spec_quality_gate.md`
 
-2. **Run PowerShell preflight:**
+2. **Rode o preflight PowerShell:**
    ```powershell
    Set-Location 'D:\Projetos\Jogos\Cindars_hope\cindars_hope'
    git status --short | Select-Object -First 50
    git branch --show-current
    ```
 
-3. **Verify:**
-   - ✓ Correct directory
-   - ✓ Correct branch (`dev`)
-   - ✓ Expected uncommitted state
-   - ✓ Use PowerShell syntax only (no Unix/Bash commands)
+3. **Verifique:**
+   - ✓ Diretório correto
+   - ✓ Branch correto (`dev`)
+   - ✓ Estado uncommitted esperado
+   - ✓ Use apenas sintaxe PowerShell (sem comandos Unix/Bash)
 
-If a command fails using Unix syntax, retry in PowerShell before treating as failure.
+Se um comando falhar usando sintaxe Unix, refaça em PowerShell antes de tratar como falha.
 
 ---
 
@@ -99,28 +99,28 @@ Ler spec inteira. Extrair:
 - **Arquivos permitidos:** allow-list de arquivos que podem ser alterados
 - **Arquivos proibidos:** no-change list (Packages, ProjectSettings, etc)
 
-### 3.5. Dependency Chain Check (5 min) — AUTOMATIC RESOLUTION
+### 3.5. Checagem de Dependency Chain (5 min) — RESOLUÇÃO AUTOMÁTICA
 
-**If spec depends on another unresolved spec in the same wave:**
+**Se a spec depende de outra spec não resolvida na mesma wave:**
 
-1. **Do NOT ask the user; resolve automatically.**
-2. Mark current spec as `BLOCKED_BY_DEPENDENCY_PENDING` (temporary status).
-3. Extract dependency chain from target spec (read `.claude/rules/spec_dependency_resolution.md`).
-4. Search same-wave specs in `.specs/a_implementar/<wave>_spec_*.md`.
-5. Build dependency DAG (directed acyclic graph).
-6. If dependency is **forbidden** (future/pets/HOLD/requires Packages/ProjectSettings/requires scene/prefab):
-   - Stop with `BLOCKED_BY_FORBIDDEN_SCOPE`
-   - Document reason
-7. If dependency is **same-wave and allowed**:
-   - Identify **root** (spec with no dependencies)
-   - Execute root first via `/execute-spec-strict`
-   - Continue upward until original spec is reached
-   - Do NOT pivot to unrelated specs
-8. Update `docs/validation/WAVE_<wave>_DEPENDENCY_RESOLUTION_PLAN.md`
-9. Update `docs/validation/WAVE_<wave>_BATCH_STATE.md`
-10. Return to original spec after chain is resolved
+1. **Não pergunte ao usuário; resolva automaticamente.**
+2. Marque a spec atual como `BLOCKED_BY_DEPENDENCY_PENDING` (status temporário).
+3. Extraia a dependency chain da spec alvo (leia `.claude/rules/spec_dependency_resolution.md`).
+4. Procure specs same-wave em `.specs/a_implementar/<wave>_spec_*.md`.
+5. Construa o dependency DAG (directed acyclic graph).
+6. Se a dependência for **proibida** (future/pets/HOLD/requer Packages/ProjectSettings/requer scene/prefab):
+   - Pare com `BLOCKED_BY_FORBIDDEN_SCOPE`
+   - Documente o motivo
+7. Se a dependência for **same-wave e permitida**:
+   - Identifique a **root** (spec sem dependências)
+   - Execute a root primeiro via `/execute-spec-strict`
+   - Continue para cima até alcançar a spec original
+   - Não pivote para specs não relacionadas
+8. Atualize `docs/validation/WAVE_<wave>_DEPENDENCY_RESOLUTION_PLAN.md`
+9. Atualize `docs/validation/WAVE_<wave>_BATCH_STATE.md`
+10. Volte para a spec original depois que a chain for resolvida
 
-**Required output clause in execution report:**
+**Cláusula obrigatória no execution report:**
 ```text
 ## Dependency Chain
 
@@ -238,9 +238,9 @@ These patterns filter output and lose `$LASTEXITCODE`, allowing false "build pas
 - Quality check: PASS (exit code 0)
 - Overall: `VALIDATION_PASS` (exit code 0)
 
-### 9.5. Document Validation Method in Report
+### 9.5. Documentar o Método de Validação no Report
 
-Every execution report must include:
+Todo execution report deve incluir:
 
 ```text
 ## Validation
@@ -254,7 +254,7 @@ Docs validation: PASS / EXPECTED_FAIL_LEGACY_ONLY
 Result artifact: docs/validation/LAST_STRICT_VALIDATION_RESULT.json
 ```
 
-Do not claim build success without this evidence.
+Não afirme sucesso de build sem essa evidência.
 
 ---
 
@@ -344,30 +344,30 @@ Can start next wave:            <Y/N + reason>
 Remaining blockers:             <list or NONE>
 ```
 
-## Stop Conditions
+## Quando parar e reportar
 
-**STOP IMMEDIATELY with status BLOCKED if:**
+**PARE IMEDIATAMENTE com status BLOCKED se:**
 
-1. Spec requires future/pets/mapped specs
-2. Spec requires scene/prefab/asset creation
-3. Spec requires Packages/ or ProjectSettings/ alteration
-4. Build fails with new errors
-5. Docs validation fails with new errors
-6. Quality check fails with critical errors (not warnings)
-7. P0 spec has status NEEDS_REWORK or BLOCKED
-8. Spec cannot be executed solo (requires parallel spec)
+1. A spec exige future/pets/mapped specs
+2. A spec exige criação de scene/prefab/asset
+3. A spec exige alteração de Packages/ ou ProjectSettings/
+4. O build falha com novos erros
+5. A docs validation falha com novos erros
+6. O quality check falha com erros críticos (não warnings)
+7. Uma spec P0 tem status NEEDS_REWORK ou BLOCKED
+8. A spec não pode ser executada sozinha (exige spec paralela)
 
-When BLOCKED:
-- Create execution report with BLOCKED status
-- Document blocker in "Remaining work" section
-- Do NOT commit (unless report-only commit is meaningful)
-- Stop
+Quando BLOCKED:
+- Crie o execution report com status BLOCKED
+- Documente o blocker na seção "Remaining work"
+- NÃO faça commit (a não ser que um commit report-only seja significativo)
+- Pare
 
-## Loop-Safe Usage — Up to 10 Specs
+## Uso Loop-Safe — Até 10 Specs
 
-This command is safe in `/loop` for batches up to 10 specs:
+Este command é seguro em `/loop` para batches de até 10 specs:
 
-### Example: 10-Spec Batch
+### Exemplo: batch de 10 specs
 
 ```text
 /loop
@@ -379,31 +379,31 @@ Do not start next wave in this loop.
 Do not mark ACCEPTED.
 ```
 
-### Rules
+### Regras
 
-1. **One spec per iteration** — each loop invocation executes exactly one spec
-2. **Max 10 per batch** — can re-invoke up to 10 times in the same `/loop`
-3. **Recommended max per wave:**
-   - 3 specs for new/unstable waves
-   - 10 specs for established waves with known patterns
-4. **Quality gates per spec** (not at end of batch):
+1. **Uma spec por iteração** — cada invocação do loop executa exatamente uma spec
+2. **Máximo 10 por batch** — pode re-invocar até 10 vezes no mesmo `/loop`
+3. **Máximo recomendado por wave:**
+   - 3 specs para waves novas/instáveis
+   - 10 specs para waves estabelecidas com patterns conhecidos
+4. **Quality gates por spec** (não no fim do batch):
    - Docs validation PASS
    - Assembly builds 0E
    - Quality check PASS
-   - Status honest (no inflation)
-5. **Stop immediately on:**
-   - `BLOCKED` status
-   - `NEEDS_REWORK` status
-   - `CONTRACT_ONLY_NEEDS_INTEGRATION` on foundational spec
-   - Build failure
-   - Docs validation new error
-   - Quality check critical failure
-   - Forbidden file altered
-   - Report missing/incomplete
+   - Status honesto (sem inflar)
+5. **Pare imediatamente em:**
+   - Status `BLOCKED`
+   - Status `NEEDS_REWORK`
+   - `CONTRACT_ONLY_NEEDS_INTEGRATION` em spec fundacional
+   - Falha de build
+   - Novo erro de docs validation
+   - Falha crítica de quality check
+   - Arquivo proibido alterado
+   - Report ausente/incompleto
 
-### Output Format
+### Formato de Saída
 
-After each spec in the loop batch, output must be:
+Depois de cada spec no batch do loop, a saída deve ser:
 
 ```text
 SPEC_EXECUTION_RESULT
@@ -419,17 +419,17 @@ Can continue next spec: <YES/NO + reason>
 Can start next wave: NO (always NO in loop batch)
 ```
 
-The command itself won't loop; `/loop` will re-invoke it up to 10 times.
+O command em si não faz loop; `/loop` vai re-invocá-lo até 10 vezes.
 
-## Fallback for Manual Execution
+## Fallback para Execução Manual
 
-If user runs `/execute-spec-strict` without argument:
+Se o usuário rodar `/execute-spec-strict` sem argumento:
 
-Ask user:
-1. Spec path?
-2. Or "next" with --wave and --after flags?
+Pergunte ao usuário:
+1. Path da spec?
+2. Ou "next" com flags --wave e --after?
 
-Then proceed normally.
+Depois prossiga normalmente.
 
 ---
 

@@ -1,34 +1,34 @@
 # /plan-wave
 
-Plan the next FASE or development wave. Only command allowed to read ROADMAP.md by default.
+Planeja a próxima FASE ou wave de desenvolvimento. Único command autorizado a ler ROADMAP.md por padrão.
 
-**Arguments:** `$ARGUMENTS` — optional: wave name or FASE number (e.g., `FASE10` or `post-mvp`)
-
----
-
-## Objective
-
-Produce a planning document for the next development wave. No implementation. No spec execution.
+**Arguments:** `$ARGUMENTS` — opcional: nome da wave ou número da FASE (ex.: `FASE10` ou `post-mvp`)
 
 ---
 
-## Required Reads
+## Objetivo
+
+Produzir um documento de planejamento para a próxima wave de desenvolvimento. Sem implementação. Sem execução de spec.
+
+---
+
+## Leitura mínima
 
 1. `CLAUDE.md`
-2. `docs/project/CURRENT_STATE.md` — active queue and blockers
-3. `.specs/SPEC_GENERATION_ROADMAP_MASTER.md` — macro roadmap of all planned specs and dependencies
-4. `.specs/SPEC_WAVE_EXECUTION_PROTOCOL.md` — execution phases, paralelization, batch size rules
-5. `.specs/SPEC_VALIDATION_MATRIX_MASTER.md` — validation requirements to plan for
-6. `.specs/SPEC_REGISTRY_TO_IMPLEMENT.md` — list of specs to plan and dependencies
-7. `docs/backlog/current_backlog.md` — operational backlog items
+2. `docs/project/CURRENT_STATE.md` — fila ativa e blockers
+3. `.specs/SPEC_GENERATION_ROADMAP_MASTER.md` — macro roadmap de todas as specs planejadas e dependências
+4. `.specs/SPEC_WAVE_EXECUTION_PROTOCOL.md` — execution phases, paralelização, regras de batch size
+5. `.specs/SPEC_VALIDATION_MATRIX_MASTER.md` — validation requirements a planejar
+6. `.specs/SPEC_REGISTRY_TO_IMPLEMENT.md` — lista de specs a planejar e dependências
+7. `docs/backlog/current_backlog.md` — itens de backlog operacional
 
-## Optional Reads
+## Leitura opcional
 
 - `docs/backlog/post_mvp_backlog.md`
 - `docs/project/DOCUMENT_INDEX.md`
-- Relevant architecture docs for the wave domain
+- Architecture docs relevantes para o domínio da wave
 
-## Do NOT Read By Default
+## Não ler por padrão
 
 ```
 PROJECT_LOG.md
@@ -39,43 +39,43 @@ docs_old/**
 
 ---
 
-## Procedure
+## Procedimento
 
-1. Read CURRENT_STATE.md to understand blocking items and current queue
-2. Read SPEC_GENERATION_ROADMAP_MASTER.md — use this as primary source for waves/specs
-3. Read SPEC_WAVE_EXECUTION_PROTOCOL.md for:
-   - Paralelization rules (which lanes can run in parallel)
-   - Lock/checkpoint timing between waves
-   - Batch size and execution capacity constraints
-4. Read SPEC_VALIDATION_MATRIX_MASTER.md to understand validation costs (time, resources)
-5. Read SPEC_REGISTRY_TO_IMPLEMENT.md to cross-check spec list
-6. Produce wave plan:
-   - Objectives of the wave
-   - Specs to create (IDs, titles, rough effort, dependencies)
-   - Dependency graph between proposed specs and waves
-   - Specs that must complete first (from CURRENT_STATE.md)
-   - Paralelization plan (which lanes, checkpoints)
-   - Validation plan (types and timing per change)
-   - Risks and open questions
-7. Output planning document
-8. Do NOT create specs or implement code — only plan.
-
----
-
-## Allowed Edits
-
-Optional: create `docs/project/ROADMAP.md` update or a wave planning document in `docs/backlog/`.
-
-## Forbidden Edits
-
-- No spec implementation
-- No spec movement
-- No code changes
-- No delete operations
+1. Leia o CURRENT_STATE.md para entender itens bloqueantes e a fila atual
+2. Leia o SPEC_GENERATION_ROADMAP_MASTER.md — use como fonte primária de waves/specs
+3. Leia o SPEC_WAVE_EXECUTION_PROTOCOL.md para:
+   - Regras de paralelização (quais lanes podem rodar em paralelo)
+   - Timing de lock/checkpoint entre waves
+   - Restrições de batch size e capacidade de execução
+4. Leia o SPEC_VALIDATION_MATRIX_MASTER.md para entender os custos de validação (tempo, recursos)
+5. Leia o SPEC_REGISTRY_TO_IMPLEMENT.md para cruzar com a lista de specs
+6. Produza o wave plan:
+   - Objetivos da wave
+   - Specs a criar (IDs, títulos, esforço aproximado, dependências)
+   - Dependency graph entre specs e waves propostas
+   - Specs que precisam ser concluídas primeiro (a partir do CURRENT_STATE.md)
+   - Plano de paralelização (quais lanes, checkpoints)
+   - Plano de validação (tipos e timing por mudança)
+   - Riscos e questões em aberto
+7. Produza o documento de planejamento
+8. NÃO crie specs nem implemente código — apenas planeje.
 
 ---
 
-## Output Format
+## Edições permitidas
+
+Opcional: criar uma atualização de `docs/project/ROADMAP.md` ou um documento de wave planning em `docs/backlog/`.
+
+## Edições proibidas
+
+- Nenhuma implementação de spec
+- Nenhuma movimentação de spec
+- Nenhuma mudança de código
+- Nenhuma operação de delete
+
+---
+
+## Saída esperada
 
 ```markdown
 # Wave Plan — <FASE/Wave Name>

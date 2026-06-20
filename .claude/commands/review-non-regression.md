@@ -1,12 +1,12 @@
 # /review-non-regression
 
-Audit current diff against project non-regression rules and detected change scope.
+Audita o diff atual contra as regras de não-regressão do projeto e o change scope detectado.
 
-**Argument expected:** (optional) Force full audit even if no changes detected
+**Argumento esperado:** (opcional) Forçar auditoria completa mesmo sem mudanças detectadas
 
-## Pre-Flight: Check Change Scope
+## Pré-voo: checar o change scope
 
-First, read `.claude/.runtime/change-scope.json` (if it exists from `/implement-spec` or detect-change-scope hook):
+Primeiro, leia `.claude/.runtime/change-scope.json` (se existir, gerado por `/implement-spec` ou pelo hook detect-change-scope):
 
 ```json
 {
@@ -22,79 +22,79 @@ First, read `.claude/.runtime/change-scope.json` (if it exists from `/implement-
 }
 ```
 
-**Critical failures (immediate FAIL):**
+**Falhas críticas (FAIL imediato):**
 - `forbiddenPathsChanged == true` (docs_old/, root specs/)
-- `rootSpecsRecreated == true` (specs/ or spec/ created in root)
+- `rootSpecsRecreated == true` (specs/ ou spec/ criado na raiz)
 
-**Legitimate actions (NOT failures):**
-- `specMigrationDetected == true` during `/implement-spec` closeout
-- `refinementMigrationDetected == true` during spec closeout
+**Ações legítimas (NÃO são falhas):**
+- `specMigrationDetected == true` durante o closeout de `/implement-spec`
+- `refinementMigrationDetected == true` durante o closeout de spec
 
-## Mandatory Checks
+## Checagens obrigatórias
 
-### 1. File Structure
+### 1. Estrutura de arquivos
 
-- [ ] No creation of root-level `specs/` or `spec/` directories
-- [ ] No edits to `docs_old/**`
-- [ ] No edits outside permitted scope
+- [ ] Nenhuma criação de diretórios `specs/` ou `spec/` na raiz
+- [ ] Nenhuma edição em `docs_old/**`
+- [ ] Nenhuma edição fora do escopo permitido
 
-### 2. Git Safety
+### 2. Segurança de Git
 
-- [ ] No `git push` executed
-- [ ] No `git reset --hard` executed
-- [ ] No `git clean` executed
-- [ ] No `git stash` executed
-- [ ] Branch is clean or only has intended commits
+- [ ] Nenhum `git push` executado
+- [ ] Nenhum `git reset --hard` executado
+- [ ] Nenhum `git clean` executado
+- [ ] Nenhum `git stash` executado
+- [ ] Branch limpo ou apenas com os commits pretendidos
 
-### 3. Gameplay/Runtime Safety (if runtime task)
+### 3. Segurança de gameplay/runtime (se for tarefa de runtime)
 
-- [ ] No `GameObject.Find()` calls introduced
-- [ ] No `FindObjectOfType()` calls introduced
-- [ ] No `FindObjectsByType()` calls introduced
-- [ ] No direct MonoBehaviour-to-MonoBehaviour communication (use GameEventBus)
-- [ ] Save doesn't serialize UnityEngine refs (no GameObject, Transform, MonoBehaviour, Sprite, Collider, Rigidbody)
-- [ ] Save uses IDs and simple types only
-- [ ] No hardcoded game data in MonoBehaviour (use ScriptableObject)
-- [ ] No `StreamingAssets` for editable save data (use Application.persistentDataPath)
-- [ ] ScriptableObjects prefixed correctly (ItemDataSO, WeaponDataSO, etc.)
-- [ ] Events prefixed correctly (DayStartedEvent, ItemCraftedEvent, etc.)
-- [ ] No forbidden namespaces created (`CindarsHope.Debug`, etc.)
+- [ ] Nenhuma chamada `GameObject.Find()` introduzida
+- [ ] Nenhuma chamada `FindObjectOfType()` introduzida
+- [ ] Nenhuma chamada `FindObjectsByType()` introduzida
+- [ ] Nenhuma comunicação direta MonoBehaviour-para-MonoBehaviour (use GameEventBus)
+- [ ] Save não serializa refs UnityEngine (sem GameObject, Transform, MonoBehaviour, Sprite, Collider, Rigidbody)
+- [ ] Save usa apenas IDs e simple types
+- [ ] Nenhum game data hardcoded em MonoBehaviour (use ScriptableObject)
+- [ ] Sem `StreamingAssets` para save data editável (use Application.persistentDataPath)
+- [ ] ScriptableObjects com prefixo correto (ItemDataSO, WeaponDataSO, etc.)
+- [ ] Events com prefixo correto (DayStartedEvent, ItemCraftedEvent, etc.)
+- [ ] Nenhum namespace proibido criado (`CindarsHope.Debug`, etc.)
 
-### 4. Runtime Evidence (if available)
+### 4. Evidência de runtime (se disponível)
 
-Inspect `.claude/.runtime/` directory for evidence files:
+Inspecione o diretório `.claude/.runtime/` em busca de arquivos de evidência:
 
-- [ ] `.claude/.runtime/change-scope.json` — Persisted change detection
-- [ ] `.claude/.runtime/validation-results.json` — Persisted validation results
+- [ ] `.claude/.runtime/change-scope.json` — detecção de mudança persistida
+- [ ] `.claude/.runtime/validation-results.json` — resultados de validação persistidos
 
-Use these as evidence for required validations.
+Use-os como evidência para as validações obrigatórias.
 
-### 5. Validations Executed (if using /implement-spec)
+### 5. Validações executadas (se usando /implement-spec)
 
-If `.claude/.runtime/validation-results.json` exists:
+Se `.claude/.runtime/validation-results.json` existir:
 
-- [ ] Docs validation: PASS or acceptable WARNING
-- [ ] Unity compile: PASS or documented NOT RUN
-- [ ] Log scan: PASS or documented NOT RUN
-- [ ] Overall status: PASS/FAIL/WARNING
+- [ ] Docs validation: PASS ou WARNING aceitável
+- [ ] Unity compile: PASS ou NOT RUN documentado
+- [ ] Log scan: PASS ou NOT RUN documentado
+- [ ] Status geral: PASS/FAIL/WARNING
 
-If files are missing, check console output for validation evidence.
+Se os arquivos estiverem ausentes, cheque o output do console em busca de evidência de validação.
 
-### 6. Spec/Roadmap Safety (if spec task)
+### 6. Segurança de spec/roadmap (se for tarefa de spec)
 
-- [ ] Task doesn't exceed spec scope
-- [ ] Didn't implement blocked/future spec (check SPEC_EXECUTION_ORDER.md)
-- [ ] Didn't skip specs in wrong order
-- [ ] Status updates have evidence in repo (code, assets, or validated logs)
+- [ ] A tarefa não excede o escopo da spec
+- [ ] Não implementou spec blocked/future (cheque SPEC_EXECUTION_ORDER.md)
+- [ ] Não pulou specs na ordem errada
+- [ ] Atualizações de status têm evidência no repo (código, assets ou logs validados)
 
-### 7. Documentation Safety
+### 7. Segurança de documentação
 
-- [ ] No spec marked as implemented without evidence
-- [ ] IMPLEMENTATION_STATUS.md changes reflect actual state
-- [ ] PROJECT_LOG.md updated when task was significant
-- [ ] No duplicate entries in registries
+- [ ] Nenhuma spec marcada como implemented sem evidência
+- [ ] Mudanças em IMPLEMENTATION_STATUS.md refletem o estado real
+- [ ] PROJECT_LOG.md atualizado quando a tarefa foi significativa
+- [ ] Sem entradas duplicadas em registries
 
-## Output Format
+## Saída esperada
 
 ```text
 Status: PASS | WARNING | FAIL
@@ -118,7 +118,7 @@ Residual risk:
   [If any]
 ```
 
-## Examples
+## Exemplos
 
 ### PASS
 
@@ -185,11 +185,11 @@ Residual risk:
 
 ---
 
-## Do NOT
+## NÃO faça
 
-- Ignore warnings and call it "close enough"
-- Skip this check and claim everything is fine
-- Mark FAIL as acceptable for production task
-- Fix issues silently without documenting in PROJECT_LOG.md
+- Ignorar warnings e dizer que está "perto o bastante"
+- Pular esta checagem e afirmar que está tudo certo
+- Marcar FAIL como aceitável para tarefa de produção
+- Corrigir issues silenciosamente sem documentar em PROJECT_LOG.md
 
-**If audit shows FAIL:** Fix issues, run this command again.
+**Se a auditoria mostrar FAIL:** corrija as issues e rode este command de novo.

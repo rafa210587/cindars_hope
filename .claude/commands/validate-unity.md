@@ -1,25 +1,25 @@
 # /validate-unity
 
-Use when the task alters runtime C#, scenes, prefabs, assets, or ProjectSettings.
+Use quando a tarefa altera runtime C#, scenes, prefabs, assets ou ProjectSettings.
 
-## When to Run
+## Quando usar
 
-- After any runtime code changes
-- After modifying scenes or prefabs
-- After changing asset settings (sprites, scriptable objects, etc.)
-- As part of task closeout
+- Depois de qualquer mudança em runtime code
+- Depois de modificar scenes ou prefabs
+- Depois de mudar asset settings (sprites, scriptable objects, etc.)
+- Como parte do fechamento da tarefa
 
-## Execution Steps
+## Procedimento
 
-### Step 1: Docs Validation (always)
+### Step 1: Docs Validation (sempre)
 
 ```powershell
 .\tools\docs\validate_docs.ps1
 ```
 
-**Expected outcome:** PASS or list specific docs issues to fix.
+**Resultado esperado:** PASS ou lista de issues específicos de docs a corrigir.
 
-### Step 2: Unity Compile Validation (if runtime changed)
+### Step 2: Unity Compile Validation (se runtime mudou)
 
 ```powershell
 .\tools\unity\RunUnityCompileValidation.ps1 `
@@ -28,60 +28,60 @@ Use when the task alters runtime C#, scenes, prefabs, assets, or ProjectSettings
   -LogFile ".\Logs\unity-compile-validation.log"
 ```
 
-**Expected outcome:**
+**Resultado esperado:**
 - PASS: "Tundra build success"
-- FAIL: List compilation errors with file:line references
+- FAIL: lista de compilation errors com referências file:line
 
-**If Unity path differs or is unknown:**
-- Check environment: `$env:UNITY_EDITOR_PATH`
-- Check installed versions: `ls "C:\Program Files\Unity\Hub\Editor\"`
-- Register in `.claude/settings.local.json` for future runs
+**Se o path do Unity diferir ou for desconhecido:**
+- Verifique o environment: `$env:UNITY_EDITOR_PATH`
+- Verifique as versões instaladas: `ls "C:\Program Files\Unity\Hub\Editor\"`
+- Registre em `.claude/settings.local.json` para execuções futuras
 
-### Step 3: Log Scanner (if Step 2 ran)
+### Step 3: Log Scanner (se o Step 2 rodou)
 
 ```powershell
 .\tools\unity\ScanUnityLogs.ps1 `
   -LogFile ".\Logs\unity-compile-validation.log"
 ```
 
-**Expected outcome:**
-- PASS: No new C# errors
-- WARNING: Preexisting Assembly warnings (acceptable)
-- FAIL: New errors introduced by this task
+**Resultado esperado:**
+- PASS: nenhum novo C# error
+- WARNING: Assembly warnings preexistentes (aceitável)
+- FAIL: novos erros introduzidos por esta tarefa
 
-## Failure Handling
+## Tratamento de falha
 
-If Step 2 cannot run due to:
+Se o Step 2 não puder rodar por causa de:
 - Sandbox environment
-- Missing Unity installation
-- Permissions issue
+- Instalação do Unity ausente
+- Problema de permissões
 - Timeout
 
-**Required documentation in task closeout:**
+**Documentação obrigatória no fechamento da tarefa:**
 
 ```text
 Unity validation: NOT RUN
-Reason: <specific reason>
-Command attempted: <command that failed>
+Reason: <motivo específico>
+Command attempted: <comando que falhou>
 Residual risk: Unity compile not validated locally
 ```
 
-**Do NOT declare runtime as validated without evidence.**
+**NÃO declare runtime como validado sem evidência.**
 
-## Success Criteria
+## Critérios de sucesso
 
 - ✅ Docs validation: PASS
-- ✅ Unity compile: PASS (if executed)
-- ✅ Log scan: No new errors (if executed)
-- ✅ If not executed: Clear reason and risk registered
+- ✅ Unity compile: PASS (se executado)
+- ✅ Log scan: nenhum erro novo (se executado)
+- ✅ Se não executado: motivo e risco claros registrados
 
-## Do NOT
+## Não faça
 
-- Skip validation and claim it "probably works"
-- Ignore docs validation even if runtime didn't change
-- Hide validation failures in summary
-- Proceed to closeout if validation blocking issue exists
+- Pular a validação e alegar que "provavelmente funciona"
+- Ignorar a docs validation mesmo que runtime não tenha mudado
+- Esconder falhas de validação no resumo
+- Avançar para o fechamento se houver issue bloqueante de validação
 
 ---
 
-**Next:** If validation passes, proceed to `/finish-spec` for task closeout.
+**Próximo:** Se a validação passar, siga para `/finish-spec` para o fechamento da tarefa.

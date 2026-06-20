@@ -1,29 +1,29 @@
 # /bugfix
 
-Fix a specific bug within the affected files' scope. Minimal context. No roadmap.
+Corrige um bug específico dentro do scope dos arquivos afetados. Contexto mínimo. Sem roadmap.
 
-**Arguments:** `$ARGUMENTS` — bug description or reference (e.g., `"save not persisting health"`)
-
----
-
-## Objective
-
-Identify root cause, fix minimally, validate, document. Do not refactor beyond the fix.
+**Arguments:** `$ARGUMENTS` — descrição ou referência do bug (ex.: `"save not persisting health"`)
 
 ---
 
-## Required Reads
+## Objetivo
+
+Identificar a root cause, corrigir de forma mínima, validar, documentar. Não refatore além da correção.
+
+---
+
+## Leitura mínima
 
 1. `CLAUDE.md`
-2. `docs/project/CURRENT_STATE.md` — check if bug is a known blocker
-3. Files directly related to the bug
+2. `docs/project/CURRENT_STATE.md` — verifique se o bug é um blocker conhecido
+3. Arquivos diretamente relacionados ao bug
 
-## Optional Reads
+## Leitura opcional
 
-- Spec that originally implemented the buggy feature (if known)
-- Prior validation report if the bug was introduced in a recent change
+- Spec que originalmente implementou a feature com bug (se conhecida)
+- Prior validation report se o bug foi introduzido por uma mudança recente
 
-## Do NOT Read By Default
+## Não ler por padrão
 
 ```
 PROJECT_LOG.md
@@ -35,36 +35,36 @@ unrelated validation reports
 
 ---
 
-## Procedure
+## Procedimento
 
-1. Read bug report / description
-2. Identify affected files
-3. Trace root cause
-4. Implement minimal fix
-5. Run validation:
-   - Docs: if any .md changed
-   - C# build: if any .cs changed
-   - Non-regression review: check fix does not introduce new violations
-6. Classify: regression (introduced by recent spec) vs. gap (known limitation)
-7. Create commit with Portuguese message describing the fix
-
----
-
-## Allowed Edits
-
-- Source files directly causing the bug
-- Docs if bug report or validation doc needs update
-
-## Forbidden Edits
-
-- No refactoring beyond the fix
-- No scope creep
-- No spec movement
-- No roadmap changes
+1. Leia o bug report / descrição
+2. Identifique os arquivos afetados
+3. Rastreie a root cause
+4. Implemente a correção mínima
+5. Rode a validação:
+   - Docs: se algum .md mudou
+   - C# build: se algum .cs mudou
+   - Non-regression review: verifique que a correção não introduz novas violações
+6. Classifique: regression (introduzida por spec recente) vs. gap (limitação conhecida)
+7. Crie o commit com mensagem em português descrevendo a correção
 
 ---
 
-## Output Format
+## Edições permitidas
+
+- Source files que diretamente causam o bug
+- Docs se o bug report ou validation doc precisar de atualização
+
+## Edições proibidas
+
+- Nenhum refactoring além da correção
+- Nenhum scope creep
+- Nenhuma movimentação de spec
+- Nenhuma mudança de roadmap
+
+---
+
+## Saída esperada
 
 ```markdown
 ## Bug Fix — <description>
