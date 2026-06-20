@@ -59,11 +59,17 @@ namespace CindarsHope.Player.Conditions
 
         public void AddTimePassingFatigue(float hours)
         {
-            // Natural fatigue: ~2 fatigue per hour awake
+            // Natural fatigue: ~2 fatigue per hour awake.
+            // fable_23 — ponto ÚNICO do NightFatigueModifier (Amuleto de Nyx -30% sobre o desgaste
+            // noturno/awake). Consulta síncrona ao AccessoryEffectRouter; sem acessório => sem redução
+            // (helper trata default 0 como neutro). Sem if espalhado em outros sistemas.
+            float baseAmount = hours * 2f;
+            baseAmount = CindarsHope.Equipment.AccessoryEffectRouter.ApplyNightFatigueReduction(baseAmount);
+
             AddFatigue(new FatigueGainContext
             {
                 Source = FatigueGainSource.TimePassing,
-                BaseAmount = hours * 2f,
+                BaseAmount = baseAmount,
                 Multiplier = 1.0f
             });
         }

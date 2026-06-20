@@ -75,9 +75,15 @@ namespace CindarsHope.Player
                     continue;
                 }
 
-                _hungerManager.RestoreHunger(itemData.HungerRestore);
+                // fable_23 — ponto ÚNICO do FoodEffectModifier (Charm de Thandra +15% no efeito de
+                // comida). Escala fome/stamina restauradas pela consulta síncrona ao roteador; sem
+                // acessório => valor base (helper trata default 0 como neutro). Sem if espalhado.
+                var hungerRestore = CindarsHope.Equipment.AccessoryEffectRouter.ApplyFoodEffect(itemData.HungerRestore);
+                var staminaRestore = CindarsHope.Equipment.AccessoryEffectRouter.ApplyFoodEffect(itemData.StaminaRestore);
 
-                staminaManager?.AddStamina(itemData.StaminaRestore);
+                _hungerManager.RestoreHunger(hungerRestore);
+
+                staminaManager?.AddStamina(staminaRestore);
 
                 if (statusManager != null && itemData.StatusEffectIds != null)
                 {

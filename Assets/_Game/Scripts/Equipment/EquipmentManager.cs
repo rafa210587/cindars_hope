@@ -36,6 +36,13 @@ namespace CindarsHope.Equipment
         public CindarsHope.Crafting.EquipmentUpgradeRegistry UpgradeRegistry => _upgradeRegistry;
         public CindarsHope.Crafting.RecipeUnlockService RecipeUnlockService => _recipeUnlockService;
 
+        // fable_23: roteador de efeitos de acessórios/relíquias (não-stack por tipo). Recomputado a
+        // cada equip/unequip/restore a partir dos 3 slots tipo-acessório (Ring1/Ring2/Accessory) e
+        // publicado no acessor estático AccessoryEffectRouter.Active para os hooks pontuais (gold,
+        // durabilidade, loot, fadiga, comida, knockback) consultarem sem busca global de cena.
+        private AccessoryEffectRouter _accessoryRouter;
+        public AccessoryEffectRouter AccessoryRouter => _accessoryRouter;
+
         // Legacy properties - deprecated, use GetEquippedItem() instead
         public string EquippedToolId => _equippedToolId;
         public ToolType EquippedToolType => _equippedToolType;
@@ -70,6 +77,15 @@ namespace CindarsHope.Equipment
                 _recipeUnlockService = new CindarsHope.Crafting.RecipeUnlockService();
             }
             CindarsHope.Crafting.RecipeUnlockService.Active = _recipeUnlockService;
+
+            // fable_23: cria/publica o roteador de acessórios como acessor único (sem busca global).
+            // DontDestroyOnLoad: o último Awake vence. Rebuild inicial a partir dos slots atuais.
+            if (_accessoryRouter == null)
+            {
+                _accessoryRouter = new AccessoryEffectRouter();
+            }
+            AccessoryEffectRouter.Active = _accessoryRouter;
+            RebuildAccessoryEffects();
         }
 
         private void OnEnable()
@@ -108,7 +124,26 @@ namespace CindarsHope.Equipment
         public void EquipItem(EquipmentSlot slot, string itemInstanceId)
         {
             _slots[slot] = itemInstanceId ?? string.Empty;
+            RebuildAccessoryEffects();
             GameEventBus.Publish(new EquipmentSlotChangedEvent(slot, itemInstanceId));
+        }
+
+        /// <summary>
+        /// fable_23 — equipa um acessório/relíquia VALIDADO num slot tipo-acessório (tipo×slot e
+        /// no máximo 1 relíquia). Retorna false sem mutar o estado quando a regra recusa; a mensagem
+        /// é entregue à tela de equipamento (F14) como feedback de recusa (ex.: 2ª relíquia).
+        /// Itens de mão/armadura continuam pela <see cref="EquipItem"/> normal (sem esta validação).
+        /// </summary>
+        public bool TryEquipAccessory(EquipmentSlot slot, string itemInstanceId, out string rejectionReason)
+        {
+            if (!AccessoryEffectRouter.CanEquip(itemInstanceId, slot, EnumerateAccessorySlots(), out rejectionReason))
+            {
+                Debug.LogWarning($"EquipmentManager: equip de acessório recusado ({rejectionReason}).", this);
+                return false;
+            }
+
+            EquipItem(slot, itemInstanceId);
+            return true;
         }
 
         public void UnequipSlot(EquipmentSlot slot)
@@ -116,8 +151,39 @@ namespace CindarsHope.Equipment
             if (_slots.ContainsKey(slot))
             {
                 _slots.Remove(slot);
+                RebuildAccessoryEffects();
                 GameEventBus.Publish(new EquipmentSlotChangedEvent(slot, null));
             }
+        }
+
+        // fable_23: itens atualmente equipados nos 3 slots tipo-acessório (para validação de equip).
+        private IEnumerable<(EquipmentSlot Slot, string ItemInstanceId)> EnumerateAccessorySlots()
+        {
+            foreach (var kvp in _slots)
+            {
+                if (AccessoryCatalog.IsAccessorySlot(kvp.Key) && !string.IsNullOrEmpty(kvp.Value))
+                {
+                    yield return (kvp.Key, kvp.Value);
+                }
+            }
+        }
+
+        // fable_23: recomputa o roteador de efeitos a partir dos itens nos slots tipo-acessório.
+        // Ponto único chamado após qualquer mutação de slot (equip/unequip/restore).
+        private void RebuildAccessoryEffects()
+        {
+            if (_accessoryRouter == null)
+            {
+                _accessoryRouter = new AccessoryEffectRouter();
+                AccessoryEffectRouter.Active = _accessoryRouter;
+            }
+
+            var ids = new List<string>(3);
+            foreach (var entry in EnumerateAccessorySlots())
+            {
+                ids.Add(entry.ItemInstanceId);
+            }
+            _accessoryRouter.Rebuild(ids);
         }
 
         public string GetEquippedItem(EquipmentSlot slot)
@@ -171,10 +237,29 @@ namespace CindarsHope.Equipment
             RegisterEquipmentUsage(GetEquippedItem(EquipmentSlot.RightHand) ?? string.Empty);
         }
 
+        // fable_23: acumulador determinístico do bônus de durabilidade de ferramenta (Anel de Thoren
+        // +15%). Cada uso registra 1.0 de "desgaste"; o bônus (fração 0..1) é creditado de volta e,
+        // quando acumula >= 1.0 uso poupado, ESTE uso não consome durabilidade. Sem RNG: ao longo de N
+        // usos o consumo efetivo tende a N×(1-bônus). Ponto ÚNICO nomeado (ToolDurabilityModifier).
+        private float _toolDurabilitySavingsAccumulator;
+
         public void RegisterEquipmentUsage(string itemInstanceId)
         {
             if (string.IsNullOrEmpty(itemInstanceId) || _durabilityTracker == null)
                 return;
+
+            // fable_23 — ponto único do ToolDurabilityModifier: credita o bônus de Thoren e poupa este
+            // uso quando o acumulado fecha 1 uso inteiro (consumo efetivo determinístico, sem if espalhado).
+            var bonus = AccessoryEffectRouter.ToolDurabilityModifierSource?.Invoke() ?? 0f;
+            if (bonus > 0f)
+            {
+                _toolDurabilitySavingsAccumulator += UnityEngine.Mathf.Clamp01(bonus);
+                if (_toolDurabilitySavingsAccumulator >= 1f)
+                {
+                    _toolDurabilitySavingsAccumulator -= 1f;
+                    return; // uso poupado pela durabilidade do acessório
+                }
+            }
 
             _durabilityTracker.TryRegisterUsage(itemInstanceId);
 
@@ -321,6 +406,7 @@ namespace CindarsHope.Equipment
                 _infusionRegistry?.ClearAll();
                 _upgradeRegistry?.ClearAll();
                 _recipeUnlockService?.ClearAll();
+                _accessoryRouter?.Clear();
                 return;
             }
 
@@ -335,6 +421,10 @@ namespace CindarsHope.Equipment
                     _slots[slotData.SlotType] = slotData.ItemInstanceId;
                 }
             }
+
+            // fable_23: recomputa os efeitos de acessório a partir dos slots restaurados. Saves antigos
+            // (sem Ring1/Ring2/Accessory) => slots vazios => roteador neutro, sem migration (CA-4).
+            RebuildAccessoryEffects();
 
             // fable_22: restaura infusões (lista null em save legado => registro vazio, sem migration).
             if (_infusionRegistry == null)

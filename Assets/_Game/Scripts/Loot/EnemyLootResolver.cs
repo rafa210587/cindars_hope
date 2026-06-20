@@ -93,6 +93,14 @@ namespace CindarsHope.Loot
             // 2) Uma escolha ponderada entre as entradas principais.
             RollOneWeighted(table, table.Entries, rng, result, warnings);
 
+            // 2b) fable_23 — ponto ÚNICO do ExtraLootRollChance (Anel de Alihana +10%). Consulta
+            // síncrona ao AccessoryEffectRouter; sem acessório => sem roll extra (helper trata default
+            // 0 como neutro). Mantém o determinismo: usa o MESMO rng do resolver. Sem if espalhado.
+            if (CindarsHope.Equipment.AccessoryEffectRouter.ShouldRollExtraLoot(rng.NextDouble()))
+            {
+                RollOneWeighted(table, table.Entries, rng, result, warnings);
+            }
+
             // 3) Essência elemental da banda (canon: 8% comum / +25% elite / 100% miniboss/boss).
             RollEssence(table, rng, isElite, isMinibossOrBoss, result);
 

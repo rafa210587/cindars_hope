@@ -8,6 +8,18 @@ namespace CindarsHope.Combat
         [SerializeField] private Rigidbody2D _rigidbody;
         [SerializeField] private float _duration = 0.15f;
 
+        // fable_23 — opt-in para a resistência a knockback de acessório (Charm de Stoneheart -50%).
+        // FALSE por padrão: inimigos recebem este componente via AddComponent e NÃO devem sofrer a
+        // resistência do jogador. Só a instância do JOGADOR habilita a flag (wiring de cena/prefab),
+        // garantindo que o ponto único de resistência (ApplyKnockback) só afete o jogador.
+        [SerializeField] private bool _appliesAccessoryResist;
+
+        public bool AppliesAccessoryResist
+        {
+            get => _appliesAccessoryResist;
+            set => _appliesAccessoryResist = value;
+        }
+
         private float _remainingTime;
         private Vector2 _velocity;
 
@@ -48,6 +60,18 @@ namespace CindarsHope.Combat
             if (direction.sqrMagnitude <= 0.0001f)
             {
                 return;
+            }
+
+            // fable_23 — ponto ÚNICO do KnockbackResistModifier. Só o jogador (opt-in) consulta o
+            // roteador; inimigos mantêm a força original. Sem acessório => força inalterada (helper
+            // trata default 0 como neutro). Clamp01 na redução garante que nunca inverte a direção.
+            if (_appliesAccessoryResist)
+            {
+                force = CindarsHope.Equipment.AccessoryEffectRouter.ApplyKnockbackResist(force);
+                if (force <= 0f)
+                {
+                    return;
+                }
             }
 
             direction.Normalize();

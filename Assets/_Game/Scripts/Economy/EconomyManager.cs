@@ -151,6 +151,11 @@ namespace CindarsHope.Economy
                 return;
             }
 
+            // fable_23 (CA-2): ponto ÚNICO nomeado do bônus de ouro em vendas de acessório (Anel de
+            // Finan +5%). Consulta síncrona ao AccessoryEffectRouter; sem acessório => neutro (sem if
+            // espalhado). Não-stack já garantido no roteador (2 anéis iguais != +10%).
+            totalGold = CindarsHope.Equipment.AccessoryEffectRouter.ApplyGoldGain(totalGold);
+
             _playerManager.AddGold(totalGold);
             PublishTransaction(true, "SellAll", string.Empty, totalAmount, totalGold, $"Venda concluida: {totalAmount} itens por {totalGold}g.");
         }
