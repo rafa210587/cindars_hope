@@ -56,6 +56,10 @@ namespace CindarsHope.Save
         // IDs e tipos simples (ADR-0006 / save-dto-simple-types-only). Ausente em save legado = lista
         // vazia = zero animais (CA-3). Sem migração. Owner: FarmAnimalRegistry.
         public CindarsHope.Farm.Animals.FarmAnimalsSaveData FarmAnimals;
+        // fable_26: amizade por NPC (npcId + pontos + marcadores de dia dos caps). Seção ADITIVA, só
+        // strings/ints e IDs estáveis (ADR-0006). Ausente em save legado = lista vazia = todos os NPCs
+        // nível 0 (Unknown) (CA-3). Sem migração. Owner: FriendshipService.
+        public CindarsHope.NPC.Friendship.FriendshipSaveData Friendship;
     }
 
     [Serializable]

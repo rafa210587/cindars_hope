@@ -191,7 +191,8 @@ namespace CindarsHope.Save
                     DailyGoals = CaptureFarmDailyGoalsSaveData(),
                     Spellbook = spellbookSaveData,
                     FarmLots = CaptureFarmLotsSaveData(),
-                    FarmAnimals = CaptureFarmAnimalsSaveData()
+                    FarmAnimals = CaptureFarmAnimalsSaveData(),
+                    Friendship = CaptureFriendshipSaveData()
                 };
 
                 var savePath = SaveFilePath;
@@ -537,6 +538,13 @@ namespace CindarsHope.Save
         {
             var service = Farm.Runtime.FarmDailyGoalService.Instance;
             return service != null ? service.CaptureSaveData() : new Farm.Runtime.FarmDailyGoalsSaveData();
+        }
+
+        // fable_26: amizade por NPC (seção aditiva, domínio NPC via serviço singleton).
+        private NPC.Friendship.FriendshipSaveData CaptureFriendshipSaveData()
+        {
+            var service = NPC.Friendship.FriendshipService.Instance;
+            return service != null ? service.CaptureSaveData() : new NPC.Friendship.FriendshipSaveData();
         }
 
         // fable_12: animais de fazenda (seção aditiva, domínio global via registry singleton).
@@ -1108,6 +1116,13 @@ namespace CindarsHope.Save
             if (Farm.Animals.FarmAnimalRegistry.Instance != null)
             {
                 Farm.Animals.FarmAnimalRegistry.Instance.RestoreFromSaveData(saveData.FarmAnimals);
+            }
+
+            // fable_26: restaura a amizade por NPC. saveData.Friendship ausente (legado) ⇒ o serviço
+            // recebe null e mantém estado limpo = todos os NPCs nível 0 (Unknown) (CA-3), sem erro.
+            if (NPC.Friendship.FriendshipService.Instance != null)
+            {
+                NPC.Friendship.FriendshipService.Instance.RestoreFromSaveData(saveData.Friendship);
             }
 
             // fable_55: restaura os jobs de processamento (queijaria/barril). Campo aditivo na seção

@@ -87,6 +87,9 @@ namespace CindarsHope.Localization
             yield return new LocalizationEntry("quest.sample.title", "Missao de Exemplo");
             yield return new LocalizationEntry("quest.sample.desc", "Descricao de exemplo da missao.");
             yield return new LocalizationEntry("dialogue.sample.greeting", "Ola, viajante.");
+            // fable_26: rotulo da linha de cabecalho do Conversar ("Amizade: nivel N"). Texto novo
+            // voltado ao jogador declarado aqui via LocalizationService (ADR-0012 / decisao 4.7).
+            yield return new LocalizationEntry("ui.friendship.level_label", "Amizade: nivel");
         }
 
         /// <summary>Number of resolvable keys currently in the table.</summary>

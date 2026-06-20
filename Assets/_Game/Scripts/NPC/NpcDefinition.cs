@@ -10,6 +10,12 @@ namespace CindarsHope.NPC
         public List<string> LikedItemTags { get; set; } = new List<string>();
         public List<string> LovedItemIds { get; set; } = new List<string>();
         public List<string> DislikedItemTags { get; set; } = new List<string>();
+        // fable_26 (emenda 2026-06-13-V3 §3): categorias que faltavam para o gosto por NPC.
+        // NeutralItemTags é opcional (o default já é neutral quando não classificado).
+        // HatedItemTags habilita a reação negativa alta (-6) específica por NPC.
+        // Reutiliza esta struct (NÃO criar uma segunda) + a tag ItemTag.Giftable como porteiro.
+        public List<string> NeutralItemTags { get; set; } = new List<string>();
+        public List<string> HatedItemTags { get; set; } = new List<string>();
         public int DailyGiftLimit { get; set; } = 1;
     }
 
