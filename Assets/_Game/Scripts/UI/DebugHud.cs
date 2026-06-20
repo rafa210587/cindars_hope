@@ -211,6 +211,9 @@ namespace CindarsHope.UI
             DrawCaveSummary();
 
             GUILayout.Space(6f);
+            DrawCombatTelemetryStatus();
+
+            GUILayout.Space(6f);
             DrawEconomyState();
 
             GUILayout.EndScrollView();
@@ -586,6 +589,26 @@ namespace CindarsHope.UI
                 _caveDebugLevelSkipController.LastDebugAction != "none")
             {
                 GUILayout.Label($"Last: {_caveDebugLevelSkipController.LastDebugAction}");
+            }
+        }
+
+        // fable_59 — linha aditiva de status da telemetria de combate (sem tela nova).
+        private void DrawCombatTelemetryStatus()
+        {
+            var service = CindarsHope.Combat.Telemetry.CombatTelemetryService.ActiveInstance;
+            if (service == null)
+            {
+                GUILayout.Label("Telemetry: bootstrap pending");
+                return;
+            }
+
+            if (service.IsCollecting)
+            {
+                GUILayout.Label($"Telemetry: ON - level {service.CurrentLevel}, {service.CurrentKillEntries} kill ids");
+            }
+            else
+            {
+                GUILayout.Label("Telemetry: OFF (debug toggle)");
             }
         }
 
