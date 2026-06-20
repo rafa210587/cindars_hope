@@ -209,6 +209,13 @@ namespace CindarsHope.Save
         // fable_22 (aditivo): infusões de têmpera por instância de arma/ferramenta. Default VAZIO =>
         // saves legados carregam sem têmpera, sem migration. Strings/ints simples (sem refs Unity).
         public List<WeaponInfusionSaveData> Infusions = new List<WeaponInfusionSaveData>();
+        // fable_49 (aditivo): upgrade focado (+1/+2/+3) por instância de equipamento. Default VAZIO =>
+        // saves legados carregam sem upgrade (level 0), sem migration. Tipos simples (sem refs Unity).
+        public List<EquipmentUpgradeSaveData> Upgrades = new List<EquipmentUpgradeSaveData>();
+        // fable_49 (aditivo): receitas de tier alto APRENDIDas via first-kill (slugs estáveis). Default
+        // VAZIO => save legado sem receitas, sem migration. Persistido aqui (mesmo owner do equipment
+        // save) para não tocar o SaveManager core; consultado pelo gating de craft.
+        public List<string> UnlockedRecipeIds = new List<string>();
     }
 
     [Serializable]
@@ -226,6 +233,17 @@ namespace CindarsHope.Save
         public string ItemInstanceId;
         public string InfusionElement; // estável: fire/ice/toxic/lightning/arcane/void
         public int InfusionTier;        // 0 = sem; 1 ou 2
+    }
+
+    // fable_49: entrada aditiva de upgrade (itemInstanceId → level/focus). Tipos simples, sem refs
+    // Unity, compatível com JsonUtility. Ausência da entrada = item sem upgrade (level 0). Derivados
+    // (dano/durabilidade) NUNCA persistidos (§45) — recalculados no load a partir deste registro.
+    [Serializable]
+    public class EquipmentUpgradeSaveData
+    {
+        public string ItemInstanceId;
+        public int UpgradeLevel;   // 0 = sem; 1..3
+        public string UpgradeFocus; // estável: damage/durability/weight/stamina/block
     }
 
     [Serializable]

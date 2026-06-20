@@ -28,6 +28,14 @@ namespace CindarsHope.Equipment
         private CindarsHope.Economy.WeaponInfusionRegistry _infusionRegistry;
         public CindarsHope.Economy.WeaponInfusionRegistry InfusionRegistry => _infusionRegistry;
 
+        // fable_49: registro de upgrade focado (+1/+2/+3) por instância, paralelo à têmpera/durabilidade,
+        // e serviço de receitas aprendidas (gating de craft de tier alto). Ambos persistidos de forma
+        // aditiva no MESMO DTO de equipment (sem tocar o SaveManager core) e expostos por acessor estático.
+        private CindarsHope.Crafting.EquipmentUpgradeRegistry _upgradeRegistry;
+        private CindarsHope.Crafting.RecipeUnlockService _recipeUnlockService;
+        public CindarsHope.Crafting.EquipmentUpgradeRegistry UpgradeRegistry => _upgradeRegistry;
+        public CindarsHope.Crafting.RecipeUnlockService RecipeUnlockService => _recipeUnlockService;
+
         // Legacy properties - deprecated, use GetEquippedItem() instead
         public string EquippedToolId => _equippedToolId;
         public ToolType EquippedToolType => _equippedToolType;
@@ -48,6 +56,20 @@ namespace CindarsHope.Equipment
                 _infusionRegistry = new CindarsHope.Economy.WeaponInfusionRegistry();
             }
             CindarsHope.Economy.WeaponInfusionRegistry.Active = _infusionRegistry;
+
+            // fable_49: cria/publica o registro de upgrade e o serviço de receitas aprendidas como
+            // acessores únicos (sem busca global). DontDestroyOnLoad: o último Awake vence.
+            if (_upgradeRegistry == null)
+            {
+                _upgradeRegistry = new CindarsHope.Crafting.EquipmentUpgradeRegistry();
+            }
+            CindarsHope.Crafting.EquipmentUpgradeRegistry.Active = _upgradeRegistry;
+
+            if (_recipeUnlockService == null)
+            {
+                _recipeUnlockService = new CindarsHope.Crafting.RecipeUnlockService();
+            }
+            CindarsHope.Crafting.RecipeUnlockService.Active = _recipeUnlockService;
         }
 
         private void OnEnable()
@@ -274,6 +296,17 @@ namespace CindarsHope.Equipment
                 data.Infusions = _infusionRegistry.CaptureSaveData();
             }
 
+            // fable_49: persiste upgrades focados e receitas aprendidas de forma aditiva (defaults vazios
+            // em saves antigos). Derivados NUNCA persistidos (§45) — só level/focus e os slugs de unlock.
+            if (_upgradeRegistry != null)
+            {
+                data.Upgrades = _upgradeRegistry.CaptureSaveData();
+            }
+            if (_recipeUnlockService != null)
+            {
+                data.UnlockedRecipeIds = _recipeUnlockService.CaptureUnlockedIds();
+            }
+
             return data;
         }
 
@@ -286,6 +319,8 @@ namespace CindarsHope.Equipment
                 _equippedToolTier = ToolTier.None;
                 _slots.Clear();
                 _infusionRegistry?.ClearAll();
+                _upgradeRegistry?.ClearAll();
+                _recipeUnlockService?.ClearAll();
                 return;
             }
 
@@ -308,6 +343,22 @@ namespace CindarsHope.Equipment
                 CindarsHope.Economy.WeaponInfusionRegistry.Active = _infusionRegistry;
             }
             _infusionRegistry.RestoreFromSaveData(saveData.Infusions);
+
+            // fable_49: restaura upgrades e receitas aprendidas (listas null em save legado => registros
+            // vazios, sem migration; derivados recalculados pelo fluxo existente lendo estes registros).
+            if (_upgradeRegistry == null)
+            {
+                _upgradeRegistry = new CindarsHope.Crafting.EquipmentUpgradeRegistry();
+                CindarsHope.Crafting.EquipmentUpgradeRegistry.Active = _upgradeRegistry;
+            }
+            _upgradeRegistry.RestoreFromSaveData(saveData.Upgrades);
+
+            if (_recipeUnlockService == null)
+            {
+                _recipeUnlockService = new CindarsHope.Crafting.RecipeUnlockService();
+                CindarsHope.Crafting.RecipeUnlockService.Active = _recipeUnlockService;
+            }
+            _recipeUnlockService.RestoreUnlockedIds(saveData.UnlockedRecipeIds);
         }
 
         private void HandleInventoryChanged(InventoryChangedEvent evt)

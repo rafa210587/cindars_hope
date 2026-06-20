@@ -25,6 +25,11 @@ namespace CindarsHope.Craft.Data
         public string RequiredSkillNodeId;
         public string[] UnlockConditionIds;
 
+        // fable_49 (aditivo): slug de receita aprendida exigido para craftar (ex.: recipe_unlock_mithril_work).
+        // Vazio = sem gating de unlock (receitas atuais inalteradas). Quando preenchido, o craft só é aceito
+        // se RecipeUnlockService.IsUnlocked(este slug) for true — receitas de tier alto começam bloqueadas.
+        public string RequiredRecipeUnlockId;
+
         public WorkshopType WorkshopType
         {
             get => RequiredStationType;

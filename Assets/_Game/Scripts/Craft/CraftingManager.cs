@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
 using CindarsHope.Craft.Data;
+using CindarsHope.Crafting;
 using CindarsHope.Inventory;
 using UnityEngine;
 
@@ -151,6 +152,15 @@ namespace CindarsHope.Craft
             if (string.IsNullOrWhiteSpace(recipe.OutputItemId) || recipe.OutputAmount <= 0)
             {
                 Debug.LogWarning($"CraftingManager rejected invalid output data for recipe '{recipeId}'.", this);
+                return false;
+            }
+
+            // fable_49: gating por receita aprendida. Receita com RequiredRecipeUnlockId só é aceita se o
+            // jogador a aprendeu (first-kill do boss de gate). Slug vazio = sem gating (receitas atuais ok).
+            if (!string.IsNullOrWhiteSpace(recipe.RequiredRecipeUnlockId)
+                && !CraftingRecipeGate.IsRecipeUnlocked(recipe.RequiredRecipeUnlockId))
+            {
+                Debug.Log($"CraftingManager rejected locked recipe '{recipeId}': requires unlock '{recipe.RequiredRecipeUnlockId}'.", this);
                 return false;
             }
 
