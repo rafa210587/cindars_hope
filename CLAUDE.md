@@ -110,6 +110,9 @@ Use `.claude/skills/<name>/SKILL.md` when task matches:
 | `implementation-closeout` | Final checklist for closing any relevant task |
 | `unity-asset-generation` | Running Unity editor asset generators with evidence |
 | `unity-validation-triage` | Classifying Unity/dotnet/log validation failures |
+| `state-machine-design` | Designing an FSM (player/enemy/boss/UI flow) when boolean flags start conflicting |
+| `ability-effect-composition` | Designing how abilities/spells/status effects compose from reusable effects |
+| `monobehaviour-decomposition` | Splitting a god-MonoBehaviour into thin adapter + pure-C# core |
 
 ---
 
