@@ -123,6 +123,17 @@ namespace CindarsHope.Equipment
 
         public void EquipItem(EquipmentSlot slot, string itemInstanceId)
         {
+            // fable_29 (emenda V3 item 6) — punitive-respec gate READ (not a rewrite of equipment):
+            // an item whose required skill tier was re-locked by a respec is non-equippable until
+            // the tier is re-unlocked. The rule is owned by Skills (SkillTierEquipGate); here we
+            // only consult it. Items with no tier requirement are never blocked.
+            if (!string.IsNullOrEmpty(itemInstanceId)
+                && CindarsHope.Skills.SkillTierEquipGate.IsEquipBlocked(itemInstanceId))
+            {
+                Debug.LogWarning($"EquipmentManager: equip de '{itemInstanceId}' bloqueado — tier de skill re-bloqueado por respec. Item permanece no inventario.", this);
+                return;
+            }
+
             _slots[slot] = itemInstanceId ?? string.Empty;
             RebuildAccessoryEffects();
             GameEventBus.Publish(new EquipmentSlotChangedEvent(slot, itemInstanceId));

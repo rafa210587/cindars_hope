@@ -21,14 +21,16 @@ namespace CindarsHope.Editor.Validation
             var issues = new List<string>();
             var passes = new List<string>();
 
-            // 1. Verify DefaultSkillCatalog builds all 55 nodes and 5 trees
+            // 1. Verify DefaultSkillCatalog builds all 69 nodes and 5 trees (fable_29: WI-11 count;
+            //    was stale "55").
             try
             {
                 var nodes = DefaultSkillCatalog.BuildAllNodes();
-                if (nodes.Count == 55)
-                    passes.Add($"DefaultSkillCatalog: {nodes.Count} nodes (expected 55) — PASS");
+                int expected = DefaultSkillCatalog.CanonicalNodeCount; // 69
+                if (nodes.Count == expected)
+                    passes.Add($"DefaultSkillCatalog: {nodes.Count} nodes (expected {expected}) — PASS");
                 else
-                    issues.Add($"DefaultSkillCatalog: {nodes.Count} nodes (expected 55) — FAIL");
+                    issues.Add($"DefaultSkillCatalog: {nodes.Count} nodes (expected {expected}) — FAIL");
 
                 var trees = DefaultSkillCatalog.BuildAllTrees(nodes);
                 if (trees.Count == 5)

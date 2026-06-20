@@ -23,24 +23,29 @@ namespace CindarsHope.Skills
         public bool IsReady => CooldownRemaining <= 0f;
     }
 
+    // fable_29 (emenda V3 item 7) — RETIRED legacy active-slot path (keys R/T/Y/G).
+    //
+    // The live, canonical active-slot path is ActiveSkillExecutionController (keys 1-4, patch
+    // WI-11). This component no longer reads input or executes skills — its R/T/Y/G handling is
+    // removed so it cannot compete with the 1-4 controller. The type and its slot/save accessors
+    // are kept ONLY so the existing SaveManager reference and the legacy ActiveSkillSlots save
+    // section keep compiling/round-tripping. Do not wire new active skills here.
+    //
+    // Retirement is BEHAVIORAL (no Update() input, no executor call) rather than via [Obsolete],
+    // so the out-of-scope SaveManager that still references this type does not emit CS0618.
     [DisallowMultipleComponent]
     public class ActiveSkillSlots : MonoBehaviour
     {
         [SerializeField] private SkillActionExecutor _skillExecutor;
         private ActiveSkillSlot[] _slots = new ActiveSkillSlot[4];
 
-        private static readonly KeyCode[] SlotKeys = { KeyCode.R, KeyCode.T, KeyCode.Y, KeyCode.G };
+        // Retained for save/state continuity; NO LONGER bound to runtime input (item 7).
+        private static readonly KeyCode[] SlotKeys = { KeyCode.None, KeyCode.None, KeyCode.None, KeyCode.None };
 
         private void Awake()
         {
             for (int i = 0; i < SlotKeys.Length; i++)
                 _slots[i] = new ActiveSkillSlot(SlotKeys[i]);
-
-            if (_skillExecutor == null)
-                _skillExecutor = GetComponent<SkillActionExecutor>();
-
-            if (_skillExecutor == null)
-                Debug.LogWarning("ActiveSkillSlots: SkillActionExecutor not found.", this);
         }
 
         private void OnEnable()
@@ -55,35 +60,7 @@ namespace CindarsHope.Skills
             GameEventBus.Unsubscribe<ActiveSkillSlotClearedEvent>(OnSlotCleared);
         }
 
-        private void Update()
-        {
-            var modalManager = GameBootstrap.Instance?.ModalManager;
-            bool isModalActive = modalManager != null && modalManager.HasActiveModal;
-
-            foreach (var slot in _slots)
-            {
-                if (slot.CooldownRemaining > 0)
-                    slot.CooldownRemaining -= Time.deltaTime;
-
-                if (!isModalActive && Input.GetKeyDown(slot.InputKey))
-                    TryActivateSlot(slot);
-            }
-        }
-
-        private void TryActivateSlot(ActiveSkillSlot slot)
-        {
-            if (!slot.IsReady || string.IsNullOrEmpty(slot.SkillActionId)) return;
-
-            if (_skillExecutor == null)
-            {
-                Debug.LogWarning("ActiveSkillSlots: SkillActionExecutor not found.", this);
-                return;
-            }
-
-            bool success = _skillExecutor.TryExecuteSkill(slot.SkillActionId);
-            if (success)
-                slot.CooldownRemaining = 1f;
-        }
+        // fable_29 (item 7): no Update() input. The keys-1-4 controller owns active-skill input.
 
         // Set a skill into a slot with validation against SkillTreeManager
         public bool TrySetSkillInSlot(int slotIndex, string skillActionId)

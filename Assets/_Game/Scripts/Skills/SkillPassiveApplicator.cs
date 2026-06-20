@@ -4,6 +4,11 @@ using UnityEngine;
 namespace CindarsHope.Skills
 {
     // Tracks which passive modifiers are currently active based on purchased nodes.
+    //
+    // fable_29: SUPERSEDED by SkillEffectAggregator, which is the single recompute authority
+    // (rank-scaled modifiers + named hooks + equip gate). This class is retained only for
+    // backward compatibility and is no longer used by SkillTreeManager. Do not wire into new code.
+    [System.Obsolete("fable_29: use SkillEffectAggregator (rank-scaled, named hooks, equip gate).")]
     public class SkillPassiveApplicator
     {
         private readonly Dictionary<string, SkillNodeDataSO> _nodeIndex;

@@ -25,6 +25,10 @@ namespace CindarsHope.Player
             public float CraftTimeReduction;
             public float RepairEfficiencyBonus;
             public float HungerDrainReduction;
+            // fable_29 (emenda V3 item 8): consumption sinks for the formerly-dead modifiers.
+            public float BowProjectileSpeed;       // BowProjectileSpeedFlat
+            public float DodgeCostReduction;        // DodgeCostReduction (0.10 == -10% dodge stamina)
+            public float StatusDurationReduction;   // StatusDurationReduction (0.10 == -10% status time)
         }
 
         public static DerivedStats Calculate(
@@ -91,6 +95,12 @@ namespace CindarsHope.Player
                         case SkillModifierType.CraftTimeReductionPercent: stats.CraftTimeReduction += mod.Value; break;
                         case SkillModifierType.RepairEfficiencyBonus:     stats.RepairEfficiencyBonus += mod.Value; break;
                         case SkillModifierType.HungerDrainReduction:      stats.HungerDrainReduction += mod.Value; break;
+                        // fable_29 (emenda V3 item 8): the five formerly-dead modifiers, now consumed.
+                        case SkillModifierType.BowProjectileSpeedFlat:    stats.BowProjectileSpeed += mod.Value; break;
+                        case SkillModifierType.DualWieldAttackSpeedBonus: stats.AttackSpeed += mod.Value; break;
+                        case SkillModifierType.TwoHandedDamageBonus:      stats.Attack += (int)mod.Value; break;
+                        case SkillModifierType.DodgeCostReduction:        stats.DodgeCostReduction += mod.Value; break;
+                        case SkillModifierType.StatusDurationReduction:   stats.StatusDurationReduction += mod.Value; break;
                     }
                 }
             }

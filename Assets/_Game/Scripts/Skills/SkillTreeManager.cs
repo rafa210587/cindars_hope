@@ -17,7 +17,9 @@ namespace CindarsHope.Skills
         private SkillTreeState _state;
         private SkillPurchaseService _purchaseService;
         private SkillRespecService _respecService;
-        private SkillPassiveApplicator _passiveApplicator;
+        // fable_29: the aggregator replaces the old per-node applicator as the single recompute
+        // authority (DerivedStats provider + named hooks + equip gate). Rank-scaled.
+        private SkillEffectAggregator _aggregator;
 
         private Dictionary<string, SkillTreeDataSO> _treeIndex = new Dictionary<string, SkillTreeDataSO>();
         private Dictionary<string, SkillNodeDataSO> _nodeIndex = new Dictionary<string, SkillNodeDataSO>();
@@ -42,7 +44,7 @@ namespace CindarsHope.Skills
 
             _purchaseService = new SkillPurchaseService(_nodeIndex.Values);
             _respecService = new SkillRespecService(_respecCostGold);
-            _passiveApplicator = new SkillPassiveApplicator(_nodeIndex);
+            _aggregator = new SkillEffectAggregator(_nodeIndex);
         }
 
         private void OnEnable()
@@ -88,6 +90,11 @@ namespace CindarsHope.Skills
         }
 
         public bool TryPurchaseNode(string nodeId, int playerLevel, out string feedback)
+            => TryPurchaseNode(nodeId, playerLevel, null, out feedback);
+
+        // fable_29 — purchase rank 1 of a node. For exclusive-capstone-variant nodes the caller
+        // must pass `chosenVariant` (the UI must have shown confirmation; see ConfirmsCapstone).
+        public bool TryPurchaseNode(string nodeId, int playerLevel, string chosenVariant, out string feedback)
         {
             feedback = string.Empty;
             if (_progressionManager != null)
@@ -95,7 +102,7 @@ namespace CindarsHope.Skills
                 _state.SetAvailablePoints(_progressionManager.UnspentSkillPoints);
             }
 
-            bool ok = _purchaseService.TryPurchase(nodeId, _state, playerLevel, out feedback);
+            bool ok = _purchaseService.TryPurchase(nodeId, _state, playerLevel, chosenVariant, out feedback);
             if (ok)
             {
                 if (_progressionManager != null && !_progressionManager.TrySpendSkillPoints(1))
@@ -104,9 +111,10 @@ namespace CindarsHope.Skills
                     return false;
                 }
 
+                _aggregator.Recompute(_state);
+
                 if (_nodeIndex.TryGetValue(nodeId, out var node))
                 {
-                    _passiveApplicator.Apply(node, _state);
                     feedback = "Skill comprada.";
                     if (node.SkillCategory == SkillCategory.EquippableSkill
                         && !string.IsNullOrWhiteSpace(node.UnlockedSkillActionId))
@@ -119,6 +127,40 @@ namespace CindarsHope.Skills
             }
             return ok;
         }
+
+        // fable_29 — rank up an already-purchased node (rank N -> N+1), bounded by the dynamic cap.
+        public bool TryRankUpNode(string nodeId, out string feedback)
+        {
+            feedback = string.Empty;
+            if (_progressionManager != null)
+                _state.SetAvailablePoints(_progressionManager.UnspentSkillPoints);
+
+            bool ok = _purchaseService.TryRankUp(nodeId, _state, out feedback);
+            if (ok)
+            {
+                if (_progressionManager != null && !_progressionManager.TrySpendSkillPoints(1))
+                {
+                    feedback = "Skill points changed before rank-up could complete.";
+                    return false;
+                }
+                _aggregator.Recompute(_state);
+                feedback = "Rank aumentado.";
+                GameEventBus.Publish(new SkillDerivedStatsChangedEvent());
+            }
+            return ok;
+        }
+
+        // fable_29 (CA-3) — does this node require an exclusive capstone-variant confirmation?
+        public bool RequiresCapstoneConfirmation(string nodeId)
+            => _nodeIndex.TryGetValue(nodeId, out var node)
+               && node.CapstoneVariants != null && node.CapstoneVariants.Count > 0;
+
+        public IReadOnlyList<string> GetCapstoneVariants(string nodeId)
+            => _nodeIndex.TryGetValue(nodeId, out var node) ? node.CapstoneVariants : null;
+
+        public int GetRank(string nodeId) => _state.GetRank(nodeId);
+        public int GetDynamicRankCap(string treeId) => _state.DynamicRankCap(treeId);
+        public int GetPointsSpentInTree(string treeId) => _state.PointsSpentInTree(treeId);
 
         public bool TryAssignActiveSlot(int slotIndex, string skillActionId)
         {
@@ -156,11 +198,16 @@ namespace CindarsHope.Skills
             return true;
         }
 
+        // fable_29 (emenda V3 item 6) — punitive respec: refunds points AND recomputes the
+        // equip-revalidation gate so items gated by re-locked tiers become non-equippable.
         public bool TryRespec(ref int gold, int playerLevel)
         {
             bool ok = _respecService.TryRespec(_state, playerLevel, ref gold);
             if (ok)
-                _passiveApplicator.Reset();
+            {
+                _aggregator.Recompute(_state); // recomputes hooks + equip gate from the empty tree
+                GameEventBus.Publish(new SkillDerivedStatsChangedEvent());
+            }
             return ok;
         }
 
@@ -170,17 +217,19 @@ namespace CindarsHope.Skills
 
         public bool IsNodeUnlocked(string nodeId)
         {
-            if (!_nodeIndex.TryGetValue(nodeId, out var node)) return false;
-            if (node.SkillCategory == SkillCategory.PassiveSkill) return _state.IsPurchased(nodeId);
+            if (!_nodeIndex.TryGetValue(nodeId, out _)) return false;
             return _state.IsPurchased(nodeId);
         }
 
+        // Single source of truth for the DerivedStats provider (rank-scaled, via aggregator).
         public List<SkillPassiveModifier> GetAllActivePassiveModifiers()
-            => _passiveApplicator.GetAllActive();
+            => _aggregator != null ? _aggregator.ActiveModifiers : new List<SkillPassiveModifier>();
 
         private string AutoAssignActiveSkill(string skillActionId)
         {
-            string[] keys = { "R", "T", "Y", "G" };
+            // fable_29 (emenda V3 item 7): the live slot path is ActiveSkillExecutionController
+            // keys 1-4. The legacy ActiveSkillSlots (R/T/Y/G) is retired; slot indices are 0-3.
+            string[] keys = { "1", "2", "3", "4" };
             for (var index = 0; index < keys.Length; index++)
             {
                 if (!string.IsNullOrEmpty(_state.GetActiveSlotSkillActionId(index)))
@@ -190,7 +239,7 @@ namespace CindarsHope.Skills
 
                 if (TryAssignActiveSlot(index, skillActionId))
                 {
-                    return $"Skill ativa alocada em {keys[index]}.";
+                    return $"Skill ativa alocada na tecla {keys[index]}.";
                 }
             }
 
@@ -201,9 +250,10 @@ namespace CindarsHope.Skills
 
         public SkillTreeSaveData CaptureSaveData()
         {
+            // fable_29 (emenda V3 item 7): slot input keys are 1-4 (ActiveSkillExecutionController).
             return _state.ToSaveData(i => i switch
             {
-                0 => "R", 1 => "T", 2 => "Y", 3 => "G", _ => string.Empty
+                0 => "1", 1 => "2", 2 => "3", 3 => "4", _ => string.Empty
             });
         }
 
@@ -211,17 +261,41 @@ namespace CindarsHope.Skills
         {
             if (data == null) return;
             int totalPoints = PlayerProgressionRules.CalculateTotalSkillPointsAtLevel(playerLevel);
-            _state.LoadFromSaveData(data, totalPoints);
-            _passiveApplicator.Reset();
 
-            foreach (var nodeId in _state.PurchasedNodeIds)
-            {
-                if (_nodeIndex.TryGetValue(nodeId, out var node))
-                    _passiveApplicator.Apply(node, _state);
-            }
+            // Load (ranks + variants), resolving each node's tree for per-tree point totals.
+            _state.LoadFromSaveData(data, totalPoints, ResolveNodeTreeId);
 
+            // fable_29 migration: refund any saved node id that no longer exists in the catalog.
+            // Points return to the pool (lossless); each refund is logged.
+            MigrateUnknownNodes(data);
+
+            _aggregator.Recompute(_state);
             ValidateActiveSlots();
             GameEventBus.Publish(new SkillDerivedStatsChangedEvent());
+        }
+
+        private string ResolveNodeTreeId(string nodeId)
+            => _nodeIndex.TryGetValue(nodeId, out var node) ? node.TreeId : null;
+
+        // fable_29 — drop saved node ids unknown to the live catalog, refunding their ranks.
+        private void MigrateUnknownNodes(SkillTreeSaveData data)
+        {
+            var unknown = new List<string>();
+            foreach (var nodeId in _state.PurchasedNodeIds)
+                if (!_nodeIndex.ContainsKey(nodeId))
+                    unknown.Add(nodeId);
+
+            if (unknown.Count == 0) return;
+
+            int totalRefunded = 0;
+            foreach (var nodeId in unknown)
+            {
+                int refunded = _state.RemoveAndRefundNode(nodeId);
+                totalRefunded += refunded;
+                Debug.Log($"[SkillTreeManager] Save migration: refunded {refunded} point(s) for obsolete skill '{nodeId}'.");
+            }
+
+            Debug.Log($"[SkillTreeManager] Save migration complete: {unknown.Count} obsolete node(s), {totalRefunded} point(s) refunded to pool.");
         }
 
         private void ValidateActiveSlots()

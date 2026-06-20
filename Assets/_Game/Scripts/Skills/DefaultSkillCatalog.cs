@@ -3,10 +3,17 @@ using UnityEngine;
 
 namespace CindarsHope.Skills
 {
-    // Code-driven catalog for all 55 skill nodes and 5 trees.
-    // Used by SkillTreeManager when no SO assets are wired in the inspector.
+    // fable_29 — code-driven CANONICAL catalog: 69 skill nodes across 5 trees
+    // (melee 14 + ranged 11 + magic 13 + survival 16 + crafting 15 = 69; patch WI-11).
+    // Used by SkillTreeManager when no SO assets are wired in the inspector, and is the
+    // data source consumed by the GenerateCanonicalSkillCatalog editor generator.
+    //
+    // Per node this assigns: Tier (1-5, drives tier gating + dynamic rank cap per the
+    // SKILL_NUMERIC_ADDENDUM §2/§3), EffectRoute (named hooks for consumer-future passives),
+    // and exclusive capstone variants (Melee: Kanthor/Kaand; Magic: Anya/Senya — CA-3).
     public static class DefaultSkillCatalog
     {
+        public const int CanonicalNodeCount = 69;
         public static List<SkillNodeDataSO> BuildAllNodes()
         {
             var nodes = new List<SkillNodeDataSO>();
@@ -15,7 +22,150 @@ namespace CindarsHope.Skills
             nodes.AddRange(BuildMagicNodes());
             nodes.AddRange(BuildSurvivalNodes());
             nodes.AddRange(BuildCraftingNodes());
+
+            // fable_29: data-driven post-passes keyed by node id (avoids threading tier/route
+            // through every call site). Tiers/routes/variants come from the SKILL_NUMERIC_ADDENDUM.
+            ApplyTiers(nodes);
+            ApplyEffectRoutes(nodes);
+            ApplyCapstoneVariants(nodes);
+            ApplyDormantActives(nodes);
             return nodes;
+        }
+
+        // ── fable_29: Tier assignment (SKILL_NUMERIC_ADDENDUM §2 tier column) ───────────────
+        // Any node not listed defaults to Tier 1 (roots/early nodes). Capstones are Tier 5.
+        private static readonly Dictionary<string, int> NodeTiers = new Dictionary<string, int>
+        {
+            // MELEE
+            { "melee_iron_grip", 1 }, { "melee_guarded_stance", 1 }, { "melee_dual_wield_flow", 1 },
+            { "melee_guarded_block", 1 }, { "melee_offhand_cut", 2 }, { "melee.avanco_aco", 2 },
+            { "melee_two_handed_momentum", 2 }, { "melee_whirl_cut", 2 }, { "melee_battle_dash", 3 },
+            { "melee_leap_attack", 3 }, { "melee.grito_desafio", 3 }, { "melee_dodge_training", 3 },
+            { "melee.investida_quebra_guarda", 4 }, { "melee_capstone_battle_rhythm", 5 },
+            // RANGED
+            { "ranged_steady_hand", 1 }, { "ranged_marked_prey", 1 }, { "ranged_charged_shot", 1 },
+            { "ranged_long_sight", 1 }, { "ranged_quick_nock", 1 }, { "ranged_kiting_steps", 2 },
+            { "ranged_line_piercer", 3 }, { "ranged_multishot_fan", 3 }, { "ranged_bleeding_arrow", 3 },
+            { "ranged_projectile_tuning", 4 }, { "ranged_capstone_eagle_focus", 5 },
+            // MAGIC
+            { "magic_mana_well", 1 }, { "magic_quick_channel", 1 }, { "magic_arcane_edge", 1 },
+            { "magic_fire_spark", 1 }, { "magic_arcane_bolt_mastery", 1 }, { "magic.chama_breve", 2 },
+            { "magic_ice_bind", 2 }, { "magic_elemental_ward", 2 }, { "magic_toxic_cloud", 3 },
+            { "magic_lightning_chain", 3 }, { "magic.rajada_gelida", 3 }, { "magic_slowing_sigils", 4 },
+            { "magic_capstone_elemental_confluence", 5 },
+            // SURVIVAL
+            { "survival_cave_lungs", 1 }, { "survival_hard_skin", 1 }, { "survival_low_rations", 1 },
+            { "survival_toxic_sense", 1 }, { "survival_cold_habit", 1 }, { "survival_heat_temper", 1 },
+            { "survival_safe_step", 2 }, { "survival.sinal_retirada", 2 }, { "survival.isca_improvisada", 2 },
+            { "survival_status_recovery", 3 }, { "survival_emergency_roll", 3 }, { "survival.kit_emergencia", 3 },
+            { "survival.instinto_sobrevivencia", 3 }, { "survival_last_breath", 4 }, { "survival.campo_seguro", 4 },
+            { "survival_capstone_caveborn", 5 },
+            // CRAFTING
+            { "crafting_fast_hands", 1 }, { "crafting_material_eye", 1 }, { "crafting_repair_care", 1 },
+            { "crafting_pack_order", 1 }, { "crafting_station_focus", 2 }, { "crafting_field_patch", 2 },
+            { "crafting_quick_repair", 3 }, { "crafting_salvage_method", 3 }, { "crafting.bomba_improvisada", 3 },
+            { "crafting.irrigador_portatil", 3 }, { "crafting_durable_finish", 4 }, { "crafting.mecanismo_campo", 4 },
+            { "crafting.marca_eficiencia", 4 }, { "crafting_shop_sense", 4 }, { "crafting_capstone_master_artisan", 5 },
+        };
+
+        private static void ApplyTiers(List<SkillNodeDataSO> nodes)
+        {
+            foreach (var n in nodes)
+            {
+                n.Tier = NodeTiers.TryGetValue(n.SkillNodeId, out var t) ? t : 1;
+                // fable_29: tier gating is by points-spent-in-tree (SkillTierRules); clear the
+                // legacy fixed RequiredPurchasedNodesInTree so it does not double-gate capstones.
+                n.RequiredPurchasedNodesInTree = 0;
+            }
+        }
+
+        // ── fable_29: named-hook routes (emenda V3 item 6) ─────────────────────────────────
+        // Consumer-future passives publish a NAMED hook and carry an "efeito pendente" tooltip.
+        // (treeId, route, perRankPayload, tooltip) keyed by node id.
+        private static void ApplyEffectRoutes(List<SkillNodeDataSO> nodes)
+        {
+            Route(nodes, "crafting_shop_sense", SkillEffectRoute.GoldDropModifier, 0.05f,
+                "Efeito pendente: bonus de venda/compra sera consumido pela economia (F06).");
+            Route(nodes, "crafting_material_eye", SkillEffectRoute.HarvestYieldModifier, 0.05f,
+                "Efeito pendente: bonus de coleta de recursos sera consumido pela fazenda/coleta (F17).");
+            Route(nodes, "crafting_station_focus", SkillEffectRoute.CraftCostModifier, 0.05f,
+                "Efeito pendente: reducao de custo de craft sera consumida pelo craft (F31).");
+            Route(nodes, "crafting_salvage_method", SkillEffectRoute.ToolEfficiencyModifier, 0.05f,
+                "Efeito pendente: eficiencia de ferramentas/recursos sera consumida por F48/F49.");
+        }
+
+        private static void Route(List<SkillNodeDataSO> nodes, string id, SkillEffectRoute route,
+            float perRank, string tooltip)
+        {
+            var n = nodes.Find(x => x.SkillNodeId == id);
+            if (n == null) return;
+            n.EffectRoute = route;
+            n.RoutePayloadPerRank = perRank;
+            n.EffectPending = true;
+            n.EffectPendingTooltip = tooltip;
+        }
+
+        // ── fable_29 (CA-3): exclusive capstone variants ───────────────────────────────────
+        // Melee capstone offers Kanthor XOR Kaand; Magic capstone offers Anya XOR Senya.
+        // Choosing one variant permanently blocks the other on that node until a full respec.
+        private static void ApplyCapstoneVariants(List<SkillNodeDataSO> nodes)
+        {
+            var melee = nodes.Find(x => x.SkillNodeId == "melee_capstone_battle_rhythm");
+            if (melee != null)
+            {
+                melee.CapstoneVariants = new List<string> { "kanthor", "kaand" };
+                melee.Description = "Capstone exclusivo: escolha Kanthor (Julgamento de Aco: cura condicional) "
+                    + "OU Kaand (Furia de Aco: ofensivo puro). A escolha bloqueia a outra ate respec na Fonte.";
+            }
+
+            var magic = nodes.Find(x => x.SkillNodeId == "magic_capstone_elemental_confluence");
+            if (magic != null)
+            {
+                magic.CapstoneVariants = new List<string> { "anya", "senya" };
+                magic.Description = "Capstone exclusivo: escolha Semente de Anya (suporte: -50% MP, +35% cura) "
+                    + "OU Semente de Senya (ofensivo: +35% dano magico). A escolha bloqueia a outra ate respec.";
+            }
+        }
+
+        // ── fable_29 (decision 1.5): dormant actives (feedback-only, NotYetExecutable) ─────
+        // Active skills whose target system has no executor yet are marked dormant. They are
+        // never wired to a parallel executor; the feedback-only path lives in
+        // ActiveSkillExecutionController.RegisterFeedbackExecutors.
+        private static readonly string[] DormantActiveNodeIds =
+        {
+            "ranged_charged_shot",       // Disparo Carregado
+            "ranged_marked_prey",        // Marcador de Presa
+            "ranged_multishot_fan",      // (multishot has executor; NOT dormant) — see filter below
+            "magic_elemental_ward",      // Selo de Protecao / ward
+            "magic_slowing_sigils",      // campo de lentidao
+            "survival_emergency_roll",   // Descanso Curto / roll
+            "survival_last_breath",      // emergencia (feedback)
+            "survival.sinal_retirada",
+            "survival.isca_improvisada",
+            "crafting_field_patch",
+            "crafting_quick_repair",
+            "crafting.irrigador_portatil",
+            "crafting.mecanismo_campo",
+            "crafting.marca_eficiencia",
+        };
+
+        private static void ApplyDormantActives(List<SkillNodeDataSO> nodes)
+        {
+            // Actives that DO have a real executor in ActiveSkillExecutionController.RegisterCombatExecutors
+            // must NOT be marked dormant (they are executable). Everything else in the dormant list is.
+            var executable = new HashSet<string>
+            {
+                "ranged_multishot_fan", "ranged_line_piercer", "ranged_bleeding_arrow",
+            };
+            foreach (var id in DormantActiveNodeIds)
+            {
+                if (executable.Contains(id)) continue;
+                var n = nodes.Find(x => x.SkillNodeId == id);
+                if (n != null && n.SkillCategory == SkillCategory.EquippableSkill)
+                {
+                    n.NotYetExecutable = true;
+                }
+            }
         }
 
         public static List<SkillTreeDataSO> BuildAllTrees(List<SkillNodeDataSO> allNodes)
@@ -26,6 +176,8 @@ namespace CindarsHope.Skills
 
             return new List<SkillTreeDataSO>
             {
+                // fable_29: per-tree node counts (WI-11): melee 14, ranged 11, magic 13,
+                // survival 16, crafting 15 = 69 total (CanonicalNodeCount).
                 BuildTree("melee", "Melee", "Combate corpo a corpo: dual wield, two-handed, block, dodge, dash e leap.", index,
                     "melee_iron_grip","melee_guarded_stance","melee_dual_wield_flow","melee_offhand_cut",
                     "melee_two_handed_momentum","melee_guarded_block","melee_battle_dash","melee_leap_attack",
