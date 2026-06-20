@@ -1,32 +1,32 @@
-# Rule: Error Handling & Resilience
+# Rule: Error Handling & Resiliência
 
-Classify every failure before handling it. The handling strategy is dictated by the category, and the categories map directly to systems that already exist in this project.
+Classifique toda falha antes de tratá-la. A estratégia de tratamento é ditada pela categoria, e as categorias mapeiam diretamente para sistemas que já existem neste projeto.
 
-## The four categories
+## As quatro categorias
 
-| # | Category | Examples | Handling in this project |
+| # | Categoria | Exemplos | Tratamento neste projeto |
 |---|----------|----------|--------------------------|
-| 1 | **Expected gameplay** | invalid action, cooldown, no stamina, missing item, target out of range | `bool TryX` + `FailureReason` string surfaced via a `GameEventBus` HUD event (skill `game-feel-checklist`). Never an exception, never a silent no-op. |
-| 2 | **Config / asset / content** | prefab missing, item without icon, quest points to invalid id, SO field unset | Catch at **editor/build time** with a validator (60-validator pattern, skill `editor-validator-authoring`); at runtime apply a safe, logged fallback. Mandatory config corruption fails fast in dev. |
-| 3 | **Infrastructure** | save write failed, file corrupt/absent on load | Atomic save flow + post-load validation + recovery (skill `save-load-pattern`). Never overwrite a good save before the new one validates. |
-| 4 | **Bug / broken invariant** | required dependency null, impossible state, unsupported save version | **Fail fast** in development (throw/assert) with a clear wiring log; do not mask with a scene search or a swallowed exception (rule `unity-architecture`). |
+| 1 | **Gameplay esperado** | ação inválida, cooldown, sem stamina, item ausente, target fora de alcance | `bool TryX` + string `FailureReason` exposta via um HUD event do `GameEventBus` (skill `game-feel-checklist`). Nunca uma exception, nunca um no-op silencioso. |
+| 2 | **Config / asset / content** | prefab ausente, item sem icon, quest aponta para id inválido, campo de SO não preenchido | Capture em **editor/build time** com um validator (pattern de 60 validators, skill `editor-validator-authoring`); em runtime aplique um fallback seguro e logado. Corrupção de config obrigatória faz fail fast em dev. |
+| 3 | **Infraestrutura** | escrita de save falhou, arquivo corrompido/ausente no load | Atomic save flow + validação pós-load + recovery (skill `save-load-pattern`). Nunca sobrescreva um save bom antes de o novo validar. |
+| 4 | **Bug / invariante quebrado** | dependência obrigatória null, estado impossível, save version não suportada | **Fail fast** em desenvolvimento (throw/assert) com um log de wiring claro; não mascare com um scene search ou uma exception engolida (rule `unity-architecture`). |
 
-## Logs must carry context
+## Logs precisam carregar contexto
 
-A log line must let a human locate the failure without a debugger. Include: system, entity/id, scene/level, operation, relevant state, and the fallback applied (if any). Ban bare lines like `"Error loading data"`. For missing required references, log scene + GameObject + component + missing field + affected id (rule `unity-architecture`).
+Uma linha de log precisa permitir que um humano localize a falha sem um debugger. Inclua: sistema, entity/id, scene/level, operação, estado relevante, e o fallback aplicado (se houver). Proíba linhas peladas como `"Error loading data"`. Para referências obrigatórias ausentes, logue scene + GameObject + component + missing field + affected id (rule `unity-architecture`).
 
-## Development vs. shipped build
+## Desenvolvimento vs. shipped build
 
-- **Development:** fail early to surface bugs (category 4 throws/asserts).
-- **Shipped:** recover where category 1–3 allows, but always log with context.
-- **Never** hide an error by silently corrupting state (e.g., writing a partial save, continuing with a null that will NRE three frames later).
+- **Desenvolvimento:** falhe cedo para expor bugs (categoria 4 dá throw/assert).
+- **Shipped:** recupere onde categoria 1–3 permite, mas sempre logue com contexto.
+- **Nunca** esconda um erro corrompendo estado silenciosamente (ex.: escrevendo um save parcial, continuando com um null que vai dar NRE três frames depois).
 
-## What never happens
+## O que nunca acontece
 
-- Exception used as normal gameplay control flow (that's category 1 → `bool`/`FailureReason`).
-- `catch { }` that swallows and continues (category 4 must fail fast; 2–3 must log + fallback).
-- A "fallback" that produces an invalid state instead of a safe default (rule `data-driven-content`: prefer Null Object / safe default).
+- Exception usada como control flow normal de gameplay (isso é categoria 1 → `bool`/`FailureReason`).
+- `catch { }` que engole e continua (categoria 4 precisa fail fast; 2–3 precisam log + fallback).
+- Um "fallback" que produz um estado inválido em vez de um default seguro (rule `data-driven-content`: prefira Null Object / default seguro).
 
 ## Enforcement
 
-Reviewed by skill `non-regression-review`, `/code-review`, and agent `bugfix-investigator` (which also requires a regression test per rule `testing-quality-gate`). No mechanical hook — this is a review lens.
+Revisado pela skill `non-regression-review`, `/code-review`, e o agent `bugfix-investigator` (que também exige um regression test conforme a rule `testing-quality-gate`). Sem hook mecânico — esta é uma lente de review.

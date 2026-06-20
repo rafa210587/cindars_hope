@@ -1,32 +1,32 @@
-# Rule: Spec Dependency Resolution
+# Rule: Resolução de Dependência de Spec
 
-## Central Rule
+## Regra Central
 
-When a spec depends on another **unresolved spec in the same wave**, resolve the chain **automatically**: do not ask the user, do not pivot randomly, do not mark final BLOCKED unless the dependency is forbidden/out-of-scope.
+Quando uma spec depende de outra **spec não resolvida na mesma wave**, resolva a cadeia **automaticamente**: não pergunte ao usuário, não pivote aleatoriamente, não marque BLOCKED final a menos que a dependência seja forbidden/out-of-scope.
 
-## Algorithm
+## Algoritmo
 
-1. Mark current spec `BLOCKED_BY_DEPENDENCY_PENDING` (temporary — never a final failure).
-2. Push the dependency onto the dependency stack; recurse until the root (depth-first).
-3. Execute the root first via `/execute-spec-strict`, then walk back up the chain.
-4. **Return-to-origin:** after the chain resolves, execute the ORIGINAL target spec before anything else. Never pivot to unrelated specs while a chain is open.
+1. Marque a spec atual como `BLOCKED_BY_DEPENDENCY_PENDING` (temporário — nunca uma falha final).
+2. Empilhe a dependência no dependency stack; recurse até a raiz (depth-first).
+3. Execute a raiz primeiro via `/execute-spec-strict`, depois suba de volta pela cadeia.
+4. **Return-to-origin:** depois que a cadeia se resolve, execute a spec-alvo ORIGINAL antes de qualquer outra coisa. Nunca pivote para specs não relacionadas enquanto uma cadeia está aberta.
 
-## Stop immediately (`BLOCKED_BY_FORBIDDEN_SCOPE`) if the dependency is
+## Pare imediatamente (`BLOCKED_BY_FORBIDDEN_SCOPE`) se a dependência for
 
-future/mapped wave (WAVE 06+), pets, HOLD, BLOCKED_SCOPE, or requires: Packages/, ProjectSettings/, scene/prefab/asset creation or editing, Unity Test Runner, Play Mode.
+wave futura/mapeada (WAVE 06+), pets, HOLD, BLOCKED_SCOPE, ou exigir: Packages/, ProjectSettings/, criação ou edição de scene/prefab/asset, Unity Test Runner, Play Mode.
 
-## Dependency extraction
+## Extração de dependência
 
-Read these spec sections: `Depends on`, `Dependencies`, `Required systems`, `Required specs`, `Blocks`, `Permissions`, and acceptance criteria that name systems/specs.
+Leia estas seções da spec: `Depends on`, `Dependencies`, `Required systems`, `Required specs`, `Blocks`, `Permissions`, e acceptance criteria que nomeiam sistemas/specs.
 
-Dependency statuses that allow continuing: `READY` (resolve first), `BUILD_VALIDATED[_WITH_WARNINGS]` (use result), `CONTRACT_ONLY[_NEEDS_INTEGRATION]` (conditional — foundational specs must wait). Full taxonomy: `.claude/rules/spec_quality_gate.md`.
+Statuses de dependência que permitem continuar: `READY` (resolver primeiro), `BUILD_VALIDATED[_WITH_WARNINGS]` (usar resultado), `CONTRACT_ONLY[_NEEDS_INTEGRATION]` (condicional — specs fundacionais devem esperar). Taxonomia completa: `.claude/rules/spec_quality_gate.md`.
 
-## Mandatory artifacts (persist state across invocations)
+## Artefatos obrigatórios (persistir estado entre invocações)
 
-- `docs/validation/WAVE_<wave>_DEPENDENCY_RESOLUTION_PLAN.md` — table: Order | Spec | Depends On | Reason | Status | Commit
-- `docs/validation/WAVE_<wave>_BATCH_STATE.md` — current stack, executed this batch, pending specs, next action
+- `docs/validation/WAVE_<wave>_DEPENDENCY_RESOLUTION_PLAN.md` — tabela: Order | Spec | Depends On | Reason | Status | Commit
+- `docs/validation/WAVE_<wave>_BATCH_STATE.md` — stack atual, executadas neste batch, specs pendentes, próxima ação
 
-## Required clause in execution reports
+## Cláusula obrigatória nos execution reports
 
 ```text
 ## Dependency Chain

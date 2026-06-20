@@ -1,6 +1,5 @@
-﻿# Rule: No Parallel Unity Batchmode (stub)
+# Rule: Sem Unity Batchmode em Paralelo (stub)
 
-> Consolidated into [.claude/rules/unity-assets.md](./unity-assets.md). This stub preserves the historical path referenced by docs/ (ADRs, validation reports).
+> Consolidated into [.claude/rules/unity-assets.md](./unity-assets.md). Este stub preserva o caminho histórico referenciado por docs/ (ADRs, validation reports).
 
-**Invariant:** Never run multiple Unity batchmode processes for the same project at the same time. Sequential only.
-
+**Invariante:** Nunca rode múltiplos processos de Unity batchmode para o mesmo projeto ao mesmo tempo. Apenas sequencial.

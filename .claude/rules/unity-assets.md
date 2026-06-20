@@ -1,14 +1,14 @@
-# Rule: Unity Assets & Editor Safety
+# Rule: Segurança de Assets & Editor Unity
 
-Consolidates: `unity-yaml-editing-policy`, `generated-asset-evidence`, `no-parallel-unity-batchmode` (originals are stubs pointing here).
+Consolida: `unity-yaml-editing-policy`, `generated-asset-evidence`, `no-parallel-unity-batchmode` (os originais são stubs apontando para cá).
 
-## 1. No manual YAML edits
+## 1. Sem edits manuais de YAML
 
-Do not manually edit `.unity`, `.prefab`, `.asset` files unless the spec explicitly authorizes it AND the Unity Editor API path (repair menus, editor scripts with `AssetDatabase`/`PrefabUtility`/`SerializedObject`) is unavailable.
+Não edite manualmente arquivos `.unity`, `.prefab`, `.asset` a menos que a spec autorize explicitamente E o caminho via Unity Editor API (repair menus, editor scripts com `AssetDatabase`/`PrefabUtility`/`SerializedObject`) esteja indisponível.
 
-Allowed: reading YAML for audit; writing `.cs` scripts; running repair menus; editor scripts using Unity APIs.
+Permitido: ler YAML para audit; escrever `.cs` scripts; rodar repair menus; editor scripts usando Unity APIs.
 
-If a manual edit is unavoidable, document:
+Se um edit manual for inevitável, documente:
 
 ```text
 Unity YAML edit: BLOCKED / EXECUTED WITH AUTHORIZATION
@@ -16,13 +16,13 @@ Reason: <Unity Editor unavailable>
 Residual risk: GUID/ref integrity not verified; must be checked in Unity Editor
 ```
 
-Enforcement: `permissions.ask` in `.claude/settings.json` prompts the human for every Edit/Write on `.unity/.prefab/.asset` — approval there counts as per-instance authorization.
+Enforcement: `permissions.ask` em `.claude/settings.json` solicita ao humano a cada Edit/Write em `.unity/.prefab/.asset` — a aprovação ali conta como autorização per-instance.
 
-## 2. Generated assets require evidence
+## 2. Assets gerados exigem evidência
 
-When a spec depends on generated Unity assets, closeout must record: menu or `-executeMethod` used, log path, exit code, affected folders, expected vs. actual asset count, any menu/method divergence.
+Quando uma spec depende de assets gerados do Unity, o closeout deve registrar: menu ou `-executeMethod` usado, log path, exit code, pastas afetadas, contagem esperada vs. real de assets, qualquer divergência de menu/method.
 
-If generation cannot run:
+Se a geração não puder rodar:
 
 ```text
 Asset generation: BLOCKED
@@ -31,10 +31,10 @@ Command attempted: <command>
 Residual risk: assets may be stale/missing until generated in Unity
 ```
 
-Never claim generated assets exist because the generator code exists. Never silently accept mismatched roster/registry assets.
+Nunca afirme que assets gerados existem só porque o código do generator existe. Nunca aceite silenciosamente roster/registry assets descasados.
 
-## 3. No parallel Unity batchmode
+## 3. Sem Unity batchmode em paralelo
 
-Never run multiple Unity batchmode processes for the same project simultaneously. Run generators/validators sequentially, one log file per command, wait for exit. If Unity is already open: close it (if authorized) or record the validation as BLOCKED — never launch more instances hoping one wins.
+Nunca rode múltiplos processos Unity batchmode para o mesmo projeto simultaneamente. Rode generators/validators sequencialmente, um log file por comando, aguarde o exit. Se o Unity já estiver aberto: feche-o (se autorizado) ou registre a validação como BLOCKED — nunca lance mais instâncias na esperança de que uma vença.
 
-Enforcement: hook `pre-bash-guard.ps1` (PreToolUse) blocks batchmode launch while a Unity process is running.
+Enforcement: hook `pre-bash-guard.ps1` (PreToolUse) bloqueia o lançamento de batchmode enquanto um processo Unity está rodando.

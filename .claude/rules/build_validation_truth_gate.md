@@ -1,6 +1,5 @@
-﻿# Rule: Build Validation Truth Gate (stub)
+# Rule: Truth Gate de Validação de Build (stub)
 
-> Consolidated into [.claude/rules/validation-truth.md](./validation-truth.md). This stub preserves the historical path referenced by docs/ (ADRs, validation reports).
+> Consolidated into [.claude/rules/validation-truth.md](./validation-truth.md). Este stub preserva o caminho histórico referenciado por docs/ (ADRs, validation reports).
 
-**Invariant:** Build success is valid only when the process exit code is 0. Never infer build success from filtered output (no dotnet build piped to Select-String).
-
+**Invariante:** O sucesso do build só é válido quando o exit code do processo é 0. Nunca infira sucesso de build a partir de output filtrado (nada de dotnet build com pipe para Select-String).

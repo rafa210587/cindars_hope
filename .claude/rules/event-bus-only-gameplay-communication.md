@@ -1,6 +1,5 @@
-﻿# Rule: Event Bus Only for Gameplay Communication (stub)
+# Rule: Comunicação de Gameplay Apenas via Event Bus (stub)
 
-> Consolidated into [.claude/rules/unity-architecture.md](./unity-architecture.md). This stub preserves the historical path referenced by docs/ (ADRs, validation reports).
+> Consolidated into [.claude/rules/unity-architecture.md](./unity-architecture.md). Este stub preserva o caminho histórico referenciado por docs/ (ADRs, validation reports).
 
-**Invariant:** Gameplay systems communicate only via GameEventBus.Publish()/Subscribe(). Direct MonoBehaviour-to-MonoBehaviour gameplay calls are prohibited.
-
+**Invariante:** Sistemas de gameplay se comunicam apenas via GameEventBus.Publish()/Subscribe(). Chamadas diretas de MonoBehaviour para MonoBehaviour em gameplay são proibidas.

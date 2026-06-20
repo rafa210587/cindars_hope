@@ -1,18 +1,18 @@
 # Rule: No Unsafe Git
 
-## Rule
+## Regra
 
-Do not execute destructive or shared-state git operations without explicit human authorization for each instance.
+Não execute operações de git destrutivas ou de shared-state sem autorização humana explícita para cada instância.
 
-## Why
+## Por que existe
 
-Destructive git operations (push, reset --hard, clean, stash, rebase) can cause irreversible data loss or affect collaborators. Authorization for one operation does not imply authorization for the same operation in a different context.
+Operações de git destrutivas (push, reset --hard, clean, stash, rebase) podem causar perda de dados irreversível ou afetar colaboradores. Autorização para uma operação não implica autorização para a mesma operação em um contexto diferente.
 
-## Applies To
+## Onde se aplica
 
-All agent tasks involving git commands.
+Toda tarefa de agent que envolva comandos git.
 
-## Prohibited Without Explicit Authorization (per-instance)
+## Proibido sem autorização explícita (por instância)
 
 ```
 git push
@@ -27,7 +27,7 @@ git checkout -- .
 git restore .
 ```
 
-## Always Allowed
+## Sempre permitido
 
 ```
 git status
@@ -38,10 +38,10 @@ git add <specific files>
 git commit -m "..."
 ```
 
-## What To Do If Exception Is Needed
+## O que fazer se a exceção for necessária
 
-The human must explicitly say: "run git push" or "force-push is authorized" in the current turn. Authorization from a previous turn does not carry forward.
+O humano precisa dizer explicitamente: "run git push" ou "force-push is authorized" no turn atual. Autorização de um turn anterior não se propaga para frente.
 
-## Validation / Detection
+## Validação
 
-`.claude/hooks/pre-bash-guard.ps1` (always enabled) blocks the most dangerous patterns at execution time.
+`.claude/hooks/pre-bash-guard.ps1` (always enabled) bloqueia os patterns mais perigosos em tempo de execução.

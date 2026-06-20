@@ -1,6 +1,5 @@
-﻿# Rule: No Premature Acceptance Claims (stub)
+# Rule: Sem Claims Prematuros de Aceitação (stub)
 
-> Consolidated into [.claude/rules/validation-truth.md](./validation-truth.md). This stub preserves the historical path referenced by docs/ (ADRs, validation reports).
+> Consolidated into [.claude/rules/validation-truth.md](./validation-truth.md). Este stub preserva o caminho histórico referenciado por docs/ (ADRs, validation reports).
 
-**Invariant:** Never claim MVP accepted / Play Mode PASS / Phase 2-3 PASS / 100% fulfilled without evidence in the repository.
-
+**Invariante:** Nunca afirme MVP accepted / Play Mode PASS / Phase 2-3 PASS / 100% fulfilled sem evidência no repositório.

@@ -1,28 +1,28 @@
-# Rule: Docs Governance
+# Rule: Governança de Docs
 
-Consolidates: `no-doc-delete-without-candidate`, `legacy-doc-paths-forbidden`, `decision-and-game-rule-policy`, `spec-source-of-truth` (originals are stubs pointing here).
+Consolida: `no-doc-delete-without-candidate`, `legacy-doc-paths-forbidden`, `decision-and-game-rule-policy`, `spec-source-of-truth` (os originais são stubs apontando para cá).
 
-## 1. No document deletion without candidate
+## 1. Nenhum documento deletado sem candidato
 
-No doc file may be deleted unless it appears in `docs/project/DOCUMENT_DELETE_CANDIDATES.md` AND the task explicitly authorizes deletion. Always allowed without pre-approval: moving to an archive folder (git-tracked), adding `status: delete_candidate`, adding to the candidates list.
+Nenhum arquivo de doc pode ser deletado a menos que apareça em `docs/project/DOCUMENT_DELETE_CANDIDATES.md` E a tarefa autorize explicitamente a deleção. Sempre permitido sem aprovação prévia: mover para uma pasta de archive (rastreada no git), adicionar `status: delete_candidate`, adicionar à lista de candidates.
 
-## 2. Canonical paths only
+## 2. Apenas paths canônicos
 
-Forbidden (never recreate or edit): `docs_old/`, `docs/00_PROJECT/` … `docs/07_RELEASES/`.
-Canonical: `docs/project/`, `.specs/`, `docs/refinements/`, `docs/validation/`, `docs/backlog/`, `docs/architecture/`, `docs/decisions/`, `docs/game_rules/`, `docs/release/`.
+Proibidos (nunca recriar ou editar): `docs_old/`, `docs/00_PROJECT/` … `docs/07_RELEASES/`.
+Canônicos: `docs/project/`, `.specs/`, `docs/refinements/`, `docs/validation/`, `docs/backlog/`, `docs/architecture/`, `docs/decisions/`, `docs/game_rules/`, `docs/release/`.
 
-The only active spec source is `.specs/` (queue in `a_implementar/`, done in `implementados/`). Never recreate root `specs/` or `spec/`, and do not recreate `docs/specs/` (the spec tree was relocated to `.specs/` — see ADR-0015).
+A única fonte ativa de spec é `.specs/` (fila em `a_implementar/`, concluídas em `implementados/`). Nunca recriar `specs/` ou `spec/` na raiz, e não recriar `docs/specs/` (a árvore de specs foi relocada para `.specs/` — ver ADR-0015).
 
-## 3. ADRs and game_rules are canonical
+## 3. ADRs e game_rules são canônicos
 
-- Decisions live in `docs/decisions/ADR-NNNN-*.md` (the *why*); current behavior lives in `docs/game_rules/*.md` (the *what*).
-- Amendments (`docs/amendments/`) are historical record only — never cite them as canonical.
-- Read only the ADRs/game_rules cited by the spec (`required_adrs`, `required_game_rules`), not all of them.
-- Conflicts: code vs. ADR/game_rule → stop and report (one of them is stale). Behavior change → superseding ADR.
+- Decisões vivem em `docs/decisions/ADR-NNNN-*.md` (o *porquê*); o comportamento atual vive em `docs/game_rules/*.md` (o *o quê*).
+- Amendments (`docs/amendments/`) são registro histórico apenas — nunca os cite como canônicos.
+- Leia apenas os ADRs/game_rules citados pela spec (`required_adrs`, `required_game_rules`), não todos eles.
+- Conflitos: code vs. ADR/game_rule → pare e reporte (um dos dois está desatualizado). Mudança de comportamento → superseding ADR.
 
 ## Enforcement
 
-- Hook `protected-path-guard.ps1` (PreToolUse) blocks Edit/Write on `docs_old/`, legacy numbered folders, and root `specs|spec/`.
-- Hook `stop-summary-check.ps1` (Stop) blocks task completion if forbidden paths changed.
-- Hook `delete-guard.ps1` (manual, invoked by docs tasks) checks the candidates list.
-- `tools/docs/validate_docs.ps1` checks legacy folder creation.
+- Hook `protected-path-guard.ps1` (PreToolUse) bloqueia Edit/Write em `docs_old/`, pastas numeradas legadas e `specs|spec/` na raiz.
+- Hook `stop-summary-check.ps1` (Stop) bloqueia a conclusão da tarefa se paths proibidos mudaram.
+- Hook `delete-guard.ps1` (manual, invocado por tarefas de docs) checa a lista de candidates.
+- `tools/docs/validate_docs.ps1` checa a criação de pastas legadas.

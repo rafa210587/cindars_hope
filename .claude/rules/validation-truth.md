@@ -1,10 +1,10 @@
-# Rule: Validation Truth
+# Rule: Verdade na Validação
 
-Consolidates: `build_validation_truth_gate`, `powershell_script_failure_gate`, `unity-validation-honesty`, `no-premature-acceptance-claims` (originals are stubs pointing here).
+Consolida: `build_validation_truth_gate`, `powershell_script_failure_gate`, `unity-validation-honesty`, `no-premature-acceptance-claims` (os originais são stubs apontando para cá).
 
-## 1. Build success = exit code 0. Nothing else.
+## 1. Build com sucesso = exit code 0. Nada mais.
 
-Never infer build success from filtered output.
+Nunca infira sucesso de build a partir de output filtrado.
 
 ```powershell
 # FORBIDDEN (loses $LASTEXITCODE, hides errors) — pre-bash-guard hook blocks this:
@@ -19,21 +19,21 @@ if ($LASTEXITCODE -ne 0) { exit 1 }
 if ($LASTEXITCODE -ne 0) { exit 1 }
 ```
 
-A spec cannot be `BUILD_VALIDATED` unless `run_strict_validation.ps1` returned exit code 0. Do not commit if any build/check failed, was unknown, or was verified only via filtered output.
+Uma spec não pode ser `BUILD_VALIDATED` a menos que `run_strict_validation.ps1` tenha retornado exit code 0. Não faça commit se qualquer build/check falhou, ficou desconhecido, ou foi verificado apenas via output filtrado.
 
-## 2. A PowerShell script failure is never secondary
+## 2. Uma falha de script PowerShell nunca é secundária
 
-If any validation script throws, prints an exception, returns non-zero, or has `$?` = false: **STOP immediately**. No "secondary issue", no "proceed anyway", no commit. Check both `$?` and `$LASTEXITCODE` after every script; wrap in `try/catch` and treat the catch as failure.
+Se qualquer script de validação lança exceção, imprime uma exceção, retorna non-zero, ou tem `$?` = false: **PARE imediatamente**. Sem "secondary issue", sem "proceed anyway", sem commit. Cheque tanto `$?` quanto `$LASTEXITCODE` depois de cada script; envolva em `try/catch` e trate o catch como falha.
 
-## 3. Validation levels are different claims — never conflate them
+## 3. Níveis de validação são claims diferentes — nunca os misture
 
-| Claim | Means only |
+| Claim | Significa apenas |
 |---|---|
-| `dotnet build` PASS | C# fallback compile passed |
-| Unity batchmode PASS | Unity compile validation passed |
-| Play Mode / manual PASS | gameplay validation passed |
+| `dotnet build` PASS | C# fallback compile passou |
+| Unity batchmode PASS | Unity compile validation passou |
+| Play Mode / manual PASS | gameplay validation passou |
 
-Blocked validation is reported, never converted to PASS:
+Validação bloqueada é reportada, nunca convertida em PASS:
 
 ```text
 Unity validation: NOT RUN or BLOCKED
@@ -42,13 +42,13 @@ Command attempted: <command>
 Residual risk: <explicit>
 ```
 
-Triage: any `error CS` is real unless proven stale; "another Unity instance running" is an editor lock, not a code failure.
+Triagem: qualquer `error CS` é real a menos que provado stale; "another Unity instance running" é um editor lock, não uma falha de código.
 
-## 4. No premature acceptance claims
+## 4. Sem claims prematuros de aceitação
 
-Never write without evidence in the repo: "MVP accepted", "100% fulfilled", "Play Mode PASS", "Unity validated" (blanket), "Phase 2/3 PASS", "Human acceptance complete".
+Nunca escreva sem evidência no repo: "MVP accepted", "100% fulfilled", "Play Mode PASS", "Unity validated" (genérico), "Phase 2/3 PASS", "Human acceptance complete".
 
-Honest alternatives: `Phase 0-1 COMPLETE`, `BUILD_VALIDATED`, `Phase 2 NOT RUN`, `Phase 3 PENDING`, `ACCEPTED pending Phase 2-3`.
+Alternativas honestas: `Phase 0-1 COMPLETE`, `BUILD_VALIDATED`, `Phase 2 NOT RUN`, `Phase 3 PENDING`, `ACCEPTED pending Phase 2-3`.
 
 ## Required report block
 
@@ -64,7 +64,7 @@ Result artifact: docs/validation/LAST_STRICT_VALIDATION_RESULT.json
 
 ## Enforcement
 
-- Hook `pre-bash-guard.ps1` (PreToolUse) blocks filtered `dotnet build` pipes.
-- `tools/docs/check_spec_quality.ps1` detects prohibited claim phrases in reports.
+- Hook `pre-bash-guard.ps1` (PreToolUse) bloqueia pipes de `dotnet build` filtrados.
+- `tools/docs/check_spec_quality.ps1` detecta frases de claim proibidas nos reports.
 
-*Historical incidents that motivated this rule: commits fcfe6d0/53e9698 (filtered build hid syntax error) and d053a29 ("secondary issue" committed unvalidated code). Details in git history.*
+*Incidentes históricos que motivaram esta rule: commits fcfe6d0/53e9698 (build filtrado escondeu um syntax error) e d053a29 ("secondary issue" commitou código não validado). Detalhes no git history.*

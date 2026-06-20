@@ -2,11 +2,11 @@
 
 This project is executed on Windows with PowerShell. No Unix/Bash commands.
 
-## Required Shell
+## Shell obrigatório
 
-All agent execution must use PowerShell syntax only (`pwsh` or `powershell`).
+Toda execução de agente deve usar somente sintaxe PowerShell (`pwsh` ou `powershell`).
 
-## Forbidden Unix/Bash Commands
+## Comandos Unix/Bash proibidos
 
 Do NOT use in any agent task:
 
@@ -22,11 +22,11 @@ cd d:/...
 bash pipes assuming Unix tools
 ```
 
-These fail on Windows or produce incorrect behavior.
+Estes falham no Windows ou produzem comportamento incorreto.
 
-## PowerShell Equivalents
+## Equivalentes PowerShell
 
-Use these instead:
+Use estes no lugar:
 
 | Need | Unix/Bash | PowerShell |
 |---|---|---|
@@ -41,19 +41,19 @@ Use these instead:
 | check if file exists | `test -f path` | `Test-Path path` |
 | file content | `cat file.md` | `Get-Content file.md` |
 
-## Environment Failure Policy
+## Política de falha de ambiente
 
-If a command fails because of shell mismatch (Unix syntax on Windows):
+Se um comando falhar por shell mismatch (sintaxe Unix no Windows):
 
-1. **Do not mark the spec BLOCKED immediately.**
-2. Mark the step as `ENV_COMMAND_RETRY_REQUIRED`.
-3. Retry once using the PowerShell equivalent.
-4. Only if PowerShell retry **also fails**, classify as `ENV_COMMAND_FAILURE`.
-5. `ENV_COMMAND_FAILURE` is **not** a spec failure unless fundamental, e.g., missing file or logic error.
+1. **Não marque a spec como BLOCKED imediatamente.**
+2. Marque o passo como `ENV_COMMAND_RETRY_REQUIRED`.
+3. Tente novamente uma vez usando o equivalente PowerShell.
+4. Só se o retry PowerShell **também falhar**, classifique como `ENV_COMMAND_FAILURE`.
+5. `ENV_COMMAND_FAILURE` **não** é uma falha de spec a menos que fundamental, ex.: arquivo ausente ou erro de lógica.
 
-## Required Preflight (Every Spec)
+## Preflight obrigatório (toda spec)
 
-Before executing any spec, run:
+Antes de executar qualquer spec, rode:
 
 ```powershell
 Set-Location 'D:\Projetos\Jogos\Cindars_hope\cindars_hope'
@@ -61,16 +61,16 @@ git status --short | Select-Object -First 50
 git branch --show-current
 ```
 
-Do not proceed without confirming:
-- ✓ Correct directory
-- ✓ Correct branch (`dev`)
-- ✓ Expected uncommitted state
+Não prossiga sem confirmar:
+- ✓ Diretório correto
+- ✓ Branch correto (`dev`)
+- ✓ Estado uncommitted esperado
 
-## PowerShell Exit Code Rule
+## Regra de Exit Code do PowerShell
 
-**When using PowerShell, always check `$LASTEXITCODE` after external commands.**
+**Ao usar PowerShell, sempre cheque `$LASTEXITCODE` depois de comandos externos.**
 
-Never rely on filtered output to infer success:
+Nunca confie em output filtrado para inferir sucesso:
 
 ```powershell
 # ❌ FORBIDDEN
@@ -85,18 +85,18 @@ if ($LASTEXITCODE -ne 0) {
 }
 ```
 
-This applies to:
+Isto se aplica a:
 - `dotnet build`
 - `dotnet test`
-- `git` commands
-- PowerShell scripts
-- Any external executable
+- comandos `git`
+- scripts PowerShell
+- Qualquer executável externo
 
 ---
 
-## Fallback Rule
+## Regra de Fallback
 
-If an agent uses Unix syntax on Windows, the human executing the task may see failures. The execution report must document:
+Se um agente usar sintaxe Unix no Windows, o humano executando a tarefa pode ver falhas. O execution report deve documentar:
 
 ```text
 Command retry:
@@ -106,9 +106,9 @@ Command retry:
   Result: [success/failure]
 ```
 
-If the agent used bash and did not retry in PowerShell, this is **not** an agent error — but the task may not have run.
+Se o agente usou bash e não tentou novamente em PowerShell, isto **não** é um erro do agente — mas a tarefa pode não ter rodado.
 
 ---
 
-*Created: 2026-06-08 (Windows Harness)*  
-*Applies to all agent-run spec execution and validation tasks.*
+*Criado: 2026-06-08 (Windows Harness)*  
+*Aplica-se a toda execução de spec e validação rodada por agente.*

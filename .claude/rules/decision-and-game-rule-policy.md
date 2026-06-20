@@ -1,6 +1,5 @@
-﻿# Rule: Decision and Game Rule Policy (stub)
+# Rule: Política de Decisões e Game Rules (stub)
 
-> Consolidated into [.claude/rules/docs-governance.md](./docs-governance.md). This stub preserves the historical path referenced by docs/ (ADRs, validation reports).
+> Consolidated into [.claude/rules/docs-governance.md](./docs-governance.md). Este stub preserva o caminho histórico referenciado por docs/ (ADRs, validation reports).
 
-**Invariant:** ADRs (docs/decisions/) and game_rules (docs/game_rules/) are canonical. Amendments are historical record only.
-
+**Invariante:** ADRs (docs/decisions/) e game_rules (docs/game_rules/) são canônicos. Amendments são apenas registro histórico.

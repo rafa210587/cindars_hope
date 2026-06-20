@@ -1,6 +1,5 @@
-﻿# Rule: Unity Validation Honesty (stub)
+# Rule: Honestidade na Validação do Unity (stub)
 
 > Consolidated into [.claude/rules/validation-truth.md](./validation-truth.md). This stub preserves the historical path referenced by docs/ (ADRs, validation reports).
 
-**Invariant:** dotnet build, Unity batchmode and Play Mode are different validation claims. Never overstate; blocked validation is reported, never converted to PASS.
-
+**Invariante:** dotnet build, Unity batchmode e Play Mode são validation claims diferentes. Nunca superestime; validação bloqueada é reportada, nunca convertida em PASS.

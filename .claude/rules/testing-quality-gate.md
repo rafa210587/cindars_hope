@@ -1,16 +1,16 @@
 # Rule: Testing Quality Gate
 
-Code changes must include the right level of automated or documented test coverage.
+Mudanças de código devem incluir o nível certo de cobertura de teste automatizada ou documentada.
 
-This rule complements Unity compile validation. Compile success proves the project builds; it does not prove behavior, persistence, imports, event wiring, UI flow, or regression safety.
+Esta rule complementa a validação de compile do Unity. Sucesso de compile prova que o projeto builda; não prova behavior, persistência, imports, event wiring, UI flow ou regression safety.
 
 ---
 
 ## Core rule
 
-Every implementation spec that changes runtime behavior must declare its test impact before closeout.
+Toda implementation spec que muda runtime behavior deve declarar seu impacto de teste antes do closeout.
 
-The execution report must say one of:
+O execution report deve dizer uma das opções:
 
 ```text
 Automated tests added/updated: YES
@@ -19,15 +19,15 @@ Manual Play Mode scenario required: YES/NO
 Residual risk: <explicit risk>
 ```
 
-A runtime/gameplay spec cannot be marked `ACCEPTED` only because build/compile passed.
+Uma spec de runtime/gameplay não pode ser marcada `ACCEPTED` só porque o build/compile passou.
 
 ---
 
 ## Mandatory automated tests
 
-Automated tests are required when a spec changes deterministic logic that can run outside live scene interaction.
+Automated tests são obrigatórios quando uma spec muda deterministic logic que pode rodar fora de live scene interaction.
 
-This includes:
+Isto inclui:
 
 ```text
 save/load DTO normalization;
@@ -58,7 +58,7 @@ event bus publish/subscribe contracts;
 parsers, adapters, pure services, validators and rule engines.
 ```
 
-Preferred test type:
+Tipo de teste preferido:
 
 ```text
 EditMode tests for pure C# and deterministic rules.
@@ -68,7 +68,7 @@ EditMode tests for pure C# and deterministic rules.
 
 ## Mandatory Play Mode or manual scenario
 
-Play Mode automated test or human Play Mode scenario is required when behavior depends on:
+Play Mode automated test ou human Play Mode scenario é obrigatório quando o behavior depende de:
 
 ```text
 scene objects;
@@ -87,19 +87,19 @@ Fonte interaction;
 corpse recovery flow.
 ```
 
-If automated Play Mode is not practical, create a human scenario under:
+Se Play Mode automatizado não for prático, crie um human scenario em:
 
 ```text
 docs/validation/playmode/<spec_id>_human_test_scenario.md
 ```
 
-The execution report must link it.
+O execution report deve linká-lo.
 
 ---
 
 ## Bugfix regression rule
 
-Any bugfix must include one of:
+Todo bugfix deve incluir uma das opções:
 
 ```text
 a regression test that fails before the fix and passes after;
@@ -107,13 +107,13 @@ a targeted validator/checklist when automation is not practical;
 a written justification explaining why automation is not possible yet.
 ```
 
-A bugfix without regression coverage must be reported as residual risk.
+Um bugfix sem regression coverage deve ser reportado como residual risk.
 
 ---
 
 ## Import and compile safety
 
-When `.cs` files change:
+Quando arquivos `.cs` mudam:
 
 ```text
 dotnet build is a fallback compile signal;
@@ -122,13 +122,13 @@ log scan must be checked when Unity compile runs;
 new missing using/import/namespace/type errors must be fixed before closeout;
 ```
 
-Do not hide import or assembly errors behind documentation-only closeout.
+Não esconda import ou assembly errors atrás de um closeout documentation-only.
 
 ---
 
 ## Save/load test expectations
 
-Any spec that changes save/load must test or explicitly justify lack of test for:
+Toda spec que muda save/load deve testar ou justificar explicitamente a ausência de teste para:
 
 ```text
 save DTO default values;
@@ -143,7 +143,7 @@ reward/state idempotency after reload when relevant;
 
 ## Quest test expectations
 
-Any spec that changes quest system behavior must test or explicitly justify lack of test for:
+Toda spec que muda o behavior do quest system deve testar ou justificar explicitamente a ausência de teste para:
 
 ```text
 condition evaluation;
@@ -160,7 +160,7 @@ save/load of quest state;
 
 ## UI test expectations
 
-UI-heavy specs must at minimum provide a human scenario covering:
+Specs UI-heavy devem, no mínimo, fornecer um human scenario cobrindo:
 
 ```text
 open/close;
@@ -173,13 +173,13 @@ error state;
 no gameplay movement while modal/dialogue is open;
 ```
 
-Automated UI tests are preferred only when stable enough to maintain.
+Automated UI tests são preferidos apenas quando estáveis o suficiente para manter.
 
 ---
 
 ## Allowed justification for no automated tests
 
-Automated tests may be skipped only with explicit justification, such as:
+Automated tests só podem ser pulados com justificativa explícita, tais como:
 
 ```text
 purely documentation-only change;
@@ -188,31 +188,31 @@ scene/prefab wiring that requires Unity Editor inspection;
 preexisting test harness gap being closed by a future foundation spec;
 ```
 
-The justification must name the missing harness or blocker.
+A justificativa deve nomear o harness ausente ou o blocker.
 
 ---
 
 ## Closeout impact
 
-Maximum allowed status if tests are missing without justification:
+Status máximo permitido se faltam testes sem justificativa:
 
 ```text
 PARTIAL
 ```
 
-Maximum allowed status for runtime/gameplay specs without Play Mode automated or human scenario evidence:
+Status máximo permitido para specs de runtime/gameplay sem evidência de Play Mode automatizado ou human scenario:
 
 ```text
 BUILD_VALIDATED
 ```
 
-A spec can become `ACCEPTED` only when its required validation level is satisfied or an explicit human-approved exception exists.
+Uma spec só pode virar `ACCEPTED` quando seu nível de validação exigido é satisfeito ou existe uma exceção explícita aprovada por humano.
 
 ---
 
 ## Required report block
 
-Every implementation report for a code-changing spec must include:
+Todo implementation report para uma spec que muda código deve incluir:
 
 ```text
 Testing Quality Gate
@@ -231,7 +231,7 @@ Residual risk: <text>
 
 ## Never claim
 
-Do not claim:
+Não afirme:
 
 ```text
 unit tests passed;
@@ -241,4 +241,4 @@ regression covered;
 feature accepted;
 ```
 
-unless the evidence exists in the execution report.
+a menos que a evidência exista no execution report.

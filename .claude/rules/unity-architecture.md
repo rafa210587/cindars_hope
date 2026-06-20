@@ -1,36 +1,36 @@
-# Rule: Unity Architecture Invariants
+# Rule: Invariantes de Arquitetura Unity
 
-Consolidates: `no-runtime-global-search`, `event-bus-only-gameplay-communication`, `save-dto-simple-types-only` (originals are stubs pointing here).
+Consolida: `no-runtime-global-search`, `event-bus-only-gameplay-communication`, `save-dto-simple-types-only` (os originais são stubs apontando para cá).
 
-## 1. No runtime global scene search
+## 1. Sem global scene search em runtime
 
-Prohibited in runtime code (`Assets/_Game/Scripts/**`, except `Editor/`): `GameObject.Find`, `FindObjectOfType`, `FindObjectsOfType`, `FindObjectsByType`.
+Proibido em runtime code (`Assets/_Game/Scripts/**`, exceto `Editor/`): `GameObject.Find`, `FindObjectOfType`, `FindObjectsOfType`, `FindObjectsByType`.
 
-Allowed: editor tools, serialized references, GameBootstrap injection, explicit configuration methods, narrow same-object `GetComponent<T>()`.
+Permitido: editor tools, serialized references, injeção via GameBootstrap, métodos de configuração explícitos, `GetComponent<T>()` restrito ao mesmo object.
 
-If a reference is missing, log a clear wiring error (scene, GameObject, component, missing field, affected id) — never mask it with a silent scene search.
+Se uma referência estiver ausente, logue um wiring error claro (scene, GameObject, component, campo ausente, id afetado) — nunca a mascare com um scene search silencioso.
 
-> **Known debt (decision pending):** ~14 runtime files use `FindObjectOfType`, mostly `*RuntimeBootstrap` self-wiring classes (Quests, Craft, NPC/Schedule, Farm, Player/Movement, World/Scenes, Cave). Until the human blesses or bans that idiom (see skill `runtime-bootstrap-pattern`), do **not** copy it into new code; the `runtime-code-guard` hook flags new occurrences.
+> **Known debt (decisão pendente):** ~14 runtime files usam `FindObjectOfType`, em sua maioria classes `*RuntimeBootstrap` de self-wiring (Quests, Craft, NPC/Schedule, Farm, Player/Movement, World/Scenes, Cave). Até o humano abençoar ou banir esse idiom (ver skill `runtime-bootstrap-pattern`), **não** o copie para código novo; o hook `runtime-code-guard` sinaliza novas ocorrências.
 
-## 2. Gameplay communication only via GameEventBus
+## 2. Comunicação de gameplay apenas via GameEventBus
 
-`GameEventBus.Publish()` / `Subscribe()` for all gameplay communication (combat, farming, inventory, UI state, NPC, cave, day cycle, economy). Direct MonoBehaviour-to-MonoBehaviour gameplay calls are prohibited.
+`GameEventBus.Publish()` / `Subscribe()` para toda comunicação de gameplay (combat, farming, inventory, UI state, NPC, cave, day cycle, economy). Chamadas diretas MonoBehaviour-to-MonoBehaviour de gameplay são proibidas.
 
-Allowed exceptions: editor tools; GameBootstrap wiring refs; same-object `GetComponent` for setup; Unity lifecycle internals. A spec may authorize a direct call explicitly with reason.
+Exceções permitidas: editor tools; refs de wiring do GameBootstrap; `GetComponent` no mesmo object para setup; internals do Unity lifecycle. Uma spec pode autorizar explicitamente uma chamada direta com justificativa.
 
-## 3. Save DTOs: simple types + stable IDs only
+## 3. Save DTOs: apenas simple types + stable IDs
 
-Prohibited in save DTOs: any Unity object reference (`ScriptableObject`, `GameObject`, `Transform`, `MonoBehaviour`, `Sprite`, components).
+Proibido em save DTOs: qualquer Unity object reference (`ScriptableObject`, `GameObject`, `Transform`, `MonoBehaviour`, `Sprite`, components).
 
-Allowed: `string`, `int`, `float`, `bool`, enums, lists/arrays of simple values, nested simple DTOs, stable IDs.
+Permitido: `string`, `int`, `float`, `bool`, enums, lists/arrays de simple values, nested simple DTOs, stable IDs.
 
-Pattern: persist IDs; resolve objects after load via registries/bootstrap; keep migrations backward-compatible; document compatibility in `docs/validation/` when schema changes.
+Pattern: persista IDs; resolva objects após o load via registries/bootstrap; mantenha migrations backward-compatible; documente compatibilidade em `docs/validation/` quando o schema mudar.
 
-## 4. Forbidden namespaces
+## 4. Namespaces proibidos
 
 `CindarsHope.Debug`, `CindarsHope.Temp` (use `CindarsHope.DebugTools`).
 
 ## Enforcement
 
-- Hook `runtime-code-guard.ps1` (PostToolUse) flags forbidden search APIs and namespaces in newly written code.
-- `/review-non-regression` audits the full diff before closeout.
+- Hook `runtime-code-guard.ps1` (PostToolUse) sinaliza forbidden search APIs e namespaces em código recém-escrito.
+- `/review-non-regression` audita o diff completo antes do closeout.

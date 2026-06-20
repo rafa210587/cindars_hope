@@ -1,34 +1,34 @@
-# Rule: Context Reading Policy
+# Rule: Política de Leitura de Contexto
 
-## Rule
+## Regra
 
-Agents executing a spec must read only: CLAUDE.md (or AGENTS.md), `docs/project/CURRENT_STATE.md`, the active spec, and files explicitly cited by the spec. Do not read PROJECT_LOG.md, ROADMAP.md, full GDD, old refinements, archived specs, or unrelated validation reports by default.
+Agents executando uma spec devem ler apenas: CLAUDE.md (ou AGENTS.md), `docs/project/CURRENT_STATE.md`, a spec ativa, e arquivos explicitamente citados pela spec. Não leia PROJECT_LOG.md, ROADMAP.md, GDD completo, refinements antigos, archived specs, ou validation reports não relacionados por padrão.
 
-## Why
+## Por que existe
 
-Heavy default context (PROJECT_LOG.md ~500+ lines, full IMPLEMENTATION_STATUS.md) increases token cost and drift risk from stale historical data. CURRENT_STATE.md (~80 lines) contains all operationally relevant information for an execution task.
+Contexto default pesado (PROJECT_LOG.md ~500+ linhas, IMPLEMENTATION_STATUS.md completo) aumenta o custo em tokens e o risco de drift por dados históricos desatualizados. CURRENT_STATE.md (~80 linhas) contém toda a informação operacionalmente relevante para uma tarefa de execução.
 
-## Applies To
+## Onde se aplica
 
-All agent-run spec execution, bug fix, and documentation tasks.
+Toda execução de spec, bug fix e tarefa de documentação rodada por agent.
 
-## Violation Examples
+## Exemplos de violação
 
-- Reading PROJECT_LOG.md as "Camada 0" before a code implementation task
-- Reading all of IMPLEMENTATION_STATUS.md to find current spec status
-- Reading full SPEC_EXECUTION_ORDER.md when CURRENT_STATE.md already lists active spec queue
+- Ler PROJECT_LOG.md como "Camada 0" antes de uma tarefa de implementação de código
+- Ler todo o IMPLEMENTATION_STATUS.md para achar o status da spec atual
+- Ler todo o SPEC_EXECUTION_ORDER.md quando CURRENT_STATE.md já lista a fila de specs ativas
 
-## Allowed Exceptions
+## Exceções permitidas
 
-- **Audit/reconciliation tasks** (`/reconcile-status`): may read PROJECT_LOG.md and IMPLEMENTATION_STATUS.md
-- **Regression investigation**: may read prior validation reports
-- **Wave planning** (`/plan-wave`): may read ROADMAP.md and current_backlog.md
-- **Explicit human request**: "read PROJECT_LOG for context"
+- **Tarefas de audit/reconciliation** (`/reconcile-status`): podem ler PROJECT_LOG.md e IMPLEMENTATION_STATUS.md
+- **Investigação de regressão**: pode ler validation reports anteriores
+- **Wave planning** (`/plan-wave`): pode ler ROADMAP.md e current_backlog.md
+- **Pedido humano explícito**: "read PROJECT_LOG for context"
 
-## What To Do If Exception Is Needed
+## O que fazer se a exceção for necessária
 
-State the justification before reading the heavy file. Example: "Reading PROJECT_LOG.md for audit of SPEC_18-24 evidence."
+Declare a justificativa antes de ler o arquivo pesado. Exemplo: "Reading PROJECT_LOG.md for audit of SPEC_18-24 evidence."
 
-## Validation / Detection
+## Validação
 
-Hook `.claude/hooks/context-policy-check.ps1` (disabled by default) can detect when execution plans include heavy historical reads without justification.
+O hook `.claude/hooks/context-policy-check.ps1` (disabled by default) consegue detectar quando planos de execução incluem leituras históricas pesadas sem justificativa.

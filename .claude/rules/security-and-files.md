@@ -1,30 +1,30 @@
-# Rule: Security & File Safety
+# Rule: Segurança & File Safety
 
-Complements [no-unsafe-git.md](./no-unsafe-git.md) (destructive git) and [unity-assets.md](./unity-assets.md) (protected Unity YAML). This rule covers secrets and sensitive non-code files.
+Complementa [no-unsafe-git.md](./no-unsafe-git.md) (git destrutivo) e [unity-assets.md](./unity-assets.md) (Unity YAML protegido). Esta rule cobre secrets e arquivos sensíveis que não são código.
 
-## No secrets in the repo
+## Nada de secrets no repo
 
-- Never write secrets into code, version-controlled config, or logs: API keys, tokens, private keys, passwords, connection strings with credentials.
-- Use placeholders/fictional values in examples; load real values from an untracked config or environment variable.
-- Enforced mechanically by hook `guard-secrets.ps1` (PreToolUse Edit/Write), which blocks content matching common secret formats.
+- Nunca escreva secrets em código, config versionada ou logs: API keys, tokens, private keys, passwords, connection strings com credentials.
+- Use placeholders/valores fictícios em exemplos; carregue valores reais de uma config não versionada ou de uma environment variable.
+- Imposto mecanicamente pelo hook `guard-secrets.ps1` (PreToolUse Edit/Write), que bloqueia conteúdo que casa com formatos comuns de secret.
 
-## Sensitive files — do not modify without an explicit request
+## Arquivos sensíveis — não modifique sem um pedido explícito
 
-`.env`, secret/credential files, keystores, certificates, signing keys, and **real user save files**. Reading for audit is fine; editing requires the task to name the file explicitly.
+`.env`, arquivos de secret/credential, keystores, certificates, signing keys, e **arquivos de save reais do usuário**. Ler para audit é ok; editar exige que a tarefa nomeie o arquivo explicitamente.
 
-> Note: real player saves are runtime data, not the save *schema*. Changing save DTOs/migrations is normal spec work (skill `save-load-pattern`); overwriting an actual user's save file on disk is not.
+> Nota: saves reais do player são runtime data, não o *schema* de save. Mudar save DTOs/migrations é trabalho normal de spec (skill `save-load-pattern`); sobrescrever o arquivo de save real de um usuário em disco não é.
 
-## Build / deploy / tooling scripts
+## Scripts de build / deploy / tooling
 
-Before editing anything under `tools/`, build scripts, or CI/deploy config, read the whole file and explain the impact first. These scripts run validation gates and asset pipelines — a silent change can mask a broken gate (rule `validation-truth`).
+Antes de editar qualquer coisa sob `tools/`, build scripts, ou config de CI/deploy, leia o arquivo inteiro e explique o impacto primeiro. Esses scripts rodam validation gates e asset pipelines — uma mudança silenciosa pode mascarar um gate quebrado (rule `validation-truth`).
 
-## General
+## Geral
 
-- Prefer reversible changes and small diffs.
-- No broad cleanup command (`Remove-Item -Recurse`, `git clean`, mass delete) to fix a local problem without stating exactly what will be removed (see rule `no-unsafe-git`).
+- Prefira mudanças reversíveis e diffs pequenos.
+- Nenhum comando de cleanup amplo (`Remove-Item -Recurse`, `git clean`, mass delete) para resolver um problema local sem dizer exatamente o que será removido (ver rule `no-unsafe-git`).
 
 ## Enforcement
 
-- Hook `guard-secrets.ps1` (PreToolUse) blocks secret-shaped content.
-- `permissions.ask` (settings.json) gates Packages/, ProjectSettings/, and Unity asset YAML.
-- Reviewed by skill `non-regression-review` before closeout.
+- Hook `guard-secrets.ps1` (PreToolUse) bloqueia conteúdo com cara de secret.
+- `permissions.ask` (settings.json) gating de Packages/, ProjectSettings/, e Unity asset YAML.
+- Revisado pela skill `non-regression-review` antes do closeout.

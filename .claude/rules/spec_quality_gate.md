@@ -1,4 +1,4 @@
-# Spec Quality Gate — Cindar's Hope
+# Rule: Spec Quality Gate
 
 Absorbs `spec-promotion-requires-evidence` (stub points here). Canonical status taxonomy lives in this file only.
 
