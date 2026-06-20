@@ -58,6 +58,15 @@ namespace CindarsHope.NPC
         public bool RequiresFestivalDay;
 
         /// <summary>
+        /// fable_39 — optional INFERRED-CLASS title gate. When set, the line is only eligible if the
+        /// player's currently inferred class title id matches (the title id, e.g. "ui.class.warrior").
+        /// Null/empty = no constraint on class (every existing line is unaffected: zero behavior
+        /// change). This enables an occasional NPC greeting that recognizes the player's inferred
+        /// class without any new gating mechanism — it reuses THIS condition type.
+        /// </summary>
+        public string RequiredInferredTitleId;
+
+        /// <summary>
         /// Number of constrained axes. Used by the selector as the specificity score: the eligible
         /// line that constrains the most axes wins (the most specific line beats a generic one).
         /// </summary>
@@ -73,6 +82,7 @@ namespace CindarsHope.NPC
                 if (!string.IsNullOrEmpty(ForbiddenFlag)) n++;
                 if (TimeBand.HasValue) n++;
                 if (RequiresFestivalDay) n++;
+                if (!string.IsNullOrEmpty(RequiredInferredTitleId)) n++;
                 return n;
             }
         }
@@ -96,6 +106,11 @@ namespace CindarsHope.NPC
             if (!string.IsNullOrEmpty(ForbiddenFlag) && ctx.IsFlagSet(ForbiddenFlag)) return false;
             if (TimeBand.HasValue && ctx.TimeBand != TimeBand.Value) return false;
             if (RequiresFestivalDay && !ctx.IsFestivalDay) return false;
+            if (!string.IsNullOrEmpty(RequiredInferredTitleId)
+                && !string.Equals(ctx.InferredTitleId, RequiredInferredTitleId, System.StringComparison.Ordinal))
+            {
+                return false;
+            }
             return true;
         }
     }

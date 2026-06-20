@@ -27,6 +27,14 @@ namespace CindarsHope.NPC
         public int FriendshipLevel { get; }
         public bool IsFestivalDay { get; }
 
+        /// <summary>
+        /// fable_39 — the player's currently INFERRED class title id (e.g. "ui.class.warrior"), or
+        /// empty when none/Colono. Additive axis read by <see cref="DialogueLineCondition"/>'s
+        /// optional <c>RequiredInferredTitleId</c>; defaults to empty so existing contexts and lines
+        /// are unaffected.
+        /// </summary>
+        public string InferredTitleId { get; }
+
         private readonly HashSet<string> _flags;
 
         public DialogueConditionContext(
@@ -37,7 +45,8 @@ namespace CindarsHope.NPC
             DialogueTimeBand timeBand,
             int friendshipLevel,
             bool isFestivalDay,
-            IEnumerable<string> activeFlags = null)
+            IEnumerable<string> activeFlags = null,
+            string inferredTitleId = null)
         {
             NpcId = npcId ?? string.Empty;
             Day = day;
@@ -46,6 +55,7 @@ namespace CindarsHope.NPC
             TimeBand = timeBand;
             FriendshipLevel = friendshipLevel;
             IsFestivalDay = isFestivalDay;
+            InferredTitleId = inferredTitleId ?? string.Empty;
             _flags = new HashSet<string>(StringComparer.Ordinal);
             if (activeFlags != null)
             {
@@ -109,8 +119,13 @@ namespace CindarsHope.NPC
                 flags = flagService.GetAllActive().Keys;
             }
 
+            // fable_39: read the current inferred-class title id (degrades to empty when the runtime
+            // is absent — dialogue never throws and the fallback line stays selectable).
+            var inferredTitleId = CindarsHope.Player.InferredClassRuntime.CurrentProfile.TitleId;
+
             return new DialogueConditionContext(
-                npcId, absoluteDay, season, weather, BandFromHour(hour), friendship, festival, flags);
+                npcId, absoluteDay, season, weather, BandFromHour(hour), friendship, festival, flags,
+                inferredTitleId);
         }
     }
 }

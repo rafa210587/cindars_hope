@@ -94,6 +94,40 @@ namespace CindarsHope.Localization
             // estalagem) declarados aqui via LocalizationService (ADR-0012). {0} = nome do NPC.
             yield return new LocalizationEntry("ui.birthday.gift_toast", "Hoje e aniversario de {0}!");
             yield return new LocalizationEntry("ui.inn.sleep_prompt", "Dormir na estalagem");
+            // fable_39: titulos da CLASSE INFERIDA (Q9.1) — texto novo voltado ao jogador declarado
+            // aqui via LocalizationService (ADR-0012). 5 titulos puros + os 20 compostos hibridos
+            // (dominante_secundario, da tabela 5x4 do doc de decisoes). "Colono" = sem dominante.
+            yield return new LocalizationEntry("ui.class.colono", "Colono");
+            yield return new LocalizationEntry("ui.class.warrior", "Lamina de Cindar");
+            yield return new LocalizationEntry("ui.class.hunter", "Olho da Mata");
+            yield return new LocalizationEntry("ui.class.mystic", "Tecelao");
+            yield return new LocalizationEntry("ui.class.farmer", "Mao da Terra");
+            yield return new LocalizationEntry("ui.class.bond", "Voz do Vale");
+            // Hibridos: dominante = Guerreiro (warrior / Lamina)
+            yield return new LocalizationEntry("ui.class.warrior_hunter", "Lamina Montesa");
+            yield return new LocalizationEntry("ui.class.warrior_mystic", "Lamina Tecela");
+            yield return new LocalizationEntry("ui.class.warrior_farmer", "Lamina da Terra");
+            yield return new LocalizationEntry("ui.class.warrior_bond", "Lamina do Vale");
+            // Hibridos: dominante = Cacador (hunter / Olho)
+            yield return new LocalizationEntry("ui.class.hunter_warrior", "Olho de Lamina");
+            yield return new LocalizationEntry("ui.class.hunter_mystic", "Olho Tecelao");
+            yield return new LocalizationEntry("ui.class.hunter_farmer", "Olho da Terra");
+            yield return new LocalizationEntry("ui.class.hunter_bond", "Olho do Vale");
+            // Hibridos: dominante = Mistico (mystic / Tecelao)
+            yield return new LocalizationEntry("ui.class.mystic_warrior", "Tecelao de Lamina");
+            yield return new LocalizationEntry("ui.class.mystic_hunter", "Tecelao Monteso");
+            yield return new LocalizationEntry("ui.class.mystic_farmer", "Tecelao da Terra");
+            yield return new LocalizationEntry("ui.class.mystic_bond", "Tecelao do Vale");
+            // Hibridos: dominante = Lavrador (farmer / Mao da Terra)
+            yield return new LocalizationEntry("ui.class.farmer_warrior", "Mao de Lamina");
+            yield return new LocalizationEntry("ui.class.farmer_hunter", "Mao Montesa");
+            yield return new LocalizationEntry("ui.class.farmer_mystic", "Mao Tecela");
+            yield return new LocalizationEntry("ui.class.farmer_bond", "Mao do Vale");
+            // Hibridos: dominante = Vinculo (bond / Voz do Vale)
+            yield return new LocalizationEntry("ui.class.bond_warrior", "Voz de Lamina");
+            yield return new LocalizationEntry("ui.class.bond_hunter", "Voz Montesa");
+            yield return new LocalizationEntry("ui.class.bond_mystic", "Voz Tecela");
+            yield return new LocalizationEntry("ui.class.bond_farmer", "Voz da Terra");
         }
 
         /// <summary>Number of resolvable keys currently in the table.</summary>

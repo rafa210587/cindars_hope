@@ -1,6 +1,8 @@
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Equipment;
 using CindarsHope.Inventory;
+using CindarsHope.Localization;
+using CindarsHope.Player;
 using CindarsHope.Player.Progression;
 using CindarsHope.UI.Modal;
 using UnityEngine;
@@ -219,6 +221,10 @@ namespace CindarsHope.UI.Character
 
             GUILayout.Label($"Level: {progression.Level}  XP: {progression.CurrentXp} / {progression.XpToNextLevel}");
             GUILayout.Label($"Attribute Points: {progression.UnspentAttributePoints}  Skill Points: {progression.UnspentSkillPoints}");
+            // fable_39: classe INFERIDA (Q9.1) — linha aditiva read-only; titulo derivado do
+            // investimento por arvore (sem estado salvo). Resolvido via LocalizationService.
+            var classProfile = InferredClassRuntime.CurrentProfile;
+            GUILayout.Label($"Classe: {LocalizationService.Get(classProfile.TitleId)}");
             GUILayout.Label("[W/S] navegar  [E] gastar ponto");
             DrawAttribute(progression, 0, PlayerAttributeType.Strength, "Strength", progression.Strength);
             DrawAttribute(progression, 1, PlayerAttributeType.Dexterity, "Dexterity", progression.Dexterity);
