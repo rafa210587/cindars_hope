@@ -50,7 +50,8 @@ namespace CindarsHope.Cave.Runtime
             CaveFishingSpotSnapshotEntry fishingSpotState,
             IEnumerable<string> depletedNodeIds,
             IEnumerable<EnemyHpRecord> enemyHpRecords = null,
-            IEnumerable<string> openedChestIds = null)
+            IEnumerable<string> openedChestIds = null,
+            IEnumerable<CaveTrapSnapshotEntry> trapStates = null)
         {
             if (generatedLevel == null)
             {
@@ -124,6 +125,16 @@ namespace CindarsHope.Cave.Runtime
             foreach (var chestId in openedChestIds ?? Array.Empty<string>())
             {
                 snapshot.MarkChestOpened(chestId);
+            }
+
+            // fable_60: preserva o estado das armadilhas (Triggered/Disarmed não rearmam na revisita).
+            // Estado mutável FORA do LayoutHash (mesmo tratamento de OpenedChestIds).
+            foreach (var trap in trapStates ?? Array.Empty<CaveTrapSnapshotEntry>())
+            {
+                if (trap != null && !string.IsNullOrWhiteSpace(trap.TrapInstanceId))
+                {
+                    snapshot.SetTrapState(trap.TrapInstanceId, trap.TrapKey, trap.Cell, trap.State);
+                }
             }
 
             snapshot.LayoutHash = CalculateLayoutHash(snapshot);

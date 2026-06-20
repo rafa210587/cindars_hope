@@ -92,6 +92,7 @@ namespace CindarsHope.Cave
             {
                 _levelController.RefreshCurrentSnapshotEnemyHp();
                 _levelController.RefreshCurrentSnapshotOpenedChests();
+                _levelController.RefreshCurrentSnapshotTrapStates(); // fable_60: revisita preserva estado das armadilhas
             }
         }
 

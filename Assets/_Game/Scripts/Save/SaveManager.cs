@@ -492,6 +492,8 @@ namespace CindarsHope.Save
                 if (levelController != null)
                 {
                     levelController.RefreshCurrentSnapshotEnemyHp();
+                    levelController.RefreshCurrentSnapshotOpenedChests(); // fable_09
+                    levelController.RefreshCurrentSnapshotTrapStates();   // fable_60
                 }
 
                 return Cave.Runtime.CaveRunSaveMapper.ToSaveData(runManager.State);

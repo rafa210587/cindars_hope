@@ -50,6 +50,13 @@ namespace CindarsHope.Equipment
         /// <summary>Imunidade a Root + Chill -50% duração (Anel de Rootguard). Flag de status (dormente).</summary>
         RootImmuneChillResist = 26,
 
+        /// <summary>
+        /// fable_60 — raio (em células) de detecção de armadilhas da caverna (Amuleto de Nyx).
+        /// Efeito DORMANTE até esta spec: o consumidor é o <c>TrapDetectionService</c>, que revela o
+        /// telegraph de armadilhas dentro do raio. 0 = sem detecção (nenhum acessório fornece).
+        /// </summary>
+        TrapDetectionRadiusFlat = 27,
+
         // ─── Relíquias §17 (hooks dormentes até a dependência existir — F27/F17/F37) ──────────────
         /// <summary>Relíquia de Kanthor "Julgamento": perfect block cura 2% HP máx (hook F27, dormente).</summary>
         RelicPerfectBlockHealPercent = 40,

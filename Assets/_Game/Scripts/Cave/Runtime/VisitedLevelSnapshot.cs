@@ -37,6 +37,11 @@ namespace CindarsHope.Cave.Runtime
         // fable_09: baús de tesouro JÁ ABERTOS neste nível/run (aditivo; estado mutável — FORA do
         // LayoutHash, mesmo padrão de DepletedResourceNodeIds/EnemyHpRecords). Revisita mostra aberto.
         [SerializeField] public List<string> OpenedChestIds = new();
+        // fable_60: estado das armadilhas geradas neste nível/run (aditivo; estado mutável — FORA do
+        // LayoutHash, mesmo padrão de OpenedChestIds). Triggered/Disarmed não rearmam na revisita
+        // (cave-stable-run / ADR-0005). Snapshot legado sem o campo = armadilhas re-derivadas Armed
+        // (o plano determinístico garante composição/posições/IDs idênticos).
+        [SerializeField] public List<CaveTrapSnapshotEntry> TrapStates = new();
 
         int IVisitedLevelSnapshot.CaveLevel => CaveLevel;
         string IVisitedLevelSnapshot.SnapshotId => SnapshotId;
@@ -136,6 +141,58 @@ namespace CindarsHope.Cave.Runtime
         public bool IsChestOpened(string chestId)
         {
             return !string.IsNullOrWhiteSpace(chestId) && OpenedChestIds.Contains(chestId);
+        }
+
+        // fable_60: grava/atualiza o estado de UMA armadilha (idempotente por trapInstanceId). Estado
+        // mutável FORA do LayoutHash. NÃO regride o estado: uma armadilha Triggered/Disarmed nunca volta
+        // a Armed dentro do mesmo CaveRunSeed (cave-stable-run / ADR-0005).
+        public void SetTrapState(string trapInstanceId, string trapKey, Vector2Int cell, int state)
+        {
+            if (string.IsNullOrWhiteSpace(trapInstanceId))
+            {
+                return;
+            }
+
+            foreach (var entry in TrapStates)
+            {
+                if (entry != null && entry.TrapInstanceId == trapInstanceId)
+                {
+                    // Só avança o estado (Armed=0 < Telegraphing=1 < Triggered=2 / Disarmed=3).
+                    if (state > entry.State)
+                    {
+                        entry.State = state;
+                    }
+
+                    return;
+                }
+            }
+
+            TrapStates.Add(new CaveTrapSnapshotEntry
+            {
+                TrapInstanceId = trapInstanceId,
+                TrapKey = trapKey ?? string.Empty,
+                Cell = cell,
+                State = state
+            });
+        }
+
+        // fable_60: estado persistido de uma armadilha (Armed por padrão se ausente). Usado na revisita.
+        public int GetTrapState(string trapInstanceId)
+        {
+            if (string.IsNullOrWhiteSpace(trapInstanceId))
+            {
+                return 0;
+            }
+
+            foreach (var entry in TrapStates)
+            {
+                if (entry != null && entry.TrapInstanceId == trapInstanceId)
+                {
+                    return entry.State;
+                }
+            }
+
+            return 0; // Armed
         }
 
         public void SetEnemySpawnPlan(CaveLevelEnemyPlan plan)
@@ -343,6 +400,17 @@ namespace CindarsHope.Cave.Runtime
         public string ResourceNodeId = string.Empty;
         public Vector2Int GridPosition;
         public bool IsDepleted;
+    }
+
+    // fable_60: estado serializável de UMA armadilha (tipos simples + IDs apenas — sem refs Unity).
+    // State: 0=Armed, 1=Telegraphing, 2=Triggered, 3=Disarmed (espelha CindarsHope.Cave.Traps.TrapState).
+    [Serializable]
+    public sealed class CaveTrapSnapshotEntry
+    {
+        public string TrapInstanceId = string.Empty;
+        public string TrapKey = string.Empty;
+        public Vector2Int Cell;
+        public int State;
     }
 
     [Serializable]

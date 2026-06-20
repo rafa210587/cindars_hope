@@ -252,5 +252,13 @@ namespace CindarsHope.Equipment
             var chance = ExtraLootRollChanceSource?.Invoke() ?? 0f;
             return chance > 0f && roll01 < chance;
         }
+
+        /// <summary>
+        /// fable_60 — fonte única do raio (em células) de detecção de armadilhas (Amuleto de Nyx).
+        /// Consumida no ponto único do <c>TrapDetectionService</c>. Default 0 => sem detecção; o efeito
+        /// dormente da F23 deixa de ser dormente quando este valor é &gt; 0.
+        /// </summary>
+        public static System.Func<float> TrapDetectionRadiusSource =
+            () => Active?.GetModifier(AccessoryEffectType.TrapDetectionRadiusFlat) ?? 0f;
     }
 }

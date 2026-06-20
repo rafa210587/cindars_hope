@@ -247,7 +247,8 @@ namespace CindarsHope.Cave
                 null,
                 _runManager.State.DepletedNodeIds,
                 _materializer != null ? _materializer.CollectEnemyHpRecords() : null,
-                _materializer != null ? _materializer.OpenedChestIds : null); // fable_09
+                _materializer != null ? _materializer.OpenedChestIds : null, // fable_09
+                _materializer != null ? _materializer.TrapStates : null); // fable_60
 
             if (snapshot == null)
             {
@@ -299,6 +300,29 @@ namespace CindarsHope.Cave
                 foreach (var chestId in _materializer.OpenedChestIds)
                 {
                     snapshot.MarkChestOpened(chestId);
+                }
+            }
+        }
+
+        // fable_60: regrava o estado das armadilhas no snapshot do nível atual antes de sair/salvar
+        // (snapshot é capturado na entrada; o jogador pode disparar/desarmar armadilhas durante o
+        // nível). Mesmo padrão de RefreshCurrentSnapshotOpenedChests — estado mutável fora do LayoutHash.
+        public void RefreshCurrentSnapshotTrapStates()
+        {
+            if (CurrentGeneratedLevel == null || _materializer == null || _runManager == null)
+            {
+                return;
+            }
+
+            if (_runManager.State.VisitedLevelSnapshots.TryGetValue(CurrentGeneratedLevel.CaveLevel, out var snapshot)
+                && snapshot != null)
+            {
+                foreach (var trap in _materializer.TrapStates)
+                {
+                    if (trap != null)
+                    {
+                        snapshot.SetTrapState(trap.TrapInstanceId, trap.TrapKey, trap.Cell, trap.State);
+                    }
                 }
             }
         }

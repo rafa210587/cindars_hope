@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using CindarsHope.Cave.Data;
 using CindarsHope.Cave.Generation;
 using CindarsHope.Cave.Resources;
+using CindarsHope.Cave.Traps;
 using CindarsHope.Combat;
 using CindarsHope.Core;
 using CindarsHope.Core.Data;
@@ -49,6 +50,8 @@ namespace CindarsHope.Cave.Runtime
         [SerializeField] private int _maxEnemiesPerLevel = 24;
         // fable_09: prefab opcional do tile de hazard (fallback procedural quando ausente).
         [SerializeField] private SpriteRenderer _hazardTilePrefab;
+        // fable_60: prefab opcional do tile de armadilha (fallback procedural quando ausente).
+        [SerializeField] private SpriteRenderer _trapTilePrefab;
 
         private GameObject _generatedRuntimeRoot;
         private CaveExitPortal _backExitPortal;
@@ -68,6 +71,11 @@ namespace CindarsHope.Cave.Runtime
         private readonly HashSet<string> _openedChestIds = new HashSet<string>();
         private Vector2Int _lastPlayerSpawnGrid;
         private CaveHazardPlan _lastHazardPlan;
+        // fable_60: plano determinístico de armadilhas + estado por instância (snapshot na entrada +
+        // mutações desta sessão). Mesmo idioma de _openedChestIds/_snapshotOpenedChestIds.
+        private CaveTrapPlan _lastTrapPlan;
+        private IReadOnlyList<CaveTrapSnapshotEntry> _snapshotTrapStates;
+        private readonly Dictionary<string, CaveTrapSnapshotEntry> _trapStates = new Dictionary<string, CaveTrapSnapshotEntry>();
 
         public CaveExitPortal BackExitPortal => _backExitPortal;
         public CaveExitPortal ForwardExitPortal => _forwardExitPortal;
@@ -81,6 +89,9 @@ namespace CindarsHope.Cave.Runtime
         // fable_09: baús abertos (snapshot de entrada + abertos nesta sessão) para persistência.
         public IReadOnlyCollection<string> OpenedChestIds => _openedChestIds;
         public CaveHazardPlan LastHazardPlan => _lastHazardPlan;
+        // fable_60: plano de armadilhas materializado e estado por instância (para o snapshot).
+        public CaveTrapPlan LastTrapPlan => _lastTrapPlan;
+        public IReadOnlyCollection<CaveTrapSnapshotEntry> TrapStates => _trapStates.Values;
 
         public void Materialize(CaveGeneratedLevel generatedLevel, CaveSpawnAnchor spawnAnchor = CaveSpawnAnchor.Entrance)
         {
@@ -91,6 +102,7 @@ namespace CindarsHope.Cave.Runtime
         {
             _snapshotEnemyHpRecords = snapshot?.EnemyHpRecords;
             _snapshotOpenedChestIds = snapshot?.OpenedChestIds; // fable_09: revisita mostra baú aberto
+            _snapshotTrapStates = snapshot?.TrapStates;          // fable_60: revisita preserva estado das armadilhas
             MaterializeInternal(
                 generatedLevel,
                 spawnAnchor,
@@ -165,6 +177,25 @@ namespace CindarsHope.Cave.Runtime
                 }
             }
 
+            // fable_60: o estado das armadilhas começa do snapshot (revisita) e cresce nesta sessão.
+            _trapStates.Clear();
+            if (_snapshotTrapStates != null)
+            {
+                foreach (var trap in _snapshotTrapStates)
+                {
+                    if (trap != null && !string.IsNullOrWhiteSpace(trap.TrapInstanceId))
+                    {
+                        _trapStates[trap.TrapInstanceId] = new CaveTrapSnapshotEntry
+                        {
+                            TrapInstanceId = trap.TrapInstanceId,
+                            TrapKey = trap.TrapKey,
+                            Cell = trap.Cell,
+                            State = trap.State
+                        };
+                    }
+                }
+            }
+
             _lastMaterializationResult = new CaveRuntimeMaterializationResult();
 
             // Create root hierarchy
@@ -206,6 +237,7 @@ namespace CindarsHope.Cave.Runtime
             _snapshotResourceNodeStates = null;
             _snapshotEnemyHpRecords = null;
             _snapshotOpenedChestIds = null;
+            _snapshotTrapStates = null;
         }
 
         private static Vector3 GridToWorld(Vector2Int gridPosition, CaveGeneratedLevel level)
@@ -940,6 +972,9 @@ namespace CindarsHope.Cave.Runtime
 
             MaterializeHazards(generatedLevel, _lastHazardPlan);
             MaterializeTreasureRoom(generatedLevel, _lastHazardPlan);
+
+            // fable_60: armadilhas determinísticas por bioma/tier (mesma superfície stable-run).
+            MaterializeTraps(generatedLevel, worldSeed, runSeed);
         }
 
         private void MaterializeHazards(CaveGeneratedLevel generatedLevel, CaveHazardPlan plan)
@@ -1090,6 +1125,225 @@ namespace CindarsHope.Cave.Runtime
             {
                 _openedChestIds.Add(chestId);
             }
+        }
+
+        // fable_60: materializa as armadilhas determinísticas do nível (CA-1..CA-5). Mesmo padrão dos
+        // hazards (parent dedicado, collider trigger, visual placeholder). FalseChest vira FalseChestTrap
+        // (interação = abrir → Hoardmaw); os demais viram TrapBehaviour (pisada → telegraph → efeito).
+        // Estado restaurado do snapshot (revisita não rearma Triggered/Disarmed — ADR-0005).
+        private void MaterializeTraps(CaveGeneratedLevel generatedLevel, string worldSeed, string runSeed)
+        {
+            _lastTrapPlan = CaveTrapPlanner.BuildPlan(generatedLevel, worldSeed, runSeed, _lastPlayerSpawnGrid);
+            if (_lastTrapPlan == null || _lastTrapPlan.Traps.Count == 0)
+            {
+                return;
+            }
+
+            var trapParent = new GameObject("GeneratedTraps");
+            trapParent.transform.SetParent(_generatedRuntimeRoot.transform);
+            trapParent.transform.localPosition = Vector3.zero;
+            _materializedObjects.Add(trapParent);
+
+            // fable_60: consumidor runtime da detecção F23 (CA-6) — sem busca global; recebe o player.
+            var detectionRuntime = trapParent.AddComponent<TrapDetectionRuntime>();
+            detectionRuntime.Configure(_playerTransform);
+
+            var runSeedSafe = runSeed ?? string.Empty;
+            var caveLevel = generatedLevel.CaveLevel;
+
+            foreach (var trap in _lastTrapPlan.Traps)
+            {
+                if (trap == null)
+                {
+                    continue;
+                }
+
+                var initialState = ResolveInitialTrapState(trap);
+
+                // Já disparada/desarmada na run: registra o estado e não materializa um perigo ativo
+                // (false_chest disparado some; armadilha disparada/desarmada fica inerte).
+                if (initialState == TrapState.Triggered || initialState == TrapState.Disarmed)
+                {
+                    RecordTrapState(trap, initialState);
+                    continue;
+                }
+
+                var worldPos = GridToWorld(trap.Cell, generatedLevel);
+                var def = TrapDefinition.Get(trap.TrapId);
+                var isFalseChest = def != null && def.Category == TrapEffectCategory.SpawnEnemy;
+
+                SpriteRenderer spriteRenderer;
+                GameObject trapGO;
+                if (_trapTilePrefab != null)
+                {
+                    spriteRenderer = Instantiate(_trapTilePrefab, worldPos, Quaternion.identity, trapParent.transform);
+                    trapGO = spriteRenderer.gameObject;
+                }
+                else
+                {
+                    trapGO = new GameObject(trap.TrapInstanceId);
+                    trapGO.transform.SetParent(trapParent.transform);
+                    trapGO.transform.position = worldPos;
+                    spriteRenderer = trapGO.AddComponent<SpriteRenderer>();
+                    spriteRenderer.sprite = GetBuiltinSprite();
+                }
+
+                trapGO.name = trap.TrapInstanceId;
+                spriteRenderer.sortingOrder = 2;
+
+                var trigger = trapGO.GetComponent<BoxCollider2D>();
+                if (trigger == null)
+                {
+                    trigger = trapGO.AddComponent<BoxCollider2D>();
+                }
+                trigger.size = Vector2.one;
+                trigger.isTrigger = true;
+
+                RecordTrapState(trap, initialState);
+
+                if (isFalseChest)
+                {
+                    var falseChest = trapGO.AddComponent<FalseChestTrap>();
+                    falseChest.Configure(
+                        trap,
+                        caveLevel,
+                        initialState,
+                        spriteRenderer,
+                        SpawnTrapEnemyById,
+                        RegisterTrapState);
+                    detectionRuntime.Register(falseChest);
+                }
+                else
+                {
+                    var behaviour = trapGO.AddComponent<TrapBehaviour>();
+                    behaviour.Configure(
+                        trap,
+                        runSeedSafe,
+                        caveLevel,
+                        initialState,
+                        spriteRenderer,
+                        RegisterTrapState);
+                    detectionRuntime.Register(behaviour);
+                }
+
+                _materializedObjects.Add(trapGO);
+            }
+
+            Debug.Log(
+                $"CaveRuntimeMaterializer: materialized {_lastTrapPlan.Traps.Count} trap(s) for level {caveLevel}.",
+                this);
+        }
+
+        private TrapState ResolveInitialTrapState(CaveTrapPlacement trap)
+        {
+            if (trap == null || string.IsNullOrWhiteSpace(trap.TrapInstanceId))
+            {
+                return TrapState.Armed;
+            }
+
+            if (_trapStates.TryGetValue(trap.TrapInstanceId, out var entry) && entry != null)
+            {
+                var state = (TrapState)entry.State;
+                // Telegraphing é transitório — na revisita conta como Armed (não persiste windup).
+                return state == TrapState.Telegraphing ? TrapState.Armed : state;
+            }
+
+            return TrapState.Armed;
+        }
+
+        private void RecordTrapState(CaveTrapPlacement trap, TrapState state)
+        {
+            if (trap == null || string.IsNullOrWhiteSpace(trap.TrapInstanceId))
+            {
+                return;
+            }
+
+            var def = TrapDefinition.Get(trap.TrapId);
+            var trapKey = def != null ? def.TrapKey : trap.TrapId.ToString().ToLowerInvariant();
+            _trapStates[trap.TrapInstanceId] = new CaveTrapSnapshotEntry
+            {
+                TrapInstanceId = trap.TrapInstanceId,
+                TrapKey = trapKey,
+                Cell = trap.Cell,
+                State = (int)state
+            };
+        }
+
+        // fable_60: callback de persistência de estado das armadilhas (Triggered/Disarmed). Só avança
+        // o estado (mesma regra do snapshot). Chamado pelo TrapBehaviour/FalseChestTrap.
+        private void RegisterTrapState(string trapInstanceId, TrapState state)
+        {
+            if (string.IsNullOrWhiteSpace(trapInstanceId))
+            {
+                return;
+            }
+
+            if (_trapStates.TryGetValue(trapInstanceId, out var entry) && entry != null)
+            {
+                if ((int)state > entry.State)
+                {
+                    entry.State = (int)state;
+                }
+
+                return;
+            }
+
+            _trapStates[trapInstanceId] = new CaveTrapSnapshotEntry
+            {
+                TrapInstanceId = trapInstanceId,
+                TrapKey = string.Empty,
+                State = (int)state
+            };
+        }
+
+        // fable_60: spawn de inimigo por ID para o baú falso (Hoardmaw), reusando o caminho de criação
+        // de inimigos EXISTENTE (sem segundo spawner). Cria 1 inimigo sob o root gerado, na posição do
+        // baú falso. Retorna true se o inimigo foi criado.
+        private bool SpawnTrapEnemyById(string enemyId)
+        {
+            if (string.IsNullOrWhiteSpace(enemyId) || _generatedRuntimeRoot == null)
+            {
+                return false;
+            }
+
+            EnsureCombatDatabasesBound();
+            if (_enemyDatabase == null || !_enemyDatabase.TryGetById(enemyId, out var enemyData) || enemyData == null)
+            {
+                Debug.LogWarning(
+                    $"CaveRuntimeMaterializer: false-chest enemy '{enemyId}' not found in EnemyDatabaseSO. Spawn skipped.",
+                    this);
+                return false;
+            }
+
+            var spawnParent = _generatedRuntimeRoot.transform;
+            var instanceId = $"falsechest_{enemyId}_{_trapStates.Count}";
+            var worldPosition = ResolveFalseChestSpawnPosition();
+
+            var entry = new CaveEnemySpawnPlanEntry
+            {
+                EnemyId = enemyId,
+                EnemyInstanceId = instanceId,
+                WorldPosition = worldPosition,
+                SizeClass = enemyData.SizeProfileId
+            };
+
+            var enemyObject = CreateEnemyRuntimeObject(entry, enemyData, spawnParent, 0);
+            _materializedObjects.Add(enemyObject);
+
+            GameEventBus.Publish(new EnemySpawnedEvent(enemyId, worldPosition, instanceId, 0));
+            GameEventBus.Publish(new EnemySeenEvent(enemyId, worldPosition, instanceId, 0));
+            return enemyObject != null;
+        }
+
+        private Vector2 ResolveFalseChestSpawnPosition()
+        {
+            // Posição: no player se houver (perto do baú falso aberto); senão origem do root.
+            if (_playerTransform != null)
+            {
+                return _playerTransform.position;
+            }
+
+            return _generatedRuntimeRoot != null ? _generatedRuntimeRoot.transform.position : Vector3.zero;
         }
 
         private void LogEnemySpawnWiringWarning(CaveGeneratedLevel generatedLevel, string cause)
