@@ -25,6 +25,11 @@ namespace CindarsHope.Cave.Runtime
         private Transform _playerTarget;
         private readonly System.Collections.Generic.List<GameObject> _spawnedAdds = new System.Collections.Generic.List<GameObject>();
 
+        // fable_44: true enquanto um boss real está spawnado neste nível. O CaveLevelRuntimeController
+        // lê esta propriedade após SpawnBossForLevel para decidir se inicia a boss fight (gate de save).
+        // false quando não há gate, o boss já foi derrotado, faltam dados, ou após CleanupBoss().
+        public bool HasLiveBoss => _spawnedBoss != null;
+
         public void SpawnBossForLevel(CaveGeneratedLevel generatedLevel, GameObject generatedRuntimeRoot, Transform playerTarget = null)
         {
             if (generatedLevel == null || _bossGateRegistry == null)

@@ -111,6 +111,16 @@ namespace CindarsHope.Save
 
         public bool SaveGame()
         {
+            // fable_44: política de save em boss fight (CA-3). Ponto ÚNICO de save manual — recusa o save
+            // enquanto uma boss fight da caverna está ativa, com feedback no canal existente (GameSavedEvent).
+            // Sem UI nova. Fora de boss fight, o save nunca é bloqueado por aqui.
+            if (TryGetActiveCaveBossFightGuard(out var blockedReason))
+            {
+                Debug.Log($"SaveManager: manual save blocked — {blockedReason}", this);
+                PublishSaveResult(false, blockedReason);
+                return false;
+            }
+
             try
             {
                 var existingSaveData = TryReadExistingValidSave();
@@ -472,6 +482,24 @@ namespace CindarsHope.Save
             }
 
             return data;
+        }
+
+        // fable_44: lê o flag de boss fight do CaveLevelRuntimeController pelo MESMO canal do bootstrap
+        // usado em CaptureCaveRunSaveData (sem GameObject.Find). Retorna true (com a razão) se o save
+        // manual deve ser recusado. Fora da caverna / sem boss fight ativa → false.
+        private bool TryGetActiveCaveBossFightGuard(out string reason)
+        {
+            reason = Cave.Runtime.CaveBossFightSaveGate.SaveBlockedReason;
+
+            var bootstrap = Core.Bootstrap.GameBootstrap.Instance;
+            var runManager = bootstrap != null ? bootstrap.CaveRunManager : null;
+            if (runManager == null)
+            {
+                return false;
+            }
+
+            var levelController = runManager.GetComponent<Cave.CaveLevelRuntimeController>();
+            return levelController != null && levelController.IsBossFightActive;
         }
 
         // F13: run da caverna sobrevive a fechar o jogo (CAVE_RUN_SAVE_LOAD_DEBT).

@@ -26,6 +26,8 @@ namespace CindarsHope.Cave
         private readonly CaveProceduralGenerator _generator = new CaveProceduralGenerator();
         private readonly CaveEnemySpawnPlanService _spawnPlanService = new CaveEnemySpawnPlanService();
         private readonly CaveSnapshotService _snapshotService = new CaveSnapshotService();
+        // fable_44: estado puro do gate de save em boss fight (set no spawn; clear em derrota/morte/saída).
+        private readonly Cave.Runtime.CaveBossFightSaveGate _bossFightSaveGate = new Cave.Runtime.CaveBossFightSaveGate();
         private CaveSpawnAnchor _currentSpawnAnchor = CaveSpawnAnchor.Entrance;
         private CaveLevelEnemyPlan _currentEnemyPlan;
 
@@ -37,6 +39,10 @@ namespace CindarsHope.Cave
         public int ResourcePointCount => CurrentGeneratedLevel != null ? CurrentGeneratedLevel.ResourceSpawnPoints.Count : 0;
         public CaveRunManager RunManager => _runManager;
         public CaveRuntimeMaterializer Materializer => _materializer;
+
+        // fable_44: lido pelo SaveManager (via canal existente do bootstrap — sem GameObject.Find) para
+        // recusar o save manual durante uma boss fight ativa. True = boss fight em andamento neste nível.
+        public bool IsBossFightActive => _bossFightSaveGate.IsBossFightActive;
 
         public void SetSpawnAnchorForNextGeneration(CaveSpawnAnchor anchor)
         {
@@ -76,6 +82,9 @@ namespace CindarsHope.Cave
             GameEventBus.Subscribe<CaveRuntimeMaterializationCompleteEvent>(OnMaterializationComplete);
             GameEventBus.Subscribe<DayStartedEvent>(OnDayStarted);
             GameEventBus.Subscribe<SceneTransitionStartedEvent>(OnSceneTransitionStarted);
+            // fable_44: clear do gate de save em boss fight (derrota do boss / morte do player).
+            GameEventBus.Subscribe<CaveBossDefeatedEvent>(OnBossDefeated);
+            GameEventBus.Subscribe<CavePlayerDefeatedEvent>(OnPlayerDefeated);
         }
 
         private void OnDisable()
@@ -83,11 +92,27 @@ namespace CindarsHope.Cave
             GameEventBus.Unsubscribe<CaveRuntimeMaterializationCompleteEvent>(OnMaterializationComplete);
             GameEventBus.Unsubscribe<DayStartedEvent>(OnDayStarted);
             GameEventBus.Unsubscribe<SceneTransitionStartedEvent>(OnSceneTransitionStarted);
+            GameEventBus.Unsubscribe<CaveBossDefeatedEvent>(OnBossDefeated);
+            GameEventBus.Unsubscribe<CavePlayerDefeatedEvent>(OnPlayerDefeated);
         }
 
         private void OnSceneTransitionStarted(SceneTransitionStartedEvent evt)
         {
+            // fable_44: sair do nível ou da caverna sempre encerra a boss fight (flag nunca fica órfão).
+            _bossFightSaveGate.EndBossFight();
             DetermineSpawnAnchorFromTransition(evt.SourceSceneName, evt.TargetSceneName, evt.TargetSpawnId);
+        }
+
+        // fable_44: derrota do boss libera o save manual.
+        private void OnBossDefeated(CaveBossDefeatedEvent _)
+        {
+            _bossFightSaveGate.EndBossFight();
+        }
+
+        // fable_44: morte do player (KO/defeat na caverna) encerra a boss fight e libera o save.
+        private void OnPlayerDefeated(CavePlayerDefeatedEvent _)
+        {
+            _bossFightSaveGate.EndBossFight();
         }
 
         private void DetermineSpawnAnchorFromTransition(string sourceScene, string targetScene, string spawnId)
@@ -127,6 +152,23 @@ namespace CindarsHope.Cave
             if (_bossSpawner != null)
             {
                 _bossSpawner.SpawnBossForLevel(e.GeneratedLevel, _materializer.GeneratedRuntimeRoot, _playerTransform);
+
+                // fable_44: a boss fight fica ativa (save manual bloqueado) somente se um boss REAL
+                // spawnou neste nível. Sem gate, ou boss já derrotado → HasLiveBoss=false → save liberado.
+                // Materialização ocorre em geração nova E em restore de snapshot; recomputar aqui mantém
+                // o flag coerente em ambos os caminhos (nível sem boss reabre com save liberado).
+                if (_bossSpawner.HasLiveBoss)
+                {
+                    _bossFightSaveGate.BeginBossFight(e.GeneratedLevel != null ? e.GeneratedLevel.CaveLevel : _runManager.CurrentCaveLevel);
+                }
+                else
+                {
+                    _bossFightSaveGate.EndBossFight();
+                }
+            }
+            else
+            {
+                _bossFightSaveGate.EndBossFight();
             }
         }
 

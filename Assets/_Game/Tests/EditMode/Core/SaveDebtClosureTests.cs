@@ -62,8 +62,13 @@ namespace CindarsHope.Tests.EditMode.Core
             Assert.IsNull(CaveRunSaveMapper.FromSaveData(null), "Save legado sem seção → sem run (default).");
         }
 
+        // fable_44 ATUALIZADO: o contrato F13 "só o nível corrente" foi substituído por persistência
+        // multi-nível (cap LRU). CurrentLevelSnapshot continua escrito em paralelo (compat de load legado),
+        // mas a lista VisitedLevelSnapshots agora carrega TODOS os níveis visitados (dentro do cap).
+        // Cobertura preservada: current snapshot correto + multi-nível restaurado. (Antes:
+        // Mapper_IncludesOnlyCurrentLevelSnapshot — ver CaveMultiLevelSaveTests para a suíte fable_44.)
         [Test]
-        public void Mapper_IncludesOnlyCurrentLevelSnapshot()
+        public void Mapper_WritesCurrentLevelSnapshotAndPersistsAllVisitedLevels()
         {
             var state = BuildState();
             var currentSnapshot = new CaveLevelSnapshot(8, "biome_fungal", "hash", "world_abc", "run_xyz");
@@ -77,10 +82,13 @@ namespace CindarsHope.Tests.EditMode.Core
 
             var data = CaveRunSaveMapper.ToSaveData(state);
             Assert.IsNotNull(data.CurrentLevelSnapshot);
-            Assert.AreEqual(8, data.CurrentLevelSnapshot.CaveLevel);
+            Assert.AreEqual(8, data.CurrentLevelSnapshot.CaveLevel, "CurrentLevelSnapshot escrito em paralelo (compat F13).");
+            Assert.AreEqual(2, data.VisitedLevelSnapshots.Count, "fable_44: ambos os níveis visitados persistidos.");
 
             var restored = CaveRunSaveMapper.FromSaveData(data);
-            Assert.AreEqual(1, restored.VisitedLevelSnapshots.Count, "Só o nível corrente (limite documentado).");
+            Assert.AreEqual(2, restored.VisitedLevelSnapshots.Count, "fable_44: dicionário multi-nível restaurado.");
+            Assert.IsTrue(restored.VisitedLevelSnapshots.ContainsKey(7));
+            Assert.IsTrue(restored.VisitedLevelSnapshots.ContainsKey(8));
         }
 
         // ------------------------------------------------------------------ enemy hp
