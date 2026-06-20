@@ -39,7 +39,7 @@ created. Scope delivered:
 
 ---
 
-## 2. Acceptance criteria
+## Acceptance criteria extracted
 
 | CA | Requirement | Evidence | Status |
 |----|-------------|----------|--------|
@@ -53,7 +53,7 @@ created. Scope delivered:
 
 ---
 
-## 3. Existing systems audit (Phase 0) — no parallel systems created
+## Existing systems audit (Phase 0) — no parallel systems created
 
 | Concern | Found (reused) | Created |
 |---------|----------------|---------|
@@ -75,7 +75,7 @@ which the skill tree already consumes). Idempotency lives in the persisted `Rewa
 
 ---
 
-## 4. Spec Compliance Matrix (requirement → implementation)
+## Spec Compliance Matrix (requirement → implementation)
 
 | Requirement | Implementation |
 |-------------|----------------|
@@ -94,7 +94,7 @@ which the skill tree already consumes). Idempotency lives in the persisted `Rewa
 
 ---
 
-## 5. Validation
+## Validation
 
 ```text
 Validation method: run_strict_validation.ps1
@@ -185,7 +185,7 @@ No .unity/.prefab/.asset YAML edited — confirmed (scene only via generator).
 
 ---
 
-## 9. Honest status rationale
+## Honest status rationale
 
 `BUILD_VALIDATED_WITH_WARNINGS`:
 - Core criteria implemented, audited, documented; Spec Compliance Matrix all OK.
