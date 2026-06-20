@@ -7,7 +7,11 @@ namespace CindarsHope.Farm.Animals
         Tired = 2,
         SickLight = 3,
         Unavailable = 4,
-        Recovering = 5
+        Recovering = 5,
+        // fable_12 (EMENDA 2026-06-12-D, decisão 5.1-A): morte permanente por negligência
+        // prolongada (N=7 dias consecutivos sem alimentação). Estado terminal — sem reviver.
+        // Valor APPENDED (não renumera os existentes) para manter saves/testes WAVE 05 estáveis.
+        Dead = 6
     }
 
     public class AnimalInstanceState

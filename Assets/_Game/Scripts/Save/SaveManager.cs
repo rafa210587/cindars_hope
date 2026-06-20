@@ -190,7 +190,8 @@ namespace CindarsHope.Save
                     CaveRun = CaptureCaveRunSaveData(),
                     DailyGoals = CaptureFarmDailyGoalsSaveData(),
                     Spellbook = spellbookSaveData,
-                    FarmLots = CaptureFarmLotsSaveData()
+                    FarmLots = CaptureFarmLotsSaveData(),
+                    FarmAnimals = CaptureFarmAnimalsSaveData()
                 };
 
                 var savePath = SaveFilePath;
@@ -536,6 +537,13 @@ namespace CindarsHope.Save
         {
             var service = Farm.Runtime.FarmDailyGoalService.Instance;
             return service != null ? service.CaptureSaveData() : new Farm.Runtime.FarmDailyGoalsSaveData();
+        }
+
+        // fable_12: animais de fazenda (seção aditiva, domínio global via registry singleton).
+        private Farm.Animals.FarmAnimalsSaveData CaptureFarmAnimalsSaveData()
+        {
+            var registry = Farm.Animals.FarmAnimalRegistry.Instance;
+            return registry != null ? registry.CaptureSaveData() : new Farm.Animals.FarmAnimalsSaveData();
         }
 
         // fable_41: posse dos lotes de expansão (campo aditivo na seção farm). Independe da cena
@@ -1048,6 +1056,14 @@ namespace CindarsHope.Save
             if (Farm.Lots.FarmLotService.Instance != null)
             {
                 Farm.Lots.FarmLotService.Instance.RestoreFromSaveData(saveData.FarmLots);
+            }
+
+            // fable_12: restaura os animais de fazenda. saveData.FarmAnimals ausente (legado) ⇒ o
+            // registry recebe null e mantém zero animais (CA-3), sem erro. Os FarmAnimalRuntime são
+            // re-hidratados pelos AnimalReleaseHandler de cena após o load.
+            if (Farm.Animals.FarmAnimalRegistry.Instance != null)
+            {
+                Farm.Animals.FarmAnimalRegistry.Instance.RestoreFromSaveData(saveData.FarmAnimals);
             }
 
             if (saveData.Player != null && _playerTransform != null)

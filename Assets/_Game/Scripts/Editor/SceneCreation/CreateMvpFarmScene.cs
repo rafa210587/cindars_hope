@@ -10,6 +10,7 @@ using CindarsHope.Economy;
 using CindarsHope.Enemy;
 using CindarsHope.Equipment;
 using CindarsHope.Farm;
+using CindarsHope.Farm.Animals;
 using CindarsHope.Farm.Integration;
 using CindarsHope.Farm.Lots;
 using CindarsHope.Farm.Scene;
@@ -94,6 +95,7 @@ namespace CindarsHope.Editor.SceneCreation
             CreateCaveEntrance();
             CreateFarmResourceInteractables(inventoryManager);
             CreateFarmExpansionLots(inventoryManager, bootstrap.GetComponent<StaminaManager>(), seedDatabaseForLots: null);
+            CreateAnimalHousings(inventoryManager);
             CreateSellPoint(inventoryManager, playerManager);
             CreateGameplayInputRouter();
             CreateActiveSkillExecutionController();
@@ -1286,6 +1288,82 @@ namespace CindarsHope.Editor.SceneCreation
             }
 
             property.objectReferenceValue = value;
+        }
+
+        // fable_12 — abrigos de animais na Zone_Construction (-1.0, 9.0; 6.0×3.0). Coop_01 (galinhas,
+        // cap. 4) e Barn_01 (cabra/vaca, cap. 4). Cada abrigo tem visual composto (corpo+telhado+porta)
+        // e uma porta interativa (AnimalReleaseHandler) com cercado (bounds de wander). O registry é o
+        // singleton de runtime (FarmAnimalRuntimeBootstrap) — o handler resolve via Instance; o
+        // InventoryManager é wired por referência (sem GameObject.Find).
+        private static void CreateAnimalHousings(InventoryManager inventoryManager)
+        {
+            var parent = new GameObject("FarmAnimalHousings");
+            parent.transform.position = Vector3.zero;
+
+            CreateAnimalHousing(
+                parent.transform, inventoryManager,
+                "Coop_01", "coop_01", AnimalHousingBuildingType.Coop, 4,
+                new Vector3(-2.5f, 9.0f, 0f), new Color(0.78f, 0.66f, 0.42f));
+
+            CreateAnimalHousing(
+                parent.transform, inventoryManager,
+                "Barn_01", "barn_01", AnimalHousingBuildingType.Barn, 4,
+                new Vector3(0.8f, 9.0f, 0f), new Color(0.62f, 0.34f, 0.28f));
+        }
+
+        private static void CreateAnimalHousing(
+            Transform parent,
+            InventoryManager inventoryManager,
+            string objectName,
+            string housingId,
+            AnimalHousingBuildingType housingType,
+            int capacity,
+            Vector3 position,
+            Color bodyColor)
+        {
+            var root = new GameObject(objectName);
+            root.transform.SetParent(parent);
+            root.transform.position = position;
+
+            // Corpo.
+            var body = new GameObject("Body");
+            body.transform.SetParent(root.transform);
+            body.transform.localPosition = Vector3.zero;
+            body.transform.localScale = new Vector3(2.0f, 1.4f, 1f);
+            var bodySr = body.AddComponent<SpriteRenderer>();
+            bodySr.sprite = GetBuiltinSprite();
+            bodySr.color = bodyColor;
+            bodySr.sortingOrder = 2;
+            TrySetSortingLayer(bodySr, "Items", 2);
+
+            // Telhado.
+            var roof = new GameObject("Roof");
+            roof.transform.SetParent(root.transform);
+            roof.transform.localPosition = new Vector3(0f, 0.9f, 0f);
+            roof.transform.localScale = new Vector3(2.2f, 0.5f, 1f);
+            var roofSr = roof.AddComponent<SpriteRenderer>();
+            roofSr.sprite = GetBuiltinSprite();
+            roofSr.color = new Color(bodyColor.r * 0.6f, bodyColor.g * 0.6f, bodyColor.b * 0.6f);
+            roofSr.sortingOrder = 3;
+            TrySetSortingLayer(roofSr, "Items", 3);
+
+            // Porta (interativa — solta animal).
+            var door = new GameObject("Door");
+            door.transform.SetParent(root.transform);
+            door.transform.localPosition = new Vector3(0f, -0.4f, 0f);
+            door.transform.localScale = new Vector3(0.6f, 0.8f, 1f);
+            var doorSr = door.AddComponent<SpriteRenderer>();
+            doorSr.sprite = GetBuiltinSprite();
+            doorSr.color = new Color(0.3f, 0.2f, 0.15f);
+            doorSr.sortingOrder = 4;
+            TrySetSortingLayer(doorSr, "Items", 4);
+
+            var col = root.AddComponent<BoxCollider2D>();
+            col.isTrigger = true;
+            col.size = new Vector2(2.2f, 1.8f);
+
+            var releaseHandler = root.AddComponent<AnimalReleaseHandler>();
+            releaseHandler.Configure(housingId, housingType, capacity, null, inventoryManager);
         }
 
         private static Sprite GetBuiltinSprite()

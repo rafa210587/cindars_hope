@@ -52,6 +52,10 @@ namespace CindarsHope.Save
         // fable_41: posse dos lotes de expansão da fazenda (domínio farm). Campo ADITIVO, só IDs
         // (ADR-0006). Ausente em save legado = lista vazia = todos os lotes Locked (CA-4). Sem migração.
         public CindarsHope.Farm.Lots.FarmLotsSaveData FarmLots;
+        // fable_12: animais de fazenda (id/tipo/abrigo/saude/fed/dias-sem-comida). Seção ADITIVA, só
+        // IDs e tipos simples (ADR-0006 / save-dto-simple-types-only). Ausente em save legado = lista
+        // vazia = zero animais (CA-3). Sem migração. Owner: FarmAnimalRegistry.
+        public CindarsHope.Farm.Animals.FarmAnimalsSaveData FarmAnimals;
     }
 
     [Serializable]
