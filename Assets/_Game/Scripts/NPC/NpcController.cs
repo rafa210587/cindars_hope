@@ -34,6 +34,13 @@ namespace CindarsHope.NPC
         private DialogueNode _currentNode;
         private readonly Dictionary<string, NpcDialogueChoice> _choiceMap = new Dictionary<string, NpcDialogueChoice>();
 
+        // fable_28 — cached world state for deterministic conditional-line selection. Updated only via
+        // GameEventBus (no GameObject.Find / FindObjectOfType): day from DayStartedEvent, weather from
+        // WeatherChangedEvent, phase from GamePhaseChangedEvent. Defaults keep the fallback selectable
+        // before any event arrives.
+        private int _currentDay = 1;
+        private GamePhaseChangedEvent.GamePhase _currentPhase = GamePhaseChangedEvent.GamePhase.Day;
+
         public string InteractionPrompt =>
             IsUnavailableBySchedule()
                 ? NpcScheduleAvailabilityGate.UnavailablePrompt(_npcData)
@@ -56,6 +63,10 @@ namespace CindarsHope.NPC
                 _dialogueModal.OnClose += HandleDialogueClosed;
                 _dialogueModal.OnChoiceSelected += HandleChoiceSelected;
             }
+
+            // fable_28 — observe world state for conditional dialogue selection.
+            GameEventBus.Subscribe<DayStartedEvent>(OnDayStarted);
+            GameEventBus.Subscribe<GamePhaseChangedEvent>(OnPhaseChanged);
         }
 
         private void OnDisable()
@@ -65,6 +76,16 @@ namespace CindarsHope.NPC
                 _dialogueModal.OnClose -= HandleDialogueClosed;
                 _dialogueModal.OnChoiceSelected -= HandleChoiceSelected;
             }
+
+            GameEventBus.Unsubscribe<DayStartedEvent>(OnDayStarted);
+            GameEventBus.Unsubscribe<GamePhaseChangedEvent>(OnPhaseChanged);
+        }
+
+        private void OnDayStarted(DayStartedEvent evt) => _currentDay = evt.DayNumber;
+
+        private void OnPhaseChanged(GamePhaseChangedEvent evt)
+        {
+            if (evt != null) _currentPhase = evt.NewPhase;
         }
 
         public bool CanInteract(GameObject interactor)
@@ -248,15 +269,40 @@ namespace CindarsHope.NPC
             }
         }
 
+        /// <summary>
+        /// fable_28 — resolves the line shown for a node. When the node carries a conditional pool
+        /// (ConditionalLines), the line is picked deterministically by world conditions + a per-day
+        /// stable hash (same line all day; the existing Text/RandomLinePool stays the guaranteed
+        /// fallback). Otherwise the legacy behavior is preserved: RandomLinePool with a random pick,
+        /// then plain Text. This is the single dialogue selection point (Phase 0 audit).
+        /// </summary>
+        private string ResolveNodeText(DialogueNode node)
+        {
+            if (node == null) return string.Empty;
+
+            string npcId = _npcData != null ? _npcData.NpcId : string.Empty;
+
+            // Fallback line: the legacy random pick if a RandomLinePool exists, else the node text.
+            string fallback = node.Text;
+            if (node.RandomLinePool != null && node.RandomLinePool.Count > 0)
+            {
+                fallback = node.RandomLinePool[Random.Range(0, node.RandomLinePool.Count)];
+            }
+
+            if (node.ConditionalLines == null || node.ConditionalLines.Count == 0)
+            {
+                return fallback;
+            }
+
+            int hour = _currentPhase == GamePhaseChangedEvent.GamePhase.Night ? 20 : 9;
+            var ctx = DialogueConditionContext.FromWorld(npcId, _currentDay, hour);
+            return DialogueLineSelector.Select(node.ConditionalLines, ctx, npcId, _currentDay, fallback);
+        }
+
         private void ShowDialogueNode(DialogueNode node)
         {
             _currentNode = node;
-            string text = node.Text;
-
-            if (node.RandomLinePool != null && node.RandomLinePool.Count > 0)
-            {
-                text = node.RandomLinePool[Random.Range(0, node.RandomLinePool.Count)];
-            }
+            string text = ResolveNodeText(node);
 
             if (_dialogueModal == null)
             {

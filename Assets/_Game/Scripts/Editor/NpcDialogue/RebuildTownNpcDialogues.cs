@@ -61,7 +61,10 @@ namespace CindarsHope.Editor.NpcDialogue
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
-            Debug.Log($"RebuildTownNpcDialogues: {updated} dialogue trees updated ({created} created, {missingNpcData} NPCs without data asset). Nodes per NPC: {TownNpcDialogueLibrary.NodesPerNpc}.");
+            // fable_28 — BuildNodes now materializes the greeting node's conditional line pool
+            // (season/rain/festival/friendship/main-quest milestones) from the library, so the
+            // rebuilt assets carry the new content with no extra step here.
+            Debug.Log($"RebuildTownNpcDialogues: {updated} dialogue trees updated ({created} created, {missingNpcData} NPCs without data asset). Nodes per NPC: {TownNpcDialogueLibrary.NodesPerNpc} (greeting node now carries fable_28 conditional line pools).");
         }
 
         private static NpcDataSO FindNpcData(string npcId)

@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using CindarsHope.World.Calendar;
+using CindarsHope.World.Weather;
 
 namespace CindarsHope.NPC
 {
@@ -9,6 +11,10 @@ namespace CindarsHope.NPC
     /// choices. The editor menu "CindarsHope/NPCs/Rebuild Town NPC Dialogues" writes this
     /// content into the DialogueTreeSO assets; NpcDialogueSetRegistry reports node counts
     /// from here so registry and content never drift apart.
+    ///
+    /// fable_28 — the greeting node also carries a per-NPC <see cref="DialogueNode.ConditionalLines"/>
+    /// pool (season/rain/festival/friendship-band/main-quest milestone) authored in the roster v1.1
+    /// voice. The base <c>Greetings</c> stay as the guaranteed fallback (selection never empty).
     /// </summary>
     public static class TownNpcDialogueLibrary
     {
@@ -28,9 +34,34 @@ namespace CindarsHope.NPC
             public string Rumor2;
             public string[] Goodbyes;
             public bool HasShop;
+
+            // fable_28 — conditional greeting pool (all optional; null entries simply contribute
+            // nothing to the pool). Authored in the NPC's voice.
+            public string SpringLine;   // estação Primavera
+            public string SummerLine;   // estação Verao
+            public string AutumnLine;   // estação Outono
+            public string WinterLine;   // estação Inverno
+            public string RainLine;     // clima chuvoso (Rainy/Stormy)
+            public string FestivalLine; // dia de festival genérico
+            public string FriendStrangerLine; // amizade 0-1
+            public string FriendWarmLine;      // amizade 2-3
+            public string FriendCloseLine;     // amizade 4-5
+            public string MilestoneArrivalLine;   // marco: chegada (flag_main_arrival)
+            public string MilestonePostAct1Line;  // marco: pós-Ato-1 (flag_main_post_act1)
+            public string MilestonePostAct3Line;  // marco: pós-Ato-3 (flag_main_post_act3)
         }
 
         public const int NodesPerNpc = 13;
+
+        // fable_28 — friendship band thresholds (FriendshipLevel 0-5): stranger 0-1, warm 2-3, close 4-5.
+        public const int FriendshipWarmMin = 2;
+        public const int FriendshipCloseMin = 4;
+
+        // fable_28 — synthetic main-quest milestone flag ids. The main-quest system sets these; this
+        // library only authors the lines gated on them (RequiredFlag). Stable ids, never renamed.
+        public const string FlagMainArrival = "flag_main_arrival";
+        public const string FlagMainPostAct1 = "flag_main_post_act1";
+        public const string FlagMainPostAct3 = "flag_main_post_act3";
 
         private static readonly List<NpcDialogueContent> s_content = new List<NpcDialogueContent>
         {
@@ -57,7 +88,19 @@ namespace CindarsHope.NPC
                 },
                 Rumor1 = "Dizem que nas noites de lua cheia a agua da Fonte fica mais quente. Eu mesmo ja senti o vapor subir diferente.",
                 Rumor2 = "Um mineiro jurou ter ouvido cantos no nivel trinta. Cantos, nao gritos. Isso me preocupa mais.",
-                Goodbyes = new[] { "Que a Fonte o acompanhe.", "Volte quando o peso for grande demais.", "Va em paz, e volte inteiro." }
+                Goodbyes = new[] { "Que a Fonte o acompanhe.", "Volte quando o peso for grande demais.", "Va em paz, e volte inteiro." },
+                SpringLine = "A primavera reacende as velas com mais facilidade. Ate a cera parece mais leve nesta estacao.",
+                SummerLine = "Verao. O templo fica fresco enquanto la fora o sol castiga. Entre, descanse a alma e o suor.",
+                AutumnLine = "No outono as oferendas mudam: trazem folha seca e gratidao. Prefiro essa a moeda, confesso.",
+                WinterLine = "Inverno em Cindar's Hope. O frio aproxima as pessoas da Fonte. A dor sempre soube o caminho do templo.",
+                RainLine = "A chuva lava a praca e traz fieis encharcados. Deixe o manto secar perto das velas, viajante.",
+                FestivalLine = "Dia de festa. O templo nao compete com a praca; apenas guarda um canto de silencio para quem cansar do barulho.",
+                FriendStrangerLine = "Que a Fonte ilumine seus passos, viajante. Ainda nao conheco seu nome, mas conheco seu cansaco.",
+                FriendWarmLine = "Voce de novo. Ja reconheco seus passos no corredor. Isso, para um guardiao, ja e quase amizade.",
+                FriendCloseLine = "Ah, e voce. Sente-se. Guardei uma vela acesa pensando que viria. Algumas presencas a gente aprende a esperar.",
+                MilestoneArrivalLine = "Voce chegou ha pouco a Cindar's Hope. A Fonte ja o notou; ela nota todos que descem com perguntas.",
+                MilestonePostAct1Line = "Depois do que houve, a cidade respira diferente. Eu acendo uma vela a mais por noite agora.",
+                MilestonePostAct3Line = "Voce mudou o rumo de coisas antigas. O templo guardara seu nome ao lado do guerreiro da praca."
             },
             new NpcDialogueContent
             {
@@ -82,7 +125,19 @@ namespace CindarsHope.NPC
                 },
                 Rumor1 = "Tem um lote abandonado perto do portao sul cujo dono nunca apareceu. Faz vinte anos. O registro continua aberto.",
                 Rumor2 = "Yael pediu licenca para o mercado noturno tres vezes. Foi negada duas. Na terceira, alguem de cima assinou. Curioso, nao?",
-                Goodbyes = new[] { "Proximo!", "Leve seus papeis, nao os meus.", "Ate logo. E nao perca o protocolo." }
+                Goodbyes = new[] { "Proximo!", "Leve seus papeis, nao os meus.", "Ate logo. E nao perca o protocolo." },
+                SpringLine = "Primavera: epoca de registrar lote novo. A fila de licenca de plantio dobra. Pegue uma senha.",
+                SummerLine = "Verao seca a tinta rapido demais. Assine com calma, ou seu nome fica borrado para sempre.",
+                AutumnLine = "Outono e mes de prestacao de contas. Traga seus recibos de colheita antes que eu va atras deles.",
+                WinterLine = "Inverno. Menos gente, mais papelada atrasada para por em ordem. Aproveito o frio para arquivar.",
+                RainLine = "Chuva? Sacuda o casaco antes de entrar. Documento molhado e documento perdido, e eu nao reescrevo.",
+                FestivalLine = "Dia de festival ate o registro fecha mais cedo. Mas se for urgente, eu carimbo. So hoje. So por voce.",
+                FriendStrangerLine = "Bom dia. Voce ainda nao consta no meu registro. Vamos resolver isso: nome, origem e motivo.",
+                FriendWarmLine = "Ah, ja conheco seu protocolo. Sente-se, sua papelada hoje vai mais rapido. Eficiencia se constroi.",
+                FriendCloseLine = "Voce de novo, e bem-vindo. Confesso que separo seus documentos com um cuidado que nao dou aos outros.",
+                MilestoneArrivalLine = "Voce e novo na cidade. Vou abrir um registro com seu nome. Memoria oficial comeca hoje.",
+                MilestonePostAct1Line = "Depois daqueles dias, tive que abrir uma pasta nova so para os fatos estranhos. Voce esta nela.",
+                MilestonePostAct3Line = "Seu nome agora aparece em atas que vao durar mais que nos dois. Cuide bem dessa tinta."
             },
             new NpcDialogueContent
             {
@@ -107,7 +162,19 @@ namespace CindarsHope.NPC
                 },
                 Rumor1 = "Alguem pediu licenca para 'pesquisa de fauna subterranea'. Nivel cinquenta para baixo. O conselho nem sabia que isso existia.",
                 Rumor2 = "Ouvi que Gurd quer erguer um muro novo no lado leste. O orcamento... bem, o orcamento e otimista.",
-                Goodbyes = new[] { "Carimbado. Proximo.", "Boa sorte com a papelada.", "Volte com o formulario certo." }
+                Goodbyes = new[] { "Carimbado. Proximo.", "Boa sorte com a papelada.", "Volte com o formulario certo." },
+                SpringLine = "Primavera traz pedido de banca de mercado em pilha. Plante seu alvara antes da colheita de gente.",
+                SummerLine = "Verao e temporada alta de aventureiro. Mais alvara de grupo, mais carimbo, menos cafe para mim.",
+                AutumnLine = "Outono: prazo de renovacao. Quem nao renovar o alvara antes da primeira geada, paga dobrado.",
+                WinterLine = "Inverno acalma o balcao. Bom para revisar formularios; ruim para a minha pilha de mate frio.",
+                RainLine = "Com essa chuva, o carimbo borra. Espere secar ou leve o documento manchado. Sua escolha, sua taxa.",
+                FestivalLine = "Festival exige licenca especial para barraca. Tenho o formulario F-9 aqui. Preenchido, e claro.",
+                FriendStrangerLine = "Licencas e alvaras. Voce ainda nao tem ficha aqui? Entao comecamos pelo basico, sem atalho.",
+                FriendWarmLine = "Ja reconheco seu pedido de longe. Vou adiantar: traga o formulario certo e a gente termina rapido.",
+                FriendCloseLine = "Voce de novo. Para voce, eu ja deixo o carimbo na mao. Confianca tambem e um tipo de alvara.",
+                MilestoneArrivalLine = "Recem-chegado. Seu primeiro carimbo nesta cidade sai daqui. Guarde-o; o resto vem mais facil.",
+                MilestonePostAct1Line = "Depois da confusao, o conselho aumentou o controle de entrada. Mais formulario para todos. Inclusive voce.",
+                MilestonePostAct3Line = "Com o que voce fez, ate liberaram alvaras que eu jurava que morreriam na gaveta. Impressionante."
             },
             new NpcDialogueContent
             {
@@ -132,7 +199,19 @@ namespace CindarsHope.NPC
                 },
                 Rumor1 = "O Eiran anda criando um filhote estranho no quintal. Ele jura que e cabra. Cabra nao tem escama, Eiran.",
                 Rumor2 = "Dizem que ha cogumelos gigantes no nivel quinze da caverna. Se alguem me trouxer esporos, pago bem.",
-                Goodbyes = new[] { "Boa colheita!", "Va com as maos cheias e volte com elas vazias!", "Que a chuva venha na hora certa." }
+                Goodbyes = new[] { "Boa colheita!", "Va com as maos cheias e volte com elas vazias!", "Que a chuva venha na hora certa." },
+                SpringLine = "PRIMAVERA! Minha estacao favorita! Sementes novas, terra acordando, tudo querendo brotar. Sente o cheiro?",
+                SummerLine = "Verao puxado. Regue de manha, ouviu? A tarde o sol bebe a agua antes da raiz. Tenho semente de sol aqui.",
+                AutumnLine = "Outono e colheita farta e plantio de raiz. A terra da o ultimo empurrao antes de dormir. Aproveite.",
+                WinterLine = "Inverno gela o solo, mas nao a vontade de plantar. Tenho sementes resistentes e mudas de estufa, viu?",
+                RainLine = "Chuva boa! O solo agradece e eu tambem. Dia de chuva e dia de planejar canteiro, nao de regar. Folga!",
+                FestivalLine = "Festival! Trouxe sementes especiais so para hoje. Plante uma lembranca do dia de festa no seu canteiro!",
+                FriendStrangerLine = "Ola! Rosto novo na banca! Se as suas maos ainda estao limpas de terra, a gente resolve isso rapidinho.",
+                FriendWarmLine = "Ei, voce! Ja sei do que suas plantas gostam. Trouxe uma semente pensando no seu canteiro, da uma olhada.",
+                FriendCloseLine = "Meu fazendeiro favorito chegou! Separei a melhor muda da safra para voce. Amizade rende boa colheita.",
+                MilestoneArrivalLine = "Voce e o da fazenda nova, ne? Bem-vindo ao vale! Comece com semente facil; a terra daqui tem humor.",
+                MilestonePostAct1Line = "Depois do susto, o solo parece mais firme. Ou e impressao minha de quem so quer ver tudo brotar de novo.",
+                MilestonePostAct3Line = "Dizem que ate as sementes da caverna respiram diferente agora, gracas a voce. Plantei uma. Brilhou bonito."
             },
             new NpcDialogueContent
             {
@@ -157,7 +236,19 @@ namespace CindarsHope.NPC
                 },
                 Rumor1 = "Uma caravana sumiu na estrada norte semana passada. Acharam as carrocas... vazias e arrumadas. Arrumadas!",
                 Rumor2 = "Dizem que existe um mercador que aparece DENTRO da caverna. Se for verdade, e meu concorrente mais corajoso.",
-                Goodbyes = new[] { "Volte sempre! E traga amigos!", "Negocio fechado e amizade mantida.", "Se faltar algo, ja sabe onde achar." }
+                Goodbyes = new[] { "Volte sempre! E traga amigos!", "Negocio fechado e amizade mantida.", "Se faltar algo, ja sabe onde achar." },
+                SpringLine = "Primavera move o estoque! Todo mundo precisa de ferramenta nova para a terra acordada. Bom para o negocio!",
+                SummerLine = "Verao quente vende corda, cantil e chapeu. Eu? Vendo de tudo, mas hoje o cantil sai voando da prateleira.",
+                AutumnLine = "Outono e mes de estocar para o frio. Compre agora; no inverno o preco sobe e a culpa nao e minha.",
+                WinterLine = "Inverno. Lampiao, oleo e cobertor saem bem. E corda, sempre corda. Ninguem se arrepende de ter corda.",
+                RainLine = "Chuva enche minha banca de gente abrigada e de poca. Pise com cuidado e leve um lampiao a prova d'agua!",
+                FestivalLine = "Festival e dia de ouro! Lembrancinha, bandeira, fita... tudo barato, tudo no precinho de festa. Aproveite!",
+                FriendStrangerLine = "Cliente novo! Renko tem de tudo, e o que nao tem, consegue ate amanha. Diga o que procura, sem vergonha.",
+                FriendWarmLine = "Voce voltou! Cliente bom e cliente que volta. Ja vou separando aquilo que costuma levar, da uma olhada.",
+                FriendCloseLine = "Meu melhor cliente! Para voce tem o preco de amigo e o cafe da casa. Negocio fechado e amizade mantida.",
+                MilestoneArrivalLine = "Rosto novo na cidade! Bem-vindo. Comece a equipar essa mochila comigo; o resto da estrada agradece.",
+                MilestonePostAct1Line = "Depois daquilo, as caravanas ficaram nervosas. Mercadoria sobe de preco. Mas para voce eu seguro o que da.",
+                MilestonePostAct3Line = "Com o que voce fez, ate as rotas do norte reabriram! Vou ter mercadoria que essa cidade nunca viu. Obrigado!"
             },
             new NpcDialogueContent
             {
@@ -182,7 +273,19 @@ namespace CindarsHope.NPC
                 },
                 Rumor1 = "A Liora encomendou um vestido de palco cor de meia-noite. Disse que e para 'a noite em que a estatua cantar'. Poetas...",
                 Rumor2 = "O Maelor passa aqui toda lua nova para remendar o mesmo casaco. Sempre o mesmo rasgo, no mesmo lugar. Nunca explica.",
-                Goodbyes = new[] { "Volte para a prova final!", "Cuide das suas bainhas, querido.", "Ate mais. E nada de rasgar isso de novo!" }
+                Goodbyes = new[] { "Volte para a prova final!", "Cuide das suas bainhas, querido.", "Ate mais. E nada de rasgar isso de novo!" },
+                SpringLine = "Primavera pede tecido leve e cor viva. Chegou um linho de Dornecia que parece feito de petala. Quer ver?",
+                SummerLine = "Verao e linho fino e chapeu de aba larga. Roupa pesada agora e castigo; deixe que eu alivio o seu corte.",
+                AutumnLine = "Outono. Hora de forrar casaco e remendar o que o verao gastou. Traga suas pecas antes do frio bater.",
+                WinterLine = "Inverno, querido! La, feltro e forro duplo. Roupa molhada na caverna e febre certa. Vista-se como gente.",
+                RainLine = "Com essa chuva, troque essa roupa encharcada antes que pegue um resfriado. Tenho um seco aqui do seu tamanho.",
+                FestivalLine = "Festival! Todo mundo quer estar bonito. Tenho fita, gola e ajuste rapido. Senta que em dez minutos voce brilha.",
+                FriendStrangerLine = "Essa costura do seu casaco... senta, querido. Eu arrumo num instante. E de quebra fico sabendo seu nome.",
+                FriendWarmLine = "Ah, voce! Ja sei suas medidas de cor. Separei um tecido que combina com o seu jeito. Da uma olhada.",
+                FriendCloseLine = "Meu cliente querido! Guardei o melhor retalho da estacao pensando em voce. Roupa boa apresenta quem voce e.",
+                MilestoneArrivalLine = "Rosto novo! Bem-vindo. Pela sua roupa de estrada, voce veio de longe. Deixa eu dar uns pontos de boas-vindas.",
+                MilestonePostAct1Line = "Depois daquilo, vi muita roupa rasgada de caverna passar por aqui. Tempos dificeis se leem no tecido.",
+                MilestonePostAct3Line = "Sabe o que mudou desde o que voce fez? Voltei a costurar roupa de festa. Isso, para uma alfaiate, e esperanca."
             },
             new NpcDialogueContent
             {
@@ -207,7 +310,19 @@ namespace CindarsHope.NPC
                 },
                 Rumor1 = "Um hospede pagou adiantado um mes e nunca subiu do nivel quarenta. O quarto dele continua trancado, como prometido.",
                 Rumor2 = "As cartas que chegam para o Maelor nao tem remetente. E cheiram a sal. Nos nao temos mar por perto.",
-                Goodbyes = new[] { "Boa estrada! E volte para a sopa.", "A porta fecha tarde, ate logo.", "Que seus sonhos sejam de colheita cheia." }
+                Goodbyes = new[] { "Boa estrada! E volte para a sopa.", "A porta fecha tarde, ate logo.", "Que seus sonhos sejam de colheita cheia." },
+                SpringLine = "Primavera enche meu salao de viajante novo. A sopa de raiz nova esta uma delicia. Cama seca tambem tem.",
+                SummerLine = "Verao e movimento! O salao ferve de historia de aventureiro. Quarto fresco no andar de cima, se quiser.",
+                AutumnLine = "Outono pede sopa mais grossa e lareira acesa. Bom para hospede cansado de uma colheita puxada. Entre.",
+                WinterLine = "Inverno! A lareira eterna nunca foi tao bem-vinda. Sopa quente resolve oitenta por cento dos problemas.",
+                RainLine = "Chuva la fora? O vento nao paga aluguel, mas a cama seca e a sopa quente, sim. Entre e sacuda esse casaco.",
+                FestivalLine = "Dia de festa enche meu salao ate a porta. Tem musica, tem caldo e tem cama para quem exagerar na comemoracao.",
+                FriendStrangerLine = "Bem-vindo a Estalagem do Vale! Rosto novo sempre traz historia nova. Cama seca, sopa quente e seu nome, depois.",
+                FriendWarmLine = "Voce de novo! Ja sei seu quarto favorito e o ponto da sua sopa. Hospede que volta vira quase familia aqui.",
+                FriendCloseLine = "Meu hospede de confianca! Deixei a lareira acesa do seu lado e a sopa no ponto que voce gosta. Sente-se.",
+                MilestoneArrivalLine = "Recem-chegado ao vale! Metade dos herois desta cidade acordou nas minhas camas. Voce sera o proximo nome.",
+                MilestonePostAct1Line = "Depois daqueles dias, o salao virou ponto de conversa baixa. Sente-se e escute; a estalagem ouve tudo.",
+                MilestonePostAct3Line = "Desde o que voce fez, as historias contadas aqui ganharam final feliz. Por sua conta, a primeira sopa."
             },
             new NpcDialogueContent
             {
@@ -232,7 +347,19 @@ namespace CindarsHope.NPC
                 },
                 Rumor1 = "Um cliente bebado jurou que viu a estatua da praca mudar a posicao do escudo. Bebado, claro. Claro...",
                 Rumor2 = "O Zrix anda recusando cerveja. Zrix! Ou esta doente, ou viu algo na estrada da caverna que o deixou serio.",
-                Goodbyes = new[] { "Vai com Deus e volta com sede!", "Cuidado no caminho, a rua gira as vezes!", "Proxima rodada tem teu nome!" }
+                Goodbyes = new[] { "Vai com Deus e volta com sede!", "Cuidado no caminho, a rua gira as vezes!", "Proxima rodada tem teu nome!" },
+                SpringLine = "Primavera! O barril novo ta fresco e a sidra de flor acabou de descansar. Senta que a primeira espuma e tua!",
+                SummerLine = "Verao da sede, e sede da movimento! Cerveja gelada no balcao, e o salao so esquenta quando a Liora aparece.",
+                AutumnLine = "Outono e mes de festa de colheita. Alugo o salao, sirvo o melhor caldo e a cerveja de mel fica perfeita!",
+                WinterLine = "Inverno! Vinho quente, lareira e historia comprida. NUNCA desca a caverna de ressaca no frio. NUNCA, ouviu?",
+                RainLine = "Chuvarada la fora? Otimo! Chuva enche minha taverna de gente sedenta e seca. Senta perto do fogo, paga depois!",
+                FestivalLine = "DIA DE FESTA! Alugo o salao, a Liora canta, e a cerveja corre solta! Hoje ate o Zrix bebe. Senta, comemoramos!",
+                FriendStrangerLine = "HAH! Mais um sedento! Rosto novo no balcao. Senta, primeiro copo a gente conversa e eu decoro tua cara.",
+                FriendWarmLine = "Ei, voce! Ja sei do que tu gosta. Senta no teu banco de sempre que eu ja sirvo. Aqui dentro ninguem e estranho!",
+                FriendCloseLine = "AH, chegou! Meu fregues de confianca! Esse copo e por minha conta. Quem paga a rodada faz amigos, e tu ja es um!",
+                MilestoneArrivalLine = "Cara nova na cidade! Bem-vindo! No meu balcao todo mundo senta no mesmo banco. Primeiro gole pra quebrar o gelo!",
+                MilestonePostAct1Line = "Depois daquilo, o salao ficou mais cheio e mais calado. As pessoas vem beber a tensao. Eu mantenho os copos cheios.",
+                MilestonePostAct3Line = "Desde o que tu fez, voltaram a rir alto no meu salao! Isso vale mais que ouro. Rodada da casa pra comemorar!"
             },
             new NpcDialogueContent
             {
@@ -257,7 +384,19 @@ namespace CindarsHope.NPC
                 },
                 Rumor1 = "A Dagna trouxe uma pedra da pedreira que nao esquenta na forja. Fica fria. FRIA. Guardei num balde, longe do resto.",
                 Rumor2 = "Pediram-me uma replica da espada da estatua. Paguei para ver quem pediu... e o sujeito sumiu da cidade no dia seguinte.",
-                Goodbyes = new[] { "Vai. E nao quebra isso de novo.", "Hm. Ate.", "Volta quando o fio cansar." }
+                Goodbyes = new[] { "Vai. E nao quebra isso de novo.", "Hm. Ate.", "Volta quando o fio cansar." },
+                SpringLine = "Primavera. O fogo pega mais facil com o ar morno. Bom para forjar enxada. Fala logo o que precisa.",
+                SummerLine = "Verao. A forja ja e quente; agora e forno duplo. Bebo agua e bato ferro. Se vai me pedir lamina, e agora.",
+                AutumnLine = "Outono. Epoca de afiar tudo antes que o frio enrijeça o aco. Traz tua lamina, eu dou o fio de volta.",
+                WinterLine = "Inverno. Forja acesa e o melhor lugar da cidade no frio. Cidade que tem forja acesa nao morre. Pode anotar.",
+                RainLine = "Chuva. A fagulha briga com a umidade, mas o ferro nao espera. Cuidado com o chao molhado perto da bigorna.",
+                FestivalLine = "Festival. Hm. Eu forjo igual, festa ou nao. Mas reconheco: ate eu limpo a fuligem da barba num dia desses.",
+                FriendStrangerLine = "Fala logo, o ferro nao espera. Cara nova. Diz o que quer que eu nao tenho o dia todo. ...Bem-vindo, suponho.",
+                FriendWarmLine = "Hm. Voce de novo. A lamina aguentou? Ja sei o teu peso de mao. Vou ajustar o proximo corte pensando nisso.",
+                FriendCloseLine = "Ah, e voce. Pode entrar sem cerimonia. Guardei um aco bom esperando alguem que saiba usar. Acho que e teu.",
+                MilestoneArrivalLine = "Cara nova na cidade. Se vai descer a caverna, vai precisar de ferro honesto. O meu e. Comeca pelo basico.",
+                MilestonePostAct1Line = "Depois daquilo, recebi minerio estranho da caverna que CANTA no fogo. Guardei. Metal assim conta historia ruim.",
+                MilestonePostAct3Line = "O que voce fez... meu avo forjou a espada da estatua e nunca fiz igual. Por voce, vou tentar de novo. Ainda."
             },
             new NpcDialogueContent
             {
@@ -282,7 +421,19 @@ namespace CindarsHope.NPC
                 },
                 Rumor1 = "Achei um fossil na camada nova. Bicho grande, asa comprida. O vale ja foi fundo do mar? Ou ceu de outra coisa?",
                 Rumor2 = "O pessoal do nivel vinte diz que as paredes de la 'respiram'. Pedra nao respira. Mas confesso que fui ver... e voltei calada.",
-                Goodbyes = new[] { "Vai pela sombra, a poeira agradece!", "Pedra no caminho? Me chama!", "Ate! E olha o carrinho!" }
+                Goodbyes = new[] { "Vai pela sombra, a poeira agradece!", "Pedra no caminho? Me chama!", "Ate! E olha o carrinho!" },
+                SpringLine = "Primavera amolece a terra em volta da pedra. Corte mais facil, veio mais limpo. Boa epoca para fundacao!",
+                SummerLine = "Verao racha pedra mal cortada. O calor encontra cada falha. Corto devagar e bebo muita agua. Sente a poeira?",
+                AutumnLine = "Outono e bom para entregar pedra antes da chuva forte. Calce sua fundacao agora, ou o inverno cobra o atraso.",
+                WinterLine = "Inverno gela a pedra e a torna traicoeira. Pedra fria racha onde voce menos espera. Trabalho com respeito redobrado.",
+                RainLine = "Chuva! Pedra molhada engana o pe, na pedreira e na caverna. Pisa devagar e bata na parede antes de confiar nela.",
+                FestivalLine = "Festival? A pedreira para, mas eu nao. Brincadeira: hoje descanso. Ate pedra precisa de um dia sem picareta.",
+                FriendStrangerLine = "Opa! Cuidado com o carrinho, ele desce sozinho. Cara nova! Se veio pela pedra, chegou ao lugar certo.",
+                FriendWarmLine = "Voce de novo! Ja sei o tipo de pedra que serve pra voce. Separei umas aparelhadas, da uma olhada antes de pedir.",
+                FriendCloseLine = "Ah, minha companhia favorita! Guardei a pedra de veio azul pensando em voce. So nao conta pros outros fregueses.",
+                MilestoneArrivalLine = "Cara nova na cidade! Toda casa daqui tem um pedaco da minha pedreira. A sua tambem vai ter. Bem-vindo!",
+                MilestonePostAct1Line = "Depois daquilo, achei tijolo ANTIGO escavando fundacao. Mais antigo que a cidade. Quem cavou aqui antes de nos?",
+                MilestonePostAct3Line = "Sabe a base da estatua, que minha avo assentou? Desde o que voce fez, eu juro que ela parece mais firme. Orgulho."
             },
             new NpcDialogueContent
             {
@@ -307,7 +458,19 @@ namespace CindarsHope.NPC
                 },
                 Rumor1 = "Pegadas estranhas no portao leste, tres noites seguidas. Grandes, descalcas, e somem no meio da rua. SOMEM.",
                 Rumor2 = "O Alaric anda dobrando o turno no portao sul sem mandato. Quando guarda veterano faz isso, e porque farejou algo.",
-                Goodbyes = new[] { "Siga em seguranca.", "Qualquer coisa, grite. Eu ouco.", "Ordem e prosperidade, cidadao." }
+                Goodbyes = new[] { "Siga em seguranca.", "Qualquer coisa, grite. Eu ouco.", "Ordem e prosperidade, cidadao." },
+                SpringLine = "Primavera traz movimento ao portao. Mais fazendeiro saindo, mais aventureiro chegando. Ronda dobrada, olho aberto.",
+                SummerLine = "Verao e temporada cheia. A entrada da caverna e meu pesadelo logistico: entra gente demais, sai gente de menos.",
+                AutumnLine = "Outono acalma o fluxo. Bom para revisar o quadro de ocorrencias. Cidade segura e a que resolve rapido.",
+                WinterLine = "Inverno esvazia a rua cedo. Ande pelo centro a noite; sombra e esconderijo. Aviso dado a guarda nunca e tempo perdido.",
+                RainLine = "Com essa chuva, a visibilidade na ronda cai. Se for sair, avise o destino. Sempre. Chuva esconde mais que a noite.",
+                FestivalLine = "Festival enche a praca, e praca cheia e meu trabalho dobrado. Aproveite a festa; eu fico de olho no que voce nao ve.",
+                FriendStrangerLine = "Tudo em ordem por aqui. Voce que chegou desarruma? Cara nova. Algum problema a relatar, cidadao?",
+                FriendWarmLine = "Voce de novo. Ja sei que nao da trabalho. Bom. Guarda gosta de rosto previsivel. Siga, e mantenha-se na rua.",
+                FriendCloseLine = "Ah, e voce. Pode passar sem o ritual. Confio na sua palavra, e isso, vindo de um guarda, e o maior elogio que tenho.",
+                MilestoneArrivalLine = "Identifique-se. ...Recem-chegado, entao. Primeiro rosto que o viajante ve, ultimo que o problema encontra. Bem-vindo.",
+                MilestonePostAct1Line = "Depois daquilo, dobrei a ronda por conta propria. Algo grande passou rente a muralha sem deixar pegada. Fico atento.",
+                MilestonePostAct3Line = "Desde o que voce fez, durmo um pouco melhor. Um pouco. Guarda veterano nunca relaxa de todo, mas reconhece quem ajuda."
             },
             new NpcDialogueContent
             {
@@ -332,7 +495,19 @@ namespace CindarsHope.NPC
                 },
                 Rumor1 = "Ha um diario de 90 anos atras que descreve a caverna com 101 niveis. O mesmo numero de hoje. Cavernas crescem. Essa nao.",
                 Rumor2 = "O fundador da cidade assinava 'C.' em tudo. Cindar? Talvez. Mas ha uma ata assinada 'C.' datada de antes do nascimento dele.",
-                Goodbyes = new[] { "Volte com perguntas melhores. As suas ja sao boas.", "O arquivo nao fecha; eu que durmo.", "Leve conhecimento, deixe poeira." }
+                Goodbyes = new[] { "Volte com perguntas melhores. As suas ja sao boas.", "O arquivo nao fecha; eu que durmo.", "Leve conhecimento, deixe poeira." },
+                SpringLine = "Primavera. A umidade nova faz mal aos pergaminhos antigos. Passo o dia conservando o que o tempo quer levar.",
+                SummerLine = "Verao resseca a tinta velha ate o pergaminho rachar. Mantenho o arquivo na sombra; conhecimento teme o sol.",
+                AutumnLine = "Outono e a melhor estacao para ler. Luz suave, ar seco. Separei uns registros que talvez lhe interessem.",
+                WinterLine = "Inverno. O frio preserva os documentos, mas gela meus dedos ao copiar mapa. Pequeno preco pela memoria intacta.",
+                RainLine = "Chuva! Faca silencio e nao goteje sobre as atas. Documento molhado e historia apagada, e eu nao reescrevo o tempo.",
+                FestivalLine = "Festival? O arquivo continua aberto. Festa passa; registro fica. Mas confesso que anoto ate as datas das festas.",
+                FriendStrangerLine = "Cuidado com a pilha da esquerda, ela desaba. Ah, um rosto novo. O arquivo recebe quem traz perguntas. As suas?",
+                FriendWarmLine = "Voce de novo. Suas perguntas estao ficando melhores. Separei um diario que so mostro a quem sabe o que procura.",
+                FriendCloseLine = "Ah, e voce. Sente-se. Confio em poucos o suficiente para mostrar os documentos do fundo. Voce e um deles.",
+                MilestoneArrivalLine = "Rosto novo. Esta cidade foi fundada ao redor da Fonte por gente que fugia de algo. Voce chega no meio dessa historia.",
+                MilestonePostAct1Line = "Depois daquilo, reabri um diario de 90 anos que descreve a caverna com 101 niveis. O mesmo numero de hoje. Curioso, nao?",
+                MilestonePostAct3Line = "O que voce fez vai entrar nos registros. Cuidarei para que sua versao sobreviva ao tempo. Historia se escreve assim."
             },
             new NpcDialogueContent
             {
@@ -357,7 +532,19 @@ namespace CindarsHope.NPC
                 },
                 Rumor1 = "Tres noites atras, algo grande passou rente a muralha. Nao deixou pegada no barro. O barro estava fresco.",
                 Rumor2 = "O velho posto de vigia do morro leste acendeu luz semana passada. Esta abandonado ha dez anos. Mandei verificar... nada.",
-                Goodbyes = new[] { "Siga. E mantenha-se na estrada.", "Portao fecha ao ultimo sino.", "Va. Eu fico. E assim que funciona." }
+                Goodbyes = new[] { "Siga. E mantenha-se na estrada.", "Portao fecha ao ultimo sino.", "Va. Eu fico. E assim que funciona." },
+                SpringLine = "Primavera. Pela manha sai suor para a fazenda; a noite volta cansaco e historia. O portao sul e o pulso da cidade.",
+                SummerLine = "Verao. O fluxo na estrada nao para. Mantenho o caminho seguro a base de bota gasta e olho aberto. Saia cedo.",
+                AutumnLine = "Outono encurta o dia. Volte antes do sol sumir; a estrada muda de cara no escuro. Vinte anos de muralha me ensinaram.",
+                WinterLine = "Inverno. A estrada gela e some sob a neve. Se vir fumaca la fora, nao va investigar. Venha me chamar. Sempre.",
+                RainLine = "Chuva apaga pegada e abafa som. Pessima noite para vigia, otima para quem nao quer ser visto. Fique na estrada.",
+                FestivalLine = "Festival? Eu vigio igual. Festa atrai gente boa e gente que se aproveita da gente boa. Aproveite; eu fico de olho.",
+                FriendStrangerLine = "Alto. Identifique-se. ...Costume antigo, nao leve a mal. Cara nova. Pode passar, mas a estrada exige respeito.",
+                FriendWarmLine = "Ah, e voce. Pode passar. Ja reconheco seu passo no barro. Para um sentinela, isso e quase um aperto de mao.",
+                FriendCloseLine = "Voce. Bem-vindo. Se sua familia vier visitar, me avise que eu agilizo. Para quem confio, o portao e mais leve.",
+                MilestoneArrivalLine = "Recem-chegado pelo portao sul. Primeiro rosto que o viajante ve, ultimo que o problema encontra. Esse sou eu. Siga.",
+                MilestonePostAct1Line = "Depois daquilo, algo grande passou rente a muralha tres noites. Sem pegada no barro fresco. Dobrei a vigilia.",
+                MilestonePostAct3Line = "Desde o que voce fez, a estrada anda mais segura. Mantenho assim, como sempre. Mas reconheco a sua parte nisso. Va."
             },
             new NpcDialogueContent
             {
@@ -382,7 +569,19 @@ namespace CindarsHope.NPC
                 },
                 Rumor1 = "Eu VI o mercador errante! Na entrada da caverna! Ele tem uma mochila MAIOR QUE EU e sumiu quando pisquei!",
                 Rumor2 = "A estatua da praca... eu deixei uma flor no escudo dela ontem. Hoje a flor tava na MAO dela. Ninguem acredita em mim!",
-                Goodbyes = new[] { "Tchau tchau! Me chama se se perder!", "Vou contar pra todo mundo que voce passou aqui!", "ATE MAIS! Cuidado com o degrau! Esse ai! Esse!" }
+                Goodbyes = new[] { "Tchau tchau! Me chama se se perder!", "Vou contar pra todo mundo que voce passou aqui!", "ATE MAIS! Cuidado com o degrau! Esse ai! Esse!" },
+                SpringLine = "PRIMAVERA! Tudo florindo! Eu fiz um mapa novo com as flores marcadas! Ta quase certo! Quer? Custa uma moedinha!",
+                SummerLine = "Calor! Calor! A sopa do Orlan no verao vem com agua de fruta! Eu sei porque eu provo TODO dia! NAO conta!",
+                AutumnLine = "Outono! As folhas caem e eu junto as mais bonitas pra vender! Marcador de livro de folha! Ninguem compra, mas eu tenho!",
+                WinterLine = "Brrr! Inverno! Eu mostro o atalho quentinho que passa perto da forja do Brumdar! O calor e de graca, o atalho NAO!",
+                RainLine = "CHUVA! Eu sei onde NAO molha indo pro mercado! Sei TODOS os beirais! Te levo seco por uma moeda! Confia! CONFIA!",
+                FestivalLine = "FESTIVAL!!! O melhor dia do ANO! Eu decoro a praca, entrego convite e ainda ganho doce! Vem, eu te mostro tudo!",
+                FriendStrangerLine = "OI! Voce e novo aqui, ne? NE?! Eu vi voce primeiro! Eu mostro onde fica tudo! Como voce chama? Como? COMO?!",
+                FriendWarmLine = "VOCE voltou! Eu falei pra todo mundo que a gente e amigo! Te guardei um mapa especial! O melhor! So pra voce!",
+                FriendCloseLine = "MEU MELHOR AMIGO CHEGOU! Eu fiz um desenho de nos dois! Ta na parede! Vou te mostrar TODOS os atalhos de graca! Quase!",
+                MilestoneArrivalLine = "VOCE chegou faz pouco tempo, ne?! Eu sei TUDO da cidade! Te mostro a estatua, a sopa e onde a Gruta deixa eu ficar!",
+                MilestonePostAct1Line = "Depois daquele dia assustador, todo mundo ficou serio. Eu nao gosto. Mas eu sei que VOCE ajudou! Eu vi! Quase vi!",
+                MilestonePostAct3Line = "VOCE e o HEROI da cidade agora! Eu falei que conhecia voce ANTES de todo mundo! Vou colocar voce no meu mapa! No meio!"
             },
             new NpcDialogueContent
             {
@@ -407,7 +606,19 @@ namespace CindarsHope.NPC
                 },
                 Rumor1 = "Achei um mecanismo na caverna que GIRA SOZINHO. Sem corda, sem peso, sem mola. Esta na minha bancada. Girando. Ha tres semanas.",
                 Rumor2 = "A Ozzra pediu um agitador automatico de poções. Combinamos que se explodir, a culpa e dividida: 60% dela, 40% minha.",
-                Goodbyes = new[] { "Volta amanha! A versao 2 estara pronta!", "Sai pela esquerda! A direita esta... em manutencao.", "Leva esse parafuso. Confia, leva." }
+                Goodbyes = new[] { "Volta amanha! A versao 2 estara pronta!", "Sai pela esquerda! A direita esta... em manutencao.", "Leva esse parafuso. Confia, leva." },
+                SpringLine = "Primavera! Umidade ideal para calibrar engrenagem. Tudo expande na medida certa. Cuidado com a alavanca! Tarde demais.",
+                SummerLine = "Verao dilata o metal! Minhas maquinas ficam birrentas no calor. Oleo na engrenagem toda lua, ouviu? TODA lua!",
+                AutumnLine = "Outono e estacao de manutencao geral. Reviso esteira, roda e mola antes que o frio enrijeca tudo. Pega um parafuso.",
+                WinterLine = "Inverno trava engrenagem fria! Aqueco a oficina e o oleo junto. Maquina que faz som novo no frio esta te avisando algo.",
+                RainLine = "CHUVA! Perfeito para testar o telhado giratorio! ...Que ainda nao impermeabilizei. Fica longe daquela goteira ali!",
+                FestivalLine = "Festival! Eu queria montar fogos mecanicos, mas o conselho VETOU. De novo. Foi UMA explosao, gente. Uma! Pequena!",
+                FriendStrangerLine = "Nao encosta nessa alava... tarde demais. Otimo, agora voce e parte do teste! Cara nova! Voce tem dois bracos, certo?",
+                FriendWarmLine = "Ah, voce! Ja sei que voce nao quebra minhas coisas de proposito. Confianca rara por aqui! Da uma olhada na bancada.",
+                FriendCloseLine = "Meu cobaia... digo, parceiro favorito! Pra voce eu mostro o projeto secreto. Se explodir, a culpa e 50/50, combinado?",
+                MilestoneArrivalLine = "Cara nova na cidade! Esta cidade tem potencial mecanico ABSURDO e ninguem me ouve! Mas voce vai ouvir, ne? NE?",
+                MilestonePostAct1Line = "Depois daquilo, achei um mecanismo na caverna que GIRA SOZINHO. Sem corda, sem mola. Ta na bancada. Girando. Ha semanas.",
+                MilestonePostAct3Line = "Sabe o que voce fez? Me deu coragem de ligar a tal engenhoca que gira sozinha no resto da oficina. Vai dar certo! Acho!"
             },
             new NpcDialogueContent
             {
@@ -432,7 +643,19 @@ namespace CindarsHope.NPC
                 },
                 Rumor1 = "Tem uma rachadura no muro leste que conserto toda semana. Toda semana ela volta. No mesmo desenho. Vou chamar o Corvus.",
                 Rumor2 = "Escavando pra fundacao nova, achamos tijolo ANTIGO. Mais antigo que a cidade. Quem construiu aqui antes de nos?",
-                Goodbyes = new[] { "Vai com cuidado e longe do andaime!", "Obra te chama, eu atendo!", "Devolve o capacete na saida!" }
+                Goodbyes = new[] { "Vai com cuidado e longe do andaime!", "Obra te chama, eu atendo!", "Devolve o capacete na saida!" },
+                SpringLine = "Primavera e temporada de obra! Todo mundo quer celeiro novo antes do plantio. Minha equipe nao para. Pega um capacete!",
+                SummerLine = "Verao e o melhor pra erguer telhado. Madeira seca rapido, argamassa cura firme. Telhado bom no verao agradece no inverno.",
+                AutumnLine = "Outono: termine a obra antes da chuva pesada. Fundacao na lama nao pega. Pressa agora evita prejuizo depois.",
+                WinterLine = "Inverno desacelera a obra, mas nao para. Aproveito pra planejar fundacao. Aquilo NAO cai nem com terremoto, pode crer.",
+                RainLine = "Chuva! Obra parada, andaime escorregadio. Fica longe da estrutura molhada. Madeira verde com chuva entorta feio!",
+                FestivalLine = "Festival! Ate a equipe folga. Mas a base da estatua, que eu reforcei, aguenta a multidao toda pulando. Pode comemorar!",
+                FriendStrangerLine = "Cuidado com a viga! Ah, oi, pensei que era a queda de material. Cara nova! Se veio olhar, pega um capacete tambem.",
+                FriendWarmLine = "Voce de novo! Ja confio em te deixar perto da obra sem capacete... quase. Pega um mesmo assim. Seguranca primeiro!",
+                FriendCloseLine = "Ah, meu parceiro de obra! Pra voce eu faco o pacote completo com preco de amigo: fundacao, estrutura e telhado. Fechado?",
+                MilestoneArrivalLine = "Cara nova na cidade! A cidade cresce mais rapido que minha equipe. Bom problema. Sua fazenda vai precisar de mim, ja aviso.",
+                MilestonePostAct1Line = "Depois daquilo, tem uma rachadura no muro leste que conserto toda semana. Toda semana ela volta. No mesmo desenho. Esquisito.",
+                MilestonePostAct3Line = "Sabe a base da estatua que eu reforcei? Desde o que voce fez, ela virou simbolo. Construir pra voce e construir pra historia."
             },
             new NpcDialogueContent
             {
@@ -457,7 +680,19 @@ namespace CindarsHope.NPC
                 },
                 Rumor1 = "Alguem anda comprando TODA pedra negra que aparece. Pagando triplo. Por tras de intermediario. Eu odeio nao saber quem.",
                 Rumor2 = "O mercador errante da caverna? Real. Nos cruzamos uma vez. Ele me vendeu um mapa... do mercado noturno. O MEU mercado. Antes de eu monta-lo.",
-                Goodbyes = new[] { "A noite te acompanha.", "Nao me viu, nao falamos. Mas volte.", "Leve o embrulho. Nao abra na frente da guarda." }
+                Goodbyes = new[] { "A noite te acompanha.", "Nao me viu, nao falamos. Mas volte.", "Leve o embrulho. Nao abra na frente da guarda." },
+                SpringLine = "Primavera. As noites encurtam e meu horario tambem. Compre cedo; o que o dia nao explica, a primavera revela rapido.",
+                SummerLine = "Verao. Noites mornas, mercado movimentado. Mais gente acorda tarde, mais gente acha minha banca. Bom para os negocios.",
+                AutumnLine = "Outono. A escuridao se estende e meus melhores itens aparecem. Outono e quando a noite fica generosa, sussurrando.",
+                WinterLine = "Inverno. Noite longa, freguesia seleta. Quem enfrenta o frio para me achar quer mesmo o que vendo. Aproxime-se.",
+                RainLine = "Chuva abafa passos e olhos curiosos. Otima noite para um negocio discreto. Fale baixo; a chuva guarda segredo melhor que eu.",
+                FestivalLine = "Festival? O dia e da praca. Mas quando o ultimo fogo de festa apaga, a noite e minha, e ela tem ofertas que a festa nao tem.",
+                FriendStrangerLine = "Shhh. Fale baixo. Voce achou o mercado noturno, ou ele achou voce. Cara nova. Aqui vendemos o que o dia nao explica.",
+                FriendWarmLine = "Ah, voce de novo. Ja sei o tipo de curiosidade que move voce. Tenho algo guardado que talvez sirva. Talvez. Aproxime-se.",
+                FriendCloseLine = "Voce. Para os de confianca, eu abro a gaveta de baixo. O que ha nela nao tem procedencia que eu conte em voz alta. Mas e seu.",
+                MilestoneArrivalLine = "Rosto novo na noite. Toda cidade tem duas faces; eu atendo a que aparece depois do ultimo sino. Bem-vindo a essa.",
+                MilestonePostAct1Line = "Depois daquilo, alguem anda comprando TODA pedra negra que aparece. Pagando triplo, por tras de intermediario. Eu odeio nao saber quem.",
+                MilestonePostAct3Line = "Desde o que voce fez, ate meus contatos noturnos falam seu nome. Raro. Para voce, a primeira informacao sai de graca. So a primeira."
             },
             new NpcDialogueContent
             {
@@ -482,7 +717,19 @@ namespace CindarsHope.NPC
                 },
                 Rumor1 = "Ha uma lua que so aparece refletida na Fonte. Olhe na agua numa noite limpa. Conte as luas. Depois me conte voce.",
                 Rumor2 = "As cartas que recebo cheiram a sal porque o remetente ainda navega. Em qual mar, eu nao sei. Talvez embaixo de nos.",
-                Goodbyes = new[] { "Durma, se conseguir.", "A noite e longa. Eu cuido dela.", "Va. Os sonhos nao gostam de esperar." }
+                Goodbyes = new[] { "Durma, se conseguir.", "A noite e longa. Eu cuido dela.", "Va. Os sonhos nao gostam de esperar." },
+                SpringLine = "Primavera. A noite cheira a terra molhada e a coisa que vai brotar. Ate o escuro acorda diferente nesta estacao.",
+                SummerLine = "Verao. As noites sao curtas e mornas, mas a cidade ainda sussurra. Escute o que o calor nao deixa o dia ouvir.",
+                AutumnLine = "Outono. As folhas caem como dias contados. A noite fica mais longa, e eu, mais ouvinte. A cidade conta mais agora.",
+                WinterLine = "Inverno. O frio silencia ate os sonhos. Ando devagar pela neve para nao acordar o que dorme sob a cidade. Voce ouve?",
+                RainLine = "A chuva conversa, sabia? Cada cidade tem uma voz na chuva. A desta fala baixo esta noite. Pare. Escute comigo um instante.",
+                FestivalLine = "Festa? O dia comemora. Eu prefiro a hora depois, quando os fogos calam e a cidade tira a mascara. Esse e meu horario.",
+                FriendStrangerLine = "...Voce tambem nao consegue dormir? A noite esta falando hoje. Ainda nao sei seu nome, mas a noite ja o anotou.",
+                FriendWarmLine = "Ah. Voce de novo, a esta hora. Comeco a reconhecer seu passo na rua escura. Poucos andam devagar o bastante para eu notar.",
+                FriendCloseLine = "Voce. Sente-se comigo no jardim da estatua. A esta altura, confio a poucos o que a noite me conta. Voce e um deles.",
+                MilestoneArrivalLine = "Um rosto novo e desperto. Raro. A cidade conta coisas a quem chega ouvindo. Ande devagar; voce vai entender por que veio.",
+                MilestonePostAct1Line = "Depois daquilo, a caverna ficou inquieta. Eu a sinto daqui de cima, sabia? Ela tem mares. Naquela noite, a mare subiu.",
+                MilestonePostAct3Line = "O que voce fez acalmou algo que eu ouvia ha anos sob a cidade. Pela primeira vez, a noite dorme tranquila. Obrigado por isso."
             },
             new NpcDialogueContent
             {
@@ -507,7 +754,19 @@ namespace CindarsHope.NPC
                 },
                 Rumor1 = "Os bichos do nivel dez estao descendo pro doze. Algo la em cima dos niveis esta... empurrando eles pra baixo. O que empurra monstro?",
                 Rumor2 = "Vi o mercador errante duas vezes no mesmo dia. Em niveis diferentes. DISTANTES. Ou ele tem um irmao, ou as regras dele sao outras.",
-                Goodbyes = new[] { "Desca devagar, suba inteiro.", "Te vejo no quadro de retorno.", "Boa sorte. E conta as tochas DUAS vezes." }
+                Goodbyes = new[] { "Desca devagar, suba inteiro.", "Te vejo no quadro de retorno.", "Boa sorte. E conta as tochas DUAS vezes." },
+                SpringLine = "Primavera. A boca da caverna fica mais movimentada com o degelo. Mais novato descendo. Verifique as botas antes de ir.",
+                SummerLine = "Verao. O calor la fora nao chega la embaixo; a caverna ignora estacao. Leve agasalho mesmo no verao. Confie em mim.",
+                AutumnLine = "Outono. Os dias encurtam e a descida fica mais arriscada no escuro. Marque seu nome no quadro antes de entrar.",
+                WinterLine = "Inverno. A estrada ate a caverna congela e escorrega. Pressa no gelo escolhe o tumulo. Desca com o dobro de cuidado.",
+                RainLine = "Chuva torna a trilha ate a boca da caverna um lamacal. Pise firme. Inimigo que recua na chuva nao desistiu; te leva pra algum lugar.",
+                FestivalLine = "Festival? Eu patrulho a estrada igual. Aventureiro animado com festa desce afoito. Justamente nesses dias eu trago gente de volta.",
+                FriendStrangerLine = "Voltando da caverna ou indo? A resposta muda meu conselho. Cara nova. Verifique as botas antes de descer. Sempre.",
+                FriendWarmLine = "Ah, voce de novo. Ja sei que voce escuta meu conselho, e isso te mantem vivo. Marquei seu nome no quadro, como sempre.",
+                FriendCloseLine = "Voce. Bom te ver inteiro. Para quem confio, deixo o melhor kit separado e desco eu mesmo se voce nao voltar no prazo. Ja trouxe sete.",
+                MilestoneArrivalLine = "Cara nova na estrada da caverna. Alguem precisa patrulhar entre a cidade e o abismo; sou eu. Meu trabalho e te ver subir inteiro.",
+                MilestonePostAct1Line = "Depois daquilo, os bichos do nivel dez estao descendo pro doze. Algo la em cima esta empurrando eles pra baixo. O que empurra monstro?",
+                MilestonePostAct3Line = "Desde o que voce fez, a estrada da caverna anda mais calma. Trinta e cinco niveis eu desci e voltei. Voce foi mais fundo. Respeito."
             },
             new NpcDialogueContent
             {
@@ -532,7 +791,19 @@ namespace CindarsHope.NPC
                 },
                 Rumor1 = "Tem um cogumelo novo crescendo na boca da caverna. Nao esta em nenhum dos meus livros. Plantei um em vaso... ele virou na direcao da caverna.",
                 Rumor2 = "Os passaros pararam de fazer ninho na arvore alta do portao leste. Passaro sabe das coisas antes da gente.",
-                Goodbyes = new[] { "Va pelo caminho marcado!", "Leve agua. E respeito.", "Que o verde te acompanhe." }
+                Goodbyes = new[] { "Va pelo caminho marcado!", "Leve agua. E respeito.", "Que o verde te acompanhe." },
+                SpringLine = "Primavera! O bosque transborda. Colhi tres cestas antes do sol alto. Folha nova cura melhor; leve enquanto ha.",
+                SummerLine = "Verao seca as ervas no pe. Colho de madrugada, antes do calor roubar o oleo das folhas. Antidoto fresco aqui, viajante.",
+                AutumnLine = "Outono e raiz e casca, a forca que a planta guarda para o frio. O pacote anti-veneno fica mais potente nesta estacao.",
+                WinterLine = "Inverno. A floresta dorme, mas eu nao. Mistura minha aquece o cha da Gruta. Roupa molhada na caverna e febre; leve cha.",
+                RainLine = "Chuva alimenta o verde e a mim. Dia de chuva e dia de secar erva na varanda e moer raiz. O bosque agradece cada gota.",
+                FestivalLine = "Festival! Levo guirlanda e cha de festa para a praca. A floresta e a cidade tem um acordo; em dia de festa, ele floresce.",
+                FriendStrangerLine = "Cuidado onde pisa. Essa florzinha leva dois anos pra crescer. Cara nova. Bem-vindo a borda do verde; a cidade termina aqui.",
+                FriendWarmLine = "Ah, voce de novo. Ja sei as ervas que te servem. Separei um antidoto fresco pensando na sua proxima descida. Leve.",
+                FriendCloseLine = "Minha companhia querida! Para voce, a erva mais rara da colheita e o cha que so ofereco a quem o verde ja aprendeu a amar.",
+                MilestoneArrivalLine = "Rosto novo na borda da floresta. A cidade e a mata fazem um acordo silencioso. Respeite o verde, e ele te recebe. Bem-vindo.",
+                MilestonePostAct1Line = "Depois daquilo, um cogumelo novo cresceu na boca da caverna. Nao esta em nenhum livro meu. Plantei um; ele virou na direcao da caverna.",
+                MilestonePostAct3Line = "Desde o que voce fez, os passaros voltaram a fazer ninho na arvore alta do portao leste. Passaro sabe das coisas. Eles confiam de novo."
             },
             new NpcDialogueContent
             {
@@ -557,7 +828,19 @@ namespace CindarsHope.NPC
                 },
                 Rumor1 = "Destilei a agua de uma poca do nivel oito. O residuo... se move. Guardei no armario triplo. O armario anda arranhado por DENTRO.",
                 Rumor2 = "A pedra negra reage a agua da Fonte. Reage MUITO. O conselho me proibiu de repetir o teste. Foi um muro so, gente.",
-                Goodbyes = new[] { "Saia antes que algo borbulhe!", "Volte com frascos vazios e curiosidade cheia!", "Se sentir gosto de metal, volta aqui CORRENDO." }
+                Goodbyes = new[] { "Saia antes que algo borbulhe!", "Volte com frascos vazios e curiosidade cheia!", "Se sentir gosto de metal, volta aqui CORRENDO." },
+                SpringLine = "Primavera! Reagentes vegetais no auge. A Savra me traz erva fresca e minhas pocoes saem mais limpas. Sente o cheiro? E normal!",
+                SummerLine = "Verao acelera toda reacao! Minhas pocoes fermentam rapido demais. NAO respire fundo perto do alambique hoje. Serio. NAO.",
+                AutumnLine = "Outono e estacao de destilar raiz e essencia concentrada. Elixir mais forte sai agora. Traga frasco vazio; ganha desconto.",
+                WinterLine = "Inverno desacelera as misturas, otimo para experimento delicado. Pocao de vida quente para o frio! Testada! Em mim, claro.",
+                RainLine = "Chuva muda a pressao e minhas reacoes ficam... imprevisiveis. Hoje a fumaca saiu roxa. Roxa depende. Pergunte antes de comprar!",
+                FestivalLine = "Festival! Eu queria soltar fumaca colorida festiva, mas o conselho... bem, voce sabe. Foi UM muro. Compre um elixir e comemore!",
+                FriendStrangerLine = "NAO respire fundo ainda! ...Pronto, agora pode. Bem-vindo! Cara nova, otimo, um voluntar... digo, cliente! O cheiro e normal.",
+                FriendWarmLine = "Ah, voce! Ja sei que voce nao foge da minha fumaca. Coragem rara! Da uma olhada nos reagentes novos, sem encostar naquele ali.",
+                FriendCloseLine = "Meu cliente de confianca! Pra voce eu mostro o elixir experimental. Se der gosto de metal na lingua, volta CORRENDO, combinado?",
+                MilestoneArrivalLine = "Cara nova na cidade! Esta cidade e perfeita para alquimia: erva da Savra, minerio da caverna e vizinhos compreensivos. Ou surdos.",
+                MilestonePostAct1Line = "Depois daquilo, destilei agua de uma poca do nivel oito. O residuo se MOVE. Guardei no armario triplo. Ele anda arranhado por dentro.",
+                MilestonePostAct3Line = "Sabe o que voce fez? Me deu vontade de repetir o teste da pedra negra com a agua da Fonte. So que dessa vez... longe das paredes. Talvez."
             },
             new NpcDialogueContent
             {
@@ -582,7 +865,19 @@ namespace CindarsHope.NPC
                 },
                 Rumor1 = "As cabras se recusam a pastar perto da entrada da caverna desde a lua passada. CABRAS. Que comem ate avental.",
                 Rumor2 = "O galo cantou meia-noite em ponto, tres noites seguidas. Meu avo dizia que isso anuncia visita... de longe. MUITO longe.",
-                Goodbyes = new[] { "Vai la! E fecha o portao, pelas cabras!", "Leva ovo fresco, ta na cesta!", "Volta pra ordenha de domingo!" }
+                Goodbyes = new[] { "Vai la! E fecha o portao, pelas cabras!", "Leva ovo fresco, ta na cesta!", "Volta pra ordenha de domingo!" },
+                SpringLine = "Primavera! Epoca de filhote! Tem pintinho, cabrito e bezerro novo no quintal. Quer levar um? So se tiver espaco e paciencia!",
+                SummerLine = "Verao da muito leite e muito calor. Galinha feliz bota mais com sombra boa. Ovo fresco na cesta toda manha, viu?",
+                AutumnLine = "Outono e mes de engordar o rebanho antes do frio. Vendo racao reforcada. Animal bem tratado atravessa o inverno inteiro.",
+                WinterLine = "Inverno. Recolho os bichos cedo e reforco o curral. Cabra que olha pra cerca ja decidiu pular; no frio, reforce antes!",
+                RainLine = "Chuva! As galinhas se abrigam e ficam mais quietas, gracas a Deus. Cuidado com a lama no curral; o portao escorrega.",
+                FestivalLine = "Festival! Levo ovo, leite e queijo fresco para a praca. Em dia de festa, ate as cabras parecem mais comportadas. Quase.",
+                FriendStrangerLine = "Ei! Voce assustou as galinhas. Brincadeira, elas se assustam sozinhas. Cara nova! Bem-vindo ao quintal mais barulhento da cidade!",
+                FriendWarmLine = "Voce de novo! Os bichos ja te reconhecem, sabia? Eles confiam em pouca gente. Pega um ovo fresco da cesta, e por minha conta.",
+                FriendCloseLine = "Ah, meu amigo! Ate a cabra mais ranzinza gosta de voce, e isso e raro. Separei o melhor queijo da semana so pra voce. Leva!",
+                MilestoneArrivalLine = "Cara nova na cidade! A cidade toma cafe da manha no meu quintal: leite da praca, ovo da estalagem. Bem-vindo ao barulho!",
+                MilestonePostAct1Line = "Depois daquilo, as cabras se recusam a pastar perto da entrada da caverna. CABRAS. Que comem ate avental. Animal sente as coisas.",
+                MilestonePostAct3Line = "Sabe o que mudou desde o que voce fez? As cabras voltaram a pastar tranquilas perto da caverna. Bicho so relaxa quando o perigo passa."
             },
             new NpcDialogueContent
             {
@@ -607,7 +902,19 @@ namespace CindarsHope.NPC
                 },
                 Rumor1 = "Quando toco certa sequencia de notas perto da estatua, o vento muda. Tres notas. Sempre as mesmas. Nao toco mais a quarta.",
                 Rumor2 = "A melodia que sonhei? Um mineiro a assobiou semana passada. Disse que ouviu 'la embaixo, no fundo'. Ele nunca tinha me visto cantar.",
-                Goodbyes = new[] { "Que sua estrada rime.", "Volte ao entardecer; a luz ajuda a musica.", "Vou colocar voce numa cancao. A parte boa, prometo." }
+                Goodbyes = new[] { "Que sua estrada rime.", "Volte ao entardecer; a luz ajuda a musica.", "Vou colocar voce numa cancao. A parte boa, prometo." },
+                SpringLine = "Primavera afina o mundo. Os passaros voltam e roubam minhas melhores notas. Componho sobre flores que nem desabrocharam ainda.",
+                SummerLine = "Verao. As noites mornas pedem cancao longa na praca. Fico ate tarde; o calor estica a musica como estica o dia.",
+                AutumnLine = "Outono e a estacao mais musical: tudo cai em tom menor, mas com esperanca no refrao. Como o nome desta cidade, alias.",
+                WinterLine = "Inverno silencia a praca, entao levo a musica para a taverna da Gruta. Ouca mais o silencio entre as notas do que as notas.",
+                RainLine = "A chuva tem ritmo proprio, sabia? Sento sob o beiral e deixo ela marcar o compasso. As melhores cancoes nascem molhadas.",
+                FestivalLine = "Festival! Hoje eu canto para a cidade inteira, nao so para a estatua. Traga uma historia verdadeira e eu transformo em verso.",
+                FriendStrangerLine = "Shh... estou compondo. Pronto, perdi. Era linda. Culpa sua. Brincadeira: era mediana. Voce chega como um acorde inesperado.",
+                FriendWarmLine = "Ah, voce de novo. Voce vira refrao na minha cabeca, sabia? Sente-se; o jardim da estatua tem a melhor acustica e o melhor publico.",
+                FriendCloseLine = "Meu ouvinte favorito! Compus uma cancao pensando em voce, e juro que dei a voce a parte boa. Fique para o refrao, sempre fique.",
+                MilestoneArrivalLine = "Um rosto novo na cidade. Cada cidade tem uma cancao escondida; a desta e em tom menor com esperanca. Voce chega no comeco dela.",
+                MilestonePostAct1Line = "Depois daquilo, quando toco certa sequencia perto da estatua, o vento muda. Tres notas. Sempre as mesmas. Nao toco mais a quarta.",
+                MilestonePostAct3Line = "A melodia que sonhei a vida toda? Desde o que voce fez, finalmente ouvi o final dela, vindo do chao. Voce a completou. Obrigada."
             },
         };
 
@@ -644,6 +951,7 @@ namespace CindarsHope.NPC
                     NodeId = "node_greeting",
                     Text = content.Greetings[0],
                     RandomLinePool = new List<string>(content.Greetings),
+                    ConditionalLines = BuildGreetingConditionalLines(content),
                     Choices = CloneChoices(hubChoices)
                 },
                 new DialogueNode
@@ -744,6 +1052,48 @@ namespace CindarsHope.NPC
             };
 
             return nodes;
+        }
+
+        /// <summary>
+        /// fable_28 — materializes the per-NPC conditional greeting pool from the authored fields.
+        /// Each non-null field becomes a <see cref="ConditionalDialogueLine"/> with the matching
+        /// <see cref="DialogueLineCondition"/>. Order is fixed (season → rain → festival → friendship
+        /// → milestones) so tie-breaking is deterministic. The base greeting stays the fallback, so
+        /// this pool never needs to be exhaustive and selection is never empty.
+        /// </summary>
+        public static List<ConditionalDialogueLine> BuildGreetingConditionalLines(NpcDialogueContent content)
+        {
+            var lines = new List<ConditionalDialogueLine>();
+
+            AddIf(lines, content.SpringLine, new DialogueLineCondition { Season = Season.Primavera });
+            AddIf(lines, content.SummerLine, new DialogueLineCondition { Season = Season.Verao });
+            AddIf(lines, content.AutumnLine, new DialogueLineCondition { Season = Season.Outono });
+            AddIf(lines, content.WinterLine, new DialogueLineCondition { Season = Season.Inverno });
+
+            // Wet weather = Rainy OR Stormy (parity with WorldWeatherService.IsWetWeather). The
+            // condition matches a single WeatherType, so the same line is registered for both so it
+            // fires on a stormy day too (still 1 authored line; deterministic tie-break unaffected).
+            AddIf(lines, content.RainLine, new DialogueLineCondition { Weather = WeatherType.Rainy });
+            AddIf(lines, content.RainLine, new DialogueLineCondition { Weather = WeatherType.Stormy });
+            AddIf(lines, content.FestivalLine, new DialogueLineCondition { RequiresFestivalDay = true });
+
+            AddIf(lines, content.FriendStrangerLine, new DialogueLineCondition { MinFriendship = 0 });
+            AddIf(lines, content.FriendWarmLine, new DialogueLineCondition { MinFriendship = FriendshipWarmMin });
+            AddIf(lines, content.FriendCloseLine, new DialogueLineCondition { MinFriendship = FriendshipCloseMin });
+
+            AddIf(lines, content.MilestoneArrivalLine, new DialogueLineCondition { RequiredFlag = FlagMainArrival });
+            AddIf(lines, content.MilestonePostAct1Line, new DialogueLineCondition { RequiredFlag = FlagMainPostAct1 });
+            AddIf(lines, content.MilestonePostAct3Line, new DialogueLineCondition { RequiredFlag = FlagMainPostAct3 });
+
+            return lines;
+        }
+
+        private static void AddIf(List<ConditionalDialogueLine> lines, string text, DialogueLineCondition condition)
+        {
+            if (!string.IsNullOrEmpty(text))
+            {
+                lines.Add(new ConditionalDialogueLine(text, condition));
+            }
         }
 
         private static List<DialogueChoice> BuildHubChoices(NpcDialogueContent content)
