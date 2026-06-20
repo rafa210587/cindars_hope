@@ -250,6 +250,29 @@ namespace CindarsHope.Farm
         public bool CanBeWatered => State == FarmPlotState.TilledDry || State == FarmPlotState.PlantedDry;
 
         /// <summary>
+        /// fable_37 — hook NOMEADO ÚNICO do pico de Lua Verde: avança o crescimento da cultura em 1
+        /// estágio sem custo/rega (o WorldEventService dirige este ponto; o FarmPlot não conhece o
+        /// serviço). Só atua em canteiros plantados (Dry/Wet); demais estados são no-op. Reusa a mesma
+        /// AdvanceGrowth interna (idêntica ao avanço diário), preservando a transição para ReadyToHarvest.
+        /// Retorna true se um estágio foi efetivamente concedido.
+        /// </summary>
+        public bool TryAdvanceStageFromLunarPeak()
+        {
+            if (State != FarmPlotState.PlantedDry && State != FarmPlotState.PlantedWet)
+            {
+                return false;
+            }
+
+            if (!TryGetPlantedSeedData(out _))
+            {
+                return false;
+            }
+
+            AdvanceGrowth();
+            return true;
+        }
+
+        /// <summary>
         /// Rega silenciosa pela chuva (RainIrrigationRunner). Sem custo de stamina/ferramenta;
         /// o runner publica um feedback agregado único.
         /// </summary>

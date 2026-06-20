@@ -744,6 +744,14 @@ namespace CindarsHope.Editor.SceneCreation
             CreateDecoration(plaza.transform, "PlazaPlanter_NW", new Vector3(-3.8f, 3.8f, 0f), new Vector3(0.8f, 0.8f, 1f), new Color(0.3f, 0.52f, 0.26f));
             CreateDecoration(plaza.transform, "PlazaPlanter_SE", new Vector3(3.8f, -3.8f, 0f), new Vector3(0.8f, 0.8f, 1f), new Color(0.3f, 0.52f, 0.26f));
             CreateDecoration(plaza.transform, "PlazaPlanter_SW", new Vector3(-3.8f, -3.8f, 0f), new Vector3(0.8f, 0.8f, 1f), new Color(0.3f, 0.52f, 0.26f));
+
+            // fable_37 — âncora das barracas de festival (ponto de extensão da praça). Empty marcado com
+            // FestivalStallAnchor: o WorldEventService monta/desmonta aqui as 3 barracas temporárias no
+            // dia de festival. Sem geometria — apenas o ponto de spawn (ADITIVO; não altera o layout).
+            var festivalAnchor = new GameObject("FestivalStallAnchor");
+            festivalAnchor.transform.SetParent(plaza.transform);
+            festivalAnchor.transform.position = new Vector3(0f, 2.6f, 0f);
+            festivalAnchor.AddComponent<CindarsHope.World.Events.FestivalStallAnchor>();
         }
 
         private static GameObject CreateStatuePart(Transform parent, string name, Vector3 localPosition, Vector3 scale, Color color, int sortingOrder)

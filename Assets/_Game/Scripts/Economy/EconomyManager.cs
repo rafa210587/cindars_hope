@@ -172,6 +172,11 @@ namespace CindarsHope.Economy
             // espalhado). Não-stack já garantido no roteador (2 anéis iguais != +10%).
             totalGold = CindarsHope.Equipment.AccessoryEffectRouter.ApplyGoldGain(totalGold);
 
+            // fable_37 (CA-2 economia): ponto ÚNICO nomeado do multiplicador de venda por evento de mundo
+            // (pico de Lua Âmbar +10% e/ou cultivo em alta +25%). Lê WorldEventHooks (resolução do dia);
+            // sem evento ativo => multiplicador neutro 1.0. O EconomyManager não conhece o WorldEventService.
+            totalGold = CindarsHope.World.Events.WorldEventHooks.ApplySellGold(totalGold);
+
             _playerManager.AddGold(totalGold);
             PublishTransaction(true, "SellAll", string.Empty, totalAmount, totalGold, $"Venda concluida: {totalAmount} itens por {totalGold}g.");
         }

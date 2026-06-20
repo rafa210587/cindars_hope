@@ -58,6 +58,17 @@ namespace CindarsHope.Cave.Runtime
             }
 
             var targetEnemyCount = ResolveTargetEnemyCount(levelSeed, maxEnemies, generatedLevel.CaveLevel);
+
+            // fable_37 (CA spawn): ponto ÚNICO nomeado do modificador de densidade por evento de mundo
+            // (pico de Cinza +30% undead, infestação +20%, dia nublado calmo −15%). Lê WorldEventHooks
+            // (resolução do dia); sem evento ativo => multiplicador neutro 1.0. ResolveTargetEnemyCount
+            // permanece PURO (testes de densidade inalterados) — o ajuste de evento entra só aqui.
+            var eventMultiplier = World.Events.WorldEventHooks.GetCaveSpawnMultiplier();
+            if (eventMultiplier != 1f)
+            {
+                targetEnemyCount = Math.Max(1, (int)Math.Round(targetEnemyCount * eventMultiplier));
+            }
+
             var requestMaxEnemies = Math.Max(1, Math.Min(targetEnemyCount, spawnPoints.Count));
 
             var resolver = new EnemySpawnResolver(profiles, packs, factionLocks);

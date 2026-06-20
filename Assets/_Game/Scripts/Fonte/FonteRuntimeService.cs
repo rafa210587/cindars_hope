@@ -105,6 +105,16 @@ namespace CindarsHope.Fonte
                 UsedAtDay = _currentDay
             });
 
+            // fable_37 (CA pico): ponto ÚNICO nomeado do bônus de Água Viva por pico de Lua Pálida (F17).
+            // Lê WorldEventHooks (resolução do dia); sem pico de Pálida => 0 (neutro). A Fonte não conhece
+            // o WorldEventService. O bônus não consome cargas (é dádiva do pico) e respeita o inventário.
+            var extraAguaViva = World.Events.WorldEventHooks.GetExtraAguaViva();
+            if (extraAguaViva > 0 && inventory.AddItem(LivingWaterItemId, extraAguaViva))
+            {
+                GameEventBus.Publish(new PlayerActionFeedbackEvent(
+                    $"A Lua Pálida abençoa a Fonte: +{extraAguaViva} Água Viva."));
+            }
+
             GameEventBus.Publish(new PlayerActionFeedbackEvent("Voce recolheu um frasco de Agua Viva."));
             return result;
         }

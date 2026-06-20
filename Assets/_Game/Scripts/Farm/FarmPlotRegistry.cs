@@ -9,7 +9,28 @@ namespace CindarsHope.Farm
     {
         [SerializeField] private FarmPlot[] _plots;
 
+        /// <summary>
+        /// fable_37 — acessor estático do registro ativo (auto-registrado em OnEnable). Permite que hooks
+        /// de eventos de mundo (Lua Verde) alcancem os canteiros sem busca global de cena em gameplay
+        /// (mesmo idioma de GreenhouseRuntimeHost.Instance / WorldWeatherService.Instance). Null fora de
+        /// uma cena de fazenda ⇒ hook neutro.
+        /// </summary>
+        public static FarmPlotRegistry Active { get; private set; }
+
         public IReadOnlyList<FarmPlot> Plots => _plots;
+
+        private void OnEnable()
+        {
+            Active = this;
+        }
+
+        private void OnDisable()
+        {
+            if (Active == this)
+            {
+                Active = null;
+            }
+        }
 
         public void Configure(FarmPlot[] plots)
         {
