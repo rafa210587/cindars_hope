@@ -157,6 +157,31 @@ namespace CindarsHope.Farm.Animals
             return animal;
         }
 
+        /// <summary>
+        /// fable_25 (hook pontual do Pasto Premium do Eiran): alimenta TODOS os animais vivos ainda não
+        /// alimentados hoje, reutilizando a regra de <see cref="Feed"/> (sem duplicar a lógica de fome).
+        /// Retorna quantos foram efetivamente alimentados nesta chamada. Animais mortos e já alimentados
+        /// são ignorados. Não consome ração de inventário (o pasto é o serviço pago do NPC).
+        /// </summary>
+        public int FeedAllLiveAnimals()
+        {
+            int fed = 0;
+            foreach (var animal in _animals.Values)
+            {
+                if (animal == null || animal.HealthState == AnimalHealthState.Dead || animal.FedToday)
+                {
+                    continue;
+                }
+
+                if (Feed(animal.AnimalInstanceId) == FeedResult.Success)
+                {
+                    fed++;
+                }
+            }
+
+            return fed;
+        }
+
         public int GetConsecutiveFedDays(string animalInstanceId)
         {
             if (!string.IsNullOrWhiteSpace(animalInstanceId) && _consecutiveFedDays.TryGetValue(animalInstanceId, out var days))

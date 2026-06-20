@@ -192,7 +192,8 @@ namespace CindarsHope.Save
                     Spellbook = spellbookSaveData,
                     FarmLots = CaptureFarmLotsSaveData(),
                     FarmAnimals = CaptureFarmAnimalsSaveData(),
-                    Friendship = CaptureFriendshipSaveData()
+                    Friendship = CaptureFriendshipSaveData(),
+                    NpcServices = CaptureNpcServicesSaveData()
                 };
 
                 var savePath = SaveFilePath;
@@ -552,6 +553,13 @@ namespace CindarsHope.Save
         {
             var registry = Farm.Animals.FarmAnimalRegistry.Instance;
             return registry != null ? registry.CaptureSaveData() : new Farm.Animals.FarmAnimalsSaveData();
+        }
+
+        // fable_25: pendências dos serviços de NPC (seção aditiva, domínio global via bridge singleton).
+        private NPC.Services.NpcServicesSaveData CaptureNpcServicesSaveData()
+        {
+            var runtime = NPC.Services.NpcServiceRuntime.Instance;
+            return runtime != null ? runtime.CaptureSaveData() : new NPC.Services.NpcServicesSaveData();
         }
 
         // fable_41: posse dos lotes de expansão (campo aditivo na seção farm). Independe da cena
@@ -1123,6 +1131,13 @@ namespace CindarsHope.Save
             if (NPC.Friendship.FriendshipService.Instance != null)
             {
                 NPC.Friendship.FriendshipService.Instance.RestoreFromSaveData(saveData.Friendship);
+            }
+
+            // fable_25: restaura as pendências dos serviços de NPC. saveData.NpcServices ausente (legado)
+            // ⇒ Restore(null) = sem encomendas/contrato/prato/pasto, sem erro (CA-5).
+            if (NPC.Services.NpcServiceRuntime.Instance != null)
+            {
+                NPC.Services.NpcServiceRuntime.Instance.RestoreFromSaveData(saveData.NpcServices);
             }
 
             // fable_55: restaura os jobs de processamento (queijaria/barril). Campo aditivo na seção

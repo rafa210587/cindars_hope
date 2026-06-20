@@ -60,6 +60,11 @@ namespace CindarsHope.Save
         // strings/ints e IDs estáveis (ADR-0006). Ausente em save legado = lista vazia = todos os NPCs
         // nível 0 (Unknown) (CA-3). Sem migração. Owner: FriendshipService.
         public CindarsHope.NPC.Friendship.FriendshipSaveData Friendship;
+        // fable_25: pendências dos serviços únicos de NPC (encomendas de livro, contrato de caca
+        // semanal, prato do dia usado, pasto premium ativo). Seção ADITIVA, só strings/ints e dias/
+        // semanas absolutos (ADR-0006). Ausente em save legado = sem pendências (CA-5). Sem migração.
+        // Owner: NpcServiceRuntime.
+        public CindarsHope.NPC.Services.NpcServicesSaveData NpcServices;
     }
 
     [Serializable]

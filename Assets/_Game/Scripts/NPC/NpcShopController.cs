@@ -288,6 +288,8 @@ namespace CindarsHope.NPC
                 choices.Add(new UiDialogueChoice(questLabel, "quest"));
             choices.Add(new UiDialogueChoice("Comprar", "buy"));
             choices.Add(new UiDialogueChoice("Vender", "sell"));
+            // fable_25: Análise de Criatura da Thalindra entra no MESMO menu (sem segundo fluxo).
+            AddNpcServiceChoices(choices);
             choices.Add(new UiDialogueChoice("Adeus", "exit"));
 
             _dialogueModal.ShowWithChoices("Como posso ajudar?", choices);
@@ -297,9 +299,21 @@ namespace CindarsHope.NPC
         {
             DetachDialogueChoiceHandler();
             _dialogueModal.OnClose -= HandleThalindraDialogueClosed;
-            _dialogueModal.Hide();
 
-            if (choice == null) return;
+            if (choice == null)
+            {
+                _dialogueModal.Hide();
+                return;
+            }
+
+            // fable_25: serviços únicos (ChoiceId "svc:<serviceId>") — mesmo handler do Conversar raiz.
+            if (choice.ChoiceId != null && choice.ChoiceId.StartsWith(NpcServiceChoicePrefix, System.StringComparison.Ordinal))
+            {
+                HandleNpcServiceChoice(choice.ChoiceId.Substring(NpcServiceChoicePrefix.Length));
+                return;
+            }
+
+            _dialogueModal.Hide();
 
             switch (choice.ChoiceId)
             {
@@ -401,6 +415,11 @@ namespace CindarsHope.NPC
                 choices.Add(serviceChoice);
             }
 
+            // fable_25 (CA-1/CA-4): serviços ÚNICOS deste NPC entram como opções no MESMO Conversar
+            // (sem segundo fluxo de diálogo). Opção gated aparece DESABILITADA com o motivo no rótulo
+            // (descoberta > ocultação); a execução real é validada/efetuada pela fachada NpcServiceAccess.
+            AddNpcServiceChoices(choices);
+
             choices.Add(new UiDialogueChoice("Adeus", "exit"));
 
             _dialogueModal.ShowWithChoices("Como posso ajudar?", choices);
@@ -471,6 +490,62 @@ namespace CindarsHope.NPC
             GameEventBus.Publish(new PlayerActionFeedbackEvent(message));
         }
 
+        // ─── fable_25: serviços únicos do NPC no Conversar ───────────────────────────────────────
+
+        private const string NpcServiceChoicePrefix = "svc:";
+
+        /// <summary>
+        /// Adiciona uma opção por serviço único deste NPC. Habilitada ⇒ rótulo simples; gated ⇒ rótulo +
+        /// motivo (descoberta > ocultação). ChoiceId = "svc:&lt;serviceId&gt;". A opção NUNCA some.
+        /// </summary>
+        private void AddNpcServiceChoices(List<UiDialogueChoice> choices)
+        {
+            var npcId = _npcData != null ? _npcData.NpcId : null;
+            if (!CindarsHope.NPC.Services.NpcServiceAccess.HasServices(npcId))
+            {
+                return;
+            }
+
+            var options = CindarsHope.NPC.Services.NpcServiceAccess.BuildOptions(npcId);
+            foreach (var option in options)
+            {
+                if (string.IsNullOrEmpty(option.ServiceId)) continue;
+                choices.Add(new UiDialogueChoice(option.Label, NpcServiceChoicePrefix + option.ServiceId));
+            }
+        }
+
+        /// <summary>
+        /// Executa (ou recusa com motivo) um serviço único selecionado no Conversar. Opção gated ⇒
+        /// toast com o requisito (não cobra, não executa). Habilitada ⇒ NpcServiceAccess.Execute valida
+        /// gate/limite/custo e despacha o efeito; feedback por toast.
+        /// </summary>
+        private void HandleNpcServiceChoice(string serviceId)
+        {
+            _dialogueModal.Hide();
+
+            var npcId = _npcData != null ? _npcData.NpcId : null;
+            // Revalida o estado da opção para um motivo honesto quando gated (descoberta > ocultação).
+            var options = CindarsHope.NPC.Services.NpcServiceAccess.BuildOptions(npcId);
+            foreach (var option in options)
+            {
+                if (option.ServiceId != serviceId) continue;
+                if (!option.Enabled)
+                {
+                    GameEventBus.Publish(new PlayerActionFeedbackEvent(
+                        string.IsNullOrEmpty(option.DisabledReason) ? "Servico indisponivel." : option.DisabledReason));
+                    BeginCloseInteraction();
+                    return;
+                }
+
+                break;
+            }
+
+            var result = CindarsHope.NPC.Services.NpcServiceAccess.Execute(serviceId);
+            var message = !string.IsNullOrEmpty(result.Message) ? result.Message : "Servico concluido.";
+            GameEventBus.Publish(new PlayerActionFeedbackEvent(message));
+            BeginCloseInteraction();
+        }
+
         private void HandleRootShopChoice(UiDialogueChoice choice)
         {
             DetachDialogueChoiceHandler();
@@ -478,6 +553,13 @@ namespace CindarsHope.NPC
             if (choice == null)
             {
                 BeginCloseInteraction();
+                return;
+            }
+
+            // fable_25: serviços únicos (ChoiceId "svc:<serviceId>").
+            if (choice.ChoiceId != null && choice.ChoiceId.StartsWith(NpcServiceChoicePrefix, System.StringComparison.Ordinal))
+            {
+                HandleNpcServiceChoice(choice.ChoiceId.Substring(NpcServiceChoicePrefix.Length));
                 return;
             }
 
