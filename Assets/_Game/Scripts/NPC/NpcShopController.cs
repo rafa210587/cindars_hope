@@ -378,7 +378,12 @@ namespace CindarsHope.NPC
             {
                 new UiDialogueChoice("Conversar", "talk"),
                 new UiDialogueChoice("Comprar", "buy"),
-                new UiDialogueChoice("Vender", "sell")
+                new UiDialogueChoice("Vender", "sell"),
+                // fable_72: opção ADITIVA de dar presente. O seletor de item Giftable do inventário é
+                // UI diferida (não existe seletor reusável no projeto; wiring/Play Mode humano). O
+                // fluxo determinístico (classificação/cap/delta/consumo/evento) vive em
+                // GiftGivingService.TryGiveGift e é coberto por testes EditMode.
+                new UiDialogueChoice("Dar presente", "gift")
             };
 
             // fable_22 (CA-3): opção "Temperar" só no Brumdar e só com o gate aberto
@@ -536,6 +541,19 @@ namespace CindarsHope.NPC
                     // toast; fecha a interação. Persistência por flag (sem nova seção de save).
                     _dialogueModal.Hide();
                     PurchaseCityServiceForThisNpc();
+                    BeginCloseInteraction();
+                    break;
+
+                case "gift":
+                    // fable_72: ponto de entrada do ato de dar presente. O seletor de item Giftable do
+                    // inventário é UI diferida (sem seletor reusável no projeto; wiring/Play Mode
+                    // humano). Quando houver seletor, a seleção chama
+                    // GiftGivingService.Instance.TryGiveGift(npcId, itemId) (classifica gosto, aplica
+                    // delta via F26, consome 1 unidade, publica NpcGiftReactionEvent). Por ora, feedback
+                    // honesto por toast; fluxo coberto por testes EditMode.
+                    _dialogueModal.Hide();
+                    GameEventBus.Publish(new PlayerActionFeedbackEvent(
+                        "Escolha um presente no inventario para oferecer. (Seletor em breve.)"));
                     BeginCloseInteraction();
                     break;
 
