@@ -13,6 +13,11 @@ namespace CindarsHope.Economy
         [SerializeField] private InventoryManager _inventoryManager;
         [SerializeField] private PlayerManager _playerManager;
 
+        // fable_19 (CA-2): ponto de venda URBANO da cidade. Apenas este source exige a licença de
+        // barraca (license_market_stall). Cave merchant (shop_cave_wandering_merchant_l*) e venda
+        // direta a NPC NÃO passam por este gate; o shipping da fazenda usa outro fluxo.
+        private const string UrbanSellSourceId = "shop_town_sell_box";
+
         public bool IsInitialized { get; private set; }
 
         private void OnEnable()
@@ -106,6 +111,17 @@ namespace CindarsHope.Economy
             if (!HasRequiredManagers("venda", out var failureMessage))
             {
                 PublishTransaction(false, "SellAll", string.Empty, 0, 0, failureMessage);
+                return;
+            }
+
+            // fable_19 (CA-2): o ponto de venda URBANO recusa sem a licença de barraca. Ponto único
+            // de gate (sem if espalhado): consulta a fachada CityServiceAccess (fail-closed). Venda a
+            // NPC e ao mercador errante da caverna seguem livres (source diferente).
+            if (string.Equals(evt.SourceId, UrbanSellSourceId, System.StringComparison.Ordinal)
+                && !CindarsHope.City.Services.CityServiceAccess.UrbanSellAllowed())
+            {
+                PublishTransaction(false, "SellAll", string.Empty, 0, 0,
+                    "Voce precisa da Licenca de Barraca de Mercado (Tovin, 200g) para vender neste ponto.");
                 return;
             }
 

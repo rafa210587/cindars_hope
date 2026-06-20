@@ -23,6 +23,12 @@ namespace CindarsHope.Farm.Shipping
             if (input.QualityTier > 0)
                 price *= (1f + input.QualityTier * 0.05f);
 
+            // fable_19 (CA-2): contrato de registro de fazenda (Mara, 100g) => +5% no preço do
+            // shipping da fazenda. Ponto único do hook (fachada CityServiceAccess, fail-closed: sem
+            // contrato => preço inalterado). O shipping da fazenda NUNCA é bloqueado por licença
+            // urbana — só ganha bônus quando o contrato existe.
+            price = CindarsHope.City.Services.CityServiceAccess.ApplyFarmRegistryContract(price);
+
             return price;
         }
     }

@@ -376,6 +376,14 @@ namespace CindarsHope.NPC
                 choices.Add(new UiDialogueChoice("Temperar", "temper"));
             }
 
+            // fable_19 (CA-2): opção de serviço civic só nos provedores canônicos (Tovin = licença de
+            // barraca; Mara = registro de fazenda). Mostra o rótulo de compra se ainda não possui, ou
+            // um rótulo de já-possui (idempotente). Mesmo idioma do gate do Brumdar acima.
+            if (TryGetCityServiceChoice(out var serviceChoice))
+            {
+                choices.Add(serviceChoice);
+            }
+
             choices.Add(new UiDialogueChoice("Adeus", "exit"));
 
             _dialogueModal.ShowWithChoices("Como posso ajudar?", choices);
@@ -389,6 +397,61 @@ namespace CindarsHope.NPC
                 return true;
             return !string.IsNullOrEmpty(_npcData.DisplayName) &&
                    _npcData.DisplayName.IndexOf("Brumdar", System.StringComparison.OrdinalIgnoreCase) >= 0;
+        }
+
+        // ─── fable_19: opção de serviço civic (Tovin/Mara) ───────────────────────────────────────
+
+        /// <summary>
+        /// Monta a opção de diálogo de serviço civic se este NPC for um provedor canônico (Tovin =
+        /// licença de barraca; Mara = registro de fazenda). Se já possui, mostra um rótulo informativo
+        /// (a compra é idempotente). ChoiceId = "service".
+        /// </summary>
+        private bool TryGetCityServiceChoice(out UiDialogueChoice choice)
+        {
+            choice = null;
+            var npcId = _npcData != null ? _npcData.NpcId : null;
+            if (!CindarsHope.City.Services.CityServiceCatalog.IsServiceProvider(npcId))
+            {
+                return false;
+            }
+
+            var serviceId = CindarsHope.City.Services.CityServiceCatalog.ServiceIdFor(npcId);
+            if (string.IsNullOrEmpty(serviceId))
+            {
+                return false;
+            }
+
+            string label = CindarsHope.City.Services.CityServiceAccess.OwnsService(serviceId)
+                ? "Servico (ja contratado)"
+                : CindarsHope.City.Services.CityServiceCatalog.DisplayLabelFor(serviceId);
+
+            if (string.IsNullOrEmpty(label))
+            {
+                return false;
+            }
+
+            choice = new UiDialogueChoice(label, "service");
+            return true;
+        }
+
+        /// <summary>
+        /// Executa a compra do serviço civic deste NPC pela fachada CityServiceAccess (débito + flag,
+        /// idempotente) e publica o feedback por toast.
+        /// </summary>
+        private void PurchaseCityServiceForThisNpc()
+        {
+            var npcId = _npcData != null ? _npcData.NpcId : null;
+            var serviceId = CindarsHope.City.Services.CityServiceCatalog.ServiceIdFor(npcId);
+            if (string.IsNullOrEmpty(serviceId))
+            {
+                return;
+            }
+
+            var result = CindarsHope.City.Services.CityServiceAccess.TryPurchase(serviceId);
+            var message = result != null && !string.IsNullOrEmpty(result.Message)
+                ? result.Message
+                : "Servico indisponivel.";
+            GameEventBus.Publish(new PlayerActionFeedbackEvent(message));
         }
 
         private void HandleRootShopChoice(UiDialogueChoice choice)
@@ -452,6 +515,15 @@ namespace CindarsHope.NPC
                         GameEventBus.Publish(new PlayerActionFeedbackEvent(
                             "A forja de tempera do Brumdar esta disponivel."));
                     }
+                    BeginCloseInteraction();
+                    break;
+
+                case "service":
+                    // fable_19 (CA-2): compra do serviço civic via diálogo. Ponto único: a fachada
+                    // CityServiceAccess decide débito + concessão de flag (idempotente). Feedback por
+                    // toast; fecha a interação. Persistência por flag (sem nova seção de save).
+                    _dialogueModal.Hide();
+                    PurchaseCityServiceForThisNpc();
                     BeginCloseInteraction();
                     break;
 

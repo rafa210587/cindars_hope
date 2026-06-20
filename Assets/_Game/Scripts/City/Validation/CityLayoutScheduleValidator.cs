@@ -36,6 +36,10 @@ namespace CindarsHope.City.Validation
             return issues;
         }
 
+        // fable_19 (CA-1): NpcScheduleDefinition é [Obsolete] (absorvido por NPC/Schedule). Este
+        // validador legado continua aceitando-o para não quebrar o build enquanto City/Schedule não é
+        // removido (delete candidates pós-F11). Supressão pontual — não cria consumidor novo.
+#pragma warning disable CS0618
         public List<CityValidationIssue> ValidateSchedule(NpcScheduleDefinition schedule)
         {
             var issues = new List<CityValidationIssue>();
@@ -46,6 +50,7 @@ namespace CindarsHope.City.Validation
                 issues.Add(new CityValidationIssue { Code = "SCHEDULE_NO_BLOCKS_NO_FALLBACK", Message = $"Schedule '{schedule.ScheduleId}' has no period blocks and no fallback waypoint", IsBlocker = false });
             return issues;
         }
+#pragma warning restore CS0618
 
         public List<CityValidationIssue> ValidateBuilding(CityBuildingDefinition building,
             Dictionary<string, DoorTriggerDefinition> doorRegistry,

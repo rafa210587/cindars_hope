@@ -1,7 +1,14 @@
+using System;
 using System.Linq;
 
 namespace CindarsHope.City.Schedule
 {
+    // fable_19 (CA-1): motor de resolução do schedule DUPLICADO (WAVE 08), absorvido por NPC/Schedule
+    // (canônico). Marcado [Obsolete]; nenhum consumidor novo. #pragma: o resolver referencia as
+    // classes-motor obsoletas deste mesmo subsistema dentro deste arquivo.
+#pragma warning disable CS0618
+
+    [Obsolete("Absorvido por NPC/Schedule — fable_19. Não usar em código novo.")]
     public class ScheduleResolveContext
     {
         public int CurrentHour { get; set; }
@@ -12,6 +19,7 @@ namespace CindarsHope.City.Schedule
         public int RelationshipLevelWithNpc { get; set; }
     }
 
+    [Obsolete("Absorvido por NPC/Schedule — fable_19. Não usar em código novo.")]
     public class ScheduleResolveResult
     {
         public bool Success { get; set; }
@@ -28,6 +36,7 @@ namespace CindarsHope.City.Schedule
             new ScheduleResolveResult { Success = false, FailureReason = reason };
     }
 
+    [Obsolete("Absorvido por NPC/Schedule (NpcScheduleService) — fable_19. Não usar em código novo.")]
     public class NpcScheduleResolver
     {
         // Resolve where an NPC should be right now given current world state
@@ -119,4 +128,5 @@ namespace CindarsHope.City.Schedule
             };
         }
     }
+#pragma warning restore CS0618
 }

@@ -1,5 +1,12 @@
 namespace CindarsHope.City.Schedule
 {
+    // fable_19 (CA-1): vocabulário SEMÂNTICO de períodos absorvido para o sistema canônico em
+    // NPC/Schedule/NpcSchedulePeriod (crosswalk 1:1 de janelas horárias + ToTimeBlock). Este enum
+    // permanece NÃO-obsoleto porque ainda é consumido por Dialogue/* (DialogueContext/DialogueCondition)
+    // e City/FarmVisits/FarmVisitRule — fora do escopo de edição desta spec. Código NOVO deve usar
+    // CindarsHope.NPC.Schedule.NpcSchedulePeriod. As classes-MOTOR (NpcScheduleDefinition/Resolver)
+    // estão [Obsolete]; só o vocabulário sobrevive até a migração dos consumidores de Dialogue.
+
     // Day periods as defined in City Layout Direction
     public enum SchedulePeriod
     {

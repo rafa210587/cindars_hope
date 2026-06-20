@@ -4,6 +4,12 @@ using CindarsHope.City.Layout;
 using CindarsHope.City.Schedule;
 using CindarsHope.City.Validation;
 
+// fable_19 (CA-1): este teste legado exercita o motor de schedule [Obsolete] (NpcScheduleDefinition/
+// Resolver) que continua existindo até a remoção física pós-F11. Supressão de CS0618 no arquivo de
+// teste para manter a cobertura sem quebrar 0W. A semântica canônica é coberta por
+// CityServicesReconciliationTests (crosswalk NpcSchedulePeriod).
+#pragma warning disable CS0618
+
 namespace CindarsHope.Tests.EditMode.City
 {
     [TestFixture]
