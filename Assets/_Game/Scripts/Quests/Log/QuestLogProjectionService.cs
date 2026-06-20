@@ -35,21 +35,30 @@ namespace CindarsHope.Quests.Log
 
             if (isHidden) return null;
 
+            // fable_34 — resolve the delivery channel: a dynamic instance pins its own source,
+            // otherwise it is mapped from the authored category. Secrets only show after discovery.
+            var source = record.IsDynamicInstance ? (QuestSource)record.Source : QuestSourceMapper.FromCategory(def.Category);
+            if (source == QuestSource.CaveSecret && !record.Discovered) return null;
+
             var title = isSpoilerSafe || (policy?.ShowTitleWhenUnknown == true)
                 ? (def.DisplayNameKey ?? def.QuestId)
                 : (def.HiddenDisplayNameKey ?? "???");
 
+            var tab = QuestSourceMapper.TabFor(source);
             var vm = new QuestLogEntryViewModel
             {
                 QuestId = def.QuestId,
                 Category = def.Category,
+                Source = source,
+                Tab = tab,
                 DisplayTitle = title,
                 DisplaySummary = isSpoilerSafe ? (def.DescriptionKey ?? "") : "",
                 StateDisplay = state.ToString(),
                 Tracked = record.Tracked,
                 CanTrack = state == QuestStateStatus.Active || state == QuestStateStatus.Waiting,
                 SpoilerSafe = isSpoilerSafe,
-                SortKey = (int)def.Category * 1000 + (int)state
+                // fable_34 — group by tab first so the Quest Log tabs sort cleanly by source.
+                SortKey = (int)tab * 100000 + (int)def.Category * 1000 + (int)state
             };
 
             // Only show deadline if quest can expire

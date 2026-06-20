@@ -35,18 +35,21 @@ namespace CindarsHope.Quests.Runtime
         private readonly QuestRewardApplicator _rewardApplicator;
         private readonly IQuestInventoryAccess _inventoryAccess;
         private readonly IQuestGoldAccess _goldAccess;
+        private readonly IQuestProgressionAccess _progressionAccess; // fable_34 — scaled XP + act skill point
 
         public QuestService(
             QuestRegistry registry,
             QuestStateSection saveSection,
             IQuestInventoryAccess inventoryAccess,
             IQuestGoldAccess goldAccess,
-            QuestFlagService flagService)
+            QuestFlagService flagService,
+            IQuestProgressionAccess progressionAccess = null)
         {
             _registry = registry;
             _saveSection = saveSection;
             _inventoryAccess = inventoryAccess;
             _goldAccess = goldAccess;
+            _progressionAccess = progressionAccess;
             _rewardApplicator = new QuestRewardApplicator(flagService);
         }
 
@@ -262,6 +265,22 @@ namespace CindarsHope.Quests.Runtime
                 }
             }
 
+            // fable_34 — scaled XP for dynamic instances (board contracts). Idempotent via a
+            // synthetic reward id recorded in GrantedRewardIds, so a reload + re-turn-in cannot
+            // re-grant XP. XP is not a generic QuestRewardType, so it is applied through the
+            // progression hook here (single point: the amount was scaled once at generation).
+            int xpGiven = 0;
+            if (record.IsDynamicInstance && record.InstanceRewardXp > 0)
+            {
+                const string xpRewardId = "reward_instance_xp";
+                if (!record.GrantedRewardIds.Contains(xpRewardId))
+                {
+                    _progressionAccess?.AddXp(record.InstanceRewardXp);
+                    xpGiven = record.InstanceRewardXp;
+                    record.GrantedRewardIds.Add(xpRewardId);
+                }
+            }
+
             // Mark quest complete
             record.State = (int)QuestStateStatus.Completed;
             record.CompletedAtDay = 0;
@@ -269,11 +288,152 @@ namespace CindarsHope.Quests.Runtime
             GameEventBus.Publish(new QuestCompletedEvent(questId));
             GameEventBus.Publish(new QuestRewardClaimedEvent(questId, goldGiven, itemsGiven));
 
-            Debug.Log($"[QuestService] Quest completed: {questId}. Gold: {goldGiven}. Items: {itemsGiven.Count}. Flags: {flagsGranted.Count}.");
+            Debug.Log($"[QuestService] Quest completed: {questId}. Gold: {goldGiven}. Xp: {xpGiven}. Items: {itemsGiven.Count}. Flags: {flagsGranted.Count}.");
             return QuestTurnInResult.Success(goldGiven, itemsGiven, flagsGranted);
         }
 
         public QuestStateSection GetSaveSection() => _saveSection;
+
+        // ─── fable_34 — quest source channels (board / secret / main act) ───────────────
+
+        /// <summary>
+        /// fable_34 (CA-1/CA-2) — registers a dynamic board/procedural instance into the EXISTING
+        /// registry/flow (no second registry). Builds the objective from the template kind and a
+        /// scaled Gold reward; XP is applied on turn-in via the progression hook. Returns the
+        /// concrete quest id, or null if the instance is invalid.
+        /// </summary>
+        public string RegisterDynamicInstance(QuestInstance instance)
+        {
+            if (instance == null || string.IsNullOrEmpty(instance.QuestId) || string.IsNullOrEmpty(instance.TargetId))
+                return null;
+
+            var objectiveType = ObjectiveTypeForSource(instance);
+            var objective = new QuestObjective
+            {
+                ObjectiveId = $"obj_{instance.QuestId}",
+                ObjectiveType = objectiveType,
+                TargetId = instance.TargetId,
+                RequiredAmount = instance.Quantity < 1 ? 1 : instance.Quantity
+            };
+
+            var definition = new QuestDefinition
+            {
+                QuestId = instance.QuestId,
+                Category = SourceToCategory(instance.Source),
+                DisplayName = instance.QuestId,
+                Description = instance.QuestTemplateId,
+                Trackable = true
+            };
+
+            var rewards = new List<QuestRewardDefinition>();
+            if (instance.RewardGold > 0)
+            {
+                rewards.Add(new QuestRewardDefinition
+                {
+                    RewardId = $"reward_{instance.QuestId}_gold",
+                    RewardType = QuestRewardType.Gold,
+                    Quantity = instance.RewardGold,
+                    IdempotencyPolicy = RewardIdempotencyPolicy.TrackByRewardId
+                });
+            }
+
+            _registry.Register(definition, new List<QuestObjective> { objective }, rewards, instance.QuestTemplateId);
+            return instance.QuestId;
+        }
+
+        /// <summary>
+        /// fable_34 — accepts a dynamic instance: registers it (if needed) and creates the active
+        /// QuestStateRecord carrying the instance params (so it survives save/load standalone).
+        /// </summary>
+        public bool AcceptDynamicInstance(QuestInstance instance)
+        {
+            if (instance == null) return false;
+            var questId = RegisterDynamicInstance(instance);
+            if (questId == null) return false;
+            if (!AcceptQuest(questId)) return false;
+
+            var record = _saveSection.GetQuestState(questId);
+            if (record != null)
+            {
+                record.IsDynamicInstance = true;
+                record.Source = (int)instance.Source;
+                record.TemplateId = instance.QuestTemplateId;
+                record.InstanceTargetId = instance.TargetId;
+                record.InstanceQuantity = instance.Quantity;
+                record.QuestLevel = instance.QuestLevel;
+                record.InstanceRewardGold = instance.RewardGold;
+                record.InstanceRewardXp = instance.RewardXp;
+                record.GeneratedForDay = instance.GeneratedForDay;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// fable_34 (CA-4) — grants +1 skill point for a completed main-quest act, EXACTLY once.
+        /// Idempotent across reloads: the act id is recorded in the persisted RewardedMainActIds.
+        /// Returns true only on the first grant for that act.
+        /// </summary>
+        public bool TryAwardActSkillPoint(string actId)
+        {
+            if (string.IsNullOrEmpty(actId)) return false;
+            if (_saveSection.RewardedMainActIds.Contains(actId)) return false;
+
+            _saveSection.RewardedMainActIds.Add(actId);
+            _progressionAccess?.GrantSkillPoints(1);
+            Debug.Log($"[QuestService] Main act '{actId}' completed: +1 skill point granted (idempotent).");
+            return true;
+        }
+
+        /// <summary>
+        /// fable_34 (CA-3) — single entry point to offer a cave-secret quest. Marks the quest as
+        /// discovered (so it appears in the Quest Log) and publishes SecretQuestDiscoveredEvent.
+        /// Consumed by the wandering merchant and peaceful-monster interactables. The concrete
+        /// scq_* content is authored by fable_52; this only opens the channel. Idempotent.
+        /// </summary>
+        public bool OfferSecretQuest(string questId)
+        {
+            if (string.IsNullOrEmpty(questId)) return false;
+            bool newlyDiscovered = _saveSection.MarkSecretDiscovered(questId);
+            if (newlyDiscovered)
+            {
+                GameEventBus.Publish(new SecretQuestDiscoveredEvent(questId));
+                Debug.Log($"[QuestService] Secret quest discovered: {questId}.");
+            }
+            return newlyDiscovered;
+        }
+
+        public bool IsSecretDiscovered(string questId) => _saveSection.IsSecretDiscovered(questId);
+
+        /// <summary>
+        /// fable_34 (EMENDA 2026-06-12-C, PREREQUISITE_UI_DEBT) — true when every
+        /// PrerequisiteQuestId of <paramref name="questId"/> is Completed. Used by
+        /// QuestGiverInteractable to gate offers. Unknown definitions / no prerequisites => true.
+        /// </summary>
+        public bool ArePrerequisitesComplete(string questId)
+        {
+            if (!_registry.TryGetQuest(questId, out var definition)) return true;
+            if (definition.PrerequisiteQuestIds == null || definition.PrerequisiteQuestIds.Count == 0) return true;
+
+            foreach (var prereqId in definition.PrerequisiteQuestIds)
+            {
+                if (string.IsNullOrWhiteSpace(prereqId)) continue;
+                var prereqState = _saveSection.GetQuestState(prereqId);
+                if (prereqState == null) return false;
+                if ((QuestStateStatus)prereqState.State != QuestStateStatus.Completed) return false;
+            }
+            return true;
+        }
+
+        /// <summary>fable_34 — the delivery source of a quest record (instance pin or category map).</summary>
+        public QuestSource GetQuestSource(string questId)
+        {
+            var record = _saveSection.GetQuestState(questId);
+            if (record != null && record.IsDynamicInstance)
+                return (QuestSource)record.Source;
+            if (_registry.TryGetQuest(questId, out var def))
+                return QuestSourceMapper.FromCategory(def.Category);
+            return record != null ? (QuestSource)record.Source : QuestSource.Npc;
+        }
 
         /// <summary>
         /// Restores quest state from the serializable save DTO.
@@ -286,10 +446,23 @@ namespace CindarsHope.Quests.Runtime
 
             _saveSection.QuestStates.Clear();
             _saveSection.GlobalKnownHints.Clear();
+            // fable_34 — restore discovered secrets + rewarded acts (idempotency carried by save).
+            _saveSection.DiscoveredSecretQuestIds.Clear();
+            _saveSection.RewardedMainActIds.Clear();
 
             if (saveData.GlobalKnownHints != null)
             {
                 _saveSection.GlobalKnownHints.AddRange(saveData.GlobalKnownHints);
+            }
+
+            if (saveData.DiscoveredSecretQuestIds != null)
+            {
+                _saveSection.DiscoveredSecretQuestIds.AddRange(saveData.DiscoveredSecretQuestIds);
+            }
+
+            if (saveData.RewardedMainActIds != null)
+            {
+                _saveSection.RewardedMainActIds.AddRange(saveData.RewardedMainActIds);
             }
 
             foreach (var dto in saveData.QuestStates ?? new List<QuestStateSaveData>())
@@ -314,6 +487,16 @@ namespace CindarsHope.Quests.Runtime
                     GrantedRewardIds = new List<string>(dto.GrantedRewardIds ?? new List<string>()),
                     GrantedFlagIds = new List<string>(dto.GrantedFlagIds ?? new List<string>()),
                     RepeatInstanceId = dto.RepeatInstanceId,
+                    // fable_34 — dynamic instance + source channel (additive simple types).
+                    Source = dto.Source,
+                    IsDynamicInstance = dto.IsDynamicInstance,
+                    TemplateId = dto.TemplateId,
+                    InstanceTargetId = dto.InstanceTargetId,
+                    InstanceQuantity = dto.InstanceQuantity,
+                    QuestLevel = dto.QuestLevel,
+                    InstanceRewardGold = dto.InstanceRewardGold,
+                    InstanceRewardXp = dto.InstanceRewardXp,
+                    GeneratedForDay = dto.GeneratedForDay,
                     ObjectiveStates = new List<QuestObjectiveStateRecord>()
                 };
 
@@ -332,12 +515,62 @@ namespace CindarsHope.Quests.Runtime
                 }
 
                 _saveSection.QuestStates.Add(record);
+
+                // fable_34 — a dynamic instance must rejoin the live flow after load: re-register
+                // its definition/objectives/rewards into the registry so progress/turn-in resolve.
+                if (record.IsDynamicInstance && !_registry.TryGetQuest(record.QuestId, out _))
+                {
+                    ReRegisterInstanceFromRecord(record);
+                }
             }
 
             Debug.Log($"[QuestService] Restored {_saveSection.QuestStates.Count} quest records from save data.");
         }
 
         // ─── Private helpers ───────────────────────────────────────────────────────
+
+        // fable_34 — board template kind → objective type. The instance already carries the
+        // template id; map by id prefix (bd_cull/bd_gather/bd_delivery) with a Collect default.
+        private static QuestObjectiveType ObjectiveTypeForSource(QuestInstance instance)
+        {
+            var template = instance.QuestTemplateId ?? string.Empty;
+            if (template.StartsWith("bd_cull")) return QuestObjectiveType.DefeatEnemy;
+            if (template.StartsWith("bd_delivery")) return QuestObjectiveType.DeliverItem;
+            return QuestObjectiveType.CollectItem; // bd_gather and any other gather-like template
+        }
+
+        private static QuestCategory SourceToCategory(QuestSource source)
+        {
+            switch (source)
+            {
+                case QuestSource.Board: return QuestCategory.FarmOrder;
+                case QuestSource.CaveContract: return QuestCategory.CaveContract;
+                case QuestSource.CaveSecret: return QuestCategory.Hidden;
+                case QuestSource.Main: return QuestCategory.Main;
+                case QuestSource.Npc:
+                case QuestSource.Mural:
+                default: return QuestCategory.Side;
+            }
+        }
+
+        // fable_34 — rebuild a dynamic instance's registry entry from its persisted record so it
+        // rejoins the live flow after load (objective + scaled gold reward reconstructed).
+        private void ReRegisterInstanceFromRecord(QuestStateRecord record)
+        {
+            var instance = new QuestInstance
+            {
+                QuestId = record.QuestId,
+                QuestTemplateId = record.TemplateId,
+                Source = (QuestSource)record.Source,
+                TargetId = record.InstanceTargetId,
+                Quantity = record.InstanceQuantity,
+                QuestLevel = record.QuestLevel,
+                RewardGold = record.InstanceRewardGold,
+                RewardXp = record.InstanceRewardXp,
+                GeneratedForDay = record.GeneratedForDay
+            };
+            RegisterDynamicInstance(instance);
+        }
 
         private bool AllObjectivesComplete(QuestStateRecord record)
         {

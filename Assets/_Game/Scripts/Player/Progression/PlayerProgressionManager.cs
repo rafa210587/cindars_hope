@@ -114,6 +114,22 @@ namespace CindarsHope.Player.Progression
             return true;
         }
 
+        // fable_34 — main-quest acts grant +1 skill point each (decision Q6.2b / quest_rules Rule 6).
+        // The idempotency guard (an act is rewarded at most once, even after reload) lives in the
+        // quest save section (RewardedMainActIds); this method only adds the granted points to the
+        // canonical ledger. Publishes SkillPointGrantedEvent so the skill tree reflects the gain.
+        public void GrantSkillPoints(int amount)
+        {
+            if (amount <= 0)
+            {
+                return;
+            }
+
+            NormalizeState();
+            _state.UnspentSkillPoints += amount;
+            GameEventBus.Publish(new SkillPointGrantedEvent(amount, _state.UnspentSkillPoints, _state.Level));
+        }
+
         public PlayerProgressionSaveData CaptureSaveData()
         {
             NormalizeState();

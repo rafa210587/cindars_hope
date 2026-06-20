@@ -112,14 +112,18 @@ namespace CindarsHope.Quests.Runtime
                     return QuestGiverInteractionMode.TurnIn;
             }
 
-            // Priority 2: Offer quest not yet accepted
+            // Priority 2: Offer quest not yet accepted — but ONLY if prerequisites are satisfied.
+            // fable_34 (EMENDA 2026-06-12-C, PREREQUISITE_UI_DEBT WAVE_INTEGRATION_26): the offer
+            // must not appear before its PrerequisiteQuestIds are completed.
             foreach (var questId in offeredQuestIds)
             {
                 if (string.IsNullOrWhiteSpace(questId))
                     continue;
 
                 var state = service.GetQuestState(questId);
-                if (state == null)
+                // fable_34 (EMENDA 2026-06-12-C) — offer only if prerequisites are completed
+                // (closes PREREQUISITE_UI_DEBT). Gate logic lives in QuestService (single source).
+                if (state == null && service.ArePrerequisitesComplete(questId))
                     return QuestGiverInteractionMode.Offer;
             }
 
@@ -146,7 +150,8 @@ namespace CindarsHope.Quests.Runtime
                         continue;
 
                     var state = service.GetQuestState(questId);
-                    if (state == null) return questId;
+                    // fable_34 (EMENDA 2026-06-12-C) — only offer a quest whose prerequisites are met.
+                    if (state == null && service.ArePrerequisitesComplete(questId)) return questId;
                 }
             }
 

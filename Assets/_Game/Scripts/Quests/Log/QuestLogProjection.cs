@@ -58,6 +58,10 @@ namespace CindarsHope.Quests.Log
     {
         public string QuestId { get; set; }
         public QuestCategory Category { get; set; }
+        // fable_34 — the delivery channel + Quest Log tab used to group entries
+        // (Main / Side / Contracts / Secrets). EMENDA 2026-06-12-B: CaveContract groups under Contracts.
+        public QuestSource Source { get; set; } = QuestSource.Npc;
+        public QuestLogTab Tab { get; set; } = QuestLogTab.Side;
         public string DisplayTitle { get; set; }
         public string DisplaySummary { get; set; }
         public string StateDisplay { get; set; }

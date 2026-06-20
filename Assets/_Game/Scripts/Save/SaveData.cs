@@ -343,6 +343,18 @@ namespace CindarsHope.Save
         public List<string> GrantedRewardIds = new List<string>();
         public List<string> GrantedFlagIds = new List<string>();
         public string RepeatInstanceId;
+
+        // fable_34 — additive simple-type fields for the source channel + dynamic instances.
+        // Defaults keep legacy saves loading safely (Source = Npc, not a dynamic instance).
+        public int Source = (int)CindarsHope.Quests.QuestSource.Npc;
+        public bool IsDynamicInstance;
+        public string TemplateId;
+        public string InstanceTargetId;
+        public int InstanceQuantity;
+        public int QuestLevel;
+        public int InstanceRewardGold;
+        public int InstanceRewardXp;
+        public int GeneratedForDay;
     }
 
     [Serializable]
@@ -351,5 +363,11 @@ namespace CindarsHope.Save
         public int Version = 1;
         public List<QuestStateSaveData> QuestStates = new List<QuestStateSaveData>();
         public List<string> GlobalKnownHints = new List<string>();
+
+        // fable_34 — quest source channels that the player has discovered (cave secrets).
+        // A secret quest only appears in the log after its id is recorded here.
+        public List<string> DiscoveredSecretQuestIds = new List<string>();
+        // fable_34 — main-quest acts already rewarded with +1 skill point (idempotency).
+        public List<string> RewardedMainActIds = new List<string>();
     }
 }

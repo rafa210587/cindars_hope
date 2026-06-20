@@ -100,6 +100,21 @@ namespace CindarsHope.Cave.Runtime
             return Math.Abs(hash) % 100 < AppearanceChancePercent;
         }
 
+        // fable_34 — the wandering merchant is one of the two consumers of the secret-quest API
+        // (the other is a peaceful-monster interactable, F33). With a deterministic 15% chance it
+        // also offers a cave-secret quest. The concrete scq_* content is authored by fable_52.
+        private const string SecretQuestSalt = "cave_secret_offer";
+
+        /// <summary>
+        /// fable_34 (CA-3) — deterministic per-(seed, level) decision: does this merchant also
+        /// offer a cave-secret quest? Uses the single rule in SecretQuestOffer (15% by seed).
+        /// </summary>
+        public static bool ShouldOfferSecretQuest(string worldSeed, string runSeed, int caveLevel)
+        {
+            var contextId = $"{worldSeed}|{runSeed}|{caveLevel}|{SecretQuestSalt}";
+            return CindarsHope.Quests.SecretQuestOffer.ShouldMerchantOffer(runSeed, contextId);
+        }
+
         /// <summary>Pure offer selection — deterministic pair of distinct catalog offers.</summary>
         public static (int firstIndex, int secondIndex) ResolveOfferIndices(string worldSeed, string runSeed, int caveLevel)
         {
@@ -148,6 +163,15 @@ namespace CindarsHope.Cave.Runtime
 
             GameEventBus.Publish(new PlayerActionFeedbackEvent("Um mercador errante montou banca neste andar..."));
             Debug.Log($"[CaveWanderingMerchant] Spawned on level {level.CaveLevel} at grid ({tile.x},{tile.y}). Offers: {OfferCatalog[firstIndex].ItemId} + {OfferCatalog[secondIndex].ItemId}.");
+
+            // fable_34 — deterministic 15% chance to also surface a cave-secret quest through the
+            // single SecretQuestOffer API. The scq_* content is authored by fable_52; until then the
+            // offer reveals the channel (the secret becomes visible in the Quest Log Secrets tab).
+            if (ShouldOfferSecretQuest(worldSeed, runSeed, level.CaveLevel))
+            {
+                var secretQuestId = $"scq_wandering_merchant_l{level.CaveLevel}";
+                CindarsHope.Quests.Runtime.QuestRuntimeBootstrap.QuestService?.OfferSecretQuest(secretQuestId);
+            }
         }
 
         private static void CreateOfferPoint(Transform parent, MerchantOffer offer, Vector3 localOffset, int caveLevel)

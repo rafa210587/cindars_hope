@@ -55,6 +55,31 @@ namespace CindarsHope.Core.Events
         }
     }
 
+    /// <summary>
+    /// fable_34 — published when the notice board rotates its daily contracts (DayStartedEvent).
+    /// UI/board listen to refresh the offered list. No Unity refs (event-bus rule).
+    /// </summary>
+    public readonly struct QuestBoardRefreshedEvent
+    {
+        public int Day { get; }
+        public IReadOnlyList<string> ContractQuestIds { get; }
+        public QuestBoardRefreshedEvent(int day, IReadOnlyList<string> contractQuestIds)
+        {
+            Day = day;
+            ContractQuestIds = contractQuestIds ?? new List<string>();
+        }
+    }
+
+    /// <summary>
+    /// fable_34 — published when a cave-secret quest is discovered (offered by a peaceful creature
+    /// or wandering merchant). Until this fires, the secret is absent from the Quest Log.
+    /// </summary>
+    public readonly struct SecretQuestDiscoveredEvent
+    {
+        public string QuestId { get; }
+        public SecretQuestDiscoveredEvent(string questId) => QuestId = questId;
+    }
+
     public enum QuestGiverInteractionMode
     {
         Offer = 0,

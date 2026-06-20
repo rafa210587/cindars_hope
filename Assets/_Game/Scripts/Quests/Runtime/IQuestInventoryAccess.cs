@@ -20,4 +20,14 @@ namespace CindarsHope.Quests.Runtime
     {
         void AddGold(int amount);
     }
+
+    /// <summary>
+    /// fable_34 — minimal player-progression access for scaled quest rewards (XP) and the
+    /// main-act +1 skill point hook. Decouples QuestService from PlayerProgressionManager.
+    /// </summary>
+    public interface IQuestProgressionAccess
+    {
+        void AddXp(int amount);
+        void GrantSkillPoints(int amount);
+    }
 }

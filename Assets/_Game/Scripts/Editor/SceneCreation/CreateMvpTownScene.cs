@@ -1216,8 +1216,50 @@ namespace CindarsHope.Editor.SceneCreation
             hallCollider.isTrigger = false;
             hallCollider.size = Vector2.one;
 
-            // Mural on the south wall of the town hall (F34 anchor — interactable wired later).
+            // Mural on the south wall of the town hall (fable_34 — read-only announcements).
             CreateDecoration(district.transform, "TownHallMural", TownDistrictLayout.TownHallMural, new Vector3(3.2f, 0.9f, 1f), new Color(0.7f, 0.55f, 0.4f));
+            CreateMuralInteractable(district.transform, TownDistrictLayout.TownHallMural);
+
+            // fable_34 — Hund's notice board (Board_Contratos) just south of the town hall.
+            CreateNoticeBoard(district.transform, TownDistrictLayout.TownHallMural + new Vector3(-2.5f, -1.6f, 0f));
+        }
+
+        // fable_34 — read-only mural interactable (QuestSource.Mural). Trigger collider + component.
+        private static void CreateMuralInteractable(Transform parent, Vector3 position)
+        {
+            var mural = new GameObject("TownHallMural_Interactable");
+            mural.transform.SetParent(parent);
+            mural.transform.position = position;
+            mural.transform.localScale = new Vector3(3.2f, 0.9f, 1f);
+
+            var collider = mural.AddComponent<BoxCollider2D>();
+            collider.isTrigger = true;
+            collider.size = Vector2.one;
+
+            mural.AddComponent<CindarsHope.Quests.Runtime.MuralInteractable>();
+        }
+
+        // fable_34 — notice board interactable (Board_Contratos / QuestSource.Board). The daily
+        // contracts are generated at runtime by QuestRuntimeBootstrap; this board exposes the
+        // accept/turn-in interaction. Sprite + trigger + QuestBoardInteractable.
+        private static void CreateNoticeBoard(Transform parent, Vector3 position)
+        {
+            var board = new GameObject("Board_Contratos");
+            board.transform.SetParent(parent);
+            board.transform.position = position;
+            board.transform.localScale = new Vector3(1.1f, 1.4f, 1f);
+
+            var renderer = board.AddComponent<SpriteRenderer>();
+            renderer.sprite = GetBuiltinSprite();
+            renderer.color = new Color(0.55f, 0.4f, 0.25f);
+            renderer.sortingOrder = 2;
+            TrySetSortingLayer(renderer, "Items", renderer.sortingOrder);
+
+            var collider = board.AddComponent<BoxCollider2D>();
+            collider.isTrigger = true;
+            collider.size = Vector2.one;
+
+            board.AddComponent<CindarsHope.Quests.Runtime.QuestBoardInteractable>();
         }
 
         // Tree clusters along the perimeter, road edges, and district borders.

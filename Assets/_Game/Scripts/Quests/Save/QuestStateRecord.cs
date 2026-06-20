@@ -41,5 +41,22 @@ namespace CindarsHope.Quests.Save
         public List<string> GrantedRewardIds { get; set; } = new List<string>();
         public List<string> GrantedFlagIds { get; set; } = new List<string>();
         public string RepeatInstanceId { get; set; }
+
+        // ─── fable_34 — quest source channel + dynamic instance params (additive, simple types) ───
+        // Source channel (Board/Npc/Mural/CaveSecret/Main/CaveContract) serialized as int.
+        // Default 1 == QuestSource.Npc so legacy saves load with a safe non-dynamic source.
+        public int Source { get; set; } = (int)QuestSource.Npc;
+
+        // True when this record was produced by a board/procedural template (QuestInstance).
+        public bool IsDynamicInstance { get; set; } = false;
+        // Template id (e.g. bd_cull_slime) — empty for authored quests.
+        public string TemplateId { get; set; }
+        // Instance objective parameters (also captured so a board contract restores standalone).
+        public string InstanceTargetId { get; set; }
+        public int InstanceQuantity { get; set; }
+        public int QuestLevel { get; set; }
+        public int InstanceRewardGold { get; set; }
+        public int InstanceRewardXp { get; set; }
+        public int GeneratedForDay { get; set; }
     }
 }
