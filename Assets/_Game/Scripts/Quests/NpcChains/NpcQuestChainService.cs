@@ -77,9 +77,13 @@ namespace CindarsHope.Quests.NpcChains
                 return false;
             }
 
-            // Min friendship gate applies once the chain has begun (step 2 and 3 — the social investment).
-            if (step.Step >= 2 &&
-                !_friendshipAtLeast(step.NpcId, NpcQuestChainCatalog.ChainProgressFriendshipMin))
+            // Friendship gate. fable_70: a per-step MinFriendshipOverride (from the v1.1 roster's varied
+            // gate columns, e.g. Renko 1/2/4, Maelor 2/3/4) takes precedence and applies at ANY step index;
+            // otherwise the fable_35 default applies (global ChainProgressFriendshipMin from step 2 on).
+            int requiredFriendship = step.MinFriendshipOverride > 0
+                ? step.MinFriendshipOverride
+                : (step.Step >= 2 ? NpcQuestChainCatalog.ChainProgressFriendshipMin : 0);
+            if (requiredFriendship > 0 && !_friendshipAtLeast(step.NpcId, requiredFriendship))
             {
                 return false;
             }

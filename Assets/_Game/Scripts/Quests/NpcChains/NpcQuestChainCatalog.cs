@@ -92,6 +92,25 @@ namespace CindarsHope.Quests.NpcChains
         /// Dormant steps are authored (so nothing is silently cut) but NOT offered until the system exists.
         /// fable_35 v1 has none — every objective mapped to an existing type.</summary>
         public bool Dormant { get; set; }
+
+        /// <summary>
+        /// fable_70 — per-step minimum friendship override (0 = use the chain default rule, i.e. the
+        /// global <see cref="NpcQuestChainCatalog.ChainProgressFriendshipMin"/> applied from step 2 on).
+        /// The wave-2 roster (CITY_NPC_ROSTER_SERVICES_DIRECTION_v1.1) cites varied per-step friendship
+        /// gates (e.g. Renko 1/2/4, Maelor 2/3/4) that the global rule cannot express; when set, this
+        /// value is the friendship the player must have with the NPC to be offered THIS step, regardless
+        /// of step index. Consumed read-only via the injected friendship probe (F26 FriendshipService).
+        /// </summary>
+        public int MinFriendshipOverride { get; set; }
+
+        /// <summary>
+        /// fable_70 — extra narrative flags this step GRANTS on turn-in, beyond the standard done/service
+        /// flags. Used for the Sethra↔Yael rivalry (<c>sq_yael_rival_known</c> on q2, the mediation choice
+        /// <c>sq_yael_rival_choice</c> on q3) and Maelor's <c>sq_maelor_secret</c> (q3) — flags read ONLY by
+        /// dialogue (F28), never revealing the Nyx cult (Act 3 / F36 owns the reveal). Null/empty for the
+        /// wave-1 chains (unchanged).
+        /// </summary>
+        public IReadOnlyList<string> ExtraGrantedFlagIds { get; set; }
     }
 
     /// <summary>
@@ -116,7 +135,15 @@ namespace CindarsHope.Quests.NpcChains
     public static class NpcQuestChainCatalog
     {
         public const int StepsPerChain = 3;
-        public const int ChainCount = 12;
+
+        /// <summary>fable_35 wave-1 chains (12) — kept as a named constant for regression assertions.</summary>
+        public const int Wave1ChainCount = 12;
+
+        /// <summary>fable_70 wave-2 chains (11 remaining roster NPCs).</summary>
+        public const int Wave2ChainCount = 11;
+
+        /// <summary>Total NPC side-quest chains after fable_70 (12 + 11 = 23, one per roster NPC).</summary>
+        public const int ChainCount = Wave1ChainCount + Wave2ChainCount;
 
         /// <summary>Stable "step done" flag set on a quest turn-in; gates the next step. sq_&lt;npc&gt;_&lt;n&gt;_done.</summary>
         public static string DoneFlag(string questId) => questId + "_done";
@@ -126,7 +153,16 @@ namespace CindarsHope.Quests.NpcChains
 
         // ── Cross-act gate flags (read-only; set by the main quest system F36) ───────────────────────
         public const string ActOneDoneFlag = "act_1_done";
+        public const string ActTwoDoneFlag = "act_2_done";
         public const string ActThreeDoneFlag = "act_3_done";
+
+        // ── fable_70 Yael rivalry narrative flags (read ONLY by dialogue F28; never reveal the cult) ──
+        /// <summary>Set on Yael q2 turn-in — the commercial rivalry with Sethra (A Vela Sem Chama) is now known.</summary>
+        public const string YaelRivalKnownFlag = "sq_yael_rival_known";
+        /// <summary>Set on Yael q3 turn-in — the player mediated the rivalry; the chosen side is recorded for dialogue.</summary>
+        public const string YaelRivalChoiceFlag = "sq_yael_rival_choice";
+        /// <summary>Set on Maelor q3 turn-in — the player's reveal/preserve choice, read by late-act dialogue.</summary>
+        public const string MaelorSecretFlag = "sq_maelor_secret";
 
         // ── LocalizationService id helpers (ADR-0012 / fable_73; {domain}.{id}.{slot}) ───────────────
         public static string TitleKey(string questId) => "quest." + questId + ".title";
@@ -134,8 +170,9 @@ namespace CindarsHope.Quests.NpcChains
         public static string OfferKey(string questId) => "quest." + questId + ".offer";
         public static string TurnInKey(string questId) => "quest." + questId + ".turnin";
 
-        // ── The 12 chains (QUEST_CATALOG §9). IDs are canonical — never rename. ───────────────────────
-        private static readonly List<NpcChainStepData> s_steps = new List<NpcChainStepData>
+        // ── fable_35 — the 12 wave-1 chains (QUEST_CATALOG §9). IDs are canonical — NEVER rename or edit
+        //    (regression: NpcChainsTests asserts these are byte-for-byte intact after fable_70). ─────────
+        private static readonly List<NpcChainStepData> s_wave1Steps = new List<NpcChainStepData>
         {
             // Brumdar (forja) — "o ferro lembra". q3 → Têmpera de Essência (F22), gated by Ato 1 (§253).
             Step("npc_brumdar", "sq_brumdar_1", 1, 8,  NpcChainObjectiveKind.Collect, "iron_ore", 10, 40, 40),
@@ -210,13 +247,116 @@ namespace CindarsHope.Quests.NpcChains
                   serviceFlag: "service_unlock_corvus_blessing", requiredAct: ActThreeDoneFlag),
         };
 
+        // ── fable_70 — the 11 wave-2 chains (CITY_NPC_ROSTER_SERVICES_DIRECTION_v1.1; spec §103-227). Same
+        //    grammar: q1 domestic → q2 touches the world → q3 milestone that grants the service flag. IDs
+        //    canonical sq_<npc>_<n>. Per-step friendship gates (col "Gate base") via MinFriendshipOverride.
+        //    Decisions v2 §3.6: Yael q2/q3 carry the Sethra rivalry flags (no cult reveal); Yael q3 gated by
+        //    Act 2 and wired to the EXISTING F25 service "Encomenda de Livro"; Maelor late chain (Act 2 +
+        //    friendship 4). Of the 11, only Yael has a real F25 service today — the other 10 q3 flags are
+        //    RESERVED (dormant service flags, documented in the report) for the wave-2 unique-services pass. ─
+        private static readonly List<NpcChainStepData> s_wave2Steps = new List<NpcChainStepData>
+        {
+            // Mara (cartório) — "civilização é aquilo que pode ser assinado e cobrado". Gate 1/2/3.
+            Step("npc_mara", "sq_mara_1", 1, 6,  NpcChainObjectiveKind.Deliver, "first_build_license_form", 1, 30, 35),
+            Step("npc_mara", "sq_mara_2", 2, 18, NpcChainObjectiveKind.Collect, "torn_registry_page", 3, 70, 90, friendshipMin: 2),
+            Final("npc_mara","sq_mara_3", 3, 35, NpcChainObjectiveKind.Talk,    "npc_mara_license_case", 1, 110, 170,
+                  serviceFlag: "service_unlock_mara_preferred_registry", rewardItem: "merithus_seal", friendshipMin: 3),
+
+            // Nimble (carpintaria) — "medir duas vezes, mover uma". Gate 1/2/3.
+            Step("npc_nimble", "sq_nimble_1", 1, 5,  NpcChainObjectiveKind.Collect, "wood", 10, 25, 25),
+            Step("npc_nimble", "sq_nimble_2", 2, 20, NpcChainObjectiveKind.Collect, "self_repairing_wood_sample", 1, 70, 90, friendshipMin: 2),
+            Final("npc_nimble","sq_nimble_3", 3, 32, NpcChainObjectiveKind.Talk,    "npc_nimble_first_structure_move", 1, 100, 160,
+                  serviceFlag: "service_unlock_nimble_move_discount", rewardItem: "nimble_pocket_level", friendshipMin: 3),
+
+            // Gurd (obra pesada) — "carregar, quebrar ou encarar — nessa ordem". Gate 1/2/3; q3 Ato 1.
+            Step("npc_gurd", "sq_gurd_1", 1, 7,  NpcChainObjectiveKind.Collect, "stone", 8, 30, 35),
+            Step("npc_gurd", "sq_gurd_2", 2, 22, NpcChainObjectiveKind.Reach,   "old_wall_investigation", 1, 75, 95, friendshipMin: 2),
+            Final("npc_gurd","sq_gurd_3", 3, 35, NpcChainObjectiveKind.Talk,    "npc_gurd_tavern_brawl", 1, 110, 170,
+                  serviceFlag: "service_unlock_gurd_heavy_cleanup", rewardItem: "clan_work_glove", requiredAct: ActOneDoneFlag, friendshipMin: 3),
+
+            // Yael (loja noturna) — "o que não existe não deixa recibo". Gate 1/2/3; q3 Ato 2. RIVALIDADE Sethra.
+            Step("npc_yael", "sq_yael_1", 1, 8,  NpcChainObjectiveKind.Talk,    "npc_yael_after_midnight", 1, 35, 40),
+            // q2 collects 3 dark-stone-buyer leads; the trail crosses A Vela Sem Chama and EXPOSES the
+            // COMMERCIAL rivalry (flag sq_yael_rival_known) — never the cult (Act 3 / F36 owns the reveal).
+            Step2Extra("npc_yael", "sq_yael_2", 2, 26, NpcChainObjectiveKind.Collect, "dark_stone_buyer_lead", 3, 80, 100, 2,
+                  extraFlags: new[] { YaelRivalKnownFlag }),
+            // q3 mirrored mediation choice (favor Yael / favor Sethra / mediate) → flag sq_yael_rival_choice;
+            // grants the EXISTING F25 "Encomenda de Livro" service flag. Gated by Act 2.
+            FinalExtra("npc_yael","sq_yael_3", 3, 45, NpcChainObjectiveKind.Talk, "npc_yael_price_of_silence", 1, 150, 230,
+                  serviceFlag: "service_unlock_yael_book_order", rewardItem: "nightmarket_rarity", requiredAct: ActTwoDoneFlag,
+                  friendshipMin: 3, extraFlags: new[] { YaelRivalChoiceFlag }),
+
+            // Pip (entregas) — "atalho é estrada que ainda não cresceu". Gate 1/2/2.
+            Step("npc_pip", "sq_pip_1", 1, 4,  NpcChainObjectiveKind.Deliver, "pip_seed_shop_parcel", 1, 25, 25),
+            Step("npc_pip", "sq_pip_2", 2, 14, NpcChainObjectiveKind.Talk,    "npc_pip_garden_ghost", 1, 55, 70, friendshipMin: 2),
+            Final("npc_pip","sq_pip_3", 3, 25, NpcChainObjectiveKind.Deliver, "wrong_sealed_letter", 1, 90, 140,
+                  serviceFlag: "service_unlock_pip_express_runs", rewardItem: "pip_patched_backpack", friendshipMin: 2),
+
+            // Alaric (guarda) — "patrulha, lâmina e responsabilidade". Gate 1/2/3; q3 Ato 1.
+            Step("npc_alaric", "sq_alaric_1", 1, 8,  NpcChainObjectiveKind.Defeat, "band_low_road_creature", 6, 35, 40),
+            Step("npc_alaric", "sq_alaric_2", 2, 24, NpcChainObjectiveKind.Talk,   "npc_alaric_incident_report", 1, 85, 105, friendshipMin: 2),
+            Final("npc_alaric","sq_alaric_3", 3, 40, NpcChainObjectiveKind.Defeat, "band_2_miniboss", 1, 130, 200,
+                  serviceFlag: "service_unlock_alaric_extended_patrol", rewardItem: "patrol_shield", requiredAct: ActOneDoneFlag, friendshipMin: 3),
+
+            // Renko (loja geral) — "preço fixo é uma ofensa criativa". Gate 1/2/4.
+            Step("npc_renko", "sq_renko_1", 1, 6,  NpcChainObjectiveKind.Deliver, "renko_late_order", 3, 30, 35),
+            Step("npc_renko", "sq_renko_2", 2, 20, NpcChainObjectiveKind.Talk,    "npc_renko_ownerless_goods", 1, 70, 90, friendshipMin: 2),
+            Final("npc_renko","sq_renko_3", 3, 38, NpcChainObjectiveKind.Talk,    "npc_renko_three_smiles", 1, 120, 180,
+                  serviceFlag: "service_unlock_renko_rotating_rare_stock", rewardItem: "renko_rare_stock_item", friendshipMin: 4),
+
+            // Liora (música/sonhos) — "algumas canções lembram por nós". Gate 1/2/3; q3 Ato 1.
+            Step("npc_liora", "sq_liora_1", 1, 7,  NpcChainObjectiveKind.Talk,  "npc_liora_song_no_author", 3, 30, 35),
+            Step("npc_liora", "sq_liora_2", 2, 25, NpcChainObjectiveKind.Reach, "statue_garden_night", 1, 80, 100, friendshipMin: 2),
+            Final("npc_liora","sq_liora_3", 3, 42, NpcChainObjectiveKind.Reach, "cave_band_2_dream_echo", 1, 135, 210,
+                  serviceFlag: "service_unlock_liora_rest_song", rewardItem: "alihana_score", requiredAct: ActOneDoneFlag, friendshipMin: 3),
+
+            // Orlan (hospedaria) — "toda chave conta de onde veio". Gate 1/2/3.
+            Step("npc_orlan", "sq_orlan_1", 1, 5,  NpcChainObjectiveKind.Collect, "traveler_supplies", 5, 25, 25),
+            Step("npc_orlan", "sq_orlan_2", 2, 16, NpcChainObjectiveKind.Reach,   "shadowless_guest_investigation", 1, 60, 75, friendshipMin: 2),
+            Final("npc_orlan","sq_orlan_3", 3, 30, NpcChainObjectiveKind.Talk,    "npc_orlan_open_account", 1, 100, 160,
+                  serviceFlag: "service_unlock_orlan_reserved_room", rewardItem: "reserved_room_key", friendshipMin: 3),
+
+            // Savra (ervas/antídotos) — "veneno é só uma planta mal compreendida". Gate 1/2/3.
+            Step("npc_savra", "sq_savra_1", 1, 6,  NpcChainObjectiveKind.Collect, "trail_herb", 6, 30, 35),
+            Step("npc_savra", "sq_savra_2", 2, 22, NpcChainObjectiveKind.Defeat,  "band_night_pest", 5, 75, 95, friendshipMin: 2),
+            Final("npc_savra","sq_savra_3", 3, 38, NpcChainObjectiveKind.Collect, "cave_underfungus", 3, 120, 180,
+                  serviceFlag: "service_unlock_savra_antidote_bench", rewardItem: "greenscale_vial", friendshipMin: 3),
+
+            // Maelor (Nyx/memória) — "a cidade esqueceu de propósito". Cadeia tardia: gate 2/3/4; q2+ Ato 2.
+            Step("npc_maelor", "sq_maelor_1", 1, 20, NpcChainObjectiveKind.Talk, "npc_maelor_steps_no_light", 1, 70, 90, friendshipMin: 2),
+            Step("npc_maelor", "sq_maelor_2", 2, 35, NpcChainObjectiveKind.Collect, "erased_record", 1, 110, 140, friendshipMin: 3, requiredAct: ActTwoDoneFlag),
+            FinalExtra("npc_maelor","sq_maelor_3", 3, 55, NpcChainObjectiveKind.Talk, "npc_maelor_silence_protects", 1, 170, 260,
+                  serviceFlag: "service_unlock_maelor_night_guide", rewardItem: "luandil_lens", requiredAct: ActTwoDoneFlag,
+                  friendshipMin: 4, extraFlags: new[] { MaelorSecretFlag }),
+        };
+
+        // The full catalog = wave-1 (intact) + wave-2 (appended). Built once, order preserved.
+        private static readonly List<NpcChainStepData> s_steps = BuildAllSteps();
+
+        private static List<NpcChainStepData> BuildAllSteps()
+        {
+            var all = new List<NpcChainStepData>(s_wave1Steps.Count + s_wave2Steps.Count);
+            all.AddRange(s_wave1Steps);
+            all.AddRange(s_wave2Steps);
+            return all;
+        }
+
         public static IReadOnlyList<NpcChainStepData> AllSteps => s_steps;
 
-        /// <summary>The 12 owning NPC ids in catalog order (one chain each).</summary>
+        /// <summary>The 12 wave-1 chains (fable_35) — exposed for the regression test that asserts they are intact.</summary>
+        public static IReadOnlyList<NpcChainStepData> Wave1Steps => s_wave1Steps;
+
+        /// <summary>The 11 wave-2 chains (fable_70).</summary>
+        public static IReadOnlyList<NpcChainStepData> Wave2Steps => s_wave2Steps;
+
+        /// <summary>The 23 owning NPC ids in catalog order (one chain each): 12 wave-1 + 11 wave-2.</summary>
         public static readonly IReadOnlyList<string> ChainNpcIds = new[]
         {
             "npc_brumdar", "npc_ozzra", "npc_thalindra", "npc_sylveth", "npc_eiran", "npc_gruta",
-            "npc_dagna", "npc_zrix", "npc_hund", "npc_mirela", "npc_tovin", "npc_corvus"
+            "npc_dagna", "npc_zrix", "npc_hund", "npc_mirela", "npc_tovin", "npc_corvus",
+            // fable_70 wave-2
+            "npc_mara", "npc_nimble", "npc_gurd", "npc_yael", "npc_pip", "npc_alaric",
+            "npc_renko", "npc_liora", "npc_orlan", "npc_savra", "npc_maelor"
         };
 
         /// <summary>All steps of an NPC's chain, ordered by step index (1..3). Empty when the NPC has none.</summary>
@@ -324,6 +464,23 @@ namespace CindarsHope.Quests.NpcChains
                 });
             }
 
+            // fable_70 — extra narrative flags (Yael rivalry, Maelor secret). Read only by dialogue (F28);
+            // granted idempotently by the same QuestFlagGrant path — no second flag registry.
+            if (step.ExtraGrantedFlagIds != null)
+            {
+                foreach (var flagId in step.ExtraGrantedFlagIds)
+                {
+                    if (string.IsNullOrEmpty(flagId)) continue;
+                    extras.Add(new QuestRewardDefinition
+                    {
+                        RewardId = "reward_" + step.QuestId + "_flag_" + flagId,
+                        RewardType = QuestRewardType.QuestFlagGrant,
+                        GrantedFlagId = flagId,
+                        IdempotencyPolicy = RewardIdempotencyPolicy.TrackByFlagId
+                    });
+                }
+            }
+
             return new QuestInstance
             {
                 QuestId = step.QuestId,
@@ -340,25 +497,58 @@ namespace CindarsHope.Quests.NpcChains
         }
 
         // ── Builders ─────────────────────────────────────────────────────────────────────────────────
+        // fable_35: Step/Final. fable_70 adds optional friendshipMin (per-step gate from the v1.1 roster),
+        // requiredAct on non-final steps (Maelor q2 → Act 2), rewardItem on Final, and the *Extra builders
+        // for steps that carry narrative flags (Yael rivalry, Maelor secret).
         private static NpcChainStepData Step(string npcId, string questId, int step, int level,
-            NpcChainObjectiveKind kind, string target, int qty, int baseGold, int baseXp)
-        {
-            return new NpcChainStepData
-            {
-                NpcId = npcId, QuestId = questId, Step = step, ReferenceLevel = level,
-                ObjectiveKind = kind, TargetId = target, Quantity = qty, BaseGold = baseGold, BaseXp = baseXp
-            };
-        }
-
-        private static NpcChainStepData Final(string npcId, string questId, int step, int level,
             NpcChainObjectiveKind kind, string target, int qty, int baseGold, int baseXp,
-            string serviceFlag, string requiredAct = null)
+            int friendshipMin = 0, string requiredAct = null)
         {
             return new NpcChainStepData
             {
                 NpcId = npcId, QuestId = questId, Step = step, ReferenceLevel = level,
                 ObjectiveKind = kind, TargetId = target, Quantity = qty, BaseGold = baseGold, BaseXp = baseXp,
-                ServiceUnlockFlagId = serviceFlag, RequiredActFlagId = requiredAct
+                MinFriendshipOverride = friendshipMin, RequiredActFlagId = requiredAct
+            };
+        }
+
+        // fable_70 — a non-final step that also grants narrative flags (Yael q2 → sq_yael_rival_known).
+        private static NpcChainStepData Step2Extra(string npcId, string questId, int step, int level,
+            NpcChainObjectiveKind kind, string target, int qty, int baseGold, int baseXp,
+            int friendshipMin, string[] extraFlags, string requiredAct = null)
+        {
+            return new NpcChainStepData
+            {
+                NpcId = npcId, QuestId = questId, Step = step, ReferenceLevel = level,
+                ObjectiveKind = kind, TargetId = target, Quantity = qty, BaseGold = baseGold, BaseXp = baseXp,
+                MinFriendshipOverride = friendshipMin, RequiredActFlagId = requiredAct, ExtraGrantedFlagIds = extraFlags
+            };
+        }
+
+        private static NpcChainStepData Final(string npcId, string questId, int step, int level,
+            NpcChainObjectiveKind kind, string target, int qty, int baseGold, int baseXp,
+            string serviceFlag, string requiredAct = null, string rewardItem = null, int friendshipMin = 0)
+        {
+            return new NpcChainStepData
+            {
+                NpcId = npcId, QuestId = questId, Step = step, ReferenceLevel = level,
+                ObjectiveKind = kind, TargetId = target, Quantity = qty, BaseGold = baseGold, BaseXp = baseXp,
+                ServiceUnlockFlagId = serviceFlag, RequiredActFlagId = requiredAct,
+                RewardItemId = rewardItem, MinFriendshipOverride = friendshipMin
+            };
+        }
+
+        // fable_70 — a final step that also grants narrative flags (Yael q3 → sq_yael_rival_choice; Maelor q3 → sq_maelor_secret).
+        private static NpcChainStepData FinalExtra(string npcId, string questId, int step, int level,
+            NpcChainObjectiveKind kind, string target, int qty, int baseGold, int baseXp,
+            string serviceFlag, string[] extraFlags, string requiredAct = null, string rewardItem = null, int friendshipMin = 0)
+        {
+            return new NpcChainStepData
+            {
+                NpcId = npcId, QuestId = questId, Step = step, ReferenceLevel = level,
+                ObjectiveKind = kind, TargetId = target, Quantity = qty, BaseGold = baseGold, BaseXp = baseXp,
+                ServiceUnlockFlagId = serviceFlag, RequiredActFlagId = requiredAct,
+                RewardItemId = rewardItem, MinFriendshipOverride = friendshipMin, ExtraGrantedFlagIds = extraFlags
             };
         }
     }
