@@ -52,6 +52,7 @@ namespace CindarsHope.Audio
             var go = new GameObject("SfxEventBridge");
             DontDestroyOnLoad(go);
             go.AddComponent<SfxEventBridge>();
+            Debug.Log("[Music] SfxEventBridge instanciado (driver de musica por cena/combate).");
         }
 
         private void Awake()
@@ -133,6 +134,7 @@ namespace CindarsHope.Audio
             else if (sceneName.Contains("Cave")) ambient = MusicState.Caverna;
             else return; // cena não-gameplay (bootstrap/persistente): mantém o ambiente atual
 
+            Debug.Log($"[Music] Cena ativa='{sceneName}' -> ambiente={ambient}.");
             _musicResolver.SetSceneAmbient(ambient);
             PushMusicStateIfChanged();
         }
@@ -276,6 +278,7 @@ namespace CindarsHope.Audio
 
             // Único evento próprio (EMENDA V3). Nenhum gameplay assina; o crossfade
             // nasce SOMENTE desta transição.
+            Debug.Log($"[Music] PlayMusic({next}) (antes={previous}, cena={_lastSceneName}).");
             GameEventBus.Publish(new MusicStateChangedEvent(previous, next));
             manager.PlayMusic(next);
         }
