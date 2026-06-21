@@ -19,6 +19,12 @@ namespace CindarsHope.Audio
         private readonly Dictionary<SfxCategory, AudioClip> _sfxCache = new Dictionary<SfxCategory, AudioClip>();
         private readonly Dictionary<MusicState, AudioClip> _musicCache = new Dictionary<MusicState, AudioClip>();
 
+        // Guard one-shot ESTÁTICO: AudioClip.Create pode falhar em ambientes sem
+        // suporte de áudio (CI/headless). BuildClip roda 1× por categoria (cacheado),
+        // então sem este guard o boot logaria N warnings (1 por categoria). Estático
+        // garante NO MÁXIMO 1 log no processo inteiro. Nunca reseta.
+        private static bool s_clipCreateFailureLogged;
+
         /// <summary>Gera (1×) e cacheia todos os clipes de SFX e de música placeholder.</summary>
         public void GenerateAll()
         {
@@ -87,7 +93,15 @@ namespace CindarsHope.Audio
             catch (Exception exception)
             {
                 // Fallback silencioso: nunca quebrar boot por causa de placeholder.
-                Debug.LogWarning($"[Audio] ProceduralSfxFactory: falha ao criar clipe '{name}'. Categoria ficará em silêncio. {exception.Message}");
+                // Loga NO MÁXIMO 1× no processo inteiro (guard estático) para não
+                // inundar o Console com 1 warning por categoria que falhar.
+                if (!s_clipCreateFailureLogged)
+                {
+                    s_clipCreateFailureLogged = true;
+                    Debug.LogWarning(
+                        $"[Audio] AudioClip.Create indisponivel neste ambiente; SFX em silencio. (logado 1x) {exception.Message}");
+                }
+
                 return null;
             }
         }
