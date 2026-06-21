@@ -113,6 +113,12 @@ Use `.claude/skills/<name>/SKILL.md` when task matches:
 | `state-machine-design` | Designing an FSM (player/enemy/boss/UI flow) when boolean flags start conflicting |
 | `ability-effect-composition` | Designing how abilities/spells/status effects compose from reusable effects |
 | `monobehaviour-decomposition` | Splitting a god-MonoBehaviour into thin adapter + pure-C# core |
+| `audio-event-wiring` | Wiring SFX/music via GameEventBus (SfxEventBridge/SfxEventMap); any spec needing sound feedback |
+| `localization-authoring` | Player-facing text via string key (LocalizationStringTable/LocalizationService); new dialogue/UI/quest text |
+| `crafting-recipe-authoring` | Adding recipes, unlock/gate, processing jobs, save of in-progress jobs (Craft/ vs Crafting/ alert) |
+| `skill-tree-authoring` | Skill tree nodes, purchase/respec, active slot wiring, skill save/load |
+| `player-needs-survival` | Stamina/hunger/fatigue consumption, regen, thresholds, sleep, eat, save of needs |
+| `input-gamepad-routing` | Input focus routing (modal guard), new key bindings, gamepad path (future) |
 
 ---
 

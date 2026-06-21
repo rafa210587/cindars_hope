@@ -54,7 +54,7 @@
 | `.claude/rules/` | 16 rules active — SPEC_DOCS_38/39 (incl. decision-and-game-rule-policy, legacy-doc-paths-forbidden) |
 | `.claude/settings.json` | Updated with canonical paths and new hooks — SPEC_DOCS_39D |
 | `.claude/commands/` | 11 commands (8 updated, 3 created) — SPEC_CLAUDE_31 |
-| `.claude/skills/` | 15 skills (incl. decision-rule-extraction) — SPEC_DOCS_39B/39E |
+| `.claude/skills/` | 48 skills (incl. audio-event-wiring, localization-authoring, crafting-recipe-authoring, skill-tree-authoring, player-needs-survival, input-gamepad-routing) — SPEC_DOCS_39B/39E + harness PT-BR wave 2026-06-20 |
 | `.claude/agents/` | 7 agents (2 updated, 2 created) — SPEC_CLAUDE_31 |
 | `.claude/hooks/` | 14 hooks (incl. decision-rule-reference-guard) — SPEC_DOCS_39B/39D |
 | Decision Records | 9 ADRs (ADR-0001 to ADR-0009) — SPEC_DOCS_38 |
