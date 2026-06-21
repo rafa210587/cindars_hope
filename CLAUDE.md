@@ -81,6 +81,7 @@ unrelated validation reports
 | `/loop-spec-batch-strict` | Batch execution loop (use fable/ queue) |
 | `/resolve-spec-dependency-chain` | Resolve same-batch spec dependencies |
 | `/validate-unity` | Unity compile/log validation only |
+| `/audit-harness` | Audita o harness (.claude/) — skills/agents ausentes do índice, refs obsoletas, tamanho, qualidade |
 
 ---
 
@@ -147,6 +148,8 @@ Use `.claude/skills/<name>/SKILL.md` when task matches:
 | `observability-and-logging` | Logging diagnóstico em runtime — one-shot guards p/ log spam, formato de wiring-error, prefixo por sistema, debug overlay; ao adicionar log de erro/aviso ou investigar log repetido |
 | `editor-tooling-orchestration` | Orquestrador 1-clique de geradores/cenas (best-effort, log por passo) + higiene de menu CindarsHope/Archive; ao adicionar MenuItem ou consolidar setup multi-passo |
 | `boot-integration-smoke` | Verificação estática/EditMode do boot-wiring (GameBootstrap, *RuntimeBootstrap, subscribers) antes de depender de Play Mode; specs runtime que fechariam só em "Play Mode deferred" |
+| `harness-authoring` | Criar nova skill, rule, agent, command ou hook — templates, gates de qualidade e checklist por tipo |
+| `harness-audit` | Auditar artefatos do harness após waves grandes ou quando skill/agent parece não estar disparando |
 
 ---
 
@@ -196,6 +199,10 @@ See `.claude/rules/RULES.md` for full list. Key non-negotiables:
 - No MVP/Play Mode PASS claim without evidence
 - Runtime/code changes require automated tests, Play Mode scenario, or documented Testing Quality Gate justification
 - Commits in Portuguese
+
+---
+
+*Updated: 2026-06-21 (harness-authoring + harness-audit skills; /audit-harness command)*
 
 ---
 
