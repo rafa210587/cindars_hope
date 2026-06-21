@@ -15,10 +15,13 @@ namespace CindarsHope.Core.Events
     /// pre-existing floating damage numbers — never created here, only suppressed) and RESTORE them
     /// otherwise.
     ///
-    /// EMENDA V3: this contract is the one fable_71 ("combat feel pass") will also provide. F43 is a
-    /// CONSUMER. Until fable_71 lands, F43 owns the canonical definition so the endgame can publish
-    /// it. Phase 0 = empty <see cref="HiddenWidgets"/> = HUD fully visible = the guaranteed
-    /// restoration state, which MUST be published on victory / death / exit.
+    /// EMENDA V3: fable_71 ("combat feel pass") is now the CANONICAL owner of this contract; F43 stays
+    /// a CONSUMER. The struct lives here (Core/Events) so both F43 and the fable_71 publisher
+    /// (<c>CindarsHope.Combat.Feel.HudSuppressionBroadcaster</c>) share ONE definition — there is no
+    /// second HudSuppressionChangedEvent anywhere in the codebase. The signature is unchanged
+    /// (int Phase, IReadOnlyList&lt;string&gt; HiddenWidgets) so F43 keeps compiling. Phase 0 = empty
+    /// <see cref="HiddenWidgets"/> = HUD fully visible = the guaranteed restoration state, which MUST
+    /// be published on victory / death / exit (and on the broadcaster's enable/disable).
     /// </summary>
     public readonly struct HudSuppressionChangedEvent
     {
