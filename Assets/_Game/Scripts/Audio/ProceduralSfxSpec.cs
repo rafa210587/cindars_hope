@@ -115,21 +115,30 @@ namespace CindarsHope.Audio
         }
 
         /// <summary>
-        /// Spec placeholder de "faixa" (drone) por estado de música. Calmo suave,
-        /// Combate tenso, Boss mais grave/denso, Festival alegre. Loop curto no v1.
+        /// Spec placeholder de "faixa" por estado de música — pensada como FUNDO SUAVE.
+        /// Sempre <see cref="WaveShape.Sine"/> (onda mais macia, sem aspereza de
+        /// square/triangle), amplitude baixa (fica embaixo dos SFX) e loops LONGOS com
+        /// poucas notas, formando um arpejo lento e consonante em vez de um beep repetindo.
+        /// Calmo: grave/sereno; Combate: leve movimento; Boss: bem grave e lento; Festival:
+        /// claro mas gentil. O envelope por nota (ataque curto + decay longo) faz cada nota
+        /// "respirar", soando ambiente — não um tom contínuo.
         /// </summary>
         public static ProceduralSfxSpec ForMusic(MusicState state)
         {
             switch (state)
             {
+                // calmo = pad sereno em registro grave, arpejo lento de 4 notas
                 case MusicState.Calmo:
-                    return new ProceduralSfxSpec(196f, 196f, 1.0f, WaveShape.Sine, 0.25f, 1);
+                    return new ProceduralSfxSpec(220f, 220f, 6.0f, WaveShape.Sine, 0.13f, 4);
+                // combate = leve subida/movimento, ainda macio (sem triangle)
                 case MusicState.Combate:
-                    return new ProceduralSfxSpec(146f, 220f, 1.0f, WaveShape.Triangle, 0.32f, 2);
+                    return new ProceduralSfxSpec(196f, 247f, 4.0f, WaveShape.Sine, 0.16f, 4);
+                // boss = muito grave e lento, ominoso mas SEM square (sem zumbido)
                 case MusicState.Boss:
-                    return new ProceduralSfxSpec(98f, 130f, 1.0f, WaveShape.Square, 0.34f, 2);
+                    return new ProceduralSfxSpec(110f, 110f, 8.0f, WaveShape.Sine, 0.15f, 3);
+                // festival = arpejo claro e gentil de 5 notas
                 case MusicState.Festival:
-                    return new ProceduralSfxSpec(330f, 494f, 1.0f, WaveShape.Sine, 0.3f, 3);
+                    return new ProceduralSfxSpec(294f, 392f, 4.5f, WaveShape.Sine, 0.14f, 5);
                 default:
                     return default;
             }
