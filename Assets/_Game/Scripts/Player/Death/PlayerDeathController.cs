@@ -1,3 +1,4 @@
+using CindarsHope.Combat;
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
 using UnityEngine;
@@ -20,6 +21,10 @@ namespace CindarsHope.Player.Death
     public class PlayerDeathController : MonoBehaviour
     {
         private static PlayerDeathController _instance;
+
+        // Graça de spawn concedida ao (re)entrar numa cena ou reviver — evita morte instantanea por
+        // dano de contato ao spawnar colado num inimigo (bug caverna->fazenda->caverna). Tecnico fixo.
+        private const float SpawnGraceSeconds = 1.5f;
 
         // Opcional: se ja estiver setado por uma cena, ok; mas nao dependemos dele —
         // o HP autoritativo vem do proprio HPChangedEvent.
@@ -56,11 +61,31 @@ namespace CindarsHope.Player.Death
         private void OnEnable()
         {
             GameEventBus.Subscribe<HPChangedEvent>(OnHPChanged);
+            GameEventBus.Subscribe<PlayerRespawnedEvent>(OnPlayerRespawned);
+            SceneManager.sceneLoaded += OnSceneLoaded;
+            // O player ja esta nesta cena no primeiro enable; concede graça inicial.
+            PlayerDamageReceiver.GrantSpawnGrace(SpawnGraceSeconds);
         }
 
         private void OnDisable()
         {
             GameEventBus.Unsubscribe<HPChangedEvent>(OnHPChanged);
+            GameEventBus.Unsubscribe<PlayerRespawnedEvent>(OnPlayerRespawned);
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+        }
+
+        // Ao (re)entrar numa cena, o player e reposicionado no anchor; conceder graça impede que um
+        // inimigo restaurado do snapshot encostado no spawn mate o player antes de ele reagir.
+        private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+        {
+            PlayerDamageReceiver.GrantSpawnGrace(SpawnGraceSeconds);
+        }
+
+        // Reviver (Lagrima da Deusa no lugar, ou respawn na Fonte) tambem ganha graça — o player pode
+        // reviver perto do inimigo que o matou.
+        private void OnPlayerRespawned(PlayerRespawnedEvent evt)
+        {
+            PlayerDamageReceiver.GrantSpawnGrace(SpawnGraceSeconds);
         }
 
         private void OnHPChanged(HPChangedEvent evt)

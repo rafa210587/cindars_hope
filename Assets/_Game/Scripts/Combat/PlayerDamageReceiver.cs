@@ -20,6 +20,25 @@ namespace CindarsHope.Combat
         /// <summary>F18: fonte de resistência por tipo de dano (setada pelo PlayerVitalsApplier).</summary>
         public static System.Func<DamageType, int> ResistanceSource;
 
+        // Graça de spawn: janela curta de invulnerabilidade logo após (re)entrar numa cena ou reviver.
+        // Sem ela o player pode spawnar colado num inimigo restaurado do snapshot da caverna e morrer
+        // de dano de contato antes de reagir (bug reportado: caverna->fazenda->caverna virava tela de
+        // morte). Armada pelo PlayerDeathController em sceneLoaded e PlayerRespawnedEvent.
+        private static float s_spawnGraceUntil;
+
+        /// <summary>Concede invulnerabilidade por <paramref name="seconds"/> a partir de agora.</summary>
+        public static void GrantSpawnGrace(float seconds)
+        {
+            var until = Time.time + Mathf.Max(0f, seconds);
+            if (until > s_spawnGraceUntil)
+            {
+                s_spawnGraceUntil = until;
+            }
+        }
+
+        /// <summary>True enquanto a graça de spawn estiver ativa (todo dano recebido é ignorado).</summary>
+        public static bool IsInSpawnGrace => Time.time < s_spawnGraceUntil;
+
         /// <summary>Fórmula central documentada: final = max(1, raw − Defense − resistência do tipo).</summary>
         public static int CalculateReducedDamage(int rawDamage, int defense, int resistance = 0)
         {
@@ -36,6 +55,14 @@ namespace CindarsHope.Combat
         {
             if (playerManager == null || rawDamage <= 0)
             {
+                return 0;
+            }
+
+            // Graça de spawn: ignora TODO dano por uma janela curta logo após (re)entrar numa cena ou
+            // reviver — evita morrer instantaneamente por dano de contato ao spawnar colado num inimigo.
+            if (IsInSpawnGrace)
+            {
+                CombatLog.Log($"CombatLog: PlayerDamageIgnoredSpawnGrace. Source={sourceId}, Raw={rawDamage}");
                 return 0;
             }
 
