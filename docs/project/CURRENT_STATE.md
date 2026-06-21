@@ -14,7 +14,7 @@
 | MVP build-validated (C#) | ✓ YES — 0E/0W runtime + editor |
 | Legacy docs validation | ✓ YES — 25+ checks (SPEC_DOCS_37) |
 | Specs validation (docs) | ✓ PASS — `validate_docs.ps1` exit 0; fonte canônica em `.specs/` (ADR-0015) |
-| Spec set v1 (FABLE) | ✓ GERADO — 73 specs funcionais: 10 BUILD_VALIDATED (E01-E10) + 63 a executar (E11-E73); +4 companion densas WAVE 14 |
+| Spec set v1 (FABLE) | ✓ IMPLEMENTADO — 73 specs implementadas/commitadas na branch dev (validacao Play Mode 2026-06-21); +4 companion densas WAVE 14; 3 novas a executar: fable_74/75/76 |
 | Refinamentos v1/v2/v3 | ✓ RESPONDIDOS — restam só decisões de calibragem em aberto (defaults registrados; ver abaixo) |
 | Legacy spec cleanup | ✓ YES — 7 specs absorbed (2026-06-07) |
 | MVP Phase 2-3 (Unity/Play Mode) | ✗ DEFERRED TO FINAL ACCEPTANCE | Not required for WAVE 02 implementation start |
@@ -391,5 +391,5 @@ PROJECT_LOG + CURRENT_STATE conflict → prefer CURRENT_STATE; report mismatch
     ItemPriceResolver unificando os dois caminhos de preco (Shipping vs NpcShop),
     validator de range em 25 ShopDataSO; fecha Open Question de economy_rules.md;
     depends fable_32; blocks fable_42/51.
-- PLACAR atualizado: 76 specs funcionais (10 executadas, 66 a executar E11-E76) + 9 retro.
+- PLACAR atualizado: 76 specs funcionais (73 executadas/implementadas na branch dev + 3 novas a executar: fable_74, fable_75, fable_76) + 9 retro.
 - validate_docs exit 0; nenhum codigo alterado; so spec files criados.
