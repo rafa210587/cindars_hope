@@ -14,7 +14,7 @@
 | MVP build-validated (C#) | ✓ YES — 0E/0W runtime + editor |
 | Legacy docs validation | ✓ YES — 25+ checks (SPEC_DOCS_37) |
 | Specs validation (docs) | ✓ PASS — `validate_docs.ps1` exit 0; fonte canônica em `.specs/` (ADR-0015) |
-| Spec set v1 (FABLE) | ✓ IMPLEMENTADO — 73 specs implementadas/commitadas na branch dev (validacao Play Mode 2026-06-21); +4 companion densas WAVE 14; 3 novas a executar: fable_74/75/76 |
+| Spec set v1 (FABLE) | ✓ IMPLEMENTADO — 77 specs implementadas/commitadas na branch dev (Batch 12 concluido 2026-06-21: fable_74/75/76/77); +4 companion densas WAVE 14 (features_futuras) |
 | Refinamentos v1/v2/v3 | ✓ RESPONDIDOS — restam só decisões de calibragem em aberto (defaults registrados; ver abaixo) |
 | Legacy spec cleanup | ✓ YES — 7 specs absorbed (2026-06-07) |
 | MVP Phase 2-3 (Unity/Play Mode) | ✗ DEFERRED TO FINAL ACCEPTANCE | Not required for WAVE 02 implementation start |
@@ -376,21 +376,16 @@ PROJECT_LOG + CURRENT_STATE conflict → prefer CURRENT_STATE; report mismatch
 - LATENTE adicional (economy): dois caminhos de economia vivos no código (SellAll por BaseValue
   cheio vs Economy/Pricing services) — registrado em economy_rules.md como Open Question para spec
   de convergência. Não bloqueia.
-## 2026-06-21 — SPECS_FABLE_74_75_76_GERADAS (Batch 12 — farm/combat/trade testáveis)
+## 2026-06-21 — SPECS_FABLE_74_75_76_77_EXECUTADAS (Batch 12 — farm/combat/trade testáveis)
 
 - Varredura de TODOs e pontos de atenção no código → 10 itens priorizados; 3 items ja cobertos
   por specs existentes (fable_66: kit inicial + Tree/Rock; fable_52: Goblin Visitor).
-- Geradas 3 specs novas para habilitar testes de farm, combat e trade em Play Mode:
-  - fable_74: EnemyBrain blink runtime + death-trigger hook (SPEC 13D) — combat domain;
-    ativa teleporte de mirror_adept/oathless_shade e death-pop do ember_tick; EditMode tests
-    de hash deterministico + idempotencia de death-trigger; depends fable_04/01/06.
-  - fable_75: FeedbackOnlySkillEffectExecutor → 14 executores reais (melee/magic/survival/crafting)
-    + stamina deduction em FarmCropSkillEffectExecutor — farm+combat domain;
-    fonte: SKILL_NUMERIC_ADDENDUM_v1.0; depends fable_01/02/03/18; blocks fable_42/29.
-  - fable_76: Economy balance pass canonical — EconomyBalanceConfigSO com gold/hora por fonte,
-    ItemPriceResolver unificando os dois caminhos de preco (Shipping vs NpcShop),
-    validator de range em 25 ShopDataSO; fecha Open Question de economy_rules.md;
-    depends fable_32; blocks fable_42/51.
-- PLACAR atualizado: 77 specs funcionais (73 executadas/implementadas na branch dev + 4 novas a executar: fable_74, fable_75, fable_76, fable_77) + 9 retro.
-- fable_77: SceneFadeOverlay — overlay preto DontDestroyOnLoad; fade-in em SceneTransitionStartedEvent; fade-out em SceneTransitionCompletedEvent; fecha FADE_LOADING_DEFERRED_WITH_REASON.
-- validate_docs exit 0; nenhum codigo alterado; so spec files criados.
+- Batch 12 CONCLUIDO — 4 specs BUILD_VALIDATED e commitadas:
+  - fable_77 (BUILD_VALIDATED): SceneFadeOverlay — overlay DontDestroyOnLoad; fade via GameEventBus; commit 3a188c66.
+  - fable_76 (BUILD_VALIDATED): Economy balance pass — EconomyBalanceConfigSO + ItemPriceResolver unificado + validator 25 ShopDataSO; fecha Open Question economy_rules.md; commit f1f8f49c.
+  - fable_75 (BUILD_VALIDATED_WITH_WARNINGS): FarmCropSkillEffectExecutor TrySpendStamina(10) wired; 9/14 nodes WI-11 já tinham executor real; 5 dormant documentados; 3 EditMode tests; commit 61f0a481.
+  - fable_74 (BUILD_VALIDATED_WITH_WARNINGS): EnemyBrain blink-strike (EnemyBlinkExecutor deterministico) + death-trigger (cave-only, once-per-life); CreateEnemyActionsAndSets atualizado (BlinkStrike/IsDeathtrigger); validator expandido (checks 12-14); 6 EditMode tests; commit 9cbf7e6d.
+- PLACAR: 77 specs funcionais — todas executadas/implementadas na branch dev.
+- validate_docs exit 0; Assembly-CSharp 0E; Assembly-CSharp-Editor 0E.
+- Pendência humana acumulada (PlayMode): regenerar assets (3 actions afetadas), executar
+  CindarsHope > SPEC 13 > Create Enemy Actions and Sets; Play Mode checklists fable_74/75/76/77.
