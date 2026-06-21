@@ -164,13 +164,23 @@ namespace CindarsHope.Cave.Runtime
             GameEventBus.Publish(new PlayerActionFeedbackEvent("Um mercador errante montou banca neste andar..."));
             Debug.Log($"[CaveWanderingMerchant] Spawned on level {level.CaveLevel} at grid ({tile.x},{tile.y}). Offers: {OfferCatalog[firstIndex].ItemId} + {OfferCatalog[secondIndex].ItemId}.");
 
-            // fable_34 — deterministic 15% chance to also surface a cave-secret quest through the
-            // single SecretQuestOffer API. The scq_* content is authored by fable_52; until then the
-            // offer reveals the channel (the secret becomes visible in the Quest Log Secrets tab).
+            // fable_34/fable_52 — deterministic 15% chance to also surface a cave-secret quest through
+            // the single SecretQuestOffer API. fable_52 authored the content: the merchant offers the 3
+            // canonical merchant lists (scq_merchant_list_1/2/3) in a fixed sequence, each 1x per run,
+            // stable per seed. The SecretQuestService owns the sequencing; until it is wired, fall back
+            // to opening the channel for list 1 so the Secrets tab still surfaces.
             if (ShouldOfferSecretQuest(worldSeed, runSeed, level.CaveLevel))
             {
-                var secretQuestId = $"scq_wandering_merchant_l{level.CaveLevel}";
-                CindarsHope.Quests.Runtime.QuestRuntimeBootstrap.QuestService?.OfferSecretQuest(secretQuestId);
+                var secretService = CindarsHope.Quests.Runtime.QuestRuntimeBootstrap.SecretQuestService;
+                if (secretService != null)
+                {
+                    secretService.OfferNextMerchantList(runSeed, level.CaveLevel);
+                }
+                else
+                {
+                    CindarsHope.Quests.Runtime.QuestRuntimeBootstrap.QuestService?.OfferSecretQuest(
+                        CindarsHope.Quests.SecretQuests.SecretQuestCatalog.MerchantList1Id);
+                }
             }
         }
 

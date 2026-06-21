@@ -248,6 +248,21 @@ namespace CindarsHope.Quests.Runtime
             _caveContractService.OfferMilestones();
             CaveContractService = _caveContractService;
 
+            // fable_52 — cave secret quests (the 8 scq_*) + their world effects. Registers the
+            // world-effect flags into the EXISTING flag registry, rides the SAME quest flow (offer via
+            // OfferSecretQuest + AcceptDynamicInstance), and rehydrates permanent flags after load.
+            CindarsHope.Quests.SecretQuests.SecretQuestFlagRegistration.RegisterAll(flagRegistry);
+            var secretWorldEffects = new CindarsHope.Quests.SecretQuests.SecretQuestWorldEffects(flagService, flagRegistry);
+            _secretQuestService = new CindarsHope.Quests.SecretQuests.SecretQuestService(
+                QuestService,
+                secretWorldEffects,
+                playerLevelProvider: () => _progressionManager != null ? _progressionManager.Level : 1);
+            _secretQuestService.Unsubscribe();
+            _secretQuestService.Subscribe();
+            _secretQuestService.RehydrateWorldEffects(CollectGrantedFlagIds());
+            SecretQuestService = _secretQuestService;
+            SecretQuestWorldEffects = secretWorldEffects;
+
             // UI controllers
             EnsureUiControllers();
 
@@ -263,6 +278,33 @@ namespace CindarsHope.Quests.Runtime
 
         // fable_51 — Zrix cave contracts orchestrator (rides the same quest flow).
         private CindarsHope.Quests.CaveContracts.CaveContractService _caveContractService;
+
+        // fable_52 — cave secret quests orchestrator (rides the same quest flow).
+        private CindarsHope.Quests.SecretQuests.SecretQuestService _secretQuestService;
+
+        /// <summary>fable_52 — exposed for the wandering merchant / peaceful interactables / tests (avoids Find).</summary>
+        public static CindarsHope.Quests.SecretQuests.SecretQuestService SecretQuestService { get; private set; }
+
+        /// <summary>fable_52 — exposed for the merchant pricing point / AI integration / tests (avoids Find).</summary>
+        public static CindarsHope.Quests.SecretQuests.SecretQuestWorldEffects SecretQuestWorldEffects { get; private set; }
+
+        /// <summary>fable_52 — every granted flag id across all quest records (source of truth for rehydration after load).</summary>
+        private static System.Collections.Generic.List<string> CollectGrantedFlagIds()
+        {
+            var result = new System.Collections.Generic.List<string>();
+            if (QuestService == null) return result;
+            var section = QuestService.GetSaveSection();
+            if (section == null) return result;
+            foreach (var record in section.QuestStates)
+            {
+                if (record?.GrantedFlagIds == null) continue;
+                foreach (var flagId in record.GrantedFlagIds)
+                {
+                    if (!string.IsNullOrEmpty(flagId) && !result.Contains(flagId)) result.Add(flagId);
+                }
+            }
+            return result;
+        }
 
         // fable_10 — Act 1 main quest -> Fonte fragment bridge.
         private MainProgressionQuestBridge _mainProgressionBridge;
