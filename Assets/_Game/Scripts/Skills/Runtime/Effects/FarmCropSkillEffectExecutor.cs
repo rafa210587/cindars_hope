@@ -1,4 +1,5 @@
 using CindarsHope.Farm;
+using CindarsHope.Player;
 using UnityEngine;
 
 namespace CindarsHope.Skills.Runtime.Effects
@@ -6,11 +7,10 @@ namespace CindarsHope.Skills.Runtime.Effects
     // WAVE_INTEGRATION_11: Executor that waters a FarmPlot target via skill active slot.
     // EffectId: "farm.crop.water_skill"
     // Target: CropPlot (FarmPlot component on Target GameObject)
-    // TODO_INTEGRATION_NOT_FINAL: Stamina cost from caster is not yet deducted here.
-    // Final design should deduct stamina from the caster's StaminaManager via SkillEffectContext.
-    // Blocks final acceptance: NO (skill effect is functional; stamina deduction is debt)
     public sealed class FarmCropSkillEffectExecutor : ISkillEffectExecutor
     {
+        private const int WaterSkillStaminaCost = 10;
+
         public string EffectId => "farm.crop.water_skill";
         public SkillEffectCategory Category => SkillEffectCategory.Farm;
         public SkillEffectTargetType TargetType => SkillEffectTargetType.CurrentInteractable;
@@ -30,11 +30,19 @@ namespace CindarsHope.Skills.Runtime.Effects
             if (!farmPlot.CanBeWatered)
                 return SkillEffectResult.Failed("PlotCannotBeWatered", "Canteiro nao pode ser regado no estado atual.");
 
+            // Deduct stamina only after confirming the plot can be watered.
+            // Guard: skip deduction when no caster (slice mode / headless test).
+            var stamina = context.Caster != null
+                ? context.Caster.GetComponent<StaminaManager>()
+                : null;
+            if (stamina != null && !stamina.TrySpendStamina(WaterSkillStaminaCost))
+                return SkillEffectResult.Failed("InsufficientStamina", "Stamina insuficiente para regar o canteiro.");
+
             bool watered = farmPlot.TryWaterViaSkill();
             if (watered)
             {
-                Debug.Log($"[FarmCropSkillEffectExecutor] Plot watered via skill. SkillActionId={context.SkillActionId}");
-                return SkillEffectResult.Succeeded("Canteiro regado pela skill.", costSpent: false, cooldownStarted: true);
+                Debug.Log($"[FarmCropSkillEffectExecutor] Plot watered via skill. SkillActionId={context.SkillActionId} StaminaSpent={stamina != null}");
+                return SkillEffectResult.Succeeded("Canteiro regado pela skill.", costSpent: stamina != null, cooldownStarted: true);
             }
 
             return SkillEffectResult.Failed("WaterFailed", "Falha ao regar o canteiro.");
