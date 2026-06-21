@@ -103,6 +103,13 @@ new PlayerActionFeedbackEvent(message, durationSeconds: 3.5f)
 - Nunca chamar `FeedbackToastHudView`, `NotificationToastController` ou `AudioManager.PlaySfx` diretamente do gameplay.
 - `HudFeedbackUpdatedEvent` é interno ao pipeline — não publicar manualmente fora de `GameplayFeedbackService`.
 
+## Quando NÃO usar
+
+- **Notificações de sistema** (save concluído, loading screen) → usar `HudFeedbackUpdatedEvent` diretamente com prioridade Normal; não é "falha de ação de gameplay".
+- **Logs de debug** internos → nunca via evento de HUD; usar `Debug.Log` ou `UnityEngine.Debug`.
+- **Notificações de quest** (quest completada, novo objetivo) → usar os eventos de quest próprios (`QuestCompletedEvent`, `QuestObjectiveUpdatedEvent`); o pipeline de quest já tem sua própria UI.
+- **Boss announcements** → `BossPhaseLogic` publica eventos próprios; não usar `PlayerActionFeedbackEvent` para isso.
+
 ## Relacionados
 
 - `(skill: localization-authoring)` — como criar a chave de mensagem

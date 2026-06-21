@@ -121,6 +121,8 @@ Use `.claude/skills/<name>/SKILL.md` when task matches:
 | `input-gamepad-routing` | Input focus routing (modal guard), new key bindings, gamepad path (future) |
 | `registry-catalog-pattern` | Static catalog/registry com const IDs, TryGet, IReadOnlyList All; criar ou estender catálogos de dados (items, animais, NPCs, quests) |
 | `action-feedback-pipeline` | Publicar PlayerActionFeedbackEvent → HUD toast + SFX automático; qualquer recusa de ação ou feedback de gameplay |
+| `fail-state-recovery-design` | Design de fail states — perda, respawn, recovery, anti-softlock; specs de morte/KO/colapso ou qualquer consequência de fracasso |
+| `loop-hierarchy-design` | Hierarquia Farm/Town/Cave — perfil de risco, fluxo de recursos, classificação de features; specs que adicionam feature de gameplay ou economy |
 
 ---
 

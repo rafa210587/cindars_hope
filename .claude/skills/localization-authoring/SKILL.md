@@ -118,6 +118,13 @@ Hardcode de string removido/ausente: SIM
 Teste de round-trip (OverrideForTests): SIM/NÃO APLICÁVEL
 ```
 
+## Quando NÃO usar
+
+- Texto de **debug/log** interno (`Debug.Log`, `UnityEngine.Debug`) → não localizar; esses nunca chegam ao player.
+- **IDs de sistema** (item IDs, npcIds, evento IDs) → são identificadores, não texto de UI; cobertos pela rule `id-stability`.
+- Texto hardcoded **pré-P4 existente** → é registered debt (ADR-0012); não refatorar a menos que a spec inclua isso explicitamente no escopo.
+- Texto de **editor tools** e validators (só visto por devs) → não precisa de localização.
+
 ## Relacionados
 
 - ADR-0012 — decisão canônica de localization

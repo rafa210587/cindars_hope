@@ -29,6 +29,7 @@ Rules são invariantes do projeto (o *que não pode driftar*). Skills explicam w
 14. [Error Handling & Resilience](./error-handling-resilience.md) — taxonomy de falha em quatro categorias (expected gameplay / config-asset / infra / bug-invariant); logs com contexto; fail fast em dev
 15. [Gameplay Design Pattern Selection](./gameplay-design-patterns.md) — qual pattern usar, mapeado a precedentes existentes; domain em C# puro, engine como adapter
 16. [Security & File Safety](./security-and-files.md) — sem secrets em código/configs/logs; arquivos sensíveis e saves reais não são editados sem pedido explícito; ler scripts de build/deploy por inteiro primeiro
+17. [Sem Magic Balance Values](./no-magic-balance-values.md) — thresholds, custos, duração e dano em SOs de balance ou consts nomeadas; nunca literais inline em métodos de gameplay
 
 ## Mechanical Enforcement (hooks em .claude/settings.json)
 

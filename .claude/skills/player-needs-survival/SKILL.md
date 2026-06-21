@@ -117,6 +117,18 @@ Assert.AreEqual(20, stamina.CurrentStamina);
 - `DrainMultiplier` de fome (F18) é aplicado dentro de `HungerManager.LoseHunger` — não escalar manualmente.
 - Sem refs Unity em save DTOs das necessidades (tipos simples: int, float, bool).
 
+## Quando NÃO usar
+
+- Spec envolve **mana** (recurso mágico) → usar `ManaManager`, análogo ao `StaminaManager` mas separado.
+- Spec envolve **HP/vida** → usar `PlayerManager.DamageHP`, não este sistema.
+- Spec de efeito de buff/debuff em stamina → usar `StatusEffectManager.TryAddEffect`; não modificar `StaminaManager` diretamente.
+- Spec de animal/NPC com fome própria → esses sistemas são independentes do player; este skill só cobre o player.
+
+## Quando parar e reportar
+
+- Spec pede colapso automático por fadiga nova (diferente de fome/stamina) → `FatigueSystem` já implementa isso; parar e verificar se a spec quer estender ou duplicar.
+- Spec altera `PlayerNeedsBalanceSO` campos existentes → mudança de balance, não de código; documentar no report e confirmar com humano.
+
 ## Relacionados
 
 - `(skill: time-calendar-weather)` — dormir = `DayStartedEvent`; stamina/fome reagem ao dia
