@@ -21,6 +21,7 @@ namespace CindarsHope.EditorTools.Magic
     {
         private const string SpellsPath = "Assets/_Game/Data/Combat/Spells/";
         private const string SpellDatabasePath = "Assets/_Game/Data/Combat/SpellDatabase.asset";
+        private const string StatusEffectDatabasePath = "Assets/_Game/Data/Combat/StatusEffectDatabase.asset";
         private const string ItemsPath = "Assets/_Game/Data/Items/";
         private const string ItemDatabasePath = "Assets/_Game/Data/Registries/ItemDatabase.asset";
         // Prefab de projétil default das spells de projétil (mesmo usado por spell_fireball — fonte única).
@@ -138,6 +139,13 @@ namespace CindarsHope.EditorTools.Magic
             // sem spell). Mapeia para spells JÁ existentes no SpellDatabase (não cria spell nova).
             int wiredCastScrolls = WireCatalogCastScrolls();
             Debug.Log($"[GenerateShapeSpells] Cast scrolls do catalogo ligados a spells reais: {wiredCastScrolls}.");
+
+            // Normaliza StatusEffectId pendente em TODAS as spells (não só as desta spec): o
+            // CombatDatabaseValidator acusa STATUSEFFECT_ID_NOT_IN_DB (ERROR) quando uma spell
+            // referencia um status ausente do StatusEffectDatabase — ex.: spell_fireball legada
+            // com "status_burn_test" (valor de teste; o canônico registrado é "status_burn").
+            int normalizedStatus = NormalizeSpellStatusEffectIds();
+            Debug.Log($"[GenerateShapeSpells] StatusEffectId pendentes repontados para o canonico: {normalizedStatus}.");
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
@@ -299,6 +307,76 @@ namespace CindarsHope.EditorTools.Magic
             }
 
             return wired;
+        }
+
+        // Sufixos de "id de teste/temporário" que devem cair para o canônico (ex.: status_burn_test
+        // -> status_burn). Mantido pequeno e explícito; nenhum schema novo, nenhum YAML manual.
+        private static readonly string[] s_staleStatusSuffixes = { "_test", "_temp", "_placeholder" };
+
+        // Repointa StatusEffectId de spells para um id REGISTRADO no StatusEffectDatabase quando o
+        // valor atual está ausente do DB. Estratégia conservadora: só repointa se conseguir derivar
+        // um canônico que EXISTE no DB (removendo um sufixo de teste conhecido). Idempotente: só
+        // escreve quando muda. Retorna quantas spells foram normalizadas.
+        private static int NormalizeSpellStatusEffectIds()
+        {
+            var statusDb = AssetDatabase.LoadAssetAtPath<StatusEffectDatabaseSO>(StatusEffectDatabasePath);
+            if (statusDb == null)
+            {
+                Debug.LogWarning($"[GenerateShapeSpells] StatusEffectDatabase nao encontrado em {StatusEffectDatabasePath}; " +
+                                 "normalizacao de StatusEffectId pulada (rode GenerateCanonicalStatusEffects antes).");
+                return 0;
+            }
+
+            int normalized = 0;
+            foreach (var guid in AssetDatabase.FindAssets("t:SpellDataSO"))
+            {
+                var path = AssetDatabase.GUIDToAssetPath(guid);
+                var spell = AssetDatabase.LoadAssetAtPath<SpellDataSO>(path);
+                if (spell == null || string.IsNullOrEmpty(spell.StatusEffectId))
+                {
+                    continue;
+                }
+
+                // Já registrado? Nada a fazer.
+                if (statusDb.TryGetById(spell.StatusEffectId, out _))
+                {
+                    continue;
+                }
+
+                if (!TryDeriveCanonicalStatusId(spell.StatusEffectId, statusDb, out var canonical))
+                {
+                    Debug.LogWarning($"[GenerateShapeSpells] Spell '{spell.Id}' referencia StatusEffectId " +
+                                     $"'{spell.StatusEffectId}' ausente do StatusEffectDatabase e sem canonico derivavel; " +
+                                     "deixado como esta (verifique manualmente).");
+                    continue;
+                }
+
+                spell.StatusEffectId = canonical;
+                EditorUtility.SetDirty(spell);
+                normalized++;
+                Debug.Log($"[GenerateShapeSpells] Spell '{spell.Id}': StatusEffectId repontado para o canonico '{canonical}'.");
+            }
+
+            return normalized;
+        }
+
+        private static bool TryDeriveCanonicalStatusId(string staleId, StatusEffectDatabaseSO statusDb, out string canonical)
+        {
+            canonical = null;
+            foreach (var suffix in s_staleStatusSuffixes)
+            {
+                if (staleId.EndsWith(suffix, System.StringComparison.Ordinal))
+                {
+                    var candidate = staleId.Substring(0, staleId.Length - suffix.Length);
+                    if (!string.IsNullOrEmpty(candidate) && statusDb.TryGetById(candidate, out _))
+                    {
+                        canonical = candidate;
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
 
         private static int RegisterAssets<T>(string databasePath, string arrayField, List<T> assets) where T : Object

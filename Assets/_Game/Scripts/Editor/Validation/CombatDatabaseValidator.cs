@@ -145,10 +145,13 @@ namespace CindarsHope.EditorTools.Validation
 
                     if (!item.IsEquippable)
                     {
+                        // INFO (não Warning): munição é selecionada/consumida pelo sistema de ammo,
+                        // não "equipada na mão" como uma arma. O contrato de gameplay não exige
+                        // IsEquippable=true para ammo, então isto é uma observação opcional, não um aviso.
                         var assetPath = AssetDatabase.GetAssetPath(item);
-                        report.AddIssue("ItemData", "AMMO_NOT_EQUIPPABLE", ValidationSeverity.Warning,
-                            $"Ammo item '{item.DisplayName}' is not equippable.",
-                            assetPath, item.DisplayName, "Set IsEquippable = true if used in hands.");
+                        report.AddIssue("ItemData", "AMMO_NOT_EQUIPPABLE", ValidationSeverity.Info,
+                            $"Ammo item '{item.DisplayName}' is not equippable (optional; ammo is consumed, not hand-equipped).",
+                            assetPath, item.DisplayName, "Optional: set IsEquippable = true only if used directly in hands.");
                     }
                 }
             }
@@ -214,24 +217,32 @@ namespace CindarsHope.EditorTools.Validation
                         assetPath, item.DisplayName, "Set SpellId in ItemDataSO or change UseKind.");
                 }
 
-                // Rule 3: IsEquippable without explicit UseKind and truly uninferrable → Warning (not error for backward compat)
+                // Rule 3: IsEquippable without explicit UseKind and truly uninferrable → INFO.
+                // O resolver (ItemUseContractResolver) já infere o UseKind de Category/WeaponId/
+                // SpellId em runtime; um UseKind explícito é metadata opcional. Quando NEM o
+                // explícito NEM a inferência resolvem (inferred==None), continua sendo apenas uma
+                // observação opcional — não bloqueia o gameplay —, logo INFO e não Warning.
                 if (item.IsEquippable && item.UseKind == ItemUseKind.None)
                 {
                     var inferred = ItemUseContractResolver.Resolve(item);
                     if (inferred == ItemUseKind.None)
                     {
-                        report.AddIssue("ItemData", "EQUIPPABLE_NO_USE_KIND", ValidationSeverity.Warning,
-                            $"Item '{item.DisplayName}' (ID: {item.Id}) is equippable but has no explicit UseKind and no inferrable kind.",
-                            assetPath, item.DisplayName, "Set UseKind explicitly or ensure Category/WeaponId/SpellId is configured.");
+                        report.AddIssue("ItemData", "EQUIPPABLE_NO_USE_KIND", ValidationSeverity.Info,
+                            $"Item '{item.DisplayName}' (ID: {item.Id}) is equippable but has no explicit UseKind and no inferrable kind (optional).",
+                            assetPath, item.DisplayName, "Optional: set UseKind explicitly or ensure Category/WeaponId/SpellId is configured.");
                     }
                 }
 
-                // Rule 4: AllowedEquipmentSlots empty on equippable item → Weak warning only (not error for backward compat)
+                // Rule 4: AllowedEquipmentSlots empty on equippable item → INFO.
+                // O slot de equipamento é resolvido a partir da Category/EquipmentDataSO em runtime;
+                // AllowedEquipmentSlots é apenas uma restrição opcional de clareza no editor. Empty é
+                // o estado válido default da grande maioria dos itens equipáveis, então é INFO (opcional),
+                // não Warning — a própria mensagem já dizia "(optional)".
                 if (item.IsEquippable && (item.AllowedEquipmentSlots == null || item.AllowedEquipmentSlots.Length == 0))
                 {
-                    report.AddIssue("ItemData", "EQUIPPABLE_NO_ALLOWED_SLOTS", ValidationSeverity.Warning,
-                        $"Item '{item.DisplayName}' (ID: {item.Id}) is equippable but has no AllowedEquipmentSlots defined.",
-                        assetPath, item.DisplayName, "Set AllowedEquipmentSlots for clarity (optional).");
+                    report.AddIssue("ItemData", "EQUIPPABLE_NO_ALLOWED_SLOTS", ValidationSeverity.Info,
+                        $"Item '{item.DisplayName}' (ID: {item.Id}) is equippable but has no AllowedEquipmentSlots defined (optional).",
+                        assetPath, item.DisplayName, "Optional: set AllowedEquipmentSlots for editor clarity.");
                 }
             }
         }

@@ -201,6 +201,11 @@ namespace CindarsHope.Editor
             RunStep("Deletar assets duplicados/legados da ItemDatabase (fix duravel)",
                 DeleteDuplicateLegacyItemAssets);
 
+            // (b.2) Remove entradas mortas (Item==null) de PlayerData.StartingItems — a delecao de
+            // assets de item legados acima deixa refs pendentes que disparam STARTING_ITEM_NULL.
+            RunStep("Remover StartingItems pendentes (Item==null) do PlayerData",
+                () => CindarsHope.EditorTools.Repair.RepairPlayerStartingItems.Repair());
+
             // (c) Recria DB quebrado (status effects self-healing).
             RunStep("Recriar StatusEffectDatabase se quebrado (self-healing)",
                 () => CindarsHope.EditorTools.Combat.GenerateCanonicalStatusEffects.Generate());

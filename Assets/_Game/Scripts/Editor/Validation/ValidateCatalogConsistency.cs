@@ -33,6 +33,11 @@ namespace CindarsHope.Editor.Validation
         private const string Tag = "[fable_30]";
         private const string ItemDatabasePath = "Assets/_Game/Data/Registries/ItemDatabase.asset";
 
+        // Sentinela "não dropa nada" usada por design em EnemyDataSO.dropItemId (ex.: bosses que
+        // só dropam via lootTableId — CreateCaveBossAssets seta dropItemId="item_nothing", dropAmount=0).
+        // NÃO é um item de catálogo; cruzá-lo contra o ItemDatabase é falso-positivo. Tratado como "sem drop".
+        private const string NoDropSentinelItemId = "item_nothing";
+
         public static void Run()
         {
             var result = Validate(out var report);
@@ -141,7 +146,8 @@ namespace CindarsHope.Editor.Validation
 
                 enemyIds.Add(enemy.enemyId);
 
-                if (!string.IsNullOrWhiteSpace(enemy.dropItemId))
+                if (!string.IsNullOrWhiteSpace(enemy.dropItemId) &&
+                    !string.Equals(enemy.dropItemId, NoDropSentinelItemId, StringComparison.Ordinal))
                 {
                     snapshot.EnemyDrops.Add(new EnemyDropSnapshot
                     {
