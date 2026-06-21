@@ -123,6 +123,11 @@ Use `.claude/skills/<name>/SKILL.md` when task matches:
 | `action-feedback-pipeline` | Publicar PlayerActionFeedbackEvent → HUD toast + SFX automático; qualquer recusa de ação ou feedback de gameplay |
 | `fail-state-recovery-design` | Design de fail states — perda, respawn, recovery, anti-softlock; specs de morte/KO/colapso ou qualquer consequência de fracasso |
 | `loop-hierarchy-design` | Hierarquia Farm/Town/Cave — perfil de risco, fluxo de recursos, classificação de features; specs que adicionam feature de gameplay ou economy |
+| `observability-and-logging` | Logging diagnóstico em runtime — one-shot guards p/ log spam, formato de wiring-error, prefixo por sistema, debug overlay; ao adicionar log de erro/aviso ou investigar log repetido |
+| `hud-canvas-binding` | Metade de cena/Canvas do padrão de UI — montar hierarquia de Canvas e plugar a View no GameplayHudCanvas; fecha o "DEFERRED: binding do canvas" das specs de UI |
+| `event-catalog-and-tracing` | Governança/observabilidade do GameEventBus — catálogo de eventos, checar duplicação antes de criar, tracer dev-only; ao criar/alterar evento em Core/Events |
+| `editor-tooling-orchestration` | Orquestrador 1-clique de geradores/cenas (best-effort, log por passo) + higiene de menu CindarsHope/Archive; ao adicionar MenuItem ou consolidar setup multi-passo |
+| `boot-integration-smoke` | Verificação estática/EditMode do boot-wiring (GameBootstrap, *RuntimeBootstrap, subscribers) antes de depender de Play Mode; specs runtime que fechariam só em "Play Mode deferred" |
 
 ---
 

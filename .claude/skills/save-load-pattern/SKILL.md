@@ -208,6 +208,22 @@ public class SaveMigration
 }
 ```
 
+## Migration: aditivo vs. breaking (decisão)
+
+A run inteira usou o caminho **aditivo** (campo/section novo + default legado, sem migration) — é o padrão preferido e cobre quase tudo. Mas há mudanças **breaking** que o aditivo não resolve (precedente: o multi-slot de save da `fable_56` foi **adiado** justamente por exigir migration/versioning, fora do escopo de uma spec de UI).
+
+| Tipo de mudança | Caminho | Exige migration? |
+|---|---|---|
+| Campo novo num DTO existente | aditivo — default seguro no load legado | NÃO |
+| Section nova (novo domínio de save) | `ISaveSectionProvider` novo (precedente `HotbarSectionProvider`); load legado = section ausente → default | NÃO |
+| Renomear/remover campo/id que já existe em saves reais | **breaking** — migration explícita + bump de versão | SIM |
+| Mudar tipo/shape (Dictionary→List, int→string id) | **breaking** — migration por versão | SIM |
+| Multi-slot / mudar layout do arquivo de save | **breaking** — sessão dedicada de SaveManager | SIM |
+
+Regra de decisão: **se um save real existente continua carregando correto com default, é aditivo.** Se um save existente quebraria ou perderia dado, é breaking → migration obrigatória (`SaveMigration.MigrateVNToVN+1`, bump de `version`, teste de round-trip do save legado). Nunca faça breaking change "no improviso" dentro de uma spec de feature — separe numa spec/sessão de save com o `SaveManager` no escopo permitido (rule `security-and-files`: sobrescrever schema de save é trabalho dedicado).
+
+Sistemas reais: `SaveManager` (orquestra Capture/Restore por section), `ISaveSectionProvider` (precedente `HotbarSectionProvider`/`OnboardingHintsSectionProvider`) — uma section nova é aditiva e NÃO precisa de migration; mexer no layout do `SaveManager` é que é breaking.
+
 ## File Location Pattern
 
 ```

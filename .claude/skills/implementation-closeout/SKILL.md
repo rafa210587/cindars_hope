@@ -241,6 +241,24 @@ Antes de entregar o report:
 - [ ] Nenhuma claim sem evidência
 - [ ] Próximo passo recomendado
 
+## Ledger de dívida diferida (visual / Play Mode / scene)
+
+A run inteira deixou dívida `DEFERRED` **espalhada** nos reports de cada spec (binding de canvas, Play Mode, placement de cena, asset generation). Achar "o que ainda falta wirar" em 73 reports é inviável. Em vez de só anotar no report individual, **acumule num ledger único**: `docs/validation/DEFERRED_VISUAL_DEBT.md`.
+
+Sempre que uma spec fechar com algo diferido, **acrescente uma linha** (não reescreva o arquivo):
+
+```
+| Spec | Item diferido | Tipo | Como fechar | Bloqueia? |
+|---|---|---|---|---|
+| fable_38 | binding do canvas do minimapa | DEFERRED_UI_VISUAL | (skill: hud-canvas-binding) + Play Mode | não |
+| fable_68 | placement dos 11 altares na cena | scene wiring | estender CreateMvp*Scene + Prepare Everything | não |
+| fable_61 | rodar build standalone + arte de icone | build/asset | RunStandaloneBuild.ps1 + arte | não |
+```
+
+Tipos canônicos: `DEFERRED_UI_VISUAL`, `scene wiring`, `Play Mode scenario`, `asset generation`, `breaking save migration`. O ledger é a fila de trabalho da validação humana final — quando o item é fechado (wirado + validado em Play Mode), risque a linha (ou mova para uma seção "Fechados" com o commit). Assim o humano tem **um** lugar para ver toda a dívida visual em vez de caçar nos reports.
+
+> Closeout de spec runtime/UI: além do report individual, **atualizar o ledger** é parte do Step 3 quando há qualquer `DEFERRED`.
+
 ## Relacionados
 
 - **Spec Execution** → Chama esta no Phase 4

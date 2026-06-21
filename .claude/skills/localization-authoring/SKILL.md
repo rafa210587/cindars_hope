@@ -98,6 +98,22 @@ Assert.AreEqual("Titulo Teste", LocalizationService.Get("quest.minha_quest.title
 LocalizationStringTable.OverrideForTests(null); // cleanup
 ```
 
+### Migração de hardcode existente (sweep) — só com spec explícita
+
+A `fable_73` entregou a string table, mas **dezenas de specs anteriores hardcodaram PT-BR** (ex.: `QuestRegistry` em `DisplayName`/`Description`, `TownNpcDialogueLibrary`, nós de `DialogueNode.Text` em SOs). Isso é **registered debt** do ADR-0012 — não migre sozinho dentro de outra spec. Quando houver uma spec de sweep no escopo:
+
+1. **Mapear o hardcode** por domínio:
+   ```powershell
+   Select-String -Path Assets\_Game\Scripts\Quests\Runtime\QuestRegistry*.cs -Pattern 'DisplayName\s*=\s*"'
+   Select-String -Path Assets\_Game\Scripts\NPC\*Dialogue*.cs -Pattern '= "'
+   ```
+2. **Priorizar por visibilidade:** texto de UI/quest/diálogo que o player lê muito primeiro; lore raro depois.
+3. **Migrar em fatias por domínio** (um commit por domínio: quests, depois diálogo, depois UI), cada literal vira `LocalizationService.Get("quest.<id>.title")` + entrada em `LocalizationStringTable.SeedEntries()`.
+4. **Preservar id-stability:** a *key* de localização é um id de domínio novo (segue a convenção `{domain}.{spec_ou_npc}.{slot}`); o id de sistema (questId, npcId) **não muda** (rule `id-stability`).
+5. **Teste de regressão:** o texto exibido antes == `LocalizationService.Get(key)` depois (round-trip via `OverrideForTests`).
+
+Sweep é migração de **apresentação**, não de save nem de id de sistema — nenhum save quebra, nenhum questId muda.
+
 ## Regras
 
 - Todo texto visível ao player a partir de P4 usa key → `LocalizationService.Get(key)`.
