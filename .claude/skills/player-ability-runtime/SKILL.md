@@ -1,98 +1,47 @@
 ---
 name: player-ability-runtime
-description: Adiciona uma player ability non-slot (Dash, Dodge, Block, roll, teleport, etc.) com wiring correto de FixedUpdate/physics. Use em qualquer tarefa que adicione uma nova player ability non-slot que mova ou modifique o player em runtime.
+description: Adiciona player ability non-slot (Dash, Dodge, Block, sprint, blink, roll) com wiring correto de FixedUpdate/physics. Usar em qualquer spec que adicione ability não pertencente aos active slots (teclas 1–4) que mova ou modifique o player em runtime.
 ---
 
 # Skill: Player Ability em Runtime
 
-Anexe ability controllers ao GameObject do player via o bootstrap existente e respeite a regra de conflito de FixedUpdate — esquecer `IsBeingDisplaced` foi o bug original que deixava o player parado.
+Anexe ability controllers ao player via bootstrap existente e respeite a regra de conflito de FixedUpdate — esquecer `IsBeingDisplaced` foi o bug original que deixava o player parado.
 
 ## Quando usar
 
-A tarefa adiciona ou conserta uma player ability que:
+A spec adiciona ou corrige ability que:
 - É disparada por input (key down / hold / double-tap)
-- Move o player ou muda a movement speed
-- **Não** é um active skill slot (teclas 1–4)
-- Roda em runtime (não editor-only)
-
-Exemplos: Dash, Dodge, Block, roll, sprint toggle, teleport, blink.
+- Move o player ou muda `SpeedMultiplier`
+- **Não** é active skill slot (teclas 1–4) — ver `skill-tree-authoring` para esses
+- Roda em runtime na scene
 
 ## Leitura mínima
 
-1. `CLAUDE.md`
-2. Spec alvo
-3. `Assets/_Game/Scripts/Player/PlayerController.cs` — SpeedMultiplier atual, IsBeingDisplaced, FixedUpdate
-4. `Assets/_Game/Scripts/Player/Movement/PlayerMovementDisplacementResolver.cs` — API TryDisplace
+1. `Assets/_Game/Scripts/Player/PlayerController.cs` — `SpeedMultiplier`, `IsBeingDisplaced`, `FixedUpdate`
+2. `Assets/_Game/Scripts/Player/Movement/PlayerMovementDisplacementResolver.cs` — `TryDisplace`
 
 ---
 
-## Arquitetura central
+## A regra de conflito de FixedUpdate (trap crítica)
 
-### Attachment de component
-
-Todos os ability controllers são anexados ao GameObject do player via um bootstrap `RuntimeInitializeOnLoadMethod`.
-
-**Reutilize `PlayerMovementActionRuntimeBootstrap` se ele já existir.** Só crie um novo bootstrap se for realmente um lifecycle diferente (ex.: bootstrap do combat system).
+Qualquer ability que chame `Rigidbody2D.MovePosition()` de uma coroutine **será sobrescrita** por `PlayerController.FixedUpdate` a menos que `IsBeingDisplaced` esteja setado.
 
 ```csharp
-private void AttachControllers(GameObject playerObject)
+// PlayerController.FixedUpdate — obrigatório:
+if (IsBeingDisplaced) return;  // ← sem isso, o player não move
+
+// PlayerMovementDisplacementResolver.DisplaceRoutine:
+_playerController.IsBeingDisplaced = true;
+_playerController.SpeedMultiplier = 0f;
+try   { /* displacement loop */ }
+finally
 {
-    EnsureComponent<PlayerMovementDisplacementResolver>(playerObject);
-    EnsureComponent<PlayerDashController>(playerObject);
-    EnsureComponent<DirectionalDoubleTapDetector>(playerObject);
-    EnsureComponent<PlayerDodgeController>(playerObject);
-    EnsureComponent<PlayerBlockController>(playerObject);
-    // Add new ability here:
-    // EnsureComponent<PlayerRollController>(playerObject);
+    _playerController.IsBeingDisplaced = false;         // SEMPRE restaurar
+    _playerController.SpeedMultiplier = _prevMultiplier; // SEMPRE restaurar
 }
 ```
 
----
-
-## A regra de conflito de FixedUpdate
-
-**Crítico**: qualquer ability que chame `Rigidbody2D.MovePosition()` a partir de uma coroutine (cadência de Update) SERÁ sobrescrita por `PlayerController.FixedUpdate`, a menos que `IsBeingDisplaced` esteja setado.
-
-### Por que quebra
-
-```
-Frame N:
-  FixedUpdate → rb.MovePosition(current_pos) → physics queues current_pos
-  Update/Coroutine → rb.MovePosition(target_pos) → physics queues target_pos
-
-Frame N+1:
-  FixedUpdate → rb.MovePosition(current_pos2) ← OVERWRITES target_pos
-  Physics → applies current_pos2 → player never moves
-```
-
-### Pattern de fix obrigatório
-
-Em `PlayerController`:
-```csharp
-public bool IsBeingDisplaced { get; set; }
-
-private void FixedUpdate()
-{
-    if (_rigidbody == null) { LogMissingRigidbodyOnce(); return; }
-    if (IsBeingDisplaced) return;   // ← skip when displaced
-    // ... normal movement
-}
-```
-
-Em `PlayerMovementDisplacementResolver.DisplaceRoutine`:
-```csharp
-if (_playerController != null)
-{
-    _playerController.SpeedMultiplier = 0f;
-    _playerController.IsBeingDisplaced = true;
-}
-// ... displacement loop ...
-if (_playerController != null)
-{
-    _playerController.SpeedMultiplier = previousSpeedMultiplier;
-    _playerController.IsBeingDisplaced = false;
-}
-```
+`finally` é obrigatório — sem ele, um early exit ou exception deixa o player congelado.
 
 ---
 
@@ -105,204 +54,99 @@ public sealed class PlayerXController : MonoBehaviour
     [SerializeField] private float _distance = 3.5f;
     [SerializeField] private float _duration = 0.14f;
     [SerializeField] private float _cooldown = 1.0f;
-    [SerializeField] private int _staminaCost = 40;
+    [SerializeField] private int   _staminaCost = 40;
 
-    [SerializeField] private PlayerMovementDisplacementResolver _resolver;
-    [SerializeField] private StaminaManager _staminaManager;
-
+    private PlayerMovementDisplacementResolver _resolver;
+    private StaminaManager _staminaManager;
     private float _lastUseTime = float.MinValue;
 
     private void Start()
     {
-        if (_resolver == null) _resolver = GetComponent<PlayerMovementDisplacementResolver>();
-        var bootstrap = GameBootstrap.Instance;
-        if (bootstrap != null && _staminaManager == null)
-            _staminaManager = bootstrap.StaminaManager;
+        _resolver = GetComponent<PlayerMovementDisplacementResolver>();
+        var bs = GameBootstrap.Instance;
+        if (bs != null) _staminaManager = bs.StaminaManager;
     }
 
     private void Update()
     {
-        // 1. Modal guard — always first
-        if (GameBootstrap.Instance?.ModalManager?.HasActiveModal == true) return;
-
-        // 2. Read input
-        if (!DetectInput(out var direction)) return;
-
-        // 3. Try ability
-        TryUse(direction);
+        if (GameBootstrap.Instance?.ModalManager?.HasActiveModal == true) return; // guard
+        if (!DetectInput(out var dir)) return;
+        TryUse(dir);
     }
 
-    private void TryUse(Vector2 direction)
+    private void TryUse(Vector2 dir)
     {
-        // 4. In-progress guard
         if (_resolver == null || _resolver.IsDisplacing) return;
-
-        // 5. Cooldown
         if (Time.time - _lastUseTime < _cooldown)
         {
-            GameEventBus.Publish(new PlayerActionFeedbackEvent("X em cooldown."));
+            GameEventBus.Publish(new PlayerActionFeedbackEvent(
+                LocalizationService.Get("action.x.cooldown")));
             return;
         }
-
-        // 6. Stamina (optional — graceful if missing)
         if (_staminaManager != null && !_staminaManager.TrySpendStamina(_staminaCost))
         {
-            GameEventBus.Publish(new PlayerActionFeedbackEvent("Stamina insuficiente."));
+            GameEventBus.Publish(new PlayerActionFeedbackEvent(
+                LocalizationService.Get("action.x.no_stamina")));
             return;
         }
-
         _lastUseTime = Time.time;
-        if (!_resolver.TryDisplace(direction, _distance, _duration, () =>
-            GameEventBus.Publish(new PlayerActionFeedbackEvent("X!"))))
-        {
-            GameEventBus.Publish(new PlayerActionFeedbackEvent("X bloqueado."));
-        }
-    }
-
-    private bool DetectInput(out Vector2 direction)
-    {
-        direction = Vector2.zero;
-        // implement per ability
-        return false;
+        _resolver.TryDisplace(dir, _distance, _duration, onComplete: null);
     }
 }
 ```
+
+Adicione o controller no `PlayerMovementActionRuntimeBootstrap.AttachControllers()`.
 
 ---
 
 ## Padrões de input
 
-### Key press one-shot (Dash)
+**Key press one-shot (Dash):** `Input.GetKeyDown(KeyCode.Space)` + fallback para `LastFacingDirection`.
 
+**Double-tap (Dodge):** use `DirectionalDoubleTapDetector.UpdateAndCheckDoubleTap()` — já existe; não criar detector paralelo.
+
+**Hold key (Block, sprint):**
 ```csharp
-if (Input.GetKeyDown(KeyCode.Space))
-{
-    var dir = ReadDirectionalInput();
-    if (dir.sqrMagnitude <= 0.1f && _playerController != null)
-        dir = _playerController.LastFacingDirection;
-    if (dir.sqrMagnitude > 0.1f) TryUse(dir.normalized);
-}
-```
-
-### Double-tap detection (Dodge)
-
-Use `DirectionalDoubleTapDetector.UpdateAndCheckDoubleTap()` — já existe. Não crie um detector paralelo.
-
-### Hold key (Block, sprint)
-
-```csharp
-private void Update()
-{
-    if (GameBootstrap.Instance?.ModalManager?.HasActiveModal == true)
-    {
-        if (_isActive) Deactivate();
-        return;
-    }
-
-    var holding = Input.GetKey(KeyCode.LeftShift);
-    if (holding && !_isActive) Activate();
-    else if (!holding && _isActive) Deactivate();
-}
+var holding = Input.GetKey(KeyCode.LeftShift);
+if (holding && !_isActive) Activate();
+else if (!holding && _isActive) Deactivate();
 ```
 
 ---
 
-## Modificação de speed (Block / slow)
-
-Use `PlayerMovementSlowState` se existir. Caso contrário:
-
-```csharp
-// Activate
-if (_playerController != null) _playerController.SpeedMultiplier *= _slowMultiplier;
-
-// Deactivate — restore exact previous value
-if (_playerController != null) _playerController.SpeedMultiplier = _previousMultiplier;
-```
-
-Guarde `_previousMultiplier = _playerController.SpeedMultiplier` antes de ativar.
-
----
-
-## Integração com stamina
-
-Sempre opcional e graceful:
-
-```csharp
-// One-shot cost
-if (_staminaManager != null && !_staminaManager.TrySpendStamina(cost)) { /* reject */ return; }
-
-// Per-second drain (Block)
-if (_staminaManager != null)
-{
-    _staminaManager.TrySpendStamina(_drainPerSecond * Time.deltaTime);
-    if (_staminaManager.CurrentStamina <= 0f) Deactivate();
-}
-```
-
-Se `StaminaManager` ou sua API estiver ausente → documente o debt:
-```
-STAMINA_MOVEMENT_ACTION_DEBT
-```
-
----
-
-## Feedback
-
-Sempre publique, mesmo que ainda não exista um consumer de HUD:
-
-```csharp
-GameEventBus.Publish(new PlayerActionFeedbackEvent("Dash!"));
-```
-
-Se o HUD ainda não exibir → documente o debt:
-```
-HUD_FEEDBACK_CONSUMER_DEBT
-```
-
----
-
-## Debt tags (usar em comentários + report)
+## Debt tags (usar em comentários e report)
 
 ```
-TODO_INTEGRATION_NOT_FINAL
 BALANCE_FINAL_PENDING
 BLOCK_DAMAGE_REDUCTION_DEFERRED_TO_COMBAT_RUNTIME
 DODGE_IFRAMES_DEFERRED_TO_COMBAT_RUNTIME
-STAMINA_MOVEMENT_ACTION_DEBT
-HUD_FEEDBACK_CONSUMER_DEBT
-BOUNDS_FINAL_DEFERRED_IF_NO_BOUND_SYSTEM
+STAMINA_MOVEMENT_ACTION_DEBT          — StaminaManager ausente; documentar
+HUD_FEEDBACK_CONSUMER_DEBT            — toast sem consumer de HUD ainda
 ```
 
 ---
 
-## Validação
+## Quando NÃO usar
 
-```powershell
-dotnet build .\Assembly-CSharp.csproj --no-restore
-if ($LASTEXITCODE -ne 0) { Write-Host "BUILD FAILED"; exit 1 }
-dotnet build .\Assembly-CSharp-Editor.csproj --no-restore
-if ($LASTEXITCODE -ne 0) { Write-Host "EDITOR BUILD FAILED"; exit 1 }
-```
-
-O checklist humano de Play Mode deve cobrir:
-- Ability executa (o player de fato move / o state muda)
-- Modal guard bloqueia a execução
-- Cooldown impede spam
-- Stamina consumida ou debt explícito
-- Collision respeitada ou debt explícito
-
----
-
-## Regressões comuns
-
-- Não setar `IsBeingDisplaced = true` → o player não move (o bug original)
-- Não restaurar `SpeedMultiplier` depois do displacement → player travado em speed 0
-- Não restaurar `IsBeingDisplaced = false` em exception/early exit → player congelado para sempre
-- Criar um segundo `DirectionalDoubleTapDetector` em vez de reutilizar o existente
-- Adicionar a ability a um active slot (teclas 1–4) — estas são ações NON-SLOT
+- Ability é um active skill slot (teclas 1–4) → `skill-tree-authoring` + `ActiveSkillExecutionController`.
+- Ability não move o player (só muda stats/flags) → MonoBehaviour simples, sem `DisplacementResolver`.
+- Spec é de input routing para UI (abrir painéis) → `input-gamepad-routing`.
 
 ## Quando parar e reportar
 
-- Mover o player exige reescrever o core de `PlayerController` → parar, reportar
-- Nenhum `Rigidbody2D` ou `transform` alcançável → `BLOCKED`
-- Ability conflita com uma ação non-slot existente (mesma input key) → parar, reportar o conflito
+- Mover o player exige reescrever o core de `PlayerController` → parar, reportar.
+- Ability conflita com input key de ability existente → parar, reportar o conflito.
+- `Rigidbody2D` inacessível no prefab do player → `BLOCKED`.
+
+## Regressões críticas
+
+- Não setar `IsBeingDisplaced = true` → player não move (o bug original).
+- Não restaurar `IsBeingDisplaced = false` em finally → player congelado para sempre.
+- Criar segundo `DirectionalDoubleTapDetector` em vez de reutilizar o existente.
+
+## Relacionados
+
+- `(skill: player-needs-survival)` — `TrySpendStamina` para custo de stamina
+- `(skill: action-feedback-pipeline)` — `PlayerActionFeedbackEvent` para recusas
+- `(skill: input-gamepad-routing)` — modal guard; `GameplayInputRouter` para teclas de UI
+- `(skill: wave-integration-slice)` — como abilities se integram a uma WAVE_INTEGRATION
