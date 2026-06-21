@@ -26,6 +26,14 @@ namespace CindarsHope.UI.HUD
             // sem GameObject.Find). Consome eventos existentes e publica no canal de toast WI-23.
             go.AddComponent<CindarsHope.UI.Onboarding.OnboardingHintService>();
 
+            // HUD de texto VISIVEL (relogio/dia/fase + vitais + ouro + prompt). Canvas proprio
+            // (sortingOrder alto) montado em codigo; fecha o gap "headless" do canvas controller.
+            // GameObject dedicado p/ nao colidir com as Views do controller no mesmo transform.
+            var overlayGo = new GameObject("GameplayHudTextOverlay");
+            Object.DontDestroyOnLoad(overlayGo);
+            var overlay = overlayGo.AddComponent<GameplayHudTextOverlay>();
+            overlay.Build();
+
             Debug.Log("[GameplayHudBootstrap] GameplayHudCanvas created via RuntimeInitializeOnLoadMethod.");
         }
     }
