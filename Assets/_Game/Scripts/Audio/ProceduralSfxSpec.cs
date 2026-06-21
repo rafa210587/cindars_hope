@@ -54,6 +54,47 @@ namespace CindarsHope.Audio
     }
 
     /// <summary>
+    /// Frase melódica procedural placeholder: uma nota raiz + uma sequência de offsets em
+    /// SEMITONS (12 = uma oitava) tocados em sequência e em loop como "faixa". Pura/testável
+    /// (sem AudioClip). Em vez de um tom único, isto produz um ARPEJO — o estilo "prelúdio"
+    /// de JRPG (Final Fantasy VII/VIII): acorde quebrado em cascata, em tom menor para o
+    /// clima melancólico, tocado em sine suave. Continua placeholder até a trilha real (arte).
+    /// </summary>
+    public readonly struct MusicPhrase
+    {
+        /// <summary>Frequência da nota raiz (Hz) — semitom 0.</summary>
+        public float RootFrequency { get; }
+
+        /// <summary>Duração de cada nota (segundos).</summary>
+        public float NoteSeconds { get; }
+
+        /// <summary>Amplitude de pico [0,1] — baixa por design (música é fundo).</summary>
+        public float Amplitude { get; }
+
+        /// <summary>Sequência de offsets em semitons a partir da raiz (12 = oitava). Faz loop.</summary>
+        public IReadOnlyList<int> Semitones { get; }
+
+        public MusicPhrase(float rootFrequency, float noteSeconds, float amplitude, IReadOnlyList<int> semitones)
+        {
+            RootFrequency = rootFrequency;
+            NoteSeconds = noteSeconds < 0.02f ? 0.02f : noteSeconds;
+            Amplitude = amplitude < 0f ? 0f : (amplitude > 1f ? 1f : amplitude);
+            Semitones = semitones;
+        }
+
+        public bool IsValid => RootFrequency > 0f && Amplitude > 0f && Semitones != null && Semitones.Count > 0;
+
+        /// <summary>Frequência (Hz) da nota no índice: root × 2^(semitom/12).</summary>
+        public float FrequencyAt(int index)
+        {
+            return RootFrequency * (float)System.Math.Pow(2.0, Semitones[index] / 12.0);
+        }
+
+        /// <summary>Duração total da frase (loop) em segundos.</summary>
+        public float TotalSeconds => NoteSeconds * (Semitones?.Count ?? 0);
+    }
+
+    /// <summary>
     /// Tabela canônica de specs procedurais por categoria de SFX e por estado de música.
     /// É o "contrato de entrega" para a fase de arte (cada linha vira um asset real).
     /// </summary>
@@ -139,6 +180,37 @@ namespace CindarsHope.Audio
                 // festival = arpejo claro e gentil de 5 notas
                 case MusicState.Festival:
                     return new ProceduralSfxSpec(294f, 392f, 4.5f, WaveShape.Sine, 0.14f, 5);
+                default:
+                    return default;
+            }
+        }
+
+        /// <summary>
+        /// Frase melódica (arpejo) por estado de música — estilo "prelúdio" de JRPG
+        /// (Final Fantasy VII/VIII). Calmo/Combate em Lá menor (melancólico), Boss grave e
+        /// ominoso, Festival em Dó maior (alegre). É o que o <see cref="ProceduralSfxFactory"/>
+        /// usa de fato para a música; <see cref="ForMusic"/> fica como spec legada de tom único.
+        /// </summary>
+        public static MusicPhrase MusicPhraseFor(MusicState state)
+        {
+            switch (state)
+            {
+                // calmo = arpejo de Lá menor em cascata (estilo "Prelude"), lento e macio
+                case MusicState.Calmo:
+                    return new MusicPhrase(220f, 0.50f, 0.14f,
+                        new[] { 0, 3, 7, 12, 7, 3, 0, 7, 10, 15, 10, 7 });
+                // combate = Lá menor com tensão (b6 = 8) e notas mais rápidas
+                case MusicState.Combate:
+                    return new MusicPhrase(220f, 0.26f, 0.16f,
+                        new[] { 0, 3, 7, 10, 7, 3, 5, 8, 5, 3, 0, -2 });
+                // boss = registro grave, lento e ominoso (b2 = 1 cria tensão), ainda sine
+                case MusicState.Boss:
+                    return new MusicPhrase(110f, 1.10f, 0.15f,
+                        new[] { 0, 1, 0, 3, 2, 0 });
+                // festival = Dó maior, arpejo claro e animado
+                case MusicState.Festival:
+                    return new MusicPhrase(262f, 0.24f, 0.14f,
+                        new[] { 0, 4, 7, 12, 7, 4, 9, 5, 0, 4, 7, 12 });
                 default:
                     return default;
             }

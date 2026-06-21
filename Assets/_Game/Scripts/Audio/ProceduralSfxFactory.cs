@@ -65,9 +65,38 @@ namespace CindarsHope.Audio
                 return cached;
             }
 
-            var clip = BuildClip($"music_proc_{state}", ProceduralSfxLibrary.ForMusic(state));
+            var clip = BuildMusicClip($"music_proc_{state}", ProceduralSfxLibrary.MusicPhraseFor(state));
             _musicCache[state] = clip;
             return clip;
+        }
+
+        /// <summary>Gera o clipe de música (faixa em loop) a partir de uma frase melódica.</summary>
+        private static AudioClip BuildMusicClip(string name, MusicPhrase phrase)
+        {
+            if (!phrase.IsValid)
+            {
+                return null;
+            }
+
+            int sampleCount = Mathf.Max(1, Mathf.RoundToInt(phrase.TotalSeconds * SampleRate));
+            var samples = new float[sampleCount];
+            FillMusicSamples(samples, phrase, SampleRate);
+
+            try
+            {
+                var clip = AudioClip.Create(name, sampleCount, 1, SampleRate, false);
+                clip.SetData(samples, 0);
+                return clip;
+            }
+            catch (Exception exception)
+            {
+                if (!s_clipCreateFailureLogged)
+                {
+                    s_clipCreateFailureLogged = true;
+                    Debug.LogWarning($"[Audio] AudioClip.Create indisponivel neste ambiente; SFX em silencio. (logado 1x) {exception.Message}");
+                }
+                return null;
+            }
         }
 
         public int SfxCacheCount => _sfxCache.Count;
@@ -185,6 +214,81 @@ namespace CindarsHope.Audio
                     return (float)(rng.NextDouble() * 2.0 - 1.0);
                 default:
                     return 0f;
+            }
+        }
+
+        /// <summary>
+        /// Preenche o buffer com a frase melódica (<see cref="MusicPhrase"/>): cada nota é
+        /// um sine puro em sequência, com envelope macio (ataque curto, sustain, release
+        /// suave) para soar legato/ambiente — não um beep. Fase reinicia por nota (sin(0)=0)
+        /// evitando clicks; um fade curto nas bordas suaviza o ponto de loop. Pura/testável.
+        /// </summary>
+        public static void FillMusicSamples(float[] samples, MusicPhrase phrase, int sampleRate)
+        {
+            if (samples == null || samples.Length == 0 || sampleRate <= 0 || !phrase.IsValid)
+            {
+                return;
+            }
+
+            int noteCount = phrase.Semitones.Count;
+            int total = samples.Length;
+            int samplesPerNote = Mathf.Max(1, total / noteCount);
+
+            const float attack = 0.08f;       // 8% de ataque
+            const float releaseStart = 0.68f; // release nos últimos 32%
+
+            for (int n = 0; n < noteCount; n++)
+            {
+                float freq = phrase.FrequencyAt(n);
+                int start = n * samplesPerNote;
+                int len = (n == noteCount - 1) ? (total - start) : samplesPerNote;
+                if (len <= 0)
+                {
+                    continue;
+                }
+
+                for (int i = 0; i < len; i++)
+                {
+                    int gi = start + i;
+                    if (gi >= total)
+                    {
+                        break;
+                    }
+
+                    float t = (float)i / sampleRate; // tempo LOCAL à nota (fase começa em 0)
+                    float wave = Mathf.Sin(2f * Mathf.PI * freq * t);
+
+                    float p = (float)i / len; // 0..1 dentro da nota
+                    float env;
+                    if (p < attack)
+                    {
+                        env = p / attack;
+                    }
+                    else if (p > releaseStart)
+                    {
+                        env = 1f - ((p - releaseStart) / (1f - releaseStart));
+                    }
+                    else
+                    {
+                        env = 1f;
+                    }
+
+                    if (env < 0f)
+                    {
+                        env = 0f;
+                    }
+
+                    samples[gi] = wave * phrase.Amplitude * env;
+                }
+            }
+
+            // Fade curto (~50ms) nas bordas para suavizar o ponto de loop da faixa.
+            int fade = Mathf.Min(total / 20, sampleRate / 20);
+            for (int i = 0; i < fade; i++)
+            {
+                float g = (float)i / fade;
+                samples[i] *= g;
+                samples[total - 1 - i] *= g;
             }
         }
     }
