@@ -93,7 +93,7 @@ Assets/_Game/Scripts/Skills/Runtime/Effects/FeedbackOnlySkillEffectExecutor.cs
 Assets/_Game/Scripts/Skills/Runtime/Effects/FarmCropSkillEffectExecutor.cs
 Assets/_Game/Scripts/Skills/Runtime/SkillEffectContext.cs
 Assets/_Game/Scripts/Skills/Data/DefaultSkillCatalog.cs (ou equivalente)
-docs/design/SKILL_NUMERIC_ADDENDUM_v1.0.md  (dano/cd/custo dos 14 nodes)
+docs/design/gameplay/combat/SKILL_NUMERIC_ADDENDUM_v1.0.md  (dano/cd/custo dos 14 nodes)
 docs/game_rules/combat_rules.md
 docs/game_rules/farm_rules.md
 docs/game_rules/player_rules.md

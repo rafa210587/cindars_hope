@@ -391,5 +391,6 @@ PROJECT_LOG + CURRENT_STATE conflict → prefer CURRENT_STATE; report mismatch
     ItemPriceResolver unificando os dois caminhos de preco (Shipping vs NpcShop),
     validator de range em 25 ShopDataSO; fecha Open Question de economy_rules.md;
     depends fable_32; blocks fable_42/51.
-- PLACAR atualizado: 76 specs funcionais (73 executadas/implementadas na branch dev + 3 novas a executar: fable_74, fable_75, fable_76) + 9 retro.
+- PLACAR atualizado: 77 specs funcionais (73 executadas/implementadas na branch dev + 4 novas a executar: fable_74, fable_75, fable_76, fable_77) + 9 retro.
+- fable_77: SceneFadeOverlay — overlay preto DontDestroyOnLoad; fade-in em SceneTransitionStartedEvent; fade-out em SceneTransitionCompletedEvent; fecha FADE_LOADING_DEFERRED_WITH_REASON.
 - validate_docs exit 0; nenhum codigo alterado; so spec files criados.

@@ -97,7 +97,7 @@ Assets/_Game/Scripts/Economy/               (ShopPricingService, ShippingService
 Assets/_Game/Data/Economy/                  (ShopDataSO assets — leitura)
 Assets/_Game/Scripts/Farm/Shipping/         (ShippingService ou SellPoint)
 docs/design/FABLE_DECISOES_RESPOSTAS_v2.0.md   (decisão 2.1/2.2 kit/baú; ritmo geral)
-docs/design/FABLE_BALANCE_CURVES.md            (curvas de XP e gold referência)
+docs/design/gameplay/combat/BALANCE_CURVES_DIRECTION_v1.0.md  (curvas de XP e gold referência)
 docs/game_rules/economy_rules.md
 docs/game_rules/farm_rules.md
 .claude/rules/no-magic-balance-values.md
@@ -243,7 +243,7 @@ if ($LASTEXITCODE -ne 0) { exit 1 }
 
 ## Stop conditions
 
-- `FABLE_BALANCE_CURVES.md` não existe → parar e pedir ao humano
+- `docs/design/gameplay/combat/BALANCE_CURVES_DIRECTION_v1.0.md` não existe → parar e pedir ao humano
 - `EconomyBalanceConfigSO` criação via YAML manual (não gerador/API) → parar
 - Qualquer ShopDataSO gerado com erro no validator → reportar antes de commitar
 
