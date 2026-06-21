@@ -37,11 +37,11 @@ namespace CindarsHope.Combat
 
             if (string.IsNullOrEmpty(equippedItemId))
             {
-                Debug.Log($"CombatLog: PlayerAttackResolveSlot. Slot={slot}, EquippedInstanceId=<empty>");
+                CombatLog.Log($"CombatLog: PlayerAttackResolveSlot. Slot={slot}, EquippedInstanceId=<empty>");
                 return null;
             }
 
-            Debug.Log($"CombatLog: PlayerAttackResolveSlot. Slot={slot}, EquippedInstanceId={equippedItemId}");
+            CombatLog.Log($"CombatLog: PlayerAttackResolveSlot. Slot={slot}, EquippedInstanceId={equippedItemId}");
 
             ItemDataSO itemData = null;
             string weaponLookupId = equippedItemId;
@@ -50,7 +50,7 @@ namespace CindarsHope.Combat
             if (_itemDatabase != null && _itemDatabase.TryGetById(equippedItemId, out itemData) && itemData != null)
             {
                 wentThroughItemDatabase = true;
-                Debug.Log($"CombatLog: PlayerAttackResolveItemData. ItemInstanceId={equippedItemId}, ItemDataId={itemData.Id}, ItemType={itemData.Category}, WeaponId='{itemData.WeaponId}'");
+                CombatLog.Log($"CombatLog: PlayerAttackResolveItemData. ItemInstanceId={equippedItemId}, ItemDataId={itemData.Id}, ItemType={itemData.Category}, WeaponId='{itemData.WeaponId}'");
                 if (!string.IsNullOrEmpty(itemData.WeaponId))
                 {
                     weaponLookupId = itemData.WeaponId;
@@ -58,17 +58,17 @@ namespace CindarsHope.Combat
                 else
                 {
                     error = $"Item '{equippedItemId}' (Category={itemData.Category}) is not a weapon — WeaponId is empty.";
-                    Debug.Log($"CombatLog: PlayerAttackResolveWeapon. WeaponId=<none>, WeaponResolved=False, Reason=ItemNotWeapon");
+                    CombatLog.Log($"CombatLog: PlayerAttackResolveWeapon. WeaponId=<none>, WeaponResolved=False, Reason=ItemNotWeapon");
                     return null;
                 }
             }
             else
             {
-                Debug.Log($"CombatLog: PlayerAttackResolveItemData. ItemInstanceId={equippedItemId}, ItemDataId=<not_in_itemdb>, FallingBackToDirectWeaponLookup=True");
+                CombatLog.Log($"CombatLog: PlayerAttackResolveItemData. ItemInstanceId={equippedItemId}, ItemDataId=<not_in_itemdb>, FallingBackToDirectWeaponLookup=True");
             }
 
             var weapon = LookupWeapon(weaponLookupId);
-            Debug.Log($"CombatLog: PlayerAttackResolveWeapon. WeaponId={weaponLookupId}, WeaponResolved={weapon != null}, ViaItemDb={wentThroughItemDatabase}");
+            CombatLog.Log($"CombatLog: PlayerAttackResolveWeapon. WeaponId={weaponLookupId}, WeaponResolved={weapon != null}, ViaItemDb={wentThroughItemDatabase}");
 
             if (weapon == null)
             {

@@ -41,7 +41,7 @@ namespace CindarsHope.Combat
             if (_enemyData != null)
             {
                 _currentHp = _enemyData.maxHp;
-                Debug.Log($"CombatLog: Enemy configured. {BuildEnemyLogPrefix()}, HP={_currentHp}/{MaxHp}, Level={_enemyData.enemyLevel}, Difficulty={_enemyData.baseDifficulty}.", this);
+                CombatLog.Log($"CombatLog: Enemy configured. {BuildEnemyLogPrefix()}, HP={_currentHp}/{MaxHp}, Level={_enemyData.enemyLevel}, Difficulty={_enemyData.baseDifficulty}.", this);
             }
 
             if (GetComponent<CindarsHope.Combat.StatusEffect.EnemyStatusRuntimeTicker>() == null)
@@ -89,7 +89,7 @@ namespace CindarsHope.Combat
             }
 
             _currentHp = _enemyData.maxHp;
-            Debug.Log($"CombatLog: Enemy spawned. {BuildEnemyLogPrefix()}, HP={_currentHp}/{MaxHp}, Level={_enemyData.enemyLevel}, Difficulty={_enemyData.baseDifficulty}.", this);
+            CombatLog.Log($"CombatLog: Enemy spawned. {BuildEnemyLogPrefix()}, HP={_currentHp}/{MaxHp}, Level={_enemyData.enemyLevel}, Difficulty={_enemyData.baseDifficulty}.", this);
 
             if (GetComponent<CindarsHope.Combat.StatusEffect.EnemyStatusRuntimeTicker>() == null)
                 gameObject.AddComponent<CindarsHope.Combat.StatusEffect.EnemyStatusRuntimeTicker>();
@@ -100,7 +100,7 @@ namespace CindarsHope.Combat
             if (statusEffect != null)
             {
                 _statusEffects.ApplyStatusEffect(statusEffect);
-                Debug.Log($"CombatLog: Applied status effect '{statusEffect.DisplayName}' to {DisplayName}.", this);
+                CombatLog.Log($"CombatLog: Applied status effect '{statusEffect.DisplayName}' to {DisplayName}.", this);
             }
         }
 
@@ -155,7 +155,7 @@ namespace CindarsHope.Combat
             var hpBefore = _currentHp;
             _currentHp -= damageResult.FinalDamage;
             _currentHp = Mathf.Max(0, _currentHp);
-            Debug.Log($"CombatLog: Hit enemy. {BuildEnemyLogPrefix()}, Damage={damageResult.FinalDamage}, HP={hpBefore}->{_currentHp}/{MaxHp}.", this);
+            CombatLog.Log($"CombatLog: Hit enemy. {BuildEnemyLogPrefix()}, Damage={damageResult.FinalDamage}, HP={hpBefore}->{_currentHp}/{MaxHp}.", this);
 
             GameEventBus.Publish(new DamageAppliedEvent(damageResult, transform.position));
             // SPEC 14A-FIX10: explicit show-at-target so popup lands above this enemy's collider
@@ -177,7 +177,7 @@ namespace CindarsHope.Combat
                     Vector3 direction = (currentPosition - request.SourcePosition).normalized;
                     float finalForce = request.KnockbackForce * _enemyData.receivedKnockbackMultiplier;
                     knockback.ApplyKnockback((Vector2)direction, finalForce);
-                    Debug.Log($"CombatLog: Knockback enemy. {BuildEnemyLogPrefix()}, Force={finalForce}, HP={_currentHp}/{MaxHp}.", this);
+                    CombatLog.Log($"CombatLog: Knockback enemy. {BuildEnemyLogPrefix()}, Force={finalForce}, HP={_currentHp}/{MaxHp}.", this);
                 }
             }
 
@@ -194,7 +194,7 @@ namespace CindarsHope.Combat
                 _enemyData.baseDifficulty,
                 _enemyData.xpRewardOverride);
 
-            Debug.Log($"CombatLog: Enemy defeated. {BuildEnemyLogPrefix()}, HP=0/{MaxHp}, Drop={_enemyData.dropItemId} x{_enemyData.dropAmount}, XP={xpReward}.", this);
+            CombatLog.Log($"CombatLog: Enemy defeated. {BuildEnemyLogPrefix()}, HP=0/{MaxHp}, Drop={_enemyData.dropItemId} x{_enemyData.dropAmount}, XP={xpReward}.", this);
 
             var bossReporter = GetComponent<CaveBossDeathReporter>();
             if (bossReporter != null)

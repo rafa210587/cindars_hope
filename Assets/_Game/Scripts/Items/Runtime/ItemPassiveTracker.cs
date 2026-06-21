@@ -112,7 +112,7 @@ namespace CindarsHope.Items.Runtime
 
             if (_state.Recompute(present))
             {
-                Debug.Log(
+                CindarsHope.Combat.CombatLog.Log(
                     $"CombatLog: MagicPassiveFlagsChanged. SlotBonus={_state.SlotBonus}, Flags=[{string.Join(",", _state.ActiveFlags)}].",
                     this);
             }

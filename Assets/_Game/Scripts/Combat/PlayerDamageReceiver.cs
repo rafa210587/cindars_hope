@@ -44,7 +44,7 @@ namespace CindarsHope.Combat
             rawDamage = Magic.PlayerBarrierState.AbsorbIncoming(rawDamage, Time.time);
             if (rawDamage <= 0)
             {
-                Debug.Log($"CombatLog: PlayerDamageFullyAbsorbedByBarrier. Source={sourceId}");
+                CombatLog.Log($"CombatLog: PlayerDamageFullyAbsorbedByBarrier. Source={sourceId}");
                 return 0;
             }
 
@@ -65,14 +65,14 @@ namespace CindarsHope.Combat
             var resistance = ResistanceSource != null ? ResistanceSource(damageType) : 0;
             var finalDamage = CalculateReducedDamage(rawDamage, defense, resistance);
             playerManager.DamageHP(finalDamage);
-            Debug.Log($"CombatLog: PlayerDamageReceived. Source={sourceId}, Raw={rawDamage}, Defense={defense}, Resist={resistance}({damageType}), Final={finalDamage}");
+            CombatLog.Log($"CombatLog: PlayerDamageReceived. Source={sourceId}, Raw={rawDamage}, Defense={defense}, Resist={resistance}({damageType}), Final={finalDamage}");
             return finalDamage;
         }
 
         // F27: perfect block — dano 0, postura refletida no atacante melee, guard break canônico.
         private static void HandlePerfectBlock(int rawDamage, string sourceId, GameObject attacker)
         {
-            Debug.Log($"CombatLog: PlayerPerfectBlock. Source={sourceId}, NegatedDamage={rawDamage}");
+            CombatLog.Log($"CombatLog: PlayerPerfectBlock. Source={sourceId}, NegatedDamage={rawDamage}");
             Core.GameEventBus.Publish(new Core.Events.PlayerPerfectBlockEvent(sourceId, rawDamage));
             Core.GameEventBus.Publish(new Core.Events.PlayerActionFeedbackEvent("Perfect block!"));
 

@@ -75,13 +75,13 @@ namespace CindarsHope.Enemy
             float dist = Vector2.Distance(transform.position, playerObject.transform.position);
             if (dist > BlastRadius)
             {
-                Debug.Log($"CombatLog: EliteVolatileBlastDodged. EnemyId={_sourceEnemyId}, Distance={dist:F2}, Radius={BlastRadius:F2}.");
+                CindarsHope.Combat.CombatLog.Log($"CombatLog: EliteVolatileBlastDodged. EnemyId={_sourceEnemyId}, Distance={dist:F2}, Radius={BlastRadius:F2}.");
                 return;
             }
 
             int applied = PlayerDamageReceiver.ApplyDamage(playerManager, _damage, _sourceEnemyId, DamageType.Physical, gameObject);
             GameEventBus.Publish(new PlayerDamagedEvent(applied, transform.position, _sourceEnemyId, _sourceEnemyId));
-            Debug.Log($"CombatLog: EliteVolatileBlastHit. EnemyId={_sourceEnemyId}, Damage={applied}.");
+            CindarsHope.Combat.CombatLog.Log($"CombatLog: EliteVolatileBlastHit. EnemyId={_sourceEnemyId}, Damage={applied}.");
         }
     }
 }

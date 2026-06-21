@@ -137,13 +137,13 @@ namespace CindarsHope.Combat
             float cooldown = Mathf.Max(0.1f, spellData.CooldownSeconds);
             if (!CooldownHelper.IsCooldownExpired(lastAttackTime, cooldown))
             {
-                Debug.Log($"CombatLog: PlayerAttackBlocked. Reason=Cooldown, Slot={slot}, RemainingSeconds={CooldownHelper.GetRemainingCooldown(lastAttackTime, cooldown):F2}");
+                CombatLog.Log($"CombatLog: PlayerAttackBlocked. Reason=Cooldown, Slot={slot}, RemainingSeconds={CooldownHelper.GetRemainingCooldown(lastAttackTime, cooldown):F2}");
                 return AttackResult.CreateError("Cooldown");
             }
 
             if (_manaManager != null && !_manaManager.TrySpendMana(spellData.ManaCost))
             {
-                Debug.Log($"CombatLog: PlayerAttackBlocked. Reason=InsufficientMana, Slot={slot}, ManaCost={spellData.ManaCost}");
+                CombatLog.Log($"CombatLog: PlayerAttackBlocked. Reason=InsufficientMana, Slot={slot}, ManaCost={spellData.ManaCost}");
                 return AttackResult.CreateError("InsufficientMana");
             }
 
@@ -205,7 +205,7 @@ namespace CindarsHope.Combat
                 if (_equipmentManager != null)
                     _equipmentManager.RegisterEquipmentUsage();
                 GameEventBus.Publish(new SpellCastSucceededEvent(spell.Id));
-                Debug.Log($"CombatLog: SpellResolved. Slot={plan.Slot}, Spell={spell.Id}, Shape={spell.Shape}, Damage={plan.FinalDamage}, ManaCost={plan.ManaSpent}");
+                CombatLog.Log($"CombatLog: SpellResolved. Slot={plan.Slot}, Spell={spell.Id}, Shape={spell.Shape}, Damage={plan.FinalDamage}, ManaCost={plan.ManaSpent}");
             }
 
             return result;
@@ -224,7 +224,7 @@ namespace CindarsHope.Combat
                 _manaManager.RestoreMana(plan.ManaSpent);
             }
 
-            Debug.Log($"CombatLog: SpellCastInterrupted. Spell={plan.Spell?.Id}, RefundedMana={plan.ManaSpent}");
+            CombatLog.Log($"CombatLog: SpellCastInterrupted. Spell={plan.Spell?.Id}, RefundedMana={plan.ManaSpent}");
             GameEventBus.Publish(new CindarsHope.Core.Events.SpellCastInterruptedEvent(plan.Spell?.Id, plan.ManaSpent));
         }
 
@@ -270,7 +270,7 @@ namespace CindarsHope.Combat
                 return AttackResult.CreateError("ProjectileSpawnFailed", spawnResult.ErrorCode);
             }
 
-            Debug.Log($"CombatLog: SpellFired. Slot={plan.Slot}, Spell={spell.Id}, Range={spell.Range}, Speed={spell.ProjectileSpeed}, ManaCost={plan.ManaSpent}");
+            CombatLog.Log($"CombatLog: SpellFired. Slot={plan.Slot}, Spell={spell.Id}, Range={spell.Range}, Speed={spell.ProjectileSpeed}, ManaCost={plan.ManaSpent}");
             return AttackResult.CreateSuccess();
         }
 
@@ -300,7 +300,7 @@ namespace CindarsHope.Combat
                 return AttackResult.CreateError("ConeSpawnFailed");
             }
 
-            Debug.Log($"CombatLog: SpellConeFired. Spell={spell.Id}, Projectiles={spawned}/{count}, SpreadDeg={spreadDeg:F1}");
+            CombatLog.Log($"CombatLog: SpellConeFired. Spell={spell.Id}, Projectiles={spawned}/{count}, SpreadDeg={spreadDeg:F1}");
             return AttackResult.CreateSuccess();
         }
 
@@ -339,7 +339,7 @@ namespace CindarsHope.Combat
                 affected++;
             }
 
-            Debug.Log($"CombatLog: SpellNovaResolved. Spell={spell.Id}, Radius={radius:F2}, Affected={affected}");
+            CombatLog.Log($"CombatLog: SpellNovaResolved. Spell={spell.Id}, Radius={radius:F2}, Affected={affected}");
             return AttackResult.CreateSuccess();
         }
 
@@ -367,7 +367,7 @@ namespace CindarsHope.Combat
                 mp = spell.RestoreMana;
             }
 
-            Debug.Log($"CombatLog: SpellSelfRestore. Spell={spell.Id}, HP=+{hp}, Stamina=+{st}, Mana=+{mp}");
+            CombatLog.Log($"CombatLog: SpellSelfRestore. Spell={spell.Id}, HP=+{hp}, Stamina=+{st}, Mana=+{mp}");
             return AttackResult.CreateSuccess();
         }
 
@@ -376,7 +376,7 @@ namespace CindarsHope.Combat
         {
             var spell = plan.Spell;
             PlayerBarrierState.Cast(spell.BarrierAbsorb, spell.BarrierSeconds, Time.time, spell.Id);
-            Debug.Log($"CombatLog: SpellBarrierCast. Spell={spell.Id}, Absorb={spell.BarrierAbsorb}, Seconds={spell.BarrierSeconds:F2}");
+            CombatLog.Log($"CombatLog: SpellBarrierCast. Spell={spell.Id}, Absorb={spell.BarrierAbsorb}, Seconds={spell.BarrierSeconds:F2}");
             return AttackResult.CreateSuccess();
         }
 

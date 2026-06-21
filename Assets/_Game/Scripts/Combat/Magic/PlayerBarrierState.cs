@@ -44,7 +44,7 @@ namespace CindarsHope.Combat.Magic
             }
 
             ActiveInstance = new PlayerBarrierState(absorb, now + seconds, sourceSpellId);
-            Debug.Log($"CombatLog: SpellBarrierRaised. Spell={ActiveInstance.SourceSpellId}, Absorb={absorb}, Seconds={seconds:F2}");
+            CombatLog.Log($"CombatLog: SpellBarrierRaised. Spell={ActiveInstance.SourceSpellId}, Absorb={absorb}, Seconds={seconds:F2}");
             return ActiveInstance;
         }
 
@@ -74,11 +74,11 @@ namespace CindarsHope.Combat.Magic
             }
 
             int passthrough = barrier.ConsumeAbsorb(rawDamage, out int absorbed);
-            Debug.Log($"CombatLog: SpellBarrierAbsorbed. Spell={barrier.SourceSpellId}, Absorbed={absorbed}, Passthrough={passthrough}, Remaining={barrier.RemainingAbsorb}");
+            CombatLog.Log($"CombatLog: SpellBarrierAbsorbed. Spell={barrier.SourceSpellId}, Absorbed={absorbed}, Passthrough={passthrough}, Remaining={barrier.RemainingAbsorb}");
 
             if (barrier.RemainingAbsorb <= 0)
             {
-                Debug.Log($"CombatLog: SpellBarrierExpired. Spell={barrier.SourceSpellId}, Reason=Depleted");
+                CombatLog.Log($"CombatLog: SpellBarrierExpired. Spell={barrier.SourceSpellId}, Reason=Depleted");
                 Clear();
             }
 

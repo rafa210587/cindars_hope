@@ -218,7 +218,7 @@ namespace CindarsHope.Cave.Runtime
             {
                 _playerTransform.position = GridToWorld(_lastPlayerSpawnGrid, generatedLevel);
 
-                Debug.Log(
+                CombatLog.Log(
                     $"CaveRuntimeMaterializer: Player spawned at anchor {spawnAnchor}. AnchorGrid: {anchorGrid}, ResolvedGrid: {_lastPlayerSpawnGrid}, WorldPos: {_playerTransform.position}",
                     this);
 
@@ -228,7 +228,7 @@ namespace CindarsHope.Cave.Runtime
             // fable_09: hazards + sala de tesouro DETERMINÍSTICOS (após inimigos, para realocar guardiões).
             MaterializeHazardsAndTreasure(generatedLevel);
 
-            Debug.Log(
+            CombatLog.Log(
                 $"CaveRuntimeMaterializer: Materialized level {generatedLevel.CaveLevel}. Floor: {_lastMaterializationResult.CreatedFloorTiles}, Walls: {_lastMaterializationResult.CreatedWallTiles}, Resources: {_lastMaterializationResult.CreatedResourceNodes}, Enemies: {_lastMaterializationResult.CreatedEnemies}. BackExit: {_lastMaterializationResult.BackExitPosition}, ForwardExit: {_lastMaterializationResult.ForwardExitPosition}. SpawnAnchor: {spawnAnchor}",
                 this);
 
@@ -439,7 +439,7 @@ namespace CindarsHope.Cave.Runtime
                 _lastMaterializationResult.ForwardExitPosition = forwardExitPos;
             }
 
-            Debug.Log($"CaveRuntimeMaterializer: BackExit at ({generatedLevel.Entrance.x}, {generatedLevel.Entrance.y}), ForwardExit at ({generatedLevel.Exit.x}, {generatedLevel.Exit.y}).", this);
+            CombatLog.Log($"CaveRuntimeMaterializer: BackExit at ({generatedLevel.Entrance.x}, {generatedLevel.Entrance.y}), ForwardExit at ({generatedLevel.Exit.x}, {generatedLevel.Exit.y}).", this);
         }
 
         private void MaterializeResourceNodes(CaveGeneratedLevel generatedLevel)
@@ -813,12 +813,12 @@ namespace CindarsHope.Cave.Runtime
             }
 
             RebindCombatDatabases(registry);
-            Debug.Log("CaveRuntimeMaterializer: combat databases re-bound from Resources/CombatRuntimeDatabasesRegistry.", this);
+            CombatLog.Log("CaveRuntimeMaterializer: combat databases re-bound from Resources/CombatRuntimeDatabasesRegistry.", this);
         }
 
         private void LogDatabasesWiringStatus(CaveGeneratedLevel generatedLevel)
         {
-            Debug.Log(
+            CombatLog.Log(
                 "CombatLog: EnemyDatabasesWiringStatus. " +
                 $"CaveLevel={generatedLevel?.CaveLevel}, " +
                 $"EnemyDatabaseAssigned={_enemyDatabase != null}, " +
@@ -955,7 +955,7 @@ namespace CindarsHope.Cave.Runtime
                     generatedLevel.CaveLevel));
             }
 
-            Debug.Log(
+            CombatLog.Log(
                 $"CaveRuntimeMaterializer: Materialized {_lastMaterializationResult.CreatedEnemies} enemies for level {generatedLevel.CaveLevel}. Seed={_lastEnemySpawnPlan.LevelSeed}. LayoutHash={_lastEnemySpawnPlan.LayoutHash}.",
                 this);
         }
@@ -1030,7 +1030,7 @@ namespace CindarsHope.Cave.Runtime
                 _materializedObjects.Add(hazardGO);
             }
 
-            Debug.Log($"CaveRuntimeMaterializer: materialized {plan.Hazards.Count} hazard(s) for level {generatedLevel.CaveLevel}.", this);
+            CombatLog.Log($"CaveRuntimeMaterializer: materialized {plan.Hazards.Count} hazard(s) for level {generatedLevel.CaveLevel}.", this);
         }
 
         private void MaterializeTreasureRoom(CaveGeneratedLevel generatedLevel, CaveHazardPlan plan)
@@ -1076,7 +1076,7 @@ namespace CindarsHope.Cave.Runtime
                 RegisterOpenedChest);
 
             _materializedObjects.Add(chestGO);
-            Debug.Log(
+            CombatLog.Log(
                 $"CaveRuntimeMaterializer: materialized treasure chest '{treasure.ChestId}' (opened={alreadyOpened}) for level {generatedLevel.CaveLevel}.",
                 this);
         }
@@ -1229,7 +1229,7 @@ namespace CindarsHope.Cave.Runtime
                 _materializedObjects.Add(trapGO);
             }
 
-            Debug.Log(
+            CombatLog.Log(
                 $"CaveRuntimeMaterializer: materialized {_lastTrapPlan.Traps.Count} trap(s) for level {caveLevel}.",
                 this);
         }
@@ -1611,7 +1611,7 @@ namespace CindarsHope.Cave.Runtime
                     entry.EliteDisplayName = CindarsHope.Enemy.EliteAffixRules.BuildEliteDisplayName(eliteAffix, enemyData.DisplayName);
                 }
 
-                Debug.Log($"CombatLog: EliteSpawned. EnemyId={enemyData.enemyId}, Affix={eliteAffix}, " +
+                CombatLog.Log($"CombatLog: EliteSpawned. EnemyId={enemyData.enemyId}, Affix={eliteAffix}, " +
                           $"Name={entry?.EliteDisplayName}, InstanceId={entry?.EnemyInstanceId}, CaveLevel={caveLevel}.", enemyObject);
             }
 
@@ -1662,7 +1662,7 @@ namespace CindarsHope.Cave.Runtime
                 ? Mathf.Max(0.1f, sizeProfile.ColliderRadius)
                 : ResolveColliderRadius(entry.SizeClass);
 
-            Debug.Log(
+            CombatLog.Log(
                 $"CombatLog: EnemyRuntimeConfigured. " +
                 $"Name={enemyData.DisplayName}, EnemyId={enemyData.enemyId}, " +
                 $"InstanceId={entry.EnemyInstanceId}, CaveLevel={caveLevel}, " +

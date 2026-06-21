@@ -170,7 +170,7 @@ namespace CindarsHope.Combat
         // SPEC 14A-FIX9: log every equip/unequip so we can see what the UI flow really stored.
         private void OnEquipmentSlotChanged(EquipmentSlotChangedEvent evt)
         {
-            Debug.Log($"CombatLog: EquipmentSlotChanged. Slot={evt.Slot}, ItemInstanceId='{evt.ItemInstanceId ?? "<null>"}'", this);
+            CombatLog.Log($"CombatLog: EquipmentSlotChanged. Slot={evt.Slot}, ItemInstanceId='{evt.ItemInstanceId ?? "<null>"}'", this);
         }
 
         public void RebindStaminaManager(StaminaManager staminaManager)
@@ -262,13 +262,13 @@ namespace CindarsHope.Combat
             if (Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.E))
             {
                 string key = Input.GetKeyDown(KeyCode.Q) ? "Q" : "E";
-                Debug.Log($"CombatLog: PlayerAttackInputReceived. Key={key}, ModalOpen={modalOpen}", this);
+                CombatLog.Log($"CombatLog: PlayerAttackInputReceived. Key={key}, ModalOpen={modalOpen}", this);
             }
 
             if (modalOpen)
             {
                 if (Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.E))
-                    Debug.Log("CombatLog: PlayerAttackBlocked. Reason=ModalActive", this);
+                    CombatLog.Log("CombatLog: PlayerAttackBlocked. Reason=ModalActive", this);
                 _leftCharge.Cancel();
                 _rightCharge.Cancel();
                 UpdateChargeTelegraph();
@@ -280,7 +280,7 @@ namespace CindarsHope.Combat
             if (PlayerStatusReceiver.Instance != null && PlayerStatusReceiver.Instance.IsActionBlocked)
             {
                 if (Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.E))
-                    Debug.Log("CombatLog: PlayerAttackBlocked. Reason=PlayerStunned", this);
+                    CombatLog.Log("CombatLog: PlayerAttackBlocked. Reason=PlayerStunned", this);
                 _leftCharge.Cancel();
                 _rightCharge.Cancel();
                 UpdateChargeTelegraph();
@@ -305,7 +305,7 @@ namespace CindarsHope.Combat
                 if (_interactionSystem != null && _interactionSystem.HasCandidate)
                 {
                     // Regressão protegida: E com candidato continua interagindo (charge não inicia).
-                    Debug.Log("CombatLog: PlayerAttackBlocked. Reason=InteractionCandidatePresent (E used for interact)", this);
+                    CombatLog.Log("CombatLog: PlayerAttackBlocked. Reason=InteractionCandidatePresent (E used for interact)", this);
                 }
                 else
                 {
@@ -399,7 +399,7 @@ namespace CindarsHope.Combat
         {
             if (_isDodging)
             {
-                Debug.Log($"CombatLog: PlayerAttackBlocked. Reason=Dodging, Slot={slot}", this);
+                CombatLog.Log($"CombatLog: PlayerAttackBlocked. Reason=Dodging, Slot={slot}", this);
                 return;
             }
 
@@ -428,7 +428,7 @@ namespace CindarsHope.Combat
                 var bowCheck = LookupWeapon(itemData.WeaponId);
                 if (bowCheck != null && bowCheck.Type == WeaponType.Bow)
                 {
-                    Debug.Log($"CombatLog: PlayerAttackBlocked. Reason=BowHandPressed_UseArrowHand, Slot={slot}", this);
+                    CombatLog.Log($"CombatLog: PlayerAttackBlocked. Reason=BowHandPressed_UseArrowHand, Slot={slot}", this);
                     return;
                 }
             }
@@ -456,7 +456,7 @@ namespace CindarsHope.Combat
             // SPEC_07B: Block bow from normal weapon path — must use bow+arrow path instead
             if (weapon.Type == WeaponType.Bow)
             {
-                Debug.Log($"CombatLog: PlayerAttackBlocked. Reason=BowHandPressed_UseArrowHand, Slot={slot}", this);
+                CombatLog.Log($"CombatLog: PlayerAttackBlocked. Reason=BowHandPressed_UseArrowHand, Slot={slot}", this);
                 return;
             }
 
@@ -469,7 +469,7 @@ namespace CindarsHope.Combat
 
             if (!CooldownHelper.IsCooldownExpired(lastAttackTime, cooldown))
             {
-                Debug.Log($"CombatLog: PlayerAttackBlocked. Reason=Cooldown, Slot={slot}, RemainingSeconds={CooldownHelper.GetRemainingCooldown(lastAttackTime, cooldown):F2}", this);
+                CombatLog.Log($"CombatLog: PlayerAttackBlocked. Reason=Cooldown, Slot={slot}, RemainingSeconds={CooldownHelper.GetRemainingCooldown(lastAttackTime, cooldown):F2}", this);
                 return;
             }
 
@@ -477,11 +477,11 @@ namespace CindarsHope.Combat
             int staminaCost = PlayerCombatStatsProvider.WeaponStaminaCost(weapon, weight);
             if (_staminaManager != null && !_staminaManager.TrySpendStamina(staminaCost))
             {
-                Debug.Log($"CombatLog: PlayerAttackBlocked. Reason=InsufficientStamina, Slot={slot}, StaminaCost={staminaCost}", this);
+                CombatLog.Log($"CombatLog: PlayerAttackBlocked. Reason=InsufficientStamina, Slot={slot}, StaminaCost={staminaCost}", this);
                 return;
             }
 
-            Debug.Log($"CombatLog: PlayerAttackStarted. Slot={slot}, Weapon={weapon.DisplayName}, BaseDamage={weapon.BaseDamage}, Weight={weight}, Range={weapon.Range:F2}, Type={weapon.Type}", this);
+            CombatLog.Log($"CombatLog: PlayerAttackStarted. Slot={slot}, Weapon={weapon.DisplayName}, BaseDamage={weapon.BaseDamage}, Weight={weight}, Range={weapon.Range:F2}, Type={weapon.Type}", this);
             GameEventBus.Publish(new PlayerChargedAttackEvent((int)weight));
             // fable_22: passa a instância equipada para o ponto único de tags (infusão de têmpera).
             ExecuteWeaponAttack(weapon, weight, equippedItemId);
@@ -620,7 +620,7 @@ namespace CindarsHope.Combat
                 if (enemyHealth == null)
                     continue;
 
-                Debug.Log($"CombatLog: PlayerAttackHitCandidate. EnemyId={enemyHealth.EnemyId}, EnemyHP={enemyHealth.CurrentHp}/{enemyHealth.MaxHp}, Distance={Vector2.Distance(attackCenter, collider.transform.position):F2}", this);
+                CombatLog.Log($"CombatLog: PlayerAttackHitCandidate. EnemyId={enemyHealth.EnemyId}, EnemyHP={enemyHealth.CurrentHp}/{enemyHealth.MaxHp}, Distance={Vector2.Distance(attackCenter, collider.transform.position):F2}", this);
 
                 // F02: dano final = (base + Attack derivado) × peso × crítico canônico.
                 // Janela de vulnerabilidade aberta (CoreExposed) GARANTE crítico (emenda).
@@ -655,12 +655,12 @@ namespace CindarsHope.Combat
                     posture.ApplyPostureDamage(weapon.BaseDamage * AttackChargeRules.PostureMultiplier(weight));
                 }
 
-                Debug.Log($"CombatLog: PlayerAttackDamageApplied. EnemyId={enemyHealth.EnemyId}, BaseDamage={weapon.BaseDamage}, FinalDamage={finalDamage}, Weight={weight}, Crit={isCrit}, HP={hpBefore}->{enemyHealth.CurrentHp}", this);
+                CombatLog.Log($"CombatLog: PlayerAttackDamageApplied. EnemyId={enemyHealth.EnemyId}, BaseDamage={weapon.BaseDamage}, FinalDamage={finalDamage}, Weight={weight}, Crit={isCrit}, HP={hpBefore}->{enemyHealth.CurrentHp}", this);
             }
 
             if (hitEnemies == 0)
             {
-                Debug.Log($"CombatLog: PlayerAttackMissed. Reason={(candidatesTotal == 0 ? "NoCollidersInRange" : "NoEnemyHealthInColliders")}, AttackCenter={attackCenter}, Range={weapon.Range:F2}, CollidersSeen={candidatesTotal}, Direction={direction}", this);
+                CombatLog.Log($"CombatLog: PlayerAttackMissed. Reason={(candidatesTotal == 0 ? "NoCollidersInRange" : "NoEnemyHealthInColliders")}, AttackCenter={attackCenter}, Range={weapon.Range:F2}, CollidersSeen={candidatesTotal}, Direction={direction}", this);
             }
         }
 

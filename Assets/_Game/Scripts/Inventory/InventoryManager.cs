@@ -53,7 +53,7 @@ namespace CindarsHope.Inventory
         public void InitializeFromStartingItems(PlayerDataSO playerData, ItemDatabaseSO itemDatabase)
         {
             Initialize(itemDatabase);
-            Debug.Log("CombatLog: StarterInventoryCheckStarted.", this);
+            CindarsHope.Combat.CombatLog.Log("CombatLog: StarterInventoryCheckStarted.", this);
 
             if (playerData == null)
             {
@@ -80,7 +80,7 @@ namespace CindarsHope.Inventory
         public void EnsureStarterItemsPresent(PlayerDataSO playerData, ItemDatabaseSO itemDatabase, string reason)
         {
             Initialize(itemDatabase);
-            Debug.Log($"CombatLog: StarterInventoryCheckStarted. Reason={reason}.", this);
+            CindarsHope.Combat.CombatLog.Log($"CombatLog: StarterInventoryCheckStarted. Reason={reason}.", this);
 
             if (playerData == null)
             {
@@ -134,7 +134,7 @@ namespace CindarsHope.Inventory
             }
 
             var appliedReason = added.Count > 0 ? reason : "AlreadyPresent";
-            Debug.Log($"CombatLog: StarterInventoryApplied={added.Count > 0}. StarterInventoryReason={appliedReason}. ItemsAdded=[{string.Join(", ", added)}]. Skipped=[{string.Join(", ", skipped)}].", this);
+            CindarsHope.Combat.CombatLog.Log($"CombatLog: StarterInventoryApplied={added.Count > 0}. StarterInventoryReason={appliedReason}. ItemsAdded=[{string.Join(", ", added)}]. Skipped=[{string.Join(", ", skipped)}].", this);
         }
 
         // SPEC 14A-FIX14: clear hotbar bindings that point to items not present in the inventory.
@@ -148,12 +148,12 @@ namespace CindarsHope.Inventory
                 if (string.IsNullOrWhiteSpace(id)) continue;
                 if (GetAmount(id) <= 0)
                 {
-                    Debug.Log($"CombatLog: HotbarInvalidBindingCleared. Slot={i}, ItemId='{id}', Reason=NotInInventory.", this);
+                    CindarsHope.Combat.CombatLog.Log($"CombatLog: HotbarInvalidBindingCleared. Slot={i}, ItemId='{id}', Reason=NotInInventory.", this);
                     setSlot(i, string.Empty);
                     cleared++;
                 }
             }
-            Debug.Log($"CombatLog: HotbarConsistencyCheck. Cleared={cleared}/{slotCount}.", this);
+            CindarsHope.Combat.CombatLog.Log($"CombatLog: HotbarConsistencyCheck. Cleared={cleared}/{slotCount}.", this);
             return cleared;
         }
 

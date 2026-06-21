@@ -69,7 +69,7 @@ namespace CindarsHope.Combat
                 {
                     // F03/F27: redução central; atacante = este inimigo (perfect block reflete).
                     var finalDamage = PlayerDamageReceiver.ApplyDamage(_playerManager, _enemyData.contactDamage, _enemyData.enemyId, DamageType.Physical, gameObject);
-                    Debug.Log($"CombatLog: EnemyContactDamage. SourceName={_enemyData.DisplayName}, SourceEnemyId={_enemyData.enemyId}, Target=Player, Damage={finalDamage}.");
+                    CombatLog.Log($"CombatLog: EnemyContactDamage. SourceName={_enemyData.DisplayName}, SourceEnemyId={_enemyData.enemyId}, Target=Player, Damage={finalDamage}.");
                     GameEventBus.Publish(new PlayerDamagedEvent(finalDamage, collision.transform.position, _enemyData.enemyId, _enemyData.DisplayName));
                     // SPEC 14A-FIX10: popup at the actual player object, not the trigger position.
                     FloatingDamageNumberDisplayer.ShowAtTarget(playerController.gameObject, finalDamage, DamageType.Physical, false, true);

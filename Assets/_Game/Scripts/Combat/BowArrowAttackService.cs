@@ -63,7 +63,7 @@ namespace CindarsHope.Combat
 
             if (bowWeapon == null || bowWeapon.Type != WeaponType.Bow)
             {
-                Debug.Log($"CombatLog: PlayerAttackBlocked. Reason=ArrowRequiresBowInOtherHand, AmmoSlot={ammoSlot}, BowSlot={bowSlot}");
+                CombatLog.Log($"CombatLog: PlayerAttackBlocked. Reason=ArrowRequiresBowInOtherHand, AmmoSlot={ammoSlot}, BowSlot={bowSlot}");
                 return AttackResult.CreateError("ArrowRequiresBowInOtherHand");
             }
 
@@ -72,20 +72,20 @@ namespace CindarsHope.Combat
             float cooldown = CooldownHelper.CalculateWeaponCooldown(bowWeapon);
             if (!CooldownHelper.IsCooldownExpired(lastAttackTime, cooldown))
             {
-                Debug.Log($"CombatLog: PlayerAttackBlocked. Reason=Cooldown, Slot={ammoSlot}, RemainingSeconds={CooldownHelper.GetRemainingCooldown(lastAttackTime, cooldown):F2}");
+                CombatLog.Log($"CombatLog: PlayerAttackBlocked. Reason=Cooldown, Slot={ammoSlot}, RemainingSeconds={CooldownHelper.GetRemainingCooldown(lastAttackTime, cooldown):F2}");
                 return AttackResult.CreateError("Cooldown");
             }
 
             if (_inventoryManager == null || !_inventoryManager.HasItem(ammoItemData.Id, 1))
             {
-                Debug.Log($"CombatLog: PlayerAttackBlocked. Reason=NoArrowsInInventory, AmmoItemId={ammoItemData.Id}");
+                CombatLog.Log($"CombatLog: PlayerAttackBlocked. Reason=NoArrowsInInventory, AmmoItemId={ammoItemData.Id}");
                 return AttackResult.CreateError("NoArrowsInInventory");
             }
 
             int staminaCost = Mathf.RoundToInt(bowWeapon.StaminaCost);
             if (_staminaManager != null && !_staminaManager.TrySpendStamina(staminaCost))
             {
-                Debug.Log($"CombatLog: PlayerAttackBlocked. Reason=InsufficientStamina, Slot={ammoSlot}, StaminaCost={staminaCost}");
+                CombatLog.Log($"CombatLog: PlayerAttackBlocked. Reason=InsufficientStamina, Slot={ammoSlot}, StaminaCost={staminaCost}");
                 return AttackResult.CreateError("InsufficientStamina");
             }
 
@@ -141,7 +141,7 @@ namespace CindarsHope.Combat
             if (_equipmentManager != null)
                 _equipmentManager.RegisterEquipmentUsage();
 
-            Debug.Log($"CombatLog: ArrowFired. AmmoSlot={ammoSlot}, BowWeapon={bowWeapon.Id}, Range={bowWeapon.Range}, Speed={bowWeapon.ProjectileSpeed}, AmmoId={ammoItemData.Id}, ArrowDamage={ballistics.ArrowDamage}, DamageType={damageType}, Tags=[{string.Join(",", appliedTags)}]");
+            CombatLog.Log($"CombatLog: ArrowFired. AmmoSlot={ammoSlot}, BowWeapon={bowWeapon.Id}, Range={bowWeapon.Range}, Speed={bowWeapon.ProjectileSpeed}, AmmoId={ammoItemData.Id}, ArrowDamage={ballistics.ArrowDamage}, DamageType={damageType}, Tags=[{string.Join(",", appliedTags)}]");
 
             // fable_48: pilha equipada zerou? auto-equipa a próxima munição compatível (ordem canônica).
             if (!_inventoryManager.HasItem(ammoItemData.Id, 1))
@@ -167,13 +167,13 @@ namespace CindarsHope.Combat
 
             if (string.IsNullOrEmpty(nextAmmoId))
             {
-                Debug.Log($"CombatLog: AmmoAutoSelect. PreviousAmmoId={depletedAmmo.Id}, NewAmmoId=<none>, Reason=NoCompatibleAmmo");
+                CombatLog.Log($"CombatLog: AmmoAutoSelect. PreviousAmmoId={depletedAmmo.Id}, NewAmmoId=<none>, Reason=NoCompatibleAmmo");
                 GameEventBus.Publish(new AmmoAutoSelectedEvent(depletedAmmo.Id, null));
                 return;
             }
 
             _equipmentManager.EquipItem(ammoSlot, nextAmmoId);
-            Debug.Log($"CombatLog: AmmoAutoSelect. PreviousAmmoId={depletedAmmo.Id}, NewAmmoId={nextAmmoId}, Slot={ammoSlot}");
+            CombatLog.Log($"CombatLog: AmmoAutoSelect. PreviousAmmoId={depletedAmmo.Id}, NewAmmoId={nextAmmoId}, Slot={ammoSlot}");
             GameEventBus.Publish(new AmmoAutoSelectedEvent(depletedAmmo.Id, nextAmmoId));
         }
 

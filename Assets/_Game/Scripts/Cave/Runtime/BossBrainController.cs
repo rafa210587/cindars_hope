@@ -201,7 +201,7 @@ namespace CindarsHope.Cave.Runtime
             ApplyPhaseBindings(phase);
 
             GameEventBus.Publish(new BossPhaseChangedEvent(_bossId, phaseIndex));
-            Debug.Log($"CombatLog: BossPhaseChanged. BossId={_bossId}, PhaseIndex={phaseIndex}, HpThreshold={phase.HpThresholdPercent:F0}, ActionSet={phase.ActionSetId}, Initial={isInitial}.", this);
+            CombatLog.Log($"CombatLog: BossPhaseChanged. BossId={_bossId}, PhaseIndex={phaseIndex}, HpThreshold={phase.HpThresholdPercent:F0}, ActionSet={phase.ActionSetId}, Initial={isInitial}.", this);
 
             if (isInitial)
             {
@@ -301,7 +301,7 @@ namespace CindarsHope.Cave.Runtime
             _addsSpawnedForPhase.Add(phaseIndex);
 
             var tiles = ResolveDeterministicAddTiles(phaseIndex, phase.AddsCount);
-            Debug.Log($"CombatLog: BossPhaseAddsSummoned. BossId={_bossId}, PhaseIndex={phaseIndex}, AddsEnemyId={phase.AddsEnemyId}, Requested={phase.AddsCount}, Placed={tiles.Count}.", this);
+            CombatLog.Log($"CombatLog: BossPhaseAddsSummoned. BossId={_bossId}, PhaseIndex={phaseIndex}, AddsEnemyId={phase.AddsEnemyId}, Requested={phase.AddsCount}, Placed={tiles.Count}.", this);
 
             if (_spawnAddCallback == null)
             {

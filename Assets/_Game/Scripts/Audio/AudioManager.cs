@@ -16,8 +16,13 @@ namespace CindarsHope.Audio
     /// para binding posterior (contrato documentado no report).
     ///
     /// Self-bootstrap por RuntimeInitializeOnLoadMethod (idiom do projeto p/ sistemas
-    /// que só consomem eventos) — não exige regeneração de cena. AudioListener já vive
-    /// nas câmeras principais das cenas; este manager não cria listener.
+    /// que só consomem eventos) — não exige regeneração de cena.
+    ///
+    /// AudioListener: as cenas geradas (CaveScene etc.) podem NÃO ter um AudioListener
+    /// na câmera, o que faz o Unity logar "There are no audio listeners in the scene"
+    /// por frame. Para evitar editar .unity, o AudioManager garante EXATAMENTE UM
+    /// AudioListener: se nenhum existir na cena, adiciona um ao próprio GameObject
+    /// (DontDestroyOnLoad), que sobrevive à troca de cena e fica único.
     ///
     /// Toda comunicação é por GameEventBus (via SfxEventBridge); nenhum sistema de
     /// gameplay referencia este manager diretamente.
@@ -50,6 +55,7 @@ namespace CindarsHope.Audio
         private float _crossfadeDuration = MusicCrossfade.DefaultDurationSeconds;
 
         private bool _missingClipLogged;
+        private bool _audioListenerCreatedLogged;
 
         // --------------------------------------------------------------- bootstrap
 
@@ -93,9 +99,38 @@ namespace CindarsHope.Audio
         public void Initialize()
         {
             TryAdoptAudioSettings();
+            EnsureAudioListener();
             EnsureSfxVoices(DefaultSfxVoiceCount);
             EnsureMusicSources();
             _factory.GenerateAll();
+        }
+
+        /// <summary>
+        /// Garante EXATAMENTE UM AudioListener no jogo. Se nenhuma cena fornecer um
+        /// (caso das cenas geradas — CaveScene etc.), adiciona um ao próprio GameObject
+        /// (DontDestroyOnLoad), eliminando o warning "There are no audio listeners in the
+        /// scene" logado por frame. FindAnyObjectByType é o idiom de bootstrap sancionado
+        /// (não é gameplay runtime). Idempotente.
+        /// </summary>
+        private void EnsureAudioListener()
+        {
+            if (GetComponent<AudioListener>() != null)
+            {
+                return;
+            }
+
+            if (Object.FindAnyObjectByType<AudioListener>() != null)
+            {
+                return; // alguma câmera/cena já fornece o listener
+            }
+
+            gameObject.AddComponent<AudioListener>();
+
+            if (!_audioListenerCreatedLogged)
+            {
+                _audioListenerCreatedLogged = true;
+                Debug.Log("[Audio] AudioListener ausente na cena; AudioManager criou um (DontDestroyOnLoad).");
+            }
         }
 
         private void EnsureSfxVoices(int count)

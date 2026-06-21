@@ -124,7 +124,7 @@ namespace CindarsHope.Skills.Runtime.Effects
             if (spawned == 0)
                 return SkillEffectResult.Failed("ProjectileSpawnFailed", $"{_displayName}: falha ao disparar.");
 
-            Debug.Log($"CombatLog: SkillProjectileFired. EffectId={_effectId}, Count={spawned}, Type={_damageType}, Pierce={_maxHitsPerProjectile}");
+            CindarsHope.Combat.CombatLog.Log($"CombatLog: SkillProjectileFired. EffectId={_effectId}, Count={spawned}, Type={_damageType}, Pierce={_maxHitsPerProjectile}");
             return SkillEffectResult.Succeeded($"{_displayName}!", costSpent: true, cooldownStarted: true, cooldownSeconds: _cooldownSeconds);
         }
 

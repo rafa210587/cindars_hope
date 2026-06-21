@@ -44,7 +44,7 @@ namespace CindarsHope.Items.Runtime
             var result = service.Resolve(itemId, day);
             if (!result.Consumed)
             {
-                Debug.Log($"CombatLog: MagicUseRefused. Item={itemId}, Reason={result.Reason}.", this);
+                CindarsHope.Combat.CombatLog.Log($"CombatLog: MagicUseRefused. Item={itemId}, Reason={result.Reason}.", this);
                 return false;
             }
 
@@ -90,7 +90,7 @@ namespace CindarsHope.Items.Runtime
             var runManager = CaveRunManager.Instance;
             if (runManager == null)
             {
-                Debug.Log("CombatLog: MagicUseRefused. Item=mirror_of_return, Reason=no_active_cave_run.", this);
+                CindarsHope.Combat.CombatLog.Log("CombatLog: MagicUseRefused. Item=mirror_of_return, Reason=no_active_cave_run.", this);
                 return false;
             }
 
@@ -107,7 +107,7 @@ namespace CindarsHope.Items.Runtime
             }
 
             GameEventBus.Publish(new MirrorReturnRequestedEvent(runSeed, level));
-            Debug.Log($"CombatLog: MirrorReturnRequested. RunSeed={runSeed}, Level={level}.", this);
+            CindarsHope.Combat.CombatLog.Log($"CombatLog: MirrorReturnRequested. RunSeed={runSeed}, Level={level}.", this);
             return true;
         }
     }

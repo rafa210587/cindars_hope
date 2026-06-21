@@ -76,7 +76,7 @@ namespace CindarsHope.Combat.Magic
 
             if (IsCasting)
             {
-                Debug.Log($"CombatLog: SpellCastBlocked. Reason=AlreadyCasting, Spell={plan.Spell.Id}", this);
+                CombatLog.Log($"CombatLog: SpellCastBlocked. Reason=AlreadyCasting, Spell={plan.Spell.Id}", this);
                 return false;
             }
 
@@ -90,7 +90,7 @@ namespace CindarsHope.Combat.Magic
             _service = service;
             _activePlan = plan;
             GameEventBus.Publish(new SpellCastStartedEvent(plan.Spell.Id));
-            Debug.Log($"CombatLog: SpellCastStarted. Spell={plan.Spell.Id}, CastTime={castTime:F2}", this);
+            CombatLog.Log($"CombatLog: SpellCastStarted. Spell={plan.Spell.Id}, CastTime={castTime:F2}", this);
             _activeCast = StartCoroutine(CastWindow(castTime));
             return true;
         }
@@ -140,7 +140,7 @@ namespace CindarsHope.Combat.Magic
 
             if (plan != null && service != null)
             {
-                Debug.Log($"CombatLog: SpellCastCanceled. Spell={plan.Spell?.Id}, Reason={reason}", this);
+                CombatLog.Log($"CombatLog: SpellCastCanceled. Spell={plan.Spell?.Id}, Reason={reason}", this);
                 service.RefundCast(plan);
             }
         }

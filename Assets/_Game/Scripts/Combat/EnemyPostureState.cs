@@ -79,7 +79,7 @@ namespace CindarsHope.Combat
             _nextBreakAllowedTime = Time.time + BreakCooldownSeconds;
 
             var enemyId = _health != null ? _health.EnemyId : name;
-            Debug.Log($"CombatLog: EnemyPostureBroken. EnemyId={enemyId}, MaxPosture={_maxPosture}", this);
+            CombatLog.Log($"CombatLog: EnemyPostureBroken. EnemyId={enemyId}, MaxPosture={_maxPosture}", this);
             GameEventBus.Publish(new EnemyPostureBrokenEvent(enemyId));
 
             if (_brain != null)
