@@ -44,6 +44,10 @@ namespace CindarsHope.Editor.Validation
             var report = new System.Text.StringBuilder();
             report.AppendLine("=== ValidateSceneTransitions — WAVE_INTEGRATION_13 ===");
 
+            // Lembra a cena que o dono tinha aberta para RESTAURAR no fim. Sem isto, o validador
+            // deixa o Editor numa cena vazia/errada e o Play abre sem GameBootstrap/camera/player.
+            var originalScenePath = SceneManager.GetActiveScene().path;
+
             var foundGates = new HashSet<string>();
             var foundAnchors = new HashSet<string>();
             var errors = new List<string>();
@@ -66,6 +70,7 @@ namespace CindarsHope.Editor.Validation
                     EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
                 }
 
+                bool wasAlreadyOpen = SceneManager.GetSceneByPath(scenePath).isLoaded;
                 var scene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Additive);
 
                 var gates = Object.FindObjectsByType<SceneTransitionGate>(FindObjectsInactive.Exclude);
@@ -99,15 +104,12 @@ namespace CindarsHope.Editor.Validation
                     report.AppendLine($"  ANCHOR: {anchor.SpawnAnchorId} at {anchor.Position}");
                 }
 
-                // Só fecha se NÃO for a última cena carregada (fechar a única dá warning espúrio do Unity).
-                // Quando for a única, troca por uma cena vazia (Single) — descarrega a auditada sem warning.
-                if (SceneManager.sceneCount > 1)
+                // Fecha SOMENTE a cena que ABRIMOS aqui — nunca a que o dono já tinha aberta, e
+                // nunca a última carregada (fechar a única dá warning espúrio do Unity). Sem isto,
+                // validar com uma cena-alvo aberta apagava a cena do dono (-> tela preta no Play).
+                if (!wasAlreadyOpen && scene.path != originalScenePath && SceneManager.sceneCount > 1)
                 {
                     EditorSceneManager.CloseScene(scene, true);
-                }
-                else
-                {
-                    EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
                 }
             }
 
@@ -150,6 +152,13 @@ namespace CindarsHope.Editor.Validation
             else
             {
                 report.AppendLine("\nRESULT: PASS — No config errors found.");
+            }
+
+            // Restaura a cena que o dono tinha aberta (o validador abre/fecha cenas em Edit mode).
+            // Sem isto o Editor fica numa cena sem GameBootstrap -> "No cameras rendering" no Play.
+            if (!string.IsNullOrEmpty(originalScenePath) && SceneManager.GetActiveScene().path != originalScenePath)
+            {
+                EditorSceneManager.OpenScene(originalScenePath, OpenSceneMode.Single);
             }
 
             Debug.Log(report.ToString());
