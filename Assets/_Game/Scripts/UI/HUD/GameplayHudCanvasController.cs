@@ -19,6 +19,7 @@ namespace CindarsHope.UI.HUD
         private InteractionPromptHudView _interactionPrompt;
         private FeedbackToastHudView _feedbackToast;
         private ModalBlockerHudView _modalBlocker;
+        private DailyGoalsHudView _dailyGoals;
 
         public GameplayHudViewModel ViewModel => _viewModel;
         public bool IsInitialized { get; private set; }
@@ -75,6 +76,9 @@ namespace CindarsHope.UI.HUD
             _feedbackToast.Initialize(_feedbackService);
 
             _modalBlocker = gameObject.AddComponent<ModalBlockerHudView>();
+
+            // fable_65: widget de metas diárias (read-only, alimentado por FarmDailyGoalService).
+            _dailyGoals = gameObject.AddComponent<DailyGoalsHudView>();
         }
     }
 }

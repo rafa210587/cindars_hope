@@ -6,8 +6,12 @@ namespace CindarsHope.Farm.Runtime
 {
     /// <summary>
     /// Bridge entre eventos de farm e o sistema de feedback HUD.
-    /// Escuta CropHarvestedEvent e DailyGoalCompletedEvent e publica PlayerActionFeedbackEvent.
+    /// Escuta CropHarvestedEvent e DailyGoalProgressedEvent e publica PlayerActionFeedbackEvent.
     /// Sem chamadas diretas — usa GameEventBus exclusivamente.
+    ///
+    /// fable_65: o toast de CONCLUSÃO de meta deixou de ser emitido aqui — passou a ser o toast
+    /// rico de recompensa ("Meta concluída: +X ouro, +Y XP") emitido por FarmDailyGoalService no
+    /// pagamento. Evita toast duplicado no mesmo DailyGoalCompletedEvent.
     /// </summary>
     [DisallowMultipleComponent]
     public class FarmLoopFeedbackBridge : MonoBehaviour
@@ -15,14 +19,12 @@ namespace CindarsHope.Farm.Runtime
         private void OnEnable()
         {
             GameEventBus.Subscribe<CropHarvestedEvent>(OnCropHarvested);
-            GameEventBus.Subscribe<DailyGoalCompletedEvent>(OnDailyGoalCompleted);
             GameEventBus.Subscribe<DailyGoalProgressedEvent>(OnDailyGoalProgressed);
         }
 
         private void OnDisable()
         {
             GameEventBus.Unsubscribe<CropHarvestedEvent>(OnCropHarvested);
-            GameEventBus.Unsubscribe<DailyGoalCompletedEvent>(OnDailyGoalCompleted);
             GameEventBus.Unsubscribe<DailyGoalProgressedEvent>(OnDailyGoalProgressed);
         }
 
@@ -32,11 +34,6 @@ namespace CindarsHope.Farm.Runtime
                 ? $"Colheita: {evt.ItemId} x{evt.Amount} adicionado ao inventário."
                 : $"Colheita: {evt.ItemId} adicionado ao inventário.";
             GameEventBus.Publish(new PlayerActionFeedbackEvent(msg, 2.5f));
-        }
-
-        private void OnDailyGoalCompleted(DailyGoalCompletedEvent evt)
-        {
-            GameEventBus.Publish(new PlayerActionFeedbackEvent("Meta diária concluída!", 4f));
         }
 
         private void OnDailyGoalProgressed(DailyGoalProgressedEvent evt)

@@ -14,29 +14,25 @@ namespace CindarsHope.Farm.Runtime
     [DisallowMultipleComponent]
     public class FarmDailyGoalService : MonoBehaviour
     {
-        private const string GoalFirstHarvest = "daily_goal_first_harvest";
-        private const string GoalSellFirstCrop = "daily_goal_sell_first_crop";
+        // ids estáveis — NUNCA renomear (id-stability). Definições no catálogo canônico único.
+        private const string GoalFirstHarvest = FarmDailyGoalCatalog.GoalFirstHarvest;
+        private const string GoalSellFirstCrop = FarmDailyGoalCatalog.GoalSellFirstCrop;
+        // fable_65: metas novas (todas ligadas a eventos REAIS verificados na Fase 0).
+        private const string GoalHarvestThree = FarmDailyGoalCatalog.GoalHarvestThree;
+        private const string GoalPlantThree = FarmDailyGoalCatalog.GoalPlantThree;
+        private const string GoalGatherResource = FarmDailyGoalCatalog.GoalGatherResource;
+        private const string GoalTalkToNpc = FarmDailyGoalCatalog.GoalTalkToNpc;
 
-        private readonly List<FarmDailyGoalDefinition> _definitions = new List<FarmDailyGoalDefinition>
-        {
-            new FarmDailyGoalDefinition
-            {
-                GoalId = GoalFirstHarvest,
-                DisplayName = "Primeira colheita do dia",
-                RequiredProgress = 1
-            },
-            new FarmDailyGoalDefinition
-            {
-                GoalId = GoalSellFirstCrop,
-                DisplayName = "Vender primeiro item colhido",
-                RequiredProgress = 1
-            }
-        };
+        // Catálogo único — sem segunda lista de definições (ver FarmDailyGoalCatalog).
+        private IReadOnlyList<FarmDailyGoalDefinition> _definitions => FarmDailyGoalCatalog.All;
 
         private readonly Dictionary<string, FarmDailyGoalState> _states =
             new Dictionary<string, FarmDailyGoalState>();
 
         private int _currentDay = 1;
+
+        // fable_65: canal de recompensa (ouro+XP). Injetável p/ teste; default resolve via GameBootstrap.
+        private IDailyGoalRewardSink _rewardSink = new GameBootstrapDailyGoalRewardSink();
 
         // Ponto de acesso estático para save/load externo (via FarmDailyGoalRuntimeBootstrap)
         private static FarmDailyGoalService _instance;
@@ -60,6 +56,10 @@ namespace CindarsHope.Farm.Runtime
             GameEventBus.Subscribe<CropHarvestedEvent>(OnCropHarvested);
             GameEventBus.Subscribe<EconomyTransactionCompletedEvent>(OnEconomyTransaction);
             GameEventBus.Subscribe<DayStartedEvent>(OnDayStarted);
+            // fable_65: gatilhos das metas novas (eventos reais existentes).
+            GameEventBus.Subscribe<SeedPlantedEvent>(OnSeedPlanted);
+            GameEventBus.Subscribe<TreeChoppedEvent>(OnTreeChopped);
+            GameEventBus.Subscribe<NpcInteractionStartedEvent>(OnNpcInteractionStarted);
         }
 
         private void OnDisable()
@@ -67,6 +67,17 @@ namespace CindarsHope.Farm.Runtime
             GameEventBus.Unsubscribe<CropHarvestedEvent>(OnCropHarvested);
             GameEventBus.Unsubscribe<EconomyTransactionCompletedEvent>(OnEconomyTransaction);
             GameEventBus.Unsubscribe<DayStartedEvent>(OnDayStarted);
+            GameEventBus.Unsubscribe<SeedPlantedEvent>(OnSeedPlanted);
+            GameEventBus.Unsubscribe<TreeChoppedEvent>(OnTreeChopped);
+            GameEventBus.Unsubscribe<NpcInteractionStartedEvent>(OnNpcInteractionStarted);
+        }
+
+        /// <summary>
+        /// fable_65: injeta um canal de recompensa alternativo (testes). Null restaura o default.
+        /// </summary>
+        public void SetRewardSink(IDailyGoalRewardSink rewardSink)
+        {
+            _rewardSink = rewardSink ?? new GameBootstrapDailyGoalRewardSink();
         }
 
         private void OnDestroy()
@@ -196,6 +207,22 @@ namespace CindarsHope.Farm.Runtime
         private void OnCropHarvested(CropHarvestedEvent evt)
         {
             AddProgress(GoalFirstHarvest, 1);
+            AddProgress(GoalHarvestThree, 1);
+        }
+
+        private void OnSeedPlanted(SeedPlantedEvent evt)
+        {
+            AddProgress(GoalPlantThree, 1);
+        }
+
+        private void OnTreeChopped(TreeChoppedEvent evt)
+        {
+            AddProgress(GoalGatherResource, 1);
+        }
+
+        private void OnNpcInteractionStarted(NpcInteractionStartedEvent evt)
+        {
+            AddProgress(GoalTalkToNpc, 1);
         }
 
         private void OnEconomyTransaction(EconomyTransactionCompletedEvent evt)
@@ -205,7 +232,7 @@ namespace CindarsHope.Farm.Runtime
                 return;
             }
 
-            // Apenas transações de venda avançam a meta de vender colheita
+            // Apenas transações de venda avançam as metas de venda
             if (evt.TransactionType == "sell" || evt.TransactionType == "Sell" ||
                 evt.TransactionType == "shipping" || evt.GoldDelta > 0)
             {
@@ -234,11 +261,45 @@ namespace CindarsHope.Farm.Runtime
                 state.Completed = true;
                 GameEventBus.Publish(new DailyGoalCompletedEvent(goalId));
                 Debug.Log($"[FarmDailyGoalService] Goal '{goalId}' completed on day {_currentDay}.", this);
+                TryClaimReward(state, _rewardSink, publishToast: true);
             }
             else
             {
                 Debug.Log($"[FarmDailyGoalService] Goal '{goalId}' progress: {state.CurrentProgress}/{state.RequiredProgress}.", this);
             }
+        }
+
+        /// <summary>
+        /// fable_65 — ponto ÚNICO de pagamento de recompensa de meta diária. Pura quanto à
+        /// decisão: paga (via sink) EXATAMENTE 1× se a meta está Completed e ainda !Claimed e
+        /// tem entrada na tabela. Idempotente — reload no meio do dia (state já Claimed) não
+        /// re-paga; reset diário limpa Claimed e re-habilita. Testável em EditMode com um sink fake.
+        /// Retorna true se pagou nesta chamada.
+        /// </summary>
+        public static bool TryClaimReward(FarmDailyGoalState state, IDailyGoalRewardSink rewardSink, bool publishToast)
+        {
+            if (state == null || !state.Completed || state.Claimed)
+            {
+                return false;
+            }
+
+            if (!FarmDailyGoalRewardTable.TryGet(state.GoalId, out var reward))
+            {
+                // Meta sem entrada de recompensa: marca Claimed para nao reavaliar, mas nao paga valor inventado.
+                state.Claimed = true;
+                return false;
+            }
+
+            state.Claimed = true;
+            rewardSink?.Grant(reward.Gold, reward.Xp);
+
+            if (publishToast)
+            {
+                GameEventBus.Publish(new PlayerActionFeedbackEvent(
+                    $"Meta concluída: +{reward.Gold} ouro, +{reward.Xp} XP", 3.5f));
+            }
+
+            return true;
         }
     }
 }
