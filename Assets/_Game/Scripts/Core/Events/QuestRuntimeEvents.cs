@@ -80,6 +80,24 @@ namespace CindarsHope.Core.Events
         public SecretQuestDiscoveredEvent(string questId) => QuestId = questId;
     }
 
+    /// <summary>
+    /// fable_36 — published when a main-quest act is fully completed (its final quest turned in).
+    /// Consumed by toast/feedback to announce the milestone. Carries only simple ids (event-bus rule):
+    /// the act number (1-4), the act-done milestone flag id, and the lore record id unlocked.
+    /// </summary>
+    public readonly struct ActCompletedEvent
+    {
+        public int ActNumber { get; }
+        public string ActDoneFlagId { get; }
+        public string LoreRecordId { get; }
+        public ActCompletedEvent(int actNumber, string actDoneFlagId, string loreRecordId)
+        {
+            ActNumber = actNumber;
+            ActDoneFlagId = actDoneFlagId;
+            LoreRecordId = loreRecordId;
+        }
+    }
+
     public enum QuestGiverInteractionMode
     {
         Offer = 0,

@@ -18,7 +18,7 @@ namespace CindarsHope.Quests.Runtime
     ///
     /// Anti-pattern: no ScriptableObject/MonoBehaviour references in this class.
     /// </summary>
-    public class QuestRegistry
+    public partial class QuestRegistry
     {
         private readonly Dictionary<string, QuestDefinition> _quests = new Dictionary<string, QuestDefinition>();
         private readonly Dictionary<string, List<QuestRewardDefinition>> _rewardsByQuestId = new Dictionary<string, List<QuestRewardDefinition>>();
@@ -230,6 +230,7 @@ namespace CindarsHope.Quests.Runtime
             Register(caveQuest, caveQuestObjectives, caveRewards, QuestRuntimeIds.MaelorId);
 
             RegisterMainQuestAct1();
+            RegisterMainQuestActs2To4();
         }
 
         // ─── fable_10 — Main Quest Ato 1: "A Fonte do Esquecimento" (Fragmento da Agua) ──────

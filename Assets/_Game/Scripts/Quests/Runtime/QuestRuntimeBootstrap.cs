@@ -222,8 +222,10 @@ namespace CindarsHope.Quests.Runtime
             var bridge = new QuestProgressEventBridge(QuestService);
             bridge.Subscribe();
 
-            // fable_10 — bridge Act 1 main quest completion to the WAVE 10 Fonte (Water fragment).
+            // fable_10 + fable_36 — bridge main-quest act finales (Acts 1-4) to the WAVE 10 Fonte
+            // (fragment integration) and to the per-act +1 skill point (idempotent) + ActCompletedEvent.
             _mainProgressionBridge = new MainProgressionQuestBridge();
+            _mainProgressionBridge.SetQuestService(QuestService);
             _mainProgressionBridge.Unsubscribe();
             _mainProgressionBridge.Subscribe();
             MainProgressionBridge = _mainProgressionBridge;
