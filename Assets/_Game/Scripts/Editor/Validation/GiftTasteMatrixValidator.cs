@@ -23,7 +23,6 @@ namespace CindarsHope.EditorTools.Validation
     /// </summary>
     public static class GiftTasteMatrixValidator
     {
-        [MenuItem("CindarsHope/Validate/Validate Gift Taste Matrix")]
         public static bool Run()
         {
             var errors = new List<string>();

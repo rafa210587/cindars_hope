@@ -26,7 +26,6 @@ namespace CindarsHope.Editor.Enemies
     {
         private const string CanonicalFolder = "Assets/_Game/Data/Enemies/Canonical";
 
-        [MenuItem("CindarsHope/Generate/Data/Canonical Bestiary (fable_33)")]
         public static void GenerateMenu()
         {
             var (created, updated) = Generate();

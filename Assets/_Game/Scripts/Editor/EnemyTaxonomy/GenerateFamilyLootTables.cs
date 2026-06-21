@@ -34,7 +34,6 @@ namespace CindarsHope.Editor.EnemyTaxonomy
 
         public static void Execute() => Generate();
 
-        [MenuItem("CindarsHope/Generate/Loot/Generate Family Loot Tables")]
         public static void Generate()
         {
             EnsureFolder(LootFolder);

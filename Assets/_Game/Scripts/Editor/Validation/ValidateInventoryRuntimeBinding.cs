@@ -21,7 +21,6 @@ namespace CindarsHope.Editor.Validation
     {
         private const string ScenePath = "Assets/_Game/Scenes/FarmScene.unity";
 
-        [MenuItem("CindarsHope/Validate/Validate Inventory Runtime", priority = 47)]
         public static void ValidateFromMenu()
         {
             var issues = RunValidation(openSceneIfNeeded: true);

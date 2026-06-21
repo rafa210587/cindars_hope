@@ -17,7 +17,6 @@ namespace CindarsHope.EditorTools
             "Assets/_Game/Scenes/CaveScene.unity"
         };
 
-        [MenuItem("CindarsHope/Validate/Scan Scene (Missing Scripts)", priority = 45)]
         public static void ScanOpenScene()
         {
             var scene = SceneManager.GetActiveScene();
@@ -25,7 +24,6 @@ namespace CindarsHope.EditorTools
             CompleteOrFail($"Scene '{scene.path}'", found);
         }
 
-        [MenuItem("CindarsHope/Archive/Validation/Scan All Gameplay Scenes for Missing Scripts")]
         public static void ScanGameplayScenes()
         {
             if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
@@ -44,7 +42,6 @@ namespace CindarsHope.EditorTools
             CompleteOrFail("Gameplay scenes", found);
         }
 
-        [MenuItem("CindarsHope/Archive/Validation/Scan Prefabs in Assets/_Game for Missing Scripts")]
         public static void ScanPrefabs()
         {
             var found = 0;

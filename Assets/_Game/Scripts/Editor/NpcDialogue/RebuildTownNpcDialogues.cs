@@ -17,7 +17,6 @@ namespace CindarsHope.Editor.NpcDialogue
         private const string NpcDataFolder = "Assets/_Game/Data/NPCs";
         private const string DialogueFolder = "Assets/_Game/Data/NPCs/Dialogues";
 
-        [MenuItem("CindarsHope/NPCs/Rebuild Town NPC Dialogues (Expanded)", priority = 40)]
         public static void Rebuild()
         {
             if (EditorApplication.isPlayingOrWillChangePlaymode)

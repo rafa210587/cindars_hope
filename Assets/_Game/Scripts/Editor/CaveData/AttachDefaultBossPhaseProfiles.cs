@@ -29,7 +29,6 @@ namespace CindarsHope.Editor.CaveData
         // table as their EnemyDataSO + action-set assets exist (fable_33).
         private const string MeteorOozeKingId = "enemy_meteor_ooze_king";
 
-        [MenuItem("CindarsHope/Archive/Generate/Scenes/Attach Default Boss Phase Profiles")]
         public static void AttachAll()
         {
             EnsureDirectory(ProfilesPath);

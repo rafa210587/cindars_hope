@@ -54,7 +54,6 @@ namespace CindarsHope.Editor.Validation
             ("item_spell_fireball_test",          1, -1),
         };
 
-        [MenuItem("CindarsHope/Debug/Provision Farm Smoke Loadout", priority = 60)]
         public static void ProvisionSmokeLoadout()
         {
             if (!Application.isPlaying)
@@ -123,7 +122,6 @@ namespace CindarsHope.Editor.Validation
                 $"Hotbar: {(hotbar != null ? string.Join(", ", hotbarSet) : "SaveManager.HotbarState null — skipped")}");
         }
 
-        [MenuItem("CindarsHope/Debug/Provision All Known Items (Debug)", priority = 61)]
         public static void ProvisionAllKnownItems()
         {
             if (!Application.isPlaying)

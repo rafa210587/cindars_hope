@@ -47,7 +47,6 @@ namespace CindarsHope.Editor.Validation
             "skill_crafting_marca_eficiencia"
         };
 
-        [MenuItem("CindarsHope/Validate/Validate WAVE11 Runtime Input Binding", priority = 48)]
         public static void RunValidation()
         {
             var issues = new List<string>();

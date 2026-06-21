@@ -9,7 +9,6 @@ namespace CindarsHope.Editor
     {
         private const string ItemsPath = "Assets/_Game/Data/Items/";
 
-        [MenuItem("CindarsHope/Archive/Generate/Create Item Examples")]
         public static void CreateItemExamples()
         {
             CreateSeeds();

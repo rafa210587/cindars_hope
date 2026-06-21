@@ -33,7 +33,6 @@ namespace CindarsHope.Editor.Validation
         private const string Tag = "[fable_30]";
         private const string ItemDatabasePath = "Assets/_Game/Data/Registries/ItemDatabase.asset";
 
-        [MenuItem("CindarsHope/Validate/Catalog Consistency")]
         public static void Run()
         {
             var result = Validate(out var report);

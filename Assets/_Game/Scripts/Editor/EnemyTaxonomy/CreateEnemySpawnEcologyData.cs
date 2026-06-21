@@ -14,7 +14,6 @@ namespace CindarsHope.Editor.EnemyTaxonomy
         private const string PacksFolder = SpawnFolder + "/Packs";
         private const string LocksFolder = SpawnFolder + "/FactionLocks";
 
-        [MenuItem("CindarsHope/Archive/SPEC 13/Create Spawn Resolver Ecology Data")]
         public static void CreateData()
         {
             EnsureFolder(ProfilesFolder);

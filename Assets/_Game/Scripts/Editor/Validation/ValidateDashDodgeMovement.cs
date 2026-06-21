@@ -13,7 +13,6 @@ namespace CindarsHope.Editor.Validation
     /// </summary>
     public static class ValidateDashDodgeMovement
     {
-        [MenuItem("CindarsHope/Validate/Validate Dash Dodge Movement", priority = 50)]
         public static void RunValidation()
         {
             Debug.Log("=== ValidateDashDodgeMovement - START ===");

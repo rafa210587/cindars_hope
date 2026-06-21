@@ -55,7 +55,6 @@ namespace CindarsHope.EditorTools.Magic
             public int ScrollBaseValue;
         }
 
-        [MenuItem("CindarsHope/Magic/Generate Shape Spells")]
         public static void Generate()
         {
             var specs = BuildSpecs();

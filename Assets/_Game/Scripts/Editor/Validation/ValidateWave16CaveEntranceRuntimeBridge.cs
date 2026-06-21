@@ -16,7 +16,6 @@ namespace CindarsHope.Editor.Validation
         private const string ScriptRoot = "Assets/_Game/Scripts";
         private const string DocsRoot = "docs/validation";
 
-        [MenuItem("CindarsHope/Validate/Validate WAVE16 Cave Entrance Runtime Bridge")]
         public static void ValidateAll()
         {
             Debug.Log("[ValidateWave16CaveEntranceRuntimeBridge] Starting WAVE16 validation...");

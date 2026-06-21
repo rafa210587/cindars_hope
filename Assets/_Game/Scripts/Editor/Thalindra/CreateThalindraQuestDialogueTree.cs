@@ -10,7 +10,6 @@ namespace CindarsHope.Editor
         private const string AssetPath =
             "Assets/_Game/Data/NPC/Thalindra/DialogueTree_Thalindra_QuestOffer.asset";
 
-        [MenuItem("CindarsHope/Setup/Create Thalindra Quest DialogueTree")]
         public static void Create()
         {
             System.IO.Directory.CreateDirectory("Assets/_Game/Data/NPC/Thalindra");

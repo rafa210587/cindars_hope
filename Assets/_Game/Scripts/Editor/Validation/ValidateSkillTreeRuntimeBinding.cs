@@ -13,7 +13,6 @@ namespace CindarsHope.Editor.Validation
     /// </summary>
     public static class ValidateSkillTreeRuntimeBinding
     {
-        [MenuItem("CindarsHope/Validate/Validate Skill Tree Runtime", priority = 48)]
         public static void RunValidation()
         {
             Debug.Log("=== ValidateSkillTreeRuntimeBinding — START ===");

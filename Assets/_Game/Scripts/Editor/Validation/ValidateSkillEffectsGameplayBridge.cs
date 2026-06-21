@@ -14,7 +14,6 @@ namespace CindarsHope.Editor.Validation
     /// </summary>
     public static class ValidateSkillEffectsGameplayBridge
     {
-        [MenuItem("CindarsHope/Validate/Validate Skill Effects Bridge", priority = 49)]
         public static void RunValidation()
         {
             Debug.Log("=== ValidateSkillEffectsGameplayBridge - START ===");

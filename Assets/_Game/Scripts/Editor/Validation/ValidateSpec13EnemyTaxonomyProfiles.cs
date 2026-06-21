@@ -59,7 +59,6 @@ namespace CindarsHope.Editor.Validation
             "faction_construct", "faction_abyssal", "faction_corrupted", "faction_draconic"
         };
 
-        [MenuItem("CindarsHope/Archive/Validation/Validate SPEC 13A - Enemy Taxonomy")]
         public static void RunValidation()
         {
             var errors = new List<string>();

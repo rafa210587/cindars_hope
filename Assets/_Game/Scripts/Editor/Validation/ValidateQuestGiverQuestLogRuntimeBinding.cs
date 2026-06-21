@@ -20,7 +20,6 @@ namespace CindarsHope.Editor.Validation
     /// </summary>
     public static class ValidateQuestGiverQuestLogRuntimeBinding
     {
-        [MenuItem("CindarsHope/Validate/Validate WAVE15 Quest Runtime Binding")]
         public static void Validate()
         {
             var errors = new System.Collections.Generic.List<string>();

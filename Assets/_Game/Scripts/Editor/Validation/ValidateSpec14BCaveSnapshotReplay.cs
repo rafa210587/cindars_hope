@@ -9,7 +9,6 @@ namespace CindarsHope.Editor.Validation
 {
     public static class ValidateSpec14BCaveSnapshotReplay
     {
-        [MenuItem("CindarsHope/Archive/Validation/Validate SPEC 14B - Cave Snapshot Replay")]
         public static void RunValidation()
         {
             var errors = new List<string>();

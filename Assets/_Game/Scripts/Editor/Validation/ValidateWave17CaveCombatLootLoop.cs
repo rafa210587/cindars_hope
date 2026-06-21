@@ -14,7 +14,6 @@ namespace CindarsHope.Editor.Validation
     /// </summary>
     public static class ValidateWave17CaveCombatLootLoop
     {
-        [MenuItem("CindarsHope/Validate Wave 17 Cave Combat Loot")]
         public static void Validate()
         {
             int passed = 0;

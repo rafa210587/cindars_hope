@@ -35,7 +35,6 @@ namespace CindarsHope.EditorTools.Build
             SceneFolder + "/CaveScene.unity",
         };
 
-        [MenuItem("CindarsHope/Build/Register Build Scenes")]
         public static void RegisterFromMenu()
         {
             var result = Register();

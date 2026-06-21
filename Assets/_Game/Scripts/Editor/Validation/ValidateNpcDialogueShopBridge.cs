@@ -47,7 +47,6 @@ namespace CindarsHope.Editor.Validation
             "docs/validation/WAVE_INTEGRATION_12_HUMAN_PLAYMODE_CHECKLIST.md",
         };
 
-        [MenuItem("CindarsHope/Validate/Validate WAVE12 NPC Dialogue Shop Bridge", priority = 49)]
         public static void RunValidation()
         {
             var passes = new List<string>();

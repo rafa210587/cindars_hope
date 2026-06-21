@@ -15,7 +15,6 @@ namespace CindarsHope.Editor.EnemyTaxonomy
         private const string MovementPath      = "Assets/_Game/Data/Enemies/MovementProfiles";
         private const string VulnPath          = "Assets/_Game/Data/Enemies/VulnerabilityProfiles";
 
-        [MenuItem("CindarsHope/Archive/SPEC 13/Create Default Enemy Profiles")]
         public static void CreateAll()
         {
             EnsureDirectory(FactionsPath);

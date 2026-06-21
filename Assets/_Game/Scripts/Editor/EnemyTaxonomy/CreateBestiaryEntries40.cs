@@ -11,7 +11,6 @@ namespace CindarsHope.Editor.EnemyTaxonomy
     {
         private const string BestiaryFolder = "Assets/_Game/Data/Bestiary";
 
-        [MenuItem("CindarsHope/Archive/SPEC 13/Create Bestiary Entries 40")]
         public static void CreateEntries()
         {
             EnsureFolder(BestiaryFolder);

@@ -30,7 +30,6 @@ namespace CindarsHope.Editor.Validation
 {
     public static class MvpSceneValidator
     {
-        [MenuItem("CindarsHope/Archive/Validate/Validate Farm Town MVP")]
         public static void ValidateScenes()
         {
             var scene = EditorSceneManager.GetActiveScene();
@@ -62,7 +61,6 @@ namespace CindarsHope.Editor.Validation
             }
         }
 
-        [MenuItem("CindarsHope/Archive/Validate/Validate Cave MVP")]
         public static void ValidateCaveSceneFromMenu()
         {
             var sceneName = EditorSceneManager.GetActiveScene().name;
@@ -82,7 +80,6 @@ namespace CindarsHope.Editor.Validation
             }
         }
 
-        [MenuItem("CindarsHope/Archive/Validate/Validate All MVP Scenes")]
         public static void ValidateAllMvpScenes()
         {
             var sceneName = EditorSceneManager.GetActiveScene().name;

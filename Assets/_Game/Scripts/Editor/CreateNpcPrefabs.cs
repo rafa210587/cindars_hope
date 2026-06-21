@@ -16,7 +16,6 @@ namespace CindarsHope.Editor.Testing
     {
         private const string PrefabPath = "Assets/_Game/Prefabs/NPCs";
 
-        [MenuItem("CindarsHope/Archive/Testing/Create NPC Prefabs (Complete Spec 06)")]
         public static void CreateNpcPrefabs_Complete()
         {
             EnsureDirectory();

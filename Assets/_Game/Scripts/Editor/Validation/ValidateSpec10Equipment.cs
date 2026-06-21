@@ -10,7 +10,6 @@ namespace CindarsHope.Editor.Validation
 {
     public class ValidateSpec10Equipment
     {
-        [MenuItem("CindarsHope/Archive/Validation/SPEC 10 - Equipment Durability Loot")]
         public static void ValidateSpec10()
         {
             Debug.Log("=== SPEC 10 Validation: Equipment Durability Loot ===");

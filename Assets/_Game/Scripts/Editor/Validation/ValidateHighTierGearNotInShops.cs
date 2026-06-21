@@ -19,7 +19,6 @@ namespace CindarsHope.Editor.Validation
     {
         private const string ShopFolder = "Assets/_Game/Data/Economy";
 
-        [MenuItem("CindarsHope/Validate/Validate High-Tier Gear Not In Shops (fable_49)")]
         public static void Run()
         {
             var errors = Validate();

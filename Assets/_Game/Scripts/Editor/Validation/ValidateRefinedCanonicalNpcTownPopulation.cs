@@ -45,7 +45,6 @@ namespace CindarsHope.Editor.Validation
             new("npc_maelor", "Maelor Cinza", "NightOnly/WanderHidden", ""),
         };
 
-        [MenuItem("CindarsHope/Validate/Validate WAVE12C Refined Canonical NPC Town Population")]
         public static void Run()
         {
             var errors = new List<string>();

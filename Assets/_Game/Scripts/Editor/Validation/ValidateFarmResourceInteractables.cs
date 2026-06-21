@@ -14,7 +14,6 @@ namespace CindarsHope.Editor.Validation
         private const float RockZoneX = -9.0f, RockZoneY = 5.0f, RockZoneDist = 5f;
         private const float ForageZoneX = -8.0f, ForageZoneY = -2.0f, ForageZoneDist = 5f;
 
-        [MenuItem("CindarsHope/Validate/Validate Farm Resources", priority = 42)]
         public static void Validate()
         {
             int issues = 0;

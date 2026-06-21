@@ -8,7 +8,6 @@ namespace CindarsHope.Editor.Validation
 {
     public class ValidateSpec11Damage
     {
-        [MenuItem("CindarsHope/Archive/Validation/SPEC 11 - Damage Status Resistances")]
         public static void ValidateSpec11()
         {
             Debug.Log("=== SPEC 11 Validation: Damage Status Resistances ===");

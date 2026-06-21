@@ -37,7 +37,6 @@ namespace CindarsHope.Editor.Validation
             "actionset_enemy_gnome_gem_madcap",
         };
 
-        [MenuItem("CindarsHope/Archive/Validation/Validate SPEC 13D - EnemyBrain Runtime")]
         public static void RunValidation()
         {
             var errors   = new List<string>();

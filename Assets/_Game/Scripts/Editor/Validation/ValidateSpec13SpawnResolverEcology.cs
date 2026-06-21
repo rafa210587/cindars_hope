@@ -13,7 +13,6 @@ namespace CindarsHope.Editor.Validation
 {
     public static class ValidateSpec13SpawnResolverEcology
     {
-        [MenuItem("CindarsHope/Archive/Validation/Validate SPEC 13F - Spawn Resolver Ecology")]
         public static void RunValidation()
         {
             var errors = new List<string>();

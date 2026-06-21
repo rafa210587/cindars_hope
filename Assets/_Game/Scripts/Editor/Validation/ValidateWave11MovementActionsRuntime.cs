@@ -19,7 +19,6 @@ namespace CindarsHope.Editor.Validation
             "Assets/_Game/Scripts/Player/Movement/PlayerMovementDisplacementResolver.cs",
         };
 
-        [MenuItem("CindarsHope/Validate/Validate WAVE11 Movement Actions Runtime")]
         public static void Run()
         {
             var errors = Validate();

@@ -12,7 +12,6 @@ namespace CindarsHope.Editor.Validation
         private const string CaveConfigPath = "Assets/_Game/Data/Cave/CaveGenerationConfig_Default.asset";
         private const string GameScaleConfigPath = "Assets/_Game/Data/Config/GameScaleConfig.asset";
 
-        [MenuItem("CindarsHope/Archive/Validation/Validate Spec 17A - Scale Config")]
         public static void Run()
         {
             var errors = 0;

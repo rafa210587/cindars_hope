@@ -11,7 +11,6 @@ namespace CindarsHope.Editor.Validation
     /// </summary>
     public static class ValidateWave18SaveLoadGapClosure
     {
-        [MenuItem("CindarsHope/Validate Wave 18 Save Load Gap Closure")]
         public static void ValidateAll()
         {
             var issues = 0;

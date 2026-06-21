@@ -48,7 +48,6 @@ namespace CindarsHope.Editor.SceneCreation
         private const string StatusEffectDatabasePath = "Assets/_Game/Data/Combat/StatusEffectDatabase.asset";
         private const string BuiltinSpritePath = "UI/Skin/UISprite.psd";
 
-        [MenuItem("CindarsHope/Create Scenes/Town Scene", priority = 21)]
         public static void CreateSceneFromMenu()
         {
 

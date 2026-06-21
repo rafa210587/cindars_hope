@@ -9,7 +9,6 @@ namespace CindarsHope.EditorTools.Validation
     /// </summary>
     public static class CombatDatabaseValidationMenu
     {
-        [MenuItem("CindarsHope/Validate/Validate Combat Databases", priority = 43)]
         public static void ValidateCombatDatabases()
         {
             var validator = new CombatDatabaseValidator();

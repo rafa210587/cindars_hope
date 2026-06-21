@@ -39,7 +39,6 @@ namespace CindarsHope.EditorTools.Combat
             [WeaponType.Staff] = new ArchetypeBaseline { Aspd = 0.9f, Primary = PlayerAttributeType.Intelligence, PrimaryWeight = 0.8f, Secondary = PlayerAttributeType.Willpower, SecondaryWeight = 0.3f, LightCost = 20, HeavyCost = 32, ChargedCost = 40, PostureMod = 0.8f, WeightClass = WeaponWeightClass.Medium, ChargedProfile = "charged_staff_arcane_channel" }
         };
 
-        [MenuItem("CindarsHope/Combat/Apply Weapon Mechanical Baselines")]
         public static void Apply()
         {
             var applied = 0;

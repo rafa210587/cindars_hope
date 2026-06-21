@@ -17,7 +17,6 @@ namespace CindarsHope.Editor.World
         private const string TablesFolderName = "Fishing";
         private const string TablesPath = "Assets/_Game/Data/Fishing/";
 
-        [MenuItem("CindarsHope/World/Generate Fishing Tables")]
         public static void Generate()
         {
             EnsureFolder(TablesFolderParent, TablesFolderName);

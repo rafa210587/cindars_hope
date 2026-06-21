@@ -51,7 +51,6 @@ namespace CindarsHope.Editor.SceneCreation
         private const string SpellDatabasePath = "Assets/_Game/Data/Combat/SpellDatabase.asset";
         private const string StatusEffectDatabasePath = "Assets/_Game/Data/Combat/StatusEffectDatabase.asset";
 
-        [MenuItem("CindarsHope/Create Scenes/Farm Scene", priority = 20)]
         public static void CreateSceneFromMenu()
         {
             if (EditorApplication.isPlayingOrWillChangePlaymode)

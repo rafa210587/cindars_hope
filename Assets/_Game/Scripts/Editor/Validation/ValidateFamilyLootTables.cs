@@ -25,7 +25,6 @@ namespace CindarsHope.Editor.Validation
         private const string ItemDatabasePath = "Assets/_Game/Data/Registries/ItemDatabase.asset";
         private const string LootDatabasePath = "Assets/_Game/Data/Loot/LootTableDatabase.asset";
 
-        [MenuItem("CindarsHope/Validation/Validate Family Loot Tables (fable_06)")]
         public static void RunValidation()
         {
             var errors = new List<string>();

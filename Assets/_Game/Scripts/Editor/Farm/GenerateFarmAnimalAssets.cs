@@ -31,7 +31,6 @@ namespace CindarsHope.Editor.Farm
         private const int BvKidGoat = 180;
         private const int BvCalfCow = 260;
 
-        [MenuItem("CindarsHope/Farm/Generate Farm Animal Assets")]
         public static void Generate()
         {
             EnsureFolder("Assets/_Game/Data", "Animals");

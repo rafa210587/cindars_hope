@@ -18,7 +18,6 @@ namespace CindarsHope.EditorTools.Combat
             "status_corruption", "status_slow", "status_heat_stress", "status_cold_stress"
         };
 
-        [MenuItem("CindarsHope/Validate/Status Effect Database")]
         public static void Validate()
         {
             var errors = ValidateAndReport();

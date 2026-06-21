@@ -42,7 +42,6 @@ namespace CindarsHope.EditorTools.Magic
             public bool IsEquippable;
         }
 
-        [MenuItem("CindarsHope/Magic/Generate Spell Learning Items")]
         public static void Generate()
         {
             var specs = BuildSpecs();

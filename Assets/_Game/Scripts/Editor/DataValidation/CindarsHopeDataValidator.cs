@@ -49,7 +49,6 @@ namespace CindarsHope.Editor.DataValidation
             "workshop_carpentry_basic"
         };
 
-        [MenuItem("CindarsHope/Archive/Validate/Validate MVP Data")]
         public static void ValidateMvpData()
         {
             var errors = new List<string>();

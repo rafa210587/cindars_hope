@@ -17,7 +17,6 @@ namespace CindarsHope.Editor.Validation
         private const string ScriptRoot = "Assets/_Game/Scripts";
         private const string DocsRoot = "docs/validation";
 
-        [MenuItem("CindarsHope/Validate/Validate WAVE14 Crafting Processing Runtime")]
         public static void ValidateAll()
         {
             Debug.Log("[ValidateCraftingProcessingRuntimeBinding] Starting WAVE14 validation...");

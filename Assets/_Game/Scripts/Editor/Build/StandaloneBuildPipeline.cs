@@ -34,7 +34,6 @@ namespace CindarsHope.EditorTools.Build
         private const string OutputFolder = "Builds/Windows";
         private const string ExecutableName = "CindarsHope.exe";
 
-        [MenuItem("CindarsHope/Build/Build Standalone Windows")]
         public static void BuildFromMenu()
         {
             var report = RunBuild(out var summaryMessage);

@@ -45,7 +45,6 @@ namespace CindarsHope.Editor.Items
                 RecipesCreated == 0 && RecipesUpdated == 0 && RegistryEntriesAdded == 0;
         }
 
-        [MenuItem("CindarsHope/Generate/Data/Canonical Item Catalog")]
         public static void Run()
         {
             var counters = Generate(out var report);

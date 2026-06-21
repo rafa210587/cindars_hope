@@ -12,7 +12,6 @@ namespace CindarsHope.Editor.Validation
 {
     public static class ValidateSpec13BestiaryRuntimeSave
     {
-        [MenuItem("CindarsHope/Archive/Validation/Validate SPEC 13E - Bestiary Runtime Save")]
         public static void RunValidation()
         {
             var errors = new List<string>();

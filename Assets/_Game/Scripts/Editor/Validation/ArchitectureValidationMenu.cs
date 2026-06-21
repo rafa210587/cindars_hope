@@ -9,7 +9,6 @@ namespace CindarsHope.EditorTools.Validation
     /// </summary>
     public static class ArchitectureValidationMenu
     {
-        [MenuItem("CindarsHope/Archive/Validate/Run Architecture Validators")]
         public static void RunArchitectureValidation()
         {
             // For now, run with no validators to establish the menu and infrastructure.

@@ -43,7 +43,6 @@ namespace CindarsHope.Editor
 
         // ── Top-level commands ──────────────────────────────────────────────────
 
-        [MenuItem("CindarsHope/Repair and Validate Project", priority = 0)]
         public static void RepairAndValidateProject()
         {
             int totalRepaired = 0;
@@ -127,24 +126,19 @@ namespace CindarsHope.Editor
                 "OK");
         }
 
-        [MenuItem("CindarsHope/Archive/Open Scenes/Cave")]
         public static void OpenCaveScene() => OpenScene(CaveSceneAssetPath);
 
-        [MenuItem("CindarsHope/Archive/Open Scenes/Farm")]
         public static void OpenFarmScene() => OpenScene(FarmSceneAssetPath);
 
-        [MenuItem("CindarsHope/Archive/Open Scenes/Town")]
         public static void OpenTownScene() => OpenScene(TownSceneAssetPath);
 
         // ── Advanced sub-menu ───────────────────────────────────────────────────
 
-        [MenuItem("CindarsHope/Archive/Advanced/Generate Runtime Assets")]
         public static void GenerateRuntimeAssets()
         {
             CindarsHope.Editor.EnemyTaxonomy.GenerateAndWireSpec13GAssets.GenerateAndWire();
         }
 
-        [MenuItem("CindarsHope/Validate/Validate Registries", priority = 40)]
         public static void ValidateRegistries()
         {
             int total = 0;
@@ -182,7 +176,6 @@ namespace CindarsHope.Editor
         // compartilham o mesmo Id dos canonicos (item_crop_carrot.asset etc.). A registry referencia AMBOS,
         // o que faz o DataRegistry falhar com "Duplicate Id". Mantemos a entrada cujo nome de ARQUIVO == "{Id}.asset"
         // (a canonica) e removemos a outra (a legada) APENAS da registry — o arquivo .asset legado NAO e deletado.
-        [MenuItem("CindarsHope/Validate/Remove Duplicate Item Ids", priority = 42)]
         public static void RemoveDuplicateItemIds()
         {
             var database = AssetDatabase.LoadAssetAtPath<ScriptableObject>(ItemDatabaseAssetPath);
@@ -287,14 +280,12 @@ namespace CindarsHope.Editor
             }
         }
 
-        [MenuItem("CindarsHope/Validate/Validate Cave Runtime", priority = 41)]
         public static void ValidateCaveRuntime()
         {
             CindarsHope.Editor.Validation.ValidateSpec14AEnemyRuntimeIntegration.RunValidation();
             CindarsHope.Editor.Validation.ValidateEnemyCaveSpawnCoverage.Validate();
         }
 
-        [MenuItem("CindarsHope/Archive/Advanced/Run PlayMode Smoke Validation")]
         public static void RunPlayModeSmokeValidation()
         {
             Debug.Log("PlayMode smoke: opening CaveScene + reporting current state.");
@@ -305,6 +296,15 @@ namespace CindarsHope.Editor
         }
 
         // ── Helpers ────────────────────────────────────────────────────────────
+
+        /// <summary>
+        /// Overload publico parameterless: remove entradas null de todas as registries conhecidas
+        /// e devolve quantos slots foram reparados. Usado pelo menu unico (Reparar e Reconstruir).
+        /// </summary>
+        public static int RemoveNullsFromAllRegistries()
+        {
+            return RemoveNullsFromAllRegistries(out _);
+        }
 
         private static int RemoveNullsFromAllRegistries(out List<RegistryValidationReport> reports)
         {

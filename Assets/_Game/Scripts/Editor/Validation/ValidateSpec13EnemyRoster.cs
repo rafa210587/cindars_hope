@@ -9,7 +9,6 @@ namespace CindarsHope.Editor.Validation
 {
     public static class ValidateSpec13EnemyRoster
     {
-        [MenuItem("CindarsHope/Archive/Validation/Validate SPEC 13B - Enemy Roster")]
         public static void RunValidation()
         {
             var errors = new List<string>();

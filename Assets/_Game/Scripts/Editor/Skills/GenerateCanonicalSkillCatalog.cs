@@ -25,7 +25,6 @@ namespace CindarsHope.Editor.Skills
             { "melee", 14 }, { "ranged", 11 }, { "magic", 13 }, { "survival", 16 }, { "crafting", 15 },
         };
 
-        [MenuItem("CindarsHope/Skills/Generate Canonical Skill Catalog", priority = 40)]
         public static void Generate()
         {
             Debug.Log("=== GenerateCanonicalSkillCatalog — START ===");
@@ -97,7 +96,6 @@ namespace CindarsHope.Editor.Skills
                 + $"(total {nodes.Count}); trees: {treesCreated} created, {treesUpdated} updated (total {trees.Count}).\n" + report);
         }
 
-        [MenuItem("CindarsHope/Skills/Validate Skill Catalog Counts", priority = 41)]
         public static void ValidateCountsMenu()
         {
             bool ok = ValidateCounts(out var report);

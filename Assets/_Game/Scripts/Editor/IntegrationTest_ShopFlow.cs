@@ -14,7 +14,6 @@ namespace CindarsHope.Editor.Testing
 {
     public class IntegrationTest_ShopFlow
     {
-        [MenuItem("CindarsHope/Archive/Testing/Integration Test - Shop Flow")]
         public static void RunShopFlowTest()
         {
             Debug.Log("═══════════════════════════════════════════════════════");

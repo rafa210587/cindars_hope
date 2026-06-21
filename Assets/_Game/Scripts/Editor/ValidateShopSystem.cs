@@ -18,7 +18,6 @@ namespace CindarsHope.Editor.Validation
         private static int _passCount = 0;
         private static int _failCount = 0;
 
-        [MenuItem("CindarsHope/Archive/Validation/Validate Shop System")]
         public static void ValidateShops()
         {
             _validationResults.Clear();

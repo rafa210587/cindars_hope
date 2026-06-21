@@ -38,10 +38,8 @@ namespace CindarsHope.Editor.EnemyTaxonomy
         // Batchmode entry: Unity.exe -executeMethod CindarsHope.Editor.EnemyTaxonomy.GenerateAndWireSpec13GAssets.Execute
         public static void Execute() => GenerateAndWire();
 
-        [MenuItem("CindarsHope/Archive/Generate/Enemy Runtime Data/Regenerate All Enemy Data")]
         public static void RegenerateAllEnemyData() => GenerateAndWire();
 
-        [MenuItem("CindarsHope/Archive/SPEC 13/Generate And Wire SPEC 13G Assets")]
         public static void GenerateAndWire()
         {
             CreateDefaultEnemyProfiles.CreateAll();

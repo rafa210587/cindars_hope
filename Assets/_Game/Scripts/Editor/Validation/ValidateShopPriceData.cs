@@ -26,7 +26,6 @@ namespace CindarsHope.Editor.Validation
             "shop_mara",
         };
 
-        [MenuItem("CindarsHope/Validate/Validate Shop Price Data")]
         public static void Run()
         {
             var errors = Validate();

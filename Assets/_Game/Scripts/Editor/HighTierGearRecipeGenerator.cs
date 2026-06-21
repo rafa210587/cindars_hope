@@ -58,7 +58,6 @@ namespace CindarsHope.Editor
             ("UpgradeRecipe_Shield_Block", "upgrade_shield_block", "Shield Hone (+Block)", MaterialBand.Bromecian, UpgradeFocus.Block),
         };
 
-        [MenuItem("CindarsHope/Crafting/Generate High-Tier Gear Recipes (fable_49)")]
         public static void GenerateHighTierRecipes()
         {
             EnsureDirectory(RecipePath);

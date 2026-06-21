@@ -55,7 +55,6 @@ namespace CindarsHope.Editor.EnemyTaxonomy
 
         // ── Entry point ──────────────────────────────────────────────────────────
 
-        [MenuItem("CindarsHope/Archive/SPEC 13/Create Enemy Actions and Sets")]
         public static void CreateAll()
         {
             EnsureFolder("Assets/_Game/Data/Enemies");

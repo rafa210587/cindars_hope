@@ -15,7 +15,6 @@ namespace CindarsHope.Editor.Validation
         private const string SizeProfileFolder = "Assets/_Game/Data/Combat/SizeProfiles";
         private const string FactionLocksFolder = "Assets/_Game/Data/EnemySpawn/FactionLocks";
 
-        [MenuItem("CindarsHope/Archive/Validate/Enemy Runtime Integration")]
         public static void RunValidation()
         {
             var errors = new List<string>();

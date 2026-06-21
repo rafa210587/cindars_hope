@@ -29,7 +29,6 @@ namespace CindarsHope.EditorTools.Combat
             public Color Color;
         }
 
-        [MenuItem("CindarsHope/Combat/Generate Canonical Status Effects")]
         public static void Generate()
         {
             if (!AssetDatabase.IsValidFolder(AssetFolder))

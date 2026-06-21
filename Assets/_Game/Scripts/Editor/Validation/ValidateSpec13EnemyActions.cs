@@ -73,7 +73,6 @@ namespace CindarsHope.Editor.Validation
             "physical", "fire", "ice", "toxic", "lightning", "arcane", "true"
         };
 
-        [MenuItem("CindarsHope/Archive/Validation/Validate SPEC 13C - Enemy Actions")]
         public static void RunValidation()
         {
             var errors   = new List<string>();

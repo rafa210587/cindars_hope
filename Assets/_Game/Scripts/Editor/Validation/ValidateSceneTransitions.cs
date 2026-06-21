@@ -38,7 +38,6 @@ namespace CindarsHope.Editor.Validation
             SceneId.SpawnCaveFromFarm,
         };
 
-        [MenuItem("CindarsHope/Validation/Validate Scene Transitions")]
         public static void ValidateAll()
         {
             var report = new System.Text.StringBuilder();

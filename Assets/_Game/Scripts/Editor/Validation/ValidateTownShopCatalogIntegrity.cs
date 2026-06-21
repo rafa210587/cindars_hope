@@ -34,7 +34,6 @@ namespace CindarsHope.Editor.Validation
         private const string ItemDatabasePath = "Assets/_Game/Data/Registries/ItemDatabase.asset";
         private const string ShopFolder = "Assets/_Game/Data/Economy";
 
-        [MenuItem("CindarsHope/Validate/Validate Town Shop Catalog Integrity")]
         public static void Run()
         {
             var errors = Validate();

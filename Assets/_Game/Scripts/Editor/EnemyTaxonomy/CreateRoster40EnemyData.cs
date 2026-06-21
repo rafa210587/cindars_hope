@@ -40,7 +40,6 @@ namespace CindarsHope.Editor.EnemyTaxonomy
             public bool IsBoss;
         }
 
-        [MenuItem("CindarsHope/Archive/SPEC 13/Create Canonical Enemy Roster")]
         public static void CreateRoster()
         {
             EnsureFolder(RosterFolder);
