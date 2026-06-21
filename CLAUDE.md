@@ -119,6 +119,8 @@ Use `.claude/skills/<name>/SKILL.md` when task matches:
 | `skill-tree-authoring` | Skill tree nodes, purchase/respec, active slot wiring, skill save/load |
 | `player-needs-survival` | Stamina/hunger/fatigue consumption, regen, thresholds, sleep, eat, save of needs |
 | `input-gamepad-routing` | Input focus routing (modal guard), new key bindings, gamepad path (future) |
+| `registry-catalog-pattern` | Static catalog/registry com const IDs, TryGet, IReadOnlyList All; criar ou estender catálogos de dados (items, animais, NPCs, quests) |
+| `action-feedback-pipeline` | Publicar PlayerActionFeedbackEvent → HUD toast + SFX automático; qualquer recusa de ação ou feedback de gameplay |
 
 ---
 

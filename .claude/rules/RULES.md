@@ -13,21 +13,22 @@ Rules são invariantes do projeto (o *que não pode driftar*). Skills explicam w
 **Code Architecture**
 5. [Unity Architecture Invariants](./unity-architecture.md) — sem runtime global search; só GameEventBus; save DTOs com simple types + IDs; namespaces proibidos
 6. [Cave Stable Run](./cave-stable-run.md) — contrato stable-run da FASE9F para cave procedural
+7. [ID Stability](./id-stability.md) — IDs de domínio como const string; nunca renomear sem migration; prefixo de domínio obrigatório
 
 **Unity, Git & Environment Safety**
-7. [Unity Assets & Editor Safety](./unity-assets.md) — sem YAML manual; evidência de generated asset; sem batchmode paralelo
-8. [No Unsafe Git](./no-unsafe-git.md) — git destrutivo exige autorização humana per-instance (enforcement via permissions.ask)
-9. [Windows / PowerShell Only](./windows_powershell_only.md) — sintaxe PowerShell; checagem de exit code; env failure policy
+8. [Unity Assets & Editor Safety](./unity-assets.md) — sem YAML manual; evidência de generated asset; sem batchmode paralelo
+9. [No Unsafe Git](./no-unsafe-git.md) — git destrutivo exige autorização humana per-instance (enforcement via permissions.ask)
+10. [Windows / PowerShell Only](./windows_powershell_only.md) — sintaxe PowerShell; checagem de exit code; env failure policy
 
 **Context & Docs**
-10. [Context Reading Policy](./context-reading-policy.md) — context mínimo; sem PROJECT_LOG por padrão
-11. [Docs Governance](./docs-governance.md) — só caminhos canônicos; sem delete sem candidate; ADRs/game_rules canônicos
+11. [Context Reading Policy](./context-reading-policy.md) — context mínimo; sem PROJECT_LOG por padrão
+12. [Docs Governance](./docs-governance.md) — só caminhos canônicos; sem delete sem candidate; ADRs/game_rules canônicos
 
 **Code Craft, Resilience & Safety** (qualidade geral de engenharia — complementa os architecture invariants; revisados, nem todos hook-gated)
-12. [C# Style & Craft](./csharp-style.md) — naming/immutability; sinalização de falha via `bool`+`FailureReason` (sem `Result<T>` paralelo); collections; async/frame-cost
-13. [Error Handling & Resilience](./error-handling-resilience.md) — taxonomy de falha em quatro categorias (expected gameplay / config-asset / infra / bug-invariant); logs com contexto; fail fast em dev
-14. [Gameplay Design Pattern Selection](./gameplay-design-patterns.md) — qual pattern usar, mapeado a precedentes existentes; domain em C# puro, engine como adapter
-15. [Security & File Safety](./security-and-files.md) — sem secrets em código/configs/logs; arquivos sensíveis e saves reais não são editados sem pedido explícito; ler scripts de build/deploy por inteiro primeiro
+13. [C# Style & Craft](./csharp-style.md) — naming/immutability; sinalização de falha via `bool`+`FailureReason` (sem `Result<T>` paralelo); collections; async/frame-cost
+14. [Error Handling & Resilience](./error-handling-resilience.md) — taxonomy de falha em quatro categorias (expected gameplay / config-asset / infra / bug-invariant); logs com contexto; fail fast em dev
+15. [Gameplay Design Pattern Selection](./gameplay-design-patterns.md) — qual pattern usar, mapeado a precedentes existentes; domain em C# puro, engine como adapter
+16. [Security & File Safety](./security-and-files.md) — sem secrets em código/configs/logs; arquivos sensíveis e saves reais não são editados sem pedido explícito; ler scripts de build/deploy por inteiro primeiro
 
 ## Mechanical Enforcement (hooks em .claude/settings.json)
 
