@@ -387,5 +387,8 @@ PROJECT_LOG + CURRENT_STATE conflict → prefer CURRENT_STATE; report mismatch
   - fable_74 (BUILD_VALIDATED_WITH_WARNINGS): EnemyBrain blink-strike (EnemyBlinkExecutor deterministico) + death-trigger (cave-only, once-per-life); CreateEnemyActionsAndSets atualizado (BlinkStrike/IsDeathtrigger); validator expandido (checks 12-14); 6 EditMode tests; commit 9cbf7e6d.
 - PLACAR: 77 specs funcionais — todas executadas/implementadas na branch dev.
 - validate_docs exit 0; Assembly-CSharp 0E; Assembly-CSharp-Editor 0E.
-- Pendência humana acumulada (PlayMode): regenerar assets (3 actions afetadas), executar
-  CindarsHope > SPEC 13 > Create Enemy Actions and Sets; Play Mode checklists fable_74/75/76/77.
+- Pendência humana acumulada (PlayMode): executar no Unity Editor os 3 comandos existentes:
+  1. `CindarsHope/Reparar e Reconstruir` — limpa refs pendentes e sincroniza databases.
+  2. `CindarsHope/Inicializar Projeto` — regenera todos os assets (incl. enemy actions/sets) e recria as cenas.
+  3. `CindarsHope/Validar Projeto` — confirma que tudo passou (leitura, sem mutação).
+  Depois: executar Play Mode checklists de fable_74/75/76/77.
