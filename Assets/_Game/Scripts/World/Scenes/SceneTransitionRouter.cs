@@ -20,7 +20,7 @@ namespace CindarsHope.World.Scenes
     ///   4. Call SceneManager.LoadScene with the destination scene name.
     ///
     /// Does NOT create duplicate managers or use DontDestroyOnLoad.
-    /// Does NOT do fading — FADE_LOADING_DEFERRED_WITH_REASON: no fade system.
+    /// Fade overlay is provided by SceneFadeOverlayBootstrap (DontDestroyOnLoad, sortingOrder 9999).
     ///
     /// Transition guard: if a transition is already in progress this frame,
     /// subsequent calls are silently ignored.
