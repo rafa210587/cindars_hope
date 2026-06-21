@@ -133,6 +133,11 @@ namespace CindarsHope.Editor.SceneCreation
         private static void LogRelayoutElementCountAudit(UnityEngine.SceneManagement.Scene scene)
         {
             int npcExpected = RefinedCanonicalTownNpcSpecs.Length + 1; // +1 wanderer
+            // Âncoras work/social/home são criadas SÓ para os NPCs com agenda (RefinedCanonicalTownNpcSpecs).
+            // O peregrino (wanderer) NÃO tem agenda (vaga numa zona), então NÃO gera as 3 âncoras — por isso
+            // o baseline de âncoras usa o nº de NPCs AGENDADOS, não o total (que inclui o wanderer). Era o que
+            // fazia a auditoria falsa-positivar: esperava (Refined+1)*3 enquanto o creator faz Refined*3.
+            int scheduledNpcExpected = RefinedCanonicalTownNpcSpecs.Length;
             int houseExpected = TownHouseSpecs.Length;
             int treeExpected = TownTreePositions.Length;
             int shopExpected = 0;
@@ -169,7 +174,7 @@ namespace CindarsHope.Editor.SceneCreation
                 $"  Houses:  before={houseExpected} after={houseActual}\n" +
                 $"  Trees:   before={treeExpected} after={treeActual}\n" +
                 $"  Stalls:  before={shopExpected} after={stallActual}\n" +
-                $"  Anchors: before={npcExpected * 3} after={anchorActual} (work/social/home)\n" +
+                $"  Anchors: before={scheduledNpcExpected * 3} after={anchorActual} (work/social/home; só NPCs agendados)\n" +
                 $"  Spawns:  before={TownDistrictLayout.StableSpawnIds.Length} after={spawnActual}\n" +
                 $"  New districts: lake/park={lakeFound} townHall={hallFound} mural={muralFound}\n" +
                 $"  Landmark statue present={boardFound}\n" +
@@ -183,7 +188,7 @@ namespace CindarsHope.Editor.SceneCreation
             // houses/trees/stalls/spawns e os landmarks bool (que specs posteriores nao alteram).
             bool ok = npcActual >= npcExpected && houseActual == houseExpected &&
                       treeActual == treeExpected && stallActual == shopExpected &&
-                      anchorActual >= npcExpected * 3 &&
+                      anchorActual >= scheduledNpcExpected * 3 &&
                       spawnActual == TownDistrictLayout.StableSpawnIds.Length &&
                       lakeFound && hallFound && muralFound && boardFound;
             if (!ok)

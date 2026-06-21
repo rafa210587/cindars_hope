@@ -44,8 +44,14 @@ namespace CindarsHope.Editor.EnemyTaxonomy
             // 2) Tabelas de loot por família.
             var tableByFamily = CreateFamilyLootTables();
 
-            // 3) Bancos (registries) — popula com as 9 tabelas e os 9 perfis de matriz.
-            var lootDb = EnsureLootDatabase(tableByFamily.Values.ToArray());
+            // 2b) Tabelas de loot DEDICADAS de boss (lootTableId explícito no EnemyDataSO do boss,
+            //     ex.: enemy_meteor_ooze_king → loot_boss_meteor_ooze_king). Sem isto, o boss referencia
+            //     uma LootTableSO inexistente (erro de validação). Reusa item ids canônicos do §11.
+            var bossTables = CreateBossLootTables();
+
+            // 3) Bancos (registries) — popula com as 9 tabelas de família + as tabelas de boss + os 9 perfis.
+            var allTables = tableByFamily.Values.Concat(bossTables.Values).ToArray();
+            var lootDb = EnsureLootDatabase(allTables);
             AddMatrixProfilesToVulnerabilityDatabase(matrixByFamily.Values.ToArray());
 
             // 4) Atribui lootTableId + VulnerabilityMatrixProfileId a cada inimigo do roster.
@@ -54,9 +60,9 @@ namespace CindarsHope.Editor.EnemyTaxonomy
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
-            Debug.Log($"[fable_06] Family loot generation complete. Tables={tableByFamily.Count}, " +
-                      $"MatrixProfiles={matrixByFamily.Count}, EnemiesAssigned={assigned}, " +
-                      $"LootDatabase='{lootDb.name}'.");
+            Debug.Log($"[fable_06] Family loot generation complete. FamilyTables={tableByFamily.Count}, " +
+                      $"BossTables={bossTables.Count}, MatrixProfiles={matrixByFamily.Count}, " +
+                      $"EnemiesAssigned={assigned}, LootDatabase='{lootDb.name}'.");
         }
 
         // ──────────────────────────────────────────────────────────────────────────────────
@@ -138,6 +144,35 @@ namespace CindarsHope.Editor.EnemyTaxonomy
                 guaranteed: new[] { E("item_material_void_ichor", 1, 1) },
                 weighted: new[] { W("item_material_void_ichor", 4, 1, 1), W("item_material_lurker_eye", 2, 1, 1, rare: true), W("item_material_night_essence", 3, 1, 1), W("item_material_abyssal_fang", 1, 1, 1, rare: true) },
                 essence: "item_essence_void");
+
+            return map;
+        }
+
+        // ──────────────────────────────────────────────────────────────────────────────────
+        // Boss loot tables (lootTableId dedicado no EnemyDataSO do boss)
+        // ──────────────────────────────────────────────────────────────────────────────────
+        // Bosses cujo EnemyDataSO referencia um lootTableId próprio (não-família). Drop garantido de
+        // essência elemental + materiais raros (recompensa de boss). Item ids canônicos do §11 já usados
+        // nas tabelas de família — nenhum item novo inventado.
+        private static Dictionary<string, LootTableSO> CreateBossLootTables()
+        {
+            var map = new Dictionary<string, LootTableSO>();
+
+            // enemy_meteor_ooze_king (boss elemental/ígneo de meteoro). lootTableId: loot_boss_meteor_ooze_king.
+            map["loot_boss_meteor_ooze_king"] = BuildTable("loot_boss_meteor_ooze_king", "boss",
+                guaranteed: new[]
+                {
+                    E("item_essence_fire", 2, 3),
+                    E("item_material_magma_chitin", 1, 2),
+                },
+                weighted: new[]
+                {
+                    W("item_material_ember_fang", 5, 2, 4),
+                    W("item_material_frost_core", 3, 1, 2),
+                    W("item_material_wyrmling_scale", 2, 1, 2, rare: true),
+                    W("item_material_arcane_crystal", 1, 1, 1, rare: true),
+                },
+                essence: "item_essence_fire");
 
             return map;
         }

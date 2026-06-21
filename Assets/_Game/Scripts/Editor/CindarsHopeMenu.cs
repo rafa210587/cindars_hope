@@ -88,6 +88,10 @@ namespace CindarsHope.Editor
                 () => CindarsHope.Editor.Enemies.GenerateCanonicalBestiary.GenerateMenu());
             RunStep("Gerar catalogo canonico de skills",
                 () => CindarsHope.Editor.Skills.GenerateCanonicalSkillCatalog.Generate());
+            // Cria/liga os WeaponDataSO dos item_weapon_* (fecha WEAPON_ITEM_NO_WEAPON_ID) ANTES das
+            // baselines — assim ApplyWeaponMechanicalBaselines preenche os campos mecanicos das armas novas.
+            RunStep("Gerar/ligar WeaponDataSO do catalogo de armas",
+                () => CindarsHope.EditorTools.Combat.GenerateWeaponDataFromCatalog.Generate());
             RunStep("Aplicar baselines mecanicas de armas",
                 () => CindarsHope.EditorTools.Combat.ApplyWeaponMechanicalBaselines.Apply());
             RunStep("Gerar loot tables por familia de inimigo",

@@ -23,6 +23,8 @@ namespace CindarsHope.EditorTools.Magic
         private const string SpellDatabasePath = "Assets/_Game/Data/Combat/SpellDatabase.asset";
         private const string ItemsPath = "Assets/_Game/Data/Items/";
         private const string ItemDatabasePath = "Assets/_Game/Data/Registries/ItemDatabase.asset";
+        // Prefab de projétil default das spells de projétil (mesmo usado por spell_fireball — fonte única).
+        private const string ProjectileFireballPath = "Assets/_Game/Data/Combat/Prefabs/Projectile_Fireball.prefab";
 
         private struct ShapeSpellSpec
         {
@@ -102,6 +104,24 @@ namespace CindarsHope.EditorTools.Magic
                 asset.StatusApplyChance = spec.StatusApplyChance;
                 asset.BaseValue = spec.BaseValue;
 
+                // O CombatDatabaseValidator exige ProjectilePrefab para spells SpellType.Fireball
+                // (spell_flame_cone = Cone, senya_rupture = Nova; ambos Type=Fireball). Atribui o
+                // MESMO prefab default do spell_fireball (sem inventar prefab novo). Só seta se ausente,
+                // para não sobrescrever um prefab já afinado à mão.
+                if (asset.Type == SpellType.Fireball && asset.ProjectilePrefab == null)
+                {
+                    var projectile = AssetDatabase.LoadAssetAtPath<GameObject>(ProjectileFireballPath);
+                    if (projectile != null)
+                    {
+                        asset.ProjectilePrefab = projectile;
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"[GenerateShapeSpells] Projectile default nao encontrado em {ProjectileFireballPath}; " +
+                                         $"'{asset.Id}' fica sem ProjectilePrefab (rode Reparar/regenere o prefab).");
+                    }
+                }
+
                 EditorUtility.SetDirty(asset);
                 spellAssets.Add(asset);
             }
@@ -111,6 +131,13 @@ namespace CindarsHope.EditorTools.Magic
             // Pergaminhos de aprendizado para as spells exemplares (fonte LearnableScroll).
             var scrollAssets = GenerateScrolls(specs);
             int registeredItems = RegisterAssets(ItemDatabasePath, "_items", scrollAssets);
+
+            // Liga os pergaminhos de CONJURAÇÃO do catálogo (fable_32) às spells reais. O catálogo
+            // (GenerateCanonicalItemCatalog) cria esses itens equipáveis Category=Magic mas NÃO é dono
+            // de SpellId/SpellSource — sem isto o validador acusa MAGIC_ITEM_NO_SPELL_ID (item que casta
+            // sem spell). Mapeia para spells JÁ existentes no SpellDatabase (não cria spell nova).
+            int wiredCastScrolls = WireCatalogCastScrolls();
+            Debug.Log($"[GenerateShapeSpells] Cast scrolls do catalogo ligados a spells reais: {wiredCastScrolls}.");
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
@@ -227,6 +254,51 @@ namespace CindarsHope.EditorTools.Magic
             }
 
             return assets;
+        }
+
+        // Pergaminhos de conjuração canônicos (fable_32) → spell real do SpellDatabase. Idempotente:
+        // só escreve se mudar. Marca SpellSource=CastScroll (semântica de "conjura e consome") e SpellId.
+        private static readonly (string ItemId, string SpellId)[] s_catalogCastScrolls =
+        {
+            ("item_consumable_scroll_cast_barrier", "spell_arcane_barrier"),
+            ("item_consumable_scroll_cast_fireburst", "spell_flame_cone"),
+        };
+
+        private static int WireCatalogCastScrolls()
+        {
+            var spellDb = AssetDatabase.LoadAssetAtPath<SpellDatabaseSO>(SpellDatabasePath);
+            int wired = 0;
+
+            foreach (var (itemId, spellId) in s_catalogCastScrolls)
+            {
+                var path = $"{ItemsPath}{itemId}.asset";
+                var item = AssetDatabase.LoadAssetAtPath<ItemDataSO>(path);
+                if (item == null)
+                {
+                    Debug.LogWarning($"[GenerateShapeSpells] Cast scroll '{itemId}' nao encontrado em {path} " +
+                                     "(rode o GenerateCanonicalItemCatalog antes); pulado.");
+                    continue;
+                }
+
+                if (spellDb != null && !spellDb.TryGetById(spellId, out _))
+                {
+                    Debug.LogWarning($"[GenerateShapeSpells] Spell alvo '{spellId}' do cast scroll '{itemId}' " +
+                                     "ausente no SpellDatabase; SpellId nao ligado.");
+                    continue;
+                }
+
+                bool changed = false;
+                if (item.SpellId != spellId) { item.SpellId = spellId; changed = true; }
+                if (item.SpellSource != SpellSourceType.CastScroll) { item.SpellSource = SpellSourceType.CastScroll; changed = true; }
+
+                if (changed)
+                {
+                    EditorUtility.SetDirty(item);
+                    wired++;
+                }
+            }
+
+            return wired;
         }
 
         private static int RegisterAssets<T>(string databasePath, string arrayField, List<T> assets) where T : Object

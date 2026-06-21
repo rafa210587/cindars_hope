@@ -3,6 +3,7 @@ using CindarsHope.World.Scenes;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace CindarsHope.Editor.Validation
 {
@@ -57,6 +58,14 @@ namespace CindarsHope.Editor.Validation
 
                 report.AppendLine($"\n--- Scene: {scenePath} ---");
 
+                // Garante uma cena-base aberta ANTES do additive: o Unity não suporta descarregar
+                // a última cena carregada, então abrir additive numa sessão sem cena (batchmode/fresh)
+                // e depois CloseScene logaria "Unloading the last loaded scene is not supported".
+                if (!SceneManager.GetActiveScene().IsValid() || SceneManager.sceneCount == 0)
+                {
+                    EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+                }
+
                 var scene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Additive);
 
                 var gates = Object.FindObjectsByType<SceneTransitionGate>(FindObjectsInactive.Exclude);
@@ -90,7 +99,16 @@ namespace CindarsHope.Editor.Validation
                     report.AppendLine($"  ANCHOR: {anchor.SpawnAnchorId} at {anchor.Position}");
                 }
 
-                EditorSceneManager.CloseScene(scene, true);
+                // Só fecha se NÃO for a última cena carregada (fechar a única dá warning espúrio do Unity).
+                // Quando for a única, troca por uma cena vazia (Single) — descarrega a auditada sem warning.
+                if (SceneManager.sceneCount > 1)
+                {
+                    EditorSceneManager.CloseScene(scene, true);
+                }
+                else
+                {
+                    EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+                }
             }
 
             // Check all expected gates are present

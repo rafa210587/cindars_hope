@@ -134,7 +134,10 @@ namespace CindarsHope.EditorTools.Magic
                     DisplayName = "Varinha de Faiscas",
                     Category = ItemCategory.Magic,
                     Source = SpellSourceType.EquippedItem,
-                    EquippedSpellId = "spell_spark",
+                    // 'spell_spark' nunca existiu como SpellDataSO (era placeholder do exemplo fable_07),
+                    // o que disparava SPELL_ID_NOT_IN_DB. Aponta para o bolt arcano básico real do
+                    // SpellDatabase (arcane_projectile, gerado por GenerateShapeSpells) — fit de "faísca".
+                    EquippedSpellId = "arcane_projectile",
                     BaseValue = 90,
                     MaxStack = 1,
                     IsEquippable = true

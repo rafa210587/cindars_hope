@@ -63,6 +63,11 @@ namespace CindarsHope.EditorTools.Validation
             {
                 if (entry == null || string.IsNullOrEmpty(entry.NpcId)) continue;
 
+                // NPCs Legacy (ambiente/lore, ex.: npc_vaalara_wanderer_01 = "Lore wanderer") NÃO fazem
+                // parte da matriz canônica de relacionamento (§4 cobre os 23 NPCs do roster v1.1; o
+                // peregrino é LegacyRetained, sem amizade/presente por design). Cobrá-los era falso-positivo.
+                if (entry.PriorityTier == NpcTownRosterRegistry.NpcPriorityTier.Legacy) continue;
+
                 var prefs = GiftTasteMatrixData.TryGetPreferences(entry.NpcId);
                 if (prefs == null)
                 {

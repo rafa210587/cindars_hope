@@ -108,14 +108,19 @@ namespace CindarsHope.EditorTools.Validation
                     }
                 }
 
-                // FR-002: Magic items must have valid SpellId
-                if (item.Category == ItemCategory.Magic && item.IsEquippable)
+                // FR-002: SOMENTE itens mágicos que REALMENTE lançam magia exigem SpellId.
+                // Itens mágicos PASSIVOS/utilitários (fable_31: pendant/lantern/pouch/candle = presença;
+                // bell/mirror/hourglass/whetstone = uso via MagicItemUseHandler) e os scrolls de APRENDER
+                // (fable_07/08: SpellSource=LearnableScroll/Tome ensinam via TaughtSpellId, não castam)
+                // NÃO castam — exigir SpellId deles é falso-positivo. Casta = UseKind=EquipSpell resolvido,
+                // OU fonte de cast (SpellSource=CastScroll/EquippedItem), OU scroll de conjuração (id scroll_cast_).
+                if (item.Category == ItemCategory.Magic && item.IsEquippable && ItemCastsSpell(item))
                 {
                     if (string.IsNullOrEmpty(item.SpellId))
                     {
                         var assetPath = AssetDatabase.GetAssetPath(item);
                         report.AddIssue("ItemData", "MAGIC_ITEM_NO_SPELL_ID", ValidationSeverity.Error,
-                            $"Magic item '{item.DisplayName}' (ID: {item.Id}) is equippable but has no SpellId.",
+                            $"Magic item '{item.DisplayName}' (ID: {item.Id}) casts a spell but has no SpellId.",
                             assetPath, item.DisplayName, "Set SpellId in ItemDataSO.");
                     }
                     else if (spellDb != null && !spellDb.TryGetById(item.SpellId, out _))
@@ -147,6 +152,36 @@ namespace CindarsHope.EditorTools.Validation
                     }
                 }
             }
+        }
+
+        // True somente para itens mágicos que LANÇAM uma magia (logo precisam de SpellId válido).
+        // Discriminadores (campos canônicos existentes — nenhum schema novo):
+        //   • UseKind resolvido == EquipSpell (item equipado que concede a magia via SpellId);
+        //   • SpellSource == CastScroll | EquippedItem (fable_07: a magia vem do SpellId do item);
+        //   • id "scroll_cast_*" (fable_32: pergaminho de conjuração).
+        // NÃO castam (retornam false): passivos/uso (PassiveFlag, UseKind=ConsumePotion/UseTool/None),
+        // scrolls de APRENDER (SpellSource=LearnableScroll/Tome → ensinam via TaughtSpellId), e o
+        // Scroll of Identify (roteado pelo MagicItemUseHandler).
+        private static bool ItemCastsSpell(ItemDataSO item)
+        {
+            if (item == null)
+            {
+                return false;
+            }
+
+            if (item.SpellSource == CindarsHope.Magic.SpellSourceType.CastScroll ||
+                item.SpellSource == CindarsHope.Magic.SpellSourceType.EquippedItem)
+            {
+                return true;
+            }
+
+            if (ItemUseContractResolver.Resolve(item) == ItemUseKind.EquipSpell)
+            {
+                return true;
+            }
+
+            return !string.IsNullOrEmpty(item.Id) &&
+                   item.Id.IndexOf("scroll_cast_", System.StringComparison.Ordinal) >= 0;
         }
 
         private void ValidateItemUseContracts(ItemDatabaseSO itemDb, ValidationReport report)
