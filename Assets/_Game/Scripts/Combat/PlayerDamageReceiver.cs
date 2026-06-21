@@ -6,9 +6,11 @@ using UnityEngine;
 namespace CindarsHope.Combat
 {
     /// <summary>
-    /// F03 — redutor CENTRAL de dano recebido pelo player. Todos os caminhos
-    /// (melee inimigo via PlayerHitEvent, contato, projétil inimigo) passam aqui.
-    /// Armadura: Defense derivado (equipment bônus + passivas) com floor 1.
+    /// F03 — redutor CENTRAL de dano recebido pelo player. Todos os caminhos passam aqui por chamada
+    /// DIRETA a ApplyDamage (fable_66: o antigo PlayerHitEvent foi aposentado — não havia publisher):
+    /// melee inimigo (EnemyBrain), contato (EnemyContactDamage), projétil inimigo
+    /// (EnemyProjectileBehaviour), armadilhas/hazards da caverna. Armadura: Defense derivado
+    /// (equipment bônus + passivas) com floor 1.
     /// </summary>
     public static class PlayerDamageReceiver
     {

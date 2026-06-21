@@ -34,20 +34,14 @@ namespace CindarsHope.Player
             }
         }
 
-        private void OnEnable()
-        {
-            GameEventBus.Subscribe<PlayerHitEvent>(OnPlayerHit);
-        }
-
-        private void OnDisable()
-        {
-            GameEventBus.Unsubscribe<PlayerHitEvent>(OnPlayerHit);
-        }
+        // fable_66: PlayerHitEvent foi aposentado (evento morto — zero publishers). O dano ao player
+        // NÃO chega mais por evento: o caminho real é a chamada direta a PlayerDamageReceiver.ApplyDamage
+        // feita pela fonte do dano (EnemyBrain melee, EnemyContactDamage, EnemyProjectileBehaviour,
+        // armadilhas). Assinatura órfã removida — nada para subscrever aqui.
 
         // SPEC 14A-FIX7: Update() was reading Q/J/E/Space and competing with PlayerAttackController
         // for the same input. PlayerAttackController is the authoritative attack handler (it does
-        // proper Physics2D enemy detection and calls EnemyHealth.TakeDamage). This controller is
-        // now reduced to its OnPlayerHit damage handler (enemy contact -> player HP).
+        // proper Physics2D enemy detection and calls EnemyHealth.TakeDamage).
 
         private void TryAttackLeftHand()
         {
@@ -191,12 +185,6 @@ namespace CindarsHope.Player
             _unarmedData.Range = 0.5f;
             _unarmedData.ArcDegrees = 120f;
             _unarmedData.DamageType = DamageType.Physical;
-        }
-
-        private void OnPlayerHit(PlayerHitEvent evt)
-        {
-            // F03: caminho central com redução por Defense derivado (armadura funcional).
-            CindarsHope.Combat.PlayerDamageReceiver.ApplyDamage(_playerManager, evt.DamageAmount, "enemy_melee");
         }
     }
 }

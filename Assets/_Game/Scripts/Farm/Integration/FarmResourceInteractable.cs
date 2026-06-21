@@ -4,10 +4,11 @@ using UnityEngine;
 
 namespace CindarsHope.Farm.Integration
 {
-    // TODO_INTEGRATION_NOT_FINAL — temporary resource interaction adapter for playable slice smoke validation.
-    // Replace with final tool/tier/service integration when farm resources WAVE is complete.
-    // Tree/Rock use existing TreeNode (chopping) / FarmResourceNodeService (generic resource nodes).
-    // This adapter provides a simplified single-step interaction for smoke validation purposes only.
+    // TODO_INTEGRATION_NOT_FINAL (RE-REGISTRADO fable_66, owner: kit inicial canônico + tool/tier flow):
+    // adapter simplificado de slice gerado por CreateMvpFarmScene para validação jogável. Substituir
+    // pelo fluxo final (TreeNode/FarmResourceNodeService com ferramenta/tier) SÓ depois que o kit inicial
+    // existir E a FarmScene for regenerada no Unity Editor sem este adapter. Mantido honestamente como
+    // débito ABERTO — ver docs/validation/fable_66_spec_code_debt_cleanup_slice_mode_execution_report.md.
     [DisallowMultipleComponent]
     public sealed class FarmResourceInteractable : MonoBehaviour, IInteractable
     {

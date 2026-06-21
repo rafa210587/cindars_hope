@@ -54,7 +54,12 @@ namespace CindarsHope.Farm
         // fable_55: calendário para o gate de estação no plantio (ponto único). Opcional: ausente
         // = sem informação de estação = plantio liberado (não bloquear sem dado).
         [SerializeField] private World.Calendar.GameCalendarService _calendarService;
-        // TODO_INTEGRATION_NOT_FINAL: WAVE_INTEGRATION_05 smoke hook. Remove when final farm tool/equipment flow covers the whole crop loop.
+        // TODO_INTEGRATION_NOT_FINAL (RE-REGISTRADO fable_66, owner: kit inicial canônico em inventário):
+        // o slice mode é o ÚNICO caminho jogável do loop de crop sem ferramentas/sementes no inventário.
+        // NÃO REMOVER até: (1) o kit inicial canônico GRANTAR hoe + watering-can + sementes ao inventário
+        // do player no new game (PlayerDataSO.StartingItems verificado no asset) E (2) CreateMvpFarmScene
+        // ser regenerado no Unity Editor com o flag OFF. Decisão e condição em
+        // docs/validation/fable_66_spec_code_debt_cleanup_slice_mode_execution_report.md (CA-4, SEM gate).
         [SerializeField] private bool _temporarySequentialSliceMode;
         [SerializeField] private string _temporarySequentialSeedId = "seed_carrot";
 
@@ -224,9 +229,9 @@ namespace CindarsHope.Farm
         }
 
         // WAVE_INTEGRATION_11: Public bridge for skill effect executors to water this plot.
-        // Bypasses tool requirement (_temporarySequentialSliceMode bypass) and stamina if no manager.
-        // TODO_INTEGRATION_NOT_FINAL: Stamina cost is always bypassed here for skill-triggered water.
-        // Final design should deduct stamina from the caster's StaminaManager passed via context.
+        // TODO_INTEGRATION_NOT_FINAL (RE-REGISTRADO fable_66, owner: onda de skills): a rega por skill
+        // não debita stamina do caster — o design final deve passar o StaminaManager do caster via
+        // contexto. Fora do escopo da fable_66 (débito de Skills, não de slice mode). Ver report CA-4.
         public bool TryWaterViaSkill()
         {
             if (State == FarmPlotState.TilledDry)

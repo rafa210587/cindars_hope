@@ -47,6 +47,8 @@ namespace CindarsHope.Player.Movement
 
         private bool _isBlocking;
         private float _staminaDrainAccumulator;
+        // fable_66: trava de log one-shot do erro de wiring de stamina (evita spam por frame no drain).
+        private bool _staminaWiringErrorLogged;
         // F27: estado da janela perfeita.
         private float _blockStartTime = -10f;
         private float _lastBlockEndTime = -10f;
@@ -84,6 +86,30 @@ namespace CindarsHope.Player.Movement
             var bootstrap = GameBootstrap.Instance;
             if (bootstrap != null && _staminaManager == null)
                 _staminaManager = bootstrap.StaminaManager;
+
+            // fable_66 (STAMINA_BLOCK_DEBT): wiring garantido aqui (serialized ref OU bootstrap).
+            // Ausente = erro de wiring logado ALTO (rule unity-architecture #1: cena/objeto/campo),
+            // nunca um guard silencioso que dreni nada.
+            if (_staminaManager == null)
+            {
+                LogStaminaWiringError();
+            }
+        }
+
+        private void LogStaminaWiringError()
+        {
+            if (_staminaWiringErrorLogged)
+            {
+                return;
+            }
+
+            _staminaWiringErrorLogged = true;
+            Debug.LogError(
+                $"[PlayerBlockController] WIRING ERROR: StaminaManager ausente. " +
+                $"Scene='{gameObject.scene.name}', GameObject='{gameObject.name}', " +
+                $"campo='_staminaManager'. Block não consegue drenar stamina. " +
+                $"Atribua a ref no Inspector ou garanta GameBootstrap.StaminaManager no bootstrap.",
+                this);
         }
 
         private void OnDestroy()
@@ -142,7 +168,13 @@ namespace CindarsHope.Player.Movement
 
         private void DrainStamina()
         {
-            if (_staminaManager == null) return; // STAMINA_BLOCK_DEBT
+            if (_staminaManager == null)
+            {
+                // fable_66: sem stamina wired, o block não pode drenar. Em vez de no-op silencioso,
+                // expõe o erro de wiring (one-shot) e mantém o block ativo sem custo (não trava o player).
+                LogStaminaWiringError();
+                return;
+            }
 
             _staminaDrainAccumulator += _staminaDrainPerSecond * Time.deltaTime;
             var spend = Mathf.FloorToInt(_staminaDrainAccumulator);

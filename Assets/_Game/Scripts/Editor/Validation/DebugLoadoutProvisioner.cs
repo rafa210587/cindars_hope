@@ -8,8 +8,10 @@ using UnityEngine;
 
 namespace CindarsHope.Editor.Validation
 {
-    // TODO_INTEGRATION_NOT_FINAL — debug provisioner for smoke-testing WAVE04/05/06 playable slices.
-    // Must be removed or disabled before production build. Do not wire to gameplay systems.
+    // fable_66 — DECISÃO AUDITADA: ferramenta de DEBUG de editor PERMANENTE (não é débito de integração).
+    // Vive em Editor/ (fora do build de produção por definição); expõe dois MenuItems Play-Mode-only
+    // (Provision Farm Smoke Loadout, Provision All Known Items) para validação manual de slices. Nunca
+    // é referenciada por código de gameplay runtime — é uma conveniência de QA. Mantida como tooling.
     public static class DebugLoadoutProvisioner
     {
         // (item ID, amount to add, hotbar slot index — -1 means don't bind to hotbar)

@@ -1,6 +1,7 @@
 using CindarsHope.Cave.Runtime;
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
+using CindarsHope.Core.Time;
 using CindarsHope.Equipment;
 using CindarsHope.Inventory;
 using CindarsHope.Player;
@@ -20,6 +21,9 @@ namespace CindarsHope.Cave.Death
         private readonly InventoryManager _inventoryManager;
         private readonly EquipmentManager _equipmentManager;
         private readonly PlayerProgressionManager _progressionManager;
+        // fable_66: owner real do dia do jogo (TimeManager, mesmo que publica DayStartedEvent).
+        // Opcional p/ compat — ausente degrada para o dia inicial 1 via CaveCorpseStamp (sem corromper).
+        private readonly TimeManager _timeManager;
 
         public Corpse LastCreatedCorpse { get; private set; }
 
@@ -29,7 +33,8 @@ namespace CindarsHope.Cave.Death
             PlayerManager playerManager,
             InventoryManager inventoryManager,
             EquipmentManager equipmentManager,
-            PlayerProgressionManager progressionManager)
+            PlayerProgressionManager progressionManager,
+            TimeManager timeManager = null)
         {
             _policy = policy ?? throw new ArgumentNullException(nameof(policy));
             _caveRunManager = caveRunManager ?? throw new ArgumentNullException(nameof(caveRunManager));
@@ -37,6 +42,7 @@ namespace CindarsHope.Cave.Death
             _inventoryManager = inventoryManager ?? throw new ArgumentNullException(nameof(inventoryManager));
             _equipmentManager = equipmentManager ?? throw new ArgumentNullException(nameof(equipmentManager));
             _progressionManager = progressionManager;
+            _timeManager = timeManager;
         }
 
         public bool IsDeathInCave(string deathSceneName)
@@ -66,7 +72,10 @@ namespace CindarsHope.Cave.Death
             ResetXp();
 
             PublishEvents(corpse);
-            ReplaceActiveCorpse(corpse);
+            // fable_66: a substituição do corpse anterior (marcar Replaced + CorpseReplacedEvent) é
+            // responsabilidade ÚNICA do CorpseRecoveryManager.SetActiveCorpse, chamado pelo handler de
+            // morte (DeathSystemBootstrap/CaveDeathEventHandler) com LastCreatedCorpse. O resolver não
+            // reimplementa replace (regra de não duplicação).
         }
 
         private Corpse CreateCorpse()
@@ -196,34 +205,35 @@ namespace CindarsHope.Cave.Death
             }
         }
 
-        private void ReplaceActiveCorpse(Corpse newCorpse)
-        {
-            // TODO: Replace old corpse with new one
-            // This will be integrated with CorpseRecoveryManager
-        }
-
         private Vector2 GetPlayerPosition()
         {
             var playerTransform = _playerManager?.gameObject.transform;
             return playerTransform != null ? playerTransform.position : Vector2.zero;
         }
 
+        // fable_66: dia real do owner de tempo (TimeManager). Ausente ⇒ floor 1 (nunca grava 0).
         private int GetCurrentGameDay()
         {
-            // TODO: Get from game time manager
-            return 1;
+            var ownerDay = _timeManager != null ? _timeManager.CurrentDay : 1;
+            return CaveCorpseStamp.ResolveGameDay(ownerDay);
         }
 
+        // fable_66: o projeto ainda não tem relógio intra-dia canônico (TimeManager só expõe o dia);
+        // o owner repassa 0 até existir. Normalizado/saneado pelo helper. Sem stub eterno: o ponto de
+        // troca para o futuro relógio é único (aqui).
         private float GetCurrentGameTime()
         {
-            // TODO: Get from game time manager
-            return 0f;
+            return CaveCorpseStamp.ResolveGameTime(0f);
         }
 
+        // fable_66: hash de layout determinístico (ADR-0005) derivado das seeds reais da run + nível,
+        // idêntico em revisita. Sem run ⇒ vazio. Substitui o stub eterno por fonte real e estável.
         private string GetCurrentLayoutHash()
         {
-            // TODO: Get from cave runtime
-            return string.Empty;
+            return CaveCorpseStamp.ResolveLayoutHash(
+                _caveRunManager.CaveWorldSeed,
+                _caveRunManager.CaveRunSeed,
+                _caveRunManager.CurrentCaveLevel);
         }
     }
 }
