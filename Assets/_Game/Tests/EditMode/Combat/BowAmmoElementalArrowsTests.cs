@@ -302,5 +302,28 @@ namespace CindarsHope.Tests.EditMode.Combat
             }
             Assert.IsFalse(ArrowBallisticsResolver.IsCanonicalArrow("nope"));
         }
+
+        // ───────────────────── flecha básica (starter/hotbar id) sem fallback ─────────────────────
+
+        [Test]
+        public void BasicArrow_ResolvesAsWoodWithoutFallback()
+        {
+            // A flecha básica (item_ammo_arrow_basic) é o id do starter/hotbar. Deve resolver com a
+            // balística de wood SEM cair no fallback (IsKnown=true, sem warning), para o disparo do
+            // arco sair limpo. Não entra na CanonicalOrder dos 6 elementais (auto-seleção).
+            var basic = ArrowBallisticsResolver.Resolve(ArrowBallisticsResolver.ArrowBasicId);
+
+            Assert.IsTrue(basic.IsKnown, "Flecha básica resolve como conhecida (sem fallback/warning).");
+            Assert.IsTrue(ArrowBallisticsResolver.IsCanonicalArrow(ArrowBallisticsResolver.ArrowBasicId),
+                "Flecha básica é reconhecida pela Table.");
+            Assert.AreEqual(2, basic.ArrowDamage, "Mesma balística de wood (+2).");
+            Assert.AreEqual(DamageType.Physical, basic.DamageType, "Flecha básica é física.");
+            Assert.IsFalse(basic.HasStatus, "Flecha básica não aplica status.");
+            Assert.AreEqual(ArrowBallisticsResolver.ArrowBasicId, basic.AmmoItemId,
+                "Preserva a própria id (logs), não a de wood.");
+
+            CollectionAssert.DoesNotContain(ArrowBallisticsResolver.CanonicalOrder, ArrowBallisticsResolver.ArrowBasicId,
+                "A básica não entra na ordem dos 6 elementais.");
+        }
     }
 }

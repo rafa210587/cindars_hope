@@ -141,6 +141,48 @@ namespace CindarsHope.Editor.Items
             {
                 asset.AmmoType = row.AmmoType;
             }
+            ApplyAmmoEquipFields(asset, row);
+        }
+
+        // Ammo rows are hand-equippable (arrow stack in one hand, bow in the other). Derive the
+        // SPEC_08 equip contract from the category so the .asset gets UseKind=EquipAmmo and
+        // AllowedEquipmentSlots=[LeftHand,RightHand] without a manual YAML edit. Returns true if a
+        // field was changed (used by the idempotent update path).
+        private static bool ApplyAmmoEquipFields(ItemDataSO asset, CatalogItemRow row)
+        {
+            if (row.Category != ItemCategory.Ammo)
+            {
+                return false;
+            }
+
+            var changed = false;
+
+            if (asset.UseKind != ItemUseKind.EquipAmmo)
+            {
+                asset.UseKind = ItemUseKind.EquipAmmo;
+                changed = true;
+            }
+
+            var desiredSlots = new[] { CindarsHope.Equipment.EquipmentSlot.LeftHand, CindarsHope.Equipment.EquipmentSlot.RightHand };
+            if (!SlotsEqual(asset.AllowedEquipmentSlots, desiredSlots))
+            {
+                asset.AllowedEquipmentSlots = desiredSlots;
+                changed = true;
+            }
+
+            return changed;
+        }
+
+        private static bool SlotsEqual(CindarsHope.Equipment.EquipmentSlot[] a, CindarsHope.Equipment.EquipmentSlot[] b)
+        {
+            if (a == null) return b == null || b.Length == 0;
+            if (b == null) return a.Length == 0;
+            if (a.Length != b.Length) return false;
+            for (var i = 0; i < a.Length; i++)
+            {
+                if (a[i] != b[i]) return false;
+            }
+            return true;
         }
 
         // Returns true if any catalog-owned field changed (and applies the change). Fields NOT
@@ -174,6 +216,13 @@ namespace CindarsHope.Editor.Items
             if (!string.IsNullOrEmpty(row.AmmoType) && asset.AmmoType != row.AmmoType)
             {
                 asset.AmmoType = row.AmmoType;
+                changed = true;
+            }
+
+            // Ammo equip contract (UseKind=EquipAmmo + hand slots) — re-run materializes it onto
+            // existing arrow assets that predate this field, then reports 0 changes thereafter.
+            if (ApplyAmmoEquipFields(asset, row))
+            {
                 changed = true;
             }
 

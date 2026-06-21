@@ -88,6 +88,10 @@ namespace CindarsHope.Editor
             // Depende do item_goddess_tear.asset criado pelo passo anterior.
             RunStep("Garantir Lagrima da Deusa (2x) no inventario inicial",
                 () => CindarsHope.EditorTools.Repair.RepairPlayerStartingItems.EnsureGoddessTears());
+            // Garante 30x Flechas Basicas no inventario inicial para testar o arco (so ACRESCENTA;
+            // idempotente). Depende do item_ammo_arrow_basic.asset criado/atualizado pelo passo anterior.
+            RunStep("Garantir Flechas Basicas (30x) no inventario inicial",
+                () => CindarsHope.EditorTools.Repair.RepairPlayerStartingItems.EnsureStartingArrows());
             RunStep("Gerar bestiario canonico",
                 () => CindarsHope.Editor.Enemies.GenerateCanonicalBestiary.GenerateMenu());
             RunStep("Gerar catalogo canonico de skills",
@@ -220,6 +224,9 @@ namespace CindarsHope.Editor
             // (e) Garante 2x Lagrima da Deusa no inventario inicial (so ACRESCENTA; idempotente).
             RunStep("Garantir Lagrima da Deusa (2x) no inventario inicial",
                 () => CindarsHope.EditorTools.Repair.RepairPlayerStartingItems.EnsureGoddessTears());
+            // (e.2) Garante 30x Flechas Basicas no inventario inicial para testar o arco.
+            RunStep("Garantir Flechas Basicas (30x) no inventario inicial",
+                () => CindarsHope.EditorTools.Repair.RepairPlayerStartingItems.EnsureStartingArrows());
             RunStep("Salvar assets (SaveAssets + Refresh)", SaveAndRefresh);
 
             ShowSummary("Reparar e Reconstruir", "[Reparar]");

@@ -19,6 +19,11 @@ namespace CindarsHope.Combat
     /// </summary>
     public static class ArrowBallisticsResolver
     {
+        // Id legado do arsenal inicial/hotbar (SaveManager defaults + PlayerData StartingItems).
+        // Não é um dos 6 perfis elementais; usa a balística da flecha de madeira (wood) — registrado
+        // na Table abaixo para disparar SEM warning de fallback (IsCanonicalArrow=true).
+        public const string ArrowBasicId = "item_ammo_arrow_basic";
+
         // Ids canônicos do catálogo (fable_32 CanonicalItemCatalog — AddOilsAndArrows).
         public const string ArrowWoodId = "item_ammo_arrow_wood";
         public const string ArrowIronId = "item_ammo_arrow_iron";
@@ -46,6 +51,9 @@ namespace CindarsHope.Combat
         private static readonly Dictionary<string, ArrowBallistics> Table = BuildTable();
 
         /// <summary>Ordem canônica do catálogo (barata→cara): usada pela auto-seleção determinística.</summary>
+        // NOTE: a flecha básica (starter) NÃO entra aqui — esta é a ordem dos 6 perfis elementais
+        // canônicos usada pela auto-seleção pós-consumo. A básica é um alias de wood na Table acima
+        // (IsCanonicalArrow=true para disparar sem warning), mas não é alvo de auto-equipar.
         public static readonly IReadOnlyList<string> CanonicalOrder = new[]
         {
             ArrowWoodId, ArrowIronId, ArrowSteelId, ArrowSilverId, ArrowFireId, ArrowFrostId
@@ -89,6 +97,9 @@ namespace CindarsHope.Combat
             //   frost +3  Ice       [Pierce, Ice]   Chill baixa
             return new Dictionary<string, ArrowBallistics>
             {
+                // Flecha básica (id do starter/hotbar): mesma balística da wood, sob a própria id para
+                // não cair no fallback com warning. AmmoItemId preserva a id real para os logs.
+                [ArrowBasicId] = new ArrowBallistics(ArrowBasicId, 2, DamageType.Physical, new[] { TagPierce }, null, 0f),
                 [ArrowWoodId] = new ArrowBallistics(ArrowWoodId, 2, DamageType.Physical, new[] { TagPierce }, null, 0f),
                 [ArrowIronId] = new ArrowBallistics(ArrowIronId, 4, DamageType.Physical, new[] { TagPierce }, null, 0f),
                 [ArrowSteelId] = new ArrowBallistics(ArrowSteelId, 6, DamageType.Physical, new[] { TagPierce }, null, 0f),

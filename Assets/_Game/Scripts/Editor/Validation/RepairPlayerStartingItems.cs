@@ -30,6 +30,12 @@ namespace CindarsHope.EditorTools.Repair
         private const string GoddessTearItemId = "item_goddess_tear";
         private const int GoddessTearStartingAmount = 2;
 
+        // Flechas basicas: 30x no inventario inicial para testar o arco. O id e o mesmo dos hotbar
+        // defaults do SaveManager (item_ammo_arrow_basic). Equipavel na mao (UseKind=EquipAmmo);
+        // o arco na outra mao consome 1 por disparo (BowArrowAttackService).
+        private const string BasicArrowItemId = "item_ammo_arrow_basic";
+        private const int BasicArrowStartingAmount = 30;
+
         public static void Repair()
         {
             var playerData = AssetDatabase.LoadAssetAtPath<PlayerDataSO>(PlayerDataPath);
@@ -79,6 +85,16 @@ namespace CindarsHope.EditorTools.Repair
         public static void EnsureGoddessTears()
         {
             EnsureStartingItem(GoddessTearItemId, GoddessTearStartingAmount);
+        }
+
+        /// <summary>
+        /// Conveniencia: garante 30x Flechas Basicas no inventario inicial para testar o arco.
+        /// Chamado pelo menu Inicializar/Reparar APOS o gerador de itens ter criado/atualizado o
+        /// item_ammo_arrow_basic.asset (equipavel, UseKind=EquipAmmo). So ACRESCENTA; idempotente.
+        /// </summary>
+        public static void EnsureStartingArrows()
+        {
+            EnsureStartingItem(BasicArrowItemId, BasicArrowStartingAmount);
         }
 
         /// <summary>

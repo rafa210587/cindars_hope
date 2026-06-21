@@ -273,8 +273,19 @@ namespace CindarsHope.Editor.Items
                 });
             }
 
+            // Arrows are HAND-equippable ammo (IsEquippable=true): the player equips an arrow stack in
+            // a hand (the opposite hand holds the bow); the bow+arrow attack path consumes 1 per shot.
+            // The generator derives UseKind=EquipAmmo + AllowedEquipmentSlots=[LeftHand,RightHand] for
+            // every Ammo-category row (see GenerateCanonicalItemCatalog.ApplyAmmoEquipFields).
+            //
+            // item_ammo_arrow_basic is the STARTER/hotbar arrow id (SaveManager hotbar defaults +
+            // PlayerData StartingItems via RepairPlayerStartingItems). It is the canonical "wood"
+            // profile under the legacy id; ArrowBallisticsResolver aliases it to wood ballistics so it
+            // fires with no fallback warning. Owning it here lets the generator set its equip fields
+            // instead of a manual .asset YAML edit (rule unity-assets).
             foreach (var (id, name, bv) in new[]
             {
+                ("item_ammo_arrow_basic", "Basic Arrows", 1),
                 ("item_ammo_arrow_wood", "Wooden Arrow", 2),
                 ("item_ammo_arrow_iron", "Iron Arrow", 4),
                 ("item_ammo_arrow_steel", "Steel Arrow", 6),
@@ -286,7 +297,7 @@ namespace CindarsHope.Editor.Items
                 rows.Add(new CatalogItemRow
                 {
                     Id = id, DisplayName = name, Category = ItemCategory.Ammo, BaseValue = bv, MaxStack = 999,
-                    AmmoType = "arrow", Source = CatalogItemSource.Shop
+                    AmmoType = "arrow", IsEquippable = true, Source = CatalogItemSource.Shop
                 });
             }
         }
