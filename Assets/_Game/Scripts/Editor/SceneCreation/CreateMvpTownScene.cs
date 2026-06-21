@@ -1445,6 +1445,43 @@ namespace CindarsHope.Editor.SceneCreation
             new("npc_liora", "NPC_Liora_StatueGarden", "Assets/_Game/Data/NPCs/Npc_Liora.asset", string.Empty, new Vector3(2.5f, -1.5f, 0f), new Color(0.68f, 0.62f, 0.9f), "WanderWithinZone/EveningStage", true, 3f),
         };
 
+        // fable_10 — explicit offered-quest mapping for the Act 1 main-quest givers. The
+        // QuestGiverInteractable picks the first offerable/turn-in-able quest whose prerequisites
+        // are complete, so listing the whole chain on the giver lets one NPC carry several steps.
+        private static readonly Dictionary<string, string[]> MainQuestGiverOfferedIds =
+            new Dictionary<string, string[]>
+            {
+                // Corvus opens Act 1 (mq_act1_01) and receives the final delivery (mq_act1_05).
+                ["npc_corvus"] = new[] { "mq_act1_01_fonte_adormecida", "mq_act1_05_fragmento_da_agua" },
+                // Thalindra: keep the existing supply quest, then the records step (mq_act1_02).
+                ["npc_thalindra"] = new[] { "quest_first_supplies_for_cindar", "mq_act1_02_registros_perdidos" },
+                // Maelor: the night clue (mq_act1_03) and the guardian step (mq_act1_04), plus the
+                // pre-existing cave echo side quest.
+                ["npc_maelor"] = new[] { "mq_act1_03_eco_da_agua", "mq_act1_04_guardiao_da_agua", "quest_echo_from_the_cave" },
+            };
+
+        private static void AddMainQuestGiver(GameObject npcObject, string npcId)
+        {
+            if (npcObject == null || string.IsNullOrEmpty(npcId)) return;
+            if (!MainQuestGiverOfferedIds.TryGetValue(npcId, out var offeredIds)) return;
+
+            var giver = npcObject.GetComponent<CindarsHope.Quests.Runtime.QuestGiverInteractable>();
+            if (giver == null)
+            {
+                giver = npcObject.AddComponent<CindarsHope.Quests.Runtime.QuestGiverInteractable>();
+            }
+
+            var serialized = new SerializedObject(giver);
+            serialized.FindProperty("_npcId").stringValue = npcId;
+            var arrayProp = serialized.FindProperty("_offeredQuestIds");
+            arrayProp.arraySize = offeredIds.Length;
+            for (var i = 0; i < offeredIds.Length; i++)
+            {
+                arrayProp.GetArrayElementAtIndex(i).stringValue = offeredIds[i];
+            }
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+        }
+
         private readonly struct TownNpcSpec
         {
             public TownNpcSpec(string npcId, string objectName, string npcDataPath, string shopDataPath, Vector3 position, Color color, string movementProfile, bool canWander, float wanderRadius)
@@ -1548,6 +1585,12 @@ namespace CindarsHope.Editor.SceneCreation
                     SetReference(serializedReception, "_playerTransform", playerTransform);
                     serializedReception.ApplyModifiedPropertiesWithoutUndo();
                 }
+
+                // fable_10 — wire QuestGiverInteractable on the Act 1 main-quest givers
+                // (closes SCENE_WIRING_DEBT for npc_corvus / npc_maelor). Thalindra already
+                // self-wires via its default offered quest ids; here we pin the explicit
+                // offered ids so the prerequisite-gated giver flow resolves the whole chain.
+                AddMainQuestGiver(npcObject, spec.NpcId);
             }
 
             var wanderer = CreateDialogueNpc(

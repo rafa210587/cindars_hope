@@ -222,6 +222,12 @@ namespace CindarsHope.Quests.Runtime
             var bridge = new QuestProgressEventBridge(QuestService);
             bridge.Subscribe();
 
+            // fable_10 — bridge Act 1 main quest completion to the WAVE 10 Fonte (Water fragment).
+            _mainProgressionBridge = new MainProgressionQuestBridge();
+            _mainProgressionBridge.Unsubscribe();
+            _mainProgressionBridge.Subscribe();
+            MainProgressionBridge = _mainProgressionBridge;
+
             // fable_34 — notice board: rotate 3 contracts/day on DayStartedEvent (deterministic).
             _boardService = new QuestBoardService();
             GameEventBus.Unsubscribe<DayStartedEvent>(OnDayStarted);
@@ -255,6 +261,12 @@ namespace CindarsHope.Quests.Runtime
 
         // fable_51 — Zrix cave contracts orchestrator (rides the same quest flow).
         private CindarsHope.Quests.CaveContracts.CaveContractService _caveContractService;
+
+        // fable_10 — Act 1 main quest -> Fonte fragment bridge.
+        private MainProgressionQuestBridge _mainProgressionBridge;
+
+        /// <summary>fable_10 — exposed for tests/diagnostics (avoids Find).</summary>
+        public static MainProgressionQuestBridge MainProgressionBridge { get; private set; }
 
         /// <summary>fable_51 — exposed for the Zrix board projection / tests (avoids Find).</summary>
         public static CindarsHope.Quests.CaveContracts.CaveContractService CaveContractService { get; private set; }
@@ -320,6 +332,9 @@ namespace CindarsHope.Quests.Runtime
 
             // fable_51 — unsubscribe the cave contracts orchestrator from the bus.
             _caveContractService?.Unsubscribe();
+
+            // fable_10 — unsubscribe the main-progression bridge.
+            _mainProgressionBridge?.Unsubscribe();
         }
 
         private static void EnsureUiControllers()

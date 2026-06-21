@@ -35,6 +35,13 @@ namespace CindarsHope.NPC
             public string[] Goodbyes;
             public bool HasShop;
 
+            // fable_10 — optional main-quest offer. When set, the service node exposes an
+            // OfferQuest choice (same DialogueActionType.OfferQuest pattern as Thalindra's quest
+            // tree). The QuestGiverInteractable on the NPC is the canonical accept path; this
+            // dialogue choice is the in-conversation entry point. Node count stays at 13.
+            public string OfferedMainQuestId;
+            public string OfferQuestLabel;
+
             // fable_28 — conditional greeting pool (all optional; null entries simply contribute
             // nothing to the pool). Authored in the NPC's voice.
             public string SpringLine;   // estação Primavera
@@ -100,7 +107,11 @@ namespace CindarsHope.NPC
                 FriendCloseLine = "Ah, e voce. Sente-se. Guardei uma vela acesa pensando que viria. Algumas presencas a gente aprende a esperar.",
                 MilestoneArrivalLine = "Voce chegou ha pouco a Cindar's Hope. A Fonte ja o notou; ela nota todos que descem com perguntas.",
                 MilestonePostAct1Line = "Depois do que houve, a cidade respira diferente. Eu acendo uma vela a mais por noite agora.",
-                MilestonePostAct3Line = "Voce mudou o rumo de coisas antigas. O templo guardara seu nome ao lado do guerreiro da praca."
+                MilestonePostAct3Line = "Voce mudou o rumo de coisas antigas. O templo guardara seu nome ao lado do guerreiro da praca.",
+                // fable_10 — Corvus abre o Ato 1 (mq_act1_01) e recebe a entrega (mq_act1_05). O
+                // QuestGiverInteractable resolve qual etapa ofertar/entregar; o dialogo so abre o canal.
+                OfferedMainQuestId = "mq_act1_01_fonte_adormecida",
+                OfferQuestLabel = "Fale-me da Fonte adormecida."
             },
             new NpcDialogueContent
             {
@@ -729,7 +740,11 @@ namespace CindarsHope.NPC
                 FriendCloseLine = "Voce. Sente-se comigo no jardim da estatua. A esta altura, confio a poucos o que a noite me conta. Voce e um deles.",
                 MilestoneArrivalLine = "Um rosto novo e desperto. Raro. A cidade conta coisas a quem chega ouvindo. Ande devagar; voce vai entender por que veio.",
                 MilestonePostAct1Line = "Depois daquilo, a caverna ficou inquieta. Eu a sinto daqui de cima, sabia? Ela tem mares. Naquela noite, a mare subiu.",
-                MilestonePostAct3Line = "O que voce fez acalmou algo que eu ouvia ha anos sob a cidade. Pela primeira vez, a noite dorme tranquila. Obrigado por isso."
+                MilestonePostAct3Line = "O que voce fez acalmou algo que eu ouvia ha anos sob a cidade. Pela primeira vez, a noite dorme tranquila. Obrigado por isso.",
+                // fable_10 — Maelor da a pista do eco (mq_act1_03). O QuestGiverInteractable so
+                // ofertara quando os prerequisitos (mq_act1_02) estiverem completos.
+                OfferedMainQuestId = "mq_act1_03_eco_da_agua",
+                OfferQuestLabel = "O que a noite diz sobre a caverna?"
             },
             new NpcDialogueContent
             {
@@ -1120,6 +1135,18 @@ namespace CindarsHope.NPC
                     Label = "Mostre o que voce vende.",
                     NextNodeId = string.Empty,
                     ActionType = DialogueActionType.OpenShop
+                });
+            }
+
+            // fable_10 — in-conversation main-quest offer (same OfferQuest action as Thalindra).
+            if (!string.IsNullOrEmpty(content.OfferedMainQuestId))
+            {
+                choices.Add(new DialogueChoice
+                {
+                    Label = string.IsNullOrEmpty(content.OfferQuestLabel) ? "Sobre a Fonte..." : content.OfferQuestLabel,
+                    NextNodeId = string.Empty,
+                    ActionType = DialogueActionType.OfferQuest,
+                    ActionPayload = content.OfferedMainQuestId
                 });
             }
 
