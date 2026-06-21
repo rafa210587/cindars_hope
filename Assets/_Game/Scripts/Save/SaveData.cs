@@ -71,6 +71,10 @@ namespace CindarsHope.Save
         // endgame nao iniciado (defaults: ato None, gate Locked, escolha Unavailable). Sem migracao.
         // Owner runtime: FonteRuntimeService.Progression (host da MainProgressionSection).
         public MainProgressionSaveData MainProgression;
+        // fable_62: hints de onboarding ja vistos (1x/save). Secao ADITIVA, so List<string> de ids
+        // estaveis (ADR-0006 / save-dto-simple-types-only). Ausente em save legado = lista vazia =
+        // todos os hints elegiveis de novo (seguro). Sem migracao. Owner: OnboardingHintService.
+        public OnboardingHintsSaveData OnboardingHints;
     }
 
     // fable_43: DTO aditivo do endgame (Ato 5). Tipos simples apenas — sem refs Unity. Os fragmentos

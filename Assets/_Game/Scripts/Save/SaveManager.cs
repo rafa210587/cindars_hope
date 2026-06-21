@@ -72,6 +72,8 @@ namespace CindarsHope.Save
         private ISaveSectionProvider _hotbarProvider;
         // fable_07: provider do grimório (padrão HotbarSectionProvider; fonte = PlayerSpellbook.Instance).
         private ISaveSectionProvider _spellbookProvider;
+        // fable_62: provider dos hints de onboarding (fonte = OnboardingHintService.Instance).
+        private ISaveSectionProvider _onboardingHintsProvider;
         private readonly SaveMigrationRegistry _migrationRegistry = new SaveMigrationRegistry(new ISaveMigration[]
         {
             new InventorySlotsV1ToV2Migration(),
@@ -97,6 +99,8 @@ namespace CindarsHope.Save
             _hotbarProvider = new HotbarSectionProvider(_hotbarState);
             // fable_07: provider do grimório (resolve PlayerSpellbook.Instance no momento de capture/restore).
             _spellbookProvider = new SpellbookSectionProvider();
+            // fable_62: provider dos hints de onboarding (resolve OnboardingHintService.Instance ao capturar/restaurar).
+            _onboardingHintsProvider = new OnboardingHintsSectionProvider();
 
             if (string.IsNullOrWhiteSpace(_hotbarState.GetSlotItemId(0)))
             {
@@ -160,6 +164,11 @@ namespace CindarsHope.Save
                     ? (_spellbookProvider.Capture(existingSaveData) as CindarsHope.Magic.SpellbookSaveData)
                     : (existingSaveData?.Spellbook ?? new CindarsHope.Magic.SpellbookSaveData());
 
+                // fable_62: captura dos hints de onboarding vistos via provider (fonte OnboardingHintService.Instance).
+                var onboardingHintsSaveData = _onboardingHintsProvider != null
+                    ? (_onboardingHintsProvider.Capture(existingSaveData) as OnboardingHintsSaveData)
+                    : (existingSaveData?.OnboardingHints ?? new OnboardingHintsSaveData());
+
                 var saveData = new GameSaveData
                 {
                     SchemaVersion = CurrentSchemaVersion,
@@ -194,7 +203,8 @@ namespace CindarsHope.Save
                     FarmAnimals = CaptureFarmAnimalsSaveData(),
                     Friendship = CaptureFriendshipSaveData(),
                     NpcServices = CaptureNpcServicesSaveData(),
-                    MainProgression = CaptureMainProgressionSaveData()
+                    MainProgression = CaptureMainProgressionSaveData(),
+                    OnboardingHints = onboardingHintsSaveData
                 };
 
                 var savePath = SaveFilePath;
@@ -1246,6 +1256,10 @@ namespace CindarsHope.Save
             // fable_07: restaura o grimório APÓS o inventário (contrato de ordem da spec).
             // Seção nula (saves legados) = grimório vazio. Fonte: PlayerSpellbook.Instance.
             _spellbookProvider?.Restore(saveData.Spellbook);
+
+            // fable_62: restaura os hints de onboarding vistos. Seção nula (save legado) = lista
+            // vazia = todos os hints elegíveis de novo. Fonte: OnboardingHintService.Instance.
+            _onboardingHintsProvider?.Restore(saveData.OnboardingHints);
 
             if (_progressionManager != null)
             {

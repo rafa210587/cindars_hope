@@ -22,6 +22,10 @@ namespace CindarsHope.UI.HUD
             var viewModel = new GameplayHudViewModel();
             controller.Initialize(viewModel, binder, feedbackService, visibilityController);
 
+            // fable_62: servico de hints de onboarding (mesmo GameObject DontDestroyOnLoad do HUD;
+            // sem GameObject.Find). Consome eventos existentes e publica no canal de toast WI-23.
+            go.AddComponent<CindarsHope.UI.Onboarding.OnboardingHintService>();
+
             Debug.Log("[GameplayHudBootstrap] GameplayHudCanvas created via RuntimeInitializeOnLoadMethod.");
         }
     }
