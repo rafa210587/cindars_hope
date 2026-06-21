@@ -183,6 +183,10 @@ namespace CindarsHope.Audio
             Add(GameEventBus.Subscribe<EnemySeenEvent>(_ => OnEnemyEngaged()));
             // Boss: único sinal existente é "boss derrotado" (auditoria Fase 0).
             Add(GameEventBus.Subscribe<CaveBossDefeatedEvent>(_ => SetBossActive(false)));
+            // Transição de cena: os inimigos da cena atual vão embora SEM disparar kill/disengage,
+            // então o combate ficaria "preso" e a música não voltaria ao ambiente da próxima cena.
+            // Zera combate/boss ao SAIR (antes da próxima cena carregar; os inimigos dela re-engajam no Start dela).
+            Add(GameEventBus.Subscribe<SceneTransitionStartedEvent>(_ => OnSceneTransitionStarted()));
         }
 
         private void Add(IDisposable subscription)
@@ -237,6 +241,16 @@ namespace CindarsHope.Audio
         }
 
         // --------------------------------------------------------------- MusicState
+
+        private void OnSceneTransitionStarted()
+        {
+            // Limpa o estado de combate ao trocar de cena (inimigos antigos somem sem evento de
+            // kill). Sem isto, sair da caverna em combate deixaria a música presa em Combate e o
+            // ambiente da fazenda/cidade nunca tocaria.
+            _musicResolver.SetEngagedEnemies(0);
+            _musicResolver.SetBossActive(false);
+            PushMusicStateIfChanged();
+        }
 
         private void OnEnemyEngaged()
         {
