@@ -25,5 +25,17 @@ namespace CindarsHope.NPC.Friendship
         public int LastTalkDay = -1;
         public int LastGiftDay = -1;
         public int LastPurchaseDay = -1;
+
+        // ── fable_46 — campos ADITIVOS de romance (mesma seção de amizade; sem migration). ──
+        // Save legado (sem estes campos) desserializa para os defaults abaixo ⇒ romance None.
+        // Apenas tipos simples + id estável; sem refs Unity (ADR-0006).
+        /// <summary>Estágio de romance (RomanceStage: 0 None, 1 Interesse, 2 Namoro, 3 Compromisso).</summary>
+        public int RomanceStage;
+        /// <summary>Interações de parceiro acumuladas no estágio atual (marco de progressão).</summary>
+        public int RomanceStageProgress;
+        /// <summary>Presentes de parceiro acumulados no estágio atual (marco de progressão).</summary>
+        public int RomanceStageGifts;
+        /// <summary>Dia da confissão; -1 = nunca confessou (default legado).</summary>
+        public int RomanceConfessedDay = -1;
     }
 }

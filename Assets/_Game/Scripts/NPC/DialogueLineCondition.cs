@@ -67,6 +67,20 @@ namespace CindarsHope.NPC
         public string RequiredInferredTitleId;
 
         /// <summary>
+        /// fable_46 — optional ROMANCE gate. When true, the line is only eligible if the player is the
+        /// NPC's partner (RomanceStage &gt;= Namoro) — the IsPartner(npcId) condition reused into THIS
+        /// type (no parallel gating mechanism). Default false = no constraint: every existing line is
+        /// unaffected (zero behavior change).
+        /// </summary>
+        public bool RequiresPartner;
+
+        /// <summary>
+        /// fable_46 — optional minimum romance stage (0 None, 1 Interesse, 2 Namoro, 3 Compromisso).
+        /// Null = no romance-stage constraint. Lets partner pools vary lines per stage. Additive.
+        /// </summary>
+        public int? MinRomanceStage;
+
+        /// <summary>
         /// Number of constrained axes. Used by the selector as the specificity score: the eligible
         /// line that constrains the most axes wins (the most specific line beats a generic one).
         /// </summary>
@@ -83,6 +97,8 @@ namespace CindarsHope.NPC
                 if (TimeBand.HasValue) n++;
                 if (RequiresFestivalDay) n++;
                 if (!string.IsNullOrEmpty(RequiredInferredTitleId)) n++;
+                if (RequiresPartner) n++;
+                if (MinRomanceStage.HasValue) n++;
                 return n;
             }
         }
@@ -111,6 +127,10 @@ namespace CindarsHope.NPC
             {
                 return false;
             }
+            // fable_46 — romance axes. RequiresPartner = stage >= Namoro (2); MinRomanceStage gates the
+            // exact stage band for per-stage partner pools. Default-off so existing lines are unaffected.
+            if (RequiresPartner && ctx.RomanceStage < (int)Friendship.RomanceStage.Namoro) return false;
+            if (MinRomanceStage.HasValue && ctx.RomanceStage < MinRomanceStage.Value) return false;
             return true;
         }
     }

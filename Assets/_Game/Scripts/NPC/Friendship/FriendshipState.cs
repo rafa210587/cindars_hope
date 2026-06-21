@@ -172,7 +172,8 @@ namespace CindarsHope.NPC.Friendship
         /// multiplicador, logo um 2º presente no mesmo dia continua sendo recusado mesmo no
         /// aniversário (o multiplicador NÃO fura o cap). Multiplicador inválido (≤0) é tratado como 1.
         /// </summary>
-        public GiftResult RegisterGift(string npcId, GiftTaste taste, int currentDay, int dailyGiftLimit, int pointsMultiplier = 1)
+        public GiftResult RegisterGift(string npcId, GiftTaste taste, int currentDay, int dailyGiftLimit,
+            int pointsMultiplier = 1, float bonusMultiplier = 1f)
         {
             if (string.IsNullOrEmpty(npcId))
             {
@@ -191,7 +192,15 @@ namespace CindarsHope.NPC.Friendship
 
             entry.LastGiftDay = currentDay;
             int multiplier = pointsMultiplier > 0 ? pointsMultiplier : 1;
-            var apply = AddPoints(npcId, GiftTasteClassifier.DeltaFor(taste) * multiplier);
+
+            // fable_46: bonusMultiplier (>0; default 1) é o bônus de PARCEIRO (+50% ⇒ 1.5). Aplicado
+            // SÓ APÓS o cap diário (acima), no ponto único de ganho por presente — sem segundo caminho
+            // de pontos e sem furar o cap. Combina multiplicativamente com o multiplicador de
+            // aniversário do fable_57. Arredonda para o inteiro mais próximo (preserva o sinal do gosto).
+            float bonus = bonusMultiplier > 0f ? bonusMultiplier : 1f;
+            int baseDelta = GiftTasteClassifier.DeltaFor(taste) * multiplier;
+            int finalDelta = (int)System.Math.Round(baseDelta * bonus, System.MidpointRounding.AwayFromZero);
+            var apply = AddPoints(npcId, finalDelta);
             return new GiftResult(true, taste, apply);
         }
 

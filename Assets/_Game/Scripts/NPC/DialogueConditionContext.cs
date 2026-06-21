@@ -35,6 +35,13 @@ namespace CindarsHope.NPC
         /// </summary>
         public string InferredTitleId { get; }
 
+        /// <summary>
+        /// fable_46 — the player's current romance stage with this NPC (0 None .. 3 Compromisso). Read
+        /// by <see cref="DialogueLineCondition"/>'s RequiresPartner / MinRomanceStage. Defaults to 0 so
+        /// existing contexts/lines are unaffected (zero behavior change).
+        /// </summary>
+        public int RomanceStage { get; }
+
         private readonly HashSet<string> _flags;
 
         public DialogueConditionContext(
@@ -46,7 +53,8 @@ namespace CindarsHope.NPC
             int friendshipLevel,
             bool isFestivalDay,
             IEnumerable<string> activeFlags = null,
-            string inferredTitleId = null)
+            string inferredTitleId = null,
+            int romanceStage = 0)
         {
             NpcId = npcId ?? string.Empty;
             Day = day;
@@ -56,6 +64,7 @@ namespace CindarsHope.NPC
             FriendshipLevel = friendshipLevel;
             IsFestivalDay = isFestivalDay;
             InferredTitleId = inferredTitleId ?? string.Empty;
+            RomanceStage = romanceStage;
             _flags = new HashSet<string>(StringComparer.Ordinal);
             if (activeFlags != null)
             {
@@ -123,9 +132,18 @@ namespace CindarsHope.NPC
             // is absent — dialogue never throws and the fallback line stays selectable).
             var inferredTitleId = CindarsHope.Player.InferredClassRuntime.CurrentProfile.TitleId;
 
+            // fable_46: read the current romance stage with this NPC (degrades to 0/None when the
+            // romance service is absent — dialogue never throws and partner lines simply do not gate in).
+            int romanceStage = 0;
+            var romanceService = Friendship.RomanceService.Instance;
+            if (romanceService != null && !string.IsNullOrEmpty(npcId))
+            {
+                romanceStage = (int)romanceService.GetStage(npcId);
+            }
+
             return new DialogueConditionContext(
                 npcId, absoluteDay, season, weather, BandFromHour(hour), friendship, festival, flags,
-                inferredTitleId);
+                inferredTitleId, romanceStage);
         }
     }
 }

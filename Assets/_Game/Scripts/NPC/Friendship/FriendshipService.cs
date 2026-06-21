@@ -38,6 +38,13 @@ namespace CindarsHope.NPC.Friendship
                 return;
             }
             _instance = this;
+
+            // fable_46: o romance é hospedado no MESMO GameObject (sem novo singleton de gameplay nem
+            // GameObject.Find runtime). Garante o componente quando o serviço sobe via bootstrap.
+            if (GetComponent<RomanceService>() == null)
+            {
+                gameObject.AddComponent<RomanceService>();
+            }
         }
 
         private void OnEnable()
@@ -130,10 +137,26 @@ namespace CindarsHope.NPC.Friendship
             bool isBirthday = NpcBirthdayService.IsBirthdayToday(npcId, _currentDay);
             int multiplier = isBirthday ? NpcBirthdayService.BirthdayGiftMultiplier : 1;
 
-            var result = _state.RegisterGift(npcId, taste, _currentDay, limit, multiplier);
+            // fable_46: parceiro de romance (Namoro+) rende +50% por presente. Bônus float aplicado
+            // DENTRO do RegisterGift, APÓS o cap diário do F26 (anti-exploit) e no ponto único de
+            // presente — combina com o multiplicador de aniversário (fable_57).
+            float partnerBonus = 1f;
+            var romance = RomanceService.Instance;
+            if (romance != null)
+            {
+                partnerBonus = romance.GiftPointMultiplierFor(npcId);
+            }
+
+            var result = _state.RegisterGift(npcId, taste, _currentDay, limit, multiplier, partnerBonus);
             if (result.Accepted)
             {
                 PublishIfLevelChanged(npcId, result.Apply);
+
+                // fable_46: presente aceito conta como marco de progressão de romance (se houver romance).
+                if (romance != null)
+                {
+                    romance.NotifyGiftAccepted(npcId);
+                }
 
                 // Toast de aniversário só quando o presente foi de fato aceito (não fura o cap) e é
                 // o dia certo. Nome de exibição vem do roster; fallback = id (LocalizationService-friendly).
@@ -155,6 +178,9 @@ namespace CindarsHope.NPC.Friendship
         private void OnDayStarted(DayStartedEvent evt)
         {
             _currentDay = evt.DayNumber;
+            // fable_46: o romance compartilha o relógio de dia (usado para registrar o dia da confissão).
+            var romance = RomanceService.Instance;
+            if (romance != null) romance.SetCurrentDay(evt.DayNumber);
         }
 
         private void OnNpcInteractionStarted(NpcInteractionStartedEvent evt)
@@ -198,11 +224,27 @@ namespace CindarsHope.NPC.Friendship
 
         // ── Save ─────────────────────────────────────────────────────────────────────────────────
 
-        public FriendshipSaveData CaptureSaveData() => _state.CaptureSaveData();
+        public FriendshipSaveData CaptureSaveData()
+        {
+            var data = _state.CaptureSaveData();
+            // fable_46: escreve os campos aditivos de romance sobre as MESMAS entradas (sem nova seção).
+            var romance = RomanceService.Instance;
+            if (romance != null)
+            {
+                romance.WriteSaveFields(data);
+            }
+            return data;
+        }
 
         public void RestoreFromSaveData(FriendshipSaveData saveData)
         {
             _state.RestoreFromSaveData(saveData);
+            // fable_46: restaura os campos aditivos de romance da mesma seção. Save legado ⇒ tudo None.
+            var romance = RomanceService.Instance;
+            if (romance != null)
+            {
+                romance.RestoreSaveFields(saveData);
+            }
             Debug.Log($"[FriendshipService] Restored {(saveData?.Entries?.Count ?? 0)} friendship entries from save.", this);
         }
 
