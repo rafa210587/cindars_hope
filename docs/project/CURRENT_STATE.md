@@ -376,3 +376,20 @@ PROJECT_LOG + CURRENT_STATE conflict → prefer CURRENT_STATE; report mismatch
 - LATENTE adicional (economy): dois caminhos de economia vivos no código (SellAll por BaseValue
   cheio vs Economy/Pricing services) — registrado em economy_rules.md como Open Question para spec
   de convergência. Não bloqueia.
+## 2026-06-21 — SPECS_FABLE_74_75_76_GERADAS (Batch 12 — farm/combat/trade testáveis)
+
+- Varredura de TODOs e pontos de atenção no código → 10 itens priorizados; 3 items ja cobertos
+  por specs existentes (fable_66: kit inicial + Tree/Rock; fable_52: Goblin Visitor).
+- Geradas 3 specs novas para habilitar testes de farm, combat e trade em Play Mode:
+  - fable_74: EnemyBrain blink runtime + death-trigger hook (SPEC 13D) — combat domain;
+    ativa teleporte de mirror_adept/oathless_shade e death-pop do ember_tick; EditMode tests
+    de hash deterministico + idempotencia de death-trigger; depends fable_04/01/06.
+  - fable_75: FeedbackOnlySkillEffectExecutor → 14 executores reais (melee/magic/survival/crafting)
+    + stamina deduction em FarmCropSkillEffectExecutor — farm+combat domain;
+    fonte: SKILL_NUMERIC_ADDENDUM_v1.0; depends fable_01/02/03/18; blocks fable_42/29.
+  - fable_76: Economy balance pass canonical — EconomyBalanceConfigSO com gold/hora por fonte,
+    ItemPriceResolver unificando os dois caminhos de preco (Shipping vs NpcShop),
+    validator de range em 25 ShopDataSO; fecha Open Question de economy_rules.md;
+    depends fable_32; blocks fable_42/51.
+- PLACAR atualizado: 76 specs funcionais (10 executadas, 66 a executar E11-E76) + 9 retro.
+- validate_docs exit 0; nenhum codigo alterado; so spec files criados.
