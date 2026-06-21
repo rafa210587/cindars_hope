@@ -43,6 +43,10 @@ namespace CindarsHope.Combat
         public bool RequiresLineOfSight = false;
         public bool IsInterruptible = true;
 
+        [Header("Blink / Death-Trigger (SPEC 13D)")]
+        public float BlinkRange = 1.5f;
+        public bool IsDeathtrigger = false;
+
         string IIdentifiedData.Id => ActionId;
 
         private void OnValidate()
@@ -69,6 +73,7 @@ namespace CindarsHope.Combat
         AreaPulse,
         SelfBuff,
         BurrowStrike,
-        LeapStrike
+        LeapStrike,
+        BlinkStrike
     }
 }

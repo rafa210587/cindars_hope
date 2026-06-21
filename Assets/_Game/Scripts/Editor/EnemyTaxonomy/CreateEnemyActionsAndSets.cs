@@ -44,6 +44,8 @@ namespace CindarsHope.Editor.EnemyTaxonomy
             public bool            IsInterruptible;
             public bool            RequiresLos;
             public int             MaxTargets;
+            public float           BlinkRange;
+            public bool            IsDeathtrigger;
         }
 
         private struct ActionSetEntry
@@ -102,6 +104,8 @@ namespace CindarsHope.Editor.EnemyTaxonomy
                 so.IsInterruptible           = a.IsInterruptible;
                 so.RequiresLineOfSight       = a.RequiresLos;
                 so.MaxTargets               = a.MaxTargets > 0 ? a.MaxTargets : 1;
+                so.BlinkRange                = a.BlinkRange;
+                so.IsDeathtrigger            = a.IsDeathtrigger;
                 AssetDatabase.CreateAsset(so, path);
                 created++;
             }
@@ -144,13 +148,14 @@ namespace CindarsHope.Editor.EnemyTaxonomy
 
         private static List<ActionEntry> BuildActions()
         {
-            var M = EnemyActionType.MeleeAttack;
-            var R = EnemyActionType.RangedProjectile;
-            var C = EnemyActionType.CastProjectile;
-            var A = EnemyActionType.AreaPulse;
-            var S = EnemyActionType.SelfBuff;
-            var B = EnemyActionType.BurrowStrike;
-            var L = EnemyActionType.LeapStrike;
+            var M  = EnemyActionType.MeleeAttack;
+            var R  = EnemyActionType.RangedProjectile;
+            var C  = EnemyActionType.CastProjectile;
+            var A  = EnemyActionType.AreaPulse;
+            var S  = EnemyActionType.SelfBuff;
+            var B  = EnemyActionType.BurrowStrike;
+            var L  = EnemyActionType.LeapStrike;
+            var BL = EnemyActionType.BlinkStrike;
 
             var TFM  = "telegraph_fast_melee";
             var THM  = "telegraph_heavy_melee";
@@ -399,13 +404,12 @@ namespace CindarsHope.Editor.EnemyTaxonomy
                     Range=0.6f, Cooldown=1.5f, Windup=0.25f, Recover=0.3f,
                     StatusIds=new[]{"status_burn"}, StatusChance=0.7f,
                     TelegraphId=TFM, TriggersVuln=true, VulnTrigger=AAR, IsInterruptible=true, MaxTargets=1 },
-                new ActionEntry { Id="action_ember_tick_death_pop", DisplayName="Death Pop (Hook)",
+                new ActionEntry { Id="action_ember_tick_death_pop", DisplayName="Death Pop",
                     ActionType=A, DamageTypeId="fire", BaseDamage=12,
                     Range=0f, AreaRadius=1.0f, Cooldown=999f, Windup=0.2f, Recover=0.5f,
                     StatusIds=new[]{"status_burn"}, StatusChance=0.8f,
                     TelegraphId=TAP, TriggersVuln=false, IsInterruptible=false, MaxTargets=3,
-                    // Death-trigger activation is SPEC 13D; cooldown=999 keeps it inactive in normal combat
-                    },
+                    IsDeathtrigger=true },
 
                 // 26. enemy_ash_crawler
                 new ActionEntry { Id="action_ash_crawler_hot_lunge", DisplayName="Hot Lunge",
@@ -533,10 +537,9 @@ namespace CindarsHope.Editor.EnemyTaxonomy
                     Range=5.0f, Cooldown=3.0f, Windup=0.65f, Recover=0.5f, ProjectileSpeed=5.5f,
                     StatusIds=new[]{"status_slow"}, StatusChance=0.75f,
                     TelegraphId=TCS, TriggersVuln=true, VulnTrigger=AC, IsInterruptible=false, MaxTargets=1 },
-                new ActionEntry { Id="action_mirror_adept_short_blink_strike", DisplayName="Blink Strike (Hook)",
-                    ActionType=M, DamageTypeId="arcane", BaseDamage=14,
-                    Range=1.0f, Cooldown=2.5f, Windup=0.35f, Recover=0.4f,
-                    // Note: blink runtime is SPEC 13D; this action uses melee resolution until then
+                new ActionEntry { Id="action_mirror_adept_short_blink_strike", DisplayName="Blink Strike",
+                    ActionType=BL, DamageTypeId="arcane", BaseDamage=14,
+                    Range=1.0f, BlinkRange=1.0f, Cooldown=2.5f, Windup=0.35f, Recover=0.4f,
                     TelegraphId=TPH, TriggersVuln=true, VulnTrigger=ABA, IsInterruptible=false, MaxTargets=1 },
 
                 // 39. enemy_puzzle_golem
@@ -551,10 +554,9 @@ namespace CindarsHope.Editor.EnemyTaxonomy
 
                 // 40. enemy_oathless_shade
                 new ActionEntry { Id="action_oathless_shade_shadow_step", DisplayName="Shadow Step",
-                    ActionType=C, DamageTypeId="arcane", BaseDamage=18,
-                    Range=4.5f, Cooldown=3.0f, Windup=0.5f, Recover=0.45f, ProjectileSpeed=5.0f,
+                    ActionType=BL, DamageTypeId="arcane", BaseDamage=18,
+                    Range=4.5f, BlinkRange=1.5f, Cooldown=3.0f, Windup=0.5f, Recover=0.45f,
                     StatusIds=new[]{"status_slow"}, StatusChance=0.8f,
-                    // Note: full blink resolution is SPEC 13D
                     TelegraphId=TPH, TriggersVuln=true, VulnTrigger=ABA, IsInterruptible=false, MaxTargets=1 },
                 new ActionEntry { Id="action_oathless_shade_oathless_cry", DisplayName="Oathless Cry",
                     ActionType=A, DamageTypeId="arcane", BaseDamage=14,
@@ -903,7 +905,7 @@ namespace CindarsHope.Editor.EnemyTaxonomy
                 ActionIds=new[]{"action_ember_tick_burning_bite","action_ember_tick_death_pop"},
                 FallbackId="action_ember_tick_burning_bite",
                 RoleTags=new[]{"Swarm","Chaser"},
-                Notes="action_ember_tick_death_pop has cooldown=999 — death-trigger hook for SPEC 13D" },
+                Notes="action_ember_tick_death_pop: IsDeathtrigger=true, cooldown=999 (only fires on death)" },
 
             new ActionSetEntry { Id="actionset_enemy_ash_crawler",
                 DisplayName="Ash Crawler Actions",
@@ -982,7 +984,7 @@ namespace CindarsHope.Editor.EnemyTaxonomy
                 ActionIds=new[]{"action_mirror_adept_reflective_bolt","action_mirror_adept_short_blink_strike"},
                 FallbackId="action_mirror_adept_reflective_bolt",
                 RoleTags=new[]{"Caster"},
-                Notes="action_mirror_adept_short_blink_strike — blink runtime is SPEC 13D; resolves as melee until then" },
+                Notes="action_mirror_adept_short_blink_strike: BlinkStrike (teleports 1.0 tiles from player then hits)" },
 
             new ActionSetEntry { Id="actionset_enemy_puzzle_golem",
                 DisplayName="Puzzle Golem Actions",
@@ -995,7 +997,7 @@ namespace CindarsHope.Editor.EnemyTaxonomy
                 ActionIds=new[]{"action_oathless_shade_shadow_step","action_oathless_shade_oathless_cry"},
                 FallbackId="action_oathless_shade_shadow_step",
                 RoleTags=new[]{"Caster"},
-                Notes="action_oathless_shade_shadow_step — full blink resolution is SPEC 13D" },
+                Notes="action_oathless_shade_shadow_step: BlinkStrike (teleports 1.5 tiles from player then hits)" },
 
             // ── BAND 6 – DEEP (71-85) ────────────────────────────────────────────
 

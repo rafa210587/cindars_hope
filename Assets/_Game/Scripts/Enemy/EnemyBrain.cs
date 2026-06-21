@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CindarsHope.Cave.Runtime;
 using CindarsHope.Combat;
 using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
@@ -64,6 +65,8 @@ namespace CindarsHope.Enemy
         private EnemyActionSO _pendingAction;
         private float _actionTimer;
         private bool _actionResolved;
+        // SPEC 13D: idempotency guard — death-trigger fires exactly once per lifetime.
+        private bool _deathtriggerFired;
 
         // Components
         private Rigidbody2D _rb;
@@ -557,6 +560,13 @@ namespace CindarsHope.Enemy
             if (!System.Enum.TryParse<DamageType>(_pendingAction.DamageType, true, out var dmgType))
                 dmgType = DamageType.Physical;
 
+            // SPEC 13D: blink-strike teleports the enemy to the player then deals melee damage.
+            if (_pendingAction.ActionType == EnemyActionType.BlinkStrike)
+            {
+                ExecuteBlinkStrike(_pendingAction, dmgType);
+                return;
+            }
+
             // Ranged and cast actions fire a real dodgeable projectile instead of
             // instant damage — the player can outplay them with movement.
             bool isProjectileAction = _pendingAction.ActionType == EnemyActionType.RangedProjectile
@@ -616,6 +626,108 @@ namespace CindarsHope.Enemy
                     ApplyVampiricLifesteal(applied);
                 }
             }
+        }
+
+        // SPEC 13D: Teleports to player then deals melee damage + applies status effects.
+        // Destination uses _blinkFlankSide (set at spawn, alternating) — no UnityEngine.Random.
+        private void ExecuteBlinkStrike(EnemyActionSO action, DamageType dmgType)
+        {
+            if (_playerTarget == null) return;
+
+            float range = action.BlinkRange > 0f ? action.BlinkRange : Mathf.Max(action.Range, 0.5f);
+            var blink = EnemyBlinkExecutor.CalculateDestination(
+                transform.position, _playerTarget.transform.position, range, _blinkFlankSide);
+
+            if (!blink.Success)
+            {
+                Debug.Log($"[EnemyBrain] BlinkStrike skipped: {blink.FailReason}");
+                return;
+            }
+
+            if (_rb != null)
+                _rb.position = blink.Destination;
+            else
+                transform.position = (Vector3)blink.Destination;
+
+            GameEventBus.Publish(new EnemyTelegraphStartedEvent(_enemyData?.enemyId, blink.Destination));
+
+            // Apply melee damage after teleport
+            int damage = Mathf.Max(0, Mathf.RoundToInt(action.BaseDamage * _phaseDamageMultiplier));
+            var req = new DamageRequest(
+                targetId: "player",
+                baseDamage: damage,
+                damageType: dmgType,
+                sourceId: _enemyData?.enemyId ?? "enemy"
+            );
+            req.SourcePosition = blink.Destination;
+            req.KnockbackForce = _enemyData?.contactKnockbackForce ?? 0f;
+            req.CanTriggerVulnerability = false;
+            var result = DamageCalculator.Calculate(req, _enemyData?.defense ?? 0);
+            if (result.FinalDamage > 0)
+            {
+                var playerManager = GameBootstrap.Instance?.PlayerManager;
+                var applied = CindarsHope.Combat.PlayerDamageReceiver.ApplyDamage(
+                    playerManager, result.FinalDamage, _enemyData?.enemyId ?? "enemy", dmgType, gameObject);
+                if (applied > 0)
+                {
+                    ApplyActionStatusesToPlayer(action);
+                    ApplyVampiricLifesteal(applied);
+                }
+            }
+        }
+
+        // SPEC 13D: Fires the death-trigger action (IsDeathtrigger=true) exactly once on death.
+        // Guard: only inside cave (CaveRunManager present) to avoid out-of-cave effects.
+        private void FireDeathTrigger()
+        {
+            if (_deathtriggerFired) return;
+            if (_activeActionSet == null || _actionDatabase == null) return;
+            if (CaveRunManager.Instance == null) return;
+
+            foreach (var actionId in _activeActionSet.ActionIds)
+            {
+                if (!_actionDatabase.TryGetById(actionId, out var action)) continue;
+                if (!action.IsDeathtrigger) continue;
+
+                _deathtriggerFired = true;
+                ExecuteDeathTrigger(action);
+                return;
+            }
+        }
+
+        // Applies AoE damage from the death-trigger action to the player if in range.
+        private void ExecuteDeathTrigger(EnemyActionSO action)
+        {
+            if (action.BaseDamage <= 0) return;
+            if (!System.Enum.TryParse<DamageType>(action.DamageType, true, out var dmgType))
+                dmgType = DamageType.Fire;
+
+            float radius = action.AreaRadius > 0f ? action.AreaRadius : action.Range;
+            var playerManager = GameBootstrap.Instance?.PlayerManager;
+            if (playerManager == null) return;
+
+            float dist = Vector2.Distance(transform.position, playerManager.transform.position);
+            if (dist > radius * 1.2f) return;
+
+            int damage = Mathf.Max(0, Mathf.RoundToInt(action.BaseDamage * _phaseDamageMultiplier));
+            var req = new DamageRequest(
+                targetId: "player",
+                baseDamage: damage,
+                damageType: dmgType,
+                sourceId: _enemyData?.enemyId ?? "enemy"
+            );
+            req.SourcePosition = transform.position;
+            req.CanTriggerVulnerability = false;
+            var result = DamageCalculator.Calculate(req, _enemyData?.defense ?? 0);
+            if (result.FinalDamage > 0)
+            {
+                var applied = CindarsHope.Combat.PlayerDamageReceiver.ApplyDamage(
+                    playerManager, result.FinalDamage, _enemyData?.enemyId ?? "enemy", dmgType, gameObject);
+                if (applied > 0)
+                    ApplyActionStatusesToPlayer(action);
+            }
+
+            Debug.Log($"[EnemyBrain] DeathTrigger fired. EnemyId={_enemyData?.enemyId}, ActionId={action.ActionId}, Damage={damage}, PlayerDist={dist:F2}");
         }
 
         // F01: EnemyActionSO.StatusApplicationIds aplicados no player via PlayerStatusReceiver.
@@ -1230,7 +1342,10 @@ namespace CindarsHope.Enemy
             {
                 _health.TakeDamage(amount);
                 if (_health.IsDead)
+                {
+                    FireDeathTrigger();
                     _currentState = EnemyBrainState.Dead;
+                }
             }
         }
 

@@ -181,6 +181,53 @@ namespace CindarsHope.Editor.Validation
             else
                 errors.Add("EnemyBrain.SetState(EnemyBrainState) not found or not public.");
 
+            // ── 12. EnemyActionType.BlinkStrike exists ─────────────────────────────
+            var actionTypeNames = System.Enum.GetNames(typeof(EnemyActionType));
+            if (actionTypeNames.Contains("BlinkStrike"))
+                passed.Add("EnemyActionType.BlinkStrike enum value exists.");
+            else
+                errors.Add("EnemyActionType.BlinkStrike missing — check EnemyActionSO.cs.");
+
+            // ── 13. EnemyActionSO has BlinkRange and IsDeathtrigger fields ───────
+            var actionSoType = typeof(EnemyActionSO);
+            bool hasBlinkRange   = actionSoType.GetField("BlinkRange")   != null;
+            bool hasDeathTrigger = actionSoType.GetField("IsDeathtrigger") != null;
+            if (hasBlinkRange)   passed.Add("EnemyActionSO.BlinkRange field exists.");
+            else                 errors.Add("EnemyActionSO.BlinkRange field missing.");
+            if (hasDeathTrigger) passed.Add("EnemyActionSO.IsDeathtrigger field exists.");
+            else                 errors.Add("EnemyActionSO.IsDeathtrigger field missing.");
+
+            // ── 14. Blink/death-trigger actions exist in the asset database ───────
+            var allActionGuids2 = AssetDatabase.FindAssets("t:EnemyActionSO");
+            var allActions = allActionGuids2
+                .Select(g => AssetDatabase.LoadAssetAtPath<EnemyActionSO>(AssetDatabase.GUIDToAssetPath(g)))
+                .Where(a => a != null)
+                .ToDictionary(a => a.ActionId, a => a);
+
+            string[] blinkActionIds = { "action_mirror_adept_short_blink_strike", "action_oathless_shade_shadow_step" };
+            foreach (var id in blinkActionIds)
+            {
+                if (allActions.TryGetValue(id, out var act))
+                {
+                    if (act.ActionType == EnemyActionType.BlinkStrike)
+                        passed.Add($"Action '{id}' is BlinkStrike.");
+                    else
+                        warnings.Add($"Action '{id}' found but ActionType is {act.ActionType} (expected BlinkStrike) — re-run Create Enemy Actions and Sets.");
+                }
+                else
+                    warnings.Add($"Action '{id}' not found — run CindarsHope > SPEC 13 > Create Enemy Actions and Sets.");
+            }
+
+            if (allActions.TryGetValue("action_ember_tick_death_pop", out var dtAction))
+            {
+                if (dtAction.IsDeathtrigger)
+                    passed.Add("action_ember_tick_death_pop.IsDeathtrigger = true.");
+                else
+                    warnings.Add("action_ember_tick_death_pop found but IsDeathtrigger is false — re-run Create Enemy Actions and Sets.");
+            }
+            else
+                warnings.Add("action_ember_tick_death_pop not found — run CindarsHope > SPEC 13 > Create Enemy Actions and Sets.");
+
             // ── Print results ──────────────────────────────────────────────────────
             Debug.Log($"[SPEC 13D Validation] PASSED: {passed.Count} | WARNINGS: {warnings.Count} | ERRORS: {errors.Count}");
             foreach (var p in passed)   Debug.Log($"  [OK]   {p}");
