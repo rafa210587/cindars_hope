@@ -44,7 +44,8 @@ namespace CindarsHope.Quests.Runtime
         public const string Act4Quest02TheJailer = "mq_act4_02_the_jailer";                // gate 100 (clamped 90)
         public const string Act4Quest03VelKaraum = "mq_act4_03_vel_karaum";
         public const string Act4Quest04BrokenRemembrance = "mq_act4_04_broken_remembrance";
-        // mq_act4_05_final_choice -> fable_43 (NOT authored here).
+        // fable_43 — Act 5 endgame finale (canonical catalog id). Authored in QuestRegistry.Endgame.cs.
+        public const string Act4Quest05FinalChoice = "mq_act4_05_final_choice";
 
         // ─── NPC givers / actors ────────────────────────────────────────────────────────────────
         public const string CorvusId = QuestMainAct1Ids.CorvusId;     // npc_corvus
@@ -60,11 +61,13 @@ namespace CindarsHope.Quests.Runtime
         public const string FlagAct2Done = "act_2_done";
         public const string FlagAct3Done = "act_3_done";
         public const string FlagAct4Done = "act_4_done";
+        public const string FlagAct5Done = "act_5_done"; // fable_43 — endgame done milestone
 
         // flag_mq_actN_complete: internal act-complete milestone (chains the next act's offer).
         public const string FlagAct2Complete = "flag_mq_act2_complete";
         public const string FlagAct3Complete = "flag_mq_act3_complete";
         public const string FlagAct4Complete = "flag_mq_act4_complete";
+        public const string FlagAct5Complete = "flag_mq_act5_complete"; // fable_43 — endgame chain-complete
 
         // flag_main_post_actN: read by TownNpcDialogueLibrary (F28) for post-act greeting lines.
         // (post_act1 already granted by Act 1; post_act3 is consumed by the dialogue library today.)
@@ -80,6 +83,7 @@ namespace CindarsHope.Quests.Runtime
         public const string LoreRecordAct2 = "lore_main_act2_memory";
         public const string LoreRecordAct3 = "lore_main_act3_life";
         public const string LoreRecordAct4 = "lore_main_act4_hope";
+        public const string LoreRecordAct5 = "lore_main_act5_final_choice"; // fable_43 — epilogue lore
 
         /// <summary>
         /// The act-final quest of each act -> (act number, fragment, act-done flag, lore record).
@@ -138,6 +142,20 @@ namespace CindarsHope.Quests.Runtime
                 ActDoneFlagId = FlagAct4Done,
                 LoreRecordId = LoreRecordAct4,
                 ActIdForSkillPoint = "act_4_hope"
+            },
+            // fable_43 — Act 5 (endgame): completing mq_act4_05_final_choice INTEGRATES the Hope
+            // fragment into the Fonte (prerequisite of the final choice, fonte_rules Rule 7) and grants
+            // the final act's +1 skill point exactly once. The irreversible Protect/Seal/Use decision
+            // itself is executed at the Fonte by FinalChoiceRuntimeAdapter, AFTER this integration.
+            new ActFinale
+            {
+                ActNumber = 5,
+                FinalQuestId = Act4Quest05FinalChoice,
+                Fragment = MainFragmentType.Hope,
+                IntegratesFragment = true,
+                ActDoneFlagId = FlagAct5Done,
+                LoreRecordId = LoreRecordAct5,
+                ActIdForSkillPoint = "act_5_hope"
             }
         };
 

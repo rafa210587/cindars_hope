@@ -193,7 +193,8 @@ namespace CindarsHope.Save
                     FarmLots = CaptureFarmLotsSaveData(),
                     FarmAnimals = CaptureFarmAnimalsSaveData(),
                     Friendship = CaptureFriendshipSaveData(),
-                    NpcServices = CaptureNpcServicesSaveData()
+                    NpcServices = CaptureNpcServicesSaveData(),
+                    MainProgression = CaptureMainProgressionSaveData()
                 };
 
                 var savePath = SaveFilePath;
@@ -486,6 +487,28 @@ namespace CindarsHope.Save
             }
 
             return data;
+        }
+
+        // fable_43: estado do endgame (Ato 5) da MainProgressionSection viva (host = FonteRuntimeService).
+        // Null-safe; sem o host => endgame nao iniciado (defaults). So tipos simples (enums por valor,
+        // ending por id) — sem refs Unity (ADR-0006). Os fragmentos integrados continuam em FonteSaveData.
+        private MainProgressionSaveData CaptureMainProgressionSaveData()
+        {
+            var fonte = Fonte.FonteRuntimeService.Instance;
+            if (fonte == null || fonte.Progression == null)
+            {
+                return new MainProgressionSaveData();
+            }
+
+            var prog = fonte.Progression;
+            return new MainProgressionSaveData
+            {
+                CurrentAct = (int)prog.CurrentAct,
+                Level100GateState = (int)prog.Level100GateState,
+                Level101AccessState = (int)prog.Level101AccessState,
+                FinalChoiceState = (int)prog.FinalChoiceState,
+                PostGameWorldState = prog.PostGameWorldState
+            };
         }
 
         // fable_44: lê o flag de boss fight do CaveLevelRuntimeController pelo MESMO canal do bootstrap
@@ -1087,6 +1110,19 @@ namespace CindarsHope.Save
                     saveData.Fonte.LivingWaterCharges,
                     saveData.Fonte.LastGrantDay,
                     saveData.Fonte.IntegratedFragments);
+
+                // fable_43: restaura o estado do endgame (Ato 5) APOS os fragmentos serem reconstruidos
+                // (RestoreFromSave recria a secao). Save legado sem a secao endgame => defaults (nao
+                // iniciado). So tipos simples; nenhuma ref Unity.
+                if (saveData.MainProgression != null)
+                {
+                    Fonte.FonteRuntimeService.Instance.RestoreEndgameState(
+                        saveData.MainProgression.CurrentAct,
+                        saveData.MainProgression.Level100GateState,
+                        saveData.MainProgression.Level101AccessState,
+                        saveData.MainProgression.FinalChoiceState,
+                        saveData.MainProgression.PostGameWorldState);
+                }
             }
 
             // F13: restaura a run da caverna via cache do bootstrap (CaveRunManager consome ao entrar).

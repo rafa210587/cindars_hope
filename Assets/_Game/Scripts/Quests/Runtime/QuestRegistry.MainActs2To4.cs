@@ -116,6 +116,7 @@ namespace CindarsHope.Quests.Runtime
             RegisterAct2();
             RegisterAct3();
             RegisterAct4();
+            RegisterEndgameAct5(); // fable_43 — mq_act4_05_final_choice (chains from mq_act4_04)
         }
 
         // ─── Act 2 — "O Arco da Memoria" (QuestLevel 35; gate 30; Fragmento da MEMORIA) ──────────

@@ -119,6 +119,24 @@ namespace CindarsHope.Fonte
             return result;
         }
 
+        /// <summary>
+        /// fable_43 — restore the endgame fields of the live MainProgressionSection (level-100/101
+        /// gate, final-choice status, current act and post-game world state). Called by SaveManager
+        /// AFTER <see cref="RestoreFromSave"/> has rebuilt the integrated fragments. Simple types
+        /// only; a legacy save (defaults) leaves the endgame not started. Safe to call with the
+        /// section absent.
+        /// </summary>
+        public void RestoreEndgameState(
+            int currentAct, int level100GateState, int level101AccessState, int finalChoiceState, string postGameWorldState)
+        {
+            if (_progression == null) _progression = new MainProgressionSection();
+            _progression.CurrentAct = (MainAct)currentAct;
+            _progression.Level100GateState = (Level100GateStatus)level100GateState;
+            _progression.Level101AccessState = (Level101AccessStatus)level101AccessState;
+            _progression.FinalChoiceState = (FinalChoiceStatus)finalChoiceState;
+            _progression.PostGameWorldState = string.IsNullOrEmpty(postGameWorldState) ? null : postGameWorldState;
+        }
+
         public void RestoreFromSave(int fonteState, System.Collections.Generic.List<int> unlockedFunctions,
             bool livingWaterUnlocked, int livingWaterCharges, int lastGrantDay, System.Collections.Generic.List<int> integratedFragments)
         {

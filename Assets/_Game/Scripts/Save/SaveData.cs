@@ -65,6 +65,26 @@ namespace CindarsHope.Save
         // semanas absolutos (ADR-0006). Ausente em save legado = sem pendências (CA-5). Sem migração.
         // Owner: NpcServiceRuntime.
         public CindarsHope.NPC.Services.NpcServicesSaveData NpcServices;
+        // fable_43: estado do endgame (Ato 5) da MainProgressionSection — ato atual, gate 100->101,
+        // status da escolha final e id do epilogo persistido. Secao ADITIVA, so ints/strings (enums
+        // por valor; ending por id; ADR-0006 / save-dto-simple-types-only). Ausente em save legado =
+        // endgame nao iniciado (defaults: ato None, gate Locked, escolha Unavailable). Sem migracao.
+        // Owner runtime: FonteRuntimeService.Progression (host da MainProgressionSection).
+        public MainProgressionSaveData MainProgression;
+    }
+
+    // fable_43: DTO aditivo do endgame (Ato 5). Tipos simples apenas — sem refs Unity. Os fragmentos
+    // integrados continuam persistidos via FonteSaveData.IntegratedFragments; este DTO adiciona o
+    // estado do gate/escolha/epilogo que antes nao era salvo (Fase 0: MainProgressionSection nao
+    // persistia). Saves legados (campo nulo) carregam com defaults = endgame nao iniciado.
+    [Serializable]
+    public class MainProgressionSaveData
+    {
+        public int CurrentAct;          // MainAct enum value (default 0 = None)
+        public int Level100GateState;   // Level100GateStatus enum value (default 0 = Locked)
+        public int Level101AccessState; // Level101AccessStatus enum value (default 0 = Locked)
+        public int FinalChoiceState;    // FinalChoiceStatus enum value (default 0 = Unavailable)
+        public string PostGameWorldState; // ending id (ending_protect|seal|use) or null
     }
 
     [Serializable]
