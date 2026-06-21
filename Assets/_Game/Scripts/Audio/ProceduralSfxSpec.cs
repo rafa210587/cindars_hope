@@ -74,21 +74,40 @@ namespace CindarsHope.Audio
         /// <summary>Sequência de offsets em semitons a partir da raiz (12 = oitava). Faz loop.</summary>
         public IReadOnlyList<int> Semitones { get; }
 
+        /// <summary>Offset em semitons da nota de BAIXO sustentada (drone) — tipicamente -12 (oitava abaixo).</summary>
+        public int BassSemitone { get; }
+
+        /// <summary>Amplitude do baixo [0,1]. 0 = sem voz de baixo.</summary>
+        public float BassAmplitude { get; }
+
         public MusicPhrase(float rootFrequency, float noteSeconds, float amplitude, IReadOnlyList<int> semitones)
+            : this(rootFrequency, noteSeconds, amplitude, semitones, 0, 0f)
+        {
+        }
+
+        public MusicPhrase(float rootFrequency, float noteSeconds, float amplitude, IReadOnlyList<int> semitones, int bassSemitone, float bassAmplitude)
         {
             RootFrequency = rootFrequency;
             NoteSeconds = noteSeconds < 0.02f ? 0.02f : noteSeconds;
             Amplitude = amplitude < 0f ? 0f : (amplitude > 1f ? 1f : amplitude);
             Semitones = semitones;
+            BassSemitone = bassSemitone;
+            BassAmplitude = bassAmplitude < 0f ? 0f : (bassAmplitude > 1f ? 1f : bassAmplitude);
         }
 
         public bool IsValid => RootFrequency > 0f && Amplitude > 0f && Semitones != null && Semitones.Count > 0;
+
+        /// <summary>True se a frase tem voz de baixo sustentada.</summary>
+        public bool HasBass => BassAmplitude > 0f;
 
         /// <summary>Frequência (Hz) da nota no índice: root × 2^(semitom/12).</summary>
         public float FrequencyAt(int index)
         {
             return RootFrequency * (float)System.Math.Pow(2.0, Semitones[index] / 12.0);
         }
+
+        /// <summary>Frequência (Hz) da voz de baixo sustentada.</summary>
+        public float BassFrequency => RootFrequency * (float)System.Math.Pow(2.0, BassSemitone / 12.0);
 
         /// <summary>Duração total da frase (loop) em segundos.</summary>
         public float TotalSeconds => NoteSeconds * (Semitones?.Count ?? 0);
@@ -195,22 +214,27 @@ namespace CindarsHope.Audio
         {
             switch (state)
             {
-                // calmo = arpejo de Lá menor em cascata (estilo "Prelude"), lento e macio
+                // calmo = melodia lírica e LENTA em Lá menor (clima "Aerith"): sobe ao octave
+                // e desce; baixo sustentado uma oitava abaixo dá o leito de pad.
                 case MusicState.Calmo:
-                    return new MusicPhrase(220f, 0.50f, 0.14f,
-                        new[] { 0, 3, 7, 12, 7, 3, 0, 7, 10, 15, 10, 7 });
-                // combate = Lá menor com tensão (b6 = 8) e notas mais rápidas
+                    return new MusicPhrase(220f, 0.66f, 0.13f,
+                        new[] { 0, 3, 7, 5, 3, 7, 12, 10, 7, 5, 3, 0 },
+                        -12, 0.10f);
+                // combate = Lá menor com tensão (b6 = 8) e notas mais rápidas + baixo grave
                 case MusicState.Combate:
-                    return new MusicPhrase(220f, 0.26f, 0.16f,
-                        new[] { 0, 3, 7, 10, 7, 3, 5, 8, 5, 3, 0, -2 });
-                // boss = registro grave, lento e ominoso (b2 = 1 cria tensão), ainda sine
+                    return new MusicPhrase(220f, 0.26f, 0.14f,
+                        new[] { 0, 3, 7, 10, 12, 10, 7, 3, 5, 8, 5, 3 },
+                        -12, 0.10f);
+                // boss = grave, lento e ominoso (b2 = 1 cria tensão) + sub-baixo (oitava abaixo)
                 case MusicState.Boss:
-                    return new MusicPhrase(110f, 1.10f, 0.15f,
-                        new[] { 0, 1, 0, 3, 2, 0 });
-                // festival = Dó maior, arpejo claro e animado
+                    return new MusicPhrase(110f, 1.00f, 0.14f,
+                        new[] { 0, 3, 2, 0, 1, 0 },
+                        -12, 0.12f);
+                // festival = Dó maior, arpejo claro e animado + baixo de corpo
                 case MusicState.Festival:
-                    return new MusicPhrase(262f, 0.24f, 0.14f,
-                        new[] { 0, 4, 7, 12, 7, 4, 9, 5, 0, 4, 7, 12 });
+                    return new MusicPhrase(262f, 0.24f, 0.13f,
+                        new[] { 0, 4, 7, 12, 16, 12, 7, 4, 9, 7, 4, 0 },
+                        -12, 0.09f);
                 default:
                     return default;
             }

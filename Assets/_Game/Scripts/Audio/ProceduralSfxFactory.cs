@@ -256,7 +256,9 @@ namespace CindarsHope.Audio
                     }
 
                     float t = (float)i / sampleRate; // tempo LOCAL à nota (fase começa em 0)
-                    float wave = Mathf.Sin(2f * Mathf.PI * freq * t);
+                    // fundamental + harmônico de oitava (0.3) = timbre mais quente, menos "beep".
+                    float wave = Mathf.Sin(2f * Mathf.PI * freq * t)
+                               + 0.3f * Mathf.Sin(2f * Mathf.PI * (freq * 2f) * t);
 
                     float p = (float)i / len; // 0..1 dentro da nota
                     float env;
@@ -279,6 +281,35 @@ namespace CindarsHope.Audio
                     }
 
                     samples[gi] = wave * phrase.Amplitude * env;
+                }
+            }
+
+            // Voz de BAIXO sustentada (drone) por baixo do arpejo: sine grave contínuo com
+            // swell lento sobre o loop inteiro — dá o leito de "pad" que encorpa a faixa.
+            if (phrase.HasBass)
+            {
+                float bassFreq = phrase.BassFrequency;
+                for (int i = 0; i < total; i++)
+                {
+                    float t = (float)i / sampleRate;
+                    float wave = Mathf.Sin(2f * Mathf.PI * bassFreq * t);
+
+                    float p = (float)i / total; // 0..1 no loop inteiro
+                    float env = 1f;
+                    if (p < 0.12f)
+                    {
+                        env = p / 0.12f;
+                    }
+                    else if (p > 0.88f)
+                    {
+                        env = (1f - p) / 0.12f;
+                    }
+                    if (env < 0f)
+                    {
+                        env = 0f;
+                    }
+
+                    samples[i] += wave * phrase.BassAmplitude * env;
                 }
             }
 
