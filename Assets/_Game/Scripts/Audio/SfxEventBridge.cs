@@ -39,6 +39,7 @@ namespace CindarsHope.Audio
         private readonly List<IDisposable> _subscriptions = new List<IDisposable>();
 
         private MusicState _lastPublishedMusicState = MusicState.Calmo;
+        private string _lastSceneName;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void Bootstrap()
@@ -84,9 +85,18 @@ namespace CindarsHope.Audio
 
         private void Update()
         {
-            // Sincroniza a faixa ao estado resolvido TODA frame: a música começa assim que o
-            // AudioManager fica pronto (independe da ordem de bootstrap) e acompanha mudanças de
-            // cena/combate mesmo que algum evento tenha sido perdido. Barato (compara enum).
+            // POLL da cena ativa: as transicoes usam EditorSceneManager.LoadSceneInPlayMode, que
+            // nem sempre dispara sceneLoaded/activeSceneChanged pros nossos handlers. GetActiveScene
+            // SEMPRE reflete a cena atual, entao detectamos a troca aqui (a prova de bala) e
+            // reaplicamos o ambiente. Depois sincronizamos a faixa ao estado resolvido toda frame
+            // (musica comeca quando o AudioManager fica pronto e acompanha cena/combate). Barato.
+            var activeName = SceneManager.GetActiveScene().name;
+            if (activeName != _lastSceneName)
+            {
+                _lastSceneName = activeName;
+                TryApplySceneAmbient(activeName);
+            }
+
             PushMusicStateIfChanged();
         }
 
