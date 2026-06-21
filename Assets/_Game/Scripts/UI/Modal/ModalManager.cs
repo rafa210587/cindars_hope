@@ -20,7 +20,9 @@ namespace CindarsHope.UI.Modal
         Pause,
         Death,
         CaveCheckpoint,
-        QuestLog
+        QuestLog,
+        // fable_56: confirmacoes da aba Sistema / titulo (Carregar, Sair, recuperacao de backup).
+        SystemConfirm
     }
 
     [DisallowMultipleComponent]
