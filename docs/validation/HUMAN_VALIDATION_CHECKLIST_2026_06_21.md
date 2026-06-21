@@ -17,8 +17,11 @@ Objetivo: deixar dados/cenas consistentes antes de qualquer teste. Rode os menus
 - [ ] **Validar** → `CindarsHope/Validar Projeto`. **Esperado:** `Duplicate=0` na ItemDatabase. (Erros de `WEAPON_ITEM_NO_WEAPON_ID`/`MAGIC_ITEM_NO_SPELL_ID`/loot/projectile são **débito de wiring de conteúdo conhecido** — anotar, não bloqueia o smoke.)
 - [ ] **Console limpo ao abrir cena** → abra a CaveScene. **Esperado:** SEM enxurrada de "There are no audio listeners" e SEM flood de `CombatLog:` (gate `CombatLog.Verbose=false`). Só logs pontuais + warnings reais.
 - [ ] Confirmar **3 cenas no Build Settings** (File ▸ Build Settings): FarmScene, TownScene, CaveScene presentes.
+- [ ] **Save NOVO obrigatório**: o starter (arco + 30 flechas + 2 Lágrimas da Deusa) só se aplica em jogo novo. Carregar save antigo NÃO traz esses itens.
 
 > ⚠️ Se `Duplicate` ≠ 0 após o passo 1+3, pare: a deleção foi bloqueada (version control no asset). Reporte.
+>
+> ⏱️ **Estado temporário de validação** (reverter quando aprovar): tempo está em **3min dia / 3min noite** (`GameTimeBalance.asset`; padrão é 20/10) e o `SfxEventBridge` tem logs `[Music]` de diagnóstico. Avisar a sessão para reverter ao confirmar.
 
 ---
 
@@ -27,8 +30,11 @@ Objetivo: deixar dados/cenas consistentes antes de qualquer teste. Rode os menus
 Para **cada** cena (Farm, Town, Cave): abrir → Play.
 
 - [ ] **Sem erros vermelhos** no Console ao entrar em Play (warnings de conteúdo conhecido OK).
+- [ ] **SEM `ArgumentNullException: caveRunManager`** no boot (sistema de morte agora tolera estar fora da caverna — regressão corrigida).
 - [ ] **Player aparece** e move com WASD/setas.
-- [ ] **HUD inicial** aparece (vida/stamina/relógio). *(F14/F20 — pode estar em estado parcial se o canvas não foi wired; anotar.)*
+- [ ] **HUD de texto visível** (overlay novo): relógio "Dia N — HH:MM (Dia/Noite)", HP/Stamina/Fome, Ouro, prompt de interação. *(Substitui o DebugHud legado; se ainda aparecer só o HUD antigo, anotar.)*
+- [ ] **Passagem de tempo visível**: o relógio anda (com o temp de 3min, a virada dia↔noite chega rápido).
+- [ ] **Música por cena distinta**: Caverna ≠ Fazenda ≠ Cidade. Trocar de cena troca a trilha (não fica a mesma) — fix `6b686cff`.
 - [ ] **Dicas de onboarding** aparecem 1× num save novo ("WASD para mover", etc.) — `docs/validation/playmode/fable_62_human_test_scenario.md`.
 - [ ] Sai do Play sem exceção.
 
@@ -53,7 +59,14 @@ Para **cada** cena (Farm, Town, Cave): abrir → Play.
 - [ ] **Combate**: atacar inimigo, tomar dano, matar; loot dropa.
 - [ ] **Feel** (F71): hit-stop + screen shake ao acertar — `docs/validation/playmode/fable_71_human_test_scenario.md`.
 - [ ] **Sair e revisitar o mesmo nível (mesmo seed)** → layout/inimigos/recursos **idênticos** (cave stable-run, ADR-0005) — `docs/validation/playmode/fable_44_human_test_scenario.md`.
-- [ ] **Morte na caverna** → tela de morte + recuperação de corpo no respawn — `docs/validation/playmode/fable_64_human_test_scenario.md` + `fable_66`.
+
+### 2D — Morte & respawn (rework desta leva)
+- [ ] **Player morre ao zerar HP** (antes não morria) → publica `PlayerDiedEvent`.
+- [ ] **Tela "Você Morreu"** abre (overlay escuro, jogo pausa, modal) com 2 opções.
+- [ ] **Reviver com Lágrima da Deusa**: botão mostra a contagem (começa em 2); usar consome 1 e revive **no lugar** com HP cheio.
+- [ ] **Respawnar na Fonte da Anya**: teleporta para a fonte; se a fonte estiver noutra cena, carrega a FarmScene e posiciona na fonte (cross-cena, anti-softlock).
+- [ ] **Morte na caverna** cria corpo; **recuperação de corpo** no respawn — `docs/validation/playmode/fable_64_human_test_scenario.md` + `fable_66`.
+- [ ] **Morte em Farm/Cidade** (fora da caverna): tela de morte funciona, **sem** corpo criado (esperado).
 
 ---
 
@@ -63,7 +76,12 @@ Para **cada** cena (Farm, Town, Cave): abrir → Play.
 - [ ] Status effects aplicam e expiram (burn/bleed/poison/stun…) — `fable_01`.
 - [ ] Ações de arma + stats derivados; perfect block/parry — `fable_02`, `fable_27`.
 - [ ] Sprint consome stamina — `fable_69`.
-- [ ] Arco + flechas elementais — `fable_48`.
+- [ ] **Arco + flecha (fluxo completo, retrabalhado)** — `fable_48`:
+  - [ ] Inventário → **Flechas Básicas** → Equipar → vai para a **mão esquerda** (não dá mais "Item não equipável").
+  - [ ] Inventário → **Arco de Madeira** → Equipar → vai para a **mão direita**.
+  - [ ] Atacar com a mão da **flecha** → **consome 1 flecha** + **lança o projétil**; contagem cai de 30.
+  - [ ] Atacar com a mão do **arco** é bloqueado de propósito (`BowHandPressed_UseArrowHand`).
+  - [ ] Sem flecha no inventário → bloqueia em `NoArrowsInInventory` (não dispara).
 - [ ] Inimigos: pack/elite/afixos e bosses por fase — `fable_04`, `fable_24`, `fable_05`.
 - [ ] XP/level sobem; classe inferida reflete o estilo — `fable_42`, `fable_39`.
 
@@ -128,3 +146,4 @@ Para **cada** cena (Farm, Town, Cave): abrir → Play.
 ---
 
 *Gerado: 2026-06-21. Base: 73 specs FABLE BUILD_VALIDATED + fixes de estabilização (dedup de itens, AudioListener, gate de log, consolidação de menus).*
+*Atualizado: 2026-06-21 (2ª passada) — fixes do teste do dono: sistema de morte null-safe (`4de9fbf7`) + tela "Você Morreu"/Lágrima/respawn (`65004453`), arco no starter (`6df510f9`), flecha equipável (`7f6aa830`), música por cena (`6b686cff`), HUD de texto visível (`78296f5b`), tempo temp 3/3 e logs [Music] a reverter.*
