@@ -92,6 +92,10 @@ namespace CindarsHope.Editor
             // idempotente). Depende do item_ammo_arrow_basic.asset criado/atualizado pelo passo anterior.
             RunStep("Garantir Flechas Basicas (30x) no inventario inicial",
                 () => CindarsHope.EditorTools.Repair.RepairPlayerStartingItems.EnsureStartingArrows());
+            // Garante 1x Arco de Madeira no inventario inicial. Sem o arco na outra mao o disparo de
+            // flecha sempre bloqueia (ArrowRequiresBowInOtherHand) — sem ele o arco/flecha nao e testavel.
+            RunStep("Garantir Arco de Madeira (1x) no inventario inicial",
+                () => CindarsHope.EditorTools.Repair.RepairPlayerStartingItems.EnsureStartingBow());
             RunStep("Gerar bestiario canonico",
                 () => CindarsHope.Editor.Enemies.GenerateCanonicalBestiary.GenerateMenu());
             RunStep("Gerar catalogo canonico de skills",
@@ -227,6 +231,9 @@ namespace CindarsHope.Editor
             // (e.2) Garante 30x Flechas Basicas no inventario inicial para testar o arco.
             RunStep("Garantir Flechas Basicas (30x) no inventario inicial",
                 () => CindarsHope.EditorTools.Repair.RepairPlayerStartingItems.EnsureStartingArrows());
+            // (e.3) Garante 1x Arco de Madeira no inventario inicial (sem ele a flecha nao dispara).
+            RunStep("Garantir Arco de Madeira (1x) no inventario inicial",
+                () => CindarsHope.EditorTools.Repair.RepairPlayerStartingItems.EnsureStartingBow());
             RunStep("Salvar assets (SaveAssets + Refresh)", SaveAndRefresh);
 
             ShowSummary("Reparar e Reconstruir", "[Reparar]");

@@ -36,6 +36,12 @@ namespace CindarsHope.EditorTools.Repair
         private const string BasicArrowItemId = "item_ammo_arrow_basic";
         private const int BasicArrowStartingAmount = 30;
 
+        // Arco de madeira: 1x no inventario inicial. SEM o arco na outra mao o disparo de flecha
+        // SEMPRE bloqueia em ArrowRequiresBowInOtherHand (BowArrowAttackService.TryFire) — entao o
+        // starter precisa do arco para o arco/flecha ser testavel. WeaponId resolvido em runtime.
+        private const string WoodBowItemId = "item_weapon_bow_wood";
+        private const int WoodBowStartingAmount = 1;
+
         public static void Repair()
         {
             var playerData = AssetDatabase.LoadAssetAtPath<PlayerDataSO>(PlayerDataPath);
@@ -95,6 +101,16 @@ namespace CindarsHope.EditorTools.Repair
         public static void EnsureStartingArrows()
         {
             EnsureStartingItem(BasicArrowItemId, BasicArrowStartingAmount);
+        }
+
+        /// <summary>
+        /// Conveniencia: garante 1x Arco de Madeira no inventario inicial. Sem o arco equipado na
+        /// outra mao o disparo de flecha sempre bloqueia (ArrowRequiresBowInOtherHand), entao o
+        /// arco/flecha so e testavel com o arco presente. So ACRESCENTA; idempotente.
+        /// </summary>
+        public static void EnsureStartingBow()
+        {
+            EnsureStartingItem(WoodBowItemId, WoodBowStartingAmount);
         }
 
         /// <summary>
