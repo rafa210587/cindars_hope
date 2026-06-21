@@ -366,6 +366,18 @@ namespace CindarsHope.Editor.Items
                 BaseValue = 180, MaxStack = 99, Dormant = true, Source = CatalogItemSource.Drop,
                 Notes = "Raw/dangerous form; stabilizing (Brumdar) produces item_material_stabilized_blackstone."
             });
+            // Lagrima da Deusa: consumivel de revive consumido DIRETO pela tela de morte
+            // (DeathScreenCanvasController). Nao tem efeito de "use" generico no inventario — a
+            // tela remove 1 e restaura o HP cheio in-place. Nao-vendavel (BV 0) para nao virar
+            // exploit de venda; stackavel. Concedido 2x no inventario inicial via
+            // RepairPlayerStartingItems.EnsureStartingItem (so ACRESCENTA, ver menu Inicializar).
+            rows.Add(new CatalogItemRow
+            {
+                Id = "item_goddess_tear", DisplayName = "Lagrima da Deusa", Category = ItemCategory.Consumable,
+                ConsumableSubtype = ConsumableSubtype.Potion, BaseValue = 0, MaxStack = 99,
+                Sellable = false, Source = CatalogItemSource.Starter,
+                Notes = "Revive item consumed directly by the death screen (no generic 'use'). BV 0 anti mass-sale; 2x granted at new game."
+            });
         }
 
         // E2.8 — Orphan monster-part drops (~25). EN-only item_material_<slug>, BV by band.

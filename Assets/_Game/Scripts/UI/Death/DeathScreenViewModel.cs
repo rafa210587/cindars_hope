@@ -41,7 +41,13 @@ namespace CindarsHope.UI.Death
     public sealed class DeathScreenViewModel
     {
         public const string RespawnActionId = "respawn_anya_fountain";
+        public const string ReviveActionId = "revive_goddess_tear";
+
+        // Mantido por compat — superseded por ReviveActionId (a Lagrima da Deusa e a opcao real agora).
         public const string FutureActionId = "future_recovery_option";
+
+        /// <summary>Headline literal "Voce Morreu" (titulo da tela, sempre exibido em destaque).</summary>
+        public const string DeathTitle = "Voce Morreu";
 
         public DeathCause Cause { get; }
         public string LocationLabel { get; }
@@ -57,6 +63,16 @@ namespace CindarsHope.UI.Death
         public string Headline { get; }
         public string RecoveryInstruction { get; }
 
+        /// <summary>Quantidade de Lagrima da Deusa no inventario no momento da morte.</summary>
+        public int GoddessTearCount { get; }
+
+        /// <summary>True se o jogador pode usar a Lagrima da Deusa para reviver no lugar.</summary>
+        public bool CanReviveWithTear => GoddessTearCount > 0;
+
+        /// <summary>Label do botao de revive, com a contagem: ex. "Usar Lagrima da Deusa (2)".</summary>
+        public string ReviveActionLabel =>
+            $"Usar Lagrima da Deusa (reviver aqui) ({GoddessTearCount})";
+
         private readonly List<DeathScreenActionViewModel> _actions = new();
         public IReadOnlyList<DeathScreenActionViewModel> Actions => _actions;
 
@@ -68,6 +84,7 @@ namespace CindarsHope.UI.Death
             int corpseGold,
             int corpseCaveLevel,
             int xpLost,
+            int goddessTearCount,
             string headline,
             string recoveryInstruction)
         {
@@ -79,13 +96,28 @@ namespace CindarsHope.UI.Death
             CorpseCaveLevel = corpseCaveLevel;
             XpLost = xpLost < 0 ? 0 : xpLost;
             HasXpLoss = XpLost > 0;
+            GoddessTearCount = goddessTearCount < 0 ? 0 : goddessTearCount;
             Headline = headline ?? string.Empty;
             RecoveryInstruction = recoveryInstruction ?? string.Empty;
 
+            // Revive com Lagrima da Deusa: habilitado SO se ha >= 1 no inventario.
             _actions.Add(new DeathScreenActionViewModel(
-                RespawnActionId, "Renascer na Fonte de Anya", true));
+                ReviveActionId, ReviveActionLabel, CanReviveWithTear));
+            // Respawnar na Fonte: sempre habilitado (anti-softlock).
             _actions.Add(new DeathScreenActionViewModel(
-                FutureActionId, "Recuperar no local (em breve)", false));
+                RespawnActionId, "Respawnar na Fonte da Anya", true));
+        }
+
+        /// <summary>
+        /// Retorna uma copia desta projection com a contagem de Lagrima da Deusa preenchida.
+        /// Permite que o controller resolva a contagem (do InventoryManager) DEPOIS de construir a
+        /// projection base, mantendo as factories puras/testaveis.
+        /// </summary>
+        public DeathScreenViewModel WithGoddessTearCount(int goddessTearCount)
+        {
+            return new DeathScreenViewModel(
+                Cause, LocationLabel, HasCorpse, CorpseItemCount, CorpseGold, CorpseCaveLevel,
+                XpLost, goddessTearCount, Headline, RecoveryInstruction);
         }
 
         /// <summary>
@@ -147,6 +179,7 @@ namespace CindarsHope.UI.Death
                 corpseGold: gold,
                 corpseCaveLevel: corpseLevel,
                 xpLost: xpLost,
+                goddessTearCount: 0,
                 headline: "Voce caiu na caverna.",
                 recoveryInstruction: instruction);
         }
@@ -169,6 +202,7 @@ namespace CindarsHope.UI.Death
                 corpseGold: 0,
                 corpseCaveLevel: 0,
                 xpLost: 0,
+                goddessTearCount: 0,
                 headline: headline,
                 recoveryInstruction: "Nada foi deixado para tras.");
         }

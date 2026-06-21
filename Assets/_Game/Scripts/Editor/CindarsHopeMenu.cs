@@ -84,6 +84,10 @@ namespace CindarsHope.Editor
                 () => CindarsHope.EditorTools.Combat.GenerateCanonicalStatusEffects.Generate());
             RunStep("Gerar catalogo canonico de itens",
                 () => CindarsHope.Editor.Items.GenerateCanonicalItemCatalog.Run());
+            // Garante 2x Lagrima da Deusa no inventario inicial (so ACRESCENTA; idempotente).
+            // Depende do item_goddess_tear.asset criado pelo passo anterior.
+            RunStep("Garantir Lagrima da Deusa (2x) no inventario inicial",
+                () => CindarsHope.EditorTools.Repair.RepairPlayerStartingItems.EnsureGoddessTears());
             RunStep("Gerar bestiario canonico",
                 () => CindarsHope.Editor.Enemies.GenerateCanonicalBestiary.GenerateMenu());
             RunStep("Gerar catalogo canonico de skills",
@@ -213,6 +217,9 @@ namespace CindarsHope.Editor
             // (d) Re-sincroniza a ItemDatabase (Run faz o sync da registry) e salva.
             RunStep("Re-sincronizar ItemDatabase (catalogo canonico)",
                 () => CindarsHope.Editor.Items.GenerateCanonicalItemCatalog.Run());
+            // (e) Garante 2x Lagrima da Deusa no inventario inicial (so ACRESCENTA; idempotente).
+            RunStep("Garantir Lagrima da Deusa (2x) no inventario inicial",
+                () => CindarsHope.EditorTools.Repair.RepairPlayerStartingItems.EnsureGoddessTears());
             RunStep("Salvar assets (SaveAssets + Refresh)", SaveAndRefresh);
 
             ShowSummary("Reparar e Reconstruir", "[Reparar]");

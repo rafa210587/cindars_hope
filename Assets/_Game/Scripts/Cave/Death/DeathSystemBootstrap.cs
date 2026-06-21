@@ -10,16 +10,14 @@ using UnityEngine;
 namespace CindarsHope.Cave.Death
 {
     /// <summary>
-    /// Processa PlayerDiedEvent: cria corpo (na caverna) e respawna o jogador.
+    /// Processa PlayerDiedEvent: cria o corpo (na caverna). NAO respawna mais automaticamente —
+    /// a acao agora e do jogador, pela DeathScreenCanvasController (Lagrima da Deusa = reviver
+    /// no lugar; ou Respawnar na Fonte da Anya, possivelmente cross-cena).
     ///
     /// Nasce sozinho via self-bootstrap estatico (idiom *RuntimeBootstrap do projeto):
     /// GameObject DontDestroyOnLoad + singleton guard. Em vez de inicializar no Awake (onde
     /// GameBootstrap.Instance ainda pode ser null por ordem de boot), uma coroutine BindWhenReady
     /// espera GameBootstrap e seus managers (PlayerManager, CorpseRecoveryManager) ficarem prontos.
-    ///
-    /// A AnyaFountain e objeto POR CENA, entao a ref de GameBootstrap pode ficar stale apos trocar de
-    /// cena. O respawn re-resolve a Fonte da cena ATIVA no momento da morte (FindAnyObjectByType e
-    /// permitido aqui: e wiring de setup do fluxo de respawn, NAO comunicacao de gameplay).
     /// </summary>
     [DisallowMultipleComponent]
     public class DeathSystemBootstrap : MonoBehaviour
@@ -140,45 +138,13 @@ namespace CindarsHope.Cave.Death
             }
             else
             {
-                // Morte fora da caverna (Farm/Town): sem corpo, mas o jogador NAO pode ficar preso morto.
+                // Morte fora da caverna (Farm/Town): sem corpo.
                 Debug.Log($"[DeathSystemBootstrap] Death outside cave ({evt.SceneName}), no corpse created");
             }
 
-            // Respawn/revive sempre acontece (dentro ou fora da caverna) para nao travar o jogador.
-            Respawn();
-        }
-
-        /// <summary>
-        /// Re-resolve a AnyaFountain da cena ATIVA no momento do respawn (a ref pode estar stale por
-        /// causa do DontDestroyOnLoad) e respawna ali. Se nenhuma Fonte existir na cena atual, faz o
-        /// minimo seguro: restaura o HP no lugar (revive) para o jogador nunca ficar preso morto.
-        /// </summary>
-        private void Respawn()
-        {
-            var fountain = Object.FindAnyObjectByType<AnyaFountain>();
-            if (fountain != null && fountain.RespawnPoint != null)
-            {
-                var bootstrap = GameBootstrap.Instance;
-                var respawnService = new AnyaRespawnService(
-                    _playerManager,
-                    bootstrap != null ? bootstrap.StaminaManager : null,
-                    bootstrap != null ? bootstrap.ManaManager : null,
-                    fountain.RespawnPoint);
-
-                respawnService.RespawnAtAnyaFountain();
-                Debug.Log("[DeathSystemBootstrap] Player respawned at Anya's Fountain");
-                return;
-            }
-
-            // Fallback seguro: sem Fonte na cena atual (respawn cross-cena nao resolvido neste slice).
-            // Restaura HP no lugar para reviver o jogador (anti-softlock). Sem inventar regra de balance nova.
-            if (_playerManager != null)
-            {
-                _playerManager.SetHP(_playerManager.MaxHP);
-                Debug.LogWarning(
-                    "[DeathSystemBootstrap] Nenhuma AnyaFountain na cena atual. Revivendo o jogador no lugar " +
-                    "(HP restaurado). Respawn cross-cena na Fonte nao implementado neste slice.");
-            }
+            // NAO respawna mais aqui. A DeathScreenCanvasController abre a tela modal e o jogador
+            // escolhe: Lagrima da Deusa (reviver no lugar) ou Respawnar na Fonte da Anya (anti-softlock,
+            // cross-cena se preciso). Manter o respawn aqui dispararia uma acao antes da escolha.
         }
 
         private void OnCorpseRecovered(CorpseRecoveredEvent evt)

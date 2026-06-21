@@ -1,50 +1,61 @@
 using System;
+using System.Collections.Generic;
 using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
+using CindarsHope.Inventory;
 using CindarsHope.Player.Death;
 using CindarsHope.UI.Modal;
 using CindarsHope.UI.Runtime;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace CindarsHope.UI.Death
 {
     /// <summary>
-    /// Canvas-based death screen (replaces the IMGUI DeathScreenController).
+    /// Canvas-based death screen "Voce Morreu" (replaces the IMGUI DeathScreenController).
     ///
     /// Responsibilities (SURFACE ONLY — no death/penalty/corpse rule lives here):
-    /// - subscribes to the same triggers (PlayerDiedEvent / CavePlayerDefeatedEvent);
-    /// - publishes the same contract (DeathScreenOpenedEvent / DeathScreenClosedEvent);
+    /// - subscribes to the triggers (PlayerDiedEvent / CavePlayerDefeatedEvent);
+    /// - publishes the contract (DeathScreenOpenedEvent / DeathScreenClosedEvent);
     /// - reads the corpse snapshot from CorpseRecoveryManager (authoritative source);
-    /// - caches cave level + XP loss from CavePlayerDeathResolvedEvent / XpResetToLevelStartEvent;
-    /// - shows a keyboard-navigable canvas; Esc does NOT close (death requires a choice).
+    /// - reads the Lagrima da Deusa count from InventoryManager at show time;
+    /// - PAUSES the game (Time.timeScale=0 + ModalManager.Death) while open; Esc does NOT close.
     ///
-    /// Respawn already happens at death time inside DeathSystemBootstrap. The "Renascer na
-    /// Fonte" action therefore only DISMISSES the screen — it never starts a second respawn
-    /// path. The dismiss path is abstracted via <see cref="DeathScreenDismissed"/> so the
-    /// contract can be EditMode-tested without a live scene.
+    /// Death no longer auto-respawns (DeathSystemBootstrap only creates the corpse). The player
+    /// chooses on this screen:
+    /// - "Usar Lagrima da Deusa (reviver aqui)" — enabled only if count &gt; 0: consumes 1, heals
+    ///   to full HP, dismisses, unpauses. Player is alive IN PLACE.
+    /// - "Respawnar na Fonte da Anya" — always enabled: starts the (possibly cross-scene) respawn
+    ///   via AnyaFountainRespawnFlow, dismisses, unpauses.
+    /// The dismiss path is observable via <see cref="DeathScreenDismissed"/> for EditMode contract
+    /// tests. Item-id + tear count are exposed as testable static helpers.
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class DeathScreenCanvasController : MonoBehaviour
     {
         public static DeathScreenCanvasController Instance { get; private set; }
 
+        /// <summary>Stable id of the revive consumable (catalog: CanonicalItemCatalog AddSpecials).</summary>
+        public const string GoddessTearItemId = "item_goddess_tear";
+
         // Cached cross-event state (subscription order is not guaranteed).
         private int _lastResolvedCaveLevel = -1;
         private int _lastXpLost;
 
         private bool _isShowing;
+        private float _timeScaleBeforeShow = 1f;
         private DeathScreenViewModel _viewModel;
         private readonly UiFocusController _focus = new();
 
         // Canvas refs (built lazily, programmatic — WI-23 fallback, no prefab/scene).
         private Canvas _canvas;
         private GameObject _root;
+        private Text _titleText;
         private Text _bodyText;
+        private Button _reviveButton;
+        private Text _reviveLabel;
         private Button _respawnButton;
-        private Button _futureButton;
 
         /// <summary>
         /// Raised when the screen is dismissed by the player. The MonoBehaviour itself
@@ -177,9 +188,12 @@ namespace CindarsHope.UI.Death
         {
             if (_isShowing) return;
 
-            _viewModel = viewModel;
+            // Resolve a contagem de Lagrima da Deusa AGORA (do inventario autoritativo) e injeta na
+            // projection, para o botao de revive saber se habilita e mostrar "(N)".
+            _viewModel = viewModel.WithGoddessTearCount(ResolveGoddessTearCount());
             _isShowing = true;
 
+            PauseGame();
             PushModal();
             BuildOrRefreshCanvas();
             SetupFocus();
@@ -194,6 +208,7 @@ namespace CindarsHope.UI.Death
             _isShowing = false;
             HideCanvas();
             PopModal();
+            UnpauseGame();
 
             // Reset cached penalty data for the next death.
             _lastResolvedCaveLevel = -1;
@@ -201,6 +216,97 @@ namespace CindarsHope.UI.Death
 
             DeathScreenDismissed?.Invoke();
             GameEventBus.Publish(new DeathScreenClosedEvent());
+        }
+
+        // ---- Pause (Time.timeScale + ModalManager) ----
+
+        private void PauseGame()
+        {
+            _timeScaleBeforeShow = Time.timeScale;
+            Time.timeScale = 0f;
+        }
+
+        private void UnpauseGame()
+        {
+            // Restaura a escala anterior (normalmente 1). Nunca deixa o jogo congelado.
+            Time.timeScale = _timeScaleBeforeShow <= 0f ? 1f : _timeScaleBeforeShow;
+        }
+
+        // ---- Inventory: Lagrima da Deusa ----
+
+        private static InventoryManager ResolveInventoryManager()
+        {
+            var bootstrap = GameBootstrap.Instance;
+            return bootstrap != null ? bootstrap.InventoryManager : null;
+        }
+
+        private static int ResolveGoddessTearCount()
+        {
+            var inventory = ResolveInventoryManager();
+            return inventory != null ? inventory.GetAmount(GoddessTearItemId) : 0;
+        }
+
+        /// <summary>
+        /// Acao do botao "Usar Lagrima da Deusa": consome 1, cura HP cheio e fecha a tela. So roda
+        /// se ainda houver pelo menos 1 (guard contra clique tardio). Reviver no LUGAR (sem mover).
+        /// </summary>
+        private void OnReviveWithTear()
+        {
+            if (!_isShowing) return;
+
+            var inventory = ResolveInventoryManager();
+            if (inventory == null || !inventory.HasItem(GoddessTearItemId, 1))
+            {
+                Debug.LogWarning("[DeathScreen] Revive recusado: sem Lagrima da Deusa no inventario.");
+                return;
+            }
+
+            if (!inventory.RemoveItem(GoddessTearItemId, 1))
+            {
+                Debug.LogWarning("[DeathScreen] Revive recusado: RemoveItem falhou para Lagrima da Deusa.");
+                return;
+            }
+
+            var bootstrap = GameBootstrap.Instance;
+            var playerManager = bootstrap != null ? bootstrap.PlayerManager : null;
+            if (playerManager != null)
+            {
+                // SetHP(MaxHP) re-arma o PlayerDeathController (HP volta > 0).
+                playerManager.SetHP(playerManager.MaxHP);
+            }
+
+            Debug.Log("[DeathScreen] Revive com Lagrima da Deusa: -1 item, HP cheio, jogador vivo no lugar.");
+            Dismiss();
+        }
+
+        /// <summary>
+        /// Acao do botao "Respawnar na Fonte da Anya": inicia o fluxo (possivelmente cross-cena) e
+        /// fecha a tela. Anti-softlock: sempre disponivel.
+        /// </summary>
+        private void OnRespawnAtFountain()
+        {
+            if (!_isShowing) return;
+
+            // Fecha/despausa ANTES de carregar a cena (a transicao destroi a cena atual). O fluxo
+            // completa o teleporte/restauracao quando a cena da Fonte termina de carregar.
+            Dismiss();
+
+            var flow = AnyaFountainRespawnFlow.Instance;
+            if (flow != null)
+            {
+                flow.Respawn();
+            }
+            else
+            {
+                // Fallback extremo: o flow ainda nao nasceu. Revive no lugar para nao travar.
+                var bootstrap = GameBootstrap.Instance;
+                var playerManager = bootstrap != null ? bootstrap.PlayerManager : null;
+                if (playerManager != null)
+                {
+                    playerManager.SetHP(playerManager.MaxHP);
+                }
+                Debug.LogWarning("[DeathScreen] AnyaFountainRespawnFlow ausente; revivendo no lugar (anti-softlock).");
+            }
         }
 
         private void PushModal()
@@ -219,8 +325,16 @@ namespace CindarsHope.UI.Death
 
         private void SetupFocus()
         {
-            // Only the respawn action is selectable; the future slot is disabled.
-            _focus.SetElements(new[] { DeathScreenViewModel.RespawnActionId });
+            // Focus order: somente as acoes HABILITADAS sao selecionaveis. O revive so entra na
+            // ordem se houver Lagrima da Deusa; a Fonte esta sempre presente (anti-softlock).
+            var ids = new List<string>(2);
+            if (_viewModel != null && _viewModel.CanReviveWithTear)
+            {
+                ids.Add(DeathScreenViewModel.ReviveActionId);
+            }
+            ids.Add(DeathScreenViewModel.RespawnActionId);
+
+            _focus.SetElements(ids);
             RefreshFocusVisuals();
         }
 
@@ -240,9 +354,21 @@ namespace CindarsHope.UI.Death
             }
             else if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
             {
-                Dismiss();
+                ActivateFocusedAction();
             }
             // Esc intentionally does NOT close: death requires an explicit choice.
+        }
+
+        private void ActivateFocusedAction()
+        {
+            if (_focus.IsFocused(DeathScreenViewModel.ReviveActionId))
+            {
+                OnReviveWithTear();
+            }
+            else
+            {
+                OnRespawnAtFountain();
+            }
         }
 
         // ---- Canvas construction (programmatic — WI-23 fallback pattern) ----
@@ -254,14 +380,48 @@ namespace CindarsHope.UI.Death
                 BuildCanvas();
             }
 
+            if (_titleText != null)
+            {
+                _titleText.text = DeathScreenViewModel.DeathTitle;
+            }
+
             if (_bodyText != null)
             {
                 _bodyText.text = ComposeBodyText(_viewModel);
             }
 
+            // O canvas e construido uma vez e reusado: refaz o estado do botao de revive a cada show
+            // (a contagem de Lagrima da Deusa muda entre mortes).
+            RefreshReviveButton();
+
             if (_root != null)
             {
                 _root.SetActive(true);
+            }
+        }
+
+        private void RefreshReviveButton()
+        {
+            if (_viewModel == null) return;
+
+            bool canRevive = _viewModel.CanReviveWithTear;
+
+            if (_reviveLabel != null)
+            {
+                _reviveLabel.text = _viewModel.ReviveActionLabel;
+                _reviveLabel.color = canRevive ? Color.white : new Color(0.6f, 0.6f, 0.6f, 1f);
+            }
+
+            if (_reviveButton != null)
+            {
+                _reviveButton.interactable = canRevive;
+                var image = _reviveButton.GetComponent<Image>();
+                if (image != null)
+                {
+                    image.color = canRevive
+                        ? new Color(0.2f, 0.3f, 0.2f, 1f)
+                        : new Color(0.15f, 0.15f, 0.15f, 1f);
+                }
             }
         }
 
@@ -289,29 +449,47 @@ namespace CindarsHope.UI.Death
             panelImage.color = new Color(0f, 0f, 0f, 0.85f);
             StretchFull(panel.GetComponent<RectTransform>());
 
+            // Titulo "Voce Morreu" em destaque no topo.
+            var titleGo = CreateChild(panel.transform, "Title");
+            _titleText = titleGo.AddComponent<Text>();
+            _titleText.alignment = TextAnchor.MiddleCenter;
+            _titleText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            _titleText.fontSize = 48;
+            _titleText.fontStyle = FontStyle.Bold;
+            _titleText.color = new Color(0.85f, 0.2f, 0.2f, 1f);
+            _titleText.text = DeathScreenViewModel.DeathTitle;
+            var titleRect = titleGo.GetComponent<RectTransform>();
+            titleRect.anchorMin = new Vector2(0.1f, 0.74f);
+            titleRect.anchorMax = new Vector2(0.9f, 0.92f);
+            titleRect.offsetMin = Vector2.zero;
+            titleRect.offsetMax = Vector2.zero;
+
             var bodyGo = CreateChild(panel.transform, "Body");
             _bodyText = bodyGo.AddComponent<Text>();
             _bodyText.alignment = TextAnchor.MiddleCenter;
             _bodyText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             _bodyText.color = Color.white;
             var bodyRect = bodyGo.GetComponent<RectTransform>();
-            bodyRect.anchorMin = new Vector2(0.1f, 0.35f);
-            bodyRect.anchorMax = new Vector2(0.9f, 0.95f);
+            bodyRect.anchorMin = new Vector2(0.1f, 0.40f);
+            bodyRect.anchorMax = new Vector2(0.9f, 0.72f);
             bodyRect.offsetMin = Vector2.zero;
             bodyRect.offsetMax = Vector2.zero;
 
-            _respawnButton = CreateButton(panel.transform, "RespawnButton",
-                new Vector2(0.3f, 0.18f), new Vector2(0.7f, 0.26f),
-                "Renascer na Fonte de Anya", true, Dismiss);
+            // Botao 1: Usar Lagrima da Deusa (reviver aqui). Interatividade/label sao ajustados por
+            // RefreshReviveButton a cada show (dependem da contagem).
+            _reviveButton = CreateButton(panel.transform, "ReviveButton",
+                new Vector2(0.25f, 0.22f), new Vector2(0.75f, 0.32f),
+                "Usar Lagrima da Deusa (reviver aqui)", true, OnReviveWithTear, out _reviveLabel);
 
-            _futureButton = CreateButton(panel.transform, "FutureButton",
-                new Vector2(0.3f, 0.06f), new Vector2(0.7f, 0.14f),
-                "Recuperar no local (em breve)", false, null);
+            // Botao 2: Respawnar na Fonte da Anya (sempre habilitado).
+            _respawnButton = CreateButton(panel.transform, "RespawnButton",
+                new Vector2(0.25f, 0.08f), new Vector2(0.75f, 0.18f),
+                "Respawnar na Fonte da Anya", true, OnRespawnAtFountain, out _);
         }
 
         private Button CreateButton(
             Transform parent, string name, Vector2 anchorMin, Vector2 anchorMax,
-            string label, bool interactable, Action onClick)
+            string label, bool interactable, Action onClick, out Text labelText)
         {
             var go = CreateChild(parent, name);
             var image = go.AddComponent<Image>();
@@ -333,11 +511,11 @@ namespace CindarsHope.UI.Death
             }
 
             var textGo = CreateChild(go.transform, "Label");
-            var text = textGo.AddComponent<Text>();
-            text.alignment = TextAnchor.MiddleCenter;
-            text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            text.color = interactable ? Color.white : new Color(0.6f, 0.6f, 0.6f, 1f);
-            text.text = label;
+            labelText = textGo.AddComponent<Text>();
+            labelText.alignment = TextAnchor.MiddleCenter;
+            labelText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            labelText.color = interactable ? Color.white : new Color(0.6f, 0.6f, 0.6f, 1f);
+            labelText.text = label;
             StretchFull(textGo.GetComponent<RectTransform>());
 
             return button;
@@ -345,16 +523,34 @@ namespace CindarsHope.UI.Death
 
         private void RefreshFocusVisuals()
         {
-            if (_respawnButton == null) return;
-
-            bool respawnFocused = _focus.IsFocused(DeathScreenViewModel.RespawnActionId);
-            var image = _respawnButton.GetComponent<Image>();
-            if (image != null)
+            if (_respawnButton != null)
             {
-                image.color = respawnFocused
-                    ? new Color(0.35f, 0.35f, 0.5f, 1f)
-                    : new Color(0.2f, 0.2f, 0.3f, 1f);
+                bool respawnFocused = _focus.IsFocused(DeathScreenViewModel.RespawnActionId);
+                ApplyFocusColor(_respawnButton, respawnFocused, enabled: true);
             }
+
+            if (_reviveButton != null)
+            {
+                bool reviveFocused = _focus.IsFocused(DeathScreenViewModel.ReviveActionId);
+                bool reviveEnabled = _viewModel != null && _viewModel.CanReviveWithTear;
+                ApplyFocusColor(_reviveButton, reviveFocused && reviveEnabled, reviveEnabled);
+            }
+        }
+
+        private static void ApplyFocusColor(Button button, bool focused, bool enabled)
+        {
+            var image = button.GetComponent<Image>();
+            if (image == null) return;
+
+            if (!enabled)
+            {
+                image.color = new Color(0.15f, 0.15f, 0.15f, 1f);
+                return;
+            }
+
+            image.color = focused
+                ? new Color(0.35f, 0.35f, 0.5f, 1f)
+                : new Color(0.2f, 0.2f, 0.3f, 1f);
         }
 
         private static GameObject CreateChild(Transform parent, string name)

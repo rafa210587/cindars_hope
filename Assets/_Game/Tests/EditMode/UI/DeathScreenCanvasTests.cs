@@ -106,23 +106,63 @@ namespace CindarsHope.Tests.EditMode.UI
             Assert.IsFalse(string.IsNullOrEmpty(vm.Headline));
         }
 
-        // ---- Action contract (honest actions) ----
+        // ---- Action contract (revive com Lagrima da Deusa + respawn) ----
 
         [Test]
-        public void Actions_RespawnEnabled_FutureDisabled()
+        public void Actions_DefaultNoTear_ReviveDisabled_RespawnEnabled()
         {
             var vm = DeathScreenViewModel.ForOverworldDeath("FarmScene");
 
             Assert.AreEqual(2, vm.Actions.Count);
 
-            var respawn = vm.Actions[0];
-            Assert.AreEqual(DeathScreenViewModel.RespawnActionId, respawn.ActionId);
-            Assert.IsTrue(respawn.Enabled, "Respawn action must be enabled");
+            var revive = vm.Actions[0];
+            Assert.AreEqual(DeathScreenViewModel.ReviveActionId, revive.ActionId);
+            Assert.IsFalse(revive.Enabled, "Revive must be disabled when there is no goddess tear");
 
-            var future = vm.Actions[1];
-            Assert.AreEqual(DeathScreenViewModel.FutureActionId, future.ActionId);
-            Assert.IsFalse(future.Enabled, "Future slot must be disabled (honest label, no second lying button)");
-            Assert.IsFalse(string.IsNullOrEmpty(future.Label));
+            var respawn = vm.Actions[1];
+            Assert.AreEqual(DeathScreenViewModel.RespawnActionId, respawn.ActionId);
+            Assert.IsTrue(respawn.Enabled, "Respawn at the fountain is always enabled (anti-softlock)");
+        }
+
+        [Test]
+        public void WithGoddessTearCount_Positive_EnablesReviveAndShowsCount()
+        {
+            var vm = DeathScreenViewModel.ForOverworldDeath("FarmScene").WithGoddessTearCount(2);
+
+            Assert.IsTrue(vm.CanReviveWithTear);
+            Assert.AreEqual(2, vm.GoddessTearCount);
+            StringAssert.Contains("(2)", vm.ReviveActionLabel);
+
+            var revive = vm.Actions[0];
+            Assert.AreEqual(DeathScreenViewModel.ReviveActionId, revive.ActionId);
+            Assert.IsTrue(revive.Enabled, "Revive must be enabled when at least one goddess tear is present");
+            StringAssert.Contains("(2)", revive.Label);
+        }
+
+        [Test]
+        public void WithGoddessTearCount_Zero_KeepsReviveDisabled()
+        {
+            var vm = DeathScreenViewModel.ForCaveDeath(deathCaveLevel: 3, corpse: null, xpLost: 0)
+                .WithGoddessTearCount(0);
+
+            Assert.IsFalse(vm.CanReviveWithTear);
+            Assert.IsFalse(vm.Actions[0].Enabled);
+            Assert.IsTrue(vm.Actions[1].Enabled);
+        }
+
+        [Test]
+        public void WithGoddessTearCount_Negative_ClampedToZero()
+        {
+            var vm = DeathScreenViewModel.ForOverworldDeath("FarmScene").WithGoddessTearCount(-3);
+
+            Assert.AreEqual(0, vm.GoddessTearCount);
+            Assert.IsFalse(vm.CanReviveWithTear);
+        }
+
+        [Test]
+        public void DeathTitle_IsVoceMorreu()
+        {
+            Assert.AreEqual("Voce Morreu", DeathScreenViewModel.DeathTitle);
         }
 
         // ---- Body text composition ----
