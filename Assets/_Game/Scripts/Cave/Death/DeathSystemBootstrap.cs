@@ -128,6 +128,11 @@ namespace CindarsHope.Cave.Death
             if (_resolver.IsDeathInCave(evt.SceneName))
             {
                 Debug.Log($"[DeathSystemBootstrap] Player died in cave ({evt.SceneName}), resolving death...");
+
+                // O resolver e DontDestroyOnLoad e nasceu antes de qualquer run de caverna; pega a
+                // referencia VIVA do CaveRunManager agora (so existe durante um run de caverna).
+                _resolver.SetCaveRunManager(GameBootstrap.Instance?.CaveRunManager);
+
                 _resolver.ResolveCaveDeath(evt.SceneName);
 
                 if (_recoveryManager != null && _resolver.LastCreatedCorpse != null)

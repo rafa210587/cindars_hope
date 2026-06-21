@@ -16,7 +16,10 @@ namespace CindarsHope.Cave.Death
     public class CaveDeathResolver
     {
         private readonly CaveDeathPolicy _policy;
-        private readonly CaveRunManager _caveRunManager;
+        // NAO readonly: o resolver nasce uma unica vez (DontDestroyOnLoad) quando ainda nao ha run
+        // de caverna (CaveRunManager null fora da caverna). O dono atualiza a referencia viva no
+        // momento da morte via SetCaveRunManager — so entao um corpo de caverna faz sentido.
+        private CaveRunManager _caveRunManager;
         private readonly PlayerManager _playerManager;
         private readonly InventoryManager _inventoryManager;
         private readonly EquipmentManager _equipmentManager;
@@ -37,12 +40,22 @@ namespace CindarsHope.Cave.Death
             TimeManager timeManager = null)
         {
             _policy = policy ?? throw new ArgumentNullException(nameof(policy));
-            _caveRunManager = caveRunManager ?? throw new ArgumentNullException(nameof(caveRunManager));
+            // caveRunManager pode ser null no boot (fora da caverna). E resolvido ao vivo na morte.
+            _caveRunManager = caveRunManager;
             _playerManager = playerManager ?? throw new ArgumentNullException(nameof(playerManager));
             _inventoryManager = inventoryManager ?? throw new ArgumentNullException(nameof(inventoryManager));
             _equipmentManager = equipmentManager ?? throw new ArgumentNullException(nameof(equipmentManager));
             _progressionManager = progressionManager;
             _timeManager = timeManager;
+        }
+
+        /// <summary>
+        /// Atualiza a referencia viva do CaveRunManager (o resolver e DontDestroyOnLoad e nasce
+        /// antes de qualquer run de caverna existir). O dono chama isto no momento da morte.
+        /// </summary>
+        public void SetCaveRunManager(CaveRunManager caveRunManager)
+        {
+            _caveRunManager = caveRunManager;
         }
 
         public bool IsDeathInCave(string deathSceneName)
@@ -54,6 +67,17 @@ namespace CindarsHope.Cave.Death
         {
             if (!_policy.CreateCorpse)
             {
+                return;
+            }
+
+            // Sem run de caverna ativo nao ha como carimbar o corpo (seed/nivel/hash). Acontece se a
+            // morte for sinalizada como "na caverna" mas o CaveRunManager ainda nao existir. Sem corpo,
+            // mas a tela de morte e o respawn continuam funcionando.
+            if (_caveRunManager == null)
+            {
+                Debug.LogWarning(
+                    "[CaveDeathResolver] Morte na caverna sem CaveRunManager ativo; corpo nao criado " +
+                    $"(cena='{deathSceneName}').");
                 return;
             }
 
