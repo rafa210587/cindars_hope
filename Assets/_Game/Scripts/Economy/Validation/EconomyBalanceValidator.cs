@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using CindarsHope.Economy.Pricing;
 using CindarsHope.Loot;
+using CindarsHope.Economy;
 
 namespace CindarsHope.Economy.Validation
 {
@@ -20,18 +21,20 @@ namespace CindarsHope.Economy.Validation
     {
         public string Source { get; set; }
         public float EstimatedGoldPerHour { get; set; }
-        // Placeholder thresholds — final tuning deferred
-        public float MaxSafeGoldPerHour { get; set; } = 5000f;
+        public float MaxSafeGoldPerHour { get; set; } = 800f;
         public bool ExceedsMax => EstimatedGoldPerHour > MaxSafeGoldPerHour;
     }
 
     public class EconomyBalanceValidator
     {
         private readonly EconomyPricingService _pricing;
+        private readonly EconomyBalanceConfigSO _config;
 
-        public EconomyBalanceValidator(EconomyPricingService pricing)
+        public EconomyBalanceValidator(EconomyPricingService pricing,
+                                       EconomyBalanceConfigSO config = null)
         {
             _pricing = pricing;
+            _config  = config;
         }
 
         // 8.1 Buy/sell invariant: ShopSellToPlayer > ShopBuyFromPlayer
@@ -80,11 +83,12 @@ namespace CindarsHope.Economy.Validation
                 report.Warnings.Add($"LOOT_PITY_NEEDED: {tableId}/{entry.ItemId} progression-critical at {entry.DropChance:P0} — ensure pity or alternative exists");
         }
 
-        // 8.5 Gold/hour budget placeholder
+        // 8.5 Gold/hour budget — ceiling from EconomyBalanceConfigSO when available
         public void ValidateGoldHour(GoldHourBudget budget, EconomyValidationReport report)
         {
-            if (budget.ExceedsMax)
-                report.Warnings.Add($"GOLD_HOUR_BUDGET: {budget.Source} estimated={budget.EstimatedGoldPerHour:F0} exceeds placeholder max={budget.MaxSafeGoldPerHour:F0} — requires balance pass");
+            float ceiling = _config != null ? _config.MaxSafeGoldPerHour : budget.MaxSafeGoldPerHour;
+            if (budget.EstimatedGoldPerHour > ceiling)
+                report.Warnings.Add($"GOLD_HOUR_BUDGET: {budget.Source} estimated={budget.EstimatedGoldPerHour:F0} exceeds max={ceiling:F0}");
         }
 
         // 8.6 Reward: boss first-time reward must differ from repeat

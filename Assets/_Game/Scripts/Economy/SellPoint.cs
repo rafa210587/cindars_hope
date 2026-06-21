@@ -29,6 +29,7 @@ namespace CindarsHope.Economy
                 return;
             }
 
+            var balanceConfig = Resources.Load<EconomyBalanceConfigSO>("EconomyBalanceConfig");
             var snapshot = new List<KeyValuePair<string, int>>(_inventoryManager.Items);
             var totalGold = 0;
 
@@ -47,7 +48,9 @@ namespace CindarsHope.Economy
                     continue;
                 }
 
-                var itemValue = itemData.BaseValue * amount;
+                var unitPrice = ItemPriceResolver.ResolveSellingPrice(
+                    itemData.BaseValue, SellContext.Shipping, balanceConfig);
+                var itemValue = unitPrice * amount;
                 if (itemValue <= 0)
                 {
                     Debug.Log($"SellPoint skipped '{itemId}' x{amount} because it has no sale value.", this);
@@ -61,7 +64,7 @@ namespace CindarsHope.Economy
                 }
 
                 totalGold += itemValue;
-                Debug.Log($"Sold '{itemId}' x{amount} for {itemValue} gold.", this);
+                Debug.Log($"Sold '{itemId}' x{amount} @ {unitPrice}/unit for {itemValue} gold.", this);
             }
 
             if (totalGold <= 0)

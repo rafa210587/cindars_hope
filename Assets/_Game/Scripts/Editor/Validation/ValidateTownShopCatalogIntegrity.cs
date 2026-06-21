@@ -5,6 +5,8 @@ using CindarsHope.Economy;
 using UnityEditor;
 using UnityEngine;
 
+// ReSharper disable MemberCanBePrivate.Global
+
 namespace CindarsHope.Editor.Validation
 {
     /// <summary>
@@ -150,6 +152,80 @@ namespace CindarsHope.Editor.Validation
                         "Set either BaseValue on ItemDataSO or BuyPriceOverride on ShopDataSO.");
                 }
             }
+        }
+
+        /// <summary>
+        /// fable_76 T5 — Price range bounds check across all ShopDataSO assets.
+        /// Warns if effective price > 3x BaseValue; errors if effective price < 0.1x BaseValue.
+        /// Returns (warnings, errors) logged counts.
+        /// </summary>
+        [MenuItem("CindarsHope/Validate/Validate Shop Price Ranges")]
+        public static void RunPriceRanges()
+        {
+            var (warnings, errors) = ValidatePriceRanges();
+            if (errors == 0 && warnings == 0)
+                Debug.Log("ValidateShopPriceRanges PASS: all shop prices within canonical bounds.");
+            else
+                Debug.Log($"ValidateShopPriceRanges: {warnings} warning(s), {errors} error(s). See log above.");
+        }
+
+        public static (int warnings, int errors) ValidatePriceRanges()
+        {
+            var itemDatabase = AssetDatabase.LoadAssetAtPath<ItemDatabaseSO>(ItemDatabasePath);
+            if (itemDatabase == null)
+            {
+                Debug.LogError($"[ValidateShopPriceRanges] ItemDatabaseSO not found at '{ItemDatabasePath}'.");
+                return (0, 1);
+            }
+
+            var configGuids = AssetDatabase.FindAssets("t:EconomyBalanceConfigSO");
+            EconomyBalanceConfigSO config = null;
+            if (configGuids.Length > 0)
+                config = AssetDatabase.LoadAssetAtPath<EconomyBalanceConfigSO>(
+                    AssetDatabase.GUIDToAssetPath(configGuids[0]));
+
+            float maxMult = config != null ? config.ShopMaxPriceMultiplier : 3.0f;
+            float minMult = config != null ? config.ShopMinPriceMultiplier : 0.1f;
+
+            var allShops = LoadAllShops();
+            int warnings = 0, errors = 0;
+
+            foreach (var shop in allShops)
+            {
+                if (shop.Items == null) continue;
+                var shopLabel = string.IsNullOrWhiteSpace(shop.Id)
+                    ? AssetDatabase.GetAssetPath(shop) : shop.Id;
+
+                foreach (var entry in shop.Items)
+                {
+                    if (entry == null || string.IsNullOrWhiteSpace(entry.ItemId)) continue;
+                    if (!itemDatabase.TryGetById(entry.ItemId, out var itemData) || itemData == null) continue;
+                    if (itemData.BaseValue <= 0) continue;
+
+                    int effectivePrice = entry.BuyPriceOverride > 0
+                        ? entry.BuyPriceOverride
+                        : (int)(itemData.BaseValue * shop.BuyPriceMultiplier);
+
+                    if (effectivePrice <= 0) continue; // free item — design intent, skip
+
+                    if (effectivePrice > itemData.BaseValue * maxMult)
+                    {
+                        Debug.LogWarning(
+                            $"[ShopPriceRange] WARN — Shop '{shopLabel}' item '{entry.ItemId}' " +
+                            $"effectivePrice={effectivePrice} > {maxMult}x BaseValue={itemData.BaseValue}.");
+                        warnings++;
+                    }
+                    else if (effectivePrice < itemData.BaseValue * minMult)
+                    {
+                        Debug.LogError(
+                            $"[ShopPriceRange] ERROR — Shop '{shopLabel}' item '{entry.ItemId}' " +
+                            $"effectivePrice={effectivePrice} < {minMult}x BaseValue={itemData.BaseValue}.");
+                        errors++;
+                    }
+                }
+            }
+
+            return (warnings, errors);
         }
     }
 }
