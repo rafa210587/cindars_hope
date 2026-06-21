@@ -42,6 +42,12 @@ namespace CindarsHope.Cave.Runtime
         // (cave-stable-run / ADR-0005). Snapshot legado sem o campo = armadilhas re-derivadas Armed
         // (o plano determinístico garante composição/posições/IDs idênticos).
         [SerializeField] public List<CaveTrapSnapshotEntry> TrapStates = new();
+        // fable_38: células reveladas do fog-of-war do minimapa NESTE nível/run (aditivo; estado
+        // mutável — FORA do LayoutHash, mesmo padrão de OpenedChestIds/TrapStates). O fog vive
+        // EXCLUSIVAMENTE aqui (estado de nível do stable-run, ADR-0005): revisitar o nível na MESMA
+        // run mantém o revelado; nova run (troca de CaveRunSeed) gera snapshot novo = fog zerado.
+        // NÃO é save global. Snapshot legado sem o campo = caverna nasce escura (lista vazia).
+        [SerializeField] public List<Vector2Int> RevealedCells = new();
 
         int IVisitedLevelSnapshot.CaveLevel => CaveLevel;
         string IVisitedLevelSnapshot.SnapshotId => SnapshotId;
@@ -141,6 +147,36 @@ namespace CindarsHope.Cave.Runtime
         public bool IsChestOpened(string chestId)
         {
             return !string.IsNullOrWhiteSpace(chestId) && OpenedChestIds.Contains(chestId);
+        }
+
+        // fable_38: revela um lote de células do fog (idempotente). Retorna quantas células NOVAS
+        // foram adicionadas. Estado mutável FORA do LayoutHash; persiste intra-run no snapshot
+        // (revisita mantém revelado). Reset ocorre naturalmente: nova run = snapshot novo.
+        public int RevealCells(IEnumerable<Vector2Int> cells)
+        {
+            if (cells == null)
+            {
+                return 0;
+            }
+
+            var existing = new HashSet<Vector2Int>(RevealedCells);
+            int added = 0;
+            foreach (var cell in cells)
+            {
+                if (existing.Add(cell))
+                {
+                    RevealedCells.Add(cell);
+                    added++;
+                }
+            }
+
+            return added;
+        }
+
+        // fable_38: consulta se uma célula já foi revelada nesta run/nível (fog-of-war).
+        public bool IsCellRevealed(Vector2Int cell)
+        {
+            return RevealedCells.Contains(cell);
         }
 
         // fable_60: grava/atualiza o estado de UMA armadilha (idempotente por trapInstanceId). Estado
