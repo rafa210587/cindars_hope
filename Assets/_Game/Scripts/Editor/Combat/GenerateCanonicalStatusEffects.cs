@@ -102,8 +102,19 @@ namespace CindarsHope.EditorTools.Combat
             var database = AssetDatabase.LoadAssetAtPath<StatusEffectDatabaseSO>(DatabasePath);
             if (database == null)
             {
-                Debug.LogError($"[GenerateCanonicalStatusEffects] StatusEffectDatabase nao encontrado em {DatabasePath}.");
-                return;
+                // Self-healing: o asset pode existir em disco mas carregar como null quando o m_Script
+                // guard aponta para um guid placeholder que nao casa com StatusEffectDatabaseSO.cs.meta.
+                // Nesse caso, deletamos o asset quebrado e recriamos via API — o Unity atribui o guid
+                // CORRETO do script no CreateAsset, e o merge-por-id abaixo repopula as entradas.
+                if (AssetDatabase.LoadMainAssetAtPath(DatabasePath) != null || System.IO.File.Exists(DatabasePath))
+                {
+                    AssetDatabase.DeleteAsset(DatabasePath);
+                }
+
+                EnsureDatabaseFolder();
+                database = ScriptableObject.CreateInstance<StatusEffectDatabaseSO>();
+                AssetDatabase.CreateAsset(database, DatabasePath);
+                Debug.Log("[GenerateCanonicalStatusEffects] StatusEffectDatabase recriado (script guid estava quebrado).");
             }
 
             var serialized = new SerializedObject(database);
@@ -130,6 +141,19 @@ namespace CindarsHope.EditorTools.Combat
 
             serialized.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(database);
+        }
+
+        // Garante que Assets/_Game/Data/Combat existe antes de recriar o database asset.
+        private static void EnsureDatabaseFolder()
+        {
+            if (!AssetDatabase.IsValidFolder("Assets/_Game/Data"))
+            {
+                AssetDatabase.CreateFolder("Assets/_Game", "Data");
+            }
+            if (!AssetDatabase.IsValidFolder("Assets/_Game/Data/Combat"))
+            {
+                AssetDatabase.CreateFolder("Assets/_Game/Data", "Combat");
+            }
         }
     }
 }

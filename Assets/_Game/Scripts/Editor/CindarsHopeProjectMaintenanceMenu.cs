@@ -35,6 +35,7 @@ namespace CindarsHope.Editor
             "Assets/_Game/Data/Combat/EnemySizeProfileDatabase.asset",
         };
 
+        private const string ItemDatabaseAssetPath = "Assets/_Game/Data/Registries/ItemDatabase.asset";
         private const string CombatRegistryAssetPath = "Assets/_Game/Resources/CombatRuntimeDatabasesRegistry.asset";
         private const string CaveSceneAssetPath = "Assets/_Game/Scenes/CaveScene.unity";
         private const string FarmSceneAssetPath = "Assets/_Game/Scenes/FarmScene.unity";
@@ -175,6 +176,115 @@ namespace CindarsHope.Editor
                 }
             }
             Debug.Log($"ValidateRegistries: {total - problems}/{total} registries clean.");
+        }
+
+        // Reparo de Ids duplicados na ItemDatabase: assets legados com nome PT (Item_Cenoura.asset etc.)
+        // compartilham o mesmo Id dos canonicos (item_crop_carrot.asset etc.). A registry referencia AMBOS,
+        // o que faz o DataRegistry falhar com "Duplicate Id". Mantemos a entrada cujo nome de ARQUIVO == "{Id}.asset"
+        // (a canonica) e removemos a outra (a legada) APENAS da registry — o arquivo .asset legado NAO e deletado.
+        [MenuItem("CindarsHope/Validate/Remove Duplicate Item Ids", priority = 42)]
+        public static void RemoveDuplicateItemIds()
+        {
+            var database = AssetDatabase.LoadAssetAtPath<ScriptableObject>(ItemDatabaseAssetPath);
+            if (database == null)
+            {
+                Debug.LogError($"[Repair] ItemDatabase nao encontrado em {ItemDatabaseAssetPath}.");
+                return;
+            }
+
+            var serialized = new SerializedObject(database);
+            var items = serialized.FindProperty("_items");
+            if (items == null || !items.isArray)
+            {
+                Debug.LogError($"[Repair] Propriedade '_items' nao encontrada em {ItemDatabaseAssetPath}.");
+                return;
+            }
+
+            // Agrupa indices por Id; so trata Ids com mais de uma entrada.
+            var indicesById = new Dictionary<string, List<int>>();
+            for (int i = 0; i < items.arraySize; i++)
+            {
+                var reference = items.GetArrayElementAtIndex(i).objectReferenceValue;
+                if (reference == null) continue;
+                var idData = reference as IIdentifiedData;
+                if (idData == null || string.IsNullOrWhiteSpace(idData.Id)) continue;
+                if (!indicesById.TryGetValue(idData.Id, out var list))
+                {
+                    list = new List<int>();
+                    indicesById[idData.Id] = list;
+                }
+                list.Add(i);
+            }
+
+            // Coleta os indices a remover (a entrada NAO-canonica de cada Id duplicado).
+            var indicesToRemove = new List<int>();
+            var legacyPaths = new List<string>();
+            int duplicatesRemoved = 0;
+            foreach (var pair in indicesById)
+            {
+                if (pair.Value.Count < 2) continue;
+
+                string id = pair.Key;
+                string canonicalAssetName = $"{id}.asset";
+                int keepIndex = -1;
+                string canonicalPath = null;
+
+                // Prefere manter a entrada cujo nome de ARQUIVO == "{Id}.asset".
+                foreach (int idx in pair.Value)
+                {
+                    var reference = items.GetArrayElementAtIndex(idx).objectReferenceValue;
+                    var path = AssetDatabase.GetAssetPath(reference);
+                    if (!string.IsNullOrEmpty(path) && System.IO.Path.GetFileName(path) == canonicalAssetName)
+                    {
+                        keepIndex = idx;
+                        canonicalPath = path;
+                        break;
+                    }
+                }
+
+                // Fallback: se nenhum arquivo casa o padrao canonico, mantem a primeira entrada.
+                if (keepIndex < 0)
+                {
+                    keepIndex = pair.Value[0];
+                    canonicalPath = AssetDatabase.GetAssetPath(items.GetArrayElementAtIndex(keepIndex).objectReferenceValue);
+                }
+
+                foreach (int idx in pair.Value)
+                {
+                    if (idx == keepIndex) continue;
+                    var reference = items.GetArrayElementAtIndex(idx).objectReferenceValue;
+                    var legacyPath = AssetDatabase.GetAssetPath(reference);
+                    indicesToRemove.Add(idx);
+                    legacyPaths.Add(legacyPath);
+                    duplicatesRemoved++;
+                    Debug.Log($"[Repair] Removida entrada duplicada da registry: {legacyPath} (Id={id}; mantida a canonica {canonicalPath})");
+                }
+            }
+
+            if (duplicatesRemoved == 0)
+            {
+                Debug.Log("[Repair] ItemDatabase: nenhum Id duplicado encontrado. Nada a fazer.");
+                return;
+            }
+
+            // Remove de indice mais alto para mais baixo para nao invalidar os indices.
+            indicesToRemove.Sort();
+            for (int i = indicesToRemove.Count - 1; i >= 0; i--)
+            {
+                items.DeleteArrayElementAtIndex(indicesToRemove[i]);
+            }
+
+            serialized.ApplyModifiedProperties();
+            EditorUtility.SetDirty(database);
+            AssetDatabase.SaveAssets();
+
+            Debug.Log($"[Repair] ItemDatabase: {duplicatesRemoved} entrada(s) duplicada(s) removida(s) da registry.");
+            Debug.LogWarning("[Repair] Os arquivos .asset legados abaixo continuam em disco (NAO foram deletados). " +
+                             "Recomenda-se deleta-los manualmente no Project window do Editor:");
+            foreach (var path in legacyPaths)
+            {
+                Debug.LogWarning($"  - {path}");
+            }
         }
 
         [MenuItem("CindarsHope/Validate/Validate Cave Runtime", priority = 41)]

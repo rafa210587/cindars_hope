@@ -177,15 +177,21 @@ namespace CindarsHope.Editor.SceneCreation
                 $"  Footprint: {TownDistrictLayout.WidthTiles}x{TownDistrictLayout.HeightTiles} " +
                 $"(bounds +/-{TownDistrictLayout.HalfWidth}/+/-{TownDistrictLayout.HalfHeight})");
 
-            bool ok = npcActual == npcExpected && houseActual == houseExpected &&
+            // A invariante REAL do relayout e "nenhum elemento foi PERDIDO", nao "contagem identica":
+            // specs posteriores (F10 AddMainQuestGiver etc.) ADICIONAM NPCs (e os 3 anchors derivados por NPC),
+            // entao npcActual/anchorActual podem ser MAIORES que o baseline canonico sem ser regressao.
+            // Regressao = perda; por isso usamos >= para NPCs e anchors e mantemos igualdade estrita para
+            // houses/trees/stalls/spawns e os landmarks bool (que specs posteriores nao alteram).
+            bool ok = npcActual >= npcExpected && houseActual == houseExpected &&
                       treeActual == treeExpected && stallActual == shopExpected &&
-                      anchorActual == npcExpected * 3 &&
+                      anchorActual >= npcExpected * 3 &&
                       spawnActual == TownDistrictLayout.StableSpawnIds.Length &&
                       lakeFound && hallFound && muralFound && boardFound;
             if (!ok)
             {
-                Debug.LogError("[fable_40] RELAYOUT REGRESSION: element count before != after, " +
-                               "or a required new district/landmark is missing. See the audit above.");
+                Debug.LogError("[fable_40] RELAYOUT REGRESSION: um elemento foi PERDIDO no relayout " +
+                               "(contagem abaixo do baseline canonico), ou um district/landmark novo esta ausente. " +
+                               "See the audit above.");
             }
         }
 
