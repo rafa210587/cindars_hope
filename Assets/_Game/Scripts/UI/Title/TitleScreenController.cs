@@ -48,6 +48,10 @@ namespace CindarsHope.UI.Title
         {
             _resetService.ResetAll();
             LoadInitialScene();
+            // fable_63 — a intro narrativa ESCUTA este evento (a F56 segue dona do reset; sem
+            // caminho duplicado). Publicado depois do reset+load da cena inicial.
+            CindarsHope.Core.GameEventBus.Publish(
+                new CindarsHope.Core.Events.NewGameStartedEvent(_initialSceneName));
         }
 
         /// <summary>Continue: mesmo caminho de load da aba Sistema (CA-4). So habilitado com save.</summary>

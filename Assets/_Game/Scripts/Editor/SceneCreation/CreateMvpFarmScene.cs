@@ -84,6 +84,7 @@ namespace CindarsHope.Editor.SceneCreation
             var farmPlotRegistry = CreateFarmPlots(inventoryManager, bootstrap.GetComponent<StaminaManager>());
             CreateRainIrrigation(farmPlotRegistry);
             CreateFarmBed();
+            CreateBedLetter(); // fable_63: carta narrativa na cama (ponte para a main quest)
             CreateFonteAnya(bootstrap);
             var treeRegistry = CreateTrees(inventoryManager);
             var itemPickupRegistry = CreateItemPickups(inventoryManager);
@@ -1031,6 +1032,29 @@ namespace CindarsHope.Editor.SceneCreation
 
             bedObject.AddComponent<CindarsHope.World.BedInteractable>();
             EditorUtility.SetDirty(bedObject);
+        }
+
+        // fable_63: carta narrativa sobre a cama. Interactable padrao (LetterInteractable) que
+        // mostra o texto da carta ("Procure Corvus na cidade") e persiste o estado de leitura.
+        // Posicionada ao lado da cama (-5.0, -7.6) para nao sobrepor o trigger de dormir.
+        private static void CreateBedLetter()
+        {
+            var letterObject = new GameObject("BedLetter");
+            letterObject.transform.position = new Vector3(-4.1f, -7.6f, 0f);
+            letterObject.transform.localScale = new Vector3(0.45f, 0.45f, 1f);
+
+            var spriteRenderer = letterObject.AddComponent<SpriteRenderer>();
+            spriteRenderer.sprite = GetBuiltinSprite();
+            spriteRenderer.color = new Color(0.95f, 0.92f, 0.78f);
+            spriteRenderer.sortingOrder = 3;
+            TrySetSortingLayer(spriteRenderer, "Ground", spriteRenderer.sortingOrder);
+
+            var collider = letterObject.AddComponent<BoxCollider2D>();
+            collider.isTrigger = true;
+            collider.size = Vector2.one;
+
+            letterObject.AddComponent<CindarsHope.World.LetterInteractable>();
+            EditorUtility.SetDirty(letterObject);
         }
 
         // F15: liga a RainIrrigationIntegration (WAVE 02, antes órfã) ao registry real via runner.

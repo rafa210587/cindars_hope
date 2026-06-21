@@ -231,6 +231,10 @@ namespace CindarsHope.Quests.Runtime
 
             RegisterMainQuestAct1();
             RegisterMainQuestActs2To4();
+
+            // fable_63 — quest-ponte mq_act1_00 (auto-ofertada no 1o DayStarted). Registrada DEPOIS
+            // do Ato 1 para poder injetar-se como PrerequisiteQuestId da mq_act1_01.
+            RegisterMainQuestHook();
         }
 
         // ─── fable_10 — Main Quest Ato 1: "A Fonte do Esquecimento" (Fragmento da Agua) ──────
