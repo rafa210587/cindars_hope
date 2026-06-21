@@ -67,33 +67,61 @@ namespace CindarsHope.Audio
         private void OnEnable()
         {
             SubscribeAll();
-            // Música por CENA: a cena ativa define o ambiente-base (Fazenda/Cidade/Caverna);
-            // combate/boss/festival sobrepõem. Atualiza ao trocar de cena.
+            // Música por CENA: a cena de gameplay (Farm/Town/Cave) define o ambiente-base;
+            // combate/boss/festival sobrepõem. Cobrimos carga inicial, carga aditiva e troca
+            // de cena ativa — e o Update() garante o playback assim que o AudioManager existir.
+            SceneManager.sceneLoaded += OnSceneLoaded;
             SceneManager.activeSceneChanged += OnActiveSceneChanged;
-            ApplySceneAmbient(SceneManager.GetActiveScene().name);
+            DetectInitialSceneAmbient();
         }
 
         private void OnDisable()
         {
+            SceneManager.sceneLoaded -= OnSceneLoaded;
             SceneManager.activeSceneChanged -= OnActiveSceneChanged;
             UnsubscribeAll();
         }
 
-        private void OnActiveSceneChanged(Scene previous, Scene next)
+        private void Update()
         {
-            ApplySceneAmbient(next.name);
+            // Sincroniza a faixa ao estado resolvido TODA frame: a música começa assim que o
+            // AudioManager fica pronto (independe da ordem de bootstrap) e acompanha mudanças de
+            // cena/combate mesmo que algum evento tenha sido perdido. Barato (compara enum).
+            PushMusicStateIfChanged();
         }
 
-        /// <summary>Mapeia o nome da cena para o ambiente musical e empurra a troca se mudou.</summary>
-        private void ApplySceneAmbient(string sceneName)
+        private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
-            var ambient = MusicState.Calmo;
-            if (!string.IsNullOrEmpty(sceneName))
+            TryApplySceneAmbient(scene.name);
+        }
+
+        private void OnActiveSceneChanged(Scene previous, Scene next)
+        {
+            TryApplySceneAmbient(next.name);
+        }
+
+        /// <summary>Varre as cenas carregadas e aplica o ambiente da primeira de gameplay encontrada.</summary>
+        private void DetectInitialSceneAmbient()
+        {
+            for (int i = 0; i < SceneManager.sceneCount; i++)
             {
-                if (sceneName.Contains("Farm")) ambient = MusicState.Fazenda;
-                else if (sceneName.Contains("Town")) ambient = MusicState.Cidade;
-                else if (sceneName.Contains("Cave")) ambient = MusicState.Caverna;
+                TryApplySceneAmbient(SceneManager.GetSceneAt(i).name);
             }
+        }
+
+        /// <summary>Se o nome for de cena de gameplay, define o ambiente; senão NÃO mexe (mantém o atual).</summary>
+        private void TryApplySceneAmbient(string sceneName)
+        {
+            if (string.IsNullOrEmpty(sceneName))
+            {
+                return;
+            }
+
+            MusicState ambient;
+            if (sceneName.Contains("Farm")) ambient = MusicState.Fazenda;
+            else if (sceneName.Contains("Town")) ambient = MusicState.Cidade;
+            else if (sceneName.Contains("Cave")) ambient = MusicState.Caverna;
+            else return; // cena não-gameplay (bootstrap/persistente): mantém o ambiente atual
 
             _musicResolver.SetSceneAmbient(ambient);
             PushMusicStateIfChanged();
@@ -218,6 +246,15 @@ namespace CindarsHope.Audio
 
         private void PushMusicStateIfChanged()
         {
+            var manager = AudioManager.Instance;
+            if (manager == null)
+            {
+                // AudioManager ainda não existe (ordem de bootstrap): NÃO avança o tracker,
+                // para que o Update() tente de novo na próxima frame (a música começa quando
+                // o manager ficar pronto). Sem isto, a faixa nunca tocaria fora de combate.
+                return;
+            }
+
             var next = _musicResolver.CurrentState;
             if (next == _lastPublishedMusicState)
             {
@@ -230,7 +267,7 @@ namespace CindarsHope.Audio
             // Único evento próprio (EMENDA V3). Nenhum gameplay assina; o crossfade
             // nasce SOMENTE desta transição.
             GameEventBus.Publish(new MusicStateChangedEvent(previous, next));
-            AudioManager.Instance?.PlayMusic(next);
+            manager.PlayMusic(next);
         }
 
         /// <summary>Acesso somente leitura ao resolver (diagnóstico/teste).</summary>
