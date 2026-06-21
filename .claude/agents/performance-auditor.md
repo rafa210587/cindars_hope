@@ -60,3 +60,4 @@ Recommended next action: [skill object-pooling-pattern | targeted spec | accept 
 
 ## Skills a usar
 - `object-pooling-pattern` — template de correção recomendado para churn de spawn
+- `observability-and-logging` — quando log spam por frame for encontrado (one-shot guards)

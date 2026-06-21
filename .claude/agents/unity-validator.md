@@ -59,8 +59,9 @@ tools: Read, Glob, Grep, Bash
 
 ## Skills aplicáveis
 
-- **Unity Validation Skill** — workflow completo de validação
-- **Non-Regression Review** — auditoria de padrões (separada do compile)
+- `unity-validation` — workflow completo de validação
+- `unity-validation-triage` — classificar erros Unity/dotnet/log
+- `non-regression-review` — auditoria de padrões (separada do compile)
 
 ## Saída esperada
 

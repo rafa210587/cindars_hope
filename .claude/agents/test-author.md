@@ -1,6 +1,6 @@
 ---
 name: test-author
-description: Escreve EditMode tests para deterministic logic (save DTOs, combat formulas, economy pricing, quest conditions, calendar) seguindo as convenções existentes de 62 tests do projeto. Use quando o Testing Quality Gate exigir testes automatizados para uma spec ou bugfix.
+description: Escreve EditMode tests para deterministic logic (save DTOs, combat formulas, economy pricing, quest conditions, calendar) seguindo as convenções do projeto. Use quando o Testing Quality Gate exigir testes automatizados para uma spec ou bugfix.
 ---
 
 # Agent: Autor de Testes

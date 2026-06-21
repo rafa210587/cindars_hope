@@ -76,3 +76,6 @@ Inspector wiring required (human action in Unity Editor):
 ## Skills a usar
 - `bootstrap-wiring` — GameBootstrap field + property
 - `combat-data-wiring` — weapon/spell/status databases
+- `data-catalog-authoring` — criação de *DataSO em bulk com editor generators
+- `unity-asset-generation` — evidência de geração de assets (comando, log, exit code, contagem)
+- `editor-validator-authoring` — validators de integridade de conteúdo (IDs duplicados, refs pendentes)

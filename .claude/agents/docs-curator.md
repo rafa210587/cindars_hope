@@ -64,9 +64,8 @@ Manter a documentação organizada, precisa e eficiente em tokens. Faz cumprir a
 Sempre rodar depois de mudanças em docs:
 ```powershell
 .\tools\docs\validate_docs.ps1
+if ($LASTEXITCODE -ne 0) { exit 1 }
 ```
-
-Esperado: PASS 14/14
 
 ## Quando parar e reportar
 
@@ -82,3 +81,4 @@ Esperado: PASS 14/14
 
 ## Skills a usar
 - `docs-governance` — workflow completo
+- `docs-migration` — mover specs/refinements para implementados/ com evidência

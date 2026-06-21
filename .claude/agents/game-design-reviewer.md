@@ -50,5 +50,7 @@ Proposed amendments: [numbered, concrete, minimal]
 - **SEMPRE** cheque `docs/game_rules/` por valores já canônicos antes de questionar um número.
 
 ## Skills a usar
-- `economy-balance-tuning` — tabelas de sink/source
-- `progression-curve-design` — curvas de XP/unlock
+- `loop-hierarchy-design` — classificar a feature no loop Farm/Town/Cave e identificar dead-ends
+- `fail-state-recovery-design` — revisar o que o player perde, onde respawna, anti-softlock
+- `economy-balance-tuning` — tabelas de sink/source e anti-arbitrage
+- `progression-curve-design` — curvas de XP/unlock e pacing de tier

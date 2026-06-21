@@ -163,6 +163,9 @@ Delegate via `.claude/agents/`:
 | `architecture-reviewer` | Pre-wave architecture |
 | `bugfix-investigator` | Bug investigation |
 | `asset-wiring-specialist` | Unity data / prefab wiring |
+| `game-design-reviewer` | Design review de specs de gameplay antes da implementação (loops, economy, pacing, failure states) |
+| `performance-auditor` | Auditoria de C# runtime — allocations em Update, churn de Instantiate/Destroy, LINQ em hot paths |
+| `test-author` | Escreve EditMode tests para lógica determinística quando o Testing Quality Gate exige |
 
 ---
 
