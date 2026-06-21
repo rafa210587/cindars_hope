@@ -6,8 +6,8 @@ namespace CindarsHope.Core.Data
     public class GameTimeBalanceSO : ScriptableObject
     {
         [Header("Day/Night Durations (in minutes, real-world time)")]
-        [SerializeField] private float _dayDurationMinutes = 10f;
-        [SerializeField] private float _nightDurationMinutes = 5f;
+        [SerializeField] private float _dayDurationMinutes = 20f;
+        [SerializeField] private float _nightDurationMinutes = 10f;
 
         public float DayDurationMinutes => _dayDurationMinutes;
         public float NightDurationMinutes => _nightDurationMinutes;

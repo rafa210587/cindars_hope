@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace CindarsHope.Audio
 {
@@ -66,11 +67,36 @@ namespace CindarsHope.Audio
         private void OnEnable()
         {
             SubscribeAll();
+            // Música por CENA: a cena ativa define o ambiente-base (Fazenda/Cidade/Caverna);
+            // combate/boss/festival sobrepõem. Atualiza ao trocar de cena.
+            SceneManager.activeSceneChanged += OnActiveSceneChanged;
+            ApplySceneAmbient(SceneManager.GetActiveScene().name);
         }
 
         private void OnDisable()
         {
+            SceneManager.activeSceneChanged -= OnActiveSceneChanged;
             UnsubscribeAll();
+        }
+
+        private void OnActiveSceneChanged(Scene previous, Scene next)
+        {
+            ApplySceneAmbient(next.name);
+        }
+
+        /// <summary>Mapeia o nome da cena para o ambiente musical e empurra a troca se mudou.</summary>
+        private void ApplySceneAmbient(string sceneName)
+        {
+            var ambient = MusicState.Calmo;
+            if (!string.IsNullOrEmpty(sceneName))
+            {
+                if (sceneName.Contains("Farm")) ambient = MusicState.Fazenda;
+                else if (sceneName.Contains("Town")) ambient = MusicState.Cidade;
+                else if (sceneName.Contains("Cave")) ambient = MusicState.Caverna;
+            }
+
+            _musicResolver.SetSceneAmbient(ambient);
+            PushMusicStateIfChanged();
         }
 
         private void OnDestroy()

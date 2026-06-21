@@ -199,6 +199,12 @@ namespace CindarsHope.Audio
                 // festival = arpejo claro e gentil de 5 notas
                 case MusicState.Festival:
                     return new ProceduralSfxSpec(294f, 392f, 4.5f, WaveShape.Sine, 0.14f, 5);
+                case MusicState.Fazenda:
+                    return new ProceduralSfxSpec(196f, 294f, 5.0f, WaveShape.Sine, 0.13f, 3);
+                case MusicState.Cidade:
+                    return new ProceduralSfxSpec(294f, 440f, 4.0f, WaveShape.Sine, 0.13f, 4);
+                case MusicState.Caverna:
+                    return new ProceduralSfxSpec(165f, 220f, 7.0f, WaveShape.Sine, 0.12f, 3);
                 default:
                     return default;
             }
@@ -235,6 +241,21 @@ namespace CindarsHope.Audio
                     return new MusicPhrase(262f, 0.24f, 0.13f,
                         new[] { 0, 4, 7, 12, 16, 12, 7, 4, 9, 7, 4, 0 },
                         -12, 0.09f);
+                // fazenda = pastoral, Sol maior, gentil e morno (fazenda ensolarada)
+                case MusicState.Fazenda:
+                    return new MusicPhrase(196f, 0.50f, 0.13f,
+                        new[] { 0, 4, 7, 9, 7, 4, 0, 4, 7, 11, 7, 4 },
+                        -12, 0.10f);
+                // cidade = animado/folk, Ré maior, com bounce
+                case MusicState.Cidade:
+                    return new MusicPhrase(294f, 0.30f, 0.12f,
+                        new[] { 0, 4, 7, 4, 9, 7, 4, 2, 0, 7, 4, 0 },
+                        -12, 0.10f);
+                // caverna = misterioso e esparso, grave menor (exploração, NÃO boss)
+                case MusicState.Caverna:
+                    return new MusicPhrase(165f, 0.85f, 0.12f,
+                        new[] { 0, 3, 7, 10, 7, 3, 5, 3, 0, -2, 0, 3 },
+                        -12, 0.11f);
                 default:
                     return default;
             }
@@ -267,6 +288,9 @@ namespace CindarsHope.Audio
             yield return MusicState.Combate;
             yield return MusicState.Boss;
             yield return MusicState.Festival;
+            yield return MusicState.Fazenda;
+            yield return MusicState.Cidade;
+            yield return MusicState.Caverna;
         }
     }
 }

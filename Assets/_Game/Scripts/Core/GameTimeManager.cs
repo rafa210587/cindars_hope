@@ -21,8 +21,8 @@ namespace CindarsHope.Core
         private bool _isInitialized = false;
 
         // Fallback values if GameTimeBalanceSO not assigned
-        private const float DefaultDayDurationSeconds = 600f; // 10 min
-        private const float DefaultNightDurationSeconds = 300f; // 5 min
+        private const float DefaultDayDurationSeconds = 1200f; // 20 min
+        private const float DefaultNightDurationSeconds = 600f; // 10 min
 
         public GamePhaseChangedEvent.GamePhase CurrentPhase => _currentPhase;
         public float PhaseTimer => _phaseTimer;
@@ -95,7 +95,7 @@ namespace CindarsHope.Core
 
             if (_timeBalance == null)
             {
-                Debug.LogWarning("GameTimeManager: GameTimeBalanceSO not assigned. Using fallback defaults (10min day, 5min night).");
+                Debug.LogWarning("GameTimeManager: GameTimeBalanceSO not assigned. Using fallback defaults (20min day, 10min night).");
             }
 
             if (_timeManager == null)

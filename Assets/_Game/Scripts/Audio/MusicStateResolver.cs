@@ -20,6 +20,10 @@ namespace CindarsHope.Audio
         private int _engagedEnemies;
         private bool _bossActive;
         private bool _festivalActive;
+        private MusicState _sceneAmbient = MusicState.Calmo;
+
+        /// <summary>Estado-base por cena (Fazenda/Cidade/Caverna/Calmo) — usado quando não há combate/boss/festival.</summary>
+        public MusicState SceneAmbient => _sceneAmbient;
 
         /// <summary>Quantidade atual de inimigos engajados (nunca negativa).</summary>
         public int EngagedEnemies => _engagedEnemies;
@@ -28,12 +32,22 @@ namespace CindarsHope.Audio
         public bool FestivalActive => _festivalActive;
 
         /// <summary>Estado dominante atual segundo a prioridade canônica.</summary>
-        public MusicState CurrentState => Resolve(_engagedEnemies, _bossActive, _festivalActive);
+        public MusicState CurrentState => Resolve(_engagedEnemies, _bossActive, _festivalActive, _sceneAmbient);
 
         /// <summary>
-        /// Resolução pura de prioridade. Boss &gt; Combate &gt; Festival &gt; Calmo.
+        /// Resolução pura de prioridade. Boss &gt; Combate &gt; Festival &gt; ambiente de cena.
+        /// Overload legado (sem ambiente) assume Calmo.
         /// </summary>
         public static MusicState Resolve(int engagedEnemies, bool bossActive, bool festivalActive)
+        {
+            return Resolve(engagedEnemies, bossActive, festivalActive, MusicState.Calmo);
+        }
+
+        /// <summary>
+        /// Resolução pura de prioridade com ambiente de cena no piso:
+        /// Boss &gt; Combate &gt; Festival &gt; <paramref name="sceneAmbient"/>.
+        /// </summary>
+        public static MusicState Resolve(int engagedEnemies, bool bossActive, bool festivalActive, MusicState sceneAmbient)
         {
             if (bossActive)
             {
@@ -50,7 +64,14 @@ namespace CindarsHope.Audio
                 return MusicState.Festival;
             }
 
-            return MusicState.Calmo;
+            return sceneAmbient;
+        }
+
+        /// <summary>Define o ambiente de cena (piso de prioridade). Retorna o novo estado dominante.</summary>
+        public MusicState SetSceneAmbient(MusicState ambient)
+        {
+            _sceneAmbient = ambient;
+            return CurrentState;
         }
 
         /// <summary>Registra entrada de um inimigo em combate. Retorna o novo estado dominante.</summary>

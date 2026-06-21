@@ -18,7 +18,16 @@ namespace CindarsHope.Audio
         /// <summary>Luta de boss/miniboss ativa (vence Combate enquanto durar).</summary>
         Boss = 2,
 
-        /// <summary>Evento de festival ativo (vence Calmo; Boss/Combate sobrepõem).</summary>
-        Festival = 3
+        /// <summary>Evento de festival ativo (vence o ambiente; Boss/Combate sobrepõem).</summary>
+        Festival = 3,
+
+        /// <summary>Ambiente da FAZENDA (pastoral). Estado base quando na FarmScene fora de combate.</summary>
+        Fazenda = 4,
+
+        /// <summary>Ambiente da CIDADE (animado). Estado base quando na TownScene fora de combate.</summary>
+        Cidade = 5,
+
+        /// <summary>Ambiente da CAVERNA (misterioso). Estado base quando na CaveScene fora de combate.</summary>
+        Caverna = 6
     }
 }
