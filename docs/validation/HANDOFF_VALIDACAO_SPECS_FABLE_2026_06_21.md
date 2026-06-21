@@ -110,10 +110,10 @@ corrige a menor mudança possível → gate de build → commit por path → don
   `_isDead` quando HP volta > 0. Lógica pura testável em `PlayerDeathDecision.cs` (+ EditMode tests).
 - `Assets/_Game/Scripts/Cave/Death/DeathSystemBootstrap.cs` — self-bootstrap; cria o corpo na
   caverna; **NÃO** respawna mais sozinho (a escolha é do jogador via tela de morte).
-- `Assets/_Game/Scripts/Cave/Death/CaveDeathResolver.cs` — **acabou de ser corrigido** (`4de9fbf7`):
+- `Assets/_Game/Scripts/Cave/Death/CaveDeathResolver.cs` — corrigido (`4de9fbf7`):
   tolera `CaveRunManager` null fora da caverna; `SetCaveRunManager` pega a referência viva na
   morte; `ResolveCaveDeath` guarda contra run ausente. (Antes lançava `ArgumentNullException` no
-  boot e derrubava todo o sistema de morte.)
+  boot e derrubava todo o sistema de morte — bug reportado pelo dono no Play Mode.)
 - `Assets/_Game/Scripts/UI/Death/DeathScreenCanvasController.cs` + `DeathScreenViewModel.cs` —
   overlay "Voce Morreu" (sortingOrder 900, bg escuro), 2 botões: **Reviver com Lágrima da Deusa**
   (consome `item_goddess_tear`, SetHP(MaxHP)) e **Respawnar na Fonte da Anya** (cross-cena).
@@ -124,11 +124,23 @@ corrige a menor mudança possível → gate de build → commit por path → don
 - Item **Lágrima da Deusa** = `item_goddess_tear`; 2 no starter (pra testar). Reparado por
   `Assets/_Game/Scripts/Editor/Validation/RepairPlayerStartingItems.cs`.
 
-### Arco / flecha (`7b6a18d1`, fable_48)
+### Arco / flecha (`7b6a18d1` fable_48 + correções `6df510f9`, `7f6aa830`)
 - Flecha (`item_ammo_arrow_basic`) é equipável em LeftHand/RightHand; usar o arco consome flecha
   do inventário e lança o projétil (`ProjectileSpawnService`); 30 flechas no starter.
-- `Assets/_Game/Scripts/Combat/BowArrowAttackService.cs` (TryFire), `ArrowBallisticsResolver.cs`
-  (alias arrow_basic → wood), `RepairPlayerStartingItems.cs` (EnsureStartingArrows).
+- `Assets/_Game/Scripts/Combat/BowArrowAttackService.cs` (TryFire — exige arco na mão OPOSTA),
+  `ArrowBallisticsResolver.cs` (alias arrow_basic → wood), `RepairPlayerStartingItems.cs`
+  (EnsureStartingArrows + **EnsureStartingBow**).
+- **DOIS bugs achados no teste do dono e corrigidos:**
+  1. `6df510f9` — o starter tinha 30 flechas mas **nenhum arco**; sem arco na outra mão o disparo
+     sempre bloqueava em `ArrowRequiresBowInOtherHand`. Adicionado 1x `item_weapon_bow_wood` ao
+     starter (EnsureStartingBow, ligado em Inicializar + Reparar).
+  2. `7f6aa830` — o painel `Assets/_Game/Scripts/UI/InventoryPanelController.cs` só inferia slot
+     para Weapon/Tool/armor/accessory; **Ammo resolvia para None** → "Item não equipável". Agora
+     `ResolveEquipmentSlot`/`IsCompatibleWithEquipmentSlot` honram `AllowedEquipmentSlots` primeiro
+     + fallback por categoria Ammo (flecha → mão esquerda; aceita as duas mãos).
+- **Lição p/ a nova sessão:** sempre que o dono disser "X não funciona" num feature de item/equip,
+  cheque (a) se o item está no starter, (b) se o painel de inventário sabe resolver o slot daquela
+  categoria, (c) se é save novo. Os dados de inventário só materializam ao rodar o menu.
 
 ### Áudio / música (vários commits cc85cff0 → 6b686cff)
 - `Assets/_Game/Scripts/Audio/SfxEventBridge.cs` — driver de música por cena (Update faz poll de
