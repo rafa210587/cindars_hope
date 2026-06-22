@@ -103,6 +103,13 @@ namespace CindarsHope.Combat.Weapon
 
         public void Initialize(Vector2 direction, float speed, float range, int baseDamage, DamageType damageType, float knockbackForce)
         {
+            // Start() só roda no próximo frame; caminhos procedurais chamam Initialize no mesmo frame
+            // do AddComponent — cacheia aqui para garantir que velocity e collider estejam disponíveis.
+            if (_rigidbody == null)
+                _rigidbody = GetComponent<Rigidbody2D>();
+            if (_collider == null)
+                _collider = GetComponent<Collider2D>();
+
             _speed = speed;
             _range = range;
             _baseDamage = baseDamage;
