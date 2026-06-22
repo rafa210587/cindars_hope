@@ -54,6 +54,37 @@ namespace CindarsHope.Combat.Weapon
             return projectile;
         }
 
+        /// <summary>
+        /// Garante que um projetil tenha um SpriteRenderer com sprite VISIVEL. Prefabs autorados de
+        /// projetil (ex.: Projectile_Arrow) podem referenciar um sprite built-in que nao resolve em
+        /// runtime (m_WasSpriteAssigned: 0) — a flecha voa invisivel. Neste caso aplica o sprite
+        /// procedural (shaft p/ Arrow, circulo p/ magia), preservando o gameplay e a tint do prefab.
+        /// No-op se ja houver um sprite valido.
+        /// </summary>
+        public static void EnsureVisibleSprite(GameObject projectile, ProjectileVisualStyle style, DamageType damageType)
+        {
+            if (projectile == null) return;
+
+            var renderer = projectile.GetComponentInChildren<SpriteRenderer>();
+            if (renderer == null)
+            {
+                renderer = projectile.AddComponent<SpriteRenderer>();
+                renderer.sortingOrder = 5;
+            }
+
+            if (renderer.sprite != null) return; // ja visivel
+
+            var resolvedStyle = ResolveStyle(style, damageType);
+            bool isArrow = resolvedStyle == ProjectileVisualStyle.Arrow;
+            renderer.sprite = isArrow ? GetShaftSprite() : GetCircleSprite();
+
+            // Preserva a tint do prefab se houver; senao usa a tint procedural do estilo.
+            if (renderer.color.a <= 0f)
+            {
+                renderer.color = ResolveTint(resolvedStyle, damageType);
+            }
+        }
+
         private static ProjectileVisualStyle ResolveStyle(ProjectileVisualStyle style, DamageType damageType)
         {
             if (style != ProjectileVisualStyle.Auto)

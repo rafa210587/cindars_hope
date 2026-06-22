@@ -27,6 +27,9 @@ namespace CindarsHope.Combat.Weapon
             if (request.Prefab != null)
             {
                 projectile = Object.Instantiate(request.Prefab, spawnPos, Quaternion.identity);
+                // Prefabs autorados podem ter um sprite built-in placeholder que nao resolve em runtime
+                // (flecha invisivel). Garante um sprite visivel sem alterar o prefab no disco.
+                RuntimeProjectileFactory.EnsureVisibleSprite(projectile, request.VisualStyle, request.DamageType);
             }
             else
             {
