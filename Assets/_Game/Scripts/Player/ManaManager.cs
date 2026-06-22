@@ -8,8 +8,16 @@ namespace CindarsHope.Player
     [DisallowMultipleComponent]
     public class ManaManager : MonoBehaviour
     {
+        /// <summary>
+        /// Valor canonico da regeneracao base de mana (MP/s). Fonte unica: o field serializado usa
+        /// este default e o fixer de cena (ManaRegenSceneInitializer) aplica este mesmo valor as
+        /// instancias do ManaManager nas cenas. Bonus de skill (ManaRegenFlat) entram via
+        /// ExternalRegenBonus, somados a esta base.
+        /// </summary>
+        public const float DefaultManaRegenPerSecond = 2f;
+
         [SerializeField] private int _maxMana = 100;
-        [SerializeField] private float _manaRegenPerSecond = 5f;
+        [SerializeField] private float _manaRegenPerSecond = DefaultManaRegenPerSecond;
         [SerializeField] private ModalManager _modalManager;
 
         private int _currentMana;
