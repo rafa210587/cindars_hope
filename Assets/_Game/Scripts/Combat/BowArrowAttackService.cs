@@ -63,7 +63,12 @@ namespace CindarsHope.Combat
 
             if (bowWeapon == null || bowWeapon.Type != WeaponType.Bow)
             {
-                CombatLog.Log($"CombatLog: PlayerAttackBlocked. Reason=ArrowRequiresBowInOtherHand, AmmoSlot={ammoSlot}, BowSlot={bowSlot}");
+                Debug.LogWarning($"CombatLog: PlayerAttackBlocked. Reason=ArrowRequiresBowInOtherHand. " +
+                    $"AmmoSlot={ammoSlot}, BowSlot={bowSlot}, " +
+                    $"BowItemId={bowItemId ?? "<null>"}, " +
+                    $"BowWeaponId={bowItemData?.WeaponId ?? "<null>"}, " +
+                    $"BowWeaponResolved={bowWeapon != null}, " +
+                    $"BowWeaponType={(bowWeapon != null ? bowWeapon.Type.ToString() : "N/A")}");
                 return AttackResult.CreateError("ArrowRequiresBowInOtherHand");
             }
 

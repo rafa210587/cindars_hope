@@ -1220,10 +1220,7 @@ namespace CindarsHope.Save
             if (_inventoryManager != null)
             {
                 _inventoryManager.RestoreFromSaveData(saveData.Inventory);
-                if (ShouldRepairStarterInventoryAfterRestore(saveData.Inventory))
-                {
-                    _inventoryManager.EnsureStarterItemsPresent(_playerData, _itemDatabase, "RepairMissingItems");
-                }
+                _inventoryManager.EnsureStarterItemsPresent(_playerData, _itemDatabase, "RepairMissingItems");
             }
             else
             {
