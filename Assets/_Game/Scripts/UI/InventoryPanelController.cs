@@ -427,9 +427,12 @@ namespace CindarsHope.UI
                 return;
             }
 
-            const int columns = 6;
+            // 5 colunas (botoes mais largos) com fonte menor + wordWrap para os nomes caberem/lerem.
+            const int columns = 5;
             var capacity = GetCapacity();
-            for (var row = 0; row < 5; row++)
+            var rows = Mathf.CeilToInt(capacity / (float)columns);
+            var slotStyle = GetSlotButtonStyle();
+            for (var row = 0; row < rows; row++)
             {
                 GUILayout.BeginHorizontal();
                 for (var column = 0; column < columns; column++)
@@ -441,7 +444,7 @@ namespace CindarsHope.UI
                     }
 
                     _inventoryManager.TryGetSlot(slotIndex, out var slot);
-                    var label = FormatSlotLabel(slotIndex, slot);
+                    var label = FormatSlotLabel(slot);
                     var previousColor = GUI.color;
                     var previousEnabled = GUI.enabled;
                     var selectable = _mode != PanelMode.EquipmentSelection || IsCompatibleSlot(slotIndex, _targetEquipmentSlot);
@@ -451,7 +454,7 @@ namespace CindarsHope.UI
                     }
 
                     GUI.enabled = selectable;
-                    if (GUILayout.Button(label, GUILayout.Width(92f), GUILayout.Height(44f)))
+                    if (GUILayout.Button(label, slotStyle, GUILayout.Width(112f), GUILayout.Height(52f)))
                     {
                         _selectedSlotIndex = slotIndex;
                         if (_mode == PanelMode.EquipmentSelection)
@@ -798,14 +801,35 @@ namespace CindarsHope.UI
             return false;
         }
 
-        private string FormatSlotLabel(int slotIndex, InventorySlot slot)
+        private string FormatSlotLabel(InventorySlot slot)
         {
             if (slot == null || slot.IsEmpty)
             {
-                return $"{slotIndex + 1}\n-";
+                return "-";
             }
 
-            return $"{slotIndex + 1}\n{ResolveDisplayName(slot.ItemId)}\nx{slot.Amount}";
+            // Nome legivel (wordWrap no estilo cuida de quebrar) + quantidade em linha propria.
+            return $"{ResolveDisplayName(slot.ItemId)}\nx{slot.Amount}";
+        }
+
+        // Estilo dos botoes de slot: fonte menor + wordWrap para nomes longos caberem e serem
+        // legiveis (sem cortar "Espada de Ferro" / "Crystal Berry Seed"). Cacheado; construido
+        // dentro do OnGUI (GUI.skin so e valido durante OnGUI).
+        private GUIStyle _slotButtonStyle;
+        private GUIStyle GetSlotButtonStyle()
+        {
+            if (_slotButtonStyle == null)
+            {
+                _slotButtonStyle = new GUIStyle(GUI.skin.button)
+                {
+                    wordWrap = true,
+                    fontSize = 10,
+                    alignment = TextAnchor.MiddleCenter,
+                    padding = new RectOffset(3, 3, 2, 2)
+                };
+            }
+
+            return _slotButtonStyle;
         }
 
         // Nome legivel do item (DisplayName do ItemDataSO) em vez do Id "tipo variavel". Fallback ao
