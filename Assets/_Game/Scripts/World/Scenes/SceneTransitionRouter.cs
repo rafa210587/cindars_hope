@@ -29,6 +29,27 @@ namespace CindarsHope.World.Scenes
     {
         private static bool _transitionInProgress;
 
+        // O guard precisa SEMPRE ser liberado quando a cena destino carrega. Antes so o
+        // PlayerSpawnResolver/SceneSpawnInstaller (Farm/Town) chamavam ClearTransitionGuard; a
+        // CaveScene usa spawn proprio e nunca limpava, deixando o guard preso 'true' -> toda
+        // transicao seguinte falhava com "A transition is already in progress". Este hook estatico
+        // (registrado no boot) zera o guard a cada carga de cena Single, valendo para qualquer destino.
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void InstallGuardReset()
+        {
+            _transitionInProgress = false; // reset defensivo (enter-playmode sem domain reload)
+            SceneManager.sceneLoaded -= OnSceneLoadedClearGuard;
+            SceneManager.sceneLoaded += OnSceneLoadedClearGuard;
+        }
+
+        private static void OnSceneLoadedClearGuard(Scene scene, LoadSceneMode mode)
+        {
+            if (mode == LoadSceneMode.Single)
+            {
+                _transitionInProgress = false;
+            }
+        }
+
         /// <summary>
         /// Execute a scene transition from a SceneTransitionRequest.
         /// Returns a SceneTransitionResult indicating success or failure reason.
@@ -76,9 +97,9 @@ namespace CindarsHope.World.Scenes
 
             LoadScene(destinationSceneName);
 
-            // Note: _transitionInProgress is intentionally not reset here.
-            // The scene will be destroyed/reloaded before any further calls
-            // can happen in the new scene context.
+            // _transitionInProgress NAO e resetado aqui de proposito: o guard debounce dura ate a
+            // cena destino terminar de carregar. O reset acontece em OnSceneLoadedClearGuard (todo
+            // destino) e tambem em ClearTransitionGuard (Farm/Town, um pouco antes, no spawn).
             return SceneTransitionResult.Success;
         }
 
