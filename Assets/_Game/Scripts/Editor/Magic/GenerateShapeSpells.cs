@@ -147,6 +147,9 @@ namespace CindarsHope.EditorTools.Magic
             int normalizedStatus = NormalizeSpellStatusEffectIds();
             Debug.Log($"[GenerateShapeSpells] StatusEffectId pendentes repontados para o canonico: {normalizedStatus}.");
 
+            // Liga a Fire Wand a sua magia (bolinha de fogo que persegue + Burn).
+            WireFireWand();
+
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             Debug.Log($"[GenerateShapeSpells] Spells criadas={created}, atualizadas={updated}, registradas no SpellDatabase={registeredSpells}; pergaminhos registrados no ItemDatabase={registeredItems}.");
@@ -223,6 +226,54 @@ namespace CindarsHope.EditorTools.Magic
                     MakeScroll = false
                 }
             };
+        }
+
+        // Caminhos da Fire Wand e da sua magia.
+        private const string FireWandItemPath = "Assets/_Game/Data/Items/item_weapon_wand_fire.asset";
+        private const string FireballSpellPath = "Assets/_Game/Data/Combat/Spells/spell_fireball.asset";
+        private const string FireWandSpellId = "spell_fireball";
+
+        /// <summary>
+        /// Configura a magia da Fire Wand: bolinha de fogo (Bolt, Fire) que PERSEGUE o inimigo mais
+        /// proximo ate 7 tiles (AutoTarget -> homing no runtime) e causa Burn; e liga o item
+        /// item_weapon_wand_fire a essa magia (SpellId). Via SerializedObject/SetDirty (sem YAML manual).
+        /// </summary>
+        public static void WireFireWand()
+        {
+            var spell = AssetDatabase.LoadAssetAtPath<SpellDataSO>(FireballSpellPath);
+            if (spell != null)
+            {
+                spell.DamageType = DamageType.Fire;
+                spell.Shape = SpellShape.Bolt;
+                spell.AutoTarget = true;   // habilita perseguicao (homing ate o alcance) no runtime
+                spell.Range = 7f;          // 7 tiles
+                spell.StatusEffectId = "status_burn";
+                if (spell.StatusApplyChance < 0.5f)
+                {
+                    spell.StatusApplyChance = 0.5f;
+                }
+                EditorUtility.SetDirty(spell);
+                Debug.Log("[GenerateShapeSpells] spell_fireball configurado: Fire/Bolt/AutoTarget, Range 7, Burn.");
+            }
+            else
+            {
+                Debug.LogWarning($"[GenerateShapeSpells] {FireballSpellPath} nao encontrado; magia da Fire Wand nao configurada.");
+            }
+
+            var wand = AssetDatabase.LoadAssetAtPath<ItemDataSO>(FireWandItemPath);
+            if (wand != null)
+            {
+                if (wand.SpellId != FireWandSpellId)
+                {
+                    wand.SpellId = FireWandSpellId;
+                    EditorUtility.SetDirty(wand);
+                    Debug.Log($"[GenerateShapeSpells] Fire Wand ({wand.Id}) ligada a {FireWandSpellId}.");
+                }
+            }
+            else
+            {
+                Debug.LogWarning($"[GenerateShapeSpells] {FireWandItemPath} nao encontrado; SpellId da Fire Wand nao ligado.");
+            }
         }
 
         private static List<ItemDataSO> GenerateScrolls(IEnumerable<ShapeSpellSpec> specs)

@@ -42,6 +42,12 @@ namespace CindarsHope.Combat.Weapon
         private bool _hasCircleCollider;
         private float _baseCircleRadius;
 
+        // Homing: persegue o inimigo mais proximo dentro de _homingRange, curvando a velocidade a uma
+        // taxa fixa. 0 = sem perseguicao. Usa OverlapCircleNonAlloc (sem busca global, sem alocacao).
+        private const float HomingTurnRateDegPerSec = 360f;
+        private float _homingRange;
+        private static readonly Collider2D[] s_homingBuffer = new Collider2D[16];
+
         private void Start()
         {
             if (_rigidbody == null)
@@ -66,7 +72,18 @@ namespace CindarsHope.Combat.Weapon
         // e compensado para o acerto fisico permanecer constante mesmo com o sprite menor.
         private void FixedUpdate()
         {
-            if (_rigidbody == null || _initialSpeed <= 0f || _speedDecayToFraction >= 1f)
+            if (_rigidbody == null)
+            {
+                return;
+            }
+
+            // Homing: curva a velocidade em direcao ao inimigo mais proximo dentro do alcance.
+            if (_homingRange > 0f)
+            {
+                ApplyHoming();
+            }
+
+            if (_initialSpeed <= 0f || _speedDecayToFraction >= 1f)
             {
                 return;
             }
@@ -85,6 +102,69 @@ namespace CindarsHope.Combat.Weapon
             {
                 circle.radius = _baseCircleRadius / visualFactor;
             }
+        }
+
+        // Curva a velocidade em direcao ao inimigo mais proximo dentro de _homingRange, preservando a
+        // velocidade atual. Sem alvo no alcance, segue reto. Tambem gira o sprite para a direcao.
+        private void ApplyHoming()
+        {
+            var target = FindNearestEnemy(_rigidbody.position, _homingRange);
+            if (target == null)
+            {
+                return;
+            }
+
+            Vector2 toTarget = ((Vector2)target.position - _rigidbody.position);
+            if (toTarget.sqrMagnitude < 0.0001f)
+            {
+                return;
+            }
+
+            float maxRadians = HomingTurnRateDegPerSec * Mathf.Deg2Rad * Time.fixedDeltaTime;
+            Vector3 newDir = Vector3.RotateTowards((Vector3)_direction, (Vector3)toTarget.normalized, maxRadians, 0f);
+            _direction = ((Vector2)newDir).normalized;
+
+            float speed = _rigidbody.linearVelocity.magnitude;
+            if (speed < 0.01f)
+            {
+                speed = _initialSpeed;
+            }
+            _rigidbody.linearVelocity = _direction * speed;
+
+            float angle = Mathf.Atan2(_direction.y, _direction.x) * Mathf.Rad2Deg;
+            transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+        }
+
+        // Inimigo vivo mais proximo do centro dentro do raio. OverlapCircleNonAlloc + buffer estatico
+        // (sem busca global, sem alocacao por frame). Sobe ate o EnemyHealth (collider pode ser filho).
+        private static Transform FindNearestEnemy(Vector2 center, float radius)
+        {
+            int count = Physics2D.OverlapCircleNonAlloc(center, radius, s_homingBuffer);
+            Transform best = null;
+            float bestSq = float.MaxValue;
+            for (int i = 0; i < count; i++)
+            {
+                var col = s_homingBuffer[i];
+                if (col == null)
+                {
+                    continue;
+                }
+
+                var enemy = col.GetComponentInParent<EnemyHealth>() ?? col.GetComponent<EnemyHealth>();
+                if (enemy == null || enemy.IsDead)
+                {
+                    continue;
+                }
+
+                float sq = ((Vector2)enemy.transform.position - center).sqrMagnitude;
+                if (sq < bestSq)
+                {
+                    bestSq = sq;
+                    best = enemy.transform;
+                }
+            }
+
+            return best;
         }
 
         private void OnTriggerEnter2D(Collider2D collision)
@@ -141,7 +221,7 @@ namespace CindarsHope.Combat.Weapon
             }
         }
 
-        public void Initialize(Vector2 direction, float speed, float range, int baseDamage, DamageType damageType, float knockbackForce, float speedDecayToFraction = 1f)
+        public void Initialize(Vector2 direction, float speed, float range, int baseDamage, DamageType damageType, float knockbackForce, float speedDecayToFraction = 1f, float homingRange = 0f)
         {
             // Start() só roda no próximo frame; caminhos procedurais chamam Initialize no mesmo frame
             // do AddComponent — cacheia aqui para garantir que velocity e collider estejam disponíveis.
@@ -160,6 +240,7 @@ namespace CindarsHope.Combat.Weapon
             _direction = direction.normalized;
             _initialSpeed = speed;
             _speedDecayToFraction = speedDecayToFraction <= 0f ? 1f : Mathf.Clamp01(speedDecayToFraction);
+            _homingRange = Mathf.Max(0f, homingRange);
 
             // Base do encolhimento visual: escala atual (definida pela factory/EnsureVisibleSprite) e o
             // raio do collider, para compensar a colisao quando a escala visual diminuir.
@@ -179,11 +260,11 @@ namespace CindarsHope.Combat.Weapon
             transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
         }
 
-        public void InitializeWithStatus(Vector2 direction, float speed, float range, int baseDamage, DamageType damageType, float knockbackForce, CindarsHope.Combat.StatusEffect.StatusEffectSO statusEffect, float statusApplyChance, float speedDecayToFraction = 1f)
+        public void InitializeWithStatus(Vector2 direction, float speed, float range, int baseDamage, DamageType damageType, float knockbackForce, CindarsHope.Combat.StatusEffect.StatusEffectSO statusEffect, float statusApplyChance, float speedDecayToFraction = 1f, float homingRange = 0f)
         {
             _statusEffect = statusEffect;
             _statusApplyChance = statusApplyChance;
-            Initialize(direction, speed, range, baseDamage, damageType, knockbackForce, speedDecayToFraction);
+            Initialize(direction, speed, range, baseDamage, damageType, knockbackForce, speedDecayToFraction, homingRange);
         }
     }
 }

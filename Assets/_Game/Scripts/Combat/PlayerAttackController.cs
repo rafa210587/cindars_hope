@@ -422,6 +422,18 @@ namespace CindarsHope.Combat
                 return;
             }
 
+            // Wand (Weapon category) com SpellId: conjura a magia da varinha (ex.: Fire Wand ->
+            // spell_fireball, bolinha de fogo que persegue). Sem isto a wand so daria um golpe melee.
+            if (itemData != null && itemData.Category == ItemCategory.Weapon && !string.IsNullOrEmpty(itemData.SpellId))
+            {
+                var wandCheck = LookupWeapon(itemData.WeaponId);
+                if (wandCheck != null && wandCheck.Type == WeaponType.Wand)
+                {
+                    TryExecuteSpellAttack(slot, itemData, ref lastAttackTime);
+                    return;
+                }
+            }
+
             // Weapon (Bow) dispatch: block — bow fires only from the arrow-hand side.
             if (itemData != null && itemData.Category == ItemCategory.Weapon && !string.IsNullOrEmpty(itemData.WeaponId))
             {

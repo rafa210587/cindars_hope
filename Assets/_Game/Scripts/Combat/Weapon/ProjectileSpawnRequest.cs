@@ -44,6 +44,13 @@ namespace CindarsHope.Combat.Weapon
         /// </summary>
         public float SpeedDecayToFraction { get; set; } = 1f;
 
+        /// <summary>
+        /// Alcance (em unidades/tiles) dentro do qual o projetil PERSEGUE o inimigo mais proximo
+        /// (homing). 0 = sem perseguicao (default, flechas/legado). A magia da Fire Wand usa &gt; 0
+        /// (bolinha de fogo que segue o oponente mais proximo ate N tiles).
+        /// </summary>
+        public float HomingRange { get; set; } = 0f;
+
         public ProjectileSpawnRequest()
         {
         }

@@ -262,6 +262,12 @@ namespace CindarsHope.Combat
                 statusApplyChance: spell.StatusApplyChance
             );
             spawnRequest.VisualStyle = ProjectileVisualStyle.MagicBolt;
+            // Bolt com AutoTarget = projetil que PERSEGUE o inimigo mais proximo ate o alcance da magia
+            // (ex.: Fire Wand -> bolinha de fogo que segue o oponente ate 7 tiles). Sem AutoTarget = reto.
+            if (spell.AutoTarget)
+            {
+                spawnRequest.HomingRange = spell.Range;
+            }
 
             var spawnResult = ProjectileSpawnService.SpawnProjectile(spawnRequest);
             if (!spawnResult.Success)
