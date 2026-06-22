@@ -72,17 +72,63 @@ namespace CindarsHope.Combat.Weapon
                 renderer.sortingOrder = 5;
             }
 
-            if (renderer.sprite != null) return; // ja visivel
+            // Sprite nulo OU built-in placeholder (ex.: Projectile_Arrow referencia um sprite built-in
+            // que nao renderiza em runtime) => substitui pelo procedural. Sprite real importado fica.
+            bool usable = renderer.sprite != null && !IsBuiltinPlaceholder(renderer.sprite);
+            if (usable) return;
 
             var resolvedStyle = ResolveStyle(style, damageType);
             bool isArrow = resolvedStyle == ProjectileVisualStyle.Arrow;
             renderer.sprite = isArrow ? GetShaftSprite() : GetCircleSprite();
 
-            // Preserva a tint do prefab se houver; senao usa a tint procedural do estilo.
+            // Material valido (Sprites-Default) — built-in placeholder pode nao ter material renderavel.
+            if (renderer.sharedMaterial == null)
+            {
+                renderer.sharedMaterial = GetTrailMaterial();
+            }
+
+            // Tint legivel (preserva a do prefab se ja for opaca).
             if (renderer.color.a <= 0f)
             {
                 renderer.color = ResolveTint(resolvedStyle, damageType);
             }
+
+            // Escala que faz a flecha LER como um shaft (o prefab placeholder vem em 0.2x0.2 = ponto).
+            if (isArrow)
+            {
+                projectile.transform.localScale = new Vector3(0.55f, 0.12f, 1f);
+            }
+            else if (projectile.transform.localScale == Vector3.zero)
+            {
+                projectile.transform.localScale = Vector3.one * 0.32f;
+            }
+
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            if (!s_repairLogged)
+            {
+                s_repairLogged = true;
+                Debug.Log($"CombatLog: ProjectileSpriteRepaired. Style={resolvedStyle}, DamageType={damageType}, " +
+                          $"AppliedProceduralSprite=True (prefab sprite era nulo/placeholder).");
+            }
+#endif
+        }
+
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        private static bool s_repairLogged;
+#endif
+
+        // Built-in/placeholder = sem textura ou textura built-in (UnityWhite/etc.). Esses nao renderam
+        // como sprite de projetil em runtime; tratamos como ausentes para forcar o visual procedural.
+        private static bool IsBuiltinPlaceholder(Sprite sprite)
+        {
+            var tex = sprite.texture;
+            if (tex == null)
+            {
+                return true;
+            }
+
+            string n = tex.name;
+            return string.IsNullOrEmpty(n) || n.StartsWith("Unity");
         }
 
         private static ProjectileVisualStyle ResolveStyle(ProjectileVisualStyle style, DamageType damageType)
@@ -163,6 +209,7 @@ namespace CindarsHope.Combat.Weapon
         {
             var texture = new Texture2D(size, size, TextureFormat.RGBA32, false);
             texture.hideFlags = HideFlags.HideAndDontSave;
+            texture.name = "ProceduralProjectileCircle";
             float center = (size - 1) * 0.5f;
             float radius = size * 0.5f;
             for (int y = 0; y < size; y++)
@@ -184,6 +231,7 @@ namespace CindarsHope.Combat.Weapon
         {
             var texture = new Texture2D(width, height, TextureFormat.RGBA32, false);
             texture.hideFlags = HideFlags.HideAndDontSave;
+            texture.name = "ProceduralProjectileShaft";
             var pixels = new Color[width * height];
             for (int i = 0; i < pixels.Length; i++)
             {
