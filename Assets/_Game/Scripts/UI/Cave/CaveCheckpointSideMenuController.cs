@@ -75,6 +75,7 @@ namespace CindarsHope.UI.Cave
         {
             if (!_isOpen) return;
 
+            MenuGuiStyle.Apply();
             var width = 280f;
             var height = Mathf.Max(160f, 60f + _checkpoints.Count * 28f);
             var rect = new Rect(

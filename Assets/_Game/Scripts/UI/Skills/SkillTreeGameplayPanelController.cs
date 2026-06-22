@@ -267,6 +267,7 @@ namespace CindarsHope.UI.Skills
                 return;
             }
 
+            MenuGuiStyle.Apply();
             var manager = GameBootstrap.Instance?.SkillTreeManager;
             var progression = GameBootstrap.Instance?.PlayerProgressionManager;
             manager?.RebindProgressionManager(progression);

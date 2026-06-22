@@ -183,6 +183,7 @@ namespace CindarsHope.UI.Character
                 return;
             }
 
+            MenuGuiStyle.Apply();
             var rect = new Rect((Screen.width - 520f) * 0.5f, (Screen.height - 500f) * 0.5f, 520f, 500f);
             GUILayout.BeginArea(rect, GUI.skin.window);
 

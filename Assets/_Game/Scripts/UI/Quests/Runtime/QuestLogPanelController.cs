@@ -95,6 +95,7 @@ namespace CindarsHope.UI.Quests.Runtime
         {
             if (!_isOpen) return;
 
+            MenuGuiStyle.Apply();
             var service = QuestRuntimeBootstrap.QuestService;
             var registry = QuestRuntimeBootstrap.QuestRegistry;
 

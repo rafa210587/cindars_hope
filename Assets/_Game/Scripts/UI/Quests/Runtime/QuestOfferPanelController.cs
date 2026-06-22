@@ -174,6 +174,7 @@ namespace CindarsHope.UI.Quests.Runtime
         {
             if (!_isOpen) return;
 
+            MenuGuiStyle.Apply();
             var rect = new Rect(Screen.width / 2f - 200, Screen.height / 2f - 220, 400, 440);
             GUI.Box(rect, "QUEST OFFER");
 

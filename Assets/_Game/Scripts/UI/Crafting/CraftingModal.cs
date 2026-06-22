@@ -155,6 +155,7 @@ namespace CindarsHope.UI.Crafting
                 return;
             }
 
+            MenuGuiStyle.Apply();
             var rect = new Rect((Screen.width - 620f) * 0.5f, (Screen.height - 430f) * 0.5f, 620f, 430f);
             GUILayout.BeginArea(rect, GUI.skin.window);
             GUILayout.Label($"Crafting - {_station.StationType} ({_station.StationInstanceId})");
