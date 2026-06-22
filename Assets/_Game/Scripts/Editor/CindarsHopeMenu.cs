@@ -143,6 +143,10 @@ namespace CindarsHope.Editor
             // FASE D — pos-cena.
             RunStep("Rebuild dos dialogos de NPC da cidade",
                 () => CindarsHope.Editor.NpcDialogue.RebuildTownNpcDialogues.Rebuild());
+            // Aplica a regen de mana canonica (ManaManager.DefaultManaRegenPerSecond) nas 3 cenas
+            // recriadas, via SerializedObject. Idempotente.
+            RunStep("Aplicar regen de mana canonica nas cenas",
+                () => CindarsHope.Editor.SceneCreation.ManaRegenSceneInitializer.ApplyToAllScenes());
             RunStep("Registrar cenas de build (EditorBuildSettings via API)", () =>
             {
                 var result = CindarsHope.EditorTools.Build.BuildSceneRegistrar.Register();
@@ -241,6 +245,9 @@ namespace CindarsHope.Editor
             // (e.4) Kit de teste: 1 de cada sistema no inventario inicial (idempotente; capacity-aware).
             RunStep("Garantir kit de teste (1 de cada) no inventario inicial",
                 () => CindarsHope.EditorTools.Repair.RepairPlayerStartingItems.EnsureTestStarterKit());
+            // (e.5) Regen de mana canonica nas cenas (idempotente; SerializedObject).
+            RunStep("Aplicar regen de mana canonica nas cenas",
+                () => CindarsHope.Editor.SceneCreation.ManaRegenSceneInitializer.ApplyToAllScenes());
             RunStep("Salvar assets (SaveAssets + Refresh)", SaveAndRefresh);
 
             ShowSummary("Reparar e Reconstruir", "[Reparar]");
