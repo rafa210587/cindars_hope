@@ -91,6 +91,10 @@ namespace CindarsHope.Combat
             var defense = ResolveDefense();
             var resistance = ResistanceSource != null ? ResistanceSource(damageType) : 0;
             var finalDamage = CalculateReducedDamage(rawDamage, defense, resistance);
+            // Flash antes do DamageHP: DamageHP pode disparar morte sincronamente, ocultando
+            // o flash se acionado depois. HitFlashController.Flash() reinicia coroutine sem artifacts.
+            var earlyFlash = playerManager.transform.root.GetComponentInChildren<HitFlashController>(true);
+            if (earlyFlash != null) earlyFlash.Flash();
             playerManager.DamageHP(finalDamage);
             CombatLog.Log($"CombatLog: PlayerDamageReceived. Source={sourceId}, Raw={rawDamage}, Defense={defense}, Resist={resistance}({damageType}), Final={finalDamage}");
             return finalDamage;
