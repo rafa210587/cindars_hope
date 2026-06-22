@@ -45,25 +45,29 @@ namespace CindarsHope.EditorTools.Repair
         // Capacidade do inventario (espelha InventoryManager.MaxCapacity): o starter nao pode exceder.
         private const int InventoryCapacity = 30;
 
-        // Kit de teste: 1 representante de cada sistema para validar tudo num jogo novo. So ACRESCENTA
-        // (idempotente; arco/flechas/lagrima ja entram pelos Ensure* dedicados). Capacity-aware: nao
-        // estoura 30 slots e loga o que foi pulado (sem truncar em silencio — rule observability).
+        // Kit de teste focado no pedido: plantio completo (todas as sementes — enxada/regador ja
+        // estao no starter), magia (wand + pergaminho de cura; o item_spell_fireball_test ja vem no
+        // starter para o ataque magico), escudo. Espada, arco, flecha, comida e pocao HP ja existem no
+        // starter base. So ACRESCENTA; idempotente; capacity-aware (nao estoura 30 slots; loga skips).
+        // Ordem: essenciais (escudo/magia) primeiro, depois as 12 sementes (preenchem o restante).
         private static readonly (string id, int amount)[] TestStarterKit =
         {
-            ("item_weapon_sword_iron", 1),                 // arma corpo-a-corpo
-            ("item_weapon_wand_fire", 1),                  // arma magica (cast)
-            ("item_armor_light_leather", 1),               // armadura
-            ("item_shield_buckler", 1),                    // escudo (block)
-            ("item_acc_ring_thoren", 1),                   // acessorio
-            ("item_consumable_food_bread", 5),             // comida (fome)
-            ("item_consumable_potion_hp_small", 5),        // pocao de HP
-            ("item_consumable_potion_mp_small", 5),        // pocao de MP
-            ("item_consumable_repair_kit_basic", 3),       // reparo de durabilidade
-            ("item_consumable_scroll_cast_fireburst", 3),  // pergaminho de conjuracao
-            ("item_consumable_scroll_learn_fire_spark", 1),// pergaminho de aprender magia
-            ("item_seed_carrot", 5),                       // semente (plantio)
-            ("item_material_wood", 20),                    // material de craft
-            ("item_material_iron_ore", 10),                // material de craft
+            ("item_shield_buckler", 1),                       // escudo (block)
+            ("item_weapon_wand_fire", 1),                     // arma magica (cast)
+            ("item_consumable_scroll_learn_minor_heal", 1),   // aprender magia de cura
+            // Todas as sementes para plantar e coletar cada cultura (colheita gera a crop).
+            ("item_seed_wheat", 5),
+            ("item_seed_carrot", 5),
+            ("item_seed_moonbean", 5),
+            ("item_seed_sunpepper", 5),
+            ("item_seed_crystal_berry", 5),
+            ("item_seed_starroot", 5),
+            ("item_seed_alihana_tear", 5),
+            ("item_seed_senya_pepper", 5),
+            ("item_seed_shadowroot", 5),
+            ("item_seed_thandra_wheat", 5),
+            ("item_seed_vale_pumpkin", 5),
+            ("item_seed_brigandini_grape", 5),
         };
 
         public static void Repair()

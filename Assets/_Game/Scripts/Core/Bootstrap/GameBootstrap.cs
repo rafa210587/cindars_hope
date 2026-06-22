@@ -168,6 +168,12 @@ namespace CindarsHope.Core.Bootstrap
                 Debug.LogWarning("GameBootstrap is missing an InventoryManager reference.", this);
             }
 
+            // Loadout inicial de combate: deixa arco + flecha JA EQUIPADOS num jogo novo (arco numa mao,
+            // flecha na outra) para o arco/flecha ser testavel sem abrir o painel de equipamento. So
+            // preenche maos VAZIAS; ao carregar um save, EquipmentManager.RestoreFromSaveData faz
+            // _slots.Clear() e reconstroi do save, entao o save sempre vence (sem vazar este default).
+            EquipStarterCombatLoadout();
+
             if (_timeManager != null)
             {
                 _timeManager.Initialize();
@@ -281,6 +287,40 @@ namespace CindarsHope.Core.Bootstrap
             CombatRuntimeInstaller.Install(BuildCombatInstallContext(), this);
 
             InitializeDeathSystem();
+        }
+
+        // Ids do loadout inicial de combate (mesmos do StartingItems/hotbar). Arco de madeira tem o
+        // WeaponDataSO (Type=Bow) e o ProjectilePrefab; flecha basica e a municao equipavel canonica.
+        private const string StarterBowItemId = "item_weapon_bow_wood";
+        private const string StarterArrowItemId = "item_ammo_arrow_basic";
+
+        // Deixa arco + flecha equipados num jogo novo. So preenche maos VAZIAS (num load, o
+        // EquipmentManager limpa e reconstroi do save depois — o save sempre vence).
+        private void EquipStarterCombatLoadout()
+        {
+            if (_equipmentManager == null || _inventoryManager == null)
+            {
+                return;
+            }
+
+            bool rightEmpty = string.IsNullOrEmpty(_equipmentManager.GetEquippedItem(EquipmentSlot.RightHand));
+            bool leftEmpty = string.IsNullOrEmpty(_equipmentManager.GetEquippedItem(EquipmentSlot.LeftHand));
+            if (!rightEmpty || !leftEmpty)
+            {
+                return;
+            }
+
+            // Arco numa mao, flecha na outra: BowArrowAttackService exige o arco na mao OPOSTA a municao.
+            if (_inventoryManager.HasItem(StarterBowItemId) && _inventoryManager.HasItem(StarterArrowItemId))
+            {
+                _equipmentManager.EquipItem(EquipmentSlot.RightHand, StarterBowItemId);
+                _equipmentManager.EquipItem(EquipmentSlot.LeftHand, StarterArrowItemId);
+                Debug.Log($"GameBootstrap: loadout inicial equipado (arco '{StarterBowItemId}' RightHand, flecha '{StarterArrowItemId}' LeftHand).", this);
+            }
+            else
+            {
+                Debug.Log("GameBootstrap: loadout inicial de arco/flecha pulado — itens ausentes no inventario inicial.", this);
+            }
         }
 
         private CombatRuntimeInstallContext BuildCombatInstallContext()
