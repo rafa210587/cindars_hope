@@ -78,7 +78,37 @@ namespace CindarsHope.Combat.Weapon
                 );
             }
 
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            LogSpawnDiagnostics(projectile, request, spawnPos);
+#endif
+
             return ProjectileSpawnResult.CreateSuccess(projectile);
         }
+
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        // Diagnostico de visibilidade do projetil: caminho (prefab/factory), posicao, e estado de
+        // render (sprite, renderer ativo, sorting, escala, cor). Uma linha responde "por que invisivel?".
+        private static void LogSpawnDiagnostics(GameObject projectile, ProjectileSpawnRequest request, Vector2 spawnPos)
+        {
+            if (projectile == null) return;
+
+            var sr = projectile.GetComponentInChildren<SpriteRenderer>();
+            string spriteName = sr != null && sr.sprite != null ? sr.sprite.name : "<null>";
+            string texName = sr != null && sr.sprite != null && sr.sprite.texture != null ? sr.sprite.texture.name : "<null>";
+            string matName = sr != null && sr.sharedMaterial != null ? sr.sharedMaterial.name : "<null>";
+            string rendererState = sr != null
+                ? $"enabled={sr.enabled}, sprite='{spriteName}', tex='{texName}', mat='{matName}', " +
+                  $"color={sr.color}, sortLayer={sr.sortingLayerID}, sortOrder={sr.sortingOrder}"
+                : "<no SpriteRenderer>";
+
+            Debug.Log($"CombatLog: ProjectileSpawned. Success=True, " +
+                      $"Path={(request.Prefab != null ? "AuthoredPrefab" : "RuntimeFactory")}, " +
+                      $"VisualStyle={request.VisualStyle}, DamageType={request.DamageType}, " +
+                      $"RequestSourcePos={request.SourcePosition}, SpawnPos={spawnPos}, " +
+                      $"ProjectilePos={(Vector2)projectile.transform.position}, " +
+                      $"Scale={projectile.transform.localScale}, Direction={request.Direction}, " +
+                      $"Renderer[{rendererState}]");
+        }
+#endif
     }
 }
