@@ -34,6 +34,14 @@ namespace CindarsHope.Combat.Weapon
         private float _initialSpeed;
         private float _speedDecayToFraction = 1f;
 
+        // Encolhimento VISUAL no fim do voo (so quando ha decay): a flecha diminui de tamanho perto do
+        // alcance maximo. O COLIDER e compensado para a colisao em world-space ficar CONSTANTE (acerto
+        // fisico nao muda). Escala visual minima atingida no alcance maximo.
+        private const float MinVisualScaleFraction = 0.45f;
+        private Vector3 _baseScale = Vector3.one;
+        private bool _hasCircleCollider;
+        private float _baseCircleRadius;
+
         private void Start()
         {
             if (_rigidbody == null)
@@ -53,8 +61,9 @@ namespace CindarsHope.Combat.Weapon
             }
         }
 
-        // Desaceleracao por distancia (so quando _speedDecayToFraction < 1). Recalcula a velocidade
-        // a cada passo de fisica: rapida no inicio, decaindo linearmente ate a fracao no alcance maximo.
+        // Desaceleracao + encolhimento visual por distancia (so quando _speedDecayToFraction < 1).
+        // Curva eased (t^2): fica cheia/rapida na maior parte do voo e cai PERTO DO FINAL. O collider
+        // e compensado para o acerto fisico permanecer constante mesmo com o sprite menor.
         private void FixedUpdate()
         {
             if (_rigidbody == null || _initialSpeed <= 0f || _speedDecayToFraction >= 1f)
@@ -64,8 +73,18 @@ namespace CindarsHope.Combat.Weapon
 
             float traveled = Vector2.Distance(_rigidbody.position, _spawnPosition);
             float t = _range > 0f ? Mathf.Clamp01(traveled / _range) : 0f;
-            float currentSpeed = Mathf.Lerp(_initialSpeed, _initialSpeed * _speedDecayToFraction, t);
+            float endWeighted = t * t; // concentra o efeito no final do voo
+
+            float currentSpeed = Mathf.Lerp(_initialSpeed, _initialSpeed * _speedDecayToFraction, endWeighted);
             _rigidbody.linearVelocity = _direction * currentSpeed;
+
+            // Encolhe o VISUAL; compensa o collider para a colisao em world-space ficar constante.
+            float visualFactor = Mathf.Lerp(1f, MinVisualScaleFraction, endWeighted);
+            transform.localScale = _baseScale * visualFactor;
+            if (_hasCircleCollider && visualFactor > 0.001f && _collider is CircleCollider2D circle)
+            {
+                circle.radius = _baseCircleRadius / visualFactor;
+            }
         }
 
         private void OnTriggerEnter2D(Collider2D collision)
@@ -141,6 +160,15 @@ namespace CindarsHope.Combat.Weapon
             _direction = direction.normalized;
             _initialSpeed = speed;
             _speedDecayToFraction = speedDecayToFraction <= 0f ? 1f : Mathf.Clamp01(speedDecayToFraction);
+
+            // Base do encolhimento visual: escala atual (definida pela factory/EnsureVisibleSprite) e o
+            // raio do collider, para compensar a colisao quando a escala visual diminuir.
+            _baseScale = transform.localScale;
+            if (_collider is CircleCollider2D circle)
+            {
+                _hasCircleCollider = true;
+                _baseCircleRadius = circle.radius;
+            }
 
             if (_rigidbody != null)
             {
