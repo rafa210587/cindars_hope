@@ -117,8 +117,9 @@ namespace CindarsHope.Combat.Weapon
         private static bool s_repairLogged;
 #endif
 
-        // Built-in/placeholder = sem textura ou textura built-in (UnityWhite/etc.). Esses nao renderam
-        // como sprite de projetil em runtime; tratamos como ausentes para forcar o visual procedural.
+        // Built-in/placeholder = sem textura, ou sprite/textura built-in da Unity (UnityWhite, UISprite,
+        // Background, Knob...). Esses nao renderam como projetil legivel em world-space; tratamos como
+        // ausentes para forcar o visual procedural. (Projectile_Arrow vem com 'UISprite' placeholder.)
         private static bool IsBuiltinPlaceholder(Sprite sprite)
         {
             var tex = sprite.texture;
@@ -127,8 +128,27 @@ namespace CindarsHope.Combat.Weapon
                 return true;
             }
 
-            string n = tex.name;
-            return string.IsNullOrEmpty(n) || n.StartsWith("Unity");
+            string spriteName = sprite.name ?? string.Empty;
+            string texName = tex.name ?? string.Empty;
+
+            if (string.IsNullOrEmpty(texName) || texName.StartsWith("Unity") || spriteName.StartsWith("Unity"))
+            {
+                return true;
+            }
+
+            switch (spriteName)
+            {
+                case "UISprite":
+                case "Background":
+                case "UIMask":
+                case "InputFieldBackground":
+                case "Knob":
+                case "Checkmark":
+                case "DropdownArrow":
+                    return true;
+                default:
+                    return false;
+            }
         }
 
         private static ProjectileVisualStyle ResolveStyle(ProjectileVisualStyle style, DamageType damageType)
