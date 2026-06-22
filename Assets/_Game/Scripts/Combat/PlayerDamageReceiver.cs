@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.Text;
 using CindarsHope.Core.Bootstrap;
+using CindarsHope.Core.Events;
 using CindarsHope.Player;
 using UnityEngine;
 
@@ -95,6 +97,9 @@ namespace CindarsHope.Combat
             // o flash se acionado depois. HitFlashController.Flash() reinicia coroutine sem artifacts.
             var earlyFlash = playerManager.transform.root.GetComponentInChildren<HitFlashController>(true);
             if (earlyFlash != null) earlyFlash.Flash();
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            PlayerDamageAuditLog.Record(Time.time, sourceId, damageType, rawDamage, finalDamage, playerManager.CurrentHP, playerManager.MaxHP);
+#endif
             playerManager.DamageHP(finalDamage);
             CombatLog.Log($"CombatLog: PlayerDamageReceived. Source={sourceId}, Raw={rawDamage}, Defense={defense}, Resist={resistance}({damageType}), Final={finalDamage}");
             return finalDamage;
@@ -148,4 +153,114 @@ namespace CindarsHope.Combat
             return stats.Defense;
         }
     }
+
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+    /// <summary>
+    /// Dev-only: registra todo dano recebido pelo player e imprime um relatorio ao morrer.
+    /// Janela deslizante de 5 minutos. Ativo em UNITY_EDITOR e DEVELOPMENT_BUILD.
+    /// </summary>
+    public static class PlayerDamageAuditLog
+    {
+        private const float WindowSeconds = 300f;
+
+        private struct Entry
+        {
+            public float GameTime;
+            public string SourceId;
+            public DamageType DamageType;
+            public int RawDamage;
+            public int FinalDamage;
+            public int HpBefore;
+            public int MaxHP;
+        }
+
+        private static readonly List<Entry> s_entries = new List<Entry>();
+        private static bool s_subscribed;
+
+        /// <summary>Chamado por PlayerDamageReceiver antes de DamageHP. Ignora finalDamage <= 0.</summary>
+        public static void Record(float gameTime, string sourceId, DamageType damageType,
+            int rawDamage, int finalDamage, int hpBefore, int maxHp)
+        {
+            if (finalDamage <= 0) return;
+            EnsureSubscribed();
+            float cutoff = gameTime - WindowSeconds;
+            s_entries.RemoveAll(e => e.GameTime < cutoff);
+            s_entries.Add(new Entry
+            {
+                GameTime = gameTime,
+                SourceId = sourceId ?? "unknown",
+                DamageType = damageType,
+                RawDamage = rawDamage,
+                FinalDamage = finalDamage,
+                HpBefore = hpBefore,
+                MaxHP = maxHp,
+            });
+        }
+
+        private static void EnsureSubscribed()
+        {
+            if (s_subscribed) return;
+            s_subscribed = true;
+            Core.GameEventBus.Subscribe<PlayerDiedEvent>(OnPlayerDied);
+        }
+
+        private static void OnPlayerDied(PlayerDiedEvent evt)
+        {
+            DumpReport(evt.SceneName);
+        }
+
+        private static void DumpReport(string sceneName)
+        {
+            var sb = new StringBuilder(2048);
+            sb.AppendLine();
+            sb.AppendLine("=== PLAYER DEATH AUDIT | cena: " + (sceneName ?? "?") + " | ultimos 5 min ===");
+            sb.AppendLine("  #  |  +T     | Fonte                      | Tipo     | Raw | Final | HP");
+            sb.AppendLine("-----|---------|----------------------------|----------|-----|-------|--------");
+
+            if (s_entries.Count == 0)
+            {
+                sb.AppendLine("  (nenhum dano registrado na janela de 5 minutos)");
+                Debug.Log(sb.ToString());
+                return;
+            }
+
+            float t0 = s_entries[0].GameTime;
+            int totalDamage = 0;
+            Entry lastEntry = default;
+            var sourceTotals = new Dictionary<string, int>();
+
+            for (int i = 0; i < s_entries.Count; i++)
+            {
+                var e = s_entries[i];
+                float rel = e.GameTime - t0;
+                int mm = (int)(rel / 60f);
+                int ss = (int)(rel % 60f);
+                int hpAfter = Mathf.Max(0, e.HpBefore - e.FinalDamage);
+                string src = e.SourceId.Length > 26 ? e.SourceId.Substring(0, 26) : e.SourceId;
+                string typStr = e.DamageType.ToString();
+                if (typStr.Length > 8) typStr = typStr.Substring(0, 8);
+                sb.AppendLine(string.Format(" {0,3} | {1:00}:{2:00}  | {3,-26} | {4,-8} | {5,3} | {6,5} | {7}→{8}",
+                    i + 1, mm, ss, src, typStr, e.RawDamage, e.FinalDamage, e.HpBefore, hpAfter));
+                totalDamage += e.FinalDamage;
+                lastEntry = e;
+                if (!sourceTotals.ContainsKey(e.SourceId)) sourceTotals[e.SourceId] = 0;
+                sourceTotals[e.SourceId] += e.FinalDamage;
+            }
+
+            string topSource = ""; int topDmg = 0;
+            foreach (var kv in sourceTotals)
+                if (kv.Value > topDmg) { topDmg = kv.Value; topSource = kv.Key; }
+
+            int fatalHpAfter = Mathf.Max(0, lastEntry.HpBefore - lastEntry.FinalDamage);
+            sb.AppendLine("-----|---------|----------------------------|----------|-----|-------|--------");
+            sb.AppendLine("  Total: " + totalDamage + " dano em " + s_entries.Count + " hits  |  MaxHP: " + lastEntry.MaxHP);
+            sb.AppendLine("  Fonte mais danosa: " + topSource + " (" + topDmg + " dmg total)");
+            sb.AppendLine("  Golpe FATAL: " + lastEntry.SourceId + " (" + lastEntry.DamageType + ", " + lastEntry.FinalDamage + " dmg) — HP era " + lastEntry.HpBefore + " -> " + fatalHpAfter);
+            sb.AppendLine("===");
+            Debug.Log(sb.ToString());
+
+            s_entries.Clear();
+        }
+    }
+#endif
 }
