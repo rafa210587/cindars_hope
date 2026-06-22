@@ -42,6 +42,30 @@ namespace CindarsHope.EditorTools.Repair
         private const string WoodBowItemId = "item_weapon_bow_wood";
         private const int WoodBowStartingAmount = 1;
 
+        // Capacidade do inventario (espelha InventoryManager.MaxCapacity): o starter nao pode exceder.
+        private const int InventoryCapacity = 30;
+
+        // Kit de teste: 1 representante de cada sistema para validar tudo num jogo novo. So ACRESCENTA
+        // (idempotente; arco/flechas/lagrima ja entram pelos Ensure* dedicados). Capacity-aware: nao
+        // estoura 30 slots e loga o que foi pulado (sem truncar em silencio — rule observability).
+        private static readonly (string id, int amount)[] TestStarterKit =
+        {
+            ("item_weapon_sword_iron", 1),                 // arma corpo-a-corpo
+            ("item_weapon_wand_fire", 1),                  // arma magica (cast)
+            ("item_armor_light_leather", 1),               // armadura
+            ("item_shield_buckler", 1),                    // escudo (block)
+            ("item_acc_ring_thoren", 1),                   // acessorio
+            ("item_consumable_food_bread", 5),             // comida (fome)
+            ("item_consumable_potion_hp_small", 5),        // pocao de HP
+            ("item_consumable_potion_mp_small", 5),        // pocao de MP
+            ("item_consumable_repair_kit_basic", 3),       // reparo de durabilidade
+            ("item_consumable_scroll_cast_fireburst", 3),  // pergaminho de conjuracao
+            ("item_consumable_scroll_learn_fire_spark", 1),// pergaminho de aprender magia
+            ("item_seed_carrot", 5),                       // semente (plantio)
+            ("item_material_wood", 20),                    // material de craft
+            ("item_material_iron_ore", 10),                // material de craft
+        };
+
         public static void Repair()
         {
             var playerData = AssetDatabase.LoadAssetAtPath<PlayerDataSO>(PlayerDataPath);
@@ -111,6 +135,77 @@ namespace CindarsHope.EditorTools.Repair
         public static void EnsureStartingBow()
         {
             EnsureStartingItem(WoodBowItemId, WoodBowStartingAmount);
+        }
+
+        /// <summary>
+        /// Conveniencia: acrescenta 1 representante de cada sistema (arma, magia, armadura, escudo,
+        /// acessorio, comida, pocoes, reparo, pergaminhos, semente, materiais) ao inventario inicial
+        /// para testar tudo num jogo novo. Idempotente; capacity-aware (nao excede 30 slots).
+        /// </summary>
+        public static void EnsureTestStarterKit()
+        {
+            var playerData = AssetDatabase.LoadAssetAtPath<PlayerDataSO>(PlayerDataPath);
+            if (playerData == null)
+            {
+                Debug.LogWarning($"[RepairPlayerStartingItems] PlayerData nao encontrado em {PlayerDataPath}; kit de teste nao aplicado.");
+                return;
+            }
+
+            var list = new List<StartingItem>(playerData.StartingItems ?? System.Array.Empty<StartingItem>());
+            int added = 0, bumped = 0, skippedFull = 0, skippedMissing = 0;
+
+            foreach (var (id, amount) in TestStarterKit)
+            {
+                int existingIndex = IndexOfItem(list, id);
+                if (existingIndex >= 0)
+                {
+                    if (list[existingIndex].Amount < amount)
+                    {
+                        var bumpedEntry = list[existingIndex];
+                        bumpedEntry.Amount = amount;
+                        list[existingIndex] = bumpedEntry;
+                        bumped++;
+                    }
+                    continue;
+                }
+
+                if (list.Count >= InventoryCapacity)
+                {
+                    skippedFull++;
+                    Debug.LogWarning($"[RepairPlayerStartingItems] Kit: '{id}' NAO adicionado — inventario inicial cheio ({list.Count}/{InventoryCapacity}).");
+                    continue;
+                }
+
+                var itemAsset = FindItemDataSoById(id);
+                if (itemAsset == null)
+                {
+                    skippedMissing++;
+                    Debug.LogWarning($"[RepairPlayerStartingItems] Kit: ItemDataSO '{id}' nao encontrado. Rode 'Gerar catalogo canonico de itens' ANTES. Pulado.");
+                    continue;
+                }
+
+                list.Add(new StartingItem { Item = itemAsset, Amount = amount });
+                added++;
+            }
+
+            playerData.StartingItems = list.ToArray();
+            EditorUtility.SetDirty(playerData);
+            AssetDatabase.SaveAssets();
+            Debug.Log($"[RepairPlayerStartingItems] Kit de teste: {added} adicionado(s), {bumped} ajustado(s), " +
+                      $"{skippedFull} pulado(s) por inventario cheio, {skippedMissing} ausente(s). Total {list.Count}/{InventoryCapacity}.");
+        }
+
+        private static int IndexOfItem(List<StartingItem> list, string itemId)
+        {
+            for (int i = 0; i < list.Count; i++)
+            {
+                var entryItem = list[i].Item;
+                if (entryItem != null && entryItem.Id == itemId)
+                {
+                    return i;
+                }
+            }
+            return -1;
         }
 
         /// <summary>

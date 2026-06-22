@@ -481,7 +481,7 @@ namespace CindarsHope.UI
             }
 
             var equipped = slot.IsEquipped ? $" [{slot.EquipmentBindingId}]" : string.Empty;
-            GUILayout.Label($"Selected: {slot.ItemId} x{slot.Amount}{equipped}");
+            GUILayout.Label($"Selected: {ResolveDisplayName(slot.ItemId)} x{slot.Amount}{equipped}");
             if (_mode == PanelMode.EquipmentSelection && !IsCompatibleSlot(_selectedSlotIndex, _targetEquipmentSlot))
             {
                 GUILayout.Label($"Incompativel com {_targetEquipmentSlot}.");
@@ -798,14 +798,34 @@ namespace CindarsHope.UI
             return false;
         }
 
-        private static string FormatSlotLabel(int slotIndex, InventorySlot slot)
+        private string FormatSlotLabel(int slotIndex, InventorySlot slot)
         {
             if (slot == null || slot.IsEmpty)
             {
                 return $"{slotIndex + 1}\n-";
             }
 
-            return $"{slotIndex + 1}\n{slot.ItemId}\nx{slot.Amount}";
+            return $"{slotIndex + 1}\n{ResolveDisplayName(slot.ItemId)}\nx{slot.Amount}";
+        }
+
+        // Nome legivel do item (DisplayName do ItemDataSO) em vez do Id "tipo variavel". Fallback ao
+        // Id se o item nao resolver (asset ausente / DB nao injetada) para nunca mostrar vazio.
+        private string ResolveDisplayName(string itemId)
+        {
+            if (string.IsNullOrEmpty(itemId))
+            {
+                return "-";
+            }
+
+            if (_inventoryManager != null
+                && _inventoryManager.TryGetItemData(itemId, out var item)
+                && item != null
+                && !string.IsNullOrWhiteSpace(item.DisplayName))
+            {
+                return item.DisplayName;
+            }
+
+            return itemId;
         }
     }
 }

@@ -96,6 +96,10 @@ namespace CindarsHope.Editor
             // flecha sempre bloqueia (ArrowRequiresBowInOtherHand) — sem ele o arco/flecha nao e testavel.
             RunStep("Garantir Arco de Madeira (1x) no inventario inicial",
                 () => CindarsHope.EditorTools.Repair.RepairPlayerStartingItems.EnsureStartingBow());
+            // Kit de teste: 1 de cada sistema (arma/magia/armadura/escudo/acessorio/comida/pocoes/
+            // reparo/pergaminhos/semente/materiais) no inventario inicial. Idempotente; capacity-aware.
+            RunStep("Garantir kit de teste (1 de cada) no inventario inicial",
+                () => CindarsHope.EditorTools.Repair.RepairPlayerStartingItems.EnsureTestStarterKit());
             RunStep("Gerar bestiario canonico",
                 () => CindarsHope.Editor.Enemies.GenerateCanonicalBestiary.GenerateMenu());
             RunStep("Gerar catalogo canonico de skills",
@@ -234,9 +238,27 @@ namespace CindarsHope.Editor
             // (e.3) Garante 1x Arco de Madeira no inventario inicial (sem ele a flecha nao dispara).
             RunStep("Garantir Arco de Madeira (1x) no inventario inicial",
                 () => CindarsHope.EditorTools.Repair.RepairPlayerStartingItems.EnsureStartingBow());
+            // (e.4) Kit de teste: 1 de cada sistema no inventario inicial (idempotente; capacity-aware).
+            RunStep("Garantir kit de teste (1 de cada) no inventario inicial",
+                () => CindarsHope.EditorTools.Repair.RepairPlayerStartingItems.EnsureTestStarterKit());
             RunStep("Salvar assets (SaveAssets + Refresh)", SaveAndRefresh);
 
             ShowSummary("Reparar e Reconstruir", "[Reparar]");
+        }
+
+        // ─────────────────────────────────────────────────────────────────────────────────
+        // 3b) KIT DE TESTE NO INVENTARIO INICIAL (standalone — aplicacao rapida)
+        // ─────────────────────────────────────────────────────────────────────────────────
+        [MenuItem("CindarsHope/Dev/Kit de Teste no Inventario Inicial", priority = 40)]
+        public static void AplicarKitDeTeste()
+        {
+            ResetCounters();
+            Debug.Log("[KitTeste] INICIO — acrescentando 1 de cada sistema ao inventario inicial (idempotente).");
+            RunStep("Garantir kit de teste (1 de cada) no inventario inicial",
+                () => CindarsHope.EditorTools.Repair.RepairPlayerStartingItems.EnsureTestStarterKit());
+            RunStep("Salvar assets (SaveAssets + Refresh)", SaveAndRefresh);
+            ShowSummary("Kit de Teste", "[KitTeste]",
+                "Itens do kit aparecem ao iniciar um JOGO NOVO (StartingItems). Veja o Console para o que foi adicionado/pulado.");
         }
 
         // ─────────────────────────────────────────────────────────────────────────────────
