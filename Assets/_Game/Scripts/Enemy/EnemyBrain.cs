@@ -235,7 +235,7 @@ namespace CindarsHope.Enemy
             if (_movementProfile != null && _movementProfile.WanderRadius > 0f)
                 _anchorLeashTiles = _movementProfile.WanderRadius;
 
-            _playerTarget = GameBootstrap.Instance?.PlayerManager?.gameObject;
+            RefreshPlayerTarget();
 
             if (_vulnerabilityState != null)
                 _vulnerabilityState.Initialize(_enemyData?.enemyId);
@@ -277,6 +277,12 @@ namespace CindarsHope.Enemy
         private void Update()
         {
             if (_currentState == EnemyBrainState.Dead) return;
+
+            // O player VISIVEL (PlayerController) pode nascer depois do inimigo materializar; re-resolve
+            // a cada frame ate apontar para ele. Sem isto o target fica no PlayerManager (no _Bootstrap,
+            // em (0,0,0)) e o inimigo mede distancia ate a origem do mundo — atacando o vazio, mas
+            // roteando o dano ao player real longe dali (bug "dano invisivel de bicho que nao esta perto").
+            RefreshPlayerTarget();
 
             // fable_24: Volatile elites explode once when they die. Damage usually flows straight
             // through EnemyHealth (not EnemyBrain.TakeDamage), so detect the death transition here
@@ -1330,6 +1336,22 @@ namespace CindarsHope.Enemy
         }
 
         // ─── Helpers ──────────────────────────────────────────────────────────
+
+        // Prefere o PlayerController VISIVEL na cena (transform real do personagem). O
+        // PlayerManager mora no _Bootstrap (DontDestroyOnLoad, em (0,0,0)) e nao representa
+        // a posicao do player — usa-lo como alvo faz o inimigo mirar a origem do mundo.
+        private void RefreshPlayerTarget()
+        {
+            var visiblePlayer = Player.PlayerController.ActiveInstance;
+            if (visiblePlayer != null)
+            {
+                _playerTarget = visiblePlayer.gameObject;
+            }
+            else if (_playerTarget == null)
+            {
+                _playerTarget = GameBootstrap.Instance?.PlayerManager?.gameObject;
+            }
+        }
 
         private float DistanceToPlayer() =>
             _playerTarget != null
