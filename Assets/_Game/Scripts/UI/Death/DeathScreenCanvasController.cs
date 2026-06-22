@@ -444,6 +444,16 @@ namespace CindarsHope.UI.Death
             _root.AddComponent<CanvasScaler>();
             _root.AddComponent<GraphicRaycaster>();
 
+            // Button.onClick exige EventSystem; o jogo usa IMGUI em varias telas entao pode estar ausente.
+            if (UnityEngine.EventSystems.EventSystem.current == null)
+            {
+                var esGo = new GameObject("EventSystem");
+                DontDestroyOnLoad(esGo);
+                esGo.AddComponent<UnityEngine.EventSystems.EventSystem>();
+                esGo.AddComponent<UnityEngine.EventSystems.StandaloneInputModule>();
+                Debug.Log("[DeathScreen] EventSystem criado (ausente na cena).");
+            }
+
             var panel = CreateChild(_root.transform, "Panel");
             var panelImage = panel.AddComponent<Image>();
             panelImage.color = new Color(0f, 0f, 0f, 0.85f);

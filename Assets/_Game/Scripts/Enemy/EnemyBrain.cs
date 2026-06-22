@@ -619,13 +619,14 @@ namespace CindarsHope.Enemy
                 // F27: caminho central com atacante (perfect block reflete postura neste GO).
                 var playerManager = GameBootstrap.Instance?.PlayerManager;
                 var applied = CindarsHope.Combat.PlayerDamageReceiver.ApplyDamage(
-                    playerManager, result.FinalDamage, _enemyData?.enemyId ?? "enemy", dmgType, gameObject);
+                    playerManager, result.FinalDamage, _enemyData?.enemyId ?? "enemy", dmgType, gameObject, _playerTarget);
                 if (applied > 0)
                 {
                     ApplyActionStatusesToPlayer(_pendingAction);
                     ApplyVampiricLifesteal(applied);
-                    GameEventBus.Publish(new PlayerDamagedEvent(applied, (Vector2)playerManager.transform.position, _enemyData?.enemyId ?? "enemy", _enemyData?.DisplayName ?? "Enemy"));
-                    FloatingDamageNumberDisplayer.ShowAtTarget(playerManager.gameObject, applied, dmgType, false, true);
+                    var playerPos = _playerTarget != null ? (Vector2)_playerTarget.transform.position : (Vector2)playerManager.transform.position;
+                    GameEventBus.Publish(new PlayerDamagedEvent(applied, playerPos, _enemyData?.enemyId ?? "enemy", _enemyData?.DisplayName ?? "Enemy"));
+                    FloatingDamageNumberDisplayer.ShowAtTarget(_playerTarget ?? playerManager.gameObject, applied, dmgType, false, true);
                 }
             }
         }
@@ -669,13 +670,14 @@ namespace CindarsHope.Enemy
             {
                 var playerManager = GameBootstrap.Instance?.PlayerManager;
                 var applied = CindarsHope.Combat.PlayerDamageReceiver.ApplyDamage(
-                    playerManager, result.FinalDamage, _enemyData?.enemyId ?? "enemy", dmgType, gameObject);
+                    playerManager, result.FinalDamage, _enemyData?.enemyId ?? "enemy", dmgType, gameObject, _playerTarget);
                 if (applied > 0)
                 {
                     ApplyActionStatusesToPlayer(action);
                     ApplyVampiricLifesteal(applied);
-                    GameEventBus.Publish(new PlayerDamagedEvent(applied, (Vector2)playerManager.transform.position, _enemyData?.enemyId ?? "enemy", _enemyData?.DisplayName ?? "Enemy"));
-                    FloatingDamageNumberDisplayer.ShowAtTarget(playerManager.gameObject, applied, dmgType, false, true);
+                    var playerPos = _playerTarget != null ? (Vector2)_playerTarget.transform.position : (Vector2)playerManager.transform.position;
+                    GameEventBus.Publish(new PlayerDamagedEvent(applied, playerPos, _enemyData?.enemyId ?? "enemy", _enemyData?.DisplayName ?? "Enemy"));
+                    FloatingDamageNumberDisplayer.ShowAtTarget(_playerTarget ?? playerManager.gameObject, applied, dmgType, false, true);
                 }
             }
         }
@@ -710,7 +712,8 @@ namespace CindarsHope.Enemy
             var playerManager = GameBootstrap.Instance?.PlayerManager;
             if (playerManager == null) return;
 
-            float dist = Vector2.Distance(transform.position, playerManager.transform.position);
+            var dtPlayerPos = _playerTarget != null ? _playerTarget.transform.position : playerManager.transform.position;
+            float dist = Vector2.Distance(transform.position, dtPlayerPos);
             if (dist > radius * 1.2f) return;
 
             int damage = Mathf.Max(0, Mathf.RoundToInt(action.BaseDamage * _phaseDamageMultiplier));
@@ -726,12 +729,12 @@ namespace CindarsHope.Enemy
             if (result.FinalDamage > 0)
             {
                 var applied = CindarsHope.Combat.PlayerDamageReceiver.ApplyDamage(
-                    playerManager, result.FinalDamage, _enemyData?.enemyId ?? "enemy", dmgType, gameObject);
+                    playerManager, result.FinalDamage, _enemyData?.enemyId ?? "enemy", dmgType, gameObject, _playerTarget);
                 if (applied > 0)
                 {
                     ApplyActionStatusesToPlayer(action);
-                    GameEventBus.Publish(new PlayerDamagedEvent(applied, (Vector2)playerManager.transform.position, _enemyData?.enemyId ?? "enemy", _enemyData?.DisplayName ?? "Enemy"));
-                    FloatingDamageNumberDisplayer.ShowAtTarget(playerManager.gameObject, applied, dmgType, false, true);
+                    GameEventBus.Publish(new PlayerDamagedEvent(applied, (Vector2)dtPlayerPos, _enemyData?.enemyId ?? "enemy", _enemyData?.DisplayName ?? "Enemy"));
+                    FloatingDamageNumberDisplayer.ShowAtTarget(_playerTarget ?? playerManager.gameObject, applied, dmgType, false, true);
                 }
             }
 

@@ -53,7 +53,7 @@ namespace CindarsHope.Combat
         }
 
         /// <summary>Aplica dano reduzido ao player. Retorna o dano final aplicado.</summary>
-        public static int ApplyDamage(PlayerManager playerManager, int rawDamage, string sourceId, DamageType damageType = DamageType.Physical, GameObject attacker = null)
+        public static int ApplyDamage(PlayerManager playerManager, int rawDamage, string sourceId, DamageType damageType = DamageType.Physical, GameObject attacker = null, GameObject playerObject = null)
         {
             if (playerManager == null || rawDamage <= 0)
             {
@@ -94,8 +94,12 @@ namespace CindarsHope.Combat
             var resistance = ResistanceSource != null ? ResistanceSource(damageType) : 0;
             var finalDamage = CalculateReducedDamage(rawDamage, defense, resistance);
             // Flash antes do DamageHP: DamageHP pode disparar morte sincronamente, ocultando
-            // o flash se acionado depois. HitFlashController.Flash() reinicia coroutine sem artifacts.
-            var earlyFlash = playerManager.transform.root.GetComponentInChildren<HitFlashController>(true);
+            // o flash se acionado depois. playerObject = GO da cena (nao o Bootstrap GO).
+            var flashTarget = playerObject ?? playerManager?.gameObject;
+            var earlyFlash = flashTarget != null
+                ? (flashTarget.GetComponentInChildren<HitFlashController>(true)
+                   ?? flashTarget.GetComponentInParent<HitFlashController>())
+                : null;
             if (earlyFlash != null) earlyFlash.Flash();
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             PlayerDamageAuditLog.Record(Time.time, sourceId, damageType, rawDamage, finalDamage, playerManager.CurrentHP, playerManager.MaxHP);
