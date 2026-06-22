@@ -51,6 +51,7 @@ namespace CindarsHope.Fonte
                 return;
             }
 
+            CindarsHope.UI.MenuGuiStyle.Apply();
             var service = FonteRuntimeService.Instance;
             var rect = new Rect(Screen.width * 0.5f - 170f, Screen.height * 0.5f - 130f, 340f, 260f);
             GUILayout.BeginArea(rect, GUI.skin.window);

@@ -142,6 +142,7 @@ namespace CindarsHope.Narrative
         private void OnGUI()
         {
             if (!_isOpen || _model == null) return;
+            CindarsHope.UI.MenuGuiStyle.Apply();
             var screen = _model.Current;
             if (screen == null) return;
 

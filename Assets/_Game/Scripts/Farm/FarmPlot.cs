@@ -416,6 +416,7 @@ namespace CindarsHope.Farm
                 return;
             }
 
+            CindarsHope.UI.MenuGuiStyle.Apply();
             var screenPosition = GetMenuScreenPosition();
             var width = 260f;
             var height = Mathf.Clamp(70f + _menuActions.Count * 26f, 90f, 260f);

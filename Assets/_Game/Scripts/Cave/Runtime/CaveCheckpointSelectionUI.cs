@@ -90,6 +90,7 @@ namespace CindarsHope.Cave.Runtime
                 return;
             }
 
+            CindarsHope.UI.MenuGuiStyle.Apply();
             var width = 300f;
             var height = 150f;
             var x = (Screen.width - width) / 2f;

@@ -33,6 +33,8 @@ namespace CindarsHope.UI.HUD
         private int _maxHp;
         private int _stamina;
         private int _maxStamina;
+        private int _mana;
+        private int _maxMana;
         private int _hunger;
         private int _maxHunger;
         private int _gold;
@@ -55,6 +57,7 @@ namespace CindarsHope.UI.HUD
         {
             GameEventBus.Subscribe<HPChangedEvent>(OnHpChanged);
             GameEventBus.Subscribe<StaminaChangedEvent>(OnStaminaChanged);
+            GameEventBus.Subscribe<ManaChangedEvent>(OnManaChanged);
             GameEventBus.Subscribe<HungerChangedEvent>(OnHungerChanged);
             GameEventBus.Subscribe<GoldChangedEvent>(OnGoldChanged);
             GameEventBus.Subscribe<InteractionPromptChangedEvent>(OnInteractionPromptChanged);
@@ -64,6 +67,7 @@ namespace CindarsHope.UI.HUD
         {
             GameEventBus.Unsubscribe<HPChangedEvent>(OnHpChanged);
             GameEventBus.Unsubscribe<StaminaChangedEvent>(OnStaminaChanged);
+            GameEventBus.Unsubscribe<ManaChangedEvent>(OnManaChanged);
             GameEventBus.Unsubscribe<HungerChangedEvent>(OnHungerChanged);
             GameEventBus.Unsubscribe<GoldChangedEvent>(OnGoldChanged);
             GameEventBus.Unsubscribe<InteractionPromptChangedEvent>(OnInteractionPromptChanged);
@@ -193,6 +197,13 @@ namespace CindarsHope.UI.HUD
                 _maxStamina = stamina.MaxStamina;
             }
 
+            var mana = bootstrap.ManaManager;
+            if (mana != null)
+            {
+                _mana = mana.CurrentMana;
+                _maxMana = mana.MaxMana;
+            }
+
             var hunger = bootstrap.HungerManager;
             if (hunger != null)
             {
@@ -213,6 +224,13 @@ namespace CindarsHope.UI.HUD
         {
             _stamina = evt.CurrentStamina;
             _maxStamina = evt.MaxStamina;
+            Render(force: true);
+        }
+
+        private void OnManaChanged(ManaChangedEvent evt)
+        {
+            _mana = evt.CurrentMana;
+            _maxMana = evt.MaxMana;
             Render(force: true);
         }
 
@@ -249,6 +267,7 @@ namespace CindarsHope.UI.HUD
             AppendClock();
             _builder.Append("    HP ").Append(_hp).Append('/').Append(_maxHp);
             _builder.Append("    Stamina ").Append(_stamina).Append('/').Append(_maxStamina);
+            _builder.Append("    MP ").Append(_mana).Append('/').Append(_maxMana);
             _builder.Append("    Fome ").Append(_hunger).Append('/').Append(_maxHunger);
             _builder.Append("    Ouro ").Append(_gold);
 
