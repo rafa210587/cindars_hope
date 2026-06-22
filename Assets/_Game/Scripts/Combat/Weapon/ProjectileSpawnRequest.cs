@@ -37,6 +37,13 @@ namespace CindarsHope.Combat.Weapon
         /// <summary>How many enemies the projectile can hit before despawning (1 = no pierce).</summary>
         public int MaxHits { get; set; } = 1;
 
+        /// <summary>
+        /// Fracao da velocidade inicial atingida no fim do alcance (game-feel de desaceleracao).
+        /// 1 = velocidade constante (default, magias/legado); 0.3 = chega a 30% da velocidade no
+        /// alcance maximo. A flecha usa &lt; 1 para comecar rapida e desacelerar conforme avanca.
+        /// </summary>
+        public float SpeedDecayToFraction { get; set; } = 1f;
+
         public ProjectileSpawnRequest()
         {
         }

@@ -13,6 +13,11 @@ namespace CindarsHope.Combat
 {
     public class BowArrowAttackService
     {
+        // Game-feel da flecha (1 tile = 1 metro). Alcance maximo de voo e fracao da velocidade
+        // inicial atingida no fim do alcance (sai rapida, desacelera conforme avanca).
+        private const float MaxArrowRangeTiles = 14f;
+        private const float ArrowSpeedDecayToFraction = 0.3f;
+
         // F02: provider de stats derivados (setado pelo PlayerAttackController; null-safe).
         public PlayerCombatStatsProvider StatsProvider { get; set; }
 
@@ -107,7 +112,10 @@ namespace CindarsHope.Combat
             var finalDamage = StatsProvider != null
                 ? StatsProvider.FinalDamage(preDeriveDamage, AttackWeight.Light, false, out _)
                 : preDeriveDamage;
-            var finalRange = bowWeapon.Range + (StatsProvider != null ? Mathf.Max(0f, StatsProvider.Current.BowRange) : 0f);
+            // Alcance da flecha em tiles (1 tile = 1 metro), capado no maximo de voo (~14m): além disso
+            // a flecha para (ProjectileBehaviour destroi ao ultrapassar o range).
+            var finalRange = Mathf.Min(MaxArrowRangeTiles,
+                bowWeapon.Range + (StatsProvider != null ? Mathf.Max(0f, StatsProvider.Current.BowRange) : 0f));
 
             // fable_48: a flecha define o DamageType (fire→Fire, frost→Ice, físicas→Physical). Físicas
             // herdam o do arco quando o resolver devolve Physical (preserva arcos elementais futuros).
@@ -135,6 +143,8 @@ namespace CindarsHope.Combat
             );
             spawnRequest.VisualStyle = ProjectileVisualStyle.Arrow;
             spawnRequest.AppliedTags = appliedTags;
+            // Game-feel: a flecha sai rapida e desacelera ate ArrowSpeedDecayToFraction no alcance maximo.
+            spawnRequest.SpeedDecayToFraction = ArrowSpeedDecayToFraction;
 
             var spawnResult = ProjectileSpawnService.SpawnProjectile(spawnRequest);
             if (!spawnResult.Success)

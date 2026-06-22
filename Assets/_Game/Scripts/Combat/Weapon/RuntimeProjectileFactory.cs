@@ -14,6 +14,9 @@ namespace CindarsHope.Combat.Weapon
         private static Sprite s_shaftSprite;
         private static Material s_trailMaterial;
 
+        // Escala visual da flecha (pequena, formato de dardo — nao um feixe de laser longo).
+        private static readonly Vector3 ArrowScale = new Vector3(0.32f, 0.1f, 1f);
+
         public static GameObject Create(ProjectileVisualStyle style, DamageType damageType)
         {
             var resolvedStyle = ResolveStyle(style, damageType);
@@ -36,7 +39,7 @@ namespace CindarsHope.Combat.Weapon
             {
                 renderer.sprite = GetShaftSprite();
                 renderer.color = tint;
-                projectile.transform.localScale = new Vector3(0.55f, 0.12f, 1f);
+                projectile.transform.localScale = ArrowScale;
             }
             else
             {
@@ -93,10 +96,10 @@ namespace CindarsHope.Combat.Weapon
                 renderer.color = ResolveTint(resolvedStyle, damageType);
             }
 
-            // Escala que faz a flecha LER como um shaft (o prefab placeholder vem em 0.2x0.2 = ponto).
+            // Escala pequena de dardo (o prefab placeholder vem em 0.2x0.2 = ponto; 0.55 ficava laser).
             if (isArrow)
             {
-                projectile.transform.localScale = new Vector3(0.55f, 0.12f, 1f);
+                projectile.transform.localScale = ArrowScale;
             }
             else if (projectile.transform.localScale == Vector3.zero)
             {

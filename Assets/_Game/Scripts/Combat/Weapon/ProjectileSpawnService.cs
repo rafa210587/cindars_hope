@@ -63,7 +63,8 @@ namespace CindarsHope.Combat.Weapon
                     request.DamageType,
                     request.KnockbackForce,
                     request.StatusEffect,
-                    request.StatusApplyChance
+                    request.StatusApplyChance,
+                    request.SpeedDecayToFraction
                 );
             }
             else
@@ -74,7 +75,8 @@ namespace CindarsHope.Combat.Weapon
                     request.Range,
                     request.BaseDamage,
                     request.DamageType,
-                    request.KnockbackForce
+                    request.KnockbackForce,
+                    request.SpeedDecayToFraction
                 );
             }
 
