@@ -624,6 +624,10 @@ namespace CindarsHope.Enemy
                 {
                     ApplyActionStatusesToPlayer(_pendingAction);
                     ApplyVampiricLifesteal(applied);
+                    GameEventBus.Publish(new PlayerDamagedEvent(applied, (Vector2)transform.position, _enemyData?.enemyId ?? "enemy", _enemyData?.DisplayName ?? "Enemy"));
+                    FloatingDamageNumberDisplayer.ShowAtTarget(playerManager.gameObject, applied, dmgType, false, true);
+                    var hitFlash = playerManager.GetComponentInChildren<HitFlashController>();
+                    if (hitFlash != null) hitFlash.Flash();
                 }
             }
         }
@@ -672,6 +676,10 @@ namespace CindarsHope.Enemy
                 {
                     ApplyActionStatusesToPlayer(action);
                     ApplyVampiricLifesteal(applied);
+                    GameEventBus.Publish(new PlayerDamagedEvent(applied, (Vector2)transform.position, _enemyData?.enemyId ?? "enemy", _enemyData?.DisplayName ?? "Enemy"));
+                    FloatingDamageNumberDisplayer.ShowAtTarget(playerManager.gameObject, applied, dmgType, false, true);
+                    var hitFlash = playerManager.GetComponentInChildren<HitFlashController>();
+                    if (hitFlash != null) hitFlash.Flash();
                 }
             }
         }
@@ -724,7 +732,13 @@ namespace CindarsHope.Enemy
                 var applied = CindarsHope.Combat.PlayerDamageReceiver.ApplyDamage(
                     playerManager, result.FinalDamage, _enemyData?.enemyId ?? "enemy", dmgType, gameObject);
                 if (applied > 0)
+                {
                     ApplyActionStatusesToPlayer(action);
+                    GameEventBus.Publish(new PlayerDamagedEvent(applied, (Vector2)transform.position, _enemyData?.enemyId ?? "enemy", _enemyData?.DisplayName ?? "Enemy"));
+                    FloatingDamageNumberDisplayer.ShowAtTarget(playerManager.gameObject, applied, dmgType, false, true);
+                    var hitFlash = playerManager.GetComponentInChildren<HitFlashController>();
+                    if (hitFlash != null) hitFlash.Flash();
+                }
             }
 
             Debug.Log($"[EnemyBrain] DeathTrigger fired. EnemyId={_enemyData?.enemyId}, ActionId={action.ActionId}, Damage={damage}, PlayerDist={dist:F2}");
