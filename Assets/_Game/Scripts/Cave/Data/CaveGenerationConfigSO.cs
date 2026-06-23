@@ -22,10 +22,13 @@ namespace CindarsHope.Cave.Data
         public int ExtraConnectionChancePercent = 20;
 
         [Header("Corridors")]
+        // Bumped 2->3 / 3->4 after the player VisualScale went 1.5->2.0: a ~1.2-unit-wide player collider
+        // filled ~60% of a 2-tile corridor (1 tile = 1 world unit). 3 tiles restores comfortable clearance
+        // with room for an enemy to share the corridor. Drives a GenerationConfigVersion bump below.
         [Tooltip("Minimum corridor width in tiles (1 = single tile, spec target >= 2).")]
-        public int CorridorMinWidth = 2;
+        public int CorridorMinWidth = 3;
         [Tooltip("Maximum corridor width in tiles.")]
-        public int CorridorMaxWidth = 3;
+        public int CorridorMaxWidth = 4;
 
         [Header("Boss Arena")]
         [Tooltip("Minimum side length for boss arena rooms in tiles.")]
@@ -41,7 +44,11 @@ namespace CindarsHope.Cave.Data
 
         [Header("Versioning")]
         [Tooltip("Increment when generation params change to invalidate old snapshots.")]
-        public int GenerationConfigVersion = 2;
+        // fable_78 (14.1): bumped 3->4 — o tamanho-base do mapa passou a escalar por banda
+        // (CaveBiomeLayoutProfile.ResolveMapSize), mudando layout/LayoutHash de níveis. Snapshots
+        // legados são invalidados → regeneração determinística limpa. O asset
+        // CaveGenerationConfig_Default.asset deve ser subido para 4 no Editor (DEFERRED_UNITY).
+        public int GenerationConfigVersion = 4;
 
         string IIdentifiedData.Id => Id;
 

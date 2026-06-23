@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using CindarsHope.Cave.Data;
 using CindarsHope.Cave.Generation;
 using CindarsHope.Enemy;
 using UnityEngine;
@@ -27,6 +28,24 @@ namespace CindarsHope.Cave.Runtime
             IEnumerable<EnemyFactionLockSO> factionLocks,
             int maxEnemies = DefaultMaxEnemies)
         {
+            return CreatePlan(generatedLevel, runManager, profiles, packs, factionLocks, null, maxEnemies);
+        }
+
+        /// <summary>
+        /// fable_78 (SLICE 2) — overload com o balance SO do ecossistema: quando fornecido, o alvo de
+        /// inimigos do nível passa a ser o THREAT BUDGET por banda (entre piso e teto, ≤ hard cap) e os
+        /// spawn points dentro do SafeEntryRadius da entrada são removidos (entrada segura, 14.4). Sem
+        /// balance, o comportamento legado (curva 16-32, cap 44) é preservado byte-a-byte.
+        /// </summary>
+        public CaveEnemySpawnPlan CreatePlan(
+            CaveGeneratedLevel generatedLevel,
+            CaveRunManager runManager,
+            IEnumerable<EnemySpawnProfileSO> profiles,
+            IEnumerable<EnemySpawnPackSO> packs,
+            IEnumerable<EnemyFactionLockSO> factionLocks,
+            CaveEcosystemBalanceSO ecosystemBalance,
+            int maxEnemies = DefaultMaxEnemies)
+        {
             if (generatedLevel == null)
             {
                 Debug.LogError("CaveEnemySpawnPlanner: Cannot create spawn plan for null CaveGeneratedLevel.");
@@ -50,6 +69,18 @@ namespace CindarsHope.Cave.Runtime
             };
 
             var spawnPoints = ResolveSpawnPoints(generatedLevel);
+
+            // fable_78 (14.4): entrada segura — remove spawn points dentro do SafeEntryRadius da entrada.
+            if (ecosystemBalance != null && ecosystemBalance.SafeEntryRadius > 0f)
+            {
+                var beforeSafe = spawnPoints.Count;
+                spawnPoints = ApplySafeEntryRadius(spawnPoints, generatedLevel.Entrance, ecosystemBalance.SafeEntryRadius);
+                if (spawnPoints.Count < beforeSafe)
+                {
+                    plan.Warnings.Add($"SafeEntryRadius removed {beforeSafe - spawnPoints.Count} spawn point(s) near the entrance.");
+                }
+            }
+
             if (spawnPoints.Count == 0)
             {
                 plan.Warnings.Add($"No valid enemy spawn points for level {generatedLevel.CaveLevel}.");
@@ -57,7 +88,17 @@ namespace CindarsHope.Cave.Runtime
                 return plan;
             }
 
-            var targetEnemyCount = ResolveTargetEnemyCount(levelSeed, maxEnemies, generatedLevel.CaveLevel);
+            int targetEnemyCount;
+            if (ecosystemBalance != null)
+            {
+                // fable_78 (14.4): alvo = threat budget por banda (entre piso e teto, ≤ hard cap).
+                var band = CaveBandScaling.BandForLevel(generatedLevel.CaveLevel);
+                targetEnemyCount = ResolveThreatBudget(band, generatedLevel.CaveLevel, ecosystemBalance);
+            }
+            else
+            {
+                targetEnemyCount = ResolveTargetEnemyCount(levelSeed, maxEnemies, generatedLevel.CaveLevel);
+            }
 
             // fable_37 (CA spawn): ponto ÚNICO nomeado do modificador de densidade por evento de mundo
             // (pico de Cinza +30% undead, infestação +20%, dia nublado calmo −15%). Lê WorldEventHooks
@@ -327,6 +368,161 @@ namespace CindarsHope.Cave.Runtime
             var upperBound = Math.Max(minBound, maxBound);
             var range = Math.Max(1, upperBound - minBound + 1);
             return minBound + Math.Abs(levelSeed % range);
+        }
+
+        // ===================================================================================
+        // fable_78 (SLICE 2) — métodos PUROS e DETERMINÍSTICOS: threat budget (14.4), gating
+        // aquático (14.3), distribuição por sala (14.4) e entrada segura (14.4). Tudo lê do
+        // CaveEcosystemBalanceSO (rule no-magic-balance-values) e usa StableHash (FNV-1a), sem
+        // UnityEngine.Random. As entranhas data-driven do CreatePlan permanecem intactas.
+        // ===================================================================================
+
+        /// <summary>
+        /// fable_78 (14.4) — orçamento de ameaça DETERMINÍSTICO do nível, ENTRE o piso e o teto da
+        /// banda (ThreatBudgetMinByBand / ThreatBudgetMaxByBand do balance SO) e nunca acima do
+        /// EnemyDensityHardCap. O budget cresce com a profundidade dentro da banda (interpolação
+        /// determinística entre piso e teto pela posição relativa do nível na banda), garantindo
+        /// desafio mínimo (piso) sem inflar só a contagem (teto). <paramref name="band"/> é 1..7.
+        /// </summary>
+        public static int ResolveThreatBudget(int band, int caveLevel, CaveEcosystemBalanceSO balance)
+        {
+            if (balance == null)
+            {
+                return MinEnemiesPerLevel;
+            }
+
+            var bandIndex = Mathf.Clamp(band - 1, 0, CaveEcosystemBalanceSO.BandCount - 1);
+            var floor = balance.GetThreatBudgetMin(bandIndex);
+            var ceiling = balance.GetThreatBudgetMax(bandIndex);
+            if (ceiling < floor)
+            {
+                ceiling = floor;
+            }
+
+            // Posição relativa do nível dentro da banda (0..1) → interpola piso→teto, monotônico.
+            var bandMin = CaveBandScaling.BandMinLevel(band);
+            var bandMax = band >= 7 ? bandMin + 15 : CaveBandScaling.BandMinLevel(band + 1) - 1;
+            var span = Math.Max(1, bandMax - bandMin);
+            var within = Mathf.Clamp01((Math.Max(bandMin, caveLevel) - bandMin) / (float)span);
+
+            var budget = Mathf.RoundToInt(Mathf.Lerp(floor, ceiling, within));
+            budget = Mathf.Clamp(budget, floor, ceiling);
+            return Math.Min(budget, balance.EnemyDensityHardCap);
+        }
+
+        /// <summary>
+        /// fable_78 (14.3) — gating aquático: criaturas com <c>IsAquatic=true</c> só são elegíveis
+        /// quando o nível tem água. Sem água, são removidas dos candidatos. Pura e determinística
+        /// (preserva a ordem de entrada). O caller deriva <paramref name="hasWater"/> de
+        /// <see cref="CaveEnvironmentElementProfileSO.HasWater"/> da banda (ou do plano de elementos).
+        /// </summary>
+        public static List<AquaticCandidate> FilterAquaticEligibility(
+            IReadOnlyList<AquaticCandidate> candidates, bool hasWater)
+        {
+            var result = new List<AquaticCandidate>();
+            if (candidates == null)
+            {
+                return result;
+            }
+
+            foreach (var candidate in candidates)
+            {
+                if (candidate.IsAquatic && !hasWater)
+                {
+                    continue; // aquático sem lago → não entra
+                }
+
+                result.Add(candidate);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// fable_78 (14.4) — distribui um total de inimigos POR SALA (não pela área bruta), de forma
+        /// determinística e proporcional ao tamanho da sala, para que mapas grandes (90×90) não fiquem
+        /// esparsos. Retorna a contagem por índice de sala; a soma == <paramref name="totalEnemies"/>
+        /// (salvo quando não há salas, caso em que retorna lista vazia). Pura, sem Random.
+        /// </summary>
+        public static List<int> DistributeEnemiesPerRoom(
+            IReadOnlyList<CaveRoom> rooms, int totalEnemies)
+        {
+            var counts = new List<int>();
+            if (rooms == null || rooms.Count == 0 || totalEnemies <= 0)
+            {
+                return counts;
+            }
+
+            var areas = new int[rooms.Count];
+            long totalArea = 0;
+            for (var i = 0; i < rooms.Count; i++)
+            {
+                areas[i] = Math.Max(1, rooms[i].Width * rooms[i].Height);
+                totalArea += areas[i];
+            }
+
+            var assigned = 0;
+            for (var i = 0; i < rooms.Count; i++)
+            {
+                counts.Add((int)((long)totalEnemies * areas[i] / totalArea));
+                assigned += counts[counts.Count - 1];
+            }
+
+            // Distribui o resto determinísticamente para as maiores salas primeiro (estável por índice).
+            var remainder = totalEnemies - assigned;
+            var order = Enumerable.Range(0, rooms.Count)
+                .OrderByDescending(i => areas[i])
+                .ThenBy(i => i)
+                .ToList();
+            for (var r = 0; r < remainder; r++)
+            {
+                counts[order[r % order.Count]]++;
+            }
+
+            return counts;
+        }
+
+        /// <summary>
+        /// fable_78 (14.4) — entrada segura: remove spawn points dentro do <c>SafeEntryRadius</c> do
+        /// spawn de entrada (anti-envelopamento ao entrar num nível denso). Distância euclidiana em
+        /// tiles. Pura e determinística (preserva ordem). O número é tunável no balance SO.
+        /// </summary>
+        public static List<Vector2Int> ApplySafeEntryRadius(
+            IReadOnlyList<Vector2Int> spawnPoints, Vector2Int entranceGrid, float safeEntryRadius)
+        {
+            var result = new List<Vector2Int>();
+            if (spawnPoints == null)
+            {
+                return result;
+            }
+
+            var radiusSqr = safeEntryRadius * safeEntryRadius;
+            foreach (var point in spawnPoints)
+            {
+                var dx = point.x - entranceGrid.x;
+                var dy = point.y - entranceGrid.y;
+                if (dx * dx + dy * dy < radiusSqr)
+                {
+                    continue; // dentro do raio seguro → sem inimigo
+                }
+
+                result.Add(point);
+            }
+
+            return result;
+        }
+
+        /// <summary>Candidato de spawn com a flag aquática do bestiário (para o gating 14.3).</summary>
+        public readonly struct AquaticCandidate
+        {
+            public readonly string EnemyId;
+            public readonly bool IsAquatic;
+
+            public AquaticCandidate(string enemyId, bool isAquatic)
+            {
+                EnemyId = enemyId ?? string.Empty;
+                IsAquatic = isAquatic;
+            }
         }
 
         private static string ResolveFactionId(

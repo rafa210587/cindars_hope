@@ -19,11 +19,40 @@ namespace CindarsHope.Cave.Generation
     public sealed class CaveBiomeLayoutProfile
     {
         // EMENDA 2026-06-12 (Q12.1): base 55×55; ~20% 42×42; ~20% 65×65; oscilação determinística.
+        // fable_78 (14.1): o tamanho-base passa a ESCALAR com a profundidade por banda (ver
+        // BandBaseMapSize abaixo). Estas constantes permanecem como a referência da banda Stone
+        // (banda 1) e como o pivô de re-escala de densidade por área.
         public const int BaseMapSize = 55;
         public const int SmallMapSize = 42;
         public const int LargeMapSize = 65;
         // Densidade re-escalada por área: count_final = count_base × (área / BaseArea).
         public const float BaseArea = BaseMapSize * BaseMapSize; // 3025
+
+        // fable_78 (14.1) — tamanho-base do mapa por banda (lado do quadrado), crescendo
+        // MONOTONICAMENTE com a profundidade: Stone(1) ~60 → Deep/Void(6-7) ~90. Indexado pela
+        // banda 1..7 (CaveBandScaling.BandForLevel). Constantes nomeadas (rule no-magic-balance-values),
+        // não literais soltas. A variação por seed (small/base/large) é aplicada como um DELTA sobre
+        // estes bases, preservando os buckets do fable_09.
+        public const int Band1BaseMapSize = 60; // stone
+        public const int Band2BaseMapSize = 64; // fungal
+        public const int Band3BaseMapSize = 69; // ice
+        public const int Band4BaseMapSize = 74; // fire
+        public const int Band5BaseMapSize = 79; // ruins
+        public const int Band6BaseMapSize = 90; // deep
+        public const int Band7BaseMapSize = 90; // void
+
+        // Delta de variação por seed em torno do base da banda (preserva os buckets small/base/large
+        // do fable_09: ~20% menor, ~20% maior, ~60% base). Mantém a base 55 com 42/55/65 (±13)
+        // proporcional; aqui usamos um delta fixo nomeado para todas as bandas.
+        public const int SeedVariationDelta = 6;
+
+        private static readonly int[] BandBaseMapSizeByBand =
+        {
+            // índice 0 é fallback (= banda 1); índices 1..7 mapeiam as bandas.
+            Band1BaseMapSize,
+            Band1BaseMapSize, Band2BaseMapSize, Band3BaseMapSize, Band4BaseMapSize,
+            Band5BaseMapSize, Band6BaseMapSize, Band7BaseMapSize
+        };
 
         public string BandId { get; }
         public int MinLevel { get; }
@@ -189,24 +218,52 @@ namespace CindarsHope.Cave.Generation
         }
 
         /// <summary>
-        /// Lado do mapa (quadrado) DETERMINÍSTICO para este nível/run. EMENDA Q12.1:
-        /// ~20% 42×42, ~20% 65×65, ~60% 55×55. Mesma run/level → mesmo tamanho (cave-stable-run).
+        /// Lado do mapa (quadrado) DETERMINÍSTICO para este nível/run.
+        ///
+        /// fable_78 (14.1): o tamanho-base ESCALA com a profundidade por banda — Stone(1) ~60 →
+        /// Deep/Void(6-7) ~90 (BandBaseMapSize, monotônico) — PRESERVANDO a variação por seed do
+        /// fable_09 (Q12.1: ~20% menor, ~20% maior, ~60% base), aplicada como delta sobre o base
+        /// da banda. Mesma (worldSeed, runSeed, caveLevel) → mesmo tamanho (cave-stable-run/ADR-0005).
         /// </summary>
         public static int ResolveMapSize(string caveWorldSeed, string caveRunSeed, int caveLevel)
         {
-            var hash = CaveLayoutStableHash.Compute($"{caveWorldSeed}|{caveRunSeed}|{Mathf.Max(1, caveLevel)}|size");
+            var level = Mathf.Max(1, caveLevel);
+            var bandBase = ResolveBandBaseMapSize(level);
+
+            var hash = CaveLayoutStableHash.Compute($"{caveWorldSeed}|{caveRunSeed}|{level}|size");
             var bucket = Mathf.Abs(hash % 100);
             if (bucket < 20)
             {
-                return SmallMapSize;
+                return bandBase - SeedVariationDelta; // bucket "small"
             }
 
             if (bucket < 40)
             {
-                return LargeMapSize;
+                return bandBase + SeedVariationDelta; // bucket "large"
             }
 
-            return BaseMapSize;
+            return bandBase; // bucket "base"
+        }
+
+        /// <summary>
+        /// Tamanho-base (lado do quadrado) da banda que contém o nível, antes da variação por seed.
+        /// Cresce monotonicamente com a profundidade. Thresholds inline (banda 1..7) para que
+        /// Generation NÃO dependa de Runtime (CaveBandScaling). Mesmo switch canônico de banda.
+        /// </summary>
+        public static int ResolveBandBaseMapSize(int caveLevel)
+        {
+            var level = Mathf.Max(1, caveLevel);
+            int band;
+            if (level <= 10) band = 1;
+            else if (level <= 25) band = 2;
+            else if (level <= 40) band = 3;
+            else if (level <= 55) band = 4;
+            else if (level <= 70) band = 5;
+            else if (level <= 85) band = 6;
+            else band = 7;
+
+            var clamped = Mathf.Clamp(band, 1, BandBaseMapSizeByBand.Length - 1);
+            return BandBaseMapSizeByBand[clamped];
         }
 
         /// <summary>
