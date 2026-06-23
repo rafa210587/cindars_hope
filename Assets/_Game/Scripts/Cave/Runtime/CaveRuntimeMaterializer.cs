@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using CindarsHope.Cave.Data;
+using CindarsHope.Cave.Ecosystem;
 using CindarsHope.Cave.Generation;
 using CindarsHope.Cave.Resources;
 using CindarsHope.Cave.Traps;
@@ -52,6 +53,13 @@ namespace CindarsHope.Cave.Runtime
         [SerializeField] private SpriteRenderer _hazardTilePrefab;
         // fable_60: prefab opcional do tile de armadilha (fallback procedural quando ausente).
         [SerializeField] private SpriteRenderer _trapTilePrefab;
+        // fable_78: dados/balance do ecossistema + prefabs opcionais de elementos ambientais.
+        // Os prefabs serão criados no Unity (slice 6); quando ausentes, logamos wiring-error claro e
+        // seguimos com um placeholder procedural null-safe (sem GameObject.Find).
+        [SerializeField] private CaveEnvironmentElementDatabaseSO _environmentElementDatabase;
+        [SerializeField] private CaveEcosystemBalanceSO _ecosystemBalance;
+        [SerializeField] private SpriteRenderer _decorElementPrefab;
+        [SerializeField] private SpriteRenderer _waterTilePrefab;
 
         private GameObject _generatedRuntimeRoot;
         private CaveExitPortal _backExitPortal;
@@ -76,6 +84,11 @@ namespace CindarsHope.Cave.Runtime
         private CaveTrapPlan _lastTrapPlan;
         private IReadOnlyList<CaveTrapSnapshotEntry> _snapshotTrapStates;
         private readonly Dictionary<string, CaveTrapSnapshotEntry> _trapStates = new Dictionary<string, CaveTrapSnapshotEntry>();
+        // fable_78: elementos ambientais materializados nesta sessão (snapshot na entrada + depleção
+        // desta sessão) + presença de água. Mesmo idioma de _trapStates/_openedChestIds.
+        private IReadOnlyList<SerializedEnvironmentElement> _snapshotEnvironmentElements;
+        private readonly List<SerializedEnvironmentElement> _lastEnvironmentElements = new List<SerializedEnvironmentElement>();
+        private bool _lastHasWater;
 
         public CaveExitPortal BackExitPortal => _backExitPortal;
         public CaveExitPortal ForwardExitPortal => _forwardExitPortal;
@@ -92,6 +105,9 @@ namespace CindarsHope.Cave.Runtime
         // fable_60: plano de armadilhas materializado e estado por instância (para o snapshot).
         public CaveTrapPlan LastTrapPlan => _lastTrapPlan;
         public IReadOnlyCollection<CaveTrapSnapshotEntry> TrapStates => _trapStates.Values;
+        // fable_78: elementos ambientais materializados + presença de água (para o snapshot stable-run).
+        public IReadOnlyList<SerializedEnvironmentElement> LastEnvironmentElements => _lastEnvironmentElements;
+        public bool LastHasWater => _lastHasWater;
 
         public void Materialize(CaveGeneratedLevel generatedLevel, CaveSpawnAnchor spawnAnchor = CaveSpawnAnchor.Entrance)
         {
@@ -103,6 +119,7 @@ namespace CindarsHope.Cave.Runtime
             _snapshotEnemyHpRecords = snapshot?.EnemyHpRecords;
             _snapshotOpenedChestIds = snapshot?.OpenedChestIds; // fable_09: revisita mostra baú aberto
             _snapshotTrapStates = snapshot?.TrapStates;          // fable_60: revisita preserva estado das armadilhas
+            _snapshotEnvironmentElements = snapshot?.EnvironmentElements; // fable_78: revisita restaura elementos
             MaterializeInternal(
                 generatedLevel,
                 spawnAnchor,
@@ -163,6 +180,9 @@ namespace CindarsHope.Cave.Runtime
             _snapshotEnemySpawnPlan = enemySpawnPlanOverride;
             _snapshotResourceNodeStates = resourceNodeStateOverride;
             _lastResourceNodeSnapshots.Clear();
+            // fable_78: estado de elementos ambientais começa zerado nesta materialização.
+            _lastEnvironmentElements.Clear();
+            _lastHasWater = false;
 
             // fable_09: o conjunto de baús abertos começa do snapshot (revisita) e cresce nesta sessão.
             _openedChestIds.Clear();
@@ -228,6 +248,12 @@ namespace CindarsHope.Cave.Runtime
             // fable_09: hazards + sala de tesouro DETERMINÍSTICOS (após inimigos, para realocar guardiões).
             MaterializeHazardsAndTreasure(generatedLevel);
 
+            // fable_78: elementos ambientais por bioma (decor/água/minerável). Determinístico na geração
+            // fresh; restaurado do snapshot na revisita (sem re-planejar — stable-run / ADR-0005).
+            // Roda após o player spawn estar resolvido (_lastPlayerSpawnGrid) para manter os elementos
+            // longe do ponto de chegada, igual aos hazards.
+            MaterializeEnvironmentElements(generatedLevel);
+
             CombatLog.Log(
                 $"CaveRuntimeMaterializer: Materialized level {generatedLevel.CaveLevel}. Floor: {_lastMaterializationResult.CreatedFloorTiles}, Walls: {_lastMaterializationResult.CreatedWallTiles}, Resources: {_lastMaterializationResult.CreatedResourceNodes}, Enemies: {_lastMaterializationResult.CreatedEnemies}. BackExit: {_lastMaterializationResult.BackExitPosition}, ForwardExit: {_lastMaterializationResult.ForwardExitPosition}. SpawnAnchor: {spawnAnchor}",
                 this);
@@ -238,6 +264,7 @@ namespace CindarsHope.Cave.Runtime
             _snapshotEnemyHpRecords = null;
             _snapshotOpenedChestIds = null;
             _snapshotTrapStates = null;
+            _snapshotEnvironmentElements = null;
         }
 
         private static Vector3 GridToWorld(Vector2Int gridPosition, CaveGeneratedLevel level)
@@ -977,6 +1004,296 @@ namespace CindarsHope.Cave.Runtime
             MaterializeTraps(generatedLevel, worldSeed, runSeed);
         }
 
+        // fable_78 (14.2/14.3): materializa os elementos ambientais do nível. Geração fresh chama o
+        // planner determinístico (CaveEnvironmentElementPlanner); revisita RESTAURA do snapshot sem
+        // re-planejar (stable-run / ADR-0005). Decor (não-)bloqueante via prefab serializado; tile de
+        // água marca HasWater (habilita aquáticos no spawn planner — slice 2); minerável REUSA
+        // ResourceNode + ResourceNodeDatabaseSO + a depleção idempotente do CaveLootSnapshotService.
+        // Null-safe: prefabs ausentes (DEFERRED_UNITY slice 6) logam wiring-error e seguem com placeholder.
+        private void MaterializeEnvironmentElements(CaveGeneratedLevel generatedLevel)
+        {
+            var elements = BuildOrRestoreEnvironmentElements(generatedLevel);
+            if (elements == null || elements.Count == 0)
+            {
+                return;
+            }
+
+            var parent = new GameObject("GeneratedEnvironmentElements");
+            parent.transform.SetParent(_generatedRuntimeRoot.transform);
+            parent.transform.localPosition = Vector3.zero;
+            _materializedObjects.Add(parent);
+
+            foreach (var element in elements)
+            {
+                if (element == null || string.IsNullOrWhiteSpace(element.ElementId))
+                {
+                    continue;
+                }
+
+                var gridPos = new Vector2Int(element.GridX, element.GridY);
+                switch ((CaveEnvironmentElementKind)element.Kind)
+                {
+                    case CaveEnvironmentElementKind.WaterTile:
+                        _lastHasWater = true;
+                        MaterializeWaterTile(generatedLevel, parent.transform, element, gridPos);
+                        break;
+                    case CaveEnvironmentElementKind.MineableNode:
+                        MaterializeMineableElement(generatedLevel, parent.transform, element, gridPos);
+                        break;
+                    case CaveEnvironmentElementKind.DecorBlocking:
+                        MaterializeDecorElement(generatedLevel, parent.transform, element, gridPos, blocking: true);
+                        break;
+                    default:
+                        MaterializeDecorElement(generatedLevel, parent.transform, element, gridPos, blocking: false);
+                        break;
+                }
+
+                _lastEnvironmentElements.Add(element);
+            }
+
+            CombatLog.Log(
+                $"CaveRuntimeMaterializer: materialized {_lastEnvironmentElements.Count} environment element(s) for level {generatedLevel.CaveLevel} (hasWater={_lastHasWater}).",
+                this);
+        }
+
+        // fable_78: revisita restaura a lista persistida (sem reroll); geração fresh planeja com o perfil
+        // do bioma + balance. Retorna SerializedEnvironmentElement (tipos simples) prontos p/ snapshot.
+        private List<SerializedEnvironmentElement> BuildOrRestoreEnvironmentElements(CaveGeneratedLevel generatedLevel)
+        {
+            // Revisita: restaura exatamente o que foi persistido (estado depletado incluso).
+            if (_snapshotEnvironmentElements != null && _snapshotEnvironmentElements.Count > 0)
+            {
+                var restored = new List<SerializedEnvironmentElement>(_snapshotEnvironmentElements.Count);
+                foreach (var element in _snapshotEnvironmentElements)
+                {
+                    if (element != null && !string.IsNullOrWhiteSpace(element.ElementId))
+                    {
+                        restored.Add(new SerializedEnvironmentElement
+                        {
+                            ElementId = element.ElementId,
+                            Kind = element.Kind,
+                            GridX = element.GridX,
+                            GridY = element.GridY,
+                            IsMineable = element.IsMineable,
+                            MineNodeDataId = element.MineNodeDataId ?? string.Empty,
+                            IsDepleted = element.IsDepleted
+                        });
+                    }
+                }
+
+                return restored;
+            }
+
+            // Geração fresh: resolve o perfil do bioma e planeja deterministicamente.
+            var profile = ResolveEnvironmentProfile(generatedLevel);
+            if (profile == null)
+            {
+                Debug.LogWarning(
+                    "CaveRuntimeMaterializer.MaterializeEnvironmentElements: no CaveEnvironmentElementProfileSO resolved. " +
+                    $"Scene='{gameObject.scene.name}', Component='{nameof(CaveRuntimeMaterializer)}', Field='_environmentElementDatabase', " +
+                    $"AffectedLevel={generatedLevel.CaveLevel}, BiomeId='{generatedLevel.BiomeId}'. " +
+                    "Environment elements skipped (DEFERRED_UNITY: profiles/database assets — slice 6).",
+                    this);
+                return null;
+            }
+
+            var worldSeed = _caveRunManager != null ? _caveRunManager.CaveWorldSeed : string.Empty;
+            var runSeed = _caveRunManager != null ? _caveRunManager.CaveRunSeed : string.Empty;
+            var plan = CaveEnvironmentElementPlanner.Build(
+                generatedLevel,
+                profile,
+                _ecosystemBalance,
+                worldSeed,
+                runSeed,
+                generatedLevel.CaveLevel,
+                _lastPlayerSpawnGrid);
+
+            var result = new List<SerializedEnvironmentElement>(plan.Placements.Count);
+            foreach (var placement in plan.Placements)
+            {
+                result.Add(new SerializedEnvironmentElement
+                {
+                    ElementId = placement.ElementId,
+                    Kind = (int)placement.Kind,
+                    GridX = placement.GridPosition.x,
+                    GridY = placement.GridPosition.y,
+                    IsMineable = placement.IsMineable,
+                    MineNodeDataId = placement.MineNodeDataId ?? string.Empty,
+                    IsDepleted = false
+                });
+            }
+
+            if (plan.HasWater)
+            {
+                _lastHasWater = true;
+            }
+
+            return result;
+        }
+
+        private CaveEnvironmentElementProfileSO ResolveEnvironmentProfile(CaveGeneratedLevel generatedLevel)
+        {
+            if (_environmentElementDatabase == null)
+            {
+                return null;
+            }
+
+            if (!string.IsNullOrWhiteSpace(generatedLevel.BiomeId)
+                && _environmentElementDatabase.TryGetByBiome(generatedLevel.BiomeId, out var byBiome)
+                && byBiome != null)
+            {
+                return byBiome;
+            }
+
+            // Fallback por banda (0..6) derivada do nível (BandForLevel é 1..7).
+            var band = Mathf.Clamp(CaveBandScaling.BandForLevel(generatedLevel.CaveLevel) - 1, 0, CaveEcosystemBalanceSO.BandCount - 1);
+            return _environmentElementDatabase.TryGetByBand(band, out var byBand) ? byBand : null;
+        }
+
+        private void MaterializeDecorElement(
+            CaveGeneratedLevel generatedLevel,
+            Transform parent,
+            SerializedEnvironmentElement element,
+            Vector2Int gridPos,
+            bool blocking)
+        {
+            var worldPos = GridToWorld(gridPos, generatedLevel);
+            SpriteRenderer spriteRenderer;
+            GameObject elementGO;
+
+            if (_decorElementPrefab != null)
+            {
+                spriteRenderer = Instantiate(_decorElementPrefab, worldPos, Quaternion.identity, parent);
+                elementGO = spriteRenderer.gameObject;
+            }
+            else
+            {
+                LogElementPrefabMissing(generatedLevel, element, nameof(_decorElementPrefab));
+                elementGO = new GameObject(element.ElementId);
+                elementGO.transform.SetParent(parent);
+                elementGO.transform.position = worldPos;
+                spriteRenderer = elementGO.AddComponent<SpriteRenderer>();
+                spriteRenderer.sprite = GetBuiltinSprite();
+                spriteRenderer.color = blocking ? new Color(0.45f, 0.4f, 0.35f) : new Color(0.55f, 0.55f, 0.5f, 0.85f);
+            }
+
+            elementGO.name = element.ElementId;
+            spriteRenderer.sortingOrder = 1;
+
+            // Decor bloqueante ocupa o tile (colisão); não-bloqueante é puramente visual.
+            if (blocking)
+            {
+                var collider = elementGO.GetComponent<BoxCollider2D>();
+                if (collider == null)
+                {
+                    collider = elementGO.AddComponent<BoxCollider2D>();
+                }
+                collider.size = Vector2.one;
+            }
+
+            _materializedObjects.Add(elementGO);
+        }
+
+        private void MaterializeWaterTile(
+            CaveGeneratedLevel generatedLevel,
+            Transform parent,
+            SerializedEnvironmentElement element,
+            Vector2Int gridPos)
+        {
+            var worldPos = GridToWorld(gridPos, generatedLevel);
+            SpriteRenderer spriteRenderer;
+            GameObject waterGO;
+
+            if (_waterTilePrefab != null)
+            {
+                spriteRenderer = Instantiate(_waterTilePrefab, worldPos, Quaternion.identity, parent);
+                waterGO = spriteRenderer.gameObject;
+            }
+            else
+            {
+                LogElementPrefabMissing(generatedLevel, element, nameof(_waterTilePrefab));
+                waterGO = new GameObject(element.ElementId);
+                waterGO.transform.SetParent(parent);
+                waterGO.transform.position = worldPos;
+                spriteRenderer = waterGO.AddComponent<SpriteRenderer>();
+                spriteRenderer.sprite = GetBuiltinSprite();
+                spriteRenderer.color = new Color(0.2f, 0.45f, 0.8f, 0.7f);
+            }
+
+            waterGO.name = element.ElementId;
+            spriteRenderer.sortingOrder = 0;
+            _materializedObjects.Add(waterGO);
+        }
+
+        // fable_78: minerável REUSA o caminho de ResourceNode existente (ResourceNodeDatabaseSO + Configure
+        // + CaveLootSnapshotService p/ depleção idempotente). Não cria sistema paralelo de mineração.
+        private void MaterializeMineableElement(
+            CaveGeneratedLevel generatedLevel,
+            Transform parent,
+            SerializedEnvironmentElement element,
+            Vector2Int gridPos)
+        {
+            // Estado depletado: não materializa o nó (revisita mostra veio esgotado).
+            if (element.IsDepleted)
+            {
+                return;
+            }
+
+            var nodeData = FindResourceNodeData(element.MineNodeDataId);
+            if (nodeData == null)
+            {
+                Debug.LogWarning(
+                    "CaveRuntimeMaterializer.MaterializeEnvironmentElements: mineable element data not found. " +
+                    $"Scene='{gameObject.scene.name}', Component='{nameof(CaveRuntimeMaterializer)}', Field='_resourceNodeDatabase', " +
+                    $"ElementId='{element.ElementId}', MineNodeDataId='{element.MineNodeDataId}', AffectedLevel={generatedLevel.CaveLevel}. " +
+                    "Mineable element skipped (DEFERRED_UNITY: ore ResourceNodeDataSO assets — slice 6).",
+                    this);
+                return;
+            }
+
+            var worldPos = GridToWorld(gridPos, generatedLevel);
+            ResourceNode resourceNode;
+            if (_resourceNodePrefab != null)
+            {
+                resourceNode = Instantiate(_resourceNodePrefab, worldPos, Quaternion.identity, parent);
+            }
+            else
+            {
+                var nodeGO = new GameObject(element.ElementId);
+                nodeGO.transform.SetParent(parent);
+                nodeGO.transform.position = worldPos;
+                resourceNode = nodeGO.AddComponent<ResourceNode>();
+            }
+
+            // Reusa a depleção idempotente: instância = ElementId (estável/determinístico).
+            ConfigureResourceNodeWithData(resourceNode, nodeData, element.ElementId, gridPos);
+
+            // Registra também na lista de snapshots de nós (mesma idempotência do CaveLootSnapshotService).
+            _lastResourceNodeSnapshots.Add(new CaveResourceNodeSnapshotEntry
+            {
+                NodeInstanceId = element.ElementId,
+                ResourceNodeId = nodeData.Id,
+                GridPosition = gridPos,
+                IsDepleted = _caveRunManager != null && _caveRunManager.IsNodeDepleted(element.ElementId)
+            });
+
+            _materializedObjects.Add(resourceNode.gameObject);
+            _lastMaterializationResult.CreatedResourceNodes++;
+        }
+
+        private void LogElementPrefabMissing(
+            CaveGeneratedLevel generatedLevel,
+            SerializedEnvironmentElement element,
+            string fieldName)
+        {
+            CombatLog.Log(
+                "CaveRuntimeMaterializer.MaterializeEnvironmentElements: element prefab not assigned, using procedural placeholder. " +
+                $"Scene='{gameObject.scene.name}', Component='{nameof(CaveRuntimeMaterializer)}', Field='{fieldName}', " +
+                $"ElementId='{element.ElementId}', AffectedLevel={generatedLevel.CaveLevel}. " +
+                "DEFERRED_UNITY: element prefabs (slice 6).",
+                this);
+        }
+
         private void MaterializeHazards(CaveGeneratedLevel generatedLevel, CaveHazardPlan plan)
         {
             if (plan == null || plan.Hazards.Count == 0)
@@ -1565,6 +1882,21 @@ namespace CindarsHope.Cave.Runtime
             {
                 enemyObject.AddComponent<DamagePopupAnchor>();
             }
+
+            // Fala ambiente de criatura (balão estilo HQ). Cave-only por construção: só é anexado aqui.
+            // ~1 em 10 criaturas fala uma frase curta a cada 30-60s. Cosmético — não afeta combate,
+            // loot nem o contrato de stable-run (chatter/timing não são conteúdo estável).
+            CindarsHope.Enemy.Speech.CreatureSpeechBubbleDisplayer.EnsureExists();
+            var chatter = enemyObject.GetComponent<CindarsHope.Enemy.Speech.CreatureChatterController>();
+            if (chatter == null)
+            {
+                chatter = enemyObject.AddComponent<CindarsHope.Enemy.Speech.CreatureChatterController>();
+            }
+            chatter.Configure(
+                enemyData.enemyId,
+                enemyData.CaveBand,
+                entry != null ? entry.EnemyInstanceId : enemyObject.name,
+                enemyObject.GetComponent<DamagePopupAnchor>());
 
             var brain = enemyObject.GetComponent<EnemyBrain>();
             if (brain == null)

@@ -88,6 +88,12 @@ namespace CindarsHope.Save
         public CaveEnemySpawnPlan EnemySpawnPlan = new CaveEnemySpawnPlan();
         public List<EnemySpawnPlanEntry> LegacyEnemySpawnPlanEntries = new List<EnemySpawnPlanEntry>();
         public List<string> Warnings = new List<string>();
+        // fable_78 (16.4): campos ADITIVOS — elementos ambientais, presença de água, estado de conflito.
+        // Tipos simples + IDs apenas (sem refs Unity). Save antigo sem estes campos carrega com defaults
+        // seguros (listas vazias, HasWater=false, conflito inativo) → regeneração determinística.
+        public List<SerializedEnvironmentElement> EnvironmentElements = new List<SerializedEnvironmentElement>();
+        public bool HasWater;
+        public CaveConflictSnapshot ConflictState = new CaveConflictSnapshot();
 
         public static SerializedVisitedLevelSnapshot FromSnapshot(VisitedLevelSnapshot snapshot)
         {
@@ -119,7 +125,60 @@ namespace CindarsHope.Save
                 FishingSpotState = snapshot.FishingSpotState,
                 EnemySpawnPlan = snapshot.EnemySpawnPlan,
                 LegacyEnemySpawnPlanEntries = new List<EnemySpawnPlanEntry>(snapshot.LegacyEnemySpawnPlanEntries),
-                Warnings = new List<string>(snapshot.Warnings)
+                Warnings = new List<string>(snapshot.Warnings),
+                EnvironmentElements = CloneEnvironmentElements(snapshot.EnvironmentElements),
+                HasWater = snapshot.HasWater,
+                ConflictState = CloneConflictState(snapshot.ConflictState)
+            };
+        }
+
+        // fable_78: deep-copy dos elementos ambientais (lista de DTOs simples — sem refs Unity).
+        private static List<SerializedEnvironmentElement> CloneEnvironmentElements(
+            List<SerializedEnvironmentElement> source)
+        {
+            var result = new List<SerializedEnvironmentElement>();
+            if (source == null)
+            {
+                return result;
+            }
+
+            foreach (var element in source)
+            {
+                if (element == null || string.IsNullOrWhiteSpace(element.ElementId))
+                {
+                    continue;
+                }
+
+                result.Add(new SerializedEnvironmentElement
+                {
+                    ElementId = element.ElementId,
+                    Kind = element.Kind,
+                    GridX = element.GridX,
+                    GridY = element.GridY,
+                    IsMineable = element.IsMineable,
+                    MineNodeDataId = element.MineNodeDataId ?? string.Empty,
+                    IsDepleted = element.IsDepleted
+                });
+            }
+
+            return result;
+        }
+
+        // fable_78: deep-copy do estado de conflito (default seguro quando ausente — back-compat).
+        private static CaveConflictSnapshot CloneConflictState(CaveConflictSnapshot source)
+        {
+            if (source == null)
+            {
+                return new CaveConflictSnapshot();
+            }
+
+            return new CaveConflictSnapshot
+            {
+                ConflictActive = source.ConflictActive,
+                FactionAId = source.FactionAId ?? string.Empty,
+                FactionBId = source.FactionBId ?? string.Empty,
+                HasHadConflict = source.HasHadConflict,
+                EntryCount = source.EntryCount
             };
         }
 
@@ -150,7 +209,11 @@ namespace CindarsHope.Save
                 FishingSpotState = FishingSpotState ?? new CaveFishingSpotSnapshotEntry(),
                 EnemySpawnPlan = EnemySpawnPlan ?? new CaveEnemySpawnPlan(),
                 LegacyEnemySpawnPlanEntries = new List<EnemySpawnPlanEntry>(LegacyEnemySpawnPlanEntries ?? new List<EnemySpawnPlanEntry>()),
-                Warnings = new List<string>(Warnings ?? new List<string>())
+                Warnings = new List<string>(Warnings ?? new List<string>()),
+                // fable_78: campos aditivos — ausência (save antigo) cai em defaults seguros.
+                EnvironmentElements = CloneEnvironmentElements(EnvironmentElements),
+                HasWater = HasWater,
+                ConflictState = CloneConflictState(ConflictState)
             };
 
             if ((snapshot.LegacyEnemySpawnPlanEntries == null || snapshot.LegacyEnemySpawnPlanEntries.Count == 0)

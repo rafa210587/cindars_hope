@@ -51,7 +51,10 @@ namespace CindarsHope.Cave.Runtime
             IEnumerable<string> depletedNodeIds,
             IEnumerable<EnemyHpRecord> enemyHpRecords = null,
             IEnumerable<string> openedChestIds = null,
-            IEnumerable<CaveTrapSnapshotEntry> trapStates = null)
+            IEnumerable<CaveTrapSnapshotEntry> trapStates = null,
+            IEnumerable<SerializedEnvironmentElement> environmentElements = null,
+            bool hasWater = false,
+            CaveConflictSnapshot conflictState = null)
         {
             if (generatedLevel == null)
             {
@@ -135,6 +138,22 @@ namespace CindarsHope.Cave.Runtime
                 {
                     snapshot.SetTrapState(trap.TrapInstanceId, trap.TrapKey, trap.Cell, trap.State);
                 }
+            }
+
+            // fable_78: elementos ambientais + presença de água + estado de conflito (aditivos, FORA do
+            // LayoutHash — estado mutável/comportamento por visita, mesmo tratamento de EnemyHpRecords).
+            snapshot.SetEnvironmentElements(environmentElements);
+            snapshot.HasWater = hasWater;
+            if (conflictState != null)
+            {
+                snapshot.ConflictState = new CaveConflictSnapshot
+                {
+                    ConflictActive = conflictState.ConflictActive,
+                    FactionAId = conflictState.FactionAId ?? string.Empty,
+                    FactionBId = conflictState.FactionBId ?? string.Empty,
+                    HasHadConflict = conflictState.HasHadConflict,
+                    EntryCount = conflictState.EntryCount
+                };
             }
 
             snapshot.LayoutHash = CalculateLayoutHash(snapshot);

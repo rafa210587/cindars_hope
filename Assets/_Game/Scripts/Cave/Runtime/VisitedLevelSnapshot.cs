@@ -48,6 +48,21 @@ namespace CindarsHope.Cave.Runtime
         // run mantém o revelado; nova run (troca de CaveRunSeed) gera snapshot novo = fog zerado.
         // NÃO é save global. Snapshot legado sem o campo = caverna nasce escura (lista vazia).
         [SerializeField] public List<Vector2Int> RevealedCells = new();
+        // fable_78 (14.8/16.4): elementos ambientais materializados NESTE nível/run (aditivo; FORA do
+        // LayoutHash). Posições/tipos são DETERMINÍSTICOS (re-deriváveis pelo CaveEnvironmentElementPlanner),
+        // mas o estado depletado de mineráveis é mutável — por isso persistimos a lista junto do snapshot,
+        // mesmo padrão de ResourceNodeStates. Snapshot legado sem o campo = lista vazia → regeneração
+        // determinística do plano de elementos na próxima materialização.
+        [SerializeField] public List<SerializedEnvironmentElement> EnvironmentElements = new();
+        // fable_78 (14.3/14.8): este nível tem tile(s) de água (lago)? Habilita criaturas aquáticas.
+        // Aditivo; snapshot legado sem o campo = false (re-derivado pelo perfil do bioma na materialização).
+        [SerializeField] public bool HasWater;
+        // fable_78 (14.5/14.8/16.4): estado de conflito inter-monstro do nível. Conflito é COMPORTAMENTO
+        // por visita (ADR-0018), NÃO composição: ConflictActive/FactionAId/FactionBId refletem a visita
+        // atual e podem mudar entre entradas; HasHadConflict e EntryCount são o estado persistido que
+        // governa a queda 5%->0,5% por entrada. Aditivo; snapshot legado sem o campo = conflito inativo,
+        // EntryCount=0, HasHadConflict=false (defaults seguros).
+        [SerializeField] public CaveConflictSnapshot ConflictState = new();
 
         int IVisitedLevelSnapshot.CaveLevel => CaveLevel;
         string IVisitedLevelSnapshot.SnapshotId => SnapshotId;
@@ -229,6 +244,66 @@ namespace CindarsHope.Cave.Runtime
             }
 
             return 0; // Armed
+        }
+
+        // fable_78: grava o conjunto de elementos ambientais do nível (idempotente por ElementId).
+        // Sobrescreve a lista corrente — o plano é determinístico; só o estado depletado varia.
+        public void SetEnvironmentElements(IEnumerable<SerializedEnvironmentElement> elements)
+        {
+            EnvironmentElements.Clear();
+            if (elements == null)
+            {
+                return;
+            }
+
+            foreach (var element in elements)
+            {
+                if (element != null && !string.IsNullOrWhiteSpace(element.ElementId))
+                {
+                    EnvironmentElements.Add(element);
+                }
+            }
+        }
+
+        // fable_78: marca um elemento minerável como depletado (idempotente). Estado mutável fora do
+        // LayoutHash — mesmo padrão de MarkResourceNodeDepleted. A depleção real do ResourceNode é
+        // idempotente via CaveLootSnapshotService; este flag espelha o estado para a revisita.
+        public void MarkEnvironmentElementDepleted(string elementId)
+        {
+            if (string.IsNullOrWhiteSpace(elementId))
+            {
+                return;
+            }
+
+            foreach (var element in EnvironmentElements)
+            {
+                if (element != null && element.ElementId == elementId)
+                {
+                    element.IsDepleted = true;
+                }
+            }
+        }
+
+        // fable_78: garante uma instância não-nula de ConflictState (back-compat de save antigo).
+        public CaveConflictSnapshot GetOrCreateConflictState()
+        {
+            return ConflictState ??= new CaveConflictSnapshot();
+        }
+
+        // fable_78: registra mais uma entrada no nível e (opcionalmente) o conflito desta visita.
+        // EntryCount cresce a cada entrada; HasHadConflict trava em true na primeira vez que um
+        // conflito é rolado (gatilho da queda 5%->0,5%). ConflictActive/Faction* refletem a visita atual.
+        public void RecordConflictEntry(bool conflictActive, string factionAId, string factionBId)
+        {
+            var state = GetOrCreateConflictState();
+            state.EntryCount += 1;
+            state.ConflictActive = conflictActive;
+            state.FactionAId = factionAId ?? string.Empty;
+            state.FactionBId = factionBId ?? string.Empty;
+            if (conflictActive)
+            {
+                state.HasHadConflict = true;
+            }
         }
 
         public void SetEnemySpawnPlan(CaveLevelEnemyPlan plan)
@@ -447,6 +522,35 @@ namespace CindarsHope.Cave.Runtime
         public string TrapKey = string.Empty;
         public Vector2Int Cell;
         public int State;
+    }
+
+    // fable_78: elemento ambiental serializável (tipos simples + IDs apenas — sem refs Unity).
+    // Kind espelha CindarsHope.Cave.Ecosystem.CaveEnvironmentElementKind (int):
+    // 0=DecorNonBlocking, 1=DecorBlocking, 2=WaterTile, 3=MineableNode. Posição em grid (GridX/GridY)
+    // para não depender de Vector2Int no JsonUtility de seções legadas. IsDepleted só vale p/ mineráveis.
+    [Serializable]
+    public sealed class SerializedEnvironmentElement
+    {
+        public string ElementId = string.Empty;
+        public int Kind;
+        public int GridX;
+        public int GridY;
+        public bool IsMineable;
+        public string MineNodeDataId = string.Empty;
+        public bool IsDepleted;
+    }
+
+    // fable_78: estado serializável do conflito inter-monstro do nível (tipos simples — sem refs Unity).
+    // EntryCount/HasHadConflict são o estado persistido que governa a chance por entrada (14.5);
+    // ConflictActive/FactionAId/FactionBId refletem a VISITA atual (comportamento, não composição).
+    [Serializable]
+    public sealed class CaveConflictSnapshot
+    {
+        public bool ConflictActive;
+        public string FactionAId = string.Empty;
+        public string FactionBId = string.Empty;
+        public bool HasHadConflict;
+        public int EntryCount;
     }
 
     [Serializable]

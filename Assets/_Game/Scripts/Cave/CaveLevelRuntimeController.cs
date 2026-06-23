@@ -290,7 +290,10 @@ namespace CindarsHope.Cave
                 _runManager.State.DepletedNodeIds,
                 _materializer != null ? _materializer.CollectEnemyHpRecords() : null,
                 _materializer != null ? _materializer.OpenedChestIds : null, // fable_09
-                _materializer != null ? _materializer.TrapStates : null); // fable_60
+                _materializer != null ? _materializer.TrapStates : null, // fable_60
+                _materializer != null ? _materializer.LastEnvironmentElements : null, // fable_78
+                _materializer != null && _materializer.LastHasWater, // fable_78
+                ResolveConflictStateForCapture()); // fable_78
 
             if (snapshot == null)
             {
@@ -308,6 +311,45 @@ namespace CindarsHope.Cave
                 $"  EnemySpawnPoints: {snapshot.EnemySpawnPointsList.Count}\n" +
                 $"  ResourceSpawnPoints: {snapshot.ResourceSpawnPointsList.Count}",
                 this);
+        }
+
+        // fable_78: resolve o estado de conflito a ser persistido na captura do snapshot. Preserva o
+        // estado persistido do nível corrente (EntryCount/HasHadConflict são acumulativos por run e NÃO
+        // podem ser zerados a cada recaptura). A rolagem de conflito por entrada (5%->0,5%) e a marcação
+        // de ConflictActive/Faction* da visita são da slice 4 (runtime de conflito); aqui só preservamos
+        // o estado existente para que a persistência aditiva já o carregue intacto.
+        private CaveConflictSnapshot ResolveConflictStateForCapture()
+        {
+            if (CurrentGeneratedLevel != null
+                && _runManager != null
+                && _runManager.State.VisitedLevelSnapshots.TryGetValue(CurrentGeneratedLevel.CaveLevel, out var existing)
+                && existing?.ConflictState != null)
+            {
+                return existing.ConflictState;
+            }
+
+            return null;
+        }
+
+        // fable_78: regrava os elementos ambientais (e a presença de água) no snapshot do nível atual
+        // antes de sair/salvar. Mesmo padrão de RefreshCurrentSnapshotTrapStates — o estado depletado de
+        // mineráveis é mutável (fora do LayoutHash); a depleção real é idempotente via CaveLootSnapshotService.
+        public void RefreshCurrentSnapshotEnvironmentElements()
+        {
+            if (CurrentGeneratedLevel == null || _materializer == null || _runManager == null)
+            {
+                return;
+            }
+
+            if (_runManager.State.VisitedLevelSnapshots.TryGetValue(CurrentGeneratedLevel.CaveLevel, out var snapshot)
+                && snapshot != null)
+            {
+                snapshot.SetEnvironmentElements(_materializer.LastEnvironmentElements);
+                if (_materializer.LastHasWater)
+                {
+                    snapshot.HasWater = true;
+                }
+            }
         }
 
         // F13: regrava o HP corrente dos inimigos no snapshot do nível atual antes de sair
