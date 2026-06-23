@@ -1,7 +1,7 @@
 # Execution Report — fable_78 (Caverna Viva: Povoamento e Ecossistema)
 
 > **Spec:** `fable_78_spec_cave_ecosystem_population_runtime`
-> **Status:** `BUILD_VALIDATED_WITH_WARNINGS` — **SLICES 1-4 de 6** concluídas (slice 4 com architecture-reviewer + non-regression PASS). A spec como um todo **NÃO está completa** e **NÃO** deve ser promovida.
+> **Status:** `BUILD_VALIDATED_WITH_WARNINGS` — **SLICES 1-5 de 6** concluídas (slice 4 com architecture-reviewer + non-regression PASS). Resta a slice 6 (Unity: assets/prefabs + Test Runner + Play Mode). A spec como um todo **NÃO está completa** e **NÃO** deve ser promovida.
 > **Date:** 2026-06-23
 > **Branch:** dev
 
@@ -31,7 +31,7 @@ Slice 1 NÃO tocou: `EnemyBrain`, `EnemyHealth`, `EnemyPackCoordinator`, `CaveEn
 | 14.3 Lagos→aquáticos | OK no nível de gating (slice 2): `FilterAquaticEligibility(hasWater)`; materialização de lago = slice 3 | `CaveEnemySpawnPlanner.cs`, `CaveThreatBudgetTests.cs` |
 | 14.4 Threat budget | OK (slice 2) — piso/teto + densidade por sala + entrada segura | `CaveEnemySpawnPlanner.cs`, `CaveThreatBudgetTests.cs` |
 | 14.6 Comportamento de conflito (aggro/dano/ferido/loot reduzido) | DEFERRED (slice 4 — toca `EnemyBrain`/`EnemyHealth`) | — |
-| 14.7 Merchant enriquecido | DEFERRED (slice 5) | — |
+| 14.7 Merchant enriquecido | OK (slice 5) — estoque temático por bioma + variedade, determinístico, back-compat | `CaveWanderingMerchant.cs`, `CaveWanderingMerchantStockTests.cs` |
 | 14.8 Persistência/save aditivo | OK (slice 3) — snapshot/CaveSaveData aditivos + back-compat test; materialização runtime = Play Mode deferido | `VisitedLevelSnapshot.cs`, `CaveSnapshotService.cs`, `CaveSaveData.cs`, `CaveRuntimeMaterializer.cs`, `CaveSaveBackCompatTests.cs` |
 | 14.9 Invariantes arquitetura | OK na slice (sem global search; eventos via bus; sem refs Unity em DTO; FNV-1a) | diff + builds |
 
@@ -107,7 +107,7 @@ Residual risk:                  Testes compilam mas não executados via Test Run
 - ~~**Slice 2:** tamanho por banda + threat budget + densidade + gating aquático~~ ✅ FEITO. **DEFERRED_UNITY:** humano deve subir `GenerationConfigVersion` 3→4 no asset `CaveGenerationConfig_Default.asset` (só o default em código foi alterado) para invalidar snapshots legados.
 - ~~**Slice 3:** materialização + persistência aditiva~~ ✅ FEITO (persistência + back-compat testados; materialização runtime null-safe com **DEFERRED_UNITY:** prefabs `_decorElementPrefab`/`_waterTilePrefab` + database/profiles + nodes de minério, e **Play Mode deferido**). GenerationConfigVersion já bumpado na slice 2.
 - ~~**Slice 4 (alto risco):** conflito em runtime — targeting de rival (`EnemyBrain`), dano inter-monstro + "Ferido" + corpo com loot reduzido (`EnemyHealth`), feedback de HUD obrigatório.~~ ✅ FEITO (ver seção SLICE 4 abaixo). non-regression PASS. **Play Mode deferido.**
-- **Slice 5:** mercador errante enriquecido.
+- ~~**Slice 5:** mercador errante enriquecido~~ ✅ FEITO (estoque temático por bioma + variedade, determinístico, back-compat; teste EditMode).
 - **Slice 6:** geradores de editor + data assets (Unity), EditMode Test Runner, replay validator, cenário humano de Play Mode.
 
 **Não promover a `implementados/` até todas as slices + Play Mode humano.**

@@ -17,6 +17,13 @@ namespace CindarsHope.Cave.Runtime
     /// same level in the same run always yields the same merchant (or absence of one).
     /// No GUIDs, no timestamps, no UnityEngine.Random.
     ///
+    /// fable_78 (SLICE 5 / criterio 14.7): the stock is now THEMED PER BIOME BAND and has
+    /// wider variety. Each band (stone/fungal/ice/fire/ruins/deep/void — the same canonical
+    /// switch as CaveBiomeLayoutProfile.ForLevel) exposes its own offer pool; the level still
+    /// selects N distinct offers deterministically, but now from the pool of THAT band. The
+    /// flat OfferCatalog surface and ResolveOfferIndices are preserved (back-compat) as the
+    /// "always available" baseline goods carried on every floor.
+    ///
     /// Trade flow reuses the event-driven economy path (ItemPurchaseRequestedEvent /
     /// SellAllRequestedEvent handled by EconomyManager), so no modal shop UI is required
     /// inside CaveScene.
@@ -28,18 +35,10 @@ namespace CindarsHope.Cave.Runtime
         private const int MinDistanceFromEntrance = 6;
         private const int MinDistanceFromExit = 3;
 
-        private static GameObject s_merchantRoot;
+        /// <summary>How many distinct offers the merchant stocks on a level.</summary>
+        public const int OffersPerLevel = 3;
 
-        /// <summary>Deterministic stock catalog. Offers rotate per level via the level seed.</summary>
-        public static readonly MerchantOffer[] OfferCatalog =
-        {
-            new MerchantOffer("item_consumable_potion_hp_small", 2, 60, "Comprar 2 Pocoes de Vida (60 ouro)"),
-            new MerchantOffer("item_consumable_food_bread", 3, 30, "Comprar 3 Paes (30 ouro)"),
-            new MerchantOffer("item_consumable_repair_kit_basic", 1, 45, "Comprar Kit de Reparo (45 ouro)"),
-            new MerchantOffer("item_consumable_food_carrot_stew", 2, 40, "Comprar 2 Ensopados (40 ouro)"),
-            new MerchantOffer("item_material_wood", 5, 25, "Comprar 5 Madeiras (25 ouro)"),
-            new MerchantOffer("item_seed_carrot", 4, 20, "Comprar 4 Sementes de Cenoura (20 ouro)")
-        };
+        private static GameObject s_merchantRoot;
 
         public readonly struct MerchantOffer
         {
@@ -56,6 +55,87 @@ namespace CindarsHope.Cave.Runtime
             public int TotalCost { get; }
             public string Prompt { get; }
         }
+
+        // ── Baseline (band-agnostic) goods carried on every floor ────────────────────────
+        // Preserved as the historical flat surface (back-compat for OfferCatalog /
+        // ResolveOfferIndices). Every level's themed pool starts from these and appends the
+        // band-specific offers below. All ids are canonical (CanonicalItemCatalog).
+        public static readonly MerchantOffer[] OfferCatalog =
+        {
+            new MerchantOffer("item_consumable_potion_hp_small", 2, 60, "Comprar 2 Pocoes de Vida (60 ouro)"),
+            new MerchantOffer("item_consumable_food_bread", 3, 30, "Comprar 3 Paes (30 ouro)"),
+            new MerchantOffer("item_consumable_repair_kit_basic", 1, 45, "Comprar Kit de Reparo (45 ouro)"),
+            new MerchantOffer("item_consumable_food_miners_ration", 2, 90, "Comprar 2 Racoes de Minerador (90 ouro)"),
+            new MerchantOffer("item_material_wood", 5, 25, "Comprar 5 Madeiras (25 ouro)"),
+            new MerchantOffer("item_material_stone", 5, 25, "Comprar 5 Pedras (25 ouro)")
+        };
+
+        // ── Band-specific themed offers ──────────────────────────────────────────────────
+        // One pool per canonical band. Each pool is the band flavour ON TOP of the baseline
+        // goods (the spawn path concatenates baseline + band). All ids are canonical.
+        private static readonly MerchantOffer[] StoneBandOffers =
+        {
+            new MerchantOffer("item_material_copper_ore", 3, 30, "Comprar 3 Minerios de Cobre (30 ouro)"),
+            new MerchantOffer("item_material_iron_ore", 2, 36, "Comprar 2 Minerios de Ferro (36 ouro)"),
+            new MerchantOffer("item_consumable_food_bread", 5, 45, "Comprar 5 Paes (45 ouro)")
+        };
+
+        private static readonly MerchantOffer[] FungalBandOffers =
+        {
+            new MerchantOffer("item_material_glowcap", 3, 48, "Comprar 3 Glowcaps (48 ouro)"),
+            new MerchantOffer("item_material_spores", 4, 50, "Comprar 4 Esporos (50 ouro)"),
+            new MerchantOffer("item_consumable_potion_mp_small", 2, 100, "Comprar 2 Pocoes de Mana (100 ouro)"),
+            new MerchantOffer("item_essence_toxic", 1, 50, "Comprar Essencia Toxica (50 ouro)")
+        };
+
+        private static readonly MerchantOffer[] IceBandOffers =
+        {
+            new MerchantOffer("item_material_frost_core", 1, 50, "Comprar Nucleo Gelido (50 ouro)"),
+            new MerchantOffer("item_consumable_potion_ice_resist", 2, 140, "Comprar 2 Pocoes de Resist. ao Gelo (140 ouro)"),
+            new MerchantOffer("item_essence_ice", 1, 65, "Comprar Essencia de Gelo (65 ouro)")
+        };
+
+        private static readonly MerchantOffer[] FireBandOffers =
+        {
+            new MerchantOffer("item_material_ember_fang", 1, 50, "Comprar Presa de Brasa (50 ouro)"),
+            new MerchantOffer("item_consumable_potion_fire_resist", 2, 140, "Comprar 2 Pocoes de Resist. ao Fogo (140 ouro)"),
+            new MerchantOffer("item_essence_fire", 1, 65, "Comprar Essencia de Fogo (65 ouro)")
+        };
+
+        private static readonly MerchantOffer[] RuinsBandOffers =
+        {
+            new MerchantOffer("item_material_silver_ore", 2, 66, "Comprar 2 Minerios de Prata (66 ouro)"),
+            new MerchantOffer("item_consumable_repair_kit_standard", 1, 90, "Comprar Kit de Reparo Padrao (90 ouro)"),
+            new MerchantOffer("item_consumable_potion_hp_medium", 2, 180, "Comprar 2 Pocoes Maiores de Vida (180 ouro)")
+        };
+
+        private static readonly MerchantOffer[] DeepBandOffers =
+        {
+            new MerchantOffer("item_material_mithril_ore", 1, 88, "Comprar Minerio de Mithril (88 ouro)"),
+            new MerchantOffer("item_material_arcane_crystal", 1, 66, "Comprar Cristal Arcano (66 ouro)"),
+            new MerchantOffer("item_essence_arcane", 1, 82, "Comprar Essencia Arcana (82 ouro)"),
+            new MerchantOffer("item_consumable_repair_kit_superior", 1, 180, "Comprar Kit de Reparo Superior (180 ouro)")
+        };
+
+        private static readonly MerchantOffer[] VoidBandOffers =
+        {
+            new MerchantOffer("item_essence_void", 1, 99, "Comprar Essencia do Vazio (99 ouro)"),
+            new MerchantOffer("item_material_star_iron", 1, 132, "Comprar Ferro Estelar (132 ouro)"),
+            new MerchantOffer("item_consumable_potion_mp_medium", 2, 190, "Comprar 2 Pocoes Maiores de Mana (190 ouro)")
+        };
+
+        // Canonical band id -> themed offers. Keys match CaveBiomeLayoutProfile.BandId.
+        private static readonly IReadOnlyDictionary<string, MerchantOffer[]> BandOffers =
+            new Dictionary<string, MerchantOffer[]>(StringComparer.Ordinal)
+            {
+                { "stone", StoneBandOffers },
+                { "fungal", FungalBandOffers },
+                { "ice", IceBandOffers },
+                { "fire", FireBandOffers },
+                { "ruins", RuinsBandOffers },
+                { "deep", DeepBandOffers },
+                { "void", VoidBandOffers }
+            };
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void Bootstrap()
@@ -115,13 +195,87 @@ namespace CindarsHope.Cave.Runtime
             return CindarsHope.Quests.SecretQuestOffer.ShouldMerchantOffer(runSeed, contextId);
         }
 
-        /// <summary>Pure offer selection — deterministic pair of distinct catalog offers.</summary>
+        /// <summary>The canonical biome band id for this level (stone/fungal/.../void).</summary>
+        public static string ResolveBandId(int caveLevel)
+        {
+            return CaveBiomeLayoutProfile.ForLevel(caveLevel).BandId;
+        }
+
+        /// <summary>
+        /// The full pool of offers available on a level: the band-agnostic baseline goods plus
+        /// the themed offers for this level's biome band. Deterministic (function of band only).
+        /// </summary>
+        public static IReadOnlyList<MerchantOffer> ResolveLevelOfferPool(int caveLevel)
+        {
+            var pool = new List<MerchantOffer>(OfferCatalog);
+            if (BandOffers.TryGetValue(ResolveBandId(caveLevel), out var bandOffers))
+            {
+                pool.AddRange(bandOffers);
+            }
+
+            return pool;
+        }
+
+        /// <summary>
+        /// Pure stock selection — deterministic, distinct offers drawn from THIS level's biome
+        /// pool (baseline + band). Same (seed, level) always yields the same stock; different
+        /// bands yield pools that differ by their themed offers.
+        /// </summary>
+        public static IReadOnlyList<MerchantOffer> ResolveBiomeStock(string worldSeed, string runSeed, int caveLevel)
+        {
+            var pool = ResolveLevelOfferPool(caveLevel);
+            var selectedIndices = SelectDistinctIndices(worldSeed, runSeed, caveLevel, pool.Count, OffersPerLevel);
+
+            var stock = new List<MerchantOffer>(selectedIndices.Count);
+            foreach (var index in selectedIndices)
+            {
+                stock.Add(pool[index]);
+            }
+
+            return stock;
+        }
+
+        /// <summary>
+        /// Back-compat flat selection — two distinct indices into OfferCatalog (the baseline
+        /// goods). Preserved for callers/tests that predate the biome pools. New stock logic
+        /// uses ResolveBiomeStock.
+        /// </summary>
         public static (int firstIndex, int secondIndex) ResolveOfferIndices(string worldSeed, string runSeed, int caveLevel)
         {
             var hash = Math.Abs(CaveEnemySpawnPlanner.StableHash($"{worldSeed}|{runSeed}|{caveLevel}|{SpawnSalt}_stock"));
             int first = hash % OfferCatalog.Length;
             int second = (first + 1 + (hash / 7) % (OfferCatalog.Length - 1)) % OfferCatalog.Length;
             return (first, second);
+        }
+
+        /// <summary>
+        /// Deterministic selection of <paramref name="take"/> distinct indices in [0, count),
+        /// seeded by (worldSeed, runSeed, caveLevel). No UnityEngine.Random; FNV-1a via StableHash.
+        /// </summary>
+        private static List<int> SelectDistinctIndices(string worldSeed, string runSeed, int caveLevel, int count, int take)
+        {
+            var selected = new List<int>(Math.Min(take, count));
+            if (count <= 0)
+            {
+                return selected;
+            }
+
+            // Order all indices by a stable per-index hash, then take the first N. Deterministic
+            // and guarantees distinct picks. ThenBy index keeps ties stable.
+            var ordered = Enumerable.Range(0, count)
+                .OrderBy(i => CaveEnemySpawnPlanner.StableHash($"{worldSeed}|{runSeed}|{caveLevel}|{SpawnSalt}_stock|{i}"))
+                .ThenBy(i => i);
+
+            foreach (var index in ordered)
+            {
+                selected.Add(index);
+                if (selected.Count >= take)
+                {
+                    break;
+                }
+            }
+
+            return selected;
         }
 
         private static Vector2Int? ResolveSpawnTile(CaveGeneratedLevel level, string worldSeed, string runSeed)
@@ -156,13 +310,22 @@ namespace CindarsHope.Cave.Runtime
             renderer.sortingOrder = 3;
             s_merchantRoot.transform.localScale = new Vector3(0.9f, 1.3f, 1f);
 
-            var (firstIndex, secondIndex) = ResolveOfferIndices(worldSeed, runSeed, level.CaveLevel);
-            CreateOfferPoint(s_merchantRoot.transform, OfferCatalog[firstIndex], new Vector3(-1f, 0f, 0f), level.CaveLevel);
-            CreateOfferPoint(s_merchantRoot.transform, OfferCatalog[secondIndex], new Vector3(1f, 0f, 0f), level.CaveLevel);
+            var stock = ResolveBiomeStock(worldSeed, runSeed, level.CaveLevel);
+
+            // Lay the buy points out symmetrically around the merchant; sell point below.
+            float spacing = 1f;
+            float startX = -((stock.Count - 1) * spacing) * 0.5f;
+            for (int i = 0; i < stock.Count; i++)
+            {
+                var offset = new Vector3(startX + i * spacing, 0f, 0f);
+                CreateOfferPoint(s_merchantRoot.transform, stock[i], offset, level.CaveLevel);
+            }
+
             CreateSellPoint(s_merchantRoot.transform, level.CaveLevel);
 
             GameEventBus.Publish(new PlayerActionFeedbackEvent("Um mercador errante montou banca neste andar..."));
-            Debug.Log($"[CaveWanderingMerchant] Spawned on level {level.CaveLevel} at grid ({tile.x},{tile.y}). Offers: {OfferCatalog[firstIndex].ItemId} + {OfferCatalog[secondIndex].ItemId}.");
+            var offerIds = string.Join(" + ", stock.Select(o => o.ItemId));
+            Debug.Log($"[CaveWanderingMerchant] Spawned on level {level.CaveLevel} ({ResolveBandId(level.CaveLevel)}) at grid ({tile.x},{tile.y}). Offers: {offerIds}.");
 
             // fable_34/fable_52 — deterministic 15% chance to also surface a cave-secret quest through
             // the single SecretQuestOffer API. fable_52 authored the content: the merchant offers the 3
