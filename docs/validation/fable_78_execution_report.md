@@ -1,7 +1,7 @@
 # Execution Report — fable_78 (Caverna Viva: Povoamento e Ecossistema)
 
 > **Spec:** `fable_78_spec_cave_ecosystem_population_runtime`
-> **Status:** `BUILD_VALIDATED_WITH_WARNINGS` — **SLICES 1-5 de 6** concluídas (slice 4 com architecture-reviewer + non-regression PASS). Resta a slice 6 (Unity: assets/prefabs + Test Runner + Play Mode). A spec como um todo **NÃO está completa** e **NÃO** deve ser promovida.
+> **Status:** `BUILD_VALIDATED_WITH_WARNINGS` — **SLICES 1-6 (lado-código) concluídas** (slice 4 com architecture-reviewer + non-regression PASS). Resta apenas a execução Unity da slice 6 (rodar os geradores de asset, wire de prefabs/database/balance no materializer, bump do `GenerationConfigVersion` no asset, EditMode Test Runner, replay validator, Play Mode humano). A spec **NÃO está completa** e **NÃO** deve ser promovida a `implementados/` até esses DEFERRED_UNITY + Play Mode.
 > **Date:** 2026-06-23
 > **Branch:** dev
 
@@ -108,7 +108,7 @@ Residual risk:                  Testes compilam mas não executados via Test Run
 - ~~**Slice 3:** materialização + persistência aditiva~~ ✅ FEITO (persistência + back-compat testados; materialização runtime null-safe com **DEFERRED_UNITY:** prefabs `_decorElementPrefab`/`_waterTilePrefab` + database/profiles + nodes de minério, e **Play Mode deferido**). GenerationConfigVersion já bumpado na slice 2.
 - ~~**Slice 4 (alto risco):** conflito em runtime — targeting de rival (`EnemyBrain`), dano inter-monstro + "Ferido" + corpo com loot reduzido (`EnemyHealth`), feedback de HUD obrigatório.~~ ✅ FEITO (ver seção SLICE 4 abaixo). non-regression PASS. **Play Mode deferido.**
 - ~~**Slice 5:** mercador errante enriquecido~~ ✅ FEITO (estoque temático por bioma + variedade, determinístico, back-compat; teste EditMode).
-- **Slice 6:** geradores de editor + data assets (Unity), EditMode Test Runner, replay validator, cenário humano de Play Mode.
+- ~~**Slice 6 (lado-código):** geradores de editor + validator + cenário humano de Play Mode~~ ✅ FEITO. **DEFERRED_UNITY (humano):** rodar os menus `CindarsHope/Cave/Ecosystem/Generate *` + `CindarsHope/Validation/Validate Cave Ecosystem (fable_78)`; wire `_ecosystemBalance`/`_environmentElementDatabase`/`_decorElementPrefab`/`_waterTilePrefab` no materializer da CaveScene; bump `GenerationConfigVersion` no asset; EditMode Test Runner (7 suítes); replay validator stable-run; Play Mode (`docs/validation/playmode/fable_78_human_test_scenario.md`).
 
 **Não promover a `implementados/` até todas as slices + Play Mode humano.**
 
@@ -212,3 +212,108 @@ Alterados:
 - **Play Mode:** validação humana de conflito visível, dano 1/10, "Ferido", corpo com loot reduzido (sem XP/quest ao player), toast, e re-roll por entrada — deferida ao lote.
 - **DEFERRED_UNITY:** `StatusEffectSO` "Ferido" + registro no database (se for desejado um status canônico em vez da janela runtime), e o asset `CaveEcosystemBalance.asset` ligado nos campos `_ecosystemBalance` do materializer (slice 6). Sem o balance ligado, `ApplyInterMonsterConflict` é no-op seguro (logado).
 - **Localização:** toast `"Criaturas em conflito!"` é literal (string do exemplo da spec); localização fora do escopo desta slice.
+
+---
+
+# SLICE 6 — Tooling de editor (geradores + validator) + cenário humano de Play Mode
+
+> **Date:** 2026-06-23 · **Status:** `BUILD_VALIDATED_WITH_WARNINGS` (lado-código da slice 6; assets/Play Mode = ação humana no Unity) · **Branch:** dev · **NÃO commitado.**
+
+## Escopo desta slice (apenas lado-código)
+
+Entrega os **scripts** que, quando rodados pelo humano no Unity, geram os data assets, mais o **validator**
+de integridade e o **cenário humano de Play Mode**. NÃO criou `.asset/.unity/.prefab`, NÃO rodou Unity/Test
+Runner/Play Mode, NÃO tocou `Packages/`/`ProjectSettings/` nem runtime das slices 1-5.
+
+## Fase 0 — padrões confirmados (não recriar)
+
+- **Gerador de SO único:** padrão de `GenerateEconomyBalanceConfig` (`ScriptableObject.CreateInstance` +
+  `AssetDatabase.CreateAsset`, idempotente por path). Seguido em `GenerateCaveEcosystemBalance`.
+- **Gerador em lote + registro em database via `SerializedObject` (`_items`):** padrão de
+  `GenerateCanonicalStatusEffects` (merge por Id, preserva entradas não-canônicas). Seguido em
+  `GenerateCaveBiomeOreNodes` e `GenerateCaveEnvironmentElementProfiles` (o `DataRegistrySO._items` é
+  privado, então o registro usa `SerializedObject`/`FindProperty("_items")` — mesmo idioma do projeto).
+- **Validator:** padrão dos ~60 validators (`[MenuItem("CindarsHope/Validation/...")]`, contadores
+  `errors`/`warnings`, `Debug.LogError`/`LogWarning` com prefixo `[fable_78]`, resumo final). Seguido em
+  `ValidateCaveEcosystem`.
+- **Como "Ferido" funciona (confirmado no código da slice 4):** "Ferido" é uma **janela runtime
+  transitória** em `EnemyHealth` (`_woundedUntil` + `IsWounded`; o multiplicador real é
+  `CaveEcosystemBalanceSO.WoundedDefenseMultiplier`, aplicado pelo `DamageCalculator` — mesmo idioma de
+  `_stunUntil`). **NÃO** é resolvido via `StatusEffectSO`/`StatusEffectDatabase`. Portanto o gerador de
+  status é **OPCIONAL/no-op** para o pipeline atual (documentado no próprio script): ele cria um
+  `status_wounded` canônico para uso futuro e **NÃO** o registra no database, para não alterar o
+  comportamento canônico de status do fable_01 sem decisão explícita.
+
+## Arquivos desta slice (criados por mim)
+
+Criados (5 scripts de editor + 1 doc):
+- `Assets/_Game/Scripts/Editor/Cave/GenerateCaveEcosystemBalance.cs`
+- `Assets/_Game/Scripts/Editor/Cave/GenerateCaveBiomeOreNodes.cs`
+- `Assets/_Game/Scripts/Editor/Cave/GenerateCaveEnvironmentElementProfiles.cs`
+- `Assets/_Game/Scripts/Editor/Cave/GenerateCaveWoundedStatusEffect.cs` (opcional/no-op documentado)
+- `Assets/_Game/Scripts/Editor/Cave/ValidateCaveEcosystem.cs`
+- `docs/validation/playmode/fable_78_human_test_scenario.md`
+
+Alterado (local-only, gitignored):
+- `Assembly-CSharp-Editor.csproj` — apenas 5 linhas `<Compile Include>` dos novos scripts (regenerado pelo Unity).
+
+## Decisões de design da slice
+
+- **IDs estáveis** (rule id-stability): balance `CaveEcosystemBalance.asset`; nós `resnode_ore_<ore>_b<band>`;
+  profiles `cave_elem_profile_<biome>`; biomes `biome_cave_<biome>`. Sem GUID/timestamp.
+- **Ore por banda:** copper/iron (Stone/Fungal), iron/silver (Ice/Fire), silver/arcane_crystal (Ruins),
+  arcane_crystal/mithril raros (Deep/Void). `RequiredToolType=Pickaxe`, `RequiredToolTier` crescente
+  (Basic→Copper→Iron→Gold→Diamond). `PrimaryDropItemId` = ores canônicos fable_32 (confirmados no
+  `CanonicalItemCatalog`: copper/iron/silver/arcane_crystal/mithril).
+- **Profiles temáticos:** pedra/decor + ≥1 minerável em TODAS as bandas (14.2); `HasWater=true` em Ice e
+  Deep (habilita aquáticos, 14.3); os `MineNodeDataId` dos profiles referenciam exatamente os Ids gerados
+  pelo gerador de nós (helper compartilhado `BuildNodeId`), então o validator consegue checar a referência.
+- **Idempotência:** todos os geradores preservam/atualizam por Id (não duplicam) e fazem merge no database
+  preservando entradas não-fable_78.
+- **Validator:** balance existe + ranges sãos (chances/multiplicadores 0..1, threat min≤max por banda,
+  densidade min≤max e ≤hardcap, elem density 0..1); 7 bandas têm profile; profiles têm Id/biome e ≥1
+  minerável; `MineNodeDataId` resolve a um nó existente; nós de minério usam Pickaxe e `PrimaryDropItemId`
+  existe em `t:ItemDataSO`; databases presentes.
+
+## Validação (3 comandos exigidos pelo prompt)
+
+```
+dotnet build .\Assembly-CSharp.csproj --no-restore:         EXIT 0 (0 erros; 1 warning pré-existente CombatTelemetrySession)
+dotnet build .\Assembly-CSharp-Editor.csproj --no-restore:  EXIT 0 (0 erros; 3 warnings pré-existentes; nenhum dos meus arquivos)
+.\tools\docs\validate_docs.ps1:                             EXIT 0 (Docs validation PASSED)
+EditMode Test Runner:                                       NOT RUN (Unity não invocado nesta slice)
+Unity asset generation:                                     NOT RUN (DEFERRED_UNITY — ação humana; geradores entregues)
+Replay validator stable-run:                                NOT RUN (DEFERRED_UNITY — exige Unity Editor)
+```
+
+## Testing Quality Gate (slice 6)
+
+```
+Changed runtime code:           NO (somente scripts de editor + doc)
+Changed deterministic logic:    NO (geradores/validator são tooling de editor)
+Changed Unity scene/prefab:     NO
+Automated tests added/updated:  NO (tooling de editor; lógica determinística já coberta nas slices 1-5)
+Automated tests command:        NOT RUN
+Manual Play Mode scenario:      CREATED (docs/validation/playmode/fable_78_human_test_scenario.md)
+Justification if no tests:      Geradores/validator são editor tooling (inspeção via menu + validator); cobertos pelo cenário humano.
+Residual risk:                  Assets gerados + wiring + Test Runner + Play Mode são DEFERRED_UNITY (ação humana); não exercitados por automação até a validação humana do lote.
+```
+
+## DEFERRED_UNITY — o que o humano precisa rodar no Unity (ordem)
+
+1. Menus: `CindarsHope/Cave/Ecosystem/Generate Ecosystem Balance`, `… Generate Biome Ore Nodes`,
+   `… Generate Environment Element Profiles` (e, se desejar o SO canônico, `… Generate Wounded Status Effect (optional)`).
+2. Validator: `CindarsHope/Validation/Validate Cave Ecosystem (fable_78)` → exigir `Errors=0`.
+3. Subir `GenerationConfigVersion` no asset `CaveGenerationConfig_Default.asset`.
+4. Wire no `CaveRuntimeMaterializer` da CaveScene: `_ecosystemBalance`, `_environmentElementDatabase`,
+   `_decorElementPrefab`, `_waterTilePrefab` (+ `ResourceNodeDatabase` ligado).
+5. EditMode Test Runner (suíte Cave — 7 suítes) → PASS.
+6. Replay validator stable-run (FASE9F) → PASS.
+7. Play Mode humano: seguir `docs/validation/playmode/fable_78_human_test_scenario.md`.
+
+## Confirmações de scope (slice 6)
+
+- Nenhum `.asset` / `.unity` / `.prefab` criado ou editado. Nenhum `Packages/` / `ProjectSettings/`.
+- Runtime das slices 1-5 intacto (nenhuma correção de compile foi necessária — builds 0 erros).
+- Sem `GameObject.Find/FindObjectOfType` (geradores/validator são editor; `AssetDatabase` é permitido).
+- Sem namespace `CindarsHope.Debug/Temp`; sem magic balance value (defaults vivem no `CaveEcosystemBalanceSO`).
