@@ -26,6 +26,10 @@ namespace CindarsHope.Skills.Runtime.Effects
         private static readonly KeyCode[] SlotInputKeys = { KeyCode.Alpha1, KeyCode.Alpha2, KeyCode.Alpha3, KeyCode.Alpha4 };
         private static ActiveSkillExecutionController _instance;
 
+        // fable_71: singleton de leitura para a HUD ler cooldown e disparar uso por clique
+        // (mesma rota das teclas 1-4). Nao e global search — e o instance pattern ja usado aqui.
+        public static ActiveSkillExecutionController Instance => _instance;
+
         [SerializeField] private SkillTargetResolver _targetResolver;
 
         // Skill action ID -> EffectId mapping.
@@ -34,12 +38,12 @@ namespace CindarsHope.Skills.Runtime.Effects
         private static readonly Dictionary<string, string> SkillActionToEffectId = new Dictionary<string, string>
         {
             // Farm/Utility skill effects (vertical slice)
-            { "skill_survival_emergency_roll", "farm.crop.water_skill" },  // debug: survival roll maps to farm water for demo
-            { "skill_crafting_field_patch", "farm.crop.water_skill" },     // debug: field patch maps to farm water for demo
+            // fable_70: skill_survival_emergency_roll removido (no cortado). skill_crafting_field_patch
+            // ainda aponta para farm water (DEBUG) ate o merge "Reparo de Campo" (deferido).
+            { "skill_crafting_field_patch", "farm.crop.water_skill" },     // DEBUG legado: substituir no merge de reparo (deferido)
 
             // Placeholder mappings for all equippable skills — effect not yet implemented
             { "skill_melee_offhand_cut", "combat.melee.offhand_cut" },
-            { "skill_melee_guarded_block", "combat.melee.block" },
             { "skill_melee_battle_dash", "combat.melee.battle_dash" },
             { "skill_melee_leap_attack", "combat.melee.leap_attack" },
             { "skill_melee_whirl_cut", "combat.melee.whirl_cut" },
@@ -74,20 +78,33 @@ namespace CindarsHope.Skills.Runtime.Effects
             { "skill_survival_kit_emergencia", "survival.kit_emergencia" },
             { "skill_survival_instinto_sobrevivencia", "survival.instinto_sobrevivencia" },
             { "skill_survival_campo_seguro", "survival.campo_seguro" },
+            { "skill_survival_last_breath", "survival.last_breath" },         // fable_70: executor real (SelfRestore)
 
             // Crafting: novas action skills (crafting_quick_repair já mapeado acima via field_patch)
+            // fable_70: skill_crafting_mecanismo_campo removido (no cortado).
             { "skill_crafting_irrigador_portatil", "crafting.irrigador_portatil" },
             { "skill_crafting_bomba_improvisada", "crafting.bomba_improvisada" },
-            { "skill_crafting_mecanismo_campo", "crafting.mecanismo_campo" },
             { "skill_crafting_marca_eficiencia", "crafting.marca_eficiencia" },
         };
 
         private readonly SkillEffectRegistry _registry = new SkillEffectRegistry();
         private readonly float[] _slotCooldowns = new float[4];
+        // fable_71: cooldown total (no momento do disparo) para a HUD calcular o fill radial.
+        private readonly float[] _slotCooldownTotals = new float[4];
         private bool _bootstrapped;
 
         public static bool TryGetEffectIdForValidation(string skillActionId, out string effectId)
             => SkillActionToEffectId.TryGetValue(skillActionId, out effectId);
+
+        // ── fable_71: API read-only de cooldown + uso por clique (convergem com as teclas 1-4) ──
+        public float GetSlotCooldownRemaining(int slotIndex)
+            => (slotIndex >= 0 && slotIndex < _slotCooldowns.Length) ? Mathf.Max(0f, _slotCooldowns[slotIndex]) : 0f;
+
+        public float GetSlotCooldownTotal(int slotIndex)
+            => (slotIndex >= 0 && slotIndex < _slotCooldownTotals.Length) ? Mathf.Max(0f, _slotCooldownTotals[slotIndex]) : 0f;
+
+        // Ponto unico de uso de slot: a HUD (clique) e o Update (teclas 1-4) chamam isto.
+        public void TryUseSlot(int slotIndex) => TryExecuteSlot(slotIndex);
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void EnsureRuntimeInstance()
@@ -158,10 +175,15 @@ namespace CindarsHope.Skills.Runtime.Effects
             // ── Crafting offensive gadget ──
             _registry.Register(new ProjectileSkillEffectExecutor("crafting.bomba_improvisada", "Bomba Improvisada", baseDamage: 18, speed: 8f, range: 5f, damageType: CindarsHope.Combat.DamageType.Toxic, resourceCost: 20, maxHitsPerProjectile: 3, cooldownSeconds: 12f));
 
+            // ── Magic area control (fable_70) ── zona de slow reusando status_slow existente.
+            _registry.Register(new SlowFieldSkillEffectExecutor("combat.magic.slowing_sigils", "Sigilos Lentificantes", statusEffectId: "status_slow", radius: 2.5f, manaCost: 18, cooldownSeconds: 8f));
+
             // ── Survival self-restores ──
             _registry.Register(new SelfRestoreSkillEffectExecutor("survival.kit_emergencia", "Kit de Emergencia", restoreHp: 30, restoreStamina: 0, restoreMana: 0, cooldownSeconds: 45f));
             _registry.Register(new SelfRestoreSkillEffectExecutor("survival.instinto_sobrevivencia", "Instinto de Sobrevivencia", restoreHp: 0, restoreStamina: 50, restoreMana: 0, cooldownSeconds: 30f));
             _registry.Register(new SelfRestoreSkillEffectExecutor("survival.campo_seguro", "Campo Seguro", restoreHp: 15, restoreStamina: 25, restoreMana: 15, cooldownSeconds: 60f));
+            // fable_70: Ultimo Folego — panic heal de CD alto (escudo temporario deferido; sem sistema de shield ainda).
+            _registry.Register(new SelfRestoreSkillEffectExecutor("survival.last_breath", "Ultimo Folego", restoreHp: 40, restoreStamina: 0, restoreMana: 0, cooldownSeconds: 90f));
         }
 
         private void RegisterFeedbackExecutors()
@@ -169,14 +191,14 @@ namespace CindarsHope.Skills.Runtime.Effects
             // DEFERRED_RUNTIME_EFFECT: effects below need systems that do not exist yet
             // (block stance via slot, prey marking, wards, slow fields, traps, efficiency buffs).
             // TODO_INTEGRATION_NOT_FINAL: substituir quando o sistema alvo existir.
-            _registry.Register(new FeedbackOnlySkillEffectExecutor("combat.melee.block", "Use Left Shift para bloquear (acao de movimento).", SkillEffectCategory.Combat));
+            // fable_70: combat.melee.block removido (guarded_block cortado; Block e ability Shift).
             _registry.Register(new FeedbackOnlySkillEffectExecutor("combat.ranged.marked_prey", "Presa Marcada. (Sistema de marcacao pendente.)", SkillEffectCategory.Combat));
             _registry.Register(new FeedbackOnlySkillEffectExecutor("combat.magic.elemental_ward", "Barreira Elemental ativada. (Sistema de ward pendente.)", SkillEffectCategory.Combat));
-            _registry.Register(new FeedbackOnlySkillEffectExecutor("combat.magic.slowing_sigils", "Sigilos de Lentidao. (Campo de lentidao pendente.)", SkillEffectCategory.Combat));
+            // fable_70: combat.magic.slowing_sigils agora tem executor real (SlowFieldSkillEffectExecutor).
             _registry.Register(new FeedbackOnlySkillEffectExecutor("survival.sinal_retirada", "Sinal de Retirada ativado. (Efeito de utilidade pendente.)", SkillEffectCategory.Utility));
             _registry.Register(new FeedbackOnlySkillEffectExecutor("survival.isca_improvisada", "Isca Improvisada lançada. (Efeito de utilidade pendente.)", SkillEffectCategory.Utility));
             _registry.Register(new FeedbackOnlySkillEffectExecutor("crafting.irrigador_portatil", "Irrigador Portátil usado. (Efeito de farm pendente.)", SkillEffectCategory.Farm));
-            _registry.Register(new FeedbackOnlySkillEffectExecutor("crafting.mecanismo_campo", "Mecanismo de Campo ativado. (Efeito de utilidade pendente.)", SkillEffectCategory.Utility));
+            // fable_70: crafting.mecanismo_campo removido (cortado).
             _registry.Register(new FeedbackOnlySkillEffectExecutor("crafting.marca_eficiencia", "Marca de Eficiência aplicada. (Efeito de utilidade pendente.)", SkillEffectCategory.Utility));
         }
 
@@ -352,6 +374,7 @@ namespace CindarsHope.Skills.Runtime.Effects
                 // Apply cooldown on success — executors suggest their own balance cooldown;
                 // fall back to a short default for executors that do not.
                 _slotCooldowns[slotIndex] = result.CooldownSeconds > 0f ? result.CooldownSeconds : 1.5f;
+                _slotCooldownTotals[slotIndex] = _slotCooldowns[slotIndex]; // fable_71: base do fill da HUD
                 PublishFeedback(result.FeedbackMessage);
                 Debug.Log($"[ActiveSkillExecutionController] Skill executed. Slot={slotIndex}, RawSlotValue={rawSlotValue}, ResolvedSkillActionId={skillActionId}, NodeId={nodeId}, EffectId={effectId}, Executor={executor.GetType().Name}", this);
             }

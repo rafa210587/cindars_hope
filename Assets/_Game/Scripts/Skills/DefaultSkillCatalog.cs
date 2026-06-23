@@ -3,8 +3,8 @@ using UnityEngine;
 
 namespace CindarsHope.Skills
 {
-    // fable_29 — code-driven CANONICAL catalog: 69 skill nodes across 5 trees
-    // (melee 14 + ranged 11 + magic 13 + survival 16 + crafting 15 = 69; patch WI-11).
+    // fable_29 — code-driven CANONICAL catalog. fable_70 saneamento: 66 skill nodes across 5 trees
+    // (melee 13 + ranged 11 + magic 13 + survival 15 + crafting 14 = 66; cortes guarded_block/emergency_roll/mecanismo_campo).
     // Used by SkillTreeManager when no SO assets are wired in the inspector, and is the
     // data source consumed by the GenerateCanonicalSkillCatalog editor generator.
     //
@@ -13,7 +13,10 @@ namespace CindarsHope.Skills
     // and exclusive capstone variants (Melee: Kanthor/Kaand; Magic: Anya/Senya — CA-3).
     public static class DefaultSkillCatalog
     {
-        public const int CanonicalNodeCount = 69;
+        // fable_70 saneamento: 69 → 66 nós (cortes de melee_guarded_block, survival_emergency_roll,
+        // crafting.mecanismo_campo — viraram abilities puras / conceito vago removido). Save-safe:
+        // SkillTreeManager.MigrateUnknownNodes refunda pontos de ids removidos no load.
+        public const int CanonicalNodeCount = 66;
         public static List<SkillNodeDataSO> BuildAllNodes()
         {
             var nodes = new List<SkillNodeDataSO>();
@@ -38,7 +41,7 @@ namespace CindarsHope.Skills
         {
             // MELEE
             { "melee_iron_grip", 1 }, { "melee_guarded_stance", 1 }, { "melee_dual_wield_flow", 1 },
-            { "melee_guarded_block", 1 }, { "melee_offhand_cut", 2 }, { "melee.avanco_aco", 2 },
+            { "melee_offhand_cut", 2 }, { "melee.avanco_aco", 2 },
             { "melee_two_handed_momentum", 2 }, { "melee_whirl_cut", 2 }, { "melee_battle_dash", 3 },
             { "melee_leap_attack", 3 }, { "melee.grito_desafio", 3 }, { "melee_dodge_training", 3 },
             { "melee.investida_quebra_guarda", 4 }, { "melee_capstone_battle_rhythm", 5 },
@@ -57,14 +60,14 @@ namespace CindarsHope.Skills
             { "survival_cave_lungs", 1 }, { "survival_hard_skin", 1 }, { "survival_low_rations", 1 },
             { "survival_toxic_sense", 1 }, { "survival_cold_habit", 1 }, { "survival_heat_temper", 1 },
             { "survival_safe_step", 2 }, { "survival.sinal_retirada", 2 }, { "survival.isca_improvisada", 2 },
-            { "survival_status_recovery", 3 }, { "survival_emergency_roll", 3 }, { "survival.kit_emergencia", 3 },
+            { "survival_status_recovery", 3 }, { "survival.kit_emergencia", 3 },
             { "survival.instinto_sobrevivencia", 3 }, { "survival_last_breath", 4 }, { "survival.campo_seguro", 4 },
             { "survival_capstone_caveborn", 5 },
             // CRAFTING
             { "crafting_fast_hands", 1 }, { "crafting_material_eye", 1 }, { "crafting_repair_care", 1 },
             { "crafting_pack_order", 1 }, { "crafting_station_focus", 2 }, { "crafting_field_patch", 2 },
             { "crafting_quick_repair", 3 }, { "crafting_salvage_method", 3 }, { "crafting.bomba_improvisada", 3 },
-            { "crafting.irrigador_portatil", 3 }, { "crafting_durable_finish", 4 }, { "crafting.mecanismo_campo", 4 },
+            { "crafting.irrigador_portatil", 3 }, { "crafting_durable_finish", 4 },
             { "crafting.marca_eficiencia", 4 }, { "crafting_shop_sense", 4 }, { "crafting_capstone_master_artisan", 5 },
         };
 
@@ -137,15 +140,14 @@ namespace CindarsHope.Skills
             "ranged_marked_prey",        // Marcador de Presa
             "ranged_multishot_fan",      // (multishot has executor; NOT dormant) — see filter below
             "magic_elemental_ward",      // Selo de Protecao / ward
-            "magic_slowing_sigils",      // campo de lentidao
-            "survival_emergency_roll",   // Descanso Curto / roll
-            "survival_last_breath",      // emergencia (feedback)
+            // fable_70: magic_slowing_sigils agora executavel (SlowFieldSkillEffectExecutor) — removido daqui.
+            // fable_70: survival_emergency_roll e crafting.mecanismo_campo CORTADOS (nao mais no catalogo).
+            // survival_last_breath agora tem executor real (SelfRestore) — removido da lista dormente.
             "survival.sinal_retirada",
             "survival.isca_improvisada",
             "crafting_field_patch",
             "crafting_quick_repair",
             "crafting.irrigador_portatil",
-            "crafting.mecanismo_campo",
             "crafting.marca_eficiencia",
         };
 
@@ -176,11 +178,11 @@ namespace CindarsHope.Skills
 
             return new List<SkillTreeDataSO>
             {
-                // fable_29: per-tree node counts (WI-11): melee 14, ranged 11, magic 13,
-                // survival 16, crafting 15 = 69 total (CanonicalNodeCount).
+                // fable_70 saneamento: per-tree node counts: melee 13, ranged 11, magic 13,
+                // survival 15, crafting 14 = 66 total (CanonicalNodeCount).
                 BuildTree("melee", "Melee", "Combate corpo a corpo: dual wield, two-handed, block, dodge, dash e leap.", index,
                     "melee_iron_grip","melee_guarded_stance","melee_dual_wield_flow","melee_offhand_cut",
-                    "melee_two_handed_momentum","melee_guarded_block","melee_battle_dash","melee_leap_attack",
+                    "melee_two_handed_momentum","melee_battle_dash","melee_leap_attack",
                     "melee_whirl_cut","melee_dodge_training","melee.avanco_aco","melee.grito_desafio",
                     "melee.investida_quebra_guarda","melee_capstone_battle_rhythm"),
                 BuildTree("ranged", "Ranged", "Arco: charge, pierce, multishot e mobilidade de arqueiro.", index,
@@ -195,14 +197,14 @@ namespace CindarsHope.Skills
                 BuildTree("survival", "Survival", "Cave survival: resistencias ambientais e habilidades de sobrevivencia.", index,
                     "survival_cave_lungs","survival_hard_skin","survival_low_rations","survival_toxic_sense",
                     "survival_cold_habit","survival_heat_temper","survival_status_recovery","survival_safe_step",
-                    "survival_emergency_roll","survival_last_breath","survival.sinal_retirada","survival.isca_improvisada",
+                    "survival_last_breath","survival.sinal_retirada","survival.isca_improvisada",
                     "survival.kit_emergencia","survival.instinto_sobrevivencia","survival.campo_seguro",
                     "survival_capstone_caveborn"),
                 BuildTree("crafting", "Crafting", "Crafting e reparo: melhorar bancadas, reparo e utilidade de campo.", index,
                     "crafting_fast_hands","crafting_repair_care","crafting_material_eye","crafting_field_patch",
                     "crafting_station_focus","crafting_pack_order","crafting_quick_repair","crafting_salvage_method",
                     "crafting_durable_finish","crafting_shop_sense","crafting.irrigador_portatil",
-                    "crafting.bomba_improvisada","crafting.mecanismo_campo","crafting.marca_eficiencia",
+                    "crafting.bomba_improvisada","crafting.marca_eficiencia",
                     "crafting_capstone_master_artisan")
             };
         }
@@ -284,11 +286,7 @@ namespace CindarsHope.Skills
                 prereq: "melee_guarded_stance",
                 mods: Mod(SkillModifierType.TwoHandedDamageBonus, 1f)),
 
-            Node("melee_guarded_block", "melee", "Bloqueio Guardado",
-                "Block temporário: reduz próximo dano.",
-                SkillNodeType.UnlockSkillAction, SkillCategory.EquippableSkill,
-                prereq: "melee_guarded_stance",
-                unlockAction: "skill_melee_guarded_block"),
+            // fable_70: melee_guarded_block CORTADO — Block segue como ability pura (Shift), nao ocupa slot.
 
             Node("melee_battle_dash", "melee", "Arrancada de Combate",
                 "Dash curto na direção do facing.",
@@ -305,7 +303,7 @@ namespace CindarsHope.Skills
             Node("melee_whirl_cut", "melee", "Corte Giratório",
                 "Ataque circular ao redor do player.",
                 SkillNodeType.UnlockSkillAction, SkillCategory.EquippableSkill,
-                prereq: "melee_guarded_block",
+                prereq: "melee_guarded_stance", // fable_70: reapontado (guarded_block cortado)
                 unlockAction: "skill_melee_whirl_cut"),
 
             Node("melee_dodge_training", "melee", "Treino de Esquiva",
@@ -550,11 +548,7 @@ namespace CindarsHope.Skills
                 prereq: "survival_low_rations",
                 mods: Mod(SkillModifierType.MoveSpeedBonus, 0.05f)),
 
-            Node("survival_emergency_roll", "survival", "Rolamento de Emergência",
-                "Dodge/utility especial.",
-                SkillNodeType.UnlockSkillAction, SkillCategory.EquippableSkill,
-                prereq: "survival_safe_step",
-                unlockAction: "skill_survival_emergency_roll"),
+            // fable_70: survival_emergency_roll CORTADO — Dodge segue como ability pura (Space), nao ocupa slot.
 
             Node("survival_last_breath", "survival", "Último Fôlego",
                 "Cura/escudo emergencial com cooldown alto.",
@@ -684,11 +678,7 @@ namespace CindarsHope.Skills
                 prereq: "crafting_quick_repair",
                 unlockAction: "skill_crafting_bomba_improvisada"),
 
-            Node("crafting.mecanismo_campo", "crafting", "Mecanismo de Campo",
-                "Dispositivo temporário: puxa item próximo ou ativa mecanismo leve. Tier 4.",
-                SkillNodeType.UnlockSkillAction, SkillCategory.EquippableSkill,
-                prereq: "crafting.irrigador_portatil",
-                unlockAction: "skill_crafting_mecanismo_campo"),
+            // fable_70: crafting.mecanismo_campo CORTADO — conceito vago demais, removido da arvore.
 
             Node("crafting.marca_eficiencia", "crafting", "Marca de Eficiência",
                 "Buff curto: reduz custo Stamina de ações agrícolas/crafting próximas. Não acumula. Tier 4.",

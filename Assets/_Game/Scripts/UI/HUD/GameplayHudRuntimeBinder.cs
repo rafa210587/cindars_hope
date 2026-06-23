@@ -2,6 +2,7 @@ using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
 using CindarsHope.Skills;
+using CindarsHope.Skills.Runtime.Effects;
 using UnityEngine;
 
 namespace CindarsHope.UI.HUD
@@ -55,17 +56,23 @@ namespace CindarsHope.UI.HUD
             var skillTreeManager = GameBootstrap.Instance?.SkillTreeManager;
             if (skillTreeManager == null) return;
             var state = skillTreeManager.State;
+            // fable_71: cooldown vem do controller (fonte única); a HUD não recalcula.
+            var controller = ActiveSkillExecutionController.Instance;
             _viewModel.ActiveSkillSlots.Clear();
-            string[] keys = { "R", "T", "Y", "G" };
-            for (int i = 0; i < keys.Length; i++)
+            for (int i = 0; i < 4; i++) // slots 0-3 = teclas 1-4
             {
                 var skillId = state.GetActiveSlotSkillActionId(i);
-                _viewModel.ActiveSkillSlots.Add(new ActiveSkillSlotViewModel
+                bool equipped = !string.IsNullOrEmpty(skillId);
+                float cooldownRemaining = controller != null ? controller.GetSlotCooldownRemaining(i) : 0f;
+
+                var vm = new ActiveSkillSlotViewModel
                 {
                     SlotIndex = i,
                     SkillId = skillId ?? string.Empty,
-                    IsEquipped = !string.IsNullOrEmpty(skillId)
-                });
+                    IconId = skillId ?? string.Empty
+                };
+                ActiveSkillSlotProjection.Project(equipped, cooldownRemaining, vm);
+                _viewModel.ActiveSkillSlots.Add(vm);
             }
         }
 

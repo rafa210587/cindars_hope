@@ -88,13 +88,14 @@ namespace CindarsHope.Editor.Validation
             // ── SKILLS ───────────────────────────────────────────────────────────
             // Source: Assets/_Game/Scripts/Skills/DefaultSkillCatalog.cs (authoritative code)
             //   cross-checked with docs/design/gameplay/player/PLAYER_SKILL_TREES_DIRECTION.md.
-            //   5 trees: melee 14 + ranged 11 + magic 13 + survival 16 + crafting 15 = 69 nodes.
+            //   5 trees (fable_70 saneamento): melee 13 + ranged 11 + magic 13 + survival 15 + crafting 14 = 66 nodes.
+            //   Cortes fable_70: melee_guarded_block, survival_emergency_roll, crafting.mecanismo_campo.
             //   These ids already exist in code, so listing them here is drift-resistant.
             var skillNodeIds = new HashSet<string>
             {
-                // melee (14) — DefaultSkillCatalog.BuildTree("melee", ...)
+                // melee (13) — DefaultSkillCatalog.BuildTree("melee", ...)
                 "melee_iron_grip", "melee_guarded_stance", "melee_dual_wield_flow", "melee_offhand_cut",
-                "melee_two_handed_momentum", "melee_guarded_block", "melee_battle_dash", "melee_leap_attack",
+                "melee_two_handed_momentum", "melee_battle_dash", "melee_leap_attack",
                 "melee_whirl_cut", "melee_dodge_training", "melee.avanco_aco", "melee.grito_desafio",
                 "melee.investida_quebra_guarda", "melee_capstone_battle_rhythm",
                 // ranged (11)
@@ -106,22 +107,22 @@ namespace CindarsHope.Editor.Validation
                 "magic_ice_bind", "magic_toxic_cloud", "magic_lightning_chain", "magic_arcane_bolt_mastery",
                 "magic_elemental_ward", "magic_slowing_sigils", "magic.chama_breve", "magic.rajada_gelida",
                 "magic_capstone_elemental_confluence",
-                // survival (16)
+                // survival (15)
                 "survival_cave_lungs", "survival_hard_skin", "survival_low_rations", "survival_toxic_sense",
                 "survival_cold_habit", "survival_heat_temper", "survival_status_recovery", "survival_safe_step",
-                "survival_emergency_roll", "survival_last_breath", "survival.sinal_retirada", "survival.isca_improvisada",
+                "survival_last_breath", "survival.sinal_retirada", "survival.isca_improvisada",
                 "survival.kit_emergencia", "survival.instinto_sobrevivencia", "survival.campo_seguro",
                 "survival_capstone_caveborn",
-                // crafting (15)
+                // crafting (14)
                 "crafting_fast_hands", "crafting_repair_care", "crafting_material_eye", "crafting_field_patch",
                 "crafting_station_focus", "crafting_pack_order", "crafting_quick_repair", "crafting_salvage_method",
                 "crafting_durable_finish", "crafting_shop_sense", "crafting.irrigador_portatil",
-                "crafting.bomba_improvisada", "crafting.mecanismo_campo", "crafting.marca_eficiencia",
+                "crafting.bomba_improvisada", "crafting.marca_eficiencia",
                 "crafting_capstone_master_artisan"
             };
             set.Set(CatalogCategory.Skills, new CatalogExpectation
             {
-                ExpectedCount = 69,
+                ExpectedCount = 66,
                 CanonicalIds = skillNodeIds
             });
 

@@ -64,10 +64,11 @@ namespace CindarsHope.Tests.EditMode.Skills
         // ── CA-1 / CA-COUNT: 69 nodes, 5 trees, per-tree counts ────────────────────
 
         [Test]
-        public void Catalog_HasExactly69NodesAcross5Trees()
+        public void Catalog_HasExactly66NodesAcross5Trees()
         {
+            // fable_70 saneamento: 69 → 66 (cortes guarded_block, emergency_roll, mecanismo_campo).
             var nodes = DefaultSkillCatalog.BuildAllNodes();
-            Assert.AreEqual(69, nodes.Count, "Canonical catalog must have 69 nodes (WI-11).");
+            Assert.AreEqual(66, nodes.Count, "Canonical catalog must have 66 nodes (fable_70 saneamento).");
             Assert.AreEqual(DefaultSkillCatalog.CanonicalNodeCount, nodes.Count);
 
             var perTree = new Dictionary<string, int>();
@@ -76,14 +77,49 @@ namespace CindarsHope.Tests.EditMode.Skills
                 perTree.TryGetValue(n.TreeId, out var c);
                 perTree[n.TreeId] = c + 1;
             }
-            Assert.AreEqual(14, perTree["melee"]);
+            Assert.AreEqual(13, perTree["melee"]);
             Assert.AreEqual(11, perTree["ranged"]);
             Assert.AreEqual(13, perTree["magic"]);
-            Assert.AreEqual(16, perTree["survival"]);
-            Assert.AreEqual(15, perTree["crafting"]);
+            Assert.AreEqual(15, perTree["survival"]);
+            Assert.AreEqual(14, perTree["crafting"]);
 
             var trees = DefaultSkillCatalog.BuildAllTrees(nodes);
             Assert.AreEqual(5, trees.Count);
+        }
+
+        // ── fable_70: cortes aplicados e last_breath promovido a executavel ────────
+        [Test]
+        public void Catalog_Fable70_CutNodesAbsent_AndLastBreathPresent()
+        {
+            var nodes = DefaultSkillCatalog.BuildAllNodes();
+            var ids = new HashSet<string>();
+            foreach (var n in nodes) ids.Add(n.SkillNodeId);
+
+            // Cortados: nao podem existir no catalogo nem nas trees.
+            foreach (var cut in new[] { "melee_guarded_block", "survival_emergency_roll", "crafting.mecanismo_campo" })
+                Assert.IsFalse(ids.Contains(cut), $"Cut node '{cut}' must not exist after fable_70.");
+
+            var trees = DefaultSkillCatalog.BuildAllTrees(nodes);
+            foreach (var tree in trees)
+                foreach (var cut in new[] { "melee_guarded_block", "survival_emergency_roll", "crafting.mecanismo_campo" })
+                    Assert.IsFalse(tree.Nodes.Exists(x => x.SkillNodeId == cut),
+                        $"Tree '{tree.TreeId}' must not list cut node '{cut}'.");
+
+            // whirl_cut reapontado para guarded_stance (guarded_block cortado).
+            var whirl = nodes.Find(x => x.SkillNodeId == "melee_whirl_cut");
+            Assert.IsNotNull(whirl);
+            Assert.Contains("melee_guarded_stance", whirl.PrerequisiteNodeIds,
+                "whirl_cut prereq must be reapointed to guarded_stance.");
+
+            // last_breath continua no catalogo e NAO esta marcado dormente (tem executor real agora).
+            var lastBreath = nodes.Find(x => x.SkillNodeId == "survival_last_breath");
+            Assert.IsNotNull(lastBreath, "survival_last_breath must remain in the catalog.");
+            Assert.IsFalse(lastBreath.NotYetExecutable, "last_breath must not be dormant (real SelfRestore executor).");
+
+            // slowing_sigils agora tem executor real (SlowFieldSkillEffectExecutor) — nao mais dormente.
+            var sigils = nodes.Find(x => x.SkillNodeId == "magic_slowing_sigils");
+            Assert.IsNotNull(sigils, "magic_slowing_sigils must remain in the catalog.");
+            Assert.IsFalse(sigils.NotYetExecutable, "slowing_sigils must not be dormant (real SlowField executor).");
         }
 
         [Test]

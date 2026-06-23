@@ -19,10 +19,10 @@ namespace CindarsHope.Editor.Skills
         private const string NodesDir = "Assets/_Game/Data/Skills/Nodes";
         private const string TreesDir = "Assets/_Game/Data/Skills/Trees";
 
-        // Canonical per-tree counts (WI-11). Sum = 69.
+        // Canonical per-tree counts (fable_70 saneamento). Sum = 66.
         private static readonly Dictionary<string, int> ExpectedPerTree = new Dictionary<string, int>
         {
-            { "melee", 14 }, { "ranged", 11 }, { "magic", 13 }, { "survival", 16 }, { "crafting", 15 },
+            { "melee", 13 }, { "ranged", 11 }, { "magic", 13 }, { "survival", 15 }, { "crafting", 14 },
         };
 
         public static void Generate()

@@ -344,8 +344,8 @@ namespace CindarsHope.Tests.EditMode.Tooling
             Assert.AreEqual(86, set.For(CatalogCategory.Quests).ExpectedCount);
 
             var skills = set.For(CatalogCategory.Skills);
-            Assert.AreEqual(69, skills.ExpectedCount);
-            Assert.AreEqual(69, skills.CanonicalIds.Count,
+            Assert.AreEqual(66, skills.ExpectedCount); // fable_70 saneamento: 69 → 66
+            Assert.AreEqual(66, skills.CanonicalIds.Count,
                 "Skill canonical id list must match the documented node count (DefaultSkillCatalog).");
             Assert.IsTrue(skills.CanonicalIds.Contains("melee_capstone_battle_rhythm"));
         }

@@ -25,7 +25,6 @@ namespace CindarsHope.Editor.Validation
             "survival.campo_seguro",
             "crafting.irrigador_portatil",
             "crafting.bomba_improvisada",
-            "crafting.mecanismo_campo",
             "crafting.marca_eficiencia"
         };
 
@@ -43,7 +42,6 @@ namespace CindarsHope.Editor.Validation
             "skill_survival_campo_seguro",
             "skill_crafting_irrigador_portatil",
             "skill_crafting_bomba_improvisada",
-            "skill_crafting_mecanismo_campo",
             "skill_crafting_marca_eficiencia"
         };
 
