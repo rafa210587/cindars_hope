@@ -26,6 +26,14 @@ namespace CindarsHope.World.Scale
         CavePortal,
         CheckpointPortal,
         Corpse,
+        // Appended (recovery): membros referenciados por CreateDefaultScaleAssets / CreateMvpFarmScene
+        // que existiam apenas em trabalho nao-commitado perdido na corrupcao. Adicionados ao FIM
+        // para preservar os ordinais ja serializados nos .asset existentes.
+        ResourceTree,
+        ResourceRock,
+        ForagePoint,
+        ShippingBin,
+        ContractBoard,
     }
 
     [CreateAssetMenu(fileName = "VisualScaleProfile_", menuName = "CindarsHope/Scale/Visual Scale Profile")]
