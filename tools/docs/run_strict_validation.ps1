@@ -75,6 +75,18 @@ function Invoke-SafeScript {
     return 0
 }
 
+# Step 0: Corruption guard (fail fast antes de erros de compile confusos)
+Write-Host ""
+Write-Host "0. Corruption guard..." -ForegroundColor Yellow
+
+$corruptionResult = Invoke-SafeScript -Name "corruption guard" -ScriptPath ".\tools\validate_no_corruption.ps1"
+
+if ($corruptionResult -ne 0) {
+    Write-Host ""
+    Write-Host "STRICT_VALIDATION_RESULT: CORRUPTION_DETECTED" -ForegroundColor Red
+    exit 1
+}
+
 # Step 1: Docs validation (allowed to be legacy-only)
 Write-Host ""
 Write-Host "1. Docs validation..." -ForegroundColor Yellow
