@@ -108,6 +108,8 @@ namespace CindarsHope.Cave.Runtime
         // fable_78: elementos ambientais materializados + presença de água (para o snapshot stable-run).
         public IReadOnlyList<SerializedEnvironmentElement> LastEnvironmentElements => _lastEnvironmentElements;
         public bool LastHasWater => _lastHasWater;
+        // fable_78 (SLICE 4): balance do ecossistema (para o controller rolar o conflito por entrada).
+        public CaveEcosystemBalanceSO EcosystemBalance => _ecosystemBalance;
 
         public void Materialize(CaveGeneratedLevel generatedLevel, CaveSpawnAnchor spawnAnchor = CaveSpawnAnchor.Entrance)
         {
@@ -125,6 +127,100 @@ namespace CindarsHope.Cave.Runtime
                 spawnAnchor,
                 snapshot?.EnemySpawnPlan,
                 snapshot?.ResourceNodeStates);
+        }
+
+        // fable_78 (SLICE 4): aplica um plano de conflito inter-monstro às instâncias JÁ materializadas.
+        // Marca os dois lados (FactionAEnemyId/FactionBEnemyId) anexando CaveConflictCombatant a cada
+        // inimigo desses lados e injetando as referências de EnemyHealth dos rivais (injeção explícita;
+        // SEM GameObject.Find — itera apenas _materializedObjects desta materialização). NÃO altera quais
+        // inimigos existem, contagem, posições ou IDs (carve-out stable-run ADR-0018): só comportamento.
+        // No-op quando o plano é inativo ou o balance não está ligado.
+        public void ApplyConflict(CaveEcosystemConflictPlan conflictPlan, int caveLevel)
+        {
+            if (conflictPlan == null || !conflictPlan.ConflictActive || _ecosystemBalance == null)
+            {
+                return;
+            }
+
+            var factionA = conflictPlan.FactionAEnemyId;
+            var factionB = conflictPlan.FactionBEnemyId;
+            if (string.IsNullOrEmpty(factionA) || string.IsNullOrEmpty(factionB) || factionA == factionB)
+            {
+                return;
+            }
+
+            // Coleta os EnemyHealth vivos de cada lado a partir das instâncias materializadas.
+            var sideA = new List<CindarsHope.Combat.EnemyHealth>();
+            var sideB = new List<CindarsHope.Combat.EnemyHealth>();
+            foreach (var obj in _materializedObjects)
+            {
+                if (obj == null)
+                {
+                    continue;
+                }
+
+                var health = obj.GetComponent<CindarsHope.Combat.EnemyHealth>();
+                if (health == null || health.IsDead)
+                {
+                    continue;
+                }
+
+                if (health.EnemyId == factionA)
+                {
+                    sideA.Add(health);
+                }
+                else if (health.EnemyId == factionB)
+                {
+                    sideB.Add(health);
+                }
+            }
+
+            if (sideA.Count == 0 || sideB.Count == 0)
+            {
+                return; // um dos lados não tem instância viva (ex.: todos mortos na run) → sem conflito real
+            }
+
+            WireConflictSide(sideA, factionA, factionB, sideB, caveLevel);
+            WireConflictSide(sideB, factionB, factionA, sideA, caveLevel);
+
+            CombatLog.Log(
+                $"CaveRuntimeMaterializer: inter-monster conflict wired for level {caveLevel}. FactionA='{factionA}' ({sideA.Count}), FactionB='{factionB}' ({sideB.Count}).",
+                this);
+        }
+
+        // fable_78: anexa o combatant a cada inimigo de um lado e injeta os rivais (EnemyHealth do outro lado).
+        private void WireConflictSide(
+            List<CindarsHope.Combat.EnemyHealth> side,
+            string ownEnemyId,
+            string rivalEnemyId,
+            List<CindarsHope.Combat.EnemyHealth> rivals,
+            int caveLevel)
+        {
+            foreach (var health in side)
+            {
+                if (health == null)
+                {
+                    continue;
+                }
+
+                var combatant = health.GetComponent<CaveConflictCombatant>();
+                if (combatant == null)
+                {
+                    combatant = health.gameObject.AddComponent<CaveConflictCombatant>();
+                }
+
+                combatant.Configure(ownEnemyId, rivalEnemyId, caveLevel);
+                foreach (var rival in rivals)
+                {
+                    combatant.AddRival(rival);
+                }
+
+                var brain = health.GetComponent<EnemyBrain>();
+                if (brain != null)
+                {
+                    brain.ConfigureConflict(combatant, _ecosystemBalance);
+                }
+            }
         }
 
         // F13: HP corrente por instância dos inimigos materializados (mortos inclusos, HP 0).

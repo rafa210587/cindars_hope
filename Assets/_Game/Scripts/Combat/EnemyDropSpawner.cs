@@ -23,11 +23,15 @@ namespace CindarsHope.Combat
         private void OnEnable()
         {
             GameEventBus.Subscribe<EnemyKilledEvent>(OnEnemyKilled);
+            // fable_78 (SLICE 4): kill monstro-vs-monstro usa o MESMO caminho de drop (reuse), mas com
+            // payload de corpo REDUZIDO; sem rota de loot do jogador (EnemyKilledEvent não é disparado).
+            GameEventBus.Subscribe<EnemyKilledByEnemyEvent>(OnEnemyKilledByEnemy);
         }
 
         private void OnDisable()
         {
             GameEventBus.Unsubscribe<EnemyKilledEvent>(OnEnemyKilled);
+            GameEventBus.Unsubscribe<EnemyKilledByEnemyEvent>(OnEnemyKilledByEnemy);
         }
 
         private void OnEnemyKilled(EnemyKilledEvent evt)
@@ -53,6 +57,62 @@ namespace CindarsHope.Combat
 
             // Caminho LEGADO: dropItemId × dropAmount fixos.
             GrantLegacyDrop(evt, inventoryManager);
+        }
+
+        // fable_78 (SLICE 4): corpo de kill monstro-vs-monstro. Concede loot REDUZIDO reusando o mesmo
+        // resolver/inventário (× ReducedLootMultiplier nas quantidades). NÃO concede XP/quest ao jogador
+        // (esses só contam para EnemyKilledEvent — kills do jogador).
+        private void OnEnemyKilledByEnemy(EnemyKilledByEnemyEvent evt)
+        {
+            var inventoryManager = _inventoryManager;
+            if (inventoryManager == null && GameBootstrap.Instance != null)
+            {
+                inventoryManager = GameBootstrap.Instance.InventoryManager;
+            }
+
+            if (inventoryManager == null)
+            {
+                Debug.LogWarning("EnemyDropSpawner: InventoryManager not found. Inter-monster corpse drop will be skipped.");
+                return;
+            }
+
+            float multiplier = evt.ReducedLootMultiplier > 0f ? evt.ReducedLootMultiplier : 1f;
+
+            // Caminho por TABELA: rola normalmente e reduz as quantidades pelo multiplicador (mín. 1).
+            if (TryResolveTable(evt.LootTableId, out var table))
+            {
+                ResolverWarnings.Clear();
+                var drops = EnemyLootResolver.Roll(table, evt.LootSeed, evt.IsElite, evt.IsMinibossOrBoss, ResolverWarnings);
+                foreach (var warning in ResolverWarnings)
+                {
+                    Debug.LogWarning($"EnemyDropSpawner: {warning}");
+                }
+
+                foreach (var drop in drops)
+                {
+                    int reduced = Mathf.Max(1, Mathf.RoundToInt(drop.Amount * multiplier));
+                    Debug.Log($"EnemyDropSpawner: inter-monster corpse table drop {drop.ItemId} x{reduced} (victim {evt.VictimEnemyId}, killer {evt.KillerInstanceId}).");
+                    if (!inventoryManager.AddItem(drop.ItemId, reduced))
+                    {
+                        Debug.LogWarning($"EnemyDropSpawner: inventory rejected inter-monster corpse drop {drop.ItemId} x{reduced}.");
+                    }
+                }
+
+                return;
+            }
+
+            // Caminho LEGADO: DropAmount já chega REDUZIDO no evento (calculado por EnemyHealth).
+            if (string.IsNullOrWhiteSpace(evt.DropItemId) || evt.DropAmount <= 0)
+            {
+                Debug.Log($"EnemyDropSpawner: inter-monster corpse for victim {evt.VictimEnemyId} has no valid drop configured.");
+                return;
+            }
+
+            Debug.Log($"EnemyDropSpawner: adding inter-monster corpse drop {evt.DropItemId} x{evt.DropAmount} to inventory.");
+            if (!inventoryManager.AddItem(evt.DropItemId, evt.DropAmount))
+            {
+                Debug.LogWarning($"EnemyDropSpawner: inventory rejected inter-monster corpse drop {evt.DropItemId} x{evt.DropAmount}.");
+            }
         }
 
         private bool TryResolveTable(string lootTableId, out LootTableSO table)

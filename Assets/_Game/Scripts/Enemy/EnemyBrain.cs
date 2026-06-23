@@ -50,6 +50,17 @@ namespace CindarsHope.Enemy
         // Target
         private GameObject _playerTarget;
 
+        // fable_78 (SLICE 4): conflito inter-monstro. _conflictCombatant != null SOMENTE na visita em que
+        // este inimigo é marcado como rival (injetado pelo materializer). Quando null, o caminho de
+        // targeting/dano é EXATAMENTE o player-only existente (byte-for-byte). Quando presente, o alvo
+        // hostil válido é {player} ∪ {rivais vivos}; o ramo de rival é totalmente isolado por este guard.
+        private CindarsHope.Cave.Ecosystem.CaveConflictCombatant _conflictCombatant;
+        private CindarsHope.Cave.Data.CaveEcosystemBalanceSO _ecosystemBalance;
+        // Alvo rival corrente desta decisão (null = mirando o player). Quando não-null, _playerTarget é
+        // apontado para o GameObject do rival para REUSAR o locomotor/estado existente; só a resolução de
+        // dano diverge (TakeDamageFromEnemy em vez de PlayerDamageReceiver).
+        private CindarsHope.Combat.EnemyHealth _rivalHealthTarget;
+
         // fable_04: threat/aggro memory + pack coordination.
         private readonly EnemyThreatState _threatState = new EnemyThreatState();
         // Internal feature flag (rollback): disabling reverts to instant-distance leash behaviour.
@@ -202,6 +213,9 @@ namespace CindarsHope.Enemy
             _health = GetComponent<EnemyHealth>();
             _vulnerabilityState = GetComponent<EnemyVulnerabilityState>();
             _spriteRenderer = GetComponent<SpriteRenderer>();
+            // fable_78: resolvido no mesmo GameObject (sem scene search). Presente só quando o materializer
+            // anexou o combatant de conflito a este inimigo nesta visita.
+            _conflictCombatant = GetComponent<CindarsHope.Cave.Ecosystem.CaveConflictCombatant>();
         }
 
         private void OnEnable()
@@ -236,6 +250,14 @@ namespace CindarsHope.Enemy
                 _anchorLeashTiles = _movementProfile.WanderRadius;
 
             RefreshPlayerTarget();
+
+            // fable_78: re-resolve o combatant caso ele tenha sido anexado após o Awake do brain
+            // (o materializer adiciona o brain e depois, condicionalmente, o combatant).
+            if (_conflictCombatant == null)
+            {
+                _conflictCombatant = GetComponent<CindarsHope.Cave.Ecosystem.CaveConflictCombatant>();
+            }
+            _rivalHealthTarget = null;
 
             if (_vulnerabilityState != null)
                 _vulnerabilityState.Initialize(_enemyData?.enemyId);
@@ -283,6 +305,11 @@ namespace CindarsHope.Enemy
             // em (0,0,0)) e o inimigo mede distancia ate a origem do mundo — atacando o vazio, mas
             // roteando o dano ao player real longe dali (bug "dano invisivel de bicho que nao esta perto").
             RefreshPlayerTarget();
+
+            // fable_78 (SLICE 4): targeting conflict-aware. Ramo ISOLADO — só roda quando este inimigo é um
+            // conflict-combatant. Caso contrário, _rivalHealthTarget fica null e o caminho player-only é
+            // intacto (RefreshPlayerTarget já restaurou _playerTarget para o player visível).
+            RefreshConflictTarget();
 
             // fable_24: Volatile elites explode once when they die. Damage usually flows straight
             // through EnemyHealth (not EnemyBrain.TakeDamage), so detect the death transition here
@@ -566,6 +593,15 @@ namespace CindarsHope.Enemy
             if (!System.Enum.TryParse<DamageType>(_pendingAction.DamageType, true, out var dmgType))
                 dmgType = DamageType.Physical;
 
+            // fable_78 (SLICE 4): quando o alvo é um rival (conflito inter-monstro), o dano vai para o
+            // EnemyHealth do rival via o caminho de origem-inimigo (×0.10 + "Ferido" + kill-by-enemy).
+            // Não toca o pipeline de dano ao jogador. Ramo isolado por IsTargetingRival.
+            if (IsTargetingRival)
+            {
+                ResolveInterMonsterAction(dmgType);
+                return;
+            }
+
             // SPEC 13D: blink-strike teleports the enemy to the player then deals melee damage.
             if (_pendingAction.ActionType == EnemyActionType.BlinkStrike)
             {
@@ -635,6 +671,39 @@ namespace CindarsHope.Enemy
                     FloatingDamageNumberDisplayer.ShowAtTarget(_playerTarget ?? playerManager.gameObject, applied, dmgType, false, true);
                 }
             }
+        }
+
+        // fable_78 (SLICE 4): resolve um ataque contra o rival corrente. Re-checa alcance (o rival pode ter
+        // se movido durante o windup, igual ao caminho do player) e roteia o dano base do action pelo
+        // caminho de origem-inimigo do EnemyHealth (×InterMonsterDamageMultiplier + "Ferido" + kill-by-enemy).
+        // Reusa o mesmo locomotor/estado: não cria projétil/pathfinding novo (área/ranged tratam como hit direto).
+        private void ResolveInterMonsterAction(DamageType dmgType)
+        {
+            var rival = _rivalHealthTarget;
+            if (rival == null || rival.IsDead || _ecosystemBalance == null)
+            {
+                return;
+            }
+
+            float dist = Vector2.Distance(transform.position, rival.transform.position);
+            float effectiveRange = _pendingAction.ActionType == EnemyActionType.AreaPulse && _pendingAction.AreaRadius > 0f
+                ? _pendingAction.AreaRadius
+                : _pendingAction.Range;
+            if (dist > effectiveRange * 1.2f)
+            {
+                return;
+            }
+
+            int rawDamage = Mathf.Max(0, Mathf.RoundToInt(_pendingAction.BaseDamage * _phaseDamageMultiplier));
+            if (rawDamage <= 0)
+            {
+                return;
+            }
+
+            int caveLevel = _conflictCombatant != null ? _conflictCombatant.CaveLevel : 0;
+            string killerInstanceId = _health != null ? _health.EnemyInstanceId : gameObject.name;
+
+            rival.TakeDamageFromEnemy(rawDamage, dmgType, killerInstanceId, caveLevel, _ecosystemBalance);
         }
 
         // SPEC 13D: Teleports to player then deals melee damage + applies status effects.
@@ -1353,6 +1422,70 @@ namespace CindarsHope.Enemy
             }
         }
 
+        // fable_78 (SLICE 4): escolhe o alvo hostil corrente entre {player} ∪ {rivais vivos}, ponderado por
+        // PlayerAggroWeight/RivalAggroWeight (default 1/1 → empate = mais próximo). Quando um rival vence,
+        // aponta _playerTarget para o GameObject do rival (REUSA o locomotor/estado existente) e registra
+        // _rivalHealthTarget para a resolução de dano divergir. Quando o player vence (ou não há rival vivo),
+        // restaura o caminho player-only. Ramo isolado: no-op se este inimigo não é conflict-combatant.
+        private void RefreshConflictTarget()
+        {
+            _rivalHealthTarget = null;
+
+            if (_conflictCombatant == null)
+            {
+                return;
+            }
+
+            var visiblePlayer = Player.PlayerController.ActiveInstance;
+            var playerGo = visiblePlayer != null ? visiblePlayer.gameObject : _playerTarget;
+
+            float detection = DetectionRange();
+            var rival = _conflictCombatant.FindNearestLivingRival(transform.position, detection);
+            if (rival == null)
+            {
+                // Sem rival vivo no raio → mira o player como sempre.
+                if (playerGo != null)
+                {
+                    _playerTarget = playerGo;
+                }
+                return;
+            }
+
+            float playerWeighted = ResolveWeightedDistance(playerGo, _ecosystemBalance?.PlayerAggroWeight ?? 1f);
+            float rivalDist = Vector2.Distance(transform.position, rival.transform.position);
+            float rivalWeighted = ResolveWeightedDistance(rivalDist, _ecosystemBalance?.RivalAggroWeight ?? 1f);
+
+            if (rivalWeighted <= playerWeighted)
+            {
+                _rivalHealthTarget = rival;
+                _playerTarget = rival.gameObject; // reusa movimento/distância/estado existentes
+            }
+            else if (playerGo != null)
+            {
+                _playerTarget = playerGo;
+            }
+        }
+
+        // Distância "ponderada" por peso de aggro: peso menor torna o alvo mais atraente (divide a distância).
+        // Peso <= 0 desliga o alvo (distância infinita). Peso 1 = distância crua (default empate = mais próximo).
+        private float ResolveWeightedDistance(GameObject target, float weight)
+        {
+            if (target == null)
+            {
+                return float.MaxValue;
+            }
+
+            return ResolveWeightedDistance(Vector2.Distance(transform.position, target.transform.position), weight);
+        }
+
+        private static float ResolveWeightedDistance(float distance, float weight)
+        {
+            return weight <= 0f ? float.MaxValue : distance / weight;
+        }
+
+        // fable_78: true quando o alvo corrente é um rival (conflito), não o player.
+        private bool IsTargetingRival => _rivalHealthTarget != null && !_rivalHealthTarget.IsDead;
+
         private float DistanceToPlayer() =>
             _playerTarget != null
                 ? Vector2.Distance(transform.position, _playerTarget.transform.position)
@@ -1442,6 +1575,20 @@ namespace CindarsHope.Enemy
             _attackCadenceFactor = EliteAffixRules.ResolveAttackCadenceFactor(affix);
             _wardedStatusConsumed = false;
             _volatileExploded = false;
+        }
+
+        /// <summary>
+        /// fable_78 (SLICE 4) — liga este brain ao conflito inter-monstro. Chamado pelo materializer logo
+        /// após anexar o CaveConflictCombatant a este inimigo (injeção explícita; sem scene search). Com o
+        /// combatant presente, o targeting passa a considerar rivais; sem ele, o caminho player-only segue
+        /// intacto. balance carrega os pesos de aggro e os multiplicadores de dano/Ferido/loot.
+        /// </summary>
+        public void ConfigureConflict(
+            CindarsHope.Cave.Ecosystem.CaveConflictCombatant combatant,
+            CindarsHope.Cave.Data.CaveEcosystemBalanceSO balance)
+        {
+            _conflictCombatant = combatant;
+            _ecosystemBalance = balance;
         }
 
         /// <summary>

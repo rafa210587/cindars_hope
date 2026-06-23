@@ -265,6 +265,9 @@ namespace CindarsHope.Cave
                 RegisterEnemySpawnPlan(_spawnPlanService.CreatePlanFromCaveEnemySpawnPlan(_materializer.LastEnemySpawnPlan));
                 RepositionCamera();
                 CaptureSnapshot();
+                // fable_78 (SLICE 4): roll de conflito inter-monstro POR ENTRADA, após a captura do
+                // snapshot (que carrega EntryCount/HasHadConflict). Marca rivais e publica o toast.
+                ApplyInterMonsterConflict();
             }
 
             GameEventBus.Publish(new CaveLevelEnteredEvent(
@@ -455,12 +458,81 @@ namespace CindarsHope.Cave
                 _materializer.MaterializeFromSnapshot(snapshot, CurrentGeneratedLevel, _currentSpawnAnchor);
                 RegisterEnemySpawnPlan(_spawnPlanService.CreatePlanFromCaveEnemySpawnPlan(_materializer.LastEnemySpawnPlan));
                 RepositionCamera();
+                // fable_78 (SLICE 4): re-roll de conflito POR ENTRADA também na revisita (comportamento por
+                // visita, não composição — ADR-0018). O snapshot já existe com EntryCount/HasHadConflict.
+                ApplyInterMonsterConflict();
             }
 
             GameEventBus.Publish(new CaveLevelEnteredEvent(
                 snapshot.CaveLevel,
                 snapshot.BiomeId,
                 _runManager.CaveRunSeed));
+        }
+
+        // fable_78 (SLICE 4): rola o conflito inter-monstro desta ENTRADA, marca os rivais nas instâncias
+        // materializadas e publica o feedback. Determinístico por (worldSeed, runSeed, caveLevel, entryIndex)
+        // — entryIndex = EntryCount persistido (re-roll por visita; queda 5%->0,5% após o primeiro conflito).
+        // Conflito é comportamento por visita (ADR-0018): não toca composição/posições/IDs (estáveis).
+        private void ApplyInterMonsterConflict()
+        {
+            if (_materializer == null || CurrentGeneratedLevel == null || _runManager == null)
+            {
+                return;
+            }
+
+            var balance = _materializer.EcosystemBalance;
+            if (balance == null)
+            {
+                return; // balance não ligado (DEFERRED_UNITY: asset CaveEcosystemBalance — slice 6)
+            }
+
+            var plan = _materializer.LastEnemySpawnPlan;
+            if (plan == null || plan.Entries == null || plan.Entries.Count == 0)
+            {
+                return;
+            }
+
+            // Estado persistido do nível (EntryCount/HasHadConflict). Get-or-create p/ back-compat de save.
+            if (!_runManager.State.VisitedLevelSnapshots.TryGetValue(CurrentGeneratedLevel.CaveLevel, out var snapshot)
+                || snapshot == null)
+            {
+                return;
+            }
+
+            var conflictState = snapshot.GetOrCreateConflictState();
+
+            var presentEnemyIds = new System.Collections.Generic.List<string>(plan.Entries.Count);
+            foreach (var entry in plan.Entries)
+            {
+                if (entry != null && !string.IsNullOrWhiteSpace(entry.EnemyId))
+                {
+                    presentEnemyIds.Add(entry.EnemyId);
+                }
+            }
+
+            var conflictPlan = Cave.Ecosystem.CaveEcosystemConflictPlanner.Decide(
+                _runManager.CaveWorldSeed,
+                _runManager.CaveRunSeed,
+                CurrentGeneratedLevel.CaveLevel,
+                conflictState.EntryCount, // entryIndex = entradas anteriores (re-roll por visita)
+                conflictState.HasHadConflict,
+                presentEnemyIds,
+                balance);
+
+            if (conflictPlan.ConflictActive)
+            {
+                _materializer.ApplyConflict(conflictPlan, CurrentGeneratedLevel.CaveLevel);
+                GameEventBus.Publish(new CaveEcosystemConflictStartedEvent(
+                    CurrentGeneratedLevel.CaveLevel,
+                    conflictPlan.FactionAEnemyId,
+                    conflictPlan.FactionBEnemyId));
+            }
+
+            // Persiste a entrada (incrementa EntryCount; trava HasHadConflict; grava Active/Faction* da visita).
+            snapshot.RecordConflictEntry(
+                conflictPlan.ConflictActive,
+                conflictPlan.FactionAEnemyId,
+                conflictPlan.FactionBEnemyId);
         }
 
         public void RegenerateCurrentRunDebug()

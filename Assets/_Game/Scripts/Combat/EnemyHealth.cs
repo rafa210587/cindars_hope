@@ -1,3 +1,5 @@
+using CindarsHope.Cave.Data;
+using CindarsHope.Cave.Ecosystem;
 using CindarsHope.Cave.Runtime;
 using CindarsHope.Combat.StatusEffect;
 using CindarsHope.Core;
@@ -25,9 +27,27 @@ namespace CindarsHope.Combat
         // fable_06: perfil de vulnerabilidade (matriz Element/Material/Status). Null => neutro.
         private EnemyVulnerabilityProfileSO _vulnerabilityProfile;
 
+        // fable_78 (SLICE 4): estado runtime "Ferido" do conflito inter-monstro. Timestamp até quando o
+        // alvo apanhou de um rival; enquanto ativo a defesa efetiva é reduzida (gancho tático). Estado
+        // transitório/aditivo (mesmo idioma do _stunUntil do EnemyBrain e da janela de vulnerabilidade);
+        // não persiste no save (comportamento por visita, fora do LayoutHash).
+        private float _woundedUntil;
+        private float _woundedDefenseMultiplier = 1f;
+        // fable_78 (SLICE 4): setado por TakeDamageFromEnemy logo antes de aplicar o golpe; consumido por
+        // Die() para escolher a rota de corpo reduzido (EnemyKilledByEnemyEvent) em vez da rota de loot
+        // do jogador (EnemyKilledEvent). Null = kill normal (pelo jogador) — comportamento inalterado.
+        private string _pendingEnemyKillerInstanceId;
+        private float _pendingKillLootMultiplier = 1f;
+        private int _pendingKillCaveLevel;
+
         public int CurrentHp => _currentHp;
         public int MaxHp => _enemyData != null ? _enemyData.maxHp : 0;
         public string EnemyId => _enemyData != null ? _enemyData.enemyId : string.Empty;
+        // fable_78: id de instância estável (setado por ConfigureLootContext). Usado como killer/victim
+        // id nos eventos de conflito inter-monstro. Vazio fora de uma run de caverna.
+        public string EnemyInstanceId => _enemyInstanceId;
+        // fable_78 (SLICE 4): true enquanto o alvo está "Ferido" (apanhou de um rival recentemente).
+        public bool IsWounded => Time.time < _woundedUntil;
         public string DisplayName => _enemyData != null && !string.IsNullOrWhiteSpace(_enemyData.DisplayName) ? _enemyData.DisplayName : name;
         public CindarsHope.Combat.StatusEffect.StatusEffectManager StatusEffects => _statusEffects;
         // SPEC 14A-FIX10: expose IsDead so EnemyBrain/external controllers can check death state.
@@ -112,6 +132,61 @@ namespace CindarsHope.Combat
             TakeDamage(request);
         }
 
+        // fable_78 (SLICE 4): caminho de dano com ORIGEM-INIMIGO (conflito inter-monstro, seção 14.6).
+        // - aplica InterMonsterDamageMultiplier (default 0.10) ao dano base — dano monstro↔jogador NÃO
+        //   passa por aqui, então permanece inalterado;
+        // - aplica o status leve "Ferido" ao alvo (defesa reduzida por uma janela curta);
+        // - se for kill, marca a morte como "by enemy" → corpo dropa loot×InterMonsterKillLootMultiplier
+        //   e publica EnemyKilledByEnemyEvent (NUNCA EnemyKilledEvent → sem XP/quest/bestiário ao jogador).
+        // killerInstanceId identifica o atacante para o evento; balance carrega todos os multiplicadores.
+        public void TakeDamageFromEnemy(int rawDamage, DamageType damageType, string killerInstanceId, int caveLevel, CaveEcosystemBalanceSO balance)
+        {
+            if (_enemyData == null || balance == null || _currentHp <= 0 || rawDamage <= 0)
+            {
+                return;
+            }
+
+            // Aplica o status "Ferido" ANTES de calcular o dano: a defesa reduzida já vale para este golpe
+            // e para os próximos da janela, dando vantagem real a quem intervém no conflito.
+            ApplyWounded(balance.WoundedDefenseMultiplier, balance.WoundedDurationSeconds);
+
+            int scaledDamage = InterMonsterCombatMath.ScaleInterMonsterDamage(rawDamage, balance.InterMonsterDamageMultiplier);
+            if (scaledDamage <= 0)
+            {
+                return;
+            }
+
+            var request = new DamageRequest(EnemyId, scaledDamage, damageType, killerInstanceId ?? "enemy")
+            {
+                SourcePosition = transform.position,
+                KnockbackForce = 0f,
+                CanTriggerVulnerability = false
+            };
+
+            // Roteia pelo caminho de dano padrão (defesa "Ferido" + mitigação) marcando o killer-inimigo,
+            // para que Die() escolha a rota de corpo reduzido em vez da rota normal de loot do jogador.
+            _pendingEnemyKillerInstanceId = killerInstanceId ?? string.Empty;
+            _pendingKillLootMultiplier = balance.InterMonsterKillLootMultiplier;
+            _pendingKillCaveLevel = caveLevel;
+            TakeDamage(request);
+            _pendingEnemyKillerInstanceId = null;
+        }
+
+        // fable_78 (SLICE 4): aplica/renova o status leve "Ferido" (defesa reduzida por uma janela curta).
+        // Reusa a janela transitória runtime (mesmo idioma de _stunUntil/janela de vulnerabilidade) em vez
+        // de um StatusEffectSO porque o asset/database de "Ferido" é DEFERRED_UNITY (slice 6) — sem criar
+        // sistema paralelo; a semântica de defesa reduzida vive no DamageCalculator existente.
+        public void ApplyWounded(float defenseMultiplier, float durationSeconds)
+        {
+            if (durationSeconds <= 0f)
+            {
+                return;
+            }
+
+            _woundedDefenseMultiplier = Mathf.Clamp(defenseMultiplier, 0f, 1f);
+            _woundedUntil = Mathf.Max(_woundedUntil, Time.time + durationSeconds);
+        }
+
         public void TakeDamage(DamageRequest request)
         {
             if (_enemyData == null)
@@ -145,8 +220,14 @@ namespace CindarsHope.Combat
             float elementMaterialMultiplier = VulnerabilityMatcher.GetDamageMultiplier(
                 _vulnerabilityProfile, request.DamageType, request.WeaponMaterialTags);
 
+            // fable_78 (SLICE 4): alvo "Ferido" tem defesa reduzida (gancho tático do conflito). Aplica-se
+            // a TODO dano recebido enquanto a janela do status está ativa, inclusive do jogador que intervém.
+            int effectiveDefense = IsWounded
+                ? InterMonsterCombatMath.ApplyWoundedDefense(_enemyData.defense, _woundedDefenseMultiplier)
+                : _enemyData.defense;
+
             var damageResult = DamageCalculator.Calculate(
-                request, _enemyData.defense, null, vulnerabilityMultiplier, 1f, elementMaterialMultiplier);
+                request, effectiveDefense, null, vulnerabilityMultiplier, 1f, elementMaterialMultiplier);
             if (damageResult.FinalDamage <= 0)
             {
                 return;
@@ -207,6 +288,33 @@ namespace CindarsHope.Combat
             // seed 0 mas o spawner cai no caminho legado se não houver lootTableId.
             int lootSeed = CindarsHope.Loot.EnemyLootResolver.BuildLootSeed(_caveRunSeed, _enemyInstanceId);
             bool isMinibossOrBoss = _enemyData.IsMiniBoss || _enemyData.IsBoss;
+
+            // fable_78 (SLICE 4): kill monstro-vs-monstro NÃO dispara a rota normal de loot do jogador
+            // (sem XP/quest/bestiário ao player). Em vez disso publica EnemyKilledByEnemyEvent com o
+            // payload do corpo REDUZIDO (× InterMonsterKillLootMultiplier), que o EnemyDropSpawner
+            // existente concede como único caminho de drop. Estado de morte persiste via F13 (HP=0).
+            if (!string.IsNullOrEmpty(_pendingEnemyKillerInstanceId))
+            {
+                int reducedDrop = InterMonsterCombatMath.ScaleReducedLoot(_enemyData.dropAmount, _pendingKillLootMultiplier);
+
+                GameEventBus.Publish(new EnemyKilledByEnemyEvent(
+                    _enemyInstanceId,
+                    _pendingEnemyKillerInstanceId,
+                    _pendingKillCaveLevel,
+                    _enemyData.enemyId,
+                    _enemyData.dropItemId,
+                    reducedDrop,
+                    _enemyData.lootTableId,
+                    lootSeed,
+                    _enemyData.IsElite,
+                    isMinibossOrBoss,
+                    _pendingKillLootMultiplier));
+
+                CombatLog.Log($"CombatLog: EnemyKilledByEnemy. Victim={_enemyInstanceId}, Killer={_pendingEnemyKillerInstanceId}, ReducedDrop={_enemyData.dropItemId} x{reducedDrop}.", this);
+
+                gameObject.SetActive(false);
+                return;
+            }
 
             GameEventBus.Publish(new EnemyKilledEvent(
                 _enemyData.enemyId,
