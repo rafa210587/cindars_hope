@@ -21,7 +21,7 @@ If an ADR conflicts with a game rule:
 
 ---
 
-## Active Decisions (ADR-0001 to ADR-0017)
+## Active Decisions (ADR-0001 to ADR-0019)
 
 | ADR | Title | Theme | Status | Canonical Ref | Source |
 |---|---|---|---|---|---|
@@ -42,6 +42,8 @@ If an ADR conflicts with a game rule:
 | [ADR-0015](../decisions/ADR-0015-canonical-specs-relocated-to-dotspecs.md) | Canonical Specs Relocated to .specs | Governance | accepted | .claude/rules/docs-governance.md | Owner directive 2026-06-13 |
 | [ADR-0016](../decisions/ADR-0016-cave-enemy-density-depth-scaling.md) | Cave Enemy Density and Depth Scaling | Gameplay | accepted | docs/game_rules/cave_rules.md | fable_67 |
 | [ADR-0017](../decisions/ADR-0017-reputation-absorbed-by-friendship.md) | Reputation Absorbed by Friendship | Gameplay | proposed | docs/decisions/ADR-0017-* | fable_57 |
+| [ADR-0018](../decisions/ADR-0018-cave-conflict-stable-run-carveout.md) | Cave Inter-Monster Conflict Carve-out | Gameplay | accepted | docs/game_rules/cave_rules.md | fable_78 |
+| [ADR-0019](../decisions/ADR-0019-cave-biome-mineable-budget-supersedes-resource-node-range.md) | Cave Biome Mineable Budget Supersedes 4-10 | Gameplay | accepted | docs/game_rules/cave_rules.md | fable_78 |
 
 ---
 
@@ -117,7 +119,10 @@ All game-specific rules are in `docs/game_rules/`. Key documents:
 
 ## Decisions Deprecated/Superseded
 
-(None yet. Old amendments migrated to ADRs and game_rules.)
+- ADR-0005 — "Resource Node Range 4-10" partially superseded by ADR-0019 (per-biome budget).
+- ADR-0005 — "scene identical on revisit" clause carved out by ADR-0018 (scoped to
+  non-player-caused enemy HP/death; composition unchanged).
+- ADR-0005 — "Enemies per level range" previously superseded by ADR-0016 (16-32, cap 44).
 
 ---
 

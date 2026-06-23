@@ -405,3 +405,13 @@ o COMPANION_ROLES_CATALOG e as decisões v3 bloco 3 — seguem WAVE 14 (gated), 
 Game_rules NÃO viram spec (regras consumidas; domínios já cobertos). Placar lote v1: 73 funcionais
 (10 executadas, 63 a executar E11-E73) + 9 retro. Ordem: fable_00C PARTE J.
 Ordem/janelas: fable_00C PARTE H e .specs/README.md.
+
+### Caverna Viva → fable_78 (pedido humano direto, 2026-06-23)
+
+| # | Spec | Fecha |
+|---|---|---|
+| F78 | `fable/fable_78_spec_cave_ecosystem_population_runtime.md` | povoamento da caverna procedural: elementos ambientais temáticos por bioma (pedras/minério/fungos/lagos/cristais/lava/destroços), mapas escalando com profundidade, threat budget por nível, ecossistema de conflito inter-monstro (re-roll por entrada 5%→0,5% após o 1º, dano 1/10, 2 espécies distintas, aggro dividido), mercadores errantes enriquecidos |
+
+F78 é P1 / Runtime+Data+Editor / NO-parallel (lock em Cave/Enemy/Combat). Depende de F33/F24/F06/F32/F09/F13
+e do GAMEPLAY_EXPANSION_SLICE. Regida por stable-run (ADR-0005). Decisões de direção do humano vinculadas na
+spec: tamanho escala com profundidade; elementos temáticos por bioma; uma spec densa multi-fase.

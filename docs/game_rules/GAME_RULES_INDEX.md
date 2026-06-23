@@ -12,7 +12,7 @@
 | Documentation | [documentation_rules.md](documentation_rules.md) | ADR-0001 | ✓ | Canonical folders, file organization, source locations |
 | Agent Execution | [agent_execution_rules.md](agent_execution_rules.md) | ADR-0002 | ✓ | What agents read/don't read by default |
 | Validation/Acceptance | [validation_acceptance_rules.md](validation_acceptance_rules.md) | ADR-0004, ADR-0009 | ✓ | Phase gates (0/1/2/3), acceptance criteria, NOT_RUN tracking |
-| Cave Gameplay | [cave_rules.md](cave_rules.md) | ADR-0005 | ✓ | Stable run invariant, snapshots, enemy/resource ranges, boss gates |
+| Cave Gameplay | [cave_rules.md](cave_rules.md) | ADR-0005, ADR-0016, ADR-0018, ADR-0019 | ✓ | Stable run invariant, snapshots, enemy/resource ranges, conflict carve-out, boss gates |
 | Event/Architecture | [event_rules.md](event_rules.md) | ADR-0007 | ✓ | Event bus, gameplay communication, avoid global lookup |
 | Save/Data | [save_rules.md](save_rules.md) | ADR-0006 | ✓ | DTO contracts, no Unity refs, versioning, migration |
 | Combat | [combat_rules.md](combat_rules.md) | ADR-0005 | ✓ | Enemy roles, AI, status effects, damage, factions |
