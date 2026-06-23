@@ -392,3 +392,17 @@ PROJECT_LOG + CURRENT_STATE conflict → prefer CURRENT_STATE; report mismatch
   2. `CindarsHope/Inicializar Projeto` — regenera todos os assets (incl. enemy actions/sets) e recria as cenas.
   3. `CindarsHope/Validar Projeto` — confirma que tudo passou (leitura, sem mutação).
   Depois: executar Play Mode checklists de fable_74/75/76/77.
+## 2026-06-23 — fable_78 EXECUTADA (Caverna Viva — lado-código completo, 6 commits)
+
+- Pedido humano direto: povoar a caverna procedural (elementos por bioma, ecossistema de monstros).
+  Spec densa multi-fase gerada (fable_78), revisada por game-design-reviewer (SOUND_WITH_AMENDMENTS).
+- Executada em 6 slices, cada uma BUILD_VALIDATED + commit individual (8ed52c11→8937aefe):
+  - S1: ADR-0018 (carve-out stable-run p/ conflito) + ADR-0019 (orçamento de mineráveis por bioma supersede "4-10 nodes") + cave_rules; contratos/SOs/eventos; planners puros (conflito 5%/0,5% por entrada determinístico; elementos por bioma BFS não-bloqueante) + 2 EditMode.
+  - S2: tamanho do mapa escala por profundidade (~60→90); threat budget piso/teto + densidade por sala + entrada segura; gating aquático; GenerationConfigVersion default 3→4; 2 EditMode.
+  - S3: persistência aditiva (VisitedLevelSnapshot/CaveSnapshotService/CaveSaveData) backward-compatible + materialização null-safe (reusa ResourceNode); EditMode back-compat.
+  - S4 (alto risco): conflito em runtime — targeting de rival no EnemyBrain (player-only intacto sem conflito), dano inter-monstro ×0.10 + status "Ferido" transitório + corpo com loot reduzido ×0.40 SEM XP/quest ao jogador (EnemyKilledByEnemyEvent), toast obrigatório. architecture-reviewer + non-regression PASS.
+  - S5: mercador errante com estoque temático por bioma (determinístico, back-compat).
+  - S6: geradores de editor (balance/ore-nodes/element-profiles+database/wounded) + ValidateCaveEcosystem + cenário humano de Play Mode.
+- Validação: Assembly-CSharp 0E, Assembly-CSharp-Editor 0E, validate_docs exit 0. Status: BUILD_VALIDATED_WITH_WARNINGS.
+- NÃO promovida. DEFERRED_UNITY (humano): rodar os menus CindarsHope/Cave/Ecosystem/Generate* + Validate Cave Ecosystem; wire balance/database/prefabs no materializer da CaveScene; subir GenerationConfigVersion no asset; EditMode Test Runner (7 suítes Cave); replay validator stable-run; Play Mode (docs/validation/playmode/fable_78_human_test_scenario.md).
+- NOTA: o working tree tinha ruído pré-existente (~centenas de .asset + dezenas de .cs de outras sessões); os 6 commits incluem APENAS arquivos da fable_78. run_strict_validation retorna exit 1 só pelo check de .asset pré-existentes (fora deste diff) — builds/docs/quality individuais passam.
