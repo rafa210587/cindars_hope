@@ -11,6 +11,18 @@ Specs live in `.specs/`. Spec is the execution contract. Refinement is fallback 
 
 ---
 
+## Execution Routing (LER PRIMEIRO — comportamento padrão de toda sessão)
+
+O loop principal é reservado para **debate, design, refinamento e decisões** — mantenha-o no modelo da sessão (Opus). Para **qualquer trabalho de execução**, NÃO execute no loop principal: delegue imediatamente a um subagent Sonnet via Agent tool.
+
+- **Delegar a Sonnet** (subagent_type específico quando existir — já em Sonnet; senão `general-purpose` com `model: sonnet`): implementar/editar código, asset wiring, rodar validação, docs migration, EditMode tests, edição de catálogo/asset em massa, bugfix mecânico, buscas amplas no repo.
+- **Modelo por tipo de subagent** (passe `model` no Agent tool): busca/exploração read-only (`Explore`) → `haiku`; pesquisa/execução genérica (`general-purpose`) → `sonnet`; agents de julgamento (`architecture-reviewer`, `game-design-reviewer`) → herdam Opus. Os demais agents do projeto já têm `model` no frontmatter.
+- **Manter no loop principal (Opus):** responder perguntas, ler 1–2 arquivos para a conversa, planejar, decidir arquitetura/design, explicar.
+- **Regra prática:** múltiplas edições/iterações ou validação → execução → subagent Sonnet. Pensar/decidir/explicar → loop principal.
+- Ao delegar, dê ao subagent o escopo, arquivos permitidos e critério de pronto; ao voltar, revise o resultado no Opus.
+
+Detalhes e racional de custo: `docs/project/COST_EFFICIENCY_GUIDE.md`.
+
 ## Default Reads (implementation task)
 
 Read ONLY:
@@ -39,6 +51,10 @@ For spec execution (implement-spec, validate-spec, finish-spec), also read:
 2. `.specs/SPEC_VALIDATION_MATRIX_MASTER.md` — validation levels and evidence requirements
 3. `.claude/rules/testing-quality-gate.md` — automated testing and human validation requirements
 4. `docs/validation/FINAL_HUMAN_VALIDATION_BY_WAVE.md` — human validation checklist (batch at wave-end)
+
+## Cost Efficiency
+
+Para reduzir gasto de tokens (roteamento de modelo, cache de prompt, script vs reasoning): `docs/project/COST_EFFICIENCY_GUIDE.md`. Agents mecânicos rodam em Sonnet; use Opus no loop principal só para design/decisão.
 
 ## Conditional Reads (only if spec or prompt cites them)
 
@@ -150,6 +166,9 @@ Use `.claude/skills/<name>/SKILL.md` when task matches:
 | `boot-integration-smoke` | Verificação estática/EditMode do boot-wiring (GameBootstrap, *RuntimeBootstrap, subscribers) antes de depender de Play Mode; specs runtime que fechariam só em "Play Mode deferred" |
 | `harness-authoring` | Criar nova skill, rule, agent, command ou hook — templates, gates de qualidade e checklist por tipo |
 | `harness-audit` | Auditar artefatos do harness após waves grandes ou quando skill/agent parece não estar disparando |
+| `delegated-execution` | Delegar execução a subagent Sonnet e VERIFICAR o resultado (no disco + rebuild); evita "narrou e não fez" / desvios omitidos |
+| `pixel-art-prompt-authoring` | Autorar prompts EN de pixel art (NPCs/monstros/props) ancorados em Vaalara + D&D oficial; corrigir sprite gerado com cor/arma/anatomia errados; lote em tools/aseprite/prompts.json |
+| `sprite-generation-pipeline` | OPERAR o pipeline de geração de sprites por IA (ComfyUI/SDXL local AMD): build de prompts, geração em lote resumível, pós (rembg+downscale), wiring no Unity; gerar/regenerar arte de inimigos/NPCs/props/player |
 
 ---
 

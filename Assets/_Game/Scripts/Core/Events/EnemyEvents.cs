@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace CindarsHope.Core.Events
 {
@@ -166,7 +166,7 @@ namespace CindarsHope.Core.Events
     }
 
     // fable_04: a pack engaged or lost a member; survivors of the same PackId are alerted toward
-    // the position. Telemetry/HUD hook only — coordination itself happens via EnemyBrain.OnPackAlert.
+    // the position. Telemetry/HUD hook only â€” coordination itself happens via EnemyBrain.OnPackAlert.
     public class EnemyPackAlertedEvent
     {
         public string PackId;
@@ -199,7 +199,7 @@ namespace CindarsHope.Core.Events
     }
 
     // fable_05: a cave boss crossed into a new phase (HP threshold). phaseIndex is 0-based into the
-    // BossPhaseProfileSO.Phases array. HUD/telemetry hook only — the phase logic lives in
+    // BossPhaseProfileSO.Phases array. HUD/telemetry hook only â€” the phase logic lives in
     // BossBrainController; this event just announces the transition (CA-1).
     public class BossPhaseChangedEvent
     {
@@ -226,6 +226,27 @@ namespace CindarsHope.Core.Events
             BiomeTags = biomeTags ?? System.Array.Empty<string>();
             PackId = packId ?? string.Empty;
             EnemyIds = enemyIds ?? System.Array.Empty<string>();
+        }
+    }
+
+    /// <summary>
+    /// fable_83 — Publicado pelo EnemyBrain ao executar SummonAdds.
+    /// O materializer/spawner da caverna pode reagir e instanciar a criatura.
+    /// Seed e posicao sao deterministas (ADR-0005; sem GUID/timestamp).
+    /// </summary>
+    public class EnemyAddsSummonedEvent
+    {
+        public string SummonerEnemyId;
+        public string AddEnemyId;
+        public Vector2 SpawnPosition;
+        public int DeterministicSeed;
+
+        public EnemyAddsSummonedEvent(string summonerEnemyId, string addEnemyId, Vector2 spawnPosition, int deterministicSeed)
+        {
+            SummonerEnemyId = summonerEnemyId ?? string.Empty;
+            AddEnemyId = addEnemyId ?? string.Empty;
+            SpawnPosition = spawnPosition;
+            DeterministicSeed = deterministicSeed;
         }
     }
 }

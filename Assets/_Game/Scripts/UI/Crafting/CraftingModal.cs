@@ -26,6 +26,28 @@ namespace CindarsHope.UI.Crafting
 
         public bool IsOpen => _isOpen;
 
+        private void OnEnable()
+        {
+            GameEventBus.Subscribe<OpenCraftingStationRequestedEvent>(HandleOpenStationRequested);
+        }
+
+        private void OnDisable()
+        {
+            GameEventBus.Unsubscribe<OpenCraftingStationRequestedEvent>(HandleOpenStationRequested);
+        }
+
+        // Estação física pediu para abrir o craft (apertou E numa forja/alambique/tear…). Resolve a estação
+        // pelo id+tipo no runtime e abre o craft filtrado por aquele WorkshopType.
+        private void HandleOpenStationRequested(OpenCraftingStationRequestedEvent evt)
+        {
+            if (_runtime == null || _isOpen)
+            {
+                return;
+            }
+
+            Open(_runtime.GetOrCreateStation(evt.StationInstanceId, evt.WorkshopType));
+        }
+
         private void Update()
         {
             if (!_isOpen)

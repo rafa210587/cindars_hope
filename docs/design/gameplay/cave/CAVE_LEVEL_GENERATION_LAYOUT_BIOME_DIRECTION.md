@@ -6,7 +6,7 @@
 > - `docs/design/gameplay/cave/CAVE_DESIGN_DIRECTION.md`  
 > - `docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_DIRECTION.md`  
 > - `docs/design/gameplay/cave/CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md`  
-> - `docs/design/gameplay/cave/CAVE_MONSTER_VISUAL_SPRITE_DIRECTION.md`  
+> - `docs/design/art/CAVE_MONSTER_VISUAL_SPRITE_DIRECTION.md`  
 > - `docs/game_rules/cave_rules.md`  
 > - `docs/decisions/ADR-0005-cave-stable-run-and-replay.md`  
 > **Função:** definir como cada run da caverna escolhe biomas por faixa, gera níveis proceduralmente, escolhe packs/traps por bioma e preserva tudo em snapshot.  

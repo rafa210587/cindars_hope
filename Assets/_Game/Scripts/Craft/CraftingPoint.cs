@@ -1,3 +1,5 @@
+using CindarsHope.Core;
+using CindarsHope.Core.Events;
 using CindarsHope.Craft.Data;
 using CindarsHope.Interaction;
 using CindarsHope.UI.Crafting;
@@ -5,6 +7,13 @@ using UnityEngine;
 
 namespace CindarsHope.Craft
 {
+    /// <summary>
+    /// Estação de craft física e interagível (forja, alambique, tear, fogão, bancada). Apertar E abre o
+    /// craft filtrado pelo WorkshopType. Funciona de DOIS modos: se os refs de runtime+modal forem plugados
+    /// no momento da geração (cenas que os criam localmente, ex.: fazenda), abre direto; senão (ex.: cidade,
+    /// onde o modal é resolvido em runtime) publica <see cref="OpenCraftingStationRequestedEvent"/> e o
+    /// CraftingModal assina. Componente ÚNICO de estação — sem paralelo.
+    /// </summary>
     [DisallowMultipleComponent]
     public sealed class CraftingPoint : MonoBehaviour, IInteractable
     {
@@ -19,7 +28,7 @@ namespace CindarsHope.Craft
 
         public bool CanInteract(GameObject interactor)
         {
-            return _craftingRuntime != null && _craftingModal != null && !string.IsNullOrWhiteSpace(_stationInstanceId);
+            return interactor != null && !string.IsNullOrWhiteSpace(_stationInstanceId);
         }
 
         public void Interact(GameObject interactor)
@@ -30,8 +39,15 @@ namespace CindarsHope.Craft
                 return;
             }
 
-            var station = _craftingRuntime.GetOrCreateStation(_stationInstanceId, _stationType);
-            _craftingModal.Open(station);
+            // Modo direto (refs plugados no gerador) ou modo desacoplado (evento; o modal da cena assina).
+            if (_craftingRuntime != null && _craftingModal != null)
+            {
+                _craftingModal.Open(_craftingRuntime.GetOrCreateStation(_stationInstanceId, _stationType));
+            }
+            else
+            {
+                GameEventBus.Publish(new OpenCraftingStationRequestedEvent(_stationInstanceId, _stationType));
+            }
         }
 
         public void Configure(string stationInstanceId, WorkshopType stationType, CraftingRuntime craftingRuntime, CraftingModal craftingModal)
@@ -40,6 +56,15 @@ namespace CindarsHope.Craft
             _stationType = stationType;
             _craftingRuntime = craftingRuntime;
             _craftingModal = craftingModal;
+        }
+
+        /// <summary>Configuração desacoplada (sem refs): a estação publica o evento e o CraftingModal da cena abre.</summary>
+        public void Configure(string stationInstanceId, WorkshopType stationType)
+        {
+            _stationInstanceId = stationInstanceId;
+            _stationType = stationType;
+            _craftingRuntime = null;
+            _craftingModal = null;
         }
 
         public void RebindCraftingManager(CraftingManager craftingManager)

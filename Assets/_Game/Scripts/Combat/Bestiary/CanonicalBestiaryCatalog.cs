@@ -3,22 +3,22 @@ using System.Collections.Generic;
 namespace CindarsHope.Combat.Bestiary
 {
     /// <summary>
-    /// fable_33 — canonical, code-side source of truth for the 64-headline (77 distinct fichas)
-    /// creature catalog derived from CAVE_BESTIARY_CATALOG_DIRECTION_v1.0. One partial file per
-    /// theme band (CanonicalBestiaryCatalog.BandStone.cs ... BandVoid.cs + BandFinalFour.cs), each
-    /// returning its band's fichas in catalog order so the table is reviewable side-by-side with the
-    /// design doc. No Unity references — consumed by the editor generator and by EditMode tests.
+    /// fable_33 — canonical, code-side source of truth for the creature catalog derived from
+    /// CAVE_BESTIARY_CATALOG_DIRECTION_v1.0. One partial file per theme band
+    /// (CanonicalBestiaryCatalog.BandStone.cs ... BandVoid.cs + BandFinalFour.cs), each returning
+    /// its band's fichas in catalog order. No Unity references — consumed by the editor generator
+    /// and by EditMode tests.
     ///
-    /// Headline count note (catalog PARTE J): "60 band creatures + 4 finals = 64 fichas" is the
-    /// catalog's framing. Materializing every distinct id in the band tables yields All.Count == 77,
-    /// split as 50 commons + 14 minibosses + 9 gate bosses + 4 finals (commons + minibosses == the 64
-    /// "band roster" headline). See CanonicalBestiaryCatalogCounts for the exact reconciliation tested.
+    /// fable_80 — +40 fichas added (5/6 per band), bringing All.Count to 104.
+    /// Original breakdown (fable_33): 50 commons + 14 minibosses + 9 gate bosses + 4 finals = 77.
+    /// fable_80 adds 40 commons/elites (no new gate bosses or finals): total 104.
+    /// See CanonicalBestiaryCatalogCounts for base reconciliation.
     /// </summary>
     public static partial class CanonicalBestiaryCatalog
     {
         private static List<BestiaryCreatureDef> _all;
 
-        /// <summary>All 77 canonical fichas (band creatures + minibosses + gate bosses + the Four).</summary>
+        /// <summary>All 104 canonical fichas: 77 from fable_33 + 40 from fable_80 (band creatures + minibosses + gate bosses + the Four).</summary>
         public static IReadOnlyList<BestiaryCreatureDef> All
         {
             get
@@ -28,7 +28,7 @@ namespace CindarsHope.Combat.Bestiary
                     return _all;
                 }
 
-                var list = new List<BestiaryCreatureDef>(96);
+                var list = new List<BestiaryCreatureDef>(128); // fable_33: 77 + fable_80: +40 = 104 + headroom
                 list.AddRange(BandStone());      // band 1
                 list.AddRange(BandFungal());     // band 2
                 list.AddRange(BandIce());        // band 3

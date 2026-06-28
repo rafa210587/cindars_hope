@@ -108,6 +108,75 @@ namespace CindarsHope.Combat.Bestiary
                 VulnerabilityMatrixProfileId = "vulnmatrix_aberration",
                 Notes = "Boss gate 80. F1 tentaculos por zona; F2 (66%) ciclo de portais (teleporta entre 3 plataformas); F3 (33%) devora a arena pelas bordas (zona segura encolhe). Fraco Radiant; os olhos que abrem sao CoreExposed. Mecanicas = F05 (dormante). Drops first-kill: scroll Purify maior + stabilized blackstone x3.",
             };
+
+            // ── fable_80: +6 Deep ───────────────────────────────────────────────────────────
+            yield return new BestiaryCreatureDef
+            {
+                EnemyId = "enemy_void_brood_larva", DisplayName = "Void Brood Larva",
+                Band = 6, MinLevel = 71, MaxLevel = 77, Family = "Aberration",
+                Size = BestiarySizeClass.Tiny, Role = EnemyRole.Swarm,
+                MovePrimary = EnemyMovementType.SwarmErratic, MoveSecondary = EnemyMovementType.GroundChase,
+                Hp = 18, Damage = 7, Defense = 0, Xp = 35, SpoilerTier = 0,
+                PrimaryDropItemId = "item_material_void_ichor", PrimaryDamageTypeId = "arcane",
+                VulnerabilityMatrixProfileId = "vulnmatrix_aberration",
+                Notes = "Motivacao: prole do ninho de Veyraath; mordida corrosiva degrada durabilidade do equipamento. Razao no pack: enxame que desgasta equipamento e cobre emboscadas do lider. Fraqueza: radiante apaga o enxame em AoE.",
+            };
+            yield return new BestiaryCreatureDef
+            {
+                EnemyId = "enemy_mindbound_thrall", DisplayName = "Mindbound Thrall",
+                Band = 6, MinLevel = 72, MaxLevel = 79, Family = "Humanoid",
+                Size = BestiarySizeClass.Medium, Role = EnemyRole.Chaser,
+                MovePrimary = EnemyMovementType.PackFlanker, MoveSecondary = EnemyMovementType.GroundChase,
+                Hp = 75, Damage = 14, Defense = 3, Xp = 60, SpoilerTier = 0,
+                PrimaryDropItemId = "item_material_lurker_eye", PrimaryDamageTypeId = "arcane",
+                VulnerabilityMatrixProfileId = "vulnmatrix_humanoid",
+                Notes = "Motivacao: mortais escravizados pelo sussurro de Veyraath; golpe-fantoche erratico. Razao no pack: flanqueador que depende do mestre (PackFlanker); liberto se o lider morre (confuso por 3s). Fraqueza: radiante/purify quebra o controle mental.",
+            };
+            yield return new BestiaryCreatureDef
+            {
+                EnemyId = "enemy_veilkin_voidassassin", DisplayName = "Veilkin Void-Assassin",
+                Band = 6, MinLevel = 74, MaxLevel = 81, Family = "Humanoid",
+                Size = BestiarySizeClass.Medium, Role = EnemyRole.Elite,
+                MovePrimary = EnemyMovementType.PhaseShortBlink, MoveSecondary = EnemyMovementType.CircleStrafe,
+                Hp = 90, Damage = 22, Defense = 2, Xp = 90, SpoilerTier = 1,
+                PrimaryDropItemId = "item_material_void_ichor", PrimaryDamageTypeId = "arcane",
+                VulnerabilityMatrixProfileId = "vulnmatrix_humanoid",
+                Notes = "Motivacao: elite do Veu que bebeu o silencio profundo; backstab por blink aplica Silence 2s. Razao no pack: assassino que reposiciona via blink; elite de pack. Fraqueza: revelar via AoE/luz bloqueia o blink por 3s.",
+            };
+            yield return new BestiaryCreatureDef
+            {
+                EnemyId = "enemy_gloomspine_lurker", DisplayName = "Gloomspine Lurker",
+                Band = 6, MinLevel = 73, MaxLevel = 80, Family = "Aberration",
+                Size = BestiarySizeClass.Large, Role = EnemyRole.Burrower,
+                MovePrimary = EnemyMovementType.BurrowAmbush, MoveSecondary = EnemyMovementType.TankSlowPush,
+                Hp = 180, Damage = 20, Defense = 5, Xp = 95, SpoilerTier = 1,
+                PrimaryDropItemId = "item_material_lurker_eye", PrimaryDamageTypeId = "physical",
+                VulnerabilityMatrixProfileId = "vulnmatrix_aberration",
+                Notes = "Motivacao: emboscador paciente do teto da Deep; arrasto de tentaculo e agarrar. Razao no pack: abre encontros de emboscada descendo do teto. Fraqueza: radiante revela e impede a descida; ataque de area apos o arrasto.",
+            };
+            yield return new BestiaryCreatureDef
+            {
+                EnemyId = "enemy_corrupt_pseudowyrm", DisplayName = "Corrupted Pseudo-Wyrm",
+                Band = 6, MinLevel = 76, MaxLevel = 83, Family = "Dragon",
+                Size = BestiarySizeClass.Medium, Role = EnemyRole.Caster,
+                MovePrimary = EnemyMovementType.FloatingOrbit, MoveSecondary = EnemyMovementType.CasterKeepAway,
+                Hp = 110, Damage = 18, Defense = 3, Xp = 88, SpoilerTier = 1,
+                PrimaryDropItemId = "item_material_wyrmling_scale", PrimaryDamageTypeId = "arcane",
+                VulnerabilityMatrixProfileId = "vulnmatrix_dragon",
+                Notes = "Motivacao: prole draconica deformada por Pedra Negra; feixe de sopro-vazio corroe e aplica Blackstone Stain. Razao no pack: orbitador conjurador que marca alvos. Fraqueza: purify remove o Blackstone Stain e aumenta dano vs wyrm 50%.",
+            };
+            yield return new BestiaryCreatureDef
+            {
+                EnemyId = "enemy_nyx_shade_elemental", DisplayName = "Nyx Shade",
+                Band = 6, MinLevel = 75, MaxLevel = 82, Family = "Elemental",
+                Size = BestiarySizeClass.Medium, Role = EnemyRole.Guard,
+                MovePrimary = EnemyMovementType.HazardLure, MoveSecondary = EnemyMovementType.FloatingSlow,
+                Hp = 80, Damage = 16, Defense = 2, Xp = 78, SpoilerTier = 1,
+                IsNocturnal = true,
+                PrimaryDropItemId = "item_material_night_essence", PrimaryDamageTypeId = "arcane",
+                VulnerabilityMatrixProfileId = "vulnmatrix_elemental",
+                Notes = "[NOTURNA] Motivacao: sombra com vontade sob a lua oculta de Nyx; agarrar de sombra aplica cegueira 2s. Razao no pack: controlador que atrai para hazard tile com HazardLure. Fraqueza: luz/radiante desfaz a forma de sombra instantaneamente.",
+            };
         }
     }
 }

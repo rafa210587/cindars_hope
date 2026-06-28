@@ -26,6 +26,12 @@ namespace CindarsHope.NPC.Schedule
         private const float StuckTeleportSeconds = 5f;
         private const float ArriveRadius = 0.3f;
 
+        // Faixa vertical onde vivem os interiores das casas (off-playfield, y>+40 — city_rules Rule 3).
+        // Mudar para/desta faixa (NPC indo dormir em casa ou saindo de manhã) é um "salto" entre o
+        // exterior e o interior: teleporta na hora em vez de deslizar pelo mapa inteiro. Como a faixa
+        // é fora da câmera do jogador, o pop é invisível.
+        private const float InteriorBandMinY = 40f;
+
         private static NpcScheduleService s_instance;
 
         private readonly Dictionary<string, NpcScheduleAnchor> _anchors =
@@ -179,6 +185,18 @@ namespace CindarsHope.NPC.Schedule
             return false;
         }
 
+        /// <summary>Resolve the full anchor (position + optional door approach point).</summary>
+        private bool TryGetAnchor(string anchorId, out NpcScheduleAnchor anchor)
+        {
+            anchor = null;
+            if (string.IsNullOrEmpty(anchorId))
+            {
+                return false;
+            }
+
+            return _anchors.TryGetValue(anchorId, out anchor) && anchor != null;
+        }
+
         /// <summary>
         /// fable_11 (CA-1) — current Work/Social/Home/Night block for an NPC at the given hour.
         /// Pure passthrough to the resolver using the NPC's registered archetype.
@@ -286,10 +304,8 @@ namespace CindarsHope.NPC.Schedule
             var anchorId = $"npc_{npcId}_{suffix}";
 
             // Resolve target position: named anchor first, else NpcDataSO.DefaultPosition.
-            if (!TryResolveAnchor(anchorId, out var targetPosition))
-            {
-                targetPosition = npcData.DefaultPosition;
-            }
+            TryGetAnchor(anchorId, out var targetAnchor);
+            Vector3 targetPosition = targetAnchor != null ? targetAnchor.GetPosition() : npcData.DefaultPosition;
 
             // Update runtime state and publish the block transition (only on change).
             var changed = !_runtimeStates.TryGetValue(npcId, out var prev)
@@ -310,6 +326,23 @@ namespace CindarsHope.NPC.Schedule
                 GameEventBus.Publish(new NpcScheduleBlockChangedEvent(npcId, block.ToString(), available));
             }
 
+            // Salto exterior↔interior (casa off-playfield, y>+40): teleporta na hora em vez de
+            // deslizar pelo mapa por StuckTeleportSeconds. O interior é fora da câmera, então o pop
+            // é invisível — e some o glide longo que parecia "andar até um lugar distante".
+            bool intoInterior = targetPosition.y > InteriorBandMinY;
+            bool outOfInterior = npcGo.transform.position.y > InteriorBandMinY;
+            if (intoInterior || outOfInterior)
+            {
+                npcGo.transform.position = targetPosition;
+                _moveOrders.Remove(npcId);
+                if (wanderer != null)
+                {
+                    wanderer.SetDestination(targetPosition, ArriveRadius);
+                }
+
+                return;
+            }
+
             // Order movement toward the target (smooth via wanderer; teleport fallback if stuck).
             _moveOrders[npcId] = new MoveOrder
             {
@@ -321,7 +354,16 @@ namespace CindarsHope.NPC.Schedule
 
             if (wanderer != null)
             {
-                wanderer.SetDestination(targetPosition, ArriveRadius);
+                // Se o anchor tem ponto de aproximação (a porta), o NPC passa por ele antes de entrar —
+                // usa a porta em vez de cruzar a parede.
+                if (targetAnchor != null && targetAnchor.HasApproach)
+                {
+                    wanderer.SetDestination(targetPosition, targetAnchor.ApproachPoint, ArriveRadius);
+                }
+                else
+                {
+                    wanderer.SetDestination(targetPosition, ArriveRadius);
+                }
             }
         }
 

@@ -297,7 +297,7 @@ docs/design/gameplay/cave/CAVE_LEVEL_GENERATION_LAYOUT_BIOME_DIRECTION.md
 docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_DIRECTION.md
 docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_ENEMY_BEHAVIOR_ADAPTER.md
 docs/design/gameplay/cave/CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md
-docs/design/gameplay/cave/CAVE_MONSTER_VISUAL_SPRITE_DIRECTION.md
+docs/design/art/CAVE_MONSTER_VISUAL_SPRITE_DIRECTION.md
 docs/design/gameplay/combat/COMBAT_CORE_DIRECTION.md
 docs/design/gameplay/combat/STATUS_EFFECTS_DIRECTION.md
 docs/design/gameplay/enemies/ENEMY_BEHAVIORS_DIRECTION.md

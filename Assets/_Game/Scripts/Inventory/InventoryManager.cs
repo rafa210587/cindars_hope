@@ -13,8 +13,8 @@ namespace CindarsHope.Inventory
     [DisallowMultipleComponent]
     public class InventoryManager : MonoBehaviour
     {
-        public const int DefaultCapacity = 30;
-        public const int MaxCapacity = 30;
+        public const int DefaultCapacity = 40;
+        public const int MaxCapacity = 40;
 
         private readonly Dictionary<string, int> _items = new Dictionary<string, int>();
         private readonly List<InventorySlot> _slots = new List<InventorySlot>(MaxCapacity);

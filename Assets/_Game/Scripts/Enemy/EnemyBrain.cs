@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using CindarsHope.Cave.Runtime;
 using CindarsHope.Combat;
 using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
@@ -36,30 +35,13 @@ namespace CindarsHope.Enemy
         // State machine
         private EnemyBrainState _currentState = EnemyBrainState.Idle;
         private float _decisionTimer;
-        private float _patrolDirectionTimer;
-        private Vector2 _spawnAnchor;
         private float _retreatEndTime;
-        private float _nextLeapTime;
-        private float _nextBlinkTime;
-        private bool _isLeaping;
-        private float _leapEndTime;
         // Alternates per spawned brain so phase enemies do not all flank the same side.
         private static float s_nextBlinkFlankSide = 1f;
         private float _blinkFlankSide = 1f;
 
         // Target
         private GameObject _playerTarget;
-
-        // fable_78 (SLICE 4): conflito inter-monstro. _conflictCombatant != null SOMENTE na visita em que
-        // este inimigo é marcado como rival (injetado pelo materializer). Quando null, o caminho de
-        // targeting/dano é EXATAMENTE o player-only existente (byte-for-byte). Quando presente, o alvo
-        // hostil válido é {player} ∪ {rivais vivos}; o ramo de rival é totalmente isolado por este guard.
-        private CindarsHope.Cave.Ecosystem.CaveConflictCombatant _conflictCombatant;
-        private CindarsHope.Cave.Data.CaveEcosystemBalanceSO _ecosystemBalance;
-        // Alvo rival corrente desta decisão (null = mirando o player). Quando não-null, _playerTarget é
-        // apontado para o GameObject do rival para REUSAR o locomotor/estado existente; só a resolução de
-        // dano diverge (TakeDamageFromEnemy em vez de PlayerDamageReceiver).
-        private CindarsHope.Combat.EnemyHealth _rivalHealthTarget;
 
         // fable_04: threat/aggro memory + pack coordination.
         private readonly EnemyThreatState _threatState = new EnemyThreatState();
@@ -69,15 +51,6 @@ namespace CindarsHope.Enemy
         private string _packId;
         private bool _packEngagedAnnounced;
         private bool _threatExpiredLogged;
-
-        // Action runtime
-        private EnemyActionSetSO _activeActionSet;
-        private readonly Dictionary<string, EnemyActionRuntime> _actionCooldowns = new Dictionary<string, EnemyActionRuntime>();
-        private EnemyActionSO _pendingAction;
-        private float _actionTimer;
-        private bool _actionResolved;
-        // SPEC 13D: idempotency guard — death-trigger fires exactly once per lifetime.
-        private bool _deathtriggerFired;
 
         // Components
         private Rigidbody2D _rb;
@@ -96,6 +69,30 @@ namespace CindarsHope.Enemy
         private float _externalSpeedUntil;
         private float _externalInvertUntil;
         private float _forcedRetreatUntil;
+
+        // fable_24: named-elite affix (decided deterministically at spawn-plan time by the planner).
+        private EliteAffix _eliteAffix = EliteAffix.None;
+        private bool _wardedStatusConsumed;          // Warded resists exactly the FIRST status applied
+        private bool _volatileExploded;              // Volatile fires its death explosion once
+        private float _attackCadenceFactor = 1f;     // Frenzied shortens windup/recover (<1 = faster)
+
+        // F02: stagger por quebra de postura — entra em Stunned e sai sozinho.
+        private float _stunUntil;
+
+        // fable_05: per-phase multipliers driven by BossBrainController (1 = unchanged / non-boss).
+        private float _phaseMoveSpeedMultiplier = 1f;
+        private float _phaseDamageMultiplier = 1f;
+
+        // fable_83: pathing leve — estado de desvio local (histerese).
+        [SerializeField] private LayerMask _obstacleLayerMask = 0; // configurar no prefab; 0 = sem raycast
+
+        // ─── Colaboradores ────────────────────────────────────────────────────
+
+        private readonly EnemyMovementExecutor _movement = new EnemyMovementExecutor();
+        private readonly EnemyActionRunner _actions = new EnemyActionRunner();
+        private readonly EnemyConflictHandler _conflict = new EnemyConflictHandler();
+
+        // ─── Comportamento externo ─────────────────────────────────────────────
 
         /// <summary>
         /// F01 — override externo de comportamento usado pelo EnemyStatusRuntimeTicker.
@@ -127,51 +124,9 @@ namespace CindarsHope.Enemy
             return Time.time < _externalSpeedUntil ? _externalSpeedMultiplier : 1f;
         }
 
-        // fable_24: named-elite affix (decided deterministically at spawn-plan time by the planner).
-        private EliteAffix _eliteAffix = EliteAffix.None;
-        private bool _wardedStatusConsumed;          // Warded resists exactly the FIRST status applied
-        private bool _volatileExploded;              // Volatile fires its death explosion once
-        private float _attackCadenceFactor = 1f;     // Frenzied shortens windup/recover (<1 = faster)
-
-        // fable_24: move-specific runtime for the 12 new moves.
-        private float _moveDecisionTimer;            // orbit/strafe re-aim cadence
-        private float _orbitSign = 1f;               // CircleStrafe/FloatingOrbit rotation direction
-        private bool _chargeTelegraphActive;
-        private float _chargeTelegraphStart;
-        private Vector2 _chargeLockedDirection;      // ChargeLine locks aim at telegraph time (no homing)
-        private bool _isCharging;
-        private float _chargeEndTime;
-        private float _nextChargeTime;
-        private bool _mimicActivated;                // TreasureIdleAmbush stays disguised until activated
-        private float _flankerNoLeaderSince = -1f;   // timestamp the flanker last lacked a leader
-        private float _nextCallForHelpTime;          // RetreatAndCall call-for-help throttle
-        private Vector2 _anchorPoint;                // ProtectAnchor / BossArenaControl leash centre
-        private float _anchorLeashTiles = EnemyMoveLogic.DefaultAnchorLeashTiles;
-
-        // F02: stagger por quebra de postura — entra em Stunned e sai sozinho.
-        private float _stunUntil;
-
-        // fable_05: per-phase multipliers driven by BossBrainController (1 = unchanged / non-boss).
-        private float _phaseMoveSpeedMultiplier = 1f;
-        private float _phaseDamageMultiplier = 1f;
-
-        public void ApplyStun(float seconds)
-        {
-            if (seconds <= 0f)
-            {
-                return;
-            }
-
-            _stunUntil = Mathf.Max(_stunUntil, Time.time + Mathf.Min(seconds, 5f));
-            _currentState = EnemyBrainState.Stunned;
-            _pendingAction = null;
-            _telegraph?.EndTelegraph();
-            StopMovement();
-        }
-
         // SPEC 14A-FIX6: Public state for real runtime resolution checks
-        public bool HasResolvedActionSet => _activeActionSet != null && _activeActionSet.ActionIds != null && _activeActionSet.ActionIds.Length > 0;
-        public int ResolvedActionCount => _actionCooldowns.Count;
+        public bool HasResolvedActionSet => _actions.ActiveActionSet != null && _actions.ActiveActionSet.ActionIds != null && _actions.ActiveActionSet.ActionIds.Length > 0;
+        public int ResolvedActionCount => _actions.ActionCooldowns.Count;
         public bool HasResolvedMovementProfile => _movementProfile != null;
         public bool HasResolvedVulnerabilityProfile => _vulnerabilityProfile != null;
         public EnemyMovementType MovementType => _movementProfile?.MovementType ?? EnemyMovementType.GroundChase;
@@ -197,7 +152,7 @@ namespace CindarsHope.Enemy
 
         public EliteAffix CurrentEliteAffix => _eliteAffix;
         public bool IsElite => _eliteAffix != EliteAffix.None;
-        public string ResolvedActionSetId => _activeActionSet?.ActionSetId ?? string.Empty;
+        public string ResolvedActionSetId => _actions.ActiveActionSet?.ActionSetId ?? string.Empty;
         public string ResolvedMovementProfileId => _movementProfile?.MovementProfileId ?? string.Empty;
         public string ResolvedVulnerabilityProfileId => _vulnerabilityProfile?.VulnerabilityProfileId ?? string.Empty;
 
@@ -215,20 +170,97 @@ namespace CindarsHope.Enemy
             _spriteRenderer = GetComponent<SpriteRenderer>();
             // fable_78: resolvido no mesmo GameObject (sem scene search). Presente só quando o materializer
             // anexou o combatant de conflito a este inimigo nesta visita.
-            _conflictCombatant = GetComponent<CindarsHope.Cave.Ecosystem.CaveConflictCombatant>();
+            _conflict.SetCombatant(GetComponent<CindarsHope.Cave.Ecosystem.CaveConflictCombatant>());
+
+            InitCollaborators();
+        }
+
+        /// <summary>Inicializa os colaboradores com as referências necessárias.</summary>
+        private void InitCollaborators()
+        {
+            _movement.Init(
+                _rb,
+                transform,
+                _enemyData,
+                _movementProfile,
+                _telegraph,
+                getPlayerTarget: () => _playerTarget,
+                getMoveSpeed: MoveSpeed,
+                getDistanceToPlayer: DistanceToPlayer,
+                getDirectionToPlayer: DirectionToPlayer,
+                setSubmergedVisual: submerged => SetSubmergedVisual(submerged),
+                getPackCoordinator: () => _packCoordinator,
+                getPackId: () => _packId,
+                hasActiveThreat: HasActiveThreat,
+                getLastKnownPosition: () => _threatState.LastKnownPosition,
+                leapCooldownSeconds: _leapCooldownSeconds,
+                leapSpeedMultiplier: _leapSpeedMultiplier,
+                blinkCooldownSeconds: _blinkCooldownSeconds,
+                burrowSpeedMultiplier: _burrowSpeedMultiplier);
+
+            _movement.ObstacleLayerMask = _obstacleLayerMask;
+
+            _actions.Init(
+                transform,
+                _enemyData,
+                _actionSetDatabase,
+                _actionDatabase,
+                _telegraphDatabase,
+                _vulnerabilityProfile,
+                _telegraph,
+                _vulnerabilityState,
+                _health,
+                getPlayerTarget: () => _playerTarget,
+                getDistanceToPlayer: DistanceToPlayer,
+                getDirectionToPlayer: DirectionToPlayer,
+                getPhaseDamageMultiplier: () => _phaseDamageMultiplier,
+                isTargetingRival: () => _conflict.IsTargetingRival,
+                resolveInterMonsterAction: dmg => _conflict.ResolveInterMonsterAction(dmg),
+                getDetectionRange: DetectionRange);
+
+            _actions.SetBlinkFlankSide(_blinkFlankSide);
+            _actions.SetRbPositionCallback(pos =>
+            {
+                if (_rb != null) _rb.position = pos;
+                else transform.position = (Vector3)pos;
+            });
+            _actions.SetOwnerGameObject(gameObject);
+            _actions.SetEliteAffixCallback(() => _eliteAffix);
+
+            _conflict.Init(
+                transform,
+                _enemyData,
+                _health,
+                getDetectionRange: DetectionRange,
+                getPhaseDamageMultiplier: () => _phaseDamageMultiplier,
+                getPendingAction: () => _actions.PendingAction);
         }
 
         private void OnEnable()
         {
             _decisionTimer = 0f;
-            _patrolDirectionTimer = 0f;
-            _actionResolved = false;
-            _pendingAction = null;
+            _movement.PatrolDirectionTimer = 0f;
+            _actions.ResetOnSpawn();
             _currentState = EnemyBrainState.Idle;
-            _spawnAnchor = transform.position;
-            _isLeaping = false;
+            _movement.SpawnAnchor = transform.position;
+            _movement.IsLeaping = false;
             _blinkFlankSide = s_nextBlinkFlankSide;
             s_nextBlinkFlankSide = -s_nextBlinkFlankSide;
+            _movement.BlinkFlankSide = _blinkFlankSide;
+            _actions.SetBlinkFlankSide(_blinkFlankSide);
+
+            // fable_82: RNG seeded por hash da posição de spawn (estável por spawn point; sem GUID/timestamp).
+            // Alternância de flanco simples (sem UnityEngine.Random) — igual ao padrão de _blinkFlankSide.
+            int spawnHash = Mathf.RoundToInt(transform.position.x * 73856093f) ^
+                            Mathf.RoundToInt(transform.position.y * 19349663f);
+            _movement.EvasionRng = new System.Random(spawnHash != 0 ? spawnHash : 1);
+            _movement.EvadeFlankSign = (spawnHash & 1) == 0 ? 1f : -1f;
+            _movement.IsEvasiveSidestepping = false;
+            _movement.IsRepositionDashing = false;
+            _movement.PlayerWindupDetected = false;
+            _movement.PlayerWindupClearTime = 0f;
+            // Subscreve ao windup do player via GameEventBus (sem scene search).
+            GameEventBus.Subscribe<CindarsHope.Core.Events.PlayerAttackWindupEvent>(OnPlayerAttackWindup);
 
             // fable_04: reset transient aggro on (re)spawn; memory window follows movement type.
             _threatState.Clear();
@@ -240,24 +272,23 @@ namespace CindarsHope.Enemy
             // re-applied by the materializer via ConfigureElite after this; clear the one-shot flags.
             _wardedStatusConsumed = false;
             _volatileExploded = false;
-            _mimicActivated = false;
-            _isCharging = false;
-            _chargeTelegraphActive = false;
-            _flankerNoLeaderSince = -1f;
-            _orbitSign = s_nextBlinkFlankSide; // reuse the alternating side so packs spread out
-            _anchorPoint = transform.position;
+            _movement.MimicActivated = false;
+            _movement.IsCharging = false;
+            _movement.ChargeTelegraphActive = false;
+            _movement.FlankerNoLeaderSince = -1f;
+            _movement.OrbitSign = s_nextBlinkFlankSide; // reuse the alternating side so packs spread out
+            _movement.AnchorPoint = transform.position;
             if (_movementProfile != null && _movementProfile.WanderRadius > 0f)
-                _anchorLeashTiles = _movementProfile.WanderRadius;
+                _movement.AnchorLeashTiles = _movementProfile.WanderRadius;
+
+            // fable_83: reset de estado de assinatura/pathing ao (re)spawn.
+            _movement.IsAvoidingObstacle = false;
 
             RefreshPlayerTarget();
 
             // fable_78: re-resolve o combatant caso ele tenha sido anexado após o Awake do brain
             // (o materializer adiciona o brain e depois, condicionalmente, o combatant).
-            if (_conflictCombatant == null)
-            {
-                _conflictCombatant = GetComponent<CindarsHope.Cave.Ecosystem.CaveConflictCombatant>();
-            }
-            _rivalHealthTarget = null;
+            _conflict.TryResolveCombatant(() => GetComponent<CindarsHope.Cave.Ecosystem.CaveConflictCombatant>());
 
             if (_vulnerabilityState != null)
                 _vulnerabilityState.Initialize(_enemyData?.enemyId);
@@ -265,7 +296,7 @@ namespace CindarsHope.Enemy
             if (_spriteRenderer != null)
                 _spriteBaseAlpha = _spriteRenderer.color.a;
 
-            InitActionSet();
+            _actions.InitActionSet();
 
             if (_movementProfile != null && _movementProfile.DecisionTickSeconds > 0f)
                 _decisionTickSeconds = _movementProfile.DecisionTickSeconds;
@@ -273,24 +304,25 @@ namespace CindarsHope.Enemy
 
         private void OnDisable()
         {
-            StopMovement();
+            _movement.StopMovement();
             SetSubmergedVisual(false);
+            // fable_82: desassina evento de windup do player ao desativar.
+            GameEventBus.Unsubscribe<CindarsHope.Core.Events.PlayerAttackWindupEvent>(OnPlayerAttackWindup);
+            _movement.IsEvasiveSidestepping = false;
+            _movement.IsRepositionDashing = false;
         }
 
-        private void InitActionSet()
+        // fable_82: callback de windup do player via GameEventBus. Marca flag por janela curta.
+        private void OnPlayerAttackWindup(CindarsHope.Core.Events.PlayerAttackWindupEvent evt)
         {
-            _actionCooldowns.Clear();
-            _activeActionSet = null;
+            if (_movementProfile == null || !_movementProfile.CanReactiveEvade) return;
 
-            if (_enemyData == null || string.IsNullOrEmpty(_enemyData.ActionSetId)) return;
-            if (_actionSetDatabase == null) return;
-            if (!_actionSetDatabase.TryGetById(_enemyData.ActionSetId, out _activeActionSet)) return;
-            if (_actionDatabase == null) return;
-
-            foreach (var actionId in _activeActionSet.ActionIds)
+            float dist = Vector2.Distance(transform.position, evt.PlayerPosition);
+            if (dist <= _movementProfile.EvadeReactionRadius)
             {
-                if (_actionDatabase.TryGetById(actionId, out var action))
-                    _actionCooldowns[actionId] = new EnemyActionRuntime(actionId, action.CooldownSeconds);
+                _movement.PlayerWindupDetected = true;
+                // Janela de windup válida por 0.5s (tempo de reação padrão de combate).
+                _movement.PlayerWindupClearTime = Time.time + 0.5f;
             }
         }
 
@@ -300,10 +332,10 @@ namespace CindarsHope.Enemy
         {
             if (_currentState == EnemyBrainState.Dead) return;
 
-            // O player VISIVEL (PlayerController) pode nascer depois do inimigo materializar; re-resolve
-            // a cada frame ate apontar para ele. Sem isto o target fica no PlayerManager (no _Bootstrap,
-            // em (0,0,0)) e o inimigo mede distancia ate a origem do mundo — atacando o vazio, mas
-            // roteando o dano ao player real longe dali (bug "dano invisivel de bicho que nao esta perto").
+            // O player VISÍVEL (PlayerController) pode nascer depois do inimigo materializar; re-resolve
+            // a cada frame até apontar para ele. Sem isto o target fica no PlayerManager (no _Bootstrap,
+            // em (0,0,0)) e o inimigo mede distância até a origem do mundo — atacando o vazio, mas
+            // roteando o dano ao player real longe dali (bug "dano invisível de bicho que não está perto").
             RefreshPlayerTarget();
 
             // fable_78 (SLICE 4): targeting conflict-aware. Ramo ISOLADO — só roda quando este inimigo é um
@@ -339,8 +371,8 @@ namespace CindarsHope.Enemy
                 EvaluateState();
             }
 
-            TickActionTimers();
-            ExecuteMovement();
+            _actions.TickActionTimers(ref _currentState, _attackCadenceFactor);
+            _movement.ExecuteMovement(_currentState, EffectiveMove);
 
             // F01: ConfusionLite inverte o movimento resultante (ponto único pós-estado).
             if (Time.time < _externalInvertUntil && _rb != null)
@@ -360,9 +392,8 @@ namespace CindarsHope.Enemy
 
             float dist = DistanceToPlayer();
             bool inDetect = dist <= DetectionRange();
-            bool inLeash = dist <= LeashRange();
 
-            // fable_04: while the player is in range, refresh threat memory and (once) wake the pack.
+            // fable_04: threat memory e pack alert (side effects — ficam no adapter)
             if (_threatMemoryEnabled && inDetect && _playerTarget != null)
             {
                 _threatState.NoticeTarget(_playerTarget.transform.position, Time.time);
@@ -370,130 +401,73 @@ namespace CindarsHope.Enemy
                 AnnouncePackEngagementOnce();
             }
 
-            // F01: Fear externo força Retreat (fora de windup/recover — guard acima já retornou).
-            if (Time.time < _forcedRetreatUntil && _currentState != EnemyBrainState.Retreat)
+            var input = new EnemyDecisionInput(
+                distanceToTarget: dist,
+                detectionRange: DetectionRange(),
+                leashRange: LeashRange(),
+                currentTime: Time.time,
+                burrowEmergeDistance: _burrowEmergeDistance,
+                lowHealthRetreatThreshold: _lowHealthRetreatThreshold,
+                retreatEndTime: _retreatEndTime,
+                forcedRetreatUntil: _forcedRetreatUntil,
+                stunUntil: _stunUntil,
+                currentHpFraction: (_health != null && _health.MaxHp > 0) ? (float)_health.CurrentHp / _health.MaxHp : float.NaN,
+                currentState: _currentState,
+                movementType: MovementType,
+                primaryRole: _enemyData?.PrimaryRole ?? EnemyRole.Chaser,
+                hasActiveThreat: HasActiveThreat(),
+                targetIsValid: _playerTarget != null,
+                healthIsValid: _health != null && _health.MaxHp > 0,
+                canBurrow: _movementProfile != null && _movementProfile.CanBurrow,
+                retreatDurationSeconds: _retreatDurationSeconds
+            );
+
+            var output = EnemyDecisionCore.Evaluate(input);
+
+            // Aplicar side effects do output
+            if (output.ClearSubmergedVisual) SetSubmergedVisual(false);
+            if (output.ShouldSetSubmergedVisual) SetSubmergedVisual(true);
+            if (output.ShouldSetRetreat)
+                _retreatEndTime = output.RetreatEndTimeOverride;
+
+            // fable_04: pack leash side effects that couldn't be handled in the pure core
+            if (output.NextState == EnemyBrainState.Patrol && _currentState != EnemyBrainState.Patrol
+                && !HasActiveThreat() && dist > LeashRange())
             {
-                _currentState = EnemyBrainState.Retreat;
-                _retreatEndTime = Mathf.Max(_retreatEndTime, _forcedRetreatUntil);
-                return;
+                LogThreatExpiredOnce();
+                if (TryCollectivePackLeashReset())
+                {
+                    // pack reset already set _currentState to Patrol; skip assignment below
+                    if (output.ShouldTryAction) TryBeginAction(dist);
+                    return;
+                }
             }
 
-            // Skittish roles break off and flee when badly hurt, regardless of current state.
-            if (_currentState != EnemyBrainState.Retreat && ShouldRetreatAtLowHealth() && inLeash)
-            {
-                _currentState = EnemyBrainState.Retreat;
-                _retreatEndTime = Time.time + _retreatDurationSeconds;
-                return;
-            }
+            _currentState = output.NextState;
 
-            switch (_currentState)
-            {
-                case EnemyBrainState.Idle:
-                    _currentState = inDetect ? EnemyBrainState.Alert : EnemyBrainState.Patrol;
-                    break;
-
-                case EnemyBrainState.Patrol:
-                    if (inDetect) _currentState = ResolveEngageState(dist);
-                    break;
-
-                case EnemyBrainState.Alert:
-                    // fable_04: an alerted enemy chases the last known position until threat
-                    // memory expires, even if it never personally saw the player (pack alert).
-                    if (inDetect)
-                        _currentState = ResolveEngageState(dist);
-                    else if (HasActiveThreat())
-                        _currentState = EnemyBrainState.Chase;
-                    else
-                        _currentState = EnemyBrainState.Patrol;
-                    break;
-
-                case EnemyBrainState.Retreat:
-                    if (Time.time >= _retreatEndTime)
-                        _currentState = inDetect ? ResolveEngageState(dist) : EnemyBrainState.Patrol;
-                    break;
-
-                case EnemyBrainState.Burrow:
-                    if (!inLeash)
-                    {
-                        SetSubmergedVisual(false);
-                        _currentState = EnemyBrainState.Patrol;
-                        break;
-                    }
-
-                    if (dist <= _burrowEmergeDistance)
-                    {
-                        SetSubmergedVisual(false);
-                        _currentState = EnemyBrainState.Chase;
-                        TryBeginAction(dist);
-                    }
-                    break;
-
-                case EnemyBrainState.Chase:
-                case EnemyBrainState.Kite:
-                case EnemyBrainState.GuardHold:
-                case EnemyBrainState.CastPrepare:
-                    if (!inLeash)
-                    {
-                        // fable_04: do not give up the instant the player crosses the leash edge.
-                        // Keep pursuing the last known position while threat memory is valid; only
-                        // disengage once it expires. Disengage is collective when the enemy belongs
-                        // to a pack and the WHOLE pack is beyond leash (reset together + heal).
-                        if (HasActiveThreat())
-                        {
-                            break; // remain engaged, MoveChase will pursue LastKnownPosition
-                        }
-
-                        LogThreatExpiredOnce();
-
-                        if (TryCollectivePackLeashReset())
-                        {
-                            break;
-                        }
-
-                        _currentState = EnemyBrainState.Patrol;
-                        break;
-                    }
-                    TryBeginAction(dist);
-                    break;
-            }
-        }
-
-        // Burrowers approach hidden underground; everyone else goes straight to Chase.
-        private EnemyBrainState ResolveEngageState(float dist)
-        {
-            var moveType = _movementProfile?.MovementType ?? EnemyMovementType.GroundChase;
-            bool canBurrow = moveType == EnemyMovementType.BurrowAmbush || (_movementProfile != null && _movementProfile.CanBurrow);
-            if (canBurrow && dist > _burrowEmergeDistance * 2f)
-            {
-                SetSubmergedVisual(true);
-                return EnemyBrainState.Burrow;
-            }
-
-            return EnemyBrainState.Chase;
-        }
-
-        private bool ShouldRetreatAtLowHealth()
-        {
-            if (_health == null || _enemyData == null || _health.MaxHp <= 0)
-                return false;
-
-            var role = _enemyData.PrimaryRole;
-            if (role != EnemyRole.Swarm && role != EnemyRole.Ranged && role != EnemyRole.Caster)
-                return false;
-
-            return (float)_health.CurrentHp / _health.MaxHp <= _lowHealthRetreatThreshold;
+            if (output.ShouldTryAction)
+                TryBeginAction(dist);
         }
 
         private void TryBeginAction(float dist)
         {
-            var action = SelectBestAction(dist);
+            var action = _actions.SelectBestAction(dist);
             if (action != null)
             {
-                BeginAction(action);
+                _actions.BeginAction(action, _attackCadenceFactor, ref _currentState);
                 return;
             }
 
             var moveType = _movementProfile?.MovementType ?? EnemyMovementType.GroundChase;
+
+            // Roles corpo-a-corpo (Chaser/Tank/Guard/Burrower/Elite/MiniBoss/Boss) nunca entram em Kite
+            // independente do MovementType atribuído. Garante que inimigos melee colem no player.
+            // Só Ranged, Caster e Swarm podem kicar — são os únicos que fazem sentido recuar.
+            var primaryRole = _enemyData?.PrimaryRole ?? EnemyRole.Chaser;
+            bool isMeleeRole = primaryRole != EnemyRole.Ranged
+                               && primaryRole != EnemyRole.Caster
+                               && primaryRole != EnemyRole.Swarm;
+
             switch (moveType)
             {
                 case EnemyMovementType.GuardStationary:
@@ -501,7 +475,8 @@ namespace CindarsHope.Enemy
                     break;
                 case EnemyMovementType.KiteRanged:
                 case EnemyMovementType.CasterKeepAway:
-                    _currentState = EnemyBrainState.Kite;
+                    // Guard: roles corpo-a-corpo forçam Chase mesmo com perfil de kite.
+                    _currentState = isMeleeRole ? EnemyBrainState.Chase : EnemyBrainState.Kite;
                     break;
                 default:
                     _currentState = EnemyBrainState.Chase;
@@ -509,906 +484,11 @@ namespace CindarsHope.Enemy
             }
         }
 
-        // ─── Action Selection ─────────────────────────────────────────────────
-
-        private EnemyActionSO SelectBestAction(float dist)
-        {
-            if (_activeActionSet == null || _actionDatabase == null) return null;
-
-            foreach (var actionId in _activeActionSet.ActionIds)
-            {
-                if (!_actionDatabase.TryGetById(actionId, out var action)) continue;
-                if (!_actionCooldowns.TryGetValue(actionId, out var runtime)) continue;
-                if (!runtime.IsReady(Time.time)) continue;
-
-                if (action.ActionType == EnemyActionType.SelfBuff)
-                    return action;
-
-                if (dist >= action.MinRange && dist <= action.Range)
-                    return action;
-            }
-            return null;
-        }
-
-        // ─── Action Execution ─────────────────────────────────────────────────
-
-        private void BeginAction(EnemyActionSO action)
-        {
-            _pendingAction = action;
-            // fable_24: Frenzied elites attack 30% faster — scale the windup (cadence factor <1).
-            _actionTimer = action.WindupSeconds * _attackCadenceFactor;
-            _actionResolved = false;
-            _currentState = EnemyBrainState.AttackWindup;
-
-            StartTelegraph(action);
-            GameEventBus.Publish(new EnemyActionStartedEvent(_enemyData?.enemyId, action.ActionId));
-            GameEventBus.Publish(new EnemyTelegraphStartedEvent(_enemyData?.enemyId, transform.position));
-        }
-
-        private void TickActionTimers()
-        {
-            if (_currentState == EnemyBrainState.AttackWindup)
-            {
-                _actionTimer -= Time.deltaTime;
-                if (_actionTimer <= 0f && !_actionResolved)
-                {
-                    _actionResolved = true;
-                    ResolveAction();
-                    _telegraph?.EndTelegraph();
-                    TryOpenVulnerabilityWindow(VulnerabilityTriggerMode.DuringChargeWindup);
-                    TryOpenVulnerabilityWindow(VulnerabilityTriggerMode.AfterCast);
-                    TryOpenVulnerabilityWindow(VulnerabilityTriggerMode.AfterProjectileVolley);
-
-                    // fable_24: Frenzied also shortens recovery (same cadence factor as windup).
-                    _actionTimer = (_pendingAction?.RecoverSeconds ?? 0.5f) * _attackCadenceFactor;
-                    _currentState = EnemyBrainState.AttackRecover;
-                }
-            }
-            else if (_currentState == EnemyBrainState.AttackRecover)
-            {
-                _actionTimer -= Time.deltaTime;
-                if (_actionTimer <= 0f)
-                {
-                    TryOpenVulnerabilityWindow(VulnerabilityTriggerMode.AfterAttackRecover);
-
-                    if (_pendingAction != null && _actionCooldowns.TryGetValue(_pendingAction.ActionId, out var rt))
-                        rt.MarkUsed(Time.time);
-
-                    GameEventBus.Publish(new EnemyActionResolvedEvent(_enemyData?.enemyId, _pendingAction?.ActionId));
-                    _pendingAction = null;
-
-                    float dist = DistanceToPlayer();
-                    _currentState = dist <= DetectionRange() ? EnemyBrainState.Chase : EnemyBrainState.Patrol;
-                }
-            }
-        }
-
-        private void ResolveAction()
-        {
-            if (_pendingAction == null) return;
-            if (_pendingAction.ActionType == EnemyActionType.SelfBuff) return;
-            if (_pendingAction.BaseDamage <= 0) return;
-            if (_playerTarget == null) return;
-
-            if (!System.Enum.TryParse<DamageType>(_pendingAction.DamageType, true, out var dmgType))
-                dmgType = DamageType.Physical;
-
-            // fable_78 (SLICE 4): quando o alvo é um rival (conflito inter-monstro), o dano vai para o
-            // EnemyHealth do rival via o caminho de origem-inimigo (×0.10 + "Ferido" + kill-by-enemy).
-            // Não toca o pipeline de dano ao jogador. Ramo isolado por IsTargetingRival.
-            if (IsTargetingRival)
-            {
-                ResolveInterMonsterAction(dmgType);
-                return;
-            }
-
-            // SPEC 13D: blink-strike teleports the enemy to the player then deals melee damage.
-            if (_pendingAction.ActionType == EnemyActionType.BlinkStrike)
-            {
-                ExecuteBlinkStrike(_pendingAction, dmgType);
-                return;
-            }
-
-            // Ranged and cast actions fire a real dodgeable projectile instead of
-            // instant damage — the player can outplay them with movement.
-            bool isProjectileAction = _pendingAction.ActionType == EnemyActionType.RangedProjectile
-                || _pendingAction.ActionType == EnemyActionType.CastProjectile;
-            if (isProjectileAction)
-            {
-                float speed = _pendingAction.ProjectileSpeed > 0f ? _pendingAction.ProjectileSpeed : 5f;
-                // fable_05: per-phase damage multiplier folds into the action's base damage.
-                int projectileDamage = Mathf.Max(0, Mathf.RoundToInt(_pendingAction.BaseDamage * _phaseDamageMultiplier));
-                EnemyProjectileBehaviour.SpawnTowards(
-                    transform.position,
-                    DirectionToPlayer(),
-                    speed,
-                    Mathf.Max(_pendingAction.Range, 2f),
-                    projectileDamage,
-                    dmgType,
-                    _enemyData?.contactKnockbackForce ?? 0f,
-                    _enemyData?.enemyId ?? "enemy",
-                    _enemyData?.DisplayName ?? "Enemy");
-                return;
-            }
-
-            // Melee/area resolution: the player may have moved during windup. Re-check
-            // distance with a small grace margin so dodging the telegraph actually works.
-            float dist = DistanceToPlayer();
-            float effectiveRange = _pendingAction.ActionType == EnemyActionType.AreaPulse && _pendingAction.AreaRadius > 0f
-                ? _pendingAction.AreaRadius
-                : _pendingAction.Range;
-            if (dist > effectiveRange * 1.2f)
-            {
-                CindarsHope.Combat.CombatLog.Log($"CombatLog: EnemyActionMissed. EnemyId={_enemyData?.enemyId}, ActionId={_pendingAction.ActionId}, Distance={dist:F2}, Range={effectiveRange:F2}");
-                return;
-            }
-
-            // fable_05: per-phase damage multiplier folds into the action's base damage.
-            int meleeDamage = Mathf.Max(0, Mathf.RoundToInt(_pendingAction.BaseDamage * _phaseDamageMultiplier));
-            var request = new DamageRequest(
-                targetId: "player",
-                baseDamage: meleeDamage,
-                damageType: dmgType,
-                sourceId: _enemyData?.enemyId ?? "enemy"
-            );
-            request.SourcePosition = transform.position;
-            request.KnockbackForce = _enemyData?.contactKnockbackForce ?? 0f;
-            request.CanTriggerVulnerability = false;
-
-            var result = DamageCalculator.Calculate(request, _enemyData?.defense ?? 0);
-            if (result.FinalDamage > 0)
-            {
-                // F27: caminho central com atacante (perfect block reflete postura neste GO).
-                var playerManager = GameBootstrap.Instance?.PlayerManager;
-                var applied = CindarsHope.Combat.PlayerDamageReceiver.ApplyDamage(
-                    playerManager, result.FinalDamage, _enemyData?.enemyId ?? "enemy", dmgType, gameObject, _playerTarget);
-                if (applied > 0)
-                {
-                    ApplyActionStatusesToPlayer(_pendingAction);
-                    ApplyVampiricLifesteal(applied);
-                    var playerPos = _playerTarget != null ? (Vector2)_playerTarget.transform.position : (Vector2)playerManager.transform.position;
-                    GameEventBus.Publish(new PlayerDamagedEvent(applied, playerPos, _enemyData?.enemyId ?? "enemy", _enemyData?.DisplayName ?? "Enemy"));
-                    FloatingDamageNumberDisplayer.ShowAtTarget(_playerTarget ?? playerManager.gameObject, applied, dmgType, false, true);
-                }
-            }
-        }
-
-        // fable_78 (SLICE 4): resolve um ataque contra o rival corrente. Re-checa alcance (o rival pode ter
-        // se movido durante o windup, igual ao caminho do player) e roteia o dano base do action pelo
-        // caminho de origem-inimigo do EnemyHealth (×InterMonsterDamageMultiplier + "Ferido" + kill-by-enemy).
-        // Reusa o mesmo locomotor/estado: não cria projétil/pathfinding novo (área/ranged tratam como hit direto).
-        private void ResolveInterMonsterAction(DamageType dmgType)
-        {
-            var rival = _rivalHealthTarget;
-            if (rival == null || rival.IsDead || _ecosystemBalance == null)
-            {
-                return;
-            }
-
-            float dist = Vector2.Distance(transform.position, rival.transform.position);
-            float effectiveRange = _pendingAction.ActionType == EnemyActionType.AreaPulse && _pendingAction.AreaRadius > 0f
-                ? _pendingAction.AreaRadius
-                : _pendingAction.Range;
-            if (dist > effectiveRange * 1.2f)
-            {
-                return;
-            }
-
-            int rawDamage = Mathf.Max(0, Mathf.RoundToInt(_pendingAction.BaseDamage * _phaseDamageMultiplier));
-            if (rawDamage <= 0)
-            {
-                return;
-            }
-
-            int caveLevel = _conflictCombatant != null ? _conflictCombatant.CaveLevel : 0;
-            string killerInstanceId = _health != null ? _health.EnemyInstanceId : gameObject.name;
-
-            rival.TakeDamageFromEnemy(rawDamage, dmgType, killerInstanceId, caveLevel, _ecosystemBalance);
-        }
-
-        // SPEC 13D: Teleports to player then deals melee damage + applies status effects.
-        // Destination uses _blinkFlankSide (set at spawn, alternating) — no UnityEngine.Random.
-        private void ExecuteBlinkStrike(EnemyActionSO action, DamageType dmgType)
-        {
-            if (_playerTarget == null) return;
-
-            float range = action.BlinkRange > 0f ? action.BlinkRange : Mathf.Max(action.Range, 0.5f);
-            var blink = EnemyBlinkExecutor.CalculateDestination(
-                transform.position, _playerTarget.transform.position, range, _blinkFlankSide);
-
-            if (!blink.Success)
-            {
-                Debug.Log($"[EnemyBrain] BlinkStrike skipped: {blink.FailReason}");
-                return;
-            }
-
-            if (_rb != null)
-                _rb.position = blink.Destination;
-            else
-                transform.position = (Vector3)blink.Destination;
-
-            GameEventBus.Publish(new EnemyTelegraphStartedEvent(_enemyData?.enemyId, blink.Destination));
-
-            // Apply melee damage after teleport
-            int damage = Mathf.Max(0, Mathf.RoundToInt(action.BaseDamage * _phaseDamageMultiplier));
-            var req = new DamageRequest(
-                targetId: "player",
-                baseDamage: damage,
-                damageType: dmgType,
-                sourceId: _enemyData?.enemyId ?? "enemy"
-            );
-            req.SourcePosition = blink.Destination;
-            req.KnockbackForce = _enemyData?.contactKnockbackForce ?? 0f;
-            req.CanTriggerVulnerability = false;
-            var result = DamageCalculator.Calculate(req, _enemyData?.defense ?? 0);
-            if (result.FinalDamage > 0)
-            {
-                var playerManager = GameBootstrap.Instance?.PlayerManager;
-                var applied = CindarsHope.Combat.PlayerDamageReceiver.ApplyDamage(
-                    playerManager, result.FinalDamage, _enemyData?.enemyId ?? "enemy", dmgType, gameObject, _playerTarget);
-                if (applied > 0)
-                {
-                    ApplyActionStatusesToPlayer(action);
-                    ApplyVampiricLifesteal(applied);
-                    var playerPos = _playerTarget != null ? (Vector2)_playerTarget.transform.position : (Vector2)playerManager.transform.position;
-                    GameEventBus.Publish(new PlayerDamagedEvent(applied, playerPos, _enemyData?.enemyId ?? "enemy", _enemyData?.DisplayName ?? "Enemy"));
-                    FloatingDamageNumberDisplayer.ShowAtTarget(_playerTarget ?? playerManager.gameObject, applied, dmgType, false, true);
-                }
-            }
-        }
-
-        // SPEC 13D: Fires the death-trigger action (IsDeathtrigger=true) exactly once on death.
-        // Guard: only inside cave (CaveRunManager present) to avoid out-of-cave effects.
-        private void FireDeathTrigger()
-        {
-            if (_deathtriggerFired) return;
-            if (_activeActionSet == null || _actionDatabase == null) return;
-            if (CaveRunManager.Instance == null) return;
-
-            foreach (var actionId in _activeActionSet.ActionIds)
-            {
-                if (!_actionDatabase.TryGetById(actionId, out var action)) continue;
-                if (!action.IsDeathtrigger) continue;
-
-                _deathtriggerFired = true;
-                ExecuteDeathTrigger(action);
-                return;
-            }
-        }
-
-        // Applies AoE damage from the death-trigger action to the player if in range.
-        private void ExecuteDeathTrigger(EnemyActionSO action)
-        {
-            if (action.BaseDamage <= 0) return;
-            if (!System.Enum.TryParse<DamageType>(action.DamageType, true, out var dmgType))
-                dmgType = DamageType.Fire;
-
-            float radius = action.AreaRadius > 0f ? action.AreaRadius : action.Range;
-            var playerManager = GameBootstrap.Instance?.PlayerManager;
-            if (playerManager == null) return;
-
-            var dtPlayerPos = _playerTarget != null ? _playerTarget.transform.position : playerManager.transform.position;
-            float dist = Vector2.Distance(transform.position, dtPlayerPos);
-            if (dist > radius * 1.2f) return;
-
-            int damage = Mathf.Max(0, Mathf.RoundToInt(action.BaseDamage * _phaseDamageMultiplier));
-            var req = new DamageRequest(
-                targetId: "player",
-                baseDamage: damage,
-                damageType: dmgType,
-                sourceId: _enemyData?.enemyId ?? "enemy"
-            );
-            req.SourcePosition = transform.position;
-            req.CanTriggerVulnerability = false;
-            var result = DamageCalculator.Calculate(req, _enemyData?.defense ?? 0);
-            if (result.FinalDamage > 0)
-            {
-                var applied = CindarsHope.Combat.PlayerDamageReceiver.ApplyDamage(
-                    playerManager, result.FinalDamage, _enemyData?.enemyId ?? "enemy", dmgType, gameObject, _playerTarget);
-                if (applied > 0)
-                {
-                    ApplyActionStatusesToPlayer(action);
-                    GameEventBus.Publish(new PlayerDamagedEvent(applied, (Vector2)dtPlayerPos, _enemyData?.enemyId ?? "enemy", _enemyData?.DisplayName ?? "Enemy"));
-                    FloatingDamageNumberDisplayer.ShowAtTarget(_playerTarget ?? playerManager.gameObject, applied, dmgType, false, true);
-                }
-            }
-
-            Debug.Log($"[EnemyBrain] DeathTrigger fired. EnemyId={_enemyData?.enemyId}, ActionId={action.ActionId}, Damage={damage}, PlayerDist={dist:F2}");
-        }
-
-        // F01: EnemyActionSO.StatusApplicationIds aplicados no player via PlayerStatusReceiver.
-        private static void ApplyActionStatusesToPlayer(EnemyActionSO action)
-        {
-            if (action == null || action.StatusApplicationIds == null || action.StatusApplicationIds.Length == 0)
-            {
-                return;
-            }
-
-            var receiver = CindarsHope.Combat.StatusEffect.PlayerStatusReceiver.Instance;
-            if (receiver == null)
-            {
-                return;
-            }
-
-            foreach (var statusId in action.StatusApplicationIds)
-            {
-                receiver.TryApplyFromEnemyAction(statusId, action.StatusApplyChance);
-            }
-        }
-
-        private void TryOpenVulnerabilityWindow(VulnerabilityTriggerMode trigger)
-        {
-            if (_pendingAction == null || !_pendingAction.TriggersVulnerabilityWindow) return;
-            if (_vulnerabilityState == null) return;
-
-            var mode = _pendingAction.VulnerabilityWindowTrigger;
-            bool shouldOpen = (mode == trigger) ||
-                              (mode == VulnerabilityTriggerMode.AlwaysForTest &&
-                               trigger == VulnerabilityTriggerMode.AfterAttackRecover);
-
-            if (shouldOpen)
-            {
-                float dur = _vulnerabilityProfile != null ? _vulnerabilityProfile.WindowDurationSeconds : 1.5f;
-                float mul = _vulnerabilityProfile != null ? _vulnerabilityProfile.Multiplier : 1.5f;
-                float cd  = _vulnerabilityProfile != null ? _vulnerabilityProfile.CooldownSeconds : 10f;
-                _vulnerabilityState.OpenWindow(dur, mul, cd);
-            }
-        }
-
-        // ─── Telegraph ────────────────────────────────────────────────────────
-
-        private void StartTelegraph(EnemyActionSO action)
-        {
-            if (_telegraph == null || string.IsNullOrEmpty(action.TelegraphProfileId)) return;
-
-            if (_telegraphDatabase != null &&
-                _telegraphDatabase.TryGetById(action.TelegraphProfileId, out var tp))
-            {
-                _telegraph.StartTelegraph(tp.BlinkColor, tp.BlinkFrequency);
-            }
-            else
-            {
-                _telegraph.StartTelegraph(Color.yellow);
-            }
-        }
-
-        // ─── Movement ─────────────────────────────────────────────────────────
-
-        private void ExecuteMovement()
-        {
-            if (_rb == null) return;
-
-            if (_isLeaping)
-            {
-                if (Time.time >= _leapEndTime)
-                    _isLeaping = false;
-                else
-                    return; // leap velocity is in flight; do not override it
-            }
-
-            // fable_24: ChargeLine investida overrides normal movement while in flight (straight line).
-            if (_isCharging)
-            {
-                if (Time.time >= _chargeEndTime)
-                {
-                    _isCharging = false;
-                }
-                else
-                {
-                    _rb.linearVelocity = EnemyMoveLogic.ResolveChargeVelocity(_chargeLockedDirection, MoveSpeed() * 3.2f);
-                    return;
-                }
-            }
-
-            switch (_currentState)
-            {
-                case EnemyBrainState.Patrol:
-                    MovePatrol();
-                    break;
-                case EnemyBrainState.Chase:
-                    MoveChase();
-                    break;
-                case EnemyBrainState.Kite:
-                    MoveKite();
-                    break;
-                case EnemyBrainState.Retreat:
-                    MoveRetreat();
-                    break;
-                case EnemyBrainState.Burrow:
-                    MoveBurrow();
-                    break;
-                case EnemyBrainState.AttackWindup:
-                case EnemyBrainState.AttackRecover:
-                    StopMovement();
-                    break;
-                case EnemyBrainState.GuardHold:
-                    MoveGuardHold();
-                    break;
-            }
-        }
-
-        private void MoveChase()
-        {
-            // fable_24: dispatch the new moves first; they fully own the chase velocity for their tick.
-            if (TryMoveNewBehaviour())
-            {
-                return;
-            }
-
-            var moveType = _movementProfile?.MovementType ?? EnemyMovementType.GroundChase;
-            float speed = MoveSpeed();
-
-            // fable_04: if the player slipped out of detection range but threat memory is still
-            // valid, pursue the last known position instead of stopping. Special movement (leap,
-            // blink, swarm jitter) only triggers when the player is actually visible/in range.
-            bool playerVisible = _playerTarget != null && DistanceToPlayer() <= DetectionRange();
-            if (!playerVisible)
-            {
-                if (_threatMemoryEnabled && HasActiveThreat())
-                {
-                    MoveTowardLastKnownPosition(speed);
-                }
-                else if (_playerTarget == null)
-                {
-                    StopMovement();
-                }
-                else
-                {
-                    _rb.linearVelocity = DirectionToPlayer() * speed;
-                }
-                return;
-            }
-
-            switch (moveType)
-            {
-                case EnemyMovementType.SwarmErratic:
-                    MoveSwarmErratic(speed);
-                    return;
-                case EnemyMovementType.TankSlowPush:
-                    speed = Mathf.Min(speed, 1.5f);
-                    break;
-                case EnemyMovementType.Leaper:
-                    if (TryLeap(speed))
-                        return;
-                    break;
-                case EnemyMovementType.PhaseShortBlink:
-                    if (TryBlink())
-                        return;
-                    break;
-            }
-
-            _rb.linearVelocity = DirectionToPlayer() * speed;
-        }
-
-        // ─── fable_24: the 12 new moves ───────────────────────────────────────
-        // Returns true when one of the new moves handled this tick's velocity (so MoveChase stops).
-        private bool TryMoveNewBehaviour()
-        {
-            float speed = MoveSpeed();
-            switch (EffectiveMove)
-            {
-                case EnemyMovementType.CircleStrafe:
-                case EnemyMovementType.FloatingOrbit:
-                    MoveOrbit(speed);
-                    return true;
-
-                case EnemyMovementType.FloatingSlow:
-                    MoveFloatingSlow(speed);
-                    return true;
-
-                case EnemyMovementType.ChargeLine:
-                    MoveChargeLine(speed);
-                    return true;
-
-                case EnemyMovementType.RetreatAndCall:
-                    MoveRetreatAndCall(speed);
-                    return true;
-
-                case EnemyMovementType.HazardLure:
-                    // Lure the player by backing away (toward a hazard the level designer placed);
-                    // straight retreat reuses the existing retreat vector (no pathfinding).
-                    MoveRetreat();
-                    return true;
-
-                case EnemyMovementType.TreasureIdleAmbush:
-                    MoveMimicAmbush(speed);
-                    return true;
-
-                case EnemyMovementType.ProtectAnchor:
-                case EnemyMovementType.BossArenaControl:
-                    MoveAnchoredChase(speed);
-                    return true;
-
-                case EnemyMovementType.PackFlanker:
-                    MovePackFlanker(speed);
-                    return true;
-
-                case EnemyMovementType.PackLeader:
-                    // Leader chases normally; its death (handled via pack alert) turns flankers to
-                    // RetreatAndCall. No special steering here — fall through to default chase.
-                    return false;
-
-                default:
-                    return false;
-            }
-        }
-
-        // CircleStrafe / FloatingOrbit: hold firing distance and orbit the player.
-        private void MoveOrbit(float speed)
-        {
-            if (_playerTarget == null)
-            {
-                StopMovement();
-                return;
-            }
-
-            float preferred = Mathf.Max(_movementProfile?.PreferredDistance ?? 4f, 1f);
-            float dist = DistanceToPlayer();
-            Vector2 toPlayer = DirectionToPlayer();
-            Vector2 tangent = Vector2.Perpendicular(toPlayer) * _orbitSign;
-
-            // Blend a radial correction (keep ~preferred distance) with the tangential orbit.
-            float radialError = dist - preferred;
-            Vector2 radial = toPlayer * Mathf.Clamp(radialError, -1f, 1f);
-            _rb.linearVelocity = (tangent + radial).normalized * speed;
-        }
-
-        // FloatingSlow: hover toward the player at reduced speed, ignoring floor obstacles (no burrow).
-        private void MoveFloatingSlow(float speed)
-        {
-            if (_playerTarget == null)
-            {
-                StopMovement();
-                return;
-            }
-
-            _rb.linearVelocity = DirectionToPlayer() * (speed * 0.6f);
-        }
-
-        // ChargeLine: telegraph a straight line, lock the aim, then charge straight (dodgeable).
-        private void MoveChargeLine(float speed)
-        {
-            if (_playerTarget == null)
-            {
-                StopMovement();
-                return;
-            }
-
-            bool offCooldown = Time.time >= _nextChargeTime;
-
-            if (!_chargeTelegraphActive && offCooldown && !_isCharging)
-            {
-                // Begin telegraph: lock direction now so the player can sidestep the committed line.
-                _chargeTelegraphActive = true;
-                _chargeTelegraphStart = Time.time;
-                _chargeLockedDirection = DirectionToPlayer();
-                _telegraph?.StartTelegraph(Color.red);
-                GameEventBus.Publish(new EnemyTelegraphStartedEvent(_enemyData?.enemyId, transform.position));
-                StopMovement();
-                return;
-            }
-
-            if (_chargeTelegraphActive)
-            {
-                float elapsed = Time.time - _chargeTelegraphStart;
-                float telegraphDuration = EnemyMoveLogic.CommonWindupSeconds;
-                StopMovement(); // hold still during the windup
-                if (EnemyMoveLogic.ShouldChargeLineFire(true, elapsed, telegraphDuration, offCooldown))
-                {
-                    _chargeTelegraphActive = false;
-                    _isCharging = true;
-                    _chargeEndTime = Time.time + 0.4f;
-                    _nextChargeTime = Time.time + 3f;
-                    _telegraph?.EndTelegraph();
-                }
-                return;
-            }
-
-            // Between charges: close in at normal speed.
-            _rb.linearVelocity = DirectionToPlayer() * speed;
-        }
-
-        // RetreatAndCall: flee and periodically emit EnemyCallForHelpEvent so allies regroup.
-        private void MoveRetreatAndCall(float speed)
-        {
-            if (_playerTarget == null)
-            {
-                StopMovement();
-                return;
-            }
-
-            _rb.linearVelocity = -DirectionToPlayer() * (speed * 1.15f);
-            EmitCallForHelp();
-        }
-
-        // TreasureIdleAmbush (mimic): stay disguised and immobile until the player is < 2 tiles.
-        private void MoveMimicAmbush(float speed)
-        {
-            if (!_mimicActivated)
-            {
-                if (EnemyMoveLogic.ShouldMimicActivate(DistanceToPlayer()))
-                {
-                    _mimicActivated = true;
-                    GameEventBus.Publish(new EnemyTelegraphStartedEvent(_enemyData?.enemyId, transform.position));
-                }
-                else
-                {
-                    StopMovement();
-                    return;
-                }
-            }
-
-            // Once sprung, behave like a chaser.
-            if (_playerTarget != null)
-            {
-                _rb.linearVelocity = DirectionToPlayer() * speed;
-            }
-        }
-
-        // ProtectAnchor / BossArenaControl: chase, but never leave the leash radius of the anchor.
-        private void MoveAnchoredChase(float speed)
-        {
-            if (_playerTarget == null)
-            {
-                ReturnToAnchor(speed);
-                return;
-            }
-
-            Vector2 desired = (Vector2)transform.position + DirectionToPlayer();
-            Vector2 clamped = EnemyMoveLogic.ClampToAnchor(desired, _anchorPoint, _anchorLeashTiles);
-
-            if (EnemyMoveLogic.IsBeyondAnchorLeash((Vector2)transform.position, _anchorPoint, _anchorLeashTiles))
-            {
-                ReturnToAnchor(speed);
-                return;
-            }
-
-            Vector2 step = clamped - (Vector2)transform.position;
-            _rb.linearVelocity = step.sqrMagnitude > 0.0001f ? step.normalized * speed : Vector2.zero;
-        }
-
-        private void ReturnToAnchor(float speed)
-        {
-            Vector2 toAnchor = _anchorPoint - (Vector2)transform.position;
-            _rb.linearVelocity = toAnchor.sqrMagnitude > 0.09f ? toAnchor.normalized * speed : Vector2.zero;
-        }
-
-        // PackFlanker: only engage while a living leader is in range; otherwise hold, then after a
-        // timeout fall back to a plain chase (no deadlock). Leader presence comes from the pack
-        // coordinator (no scene search).
-        private void MovePackFlanker(float speed)
-        {
-            bool leaderAlive = PackLeaderInRange(out float distToLeader, out float awareness);
-            if (EnemyMoveLogic.ShouldFlankerEngage(leaderAlive, distToLeader, awareness))
-            {
-                _flankerNoLeaderSince = -1f;
-                if (_playerTarget != null)
-                {
-                    // Flank: approach offset to the side of the player instead of head-on.
-                    Vector2 toPlayer = DirectionToPlayer();
-                    Vector2 flank = Vector2.Perpendicular(toPlayer) * _orbitSign;
-                    _rb.linearVelocity = (toPlayer + flank * 0.5f).normalized * speed;
-                }
-                return;
-            }
-
-            // No leader in range — start/continue the fallback timer.
-            if (_flankerNoLeaderSince < 0f)
-            {
-                _flankerNoLeaderSince = Time.time;
-            }
-
-            if (EnemyMoveLogic.ShouldFlankerFallbackToChase(Time.time - _flankerNoLeaderSince) && _playerTarget != null)
-            {
-                _rb.linearVelocity = DirectionToPlayer() * speed; // act as GroundChase
-            }
-            else
-            {
-                StopMovement(); // hold, waiting for a leader
-            }
-        }
-
-        // Pack leader lookup via the coordinator anchor as a stand-in for leader position (no scene
-        // search). A pack with at least one living member is treated as having a leader in range when
-        // the anchor is within awareness radius. Solo enemies (no pack) report no leader.
-        private bool PackLeaderInRange(out float distanceToLeader, out float awarenessRadius)
-        {
-            awarenessRadius = Mathf.Max(_movementProfile?.DetectionRange ?? 10f, 1f);
-            distanceToLeader = float.MaxValue;
-
-            if (_packCoordinator == null || string.IsNullOrWhiteSpace(_packId))
-            {
-                return false;
-            }
-
-            // A living pack still has members registered; use the deterministic anchor as the leader
-            // reference point (centroid of the pack's spawn — stable run / ADR-0005).
-            if (_packCoordinator.MemberCount(_packId) <= 1)
-            {
-                return false;
-            }
-
-            Vector2 anchor = _packCoordinator.GetAnchor(_packId);
-            distanceToLeader = Vector2.Distance(transform.position, anchor);
-            return true;
-        }
-
-        private void EmitCallForHelp()
-        {
-            if (Time.time < _nextCallForHelpTime)
-            {
-                return;
-            }
-
-            _nextCallForHelpTime = Time.time + 2f;
-            float radius = Mathf.Max(_movementProfile?.DetectionRange ?? 8f, 4f);
-            GameEventBus.Publish(new EnemyCallForHelpEvent(_enemyData?.enemyId, transform.position, radius));
-
-            // If part of a pack, also wake siblings directly (same path as fable_04 pack alert).
-            if (_packCoordinator != null && !string.IsNullOrWhiteSpace(_packId))
-            {
-                _packCoordinator.Alert(_packId, transform.position);
-            }
-        }
-
-        // fable_04: walk toward the remembered position; once reached, drop velocity so the next
-        // decision tick can resolve back to Patrol when the memory finally expires (legible reset).
-        private void MoveTowardLastKnownPosition(float speed)
-        {
-            Vector2 toTarget = _threatState.LastKnownPosition - (Vector2)transform.position;
-            if (toTarget.sqrMagnitude <= 0.09f)
-            {
-                StopMovement();
-                return;
-            }
-
-            _rb.linearVelocity = toTarget.normalized * speed;
-        }
-
-        // Leapers lunge in a fast burst when the player is in the mid-range band.
-        private bool TryLeap(float baseSpeed)
-        {
-            if (Time.time < _nextLeapTime)
-                return false;
-
-            float dist = DistanceToPlayer();
-            float attackRange = _movementProfile?.AttackRange ?? 1.5f;
-            if (dist < attackRange || dist > attackRange * 3.5f)
-                return false;
-
-            _isLeaping = true;
-            _leapEndTime = Time.time + 0.35f;
-            _nextLeapTime = Time.time + _leapCooldownSeconds;
-            _rb.linearVelocity = DirectionToPlayer() * baseSpeed * _leapSpeedMultiplier;
-            GameEventBus.Publish(new EnemyTelegraphStartedEvent(_enemyData?.enemyId, transform.position));
-            return true;
-        }
-
-        // Phase enemies blink to the player's flank instead of walking the gap.
-        private bool TryBlink()
-        {
-            if (Time.time < _nextBlinkTime || _playerTarget == null)
-                return false;
-
-            float dist = DistanceToPlayer();
-            float preferred = Mathf.Max(_movementProfile?.PreferredDistance ?? 1f, 0.9f);
-            if (dist < preferred * 2.5f)
-                return false;
-
-            _nextBlinkTime = Time.time + _blinkCooldownSeconds;
-            Vector2 toPlayer = DirectionToPlayer();
-            Vector2 flank = Vector2.Perpendicular(toPlayer) * _blinkFlankSide;
-            Vector2 destination = (Vector2)_playerTarget.transform.position - toPlayer * preferred + flank * 0.5f;
-            _rb.position = destination;
-            _rb.linearVelocity = Vector2.zero;
-            GameEventBus.Publish(new EnemyTelegraphStartedEvent(_enemyData?.enemyId, destination));
-            return true;
-        }
-
-        private void MoveBurrow()
-        {
-            if (_playerTarget == null) return;
-            _rb.linearVelocity = DirectionToPlayer() * (MoveSpeed() * _burrowSpeedMultiplier);
-        }
-
-        private void MoveRetreat()
-        {
-            if (_playerTarget == null)
-            {
-                StopMovement();
-                return;
-            }
-
-            _rb.linearVelocity = -DirectionToPlayer() * (MoveSpeed() * 1.25f);
-        }
-
-        // Guards hold their post: drift back to the spawn anchor when displaced.
-        private void MoveGuardHold()
-        {
-            Vector2 toAnchor = _spawnAnchor - (Vector2)transform.position;
-            if (toAnchor.sqrMagnitude > 0.36f)
-                _rb.linearVelocity = toAnchor.normalized * (MoveSpeed() * 0.6f);
-            else
-                StopMovement();
-        }
-
-        private void MoveKite()
-        {
-            // fable_24: orbit/strafe and other new moves own their steering even in the Kite state.
-            if (TryMoveNewBehaviour())
-            {
-                return;
-            }
-
-            if (_playerTarget == null) return;
-
-            float speed = MoveSpeed();
-            float preferred = _movementProfile?.PreferredDistance ?? 5f;
-            float dist = DistanceToPlayer();
-            Vector2 toPlayer = DirectionToPlayer();
-
-            if (dist < preferred * 0.8f)
-                _rb.linearVelocity = -toPlayer * speed;
-            else if (dist > preferred * 1.2f)
-                _rb.linearVelocity = toPlayer * (speed * 0.5f);
-            else
-                StopMovement();
-        }
-
-        private void MovePatrol()
-        {
-            _patrolDirectionTimer -= Time.deltaTime;
-            if (_patrolDirectionTimer > 0f) return;
-
-            _patrolDirectionTimer = Random.Range(1.5f, 3.5f);
-
-            // Anchor patrol to the spawn point so idle enemies stay in their room
-            // instead of drifting across the level over time.
-            float wanderRadius = Mathf.Max(_movementProfile?.WanderRadius ?? 5f, 1f);
-            Vector2 fromAnchor = (Vector2)transform.position - _spawnAnchor;
-            Vector2 direction;
-            if (fromAnchor.sqrMagnitude > wanderRadius * wanderRadius)
-            {
-                direction = (-fromAnchor).normalized;
-            }
-            else
-            {
-                direction = Random.insideUnitCircle.normalized;
-            }
-
-            _rb.linearVelocity = direction * (MoveSpeed() * 0.4f);
-        }
-
-        private void MoveSwarmErratic(float speed)
-        {
-            _patrolDirectionTimer -= Time.deltaTime;
-            if (_patrolDirectionTimer > 0f) return;
-
-            _patrolDirectionTimer = Random.Range(0.15f, 0.5f);
-            Vector2 toPlayer = DirectionToPlayer();
-            Vector2 erratic = (toPlayer * 0.6f + (Vector2)Random.insideUnitCircle * 0.8f).normalized;
-            _rb.linearVelocity = erratic * speed;
-        }
-
-        private void StopMovement()
-        {
-            if (_rb != null)
-                _rb.linearVelocity = Vector2.zero;
-        }
-
-        private void SetSubmergedVisual(bool submerged)
-        {
-            if (_spriteRenderer == null) return;
-            var color = _spriteRenderer.color;
-            color.a = submerged ? _spriteBaseAlpha * 0.25f : _spriteBaseAlpha;
-            _spriteRenderer.color = color;
-        }
-
         // ─── Helpers ──────────────────────────────────────────────────────────
 
-        // Prefere o PlayerController VISIVEL na cena (transform real do personagem). O
-        // PlayerManager mora no _Bootstrap (DontDestroyOnLoad, em (0,0,0)) e nao representa
-        // a posicao do player — usa-lo como alvo faz o inimigo mirar a origem do mundo.
+        // Prefere o PlayerController VISÍVEL na cena (transform real do personagem). O
+        // PlayerManager mora no _Bootstrap (DontDestroyOnLoad, em (0,0,0)) e não representa
+        // a posição do player — usa-lo como alvo faz o inimigo mirar a origem do mundo.
         private void RefreshPlayerTarget()
         {
             var visiblePlayer = Player.PlayerController.ActiveInstance;
@@ -1422,69 +502,24 @@ namespace CindarsHope.Enemy
             }
         }
 
-        // fable_78 (SLICE 4): escolhe o alvo hostil corrente entre {player} ∪ {rivais vivos}, ponderado por
-        // PlayerAggroWeight/RivalAggroWeight (default 1/1 → empate = mais próximo). Quando um rival vence,
-        // aponta _playerTarget para o GameObject do rival (REUSA o locomotor/estado existente) e registra
-        // _rivalHealthTarget para a resolução de dano divergir. Quando o player vence (ou não há rival vivo),
-        // restaura o caminho player-only. Ramo isolado: no-op se este inimigo não é conflict-combatant.
+        // fable_78 (SLICE 4): delega ao EnemyConflictHandler.
+        // Ramo isolado: no-op quando não há CaveConflictCombatant neste inimigo.
         private void RefreshConflictTarget()
         {
-            _rivalHealthTarget = null;
-
-            if (_conflictCombatant == null)
-            {
-                return;
-            }
-
             var visiblePlayer = Player.PlayerController.ActiveInstance;
             var playerGo = visiblePlayer != null ? visiblePlayer.gameObject : _playerTarget;
 
-            float detection = DetectionRange();
-            var rival = _conflictCombatant.FindNearestLivingRival(transform.position, detection);
-            if (rival == null)
+            var newTarget = _conflict.RefreshConflictTarget(playerGo, _playerTarget, out _);
+            if (newTarget != null)
             {
-                // Sem rival vivo no raio → mira o player como sempre.
-                if (playerGo != null)
-                {
-                    _playerTarget = playerGo;
-                }
-                return;
-            }
-
-            float playerWeighted = ResolveWeightedDistance(playerGo, _ecosystemBalance?.PlayerAggroWeight ?? 1f);
-            float rivalDist = Vector2.Distance(transform.position, rival.transform.position);
-            float rivalWeighted = ResolveWeightedDistance(rivalDist, _ecosystemBalance?.RivalAggroWeight ?? 1f);
-
-            if (rivalWeighted <= playerWeighted)
-            {
-                _rivalHealthTarget = rival;
-                _playerTarget = rival.gameObject; // reusa movimento/distância/estado existentes
-            }
-            else if (playerGo != null)
-            {
-                _playerTarget = playerGo;
+                _playerTarget = newTarget;
             }
         }
 
-        // Distância "ponderada" por peso de aggro: peso menor torna o alvo mais atraente (divide a distância).
-        // Peso <= 0 desliga o alvo (distância infinita). Peso 1 = distância crua (default empate = mais próximo).
-        private float ResolveWeightedDistance(GameObject target, float weight)
+        private void SetSubmergedVisual(bool submerged)
         {
-            if (target == null)
-            {
-                return float.MaxValue;
-            }
-
-            return ResolveWeightedDistance(Vector2.Distance(transform.position, target.transform.position), weight);
+            _movement.SetSubmergedVisual(submerged, _spriteRenderer, _spriteBaseAlpha);
         }
-
-        private static float ResolveWeightedDistance(float distance, float weight)
-        {
-            return weight <= 0f ? float.MaxValue : distance / weight;
-        }
-
-        // fable_78: true quando o alvo corrente é um rival (conflito), não o player.
-        private bool IsTargetingRival => _rivalHealthTarget != null && !_rivalHealthTarget.IsDead;
 
         private float DistanceToPlayer() =>
             _playerTarget != null
@@ -1509,7 +544,7 @@ namespace CindarsHope.Enemy
                 _health.TakeDamage(amount);
                 if (_health.IsDead)
                 {
-                    FireDeathTrigger();
+                    _actions.FireDeathTrigger();
                     _currentState = EnemyBrainState.Dead;
                 }
             }
@@ -1525,7 +560,10 @@ namespace CindarsHope.Enemy
                 _vulnerabilityState.Initialize(_enemyData?.enemyId);
             }
 
-            InitActionSet();
+            _actions.UpdateRefs(_enemyData, _actionSetDatabase, _actionDatabase, _telegraphDatabase, _vulnerabilityProfile, _telegraph, _vulnerabilityState, _health);
+            _movement.UpdateRefs(_enemyData, _movementProfile, _telegraph);
+            _conflict.UpdateRefs(_enemyData, _health);
+            _actions.InitActionSet();
         }
 
         public void ConfigureRuntime(
@@ -1558,7 +596,12 @@ namespace CindarsHope.Enemy
             if (_vulnerabilityState != null)
                 _vulnerabilityState.Initialize(_enemyData?.enemyId);
 
-            InitActionSet();
+            // Update collaborator references
+            _movement.UpdateRefs(_enemyData, _movementProfile, _telegraph);
+            _movement.UpdateTuning(_leapCooldownSeconds, _leapSpeedMultiplier, _blinkCooldownSeconds, _burrowSpeedMultiplier);
+            _actions.UpdateRefs(_enemyData, _actionSetDatabase, _actionDatabase, _telegraphDatabase, _vulnerabilityProfile, _telegraph, _vulnerabilityState, _health);
+            _conflict.UpdateRefs(_enemyData, _health);
+            _actions.InitActionSet();
         }
 
         // ─── fable_24: elite affix runtime ────────────────────────────────────
@@ -1587,8 +630,7 @@ namespace CindarsHope.Enemy
             CindarsHope.Cave.Ecosystem.CaveConflictCombatant combatant,
             CindarsHope.Cave.Data.CaveEcosystemBalanceSO balance)
         {
-            _conflictCombatant = combatant;
-            _ecosystemBalance = balance;
+            _conflict.ConfigureConflict(combatant, balance);
         }
 
         /// <summary>
@@ -1605,19 +647,6 @@ namespace CindarsHope.Enemy
             _wardedStatusConsumed = true;
             CindarsHope.Combat.CombatLog.Log($"CombatLog: EliteWardedResistedStatus. EnemyId={_enemyData?.enemyId}, Affix=Warded.", this);
             return true;
-        }
-
-        // Vampiric elites heal 25% of damage dealt (melee/area path, where the applied amount is known).
-        private void ApplyVampiricLifesteal(int damageDealt)
-        {
-            int heal = EliteAffixRules.ResolveLifestealHeal(_eliteAffix, damageDealt);
-            if (heal <= 0 || _health == null || _health.MaxHp <= 0)
-            {
-                return;
-            }
-
-            _health.RestoreHp(Mathf.Min(_health.MaxHp, _health.CurrentHp + heal));
-            CindarsHope.Combat.CombatLog.Log($"CombatLog: EliteVampiricHeal. EnemyId={_enemyData?.enemyId}, Heal={heal}, HP={_health.CurrentHp}/{_health.MaxHp}.", this);
         }
 
         /// <summary>
@@ -1660,8 +689,8 @@ namespace CindarsHope.Enemy
         /// </summary>
         public void SetArenaLeash(Vector2 arenaCenter, float arenaRadiusTiles)
         {
-            _anchorPoint = arenaCenter;
-            _anchorLeashTiles = Mathf.Max(1f, arenaRadiusTiles);
+            _movement.AnchorPoint = arenaCenter;
+            _movement.AnchorLeashTiles = Mathf.Max(1f, arenaRadiusTiles);
         }
 
         /// <summary>
@@ -1674,14 +703,14 @@ namespace CindarsHope.Enemy
         {
             if (newActionSet != null)
             {
-                _activeActionSet = newActionSet;
-                _actionCooldowns.Clear();
+                _actions.ActiveActionSet = newActionSet;
+                _actions.ActionCooldowns.Clear();
                 if (_actionDatabase != null)
                 {
                     foreach (var actionId in newActionSet.ActionIds)
                     {
                         if (_actionDatabase.TryGetById(actionId, out var action))
-                            _actionCooldowns[actionId] = new EnemyActionRuntime(actionId, action.CooldownSeconds);
+                            _actions.ActionCooldowns[actionId] = new EnemyActionRuntime(actionId, action.CooldownSeconds);
                     }
                 }
             }
@@ -1689,10 +718,11 @@ namespace CindarsHope.Enemy
             if (newMovementProfile != null)
             {
                 _movementProfile = newMovementProfile;
+                _movement.UpdateRefs(_enemyData, _movementProfile, _telegraph);
             }
 
             // Interrupt any pending action so the new phase starts clean (telegraph cleared).
-            _pendingAction = null;
+            _actions.PendingAction = null;
             _telegraph?.EndTelegraph();
             _currentState = EnemyBrainState.Alert;
             GameEventBus.Publish(new EnemyActionResolvedEvent(_enemyData?.enemyId, "phase_shift"));
@@ -1781,6 +811,20 @@ namespace CindarsHope.Enemy
             }
         }
 
+        public void ApplyStun(float seconds)
+        {
+            if (seconds <= 0f)
+            {
+                return;
+            }
+
+            _stunUntil = Mathf.Max(_stunUntil, Time.time + Mathf.Min(seconds, 5f));
+            _currentState = EnemyBrainState.Stunned;
+            _actions.PendingAction = null;
+            _telegraph?.EndTelegraph();
+            _movement.StopMovement();
+        }
+
         // First time this enemy detects the player, alert its pack so siblings engage together.
         private void AnnouncePackEngagementOnce()
         {
@@ -1829,8 +873,8 @@ namespace CindarsHope.Enemy
             _threatState.Clear();
             _packEngagedAnnounced = false;
             _currentState = EnemyBrainState.Patrol;
-            StopMovement();
-            _spawnAnchor = anchor;
+            _movement.StopMovement();
+            _movement.SpawnAnchor = anchor;
 
             if (_health != null && _health.MaxHp > 0)
             {

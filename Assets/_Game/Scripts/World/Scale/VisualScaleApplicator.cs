@@ -21,6 +21,19 @@ namespace CindarsHope.World.Scale
             }
         }
 
+        /// <summary>
+        /// Assigns the profile (and optional visual root) so editor scene-creation scripts can wire the
+        /// applicator without touching serialized YAML by hand. Scale is applied at runtime on Awake.
+        /// </summary>
+        public void Configure(VisualScaleProfileSO profile, Transform visualRoot = null)
+        {
+            _profile = profile;
+            if (visualRoot != null)
+            {
+                _visualRoot = visualRoot;
+            }
+        }
+
         public void Apply()
         {
             if (_profile == null)

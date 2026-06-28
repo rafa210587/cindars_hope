@@ -130,6 +130,74 @@ namespace CindarsHope.Combat.Bestiary
                 VulnerabilityMatrixProfileId = "vulnmatrix_elemental",
                 Notes = "Boss gate 30. F1 punhos + pilares; F2 (66%) IceSlick global + 2 Frost Wisps; F3 (33%) pilar quebrado expoe nucleo (Hammer/charged +50%). Fraco Fire; imune Ice/Chill/Stun. Mecanicas de fase = F05 (dormante). Drops first-kill: receita Frost Oil + Anel de Brasa.",
             };
+
+            // ── fable_80: +6 Ice ────────────────────────────────────────────────────────────
+            yield return new BestiaryCreatureDef
+            {
+                EnemyId = "enemy_frostshard_wisp", DisplayName = "Frostshard Wisp",
+                Band = 3, MinLevel = 26, MaxLevel = 32, Family = "Elemental",
+                Size = BestiarySizeClass.Tiny, Role = EnemyRole.Caster,
+                MovePrimary = EnemyMovementType.FloatingOrbit, MoveSecondary = EnemyMovementType.FloatingSlow,
+                Hp = 18, Damage = 5, Defense = 0, Xp = 22, SpoilerTier = 0,
+                PrimaryDropItemId = "item_material_frost_core", PrimaryDamageTypeId = "ice",
+                VulnerabilityMatrixProfileId = "vulnmatrix_elemental",
+                Notes = "Motivacao: estilhaco da vontade do Rimelock; orbita e pune stamina. Razao no pack: orbitador de apoio que aplica dreno de stamina via raio de frio. Fraqueza: fogo dissolve em 2 hits; melee nao alcanca enquanto orbita.",
+            };
+            yield return new BestiaryCreatureDef
+            {
+                EnemyId = "enemy_crystal_hound", DisplayName = "Crystal Hound",
+                Band = 3, MinLevel = 28, MaxLevel = 36, Family = "Beast",
+                Size = BestiarySizeClass.Medium, Role = EnemyRole.Chaser,
+                MovePrimary = EnemyMovementType.PackLeader, MoveSecondary = EnemyMovementType.GroundChase,
+                Hp = 58, Damage = 9, Defense = 2, Xp = 40, SpoilerTier = 1,
+                PrimaryDropItemId = "item_material_frost_core", PrimaryDamageTypeId = "ice",
+                VulnerabilityMatrixProfileId = "vulnmatrix_beast",
+                Notes = "Motivacao: caca em pares a servico do culto frio; lider inato do bando de feras de gelo. Razao no pack: PackLeader de feras; bote de presa-de-gelo aplica slow 1s. Fraqueza: contundente quebra a armadura cristalina.",
+            };
+            yield return new BestiaryCreatureDef
+            {
+                EnemyId = "enemy_veilkin_iceblade", DisplayName = "Veilkin Iceblade",
+                Band = 3, MinLevel = 29, MaxLevel = 37, Family = "Humanoid",
+                Size = BestiarySizeClass.Medium, Role = EnemyRole.Chaser,
+                MovePrimary = EnemyMovementType.CircleStrafe, MoveSecondary = EnemyMovementType.GroundChase,
+                Hp = 52, Damage = 10, Defense = 3, Xp = 44, SpoilerTier = 1,
+                PrimaryDropItemId = "item_material_frost_core", PrimaryDamageTypeId = "ice",
+                VulnerabilityMatrixProfileId = "vulnmatrix_humanoid",
+                Notes = "Motivacao: duelista do Veu a servico do culto frio; usa ripostes apos bloqueio. Razao no pack: flanqueador tecnico que circula enquanto lider ataca de frente. Fraqueza: fogo cancela riposte window.",
+            };
+            yield return new BestiaryCreatureDef
+            {
+                EnemyId = "enemy_coldcult_preacher", DisplayName = "Cold Cult Preacher",
+                Band = 3, MinLevel = 30, MaxLevel = 38, Family = "Humanoid",
+                Size = BestiarySizeClass.Medium, Role = EnemyRole.Caster,
+                MovePrimary = EnemyMovementType.CasterKeepAway, MoveSecondary = EnemyMovementType.RetreatAndCall,
+                Hp = 42, Damage = 9, Defense = 1, Xp = 48, SpoilerTier = 1,
+                PrimaryDropItemId = "item_material_frost_core", PrimaryDamageTypeId = "ice",
+                VulnerabilityMatrixProfileId = "vulnmatrix_humanoid",
+                Notes = "Motivacao: converte os perdidos a fome de Husinord; envia nova de frio e canto de chill. Razao no pack: conjurador-lider do culto que chama reforco ao fugir. Fraqueza: silencio interrompe o canto de chill e o buff do pack.",
+            };
+            yield return new BestiaryCreatureDef
+            {
+                EnemyId = "enemy_frostbound_revenant", DisplayName = "Frostbound Revenant",
+                Band = 3, MinLevel = 32, MaxLevel = 40, Family = "Undead",
+                Size = BestiarySizeClass.Large, Role = EnemyRole.Tank,
+                MovePrimary = EnemyMovementType.TankSlowPush, MoveSecondary = EnemyMovementType.GroundChase,
+                Hp = 110, Damage = 12, Defense = 4, Xp = 60, SpoilerTier = 1,
+                PrimaryDropItemId = "item_material_rot_gland", PrimaryDamageTypeId = "ice",
+                VulnerabilityMatrixProfileId = "vulnmatrix_undead",
+                Notes = "Motivacao: mineiros congelados em pleno labor que nunca param; talho congelado e ergue-se uma vez (50% HP). Razao no pack: tanque que regressa, nucleo de packs mortos. Fraqueza: fogo/radiante impede a ressurreicao.",
+            };
+            yield return new BestiaryCreatureDef
+            {
+                EnemyId = "enemy_glacier_tick", DisplayName = "Glacier Tick",
+                Band = 3, MinLevel = 26, MaxLevel = 34, Family = "Insect",
+                Size = BestiarySizeClass.Small, Role = EnemyRole.Swarm,
+                MovePrimary = EnemyMovementType.SwarmErratic, MoveSecondary = EnemyMovementType.GroundChase,
+                Hp = 14, Damage = 4, Defense = 0, Xp = 16, SpoilerTier = 0,
+                PrimaryDropItemId = "item_material_chitin", PrimaryDamageTypeId = "ice",
+                VulnerabilityMatrixProfileId = "vulnmatrix_insect",
+                Notes = "Motivacao: parasita de enxame da banda de gelo; agarra e drena frostbite. Razao no pack: fodder que cobre conjuradores; drena stamina ao agarrar. Fraqueza: fogo mata grupo inteiro em AoE.",
+            };
         }
     }
 }

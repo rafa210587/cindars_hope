@@ -15,6 +15,7 @@ namespace CindarsHope.Cave.Runtime
         [SerializeField] private DataRegistrySO<EnemyDataSO> _enemyDatabase;
         [SerializeField] private EnemyDataSO _fallbackEnemyData;
         [SerializeField] private GameScaleConfigSO _scaleConfig;
+        [SerializeField] private CaveEcosystemBalanceSO _ecosystemBalance;
 
         // fable_05: optional boss-phase wiring. When a profile exists for the boss, the spawner adds an
         // EnemyBrain + BossBrainController; bosses without a profile keep the simple behaviour below.
@@ -24,6 +25,7 @@ namespace CindarsHope.Cave.Runtime
         private GameObject _spawnedBoss;
         private Transform _playerTarget;
         private readonly System.Collections.Generic.List<GameObject> _spawnedAdds = new System.Collections.Generic.List<GameObject>();
+        private int _currentBossCaveLevel;
 
         // fable_44: true enquanto um boss real está spawnado neste nível. O CaveLevelRuntimeController
         // lê esta propriedade após SpawnBossForLevel para decidir se inicia a boss fight (gate de save).
@@ -84,7 +86,7 @@ namespace CindarsHope.Cave.Runtime
             }
             spriteRenderer.sortingOrder = 3;
 
-            var bossScale = GetBossScale();
+            var bossScale = GetBossScale(bossEnemyData);
             _spawnedBoss.transform.localScale = Vector3.one * bossScale;
 
             var collider = _spawnedBoss.AddComponent<CircleCollider2D>();
@@ -94,8 +96,10 @@ namespace CindarsHope.Cave.Runtime
             rigidbody.gravityScale = 0;
             rigidbody.constraints = RigidbodyConstraints2D.FreezeRotation;
 
+            _currentBossCaveLevel = generatedLevel.CaveLevel;
             var enemyHealth = _spawnedBoss.AddComponent<EnemyHealth>();
-            enemyHealth.Configure(bossEnemyData);
+            var hpMult = _ecosystemBalance != null ? _ecosystemBalance.EnemyHpBaseMultiplier : 1f;
+            enemyHealth.ConfigureWithScaling(bossEnemyData, generatedLevel.CaveLevel, hpMult);
 
             _spawnedBoss.AddComponent<KnockbackController>();
             _spawnedBoss.AddComponent<HitFlashController>();
@@ -295,10 +299,17 @@ namespace CindarsHope.Cave.Runtime
             return null;
         }
 
-        private float GetBossScale()
+        private float GetBossScale(EnemyDataSO bossEnemyData)
         {
-            if (_scaleConfig == null) return 2.5f;
-            return Mathf.Clamp(_scaleConfig.BossScale, _scaleConfig.BossMinScale, _scaleConfig.BossMaxScale);
+            var dataScale = bossEnemyData != null ? bossEnemyData.VisualScale : 1f;
+            if (_scaleConfig == null)
+            {
+                // No config: honour a per-boss override, else the historical default.
+                return EnemyScaleResolver.ResolveBossScale(dataScale, 2.5f, 2f, 2.5f);
+            }
+
+            return EnemyScaleResolver.ResolveBossScale(
+                dataScale, _scaleConfig.BossScale, _scaleConfig.BossMinScale, _scaleConfig.BossMaxScale);
         }
 
         private Color GetBossColor()
@@ -445,15 +456,19 @@ namespace CindarsHope.Cave.Runtime
             spriteRenderer.color = addData.Icon != null ? Color.white : new Color(0.85f, 0.23f, 0.23f);
             spriteRenderer.sortingOrder = 3;
 
+            var addScale = Mathf.Max(0.1f, addData.VisualScale);
+            add.transform.localScale = new Vector3(addScale, addScale, 1f);
+
             var collider = add.AddComponent<CircleCollider2D>();
-            collider.radius = 0.4f;
+            collider.radius = 0.4f * addScale;
 
             var rigidbody = add.AddComponent<Rigidbody2D>();
             rigidbody.gravityScale = 0;
             rigidbody.constraints = RigidbodyConstraints2D.FreezeRotation;
 
             var enemyHealth = add.AddComponent<EnemyHealth>();
-            enemyHealth.Configure(addData);
+            var hpMult = _ecosystemBalance != null ? _ecosystemBalance.EnemyHpBaseMultiplier : 1f;
+            enemyHealth.ConfigureWithScaling(addData, _currentBossCaveLevel, hpMult);
 
             add.AddComponent<KnockbackController>();
             add.AddComponent<HitFlashController>();
@@ -470,7 +485,7 @@ namespace CindarsHope.Cave.Runtime
             triggerChild.transform.localPosition = Vector3.zero;
 
             var triggerCollider = triggerChild.AddComponent<CircleCollider2D>();
-            triggerCollider.radius = 0.5f;
+            triggerCollider.radius = 0.5f * addScale;
             triggerCollider.isTrigger = true;
 
             var contactDamage = triggerChild.AddComponent<EnemyContactDamage>();

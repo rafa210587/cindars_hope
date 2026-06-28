@@ -75,6 +75,11 @@ namespace CindarsHope.Save
         // estaveis (ADR-0006 / save-dto-simple-types-only). Ausente em save legado = lista vazia =
         // todos os hints elegiveis de novo (seguro). Sem migracao. Owner: OnboardingHintService.
         public OnboardingHintsSaveData OnboardingHints;
+        // spec_farm_till_anywhere_tilemap: estado dos tiles araveis por coordenada (TileX,TileY).
+        // Secao ADITIVA, so ints/strings e tipos simples (ADR-0006 / save-dto-simple-types-only).
+        // Ausente em save legado = sem tiles arados = fazenda sem plots livres (CA-3). Sem migracao.
+        // Owner: FarmTilesSectionProvider (via FarmTileGrid + FarmPlotLogic).
+        public FarmTilesSaveData FarmTiles;
     }
 
     // fable_43: DTO aditivo do endgame (Ato 5). Tipos simples apenas — sem refs Unity. Os fragmentos

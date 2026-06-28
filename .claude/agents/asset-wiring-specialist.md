@@ -1,5 +1,6 @@
 ---
 name: asset-wiring-specialist
+model: sonnet
 description: Especialista em wiring de data assets do Unity — ScriptableObject databases, prefab refs, scene creators, GameBootstrap, validators. Sem gameplay logic, sem mudanças de save schema, sem edits manuais de YAML.
 ---
 

@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Data;
@@ -13,76 +13,42 @@ using UnityEngine;
 namespace CindarsHope.Farm
 {
     [DisallowMultipleComponent]
-    public class FarmPlot : MonoBehaviour, IInteractable
+    public partial class FarmPlot : MonoBehaviour, IInteractable
     {
-        private enum FarmMenuActionType
-        {
-            Till,
-            Water,
-            Plant,
-            Harvest,
-            Status,
-            AdvanceGrowth,
-            ClearDead,
-            Analyze,
-            Fertilize
-        }
-
-        private readonly struct FarmMenuAction
-        {
-            public readonly FarmMenuActionType Type;
-            public readonly string Label;
-            public readonly string SeedId;
-            public readonly string SeedItemId;
-
-            public FarmMenuAction(FarmMenuActionType type, string label, string seedId = "", string seedItemId = "")
-            {
-                Type = type;
-                Label = label;
-                SeedId = seedId ?? string.Empty;
-                SeedItemId = seedItemId ?? string.Empty;
-            }
-        }
-
-        private static FarmPlot _activeMenuPlot;
-
         [SerializeField] private int _plotIndex;
         [SerializeField] private SpriteRenderer _spriteRenderer;
         [SerializeField] private InventoryManager _inventoryManager;
         [SerializeField] private SeedDatabaseSO _seedDatabase;
         [SerializeField] private Player.StaminaManager _staminaManager;
-        // fable_55: calendário para o gate de estação no plantio (ponto único). Opcional: ausente
-        // = sem informação de estação = plantio liberado (não bloquear sem dado).
+        // fable_55: calendÃ¡rio para o gate de estaÃ§Ã£o no plantio (ponto Ãºnico). Opcional: ausente
+        // = sem informaÃ§Ã£o de estaÃ§Ã£o = plantio liberado (nÃ£o bloquear sem dado).
         [SerializeField] private World.Calendar.GameCalendarService _calendarService;
-        // TODO_INTEGRATION_NOT_FINAL (RE-REGISTRADO fable_66, owner: kit inicial canônico em inventário):
-        // o slice mode é o ÚNICO caminho jogável do loop de crop sem ferramentas/sementes no inventário.
-        // NÃO REMOVER até: (1) o kit inicial canônico GRANTAR hoe + watering-can + sementes ao inventário
+        // TODO_INTEGRATION_NOT_FINAL (RE-REGISTRADO fable_66, owner: kit inicial canÃ´nico em inventÃ¡rio):
+        // o slice mode Ã© o ÃšNICO caminho jogÃ¡vel do loop de crop sem ferramentas/sementes no inventÃ¡rio.
+        // NÃƒO REMOVER atÃ©: (1) o kit inicial canÃ´nico GRANTAR hoe + watering-can + sementes ao inventÃ¡rio
         // do player no new game (PlayerDataSO.StartingItems verificado no asset) E (2) CreateMvpFarmScene
-        // ser regenerado no Unity Editor com o flag OFF. Decisão e condição em
+        // ser regenerado no Unity Editor com o flag OFF. DecisÃ£o e condiÃ§Ã£o em
         // docs/validation/fable_66_spec_code_debt_cleanup_slice_mode_execution_report.md (CA-4, SEM gate).
         [SerializeField] private bool _temporarySequentialSliceMode;
         [SerializeField] private string _temporarySequentialSeedId = "seed_carrot";
 
-        private readonly List<FarmMenuAction> _menuActions = new List<FarmMenuAction>();
+        // Inicializado no campo (não só no Awake): scene creators/editor (AddComponent, ResetPlot,
+        // Configure) rodam fora do Play Mode, onde Awake não é chamado — sem isto, _logic fica null e NRE.
+        private FarmPlotLogic _logic = new FarmPlotLogic();
+        private FarmPlotMenuController _menuController;
         private Sprite _baseSprite;
-        private int _selectedMenuIndex;
-        private int _currentDay = 1;
-        private int _menuOpenedFrame = -1;
-        private string _feedback = string.Empty;
 
-        public static bool IsAnyActionMenuOpen => _activeMenuPlot != null;
+        public static bool IsAnyActionMenuOpen => FarmPlotMenuController.ActiveMenuPlot != null;
 
-        private const int DefaultDeathThresholdDays = 3;
-
-        public FarmPlotState State { get; private set; }
-        public string PlantedSeedId { get; private set; }
-        public int DaysGrown { get; private set; }
-        public bool IsWatered => State == FarmPlotState.TilledWet || State == FarmPlotState.PlantedWet;
-        public int RegrowRemainingDays { get; private set; }
-        public int DaysWithoutWater { get; private set; }
-        public int LastProcessedDay { get; private set; }
-        public string FertilizerId { get; private set; } = string.Empty;
-        public int WateredDaysCount { get; private set; }
+        public FarmPlotState State => _logic.State;
+        public string PlantedSeedId => _logic.PlantedSeedId;
+        public int DaysGrown => _logic.DaysGrown;
+        public bool IsWatered => _logic.State == FarmPlotState.TilledWet || _logic.State == FarmPlotState.PlantedWet;
+        public int RegrowRemainingDays => _logic.RegrowRemainingDays;
+        public int DaysWithoutWater => _logic.DaysWithoutWater;
+        public int LastProcessedDay => _logic.LastProcessedDay;
+        public string FertilizerId => _logic.FertilizerId;
+        public int WateredDaysCount => _logic.WateredDaysCount;
 
         public string PlotId => $"plot_{_plotIndex}";
 
@@ -119,50 +85,26 @@ namespace CindarsHope.Farm
             _inventoryManager = inventoryManager;
             _seedDatabase = seedDatabase;
             EnsureRenderer();
-            SetState(State == FarmPlotState.Blocked ? FarmPlotState.Blocked : NormalizeState(State));
+            var normalized = State == FarmPlotState.Blocked ? FarmPlotState.Blocked : FarmPlotLogic.NormalizeState(State);
+            _logic.SetStateInternal(normalized);
+            UpdateVisual();
         }
 
         public void SetState(FarmPlotState state)
         {
-            State = NormalizeState(state);
-            if (State == FarmPlotState.Raw || State == FarmPlotState.TilledDry || State == FarmPlotState.TilledWet || State == FarmPlotState.Blocked)
-            {
-                PlantedSeedId = string.Empty;
-                DaysGrown = 0;
-                RegrowRemainingDays = 0;
-                DaysWithoutWater = 0;
-                WateredDaysCount = 0;
-            }
-
+            _logic.SetStateInternal(state);
             UpdateVisual();
         }
 
         public void ResetPlot()
         {
-            PlantedSeedId = string.Empty;
-            DaysGrown = 0;
-            RegrowRemainingDays = 0;
-            DaysWithoutWater = 0;
-            SetState(FarmPlotState.TilledDry);
+            _logic.ResetPlot();
+            UpdateVisual();
         }
 
         public FarmPlotSaveData CaptureSaveData()
         {
-            return new FarmPlotSaveData
-            {
-                PlotIndex = _plotIndex,
-                State = State.ToString(),
-                PlantedSeedId = PlantedSeedId,
-                DaysGrown = DaysGrown,
-                GrowthProgressDays = DaysGrown,
-                IsWatered = IsWatered,
-                RegrowRemainingDays = RegrowRemainingDays,
-                LastUpdatedDay = _currentDay,
-                DaysWithoutWater = DaysWithoutWater,
-                LastProcessedDay = LastProcessedDay,
-                FertilizerId = FertilizerId,
-                WateredDaysCount = WateredDaysCount
-            };
+            return _logic.CaptureSaveData(_plotIndex);
         }
 
         public void RestoreFromSaveData(FarmPlotSaveData saveData)
@@ -173,43 +115,42 @@ namespace CindarsHope.Farm
                 return;
             }
 
-            if (!System.Enum.TryParse(saveData.State, out FarmPlotState restoredState))
+            if (!System.Enum.TryParse(saveData.State, out FarmPlotState _))
             {
                 Debug.LogWarning($"FarmPlot {_plotIndex} received invalid saved state '{saveData.State}'. Resetting plot.", this);
-                SetState(FarmPlotState.Raw);
+                _logic.SetStateInternal(FarmPlotState.Raw);
+                UpdateVisual();
                 return;
             }
 
-            restoredState = NormalizeState(restoredState);
-            PlantedSeedId = string.IsNullOrWhiteSpace(saveData.PlantedSeedId) ? string.Empty : saveData.PlantedSeedId;
-            DaysGrown = Mathf.Max(0, saveData.GrowthProgressDays > 0 ? saveData.GrowthProgressDays : saveData.DaysGrown);
-            RegrowRemainingDays = Mathf.Max(0, saveData.RegrowRemainingDays);
-            _currentDay = Mathf.Max(1, saveData.LastUpdatedDay);
-            DaysWithoutWater = Mathf.Max(0, saveData.DaysWithoutWater);
-            LastProcessedDay = Mathf.Max(0, saveData.LastProcessedDay);
-            WateredDaysCount = Mathf.Max(0, saveData.WateredDaysCount);
-            FertilizerId = string.IsNullOrWhiteSpace(saveData.FertilizerId) ? string.Empty : saveData.FertilizerId;
-            if (!string.IsNullOrEmpty(FertilizerId))
+            // Resolve seed before delegating so logic doesn't need a reference to seedDatabase
+            var seedIsResolvable = true;
+            if (!string.IsNullOrWhiteSpace(saveData.PlantedSeedId))
             {
-                FarmFertilityRuntime.RestoreModifier(PlotId, FertilizerId, _currentDay);
+                // Only relevant when state is planted/ready
+                if (!System.Enum.TryParse(saveData.State, out FarmPlotState savedStateEnum) ||
+                    (FarmPlotLogic.IsPlantedState(savedStateEnum) || savedStateEnum == FarmPlotState.ReadyToHarvest))
+                {
+                    seedIsResolvable = TryGetPlantedSeedDataById(saveData.PlantedSeedId, out _);
+                    if (!seedIsResolvable)
+                    {
+                        Debug.LogWarning($"FarmPlot {_plotIndex} could not resolve saved seed '{saveData.PlantedSeedId}'. Resetting to tilled dry.", this);
+                    }
+                }
             }
 
-            if (!IsPlantedState(restoredState) && restoredState != FarmPlotState.ReadyToHarvest)
+            var restored = _logic.RestoreFromSaveData(saveData, seedIsResolvable);
+            if (!restored)
             {
-                PlantedSeedId = string.Empty;
-                DaysGrown = 0;
-                RegrowRemainingDays = 0;
-            }
-            else if (!TryGetPlantedSeedData(out _))
-            {
-                Debug.LogWarning($"FarmPlot {_plotIndex} could not resolve saved seed '{PlantedSeedId}'. Resetting to tilled dry.", this);
-                PlantedSeedId = string.Empty;
-                DaysGrown = 0;
-                RegrowRemainingDays = 0;
-                restoredState = FarmPlotState.TilledDry;
+                Debug.LogWarning($"FarmPlot {_plotIndex} RestoreFromSaveData returned false.", this);
             }
 
-            SetState(restoredState);
+            if (!string.IsNullOrEmpty(_logic.FertilizerId))
+            {
+                FarmFertilityRuntime.RestoreModifier(PlotId, _logic.FertilizerId, _logic.CurrentDay);
+            }
+
+            UpdateVisual();
         }
 
         public void RebindInventoryManager(InventoryManager inventoryManager)
@@ -229,37 +170,26 @@ namespace CindarsHope.Farm
         }
 
         // WAVE_INTEGRATION_11: Public bridge for skill effect executors to water this plot.
-        // TODO_INTEGRATION_NOT_FINAL (RE-REGISTRADO fable_66, owner: onda de skills): a rega por skill
-        // não debita stamina do caster — o design final deve passar o StaminaManager do caster via
-        // contexto. Fora do escopo da fable_66 (débito de Skills, não de slice mode). Ver report CA-4.
         public bool TryWaterViaSkill()
         {
-            if (State == FarmPlotState.TilledDry)
+            var success = _logic.TryWaterSilent();
+            if (success)
             {
-                SetState(FarmPlotState.TilledWet);
-                PublishFeedback("Soil watered by skill.");
-                return true;
+                UpdateVisual();
+                PublishFeedback(State == FarmPlotState.TilledWet ? "Soil watered by skill." : "Crop watered by skill.");
+            }
+            else
+            {
+                PublishFeedback("Plot cannot be watered in current state.");
             }
 
-            if (State == FarmPlotState.PlantedDry)
-            {
-                SetState(FarmPlotState.PlantedWet);
-                PublishFeedback("Crop watered by skill.");
-                return true;
-            }
-
-            PublishFeedback("Plot cannot be watered in current state.");
-            return false;
+            return success;
         }
 
         public bool CanBeWatered => State == FarmPlotState.TilledDry || State == FarmPlotState.PlantedDry;
 
         /// <summary>
-        /// fable_37 — hook NOMEADO ÚNICO do pico de Lua Verde: avança o crescimento da cultura em 1
-        /// estágio sem custo/rega (o WorldEventService dirige este ponto; o FarmPlot não conhece o
-        /// serviço). Só atua em canteiros plantados (Dry/Wet); demais estados são no-op. Reusa a mesma
-        /// AdvanceGrowth interna (idêntica ao avanço diário), preservando a transição para ReadyToHarvest.
-        /// Retorna true se um estágio foi efetivamente concedido.
+        /// fable_37 â€” hook NOMEADO ÃšNICO do pico de Lua Verde.
         /// </summary>
         public bool TryAdvanceStageFromLunarPeak()
         {
@@ -268,85 +198,68 @@ namespace CindarsHope.Farm
                 return false;
             }
 
-            if (!TryGetPlantedSeedData(out _))
+            if (!TryGetPlantedSeedData(out var seedData))
             {
                 return false;
             }
 
-            AdvanceGrowth();
-            return true;
+            var seed = BuildSeedParams(seedData);
+            var advanced = _logic.TryAdvanceStagePure(seed);
+            if (advanced)
+            {
+                if (State == FarmPlotState.ReadyToHarvest)
+                {
+                    GameEventBus.Publish(new CropReadyEvent(_logic.PlantedSeedId, GetTilePosition(), _logic.DaysGrown));
+                }
+
+                UpdateVisual();
+            }
+
+            return advanced;
         }
 
         /// <summary>
-        /// Rega silenciosa pela chuva (RainIrrigationRunner). Sem custo de stamina/ferramenta;
-        /// o runner publica um feedback agregado único.
+        /// Rega silenciosa pela chuva (RainIrrigationRunner).
         /// </summary>
         public bool TryWaterFromRain()
         {
-            if (State == FarmPlotState.TilledDry)
+            var success = _logic.TryWaterSilent();
+            if (success)
             {
-                SetState(FarmPlotState.TilledWet);
-                return true;
+                UpdateVisual();
             }
 
-            if (State == FarmPlotState.PlantedDry)
-            {
-                SetState(FarmPlotState.PlantedWet);
-                return true;
-            }
-
-            return false;
+            return success;
         }
 
         /// <summary>
-        /// Monta a entrada de qualidade da colheita a partir do histórico do canteiro.
-        /// SeasonMatch fica true enquanto SeedDataSO não declara estação (decisão documentada na F15).
+        /// Monta a entrada de qualidade da colheita a partir do histÃ³rico do canteiro.
         /// </summary>
         internal static Crops.CropQualityInput BuildQualityInput(int wateredDaysCount, int daysGrown, bool fertilizerApplied)
         {
-            var consistency = daysGrown <= 0
-                ? 100
-                : Mathf.Clamp(Mathf.RoundToInt(wateredDaysCount * 100f / daysGrown), 0, 100);
-
-            return new Crops.CropQualityInput
-            {
-                WateringConsistencyScore = consistency,
-                SeasonMatch = true,
-                FertilizerApplied = fertilizerApplied,
-                IsQualityEnabled = true
-            };
+            return FarmPlotLogic.BuildQualityInput(wateredDaysCount, daysGrown, fertilizerApplied);
         }
 
-        /// <summary>Unidades extras por tier de qualidade (até itens _silver/_gold existirem — F32).</summary>
+        /// <summary>Unidades extras por tier de qualidade.</summary>
         internal static int GetQualityBonusUnits(Crops.CropQualityTier tier)
         {
-            switch (tier)
-            {
-                case Crops.CropQualityTier.Good:
-                    return 1;
-                case Crops.CropQualityTier.Excellent:
-                case Crops.CropQualityTier.Rare:
-                case Crops.CropQualityTier.Arcane:
-                    return 2;
-                default:
-                    return 0;
-            }
+            return FarmPlotLogic.GetQualityBonusUnits(tier);
         }
 
         public bool CanInteract(GameObject interactor)
         {
-            return _activeMenuPlot == null || _activeMenuPlot == this;
+            return FarmPlotMenuController.ActiveMenuPlot == null || FarmPlotMenuController.ActiveMenuPlot == this;
         }
 
         public void Interact(GameObject interactor)
         {
-            if (_activeMenuPlot == this)
+            if (FarmPlotMenuController.ActiveMenuPlot == this)
             {
-                CloseMenu();
+                _menuController.CloseMenu();
                 return;
             }
 
-            OpenMenu();
+            _menuController.OpenMenu(State);
         }
 
         private void Reset()
@@ -356,8 +269,10 @@ namespace CindarsHope.Farm
 
         private void Awake()
         {
+            _logic = new FarmPlotLogic();
+            _menuController = new FarmPlotMenuController(this);
             EnsureRenderer();
-            State = NormalizeState(State);
+            _logic.SetStateInternal(FarmPlotLogic.NormalizeState(State));
             UpdateVisual();
         }
 
@@ -369,9 +284,9 @@ namespace CindarsHope.Farm
         private void OnDisable()
         {
             GameEventBus.Unsubscribe<DayStartedEvent>(OnDayStarted);
-            if (_activeMenuPlot == this)
+            if (FarmPlotMenuController.ActiveMenuPlot == this)
             {
-                _activeMenuPlot = null;
+                _menuController.CloseMenu();
             }
         }
 
@@ -383,715 +298,124 @@ namespace CindarsHope.Farm
 
         private void Update()
         {
-            if (_activeMenuPlot != this)
-            {
-                return;
-            }
-
-            if (Input.GetKeyDown(KeyCode.Escape))
-            {
-                CloseMenu();
-                return;
-            }
-
-            if (Input.GetKeyDown(KeyCode.W))
-            {
-                _selectedMenuIndex = Mathf.Max(0, _selectedMenuIndex - 1);
-            }
-            else if (Input.GetKeyDown(KeyCode.S))
-            {
-                _selectedMenuIndex = Mathf.Min(_menuActions.Count - 1, _selectedMenuIndex + 1);
-            }
-            else if (Time.frameCount != _menuOpenedFrame &&
-                     (Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space)))
-            {
-                ExecuteSelectedMenuAction();
-            }
+            _menuController?.Update();
         }
 
         private void OnGUI()
         {
-            if (_activeMenuPlot != this)
-            {
-                return;
-            }
-
-            CindarsHope.UI.MenuGuiStyle.Apply();
-            var screenPosition = GetMenuScreenPosition();
-            var width = 260f;
-            var height = Mathf.Clamp(70f + _menuActions.Count * 26f, 90f, 260f);
-            var rect = new Rect(screenPosition.x - width * 0.5f, screenPosition.y - height, width, height);
-            GUILayout.BeginArea(rect, GUI.skin.window);
-            GUILayout.Label($"Plot {_plotIndex}: {State}");
-
-            if (_menuActions.Count == 0)
-            {
-                GUILayout.Label(string.IsNullOrWhiteSpace(_feedback) ? "Sem acao disponivel." : _feedback);
-            }
-            else
-            {
-                for (var index = 0; index < _menuActions.Count; index++)
-                {
-                    GUILayout.Label(index == _selectedMenuIndex ? $"> {_menuActions[index].Label}" : $"  {_menuActions[index].Label}");
-                }
-            }
-
-            if (!string.IsNullOrWhiteSpace(_feedback))
-            {
-                GUILayout.Space(4f);
-                GUILayout.Label(_feedback);
-            }
-
-            GUILayout.EndArea();
-        }
-
-        private void OpenMenu()
-        {
-            BuildMenuActions();
-            if (_menuActions.Count == 0)
-            {
-                PublishFeedback(string.IsNullOrWhiteSpace(_feedback) ? "No farm action available." : _feedback);
-                return;
-            }
-
-            _activeMenuPlot = this;
-            _selectedMenuIndex = 0;
-            _menuOpenedFrame = Time.frameCount;
-        }
-
-        private void CloseMenu()
-        {
-            if (_activeMenuPlot == this)
-            {
-                _activeMenuPlot = null;
-            }
-
-            _menuActions.Clear();
-            _selectedMenuIndex = 0;
-        }
-
-        private void BuildMenuActions()
-        {
-            _menuActions.Clear();
-            _feedback = string.Empty;
-
-            switch (State)
-            {
-                case FarmPlotState.Raw:
-                    if (HasRequiredTool(ToolType.Hoe) || _temporarySequentialSliceMode)
-                    {
-                        _menuActions.Add(new FarmMenuAction(FarmMenuActionType.Till, "Arar solo"));
-                    }
-                    else
-                    {
-                        _feedback = "Hoe required.";
-                    }
-
-                    break;
-                case FarmPlotState.TilledDry:
-                    if (HasRequiredTool(ToolType.WateringCan) || _temporarySequentialSliceMode)
-                    {
-                        _menuActions.Add(new FarmMenuAction(FarmMenuActionType.Water, "Molhar solo"));
-                    }
-
-                    AddPlantActions();
-                    break;
-                case FarmPlotState.TilledWet:
-                    AddPlantActions();
-                    break;
-                case FarmPlotState.PlantedDry:
-                    if (HasRequiredTool(ToolType.WateringCan) || _temporarySequentialSliceMode)
-                    {
-                        _menuActions.Add(new FarmMenuAction(FarmMenuActionType.Water, "Molhar solo"));
-                    }
-                    else
-                    {
-                        _feedback = "Watering Can required.";
-                    }
-
-                    AddFertilizeActions();
-                    break;
-                case FarmPlotState.PlantedWet:
-                    AddFertilizeActions();
-                    if (_temporarySequentialSliceMode)
-                    {
-                        _menuActions.Add(new FarmMenuAction(FarmMenuActionType.AdvanceGrowth, "Simular crescimento"));
-                    }
-                    else
-                    {
-                        _menuActions.Add(new FarmMenuAction(FarmMenuActionType.Status, "Ja irrigado"));
-                    }
-                    break;
-                case FarmPlotState.ReadyToHarvest:
-                    _menuActions.Add(new FarmMenuAction(FarmMenuActionType.Harvest, "Colher"));
-                    break;
-                case FarmPlotState.Dead:
-                    if (HasRequiredTool(ToolType.Hoe) || _temporarySequentialSliceMode)
-                    {
-                        _menuActions.Add(new FarmMenuAction(FarmMenuActionType.ClearDead, "Limpar solo"));
-                    }
-                    else
-                    {
-                        _feedback = "Hoe required to clear.";
-                    }
-
-                    break;
-                case FarmPlotState.Blocked:
-                    _feedback = "Plot blocked.";
-                    break;
-            }
-
-            if (State != FarmPlotState.Blocked)
-            {
-                _menuActions.Add(new FarmMenuAction(FarmMenuActionType.Analyze, "Analisar solo"));
-            }
-        }
-
-        private void AddFertilizeActions()
-        {
-            if (_inventoryManager == null || FarmFertilityRuntime.HasActiveFertilizer(PlotId))
-            {
-                return;
-            }
-
-            foreach (var definition in FarmFertilityRuntime.Definitions.Values)
-            {
-                if (definition == null || definition.IsEndgameReserved)
-                {
-                    continue;
-                }
-
-                if (!_inventoryManager.HasItem(definition.FertilizerId))
-                {
-                    continue;
-                }
-
-                _menuActions.Add(new FarmMenuAction(FarmMenuActionType.Fertilize, $"Aplicar {definition.DisplayName}", definition.FertilizerId));
-            }
-        }
-
-        private bool TryFertilize(string fertilizerId)
-        {
-            if (string.IsNullOrWhiteSpace(fertilizerId) || _inventoryManager == null)
-            {
-                PublishFeedback("Fertilizante indisponivel.");
-                return false;
-            }
-
-            if (!_inventoryManager.HasItem(fertilizerId))
-            {
-                PublishFeedback("Fertilizante nao esta no inventario.");
-                return false;
-            }
-
-            var result = FarmFertilityRuntime.TryApply(PlotId, fertilizerId, _currentDay);
-            if (!result.Success)
-            {
-                PublishFeedback($"Nao foi possivel fertilizar ({result.FailureReason}).");
-                return false;
-            }
-
-            if (!_inventoryManager.RemoveItem(fertilizerId, 1))
-            {
-                PublishFeedback("Nao foi possivel consumir o fertilizante.");
-                return false;
-            }
-
-            FertilizerId = fertilizerId;
-            PublishFeedback("Solo fertilizado.");
-            return true;
-        }
-
-        private void AddPlantActions()
-        {
-            if (_inventoryManager == null || _seedDatabase == null)
-            {
-                _feedback = "Inventory or seed database missing.";
-                return;
-            }
-
-            foreach (var item in _inventoryManager.Items)
-            {
-                if (string.IsNullOrWhiteSpace(item.Key) || item.Value <= 0)
-                {
-                    continue;
-                }
-
-                if (!TryResolveSeedDataForItem(item.Key, out var seedData) || seedData == null)
-                {
-                    continue;
-                }
-
-                var label = seedData.SeedItem != null && !string.IsNullOrWhiteSpace(seedData.SeedItem.DisplayName)
-                    ? $"Plantar {seedData.SeedItem.DisplayName}"
-                    : $"Plantar {item.Key}";
-                _menuActions.Add(new FarmMenuAction(FarmMenuActionType.Plant, label, seedData.Id, item.Key));
-            }
-
-            if (_menuActions.Count == 0)
-            {
-                AddTemporaryPlantAction();
-            }
-        }
-
-        private void ExecuteSelectedMenuAction()
-        {
-            if (_selectedMenuIndex < 0 || _selectedMenuIndex >= _menuActions.Count)
-            {
-                return;
-            }
-
-            var action = _menuActions[_selectedMenuIndex];
-            var closeAfterAction = true;
-            switch (action.Type)
-            {
-                case FarmMenuActionType.Till:
-                    TryTill();
-                    break;
-                case FarmMenuActionType.Water:
-                    TryWater();
-                    break;
-                case FarmMenuActionType.Plant:
-                    TryPlantSeed(action.SeedId, action.SeedItemId);
-                    break;
-                case FarmMenuActionType.Harvest:
-                    TryHarvest();
-                    break;
-                case FarmMenuActionType.Status:
-                    PublishFeedback("Plot already watered.");
-                    break;
-                case FarmMenuActionType.AdvanceGrowth:
-                    TryAdvanceTemporaryGrowth();
-                    break;
-                case FarmMenuActionType.ClearDead:
-                    TryClearDead();
-                    break;
-                case FarmMenuActionType.Analyze:
-                    ExecuteAnalyze();
-                    closeAfterAction = false;
-                    break;
-                case FarmMenuActionType.Fertilize:
-                    TryFertilize(action.SeedId);
-                    break;
-            }
-
-            if (closeAfterAction)
-            {
-                CloseMenu();
-            }
-        }
-
-        private bool TryTill()
-        {
-            const int tillStaminaCost = 16;
-
-            if (State != FarmPlotState.Raw || (!HasRequiredTool(ToolType.Hoe) && !_temporarySequentialSliceMode))
-            {
-                PublishFeedback("Cannot till this plot.");
-                return false;
-            }
-
-            if (!ValidateStamina(tillStaminaCost))
-            {
-                PublishFeedback("Not enough stamina to till.");
-                return false;
-            }
-
-            if (!TrySpendStamina(tillStaminaCost))
-            {
-                PublishFeedback("Not enough stamina to till.");
-                return false;
-            }
-
-            SetState(FarmPlotState.TilledDry);
-            PublishFeedback("Soil tilled.");
-            return true;
-        }
-
-        private bool TryWater()
-        {
-            const int waterStaminaCost = 8;
-
-            if (!HasRequiredTool(ToolType.WateringCan) && !_temporarySequentialSliceMode)
-            {
-                PublishFeedback("Watering Can required.");
-                return false;
-            }
-
-            if (!ValidateStamina(waterStaminaCost))
-            {
-                PublishFeedback("Not enough stamina to water.");
-                return false;
-            }
-
-            if (State == FarmPlotState.TilledDry)
-            {
-                if (!TrySpendStamina(waterStaminaCost))
-                {
-                    PublishFeedback("Not enough stamina to water.");
-                    return false;
-                }
-                SetState(FarmPlotState.TilledWet);
-                PublishFeedback("Soil watered.");
-                return true;
-            }
-
-            if (State == FarmPlotState.PlantedDry)
-            {
-                if (!TrySpendStamina(waterStaminaCost))
-                {
-                    PublishFeedback("Not enough stamina to water.");
-                    return false;
-                }
-                SetState(FarmPlotState.PlantedWet);
-                PublishFeedback("Crop watered.");
-                return true;
-            }
-
-            PublishFeedback("Cannot water this plot.");
-            return false;
-        }
-
-        private bool TryPlantSeed(string seedId, string seedItemId)
-        {
-            const int plantStaminaCost = 4;
-
-            if (State != FarmPlotState.TilledDry && State != FarmPlotState.TilledWet)
-            {
-                PublishFeedback("Plot is not plantable.");
-                return false;
-            }
-
-            if (string.IsNullOrWhiteSpace(seedId) || _inventoryManager == null || _seedDatabase == null)
-            {
-                PublishFeedback("Seed data unavailable.");
-                return false;
-            }
-
-            if (!_seedDatabase.TryGetById(seedId, out var seedData) || seedData == null)
-            {
-                PublishFeedback("Seed not registered.");
-                return false;
-            }
-
-            // fable_55: ponto ÚNICO de validação de estação. Canteiro comum recusa semente fora de
-            // estação; canteiro da estufa (GreenhouseContextProvider.CanOverrideSeason) ignora a
-            // estação. Sementes sem SeasonTags / sem calendário continuam plantáveis (regressão
-            // segura — diff mínimo).
-            if (!IsSeasonAllowedForSeed(seedData))
-            {
-                PublishFeedback("Fora de estacao para esta semente.");
-                return false;
-            }
-
-            var inventorySeedId = string.IsNullOrWhiteSpace(seedItemId) ? seedId : seedItemId;
-            var temporarySeedBypass = _temporarySequentialSliceMode && !_inventoryManager.HasItem(inventorySeedId);
-            if (!temporarySeedBypass && !_inventoryManager.HasItem(inventorySeedId))
-            {
-                PublishFeedback("Seed not in inventory.");
-                return false;
-            }
-
-            if (!ValidateStamina(plantStaminaCost))
-            {
-                PublishFeedback("Not enough stamina to plant.");
-                return false;
-            }
-
-            if (!temporarySeedBypass && !_inventoryManager.RemoveItem(inventorySeedId, 1))
-            {
-                PublishFeedback("Could not consume seed.");
-                return false;
-            }
-
-            if (!TrySpendStamina(plantStaminaCost))
-            {
-                if (!temporarySeedBypass)
-                {
-                    _inventoryManager.AddItem(inventorySeedId, 1);
-                }
-
-                PublishFeedback("Not enough stamina to plant.");
-                return false;
-            }
-
-            PlantedSeedId = seedId;
-            DaysGrown = 0;
-            RegrowRemainingDays = 0;
-            SetState(State == FarmPlotState.TilledWet ? FarmPlotState.PlantedWet : FarmPlotState.PlantedDry);
-
-            GameEventBus.Publish(new SeedPlantedEvent(seedId, GetTilePosition(), _currentDay));
-            Debug.Log($"FarmPlot {_plotIndex} planted seed '{seedId}'.", this);
-            return true;
-        }
-
-        private bool TryAdvanceTemporaryGrowth()
-        {
-            if (!_temporarySequentialSliceMode || State != FarmPlotState.PlantedWet)
-            {
-                PublishFeedback("Growth simulation unavailable.");
-                return false;
-            }
-
-            if (!TryGetPlantedSeedData(out var seedData))
-            {
-                PublishFeedback("Seed data unavailable.");
-                return false;
-            }
-
-            var maxSteps = Mathf.Max(1, seedData.GrowthDays + 1);
-            for (var step = 0; step < maxSteps && State == FarmPlotState.PlantedWet; step++)
-            {
-                AdvanceGrowth();
-            }
-
-            PublishFeedback(State == FarmPlotState.ReadyToHarvest ? "Crop ready for harvest." : "Crop growth simulated.");
-            return State == FarmPlotState.ReadyToHarvest;
+            _menuController?.OnGUI(_plotIndex, State);
         }
 
         private void OnDayStarted(DayStartedEvent evt)
         {
-            _currentDay = evt.DayNumber;
-
-            // Idempotency: skip if already processed this day
-            if (LastProcessedDay == _currentDay)
-                return;
-
-            LastProcessedDay = _currentDay;
-
-            if (State == FarmPlotState.PlantedWet)
+            if (_logic == null)
             {
-                DaysWithoutWater = 0;
-                WateredDaysCount++;
-                AdvanceGrowth();
-                if (State == FarmPlotState.PlantedWet)
+                return;
+            }
+
+            var seedParams = ResolveSeedParams();
+            var result = _logic.ProcessDay(evt.DayNumber, seedParams);
+
+            if (result.BecameReady)
+            {
+                GameEventBus.Publish(new CropReadyEvent(_logic.PlantedSeedId, GetTilePosition(), _logic.DaysGrown));
+                Debug.Log($"FarmPlot {_plotIndex} crop '{_logic.PlantedSeedId}' is ready after {_logic.DaysGrown} watered day(s).", this);
+            }
+            else if (result.CropAdvanced)
+            {
+                if (TryGetPlantedSeedData(out var sd))
                 {
-                    SetState(FarmPlotState.PlantedDry);
+                    Debug.Log($"FarmPlot {_plotIndex} crop '{_logic.PlantedSeedId}' grew to {_logic.DaysGrown}/{sd.GrowthDays} on day {evt.DayNumber}.", this);
                 }
             }
-            else if (State == FarmPlotState.PlantedDry)
+            else if (result.CropDied)
             {
-                DaysWithoutWater++;
-                if (DaysWithoutWater >= DefaultDeathThresholdDays)
-                {
-                    SetState(FarmPlotState.Dead);
-                    GameEventBus.Publish(new CropDiedEvent(PlantedSeedId, GetTilePosition(), _currentDay));
-                    Debug.Log($"FarmPlot {_plotIndex} crop '{PlantedSeedId}' died after {DaysWithoutWater} days without water.", this);
-                }
-            }
-            else if (State == FarmPlotState.TilledWet)
-            {
-                SetState(FarmPlotState.TilledDry);
-            }
-        }
-
-        private void AdvanceGrowth()
-        {
-            if (!TryGetPlantedSeedData(out var seedData))
-            {
-                UpdateVisual();
-                return;
-            }
-
-            DaysGrown++;
-            if (DaysGrown >= seedData.GrowthDays)
-            {
-                SetState(FarmPlotState.ReadyToHarvest);
-                GameEventBus.Publish(new CropReadyEvent(PlantedSeedId, GetTilePosition(), DaysGrown));
-                Debug.Log($"FarmPlot {_plotIndex} crop '{PlantedSeedId}' is ready after {DaysGrown} watered day(s).", this);
-                return;
+                GameEventBus.Publish(new CropDiedEvent(_logic.PlantedSeedId, GetTilePosition(), evt.DayNumber));
+                Debug.Log($"FarmPlot {_plotIndex} crop '{_logic.PlantedSeedId}' died after {_logic.DaysWithoutWater} days without water.", this);
             }
 
             UpdateVisual();
-            Debug.Log($"FarmPlot {_plotIndex} crop '{PlantedSeedId}' grew to {DaysGrown}/{seedData.GrowthDays} on day {DaysGrown}.", this);
         }
 
-        private bool TryClearDead()
+        // â”€â”€ Internal bridge methods for FarmPlotMenuController â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+        internal bool HasRequiredToolInternal(ToolType toolType)
         {
-            const int clearStaminaCost = 8;
-
-            if (State != FarmPlotState.Dead || (!HasRequiredTool(ToolType.Hoe) && !_temporarySequentialSliceMode))
-            {
-                PublishFeedback("Cannot clear this plot.");
-                return false;
-            }
-
-            if (!ValidateStamina(clearStaminaCost))
-            {
-                PublishFeedback("Not enough stamina to clear.");
-                return false;
-            }
-
-            if (!TrySpendStamina(clearStaminaCost))
-            {
-                PublishFeedback("Not enough stamina to clear.");
-                return false;
-            }
-
-            var clearedSeedId = PlantedSeedId;
-            SetState(FarmPlotState.TilledDry);
-            Debug.Log($"FarmPlot {_plotIndex} cleared dead crop '{clearedSeedId}'. Plot reset to TilledDry.", this);
-            PublishFeedback("Solo limpo.");
-            return true;
+            return HasRequiredTool(toolType);
         }
 
-        private void ExecuteAnalyze()
+        internal bool TemporarySliceModeInternal => _temporarySequentialSliceMode;
+        internal string TemporarySequentialSeedIdInternal => _temporarySequentialSeedId;
+        internal InventoryManager InventoryManagerInternal => _inventoryManager;
+        internal SeedDatabaseSO SeedDatabaseInternal => _seedDatabase;
+
+        internal bool TryResolveSeedDataForItemInternal(string seedItemId, out Data.SeedDataSO seedData)
         {
-            var sb = new System.Text.StringBuilder();
-            sb.Append($"Estado: {State}");
-
-            if (!string.IsNullOrWhiteSpace(PlantedSeedId))
-            {
-                sb.Append($" | Semente: {PlantedSeedId}");
-                sb.Append($" | Dias crescido: {DaysGrown}");
-            }
-
-            if (State == FarmPlotState.PlantedDry || State == FarmPlotState.Dead)
-            {
-                sb.Append($" | Dias sem agua: {DaysWithoutWater}");
-            }
-
-            if (IsWatered)
-            {
-                sb.Append(" | Irrigado");
-            }
-
-            _feedback = sb.ToString();
-            GameEventBus.Publish(new PlayerActionFeedbackEvent(_feedback));
-            Debug.Log($"FarmPlot {_plotIndex} analise: {_feedback}", this);
+            return TryResolveSeedDataForItem(seedItemId, out seedData);
         }
 
-        private bool TryHarvest()
+        internal Vector2 GetMenuScreenPositionInternal()
         {
-            const int harvestStaminaCost = 4;
+            return GetMenuScreenPosition();
+        }
 
-            if (State != FarmPlotState.ReadyToHarvest)
-            {
-                PublishFeedback("Crop is not ready.");
-                return false;
-            }
+        internal void PublishFeedbackInternal(string message)
+        {
+            PublishFeedback(message);
+        }
 
-            if (_inventoryManager == null)
-            {
-                Debug.LogWarning($"FarmPlot {_plotIndex} cannot harvest because InventoryManager is missing.", this);
-                return false;
-            }
+        internal void TryTillInternal()
+        {
+            TryTill();
+        }
 
-            if (!ValidateStamina(harvestStaminaCost))
-            {
-                PublishFeedback("Not enough stamina to harvest.");
-                return false;
-            }
+        internal void TryWaterInternal()
+        {
+            TryWater();
+        }
 
-            if (!TryGetPlantedSeedData(out var seedData))
-            {
-                return false;
-            }
+        internal void TryPlantSeedInternal(string seedId, string seedItemId)
+        {
+            TryPlantSeed(seedId, seedItemId);
+        }
 
-            if (seedData.HarvestItems == null || seedData.HarvestAmounts == null)
-            {
-                Debug.LogWarning($"FarmPlot {_plotIndex} cannot harvest seed '{PlantedSeedId}' because harvest data is missing.", this);
-                return false;
-            }
+        internal void TryHarvestInternal()
+        {
+            TryHarvest();
+        }
 
-            var pairCount = Mathf.Min(seedData.HarvestItems.Length, seedData.HarvestAmounts.Length);
-            if (pairCount == 0)
-            {
-                Debug.LogWarning($"FarmPlot {_plotIndex} cannot harvest seed '{PlantedSeedId}' because harvest data is empty.", this);
-                return false;
-            }
+        internal void TryAdvanceTemporaryGrowthInternal()
+        {
+            TryAdvanceTemporaryGrowth();
+        }
 
-            if (!TrySpendStamina(harvestStaminaCost))
-            {
-                PublishFeedback("Not enough stamina to harvest.");
-                return false;
-            }
+        internal void TryClearDeadInternal()
+        {
+            TryClearDead();
+        }
 
-            var harvestedAnyItem = false;
-            var harvestedSeedId = PlantedSeedId;
-            var tilePosition = GetTilePosition();
+        internal void ExecuteAnalyzeInternal()
+        {
+            ExecuteAnalyze();
+        }
 
-            // Qualidade pela consistência de rega + fertilizante (CropQualityResolver WAVE 05,
-            // antes órfão). Bônus = unidades extras até existirem itens _silver/_gold (F32).
-            var fertilizerModifier = FarmFertilityRuntime.GetModifier(PlotId);
-            var fertilizerActive = fertilizerModifier != null && fertilizerModifier.IsActive;
-            var quality = Crops.CropQualityResolver.Resolve(BuildQualityInput(WateredDaysCount, DaysGrown, fertilizerActive));
-            var qualityBonusUnits = GetQualityBonusUnits(quality);
-            var yieldModifier = fertilizerActive ? fertilizerModifier.YieldModifierSnapshot : 0f;
-            var qualityBonusPending = qualityBonusUnits > 0;
-
-            for (var i = 0; i < pairCount; i++)
-            {
-                var harvestItem = seedData.HarvestItems[i];
-                var amount = seedData.HarvestAmounts[i];
-
-                if (harvestItem == null || amount <= 0)
-                {
-                    continue;
-                }
-
-                if (yieldModifier > 0f)
-                {
-                    amount += Mathf.FloorToInt(amount * yieldModifier);
-                }
-
-                if (qualityBonusPending)
-                {
-                    amount += qualityBonusUnits;
-                    qualityBonusPending = false;
-                }
-
-                if (!_inventoryManager.AddItem(harvestItem.Id, amount))
-                {
-                    Debug.LogWarning($"FarmPlot {_plotIndex} could not add harvest item '{harvestItem.Id}' x{amount} to inventory.", this);
-                    continue;
-                }
-
-                harvestedAnyItem = true;
-                GameEventBus.Publish(new CropHarvestedEvent(harvestedSeedId, harvestItem.Id, amount, tilePosition));
-                Debug.Log($"FarmPlot {_plotIndex} harvested '{harvestItem.Id}' x{amount} from seed '{harvestedSeedId}'.", this);
-            }
-
-            if (!harvestedAnyItem)
-            {
-                Debug.LogWarning($"FarmPlot {_plotIndex} harvest produced no items and plot will remain ready.", this);
-                return false;
-            }
-
-            if (fertilizerActive)
-            {
-                FarmFertilityRuntime.ConsumeOnHarvest(PlotId);
-                if (!FarmFertilityRuntime.HasActiveFertilizer(PlotId))
-                {
-                    FertilizerId = string.Empty;
-                }
-            }
-
-            if (quality > Crops.CropQualityTier.Normal)
-            {
-                PublishFeedback($"Colheita de qualidade: {quality}.");
-            }
-
-            WateredDaysCount = 0;
-
-            if (seedData.RegrowDays > 0)
-            {
-                DaysGrown = Mathf.Max(0, seedData.GrowthDays - seedData.RegrowDays);
-                RegrowRemainingDays = seedData.RegrowDays;
-                SetState(FarmPlotState.PlantedDry);
-            }
-            else
-            {
-                ResetPlot();
-            }
-
-            return true;
+        internal void TryFertilizeInternal(string fertilizerId)
+        {
+            TryFertilize(fertilizerId);
         }
 
         private void UpdateVisual()
         {
             if (_spriteRenderer == null)
             {
+                return;
+            }
+
+            // _logic só é criado no Awake; OnValidate/edit-time pode chamar UpdateVisual antes disso.
+            // Sem o core, não há estado de cultivo para exibir — mostra o sprite base e sai (evita NRE no editor).
+            if (_logic == null)
+            {
+                _spriteRenderer.sprite = _baseSprite;
                 return;
             }
 
@@ -1129,7 +453,7 @@ namespace CindarsHope.Farm
 
         private Sprite GetCurrentStageSprite()
         {
-            if (!IsPlantedState(State) && State != FarmPlotState.ReadyToHarvest)
+            if (!FarmPlotLogic.IsPlantedState(State) && State != FarmPlotState.ReadyToHarvest)
             {
                 return null;
             }
@@ -1145,7 +469,7 @@ namespace CindarsHope.Farm
             return seedData.GrowthStageSprites[index];
         }
 
-        private bool TryGetPlantedSeedData(out SeedDataSO seedData)
+        private bool TryGetPlantedSeedData(out Data.SeedDataSO seedData)
         {
             seedData = null;
 
@@ -1169,7 +493,18 @@ namespace CindarsHope.Farm
             return true;
         }
 
-        private bool TryResolveSeedDataForItem(string seedItemId, out SeedDataSO seedData)
+        private bool TryGetPlantedSeedDataById(string seedId, out Data.SeedDataSO seedData)
+        {
+            seedData = null;
+            if (string.IsNullOrWhiteSpace(seedId) || _seedDatabase == null)
+            {
+                return false;
+            }
+
+            return _seedDatabase.TryGetById(seedId, out seedData) && seedData != null;
+        }
+
+        private bool TryResolveSeedDataForItem(string seedItemId, out Data.SeedDataSO seedData)
         {
             seedData = null;
             if (string.IsNullOrWhiteSpace(seedItemId) || _seedDatabase == null)
@@ -1199,31 +534,7 @@ namespace CindarsHope.Farm
             return false;
         }
 
-        private void AddTemporaryPlantAction()
-        {
-            if (!_temporarySequentialSliceMode)
-            {
-                _feedback = "No seeds in inventory.";
-                return;
-            }
-
-            if (!_seedDatabase.TryGetById(_temporarySequentialSeedId, out var seedData) || seedData == null)
-            {
-                _feedback = "Temporary seed not registered.";
-                return;
-            }
-
-            var label = seedData.SeedItem != null && !string.IsNullOrWhiteSpace(seedData.SeedItem.DisplayName)
-                ? $"Plantar {seedData.SeedItem.DisplayName}"
-                : $"Plantar {seedData.Id}";
-            var seedItemId = seedData.SeedItem != null ? seedData.SeedItem.Id : string.Empty;
-            _menuActions.Add(new FarmMenuAction(FarmMenuActionType.Plant, label, seedData.Id, seedItemId));
-        }
-
-        // fable_55: gate de estação no ponto único de plantio. Consulta o GreenhouseRuntimeHost
-        // (override de estação na estufa) e o calendário (estação atual). Sem GameObject.Find:
-        // GreenhouseRuntimeHost.Instance é singleton de runtime; _calendarService é ref serializada.
-        private bool IsSeasonAllowedForSeed(SeedDataSO seedData)
+        private bool IsSeasonAllowedForSeed(Data.SeedDataSO seedData)
         {
             var canOverride = false;
             var greenhouse = Watering.GreenhouseRuntimeHost.Instance;
@@ -1290,50 +601,50 @@ namespace CindarsHope.Farm
 
         private void PublishFeedback(string message)
         {
-            _feedback = message ?? string.Empty;
-            if (!string.IsNullOrWhiteSpace(_feedback))
+            var msg = message ?? string.Empty;
+            _menuController?.SetFeedback(msg);
+            if (!string.IsNullOrWhiteSpace(msg))
             {
-                GameEventBus.Publish(new PlayerActionFeedbackEvent(_feedback));
+                GameEventBus.Publish(new PlayerActionFeedbackEvent(msg));
             }
         }
 
-        private static bool IsPlantedState(FarmPlotState state)
+        private SeedParams ResolveSeedParams()
         {
-            return state == FarmPlotState.PlantedDry || state == FarmPlotState.PlantedWet;
-        }
-
-        private static FarmPlotState NormalizeState(FarmPlotState state)
-        {
-            switch (state)
+            if (!TryGetPlantedSeedData(out var seedData))
             {
-                case FarmPlotState.Blocked:
-                case FarmPlotState.Raw:
-                case FarmPlotState.TilledDry:
-                case FarmPlotState.TilledWet:
-                case FarmPlotState.PlantedDry:
-                case FarmPlotState.PlantedWet:
-                case FarmPlotState.ReadyToHarvest:
-                case FarmPlotState.Dead:
-                    return state;
-                default:
-                    return FarmPlotState.Raw;
+                return new SeedParams { IsValid = false };
             }
+
+            return BuildSeedParams(seedData);
         }
 
-        private bool ValidateStamina(int requiredStamina)
+        private static SeedParams BuildSeedParams(Data.SeedDataSO seedData)
         {
-            if (_staminaManager == null)
-                return true;
+            if (seedData == null)
+            {
+                return new SeedParams { IsValid = false };
+            }
 
-            return _staminaManager.CurrentStamina >= requiredStamina;
-        }
+            var pairCount = seedData.HarvestItems != null && seedData.HarvestAmounts != null
+                ? System.Math.Min(seedData.HarvestItems.Length, seedData.HarvestAmounts.Length)
+                : 0;
 
-        private bool TrySpendStamina(int requiredStamina)
-        {
-            if (_staminaManager == null)
-                return true;
+            var pairs = new (string itemId, int baseAmount)[pairCount];
+            for (var i = 0; i < pairCount; i++)
+            {
+                var item = seedData.HarvestItems[i];
+                pairs[i] = (item != null ? item.Id : string.Empty, seedData.HarvestAmounts[i]);
+            }
 
-            return _staminaManager.TrySpendStamina(requiredStamina);
+            return new SeedParams
+            {
+                SeedId = seedData.Id,
+                GrowthDays = seedData.GrowthDays,
+                RegrowDays = seedData.RegrowDays,
+                HarvestPairs = pairs,
+                IsValid = true
+            };
         }
     }
 }

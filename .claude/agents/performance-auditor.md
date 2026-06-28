@@ -1,5 +1,6 @@
 ---
 name: performance-auditor
+model: sonnet
 description: Audita C# de runtime em busca de anti-patterns de performance do Unity — allocations em Update/FixedUpdate, falta de object pooling, LINQ em hot paths, formatação de string por frame, lookups de component não cacheados. Audit-only — reporta findings rankeados por impacto, nunca edita código.
 tools: Read, Glob, Grep, Bash
 ---

@@ -60,7 +60,7 @@ namespace CindarsHope.Editor.SceneCreation
         // SerializedObject no _manaRegenPerSecond de cada ManaManager da cena. Retorna true se mudou.
         private static bool ApplyToOpenScene()
         {
-            var managers = Object.FindObjectsByType<ManaManager>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+            var managers = Object.FindObjectsByType<ManaManager>(FindObjectsInactive.Include);
             bool changed = false;
 
             foreach (var manager in managers)

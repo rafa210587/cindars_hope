@@ -9,7 +9,15 @@ namespace CindarsHope.Combat
         public string SizeProfileId;
         public EnemySizeClass SizeClass;
 
-        [Header("Visual")]
+        // fable_79: SpriteScale NÃO É MAIS AUTORITATIVO para escala visual de inimigos da caverna.
+        // A escala visual agora vem de EnemyScaleResolver.ResolveVisualScale(BestiarySize, IsMiniBoss, IsBoss)
+        // (player-relative). Este campo é mantido apenas por compatibilidade de assets existentes e para
+        // o gerador CreateDefaultEnemyProfiles (que precisa persistir algo no SO). CaveRuntimeMaterializer
+        // ignora este campo desde fable_79. Física (collider/footprint/pathing) continua nos campos abaixo.
+        [Header("Visual — NAO AUTORITATIVO para escala (fable_79): ver EnemyScaleResolver.ResolveVisualScale")]
+        [Tooltip("fable_79: CAMPO NAO AUTORITATIVO. Escala visual vem de EnemyScaleResolver.ResolveVisualScale " +
+                 "(player-relative). Mantido apenas por compatibilidade de assets existentes. " +
+                 "CaveRuntimeMaterializer ignora este campo desde fable_79.")]
         public float SpriteScale = 1f;
 
         [Header("Physics")]

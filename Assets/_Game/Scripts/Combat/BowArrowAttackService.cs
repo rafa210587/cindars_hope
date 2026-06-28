@@ -68,7 +68,10 @@ namespace CindarsHope.Combat
 
             if (bowWeapon == null || bowWeapon.Type != WeaponType.Bow)
             {
-                Debug.LogWarning($"CombatLog: PlayerAttackBlocked. Reason=ArrowRequiresBowInOtherHand. " +
+                // Falha de gameplay ESPERADA (flecha equipada sem arco na outra mão) — usa o canal
+                // quieto CombatLog (igual às recusas irmãs, ex.: Cooldown abaixo), não Debug.LogWarning,
+                // que spammava o console a cada frame de ataque segurado.
+                CombatLog.Log($"CombatLog: PlayerAttackBlocked. Reason=ArrowRequiresBowInOtherHand. " +
                     $"AmmoSlot={ammoSlot}, BowSlot={bowSlot}, " +
                     $"BowItemId={bowItemId ?? "<null>"}, " +
                     $"BowWeaponId={bowItemData?.WeaponId ?? "<null>"}, " +

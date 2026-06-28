@@ -9,9 +9,22 @@ namespace CindarsHope.Editor.ScaleSystem
 {
     public static class CreateDefaultScaleAssets
     {
+        // Standalone entry so the path referenced by every "run this first" message (ScaleProfileLibrary,
+        // both validators) is a real menu — generate/refresh just the scale profiles without the full
+        // destructive project init.
+        [MenuItem("CindarsHope/Generate/Data/Create Default Scale Assets")]
+        public static void CreateAllMenu() => CreateAll();
+
         private const string ScaleDataPath = "Assets/_Game/Data/Scale";
         private const string CameraDataPath = "Assets/_Game/Data/Camera";
         private const string ConfigDataPath = "Assets/_Game/Data/Config";
+
+        // The PLAYER is the size reference for the whole game. Every other category below is declared as a
+        // multiple of the player ("playerRelative"), and the absolute VisualScale = PlayerReferenceScale ×
+        // playerRelative. This is the single knob: bump PlayerReferenceScale and the entire world rescales
+        // proportionally; change one ratio and only that prop class moves. No magic absolutes in scene code.
+        // (Enemies size through EnemySizeProfileSO — the Enemy* rows here are cosmetic placeholders only.)
+        public const float PlayerReferenceScale = 2.0f;
 
         public static void CreateAll()
         {
@@ -19,34 +32,43 @@ namespace CindarsHope.Editor.ScaleSystem
             EnsureDirectory(CameraDataPath);
             EnsureDirectory(ConfigDataPath);
 
-            CreateProfile(EntityScaleCategory.Player,           "player",             "Player",            visualScale: 2.0f,  colliderScale: 1.0f, nameplateY: 1.4f);
-            CreateProfile(EntityScaleCategory.NPC,              "npc",                "NPC",               visualScale: 2.0f,  colliderScale: 1.0f, nameplateY: 1.4f);
-            CreateProfile(EntityScaleCategory.EnemyTiny,        "enemy_tiny",         "Enemy Tiny",        visualScale: 1.0f,  colliderScale: 1.0f, nameplateY: 0.8f);
-            CreateProfile(EntityScaleCategory.EnemySmall,       "enemy_small",        "Enemy Small",       visualScale: 1.5f,  colliderScale: 1.0f, nameplateY: 1.0f);
-            CreateProfile(EntityScaleCategory.EnemyMedium,      "enemy_medium",       "Enemy Medium",      visualScale: 2.0f,  colliderScale: 1.0f, nameplateY: 1.4f);
-            CreateProfile(EntityScaleCategory.EnemyLarge,       "enemy_large",        "Enemy Large",       visualScale: 3.0f,  colliderScale: 1.0f, nameplateY: 2.0f);
-            CreateProfile(EntityScaleCategory.EnemyHuge,        "enemy_huge",         "Enemy Huge",        visualScale: 4.0f,  colliderScale: 1.0f, nameplateY: 2.6f);
-            CreateProfile(EntityScaleCategory.EnemyBoss,        "enemy_boss",         "Enemy Boss",        visualScale: 4.0f,  colliderScale: 1.0f, nameplateY: 2.6f);
-            CreateProfile(EntityScaleCategory.TreeSmall,        "tree_small",         "Tree Small",        visualScale: 2.0f,  colliderScale: 0.4f, nameplateY: 1.8f);
-            CreateProfile(EntityScaleCategory.TreeMedium,       "tree_medium",        "Tree Medium",       visualScale: 3.0f,  colliderScale: 0.4f, nameplateY: 2.4f);
-            CreateProfile(EntityScaleCategory.TreeLarge,        "tree_large",         "Tree Large",        visualScale: 4.0f,  colliderScale: 0.4f, nameplateY: 3.0f);
-            CreateProfile(EntityScaleCategory.RockSmall,        "rock_small",         "Rock Small",        visualScale: 1.5f,  colliderScale: 1.0f, nameplateY: 1.0f);
-            CreateProfile(EntityScaleCategory.RockMedium,       "rock_medium",        "Rock Medium",       visualScale: 2.0f,  colliderScale: 1.0f, nameplateY: 1.4f);
-            CreateProfile(EntityScaleCategory.Pickup,           "pickup",             "Pickup",            visualScale: 1.0f,  colliderScale: 1.0f, nameplateY: 0.7f);
-            CreateProfile(EntityScaleCategory.Chest,            "chest",              "Chest",             visualScale: 1.5f,  colliderScale: 1.0f, nameplateY: 1.2f);
-            CreateProfile(EntityScaleCategory.Workbench,        "workbench",          "Workbench",         visualScale: 2.0f,  colliderScale: 1.0f, nameplateY: 1.6f);
-            CreateProfile(EntityScaleCategory.Forge,            "forge",              "Forge",             visualScale: 2.0f,  colliderScale: 1.0f, nameplateY: 1.6f);
-            CreateProfile(EntityScaleCategory.CookingStation,   "cooking_station",    "Cooking Station",   visualScale: 2.0f,  colliderScale: 1.0f, nameplateY: 1.6f);
-            CreateProfile(EntityScaleCategory.FarmObject,       "farm_object",        "Farm Object",       visualScale: 1.5f,  colliderScale: 1.0f, nameplateY: 1.2f);
-            CreateProfile(EntityScaleCategory.CavePortal,       "cave_portal",        "Cave Portal",       visualScale: 2.5f,  colliderScale: 1.0f, nameplateY: 2.0f);
-            CreateProfile(EntityScaleCategory.CheckpointPortal, "checkpoint_portal",  "Checkpoint Portal", visualScale: 2.0f,  colliderScale: 1.0f, nameplateY: 1.8f);
-            CreateProfile(EntityScaleCategory.Corpse,           "corpse",             "Corpse",            visualScale: 2.0f,  colliderScale: 0.5f, nameplateY: 0.6f);
+            // category                                    id                    displayName          ×player  collider  nameplateY
+            CreateProfile(EntityScaleCategory.Player,           "player",             "Player",            1.00f,  1.0f, 1.4f);
+            CreateProfile(EntityScaleCategory.NPC,              "npc",                "NPC",               1.00f,  1.0f, 1.4f);
+            CreateProfile(EntityScaleCategory.EnemyTiny,        "enemy_tiny",         "Enemy Tiny",        0.50f,  1.0f, 0.8f);
+            CreateProfile(EntityScaleCategory.EnemySmall,       "enemy_small",        "Enemy Small",       0.75f,  1.0f, 1.0f);
+            CreateProfile(EntityScaleCategory.EnemyMedium,      "enemy_medium",       "Enemy Medium",      1.00f,  1.0f, 1.4f);
+            CreateProfile(EntityScaleCategory.EnemyLarge,       "enemy_large",        "Enemy Large",       1.50f,  1.0f, 2.0f);
+            CreateProfile(EntityScaleCategory.EnemyHuge,        "enemy_huge",         "Enemy Huge",        2.00f,  1.0f, 2.6f);
+            CreateProfile(EntityScaleCategory.EnemyBoss,        "enemy_boss",         "Enemy Boss",        2.00f,  1.0f, 2.6f);
+            CreateProfile(EntityScaleCategory.TreeSmall,        "tree_small",         "Tree Small",        1.00f,  0.4f, 1.8f);
+            CreateProfile(EntityScaleCategory.TreeMedium,       "tree_medium",        "Tree Medium",       1.50f,  0.4f, 2.4f);
+            CreateProfile(EntityScaleCategory.TreeLarge,        "tree_large",         "Tree Large",        2.00f,  0.4f, 3.0f);
+            CreateProfile(EntityScaleCategory.RockSmall,        "rock_small",         "Rock Small",        0.75f,  1.0f, 1.0f);
+            CreateProfile(EntityScaleCategory.RockMedium,       "rock_medium",        "Rock Medium",       1.00f,  1.0f, 1.4f);
+            CreateProfile(EntityScaleCategory.Pickup,           "pickup",             "Pickup",            0.45f,  1.0f, 0.7f); // small ground item
+            CreateProfile(EntityScaleCategory.Chest,            "chest",              "Chest",             0.75f,  1.0f, 1.2f);
+            CreateProfile(EntityScaleCategory.Workbench,        "workbench",          "Workbench",         0.65f,  1.0f, 1.2f); // waist/chest-high
+            CreateProfile(EntityScaleCategory.Forge,            "forge",              "Forge",             0.65f,  1.0f, 1.2f);
+            CreateProfile(EntityScaleCategory.CookingStation,   "cooking_station",    "Cooking Station",   0.65f,  1.0f, 1.2f);
+            CreateProfile(EntityScaleCategory.FarmObject,       "farm_object",        "Farm Object",       0.75f,  1.0f, 1.2f);
+            CreateProfile(EntityScaleCategory.CavePortal,       "cave_portal",        "Cave Portal",       1.10f,  1.0f, 2.0f); // landmark gate, slightly taller than player
+            CreateProfile(EntityScaleCategory.CheckpointPortal, "checkpoint_portal",  "Checkpoint Portal", 0.90f,  1.0f, 1.8f);
+            CreateProfile(EntityScaleCategory.Corpse,           "corpse",             "Corpse",            1.00f,  0.5f, 0.6f);
+            CreateProfile(EntityScaleCategory.ResourceTree,     "resource_tree",      "Resource Tree",     1.20f,  1.0f, 1.8f); // taller than player
+            CreateProfile(EntityScaleCategory.ResourceRock,     "resource_rock",      "Resource Rock",     0.65f,  1.0f, 1.0f);
+            CreateProfile(EntityScaleCategory.ForagePoint,      "forage_point",       "Forage Point",      0.55f,  1.0f, 0.9f);
+            CreateProfile(EntityScaleCategory.ShippingBin,      "shipping_bin",       "Shipping Bin",      0.90f,  1.0f, 1.3f);
+            CreateProfile(EntityScaleCategory.ContractBoard,    "contract_board",     "Contract Board",    0.72f,  1.0f, 1.4f);
 
             CreateCameraConfig();
             CreateGameScaleConfig();
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
+            // Drop any cached lookup so scene creators run later in the same orchestrator pass see the
+            // freshly generated/updated profiles instead of a stale (or empty) cache.
+            ScaleProfileLibrary.InvalidateCache();
             Debug.Log("[CreateDefaultScaleAssets] All scale assets created.");
         }
 
@@ -54,17 +76,22 @@ namespace CindarsHope.Editor.ScaleSystem
             EntityScaleCategory category,
             string id,
             string displayName,
-            float visualScale,
+            float playerRelative,
             float colliderScale,
             float nameplateY)
         {
+            var visualScale = PlayerReferenceScale * playerRelative;
             var path = $"{ScaleDataPath}/VisualScaleProfile_{id}.asset";
-            if (File.Exists(Path.Combine(Application.dataPath, "..", path)))
+            // Idempotent + authoritative: update an existing profile's values instead of skipping it. These
+            // profiles were never wired into scenes before, so there are no hand-tuned values to clobber, and
+            // re-running the generator must converge on the canonical numbers (e.g. after a balance change).
+            var asset = AssetDatabase.LoadAssetAtPath<VisualScaleProfileSO>(path);
+            var isNew = asset == null;
+            if (isNew)
             {
-                return;
+                asset = ScriptableObject.CreateInstance<VisualScaleProfileSO>();
             }
 
-            var asset = ScriptableObject.CreateInstance<VisualScaleProfileSO>();
             asset.ProfileId = id;
             asset.DisplayName = displayName;
             asset.Category = category;
@@ -74,7 +101,14 @@ namespace CindarsHope.Editor.ScaleSystem
             asset.HintOffset = new Vector2(0f, nameplateY + 0.2f);
             asset.DamageNumberOffset = new Vector2(0f, nameplateY - 0.2f);
 
-            AssetDatabase.CreateAsset(asset, path);
+            if (isNew)
+            {
+                AssetDatabase.CreateAsset(asset, path);
+            }
+            else
+            {
+                EditorUtility.SetDirty(asset);
+            }
         }
 
         private static void CreateCameraConfig()

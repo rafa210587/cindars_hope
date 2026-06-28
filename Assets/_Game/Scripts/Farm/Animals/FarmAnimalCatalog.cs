@@ -18,11 +18,13 @@ namespace CindarsHope.Farm.Animals
         public const string AnimalChicken = "animal_chicken";
         public const string AnimalGoat = "animal_goat";
         public const string AnimalCow = "animal_cow";
+        public const string AnimalSheep = "animal_sheep"; // slice village_economy: lã → cadeia de tecido
 
         // Itens de filhote (compra no Eiran).
         public const string ItemChickChicken = "item_animal_chicken_chick";
         public const string ItemKidGoat = "item_animal_goat_kid";
         public const string ItemCalfCow = "item_animal_cow_calf";
+        public const string ItemLambSheep = "item_animal_sheep_lamb";
 
         // Ração (genérica para os três; comprável/craftável).
         public const string ItemFeed = "item_animal_feed";
@@ -31,6 +33,7 @@ namespace CindarsHope.Farm.Animals
         public const string ItemEgg = "item_animal_egg";
         public const string ItemGoatMilk = "item_animal_goat_milk";
         public const string ItemCowMilk = "item_animal_cow_milk";
+        public const string ItemWool = "item_animal_wool";
 
         // Limiares de qualidade por dias consecutivos de FedToday (EMENDA 2026-06-12, §18).
         public const int SilverConsecutiveFedDays = 3;
@@ -86,6 +89,18 @@ namespace CindarsHope.Farm.Animals
                     PurchaseItemId = ItemCalfCow,
                     FeedItemId = ItemFeed,
                     ProductItemId = ItemCowMilk,
+                    ProductIntervalDays = 1
+                },
+                // Ovelha (slice village_economy) — produz lã, fechando a cadeia de tecido (Tear/Sewing).
+                new AnimalCatalogEntry
+                {
+                    AnimalId = AnimalSheep,
+                    DisplayName = "Ovelha",
+                    Species = FarmAnimalSpecies.Sheep,
+                    HousingType = AnimalHousingBuildingType.Barn,
+                    PurchaseItemId = ItemLambSheep,
+                    FeedItemId = ItemFeed,
+                    ProductItemId = ItemWool,
                     ProductIntervalDays = 1
                 }
             };

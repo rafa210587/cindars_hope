@@ -92,6 +92,9 @@ docs/design/
   README.md
   SPEC_SOURCE_MAP.md
   SPECIFICATION_PROCESS.md
+  art/
+    ART_DIRECTION_ILLUSTRATOR_GUIDE.md
+    CAVE_MONSTER_VISUAL_SPRITE_DIRECTION.md
   gameplay/
     farm/
       FARM_DESIGN_DIRECTION_v1.3.md
@@ -105,7 +108,6 @@ docs/design/
       CAVE_LEVEL_GENERATION_LAYOUT_BIOME_DIRECTION.md
       CAVE_MONSTER_ROSTER_DIRECTION.md
       CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md
-      CAVE_MONSTER_VISUAL_SPRITE_DIRECTION.md
     player/
       PLAYER_CORE_SYSTEMS_DIRECTION.md
       PLAYER_SKILL_TREES_DIRECTION.md
@@ -219,7 +221,7 @@ docs/design/gameplay/cave/CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md
 Direção visual de sprites, silhuetas, animações e variações dos monstros da caverna:
 
 ```text
-docs/design/gameplay/cave/CAVE_MONSTER_VISUAL_SPRITE_DIRECTION.md
+docs/design/art/CAVE_MONSTER_VISUAL_SPRITE_DIRECTION.md
 ```
 
 Documento ativo consolidado dos sistemas centrais do personagem:
@@ -272,7 +274,7 @@ docs/design/gameplay/cave/CAVE_DESIGN_DIRECTION.md
 docs/design/gameplay/cave/CAVE_LEVEL_GENERATION_LAYOUT_BIOME_DIRECTION.md
 docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_DIRECTION.md
 docs/design/gameplay/cave/CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md
-docs/design/gameplay/cave/CAVE_MONSTER_VISUAL_SPRITE_DIRECTION.md
+docs/design/art/CAVE_MONSTER_VISUAL_SPRITE_DIRECTION.md
 docs/game_rules/cave_rules.md
 docs/decisions/ADR-0005-cave-stable-run-and-replay.md
 ```

@@ -1,0 +1,492 @@
+﻿### cave_mite [monster] 24x24
+Inseto minÃºsculo com corpo oval cinza-pedra, 6 patas rÃ¡pidas e brilho branco mÃ­nimo nos olhos; swarm frÃ¡gil que avanÃ§a em grupo pela fenda escura. full-body single creature, facing forward, game enemy sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### stone_rat [monster] 32x32
+Rato baixo com dorso de pedra basalto quebrada, focinho escuro, olhos Ã¢mbar vivos; perseguidor simples que avanÃ§a direto em direÃ§Ã£o ao alvo. full-body single creature, facing forward, game enemy sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### cave_bat [monster] 32x32
+Morcego de fenda com asas largas pequenas, corpo escuro roxo-cinza com bordas azuladas e orelhas grandes; evasivo e fraco, incomoda em grupo com mergulho de eco. full-body single creature, facing forward, game enemy sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### goblin_grashnaar_scavenger [monster] 32x40
+Goblin pequeno e curvado com mochila de sucata, pele verde-acinzentada, trapos marrons e faca curta de cobre oxidado; saqueador oportunista que recua e chama reforÃ§os. full-body single creature, facing forward, game enemy sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### kobold_scout [monster] 32x40
+Pequeno reptiliano com focinho longo, escamas cobre/terra, olhos amarelos vivos e lanÃ§a curta com faixas de couro; scout tÃ¡tico que aponta alvo antes de recuar. full-body single creature, facing forward, game enemy sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### mossling [monster] 32x40
+Bolota fÃºngica com pernas curtas e braÃ§os de musgo verde Ãºmido, esporos amarelos pulsando; resistente e lento, lanÃ§a puff de esporo ao ser golpeado. full-body single creature, facing forward, game enemy sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### cracked_bone [monster] 32x48
+Esqueleto incompleto com postura torta, osso gasto rachado, rachaduras escuras e brilho frio azulado nos olhos; morto-vivo direto que arrasta um braÃ§o maior que o outro. full-body single creature, facing forward, game enemy sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### blackroot_sprout [monster] 32x48
+Planta fixa com raiz retorcida como mÃ£o negra, preto-marrom com seiva roxa e folhas escuras; turret/guardiÃ£o vegetal que brota do chÃ£o e dispara agulhas. full-body single creature, facing forward, game enemy sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### spore_imp [monster] 32x40
+Diabrete fÃºngico pequeno e magro com chapÃ©u fÃºngico lilÃ¡s, braÃ§os finos verde-claro e olhos amarelo-esporo; pula e conjura nuvem de esporos antes de recuar rindo. full-body single creature, facing forward, game enemy sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### rootsnare [monster] 32x48
+Raiz grossa em forma de garra emergindo do chÃ£o, marrom escuro com seiva preta e pontas verdes; burrower vegetal que agarra o jogador ao emergir do chÃ£o tremendo. full-body single creature, facing forward, game enemy sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### hollow_stagling [monster] 48x56
+Cervo magro e oco com cavidade brilhante verde no peito e chifres tortos cinza-pÃ¡lidos, couro cinzento; pisoteia e investe com coice pesado apÃ³s errar a investida. full-body single creature, facing forward, game enemy sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### goblin_urudakh_trapper [monster] 32x40
+Goblin com armadilhas nas costas e mÃ¡scara parcial de couro preto, tom verde escuro com metais pequenos; coloca armadilha no chÃ£o antes de arremessar e recuar. full-body single creature, facing forward, game enemy sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### thorn_archer [monster] 32x48
+Arqueiro magro goblinÃ³ide com arco de espinhos verde-escuro, madeira negra e olhos amarelos; dispara tiro preso que desacelera e fica vulnerÃ¡vel apÃ³s sequÃªncia de flechas. full-body single creature, facing forward, game enemy sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### orc_nyx_stalker [monster] 48x56
+Orc mÃ©dio com ombros largos, capuz/pele cinza-esverdeada, marcas azul-escuras de Nyx e couro preto; surge da sombra em dash lateral e golpeia em arco amplo. full-body single creature, facing forward, game enemy sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### mycobulwark [monster] 48x56
+Fungo grande em forma de escudo vivo, branco sujo com placas marrons e verde musgo; ergue defesa de esporos e usa slam quando o jogador se aproxima. full-body single creature, facing forward, game enemy sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### nyx_moth [monster] 32x32
+Mariposa pequena com asas grandes de olho-padrÃ£o azul-escuro e prata, roxo profundo no corpo; flutua e solta pÃ³ lunar que confunde a direÃ§Ã£o do jogador. full-body single creature, facing forward, game enemy sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### frost_gnawer [monster] 32x32
+Pequeno roedor com pelos congelados e dentes azulados cortantes, corpo branco-gelo com reflexos azul-pÃ¡lido; frÃ¡gil e rÃ¡pido, ataca em dash e recua antes do contra-ataque. full-body single creature, facing forward, game enemy sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### duergar_frostdelver [monster] 48x56
+AnÃ£o subterrÃ¢neo robusto com barba congelada, picareta pesada e placas de metal frio; pele cinza-pedra com reflexos de gelo azulado, silhueta larga e baixa. full-body single creature, facing forward, game enemy sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### duergar_shieldbreaker [monster] 48x56
+Duergar grande com escudo rachado e martelo curto, silhueta larga e defensiva, pele cinza-ardÃ³sia com reflexos de gelo; quebra a guarda do jogador e avanÃ§a pesadamente. full-body single creature, facing forward, game enemy sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### icebound_sentinel [monster] 48x56
+Constructo de gelo e metal antigo com nÃºcleo azul pulsando no peito, movimentos rÃ­gidos e mecÃ¢nicos; pele de pedra-gelo cinza-azulada com reflexos cristalinos. full-body single creature, facing forward, game enemy sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### glassbone [monster] 32x48
+Esqueleto cristalino translÃºcido com pontas quebradas que brilham levemente em azul-gelo, corpo quase transparente; fragmenta ao morrer lanÃ§ando estilhaÃ§os de cristal. full-body single creature, facing forward, game enemy sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### cold_cult_acolyte [monster] 32x48
+Humanoide encapuzado com sÃ­mbolos congelados no manto escuro e mÃ£os azuladas de magia fria; conjura projÃ©teis de gelo com windup claro de brilho azul nas palmas. full-body single creature, facing forward, game enemy sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### crystal_leaper [monster] 32x48
+Criatura cristalina com pernas longas angulares em postura de salto, corpo azul-translÃºcido com facetas que refletem; salta em arco alto e pousa com impacto de cristal. full-body single creature, facing forward, game enemy sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### frost_wailer [monster] 32x48
+Morto-vivo flutuante ou arrastado com boca aberta e vapor frio constante, corpo cinza-roxo com reflexos gelados; emite grito de gelo que aplica slow em Ã¡rea. full-body single creature, facing forward, game enemy sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### ember_tick [monster] 24x24
+Inseto parasita pequeno com abdÃ´men incandescente laranja-brasa, carapaÃ§a marrom-escura com fissuras quentes; swarm de fogo que gruda e drena HP por combustÃ£o. full-body single creature, facing forward, game enemy sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### ash_crawler [monster] 48x48
+QuadrÃºpede coberto de cinza densa, corpo escuro com rastro cinzento no chÃ£o, olhos laranja-brasa; rastejante lento que emerge de poÃ§as de cinza e empurra o jogador. full-body single creature, facing forward, game enemy sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### orc_kaand_berserker [monster] 48x56
+Orc grande de Kaand com marcas vermelhas de guerra na pele cinza-esverdeada e arma pesada na mÃ£o; postura agressiva que se lanÃ§a em combo de golpes apÃ³s telegrafar investida. full-body single creature, facing forward, game enemy sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### orc_kaand_ashcaller [monster] 48x56
+Orc xamÃ¢nico de Kaand com ossos queimados no colar e cinzas flutuando nas mÃ£os em conjuraÃ§Ã£o; caster que invoca nuvem de cinza antes de recuar para trÃ¡s dos aliados. full-body single creature, facing forward, game enemy sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### lava_bulwark [monster] 64x64
+Elemental largo de rocha negra com rachaduras laranja-lava incandescentes por todo o corpo; tank massivo que slam o chÃ£o com braÃ§os de pedra fundida. full-body single creature, facing forward, game enemy sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### cinder_spitter [monster] 48x56
+Besta mÃ©dia com garganta inflada laranja-brilhante, placas de cinza e boca luminosa; infla o pescoÃ§o antes de cuspir projÃ©til de cinza incandescente em arco. full-body single creature, facing forward, game enemy sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### scorched_cultist [monster] 32x48
+Cultista de pele queimada e manto rasgado, sÃ­mbolo de fogo no peito, tom carbonizado com brasas nos olhos; conjura projÃ©til flamejante apÃ³s windup de mÃ£os incandescentes. full-body single creature, facing forward, game enemy sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### furnace_warden [monster] 64x64
+Constructo de forja com braÃ§os pesados de ferro e peito aberto como forno incandescente; tank de lava que martela o chÃ£o em arco amplo e expele jato de brasa. full-body single creature, facing forward, game enemy sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### rune_shard [monster] 24x24
+Pequeno fragmento flutuante de pedra com runa arcana gravada e brilho roxo-arcano pulsando; swarm mÃ¡gico que orbita e dispara raio de runa ao receber dano. full-body single creature, facing forward, game enemy sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### clockwork_guard [monster] 32x48
+Constructo humanoide de engrenagens bronze-envelhecido com olhos Ã¢mbar mecÃ¢nicos, passos rÃ­tmicos e arma simples; guarda de corda que patrulha e ataca em padrÃ£o previsÃ­vel. full-body single creature, facing forward, game enemy sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### gnome_gem_madcap [monster] 32x40
+Gnomo pequeno com olhos ampliados por gema azul implantada, cabelo bagunÃ§ado e ferramentas penduradas; enlouquecido pelas ruÃ­nas, lanÃ§a gadgets explosivos e ri. full-body single creature, facing forward, game enemy sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### gnomorin_rune_tinker [monster] 32x40
+Gnomorin tÃ©cnico pequeno com mochila de peÃ§as mecÃ¢nicas, runas tortas gravadas nas luvas grandes; conjura runa armadilha no chÃ£o e recua antes de detonÃ¡-la. full-body single creature, facing forward, game enemy sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### sealed_knight [monster] 48x56
+Armadura antiga vazia com elmo fechado e selo arcano dourado brilhando no peito, tom cinza-ardÃ³sia; defende e contra-ataca em postura rÃ­gida de cavaleiro imemorial. full-body single creature, facing forward, game enemy sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### mirror_adept [monster] 32x48
+Humanoide com fragmentos refletivos espelhados no manto claro/escuro, pose elegante de adivinhaÃ§Ã£o; cria ilusÃµes espelhadas de si mesmo e confunde mira do jogador. full-body single creature, facing forward, game enemy sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### puzzle_golem [monster] 64x64
+Golem grande de pedra com placas mÃ³veis intercambiÃ¡veis no corpo e nÃºcleo arcano azul exposto em ciclos; vulnerÃ¡vel apenas quando o nÃºcleo estÃ¡ aberto entre as placas. full-body single creature, facing forward, game enemy sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### oathless_shade [monster] 32x48
+Sombra humanoide com restos de armadura e juramento quebrado, tom negro-roxo escuro com ecos de contorno azulado; esquivo e confuso, duplica imagens antes do golpe. full-body single creature, facing forward, game enemy sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### drow_shadowblade [monster] 32x48
+Drow Ã¡gil com lÃ¢mina curva escura, capa negra e olhos violeta frios; pele cinza-violÃ¡cea, cabelo branco, executa dash em arco e se esconde na sombra entre ataques. full-body single creature, facing forward, game enemy sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### drow_arcane_adept [monster] 32x48
+Drow caster esguio com foco lunar e manto azul-prateado escuro, pele cinza, olhos roxo-profundo; conjura projÃ©til lunar com windup lento mas poderoso e teleporta ao ser acertado. [INFERIDO: expandido de drow_moon_caster por FactionText Drow] full-body single creature, facing forward, game enemy sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### drow_shadow_warden [monster] 48x56
+Drow robusto e blindado com escudo escuro e maÃ§a pesada, pele cinza-violÃ¡cea, cabelo branco, olhos vermelhos e manto negro; defensor de linha que cobre casters com bash de escudo. full-body single creature, facing forward, game enemy sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### ninrorin_void_sentinel [monster] 32x48
+Elfo cinzento alto e imÃ³vel com armadura ritual cinza-prata, lanÃ§a e escudo de pedra-fenda, fissura negra-roxa pulsando no peito; tank/guardiÃ£o com brecha quando o escudo desce. full-body single creature, facing forward, game enemy sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### ninrorin_void_knight [monster] 32x48
+Elfo cinzento em armadura completa lunar cinza-azulada com espada longa de fenda e capa esfarrapada, roxo-vazio nas juntas da armadura; bruiser agressivo que fecha distÃ¢ncia em combo de duas lÃ¢minas. full-body single creature, facing forward, game enemy sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### ninrorin_void_acolyte [monster] 32x48
+Elfo cinzento esguio com manto ritual e capuz, mÃ£os erguidas em conjuraÃ§Ã£o de energia negra-roxa, olhos brancos sem Ã­ris; caster com telegraph claro de brilho antes do projÃ©til de bile do vazio. full-body single creature, facing forward, game enemy sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### ninrorin_phasewalker [monster] 32x48
+Elfo cinzento meio translÃºcido com contorno duplicado que pisca entre posiÃ§Ãµes, cinza-prata com bordas azul-fantasma que desfocam; evasivo que reaparece pelo flanco com golpe surpresa. full-body single creature, facing forward, game enemy sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### ninrorin_echo_shade [monster] 32x48
+Vulto cinzento quase incorpÃ³reo com restos de vÃ©u ritual flutuando e rosto apagado, cinza-fumaÃ§a com nÃºcleo azul-frio; ecos atrasados seguem o corpo, confunde mira e desaparece ao morrer. full-body single creature, facing forward, game enemy sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### void_spitter [monster] 48x48
+AberraÃ§Ã£o baixa e inchada com boca vertical grande e glÃ¢ndulas que incham antes do cuspe, roxo-escuro e preto com bile Ã¡cida violeta brilhando na garganta; artilheiro estacionÃ¡rio de longo alcance. full-body single creature, facing forward, game enemy sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### void_tick [monster] 24x24
+Parasita minÃºsculo com carapaÃ§a negra-vazio e fissura roxa no dorso, patas rÃ¡pidas; swarm frÃ¡gil que adere ao jogador, drena HP e estoura liberando bile ao morrer. full-body single creature, facing forward, game enemy sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### abyssal_riftstalker [monster] 48x56
+Predador mÃ©dio esguio do abismo com membros longos, corpo recortado do escuro, negro-abissal com contorno roxo e olhos sem brilho; caÃ§ador que abre fenda e investe pelo abismo em blink surpresa. full-body single creature, facing forward, game enemy sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### abyssal_void_reaver [monster] 64x64
+AberraÃ§Ã£o grande e imponente com dois braÃ§os-lÃ¢mina de energia roxa-vazio e fendas rasgando o tronco, brasa fria azul nas feridas; elite bruiser com sweep duplo muito telegrafado e janela vulnerÃ¡vel apÃ³s combo. full-body single creature, facing forward, game enemy sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### shadow_sentinel [monster] 48x56
+GuardiÃ£o alto de sombra sÃ³lida com nÃºcleo roxo-frio exposto no peito, preto-fosco e cinza-sombra; tank imÃ³vel que sÃ³ fica vulnerÃ¡vel quando o nÃºcleo se abre apÃ³s sweep amplo. full-body single creature, facing forward, game enemy sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### corrupted_bone_knight [monster] 48x56
+Morto-vivo blindado com armadura rachada sobre ossos gastos, veios pretos de Pedra Negra e olhos roxos; bruiser lento e resistente que arrasta a arma e desmonta ao morrer. full-body single creature, facing forward, game enemy sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### corrupted_draconic_spawn [monster] 48x56
+Filhote de dragÃ£o deformado com escamas negro-roxas opacas, asas rasgadas e baba/veios de Pedra Negra, brasa roxa na garganta; voo baixo Ã¡gil que mergulha em dive e lanÃ§a lufada corrompida. full-body single creature, facing forward, game enemy sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### blackstone_wyvern [monster] 80x80
+Wyvern grande com placas de Pedra Negra, asas feridas e brilho roxo pulsando nas fendas do corpo; voa em arco antes de mergulhar com picada de cauda e urra abrindo janela de vulnerabilidade. full-body single creature, facing forward, game enemy sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### draconic_elder_kin [monster] 64x64
+DracÃ´nido grande e antigo com porte de patriarca, placas cinza-ferro no peito, chifres longos e escamas escuras com brilho roxo-mana, olhos Ã¢mbar-corrompido; elite com sopro de energia corrompida fortemente telegrafado. full-body single creature, facing forward, game enemy sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### corrupted_lich_shard [monster] 32x48
+Fragmento de lich corrompido, forma humanoide espectral com veios de Pedra Negra e energia roxa-vazio irradiando dos ossos; conjura ondas de energia necrÃ³tica e se regenera ao absorver fragmentos de sombra. [INFERIDO: famÃ­lia Undead/Corrompido, bioma NÃºcleo Corrompido] full-body single creature, facing forward, game enemy sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### draconic_ashspitter [monster] 48x56
+DracÃ´nido mÃ©dio de cinza Ã­gnea com escamas cinza-antracite e garganta incandescente laranja, postura baixa de predador; cuspidor de cinza que infla o pescoÃ§o antes de disparar projÃ©til de brasa. [INFERIDO: famÃ­lia DracÃ´nico, bioma Caverna de Fogo] full-body single creature, facing forward, game enemy sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### draconic_void_wyrm [monster] 64x64
+Wyrm longo e sinuoso do vazio com escamas negro-abissal, veios roxo-vazio pulsando ao longo do corpo e olhos violeta sem pupila; rasteja pelo chÃ£o e abre rasgos de fenda antes de mergulhar. [INFERIDO: famÃ­lia DracÃ´nico, bioma Abismo Sombrio] full-body single creature, facing forward, game enemy sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### npc_corvus [npc] 32x48
+Middle-aged priest with calm authority, morena-clara skin, short grey hair, white-cream robes with gold-bordered details and high collar, small silver scales pendant on chain. full-body single character, standing, facing forward, RPG npc sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### npc_mara [npc] 32x48
+Analytical woman with controlled posture, olive skin, black hair in tight bun, slate-blue coat buttoned to the neck with bronze buttons, always carrying a ledger or clipboard. full-body single character, standing, facing forward, RPG npc sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### npc_sylveth [npc] 32x48
+Wood elf woman with bronze-copper skin leaning forward curiously, moss-brown braided hair with dried leaves and flowers, light green linen blouse over earth-toned shirt, leather belt with herb pouches. full-body single character, standing, facing forward, RPG npc sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### npc_brumdar [npc] 32x44
+Broad dwarf blacksmith, weathered tan skin with burn scars on palms, three thick grey braids with iron rings, heavy leather apron, arms disproportionately large from years at the forge. full-body single character, standing, facing forward, RPG npc sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### npc_nimble [npc] 28x40
+Energetic halfling carpenter, light-brown skin, light-chestnut curly sideburns, enormous bare hairy feet caked in sawdust, vest with dozens of pockets stuffed with tools and notes. full-body single character, standing, facing forward, RPG npc sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### npc_gurd [npc] 36x52
+Half-orc barrel-bodied bouncer, grey-red skin, prominent tusks from lower jaw, geometric clan tattoos on shoulders and arms, old combat scars, work shirt with sleeves rolled up, resting scowl. full-body single character, standing, facing forward, RPG npc sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### npc_hund [npc] 36x52
+Half-orc with grey-blue skin, small discreet tusks, eyes always scanning exits, shaved sides with a longer top lock tilted forward, heavy dark leather coat always buttoned, posture of someone waiting. full-body single character, standing, facing forward, RPG npc sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### npc_ozzra [npc] 28x40
+Goblin alchemist with orange-grey skin, vivid yellow eyes, wild blue hair spiked in all directions from an old experiment, leather apron covered in multicoloured stains, multiple bubbling vials dangling from belt. full-body single character, standing, facing forward, RPG npc sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### npc_gruta [npc] 36x52
+Orc tavern owner with warm dark-green skin, strong visible tusks, thick red braid draped over one shoulder, worn red apron with work stains, powerful calloused hands, direct confident expression. full-body single character, standing, facing forward, RPG npc sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### npc_zrix [npc] 36x52
+Copper draconite merchant with weathered dark-copper scales, pale-grey chest and neck plates, short chipped horns, amber vertical-slit eyes, travel cloak with hood down, heavy boots, explorer belt, tail with faint scars. full-body single character, standing, facing forward, RPG npc sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### npc_yael [npc] 32x48
+Night elf woman with midnight-blue skin trying to blend in, extremely fine silver-white straight hair, violet faintly glowing eyes, subtle constellation tattoos on neck and forearms, deliberately plain brown-beige common city clothing. full-body single character, standing, facing forward, RPG npc sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### npc_thalindra [npc] 32x48
+Ninrorin grey-elf scholar with pale grey skin, ice-blue eyes, straight silver hair to shoulders, cobalt-blue tunic with geometric silver embroidery at borders, perfectly erect posture, always holding a scroll or book. full-body single character, standing, facing forward, RPG npc sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### npc_dagna [npc] 32x44
+Dwarf miner-warrior, bronzed skin, black hair with natural white streaks, short braided beard with copper ring, reinforced leather breastplate and metal bracers, pickaxe worn on back like a weapon. full-body single character, standing, facing forward, RPG npc sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### npc_pip [npc] 20x32
+Young halfling boy with pale skin and freckles, wild red hair, enormous golden-furred bare feet, a worn leather backpack clearly too large for him tilting him backward, animated money-savvy expression. full-body single character, standing, facing forward, RPG npc sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### npc_alaric [npc] 32x48
+City guard knight, sun-bronzed skin, neatly trimmed brown hair and beard, clear green eyes mixing caution and openness, slate-blue half-armour with Kanthor shield-and-stars emblem on right shoulder. full-body single character, standing, facing forward, RPG npc sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### npc_mirela [npc] 32x48
+Tailor using her own outfit as portfolio, brown skin, curly dark hair with coloured fabric ribbon samples woven in, expressive eyes, precisely tailored structured garments, measuring tape worn as necklace. full-body single character, standing, facing forward, RPG npc sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### npc_renko [npc] 28x40
+Goblin merchant with orange-grey skin, too-wide smile with many teeth, half-shut calculating-friendly yellow eyes, quality-fabric merchant shirt, many-buttoned vest, small hat slightly tilted, conspicuously harmless appearance. full-body single character, standing, facing forward, RPG npc sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### npc_eiran [npc] 32x48
+Half-elf animal keeper with outdoor-bronzed skin, barely pointed ears easy to miss, amber patient eyes, long brown hair tied with a green cord, simple practical green-and-brown work clothes with grass stains, small animal often nearby. full-body single character, standing, facing forward, RPG npc sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### npc_liora [npc] 32x48
+Musician with golden-fair skin with subtle shimmer highlights, wavy dark-brown hair loose and free, unusual blue eyes for a Dornecan, light colourful flowing fabric clothes, always mid-hum with soft expression. full-body single character, standing, facing forward, RPG npc sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### npc_orlan [npc] 32x48
+Short stocky innkeeper, fair skin, thinning brown hair neatly but unsuccessfully combed, short symmetrical moustache, gentle eyes, white shirt and dark vest under a dirty-beige apron, jangling key-ring on belt. full-body single character, standing, facing forward, RPG npc sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### npc_savra [npc] 32x52
+Green draconita herbalist with dark-green scales and irregular olive patches like a forest snake, gold-yellow vertical-slit eyes, short backward-curving soft horns, fine long tail used for balance, herb-pocket apron over linen tunic. full-body single character, standing, facing forward, RPG npc sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### npc_tovin [npc] 24x36
+Tiny gnome archivist, rosy-clear skin, perfectly parted brown hair, enormous round golden-framed spectacles magnifying his already large eyes, dark-blue vest with a different ink-stamp in each dedicated pocket, long agile fingers. full-body single character, standing, facing forward, RPG npc sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### npc_maelor [npc] 32x48
+Night elf man with charcoal-grey skin darker than Yael, deep blue-black hair, silver reflective eyes, linear constellation tattoos on neck, closed unreadable expression, dark explorer clothing, appears rarely. full-body single character, standing, facing forward, RPG npc sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### npc_sael [npc] 32x48
+Tiefling fisherman with blue-grey skin, small backward-curving discrete horns, thin pointed tail touching the water when seated, black hair always damp and tied back, solid amber eyes gazing at water surfaces, waxed green-grey fishing oilskin coat with shoulder-slung net. full-body single character, standing, facing forward, RPG npc sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### npc_mella [npc] 32x48
+Robust warm-brown baker with flushed rosy cheeks from the oven, brown hair wrapped in a red-earth kerchief with loose flour-dusted strands, white flour-stained apron over a warm-brown dress, dish cloth on shoulder, idle animation shakes a puff of flour from her apron. full-body single character, standing, facing forward, RPG npc sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### npc_hess [npc] 32x52
+Very old draconato tanner with matte opaque earth-brown scales stripped of all sheen by decades of tannin, heavy blunt snout, pale amber slow-blinking eyes, short lashed back horns with chipped tips, thick dragging tail, enormous calloused hands, stiff dark tannin-blackened apron, idle caresses a stretched hide. full-body single character, standing, facing forward, RPG npc sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### npc_tibbet [npc] 24x36
+Pale small gnome acolyte who actually works nights as a gravedigger, enormous dark eyes with deep purple shadows, fine grey-brown slightly dishevelled hair, oversized white acolyte tunic with hem always caked in graveyard earth, thick dripping candle in hand with hardened wax on fingers, hidden black-luna pendant beneath collar. full-body single character, standing, facing forward, RPG npc sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### npc_velorin [npc] 32x48
+Very old Ninrorin grey-elf village elder, pale grey wrinkled skin with pixel-wrinkle lines at brow and eyes, long white-grey straight hair and beard falling to chest, heavy white brows, deep amber weary eyes with slow lids, long grey-blue civic mantle with silver Kanthor-scales fibula, leans on gnarled oak staff as genuine support. full-body single character, standing, facing forward, RPG npc sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### race_human [npc] 32x48
+Generic human NPC archetype, neutral warm skin tone, rounded ears, varied trade clothing appropriate to occupation, readable expression at 32px scale. full-body single character, standing, facing forward, RPG npc sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### race_elf [npc] 32x48
+Generic elf NPC archetype, cool-fair skin, pointed ears 5-6px above head line, slightly almond eyes, long or braided hair, slender silhouette. full-body single character, standing, facing forward, RPG npc sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### race_tiefling [npc] 32x48
+Generic tiefling NPC archetype, purple-grey unusual skin, small curved horns from head, visible thin pointed tail behind body, solid irises with no visible white, ordinary city clothing. full-body single character, standing, facing forward, RPG npc sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### race_halfling [npc] 28x40
+Generic halfling NPC archetype, warm fair skin, slightly pointed wide ears, curly hair, disproportionately large hairy bare feet, colourful clothing with many pockets, naturally jovial expression. full-body single character, standing, facing forward, RPG npc sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### race_goblin [npc] 28x40
+Generic goblin NPC archetype, grey-green skin, large head relative to body, long protruding nose, tattered-leather scraps clothing, large amber-yellow eyes, ragged pointed ears. full-body single character, standing, facing forward, RPG npc sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### race_dwarf [npc] 32x44
+Generic dwarf NPC archetype, rosy-dark skin, extremely wide shoulders nearly as broad as sprite height, thick layered beard, heavy work apron, large hands, metal buckles, serious practical expression. full-body single character, standing, facing forward, RPG npc sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### race_orc [npc] 36x52
+Generic orc NPC archetype, medium-green skin with deep shadow variation, visible lower tusks, broad hunched-forward shoulders, heavy brow, deep-set eyes, imposing silhouette among other NPCs. full-body single character, standing, facing forward, RPG npc sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### race_draconato [npc] 36x52
+Generic draconito NPC archetype, copper-toned scales with diagonal pixel texture suggesting scale pattern, short prominent snout, vertical-slit eyes, short backward horns, visible short tail, elegant yet imposing posture. full-body single character, standing, facing forward, RPG npc sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### child_npc [npc] 24x36
+Generic child NPC, slightly oversized head in proportion, short legs, fast and clumsy movement, simple patched colourful clothing, curious open expression. full-body single character, standing, facing forward, RPG npc sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### pet_cat [npc] 24x24
+Tabby cat in Stardew Valley style, compact oval body, round head, triangular ears, long curved tail, orange base with dark-brown stripes and cream belly, idle animation: ear flick or tail sway. full-body single character, standing, facing forward, RPG npc sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### pet_dog [npc] 32x32
+Medium caramel-coloured dog, fluffy coat, floppy or upright ears depending on breed, short friendly snout, tongue out in idle-happy animation, always-wagging tail, caramel coat with cream muzzle and paws. full-body single character, standing, facing forward, RPG npc sprite, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### soil_grass [world] 32x32
+soil grass, Verde medio com variacao organica de 1-2 px; pequenas pedras, flores, folhas esparsas. Varias variantes aleatorias., single tile game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### soil_dry [world] 32x32
+soil dry, Solo aravel nao plantado. Terra marrom-ocre com textura de pedrinhas e torraes; 3-4 tons de marrom alternados., single tile game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### soil_wet [world] 32x32
+soil wet, Solo regado, marrom-escuro e rico, levemente brilhante, textura mais lisa., single tile game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### soil_planted [world] 32x32
+soil planted, Como solo molhado + pequeno broto emergindo (2-4 px de altura)., single tile game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### terrain_stone_path [world] 32x32
+terrain stone path, Pedra/caminho; juntas escuras 5A5040, levemente irregular., single tile game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### terrain_wood_deck [world] 32x32
+terrain wood deck, Madeira (deck/cerca); veios horizontais mais claros C89060., single tile game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### crop_carrot [world] 32x64
+crop carrot, 5 estagios: broto 2px ate folhagem verde-escura com pontinha laranja; fase adulta usa tile 32x64. Estado especial: seca/morta em marrom opaco. c1=folha, c2=raiz., single crop game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### crop_wheat [world] 32x64
+crop wheat, 5 estagios; fase final: espiga dourada inclinada com espigas pequenas no topo. c1=palha, c2=talo., single crop game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### crop_pumpkin [world] 32x32
+crop pumpkin, 5 estagios; ocupa 1x1 tile mas abobora madura vaza levemente nas bordas. c1=laranja-vibrante, c2=folhas verdes grandes., single crop game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### crop_flower [world] 32x32
+crop flower, 5 estagios; pequenas, coloridas, delicadas; petala claramente distinta em 6-8 px. c1 varia por tipo (rosa/amarelo/branco â€” baixa confianca na cor exata, guia nao especifica hex)., single crop game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### tree_young [world] 32x64
+tree young, 1x2 tiles (32x64); tronco fino 4px, copa oval pequena, 3 tons de verde., single tree game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### tree_adult [world] 64x96
+tree adult, 2x3 tiles (64x96); tronco medio 8px, copa arredondada densa; frutos 2-3px em fase colheita. Copa: 3A8A20/4AAA30/6AC040. Tronco: 5C3D1E., single tree game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### tree_large [world] 96x128
+tree large, 3x4 tiles (96x128); tronco grosso 14px, copa massiva e irregular, musgo na base., single tree game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### tree_mana_special [world] 160x160
+tree mana special, 5x5 tiles (160x160); UNICA, nao cultivavel. Tronco prateado-palido, copa azul-esverdeada, particulas douradas flutuando, frutos brancos-dourados. c1 e c2 inferidos â€” guia descreve por nome, nao hex., single tree game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### animal_chicken [world] 32x32
+animal chicken, Corpo oval, crista vermelha pequena C82020, bico amarelo, patas finas. Variedades: branca F0F0E0, caramelo D4902A, preta 3A3028., single animal game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### animal_duck [world] 32x32
+animal duck, Similar a galinha; pescoco mais longo, bico achatado. Macho: cabeca verde-escura 2A6030 com anel branco no pescoco., single animal game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### animal_sheep [world] 48x40
+animal sheep, Corpo bloboso arredondado de la; pernas pequenas. La cheia: c1=EEE8D8 / c2=C8C0A8. La tosada: menor, pele rosada C8A0A0 (variante)., single animal game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### animal_goat [world] 48x40
+animal goat, Corpo mais angular, pescoco visivel, barbinha, chifres curvados. Variedades: branca, marrom, mesclada. Cores sao inferidas â€” guia nao da hex especifico para cabra., single animal game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### animal_cow [world] 64x48
+animal cow, Corpo grande retangular, focinho largo, chifres curtos, ubere 2-3px. Manchas preto 2A2822 ou marrom 6A3A1A. Focinho rosa-claro E8A8A0., single animal game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### house_farm [world] 320x256
+house farm, 10x8 tiles exterior (320x256); interior 16x12 (512x384). Chale 2 andares, paredes bege-sujo D8C8A8, telhado telha vermelha-tijolo A04030, chamine pedra 8C8070, janelas moldura branca + vidro A8C8B8, porta 7A5030., single building game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### chicken_coop [world] 256x192
+chicken coop, 8x6 tiles exterior (256x192); interior 14x10 (448x320). Construcao baixa de madeira com ripas e frestas, porta baixa, teto de palha/colmo, cercado de estacas. Cor inferida do material madeira., single building game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### barn [world] 320x256
+barn, 10x8 tiles exterior (320x256); interior 18x14 (576x448). Porta dupla dobravel, teto pontiagudo com claraboia, paredes vermelho-escuro 8A3020 com detalhes brancos E8E0D0., single building game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### greenhouse [world] 320x256
+greenhouse, 10x8 tiles exterior (320x256); interior 16x12 (512x384). Armacao de madeira com paineis de vidro verde-azulado B0D8C0, vapores por frestas., single building game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### workshop_small [world] 192x160
+workshop small, 6x5 tiles pequena (192x160); versao grande 10x8 (320x256). Pedra e madeira, chamine pequena, janela com grade, ferramentas na fachada., single building game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### fountain_anya [world] 192x192
+fountain anya, 6x6 tiles (192x192). UNICA e FIXA. Fonte circular pedra branca-prateada com veios azuis 60A8E0, Agua Viva animada azul-dourado, runas douradas E0C040. Flores ao redor nao removiveis., single building game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### mana_root_dormant [world] 160x160
+mana root dormant, 5x5 tiles (160x160). UNICA e FIXA. Raiz gigante palida com veios azuis 60A0E0 e dourados D4A820, broto fechado 80C0F0; endgame abre flor azul-branca., single building game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### planter_box [world] 32x32
+planter box, Rectangulo de terra escura delimitado por tabuas de madeira., single tile game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### fence_segment [world] 32x32
+fence segment, Duas estacas de madeira com um ripao horizontal. Madeira clara desgastada., single fence game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### fence_gate [world] 64x32
+fence gate, Como dois segmentos de cerca com dobradicas metalicas 707870. Abre/fecha animado., single fence game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### well [world] 96x96
+well, 3x3 tiles (96x96). Cilindro de pedra, telhado triangular de madeira, balde pendurado em corda., single building game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### barrel [world] 32x32
+barrel, Barril de madeira com arcos de metal 8898A8. Inclinado levemente., single barrel game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### crate [world] 32x32
+crate, Caixa simples de madeira com tampa semi-aberta., single crate game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### scarecrow [world] 32x64
+scarecrow, Estaca com chapeu de palha D4A020, roupa velha recheada de palha, bracos abertos. Levemente torto., single sign game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### compost_bin [world] 64x64
+compost bin, Caixa de madeira sem tampa, restos vegetais coloridos dentro., single crate game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### lantern_post [world] 32x64
+lantern post, Poste de madeira 7A5030, lanterna de vidro no topo. Luz laranja-quente E09030 a noite., single sign game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### bench_farm [world] 64x32
+bench farm, Banco simples de madeira, dois suportes, tabua horizontal., single tile game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### sign_post [world] 32x32
+sign post, Poste de madeira com placa retangular. Texto gravado., single sign game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### rock_small [world] 32x32
+rock small, Pedra arredondada cinza, removivel., single rock game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### rock_medium [world] 64x64
+rock medium, Amontoado de 2-3 pedras, mais resistente., single rock game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### rock_large [world] 96x96
+rock large, Rocha macica, impoe presenca, bloqueia caminho. Cor inferida de pedra cinza-escuro., single rock game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### tree_stump [world] 32x32
+tree stump, Toco cortado, veios visiveis, musgo na borda. c2=musgo verde 4A6A30., single rock game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### fallen_log [world] 64x64
+fallen log, Tronco medio caido com galhos menores. kind=rock pois nenhum primitivo encaixa melhor; serve como obstaculo removivel., single rock game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### temple_kanthor [world] 576x448
+temple kanthor, 18x14 tiles exterior (576x448); interior 24x18 (768x576). Pedra cinza-clara C8C0B0, arcos goticos, porta dupla 3x3 madeira escura 4A3020, vidro azul-royal 3060A0 + dourado D0A020, escadaria 3 degraus., single building game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### town_hall [world] 512x384
+town hall, 16x12 tiles exterior (512x384); interior 22x16 (704x512). Dois andares, bandeira no topo, janelas grandes, porta dupla madeira escura, relogio decorativo na fachada., single building game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### tavern_inn [world] 640x448
+tavern inn, 20x14 tiles exterior (640x448); interior 28x20 (896x640). Letreiro colorido, toldo listrado vermelho-bege, janelas com luz ambar E09030, barris na calcada, 2 andares (estalagem acima)., single building game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### blacksmith_brumdar [world] 448x384
+blacksmith brumdar, 14x12 tiles exterior (448x384); interior 18x15 (576x480). Pedra escura e tijolo 6A3020, fumaca densa, bigorna exposta na entrada, brilho de forja laranja E06010 pela janela., single building game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### seed_shop_sylveth [world] 384x320
+seed shop sylveth, 12x10 tiles exterior (384x320); interior 16x13 (512x416). Fachada verde-clara 7A9A5A, flores na janela, letreiro madeira natural, toldo verde., single building game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### alchemy_shop_ozzra [world] 384x320
+alchemy shop ozzra, 12x10 tiles exterior (384x320); interior 17x14 (544x448). Vidrace com pocoes coloridas (C02020 vermelho, 2050C0 azul, 20A040 verde, 8020C0 roxo), fumaca colorida por tubo., single building game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### archive_thalindra [world] 448x384
+archive thalindra, 14x12 tiles exterior (448x384); interior 20x16 (640x512). Pedra escura 5A5850, porta com tranca visivel, janelas pequenas com grades, simbolo de livro ou coruja gravado., single building game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### shop_yael_night [world] 320x256
+shop yael night, 10x8 tiles exterior (320x256); interior 14x10 (448x320). Parece fechada de dia; a noite: vela acende, porta entreaberta, luz roxa-azulada 4020A0 fraca interna., single building game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### fishing_cabin_sael [world] 384x320
+fishing cabin sael, 12x10 tiles exterior (384x320); interior 16x12 (512x384). Madeira cinza-umida 6A6258 sobre estacas, doca de tabuas avancando sobre a agua, redes secando B8A878, defumador com fumaca, barris de peixe., single building game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### bakery_mill_mella [world] 448x352
+bakery mill mella, 14x11 tiles exterior (448x352); interior 18x14 (576x448). Pedra clara C8C0A8, moinho anexo animado, forno de tijolo A04830 com chamine, pao exposto na janela, toldo bege-trigo D8C088., single building game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### tannery_hess [world] 384x320
+tannery hess, 12x10 tiles exterior (384x320); interior 16x13 (512x416). Madeira escura 4A3826, bastidores de pele C8B088 secando ao sol, tanques de tanino marrom-escuro 2E1E12., single building game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### sacristy_tibbet [world] 256x192
+sacristy tibbet, 8x6 tiles exterior (256x192); interior 12x8 (384x256). Pedra cinza-musgo 6A6858, madeira escura 3A2E20, anexa ao Templo, voltada ao cemiterio, ferramentas de cova na parede externa., single building game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### cave_gate [world] 768x640
+cave gate, 24x20 tiles exterior (768x640). Pedra macica quase negra 3A3830, runas azul-frio 4080C0 pulsando, dois postos de guarda laterais, arco escuro com correntes pesadas simbolicas., single building game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### streetlamp [world] 32x64
+streetlamp, Poste de ferro forjado 404848, globo de vidro no topo. Luz laranja E09030 a noite., single sign game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### market_tent [world] 96x96
+market tent, 3x3 tiles (96x96). Tenda triangular com lona listrada (c1 e c2), mesa exposta de produtos., single building game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### plaza_bench [world] 64x32
+plaza bench, Banco de pedra, dois bracos laterais esculpidos. Cor inferida â€” guia nao da hex especifico para banco de pedra., single tile game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### plaza_fountain [world] 64x64
+plaza fountain, 2x2 tiles (64x64). Fonte circular de pedra funcional, menor que a Fonte de Anya. Sem hex especifico â€” pedra cinza inferida., single building game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### statue_medium [world] 64x96
+statue medium, 2x3 tiles (64x96). Figura esculpida em pedra, levemente desgastada. Cor inferida de pedra cinza., single building game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### statue_large [world] 96x128
+statue large, 3x4 tiles (96x128). Estatua imponente, sugestao de Anya ou figura historica. Cor inferida de pedra cinza., single building game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### plaza_tree [world] 64x96
+plaza tree, 2x3 tiles (64x96). Arvore ornamental bem cuidada, formato oval bonito. Reutiliza paleta da tree_adult., single tree game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### barrel_street [world] 32x32
+barrel street, Barril de madeira encostado na parede de alguma loja. Visual identico ao barrel da fazenda, contexto diferente., single barrel game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### shop_sign [world] 48x32
+shop sign, 32x32 a 64x32 px; w=48 como media. Placa de madeira pendurada, icone pintado identificando o servico., single sign game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+
+### stray_dog [world] 32x32
+stray dog, NPC animal vagando, gordinho, sem coleira. Mesmo esquema visual do pet cachorro. Cor caramelo inferida., single animal game asset object, pixel art, pixelart, aziib pixel mix, crisp clean pixels, limited palette, centered, solid flat background, no antialiasing
+

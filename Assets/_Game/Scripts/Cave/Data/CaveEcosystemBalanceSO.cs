@@ -44,6 +44,13 @@ namespace CindarsHope.Cave.Data
         [Header("Entrada segura")]
         [SerializeField, Min(0f)] private float _safeEntryRadius = 4f;
 
+        [Header("Balance de HP/dano dos inimigos")]
+        [Tooltip("Multiplicador global aplicado ao HP base dos inimigos comuns e elites durante o spawn. " +
+                 "Valor 1.0 = HP do catálogo (muito baixo vs dano do player). " +
+                 "Alvo: inimigo Stone comum (lv1) sobrevive 3-5 hits de ataque básico.")]
+        [SerializeField, Min(1f)] private float _enemyHpBaseMultiplier = 3.5f;
+
+        public float EnemyHpBaseMultiplier => _enemyHpBaseMultiplier;
         public float InterMonsterConflictChance => _interMonsterConflictChance;
         public float InterMonsterConflictReducedChance => _interMonsterConflictReducedChance;
         public float InterMonsterDamageMultiplier => _interMonsterDamageMultiplier;

@@ -47,6 +47,20 @@ namespace CindarsHope.Combat
         public float BlinkRange = 1.5f;
         public bool IsDeathtrigger = false;
 
+        [Header("Signature Attacks (fable_83)")]
+        // ComboStrike: numero de hits encadeados (>= 1)
+        public int ComboHits = 3;
+        // TelegraphedAoE: atraso em segundos entre marcar a zona e resolver o dano
+        public float AoeDelay = 0.8f;
+        // TelegraphedAoE: raio da zona de dano
+        public float AoeRadius = 2.5f;
+        // SummonAdds: quantidade de adds invocados por uso
+        public int SummonCount = 2;
+        // SummonAdds: ID da criatura a ser invocada (referenciado no EnemyDatabase)
+        public string SummonEnemyId = string.Empty;
+        // DebuffStrike: ID do status a aplicar no hit (reusa StatusEffect database)
+        public string DebuffStatusId = string.Empty;
+
         string IIdentifiedData.Id => ActionId;
 
         private void OnValidate()
@@ -74,6 +88,12 @@ namespace CindarsHope.Combat
         SelfBuff,
         BurrowStrike,
         LeapStrike,
-        BlinkStrike
+        BlinkStrike,
+        // fable_83 — ataques-assinatura por arquetipo (aditivos no fim; save-safe)
+        ComboStrike,
+        TelegraphedAoE,
+        SummonAdds,
+        MultiHitCharge,
+        DebuffStrike
     }
 }

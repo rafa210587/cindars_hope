@@ -16,12 +16,17 @@ namespace CindarsHope.NPC.Friendship
         public static readonly int[] LevelThresholds = { 0, 10, 30, 60, 100, 150 };
         public const int MaxLevel = 5;
 
+        // Limites da opinião signed (afinidade exibida no painel de retrato).
+        public const int OpinionMin = -100;
+        public const int OpinionMax = 100;
+
         private sealed class Entry
         {
             public int Points;
             public int LastTalkDay = -1;
             public int LastGiftDay = -1;
             public int LastPurchaseDay = -1;
+            public int Opinion; // -100..+100, neutro 0
         }
 
         private readonly Dictionary<string, Entry> _entries = new Dictionary<string, Entry>();
@@ -76,6 +81,44 @@ namespace CindarsHope.NPC.Friendship
         public bool IsAtLeast(string npcId, FriendshipLevel level)
         {
             return IsAtLeast(npcId, (int)level);
+        }
+
+        // ── Opinião signed (-100..+100) — eixo de gostar/desgostar exibido no painel de retrato ──
+
+        /// <summary>Opinião atual do NPC sobre o jogador. npcId desconhecido ⇒ 0 (neutro).</summary>
+        public int GetOpinion(string npcId)
+        {
+            if (string.IsNullOrEmpty(npcId)) return 0;
+            return _entries.TryGetValue(npcId, out var e) ? e.Opinion : 0;
+        }
+
+        /// <summary>
+        /// Soma <paramref name="delta"/> à opinião (cria entrada se preciso), com clamp em [-100, +100].
+        /// Retorna (mudou, valorAnterior, valorNovo) para o caller publicar evento.
+        /// </summary>
+        public (bool changed, int previous, int current) AdjustOpinion(string npcId, int delta)
+        {
+            if (string.IsNullOrEmpty(npcId)) return (false, 0, 0);
+            var entry = GetOrCreate(npcId);
+            int before = entry.Opinion;
+            int after = before + delta;
+            if (after < OpinionMin) after = OpinionMin;
+            if (after > OpinionMax) after = OpinionMax;
+            entry.Opinion = after;
+            return (after != before, before, after);
+        }
+
+        /// <summary>Define a opinião diretamente (clamp). Útil para debug/teste/wiring externo.</summary>
+        public (bool changed, int previous, int current) SetOpinion(string npcId, int value)
+        {
+            if (string.IsNullOrEmpty(npcId)) return (false, 0, 0);
+            var entry = GetOrCreate(npcId);
+            int before = entry.Opinion;
+            int after = value;
+            if (after < OpinionMin) after = OpinionMin;
+            if (after > OpinionMax) after = OpinionMax;
+            entry.Opinion = after;
+            return (after != before, before, after);
         }
 
         /// <summary>Converte pontos para nível usando os thresholds canônicos.</summary>
@@ -231,7 +274,8 @@ namespace CindarsHope.NPC.Friendship
                     Points = kv.Value.Points,
                     LastTalkDay = kv.Value.LastTalkDay,
                     LastGiftDay = kv.Value.LastGiftDay,
-                    LastPurchaseDay = kv.Value.LastPurchaseDay
+                    LastPurchaseDay = kv.Value.LastPurchaseDay,
+                    Opinion = kv.Value.Opinion
                 });
             }
             return data;
@@ -265,7 +309,8 @@ namespace CindarsHope.NPC.Friendship
                     Points = saved.Points < 0 ? 0 : saved.Points,
                     LastTalkDay = saved.LastTalkDay,
                     LastGiftDay = saved.LastGiftDay,
-                    LastPurchaseDay = saved.LastPurchaseDay
+                    LastPurchaseDay = saved.LastPurchaseDay,
+                    Opinion = ClampOpinion(saved.Opinion)
                 };
             }
         }
@@ -286,6 +331,13 @@ namespace CindarsHope.NPC.Friendship
         {
             int level = GetLevel(npcId);
             return new ApplyResult(false, 0, level, level);
+        }
+
+        private static int ClampOpinion(int value)
+        {
+            if (value < OpinionMin) return OpinionMin;
+            if (value > OpinionMax) return OpinionMax;
+            return value;
         }
     }
 }

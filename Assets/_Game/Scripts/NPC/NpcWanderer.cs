@@ -1,40 +1,88 @@
+using CindarsHope.Core;
+using CindarsHope.Core.Events;
 using UnityEngine;
 
 namespace CindarsHope.NPC
 {
+    /// <summary>
+    /// Movimento "vivo" de um NPC. TODO NPC tem um idle-wander (vaivém curto e aleatório em torno do
+    /// seu ponto), com raio/velocidade por tier (lojista = micro-movimento no posto; andarilho = raio
+    /// maior pela cidade). A configuração é própria deste componente (serializada pelo gerador) e não
+    /// depende mais de <c>NpcDataSO.MovementMode/WanderData</c>, para que mesmo lojistas estáticos
+    /// pareçam vivos.
+    ///
+    /// O agendamento (NpcScheduleService) pode sobrepor um destino (ir trabalhar/dormir), opcionalmente
+    /// passando por um waypoint (o vão da porta) antes do alvo final — assim o NPC entra em casa pela
+    /// porta em vez de atravessar a parede. Durante uma conversa o vaivém pausa (via GameEventBus).
+    /// </summary>
     [DisallowMultipleComponent]
     public class NpcWanderer : MonoBehaviour
     {
         [SerializeField] private NpcDataSO _npcData;
         [SerializeField] private Rigidbody2D _rigidbody;
-        [SerializeField] private Vector2 _wanderBoundsMin = new Vector2(-6f, -3.5f);
-        [SerializeField] private Vector2 _wanderBoundsMax = new Vector2(6f, 3.5f);
 
-        private Vector2 _spawnPosition;
-        private Vector3 _targetPosition;
-        private float _pauseTimer = 0f;
+        [Header("Idle wander (todos os NPCs)")]
+        [SerializeField] private float _moveSpeed = 1.3f;
+        [SerializeField] private float _idleWanderRadius = 1.2f;   // ~2 tiles
+        [SerializeField] private float _pauseMin = 2.5f;
+        [SerializeField] private float _pauseMax = 5.5f;
+        [Tooltip("Clamp duro para nunca sair do playfield da cidade.")]
+        [SerializeField] private Vector2 _townClampMin = new Vector2(-37f, -31f);
+        [SerializeField] private Vector2 _townClampMax = new Vector2(37f, 31f);
+
+        // Centro do vaivém: re-ancorado quando o NPC chega a um destino de agenda (trabalho/casa).
+        private Vector3 _homeSpot;
+        private Vector3 _idleTarget;
+        private float _pauseTimer;
         private bool _isPaused = true;
         private bool _isInteractionPaused;
-        private Collider2D _collider;
 
-        // fable_11: schedule destination override. When set, the NPC walks toward this point
-        // regardless of its base movement mode (static shopkeepers still go home at night).
+        // Destino de agenda (override): waypoint opcional (porta) → alvo final (interior).
         private bool _hasScheduleDestination;
+        private bool _hasWaypoint;
+        private Vector3 _waypoint;
         private Vector3 _scheduleDestination;
         private float _scheduleArriveRadius = 0.3f;
 
-        // Movement speed fallback for NPCs without WanderData (static shopkeepers being routed home).
-        private const float DefaultScheduleMoveSpeed = 1.5f;
+        private const float WaypointArriveRadius = 0.45f;
 
         private void Start()
         {
-            _spawnPosition = transform.position;
-            _targetPosition = _spawnPosition;
-            _collider = GetComponent<Collider2D>();
-
-            if (_npcData?.WanderData != null)
+            _homeSpot = transform.position;
+            _idleTarget = _homeSpot;
+            if (_rigidbody == null)
             {
-                StartPause();
+                _rigidbody = GetComponent<Rigidbody2D>();
+            }
+
+            StartPause();
+        }
+
+        private void OnEnable()
+        {
+            GameEventBus.Subscribe<NpcInteractionStartedEvent>(OnInteractionStarted);
+            GameEventBus.Subscribe<NpcInteractionEndedEvent>(OnInteractionEnded);
+        }
+
+        private void OnDisable()
+        {
+            GameEventBus.Unsubscribe<NpcInteractionStartedEvent>(OnInteractionStarted);
+            GameEventBus.Unsubscribe<NpcInteractionEndedEvent>(OnInteractionEnded);
+        }
+
+        private void OnInteractionStarted(NpcInteractionStartedEvent evt)
+        {
+            if (_npcData != null && evt.NpcId == _npcData.NpcId)
+            {
+                SetInteractionPaused(true);
+            }
+        }
+
+        private void OnInteractionEnded(NpcInteractionEndedEvent evt)
+        {
+            if (_npcData != null && evt.NpcId == _npcData.NpcId)
+            {
+                SetInteractionPaused(false);
             }
         }
 
@@ -46,16 +94,11 @@ namespace CindarsHope.NPC
                 return;
             }
 
-            // fable_11: a schedule destination override takes priority over normal wandering and
-            // applies to any NPC (including static ones being routed home/work by the schedule).
             if (_hasScheduleDestination)
             {
                 MoveTowardScheduleDestination();
                 return;
             }
-
-            if (_npcData?.MovementMode != NpcMovementMode.RandomWander)
-                return;
 
             if (_isPaused)
             {
@@ -63,61 +106,73 @@ namespace CindarsHope.NPC
             }
             else
             {
-                MoveTowardTarget();
+                MoveTowardIdleTarget();
             }
         }
 
         /// <summary>
-        /// fable_11 — order the NPC to walk toward a schedule anchor. Overrides wandering until the
-        /// NPC arrives within <paramref name="arriveRadius"/>. Works for static NPCs too. The schedule
-        /// service applies a teleport fallback if the NPC is blocked en route for too long.
+        /// Ordena o NPC a caminhar até um destino de agenda. Sobrepõe o vaivém até chegar.
         /// </summary>
         public void SetDestination(Vector2 target, float arriveRadius)
         {
+            _hasWaypoint = false;
             _scheduleDestination = target;
             _scheduleArriveRadius = Mathf.Max(0.05f, arriveRadius);
             _hasScheduleDestination = true;
             _isPaused = false;
         }
 
-        /// <summary>Clear any active schedule destination override and resume normal behavior.</summary>
+        /// <summary>
+        /// Como <see cref="SetDestination(Vector2, float)"/>, mas passa primeiro por <paramref name="waypoint"/>
+        /// (ex.: o vão da porta) antes do alvo final — entra em casa pela porta, sem cruzar a parede.
+        /// </summary>
+        public void SetDestination(Vector2 target, Vector2 waypoint, float arriveRadius)
+        {
+            _waypoint = waypoint;
+            _hasWaypoint = true;
+            _scheduleDestination = target;
+            _scheduleArriveRadius = Mathf.Max(0.05f, arriveRadius);
+            _hasScheduleDestination = true;
+            _isPaused = false;
+        }
+
+        /// <summary>Cancela um destino de agenda e volta ao vaivém local.</summary>
         public void ClearDestination()
         {
             _hasScheduleDestination = false;
+            _hasWaypoint = false;
             StopMotion();
-            if (_npcData?.WanderData != null)
-            {
-                StartPause();
-            }
+            StartPause();
         }
 
         private void MoveTowardScheduleDestination()
         {
+            // Primeiro o waypoint (porta), se houver.
+            if (_hasWaypoint)
+            {
+                if (Vector2.Distance(transform.position, _waypoint) <= WaypointArriveRadius)
+                {
+                    _hasWaypoint = false;
+                }
+                else
+                {
+                    MoveToward(_waypoint);
+                    return;
+                }
+            }
+
             float distance = Vector2.Distance(transform.position, _scheduleDestination);
             if (distance <= _scheduleArriveRadius)
             {
                 _hasScheduleDestination = false;
                 StopMotion();
-                if (_npcData?.WanderData != null)
-                {
-                    // Re-anchor wander to the arrival point so the NPC mills around its current anchor.
-                    _spawnPosition = transform.position;
-                    StartPause();
-                }
+                // Re-ancora o vaivém no ponto de chegada (mila em torno do destino atual).
+                _homeSpot = transform.position;
+                StartPause();
                 return;
             }
 
-            var direction = (Vector2)((_scheduleDestination - transform.position).normalized);
-            var moveSpeed = _npcData?.WanderData != null ? _npcData.WanderData.WanderSpeed : DefaultScheduleMoveSpeed;
-
-            if (_rigidbody != null)
-            {
-                _rigidbody.linearVelocity = direction * moveSpeed;
-            }
-            else
-            {
-                transform.position += (Vector3)direction * moveSpeed * Time.fixedDeltaTime;
-            }
+            MoveToward(_scheduleDestination);
         }
 
         private void UpdatePause()
@@ -125,55 +180,56 @@ namespace CindarsHope.NPC
             _pauseTimer -= Time.fixedDeltaTime;
             if (_pauseTimer <= 0f)
             {
-                ChooseNewTarget();
+                ChooseNewIdleTarget();
             }
         }
 
-        private void MoveTowardTarget()
+        private void MoveTowardIdleTarget()
         {
-            float distance = Vector2.Distance(transform.position, _targetPosition);
-            if (distance < 0.1f)
+            if (Vector2.Distance(transform.position, _idleTarget) < 0.1f)
             {
                 StartPause();
                 return;
             }
 
-            var direction = (Vector2)((_targetPosition - transform.position).normalized);
-            var moveSpeed = _npcData.WanderData.WanderSpeed;
+            MoveToward(_idleTarget);
+        }
+
+        private void ChooseNewIdleTarget()
+        {
+            _isPaused = false;
+            var randomAngle = Random.Range(0f, 360f) * Mathf.Deg2Rad;
+            var randomDistance = Random.Range(0f, _idleWanderRadius);
+            var offset = new Vector2(Mathf.Cos(randomAngle) * randomDistance, Mathf.Sin(randomAngle) * randomDistance);
+            var intended = (Vector2)_homeSpot + offset;
+            _idleTarget = new Vector3(
+                Mathf.Clamp(intended.x, _townClampMin.x, _townClampMax.x),
+                Mathf.Clamp(intended.y, _townClampMin.y, _townClampMax.y),
+                0f);
+        }
+
+        private void MoveToward(Vector3 worldTarget)
+        {
+            var direction = (Vector2)((worldTarget - transform.position));
+            if (direction.sqrMagnitude > 0.0001f)
+            {
+                direction.Normalize();
+            }
 
             if (_rigidbody != null)
             {
-                _rigidbody.linearVelocity = direction * moveSpeed;
+                _rigidbody.linearVelocity = direction * _moveSpeed;
             }
             else
             {
-                transform.position += (Vector3)direction * moveSpeed * Time.fixedDeltaTime;
+                transform.position += (Vector3)direction * _moveSpeed * Time.fixedDeltaTime;
             }
-        }
-
-        private void ChooseNewTarget()
-        {
-            _isPaused = false;
-            var wanderData = _npcData.WanderData;
-            var randomAngle = Random.Range(0f, 360f) * Mathf.Deg2Rad;
-            var randomDistance = Random.Range(0f, wanderData.WanderRadius);
-            var offset = new Vector2(
-                Mathf.Cos(randomAngle) * randomDistance,
-                Mathf.Sin(randomAngle) * randomDistance
-            );
-
-            var intendedTarget = _spawnPosition + offset;
-            _targetPosition = new Vector2(
-                Mathf.Clamp(intendedTarget.x, _wanderBoundsMin.x, _wanderBoundsMax.x),
-                Mathf.Clamp(intendedTarget.y, _wanderBoundsMin.y, _wanderBoundsMax.y));
         }
 
         private void StartPause()
         {
             _isPaused = true;
-            var wanderData = _npcData.WanderData;
-            _pauseTimer = Random.Range(wanderData.PauseMinDuration, wanderData.PauseMaxDuration);
-
+            _pauseTimer = Random.Range(_pauseMin, _pauseMax);
             StopMotion();
         }
 
@@ -184,7 +240,7 @@ namespace CindarsHope.NPC
             {
                 StopMotion();
             }
-            else if (_npcData?.WanderData != null)
+            else if (!_hasScheduleDestination)
             {
                 StartPause();
             }
@@ -196,6 +252,18 @@ namespace CindarsHope.NPC
             {
                 _rigidbody.linearVelocity = Vector2.zero;
             }
+        }
+
+        /// <summary>Configuração do tier de movimento pelo gerador (raio/velocidade/pausa e clamp).</summary>
+        public void ConfigureMovement(float moveSpeed, float idleWanderRadius, float pauseMin, float pauseMax,
+            Vector2 townClampMin, Vector2 townClampMax)
+        {
+            _moveSpeed = moveSpeed;
+            _idleWanderRadius = idleWanderRadius;
+            _pauseMin = pauseMin;
+            _pauseMax = pauseMax;
+            _townClampMin = townClampMin;
+            _townClampMax = townClampMax;
         }
     }
 }

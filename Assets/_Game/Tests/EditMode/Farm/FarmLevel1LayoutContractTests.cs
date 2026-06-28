@@ -4,73 +4,107 @@ using UnityEngine;
 
 namespace CindarsHope.Tests.EditMode.Farm
 {
+    /// <summary>
+    /// Testes do FarmLevel1LayoutContract v5 (origem centrada, 56x40 tiles).
+    /// Atualizado em 2026-06-26 (spec_farm_scene_relayout_v4 §15.2 v5).
+    /// </summary>
     public class FarmLevel1LayoutContractTests
     {
         [Test]
-        public void Level1DimensionsAreCorrect()
+        public void Level1DimensionsAreCorrect_V5()
         {
-            Assert.That(FarmLevel1LayoutContract.Level1WidthTiles, Is.EqualTo(40f));
-            Assert.That(FarmLevel1LayoutContract.Level1HeightTiles, Is.EqualTo(32f));
+            Assert.That(FarmLevel1LayoutContract.Level1WidthTiles, Is.EqualTo(56f));
+            Assert.That(FarmLevel1LayoutContract.Level1HeightTiles, Is.EqualTo(40f));
         }
 
         [Test]
-        public void InitialFieldDimensionsAreReasonable()
+        public void BoundsAreOriginCentered()
         {
-            Assert.That(FarmLevel1LayoutContract.InitialFieldWidthTiles, Is.LessThan(FarmLevel1LayoutContract.Level1WidthTiles));
-            Assert.That(FarmLevel1LayoutContract.InitialFieldHeightTiles, Is.LessThan(FarmLevel1LayoutContract.Level1HeightTiles));
+            Assert.That(FarmLevel1LayoutContract.MinX, Is.EqualTo(-28f));
+            Assert.That(FarmLevel1LayoutContract.MaxX, Is.EqualTo(28f));
+            Assert.That(FarmLevel1LayoutContract.MinY, Is.EqualTo(-20f));
+            Assert.That(FarmLevel1LayoutContract.MaxY, Is.EqualTo(20f));
         }
 
         [Test]
-        public void InitialFieldIsInBounds()
+        public void Level1SizeValidation_56x40_IsTrue()
         {
-            bool inBounds = FarmLevel1LayoutContract.IsInitialFieldInBounds();
-            Assert.That(inBounds, Is.True);
+            Assert.That(FarmLevel1LayoutContract.IsLevel1SizeValid(56f, 40f), Is.True);
+        }
+
+        [Test]
+        public void Level1SizeValidation_WrongSize_IsFalse()
+        {
+            Assert.That(FarmLevel1LayoutContract.IsLevel1SizeValid(48f, 34f), Is.False);
+            Assert.That(FarmLevel1LayoutContract.IsLevel1SizeValid(40f, 32f), Is.False);
+        }
+
+        [Test]
+        public void FarmLevel1SizeContract_MeetsMinimum()
+        {
+            // FarmScaleContract.IsFarmLevel1SizeValid aceita >= minimo (32x24).
+            Assert.That(FarmScaleContract.IsFarmLevel1SizeValid(56f, 40f), Is.True);
         }
 
         [Test]
         public void FonteAnchorIsInBounds()
         {
-            bool inBounds = FarmLevel1LayoutContract.IsFonteInBounds();
-            Assert.That(inBounds, Is.True);
-        }
-
-        [Test]
-        public void FonteAnchorIsNotAtEdges()
-        {
-            Assert.That(FarmLevel1LayoutContract.FonteAnchorX, Is.GreaterThan(0));
-            Assert.That(FarmLevel1LayoutContract.FonteAnchorX, Is.LessThan(FarmLevel1LayoutContract.Level1WidthTiles));
-            Assert.That(FarmLevel1LayoutContract.FonteAnchorY, Is.GreaterThan(0));
-            Assert.That(FarmLevel1LayoutContract.FonteAnchorY, Is.LessThan(FarmLevel1LayoutContract.Level1HeightTiles));
+            Assert.That(FarmLevel1LayoutContract.IsFonteInBounds(), Is.True);
         }
 
         [Test]
         public void LakeAnchorIsInBounds()
         {
-            bool inBounds = FarmLevel1LayoutContract.IsLakeInBounds();
-            Assert.That(inBounds, Is.True);
-        }
-
-        [Test]
-        public void LakeDimensionsAreReasonable()
-        {
-            Assert.That(FarmLevel1LayoutContract.LakeWidthTiles, Is.GreaterThan(0));
-            Assert.That(FarmLevel1LayoutContract.LakeHeightTiles, Is.GreaterThan(0));
-            Assert.That(FarmLevel1LayoutContract.LakeWidthTiles, Is.LessThan(FarmLevel1LayoutContract.Level1WidthTiles));
-            Assert.That(FarmLevel1LayoutContract.LakeHeightTiles, Is.LessThan(FarmLevel1LayoutContract.Level1HeightTiles));
+            Assert.That(FarmLevel1LayoutContract.IsLakeInBounds(), Is.True);
         }
 
         [Test]
         public void CaveEntranceIsInBounds()
         {
-            bool inBounds = FarmLevel1LayoutContract.IsCaveEntranceInBounds();
-            Assert.That(inBounds, Is.True);
+            Assert.That(FarmLevel1LayoutContract.IsCaveEntranceInBounds(), Is.True);
+        }
+
+        [Test]
+        public void CaveEntranceIsAtNorthwest()
+        {
+            // Caverna no canto NO: X negativo (oeste), Y positivo alto (norte).
+            Assert.That(FarmLevel1LayoutContract.CaveEntranceX, Is.LessThan(0f));
+            Assert.That(FarmLevel1LayoutContract.CaveEntranceY, Is.GreaterThan(5f));
         }
 
         [Test]
         public void CityExitIsAccessible()
         {
-            bool accessible = FarmLevel1LayoutContract.IsCityExitAccessible();
-            Assert.That(accessible, Is.True);
+            Assert.That(FarmLevel1LayoutContract.IsCityExitAccessible(), Is.True);
+        }
+
+        [Test]
+        public void CityExitIsAtEast()
+        {
+            // Saida da cidade na extrema direita: X proximo do maximo.
+            Assert.That(FarmLevel1LayoutContract.CityExitX, Is.GreaterThan(10f));
+        }
+
+        [Test]
+        public void MountainBaseIsBelowNorthEdge()
+        {
+            Assert.That(FarmLevel1LayoutContract.IsMountainInBounds(), Is.True);
+            Assert.That(FarmLevel1LayoutContract.MountainBaseY, Is.LessThan(FarmLevel1LayoutContract.MaxY));
+        }
+
+        [Test]
+        public void BridgeIsInBounds()
+        {
+            Assert.That(FarmLevel1LayoutContract.IsBridgeInBounds(), Is.True);
+        }
+
+        [Test]
+        public void EvolutionBoardAnchorIsInBounds()
+        {
+            Assert.That(FarmLevel1LayoutContract.EvolutionBoardX, Is.GreaterThanOrEqualTo(FarmLevel1LayoutContract.MinX));
+            Assert.That(FarmLevel1LayoutContract.EvolutionBoardX, Is.LessThan(FarmLevel1LayoutContract.MaxX));
+            Assert.That(FarmLevel1LayoutContract.EvolutionBoardY, Is.GreaterThanOrEqualTo(FarmLevel1LayoutContract.MinY));
+            Assert.That(FarmLevel1LayoutContract.EvolutionBoardY, Is.LessThan(FarmLevel1LayoutContract.MaxY));
         }
 
         [Test]
@@ -81,28 +115,26 @@ namespace CindarsHope.Tests.EditMode.Farm
         }
 
         [Test]
-        public void HouseStartLocationIsInBounds()
+        public void SellPointAnchorIsInBounds()
         {
-            Assert.That(FarmLevel1LayoutContract.HouseStartX, Is.GreaterThanOrEqualTo(0));
-            Assert.That(FarmLevel1LayoutContract.HouseStartX, Is.LessThan(FarmLevel1LayoutContract.Level1WidthTiles));
-            Assert.That(FarmLevel1LayoutContract.HouseStartY, Is.GreaterThanOrEqualTo(0));
-            Assert.That(FarmLevel1LayoutContract.HouseStartY, Is.LessThan(FarmLevel1LayoutContract.Level1HeightTiles));
+            Assert.That(FarmLevel1LayoutContract.SellPointStartX, Is.GreaterThanOrEqualTo(FarmLevel1LayoutContract.MinX));
+            Assert.That(FarmLevel1LayoutContract.SellPointStartX, Is.LessThan(FarmLevel1LayoutContract.MaxX));
+            Assert.That(FarmLevel1LayoutContract.SellPointStartY, Is.GreaterThanOrEqualTo(FarmLevel1LayoutContract.MinY));
+            Assert.That(FarmLevel1LayoutContract.SellPointStartY, Is.LessThan(FarmLevel1LayoutContract.MaxY));
         }
 
         [Test]
-        public void SellPointStartLocationIsInBounds()
+        public void AllSpawnAnchorsAreInBounds()
         {
-            Assert.That(FarmLevel1LayoutContract.SellPointStartX, Is.GreaterThanOrEqualTo(0));
-            Assert.That(FarmLevel1LayoutContract.SellPointStartX, Is.LessThan(FarmLevel1LayoutContract.Level1WidthTiles));
-            Assert.That(FarmLevel1LayoutContract.SellPointStartY, Is.GreaterThanOrEqualTo(0));
-            Assert.That(FarmLevel1LayoutContract.SellPointStartY, Is.LessThan(FarmLevel1LayoutContract.Level1HeightTiles));
-        }
-
-        [Test]
-        public void AllFixedAnchorsAreValidated()
-        {
-            Assert.That(FarmLevel1LayoutContract.IsLevel1SizeValid(40f, 32f), Is.True);
-            Assert.That(FarmLevel1LayoutContract.IsLevel1SizeValid(39f, 32f), Is.False);
+            // spawn_farm_default
+            Assert.That(FarmLevel1LayoutContract.DefaultSpawnX, Is.InRange(FarmLevel1LayoutContract.MinX, FarmLevel1LayoutContract.MaxX));
+            Assert.That(FarmLevel1LayoutContract.DefaultSpawnY, Is.InRange(FarmLevel1LayoutContract.MinY, FarmLevel1LayoutContract.MaxY));
+            // spawn_farm_from_town
+            Assert.That(FarmLevel1LayoutContract.SpawnFromTownX, Is.InRange(FarmLevel1LayoutContract.MinX, FarmLevel1LayoutContract.MaxX));
+            Assert.That(FarmLevel1LayoutContract.SpawnFromTownY, Is.InRange(FarmLevel1LayoutContract.MinY, FarmLevel1LayoutContract.MaxY));
+            // spawn_farm_from_cave
+            Assert.That(FarmLevel1LayoutContract.SpawnFromCaveX, Is.InRange(FarmLevel1LayoutContract.MinX, FarmLevel1LayoutContract.MaxX));
+            Assert.That(FarmLevel1LayoutContract.SpawnFromCaveY, Is.InRange(FarmLevel1LayoutContract.MinY, FarmLevel1LayoutContract.MaxY));
         }
     }
 }

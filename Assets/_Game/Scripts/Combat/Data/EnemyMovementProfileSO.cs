@@ -29,6 +29,36 @@ namespace CindarsHope.Combat
         [Header("Timing")]
         public float DecisionTickSeconds = 0.3f;
 
+        // ── fable_82: Evasao Reativa (campos aditivos, default OFF para roles que nao evadem) ──
+
+        [Header("Reactive Evasion (fable_82)")]
+        /// <summary>Habilita sidestep reativo ao windup do player. Default false (tanks/brutes/swarm/guard nao evadem).</summary>
+        public bool CanReactiveEvade = false;
+        /// <summary>Probabilidade (0-1) de executar o sidestep quando condicoes forem atendidas.</summary>
+        [Range(0f, 1f)] public float EvadeChance = 0.5f;
+        /// <summary>Cooldown minimo entre esquivas reativas (segundos).</summary>
+        public float EvadeCooldown = 2.5f;
+        /// <summary>Raio maximo do player para ativar a esquiva reativa (tiles).</summary>
+        public float EvadeReactionRadius = 4f;
+        /// <summary>Distancia do sidestep lateral (tiles).</summary>
+        public float EvadeSidestepDistance = 1.6f;
+        /// <summary>Duracao do sidestep hop (segundos).</summary>
+        public float EvadeSidestepDuration = 0.18f;
+
+        [Header("Reposition Dash (fable_82)")]
+        /// <summary>Habilita dash de reposicionamento. So para ranged/caster/assassino/duelista (gate por role).</summary>
+        public bool RepositionDashEnabled = false;
+        /// <summary>Cooldown entre repositions dash (segundos).</summary>
+        public float DashCooldown = 3f;
+        /// <summary>Distancia do dash de reposicionamento (tiles).</summary>
+        public float DashDistance = 2.5f;
+        /// <summary>Duracao do dash de reposicionamento (segundos).</summary>
+        public float DashDuration = 0.22f;
+
+        [Header("Gap Closer Leap (fable_82)")]
+        /// <summary>Habilita uso do Leap existente como gap-closer agressivo. Default false.</summary>
+        public bool GapCloserLeap = false;
+
         string IIdentifiedData.Id => MovementProfileId;
 
         private void OnValidate()
@@ -44,6 +74,16 @@ namespace CindarsHope.Combat
 
             if (string.IsNullOrWhiteSpace(MovementProfileId))
                 MovementProfileId = "movement_" + name.ToLower();
+
+            // fable_82: clampar campos de evasao
+            EvadeChance = Mathf.Clamp01(EvadeChance);
+            EvadeCooldown = Mathf.Max(0.5f, EvadeCooldown);
+            EvadeReactionRadius = Mathf.Max(0.5f, EvadeReactionRadius);
+            EvadeSidestepDistance = Mathf.Max(0.2f, EvadeSidestepDistance);
+            EvadeSidestepDuration = Mathf.Max(0.05f, EvadeSidestepDuration);
+            DashCooldown = Mathf.Max(0.5f, DashCooldown);
+            DashDistance = Mathf.Max(0.5f, DashDistance);
+            DashDuration = Mathf.Max(0.05f, DashDuration);
         }
     }
 

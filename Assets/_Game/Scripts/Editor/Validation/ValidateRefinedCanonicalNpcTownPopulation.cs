@@ -43,6 +43,9 @@ namespace CindarsHope.Editor.Validation
             new("npc_savra", "Savra Escama-Verde", "Patrol/HerbRoute", "shop_savra"),
             new("npc_tovin", "Tovin Maos-de-Selo", "Stationary/PermitDesk", "shop_tovin"),
             new("npc_maelor", "Maelor Cinza", "NightOnly/WanderHidden", ""),
+            // NOTA: o Ancião Velorin (líder da aldeia) é uma EXTENSÃO além dos 23 canônicos WAVE12C —
+            // não entra aqui de propósito (este validator exige árvore de diálogo ≥10 nós; o chefe
+            // saúda pela OpeningLine). Ele está no roster (CanonicalCount=24) e tem anchors de schedule.
         };
 
         public static void Run()

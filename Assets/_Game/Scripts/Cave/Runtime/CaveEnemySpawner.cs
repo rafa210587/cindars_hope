@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using CindarsHope.Combat;
+using CindarsHope.Cave.Data;
 using CindarsHope.Cave.Generation;
 using CindarsHope.Core.Data;
 using UnityEngine;
@@ -15,6 +16,7 @@ namespace CindarsHope.Cave.Runtime
         [SerializeField] private DataRegistrySO<EnemyDataSO> _enemyDatabase;
         [SerializeField] private CaveRunManager _caveRunManager;
         [SerializeField] private EnemyDataSO _fallbackEnemyData;
+        [SerializeField] private CaveEcosystemBalanceSO _ecosystemBalance;
 
         private List<GameObject> _spawnedEnemies = new List<GameObject>();
         private List<string> _spawnedEnemyIds = new List<string>();
@@ -103,17 +105,23 @@ namespace CindarsHope.Cave.Runtime
             }
             spriteRenderer.sortingOrder = 3;
 
-            enemyGO.transform.localScale = Vector3.one;
+            // Data-driven scale via EnemyScaleResolver (player-relative), identical ao caminho do
+            // CaveRuntimeMaterializer. VisualScale hardcoded era ignorado para size class; agora
+            // Tiny/Small/Medium/Large/Huge/Boss aparecem em tamanhos distintos tambem neste spawner legado.
+            var visualScale = Mathf.Max(0.1f,
+                EnemyScaleResolver.ResolveVisualScale(enemyData.BestiarySize, false, false));
+            enemyGO.transform.localScale = new Vector3(visualScale, visualScale, 1f);
 
             var collider = enemyGO.AddComponent<CircleCollider2D>();
-            collider.radius = 0.4f;
+            collider.radius = EnemyScaleResolver.ColliderRadiusFor(enemyData.BestiarySize);
 
             var rigidbody = enemyGO.AddComponent<Rigidbody2D>();
             rigidbody.gravityScale = 0;
             rigidbody.constraints = RigidbodyConstraints2D.FreezeRotation;
 
             var enemyHealth = enemyGO.AddComponent<EnemyHealth>();
-            enemyHealth.Configure(enemyData);
+            var hpMult = _ecosystemBalance != null ? _ecosystemBalance.EnemyHpBaseMultiplier : 1f;
+            enemyHealth.ConfigureWithScaling(enemyData, generatedLevel.CaveLevel, hpMult);
 
             var knockback = enemyGO.AddComponent<KnockbackController>();
             var hitFlash = enemyGO.AddComponent<HitFlashController>();
@@ -131,7 +139,7 @@ namespace CindarsHope.Cave.Runtime
             triggerChild.transform.localPosition = Vector3.zero;
 
             var triggerCollider = triggerChild.AddComponent<CircleCollider2D>();
-            triggerCollider.radius = 0.5f;
+            triggerCollider.radius = Mathf.Max(collider.radius, 0.5f * visualScale);
             triggerCollider.isTrigger = true;
 
             var contactDamage = triggerChild.AddComponent<EnemyContactDamage>();

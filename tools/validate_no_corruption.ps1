@@ -72,7 +72,30 @@ if (Test-Path $scriptAssemblies) {
     }
 }
 
-$total = $corrupt.Count + $dllCorrupt.Count
+# 4) Arquivos RASTREADOS pelo git que sumiram ou estao ilegiveis no disco.
+#    Pega a classe de corrupcao de NTFS/diretorio (recorrencia 2026-06-28): a entrada
+#    de diretorio fica danificada -> Get-ChildItem nem enxerga os arquivos (secoes 1-2
+#    sao cegas a isso); o git sabe que deveriam existir. Test-Path False = sumido;
+#    OpenRead lanca = ilegivel.
+$missing = New-Object System.Collections.Generic.List[string]
+try {
+    $tracked = & git ls-files -- $Root 2>$null
+    if ($LASTEXITCODE -eq 0 -and $tracked) {
+        foreach ($rel in $tracked) {
+            if ([string]::IsNullOrWhiteSpace($rel)) { continue }
+            $full = Join-Path (Get-Location) $rel
+            $ok = $true
+            if (-not (Test-Path -LiteralPath $full)) {
+                $ok = $false
+            } else {
+                try { $h = [System.IO.File]::OpenRead($full); $h.Close() } catch { $ok = $false }
+            }
+            if (-not $ok) { $missing.Add($rel) }
+        }
+    }
+} catch { }
+
+$total = $corrupt.Count + $dllCorrupt.Count + $missing.Count
 if ($total -eq 0) {
     Write-Host "   PASS: nenhum arquivo de fonte/dados/assembly corrompido" -ForegroundColor Green
     exit 0
@@ -80,13 +103,16 @@ if ($total -eq 0) {
 
 Write-Host ""
 Write-Host "CORRUPTION_DETECTED: $total arquivo(s)" -ForegroundColor Red
-foreach ($f in $corrupt)    { Write-Host "  [fonte/dado] $f" -ForegroundColor Red }
-foreach ($f in $dllCorrupt) { Write-Host "  [assembly]   Library/ScriptAssemblies/$f" -ForegroundColor Red }
+foreach ($f in $corrupt)    { Write-Host "  [fonte/dado]      $f" -ForegroundColor Red }
+foreach ($f in $dllCorrupt) { Write-Host "  [assembly]        Library/ScriptAssemblies/$f" -ForegroundColor Red }
+foreach ($f in $missing)    { Write-Host "  [sumido/ilegivel] $f" -ForegroundColor Red }
 Write-Host ""
 Write-Host "RECUPERACAO:" -ForegroundColor Yellow
-Write-Host "  rastreado no git : Remove-Item <f>; git checkout HEAD -- <f>   (o rm forca reescrita; stat-cache pode mascarar)"
-Write-Host "  nao-rastreado    : reconstruir a partir dos consumidores ou regenerar via gerador de editor"
-Write-Host "  Library *.dll    : Remove-Item e deixar o Unity recompilar (cache regeneravel)"
+Write-Host "  rastreado no git      : Remove-Item <f>; git checkout HEAD -- <f>   (o rm forca reescrita; stat-cache pode mascarar)"
+Write-Host "  nao-rastreado         : reconstruir a partir dos consumidores ou regenerar via gerador de editor"
+Write-Host "  Library *.dll         : Remove-Item e deixar o Unity recompilar (cache regeneravel)"
+Write-Host "  sumido/ilegivel (NTFS): se Remove-Item E git checkout falham com 'corrompido e ilegivel' / 'Invalid argument',"
+Write-Host "                          e corrupcao de filesystem -> 'chkdsk D: /f' (admin + reboot) e SO DEPOIS git checkout -- <pasta>"
 Write-Host ""
 Write-Host "PREVENCAO: excluir a pasta do projeto de cloud sync (OneDrive/Drive/Dropbox) e do scan em tempo real do antivirus; rodar este guard antes de commit/validacao." -ForegroundColor Yellow
 exit 1

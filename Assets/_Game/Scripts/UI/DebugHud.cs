@@ -46,6 +46,11 @@ namespace CindarsHope.UI
         private Vector2 _actionsScrollPosition;
         private Vector2 _infoScrollPosition;
 
+        // Both debug overlays start hidden for a clean play screen; N toggles the Actions panel and
+        // V toggles the Debug Info panel (B is taken by the equipped-tool cycle, M by the minimap).
+        private bool _showActionsPanel;
+        private bool _showInfoPanel;
+
         public static DebugHud Instance => _instance;
 
         private void Awake()
@@ -133,6 +138,16 @@ namespace CindarsHope.UI
             {
                 GrantDebugXp();
             }
+
+            if (global::UnityEngine.Input.GetKeyDown(KeyCode.N))
+            {
+                _showActionsPanel = !_showActionsPanel;
+            }
+
+            if (global::UnityEngine.Input.GetKeyDown(KeyCode.V))
+            {
+                _showInfoPanel = !_showInfoPanel;
+            }
         }
 
         // SPEC 14A-FIX13: responsive HUD layout. Font size and panel widths scale with screen size
@@ -159,8 +174,40 @@ namespace CindarsHope.UI
             }
 
             ApplyResponsiveStyles();
-            DrawActionsPanel();
-            DrawInfoPanel();
+            if (_showActionsPanel)
+            {
+                DrawActionsPanel();
+            }
+
+            if (_showInfoPanel)
+            {
+                DrawInfoPanel();
+            }
+
+            DrawToggleHint();
+        }
+
+        // Always-visible one-liner so the hidden debug panels stay discoverable. Lists only the panels that
+        // are currently hidden, so it vanishes entirely once both are shown.
+        private void DrawToggleHint()
+        {
+            var hint = string.Empty;
+            if (!_showActionsPanel)
+            {
+                hint += "[N] Actions   ";
+            }
+
+            if (!_showInfoPanel)
+            {
+                hint += "[V] Debug Info";
+            }
+
+            if (string.IsNullOrWhiteSpace(hint))
+            {
+                return;
+            }
+
+            GUI.Label(new Rect(12f, Screen.height - 22f, 360f, 20f), hint.Trim());
         }
 
         private void DrawActionsPanel()
@@ -455,6 +502,7 @@ namespace CindarsHope.UI
 
             GUILayout.Space(6f);
             GUILayout.Label("== Debug ==");
+            GUILayout.Label("N / V: toggle Actions / Debug Info HUD");
             GUILayout.Label("O: +99 XP");
             GUILayout.Label("P: next gate / level skip");
             GUILayout.Label("F2: alt debug skip");

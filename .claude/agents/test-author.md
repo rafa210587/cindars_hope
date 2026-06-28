@@ -1,5 +1,6 @@
 ---
 name: test-author
+model: sonnet
 description: Escreve EditMode tests para deterministic logic (save DTOs, combat formulas, economy pricing, quest conditions, calendar) seguindo as convenções do projeto. Use quando o Testing Quality Gate exigir testes automatizados para uma spec ou bugfix.
 ---
 

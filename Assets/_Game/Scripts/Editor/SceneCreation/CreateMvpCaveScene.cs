@@ -27,6 +27,8 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using CindarsHope.UI.Hotbar;
+using CindarsHope.Editor.ScaleSystem;
+using CindarsHope.World.Scale;
 
 namespace CindarsHope.Editor.SceneCreation
 {
@@ -354,18 +356,31 @@ namespace CindarsHope.Editor.SceneCreation
         {
             var player = new GameObject("Player");
             player.transform.position = Vector3.zero;
-            player.transform.localScale = new Vector3(1f, 1.5f, 1f);
+            // Size from the authored Player scale profile (VisualScale 2.0), not a hardcoded localScale.
+            if (!ScaleProfileLibrary.AttachApplicator(player, EntityScaleCategory.Player))
+            {
+                player.transform.localScale = new Vector3(1f, 1.5f, 1f);
+            }
+
+            // Escala visual do player com sprites pixel art a 128 PPU (~0.5625u/altura).
+            // Valor afinavel: 1.3f resulta em ~0.73 unidade de altura na cena.
+            const float PlayerVisualScale = 1.3f;
 
             var spriteRenderer = player.AddComponent<SpriteRenderer>();
-            spriteRenderer.sprite = GetBuiltinSprite();
-            spriteRenderer.color = new Color(0.23f, 0.48f, 0.84f);
+            var walkDownFrame1 = Resources.Load<Sprite>("PlayerSprites/walk/down/walk_down_01");
+            if (walkDownFrame1 != null)
+            {
+                spriteRenderer.sprite = walkDownFrame1;
+            }
+            else
+            {
+                spriteRenderer.sprite = GetBuiltinSprite();
+                Debug.LogWarning("[PlayerWalkAnimator] Cave: Resources/PlayerSprites/walk/down/walk_down_01 nao encontrado. " +
+                                 "Usando sprite builtin como fallback. Reimporte os sprites do player.");
+            }
+            spriteRenderer.color = Color.white;
             spriteRenderer.sortingOrder = 0;
             TrySetSortingLayer(spriteRenderer, "Player", spriteRenderer.sortingOrder);
-
-            if (spriteRenderer.sprite == null)
-            {
-                Debug.LogWarning("Player placeholder SpriteRenderer was created without a sprite. Replace it with player art in a future art PR.");
-            }
 
             var collider = player.AddComponent<BoxCollider2D>();
             collider.size = new Vector2(0.6f, 1f);
@@ -376,6 +391,11 @@ namespace CindarsHope.Editor.SceneCreation
 
             var playerController = player.AddComponent<PlayerController>();
             player.AddComponent<PlayerManager>();
+
+            player.AddComponent<CindarsHope.Player.PlayerWalkAnimator>();
+
+            // Sobrescreve a escala definida pelo ScaleProfileLibrary para adequar o sprite pixel art.
+            player.transform.localScale = new Vector3(PlayerVisualScale, PlayerVisualScale, 1f);
 
             var interactionSystem = player.AddComponent<InteractionSystem>();
             var interactionTrigger = CreateInteractionTrigger(player.transform, interactionSystem);
@@ -488,7 +508,10 @@ namespace CindarsHope.Editor.SceneCreation
         {
             var portalObject = new GameObject(name);
             portalObject.transform.position = position;
-            portalObject.transform.localScale = new Vector3(0.9f, 0.9f, 1f);
+            if (!ScaleProfileLibrary.AttachApplicator(portalObject, EntityScaleCategory.CavePortal))
+            {
+                portalObject.transform.localScale = new Vector3(0.9f, 0.9f, 1f);
+            }
 
             var spriteRenderer = portalObject.AddComponent<SpriteRenderer>();
             spriteRenderer.sprite = GetBuiltinSprite();
@@ -545,6 +568,9 @@ namespace CindarsHope.Editor.SceneCreation
         {
             var slimeObject = new GameObject("Slime");
             slimeObject.transform.position = position;
+            // Scene-authored demo enemy: size via the shared EnemySmall profile so it reads consistently
+            // against the 2.0 player (spawner-driven cave enemies use the EnemySizeProfile path instead).
+            ScaleProfileLibrary.AttachApplicator(slimeObject, EntityScaleCategory.EnemySmall);
 
             var spriteRenderer = slimeObject.AddComponent<SpriteRenderer>();
             spriteRenderer.sprite = GetBuiltinSprite();

@@ -13,15 +13,14 @@ namespace CindarsHope.Editor.Validation
     /// <summary>
     /// fable_11 editor validator (CA-2 / CA-3). Opens TownScene and verifies:
     /// - every canonical town NPC has >= 3 schedule anchors (work/social/home);
-    /// - 12 minimal interiors exist in the off-playfield band (y > +40);
-    /// - 24 paired house doors exist (exterior + interior per house).
+    /// - casas FÍSICAS percorríveis: cada casa tem um RoofRevealController (telhado some ao entrar),
+    ///   substituindo a antiga faixa off-field de interiores + portas de teleporte.
     /// Also checks runtime code presence. Menu: CindarsHope/Validate/Fable City Schedule (fable_11).
     /// </summary>
     public static class ValidateFableCitySchedule
     {
         private const string MenuPath = "CindarsHope/Validate/Fable City Schedule (fable_11)";
         private const string ScenePath = "Assets/_Game/Scenes/TownScene.unity";
-        private const float InteriorBandMinY = 40f;
 
         [MenuItem(MenuPath)]
         public static void Validate()
@@ -51,7 +50,7 @@ namespace CindarsHope.Editor.Validation
             var scene = EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single);
 
             var anchors = FindAll<NpcScheduleAnchor>(scene);
-            var doors = FindAll<DoorInteractable>(scene);
+            var roofReveals = FindAll<RoofRevealController>(scene);
 
             // Anchors: >= 3 per canonical NPC, all 23 covered.
             var byNpc = new Dictionary<string, int>();
@@ -74,38 +73,34 @@ namespace CindarsHope.Editor.Validation
             Check($"All {NpcTownRosterRegistry.CanonicalCount} canonical NPCs have >= 3 anchors (have {npcsWith3})",
                 npcsWith3 >= NpcTownRosterRegistry.CanonicalCount, ref passCount, ref failCount);
 
-            // Interiors band: count GameObjects named Interior_* with y > +40.
-            int interiorCount = CountInteriors(scene);
-            Check($"12 interiors in off-playfield band (y>+40) — found {interiorCount}",
-                interiorCount >= 12, ref passCount, ref failCount);
+            // Casas físicas percorríveis: cada casa tem um RoofRevealController (telhado some ao entrar).
+            Check($"Casas percorríveis com revelação de telhado — encontradas {roofReveals.Count} (>=12)",
+                roofReveals.Count >= 12, ref passCount, ref failCount);
 
-            // Doors: 24 paired (exterior + interior per 12 houses).
-            Check($"24 paired house doors — found {doors.Count}",
-                doors.Count >= 24, ref passCount, ref failCount);
-
-            // At least one shop-gated door (closed-shop hours, decision 6.4-A).
-            int shopDoors = 0;
-            foreach (var door in doors)
-            {
-                if (door != null && door.IsShopDoor && !string.IsNullOrEmpty(door.LinkedNpcId)) shopDoors++;
-            }
-            Check($"At least one closed-shop-gated door — found {shopDoors}",
-                shopDoors >= 1, ref passCount, ref failCount);
+            // Toda casa percorrível deve ter um chão (objeto Floor) sob o root House_*.
+            int walkInFloors = CountWalkInFloors(scene);
+            Check($"Casas com chão andável (Floor sob House_*) — encontradas {walkInFloors} (>=12)",
+                walkInFloors >= 12, ref passCount, ref failCount);
 
             Report(passCount, failCount);
         }
 
-        private static int CountInteriors(Scene scene)
+        // Conta casas percorríveis: roots cujo nome começa com "House_" e que têm um filho "Floor".
+        private static int CountWalkInFloors(Scene scene)
         {
             int count = 0;
             foreach (var root in scene.GetRootGameObjects())
             {
-                if (root.name != "HouseInteriors") continue;
-                foreach (Transform child in root.transform)
+                foreach (var t in root.GetComponentsInChildren<Transform>(true))
                 {
-                    if (child.name.StartsWith("Interior_") && child.position.y > InteriorBandMinY)
+                    if (!t.gameObject.name.StartsWith("House_")) continue;
+                    foreach (Transform child in t)
                     {
-                        count++;
+                        if (child.name == "Floor")
+                        {
+                            count++;
+                            break;
+                        }
                     }
                 }
             }

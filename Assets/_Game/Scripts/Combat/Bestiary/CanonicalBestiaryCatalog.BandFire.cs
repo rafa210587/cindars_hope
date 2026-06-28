@@ -119,6 +119,74 @@ namespace CindarsHope.Combat.Bestiary
                 VulnerabilityMatrixProfileId = "vulnmatrix_dragon",
                 Notes = "Boss gate 50 (o dragao pequeno). F1 garras/cauda; F2 (66%) Ember Breath cone + voo curto; F3 (33%) pousa exausta cada 20s, CoreExposed 4s. Fraca Ice; imune Fire/Burn; 1o rugido aplica Fear. Mecanicas = F05 (dormante). Drops first-kill: dragon ember scale + receita scroll Fire Wall.",
             };
+
+            // ── fable_80: +6 Fire ───────────────────────────────────────────────────────────
+            yield return new BestiaryCreatureDef
+            {
+                EnemyId = "enemy_magma_slug", DisplayName = "Magma Slug",
+                Band = 4, MinLevel = 41, MaxLevel = 48, Family = "Elemental",
+                Size = BestiarySizeClass.Large, Role = EnemyRole.Tank,
+                MovePrimary = EnemyMovementType.TankSlowPush, MoveSecondary = EnemyMovementType.GuardStationary,
+                Hp = 130, Damage = 10, Defense = 5, Xp = 55, SpoilerTier = 0,
+                PrimaryDropItemId = "item_material_magma_chitin", PrimaryDamageTypeId = "fire",
+                VulnerabilityMatrixProfileId = "vulnmatrix_elemental",
+                Notes = "Motivacao: pastador lento de fornalha que bloqueia caminhos em busca de mineral. Razao no pack: controlador de espaco; trilha de magma cria hazard tile que dura 8s. Fraqueza: agua/gelo aplica slow e cancela a trilha.",
+            };
+            yield return new BestiaryCreatureDef
+            {
+                EnemyId = "enemy_ember_scorpion", DisplayName = "Ember Scorpion",
+                Band = 4, MinLevel = 43, MaxLevel = 50, Family = "Beast",
+                Size = BestiarySizeClass.Medium, Role = EnemyRole.Chaser,
+                MovePrimary = EnemyMovementType.ChargeLine, MoveSecondary = EnemyMovementType.GroundChase,
+                Hp = 75, Damage = 14, Defense = 2, Xp = 60, SpoilerTier = 1,
+                PrimaryDropItemId = "item_material_ember_fang", PrimaryDamageTypeId = "fire",
+                VulnerabilityMatrixProfileId = "vulnmatrix_beast",
+                Notes = "Motivacao: territorial perto de veios de magma; protege a ninhada. Razao no pack: perseguidor de carga em packs de fogo; ferrão aplica Burn 3s. Fraqueza: gelo paralisa a carga e expoe o abdomen.",
+            };
+            yield return new BestiaryCreatureDef
+            {
+                EnemyId = "enemy_sulfur_wyrmling", DisplayName = "Sulfur Wyrmling",
+                Band = 4, MinLevel = 45, MaxLevel = 53, Family = "Dragon",
+                Size = BestiarySizeClass.Medium, Role = EnemyRole.Ranged,
+                MovePrimary = EnemyMovementType.KiteRanged, MoveSecondary = EnemyMovementType.FloatingSlow,
+                Hp = 65, Damage = 13, Defense = 2, Xp = 68, SpoilerTier = 1,
+                PrimaryDropItemId = "item_material_wyrmling_scale", PrimaryDamageTypeId = "fire",
+                VulnerabilityMatrixProfileId = "vulnmatrix_dragon",
+                Notes = "Motivacao: ninhada menor do Cindershard; cone de sopro sulfurico aplica Poison+Burn. Razao no pack: atirador que mantem distancia, lider de mini-ninho; guarda o adulto. Fraqueza: gelo/agua fecha o cone e para o voo.",
+            };
+            yield return new BestiaryCreatureDef
+            {
+                EnemyId = "enemy_emberroot_horror", DisplayName = "Emberroot Horror",
+                Band = 4, MinLevel = 44, MaxLevel = 52, Family = "Plant",
+                Size = BestiarySizeClass.Large, Role = EnemyRole.Guard,
+                MovePrimary = EnemyMovementType.ProtectAnchor, MoveSecondary = EnemyMovementType.TankSlowPush,
+                Hp = 120, Damage = 11, Defense = 4, Xp = 58, SpoilerTier = 1,
+                PrimaryDropItemId = "item_material_sinew", PrimaryDamageTypeId = "fire",
+                VulnerabilityMatrixProfileId = "vulnmatrix_plant",
+                Notes = "Motivacao: crescimento corrompido alimentado por lava e Pedra Negra; defende a fenda de onde cresce. Razao no pack: ancora de hazard; chicote de vinha flamejante alcanca 3 tiles. Fraqueza: agua extingue as vinhas temporariamente.",
+            };
+            yield return new BestiaryCreatureDef
+            {
+                EnemyId = "enemy_veilkin_pyrecaller", DisplayName = "Veilkin Pyrecaller",
+                Band = 4, MinLevel = 46, MaxLevel = 54, Family = "Humanoid",
+                Size = BestiarySizeClass.Medium, Role = EnemyRole.Caster,
+                MovePrimary = EnemyMovementType.CasterKeepAway, MoveSecondary = EnemyMovementType.RetreatAndCall,
+                Hp = 55, Damage = 15, Defense = 1, Xp = 72, SpoilerTier = 1,
+                PrimaryDropItemId = "item_material_shade_ash", PrimaryDamageTypeId = "fire",
+                VulnerabilityMatrixProfileId = "vulnmatrix_humanoid",
+                Notes = "Motivacao: culto do Veu de Kaand do fogo; convoca brasa para homenagear o deus do conflito. Razao no pack: conjurador-lider; bola de fogo + chuva de brasas cobre a retirada. Fraqueza: silencio/agua cancela o canal de chuva.",
+            };
+            yield return new BestiaryCreatureDef
+            {
+                EnemyId = "enemy_steam_golem_proto", DisplayName = "Steam Golem Prototype",
+                Band = 4, MinLevel = 48, MaxLevel = 56, Family = "Construct",
+                Size = BestiarySizeClass.Large, Role = EnemyRole.Guard,
+                MovePrimary = EnemyMovementType.BossArenaControl, MoveSecondary = EnemyMovementType.TankSlowPush,
+                Hp = 160, Damage = 16, Defense = 6, Xp = 90, SpoilerTier = 1,
+                PrimaryDropItemId = "item_material_bromecian_alloy", PrimaryDamageTypeId = "fire",
+                VulnerabilityMatrixProfileId = "vulnmatrix_construct",
+                Notes = "Motivacao: unidade de forja bromeciana defeituosa que patrulha a camara sem ordens; jato de vapor e pancada de pistao. Razao no pack: guarda pesado de camara (proto-boss primitivo — sem fases de gate); leash de arena. Fraqueza: relampago/EMP desliga a caldeira 3s (CoreExposed).",
+            };
         }
     }
 }

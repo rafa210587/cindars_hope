@@ -1,4 +1,4 @@
-using CindarsHope.Combat.Magic;
+﻿using CindarsHope.Combat.Magic;
 using CindarsHope.Combat.StatusEffect;
 using CindarsHope.Combat.Weapon;
 using CindarsHope.Core;
@@ -16,7 +16,7 @@ using UnityEngine;
 namespace CindarsHope.Combat
 {
     [DisallowMultipleComponent]
-    public class PlayerAttackController : MonoBehaviour
+    public partial class PlayerAttackController : MonoBehaviour
     {
         [SerializeField] private PlayerController _playerController;
         [SerializeField] private EquipmentManager _equipmentManager;
@@ -41,11 +41,7 @@ namespace CindarsHope.Combat
         [SerializeField] private float _dodgeDistance = 2f;
         [SerializeField] private float _dodgeDurationSeconds = 0.2f;
 
-        private float _lastLeftHandAttackTime;
-        private float _lastRightHandAttackTime;
-        private float _lastDodgeTime;
-        private float _dodgeEndTime;
-        private bool _isDodging;
+        private readonly PlayerAttackCore _attackCore = new PlayerAttackCore();
 
         // SPEC_05: Service extraction
         private EquippedItemResolver _itemResolver;
@@ -58,7 +54,7 @@ namespace CindarsHope.Combat
         // fable_08: gerencia janela de cast time + interrupt (criado em Start no player).
         private CindarsHope.Combat.Magic.SpellCastRoutine _spellCastRoutine;
 
-        // F02: carga por mão (tap=light, hold=heavy, hold longo=charged) + stats derivados.
+        // F02: carga por mÃ£o (tap=light, hold=heavy, hold longo=charged) + stats derivados.
         private readonly AttackChargeTracker _leftCharge = new AttackChargeTracker();
         private readonly AttackChargeTracker _rightCharge = new AttackChargeTracker();
         private PlayerCombatStatsProvider _statsProvider;
@@ -105,8 +101,8 @@ namespace CindarsHope.Combat
             RefreshItemResolver();
             _currentActionContext = new CombatActionContext();
 
-            // F02: provider de stats derivados (DerivedStatsCalculator WAVE 05, antes órfão).
-            // Base de Attack = Força do player; equipment dict entra quando F03 criar o registry.
+            // F02: provider de stats derivados (DerivedStatsCalculator WAVE 05, antes Ã³rfÃ£o).
+            // Base de Attack = ForÃ§a do player; equipment dict entra quando F03 criar o registry.
             var progression = bootstrap != null ? bootstrap.PlayerProgressionManager : null;
             var skillTree = bootstrap != null ? bootstrap.SkillTreeManager : null;
             _statsProvider = new PlayerCombatStatsProvider(
@@ -142,7 +138,7 @@ namespace CindarsHope.Combat
             RefreshServices();
 
             // fable_08: rotina de cast time/interrupt fica no GameObject do player (mesmo telegraph
-            // renderer da carga). Anexa ao PlayerController quando houver; senão neste GameObject.
+            // renderer da carga). Anexa ao PlayerController quando houver; senÃ£o neste GameObject.
             var routineHost = _playerController != null ? _playerController.gameObject : gameObject;
             _spellCastRoutine = routineHost.GetComponent<CindarsHope.Combat.Magic.SpellCastRoutine>();
             if (_spellCastRoutine == null)
@@ -221,7 +217,7 @@ namespace CindarsHope.Combat
         {
             _bowArrowService = new BowArrowAttackService(_equipmentManager, _inventoryManager, _staminaManager, _itemDatabase, _itemResolver, _knockbackForce, _statusEffectDatabase);
             _spellCastService = new SpellCastService(_manaManager, _equipmentManager, _itemResolver, _knockbackForce, _statusEffectDatabase);
-            // F02: serviços consomem o mesmo provider (dano derivado em projéteis).
+            // F02: serviÃ§os consomem o mesmo provider (dano derivado em projÃ©teis).
             if (_bowArrowService != null) _bowArrowService.StatsProvider = _statsProvider;
             if (_spellCastService != null)
             {
@@ -231,13 +227,13 @@ namespace CindarsHope.Combat
                 _spellCastService.StaminaManager = _staminaManager;
                 _spellCastService.Spellbook = CindarsHope.Magic.PlayerSpellbook.Instance;
                 // fable_08 EMENDA 6.6-A: auto-target via QUERY de Physics2D (inimigos no raio),
-                // NÃO FindObjectsByType (rule unity-architecture). Devolve posições de EnemyHealth.
+                // NÃƒO FindObjectsByType (rule unity-architecture). Devolve posiÃ§Ãµes de EnemyHealth.
                 _spellCastService.EnemyPositionQuery = QueryEnemyPositions;
             }
         }
 
-        // fable_08: posições de inimigos vivos dentro do raio, para auto-target/área. Usa
-        // OverlapCircleAll (mesma query do melee) — busca de física, não de objeto global.
+        // fable_08: posiÃ§Ãµes de inimigos vivos dentro do raio, para auto-target/Ã¡rea. Usa
+        // OverlapCircleAll (mesma query do melee) â€” busca de fÃ­sica, nÃ£o de objeto global.
         private System.Collections.Generic.IReadOnlyList<UnityEngine.Vector2> QueryEnemyPositions(UnityEngine.Vector2 center, float radius)
         {
             var positions = new System.Collections.Generic.List<UnityEngine.Vector2>();
@@ -292,6 +288,8 @@ namespace CindarsHope.Combat
             if (Input.GetKeyDown(KeyCode.Q))
             {
                 _leftCharge.Begin(Time.time);
+                // fable_82: sinaliza windup ao EnemyBrain para evasao reativa.
+                GameEventBus.Publish(new CindarsHope.Core.Events.PlayerAttackWindupEvent((UnityEngine.Vector2)transform.position));
             }
 
             if (Input.GetKeyUp(KeyCode.Q) && _leftCharge.IsCharging)
@@ -304,12 +302,14 @@ namespace CindarsHope.Combat
             {
                 if (_interactionSystem != null && _interactionSystem.HasCandidate)
                 {
-                    // Regressão protegida: E com candidato continua interagindo (charge não inicia).
+                    // RegressÃ£o protegida: E com candidato continua interagindo (charge nÃ£o inicia).
                     CombatLog.Log("CombatLog: PlayerAttackBlocked. Reason=InteractionCandidatePresent (E used for interact)", this);
                 }
                 else
                 {
                     _rightCharge.Begin(Time.time);
+                    // fable_82: sinaliza windup ao EnemyBrain para evasao reativa.
+                    GameEventBus.Publish(new CindarsHope.Core.Events.PlayerAttackWindupEvent((UnityEngine.Vector2)transform.position));
                 }
             }
 
@@ -338,16 +338,16 @@ namespace CindarsHope.Combat
         private void TryAttackLeftHand(AttackWeight weight = AttackWeight.Light)
         {
             var equippedItemId = _equipmentManager != null ? _equipmentManager.GetEquippedItem(EquipmentSlot.LeftHand) : null;
-            AttackWithSlot(EquipmentSlot.LeftHand, ref _lastLeftHandAttackTime, equippedItemId, weight);
+            AttackWithSlot(EquipmentSlot.LeftHand, equippedItemId, weight);
         }
 
         private void TryAttackRightHand(AttackWeight weight = AttackWeight.Light)
         {
             var equippedItemId = _equipmentManager != null ? _equipmentManager.GetEquippedItem(EquipmentSlot.RightHand) : null;
-            AttackWithSlot(EquipmentSlot.RightHand, ref _lastRightHandAttackTime, equippedItemId, weight);
+            AttackWithSlot(EquipmentSlot.RightHand, equippedItemId, weight);
         }
 
-        // F02: telegraph simples de carga — tinta o sprite conforme o peso acumulado.
+        // F02: telegraph simples de carga â€” tinta o sprite conforme o peso acumulado.
         private void UpdateChargeTelegraph()
         {
             if (_chargeTelegraphRenderer == null)
@@ -395,354 +395,17 @@ namespace CindarsHope.Combat
             return _itemResolver.LookupWeapon(weaponId);
         }
 
-        private void AttackWithSlot(EquipmentSlot slot, ref float lastAttackTime, string equippedItemId, AttackWeight weight = AttackWeight.Light)
-        {
-            if (_isDodging)
-            {
-                CombatLog.Log($"CombatLog: PlayerAttackBlocked. Reason=Dodging, Slot={slot}", this);
-                return;
-            }
-
-            // Resolve ItemDataSO first to categorize the equipped item.
-            ItemDataSO itemData = null;
-            if (!string.IsNullOrEmpty(equippedItemId) && _itemDatabase != null)
-                _itemDatabase.TryGetById(equippedItemId, out itemData);
-
-            // Ammo (arrow) slot dispatch: fire bow+arrow combo.
-            if (itemData != null && itemData.Category == ItemCategory.Ammo)
-            {
-                TryExecuteArrowAttack(slot, itemData, ref lastAttackTime);
-                return;
-            }
-
-            // Magic slot dispatch: fire spell.
-            if (itemData != null && itemData.Category == ItemCategory.Magic)
-            {
-                TryExecuteSpellAttack(slot, itemData, ref lastAttackTime);
-                return;
-            }
-
-            // Wand (Weapon category) com SpellId: conjura a magia da varinha (ex.: Fire Wand ->
-            // spell_fireball, bolinha de fogo que persegue). Sem isto a wand so daria um golpe melee.
-            if (itemData != null && itemData.Category == ItemCategory.Weapon && !string.IsNullOrEmpty(itemData.SpellId))
-            {
-                var wandCheck = LookupWeapon(itemData.WeaponId);
-                if (wandCheck != null && wandCheck.Type == WeaponType.Wand)
-                {
-                    TryExecuteSpellAttack(slot, itemData, ref lastAttackTime);
-                    return;
-                }
-            }
-
-            // Weapon (Bow) dispatch: block — bow fires only from the arrow-hand side.
-            if (itemData != null && itemData.Category == ItemCategory.Weapon && !string.IsNullOrEmpty(itemData.WeaponId))
-            {
-                var bowCheck = LookupWeapon(itemData.WeaponId);
-                if (bowCheck != null && bowCheck.Type == WeaponType.Bow)
-                {
-                    CombatLog.Log($"CombatLog: PlayerAttackBlocked. Reason=BowHandPressed_UseArrowHand, Slot={slot}", this);
-                    return;
-                }
-            }
-
-            WeaponDataSO weapon = ResolveEquippedWeapon(slot, equippedItemId, out string resolveError);
-
-            // CASE A: Slot is empty (nothing equipped) -> use unarmed fallback.
-            // CASE B: Something IS equipped but didn't resolve -> ERROR + abort (do not silently fall to unarmed).
-            // CASE C: Resolved weapon -> attack with it.
-            if (weapon == null && string.IsNullOrEmpty(equippedItemId))
-            {
-                if (_unarmedFallback == null)
-                {
-                    Debug.LogError($"CombatLog: PlayerAttackBlocked. Reason=NoWeaponEquippedAndNoUnarmedFallback, Slot={slot}", this);
-                    return;
-                }
-                weapon = ConvertUnarmedToWeapon(_unarmedFallback);
-            }
-            else if (weapon == null)
-            {
-                Debug.LogError($"CombatLog: PlayerAttackBlocked. Reason=WeaponEquippedButNotResolved, Slot={slot}, EquippedInstanceId={equippedItemId}, ResolveError={resolveError}", this);
-                return;
-            }
-
-            // SPEC_07B: Block bow from normal weapon path — must use bow+arrow path instead
-            if (weapon.Type == WeaponType.Bow)
-            {
-                CombatLog.Log($"CombatLog: PlayerAttackBlocked. Reason=BowHandPressed_UseArrowHand, Slot={slot}", this);
-                return;
-            }
-
-            // F02/F03: cooldown final via AttackSpeed derivado × ASPD da arma.
-            float cooldown = CooldownHelper.CalculateWeaponCooldown(weapon);
-            if (_statsProvider != null)
-            {
-                cooldown = _statsProvider.FinalCooldown(cooldown, weapon);
-            }
-
-            if (!CooldownHelper.IsCooldownExpired(lastAttackTime, cooldown))
-            {
-                CombatLog.Log($"CombatLog: PlayerAttackBlocked. Reason=Cooldown, Slot={slot}, RemainingSeconds={CooldownHelper.GetRemainingCooldown(lastAttackTime, cooldown):F2}", this);
-                return;
-            }
-
-            // F03: custos canônicos POR ARMA quando autorados; senão razões F02.
-            int staminaCost = PlayerCombatStatsProvider.WeaponStaminaCost(weapon, weight);
-            if (_staminaManager != null && !_staminaManager.TrySpendStamina(staminaCost))
-            {
-                CombatLog.Log($"CombatLog: PlayerAttackBlocked. Reason=InsufficientStamina, Slot={slot}, StaminaCost={staminaCost}", this);
-                return;
-            }
-
-            CombatLog.Log($"CombatLog: PlayerAttackStarted. Slot={slot}, Weapon={weapon.DisplayName}, BaseDamage={weapon.BaseDamage}, Weight={weight}, Range={weapon.Range:F2}, Type={weapon.Type}", this);
-            GameEventBus.Publish(new PlayerChargedAttackEvent((int)weight));
-            // fable_22: passa a instância equipada para o ponto único de tags (infusão de têmpera).
-            ExecuteWeaponAttack(weapon, weight, equippedItemId);
-            lastAttackTime = Time.time;
-        }
-
-        // SPEC_07: Delegated to BowArrowAttackService
-        private void TryExecuteArrowAttack(EquipmentSlot ammoSlot, ItemDataSO ammoItemData, ref float lastAttackTime)
-        {
-            if (_bowArrowService == null)
-            {
-                Debug.LogError($"CombatLog: PlayerAttackBlocked. Reason=BowArrowServiceNull, Slot={ammoSlot}", this);
-                return;
-            }
-            Vector2 direction = _playerController?.LastFacingDirection ?? Vector2.right;
-            var result = _bowArrowService.TryFire(ammoSlot, ammoItemData, lastAttackTime, direction, transform.position);
-            if (result.Success)
-                lastAttackTime = Time.time;
-        }
-
-        // SPEC_07: Delegated to SpellCastService
-        private void TryExecuteSpellAttack(EquipmentSlot slot, ItemDataSO itemData, ref float lastAttackTime)
-        {
-            if (_spellCastService == null)
-            {
-                Debug.LogError($"CombatLog: PlayerAttackBlocked. Reason=SpellCastServiceNull, Slot={slot}", this);
-                return;
-            }
-            Vector2 direction = _playerController?.LastFacingDirection ?? Vector2.right;
-
-            // fable_08: valida/reserva (cooldown, mana, conhecimento). Em sucesso a rotina cuida da
-            // janela de cast time + interrupt; cast 0s resolve imediatamente dentro do BeginCast.
-            var begin = _spellCastService.TryBeginCast(slot, itemData, lastAttackTime, direction, transform.position, out var plan);
-            if (!begin.Success || plan == null)
-            {
-                return;
-            }
-
-            if (_spellCastRoutine != null)
-            {
-                if (!_spellCastRoutine.BeginCast(_spellCastService, plan))
-                {
-                    // Já conjurando outra magia: reembolsa a mana reservada deste plano.
-                    _spellCastService.RefundCast(plan);
-                    return;
-                }
-            }
-            else
-            {
-                // Fallback sem rotina (não deveria ocorrer em cena): resolve direto.
-                _spellCastService.ResolveCast(plan);
-            }
-
-            lastAttackTime = Time.time;
-        }
-
-        // SPEC_05: Delegated to EquippedItemResolver
-        // SPEC_05B: Added null guard for resolver safety.
-        private SpellDataSO ResolveEquippedSpell(ItemDataSO itemData)
-        {
-            if (_itemResolver == null)
-            {
-                Debug.LogError($"CombatLog: PlayerAttackBlocked. Reason=ItemResolverNull", this);
-                return null;
-            }
-            return _itemResolver.ResolveEquippedSpell(itemData);
-        }
-
-        private static EquipmentSlot GetOppositeHand(EquipmentSlot slot)
-        {
-            return slot == EquipmentSlot.LeftHand ? EquipmentSlot.RightHand : EquipmentSlot.LeftHand;
-        }
-
-        private void ExecuteWeaponAttack(WeaponDataSO weapon, AttackWeight weight = AttackWeight.Light, string equippedItemId = null)
-        {
-            Vector2 direction = _playerController?.LastFacingDirection ?? Vector2.right;
-
-            if (weapon.Type == WeaponType.Bow && weapon.ProjectilePrefab != null)
-            {
-                ExecuteRangedAttack(weapon, direction);
-            }
-            else
-            {
-                ExecuteMeleeAttack(weapon, direction, weight, equippedItemId);
-            }
-
-            if (_equipmentManager != null)
-                _equipmentManager.RegisterEquipmentUsage();
-        }
-
-        // fable_22: resolve as tags efetivas da arma para o matching F06 = tags base do WeaponDataSO
-        // + (se houver) a tag de gume canônica da INFUSÃO de têmpera da instância equipada. Ponto
-        // ÚNICO de injeção da tag de infusão; nenhum multiplicador paralelo é criado (a tag entra
-        // no matching como qualquer outra). Óleo SUPRIME a têmpera: ver ResolveActiveWeaponTags.
-        private string[] ResolveWeaponMaterialTags(WeaponDataSO weapon, string equippedItemId)
-        {
-            var baseTags = weapon != null ? weapon.MaterialTagsApplied : null;
-            string edgeTag = ResolveInfusionEdgeTag(equippedItemId);
-            if (string.IsNullOrEmpty(edgeTag))
-            {
-                return baseTags;
-            }
-
-            int baseLen = baseTags?.Length ?? 0;
-            var combined = new string[baseLen + 1];
-            if (baseLen > 0)
-            {
-                System.Array.Copy(baseTags, combined, baseLen);
-            }
-            combined[baseLen] = edgeTag;
-            return combined;
-        }
-
-        // fable_22: tag de gume da infusão da instância equipada, ou null se sem têmpera. Lê do
-        // acessor único WeaponInfusionRegistry.Active (sem busca global de cena).
-        private static string ResolveInfusionEdgeTag(string equippedItemId)
-        {
-            if (string.IsNullOrEmpty(equippedItemId)) return null;
-            var registry = CindarsHope.Economy.WeaponInfusionRegistry.Active;
-            return registry != null ? registry.GetEdgeTag(equippedItemId) : null;
-        }
-
-        private void ExecuteMeleeAttack(WeaponDataSO weapon, Vector2 direction, AttackWeight weight = AttackWeight.Light, string equippedItemId = null)
-        {
-            Vector2 attackCenter = (Vector2)transform.position + direction * 0.5f;
-            var hitColliders = Physics2D.OverlapCircleAll(attackCenter, weapon.Range);
-
-            int candidatesTotal = hitColliders.Length;
-            int hitEnemies = 0;
-            foreach (var collider in hitColliders)
-            {
-                if (collider.gameObject == gameObject)
-                    continue;
-
-                var enemyHealth = collider.GetComponentInParent<EnemyHealth>() ?? collider.GetComponent<EnemyHealth>();
-                if (enemyHealth == null)
-                    continue;
-
-                CombatLog.Log($"CombatLog: PlayerAttackHitCandidate. EnemyId={enemyHealth.EnemyId}, EnemyHP={enemyHealth.CurrentHp}/{enemyHealth.MaxHp}, Distance={Vector2.Distance(attackCenter, collider.transform.position):F2}", this);
-
-                // F02: dano final = (base + Attack derivado) × peso × crítico canônico.
-                // Janela de vulnerabilidade aberta (CoreExposed) GARANTE crítico (emenda).
-                var vulnerability = enemyHealth.GetComponent<CindarsHope.Enemy.EnemyVulnerabilityState>();
-                var guaranteedCrit = vulnerability != null && vulnerability.IsVulnerable;
-                var finalDamage = weapon.BaseDamage;
-                var isCrit = false;
-                if (_statsProvider != null)
-                {
-                    // F03: inclui scaling por atributo da arma.
-                    finalDamage = _statsProvider.FinalDamage(weapon, weight, guaranteedCrit, out isCrit);
-                }
-
-                var damageRequest = new DamageRequest(enemyHealth.EnemyId, finalDamage)
-                {
-                    DamageType = weapon.DamageType,
-                    SourcePosition = transform.position,
-                    KnockbackForce = _knockbackForce,
-                    // fable_06: tags de material da arma (ex.: prata) para matching de vulnerabilidade.
-                    // fable_22: + tag de gume da têmpera (FireEdge/...) quando a instância está infundida.
-                    WeaponMaterialTags = ResolveWeaponMaterialTags(weapon, equippedItemId)
-                };
-
-                int hpBefore = enemyHealth.CurrentHp;
-                enemyHealth.TakeDamage(damageRequest);
-                hitEnemies++;
-
-                // F02: dano de posture por peso (quebra → stagger + CoreExposed).
-                var posture = enemyHealth.GetComponent<EnemyPostureState>();
-                if (posture != null)
-                {
-                    posture.ApplyPostureDamage(weapon.BaseDamage * AttackChargeRules.PostureMultiplier(weight));
-                }
-
-                CombatLog.Log($"CombatLog: PlayerAttackDamageApplied. EnemyId={enemyHealth.EnemyId}, BaseDamage={weapon.BaseDamage}, FinalDamage={finalDamage}, Weight={weight}, Crit={isCrit}, HP={hpBefore}->{enemyHealth.CurrentHp}", this);
-            }
-
-            if (hitEnemies == 0)
-            {
-                CombatLog.Log($"CombatLog: PlayerAttackMissed. Reason={(candidatesTotal == 0 ? "NoCollidersInRange" : "NoEnemyHealthInColliders")}, AttackCenter={attackCenter}, Range={weapon.Range:F2}, CollidersSeen={candidatesTotal}, Direction={direction}", this);
-            }
-        }
-
-        private void ExecuteRangedAttack(WeaponDataSO weapon, Vector2 direction)
-        {
-            // SPEC_06: Use ProjectileSpawnService to centralize spawn logic
-            var spawnRequest = new ProjectileSpawnRequest(
-                weapon.ProjectilePrefab,
-                (Vector2)transform.position,
-                direction,
-                weapon.ProjectileSpeed,
-                weapon.Range,
-                weapon.BaseDamage,
-                weapon.DamageType,
-                _knockbackForce,
-                spawnOffset: 0.5f
-            );
-
-            var spawnResult = ProjectileSpawnService.SpawnProjectile(spawnRequest);
-            if (!spawnResult.Success)
-            {
-                Debug.LogError($"CombatLog: PlayerAttackBlocked. Reason=ProjectileSpawnFailed, ErrorCode={spawnResult.ErrorCode}", this);
-            }
-        }
-
-        private void ExecuteSpellAttack(SpellDataSO spellData, Vector2 direction)
-        {
-            if (spellData.ProjectilePrefab == null)
-            {
-                Debug.LogError($"CombatLog: PlayerAttackBlocked. Reason=SpellHasNoProjectilePrefab, SpellId={spellData.Id}", this);
-                return;
-            }
-
-            // SPEC_06: Use ProjectileSpawnService to centralize spawn logic
-            CindarsHope.Combat.StatusEffect.StatusEffectSO statusEffect = null;
-            if (!string.IsNullOrEmpty(spellData.StatusEffectId))
-                statusEffect = Resources.Load<CindarsHope.Combat.StatusEffect.StatusEffectSO>(spellData.StatusEffectId);
-
-            var spawnRequest = new ProjectileSpawnRequest(
-                spellData.ProjectilePrefab,
-                (Vector2)transform.position,
-                direction,
-                spellData.ProjectileSpeed,
-                spellData.Range,
-                spellData.BaseDamage,
-                spellData.DamageType,
-                _knockbackForce,
-                spawnOffset: 0.5f,
-                statusEffect: statusEffect,
-                statusApplyChance: spellData.StatusApplyChance
-            );
-
-            var spawnResult = ProjectileSpawnService.SpawnProjectile(spawnRequest);
-            if (!spawnResult.Success)
-            {
-                Debug.LogError($"CombatLog: PlayerAttackBlocked. Reason=ProjectileSpawnFailed, ErrorCode={spawnResult.ErrorCode}", this);
-            }
-        }
-
         private void TryDodge()
         {
-            if (Time.time < _lastDodgeTime + _dodgeCooldownSeconds)
+            // Pass hasEnoughStamina=true here; actual stamina check (spend) happens below.
+            // If stamina spend fails, BeginDodge is not called so dodge state is never set.
+            if (!_attackCore.CanDodge(Time.time, _dodgeCooldownSeconds, hasEnoughStamina: true))
                 return;
 
             if (_staminaManager != null && !_staminaManager.TrySpendStamina((int)_dodgeStaminaCost))
                 return;
 
-            _isDodging = true;
-            _dodgeEndTime = Time.time + _dodgeDurationSeconds;
-            _lastDodgeTime = Time.time;
+            _attackCore.BeginDodge(Time.time, _dodgeDurationSeconds);
 
             Vector2 direction = _playerController?.MoveInput ?? Vector2.right;
             if (direction.sqrMagnitude < 0.01f)
@@ -759,9 +422,8 @@ namespace CindarsHope.Combat
 
         private void UpdateDodgeState()
         {
-            if (_isDodging && Time.time >= _dodgeEndTime)
+            if (_attackCore.UpdateDodge(Time.time))
             {
-                _isDodging = false;
                 GameEventBus.Publish(new PlayerDodgeEndedEvent());
             }
         }

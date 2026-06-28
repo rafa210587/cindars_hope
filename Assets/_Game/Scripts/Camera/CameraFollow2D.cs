@@ -1,3 +1,5 @@
+using CindarsHope.Core;
+using CindarsHope.Core.Events;
 using UnityEngine;
 
 namespace CindarsHope.Camera
@@ -18,6 +20,23 @@ namespace CindarsHope.Camera
             {
                 SnapToTarget();
             }
+        }
+
+        private void OnEnable()
+        {
+            GameEventBus.Subscribe<CameraSnapRequestedEvent>(HandleSnapRequested);
+        }
+
+        private void OnDisable()
+        {
+            GameEventBus.Unsubscribe<CameraSnapRequestedEvent>(HandleSnapRequested);
+        }
+
+        // Corta direto para o jogador no mesmo frame em que ele foi teleportado por uma porta,
+        // evitando o pan suave pelo mapa inteiro até o interior (y > +40).
+        private void HandleSnapRequested(CameraSnapRequestedEvent _)
+        {
+            SnapToTarget();
         }
 
         private void LateUpdate()

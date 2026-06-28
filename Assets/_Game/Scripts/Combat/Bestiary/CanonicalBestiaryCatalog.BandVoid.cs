@@ -109,6 +109,64 @@ namespace CindarsHope.Combat.Bestiary
                 VulnerabilityMatrixProfileId = "vulnmatrix_dragon",
                 Notes = "Boss gate 100 (carcereiro voluntario do 101). F1 terra (garra/cauda/breath); F2 voo (FloatingOrbit + mergulhos); F3 pousa exausto em ciclos (CoreExposed 5s) + chama Wyrmlings. Fraco Ice nas asas/Radiant no peito. Mecanicas = F05 (dormante). Drops first-kill: elder scale set (armadura final).",
             };
+
+            // ── fable_80: +5 Void ───────────────────────────────────────────────────────────
+            yield return new BestiaryCreatureDef
+            {
+                EnemyId = "enemy_void_tendril_watcher", DisplayName = "Void Tendril Watcher",
+                Band = 7, MinLevel = 86, MaxLevel = 92, Family = "Aberration",
+                Size = BestiarySizeClass.Huge, Role = EnemyRole.Guard,
+                MovePrimary = EnemyMovementType.ProtectAnchor, MoveSecondary = EnemyMovementType.TankSlowPush,
+                Hp = 280, Damage = 25, Defense = 8, Xp = 150, SpoilerTier = 1,
+                PrimaryDropItemId = "item_material_void_ichor", PrimaryDamageTypeId = "arcane",
+                VulnerabilityMatrixProfileId = "vulnmatrix_aberration",
+                Notes = "Motivacao: fragmento do olhar de Veyraath; feixe-olho e campo de tentaculos protegem o ponto de ancora. Razao no pack: ancora-controlador de camara; so radiante puro faz dano real (purify falha neste). Fraqueza: radiante concentrado no olho central (CoreExposed) por 2s.",
+            };
+            yield return new BestiaryCreatureDef
+            {
+                EnemyId = "enemy_reality_render", DisplayName = "Reality Render",
+                Band = 7, MinLevel = 88, MaxLevel = 95, Family = "Aberration",
+                Size = BestiarySizeClass.Large, Role = EnemyRole.Chaser,
+                MovePrimary = EnemyMovementType.ChargeLine, MoveSecondary = EnemyMovementType.PhaseShortBlink,
+                Hp = 220, Damage = 28, Defense = 6, Xp = 140, SpoilerTier = 1,
+                PrimaryDropItemId = "item_material_void_ichor", PrimaryDamageTypeId = "arcane",
+                VulnerabilityMatrixProfileId = "vulnmatrix_aberration",
+                Notes = "Motivacao: desfaz o que toca; bote de rasgo-de-fase aplica Silence instantaneo. Razao no pack: perseguidor de pressao de endgame; combina carga e blink para nao deixar respiro. Fraqueza: radiante e a unica escola de dano que nao e absorvida.",
+            };
+            yield return new BestiaryCreatureDef
+            {
+                EnemyId = "enemy_veilkin_voidknight", DisplayName = "Veilkin Void-Knight",
+                Band = 7, MinLevel = 90, MaxLevel = 97, Family = "Humanoid",
+                Size = BestiarySizeClass.Large, Role = EnemyRole.Elite,
+                MovePrimary = EnemyMovementType.CircleStrafe, MoveSecondary = EnemyMovementType.ChargeLine,
+                Hp = 260, Damage = 30, Defense = 9, Xp = 160, SpoilerTier = 1,
+                PrimaryDropItemId = "item_material_stabilized_blackstone", PrimaryDamageTypeId = "arcane",
+                VulnerabilityMatrixProfileId = "vulnmatrix_humanoid",
+                Notes = "Motivacao: evolucao final dos traidores do Veu; combo de montante-vazio aplica Blackstone Stain. Razao no pack: elite duelista que circula e carrega em alternancia. Fraqueza: radiante e a unica fraqueza — impede o combo apos hit.",
+            };
+            yield return new BestiaryCreatureDef
+            {
+                EnemyId = "enemy_sealed_observer", DisplayName = "Sealed Observer",
+                Band = 7, MinLevel = 86, MaxLevel = 94, Family = "Construct",
+                Size = BestiarySizeClass.Large, Role = EnemyRole.Guard,
+                MovePrimary = EnemyMovementType.GuardStationary, MoveSecondary = EnemyMovementType.ProtectAnchor,
+                Hp = 300, Damage = 22, Defense = 10, Xp = 120, SpoilerTier = 1,
+                IsNonAggressive = true,
+                PrimaryDropItemId = "item_material_stabilized_blackstone", PrimaryDamageTypeId = "arcane",
+                VulnerabilityMatrixProfileId = "vulnmatrix_construct",
+                Notes = "[NAO-AGRESSIVA] Motivacao: vigia feito por Anya que ainda mantem o posto; pulso de julgamento poupa quem nao perturba o arquivo. Razao no pack: guarda neutro/condicional; imune a corrupcao; ataca so se agredido ou se jogador porta item corrupto. Fraqueza: sem fraqueza elementar; vulneravel apenas a armas de Anya (lore — F05 dormante).",
+            };
+            yield return new BestiaryCreatureDef
+            {
+                EnemyId = "enemy_dread_chorister", DisplayName = "Dread Chorister",
+                Band = 7, MinLevel = 87, MaxLevel = 95, Family = "Undead",
+                Size = BestiarySizeClass.Medium, Role = EnemyRole.Caster,
+                MovePrimary = EnemyMovementType.FloatingOrbit, MoveSecondary = EnemyMovementType.CasterKeepAway,
+                Hp = 150, Damage = 20, Defense = 3, Xp = 130, SpoilerTier = 1,
+                PrimaryDropItemId = "item_material_night_essence", PrimaryDamageTypeId = "arcane",
+                VulnerabilityMatrixProfileId = "vulnmatrix_undead",
+                Notes = "Motivacao: canta a litania de Veyraath; hino do medo aplica oscilacao de HUD (simulando medo). Razao no pack: conjurador de apoio de packs do vazio; resiste silencio mas sofre dano triplo de radiante. Fraqueza: radiante — unica escola de dano real.",
+            };
         }
     }
 }

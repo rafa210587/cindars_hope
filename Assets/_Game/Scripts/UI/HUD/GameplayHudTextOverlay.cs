@@ -26,7 +26,14 @@ namespace CindarsHope.UI.HUD
         private const int MinutesPerPhase = 12 * 60; // cada fase (Dia/Noite) cobre 12h.
 
         private Text _text;
+        private RectTransform _panelRect;
         private readonly StringBuilder _builder = new StringBuilder(256);
+
+        // Painel auto-ajusta a largura/altura ao texto (corrige o overflow para fora da caixa).
+        private const float PanelPaddingX = 56f;
+        private const float PanelPaddingY = 18f;
+        private const float PanelMinWidth = 420f;
+        private const float PanelMaxWidth = 1860f;
 
         // Estado vital/ouro/prompt, alimentado por eventos (cache; sem ler manager por frame).
         private int _hp;
@@ -46,9 +53,23 @@ namespace CindarsHope.UI.HUD
         private string _lastRendered = string.Empty;
         private bool _loggedReady;
 
+        // ---- HUD de vitais (barras coloridas), separado do texto do topo. Esconde durante modais
+        //      (dialogo/loja/inventario) e reaparece ao fechar. Layout: duas colunas centralizadas —
+        //      ESQUERDA Stamina/Fome, DIREITA HP/MP, cada par empilhado.
+        private CanvasGroup _barsGroup;
+        private Image _hpFill, _staminaFill, _manaFill, _hungerFill;
+        private Text _hpValue, _staminaValue, _manaValue, _hungerValue;
+
+        private static readonly Color HpColor = new Color(0.85f, 0.22f, 0.22f);      // vermelho
+        private static readonly Color StaminaColor = new Color(0.93f, 0.82f, 0.25f); // amarelo
+        private static readonly Color ManaColor = new Color(0.30f, 0.55f, 0.95f);    // azul
+        private static readonly Color HungerColor = new Color(0.95f, 0.58f, 0.20f);  // laranja
+        private const float BarWidth = 320f;
+
         public void Build()
         {
             BuildCanvasHierarchy();
+            BuildVitalsBars();
             SeedFromManagers();
             Render(force: true);
         }
@@ -81,6 +102,10 @@ namespace CindarsHope.UI.HUD
             {
                 SeedFromManagers();
             }
+
+            // Esconde as barras de vitais enquanto um modal (dialogo/loja/inventario) esta ativo; checagem
+            // barata por frame para resposta imediata ao abrir/fechar a conversa.
+            UpdateBarsVisibility();
 
             _pollTimer += Time.unscaledDeltaTime;
             if (_pollTimer < PollIntervalSeconds)
@@ -129,7 +154,8 @@ namespace CindarsHope.UI.HUD
             panelRect.anchorMax = new Vector2(0.5f, 1f);
             panelRect.pivot = new Vector2(0.5f, 1f);
             panelRect.anchoredPosition = new Vector2(0f, -8f);
-            panelRect.sizeDelta = new Vector2(760f, 64f);
+            panelRect.sizeDelta = new Vector2(760f, 72f);
+            _panelRect = panelRect;
 
             var panelImage = panelGo.GetComponent<Image>();
             panelImage.color = new Color(0f, 0f, 0f, 0.55f);
@@ -146,7 +172,7 @@ namespace CindarsHope.UI.HUD
 
             _text = textGo.GetComponent<Text>();
             _text.font = ResolveBuiltinFont();
-            _text.fontSize = 22;
+            _text.fontSize = 28;
             _text.alignment = TextAnchor.MiddleCenter;
             _text.horizontalOverflow = HorizontalWrapMode.Overflow;
             _text.verticalOverflow = VerticalWrapMode.Overflow;
@@ -258,17 +284,17 @@ namespace CindarsHope.UI.HUD
 
         private void Render(bool force)
         {
+            // HP/Stamina/MP/Fome agora vivem nas barras coloridas (sempre refletem o cache atual).
+            UpdateVitalsBars();
+
             if (_text == null)
             {
                 return;
             }
 
+            // Texto do topo: so relogio/dia/fase, ouro e prompt de interacao (vitais sairam para as barras).
             _builder.Length = 0;
             AppendClock();
-            _builder.Append("    HP ").Append(_hp).Append('/').Append(_maxHp);
-            _builder.Append("    Stamina ").Append(_stamina).Append('/').Append(_maxStamina);
-            _builder.Append("    MP ").Append(_mana).Append('/').Append(_maxMana);
-            _builder.Append("    Fome ").Append(_hunger).Append('/').Append(_maxHunger);
             _builder.Append("    Ouro ").Append(_gold);
 
             if (_hasPrompt && !string.IsNullOrWhiteSpace(_prompt))
@@ -284,12 +310,168 @@ namespace CindarsHope.UI.HUD
 
             _lastRendered = rendered;
             _text.text = rendered;
+            ResizePanelToText();
 
             if (!_loggedReady)
             {
                 _loggedReady = true;
                 Debug.Log("[GameplayHud] HUD visivel montado (relogio/vitais/ouro).");
             }
+        }
+
+        // Hugs the dark panel to the text so nothing spills outside the box, and grows the height when the
+        // interaction prompt adds a second line. preferredWidth/Height are the natural unwrapped text metrics.
+        private void ResizePanelToText()
+        {
+            if (_panelRect == null || _text == null)
+            {
+                return;
+            }
+
+            var width = Mathf.Clamp(_text.preferredWidth + PanelPaddingX, PanelMinWidth, PanelMaxWidth);
+            var height = _text.preferredHeight + PanelPaddingY;
+            _panelRect.sizeDelta = new Vector2(width, height);
+        }
+
+        // ---- Barras de vitais (construcao + atualizacao) ----
+
+        private void BuildVitalsBars()
+        {
+            var barsGo = new GameObject("VitalsBars", typeof(RectTransform), typeof(CanvasGroup));
+            barsGo.transform.SetParent(transform, false);
+            var barsRect = (RectTransform)barsGo.transform;
+            // Faixa de largura total no RODAPE da tela; as colunas ancoram no CENTRO com um afastamento fixo
+            // (ColX), entao ficam centralizadas e proximas (nao nos cantos), iguais em qualquer largura.
+            barsRect.anchorMin = new Vector2(0f, 0f);
+            barsRect.anchorMax = new Vector2(1f, 0f);
+            barsRect.pivot = new Vector2(0.5f, 0f);
+            barsRect.anchoredPosition = new Vector2(0f, 14f); // bem abaixo, ~14px do fundo
+            barsRect.sizeDelta = new Vector2(0f, 90f);
+            _barsGroup = barsGo.GetComponent<CanvasGroup>();
+            _barsGroup.interactable = false;
+            _barsGroup.blocksRaycasts = false;
+
+            const float colX = 300f;   // afastamento de cada coluna a partir do centro (menor = mais juntas)
+            const float rowGap = 46f;  // espacamento vertical entre as duas barras empilhadas
+
+            // Coluna ESQUERDA: HP (cima) / MP (baixo).
+            _hpFill = CreateVitalBar(barsRect, "HP", -colX, 0f, HpColor, out _hpValue);
+            _manaFill = CreateVitalBar(barsRect, "MP", -colX, -rowGap, ManaColor, out _manaValue);
+            // Coluna DIREITA: Stamina (cima) / Fome (baixo).
+            _staminaFill = CreateVitalBar(barsRect, "Stamina", colX, 0f, StaminaColor, out _staminaValue);
+            _hungerFill = CreateVitalBar(barsRect, "Fome", colX, -rowGap, HungerColor, out _hungerValue);
+        }
+
+        private Image CreateVitalBar(Transform parent, string label, float xOffset, float yOffset, Color color, out Text valueText)
+        {
+            var barGo = new GameObject(label + "Bar", typeof(RectTransform));
+            barGo.transform.SetParent(parent, false);
+            var barRect = (RectTransform)barGo.transform;
+            // Centralizado no topo da faixa, deslocado por (xOffset, yOffset).
+            barRect.anchorMin = new Vector2(0.5f, 1f);
+            barRect.anchorMax = new Vector2(0.5f, 1f);
+            barRect.pivot = new Vector2(0.5f, 1f);
+            barRect.anchoredPosition = new Vector2(xOffset, yOffset);
+            barRect.sizeDelta = new Vector2(BarWidth, 32f);
+
+            // Fundo (preenche toda a barra).
+            CreateStretchImage(barRect, "Bg", new Color(0f, 0f, 0f, 0.55f));
+
+            // Preenchimento ancorado a ESQUERDA, com a largura ajustada em SetBar (largura = BarWidth * t).
+            // Nao usamos Image.Type.Filled de proposito: fillAmount so funciona com um sprite atribuido, e
+            // estas imagens nao tem sprite — por isso encolhemos a largura do retangulo, que sempre funciona.
+            var fillGo = new GameObject("Fill", typeof(RectTransform), typeof(Image));
+            fillGo.transform.SetParent(barRect, false);
+            var fillRect = (RectTransform)fillGo.transform;
+            fillRect.anchorMin = new Vector2(0f, 0f);
+            fillRect.anchorMax = new Vector2(0f, 1f);
+            fillRect.pivot = new Vector2(0f, 0.5f);
+            fillRect.anchoredPosition = Vector2.zero;
+            fillRect.sizeDelta = new Vector2(BarWidth, 0f);
+            var fill = fillGo.GetComponent<Image>();
+            fill.color = color;
+            fill.raycastTarget = false;
+
+            // Rotulo (esquerda) e valor (direita) sobre a barra.
+            CreateBarText(barRect, "Label", label, TextAnchor.MiddleLeft, 16);
+            valueText = CreateBarText(barRect, "Value", "0/0", TextAnchor.MiddleRight, 15);
+            return fill;
+        }
+
+        private static Image CreateStretchImage(Transform parent, string name, Color color)
+        {
+            var go = new GameObject(name, typeof(RectTransform), typeof(Image));
+            go.transform.SetParent(parent, false);
+            var rect = (RectTransform)go.transform;
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
+
+            var img = go.GetComponent<Image>();
+            img.color = color;
+            img.raycastTarget = false;
+            return img;
+        }
+
+        private Text CreateBarText(Transform parent, string name, string content, TextAnchor anchor, int fontSize)
+        {
+            var go = new GameObject(name, typeof(RectTransform), typeof(Text), typeof(Shadow));
+            go.transform.SetParent(parent, false);
+            var rect = (RectTransform)go.transform;
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = new Vector2(10f, 0f);
+            rect.offsetMax = new Vector2(-10f, 0f);
+
+            var txt = go.GetComponent<Text>();
+            txt.font = ResolveBuiltinFont();
+            txt.fontSize = fontSize;
+            txt.alignment = anchor;
+            txt.color = new Color(0.97f, 0.97f, 0.9f, 1f);
+            txt.raycastTarget = false;
+            txt.text = content;
+
+            var sh = go.GetComponent<Shadow>();
+            sh.effectColor = new Color(0f, 0f, 0f, 0.85f);
+            sh.effectDistance = new Vector2(1f, -1f);
+            return txt;
+        }
+
+        private void UpdateVitalsBars()
+        {
+            SetBar(_hpFill, _hpValue, _hp, _maxHp);
+            SetBar(_staminaFill, _staminaValue, _stamina, _maxStamina);
+            SetBar(_manaFill, _manaValue, _mana, _maxMana);
+            SetBar(_hungerFill, _hungerValue, _hunger, _maxHunger);
+        }
+
+        private static void SetBar(Image fill, Text value, int current, int max)
+        {
+            if (fill == null)
+            {
+                return;
+            }
+
+            var t = max > 0 ? Mathf.Clamp01(current / (float)max) : 0f;
+            fill.rectTransform.sizeDelta = new Vector2(BarWidth * t, 0f);
+            if (value != null)
+            {
+                value.text = current + "/" + max;
+            }
+        }
+
+        private void UpdateBarsVisibility()
+        {
+            if (_barsGroup == null)
+            {
+                return;
+            }
+
+            var modalActive = GameBootstrap.Instance != null
+                && GameBootstrap.Instance.ModalManager != null
+                && GameBootstrap.Instance.ModalManager.HasActiveModal;
+            _barsGroup.alpha = modalActive ? 0f : 1f;
         }
 
         private void AppendClock()

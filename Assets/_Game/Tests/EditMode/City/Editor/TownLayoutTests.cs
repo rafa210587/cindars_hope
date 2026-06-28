@@ -17,14 +17,14 @@ namespace CindarsHope.Tests.EditMode.City
     {
         private const float Eps = 0.0001f;
 
-        // ── CA-1: canonical footprint ────────────────────────────────────────────────
+        // ── CA-1: footprint canônico (ampliado p/ casas percorríveis — spec_city_real_walkin_houses) ──
         [Test]
-        public void Footprint_Is48x42()
+        public void Footprint_Is76x64()
         {
-            Assert.AreEqual(48f, TownDistrictLayout.WidthTiles, Eps, "Town width must be 48 tiles (Q12.1).");
-            Assert.AreEqual(42f, TownDistrictLayout.HeightTiles, Eps, "Town height must be 42 tiles (Q12.1).");
-            Assert.AreEqual(24f, TownDistrictLayout.HalfWidth, Eps, "Bounds must be -24..24 on x.");
-            Assert.AreEqual(21f, TownDistrictLayout.HalfHeight, Eps, "Bounds must be -21..21 on y.");
+            Assert.AreEqual(76f, TownDistrictLayout.WidthTiles, Eps, "Town width must be 76 tiles (city walk-in expansion).");
+            Assert.AreEqual(64f, TownDistrictLayout.HeightTiles, Eps, "Town height must be 64 tiles.");
+            Assert.AreEqual(38f, TownDistrictLayout.HalfWidth, Eps, "Bounds must be -38..38 on x.");
+            Assert.AreEqual(32f, TownDistrictLayout.HalfHeight, Eps, "Bounds must be -32..32 on y.");
         }
 
         // ── CA-1 / data contract: seven canonical districts, all inside bounds ────────

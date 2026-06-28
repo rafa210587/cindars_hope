@@ -161,7 +161,7 @@ namespace CindarsHope.Tests.EditMode.City
         [Test]
         public void EveryNpc_HasNonEmptyConditionalPool_AndAreEligibleSomewhere()
         {
-            Assert.AreEqual(23, TownNpcDialogueLibrary.AllContent.Count);
+            Assert.AreEqual(28, TownNpcDialogueLibrary.AllContent.Count); // +Velorin +Sael/Mella/Hess/Tibbet
             foreach (var content in TownNpcDialogueLibrary.AllContent)
             {
                 var lines = TownNpcDialogueLibrary.BuildGreetingConditionalLines(content);

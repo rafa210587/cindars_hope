@@ -102,49 +102,103 @@ namespace CindarsHope.Editor.EnemyTaxonomy
         }
 
         // ──────────────────────────────────────────────────────────────────────
-        // Movement profiles (10 types, Flying excluded from MVP)
+        // MoveSpeed tiers (tuning 2026-06-24 — reduzidos para ritmo jogavel)
+        // LENTO  : 0.9  — tanks, sentinelas, bosses de arena, iscas, flutuantes lentos, mimicos
+        // NORMAL : 1.4  — chasers base, patrulhas, kite, casters, lideres, boss phase
+        // RAPIDO : 2.0  — swarm, leaper, blinker, flanker, orbit, charge, strafe, retreat
+        // Razao: 1.4 tiles/s e ritmo de perseguicao confortavel; 2.0 ja parece rapido para mobs ageis.
+        // Valores anteriores: 1.3 / 2.0 / 2.8 (tuning 2026-06).
+        // ──────────────────────────────────────────────────────────────────────
+        private const float SpeedSlow   = 0.9f;
+        private const float SpeedNormal = 1.4f;
+        private const float SpeedFast   = 2.0f;
+
+        // ──────────────────────────────────────────────────────────────────────
+        // Movement profiles — 10 originais (fable_13) + 12 novos (fable_24)
+        // UpsertMovement: cria o asset se ausente; atualiza campos se já existe.
         // ──────────────────────────────────────────────────────────────────────
         private static void CreateMovementProfiles()
         {
+            // ── fable_13: 10 originais ───────────────────────────────────────
+            // Kiting corrigido (TUNING 2026-06):
+            //   kite_ranged:     PreferredDistance 5.5 -> 3.5  (caves estreitas)
+            //   caster_keep_away: PreferredDistance 6.0 -> 4.0 (caves estreitas)
             // id, type, speed, detect, leash, attackRange, preferred, wander, tick,
-            //   canBurrow, canBlink, canLeap
-            CreateMovement("movement_ground_chase",    Combat.EnemyMovementType.GroundChase,    2.5f, 9f,  28f, 1.2f, 0.9f, 4f,  0.25f, false, false, false);
-            CreateMovement("movement_ground_patrol",   Combat.EnemyMovementType.GroundPatrol,   1.5f, 7f,  20f, 1.2f, 0.9f, 8f,  0.35f, false, false, false);
-            CreateMovement("movement_guard_stationary",Combat.EnemyMovementType.GuardStationary,0.8f, 6f,  10f, 1.5f, 1.0f, 1f,  0.40f, false, false, false);
-            CreateMovement("movement_kite_ranged",     Combat.EnemyMovementType.KiteRanged,     2.0f, 10f, 25f, 7.0f, 5.5f, 5f,  0.30f, false, false, false);
-            CreateMovement("movement_caster_keep_away",Combat.EnemyMovementType.CasterKeepAway, 1.8f, 9f,  22f, 8.0f, 6.0f, 4f,  0.40f, false, false, false);
-            CreateMovement("movement_burrow_ambush",   Combat.EnemyMovementType.BurrowAmbush,   2.2f, 8f,  20f, 1.0f, 0.5f, 3f,  0.30f, true,  false, false);
-            // SPEC 14A-FIX7: swarm speed lowered from 3.0 -> 2.2. 3.0 made Tiny-class swarm enemies
-            // (cave mite, pale grub, void tick, ember tick) feel impossible to track and hit.
-            CreateMovement("movement_swarm_erratic",   Combat.EnemyMovementType.SwarmErratic,   2.2f, 7f,  18f, 0.8f, 0.4f, 3f,  0.20f, false, false, false);
-            CreateMovement("movement_tank_slow_push",  Combat.EnemyMovementType.TankSlowPush,   1.0f, 8f,  20f, 1.8f, 1.2f, 2f,  0.45f, false, false, false);
-            CreateMovement("movement_phase_short_blink",Combat.EnemyMovementType.PhaseShortBlink,2.0f,10f, 24f, 1.2f, 0.9f, 4f,  0.30f, false, true,  false);
-            CreateMovement("movement_leaper",          Combat.EnemyMovementType.Leaper,         2.5f, 9f,  22f, 3.5f, 2.5f, 5f,  0.30f, false, false, true);
+            //   burrow, blink, leap, fly, repositionDash
+            UpsertMovement("movement_ground_chase",     Combat.EnemyMovementType.GroundChase,     SpeedNormal, 9f,  28f, 1.2f, 0.9f, 4f, 0.25f, false, false, false, false, false);
+            UpsertMovement("movement_ground_patrol",    Combat.EnemyMovementType.GroundPatrol,    SpeedNormal, 7f,  20f, 1.2f, 0.9f, 8f, 0.35f, false, false, false, false, false);
+            UpsertMovement("movement_guard_stationary", Combat.EnemyMovementType.GuardStationary, SpeedSlow,   6f,  10f, 1.5f, 1.0f, 1f, 0.40f, false, false, false, false, false);
+            UpsertMovement("movement_kite_ranged",      Combat.EnemyMovementType.KiteRanged,      SpeedNormal, 10f, 25f, 7.0f, 3.5f, 5f, 0.30f, false, false, false, false, false); // preferred: 5.5->3.5
+            UpsertMovement("movement_caster_keep_away", Combat.EnemyMovementType.CasterKeepAway,  SpeedNormal, 9f,  22f, 8.0f, 4.0f, 4f, 0.40f, false, false, false, false, false); // preferred: 6.0->4.0
+            UpsertMovement("movement_burrow_ambush",    Combat.EnemyMovementType.BurrowAmbush,    SpeedNormal, 8f,  20f, 1.0f, 0.5f, 3f, 0.30f, true,  false, false, false, false);
+            // SPEC 14A-FIX7: 3.0 -> 2.2 (Tiny swarm impossiveis de acertar); SpeedFast mantém diferenciacao
+            UpsertMovement("movement_swarm_erratic",    Combat.EnemyMovementType.SwarmErratic,    SpeedFast,   7f,  18f, 0.8f, 0.4f, 3f, 0.20f, false, false, false, false, false);
+            UpsertMovement("movement_tank_slow_push",   Combat.EnemyMovementType.TankSlowPush,    SpeedSlow,   8f,  20f, 1.8f, 1.2f, 2f, 0.45f, false, false, false, false, false);
+            UpsertMovement("movement_phase_short_blink",Combat.EnemyMovementType.PhaseShortBlink, SpeedFast,   10f, 24f, 1.2f, 0.9f, 4f, 0.30f, false, true,  false, false, true);  // blink + repositionDash
+            UpsertMovement("movement_leaper",           Combat.EnemyMovementType.Leaper,          SpeedFast,   9f,  22f, 3.5f, 2.5f, 5f, 0.30f, false, false, true,  false, false);
+
+            // ── fable_24: 12 novos arquétipos ───────────────────────────────
+            // PackFlanker: flanqueador rapido, abre espaço para o lider
+            UpsertMovement("movement_pack_flanker",      Combat.EnemyMovementType.PackFlanker,      SpeedFast,   10f, 25f, 1.2f, 1.0f, 5f, 0.25f, false, false, false, false, true);  // repositionDash: reposiciona p/ flanquear
+            // PackLeader: lider de bando, movimento normal mas coordena
+            UpsertMovement("movement_pack_leader",       Combat.EnemyMovementType.PackLeader,       SpeedNormal, 10f, 28f, 1.5f, 1.0f, 4f, 0.30f, false, false, false, false, false);
+            // RetreatAndCall: recua, chama reforcos, depois volta — agil
+            UpsertMovement("movement_retreat_and_call",  Combat.EnemyMovementType.RetreatAndCall,   SpeedFast,   9f,  22f, 1.2f, 4.0f, 6f, 0.25f, false, false, false, false, false);
+            // FloatingSlow: voador lento, flutua e drena — CanFly obrigatorio
+            UpsertMovement("movement_floating_slow",     Combat.EnemyMovementType.FloatingSlow,     SpeedSlow,   10f, 25f, 2.0f, 2.5f, 4f, 0.35f, false, false, false, true,  false);
+            // FloatingOrbit: voador agil que orbita o alvo — CanFly obrigatorio
+            UpsertMovement("movement_floating_orbit",    Combat.EnemyMovementType.FloatingOrbit,    SpeedFast,   10f, 25f, 2.5f, 3.0f, 4f, 0.25f, false, false, false, true,  false);
+            // CircleStrafe: combat strafe, reposiciona constantemente — assassino
+            UpsertMovement("movement_circle_strafe",     Combat.EnemyMovementType.CircleStrafe,     SpeedFast,   9f,  22f, 2.0f, 2.5f, 3f, 0.20f, false, false, false, false, true);  // repositionDash
+            // ChargeLine: base normal; investida multiplica velocidade no EnemyBrain
+            UpsertMovement("movement_charge_line",       Combat.EnemyMovementType.ChargeLine,       SpeedNormal, 10f, 28f, 1.5f, 3.0f, 3f, 0.35f, false, false, false, false, false);
+            // TreasureIdleAmbush: mimico parado ate ser ativado
+            UpsertMovement("movement_treasure_idle_ambush", Combat.EnemyMovementType.TreasureIdleAmbush, SpeedSlow, 8f, 20f, 1.5f, 0.5f, 1f, 0.45f, false, false, false, false, false);
+            // HazardLure: isca que atrai antes de atacar
+            UpsertMovement("movement_hazard_lure",       Combat.EnemyMovementType.HazardLure,       SpeedNormal, 12f, 25f, 2.0f, 1.5f, 3f, 0.40f, false, false, false, false, false);
+            // ProtectAnchor: sentinela lento que guarda um ponto fixo
+            UpsertMovement("movement_protect_anchor",    Combat.EnemyMovementType.ProtectAnchor,    SpeedSlow,   8f,  15f, 1.8f, 1.0f, 2f, 0.45f, false, false, false, false, false);
+            // BossArenaControl: boss lento que controla o espaco da arena
+            UpsertMovement("movement_boss_arena_control",Combat.EnemyMovementType.BossArenaControl, SpeedSlow,   15f, 35f, 2.5f, 3.0f, 5f, 0.50f, false, false, false, false, false);
+            // BossPhaseShift: boss que muda de fase, velocidade normal base
+            UpsertMovement("movement_boss_phase_shift",  Combat.EnemyMovementType.BossPhaseShift,   SpeedNormal, 15f, 35f, 2.0f, 2.5f, 5f, 0.40f, false, false, false, false, false);
         }
 
-        private static void CreateMovement(string id, Combat.EnemyMovementType type,
+        /// <summary>
+        /// Cria o asset de MovementProfile se nao existir; atualiza todos os campos se ja existir.
+        /// Garante que regeneracoes do gerador sempre apliquem os valores do codigo (upsert idempotente).
+        /// </summary>
+        private static void UpsertMovement(string id, Combat.EnemyMovementType type,
             float speed, float detect, float leash, float attackRange,
             float preferred, float wander, float tick,
-            bool burrow, bool blink, bool leap)
+            bool burrow, bool blink, bool leap, bool fly, bool repositionDash)
         {
-            var path = $"{MovementPath}/{id}.asset";
-            if (AssetDatabase.LoadAssetAtPath<Combat.EnemyMovementProfileSO>(path) != null) return;
+            var path  = $"{MovementPath}/{id}.asset";
+            var asset = AssetDatabase.LoadAssetAtPath<Combat.EnemyMovementProfileSO>(path);
+            if (asset == null)
+            {
+                asset = ScriptableObject.CreateInstance<Combat.EnemyMovementProfileSO>();
+                AssetDatabase.CreateAsset(asset, path);
+            }
 
-            var asset = ScriptableObject.CreateInstance<Combat.EnemyMovementProfileSO>();
-            asset.MovementProfileId  = id;
-            asset.MovementType       = type;
-            asset.MoveSpeed          = speed;
-            asset.DetectionRange     = detect;
-            asset.LeashRange         = leash;
-            asset.AttackRange        = attackRange;
-            asset.PreferredDistance  = preferred;
-            asset.WanderRadius       = wander;
-            asset.DecisionTickSeconds = tick;
-            asset.CanBurrow          = burrow;
-            asset.CanPhaseShortBlink = blink;
-            asset.CanLeap            = leap;
-            asset.CanFly             = false;
-            AssetDatabase.CreateAsset(asset, path);
+            // Upsert via SerializedObject para respeitar undo/dirty corretamente
+            var so = new SerializedObject(asset);
+            so.FindProperty("MovementProfileId").stringValue   = id;
+            so.FindProperty("MovementType").enumValueIndex     = (int)type;
+            so.FindProperty("MoveSpeed").floatValue            = speed;
+            so.FindProperty("DetectionRange").floatValue       = detect;
+            so.FindProperty("LeashRange").floatValue           = leash;
+            so.FindProperty("AttackRange").floatValue          = attackRange;
+            so.FindProperty("PreferredDistance").floatValue    = preferred;
+            so.FindProperty("WanderRadius").floatValue         = wander;
+            so.FindProperty("DecisionTickSeconds").floatValue  = tick;
+            so.FindProperty("CanBurrow").boolValue             = burrow;
+            so.FindProperty("CanPhaseShortBlink").boolValue    = blink;
+            so.FindProperty("CanLeap").boolValue               = leap;
+            so.FindProperty("CanFly").boolValue                = fly;
+            so.FindProperty("RepositionDashEnabled").boolValue = repositionDash;
+            so.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(asset);
         }
 
         // ──────────────────────────────────────────────────────────────────────

@@ -131,6 +131,74 @@ namespace CindarsHope.Combat.Bestiary
                 VulnerabilityMatrixProfileId = "vulnmatrix_dragon",
                 Notes = "Boss gate 70. F1 lanca+escudo (GuardBreak); F2 alterna posturas (tells por cor); F3 invoca 2 Wyrmlings. Fraco Spear/Impale nas asas (WingExposed). Mecanicas = F05 (dormante). Drops: guardian scale, dragon ember scale.",
             };
+
+            // ── fable_80: +6 Ruins ──────────────────────────────────────────────────────────
+            yield return new BestiaryCreatureDef
+            {
+                EnemyId = "enemy_rune_sentry_mk2", DisplayName = "Rune Sentry Mk.II",
+                Band = 5, MinLevel = 56, MaxLevel = 63, Family = "Construct",
+                Size = BestiarySizeClass.Medium, Role = EnemyRole.Ranged,
+                MovePrimary = EnemyMovementType.GuardStationary, MoveSecondary = EnemyMovementType.KiteRanged,
+                Hp = 85, Damage = 12, Defense = 5, Xp = 60, SpoilerTier = 0,
+                PrimaryDropItemId = "item_material_bromecian_alloy", PrimaryDamageTypeId = "arcane",
+                VulnerabilityMatrixProfileId = "vulnmatrix_construct",
+                Notes = "Motivacao: sentinela de Elyndor que nunca soube que o imperio caiu; varredura de feixe runico. Razao no pack: torre de fogo de cobertura; ciclo de scan de 3s seguido de burst de feixe. Fraqueza: relampago/EMP desliga 2s.",
+            };
+            yield return new BestiaryCreatureDef
+            {
+                EnemyId = "enemy_mirror_golem", DisplayName = "Mirror Golem",
+                Band = 5, MinLevel = 58, MaxLevel = 65, Family = "Construct",
+                Size = BestiarySizeClass.Large, Role = EnemyRole.Tank,
+                MovePrimary = EnemyMovementType.ProtectAnchor, MoveSecondary = EnemyMovementType.TankSlowPush,
+                Hp = 160, Damage = 14, Defense = 7, Xp = 80, SpoilerTier = 1,
+                PrimaryDropItemId = "item_material_bromecian_alloy", PrimaryDamageTypeId = "physical",
+                VulnerabilityMatrixProfileId = "vulnmatrix_construct",
+                Notes = "Motivacao: guarda os saloes espelhados do Arquivo de Bromecia; reflete projeteis. Razao no pack: tanque-ancora anti-ranged; empurrao apos refletir. Fraqueza: contundente quebra o espelho (perde reflexo apos 3 hits contundentes).",
+            };
+            yield return new BestiaryCreatureDef
+            {
+                EnemyId = "enemy_gravedelver_runepriest", DisplayName = "Gravedelver Runepriest",
+                Band = 5, MinLevel = 60, MaxLevel = 67, Family = "Humanoid",
+                Size = BestiarySizeClass.Medium, Role = EnemyRole.Caster,
+                MovePrimary = EnemyMovementType.CasterKeepAway, MoveSecondary = EnemyMovementType.RetreatAndCall,
+                Hp = 65, Damage = 13, Defense = 2, Xp = 75, SpoilerTier = 1,
+                PrimaryDropItemId = "item_material_iron_ore", PrimaryDamageTypeId = "arcane",
+                VulnerabilityMatrixProfileId = "vulnmatrix_humanoid",
+                Notes = "Motivacao: exilado Gravedelver que barganha com as maquinas antigas de Elyndor. Razao no pack: conjurador-lider tecnico; barreira runica absorve 1 hit; raio arcano penetra armadura. Fraqueza: silencio quebra a barreira e exige reativacao.",
+            };
+            yield return new BestiaryCreatureDef
+            {
+                EnemyId = "enemy_ninrorin_echo_warrior", DisplayName = "Ninrorin Echo Warrior",
+                Band = 5, MinLevel = 57, MaxLevel = 64, Family = "Undead",
+                Size = BestiarySizeClass.Medium, Role = EnemyRole.Chaser,
+                MovePrimary = EnemyMovementType.CircleStrafe, MoveSecondary = EnemyMovementType.GroundChase,
+                Hp = 72, Damage = 13, Defense = 3, Xp = 66, SpoilerTier = 1,
+                PrimaryDropItemId = "item_material_night_essence", PrimaryDamageTypeId = "physical",
+                VulnerabilityMatrixProfileId = "vulnmatrix_undead",
+                Notes = "Motivacao: eco-memoria dos guerreiros Ninrorin que serviram antes do fim de Bromecia. Razao no pack: flanqueador espectral; flurry de lamina-fantasma ignora 1 ponto de defesa. Fraqueza: radiante desintegra o eco em 2 hits.",
+            };
+            yield return new BestiaryCreatureDef
+            {
+                EnemyId = "enemy_chromatic_hoardling", DisplayName = "Chromatic Hoardling",
+                Band = 5, MinLevel = 56, MaxLevel = 65, Family = "Aberration",
+                Size = BestiarySizeClass.Small, Role = EnemyRole.Burrower,
+                MovePrimary = EnemyMovementType.TreasureIdleAmbush, MoveSecondary = EnemyMovementType.GroundChase,
+                Hp = 55, Damage = 16, Defense = 2, Xp = 70, SpoilerTier = 1,
+                PrimaryDropItemId = "item_material_bromecian_alloy", PrimaryDamageTypeId = "physical",
+                VulnerabilityMatrixProfileId = "vulnmatrix_aberration",
+                Notes = "Motivacao: atrai os gananciosos fingindo ser um bau-mimico de tesouro. Razao no pack: armadilha solitaria junto a tesouro; bote de surpresa aplica stagger. Fraqueza: qualquer dano apos revelado — sem resistencias.",
+            };
+            yield return new BestiaryCreatureDef
+            {
+                EnemyId = "enemy_runic_warbeast", DisplayName = "Runic Warbeast",
+                Band = 5, MinLevel = 62, MaxLevel = 69, Family = "Beast",
+                Size = BestiarySizeClass.Large, Role = EnemyRole.Chaser,
+                MovePrimary = EnemyMovementType.ChargeLine, MoveSecondary = EnemyMovementType.GroundChase,
+                Hp = 180, Damage = 18, Defense = 5, Xp = 95, SpoilerTier = 1,
+                PrimaryDropItemId = "item_material_sinew", PrimaryDamageTypeId = "arcane",
+                VulnerabilityMatrixProfileId = "vulnmatrix_beast",
+                Notes = "Motivacao: fera de guerra bromeciana domesticada que voltou ao selvagem; runa de carga e gravada nos chifres. Razao no pack: bruto de carga; investida runica atravessa 3 tiles e aplica knockback forte. Fraqueza: relampago desativa a runa de carga temporariamente.",
+            };
         }
     }
 }

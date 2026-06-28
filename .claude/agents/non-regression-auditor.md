@@ -1,5 +1,6 @@
 ---
 name: non-regression-auditor
+model: sonnet
 description: Audita diffs de implementação e documentação em busca de violações de arquitetura e riscos de regressão (forbidden APIs, breach de scope, violações de save DTO, claims de status falsos). Audit-only — reporta findings com evidência, nunca corrige. Use antes do closeout da spec.
 tools: Read, Glob, Grep, Bash
 ---

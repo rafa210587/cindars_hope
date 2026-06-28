@@ -143,6 +143,64 @@ namespace CindarsHope.Combat.Bestiary
                 VulnerabilityMatrixProfileId = "vulnmatrix_insect",
                 Notes = "Boss gate 10. F1 spawn mites + investidas; F2 (66%) Acid Spray cone; F3 (33%) frenesi +30% vel. Fraco Fire; imune ConfusionLite. Janela 2.5s pos-Acid. Mecanicas de fase = F05 (dormante ate la). Drops first-kill: receita cozinha + essencia da banda.",
             };
+
+            // ── fable_80: +5 Stone ──────────────────────────────────────────────────────────
+            yield return new BestiaryCreatureDef
+            {
+                EnemyId = "enemy_glimmer_centipede", DisplayName = "Glimmering Centipede",
+                Band = 1, MinLevel = 1, MaxLevel = 4, Family = "Insect",
+                Size = BestiarySizeClass.Tiny, Role = EnemyRole.Swarm,
+                MovePrimary = EnemyMovementType.SwarmErratic, MoveSecondary = EnemyMovementType.GroundChase,
+                Hp = 6, Damage = 1, Defense = 0, Xp = 3, SpoilerTier = 0,
+                PrimaryDropItemId = "item_material_chitin", PrimaryDamageTypeId = "poison",
+                VulnerabilityMatrixProfileId = "vulnmatrix_insect",
+                Notes = "Motivacao: caca atraida por sua propria bioluminescencia que atrai presas cegas. Razao no pack: enxame de fundo que preenche packs de abertura do bioma Stone. Fraqueza: fogo/AoE liquida o enxame rapido.",
+            };
+            yield return new BestiaryCreatureDef
+            {
+                EnemyId = "enemy_stone_burrower", DisplayName = "Stone Burrower",
+                Band = 1, MinLevel = 2, MaxLevel = 6, Family = "Beast",
+                Size = BestiarySizeClass.Small, Role = EnemyRole.Burrower,
+                MovePrimary = EnemyMovementType.BurrowAmbush, MoveSecondary = EnemyMovementType.GroundChase,
+                Hp = 18, Damage = 3, Defense = 1, Xp = 10, SpoilerTier = 0,
+                PrimaryDropItemId = "item_material_chitin_plate", PrimaryDamageTypeId = "physical",
+                VulnerabilityMatrixProfileId = "vulnmatrix_beast",
+                Notes = "Motivacao: embosca em gargalos de pedra com investida vertical surpresa. Razao no pack: isca/abre-pack que pune avanco descuidado; tell de 0.5s no chao antes do salto. Fraqueza: golpe contundente quando emergido.",
+            };
+            yield return new BestiaryCreatureDef
+            {
+                EnemyId = "enemy_roost_cave_bat", DisplayName = "Roost Cave Bat",
+                Band = 1, MinLevel = 1, MaxLevel = 5, Family = "Beast",
+                Size = BestiarySizeClass.Tiny, Role = EnemyRole.Swarm,
+                MovePrimary = EnemyMovementType.FloatingSlow, MoveSecondary = EnemyMovementType.SwarmErratic,
+                Hp = 5, Damage = 1, Defense = 0, Xp = 3, SpoilerTier = 0,
+                IsNocturnal = true,
+                PrimaryDropItemId = "item_material_sinew", PrimaryDamageTypeId = "physical",
+                VulnerabilityMatrixProfileId = "vulnmatrix_beast",
+                Notes = "[NOTURNA] Motivacao: colonia de teto que defende seu roost durante a noite. Razao no pack: enxame aereo de Nyx ativo a noite, desorientador por guincho (aplica ConfusionLite 0.5s). Fraqueza: radiante/luz revela e dispersa.",
+            };
+            yield return new BestiaryCreatureDef
+            {
+                EnemyId = "enemy_bandit_scavenger", DisplayName = "Bandit Scavenger",
+                Band = 1, MinLevel = 3, MaxLevel = 7, Family = "Humanoid",
+                Size = BestiarySizeClass.Medium, Role = EnemyRole.Chaser,
+                MovePrimary = EnemyMovementType.GroundChase, MoveSecondary = EnemyMovementType.RetreatAndCall,
+                Hp = 22, Damage = 3, Defense = 1, Xp = 12, SpoilerTier = 0,
+                PrimaryDropItemId = "item_material_copper_ore", PrimaryDamageTypeId = "physical",
+                VulnerabilityMatrixProfileId = "vulnmatrix_humanoid",
+                Notes = "Motivacao: gente quebrada que fugiu para as cavernas e saqueia recem-chegados desesperadamente. Razao no pack: lider humano improvisado de packs Stone; chama reforcos ao recuar. Fraqueza: qualquer elemento magico — sem resistencias.",
+            };
+            yield return new BestiaryCreatureDef
+            {
+                EnemyId = "enemy_cracked_golem_shard", DisplayName = "Cracked Golem Shard",
+                Band = 1, MinLevel = 4, MaxLevel = 8, Family = "Construct",
+                Size = BestiarySizeClass.Small, Role = EnemyRole.Guard,
+                MovePrimary = EnemyMovementType.GuardStationary, MoveSecondary = EnemyMovementType.TankSlowPush,
+                Hp = 28, Damage = 4, Defense = 3, Xp = 14, SpoilerTier = 0,
+                PrimaryDropItemId = "item_material_iron_ore", PrimaryDamageTypeId = "physical",
+                VulnerabilityMatrixProfileId = "vulnmatrix_construct",
+                Notes = "Motivacao: reliquia bromeciana partida que ainda guarda escombros sem saber que o imperio caiu. Razao no pack: ancora estacionaria perto de tesouro inicial; imune a corrupcao. Fraqueza: relampago/EMP desativa temporariamente.",
+            };
         }
     }
 }

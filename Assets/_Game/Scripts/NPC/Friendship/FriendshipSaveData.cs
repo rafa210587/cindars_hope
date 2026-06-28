@@ -26,6 +26,12 @@ namespace CindarsHope.NPC.Friendship
         public int LastGiftDay = -1;
         public int LastPurchaseDay = -1;
 
+        // ── Afinidade signed (opinião) — campo ADITIVO (mesma seção; sem migration). ──
+        // Escala -100..+100, neutro 0 (default). Distinta dos Points (0-150, só positivo): mede o
+        // quanto o NPC GOSTA/DESGOSTA do jogador (ódio..amor), exibida no painel de retrato.
+        // Save legado (sem o campo) desserializa para 0 ⇒ todos neutros.
+        public int Opinion;
+
         // ── fable_46 — campos ADITIVOS de romance (mesma seção de amizade; sem migration). ──
         // Save legado (sem estes campos) desserializa para os defaults abaixo ⇒ romance None.
         // Apenas tipos simples + id estável; sem refs Unity (ADR-0006).

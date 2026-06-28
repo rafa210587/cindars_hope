@@ -82,6 +82,10 @@ namespace CindarsHope.Editor
             // FASE A — geradores de dados (SOs antes das cenas).
             RunStep("Gerar status effects canonicos",
                 () => CindarsHope.EditorTools.Combat.GenerateCanonicalStatusEffects.Generate());
+            // Cria o asset do Regador Basico (clona a Enxada) ANTES do catalogo, para que o scan de
+            // Data/Items o registre no ItemDatabase. Idempotente. (Fase 8 v6: ferramenta de rega.)
+            RunStep("Garantir asset do Regador Basico (Data/Items)",
+                () => CindarsHope.EditorTools.Repair.RepairPlayerStartingItems.EnsureBasicWateringCanAsset());
             RunStep("Gerar catalogo canonico de itens",
                 () => CindarsHope.Editor.Items.GenerateCanonicalItemCatalog.Run());
             // Garante 2x Lagrima da Deusa no inventario inicial (so ACRESCENTA; idempotente).
@@ -96,6 +100,12 @@ namespace CindarsHope.Editor
             // flecha sempre bloqueia (ArrowRequiresBowInOtherHand) — sem ele o arco/flecha nao e testavel.
             RunStep("Garantir Arco de Madeira (1x) no inventario inicial",
                 () => CindarsHope.EditorTools.Repair.RepairPlayerStartingItems.EnsureStartingBow());
+            // Ferramentas de fazenda: enxada e regador para FarmTillingInputController (Fase 8).
+            // EquipmentManager.HasTool(Hoe/WateringCan) requer que a ferramenta esteja no inventario.
+            RunStep("Garantir Enxada Basica (1x) no inventario inicial",
+                () => CindarsHope.EditorTools.Repair.RepairPlayerStartingItems.EnsureStartingHoe());
+            RunStep("Garantir Regador Basico (1x) no inventario inicial",
+                () => CindarsHope.EditorTools.Repair.RepairPlayerStartingItems.EnsureStartingWateringCan());
             // Kit de teste: 1 de cada sistema (arma/magia/armadura/escudo/acessorio/comida/pocoes/
             // reparo/pergaminhos/semente/materiais) no inventario inicial. Idempotente; capacity-aware.
             RunStep("Garantir kit de teste (1 de cada) no inventario inicial",
@@ -128,6 +138,15 @@ namespace CindarsHope.Editor
                 () => CindarsHope.Editor.CaveData.CreateCaveBossAssets.CreateAll());
             RunStep("Anexar perfis default de fase de boss",
                 () => CindarsHope.Editor.CaveData.AttachDefaultBossPhaseProfiles.AttachAll());
+            // Packs tematicos de spawn por bioma (fable_81). Depende do roster (bestiario) e dos
+            // movement profiles (GenerateAndWireSpec13GAssets acima) ja gerados. Idempotente.
+            RunStep("Gerar packs tematicos de spawn por bioma (fable_81)",
+                () => CindarsHope.Editor.EnemyTaxonomy.GenerateThematicPacksFable81.GeneratePacks());
+
+            // Profiles de escala visual (player/NPC/props). DEVE rodar antes das cenas: os scene creators
+            // anexam VisualScaleApplicator lendo esses profiles; sem eles caem no fallback hardcoded e logam erro.
+            RunStep("Gerar profiles de escala visual (player/NPC/props)",
+                () => CindarsHope.Editor.ScaleSystem.CreateDefaultScaleAssets.CreateAll());
 
             // FASE B — salvar assets antes das cenas.
             RunStep("Salvar assets gerados (SaveAssets + Refresh) antes das cenas", SaveAndRefresh);
@@ -195,6 +214,8 @@ namespace CindarsHope.Editor
                 () => CindarsHope.Editor.Validation.ValidateHighTierGearNotInShops.Validate());
             RunStep("Validar scene transitions",
                 () => CindarsHope.Editor.Validation.ValidateSceneTransitions.ValidateAll());
+            RunStep("Validar layout FarmScene v4 (presenca dos elementos §32)",
+                () => CindarsHope.Editor.Validation.ValidateFarmSceneLayoutV4.Validate());
 
             ShowSummary("Validar Projeto", "[Validar]",
                 "Veja o Console: cada validador loga PASS/FAIL e detalhes. Este comando NAO altera assets.");
@@ -231,6 +252,9 @@ namespace CindarsHope.Editor
                 () => CindarsHope.EditorTools.Combat.GenerateCanonicalStatusEffects.Generate());
 
             // (d) Re-sincroniza a ItemDatabase (Run faz o sync da registry) e salva.
+            // Cria o asset do Regador Basico ANTES da re-sincronizacao (para entrar no ItemDatabase).
+            RunStep("Garantir asset do Regador Basico (Data/Items)",
+                () => CindarsHope.EditorTools.Repair.RepairPlayerStartingItems.EnsureBasicWateringCanAsset());
             RunStep("Re-sincronizar ItemDatabase (catalogo canonico)",
                 () => CindarsHope.Editor.Items.GenerateCanonicalItemCatalog.Run());
             // (e) Garante 2x Lagrima da Deusa no inventario inicial (so ACRESCENTA; idempotente).
@@ -242,7 +266,12 @@ namespace CindarsHope.Editor
             // (e.3) Garante 1x Arco de Madeira no inventario inicial (sem ele a flecha nao dispara).
             RunStep("Garantir Arco de Madeira (1x) no inventario inicial",
                 () => CindarsHope.EditorTools.Repair.RepairPlayerStartingItems.EnsureStartingBow());
-            // (e.4) Kit de teste: 1 de cada sistema no inventario inicial (idempotente; capacity-aware).
+            // (e.4) Ferramentas de fazenda: enxada e regador (Fase 8; EquipmentManager.HasTool).
+            RunStep("Garantir Enxada Basica (1x) no inventario inicial",
+                () => CindarsHope.EditorTools.Repair.RepairPlayerStartingItems.EnsureStartingHoe());
+            RunStep("Garantir Regador Basico (1x) no inventario inicial",
+                () => CindarsHope.EditorTools.Repair.RepairPlayerStartingItems.EnsureStartingWateringCan());
+            // (e.5) Kit de teste: 1 de cada sistema no inventario inicial (idempotente; capacity-aware).
             RunStep("Garantir kit de teste (1 de cada) no inventario inicial",
                 () => CindarsHope.EditorTools.Repair.RepairPlayerStartingItems.EnsureTestStarterKit());
             // (e.5) Regen de mana canonica nas cenas (idempotente; SerializedObject).

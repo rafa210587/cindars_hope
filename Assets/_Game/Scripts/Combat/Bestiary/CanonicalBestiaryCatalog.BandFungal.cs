@@ -130,6 +130,74 @@ namespace CindarsHope.Combat.Bestiary
                 VulnerabilityMatrixProfileId = "vulnmatrix_plant",
                 Notes = "Boss gate 20. F1 chicotadas + spawns; F2 (66%) Mycel Maze; F3 (33%) Burst Bloom, nucleo exposto 4s/ciclo. Fraco Fire (queimar anel abre CoreExposed). Mecanicas de fase = F05 (dormante). Drops first-kill: receita rara + essence_toxic x3.",
             };
+
+            // ── fable_80: +6 Fungal ─────────────────────────────────────────────────────────
+            yield return new BestiaryCreatureDef
+            {
+                EnemyId = "enemy_rotcap_cluster", DisplayName = "Rotcap Cluster",
+                Band = 2, MinLevel = 11, MaxLevel = 16, Family = "Plant",
+                Size = BestiarySizeClass.Small, Role = EnemyRole.Guard,
+                MovePrimary = EnemyMovementType.GuardStationary, MoveSecondary = EnemyMovementType.GroundChase,
+                Hp = 20, Damage = 2, Defense = 0, Xp = 14, SpoilerTier = 0,
+                PrimaryDropItemId = "item_material_spores", PrimaryDamageTypeId = "poison",
+                VulnerabilityMatrixProfileId = "vulnmatrix_plant",
+                Notes = "Motivacao: colonia que toma corredores do bioma fungico naturalmente. Razao no pack: hazard estacionario que cobre packs fungicos; estouro de esporos cria nuvem de veneno (raio 1.5). Fraqueza: fogo desintegra imediatamente.",
+            };
+            yield return new BestiaryCreatureDef
+            {
+                EnemyId = "enemy_mycelial_warden", DisplayName = "Mycelial Warden",
+                Band = 2, MinLevel = 14, MaxLevel = 20, Family = "Plant",
+                Size = BestiarySizeClass.Large, Role = EnemyRole.Tank,
+                MovePrimary = EnemyMovementType.ProtectAnchor, MoveSecondary = EnemyMovementType.TankSlowPush,
+                Hp = 80, Damage = 7, Defense = 3, Xp = 42, SpoilerTier = 1,
+                PrimaryDropItemId = "item_material_mycel_thread", PrimaryDamageTypeId = "physical",
+                VulnerabilityMatrixProfileId = "vulnmatrix_plant",
+                Notes = "Motivacao: guarda os leitos de esporo do Patriarca; regenera HP perto de esporos. Razao no pack: tanque-ancora do pack fungico; chicote de raiz atinge 2 tiles. Fraqueza: fogo cancela a regen e abre janela de dano extra.",
+            };
+            yield return new BestiaryCreatureDef
+            {
+                EnemyId = "enemy_goblin_shredder", DisplayName = "Goblin Shredder",
+                Band = 2, MinLevel = 11, MaxLevel = 17, Family = "Humanoid",
+                Size = BestiarySizeClass.Small, Role = EnemyRole.Chaser,
+                MovePrimary = EnemyMovementType.PackFlanker, MoveSecondary = EnemyMovementType.GroundChase,
+                Hp = 28, Damage = 5, Defense = 1, Xp = 20, SpoilerTier = 0,
+                PrimaryDropItemId = "item_material_copper_ore", PrimaryDamageTypeId = "physical",
+                VulnerabilityMatrixProfileId = "vulnmatrix_humanoid",
+                Notes = "Motivacao: flanqueador do bando que segue o tambor do Orc War-Drummer. Razao no pack: PackFlanker — so engaja enquanto lider vivo; investida de lamina dupla. Fraqueza: mata o lider e eles debandam.",
+            };
+            yield return new BestiaryCreatureDef
+            {
+                EnemyId = "enemy_orc_drummer", DisplayName = "Orc War-Drummer",
+                Band = 2, MinLevel = 13, MaxLevel = 19, Family = "Humanoid",
+                Size = BestiarySizeClass.Medium, Role = EnemyRole.Caster,
+                MovePrimary = EnemyMovementType.RetreatAndCall, MoveSecondary = EnemyMovementType.GuardStationary,
+                Hp = 45, Damage = 4, Defense = 2, Xp = 32, SpoilerTier = 1,
+                PrimaryDropItemId = "item_material_iron_ore", PrimaryDamageTypeId = "physical",
+                VulnerabilityMatrixProfileId = "vulnmatrix_humanoid",
+                Notes = "Motivacao: reune os bandos de Kaand com o tambor de guerra fungico. Razao no pack: lider de apoio que chama reforco (RetreatAndCall) e aplica frenesi +15% dano aliados. Fraqueza: silencio/atordoamento interrompe o tambor e paralisa o buff.",
+            };
+            yield return new BestiaryCreatureDef
+            {
+                EnemyId = "enemy_cave_stalker_cat", DisplayName = "Cave Stalker",
+                Band = 2, MinLevel = 15, MaxLevel = 22, Family = "Beast",
+                Size = BestiarySizeClass.Medium, Role = EnemyRole.Chaser,
+                MovePrimary = EnemyMovementType.Leaper, MoveSecondary = EnemyMovementType.GroundChase,
+                Hp = 50, Damage = 8, Defense = 1, Xp = 38, SpoilerTier = 1,
+                PrimaryDropItemId = "item_material_sinew", PrimaryDamageTypeId = "physical",
+                VulnerabilityMatrixProfileId = "vulnmatrix_beast",
+                Notes = "Motivacao: emboscador solitario que disputa presas com goblins na escuridao. Razao no pack: elite ocasional fora de pack; bote de escuridao adiciona stagger. Fraqueza: luz o revela (perde bonus de surpresa); fogo.",
+            };
+            yield return new BestiaryCreatureDef
+            {
+                EnemyId = "enemy_spore_amalgam", DisplayName = "Spore Amalgam",
+                Band = 2, MinLevel = 17, MaxLevel = 24, Family = "Aberration",
+                Size = BestiarySizeClass.Medium, Role = EnemyRole.Tank,
+                MovePrimary = EnemyMovementType.TankSlowPush, MoveSecondary = EnemyMovementType.GroundChase,
+                Hp = 70, Damage = 6, Defense = 2, Xp = 40, SpoilerTier = 1,
+                PrimaryDropItemId = "item_material_mycel_heart", PrimaryDamageTypeId = "poison",
+                VulnerabilityMatrixProfileId = "vulnmatrix_aberration",
+                Notes = "Motivacao: fusao sem mente de coisas mortas que transbordou do leito fungico; absorve materia organica. Razao no pack: bruto de pressao em packs fungicos densos; engolfa e aplica lentidao. Fraqueza: fogo/radiante.",
+            };
         }
     }
 }

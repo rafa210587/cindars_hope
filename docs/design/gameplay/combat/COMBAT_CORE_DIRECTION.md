@@ -12,7 +12,7 @@
 > - `docs/design/gameplay/cave/CAVE_DESIGN_DIRECTION.md`  
 > - `docs/design/gameplay/cave/CAVE_MONSTER_ROSTER_DIRECTION.md`  
 > - `docs/design/gameplay/cave/CAVE_COMBAT_BALANCE_VULNERABILITIES_DIRECTION.md`  
-> - `docs/design/gameplay/cave/CAVE_MONSTER_VISUAL_SPRITE_DIRECTION.md`  
+> - `docs/design/art/CAVE_MONSTER_VISUAL_SPRITE_DIRECTION.md`  
 > **Função:** consolidar como o combate deve funcionar: ritmo, input, movimentação, stamina, ataque, defesa, magia, janelas, inimigos, companions, pets, HUD e validação.  
 > **Não é spec implementável.** Este documento orienta design. Specs futuras devem transformar isto em código/data assets.
 

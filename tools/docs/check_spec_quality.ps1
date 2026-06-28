@@ -144,7 +144,11 @@ $reportIssues = @()
 foreach ($report in $reportFiles) {
     $content = Get-Content -Path $report.FullName -Raw
     foreach ($section in $mandatorySections) {
-        if ($content -notmatch "^## $section") {
+        # NOTE: $content is the whole file (Get-Content -Raw) and there is no (?m),
+        # so "^## $section" only ever matched the very start of the file -> every
+        # report was flagged as missing every section. Use "##\s*$section" (matches
+        # the heading on any line), aligned with check_spec_diff_completeness.ps1.
+        if ($content -notmatch "##\s*$section") {
             $reportIssues += "  - $($report.Name): missing '$section'"
         }
     }
@@ -383,10 +387,14 @@ foreach ($file in $cmdFiles) {
     $content = Get-Content -Path $file.FullName -Raw
 
     # Skip if file explicitly documents the patterns as forbidden examples
-    # (rule/command docs quote them as "FORBIDDEN" — they define the rule, they do
-    # not violate it). (?s) lets . span newlines; the old single-line regex never
-    # matched, so the rule docs were being flagged whenever the script ran at all.
-    if ($content -match '(?s)(Forbidden|FORBIDDEN|PROIBID).*(pattern|build|Select-String)') {
+    # (rule/command docs quote them as "FORBIDDEN" / "❌" — they define the rule,
+    # they do not violate it). Consolidation stubs restate the rule as
+    # "**Invariant:** ... no dotnet build piped to Select-String" without the word
+    # "FORBIDDEN", so "Invariant" is included too (e.g. build_validation_truth_gate.md,
+    # which was the lone false positive forcing run_strict_validation to exit 1).
+    # (?s) lets . span newlines; the old single-line regex never matched, so the rule
+    # docs were being flagged whenever the script ran at all.
+    if ($content -match '(?s)(Forbidden|FORBIDDEN|PROIBID|Invariant).*(pattern|build|Select-String)') {
         continue
     }
 

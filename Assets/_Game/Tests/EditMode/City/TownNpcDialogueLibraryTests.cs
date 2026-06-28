@@ -14,7 +14,8 @@ namespace CindarsHope.Tests.EditMode.City
         [Test]
         public void Library_CoversAll23CanonicalNpcs()
         {
-            Assert.AreEqual(23, TownNpcDialogueLibrary.AllContent.Count);
+            // 23 canônicos WAVE12C + Velorin + Sael/Mella/Hess/Tibbet (village_economy) = 28.
+            Assert.AreEqual(28, TownNpcDialogueLibrary.AllContent.Count);
         }
 
         [Test]

@@ -14,10 +14,12 @@ namespace CindarsHope.World
     ///    an off-playfield band (y &gt; +40, city_rules.md Rule 3). The interior's return door pairs
     ///    back to the exterior. The camera follows because it tracks the player transform.
     ///
-    /// 2. <b>Closed-shop door (blocked):</b> when wired to a shop NPC (<see cref="_linkedNpcId"/>) and
-    ///    that NPC is currently unavailable by schedule, the door is BLOCKED — the player cannot enter
-    ///    and an opening-hours notice is shown (decision v2 §6.4-A, city_rules.md Rule 4). No silent
-    ///    fail, never walks in.
+    /// 2. <b>Closed-shop door (notice):</b> when wired to a shop NPC (<see cref="_linkedNpcId"/>) and
+    ///    that NPC is currently unavailable by schedule, o prompt avisa que a loja está fechada — mas a
+    ///    ENTRADA no prédio continua liberada (o jogador pode entrar e encontrar o morador em casa à
+    ///    noite). A trava de COMÉRCIO noturno (city_rules Rule 4) é aplicada no <c>NpcShopController</c>,
+    ///    que recusa a venda quando o vendedor está indisponível — não na porta. Assim a porta é só
+    ///    acesso ao prédio e o NPC permanece acessível dentro de casa no bloco "home".
     ///
     /// The door is data-only configured by the scene generator via <see cref="Configure"/>; it holds
     /// no Unity asset references and performs no global scene search.
@@ -59,9 +61,10 @@ namespace CindarsHope.World
         {
             get
             {
-                if (IsBlockedByShopHours())
+                if (IsShopClosedNow())
                 {
-                    return ClosedNotice();
+                    // Avisa que a loja está fechada, mas o jogador ainda pode entrar no prédio.
+                    return $"{_doorLabel} ({ClosedNotice()})";
                 }
 
                 return _doorLabel;
@@ -78,19 +81,22 @@ namespace CindarsHope.World
                 return;
             }
 
-            if (IsBlockedByShopHours())
-            {
-                // Blocked: show the opening-hours notice and do NOT teleport (decision v2 §6.4-A).
-                GameEventBus.Publish(new PlayerActionFeedbackEvent(ClosedNotice()));
-                return;
-            }
-
             // House/interior door: teleport the interactor to the paired position (same scene).
+            // A entrada nunca é bloqueada — a loja fechada só recusa COMÉRCIO (no NpcShopController),
+            // permitindo visitar o morador dentro de casa no horário "home".
             interactor.transform.position = TeleportTargetPosition;
-            GameEventBus.Publish(new PlayerActionFeedbackEvent(_doorLabel));
+
+            // Corta a câmera para o destino no mesmo frame, senão ela faria um pan suave pelo mapa
+            // inteiro até o interior (y > +40) — a sensação de "ir para longe e voltar".
+            GameEventBus.Publish(new CameraSnapRequestedEvent());
+
+            var feedback = IsShopClosedNow() ? $"{_doorLabel} ({ClosedNotice()})" : _doorLabel;
+            GameEventBus.Publish(new PlayerActionFeedbackEvent(feedback));
         }
 
-        private bool IsBlockedByShopHours()
+        // Apenas INFORMATIVO: a loja vinculada está fora do horário agora? Não bloqueia a entrada;
+        // só alimenta o aviso no prompt/feedback. A recusa de venda mora no NpcShopController.
+        private bool IsShopClosedNow()
         {
             if (!_isShopDoor || string.IsNullOrEmpty(_linkedNpcId))
             {
@@ -100,10 +106,10 @@ namespace CindarsHope.World
             var service = NpcScheduleService.Instance;
             if (service == null)
             {
-                return false; // fail-open: no schedule runtime → door behaves as a plain door
+                return false; // fail-open: no schedule runtime → trata como porta comum
             }
 
-            // Only block when the service actually tracks this NPC (avoids false closes pre-wiring).
+            // Só avisa quando o serviço realmente rastreia este NPC (evita falso "fechado" pré-wiring).
             if (!service.TryGetRuntimeState(_linkedNpcId, out var state) || state == null)
             {
                 return false;

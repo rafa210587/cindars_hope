@@ -9,6 +9,36 @@
 
 ---
 
+## 0.0 Atualização (2026-06-23) — Autossuficiência da vila
+
+Ver direção completa em [`CITY_SELF_SUFFICIENCY_DIRECTION_v1.0.md`](./CITY_SELF_SUFFICIENCY_DIRECTION_v1.0.md)
+(matriz de cobertura, cadeias quebradas, identidade de produtor por NPC, lógica das casas, lista de assets).
+
+**Decisão de design:** híbrido com o jogador como artesão principal (opera estações nas casas-ofício);
+cada NPC artesão ganha identidade de produtor explícita + estação visível na sua casa.
+
+**Identidades de produtor reforçadas (NPCs existentes):**
+- **Mirela** → **Tecelã/Alfaiate** (só tecido/roupa — o couro saiu para o Hess) — estação: tear.
+- **Eiran** → Tratador + **Laticínio** (leite→queijo) — estação: queijaria.
+- **Gruta** → Cozinheira/Taberneira (comida + cerveja/vinho) — estações: fogão + barris.
+- **Corvus** → continua padre/curandeiro; o cemitério passa a ser zelado pelo coveiro **Tibbet** (auxiliar).
+
+**NPCs NOVOS (24 → 28)** — cada um com gancho/segredo próprio (ver `CITY_SELF_SUFFICIENCY_DIRECTION_v1.0.md` §4 e o guia de arte):
+
+| NPC | Raça | Classe primária / secundária | Tags de serviço | Casa | Gancho |
+|---|---|---|---|---|---|
+| **Sael Maré-Quieta** | Tiefling (1º da vila) | Pescador / Comerciante | peixe, isca, varas, defumado; compra pescado | House_Fishery (lago SW) | oferenda secreta a um espírito-do-rio |
+| **Mella Forno-Quente** | Humana de Mana | Artesão (padaria/moagem) / Comerciante | farinha, pão, doces, bolo; compra trigo/ovo/leite | House_Bakery (mercado) | viúva; alimenta os famintos em silêncio |
+| **Hess Couro-Fundo** | Draconato terroso | Artesão (curtidor) / Comerciante | couro, armadura leve; compra hides | House_Tannery (borda) | "agradece" cada pele; o mais velho da vila |
+| **Tibbet Vela-Torta** | Gnomo | Curandeiro-aux (coveiro/coroinha) | enterros, bênçãos; quest de fé | Sacristia (anexo ao Templo) | **adora Nyx em segredo** sob o padre de Kanthor |
+
+**Cadeia de lã:** adicionar **Ovelha** ao FarmAnimalCatalog (sprite já no guia de arte) fecha lã→tecido.
+
+> Estes NPCs e identidades viram specs próprias (`spec_city_artisan_stations`, `spec_closed_chains_leather_cloth_wool`,
+> `spec_npc_fisher_baker_tanner_gravedigger`) — ainda **não implementados**.
+
+---
+
 ## 0. Correção estrutural
 
 Este documento usa **classes funcionais do jogo**, não classes de D&D.
@@ -207,6 +237,9 @@ Quando um NPC é `RomanceEligibleAnyPlayerGender`, ele pode se relacionar e casa
 | npc_savra | Savra Escama-Verde | Draconata verde | Curandeiro | Explorador | sim | Tandra/Telisandra |
 | npc_tovin | Tovin Mãos-de-Selo | Gnomo Artífice | Escriba | Artesão | casado | Merithus |
 | npc_maelor | Maelor Cinza | Elfo da Noite / Luandil | Explorador | Pesquisador | tardio | Nyx |
+| npc_velorin | Ancião Velorin | Ninrorin (elfo cinzento), idoso | Guardião | Escriba | não | Kanthor |
+
+> **Extensão (pós-roster canônico WAVE12C):** `npc_velorin` é o **líder/ancião da aldeia**, adicionado depois dos 23 canônicos. Mora na **Mansão** (a maior residência), trabalha na **Câmara** (casa das decisões) e não tem loja. Não consta no validator `ValidateRefinedCanonicalNpcTownPopulation` (que cobre os 23 canônicos); está no `NpcTownRosterRegistry` com `CanonicalCount = 24`.
 
 ---
 
@@ -1259,6 +1292,44 @@ Romance:
 
 - Quest tardia: **O Nome que a Noite Não Levou**.
 - Só disponível após parte da trama de Nyx/Anya.
+
+---
+
+## 30. Ancião Velorin (líder da aldeia — extensão pós-WAVE12C)
+
+```text
+ID: npc_velorin
+Gênero: homem
+Raça/subraça: Ninrorin (elfo cinzento), idoso
+Classe Primária: Guardião
+Classe Secundária: Escriba
+Tags: kanthor, lideranca, anciao, decisoes, memoria-viva
+Relacionamento: UnavailableForRomance
+Deus cultuado: Kanthor
+Simpatia: Corvus (ordem), Mara/Tovin (registros), Thalindra (história)
+Não gosta/desconfia: cultos de Nyx, oportunistas, pressa
+Visita fazenda: raramente
+HP 95 | MP 60 | Stamina 55
+Força 2 | Constituição 3 | Destreza 3 | Inteligência 6 | Vontade 7 | Carisma 6
+Resiste: Medo, Coerção
+Vulnerável: Frágil ao físico (idade avançada)
+```
+
+Aparência (visual):
+
+Elfo Ninrorin **muito idoso**: pele cinza-pálida enrugada, longos cabelos e barba brancos como cinza, olhos âmbar fundos e cansados. Veste um manto cívico cinza-azulado com fíbula de Kanthor (balança) e empunha um bastão de carvalho. Postura curvada mas digna; voz lenta e pesada.
+
+Background:
+
+Velorin lidera Cindar's Hope há mais tempo do que a maioria está viva. "Já vi esta aldeia nascer, cair e se reerguer." Guarda decisões, atas e a memória viva da fundação — e sabe mais sobre a Fonte e Cindar do que deixa transparecer.
+
+Papel no jogo:
+
+- Mora na **Mansão** (a maior residência, NE); de dia fica na frente da **Câmara** (casa das decisões).
+- Sem loja. Conversa pela linha de saudação (uma árvore de diálogo completa pode ser adicionada via `TownNpcDialogueLibrary` + Rebuild Dialogues).
+- Futuro: dar contratos/decisões cívicas, gate de reputação da aldeia, ligação de lore com Cindar/Anya.
+
+> Nota de implementação: o asset `Npc_Velorin.asset` é criado pelo scene-gen (`EnsureChiefNpcAsset` em `CreateMvpTownScene`), pois não há gerador automático de `NpcDataSO`. Raça/idade editáveis em `NpcTownRosterRegistry` e no asset.
 
 ---
 

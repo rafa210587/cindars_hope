@@ -78,6 +78,31 @@ namespace CindarsHope.NPC.Friendship
         public bool IsAtLeast(string npcId, int level) => _state.IsAtLeast(npcId, level);
         public bool IsAtLeast(string npcId, FriendshipLevel level) => _state.IsAtLeast(npcId, level);
 
+        // ── Opinião signed (-100..+100) — afinidade ódio..amor exibida no painel de retrato ──
+
+        /// <summary>Opinião atual do NPC sobre o jogador (-100..+100; 0 neutro). Desconhecido ⇒ 0.</summary>
+        public int GetOpinion(string npcId) => _state.GetOpinion(npcId);
+
+        /// <summary>Soma à opinião (clamp ±100) e publica NpcOpinionChangedEvent se mudou.</summary>
+        public void AdjustOpinion(string npcId, int delta)
+        {
+            var (changed, previous, current) = _state.AdjustOpinion(npcId, delta);
+            if (changed)
+            {
+                GameEventBus.Publish(new NpcOpinionChangedEvent(npcId, current, previous));
+            }
+        }
+
+        /// <summary>Define a opinião diretamente (clamp ±100) e publica o evento se mudou.</summary>
+        public void SetOpinion(string npcId, int value)
+        {
+            var (changed, previous, current) = _state.SetOpinion(npcId, value);
+            if (changed)
+            {
+                GameEventBus.Publish(new NpcOpinionChangedEvent(npcId, current, previous));
+            }
+        }
+
         /// <summary>
         /// Adição genérica com a fonte declarada (aplica o cap da fonte). Mantida para o contrato
         /// AddPoints(npcId, n, fonte) do plano; fontes com cap usam o método específico abaixo.

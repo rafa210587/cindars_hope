@@ -19,10 +19,14 @@ namespace CindarsHope.Editor.SceneCreation
         // ── Canonical footprint (48×42 tiles) ─────────────────────────────────────────
         // Bounds −24..24 / −21..21 (city_rules Rule 1). The legacy build was 36×30
         // (x = ±18.5, y = ±15) — see CreateMvpTownScene history and city_rules number table.
-        public const float HalfWidth = 24f;   // x ∈ [−24, 24] → 48 tiles wide
-        public const float HalfHeight = 21f;  // y ∈ [−21, 21] → 42 tiles tall
-        public const float WidthTiles = HalfWidth * 2f;   // 48
-        public const float HeightTiles = HalfHeight * 2f; // 42
+        // Footprint ampliado para 76×64 (spec_city_real_walkin_houses_no_teleport): cada residência é
+        // um prédio FÍSICO percorrível e os marcos cívicos (igreja, câmara, mansão, mercado, praça de
+        // eventos, cemitério) ganham espaço próprio. O placer determinístico em CreateMvpTownScene
+        // distribui os 21 prédios sem sobreposição dentro deste footprint.
+        public const float HalfWidth = 38f;   // x ∈ [−38, 38] → 76 tiles wide
+        public const float HalfHeight = 32f;  // y ∈ [−32, 32] → 64 tiles tall
+        public const float WidthTiles = HalfWidth * 2f;   // 56
+        public const float HeightTiles = HalfHeight * 2f; // 48
 
         // Legacy interior half-extents the existing element coordinates were authored against.
         // Used only to derive the relayout scale; not a runtime value.
@@ -87,22 +91,25 @@ namespace CindarsHope.Editor.SceneCreation
         public const string DistrictTownHallNortheast = "town_hall_northeast";
         public const string DistrictLakeParkSouthwest = "lake_park_southwest";
 
+        // Footprint 76×64: distritos reescalados. O placer de prédios (CreateMvpTownScene) usa zonas
+        // reservadas próprias; estes retângulos servem para classificação de social anchors, os
+        // landmarks de canto (lago SW, prefeitura NE) e os testes de WithinBounds/cores.
         private static readonly District[] Districts =
         {
-            // Central plaza ~12×12, town center (statue + public board).
-            new District(DistrictCentralPlaza, new Vector2(0f, 0f), new Vector2(12f, 12f)),
-            // Market / commercial row — west.
-            new District(DistrictMarketWest, new Vector2(-16f, 3f), new Vector2(14f, 20f)),
-            // Residential — east.
-            new District(DistrictResidentialEast, new Vector2(16f, 3f), new Vector2(14f, 20f)),
-            // Temple / Fountain — north.
-            new District(DistrictTempleNorth, new Vector2(0f, 15f), new Vector2(22f, 10f)),
-            // Corral / south entrance (road to the farm) — south.
-            new District(DistrictCorralSouth, new Vector2(0f, -16f), new Vector2(24f, 8f)),
-            // Town hall + mural — northeast corner.
-            new District(DistrictTownHallNortheast, new Vector2(18f, 16f), new Vector2(10f, 8f)),
-            // Lake / park — southwest corner.
-            new District(DistrictLakeParkSouthwest, new Vector2(-18f, -15f), new Vector2(10f, 9f)),
+            // Praça central (estátua + quadro público).
+            new District(DistrictCentralPlaza, new Vector2(0f, 0f), new Vector2(14f, 14f)),
+            // Mercado / comercial — oeste-centro.
+            new District(DistrictMarketWest, new Vector2(-22f, 4f), new Vector2(16f, 22f)),
+            // Residencial — leste.
+            new District(DistrictResidentialEast, new Vector2(22f, 4f), new Vector2(16f, 22f)),
+            // Templo / fonte — norte.
+            new District(DistrictTempleNorth, new Vector2(0f, 23f), new Vector2(26f, 12f)),
+            // Curral / entrada sul (estrada para a fazenda).
+            new District(DistrictCorralSouth, new Vector2(0f, -24f), new Vector2(28f, 10f)),
+            // Prefeitura + mural — canto nordeste.
+            new District(DistrictTownHallNortheast, new Vector2(30f, 26f), new Vector2(12f, 9f)),
+            // Lago / parque — canto sudoeste.
+            new District(DistrictLakeParkSouthwest, new Vector2(-30f, -25f), new Vector2(12f, 10f)),
         };
 
         public static IReadOnlyList<District> AllDistricts => Districts;

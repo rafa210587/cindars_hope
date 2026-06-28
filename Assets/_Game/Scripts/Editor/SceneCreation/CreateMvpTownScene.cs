@@ -33,6 +33,8 @@ using CindarsHope.UI.Hotbar;
 using CindarsHope.Equipment;
 using CindarsHope.Player.Progression;
 using CindarsHope.Editor.Validation;
+using CindarsHope.Editor.ScaleSystem;
+using CindarsHope.World.Scale;
 
 namespace CindarsHope.Editor.SceneCreation
 {
@@ -85,18 +87,37 @@ namespace CindarsHope.Editor.SceneCreation
             // Camera background is a flat color playfield; do not create a giant
             // ground sprite because it reads as a horizon/central rectangle in MVP art.
             CreateBounds();
+            // Muralha de pedra visível (torres de canto, postes de portão, ameias) sobre a linha da borda.
+            CreateCityWall();
+            // Estrutura de chão: pads de distrito (zonas) + ruas de terra ligando praça↔distritos↔
+            // portões. Vão por baixo de tudo (Ground, sortingOrder negativo) para os elementos não
+            // flutuarem no vazio. São tiras estreitas / zonas, não um slab de horizonte.
+            CreateDistrictPads();
+            CreateTownRoads();
             CreateMainCamera(playerTransform);
             CreateSpawnPoints(playerTransform);
             CreatePortals();
+            // Garante o asset do líder da aldeia (não há gerador automático de NpcDataSO) antes de
+            // materializar os NPCs, para o spec npc_velorin carregar os dados.
+            EnsureChiefNpcAsset();
+            // 4 NPCs da autossuficiência (Sael/Mella/Hess/Tibbet) + 3 lojas — mesmos assets idempotentes.
+            EnsureVillageEconomyNpcAssets();
             var npcManager = CreateNpcs(playerTransform, playerManager, inventoryManager, itemDatabase, shopManager, modalManager, shopUi);
             CreateCentralPlaza();
             CreateMarketStalls();
             CreateHouses();
-            // fable_11: schedule anchors (work/social/home per NPC), minimal interiors (y>+40) and
-            // functional house doors. Must run after NPCs + houses exist.
+            // Praça de eventos (festivais) + distrito de mercado (bancas ao redor do Salão de Mercado).
+            CreateEventsAndMarketDistricts();
+            // (Removido: CreateFillerBuildings — eram caixotes/barris SÓ decorativos com collider sólido,
+            //  blocos físicos sem motivo. O mapa já é preenchido pelas casas percorríveis reais.)
+            // fable_11: schedule anchors (work/social/home per NPC). Must run after NPCs + houses exist.
+            // (As casas agora são FÍSICAS percorríveis — CreateWalkInHouse — sem faixa off-field nem portas
+            //  de teleporte. O anchor "home" cai dentro do interior físico da própria casa.)
             CreateNpcScheduleAnchors();
-            CreateHouseInteriorsAndDoors();
             CreateTownDecorations();
+            // Arredores temáticos (margem nova do footprint): cemitério (NW), boca de gruta (E) e
+            // tenda escondida do mercado noturno (S) — moradias ao relento de Maelor/Zrix/Yael.
+            CreateTownOutskirts();
             CreateTownTrees();
             CreateDebugHud(playerManager, inventoryManager, hungerManager, interactionSystem, timeManager, saveManager);
             CreateSceneRuntimeInstaller(playerTransform);
@@ -447,18 +468,34 @@ namespace CindarsHope.Editor.SceneCreation
         {
             var player = new GameObject("Player");
             player.transform.position = Vector3.zero;
-            player.transform.localScale = new Vector3(1f, 1.5f, 1f);
+            // Tag built-in "Player" — usada pelo RoofRevealController para revelar o interior da casa
+            // (esconder o telhado) quando o jogador entra. Tag padrão do Unity, sempre existe.
+            player.tag = "Player";
+            // Size from the authored Player scale profile (VisualScale 2.0), not a hardcoded localScale.
+            if (!ScaleProfileLibrary.AttachApplicator(player, EntityScaleCategory.Player))
+            {
+                player.transform.localScale = new Vector3(1f, 1.5f, 1f);
+            }
+
+            // Escala visual do player com sprites pixel art a 128 PPU (~0.5625u/altura).
+            // Valor afinavel: 1.3f resulta em ~0.73 unidade de altura na cena.
+            const float PlayerVisualScale = 1.3f;
 
             var spriteRenderer = player.AddComponent<SpriteRenderer>();
-            spriteRenderer.sprite = GetBuiltinSprite();
-            spriteRenderer.color = new Color(0.23f, 0.48f, 0.84f);
+            var walkDownFrame1 = Resources.Load<Sprite>("PlayerSprites/walk/down/walk_down_01");
+            if (walkDownFrame1 != null)
+            {
+                spriteRenderer.sprite = walkDownFrame1;
+            }
+            else
+            {
+                spriteRenderer.sprite = GetBuiltinSprite();
+                Debug.LogWarning("[PlayerWalkAnimator] Town: Resources/PlayerSprites/walk/down/walk_down_01 nao encontrado. " +
+                                 "Usando sprite builtin como fallback. Reimporte os sprites do player.");
+            }
+            spriteRenderer.color = Color.white;
             spriteRenderer.sortingOrder = 0;
             TrySetSortingLayer(spriteRenderer, "Characters", spriteRenderer.sortingOrder);
-
-            if (spriteRenderer.sprite == null)
-            {
-                Debug.LogWarning("Town Player placeholder SpriteRenderer was created without a sprite. Replace it with the final placeholder sprite in a future art PR.");
-            }
 
             var rigidbody = player.AddComponent<Rigidbody2D>();
             rigidbody.bodyType = RigidbodyType2D.Dynamic;
@@ -471,6 +508,11 @@ namespace CindarsHope.Editor.SceneCreation
 
             var playerController = player.AddComponent<PlayerController>();
             ConfigurePlayerController(playerController, rigidbody);
+
+            player.AddComponent<CindarsHope.Player.PlayerWalkAnimator>();
+
+            // Sobrescreve a escala definida pelo ScaleProfileLibrary para adequar o sprite pixel art.
+            player.transform.localScale = new Vector3(PlayerVisualScale, PlayerVisualScale, 1f);
 
             var interactionSystem = player.AddComponent<InteractionSystem>();
             var interactionTrigger = CreateInteractionTrigger(player.transform, interactionSystem);
@@ -563,6 +605,81 @@ namespace CindarsHope.Editor.SceneCreation
             CreateBound("Right", bounds.transform, new Vector2(halfW + 0.5f, 0f), new Vector2(1f, h + 1f));
         }
 
+        // Detalhes fortificados da muralha: torres de canto, postes do portão (oeste) e ameias (merlões).
+        // O CORPO do muro + collider vêm de CreateBounds (cor de pedra); aqui é só o visual de muralha.
+        private static void CreateCityWall()
+        {
+            var parent = new GameObject("CityWall");
+            parent.transform.position = Vector3.zero;
+            float wx = TownDistrictLayout.HalfWidth + 0.5f;   // 38.5
+            float wy = TownDistrictLayout.HalfHeight + 0.5f;  // 32.5
+            var stone = new Color(0.56f, 0.54f, 0.50f);
+            var stoneDark = new Color(0.34f, 0.32f, 0.30f);
+            const float gateHalf = 4f;
+
+            // Merlões (recorte de castelo) ao longo do topo norte/sul e da borda leste.
+            for (float x = -wx + 2f; x <= wx - 2f + 0.01f; x += 3f)
+            {
+                CreateDecoration(parent.transform, "Merlon_N", new Vector3(x, wy + 0.4f, 0f), new Vector3(1.2f, 0.9f, 1f), stoneDark);
+                CreateDecoration(parent.transform, "Merlon_S", new Vector3(x, -wy - 0.4f, 0f), new Vector3(1.2f, 0.9f, 1f), stoneDark);
+            }
+            for (float y = -wy + 2f; y <= wy - 2f + 0.01f; y += 3f)
+            {
+                CreateDecoration(parent.transform, "Merlon_E", new Vector3(wx + 0.4f, y, 0f), new Vector3(0.9f, 1.2f, 1f), stoneDark);
+                if (Mathf.Abs(y) > gateHalf + 1f) // oeste com vão do portão
+                {
+                    CreateDecoration(parent.transform, "Merlon_W", new Vector3(-wx - 0.4f, y, 0f), new Vector3(0.9f, 1.2f, 1f), stoneDark);
+                }
+            }
+
+            // Torres de canto (sólidas).
+            CreateTower(parent.transform, "Tower_NW", new Vector3(-wx, wy, 0f), stone, stoneDark, 3.0f);
+            CreateTower(parent.transform, "Tower_NE", new Vector3(wx, wy, 0f), stone, stoneDark, 3.0f);
+            CreateTower(parent.transform, "Tower_SW", new Vector3(-wx, -wy, 0f), stone, stoneDark, 3.0f);
+            CreateTower(parent.transform, "Tower_SE", new Vector3(wx, -wy, 0f), stone, stoneDark, 3.0f);
+            // Postes do portão (oeste, ladeando o vão central).
+            CreateTower(parent.transform, "GatePost_N", new Vector3(-wx, gateHalf + 0.6f, 0f), stone, stoneDark, 1.8f);
+            CreateTower(parent.transform, "GatePost_S", new Vector3(-wx, -(gateHalf + 0.6f), 0f), stone, stoneDark, 1.8f);
+        }
+
+        private static void CreateTower(Transform parent, string name, Vector3 position, Color stone, Color stoneDark, float size)
+        {
+            var tower = new GameObject(name);
+            tower.transform.SetParent(parent);
+            tower.transform.position = position;
+
+            var baseGo = new GameObject("Base");
+            baseGo.transform.SetParent(tower.transform);
+            baseGo.transform.localPosition = Vector3.zero;
+            baseGo.transform.localScale = new Vector3(size + 0.4f, size + 0.4f, 1f);
+            var baseRenderer = baseGo.AddComponent<SpriteRenderer>();
+            baseRenderer.sprite = GetBuiltinSprite();
+            baseRenderer.color = stoneDark;
+            baseRenderer.sortingOrder = 8;
+            TrySetSortingLayer(baseRenderer, "Items", baseRenderer.sortingOrder);
+
+            var topGo = new GameObject("Top");
+            topGo.transform.SetParent(tower.transform);
+            topGo.transform.localPosition = Vector3.zero;
+            topGo.transform.localScale = new Vector3(size, size, 1f);
+            var topRenderer = topGo.AddComponent<SpriteRenderer>();
+            topRenderer.sprite = GetBuiltinSprite();
+            topRenderer.color = stone;
+            topRenderer.sortingOrder = 9;
+            TrySetSortingLayer(topRenderer, "Items", topRenderer.sortingOrder);
+
+            var col = tower.AddComponent<BoxCollider2D>();
+            col.isTrigger = false;
+            col.size = new Vector2(size, size);
+        }
+
+        // Perímetro: MURALHA DE PEDRA visível na linha da borda (CreateCityWall adiciona torres de canto,
+        // postes do portão e ameias). A floresta fica POR FORA da muralha (BuildBorderTreeRing). Cor de
+        // pedra para o muro ler como muralha, não como força invisível.
+        private static readonly Color BorderWallColor = new Color(0.50f, 0.48f, 0.44f);
+        // Earthy interior wall so a house interior reads as an enclosed room.
+        private static readonly Color InteriorWallColor = new Color(0.3f, 0.25f, 0.21f);
+
         private static void CreateBound(string name, Transform parent, Vector2 position, Vector2 size)
         {
             var bound = new GameObject(name);
@@ -571,6 +688,24 @@ namespace CindarsHope.Editor.SceneCreation
 
             var collider = bound.AddComponent<BoxCollider2D>();
             collider.size = size;
+
+            AddWallVisual(bound.transform, size, BorderWallColor, "Wall");
+        }
+
+        // Adds a visible quad sprite matching a wall collider. The visual is a SCALED CHILD so the
+        // parent's BoxCollider2D.size (in local units) is unaffected by the visual scale.
+        private static void AddWallVisual(Transform parent, Vector2 size, Color color, string sortingLayer)
+        {
+            var visual = new GameObject("Visual");
+            visual.transform.SetParent(parent);
+            visual.transform.localPosition = Vector3.zero;
+            visual.transform.localScale = new Vector3(size.x, size.y, 1f);
+
+            var renderer = visual.AddComponent<SpriteRenderer>();
+            renderer.sprite = GetBuiltinSprite();
+            renderer.color = color;
+            renderer.sortingOrder = 1;
+            TrySetSortingLayer(renderer, sortingLayer, renderer.sortingOrder);
         }
 
         private static void CreateMainCamera(Transform playerTransform)
@@ -600,7 +735,8 @@ namespace CindarsHope.Editor.SceneCreation
 
             // fable_40: spawn IDs are frozen (CA-4); only positions move into the 48×42 footprint.
             var defaultSpawn = CreateSpawnPoint(parent.transform, "town_default", TownDistrictLayout.Reposition(new Vector3(0f, -5f, 0f)));
-            var fromFarmSpawn = CreateSpawnPoint(parent.transform, "town_from_farm", TownDistrictLayout.Reposition(new Vector3(0f, -11.5f, 0f)));
+            // Chegada da fazenda: logo DENTRO do portão oeste (a entrada da cidade).
+            var fromFarmSpawn = CreateSpawnPoint(parent.transform, "town_from_farm", new Vector3(-(TownDistrictLayout.HalfWidth - 4f), 0f, 0f));
 
             var installer = parent.AddComponent<SceneSpawnInstaller>();
             var serializedInstaller = new SerializedObject(installer);
@@ -647,12 +783,12 @@ namespace CindarsHope.Editor.SceneCreation
             var portals = new GameObject("Portals");
             portals.transform.position = Vector3.zero;
 
-            // South gate: the road back to the farm leaves the town at the bottom wall.
-            // fable_40: portal moved to the new south perimeter; target scene/spawn IDs frozen.
+            // Entrada da cidade / saída para a fazenda: no MEIO do lado OESTE (entre os cantos), onde
+            // o anel de árvores abre o vão. É por aqui que se chega da fazenda e se volta para ela.
             CreateScenePortal(
                 portals.transform,
                 "Portal_Town_To_Farm",
-                new Vector3(0f, -(TownDistrictLayout.HalfHeight - 2f), 0f),
+                new Vector3(-(TownDistrictLayout.HalfWidth - 2f), 0f, 0f),
                 new Color(0.78f, 0.62f, 0.24f),
                 "FarmScene",
                 FarmScenePath,
@@ -756,13 +892,78 @@ namespace CindarsHope.Editor.SceneCreation
             CreateDecoration(plaza.transform, "PlazaPlanter_SE", new Vector3(3.8f, -3.8f, 0f), new Vector3(0.8f, 0.8f, 1f), new Color(0.3f, 0.52f, 0.26f));
             CreateDecoration(plaza.transform, "PlazaPlanter_SW", new Vector3(-3.8f, -3.8f, 0f), new Vector3(0.8f, 0.8f, 1f), new Color(0.3f, 0.52f, 0.26f));
 
-            // fable_37 — âncora das barracas de festival (ponto de extensão da praça). Empty marcado com
-            // FestivalStallAnchor: o WorldEventService monta/desmonta aqui as 3 barracas temporárias no
-            // dia de festival. Sem geometria — apenas o ponto de spawn (ADITIVO; não altera o layout).
+            // (FestivalStallAnchor foi movido para a PRAÇA DE EVENTOS dedicada — ver CreateEventsAndMarketDistricts.)
+        }
+
+        // Praça de eventos (festivais) + distrito de mercado. A praça de eventos é uma área ABERTA
+        // dedicada onde o WorldEventService monta as barracas temporárias; o distrito de mercado agrupa
+        // bancas cobertas ao redor do Salão de Mercado (House_MarketHall). Ambos em zonas reservadas
+        // (o placer não põe casa em cima).
+        private static void CreateEventsAndMarketDistricts()
+        {
+            var parent = new GameObject("TownEventsMarket");
+            parent.transform.position = Vector3.zero;
+
+            // ── Praça de eventos (sul) ──
+            CreateGroundSlab(parent.transform, "EventsPlaza_Ground", EventsPlazaCenter, new Vector2(15f, 9f), new Color(0.66f, 0.62f, 0.52f), -1);
+            CreateDecoration(parent.transform, "EventsPlaza_Stage",
+                EventsPlazaCenter + new Vector3(0f, 2.6f, 0f), new Vector3(5f, 1.4f, 1f), new Color(0.50f, 0.38f, 0.26f)); // tablado
             var festivalAnchor = new GameObject("FestivalStallAnchor");
-            festivalAnchor.transform.SetParent(plaza.transform);
-            festivalAnchor.transform.position = new Vector3(0f, 2.6f, 0f);
+            festivalAnchor.transform.SetParent(parent.transform);
+            festivalAnchor.transform.position = EventsPlazaCenter;
             festivalAnchor.AddComponent<CindarsHope.World.Events.FestivalStallAnchor>();
+
+            // ── Distrito de mercado (norte) — bancas cobertas ao redor do Salão de Mercado ──
+            CreateGroundSlab(parent.transform, "MarketSquare_Ground", MarketHallCenter + new Vector3(0f, -4.5f, 0f), new Vector2(16f, 5f), new Color(0.64f, 0.57f, 0.44f), -1);
+            float[] sx = { -7f, -4f, 4f, 7f };
+            for (int i = 0; i < sx.Length; i++)
+            {
+                CreateMarketStall(parent.transform, $"MarketSquare_Stall_{i:00}", MarketHallCenter + new Vector3(sx[i], -4.5f, 0f), MarketAwningColor(i));
+            }
+            CreateMarketStall(parent.transform, "MarketSquare_Stall_04", MarketHallCenter + new Vector3(-5.5f, -6.8f, 0f), MarketAwningColor(4));
+            CreateMarketStall(parent.transform, "MarketSquare_Stall_05", MarketHallCenter + new Vector3(5.5f, -6.8f, 0f), MarketAwningColor(5));
+        }
+
+        private static Color MarketAwningColor(int i)
+        {
+            var palette = new[]
+            {
+                new Color(0.72f, 0.45f, 0.40f), new Color(0.45f, 0.60f, 0.50f),
+                new Color(0.50f, 0.52f, 0.70f), new Color(0.72f, 0.66f, 0.45f),
+                new Color(0.66f, 0.50f, 0.62f), new Color(0.50f, 0.66f, 0.66f),
+            };
+            return palette[i % palette.Length];
+        }
+
+        // Banca de mercado decorativa: balcão (bloqueia atrás) + toldo colorido (cosmético, sem collider).
+        private static void CreateMarketStall(Transform parent, string name, Vector3 position, Color awningColor)
+        {
+            var stall = new GameObject(name);
+            stall.transform.SetParent(parent);
+            stall.transform.position = position;
+
+            var counter = new GameObject("Counter");
+            counter.transform.SetParent(stall.transform);
+            counter.transform.localPosition = Vector3.zero;
+            counter.transform.localScale = new Vector3(2.0f, 0.6f, 1f);
+            var counterRenderer = counter.AddComponent<SpriteRenderer>();
+            counterRenderer.sprite = GetBuiltinSprite();
+            counterRenderer.color = new Color(0.46f, 0.34f, 0.22f);
+            counterRenderer.sortingOrder = 1;
+            TrySetSortingLayer(counterRenderer, "Items", counterRenderer.sortingOrder);
+            var counterCollider = counter.AddComponent<BoxCollider2D>();
+            counterCollider.isTrigger = false;
+            counterCollider.size = Vector2.one;
+
+            var awning = new GameObject("Awning");
+            awning.transform.SetParent(stall.transform);
+            awning.transform.localPosition = new Vector3(0f, 0.7f, 0f);
+            awning.transform.localScale = new Vector3(2.3f, 0.5f, 1f);
+            var awningRenderer = awning.AddComponent<SpriteRenderer>();
+            awningRenderer.sprite = GetBuiltinSprite();
+            awningRenderer.color = awningColor;
+            awningRenderer.sortingOrder = 4;
+            TrySetSortingLayer(awningRenderer, "Items", awningRenderer.sortingOrder);
         }
 
         private static GameObject CreateStatuePart(Transform parent, string name, Vector3 localPosition, Vector3 scale, Color color, int sortingOrder)
@@ -825,75 +1026,454 @@ namespace CindarsHope.Editor.SceneCreation
         }
 
         // ─── Houses: simple base+roof+door composites per resident district ──
-        private static readonly (string name, Vector3 position, Color baseColor)[] TownHouseSpecs =
+        private static readonly Vector2 HouseSizeDefault = new Vector2(2.6f, 1.8f);
+
+        // Casas FÍSICAS percorríveis (pedido: "a casa deveria ser real, física, só entrar e andar por
+        // elas mesmo. Não ser cena separada"). Cada casa tem chão andável + 4 paredes sólidas com um VÃO
+        // de porta embaixo + móveis + telhado que esconde o interior até o jogador entrar
+        // (RoofRevealController). SEM teleporte, SEM cena separada, SEM faixa off-field.
+        //
+        // Coordenadas JÁ no footprint final 56×48 (NÃO passam por Reposition) para controlar exatamente o
+        // espaçamento e nunca sobrepor. Layout em colunas com ruas entre elas; núcleo cívico ao norte;
+        // praça central livre; corredor de entrada a oeste (y≈0) livre. AuditHouseOverlaps valida na geração.
+        private const float WallThickness = 0.55f; // paredes mais grossas ⇒ leem como parede de verdade
+        private const float DoorGapWidth = 1.8f;
+
+        // Centros de marcos/áreas reservadas (não recebem casas). Devem bater com onde os marcos são
+        // de fato criados (praça, salão de mercado, praça de eventos) e com os landmarks de canto.
+        private static readonly Vector3 MarketHallCenter = new Vector3(0f, 23f, 0f);
+        private static readonly Vector3 EventsPlazaCenter = new Vector3(0f, -23f, 0f);
+
+        // Marcos cívicos com posição FIXA (eixo central, batendo com o mockup): mercado ao norte,
+        // igreja/mansão flanqueando o mercado, câmara/prisão ladeando a praça. Porta vira p/ o centro.
+        private static readonly (string name, Vector3 position, Color color, Vector2 size)[] PinnedCivicDefs =
         {
-            ("House_Temple", new Vector3(-12f, 11.5f, 0f), new Color(0.78f, 0.74f, 0.62f)),
-            ("House_Registry", new Vector3(-8.5f, 11.5f, 0f), new Color(0.55f, 0.58f, 0.66f)),
-            ("House_MarketRow_A", new Vector3(-4.5f, 9.6f, 0f), new Color(0.55f, 0.42f, 0.3f)),
-            ("House_MarketRow_B", new Vector3(0f, 9.6f, 0f), new Color(0.6f, 0.46f, 0.32f)),
-            ("House_MarketRow_C", new Vector3(4.5f, 9.6f, 0f), new Color(0.52f, 0.4f, 0.3f)),
-            ("House_Inn", new Vector3(8.5f, 9.6f, 0f), new Color(0.62f, 0.5f, 0.36f)),
-            ("House_Blacksmith", new Vector3(-14.5f, 4.5f, 0f), new Color(0.4f, 0.34f, 0.3f)),
-            ("House_Archive", new Vector3(-11.5f, -5.5f, 0f), new Color(0.48f, 0.42f, 0.6f)),
-            ("House_Workshop", new Vector3(9.5f, -6f, 0f), new Color(0.56f, 0.46f, 0.3f)),
-            ("House_AnimalYard", new Vector3(14.5f, 10.5f, 0f), new Color(0.46f, 0.56f, 0.4f)),
-            ("House_AlchemyLab", new Vector3(14f, 1f, 0f), new Color(0.36f, 0.55f, 0.58f)),
-            ("House_GateKeeper", new Vector3(-7.5f, -11f, 0f), new Color(0.42f, 0.46f, 0.56f)),
+            ("House_MarketHall", MarketHallCenter,             new Color(0.60f, 0.50f, 0.34f), new Vector2(6.4f, 5.2f)),
+            ("House_Temple",     new Vector3(-16f, 23f, 0f),   new Color(0.82f, 0.79f, 0.66f), new Vector2(8.0f, 7.0f)), // igreja (Corvus)
+            ("House_Manor",      new Vector3(16f, 23f, 0f),    new Color(0.66f, 0.58f, 0.46f), new Vector2(7.0f, 5.6f)), // mansão (Velorin)
+            ("House_Chamber",    new Vector3(-13f, 11f, 0f),   new Color(0.60f, 0.62f, 0.58f), new Vector2(6.6f, 5.2f)), // câmara
+            ("House_Prison",     new Vector3(13f, 11f, 0f),    new Color(0.40f, 0.40f, 0.44f), new Vector2(5.6f, 4.6f)), // prisão
         };
+
+        // Residências distribuídas pelo placer por DISPERSÃO (espalha pela cidade toda).
+        // IMPORTANTE: mantidas em ordem de área DECRESCENTE (big-first bin-packing).
+        // O placer max-min dispersion coloca cada casa no lote mais isolado disponível;
+        // com footprints maiores primeiro há mais espaço livre para as menores restantes,
+        // evitando que as últimas fiquem sem vaga (bug: Bakery/Tannery sem lote).
+        private static readonly (string name, Color color, Vector2 size)[] ResidentialDefs =
+        {
+            // 6.4 × 5.2 = 33.28
+            ("House_Inn",      new Color(0.62f, 0.50f, 0.36f), new Vector2(6.4f, 5.2f)), // estalagem (Orlan+Gruta)
+            // 6.2 × 5.0 = 31.00
+            ("House_CarvalhoTorto", new Color(0.50f, 0.46f, 0.34f), new Vector2(6.2f, 5.0f)), // família (Gurd+Hund)
+            // 6.0 × 4.8 = 28.80
+            ("House_Fishery",      new Color(0.48f, 0.62f, 0.70f), new Vector2(6.0f, 4.8f)), // Sael (pescaria)
+            // 5.8 × 4.6 = 26.68
+            ("House_Registry",   new Color(0.55f, 0.58f, 0.66f), new Vector2(5.8f, 4.6f)), // Mara
+            ("House_Blacksmith", new Color(0.40f, 0.34f, 0.30f), new Vector2(5.8f, 4.6f)), // Brumdar
+            ("House_Archive",    new Color(0.48f, 0.42f, 0.60f), new Vector2(5.8f, 4.6f)), // Thalindra
+            ("House_Workshop",   new Color(0.56f, 0.46f, 0.30f), new Vector2(5.8f, 4.6f)), // Nimble
+            ("House_AlchemyLab", new Color(0.36f, 0.55f, 0.58f), new Vector2(5.8f, 4.6f)), // Ozzra
+            ("House_AnimalYard", new Color(0.46f, 0.56f, 0.40f), new Vector2(5.8f, 4.6f)), // Eiran
+            ("House_Bakery",       new Color(0.78f, 0.64f, 0.44f), new Vector2(5.8f, 4.6f)), // Mella (padaria/moinho)
+            ("House_Tannery",      new Color(0.62f, 0.50f, 0.38f), new Vector2(5.8f, 4.6f)), // Hess (tanoaria)
+            ("House_Residential_1",new Color(0.64f, 0.54f, 0.40f), new Vector2(5.8f, 4.6f)), // Sylveth — movida para cá (mesmo grupo 5.8×4.6) para garantir lote disponível no bin-packing big-first
+            // 5.6 × 4.6 = 25.76
+            ("House_GateKeeper", new Color(0.42f, 0.46f, 0.56f), new Vector2(5.6f, 4.6f)), // Alaric
+            ("House_Residential_2",new Color(0.58f, 0.48f, 0.34f), new Vector2(5.6f, 4.4f)), // Renko
+            ("House_Residential_3",new Color(0.56f, 0.47f, 0.33f), new Vector2(5.6f, 4.4f)), // Mirela
+            // 5.4 × 4.4 = 23.76
+            ("House_Tovin",        new Color(0.58f, 0.56f, 0.62f), new Vector2(5.4f, 4.4f)), // Tovin
+            ("House_Dagna",        new Color(0.52f, 0.44f, 0.40f), new Vector2(5.4f, 4.4f)), // Dagna
+            ("House_Pip",          new Color(0.60f, 0.54f, 0.42f), new Vector2(5.4f, 4.4f)), // Pip
+            ("House_Residential_4",new Color(0.62f, 0.51f, 0.35f), new Vector2(5.4f, 4.4f)), // Savra
+        };
+
+        // Retângulo reservado (centro + meia-extensão). Usado pelo placer para nunca pôr casa sobre
+        // praça, mercado, eventos, lago, prefeitura, cemitério, gruta ou tenda.
+        private readonly struct ReservedRect
+        {
+            public readonly float Cx, Cy, Hw, Hh;
+            public ReservedRect(float cx, float cy, float w, float h) { Cx = cx; Cy = cy; Hw = w * 0.5f; Hh = h * 0.5f; }
+            public bool Overlaps(float ox, float oy, float ohw, float ohh, float margin) =>
+                Mathf.Abs(Cx - ox) < Hw + ohw + margin && Mathf.Abs(Cy - oy) < Hh + ohh + margin;
+        }
+
+        private static List<ReservedRect> ReservedZones()
+        {
+            var zones = new List<ReservedRect>
+            {
+                new ReservedRect(0f, 0f, 16f, 16f),                                                              // praça central
+                new ReservedRect(MarketHallCenter.x, MarketHallCenter.y, 18f, 13f),                              // distrito de mercado
+                new ReservedRect(EventsPlazaCenter.x, EventsPlazaCenter.y, 18f, 12f),                            // praça de eventos
+                new ReservedRect(TownDistrictLayout.LakeCenter.x, TownDistrictLayout.LakeCenter.y, 14f, 12f),    // lago/parque SW
+                new ReservedRect(TownDistrictLayout.TownHallCenter.x, TownDistrictLayout.TownHallCenter.y, 14f, 11f), // prefeitura NE
+                new ReservedRect(CemeteryPosition.x, CemeteryPosition.y, 14f, 12f),                              // cemitério NW
+                new ReservedRect(CaveMouthPosition.x, CaveMouthPosition.y, 9f, 11f),                             // boca de gruta E
+                new ReservedRect(NightMarketBackPosition.x, NightMarketBackPosition.y, 7f, 6f),                  // tenda noturna S
+                // Entrada/portão OESTE: corredor livre onde o jogador chega da fazenda (spawn town_from_farm
+                // em -(HalfWidth-4), 0). Sem isto, o placer por dispersão punha uma casa em cima do spawn.
+                new ReservedRect(-(TownDistrictLayout.HalfWidth - 4f), 0f, 16f, 12f),
+            };
+            // Cada árvore interna reserva um pequeno lote ⇒ nenhuma casa cai em cima dela.
+            foreach (var t in ScatteredTreePositions)
+            {
+                zones.Add(new ReservedRect(t.x, t.y, 3.6f, 3.6f));
+            }
+            return zones;
+        }
+
+        // Lazily computado (placer roda após todos os static fields existirem — CemeteryPosition etc.).
+        private static (string name, Vector3 position, Color baseColor, Vector2 size)[] s_houseSpecs;
+        private static (string name, Vector3 position, Color baseColor, Vector2 size)[] TownHouseSpecs
+            => s_houseSpecs ??= BuildPlacedHouseSpecs();
+
+        // Placer determinístico (sem RNG): marcos cívicos FIXOS no eixo central; residências por
+        // DISPERSÃO max-min (cada casa vai ao lote livre mais distante de tudo já colocado ⇒ espalha
+        // pela cidade inteira, corrigindo o amontoado de cima). Overlap-free; AuditHouseOverlaps confirma.
+        private static (string name, Vector3 position, Color baseColor, Vector2 size)[] BuildPlacedHouseSpecs()
+        {
+            var reserved = ReservedZones();
+            var placed = new List<(Vector3 pos, Vector2 size)>();
+            var result = new List<(string, Vector3, Color, Vector2)>();
+
+            // Marcos cívicos com posição fixa.
+            foreach (var civic in PinnedCivicDefs)
+            {
+                result.Add((civic.name, civic.position, civic.color, civic.size));
+                placed.Add((civic.position, civic.size));
+            }
+
+            float limX = TownDistrictLayout.HalfWidth - 1.5f;   // 36.5
+            float limY = TownDistrictLayout.HalfHeight - 1.5f;  // 30.5
+            const float bMargin = 1.2f;  // rua entre prédios (reduzido de 1.7 → 1.2 para garantir lote para todas as casas)
+            const float step = 1.5f;
+
+            foreach (var def in ResidentialDefs)
+            {
+                float hw = def.size.x * 0.5f, hh = def.size.y * 0.5f;
+                bool done = false;
+                float bestScore = float.NegativeInfinity;
+                Vector3 best = new Vector3(0f, limY, 0f);
+                for (float y = limY - hh; y >= -limY + hh - 0.01f; y -= step)
+                {
+                    for (float x = -limX + hw; x <= limX - hw + 0.01f; x += step)
+                    {
+                        if (IntersectsReserved(reserved, x, y, hw, hh, bMargin)) continue;
+                        if (IntersectsPlaced(placed, x, y, def.size, bMargin)) continue;
+                        float score = DispersionScore(reserved, placed, x, y);
+                        if (score > bestScore) { bestScore = score; best = new Vector3(x, y, 0f); done = true; }
+                    }
+                }
+                if (done)
+                {
+                    result.Add((def.name, best, def.color, def.size));
+                    placed.Add((best, def.size));
+                }
+                else
+                {
+                    Debug.LogError($"[walk-in-houses] sem lote livre para {def.name} — aumentar footprint ou reduzir zonas reservadas.");
+                    result.Add((def.name, new Vector3(0f, limY, 0f), def.color, def.size));
+                }
+            }
+
+            return result.ToArray();
+        }
+
+        private static bool IntersectsReserved(List<ReservedRect> reserved, float x, float y, float hw, float hh, float margin)
+        {
+            foreach (var r in reserved)
+            {
+                if (r.Overlaps(x, y, hw, hh, margin)) return true;
+            }
+            return false;
+        }
+
+        // Distância² ao quê de mais perto (prédio já colocado OU centro de zona reservada). Maximizá-la
+        // ⇒ cada residência cai no ponto livre mais isolado, espalhando-as pela cidade toda.
+        private static float DispersionScore(List<ReservedRect> reserved, List<(Vector3 pos, Vector2 size)> placed, float x, float y)
+        {
+            float min = float.MaxValue;
+            foreach (var p in placed)
+            {
+                float d = (p.pos.x - x) * (p.pos.x - x) + (p.pos.y - y) * (p.pos.y - y);
+                if (d < min) min = d;
+            }
+            foreach (var r in reserved)
+            {
+                float d = (r.Cx - x) * (r.Cx - x) + (r.Cy - y) * (r.Cy - y);
+                if (d < min) min = d;
+            }
+            return min;
+        }
+
+        private static bool IntersectsPlaced(List<(Vector3 pos, Vector2 size)> placed, float x, float y, Vector2 size, float margin)
+        {
+            foreach (var p in placed)
+            {
+                if (Mathf.Abs(p.pos.x - x) < (p.size.x + size.x) * 0.5f + margin &&
+                    Mathf.Abs(p.pos.y - y) < (p.size.y + size.y) * 0.5f + margin)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
 
         private static void CreateHouses()
         {
             var parent = new GameObject("TownHouses");
             parent.transform.position = Vector3.zero;
 
-            // fable_40: every house repositioned into the canonical 48×42 footprint.
-            foreach (var (name, position, baseColor) in TownHouseSpecs)
+            // Posições calculadas pelo placer (sem Reposition; já finais). A porta vira para a rua mais
+            // próxima: casa ao norte do centro → porta ao sul; casa ao sul → porta ao norte.
+            foreach (var (name, position, baseColor, size) in TownHouseSpecs)
             {
-                CreateHouse(parent.transform, name, TownDistrictLayout.Reposition(position), baseColor);
+                var doorSide = position.y >= 0f ? DoorSide.South : DoorSide.North;
+                CreateWalkInHouse(parent.transform, name, position, baseColor, size, doorSide);
             }
+
+            AuditHouseOverlaps();
         }
 
-        private static void CreateHouse(Transform parent, string name, Vector3 position, Color baseColor)
+        // Constrói uma casa FÍSICA percorrível, no MESMO lugar do exterior. O jogador entra pelo vão da
+        // parede de baixo, anda pelo cômodo, e o telhado some enquanto ele está dentro (RoofRevealController).
+        // Lado da casa onde fica a porta — vira para a rua mais próxima (norte da cidade → porta ao
+        // sul; sul da cidade → porta ao norte), em vez de toda porta apontar para baixo.
+        private enum DoorSide { South, North }
+
+        private static void CreateWalkInHouse(Transform parent, string name, Vector3 position, Color baseColor, Vector2 size, DoorSide doorSide)
         {
             var house = new GameObject(name);
             house.transform.SetParent(parent);
             house.transform.position = position;
 
-            // Walls (blocking)
-            var body = new GameObject("Body");
-            body.transform.SetParent(house.transform);
-            body.transform.localPosition = Vector3.zero;
-            body.transform.localScale = new Vector3(2.6f, 1.8f, 1f);
-            var bodyRenderer = body.AddComponent<SpriteRenderer>();
-            bodyRenderer.sprite = GetBuiltinSprite();
-            bodyRenderer.color = baseColor;
-            bodyRenderer.sortingOrder = 2;
-            TrySetSortingLayer(bodyRenderer, "Items", bodyRenderer.sortingOrder);
-            var bodyCollider = body.AddComponent<BoxCollider2D>();
-            bodyCollider.isTrigger = false;
-            bodyCollider.size = Vector2.one;
+            float hw = size.x * 0.5f;
+            float hh = size.y * 0.5f;
+            bool big = size.x >= 6f;
+            float doorY = doorSide == DoorSide.South ? -hh : hh;
 
-            // Roof
+            // Chão (andável — SEM collider). Tom claro derivado da cor base.
+            var floor = new GameObject("Floor");
+            floor.transform.SetParent(house.transform);
+            floor.transform.localPosition = Vector3.zero;
+            floor.transform.localScale = new Vector3(size.x, size.y, 1f);
+            var floorRenderer = floor.AddComponent<SpriteRenderer>();
+            floorRenderer.sprite = GetBuiltinSprite();
+            floorRenderer.color = Color.Lerp(baseColor, new Color(0.85f, 0.80f, 0.72f), 0.5f);
+            floorRenderer.sortingOrder = 0;
+            TrySetSortingLayer(floorRenderer, "Items", floorRenderer.sortingOrder);
+
+            // Paredes sólidas (visual de PEDRA com contorno — ver AddStoneWallVisual). Três paredes
+            // inteiras + a parede do lado da porta dividida em duas, deixando o VÃO no centro.
+            CreateInteriorWall(house.transform, "Wall_Left",  new Vector3(-hw, 0f, 0f), new Vector2(WallThickness, size.y));
+            CreateInteriorWall(house.transform, "Wall_Right", new Vector3(hw, 0f, 0f), new Vector2(WallThickness, size.y));
+            float sideWidth = (size.x - DoorGapWidth) * 0.5f;
+            float sideCenter = (DoorGapWidth + sideWidth) * 0.5f;
+            string doorWall = doorSide == DoorSide.South ? "Bottom" : "Top";
+            string fullWall = doorSide == DoorSide.South ? "Top" : "Bottom";
+            CreateInteriorWall(house.transform, $"Wall_{fullWall}", new Vector3(0f, -doorY, 0f), new Vector2(size.x, WallThickness));
+            CreateInteriorWall(house.transform, $"Wall_{doorWall}L", new Vector3(-sideCenter, doorY, 0f), new Vector2(sideWidth, WallThickness));
+            CreateInteriorWall(house.transform, $"Wall_{doorWall}R", new Vector3(sideCenter, doorY, 0f), new Vector2(sideWidth, WallThickness));
+
+            // Porta funcional no vão: FECHADA tranca a passagem; aperte E para ABRIR (desliza) e entrar.
+            CreateHouseDoor(house.transform, doorY);
+
+            // Móveis (andáveis — CreateInteriorProp não põe collider). Cama sempre; mesa/estante nas maiores.
+            var bedProp = CreateInteriorProp(house.transform, "Bed", new Vector3(-hw + 1.1f, hh - 1.0f, 0f), new Vector3(1.6f, 1f, 1f), new Color(0.5f, 0.36f, 0.5f));
+            if (name == "House_Inn")
+            {
+                // fable_57: a cama da estalagem é interagível e paga.
+                bedProp.name = "GuestBed_Inn";
+                var trigger = bedProp.AddComponent<BoxCollider2D>();
+                trigger.isTrigger = true;
+                trigger.size = new Vector2(1.6f, 1.0f);
+                var gate = bedProp.AddComponent<InnBedPaymentGate>();
+                gate.Configure(InnLodgingPaymentResolver.DefaultNightlyRate);
+                EditorUtility.SetDirty(gate);
+            }
+            CreateInteriorProp(house.transform, "Table", new Vector3(hw - 1.3f, -hh + 1.2f, 0f), new Vector3(1.3f, 0.9f, 1f), new Color(0.46f, 0.34f, 0.22f));
+            if (big)
+            {
+                CreateInteriorProp(house.transform, "Furniture_Shelf", new Vector3(hw - 1.1f, hh - 1.0f, 0f), new Vector3(1.7f, 0.7f, 1f), new Color(0.42f, 0.32f, 0.22f));
+                CreateInteriorProp(house.transform, "Furniture_Rug", new Vector3(0.4f, -0.2f, 0f), new Vector3(2.6f, 1.6f, 1f), new Color(0.40f, 0.26f, 0.24f));
+            }
+
+            // Prédios MUITO grandes (igreja 8×7) ganham uma divisória vertical com vão de passagem ⇒ DOIS
+            // cômodos (nave + cômodo lateral). A divisória deixa um corredor embaixo para o jogador passar.
+            if (size.x >= 7.5f)
+            {
+                float dividerX = hw - 2.6f; // separa um cômodo lateral à direita
+                float passage = 1.6f;       // vão de passagem na base da divisória
+                float segH = (size.y - passage) * 0.5f;
+                CreateInteriorWall(house.transform, "Wall_Divider", new Vector3(dividerX, hh - segH * 0.5f, 0f), new Vector2(WallThickness, segH));
+                CreateInteriorProp(house.transform, "Furniture_Altar", new Vector3(0f, hh - 1.2f, 0f), new Vector3(2.0f, 0.8f, 1f), new Color(0.55f, 0.48f, 0.30f));
+                CreateInteriorProp(house.transform, "Furniture_Pew", new Vector3(-1.0f, -0.5f, 0f), new Vector3(3.2f, 0.6f, 1f), new Color(0.42f, 0.30f, 0.20f));
+            }
+
+            // Estação de ofício da casa (forja/alambique/tear/fogão/bancada): aperte E para abrir o craft
+            // filtrado por aquele WorkshopType. Só casas-ofício recebem; o resto ignora.
+            TryAddCraftingStation(house.transform, name, new Vector3(-hw + 1.6f, -hh + 1.4f, 0f));
+
+            // Telhado: cobre TODO o footprint (+ beiral). sortingOrder alto ⇒ esconde chão/paredes/móveis/NPC
+            // enquanto o jogador está fora. O RoofRevealController zera seu alpha quando o jogador entra.
             var roof = new GameObject("Roof");
             roof.transform.SetParent(house.transform);
-            roof.transform.localPosition = new Vector3(0f, 1.2f, 0f);
-            roof.transform.localScale = new Vector3(3f, 0.7f, 1f);
+            roof.transform.localPosition = Vector3.zero;
+            roof.transform.localScale = new Vector3(size.x + 0.5f, size.y + 0.5f, 1f);
             var roofRenderer = roof.AddComponent<SpriteRenderer>();
             roofRenderer.sprite = GetBuiltinSprite();
             roofRenderer.color = Color.Lerp(baseColor, new Color(0.5f, 0.18f, 0.12f), 0.6f);
-            roofRenderer.sortingOrder = 3;
+            roofRenderer.sortingOrder = 20;
             TrySetSortingLayer(roofRenderer, "Items", roofRenderer.sortingOrder);
 
-            // Door
+            // Cumeeira: faixa escura no topo do telhado (só estética de "telhado de duas águas").
+            var ridge = new GameObject("RoofRidge");
+            ridge.transform.SetParent(house.transform);
+            ridge.transform.localPosition = new Vector3(0f, hh * 0.45f, 0f);
+            ridge.transform.localScale = new Vector3(size.x + 0.5f, 0.5f, 1f);
+            var ridgeRenderer = ridge.AddComponent<SpriteRenderer>();
+            ridgeRenderer.sprite = GetBuiltinSprite();
+            ridgeRenderer.color = Color.Lerp(baseColor, new Color(0.35f, 0.10f, 0.08f), 0.7f);
+            ridgeRenderer.sortingOrder = 21;
+            TrySetSortingLayer(ridgeRenderer, "Items", ridgeRenderer.sortingOrder);
+
+            // Trigger de revelação: cobre o footprint; some os dois renderers de telhado ao jogador entrar.
+            var revealObject = new GameObject("RoofReveal");
+            revealObject.transform.SetParent(house.transform);
+            revealObject.transform.localPosition = Vector3.zero;
+            var revealTrigger = revealObject.AddComponent<BoxCollider2D>();
+            revealTrigger.isTrigger = true;
+            revealTrigger.size = new Vector2(size.x, size.y);
+            var reveal = revealObject.AddComponent<RoofRevealController>();
+            reveal.Configure(new[] { roofRenderer, ridgeRenderer });
+            EditorUtility.SetDirty(reveal);
+        }
+
+        // Mapa casa-ofício → estação de craft. Só estas casas recebem estação; as demais ignoram.
+        private static void TryAddCraftingStation(Transform house, string houseName, Vector3 localPos)
+        {
+            WorkshopType type;
+            string label;
+            Color color;
+            switch (houseName)
+            {
+                case "House_Blacksmith": type = WorkshopType.Forge;          label = "Usar a forja [E]";        color = new Color(0.70f, 0.32f, 0.16f); break;
+                case "House_AlchemyLab": type = WorkshopType.Alchemy;        label = "Usar o alambique [E]";    color = new Color(0.30f, 0.60f, 0.42f); break;
+                case "House_Inn":        type = WorkshopType.CookingStation; label = "Cozinhar [E]";            color = new Color(0.66f, 0.42f, 0.22f); break;
+                case "House_Workshop":   type = WorkshopType.Carpentry;      label = "Usar a bancada [E]";      color = new Color(0.52f, 0.40f, 0.24f); break;
+                case "House_Residential_3": type = WorkshopType.Sewing;      label = "Usar o tear [E]";         color = new Color(0.52f, 0.46f, 0.62f); break; // Mirela
+                case "House_MarketHall": type = WorkshopType.Workbench;      label = "Usar a bancada do mercado [E]"; color = new Color(0.52f, 0.50f, 0.44f); break;
+                default: return;
+            }
+
+            CreateCraftingStation(house, localPos, color, $"station_{houseName.ToLowerInvariant()}", type, label);
+        }
+
+        // Estação física interagível: prop colorido + trigger de interação + CraftingStationInteractable.
+        // Ao apertar E, publica o evento que abre o craft daquele WorkshopType (CraftingModal assina).
+        private static void CreateCraftingStation(Transform house, Vector3 localPos, Color color, string stationId, WorkshopType type, string label)
+        {
+            var station = CreateInteriorProp(house, $"Station_{type}", localPos, new Vector3(1.6f, 1.1f, 1f), color);
+            station.GetComponent<SpriteRenderer>().sortingOrder = 2; // acima do chão/móveis, abaixo do telhado
+
+            var trigger = station.AddComponent<BoxCollider2D>();
+            trigger.isTrigger = true;
+            trigger.size = Vector2.one; // local 1 × escala ⇒ área de interação ~1.6×1.1
+
+            // Componente canônico de estação (CraftingPoint), modo DESACOPLADO: sem refs no momento da
+            // geração da cidade, ele publica o evento e o CraftingModal da cena abre o craft do tipo.
+            var craftingPoint = station.AddComponent<CraftingPoint>();
+            craftingPoint.Configure(stationId, type);
+            EditorUtility.SetDirty(craftingPoint);
+        }
+
+        // Porta funcional no vão da casa (lado virado para a rua). Desenhada ACIMA do telhado
+        // (sortingOrder > 20) para ser visível de fora; fechada tranca o vão (collider sólido),
+        // aperte E para deslizar e abrir. doorY = -hh (porta ao sul) ou +hh (porta ao norte).
+        private static void CreateHouseDoor(Transform house, float doorY)
+        {
             var door = new GameObject("Door");
-            door.transform.SetParent(house.transform);
-            door.transform.localPosition = new Vector3(0f, -0.55f, 0f);
-            door.transform.localScale = new Vector3(0.5f, 0.75f, 1f);
-            var doorRenderer = door.AddComponent<SpriteRenderer>();
-            doorRenderer.sprite = GetBuiltinSprite();
-            doorRenderer.color = new Color(0.28f, 0.2f, 0.14f);
-            doorRenderer.sortingOrder = 3;
-            TrySetSortingLayer(doorRenderer, "Items", doorRenderer.sortingOrder);
+            door.transform.SetParent(house);
+            door.transform.localPosition = new Vector3(0f, doorY, 0f);
+
+            // Umbral escuro (a abertura) atrás da folha — aparece quando a porta desliza.
+            var threshold = new GameObject("Threshold");
+            threshold.transform.SetParent(door.transform);
+            threshold.transform.localPosition = Vector3.zero;
+            threshold.transform.localScale = new Vector3(DoorGapWidth, WallThickness * 1.2f, 1f);
+            var thr = threshold.AddComponent<SpriteRenderer>();
+            thr.sprite = GetBuiltinSprite();
+            thr.color = new Color(0.10f, 0.08f, 0.07f);
+            thr.sortingOrder = 22; // acima do telhado (20) ⇒ visível de fora
+            TrySetSortingLayer(thr, "Items", thr.sortingOrder);
+
+            // Folha de madeira: desliza para o lado ao abrir.
+            var leaf = new GameObject("Leaf");
+            leaf.transform.SetParent(door.transform);
+            var closedLocalPos = Vector3.zero;
+            var openLocalPos = new Vector3(DoorGapWidth * 0.92f, 0f, 0f);
+            leaf.transform.localPosition = closedLocalPos;
+            leaf.transform.localScale = new Vector3(DoorGapWidth, WallThickness * 2.0f, 1f);
+            var leafRenderer = leaf.AddComponent<SpriteRenderer>();
+            leafRenderer.sprite = GetBuiltinSprite();
+            leafRenderer.color = new Color(0.34f, 0.22f, 0.13f); // madeira
+            leafRenderer.sortingOrder = 23;
+            TrySetSortingLayer(leafRenderer, "Items", leafRenderer.sortingOrder);
+
+            // Collider SÓLIDO que tranca o vão (desligado quando aberta).
+            var blocker = door.AddComponent<BoxCollider2D>();
+            blocker.isTrigger = false;
+            blocker.size = new Vector2(DoorGapWidth, WallThickness);
+
+            // Trigger de interação (sempre ligado): permite abrir de fora e fechar de dentro.
+            var interact = door.AddComponent<BoxCollider2D>();
+            interact.isTrigger = true;
+            interact.size = new Vector2(DoorGapWidth + 0.6f, WallThickness + 1.4f);
+
+            var interactable = door.AddComponent<HouseDoorInteractable>();
+            interactable.Configure(leaf.transform, blocker, closedLocalPos, openLocalPos);
+            EditorUtility.SetDirty(interactable);
+        }
+
+        // Auditoria de geração: avisa se duas casas se sobrepõem, se alguma sai do playfield, ou se um
+        // spawn cai dentro de uma casa. Como não há Play Mode aqui, é a rede de segurança do layout.
+        private static void AuditHouseOverlaps()
+        {
+            const float margin = 0.3f;
+            for (int a = 0; a < TownHouseSpecs.Length; a++)
+            {
+                var (nameA, posA, _, sizeA) = TownHouseSpecs[a];
+                float axMin = posA.x - sizeA.x * 0.5f, axMax = posA.x + sizeA.x * 0.5f;
+                float ayMin = posA.y - sizeA.y * 0.5f, ayMax = posA.y + sizeA.y * 0.5f;
+
+                if (axMin < -TownDistrictLayout.HalfWidth || axMax > TownDistrictLayout.HalfWidth ||
+                    ayMin < -TownDistrictLayout.HalfHeight || ayMax > TownDistrictLayout.HalfHeight)
+                {
+                    Debug.LogError($"[walk-in-houses] {nameA} sai do playfield ({axMin:0.0}..{axMax:0.0}, {ayMin:0.0}..{ayMax:0.0}).");
+                }
+
+                for (int b = a + 1; b < TownHouseSpecs.Length; b++)
+                {
+                    var (nameB, posB, _, sizeB) = TownHouseSpecs[b];
+                    bool overlapX = Mathf.Abs(posA.x - posB.x) < (sizeA.x + sizeB.x) * 0.5f + margin;
+                    bool overlapY = Mathf.Abs(posA.y - posB.y) < (sizeA.y + sizeB.y) * 0.5f + margin;
+                    if (overlapX && overlapY)
+                    {
+                        Debug.LogError($"[walk-in-houses] sobreposição: {nameA} × {nameB}.");
+                    }
+                }
+
+                // Defensivo: nenhum prédio pode invadir uma zona reservada (praça/mercado/eventos/landmarks).
+                // EXCETO o Salão de Mercado, fixado DE PROPÓSITO no centro do distrito de mercado.
+                if (nameA != "House_MarketHall" &&
+                    IntersectsReserved(ReservedZones(), posA.x, posA.y, sizeA.x * 0.5f, sizeA.y * 0.5f, 0f))
+                {
+                    Debug.LogError($"[walk-in-houses] {nameA} invade uma zona reservada (praça/mercado/eventos/landmark).");
+                }
+            }
+
+            Debug.Log($"[walk-in-houses] {TownHouseSpecs.Length} prédios percorríveis posicionados (auditoria concluída).");
         }
 
         // ─── fable_11: schedule anchors (work/social/home per NPC) ───────────────────────────────
@@ -903,13 +1483,104 @@ namespace CindarsHope.Editor.SceneCreation
         private static readonly Vector3 PlazaSocialAnchorLegacy = new Vector3(0f, -1.5f, 0f);
         private static readonly Vector3 NightMarketAnchorLegacy = new Vector3(11f, -9.5f, 0f);
 
+        // ── Moradias temáticas (footprint 56×48) ──────────────────────────────────────────────────
+        // Pontos de dormir AO RELENTO (no campo, y<24) — o NPC caminha até lá à noite e dorme à vista.
+        // Coords no footprint; os landmarks visíveis são criados em CreateTownOutskirts nas MESMAS coords.
+        // Footprint 76×64 — pontos de dormir ao relento, nos cantos/bordas (batem com as zonas reservadas).
+        private static readonly Vector3 CemeteryPosition = new Vector3(-30f, 24f, 0f);           // NW — Maelor
+        private static readonly Vector3 CaveMouthPosition = new Vector3(34f, -6f, 0f);            // E  — Zrix
+        private static readonly Vector3 NightMarketBackPosition = new Vector3(14f, -28f, 0f);     // S  — Yael
+        private static readonly Vector3 StatueGardenSleepPosition = new Vector3(-3f, -4f, 0f);    // praça — Liora
+
+        private readonly struct HomeAssignment
+        {
+            public readonly bool IsIndoor;
+            public readonly string HouseName;       // se indoor: nome em TownHouseSpecs
+            public readonly Vector3 OutdoorPosition; // se outdoor: ponto no campo
+
+            private HomeAssignment(bool indoor, string houseName, Vector3 pos)
+            {
+                IsIndoor = indoor; HouseName = houseName; OutdoorPosition = pos;
+            }
+
+            public static HomeAssignment Indoor(string houseName) => new HomeAssignment(true, houseName, Vector3.zero);
+            public static HomeAssignment Outdoor(Vector3 pos) => new HomeAssignment(false, null, pos);
+        }
+
+        // Cada NPC dorme num lugar que combina com ele. Indoor = interior da casa (o jogador entra e o
+        // encontra); Outdoor = dorme à vista no ponto temático. Não-mapeado cai no fallback (casa mais próxima).
+        private static readonly Dictionary<string, HomeAssignment> TownNpcHomes = new Dictionary<string, HomeAssignment>
+        {
+            // Modelo MISTO (spec 15.2): compartilhar só com relação real; senão, casa própria.
+            ["npc_corvus"] = HomeAssignment.Indoor("House_Temple"),       // padre mora na igreja
+            ["npc_velorin"] = HomeAssignment.Indoor("House_Manor"),       // líder na mansão
+            ["npc_orlan"] = HomeAssignment.Indoor("House_Inn"),           // ┐ tocam a estalagem juntos
+            ["npc_gruta"] = HomeAssignment.Indoor("House_Inn"),           // ┘ (compartilhada)
+            ["npc_gurd"] = HomeAssignment.Indoor("House_CarvalhoTorto"),  // ┐ família Carvalho-Torto
+            ["npc_hund"] = HomeAssignment.Indoor("House_CarvalhoTorto"),  // ┘ (compartilhada)
+            ["npc_mara"] = HomeAssignment.Indoor("House_Registry"),       // casa própria
+            ["npc_tovin"] = HomeAssignment.Indoor("House_Tovin"),         // casa própria
+            ["npc_brumdar"] = HomeAssignment.Indoor("House_Blacksmith"),  // casa própria
+            ["npc_dagna"] = HomeAssignment.Indoor("House_Dagna"),         // casa própria
+            ["npc_thalindra"] = HomeAssignment.Indoor("House_Archive"),   // casa própria
+            ["npc_nimble"] = HomeAssignment.Indoor("House_Workshop"),     // casa própria
+            ["npc_ozzra"] = HomeAssignment.Indoor("House_AlchemyLab"),    // casa própria
+            ["npc_eiran"] = HomeAssignment.Indoor("House_AnimalYard"),    // casa própria
+            ["npc_alaric"] = HomeAssignment.Indoor("House_GateKeeper"),   // casa própria
+            ["npc_pip"] = HomeAssignment.Indoor("House_Pip"),             // casa própria
+            ["npc_sylveth"] = HomeAssignment.Indoor("House_Residential_1"),
+            ["npc_renko"] = HomeAssignment.Indoor("House_Residential_2"),
+            ["npc_mirela"] = HomeAssignment.Indoor("House_Residential_3"),
+            ["npc_savra"] = HomeAssignment.Indoor("House_Residential_4"),
+            // Ao relento, em pontos temáticos:
+            ["npc_maelor"] = HomeAssignment.Outdoor(CemeteryPosition),       // dorme no cemitério (noturno, sem memória)
+            ["npc_yael"] = HomeAssignment.Outdoor(NightMarketBackPosition),  // fundo escondido do mercado noturno
+            ["npc_liora"] = HomeAssignment.Outdoor(StatueGardenSleepPosition), // jardim da estátua, ao relento
+            ["npc_zrix"] = HomeAssignment.Outdoor(CaveMouthPosition),        // batedor dorme na boca da gruta
+            // Autossuficiência da vila (slice village_economy):
+            ["npc_sael"] = HomeAssignment.Indoor("House_Fishery"),           // pescador mora na pescaria
+            ["npc_mella"] = HomeAssignment.Indoor("House_Bakery"),           // padeira mora na padaria
+            ["npc_hess"] = HomeAssignment.Indoor("House_Tannery"),           // curtidor mora na tanoaria
+            ["npc_tibbet"] = HomeAssignment.Outdoor(CemeteryPosition + new Vector3(3.5f, -1.5f, 0f)), // coveiro dorme entre as covas
+        };
+
+        private static int HouseIndexByName(string houseName)
+        {
+            for (int i = 0; i < TownHouseSpecs.Length; i++)
+            {
+                if (TownHouseSpecs[i].name == houseName) return i;
+            }
+            return -1;
+        }
+
+        // Resolve o ponto do anchor "home" do NPC pela moradia temática (indoor → interior da casa;
+        // outdoor → ponto no campo). Fallback: interior da casa mais próxima (comportamento anterior).
+        private static Vector3 ResolveHomeAnchorPosition(TownNpcSpec spec)
+        {
+            if (TownNpcHomes.TryGetValue(spec.NpcId, out var home))
+            {
+                if (home.IsIndoor)
+                {
+                    int hi = HouseIndexByName(home.HouseName);
+                    if (hi >= 0) return InteriorCenterForHouseIndex(hi) + new Vector3(0f, -0.6f, 0f);
+                }
+                else
+                {
+                    return home.OutdoorPosition;
+                }
+            }
+
+            int nearest = NearestHouseIndexTo(spec.LayoutPosition);
+            return nearest >= 0
+                ? InteriorCenterForHouseIndex(nearest) + new Vector3(0f, -0.6f, 0f)
+                : spec.LayoutPosition;
+        }
+
         private static void CreateNpcScheduleAnchors()
         {
             var parent = new GameObject("NpcScheduleAnchors");
             parent.transform.position = Vector3.zero;
 
-            var houseDoorPositions = HouseDoorPositions();
-            int houseCount = houseDoorPositions.Count;
             int index = 0;
 
             foreach (var spec in RefinedCanonicalTownNpcSpecs)
@@ -928,13 +1599,14 @@ namespace CindarsHope.Editor.SceneCreation
                 CreateScheduleAnchor(parent.transform, spec.NpcId,
                     NpcScheduleBlockResolver.SocialAnchorSuffix, TownDistrictLayout.Reposition(socialLegacy));
 
-                // Home = a house door (cycled across the 12 houses), nudged just below the door.
-                // houseDoorPositions are already in the 48×42 footprint (HouseDoorPositions).
-                var home = houseCount > 0
-                    ? houseDoorPositions[index % houseCount] + new Vector3(0f, -0.9f, 0f)
-                    : spec.LayoutPosition;
+                // Home TEMÁTICO: cada NPC dorme num lugar que combina com ele (templo, forja, oficina,
+                // arquivo, lab, curral, posto/cemitério, boca de gruta, jardim, ou casa residencial).
+                // Indoor → interior da casa (entra para encontrar o NPC à noite); Outdoor → dorme à
+                // vista no ponto temático. Mapa em TownNpcHomes; fallback = casa mais próxima.
+                var home = ResolveHomeAnchorPosition(spec);
+                bool hasDoor = TryResolveHomeDoorApproach(spec, out var doorApproach);
                 CreateScheduleAnchor(parent.transform, spec.NpcId,
-                    NpcScheduleBlockResolver.HomeAnchorSuffix, home);
+                    NpcScheduleBlockResolver.HomeAnchorSuffix, home, hasDoor, doorApproach);
 
                 index++;
             }
@@ -943,7 +1615,8 @@ namespace CindarsHope.Editor.SceneCreation
                       $"({index * 3} anchors: work/social/home).");
         }
 
-        private static void CreateScheduleAnchor(Transform parent, string npcId, string suffix, Vector3 position)
+        private static void CreateScheduleAnchor(Transform parent, string npcId, string suffix, Vector3 position,
+            bool hasApproach = false, Vector3 approachPoint = default)
         {
             var anchorId = $"npc_{npcId}_{suffix}";
             var go = new GameObject($"Anchor_{anchorId}");
@@ -954,105 +1627,40 @@ namespace CindarsHope.Editor.SceneCreation
             var serialized = new SerializedObject(anchor);
             SetSerializedString(serialized, "_anchorId", anchorId);
             SetSerializedString(serialized, "_npcId", npcId);
+            serialized.FindProperty("_hasApproach").boolValue = hasApproach;
+            serialized.FindProperty("_approachPoint").vector3Value = approachPoint;
             serialized.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(anchor);
         }
 
-        // ─── fable_11: minimal interiors (off-playfield band y > +40) + functional house doors ────
-        private const float InteriorBandBaseY = 44f;
-        private const float InteriorSpacingX = 12f;
-        private const float InteriorSpacingY = 9f;
-        private const int InteriorsPerRow = 4;
-
-        private static void CreateHouseInteriorsAndDoors()
+        // Ponto de aproximação da PORTA, logo fora da casa do morador (indoor). O NPC passa por aqui
+        // antes de entrar ⇒ alinha com o vão e usa a porta em vez de cruzar a parede. A porta vira para
+        // a rua (sul no norte da cidade / norte no sul), então o ponto fica do lado de fora da porta.
+        private static bool TryResolveHomeDoorApproach(TownNpcSpec spec, out Vector3 approach)
         {
-            var interiorsParent = new GameObject("HouseInteriors");
-            interiorsParent.transform.position = Vector3.zero;
-            var doorsParent = new GameObject("HouseDoors");
-            doorsParent.transform.position = Vector3.zero;
-
-            // Map shop NPCs to their nearest house so a closed-shop door blocks at that house.
-            int doorCount = 0;
-            for (int i = 0; i < TownHouseSpecs.Length; i++)
+            approach = default;
+            if (!TownNpcHomes.TryGetValue(spec.NpcId, out var home) || !home.IsIndoor)
             {
-                var (houseName, legacyHousePosition, _) = TownHouseSpecs[i];
-                // fable_40: the exterior of the house moved into the 48×42 footprint; the
-                // interior band (y>+40, fable_11) is preserved unchanged.
-                var housePosition = TownDistrictLayout.Reposition(legacyHousePosition);
-
-                // Interior center for this house in the off-playfield band (preserved offsets).
-                int row = i / InteriorsPerRow;
-                int col = i % InteriorsPerRow;
-                var interiorCenter = new Vector3(
-                    (col - (InteriorsPerRow - 1) * 0.5f) * InteriorSpacingX,
-                    InteriorBandBaseY + row * InteriorSpacingY,
-                    0f);
-
-                var exteriorDoorPos = housePosition + new Vector3(0f, -0.55f, 0f);
-                var interiorExitPos = interiorCenter + new Vector3(0f, -2.0f, 0f);
-                var interiorEntryPos = interiorCenter + new Vector3(0f, -1.4f, 0f);
-                var exteriorReturnPos = housePosition + new Vector3(0f, -1.4f, 0f);
-
-                BuildMinimalInterior(interiorsParent.transform, houseName, interiorCenter);
-
-                // Exterior door on the house → teleports into the interior.
-                var linkedNpcId = NpcIdNearestHouse(housePosition);
-                var isShopDoor = linkedNpcId != null;
-                CreateDoor(doorsParent.transform, $"Door_{houseName}_Exterior",
-                    exteriorDoorPos, interiorEntryPos, "Entrar", linkedNpcId, isShopDoor);
-                doorCount++;
-
-                // Interior return door → teleports back outside.
-                CreateDoor(doorsParent.transform, $"Door_{houseName}_Interior",
-                    interiorExitPos, exteriorReturnPos, "Sair", null, false);
-                doorCount++;
+                return false;
             }
 
-            Debug.Log($"[fable_11] Created {TownHouseSpecs.Length} interiors and {doorCount} paired doors.");
-        }
-
-        private static void BuildMinimalInterior(Transform parent, string houseName, Vector3 center)
-        {
-            var interior = new GameObject($"Interior_{houseName}");
-            interior.transform.SetParent(parent);
-            interior.transform.position = center;
-
-            // Floor (6x5 tiles) — decorative.
-            var floor = new GameObject("Floor");
-            floor.transform.SetParent(interior.transform);
-            floor.transform.localPosition = Vector3.zero;
-            floor.transform.localScale = new Vector3(6f, 5f, 1f);
-            var floorRenderer = floor.AddComponent<SpriteRenderer>();
-            floorRenderer.sprite = GetBuiltinSprite();
-            floorRenderer.color = new Color(0.34f, 0.28f, 0.22f);
-            floorRenderer.sortingOrder = 0;
-            TrySetSortingLayer(floorRenderer, "Items", floorRenderer.sortingOrder);
-
-            // Interior bounds (own colliders so the playfield camera/bounds are unaffected).
-            CreateInteriorWall(interior.transform, "Wall_Top", new Vector3(0f, 2.6f, 0f), new Vector2(6.4f, 0.4f));
-            CreateInteriorWall(interior.transform, "Wall_Bottom", new Vector3(0f, -2.6f, 0f), new Vector2(6.4f, 0.4f));
-            CreateInteriorWall(interior.transform, "Wall_Left", new Vector3(-3.2f, 0f, 0f), new Vector2(0.4f, 5.2f));
-            CreateInteriorWall(interior.transform, "Wall_Right", new Vector3(3.2f, 0f, 0f), new Vector2(0.4f, 5.2f));
-
-            // Bed + table placeholders.
-            // fable_57: a cama da estalagem (House_Inn) é uma CAMA DE HÓSPEDE interagível e paga
-            // (InnBedPaymentGate → diária → fluxo de dormir da F16). As demais casas mantêm a cama
-            // decorativa (jogador não usa camas de NPC — CITY_LAYOUT §26).
-            var bedProp = CreateInteriorProp(interior.transform, "Bed", new Vector3(-2f, 1.4f, 0f), new Vector3(1.6f, 1f, 1f), new Color(0.5f, 0.36f, 0.5f));
-            if (houseName == "House_Inn")
+            int hi = HouseIndexByName(home.HouseName);
+            if (hi < 0)
             {
-                bedProp.name = "GuestBed_Inn";
-                var trigger = bedProp.AddComponent<BoxCollider2D>();
-                trigger.isTrigger = true;
-                trigger.size = new Vector2(1.6f, 1.0f);
-
-                var gate = bedProp.AddComponent<InnBedPaymentGate>();
-                gate.Configure(InnLodgingPaymentResolver.DefaultNightlyRate);
-                EditorUtility.SetDirty(gate);
+                return false;
             }
-            CreateInteriorProp(interior.transform, "Table", new Vector3(1.6f, -0.4f, 0f), new Vector3(1.2f, 0.8f, 1f), new Color(0.46f, 0.34f, 0.22f));
+
+            var (_, housePos, _, size) = TownHouseSpecs[hi];
+            float hh = size.y * 0.5f;
+            bool doorSouth = housePos.y >= 0f; // CreateHouses: norte→porta ao sul, sul→porta ao norte
+            float outsideY = doorSouth ? housePos.y - hh - 1.3f : housePos.y + hh + 1.3f;
+            approach = new Vector3(housePos.x, outsideY, 0f);
+            return true;
         }
 
+        // (As casas agora são FÍSICAS percorríveis — ver CreateWalkInHouse. A antiga faixa off-field de
+        //  interiores (y>+40) + portas de teleporte foi removida. CreateInteriorWall/CreateInteriorProp
+        //  permanecem como helpers reutilizados pela casa percorrível.)
         private static void CreateInteriorWall(Transform parent, string name, Vector3 localPos, Vector2 size)
         {
             var wall = new GameObject(name);
@@ -1061,6 +1669,46 @@ namespace CindarsHope.Editor.SceneCreation
             var collider = wall.AddComponent<BoxCollider2D>();
             collider.isTrigger = false;
             collider.size = size;
+
+            AddStoneWallVisual(wall.transform, size);
+        }
+
+        // Visual de PAREDE DE PEDRA: contorno escuro (junta) + face de pedra + uma faixa de base mais
+        // escura no rodapé. Lê como alvenaria de verdade quando o jogador entra (não um bloco chapado).
+        private static void AddStoneWallVisual(Transform parent, Vector2 size)
+        {
+            // Contorno escuro (um pouco maior, atrás) — dá borda à parede.
+            var outline = new GameObject("Outline");
+            outline.transform.SetParent(parent);
+            outline.transform.localPosition = Vector3.zero;
+            outline.transform.localScale = new Vector3(size.x + 0.18f, size.y + 0.18f, 1f);
+            var outlineRenderer = outline.AddComponent<SpriteRenderer>();
+            outlineRenderer.sprite = GetBuiltinSprite();
+            outlineRenderer.color = new Color(0.20f, 0.18f, 0.16f);
+            outlineRenderer.sortingOrder = 4;
+            TrySetSortingLayer(outlineRenderer, "Items", outlineRenderer.sortingOrder);
+
+            // Face de pedra (cinza-quente).
+            var face = new GameObject("Face");
+            face.transform.SetParent(parent);
+            face.transform.localPosition = Vector3.zero;
+            face.transform.localScale = new Vector3(size.x, size.y, 1f);
+            var faceRenderer = face.AddComponent<SpriteRenderer>();
+            faceRenderer.sprite = GetBuiltinSprite();
+            faceRenderer.color = new Color(0.57f, 0.54f, 0.49f);
+            faceRenderer.sortingOrder = 5;
+            TrySetSortingLayer(faceRenderer, "Items", faceRenderer.sortingOrder);
+
+            // Rodapé mais escuro (faixa de base) — sensação de espessura/sombra da parede.
+            var baseStrip = new GameObject("Base");
+            baseStrip.transform.SetParent(parent);
+            baseStrip.transform.localPosition = new Vector3(0f, -size.y * 0.32f, 0f);
+            baseStrip.transform.localScale = new Vector3(size.x, size.y * 0.34f, 1f);
+            var baseRenderer = baseStrip.AddComponent<SpriteRenderer>();
+            baseRenderer.sprite = GetBuiltinSprite();
+            baseRenderer.color = new Color(0.42f, 0.39f, 0.35f);
+            baseRenderer.sortingOrder = 6;
+            TrySetSortingLayer(baseRenderer, "Items", baseRenderer.sortingOrder);
         }
 
         private static GameObject CreateInteriorProp(Transform parent, string name, Vector3 localPos, Vector3 scale, Color color)
@@ -1077,64 +1725,32 @@ namespace CindarsHope.Editor.SceneCreation
             return prop;
         }
 
-        private static void CreateDoor(
-            Transform parent,
-            string name,
-            Vector3 doorPosition,
-            Vector3 teleportTarget,
-            string label,
-            string linkedNpcId,
-            bool isShopDoor)
+        // Centro do interior FÍSICO da casa de índice i (coords finais, no MESMO lugar do exterior).
+        // Consumido pelo anchor "home" do morador → o NPC dorme dentro da própria casa percorrível.
+        private static Vector3 InteriorCenterForHouseIndex(int i)
         {
-            var door = new GameObject(name);
-            door.transform.SetParent(parent);
-            door.transform.position = doorPosition;
-
-            var trigger = door.AddComponent<BoxCollider2D>();
-            trigger.isTrigger = true;
-            trigger.size = new Vector2(0.8f, 0.9f);
-
-            var interactable = door.AddComponent<DoorInteractable>();
-            interactable.Configure(teleportTarget, label, linkedNpcId, isShopDoor);
-            EditorUtility.SetDirty(interactable);
+            return TownHouseSpecs[i].position;
         }
 
-        // Door anchor (just below each house body) used as the home schedule anchor target.
-        // fable_40: positions are in the canonical 48×42 footprint (repositioned).
-        private static List<Vector3> HouseDoorPositions()
+        // Índice da casa (em TownHouseSpecs) mais próxima de uma posição no footprint final.
+        // Usado para mandar o morador "dormir" dentro da casa percorrível mais perto do seu posto.
+        private static int NearestHouseIndexTo(Vector3 layoutPosition)
         {
-            var list = new List<Vector3>(TownHouseSpecs.Length);
-            foreach (var (_, position, _) in TownHouseSpecs)
+            int nearest = -1;
+            float bestSqr = float.MaxValue;
+            for (int i = 0; i < TownHouseSpecs.Length; i++)
             {
-                list.Add(TownDistrictLayout.Reposition(position));
-            }
-            return list;
-        }
-
-        // Nearest shop NPC to a house (within ~4 units) so its door gates by that vendor's hours.
-        // fable_40: both sides compared in the relayout footprint; the gate radius scales with
-        // the relayout so vendors stay matched to their nearest house after repositioning.
-        private static string NpcIdNearestHouse(Vector3 layoutHousePosition)
-        {
-            string nearestId = null;
-            float gate = 4f * TownDistrictLayout.RelayoutScale;
-            float bestSqr = gate * gate;
-            foreach (var spec in RefinedCanonicalTownNpcSpecs)
-            {
-                if (string.IsNullOrWhiteSpace(spec.ShopDataPath))
-                {
-                    continue;
-                }
-
-                float sqr = (spec.LayoutPosition - layoutHousePosition).sqrMagnitude;
+                // TownHouseSpecs já está em coords finais (sem Reposition) — comparar direto.
+                var housePos = TownHouseSpecs[i].position;
+                float sqr = (housePos - layoutPosition).sqrMagnitude;
                 if (sqr < bestSqr)
                 {
                     bestSqr = sqr;
-                    nearestId = spec.NpcId;
+                    nearest = i;
                 }
             }
 
-            return nearestId;
+            return nearest;
         }
 
         private static void SetSerializedString(SerializedObject serialized, string propertyName, string value)
@@ -1272,23 +1888,57 @@ namespace CindarsHope.Editor.SceneCreation
             board.AddComponent<CindarsHope.Quests.Runtime.QuestBoardInteractable>();
         }
 
-        // Tree clusters along the perimeter, road edges, and district borders.
-        private static readonly Vector3[] TownTreePositions =
+        // Algumas árvores espalhadas DENTRO da cidade (pedido do jogador), além da floresta da borda.
+        // Posições em pontos de baixa densidade de casas (cantos da praça + entre distritos); cada uma
+        // vira uma pequena zona reservada (ReservedZones) para nenhuma casa cair em cima.
+        private static readonly Vector3[] ScatteredTreePositions =
         {
-            // West perimeter
-            new Vector3(-16.5f, 11f, 0f), new Vector3(-16f, 6.5f, 0f), new Vector3(-16.5f, -0.5f, 0f),
-            new Vector3(-16f, -6f, 0f), new Vector3(-16.5f, -11f, 0f),
-            // East perimeter
-            new Vector3(16.5f, 11.5f, 0f), new Vector3(16f, 5.5f, 0f), new Vector3(16.5f, -0.5f, 0f),
-            new Vector3(16f, -5.5f, 0f), new Vector3(16.5f, -11f, 0f),
-            // North band between districts
-            new Vector3(-6f, 12.5f, 0f), new Vector3(-1.5f, 12.8f, 0f), new Vector3(2.5f, 12.5f, 0f), new Vector3(6.5f, 12.8f, 0f),
-            // South band near the gate road
-            new Vector3(-10f, -12.5f, 0f), new Vector3(-3.5f, -12.8f, 0f), new Vector3(4f, -12.5f, 0f), new Vector3(13f, -12.5f, 0f),
-            // Inner garden clusters (statue garden + temple path)
-            new Vector3(-5.5f, -7.5f, 0f), new Vector3(5.5f, 3.5f, 0f), new Vector3(-5.5f, 2.5f, 0f),
-            new Vector3(4.8f, -3.6f, 0f), new Vector3(-10.5f, 5.8f, 0f), new Vector3(9.5f, 0.5f, 0f),
+            new Vector3(-7f, 7f, 0f), new Vector3(7f, 7f, 0f), new Vector3(-7f, -7f, 0f), new Vector3(7f, -7f, 0f), // cantos da praça
+            new Vector3(-12f, 17f, 0f), new Vector3(12f, 17f, 0f),    // entre praça e mercado
+            new Vector3(-12f, -16f, 0f), new Vector3(12f, -16f, 0f),  // entre praça e eventos
         };
+
+        // Floresta da borda: agora fica POR FORA da muralha de pedra (a muralha é o limite visível;
+        // a mata é a profundidade atrás dela). Deixa um vão central a OESTE para o portão da fazenda.
+        private static readonly Vector3[] TownTreePositions = BuildBorderTreeRing();
+
+        private static Vector3[] BuildBorderTreeRing()
+        {
+            var list = new List<Vector3>();
+            float wallX = TownDistrictLayout.HalfWidth + 0.5f;   // 38.5 — linha da muralha oeste/leste
+            float wallY = TownDistrictLayout.HalfHeight + 0.5f;  // 32.5 — linha da muralha norte/sul
+            float[] depths = { 1.2f, 2.8f, 4.4f };  // TRÊS fileiras FORA da muralha (mata atrás do muro)
+            const float step = 2.6f;     // árvores (~3 tiles) se sobrepõem ⇒ cada fileira fecha totalmente
+            const float gateHalf = 4f;   // metade do vão central OESTE (entrada da cidade / saída p/ fazenda)
+
+            foreach (float d in depths)
+            {
+                float tx = wallX + d;
+                float ty = wallY + d;
+
+                // Norte (topo) e sul (base): fileiras completas, sem vão.
+                for (float x = -tx; x <= tx + 0.01f; x += step)
+                {
+                    list.Add(new Vector3(x, ty, 0f));
+                    list.Add(new Vector3(x, -ty, 0f));
+                }
+
+                // Oeste (com vão central de entrada) e leste. O vão é preservado em TODAS as
+                // profundidades ⇒ um corredor limpo atravessa a faixa inteira de floresta.
+                for (float y = -wallY + step; y <= wallY - step + 0.01f; y += step)
+                {
+                    if (Mathf.Abs(y) > gateHalf)
+                    {
+                        list.Add(new Vector3(-tx, y, 0f));
+                    }
+                    list.Add(new Vector3(tx, y, 0f));
+                }
+            }
+
+            // Árvores espalhadas DENTRO da cidade (alguns pontos, fora da borda).
+            list.AddRange(ScatteredTreePositions);
+            return list.ToArray();
+        }
 
         private static void CreateTownTrees()
         {
@@ -1305,19 +1955,140 @@ namespace CindarsHope.Editor.SceneCreation
         {
             var treeObject = new GameObject($"TownTree_{treeIndex:00}");
             treeObject.transform.SetParent(parent);
-            // fable_40: tree clusters repositioned into the 48×42 footprint.
-            treeObject.transform.position = TownDistrictLayout.Reposition(position);
-            treeObject.transform.localScale = new Vector3(3f, 3f, 1f);
+            // Posições já estão no footprint 48×42 (anel de borda) — sem reposition.
+            treeObject.transform.position = position;
+            // Pequena variação determinística por índice para o anel não parecer um carimbo repetido.
+            float scale = 2.7f + (treeIndex % 3) * 0.3f;
+            treeObject.transform.localScale = new Vector3(scale, scale, 1f);
 
             var spriteRenderer = treeObject.AddComponent<SpriteRenderer>();
             spriteRenderer.sprite = GetBuiltinSprite();
-            spriteRenderer.color = new Color(0.24f, 0.48f, 0.22f);
+            float greenShift = (treeIndex % 4) * 0.025f;
+            spriteRenderer.color = new Color(0.22f + greenShift, 0.45f + greenShift, 0.2f);
             spriteRenderer.sortingOrder = 2;
             TrySetSortingLayer(spriteRenderer, "Items", spriteRenderer.sortingOrder);
 
             var collider = treeObject.AddComponent<BoxCollider2D>();
             collider.isTrigger = false;
             FitBoxColliderToOpaqueSprite(collider, spriteRenderer);
+        }
+
+        // Arredores temáticos na margem nova do footprint 56×48 — locais de dormir ao relento.
+        // As posições batem com TownNpcHomes (Maelor→cemitério, Zrix→gruta, Yael→tenda noturna).
+        private static void CreateTownOutskirts()
+        {
+            var parent = new GameObject("TownOutskirts");
+            parent.transform.position = Vector3.zero;
+
+            // Cemitério (NW) AMPLIADO: terreno de terra + cripta destacada + 9 lápides + cerca com portão.
+            CreateGroundSlab(parent.transform, "Cemetery_Ground", CemeteryPosition, new Vector2(11f, 9f), new Color(0.52f, 0.50f, 0.46f), -1);
+            CreateDecoration(parent.transform, "Cemetery_Crypt",
+                CemeteryPosition + new Vector3(0f, 2.4f, 0f), new Vector3(3.4f, 2.4f, 1f), new Color(0.45f, 0.45f, 0.5f));
+            for (int i = 0; i < 9; i++)
+            {
+                int col = i % 3, row = i / 3;
+                float gx = CemeteryPosition.x - 3.2f + col * 1.6f;
+                float gy = CemeteryPosition.y - 0.2f - row * 1.7f;
+                CreateDecoration(parent.transform, $"Gravestone_{i:00}",
+                    new Vector3(gx, gy, 0f), new Vector3(0.6f, 0.9f, 1f), new Color(0.56f, 0.56f, 0.59f));
+            }
+            // Cerca de ferro (decorativa, sem colisão para não trancar Maelor) nos lados sul e leste,
+            // que dão para a cidade; o norte/oeste encostam na borda. Deixa um vão de portão no sul-centro.
+            var fenceColor = new Color(0.30f, 0.30f, 0.34f);
+            CreateDecoration(parent.transform, "CemeteryFence_S_L",
+                new Vector3(CemeteryPosition.x - 3.6f, CemeteryPosition.y - 4.3f, 0f), new Vector3(3.2f, 0.3f, 1f), fenceColor);
+            CreateDecoration(parent.transform, "CemeteryFence_S_R",
+                new Vector3(CemeteryPosition.x + 3.6f, CemeteryPosition.y - 4.3f, 0f), new Vector3(3.2f, 0.3f, 1f), fenceColor);
+            CreateDecoration(parent.transform, "CemeteryGate_Post_L",
+                new Vector3(CemeteryPosition.x - 1.0f, CemeteryPosition.y - 4.3f, 0f), new Vector3(0.3f, 0.9f, 1f), fenceColor);
+            CreateDecoration(parent.transform, "CemeteryGate_Post_R",
+                new Vector3(CemeteryPosition.x + 1.0f, CemeteryPosition.y - 4.3f, 0f), new Vector3(0.3f, 0.9f, 1f), fenceColor);
+            CreateDecoration(parent.transform, "CemeteryFence_E",
+                new Vector3(CemeteryPosition.x + 5.2f, CemeteryPosition.y, 0f), new Vector3(0.3f, 8.5f, 1f), fenceColor);
+
+            // Boca de gruta (E): duas rochas (com colisão) e a abertura escura no meio. Onde Zrix dorme.
+            CreateBlocker(parent.transform, "CaveMouth_RockL",
+                new Vector3(CaveMouthPosition.x - 1.7f, CaveMouthPosition.y + 0.2f, 0f), new Vector2(1.6f, 2.4f), new Color(0.40f, 0.38f, 0.36f));
+            CreateBlocker(parent.transform, "CaveMouth_RockR",
+                new Vector3(CaveMouthPosition.x + 1.7f, CaveMouthPosition.y + 0.2f, 0f), new Vector2(1.6f, 2.4f), new Color(0.40f, 0.38f, 0.36f));
+            CreateDecoration(parent.transform, "CaveMouth_Dark",
+                CaveMouthPosition, new Vector3(2.2f, 2.6f, 1f), new Color(0.08f, 0.07f, 0.1f));
+
+            // Tenda escondida do mercado noturno (S): onde Yael dorme, no fundo, longe dos olhos.
+            CreateDecoration(parent.transform, "NightTent_Hidden",
+                NightMarketBackPosition, new Vector3(2.4f, 1.7f, 1f), new Color(0.30f, 0.26f, 0.5f));
+        }
+
+        // ── Estrutura de chão: ruas, pads de distrito e construções de preenchimento ──────────────
+
+        // Slab de chão puramente visual (Ground, sortingOrder dado; sem collider).
+        private static void CreateGroundSlab(Transform parent, string name, Vector3 center, Vector2 size, Color color, int sortingOrder)
+        {
+            var go = new GameObject(name);
+            go.transform.SetParent(parent);
+            go.transform.position = center;
+            go.transform.localScale = new Vector3(size.x, size.y, 1f);
+            var sr = go.AddComponent<SpriteRenderer>();
+            sr.sprite = GetBuiltinSprite();
+            sr.color = color;
+            sr.sortingOrder = sortingOrder;
+            TrySetSortingLayer(sr, "Ground", sortingOrder);
+        }
+
+        // Ruas de terra: avenida N–S e rua principal L–O cruzando a praça, mais a rua do mercado ao
+        // norte. Ligam praça e distritos, dando estrutura para os elementos não flutuarem no vazio.
+        private static void CreateTownRoads()
+        {
+            var parent = new GameObject("TownRoads");
+            parent.transform.position = Vector3.zero;
+            var dirt = new Color(0.62f, 0.55f, 0.42f);
+            float w = TownDistrictLayout.WidthTiles;   // 48
+            float h = TownDistrictLayout.HeightTiles;  // 42
+            CreateGroundSlab(parent.transform, "Road_Avenue_NS", Vector3.zero, new Vector2(5f, h - 2f), dirt, -1);
+            CreateGroundSlab(parent.transform, "Road_Main_EW", Vector3.zero, new Vector2(w - 2f, 5f), dirt, -1);
+            // Travessa do mercado (liga a avenida ao distrito de mercado, ao norte).
+            CreateGroundSlab(parent.transform, "Road_Market", new Vector3(0f, 16f, 0f), new Vector2(20f, 3.5f), dirt, -1);
+        }
+
+        // Pads de distrito: zonas de chão de tom levemente distinto sob cada cluster, para os grupos
+        // lerem como bairros. Contraste baixo (não vira patchwork). Ground, sortingOrder -2 (sob as ruas).
+        private static void CreateDistrictPads()
+        {
+            var parent = new GameObject("TownDistrictPads");
+            parent.transform.position = Vector3.zero;
+            void Pad(string name, float cx, float cy, float sx, float sy, Color c)
+                => CreateGroundSlab(parent.transform, name, new Vector3(cx, cy, 0f), new Vector2(sx, sy), c, -2);
+
+            Pad("Pad_Temple_NW", -15f, 12f, 13f, 9f, new Color(0.60f, 0.60f, 0.50f));
+            Pad("Pad_Market_N", 0f, 9.5f, 38f, 7f, new Color(0.60f, 0.56f, 0.46f));
+            Pad("Pad_Residential_E", 16f, 3f, 11f, 16f, new Color(0.56f, 0.58f, 0.48f));
+            Pad("Pad_Industry_W", -15f, -3f, 11f, 13f, new Color(0.56f, 0.54f, 0.52f));
+            Pad("Pad_Workshop_SE", 10f, -8f, 13f, 9f, new Color(0.60f, 0.54f, 0.44f));
+            Pad("Pad_NightMarket_S", 7f, -13f, 18f, 8f, new Color(0.50f, 0.48f, 0.56f));
+            Pad("Pad_AnimalYard_NE", 16f, 11f, 11f, 8f, new Color(0.54f, 0.58f, 0.48f));
+        }
+
+        // Construções de preenchimento (com colisão) nos vazios entre distritos: dão volume à cidade
+        // e bloqueiam movimento. Decorativas (sem lógica). Posicionadas longe das ruas centrais.
+        // (CreateFillerBuildings removido: eram blocos sólidos puramente decorativos, sem motivo de
+        //  gameplay. CreateBlocker permanece — usado pelas rochas da boca de gruta, que de fato BLOQUEIAM
+        //  a entrada da gruta, isto é, têm motivo para colidir.)
+
+        // Bloqueador com motivo de gameplay: sprite + collider sólido (ex.: rochas que trancam a gruta).
+        private static void CreateBlocker(Transform parent, string name, Vector3 center, Vector2 size, Color color)
+        {
+            var go = new GameObject(name);
+            go.transform.SetParent(parent);
+            go.transform.position = center;
+            go.transform.localScale = new Vector3(size.x, size.y, 1f);
+            var sr = go.AddComponent<SpriteRenderer>();
+            sr.sprite = GetBuiltinSprite();
+            sr.color = color;
+            sr.sortingOrder = 2;
+            TrySetSortingLayer(sr, "Items", sr.sortingOrder);
+            var col = go.AddComponent<BoxCollider2D>();
+            col.isTrigger = false;
+            col.size = Vector2.one;
         }
 
         private sealed class ShopUiReferences
@@ -1337,15 +2108,24 @@ namespace CindarsHope.Editor.SceneCreation
             var canvasScaler = canvasObject.GetComponent<CanvasScaler>();
             canvasScaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             canvasScaler.referenceResolution = new Vector2(1280f, 720f);
+            // Match 0.5 (largura+altura): com match=0 (so largura), telas mais altas/estreitas
+            // escalavam a UI pela largura e empurravam o rodape do painel para fora da tela.
+            canvasScaler.matchWidthOrHeight = 0.5f;
 
             new GameObject("ShopEventSystem", typeof(EventSystem), typeof(StandaloneInputModule));
 
-            var dialoguePanel = CreatePanel(canvasObject.transform, "DialogueModal", new Vector2(0f, -195f), new Vector2(1040f, 300f));
-            var dialogueText = CreateText(dialoguePanel.transform, "DialogueText", new Vector2(0f, 105f), new Vector2(900f, 56f), string.Empty);
-            var continueButton = CreateButton(dialoguePanel.transform, "ContinueButton", new Vector2(0f, -105f), new Vector2(160f, 42f), "Continuar");
-            var choicesContainer = CreateContainer(dialoguePanel.transform, "Choices", new Vector2(0f, -5f), new Vector2(760f, 145f));
-            var choiceTemplate = CreateButton(choicesContainer, "ChoiceTemplate", Vector2.zero, new Vector2(760f, 30f), string.Empty);
-            choiceTemplate.gameObject.AddComponent<LayoutElement>().preferredHeight = 30f;
+            // Caixa de dialogo no rodape. Altura 300 para o prompt + ate ~6 escolhas caberem DENTRO da caixa
+            // (antes 250 com container de 120 deixava a 5a/6a opcao — "Adeus" — escapar pelo rodape). O cartao
+            // de retrato do NPC ancora colado a esquerda dela (CreateNpcPortraitPanel), nao no canto da tela.
+            var dialoguePanel = CreatePanel(canvasObject.transform, "DialogueModal", new Vector2(0f, -195f), new Vector2(820f, 300f));
+            AnchorToBottomCenter(dialoguePanel, 28f);
+            var dialogueText = CreateText(dialoguePanel.transform, "DialogueText", new Vector2(0f, 108f), new Vector2(740f, 60f), string.Empty);
+            var continueButton = CreateButton(dialoguePanel.transform, "ContinueButton", new Vector2(0f, -118f), new Vector2(180f, 42f), "Continuar");
+            // Container de escolhas: topo logo abaixo do prompt (~75) descendo ate ~-133, dentro da caixa.
+            // 6 linhas de 28px + spacing 8 = 208 <= 210; childControlHeight=false mantem cada linha em 28.
+            var choicesContainer = CreateContainer(dialoguePanel.transform, "Choices", new Vector2(0f, -30f), new Vector2(740f, 210f));
+            var choiceTemplate = CreateButton(choicesContainer, "ChoiceTemplate", Vector2.zero, new Vector2(720f, 28f), string.Empty);
+            choiceTemplate.gameObject.AddComponent<LayoutElement>().preferredHeight = 28f;
             choiceTemplate.gameObject.SetActive(false);
             var dialogue = dialoguePanel.AddComponent<DialogueModal>();
             var serializedDialogue = new SerializedObject(dialogue);
@@ -1406,6 +2186,9 @@ namespace CindarsHope.Editor.SceneCreation
             SetReference(serializedSell, "_backButton", sellBack);
             serializedSell.ApplyModifiedPropertiesWithoutUndo();
 
+            // Painel lateral de retrato + afinidade do NPC (aparece ao conversar). Self-wiring por eventos.
+            CreateNpcPortraitPanel(canvasObject.transform);
+
             modalManager.Initialize();
             return new ShopUiReferences
             {
@@ -1414,6 +2197,98 @@ namespace CindarsHope.Editor.SceneCreation
                 BuyPanel = buy,
                 SellPanel = sell
             };
+        }
+
+        // Painel lateral (esquerda) com retrato placeholder, nome/raça/papel e a barra de afinidade
+        // vermelho→amarelo→verde. O NpcInteractionPortraitHud se liga sozinho aos eventos de interação
+        // e de opinião; aqui só montamos a hierarquia e plugamos as referências serializadas.
+        private static void CreateNpcPortraitPanel(Transform canvasParent)
+        {
+            var panelGo = new GameObject("NpcPortraitPanel",
+                typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(CanvasGroup));
+            panelGo.transform.SetParent(canvasParent, false);
+            // Cartao ancorado ao CENTRO-RODAPE, a esquerda da caixa de dialogo (820 de largura => meia-largura
+            // 410). Pivot direito-baixo: borda direita em -424 deixa ~14px de respiro do dialogo (antes -400
+            // colava). Maior (230x326) e elevado (y=22) para "saltar" acima da caixa e ter destaque proprio.
+            var panelRect = panelGo.GetComponent<RectTransform>();
+            panelRect.anchorMin = new Vector2(0.5f, 0f);
+            panelRect.anchorMax = new Vector2(0.5f, 0f);
+            panelRect.pivot = new Vector2(1f, 0f);
+            panelRect.sizeDelta = new Vector2(230f, 326f);
+            panelRect.anchoredPosition = new Vector2(-424f, 22f);
+            panelGo.GetComponent<Image>().color = new Color(0.11f, 0.12f, 0.16f, 0.96f);
+            // Contorno fino para destacar o cartao do fundo / da caixa de dialogo.
+            var cardOutline = panelGo.AddComponent<Outline>();
+            cardOutline.effectColor = new Color(0.85f, 0.72f, 0.35f, 0.55f);
+            cardOutline.effectDistance = new Vector2(2f, -2f);
+            var group = panelGo.GetComponent<CanvasGroup>();
+            group.alpha = 0f;
+            group.interactable = false;
+            group.blocksRaycasts = false;
+
+            // Faixa de acento (dourada) no topo — leitura de "cabecalho do cartao".
+            CreatePanelImage(panelGo.transform, "TopAccent", new Vector2(0f, 153f), new Vector2(218f, 6f), new Color(0.85f, 0.72f, 0.35f, 0.95f));
+
+            // Moldura do retrato (atras) + retrato placeholder tintado pela feicao em runtime.
+            CreatePanelImage(panelGo.transform, "PortraitFrame", new Vector2(0f, 84f), new Vector2(122f, 122f), new Color(0.30f, 0.33f, 0.40f));
+            var portrait = CreatePanelImage(panelGo.transform, "Portrait", new Vector2(0f, 84f), new Vector2(108f, 108f), new Color(0.7f, 0.7f, 0.72f));
+
+            var expression = CreateText(panelGo.transform, "Expression", new Vector2(0f, 12f), new Vector2(206f, 22f), "Normal");
+            expression.alignment = TextAnchor.MiddleCenter;
+            expression.fontStyle = FontStyle.Italic;
+
+            var nameText = CreateText(panelGo.transform, "Name", new Vector2(0f, -18f), new Vector2(212f, 42f), "—");
+            nameText.alignment = TextAnchor.MiddleCenter;
+            nameText.fontSize = 19;
+            nameText.fontStyle = FontStyle.Bold;
+
+            // Separador sob o nome — organiza a diagramacao (cabeca: retrato+nome / corpo: raca/papel/afinidade).
+            CreatePanelImage(panelGo.transform, "Separator", new Vector2(0f, -46f), new Vector2(160f, 2f), new Color(0.45f, 0.47f, 0.52f, 0.8f));
+
+            var raceText = CreateText(panelGo.transform, "Race", new Vector2(0f, -64f), new Vector2(204f, 20f), "—");
+            raceText.alignment = TextAnchor.MiddleCenter;
+            raceText.fontSize = 14;
+
+            var roleText = CreateText(panelGo.transform, "Role", new Vector2(0f, -86f), new Vector2(204f, 20f), "—");
+            roleText.alignment = TextAnchor.MiddleCenter;
+            roleText.fontSize = 14;
+
+            var affinityLabel = CreateText(panelGo.transform, "AffinityLabel", new Vector2(0f, -118f), new Vector2(204f, 18f), "Afinidade");
+            affinityLabel.alignment = TextAnchor.MiddleCenter;
+            affinityLabel.fontSize = 13;
+
+            // Barra: fundo + preenchimento (Image.type = Filled Horizontal).
+            CreatePanelImage(panelGo.transform, "AffinityBarBg", new Vector2(0f, -140f), new Vector2(198f, 16f), new Color(0.05f, 0.05f, 0.07f, 1f));
+            var fill = CreatePanelImage(panelGo.transform, "AffinityBarFill", new Vector2(0f, -140f), new Vector2(198f, 16f), new Color(0.95f, 0.85f, 0.25f));
+            fill.type = Image.Type.Filled;
+            fill.fillMethod = Image.FillMethod.Horizontal;
+            fill.fillOrigin = (int)Image.OriginHorizontal.Left;
+            fill.fillAmount = 0.5f; // neutro (opinião 0)
+
+            var hud = panelGo.AddComponent<CindarsHope.UI.Npc.NpcInteractionPortraitHud>();
+            var serialized = new SerializedObject(hud);
+            SetReference(serialized, "_panel", group);
+            SetReference(serialized, "_portrait", portrait);
+            SetReference(serialized, "_nameText", nameText);
+            SetReference(serialized, "_raceText", raceText);
+            SetReference(serialized, "_roleText", roleText);
+            SetReference(serialized, "_expressionCaption", expression);
+            SetReference(serialized, "_affinityFill", fill);
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(hud);
+        }
+
+        private static Image CreatePanelImage(Transform parent, string name, Vector2 position, Vector2 size, Color color)
+        {
+            var go = new GameObject(name, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+            go.transform.SetParent(parent, false);
+            var rect = go.GetComponent<RectTransform>();
+            rect.anchoredPosition = position;
+            rect.sizeDelta = size;
+            var image = go.GetComponent<Image>();
+            image.sprite = GetBuiltinSprite();
+            image.color = color;
+            return image;
         }
 
         // District layout v2: NPCs spread across the full playfield (~±16 x ±12) so the town
@@ -1453,7 +2328,128 @@ namespace CindarsHope.Editor.SceneCreation
             new("npc_eiran", "NPC_Eiran_AnimalYard", "Assets/_Game/Data/NPCs/Npc_Eiran.asset", "Assets/_Game/Data/Economy/Shop_Eiran.asset", new Vector3(12f, 8.5f, 0f), new Color(0.44f, 0.68f, 0.42f), "WanderWithinZone/AnimalArea", true, 3f),
             // Statue garden (center)
             new("npc_liora", "NPC_Liora_StatueGarden", "Assets/_Game/Data/NPCs/Npc_Liora.asset", string.Empty, new Vector3(2.5f, -1.5f, 0f), new Color(0.68f, 0.62f, 0.9f), "WanderWithinZone/EveningStage", true, 3f),
+            // Líder da aldeia — Ancião Velorin (Ninrorin idoso). Sem loja; fica na frente da Câmara
+            // (casa das decisões) de dia; dorme na Mansão. O asset Npc_Velorin é criado por
+            // EnsureChiefNpcAsset() no início de CreateScene (não há gerador automático de NpcDataSO).
+            new("npc_velorin", "NPC_Velorin_Chamber", "Assets/_Game/Data/NPCs/Npc_Velorin.asset", string.Empty, new Vector3(6.5f, 11.5f, 0f), new Color(0.82f, 0.80f, 0.86f), "Stationary/ChamberDesk", false, 2f),
+            // Autossuficiência da vila (slice village_economy) — assets criados por EnsureVillageEconomyNpcAssets().
+            // Sael no cais (SO, perto do lago); Mella na praça/mercado (N); Hess na borda leste; Tibbet no cemitério (NO).
+            new("npc_sael", "NPC_Sael_Dock", "Assets/_Game/Data/NPCs/Npc_Sael.asset", "Assets/_Game/Data/Economy/Shop_Sael.asset", new Vector3(-23f, -19f, 0f), new Color(0.36f, 0.50f, 0.62f), "ShopKeeperFixed/Dock", false, 2f),
+            new("npc_mella", "NPC_Mella_Bakery", "Assets/_Game/Data/NPCs/Npc_Mella.asset", "Assets/_Game/Data/Economy/Shop_Mella.asset", new Vector3(0f, 17f, 0f), new Color(0.86f, 0.70f, 0.50f), "ShopKeeperFixed/Bakery", false, 2f),
+            new("npc_hess", "NPC_Hess_Tannery", "Assets/_Game/Data/NPCs/Npc_Hess.asset", "Assets/_Game/Data/Economy/Shop_Hess.asset", new Vector3(24f, 2f, 0f), new Color(0.55f, 0.45f, 0.32f), "ShopKeeperFixed/Tannery", false, 2f),
+            new("npc_tibbet", "NPC_Tibbet_Cemetery", "Assets/_Game/Data/NPCs/Npc_Tibbet.asset", string.Empty, new Vector3(-23f, 18f, 0f), new Color(0.80f, 0.78f, 0.72f), "Stationary/Cemetery", false, 2f),
         };
+
+        // Cria (ou atualiza) o NpcDataSO do líder da aldeia. Não há gerador automático de NpcDataSO no
+        // projeto, então o scene-gen garante este asset (idempotente: load-or-create por caminho).
+        // Ancião Velorin — Ninrorin (elfo cinzento) idoso, líder; sem loja; saúda via Opening/Closing
+        // line (uma árvore de diálogo completa pode ser adicionada depois via TownNpcDialogueLibrary).
+        private static void EnsureChiefNpcAsset()
+        {
+            const string path = "Assets/_Game/Data/NPCs/Npc_Velorin.asset";
+            var npc = AssetDatabase.LoadAssetAtPath<NpcDataSO>(path);
+            bool created = false;
+            if (npc == null)
+            {
+                npc = ScriptableObject.CreateInstance<NpcDataSO>();
+                AssetDatabase.CreateAsset(npc, path);
+                created = true;
+            }
+
+            npc.NpcId = "npc_velorin";
+            npc.DisplayName = "Anciao Velorin";
+            npc.OpeningLine = "Bem-vindo a Cindar's Hope. Sou Velorin; ja vi esta aldeia nascer, cair e se reerguer. Os anos ensinam paciencia.";
+            npc.ClosingLine = "Que a ordem de Kanthor guarde os seus passos, jovem. A aldeia conta com cada um de nos.";
+            npc.DefaultSceneId = "TownScene";
+            npc.MovementMode = NpcMovementMode.Static;
+            EditorUtility.SetDirty(npc);
+            AssetDatabase.SaveAssets();
+            Debug.Log($"[CreateMvpTownScene] Npc_Velorin (lider da aldeia) {(created ? "criado" : "atualizado")} em {path}.");
+        }
+
+        // 4 NPCs novos (Sael/Mella/Hess/Tibbet) + 3 lojas (sem gerador automático; idempotente como o chefe).
+        private static void EnsureVillageEconomyNpcAssets()
+        {
+            EnsureTownNpcAsset("Assets/_Game/Data/NPCs/Npc_Sael.asset", "npc_sael", "Sael Mare-Quieta",
+                "Bem-vindo ao cais. A pesca e arte de quem tem paciencia. Vendo peixe, isca e o silencio que o anzol pede.",
+                "Va com a mare calma. A agua estara aqui; eu tambem.", "shop_sael");
+            EnsureTownNpcAsset("Assets/_Game/Data/NPCs/Npc_Mella.asset", "npc_mella", "Mella Forno-Quente",
+                "Entra, entra! Acabou de sair do forno. Em Cindar's Hope ninguem sai de maos vazias se eu puder evitar.",
+                "Nao esquece de comer. Volta amanha, tem fornada nova ao amanhecer.", "shop_mella");
+            EnsureTownNpcAsset("Assets/_Game/Data/NPCs/Npc_Hess.asset", "npc_hess", "Hess Couro-Fundo",
+                "Devagar. O couro nao ensina pressa nenhuma. Curto peles; vendo couro e armadura leve.",
+                "Va devagar. O que tiver de durar, durara. Volte quando precisar.", "shop_hess");
+            EnsureTownNpcAsset("Assets/_Game/Data/NPCs/Npc_Tibbet.asset", "npc_tibbet", "Tibbet Vela-Torta",
+                "Oh, ola. Desculpe a terra nas maos. Sou Tibbet, auxiliar do Padre Corvus: cuido do altar de dia e das covas de noite.",
+                "Va com a luz e com a falta dela. Que a noite seja mansa com voce.", null);
+
+            EnsureShopAsset("Assets/_Game/Data/Economy/Shop_Sael.asset", "shop_sael", "Pescaria do Sael", "npc_sael",
+                new[] { ("item_fish_river_perch", 8, 0), ("item_fish_sun_bass", 6, 0), ("item_fish_amber_trout", 5, 0), ("item_consumable_food_grilled_fish", 6, 0) });
+            EnsureShopAsset("Assets/_Game/Data/Economy/Shop_Mella.asset", "shop_mella", "Padaria da Mella", "npc_mella",
+                new[] { ("item_consumable_food_bread", 12, 0), ("item_consumable_food_thandra_loaf", 6, 0), ("item_consumable_food_festival_cake", 2, 0), ("item_consumable_food_pumpkin_soup", 5, 0) });
+            EnsureShopAsset("Assets/_Game/Data/Economy/Shop_Hess.asset", "shop_hess", "Tanoaria do Hess", "npc_hess",
+                new[] { ("item_material_leather", 10, 0), ("item_material_hide", 8, 0), ("item_armor_light_leather", 2, 0) });
+        }
+
+        private static void EnsureTownNpcAsset(string path, string id, string name, string opening, string closing, string shopId)
+        {
+            var npc = AssetDatabase.LoadAssetAtPath<NpcDataSO>(path);
+            bool created = false;
+            if (npc == null)
+            {
+                npc = ScriptableObject.CreateInstance<NpcDataSO>();
+                AssetDatabase.CreateAsset(npc, path);
+                created = true;
+            }
+
+            npc.NpcId = id;
+            npc.DisplayName = name;
+            npc.OpeningLine = opening;
+            npc.ClosingLine = closing;
+            npc.DefaultSceneId = "TownScene";
+            npc.MovementMode = NpcMovementMode.Static;
+            if (!string.IsNullOrEmpty(shopId))
+            {
+                npc.ShopId = shopId;
+            }
+
+            EditorUtility.SetDirty(npc);
+            AssetDatabase.SaveAssets();
+            Debug.Log($"[CreateMvpTownScene] {path} {(created ? "criado" : "atualizado")}.");
+        }
+
+        private static void EnsureShopAsset(string path, string id, string displayName, string npcId, (string itemId, int stock, int priceOverride)[] items)
+        {
+            var shop = AssetDatabase.LoadAssetAtPath<ShopDataSO>(path);
+            bool created = false;
+            if (shop == null)
+            {
+                shop = ScriptableObject.CreateInstance<ShopDataSO>();
+                AssetDatabase.CreateAsset(shop, path);
+                created = true;
+            }
+
+            shop.Id = id;
+            shop.DisplayName = displayName;
+            shop.NpcId = npcId;
+            var entries = new ShopItemEntry[items.Length];
+            for (int i = 0; i < items.Length; i++)
+            {
+                entries[i] = new ShopItemEntry
+                {
+                    ItemId = items[i].itemId,
+                    BaseDailyStock = items[i].stock,
+                    IsFiniteStock = true,
+                    BuyPriceOverride = items[i].priceOverride
+                };
+            }
+
+            shop.Items = entries;
+            shop.DailyRestock = true;
+            EditorUtility.SetDirty(shop);
+            AssetDatabase.SaveAssets();
+            Debug.Log($"[CreateMvpTownScene] {path} {(created ? "criado" : "atualizado")} ({items.Length} itens).");
+        }
 
         // fable_10 — explicit offered-quest mapping for the Act 1 main-quest givers. The
         // QuestGiverInteractable picks the first offerable/turn-in-able quest whose prerequisites
@@ -1538,6 +2534,10 @@ namespace CindarsHope.Editor.SceneCreation
             var parent = new GameObject("NPCs");
             parent.transform.position = Vector3.zero;
 
+            // Collider sólido do jogador (BoxCollider2D no root; o trigger de interação fica num filho).
+            // Cada NPC ignora a colisão com este collider → player atravessa NPCs, NPCs batem nas paredes.
+            var playerCollider = playerTransform != null ? playerTransform.GetComponent<Collider2D>() : null;
+
             var dialogueNpcs = new List<NpcController>();
             var shopNpcs = new List<NpcShopController>();
 
@@ -1554,6 +2554,8 @@ namespace CindarsHope.Editor.SceneCreation
                         spec.NpcDataPath,
                         spec.ShopDataPath,
                         spec.MovementProfile,
+                        spec.WanderRadius,
+                        playerCollider,
                         playerManager,
                         inventoryManager,
                         itemDatabase,
@@ -1579,7 +2581,8 @@ namespace CindarsHope.Editor.SceneCreation
                         shopUi.DialogueModal,
                         spec.CanWander,
                         spec.MovementProfile,
-                        spec.WanderRadius);
+                        spec.WanderRadius,
+                        playerCollider);
 
                     var dialogueController = npcObject.GetComponent<NpcController>();
                     if (dialogueController != null)
@@ -1612,8 +2615,9 @@ namespace CindarsHope.Editor.SceneCreation
                 modalManager,
                 shopUi.DialogueModal,
                 true,
-                "WanderWithinZone",
-                6f);
+                "Roam",
+                8f,
+                playerCollider);
             var wandererController = wanderer.GetComponent<NpcController>();
             if (wandererController != null)
             {
@@ -1638,6 +2642,8 @@ namespace CindarsHope.Editor.SceneCreation
             string npcDataPath,
             string shopDataPath,
             string movementProfile,
+            float wanderRadius,
+            Collider2D playerCollider,
             PlayerManager playerManager,
             InventoryManager inventoryManager,
             ItemDatabaseSO itemDatabase,
@@ -1648,7 +2654,11 @@ namespace CindarsHope.Editor.SceneCreation
             var npcObject = new GameObject(objectName);
             npcObject.transform.SetParent(parent);
             npcObject.transform.position = position;
-            npcObject.transform.localScale = new Vector3(1f, 1.5f, 1f);
+            // Size from the authored NPC scale profile (VisualScale 2.0), matching the player.
+            if (!ScaleProfileLibrary.AttachApplicator(npcObject, EntityScaleCategory.NPC))
+            {
+                npcObject.transform.localScale = new Vector3(1f, 1.5f, 1f);
+            }
             var renderer = npcObject.AddComponent<SpriteRenderer>();
             renderer.sprite = GetBuiltinSprite();
             renderer.color = color;
@@ -1676,8 +2686,83 @@ namespace CindarsHope.Editor.SceneCreation
             SetReference(serialized, "_sellPanel", shopUi.SellPanel);
             SetReference(serialized, "_modalManager", modalManager);
             serialized.ApplyModifiedPropertiesWithoutUndo();
+            ConfigureNpcMovement(npcObject, npcData, position, movementProfile, canWander: true, wanderRadius, playerCollider);
             AddPlacementMarker(npcObject, npcData, movementProfile);
             return npcObject;
+        }
+
+        // Dá ao NPC um corpo VIVO e SÓLIDO: (1) Rigidbody2D dinâmico + collider sólido pequeno nos pés
+        // ⇒ bate em paredes/portas; (2) NpcPhysicsBody ignora a colisão com o player ⇒ o jogador
+        // atravessa NPCs (sem o "bloco invisível" do pass 1, sem mexer em ProjectSettings); (3)
+        // NpcDweller ⇒ a porta da casa abre sozinha quando o morador chega; (4) NpcWanderer com tier de
+        // movimento (lojista faz micro-vaivém no posto; andarilho cobre mais a cidade). O trigger 1x1 de
+        // interação (já criado pelo caller) continua sendo o que o player usa para conversar.
+        private static void ConfigureNpcMovement(
+            GameObject npcObject, NpcDataSO npcData, Vector3 position, string movementProfile,
+            bool canWander, float wanderRadius, Collider2D playerCollider)
+        {
+            var body = npcObject.GetComponent<Rigidbody2D>();
+            if (body == null)
+            {
+                body = npcObject.AddComponent<Rigidbody2D>();
+            }
+            body.bodyType = RigidbodyType2D.Dynamic;
+            body.gravityScale = 0f;
+            body.constraints = RigidbodyConstraints2D.FreezeRotation;
+            body.interpolation = RigidbodyInterpolation2D.Interpolate;
+            body.linearDamping = 4f;
+
+            // Collider sólido pequeno nos "pés" (filho ⇒ offset/escala independentes do trigger 1x1).
+            var bodyObject = new GameObject("SolidBody");
+            bodyObject.transform.SetParent(npcObject.transform);
+            bodyObject.transform.localPosition = new Vector3(0f, -0.35f, 0f);
+            bodyObject.transform.localScale = Vector3.one;
+            var solid = bodyObject.AddComponent<BoxCollider2D>();
+            solid.isTrigger = false;
+            solid.size = new Vector2(0.55f, 0.4f);
+
+            if (playerCollider != null)
+            {
+                var physicsBody = npcObject.AddComponent<NpcPhysicsBody>();
+                physicsBody.Configure(solid, playerCollider);
+                EditorUtility.SetDirty(physicsBody);
+            }
+
+            var dweller = npcObject.AddComponent<NpcDweller>();
+            dweller.Configure(npcData != null ? npcData.NpcId : string.Empty);
+
+            var wanderer = npcObject.AddComponent<NpcWanderer>();
+            var serializedWanderer = new SerializedObject(wanderer);
+            SetReference(serializedWanderer, "_npcData", npcData);
+            SetReference(serializedWanderer, "_rigidbody", body);
+            serializedWanderer.ApplyModifiedPropertiesWithoutUndo();
+
+            var tier = MovementTierFor(movementProfile, canWander, wanderRadius);
+            float clampX = TownDistrictLayout.HalfWidth - 1f;   // 37
+            float clampY = TownDistrictLayout.HalfHeight - 1f;  // 31
+            wanderer.ConfigureMovement(tier.speed, tier.radius, tier.pauseMin, tier.pauseMax,
+                new Vector2(-clampX, -clampY), new Vector2(clampX, clampY));
+            EditorUtility.SetDirty(wanderer);
+        }
+
+        // Tier de movimento por perfil. Todos têm vaivém; o raio/velocidade muda quem fica no posto
+        // (lojista/estático), quem ronda a vizinhança (patrulha/zona) e quem cobre a cidade (roam).
+        private static (float speed, float radius, float pauseMin, float pauseMax) MovementTierFor(
+            string movementProfile, bool canWander, float wanderRadius)
+        {
+            string p = movementProfile ?? string.Empty;
+            if (p.StartsWith("Roam"))
+                return (1.5f, Mathf.Max(wanderRadius, 7f), 1.5f, 3.5f);
+            if (p.StartsWith("Patrol"))
+                return (1.6f, Mathf.Max(wanderRadius, 3.5f), 1.5f, 3.5f);
+            if (p.StartsWith("WanderWithinZone"))
+                return (1.3f, Mathf.Max(wanderRadius, 3f), 2f, 4f);
+            if (p.StartsWith("NightOnly"))
+                return (1.4f, Mathf.Max(wanderRadius, 3f), 2f, 4f);
+            // Stationary / ShopKeeperFixed / desconhecido sem wander: micro-vaivém no posto (~2 tiles).
+            if (!canWander || p.StartsWith("Stationary") || p.StartsWith("ShopKeeperFixed"))
+                return (0.8f, 1.2f, 3f, 6f);
+            return (1.3f, Mathf.Max(wanderRadius, 2.5f), 2.5f, 5f);
         }
 
         private static GameObject CreateDialogueNpc(
@@ -1690,12 +2775,17 @@ namespace CindarsHope.Editor.SceneCreation
             DialogueModal dialogueModal,
             bool canWander,
             string movementProfile,
-            float wanderRadius = 3f)
+            float wanderRadius,
+            Collider2D playerCollider)
         {
             var npcObject = new GameObject(objectName);
             npcObject.transform.SetParent(parent);
             npcObject.transform.position = position;
-            npcObject.transform.localScale = new Vector3(1f, 1.5f, 1f);
+            // Size from the authored NPC scale profile (VisualScale 2.0), matching the player.
+            if (!ScaleProfileLibrary.AttachApplicator(npcObject, EntityScaleCategory.NPC))
+            {
+                npcObject.transform.localScale = new Vector3(1f, 1.5f, 1f);
+            }
             var renderer = npcObject.AddComponent<SpriteRenderer>();
             renderer.sprite = GetBuiltinSprite();
             renderer.color = color;
@@ -1714,32 +2804,11 @@ namespace CindarsHope.Editor.SceneCreation
             SetReference(serializedController, "_collider", collider);
             SetReference(serializedController, "_spriteRenderer", renderer);
 
-            if (canWander)
-            {
-                var body = npcObject.AddComponent<Rigidbody2D>();
-                body.gravityScale = 0f;
-                body.constraints = RigidbodyConstraints2D.FreezeRotation;
-                var wanderer = npcObject.AddComponent<NpcWanderer>();
-                var serializedWanderer = new SerializedObject(wanderer);
-                SetReference(serializedWanderer, "_npcData", npcData);
-                SetReference(serializedWanderer, "_rigidbody", body);
-                // District-relative wander bounds: each NPC roams around its own home spot
-                // instead of one shared central rectangle, clamped to the town playfield.
-                // fable_40: clamp to the canonical 48×42 interior (1 tile inside the perimeter).
-                float radius = Mathf.Max(1f, wanderRadius);
-                float clampX = TownDistrictLayout.HalfWidth - 1f;   // 23
-                float clampY = TownDistrictLayout.HalfHeight - 1f;  // 20
-                var boundsMin = new Vector2(
-                    Mathf.Max(-clampX, position.x - radius),
-                    Mathf.Max(-clampY, position.y - radius));
-                var boundsMax = new Vector2(
-                    Mathf.Min(clampX, position.x + radius),
-                    Mathf.Min(clampY, position.y + radius));
-                serializedWanderer.FindProperty("_wanderBoundsMin").vector2Value = boundsMin;
-                serializedWanderer.FindProperty("_wanderBoundsMax").vector2Value = boundsMax;
-                serializedWanderer.ApplyModifiedPropertiesWithoutUndo();
-                SetReference(serializedController, "_wanderer", wanderer);
-            }
+            // TODO NPC se move agora (vaivém vivo + corpo sólido). O tier (micro no posto vs. ronda)
+            // sai do movementProfile; canWander só decide se ele é "estático-vivo" ou andarilho.
+            ConfigureNpcMovement(npcObject, npcData, position, movementProfile, canWander, wanderRadius, playerCollider);
+            var wandererRef = npcObject.GetComponent<NpcWanderer>();
+            SetReference(serializedController, "_wanderer", wandererRef);
 
             serializedController.ApplyModifiedPropertiesWithoutUndo();
             AddPlacementMarker(npcObject, npcData, movementProfile);
@@ -1755,6 +2824,20 @@ namespace CindarsHope.Editor.SceneCreation
             rect.sizeDelta = size;
             panel.GetComponent<Image>().color = new Color(0.09f, 0.1f, 0.13f, 0.96f);
             return panel;
+        }
+
+        // Re-ancora um painel ao centro do RODAPE da tela: a borda de baixo fica a uma margem fixa
+        // do fundo, então nunca é cortada quando a resolução/aspecto muda. Os filhos do painel usam
+        // anchoredPosition relativo ao rect do painel, então o layout interno é preservado.
+        private static void AnchorToBottomCenter(GameObject panel, float bottomMargin)
+        {
+            var rect = panel.GetComponent<RectTransform>();
+            var size = rect.sizeDelta;
+            rect.anchorMin = new Vector2(0.5f, 0f);
+            rect.anchorMax = new Vector2(0.5f, 0f);
+            rect.pivot = new Vector2(0.5f, 0f);
+            rect.sizeDelta = size;
+            rect.anchoredPosition = new Vector2(0f, bottomMargin);
         }
 
         private static Text CreateText(Transform parent, string name, Vector2 position, Vector2 size, string text)

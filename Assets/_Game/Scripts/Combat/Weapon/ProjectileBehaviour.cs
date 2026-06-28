@@ -47,6 +47,9 @@ namespace CindarsHope.Combat.Weapon
         private const float HomingTurnRateDegPerSec = 360f;
         private float _homingRange;
         private static readonly Collider2D[] s_homingBuffer = new Collider2D[16];
+        // NoFilter() = todos os layers + triggers (mesma abrangencia do antigo OverlapCircleNonAlloc, que
+        // usava o queriesHitTriggers global). A filtragem real por inimigo vivo e feita via EnemyHealth abaixo.
+        private static readonly ContactFilter2D s_homingFilter = ContactFilter2D.noFilter;
 
         private void Start()
         {
@@ -139,7 +142,7 @@ namespace CindarsHope.Combat.Weapon
         // (sem busca global, sem alocacao por frame). Sobe ate o EnemyHealth (collider pode ser filho).
         private static Transform FindNearestEnemy(Vector2 center, float radius)
         {
-            int count = Physics2D.OverlapCircleNonAlloc(center, radius, s_homingBuffer);
+            int count = Physics2D.OverlapCircle(center, radius, s_homingFilter, s_homingBuffer);
             Transform best = null;
             float bestSq = float.MaxValue;
             for (int i = 0; i < count; i++)

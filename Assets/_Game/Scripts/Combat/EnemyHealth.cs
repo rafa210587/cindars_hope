@@ -16,6 +16,9 @@ namespace CindarsHope.Combat
         [SerializeField] private EnemyDataSO _enemyData;
 
         private int _currentHp;
+        // Quando > 0, sobrescreve _enemyData.maxHp (HP escalado via ConfigureWithScaling).
+        // Sentinel 0 = usar _enemyData.maxHp (caminho de Configure legado sem scaling).
+        private int _scaledMaxHp;
         private bool _hpRestoredFromSnapshot;
         private CindarsHope.Combat.StatusEffect.StatusEffectManager _statusEffects = new CindarsHope.Combat.StatusEffect.StatusEffectManager();
 
@@ -41,7 +44,9 @@ namespace CindarsHope.Combat
         private int _pendingKillCaveLevel;
 
         public int CurrentHp => _currentHp;
-        public int MaxHp => _enemyData != null ? _enemyData.maxHp : 0;
+        /// <summary>HP máximo desta instância. Usa valor escalado quando disponível (ConfigureWithScaling),
+        /// senão retorna o valor do asset (Configure legado).</summary>
+        public int MaxHp => _scaledMaxHp > 0 ? _scaledMaxHp : (_enemyData != null ? _enemyData.maxHp : 0);
         public string EnemyId => _enemyData != null ? _enemyData.enemyId : string.Empty;
         // fable_78: id de instância estável (setado por ConfigureLootContext). Usado como killer/victim
         // id nos eventos de conflito inter-monstro. Vazio fora de uma run de caverna.
@@ -57,11 +62,41 @@ namespace CindarsHope.Combat
 
         public void Configure(EnemyDataSO enemyData)
         {
+            _scaledMaxHp = 0; // reset sentinel — MaxHp volta a usar asset value
             _enemyData = enemyData;
             if (_enemyData != null)
             {
                 _currentHp = _enemyData.maxHp;
                 CombatLog.Log($"CombatLog: Enemy configured. {BuildEnemyLogPrefix()}, HP={_currentHp}/{MaxHp}, Level={_enemyData.enemyLevel}, Difficulty={_enemyData.baseDifficulty}.", this);
+            }
+
+            if (GetComponent<CindarsHope.Combat.StatusEffect.EnemyStatusRuntimeTicker>() == null)
+                gameObject.AddComponent<CindarsHope.Combat.StatusEffect.EnemyStatusRuntimeTicker>();
+        }
+
+        /// <summary>
+        /// Configura HP com scaling por nível de caverna e multiplicador global de balance.
+        /// Aplica CaveBandScaling.ScaleHp para crescimento intra-banda (+12%/nível),
+        /// depois aplica hpBaseMultiplier (do CaveEcosystemBalanceSO) para corrigir desproporção
+        /// vs. dano do player. Chame este overload em vez de Configure(enemyData) em spawners
+        /// de caverna que conhecem o nível real. caveLevel=0 ou hpBaseMultiplier=1 degenera ao
+        /// comportamento original.
+        /// </summary>
+        public void ConfigureWithScaling(EnemyDataSO enemyData, int caveLevel, float hpBaseMultiplier = 1f)
+        {
+            _enemyData = enemyData;
+            if (_enemyData != null)
+            {
+                var bandMinLevel = CaveBandScaling.BandMinLevel(CaveBandScaling.BandForLevel(caveLevel > 0 ? caveLevel : _enemyData.enemyLevel));
+                var baseHp = _enemyData.maxHp;
+                var scaledHp = caveLevel > 0
+                    ? CaveBandScaling.ScaleHp(baseHp, caveLevel, bandMinLevel)
+                    : baseHp;
+                var multipliedHp = Mathf.Max(1, Mathf.RoundToInt(scaledHp * Mathf.Max(1f, hpBaseMultiplier)));
+                _currentHp = multipliedHp;
+                // Override MaxHp for this instance via a private backing field to reflect scaled value.
+                _scaledMaxHp = multipliedHp;
+                CombatLog.Log($"CombatLog: Enemy configured (scaled). {BuildEnemyLogPrefix()}, BaseHP={baseHp}, ScaledHP={scaledHp}, FinalHP={_currentHp}/{multipliedHp}, CaveLevel={caveLevel}, HpMult={hpBaseMultiplier:F2}, BandMin={bandMinLevel}.", this);
             }
 
             if (GetComponent<CindarsHope.Combat.StatusEffect.EnemyStatusRuntimeTicker>() == null)
@@ -91,7 +126,7 @@ namespace CindarsHope.Combat
                 return;
             }
 
-            _currentHp = Mathf.Clamp(savedHp, 0, _enemyData.maxHp);
+            _currentHp = Mathf.Clamp(savedHp, 0, MaxHp);
             _hpRestoredFromSnapshot = true;
         }
 
@@ -108,7 +143,11 @@ namespace CindarsHope.Combat
                 return;
             }
 
-            _currentHp = _enemyData.maxHp;
+            // Preserva HP escalado se ConfigureWithScaling já setou _currentHp corretamente.
+            if (_scaledMaxHp <= 0)
+            {
+                _currentHp = _enemyData.maxHp;
+            }
             CombatLog.Log($"CombatLog: Enemy spawned. {BuildEnemyLogPrefix()}, HP={_currentHp}/{MaxHp}, Level={_enemyData.enemyLevel}, Difficulty={_enemyData.baseDifficulty}.", this);
 
             if (GetComponent<CindarsHope.Combat.StatusEffect.EnemyStatusRuntimeTicker>() == null)

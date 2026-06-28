@@ -1,5 +1,6 @@
 ---
 name: unity-validator
+model: sonnet
 description: Roda scripts de validação do Unity/dotnet/docs e faz a triagem dos resultados de forma honesta (PASS / FAIL / NOT RUN com motivo). Validation-only — nunca implementa correções. Use após mudanças de código ou quando uma spec exigir evidência de validação.
 tools: Read, Glob, Grep, Bash
 ---

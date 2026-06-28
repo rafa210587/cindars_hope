@@ -1,5 +1,24 @@
+using CindarsHope.Craft.Data;
+
 namespace CindarsHope.Core.Events
 {
+    /// <summary>
+    /// Pedido para ABRIR o craft de uma estação física (forja, alambique, tear…). Publicado por
+    /// CraftingStationInteractable ao apertar E; assinado pelo CraftingModal, que abre o craft filtrado
+    /// pelo WorkshopType. Mantém a estação desacoplada da UI (regra do GameEventBus).
+    /// </summary>
+    public readonly struct OpenCraftingStationRequestedEvent
+    {
+        public OpenCraftingStationRequestedEvent(string stationInstanceId, WorkshopType workshopType)
+        {
+            StationInstanceId = stationInstanceId;
+            WorkshopType = workshopType;
+        }
+
+        public string StationInstanceId { get; }
+        public WorkshopType WorkshopType { get; }
+    }
+
     public readonly struct CraftingStationOpenedEvent
     {
         public CraftingStationOpenedEvent(string stationInstanceId) => StationInstanceId = stationInstanceId;

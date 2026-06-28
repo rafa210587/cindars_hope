@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using CindarsHope.Craft.Data;
 using CindarsHope.Inventory.Data;
 
 namespace CindarsHope.Editor.Items
@@ -72,6 +73,8 @@ namespace CindarsHope.Editor.Items
         public int OutputAmount = 1;
         // ingredientId -> amount (all must resolve to a catalog item id).
         public List<KeyValuePair<string, int>> Ingredients = new List<KeyValuePair<string, int>>();
+        // Estação exigida. None = craft de bolso (padrão, compatível com as receitas existentes).
+        public WorkshopType Station = WorkshopType.None;
         public string Notes = string.Empty;
     }
 
@@ -318,6 +321,9 @@ namespace CindarsHope.Editor.Items
             Mat("item_material_copper_ore", "Copper Ore", 8);
             Mat("item_material_iron_ore", "Iron Ore", 15);
             Mat("item_material_leather", "Leather", 15, CatalogItemSource.Drop);
+            // Cadeia de couro/tecido (slice village_economy): hide (drop) → couro (curtir); cloth (tecer).
+            Mat("item_material_hide", "Hide", 8, CatalogItemSource.Drop);
+            Mat("item_material_cloth", "Cloth", 22, CatalogItemSource.Craft);
             Mat("item_material_silver_ore", "Silver Ore", 30);
             Mat("item_material_arcane_crystal", "Arcane Crystal", 60);
             Mat("item_material_mithril_ore", "Mithril Ore", 80);
@@ -474,6 +480,8 @@ namespace CindarsHope.Editor.Items
             Weapon("item_weapon_sword_steel", "Steel Sword", 300);
             Weapon("item_weapon_axe_iron", "Iron Axe", 130);
             Weapon("item_weapon_axe_steel", "Steel Axe", 320);
+            Weapon("item_tool_pickaxe_iron", "Iron Pickaxe", 90, dormant: false);
+            Weapon("item_tool_pickaxe_steel", "Steel Pickaxe", 220, dormant: false);
             Weapon("item_weapon_hammer_iron", "Iron Hammer", 140);
             Weapon("item_weapon_hammer_steel", "Steel Hammer", 340);
             Weapon("item_weapon_spear_iron", "Iron Spear", 125);
@@ -807,6 +815,30 @@ namespace CindarsHope.Editor.Items
             R("recipe_oil_frost", "Frost Oil", "item_consumable_oil_frost", ("item_material_frost_core", 1), ("item_material_fiber", 1));
             R("recipe_oil_shock", "Shock Oil", "item_consumable_oil_shock", ("item_material_spark_dust", 2), ("item_material_fiber", 1));
             R("recipe_oil_poison", "Poison Oil", "item_consumable_oil_poison", ("item_material_rot_gland", 1), ("item_material_spores", 2));
+
+            // Cadeia couro/tecido (slice village_economy) — estação Sewing (tear/curtir do distrito da Mirela/Hess).
+            R("recipe_leather_from_hide", "Curtir Couro", "item_material_leather", ("item_material_hide", 2)).Station = WorkshopType.Sewing;
+            R("recipe_cloth_from_fiber", "Tecer Pano (fibra)", "item_material_cloth", ("item_material_fiber", 3)).Station = WorkshopType.Sewing;
+            R("recipe_cloth_from_wool", "Tecer Pano (lã)", "item_material_cloth", ("item_animal_wool", 2)).Station = WorkshopType.Sewing;
+            R("recipe_leather_armor", "Armadura de Couro", "item_armor_light_leather", ("item_material_leather", 4)).Station = WorkshopType.Sewing;
+            R("recipe_arcane_robe", "Manto de Pano", "item_armor_robe_arcane", ("item_material_cloth", 5)).Station = WorkshopType.Sewing;
+
+            // Realismo (decisão do usuário): craft travado por estação. Comida exige FOGÃO, poção/óleo
+            // exigem ALAMBIQUE. Só aplica onde a estação ainda não foi setada (Sewing acima é preservada).
+            // A fazenda recebe um fogão + bancada (CreateMvpFarmScene) para o jogador cozinhar/craftar em casa.
+            foreach (var r in recipes)
+            {
+                if (r.Station != WorkshopType.None) continue;
+                var o = r.OutputItemId ?? string.Empty;
+                if (o.StartsWith("item_consumable_food_"))
+                {
+                    r.Station = WorkshopType.CookingStation;
+                }
+                else if (o.StartsWith("item_consumable_potion_") || o.StartsWith("item_consumable_oil_"))
+                {
+                    r.Station = WorkshopType.Alchemy;
+                }
+            }
 
             return recipes;
         }

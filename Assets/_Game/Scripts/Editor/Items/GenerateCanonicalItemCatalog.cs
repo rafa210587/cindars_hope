@@ -259,6 +259,7 @@ namespace CindarsHope.Editor.Items
             asset.DisplayName = recipe.DisplayName;
             asset.OutputItemId = recipe.OutputItemId;
             asset.OutputAmount = Mathf.Max(1, recipe.OutputAmount);
+            asset.RequiredStationType = recipe.Station;
             asset.Ingredients = recipe.Ingredients
                 .Select(kv => new RecipeIngredient(kv.Key, kv.Value))
                 .ToArray();
@@ -270,6 +271,7 @@ namespace CindarsHope.Editor.Items
 
             if (asset.DisplayName != recipe.DisplayName) { asset.DisplayName = recipe.DisplayName; changed = true; }
             if (asset.OutputItemId != recipe.OutputItemId) { asset.OutputItemId = recipe.OutputItemId; changed = true; }
+            if (asset.RequiredStationType != recipe.Station) { asset.RequiredStationType = recipe.Station; changed = true; }
 
             var outAmount = Mathf.Max(1, recipe.OutputAmount);
             if (asset.OutputAmount != outAmount) { asset.OutputAmount = outAmount; changed = true; }
