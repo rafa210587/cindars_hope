@@ -30,7 +30,9 @@ from rembg import remove, new_session
 from PIL import Image
 remove(Image.open('sheet.png').convert('RGBA'), session=new_session('u2net')).save('sheet_nobg.png')
 ```
-(rembg + onnxruntime CPU já instalados no venv `D:\AI\ComfyUI\venv` — confirmar no novo ambiente.)
+**Python a usar (centralizado no F:, disco saudável):**
+`F:\Projetos\Jogos\AI\ComfyUI\venv\Scripts\python.exe` — já tem PIL/numpy/**rembg**/onnxruntime
+instalados; o modelo u2net está em `%USERPROFILE%\.u2net` (C:). NÃO montar venv novo nem usar o D:.
 
 ## 3. Fatiar os frames (`slice_sheet.py`)
 ```

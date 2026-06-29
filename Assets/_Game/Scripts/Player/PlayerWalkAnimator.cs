@@ -27,7 +27,16 @@ namespace CindarsHope.Player
             "right", "upright", "up", "upleft", "left", "downleft", "down", "downright"
         };
 
+        // Idle: pasta de idle por direcao. Diagonais ainda nao tem idle dedicado,
+        // entao caem na lateral (right/left) para manter o facing horizontal continuo.
+        // Trocar aqui se quiser diagonal->front/back, ou quando houver idle diagonal proprio.
+        private static readonly string[] IdleDirKeys = new string[DirCount]
+        {
+            "right", "right", "up", "left", "left", "left", "down", "right"
+        };
+
         [SerializeField] private float _framesPerSecond = 10f;
+        [SerializeField] private float _idleFramesPerSecond = 2.0f; // ~500ms/frame (idle lento)
         [SerializeField] private float _moveThreshold = 0.1f;
 
         private SpriteRenderer _spriteRenderer;
@@ -35,8 +44,10 @@ namespace CindarsHope.Player
 
         // Frames cacheados por direcao — carregados uma vez em Awake.
         private readonly Sprite[][] _frames = new Sprite[DirCount][];
+        private readonly Sprite[][] _idleFrames = new Sprite[DirCount][];
 
         private float _timer;
+        private float _idleTimer;
         private int _currentDir = DirDown;
         private Sprite[] _currentFrames;
         private bool _missingController;
@@ -65,22 +76,29 @@ namespace CindarsHope.Player
         {
             for (int i = 0; i < DirCount; i++)
             {
-                string folder = "PlayerSprites/walk/" + DirKeys[i];
-                Sprite[] loaded = Resources.LoadAll<Sprite>(folder);
+                _frames[i] = LoadFolderSorted("PlayerSprites/walk/" + DirKeys[i], required: true);
+                // Idle: opcional. Diagonais reusam a lateral via IdleDirKeys. Ausente => walk[0] estatico.
+                _idleFrames[i] = LoadFolderSorted("PlayerSprites/idle/" + IdleDirKeys[i], required: false);
+            }
+        }
 
-                if (loaded == null || loaded.Length == 0)
+        private static Sprite[] LoadFolderSorted(string folder, bool required)
+        {
+            Sprite[] loaded = Resources.LoadAll<Sprite>(folder);
+
+            if (loaded == null || loaded.Length == 0)
+            {
+                if (required)
                 {
                     Debug.LogError($"[PlayerWalkAnimator] Nenhum sprite encontrado em Resources/{folder}. " +
                                    "Verifique se os PNGs foram importados corretamente.");
-                    _frames[i] = new Sprite[0];
-                    continue;
                 }
-
-                // Ordena por nome (ordinal) para garantir ordem frame 01, 02, ...
-                System.Array.Sort(loaded, (a, b) =>
-                    string.CompareOrdinal(a.name, b.name));
-                _frames[i] = loaded;
+                return new Sprite[0];
             }
+
+            // Ordena por nome (ordinal) para garantir ordem frame 01, 02, ...
+            System.Array.Sort(loaded, (a, b) => string.CompareOrdinal(a.name, b.name));
+            return loaded;
         }
 
         private void Update()
@@ -104,6 +122,7 @@ namespace CindarsHope.Player
 
             if (isMoving)
             {
+                _idleTimer = 0f;
                 _timer += Time.deltaTime;
                 int frameCount = _currentFrames.Length;
                 // Sem modulo flutuante para evitar divisao: usa int cast + modulo inteiro.
@@ -113,7 +132,18 @@ namespace CindarsHope.Player
             else
             {
                 _timer = 0f;
-                _spriteRenderer.sprite = _currentFrames[0];
+                Sprite[] idle = _idleFrames[_currentDir];
+                if (idle != null && idle.Length > 0)
+                {
+                    _idleTimer += Time.deltaTime;
+                    int idx = (int)(_idleTimer * _idleFramesPerSecond) % idle.Length;
+                    _spriteRenderer.sprite = idle[idx];
+                }
+                else
+                {
+                    // Sem idle dedicado: mantem o primeiro frame de walk (facing correto, estatico).
+                    _spriteRenderer.sprite = _currentFrames[0];
+                }
             }
         }
 
