@@ -111,6 +111,11 @@ namespace CindarsHope.Combat
 
             CombatLog.Log($"CombatLog: PlayerAttackStarted. Slot={slot}, Weapon={weapon.DisplayName}, BaseDamage={weapon.BaseDamage}, Weight={weight}, Range={weapon.Range:F2}, Type={weapon.Type}", this);
             GameEventBus.Publish(new PlayerChargedAttackEvent((int)weight));
+            // Animacao de ataque do player: direcao pelo facing, duracao = cooldown efetivo
+            // (atrela a velocidade da anim ao attack speed). Arquetipo derivado do tipo da arma.
+            Vector2 swingDirection = _playerController != null ? _playerController.LastFacingDirection : Vector2.right;
+            var archetype = WeaponAttackArchetypeMapper.FromWeaponType(weapon.Type);
+            GameEventBus.Publish(new PlayerMeleeSwingEvent(swingDirection, cooldown, archetype));
             // fable_22: passa a instÃ¢ncia equipada para o ponto Ãºnico de tags (infusÃ£o de tÃªmpera).
             ExecuteWeaponAttack(weapon, weight, equippedItemId);
             _attackCore.RecordAttack(slot, Time.time);

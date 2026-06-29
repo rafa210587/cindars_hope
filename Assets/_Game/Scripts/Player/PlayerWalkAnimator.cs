@@ -1,11 +1,15 @@
 using UnityEngine;
+using CindarsHope.Core;
+using CindarsHope.Core.Events;
 
 namespace CindarsHope.Player
 {
     /// <summary>
-    /// Anima o SpriteRenderer do player com sprites de caminhada de 8 direcoes.
+    /// Anima o SpriteRenderer do player: caminhada + idle + ataque, em 8 direcoes.
     /// Carrega frames via Resources.LoadAll em Awake (sem alocacao em Update).
     /// Depende de PlayerController no mesmo GameObject via GetComponent (permitido pelas regras).
+    /// O ataque melee e disparado por PlayerMeleeSwingEvent (com arquetipo de arma) e tem prioridade sobre walk/idle;
+    /// a duracao do swing vem do evento (= cooldown efetivo = attack speed do player).
     /// </summary>
     [RequireComponent(typeof(SpriteRenderer))]
     public class PlayerWalkAnimator : MonoBehaviour
@@ -27,6 +31,19 @@ namespace CindarsHope.Player
             "right", "upright", "up", "upleft", "left", "downleft", "down", "downright"
         };
 
+        // Nomes de pasta por arquetipo, indexados pelo valor int do enum PlayerAttackAnimArchetype.
+        // Array estatico evita depender de enum.ToString() (§26 da spec — risco de divergencia).
+        // Ordem: Sword=0, Bow=1, Heavy=2, Thrust=3, Dagger=4, Cast=5.
+        private static readonly string[] ArchetypeFolders = new string[]
+        {
+            "attack_sword",   // 0 = Sword
+            "attack_bow",     // 1 = Bow
+            "attack_heavy",   // 2 = Heavy
+            "attack_thrust",  // 3 = Thrust
+            "attack_dagger",  // 4 = Dagger
+            "attack_cast",    // 5 = Cast
+        };
+
         // Idle: pasta de idle por direcao. Diagonais ainda nao tem idle dedicado,
         // entao caem na lateral (right/left) para manter o facing horizontal continuo.
         // Trocar aqui se quiser diagonal->front/back, ou quando houver idle diagonal proprio.
@@ -45,12 +62,24 @@ namespace CindarsHope.Player
         // Frames cacheados por direcao — carregados uma vez em Awake.
         private readonly Sprite[][] _frames = new Sprite[DirCount][];
         private readonly Sprite[][] _idleFrames = new Sprite[DirCount][];
+        // Frames de ataque por arquetipo × direcao. Dimensoes: [arquetipo][direcao].
+        // Indexado pelo valor int de PlayerAttackAnimArchetype (Sword=0 .. Cast=5).
+        private readonly Sprite[][][] _attackFramesByArchetype = new Sprite[6][][];
+        private readonly Sprite[][] _bowFrames = new Sprite[DirCount][];    // arco
 
         private float _timer;
         private float _idleTimer;
         private int _currentDir = DirDown;
         private Sprite[] _currentFrames;
         private bool _missingController;
+
+        // Estado de one-shot (ataque melee por arquetipo OU tiro de arco): prioridade sobre walk/idle.
+        // A sequencia da direcao e capturada no disparo; toca uma vez ao longo de _attackDuration.
+        private bool _attacking;
+        private Sprite[] _oneShotFrames;
+        private float _attackTimer;
+        private float _attackDuration;
+        private bool _rootMovement; // trava o movimento durante este one-shot (ex.: tiro de arco)
 
         private void Awake()
         {
@@ -76,10 +105,101 @@ namespace CindarsHope.Player
         {
             for (int i = 0; i < DirCount; i++)
             {
-                _frames[i] = LoadFolderSorted("PlayerSprites/walk/" + DirKeys[i], required: true);
+                _frames[i]     = LoadFolderSorted("PlayerSprites/walk/" + DirKeys[i], required: true);
                 // Idle: opcional. Diagonais reusam a lateral via IdleDirKeys. Ausente => walk[0] estatico.
                 _idleFrames[i] = LoadFolderSorted("PlayerSprites/idle/" + IdleDirKeys[i], required: false);
+                // Arco: opcional. As 8 direcoes existem (diagonais por espelho); ausente => sem anim.
+                _bowFrames[i]  = LoadFolderSorted("PlayerSprites/bow/" + DirKeys[i], required: false);
             }
+
+            // Carrega frames de ataque por arquetipo usando pastas attack_{arquetipo}/{dir}/.
+            // ArchetypeFolders e indexado pelo valor int do enum (Sword=0 .. Cast=5).
+            for (int a = 0; a < ArchetypeFolders.Length; a++)
+            {
+                _attackFramesByArchetype[a] = new Sprite[DirCount][];
+                for (int i = 0; i < DirCount; i++)
+                {
+                    _attackFramesByArchetype[a][i] = LoadFolderSorted(
+                        "PlayerSprites/" + ArchetypeFolders[a] + "/" + DirKeys[i],
+                        required: false);
+                }
+            }
+        }
+
+        private void OnEnable()
+        {
+            GameEventBus.Subscribe<PlayerMeleeSwingEvent>(OnMeleeSwing);
+            GameEventBus.Subscribe<PlayerBowShootEvent>(OnBowShoot);
+        }
+
+        private void OnDisable()
+        {
+            GameEventBus.Unsubscribe<PlayerMeleeSwingEvent>(OnMeleeSwing);
+            GameEventBus.Unsubscribe<PlayerBowShootEvent>(OnBowShoot);
+            // Seguranca: nao deixar o player travado se desabilitar no meio do tiro.
+            _attacking = false;
+            EndOneShotRoot();
+        }
+
+        // Destrava o movimento do player ao fim de um one-shot que travava (arco).
+        private void EndOneShotRoot()
+        {
+            if (_rootMovement && _playerController != null)
+            {
+                _playerController.MovementLocked = false;
+            }
+            _rootMovement = false;
+        }
+
+        // Melee: dispara a anim de ataque pelo arquetipo da arma.
+        // Fallback para Sword se o set do arquetipo estiver vazio (arte ainda nao entregue).
+        // Nao trava o movimento (pode golpear andando).
+        private void OnMeleeSwing(PlayerMeleeSwingEvent evt)
+        {
+            int archetypeIdx = (int)evt.Archetype;
+            Sprite[][] set = (archetypeIdx >= 0 && archetypeIdx < _attackFramesByArchetype.Length)
+                ? _attackFramesByArchetype[archetypeIdx]
+                : null;
+
+            // Fallback para Sword se o arquetipo nao tem arte carregada.
+            if (set == null || IsSetEmpty(set))
+                set = _attackFramesByArchetype[(int)PlayerAttackAnimArchetype.Sword];
+
+            BeginOneShot(set, evt.Direction, evt.Duration, rootMovement: false);
+        }
+
+        private static bool IsSetEmpty(Sprite[][] set)
+        {
+            if (set == null) return true;
+            for (int i = 0; i < set.Length; i++)
+                if (set[i] != null && set[i].Length > 0) return false;
+            return true;
+        }
+
+        // Arco: dispara a anim de tiro quando uma flecha e disparada. Trava o movimento
+        // durante o saque/release (o player para para atirar).
+        private void OnBowShoot(PlayerBowShootEvent evt)
+        {
+            BeginOneShot(_bowFrames, evt.Direction, evt.Duration, rootMovement: true);
+        }
+
+        // Inicia uma animacao one-shot direcional. Duracao atrela a velocidade ao cooldown
+        // efetivo do ataque (= attack speed, escala com progressao). Sem arte p/ a direcao: ignora.
+        // rootMovement trava o PlayerController (mesmo GameObject) enquanto o one-shot toca.
+        private void BeginOneShot(Sprite[][] set, Vector2 direction, float duration, bool rootMovement)
+        {
+            if (_missingController) return;
+
+            int dir = GetDirectionBucket(direction);
+            Sprite[] frames = set[dir];
+            if (frames == null || frames.Length == 0) return;
+
+            _attacking = true;
+            _oneShotFrames = frames;
+            _attackTimer = 0f;
+            _attackDuration = Mathf.Max(duration, 0.05f); // piso minimo p/ ser visivel
+            _rootMovement = rootMovement;
+            _playerController.MovementLocked = rootMovement; // trava p/ arco, libera p/ espada
         }
 
         private static Sprite[] LoadFolderSorted(string folder, bool required)
@@ -104,6 +224,26 @@ namespace CindarsHope.Player
         private void Update()
         {
             if (_missingController) return;
+
+            // One-shot (melee/arco) tem prioridade: ignora walk/idle e toca a sequencia uma vez.
+            if (_attacking)
+            {
+                Sprite[] oneShot = _oneShotFrames;
+                if (oneShot != null && oneShot.Length > 0)
+                {
+                    _attackTimer += Time.deltaTime;
+                    int n = oneShot.Length;
+                    int idx = (int)(_attackTimer / _attackDuration * n);
+                    if (idx < n)
+                    {
+                        _spriteRenderer.sprite = oneShot[idx];
+                        return;
+                    }
+                }
+                // Terminou (ou sem frames): destrava movimento e volta ao walk/idle neste mesmo frame.
+                _attacking = false;
+                EndOneShotRoot();
+            }
 
             Vector2 moveInput = _playerController.MoveInput;
             bool isMoving = moveInput.sqrMagnitude > _moveThreshold * _moveThreshold;
