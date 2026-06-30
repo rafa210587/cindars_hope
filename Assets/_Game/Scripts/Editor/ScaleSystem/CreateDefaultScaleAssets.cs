@@ -60,9 +60,14 @@ namespace CindarsHope.Editor.ScaleSystem
             CreateProfile(EntityScaleCategory.ForagePoint,      "forage_point",       "Forage Point",      0.55f,  1.0f, 0.9f);
             CreateProfile(EntityScaleCategory.ShippingBin,      "shipping_bin",       "Shipping Bin",      0.90f,  1.0f, 1.3f);
             CreateProfile(EntityScaleCategory.ContractBoard,    "contract_board",     "Contract Board",    0.72f,  1.0f, 1.4f);
-            CreateProfile(EntityScaleCategory.NpcDwarf,         "npc_dwarf",          "NPC Dwarf",         0.80f,  1.0f, 1.2f);
-            CreateProfile(EntityScaleCategory.NpcSmallfolk,     "npc_smallfolk",      "NPC Smallfolk",     0.70f,  1.0f, 1.0f);
-            CreateProfile(EntityScaleCategory.NpcOrc,           "npc_orc",            "NPC Orc",           1.20f,  1.0f, 1.7f);
+            // Tamanhos OFICIAIS por raca (2026-06-30), relativos ao player. Anao 0.90, smallfolk
+            // (halfling/goblin/gnome) 0.85, orc/meio-orc 1.10. Dragonborn (1.07) e demais (elfo/humano/
+            // tiefling/nymiriano = 1.00) usam o profile "npc" padrao. Ver memoria project_npc_race_sizes_official.
+            CreateProfile(EntityScaleCategory.NpcDwarf,          "npc_dwarf",          "NPC Dwarf",         0.90f,  1.0f, 1.2f);
+            CreateProfile(EntityScaleCategory.NpcSmallfolk,      "npc_smallfolk",      "NPC Smallfolk",     0.85f,  1.0f, 1.0f);
+            CreateProfile(EntityScaleCategory.NpcOrc,            "npc_orc",            "NPC Orc",           1.30f,  1.0f, 1.7f);
+            // Dragonborn: 1.07x player (tamanho oficial raca — spec_npc_physics_cat_companion 2026-06-30).
+            CreateProfile(EntityScaleCategory.NpcDragonborn,     "npc_dragonborn",     "NPC Dragonborn",    1.07f,  1.0f, 1.5f);
 
             CreateCameraConfig();
             CreateGameScaleConfig();

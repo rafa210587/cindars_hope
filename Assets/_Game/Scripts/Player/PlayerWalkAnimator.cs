@@ -153,7 +153,8 @@ namespace CindarsHope.Player
 
         // Melee: dispara a anim de ataque pelo arquetipo da arma.
         // Fallback para Sword se o set do arquetipo estiver vazio (arte ainda nao entregue).
-        // Nao trava o movimento (pode golpear andando).
+        // Trava o movimento durante a animacao (attack commitment): golpear andando ficava
+        // estranho com a anim de swing por arquetipo, entao o player para enquanto ataca.
         private void OnMeleeSwing(PlayerMeleeSwingEvent evt)
         {
             int archetypeIdx = (int)evt.Archetype;
@@ -165,7 +166,7 @@ namespace CindarsHope.Player
             if (set == null || IsSetEmpty(set))
                 set = _attackFramesByArchetype[(int)PlayerAttackAnimArchetype.Sword];
 
-            BeginOneShot(set, evt.Direction, evt.Duration, rootMovement: false);
+            BeginOneShot(set, evt.Direction, evt.Duration, rootMovement: true);
         }
 
         private static bool IsSetEmpty(Sprite[][] set)
@@ -199,7 +200,7 @@ namespace CindarsHope.Player
             _attackTimer = 0f;
             _attackDuration = Mathf.Max(duration, 0.05f); // piso minimo p/ ser visivel
             _rootMovement = rootMovement;
-            _playerController.MovementLocked = rootMovement; // trava p/ arco, libera p/ espada
+            _playerController.MovementLocked = rootMovement; // trava melee e arco durante o one-shot
         }
 
         private static Sprite[] LoadFolderSorted(string folder, bool required)

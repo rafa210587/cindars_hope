@@ -2300,7 +2300,7 @@ namespace CindarsHope.Editor.SceneCreation
             new("npc_corvus", "NPC_Corvus_Temple", "Assets/_Game/Data/NPCs/Npc_Corvus.asset", "Assets/_Game/Data/Economy/Shop_Corvus.asset", new Vector3(-12f, 9f, 0f), new Color(0.82f, 0.76f, 0.58f), "Stationary/TemplePatrol", false, 2f),
             new("npc_mara", "NPC_Mara_Registry", "Assets/_Game/Data/NPCs/Npc_Mara.asset", "Assets/_Game/Data/Economy/Shop_Mara.asset", new Vector3(-9f, 9f, 0f), new Color(0.44f, 0.56f, 0.72f), "Stationary/RegistryDesk", false, 2f),
             // Market row (N)
-            new("npc_tovin", "NPC_Tovin_Registry", "Assets/_Game/Data/NPCs/Npc_Tovin.asset", "Assets/_Game/Data/Economy/Shop_Tovin.asset", new Vector3(-6.5f, 7f, 0f), new Color(0.58f, 0.64f, 0.72f), "Stationary/PermitDesk", false, 2f),
+            new("npc_tovin", "NPC_Tovin_Registry", "Assets/_Game/Data/NPCs/Npc_Tovin.asset", "Assets/_Game/Data/Economy/Shop_Tovin.asset", new Vector3(-6.5f, 7f, 0f), new Color(0.58f, 0.64f, 0.72f), "Stationary/PermitDesk", false, 2f, EntityScaleCategory.NpcSmallfolk),
             new("npc_sylveth", "NPC_Sylveth_SeedVendor", "Assets/_Game/Data/NPCs/Npc_Sylveth.asset", "Assets/_Game/Data/Economy/Shop_Sylveth.asset", new Vector3(-3.5f, 7f, 0f), new Color(0.42f, 0.72f, 0.34f), "ShopKeeperFixed/FarmVisit", false, 2f),
             new("npc_renko", "NPC_Renko_GeneralMerchant", "Assets/_Game/Data/NPCs/Npc_Renko.asset", "Assets/_Game/Data/Economy/Shop_Renko.asset", new Vector3(0f, 7f, 0f), new Color(0.86f, 0.72f, 0.34f), "ShopKeeperFixed", false, 2f, EntityScaleCategory.NpcSmallfolk),
             new("npc_mirela", "NPC_Mirela_Tailor", "Assets/_Game/Data/NPCs/Npc_Mirela.asset", "Assets/_Game/Data/Economy/Shop_Mirela.asset", new Vector3(3.5f, 7f, 0f), new Color(0.82f, 0.48f, 0.62f), "ShopKeeperFixed", false, 2f),
@@ -2309,20 +2309,20 @@ namespace CindarsHope.Editor.SceneCreation
             // Industry / blacksmith / quarry (W)
             new("npc_brumdar", "NPC_Brumdar_Blacksmith", "Assets/_Game/Data/NPCs/Npc_Brumdar.asset", "Assets/_Game/Data/Economy/Shop_Brumdar.asset", new Vector3(-12f, 2.5f, 0f), new Color(0.64f, 0.45f, 0.3f), "ShopKeeperFixed", false, 2f, EntityScaleCategory.NpcDwarf),
             new("npc_dagna", "NPC_Dagna_Quarry", "Assets/_Game/Data/NPCs/Npc_Dagna.asset", "Assets/_Game/Data/Economy/Shop_Dagna.asset", new Vector3(-12.5f, -2.5f, 0f), new Color(0.54f, 0.46f, 0.4f), "Patrol/QuarryRoad", true, 3f, EntityScaleCategory.NpcDwarf),
-            new("npc_hund", "NPC_Hund_GuardRoute", "Assets/_Game/Data/NPCs/Npc_Hund.asset", "Assets/_Game/Data/Economy/Shop_Hund.asset", new Vector3(-8f, 0f, 0f), new Color(0.38f, 0.48f, 0.58f), "Patrol/TownRoad", true, 5f),
+            new("npc_hund", "NPC_Hund_GuardRoute", "Assets/_Game/Data/NPCs/Npc_Hund.asset", "Assets/_Game/Data/Economy/Shop_Hund.asset", new Vector3(-8f, 0f, 0f), new Color(0.38f, 0.48f, 0.58f), "Patrol/TownRoad", true, 5f, EntityScaleCategory.NpcOrc),
             new("npc_thalindra", "NPC_Thalindra_Archive", "Assets/_Game/Data/NPCs/Npc_Thalindra.asset", "Assets/_Game/Data/Economy/Shop_Thalindra.asset", new Vector3(-9f, -5f, 0f), new Color(0.5f, 0.42f, 0.77f), "Stationary/ArchiveDesk", false, 2f),
             // South gate
             new("npc_alaric", "NPC_Alaric_GuardPost", "Assets/_Game/Data/NPCs/Npc_Alaric.asset", string.Empty, new Vector3(-5f, -10f, 0f), new Color(0.36f, 0.46f, 0.72f), "Patrol/TownGate", true, 3.5f),
             new("npc_pip", "NPC_Pip_TownEntrance", "Assets/_Game/Data/NPCs/Npc_Pip_Miudinho.asset", "Assets/_Game/Data/Economy/Shop_Pip.asset", new Vector3(-2.5f, -9f, 0f), new Color(0.38f, 0.72f, 0.86f), "WanderWithinZone", true, 3f, EntityScaleCategory.NpcSmallfolk),
             // Workshop / construction (SE)
             new("npc_nimble", "NPC_Nimble_Workshop", "Assets/_Game/Data/NPCs/Npc_Nimble.asset", "Assets/_Game/Data/Economy/Shop_Nimble.asset", new Vector3(7f, -5f, 0f), new Color(0.72f, 0.58f, 0.32f), "Patrol/WorkshopDesk", true, 2.5f, EntityScaleCategory.NpcSmallfolk),
-            new("npc_gurd", "NPC_Gurd_ConstructionYard", "Assets/_Game/Data/NPCs/Npc_Gurd.asset", "Assets/_Game/Data/Economy/Shop_Gurd.asset", new Vector3(4f, -6.5f, 0f), new Color(0.62f, 0.36f, 0.32f), "Patrol/HeavyWorkZone", true, 3f),
+            new("npc_gurd", "NPC_Gurd_ConstructionYard", "Assets/_Game/Data/NPCs/Npc_Gurd.asset", "Assets/_Game/Data/Economy/Shop_Gurd.asset", new Vector3(4f, -6.5f, 0f), new Color(0.62f, 0.36f, 0.32f), "Patrol/HeavyWorkZone", true, 3f, EntityScaleCategory.NpcOrc),
             // Night market (S)
             new("npc_yael", "NPC_Yael_NightMarket", "Assets/_Game/Data/NPCs/Npc_Yael.asset", "Assets/_Game/Data/Economy/Shop_Yael.asset", new Vector3(10f, -9f, 0f), new Color(0.28f, 0.24f, 0.62f), "NightOnly/WanderHidden", true, 3f),
             new("npc_maelor", "NPC_Maelor_NightRoute", "Assets/_Game/Data/NPCs/Npc_Maelor.asset", string.Empty, new Vector3(0f, -11.5f, 0f), new Color(0.22f, 0.24f, 0.32f), "NightOnly/WanderHidden", true, 4f),
             // Cave road / forest gate / alchemy (E)
-            new("npc_zrix", "NPC_Zrix_CaveRoad", "Assets/_Game/Data/NPCs/Npc_Zrix.asset", "Assets/_Game/Data/Economy/Shop_Zrix.asset", new Vector3(12f, -2f, 0f), new Color(0.43f, 0.52f, 0.68f), "Patrol/CaveRoad", true, 3.5f),
-            new("npc_savra", "NPC_Savra_ForestGate", "Assets/_Game/Data/NPCs/Npc_Savra.asset", "Assets/_Game/Data/Economy/Shop_Savra.asset", new Vector3(13.5f, 4.5f, 0f), new Color(0.34f, 0.62f, 0.38f), "Patrol/HerbRoute", true, 3f),
+            new("npc_zrix", "NPC_Zrix_CaveRoad", "Assets/_Game/Data/NPCs/Npc_Zrix.asset", "Assets/_Game/Data/Economy/Shop_Zrix.asset", new Vector3(12f, -2f, 0f), new Color(0.43f, 0.52f, 0.68f), "Patrol/CaveRoad", true, 3.5f, EntityScaleCategory.NpcDragonborn),
+            new("npc_savra", "NPC_Savra_ForestGate", "Assets/_Game/Data/NPCs/Npc_Savra.asset", "Assets/_Game/Data/Economy/Shop_Savra.asset", new Vector3(13.5f, 4.5f, 0f), new Color(0.34f, 0.62f, 0.38f), "Patrol/HerbRoute", true, 3f, EntityScaleCategory.NpcDragonborn),
             new("npc_ozzra", "NPC_Ozzra_AlchemyLab", "Assets/_Game/Data/NPCs/Npc_Ozzra.asset", "Assets/_Game/Data/Economy/Shop_Ozzra.asset", new Vector3(11f, 2.5f, 0f), new Color(0.32f, 0.7f, 0.75f), "WanderWithinZone/Lab", true, 2.5f, EntityScaleCategory.NpcSmallfolk),
             // Animal yard (NE)
             new("npc_eiran", "NPC_Eiran_AnimalYard", "Assets/_Game/Data/NPCs/Npc_Eiran.asset", "Assets/_Game/Data/Economy/Shop_Eiran.asset", new Vector3(12f, 8.5f, 0f), new Color(0.44f, 0.68f, 0.42f), "WanderWithinZone/AnimalArea", true, 3f),
@@ -2336,8 +2336,8 @@ namespace CindarsHope.Editor.SceneCreation
             // Sael no cais (SO, perto do lago); Mella na praça/mercado (N); Hess na borda leste; Tibbet no cemitério (NO).
             new("npc_sael", "NPC_Sael_Dock", "Assets/_Game/Data/NPCs/Npc_Sael.asset", "Assets/_Game/Data/Economy/Shop_Sael.asset", new Vector3(-23f, -19f, 0f), new Color(0.36f, 0.50f, 0.62f), "ShopKeeperFixed/Dock", false, 2f),
             new("npc_mella", "NPC_Mella_Bakery", "Assets/_Game/Data/NPCs/Npc_Mella.asset", "Assets/_Game/Data/Economy/Shop_Mella.asset", new Vector3(0f, 17f, 0f), new Color(0.86f, 0.70f, 0.50f), "ShopKeeperFixed/Bakery", false, 2f),
-            new("npc_hess", "NPC_Hess_Tannery", "Assets/_Game/Data/NPCs/Npc_Hess.asset", "Assets/_Game/Data/Economy/Shop_Hess.asset", new Vector3(24f, 2f, 0f), new Color(0.55f, 0.45f, 0.32f), "ShopKeeperFixed/Tannery", false, 2f),
-            new("npc_tibbet", "NPC_Tibbet_Cemetery", "Assets/_Game/Data/NPCs/Npc_Tibbet.asset", string.Empty, new Vector3(-23f, 18f, 0f), new Color(0.80f, 0.78f, 0.72f), "Stationary/Cemetery", false, 2f),
+            new("npc_hess", "NPC_Hess_Tannery", "Assets/_Game/Data/NPCs/Npc_Hess.asset", "Assets/_Game/Data/Economy/Shop_Hess.asset", new Vector3(24f, 2f, 0f), new Color(0.55f, 0.45f, 0.32f), "ShopKeeperFixed/Tannery", false, 2f, EntityScaleCategory.NpcDragonborn),
+            new("npc_tibbet", "NPC_Tibbet_Cemetery", "Assets/_Game/Data/NPCs/Npc_Tibbet.asset", string.Empty, new Vector3(-23f, 18f, 0f), new Color(0.80f, 0.78f, 0.72f), "Stationary/Cemetery", false, 2f, EntityScaleCategory.NpcSmallfolk),
         };
 
         // Cria (ou atualiza) o NpcDataSO do líder da aldeia. Não há gerador automático de NpcDataSO no
@@ -2611,6 +2611,13 @@ namespace CindarsHope.Editor.SceneCreation
                 // self-wires via its default offered quest ids; here we pin the explicit
                 // offered ids so the prerequisite-gated giver flow resolves the whole chain.
                 AddMainQuestGiver(npcObject, spec.NpcId);
+
+                // spec_npc_physics_cat_companion — gato companheiro do Eiran.
+                // Spawna como entidade separada, segue o Eiran via CompanionFollow.
+                if (spec.NpcId == "npc_eiran")
+                {
+                    SpawnCatCompanion(parent.transform, npcObject.transform, spec.LayoutPosition);
+                }
             }
 
             var wanderer = CreateDialogueNpc(
@@ -2671,8 +2678,11 @@ namespace CindarsHope.Editor.SceneCreation
             }
             var npcData = AssetDatabase.LoadAssetAtPath<NpcDataSO>(npcDataPath);
             var renderer = npcObject.AddComponent<SpriteRenderer>();
-            renderer.sprite = (npcData != null && npcData.BodySprite != null) ? npcData.BodySprite : GetBuiltinSprite();
-            renderer.color = color;
+            var hasBodySprite = npcData != null && npcData.BodySprite != null;
+            renderer.sprite = hasBodySprite ? npcData.BodySprite : GetBuiltinSprite();
+            // Real body sprites render untinted (white); the per-NPC color only tints the placeholder square,
+            // otherwise it would multiply over the artwork and wash the sprite with a color cast.
+            renderer.color = hasBodySprite ? Color.white : color;
             renderer.sortingOrder = 2;
             TrySetSortingLayer(renderer, "Characters", renderer.sortingOrder);
             var collider = npcObject.AddComponent<BoxCollider2D>();
@@ -2702,8 +2712,8 @@ namespace CindarsHope.Editor.SceneCreation
         }
 
         // Dá ao NPC um corpo VIVO e SÓLIDO: (1) Rigidbody2D dinâmico + collider sólido pequeno nos pés
-        // ⇒ bate em paredes/portas; (2) NpcPhysicsBody ignora a colisão com o player ⇒ o jogador
-        // atravessa NPCs (sem o "bloco invisível" do pass 1, sem mexer em ProjectSettings); (3)
+        // ⇒ bate em paredes/portas; (2) massa alta ⇒ o player ESBARRA no NPC e é bloqueado (resistência,
+        // pedido humano 2026-06-30) sem conseguir empurrá-lo — NpcPhysicsBody removido daqui; (3)
         // NpcDweller ⇒ a porta da casa abre sozinha quando o morador chega; (4) NpcWanderer com tier de
         // movimento (lojista faz micro-vaivém no posto; andarilho cobre mais a cidade). O trigger 1x1 de
         // interação (já criado pelo caller) continua sendo o que o player usa para conversar.
@@ -2721,22 +2731,33 @@ namespace CindarsHope.Editor.SceneCreation
             body.constraints = RigidbodyConstraints2D.FreezeRotation;
             body.interpolation = RigidbodyInterpolation2D.Interpolate;
             body.linearDamping = 4f;
+            // Massa alta: o player ESBARRA no NPC (resistencia, pedido humano 2026-06-30) e nao consegue
+            // empurra-lo de forma perceptivel; o NpcWanderer + damping mantem o NPC no lugar.
+            body.mass = 50f;
 
             // Collider sólido pequeno nos "pés" (filho ⇒ offset/escala independentes do trigger 1x1).
+            // CONTRA-ESCALA (fix 2026-06-30): o root do NPC já foi escalado pela VisualScale (AttachApplicator
+            // roda ANTES disto), então um filho herdaria essa escala e o box de colisão ficaria 2–2.6× maior
+            // que o sprite, bloqueando o player longe do NPC. Dividimos escala E offset do SolidBody pela
+            // escala do root ⇒ collider com tamanho de MUNDO fixo (0.55×0.4) e offset fixo, por raça.
+            float visualScale = npcObject.transform.localScale.y;
+            if (visualScale <= 0.01f) visualScale = 1f;
             var bodyObject = new GameObject("SolidBody");
             bodyObject.transform.SetParent(npcObject.transform);
-            bodyObject.transform.localPosition = new Vector3(0f, -0.35f, 0f);
-            bodyObject.transform.localScale = Vector3.one;
+            // Centro VERTICAL do sprite (fix 2026-06-30): o pivot e BottomCenter (origem nos pes), entao um
+            // offset negativo jogava a caixa pra BAIXO do sprite. Subimos meia-altura do personagem
+            // (128px @ PPU 234 = 0.547u em escala 1 ⇒ meia = 0.273). localPosition escala pelo parent
+            // (visualScale), entao o collider fica centrado no sprite de qualquer raca.
+            bodyObject.transform.localPosition = new Vector3(0f, (128f / 234f) * 0.5f, 0f);
+            bodyObject.transform.localScale = new Vector3(1f / visualScale, 1f / visualScale, 1f);
             var solid = bodyObject.AddComponent<BoxCollider2D>();
             solid.isTrigger = false;
             solid.size = new Vector2(0.55f, 0.4f);
 
-            if (playerCollider != null)
-            {
-                var physicsBody = npcObject.AddComponent<NpcPhysicsBody>();
-                physicsBody.Configure(solid, playerCollider);
-                EditorUtility.SetDirty(physicsBody);
-            }
+            // Resistencia total (pedido humano 2026-06-30): o NPC NAO ignora mais a colisao com o player
+            // (NpcPhysicsBody removido daqui) — o player esbarra e e bloqueado pelo NPC. A massa alta acima
+            // impede que o player empurre o NPC. playerCollider mantido na assinatura para uso futuro.
+            _ = playerCollider;
 
             var dweller = npcObject.AddComponent<NpcDweller>();
             dweller.Configure(npcData != null ? npcData.NpcId : string.Empty);
@@ -2753,6 +2774,95 @@ namespace CindarsHope.Editor.SceneCreation
             wanderer.ConfigureMovement(tier.speed, tier.radius, tier.pauseMin, tier.pauseMax,
                 new Vector2(-clampX, -clampY), new Vector2(clampX, clampY));
             EditorUtility.SetDirty(wanderer);
+        }
+
+        // spec_npc_physics_cat_companion — cria o gato do Eiran como entidade separada.
+        // O gato tem: SpriteRenderer (sprite do gato se disponivel em Resources, senao placeholder),
+        // Rigidbody2D Kinematic (nao bloqueia fisica — so visual/companheiro), CircleCollider2D
+        // pequeno como trigger (nao bloqueia player), e CompanionFollow wired no Transform do Eiran.
+        // Sem interacao (o gato e cosmético); sem NpcPhysicsBody (Kinematic ja nao colide solidamente).
+        private static void SpawnCatCompanion(Transform parent, Transform eiranTransform, Vector3 eiranPosition)
+        {
+            const string CatObjectName = "Cat_Eiran_Companion";
+            const string CatSpritePath = "CatCompanion/gpt_cat";
+            const float CatVisualScale = 0.7f;   // gato e menor que NPC humano
+            const float CatColliderRadius = 0.2f; // trigger pequeno — nao bloqueia player
+
+            var cat = new GameObject(CatObjectName);
+            cat.transform.SetParent(parent);
+            // Spawna ligeiramente ao lado do Eiran para nao sobrepor sprites na cena.
+            cat.transform.position = eiranPosition + new Vector3(0.5f, -0.3f, 0f);
+            cat.transform.localScale = new Vector3(CatVisualScale, CatVisualScale, 1f);
+
+            var renderer = cat.AddComponent<SpriteRenderer>();
+            // Garante que o PNG do gato esteja importado COMO SPRITE antes de carregar (um PNG recem-copiado
+            // importa como Texture default e Resources.Load<Sprite> retornaria null). Self-heal idempotente.
+            EnsureSpriteImport("Assets/_Game/Resources/CatCompanion/gpt_cat.png");
+            var catSprite = Resources.Load<Sprite>(CatSpritePath);
+            renderer.sprite = catSprite != null ? catSprite : GetBuiltinSprite();
+            if (catSprite == null)
+            {
+                renderer.color = new Color(0.55f, 0.42f, 0.28f); // laranja-caramelo como placeholder
+                Debug.LogWarning(
+                    $"[CreateMvpTownScene] Sprite do gato nao encontrado em Resources/{CatSpritePath}. " +
+                    "Copie _art_archive/art/animations/_npc_tests/batch_v3/_cat_companion/gpt_cat.png " +
+                    "para Assets/_Game/Resources/CatCompanion/gpt_cat.png e reimporte.");
+            }
+            else
+            {
+                renderer.color = Color.white;
+            }
+            renderer.sortingOrder = 1;
+            TrySetSortingLayer(renderer, "Characters", renderer.sortingOrder);
+
+            // Rigidbody2D Kinematic: sem gravidade, sem colisao solida — o gato e puro companheiro visual.
+            var rb = cat.AddComponent<Rigidbody2D>();
+            rb.bodyType = RigidbodyType2D.Kinematic;
+            rb.gravityScale = 0f;
+            rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+            rb.interpolation = RigidbodyInterpolation2D.Interpolate;
+
+            // Trigger minusculo — nao bloqueia o player; presente para coerencia de layer.
+            var trigger = cat.AddComponent<CircleCollider2D>();
+            trigger.isTrigger = true;
+            trigger.radius = CatColliderRadius;
+
+            // CompanionFollow: segue o Eiran com leve atraso, para quando perto.
+            var follow = cat.AddComponent<CompanionFollow>();
+            follow.SetTarget(eiranTransform);
+            EditorUtility.SetDirty(cat);
+
+            Debug.Log($"[CreateMvpTownScene] Gato companheiro '{CatObjectName}' criado junto do Eiran " +
+                      $"(sprite {(catSprite != null ? "OK" : "PLACEHOLDER")}).");
+        }
+
+        // Configura o TextureImporter de um PNG para Sprite pixel-art (idempotente). Necessario para que
+        // Resources.Load<Sprite> funcione em PNGs adicionados fora do fluxo de AssignNpcBodySprites (ex.: gato).
+        private static void EnsureSpriteImport(string assetPath)
+        {
+            var full = System.IO.Path.Combine(Application.dataPath, "..", assetPath);
+            if (!System.IO.File.Exists(full))
+            {
+                return;
+            }
+            if (AssetImporter.GetAtPath(assetPath) is not TextureImporter importer)
+            {
+                return;
+            }
+            importer.textureType = TextureImporterType.Sprite;
+            importer.spriteImportMode = SpriteImportMode.Single;
+            importer.spritePixelsPerUnit = 234f;
+            importer.filterMode = FilterMode.Point;
+            importer.mipmapEnabled = false;
+            importer.alphaIsTransparency = true;
+            importer.textureCompression = TextureImporterCompression.Uncompressed;
+
+            var settings = new TextureImporterSettings();
+            importer.ReadTextureSettings(settings);
+            settings.spriteAlignment = (int)SpriteAlignment.BottomCenter;
+            settings.spriteMeshType = SpriteMeshType.FullRect;
+            importer.SetTextureSettings(settings);
+            importer.SaveAndReimport();
         }
 
         // Tier de movimento por perfil. Todos têm vaivém; o raio/velocidade muda quem fica no posto
@@ -2800,8 +2910,11 @@ namespace CindarsHope.Editor.SceneCreation
             }
             var npcData = AssetDatabase.LoadAssetAtPath<NpcDataSO>(npcDataPath);
             var renderer = npcObject.AddComponent<SpriteRenderer>();
-            renderer.sprite = (npcData != null && npcData.BodySprite != null) ? npcData.BodySprite : GetBuiltinSprite();
-            renderer.color = color;
+            var hasBodySprite = npcData != null && npcData.BodySprite != null;
+            renderer.sprite = hasBodySprite ? npcData.BodySprite : GetBuiltinSprite();
+            // Real body sprites render untinted (white); the per-NPC color only tints the placeholder square,
+            // otherwise it would multiply over the artwork and wash the sprite with a color cast.
+            renderer.color = hasBodySprite ? Color.white : color;
             renderer.sortingOrder = 2;
             TrySetSortingLayer(renderer, "Characters", renderer.sortingOrder);
             var collider = npcObject.AddComponent<BoxCollider2D>();

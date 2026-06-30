@@ -119,7 +119,11 @@ namespace CindarsHope.Editor.NPC
             importer.textureType         = TextureImporterType.Sprite;
             importer.spriteImportMode    = SpriteImportMode.Single;
             importer.spritePivot         = new Vector2(0.5f, 0f);   // BottomCenter
-            importer.spritePixelsPerUnit = 128f;
+            // Sprites sao re-cortados a 128px de altura (LANCZOS). A figura do player tem ~70px @ 128 PPU
+            // @ scale 2.0 = ~1.09u. PPU 234 faz a figura de NPC de 128px render na MESMA altura do player
+            // (128/234*2.0 ~= 1.09u), entao um NPC 1.0x = altura do player e as razoes por raca (anao 0.8,
+            // halfling/goblin 0.7, orc 1.2) ficam exatas em relacao ao player.
+            importer.spritePixelsPerUnit = 234f;
             importer.filterMode          = FilterMode.Point;
             importer.mipmapEnabled       = false;
             importer.alphaIsTransparency = true;

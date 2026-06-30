@@ -39,6 +39,9 @@ namespace CindarsHope.World.Scale
         NpcDwarf,
         NpcSmallfolk,
         NpcOrc,
+        // Appended: dragonborn (1.07x player) — spec_npc_physics_cat_companion 2026-06-30.
+        // Fica ao FIM para preservar ordinais serializados dos .asset existentes.
+        NpcDragonborn,
     }
 
     [CreateAssetMenu(fileName = "VisualScaleProfile_", menuName = "CindarsHope/Scale/Visual Scale Profile")]
