@@ -16,15 +16,17 @@
 
 O loop principal e os agents não precisam todos ser Opus. Opus ≈ 5x o custo de Sonnet; Haiku é ainda mais barato.
 
+> **Regra de ouro:** **Opus (última versão)** SÓ para pensar, debater, planejar ou propor. **Toda execução — construir, editar, fazer, validar — vai para Sonnet (última versão).** Sempre a última versão de cada modelo; use os aliases `opus` / `sonnet` / `haiku`, que já resolvem para a versão mais nova (hoje Opus 4.8, Sonnet 5, Haiku 4.5) — não fixe número de versão no `model:`.
+
 | Tipo de tarefa | Modelo | Por quê |
 |---|---|---|
-| Arquitetura, design de spec/refinamento, debug difícil, game design review, decisões | **Opus 4.8** | Exige julgamento real |
-| Implementar spec mecânica, asset wiring, docs migration, rodar validação, EditMode tests, edição de catálogo/bestiário | **Sonnet 4.6** | Padrão claro, baixo julgamento |
-| Reconcile status, docs-health, harness audit, commit messages, lookups simples | **Haiku 4.5** | Quase mecânico |
+| Pensar, debater, planejar, propor: arquitetura, design de spec/refinamento, debug difícil, game design review, decisões | **Opus (última versão)** | Exige julgamento real |
+| Executar / construir / fazer: implementar spec, asset wiring, docs migration, rodar validação, EditMode tests, edição de catálogo/bestiário, bugfix mecânico | **Sonnet (última versão)** | Padrão claro, baixo julgamento |
+| Reconcile status, docs-health, harness audit, commit messages, lookups simples | **Haiku (última versão)** | Quase mecânico |
 
 **Como aplicar:**
-- **Loop principal:** troque o modelo da sessão (seletor de modelo do app) para Sonnet quando a sessão for de implementação/validação mecânica. Use Opus só em sessões de design/decisão.
-- **Agents:** já configurados via `model:` no frontmatter. Sonnet em: `spec-implementer`, `unity-validator`, `docs-curator`, `asset-wiring-specialist`, `test-author`, `non-regression-auditor`, `performance-auditor`. Opus (herdado) em: `architecture-reviewer`, `game-design-reviewer`, `bugfix-investigator`.
+- **Loop principal:** mantenha Opus (última versão) só enquanto a sessão for pensar/debater/planejar/propor. No momento de **executar** (construir, editar, fazer, validar), delegue a um subagent Sonnet (última versão) — não execute no loop Opus.
+- **Agents:** já configurados via `model:` no frontmatter, usando o alias `sonnet` (resolve para a última versão automaticamente). Sonnet em: `spec-implementer`, `unity-validator`, `docs-curator`, `asset-wiring-specialist`, `test-author`, `non-regression-auditor`, `performance-auditor`, `bugfix-investigator`. Opus (herdado) em: `architecture-reviewer`, `game-design-reviewer`.
 - **`/fast` NÃO economiza:** é Opus com saída mais rápida, mesmo preço.
 
 ---

@@ -13,12 +13,14 @@ Specs live in `.specs/`. Spec is the execution contract. Refinement is fallback 
 
 ## Execution Routing (LER PRIMEIRO — comportamento padrão de toda sessão)
 
-O loop principal é reservado para **debate, design, refinamento e decisões** — mantenha-o no modelo da sessão (Opus). Para **qualquer trabalho de execução**, NÃO execute no loop principal: delegue imediatamente a um subagent Sonnet via Agent tool.
+O loop principal (Opus, **sempre a última versão**) é reservado para **pensar, debater, planejar e propor** — design, refinamento e decisões. Para **qualquer trabalho de execução** (construir, editar, fazer, validar), NÃO execute no loop principal: delegue imediatamente a um subagent Sonnet (**última versão**) via Agent tool.
+
+> Use sempre os aliases de modelo (`opus` / `sonnet` / `haiku`), que já resolvem para a versão mais nova. Nunca fixe um número de versão no `model:`.
 
 - **Delegar a Sonnet** (subagent_type específico quando existir — já em Sonnet; senão `general-purpose` com `model: sonnet`): implementar/editar código, asset wiring, rodar validação, docs migration, EditMode tests, edição de catálogo/asset em massa, bugfix mecânico, buscas amplas no repo.
 - **Modelo por tipo de subagent** (passe `model` no Agent tool): busca/exploração read-only (`Explore`) → `haiku`; pesquisa/execução genérica (`general-purpose`) → `sonnet`; agents de julgamento (`architecture-reviewer`, `game-design-reviewer`) → herdam Opus. Os demais agents do projeto já têm `model` no frontmatter.
-- **Manter no loop principal (Opus):** responder perguntas, ler 1–2 arquivos para a conversa, planejar, decidir arquitetura/design, explicar.
-- **Regra prática:** múltiplas edições/iterações ou validação → execução → subagent Sonnet. Pensar/decidir/explicar → loop principal.
+- **Manter no loop principal (Opus):** responder perguntas, ler 1–2 arquivos para a conversa, planejar, decidir arquitetura/design, propor, explicar.
+- **Regra prática:** pensar/debater/planejar/propor → loop principal (Opus). Qualquer execução — múltiplas edições/iterações, construção ou validação → subagent Sonnet.
 - Ao delegar, dê ao subagent o escopo, arquivos permitidos e critério de pronto; ao voltar, revise o resultado no Opus.
 
 Detalhes e racional de custo: `docs/project/COST_EFFICIENCY_GUIDE.md`.
