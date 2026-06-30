@@ -5,8 +5,7 @@ adr_id: ADR-0008
 title: Unity Scene/Asset YAML Editing Policy
 date: 2026-06-01
 source_documents:
-  - .claude/rules/unity-yaml-editing-policy.md
-  - .claude/rules/generated-asset-evidence.md
+  - .claude/rules/unity-assets.md
 supersedes: []
 superseded_by: []
 applies_to:
@@ -122,8 +121,7 @@ Hook `.claude/hooks/unity-yaml-edit-guard.ps1` detects when a task modifies `.un
 
 ## Source Documents
 
-- [unity-yaml-editing-policy.md](./../.claude/rules/unity-yaml-editing-policy.md) — enforcement rule
-- [generated-asset-evidence.md](./../.claude/rules/generated-asset-evidence.md) — asset generation evidence requirements
+- [unity-assets.md](./../.claude/rules/unity-assets.md) — YAML editing policy & asset generation evidence
 
 ---
 

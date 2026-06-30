@@ -96,6 +96,7 @@ unrelated validation reports
 | `/execute-spec-strict` | Strict single-spec execution with validation gates |
 | `/loop-spec-batch-strict` | Batch execution loop (use fable/ queue) |
 | `/resolve-spec-dependency-chain` | Resolve same-batch spec dependencies |
+| `/run-editmode-tests` | Rodar EditMode tests (Unity Test Runner) |
 | `/validate-unity` | Unity compile/log validation only |
 | `/audit-harness` | Audita o harness (.claude/) — skills/agents ausentes do índice, refs obsoletas, tamanho, qualidade |
 
@@ -221,7 +222,7 @@ See `.claude/rules/RULES.md` for full list. Key non-negotiables:
 
 ---
 
-*Updated: 2026-06-21 (harness-authoring + harness-audit skills; /audit-harness command)*
+*Updated: 2026-06-29 (reconciliação de índices do harness: 62 skills, 16 commands, 10 agents; 20 rules ativas + índice = 21 arquivos; 15 stubs históricos deletados e links repointados)*
 
 ---
 
@@ -234,4 +235,4 @@ See `.claude/rules/RULES.md` for full list. Key non-negotiables:
 
 ---
 
-*Updated: 2026-06-21 (Skills index completo — 57 skills; testing-quality-gate refatorada 244→80 linhas)*
+*Updated: 2026-06-29 (Skills index completo — 62 skills; reconciliação de índices do harness)*

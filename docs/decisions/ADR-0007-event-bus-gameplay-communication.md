@@ -5,7 +5,7 @@ adr_id: ADR-0007
 title: Event Bus Gameplay Communication
 date: 2026-06-01
 source_documents:
-  - .claude/rules/event-bus-only-gameplay-communication.md
+  - .claude/rules/unity-architecture.md
   - docs/game_rules/event_rules.md
 supersedes: []
 superseded_by: []
@@ -122,7 +122,7 @@ Spec must explicitly state: "Direct call authorized: `X` calls `Y.Method()` beca
 
 ## Source Documents
 
-- [event-bus-only-gameplay-communication.md](./../.claude/rules/event-bus-only-gameplay-communication.md) — enforcement rule
+- [unity-architecture.md](./../.claude/rules/unity-architecture.md) — enforcement rule
 - [event_rules.md](./../game_rules/event_rules.md) — current event patterns
 
 ---

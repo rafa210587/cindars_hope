@@ -16,7 +16,6 @@ applies_to:
   - spec-lifecycle
 relates_to:
   - .claude/rules/docs-governance.md
-  - .claude/rules/spec-source-of-truth.md
 ---
 
 # ADR-0015 — Canonical Spec Tree Relocated from `docs/specs/` to `.specs/`

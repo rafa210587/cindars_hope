@@ -30,10 +30,10 @@ If an ADR conflicts with a game rule:
 | [ADR-0003](../decisions/ADR-0003-spec-lifecycle.md) | Spec Lifecycle | Governance | accepted | docs/decisions/ADR-0003-* | SPEC_EXECUTION_ORDER.md, CURRENT_STATE.md |
 | [ADR-0004](../decisions/ADR-0004-validation-evidence-phase-gates.md) | Validation Evidence and Phase Gates | Validation | accepted | docs/decisions/ADR-0004-* | LAST_VALIDATION_STATUS.md, .claude/rules/* |
 | [ADR-0005](../decisions/ADR-0005-cave-stable-run-and-replay.md) | Cave Stable Run and Replay | Gameplay | accepted | docs/decisions/ADR-0005-* | FASE9F Amendment, SPEC_24 |
-| [ADR-0006](../decisions/ADR-0006-save-data-contracts-simple-dtos.md) | Save Data Contracts Simple DTOs | Architecture | accepted | docs/decisions/ADR-0006-* | .claude/rules/save-dto-simple-types-only.md |
-| [ADR-0007](../decisions/ADR-0007-event-bus-gameplay-communication.md) | Event Bus Gameplay Communication | Architecture | accepted | docs/decisions/ADR-0007-* | .claude/rules/event-bus-only-gameplay-communication.md |
-| [ADR-0008](../decisions/ADR-0008-unity-yaml-editing-policy.md) | Unity Scene/Asset YAML Editing Policy | Tooling | accepted | docs/decisions/ADR-0008-* | .claude/rules/unity-yaml-editing-policy.md |
-| [ADR-0009](../decisions/ADR-0009-mvp-acceptance-phase-2-3.md) | MVP Acceptance Requires Phase 2-3 | Validation | accepted | docs/decisions/ADR-0009-* | .claude/rules/no-premature-acceptance-claims.md |
+| [ADR-0006](../decisions/ADR-0006-save-data-contracts-simple-dtos.md) | Save Data Contracts Simple DTOs | Architecture | accepted | docs/decisions/ADR-0006-* | .claude/rules/unity-architecture.md |
+| [ADR-0007](../decisions/ADR-0007-event-bus-gameplay-communication.md) | Event Bus Gameplay Communication | Architecture | accepted | docs/decisions/ADR-0007-* | .claude/rules/unity-architecture.md |
+| [ADR-0008](../decisions/ADR-0008-unity-yaml-editing-policy.md) | Unity Scene/Asset YAML Editing Policy | Tooling | accepted | docs/decisions/ADR-0008-* | .claude/rules/unity-assets.md |
+| [ADR-0009](../decisions/ADR-0009-mvp-acceptance-phase-2-3.md) | MVP Acceptance Requires Phase 2-3 | Validation | accepted | docs/decisions/ADR-0009-* | .claude/rules/validation-truth.md |
 | [ADR-0010](../decisions/ADR-0010-fable-skill-and-inventory-rules-reconciliation.md) | FABLE Skill & Inventory Rules Reconciliation | Gameplay | accepted | docs/game_rules/skill_tree_rules.md, inventory_equipment_rules.md | FABLE_DECISOES_RESPOSTAS_v3.0 (1.8, 2.12) |
 | [ADR-0011](../decisions/ADR-0011-pixel-art-scale-32px-per-tile.md) | Pixel Art Scale 32px/Tile | Art | accepted | docs/decisions/ADR-0011-* | FABLE_DECISOES_RESPOSTAS_v3.0 (4.3) |
 | [ADR-0012](../decisions/ADR-0012-localization-string-table-from-p4.md) | Localization String Table from P4 | Tooling | accepted | docs/decisions/ADR-0012-* | FABLE_DECISOES_RESPOSTAS_v3.0 (4.7) |
@@ -87,7 +87,7 @@ Defines save/load and data contracts:
 Defines how tools and code editing work:
 - No manual YAML edits (use scripts/tools)
 
-**See also:** .claude/rules/unity-yaml-editing-policy.md
+**See also:** .claude/rules/unity-assets.md
 
 ---
 

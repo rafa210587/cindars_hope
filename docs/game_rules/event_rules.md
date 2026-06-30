@@ -6,7 +6,7 @@ source_adrs:
   - ADR-0007
 source_documents:
   - docs/decisions/ADR-0007-event-bus-gameplay-communication.md
-  - .claude/rules/event-bus-only-gameplay-communication.md
+  - .claude/rules/unity-architecture.md
 last_reviewed: 2026-06-01
 ---
 

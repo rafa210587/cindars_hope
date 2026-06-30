@@ -63,7 +63,7 @@ if ($violations.Count -gt 0) {
         Write-Host $v
     }
     Write-Host ""
-    Write-Host "  Rule: spec-promotion-requires-evidence.md"
+    Write-Host "  Rule: spec_quality_gate.md (spec-promotion-requires-evidence)"
     Write-Host "  Create execution report before promoting spec."
     Write-Host "==================================================="
     Write-Host ""

@@ -1,8 +1,8 @@
 # Regras do Agente — Cindar's Hope
 
-Rules são invariantes do projeto (o *que não pode driftar*). Skills explicam workflows; hooks fazem o enforcement mecânico. Consolidado em 2026-06-12 — rules absorvidas permanecem como stubs para preservar links históricos vindos de docs/.
+Rules são invariantes do projeto (o *que não pode driftar*). Skills explicam workflows; hooks fazem o enforcement mecânico. Consolidado em 2026-06-12; em 2026-06-29 os 15 stubs históricos remanescentes foram **deletados** e os links em ADRs/game_rules/DECISION_LOG repointados para a rule consolidada (ex.: `save-dto-simple-types-only` → `unity-architecture`).
 
-> **Custo de contexto (2026-06-23):** o invariante de cada rule fica sempre carregado; o detalhe verboso de algumas rules "review-lens/processo" foi movido para skills on-demand (marcadas abaixo com → skill). O stub no path da rule carrega o invariante em todo turno; a skill carrega o detalhe só quando o contexto exige.
+> **Custo de contexto (2026-06-29):** o invariante de cada rule fica sempre carregado; o detalhe verboso de algumas rules "review-lens/processo" foi movido para skills on-demand (marcadas abaixo com → skill). O diretório `.claude/rules/` agora tem só rules ativas (20 + este índice) — sem stubs de redirecionamento.
 
 ## Active Rules
 

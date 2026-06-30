@@ -57,7 +57,7 @@ if ($violations.Count -gt 0) {
         Write-Host $v
     }
     Write-Host ""
-    Write-Host "  Rule: no-doc-delete-without-candidate.md"
+    Write-Host "  Rule: docs-governance.md (no-doc-delete-without-candidate)"
     Write-Host "  Add file to DOCUMENT_DELETE_CANDIDATES.md first."
     Write-Host "==================================================="
     Write-Host ""

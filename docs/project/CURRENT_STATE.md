@@ -51,12 +51,12 @@
 |------|--------|
 | CLAUDE.md | Short router (~80 lines) — SPEC_CLAUDE_31 |
 | AGENTS.md | Multi-agent rules — SPEC_CLAUDE_31 |
-| `.claude/rules/` | 16 rules active — SPEC_DOCS_38/39 (incl. decision-and-game-rule-policy, legacy-doc-paths-forbidden) |
+| `.claude/rules/` | 21 arquivos (20 rules ativas + RULES.md índice; 15 stubs históricos deletados 2026-06-29, links repointados p/ rules consolidadas) |
 | `.claude/settings.json` | Updated with canonical paths and new hooks — SPEC_DOCS_39D |
-| `.claude/commands/` | 11 commands (8 updated, 3 created) — SPEC_CLAUDE_31 |
-| `.claude/skills/` | 48 skills (incl. audio-event-wiring, localization-authoring, crafting-recipe-authoring, skill-tree-authoring, player-needs-survival, input-gamepad-routing) — SPEC_DOCS_39B/39E + harness PT-BR wave 2026-06-20 |
-| `.claude/agents/` | 7 agents (2 updated, 2 created) — SPEC_CLAUDE_31 |
-| `.claude/hooks/` | 14 hooks (incl. decision-rule-reference-guard) — SPEC_DOCS_39B/39D |
+| `.claude/commands/` | 16 commands — SPEC_CLAUDE_31 + waves subsequentes |
+| `.claude/skills/` | 62 skills — SPEC_DOCS_39B/39E + harness PT-BR wave 2026-06-20 + waves subsequentes |
+| `.claude/agents/` | 10 agents — SPEC_CLAUDE_31 + waves subsequentes |
+| `.claude/hooks/` | 19 hooks (incl. decision-rule-reference-guard) — SPEC_DOCS_39B/39D + waves subsequentes |
 | Decision Records | 9 ADRs (ADR-0001 to ADR-0009) — SPEC_DOCS_38 |
 | Game Rules | 12 game_rules documents — SPEC_DOCS_38 |
 | Docs validation | 25+ checks (validate_docs.ps1) — SPEC_DOCS_37/39C |
@@ -187,10 +187,11 @@ These do NOT block WAVE 05 execution but are required for final project acceptan
 | What | Where |
 |------|-------|
 | Agent rules | `CLAUDE.md` (router), `AGENTS.md` (rules), `.claude/rules/RULES.md` |
-| Active specs | `.specs/a_implementar/` (147 wave-based) |
+| Active specs | `.specs/a_implementar/` — restam só: `closeout_mvp/` (12), `features_futuras/` (53), 5 specs soltas + índices `fable_00*`. Specs build-validated foram promovidas a `implementados/` em 2026-06-29 |
+| Implemented specs | `.specs/implementados/` (239 — inclui 164 promovidas em 2026-06-29; 18 revertidas pós-auditoria de evidência) |
 | Absorbed legacy specs | `.specs/absorvidas/legacy_pre_wave_reconciliation/` (7 specs) |
-| Commands | `.claude/commands/` (11 commands) |
-| Skills | `.claude/skills/` (14 skills) |
+| Commands | `.claude/commands/` (16 commands) |
+| Skills | `.claude/skills/` (62 skills) |
 | Validation evidence | `docs/validation/spec_mvp_closeout_*.md` |
 | MVP acceptance | `docs/release/MVP_ACCEPTANCE_REPORT.md` |
 | Post-MVP backlog | `docs/backlog/post_mvp_backlog.md` |
@@ -406,3 +407,15 @@ PROJECT_LOG + CURRENT_STATE conflict → prefer CURRENT_STATE; report mismatch
 - Validação: Assembly-CSharp 0E, Assembly-CSharp-Editor 0E, validate_docs exit 0. Status: BUILD_VALIDATED_WITH_WARNINGS.
 - NÃO promovida. DEFERRED_UNITY (humano): rodar os menus CindarsHope/Cave/Ecosystem/Generate* + Validate Cave Ecosystem; wire balance/database/prefabs no materializer da CaveScene; subir GenerationConfigVersion no asset; EditMode Test Runner (7 suítes Cave); replay validator stable-run; Play Mode (docs/validation/playmode/fable_78_human_test_scenario.md).
 - NOTA: o working tree tinha ruído pré-existente (~centenas de .asset + dezenas de .cs de outras sessões); os 6 commits incluem APENAS arquivos da fable_78. run_strict_validation retorna exit 1 só pelo check de .asset pré-existentes (fora deste diff) — builds/docs/quality individuais passam.
+
+## 2026-06-29 — PROMOÇÃO EM BLOCO PARA implementados/ (atestação humana)
+
+- Por decisão humana direta ("assuma que validei e mova"), specs build-validated foram movidas de `a_implementar/` → `implementados/` via `git mv` (histórico preservado), renomeadas para o prefixo `spec_` exigido (ex.: `00_spec_x` → `spec_00_x`; `fable_42_spec_x` → `spec_fable_42_x`).
+- **AUDITORIA PÓS-MOVE (dotnet build + cross-ref de evidência):** Assembly-CSharp e Assembly-CSharp-Editor compilam exit 0 (0 erros). Cruzamento das 182 movidas com execution reports revelou **18 que NÃO eram build-validated** — foram **REVERTIDAS** para `a_implementar/`:
+  - 13 wave 04 UI: 11 `CONTRACT_ONLY` (só contrato, sem integração) + 2 SEM execution report (`storage_chest_transfer`, `weapon_armor_detail_drawer`).
+  - 3 wave 05 `BLOCKED` (dependency chain não executada): companion_farm_job_board, farm_building_footprints, farm_level1_layout.
+  - fable_78 (report diz "NÃO deve ser promovida" — DEFERRED_UNITY) e fable_85 (ASSET_COPIED, import/Play Mode pendentes).
+- **Líquido: 164 specs promovidas**; `implementados/` passou de 75 → **239**.
+- Permanecem em `a_implementar/`: `closeout_mvp/` (12, PENDING HUMAN Play Mode), `features_futuras/` (53, bloqueadas), 5 specs soltas (não executadas), e os 3 índices `fable_00*` (planejamento, não specs).
+- **Ressalva de honestidade (ADR-0009):** a promoção se deu por **atestação humana** levantando o gate de Play Mode — NÃO por evidência Phase 2-3 por spec. A evidência de nível build (compile + validações + execution reports) existe; a validação de gameplay por spec permanece como foi registrada nos reports individuais.
+- Referências em prosa a nomes antigos de arquivo (crosswalks, fable_00C plan, execution reports) podem ficar stale — artefato histórico, não quebra validate_docs.

@@ -78,6 +78,10 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Arte-fonte/arquivo (masters do GPT em alta + frames de trabalho). NAO faz parte do build:
+# o jogo usa as copias pequenas em Assets/_Game/Resources/. Mantido localmente/arquivado fora do repo.
+/art/
+
 # Obsidian vault config (local editor state, not project source)
 .obsidian/
 .trash/

@@ -70,7 +70,7 @@ if ($violations.Count -gt 0) {
         Write-Host $v
     }
     Write-Host ""
-    Write-Host "  Rule: no-premature-acceptance-claims.md"
+    Write-Host "  Rule: validation-truth.md (no-premature-acceptance-claims)"
     Write-Host "  Add evidence before making this claim, or use honest phase status."
     Write-Host "==================================================="
     Write-Host ""

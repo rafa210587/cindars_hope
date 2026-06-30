@@ -6,8 +6,7 @@ title: Validation Evidence and Phase Gates
 date: 2026-06-01
 source_documents:
   - docs/validation/current/LAST_VALIDATION_STATUS.md
-  - .claude/rules/unity-validation-honesty.md
-  - .claude/rules/no-premature-acceptance-claims.md
+  - .claude/rules/validation-truth.md
 supersedes: []
 superseded_by: []
 applies_to:
@@ -123,8 +122,7 @@ Use honest alternatives:
 
 ## Source Documents
 
-- [unity-validation-honesty.md](./../.claude/rules/unity-validation-honesty.md) — validation result integrity
-- [no-premature-acceptance-claims.md](./../.claude/rules/no-premature-acceptance-claims.md) — evidence requirement
+- [validation-truth.md](./../.claude/rules/validation-truth.md) — validation result integrity & evidence requirement
 - [LAST_VALIDATION_STATUS.md](./../validation/current/LAST_VALIDATION_STATUS.md) — current phase status tracking
 
 ---

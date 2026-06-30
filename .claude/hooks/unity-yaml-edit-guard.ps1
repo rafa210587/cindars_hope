@@ -34,7 +34,7 @@ foreach ($f in $yamlEdits) {
     Write-Host "    $f"
 }
 Write-Host ""
-Write-Host "  Rule: unity-yaml-editing-policy.md"
+Write-Host "  Rule: unity-assets.md (unity-yaml-editing-policy)"
 Write-Host "  Manual YAML edits to .unity/.prefab/.asset can corrupt scene/prefab refs."
 Write-Host ""
 Write-Host "  Verify:"

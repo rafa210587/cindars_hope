@@ -6,7 +6,7 @@ source_adrs:
   - ADR-0006
 source_documents:
   - docs/decisions/ADR-0006-save-data-contracts-simple-dtos.md
-  - .claude/rules/save-dto-simple-types-only.md
+  - .claude/rules/unity-architecture.md
 last_reviewed: 2026-06-01
 ---
 

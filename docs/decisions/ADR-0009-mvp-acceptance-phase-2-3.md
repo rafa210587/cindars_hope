@@ -5,7 +5,7 @@ adr_id: ADR-0009
 title: MVP Acceptance Requires Phase 2-3
 date: 2026-06-01
 source_documents:
-  - .claude/rules/no-premature-acceptance-claims.md
+  - .claude/rules/validation-truth.md
   - docs/validation/current/LAST_VALIDATION_STATUS.md
 supersedes: []
 superseded_by: []
@@ -130,7 +130,7 @@ Do **not** convert "blocked" into "pass".
 
 ## Source Documents
 
-- [no-premature-acceptance-claims.md](./../.claude/rules/no-premature-acceptance-claims.md) — policy enforcement
+- [validation-truth.md](./../.claude/rules/validation-truth.md) — policy enforcement
 - [ADR-0004: Validation Evidence](./ADR-0004-validation-evidence-phase-gates.md) — phase definitions
 - [ADR-0003: Spec Lifecycle](./ADR-0003-spec-lifecycle.md) — spec promotion rules
 

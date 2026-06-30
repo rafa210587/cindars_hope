@@ -5,7 +5,7 @@ adr_id: ADR-0006
 title: Save Data Contracts Simple DTOs
 date: 2026-06-01
 source_documents:
-  - .claude/rules/save-dto-simple-types-only.md
+  - .claude/rules/unity-architecture.md
   - .specs/implementados/SPEC_10_FARM_PERSISTENCE.md
   - docs/game_rules/save_rules.md
 supersedes: []
@@ -121,7 +121,7 @@ public class PlayerSaveData
 
 ## Source Documents
 
-- [save-dto-simple-types-only.md](./../.claude/rules/save-dto-simple-types-only.md) — enforcement rule
+- [unity-architecture.md](./../.claude/rules/unity-architecture.md) — enforcement rule
 - [SPEC_10: Farm Persistence](./../specs/implementados/SPEC_10_FARM_PERSISTENCE.md) — implementation example
 - [ADR-0001: Canonical Documentation](./ADR-0001-canonical-documentation-structure.md) — folder for data registries
 
