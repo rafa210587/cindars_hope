@@ -161,6 +161,12 @@ namespace CindarsHope.Combat
 
             CombatLog.Log($"CombatLog: ArrowFired. AmmoSlot={ammoSlot}, BowWeapon={bowWeapon.Id}, Range={bowWeapon.Range}, Speed={bowWeapon.ProjectileSpeed}, AmmoId={ammoItemData.Id}, ArrowDamage={ballistics.ArrowDamage}, DamageType={damageType}, Tags=[{string.Join(",", appliedTags)}]");
 
+            // Animacao de tiro de arco do player: direcao pelo facing. Duracao = ~metade do cooldown
+            // efetivo (escala com attack speed) — o projetil sai no inicio, entao a anim precisa ser
+            // mais rapida que o intervalo de tiro para o saque/release nao terminar depois da flecha.
+            float bowCooldown = StatsProvider != null ? StatsProvider.FinalCooldown(cooldown, bowWeapon) : cooldown;
+            GameEventBus.Publish(new PlayerBowShootEvent(direction, bowCooldown * 0.5f));
+
             // fable_48: pilha equipada zerou? auto-equipa a próxima munição compatível (ordem canônica).
             if (!_inventoryManager.HasItem(ammoItemData.Id, 1))
             {

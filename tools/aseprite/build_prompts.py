@@ -14,11 +14,11 @@ OVR = load("monster_overrides.json")["overrides"]
 # Estilo-alvo: "Children of Morta leve" (detalhado, volume, proporcao levemente estilizada,
 # outline sutil) — NAO o flat cel-shaded jrpg antigo. Travado em 2026-06-28 apos matriz de estilo.
 # LoRA pixel-art-xl NAO entra aqui (e parametro de geracao): humanoides=1.0, monstros=0.8.
-STYLE = ("detailed pixel art, action rpg game sprite, dark fantasy, dramatic directional lighting, "
-         "rich saturated palette, soft subtle outline, volumetric shading with depth and form, "
-         "slightly stylized proportions, hand-crafted spritework, full body, centered, "
-         "single subject only, one character only, on a plain pure white background, "
-         "no shadow, no ground, no floor, no antialiasing")
+STYLE = ("detailed pixel art, 2d action rpg game sprite, Children of Morta art style, "
+         "clean defined cel-shading with few tones per color, soft neutral top lighting, "
+         "firm selective dark outline, cohesive readable silhouette, hand-crafted spritework, "
+         "full body, centered, single subject only, one character only, "
+         "on a plain pure white background, no shadow, no ground, no floor, no antialiasing")
 NEG_FIX = ("inconsistent style, photorealistic, realistic photograph, 3d render, extra figures, duplicate character, small extra characters, "
            "character reference sheet, model sheet, multiple views, character turnaround, multiple poses, "
            "cropped, cut off, bust, portrait, upper body only, half body, headshot, close-up, legs cut off, "
@@ -29,6 +29,13 @@ NEG_FIX = ("inconsistent style, photorealistic, realistic photograph, 3d render,
            "health bar, game screenshot, blurry, antialiasing, gradient background, "
            "flat plain shading, flat colors, thick heavy black outline, super deformed cartoon, "
            "drop shadow, extra limbs, deformed, mutated")
+
+# Ancora de PROPORCAO do heroi (fazendeiro): cabeca levemente grande, pernas curtas, atarracado ~4 cabecas.
+# Aplicada a HUMANOIDES (NPCs, player). O ControlNet (esqueleto compacto) e o lock real; isto so reforca.
+PROPORTION = ("compact heroic action-rpg proportions, slightly large head, short sturdy legs, "
+              "stocky grounded build, roughly 4 heads tall stylized, same body proportions as the village hero")
+NEG_PROP = ("tall lanky body, long legs, realistic seven heads tall proportions, elongated figure, "
+            "small head, supermodel proportions, chibi, super deformed baby proportions")
 
 NAMED = [
     ("black",(20,20,24)),("dark gray",(60,60,68)),("gray",(120,120,128)),("light gray",(200,200,205)),
@@ -231,7 +238,10 @@ for n in npc:
         # usa a descricao original (EN nos npcs) + reforco de genero/raca/cor
         pos=", ".join([p for p in [f"{g} {race} {role}".strip(), f"{skin} skin", f"{clo} colored outfit",
             f"{hair} hair", "single full-body character, facing forward, one person only, fantasy rpg npc", STYLE] if p])
-    items.append({"id":n["id"],"cat":"npc","w":n["w"],"h":n["h"],"body":n["body"],"accent":n["accent"],"positive":pos,"negative":NEG_FIX})
+    is_pet = n["id"] in ("pet_cat","pet_dog")
+    fpos = pos if is_pet else PROPORTION + ", " + pos
+    fneg = NEG_FIX if is_pet else NEG_PROP + ", " + NEG_FIX
+    items.append({"id":n["id"],"cat":"npc","w":n["w"],"h":n["h"],"body":n["body"],"accent":n["accent"],"positive":fpos,"negative":fneg})
 
 # ---- World ----
 def wdesc(x):

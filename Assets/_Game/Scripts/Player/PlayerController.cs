@@ -83,6 +83,14 @@ namespace CindarsHope.Player
         }
 
         public bool IsBeingDisplaced { get; set; }
+
+        /// <summary>
+        /// Trava o movimento (sem translacao nem mudanca de facing). Usado, por ex., pelo
+        /// PlayerWalkAnimator durante o tiro de arco: o player para para atirar. Setado por
+        /// componente no MESMO GameObject (permitido). Sempre limpar ao fim da acao.
+        /// </summary>
+        public bool MovementLocked { get; set; }
+
         public Vector2 LastFacingDirection => _lastFacingDirection;
 
         private void Awake()
@@ -172,6 +180,11 @@ namespace CindarsHope.Player
 
         private Vector2 ReadMoveInput()
         {
+            if (MovementLocked)
+            {
+                return Vector2.zero;
+            }
+
             if (FarmPlot.IsAnyActionMenuOpen)
             {
                 return Vector2.zero;

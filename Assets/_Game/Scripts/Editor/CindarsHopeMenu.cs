@@ -79,6 +79,12 @@ namespace CindarsHope.Editor
             ResetCounters();
             Debug.Log("[Inicializar] INICIO — gerando dados, recriando cenas e pos-processamento na ordem certa.");
 
+            // Migracao one-shot (fable_84): renomeia Resources/PlayerSprites/attack/ -> attack_sword/
+            // via AssetDatabase.MoveAsset (preserva GUIDs). Idempotente. Necessario para o animador
+            // carregar o set de espada, que agora vem de attack_sword/ (e nao mais de attack/).
+            RunStep("Renomear pasta de sprites attack/ -> attack_sword/ (fable_84)",
+                () => CindarsHope.Editor.RenameAttackSpriteFolder.Execute());
+
             // FASE A — geradores de dados (SOs antes das cenas).
             RunStep("Gerar status effects canonicos",
                 () => CindarsHope.EditorTools.Combat.GenerateCanonicalStatusEffects.Generate());
@@ -100,6 +106,10 @@ namespace CindarsHope.Editor
             // flecha sempre bloqueia (ArrowRequiresBowInOtherHand) — sem ele o arco/flecha nao e testavel.
             RunStep("Garantir Arco de Madeira (1x) no inventario inicial",
                 () => CindarsHope.EditorTools.Repair.RepairPlayerStartingItems.EnsureStartingBow());
+            // Machado de Ferro: 1x no inventario inicial para testar a animacao do arquetipo Heavy
+            // (fable_84/85). Equipar (painel L -> Mao direita) e atacar (E) publica o archetype Heavy.
+            RunStep("Garantir Machado de Ferro (1x) no inventario inicial",
+                () => CindarsHope.EditorTools.Repair.RepairPlayerStartingItems.EnsureStartingAxe());
             // Ferramentas de fazenda: enxada e regador para FarmTillingInputController (Fase 8).
             // EquipmentManager.HasTool(Hoe/WateringCan) requer que a ferramenta esteja no inventario.
             RunStep("Garantir Enxada Basica (1x) no inventario inicial",
@@ -147,6 +157,12 @@ namespace CindarsHope.Editor
             // anexam VisualScaleApplicator lendo esses profiles; sem eles caem no fallback hardcoded e logam erro.
             RunStep("Gerar profiles de escala visual (player/NPC/props)",
                 () => CindarsHope.Editor.ScaleSystem.CreateDefaultScaleAssets.CreateAll());
+
+            // Atribui BodySprite nos NpcDataSO a partir dos PNGs gerados em NpcSprites/<art_folder>.png.
+            // Deve rodar ANTES das cenas (FASE C) para que CreateMvpTownScene ja leia BodySprite.
+            // NPCs sem PNG sao pulados com aviso; nao falha o lote.
+            RunStep("Atribuir sprites de corpo aos NPCs (NpcDataSO.BodySprite)",
+                () => CindarsHope.Editor.NPC.AssignNpcBodySprites.AssignAll());
 
             // FASE B — salvar assets antes das cenas.
             RunStep("Salvar assets gerados (SaveAssets + Refresh) antes das cenas", SaveAndRefresh);
@@ -247,6 +263,11 @@ namespace CindarsHope.Editor
             RunStep("Remover StartingItems pendentes (Item==null) do PlayerData",
                 () => CindarsHope.EditorTools.Repair.RepairPlayerStartingItems.Repair());
 
+            // (b.3) Migracao one-shot (fable_84): renomeia Resources/PlayerSprites/attack/ -> attack_sword/
+            // (AssetDatabase.MoveAsset, preserva GUIDs). Idempotente. Sem isso o animador nao acha o set de espada.
+            RunStep("Renomear pasta de sprites attack/ -> attack_sword/ (fable_84)",
+                () => CindarsHope.Editor.RenameAttackSpriteFolder.Execute());
+
             // (c) Recria DB quebrado (status effects self-healing).
             RunStep("Recriar StatusEffectDatabase se quebrado (self-healing)",
                 () => CindarsHope.EditorTools.Combat.GenerateCanonicalStatusEffects.Generate());
@@ -266,6 +287,9 @@ namespace CindarsHope.Editor
             // (e.3) Garante 1x Arco de Madeira no inventario inicial (sem ele a flecha nao dispara).
             RunStep("Garantir Arco de Madeira (1x) no inventario inicial",
                 () => CindarsHope.EditorTools.Repair.RepairPlayerStartingItems.EnsureStartingBow());
+            // (e.3b) Machado de Ferro: 1x no inventario inicial para testar a animacao Heavy (fable_84/85).
+            RunStep("Garantir Machado de Ferro (1x) no inventario inicial",
+                () => CindarsHope.EditorTools.Repair.RepairPlayerStartingItems.EnsureStartingAxe());
             // (e.4) Ferramentas de fazenda: enxada e regador (Fase 8; EquipmentManager.HasTool).
             RunStep("Garantir Enxada Basica (1x) no inventario inicial",
                 () => CindarsHope.EditorTools.Repair.RepairPlayerStartingItems.EnsureStartingHoe());

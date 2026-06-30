@@ -38,6 +38,7 @@ using CindarsHope.UI.Modal;
 using CindarsHope.UI.Routing;
 using CindarsHope.Editor.Validation;
 using CindarsHope.Editor.ScaleSystem;
+using CindarsHope.NPC;
 
 namespace CindarsHope.Editor.SceneCreation
 {
@@ -2126,7 +2127,7 @@ namespace CindarsHope.Editor.SceneCreation
 
         private static void CreateFarmZrixNpc()
         {
-            var npcData = AssetDatabase.LoadAssetAtPath<NPC.NpcDataSO>(ZrixNpcDataPath);
+            var npcData = AssetDatabase.LoadAssetAtPath<NpcDataSO>(ZrixNpcDataPath);
             if (npcData == null)
             {
                 Debug.LogWarning($"[CreateMvpFarmScene] NpcDataSO de Zrix nao encontrado em {ZrixNpcDataPath}. " +
@@ -2171,7 +2172,7 @@ namespace CindarsHope.Editor.SceneCreation
             solidCol.size = new Vector2(0.55f, 0.4f);
 
             // NpcController: wiring minimo (sem DialogueModal — Zrix so perambula na fazenda).
-            var controller = npcObject.AddComponent<NPC.NpcController>();
+            var controller = npcObject.AddComponent<NpcController>();
             var serializedController = new SerializedObject(controller);
             SetReference(serializedController, "_npcData", npcData);
             // _dialogueModal e _modalManager ficam null — interacao logara aviso mas nao crashara.
@@ -2179,7 +2180,7 @@ namespace CindarsHope.Editor.SceneCreation
             SetReference(serializedController, "_spriteRenderer", renderer);
 
             // NpcWanderer: perambulacao lenta no bosque NO.
-            var wanderer = npcObject.AddComponent<NPC.NpcWanderer>();
+            var wanderer = npcObject.AddComponent<NpcWanderer>();
             var serializedWanderer = new SerializedObject(wanderer);
             SetReference(serializedWanderer, "_npcData", npcData);
             SetReference(serializedWanderer, "_rigidbody", body);

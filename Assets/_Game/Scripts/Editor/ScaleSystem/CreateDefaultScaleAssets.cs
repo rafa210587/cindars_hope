@@ -60,6 +60,9 @@ namespace CindarsHope.Editor.ScaleSystem
             CreateProfile(EntityScaleCategory.ForagePoint,      "forage_point",       "Forage Point",      0.55f,  1.0f, 0.9f);
             CreateProfile(EntityScaleCategory.ShippingBin,      "shipping_bin",       "Shipping Bin",      0.90f,  1.0f, 1.3f);
             CreateProfile(EntityScaleCategory.ContractBoard,    "contract_board",     "Contract Board",    0.72f,  1.0f, 1.4f);
+            CreateProfile(EntityScaleCategory.NpcDwarf,         "npc_dwarf",          "NPC Dwarf",         0.80f,  1.0f, 1.2f);
+            CreateProfile(EntityScaleCategory.NpcSmallfolk,     "npc_smallfolk",      "NPC Smallfolk",     0.70f,  1.0f, 1.0f);
+            CreateProfile(EntityScaleCategory.NpcOrc,           "npc_orc",            "NPC Orc",           1.20f,  1.0f, 1.7f);
 
             CreateCameraConfig();
             CreateGameScaleConfig();

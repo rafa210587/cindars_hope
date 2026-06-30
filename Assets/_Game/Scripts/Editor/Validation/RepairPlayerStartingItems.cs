@@ -42,6 +42,12 @@ namespace CindarsHope.EditorTools.Repair
         private const string WoodBowItemId = "item_weapon_bow_wood";
         private const int WoodBowStartingAmount = 1;
 
+        // Machado de Ferro: 1x no inventario inicial para testar a animacao do arquetipo Heavy
+        // (fable_84/85). O item_weapon_axe_iron e equipavel e liga a weapon_axe_iron (Type=Axe),
+        // que WeaponAttackArchetypeMapper mapeia para PlayerAttackAnimArchetype.Heavy.
+        private const string IronAxeItemId = "item_weapon_axe_iron";
+        private const int IronAxeStartingAmount = 1;
+
         // Ferramentas de fazenda: enxada e regador para arar e regar o solo.
         // Necessarias para FarmTillingInputController (EquipmentManager.HasTool) apos Fase 8.
         // IDs reais dos ItemDataSO (o asset da enxada e item_shop_tool_hoe_basic / Item_Shop_Hoe_Basic.asset;
@@ -150,6 +156,16 @@ namespace CindarsHope.EditorTools.Repair
         public static void EnsureStartingBow()
         {
             EnsureStartingItem(WoodBowItemId, WoodBowStartingAmount);
+        }
+
+        /// <summary>
+        /// Conveniencia: garante 1x Machado de Ferro no inventario inicial para testar a animacao
+        /// do arquetipo Heavy (fable_84/85). Equipar (painel L -> Mao direita) e atacar (E) publica
+        /// PlayerMeleeSwingEvent com archetype Heavy. So ACRESCENTA; idempotente.
+        /// </summary>
+        public static void EnsureStartingAxe()
+        {
+            EnsureStartingItem(IronAxeItemId, IronAxeStartingAmount);
         }
 
         /// <summary>

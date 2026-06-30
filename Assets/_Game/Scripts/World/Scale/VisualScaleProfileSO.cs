@@ -34,6 +34,11 @@ namespace CindarsHope.World.Scale
         ForagePoint,
         ShippingBin,
         ContractBoard,
+        // Appended: per-race NPC scale categories (npc_wiring spec).
+        // Ordinals acima preservados; estes ficam ao FIM para nao quebrar .asset ja serializados.
+        NpcDwarf,
+        NpcSmallfolk,
+        NpcOrc,
     }
 
     [CreateAssetMenu(fileName = "VisualScaleProfile_", menuName = "CindarsHope/Scale/Visual Scale Profile")]

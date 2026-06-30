@@ -23,6 +23,7 @@ namespace CindarsHope.NPC
         public Vector2 DefaultPosition;
         public NpcMovementMode MovementMode = NpcMovementMode.Static;
         public NpcWanderData WanderData;
+        public Sprite BodySprite;
 
         string IIdentifiedData.Id => NpcId;
     }

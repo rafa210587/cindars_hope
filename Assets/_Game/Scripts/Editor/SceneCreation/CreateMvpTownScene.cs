@@ -2302,20 +2302,20 @@ namespace CindarsHope.Editor.SceneCreation
             // Market row (N)
             new("npc_tovin", "NPC_Tovin_Registry", "Assets/_Game/Data/NPCs/Npc_Tovin.asset", "Assets/_Game/Data/Economy/Shop_Tovin.asset", new Vector3(-6.5f, 7f, 0f), new Color(0.58f, 0.64f, 0.72f), "Stationary/PermitDesk", false, 2f),
             new("npc_sylveth", "NPC_Sylveth_SeedVendor", "Assets/_Game/Data/NPCs/Npc_Sylveth.asset", "Assets/_Game/Data/Economy/Shop_Sylveth.asset", new Vector3(-3.5f, 7f, 0f), new Color(0.42f, 0.72f, 0.34f), "ShopKeeperFixed/FarmVisit", false, 2f),
-            new("npc_renko", "NPC_Renko_GeneralMerchant", "Assets/_Game/Data/NPCs/Npc_Renko.asset", "Assets/_Game/Data/Economy/Shop_Renko.asset", new Vector3(0f, 7f, 0f), new Color(0.86f, 0.72f, 0.34f), "ShopKeeperFixed", false, 2f),
+            new("npc_renko", "NPC_Renko_GeneralMerchant", "Assets/_Game/Data/NPCs/Npc_Renko.asset", "Assets/_Game/Data/Economy/Shop_Renko.asset", new Vector3(0f, 7f, 0f), new Color(0.86f, 0.72f, 0.34f), "ShopKeeperFixed", false, 2f, EntityScaleCategory.NpcSmallfolk),
             new("npc_mirela", "NPC_Mirela_Tailor", "Assets/_Game/Data/NPCs/Npc_Mirela.asset", "Assets/_Game/Data/Economy/Shop_Mirela.asset", new Vector3(3.5f, 7f, 0f), new Color(0.82f, 0.48f, 0.62f), "ShopKeeperFixed", false, 2f),
             new("npc_orlan", "NPC_Orlan_Inn", "Assets/_Game/Data/NPCs/Npc_Orlan.asset", "Assets/_Game/Data/Economy/Shop_Orlan.asset", new Vector3(6.5f, 7f, 0f), new Color(0.66f, 0.56f, 0.42f), "ShopKeeperFixed", false, 2f),
-            new("npc_gruta", "NPC_Gruta_Tavern", "Assets/_Game/Data/NPCs/Npc_Gruta.asset", "Assets/_Game/Data/Economy/Shop_Gruta.asset", new Vector3(9.5f, 6.5f, 0f), new Color(0.75f, 0.42f, 0.28f), "ShopKeeperFixed/TavernStage", false, 2.5f),
+            new("npc_gruta", "NPC_Gruta_Tavern", "Assets/_Game/Data/NPCs/Npc_Gruta.asset", "Assets/_Game/Data/Economy/Shop_Gruta.asset", new Vector3(9.5f, 6.5f, 0f), new Color(0.75f, 0.42f, 0.28f), "ShopKeeperFixed/TavernStage", false, 2.5f, EntityScaleCategory.NpcOrc),
             // Industry / blacksmith / quarry (W)
-            new("npc_brumdar", "NPC_Brumdar_Blacksmith", "Assets/_Game/Data/NPCs/Npc_Brumdar.asset", "Assets/_Game/Data/Economy/Shop_Brumdar.asset", new Vector3(-12f, 2.5f, 0f), new Color(0.64f, 0.45f, 0.3f), "ShopKeeperFixed", false, 2f),
-            new("npc_dagna", "NPC_Dagna_Quarry", "Assets/_Game/Data/NPCs/Npc_Dagna.asset", "Assets/_Game/Data/Economy/Shop_Dagna.asset", new Vector3(-12.5f, -2.5f, 0f), new Color(0.54f, 0.46f, 0.4f), "Patrol/QuarryRoad", true, 3f),
+            new("npc_brumdar", "NPC_Brumdar_Blacksmith", "Assets/_Game/Data/NPCs/Npc_Brumdar.asset", "Assets/_Game/Data/Economy/Shop_Brumdar.asset", new Vector3(-12f, 2.5f, 0f), new Color(0.64f, 0.45f, 0.3f), "ShopKeeperFixed", false, 2f, EntityScaleCategory.NpcDwarf),
+            new("npc_dagna", "NPC_Dagna_Quarry", "Assets/_Game/Data/NPCs/Npc_Dagna.asset", "Assets/_Game/Data/Economy/Shop_Dagna.asset", new Vector3(-12.5f, -2.5f, 0f), new Color(0.54f, 0.46f, 0.4f), "Patrol/QuarryRoad", true, 3f, EntityScaleCategory.NpcDwarf),
             new("npc_hund", "NPC_Hund_GuardRoute", "Assets/_Game/Data/NPCs/Npc_Hund.asset", "Assets/_Game/Data/Economy/Shop_Hund.asset", new Vector3(-8f, 0f, 0f), new Color(0.38f, 0.48f, 0.58f), "Patrol/TownRoad", true, 5f),
             new("npc_thalindra", "NPC_Thalindra_Archive", "Assets/_Game/Data/NPCs/Npc_Thalindra.asset", "Assets/_Game/Data/Economy/Shop_Thalindra.asset", new Vector3(-9f, -5f, 0f), new Color(0.5f, 0.42f, 0.77f), "Stationary/ArchiveDesk", false, 2f),
             // South gate
             new("npc_alaric", "NPC_Alaric_GuardPost", "Assets/_Game/Data/NPCs/Npc_Alaric.asset", string.Empty, new Vector3(-5f, -10f, 0f), new Color(0.36f, 0.46f, 0.72f), "Patrol/TownGate", true, 3.5f),
-            new("npc_pip", "NPC_Pip_TownEntrance", "Assets/_Game/Data/NPCs/Npc_Pip_Miudinho.asset", "Assets/_Game/Data/Economy/Shop_Pip.asset", new Vector3(-2.5f, -9f, 0f), new Color(0.38f, 0.72f, 0.86f), "WanderWithinZone", true, 3f),
+            new("npc_pip", "NPC_Pip_TownEntrance", "Assets/_Game/Data/NPCs/Npc_Pip_Miudinho.asset", "Assets/_Game/Data/Economy/Shop_Pip.asset", new Vector3(-2.5f, -9f, 0f), new Color(0.38f, 0.72f, 0.86f), "WanderWithinZone", true, 3f, EntityScaleCategory.NpcSmallfolk),
             // Workshop / construction (SE)
-            new("npc_nimble", "NPC_Nimble_Workshop", "Assets/_Game/Data/NPCs/Npc_Nimble.asset", "Assets/_Game/Data/Economy/Shop_Nimble.asset", new Vector3(7f, -5f, 0f), new Color(0.72f, 0.58f, 0.32f), "Patrol/WorkshopDesk", true, 2.5f),
+            new("npc_nimble", "NPC_Nimble_Workshop", "Assets/_Game/Data/NPCs/Npc_Nimble.asset", "Assets/_Game/Data/Economy/Shop_Nimble.asset", new Vector3(7f, -5f, 0f), new Color(0.72f, 0.58f, 0.32f), "Patrol/WorkshopDesk", true, 2.5f, EntityScaleCategory.NpcSmallfolk),
             new("npc_gurd", "NPC_Gurd_ConstructionYard", "Assets/_Game/Data/NPCs/Npc_Gurd.asset", "Assets/_Game/Data/Economy/Shop_Gurd.asset", new Vector3(4f, -6.5f, 0f), new Color(0.62f, 0.36f, 0.32f), "Patrol/HeavyWorkZone", true, 3f),
             // Night market (S)
             new("npc_yael", "NPC_Yael_NightMarket", "Assets/_Game/Data/NPCs/Npc_Yael.asset", "Assets/_Game/Data/Economy/Shop_Yael.asset", new Vector3(10f, -9f, 0f), new Color(0.28f, 0.24f, 0.62f), "NightOnly/WanderHidden", true, 3f),
@@ -2323,7 +2323,7 @@ namespace CindarsHope.Editor.SceneCreation
             // Cave road / forest gate / alchemy (E)
             new("npc_zrix", "NPC_Zrix_CaveRoad", "Assets/_Game/Data/NPCs/Npc_Zrix.asset", "Assets/_Game/Data/Economy/Shop_Zrix.asset", new Vector3(12f, -2f, 0f), new Color(0.43f, 0.52f, 0.68f), "Patrol/CaveRoad", true, 3.5f),
             new("npc_savra", "NPC_Savra_ForestGate", "Assets/_Game/Data/NPCs/Npc_Savra.asset", "Assets/_Game/Data/Economy/Shop_Savra.asset", new Vector3(13.5f, 4.5f, 0f), new Color(0.34f, 0.62f, 0.38f), "Patrol/HerbRoute", true, 3f),
-            new("npc_ozzra", "NPC_Ozzra_AlchemyLab", "Assets/_Game/Data/NPCs/Npc_Ozzra.asset", "Assets/_Game/Data/Economy/Shop_Ozzra.asset", new Vector3(11f, 2.5f, 0f), new Color(0.32f, 0.7f, 0.75f), "WanderWithinZone/Lab", true, 2.5f),
+            new("npc_ozzra", "NPC_Ozzra_AlchemyLab", "Assets/_Game/Data/NPCs/Npc_Ozzra.asset", "Assets/_Game/Data/Economy/Shop_Ozzra.asset", new Vector3(11f, 2.5f, 0f), new Color(0.32f, 0.7f, 0.75f), "WanderWithinZone/Lab", true, 2.5f, EntityScaleCategory.NpcSmallfolk),
             // Animal yard (NE)
             new("npc_eiran", "NPC_Eiran_AnimalYard", "Assets/_Game/Data/NPCs/Npc_Eiran.asset", "Assets/_Game/Data/Economy/Shop_Eiran.asset", new Vector3(12f, 8.5f, 0f), new Color(0.44f, 0.68f, 0.42f), "WanderWithinZone/AnimalArea", true, 3f),
             // Statue garden (center)
@@ -2490,7 +2490,7 @@ namespace CindarsHope.Editor.SceneCreation
 
         private readonly struct TownNpcSpec
         {
-            public TownNpcSpec(string npcId, string objectName, string npcDataPath, string shopDataPath, Vector3 position, Color color, string movementProfile, bool canWander, float wanderRadius)
+            public TownNpcSpec(string npcId, string objectName, string npcDataPath, string shopDataPath, Vector3 position, Color color, string movementProfile, bool canWander, float wanderRadius, EntityScaleCategory scaleCategory = EntityScaleCategory.NPC)
             {
                 NpcId = npcId;
                 ObjectName = objectName;
@@ -2501,6 +2501,7 @@ namespace CindarsHope.Editor.SceneCreation
                 MovementProfile = movementProfile;
                 CanWander = canWander;
                 WanderRadius = wanderRadius;
+                ScaleCategory = scaleCategory;
             }
 
             public string NpcId { get; }
@@ -2520,6 +2521,10 @@ namespace CindarsHope.Editor.SceneCreation
             public string MovementProfile { get; }
             public bool CanWander { get; }
             public float WanderRadius { get; }
+
+            /// <summary>Per-race visual scale category. Defaults to <see cref="EntityScaleCategory.NPC"/>
+            /// (1.0× player). Override for dwarves (0.8×), halfling/goblin (0.7×), orc (1.2×).</summary>
+            public EntityScaleCategory ScaleCategory { get; }
         }
 
         private static NpcManager CreateNpcs(
@@ -2561,7 +2566,8 @@ namespace CindarsHope.Editor.SceneCreation
                         itemDatabase,
                         shopManager,
                         modalManager,
-                        shopUi);
+                        shopUi,
+                        spec.ScaleCategory);
 
                     var shopController = npcObject.GetComponent<NpcShopController>();
                     if (shopController != null)
@@ -2582,7 +2588,8 @@ namespace CindarsHope.Editor.SceneCreation
                         spec.CanWander,
                         spec.MovementProfile,
                         spec.WanderRadius,
-                        playerCollider);
+                        playerCollider,
+                        spec.ScaleCategory);
 
                     var dialogueController = npcObject.GetComponent<NpcController>();
                     if (dialogueController != null)
@@ -2617,7 +2624,8 @@ namespace CindarsHope.Editor.SceneCreation
                 true,
                 "Roam",
                 8f,
-                playerCollider);
+                playerCollider,
+                EntityScaleCategory.NPC);
             var wandererController = wanderer.GetComponent<NpcController>();
             if (wandererController != null)
             {
@@ -2649,18 +2657,21 @@ namespace CindarsHope.Editor.SceneCreation
             ItemDatabaseSO itemDatabase,
             ShopManager shopManager,
             ModalManager modalManager,
-            ShopUiReferences shopUi)
+            ShopUiReferences shopUi,
+            EntityScaleCategory scaleCategory = EntityScaleCategory.NPC)
         {
             var npcObject = new GameObject(objectName);
             npcObject.transform.SetParent(parent);
             npcObject.transform.position = position;
-            // Size from the authored NPC scale profile (VisualScale 2.0), matching the player.
-            if (!ScaleProfileLibrary.AttachApplicator(npcObject, EntityScaleCategory.NPC))
+            // Size from the per-race NPC scale profile; falls back to a hardcoded scale if the profile
+            // asset has not been generated yet (run CindarsHope/Inicializar Projeto to materialise it).
+            if (!ScaleProfileLibrary.AttachApplicator(npcObject, scaleCategory))
             {
                 npcObject.transform.localScale = new Vector3(1f, 1.5f, 1f);
             }
+            var npcData = AssetDatabase.LoadAssetAtPath<NpcDataSO>(npcDataPath);
             var renderer = npcObject.AddComponent<SpriteRenderer>();
-            renderer.sprite = GetBuiltinSprite();
+            renderer.sprite = (npcData != null && npcData.BodySprite != null) ? npcData.BodySprite : GetBuiltinSprite();
             renderer.color = color;
             renderer.sortingOrder = 2;
             TrySetSortingLayer(renderer, "Characters", renderer.sortingOrder);
@@ -2670,7 +2681,6 @@ namespace CindarsHope.Editor.SceneCreation
 
             var controller = npcObject.AddComponent<NpcShopController>();
             var serialized = new SerializedObject(controller);
-            var npcData = AssetDatabase.LoadAssetAtPath<NpcDataSO>(npcDataPath);
             SetReference(serialized, "_npcData", npcData);
             if (!string.IsNullOrWhiteSpace(shopDataPath))
             {
@@ -2776,18 +2786,21 @@ namespace CindarsHope.Editor.SceneCreation
             bool canWander,
             string movementProfile,
             float wanderRadius,
-            Collider2D playerCollider)
+            Collider2D playerCollider,
+            EntityScaleCategory scaleCategory = EntityScaleCategory.NPC)
         {
             var npcObject = new GameObject(objectName);
             npcObject.transform.SetParent(parent);
             npcObject.transform.position = position;
-            // Size from the authored NPC scale profile (VisualScale 2.0), matching the player.
-            if (!ScaleProfileLibrary.AttachApplicator(npcObject, EntityScaleCategory.NPC))
+            // Size from the per-race NPC scale profile; falls back to a hardcoded scale if the profile
+            // asset has not been generated yet (run CindarsHope/Inicializar Projeto to materialise it).
+            if (!ScaleProfileLibrary.AttachApplicator(npcObject, scaleCategory))
             {
                 npcObject.transform.localScale = new Vector3(1f, 1.5f, 1f);
             }
+            var npcData = AssetDatabase.LoadAssetAtPath<NpcDataSO>(npcDataPath);
             var renderer = npcObject.AddComponent<SpriteRenderer>();
-            renderer.sprite = GetBuiltinSprite();
+            renderer.sprite = (npcData != null && npcData.BodySprite != null) ? npcData.BodySprite : GetBuiltinSprite();
             renderer.color = color;
             renderer.sortingOrder = 2;
             TrySetSortingLayer(renderer, "Characters", renderer.sortingOrder);
@@ -2797,7 +2810,6 @@ namespace CindarsHope.Editor.SceneCreation
 
             var controller = npcObject.AddComponent<NpcController>();
             var serializedController = new SerializedObject(controller);
-            var npcData = AssetDatabase.LoadAssetAtPath<NpcDataSO>(npcDataPath);
             SetReference(serializedController, "_npcData", npcData);
             SetReference(serializedController, "_dialogueModal", dialogueModal);
             SetReference(serializedController, "_modalManager", modalManager);
