@@ -22,7 +22,7 @@ namespace CindarsHope.Editor.NPC
 
         // Tabela NpcId -> art_folder (baseada em NPC_PROMPTS_REVIEW.md + roster de CreateMvpTownScene).
         // NPCs sem art_folder (ex.: npc_corvus, npc_vaalara_wanderer) sao pulados graciosamente.
-        private static readonly Dictionary<string, string> NpcArtFolder = new()
+        internal static readonly Dictionary<string, string> NpcArtFolder = new()
         {
             { "npc_brumdar",  "brumdar_ferro_quieto"  },
             { "npc_dagna",    "dagna_rocha_morna"      },

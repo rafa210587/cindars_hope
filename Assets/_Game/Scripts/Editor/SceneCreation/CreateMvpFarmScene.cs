@@ -38,6 +38,7 @@ using CindarsHope.UI.Modal;
 using CindarsHope.UI.Routing;
 using CindarsHope.Editor.Validation;
 using CindarsHope.Editor.ScaleSystem;
+using CindarsHope.Editor.Art;
 using CindarsHope.NPC;
 
 namespace CindarsHope.Editor.SceneCreation
@@ -99,6 +100,7 @@ namespace CindarsHope.Editor.SceneCreation
             CreateFarmPortals();
             CreateFishingSpot(inventoryManager);
             CreateFarmSceneFoundationZones();
+            CreateFarmGroundTexture();  // chao base texturizado (grama tiled) atras de tudo — antes so cinza
             CreateCaveEntrance();
             CreateZrixContractBoard(); // fable_51: Zrix's cave-contract board at the cave mouth
             CreateFarmZrixNpc();        // Fase 5: Zrix perambula no bosque NO (NpcController + NpcWanderer)
@@ -927,6 +929,29 @@ namespace CindarsHope.Editor.SceneCreation
             serializedMarker.FindProperty("stableId").stringValue = stableId;
             serializedMarker.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(marker);
+        }
+
+        // Chao base texturizado. As zonas de fundacao NAO renderizam (gizmo-only), entao sem isto
+        // o mundo aparece cinza. Adiciona um unico SpriteRenderer de grama em modo Tiled cobrindo o
+        // footprint da fazenda (64x44 + margem), atras de tudo. Arte via WorldSpriteLibrary
+        // (Art/Generated/World/tiles/ground_grass). Se ausente, loga wiring-error e nao cria (nao mascara).
+        private static void CreateFarmGroundTexture()
+        {
+            var grass = WorldSpriteLibrary.Ground("ground_grass");
+            if (grass == null)
+            {
+                Debug.LogWarning("CreateMvpFarmScene: 'ground_grass' ausente — chao texturizado NAO criado " +
+                                 "(mundo permanece sem base). Rode art/world_gpt/_stage_world_to_assets.py e reimporte em Unity.");
+                return;
+            }
+
+            // Chao via TILEMAP (best practice) — nao SpriteRenderer Tiled (estoura mesh) nem esticado.
+            // Ver skill tilemap-world-rendering. A tile de grama e seamless, entao o Tilemap da campo
+            // uniforme sem grade nem erro de 9-slice. Rule Tiles/variacao = passo futuro (2D Extras).
+            var ground = new GameObject("FarmGround");
+            ground.transform.position = Vector3.zero;
+            // Grama COM VARIACAO (base + variantes esparsas) via Tilemap — quebra a repeticao.
+            WorldTilemapGround.PaintGrass(ground.transform, "WorldGrid", -100, "Default", new Vector2(-1f, -1f), new Vector2(72f, 52f));
         }
 
         private static ItemPickupRegistry CreateItemPickups(InventoryManager inventoryManager)
@@ -2386,8 +2411,9 @@ namespace CindarsHope.Editor.SceneCreation
             }
 
             var sr = obj.AddComponent<SpriteRenderer>();
-            sr.sprite = GetBuiltinSprite();
-            sr.color = new Color(0.24f, 0.52f, 0.24f);
+            var treeSprite = WorldSpriteLibrary.Tree("tree_oak");
+            if (treeSprite != null) { sr.sprite = treeSprite; sr.color = Color.white; }
+            else { sr.sprite = GetBuiltinSprite(); sr.color = new Color(0.24f, 0.52f, 0.24f); }
             sr.sortingOrder = 2;
             TrySetSortingLayer(sr, "Items", 2);
 
@@ -2425,8 +2451,9 @@ namespace CindarsHope.Editor.SceneCreation
             }
 
             var sr = obj.AddComponent<SpriteRenderer>();
-            sr.sprite = GetBuiltinSprite();
-            sr.color = new Color(0.55f, 0.52f, 0.50f);
+            var rockSprite = WorldSpriteLibrary.Prop("rock_ore_0");
+            if (rockSprite != null) { sr.sprite = rockSprite; sr.color = Color.white; }
+            else { sr.sprite = GetBuiltinSprite(); sr.color = new Color(0.55f, 0.52f, 0.50f); }
             sr.sortingOrder = 2;
             TrySetSortingLayer(sr, "Items", 2);
 

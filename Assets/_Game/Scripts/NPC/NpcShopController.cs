@@ -34,6 +34,8 @@ namespace CindarsHope.NPC
         [SerializeField] private ModalManager _modalManager;
 
         private const string ThalindraQuestId = "quest_first_supplies_for_cindar";
+        private const string DebugExprOpenId = "dbg_open";
+        private const string DebugExprPrefix = "dbg:";
 
         private bool _isInteracting;
         private bool _isClosing;
@@ -49,6 +51,7 @@ namespace CindarsHope.NPC
 
         private void OnEnable()
         {
+            NpcVisualRegistry.Register(_npcData);
             TryEnsureShopInitialized("OnEnable");
         }
 
@@ -172,6 +175,7 @@ namespace CindarsHope.NPC
 
         private void OnDisable()
         {
+            if (_npcData != null) NpcVisualRegistry.Unregister(_npcData.NpcId);
             DetachUiEvents();
             _isInteracting = false;
             _isClosing = false;
@@ -290,6 +294,10 @@ namespace CindarsHope.NPC
             choices.Add(new UiDialogueChoice("Vender", "sell"));
             // fable_25: Análise de Criatura da Thalindra entra no MESMO menu (sem segundo fluxo).
             AddNpcServiceChoices(choices);
+            if (UnityEngine.Debug.isDebugBuild)
+            {
+                choices.Add(new UiDialogueChoice("[Debug] expressao", DebugExprOpenId));
+            }
             choices.Add(new UiDialogueChoice("Adeus", "exit"));
 
             _dialogueModal.ShowWithChoices("Como posso ajudar?", choices);
@@ -310,6 +318,12 @@ namespace CindarsHope.NPC
             if (choice.ChoiceId != null && choice.ChoiceId.StartsWith(NpcServiceChoicePrefix, System.StringComparison.Ordinal))
             {
                 HandleNpcServiceChoice(choice.ChoiceId.Substring(NpcServiceChoicePrefix.Length));
+                return;
+            }
+
+            if (choice.ChoiceId == DebugExprOpenId)
+            {
+                ShowDebugExpressionMenu();
                 return;
             }
 
@@ -372,6 +386,56 @@ namespace CindarsHope.NPC
             _dialogueModal.OnChoiceSelected -= HandleRootShopChoice;
             _dialogueModal.OnChoiceSelected -= HandleTreeChoice;
             _dialogueModal.OnClose -= HandleTreeDialogueClosed;
+            _dialogueModal.OnChoiceSelected -= HandleDebugChoice;
+        }
+
+        private void ShowDebugExpressionMenu()
+        {
+            if (!_isInteracting || _isClosing || _dialogueModal == null) return;
+            DetachDialogueChoiceHandler();
+            _dialogueModal.OnChoiceSelected += HandleDebugChoice;
+            _dialogueModal.OnClose += HandleTreeDialogueClosed;
+            var choices = new List<UiDialogueChoice>
+            {
+                new UiDialogueChoice("Neutro", DebugExprPrefix + nameof(NpcExpression.Neutral)),
+                new UiDialogueChoice("Felicidade", DebugExprPrefix + nameof(NpcExpression.Happiness)),
+                new UiDialogueChoice("Amor", DebugExprPrefix + nameof(NpcExpression.Love)),
+                new UiDialogueChoice("Desdem", DebugExprPrefix + nameof(NpcExpression.Disdain)),
+                new UiDialogueChoice("Odio", DebugExprPrefix + nameof(NpcExpression.Hatred)),
+                new UiDialogueChoice("Voltar", "dbg_back"),
+            };
+            _dialogueModal.ShowWithChoices("[Debug] Trocar expressao:", choices);
+        }
+
+        private void HandleDebugChoice(UiDialogueChoice choice)
+        {
+            DetachDialogueChoiceHandler();
+            _dialogueModal.OnClose -= HandleTreeDialogueClosed;
+
+            if (choice == null)
+            {
+                BeginCloseInteraction();
+                return;
+            }
+
+            if (choice.ChoiceId == "dbg_back")
+            {
+                if (IsThalindra()) ShowThalindraQuestShopDialogue(); else ShowRootShopDialogue();
+                return;
+            }
+
+            if (choice.ChoiceId != null && choice.ChoiceId.StartsWith(DebugExprPrefix, System.StringComparison.Ordinal))
+            {
+                var name = choice.ChoiceId.Substring(DebugExprPrefix.Length);
+                if (_npcData != null && System.Enum.TryParse<NpcExpression>(name, out var expr))
+                {
+                    GameEventBus.Publish(new NpcExpressionOverrideEvent(_npcData.NpcId, expr));
+                }
+                ShowDebugExpressionMenu();
+                return;
+            }
+
+            if (IsThalindra()) ShowThalindraQuestShopDialogue(); else ShowRootShopDialogue();
         }
 
         // ─── Dialogue tree support for shop NPCs ─────────────────────────────
@@ -419,6 +483,11 @@ namespace CindarsHope.NPC
             // (sem segundo fluxo de diálogo). Opção gated aparece DESABILITADA com o motivo no rótulo
             // (descoberta > ocultação); a execução real é validada/efetuada pela fachada NpcServiceAccess.
             AddNpcServiceChoices(choices);
+
+            if (UnityEngine.Debug.isDebugBuild)
+            {
+                choices.Add(new UiDialogueChoice("[Debug] expressao", DebugExprOpenId));
+            }
 
             choices.Add(new UiDialogueChoice("Adeus", "exit"));
 
@@ -563,6 +632,12 @@ namespace CindarsHope.NPC
                 return;
             }
 
+            if (choice.ChoiceId == DebugExprOpenId)
+            {
+                ShowDebugExpressionMenu();
+                return;
+            }
+
             switch (choice.ChoiceId)
             {
                 case "talk":
@@ -655,6 +730,11 @@ namespace CindarsHope.NPC
                 return;
             }
 
+            if (node.HasExpressionOverride && _npcData != null)
+            {
+                GameEventBus.Publish(new NpcExpressionOverrideEvent(_npcData.NpcId, node.ExpressionOverride));
+            }
+
             string text = node.Text;
             if (node.RandomLinePool != null && node.RandomLinePool.Count > 0)
             {
@@ -694,6 +774,11 @@ namespace CindarsHope.NPC
             {
                 BeginCloseInteraction();
                 return;
+            }
+
+            if (npcChoice.HasExpressionOverride && _npcData != null)
+            {
+                GameEventBus.Publish(new NpcExpressionOverrideEvent(_npcData.NpcId, npcChoice.ExpressionOverride));
             }
 
             switch (npcChoice.ActionType)

@@ -32,6 +32,9 @@ namespace CindarsHope.Editor
             imp.ReadTextureSettings(s);
             s.textureType = TextureImporterType.Sprite;
             s.spriteMode = (int)SpriteImportMode.Single;
+            // Full Rect (nao Tight): necessario para SpriteRenderer.drawMode = Tiled (chao/paredes)
+            // — Tight dispara "Sprite Tiling might not appear correctly ... not generated with Full Rect".
+            s.spriteMeshType = SpriteMeshType.FullRect;
             s.spriteAlignment = (int)SpriteAlignment.BottomCenter;
             s.spritePixelsPerUnit = Ppu;
             s.filterMode = FilterMode.Point;

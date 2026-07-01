@@ -22,6 +22,7 @@ namespace CindarsHope.UI.Npc
     {
         [SerializeField] private CanvasGroup _panel;
         [SerializeField] private Image _portrait;       // placeholder; trocar por sprite por NPC/feição depois
+        [SerializeField] private Image _portraitBackground;
         [SerializeField] private Text _nameText;
         [SerializeField] private Text _raceText;
         [SerializeField] private Text _roleText;
@@ -41,12 +42,17 @@ namespace CindarsHope.UI.Npc
         private static readonly Color BarGreen = new Color(0.35f, 0.80f, 0.35f);
 
         private string _activeNpcId;
+        private NpcDataSO _activeNpcData;
+        private bool _hasExpressionOverride;
+        private NpcExpression _overrideExpression;
+        private int _currentOpinion;
 
         private void OnEnable()
         {
             GameEventBus.Subscribe<NpcInteractionStartedEvent>(OnInteractionStarted);
             GameEventBus.Subscribe<NpcInteractionEndedEvent>(OnInteractionEnded);
             GameEventBus.Subscribe<NpcOpinionChangedEvent>(OnOpinionChanged);
+            GameEventBus.Subscribe<NpcExpressionOverrideEvent>(OnExpressionOverride);
             HidePanel();
         }
 
@@ -55,6 +61,7 @@ namespace CindarsHope.UI.Npc
             GameEventBus.Unsubscribe<NpcInteractionStartedEvent>(OnInteractionStarted);
             GameEventBus.Unsubscribe<NpcInteractionEndedEvent>(OnInteractionEnded);
             GameEventBus.Unsubscribe<NpcOpinionChangedEvent>(OnOpinionChanged);
+            GameEventBus.Unsubscribe<NpcExpressionOverrideEvent>(OnExpressionOverride);
         }
 
         private void OnInteractionStarted(NpcInteractionStartedEvent evt)
@@ -65,6 +72,17 @@ namespace CindarsHope.UI.Npc
             }
 
             _activeNpcId = evt.NpcId;
+            _hasExpressionOverride = false;
+            NpcVisualRegistry.TryGet(evt.NpcId, out _activeNpcData);
+
+            if (_portraitBackground != null)
+            {
+                var bgName = NpcPortraitBackgroundCatalog.BackgroundFor(evt.NpcId);
+                var bgSprite = string.IsNullOrEmpty(bgName) ? null : Resources.Load<Sprite>("NpcPortraitBackgrounds/" + bgName);
+                _portraitBackground.sprite = bgSprite;
+                _portraitBackground.preserveAspect = false;
+                _portraitBackground.enabled = bgSprite != null;
+            }
 
             string displayName = evt.NpcId;
             string race = "—";
@@ -90,6 +108,8 @@ namespace CindarsHope.UI.Npc
             if (_activeNpcId == evt.NpcId)
             {
                 _activeNpcId = null;
+                _activeNpcData = null;
+                _hasExpressionOverride = false;
                 HidePanel();
             }
         }
@@ -102,13 +122,35 @@ namespace CindarsHope.UI.Npc
             }
         }
 
+        private void OnExpressionOverride(NpcExpressionOverrideEvent evt)
+        {
+            if (!string.IsNullOrEmpty(_activeNpcId) && _activeNpcId == evt.NpcId)
+            {
+                _hasExpressionOverride = true;
+                _overrideExpression = evt.Expression;
+                ApplyOpinionVisuals(_currentOpinion);
+            }
+        }
+
         private void ApplyOpinionVisuals(int opinion)
         {
-            var expression = NpcExpressionResolver.Resolve(opinion);
+            _currentOpinion = opinion;
+            var expression = _hasExpressionOverride ? _overrideExpression : NpcExpressionResolver.Resolve(opinion);
 
             if (_portrait != null)
             {
-                _portrait.color = TintFor(expression);
+                var portraitSprite = _activeNpcData != null ? _activeNpcData.GetPortrait(expression) : null;
+                if (portraitSprite != null)
+                {
+                    _portrait.sprite = portraitSprite;
+                    _portrait.preserveAspect = true;
+                    _portrait.color = Color.white;
+                }
+                else
+                {
+                    // Sem retrato atribuido ainda: mantem o placeholder tintado por feicao.
+                    _portrait.color = TintFor(expression);
+                }
             }
 
             if (_expressionCaption != null)

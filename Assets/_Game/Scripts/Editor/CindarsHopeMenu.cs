@@ -164,6 +164,12 @@ namespace CindarsHope.Editor
             RunStep("Atribuir sprites de corpo aos NPCs (NpcDataSO.BodySprite)",
                 () => CindarsHope.Editor.NPC.AssignNpcBodySprites.AssignAll());
 
+            RunStep("Atribuir retratos (busto) aos NPCs (NpcDataSO.Portrait*)",
+                () => CindarsHope.Editor.NPC.AssignNpcPortraitSprites.AssignAll());
+
+            RunStep("Configurar fundos de retrato de NPC como Sprite (NpcPortraitBackgrounds)",
+                () => CindarsHope.Editor.NPC.AssignNpcPortraitBackgrounds.ConfigureAll());
+
             // FASE B — salvar assets antes das cenas.
             RunStep("Salvar assets gerados (SaveAssets + Refresh) antes das cenas", SaveAndRefresh);
 

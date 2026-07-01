@@ -83,6 +83,56 @@ def mode_ref(a):
     }
     return run(wf, a.out)
 
+def mode_txtpix(a):
+    # txt2img pixel art SEM ControlNet (busto/retrato — sem esqueleto de corpo inteiro).
+    # Usa a pixel LoRA (se --lora > 0) para o look pixel-art; framing vem 100% do prompt.
+    model, clip = ["4", 0], ["4", 1]
+    wf = {
+      "4": {"class_type": "CheckpointLoaderSimple", "inputs": {"ckpt_name": CKPT}},
+      "5": {"class_type": "EmptyLatentImage", "inputs": {"width": a.w, "height": a.h, "batch_size": 1}},
+    }
+    if a.lora:
+        wf["10"] = {"class_type": "LoraLoader", "inputs": {"model": ["4", 0], "clip": ["4", 1],
+                    "lora_name": LORA, "strength_model": a.lora, "strength_clip": a.lora}}
+        model, clip = ["10", 0], ["10", 1]
+    wf["6"] = {"class_type": "CLIPTextEncode", "inputs": {"text": a.pos, "clip": clip}}
+    wf["7"] = {"class_type": "CLIPTextEncode", "inputs": {"text": a.neg, "clip": clip}}
+    wf["3"] = {"class_type": "KSampler", "inputs": {"seed": a.seed, "steps": a.steps, "cfg": a.cfg,
+               "sampler_name": "dpmpp_2m", "scheduler": "karras", "denoise": 1.0,
+               "model": model, "positive": ["6", 0], "negative": ["7", 0], "latent_image": ["5", 0]}}
+    wf["8"] = {"class_type": "VAEDecode", "inputs": {"samples": ["3", 0], "vae": ["4", 2]}}
+    wf["9"] = {"class_type": "SaveImage", "inputs": {"images": ["8", 0], "filename_prefix": "txtpix"}}
+    return run(wf, a.out)
+
+def mode_ip_txt(a):
+    # IP-Adapter (trava IDENTIDADE/paleta de uma imagem de referencia, ex.: a sprite do NPC) +
+    # txt2img pixel art, SEM ControlNet (busto/retrato, sem esqueleto de corpo inteiro).
+    ref = upload(a.image)   # imagem de referencia de identidade (sprite do personagem)
+    model, clip = ["4", 0], ["4", 1]
+    wf = {
+      "4": {"class_type": "CheckpointLoaderSimple", "inputs": {"ckpt_name": CKPT}},
+      "30": {"class_type": "IPAdapterModelLoader", "inputs": {"ipadapter_file": "ip-adapter-plus_sdxl_vit-h.safetensors"}},
+      "31": {"class_type": "CLIPVisionLoader", "inputs": {"clip_name": "CLIP-ViT-H-14-laion2B-s32B-b79K.safetensors"}},
+      "32": {"class_type": "LoadImage", "inputs": {"image": ref}},
+      "5": {"class_type": "EmptyLatentImage", "inputs": {"width": a.w, "height": a.h, "batch_size": 1}},
+    }
+    if a.lora:
+        wf["10"] = {"class_type": "LoraLoader", "inputs": {"model": ["4", 0], "clip": ["4", 1],
+                    "lora_name": LORA, "strength_model": a.lora, "strength_clip": a.lora}}
+        model, clip = ["10", 0], ["10", 1]
+    wf["33"] = {"class_type": "IPAdapterAdvanced", "inputs": {
+        "model": model, "ipadapter": ["30", 0], "image": ["32", 0],
+        "weight": a.ip_weight, "weight_type": "linear", "combine_embeds": "concat",
+        "start_at": 0.0, "end_at": 1.0, "embeds_scaling": "V only", "clip_vision": ["31", 0]}}
+    wf["6"] = {"class_type": "CLIPTextEncode", "inputs": {"text": a.pos, "clip": clip}}
+    wf["7"] = {"class_type": "CLIPTextEncode", "inputs": {"text": a.neg, "clip": clip}}
+    wf["3"] = {"class_type": "KSampler", "inputs": {"seed": a.seed, "steps": a.steps, "cfg": a.cfg,
+               "sampler_name": "dpmpp_2m", "scheduler": "karras", "denoise": 1.0,
+               "model": ["33", 0], "positive": ["6", 0], "negative": ["7", 0], "latent_image": ["5", 0]}}
+    wf["8"] = {"class_type": "VAEDecode", "inputs": {"samples": ["3", 0], "vae": ["4", 2]}}
+    wf["9"] = {"class_type": "SaveImage", "inputs": {"images": ["8", 0], "filename_prefix": "iptxt"}}
+    return run(wf, a.out)
+
 def mode_extract(a):
     name = upload(a.image)
     wf = {
@@ -249,7 +299,7 @@ def mode_img2img(a):
 
 if __name__ == "__main__":
     p = argparse.ArgumentParser()
-    p.add_argument("mode", choices=["ref", "extract", "cn", "img2img", "cn_i2i", "ip_cn", "pose", "ip_i2i"])
+    p.add_argument("mode", choices=["ref", "extract", "cn", "txtpix", "ip_txt", "img2img", "cn_i2i", "ip_cn", "pose", "ip_i2i"])
     p.add_argument("--out", required=True)
     p.add_argument("--pos", default="")
     p.add_argument("--neg", default="")
@@ -267,6 +317,12 @@ if __name__ == "__main__":
     p.add_argument("--ip_weight", type=float, default=0.8)
     p.add_argument("--bbox", default="yolox_l.onnx")
     p.add_argument("--ref", default="")
+    p.add_argument("--ckpt", default="")        # override do checkpoint (ex.: AziibPixelMix_Full.safetensors)
+    p.add_argument("--lora_name", default="")    # override da LoRA (ex.: ume_modern_pixelart.safetensors)
     a = p.parse_args()
-    ok = {"ref": mode_ref, "extract": mode_extract, "cn": mode_cn, "img2img": mode_img2img, "cn_i2i": mode_cn_i2i, "ip_cn": mode_ip_cn, "pose": mode_pose, "ip_i2i": mode_ip_i2i}[a.mode](a)
+    if a.ckpt:
+        CKPT = a.ckpt
+    if a.lora_name:
+        LORA = a.lora_name
+    ok = {"ref": mode_ref, "extract": mode_extract, "cn": mode_cn, "txtpix": mode_txtpix, "ip_txt": mode_ip_txt, "img2img": mode_img2img, "cn_i2i": mode_cn_i2i, "ip_cn": mode_ip_cn, "pose": mode_pose, "ip_i2i": mode_ip_i2i}[a.mode](a)
     sys.exit(0 if ok else 1)

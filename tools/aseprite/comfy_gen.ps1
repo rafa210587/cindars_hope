@@ -17,7 +17,8 @@ param(
   [string]$Negative = "",  # override do prompt negativo
   [string]$Suffix = "",    # sufixo no nome do arquivo de saida (p/ variacoes: _v1, _v2...)
   [string]$Lora = "pixel-art-xl.safetensors",  # LoRA de estilo (SDXL); "" desliga
-  [double]$LoraStr = 1.1   # forca da LoRA
+  [double]$LoraStr = 1.1,   # forca da LoRA
+  [int]$MaxSide = 1024      # lado maior da geracao (SDXL=1024; SD1.5/Aziib use 768)
 )
 
 New-Item -ItemType Directory -Force $Out | Out-Null
@@ -29,10 +30,12 @@ if($Limit -gt 0){ $items = $items | Select-Object -First $Limit }
 "itens a gerar: $($items.Count)"
 
 function Get-GenSize($w,$h){
-  # SDXL: lado maior ~1024, multiplo de 64, mantendo aspecto
+  # lado maior = $MaxSide, multiplo de 64, mantendo aspecto (SDXL=1024; SD1.5/Aziib=768)
+  $ms = $MaxSide
   $ar = $w / $h
-  if($ar -ge 1){ $W=1024; $H=[math]::Round(1024/$ar/64)*64 } else { $H=1024; $W=[math]::Round(1024*$ar/64)*64 }
-  if($W -lt 512){$W=512}; if($H -lt 512){$H=512}
+  if($ar -ge 1){ $W=$ms; $H=[math]::Round($ms/$ar/64)*64 } else { $H=$ms; $W=[math]::Round($ms*$ar/64)*64 }
+  $min = [math]::Min(512, $ms)
+  if($W -lt $min){$W=$min}; if($H -lt $min){$H=$min}
   return @($W,$H)
 }
 

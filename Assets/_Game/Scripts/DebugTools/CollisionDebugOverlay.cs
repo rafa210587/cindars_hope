@@ -16,8 +16,9 @@ namespace CindarsHope.DebugTools
         [SerializeField] private KeyCode _toggleKey = KeyCode.F7;
         [SerializeField] private KeyCode _zoomKey = KeyCode.F8;
 
-        // Tamanho ortográfico no super zoom-out (mostra os ~56×48 tiles da cidade inteira de uma vez).
-        private const float ZoomOutOrthoSize = 28f;
+        // Tamanho ortográfico no super zoom-out. 34 => ~68 unidades de altura visíveis, com folga
+        // para pegar a cidade inteira (~56×48) + arredores/margem sem cortar as bordas.
+        private const float ZoomOutOrthoSize = 34f;
 
         // Recria o overlay periodicamente enquanto ligado, para acompanhar colliders que se movem (NPCs).
         private const float RebuildInterval = 0.3f;

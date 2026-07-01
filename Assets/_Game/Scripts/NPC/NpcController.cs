@@ -58,6 +58,7 @@ namespace CindarsHope.NPC
 
         private void OnEnable()
         {
+            NpcVisualRegistry.Register(_npcData);
             if (_dialogueModal != null)
             {
                 _dialogueModal.OnClose += HandleDialogueClosed;
@@ -71,6 +72,7 @@ namespace CindarsHope.NPC
 
         private void OnDisable()
         {
+            if (_npcData != null) NpcVisualRegistry.Unregister(_npcData.NpcId);
             if (_dialogueModal != null)
             {
                 _dialogueModal.OnClose -= HandleDialogueClosed;
@@ -302,6 +304,10 @@ namespace CindarsHope.NPC
         private void ShowDialogueNode(DialogueNode node)
         {
             _currentNode = node;
+            if (node.HasExpressionOverride && _npcData != null)
+            {
+                GameEventBus.Publish(new NpcExpressionOverrideEvent(_npcData.NpcId, node.ExpressionOverride));
+            }
             string text = ResolveNodeText(node);
 
             if (_dialogueModal == null)
@@ -341,14 +347,29 @@ namespace CindarsHope.NPC
                 uiChoices.Add(new UiDialogueChoice(label, choiceId));
             }
 
+            if (UnityEngine.Debug.isDebugBuild)
+            {
+                uiChoices.Add(new UiDialogueChoice("[Debug] expressao", "dbg_open"));
+            }
+
             return uiChoices;
         }
 
         private void HandleChoiceSelected(UiDialogueChoice choice)
         {
+            if (_isInteracting && choice != null && TryHandleDebugExpressionChoice(choice))
+            {
+                return;
+            }
+
             if (!_isInteracting || choice == null || !_choiceMap.TryGetValue(choice.ChoiceId, out var npcChoice))
             {
                 return;
+            }
+
+            if (npcChoice.HasExpressionOverride && _npcData != null)
+            {
+                GameEventBus.Publish(new NpcExpressionOverrideEvent(_npcData.NpcId, npcChoice.ExpressionOverride));
             }
 
             if (npcChoice.ActionType == DialogueActionType.OfferQuest)
@@ -391,6 +412,56 @@ namespace CindarsHope.NPC
             }
 
             ShowDialogueNode(nextNode);
+        }
+
+        private const string DebugExprPrefix = "dbg:";
+
+        private bool TryHandleDebugExpressionChoice(UiDialogueChoice choice)
+        {
+            if (!UnityEngine.Debug.isDebugBuild || choice == null || choice.ChoiceId == null)
+            {
+                return false;
+            }
+
+            if (choice.ChoiceId == "dbg_open")
+            {
+                ShowDebugExpressionMenu();
+                return true;
+            }
+
+            if (choice.ChoiceId == "dbg_back")
+            {
+                if (_currentNode != null) ShowDialogueNode(_currentNode); else EndInteraction();
+                return true;
+            }
+
+            if (choice.ChoiceId.StartsWith(DebugExprPrefix, System.StringComparison.Ordinal))
+            {
+                var name = choice.ChoiceId.Substring(DebugExprPrefix.Length);
+                if (_npcData != null && System.Enum.TryParse<NpcExpression>(name, out var expr))
+                {
+                    GameEventBus.Publish(new NpcExpressionOverrideEvent(_npcData.NpcId, expr));
+                }
+                ShowDebugExpressionMenu();
+                return true;
+            }
+
+            return false;
+        }
+
+        private void ShowDebugExpressionMenu()
+        {
+            if (_dialogueModal == null) return;
+            var choices = new System.Collections.Generic.List<UiDialogueChoice>
+            {
+                new UiDialogueChoice("Neutro", DebugExprPrefix + nameof(NpcExpression.Neutral)),
+                new UiDialogueChoice("Felicidade", DebugExprPrefix + nameof(NpcExpression.Happiness)),
+                new UiDialogueChoice("Amor", DebugExprPrefix + nameof(NpcExpression.Love)),
+                new UiDialogueChoice("Desdem", DebugExprPrefix + nameof(NpcExpression.Disdain)),
+                new UiDialogueChoice("Odio", DebugExprPrefix + nameof(NpcExpression.Hatred)),
+                new UiDialogueChoice("Voltar", "dbg_back"),
+            };
+            _dialogueModal.ShowWithChoices("[Debug] Trocar expressao:", choices);
         }
 
         private static QuestGiverInteractionMode ResolveQuestInteractionMode(string questId)

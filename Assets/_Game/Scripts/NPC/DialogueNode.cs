@@ -17,5 +17,10 @@ namespace CindarsHope.NPC
         // populated, DialogueLineSelector picks one deterministically per day; the existing text
         // remains the guaranteed fallback so this never produces an empty line.
         public List<ConditionalDialogueLine> ConditionalLines = new();
+
+        // Override opcional de feicao do retrato: quando HasExpressionOverride, ao exibir este no
+        // o NPC mostra ExpressionOverride (sobrepondo a afinidade) ate o fim da interacao.
+        public bool HasExpressionOverride;
+        public NpcExpression ExpressionOverride = NpcExpression.Neutral;
     }
 }

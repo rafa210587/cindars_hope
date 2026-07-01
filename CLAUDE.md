@@ -138,6 +138,7 @@ Use `.claude/skills/<name>/SKILL.md` when task matches:
 | `player-ability-runtime` | Adding any non-slot player ability (Dash, Dodge, Block, roll, blink, sprint) |
 | `npc-dialogue-authoring` | Creating or extending NPCs with dialogue, shop, or scene placement |
 | `scene-interactable-wiring` | Adding IInteractable objects (crops, resources, fishing, chests) to scenes |
+| `tilemap-world-rendering` | Renderizar o mundo 2D top-down certo — Tilemap+Rule Tiles no chão, casas como prefab com volume, Y-sort, import pixel-art, colisão CompositeCollider2D; ao ver grade/seam no chão ou o erro "Cannot generate 9 slice" |
 | `crop-farming-systems` | Farm tile, ciclo de cultivo (plantar/regar/colher), estado do solo, yield sazonal |
 | `quest-authoring` | Definição de quest, objetivos, condições, triggers, recompensas, save de estado |
 | `time-calendar-weather` | Ciclo dia/estação/lunar, geração de clima, eventos de calendário |
@@ -172,6 +173,7 @@ Use `.claude/skills/<name>/SKILL.md` when task matches:
 | `delegated-execution` | Delegar execução a subagent Sonnet e VERIFICAR o resultado (no disco + rebuild); evita "narrou e não fez" / desvios omitidos |
 | `pixel-art-prompt-authoring` | Autorar prompts EN de pixel art (NPCs/monstros/props) ancorados em Vaalara + D&D oficial; corrigir sprite gerado com cor/arma/anatomia errados; lote em tools/aseprite/prompts.json |
 | `sprite-generation-pipeline` | OPERAR o pipeline de geração de sprites por IA (ComfyUI/SDXL local AMD): build de prompts, geração em lote resumível, pós (rembg+downscale), wiring no Unity; gerar/regenerar arte de inimigos/NPCs/props/player |
+| `chatgpt-web-sprite-gen` | Gerar sprites de MUNDO (peças modulares, props, tiles, vegetação, landmarks) pela web do ChatGPT via Chrome MCP, no projeto "Sprites - Fazendeiro"; regra de ÂNGULO 3/4 top-down por componente + rate limit (pausa 10 min + retry). Usar quando o local não dá conta de peça modular isolada |
 
 ---
 

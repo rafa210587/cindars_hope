@@ -35,6 +35,7 @@ using CindarsHope.Player.Progression;
 using CindarsHope.Editor.Validation;
 using CindarsHope.Editor.ScaleSystem;
 using CindarsHope.World.Scale;
+using CindarsHope.Editor.Art;
 
 namespace CindarsHope.Editor.SceneCreation
 {
@@ -119,6 +120,7 @@ namespace CindarsHope.Editor.SceneCreation
             // tenda escondida do mercado noturno (S) — moradias ao relento de Maelor/Zrix/Yael.
             CreateTownOutskirts();
             CreateTownTrees();
+            CreateTownProps();  // poço, fonte, lampiões, bancos, cerca, placa — preenche a cidade
             CreateDebugHud(playerManager, inventoryManager, hungerManager, interactionSystem, timeManager, saveManager);
             CreateSceneRuntimeInstaller(playerTransform);
 
@@ -653,8 +655,9 @@ namespace CindarsHope.Editor.SceneCreation
             baseGo.transform.localPosition = Vector3.zero;
             baseGo.transform.localScale = new Vector3(size + 0.4f, size + 0.4f, 1f);
             var baseRenderer = baseGo.AddComponent<SpriteRenderer>();
-            baseRenderer.sprite = GetBuiltinSprite();
-            baseRenderer.color = stoneDark;
+            var towerStoneBase = WorldSpriteLibrary.Building("wall_stone");
+            if (towerStoneBase != null) { baseRenderer.sprite = towerStoneBase; baseRenderer.color = Color.white; }
+            else { baseRenderer.sprite = GetBuiltinSprite(); baseRenderer.color = stoneDark; }
             baseRenderer.sortingOrder = 8;
             TrySetSortingLayer(baseRenderer, "Items", baseRenderer.sortingOrder);
 
@@ -663,8 +666,9 @@ namespace CindarsHope.Editor.SceneCreation
             topGo.transform.localPosition = Vector3.zero;
             topGo.transform.localScale = new Vector3(size, size, 1f);
             var topRenderer = topGo.AddComponent<SpriteRenderer>();
-            topRenderer.sprite = GetBuiltinSprite();
-            topRenderer.color = stone;
+            var towerStoneTop = WorldSpriteLibrary.Building("wall_stone");
+            if (towerStoneTop != null) { topRenderer.sprite = towerStoneTop; topRenderer.color = Color.white; }
+            else { topRenderer.sprite = GetBuiltinSprite(); topRenderer.color = stone; }
             topRenderer.sortingOrder = 9;
             TrySetSortingLayer(topRenderer, "Items", topRenderer.sortingOrder);
 
@@ -848,10 +852,23 @@ namespace CindarsHope.Editor.SceneCreation
             var floor = new GameObject("PlazaFloor");
             floor.transform.SetParent(plaza.transform);
             floor.transform.position = Vector3.zero;
-            floor.transform.localScale = new Vector3(9f, 9f, 1f);
             var floorRenderer = floor.AddComponent<SpriteRenderer>();
-            floorRenderer.sprite = GetBuiltinSprite();
-            floorRenderer.color = new Color(0.69f, 0.66f, 0.6f);
+            var plazaTile = WorldSpriteLibrary.Ground("ground_cobble");
+            if (plazaTile != null)
+            {
+                floor.transform.localScale = Vector3.one;
+                floorRenderer.sprite = plazaTile;
+                floorRenderer.color = Color.white;
+                floorRenderer.drawMode = SpriteDrawMode.Tiled;
+                floorRenderer.tileMode = SpriteTileMode.Continuous;
+                floorRenderer.size = new Vector2(9f, 9f);
+            }
+            else
+            {
+                floor.transform.localScale = new Vector3(9f, 9f, 1f);
+                floorRenderer.sprite = GetBuiltinSprite();
+                floorRenderer.color = new Color(0.69f, 0.66f, 0.6f);
+            }
             floorRenderer.sortingOrder = 0;
             TrySetSortingLayer(floorRenderer, "Ground", floorRenderer.sortingOrder);
 
@@ -1004,8 +1021,9 @@ namespace CindarsHope.Editor.SceneCreation
                 counter.transform.localPosition = Vector3.zero;
                 counter.transform.localScale = new Vector3(2.1f, 0.6f, 1f);
                 var counterRenderer = counter.AddComponent<SpriteRenderer>();
-                counterRenderer.sprite = GetBuiltinSprite();
-                counterRenderer.color = new Color(0.46f, 0.34f, 0.22f);
+                var stallCounter = WorldSpriteLibrary.Prop("crate");
+                if (stallCounter != null) { counterRenderer.sprite = stallCounter; counterRenderer.color = Color.white; }
+                else { counterRenderer.sprite = GetBuiltinSprite(); counterRenderer.color = new Color(0.46f, 0.34f, 0.22f); }
                 counterRenderer.sortingOrder = 1;
                 TrySetSortingLayer(counterRenderer, "Items", counterRenderer.sortingOrder);
                 var counterCollider = counter.AddComponent<BoxCollider2D>();
@@ -1257,10 +1275,23 @@ namespace CindarsHope.Editor.SceneCreation
             var floor = new GameObject("Floor");
             floor.transform.SetParent(house.transform);
             floor.transform.localPosition = Vector3.zero;
-            floor.transform.localScale = new Vector3(size.x, size.y, 1f);
             var floorRenderer = floor.AddComponent<SpriteRenderer>();
-            floorRenderer.sprite = GetBuiltinSprite();
-            floorRenderer.color = Color.Lerp(baseColor, new Color(0.85f, 0.80f, 0.72f), 0.5f);
+            var floorTile = WorldSpriteLibrary.Ground("ground_deck");
+            if (floorTile != null)
+            {
+                floor.transform.localScale = Vector3.one;
+                floorRenderer.sprite = floorTile;
+                floorRenderer.color = Color.white;
+                floorRenderer.drawMode = SpriteDrawMode.Tiled;
+                floorRenderer.tileMode = SpriteTileMode.Continuous;
+                floorRenderer.size = size;
+            }
+            else
+            {
+                floor.transform.localScale = new Vector3(size.x, size.y, 1f);
+                floorRenderer.sprite = GetBuiltinSprite();
+                floorRenderer.color = Color.Lerp(baseColor, new Color(0.85f, 0.80f, 0.72f), 0.5f);
+            }
             floorRenderer.sortingOrder = 0;
             TrySetSortingLayer(floorRenderer, "Items", floorRenderer.sortingOrder);
 
@@ -1320,23 +1351,67 @@ namespace CindarsHope.Editor.SceneCreation
             var roof = new GameObject("Roof");
             roof.transform.SetParent(house.transform);
             roof.transform.localPosition = Vector3.zero;
-            roof.transform.localScale = new Vector3(size.x + 0.5f, size.y + 0.5f, 1f);
+            roof.transform.localScale = new Vector3(size.x + 0.9f, size.y + 0.9f, 1f); // beiral maior = overhang
             var roofRenderer = roof.AddComponent<SpriteRenderer>();
-            roofRenderer.sprite = GetBuiltinSprite();
-            roofRenderer.color = Color.Lerp(baseColor, new Color(0.5f, 0.18f, 0.12f), 0.6f);
+            var roofTile = WorldSpriteLibrary.Building("roof_redtile");
+            if (roofTile != null) { roofRenderer.sprite = roofTile; roofRenderer.color = Color.white; }
+            else { roofRenderer.sprite = GetBuiltinSprite(); roofRenderer.color = Color.Lerp(baseColor, new Color(0.5f, 0.18f, 0.12f), 0.6f); }
             roofRenderer.sortingOrder = 20;
             TrySetSortingLayer(roofRenderer, "Items", roofRenderer.sortingOrder);
 
             // Cumeeira: faixa escura no topo do telhado (só estética de "telhado de duas águas").
             var ridge = new GameObject("RoofRidge");
             ridge.transform.SetParent(house.transform);
-            ridge.transform.localPosition = new Vector3(0f, hh * 0.45f, 0f);
-            ridge.transform.localScale = new Vector3(size.x + 0.5f, 0.5f, 1f);
+            ridge.transform.localPosition = new Vector3(0f, hh * 0.15f, 0f);
+            ridge.transform.localScale = new Vector3(size.x + 0.9f, 0.35f, 1f);
             var ridgeRenderer = ridge.AddComponent<SpriteRenderer>();
             ridgeRenderer.sprite = GetBuiltinSprite();
-            ridgeRenderer.color = Color.Lerp(baseColor, new Color(0.35f, 0.10f, 0.08f), 0.7f);
+            ridgeRenderer.color = new Color(0.30f, 0.10f, 0.07f);
             ridgeRenderer.sortingOrder = 21;
             TrySetSortingLayer(ridgeRenderer, "Items", ridgeRenderer.sortingOrder);
+
+            // Destaque claro logo acima da cumeeira => leitura de telhado de duas aguas.
+            var ridgeHi = new GameObject("RoofRidgeHighlight");
+            ridgeHi.transform.SetParent(house.transform);
+            ridgeHi.transform.localPosition = new Vector3(0f, hh * 0.15f + 0.30f, 0f);
+            ridgeHi.transform.localScale = new Vector3(size.x + 0.9f, 0.16f, 1f);
+            var ridgeHiRenderer = ridgeHi.AddComponent<SpriteRenderer>();
+            ridgeHiRenderer.sprite = GetBuiltinSprite();
+            ridgeHiRenderer.color = new Color(1f, 0.85f, 0.70f, 0.35f);
+            ridgeHiRenderer.sortingOrder = 21;
+            TrySetSortingLayer(ridgeHiRenderer, "Items", ridgeHiRenderer.sortingOrder);
+
+            // Sombra de beiral na borda inferior do telhado (destaca a casa do chao).
+            var eave = new GameObject("RoofEaveShadow");
+            eave.transform.SetParent(house.transform);
+            eave.transform.localPosition = new Vector3(0f, -hh - 0.35f, 0f);
+            eave.transform.localScale = new Vector3(size.x + 0.9f, 0.35f, 1f);
+            var eaveRenderer = eave.AddComponent<SpriteRenderer>();
+            eaveRenderer.sprite = GetBuiltinSprite();
+            eaveRenderer.color = new Color(0f, 0f, 0f, 0.30f);
+            eaveRenderer.sortingOrder = 20;
+            TrySetSortingLayer(eaveRenderer, "Items", eaveRenderer.sortingOrder);
+
+            // Chamine + fumacinha no canto superior do telhado.
+            var chimney = new GameObject("Chimney");
+            chimney.transform.SetParent(house.transform);
+            chimney.transform.localPosition = new Vector3(hw - 0.9f, hh + 0.15f, 0f);
+            chimney.transform.localScale = new Vector3(0.7f, 0.9f, 1f);
+            var chimneyRenderer = chimney.AddComponent<SpriteRenderer>();
+            chimneyRenderer.sprite = GetBuiltinSprite();
+            chimneyRenderer.color = new Color(0.45f, 0.30f, 0.24f);
+            chimneyRenderer.sortingOrder = 22;
+            TrySetSortingLayer(chimneyRenderer, "Items", chimneyRenderer.sortingOrder);
+
+            var smoke = new GameObject("ChimneySmoke");
+            smoke.transform.SetParent(house.transform);
+            smoke.transform.localPosition = new Vector3(hw - 0.9f, hh + 0.85f, 0f);
+            smoke.transform.localScale = new Vector3(0.5f, 0.5f, 1f);
+            var smokeRenderer = smoke.AddComponent<SpriteRenderer>();
+            smokeRenderer.sprite = GetBuiltinSprite();
+            smokeRenderer.color = new Color(0.85f, 0.85f, 0.85f, 0.5f);
+            smokeRenderer.sortingOrder = 22;
+            TrySetSortingLayer(smokeRenderer, "Items", smokeRenderer.sortingOrder);
 
             // Trigger de revelação: cobre o footprint; some os dois renderers de telhado ao jogador entrar.
             var revealObject = new GameObject("RoofReveal");
@@ -1346,7 +1421,7 @@ namespace CindarsHope.Editor.SceneCreation
             revealTrigger.isTrigger = true;
             revealTrigger.size = new Vector2(size.x, size.y);
             var reveal = revealObject.AddComponent<RoofRevealController>();
-            reveal.Configure(new[] { roofRenderer, ridgeRenderer });
+            reveal.Configure(new[] { roofRenderer, ridgeRenderer, ridgeHiRenderer, eaveRenderer, chimneyRenderer, smokeRenderer });
             EditorUtility.SetDirty(reveal);
         }
 
@@ -1692,10 +1767,23 @@ namespace CindarsHope.Editor.SceneCreation
             var face = new GameObject("Face");
             face.transform.SetParent(parent);
             face.transform.localPosition = Vector3.zero;
-            face.transform.localScale = new Vector3(size.x, size.y, 1f);
             var faceRenderer = face.AddComponent<SpriteRenderer>();
-            faceRenderer.sprite = GetBuiltinSprite();
-            faceRenderer.color = new Color(0.57f, 0.54f, 0.49f);
+            var wallTile = WorldSpriteLibrary.Building("wall_stone");
+            if (wallTile != null)
+            {
+                face.transform.localScale = Vector3.one;
+                faceRenderer.sprite = wallTile;
+                faceRenderer.color = Color.white;
+                faceRenderer.drawMode = SpriteDrawMode.Tiled;
+                faceRenderer.tileMode = SpriteTileMode.Continuous;
+                faceRenderer.size = size;
+            }
+            else
+            {
+                face.transform.localScale = new Vector3(size.x, size.y, 1f);
+                faceRenderer.sprite = GetBuiltinSprite();
+                faceRenderer.color = new Color(0.57f, 0.54f, 0.49f);
+            }
             faceRenderer.sortingOrder = 5;
             TrySetSortingLayer(faceRenderer, "Items", faceRenderer.sortingOrder);
 
@@ -1718,11 +1806,62 @@ namespace CindarsHope.Editor.SceneCreation
             prop.transform.localPosition = localPos;
             prop.transform.localScale = scale;
             var renderer = prop.AddComponent<SpriteRenderer>();
-            renderer.sprite = GetBuiltinSprite();
-            renderer.color = color;
+            var furniture = InteriorSpriteFor(name);
+            if (furniture != null) { renderer.sprite = furniture; renderer.color = Color.white; }
+            else { renderer.sprite = GetBuiltinSprite(); renderer.color = color; }
             renderer.sortingOrder = 1;
             TrySetSortingLayer(renderer, "Items", renderer.sortingOrder);
             return prop;
+        }
+
+        // Mapeia o nome do movel interno -> sprite em Art/Generated/World/interior. null = sem match
+        // (usa fallback colorido no chamador). Estacoes de oficio (Station_*) ficam com cor propria.
+        private static Sprite InteriorSpriteFor(string propName)
+        {
+            string key = null;
+            if (propName == "Bed" || propName == "GuestBed_Inn") key = "bed";
+            else if (propName == "Table") key = "table";
+            else if (propName == "Furniture_Shelf") key = "cupboard";
+            else if (propName == "Furniture_Rug") key = "rug";
+            else if (propName == "Furniture_Pew") key = "chair";
+            return key != null ? WorldSpriteLibrary.Interior(key) : null;
+        }
+
+        // Props decorativos da cidade (poco, fonte, lampioes, bancos, cerca, placa). Puramente visuais
+        // (sem collider) — dao vida a cidade que antes era so chao + casas. Sprites em World/props;
+        // fallback cinza se ausente. Posicoes proximas das ruas/praca central (footprint 48x42).
+        private static void CreateTownProps()
+        {
+            var parent = new GameObject("TownProps");
+            parent.transform.position = Vector3.zero;
+
+            void P(string name, string key, Vector3 pos, float scale)
+            {
+                var go = new GameObject(name);
+                go.transform.SetParent(parent.transform);
+                go.transform.position = pos;
+                go.transform.localScale = new Vector3(scale, scale, 1f);
+                var sr = go.AddComponent<SpriteRenderer>();
+                var sprite = WorldSpriteLibrary.Prop(key);
+                if (sprite != null) { sr.sprite = sprite; sr.color = Color.white; }
+                else { sr.sprite = GetBuiltinSprite(); sr.color = new Color(0.6f, 0.6f, 0.6f); }
+                sr.sortingOrder = 2;
+                TrySetSortingLayer(sr, "Items", sr.sortingOrder);
+            }
+
+            P("Well", "well", new Vector3(-7f, 6f, 0f), 2.2f);
+            P("Fountain", "fountain", new Vector3(7f, -6f, 0f), 2.4f);
+            P("Streetlamp_1", "streetlamp", new Vector3(3.2f, 7.5f, 0f), 2.0f);
+            P("Streetlamp_2", "streetlamp", new Vector3(3.2f, -7.5f, 0f), 2.0f);
+            P("Streetlamp_3", "streetlamp", new Vector3(-9.5f, 0.5f, 0f), 2.0f);
+            P("Streetlamp_4", "streetlamp", new Vector3(11.5f, 0.5f, 0f), 2.0f);
+            P("Bench_1", "bench", new Vector3(5f, 2.6f, 0f), 1.6f);
+            P("Bench_2", "bench", new Vector3(-5f, -2.6f, 0f), 1.6f);
+            P("SignPost", "sign_post", new Vector3(0.5f, 3.4f, 0f), 1.5f);
+            for (int i = 0; i < 5; i++)
+            {
+                P($"Fence_{i}", "fence", new Vector3(-14f + i * 1.4f, -8.6f, 0f), 1.4f);
+            }
         }
 
         // Centro do interior FÍSICO da casa de índice i (coords finais, no MESMO lugar do exterior).
@@ -1809,10 +1948,20 @@ namespace CindarsHope.Editor.SceneCreation
             var lake = new GameObject("LakeWater");
             lake.transform.SetParent(district.transform);
             lake.transform.position = TownDistrictLayout.LakeCenter;
-            lake.transform.localScale = new Vector3(6f, 4.5f, 1f);
             var lakeRenderer = lake.AddComponent<SpriteRenderer>();
-            lakeRenderer.sprite = GetBuiltinSprite();
-            lakeRenderer.color = new Color(0.27f, 0.45f, 0.62f);
+            var lakeTile = WorldSpriteLibrary.Ground("ground_water");
+            if (lakeTile != null)
+            {
+                lake.transform.localScale = Vector3.one;
+                lakeRenderer.sprite = lakeTile; lakeRenderer.color = Color.white;
+                lakeRenderer.drawMode = SpriteDrawMode.Tiled; lakeRenderer.tileMode = SpriteTileMode.Continuous;
+                lakeRenderer.size = new Vector2(6f, 4.5f);
+            }
+            else
+            {
+                lake.transform.localScale = new Vector3(6f, 4.5f, 1f);
+                lakeRenderer.sprite = GetBuiltinSprite(); lakeRenderer.color = new Color(0.27f, 0.45f, 0.62f);
+            }
             lakeRenderer.sortingOrder = 0;
             TrySetSortingLayer(lakeRenderer, "Ground", lakeRenderer.sortingOrder);
 
@@ -1832,10 +1981,20 @@ namespace CindarsHope.Editor.SceneCreation
             var hall = new GameObject("TownHallBuilding");
             hall.transform.SetParent(district.transform);
             hall.transform.position = TownDistrictLayout.TownHallCenter;
-            hall.transform.localScale = new Vector3(4.5f, 3.2f, 1f);
             var hallRenderer = hall.AddComponent<SpriteRenderer>();
-            hallRenderer.sprite = GetBuiltinSprite();
-            hallRenderer.color = new Color(0.6f, 0.58f, 0.52f);
+            var hallTile = WorldSpriteLibrary.Building("wall_stone");
+            if (hallTile != null)
+            {
+                hall.transform.localScale = Vector3.one;
+                hallRenderer.sprite = hallTile; hallRenderer.color = Color.white;
+                hallRenderer.drawMode = SpriteDrawMode.Tiled; hallRenderer.tileMode = SpriteTileMode.Continuous;
+                hallRenderer.size = new Vector2(4.5f, 3.2f);
+            }
+            else
+            {
+                hall.transform.localScale = new Vector3(4.5f, 3.2f, 1f);
+                hallRenderer.sprite = GetBuiltinSprite(); hallRenderer.color = new Color(0.6f, 0.58f, 0.52f);
+            }
             hallRenderer.sortingOrder = 2;
             TrySetSortingLayer(hallRenderer, "Items", hallRenderer.sortingOrder);
             var hallCollider = hall.AddComponent<BoxCollider2D>();
@@ -1962,9 +2121,10 @@ namespace CindarsHope.Editor.SceneCreation
             treeObject.transform.localScale = new Vector3(scale, scale, 1f);
 
             var spriteRenderer = treeObject.AddComponent<SpriteRenderer>();
-            spriteRenderer.sprite = GetBuiltinSprite();
-            float greenShift = (treeIndex % 4) * 0.025f;
-            spriteRenderer.color = new Color(0.22f + greenShift, 0.45f + greenShift, 0.2f);
+            string[] townTreeSpecies = { "tree_oak", "tree_pine", "tree_apple" };
+            var townTreeSprite = WorldSpriteLibrary.Tree(townTreeSpecies[treeIndex % townTreeSpecies.Length]);
+            if (townTreeSprite != null) { spriteRenderer.sprite = townTreeSprite; spriteRenderer.color = Color.white; }
+            else { spriteRenderer.sprite = GetBuiltinSprite(); float greenShift = (treeIndex % 4) * 0.025f; spriteRenderer.color = new Color(0.22f + greenShift, 0.45f + greenShift, 0.2f); }
             spriteRenderer.sortingOrder = 2;
             TrySetSortingLayer(spriteRenderer, "Items", spriteRenderer.sortingOrder);
 
@@ -2022,8 +2182,18 @@ namespace CindarsHope.Editor.SceneCreation
         // ── Estrutura de chão: ruas, pads de distrito e construções de preenchimento ──────────────
 
         // Slab de chão puramente visual (Ground, sortingOrder dado; sem collider).
-        private static void CreateGroundSlab(Transform parent, string name, Vector3 center, Vector2 size, Color color, int sortingOrder)
+        private static void CreateGroundSlab(Transform parent, string name, Vector3 center, Vector2 size, Color color, int sortingOrder, string tileName = null)
         {
+            var tile = tileName != null ? WorldSpriteLibrary.Ground(tileName) : null;
+            if (tile != null)
+            {
+                // Chao via TILEMAP (best practice) — sem SpriteRenderer Tiled (estoura mesh) nem esticado.
+                // Uma camada por sortingOrder dentro de um Grid compartilhado neste parent.
+                float cs = WorldTilemapGround.SpriteWorldSize(tile);
+                var tm = WorldTilemapGround.GetOrCreateLayer(parent, "TownWorldGrid", $"Ground_{sortingOrder}", cs, sortingOrder, "Ground");
+                WorldTilemapGround.PaintRect(tm, tile, new Vector2(center.x, center.y), size);
+                return;
+            }
             var go = new GameObject(name);
             go.transform.SetParent(parent);
             go.transform.position = center;
@@ -2044,10 +2214,10 @@ namespace CindarsHope.Editor.SceneCreation
             var dirt = new Color(0.62f, 0.55f, 0.42f);
             float w = TownDistrictLayout.WidthTiles;   // 48
             float h = TownDistrictLayout.HeightTiles;  // 42
-            CreateGroundSlab(parent.transform, "Road_Avenue_NS", Vector3.zero, new Vector2(5f, h - 2f), dirt, -1);
-            CreateGroundSlab(parent.transform, "Road_Main_EW", Vector3.zero, new Vector2(w - 2f, 5f), dirt, -1);
+            CreateGroundSlab(parent.transform, "Road_Avenue_NS", Vector3.zero, new Vector2(5f, h - 2f), dirt, -1, "ground_cobble");
+            CreateGroundSlab(parent.transform, "Road_Main_EW", Vector3.zero, new Vector2(w - 2f, 5f), dirt, -1, "ground_cobble");
             // Travessa do mercado (liga a avenida ao distrito de mercado, ao norte).
-            CreateGroundSlab(parent.transform, "Road_Market", new Vector3(0f, 16f, 0f), new Vector2(20f, 3.5f), dirt, -1);
+            CreateGroundSlab(parent.transform, "Road_Market", new Vector3(0f, 16f, 0f), new Vector2(20f, 3.5f), dirt, -1, "ground_cobble");
         }
 
         // Pads de distrito: zonas de chão de tom levemente distinto sob cada cluster, para os grupos
@@ -2056,16 +2226,10 @@ namespace CindarsHope.Editor.SceneCreation
         {
             var parent = new GameObject("TownDistrictPads");
             parent.transform.position = Vector3.zero;
-            void Pad(string name, float cx, float cy, float sx, float sy, Color c)
-                => CreateGroundSlab(parent.transform, name, new Vector3(cx, cy, 0f), new Vector2(sx, sy), c, -2);
-
-            Pad("Pad_Temple_NW", -15f, 12f, 13f, 9f, new Color(0.60f, 0.60f, 0.50f));
-            Pad("Pad_Market_N", 0f, 9.5f, 38f, 7f, new Color(0.60f, 0.56f, 0.46f));
-            Pad("Pad_Residential_E", 16f, 3f, 11f, 16f, new Color(0.56f, 0.58f, 0.48f));
-            Pad("Pad_Industry_W", -15f, -3f, 11f, 13f, new Color(0.56f, 0.54f, 0.52f));
-            Pad("Pad_Workshop_SE", 10f, -8f, 13f, 9f, new Color(0.60f, 0.54f, 0.44f));
-            Pad("Pad_NightMarket_S", 7f, -13f, 18f, 8f, new Color(0.50f, 0.48f, 0.56f));
-            Pad("Pad_AnimalYard_NE", 16f, 11f, 11f, 8f, new Color(0.54f, 0.58f, 0.48f));
+            // Grama base COM VARIACAO sob TODA a cidade (best practice: base + variantes esparsas via
+            // Tilemap). Substitui a laje unica lisa + os pads de distrito (que cobriam a variacao).
+            WorldTilemapGround.PaintGrass(parent.transform, "TownWorldGrid", -6, "Ground", Vector2.zero,
+                new Vector2(TownDistrictLayout.WidthTiles + 6f, TownDistrictLayout.HeightTiles + 6f));
         }
 
         // Construções de preenchimento (com colisão) nos vazios entre distritos: dão volume à cidade
@@ -2082,8 +2246,9 @@ namespace CindarsHope.Editor.SceneCreation
             go.transform.position = center;
             go.transform.localScale = new Vector3(size.x, size.y, 1f);
             var sr = go.AddComponent<SpriteRenderer>();
-            sr.sprite = GetBuiltinSprite();
-            sr.color = color;
+            var blockerRock = WorldSpriteLibrary.Prop("rock_ore_0");
+            if (blockerRock != null) { sr.sprite = blockerRock; sr.color = Color.white; }
+            else { sr.sprite = GetBuiltinSprite(); sr.color = color; }
             sr.sortingOrder = 2;
             TrySetSortingLayer(sr, "Items", sr.sortingOrder);
             var col = go.AddComponent<BoxCollider2D>();
@@ -2231,6 +2396,9 @@ namespace CindarsHope.Editor.SceneCreation
 
             // Moldura do retrato (atras) + retrato placeholder tintado pela feicao em runtime.
             CreatePanelImage(panelGo.transform, "PortraitFrame", new Vector2(0f, 84f), new Vector2(122f, 122f), new Color(0.30f, 0.33f, 0.40f));
+            // Fundo preenche o frame inteiro (122) — sem borda dark visivel; o frame fica so de backing.
+            var portraitBg = CreatePanelImage(panelGo.transform, "PortraitBackground", new Vector2(0f, 84f), new Vector2(122f, 122f), Color.white);
+            portraitBg.enabled = false; // fundo por NPC e setado em runtime pelo HUD
             var portrait = CreatePanelImage(panelGo.transform, "Portrait", new Vector2(0f, 84f), new Vector2(108f, 108f), new Color(0.7f, 0.7f, 0.72f));
 
             var expression = CreateText(panelGo.transform, "Expression", new Vector2(0f, 12f), new Vector2(206f, 22f), "Normal");
@@ -2269,6 +2437,7 @@ namespace CindarsHope.Editor.SceneCreation
             var serialized = new SerializedObject(hud);
             SetReference(serialized, "_panel", group);
             SetReference(serialized, "_portrait", portrait);
+            SetReference(serialized, "_portraitBackground", portraitBg);
             SetReference(serialized, "_nameText", nameText);
             SetReference(serialized, "_raceText", raceText);
             SetReference(serialized, "_roleText", roleText);
