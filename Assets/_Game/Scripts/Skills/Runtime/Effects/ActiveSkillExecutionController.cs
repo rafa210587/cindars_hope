@@ -3,7 +3,6 @@ using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
 using CindarsHope.Interaction;
-using CindarsHope.Skills;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityInput = UnityEngine.Input;
@@ -38,9 +37,14 @@ namespace CindarsHope.Skills.Runtime.Effects
         private static readonly Dictionary<string, string> SkillActionToEffectId = new Dictionary<string, string>
         {
             // Farm/Utility skill effects (vertical slice)
-            // fable_70: skill_survival_emergency_roll removido (no cortado). skill_crafting_field_patch
-            // ainda aponta para farm water (DEBUG) ate o merge "Reparo de Campo" (deferido).
-            { "skill_crafting_field_patch", "farm.crop.water_skill" },     // DEBUG legado: substituir no merge de reparo (deferido)
+            // fable_70: skill_survival_emergency_roll removido (no cortado).
+            // spec_codex_05: skill_crafting_field_patch NAO aponta mais para farm.crop.water_skill
+            // (mapeamento legado errado: "Reparo de Campo" regava uma cultura). O efeito real de
+            // regar foi realocado para skill_crafting_irrigador_portatil (nome semanticamente
+            // correto — "irrigador" = regar). field_patch agora e feedback-only com mensagem de
+            // reparo (ver RegisterFeedbackExecutors). Ver ledger de debito no
+            // WAVE_INTEGRATION_11_SKILL_EFFECT_CATALOG.md.
+            { "skill_crafting_field_patch", "crafting.field_patch" },
 
             // Placeholder mappings for all equippable skills — effect not yet implemented
             { "skill_melee_offhand_cut", "combat.melee.offhand_cut" },
@@ -80,9 +84,11 @@ namespace CindarsHope.Skills.Runtime.Effects
             { "skill_survival_campo_seguro", "survival.campo_seguro" },
             { "skill_survival_last_breath", "survival.last_breath" },         // fable_70: executor real (SelfRestore)
 
-            // Crafting: novas action skills (crafting_quick_repair já mapeado acima via field_patch)
+            // Crafting: novas action skills
             // fable_70: skill_crafting_mecanismo_campo removido (no cortado).
-            { "skill_crafting_irrigador_portatil", "crafting.irrigador_portatil" },
+            // spec_codex_05: irrigador_portatil agora recebe o efeito REAL de regar (farm.crop.water_skill),
+            // realocado de skill_crafting_field_patch (mapeamento semanticamente correto: irrigador = regar).
+            { "skill_crafting_irrigador_portatil", "farm.crop.water_skill" },
             { "skill_crafting_bomba_improvisada", "crafting.bomba_improvisada" },
             { "skill_crafting_marca_eficiencia", "crafting.marca_eficiencia" },
         };
@@ -189,15 +195,20 @@ namespace CindarsHope.Skills.Runtime.Effects
         private void RegisterFeedbackExecutors()
         {
             // DEFERRED_RUNTIME_EFFECT: effects below need systems that do not exist yet
-            // (block stance via slot, prey marking, wards, slow fields, traps, efficiency buffs).
+            // (target marking, wards, aggro reduction, lure, crafting speed buff, field repair).
             // TODO_INTEGRATION_NOT_FINAL: substituir quando o sistema alvo existir.
+            // Ledger de debito canonico: docs/validation/WAVE_INTEGRATION_11_SKILL_EFFECT_CATALOG.md
+            // (secao "Skill Effect Debt Ledger — spec_codex_05").
             // fable_70: combat.melee.block removido (guarded_block cortado; Block e ability Shift).
             _registry.Register(new FeedbackOnlySkillEffectExecutor("combat.ranged.marked_prey", "Presa Marcada. (Sistema de marcacao pendente.)", SkillEffectCategory.Combat));
             _registry.Register(new FeedbackOnlySkillEffectExecutor("combat.magic.elemental_ward", "Barreira Elemental ativada. (Sistema de ward pendente.)", SkillEffectCategory.Combat));
             // fable_70: combat.magic.slowing_sigils agora tem executor real (SlowFieldSkillEffectExecutor).
             _registry.Register(new FeedbackOnlySkillEffectExecutor("survival.sinal_retirada", "Sinal de Retirada ativado. (Efeito de utilidade pendente.)", SkillEffectCategory.Utility));
             _registry.Register(new FeedbackOnlySkillEffectExecutor("survival.isca_improvisada", "Isca Improvisada lançada. (Efeito de utilidade pendente.)", SkillEffectCategory.Utility));
-            _registry.Register(new FeedbackOnlySkillEffectExecutor("crafting.irrigador_portatil", "Irrigador Portátil usado. (Efeito de farm pendente.)", SkillEffectCategory.Farm));
+            // spec_codex_05: crafting.irrigador_portatil agora tem executor REAL (farm.crop.water_skill,
+            // registrado em Bootstrap()) — removido daqui. crafting.field_patch assume o slot
+            // feedback-only com mensagem honesta de reparo (nunca mais reusa o efeito de water).
+            _registry.Register(new FeedbackOnlySkillEffectExecutor("crafting.field_patch", "Reparo de Campo aplicado. (Efeito de reparo pendente.)", SkillEffectCategory.Utility));
             // fable_70: crafting.mecanismo_campo removido (cortado).
             _registry.Register(new FeedbackOnlySkillEffectExecutor("crafting.marca_eficiencia", "Marca de Eficiência aplicada. (Efeito de utilidade pendente.)", SkillEffectCategory.Utility));
         }
