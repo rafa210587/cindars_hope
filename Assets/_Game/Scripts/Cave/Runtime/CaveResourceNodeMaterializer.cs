@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using CindarsHope.Cave.Data;
 using CindarsHope.Cave.Generation;
 using CindarsHope.Cave.Resources;
-using CindarsHope.Core.Data;
 using CindarsHope.Equipment;
 using CindarsHope.Inventory;
 using UnityEngine;
@@ -74,8 +73,10 @@ namespace CindarsHope.Cave.Runtime
 
             // CRÍTICO: a seed string "resource_spawn" é parte do contrato cave-stable-run.
             // Não altere esta string nem a ordem das chamadas de spawnRandom.NextDouble().
+            // spec_codex_09: string.GetHashCode() nao e garantido estavel entre processos/runtimes;
+            // usa o FNV-1a determinístico ja existente no projeto (cave-stable-run).
             var spawnSeedString = $"{_caveRunManager.CaveWorldSeed}_{_caveRunManager.CaveRunSeed}_{level.CaveLevel}_resource_spawn";
-            var spawnRandom = new System.Random(spawnSeedString.GetHashCode());
+            var spawnRandom = new System.Random(CaveLayoutStableHash.Compute(spawnSeedString));
 
             int createdCount = 0;
             for (int i = 0; i < level.ResourceSpawnPoints.Count; i++)
@@ -343,8 +344,10 @@ namespace CindarsHope.Cave.Runtime
                 return null;
             }
 
+            // spec_codex_09: string.GetHashCode() nao e garantido estavel entre processos/runtimes;
+            // usa o FNV-1a determinístico ja existente no projeto (cave-stable-run).
             var seedString = $"{_caveRunManager.CaveWorldSeed}_{_caveRunManager.CaveRunSeed}_{level.CaveLevel}_resources_{spawnIndex}_{spawnPosition.x}_{spawnPosition.y}";
-            var deterministicRandom = new System.Random(seedString.GetHashCode());
+            var deterministicRandom = new System.Random(CaveLayoutStableHash.Compute(seedString));
 
             var roll = deterministicRandom.NextDouble();
             ResourceNodeDataSO selectedNode = null;

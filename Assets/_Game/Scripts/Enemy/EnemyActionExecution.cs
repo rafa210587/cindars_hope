@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CindarsHope.Cave.Generation;
 using UnityEngine;
 
 namespace CindarsHope.Enemy
@@ -127,13 +128,16 @@ namespace CindarsHope.Enemy
         /// <summary>
         /// Gera um seed inteiro determinisico para summon a partir de strings de contexto.
         /// Derivado de CaveRunSeed + caveLevel + summonerId (estavel por run, sem GUID/timestamp).
+        /// spec_codex_09 / cave-stable-run: string.GetHashCode() nao e garantido estavel entre
+        /// processos/runtimes; usa o FNV-1a determinístico ja existente no projeto para cada string
+        /// individual, mantendo intacta a formula de combinacao h * 31 + x.
         /// </summary>
         public static int DeriveSummonSeed(string caveRunSeed, int caveLevel, string summonerId)
         {
             int h = 17;
-            h = h * 31 + (caveRunSeed ?? string.Empty).GetHashCode();
+            h = h * 31 + CaveLayoutStableHash.Compute(caveRunSeed ?? string.Empty);
             h = h * 31 + caveLevel;
-            h = h * 31 + (summonerId ?? string.Empty).GetHashCode();
+            h = h * 31 + CaveLayoutStableHash.Compute(summonerId ?? string.Empty);
             return h;
         }
 

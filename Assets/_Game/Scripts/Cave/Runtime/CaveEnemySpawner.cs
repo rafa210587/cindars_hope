@@ -59,11 +59,13 @@ namespace CindarsHope.Cave.Runtime
 
             _playerTarget = playerTarget;
 
-            // Deterministic enemy selection using world + run + level seeds
+            // Deterministic enemy selection using world + run + level seeds.
+            // spec_codex_09 / cave-stable-run: string.GetHashCode() nao e garantido estavel entre
+            // processos/runtimes; usa o FNV-1a determinístico ja existente no projeto.
             var seedString = _caveRunManager != null
                 ? $"{_caveRunManager.CaveWorldSeed}_{_caveRunManager.CaveRunSeed}_{generatedLevel.CaveLevel}_enemies"
                 : $"{generatedLevel.CaveLevel}_enemies";
-            var deterministicRandom = new System.Random(seedString.GetHashCode());
+            var deterministicRandom = new System.Random(CaveLayoutStableHash.Compute(seedString));
 
             var sortedSpawnPoints = generatedLevel.EnemySpawnPoints
                 .OrderBy(sp => Vector2.Distance(sp.Position, generatedLevel.Entrance))
