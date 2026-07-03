@@ -32,7 +32,6 @@ using CindarsHope.World.Scale;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using CindarsHope.UI.Hotbar;
 using CindarsHope.UI.Modal;
 using CindarsHope.UI.Routing;
@@ -128,7 +127,8 @@ namespace CindarsHope.Editor.SceneCreation
             CreateLockedOreNodes();     // spec_farm_scene_relayout_v4: 4 veios de minerio bloqueados
             CreateMainCamera(playerTransform);
             CreateFarmSceneRuntimeBootstrap(bootstrap.GetComponent<SaveManager>());
-            CreateFarmTillingInputController(bootstrap.GetComponent<SaveManager>(), playerTransform, bootstrap.GetComponent<EquipmentManager>());
+            CreateFarmTillingInputController(bootstrap.GetComponent<SaveManager>(), playerTransform, bootstrap.GetComponent<EquipmentManager>(),
+                bootstrap.GetComponent<StaminaManager>(), bootstrap.GetComponent<TimeManager>());
             CreateSceneRuntimeInstaller(
                 farmPlotRegistry,
                 treeRegistry,
@@ -2169,8 +2169,11 @@ namespace CindarsHope.Editor.SceneCreation
             }
 
             var renderer = npcObject.AddComponent<SpriteRenderer>();
-            renderer.sprite = GetBuiltinSprite();
-            renderer.color = new Color(0.43f, 0.52f, 0.68f); // azul-ardosia: cor de Zrix na cidade
+            // Usa o BodySprite real do Zrix (mesmo padrao dos NPCs de dialogo da cidade); so cai no
+            // placeholder azul-ardosia se AssignNpcBodySprites nao tiver setado o sprite. Sprite real sem tint.
+            var hasBodySprite = npcData.BodySprite != null;
+            renderer.sprite = hasBodySprite ? npcData.BodySprite : GetBuiltinSprite();
+            renderer.color = hasBodySprite ? Color.white : new Color(0.43f, 0.52f, 0.68f);
             renderer.sortingOrder = 2;
             TrySetSortingLayer(renderer, "Characters", renderer.sortingOrder);
 
@@ -2730,11 +2733,14 @@ namespace CindarsHope.Editor.SceneCreation
         // spec_farm_scene_relayout_v4: FarmTillingInputController — input de aragem/rega pelo
         // jogador (tecla [F]). Fecha gap T006 da Spec B. Refs injetadas (sem FindObjectOfType).
         // Fase 8: tambem injeta EquipmentManager para checagem real de ferramenta.
-        private static void CreateFarmTillingInputController(SaveManager saveManager, Transform playerTransform, EquipmentManager equipmentManager)
+        // spec_codex_03: tambem injeta StaminaManager/TimeManager para stamina e dia reais
+        // (evita que o fallback permissivo mascare o gap apos regenerar a cena).
+        private static void CreateFarmTillingInputController(SaveManager saveManager, Transform playerTransform, EquipmentManager equipmentManager,
+            StaminaManager staminaManager = null, TimeManager timeManager = null)
         {
             var obj = new GameObject("FarmTillingInputController");
             var controller = obj.AddComponent<FarmTillingInputController>();
-            controller.EditorWire(saveManager, playerTransform, equipmentManager);
+            controller.EditorWire(saveManager, playerTransform, equipmentManager, staminaManager, timeManager);
             EditorUtility.SetDirty(controller);
         }
 
