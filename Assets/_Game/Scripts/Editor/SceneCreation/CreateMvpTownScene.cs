@@ -1272,11 +1272,11 @@ namespace CindarsHope.Editor.SceneCreation
                 roofRenderer.color = RoofTint(archetype);
                 roofRenderer.drawMode = SpriteDrawMode.Tiled;
                 roofRenderer.tileMode = SpriteTileMode.Continuous;
-                roofRenderer.size = new Vector2(size.x + 0.6f, size.y + 0.6f);
+                roofRenderer.size = new Vector2(size.x + 0.2f, size.y + 0.2f);
             }
             else
             {
-                roof.transform.localScale = new Vector3(size.x + 0.9f, size.y + 0.9f, 1f);
+                roof.transform.localScale = new Vector3(size.x + 0.2f, size.y + 0.2f, 1f);
                 roofRenderer.sprite = GetBuiltinSprite();
                 roofRenderer.color = Color.Lerp(baseColor, new Color(0.5f, 0.18f, 0.12f), 0.6f);
             }
@@ -1289,7 +1289,7 @@ namespace CindarsHope.Editor.SceneCreation
             var ridge = new GameObject("RoofRidge");
             ridge.transform.SetParent(house.transform);
             ridge.transform.localPosition = new Vector3(0f, hh * 0.15f, 0f);
-            ridge.transform.localScale = new Vector3(size.x + 0.9f, 0.35f, 1f);
+            ridge.transform.localScale = new Vector3(size.x + 0.2f, 0.35f, 1f);
             var ridgeRenderer = ridge.AddComponent<SpriteRenderer>();
             ridgeRenderer.sprite = GetBuiltinSprite();
             ridgeRenderer.color = new Color(0.30f, 0.10f, 0.07f);
@@ -1300,7 +1300,7 @@ namespace CindarsHope.Editor.SceneCreation
             var ridgeHi = new GameObject("RoofRidgeHighlight");
             ridgeHi.transform.SetParent(house.transform);
             ridgeHi.transform.localPosition = new Vector3(0f, hh * 0.15f + 0.30f, 0f);
-            ridgeHi.transform.localScale = new Vector3(size.x + 0.9f, 0.16f, 1f);
+            ridgeHi.transform.localScale = new Vector3(size.x + 0.2f, 0.16f, 1f);
             var ridgeHiRenderer = ridgeHi.AddComponent<SpriteRenderer>();
             ridgeHiRenderer.sprite = GetBuiltinSprite();
             ridgeHiRenderer.color = new Color(1f, 0.85f, 0.70f, 0.35f);
@@ -1311,7 +1311,7 @@ namespace CindarsHope.Editor.SceneCreation
             var eave = new GameObject("RoofEaveShadow");
             eave.transform.SetParent(house.transform);
             eave.transform.localPosition = new Vector3(0f, -hh - 0.35f, 0f);
-            eave.transform.localScale = new Vector3(size.x + 0.9f, 0.35f, 1f);
+            eave.transform.localScale = new Vector3(size.x + 0.2f, 0.35f, 1f);
             var eaveRenderer = eave.AddComponent<SpriteRenderer>();
             eaveRenderer.sprite = GetBuiltinSprite();
             eaveRenderer.color = new Color(0f, 0f, 0f, 0.30f);
@@ -2136,45 +2136,70 @@ namespace CindarsHope.Editor.SceneCreation
             new Vector3(-10f, -12f, 0f), new Vector3(10f, -12f, 0f),
         };
 
-        // Floresta da borda: agora fica POR FORA da muralha de pedra (a muralha é o limite visível;
-        // a mata é a profundidade atrás dela). Deixa um vão central ao SUL para o portão da fazenda.
+        // Floresta da borda: fica POR FORA da muralha. Seis faixas com jitter determinístico evitam
+        // linhas retas e criam profundidade, sem tornar a cena diferente a cada regeneração.
         private static readonly Vector3[] TownTreePositions = BuildBorderTreeRing();
 
         private static Vector3[] BuildBorderTreeRing()
         {
             var list = new List<Vector3>();
-            float wallX = TownDistrictLayout.HalfWidth + 0.5f;   // 38.5 — linha da muralha oeste/leste
-            float wallY = TownDistrictLayout.HalfHeight + 0.5f;  // 32.5 — linha da muralha norte/sul
-            float[] depths = { 1.2f, 2.8f, 4.4f };  // TRÊS fileiras FORA da muralha (mata atrás do muro)
-            const float step = 2.6f;     // árvores (~3 tiles) se sobrepõem ⇒ cada fileira fecha totalmente
-            const float gateHalf = 4f;   // metade do corredor sul (entrada da cidade / saída p/ fazenda)
+            float wallX = TownDistrictLayout.HalfWidth + 0.5f;
+            float wallY = TownDistrictLayout.HalfHeight + 0.5f;
+            float step = TownCityLayout.ExteriorForestStep;
+            float gateHalf = TownCityLayout.ExteriorForestGateHalfClearance;
 
-            foreach (float d in depths)
+            for (int band = 0; band < TownCityLayout.ExteriorForestBandCount; band++)
             {
+                // Distâncias crescentes deixam a borda densa sem formar uma faixa geométrica uniforme.
+                float d = 1.0f + band * 1.85f + band * band * 0.08f;
                 float tx = wallX + d;
                 float ty = wallY + d;
+                float stagger = (band & 1) == 0 ? 0f : step * 0.5f;
 
                 // Norte completo; sul preserva o corredor do portão em todas as profundidades.
-                for (float x = -tx; x <= tx + 0.01f; x += step)
+                int horizontalIndex = 0;
+                for (float baseX = -tx + stagger; baseX <= tx + 0.01f; baseX += step, horizontalIndex++)
                 {
-                    list.Add(new Vector3(x, ty, 0f));
-                    if (Mathf.Abs(x) > gateHalf)
+                    float northX = baseX + ForestSignedNoise(band, horizontalIndex, 11) * 0.72f;
+                    float northY = ty + ForestSignedNoise(band, horizontalIndex, 17) * 0.48f;
+                    list.Add(new Vector3(northX, northY, 0f));
+
+                    float southX = baseX + ForestSignedNoise(band, horizontalIndex, 23) * 0.72f;
+                    float southY = -ty + ForestSignedNoise(band, horizontalIndex, 29) * 0.48f;
+                    if (Mathf.Abs(southX) > gateHalf)
                     {
-                        list.Add(new Vector3(x, -ty, 0f));
+                        list.Add(new Vector3(southX, southY, 0f));
                     }
                 }
 
-                // Laterais oeste/leste completas.
-                for (float y = -wallY + step; y <= wallY - step + 0.01f; y += step)
+                // Laterais completas, desencontradas das faixas norte/sul e também com jitter nos dois eixos.
+                int verticalIndex = 0;
+                for (float baseY = -wallY + step + stagger; baseY <= wallY - step + 0.01f; baseY += step, verticalIndex++)
                 {
-                    list.Add(new Vector3(-tx, y, 0f));
-                    list.Add(new Vector3(tx, y, 0f));
+                    float westX = -tx + ForestSignedNoise(band, verticalIndex, 31) * 0.48f;
+                    float westY = baseY + ForestSignedNoise(band, verticalIndex, 37) * 0.72f;
+                    float eastX = tx + ForestSignedNoise(band, verticalIndex, 41) * 0.48f;
+                    float eastY = baseY + ForestSignedNoise(band, verticalIndex, 43) * 0.72f;
+                    list.Add(new Vector3(westX, westY, 0f));
+                    list.Add(new Vector3(eastX, eastY, 0f));
                 }
             }
 
             // Árvores espalhadas DENTRO da cidade (alguns pontos, fora da borda).
             list.AddRange(ScatteredTreePositions);
             return list.ToArray();
+        }
+
+        private static float ForestSignedNoise(int band, int index, int salt)
+        {
+            unchecked
+            {
+                uint hash = (uint)(band * 73856093 ^ index * 19349663 ^ salt * 83492791);
+                hash ^= hash >> 13;
+                hash *= 1274126177u;
+                hash ^= hash >> 16;
+                return ((hash & 0xFFFFu) / 65535f) * 2f - 1f;
+            }
         }
 
         private static void CreateTownTrees()
@@ -2194,13 +2219,15 @@ namespace CindarsHope.Editor.SceneCreation
             treeObject.transform.SetParent(parent);
             // Posições já estão no footprint 120x90 (anel de borda) — sem reposition.
             treeObject.transform.position = position;
-            // Pequena variação determinística por índice para o anel não parecer um carimbo repetido.
-            float scale = 2.7f + (treeIndex % 3) * 0.3f;
+            // Variação determinística de escala e espécie: orgânica, mas estável entre regenerações.
+            float scale = 2.55f + (ForestSignedNoise(treeIndex % 7, treeIndex, 53) + 1f) * 0.38f;
             treeObject.transform.localScale = new Vector3(scale, scale, 1f);
 
             var spriteRenderer = treeObject.AddComponent<SpriteRenderer>();
             string[] townTreeSpecies = { "tree_oak", "tree_pine", "tree_apple" };
-            var townTreeSprite = WorldSpriteLibrary.Tree(townTreeSpecies[treeIndex % townTreeSpecies.Length]);
+            int speciesIndex = Mathf.FloorToInt((ForestSignedNoise(treeIndex % 11, treeIndex, 59) + 1f) * 1.5f);
+            speciesIndex = Mathf.Clamp(speciesIndex, 0, townTreeSpecies.Length - 1);
+            var townTreeSprite = WorldSpriteLibrary.Tree(townTreeSpecies[speciesIndex]);
             if (townTreeSprite != null) { spriteRenderer.sprite = townTreeSprite; spriteRenderer.color = Color.white; }
             else { spriteRenderer.sprite = GetBuiltinSprite(); float greenShift = (treeIndex % 4) * 0.025f; spriteRenderer.color = new Color(0.22f + greenShift, 0.45f + greenShift, 0.2f); }
             spriteRenderer.sortingOrder = 2;
@@ -2322,7 +2349,9 @@ namespace CindarsHope.Editor.SceneCreation
             // Grama base COM VARIACAO sob TODA a cidade (best practice: base + variantes esparsas via
             // Tilemap). Substitui a laje unica lisa + os pads de distrito (que cobriam a variacao).
             WorldTilemapGround.PaintGrass(parent.transform, "TownWorldGrid", -6, "Ground", Vector2.zero,
-                new Vector2(TownDistrictLayout.WidthTiles + 6f, TownDistrictLayout.HeightTiles + 6f));
+                new Vector2(
+                    TownDistrictLayout.WidthTiles + TownCityLayout.ExteriorForestGroundPadding,
+                    TownDistrictLayout.HeightTiles + TownCityLayout.ExteriorForestGroundPadding));
         }
 
         // Construções de preenchimento (com colisão) nos vazios entre distritos: dão volume à cidade

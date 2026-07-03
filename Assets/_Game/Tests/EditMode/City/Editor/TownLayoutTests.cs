@@ -206,6 +206,10 @@ namespace CindarsHope.Tests.EditMode.City
             Assert.AreEqual(23, TownCityLayout.BaselineNpcStallCount);
             Assert.AreEqual(6, TownCityLayout.BaselineMarketStallCount);
             Assert.AreEqual(497, TownCityLayout.BaselineTreeCount);
+            Assert.GreaterOrEqual(TownCityLayout.ExteriorForestBandCount, 6);
+            Assert.LessOrEqual(TownCityLayout.ExteriorForestStep, 2.3f);
+            Assert.GreaterOrEqual(TownCityLayout.ExteriorForestGateHalfClearance, 6f);
+            Assert.GreaterOrEqual(TownCityLayout.ExteriorForestGroundPadding, 28f);
             Assert.AreEqual(TownCityLayout.BaselineHouseCount, TownCityLayout.AllBuildings.Count);
         }
 

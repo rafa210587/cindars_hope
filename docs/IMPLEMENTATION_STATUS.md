@@ -13,7 +13,7 @@
 **Status:** `BUILD_VALIDATED_PENDING_HUMAN_PLAYMODE`
 
 - TownScene reorganizada por 24 lotes determinísticos e malha de vias sem overlap.
-- Baseline preservado: 24 casas/portas/telhados, 29 barracas, 497 árvores, 28 NPCs e 84 anchors.
+- Baseline preservado: 24 casas/portas/telhados, 29 barracas, 1153 árvores (497 era o piso v8), 28 NPCs e 84 anchors.
 - Papéis e destinos de trabalho/social/home reconciliados; `Stationary` agora respeita expediente.
 - EditMode 22/22, validator 21/21, builds runtime/editor exit 0.
 - Play Mode visual pendente: `docs/validation/playmode/spec_city_preservation_first_coherent_relayout_human_test_scenario.md`.

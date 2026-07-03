@@ -33,7 +33,7 @@ HouseDoorInteractable: 24 -> 24
 RoofReveal: 24 -> 24
 Stall_npc_*: 23 -> 23
 MarketSquare_Stall_*: 6 -> 6
-TownTree_*: 334 -> 497
+TownTree_*: 334 -> 497 -> 1153
 Schedule anchors: 84 (28 NPCs × work/social/home)
 Stable spawns: town_default + town_from_farm present
 ```

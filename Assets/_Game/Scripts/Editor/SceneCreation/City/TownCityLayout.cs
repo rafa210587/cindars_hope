@@ -154,6 +154,10 @@ namespace CindarsHope.Editor.SceneCreation
         public const int BaselineNpcStallCount = 23;
         public const int BaselineMarketStallCount = 6;
         public const int BaselineTreeCount = 497;
+        public const int ExteriorForestBandCount = 6;
+        public const float ExteriorForestStep = 2.25f;
+        public const float ExteriorForestGateHalfClearance = 6f;
+        public const float ExteriorForestGroundPadding = 30f;
 
         private static readonly TownRoadSegment[] Roads =
         {

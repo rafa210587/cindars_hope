@@ -112,7 +112,7 @@ namespace CindarsHope.Editor.Validation
                 npcStalls >= TownCityLayout.BaselineNpcStallCount, ref passCount, ref failCount);
             Check($"Market stall preservation floor — found {marketStalls} (>=6)",
                 marketStalls >= TownCityLayout.BaselineMarketStallCount, ref passCount, ref failCount);
-            Check($"Tree visual v8 ring — found {treeCount} (>={TownCityLayout.BaselineTreeCount})",
+            Check($"Dense irregular exterior forest — found {treeCount} (>={TownCityLayout.BaselineTreeCount})",
                 treeCount >= TownCityLayout.BaselineTreeCount, ref passCount, ref failCount);
 
             Check("All stable building roots exist at their canonical lots",

@@ -52,15 +52,17 @@ portais e quantidades mínimas continuam válidos.
 - casa residencial padrão: `8×7` exterior e `6×5` interior caminhável, com recuo/parede de 1 tile por lado;
 - cada residência padrão contém cama, mesa, armazenamento, cozinha compacta e fogão sem collider,
   preservando o corredor central caminhável;
-- telhados placeholder usam composição tiled limitada ao footprint + `0.3` tile de beiral por lado;
+- telhados placeholder usam composição tiled limitada ao footprint + `0.1` tile de beiral por lado;
 - avenida principal tem 7 tiles; vias secundárias têm 4 tiles quando não limitadas pelo frontage cívico;
 - bancas de NPC ficam 4 tiles deslocadas da linha central da porta, preservando um apron livre de `3×3`;
 - centro: praça pavimentada quadrada `26×26`, com fonte, estátua, bancos, canteiros e iluminação;
 - os 28 NPCs mantêm IDs, horários e lógicas, com trabalho/social/casa realocados por papel;
 - arte final específica fica pendente; até lá cada construção usa placeholder semântico nomeado e
   substituível, além das sprites modulares já existentes;
-- árvores visuais passam de 334 para 497 por causa do perímetro maior; somente as 8 árvores internas
-  mantêm collider pequeno de tronco.
+- árvores visuais passam de 334 para 1153: seis faixas externas com jitter determinístico de posição,
+  escala e espécie formam uma mata densa e irregular; somente as 8 árvores internas mantêm collider
+  pequeno de tronco, o corredor sul preserva 12 tiles livres em toda a profundidade da floresta e a
+  base de grama recebe 15 tiles extras por lado para não expor o fundo cinza entre as árvores.
 
 Conflitos resolvidos explicitamente: as cláusulas antigas “footprint continua 76×64”, “acesso oeste
 permanece” e “portão sul só pode ser adicional” estão superseded pela decisão humana v8. Nenhum ID ou

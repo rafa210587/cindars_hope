@@ -20,7 +20,7 @@ must not remove. Counts discovered after this capture also become preservation f
 | `Stall_npc_*` | 23 | after >= before; NPC association retained |
 | `MarketSquare_Stall_*` | 6 | after >= before |
 | total stalls | 29 | after >= before |
-| `TownTree_*` | 334 baseline / 497 v8 | v8 expands the perimeter without reducing visuals |
+| `TownTree_*` | 334 baseline / 497 v8 floor / 1153 current | six irregular exterior bands expand the perimeter without reducing visuals |
 | canonical scheduled NPCs | 28 | three anchors per NPC retained |
 | spawn `town_default` | 1 | ID retained |
 | spawn `town_from_farm` | 1 | ID retained |

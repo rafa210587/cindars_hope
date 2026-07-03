@@ -19,7 +19,7 @@ validated_game_rules: [city_rules.md]
 
 O código-fonte do gerador foi atualizado para a planta v8 aprovada: `120×90`, portão/portal sul,
 zonas cívica/comercial/ofícios/água/residencial ampliadas, 24 prédios preservados e reinterpretados,
-28 NPCs realocados por papel, 497 árvores de perímetro e placeholders semânticos substituíveis.
+28 NPCs realocados por papel, 1153 árvores em floresta externa irregular e placeholders semânticos substituíveis.
 
 O build C# de `Assembly-CSharp-Editor.csproj` passou sem erros. A `TownScene.unity` foi regenerada em
 batchmode após o ajuste de circulação: telhados tiled contidos no footprint, avenida principal de 7
@@ -29,7 +29,7 @@ tiles, vias secundárias de 4 tiles, bancas afastadas das portas e seis residên
 ## Summary
 
 TownScene reorganizada por uma fonte determinística de 24 lotes e 10 segmentos viários. A entrega
-preserva casas, portas, telhados, 29 barracas, 497 árvores, 28 NPCs, 84 anchors, spawns e portais;
+preserva casas, portas, telhados, 29 barracas, 1153 árvores, 28 NPCs, 84 anchors, spawns e portais;
 reconcilia trabalho/social/casa por papel; adiciona portas N/S/E/W, identidade por arquétipo,
 collider de tronco e lago bloqueado com cais.
 
@@ -58,7 +58,7 @@ Created new: `TownCityLayout`, pure editorial geometry/role contract. No runtime
 
 ```text
 Preserve every baseline object family and stable ID.
-Keep 24 walk-in buildings, 29 stalls, 497 trees and 84 schedule anchors.
+Keep 24 walk-in buildings, 29 stalls, at least 497 trees and 84 schedule anchors.
 Remove building/building and building/road overlaps.
 Connect every building entrance to the road graph.
 Keep temple, cemetery, Chamber, Town Hall, market, lake and west access.
@@ -78,7 +78,7 @@ Require automated geometry/regression tests and final human Play Mode.
 | 28 NPC roles and destinations | PASS | `NpcPlaces_PreserveAllRoles_AndStayNearAssociatedBuildings` |
 | existing schedule windows preserved | PASS | resolver tests; only `Stationary` classification corrected |
 | landmarks retained | PASS | validator landmark check |
-| tree visuals retained/colliders tightened | PASS | 497 trees, exactly 8 internal colliders |
+| tree visuals retained/colliders tightened | PASS | 1153 trees, exactly 8 internal colliders; six jittered exterior bands |
 | final visual/feel validation | DEFERRED | human scenario NOT RUN |
 
 ## Files changed
@@ -109,7 +109,7 @@ Forbidden files touched by this execution: NO.
 | Editor build | PASS, exit 0, 0 errors | `Logs/town-editor-build.log` |
 | Town EditMode tests | PASS, 22/22 | `Logs/town-circulation-editmode-results.xml` |
 | City schedule/scene validator | PASS, 21/21 | `Logs/town-circulation-validator.log` |
-| Preservation manifest diff | PASS | 24 houses, 29 stalls, 497 trees, 24 doors/roofs, 84 anchors |
+| Preservation manifest diff | PASS | 24 houses, 29 stalls, 1153 trees, 24 doors/roofs, 84 anchors |
 | Non-regression review | PASS_WITH_DEFERRED | linked review report |
 | Docs validation | EXPECTED_FAIL_PREEXISTING | unrelated NPC physics companion spec + dirty harness placeholder scan |
 | Strict validation | builds PASS; global result initially blocked because this report did not exist | `Logs/town-strict-validation.log` |
