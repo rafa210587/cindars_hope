@@ -443,3 +443,25 @@ via `EnemyHealth`; `City/Schedule/SchedulePeriod.cs` é vocabulário ativo, só 
 
 Todas as 8 são `Parallelizable: YES` entre si (arquivos não se sobrepõem), sem dependência entre elas.
 Nenhuma promovida a `SPEC_EXECUTION_ORDER.md` — aguardam autorização humana explícita para execução.
+
+### Lote CODEX_CONVERGENCE — Lote 2 (gerado 2026-07-03)
+
+Continuação da auditoria de convergência: 5 gaps adicionais achados por Grep/leitura direta —
+hash de seed instável (`string.GetHashCode()`) em 3 pontos de cave/enemy, escrita de save
+não-atômica com janela de perda entre delete e move, debug tooling sem guard de build (overlay
+de colisão + skip de nível da cave), 15 arquivos + 4 eventos de código morto adicionais
+re-verificados nesta sessão, e ausência de physics layers/ContactFilter2D em queries de combate
+(mask 0 no obstacle avoidance de inimigo, alocação por ataque).
+
+| # | Spec | Fecha |
+|---|---|---|
+| CX09 | `spec_codex_09_cave_stable_hash.md` | Hash FNV-1a estável (reusa CaveLayoutStableHash) em CaveEnemySpawner, CaveResourceNodeMaterializer e EnemyActionExecution.DeriveSummonSeed, em vez de string.GetHashCode() |
+| CX10 | `spec_codex_10_save_atomic_write.md` | WriteTextSafely atômico (File.Replace ou backup-antes-de-delete via SaveBackupService) + recuperação de .backup no load |
+| CX11 | `spec_codex_11_debug_build_guards.md` | Guard #if UNITY_EDITOR \|\| DEVELOPMENT_BUILD no CollisionDebugOverlayBootstrap e no CaveDebugLevelSkipController (default false); DebugHud explicitamente não tocado |
+| CX12 | `spec_codex_12_dead_code_removal_batch2.md` | Remove 15 arquivos + 4 eventos mortos (lote 2, re-verificados); ajusta ValidateSpec11Damage.cs (StatusTickedEvent) |
+| CX13 | `spec_codex_13_physics_layers_contact_filter.md` | 7 physics layers via RunStep idempotente em CindarsHopeMenu; ContactFilter2D + buffers nas 3 queries de combate; wire de EnemyBrain._obstacleLayerMask para WorldSolid (NO-parallel, maior risco do lote) |
+
+CX09-CX12 são `Parallelizable: YES` entre si (arquivos não se sobrepõem). CX13 é
+`Parallelizable: NO` (lock central em ProjectSettings/TagManager.asset e nos arquivos de combate;
+maior risco de regressão do lote, recomenda-se validação isolada). Nenhuma spec deste lote 2 foi
+promovida a `SPEC_EXECUTION_ORDER.md` — aguardam autorização humana explícita para execução.
