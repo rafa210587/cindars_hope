@@ -21,7 +21,7 @@ If an ADR conflicts with a game rule:
 
 ---
 
-## Active Decisions (ADR-0001 to ADR-0019)
+## Active Decisions (ADR-0001 to ADR-0030)
 
 | ADR | Title | Theme | Status | Canonical Ref | Source |
 |---|---|---|---|---|---|
@@ -44,6 +44,17 @@ If an ADR conflicts with a game rule:
 | [ADR-0017](../decisions/ADR-0017-reputation-absorbed-by-friendship.md) | Reputation Absorbed by Friendship | Gameplay | proposed | docs/decisions/ADR-0017-* | fable_57 |
 | [ADR-0018](../decisions/ADR-0018-cave-conflict-stable-run-carveout.md) | Cave Inter-Monster Conflict Carve-out | Gameplay | accepted | docs/game_rules/cave_rules.md | fable_78 |
 | [ADR-0019](../decisions/ADR-0019-cave-biome-mineable-budget-supersedes-resource-node-range.md) | Cave Biome Mineable Budget Supersedes 4-10 | Gameplay | accepted | docs/game_rules/cave_rules.md | fable_78 |
+| [ADR-0020](../decisions/ADR-0020-incremental-asmdef-adoption.md) | Incremental Assembly Definition (.asmdef) Adoption | Architecture | proposed | docs/decisions/ADR-0020-* | spec_codex_08_convergence_decisions |
+| [ADR-0021](../decisions/ADR-0021-unity-yaml-lfs-removal.md) | Unity YAML Out of Git LFS (extends ADR-0008) | Tooling | proposed | docs/decisions/ADR-0021-* | spec_codex_08_convergence_decisions |
+| [ADR-0022](../decisions/ADR-0022-runtime-bootstrap-composition-root.md) | Runtime Bootstrap Composition Root | Architecture | proposed | docs/decisions/ADR-0022-*, .claude/skills/runtime-bootstrap-pattern | spec_codex_08_convergence_decisions |
+| [ADR-0023](../decisions/ADR-0023-townscene-forest-tilemap-chunking.md) | TownScene Forest → Tilemap/Chunked Rendering | Performance | proposed | docs/decisions/ADR-0023-* | spec_codex_08_convergence_decisions |
+| [ADR-0024](../decisions/ADR-0024-imgui-to-canvas-migration-remaining.md) | Remaining IMGUI → Canvas Migration | UI | proposed | docs/decisions/ADR-0024-* | spec_codex_08_convergence_decisions |
+| [ADR-0025](../decisions/ADR-0025-resources-to-direct-refs-addressables.md) | Resources → Direct Refs / Addressables | Tooling | proposed | docs/decisions/ADR-0025-* | spec_codex_08_convergence_decisions |
+| [ADR-0026](../decisions/ADR-0026-rng-domain-separation.md) | RNG Domain Separation (Gameplay/World/Visual) | Architecture | proposed | .claude/skills/rng-and-determinism | spec_codex_08_convergence_decisions (extra, 2nd audit) |
+| [ADR-0027](../decisions/ADR-0027-timescale-coordinator-tokens.md) | TimeScaleCoordinator with Tokens | Architecture | proposed | docs/decisions/ADR-0027-* | spec_codex_08_convergence_decisions (extra, 2nd audit) |
+| [ADR-0028](../decisions/ADR-0028-unified-async-scene-flow.md) | Unified Async Scene Loading Flow | Architecture | proposed | docs/decisions/ADR-0028-* | spec_codex_08_convergence_decisions (extra, 2nd audit) |
+| [ADR-0029](../decisions/ADR-0029-ppu-ysort-single-contract.md) | Single PPU / Y-Sort Contract (amends ADR-0011) | Art | proposed | docs/decisions/ADR-0011-*, ADR-0029-* | spec_codex_08_convergence_decisions (extra, 2nd audit) |
+| [ADR-0030](../decisions/ADR-0030-cave-tile-gameobject-pooling.md) | GameObject Pooling + Tilemap for Cave Materialization | Performance | proposed | .claude/skills/object-pooling-pattern, cave-stable-run | spec_codex_08_convergence_decisions (extra, 2nd audit) |
 
 ---
 
