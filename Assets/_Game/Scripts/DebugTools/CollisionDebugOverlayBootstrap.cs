@@ -11,6 +11,10 @@ namespace CindarsHope.DebugTools
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void Init()
         {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            // Build guard: overlay so de debug tooling, nunca deve existir em build de producao final.
+            // FindAnyObjectByType aqui e excecao documentada de DebugTools (nao gameplay code) para
+            // evitar instanciar uma segunda instancia dormente do overlay.
             if (Object.FindAnyObjectByType<CollisionDebugOverlay>() != null)
             {
                 return;
@@ -19,6 +23,7 @@ namespace CindarsHope.DebugTools
             var go = new GameObject("CollisionDebugOverlay");
             Object.DontDestroyOnLoad(go);
             go.AddComponent<CollisionDebugOverlay>();
+#endif
         }
     }
 }

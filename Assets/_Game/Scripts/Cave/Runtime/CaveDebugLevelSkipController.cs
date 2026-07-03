@@ -8,7 +8,7 @@ namespace CindarsHope.Cave.Runtime
     {
         [SerializeField] private CaveRunManager _caveRunManager;
         [SerializeField] private CaveLevelRuntimeController _levelController;
-        [SerializeField] private bool _enableDebugLevelSkip = true;
+        [SerializeField] private bool _enableDebugLevelSkip = false;
         [SerializeField] private KeyCode _nextGateKey = KeyCode.P;
         [SerializeField] private KeyCode _alternateNextGateKey = KeyCode.F2;
         [SerializeField] private int _maxDebugGateSearchLevel = 100;
@@ -41,6 +41,10 @@ namespace CindarsHope.Cave.Runtime
         {
             SyncLegacySerializedFields();
 
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            // Build guard: skip de nivel e ferramenta de debug; dupla protecao com o default
+            // seguro (_enableDebugLevelSkip = false) garante que nao roda em build de producao
+            // mesmo que o campo tenha sido setado manualmente como true em algum asset/prefab.
             if (!_enableDebugLevelSkip)
             {
                 if (!_disabledLogged)
@@ -67,10 +71,12 @@ namespace CindarsHope.Cave.Runtime
                 Debug.Log($"CaveDebugLevelSkipController: debug next gate key pressed. Key={_alternateNextGateKey}.", this);
                 SkipToNextBossGateLevel();
             }
+#endif
         }
 
         private void OnGUI()
         {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
             if (!_enableDebugLevelSkip || !_showDebugSkipButton || SceneManager.GetActiveScene().name != "CaveScene")
             {
                 return;
@@ -82,6 +88,7 @@ namespace CindarsHope.Cave.Runtime
                 Debug.Log("CaveDebugLevelSkipController: debug next gate button clicked.", this);
                 SkipToNextBossGateLevel();
             }
+#endif
         }
 
         private void SyncLegacySerializedFields()
