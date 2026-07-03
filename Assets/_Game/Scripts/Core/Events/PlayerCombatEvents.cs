@@ -28,18 +28,6 @@ namespace CindarsHope.Core.Events
         }
     }
 
-    public class SpellCastFailedEvent
-    {
-        public string SpellId { get; }
-        public string Reason { get; }
-
-        public SpellCastFailedEvent(string spellId, string reason = "Unknown")
-        {
-            SpellId = spellId ?? string.Empty;
-            Reason = reason ?? "Unknown";
-        }
-    }
-
     public class SkillActionExecutedEvent
     {
         public string SkillActionId { get; }

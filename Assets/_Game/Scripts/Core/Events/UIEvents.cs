@@ -2,8 +2,6 @@ namespace CindarsHope.Core.Events
 {
     public struct PauseOpenedEvent { }
 
-    public struct PauseClosedEvent { }
-
     public readonly struct NotificationToastRequestedEvent
     {
         public readonly string Message;

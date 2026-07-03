@@ -30,20 +30,6 @@
         }
     }
 
-    public class StatusTickedEvent
-    {
-        public string TargetId { get; }
-        public string StatusId { get; }
-        public int Damage { get; }
-
-        public StatusTickedEvent(string targetId, string statusId, int damage)
-        {
-            TargetId = targetId ?? string.Empty;
-            StatusId = statusId ?? string.Empty;
-            Damage = damage;
-        }
-    }
-
     public class StatusExpiredEvent
     {
         public string TargetId { get; }

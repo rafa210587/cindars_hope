@@ -1,6 +1,4 @@
 #if UNITY_EDITOR
-using CindarsHope.Combat;
-using CindarsHope.Core.Events;
 using UnityEditor;
 using UnityEngine;
 
@@ -59,9 +57,11 @@ namespace CindarsHope.Editor.Validation
         private static bool ValidateDamageEvents()
         {
             var script = AssetDatabase.LoadAssetAtPath<MonoScript>("Assets/_Game/Scripts/Core/Events/StatusAndDamageEvents.cs");
-            if (script != null && script.text.Contains("class DamageAppliedEvent") && script.text.Contains("StatusAppliedEvent") && script.text.Contains("StatusTickedEvent"))
+            // StatusTickedEvent removido do check (spec_codex_12_dead_code_removal_batch2):
+            // evento morto sem publish/subscribe, arquivo deletado.
+            if (script != null && script.text.Contains("class DamageAppliedEvent") && script.text.Contains("StatusAppliedEvent"))
             {
-                Debug.Log("✓ Damage and Status events exist (DamageApplied, StatusApplied, StatusTicked)");
+                Debug.Log("✓ Damage and Status events exist (DamageApplied, StatusApplied)");
                 return true;
             }
 
