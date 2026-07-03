@@ -21,5 +21,11 @@ namespace CindarsHope.Quests.Conditions
         public HashSet<string> BestiaryKnownIds { get; set; } = new HashSet<string>();
         public HashSet<string> ActiveQuestIds { get; set; } = new HashSet<string>();
         public HashSet<string> CompletedQuestIds { get; set; } = new HashSet<string>();
+
+        // Combat snapshot — nullable because no context builder wires these from the real
+        // player HP manager yet (PlayerManager.CurrentHP/MaxHP). Absence must be treated as
+        // "not evaluable", never as an implicit pass. See CombatCondition in QuestConditionResolver.
+        public int? PlayerCurrentHp { get; set; }
+        public int? PlayerMaxHp { get; set; }
     }
 }

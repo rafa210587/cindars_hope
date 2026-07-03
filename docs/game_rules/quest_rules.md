@@ -124,6 +124,22 @@ Hidden quests may resolve to HiddenCompleted instead of a visible Completed.
 - **Edge case:** Trigger deduplication uses an explicit `QuestTriggerDeduplicationPolicy` (`ByEventId`, `ByDayTarget`, `ByRunSeedTarget`, `ByObjectiveCompletion`, `ManualAllowRepeat`) so the same gameplay event is not counted twice (`QuestConditionType.cs:36`).
 - **Source:** QUEST_OBJECTIVE_EVENT_SYSTEM §8-§9; `QuestConditionType.cs:3`, `QuestTriggerType.cs:3`, `QuestCategoryType.cs:62`.
 
+#### Rule 4.1: `CombatCondition` Is Real, Not Future — and Now Evaluates Honestly
+
+- **Rule:** `CombatCondition` (`QuestConditionType.CombatCondition`, value 11) is a **real** condition type (not one of the `*ConditionFuture` values) — it is distinct from the future-condition skip mechanism above. It compares the player's current HP percentage against `ExpectedValue` (0-100) using `Operator` (`GreaterThanOrEqual` / `LessThanOrEqual`), reading `QuestConditionContext.PlayerCurrentHp` / `PlayerMaxHp`.
+- **Constraint:** If the context has no combat snapshot (`PlayerCurrentHp`/`PlayerMaxHp` are `null`, or `PlayerMaxHp <= 0`), the condition returns an **explicit failure** citing "Combat snapshot indisponivel" — it must never return an implicit `Pass`. Prior to this rule (spec `spec_codex_02_quest_condition_honesty`), `CombatCondition` always returned `true` unconditionally; this was a silent honesty gap, not an intended behavior.
+- **Known gap (as of this rule):** no runtime context builder currently populates `QuestConditionContext` from the real `PlayerManager.CurrentHP`/`MaxHP` — `QuestConditionContext` is constructed only by EditMode tests today (`QuestConditionTriggerTests.cs`). No quest data in `Assets/_Game/Data/**` uses `CombatCondition` yet (grep-confirmed at authoring time), so this is preventive hardening, not an active regression fix. Closure criterion: when a real context-builder wires `QuestConditionContext.PlayerCurrentHp`/`PlayerMaxHp` from `PlayerManager` (e.g. inside `QuestTriggerRouter`'s caller), `CombatCondition` will start evaluating real data with zero further changes to `QuestConditionResolver`.
+- **Debt tracking — the 3 future condition types:**
+
+| ConditionType | Domain | Closure criterion |
+|---|---|---|
+| `SocialConditionFuture` (90) | NPC relationship/friendship depth | When a real social/relationship system exists (see `npc_rules.md` planned) |
+| `PetConditionFuture` (91) | Pet ownership/bond state | When a pet system exists (blocked/moved to `features_futuras` — see CURRENT_STATE.md WAVE 17-24) |
+| `CompanionConditionFuture` (92) | Companion state/loyalty | When a companion system exists (see companion specs in `features_futuras`) |
+
+  Each future type emits a one-shot dev log (`Debug.Log`, guarded per-`ConditionType` for the process lifetime) the first time `IsFutureCondition()` routes it to `Pass()`, so a quest that references one is auditable instead of silent. This does not change behavior (still `Pass`) — it only makes the deferral visible.
+- **Source:** `QuestConditionResolver.cs` (`EvaluateCombat`, `s_loggedFutureConditionTypes`); `QuestConditionContext.cs` (`PlayerCurrentHp`/`PlayerMaxHp`); spec `spec_codex_02_quest_condition_honesty`.
+
 ### Rule 5: Objective Progress Tracking
 
 - **Rule:** Objectives advance through the `QuestService` runtime in three shapes, depending on `QuestObjectiveType`:
