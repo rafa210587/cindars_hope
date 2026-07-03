@@ -418,3 +418,28 @@ Ordem/janelas: fable_00C PARTE H e .specs/README.md.
 F78 é P1 / Runtime+Data+Editor / NO-parallel (lock em Cave/Enemy/Combat). Depende de F33/F24/F06/F32/F09/F13
 e do GAMEPLAY_EXPANSION_SLICE. Regida por stable-run (ADR-0005). Decisões de direção do humano vinculadas na
 spec: tamanho escala com profundidade; elementos temáticos por bioma; uma spec densa multi-fase.
+
+### Lote CODEX_CONVERGENCE — Honestidade de Validação (gerado 2026-07-03)
+
+Auditoria de convergência arquitetural (achados verificados por Grep/leitura direta) revelou 8 gaps de
+honestidade de validação/execução: validator runner que reporta PASS com lista vazia, quest condition de
+combate hardcoded, farm tilling com stamina/dia fake, nó de minério que não entrega item, mapeamento de
+skill legado/errado + 6 skills feedback-only sem ledger, código morto não re-verificado, ausência de smoke
+de boot-wiring, e débito estrutural pesado sem ADR. Todas as 8 specs re-auditaram Phase-0 nesta sessão —
+2 achados do prompt original foram corrigidos (`Combat/StatusEffect/StatusEffectManager.cs` está em uso real
+via `EnemyHealth`; `City/Schedule/SchedulePeriod.cs` é vocabulário ativo, só `NpcScheduleResolver`/
+`NpcScheduleDefinition` são obsoletos-mas-testados) — ver `spec_codex_06` seção 9 para o detalhe completo.
+
+| # | Spec | Fecha |
+|---|---|---|
+| CX01 | `spec_codex_01_validator_not_configured.md` | ProjectValidationRunner honesto (NOT_CONFIGURED) + registra os 4 validators reais existentes |
+| CX02 | `spec_codex_02_quest_condition_honesty.md` | CombatCondition deixa de ser `true` hardcoded; IsFutureCondition ganha log one-shot + doc de débito |
+| CX03 | `spec_codex_03_farm_tilling_real_params.md` | FarmTillingInputController usa StaminaManager/TimeManager reais em vez de staminaOk/currentDay fixos |
+| CX04 | `spec_codex_04_locked_ore_delivery.md` | LockedOreNodeInteractable entrega `item_material_copper_ore` real via InventoryManager.AddItem |
+| CX05 | `spec_codex_05_skill_placeholder_debt.md` | Corrige mapeamento legado `field_patch→water_skill`; ledger de débito das 6 skills feedback-only |
+| CX06 | `spec_codex_06_dead_code_removal_batch1.md` | Remove 11 arquivos de código morto re-verificados; exclui 2 falsos-positivos do pedido original |
+| CX07 | `spec_codex_07_boot_smoke_editmode.md` | Smoke EditMode estático de boot-wiring (GameBootstrap), sem Play Mode |
+| CX08 | `spec_codex_08_convergence_decisions.md` | DOC-ONLY: 6 ADR drafts para débito estrutural pesado (asmdef, LFS, bootstrap composition root, floresta/Tilemap, IMGUI→Canvas, Resources→Addressables) |
+
+Todas as 8 são `Parallelizable: YES` entre si (arquivos não se sobrepõem), sem dependência entre elas.
+Nenhuma promovida a `SPEC_EXECUTION_ORDER.md` — aguardam autorização humana explícita para execução.
