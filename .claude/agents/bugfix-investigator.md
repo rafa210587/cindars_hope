@@ -95,7 +95,7 @@ Residual risk: <texto>
 
 ## Skills a usar
 
-- `error-handling-resilience` — classificar a categoria do bug (gameplay/config/infra/bug-invariant)
+- rule `error-handling-resilience` (invariante em `.claude/rules/`; detalhe na skill `non-regression-review`) — classificar a categoria do bug (gameplay/config/infra/bug-invariant)
 - `non-regression-review` — auditoria pós-fix antes do closeout
 - `unity-validation-triage` — quando build falha após o fix
 - `editmode-test-authoring` — convenções de regression test
