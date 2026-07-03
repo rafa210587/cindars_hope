@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Collections;
 using System.Collections.Generic;
@@ -268,7 +268,7 @@ namespace CindarsHope.Save
 
             saveData.Farm.Plots ??= new List<FarmPlotSaveData>();
             saveData.Farm.Trees ??= new List<TreeSaveData>();
-            // fable_55: save legado sem o campo aditivo carrega com seÃ§Ã£o de processamento vazia.
+            // fable_55: save legado sem o campo aditivo carrega com seção de processamento vazia.
             saveData.Farm.Processing ??= new Farm.Processing.FarmProcessingSaveData();
             saveData.Farm.Processing.Jobs ??= new List<Farm.Processing.FarmProcessingJobSaveData>();
             saveData.World.Pickups ??= new List<ItemPickupSaveData>();
@@ -302,10 +302,19 @@ namespace CindarsHope.Save
             return true;
         }
 
+        /// <summary>
+        /// Escreve <paramref name="contents"/> em <paramref name="path"/> sem deixar uma janela
+        /// onde o arquivo final esta ausente. Se ja existir um arquivo em <paramref name="path"/>,
+        /// usa <see cref="File.Replace(string, string, string)"/> (atomico no NTFS/Mono/IL2CPP:
+        /// substitui o destino e move o conteudo antigo para <c>path + ".backup"</c> em uma unica
+        /// chamada - nunca ha um instante em que <paramref name="path"/> nao exista). Se
+        /// <paramref name="path"/> ainda nao existir, nao ha arquivo antigo a perder: basta mover
+        /// o temporario.
+        /// </summary>
         private static void WriteTextSafely(string path, string contents)
         {
             var directory = Path.GetDirectoryName(path);
-            if (!Directory.Exists(directory))
+            if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
             {
                 Directory.CreateDirectory(directory);
             }
@@ -318,13 +327,82 @@ namespace CindarsHope.Save
                 throw new IOException($"Temporary save file was not written: {tempPath}");
             }
 
-            if (File.Exists(path))
+            if (!File.Exists(path))
             {
-                File.Delete(path);
+                // Sem arquivo antigo em `path`: nada a perder, basta mover o tmp.
+                File.Move(tempPath, path);
+                return;
             }
 
-            File.Move(tempPath, path);
+            var backupPath = $"{path}{SaveBackupSuffix}";
+            try
+            {
+                // Atomico: substitui `path` por `tempPath` e move o `path` antigo para
+                // `backupPath` em uma unica operacao do SO. Nao ha instante intermediario em
+                // que `path` esteja ausente.
+                File.Replace(tempPath, path, backupPath, true);
+            }
+            catch (PlatformNotSupportedException)
+            {
+                // Fallback manual seguro: cria backup do arquivo antigo ANTES de qualquer delete.
+                // So prossegue com delete+move se o backup foi confirmado - nunca perde o
+                // original sem garantir que uma copia ja existe em outro lugar.
+                if (!SaveBackupService.TryCreateBackup(path, out _, out var backupError))
+                {
+                    throw new IOException($"Could not create safety backup before replacing save: {backupError}");
+                }
+
+                File.Delete(path);
+                File.Move(tempPath, path);
+            }
         }
 
+        private const string SaveBackupSuffix = ".backup";
+
+        /// <summary>
+        /// Se <paramref name="path"/> estiver ausente ou seu conteudo nao puder ser
+        /// deserializado como <see cref="GameSaveData"/> valido, tenta recuperar de
+        /// <c>path + ".backup"</c> (criado por <see cref="WriteTextSafely"/> ou por
+        /// <see cref="SaveBackupService"/>). Retorna true e loga a recuperacao se um backup valido
+        /// foi restaurado; retorna false se nao havia backup ou se ele tambem e invalido - nesse
+        /// caso o chamador deve seguir o comportamento existente (sem save = novo jogo / erro).
+        /// </summary>
+        private static bool TryRecoverFromBackupIfNeeded(string path)
+        {
+            var backupPath = $"{path}{SaveBackupSuffix}";
+
+            var mainIsUsable = File.Exists(path) && IsReadableValidSave(path);
+            if (mainIsUsable)
+            {
+                return false;
+            }
+
+            if (!File.Exists(backupPath) || !IsReadableValidSave(backupPath))
+            {
+                return false;
+            }
+
+            if (!SaveBackupService.TryRestoreBackup(path, backupPath, out var restoreError))
+            {
+                Debug.LogWarning($"Save file at {path} was missing/corrupted and backup restore failed: {restoreError}", null);
+                return false;
+            }
+
+            Debug.LogWarning($"Save file at {path} was missing or corrupted. Recovered from backup at {backupPath}.", null);
+            return true;
+        }
+
+        private static bool IsReadableValidSave(string path)
+        {
+            try
+            {
+                var json = File.ReadAllText(path);
+                return !string.IsNullOrWhiteSpace(json) && TryDeserializeSave(json, out _, out _);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
     }
 }

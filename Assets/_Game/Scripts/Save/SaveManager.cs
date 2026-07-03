@@ -331,6 +331,8 @@ namespace CindarsHope.Save
         public bool LoadGame()
         {
             var savePath = SaveFilePath;
+            TryRecoverFromBackupIfNeeded(savePath);
+
             if (!File.Exists(savePath))
             {
                 Debug.Log($"Save file not found at {savePath}.", this);
