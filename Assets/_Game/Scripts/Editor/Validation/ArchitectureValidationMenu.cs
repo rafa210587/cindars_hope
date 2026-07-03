@@ -1,6 +1,6 @@
 #if UNITY_EDITOR
 
-using UnityEditor;
+using CindarsHope.Editor.Validation;
 
 namespace CindarsHope.EditorTools.Validation
 {
@@ -11,9 +11,11 @@ namespace CindarsHope.EditorTools.Validation
     {
         public static void RunArchitectureValidation()
         {
-            // For now, run with no validators to establish the menu and infrastructure.
-            // Validators will be registered in future specs (SPEC_02, SPEC_03, etc).
-            ProjectValidationRunner.RunValidators();
+            ProjectValidationRunner.RunValidators(
+                new ValidateFarmLevel1LayoutContract(),
+                new CombatDatabaseValidator(),
+                new ValidateFarmScaleContract(),
+                new ProjectilePrefabValidator());
         }
     }
 }

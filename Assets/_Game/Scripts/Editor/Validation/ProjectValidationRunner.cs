@@ -1,6 +1,5 @@
 #if UNITY_EDITOR
 
-using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
@@ -18,8 +17,8 @@ namespace CindarsHope.EditorTools.Validation
         {
             if (validators == null || validators.Length == 0)
             {
-                Debug.Log("[ProjectValidationRunner] No validators to run. Returning PASS.");
-                return new ValidationReport();
+                Debug.LogError("[ProjectValidationRunner] NOT_CONFIGURED: no validators were registered to run. This is not a PASS — zero architecture rules were checked.");
+                return new ValidationReport { IsConfigured = false };
             }
 
             var aggregated = new ValidationReport();

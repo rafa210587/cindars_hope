@@ -13,6 +13,14 @@ namespace CindarsHope.EditorTools.Validation
     {
         public List<ValidationIssue> Issues { get; set; } = new List<ValidationIssue>();
 
+        /// <summary>
+        /// True when at least one validator actually ran. False when the runner had zero
+        /// validators to execute (e.g. RunValidators() called with no args) — this is a
+        /// NOT_CONFIGURED state and must never be treated as PASS. Defaults to true so
+        /// existing callers that already pass validators are unaffected.
+        /// </summary>
+        public bool IsConfigured { get; set; } = true;
+
         public int ErrorCount => Issues.Count(i => i.Severity == ValidationSeverity.Error);
         public int WarningCount => Issues.Count(i => i.Severity == ValidationSeverity.Warning);
         public int InfoCount => Issues.Count(i => i.Severity == ValidationSeverity.Info);
