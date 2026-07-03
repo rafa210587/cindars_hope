@@ -108,8 +108,8 @@ namespace CindarsHope.NPC.Schedule
 
         /// <summary>
         /// Map a town movement-profile string (from the generator spec / roster) to a coarse archetype.
-        /// "NightOnly*" → Night; "Patrol*" / guard routes → Guard; shopkeepers (with a stall) → Shopkeeper;
-        /// everything else (wander / stationary social) → Wanderer.
+        /// "NightOnly*" → Night; "Patrol*" / guard routes → Guard; fixed workers and shopkeepers →
+        /// Shopkeeper work/social/home windows; everything else (wander) → Wanderer.
         /// </summary>
         public static NpcScheduleArchetype ArchetypeFromMovementProfile(string movementProfile, bool hasShop)
         {
@@ -125,7 +125,7 @@ namespace CindarsHope.NPC.Schedule
                 return NpcScheduleArchetype.Guard;
             }
 
-            if (hasShop)
+            if (hasShop || profile.StartsWith("Stationary", System.StringComparison.OrdinalIgnoreCase))
             {
                 return NpcScheduleArchetype.Shopkeeper;
             }

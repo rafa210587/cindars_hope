@@ -119,6 +119,12 @@ namespace CindarsHope.Tests.EditMode.City
                 NpcScheduleBlockResolver.ArchetypeFromMovementProfile("Patrol/TownRoad", false));
             Assert.AreEqual(NpcScheduleArchetype.Shopkeeper,
                 NpcScheduleBlockResolver.ArchetypeFromMovementProfile("ShopKeeperFixed", true));
+            Assert.AreEqual(NpcScheduleArchetype.Shopkeeper,
+                NpcScheduleBlockResolver.ArchetypeFromMovementProfile("Stationary/ChamberDesk", false),
+                "Velorin and other fixed civic workers must remain at work during business hours.");
+            Assert.AreEqual(NpcScheduleArchetype.Shopkeeper,
+                NpcScheduleBlockResolver.ArchetypeFromMovementProfile("Stationary/Cemetery", false),
+                "Tibbet must work at the cemetery instead of wandering all day.");
             Assert.AreEqual(NpcScheduleArchetype.Wanderer,
                 NpcScheduleBlockResolver.ArchetypeFromMovementProfile("WanderWithinZone", false));
         }

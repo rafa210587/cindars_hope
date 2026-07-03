@@ -26,6 +26,9 @@ docs/validation/FINAL_HUMAN_VALIDATION_BY_WAVE.md
 | 01.04 | [01_spec_save_section_ownership_registry.md](a_implementar/01_spec_save_section_ownership_registry.md) | A implementar - hardening/residual | 01.03 + save specs implementadas | Cria ou consolida ownership registry de save sections, owners, defaults, dependencies e migration responsibility sem migrar tudo para providers. |
 | 01.05 | [01_spec_save_provider_architecture_runtime.md](a_implementar/01_spec_save_provider_architecture_runtime.md) | A implementar - gradual/residual | 01.04 + save ownership registry | Consolida arquitetura incremental de save providers sem substituir SaveManager, sem schema change e sem migração massiva de sections. |
 | 01Q | [spec_test_harness_editmode_playmode_quality_gate.md](a_implementar/spec_test_harness_editmode_playmode_quality_gate.md) | A implementar - quality gate fundacional | 01 validacao Unity + rules/skills atuais | Deve ser executada antes das novas waves runtime para exigir EditMode tests, PlayMode/manual scenarios, regression tests e evidencia de risco residual. |
+| CITY.P0 | [spec_city_preservation_first_coherent_relayout.md](a_implementar/spec_city_preservation_first_coherent_relayout.md) | BUILD_VALIDATED_PENDING_HUMAN_PLAYMODE | TownScene materializada pós F40 + contratos atuais | Implementada com manifesto before/after: 24 casas, 29 barracas, 497 árvores, 84 anchors e IDs preservados; 22/22 tests e 21/21 validator. Play Mode humano pendente. |
+
+> `CITY.P0` foi registrada como spec concreta aprovada. Esta inclusão **não altera** `SPEC_EXECUTION_ORDER.md` e não autoriza execução automática.
 
 ---
 

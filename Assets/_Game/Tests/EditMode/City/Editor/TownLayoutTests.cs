@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 using CindarsHope.Editor.SceneCreation;
@@ -6,7 +7,7 @@ using CindarsHope.NPC.Schedule;
 namespace CindarsHope.Tests.EditMode.City
 {
     /// <summary>
-    /// fable_40 — pure validation of the canonical 48×42 town layout (no scene side effects).
+    /// Pure validation of the preservation-first 120x90 town layout (no scene side effects).
     /// Covers CA-1 (footprint + element coverage), CA-2/CA-4 (stable schedule-anchor & spawn IDs),
     /// CA-3 (lake/park SW + town hall NE + mural exist inside their districts). The scene
     /// regeneration itself is DEFERRED (generator ready; Unity not run) — these tests guard the
@@ -19,12 +20,12 @@ namespace CindarsHope.Tests.EditMode.City
 
         // ── CA-1: footprint canônico (ampliado p/ casas percorríveis — spec_city_real_walkin_houses) ──
         [Test]
-        public void Footprint_Is76x64()
+        public void Footprint_Is120x90()
         {
-            Assert.AreEqual(76f, TownDistrictLayout.WidthTiles, Eps, "Town width must be 76 tiles (city walk-in expansion).");
-            Assert.AreEqual(64f, TownDistrictLayout.HeightTiles, Eps, "Town height must be 64 tiles.");
-            Assert.AreEqual(38f, TownDistrictLayout.HalfWidth, Eps, "Bounds must be -38..38 on x.");
-            Assert.AreEqual(32f, TownDistrictLayout.HalfHeight, Eps, "Bounds must be -32..32 on y.");
+            Assert.AreEqual(120f, TownDistrictLayout.WidthTiles, Eps);
+            Assert.AreEqual(90f, TownDistrictLayout.HeightTiles, Eps);
+            Assert.AreEqual(60f, TownDistrictLayout.HalfWidth, Eps);
+            Assert.AreEqual(45f, TownDistrictLayout.HalfHeight, Eps);
         }
 
         // ── CA-1 / data contract: seven canonical districts, all inside bounds ────────
@@ -41,7 +42,7 @@ namespace CindarsHope.Tests.EditMode.City
             foreach (var d in TownDistrictLayout.AllDistricts)
             {
                 Assert.IsTrue(d.WithinBounds(),
-                    $"District '{d.Id}' rectangle escapes the 48x42 bounds " +
+                    $"District '{d.Id}' rectangle escapes the 120x90 bounds " +
                     $"(x[{d.MinX},{d.MaxX}] y[{d.MinY},{d.MaxY}]).");
             }
         }
@@ -176,6 +177,18 @@ namespace CindarsHope.Tests.EditMode.City
             Assert.AreEqual("home", NpcScheduleBlockResolver.HomeAnchorSuffix);
         }
 
+        [Test]
+        public void StationaryCivicRoles_UseBusinessHoursInsteadOfWandererHours()
+        {
+            var chamber = NpcScheduleBlockResolver.ArchetypeFromMovementProfile("Stationary/ChamberDesk", false);
+            var cemetery = NpcScheduleBlockResolver.ArchetypeFromMovementProfile("Stationary/Cemetery", false);
+            Assert.AreEqual(NpcScheduleArchetype.Shopkeeper, chamber);
+            Assert.AreEqual(NpcScheduleArchetype.Shopkeeper, cemetery);
+            Assert.AreEqual(NpcRuntimeBlock.Work, NpcScheduleBlockResolver.ResolveBlock(chamber, 10));
+            Assert.AreEqual(NpcRuntimeBlock.Social, NpcScheduleBlockResolver.ResolveBlock(chamber, 19));
+            Assert.AreEqual(NpcRuntimeBlock.Home, NpcScheduleBlockResolver.ResolveBlock(chamber, 23));
+        }
+
         // ── CA-4: spawn IDs are FROZEN (saves transition without error) ───────────────
         [Test]
         public void SpawnIds_AreStableCanonicalSet()
@@ -186,6 +199,164 @@ namespace CindarsHope.Tests.EditMode.City
                 "Spawn IDs must remain town_default / town_from_farm across the relayout (CA-4).");
         }
 
+        [Test]
+        public void PreservationBaseline_ContainsExpectedMinimumCounts()
+        {
+            Assert.AreEqual(24, TownCityLayout.BaselineHouseCount);
+            Assert.AreEqual(23, TownCityLayout.BaselineNpcStallCount);
+            Assert.AreEqual(6, TownCityLayout.BaselineMarketStallCount);
+            Assert.AreEqual(497, TownCityLayout.BaselineTreeCount);
+            Assert.AreEqual(TownCityLayout.BaselineHouseCount, TownCityLayout.AllBuildings.Count);
+        }
+
+        [Test]
+        public void BuildingLots_HaveUniqueStableNamesAndDoNotOverlap()
+        {
+            var names = new HashSet<string>();
+            var lots = TownCityLayout.AllBuildings;
+            for (var i = 0; i < lots.Count; i++)
+            {
+                Assert.IsTrue(names.Add(lots[i].Name), $"Duplicate stable building name: {lots[i].Name}");
+                Assert.IsTrue(TownDistrictLayout.TryGetDistrict(lots[i].DistrictId, out _),
+                    $"Building {lots[i].Name} references unknown district {lots[i].DistrictId}.");
+                Assert.GreaterOrEqual(lots[i].MinX, -TownDistrictLayout.HalfWidth);
+                Assert.LessOrEqual(lots[i].MaxX, TownDistrictLayout.HalfWidth);
+                Assert.GreaterOrEqual(lots[i].MinY, -TownDistrictLayout.HalfHeight);
+                Assert.LessOrEqual(lots[i].MaxY, TownDistrictLayout.HalfHeight);
+
+                for (var j = i + 1; j < lots.Count; j++)
+                {
+                    Assert.IsFalse(lots[i].Overlaps(lots[j], 0.3f),
+                        $"Building lots overlap: {lots[i].Name} × {lots[j].Name}.");
+                }
+            }
+        }
+
+        [Test]
+        public void BuildingLots_DoNotOverlapRoads_AndEveryDoorReachesRoad()
+        {
+            foreach (var lot in TownCityLayout.AllBuildings)
+            {
+                foreach (var road in TownCityLayout.AllRoads)
+                {
+                    Assert.IsFalse(lot.Overlaps(road), $"{lot.Name} overlaps road {road.Id}.");
+                }
+
+                Assert.IsTrue(TownCityLayout.IsPointOnRoad(lot.DoorApproach, 0.4f),
+                    $"Door approach for {lot.Name} is disconnected from the road graph.");
+            }
+        }
+
+        [Test]
+        public void DoorFrontages_SupportAllFourDirections()
+        {
+            var sides = new HashSet<TownDoorSide>();
+            foreach (var lot in TownCityLayout.AllBuildings)
+            {
+                sides.Add(lot.DoorSide);
+            }
+
+            CollectionAssert.AreEquivalent(
+                new[] { TownDoorSide.North, TownDoorSide.South, TownDoorSide.West, TownDoorSide.East },
+                sides);
+        }
+
+        [Test]
+        public void NpcPlaces_PreserveAllRoles_AndStayNearAssociatedBuildings()
+        {
+            Assert.AreEqual(28, TownCityLayout.AllNpcPlaces.Count, "All materialized canonical NPCs need a placement contract.");
+            var ids = new HashSet<string>();
+            foreach (var place in TownCityLayout.AllNpcPlaces)
+            {
+                Assert.IsTrue(ids.Add(place.NpcId), $"Duplicate NPC placement: {place.NpcId}");
+                Assert.IsFalse(string.IsNullOrWhiteSpace(place.Role), $"NPC {place.NpcId} has no role description.");
+
+                if (string.IsNullOrWhiteSpace(place.BuildingName))
+                {
+                    continue;
+                }
+
+                Assert.IsTrue(TownCityLayout.TryGetBuilding(place.BuildingName, out var building),
+                    $"NPC {place.NpcId} references missing building {place.BuildingName}.");
+                Assert.LessOrEqual(Vector2.Distance(place.Work, building.DoorApproach), 2.1f,
+                    $"NPC {place.NpcId} work anchor is detached from {place.BuildingName}.");
+
+                var stall = TownCityLayout.ResolveNpcStallPosition(place.NpcId, Vector3.zero);
+                Assert.GreaterOrEqual(Vector2.Distance(stall, building.DoorApproach), 1.9f,
+                    $"NPC {place.NpcId} stall blocks the door approach of {place.BuildingName}.");
+            }
+        }
+
+        [Test]
+        public void V8_ZonesUseLargeSemanticBuildings()
+        {
+            AssertLot("House_Temple", TownBuildingArchetype.Temple, 16f, 13f);
+            AssertLot("House_Manor", TownBuildingArchetype.Noble, 16f, 13f);
+            AssertLot("House_Chamber", TownBuildingArchetype.Civic, 16f, 11f);
+            AssertLot("House_Archive", TownBuildingArchetype.Noble, 17f, 13f);
+            AssertLot("House_MarketHall", TownBuildingArchetype.Market, 18f, 12f);
+            AssertLot("House_Inn", TownBuildingArchetype.Inn, 16f, 11f);
+            AssertLot("House_Bakery", TownBuildingArchetype.Bakery, 12f, 10f);
+            AssertLot("House_Blacksmith", TownBuildingArchetype.Forge, 13f, 10f);
+            AssertLot("House_AlchemyLab", TownBuildingArchetype.Alchemy, 13f, 10f);
+            AssertLot("House_Tannery", TownBuildingArchetype.Tannery, 14f, 10f);
+            AssertLot("House_Fishery", TownBuildingArchetype.Watermill, 12f, 9f);
+            AssertLot("House_AnimalYard", TownBuildingArchetype.Warehouse, 17f, 12f);
+            Assert.AreEqual(new Vector2(0f, 4f), TownCityLayout.CentralPlazaCenter);
+            Assert.AreEqual(new Vector2(26f, 26f), TownCityLayout.CentralPlazaSize,
+                "The civic square must occupy the large reserved central block from the visual reference.");
+        }
+
+        [Test]
+        public void V8_SouthResidentialRowLeavesCentralGateAvenueOpen()
+        {
+            foreach (var name in new[] { "House_CarvalhoTorto", "House_Dagna", "House_GateKeeper", "House_Pip", "House_Residential_4", "House_Tovin" })
+            {
+                Assert.IsTrue(TownCityLayout.TryGetBuilding(name, out var lot));
+                Assert.AreEqual(-36f, lot.Center.y, Eps, $"{name} left the south residential row.");
+                Assert.AreEqual(TownCityLayout.StandardHouseExteriorSize, lot.Size, $"{name} must be 8x7 externally.");
+                Assert.IsFalse(lot.MinX < 4f && lot.MaxX > -4f, $"{name} blocks the south gate avenue.");
+            }
+            Assert.AreEqual(new Vector2(6f, 5f), TownCityLayout.StandardHouseInteriorSize);
+            Assert.AreEqual(
+                TownCityLayout.StandardHouseExteriorSize - new Vector2(2f, 2f),
+                TownCityLayout.StandardHouseInteriorSize,
+                "A one-tile wall/inset per side must produce a 6x5 walkable interior.");
+        }
+
+        [Test]
+        public void V8_CirculationUsesWideAvenuesAndClearStallAprons()
+        {
+            foreach (var road in TownCityLayout.AllRoads)
+            {
+                if (road.Id == "road_civic_frontage")
+                {
+                    Assert.GreaterOrEqual(road.Size.y, 3f, "Civic frontage is the only constrained secondary road.");
+                    continue;
+                }
+
+                float crossSection = Mathf.Min(road.Size.x, road.Size.y);
+                Assert.GreaterOrEqual(crossSection, 4f, $"{road.Id} is narrower than the v8 circulation contract.");
+            }
+
+            foreach (var place in TownCityLayout.AllNpcPlaces)
+            {
+                if (string.IsNullOrWhiteSpace(place.BuildingName)) continue;
+                Assert.IsTrue(TownCityLayout.TryGetBuilding(place.BuildingName, out var lot));
+                var stall = TownCityLayout.ResolveNpcStallPosition(place.NpcId, Vector3.zero);
+                Assert.GreaterOrEqual(Vector2.Distance(stall, lot.DoorApproach), 3.9f,
+                    $"Stall for {place.NpcId} intrudes into the 3x3 door apron.");
+            }
+        }
+
+        private static void AssertLot(string name, TownBuildingArchetype archetype, float minWidth, float minHeight)
+        {
+            Assert.IsTrue(TownCityLayout.TryGetBuilding(name, out var lot), $"Missing v8 lot {name}.");
+            Assert.AreEqual(archetype, lot.Archetype, $"Wrong semantic archetype for {name}.");
+            Assert.GreaterOrEqual(lot.Size.x, minWidth, $"{name} is too narrow for the v8 reference.");
+            Assert.GreaterOrEqual(lot.Size.y, minHeight, $"{name} is too shallow for the v8 reference.");
+        }
+
         private static void AssertInside(TownDistrictLayout.District d, Vector3 point, string label)
         {
             var p2 = new Vector2(point.x, point.y);
@@ -193,7 +364,7 @@ namespace CindarsHope.Tests.EditMode.City
                 $"{label} at {p2} is outside district '{d.Id}' (x[{d.MinX},{d.MaxX}] y[{d.MinY},{d.MaxY}]).");
             Assert.IsTrue(Mathf.Abs(point.x) <= TownDistrictLayout.HalfWidth &&
                           Mathf.Abs(point.y) <= TownDistrictLayout.HalfHeight,
-                $"{label} at {p2} is outside the 48x42 bounds.");
+                $"{label} at {p2} is outside the 120x90 bounds.");
         }
     }
 }

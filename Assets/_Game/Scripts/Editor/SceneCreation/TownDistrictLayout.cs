@@ -4,8 +4,8 @@ using UnityEngine;
 namespace CindarsHope.Editor.SceneCreation
 {
     /// <summary>
-    /// fable_40 — Data-driven 48×42 town layout (canonical footprint Q12.1 / HUD_LAYOUT §3 /
-    /// city_rules Rule 1-2). Pure C# (no UnityEditor / scene side effects) so the layout can be
+    /// Preservation-first 76×64 town bounds and stable district/spawn contracts. Pure C#
+    /// (no UnityEditor / scene side effects) so the layout can be
     /// exercised by EditMode tests: bounds, the seven named district rectangles, the
     /// element→district table (no orphan), the scale transform that repositions every existing
     /// element into the larger footprint, and the stable schedule-anchor / spawn-point ID lists.
@@ -16,17 +16,13 @@ namespace CindarsHope.Editor.SceneCreation
     /// </summary>
     public static class TownDistrictLayout
     {
-        // ── Canonical footprint (48×42 tiles) ─────────────────────────────────────────
-        // Bounds −24..24 / −21..21 (city_rules Rule 1). The legacy build was 36×30
-        // (x = ±18.5, y = ±15) — see CreateMvpTownScene history and city_rules number table.
-        // Footprint ampliado para 76×64 (spec_city_real_walkin_houses_no_teleport): cada residência é
-        // um prédio FÍSICO percorrível e os marcos cívicos (igreja, câmara, mansão, mercado, praça de
-        // eventos, cemitério) ganham espaço próprio. O placer determinístico em CreateMvpTownScene
-        // distribui os 21 prédios sem sobreposição dentro deste footprint.
-        public const float HalfWidth = 38f;   // x ∈ [−38, 38] → 76 tiles wide
-        public const float HalfHeight = 32f;  // y ∈ [−32, 32] → 64 tiles tall
-        public const float WidthTiles = HalfWidth * 2f;   // 56
-        public const float HeightTiles = HalfHeight * 2f; // 48
+        // ── Canonical materialized footprint (76×64 tiles) ─────────────────────────────
+        // Kept stable by spec_city_preservation_first_coherent_relayout. Buildings are placed by
+        // TownCityLayout lots; this class remains the bounds/district/stable-ID contract.
+        public const float HalfWidth = 60f;
+        public const float HalfHeight = 45f;
+        public const float WidthTiles = HalfWidth * 2f;
+        public const float HeightTiles = HalfHeight * 2f;
 
         // Legacy interior half-extents the existing element coordinates were authored against.
         // Used only to derive the relayout scale; not a runtime value.
@@ -37,11 +33,11 @@ namespace CindarsHope.Editor.SceneCreation
         // overlap that did not already exist, so element count and relative neighborhoods are
         // preserved by construction (CA-1). 1.3 keeps the furthest legacy element
         // (|x|≈16.5 → 21.5 < 24; |y|≈12.8 → 16.6 < 21) inside the new playfield with margin.
-        public const float RelayoutScale = 1.3f;
+        public const float RelayoutScale = 2f;
 
         /// <summary>
         /// Maps a legacy element position (authored for the 36×30 field) into the canonical
-        /// 48×42 footprint. Deterministic and total: every element keeps its z and is clamped
+        /// 76×64 footprint. Deterministic and total: every element keeps its z and is clamped
         /// to stay just inside the perimeter wall so nothing lands on or past a border collider.
         /// </summary>
         public static Vector3 Reposition(Vector3 legacyPosition)
@@ -97,19 +93,19 @@ namespace CindarsHope.Editor.SceneCreation
         private static readonly District[] Districts =
         {
             // Praça central (estátua + quadro público).
-            new District(DistrictCentralPlaza, new Vector2(0f, 0f), new Vector2(14f, 14f)),
+            new District(DistrictCentralPlaza, TownCityLayout.CentralPlazaCenter, TownCityLayout.CentralPlazaSize),
             // Mercado / comercial — oeste-centro.
-            new District(DistrictMarketWest, new Vector2(-22f, 4f), new Vector2(16f, 22f)),
+            new District(DistrictMarketWest, new Vector2(-38f, 4f), new Vector2(34f, 30f)),
             // Residencial — leste.
-            new District(DistrictResidentialEast, new Vector2(22f, 4f), new Vector2(16f, 22f)),
+            new District(DistrictResidentialEast, new Vector2(38f, 2f), new Vector2(34f, 40f)),
             // Templo / fonte — norte.
-            new District(DistrictTempleNorth, new Vector2(0f, 23f), new Vector2(26f, 12f)),
+            new District(DistrictTempleNorth, new Vector2(-24f, 35f), new Vector2(68f, 16f)),
             // Curral / entrada sul (estrada para a fazenda).
-            new District(DistrictCorralSouth, new Vector2(0f, -24f), new Vector2(28f, 10f)),
+            new District(DistrictCorralSouth, new Vector2(0f, -35f), new Vector2(88f, 14f)),
             // Prefeitura + mural — canto nordeste.
-            new District(DistrictTownHallNortheast, new Vector2(30f, 26f), new Vector2(12f, 9f)),
+            new District(DistrictTownHallNortheast, new Vector2(12f, 42f), new Vector2(18f, 5.5f)),
             // Lago / parque — canto sudoeste.
-            new District(DistrictLakeParkSouthwest, new Vector2(-30f, -25f), new Vector2(12f, 10f)),
+            new District(DistrictLakeParkSouthwest, new Vector2(-45f, -14f), new Vector2(22f, 14f)),
         };
 
         public static IReadOnlyList<District> AllDistricts => Districts;
@@ -132,12 +128,12 @@ namespace CindarsHope.Editor.SceneCreation
         // ── New-district landmark anchors (relayout-only) ─────────────────────────────
         // Lake/park water body + benches (SW); town hall building + mural wall (NE). These are
         // the elements city_rules Rule 1/Rule 8 say did not exist before fable_40.
-        public static Vector3 LakeCenter => ToVec3(DistrictLakeParkSouthwest, 0f, 0.5f);
-        public static Vector3 LakeBenchWest => ToVec3(DistrictLakeParkSouthwest, -3f, -3f);
-        public static Vector3 LakeBenchEast => ToVec3(DistrictLakeParkSouthwest, 3f, -3f);
-        public static Vector3 TownHallCenter => ToVec3(DistrictTownHallNortheast, 0f, 0.5f);
+        public static Vector3 LakeCenter => ToVec3(DistrictLakeParkSouthwest, 0f, 0f);
+        public static Vector3 LakeBenchWest => ToVec3(DistrictLakeParkSouthwest, -7f, -6f);
+        public static Vector3 LakeBenchEast => ToVec3(DistrictLakeParkSouthwest, 7f, -6f);
+        public static Vector3 TownHallCenter => ToVec3(DistrictTownHallNortheast, 0f, 0f);
         // Mural lives on the town-hall south wall (the public board moves to the plaza per CA-3).
-        public static Vector3 TownHallMural => ToVec3(DistrictTownHallNortheast, 0f, -2.6f);
+        public static Vector3 TownHallMural => ToVec3(DistrictTownHallNortheast, 0f, -2.1f);
 
         private static Vector3 ToVec3(string districtId, float offsetX, float offsetY)
         {

@@ -1,7 +1,9 @@
 # SPEC — Cidade Real: Casas Percorríveis, Portas Funcionais, Marcos Cívicos e Sem Teleporte
 
 > **Spec ID:** `spec_city_real_walkin_houses_no_teleport`
-> **Status:** A implementar
+> **Status:** ABSORVIDA / NÃO EXECUTAR
+> **Absorvida por:** `.specs/a_implementar/spec_city_preservation_first_coherent_relayout.md`
+> **Motivo:** o baseline e as reduções propostas não representam mais a TownScene materializada; preservada apenas como histórico.
 > **Wave:** WAVE CITY — Coerência da TownScene (pós fable_40)
 > **Priority:** P1
 > **Type:** Runtime + Tooling (editor scene generator)

@@ -8,6 +8,20 @@
 > Fonte oficial de specs: `.specs/`.
 > A pasta raiz `specs/` foi removida e nao deve ser recriada.
 
+## 0.0.1 TownScene preservation-first relayout (2026-07-01)
+
+**Status:** `BUILD_VALIDATED_PENDING_HUMAN_PLAYMODE`
+
+- TownScene reorganizada por 24 lotes determinísticos e malha de vias sem overlap.
+- Baseline preservado: 24 casas/portas/telhados, 29 barracas, 497 árvores, 28 NPCs e 84 anchors.
+- Papéis e destinos de trabalho/social/home reconciliados; `Stationary` agora respeita expediente.
+- EditMode 22/22, validator 21/21, builds runtime/editor exit 0.
+- Play Mode visual pendente: `docs/validation/playmode/spec_city_preservation_first_coherent_relayout_human_test_scenario.md`.
+
+Evidence: `docs/validation/spec_city_preservation_first_coherent_relayout_execution_report.md`.
+
+---
+
 ## 1. Resumo executivo — SPEC_29 Consolidation (2026-06-01)
 
 **MVP Status: CODE-COMPLETE AND BUILD-VALIDATED ✓**

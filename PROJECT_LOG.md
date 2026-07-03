@@ -4,6 +4,20 @@
 
 ---
 
+## Sessao 2026-07-01 — TownScene preservation-first relayout
+
+**Foco:** reorganizar a cidade sem reduzir conteúdo ou substituir sistemas existentes.
+
+- Criado `TownCityLayout` com 24 lotes, vias, quatro orientações de porta e destinos explícitos para 28 NPCs.
+- Preservados 24 prédios/portas/telhados, 29 barracas, 497 árvores, 84 anchors, spawns e portais.
+- Templo, cemitério, Câmara, Town Hall, mercado, lago/cais, estalagem e ofícios permanecem materializados.
+- `Stationary` passou a usar expediente 09–18/social 18–22, corrigindo Velorin e Tibbet sem alterar os demais horários.
+- Árvores internas usam collider de tronco; árvores externas são visual-only; lago ganhou bloqueio e cais.
+- Evidência: builds exit 0, EditMode 22/22, validator 21/21; Play Mode humano pendente.
+- Report: `docs/validation/spec_city_preservation_first_coherent_relayout_execution_report.md`.
+
+---
+
 ## Sessao 2026-06-13 - Migracao da arvore canonica de specs para .specs (GOVERNANCA / DESVIO AUTORIZADO)
 
 **Foco:** Consolidar a redundancia entre `docs/specs/` (canonica) e `.specs/` (espelho de trabalho untracked) numa fonte unica, por diretriz do dono.
