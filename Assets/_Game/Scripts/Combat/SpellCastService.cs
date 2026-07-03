@@ -38,6 +38,33 @@ namespace CindarsHope.Combat
         private readonly float _knockbackForce;
         private readonly StatusEffectDatabaseSO _statusEffectDatabase;
 
+        // spec_codex_13: buffer reutilizavel + ContactFilter2D para ExecuteNova (mesmo tamanho
+        // e mesma mask "Enemy" que PlayerAttackController — convencao compartilhada).
+        private readonly Collider2D[] _novaQueryBuffer = new Collider2D[PlayerAttackController.CombatQueryBufferSize];
+        private readonly HashSet<EnemyHealth> _novaQuerySeenBuffer = new HashSet<EnemyHealth>();
+        private ContactFilter2D _enemyContactFilter;
+        private bool _enemyContactFilterInitialized;
+
+        private ContactFilter2D EnemyContactFilter
+        {
+            get
+            {
+                if (!_enemyContactFilterInitialized)
+                {
+                    var mask = CindarsHope.Core.Physics.GameplayLayerNames.GetMaskSafe(
+                        CindarsHope.Core.Physics.GameplayLayerNames.Enemy);
+                    _enemyContactFilter = mask.value != 0 ? new ContactFilter2D() : ContactFilter2D.noFilter;
+                    if (mask.value != 0)
+                    {
+                        _enemyContactFilter.SetLayerMask(mask);
+                    }
+                    _enemyContactFilter.useTriggers = true;
+                    _enemyContactFilterInitialized = true;
+                }
+                return _enemyContactFilter;
+            }
+        }
+
         public SpellCastService(
             ManaManager manaManager,
             EquipmentManager equipmentManager,
@@ -310,20 +337,23 @@ namespace CindarsHope.Combat
             return AttackResult.CreateSuccess();
         }
 
-        // Nova = OverlapCircleAll radial: dano + status em todos os inimigos no raio.
+        // Nova = query radial: dano + status em todos os inimigos no raio.
+        // spec_codex_13: ContactFilter2D (mask "Enemy" com fallback NoFilter) + buffer
+        // pre-alocado reutilizavel (OverlapCircle NonAlloc) — sem alocacao por cast.
         private AttackResult ExecuteNova(SpellCastPlan plan)
         {
             var spell = plan.Spell;
             float radius = Mathf.Max(0.1f, spell.NovaRadius);
-            var hits = Physics2D.OverlapCircleAll(plan.SpawnPosition, radius);
+            int hitCount = Physics2D.OverlapCircle(plan.SpawnPosition, radius, EnemyContactFilter, _novaQueryBuffer);
             int affected = 0;
-            var seen = new HashSet<EnemyHealth>();
+            _novaQuerySeenBuffer.Clear();
 
-            foreach (var col in hits)
+            for (int i = 0; i < hitCount; i++)
             {
+                var col = _novaQueryBuffer[i];
                 if (col == null) continue;
                 var enemy = col.GetComponentInParent<EnemyHealth>() ?? col.GetComponent<EnemyHealth>();
-                if (enemy == null || enemy.IsDead || !seen.Add(enemy))
+                if (enemy == null || enemy.IsDead || !_novaQuerySeenBuffer.Add(enemy))
                 {
                     continue;
                 }

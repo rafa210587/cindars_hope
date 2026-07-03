@@ -242,13 +242,15 @@ namespace CindarsHope.Combat
         private void ExecuteMeleeAttack(WeaponDataSO weapon, Vector2 direction, AttackWeight weight = AttackWeight.Light, string equippedItemId = null)
         {
             Vector2 attackCenter = (Vector2)transform.position + direction * 0.5f;
-            var hitColliders = Physics2D.OverlapCircleAll(attackCenter, weapon.Range);
+            // spec_codex_13: ContactFilter2D (mask "Enemy" com fallback NoFilter) + buffer
+            // pre-alocado reutilizavel (OverlapCircle NonAlloc) — sem alocacao por ataque.
+            int candidatesTotal = Physics2D.OverlapCircle(attackCenter, weapon.Range, EnemyContactFilter, _combatQueryBuffer);
 
-            int candidatesTotal = hitColliders.Length;
             int hitEnemies = 0;
-            foreach (var collider in hitColliders)
+            for (int i = 0; i < candidatesTotal; i++)
             {
-                if (collider.gameObject == gameObject)
+                var collider = _combatQueryBuffer[i];
+                if (collider == null || collider.gameObject == gameObject)
                     continue;
 
                 var enemyHealth = collider.GetComponentInParent<EnemyHealth>() ?? collider.GetComponent<EnemyHealth>();

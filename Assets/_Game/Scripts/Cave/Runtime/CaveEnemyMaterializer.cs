@@ -296,10 +296,24 @@ namespace CindarsHope.Cave.Runtime
                 spriteRenderer = enemyObject.AddComponent<SpriteRenderer>();
             }
 
-            // Sprite: Icon do SO; se vazio, autoload em runtime por id de
-            // Assets/_Game/Resources/EnemySprites/<slug>.png (enemyId 'enemy_<slug>' -> '<slug>').
-            // Independe de assignment manual no asset e de qual instancia de SO a caverna resolve.
-            var resolvedSprite = enemyData.Icon;
+            // Sprite (ordem de prioridade):
+            //  1) SKIN BINDING (data-driven): EnemySkinCatalog mapeia enemyId -> slugs, com
+            //     variancia deterministica por instancia (estavel dentro do CaveRunSeed). E o
+            //     caminho para aplicar/trocar arte por referencia cruzada sem recompilar.
+            //  2) Icon do SO (se preenchido no asset).
+            //  3) Autoload por id: Resources/EnemySprites/<slug>.png (enemyId 'enemy_<slug>' -> '<slug>').
+            //  4) Placeholder builtin.
+            Sprite resolvedSprite = null;
+            if (!string.IsNullOrEmpty(enemyData.enemyId))
+            {
+                int skinSeed = EnemySkinCatalog.StableHash(
+                    enemyData.enemyId, entry != null ? entry.EnemyInstanceId : null, caveLevel);
+                var skinSlug = EnemySkinCatalog.ResolveSlug(enemyData.enemyId, skinSeed);
+                if (!string.IsNullOrEmpty(skinSlug))
+                    resolvedSprite = UnityEngine.Resources.Load<Sprite>("EnemySprites/" + skinSlug);
+            }
+            if (resolvedSprite == null)
+                resolvedSprite = enemyData.Icon;
             if (resolvedSprite == null && !string.IsNullOrEmpty(enemyData.enemyId))
             {
                 var slug = enemyData.enemyId.StartsWith("enemy_")
@@ -319,7 +333,34 @@ namespace CindarsHope.Cave.Runtime
             float visualScale = Mathf.Max(0.1f,
                 EnemyScaleResolver.ResolveVisualScale(
                     enemyData.BestiarySize, enemyData.IsMiniBoss, enemyData.IsBoss));
-            enemyObject.transform.localScale = new Vector3(visualScale, visualScale, 1f);
+
+            // Escala normalizada pela ALTURA REAL do sprite (sprite.bounds), NAO por um PPU fixo.
+            // Assim o tamanho na tela independe de quao grande o PNG foi desenhado ou do PPU do
+            // import: um inimigo Medium (visualScale=2.0) sempre fica com UnitsPerVisualScale*2.0
+            // = 1 unidade = 1 tile = tamanho do player; Tiny 0.5, Large 1.5, Huge 2.0, boss ~5.
+            // rule no-magic-balance-values: fator nomeado, nao literal solto no call site.
+            const float UnitsPerVisualScale = 0.5f;
+            // Nudge fino por criatura (tamanhos intermediarios entre classes; ex. orc ~15% > player).
+            float perCreatureNudge = EnemyScaleResolver.PerCreatureVisualNudge(enemyData.enemyId);
+            float targetHeightUnits = visualScale * UnitsPerVisualScale * perCreatureNudge;
+            var scaleSprite = spriteRenderer.sprite;
+            float spriteHeightUnits = scaleSprite != null ? scaleSprite.bounds.size.y : 1f;
+            float appliedScale = spriteHeightUnits > 0.001f
+                ? targetHeightUnits / spriteHeightUnits
+                : visualScale;
+
+            // Piso de visibilidade: nenhuma criatura fica menor que MinVisualExtent (tiles) na sua
+            // MAIOR dimensao. Sem isto, Tiny/compactos (mites, ticks, esqueletos baixos) e sprites
+            // baixos-largos ficam pequenos demais para ver/acertar. So levanta os pequenos — quem ja
+            // passa do piso nao muda. rule no-magic-balance-values: constante nomeada.
+            const float MinVisualExtent = 0.8f;
+            if (scaleSprite != null)
+            {
+                float largerExtent = appliedScale * Mathf.Max(scaleSprite.bounds.size.x, scaleSprite.bounds.size.y);
+                if (largerExtent > 0.001f && largerExtent < MinVisualExtent)
+                    appliedScale *= MinVisualExtent / largerExtent;
+            }
+            enemyObject.transform.localScale = new Vector3(appliedScale, appliedScale, 1f);
 
             // Juice de apresentacao: squash + flash. Bob de posicao OFF porque a IA move
             // o inimigo por transform.position (bob brigaria com o movimento).
@@ -426,6 +467,17 @@ namespace CindarsHope.Cave.Runtime
             {
                 brain = enemyObject.AddComponent<EnemyBrain>();
             }
+
+            // spec_codex_13: obstacle avoidance real via WorldSolid (era mask 0 = sempre skip).
+            // Resolvido por NOME com fallback seguro (mask 0 + log one-shot categoria
+            // config-asset) ate o humano rodar CindarsHope/Inicializar Projeto no Editor.
+            brain.SetObstacleLayerMask(
+                CindarsHope.Core.Physics.GameplayLayerNames.GetMaskSafe(
+                    CindarsHope.Core.Physics.GameplayLayerNames.WorldSolid));
+
+            // spec_codex_13: layer de gameplay do proprio inimigo (queries de combate por mask).
+            CindarsHope.Core.Physics.GameplayLayerNames.TryAssignRuntimeLayer(
+                enemyObject, CindarsHope.Core.Physics.GameplayLayerNames.Enemy);
 
             var packId = entry?.PackId;
             if (packCoordinator != null && !string.IsNullOrWhiteSpace(packId))

@@ -61,6 +61,39 @@ namespace CindarsHope.Combat
         private SpriteRenderer _chargeTelegraphRenderer;
         private Color _chargeTelegraphBaseColor = Color.white;
 
+        // spec_codex_13: buffer reutilizavel para as queries de combate deste controller
+        // (ContactFilter2D + NonAlloc), evitando alocacao por ataque. Tamanho fixo — convencao
+        // compartilhada com SpellCastService (mesmo tamanho de buffer entre os pontos de query).
+        internal const int CombatQueryBufferSize = 32;
+        private readonly Collider2D[] _combatQueryBuffer = new Collider2D[CombatQueryBufferSize];
+        private readonly System.Collections.Generic.HashSet<EnemyHealth> _combatQuerySeenBuffer =
+            new System.Collections.Generic.HashSet<EnemyHealth>();
+        private ContactFilter2D _enemyContactFilter;
+        private bool _enemyContactFilterInitialized;
+
+        // fable_08 / spec_codex_13: ContactFilter2D configurado por LayerMask("Enemy"), com
+        // fallback para NoFilter (sem mask) quando o layer ainda nao existe — nao quebra o
+        // comportamento atual antes do humano rodar CindarsHope/Inicializar Projeto.
+        private ContactFilter2D EnemyContactFilter
+        {
+            get
+            {
+                if (!_enemyContactFilterInitialized)
+                {
+                    var mask = CindarsHope.Core.Physics.GameplayLayerNames.GetMaskSafe(
+                        CindarsHope.Core.Physics.GameplayLayerNames.Enemy);
+                    _enemyContactFilter = mask.value != 0 ? new ContactFilter2D() : ContactFilter2D.noFilter;
+                    if (mask.value != 0)
+                    {
+                        _enemyContactFilter.SetLayerMask(mask);
+                    }
+                    _enemyContactFilter.useTriggers = true;
+                    _enemyContactFilterInitialized = true;
+                }
+                return _enemyContactFilter;
+            }
+        }
+
         private void Start()
         {
             if (_interactionSystem == null)
@@ -232,21 +265,26 @@ namespace CindarsHope.Combat
             }
         }
 
-        // fable_08: posiÃ§Ãµes de inimigos vivos dentro do raio, para auto-target/Ã¡rea. Usa
-        // OverlapCircleAll (mesma query do melee) â€” busca de fÃ­sica, nÃ£o de objeto global.
+        // fable_08: posicoes de inimigos vivos dentro do raio, para auto-target/area.
+        // spec_codex_13: ContactFilter2D (mask "Enemy" com fallback NoFilter) + buffer
+        // pre-alocado reutilizavel (OverlapCircle NonAlloc) — sem List/HashSet novos por chamada.
+        private readonly System.Collections.Generic.List<UnityEngine.Vector2> _enemyPositionQueryResult =
+            new System.Collections.Generic.List<UnityEngine.Vector2>();
+
         private System.Collections.Generic.IReadOnlyList<UnityEngine.Vector2> QueryEnemyPositions(UnityEngine.Vector2 center, float radius)
         {
-            var positions = new System.Collections.Generic.List<UnityEngine.Vector2>();
-            var hits = Physics2D.OverlapCircleAll(center, Mathf.Max(0.1f, radius));
-            var seen = new System.Collections.Generic.HashSet<EnemyHealth>();
-            foreach (var col in hits)
+            _enemyPositionQueryResult.Clear();
+            _combatQuerySeenBuffer.Clear();
+            int count = Physics2D.OverlapCircle(center, Mathf.Max(0.1f, radius), EnemyContactFilter, _combatQueryBuffer);
+            for (int i = 0; i < count; i++)
             {
+                var col = _combatQueryBuffer[i];
                 if (col == null) continue;
                 var enemy = col.GetComponentInParent<EnemyHealth>() ?? col.GetComponent<EnemyHealth>();
-                if (enemy == null || enemy.IsDead || !seen.Add(enemy)) continue;
-                positions.Add(enemy.transform.position);
+                if (enemy == null || enemy.IsDead || !_combatQuerySeenBuffer.Add(enemy)) continue;
+                _enemyPositionQueryResult.Add(enemy.transform.position);
             }
-            return positions;
+            return _enemyPositionQueryResult;
         }
 
         private void Update()

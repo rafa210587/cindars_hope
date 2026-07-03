@@ -27,7 +27,6 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using CindarsHope.UI.Hotbar;
 using CindarsHope.Equipment;
@@ -1072,6 +1071,43 @@ namespace CindarsHope.Editor.SceneCreation
         private const float InteriorInsetPerSide = 1f;
         private const float DoorGapWidth = 1.8f;
 
+        // Kit modular residencial (roof/walls/door A-B-C): beiral do telhado além do footprint da
+        // casca, largura de porta desejada, e escala calculada por BOUNDS do sprite (não por PPU) —
+        // robusto contra reimport tardio da regra de PPU=64 do GeneratedSpriteImporter.
+        private const float ModularRoofEaveOverhang = 0.7f;
+        private const float ModularDoorDesiredWidth = 1.5f;
+        // Quanto da faixa de parede frontal (onde fica a porta) deve ficar visível abaixo do beiral
+        // do telhado, em tiles de mundo. Metade da espessura de parede é o mínimo pra não parecer que
+        // o telhado "flutua"; valor um pouco maior lê melhor como fachada com beiral.
+        private const float ModularRoofFrontWallReveal = 0.6f;
+
+        // sprite.bounds.size já reflete pixelsPerUnit correto no momento do import; se o PPU ainda
+        // não foi reaplicado pela regra do importer, o resultado visual pode ficar levemente off até
+        // reimport, mas a escala aqui nunca "explode" como o cálculo antigo por rect.width/ppu fazia.
+        private static float ModularScaleForWidth(Sprite sprite, float desiredWidth)
+        {
+            float boundsWidth = sprite.bounds.size.x;
+            return boundsWidth > 0.0001f ? desiredWidth / boundsWidth : 1f;
+        }
+
+        // Casas RESIDENCIAIS "normais" que recebem o kit modular novo (roof/walls/door A-B-C, 64 px/tile)
+        // em vez do telhado Tiled procedural. Ordem fixa => variante deterministica por indice (A/B/C
+        // ciclico). Demais casas (Temple, MarketHall, ofícios, etc.) mantem o caminho Tiled existente.
+        private static readonly string[] ModularHouseOrder =
+        {
+            "House_Residential_1", "House_Residential_2", "House_Residential_3", "House_Residential_4",
+            "House_Dagna", "House_Pip", "House_Tovin",
+        };
+        private static readonly char[] ModularHouseVariants = { 'A', 'B', 'C' };
+
+        // Retorna a variante {A,B,C} para casas residenciais do kit modular, ou '\0' se a casa nao
+        // participa (mantem o telhado Tiled procedural existente).
+        private static char GetHouseModularVariant(string houseName)
+        {
+            var index = System.Array.IndexOf(ModularHouseOrder, houseName);
+            return index < 0 ? '\0' : ModularHouseVariants[index % ModularHouseVariants.Length];
+        }
+
         // Centros de marcos/áreas reservadas (não recebem casas). Devem bater com onde os marcos são
         // de fato criados (praça, salão de mercado, praça de eventos) e com os landmarks de canto.
         private static readonly Vector3 MarketHallCenter = new Vector3(-48f, 15f, 0f);
@@ -1131,6 +1167,8 @@ namespace CindarsHope.Editor.SceneCreation
             house.transform.SetParent(parent);
             house.transform.position = position;
 
+            char modularVariant = GetHouseModularVariant(name);
+
             float hw = size.x * 0.5f;
             float hh = size.y * 0.5f;
             var interiorSize = new Vector2(
@@ -1177,6 +1215,32 @@ namespace CindarsHope.Editor.SceneCreation
             floorRenderer.sortingOrder = 0;
             TrySetSortingLayer(floorRenderer, "Items", floorRenderer.sortingOrder);
 
+            // Kit modular (residenciais A/B/C, 64 px/tile): casca de paredes visual acima do chão e
+            // abaixo do telhado. Os colliders/quads de parede procedurais abaixo continuam existindo
+            // (bloqueiam movimento); este SpriteRenderer é só a pele visual por cima deles.
+            if (modularVariant != '\0')
+            {
+                var wallsShell = new GameObject("WallsShell");
+                wallsShell.transform.SetParent(house.transform);
+                var wallsSprite = WorldSpriteLibrary.HouseModular($"walls_{modularVariant}_topdown");
+                if (wallsSprite != null)
+                {
+                    var wallsRenderer = wallsShell.AddComponent<SpriteRenderer>();
+                    wallsRenderer.sprite = wallsSprite;
+                    wallsRenderer.color = Color.white;
+                    wallsRenderer.drawMode = SpriteDrawMode.Simple;
+                    // Escala pelos BOUNDS reais do sprite (não por PPU) — largura da casca = footprint.
+                    float wallsScale = ModularScaleForWidth(wallsSprite, size.x);
+                    wallsShell.transform.localScale = new Vector3(wallsScale, wallsScale, 1f);
+                    // Bottom-align pela base do footprint: se a casca escalada for mais alta/baixa que
+                    // size.y, ela ainda encosta a base em -hh (não fica centralizada no meio da casa).
+                    float wallsScaledHeight = wallsSprite.bounds.size.y * wallsScale;
+                    wallsShell.transform.localPosition = new Vector3(0f, -hh + wallsScaledHeight * 0.5f, 0f);
+                    wallsRenderer.sortingOrder = 10;
+                    TrySetSortingLayer(wallsRenderer, "Items", wallsRenderer.sortingOrder);
+                }
+            }
+
             // Paredes sólidas (visual de PEDRA com contorno — ver AddStoneWallVisual). Três paredes
             // inteiras + a parede do lado da porta dividida em duas, deixando o VÃO no centro.
             if (horizontalDoor)
@@ -1205,7 +1269,7 @@ namespace CindarsHope.Editor.SceneCreation
             }
 
             // Porta funcional no vão: FECHADA tranca a passagem; aperte E para ABRIR (desliza) e entrar.
-            CreateHouseDoor(house.transform, doorLocalPosition, doorSide);
+            CreateHouseDoor(house.transform, doorLocalPosition, doorSide, modularVariant);
 
             // Móveis (andáveis — CreateInteriorProp não põe collider). Cama sempre; mesa/estante nas maiores.
             var bedProp = CreateInteriorProp(house.transform, "Bed", new Vector3(-ihw + 0.9f, ihh - 0.7f, 0f), new Vector3(1.6f, 1f, 1f), new Color(0.5f, 0.36f, 0.5f));
@@ -1264,21 +1328,48 @@ namespace CindarsHope.Editor.SceneCreation
             roof.transform.SetParent(house.transform);
             roof.transform.localPosition = Vector3.zero;
             var roofRenderer = roof.AddComponent<SpriteRenderer>();
-            var roofTile = WorldSpriteLibrary.Building("roof_redtile");
-            if (roofTile != null)
+            var modularRoofSprite = modularVariant != '\0' ? WorldSpriteLibrary.HouseModular($"roof_{modularVariant}_aerial") : null;
+            if (modularRoofSprite != null)
             {
-                roof.transform.localScale = Vector3.one;
-                roofRenderer.sprite = roofTile;
-                roofRenderer.color = RoofTint(archetype);
-                roofRenderer.drawMode = SpriteDrawMode.Tiled;
-                roofRenderer.tileMode = SpriteTileMode.Continuous;
-                roofRenderer.size = new Vector2(size.x + 0.2f, size.y + 0.2f);
+                // Peca COMPLETA (nao textura tileavel): Simple + escala uniforme por BOUNDS (nao PPU,
+                // que pode nao ter sido reaplicado ainda pela regra do importer), sem tint (a variante
+                // A/B/C ja diferencia; roof_redtile/RoofTint ficam so para as demais casas).
+                float roofDesiredWidth = size.x + ModularRoofEaveOverhang;
+                float roofScale = ModularScaleForWidth(modularRoofSprite, roofDesiredWidth);
+                roof.transform.localScale = new Vector3(roofScale, roofScale, 1f);
+                roofRenderer.sprite = modularRoofSprite;
+                roofRenderer.color = Color.white;
+                roofRenderer.drawMode = SpriteDrawMode.Simple;
+
+                // A casa é vista quase-frontal (player olha a fachada, porta na base -hh): a faixa da
+                // parede FRONTAL da casca deve aparecer embaixo do beiral, não ser coberta por ele.
+                // Pivot do sprite é center (Unity default): com localPosition.y = 0 a borda inferior
+                // do telhado ficaria em -roofScaledHeight/2, colada na base do footprint (-hh) — sem
+                // revelar parede nenhuma. Deslocamos o roof para CIMA para que a borda inferior do
+                // telhado pare em (-hh + ModularRoofFrontWallReveal), revelando essa faixa de parede.
+                float roofScaledHeight = modularRoofSprite.bounds.size.y * roofScale;
+                float desiredRoofBottomY = -hh + ModularRoofFrontWallReveal;
+                float roofOffsetY = desiredRoofBottomY + roofScaledHeight * 0.5f;
+                roof.transform.localPosition = new Vector3(0f, roofOffsetY, 0f);
             }
             else
             {
-                roof.transform.localScale = new Vector3(size.x + 0.2f, size.y + 0.2f, 1f);
-                roofRenderer.sprite = GetBuiltinSprite();
-                roofRenderer.color = Color.Lerp(baseColor, new Color(0.5f, 0.18f, 0.12f), 0.6f);
+                var roofTile = WorldSpriteLibrary.Building("roof_redtile");
+                if (roofTile != null)
+                {
+                    roof.transform.localScale = Vector3.one;
+                    roofRenderer.sprite = roofTile;
+                    roofRenderer.color = RoofTint(archetype);
+                    roofRenderer.drawMode = SpriteDrawMode.Tiled;
+                    roofRenderer.tileMode = SpriteTileMode.Continuous;
+                    roofRenderer.size = new Vector2(size.x + 0.2f, size.y + 0.2f);
+                }
+                else
+                {
+                    roof.transform.localScale = new Vector3(size.x + 0.2f, size.y + 0.2f, 1f);
+                    roofRenderer.sprite = GetBuiltinSprite();
+                    roofRenderer.color = Color.Lerp(baseColor, new Color(0.5f, 0.18f, 0.12f), 0.6f);
+                }
             }
             roofRenderer.sortingOrder = 20;
             TrySetSortingLayer(roofRenderer, "Items", roofRenderer.sortingOrder);
@@ -1392,7 +1483,7 @@ namespace CindarsHope.Editor.SceneCreation
         // Porta funcional no vão da casa (lado virado para a rua). Desenhada ACIMA do telhado
         // (sortingOrder > 20) para ser visível de fora; fechada tranca o vão (collider sólido),
         // aperte E para deslizar e abrir. A folha acompanha a orientação N/S/E/W do frontage.
-        private static void CreateHouseDoor(Transform house, Vector3 localPosition, TownDoorSide side)
+        private static void CreateHouseDoor(Transform house, Vector3 localPosition, TownDoorSide side, char modularVariant = '\0')
         {
             var door = new GameObject("Door");
             door.transform.SetParent(house);
@@ -1430,13 +1521,28 @@ namespace CindarsHope.Editor.SceneCreation
                 ? new Vector3(DoorGapWidth * 0.92f, 0f, 0f)
                 : new Vector3(0f, DoorGapWidth * 0.92f, 0f);
             leaf.transform.localPosition = closedLocalPos;
-            leaf.transform.localScale = panelScale;
             var leafRenderer = leaf.AddComponent<SpriteRenderer>();
-            var doorSprite = WorldSpriteLibrary.Building("door_wood");
+            var doorSprite = modularVariant != '\0'
+                ? WorldSpriteLibrary.HouseModular($"door_{modularVariant}")
+                : WorldSpriteLibrary.Building("door_wood");
             leafRenderer.sprite = doorSprite != null ? doorSprite : GetBuiltinSprite();
             leafRenderer.color = doorSprite != null ? Color.white : new Color(0.34f, 0.22f, 0.13f);
             leafRenderer.sortingOrder = 23;
             TrySetSortingLayer(leafRenderer, "Items", leafRenderer.sortingOrder);
+            if (modularVariant != '\0' && doorSprite != null)
+            {
+                // Peça de arte completa do kit modular: escala por BOUNDS reais (não PPU/panelScale
+                // procedural) — evita a porta gigante centralizada em cima do telhado vista no Play
+                // Mode. Posição já é doorLocalPosition (bottom-center do footprint, igual à porta
+                // antiga); só a escala visual muda. Collider/blocker/trigger continuam usando
+                // blockerSize/triggerSize (geometria de vão), não esta escala.
+                float doorScale = ModularScaleForWidth(doorSprite, ModularDoorDesiredWidth);
+                leaf.transform.localScale = new Vector3(doorScale, doorScale, 1f);
+            }
+            else
+            {
+                leaf.transform.localScale = panelScale;
+            }
 
             // Collider SÓLIDO que tranca o vão (desligado quando aberta).
             var blocker = door.AddComponent<BoxCollider2D>();
@@ -2961,6 +3067,9 @@ namespace CindarsHope.Editor.SceneCreation
             var npcObject = new GameObject(objectName);
             npcObject.transform.SetParent(parent);
             npcObject.transform.position = position;
+            // spec_codex_13: layer de gameplay NPC.
+            CindarsHope.Editor.Physics.GenerateGameplayPhysicsLayers.TryAssignLayer(
+                npcObject, CindarsHope.Editor.Physics.GenerateGameplayPhysicsLayers.Npc);
             // Size from the per-race NPC scale profile; falls back to a hardcoded scale if the profile
             // asset has not been generated yet (run CindarsHope/Inicializar Projeto to materialise it).
             if (!ScaleProfileLibrary.AttachApplicator(npcObject, scaleCategory))
@@ -2997,6 +3106,14 @@ namespace CindarsHope.Editor.SceneCreation
             SetReference(serialized, "_sellPanel", shopUi.SellPanel);
             SetReference(serialized, "_modalManager", modalManager);
             serialized.ApplyModifiedPropertiesWithoutUndo();
+
+            // Anima a caminhada se o NPC ja tiver WalkAnimResourcesPath (gerado por
+            // GenerateNpcWalkAnimations); sem path, o componente se auto-desabilita em Awake.
+            var walkAnimator = npcObject.AddComponent<CindarsHope.NPC.NpcWalkAnimator>();
+            var serializedWalkAnimator = new SerializedObject(walkAnimator);
+            SetReference(serializedWalkAnimator, "_npcData", npcData);
+            serializedWalkAnimator.ApplyModifiedPropertiesWithoutUndo();
+
             ConfigureNpcMovement(npcObject, npcData, position, movementProfile, canWander: true, wanderRadius, playerCollider);
             AddPlacementMarker(npcObject, npcData, movementProfile);
             return npcObject;
@@ -3193,6 +3310,9 @@ namespace CindarsHope.Editor.SceneCreation
             var npcObject = new GameObject(objectName);
             npcObject.transform.SetParent(parent);
             npcObject.transform.position = position;
+            // spec_codex_13: layer de gameplay NPC.
+            CindarsHope.Editor.Physics.GenerateGameplayPhysicsLayers.TryAssignLayer(
+                npcObject, CindarsHope.Editor.Physics.GenerateGameplayPhysicsLayers.Npc);
             // Size from the per-race NPC scale profile; falls back to a hardcoded scale if the profile
             // asset has not been generated yet (run CindarsHope/Inicializar Projeto to materialise it).
             if (!ScaleProfileLibrary.AttachApplicator(npcObject, scaleCategory))
@@ -3219,6 +3339,15 @@ namespace CindarsHope.Editor.SceneCreation
             SetReference(serializedController, "_modalManager", modalManager);
             SetReference(serializedController, "_collider", collider);
             SetReference(serializedController, "_spriteRenderer", renderer);
+
+            // Anima a caminhada se o NPC ja tiver WalkAnimResourcesPath (gerado por
+            // GenerateNpcWalkAnimations); sem path, o componente se auto-desabilita em Awake
+            // e mantem so o BodySprite estatico. Zero-code para novos NPCs: soltar PNG + rodar
+            // "Inicializar Projeto" ja materializa o path aqui.
+            var walkAnimator = npcObject.AddComponent<CindarsHope.NPC.NpcWalkAnimator>();
+            var serializedWalkAnimator = new SerializedObject(walkAnimator);
+            SetReference(serializedWalkAnimator, "_npcData", npcData);
+            serializedWalkAnimator.ApplyModifiedPropertiesWithoutUndo();
 
             // TODO NPC se move agora (vaivém vivo + corpo sólido). O tier (micro no posto vs. ronda)
             // sai do movementProfile; canWander só decide se ele é "estático-vivo" ou andarilho.

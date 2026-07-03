@@ -72,6 +72,10 @@ namespace CindarsHope.Cave.Runtime
                 hazardGO.name = hazard.HazardId;
                 spriteRenderer.sortingOrder = 1;
 
+                // spec_codex_13: layer de gameplay do hazard.
+                CindarsHope.Core.Physics.GameplayLayerNames.TryAssignRuntimeLayer(
+                    hazardGO, CindarsHope.Core.Physics.GameplayLayerNames.Hazard);
+
                 var trigger = hazardGO.GetComponent<BoxCollider2D>();
                 if (trigger == null)
                 {

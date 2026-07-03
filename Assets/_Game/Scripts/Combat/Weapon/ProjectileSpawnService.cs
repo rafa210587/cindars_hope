@@ -37,6 +37,10 @@ namespace CindarsHope.Combat.Weapon
                 projectile.transform.position = spawnPos;
             }
 
+            // spec_codex_13: layer de gameplay do projetil (prefab autorado ou procedural).
+            CindarsHope.Core.Physics.GameplayLayerNames.TryAssignRuntimeLayer(
+                projectile, CindarsHope.Core.Physics.GameplayLayerNames.Projectile);
+
             // Get ProjectileBehaviour component
             var projectileBehaviour = projectile.GetComponent<ProjectileBehaviour>();
             if (projectileBehaviour == null)

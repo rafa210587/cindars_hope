@@ -85,6 +85,11 @@ namespace CindarsHope.Editor
             RunStep("Renomear pasta de sprites attack/ -> attack_sword/ (fable_84)",
                 () => CindarsHope.Editor.RenameAttackSpriteFolder.Execute());
 
+            // spec_codex_13: cria os 7 physics layers de gameplay ANTES de qualquer gerador
+            // que atribua layer a prefab/objeto de cena (ordem de dependencia obrigatoria).
+            RunStep("Criar physics layers de gameplay",
+                () => { CindarsHope.Editor.Physics.GenerateGameplayPhysicsLayers.EnsureLayers(); });
+
             // FASE A — geradores de dados (SOs antes das cenas).
             RunStep("Gerar status effects canonicos",
                 () => CindarsHope.EditorTools.Combat.GenerateCanonicalStatusEffects.Generate());
@@ -152,6 +157,16 @@ namespace CindarsHope.Editor
             // movement profiles (GenerateAndWireSpec13GAssets acima) ja gerados. Idempotente.
             RunStep("Gerar packs tematicos de spawn por bioma (fable_81)",
                 () => CindarsHope.Editor.EnemyTaxonomy.GenerateThematicPacksFable81.GeneratePacks());
+            // Reimporta os sprites de inimigo (Resources/EnemySprites) com settings de pixel art
+            // (Sprite, Uncompressed, Point, PPU=128, BottomCenter). Sem isso os PNGs dropados na pasta
+            // entram com import padrao e o inimigo aparece borrado/errado. Idempotente.
+            RunStep("Reimportar sprites de inimigo (PPU/Point/BottomCenter)",
+                () => CindarsHope.Editor.EnemySpriteImportFixer.FixSize());
+            // Bindings de skin (data-driven): mapeia enemyId -> slugs de sprite por referencia cruzada,
+            // aplicando a arte nova ao roster que spawna, com variancia deterministica. Aditivo: preserva
+            // as entradas curadas do JSON e so acrescenta identidades faltantes. Depende dos PNGs acima.
+            RunStep("Gerar/atualizar bindings de skin de inimigo (data-driven, aditivo)",
+                () => CindarsHope.Editor.EnemySkins.GenerateEnemySkinBindings.Generate());
 
             // Profiles de escala visual (player/NPC/props). DEVE rodar antes das cenas: os scene creators
             // anexam VisualScaleApplicator lendo esses profiles; sem eles caem no fallback hardcoded e logam erro.
@@ -169,6 +184,13 @@ namespace CindarsHope.Editor
 
             RunStep("Configurar fundos de retrato de NPC como Sprite (NpcPortraitBackgrounds)",
                 () => CindarsHope.Editor.NPC.AssignNpcPortraitBackgrounds.ConfigureAll());
+
+            // Fatia as folhas de sprite de caminhada (5 frames x 5 direcoes) de art/npc_anim_gpt/raw/
+            // para Resources/NpcWalkSprites/ e popula NpcDataSO.WalkAnimResourcesPath. Deve rodar
+            // ANTES das cenas (FASE C) para que o NpcWalkAnimator ja encontre o path no BodySprite/prefab.
+            // NPCs sem PNG de caminhada sao pulados com aviso; nao falha o lote.
+            RunStep("Gerar/fatiar animacoes de caminhada dos NPCs (walk sheets 5x5)",
+                () => CindarsHope.Editor.NPC.GenerateNpcWalkAnimations.GenerateAll());
 
             // FASE B — salvar assets antes das cenas.
             RunStep("Salvar assets gerados (SaveAssets + Refresh) antes das cenas", SaveAndRefresh);
@@ -238,6 +260,10 @@ namespace CindarsHope.Editor
                 () => CindarsHope.Editor.Validation.ValidateSceneTransitions.ValidateAll());
             RunStep("Validar layout FarmScene v4 (presenca dos elementos §32)",
                 () => CindarsHope.Editor.Validation.ValidateFarmSceneLayoutV4.Validate());
+            RunStep("Validar bindings de skin de inimigo (slugs existem; profiles cobertos)",
+                () => CindarsHope.Editor.EnemySkins.ValidateEnemySkinBindings.Validate());
+            RunStep("Validar animacoes de caminhada dos NPCs (25 sprites fatiados por NPC)",
+                () => CindarsHope.Editor.NPC.ValidateNpcWalkAnimations.Validate());
 
             ShowSummary("Validar Projeto", "[Validar]",
                 "Veja o Console: cada validador loga PASS/FAIL e detalhes. Este comando NAO altera assets.");
@@ -259,6 +285,13 @@ namespace CindarsHope.Editor
                     int repaired = CindarsHope.Editor.CindarsHopeProjectMaintenanceMenu.RemoveNullsFromAllRegistries();
                     Debug.Log($"[Reparar] Entradas null removidas das registries: {repaired}.");
                 });
+
+            // Reimporta os sprites de inimigo com settings de pixel art (mesmo passo do Inicializar).
+            RunStep("Reimportar sprites de inimigo (PPU/Point/BottomCenter)",
+                () => CindarsHope.Editor.EnemySpriteImportFixer.FixSize());
+            // Regenera os bindings de skin (aditivo; preserva curados). Mesmo passo do Inicializar.
+            RunStep("Gerar/atualizar bindings de skin de inimigo (data-driven, aditivo)",
+                () => CindarsHope.Editor.EnemySkins.GenerateEnemySkinBindings.Generate());
 
             // (b) Fix duravel dos duplicados: deleta em disco o asset legado de cada Id duplicado.
             RunStep("Deletar assets duplicados/legados da ItemDatabase (fix duravel)",

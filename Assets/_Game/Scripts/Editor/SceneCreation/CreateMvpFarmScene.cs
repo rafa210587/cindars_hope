@@ -424,6 +424,9 @@ namespace CindarsHope.Editor.SceneCreation
         {
             var player = new GameObject("Player");
             player.transform.position = Vector3.zero;
+            // spec_codex_13: layer de gameplay para queries de combate (ContactFilter2D).
+            CindarsHope.Editor.Physics.GenerateGameplayPhysicsLayers.TryAssignLayer(
+                player, CindarsHope.Editor.Physics.GenerateGameplayPhysicsLayers.Player);
             // Size from the authored Player scale profile (VisualScale 2.0), not a hardcoded localScale —
             // keeps player/NPC/world sizing in one data source. Falls back if the profile asset is absent.
             if (!ScaleProfileLibrary.AttachApplicator(player, EntityScaleCategory.Player))
@@ -1249,6 +1252,9 @@ namespace CindarsHope.Editor.SceneCreation
             var wall = new GameObject(name);
             wall.transform.SetParent(parent);
             wall.transform.localPosition = localPos;
+            // spec_codex_13: parede solida entra no layer WorldSolid (obstacle avoidance de inimigo).
+            CindarsHope.Editor.Physics.GenerateGameplayPhysicsLayers.TryAssignLayer(
+                wall, CindarsHope.Editor.Physics.GenerateGameplayPhysicsLayers.WorldSolid);
             var col = wall.AddComponent<BoxCollider2D>();
             col.isTrigger = false;
             col.size = size;
@@ -2341,6 +2347,8 @@ namespace CindarsHope.Editor.SceneCreation
             var obj = new GameObject($"ForagePoint_{spawnId}");
             obj.transform.SetParent(parent);
             obj.transform.position = position;
+            CindarsHope.Editor.Physics.GenerateGameplayPhysicsLayers.TryAssignLayer(
+                obj, CindarsHope.Editor.Physics.GenerateGameplayPhysicsLayers.Interactable);
             if (!ScaleProfileLibrary.AttachApplicator(obj, EntityScaleCategory.ForagePoint))
             {
                 obj.transform.localScale = new Vector3(0.85f, 0.85f, 1f);
@@ -2381,6 +2389,8 @@ namespace CindarsHope.Editor.SceneCreation
             // v7: homestead leste (spec_farm_scene_relayout_v4 §15.5 v7).
             // Coord 64x44: (28, 4).
             obj.transform.position = new Vector3(28f, 4f, 0f);
+            CindarsHope.Editor.Physics.GenerateGameplayPhysicsLayers.TryAssignLayer(
+                obj, CindarsHope.Editor.Physics.GenerateGameplayPhysicsLayers.Interactable);
             if (!ScaleProfileLibrary.AttachApplicator(obj, EntityScaleCategory.ShippingBin))
             {
                 obj.transform.localScale = new Vector3(1.4f, 1.1f, 1f);
@@ -2408,6 +2418,8 @@ namespace CindarsHope.Editor.SceneCreation
             var obj = new GameObject("TreeResource_01");
             obj.transform.SetParent(parent);
             obj.transform.position = position;
+            CindarsHope.Editor.Physics.GenerateGameplayPhysicsLayers.TryAssignLayer(
+                obj, CindarsHope.Editor.Physics.GenerateGameplayPhysicsLayers.Interactable);
             if (!ScaleProfileLibrary.AttachApplicator(obj, EntityScaleCategory.ResourceTree))
             {
                 obj.transform.localScale = new Vector3(1.2f, 1.8f, 1f);
@@ -2448,6 +2460,8 @@ namespace CindarsHope.Editor.SceneCreation
             var obj = new GameObject("RockResource_01");
             obj.transform.SetParent(parent);
             obj.transform.position = position;
+            CindarsHope.Editor.Physics.GenerateGameplayPhysicsLayers.TryAssignLayer(
+                obj, CindarsHope.Editor.Physics.GenerateGameplayPhysicsLayers.Interactable);
             if (!ScaleProfileLibrary.AttachApplicator(obj, EntityScaleCategory.ResourceRock))
             {
                 obj.transform.localScale = new Vector3(1.0f, 0.85f, 1f);

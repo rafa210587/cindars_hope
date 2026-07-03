@@ -161,6 +161,19 @@ namespace CindarsHope.Enemy
             _enemyData = data;
         }
 
+        /// <summary>
+        /// spec_codex_13: wiring de obstacle avoidance a partir do materializer/gerador de
+        /// spawn (nao hardcoded no runtime — o CALLER resolve o layer por nome, ex.:
+        /// CindarsHope.Core.Physics.GameplayLayerNames.GetMaskSafe("WorldSolid")). Seguro
+        /// chamar antes ou depois de Awake/Configure; atualiza tanto o campo serializado
+        /// quanto o executor de movimento ja inicializado.
+        /// </summary>
+        public void SetObstacleLayerMask(LayerMask mask)
+        {
+            _obstacleLayerMask = mask;
+            _movement.ObstacleLayerMask = mask;
+        }
+
         private void Awake()
         {
             _rb = GetComponent<Rigidbody2D>();
