@@ -137,6 +137,40 @@ namespace CindarsHope.Tests.EditMode.Architecture
                 "not by Unity predefined assembly name.\n" + string.Join("\n", violations));
         }
 
+        [Test]
+        public void FoundationAssembly_ContainsOnlyTheCuratedPureContracts()
+        {
+            Type identifiedDataType = typeof(CindarsHope.Core.Data.IIdentifiedData);
+            Type registryType = typeof(CindarsHope.Core.Data.IDataRegistry<>);
+            string foundationAssemblyName = "CindarsHope.Foundation";
+
+            Assert.That(identifiedDataType.Assembly, Is.SameAs(registryType.Assembly));
+            Assert.That(identifiedDataType.Assembly.GetName().Name, Is.EqualTo(foundationAssemblyName));
+            Assert.That(
+                identifiedDataType.Assembly.GetReferencedAssemblies()
+                    .Select(reference => reference.Name)
+                    .Where(name => name != null)
+                    .Any(name => name.StartsWith("UnityEngine", StringComparison.Ordinal)),
+                Is.False,
+                "Foundation must remain independent from UnityEngine assemblies.");
+
+            string projectRoot = Directory.GetParent(Application.dataPath)?.FullName;
+            Assert.That(projectRoot, Is.Not.Null.And.Not.Empty);
+            string foundationRoot = Path.Combine(
+                projectRoot,
+                "Assets",
+                "_Game",
+                "Scripts",
+                "Foundation");
+            string[] sourceFiles = Directory.GetFiles(foundationRoot, "*.cs", SearchOption.AllDirectories);
+
+            Assert.That(sourceFiles.Length, Is.EqualTo(2), "Foundation scope must grow only by explicit decision.");
+            Assert.That(
+                sourceFiles.Select(File.ReadAllText).Any(source => source.Contains("UnityEngine")),
+                Is.False,
+                "Foundation source must not depend on UnityEngine.");
+        }
+
         private static IReadOnlyList<Rule> ReadRules(string path)
         {
             Assert.That(File.Exists(path), Is.True, $"Architecture rule file not found: {path}");

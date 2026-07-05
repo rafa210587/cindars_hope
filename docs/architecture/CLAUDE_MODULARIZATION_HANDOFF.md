@@ -5,6 +5,49 @@ estiver próxima do limite de contexto/tokens.
 
 ---
 
+## 2026-07-05 — Autorização e preflight da Fase 3
+
+- Decisão humana: seguir para a próxima fase na branch `dev`.
+- Escopo: criar somente a primeira assembly pequena `CindarsHope.Foundation` com tipos puros.
+- Preflight: `origin/dev` e `HEAD` em `63abc536`, divergência `0 0`.
+- Alterações externas preservadas e excluídas dos commits:
+  - `Assets/_Game/Scripts/Editor/Enemy/GenerateEnemyWalkAnimations.cs`;
+  - `Assets/_Game/Scripts/Enemy/EnemyAnimator.cs`;
+  - `tools/enemy_anim/normalize_enemy_sheets.py`.
+- Restrições: preservar namespaces e GUIDs, usar `noEngineReferences`, não alterar gameplay, saves,
+  cenas, assets, balanceamento ou conteúdo.
+- Gate para encerrar: assembly gerada pelo Unity; todos os projetos compilando; testes de
+  arquitetura e save passando; nenhuma falha EditMode nova; nenhuma referência ou script ausente.
+- Fase 4: não autorizada.
+
+### 2026-07-05 — Fase 3.1: primeira fronteira Foundation
+
+- Tipos selecionados: `IIdentifiedData` e `IDataRegistry<T>`; ambos são contratos puros baseados
+  somente na BCL e tiveram namespaces preservados.
+- Movimento: fontes e respectivos `.meta` migrados de `Core/Data` para `Foundation/Data`.
+- GUIDs preservados: `319077d6cfe6c8f4192c1c6588d41076` e
+  `e17342ebda143d849a3f7f1063674f53`.
+- Assembly criada: `CindarsHope.Foundation`, `autoReferenced: true`,
+  `noEngineReferences: true`, sem referências explícitas.
+- Unity gerou `CindarsHope.Foundation.csproj` e `Library/ScriptAssemblies/CindarsHope.Foundation.dll`.
+- Primeiro processo de importação retornou exit 1 pelo wrapper apesar de o log terminar em return
+  code 0; a repetição independente após a importação retornou exit 0.
+- Builder multi-project: 3 projetos descobertos e compilados, 0 warnings e 0 erros.
+- Testes de arquitetura: 7/7 PASS.
+- Save fixtures: 6/6 PASS.
+- EditMode completa: 69/82 PASS, com as mesmas 13 falhas da Fase 2 e nenhuma nova.
+- Ratchet: PASS; 19 GUIDs protegidos; nenhum limite elevado.
+- Snapshot: 0 hardcodes, 18 tipos internos, 3 cruzamentos de teste, 206 arestas e 49 pares mútuos.
+- Logs: nenhum erro C#, missing script ou `MissingReferenceException`.
+- Docs validator: exit 1 somente pelas specs futuras e pelo harness já conhecidos; nenhum erro
+  restante pertence aos arquivos da Fase 3.
+- Infraestrutura corrigida:
+  - `RunUnityEditModeTests.ps1` não usa mais `-quit`, exige XML válido e propaga resultado real;
+  - scanners de arquitetura agora resolvem `-ProjectRoot .` antes de calcular paths relativos.
+- Relatório: `docs/architecture/MODULARIZATION_PHASE3_FOUNDATION_REPORT.md`.
+- Status técnico: `COMPLETE`; commit e publicação pendentes.
+- Próximo passo: commitar/publicar somente o lote da Fase 3 e parar antes da Fase 4.
+
 Você está continuando o rework modular do projeto Unity **Cindar's Hope**.
 
 ## Objetivo

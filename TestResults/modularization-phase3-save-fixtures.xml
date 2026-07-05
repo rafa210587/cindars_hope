@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="6" result="Passed" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-07-05 09:42:09Z" end-time="2026-07-05 09:42:09Z" duration="0,0475265">
+  <test-suite type="TestSuite" id="1000" name="cindars_hope" fullname="cindars_hope" runstate="Runnable" testcasecount="82" result="Passed" start-time="2026-07-05 09:42:09Z" end-time="2026-07-05 09:42:09Z" duration="0.047527" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1096" name="Assembly-CSharp-Editor.dll" fullname="F:/Projetos/Jogos/Cindars_hope/cindars_hope/Library/ScriptAssemblies/Assembly-CSharp-Editor.dll" runstate="Runnable" testcasecount="82" result="Passed" start-time="2026-07-05 09:42:09Z" end-time="2026-07-05 09:42:09Z" duration="0.039927" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="35676" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1097" name="CindarsHope" fullname="CindarsHope" runstate="Runnable" testcasecount="82" result="Passed" start-time="2026-07-05 09:42:09Z" end-time="2026-07-05 09:42:09Z" duration="0.038821" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1098" name="Tests" fullname="CindarsHope.Tests" runstate="Runnable" testcasecount="82" result="Passed" start-time="2026-07-05 09:42:09Z" end-time="2026-07-05 09:42:09Z" duration="0.036480" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="1099" name="EditMode" fullname="CindarsHope.Tests.EditMode" runstate="Runnable" testcasecount="82" result="Passed" start-time="2026-07-05 09:42:09Z" end-time="2026-07-05 09:42:09Z" duration="0.035657" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestSuite" id="1103" name="Save" fullname="CindarsHope.Tests.EditMode.Save" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-07-05 09:42:09Z" end-time="2026-07-05 09:42:09Z" duration="0.034576" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-suite type="TestFixture" id="1026" name="SaveCompatibilityFixtureTests" fullname="CindarsHope.Tests.EditMode.Save.SaveCompatibilityFixtureTests" classname="CindarsHope.Tests.EditMode.Save.SaveCompatibilityFixtureTests" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-07-05 09:42:09Z" end-time="2026-07-05 09:42:09Z" duration="0.034007" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1033" name="CurrentFixture_RoundTripsWithoutMigration" fullname="CindarsHope.Tests.EditMode.Save.SaveCompatibilityFixtureTests.CurrentFixture_RoundTripsWithoutMigration" methodname="CurrentFixture_RoundTripsWithoutMigration" classname="CindarsHope.Tests.EditMode.Save.SaveCompatibilityFixtureTests" runstate="Runnable" seed="230294020" result="Passed" start-time="2026-07-05 09:42:09Z" end-time="2026-07-05 09:42:09Z" duration="0.016324" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-suite type="ParameterizedMethod" id="1031" name="LegacyFixture_MigratesToCurrentSchemaAndRoundTrips" fullname="CindarsHope.Tests.EditMode.Save.SaveCompatibilityFixtureTests.LegacyFixture_MigratesToCurrentSchemaAndRoundTrips" classname="CindarsHope.Tests.EditMode.Save.SaveCompatibilityFixtureTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-07-05 09:42:09Z" end-time="2026-07-05 09:42:09Z" duration="0.007888" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+                  <properties />
+                  <test-case id="1027" name="LegacyFixture_MigratesToCurrentSchemaAndRoundTrips(1)" fullname="CindarsHope.Tests.EditMode.Save.SaveCompatibilityFixtureTests.LegacyFixture_MigratesToCurrentSchemaAndRoundTrips(1)" methodname="LegacyFixture_MigratesToCurrentSchemaAndRoundTrips" classname="CindarsHope.Tests.EditMode.Save.SaveCompatibilityFixtureTests" runstate="Runnable" seed="1554706334" result="Passed" start-time="2026-07-05 09:42:09Z" end-time="2026-07-05 09:42:09Z" duration="0.004087" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1028" name="LegacyFixture_MigratesToCurrentSchemaAndRoundTrips(2)" fullname="CindarsHope.Tests.EditMode.Save.SaveCompatibilityFixtureTests.LegacyFixture_MigratesToCurrentSchemaAndRoundTrips(2)" methodname="LegacyFixture_MigratesToCurrentSchemaAndRoundTrips" classname="CindarsHope.Tests.EditMode.Save.SaveCompatibilityFixtureTests" runstate="Runnable" seed="1404095096" result="Passed" start-time="2026-07-05 09:42:09Z" end-time="2026-07-05 09:42:09Z" duration="0.000931" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1029" name="LegacyFixture_MigratesToCurrentSchemaAndRoundTrips(3)" fullname="CindarsHope.Tests.EditMode.Save.SaveCompatibilityFixtureTests.LegacyFixture_MigratesToCurrentSchemaAndRoundTrips(3)" methodname="LegacyFixture_MigratesToCurrentSchemaAndRoundTrips" classname="CindarsHope.Tests.EditMode.Save.SaveCompatibilityFixtureTests" runstate="Runnable" seed="1420212754" result="Passed" start-time="2026-07-05 09:42:09Z" end-time="2026-07-05 09:42:09Z" duration="0.000661" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1030" name="LegacyFixture_MigratesToCurrentSchemaAndRoundTrips(4)" fullname="CindarsHope.Tests.EditMode.Save.SaveCompatibilityFixtureTests.LegacyFixture_MigratesToCurrentSchemaAndRoundTrips(4)" methodname="LegacyFixture_MigratesToCurrentSchemaAndRoundTrips" classname="CindarsHope.Tests.EditMode.Save.SaveCompatibilityFixtureTests" runstate="Runnable" seed="1813819855" result="Passed" start-time="2026-07-05 09:42:09Z" end-time="2026-07-05 09:42:09Z" duration="0.000560" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                </test-suite>
+                <test-case id="1032" name="VersionOneFixture_PreservesLegacyInventoryAmountAcrossSlotMigration" fullname="CindarsHope.Tests.EditMode.Save.SaveCompatibilityFixtureTests.VersionOneFixture_PreservesLegacyInventoryAmountAcrossSlotMigration" methodname="VersionOneFixture_PreservesLegacyInventoryAmountAcrossSlotMigration" classname="CindarsHope.Tests.EditMode.Save.SaveCompatibilityFixtureTests" runstate="Runnable" seed="172202845" result="Passed" start-time="2026-07-05 09:42:09Z" end-time="2026-07-05 09:42:09Z" duration="0.001605" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[Saving results to: F:\Projetos\Jogos\Cindars_hope\cindars_hope\TestResults\modularization-phase3-save-fixtures.xml
+]]></output>
+                </test-case>
+              </test-suite>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>
