@@ -52,8 +52,10 @@ Pare e reporte se:
 - Decisão humana recebida para iniciar modularização em branch dedicada.
 - Plano detalhado criado em `docs/architecture/MODULARIZATION_REWORK_PLAN.md`.
 - Este handoff vivo foi criado.
-- A publicação do baseline pendente em `dev` está em andamento; confirme no Git antes de assumir que
-  foi concluída.
+- O baseline completo foi consolidado no commit `a8fec139` e publicado em `origin/dev`.
+- O push enviou 904 objetos Git LFS (150 MB) e terminou com exit 0.
+- A validação do estado remoto ainda deve ser refeita no início da próxima sessão; não confie apenas
+  neste registro.
 
 ### Ainda não executado
 
@@ -63,13 +65,16 @@ Pare e reporte se:
 - Nenhuma fachada ou API antiga foi removida.
 - Fase 0 ainda precisa ser executada na branch de rework.
 
-## Baseline conhecido antes da publicação
+## Baseline publicado
 
 - Branch observada: `dev`.
 - HEAD observado antes dos novos commits: `f8892874`.
-- `dev` estava 21 commits à frente de `origin/dev` e sem commits remotos exclusivos após fetch.
-- Working tree tinha aproximadamente 1.553 entradas pendentes e o usuário autorizou explicitamente
-  incluir **todas** no commit/push de baseline.
+- Commit principal publicado: `a8fec139` (`feat(projeto): consolidar lote pendente e preparar rework modular`).
+- O commit principal contém 1.821 arquivos alterados, 84.855 inserções e 1.541 remoções.
+- Antes do push, `dev` estava 21 commits à frente de `origin/dev` e sem commits remotos exclusivos
+  após fetch.
+- O usuário autorizou explicitamente incluir **todas** as alterações pendentes no commit/push de
+  baseline.
 - O lote pendente contém código, assets, sprites, cenas, geradores, documentação e ferramentas de
   trabalhos anteriores; não atribua tudo ao rework modular.
 
@@ -135,10 +140,14 @@ Não declare PASS por compilação textual ou por relato de outro agente. Use ex
   - Falhas EditMode observadas: 7 contratos de layout da cidade, 2 testes do
     `ProjectValidationRunner` sem `LogAssert.Expect` e 4 contratos de catálogo de itens/flechas.
     Não corrigir essas falhas dentro de um commit de modularização sem spec/escopo próprio.
-- Commit: pendente no momento desta entrada; conferir `git log`.
+- Verificação adicional: `git diff --cached --check` apontou whitespace em arquivos `.meta` gerados
+  pelo Unity. Isso foi registrado como ruído preexistente/gerado e não foi normalizado mecanicamente
+  neste lote para evitar alterar milhares de metadados sem validação do Editor.
+- Commit principal: `a8fec139`.
+- Publicação principal: `git push -u origin dev`, exit 0; `a8fec139` enviado para `origin/dev`.
 - Risco residual: working tree contém um lote grande de trabalhos anteriores autorizado para commit.
-- Próximo passo: executar os testes Unity praticáveis, commitar e publicar todo o baseline; depois
-  criar a branch de rework limpa.
+- Próximo passo: confirmar `origin/dev...HEAD = 0 0` após o commit documental deste handoff; depois
+  criar a branch de rework limpa e executar a Fase 0.
 
 ## Gates mínimos por mudança
 
