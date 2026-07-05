@@ -10,6 +10,21 @@
 
 **4. Namespaces proibidos:** `CindarsHope.Debug`, `CindarsHope.Temp` — use `CindarsHope.DebugTools`.
 
+**5. Fronteiras modulares.** Código de jogo deve permanecer nas assemblies explícitas
+`CindarsHope.Foundation`, `CindarsHope.Runtime`, `CindarsHope.Editor` e assemblies de teste.
+Foundation contém somente contratos/tipos puros e nunca referencia Unity. Dependências runtime novas
+entram pelo `GameRuntimeCompositionRoot` ou por wiring explícito; não criar novo auto-bootstrap.
+
+**6. Ports canônicos.** Tempo usa `IGameClock`; aleatoriedade declara a finalidade Gameplay, World ou
+Visual; pause usa tokens do `GameTimeScaleCoordinator`; compra que altera inventário e ouro usa uma
+transação atômica; providers de save novos entram pelo registro tipado. Não reintroduzir acesso
+concreto paralelo a esses caminhos.
+
+**7. Performance e UI.** Hotspots recebem `ProfilerMarker` antes de otimização. Dispatch normal do
+EventBus não pode alocar. UI nova usa Canvas + estado/projeção e atualização por evento/dirty flag;
+não adicionar `OnGUI` nem polling vazio. Legado só é removido depois de busca de referências e smoke
+PlayMode do fluxo afetado.
+
 ## Enforcement
 
 Hook `runtime-code-guard.ps1` (PostToolUse) sinaliza forbidden APIs e namespaces em código recém-escrito.

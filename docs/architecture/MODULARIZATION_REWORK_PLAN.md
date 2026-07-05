@@ -631,3 +631,21 @@ erros; arquitetura passa 7/7 e saves 6/6.
 A descoberta real subiu de 82 para 2.660 testes EditMode, expondo 81 falhas antes invisíveis. O
 PlayMode batch continua bloqueado porque o Unity entra no jogo sem iniciar testes ou gerar XML. Ver
 `MODULARIZATION_PHASE4_COMPOSITION_REPORT.md` e `MODULARIZATION_PHASE5_ASSEMBLIES_REPORT.md`.
+
+### Resultado das Fases 6 a 8
+
+A Fase 6 adicionou Strategy de ações inimigas, ports de clock/RNG, pause por tokens, transação
+atômica de compra e registry tipado de providers de save. A Fase 7 instrumentou os hotspots e tornou
+o dispatch normal do EventBus zero-allocation após aquecimento. A Fase 8 reconciliou o pipeline de UI
+já migrado para Canvas/projections, sincronizou as regras de Codex e Claude e preservou o legado que
+não pode ser removido sem PlayMode.
+
+O gate final compilado passou em 6/6 assemblies. A suíte EditMode descobriu 2.670 testes: 2.591 PASS
+e 79 FAIL, duas falhas conhecidas a menos que o baseline da Fase 5 e nenhuma nova. O build Windows
+foi `Succeeded` e iniciou por 12 segundos sem erro crítico. O único critério não concluído é o smoke
+PlayMode das três cenas: o runner Unity entra na cena, não executa o teste e não gera XML, inclusive
+com assembly explícita. Por isso nenhuma fachada legada foi apagada e o rework fica tecnicamente
+fechado nos gates automatizáveis, com esse gate ambiental explicitamente pendente.
+
+Relatórios: `MODULARIZATION_PHASE6_DECOUPLING_REPORT.md`,
+`MODULARIZATION_PHASE7_PERFORMANCE_REPORT.md` e `MODULARIZATION_PHASE8_UI_LEGACY_REPORT.md`.

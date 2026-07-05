@@ -510,4 +510,45 @@ Além disso:
 Ao final de cada sessão, deixe este arquivo suficiente para que outra sessão consiga continuar sem
 depender do histórico da conversa.
 
+## 2026-07-05 — Fechamento das Fases 6 a 8
+
+- Status do código: `COMPLETE` para os gates compilados, EditMode, save e standalone.
+- Commit técnico: `a21cbf0a` (`refactor(arquitetura): desacoplar runtime e medir hotspots`).
+- Fase 6:
+  - Strategy injetável em `EnemyActionRunner`;
+  - `IGameClock` e RNG por finalidade em Foundation;
+  - pause coordenado por tokens;
+  - compra atômica inventory/wallet;
+  - registry tipado de providers de save, com hotbar como piloto;
+  - correções confirmadas de anchor IDs e preço 90%.
+- Fase 7:
+  - markers em EventBus, schedule, cave, save, minimap e scene transition;
+  - EventBus com snapshot por mutation e 0 bytes em 1.000 dispatches aquecidos.
+- Fase 8:
+  - regra `unity-architecture` sincronizada em `.codex` e `.claude`;
+  - pipeline Canvas/projection existente reconhecido como canônico;
+  - nenhum legado apagado sem o gate PlayMode.
+- Validação:
+  - 6/6 projetos Unity compilam, 0 warnings, 0 erros;
+  - ratchets 4/4, save fixtures 6/6;
+  - EditMode 2.591/2.670 PASS, 79 falhas; baseline 81, falhas novas 0, removidas 2;
+  - build Windows `Succeeded`, 0 erros, 4 warnings;
+  - executável vivo após 12 s, `Player.log` sem erro crítico.
+  - scanner Editor abriu Farm/Town/Cave e encontrou 0 missing scripts.
+- Bloqueio real:
+  - PlayMode batch cria `InitTestScene`, entra em `FarmScene`, não inicia testes e não gera XML;
+  - repetido com `-assemblyNames CindarsHope.Tests.PlayMode.Composition`;
+  - processo e cena temporária foram removidos;
+  - não declarar smoke PlayMode das três cenas nem remover `ContextHintController` até corrigir o
+    runner.
+- Mudanças concorrentes a preservar fora dos commits:
+  - `Assets/_Game/Scripts/Editor/Enemy/GenerateEnemyWalkAnimations.cs`;
+  - `Assets/_Game/Scripts/Enemy/EnemyAnimator.cs`;
+  - `tools/enemy_anim/normalize_enemy_sheets.py`.
+- Também não absorver ruído de Unity em `ProjectSettings/*.asset` ou reorder de `.slnx`.
+- Relatórios: `MODULARIZATION_PHASE6_DECOUPLING_REPORT.md`,
+  `MODULARIZATION_PHASE7_PERFORMANCE_REPORT.md`, `MODULARIZATION_PHASE8_UI_LEGACY_REPORT.md`.
+- Próximo passo de outra sessão: corrigir/atualizar o Unity Test Framework runner PlayMode e então
+  executar smoke Farm/Town/Cave; somente depois avaliar remoção do legado UI sem referências.
+
 ---
