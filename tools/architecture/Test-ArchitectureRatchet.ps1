@@ -3,6 +3,7 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
+$ProjectRoot = (Resolve-Path -LiteralPath $ProjectRoot).Path
 
 $rulesPath = Join-Path $PSScriptRoot 'architecture-ratchet-rules.tsv'
 $baselinePath = Join-Path $PSScriptRoot 'architecture-ratchet-baseline.tsv'

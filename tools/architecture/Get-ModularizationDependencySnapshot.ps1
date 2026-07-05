@@ -3,6 +3,7 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
+$ProjectRoot = (Resolve-Path -LiteralPath $ProjectRoot).Path
 
 $scriptsRoot = Join-Path $ProjectRoot 'Assets\_Game\Scripts'
 $testsRoot = Join-Path $ProjectRoot 'Assets\_Game\Tests'
@@ -66,12 +67,12 @@ foreach ($declaration in $internalDeclarations) {
 $edges = @{}
 foreach ($file in $runtimeFiles) {
     $relativeToScripts = $file.FullName.Substring($scriptsRoot.Length + 1)
-    $sourceModule = ($relativeToScripts -split '[\\/]')[0]
+    $originModule = ($relativeToScripts -split '[\\/]')[0]
     $text = [System.IO.File]::ReadAllText($file.FullName)
     foreach ($match in [regex]::Matches($text, '(?m)^using\s+CindarsHope\.([A-Za-z_][A-Za-z0-9_]*)')) {
         $targetModule = $match.Groups[1].Value
-        if ($targetModule -ne $sourceModule) {
-            $edges["$sourceModule|$targetModule"] = $true
+        if ($targetModule -ne $originModule) {
+            $edges["$originModule|$targetModule"] = $true
         }
     }
 }
