@@ -1,0 +1,173 @@
+# Prompt de Continuação para Claude — Rework Modular
+
+Copie todo o conteúdo deste documento para uma nova sessão do Claude Code quando a sessão atual
+estiver próxima do limite de contexto/tokens.
+
+---
+
+Você está continuando o rework modular do projeto Unity **Cindar's Hope**.
+
+## Objetivo
+
+Modularizar o projeto incrementalmente, aplicando DRY, SOLID, Ports and Adapters, Composition Root,
+Strategy, State/Presenter, Command/Unit of Work e assemblies explícitas, sem alterar o comportamento
+do jogo.
+
+O plano autoritativo desta execução é:
+
+`docs/architecture/MODULARIZATION_REWORK_PLAN.md`
+
+Leia esse arquivo por completo antes de propor ou alterar qualquer código.
+
+## Regra obrigatória de continuidade
+
+Antes de continuar, **valide de forma independente tudo que o Codex afirma ter feito**. Não use este
+handoff, mensagens anteriores ou relatórios como prova. Verifique no disco, no Git e nos resultados
+reais dos comandos.
+
+No início de toda nova sessão execute:
+
+```powershell
+git fetch origin dev
+git branch --show-current
+git status --short
+git log --oneline -12
+git rev-list --left-right --count origin/dev...HEAD
+```
+
+Pare e reporte se:
+
+- a branch não for a esperada;
+- houver alterações não documentadas neste handoff;
+- o working tree estiver misturado com arte/conteúdo de outra tarefa;
+- commits citados aqui não existirem;
+- o código contradizer o plano;
+- algum gate de validação produzir resultado diferente do registrado.
+
+## Estado registrado pelo Codex
+
+### Concluído nesta preparação
+
+- Auditoria arquitetural e de performance realizada no working tree de 2026-07-04.
+- Decisão humana recebida para iniciar modularização em branch dedicada.
+- Plano detalhado criado em `docs/architecture/MODULARIZATION_REWORK_PLAN.md`.
+- Este handoff vivo foi criado.
+- A publicação do baseline pendente em `dev` está em andamento; confirme no Git antes de assumir que
+  foi concluída.
+
+### Ainda não executado
+
+- Branch `rework/modular-architecture` ainda não deve ser assumida como criada.
+- Nenhum `.asmdef` foi criado por este rework.
+- Nenhum código runtime foi refatorado por este rework.
+- Nenhuma fachada ou API antiga foi removida.
+- Fase 0 ainda precisa ser executada na branch de rework.
+
+## Baseline conhecido antes da publicação
+
+- Branch observada: `dev`.
+- HEAD observado antes dos novos commits: `f8892874`.
+- `dev` estava 21 commits à frente de `origin/dev` e sem commits remotos exclusivos após fetch.
+- Working tree tinha aproximadamente 1.553 entradas pendentes e o usuário autorizou explicitamente
+  incluir **todas** no commit/push de baseline.
+- O lote pendente contém código, assets, sprites, cenas, geradores, documentação e ferramentas de
+  trabalhos anteriores; não atribua tudo ao rework modular.
+
+## Achados que devem ser revalidados
+
+- zero `.asmdef`;
+- aproximadamente 51 arquivos com auto-bootstrap;
+- referências hardcoded a `Assembly-CSharp` em geradores/validadores;
+- `CSharpProjectPostprocessor.OnGeneratedCSProject` com warning `UNT0006`;
+- `_blocks` da telemetria nunca incrementado;
+- views de HUD com `Update()` sem trabalho útil;
+- `OverlapCircleAll` residual em dois executores de skill;
+- `GameEventBus.Publish` usando `handlers.ToArray()`;
+- dezenas de acessos globais, inputs diretos e mutações distribuídas de inventário/ouro;
+- `GameBootstrap` e `SaveManager` como principais hubs de dependência.
+
+## Sequência obrigatória
+
+1. Verificar este handoff contra Git/disco.
+2. Confirmar que o baseline foi publicado e que `dev` está sincronizada.
+3. Criar/usar `rework/modular-architecture` somente com working tree limpo.
+4. Executar Fase 0 do plano.
+5. Não criar `.asmdef` antes de remover dependências hardcoded e atualizar validators.
+6. Não começar por Editor/Tests enquanto runtime continuar preso à `Assembly-CSharp`.
+7. Migrar Foundation primeiro.
+8. Atualizar este handoff após cada mudança material.
+
+## Atualização obrigatória deste arquivo
+
+Após **cada mudança material**, edite este documento antes do próximo commit. Acrescente uma entrada
+ao log abaixo contendo:
+
+- data/hora;
+- objetivo;
+- arquivos alterados;
+- comportamento preservado;
+- validações executadas e exit codes;
+- testes não executados e motivo;
+- commit produzido;
+- riscos residuais;
+- próximo passo exato.
+
+Não declare PASS por compilação textual ou por relato de outro agente. Use exit code real.
+
+## Log de execução
+
+### 2026-07-04 — Preparação do rework pelo Codex
+
+- Objetivo: documentar a modularização e preparar o baseline para publicação.
+- Arquivos criados:
+  - `docs/architecture/MODULARIZATION_REWORK_PLAN.md`;
+  - `docs/architecture/CLAUDE_MODULARIZATION_HANDOFF.md`.
+- Código runtime alterado pelo rework: nenhum.
+- Validações executadas:
+  - `dotnet build Assembly-CSharp.csproj`: exit 0, 0 erros, 0 warnings;
+  - `dotnet build Assembly-CSharp-Editor.csproj`: exit 0, 0 erros, 0 warnings;
+  - `tools/docs/validate_docs.ps1`: exit 1 por dívidas já presentes no lote de trabalho
+    (`spec_enemy_attack_kits_v1`, specs legadas de NPC/Town e falsos positivos de placeholder em
+    `Generate-CodexHarness.ps1`). Os dois documentos novos não apareceram entre as falhas.
+  - Unity Test Runner EditMode em batch: execução concluída com exit 2; 63 testes descobertos,
+    50 passaram e 13 falharam. Resultado salvo em
+    `TestResults/baseline-before-modularization.xml`.
+  - Falhas EditMode observadas: 7 contratos de layout da cidade, 2 testes do
+    `ProjectValidationRunner` sem `LogAssert.Expect` e 4 contratos de catálogo de itens/flechas.
+    Não corrigir essas falhas dentro de um commit de modularização sem spec/escopo próprio.
+- Commit: pendente no momento desta entrada; conferir `git log`.
+- Risco residual: working tree contém um lote grande de trabalhos anteriores autorizado para commit.
+- Próximo passo: executar os testes Unity praticáveis, commitar e publicar todo o baseline; depois
+  criar a branch de rework limpa.
+
+## Gates mínimos por mudança
+
+```powershell
+dotnet build .\Assembly-CSharp.csproj
+dotnet build .\Assembly-CSharp-Editor.csproj
+```
+
+Além disso:
+
+- rodar EditMode tests relevantes;
+- executar validators afetados;
+- criar/rodar PlayMode quando lifecycle, bootstrap, cena, UI ou gameplay observável mudar;
+- verificar GUIDs antes/depois de mover/deletar scripts;
+- verificar fixtures de save quando tipos, providers ou ordem de restore mudarem;
+- usar profiler antes/depois de alegar melhoria de performance.
+
+## Limites absolutos
+
+- Não usar `git reset --hard` ou checkout destrutivo.
+- Não apagar alterações do usuário.
+- Não editar YAML Unity manualmente.
+- Não alterar gameplay junto com arquitetura.
+- Não renomear campo serializado sem migration Unity.
+- Não mudar IDs, quantidades, balanceamento ou starter items.
+- Não promover spec sem evidência exigida.
+- Não realizar migração big-bang.
+
+Ao final de cada sessão, deixe este arquivo suficiente para que outra sessão consiga continuar sem
+depender do histórico da conversa.
+
+---

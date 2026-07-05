@@ -149,10 +149,32 @@ namespace CindarsHope.Editor
                 () => CindarsHope.Editor.HighTierGearRecipeGenerator.GenerateHighTierRecipes());
             RunStep("Gerar e wirar assets de inimigos (taxonomia / runtime)",
                 () => CindarsHope.Editor.EnemyTaxonomy.GenerateAndWireSpec13GAssets.GenerateAndWire());
+            // spec_enemy_attack_kits_v1: gera/realinha kits de ataque (2-3 acoes) para o universo
+            // completo (113 fichas canonicas + 7 novas do Roster + meteor_ooze_king) + wireia as 53
+            // variancias do Roster para o ActionSetId da mae. DEVE rodar DEPOIS do passo acima
+            // (precisa do bestiario canonico + dos 60 EnemyDataSO do Roster ja materializados).
+            RunStep("Gerar kits de ataque de inimigo (universo completo + primitivas P2)",
+                () => CindarsHope.Editor.EnemyTaxonomy.GenerateEnemyAttackKits.GenerateAll());
             RunStep("Criar assets de gate de boss da caverna",
                 () => CindarsHope.Editor.CaveData.CreateCaveBossAssets.CreateAll());
             RunStep("Anexar perfis default de fase de boss",
                 () => CindarsHope.Editor.CaveData.AttachDefaultBossPhaseProfiles.AttachAll());
+            // spec_cave_biome_art_profiles_runtime (CV01): 8 profiles de arte por bioma, idempotente.
+            // Preenche tiles/sprites a partir da convenção Art/Generated/World/cave/<biomeId>/ quando
+            // existir; ausência de arte = campo null (fallback aos placeholders atuais, sem erro).
+            RunStep("Gerar perfis de arte de bioma da caverna",
+                () => CindarsHope.Editor.Cave.GenerateCaveBiomeArtProfiles.Generate());
+            // fable_78 (slice 6) — ecossistema da caverna: elementos ambientais, nos de minerio e
+            // balance. Ordem de dependencia exigida pelos proprios comentarios dos geradores:
+            // EnvironmentElementProfiles referencia os MineNodeDataId de BiomeOreNodes (rodar
+            // ANTES ou junto), e EcosystemBalance e independente. Todos idempotentes (merge por
+            // Id / preserva asset existente sem sobrescrever tuning manual).
+            RunStep("Gerar perfis de elemento ambiental da caverna (fable_78)",
+                () => CindarsHope.EditorTools.Cave.GenerateCaveEnvironmentElementProfiles.Generate());
+            RunStep("Gerar nos de minerio por bioma da caverna (fable_78)",
+                () => CindarsHope.EditorTools.Cave.GenerateCaveBiomeOreNodes.Generate());
+            RunStep("Gerar balance do ecossistema da caverna (fable_78)",
+                () => CindarsHope.EditorTools.Cave.GenerateCaveEcosystemBalance.Generate());
             // Packs tematicos de spawn por bioma (fable_81). Depende do roster (bestiario) e dos
             // movement profiles (GenerateAndWireSpec13GAssets acima) ja gerados. Idempotente.
             RunStep("Gerar packs tematicos de spawn por bioma (fable_81)",
@@ -191,6 +213,19 @@ namespace CindarsHope.Editor
             // NPCs sem PNG de caminhada sao pulados com aviso; nao falha o lote.
             RunStep("Gerar/fatiar animacoes de caminhada dos NPCs (walk sheets 5x5)",
                 () => CindarsHope.Editor.NPC.GenerateNpcWalkAnimations.GenerateAll());
+
+            // Folhas de animacao dos inimigos do batch 1 (movimento + ataques): fatia
+            // art/enemy_anim_gpt/normalized -> Resources/EnemyAnimSprites; o EnemyAnimator (runtime,
+            // anexado pelo CaveEnemyMaterializer) carrega por slug. Grade N linhas x 5 colunas.
+            RunStep("Gerar/fatiar animacoes de inimigo (walk + ataques, batch 1)",
+                () => CindarsHope.Editor.Enemy.GenerateEnemyWalkAnimations.GenerateAll());
+
+            // Pivot dos sprites de mundo (predios/arvores/props/foliage/interior/animais) para
+            // BottomCenter, exigido pelo Y-sort global (Custom Axis Y + spriteSortPoint = Pivot).
+            // Deve rodar ANTES das cenas (FASE C): os scene creators instanciam esses sprites e o
+            // Y-sort so fica correto se o import ja estiver com o pivot certo. Idempotente.
+            RunStep("Ajustar pivots dos sprites de mundo (BottomCenter p/ Y-sort)",
+                () => CindarsHope.Editor.Art.WorldSpritePivotImportStep.EnsureWorldSpritePivots());
 
             // FASE B — salvar assets antes das cenas.
             RunStep("Salvar assets gerados (SaveAssets + Refresh) antes das cenas", SaveAndRefresh);
@@ -264,6 +299,19 @@ namespace CindarsHope.Editor
                 () => CindarsHope.Editor.EnemySkins.ValidateEnemySkinBindings.Validate());
             RunStep("Validar animacoes de caminhada dos NPCs (25 sprites fatiados por NPC)",
                 () => CindarsHope.Editor.NPC.ValidateNpcWalkAnimations.Validate());
+            RunStep("Validar kits de ataque de inimigo (universo completo + variancias)",
+                () => CindarsHope.Editor.Validation.ValidateEnemyAttackKits.RunValidation());
+            // spec_cave_biome_art_profiles_runtime (CV01): read-only; campos de arte vazios = WARNING.
+            RunStep("Validar perfis de arte de bioma da caverna",
+                () => CindarsHope.Editor.Cave.ValidateCaveBiomeArtProfiles.Validate());
+            RunStep("Validar wiring de escala visual de atores/props",
+                () => CindarsHope.Editor.Validation.ValidateActorScaleWiring.Run());
+            RunStep("Validar agenda/casas da cidade (fable_11)",
+                () => CindarsHope.Editor.Validation.ValidateFableCitySchedule.Validate());
+            RunStep("Validar ecossistema da caverna (fable_78)",
+                () => CindarsHope.Editor.Validation.ValidateCaveEcosystem.Run());
+            RunStep("Validar ranges de preco das lojas (fable_76 T5)",
+                () => CindarsHope.Editor.Validation.ValidateTownShopCatalogIntegrity.RunPriceRanges());
 
             ShowSummary("Validar Projeto", "[Validar]",
                 "Veja o Console: cada validador loga PASS/FAIL e detalhes. Este comando NAO altera assets.");

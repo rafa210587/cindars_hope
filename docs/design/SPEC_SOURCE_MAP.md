@@ -1578,6 +1578,16 @@ em conflito de LISTA/NÚMERO, o catálogo vence):
 ```text
 docs/design/gameplay/cave/CAVE_BESTIARY_CATALOG_DIRECTION_v1.0.md
   60 criaturas + 4 chefes finais, stat blocks, renomeações (Veilkin/Gravedelver).
+docs/design/gameplay/enemies/ENEMY_ATTACK_CATALOG_DIRECTION_v1.0.md (v1.1, 2026-07-03)
+  kits de ataque (2–3 ações: melee + ranged onde justificado + especial) do universo
+  COMPLETO de inimigos — 178 IDs: 117 fichas do CanonicalBestiaryCatalog (fonte de
+  verdade, incl. The Four) + 60 IDs do Roster reclassificados no crosswalk §4A
+  (53 variâncias que herdam kit da mãe + 7 novas) + 1 boss extra; 22 arquétipos
+  mecânicos compartilhados (EnemyActionSO) e primitivas novas priorizadas.
+docs/design/gameplay/enemies/ENEMY_ATTACK_IMPLEMENTATION_DIRECTION_v1.0.md (2026-07-03)
+  par ataque-cêntrico do catálogo acima: mecânica + descrição VISUAL de cada arquétipo
+  de ataque, tabela ataque→criaturas, convenção de cor/VFX por elemento, pipeline de
+  implementação (EnemyActionSO/ActionSet + EnemyAttackAnimator) e ordem de produção.
 docs/design/gameplay/loot_crafting_economy/ITEM_CATALOG_DIRECTION_v1.0.md
   ~118 itens nominais com BaseValue; qualidade de crops como itens separados.
 docs/design/gameplay/quests/QUEST_CATALOG_DIRECTION_v1.0.md

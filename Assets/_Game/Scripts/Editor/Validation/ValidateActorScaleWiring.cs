@@ -16,7 +16,6 @@ namespace CindarsHope.Editor.Validation
     /// </summary>
     public static class ValidateActorScaleWiring
     {
-        [MenuItem("CindarsHope/Validate/Actor Scale Wiring")]
         public static void Run()
         {
             var errors = 0;

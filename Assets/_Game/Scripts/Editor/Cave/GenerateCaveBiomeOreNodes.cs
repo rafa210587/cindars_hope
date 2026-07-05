@@ -35,7 +35,6 @@ namespace CindarsHope.EditorTools.Cave
             public int HitsRequired;
         }
 
-        [MenuItem("CindarsHope/Cave/Ecosystem/Generate Biome Ore Nodes")]
         public static void Generate()
         {
             EnsureFolders();

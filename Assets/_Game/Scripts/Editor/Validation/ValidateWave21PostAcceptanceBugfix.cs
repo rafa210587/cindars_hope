@@ -8,7 +8,7 @@ namespace CindarsHope.Editor.Validation
 {
     public static class ValidateWave21PostAcceptanceBugfix
     {
-        private const string MenuPath = "CindarsHope/Validate Wave 21 Post-Acceptance Bugfix";
+        private const string MenuPath = "CindarsHope/Archive/Validate Wave 21 Post-Acceptance Bugfix";
 
         [MenuItem(MenuPath)]
         public static void Validate()

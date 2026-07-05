@@ -27,6 +27,10 @@ namespace CindarsHope.Cave.Traps
         private SpriteRenderer _spriteRenderer;
         private Func<string, bool> _spawnEnemyById;
         private Action<string, TrapState> _onStateChanged;
+        // spec_cave_biome_art_profiles_runtime (CV01): sprites opcionais do bioma; null = placeholder
+        // de cor atual (fallback-first). Closed reusa o mesmo sprite do baú real (CAVE_BIOME_VISUAL_REFERENCE §2.1).
+        private Sprite _closedSprite;
+        private Sprite _revealedSprite;
 
         public string TrapInstanceId => _trapInstanceId;
         public TrapState State => _state;
@@ -39,7 +43,9 @@ namespace CindarsHope.Cave.Traps
             TrapState initialState,
             SpriteRenderer spriteRenderer,
             Func<string, bool> spawnEnemyById,
-            Action<string, TrapState> onStateChanged)
+            Action<string, TrapState> onStateChanged,
+            Sprite closedSprite = null,
+            Sprite revealedSprite = null)
         {
             _trapInstanceId = placement != null ? placement.TrapInstanceId : string.Empty;
             _caveLevel = caveLevel;
@@ -48,6 +54,8 @@ namespace CindarsHope.Cave.Traps
             _spriteRenderer = spriteRenderer != null ? spriteRenderer : GetComponent<SpriteRenderer>();
             _spawnEnemyById = spawnEnemyById;
             _onStateChanged = onStateChanged;
+            _closedSprite = closedSprite;
+            _revealedSprite = revealedSprite;
             ApplyVisual();
         }
 
@@ -100,6 +108,19 @@ namespace CindarsHope.Cave.Traps
             if (_spriteRenderer == null)
             {
                 return;
+            }
+
+            // spec_cave_biome_art_profiles_runtime (CV01): sprite do bioma vence quando presente para
+            // "fechado"/"detectado"; Triggered (vazio) e ausência de sprite mantêm o placeholder atual.
+            if (_state != TrapState.Triggered)
+            {
+                var customSprite = _detected ? _revealedSprite : _closedSprite;
+                if (customSprite != null)
+                {
+                    _spriteRenderer.sprite = customSprite;
+                    _spriteRenderer.color = Color.white;
+                    return;
+                }
             }
 
             if (_state == TrapState.Triggered)

@@ -21,7 +21,6 @@ namespace CindarsHope.EditorTools.Cave
         private const string CaveDir = DataRoot + "/Cave";
         private const string AssetPath = CaveDir + "/CaveEcosystemBalance.asset";
 
-        [MenuItem("CindarsHope/Cave/Ecosystem/Generate Ecosystem Balance")]
         public static void Generate()
         {
             EnsureCaveFolder();

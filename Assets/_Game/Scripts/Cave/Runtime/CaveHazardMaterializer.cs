@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using CindarsHope.Cave.Art;
 using CindarsHope.Cave.Generation;
 using CindarsHope.Combat;
 using CindarsHope.Inventory;
@@ -16,6 +17,8 @@ namespace CindarsHope.Cave.Runtime
         private readonly SpriteRenderer _hazardTilePrefab;
         private readonly InventoryManager _inventoryManager;
         private readonly CaveRunManager _caveRunManager;
+        // spec_cave_biome_art_profiles_runtime (CV01): resolver opcional; null = comportamento atual.
+        private readonly CaveBiomeArtResolver _biomeArtResolver;
 
         /// <summary>
         /// Inicializa o materializer de hazards e tesouro.
@@ -23,11 +26,13 @@ namespace CindarsHope.Cave.Runtime
         internal CaveHazardMaterializer(
             SpriteRenderer hazardTilePrefab,
             InventoryManager inventoryManager,
-            CaveRunManager caveRunManager)
+            CaveRunManager caveRunManager,
+            CaveBiomeArtResolver biomeArtResolver = null)
         {
             _hazardTilePrefab = hazardTilePrefab;
             _inventoryManager = inventoryManager;
             _caveRunManager = caveRunManager;
+            _biomeArtResolver = biomeArtResolver;
         }
 
         /// <summary>
@@ -48,6 +53,10 @@ namespace CindarsHope.Cave.Runtime
             hazardParent.transform.SetParent(generatedRuntimeRoot);
             hazardParent.transform.localPosition = Vector3.zero;
             materializedObjects.Add(hazardParent);
+
+            // spec_cave_biome_art_profiles_runtime (CV01): banda derivada do nível (mesma fonte que
+            // traps/inimigos); resolver ausente ou sem profile = fallback integral (Sprite fica null).
+            var bandId = CaveBiomeArtDebug.ResolveBandForArt(Runtime.CaveBandScaling.BandForLevel(level.CaveLevel));
 
             foreach (var hazard in plan.Hazards)
             {
@@ -70,7 +79,9 @@ namespace CindarsHope.Cave.Runtime
                 }
 
                 hazardGO.name = hazard.HazardId;
-                spriteRenderer.sortingOrder = 1;
+                spriteRenderer.sortingOrder = 0;
+                spriteRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
+                spriteRenderer.sortingLayerName = CaveWorldSortingLayers.World;
 
                 // spec_codex_13: layer de gameplay do hazard.
                 CindarsHope.Core.Physics.GameplayLayerNames.TryAssignRuntimeLayer(
@@ -84,12 +95,23 @@ namespace CindarsHope.Cave.Runtime
                 trigger.size = Vector2.one;
                 trigger.isTrigger = true;
 
+                // spec_cave_biome_art_profiles_runtime (CV01): fallback-first — sprite do bioma só
+                // sobrescreve se o resolver encontrar um; caso contrário CaveHazardTile aplica o
+                // placeholder de cor EXATAMENTE como hoje.
+                var hasCustomSprite = false;
+                if (_biomeArtResolver != null && _biomeArtResolver.TryGetHazardSprite(bandId, hazard.Kind, out var hazardSprite))
+                {
+                    spriteRenderer.sprite = hazardSprite;
+                    spriteRenderer.color = Color.white;
+                    hasCustomSprite = true;
+                }
+
                 var hazardTile = hazardGO.GetComponent<CaveHazardTile>();
                 if (hazardTile == null)
                 {
                     hazardTile = hazardGO.AddComponent<CaveHazardTile>();
                 }
-                hazardTile.Configure(hazard.HazardId, hazard.Kind, spriteRenderer);
+                hazardTile.Configure(hazard.HazardId, hazard.Kind, spriteRenderer, hasCustomSprite);
 
                 materializedObjects.Add(hazardGO);
             }
@@ -130,11 +152,24 @@ namespace CindarsHope.Cave.Runtime
 
             var spriteRenderer = chestGO.AddComponent<SpriteRenderer>();
             spriteRenderer.sprite = CaveTileMaterializer.GetBuiltinSprite();
-            spriteRenderer.sortingOrder = 2;
+            spriteRenderer.sortingOrder = 0;
+            spriteRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            spriteRenderer.sortingLayerName = CaveWorldSortingLayers.World;
 
             var collider = chestGO.AddComponent<CircleCollider2D>();
             collider.radius = 0.45f;
             collider.isTrigger = true;
+
+            // spec_cave_biome_art_profiles_runtime (CV01): sprites opcionais do bioma; ausentes = null,
+            // TreasureChestInteractable mantém o placeholder de cor atual (fallback-first).
+            var chestBandId = CaveBiomeArtDebug.ResolveBandForArt(Runtime.CaveBandScaling.BandForLevel(level.CaveLevel));
+            Sprite closedSprite = null;
+            Sprite openSprite = null;
+            if (_biomeArtResolver != null)
+            {
+                _biomeArtResolver.TryGetChestSprite(chestBandId, CaveChestVisualState.Closed, out closedSprite);
+                _biomeArtResolver.TryGetChestSprite(chestBandId, CaveChestVisualState.Open, out openSprite);
+            }
 
             var alreadyOpened = openedChestIds.Contains(treasure.ChestId);
             var chest = chestGO.AddComponent<TreasureChestInteractable>();
@@ -145,7 +180,9 @@ namespace CindarsHope.Cave.Runtime
                 alreadyOpened,
                 _inventoryManager,
                 spriteRenderer,
-                registerOpenedChest);
+                registerOpenedChest,
+                closedSprite,
+                openSprite);
 
             materializedObjects.Add(chestGO);
             CombatLog.Log(

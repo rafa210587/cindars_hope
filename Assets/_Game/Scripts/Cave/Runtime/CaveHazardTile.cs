@@ -44,11 +44,16 @@ namespace CindarsHope.Cave.Runtime
         public string HazardId => _hazardId;
         public CaveHazardKind Kind => _kind;
 
-        public void Configure(string hazardId, CaveHazardKind kind, SpriteRenderer spriteRenderer)
+        // spec_cave_biome_art_profiles_runtime (CV01): quando o profile de arte já forneceu um
+        // sprite dedicado, mantém a cor branca (não aplica o tint placeholder por cima da arte real).
+        private bool _hasCustomSprite;
+
+        public void Configure(string hazardId, CaveHazardKind kind, SpriteRenderer spriteRenderer, bool hasCustomSprite = false)
         {
             _hazardId = hazardId;
             _kind = kind;
             _spriteRenderer = spriteRenderer != null ? spriteRenderer : GetComponent<SpriteRenderer>();
+            _hasCustomSprite = hasCustomSprite;
             ApplyTelegraphColor();
         }
 
@@ -70,10 +75,12 @@ namespace CindarsHope.Cave.Runtime
 
         private void ApplyTelegraphColor()
         {
-            if (_spriteRenderer != null)
+            if (_spriteRenderer == null || _hasCustomSprite)
             {
-                _spriteRenderer.color = ResolveTelegraphColor(_kind);
+                return;
             }
+
+            _spriteRenderer.color = ResolveTelegraphColor(_kind);
         }
 
         private void Update()

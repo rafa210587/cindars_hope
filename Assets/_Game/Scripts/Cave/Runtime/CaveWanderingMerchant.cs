@@ -307,7 +307,9 @@ namespace CindarsHope.Cave.Runtime
             var renderer = s_merchantRoot.AddComponent<SpriteRenderer>();
             renderer.sprite = BuildMerchantSprite();
             renderer.color = new Color(0.85f, 0.7f, 0.3f);
-            renderer.sortingOrder = 3;
+            renderer.sortingOrder = 0;
+            renderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            renderer.sortingLayerName = CaveWorldSortingLayers.World;
             s_merchantRoot.transform.localScale = new Vector3(0.9f, 1.3f, 1f);
 
             var stock = ResolveBiomeStock(worldSeed, runSeed, level.CaveLevel);
@@ -347,17 +349,24 @@ namespace CindarsHope.Cave.Runtime
             }
         }
 
+        // Épsilon de pivot para desempatar visualmente contra o corpo do mercador quando o offer
+        // point compartilha o mesmo Y (localOffset.y == 0) — mesmo padrão do desempate de porta/parede
+        // do contrato de sorting da FASE 1 (World, order 0, nunca sortingOrder para profundidade).
+        private const float MerchantPivotEpsilon = 0.01f;
+
         private static void CreateOfferPoint(Transform parent, MerchantOffer offer, Vector3 localOffset, int caveLevel)
         {
             var pointObject = new GameObject($"MerchantOffer_{offer.ItemId}");
             pointObject.transform.SetParent(parent);
-            pointObject.transform.localPosition = localOffset;
+            pointObject.transform.localPosition = localOffset - new Vector3(0f, MerchantPivotEpsilon, 0f);
             pointObject.transform.localScale = new Vector3(0.7f, 0.55f, 1f);
 
             var renderer = pointObject.AddComponent<SpriteRenderer>();
             renderer.sprite = BuildMerchantSprite();
             renderer.color = new Color(0.5f, 0.36f, 0.2f);
-            renderer.sortingOrder = 2;
+            renderer.sortingOrder = 0;
+            renderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            renderer.sortingLayerName = CaveWorldSortingLayers.World;
 
             var collider = pointObject.AddComponent<BoxCollider2D>();
             collider.isTrigger = true;
@@ -382,7 +391,9 @@ namespace CindarsHope.Cave.Runtime
             var renderer = pointObject.AddComponent<SpriteRenderer>();
             renderer.sprite = BuildMerchantSprite();
             renderer.color = new Color(0.32f, 0.45f, 0.3f);
-            renderer.sortingOrder = 2;
+            renderer.sortingOrder = 0;
+            renderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            renderer.sortingLayerName = CaveWorldSortingLayers.World;
 
             var collider = pointObject.AddComponent<BoxCollider2D>();
             collider.isTrigger = true;

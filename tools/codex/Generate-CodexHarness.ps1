@@ -157,6 +157,9 @@ foreach ($cmd in $commandFiles) {
     $firstLine = ""
     try {
         $bodyText = Read-Utf8 $cmd.FullName
+        if ($bodyText -match "[\x00-\x08\x0e-\x1f]") {
+            throw "binary/control characters detected"
+        }
         $lines = $bodyText -split "`r?`n"
         foreach ($l in $lines) {
             $trimmed = $l.Trim()
@@ -174,6 +177,13 @@ foreach ($cmd in $commandFiles) {
     }
     catch {
         $Report.CopyFails += "command:$cmdName (unreadable source: $_)"
+        $phDesc = "Command com origem corrompida em .claude/commands/$($cmd.Name) -- recuperar versao limpa do historico git. Placeholder gerado automaticamente."
+        $ph = "---`nname: $cmdName`ndescription: `"$phDesc`"`n---`n`n> AVISO: o command de origem esta corrompido no repositorio (.claude/commands/$($cmd.Name)). Recupere a versao limpa do historico git e re-execute este gerador.`n"
+        if (-not $WhatIf) {
+            New-Item -ItemType Directory -Force -Path $destDir | Out-Null
+            Write-Utf8NoBom -Path (Join-Path $destDir "SKILL.md") -Content $ph
+        }
+        $Report.CommandsCopied += $cmdName
         continue
     }
 
@@ -493,29 +503,29 @@ $generatedBlockLines.Add("### Routing")
 $generatedBlockLines.Add("")
 $generatedBlockLines.Add("Main loop (high reasoning effort) is reserved for thinking / debating / planning / proposing --")
 $generatedBlockLines.Add("design, refinement and decisions. For execution work (build, edit, run, validate), delegate to a")
-$generatedBlockLines.Add("Codex subagent defined under `.codex/agents/*.toml` (medium reasoning effort, workspace-write),")
-$generatedBlockLines.Add("reserving `read-only` + high-effort subagents for the reviewer/auditor roles listed below.")
+$generatedBlockLines.Add('Codex subagent defined under `.codex/agents/*.toml` (medium reasoning effort, workspace-write),')
+$generatedBlockLines.Add('reserving `read-only` + high-effort subagents for the reviewer/auditor roles listed below.')
 $generatedBlockLines.Add("")
-$generatedBlockLines.Add("### Rules index (`.codex/rules/*.md`, copied verbatim from `.claude/rules/`)")
+$generatedBlockLines.Add('### Rules index (`.codex/rules/*.md`, copied verbatim from `.claude/rules/`)')
 $generatedBlockLines.Add("")
 $generatedBlockLines.AddRange([string[]]$ruleIndexLines)
 $generatedBlockLines.Add("")
-$generatedBlockLines.Add("### Skills index (`.agents/skills/*/SKILL.md`, copied from `.claude/skills/`)")
+$generatedBlockLines.Add('### Skills index (`.agents/skills/*/SKILL.md`, copied from `.claude/skills/`)')
 $generatedBlockLines.Add("")
 $generatedBlockLines.AddRange([string[]]$skillIndexLines)
 $generatedBlockLines.Add("")
-$generatedBlockLines.Add("### Command-skills index (synthesized from `.claude/commands/`)")
+$generatedBlockLines.Add('### Command-skills index (synthesized from `.claude/commands/`)')
 $generatedBlockLines.Add("")
 $generatedBlockLines.AddRange([string[]]$commandIndexLines)
 $generatedBlockLines.Add("")
-$generatedBlockLines.Add("### Agents index (`.codex/agents/*.toml`, converted from `.claude/agents/`)")
+$generatedBlockLines.Add('### Agents index (`.codex/agents/*.toml`, converted from `.claude/agents/`)')
 $generatedBlockLines.Add("")
 $generatedBlockLines.AddRange([string[]]$agentIndexLines)
 $generatedBlockLines.Add("")
 $generatedBlockLines.Add("### Mechanical enforcement")
 $generatedBlockLines.Add("")
-$generatedBlockLines.Add("Hooks are wired in `.codex/hooks.json` and reuse the same `.claude/hooks/*.ps1` scripts as")
-$generatedBlockLines.Add("Claude Code (single source of truth for guard logic -- see `tools/codex/README.md`).")
+$generatedBlockLines.Add('Hooks are wired in `.codex/hooks.json` and reuse the same `.claude/hooks/*.ps1` scripts as')
+$generatedBlockLines.Add('Claude Code (single source of truth for guard logic -- see `tools/codex/README.md`).')
 $generatedBlockLines.Add("")
 $generatedBlockLines.Add($EndMarker)
 

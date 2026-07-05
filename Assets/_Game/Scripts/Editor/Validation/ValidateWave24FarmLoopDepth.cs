@@ -11,7 +11,7 @@ namespace CindarsHope.Editor.Validation
     /// </summary>
     public static class ValidateWave24FarmLoopDepth
     {
-        private const string MenuPath = "CindarsHope/Validate/Wave 24 - Farm Loop Depth";
+        private const string MenuPath = "CindarsHope/Archive/Wave 24 - Farm Loop Depth";
 
         [MenuItem(MenuPath)]
         public static void Run()

@@ -147,7 +147,7 @@ namespace CindarsHope.Editor.SceneCreation
 
             var sceneAsset = AssetDatabase.LoadAssetAtPath<SceneAsset>(ScenePath);
             Selection.activeObject = sceneAsset;
-            Debug.Log($"MVP TownScene created at {ScenePath} (120x90 v8 preservation-first layout).");
+            Debug.Log($"MVP TownScene created at {ScenePath} (120x90 v9 organic layout — spec_town_layout_v9_organic).");
         }
 
         // Preservation audit: proves the 76×64 relayout dropped no materialized element. The baseline is
@@ -192,7 +192,7 @@ namespace CindarsHope.Editor.SceneCreation
             }
 
             Debug.Log(
-                "[town-layout] Town 120x90 v8 element-count audit (before=canonical | after=scene):\n" +
+                "[town-layout] Town 120x90 v9 organic element-count audit (before=canonical | after=scene):\n" +
                 $"  NPCs:    before={npcExpected} after={npcActual}\n" +
                 $"  Houses:  before={houseExpected} after={houseActual}\n" +
                 $"  Trees:   before={treeExpected} after={treeActual}\n" +
@@ -497,7 +497,8 @@ namespace CindarsHope.Editor.SceneCreation
             }
             spriteRenderer.color = Color.white;
             spriteRenderer.sortingOrder = 0;
-            TrySetSortingLayer(spriteRenderer, "Characters", spriteRenderer.sortingOrder);
+            spriteRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            TrySetSortingLayer(spriteRenderer, "World", spriteRenderer.sortingOrder);
 
             var rigidbody = player.AddComponent<Rigidbody2D>();
             rigidbody.bodyType = RigidbodyType2D.Dynamic;
@@ -652,25 +653,45 @@ namespace CindarsHope.Editor.SceneCreation
 
             var baseGo = new GameObject("Base");
             baseGo.transform.SetParent(tower.transform);
-            baseGo.transform.localPosition = Vector3.zero;
             baseGo.transform.localScale = new Vector3(size + 0.4f, size + 0.4f, 1f);
             var baseRenderer = baseGo.AddComponent<SpriteRenderer>();
             var towerStoneBase = WorldSpriteLibrary.Building("wall_stone");
-            if (towerStoneBase != null) { baseRenderer.sprite = towerStoneBase; baseRenderer.color = Color.white; }
-            else { baseRenderer.sprite = GetBuiltinSprite(); baseRenderer.color = stoneDark; }
-            baseRenderer.sortingOrder = 8;
-            TrySetSortingLayer(baseRenderer, "Items", baseRenderer.sortingOrder);
+            if (towerStoneBase != null)
+            {
+                // wall_stone agora importa com pivot BottomCenter (Y-sort). Este quad era centrado em
+                // localPosition=0 com pivot Center; para manter o mesmo centro visual, a base do sprite
+                // precisa ficar em -alturaVisual/2 em vez de 0.
+                baseRenderer.sprite = towerStoneBase; baseRenderer.color = Color.white;
+                float baseVisualHeight = towerStoneBase.bounds.size.y * baseGo.transform.localScale.y;
+                baseGo.transform.localPosition = new Vector3(0f, WorldSpriteBasePlacement.BaseYForVisualCenter(0f, baseVisualHeight), 0f);
+            }
+            else
+            {
+                baseGo.transform.localPosition = Vector3.zero;
+                baseRenderer.sprite = GetBuiltinSprite(); baseRenderer.color = stoneDark;
+            }
+            baseRenderer.sortingOrder = 0;
+            baseRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            TrySetSortingLayer(baseRenderer, "World", baseRenderer.sortingOrder);
 
             var topGo = new GameObject("Top");
             topGo.transform.SetParent(tower.transform);
-            topGo.transform.localPosition = Vector3.zero;
             topGo.transform.localScale = new Vector3(size, size, 1f);
             var topRenderer = topGo.AddComponent<SpriteRenderer>();
             var towerStoneTop = WorldSpriteLibrary.Building("wall_stone");
-            if (towerStoneTop != null) { topRenderer.sprite = towerStoneTop; topRenderer.color = Color.white; }
-            else { topRenderer.sprite = GetBuiltinSprite(); topRenderer.color = stone; }
+            if (towerStoneTop != null)
+            {
+                topRenderer.sprite = towerStoneTop; topRenderer.color = Color.white;
+                float topVisualHeight = towerStoneTop.bounds.size.y * topGo.transform.localScale.y;
+                topGo.transform.localPosition = new Vector3(0f, WorldSpriteBasePlacement.BaseYForVisualCenter(0f, topVisualHeight), 0f);
+            }
+            else
+            {
+                topGo.transform.localPosition = Vector3.zero;
+                topRenderer.sprite = GetBuiltinSprite(); topRenderer.color = stone;
+            }
             topRenderer.sortingOrder = 9;
-            TrySetSortingLayer(topRenderer, "Items", topRenderer.sortingOrder);
+            TrySetSortingLayer(topRenderer, "Roof", topRenderer.sortingOrder);
 
             var col = tower.AddComponent<BoxCollider2D>();
             col.isTrigger = false;
@@ -693,7 +714,7 @@ namespace CindarsHope.Editor.SceneCreation
             var collider = bound.AddComponent<BoxCollider2D>();
             collider.size = size;
 
-            AddWallVisual(bound.transform, size, BorderWallColor, "Wall");
+            AddWallVisual(bound.transform, size, BorderWallColor, "World");
         }
 
         // Adds a visible quad sprite matching a wall collider. The visual is a SCALED CHILD so the
@@ -708,7 +729,8 @@ namespace CindarsHope.Editor.SceneCreation
             var renderer = visual.AddComponent<SpriteRenderer>();
             renderer.sprite = GetBuiltinSprite();
             renderer.color = color;
-            renderer.sortingOrder = 1;
+            renderer.sortingOrder = 0;
+            renderer.spriteSortPoint = SpriteSortPoint.Pivot;
             TrySetSortingLayer(renderer, sortingLayer, renderer.sortingOrder);
         }
 
@@ -816,8 +838,9 @@ namespace CindarsHope.Editor.SceneCreation
             var spriteRenderer = portalObject.AddComponent<SpriteRenderer>();
             spriteRenderer.sprite = GetBuiltinSprite();
             spriteRenderer.color = color;
-            spriteRenderer.sortingOrder = 2;
-            TrySetSortingLayer(spriteRenderer, "Items", spriteRenderer.sortingOrder);
+            spriteRenderer.sortingOrder = 0;
+            spriteRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            TrySetSortingLayer(spriteRenderer, "World", spriteRenderer.sortingOrder);
 
             if (spriteRenderer.sprite == null)
             {
@@ -868,7 +891,7 @@ namespace CindarsHope.Editor.SceneCreation
                 floorRenderer.sprite = GetBuiltinSprite();
                 floorRenderer.color = new Color(0.69f, 0.66f, 0.6f);
             }
-            floorRenderer.sortingOrder = 0;
+            floorRenderer.sortingOrder = 2;
             TrySetSortingLayer(floorRenderer, "Ground", floorRenderer.sortingOrder);
 
             var statue = new GameObject("WarriorStatue");
@@ -906,19 +929,61 @@ namespace CindarsHope.Editor.SceneCreation
             // Plaque honoring the founder of Cindar's Hope
             CreateStatuePart(statue.transform, "Plaque", new Vector3(0f, -1.15f, 0f), new Vector3(1.1f, 0.3f, 1f), new Color(0.75f, 0.68f, 0.4f), 3);
 
-            // Plaza benches and corner planters
-            CreateDecoration(plaza.transform, "PlazaBench_N", plazaCenter + new Vector3(0f, 7f, 0f), new Vector3(2.2f, 0.55f, 1f), new Color(0.5f, 0.38f, 0.26f));
-            CreateDecoration(plaza.transform, "PlazaBench_S", plazaCenter + new Vector3(0f, -7f, 0f), new Vector3(2.2f, 0.55f, 1f), new Color(0.5f, 0.38f, 0.26f));
-            CreateDecoration(plaza.transform, "PlazaBench_E", plazaCenter + new Vector3(7f, 0f, 0f), new Vector3(0.55f, 2.2f, 1f), new Color(0.5f, 0.38f, 0.26f));
-            CreateDecoration(plaza.transform, "PlazaBench_W", plazaCenter + new Vector3(-7f, 0f, 0f), new Vector3(0.55f, 2.2f, 1f), new Color(0.5f, 0.38f, 0.26f));
-            CreateDecoration(plaza.transform, "PlazaPlanter_NE", plazaCenter + new Vector3(9.5f, 9.5f, 0f), new Vector3(1.4f, 1.4f, 1f), new Color(0.3f, 0.52f, 0.26f));
-            CreateDecoration(plaza.transform, "PlazaPlanter_NW", plazaCenter + new Vector3(-9.5f, 9.5f, 0f), new Vector3(1.4f, 1.4f, 1f), new Color(0.3f, 0.52f, 0.26f));
-            CreateDecoration(plaza.transform, "PlazaPlanter_SE", plazaCenter + new Vector3(9.5f, -9.5f, 0f), new Vector3(1.4f, 1.4f, 1f), new Color(0.3f, 0.52f, 0.26f));
-            CreateDecoration(plaza.transform, "PlazaPlanter_SW", plazaCenter + new Vector3(-9.5f, -9.5f, 0f), new Vector3(1.4f, 1.4f, 1f), new Color(0.3f, 0.52f, 0.26f));
-            CreateDecoration(plaza.transform, "PlazaLamp_NE", plazaCenter + new Vector3(11f, 5.5f, 0f), new Vector3(0.4f, 1.5f, 1f), new Color(0.76f, 0.62f, 0.30f));
-            CreateDecoration(plaza.transform, "PlazaLamp_NW", plazaCenter + new Vector3(-11f, 5.5f, 0f), new Vector3(0.4f, 1.5f, 1f), new Color(0.76f, 0.62f, 0.30f));
-            CreateDecoration(plaza.transform, "PlazaLamp_SE", plazaCenter + new Vector3(11f, -5.5f, 0f), new Vector3(0.4f, 1.5f, 1f), new Color(0.76f, 0.62f, 0.30f));
-            CreateDecoration(plaza.transform, "PlazaLamp_SW", plazaCenter + new Vector3(-11f, -5.5f, 0f), new Vector3(0.4f, 1.5f, 1f), new Color(0.76f, 0.62f, 0.30f));
+            // Anel interno (v9 organic — spec_town_layout_v9_organic): 8 canteiros de flores em
+            // raio ~6.5, distribuídos uniformemente ao redor da fonte.
+            const int innerFlowerCount = 8;
+            const float innerRingRadius = 6.5f;
+            for (int i = 0; i < innerFlowerCount; i++)
+            {
+                float angle = i * Mathf.PI * 2f / innerFlowerCount;
+                var offset = new Vector3(Mathf.Cos(angle) * innerRingRadius, Mathf.Sin(angle) * innerRingRadius, 0f);
+                var flowerGo = new GameObject($"PlazaFlowerPatch_{i:00}");
+                flowerGo.transform.SetParent(plaza.transform);
+                var flowerVisualCenter = plazaCenter + offset;
+                flowerGo.transform.localScale = new Vector3(1.1f, 1.1f, 1f);
+                var flowerRenderer = flowerGo.AddComponent<SpriteRenderer>();
+                var flowerSprite = WorldSpriteLibrary.Foliage("flower_patch");
+                if (flowerSprite != null)
+                {
+                    flowerRenderer.sprite = flowerSprite; flowerRenderer.color = Color.white;
+                    float flowerVisualHeight = flowerSprite.bounds.size.y * flowerGo.transform.localScale.y;
+                    flowerGo.transform.position = WorldSpriteBasePlacement.BaseFromVisualCenter(flowerVisualCenter, flowerVisualHeight);
+                }
+                else
+                {
+                    flowerGo.transform.position = flowerVisualCenter;
+                    flowerRenderer.sprite = GetBuiltinSprite(); flowerRenderer.color = new Color(0.62f, 0.34f, 0.5f);
+                }
+                flowerRenderer.sortingOrder = 0;
+                flowerRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
+                TrySetSortingLayer(flowerRenderer, "World", flowerRenderer.sortingOrder);
+            }
+
+            // Anel externo: 6 bancos + 4 postes de luz em raio ~10.5 (dentro do raio ~13 da praça).
+            const int outerBenchCount = 6;
+            const float outerRingRadius = 10.5f;
+            for (int i = 0; i < outerBenchCount; i++)
+            {
+                float angle = Mathf.PI / 2f + i * Mathf.PI * 2f / outerBenchCount; // start at north, go clockwise
+                var offset = new Vector3(Mathf.Cos(angle) * outerRingRadius, Mathf.Sin(angle) * outerRingRadius, 0f);
+                bool horizontal = Mathf.Abs(offset.x) > Mathf.Abs(offset.y);
+                var size = horizontal ? new Vector3(0.55f, 2.2f, 1f) : new Vector3(2.2f, 0.55f, 1f);
+                CreateDecoration(plaza.transform, $"PlazaBench_{i:00}", plazaCenter + offset, size, new Color(0.5f, 0.38f, 0.26f));
+            }
+
+            const int outerLampCount = 4;
+            const float lampRingRadius = 11f;
+            for (int i = 0; i < outerLampCount; i++)
+            {
+                float angle = Mathf.PI / 4f + i * Mathf.PI * 2f / outerLampCount; // NE/NW/SW/SE diagonals
+                var offset = new Vector3(Mathf.Cos(angle) * lampRingRadius, Mathf.Sin(angle) * lampRingRadius, 0f);
+                CreateDecoration(plaza.transform, $"PlazaLamp_{i:00}", plazaCenter + offset, new Vector3(0.4f, 1.5f, 1f), new Color(0.76f, 0.62f, 0.30f));
+            }
+
+            // Placa de avisos na borda SUL da praça (spec_town_layout_v9_organic).
+            CreateDecoration(plaza.transform, "PlazaNoticeBoard",
+                plazaCenter + new Vector3(0f, -(TownCityLayout.CentralPlazaRadius - 1.2f), 0f),
+                new Vector3(1.1f, 1.4f, 1f), new Color(0.55f, 0.4f, 0.25f));
 
             // (FestivalStallAnchor foi movido para a PRAÇA DE EVENTOS dedicada — ver CreateEventsAndMarketDistricts.)
         }
@@ -932,24 +997,25 @@ namespace CindarsHope.Editor.SceneCreation
             var parent = new GameObject("TownEventsMarket");
             parent.transform.position = Vector3.zero;
 
-            // ── Praça de eventos (sul) ──
-            CreateGroundSlab(parent.transform, "EventsPlaza_Ground", EventsPlazaCenter, new Vector2(15f, 9f), new Color(0.66f, 0.62f, 0.52f), -1);
+            // ── Praça de eventos (realocada — v9 organic: o antigo (0,-17) caía sobre a avenida
+            // N-S e a fileira residencial sul, que agora ocupam aquele espaço) ──
+            CreateGroundSlab(parent.transform, "EventsPlaza_Ground", EventsPlazaCenter, new Vector2(12f, 8f), new Color(0.66f, 0.62f, 0.52f), 2);
             CreateDecoration(parent.transform, "EventsPlaza_Stage",
-                EventsPlazaCenter + new Vector3(0f, 2.6f, 0f), new Vector3(5f, 1.4f, 1f), new Color(0.50f, 0.38f, 0.26f)); // tablado
+                EventsPlazaCenter + new Vector3(0f, 2.2f, 0f), new Vector3(4.5f, 1.2f, 1f), new Color(0.50f, 0.38f, 0.26f)); // tablado
             var festivalAnchor = new GameObject("FestivalStallAnchor");
             festivalAnchor.transform.SetParent(parent.transform);
             festivalAnchor.transform.position = EventsPlazaCenter;
             festivalAnchor.AddComponent<CindarsHope.World.Events.FestivalStallAnchor>();
 
-            // ── Distrito de mercado (norte) — bancas cobertas ao redor do Salão de Mercado ──
-            CreateGroundSlab(parent.transform, "MarketSquare_Ground", MarketHallCenter + new Vector3(0f, -8.5f, 0f), new Vector2(16f, 5f), new Color(0.64f, 0.57f, 0.44f), -1);
-            float[] sx = { -7f, -4f, 4f, 7f };
+            // ── Tenda de mercado (prop), ao lado S do MarketHall (spec_town_layout_v9_organic) ──
+            CreateGroundSlab(parent.transform, "MarketSquare_Ground", MarketHallCenter + new Vector3(0f, -6.5f, 0f), new Vector2(12f, 3f), new Color(0.64f, 0.57f, 0.44f), 2);
+            float[] sx = { -4.5f, -1.5f, 1.5f, 4.5f };
             for (int i = 0; i < sx.Length; i++)
             {
-                CreateMarketStall(parent.transform, $"MarketSquare_Stall_{i:00}", MarketHallCenter + new Vector3(sx[i], -8.5f, 0f), MarketAwningColor(i));
+                CreateMarketStall(parent.transform, $"MarketSquare_Stall_{i:00}", MarketHallCenter + new Vector3(sx[i], -6.5f, 0f), MarketAwningColor(i));
             }
-            CreateMarketStall(parent.transform, "MarketSquare_Stall_04", MarketHallCenter + new Vector3(-5.5f, -10.8f, 0f), MarketAwningColor(4));
-            CreateMarketStall(parent.transform, "MarketSquare_Stall_05", MarketHallCenter + new Vector3(5.5f, -10.8f, 0f), MarketAwningColor(5));
+            CreateMarketStall(parent.transform, "MarketSquare_Stall_04", MarketHallCenter + new Vector3(-6f, -8.3f, 0f), MarketAwningColor(4));
+            CreateMarketStall(parent.transform, "MarketSquare_Stall_05", MarketHallCenter + new Vector3(6f, -8.3f, 0f), MarketAwningColor(5));
         }
 
         private static Color MarketAwningColor(int i)
@@ -977,8 +1043,9 @@ namespace CindarsHope.Editor.SceneCreation
             var counterRenderer = counter.AddComponent<SpriteRenderer>();
             counterRenderer.sprite = GetBuiltinSprite();
             counterRenderer.color = new Color(0.46f, 0.34f, 0.22f);
-            counterRenderer.sortingOrder = 1;
-            TrySetSortingLayer(counterRenderer, "Items", counterRenderer.sortingOrder);
+            counterRenderer.sortingOrder = 0;
+            counterRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            TrySetSortingLayer(counterRenderer, "World", counterRenderer.sortingOrder);
             var counterCollider = counter.AddComponent<BoxCollider2D>();
             counterCollider.isTrigger = false;
             counterCollider.size = Vector2.one;
@@ -991,7 +1058,7 @@ namespace CindarsHope.Editor.SceneCreation
             awningRenderer.sprite = GetBuiltinSprite();
             awningRenderer.color = awningColor;
             awningRenderer.sortingOrder = 4;
-            TrySetSortingLayer(awningRenderer, "Items", awningRenderer.sortingOrder);
+            TrySetSortingLayer(awningRenderer, "Roof", awningRenderer.sortingOrder);
         }
 
         private static GameObject CreateStatuePart(Transform parent, string name, Vector3 localPosition, Vector3 scale, Color color, int sortingOrder)
@@ -1004,8 +1071,13 @@ namespace CindarsHope.Editor.SceneCreation
             var renderer = part.AddComponent<SpriteRenderer>();
             renderer.sprite = GetBuiltinSprite();
             renderer.color = color;
-            renderer.sortingOrder = sortingOrder;
-            TrySetSortingLayer(renderer, "Items", renderer.sortingOrder);
+            // Desempate dentro do mesmo prop (mesma layer World, order 0): partes empilhadas na mesma
+            // posição usam um épsilon de Y decrescente por sortingOrder original, para renderizar na
+            // ordem esperada via Y-sort determinístico em vez de sortingOrder.
+            part.transform.localPosition -= new Vector3(0f, sortingOrder * 0.001f, 0f);
+            renderer.sortingOrder = 0;
+            renderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            TrySetSortingLayer(renderer, "World", renderer.sortingOrder);
             return part;
         }
 
@@ -1031,17 +1103,33 @@ namespace CindarsHope.Editor.SceneCreation
                 // Counter (walkable in front, blocks behind)
                 var counter = new GameObject("Counter");
                 counter.transform.SetParent(stall.transform);
-                counter.transform.localPosition = Vector3.zero;
                 counter.transform.localScale = new Vector3(2.1f, 0.6f, 1f);
                 var counterRenderer = counter.AddComponent<SpriteRenderer>();
                 var stallCounter = WorldSpriteLibrary.Prop("crate");
-                if (stallCounter != null) { counterRenderer.sprite = stallCounter; counterRenderer.color = Color.white; }
-                else { counterRenderer.sprite = GetBuiltinSprite(); counterRenderer.color = new Color(0.46f, 0.34f, 0.22f); }
-                counterRenderer.sortingOrder = 1;
-                TrySetSortingLayer(counterRenderer, "Items", counterRenderer.sortingOrder);
+                float counterColliderOffsetY = 0f;
+                if (stallCounter != null)
+                {
+                    counterRenderer.sprite = stallCounter; counterRenderer.color = Color.white;
+                    float counterVisualHeight = stallCounter.bounds.size.y * counter.transform.localScale.y;
+                    float baseOffsetY = WorldSpriteBasePlacement.BaseYForVisualCenter(0f, counterVisualHeight);
+                    counter.transform.localPosition = new Vector3(0f, baseOffsetY, 0f);
+                    // Collider está no MESMO GameObject: transform moveu para a base, então o collider
+                    // (offset relativo ao transform) precisa do offset OPOSTO para continuar cobrindo o
+                    // centro visual do caixote (mesma cobertura física de antes da mudança de pivot).
+                    counterColliderOffsetY = -baseOffsetY;
+                }
+                else
+                {
+                    counter.transform.localPosition = Vector3.zero;
+                    counterRenderer.sprite = GetBuiltinSprite(); counterRenderer.color = new Color(0.46f, 0.34f, 0.22f);
+                }
+                counterRenderer.sortingOrder = 0;
+                counterRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
+                TrySetSortingLayer(counterRenderer, "World", counterRenderer.sortingOrder);
                 var counterCollider = counter.AddComponent<BoxCollider2D>();
                 counterCollider.isTrigger = false;
                 counterCollider.size = Vector2.one;
+                counterCollider.offset = new Vector2(0f, counterColliderOffsetY);
 
                 // Awning tinted with the vendor color so each market is identifiable
                 var awning = new GameObject("Awning");
@@ -1052,7 +1140,7 @@ namespace CindarsHope.Editor.SceneCreation
                 awningRenderer.sprite = GetBuiltinSprite();
                 awningRenderer.color = Color.Lerp(spec.Color, Color.white, 0.25f);
                 awningRenderer.sortingOrder = 4;
-                TrySetSortingLayer(awningRenderer, "Items", awningRenderer.sortingOrder);
+                TrySetSortingLayer(awningRenderer, "Roof", awningRenderer.sortingOrder);
             }
         }
 
@@ -1076,10 +1164,24 @@ namespace CindarsHope.Editor.SceneCreation
         // robusto contra reimport tardio da regra de PPU=64 do GeneratedSpriteImporter.
         private const float ModularRoofEaveOverhang = 0.7f;
         private const float ModularDoorDesiredWidth = 1.5f;
-        // Quanto da faixa de parede frontal (onde fica a porta) deve ficar visível abaixo do beiral
-        // do telhado, em tiles de mundo. Metade da espessura de parede é o mínimo pra não parecer que
-        // o telhado "flutua"; valor um pouco maior lê melhor como fachada com beiral.
-        private const float ModularRoofFrontWallReveal = 0.6f;
+
+        // Proporção telhado/fachada: fração da ALTURA do lote (size.y) coberta pelo telhado,
+        // ancorada no TOPO do lote (hh). O telhado cobre de `hh` até `hh - size.y*RoofCoverageRatio`;
+        // a fachada visível é a faixa inferior restante (altura = size.y*FacadeBandRatio).
+        // Aplica-se tanto ao telhado modular (roof_{variant}_aerial) quanto ao fallback Tiled
+        // (roof_redtile) — antes ambos cobriam a altura INTEIRA do lote, escondendo a fachada.
+        // O telhado cobre a faixa superior do lote; a fachada (parte de baixo do kit walls_*_topdown)
+        // fica visível abaixo. 0.72 alinha a borda inferior do telhado ao topo da fachada pintada na
+        // arte do kit (a fachada ocupa ~28% da altura do sprite walls_*_topdown).
+        private const float RoofCoverageRatio = 0.72f;
+        private const float FacadeBandRatio = 1f - RoofCoverageRatio;
+        // roof_*_aerial traz a chaminé embutida acima do corpo do telhado (~top 18% do sprite). Para o
+        // CORPO (telhas) preencher a cobertura-alvo — e não o sprite inteiro, o que deixava a parede
+        // norte do shell aparecendo acima do telhado — escalamos por esta fração de corpo.
+        private const float ModularRoofBodyFraction = 0.80f;
+        // O beiral de madeira do telhado desce um pouco sobre o topo da fachada (junta limpa, sem
+        // filete de pedra/transparência entre telhado e fachada).
+        private const float ModularRoofFacadeOverlap = 0.35f;
 
         // sprite.bounds.size já reflete pixelsPerUnit correto no momento do import; se o PPU ainda
         // não foi reaplicado pela regra do importer, o resultado visual pode ficar levemente off até
@@ -1093,25 +1195,55 @@ namespace CindarsHope.Editor.SceneCreation
         // Casas RESIDENCIAIS "normais" que recebem o kit modular novo (roof/walls/door A-B-C, 64 px/tile)
         // em vez do telhado Tiled procedural. Ordem fixa => variante deterministica por indice (A/B/C
         // ciclico). Demais casas (Temple, MarketHall, ofícios, etc.) mantem o caminho Tiled existente.
-        private static readonly string[] ModularHouseOrder =
+        // Lotes que usam arte bespoke de prédio inteiro (landmark) em vez do kit modular. À medida que
+        // gerarmos arte para mercado/ferraria/etc., basta adicionar aqui e soltar o PNG em
+        // locations/<id>/<id>.png. Mantido em sincronia com manifest.locations.json.
+        private static string GetLandmarkLocationId(string houseName)
         {
-            "House_Residential_1", "House_Residential_2", "House_Residential_3", "House_Residential_4",
-            "House_Dagna", "House_Pip", "House_Tovin",
-        };
+            switch (houseName)
+            {
+                case "House_Temple": return "temple";
+                case "House_Chamber": return "town_hall";
+                case "House_Blacksmith": return "blacksmith";
+                default: return null;
+            }
+        }
+
+        // Prédio hero um pouco mais largo que o lote (beirais/escadaria da arte transbordam o footprint).
+        private const float LandmarkWidthOverhang = 1.12f;
+
         private static readonly char[] ModularHouseVariants = { 'A', 'B', 'C' };
 
-        // Retorna a variante {A,B,C} para casas residenciais do kit modular, ou '\0' se a casa nao
-        // participa (mantem o telhado Tiled procedural existente).
+        // TODOS os lotes usam o kit modular de 3 partes (base walls_*_topdown + telhado roof_*_aerial +
+        // porta door_*). A variante {A,B,C} é escolhida de forma determinística pelo nome, dando
+        // variedade de cor de telhado pela cidade. Enquanto a arte bespoke por arquétipo (templo,
+        // ferraria, taverna…) não chega (Fase 3), os 24 prédios já renderizam como casas de verdade
+        // em vez do telhado Tiled + parede de pedra procedural (os antigos "retângulos"). Quando a arte
+        // por arquétipo existir, este mapa pode passar a escolher o kit por Archetype.
         private static char GetHouseModularVariant(string houseName)
         {
-            var index = System.Array.IndexOf(ModularHouseOrder, houseName);
-            return index < 0 ? '\0' : ModularHouseVariants[index % ModularHouseVariants.Length];
+            if (string.IsNullOrEmpty(houseName))
+            {
+                return ModularHouseVariants[0];
+            }
+
+            // Soma determinística dos chars do nome ⇒ mesma variante toda vez (sem RNG).
+            var hash = 0;
+            foreach (var c in houseName)
+            {
+                hash += c;
+            }
+
+            return ModularHouseVariants[hash % ModularHouseVariants.Length];
         }
 
         // Centros de marcos/áreas reservadas (não recebem casas). Devem bater com onde os marcos são
         // de fato criados (praça, salão de mercado, praça de eventos) e com os landmarks de canto.
-        private static readonly Vector3 MarketHallCenter = new Vector3(-48f, 15f, 0f);
-        private static readonly Vector3 EventsPlazaCenter = new Vector3(0f, -17f, 0f);
+        // v9 organic relayout: MarketHallCenter segue House_MarketHall (-44,12); EventsPlazaCenter
+        // realocada para o vão livre entre Inn/lago/Residential_4 (o antigo (0,-17) caía em cima da
+        // avenida N-S e da fileira residencial sul, que agora ocupam aquele espaço).
+        private static readonly Vector3 MarketHallCenter = new Vector3(-44f, 12f, 0f);
+        private static readonly Vector3 EventsPlazaCenter = new Vector3(-20f, -14f, 0f);
 
         // Compatibility projection consumed by the existing house/home helpers. TownCityLayout is
         // the sole placement source; this tuple array preserves the generator's established API.
@@ -1169,6 +1301,22 @@ namespace CindarsHope.Editor.SceneCreation
 
             char modularVariant = GetHouseModularVariant(name);
 
+            // Prédio bespoke (hero): se este lote tem arte própria de local (temple, town_hall…), a
+            // sprite INTEIRA do prédio vira a "casca" que SOME quando o jogador entra (RoofReveal),
+            // revelando o interior — walk-in por fade. Reusa todo o resto do caminho walk-in (chão,
+            // colliders com vão de porta, porta, trigger de reveal, móveis); só troca a casca visual
+            // (pula o shell walls_* e o telhado do kit). Enquanto a arte não existir, cai no kit
+            // genérico. Fonte de verdade do que existe/falta: manifest.locations.json.
+            var landmarkId = GetLandmarkLocationId(name);
+            var heroSprite = landmarkId != null ? WorldSpriteLibrary.Location(landmarkId) : null;
+            if (landmarkId != null && heroSprite == null)
+            {
+                Debug.LogWarning(
+                    $"[town-layout] {name}: local '{landmarkId}' sem sprite em " +
+                    $"locations/{landmarkId}/{landmarkId}.png — usando kit genérico até a arte existir.");
+            }
+            bool isHero = heroSprite != null;
+
             float hw = size.x * 0.5f;
             float hh = size.y * 0.5f;
             var interiorSize = new Vector2(
@@ -1191,10 +1339,15 @@ namespace CindarsHope.Editor.SceneCreation
                 default: doorLocalPosition = new Vector3(0f, -wallY, 0f); break;
             }
 
-            // Chão (andável — SEM collider). Tom claro derivado da cor base.
+            // Chão (andável — SEM collider). Cobre o FOOTPRINT INTEIRO do lote (não o interiorSize
+            // menor): as paredes ficam na layer World, ACIMA do chão (layer Ground), então o chão passa
+            // por baixo delas até a borda do lote e nenhuma grama aparece por dentro. Usar interiorSize
+            // deixava uma faixa sem chão junto às paredes — como a fachada sul é baixa (transparente
+            // acima), via-se grama dentro da casa.
+            // Uma pequena margem garante que o chão passe por baixo das paredes até a borda do lote.
+            var floorSize = new Vector2(size.x + 0.5f, size.y + 0.5f);
             var floor = new GameObject("Floor");
             floor.transform.SetParent(house.transform);
-            floor.transform.localPosition = Vector3.zero;
             var floorRenderer = floor.AddComponent<SpriteRenderer>();
             var floorTile = WorldSpriteLibrary.Ground("ground_deck");
             if (floorTile != null)
@@ -1204,21 +1357,34 @@ namespace CindarsHope.Editor.SceneCreation
                 floorRenderer.color = Color.white;
                 floorRenderer.drawMode = SpriteDrawMode.Tiled;
                 floorRenderer.tileMode = SpriteTileMode.Continuous;
-                floorRenderer.size = interiorSize;
+                floorRenderer.size = floorSize;
+                // O retângulo Tiled é ancorado no PIVOT do sprite. ground_deck deveria ser center
+                // (meta), mas o import pode deixá-lo BottomCenter em runtime — o que fazia o chão
+                // cobrir só a metade de cima do lote (o retângulo crescia pra cima a partir do centro).
+                // Lê o pivot REAL e desloca o retângulo para ficar centrado no lote, seja qual for.
+                float pivotXNorm = floorTile.rect.width > 0.0001f ? floorTile.pivot.x / floorTile.rect.width : 0.5f;
+                float pivotYNorm = floorTile.rect.height > 0.0001f ? floorTile.pivot.y / floorTile.rect.height : 0.5f;
+                floor.transform.localPosition = new Vector3(
+                    floorSize.x * (pivotXNorm - 0.5f),
+                    floorSize.y * (pivotYNorm - 0.5f),
+                    0f);
             }
             else
             {
-                floor.transform.localScale = new Vector3(interiorSize.x, interiorSize.y, 1f);
+                floor.transform.localPosition = Vector3.zero;
+                floor.transform.localScale = new Vector3(floorSize.x, floorSize.y, 1f);
                 floorRenderer.sprite = GetBuiltinSprite();
                 floorRenderer.color = Color.Lerp(baseColor, new Color(0.85f, 0.80f, 0.72f), 0.5f);
             }
-            floorRenderer.sortingOrder = 0;
-            TrySetSortingLayer(floorRenderer, "Items", floorRenderer.sortingOrder);
+            floorRenderer.sortingOrder = 5;
+            TrySetSortingLayer(floorRenderer, "Ground", floorRenderer.sortingOrder);
 
             // Kit modular (residenciais A/B/C, 64 px/tile): casca de paredes visual acima do chão e
             // abaixo do telhado. Os colliders/quads de parede procedurais abaixo continuam existindo
             // (bloqueiam movimento); este SpriteRenderer é só a pele visual por cima deles.
-            if (modularVariant != '\0')
+            // Prédios hero pulam o shell — a sprite inteira do prédio (aplicada no lugar do telhado
+            // abaixo) já traz as paredes; ela é a casca que some no reveal.
+            if (modularVariant != '\0' && !isHero)
             {
                 var wallsShell = new GameObject("WallsShell");
                 wallsShell.transform.SetParent(house.transform);
@@ -1229,43 +1395,52 @@ namespace CindarsHope.Editor.SceneCreation
                     wallsRenderer.sprite = wallsSprite;
                     wallsRenderer.color = Color.white;
                     wallsRenderer.drawMode = SpriteDrawMode.Simple;
-                    // Escala pelos BOUNDS reais do sprite (não por PPU) — largura da casca = footprint.
-                    float wallsScale = ModularScaleForWidth(wallsSprite, size.x);
-                    wallsShell.transform.localScale = new Vector3(wallsScale, wallsScale, 1f);
-                    // Bottom-align pela base do footprint: se a casca escalada for mais alta/baixa que
-                    // size.y, ela ainda encosta a base em -hh (não fica centralizada no meio da casa).
-                    float wallsScaledHeight = wallsSprite.bounds.size.y * wallsScale;
-                    wallsShell.transform.localPosition = new Vector3(0f, -hh + wallsScaledHeight * 0.5f, 0f);
-                    wallsRenderer.sortingOrder = 10;
-                    TrySetSortingLayer(wallsRenderer, "Items", wallsRenderer.sortingOrder);
+                    // Escala NÃO-uniforme pelos BOUNDS reais do sprite (não por PPU): X = largura do
+                    // footprint, Y = altura do lote EXATA. Com escala uniforme a casca estourava
+                    // acima do topo do lote (faixa de madeira visível acima do telhado) sempre que o
+                    // aspecto do sprite era mais alto que o do lote.
+                    float wallsScaleX = ModularScaleForWidth(wallsSprite, size.x);
+                    float wallsSpriteHeight = wallsSprite.bounds.size.y;
+                    float wallsScaleY = wallsSpriteHeight > 0.0001f ? size.y / wallsSpriteHeight : wallsScaleX;
+                    wallsShell.transform.localScale = new Vector3(wallsScaleX, wallsScaleY, 1f);
+                    // Bottom-align pela base do footprint: walls_*_topdown agora importa com pivot
+                    // BottomCenter (Y-sort), então localPosition.y JÁ É o Y da base do sprite — basta
+                    // colocá-la em -hh diretamente (antes, com pivot Center, era preciso somar
+                    // +wallsScaledHeight/2 para compensar o centro do sprite).
+                    wallsShell.transform.localPosition = new Vector3(0f, -hh, 0f);
+                    wallsRenderer.sortingOrder = 0;
+                    wallsRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
+                    TrySetSortingLayer(wallsRenderer, "World", wallsRenderer.sortingOrder);
                 }
             }
 
-            // Paredes sólidas (visual de PEDRA com contorno — ver AddStoneWallVisual). Três paredes
-            // inteiras + a parede do lado da porta dividida em duas, deixando o VÃO no centro.
+            // Paredes sólidas (colliders). Nas casas com kit, o visual de pedra é suprimido (a arte
+            // walls_*_topdown já pinta as paredes) — só o collider fica; nas casas de placeholder o
+            // visual de pedra procedural continua.
+            bool showWallStone = modularVariant == '\0';
             if (horizontalDoor)
             {
-                CreateInteriorWall(house.transform, "Wall_Left", new Vector3(-wallX, 0f, 0f), new Vector2(WallThickness, size.y));
-                CreateInteriorWall(house.transform, "Wall_Right", new Vector3(wallX, 0f, 0f), new Vector2(WallThickness, size.y));
+                CreateInteriorWall(house.transform, "Wall_Left", new Vector3(-wallX, 0f, 0f), new Vector2(WallThickness, size.y), showWallStone);
+                CreateInteriorWall(house.transform, "Wall_Right", new Vector3(wallX, 0f, 0f), new Vector2(WallThickness, size.y), showWallStone);
                 float sideWidth = (size.x - DoorGapWidth) * 0.5f;
                 float sideCenter = (DoorGapWidth + sideWidth) * 0.5f;
                 string doorWall = doorSide == TownDoorSide.South ? "Bottom" : "Top";
                 float oppositeY = -doorLocalPosition.y;
-                CreateInteriorWall(house.transform, $"Wall_{(doorSide == TownDoorSide.South ? "Top" : "Bottom")}", new Vector3(0f, oppositeY, 0f), new Vector2(size.x, WallThickness));
-                CreateInteriorWall(house.transform, $"Wall_{doorWall}L", new Vector3(-sideCenter, doorLocalPosition.y, 0f), new Vector2(sideWidth, WallThickness));
-                CreateInteriorWall(house.transform, $"Wall_{doorWall}R", new Vector3(sideCenter, doorLocalPosition.y, 0f), new Vector2(sideWidth, WallThickness));
+                CreateInteriorWall(house.transform, $"Wall_{(doorSide == TownDoorSide.South ? "Top" : "Bottom")}", new Vector3(0f, oppositeY, 0f), new Vector2(size.x, WallThickness), showWallStone);
+                CreateInteriorWall(house.transform, $"Wall_{doorWall}L", new Vector3(-sideCenter, doorLocalPosition.y, 0f), new Vector2(sideWidth, WallThickness), showWallStone);
+                CreateInteriorWall(house.transform, $"Wall_{doorWall}R", new Vector3(sideCenter, doorLocalPosition.y, 0f), new Vector2(sideWidth, WallThickness), showWallStone);
             }
             else
             {
-                CreateInteriorWall(house.transform, "Wall_Top", new Vector3(0f, wallY, 0f), new Vector2(size.x, WallThickness));
-                CreateInteriorWall(house.transform, "Wall_Bottom", new Vector3(0f, -wallY, 0f), new Vector2(size.x, WallThickness));
+                CreateInteriorWall(house.transform, "Wall_Top", new Vector3(0f, wallY, 0f), new Vector2(size.x, WallThickness), showWallStone);
+                CreateInteriorWall(house.transform, "Wall_Bottom", new Vector3(0f, -wallY, 0f), new Vector2(size.x, WallThickness), showWallStone);
                 float sideHeight = (size.y - DoorGapWidth) * 0.5f;
                 float sideCenter = (DoorGapWidth + sideHeight) * 0.5f;
                 string doorWall = doorSide == TownDoorSide.West ? "Left" : "Right";
                 float oppositeX = -doorLocalPosition.x;
-                CreateInteriorWall(house.transform, $"Wall_{(doorSide == TownDoorSide.West ? "Right" : "Left")}", new Vector3(oppositeX, 0f, 0f), new Vector2(WallThickness, size.y));
-                CreateInteriorWall(house.transform, $"Wall_{doorWall}T", new Vector3(doorLocalPosition.x, sideCenter, 0f), new Vector2(WallThickness, sideHeight));
-                CreateInteriorWall(house.transform, $"Wall_{doorWall}B", new Vector3(doorLocalPosition.x, -sideCenter, 0f), new Vector2(WallThickness, sideHeight));
+                CreateInteriorWall(house.transform, $"Wall_{(doorSide == TownDoorSide.West ? "Right" : "Left")}", new Vector3(oppositeX, 0f, 0f), new Vector2(WallThickness, size.y), showWallStone);
+                CreateInteriorWall(house.transform, $"Wall_{doorWall}T", new Vector3(doorLocalPosition.x, sideCenter, 0f), new Vector2(WallThickness, sideHeight), showWallStone);
+                CreateInteriorWall(house.transform, $"Wall_{doorWall}B", new Vector3(doorLocalPosition.x, -sideCenter, 0f), new Vector2(WallThickness, sideHeight), showWallStone);
             }
 
             // Porta funcional no vão: FECHADA tranca a passagem; aperte E para ABRIR (desliza) e entrar.
@@ -1306,7 +1481,7 @@ namespace CindarsHope.Editor.SceneCreation
                 float dividerX = hw - 2.6f; // separa um cômodo lateral à direita
                 float passage = 1.6f;       // vão de passagem na base da divisória
                 float segH = (size.y - passage) * 0.5f;
-                CreateInteriorWall(house.transform, "Wall_Divider", new Vector3(dividerX, hh - segH * 0.5f, 0f), new Vector2(WallThickness, segH));
+                CreateInteriorWall(house.transform, "Wall_Divider", new Vector3(dividerX, hh - segH * 0.5f, 0f), new Vector2(WallThickness, segH), showWallStone);
                 if (archetype == TownBuildingArchetype.Temple)
                 {
                     CreateInteriorProp(house.transform, "Furniture_Altar", new Vector3(0f, ihh - 0.6f, 0f), new Vector3(2.0f, 0.8f, 1f), new Color(0.55f, 0.48f, 0.30f));
@@ -1329,28 +1504,53 @@ namespace CindarsHope.Editor.SceneCreation
             roof.transform.localPosition = Vector3.zero;
             var roofRenderer = roof.AddComponent<SpriteRenderer>();
             var modularRoofSprite = modularVariant != '\0' ? WorldSpriteLibrary.HouseModular($"roof_{modularVariant}_aerial") : null;
-            if (modularRoofSprite != null)
+            // Retângulo-alvo do telhado (ambos os caminhos): cobre de `hh` (topo do lote) até
+            // `hh - size.y*RoofCoverageRatio`, deixando a faixa inferior (fachada) visível.
+            float roofCoverageHeight = size.y * RoofCoverageRatio;
+            float roofTargetBottomY = hh - roofCoverageHeight;
+            if (isHero)
+            {
+                // Prédio hero: a sprite INTEIRA do prédio é a casca. Escala pela LARGURA do lote
+                // (+ beiral); a altura acompanha o aspecto (torre/telhado sobem acima do footprint).
+                // Base ancorada na borda frontal (sul, y=-hh) do lote, robusto ao pivot do sprite.
+                float heroSpriteWidth = heroSprite.bounds.size.x;
+                float heroScale = heroSpriteWidth > 0.0001f ? (size.x * LandmarkWidthOverhang) / heroSpriteWidth : 1f;
+                roof.transform.localScale = new Vector3(heroScale, heroScale, 1f);
+                roofRenderer.sprite = heroSprite;
+                roofRenderer.color = Color.white;
+                roofRenderer.drawMode = SpriteDrawMode.Simple;
+                float heroPivotYNorm = heroSprite.rect.height > 0.0001f ? heroSprite.pivot.y / heroSprite.rect.height : 0f;
+                roof.transform.localPosition = new Vector3(0f, -hh + heroPivotYNorm * heroSprite.bounds.size.y * heroScale, 0f);
+            }
+            else if (modularRoofSprite != null)
             {
                 // Peca COMPLETA (nao textura tileavel): Simple + escala uniforme por BOUNDS (nao PPU,
                 // que pode nao ter sido reaplicado ainda pela regra do importer), sem tint (a variante
                 // A/B/C ja diferencia; roof_redtile/RoofTint ficam so para as demais casas).
+                // Escala NÃO-uniforme por eixo: X preenche a largura do lote (+ beiral) de borda a
+                // borda; Y é dimensionado para que o CORPO do telhado (telhas, = sprite*bodyFraction,
+                // excluindo a chaminé embutida) vá da junta com a fachada até o TOPO do lote, cobrindo
+                // a parede norte do shell. A distorção leve é aceitável (estilo Stardew). Versões
+                // anteriores (Mathf.Min uniforme, ou Y pelo sprite inteiro) ou encolhiam o telhado
+                // (moldura ao redor) ou deixavam a parede norte do shell aparecer acima do telhado.
+                float roofBottomY = roofTargetBottomY - ModularRoofFacadeOverlap;
+                float roofBodyTargetHeight = hh - roofBottomY;
                 float roofDesiredWidth = size.x + ModularRoofEaveOverhang;
-                float roofScale = ModularScaleForWidth(modularRoofSprite, roofDesiredWidth);
-                roof.transform.localScale = new Vector3(roofScale, roofScale, 1f);
+                float roofScaleX = ModularScaleForWidth(modularRoofSprite, roofDesiredWidth);
+                float roofSpriteHeight = modularRoofSprite.bounds.size.y;
+                float roofScaleY = roofSpriteHeight > 0.0001f
+                    ? roofBodyTargetHeight / (roofSpriteHeight * ModularRoofBodyFraction)
+                    : roofScaleX;
+                roof.transform.localScale = new Vector3(roofScaleX, roofScaleY, 1f);
                 roofRenderer.sprite = modularRoofSprite;
                 roofRenderer.color = Color.white;
                 roofRenderer.drawMode = SpriteDrawMode.Simple;
 
-                // A casa é vista quase-frontal (player olha a fachada, porta na base -hh): a faixa da
-                // parede FRONTAL da casca deve aparecer embaixo do beiral, não ser coberta por ele.
-                // Pivot do sprite é center (Unity default): com localPosition.y = 0 a borda inferior
-                // do telhado ficaria em -roofScaledHeight/2, colada na base do footprint (-hh) — sem
-                // revelar parede nenhuma. Deslocamos o roof para CIMA para que a borda inferior do
-                // telhado pare em (-hh + ModularRoofFrontWallReveal), revelando essa faixa de parede.
-                float roofScaledHeight = modularRoofSprite.bounds.size.y * roofScale;
-                float desiredRoofBottomY = -hh + ModularRoofFrontWallReveal;
-                float roofOffsetY = desiredRoofBottomY + roofScaledHeight * 0.5f;
-                roof.transform.localPosition = new Vector3(0f, roofOffsetY, 0f);
+                // roof_*_aerial importa com pivot BottomCenter: localPosition.y JÁ É o Y da borda
+                // inferior (beiral) do telhado. Ancora o beiral em `roofBottomY` (topo da fachada,
+                // com um leve overlap), de modo que o corpo cubra até o topo do lote e a chaminé
+                // embutida fique acima dele.
+                roof.transform.localPosition = new Vector3(0f, roofBottomY, 0f);
             }
             else
             {
@@ -1362,7 +1562,15 @@ namespace CindarsHope.Editor.SceneCreation
                     roofRenderer.color = RoofTint(archetype);
                     roofRenderer.drawMode = SpriteDrawMode.Tiled;
                     roofRenderer.tileMode = SpriteTileMode.Continuous;
-                    roofRenderer.size = new Vector2(size.x + 0.2f, size.y + 0.2f);
+                    // Cobre só a faixa superior (RoofCoverageRatio da altura do lote) + uma pequena
+                    // folga lateral/superior de acabamento (+0.2), não mais a altura INTEIRA do lote —
+                    // isso escondia a fachada completa atrás do telhado.
+                    var roofTiledSize = new Vector2(size.x + 0.2f, roofCoverageHeight + 0.2f);
+                    roofRenderer.size = roofTiledSize;
+                    // roof_redtile importa com pivot BottomCenter: o retângulo Tiled nasce em
+                    // localPosition.y (base). Ancora a base do telhado em `roofTargetBottomY` (topo do
+                    // lote menos a cobertura-alvo) em vez de centralizar no meio do lote inteiro.
+                    roof.transform.localPosition = new Vector3(0f, roofTargetBottomY, 0f);
                 }
                 else
                 {
@@ -1371,66 +1579,94 @@ namespace CindarsHope.Editor.SceneCreation
                     roofRenderer.color = Color.Lerp(baseColor, new Color(0.5f, 0.18f, 0.12f), 0.6f);
                 }
             }
-            roofRenderer.sortingOrder = 20;
-            TrySetSortingLayer(roofRenderer, "Items", roofRenderer.sortingOrder);
+            if (isHero)
+            {
+                // Prédio hero fica na layer World (Y-sort pela base) para o player passar CORRETO na
+                // frente/atrás dele quando está FORA — na Roof layer, o prédio (order alto) desenharia
+                // por cima do player parado na porta. Ao entrar, o RoofReveal zera o alpha (some tudo).
+                roofRenderer.sortingOrder = 0;
+                roofRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
+                TrySetSortingLayer(roofRenderer, "World", roofRenderer.sortingOrder);
+            }
+            else
+            {
+                roofRenderer.sortingOrder = 20;
+                TrySetSortingLayer(roofRenderer, "Roof", roofRenderer.sortingOrder);
+            }
 
-            CreateBuildingIdentityDetails(house.transform, name, size, doorSide, archetype, baseColor);
+            // Renderers que o RoofRevealController esconde quando o jogador entra. O telhado sempre;
+            // os adornos procedurais (cumeeira/beiral/chaminé) só existem nas casas SEM kit — a arte
+            // roof_*_aerial do kit modular já traz cumeeira, beiral e chaminé embutidos.
+            var roofRevealRenderers = new List<SpriteRenderer> { roofRenderer };
+            bool hasModularKit = modularVariant != '\0';
 
-            // Cumeeira: faixa escura no topo do telhado (só estética de "telhado de duas águas").
-            var ridge = new GameObject("RoofRidge");
-            ridge.transform.SetParent(house.transform);
-            ridge.transform.localPosition = new Vector3(0f, hh * 0.15f, 0f);
-            ridge.transform.localScale = new Vector3(size.x + 0.2f, 0.35f, 1f);
-            var ridgeRenderer = ridge.AddComponent<SpriteRenderer>();
-            ridgeRenderer.sprite = GetBuiltinSprite();
-            ridgeRenderer.color = new Color(0.30f, 0.10f, 0.07f);
-            ridgeRenderer.sortingOrder = 21;
-            TrySetSortingLayer(ridgeRenderer, "Items", ridgeRenderer.sortingOrder);
+            // Janelas/placa/marcador de identidade: só para casas SEM kit (a fachada walls_*_topdown
+            // do kit já traz janelas pintadas; nas casas de placeholder eles dão leitura ao prédio).
+            if (!hasModularKit)
+            {
+                CreateBuildingIdentityDetails(house.transform, name, size, doorSide, archetype, baseColor);
 
-            // Destaque claro logo acima da cumeeira => leitura de telhado de duas aguas.
-            var ridgeHi = new GameObject("RoofRidgeHighlight");
-            ridgeHi.transform.SetParent(house.transform);
-            ridgeHi.transform.localPosition = new Vector3(0f, hh * 0.15f + 0.30f, 0f);
-            ridgeHi.transform.localScale = new Vector3(size.x + 0.2f, 0.16f, 1f);
-            var ridgeHiRenderer = ridgeHi.AddComponent<SpriteRenderer>();
-            ridgeHiRenderer.sprite = GetBuiltinSprite();
-            ridgeHiRenderer.color = new Color(1f, 0.85f, 0.70f, 0.35f);
-            ridgeHiRenderer.sortingOrder = 21;
-            TrySetSortingLayer(ridgeHiRenderer, "Items", ridgeHiRenderer.sortingOrder);
+                // Cumeeira: faixa escura no topo do telhado (só estética de "telhado de duas águas").
+                var ridge = new GameObject("RoofRidge");
+                ridge.transform.SetParent(house.transform);
+                ridge.transform.localPosition = new Vector3(0f, hh * 0.15f, 0f);
+                ridge.transform.localScale = new Vector3(size.x + 0.2f, 0.35f, 1f);
+                var ridgeRenderer = ridge.AddComponent<SpriteRenderer>();
+                ridgeRenderer.sprite = GetBuiltinSprite();
+                ridgeRenderer.color = new Color(0.30f, 0.10f, 0.07f);
+                ridgeRenderer.sortingOrder = 21;
+                TrySetSortingLayer(ridgeRenderer, "Roof", ridgeRenderer.sortingOrder);
+                roofRevealRenderers.Add(ridgeRenderer);
 
-            // Sombra de beiral na borda inferior do telhado (destaca a casa do chao).
-            var eave = new GameObject("RoofEaveShadow");
-            eave.transform.SetParent(house.transform);
-            eave.transform.localPosition = new Vector3(0f, -hh - 0.35f, 0f);
-            eave.transform.localScale = new Vector3(size.x + 0.2f, 0.35f, 1f);
-            var eaveRenderer = eave.AddComponent<SpriteRenderer>();
-            eaveRenderer.sprite = GetBuiltinSprite();
-            eaveRenderer.color = new Color(0f, 0f, 0f, 0.30f);
-            eaveRenderer.sortingOrder = 20;
-            TrySetSortingLayer(eaveRenderer, "Items", eaveRenderer.sortingOrder);
+                // Destaque claro logo acima da cumeeira => leitura de telhado de duas aguas.
+                var ridgeHi = new GameObject("RoofRidgeHighlight");
+                ridgeHi.transform.SetParent(house.transform);
+                ridgeHi.transform.localPosition = new Vector3(0f, hh * 0.15f + 0.30f, 0f);
+                ridgeHi.transform.localScale = new Vector3(size.x + 0.2f, 0.16f, 1f);
+                var ridgeHiRenderer = ridgeHi.AddComponent<SpriteRenderer>();
+                ridgeHiRenderer.sprite = GetBuiltinSprite();
+                ridgeHiRenderer.color = new Color(1f, 0.85f, 0.70f, 0.35f);
+                ridgeHiRenderer.sortingOrder = 21;
+                TrySetSortingLayer(ridgeHiRenderer, "Roof", ridgeHiRenderer.sortingOrder);
+                roofRevealRenderers.Add(ridgeHiRenderer);
 
-            // Chamine + fumacinha no canto superior do telhado.
-            var chimney = new GameObject("Chimney");
-            chimney.transform.SetParent(house.transform);
-            chimney.transform.localPosition = new Vector3(hw - 0.9f, hh + 0.15f, 0f);
-            chimney.transform.localScale = new Vector3(0.7f, 0.9f, 1f);
-            var chimneyRenderer = chimney.AddComponent<SpriteRenderer>();
-            chimneyRenderer.sprite = GetBuiltinSprite();
-            chimneyRenderer.color = new Color(0.45f, 0.30f, 0.24f);
-            chimneyRenderer.sortingOrder = 22;
-            TrySetSortingLayer(chimneyRenderer, "Items", chimneyRenderer.sortingOrder);
+                // Sombra de beiral na borda inferior do TELHADO.
+                var eave = new GameObject("RoofEaveShadow");
+                eave.transform.SetParent(house.transform);
+                eave.transform.localPosition = new Vector3(0f, roofTargetBottomY - 0.35f, 0f);
+                eave.transform.localScale = new Vector3(size.x + 0.2f, 0.35f, 1f);
+                var eaveRenderer = eave.AddComponent<SpriteRenderer>();
+                eaveRenderer.sprite = GetBuiltinSprite();
+                eaveRenderer.color = new Color(0f, 0f, 0f, 0.30f);
+                eaveRenderer.sortingOrder = 20;
+                TrySetSortingLayer(eaveRenderer, "Roof", eaveRenderer.sortingOrder);
+                roofRevealRenderers.Add(eaveRenderer);
 
-            var smoke = new GameObject("ChimneySmoke");
-            smoke.transform.SetParent(house.transform);
-            smoke.transform.localPosition = new Vector3(hw - 0.9f, hh + 0.85f, 0f);
-            smoke.transform.localScale = new Vector3(0.5f, 0.5f, 1f);
-            var smokeRenderer = smoke.AddComponent<SpriteRenderer>();
-            smokeRenderer.sprite = GetBuiltinSprite();
-            smokeRenderer.color = new Color(0.85f, 0.85f, 0.85f, 0.5f);
-            smokeRenderer.sortingOrder = 22;
-            TrySetSortingLayer(smokeRenderer, "Items", smokeRenderer.sortingOrder);
+                // Chamine + fumacinha no canto superior do telhado.
+                var chimney = new GameObject("Chimney");
+                chimney.transform.SetParent(house.transform);
+                chimney.transform.localPosition = new Vector3(hw - 0.9f, hh + 0.15f, 0f);
+                chimney.transform.localScale = new Vector3(0.7f, 0.9f, 1f);
+                var chimneyRenderer = chimney.AddComponent<SpriteRenderer>();
+                chimneyRenderer.sprite = GetBuiltinSprite();
+                chimneyRenderer.color = new Color(0.45f, 0.30f, 0.24f);
+                chimneyRenderer.sortingOrder = 22;
+                TrySetSortingLayer(chimneyRenderer, "Roof", chimneyRenderer.sortingOrder);
+                roofRevealRenderers.Add(chimneyRenderer);
 
-            // Trigger de revelação: cobre o footprint; some os dois renderers de telhado ao jogador entrar.
+                var smoke = new GameObject("ChimneySmoke");
+                smoke.transform.SetParent(house.transform);
+                smoke.transform.localPosition = new Vector3(hw - 0.9f, hh + 0.85f, 0f);
+                smoke.transform.localScale = new Vector3(0.5f, 0.5f, 1f);
+                var smokeRenderer = smoke.AddComponent<SpriteRenderer>();
+                smokeRenderer.sprite = GetBuiltinSprite();
+                smokeRenderer.color = new Color(0.85f, 0.85f, 0.85f, 0.5f);
+                smokeRenderer.sortingOrder = 22;
+                TrySetSortingLayer(smokeRenderer, "Roof", smokeRenderer.sortingOrder);
+                roofRevealRenderers.Add(smokeRenderer);
+            }
+
+            // Trigger de revelação: cobre o footprint; some os renderers de telhado ao jogador entrar.
             var revealObject = new GameObject("RoofReveal");
             revealObject.transform.SetParent(house.transform);
             revealObject.transform.localPosition = Vector3.zero;
@@ -1438,7 +1674,7 @@ namespace CindarsHope.Editor.SceneCreation
             revealTrigger.isTrigger = true;
             revealTrigger.size = interiorSize;
             var reveal = revealObject.AddComponent<RoofRevealController>();
-            reveal.Configure(new[] { roofRenderer, ridgeRenderer, ridgeHiRenderer, eaveRenderer, chimneyRenderer, smokeRenderer });
+            reveal.Configure(roofRevealRenderers.ToArray());
             EditorUtility.SetDirty(reveal);
         }
 
@@ -1466,8 +1702,8 @@ namespace CindarsHope.Editor.SceneCreation
         // Ao apertar E, publica o evento que abre o craft daquele WorkshopType (CraftingModal assina).
         private static void CreateCraftingStation(Transform house, Vector3 localPos, Color color, string stationId, WorkshopType type, string label)
         {
+            // World/0/Pivot já aplicado por CreateInteriorProp — profundidade decidida pelo Y-sort.
             var station = CreateInteriorProp(house, $"Station_{type}", localPos, new Vector3(1.6f, 1.1f, 1f), color);
-            station.GetComponent<SpriteRenderer>().sortingOrder = 2; // acima do chão/móveis, abaixo do telhado
 
             var trigger = station.AddComponent<BoxCollider2D>();
             trigger.isTrigger = true;
@@ -1480,14 +1716,17 @@ namespace CindarsHope.Editor.SceneCreation
             EditorUtility.SetDirty(craftingPoint);
         }
 
-        // Porta funcional no vão da casa (lado virado para a rua). Desenhada ACIMA do telhado
-        // (sortingOrder > 20) para ser visível de fora; fechada tranca o vão (collider sólido),
-        // aperte E para deslizar e abrir. A folha acompanha a orientação N/S/E/W do frontage.
+        // Porta funcional no vão da casa (lado virado para a rua). Layer World, order 0 — desempate
+        // contra o shell de parede via épsilon de Y no pivot (nunca sortingOrder, que quebraria o
+        // Y-sort global); fechada tranca o vão (collider sólido), aperte E para deslizar e abrir.
+        // A folha acompanha a orientação N/S/E/W do frontage.
+        private const float DoorPivotEpsilon = 0.01f;
+
         private static void CreateHouseDoor(Transform house, Vector3 localPosition, TownDoorSide side, char modularVariant = '\0')
         {
             var door = new GameObject("Door");
             door.transform.SetParent(house);
-            door.transform.localPosition = localPosition;
+            door.transform.localPosition = localPosition - new Vector3(0f, DoorPivotEpsilon, 0f);
 
             bool horizontal = side == TownDoorSide.North || side == TownDoorSide.South;
             Vector3 panelScale = horizontal
@@ -1510,8 +1749,9 @@ namespace CindarsHope.Editor.SceneCreation
             var thr = threshold.AddComponent<SpriteRenderer>();
             thr.sprite = GetBuiltinSprite();
             thr.color = new Color(0.10f, 0.08f, 0.07f);
-            thr.sortingOrder = 22; // acima do telhado (20) ⇒ visível de fora
-            TrySetSortingLayer(thr, "Items", thr.sortingOrder);
+            thr.sortingOrder = 0;
+            thr.spriteSortPoint = SpriteSortPoint.Pivot;
+            TrySetSortingLayer(thr, "World", thr.sortingOrder);
 
             // Folha de madeira: desliza para o lado ao abrir.
             var leaf = new GameObject("Leaf");
@@ -1520,29 +1760,75 @@ namespace CindarsHope.Editor.SceneCreation
             var openLocalPos = horizontal
                 ? new Vector3(DoorGapWidth * 0.92f, 0f, 0f)
                 : new Vector3(0f, DoorGapWidth * 0.92f, 0f);
-            leaf.transform.localPosition = closedLocalPos;
             var leafRenderer = leaf.AddComponent<SpriteRenderer>();
             var doorSprite = modularVariant != '\0'
                 ? WorldSpriteLibrary.HouseModular($"door_{modularVariant}")
                 : WorldSpriteLibrary.Building("door_wood");
             leafRenderer.sprite = doorSprite != null ? doorSprite : GetBuiltinSprite();
             leafRenderer.color = doorSprite != null ? Color.white : new Color(0.34f, 0.22f, 0.13f);
-            leafRenderer.sortingOrder = 23;
-            TrySetSortingLayer(leafRenderer, "Items", leafRenderer.sortingOrder);
+            leafRenderer.sortingOrder = 0;
+            leafRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            TrySetSortingLayer(leafRenderer, "World", leafRenderer.sortingOrder);
+            // CAUSA-RAIZ do bug "porta renderizando na borda norte / fora do vão": door_{variant} e
+            // door_wood importam com pivot BottomCenter (WorldSpritePivotImportStep, exigência do
+            // Y-sort global), mas closedLocalPos/openLocalPos acima foram calculados como o CENTRO
+            // visual pretendido do vão (igual ao panelScale antigo, pivot Center). Sem compensar o
+            // pivot, o sprite desenha de closedLocalPos.y PARA CIMA (y, y+altura) em vez de ficar
+            // centrado nele — a folha "sobe" meia-altura acima do vão real. Em portas horizontais
+            // (South/North) isso empurra a folha visualmente para dentro da casa / em direção ao
+            // topo do lote; era mais perceptível quando lotes tinham DoorSide East/West (a folha
+            // ficava deslocada para cima, lida como "na borda norte"). Fix: mesmo padrão já usado
+            // para janelas/árvores — WorldSpriteBasePlacement.BaseFromVisualCenter desloca a base do
+            // sprite para -alturaVisual/2 do centro pretendido, mantendo o visual centrado no vão.
+            float leafScale;
             if (modularVariant != '\0' && doorSprite != null)
             {
                 // Peça de arte completa do kit modular: escala por BOUNDS reais (não PPU/panelScale
                 // procedural) — evita a porta gigante centralizada em cima do telhado vista no Play
-                // Mode. Posição já é doorLocalPosition (bottom-center do footprint, igual à porta
-                // antiga); só a escala visual muda. Collider/blocker/trigger continuam usando
-                // blockerSize/triggerSize (geometria de vão), não esta escala.
-                float doorScale = ModularScaleForWidth(doorSprite, ModularDoorDesiredWidth);
-                leaf.transform.localScale = new Vector3(doorScale, doorScale, 1f);
+                // Mode. Collider/blocker/trigger continuam usando blockerSize/triggerSize (geometria
+                // de vão), não esta escala.
+                leafScale = ModularScaleForWidth(doorSprite, ModularDoorDesiredWidth);
+                leaf.transform.localScale = new Vector3(leafScale, leafScale, 1f);
+            }
+            else if (doorSprite != null)
+            {
+                // door_wood (fallback não-modular): mantém a escala procedural do vão (panelScale),
+                // mas ainda precisa da compensação de pivot abaixo (também é sprite BottomCenter).
+                leaf.transform.localScale = panelScale;
+                leafScale = horizontal ? panelScale.y : panelScale.x;
             }
             else
             {
+                // GetBuiltinSprite (UI/Skin) não é afetado pela mudança de pivot de sprites de mundo.
                 leaf.transform.localScale = panelScale;
+                leafScale = -1f;
             }
+
+            // HouseDoorInteractable anima leaf.transform entre estes dois pontos — precisam refletir
+            // a MESMA compensação de pivot aplicada acima, senão a folha fechada usaria o valor
+            // corrigido mas a animação de abrir/fechar puxaria de volta para o valor não-compensado.
+            Vector3 leafClosedPos = closedLocalPos;
+            Vector3 leafOpenPos = openLocalPos;
+            if (doorSprite != null)
+            {
+                if (horizontal)
+                {
+                    // Porta sul/norte: a BASE da folha fica na linha do chão da fachada (borda do
+                    // lote). O pai Door está na linha central da parede (±wallY = borda ∓ WT/2),
+                    // então a base local é -WallThickness/2. Pivot BottomCenter ⇒ setar o Y da base
+                    // basta; a folha sobe dali cobrindo o vão dentro da fachada.
+                    float doorBaseLocalY = -WallThickness * 0.5f;
+                    leafClosedPos = new Vector3(closedLocalPos.x, doorBaseLocalY, closedLocalPos.z);
+                    leafOpenPos = new Vector3(openLocalPos.x, doorBaseLocalY, openLocalPos.z);
+                }
+                else
+                {
+                    float doorVisualHeight = doorSprite.bounds.size.y * leafScale;
+                    leafClosedPos = WorldSpriteBasePlacement.BaseFromVisualCenter(closedLocalPos, doorVisualHeight);
+                    leafOpenPos = WorldSpriteBasePlacement.BaseFromVisualCenter(openLocalPos, doorVisualHeight);
+                }
+            }
+            leaf.transform.localPosition = leafClosedPos;
 
             // Collider SÓLIDO que tranca o vão (desligado quando aberta).
             var blocker = door.AddComponent<BoxCollider2D>();
@@ -1555,7 +1841,7 @@ namespace CindarsHope.Editor.SceneCreation
             interact.size = triggerSize;
 
             var interactable = door.AddComponent<HouseDoorInteractable>();
-            interactable.Configure(leaf.transform, blocker, closedLocalPos, openLocalPos);
+            interactable.Configure(leaf.transform, blocker, leafClosedPos, leafOpenPos);
             EditorUtility.SetDirty(interactable);
         }
 
@@ -1604,7 +1890,7 @@ namespace CindarsHope.Editor.SceneCreation
                 float offset = i == 0 ? -halfFrontage * 0.55f : halfFrontage * 0.55f;
                 var window = new GameObject($"Window_{i + 1}");
                 window.transform.SetParent(details.transform);
-                window.transform.localPosition = horizontal
+                var windowVisualCenter = horizontal
                     ? new Vector3(offset, doorSide == TownDoorSide.South ? -size.y * 0.5f - 0.04f : size.y * 0.5f + 0.04f, 0f)
                     : new Vector3(doorSide == TownDoorSide.West ? -size.x * 0.5f - 0.04f : size.x * 0.5f + 0.04f, offset, 0f);
                 window.transform.localScale = horizontal
@@ -1613,8 +1899,22 @@ namespace CindarsHope.Editor.SceneCreation
                 var renderer = window.AddComponent<SpriteRenderer>();
                 renderer.sprite = windowSprite != null ? windowSprite : GetBuiltinSprite();
                 renderer.color = windowSprite != null ? Color.white : signColor;
-                renderer.sortingOrder = 22;
-                TrySetSortingLayer(renderer, "Items", renderer.sortingOrder);
+                if (windowSprite != null)
+                {
+                    // window_wood agora importa com pivot BottomCenter: a janela é pintada CENTRADA na
+                    // linha da parede (não apoiada nela como uma porta) — desloca para baixo meia altura
+                    // visual para manter o centro de antes (pivot Center).
+                    float windowScaleForAxis = horizontal ? window.transform.localScale.y : window.transform.localScale.x;
+                    float windowVisualHeight = windowSprite.bounds.size.y * windowScaleForAxis;
+                    windowVisualCenter = WorldSpriteBasePlacement.BaseFromVisualCenter(windowVisualCenter, windowVisualHeight);
+                }
+                window.transform.localPosition = windowVisualCenter;
+                // Decoro de parede (facade): World com épsilon de pivot para desempatar contra o shell,
+                // igual à porta — nunca sortingOrder alto (quebraria o Y-sort global).
+                window.transform.localPosition -= new Vector3(0f, DoorPivotEpsilon, 0f);
+                renderer.sortingOrder = 0;
+                renderer.spriteSortPoint = SpriteSortPoint.Pivot;
+                TrySetSortingLayer(renderer, "World", renderer.sortingOrder);
             }
 
             var sign = new GameObject($"Sign_{houseName.Substring("House_".Length)}");
@@ -1627,7 +1927,7 @@ namespace CindarsHope.Editor.SceneCreation
             signRenderer.sprite = GetBuiltinSprite();
             signRenderer.color = signColor;
             signRenderer.sortingOrder = 24;
-            TrySetSortingLayer(signRenderer, "Items", signRenderer.sortingOrder);
+            TrySetSortingLayer(signRenderer, "Roof", signRenderer.sortingOrder);
 
             CreateSemanticBuildingPlaceholder(details.transform, houseName, size, doorSide);
         }
@@ -1667,14 +1967,24 @@ namespace CindarsHope.Editor.SceneCreation
             renderer.sprite = GetBuiltinSprite();
             renderer.color = color;
             renderer.sortingOrder = 25;
-            TrySetSortingLayer(renderer, "Items", renderer.sortingOrder);
+            TrySetSortingLayer(renderer, "Roof", renderer.sortingOrder);
         }
 
-        // Auditoria de geração: avisa se duas casas se sobrepõem, se alguma sai do playfield, ou se um
-        // spawn cai dentro de uma casa. Como não há Play Mode aqui, é a rede de segurança do layout.
+        // Clearance mínima exigida da muralha para qualquer lote (spec_town_layout_v9_organic:
+        // "clearance >=3un da muralha").
+        private const float MinWallClearance = 3f;
+
+        // Auditoria de geração: avisa se duas casas se sobrepõem, se alguma sai do playfield ou fura
+        // a clearance da muralha, se uma porta não alcança a malha viária, ou se um lote invade uma
+        // via. Como não há Play Mode aqui, é a rede de segurança estática do layout (spec ponto 2).
         private static void AuditHouseOverlaps()
         {
             const float margin = 0.3f;
+            int wallClearanceViolations = 0;
+            int doorAccessViolations = 0;
+            int roadOverlapViolations = 0;
+            int lotOverlapViolations = 0;
+
             for (int a = 0; a < TownHouseSpecs.Length; a++)
             {
                 var (nameA, posA, _, sizeA) = TownHouseSpecs[a];
@@ -1687,6 +1997,18 @@ namespace CindarsHope.Editor.SceneCreation
                     Debug.LogError($"[walk-in-houses] {nameA} sai do playfield ({axMin:0.0}..{axMax:0.0}, {ayMin:0.0}..{ayMax:0.0}).");
                 }
 
+                // Clearance da muralha: distância do lote até cada parede deve ser >= MinWallClearance.
+                float clearanceWest = axMin - (-TownDistrictLayout.HalfWidth);
+                float clearanceEast = TownDistrictLayout.HalfWidth - axMax;
+                float clearanceSouth = ayMin - (-TownDistrictLayout.HalfHeight);
+                float clearanceNorth = TownDistrictLayout.HalfHeight - ayMax;
+                float minClearance = Mathf.Min(Mathf.Min(clearanceWest, clearanceEast), Mathf.Min(clearanceSouth, clearanceNorth));
+                if (minClearance < MinWallClearance)
+                {
+                    wallClearanceViolations++;
+                    Debug.LogError($"[town-layout] {nameA}: clearance da muralha {minClearance:0.0}un < {MinWallClearance:0.0}un exigido.");
+                }
+
                 for (int b = a + 1; b < TownHouseSpecs.Length; b++)
                 {
                     var (nameB, posB, _, sizeB) = TownHouseSpecs[b];
@@ -1694,6 +2016,7 @@ namespace CindarsHope.Editor.SceneCreation
                     bool overlapY = Mathf.Abs(posA.y - posB.y) < (sizeA.y + sizeB.y) * 0.5f + margin;
                     if (overlapX && overlapY)
                     {
+                        lotOverlapViolations++;
                         Debug.LogError($"[walk-in-houses] sobreposição: {nameA} × {nameB}.");
                     }
                 }
@@ -1708,17 +2031,32 @@ namespace CindarsHope.Editor.SceneCreation
                 {
                     if (lot.Overlaps(road))
                     {
+                        roadOverlapViolations++;
                         Debug.LogError($"[town-layout] {nameA} invade a via {road.Id}.");
                     }
                 }
 
+                // Praça central (pavimento circular r~13): checada à parte pois não é um TownRoadSegment.
+                bool overlapsPlazaX = Mathf.Abs(posA.x - TownCityLayout.CentralPlazaCenter.x) <
+                    (sizeA.x + TownCityLayout.CentralPlazaSize.x) * 0.5f;
+                bool overlapsPlazaY = Mathf.Abs(posA.y - TownCityLayout.CentralPlazaCenter.y) <
+                    (sizeA.y + TownCityLayout.CentralPlazaSize.y) * 0.5f;
+                if (overlapsPlazaX && overlapsPlazaY)
+                {
+                    roadOverlapViolations++;
+                    Debug.LogError($"[town-layout] {nameA} invade a praça central.");
+                }
+
                 if (!TownCityLayout.IsPointOnRoad(lot.DoorApproach, 0.4f))
                 {
+                    doorAccessViolations++;
                     Debug.LogError($"[town-layout] acesso da porta de {nameA} não alcança a malha viária.");
                 }
             }
 
-            Debug.Log($"[walk-in-houses] {TownHouseSpecs.Length} prédios percorríveis posicionados (auditoria concluída).");
+            Debug.Log($"[walk-in-houses] {TownHouseSpecs.Length} prédios percorríveis posicionados. " +
+                      $"Auditoria v9 organic: clearance={wallClearanceViolations} lote-lote={lotOverlapViolations} " +
+                      $"lote-via={roadOverlapViolations} porta-sem-acesso={doorAccessViolations} (0 = OK).");
         }
 
         // ─── fable_11: schedule anchors (work/social/home per NPC) ───────────────────────────────
@@ -1728,13 +2066,15 @@ namespace CindarsHope.Editor.SceneCreation
         private static readonly Vector3 PlazaSocialAnchorLegacy = new Vector3(0f, -1.5f, 0f);
         private static readonly Vector3 NightMarketAnchorLegacy = new Vector3(11f, -9.5f, 0f);
 
-        // ── Moradias temáticas (footprint 76×64) ──────────────────────────────────────────────────
-        // Pontos de dormir AO RELENTO (no campo, y<24) — o NPC caminha até lá à noite e dorme à vista.
+        // ── Moradias temáticas (footprint 120×90 v9 organic) ──────────────────────────────────────
+        // Pontos de dormir AO RELENTO (no campo) — o NPC caminha até lá à noite e dorme à vista.
         // Coords no footprint; os landmarks visíveis são criados em CreateTownOutskirts nas MESMAS coords.
-        // Footprint 76×64 — pontos de dormir ao relento, nos cantos/bordas (batem com as zonas reservadas).
-        private static readonly Vector3 CemeteryPosition = new Vector3(-36f, 35f, 0f);
+        // Cemitério: movido para junto de House_Temple (spec_town_layout_v9_organic — região alvo
+        // −52..−44, 26..38), reposicionado a −51.5/32.5 para não sobrepor o lote do Temple (x−46..−30)
+        // nem furar a clearance de 3un da muralha oeste (x=−60).
+        private static readonly Vector3 CemeteryPosition = new Vector3(-51.5f, 32.5f, 0f);
         private static readonly Vector3 CaveMouthPosition = new Vector3(57f, -4f, 0f);
-        private static readonly Vector3 NightMarketBackPosition = new Vector3(54f, -16f, 0f);
+        private static readonly Vector3 NightMarketBackPosition = new Vector3(15f, -13f, 0f);
         private static readonly Vector3 StatueGardenSleepPosition = new Vector3(-3f, -4f, 0f);    // praça — Liora
 
         private readonly struct HomeAssignment
@@ -1908,7 +2248,7 @@ namespace CindarsHope.Editor.SceneCreation
         // (As casas agora são FÍSICAS percorríveis — ver CreateWalkInHouse. A antiga faixa off-field de
         //  interiores (y>+40) + portas de teleporte foi removida. CreateInteriorWall/CreateInteriorProp
         //  permanecem como helpers reutilizados pela casa percorrível.)
-        private static void CreateInteriorWall(Transform parent, string name, Vector3 localPos, Vector2 size)
+        private static void CreateInteriorWall(Transform parent, string name, Vector3 localPos, Vector2 size, bool showStoneVisual = true)
         {
             var wall = new GameObject(name);
             wall.transform.SetParent(parent);
@@ -1917,7 +2257,13 @@ namespace CindarsHope.Editor.SceneCreation
             collider.isTrigger = false;
             collider.size = size;
 
-            AddStoneWallVisual(wall.transform, size);
+            // Casas com kit modular: mantém o collider (bloqueio), mas NÃO desenha o visual de pedra —
+            // a arte walls_*_topdown já pinta as paredes; o quad de pedra por baixo vazava pelo miolo
+            // transparente do kit (filetes cinza entre beiral e fachada / nas laterais).
+            if (showStoneVisual)
+            {
+                AddStoneWallVisual(wall.transform, size);
+            }
         }
 
         // Visual de PAREDE DE PEDRA: contorno escuro (junta) + face de pedra + uma faixa de base mais
@@ -1932,13 +2278,16 @@ namespace CindarsHope.Editor.SceneCreation
             var outlineRenderer = outline.AddComponent<SpriteRenderer>();
             outlineRenderer.sprite = GetBuiltinSprite();
             outlineRenderer.color = new Color(0.20f, 0.18f, 0.16f);
-            outlineRenderer.sortingOrder = 4;
-            TrySetSortingLayer(outlineRenderer, "Items", outlineRenderer.sortingOrder);
+            // Desempate contra a Face (mesma posição): outline fica ATRÁS via épsilon de pivot acima
+            // (Y-sort: maior Y desenha atrás quando visto de baixo — mantém a leitura de borda/junta).
+            outline.transform.localPosition += new Vector3(0f, DoorPivotEpsilon, 0f);
+            outlineRenderer.sortingOrder = 0;
+            outlineRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            TrySetSortingLayer(outlineRenderer, "World", outlineRenderer.sortingOrder);
 
             // Face de pedra (cinza-quente).
             var face = new GameObject("Face");
             face.transform.SetParent(parent);
-            face.transform.localPosition = Vector3.zero;
             var faceRenderer = face.AddComponent<SpriteRenderer>();
             var wallTile = WorldSpriteLibrary.Building("wall_stone");
             if (wallTile != null)
@@ -1949,17 +2298,25 @@ namespace CindarsHope.Editor.SceneCreation
                 faceRenderer.drawMode = SpriteDrawMode.Tiled;
                 faceRenderer.tileMode = SpriteTileMode.Continuous;
                 faceRenderer.size = size;
+                // wall_stone agora importa com pivot BottomCenter: o retângulo Tiled nasce em
+                // localPosition (base), não mais centrado nele. Desloca para baixo meia altura para
+                // manter a mesma cobertura simétrica do segmento de parede (pivot Center antigo).
+                face.transform.localPosition = new Vector3(0f, -size.y * 0.5f, 0f);
             }
             else
             {
+                face.transform.localPosition = Vector3.zero;
                 face.transform.localScale = new Vector3(size.x, size.y, 1f);
                 faceRenderer.sprite = GetBuiltinSprite();
                 faceRenderer.color = new Color(0.57f, 0.54f, 0.49f);
             }
-            faceRenderer.sortingOrder = 5;
-            TrySetSortingLayer(faceRenderer, "Items", faceRenderer.sortingOrder);
+            faceRenderer.sortingOrder = 0;
+            faceRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            TrySetSortingLayer(faceRenderer, "World", faceRenderer.sortingOrder);
 
-            // Rodapé mais escuro (faixa de base) — sensação de espessura/sombra da parede.
+            // Rodapé mais escuro (faixa de base) — sensação de espessura/sombra da parede. Já fica
+            // abaixo da Face no footprint (Y menor ⇒ mais perto da câmera no Y-sort ⇒ desenha na
+            // frente), sem precisar de épsilon adicional.
             var baseStrip = new GameObject("Base");
             baseStrip.transform.SetParent(parent);
             baseStrip.transform.localPosition = new Vector3(0f, -size.y * 0.32f, 0f);
@@ -1967,22 +2324,43 @@ namespace CindarsHope.Editor.SceneCreation
             var baseRenderer = baseStrip.AddComponent<SpriteRenderer>();
             baseRenderer.sprite = GetBuiltinSprite();
             baseRenderer.color = new Color(0.42f, 0.39f, 0.35f);
-            baseRenderer.sortingOrder = 6;
-            TrySetSortingLayer(baseRenderer, "Items", baseRenderer.sortingOrder);
+            baseRenderer.sortingOrder = 0;
+            baseRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            TrySetSortingLayer(baseRenderer, "World", baseRenderer.sortingOrder);
         }
 
+        // NOTA: móveis/estações interagíveis ganham collider/trigger DEPOIS, no MESMO GameObject
+        // retornado (ver CreateWalkInHouse "bedProp"/CreateCraftingStation) — sem offset, ancorado no
+        // centro visual pretendido de antes (localPos), não na base. Por isso este método reposiciona
+        // só o SpriteRenderer (um child "Visual"), preservando prop.transform.localPosition == localPos
+        // para não quebrar esses colliders/triggers existentes.
         private static GameObject CreateInteriorProp(Transform parent, string name, Vector3 localPos, Vector3 scale, Color color)
         {
             var prop = new GameObject(name);
             prop.transform.SetParent(parent);
             prop.transform.localPosition = localPos;
-            prop.transform.localScale = scale;
-            var renderer = prop.AddComponent<SpriteRenderer>();
+
+            var visual = new GameObject("Visual");
+            visual.transform.SetParent(prop.transform);
+            visual.transform.localScale = scale;
+            var renderer = visual.AddComponent<SpriteRenderer>();
             var furniture = InteriorSpriteFor(name);
-            if (furniture != null) { renderer.sprite = furniture; renderer.color = Color.white; }
-            else { renderer.sprite = GetBuiltinSprite(); renderer.color = color; }
-            renderer.sortingOrder = 1;
-            TrySetSortingLayer(renderer, "Items", renderer.sortingOrder);
+            if (furniture != null)
+            {
+                renderer.sprite = furniture; renderer.color = Color.white;
+                // interior/ agora importa com pivot BottomCenter: desloca o child Visual para baixo
+                // meia altura para manter o móvel centrado em localPos como antes (pivot Center).
+                float visualHeight = furniture.bounds.size.y * scale.y;
+                visual.transform.localPosition = new Vector3(0f, WorldSpriteBasePlacement.BaseYForVisualCenter(0f, visualHeight), 0f);
+            }
+            else
+            {
+                visual.transform.localPosition = Vector3.zero;
+                renderer.sprite = GetBuiltinSprite(); renderer.color = color;
+            }
+            renderer.sortingOrder = 0;
+            renderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            TrySetSortingLayer(renderer, "World", renderer.sortingOrder);
             return prop;
         }
 
@@ -1994,8 +2372,13 @@ namespace CindarsHope.Editor.SceneCreation
             if (propName == "Bed" || propName == "GuestBed_Inn") key = "bed";
             else if (propName == "Table") key = "table";
             else if (propName == "Furniture_Shelf") key = "cupboard";
+            else if (propName == "Furniture_Cupboard") key = "cupboard";
             else if (propName == "Furniture_Rug") key = "rug";
             else if (propName == "Furniture_Pew") key = "chair";
+            else if (propName == "Furniture_KitchenCounter") key = "kitchen_counter";
+            else if (propName == "Furniture_ServiceCounter") key = "kitchen_counter";
+            else if (propName == "Furniture_Stove") key = "fireplace";
+            else if (propName == "Furniture_Altar") key = "table"; // altar: mesa como base até arte própria
             return key != null ? WorldSpriteLibrary.Interior(key) : null;
         }
 
@@ -2011,14 +2394,25 @@ namespace CindarsHope.Editor.SceneCreation
             {
                 var go = new GameObject(name);
                 go.transform.SetParent(parent.transform);
-                go.transform.position = pos;
                 go.transform.localScale = new Vector3(scale, scale, 1f);
                 var sr = go.AddComponent<SpriteRenderer>();
                 var sprite = WorldSpriteLibrary.Prop(key);
-                if (sprite != null) { sr.sprite = sprite; sr.color = Color.white; }
-                else { sr.sprite = GetBuiltinSprite(); sr.color = new Color(0.6f, 0.6f, 0.6f); }
-                sr.sortingOrder = 2;
-                TrySetSortingLayer(sr, "Items", sr.sortingOrder);
+                if (sprite != null)
+                {
+                    sr.sprite = sprite; sr.color = Color.white;
+                    // props/ agora importa com pivot BottomCenter: converte o centro visual pretendido
+                    // (pos) para a position que produz o mesmo centro (sem collider aqui — sem offset).
+                    float visualHeight = sprite.bounds.size.y * scale;
+                    go.transform.position = WorldSpriteBasePlacement.BaseFromVisualCenter(pos, visualHeight);
+                }
+                else
+                {
+                    go.transform.position = pos;
+                    sr.sprite = GetBuiltinSprite(); sr.color = new Color(0.6f, 0.6f, 0.6f);
+                }
+                sr.sortingOrder = 0;
+                sr.spriteSortPoint = SpriteSortPoint.Pivot;
+                TrySetSortingLayer(sr, "World", sr.sortingOrder);
             }
 
             P("Well", "well", new Vector3(-7f, 6f, 0f), 2.2f);
@@ -2116,7 +2510,9 @@ namespace CindarsHope.Editor.SceneCreation
             district.transform.SetParent(parent);
             district.transform.position = Vector3.zero;
 
-            // Water body (decorative, blue, large slab under the park).
+            // Water body (decorative, blue, large slab under the park). v9 organic relayout: ~14x8
+            // (spec target 14x10, tightened 2un to clear Inn/Residential_4 — see execution report).
+            var lakeSize = new Vector2(14f, 8f);
             var lake = new GameObject("LakeWater");
             lake.transform.SetParent(district.transform);
             lake.transform.position = TownDistrictLayout.LakeCenter;
@@ -2127,11 +2523,11 @@ namespace CindarsHope.Editor.SceneCreation
                 lake.transform.localScale = Vector3.one;
                 lakeRenderer.sprite = lakeTile; lakeRenderer.color = Color.white;
                 lakeRenderer.drawMode = SpriteDrawMode.Tiled; lakeRenderer.tileMode = SpriteTileMode.Continuous;
-                lakeRenderer.size = new Vector2(18f, 12f);
+                lakeRenderer.size = lakeSize;
             }
             else
             {
-                lake.transform.localScale = new Vector3(18f, 12f, 1f);
+                lake.transform.localScale = new Vector3(lakeSize.x, lakeSize.y, 1f);
                 lakeRenderer.sprite = GetBuiltinSprite(); lakeRenderer.color = new Color(0.27f, 0.45f, 0.62f);
             }
             lakeRenderer.sortingOrder = 0;
@@ -2139,14 +2535,15 @@ namespace CindarsHope.Editor.SceneCreation
 
             var lakeCollider = lake.AddComponent<BoxCollider2D>();
             lakeCollider.isTrigger = false;
-            lakeCollider.size = new Vector2(18f, 12f);
+            lakeCollider.size = lakeSize;
 
-            // Cais no lado sul: ponto de leitura para Sael e aproximação segura sem entrar na água.
+            // Deque de pesca na borda LESTE do lago (spec_town_layout_v9_organic): ponto de leitura
+            // para Sael e aproximação segura sem entrar na água.
             CreateDecoration(
                 district.transform,
-                "LakeDock_South",
-                TownDistrictLayout.LakeCenter + new Vector3(0f, -6.6f, 0f),
-                new Vector3(4.5f, 1.4f, 1f),
+                "LakeDock_East",
+                TownDistrictLayout.LakeCenter + new Vector3(lakeSize.x * 0.5f + 1.2f, 0f, 0f),
+                new Vector3(1.4f, 4.0f, 1f),
                 new Color(0.46f, 0.34f, 0.22f));
 
             CreateDecoration(district.transform, "ParkBench_W", TownDistrictLayout.LakeBenchWest, new Vector3(1.4f, 0.4f, 1f), new Color(0.5f, 0.38f, 0.26f));
@@ -2161,26 +2558,36 @@ namespace CindarsHope.Editor.SceneCreation
             district.transform.SetParent(parent);
             district.transform.position = Vector3.zero;
 
-            // Town hall building body (blocking).
+            // Town hall building body (blocking). hall.transform.position mantém TownHallCenter (o
+            // collider sólido abaixo usa esse mesmo transform); só o Visual filho se desloca pela base.
             var hall = new GameObject("TownHallBuilding");
             hall.transform.SetParent(district.transform);
             hall.transform.position = TownDistrictLayout.TownHallCenter;
-            var hallRenderer = hall.AddComponent<SpriteRenderer>();
+
+            var hallVisual = new GameObject("Visual");
+            hallVisual.transform.SetParent(hall.transform);
+            var hallRenderer = hallVisual.AddComponent<SpriteRenderer>();
             var hallTile = WorldSpriteLibrary.Building("wall_stone");
+            var hallTiledSize = new Vector2(4.5f, 3.2f);
             if (hallTile != null)
             {
-                hall.transform.localScale = Vector3.one;
+                hallVisual.transform.localScale = Vector3.one;
                 hallRenderer.sprite = hallTile; hallRenderer.color = Color.white;
                 hallRenderer.drawMode = SpriteDrawMode.Tiled; hallRenderer.tileMode = SpriteTileMode.Continuous;
-                hallRenderer.size = new Vector2(4.5f, 3.2f);
+                hallRenderer.size = hallTiledSize;
+                // wall_stone agora importa com pivot BottomCenter: desloca o retângulo Tiled para baixo
+                // meia altura para manter a mesma cobertura simétrica de antes (pivot Center).
+                hallVisual.transform.localPosition = new Vector3(0f, -hallTiledSize.y * 0.5f, 0f);
             }
             else
             {
-                hall.transform.localScale = new Vector3(4.5f, 3.2f, 1f);
+                hallVisual.transform.localScale = new Vector3(hallTiledSize.x, hallTiledSize.y, 1f);
+                hallVisual.transform.localPosition = Vector3.zero;
                 hallRenderer.sprite = GetBuiltinSprite(); hallRenderer.color = new Color(0.6f, 0.58f, 0.52f);
             }
-            hallRenderer.sortingOrder = 2;
-            TrySetSortingLayer(hallRenderer, "Items", hallRenderer.sortingOrder);
+            hallRenderer.sortingOrder = 0;
+            hallRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            TrySetSortingLayer(hallRenderer, "World", hallRenderer.sortingOrder);
             var hallCollider = hall.AddComponent<BoxCollider2D>();
             hallCollider.isTrigger = false;
             hallCollider.size = Vector2.one;
@@ -2221,8 +2628,9 @@ namespace CindarsHope.Editor.SceneCreation
             var renderer = board.AddComponent<SpriteRenderer>();
             renderer.sprite = GetBuiltinSprite();
             renderer.color = new Color(0.55f, 0.4f, 0.25f);
-            renderer.sortingOrder = 2;
-            TrySetSortingLayer(renderer, "Items", renderer.sortingOrder);
+            renderer.sortingOrder = 0;
+            renderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            TrySetSortingLayer(renderer, "World", renderer.sortingOrder);
 
             var collider = board.AddComponent<BoxCollider2D>();
             collider.isTrigger = true;
@@ -2244,6 +2652,9 @@ namespace CindarsHope.Editor.SceneCreation
 
         // Floresta da borda: fica POR FORA da muralha. Seis faixas com jitter determinístico evitam
         // linhas retas e criam profundidade, sem tornar a cena diferente a cada regeneração.
+        // Cache da contagem da fileira interna (spec_town_layout_v9_organic) para CreateTownTree
+        // saber quais índices finais do array precisam de collider (ver isInternalTree).
+        private static readonly int InteriorWallTreeCount = BuildInteriorWallTreeRow().Length;
         private static readonly Vector3[] TownTreePositions = BuildBorderTreeRing();
 
         private static Vector3[] BuildBorderTreeRing()
@@ -2293,6 +2704,59 @@ namespace CindarsHope.Editor.SceneCreation
 
             // Árvores espalhadas DENTRO da cidade (alguns pontos, fora da borda).
             list.AddRange(ScatteredTreePositions);
+            // Fileira orgânica de árvores INTERNA, junto à muralha por dentro (spec_town_layout_v9_organic).
+            list.AddRange(BuildInteriorWallTreeRow());
+            return list.ToArray();
+        }
+
+        // Fileira interna de árvores encostada na muralha (por dentro), sem bloquear ruas/portas:
+        // cada ponto candidato é filtrado contra todo lote (TownCityLayout.AllBuildings) e toda via
+        // (TownCityLayout.AllRoads) antes de entrar na lista final — puramente geométrico, sem
+        // necessidade de curadoria manual ponto a ponto.
+        private static Vector3[] BuildInteriorWallTreeRow()
+        {
+            var list = new List<Vector3>();
+            float inset = 2.4f; // dentro da muralha, dentro da faixa de clearance de 3un dos lotes
+            float wallX = TownDistrictLayout.HalfWidth - inset;
+            float wallY = TownDistrictLayout.HalfHeight - inset;
+            const float step = 3.2f;
+            const float gateHalf = 5f; // corredor livre em torno do portão sul (x=0)
+
+            bool Blocked(float x, float y)
+            {
+                var p = new Vector2(x, y);
+                foreach (var lot in TownCityLayout.AllBuildings)
+                {
+                    if (p.x >= lot.MinX - 1f && p.x <= lot.MaxX + 1f && p.y >= lot.MinY - 1f && p.y <= lot.MaxY + 1f)
+                    {
+                        return true;
+                    }
+                }
+                return TownCityLayout.IsPointOnRoad(new Vector3(x, y, 0f), 1f);
+            }
+
+            int idx = 0;
+            for (float x = -wallX; x <= wallX + 0.01f; x += step, idx++)
+            {
+                float jitterY = ForestSignedNoise(1, idx, 61) * 0.5f;
+                float topY = wallY + jitterY;
+                if (!Blocked(x, topY)) list.Add(new Vector3(x, topY, 0f));
+
+                float bottomY = -wallY + jitterY;
+                if (Mathf.Abs(x) > gateHalf && !Blocked(x, bottomY)) list.Add(new Vector3(x, bottomY, 0f));
+            }
+
+            int idy = 0;
+            for (float y = -wallY + step; y <= wallY - step + 0.01f; y += step, idy++)
+            {
+                float jitterX = ForestSignedNoise(2, idy, 67) * 0.5f;
+                float leftX = -wallX + jitterX;
+                if (!Blocked(leftX, y)) list.Add(new Vector3(leftX, y, 0f));
+
+                float rightX = wallX + jitterX;
+                if (!Blocked(rightX, y)) list.Add(new Vector3(rightX, y, 0f));
+            }
+
             return list.ToArray();
         }
 
@@ -2323,8 +2787,6 @@ namespace CindarsHope.Editor.SceneCreation
         {
             var treeObject = new GameObject($"TownTree_{treeIndex:00}");
             treeObject.transform.SetParent(parent);
-            // Posições já estão no footprint 120x90 (anel de borda) — sem reposition.
-            treeObject.transform.position = position;
             // Variação determinística de escala e espécie: orgânica, mas estável entre regenerações.
             float scale = 2.55f + (ForestSignedNoise(treeIndex % 7, treeIndex, 53) + 1f) * 0.38f;
             treeObject.transform.localScale = new Vector3(scale, scale, 1f);
@@ -2334,12 +2796,32 @@ namespace CindarsHope.Editor.SceneCreation
             int speciesIndex = Mathf.FloorToInt((ForestSignedNoise(treeIndex % 11, treeIndex, 59) + 1f) * 1.5f);
             speciesIndex = Mathf.Clamp(speciesIndex, 0, townTreeSpecies.Length - 1);
             var townTreeSprite = WorldSpriteLibrary.Tree(townTreeSpecies[speciesIndex]);
-            if (townTreeSprite != null) { spriteRenderer.sprite = townTreeSprite; spriteRenderer.color = Color.white; }
-            else { spriteRenderer.sprite = GetBuiltinSprite(); float greenShift = (treeIndex % 4) * 0.025f; spriteRenderer.color = new Color(0.22f + greenShift, 0.45f + greenShift, 0.2f); }
-            spriteRenderer.sortingOrder = 2;
-            TrySetSortingLayer(spriteRenderer, "Items", spriteRenderer.sortingOrder);
+            // trees/ agora importa com pivot BottomCenter: converte o centro visual pretendido (position,
+            // já no footprint 120x90) para a position que produz o mesmo centro visual de antes.
+            float colliderCenterOffsetY = -0.34f / scale; // offset original, relativo ao centro visual antigo
+            if (townTreeSprite != null)
+            {
+                spriteRenderer.sprite = townTreeSprite; spriteRenderer.color = Color.white;
+                float visualHeight = townTreeSprite.bounds.size.y * scale;
+                treeObject.transform.position = WorldSpriteBasePlacement.BaseFromVisualCenter(position, visualHeight);
+                // A base do sprite (novo position) já fica perto do tronco; ainda assim preserva o
+                // épsilon original de -0.34/scale (relativo ao centro visual antigo) somado ao quanto o
+                // transform desceu, para o collider continuar cobrindo exatamente o mesmo ponto do tronco.
+                colliderCenterOffsetY -= visualHeight * 0.5f;
+            }
+            else
+            {
+                treeObject.transform.position = position;
+                spriteRenderer.sprite = GetBuiltinSprite(); float greenShift = (treeIndex % 4) * 0.025f; spriteRenderer.color = new Color(0.22f + greenShift, 0.45f + greenShift, 0.2f);
+            }
+            spriteRenderer.sortingOrder = 0;
+            spriteRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            TrySetSortingLayer(spriteRenderer, "World", spriteRenderer.sortingOrder);
 
-            bool isInternalTree = treeIndex >= TownTreePositions.Length - ScatteredTreePositions.Length;
+            // Árvores internas (ScatteredTreePositions + a fileira interna junto à muralha, ambas
+            // adicionadas ao final de BuildBorderTreeRing) recebem collider — o jogador pode
+            // encostar nelas. As da faixa externa (por fora da muralha) não precisam.
+            bool isInternalTree = treeIndex >= TownTreePositions.Length - ScatteredTreePositions.Length - InteriorWallTreeCount;
             if (isInternalTree)
             {
                 // World-space target ≈0.65×0.50 around the trunk/base. The object itself is scaled,
@@ -2347,19 +2829,21 @@ namespace CindarsHope.Editor.SceneCreation
                 var collider = treeObject.AddComponent<BoxCollider2D>();
                 collider.isTrigger = false;
                 collider.size = new Vector2(0.65f / scale, 0.50f / scale);
-                collider.offset = new Vector2(0f, -0.34f / scale);
+                collider.offset = new Vector2(0f, colliderCenterOffsetY);
             }
         }
 
-        // Arredores temáticos na margem do footprint 76×64 — locais de dormir ao relento.
+        // Arredores temáticos no footprint 120×90 v9 organic — locais de dormir ao relento.
         // As posições batem com TownNpcHomes (Maelor→cemitério, Zrix→gruta, Yael→tenda noturna).
         private static void CreateTownOutskirts()
         {
             var parent = new GameObject("TownOutskirts");
             parent.transform.position = Vector3.zero;
 
-            // Cemitério (NW) AMPLIADO: terreno de terra + cripta destacada + 9 lápides + cerca com portão.
-            CreateGroundSlab(parent.transform, "Cemetery_Ground", CemeteryPosition, new Vector2(11f, 9f), new Color(0.52f, 0.50f, 0.46f), -1);
+            // Cemitério (junto ao Temple, spec_town_layout_v9_organic): terreno de terra + cripta
+            // destacada + 9 lápides + cerca com portão. Footprint 9x8 (reduzido de 11x9 v8 para
+            // caber no corredor entre a muralha oeste e o lote do Temple sem furar clearance/overlap).
+            CreateGroundSlab(parent.transform, "Cemetery_Ground", CemeteryPosition, new Vector2(9f, 8f), new Color(0.52f, 0.50f, 0.46f), 2);
             CreateDecoration(parent.transform, "Cemetery_Crypt",
                 CemeteryPosition + new Vector3(0f, 2.4f, 0f), new Vector3(3.4f, 2.4f, 1f), new Color(0.45f, 0.45f, 0.5f));
             for (int i = 0; i < 9; i++)
@@ -2370,22 +2854,23 @@ namespace CindarsHope.Editor.SceneCreation
                 CreateDecoration(parent.transform, $"Gravestone_{i:00}",
                     new Vector3(gx, gy, 0f), new Vector3(0.6f, 0.9f, 1f), new Color(0.56f, 0.56f, 0.59f));
             }
-            // Cerca completa, decorativa e sem colisão, com vão de portão no sul-centro.
+            // Cerca completa, decorativa e sem colisão, com vão de portão no sul-centro. Dimensionada
+            // para o footprint 9x8 (half-extents 4.5/4) do terreno acima.
             var fenceColor = new Color(0.30f, 0.30f, 0.34f);
             CreateDecoration(parent.transform, "CemeteryFence_S_L",
-                new Vector3(CemeteryPosition.x - 3.6f, CemeteryPosition.y - 4.3f, 0f), new Vector3(3.2f, 0.3f, 1f), fenceColor);
+                new Vector3(CemeteryPosition.x - 2.9f, CemeteryPosition.y - 3.8f, 0f), new Vector3(2.6f, 0.3f, 1f), fenceColor);
             CreateDecoration(parent.transform, "CemeteryFence_S_R",
-                new Vector3(CemeteryPosition.x + 3.6f, CemeteryPosition.y - 4.3f, 0f), new Vector3(3.2f, 0.3f, 1f), fenceColor);
+                new Vector3(CemeteryPosition.x + 2.9f, CemeteryPosition.y - 3.8f, 0f), new Vector3(2.6f, 0.3f, 1f), fenceColor);
             CreateDecoration(parent.transform, "CemeteryGate_Post_L",
-                new Vector3(CemeteryPosition.x - 1.0f, CemeteryPosition.y - 4.3f, 0f), new Vector3(0.3f, 0.9f, 1f), fenceColor);
+                new Vector3(CemeteryPosition.x - 1.0f, CemeteryPosition.y - 3.8f, 0f), new Vector3(0.3f, 0.9f, 1f), fenceColor);
             CreateDecoration(parent.transform, "CemeteryGate_Post_R",
-                new Vector3(CemeteryPosition.x + 1.0f, CemeteryPosition.y - 4.3f, 0f), new Vector3(0.3f, 0.9f, 1f), fenceColor);
+                new Vector3(CemeteryPosition.x + 1.0f, CemeteryPosition.y - 3.8f, 0f), new Vector3(0.3f, 0.9f, 1f), fenceColor);
             CreateDecoration(parent.transform, "CemeteryFence_N",
-                new Vector3(CemeteryPosition.x, CemeteryPosition.y + 4.3f, 0f), new Vector3(10.4f, 0.3f, 1f), fenceColor);
+                new Vector3(CemeteryPosition.x, CemeteryPosition.y + 3.8f, 0f), new Vector3(8.6f, 0.3f, 1f), fenceColor);
             CreateDecoration(parent.transform, "CemeteryFence_W",
-                new Vector3(CemeteryPosition.x - 5.2f, CemeteryPosition.y, 0f), new Vector3(0.3f, 8.5f, 1f), fenceColor);
+                new Vector3(CemeteryPosition.x - 4.4f, CemeteryPosition.y, 0f), new Vector3(0.3f, 7.6f, 1f), fenceColor);
             CreateDecoration(parent.transform, "CemeteryFence_E",
-                new Vector3(CemeteryPosition.x + 5.2f, CemeteryPosition.y, 0f), new Vector3(0.3f, 8.5f, 1f), fenceColor);
+                new Vector3(CemeteryPosition.x + 4.4f, CemeteryPosition.y, 0f), new Vector3(0.3f, 7.6f, 1f), fenceColor);
 
             // Boca de gruta (E): duas rochas (com colisão) e a abertura escura no meio. Onde Zrix dorme.
             CreateBlocker(parent.transform, "CaveMouth_RockL",
@@ -2441,7 +2926,7 @@ namespace CindarsHope.Editor.SceneCreation
                     new Vector3(road.Center.x, road.Center.y, 0f),
                     road.Size,
                     dirt,
-                    -1,
+                    1,
                     "ground_cobble");
             }
         }
@@ -2454,7 +2939,7 @@ namespace CindarsHope.Editor.SceneCreation
             parent.transform.position = Vector3.zero;
             // Grama base COM VARIACAO sob TODA a cidade (best practice: base + variantes esparsas via
             // Tilemap). Substitui a laje unica lisa + os pads de distrito (que cobriam a variacao).
-            WorldTilemapGround.PaintGrass(parent.transform, "TownWorldGrid", -6, "Ground", Vector2.zero,
+            WorldTilemapGround.PaintGrass(parent.transform, "TownWorldGrid", 0, "Ground", Vector2.zero,
                 new Vector2(
                     TownDistrictLayout.WidthTiles + TownCityLayout.ExteriorForestGroundPadding,
                     TownDistrictLayout.HeightTiles + TownCityLayout.ExteriorForestGroundPadding));
@@ -2469,16 +2954,32 @@ namespace CindarsHope.Editor.SceneCreation
         // Bloqueador com motivo de gameplay: sprite + collider sólido (ex.: rochas que trancam a gruta).
         private static void CreateBlocker(Transform parent, string name, Vector3 center, Vector2 size, Color color)
         {
+            // go.transform.position fica em "center" (mantém o collider sólido exatamente onde estava);
+            // só o SpriteRenderer visual muda para um child "Visual" reposicionado pela base (pivot
+            // BottomCenter de props/), preservando a área bloqueada de antes.
             var go = new GameObject(name);
             go.transform.SetParent(parent);
             go.transform.position = center;
-            go.transform.localScale = new Vector3(size.x, size.y, 1f);
-            var sr = go.AddComponent<SpriteRenderer>();
+
+            var visual = new GameObject("Visual");
+            visual.transform.SetParent(go.transform);
+            visual.transform.localScale = new Vector3(size.x, size.y, 1f);
+            var sr = visual.AddComponent<SpriteRenderer>();
             var blockerRock = WorldSpriteLibrary.Prop("rock_ore_0");
-            if (blockerRock != null) { sr.sprite = blockerRock; sr.color = Color.white; }
-            else { sr.sprite = GetBuiltinSprite(); sr.color = color; }
-            sr.sortingOrder = 2;
-            TrySetSortingLayer(sr, "Items", sr.sortingOrder);
+            if (blockerRock != null)
+            {
+                sr.sprite = blockerRock; sr.color = Color.white;
+                float visualHeight = blockerRock.bounds.size.y * size.y;
+                visual.transform.localPosition = new Vector3(0f, WorldSpriteBasePlacement.BaseYForVisualCenter(0f, visualHeight), 0f);
+            }
+            else
+            {
+                visual.transform.localPosition = Vector3.zero;
+                sr.sprite = GetBuiltinSprite(); sr.color = color;
+            }
+            sr.sortingOrder = 0;
+            sr.spriteSortPoint = SpriteSortPoint.Pivot;
+            TrySetSortingLayer(sr, "World", sr.sortingOrder);
             var col = go.AddComponent<BoxCollider2D>();
             col.isTrigger = false;
             col.size = Vector2.one;
@@ -2718,7 +3219,7 @@ namespace CindarsHope.Editor.SceneCreation
             new("npc_yael", "NPC_Yael_NightMarket", "Assets/_Game/Data/NPCs/Npc_Yael.asset", "Assets/_Game/Data/Economy/Shop_Yael.asset", new Vector3(10f, -9f, 0f), new Color(0.28f, 0.24f, 0.62f), "NightOnly/WanderHidden", true, 3f),
             new("npc_maelor", "NPC_Maelor_NightRoute", "Assets/_Game/Data/NPCs/Npc_Maelor.asset", string.Empty, new Vector3(0f, -11.5f, 0f), new Color(0.22f, 0.24f, 0.32f), "NightOnly/WanderHidden", true, 4f),
             // Cave road / forest gate / alchemy (E)
-            new("npc_zrix", "NPC_Zrix_CaveRoad", "Assets/_Game/Data/NPCs/Npc_Zrix.asset", "Assets/_Game/Data/Economy/Shop_Zrix.asset", new Vector3(12f, -2f, 0f), new Color(0.43f, 0.52f, 0.68f), "Patrol/CaveRoad", true, 3.5f, EntityScaleCategory.NpcDragonborn),
+            new("npc_zrix", "NPC_Zrix_CaveRoad", "Assets/_Game/Data/NPCs/Npc_Zrix.asset", "Assets/_Game/Data/Economy/Shop_Zrix.asset", new Vector3(12f, -2f, 0f), new Color(0.43f, 0.52f, 0.68f), "Patrol/CaveRoad", true, 3.5f, EntityScaleCategory.NpcSmallfolk),
             new("npc_savra", "NPC_Savra_ForestGate", "Assets/_Game/Data/NPCs/Npc_Savra.asset", "Assets/_Game/Data/Economy/Shop_Savra.asset", new Vector3(13.5f, 4.5f, 0f), new Color(0.34f, 0.62f, 0.38f), "Patrol/HerbRoute", true, 3f, EntityScaleCategory.NpcDragonborn),
             new("npc_ozzra", "NPC_Ozzra_AlchemyLab", "Assets/_Game/Data/NPCs/Npc_Ozzra.asset", "Assets/_Game/Data/Economy/Shop_Ozzra.asset", new Vector3(11f, 2.5f, 0f), new Color(0.32f, 0.7f, 0.75f), "WanderWithinZone/Lab", true, 2.5f, EntityScaleCategory.NpcSmallfolk),
             // Animal yard (NE)
@@ -3083,8 +3584,9 @@ namespace CindarsHope.Editor.SceneCreation
             // Real body sprites render untinted (white); the per-NPC color only tints the placeholder square,
             // otherwise it would multiply over the artwork and wash the sprite with a color cast.
             renderer.color = hasBodySprite ? Color.white : color;
-            renderer.sortingOrder = 2;
-            TrySetSortingLayer(renderer, "Characters", renderer.sortingOrder);
+            renderer.sortingOrder = 0;
+            renderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            TrySetSortingLayer(renderer, "World", renderer.sortingOrder);
             var collider = npcObject.AddComponent<BoxCollider2D>();
             collider.isTrigger = true;
             collider.size = Vector2.one;
@@ -3220,8 +3722,9 @@ namespace CindarsHope.Editor.SceneCreation
             {
                 renderer.color = Color.white;
             }
-            renderer.sortingOrder = 1;
-            TrySetSortingLayer(renderer, "Characters", renderer.sortingOrder);
+            renderer.sortingOrder = 0;
+            renderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            TrySetSortingLayer(renderer, "World", renderer.sortingOrder);
 
             // Rigidbody2D Kinematic: sem gravidade, sem colisao solida — o gato e puro companheiro visual.
             var rb = cat.AddComponent<Rigidbody2D>();
@@ -3326,8 +3829,9 @@ namespace CindarsHope.Editor.SceneCreation
             // Real body sprites render untinted (white); the per-NPC color only tints the placeholder square,
             // otherwise it would multiply over the artwork and wash the sprite with a color cast.
             renderer.color = hasBodySprite ? Color.white : color;
-            renderer.sortingOrder = 2;
-            TrySetSortingLayer(renderer, "Characters", renderer.sortingOrder);
+            renderer.sortingOrder = 0;
+            renderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            TrySetSortingLayer(renderer, "World", renderer.sortingOrder);
             var collider = npcObject.AddComponent<BoxCollider2D>();
             collider.isTrigger = true;
             collider.size = Vector2.one;
@@ -3567,8 +4071,9 @@ namespace CindarsHope.Editor.SceneCreation
             var spriteRenderer = pointObject.AddComponent<SpriteRenderer>();
             spriteRenderer.sprite = GetBuiltinSprite();
             spriteRenderer.color = color;
-            spriteRenderer.sortingOrder = 2;
-            TrySetSortingLayer(spriteRenderer, "Items", spriteRenderer.sortingOrder);
+            spriteRenderer.sortingOrder = 0;
+            spriteRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            TrySetSortingLayer(spriteRenderer, "World", spriteRenderer.sortingOrder);
 
             if (spriteRenderer.sprite == null)
             {
@@ -3627,8 +4132,9 @@ namespace CindarsHope.Editor.SceneCreation
             var spriteRenderer = decoration.AddComponent<SpriteRenderer>();
             spriteRenderer.sprite = GetBuiltinSprite();
             spriteRenderer.color = color;
-            spriteRenderer.sortingOrder = 1;
-            TrySetSortingLayer(spriteRenderer, "Items", spriteRenderer.sortingOrder);
+            spriteRenderer.sortingOrder = 0;
+            spriteRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            TrySetSortingLayer(spriteRenderer, "World", spriteRenderer.sortingOrder);
         }
 
         private static void SetReference(SerializedObject serializedObject, string propertyName, Object value)
@@ -3671,18 +4177,7 @@ namespace CindarsHope.Editor.SceneCreation
         }
 
         private static void TrySetSortingLayer(SpriteRenderer renderer, string layerName, int fallbackOrder)
-        {
-            foreach (var layer in SortingLayer.layers)
-            {
-                if (layer.name == layerName)
-                {
-                    renderer.sortingLayerName = layerName;
-                    return;
-                }
-            }
-
-            renderer.sortingOrder = fallbackOrder;
-        }
+            => SceneSortingLayerHelper.TrySetSortingLayer(renderer, layerName, fallbackOrder);
 
         private static void CreateSceneRuntimeInstaller(Transform playerTransform)
         {

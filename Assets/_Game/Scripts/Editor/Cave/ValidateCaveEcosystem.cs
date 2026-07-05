@@ -23,7 +23,6 @@ namespace CindarsHope.Editor.Validation
         private const string CaveDataDir = "Assets/_Game/Data/Cave";
         private const int BandCount = CaveEcosystemBalanceSO.BandCount; // 7
 
-        [MenuItem("CindarsHope/Validation/Validate Cave Ecosystem (fable_78)")]
         public static void Run()
         {
             var errors = 0;

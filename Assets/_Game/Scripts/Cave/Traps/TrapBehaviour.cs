@@ -41,6 +41,10 @@ namespace CindarsHope.Cave.Traps
         private SpriteRenderer _spriteRenderer;
         private PlayerManager _playerManager;
         private Action<string, TrapState> _onStateChanged;
+        // spec_cave_biome_art_profiles_runtime (CV01): sprite opcional do bioma; null = placeholder
+        // atual (retângulo colorido). Quando presente, o tint de estado continua aplicado por cima
+        // (telegraph precisa continuar legível — CAVE_BIOME_VISUAL_REFERENCE §2).
+        private Sprite _biomeSprite;
 
         public string TrapInstanceId => _trapInstanceId;
         public TrapState State => _state;
@@ -63,7 +67,8 @@ namespace CindarsHope.Cave.Traps
             int caveLevel,
             TrapState initialState,
             SpriteRenderer spriteRenderer,
-            Action<string, TrapState> onStateChanged)
+            Action<string, TrapState> onStateChanged,
+            Sprite biomeSprite = null)
         {
             _definition = placement != null ? TrapDefinition.Get(placement.TrapId) : null;
             _trapInstanceId = placement != null ? placement.TrapInstanceId : string.Empty;
@@ -74,6 +79,11 @@ namespace CindarsHope.Cave.Traps
             _detected = false;
             _spriteRenderer = spriteRenderer != null ? spriteRenderer : GetComponent<SpriteRenderer>();
             _onStateChanged = onStateChanged;
+            _biomeSprite = biomeSprite;
+            if (_biomeSprite != null && _spriteRenderer != null)
+            {
+                _spriteRenderer.sprite = _biomeSprite;
+            }
             ApplyVisual();
         }
 
@@ -355,6 +365,17 @@ namespace CindarsHope.Cave.Traps
         {
             if (_spriteRenderer == null)
             {
+                return;
+            }
+
+            // spec_cave_biome_art_profiles_runtime (CV01): com sprite do bioma, o estado padrão
+            // (Armed, não detectado) fica OPACO — a própria arte já "camufla" a armadilha no cenário
+            // (ex.: espinhos discretos no chão), sem precisar da alpha baixa do placeholder. Os
+            // demais estados (Telegraphing/Triggered/Disarmed/detectado) continuam aplicando o tint
+            // de aviso por cima — o telegraph (CA-2) precisa continuar legível mesmo com arte real.
+            if (_biomeSprite != null && _state == TrapState.Armed && !_detected)
+            {
+                _spriteRenderer.color = Color.white;
                 return;
             }
 

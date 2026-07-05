@@ -25,6 +25,12 @@ namespace CindarsHope.EditorTools.Cave
         private const string CaveDir = DataRoot + "/Cave";
         private const string ProfilesDir = CaveDir + "/ElementProfiles";
         private const string DatabasePath = CaveDir + "/CaveEnvironmentElementDatabase.asset";
+        // Bugfix 2026-07-04: CaveScene nunca teve _environmentElementDatabase wireado (fileID: 0) ->
+        // decor de fable_78 nao aparecia em Play Mode. Mesmo precedente de
+        // GenerateCaveBiomeArtProfiles/CaveBiomeArtProfileRegistry.asset (fallback via Resources.Load
+        // em CaveRuntimeMaterializer quando o serialized field da cena esta vazio).
+        private const string ResourcesDir = "Assets/_Game/Resources";
+        private const string ResourcesDatabasePath = ResourcesDir + "/CaveEnvironmentElementDatabase.asset";
 
         private struct ProfileSpec
         {
@@ -42,7 +48,6 @@ namespace CindarsHope.EditorTools.Cave
             public string MineNodeDataId; // vazio quando não-minerável
         }
 
-        [MenuItem("CindarsHope/Cave/Ecosystem/Generate Environment Element Profiles")]
         public static void Generate()
         {
             EnsureFolders();
@@ -75,11 +80,49 @@ namespace CindarsHope.EditorTools.Cave
             }
 
             RegisterInDatabase(assets);
+            var resourcesStatus = MaterializeResourcesDatabase(assets);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             Debug.Log($"[{Tag}] {created} criados, {updated} atualizados, {assets.Count} registrados no " +
                       $"CaveEnvironmentElementDatabase. Pasta: {ProfilesDir}. " +
-                      "DEFERRED_UNITY: ligar o database/profiles no CaveRuntimeMaterializer na CaveScene.");
+                      $"Resources/CaveEnvironmentElementDatabase {resourcesStatus} ({assets.Count} profile(s)) — " +
+                      "fallback de runtime quando a CaveScene nao tiver o campo _environmentElementDatabase wireado.");
+        }
+
+        // Bugfix 2026-07-04: copia idempotente do database (mesmos assets de perfil, por referência
+        // GUID) para Assets/_Game/Resources, para que CaveRuntimeMaterializer.ResolveEnvironmentElementDatabase()
+        // encontre via Resources.Load quando a cena não wireou o serialized field.
+        private static string MaterializeResourcesDatabase(List<CaveEnvironmentElementProfileSO> profileAssets)
+        {
+            EnsureFolder(ResourcesDir);
+
+            var database = AssetDatabase.LoadAssetAtPath<CaveEnvironmentElementDatabaseSO>(ResourcesDatabasePath);
+            var isNew = database == null;
+            if (isNew)
+            {
+                database = ScriptableObject.CreateInstance<CaveEnvironmentElementDatabaseSO>();
+            }
+
+            var serialized = new SerializedObject(database);
+            var itemsProperty = serialized.FindProperty("_items");
+            itemsProperty.arraySize = profileAssets.Count;
+            for (var i = 0; i < profileAssets.Count; i++)
+            {
+                itemsProperty.GetArrayElementAtIndex(i).objectReferenceValue = profileAssets[i];
+            }
+
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+
+            if (isNew)
+            {
+                AssetDatabase.CreateAsset(database, ResourcesDatabasePath);
+            }
+            else
+            {
+                EditorUtility.SetDirty(database);
+            }
+
+            return isNew ? "criado" : "atualizado";
         }
 
         // Public static para -executeMethod em batchmode.
@@ -266,6 +309,25 @@ namespace CindarsHope.EditorTools.Cave
                 AssetDatabase.CreateFolder(CaveDir, "ElementProfiles");
                 Debug.Log($"[{Tag}] Pasta criada: {ProfilesDir}");
             }
+        }
+
+        // Bugfix 2026-07-04: Assets/_Game/Resources já existe no projeto (CombatRuntimeDatabasesRegistry,
+        // CaveBiomeArtProfileRegistry), mas o helper é mínimo/best-effort caso não exista ainda.
+        private static void EnsureFolder(string path)
+        {
+            if (AssetDatabase.IsValidFolder(path))
+            {
+                return;
+            }
+
+            var parent = System.IO.Path.GetDirectoryName(path)?.Replace('\\', '/');
+            var folderName = System.IO.Path.GetFileName(path);
+            if (!string.IsNullOrEmpty(parent) && !AssetDatabase.IsValidFolder(parent))
+            {
+                EnsureFolder(parent);
+            }
+
+            AssetDatabase.CreateFolder(parent, folderName);
         }
     }
 }

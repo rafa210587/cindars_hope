@@ -61,12 +61,31 @@ namespace CindarsHope.Editor.Art
 
         public static Sprite Ground(string name) => Load("tiles", name);
         public static Sprite Building(string name) => Load("building", name);
+
+        /// <summary>
+        /// Pecas de casa modular (roof/walls/door A-B-C, 64 px/tile) em
+        /// Assets/_Game/Art/Generated/World/building/houses_modular/&lt;name&gt;.png.
+        /// </summary>
+        public static Sprite HouseModular(string name) => Load("building/houses_modular", name);
         public static Sprite Tree(string name) => Load("trees", name);
         public static Sprite Foliage(string name) => Load("foliage", name);
         public static Sprite Prop(string name) => Load("props", name);
         public static Sprite Interior(string name) => Load("interior", name);
         public static Sprite Animal(string name) => Load("animals", name);
         public static Sprite Crop(string name) => Load("crops", name);
+
+        /// <summary>
+        /// Sprite bespoke de um LOCAL/prédio inteiro (landmark) em
+        /// Assets/_Game/Art/Generated/World/locations/&lt;id&gt;/&lt;id&gt;.png — um prédio por pasta.
+        /// Retorna null (sem erro barulhento) quando o local ainda não tem arte bespoke: o chamador
+        /// cai no kit modular genérico. É a fonte única; o manifest.locations.json rastreia o status.
+        /// </summary>
+        public static Sprite Location(string id)
+        {
+            var path = $"{Root}/locations/{id}/{id}.png";
+            EnsureFullRect(path);
+            return AssetDatabase.LoadAssetAtPath<Sprite>(path);
+        }
 
         /// <summary>
         /// Configura um SpriteRenderer para cobrir uma area de chao com a textura dada.

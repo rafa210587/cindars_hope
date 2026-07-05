@@ -242,7 +242,9 @@ namespace CindarsHope.Cave.Runtime
 
             spriteRenderer.sprite = CaveTileMaterializer.GetBuiltinSprite();
             spriteRenderer.color = new Color(0.8f, 0.6f, 0.4f);
-            spriteRenderer.sortingOrder = 1;
+            spriteRenderer.sortingOrder = 0;
+            spriteRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            spriteRenderer.sortingLayerName = CaveWorldSortingLayers.World;
 
             var collider = nodeInstance.GetComponent<CircleCollider2D>();
             if (collider == null)

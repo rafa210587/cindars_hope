@@ -32,6 +32,7 @@ namespace CindarsHope.Combat.Weapon
 
             var renderer = projectile.AddComponent<SpriteRenderer>();
             renderer.sortingOrder = 5;
+            renderer.sortingLayerName = CindarsHope.World.WorldSortingLayers.World;
 
             bool isArrow = resolvedStyle == ProjectileVisualStyle.Arrow;
             Color tint = ResolveTint(resolvedStyle, damageType);
@@ -73,6 +74,7 @@ namespace CindarsHope.Combat.Weapon
             {
                 renderer = projectile.AddComponent<SpriteRenderer>();
                 renderer.sortingOrder = 5;
+                renderer.sortingLayerName = CindarsHope.World.WorldSortingLayers.World;
             }
 
             // Sprite nulo OU built-in placeholder (ex.: Projectile_Arrow referencia um sprite built-in
@@ -195,6 +197,7 @@ namespace CindarsHope.Combat.Weapon
             trail.startColor = new Color(tint.r, tint.g, tint.b, 0.65f);
             trail.endColor = new Color(tint.r, tint.g, tint.b, 0f);
             trail.sortingOrder = 4;
+            trail.sortingLayerName = CindarsHope.World.WorldSortingLayers.World;
         }
 
         private static Material GetTrailMaterial()

@@ -159,7 +159,6 @@ namespace CindarsHope.Editor.Validation
         /// Warns if effective price > 3x BaseValue; errors if effective price < 0.1x BaseValue.
         /// Returns (warnings, errors) logged counts.
         /// </summary>
-        [MenuItem("CindarsHope/Validate/Validate Shop Price Ranges")]
         public static void RunPriceRanges()
         {
             var (warnings, errors) = ValidatePriceRanges();

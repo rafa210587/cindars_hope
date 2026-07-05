@@ -380,13 +380,25 @@ namespace CindarsHope.Editor.SceneCreation
             }
             spriteRenderer.color = Color.white;
             spriteRenderer.sortingOrder = 0;
-            TrySetSortingLayer(spriteRenderer, "Player", spriteRenderer.sortingOrder);
+            spriteRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            TrySetSortingLayer(spriteRenderer, "World", spriteRenderer.sortingOrder);
 
             var collider = player.AddComponent<BoxCollider2D>();
             collider.size = new Vector2(0.6f, 1f);
 
+            // Fix pós-Play-Mode 2026-07-04 (2ª rodada): era Kinematic — um Rigidbody2D Kinematic nunca
+            // sofre resolucao fisica de colisao do Unity contra os BoxCollider2D estaticos das paredes
+            // (CaveTileMaterializer.MaterializeWalls), entao o player atravessava a massa de parede;
+            // a unica defesa era CavePlayerPathConfinement (snap de grid pos-frame), que nao impede o
+            // corpo do sprite/collider de sobrepor visualmente a parede antes do centro cruzar a
+            // fronteira da celula. Alinhado ao mesmo padrao ja usado e validado em CreateMvpFarmScene
+            // (Dynamic + gravityScale 0 + Continuous + FreezeRotation) para que a fisica real do Unity
+            // empurre o player para fora do collider da parede. CavePlayerPathConfinement continua
+            // ativo como segunda camada (grid-snap) — nenhuma mudanca nele.
             var rigidbody = player.AddComponent<Rigidbody2D>();
-            rigidbody.bodyType = RigidbodyType2D.Kinematic;
+            rigidbody.bodyType = RigidbodyType2D.Dynamic;
+            rigidbody.gravityScale = 0f;
+            rigidbody.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
             rigidbody.constraints = RigidbodyConstraints2D.FreezeRotation;
 
             var playerController = player.AddComponent<PlayerController>();
@@ -464,7 +476,7 @@ namespace CindarsHope.Editor.SceneCreation
             var spriteRenderer = ground.AddComponent<SpriteRenderer>();
             spriteRenderer.sprite = GetBuiltinSprite();
             spriteRenderer.color = new Color(0.15f, 0.15f, 0.15f);
-            spriteRenderer.sortingOrder = -1;
+            spriteRenderer.sortingOrder = 0;
             TrySetSortingLayer(spriteRenderer, "Ground", spriteRenderer.sortingOrder);
 
             var collider = ground.AddComponent<BoxCollider2D>();
@@ -516,8 +528,9 @@ namespace CindarsHope.Editor.SceneCreation
             var spriteRenderer = portalObject.AddComponent<SpriteRenderer>();
             spriteRenderer.sprite = GetBuiltinSprite();
             spriteRenderer.color = color;
-            spriteRenderer.sortingOrder = 2;
-            TrySetSortingLayer(spriteRenderer, "Items", spriteRenderer.sortingOrder);
+            spriteRenderer.sortingOrder = 0;
+            spriteRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            TrySetSortingLayer(spriteRenderer, "World", spriteRenderer.sortingOrder);
 
             if (spriteRenderer.sprite == null)
             {
@@ -548,7 +561,10 @@ namespace CindarsHope.Editor.SceneCreation
             camera.orthographic = true;
             camera.orthographicSize = 7.5f;
             camera.clearFlags = CameraClearFlags.SolidColor;
-            camera.backgroundColor = new Color(0.5741177f, 0.5741177f, 0.5741177f);
+            // Fix pós-Play-Mode 2026-07-04: era cinza 0.574 — o void além da borda do nível (fora da
+            // faixa de parede) mostrava esse cinza como "buracos" retangulares. Quase-preto quente = a
+            // escuridão de borda da keyart (CAVE_BIOME_VISUAL_REFERENCE) e some com os buracos cinza.
+            camera.backgroundColor = new Color(0.055f, 0.05f, 0.05f);
 
             var cameraFollow = cameraObject.AddComponent<CindarsHope.Camera.CameraFollow2D>();
             var serializedFollow = new SerializedObject(cameraFollow);
@@ -576,7 +592,8 @@ namespace CindarsHope.Editor.SceneCreation
             spriteRenderer.sprite = GetBuiltinSprite();
             spriteRenderer.color = new Color(0.85f, 0.23f, 0.23f);
             spriteRenderer.sortingOrder = 0;
-            TrySetSortingLayer(spriteRenderer, "Enemies", spriteRenderer.sortingOrder);
+            spriteRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            TrySetSortingLayer(spriteRenderer, "World", spriteRenderer.sortingOrder);
 
             var collider = slimeObject.AddComponent<CircleCollider2D>();
             collider.radius = 0.4f;
@@ -1046,8 +1063,9 @@ namespace CindarsHope.Editor.SceneCreation
             var spriteRenderer = nodeObject.AddComponent<SpriteRenderer>();
             spriteRenderer.sprite = GetBuiltinSprite();
             spriteRenderer.color = color;
-            spriteRenderer.sortingOrder = 1;
-            TrySetSortingLayer(spriteRenderer, "Items", spriteRenderer.sortingOrder);
+            spriteRenderer.sortingOrder = 0;
+            spriteRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            TrySetSortingLayer(spriteRenderer, "World", spriteRenderer.sortingOrder);
 
             var collider = nodeObject.AddComponent<BoxCollider2D>();
             collider.isTrigger = true;
@@ -1239,18 +1257,7 @@ namespace CindarsHope.Editor.SceneCreation
         }
 
         private static void TrySetSortingLayer(SpriteRenderer renderer, string layerName, int fallbackOrder)
-        {
-            foreach (var layer in SortingLayer.layers)
-            {
-                if (layer.name == layerName)
-                {
-                    renderer.sortingLayerName = layerName;
-                    return;
-                }
-            }
-
-            renderer.sortingOrder = fallbackOrder;
-        }
+            => SceneSortingLayerHelper.TrySetSortingLayer(renderer, layerName, fallbackOrder);
 
         private static CaveBossGateRegistrySO EnsureCaveBossGateRegistry()
         {

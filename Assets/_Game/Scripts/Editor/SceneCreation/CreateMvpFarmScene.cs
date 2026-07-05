@@ -452,7 +452,8 @@ namespace CindarsHope.Editor.SceneCreation
             }
             spriteRenderer.color = Color.white;
             spriteRenderer.sortingOrder = 0;
-            TrySetSortingLayer(spriteRenderer, "Characters", 0);
+            spriteRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            TrySetSortingLayer(spriteRenderer, "World", 0);
 
             var rigidbody = player.AddComponent<Rigidbody2D>();
             rigidbody.bodyType = RigidbodyType2D.Dynamic;
@@ -661,8 +662,9 @@ namespace CindarsHope.Editor.SceneCreation
             var spriteRenderer = portalObject.AddComponent<SpriteRenderer>();
             spriteRenderer.sprite = GetBuiltinSprite();
             spriteRenderer.color = color;
-            spriteRenderer.sortingOrder = 2;
-            TrySetSortingLayer(spriteRenderer, "Items", spriteRenderer.sortingOrder);
+            spriteRenderer.sortingOrder = 0;
+            spriteRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            TrySetSortingLayer(spriteRenderer, "World", spriteRenderer.sortingOrder);
 
             if (spriteRenderer.sprite == null)
             {
@@ -692,8 +694,9 @@ namespace CindarsHope.Editor.SceneCreation
             var spriteRenderer = debugInteractableObject.AddComponent<SpriteRenderer>();
             spriteRenderer.sprite = GetBuiltinSprite();
             spriteRenderer.color = new Color(0.95f, 0.82f, 0.22f);
-            spriteRenderer.sortingOrder = 2;
-            TrySetSortingLayer(spriteRenderer, "Items", spriteRenderer.sortingOrder);
+            spriteRenderer.sortingOrder = 0;
+            spriteRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            TrySetSortingLayer(spriteRenderer, "World", spriteRenderer.sortingOrder);
 
             if (spriteRenderer.sprite == null)
             {
@@ -721,8 +724,9 @@ namespace CindarsHope.Editor.SceneCreation
             var spriteRenderer = sellPointObject.AddComponent<SpriteRenderer>();
             spriteRenderer.sprite = GetBuiltinSprite();
             spriteRenderer.color = new Color(0.25f, 0.75f, 0.85f);
-            spriteRenderer.sortingOrder = 2;
-            TrySetSortingLayer(spriteRenderer, "Items", spriteRenderer.sortingOrder);
+            spriteRenderer.sortingOrder = 0;
+            spriteRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            TrySetSortingLayer(spriteRenderer, "World", spriteRenderer.sortingOrder);
 
             if (spriteRenderer.sprite == null)
             {
@@ -750,8 +754,9 @@ namespace CindarsHope.Editor.SceneCreation
             var spriteRenderer = shopObject.AddComponent<SpriteRenderer>();
             spriteRenderer.sprite = GetBuiltinSprite();
             spriteRenderer.color = new Color(0.78f, 0.48f, 0.18f);
-            spriteRenderer.sortingOrder = 2;
-            TrySetSortingLayer(spriteRenderer, "Items", spriteRenderer.sortingOrder);
+            spriteRenderer.sortingOrder = 0;
+            spriteRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            TrySetSortingLayer(spriteRenderer, "World", spriteRenderer.sortingOrder);
 
             if (spriteRenderer.sprite == null)
             {
@@ -806,8 +811,9 @@ namespace CindarsHope.Editor.SceneCreation
             var spriteRenderer = craftingObject.AddComponent<SpriteRenderer>();
             spriteRenderer.sprite = GetBuiltinSprite();
             spriteRenderer.color = color;
-            spriteRenderer.sortingOrder = 2;
-            TrySetSortingLayer(spriteRenderer, "Items", spriteRenderer.sortingOrder);
+            spriteRenderer.sortingOrder = 0;
+            spriteRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            TrySetSortingLayer(spriteRenderer, "World", spriteRenderer.sortingOrder);
 
             if (spriteRenderer.sprite == null)
             {
@@ -836,8 +842,8 @@ namespace CindarsHope.Editor.SceneCreation
             var spriteRenderer = fishingObject.AddComponent<SpriteRenderer>();
             spriteRenderer.sprite = GetBuiltinSprite();
             spriteRenderer.color = new Color(0.18f, 0.42f, 0.85f);
-            spriteRenderer.sortingOrder = 1;
-            TrySetSortingLayer(spriteRenderer, "Items", spriteRenderer.sortingOrder);
+            spriteRenderer.sortingOrder = 0;
+            TrySetSortingLayer(spriteRenderer, "Ground", spriteRenderer.sortingOrder);
 
             if (spriteRenderer.sprite == null)
             {
@@ -954,7 +960,7 @@ namespace CindarsHope.Editor.SceneCreation
             var ground = new GameObject("FarmGround");
             ground.transform.position = Vector3.zero;
             // Grama COM VARIACAO (base + variantes esparsas) via Tilemap — quebra a repeticao.
-            WorldTilemapGround.PaintGrass(ground.transform, "WorldGrid", -100, "Default", new Vector2(-1f, -1f), new Vector2(72f, 52f));
+            WorldTilemapGround.PaintGrass(ground.transform, "WorldGrid", 0, "Ground", new Vector2(-1f, -1f), new Vector2(72f, 52f));
         }
 
         private static ItemPickupRegistry CreateItemPickups(InventoryManager inventoryManager)
@@ -991,8 +997,9 @@ namespace CindarsHope.Editor.SceneCreation
             var spriteRenderer = pickupObject.AddComponent<SpriteRenderer>();
             spriteRenderer.sprite = GetBuiltinSprite();
             spriteRenderer.color = new Color(0.95f, 0.5f, 0.22f);
-            spriteRenderer.sortingOrder = 2;
-            TrySetSortingLayer(spriteRenderer, "Items", spriteRenderer.sortingOrder);
+            spriteRenderer.sortingOrder = 0;
+            spriteRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            TrySetSortingLayer(spriteRenderer, "World", spriteRenderer.sortingOrder);
 
             if (spriteRenderer.sprite == null)
             {
@@ -1108,8 +1115,12 @@ namespace CindarsHope.Editor.SceneCreation
             var renderer = part.AddComponent<SpriteRenderer>();
             renderer.sprite = GetBuiltinSprite();
             renderer.color = color;
-            renderer.sortingOrder = sortingOrder;
-            TrySetSortingLayer(renderer, "Ground", sortingOrder);
+            // Desempate dentro do mesmo prop (mesma layer World, order 0), igual ao padrao da
+            // CreateStatuePart da cidade: epsilon de Y decrescente por sortingOrder original.
+            part.transform.localPosition -= new Vector3(0f, sortingOrder * 0.001f, 0f);
+            renderer.sortingOrder = 0;
+            renderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            TrySetSortingLayer(renderer, "World", renderer.sortingOrder);
             return part;
         }
 
@@ -1144,8 +1155,8 @@ namespace CindarsHope.Editor.SceneCreation
             var floorSr = floor.AddComponent<SpriteRenderer>();
             floorSr.sprite = GetBuiltinSprite();
             floorSr.color = new Color(0.78f, 0.72f, 0.62f); // piso madeira claro
-            floorSr.sortingOrder = 0;
-            TrySetSortingLayer(floorSr, "Items", 0);
+            floorSr.sortingOrder = 5;
+            TrySetSortingLayer(floorSr, "Ground", 5);
 
             // Paredes solidas (3 inteiras + vao da porta dividido em 2 laterais).
             CreateFarmInteriorWall(house.transform, "Wall_Left",  new Vector3(-hw, 0f, 0f), new Vector2(FarmWallThickness, h));
@@ -1170,8 +1181,9 @@ namespace CindarsHope.Editor.SceneCreation
             var bedSr = bedObj.AddComponent<SpriteRenderer>();
             bedSr.sprite = GetBuiltinSprite();
             bedSr.color = new Color(0.55f, 0.30f, 0.45f);
-            bedSr.sortingOrder = 2;
-            TrySetSortingLayer(bedSr, "Ground", 2);
+            bedSr.sortingOrder = 0;
+            bedSr.spriteSortPoint = SpriteSortPoint.Pivot;
+            TrySetSortingLayer(bedSr, "World", 0);
             var bedCol = bedObj.AddComponent<BoxCollider2D>();
             bedCol.isTrigger = true;
             bedCol.size = Vector2.one;
@@ -1186,8 +1198,9 @@ namespace CindarsHope.Editor.SceneCreation
             var letterSr = letterObj.AddComponent<SpriteRenderer>();
             letterSr.sprite = GetBuiltinSprite();
             letterSr.color = new Color(0.95f, 0.92f, 0.78f);
-            letterSr.sortingOrder = 3;
-            TrySetSortingLayer(letterSr, "Ground", 3);
+            letterSr.sortingOrder = 0;
+            letterSr.spriteSortPoint = SpriteSortPoint.Pivot;
+            TrySetSortingLayer(letterSr, "World", 0);
             var letterCol = letterObj.AddComponent<BoxCollider2D>();
             letterCol.isTrigger = true;
             letterCol.size = Vector2.one;
@@ -1202,8 +1215,9 @@ namespace CindarsHope.Editor.SceneCreation
             var chestSr = chestObj.AddComponent<SpriteRenderer>();
             chestSr.sprite = GetBuiltinSprite();
             chestSr.color = new Color(0.52f, 0.38f, 0.18f);
-            chestSr.sortingOrder = 2;
-            TrySetSortingLayer(chestSr, "Ground", 2);
+            chestSr.sortingOrder = 0;
+            chestSr.spriteSortPoint = SpriteSortPoint.Pivot;
+            TrySetSortingLayer(chestSr, "World", 0);
             var chestCol = chestObj.AddComponent<BoxCollider2D>();
             chestCol.isTrigger = true;
             chestCol.size = Vector2.one;
@@ -1219,7 +1233,7 @@ namespace CindarsHope.Editor.SceneCreation
             roofSr.sprite = GetBuiltinSprite();
             roofSr.color = new Color(0.42f, 0.20f, 0.14f); // vermelho-telha
             roofSr.sortingOrder = 20;
-            TrySetSortingLayer(roofSr, "Items", 20);
+            TrySetSortingLayer(roofSr, "Roof", 20);
 
             // Cumeeira (estetica).
             var ridge = new GameObject("RoofRidge");
@@ -1230,7 +1244,7 @@ namespace CindarsHope.Editor.SceneCreation
             ridgeSr.sprite = GetBuiltinSprite();
             ridgeSr.color = new Color(0.28f, 0.12f, 0.08f);
             ridgeSr.sortingOrder = 21;
-            TrySetSortingLayer(ridgeSr, "Items", 21);
+            TrySetSortingLayer(ridgeSr, "Roof", 21);
 
             // Trigger de revelacao do telhado.
             var revealObj = new GameObject("RoofReveal");
@@ -1263,21 +1277,26 @@ namespace CindarsHope.Editor.SceneCreation
             var sr = wall.AddComponent<SpriteRenderer>();
             sr.sprite = GetBuiltinSprite();
             sr.color = new Color(0.50f, 0.46f, 0.40f); // cinza-pedra
-            sr.sortingOrder = 5;
-            TrySetSortingLayer(sr, "Items", 5);
+            sr.sortingOrder = 0;
+            sr.spriteSortPoint = SpriteSortPoint.Pivot;
+            TrySetSortingLayer(sr, "World", 0);
             // Escala do visual = tamanho da parede.
             wall.transform.localScale = new Vector3(size.x, size.y, 1f);
             // O BoxCollider2D usa size local (size / localScale).
             col.size = Vector2.one; // normalizado — a escala do transform faz o resize
         }
 
-        // Porta da casa de fazenda (HouseDoorInteractable — [E] abre).
+        // Porta da casa de fazenda (HouseDoorInteractable — [E] abre). Layer World, order 0 — desempate
+        // contra o shell de parede via epsilon de pivot em Y (nunca sortingOrder, ver contrato de
+        // sorting da FASE 1 / CreateMvpTownScene.CreateHouseDoor).
         // doorY = posicao Y local da porta (negativo = sul, positivo = norte).
+        private const float FarmDoorPivotEpsilon = 0.01f;
+
         private static void CreateFarmHouseDoor(Transform house, float doorY)
         {
             var door = new GameObject("Door");
             door.transform.SetParent(house);
-            door.transform.localPosition = new Vector3(0f, doorY, 0f);
+            door.transform.localPosition = new Vector3(0f, doorY - FarmDoorPivotEpsilon, 0f);
 
             // Umbral escuro (abertura) — visivel quando a folha desliza.
             var threshold = new GameObject("Threshold");
@@ -1287,8 +1306,9 @@ namespace CindarsHope.Editor.SceneCreation
             var thrSr = threshold.AddComponent<SpriteRenderer>();
             thrSr.sprite = GetBuiltinSprite();
             thrSr.color = new Color(0.10f, 0.08f, 0.07f);
-            thrSr.sortingOrder = 22;
-            TrySetSortingLayer(thrSr, "Items", 22);
+            thrSr.sortingOrder = 0;
+            thrSr.spriteSortPoint = SpriteSortPoint.Pivot;
+            TrySetSortingLayer(thrSr, "World", 0);
 
             // Folha de madeira (desliza ao abrir).
             var leaf = new GameObject("Leaf");
@@ -1300,8 +1320,9 @@ namespace CindarsHope.Editor.SceneCreation
             var leafSr = leaf.AddComponent<SpriteRenderer>();
             leafSr.sprite = GetBuiltinSprite();
             leafSr.color = new Color(0.38f, 0.24f, 0.14f); // madeira
-            leafSr.sortingOrder = 23;
-            TrySetSortingLayer(leafSr, "Items", 23);
+            leafSr.sortingOrder = 0;
+            leafSr.spriteSortPoint = SpriteSortPoint.Pivot;
+            TrySetSortingLayer(leafSr, "World", 0);
 
             // Collider solido que tranca o vao (desligado quando aberta).
             var blocker = door.AddComponent<BoxCollider2D>();
@@ -1652,8 +1673,9 @@ namespace CindarsHope.Editor.SceneCreation
             var spriteRenderer = treeObject.AddComponent<SpriteRenderer>();
             spriteRenderer.sprite = GetBuiltinSprite();
             spriteRenderer.color = new Color(0.24f, 0.48f, 0.22f);
-            spriteRenderer.sortingOrder = 2;
-            TrySetSortingLayer(spriteRenderer, "Items", spriteRenderer.sortingOrder);
+            spriteRenderer.sortingOrder = 0;
+            spriteRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            TrySetSortingLayer(spriteRenderer, "World", spriteRenderer.sortingOrder);
 
             if (spriteRenderer.sprite == null)
             {
@@ -1809,8 +1831,9 @@ namespace CindarsHope.Editor.SceneCreation
             var bodySr = body.AddComponent<SpriteRenderer>();
             bodySr.sprite = GetBuiltinSprite();
             bodySr.color = bodyColor;
-            bodySr.sortingOrder = 2;
-            TrySetSortingLayer(bodySr, "Items", 2);
+            bodySr.sortingOrder = 0;
+            bodySr.spriteSortPoint = SpriteSortPoint.Pivot;
+            TrySetSortingLayer(bodySr, "World", 0);
 
             // Telhado.
             var roof = new GameObject("Roof");
@@ -1821,7 +1844,7 @@ namespace CindarsHope.Editor.SceneCreation
             roofSr.sprite = GetBuiltinSprite();
             roofSr.color = new Color(bodyColor.r * 0.6f, bodyColor.g * 0.6f, bodyColor.b * 0.6f);
             roofSr.sortingOrder = 3;
-            TrySetSortingLayer(roofSr, "Items", 3);
+            TrySetSortingLayer(roofSr, "Roof", 3);
 
             // Porta (interativa — solta animal).
             var door = new GameObject("Door");
@@ -1831,8 +1854,9 @@ namespace CindarsHope.Editor.SceneCreation
             var doorSr = door.AddComponent<SpriteRenderer>();
             doorSr.sprite = GetBuiltinSprite();
             doorSr.color = new Color(0.3f, 0.2f, 0.15f);
-            doorSr.sortingOrder = 4;
-            TrySetSortingLayer(doorSr, "Items", 4);
+            doorSr.sortingOrder = 0;
+            doorSr.spriteSortPoint = SpriteSortPoint.Pivot;
+            TrySetSortingLayer(doorSr, "World", 0);
 
             var col = root.AddComponent<BoxCollider2D>();
             col.isTrigger = true;
@@ -1894,8 +1918,9 @@ namespace CindarsHope.Editor.SceneCreation
             var sr = obj.AddComponent<SpriteRenderer>();
             sr.sprite = GetBuiltinSprite();
             sr.color = bodyColor;
-            sr.sortingOrder = 2;
-            TrySetSortingLayer(sr, "Items", 2);
+            sr.sortingOrder = 0;
+            sr.spriteSortPoint = SpriteSortPoint.Pivot;
+            TrySetSortingLayer(sr, "World", 0);
 
             var col = obj.AddComponent<BoxCollider2D>();
             col.isTrigger = true;
@@ -1935,7 +1960,7 @@ namespace CindarsHope.Editor.SceneCreation
             var floorSr = floor.AddComponent<SpriteRenderer>();
             floorSr.sprite = GetBuiltinSprite();
             floorSr.color = new Color(0.70f, 0.90f, 0.80f, 0.45f);
-            floorSr.sortingOrder = -2;
+            floorSr.sortingOrder = 0;
             TrySetSortingLayer(floorSr, "Ground", floorSr.sortingOrder);
 
             const int greenhouseBaseIndex = 200;
@@ -1980,18 +2005,7 @@ namespace CindarsHope.Editor.SceneCreation
         }
 
         private static void TrySetSortingLayer(SpriteRenderer renderer, string layerName, int fallbackOrder)
-        {
-            foreach (var layer in SortingLayer.layers)
-            {
-                if (layer.name == layerName)
-                {
-                    renderer.sortingLayerName = layerName;
-                    return;
-                }
-            }
-
-            renderer.sortingOrder = fallbackOrder;
-        }
+            => SceneSortingLayerHelper.TrySetSortingLayer(renderer, layerName, fallbackOrder);
 
         private static void CreateSceneRuntimeInstaller(
             FarmPlotRegistry farmPlotRegistry,
@@ -2071,18 +2085,20 @@ namespace CindarsHope.Editor.SceneCreation
             var rockRenderer = rockFrame.AddComponent<SpriteRenderer>();
             rockRenderer.sprite = GetBuiltinSprite();
             rockRenderer.color = new Color(0.36f, 0.33f, 0.3f);
-            rockRenderer.sortingOrder = 1;
-            TrySetSortingLayer(rockRenderer, "Items", rockRenderer.sortingOrder);
+            rockRenderer.sortingOrder = 0;
+            rockRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            TrySetSortingLayer(rockRenderer, "World", rockRenderer.sortingOrder);
 
             var mouth = new GameObject("CaveMouth");
             mouth.transform.SetParent(entrance.transform);
-            mouth.transform.localPosition = new Vector3(0f, -0.3f, 0f);
+            mouth.transform.localPosition = new Vector3(0f, -0.3f - FarmDoorPivotEpsilon, 0f);
             mouth.transform.localScale = new Vector3(3.5f, 2.8f, 1f); // v6: interior escuro maior
             var mouthRenderer = mouth.AddComponent<SpriteRenderer>();
             mouthRenderer.sprite = GetBuiltinSprite();
             mouthRenderer.color = new Color(0.08f, 0.06f, 0.1f);
-            mouthRenderer.sortingOrder = 2;
-            TrySetSortingLayer(mouthRenderer, "Items", mouthRenderer.sortingOrder);
+            mouthRenderer.sortingOrder = 0;
+            mouthRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            TrySetSortingLayer(mouthRenderer, "World", mouthRenderer.sortingOrder);
 
             var trigger = entrance.AddComponent<BoxCollider2D>();
             trigger.isTrigger = true;
@@ -2113,7 +2129,7 @@ namespace CindarsHope.Editor.SceneCreation
             sign.sprite = GetBuiltinSprite();
             sign.color = new Color(0.30f, 0.22f, 0.42f); // draconato-purple board
             sign.sortingOrder = 2;
-            TrySetSortingLayer(sign, "Items", sign.sortingOrder);
+            TrySetSortingLayer(sign, "Roof", sign.sortingOrder);
             if (!ScaleProfileLibrary.AttachApplicator(board, EntityScaleCategory.ContractBoard))
             {
                 board.transform.localScale = new Vector3(0.9f, 1.1f, 1f);
@@ -2180,8 +2196,9 @@ namespace CindarsHope.Editor.SceneCreation
             var hasBodySprite = npcData.BodySprite != null;
             renderer.sprite = hasBodySprite ? npcData.BodySprite : GetBuiltinSprite();
             renderer.color = hasBodySprite ? Color.white : new Color(0.43f, 0.52f, 0.68f);
-            renderer.sortingOrder = 2;
-            TrySetSortingLayer(renderer, "Characters", renderer.sortingOrder);
+            renderer.sortingOrder = 0;
+            renderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            TrySetSortingLayer(renderer, "World", renderer.sortingOrder);
 
             // Trigger de interacao (1x1) — sem DialogueModal na fazenda; interacao nao abre dialogo.
             var trigger = npcObject.AddComponent<BoxCollider2D>();
@@ -2219,6 +2236,18 @@ namespace CindarsHope.Editor.SceneCreation
             SetReference(serializedWanderer, "_npcData", npcData);
             SetReference(serializedWanderer, "_rigidbody", body);
             serializedWanderer.ApplyModifiedPropertiesWithoutUndo();
+
+            // NpcWalkAnimator: anima a caminhada (5x5) IGUAL aos NPCs da cidade. Sem ele o Zrix
+            // perambula mas fica no frame parado (bug: CreateFarmZrixNpc replicava "o minimo da cidade"
+            // mas esquecia justamente o animator). Le NpcDataSO.WalkAnimResourcesPath em runtime.
+            var walkAnimator = npcObject.AddComponent<CindarsHope.NPC.NpcWalkAnimator>();
+            var serializedWalkAnimator = new SerializedObject(walkAnimator);
+            SetReference(serializedWalkAnimator, "_npcData", npcData);
+            serializedWalkAnimator.ApplyModifiedPropertiesWithoutUndo();
+
+            // Fade-in de aparição: o Zrix nasce longe (bosque NO) e "aparece" quando o player chega
+            // perto. NpcAppearFade materializa suave (alpha 0→1) na 1a vez que entra na câmera.
+            npcObject.AddComponent<CindarsHope.NPC.NpcAppearFade>();
 
             // ConfigureMovement(speed, radius, pauseMin, pauseMax, clampMin, clampMax)
             // Especificacao: speed=1.0, radius=4.0, pauseMin=2.5, pauseMax=5.5, clamp(-26,4)(-10,16)
@@ -2267,8 +2296,8 @@ namespace CindarsHope.Editor.SceneCreation
             var overlaySr = overlay.AddComponent<SpriteRenderer>();
             overlaySr.sprite = GetBuiltinSprite();
             overlaySr.color = new Color(0.35f, 0.28f, 0.50f, 0.22f); // roxo-escuro semi-transparente
-            overlaySr.sortingOrder = -1;
-            TrySetSortingLayer(overlaySr, "Ground", -1);
+            overlaySr.sortingOrder = 0;
+            TrySetSortingLayer(overlaySr, "Ground", 0);
 
             // Borda N (topo)
             CreateExpansionBorder(obj.transform, "Border_N",
@@ -2357,8 +2386,9 @@ namespace CindarsHope.Editor.SceneCreation
             var sr = obj.AddComponent<SpriteRenderer>();
             sr.sprite = GetBuiltinSprite();
             sr.color = new Color(0.5f, 0.72f, 0.3f);
-            sr.sortingOrder = 2;
-            TrySetSortingLayer(sr, "Items", 2);
+            sr.sortingOrder = 0;
+            sr.spriteSortPoint = SpriteSortPoint.Pivot;
+            TrySetSortingLayer(sr, "World", 0);
 
             var col = obj.AddComponent<BoxCollider2D>();
             col.isTrigger = true;
@@ -2399,8 +2429,9 @@ namespace CindarsHope.Editor.SceneCreation
             var sr = obj.AddComponent<SpriteRenderer>();
             sr.sprite = GetBuiltinSprite();
             sr.color = new Color(0.78f, 0.58f, 0.22f);
-            sr.sortingOrder = 2;
-            TrySetSortingLayer(sr, "Items", 2);
+            sr.sortingOrder = 0;
+            sr.spriteSortPoint = SpriteSortPoint.Pivot;
+            TrySetSortingLayer(sr, "World", 0);
 
             var col = obj.AddComponent<BoxCollider2D>();
             col.isTrigger = true;
@@ -2415,6 +2446,12 @@ namespace CindarsHope.Editor.SceneCreation
 
         private static void CreateTreeResource(Transform parent, InventoryManager inventoryManager, Vector3 position)
         {
+            // obj.transform.position/scale continuam sendo o que ScaleProfileLibrary/collider/layer
+            // esperam (AttachApplicator baqueia a escala em target.transform, não num visualRoot — ver
+            // ScaleProfileLibrary.AttachApplicator; passar um visualRoot causaria double-scale em Play
+            // Mode). Só o SpriteRenderer visual muda para um child "Visual" (herda a escala do pai pela
+            // hierarquia) — trees/ agora importa com pivot BottomCenter (Y-sort), então só o child
+            // precisa de reposicionamento de base; obj/collider ficam intocados.
             var obj = new GameObject("TreeResource_01");
             obj.transform.SetParent(parent);
             obj.transform.position = position;
@@ -2425,12 +2462,24 @@ namespace CindarsHope.Editor.SceneCreation
                 obj.transform.localScale = new Vector3(1.2f, 1.8f, 1f);
             }
 
-            var sr = obj.AddComponent<SpriteRenderer>();
+            var visual = new GameObject("Visual");
+            visual.transform.SetParent(obj.transform);
+            var sr = visual.AddComponent<SpriteRenderer>();
             var treeSprite = WorldSpriteLibrary.Tree("tree_oak");
-            if (treeSprite != null) { sr.sprite = treeSprite; sr.color = Color.white; }
-            else { sr.sprite = GetBuiltinSprite(); sr.color = new Color(0.24f, 0.52f, 0.24f); }
-            sr.sortingOrder = 2;
-            TrySetSortingLayer(sr, "Items", 2);
+            if (treeSprite != null)
+            {
+                sr.sprite = treeSprite; sr.color = Color.white;
+                float visualHeight = treeSprite.bounds.size.y; // child scale is 1; obj carries the scale
+                visual.transform.localPosition = new Vector3(0f, WorldSpriteBasePlacement.BaseYForVisualCenter(0f, visualHeight), 0f);
+            }
+            else
+            {
+                visual.transform.localPosition = Vector3.zero;
+                sr.sprite = GetBuiltinSprite(); sr.color = new Color(0.24f, 0.52f, 0.24f);
+            }
+            sr.sortingOrder = 0;
+            sr.spriteSortPoint = SpriteSortPoint.Pivot;
+            TrySetSortingLayer(sr, "World", 0);
 
             var col = obj.AddComponent<BoxCollider2D>();
             col.isTrigger = true;
@@ -2457,6 +2506,8 @@ namespace CindarsHope.Editor.SceneCreation
 
         private static void CreateRockResource(Transform parent, InventoryManager inventoryManager, Vector3 position)
         {
+            // Mesmo padrão de CreateTreeResource: obj/collider/AttachApplicator intocados; sprite visual
+            // num child "Visual" reposicionado pela base (props/ agora importa com pivot BottomCenter).
             var obj = new GameObject("RockResource_01");
             obj.transform.SetParent(parent);
             obj.transform.position = position;
@@ -2467,12 +2518,24 @@ namespace CindarsHope.Editor.SceneCreation
                 obj.transform.localScale = new Vector3(1.0f, 0.85f, 1f);
             }
 
-            var sr = obj.AddComponent<SpriteRenderer>();
+            var visual = new GameObject("Visual");
+            visual.transform.SetParent(obj.transform);
+            var sr = visual.AddComponent<SpriteRenderer>();
             var rockSprite = WorldSpriteLibrary.Prop("rock_ore_0");
-            if (rockSprite != null) { sr.sprite = rockSprite; sr.color = Color.white; }
-            else { sr.sprite = GetBuiltinSprite(); sr.color = new Color(0.55f, 0.52f, 0.50f); }
-            sr.sortingOrder = 2;
-            TrySetSortingLayer(sr, "Items", 2);
+            if (rockSprite != null)
+            {
+                sr.sprite = rockSprite; sr.color = Color.white;
+                float visualHeight = rockSprite.bounds.size.y; // child scale is 1; obj carries the scale
+                visual.transform.localPosition = new Vector3(0f, WorldSpriteBasePlacement.BaseYForVisualCenter(0f, visualHeight), 0f);
+            }
+            else
+            {
+                visual.transform.localPosition = Vector3.zero;
+                sr.sprite = GetBuiltinSprite(); sr.color = new Color(0.55f, 0.52f, 0.50f);
+            }
+            sr.sortingOrder = 0;
+            sr.spriteSortPoint = SpriteSortPoint.Pivot;
+            TrySetSortingLayer(sr, "World", 0);
 
             var col = obj.AddComponent<BoxCollider2D>();
             col.isTrigger = true;
@@ -2519,8 +2582,9 @@ namespace CindarsHope.Editor.SceneCreation
             var sr = obj.AddComponent<SpriteRenderer>();
             sr.sprite = GetBuiltinSprite();
             sr.color = new Color(0.55f, 0.38f, 0.22f);
-            sr.sortingOrder = 2;
-            TrySetSortingLayer(sr, "Items", 2);
+            sr.sortingOrder = 0;
+            sr.spriteSortPoint = SpriteSortPoint.Pivot;
+            TrySetSortingLayer(sr, "World", 0);
 
             var col = obj.AddComponent<BoxCollider2D>();
             col.isTrigger = true;
@@ -2545,8 +2609,9 @@ namespace CindarsHope.Editor.SceneCreation
             var sr = visual.AddComponent<SpriteRenderer>();
             sr.sprite = GetBuiltinSprite();
             sr.color = new Color(0.38f, 0.34f, 0.30f);
-            sr.sortingOrder = -3;
-            TrySetSortingLayer(sr, "Ground", -3);
+            sr.sortingOrder = 0;
+            sr.spriteSortPoint = SpriteSortPoint.Pivot;
+            TrySetSortingLayer(sr, "World", 0);
 
             // Colisao solida na base da montanha (nao e trigger — bloqueia o jogador em y >= 18).
             var barrier = new GameObject("MountainCollider");
@@ -2628,8 +2693,9 @@ namespace CindarsHope.Editor.SceneCreation
             var bridgeSr = bridge.AddComponent<SpriteRenderer>();
             bridgeSr.sprite = GetBuiltinSprite();
             bridgeSr.color = new Color(0.68f, 0.52f, 0.32f); // madeira clara
-            bridgeSr.sortingOrder = 1;
-            TrySetSortingLayer(bridgeSr, "Ground", 1);
+            bridgeSr.sortingOrder = 0;
+            bridgeSr.spriteSortPoint = SpriteSortPoint.Pivot;
+            TrySetSortingLayer(bridgeSr, "World", 0);
 
             // ── Lago organico SE v7 (~26x14) ─────────────────────────────────────────────────────
             // Centro v7: (18,-13). spans x[5,31] y[-20,-6]; foz do rio funde na borda N (~19,-6).
@@ -2643,9 +2709,12 @@ namespace CindarsHope.Editor.SceneCreation
                 new Vector3(24f, -17f, 0f), new Vector3(14f, 6f, 1f), waterColorSr, -2);
         }
 
-        // Corpo de lago (visual sem collider — apenas backdrop estetico).
+        // Corpo de lago (visual sem collider — apenas backdrop estetico). "order" preservado na
+        // assinatura por compatibilidade dos chamadores, mas a agua e sempre Ground/0 (contrato de
+        // sorting da FASE 1 — profundidade decidida por Y-sort, nao por sortingOrder relativo).
         private static void CreateLakeBody(Transform parent, string name, Vector3 pos, Vector3 scale, Color color, int order)
         {
+            _ = order;
             var body = new GameObject(name);
             body.transform.SetParent(parent);
             body.transform.position = pos;
@@ -2653,8 +2722,8 @@ namespace CindarsHope.Editor.SceneCreation
             var sr = body.AddComponent<SpriteRenderer>();
             sr.sprite = GetBuiltinSprite();
             sr.color = color;
-            sr.sortingOrder = order;
-            TrySetSortingLayer(sr, "Ground", order);
+            sr.sortingOrder = 0;
+            TrySetSortingLayer(sr, "Ground", 0);
         }
 
         // waterColor: opcional — se default(Color), usa azul v5 (0.42,0.62,0.85).
@@ -2675,8 +2744,8 @@ namespace CindarsHope.Editor.SceneCreation
             var sr = seg.AddComponent<SpriteRenderer>();
             sr.sprite = GetBuiltinSprite();
             sr.color = waterColor;
-            sr.sortingOrder = -1;
-            TrySetSortingLayer(sr, "Ground", -1);
+            sr.sortingOrder = 0;
+            TrySetSortingLayer(sr, "Ground", 0);
 
             // Colisao solida (água bloqueia) — EXCETO no vão da ponte (withCollider:false).
             // BoxCollider2D usa size em espaco local — mantem (1,1) para herdar a escala do transform.
@@ -2721,8 +2790,9 @@ namespace CindarsHope.Editor.SceneCreation
                 var sr = obj.AddComponent<SpriteRenderer>();
                 sr.sprite = GetBuiltinSprite();
                 sr.color = new Color(0.45f, 0.40f, 0.36f); // pedra escura com veia
-                sr.sortingOrder = 1;
-                TrySetSortingLayer(sr, "Items", 1);
+                sr.sortingOrder = 0;
+                sr.spriteSortPoint = SpriteSortPoint.Pivot;
+                TrySetSortingLayer(sr, "World", 0);
 
                 var col = obj.AddComponent<BoxCollider2D>();
                 col.isTrigger = true;

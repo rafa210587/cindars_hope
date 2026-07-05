@@ -1,0 +1,30 @@
+{
+  "_doc": "Fonte de verdade dos LOCAIS/prédios da cidade. render: 'landmark' = sprite bespoke inteira (locations/<id>/<id>.png); 'kit' = kit modular genérico A/B/C. art: 'have' = já importada em Assets; 'pending' = falta gerar via GPT. reference = arte-conceito preservada em art/_reference/locations/. Ao gerar arte nova: (1) rembg -> Assets/_Game/Art/Generated/World/locations/<id>/<id>.png, (2) preserve o raw em art/_reference/locations/, (3) adicione o id em GetLandmarkLocationId (CreateMvpTownScene), (4) marque art='have' aqui.",
+  "schemaVersion": 1,
+  "locations": [
+    { "lot": "House_Temple",       "id": "temple",       "name": "Templo de Kanthor",     "archetype": "Temple",     "render": "landmark", "art": "have",    "sprite": "locations/temple/temple.png",       "reference": "art/_reference/locations/temple_reference.png" },
+    { "lot": "House_Chamber",      "id": "town_hall",    "name": "Prefeitura / Câmara",   "archetype": "Civic",      "render": "landmark", "art": "have",    "sprite": "locations/town_hall/town_hall.png", "reference": "art/_reference/locations/town_hall_reference.png" },
+    { "lot": "House_Manor",        "id": "manor",        "name": "Mansão Nobre",          "archetype": "Noble",      "render": "landmark", "art": "pending", "sprite": null, "reference": null },
+    { "lot": "House_Archive",      "id": "archive",      "name": "Arquivo / Biblioteca",  "archetype": "Noble",      "render": "landmark", "art": "pending", "sprite": null, "reference": null },
+    { "lot": "House_Registry",     "id": "registry",     "name": "Registro Civil",        "archetype": "Civic",      "render": "landmark", "art": "pending", "sprite": null, "reference": null },
+    { "lot": "House_Prison",       "id": "guard_post",   "name": "Guarnição / Prisão",    "archetype": "Guard",      "render": "landmark", "art": "pending", "sprite": null, "reference": null },
+    { "lot": "House_MarketHall",   "id": "market_hall",  "name": "Mercado Coberto",       "archetype": "Market",     "render": "landmark", "art": "pending", "sprite": null, "reference": null },
+    { "lot": "House_Bakery",       "id": "bakery",       "name": "Padaria",               "archetype": "Bakery",     "render": "landmark", "art": "pending", "sprite": null, "reference": null },
+    { "lot": "House_Inn",          "id": "inn",          "name": "Taverna / Estalagem",   "archetype": "Inn",        "render": "landmark", "art": "pending", "sprite": null, "reference": null },
+    { "lot": "House_Blacksmith",   "id": "blacksmith",   "name": "Ferraria",              "archetype": "Forge",      "render": "landmark", "art": "have",    "sprite": "locations/blacksmith/blacksmith.png", "reference": "art/_reference/locations/blacksmith_reference.png" },
+    { "lot": "House_AlchemyLab",   "id": "alchemy_lab",  "name": "Laboratório de Alquimia","archetype": "Alchemy",    "render": "landmark", "art": "pending", "sprite": null, "reference": null },
+    { "lot": "House_Workshop",     "id": "workshop",     "name": "Oficina / Marcenaria",  "archetype": "Workshop",   "render": "landmark", "art": "pending", "sprite": null, "reference": null },
+    { "lot": "House_Tannery",      "id": "tannery",      "name": "Curtume",               "archetype": "Tannery",    "render": "landmark", "art": "pending", "sprite": null, "reference": null },
+    { "lot": "House_Fishery",      "id": "watermill",    "name": "Moinho d'Água / Pesca", "archetype": "Watermill",  "render": "landmark", "art": "pending", "sprite": null, "reference": null },
+    { "lot": "House_AnimalYard",   "id": "warehouse",    "name": "Armazém / Celeiro",     "archetype": "Warehouse",  "render": "landmark", "art": "pending", "sprite": null, "reference": null },
+    { "lot": "House_GateKeeper",   "id": "gate_house",   "name": "Casa do Guardião",      "archetype": "Guard",      "render": "kit",      "art": "pending", "sprite": null, "reference": null },
+    { "lot": "House_Residential_1","id": null, "name": "Residência (Sylveth)",  "archetype": "Rural",        "render": "kit", "art": "have", "sprite": "building/houses_modular (A/B/C)", "reference": null },
+    { "lot": "House_Residential_2","id": null, "name": "Residência",            "archetype": "Market",       "render": "kit", "art": "have", "sprite": "building/houses_modular (A/B/C)", "reference": null },
+    { "lot": "House_Residential_3","id": null, "name": "Residência (Mirela)",   "archetype": "Workshop",     "render": "kit", "art": "have", "sprite": "building/houses_modular (A/B/C)", "reference": null },
+    { "lot": "House_Residential_4","id": null, "name": "Residência (Savra)",    "archetype": "Residential",  "render": "kit", "art": "have", "sprite": "building/houses_modular (A/B/C)", "reference": null },
+    { "lot": "House_Dagna",        "id": null, "name": "Casa da Dagna",         "archetype": "Residential",  "render": "kit", "art": "have", "sprite": "building/houses_modular (A/B/C)", "reference": null },
+    { "lot": "House_Pip",          "id": null, "name": "Casa do Pip",           "archetype": "Residential",  "render": "kit", "art": "have", "sprite": "building/houses_modular (A/B/C)", "reference": null },
+    { "lot": "House_Tovin",        "id": null, "name": "Casa do Tovin",         "archetype": "Residential",  "render": "kit", "art": "have", "sprite": "building/houses_modular (A/B/C)", "reference": null },
+    { "lot": "House_CarvalhoTorto","id": null, "name": "Casa Carvalho Torto",   "archetype": "Residential",  "render": "kit", "art": "have", "sprite": "building/houses_modular (A/B/C)", "reference": null }
+  ]
+}

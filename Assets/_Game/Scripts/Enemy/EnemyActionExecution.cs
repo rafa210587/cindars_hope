@@ -25,6 +25,9 @@ namespace CindarsHope.Enemy
         /// <summary>Raio minimo aceitavel de AoE.</summary>
         public const float MinAoeRadius = 0.5f;
 
+        /// <summary>Limite maximo de projeteis por salvo (espelha EnemyActionSO.ProjectileCount clamp).</summary>
+        public const int MaxProjectileCount = 5;
+
         // ── ComboStrike ─────────────────────────────────────────────────────────────────────────
 
         /// <summary>
@@ -196,6 +199,186 @@ namespace CindarsHope.Enemy
             if (!string.IsNullOrWhiteSpace(debuffStatusId)) return debuffStatusId;
             if (statusApplicationIds != null && statusApplicationIds.Length > 0) return statusApplicationIds[0];
             return string.Empty;
+        }
+
+        // ── Rise-Once (spec_enemy_attack_kits_v1 — primitiva P2) ───────────────────────────────
+
+        /// <summary>
+        /// Verifica se o dano recebido bloqueia o reerguimento (ex.: fire/radiant). Comparacao
+        /// case-insensitive; lista vazia/nula = nunca bloqueia.
+        /// </summary>
+        public static bool ShouldBlockRise(string lastDamageType, string[] blockedTypes)
+        {
+            if (blockedTypes == null || blockedTypes.Length == 0 || string.IsNullOrWhiteSpace(lastDamageType))
+                return false;
+
+            for (int i = 0; i < blockedTypes.Length; i++)
+            {
+                if (string.Equals(blockedTypes[i], lastDamageType, System.StringComparison.OrdinalIgnoreCase))
+                    return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Decide se a morte deve ser interceptada pelo Rise-once: habilitado, ainda nao consumido,
+        /// e o ultimo dano nao e de um elemento bloqueador.
+        /// </summary>
+        public static bool ShouldRiseOnce(bool riseOnceEnabled, bool alreadyConsumed, string lastDamageType, string[] blockedTypes)
+        {
+            if (!riseOnceEnabled || alreadyConsumed) return false;
+            return !ShouldBlockRise(lastDamageType, blockedTypes);
+        }
+
+        /// <summary>
+        /// Calcula o HP restaurado ao reerguer (fracao de maxHp, minimo 1 para nao reerguer morto).
+        /// </summary>
+        public static int ResolveRiseHp(int maxHp, float riseOnceHpPercent)
+        {
+            int hp = Mathf.RoundToInt(Mathf.Max(0, maxHp) * Mathf.Clamp01(riseOnceHpPercent));
+            return Mathf.Max(1, hp);
+        }
+
+        // ── Ally Heal/Buff (spec_enemy_attack_kits_v1 — primitiva P2) ──────────────────────────
+
+        /// <summary>Candidato a alvo-aliado: posicao, fracao de HP atual (0-1) e indice original.</summary>
+        public readonly struct AllyCandidate
+        {
+            public readonly int Index;
+            public readonly Vector2 Position;
+            public readonly float HpFraction;
+
+            public AllyCandidate(int index, Vector2 position, float hpFraction)
+            {
+                Index = index;
+                Position = position;
+                HpFraction = hpFraction;
+            }
+        }
+
+        /// <summary>
+        /// Resolve o indice do aliado-alvo dentro do raio: prefere o mais ferido (menor HpFraction);
+        /// em empate (ou quando nenhum esta ferido, HpFraction >= 1 para todos), prefere o mais
+        /// proximo. Retorna -1 se nenhum candidato estiver dentro do raio.
+        /// </summary>
+        public static int ResolveAllyHealTarget(Vector2 origin, float radius, IReadOnlyList<AllyCandidate> candidates)
+        {
+            if (candidates == null || candidates.Count == 0) return -1;
+
+            float sqrRadius = Mathf.Max(radius, 0f) * Mathf.Max(radius, 0f);
+            int bestIndex = -1;
+            float bestHpFraction = float.MaxValue;
+            float bestSqrDist = float.MaxValue;
+
+            for (int i = 0; i < candidates.Count; i++)
+            {
+                var c = candidates[i];
+                float sqrDist = (c.Position - origin).sqrMagnitude;
+                if (sqrDist > sqrRadius) continue;
+
+                bool betterHp = c.HpFraction < bestHpFraction - 0.0001f;
+                bool tiedHp = Mathf.Abs(c.HpFraction - bestHpFraction) <= 0.0001f;
+                bool closer = sqrDist < bestSqrDist;
+
+                if (bestIndex < 0 || betterHp || (tiedHp && closer))
+                {
+                    bestIndex = c.Index;
+                    bestHpFraction = c.HpFraction;
+                    bestSqrDist = sqrDist;
+                }
+            }
+
+            return bestIndex;
+        }
+
+        // ── Hazard Zone (spec_enemy_attack_kits_v1 — primitiva P2) ─────────────────────────────
+
+        /// <summary>
+        /// Verifica se a zona de hazard ja expirou (tempo decorrido >= duracao total).
+        /// </summary>
+        public static bool IsHazardExpired(float elapsedSeconds, float durationSeconds)
+        {
+            return elapsedSeconds >= durationSeconds;
+        }
+
+        /// <summary>
+        /// Resolve quantos ticks de hazard devem ser aplicados dado o tempo decorrido desde o
+        /// ultimo tick processado e o intervalo configurado (determinista; sem UnityEngine.Time).
+        /// </summary>
+        public static int ResolveHazardTickCount(float elapsedSinceLastTick, float tickIntervalSeconds)
+        {
+            float interval = Mathf.Max(tickIntervalSeconds, 0.01f);
+            return Mathf.FloorToInt(Mathf.Max(0f, elapsedSinceLastTick) / interval);
+        }
+
+        /// <summary>Verifica se uma posicao esta dentro do raio da zona de hazard.</summary>
+        public static bool IsInsideHazard(Vector2 hazardCenter, float hazardRadius, Vector2 targetPosition)
+        {
+            float r = Mathf.Max(hazardRadius, 0f);
+            return (targetPosition - hazardCenter).sqrMagnitude <= r * r;
+        }
+
+        // ── Pull (spec_enemy_attack_kits_v1 — primitiva P2) ────────────────────────────────────
+
+        /// <summary>
+        /// Calcula a posicao-alvo do player apos ser puxado N tiles na direcao de origin->target
+        /// invertida (isto e, o player se move EM DIRECAO a origin). Clamp contra paredes/obstaculos
+        /// e responsabilidade do consumidor (EnemyBrain), nao desta primitiva pura.
+        /// </summary>
+        public static Vector2 ResolvePullTargetPosition(Vector2 pullOrigin, Vector2 playerPosition, float pullDistanceTiles)
+        {
+            Vector2 toOrigin = pullOrigin - playerPosition;
+            float distance = toOrigin.magnitude;
+            if (distance < 0.0001f) return playerPosition;
+
+            Vector2 direction = toOrigin / distance;
+            float travel = Mathf.Min(Mathf.Max(pullDistanceTiles, 0f), distance);
+            return playerPosition + direction * travel;
+        }
+
+        // ── Salvo Multiplo (spec_enemy_attack_kits_v1 — follow-up salvas) ──────────────────────
+
+        /// <summary>
+        /// Resolve as direcoes de um leque de N projeteis em torno de uma direcao base, distribuindo
+        /// simetricamente o angulo total configurado. count=1 retorna so a direcao base (spread
+        /// ignorado — comportamento identico ao disparo single-projectile existente). count impar
+        /// tem 1 direcao exatamente no centro (angulo 0); count par nao tem centro (as duas direcoes
+        /// mais proximas do centro ficam a +-meio-passo). spreadAngleDegrees=0 colapsa todas as
+        /// direcoes na base (leque de largura zero). Clamp de count em [1, MaxProjectileCount]
+        /// (espelha EnemyActionSO.OnValidate; nunca aloca alem do array de retorno de tamanho count).
+        /// </summary>
+        public static Vector2[] ResolveSalvoDirections(Vector2 baseDirection, int count, float spreadAngleDegrees)
+        {
+            int clampedCount = Mathf.Clamp(count, 1, MaxProjectileCount);
+            var directions = new Vector2[clampedCount];
+
+            if (clampedCount == 1)
+            {
+                directions[0] = baseDirection;
+                return directions;
+            }
+
+            float spread = Mathf.Clamp(spreadAngleDegrees, 0f, 90f);
+            float angleStep = spread / (clampedCount - 1);
+            float startAngle = -spread * 0.5f;
+
+            for (int i = 0; i < clampedCount; i++)
+            {
+                float angleDeg = startAngle + angleStep * i;
+                directions[i] = RotateDegrees(baseDirection, angleDeg);
+            }
+
+            return directions;
+        }
+
+        private static Vector2 RotateDegrees(Vector2 direction, float angleDegrees)
+        {
+            float rad = angleDegrees * Mathf.Deg2Rad;
+            float cos = Mathf.Cos(rad);
+            float sin = Mathf.Sin(rad);
+            return new Vector2(
+                direction.x * cos - direction.y * sin,
+                direction.x * sin + direction.y * cos);
         }
     }
 }

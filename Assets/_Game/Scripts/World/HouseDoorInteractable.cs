@@ -18,10 +18,11 @@ namespace CindarsHope.World
     [DisallowMultipleComponent]
     public sealed class HouseDoorInteractable : MonoBehaviour, IInteractable
     {
-        [SerializeField] private Transform _leaf;          // folha visível da porta (desliza ao abrir)
+        [SerializeField] private Transform _leaf;          // folha visível da porta (some ao abrir)
+        [SerializeField] private SpriteRenderer _leafRenderer; // renderer da folha (escondido quando aberta)
         [SerializeField] private Collider2D _blocker;      // collider sólido que tranca o vão (off = aberto)
         [SerializeField] private Vector3 _closedLocalPos;  // posição da folha fechada
-        [SerializeField] private Vector3 _openLocalPos;    // posição da folha aberta (deslizada p/ o lado)
+        [SerializeField] private Vector3 _openLocalPos;    // posição da folha aberta (recuada p/ o vão)
         [SerializeField] private bool _isOpen;
 
         // Auto-abertura para NPCs: quando um morador (NpcDweller) entra no trigger da porta, ela abre
@@ -59,6 +60,14 @@ namespace CindarsHope.World
             if (_leaf != null)
             {
                 _leaf.localPosition = open ? _openLocalPos : _closedLocalPos;
+            }
+
+            // Porta top-down: ao abrir, a folha SOME e o vão escuro (Threshold, atrás dela) aparece —
+            // lê como um portal aberto por onde se anda. Fechada, a folha reaparece. Bem mais limpo do
+            // que deslizar a folha para o lado (que a fazia sobrepor a parede vizinha).
+            if (_leafRenderer != null)
+            {
+                _leafRenderer.enabled = !open;
             }
         }
 
@@ -115,6 +124,7 @@ namespace CindarsHope.World
         public void Configure(Transform leaf, Collider2D blocker, Vector3 closedLocalPos, Vector3 openLocalPos)
         {
             _leaf = leaf;
+            _leafRenderer = leaf != null ? leaf.GetComponent<SpriteRenderer>() : null;
             _blocker = blocker;
             _closedLocalPos = closedLocalPos;
             _openLocalPos = openLocalPos;

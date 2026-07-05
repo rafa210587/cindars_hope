@@ -71,6 +71,10 @@ namespace CindarsHope.Editor.EnemyTaxonomy
                 so.SecondaryRoles       = entry.SecondaryRoles ?? new EnemyRole[0];
                 so.MovementProfileId    = entry.MovementProfileId;
                 so.SizeProfileId        = entry.SizeProfileId;
+                // BestiarySize (escala visual via EnemyScaleResolver) DEVE espelhar o SizeProfileId
+                // (intencao de tamanho ja curada por criatura). Sem isto todos caem no default Medium
+                // e ficam do mesmo tamanho na tela.
+                so.BestiarySize         = BestiarySizeFromProfile(entry.SizeProfileId);
                 so.ActionSetId          = entry.ActionSetId;
                 so.VulnerabilityProfileId = entry.VulnerabilityProfileId;
                 so.PrimaryDamageTypeId  = entry.PrimaryDamageTypeId;
@@ -89,6 +93,22 @@ namespace CindarsHope.Editor.EnemyTaxonomy
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             Debug.Log($"[SPEC 13B] Canonical roster creation complete. Created: {created}, Updated: {updated}.");
+        }
+
+        // Mapeia o SizeProfileId (colisor/room-gating) para a classe visual BestiarySize
+        // (EnemyScaleResolver). Mantem os dois eixos de tamanho consistentes.
+        private static BestiarySizeClass BestiarySizeFromProfile(string sizeProfileId)
+        {
+            switch (sizeProfileId)
+            {
+                case "size_tiny":       return BestiarySizeClass.Tiny;
+                case "size_small":      return BestiarySizeClass.Small;
+                case "size_large":      return BestiarySizeClass.Large;
+                case "size_huge":       return BestiarySizeClass.Huge;
+                case "size_gargantuan": return BestiarySizeClass.Gargantuan;
+                case "size_boss":       return BestiarySizeClass.Huge;
+                default:                return BestiarySizeClass.Medium; // size_medium / desconhecido
+            }
         }
 
         private static void EnsureFolder(string path)

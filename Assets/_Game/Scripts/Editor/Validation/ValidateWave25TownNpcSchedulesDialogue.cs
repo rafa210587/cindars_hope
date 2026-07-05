@@ -11,7 +11,7 @@ namespace CindarsHope.Editor.Validation
     /// </summary>
     public static class ValidateWave25TownNpcSchedulesDialogue
     {
-        private const string MenuPath = "CindarsHope/Validate/Wave25 Town NPC Schedules Dialogue";
+        private const string MenuPath = "CindarsHope/Archive/Wave25 Town NPC Schedules Dialogue";
 
         [MenuItem(MenuPath)]
         public static void Validate()

@@ -25,6 +25,10 @@ namespace CindarsHope.NPC
         public NpcWanderData WanderData;
         public Sprite BodySprite;
 
+        [Tooltip("Pasta Resources com os 25 sprites de caminhada fatiados (ex.: 'NpcWalkSprites/npc_alaric_walk'). " +
+            "Vazio = NPC ainda sem anim de caminhada (mostra so o BodySprite estatico).")]
+        public string WalkAnimResourcesPath;
+
         [Header("Retratos (busto) para UI de conversa / status de companion")]
         public Sprite PortraitNeutral;
         public Sprite PortraitHappiness;

@@ -13,6 +13,12 @@ namespace CindarsHope.Combat
     [DisallowMultipleComponent]
     public class EnemyHealth : MonoBehaviour
     {
+        // spec_enemy_attack_kits_v1 (AllyHeal/AllyBuff): registro estatico de instancias ativas,
+        // mesmo padrao de CraftingRuntime.ActiveInstances (FIX-001) — evita FindObjectsOfType.
+        // Populado via OnEnable/OnDisable. EnemyActionRunner le esta lista para enumerar aliados
+        // vivos candidatos a cura/buff (posicao + HP), sem scene search.
+        public static readonly System.Collections.Generic.List<EnemyHealth> ActiveInstances = new System.Collections.Generic.List<EnemyHealth>();
+
         [SerializeField] private EnemyDataSO _enemyData;
 
         private int _currentHp;
@@ -42,6 +48,13 @@ namespace CindarsHope.Combat
         private string _pendingEnemyKillerInstanceId;
         private float _pendingKillLootMultiplier = 1f;
         private int _pendingKillCaveLevel;
+
+        // spec_enemy_attack_kits_v1 (Rise-once, primitiva P2): DamageType do ultimo golpe recebido
+        // (setado em TakeDamage antes de checar morte) + flag idempotente de consumo. Estado runtime
+        // transitorio (mesmo idioma do _woundedUntil acima) — nao persiste no save.
+        private DamageType _lastDamageType = DamageType.Physical;
+        private bool _riseOnceConsumed;
+        private bool _isCollapsedPendingRise;
 
         public int CurrentHp => _currentHp;
         /// <summary>HP máximo desta instância. Usa valor escalado quando disponível (ConfigureWithScaling),
@@ -115,6 +128,34 @@ namespace CindarsHope.Combat
         public void ConfigureVulnerabilityMatrix(EnemyVulnerabilityProfileSO profile)
         {
             _vulnerabilityProfile = profile;
+        }
+
+        // spec_enemy_attack_kits_v1 (Rise-once, primitiva P2): parametros lidos do EnemyActionSO
+        // marcado RiseOnceEnabled no actionset ativo. Chamado por EnemyBrain apos resolver o
+        // ActionSet (InitActionSet); null/disabled = comportamento de morte 100% inalterado.
+        private bool _riseOnceEnabled;
+        private float _riseOnceHpPercent;
+        private string[] _riseOnceBlockedByDamageTypes = System.Array.Empty<string>();
+        private float _riseOnceCollapseSeconds;
+
+        public void ConfigureRiseOnce(bool enabled, float hpPercent, string[] blockedByDamageTypes, float collapseSeconds)
+        {
+            _riseOnceEnabled = enabled;
+            _riseOnceHpPercent = hpPercent;
+            _riseOnceBlockedByDamageTypes = blockedByDamageTypes ?? System.Array.Empty<string>();
+            _riseOnceCollapseSeconds = collapseSeconds;
+        }
+
+        // spec_enemy_attack_kits_v1 (AllyHeal/AllyBuff): mantem ActiveInstances sem scene search.
+        private void OnEnable()
+        {
+            if (!ActiveInstances.Contains(this))
+                ActiveInstances.Add(this);
+        }
+
+        private void OnDisable()
+        {
+            ActiveInstances.Remove(this);
         }
 
         // F13: restaura HP salvo do snapshot da run (chamado APÓS Configure, antes do Start).
@@ -275,6 +316,9 @@ namespace CindarsHope.Combat
             var hpBefore = _currentHp;
             _currentHp -= damageResult.FinalDamage;
             _currentHp = Mathf.Max(0, _currentHp);
+            // spec_enemy_attack_kits_v1: registra o DamageType deste golpe ANTES de checar morte —
+            // Die() consulta este valor para decidir se o Rise-once e bloqueado (ex.: fire/radiant).
+            _lastDamageType = damageResult.DamageType;
             CombatLog.Log($"CombatLog: Hit enemy. {BuildEnemyLogPrefix()}, Damage={damageResult.FinalDamage}, HP={hpBefore}->{_currentHp}/{MaxHp}.", this);
 
             GameEventBus.Publish(new DamageAppliedEvent(damageResult, transform.position));
@@ -309,6 +353,20 @@ namespace CindarsHope.Combat
 
         private void Die()
         {
+            // spec_enemy_attack_kits_v1 (Rise-once, primitiva P2): intercepta a morte ANTES de
+            // publicar qualquer evento. So se aplica ao caminho de kill NORMAL (pelo player) —
+            // kill inter-monstro (_pendingEnemyKillerInstanceId setado) sempre segue o fluxo padrao,
+            // preservando o loot reduzido do ecossistema (fable_78) intacto.
+            if (string.IsNullOrEmpty(_pendingEnemyKillerInstanceId)
+                && CindarsHope.Enemy.EnemyActionExecution.ShouldRiseOnce(_riseOnceEnabled, _riseOnceConsumed, _lastDamageType.ToString(), _riseOnceBlockedByDamageTypes))
+            {
+                _riseOnceConsumed = true;
+                _isCollapsedPendingRise = true;
+                CombatLog.Log($"CombatLog: EnemyRiseOnceCollapse. {BuildEnemyLogPrefix()}, CollapseSeconds={_riseOnceCollapseSeconds:F2}, LastDamageType={_lastDamageType}.", this);
+                Invoke(nameof(ResolveRise), Mathf.Max(0f, _riseOnceCollapseSeconds));
+                return;
+            }
+
             var xpReward = PlayerProgressionRules.CalculateEnemyXpReward(
                 _enemyData.enemyLevel,
                 _enemyData.baseDifficulty,
@@ -368,6 +426,18 @@ namespace CindarsHope.Combat
                 isMinibossOrBoss));
 
             gameObject.SetActive(false);
+        }
+
+        // spec_enemy_attack_kits_v1 (Rise-once): chamado via Invoke() apos o colapso. Reergue com o
+        // % HP configurado; se o GameObject foi desativado/destruido nesse meio tempo (ex.: cena
+        // trocou), Invoke nao dispara em objeto destruido — no-op seguro.
+        private void ResolveRise()
+        {
+            if (!_isCollapsedPendingRise) return;
+            _isCollapsedPendingRise = false;
+
+            _currentHp = CindarsHope.Enemy.EnemyActionExecution.ResolveRiseHp(MaxHp, _riseOnceHpPercent);
+            CombatLog.Log($"CombatLog: EnemyRiseOnceResolved. {BuildEnemyLogPrefix()}, HP={_currentHp}/{MaxHp}.", this);
         }
 
         private string BuildEnemyLogPrefix()

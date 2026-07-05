@@ -70,6 +70,27 @@ namespace CindarsHope.Combat
             return PlayerReferenceScale * relative * role;
         }
 
+        /// <summary>
+        /// Nudge fino de tamanho POR CRIATURA, aplicado sobre a altura da classe. Serve para dar
+        /// tamanhos INTERMEDIÁRIOS sem inventar classes rígidas: ex. um orc (Medium) fica ~15% maior
+        /// que o player, um esqueleto (Small) fica um pouco acima dos outros small — sem virar Medium.
+        /// Baseado em palavra-chave do id (mesmo estilo dos Guess* do gerador). 1.0 = sem mudança.
+        /// rule no-magic-balance-values: multiplicadores como consts nomeadas.
+        /// </summary>
+        public static class VisualSizeNudge
+        {
+            public const float BruteWarrior = 1.15f; // orcs/brutamontes: acima do player, abaixo de Large
+            public const float Skeletal     = 1.15f; // esqueletos base: um degrau acima dos small comuns
+        }
+
+        public static float PerCreatureVisualNudge(string enemyId)
+        {
+            if (string.IsNullOrEmpty(enemyId)) return 1f;
+            if (enemyId.Contains("orc")) return VisualSizeNudge.BruteWarrior;
+            if (enemyId.Contains("cracked_bone")) return VisualSizeNudge.Skeletal;
+            return 1f;
+        }
+
         /// <summary>Retorna o ratio player-relative para uma size class (sem multiplicador de role).</summary>
         public static float PlayerRelativeRatioFor(BestiarySizeClass size)
         {

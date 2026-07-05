@@ -28,6 +28,10 @@ namespace CindarsHope.Cave.Runtime
         private InventoryManager _inventoryManager;
         private SpriteRenderer _spriteRenderer;
         private Action<string> _onOpenedPersist;
+        // spec_cave_biome_art_profiles_runtime (CV01): sprites opcionais do bioma; null = placeholder
+        // de cor atual (fallback-first, critério 14.2).
+        private Sprite _closedSprite;
+        private Sprite _openSprite;
 
         public string ChestId => _chestId;
         public bool IsOpened => _isOpened;
@@ -40,7 +44,9 @@ namespace CindarsHope.Cave.Runtime
             bool alreadyOpened,
             InventoryManager inventoryManager,
             SpriteRenderer spriteRenderer,
-            Action<string> onOpenedPersist)
+            Action<string> onOpenedPersist,
+            Sprite closedSprite = null,
+            Sprite openSprite = null)
         {
             _chestId = chestId;
             _caveLevel = caveLevel;
@@ -49,6 +55,8 @@ namespace CindarsHope.Cave.Runtime
             _inventoryManager = inventoryManager;
             _spriteRenderer = spriteRenderer != null ? spriteRenderer : GetComponent<SpriteRenderer>();
             _onOpenedPersist = onOpenedPersist;
+            _closedSprite = closedSprite;
+            _openSprite = openSprite;
             UpdateVisual();
         }
 
@@ -166,6 +174,16 @@ namespace CindarsHope.Cave.Runtime
         {
             if (_spriteRenderer == null)
             {
+                return;
+            }
+
+            // spec_cave_biome_art_profiles_runtime (CV01): sprite do bioma vence quando presente;
+            // ausência de qualquer um dos dois mantém o placeholder de cor atual (fallback-first).
+            var customSprite = _isOpened ? _openSprite : _closedSprite;
+            if (customSprite != null)
+            {
+                _spriteRenderer.sprite = customSprite;
+                _spriteRenderer.color = Color.white;
                 return;
             }
 

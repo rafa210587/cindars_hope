@@ -6,7 +6,7 @@ namespace CindarsHope.Editor.Validation
 {
     public static class ValidateWave22DebtBacklog
     {
-        private const string MenuPath = "CindarsHope/Validate Wave 22 Debt Backlog";
+        private const string MenuPath = "CindarsHope/Archive/Validate Wave 22 Debt Backlog";
 
         [MenuItem(MenuPath)]
         public static void Validate()

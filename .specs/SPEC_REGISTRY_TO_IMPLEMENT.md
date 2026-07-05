@@ -465,3 +465,45 @@ CX09-CX12 são `Parallelizable: YES` entre si (arquivos não se sobrepõem). CX1
 `Parallelizable: NO` (lock central em ProjectSettings/TagManager.asset e nos arquivos de combate;
 maior risco de regressão do lote, recomenda-se validação isolada). Nenhuma spec deste lote 2 foi
 promovida a `SPEC_EXECUTION_ORDER.md` — aguardam autorização humana explícita para execução.
+
+### Lote CAVE_VISUALS (gerado 2026-07-03)
+
+Camada de apresentacao visual por bioma da cave, derivada da direcao validada em
+`docs/design/gameplay/cave/CAVE_BIOME_VISUAL_REFERENCE.md` (8 biomas, keyarts e folhas de guia
+em `art/world_gpt/raw/cave_guides/`). Mecanica dos biomas ja existe; esta spec cria o contrato
+de dados para a arte do lote 2 ser plugada sem codigo novo.
+
+| # | Spec | Fecha |
+|---|---|---|
+| CV01 | `spec_cave_biome_art_profiles_runtime.md` | 8 CaveBiomeArtProfileSO + resolver deterministico (FNV-1a) nos materializers com fallback aos placeholders atuais; Tilemap floor/wall condicional a auditoria; RunStep gerador+validator nos 3 comandos canonicos; CaveBiomeChangedEvent p/ musica futura |
+
+CV01 e `Parallelizable: NO` (lock em Assets/_Game/Scripts/Cave/** e CindarsHopeMenu.cs).
+Nao promovida a SPEC_EXECUTION_ORDER.md - aguarda autorizacao humana explicita para execucao.
+
+### Lote ENEMY_ATTACK_KITS (gerado 2026-07-03)
+
+Design canonico de ataques de inimigo derivado de `ENEMY_ATTACK_CATALOG_DIRECTION_v1.0.md` (v1.1,
+universo completo de 178 IDs: 117 fichas canonicas + 60 IDs do Roster + 1 boss legado) e seu par
+`ENEMY_ATTACK_IMPLEMENTATION_DIRECTION_v1.0.md`. fable_83 ja implementou a base de 5
+EnemyActionType signature (ComboStrike/TelegraphedAoE/SummonAdds/MultiHitCharge/DebuffStrike) com
+EnemyActionExecution puro — esta spec autora o CONTEUDO (kits por criatura) e fecha as 4
+primitivas P2 do catalogo §5 que ainda faltam no runtime (Rise-once, AllyHeal/AllyBuff,
+HazardZone, Pull).
+
+| # | Spec | Fecha |
+|---|---|---|
+| EAK01 | `spec_enemy_attack_kits_v1.md` | 4 primitivas P2 (Rise-once/AllyHeal-Buff/HazardZone/Pull) + generator idempotente de EnemyActionSO/EnemyActionSetSO para os ~121 donos de kit do universo (113 canonicas + 7 novas do Roster + enemy_meteor_ooze_king) + wiring das 53 variancias do Roster para a mae + validator read-only |
+
+EAK01 e `Parallelizable: NO` (lock em EnemyBrain.cs, EnemyActionSO.cs, EnemyActionExecution.cs,
+CindarsHopeMenu.cs, e nas pastas Assets/_Game/Data/Enemies/Actions|ActionSets/**). Fora de escopo:
+EnemyAttackAnimator/sprites, primitivas P3/P4, mecanicas do The Four. Nao promovida a
+SPEC_EXECUTION_ORDER.md - aguarda autorizacao humana explicita para execucao.
+
+### Lote CAVE_VISUALS - fatia de decor (gerado 2026-07-04)
+
+| # | Spec | Fecha |
+|---|---|---|
+| CV02 | `spec_cave_decor_placement_runtime.md` | Colocacao deterministica + materializacao de decor por bioma (props nao-bloqueantes/bloqueantes) usando os sprites reais da CV01, persistido no snapshot stable-run. Subconjunto EXPLICITO da fable_78 (mesmos nomes/DTOs) - a fable_78 completa o absorve (adiciona lago/mineravel/conflito/threat/mercador). Povoar bioma 1 = objetivo da keyart. |
+
+CV02 e Parallelizable: NO (mesmo lock scope da fable_78 e de Cave/**; nunca rodar as duas juntas).
+Nao promovida a SPEC_EXECUTION_ORDER.md - aguarda autorizacao humana.

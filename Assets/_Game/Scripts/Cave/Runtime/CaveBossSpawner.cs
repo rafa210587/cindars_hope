@@ -84,7 +84,9 @@ namespace CindarsHope.Cave.Runtime
                 spriteRenderer.sprite = GetBuiltinSprite();
                 spriteRenderer.color = GetBossColor();
             }
-            spriteRenderer.sortingOrder = 3;
+            spriteRenderer.sortingOrder = 0;
+            spriteRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            spriteRenderer.sortingLayerName = CaveWorldSortingLayers.World;
 
             var bossScale = GetBossScale(bossEnemyData);
             _spawnedBoss.transform.localScale = Vector3.one * bossScale;
@@ -454,7 +456,9 @@ namespace CindarsHope.Cave.Runtime
             var spriteRenderer = add.AddComponent<SpriteRenderer>();
             spriteRenderer.sprite = addData.Icon != null ? addData.Icon : GetBuiltinSprite();
             spriteRenderer.color = addData.Icon != null ? Color.white : new Color(0.85f, 0.23f, 0.23f);
-            spriteRenderer.sortingOrder = 3;
+            spriteRenderer.sortingOrder = 0;
+            spriteRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            spriteRenderer.sortingLayerName = CaveWorldSortingLayers.World;
 
             var addScale = Mathf.Max(0.1f, addData.VisualScale);
             add.transform.localScale = new Vector3(addScale, addScale, 1f);

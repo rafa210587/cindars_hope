@@ -60,8 +60,12 @@ namespace CindarsHope.Editor.NPC
         public static void AssignAll()
         {
             var guids = AssetDatabase.FindAssets("t:NpcDataSO", new[] { NpcDataRoot });
-            int assigned = 0;
-            int skipped  = 0;
+            int skipped = 0;
+
+            // Fase 1 (leitura, fora de batching): resolve NpcDataSO -> pngPath e so enfileira
+            // reimport para os PNGs que ainda nao estao com os settings desejados.
+            var toAssign = new List<(NpcDataSO npcData, string pngPath)>();
+            var toReimport = new List<TextureImporter>();
 
             foreach (var guid in guids)
             {
@@ -87,8 +91,35 @@ namespace CindarsHope.Editor.NPC
                     continue;
                 }
 
-                ConfigureImporter(pngPath);
+                if (TryConfigureImporter(pngPath, out var importer))
+                {
+                    toReimport.Add(importer);
+                }
 
+                toAssign.Add((npcData, pngPath));
+            }
+
+            // Fase 2 (escrita em lote): 1 unico Asset Pipeline Refresh para todos os PNGs pendentes.
+            if (toReimport.Count > 0)
+            {
+                AssetDatabase.StartAssetEditing();
+                try
+                {
+                    foreach (var importer in toReimport)
+                    {
+                        importer.SaveAndReimport();
+                    }
+                }
+                finally
+                {
+                    AssetDatabase.StopAssetEditing();
+                }
+            }
+
+            // Fase 3 (leitura pos-import): so agora os resultados do reimport estao materializados.
+            int assigned = 0;
+            foreach (var (npcData, pngPath) in toAssign)
+            {
                 var sprite = AssetDatabase.LoadAssetAtPath<Sprite>(pngPath);
                 if (sprite == null)
                 {
@@ -108,13 +139,39 @@ namespace CindarsHope.Editor.NPC
 
             AssetDatabase.SaveAssets();
             Debug.Log(
-                $"[AssignNpcBodySprites] Concluido. Atribuidos: {assigned} | Pulados/sem-PNG: {skipped}.");
+                $"[AssignNpcBodySprites] Concluido. Atribuidos: {assigned} | " +
+                $"Reimportados: {toReimport.Count} | Pulados/sem-PNG: {skipped}.");
         }
 
-        private static void ConfigureImporter(string pngPath)
+        /// <summary>
+        /// Le os settings atuais do importer e, se ja corretos (idempotencia), nao enfileira
+        /// reimport. Retorna true (com o importer) quando ha mudanca pendente.
+        /// </summary>
+        private static bool TryConfigureImporter(string pngPath, out TextureImporter importer)
         {
-            var importer = AssetImporter.GetAtPath(pngPath) as TextureImporter;
-            if (importer == null) return;
+            importer = AssetImporter.GetAtPath(pngPath) as TextureImporter;
+            if (importer == null) return false;
+
+            var settings = new TextureImporterSettings();
+            importer.ReadTextureSettings(settings);
+
+            bool typeOk = importer.textureType == TextureImporterType.Sprite;
+            bool modeOk = importer.spriteImportMode == SpriteImportMode.Single;
+            bool pivotOk = importer.spritePivot == new Vector2(0.5f, 0f);
+            bool ppuOk = Mathf.Approximately(importer.spritePixelsPerUnit, 234f);
+            bool filterOk = importer.filterMode == FilterMode.Point;
+            bool mipmapOk = !importer.mipmapEnabled;
+            bool alphaOk = importer.alphaIsTransparency;
+            bool maxSizeOk = importer.maxTextureSize == 256;
+            bool compressionOk = importer.textureCompression == TextureImporterCompression.Uncompressed;
+            bool meshTypeOk = settings.spriteMeshType == SpriteMeshType.FullRect;
+            bool alignmentOk = settings.spriteAlignment == (int)SpriteAlignment.BottomCenter;
+
+            if (typeOk && modeOk && pivotOk && ppuOk && filterOk && mipmapOk && alphaOk
+                && maxSizeOk && compressionOk && meshTypeOk && alignmentOk)
+            {
+                return false;
+            }
 
             importer.textureType         = TextureImporterType.Sprite;
             importer.spriteImportMode    = SpriteImportMode.Single;
@@ -130,13 +187,11 @@ namespace CindarsHope.Editor.NPC
             importer.maxTextureSize      = 256;
             importer.textureCompression  = TextureImporterCompression.Uncompressed;
 
-            var settings = new TextureImporterSettings();
-            importer.ReadTextureSettings(settings);
             settings.spriteMeshType   = SpriteMeshType.FullRect;
             settings.spriteAlignment  = (int)SpriteAlignment.BottomCenter;
             importer.SetTextureSettings(settings);
 
-            importer.SaveAndReimport();
+            return true;
         }
     }
 }

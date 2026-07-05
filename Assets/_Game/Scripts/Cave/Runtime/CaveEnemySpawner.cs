@@ -105,7 +105,9 @@ namespace CindarsHope.Cave.Runtime
                 spriteRenderer.sprite = GetBuiltinSprite();
                 spriteRenderer.color = new Color(0.85f, 0.23f, 0.23f);
             }
-            spriteRenderer.sortingOrder = 3;
+            spriteRenderer.sortingOrder = 0;
+            spriteRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            spriteRenderer.sortingLayerName = CaveWorldSortingLayers.World;
 
             // Data-driven scale via EnemyScaleResolver (player-relative), identical ao caminho do
             // CaveRuntimeMaterializer. VisualScale hardcoded era ignorado para size class; agora

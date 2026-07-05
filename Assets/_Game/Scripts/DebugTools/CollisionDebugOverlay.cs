@@ -16,9 +16,9 @@ namespace CindarsHope.DebugTools
         [SerializeField] private KeyCode _toggleKey = KeyCode.F7;
         [SerializeField] private KeyCode _zoomKey = KeyCode.F8;
 
-        // Tamanho ortográfico no super zoom-out. 34 => ~68 unidades de altura visíveis, com folga
-        // para pegar a cidade inteira (~56×48) + arredores/margem sem cortar as bordas.
-        private const float ZoomOutOrthoSize = 34f;
+        // Tamanho ortográfico no super zoom-out. 42.5 => ~85 unidades de altura visíveis (~25% mais
+        // distante que o valor anterior de 34), pegando a cidade inteira (~56×48) + arredores largos.
+        private const float ZoomOutOrthoSize = 42.5f;
 
         // Recria o overlay periodicamente enquanto ligado, para acompanhar colliders que se movem (NPCs).
         private const float RebuildInterval = 0.3f;
@@ -111,7 +111,11 @@ namespace CindarsHope.DebugTools
                 var sr = go.AddComponent<SpriteRenderer>();
                 sr.sprite = Marker();
                 sr.color = c.isTrigger ? new Color(0.2f, 0.8f, 1f, 0.28f) : new Color(1f, 0.25f, 0.2f, 0.42f);
-                sr.sortingOrder = 32000; // por cima de tudo
+                sr.sortingOrder = 32000; // por cima de tudo dentro da layer
+                // "Roof" e a sorting layer mais alta do contrato Ground/World/Roof (FASE 1) — Default
+                // nao fica mais acima de tudo, entao o overlay de debug precisa da layer explicita para
+                // continuar cobrindo o mundo.
+                sr.sortingLayerName = CindarsHope.World.WorldSortingLayers.Roof;
                 _markers.Add(go);
             }
         }

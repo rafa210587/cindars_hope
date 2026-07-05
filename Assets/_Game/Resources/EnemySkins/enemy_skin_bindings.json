@@ -1,0 +1,1152 @@
+{
+    "schemaVersion": 1,
+    "bindings": [
+        {
+            "id": "boss_archivist_of_silence",
+            "slugs": [
+                "boss_archivist_of_silence"
+            ]
+        },
+        {
+            "id": "boss_cindrathel",
+            "slugs": [
+                "boss_cindrathel"
+            ]
+        },
+        {
+            "id": "boss_ithryndor",
+            "slugs": [
+                "boss_ithryndor"
+            ]
+        },
+        {
+            "id": "boss_vel_karaum",
+            "slugs": [
+                "boss_vel_karaum"
+            ]
+        },
+        {
+            "id": "enemy_abyssal_gatekeeper",
+            "slugs": [
+                "abyssal_gatekeeper"
+            ]
+        },
+        {
+            "id": "enemy_abyssal_hound",
+            "slugs": [
+                "abyssal_hound"
+            ]
+        },
+        {
+            "id": "enemy_abyssal_lurker",
+            "slugs": [
+                "abyssal_lurker"
+            ]
+        },
+        {
+            "id": "enemy_abyssal_riftstalker",
+            "slugs": [
+                "abyssal_lurker",
+                "gloomspine_lurker"
+            ]
+        },
+        {
+            "id": "enemy_abyssal_void_reaver",
+            "slugs": [
+                "abyssal_gatekeeper",
+                "gen_void_reaver"
+            ]
+        },
+        {
+            "id": "enemy_ash_crawler",
+            "slugs": [
+                "ember_scorpion",
+                "magma_slug",
+                "gen_centipede"
+            ]
+        },
+        {
+            "id": "enemy_ashwing_matriarch",
+            "slugs": [
+                "ashwing_matriarch"
+            ]
+        },
+        {
+            "id": "enemy_bandit_scavenger",
+            "slugs": [
+                "bandit_scavenger"
+            ]
+        },
+        {
+            "id": "enemy_blackroot_sprout",
+            "slugs": [
+                "fungal_spreader",
+                "rotcap_cluster",
+                "gen_black_root"
+            ]
+        },
+        {
+            "id": "enemy_blackstone_thrall",
+            "slugs": [
+                "blackstone_thrall"
+            ]
+        },
+        {
+            "id": "enemy_blackstone_wyvern",
+            "slugs": [
+                "cindershard_wyrm",
+                "gen_wyvern",
+                "draconic_guardian"
+            ]
+        },
+        {
+            "id": "enemy_burrow_matron",
+            "slugs": [
+                "burrow_matron"
+            ]
+        },
+        {
+            "id": "enemy_burrowing_maggot",
+            "slugs": [
+                "burrowing_maggot"
+            ]
+        },
+        {
+            "id": "enemy_cave_bat",
+            "slugs": [
+                "roost_cave_bat",
+                "gen_cave_bat"
+            ]
+        },
+        {
+            "id": "enemy_cave_burrower_elite",
+            "slugs": [
+                "cave_burrower_elite"
+            ]
+        },
+        {
+            "id": "enemy_cave_leaper",
+            "slugs": [
+                "cave_leaper"
+            ]
+        },
+        {
+            "id": "enemy_cave_mite",
+            "slugs": [
+                "verdant_mite",
+                "cave_mite_queen",
+                "gen_mite"
+            ]
+        },
+        {
+            "id": "enemy_cave_mite_queen",
+            "slugs": [
+                "cave_mite_queen"
+            ]
+        },
+        {
+            "id": "enemy_cave_stalker_cat",
+            "slugs": [
+                "cave_stalker_cat"
+            ]
+        },
+        {
+            "id": "enemy_chromatic_hoardling",
+            "slugs": [
+                "chromatic_hoardling"
+            ]
+        },
+        {
+            "id": "enemy_cinder_shade",
+            "slugs": [
+                "cinder_shade"
+            ]
+        },
+        {
+            "id": "enemy_cinder_spitter",
+            "slugs": [
+                "cinder_shade",
+                "magma_slug"
+            ]
+        },
+        {
+            "id": "enemy_cindershard_wyrm",
+            "slugs": [
+                "cindershard_wyrm"
+            ]
+        },
+        {
+            "id": "enemy_clockwork_guard",
+            "slugs": [
+                "construct_sentry",
+                "rune_sentry_mk2",
+                "gen_clockwork"
+            ]
+        },
+        {
+            "id": "enemy_cold_cult_acolyte",
+            "slugs": [
+                "coldcult_preacher",
+                "cultist_zealot"
+            ]
+        },
+        {
+            "id": "enemy_coldcult_preacher",
+            "slugs": [
+                "coldcult_preacher"
+            ]
+        },
+        {
+            "id": "enemy_construct_sentry",
+            "slugs": [
+                "construct_sentry"
+            ]
+        },
+        {
+            "id": "enemy_corrupt_pseudowyrm",
+            "slugs": [
+                "corrupt_pseudowyrm"
+            ]
+        },
+        {
+            "id": "enemy_corrupted_bone_knight",
+            "slugs": [
+                "frostbound_revenant",
+                "gen_skeleton_knight"
+            ]
+        },
+        {
+            "id": "enemy_corrupted_draconic_spawn",
+            "slugs": [
+                "draconic_wyrmling",
+                "corrupt_pseudowyrm",
+                "gen_draconic_spawn"
+            ]
+        },
+        {
+            "id": "enemy_corrupted_lich_shard",
+            "slugs": [
+                "undead_lich_acolyte",
+                "gen_lich"
+            ]
+        },
+        {
+            "id": "enemy_corrupted_orc_champion",
+            "slugs": [
+                "corrupted_orc_champion"
+            ]
+        },
+        {
+            "id": "enemy_corrupted_vine_horror",
+            "slugs": [
+                "corrupted_vine_horror"
+            ]
+        },
+        {
+            "id": "enemy_cracked_bone",
+            "slugs": [
+                "undead_shambler",
+                "gen_cracked_skeleton",
+                "gen_bone_archer"
+            ]
+        },
+        {
+            "id": "enemy_cracked_golem_shard",
+            "slugs": [
+                "cracked_golem_shard"
+            ]
+        },
+        {
+            "id": "enemy_crystal_hound",
+            "slugs": [
+                "crystal_hound"
+            ]
+        },
+        {
+            "id": "enemy_crystal_leaper",
+            "slugs": [
+                "crystal_hound",
+                "cave_leaper"
+            ]
+        },
+        {
+            "id": "enemy_cultist_zealot",
+            "slugs": [
+                "cultist_zealot"
+            ]
+        },
+        {
+            "id": "enemy_deep_angler",
+            "slugs": [
+                "deep_angler"
+            ]
+        },
+        {
+            "id": "enemy_draconic_ashspitter",
+            "slugs": [
+                "draconic_wyrmling",
+                "sulfur_wyrmling"
+            ]
+        },
+        {
+            "id": "enemy_draconic_elder",
+            "slugs": [
+                "draconic_elder"
+            ]
+        },
+        {
+            "id": "enemy_draconic_elder_kin",
+            "slugs": [
+                "draconic_elder",
+                "draconic_guardian",
+                "gen_dragon_elder"
+            ]
+        },
+        {
+            "id": "enemy_draconic_guardian",
+            "slugs": [
+                "draconic_guardian"
+            ]
+        },
+        {
+            "id": "enemy_draconic_void_wyrm",
+            "slugs": [
+                "corrupt_pseudowyrm",
+                "cindershard_wyrm"
+            ]
+        },
+        {
+            "id": "enemy_draconic_wyrmling",
+            "slugs": [
+                "draconic_wyrmling"
+            ]
+        },
+        {
+            "id": "enemy_dread_choir",
+            "slugs": [
+                "dread_choir"
+            ]
+        },
+        {
+            "id": "enemy_dread_chorister",
+            "slugs": [
+                "dread_chorister"
+            ]
+        },
+        {
+            "id": "enemy_drow_arcane_adept",
+            "slugs": [
+                "veilkin_witch",
+                "gen_drow"
+            ]
+        },
+        {
+            "id": "enemy_drow_shadow_warden",
+            "slugs": [
+                "veilkin_voidknight",
+                "veilkin_blademaster",
+                "gen_drow"
+            ]
+        },
+        {
+            "id": "enemy_drow_shadowblade",
+            "slugs": [
+                "veilkin_skirmisher",
+                "veilkin_voidassassin",
+                "gen_drow"
+            ]
+        },
+        {
+            "id": "enemy_duergar_frostdelver",
+            "slugs": [
+                "gen_duergar",
+                "gnome_tinkerer"
+            ]
+        },
+        {
+            "id": "enemy_duergar_shieldbreaker",
+            "slugs": [
+                "gen_duergar",
+                "gnome_wargolem"
+            ]
+        },
+        {
+            "id": "enemy_earth_elemental_greater",
+            "slugs": [
+                "earth_elemental_greater"
+            ]
+        },
+        {
+            "id": "enemy_earth_elemental_minor",
+            "slugs": [
+                "earth_elemental_minor"
+            ]
+        },
+        {
+            "id": "enemy_ember_hound",
+            "slugs": [
+                "ember_hound"
+            ]
+        },
+        {
+            "id": "enemy_ember_scorpion",
+            "slugs": [
+                "ember_scorpion"
+            ]
+        },
+        {
+            "id": "enemy_ember_tick",
+            "slugs": [
+                "gen_tick",
+                "ember_scorpion"
+            ]
+        },
+        {
+            "id": "enemy_emberroot_horror",
+            "slugs": [
+                "emberroot_horror"
+            ]
+        },
+        {
+            "id": "enemy_forge_tyrant_vask",
+            "slugs": [
+                "forge_tyrant_vask"
+            ]
+        },
+        {
+            "id": "enemy_frost_gnawer",
+            "slugs": [
+                "gen_frost_rodent",
+                "frost_wisp"
+            ]
+        },
+        {
+            "id": "enemy_frost_wailer",
+            "slugs": [
+                "frost_wisp",
+                "frostshard_wisp",
+                "gen_wraith"
+            ]
+        },
+        {
+            "id": "enemy_frost_wisp",
+            "slugs": [
+                "frost_wisp"
+            ]
+        },
+        {
+            "id": "enemy_frostbound_revenant",
+            "slugs": [
+                "frostbound_revenant"
+            ]
+        },
+        {
+            "id": "enemy_frostshard_wisp",
+            "slugs": [
+                "frostshard_wisp"
+            ]
+        },
+        {
+            "id": "enemy_fungal_patriarch",
+            "slugs": [
+                "fungal_patriarch"
+            ]
+        },
+        {
+            "id": "enemy_fungal_spreader",
+            "slugs": [
+                "fungal_spreader"
+            ]
+        },
+        {
+            "id": "enemy_fungal_tyrant_sprout",
+            "slugs": [
+                "fungal_tyrant_sprout"
+            ]
+        },
+        {
+            "id": "enemy_furnace_warden",
+            "slugs": [
+                "forge_tyrant_vask",
+                "steam_golem_proto",
+                "gen_furnace_golem"
+            ]
+        },
+        {
+            "id": "enemy_glacier_maw",
+            "slugs": [
+                "glacier_maw"
+            ]
+        },
+        {
+            "id": "enemy_glacier_tick",
+            "slugs": [
+                "glacier_tick"
+            ]
+        },
+        {
+            "id": "enemy_glassbone",
+            "slugs": [
+                "frostbound_revenant",
+                "gen_cracked_skeleton"
+            ]
+        },
+        {
+            "id": "enemy_glimmer_centipede",
+            "slugs": [
+                "glimmer_centipede"
+            ]
+        },
+        {
+            "id": "enemy_gloom_moth",
+            "slugs": [
+                "gloom_moth"
+            ]
+        },
+        {
+            "id": "enemy_gloomspine_lurker",
+            "slugs": [
+                "gloomspine_lurker"
+            ]
+        },
+        {
+            "id": "enemy_gnome_gem_madcap",
+            "slugs": [
+                "gnome_tinkerer"
+            ]
+        },
+        {
+            "id": "enemy_gnome_tinkerer",
+            "slugs": [
+                "gnome_tinkerer"
+            ]
+        },
+        {
+            "id": "enemy_gnome_wargolem",
+            "slugs": [
+                "gnome_wargolem"
+            ]
+        },
+        {
+            "id": "enemy_gnomorin_rune_tinker",
+            "slugs": [
+                "gnome_tinkerer",
+                "gnome_wargolem"
+            ]
+        },
+        {
+            "id": "enemy_goblin_grashnaar_scavenger",
+            "slugs": [
+                "goblin_scrounger",
+                "goblin_shredder",
+                "gen_goblin"
+            ]
+        },
+        {
+            "id": "enemy_goblin_scrounger",
+            "slugs": [
+                "goblin_scrounger"
+            ]
+        },
+        {
+            "id": "enemy_goblin_shaman",
+            "slugs": [
+                "goblin_shaman"
+            ]
+        },
+        {
+            "id": "enemy_goblin_shredder",
+            "slugs": [
+                "goblin_shredder"
+            ]
+        },
+        {
+            "id": "enemy_goblin_urudakh_trapper",
+            "slugs": [
+                "goblin_shredder",
+                "goblin_shaman",
+                "gen_goblin"
+            ]
+        },
+        {
+            "id": "enemy_goblin_warchief",
+            "slugs": [
+                "goblin_warchief"
+            ]
+        },
+        {
+            "id": "enemy_gravedelver_artificer_lord",
+            "slugs": [
+                "gravedelver_artificer_lord"
+            ]
+        },
+        {
+            "id": "enemy_gravedelver_crossbowman",
+            "slugs": [
+                "gravedelver_crossbowman"
+            ]
+        },
+        {
+            "id": "enemy_gravedelver_runepriest",
+            "slugs": [
+                "gravedelver_runepriest"
+            ]
+        },
+        {
+            "id": "enemy_gravedelver_warder",
+            "slugs": [
+                "gravedelver_warder"
+            ]
+        },
+        {
+            "id": "enemy_gravelborn_twins",
+            "slugs": [
+                "gravelborn_twins"
+            ]
+        },
+        {
+            "id": "enemy_grimfang_packleader",
+            "slugs": [
+                "grimfang_packleader"
+            ]
+        },
+        {
+            "id": "enemy_heralds_hand",
+            "slugs": [
+                "heralds_hand"
+            ]
+        },
+        {
+            "id": "enemy_hoardmaw",
+            "slugs": [
+                "hoardmaw"
+            ]
+        },
+        {
+            "id": "enemy_hollow_stagling",
+            "slugs": [
+                "gen_hollow_stag"
+            ]
+        },
+        {
+            "id": "enemy_icebound_sentinel",
+            "slugs": [
+                "rimelock_colossus",
+                "construct_sentry",
+                "gen_sentinel"
+            ]
+        },
+        {
+            "id": "enemy_kobold_scout",
+            "slugs": [
+                "kobold_sentry",
+                "kobold_trapmaster"
+            ]
+        },
+        {
+            "id": "enemy_kobold_sentry",
+            "slugs": [
+                "kobold_sentry"
+            ]
+        },
+        {
+            "id": "enemy_kobold_trapmaster",
+            "slugs": [
+                "kobold_trapmaster"
+            ]
+        },
+        {
+            "id": "enemy_lake_lurker",
+            "slugs": [
+                "lake_lurker"
+            ]
+        },
+        {
+            "id": "enemy_lava_bulwark",
+            "slugs": [
+                "forge_tyrant_vask",
+                "gen_furnace_golem"
+            ]
+        },
+        {
+            "id": "enemy_magma_slug",
+            "slugs": [
+                "magma_slug"
+            ]
+        },
+        {
+            "id": "enemy_mindbound_thrall",
+            "slugs": [
+                "mindbound_thrall"
+            ]
+        },
+        {
+            "id": "enemy_mirror_adept",
+            "slugs": [
+                "mirror_golem",
+                "gen_mirror_adept",
+                "veilkin_witch"
+            ]
+        },
+        {
+            "id": "enemy_mirror_golem",
+            "slugs": [
+                "mirror_golem"
+            ]
+        },
+        {
+            "id": "enemy_mirrorfin_shoal",
+            "slugs": [
+                "mirrorfin_shoal"
+            ]
+        },
+        {
+            "id": "enemy_mossling",
+            "slugs": [
+                "mushroom_puffball",
+                "spore_crawler",
+                "gen_mossling"
+            ]
+        },
+        {
+            "id": "enemy_mushroom_puffball",
+            "slugs": [
+                "mushroom_puffball"
+            ]
+        },
+        {
+            "id": "enemy_mycelial_warden",
+            "slugs": [
+                "mycelial_warden"
+            ]
+        },
+        {
+            "id": "enemy_mycobulwark",
+            "slugs": [
+                "mycelial_warden",
+                "fungal_tyrant_sprout",
+                "gen_mushroom_bulwark"
+            ]
+        },
+        {
+            "id": "enemy_night_haunt",
+            "slugs": [
+                "night_haunt"
+            ]
+        },
+        {
+            "id": "enemy_ninrorin_echo_shade",
+            "slugs": [
+                "ninrorin_phantom",
+                "ninrorin_echo_warrior"
+            ]
+        },
+        {
+            "id": "enemy_ninrorin_echo_warrior",
+            "slugs": [
+                "ninrorin_echo_warrior"
+            ]
+        },
+        {
+            "id": "enemy_ninrorin_phantom",
+            "slugs": [
+                "ninrorin_phantom"
+            ]
+        },
+        {
+            "id": "enemy_ninrorin_phasewalker",
+            "slugs": [
+                "ninrorin_phantom",
+                "night_haunt"
+            ]
+        },
+        {
+            "id": "enemy_ninrorin_void_acolyte",
+            "slugs": [
+                "nyx_shade_elemental",
+                "veilkin_witch"
+            ]
+        },
+        {
+            "id": "enemy_ninrorin_void_knight",
+            "slugs": [
+                "veilkin_voidknight",
+                "ninrorin_echo_warrior"
+            ]
+        },
+        {
+            "id": "enemy_ninrorin_void_sentinel",
+            "slugs": [
+                "sealed_observer",
+                "silence_warden"
+            ]
+        },
+        {
+            "id": "enemy_nyx_moth",
+            "slugs": [
+                "gloom_moth",
+                "gen_moth"
+            ]
+        },
+        {
+            "id": "enemy_nyx_shade_elemental",
+            "slugs": [
+                "nyx_shade_elemental"
+            ]
+        },
+        {
+            "id": "enemy_oathless_shade",
+            "slugs": [
+                "silence_warden",
+                "night_haunt",
+                "gen_wraith"
+            ]
+        },
+        {
+            "id": "enemy_orc_berserker",
+            "slugs": [
+                "orc_grunt",
+                "gen_orc"
+            ]
+        },
+        {
+            "id": "enemy_orc_drummer",
+            "slugs": [
+                "orc_drummer"
+            ]
+        },
+        {
+            "id": "enemy_orc_grunt",
+            "slugs": [
+                "orc_grunt"
+            ]
+        },
+        {
+            "id": "enemy_orc_kaand_ashcaller",
+            "slugs": [
+                "orc_drummer",
+                "veilkin_pyrecaller",
+                "gen_orc"
+            ]
+        },
+        {
+            "id": "enemy_orc_kaand_berserker",
+            "slugs": [
+                "orc_grunt",
+                "gen_orc"
+            ]
+        },
+        {
+            "id": "enemy_orc_nyx_stalker",
+            "slugs": [
+                "orc_grunt",
+                "corrupted_orc_champion",
+                "gen_orc"
+            ]
+        },
+        {
+            "id": "enemy_orc_warlord",
+            "slugs": [
+                "orc_warlord"
+            ]
+        },
+        {
+            "id": "enemy_packlord_ruvash",
+            "slugs": [
+                "packlord_ruvash"
+            ]
+        },
+        {
+            "id": "enemy_pale_grub",
+            "slugs": [
+                "pale_grub"
+            ]
+        },
+        {
+            "id": "enemy_puzzle_golem",
+            "slugs": [
+                "gnome_wargolem",
+                "rune_sentry_mk2",
+                "gen_puzzle_golem"
+            ]
+        },
+        {
+            "id": "enemy_reality_render",
+            "slugs": [
+                "reality_render"
+            ]
+        },
+        {
+            "id": "enemy_rime_stalker",
+            "slugs": [
+                "rime_stalker"
+            ]
+        },
+        {
+            "id": "enemy_rimelock_colossus",
+            "slugs": [
+                "rimelock_colossus"
+            ]
+        },
+        {
+            "id": "enemy_roost_cave_bat",
+            "slugs": [
+                "roost_cave_bat"
+            ]
+        },
+        {
+            "id": "enemy_rootsnare",
+            "slugs": [
+                "corrupted_vine_horror",
+                "gen_root_snare",
+                "gen_vine_lasher"
+            ]
+        },
+        {
+            "id": "enemy_rot_beetle",
+            "slugs": [
+                "rot_beetle"
+            ]
+        },
+        {
+            "id": "enemy_rotcap_cluster",
+            "slugs": [
+                "rotcap_cluster"
+            ]
+        },
+        {
+            "id": "enemy_ruin_warden",
+            "slugs": [
+                "ruin_warden"
+            ]
+        },
+        {
+            "id": "enemy_rune_sentry_mk2",
+            "slugs": [
+                "rune_sentry_mk2"
+            ]
+        },
+        {
+            "id": "enemy_rune_shard",
+            "slugs": [
+                "rune_sentry_mk2",
+                "cracked_golem_shard"
+            ]
+        },
+        {
+            "id": "enemy_runic_warbeast",
+            "slugs": [
+                "runic_warbeast"
+            ]
+        },
+        {
+            "id": "enemy_scorched_cultist",
+            "slugs": [
+                "cultist_zealot",
+                "veilkin_pyromancer"
+            ]
+        },
+        {
+            "id": "enemy_scrounger_king",
+            "slugs": [
+                "scrounger_king"
+            ]
+        },
+        {
+            "id": "enemy_sealed_knight",
+            "slugs": [
+                "sealed_observer",
+                "ruin_warden",
+                "gen_animated_armor"
+            ]
+        },
+        {
+            "id": "enemy_sealed_observer",
+            "slugs": [
+                "sealed_observer"
+            ]
+        },
+        {
+            "id": "enemy_shadow_sentinel",
+            "slugs": [
+                "silence_warden",
+                "gen_shadow_sentinel"
+            ]
+        },
+        {
+            "id": "enemy_silence_warden",
+            "slugs": [
+                "silence_warden"
+            ]
+        },
+        {
+            "id": "enemy_spore_amalgam",
+            "slugs": [
+                "spore_amalgam"
+            ]
+        },
+        {
+            "id": "enemy_spore_crawler",
+            "slugs": [
+                "spore_crawler"
+            ]
+        },
+        {
+            "id": "enemy_spore_imp",
+            "slugs": [
+                "rotcap_cluster",
+                "gen_spore_imp",
+                "mushroom_puffball"
+            ]
+        },
+        {
+            "id": "enemy_starfall_remnant",
+            "slugs": [
+                "starfall_remnant"
+            ]
+        },
+        {
+            "id": "enemy_steam_golem_proto",
+            "slugs": [
+                "steam_golem_proto"
+            ]
+        },
+        {
+            "id": "enemy_stone_burrower",
+            "slugs": [
+                "stone_burrower"
+            ]
+        },
+        {
+            "id": "enemy_stone_rat",
+            "slugs": [
+                "gen_dire_rat",
+                "gen_frost_rodent"
+            ]
+        },
+        {
+            "id": "enemy_sulfur_wyrmling",
+            "slugs": [
+                "sulfur_wyrmling"
+            ]
+        },
+        {
+            "id": "enemy_thorn_archer",
+            "slugs": [
+                "gen_thorn_archer",
+                "fungal_spreader"
+            ]
+        },
+        {
+            "id": "enemy_undead_lich_acolyte",
+            "slugs": [
+                "undead_lich_acolyte"
+            ]
+        },
+        {
+            "id": "enemy_undead_shambler",
+            "slugs": [
+                "undead_shambler"
+            ]
+        },
+        {
+            "id": "enemy_veilkin_blademaster",
+            "slugs": [
+                "veilkin_blademaster"
+            ]
+        },
+        {
+            "id": "enemy_veilkin_iceblade",
+            "slugs": [
+                "veilkin_iceblade"
+            ]
+        },
+        {
+            "id": "enemy_veilkin_pyrecaller",
+            "slugs": [
+                "veilkin_pyrecaller"
+            ]
+        },
+        {
+            "id": "enemy_veilkin_pyromancer",
+            "slugs": [
+                "veilkin_pyromancer"
+            ]
+        },
+        {
+            "id": "enemy_veilkin_skirmisher",
+            "slugs": [
+                "veilkin_skirmisher"
+            ]
+        },
+        {
+            "id": "enemy_veilkin_voidassassin",
+            "slugs": [
+                "veilkin_voidassassin"
+            ]
+        },
+        {
+            "id": "enemy_veilkin_voidknight",
+            "slugs": [
+                "veilkin_voidknight"
+            ]
+        },
+        {
+            "id": "enemy_veilkin_witch",
+            "slugs": [
+                "veilkin_witch"
+            ]
+        },
+        {
+            "id": "enemy_verdant_mite",
+            "slugs": [
+                "verdant_mite"
+            ]
+        },
+        {
+            "id": "enemy_void_brood_larva",
+            "slugs": [
+                "void_brood_larva"
+            ]
+        },
+        {
+            "id": "enemy_void_herald",
+            "slugs": [
+                "void_herald"
+            ]
+        },
+        {
+            "id": "enemy_void_husk",
+            "slugs": [
+                "void_husk"
+            ]
+        },
+        {
+            "id": "enemy_void_spitter",
+            "slugs": [
+                "void_tendril_watcher",
+                "void_husk",
+                "gen_void_aberration"
+            ]
+        },
+        {
+            "id": "enemy_void_tendril_watcher",
+            "slugs": [
+                "void_tendril_watcher"
+            ]
+        },
+        {
+            "id": "enemy_void_tick",
+            "slugs": [
+                "void_brood_larva",
+                "gen_tick"
+            ]
+        },
+        {
+            "id": "enemy_whisper_of_veyraath",
+            "slugs": [
+                "whisper_of_veyraath"
+            ]
+        }
+    ]
+}

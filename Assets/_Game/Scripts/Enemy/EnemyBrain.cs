@@ -64,6 +64,11 @@ namespace CindarsHope.Enemy
 
         public EnemyBrainState CurrentState => _currentState;
 
+        /// <summary>ActionId da acao em windup/recover agora (null se nenhuma). Passthrough somente-leitura
+        /// do <see cref="EnemyActionRunner.PendingAction"/> para o EnemyAnimator (componente irmao) escolher
+        /// a folha de ataque (normal vs "_special"). Nao altera comportamento de combate.</summary>
+        public string CurrentActionId => _actions != null ? _actions.PendingAction?.ActionId : null;
+
         // F01: modificadores externos aplicados por status effects (Chill/Slow/Root/Fear/ConfusionLite).
         private float _externalSpeedMultiplier = 1f;
         private float _externalSpeedUntil;

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using CindarsHope.Cave.Art;
 using CindarsHope.Cave.Data;
 using CindarsHope.Cave.Ecosystem;
 using CindarsHope.Cave.Generation;
@@ -59,6 +60,9 @@ namespace CindarsHope.Cave.Runtime
         [SerializeField] private CaveEcosystemBalanceSO _ecosystemBalance;
         [SerializeField] private SpriteRenderer _decorElementPrefab;
         [SerializeField] private SpriteRenderer _waterTilePrefab;
+        // spec_cave_biome_art_profiles_runtime (CV01): 8 profiles de arte por bioma (opcional; array
+        // vazio/profiles vazios = fallback integral aos placeholders atuais nos materializers).
+        [SerializeField] private CaveBiomeArtProfileSO[] _biomeArtProfiles = new CaveBiomeArtProfileSO[0];
 
         private GameObject _generatedRuntimeRoot;
         private CaveExitPortal _backExitPortal;
@@ -94,6 +98,9 @@ namespace CindarsHope.Cave.Runtime
         private CaveHazardMaterializer _hazardMaterializer;
         private CaveTrapMaterializer _trapMaterializer;
         private CaveEnvironmentElementMaterializer _environmentElementMaterializer;
+        // spec_cave_biome_art_profiles_runtime (CV01): resolver puro banda->arte; reconstruído se o
+        // array de profiles mudar (raro; array é estável por sessão de Editor/Play).
+        private CaveBiomeArtResolver _biomeArtResolver;
 
         public CaveExitPortal BackExitPortal => _backExitPortal;
         public CaveExitPortal ForwardExitPortal => _forwardExitPortal;
@@ -251,8 +258,16 @@ namespace CindarsHope.Cave.Runtime
         // Garante que todos os colaboradores estão instanciados antes da materialização.
         // Colaboradores stateless (Tile/Exit) são singletons de sessão.
         // Colaboradores com dependências são recriados se nulos.
+        // Fix pós-Play-Mode 2026-07-04: guard one-shot por instância — o wiring-error/status de
+        // resolução do biome art só precisa aparecer 1x por materializer (mesmo padrão de
+        // AudioManager._missingClipLogged, skill observability-and-logging).
+        private bool _biomeArtWiringLogged;
+
         private void EnsureCollaborators()
         {
+            // spec_cave_biome_art_profiles_runtime (CV01): resolvido primeiro — hazard/trap
+            // materializers o recebem no construtor.
+            _biomeArtResolver ??= new CaveBiomeArtResolver(ResolveBiomeArtProfiles());
             _tileMaterializer ??= new CaveTileMaterializer();
             _exitMaterializer ??= new CaveExitMaterializer();
             _resourceNodeMaterializer ??= new CaveResourceNodeMaterializer(
@@ -283,13 +298,15 @@ namespace CindarsHope.Cave.Runtime
             _hazardMaterializer ??= new CaveHazardMaterializer(
                 _hazardTilePrefab,
                 _inventoryManager,
-                _caveRunManager);
+                _caveRunManager,
+                _biomeArtResolver);
             _trapMaterializer ??= new CaveTrapMaterializer(
                 _trapTilePrefab,
                 _caveRunManager,
-                _playerTransform);
+                _playerTransform,
+                _biomeArtResolver);
             _environmentElementMaterializer ??= new CaveEnvironmentElementMaterializer(
-                _environmentElementDatabase,
+                ResolveEnvironmentElementDatabase(),
                 _ecosystemBalance,
                 _decorElementPrefab,
                 _waterTilePrefab,
@@ -297,7 +314,135 @@ namespace CindarsHope.Cave.Runtime
                 _resourceNodeDatabase,
                 _inventoryManager,
                 _equipmentManager,
-                _caveRunManager);
+                _caveRunManager,
+                _biomeArtResolver);
+        }
+
+        // Fix pós-Play-Mode 2026-07-04: cenas de CaveScene criadas ANTES da spec CV01 têm
+        // _biomeArtProfiles serializado vazio (nunca preenchido no Editor) — sem isto, o resolver
+        // fica sempre vazio e nenhum tile/sprite de bioma aparece, em silêncio. Precedente idêntico:
+        // EnsureCombatDatabasesBound() / Resources.Load<CombatRuntimeDatabasesRegistrySO> (linha
+        // ~545). Serialized field continua sendo a fonte de verdade quando preenchido; Resources é
+        // só o fallback.
+        private IReadOnlyList<CaveBiomeArtProfileSO> ResolveBiomeArtProfiles()
+        {
+            if (_biomeArtProfiles != null && _biomeArtProfiles.Length > 0)
+            {
+                LogBiomeArtWiringStatusOnce("serialized field", _biomeArtProfiles.Length);
+                return _biomeArtProfiles;
+            }
+
+            var registry = UnityEngine.Resources.Load<CaveBiomeArtProfileRegistrySO>("CaveBiomeArtProfileRegistry");
+            if (registry != null && registry.Profiles != null && registry.Profiles.Count > 0)
+            {
+                LogBiomeArtWiringStatusOnce("Resources/CaveBiomeArtProfileRegistry", registry.Profiles.Count);
+                return registry.Profiles;
+            }
+
+            LogBiomeArtWiringStatusOnce(registry == null ? "none (registry asset not found)" : "none (registry empty)", 0);
+            return System.Array.Empty<CaveBiomeArtProfileSO>();
+        }
+
+        private void LogBiomeArtWiringStatusOnce(string source, int count)
+        {
+            if (_biomeArtWiringLogged)
+            {
+                return;
+            }
+
+            _biomeArtWiringLogged = true;
+
+            if (count > 0)
+            {
+                CombatLog.Log(
+                    $"[Cave] CaveRuntimeMaterializer: biome art profiles resolved from {source} ({count} profile(s)).",
+                    this);
+                return;
+            }
+
+            Debug.LogWarning(
+                $"[Cave][Wiring] CaveRuntimeMaterializer: 0 CaveBiomeArtProfileSO resolved (source='{source}'). " +
+                $"Scene='{gameObject.scene.name}', go='{name}', field='_biomeArtProfiles'. " +
+                "Fallback ativo: chao/parede/hazard/trap/baus/saidas usam APENAS os placeholders " +
+                "proceduais atuais (sem arte de bioma). Corrija rodando CindarsHope/Inicializar Projeto " +
+                "(gera os 8 CaveBiomeArtProfileSO + o registry em Resources) ou wireie manualmente o " +
+                "array _biomeArtProfiles no Inspector desta CaveScene.",
+                this);
+        }
+
+        // Bugfix 2026-07-04 (mesmo padrão de ResolveBiomeArtProfiles/EnsureCombatDatabasesBound):
+        // guard one-shot por instância para o wiring-status do database de elementos ambientais.
+        private bool _environmentElementDatabaseWiringLogged;
+
+        // Bugfix 2026-07-04: CaveScene serializa _environmentElementDatabase como fileID: 0 (nunca
+        // foi wireado no Editor). Sem database, CaveEnvironmentElementPlanner nao recebe perfil por
+        // banda -> zero elementos ambientais materializados (decor real E placeholder), em silencio.
+        // Mesmo precedente de ResolveBiomeArtProfiles (linha ~327): serialized field continua sendo a
+        // fonte de verdade quando preenchido; Resources e so o fallback.
+        private CaveEnvironmentElementDatabaseSO ResolveEnvironmentElementDatabase()
+        {
+            if (_environmentElementDatabase != null)
+            {
+                LogEnvironmentElementDatabaseWiringStatusOnce("serialized field");
+                return _environmentElementDatabase;
+            }
+
+            var resolved = UnityEngine.Resources.Load<CaveEnvironmentElementDatabaseSO>("CaveEnvironmentElementDatabase");
+            if (resolved != null)
+            {
+                LogEnvironmentElementDatabaseWiringStatusOnce("Resources/CaveEnvironmentElementDatabase");
+                return resolved;
+            }
+
+            LogEnvironmentElementDatabaseWiringStatusOnce(null);
+            return null;
+        }
+
+        private void LogEnvironmentElementDatabaseWiringStatusOnce(string source)
+        {
+            if (_environmentElementDatabaseWiringLogged)
+            {
+                return;
+            }
+
+            _environmentElementDatabaseWiringLogged = true;
+
+            if (source != null)
+            {
+                CombatLog.Log(
+                    $"[Cave] CaveRuntimeMaterializer: environment element database resolved from {source}.",
+                    this);
+                return;
+            }
+
+            Debug.LogWarning(
+                "[Cave][Wiring] CaveRuntimeMaterializer: CaveEnvironmentElementDatabaseSO nao resolvido " +
+                "(nem serialized field, nem Resources/CaveEnvironmentElementDatabase). " +
+                $"Scene='{gameObject.scene.name}', go='{name}', field='_environmentElementDatabase'. " +
+                "Fallback ativo: zero elementos ambientais (decor/agua/no minerio de fable_78) sao " +
+                "materializados nesta cave. Corrija rodando CindarsHope/Inicializar Projeto (gera os 7 " +
+                "CaveEnvironmentElementProfileSO + o database em Resources) ou wireie manualmente o " +
+                "campo _environmentElementDatabase no Inspector desta CaveScene.",
+                this);
+        }
+
+        /// <summary>spec_cave_biome_art_profiles_runtime (CV01): resolver puro banda->arte, exposto
+        /// para o CaveLevelRuntimeController (evento) e para os materializers (fallback-first).</summary>
+        public CaveBiomeArtResolver BiomeArtResolver
+        {
+            get
+            {
+                EnsureCollaborators();
+                return _biomeArtResolver;
+            }
+        }
+
+        /// <summary>BiomeId de ARTE (não gameplay) do profile resolvido para a banda, ou string vazia
+        /// se não houver profile carregado para essa banda (fallback null-safe).</summary>
+        public string ResolveArtBiomeIdForBand(int bandId)
+        {
+            EnsureCollaborators();
+            return _biomeArtResolver.TryGetProfile(bandId, out var profile) ? profile.BiomeId : string.Empty;
         }
 
         private void MaterializeInternal(
@@ -371,8 +516,10 @@ namespace CindarsHope.Cave.Runtime
             _generatedRuntimeRoot.transform.position = Vector3.zero;
 
             // ORDEM SAGRADA — cave-stable-run / ADR-0005. Não altere a sequência.
-            _tileMaterializer.MaterializeFloor(generatedLevel, _generatedRuntimeRoot.transform, _floorTilePrefab, _materializedObjects, _lastMaterializationResult);
-            _tileMaterializer.MaterializeWalls(generatedLevel, _generatedRuntimeRoot.transform, _wallTilePrefab, _materializedObjects, _lastMaterializationResult);
+            var worldSeedForArt = _caveRunManager != null ? _caveRunManager.CaveWorldSeed : string.Empty;
+            var runSeedForArt = _caveRunManager != null ? _caveRunManager.CaveRunSeed : string.Empty;
+            _tileMaterializer.MaterializeFloor(generatedLevel, _generatedRuntimeRoot.transform, _floorTilePrefab, _materializedObjects, _lastMaterializationResult, _biomeArtResolver, worldSeedForArt, runSeedForArt);
+            _tileMaterializer.MaterializeWalls(generatedLevel, _generatedRuntimeRoot.transform, _wallTilePrefab, _materializedObjects, _lastMaterializationResult, _biomeArtResolver);
 
             _exitMaterializer.Materialize(
                 generatedLevel,
@@ -383,7 +530,8 @@ namespace CindarsHope.Cave.Runtime
                 _materializedObjects,
                 _lastMaterializationResult,
                 out _backExitPortal,
-                out _forwardExitPortal);
+                out _forwardExitPortal,
+                _biomeArtResolver);
 
             _resourceNodeMaterializer.MaterializeResourceNodes(
                 generatedLevel,

@@ -8,7 +8,7 @@ namespace CindarsHope.Editor.Validation
 {
     public static class ValidateWave20PlayableSliceAcceptance
     {
-        private const string MenuPath = "CindarsHope/Validate Wave 20 Playable Slice Acceptance";
+        private const string MenuPath = "CindarsHope/Archive/Validate Wave 20 Playable Slice Acceptance";
 
         [MenuItem(MenuPath)]
         public static void Validate()

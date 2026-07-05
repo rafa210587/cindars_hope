@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CindarsHope.Cave.Art;
 using CindarsHope.Cave.Generation;
 using CindarsHope.Combat;
 using UnityEngine;
@@ -14,6 +15,7 @@ namespace CindarsHope.Cave.Runtime
         /// <summary>
         /// Materializa a entrada (BackExit) e a saída (ForwardExit) do nível como portais.
         /// Preenche backExit e forwardExit; atualiza result.BackExitPosition e ForwardExitPosition.
+        /// biomeArtResolver é opcional (null = comportamento atual, cores placeholder).
         /// </summary>
         internal void Materialize(
             CaveGeneratedLevel level,
@@ -24,8 +26,18 @@ namespace CindarsHope.Cave.Runtime
             List<GameObject> materializedObjects,
             CaveRuntimeMaterializationResult result,
             out CaveExitPortal backExit,
-            out CaveExitPortal forwardExit)
+            out CaveExitPortal forwardExit,
+            CaveBiomeArtResolver biomeArtResolver = null)
         {
+            var bandId = CaveBiomeArtDebug.ResolveBandForArt(Runtime.CaveBandScaling.BandForLevel(level.CaveLevel));
+            Sprite exitUpSprite = null;
+            Sprite exitDownSprite = null;
+            if (biomeArtResolver != null)
+            {
+                biomeArtResolver.TryGetExitSprite(bandId, isForwardExit: false, out exitUpSprite);
+                biomeArtResolver.TryGetExitSprite(bandId, isForwardExit: true, out exitDownSprite);
+            }
+
             var portalsParent = new GameObject("GeneratedExits");
             portalsParent.transform.SetParent(parent);
             portalsParent.transform.localPosition = Vector3.zero;
@@ -45,9 +57,21 @@ namespace CindarsHope.Cave.Runtime
                 backExitGO.transform.position = backExitPos;
 
                 var spriteRenderer = backExitGO.AddComponent<SpriteRenderer>();
-                spriteRenderer.sprite = CaveTileMaterializer.GetBuiltinSprite();
-                spriteRenderer.color = new Color(0f, 1f, 1f, 0.7f);
-                spriteRenderer.sortingOrder = 2;
+                // spec_cave_biome_art_profiles_runtime (CV01): sprite do bioma vence quando presente;
+                // ausência mantém o placeholder de cor atual (fallback-first).
+                if (exitUpSprite != null)
+                {
+                    spriteRenderer.sprite = exitUpSprite;
+                    spriteRenderer.color = Color.white;
+                }
+                else
+                {
+                    spriteRenderer.sprite = CaveTileMaterializer.GetBuiltinSprite();
+                    spriteRenderer.color = new Color(0f, 1f, 1f, 0.7f);
+                }
+                spriteRenderer.sortingOrder = 0;
+                spriteRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
+                spriteRenderer.sortingLayerName = CaveWorldSortingLayers.World;
 
                 var collider = backExitGO.AddComponent<BoxCollider2D>();
                 collider.size = Vector2.one;
@@ -85,9 +109,21 @@ namespace CindarsHope.Cave.Runtime
                 forwardExitGO.transform.position = forwardExitPos;
 
                 var spriteRenderer = forwardExitGO.AddComponent<SpriteRenderer>();
-                spriteRenderer.sprite = CaveTileMaterializer.GetBuiltinSprite();
-                spriteRenderer.color = new Color(1f, 0f, 1f, 0.7f);
-                spriteRenderer.sortingOrder = 2;
+                // spec_cave_biome_art_profiles_runtime (CV01): sprite do bioma vence quando presente;
+                // ausência mantém o placeholder de cor atual (fallback-first).
+                if (exitDownSprite != null)
+                {
+                    spriteRenderer.sprite = exitDownSprite;
+                    spriteRenderer.color = Color.white;
+                }
+                else
+                {
+                    spriteRenderer.sprite = CaveTileMaterializer.GetBuiltinSprite();
+                    spriteRenderer.color = new Color(1f, 0f, 1f, 0.7f);
+                }
+                spriteRenderer.sortingOrder = 0;
+                spriteRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
+                spriteRenderer.sortingLayerName = CaveWorldSortingLayers.World;
 
                 var collider = forwardExitGO.AddComponent<BoxCollider2D>();
                 collider.size = Vector2.one;

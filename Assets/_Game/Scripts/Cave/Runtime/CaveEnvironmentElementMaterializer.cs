@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using CindarsHope.Combat;
+using CindarsHope.Cave.Art;
 using CindarsHope.Cave.Data;
 using CindarsHope.Cave.Ecosystem;
 using CindarsHope.Cave.Generation;
@@ -27,6 +28,7 @@ namespace CindarsHope.Cave.Runtime
         private readonly InventoryManager _inventoryManager;
         private readonly EquipmentManager _equipmentManager;
         private readonly CaveRunManager _caveRunManager;
+        private readonly CaveBiomeArtResolver _biomeArtResolver;
 
         /// <summary>
         /// Inicializa o materializer de elementos ambientais com todas as dependências.
@@ -40,7 +42,8 @@ namespace CindarsHope.Cave.Runtime
             ResourceNodeDatabaseSO resourceNodeDatabase,
             InventoryManager inventoryManager,
             EquipmentManager equipmentManager,
-            CaveRunManager caveRunManager)
+            CaveRunManager caveRunManager,
+            CaveBiomeArtResolver biomeArtResolver)
         {
             _environmentElementDatabase = environmentElementDatabase;
             _ecosystemBalance = ecosystemBalance;
@@ -51,6 +54,7 @@ namespace CindarsHope.Cave.Runtime
             _inventoryManager = inventoryManager;
             _equipmentManager = equipmentManager;
             _caveRunManager = caveRunManager;
+            _biomeArtResolver = biomeArtResolver;
         }
 
         /// <summary>
@@ -217,7 +221,20 @@ namespace CindarsHope.Cave.Runtime
             SpriteRenderer spriteRenderer;
             GameObject elementGO;
 
-            if (_decorElementPrefab != null)
+            // spec_cave_decor_placement_runtime (CV02): tenta o sprite real do pool do bioma ANTES
+            // do fallback prefab/builtin. Pick determinístico por (banda, Kind, hash estável da
+            // posição) — mesmo hash usado pelo CaveTileMaterializer/CaveBiomeArtResolver (FNV-1a via
+            // CaveLayoutStableHash), nunca Random/GetHashCode (cave-stable-run). Falha (resolver
+            // nulo, sem profile, pool vazio) cai no comportamento atual, byte-for-byte.
+            if (TryResolveDecorSprite(level, gridPos, blocking, out var resolvedSprite))
+            {
+                elementGO = new GameObject(element.ElementId);
+                elementGO.transform.SetParent(parent);
+                elementGO.transform.position = worldPos;
+                spriteRenderer = elementGO.AddComponent<SpriteRenderer>();
+                spriteRenderer.sprite = resolvedSprite;
+            }
+            else if (_decorElementPrefab != null)
             {
                 spriteRenderer = Object.Instantiate(_decorElementPrefab, worldPos, Quaternion.identity, parent);
                 elementGO = spriteRenderer.gameObject;
@@ -234,7 +251,9 @@ namespace CindarsHope.Cave.Runtime
             }
 
             elementGO.name = element.ElementId;
-            spriteRenderer.sortingOrder = 1;
+            spriteRenderer.sortingOrder = 0;
+            spriteRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            spriteRenderer.sortingLayerName = CaveWorldSortingLayers.World;
 
             if (blocking)
             {
@@ -247,6 +266,32 @@ namespace CindarsHope.Cave.Runtime
             }
 
             materializedObjects.Add(elementGO);
+        }
+
+        /// <summary>spec_cave_decor_placement_runtime (CV02): resolve o sprite real de decor do pool
+        /// do bioma para a posição do elemento. Retorna false (sem mutar nada) se o resolver não foi
+        /// injetado, se não houver profile para a banda do nível, ou se o pool do Kind estiver
+        /// vazio — o chamador cai no fallback atual.</summary>
+        private bool TryResolveDecorSprite(CaveGeneratedLevel level, Vector2Int gridPos, bool blocking, out Sprite sprite)
+        {
+            sprite = null;
+            if (_biomeArtResolver == null)
+            {
+                return false;
+            }
+
+            // Fix pós-Play-Mode 2026-07-04: o decor (código fable_78, banda 0-indexed do ecossistema)
+            // consultava BandForLevel-1, mas o CaveBiomeArtResolver (CV01) é keyed pelo BandId do profile
+            // = BandForLevel (1-indexed), o mesmo que o CaveTileMaterializer usa para o chão. O -1 fazia o
+            // decor pedir uma banda inexistente → pool vazio → sprite genérico. Alinhar com o chão (e
+            // respeitar o toggle de banda forçada de debug, para o decor casar com o terreno).
+            var band = CaveBiomeArtDebug.ResolveBandForArt(CaveBandScaling.BandForLevel(level.CaveLevel));
+            var worldSeed = _caveRunManager != null ? _caveRunManager.CaveWorldSeed : string.Empty;
+            var runSeed = _caveRunManager != null ? _caveRunManager.CaveRunSeed : string.Empty;
+            var stableHash = CaveBiomeArtResolver.ComputeCellHash(worldSeed, runSeed, level.CaveLevel, gridPos.x, gridPos.y);
+            var kind = blocking ? CaveEnvironmentElementKind.DecorBlocking : CaveEnvironmentElementKind.DecorNonBlocking;
+
+            return _biomeArtResolver.TryGetDecorSprite(band, kind, stableHash, out sprite);
         }
 
         private void MaterializeWaterTile(
@@ -278,6 +323,7 @@ namespace CindarsHope.Cave.Runtime
 
             waterGO.name = element.ElementId;
             spriteRenderer.sortingOrder = 0;
+            spriteRenderer.sortingLayerName = CaveWorldSortingLayers.Ground;
             materializedObjects.Add(waterGO);
         }
 
@@ -350,7 +396,9 @@ namespace CindarsHope.Cave.Runtime
             nodeInstance.gameObject.name = $"{nodeInstanceId}_{nodeData.Id}";
             spriteRenderer.sprite = CaveTileMaterializer.GetBuiltinSprite();
             spriteRenderer.color = new Color(0.8f, 0.6f, 0.4f);
-            spriteRenderer.sortingOrder = 1;
+            spriteRenderer.sortingOrder = 0;
+            spriteRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            spriteRenderer.sortingLayerName = CaveWorldSortingLayers.World;
 
             var collider = nodeInstance.GetComponent<CircleCollider2D>();
             if (collider == null)

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using CindarsHope.NPC;
 using UnityEditor;
 using UnityEngine;
@@ -32,8 +33,12 @@ namespace CindarsHope.Editor.NPC
         public static void AssignAll()
         {
             var guids = AssetDatabase.FindAssets("t:NpcDataSO", new[] { NpcDataRoot });
-            int assigned = 0;
             int skipped = 0;
+
+            // Fase 1 (leitura, fora de batching): resolve NpcDataSO -> (field, pngPath) existentes
+            // e enfileira reimport so para os PNGs ainda sem os settings desejados.
+            var toAssign = new List<(NpcDataSO npcData, string field, string pngPath)>();
+            var toReimport = new List<TextureImporter>();
 
             foreach (var guid in guids)
             {
@@ -47,8 +52,7 @@ namespace CindarsHope.Editor.NPC
                     continue;
                 }
 
-                var so = new SerializedObject(npcData);
-                bool any = false;
+                bool anyFound = false;
                 foreach (var (expr, field) in ExpressionFields)
                 {
                     var pngPath = $"{PortraitRoot}/{artFolder}_{expr}.png";
@@ -57,22 +61,51 @@ namespace CindarsHope.Editor.NPC
                         continue;
                     }
 
-                    ConfigureImporter(pngPath);
-                    var sprite = AssetDatabase.LoadAssetAtPath<Sprite>(pngPath);
-                    if (sprite == null)
+                    anyFound = true;
+                    if (TryConfigureImporter(pngPath, out var importer))
                     {
-                        Debug.LogWarning($"[AssignNpcPortraitSprites] LoadAssetAtPath<Sprite> null para {pngPath} (NPC {npcData.NpcId}).");
-                        continue;
+                        toReimport.Add(importer);
                     }
 
-                    so.FindProperty(field).objectReferenceValue = sprite;
-                    any = true;
+                    toAssign.Add((npcData, field, pngPath));
                 }
 
-                if (any)
+                if (!anyFound)
                 {
-                    so.ApplyModifiedPropertiesWithoutUndo();
-                    EditorUtility.SetDirty(npcData);
+                    skipped++;
+                }
+            }
+
+            // Fase 2 (escrita em lote): 1 unico Asset Pipeline Refresh para todos os PNGs pendentes.
+            if (toReimport.Count > 0)
+            {
+                AssetDatabase.StartAssetEditing();
+                try
+                {
+                    foreach (var importer in toReimport)
+                    {
+                        importer.SaveAndReimport();
+                    }
+                }
+                finally
+                {
+                    AssetDatabase.StopAssetEditing();
+                }
+            }
+
+            // Fase 3 (leitura pos-import + atribuicao no SO).
+            int assigned = 0;
+            NpcDataSO currentNpc = null;
+            SerializedObject currentSo = null;
+            bool currentAny = false;
+
+            void FlushCurrent()
+            {
+                if (currentNpc == null) return;
+                if (currentAny)
+                {
+                    currentSo.ApplyModifiedPropertiesWithoutUndo();
+                    EditorUtility.SetDirty(currentNpc);
                     assigned++;
                 }
                 else
@@ -81,14 +114,62 @@ namespace CindarsHope.Editor.NPC
                 }
             }
 
+            foreach (var (npcData, field, pngPath) in toAssign)
+            {
+                if (!ReferenceEquals(npcData, currentNpc))
+                {
+                    FlushCurrent();
+                    currentNpc = npcData;
+                    currentSo = new SerializedObject(npcData);
+                    currentAny = false;
+                }
+
+                var sprite = AssetDatabase.LoadAssetAtPath<Sprite>(pngPath);
+                if (sprite == null)
+                {
+                    Debug.LogWarning($"[AssignNpcPortraitSprites] LoadAssetAtPath<Sprite> null para {pngPath} (NPC {npcData.NpcId}).");
+                    continue;
+                }
+
+                currentSo.FindProperty(field).objectReferenceValue = sprite;
+                currentAny = true;
+            }
+            FlushCurrent();
+
             AssetDatabase.SaveAssets();
-            Debug.Log($"[AssignNpcPortraitSprites] Concluido. NPCs com >=1 retrato: {assigned} | sem retrato/sem-PNG: {skipped}.");
+            Debug.Log($"[AssignNpcPortraitSprites] Concluido. NPCs com >=1 retrato: {assigned} | " +
+                      $"Reimportados: {toReimport.Count} | sem retrato/sem-PNG: {skipped}.");
         }
 
-        private static void ConfigureImporter(string pngPath)
+        /// <summary>
+        /// Le os settings atuais do importer e, se ja corretos (idempotencia), nao enfileira
+        /// reimport. Retorna true (com o importer) quando ha mudanca pendente.
+        /// </summary>
+        private static bool TryConfigureImporter(string pngPath, out TextureImporter importer)
         {
-            var importer = AssetImporter.GetAtPath(pngPath) as TextureImporter;
-            if (importer == null) return;
+            importer = AssetImporter.GetAtPath(pngPath) as TextureImporter;
+            if (importer == null) return false;
+
+            var settings = new TextureImporterSettings();
+            importer.ReadTextureSettings(settings);
+
+            bool typeOk = importer.textureType == TextureImporterType.Sprite;
+            bool modeOk = importer.spriteImportMode == SpriteImportMode.Single;
+            bool pivotOk = importer.spritePivot == new Vector2(0.5f, 0.5f);
+            bool ppuOk = Mathf.Approximately(importer.spritePixelsPerUnit, 100f);
+            bool filterOk = importer.filterMode == FilterMode.Point;
+            bool mipmapOk = !importer.mipmapEnabled;
+            bool alphaOk = importer.alphaIsTransparency;
+            bool maxSizeOk = importer.maxTextureSize == 1024;
+            bool compressionOk = importer.textureCompression == TextureImporterCompression.Uncompressed;
+            bool meshTypeOk = settings.spriteMeshType == SpriteMeshType.FullRect;
+            bool alignmentOk = settings.spriteAlignment == (int)SpriteAlignment.Center;
+
+            if (typeOk && modeOk && pivotOk && ppuOk && filterOk && mipmapOk && alphaOk
+                && maxSizeOk && compressionOk && meshTypeOk && alignmentOk)
+            {
+                return false;
+            }
 
             importer.textureType = TextureImporterType.Sprite;
             importer.spriteImportMode = SpriteImportMode.Single;
@@ -100,13 +181,11 @@ namespace CindarsHope.Editor.NPC
             importer.maxTextureSize = 1024;
             importer.textureCompression = TextureImporterCompression.Uncompressed;
 
-            var settings = new TextureImporterSettings();
-            importer.ReadTextureSettings(settings);
             settings.spriteMeshType = SpriteMeshType.FullRect;
             settings.spriteAlignment = (int)SpriteAlignment.Center;
             importer.SetTextureSettings(settings);
 
-            importer.SaveAndReimport();
+            return true;
         }
     }
 }

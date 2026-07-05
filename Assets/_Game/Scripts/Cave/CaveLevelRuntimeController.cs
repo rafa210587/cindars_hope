@@ -1,3 +1,4 @@
+using CindarsHope.Cave.Art;
 using CindarsHope.Cave.Data;
 using CindarsHope.Cave.Generation;
 using CindarsHope.Cave.Resources;
@@ -30,6 +31,10 @@ namespace CindarsHope.Cave
         private readonly Cave.Runtime.CaveBossFightSaveGate _bossFightSaveGate = new Cave.Runtime.CaveBossFightSaveGate();
         private CaveSpawnAnchor _currentSpawnAnchor = CaveSpawnAnchor.Entrance;
         private CaveLevelEnemyPlan _currentEnemyPlan;
+        // spec_cave_biome_art_profiles_runtime (CV01): banda publicada na última entrada de nível
+        // (sentinela NoPreviousBand garante que a primeira entrada da run conta como mudança).
+        private int _lastPublishedBandId = CaveBiomeChangeDecision.NoPreviousBand;
+        private string _lastPublishedBiomeId = string.Empty;
 
         public CaveGeneratedLevel CurrentGeneratedLevel { get; private set; }
         public CaveSpawnAnchor CurrentSpawnAnchor => _currentSpawnAnchor;
@@ -274,6 +279,31 @@ namespace CindarsHope.Cave
                 _runManager.CurrentCaveLevel,
                 _defaultBiomeId,
                 _runManager.CaveRunSeed));
+
+            PublishBiomeChangedIfNeeded(_runManager.CurrentCaveLevel);
+        }
+
+        // spec_cave_biome_art_profiles_runtime (CV01): publica CaveBiomeChangedEvent SOMENTE quando a
+        // banda difere da última publicada (a primeira entrada da run sempre conta como mudança —
+        // critério 14.4). BandId vem de CaveBandScaling (puro, já fonte de verdade em todo o resto do
+        // código); BiomeId vem do CaveBiomeArtProfileSO da banda quando o materializer expõe um
+        // resolver com profile carregado, senão string vazia (não é dado de gameplay, só de arte).
+        private void PublishBiomeChangedIfNeeded(int caveLevel)
+        {
+            // ResolveBandForArt: toggle dev T011 (default OFF) afeta só esta apresentação, nunca
+            // layout/spawn/loot/snapshot — CaveBandScaling.BandForLevel puro segue sendo a fonte de
+            // verdade de gameplay em todo o resto do código.
+            var bandId = CaveBiomeArtDebug.ResolveBandForArt(CaveBandScaling.BandForLevel(caveLevel));
+            if (!CaveBiomeChangeDecision.HasBandChanged(_lastPublishedBandId, bandId))
+            {
+                return;
+            }
+
+            var biomeId = _materializer != null ? _materializer.ResolveArtBiomeIdForBand(bandId) : string.Empty;
+            GameEventBus.Publish(new CaveBiomeChangedEvent(_lastPublishedBiomeId, biomeId, bandId, caveLevel));
+
+            _lastPublishedBandId = bandId;
+            _lastPublishedBiomeId = biomeId;
         }
 
         public void CaptureSnapshot()
@@ -467,6 +497,8 @@ namespace CindarsHope.Cave
                 snapshot.CaveLevel,
                 snapshot.BiomeId,
                 _runManager.CaveRunSeed));
+
+            PublishBiomeChangedIfNeeded(snapshot.CaveLevel);
         }
 
         // fable_78 (SLICE 4): rola o conflito inter-monstro desta ENTRADA, marca os rivais nas instâncias

@@ -21,10 +21,8 @@ namespace CindarsHope.Editor.Validation
     /// </summary>
     public static class ValidateFableCitySchedule
     {
-        private const string MenuPath = "CindarsHope/Validate/Fable City Schedule (fable_11)";
         private const string ScenePath = "Assets/_Game/Scenes/TownScene.unity";
 
-        [MenuItem(MenuPath)]
         public static void Validate()
         {
             Debug.Log("[ValidateFableCitySchedule] Starting fable_11 city schedule/doors/interiors validation...");

@@ -13,7 +13,7 @@ namespace CindarsHope.Editor.Validation
     /// </summary>
     public static class ValidateWave19HudUxAcceptanceGate
     {
-        private const string MenuPath = "CindarsHope/Validate Wave 19 HUD UX Acceptance Gate";
+        private const string MenuPath = "CindarsHope/Archive/Validate Wave 19 HUD UX Acceptance Gate";
 
         [MenuItem(MenuPath)]
         public static void Validate()

@@ -26,6 +26,11 @@
 > - GAMEPLAY_EXPANSION_SLICE (densidade 16–32, `CaveWanderingMerchant`, hazards, treasure rooms)
 > **Blocks:**
 > - specs futuras de "cave biome art pass" (consomem o layer de elementos ambientais)
+> **Nota (2026-07-04):** a fatia visual do layer de decor foi extraída para
+> `spec_cave_decor_placement_runtime` (subconjunto: só DecorNonBlocking/DecorBlocking + materialização
+> + snapshot, usando os sprites reais da CV01). Ao executar esta fable_78, tratar o decor como já-feito
+> e ESTENDER (adicionar WaterTile/MineableNode ao mesmo enum, threat/conflito/mercador) — não recriar o
+> `CaveEnvironmentDecorPlanner`. Os nomes/DTOs são compartilhados de propósito.
 > **Scope:** transformar a caverna procedural em um ecossistema vivo — elementos ambientais temáticos por bioma (pedras/minério, fungos, lagos, cristais, lava, destroços), maior densidade e desafio calibrado por nível, mapas que crescem com a profundidade, mercadores errantes enriquecidos, e um sistema determinístico de **conflito inter-monstro** (5% dos níveis por run) onde duas espécies diferentes brigam entre si e dividem agressividade com o jogador, causando 1/10 do dano entre elas.
 > **Out of scope:** arte final (placeholders por família/bioma já bastam), novas criaturas além do roster fable_33, novo modal de UI, pets/companions na caverna, rework do sistema de save (apenas campos aditivos), balance numérico "final" (esta spec entrega curvas determinísticas tunáveis, não o balance assinado pelo humano).
 

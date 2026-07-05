@@ -328,7 +328,9 @@ namespace CindarsHope.Cave.Runtime
             spriteRenderer.color = resolvedSprite != null
                 ? (enemyData.IsElite || entry.IsElite ? new Color(1f, 0.78f, 0.6f) : Color.white)
                 : (enemyData.IsElite || entry.IsElite ? new Color(1f, 0.55f, 0.25f) : new Color(0.85f, 0.23f, 0.23f));
-            spriteRenderer.sortingOrder = 3;
+            spriteRenderer.sortingOrder = 0;
+            spriteRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            spriteRenderer.sortingLayerName = CaveWorldSortingLayers.World;
 
             float visualScale = Mathf.Max(0.1f,
                 EnemyScaleResolver.ResolveVisualScale(
@@ -388,7 +390,19 @@ namespace CindarsHope.Cave.Runtime
                 rigidbody = enemyObject.AddComponent<Rigidbody2D>();
             }
 
+            // Bugfix pós-Play-Mode 2026-07-04 (3ª rodada): inimigos atravessavam/ficavam em cima
+            // da massa de parede (BoxCollider2D estatico em CaveTileMaterializer.MaterializeWalls).
+            // Mesma causa raiz ja documentada e corrigida para o player em CreateMvpCaveScene.
+            // CreatePlayer() (secao 20.2b do execution report): sem bodyType=Dynamic explicito e
+            // CollisionDetectionMode2D.Continuous, o Rigidbody2D nao recebe resolucao fisica real
+            // contra o BoxCollider2D estatico da parede quando a velocidade e setada em Update()
+            // (EnemyBrain.Update -> EnemyMovementExecutor.ExecuteMovement) em vez de FixedUpdate,
+            // e moves de alta velocidade (leap 3.2x, charge, blink) atravessam o collider de
+            // 1 unidade de espessura em Discrete mode. Alinhado ao mesmo padrao ja validado em
+            // CreateMvpFarmScene/CreateMvpCaveScene.CreatePlayer.
+            rigidbody.bodyType = RigidbodyType2D.Dynamic;
             rigidbody.gravityScale = 0f;
+            rigidbody.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
             rigidbody.constraints = RigidbodyConstraints2D.FreezeRotation;
 
             var enemyHealth = enemyObject.GetComponent<CindarsHope.Combat.EnemyHealth>();
@@ -467,6 +481,16 @@ namespace CindarsHope.Cave.Runtime
             {
                 brain = enemyObject.AddComponent<EnemyBrain>();
             }
+
+            // Animacao (batch 1): inimigos com folhas geradas ganham um EnemyAnimator que assume o
+            // SpriteRenderer (walk 8-dir por delta de posicao + folhas de ataque via EnemyBrain.CurrentState),
+            // sobrescrevendo o skin estatico com o frame idle e casando a altura de mundo ja resolvida
+            // (appliedScale * bounds do skin). Inimigos fora do batch nao recebem o componente (Configure
+            // desabilita quando o enemyId nao mapeia a um slug de animacao) — mantem o skin estatico atual.
+            float animWorldHeight = appliedScale * (scaleSprite != null ? scaleSprite.bounds.size.y : 1f);
+            var enemyAnimator = enemyObject.GetComponent<CindarsHope.Enemy.EnemyAnimator>();
+            if (enemyAnimator == null) enemyAnimator = enemyObject.AddComponent<CindarsHope.Enemy.EnemyAnimator>();
+            enemyAnimator.Configure(enemyData.enemyId, animWorldHeight, _playerTransform);
 
             // spec_codex_13: obstacle avoidance real via WorldSolid (era mask 0 = sempre skip).
             // Resolvido por NOME com fallback seguro (mask 0 + log one-shot categoria

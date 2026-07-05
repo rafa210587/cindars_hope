@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using CindarsHope.Cave.Art;
 using CindarsHope.Cave.Generation;
 using CindarsHope.Cave.Traps;
 using CindarsHope.Combat;
@@ -17,6 +18,8 @@ namespace CindarsHope.Cave.Runtime
         private readonly SpriteRenderer _trapTilePrefab;
         private readonly CaveRunManager _caveRunManager;
         private readonly Transform _playerTransform;
+        // spec_cave_biome_art_profiles_runtime (CV01): resolver opcional; null = comportamento atual.
+        private readonly CaveBiomeArtResolver _biomeArtResolver;
 
         /// <summary>
         /// Inicializa o materializer de armadilhas.
@@ -24,11 +27,13 @@ namespace CindarsHope.Cave.Runtime
         internal CaveTrapMaterializer(
             SpriteRenderer trapTilePrefab,
             CaveRunManager caveRunManager,
-            Transform playerTransform)
+            Transform playerTransform,
+            CaveBiomeArtResolver biomeArtResolver = null)
         {
             _trapTilePrefab = trapTilePrefab;
             _caveRunManager = caveRunManager;
             _playerTransform = playerTransform;
+            _biomeArtResolver = biomeArtResolver;
         }
 
         /// <summary>
@@ -102,7 +107,9 @@ namespace CindarsHope.Cave.Runtime
                 }
 
                 trapGO.name = trap.TrapInstanceId;
-                spriteRenderer.sortingOrder = 2;
+                spriteRenderer.sortingOrder = 0;
+                spriteRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
+                spriteRenderer.sortingLayerName = CaveWorldSortingLayers.World;
 
                 var trigger = trapGO.GetComponent<BoxCollider2D>();
                 if (trigger == null)
@@ -114,8 +121,22 @@ namespace CindarsHope.Cave.Runtime
 
                 RecordTrapState(trap, initialState, trapStates);
 
+                // spec_cave_biome_art_profiles_runtime (CV01): trapBandId é a banda de GAMEPLAY do
+                // trap (dano por tier, nunca afetada pelo toggle dev); artBandId é só para lookup de
+                // sprite e respeita CaveBiomeArtDebug.ForcedBandId (dev-only, arte apenas).
+                var trapBandId = trap.Band > 0 ? Mathf.Clamp(trap.Band, 1, 7) : Runtime.CaveBandScaling.BandForLevel(caveLevel);
+                var artBandId = CaveBiomeArtDebug.ResolveBandForArt(trapBandId);
+
                 if (isFalseChest)
                 {
+                    Sprite falseChestClosed = null;
+                    Sprite falseChestRevealed = null;
+                    if (_biomeArtResolver != null)
+                    {
+                        _biomeArtResolver.TryGetChestSprite(artBandId, CaveChestVisualState.Closed, out falseChestClosed);
+                        _biomeArtResolver.TryGetChestSprite(artBandId, CaveChestVisualState.FalseChestRevealed, out falseChestRevealed);
+                    }
+
                     var falseChest = trapGO.AddComponent<FalseChestTrap>();
                     falseChest.Configure(
                         trap,
@@ -123,11 +144,18 @@ namespace CindarsHope.Cave.Runtime
                         initialState,
                         spriteRenderer,
                         spawnTrapEnemyById,
-                        registerTrapStateCallback);
+                        registerTrapStateCallback,
+                        falseChestClosed,
+                        falseChestRevealed);
                     detectionRuntime.Register(falseChest);
                 }
                 else
                 {
+                    // trapId do profile é a chave canônica ("trap_spike_floor"), não o enum.ToString().
+                    Sprite trapSprite = null;
+                    var trapKey = def != null ? def.TrapKey : null;
+                    _biomeArtResolver?.TryGetTrapSprite(artBandId, trapKey, out trapSprite);
+
                     var behaviour = trapGO.AddComponent<TrapBehaviour>();
                     behaviour.Configure(
                         trap,
@@ -135,7 +163,8 @@ namespace CindarsHope.Cave.Runtime
                         caveLevel,
                         initialState,
                         spriteRenderer,
-                        registerTrapStateCallback);
+                        registerTrapStateCallback,
+                        trapSprite);
                     detectionRuntime.Register(behaviour);
                 }
 

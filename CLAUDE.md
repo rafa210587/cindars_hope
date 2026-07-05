@@ -174,6 +174,7 @@ Use `.claude/skills/<name>/SKILL.md` when task matches:
 | `pixel-art-prompt-authoring` | Autorar prompts EN de pixel art (NPCs/monstros/props) ancorados em Vaalara + D&D oficial; corrigir sprite gerado com cor/arma/anatomia errados; lote em tools/aseprite/prompts.json |
 | `sprite-generation-pipeline` | OPERAR o pipeline de geração de sprites por IA (ComfyUI/SDXL local AMD): build de prompts, geração em lote resumível, pós (rembg+downscale), wiring no Unity; gerar/regenerar arte de inimigos/NPCs/props/player |
 | `chatgpt-web-sprite-gen` | Gerar sprites de MUNDO (peças modulares, props, tiles, vegetação, landmarks) pela web do ChatGPT via Chrome MCP, no projeto "Sprites - Fazendeiro"; regra de ÂNGULO 3/4 top-down por componente + rate limit (pausa 10 min + retry). Usar quando o local não dá conta de peça modular isolada |
+| `npc-walk-animation` | Gerar, AUDITAR (frames realmente animam a passada) e wire folhas de caminhada 5x5 dos NPCs; prompt de keyframes, montagem de auditoria, e o sistema NpcWalkAnimator + slicer (Inicializar Projeto). Usar ao criar/regerar/auditar walk sheets ou ligar a folha ao NPC |
 
 ---
 

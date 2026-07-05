@@ -11,7 +11,7 @@ namespace CindarsHope.Editor.Validation
     /// </summary>
     public static class ValidateWave26QuestlineObjectiveVariety
     {
-        private const string MenuPath = "CindarsHope/Validate/Wave26 Questline Objective Variety";
+        private const string MenuPath = "CindarsHope/Archive/Wave26 Questline Objective Variety";
 
         [MenuItem(MenuPath)]
         public static void Validate()

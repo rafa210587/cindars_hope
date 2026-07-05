@@ -80,7 +80,9 @@ namespace CindarsHope.Cave.Runtime
             // Visual — red placeholder square
             var spriteRenderer = enemyGO.AddComponent<SpriteRenderer>();
             spriteRenderer.color = new Color(0.85f, 0.23f, 0.23f);
-            spriteRenderer.sortingOrder = 3;
+            spriteRenderer.sortingOrder = 0;
+            spriteRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            spriteRenderer.sortingLayerName = CaveWorldSortingLayers.World;
 
             // Physics
             var col = enemyGO.AddComponent<CircleCollider2D>();

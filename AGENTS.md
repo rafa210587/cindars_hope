@@ -133,10 +133,10 @@ Regra central:
 
 Main loop (high reasoning effort) is reserved for thinking / debating / planning / proposing --
 design, refinement and decisions. For execution work (build, edit, run, validate), delegate to a
-Codex subagent defined under .codex/agents/*.toml (medium reasoning effort, workspace-write),
-reserving ead-only + high-effort subagents for the reviewer/auditor roles listed below.
+Codex subagent defined under `.codex/agents/*.toml` (medium reasoning effort, workspace-write),
+reserving `read-only` + high-effort subagents for the reviewer/auditor roles listed below.
 
-### Rules index (.codex/rules/*.md, copied verbatim from .claude/rules/)
+### Rules index (`.codex/rules/*.md`, copied verbatim from `.claude/rules/`)
 
 - `cave-stable-run` -- Qualquer mudança procedural/runtime da cave precisa preservar o stable-run contract da FASE9F.
 - `code-minimalism-ladder` -- Nenhum código novo é escrito sem antes percorrer a escada de decisão. Prefira **não** escrever; só implemente no último degrau, e o mínimo.
@@ -160,7 +160,7 @@ reserving ead-only + high-effort subagents for the reviewer/auditor roles liste
 - `validation-truth` -- **1. Build com sucesso = exit code 0.** Nunca infira sucesso de output filtrado. Uma spec só pode ser `BUILD_VALIDATED` quando `run_strict_validation.ps1` retornou exit code 0. Não faça commit se qualquer check falhou...
 - `windows_powershell_only` -- This project is executed on Windows with PowerShell. No Unix/Bash commands.
 
-### Skills index (.agents/skills/*/SKILL.md, copied from .claude/skills/)
+### Skills index (`.agents/skills/*/SKILL.md`, copied from `.claude/skills/`)
 
 - `ability-effect-composition` -- Projeta um sistema componível de ability/effect/modifier — abilities construídas a partir de effects pequenos e reutilizáveis (damage, heal, apply status, kn...
 - `action-feedback-pipeline` -- Pipeline completo de feedback de falha/sucesso de ação ao player — publicar PlayerActionFeedbackEvent, fila de HUD com prioridade, toast visual e SFX automát...
@@ -227,7 +227,7 @@ reserving ead-only + high-effort subagents for the reviewer/auditor roles liste
 - `unity-validation-triage` -- Classifica falhas de validação do Unity, dotnet e log scanning sem esconder erros reais de compile. Use sempre que Unity batchmode, dotnet build ou Unity log...
 - `wave-integration-slice` -- Protocolo para specs de WAVE_INTEGRATION — auditar sistemas existentes, decidir reuse vs. new, implementar, documentar e produzir checklist humano. Usar em s...
 
-### Command-skills index (synthesized from .claude/commands/)
+### Command-skills index (synthesized from `.claude/commands/`)
 
 - `audit-harness` (skill; equivalent of /audit-harness)
 - `audit-spec` (skill; equivalent of /audit-spec)
@@ -246,7 +246,7 @@ reserving ead-only + high-effort subagents for the reviewer/auditor roles liste
 - `validate-spec` (skill; equivalent of /validate-spec)
 - `validate-unity` (skill; equivalent of /validate-unity)
 
-### Agents index (.codex/agents/*.toml, converted from .claude/agents/)
+### Agents index (`.codex/agents/*.toml`, converted from `.claude/agents/`)
 
 - `architecture-reviewer` -- Revisa a aderência do código à arquitetura do projeto, design patterns e regras estruturais (event bus, MonoBehaviours finos, save DTOs, bootstrap wiring). A...
 - `asset-wiring-specialist` -- Especialista em wiring de data assets do Unity — ScriptableObject databases, prefab refs, scene creators, GameBootstrap, validators. Sem gameplay logic, sem ...
@@ -261,7 +261,7 @@ reserving ead-only + high-effort subagents for the reviewer/auditor roles liste
 
 ### Mechanical enforcement
 
-Hooks are wired in .codex/hooks.json and reuse the same .claude/hooks/*.ps1 scripts as
-Claude Code (single source of truth for guard logic -- see 	ools/codex/README.md).
+Hooks are wired in `.codex/hooks.json` and reuse the same `.claude/hooks/*.ps1` scripts as
+Claude Code (single source of truth for guard logic -- see `tools/codex/README.md`).
 
 <!-- END CODEX-HARNESS (generated) -->

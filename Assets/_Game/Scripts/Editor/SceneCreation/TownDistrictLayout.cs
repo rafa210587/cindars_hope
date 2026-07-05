@@ -4,21 +4,22 @@ using UnityEngine;
 namespace CindarsHope.Editor.SceneCreation
 {
     /// <summary>
-    /// Preservation-first 76×64 town bounds and stable district/spawn contracts. Pure C#
+    /// Preservation-first 120×90 town bounds and stable district/spawn contracts (footprint grew
+    /// from 76×64 to 120×90 under spec_town_layout_v9_organic). Pure C#
     /// (no UnityEditor / scene side effects) so the layout can be
     /// exercised by EditMode tests: bounds, the seven named district rectangles, the
     /// element→district table (no orphan), the scale transform that repositions every existing
     /// element into the larger footprint, and the stable schedule-anchor / spawn-point ID lists.
     ///
-    /// The generator (<see cref="CreateMvpTownScene"/>) consumes this for the new perimeter, the
-    /// wander clamps, and the two new districts (lake/park SW, town hall NE + mural). It is the
-    /// single source of truth for the relayout geometry — no second generator, no manual YAML.
+    /// The generator (<see cref="CreateMvpTownScene"/>) consumes this for the perimeter, the
+    /// wander clamps, and the two corner-landmark districts (lake/park SW, town hall NE + mural). It
+    /// is the single source of truth for the relayout geometry — no second generator, no manual YAML.
     /// </summary>
     public static class TownDistrictLayout
     {
-        // ── Canonical materialized footprint (76×64 tiles) ─────────────────────────────
-        // Kept stable by spec_city_preservation_first_coherent_relayout. Buildings are placed by
-        // TownCityLayout lots; this class remains the bounds/district/stable-ID contract.
+        // ── Canonical materialized footprint (120×90 tiles) ────────────────────────────
+        // Kept stable by spec_city_preservation_first_coherent_relayout / spec_town_layout_v9_organic.
+        // Buildings are placed by TownCityLayout lots; this class remains the bounds/district/stable-ID contract.
         public const float HalfWidth = 60f;
         public const float HalfHeight = 45f;
         public const float WidthTiles = HalfWidth * 2f;
@@ -87,25 +88,27 @@ namespace CindarsHope.Editor.SceneCreation
         public const string DistrictTownHallNortheast = "town_hall_northeast";
         public const string DistrictLakeParkSouthwest = "lake_park_southwest";
 
-        // Footprint 76×64: distritos reescalados. O placer de prédios (CreateMvpTownScene) usa zonas
-        // reservadas próprias; estes retângulos servem para classificação de social anchors, os
-        // landmarks de canto (lago SW, prefeitura NE) e os testes de WithinBounds/cores.
+        // v9 organic relayout (spec_town_layout_v9_organic): bounds recalculated to cover the new
+        // lot regions per district (same 7 IDs/names — only the rectangles moved). O placer de
+        // prédios (CreateMvpTownScene) usa TownCityLayout diretamente; estes retângulos servem para
+        // classificação de social anchors, os landmarks de canto (lago SW, prefeitura NE) e os
+        // testes de WithinBounds/cores.
         private static readonly District[] Districts =
         {
-            // Praça central (estátua + quadro público).
+            // Praça central (estátua + fonte), r~13 em (0,4).
             new District(DistrictCentralPlaza, TownCityLayout.CentralPlazaCenter, TownCityLayout.CentralPlazaSize),
-            // Mercado / comercial — oeste-centro.
-            new District(DistrictMarketWest, new Vector2(-38f, 4f), new Vector2(34f, 30f)),
-            // Residencial — leste.
-            new District(DistrictResidentialEast, new Vector2(38f, 2f), new Vector2(34f, 40f)),
-            // Templo / fonte — norte.
-            new District(DistrictTempleNorth, new Vector2(-24f, 35f), new Vector2(68f, 16f)),
-            // Curral / entrada sul (estrada para a fazenda).
-            new District(DistrictCorralSouth, new Vector2(0f, -35f), new Vector2(88f, 14f)),
-            // Prefeitura + mural — canto nordeste.
-            new District(DistrictTownHallNortheast, new Vector2(12f, 42f), new Vector2(18f, 5.5f)),
-            // Lago / parque — canto sudoeste.
-            new District(DistrictLakeParkSouthwest, new Vector2(-45f, -14f), new Vector2(22f, 14f)),
+            // Mercado / comercial + parque — oeste (MarketHall, Bakery, Inn).
+            new District(DistrictMarketWest, new Vector2(-33f, 4.5f), new Vector2(36f, 28f)),
+            // Ofícios — leste (Blacksmith, AlchemyLab, Workshop, Tannery).
+            new District(DistrictResidentialEast, new Vector2(35.5f, 3.25f), new Vector2(18f, 28f)),
+            // Cívico/religioso — norte (Temple, Chamber, Prison, Manor, Registry, Archive).
+            new District(DistrictTempleNorth, new Vector2(5f, 28f), new Vector2(104f, 24f)),
+            // Residencial + curral — sul (as 10 casas da fileira sul + AnimalYard + GateKeeper).
+            new District(DistrictCorralSouth, new Vector2(-10f, -30.25f), new Vector2(80f, 24f)),
+            // Prefeitura + mural — canto nordeste (landmark; câmara real ficou no distrito norte).
+            new District(DistrictTownHallNortheast, new Vector2(50f, 36f), new Vector2(10f, 8f)),
+            // Lago / parque — sudoeste (House_Fishery + o lago orgânico).
+            new District(DistrictLakeParkSouthwest, new Vector2(-42f, -15.5f), new Vector2(22f, 15f)),
         };
 
         public static IReadOnlyList<District> AllDistricts => Districts;
@@ -128,9 +131,11 @@ namespace CindarsHope.Editor.SceneCreation
         // ── New-district landmark anchors (relayout-only) ─────────────────────────────
         // Lake/park water body + benches (SW); town hall building + mural wall (NE). These are
         // the elements city_rules Rule 1/Rule 8 say did not exist before fable_40.
-        public static Vector3 LakeCenter => ToVec3(DistrictLakeParkSouthwest, 0f, 0f);
-        public static Vector3 LakeBenchWest => ToVec3(DistrictLakeParkSouthwest, -7f, -6f);
-        public static Vector3 LakeBenchEast => ToVec3(DistrictLakeParkSouthwest, 7f, -6f);
+        // v9 organic relayout: o lago fica no lado leste do distrito (perto da porta E da Fishery,
+        // "moinho ao lado"), deixando a doca/cais entre os dois — ver spec_town_layout_v9_organic.
+        public static Vector3 LakeCenter => ToVec3(DistrictLakeParkSouthwest, 9f, 1.8f);
+        public static Vector3 LakeBenchWest => ToVec3(DistrictLakeParkSouthwest, 2f, -3.2f);
+        public static Vector3 LakeBenchEast => ToVec3(DistrictLakeParkSouthwest, 16f, -3.2f);
         public static Vector3 TownHallCenter => ToVec3(DistrictTownHallNortheast, 0f, 0f);
         // Mural lives on the town-hall south wall (the public board moves to the plaza per CA-3).
         public static Vector3 TownHallMural => ToVec3(DistrictTownHallNortheast, 0f, -2.1f);

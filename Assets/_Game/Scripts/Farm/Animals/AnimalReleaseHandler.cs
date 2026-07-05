@@ -125,7 +125,9 @@ namespace CindarsHope.Farm.Animals
 
             var sr = go.AddComponent<SpriteRenderer>();
             sr.color = ColorForSpecies(entry.Species);
-            sr.sortingOrder = 3;
+            sr.sortingOrder = 0;
+            sr.spriteSortPoint = SpriteSortPoint.Pivot;
+            sr.sortingLayerName = CindarsHope.World.WorldSortingLayers.World;
 
             var col = go.AddComponent<BoxCollider2D>();
             col.isTrigger = true;

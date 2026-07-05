@@ -91,6 +91,11 @@ namespace CindarsHope.Visual
             }
         }
 
+        /// <summary>Redefine a escala base do squash. Chame ao redimensionar o transform em runtime
+        /// depois deste componente ja ter cacheado a escala no Awake (ex.: o EnemyAnimator ajusta a
+        /// escala para a folha animada). Sem isto, o squash reverteria para a escala antiga todo frame.</summary>
+        public void SetBaseScale(Vector3 scale) => _baseScale = scale;
+
         /// <summary>Define a cor base (chame ao trocar o tint do sprite em runtime).</summary>
         public void SetBaseColor(Color color)
         {

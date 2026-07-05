@@ -1,4 +1,4 @@
-# Current State — Cindar's Hope
+﻿# Current State — Cindar's Hope
 
 > **Primary execution context for agents.** Read this + AGENTS.md + active spec.  
 > **Do NOT read:** PROJECT_LOG.md, ROADMAP.md, GDD, old refinements (unless spec requires).
@@ -431,3 +431,37 @@ PROJECT_LOG + CURRENT_STATE conflict → prefer CURRENT_STATE; report mismatch
 - Arte: walk sheet da Liora recolorida (teal→roxo canônico, staging art/, script tools/aseprite/recolor_liora_walk.py).
 - PENDENTE HUMANO (Unity Editor): rodar `CindarsHope/Inicializar Projeto` 2x (materializa os 7 layers, idempotência, re-fatia a Liora), regenerar FarmScene/TownScene, Unity Test Runner EditMode (~40 testes novos do lote), cenários Play Mode (spec_codex_03/13), e revisar/aprovar ADRs 0020-0030.
 - run_strict_validation retorna exit 1 apenas por legado pré-existente (reports antigos sem seções, spec_npc_physics_cat_companion, placeholders tools/codex/, Enemies/Roster + 3 cenas modificados fora desta sessão); builds dos 2 assemblies 0E em todos os commits.
+## 2026-07-03 — CAVE_VISUALS: CV01 BUILD_VALIDATED (fatia de teste bioma 1)
+
+- Direcao visual dos 8 biomas validada com o humano: docs/design/gameplay/cave/CAVE_BIOME_VISUAL_REFERENCE.md
+  (paletas, elementos, traps por bioma, identidade sonora, arquitetura de terreno em 3 camadas §3.9).
+  11 imagens de guia geradas em art/world_gpt/raw/cave_guides/ (8 keyarts + baus/hazards/fixtures).
+- spec_cave_biome_art_profiles_runtime (CV01): BUILD_VALIDATED — CaveBiomeArtProfileSO + CaveBiomeArtResolver
+  (FNV-1a via CaveLayoutStableHash, sem Random) + CaveBiomeChangedEvent + integracao fallback-first nos
+  materializers (trap/chest/false chest/hazard/exit) + CaveTileMaterializer (Tilemap floor/wall runtime) +
+  GenerateCaveBiomeArtProfiles/ValidateCaveBiomeArtProfiles como RunSteps nos comandos canonicos + toggle dev
+  de bioma fixo (CaveBiomeArtDebug, guard EDITOR||DEV_BUILD). 16 EditMode tests novos (NOT RUN no Test Runner —
+  headless). Builds runtime+editor exit 0 verificados pelo orquestrador. Docs validation: sem erros novos
+  (legado apenas). Report: docs/validation/spec_cave_biome_art_profiles_execution_report.md.
+- Arte de teste do bioma 1 staged: Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/ (floor_a/b,
+  wall_face, wall_top 64x64 seamless; pipeline art/world_gpt/_reseam_cave_tiles.py); carve-out de PPU 64 +
+  pivot Center p/ World/cave/ no GeneratedSpriteImporter.
+- PENDENTE HUMANO (Play Mode): rodar CindarsHope/Inicializar Projeto (gera os 8 profiles), ligar
+  CindarsHope/Dev/Cave/Forcar Banda De Arte (Bioma 1), entrar na cave e conferir tiles/sprites + revisita estavel.
+  Bug pre-existente documentado (fora de escopo): _defaultBiomeId "biome_cave_earth" nao casa com registry.
+
+## 2026-07-04 — CAVE_VISUALS milestone (CV01 + fable_78 art pass CV02)
+
+- fable_78 (Caverna Viva) CONFIRMADA implementada/commitada: planner de decor + materializer + snapshot
+  stable-run + conflito inter-monstro. Decor posicionado mas com prefab generico (invisivel).
+- CV02 (spec_cave_decor_placement_runtime) REESCRITA como art pass minima e BUILD_VALIDATED: pool de
+  sprites de decor por bioma (NonBlocking/Blocking) no CaveBiomeArtProfileSO, consumido pelo
+  CaveEnvironmentElementMaterializer por hash estavel (fallback preservado). Bioma 1 povoado com
+  chunk_*/prop_*/rock_ore/mushroom reais. Builds exit 0; docs validation sem erros novos; 9 EditMode
+  tests. Report: docs/validation/spec_cave_decor_placement_execution_report.md.
+- Tambem nesta sessao: fundo da camera cinza->quase-preto (some com buracos cinza do void), sombra de
+  borda chao<->parede, colisao de player+inimigo (Rigidbody Dynamic), tiles v3 lajota+boulder batendo
+  com a keyart, baus/hazards/saidas com arte real.
+- PENDENTE HUMANO (Play Mode): rodar CindarsHope/Inicializar Projeto 1x (preenche pools + reimporta +
+  aplica fundo escuro) -> Play na CaveScene. Esperado: sala povoada com props reais, chao lajota,
+  paredes escuras, sem buracos cinza. Rule Tile de borda de parede e biomas 2-8 = follow-up.

@@ -6,7 +6,7 @@ namespace CindarsHope.Editor.Validation
 {
     public static class ValidateWave23UiHudCanvasFinalization
     {
-        private const string MenuPath = "CindarsHope/Validate Wave 23 UI HUD Canvas Finalization";
+        private const string MenuPath = "CindarsHope/Archive/Validate Wave 23 UI HUD Canvas Finalization";
 
         [MenuItem(MenuPath)]
         public static void Validate()

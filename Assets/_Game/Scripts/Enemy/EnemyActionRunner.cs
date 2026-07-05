@@ -138,10 +138,27 @@ namespace CindarsHope.Enemy
             if (!_actionSetDatabase.TryGetById(_enemyData.ActionSetId, out ActiveActionSet)) return;
             if (_actionDatabase == null) return;
 
+            EnemyActionSO riseOnceAction = null;
             foreach (var actionId in ActiveActionSet.ActionIds)
             {
                 if (_actionDatabase.TryGetById(actionId, out var action))
+                {
                     ActionCooldowns[actionId] = new EnemyActionRuntime(actionId, action.CooldownSeconds);
+                    if (action.RiseOnceEnabled && riseOnceAction == null)
+                        riseOnceAction = action;
+                }
+            }
+
+            // spec_enemy_attack_kits_v1 (Rise-once, primitiva P2): propaga os parametros do
+            // EnemyActionSO marcado RiseOnceEnabled para o EnemyHealth deste inimigo. Sem acao
+            // marcada (a maioria dos kits), ConfigureRiseOnce(false, ...) mantem Die() inalterado.
+            if (_health != null)
+            {
+                _health.ConfigureRiseOnce(
+                    riseOnceAction != null,
+                    riseOnceAction?.RiseOnceHpPercent ?? 0f,
+                    riseOnceAction?.RiseOnceBlockedByDamageTypes,
+                    riseOnceAction?.RiseOnceCollapseSeconds ?? 0f);
             }
         }
 
@@ -247,7 +264,16 @@ namespace CindarsHope.Enemy
         private void ResolveAction()
         {
             if (PendingAction == null) return;
-            if (PendingAction.ActionType == EnemyActionType.SelfBuff) return;
+            if (PendingAction.ActionType == EnemyActionType.SelfBuff)
+            {
+                // spec_enemy_attack_kits_v1 (AllyHeal/AllyBuff, primitiva P2): quando o SelfBuff
+                // configura AllyHealPercent/AllyBuffStatusId, cura/buffa o aliado-alvo em vez de
+                // (ou alem de) buffar a si mesmo. Sem esses campos (defaults neutros), o SelfBuff
+                // permanece o no-op de sempre — comportamento pre-existente inalterado.
+                if (PendingAction.AllyHealPercent > 0f || !string.IsNullOrWhiteSpace(PendingAction.AllyBuffStatusId))
+                    ExecuteAllyHealBuff(PendingAction);
+                return;
+            }
 
             // fable_83: ataques-assinatura são roteados antes do guard de dano base
             switch (PendingAction.ActionType)
@@ -300,16 +326,42 @@ namespace CindarsHope.Enemy
                 float speed = PendingAction.ProjectileSpeed > 0f ? PendingAction.ProjectileSpeed : 5f;
                 // fable_05: per-phase damage multiplier folds into the action's base damage.
                 int projectileDamage = Mathf.Max(0, Mathf.RoundToInt(PendingAction.BaseDamage * _getPhaseDamageMultiplier()));
-                EnemyProjectileBehaviour.SpawnTowards(
-                    _transform.position,
-                    _getDirectionToPlayer(),
-                    speed,
-                    Mathf.Max(PendingAction.Range, 2f),
-                    projectileDamage,
-                    dmgType,
-                    _enemyData?.contactKnockbackForce ?? 0f,
-                    _enemyData?.enemyId ?? "enemy",
-                    _enemyData?.DisplayName ?? "Enemy");
+
+                // spec_enemy_attack_kits_v1 (follow-up salvas): ProjectileCount<=1 mantem o caminho
+                // single-projectile identico ao anterior (nenhuma mudanca de comportamento). Acima
+                // disso, dispara N projeteis em leque (mesmo dano por projetil — cada um e um hit
+                // independente esquivavel, o catalogo nao divide dano entre eles).
+                if (PendingAction.ProjectileCount <= 1)
+                {
+                    EnemyProjectileBehaviour.SpawnTowards(
+                        _transform.position,
+                        _getDirectionToPlayer(),
+                        speed,
+                        Mathf.Max(PendingAction.Range, 2f),
+                        projectileDamage,
+                        dmgType,
+                        _enemyData?.contactKnockbackForce ?? 0f,
+                        _enemyData?.enemyId ?? "enemy",
+                        _enemyData?.DisplayName ?? "Enemy");
+                }
+                else
+                {
+                    var salvoDirections = EnemyActionExecution.ResolveSalvoDirections(
+                        _getDirectionToPlayer(), PendingAction.ProjectileCount, PendingAction.ProjectileSpreadAngleDegrees);
+                    for (int i = 0; i < salvoDirections.Length; i++)
+                    {
+                        EnemyProjectileBehaviour.SpawnTowards(
+                            _transform.position,
+                            salvoDirections[i],
+                            speed,
+                            Mathf.Max(PendingAction.Range, 2f),
+                            projectileDamage,
+                            dmgType,
+                            _enemyData?.contactKnockbackForce ?? 0f,
+                            _enemyData?.enemyId ?? "enemy",
+                            _enemyData?.DisplayName ?? "Enemy");
+                    }
+                }
                 return;
             }
 
@@ -422,12 +474,82 @@ namespace CindarsHope.Enemy
             float radius = action.AoeRadius > 0f ? action.AoeRadius : (action.AreaRadius > 0f ? action.AreaRadius : 2.5f);
             Vector2 aoeCenter = _getPlayerTarget().transform.position;
             float dist = Vector2.Distance(_transform.position, aoeCenter);
+
+            // spec_enemy_attack_kits_v1 (HazardZone, primitiva P2): quando a acao deixa uma zona
+            // persistente (LeavesHazard), a zona nasce na origem do atacante (rastro de movimento —
+            // lava_bulwark/magma_slug) INDEPENDENTE do player estar no raio agora — ela existe para
+            // ser pisada depois. Spawn destacado (mesmo padrao de EnemyVolatileExplosionRunner);
+            // nao duplica fisica (deteccao por distancia via EnemyActionExecution.IsInsideHazard).
+            if (action.LeavesHazard)
+            {
+                EnemyHazardZoneRunner.Spawn(
+                    _transform.position,
+                    action.HazardRadius,
+                    action.HazardDurationSeconds,
+                    action.HazardTickSeconds,
+                    Mathf.Max(0, Mathf.RoundToInt(action.HazardDamagePerTick * _getPhaseDamageMultiplier())),
+                    action.HazardStatusId,
+                    _enemyData?.enemyId ?? "enemy");
+            }
+
             // Grace margin para AoE: se o player estava dentro do raio durante o telegraph, recebe dano.
             if (dist > radius * 1.4f) return;
 
             int damage = Mathf.Max(0, Mathf.RoundToInt(action.BaseDamage * _getPhaseDamageMultiplier()));
             ApplySingleHitToPlayer(action, damage, dmgType);
             GameEventBus.Publish(new EnemyTelegraphStartedEvent(_enemyData?.enemyId, aoeCenter));
+        }
+
+        /// <summary>
+        /// spec_enemy_attack_kits_v1 (AllyHeal/AllyBuff, primitiva P2): seleciona o aliado-alvo
+        /// (mais ferido, senao mais proximo) dentro de AllyTargetRadius via
+        /// EnemyHealth.ActiveInstances (registro estatico — sem FindObjectsOfType, mesmo padrao de
+        /// CraftingRuntime.ActiveInstances) e cura/buffa. Exclui o proprio invocador da busca.
+        /// </summary>
+        private void ExecuteAllyHealBuff(EnemyActionSO action)
+        {
+            var candidates = new List<EnemyActionExecution.AllyCandidate>();
+            var candidateHealths = new List<CindarsHope.Combat.EnemyHealth>();
+            Vector2 origin = _transform.position;
+
+            var activeInstances = CindarsHope.Combat.EnemyHealth.ActiveInstances;
+            for (int i = 0; i < activeInstances.Count; i++)
+            {
+                var candidate = activeInstances[i];
+                if (candidate == null || candidate.IsDead) continue;
+                if (candidate.transform == _transform) continue; // exclui o proprio invocador
+                if (candidate.MaxHp <= 0) continue;
+
+                float hpFraction = (float)candidate.CurrentHp / candidate.MaxHp;
+                candidates.Add(new EnemyActionExecution.AllyCandidate(candidateHealths.Count, candidate.transform.position, hpFraction));
+                candidateHealths.Add(candidate);
+            }
+
+            int bestIndex = EnemyActionExecution.ResolveAllyHealTarget(origin, action.AllyTargetRadius, candidates);
+            if (bestIndex < 0 || bestIndex >= candidateHealths.Count) return;
+
+            var target = candidateHealths[bestIndex];
+
+            if (action.AllyHealPercent > 0f)
+            {
+                int healAmount = Mathf.Max(1, Mathf.RoundToInt(target.MaxHp * action.AllyHealPercent));
+                int newHp = Mathf.Min(target.MaxHp, target.CurrentHp + healAmount);
+                target.RestoreHp(newHp);
+                CombatLog.Log($"CombatLog: AllyHeal. SourceId={_enemyData?.enemyId}, TargetId={target.EnemyId}, Amount={healAmount}, HP={newHp}/{target.MaxHp}.");
+            }
+
+            if (!string.IsNullOrWhiteSpace(action.AllyBuffStatusId))
+            {
+                // Buff de aliado reusa o caminho existente de status em EnemyHealth
+                // (ApplyStatusEffect); resolucao do StatusEffectSO via o mesmo
+                // StatusEffectDatabaseSO ja usado para status de inimigo (GameBootstrap).
+                var statusDb = GameBootstrap.Instance?.StatusEffectDatabase;
+                if (statusDb != null && statusDb.TryGetById(action.AllyBuffStatusId, out var statusEffect))
+                {
+                    target.ApplyStatusEffect(statusEffect);
+                    CombatLog.Log($"CombatLog: AllyBuff. SourceId={_enemyData?.enemyId}, TargetId={target.EnemyId}, StatusId={action.AllyBuffStatusId}.");
+                }
+            }
         }
 
         /// <summary>
@@ -509,11 +631,31 @@ namespace CindarsHope.Enemy
             // Aplicar o debuff com chance garantida (DebuffStrike ignora StatusApplyChance parcial:
             // garante pelo menos 1 aplicação por uso para identidade de arquétipo).
             string statusId = EnemyActionExecution.ResolveDebuffStatusId(action.DebuffStatusId, action.StatusApplicationIds);
-            if (string.IsNullOrWhiteSpace(statusId)) return;
+            if (!string.IsNullOrWhiteSpace(statusId))
+            {
+                var receiver = CindarsHope.Combat.StatusEffect.PlayerStatusReceiver.Instance;
+                if (receiver != null)
+                    receiver.TryApplyFromEnemyAction(statusId, 1f); // chance=1 garante aplicação
+            }
 
-            var receiver = CindarsHope.Combat.StatusEffect.PlayerStatusReceiver.Instance;
-            if (receiver != null)
-                receiver.TryApplyFromEnemyAction(statusId, 1f); // chance=1 garante aplicação
+            // spec_enemy_attack_kits_v1 (Pull, primitiva P2): desloca o player N tiles na direcao do
+            // atacante (agarrao) ou do hazard/origem configurada — reusa DebuffStrike (dano+status ja
+            // resolvidos acima), aditivo. Clamp contra paredes/obstaculos fica a cargo do proprio
+            // Rigidbody2D/colisao do player (nao duplicamos deteccao de colisao aqui).
+            if (action.PullDistanceTiles > 0f)
+            {
+                var playerTarget = _getPlayerTarget();
+                if (playerTarget != null)
+                {
+                    Vector2 pullOrigin = action.PullFromAttackerOrigin ? (Vector2)_transform.position : (Vector2)playerTarget.transform.position;
+                    Vector2 targetPos = EnemyActionExecution.ResolvePullTargetPosition(pullOrigin, playerTarget.transform.position, action.PullDistanceTiles);
+                    var playerRb = playerTarget.GetComponent<Rigidbody2D>();
+                    if (playerRb != null)
+                        playerRb.position = targetPos;
+                    else
+                        playerTarget.transform.position = targetPos;
+                }
+            }
         }
 
         // SPEC 13D: Teleports to player then deals melee damage + applies status effects.

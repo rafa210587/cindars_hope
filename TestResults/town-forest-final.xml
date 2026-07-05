@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="22" result="Passed" total="22" passed="22" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-07-03 03:09:14Z" end-time="2026-07-03 03:09:14Z" duration="0,0453479">
+  <test-suite type="TestSuite" id="1000" name="cindars_hope" fullname="cindars_hope" runstate="Runnable" testcasecount="60" result="Passed" start-time="2026-07-03 03:09:14Z" end-time="2026-07-03 03:09:14Z" duration="0.045348" total="22" passed="22" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1065" name="Assembly-CSharp-Editor.dll" fullname="F:/Projetos/Jogos/Cindars_hope/cindars_hope/Library/ScriptAssemblies/Assembly-CSharp-Editor.dll" runstate="Runnable" testcasecount="60" result="Passed" start-time="2026-07-03 03:09:14Z" end-time="2026-07-03 03:09:14Z" duration="0.039522" total="22" passed="22" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="47568" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1066" name="CindarsHope" fullname="CindarsHope" runstate="Runnable" testcasecount="60" result="Passed" start-time="2026-07-03 03:09:14Z" end-time="2026-07-03 03:09:14Z" duration="0.037849" total="22" passed="22" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1067" name="Tests" fullname="CindarsHope.Tests" runstate="Runnable" testcasecount="60" result="Passed" start-time="2026-07-03 03:09:14Z" end-time="2026-07-03 03:09:14Z" duration="0.037357" total="22" passed="22" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="1068" name="EditMode" fullname="CindarsHope.Tests.EditMode" runstate="Runnable" testcasecount="60" result="Passed" start-time="2026-07-03 03:09:14Z" end-time="2026-07-03 03:09:14Z" duration="0.036906" total="22" passed="22" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestSuite" id="1071" name="City" fullname="CindarsHope.Tests.EditMode.City" runstate="Runnable" testcasecount="22" result="Passed" start-time="2026-07-03 03:09:14Z" end-time="2026-07-03 03:09:14Z" duration="0.034733" total="22" passed="22" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-suite type="TestFixture" id="1042" name="TownLayoutTests" fullname="CindarsHope.Tests.EditMode.City.TownLayoutTests" classname="CindarsHope.Tests.EditMode.City.TownLayoutTests" runstate="Runnable" testcasecount="22" result="Passed" start-time="2026-07-03 03:09:14Z" end-time="2026-07-03 03:09:14Z" duration="0.033795" total="22" passed="22" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1059" name="BuildingLots_DoNotOverlapRoads_AndEveryDoorReachesRoad" fullname="CindarsHope.Tests.EditMode.City.TownLayoutTests.BuildingLots_DoNotOverlapRoads_AndEveryDoorReachesRoad" methodname="BuildingLots_DoNotOverlapRoads_AndEveryDoorReachesRoad" classname="CindarsHope.Tests.EditMode.City.TownLayoutTests" runstate="Runnable" seed="1674122354" result="Passed" start-time="2026-07-03 03:09:14Z" end-time="2026-07-03 03:09:14Z" duration="0.009096" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1058" name="BuildingLots_HaveUniqueStableNamesAndDoNotOverlap" fullname="CindarsHope.Tests.EditMode.City.TownLayoutTests.BuildingLots_HaveUniqueStableNamesAndDoNotOverlap" methodname="BuildingLots_HaveUniqueStableNamesAndDoNotOverlap" classname="CindarsHope.Tests.EditMode.City.TownLayoutTests" runstate="Runnable" seed="1552073633" result="Passed" start-time="2026-07-03 03:09:14Z" end-time="2026-07-03 03:09:14Z" duration="0.002730" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1045" name="DistrictMap_AllRectanglesWithinBounds" fullname="CindarsHope.Tests.EditMode.City.TownLayoutTests.DistrictMap_AllRectanglesWithinBounds" methodname="DistrictMap_AllRectanglesWithinBounds" classname="CindarsHope.Tests.EditMode.City.TownLayoutTests" runstate="Runnable" seed="968842424" result="Passed" start-time="2026-07-03 03:09:14Z" end-time="2026-07-03 03:09:14Z" duration="0.000648" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1047" name="DistrictMap_CentersDoNotOverlapOtherDistricts" fullname="CindarsHope.Tests.EditMode.City.TownLayoutTests.DistrictMap_CentersDoNotOverlapOtherDistricts" methodname="DistrictMap_CentersDoNotOverlapOtherDistricts" classname="CindarsHope.Tests.EditMode.City.TownLayoutTests" runstate="Runnable" seed="283246212" result="Passed" start-time="2026-07-03 03:09:14Z" end-time="2026-07-03 03:09:14Z" duration="0.000353" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1046" name="DistrictMap_ContainsAllSevenCanonicalIds" fullname="CindarsHope.Tests.EditMode.City.TownLayoutTests.DistrictMap_ContainsAllSevenCanonicalIds" methodname="DistrictMap_ContainsAllSevenCanonicalIds" classname="CindarsHope.Tests.EditMode.City.TownLayoutTests" runstate="Runnable" seed="196809942" result="Passed" start-time="2026-07-03 03:09:14Z" end-time="2026-07-03 03:09:14Z" duration="0.000140" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1044" name="DistrictMap_HasSevenDistricts" fullname="CindarsHope.Tests.EditMode.City.TownLayoutTests.DistrictMap_HasSevenDistricts" methodname="DistrictMap_HasSevenDistricts" classname="CindarsHope.Tests.EditMode.City.TownLayoutTests" runstate="Runnable" seed="158386413" result="Passed" start-time="2026-07-03 03:09:14Z" end-time="2026-07-03 03:09:14Z" duration="0.002142" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1060" name="DoorFrontages_SupportAllFourDirections" fullname="CindarsHope.Tests.EditMode.City.TownLayoutTests.DoorFrontages_SupportAllFourDirections" methodname="DoorFrontages_SupportAllFourDirections" classname="CindarsHope.Tests.EditMode.City.TownLayoutTests" runstate="Runnable" seed="505871009" result="Passed" start-time="2026-07-03 03:09:14Z" end-time="2026-07-03 03:09:14Z" duration="0.002113" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1043" name="Footprint_Is120x90" fullname="CindarsHope.Tests.EditMode.City.TownLayoutTests.Footprint_Is120x90" methodname="Footprint_Is120x90" classname="CindarsHope.Tests.EditMode.City.TownLayoutTests" runstate="Runnable" seed="2125749708" result="Passed" start-time="2026-07-03 03:09:14Z" end-time="2026-07-03 03:09:14Z" duration="0.000563" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1048" name="LakeParkDistrict_LandmarksInsideDistrictAndBounds" fullname="CindarsHope.Tests.EditMode.City.TownLayoutTests.LakeParkDistrict_LandmarksInsideDistrictAndBounds" methodname="LakeParkDistrict_LandmarksInsideDistrictAndBounds" classname="CindarsHope.Tests.EditMode.City.TownLayoutTests" runstate="Runnable" seed="1932342074" result="Passed" start-time="2026-07-03 03:09:14Z" end-time="2026-07-03 03:09:14Z" duration="0.000604" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1061" name="NpcPlaces_PreserveAllRoles_AndStayNearAssociatedBuildings" fullname="CindarsHope.Tests.EditMode.City.TownLayoutTests.NpcPlaces_PreserveAllRoles_AndStayNearAssociatedBuildings" methodname="NpcPlaces_PreserveAllRoles_AndStayNearAssociatedBuildings" classname="CindarsHope.Tests.EditMode.City.TownLayoutTests" runstate="Runnable" seed="905981505" result="Passed" start-time="2026-07-03 03:09:14Z" end-time="2026-07-03 03:09:14Z" duration="0.001277" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1057" name="PreservationBaseline_ContainsExpectedMinimumCounts" fullname="CindarsHope.Tests.EditMode.City.TownLayoutTests.PreservationBaseline_ContainsExpectedMinimumCounts" methodname="PreservationBaseline_ContainsExpectedMinimumCounts" classname="CindarsHope.Tests.EditMode.City.TownLayoutTests" runstate="Runnable" seed="360049275" result="Passed" start-time="2026-07-03 03:09:14Z" end-time="2026-07-03 03:09:14Z" duration="0.000424" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1051" name="Reposition_IsDeterministicAndPreservesZ" fullname="CindarsHope.Tests.EditMode.City.TownLayoutTests.Reposition_IsDeterministicAndPreservesZ" methodname="Reposition_IsDeterministicAndPreservesZ" classname="CindarsHope.Tests.EditMode.City.TownLayoutTests" runstate="Runnable" seed="166533289" result="Passed" start-time="2026-07-03 03:09:14Z" end-time="2026-07-03 03:09:14Z" duration="0.000564" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1050" name="Reposition_KeepsExtremeLegacyCornersInsideBounds" fullname="CindarsHope.Tests.EditMode.City.TownLayoutTests.Reposition_KeepsExtremeLegacyCornersInsideBounds" methodname="Reposition_KeepsExtremeLegacyCornersInsideBounds" classname="CindarsHope.Tests.EditMode.City.TownLayoutTests" runstate="Runnable" seed="1231437988" result="Passed" start-time="2026-07-03 03:09:14Z" end-time="2026-07-03 03:09:14Z" duration="0.000400" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1052" name="Reposition_ScalesAwayFromCenter" fullname="CindarsHope.Tests.EditMode.City.TownLayoutTests.Reposition_ScalesAwayFromCenter" methodname="Reposition_ScalesAwayFromCenter" classname="CindarsHope.Tests.EditMode.City.TownLayoutTests" runstate="Runnable" seed="1843287440" result="Passed" start-time="2026-07-03 03:09:14Z" end-time="2026-07-03 03:09:14Z" duration="0.000271" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1054" name="ScheduleAnchorSuffixes_AreExactlyWorkSocialHome" fullname="CindarsHope.Tests.EditMode.City.TownLayoutTests.ScheduleAnchorSuffixes_AreExactlyWorkSocialHome" methodname="ScheduleAnchorSuffixes_AreExactlyWorkSocialHome" classname="CindarsHope.Tests.EditMode.City.TownLayoutTests" runstate="Runnable" seed="2017031404" result="Passed" start-time="2026-07-03 03:09:14Z" end-time="2026-07-03 03:09:14Z" duration="0.000075" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1053" name="ScheduleAnchorSuffixes_MatchRuntimeResolverConstants" fullname="CindarsHope.Tests.EditMode.City.TownLayoutTests.ScheduleAnchorSuffixes_MatchRuntimeResolverConstants" methodname="ScheduleAnchorSuffixes_MatchRuntimeResolverConstants" classname="CindarsHope.Tests.EditMode.City.TownLayoutTests" runstate="Runnable" seed="1428759033" result="Passed" start-time="2026-07-03 03:09:14Z" end-time="2026-07-03 03:09:14Z" duration="0.000183" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1056" name="SpawnIds_AreStableCanonicalSet" fullname="CindarsHope.Tests.EditMode.City.TownLayoutTests.SpawnIds_AreStableCanonicalSet" methodname="SpawnIds_AreStableCanonicalSet" classname="CindarsHope.Tests.EditMode.City.TownLayoutTests" runstate="Runnable" seed="1527701015" result="Passed" start-time="2026-07-03 03:09:14Z" end-time="2026-07-03 03:09:14Z" duration="0.000098" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1055" name="StationaryCivicRoles_UseBusinessHoursInsteadOfWandererHours" fullname="CindarsHope.Tests.EditMode.City.TownLayoutTests.StationaryCivicRoles_UseBusinessHoursInsteadOfWandererHours" methodname="StationaryCivicRoles_UseBusinessHoursInsteadOfWandererHours" classname="CindarsHope.Tests.EditMode.City.TownLayoutTests" runstate="Runnable" seed="1047505819" result="Passed" start-time="2026-07-03 03:09:14Z" end-time="2026-07-03 03:09:14Z" duration="0.000234" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1049" name="TownHallDistrict_BuildingAndMuralInsideDistrictAndBounds" fullname="CindarsHope.Tests.EditMode.City.TownLayoutTests.TownHallDistrict_BuildingAndMuralInsideDistrictAndBounds" methodname="TownHallDistrict_BuildingAndMuralInsideDistrictAndBounds" classname="CindarsHope.Tests.EditMode.City.TownLayoutTests" runstate="Runnable" seed="564139894" result="Passed" start-time="2026-07-03 03:09:14Z" end-time="2026-07-03 03:09:14Z" duration="0.000167" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1064" name="V8_CirculationUsesWideAvenuesAndClearStallAprons" fullname="CindarsHope.Tests.EditMode.City.TownLayoutTests.V8_CirculationUsesWideAvenuesAndClearStallAprons" methodname="V8_CirculationUsesWideAvenuesAndClearStallAprons" classname="CindarsHope.Tests.EditMode.City.TownLayoutTests" runstate="Runnable" seed="1367882578" result="Passed" start-time="2026-07-03 03:09:14Z" end-time="2026-07-03 03:09:14Z" duration="0.000360" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1063" name="V8_SouthResidentialRowLeavesCentralGateAvenueOpen" fullname="CindarsHope.Tests.EditMode.City.TownLayoutTests.V8_SouthResidentialRowLeavesCentralGateAvenueOpen" methodname="V8_SouthResidentialRowLeavesCentralGateAvenueOpen" classname="CindarsHope.Tests.EditMode.City.TownLayoutTests" runstate="Runnable" seed="2122769012" result="Passed" start-time="2026-07-03 03:09:14Z" end-time="2026-07-03 03:09:14Z" duration="0.000390" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1062" name="V8_ZonesUseLargeSemanticBuildings" fullname="CindarsHope.Tests.EditMode.City.TownLayoutTests.V8_ZonesUseLargeSemanticBuildings" methodname="V8_ZonesUseLargeSemanticBuildings" classname="CindarsHope.Tests.EditMode.City.TownLayoutTests" runstate="Runnable" seed="506154818" result="Passed" start-time="2026-07-03 03:09:14Z" end-time="2026-07-03 03:09:14Z" duration="0.000319" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[Saving results to: F:\Projetos\Jogos\Cindars_hope\cindars_hope\TestResults\town-forest-final.xml
+]]></output>
+                </test-case>
+              </test-suite>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

@@ -61,6 +61,50 @@ namespace CindarsHope.Combat
         // DebuffStrike: ID do status a aplicar no hit (reusa StatusEffect database)
         public string DebuffStatusId = string.Empty;
 
+        [Header("Rise-Once (spec_enemy_attack_kits_v1 — primitiva P2)")]
+        // Habilita o comportamento de reerguer 1x apos "morrer" (cracked_bone, undead_shambler, etc.).
+        public bool RiseOnceEnabled = false;
+        // Fracao de HP maximo restaurada ao reerguer (0-1).
+        [Range(0f, 1f)] public float RiseOnceHpPercent = 0.25f;
+        // DamageType (strings, case-insensitive) que bloqueiam o reerguimento (ex.: {"fire","radiant"}).
+        public string[] RiseOnceBlockedByDamageTypes = new string[0];
+        // Duracao do colapso antes de reerguer (janela de punicao para o player destruir os ossos).
+        public float RiseOnceCollapseSeconds = 2f;
+
+        [Header("Ally Heal/Buff (spec_enemy_attack_kits_v1 — primitiva P2)")]
+        // Raio de busca por alvo-aliado (mais ferido, senao mais proximo).
+        public float AllyTargetRadius = 4f;
+        // Fracao de HP curada no aliado-alvo (0 = nao cura, so buffa).
+        [Range(0f, 1f)] public float AllyHealPercent = 0f;
+        // StatusId de buff aplicado ao aliado-alvo (reusa StatusEffect database; vazio = nenhum).
+        public string AllyBuffStatusId = string.Empty;
+
+        [Header("Hazard Zone (spec_enemy_attack_kits_v1 — primitiva P2)")]
+        // Raio da zona de hazard deixada no chao.
+        public float HazardRadius = 1.5f;
+        // Duracao total da zona antes de expirar.
+        public float HazardDurationSeconds = 4f;
+        // Intervalo entre ticks de dano/status dentro da zona.
+        public float HazardTickSeconds = 1f;
+        // Dano aplicado por tick a quem estiver dentro da zona.
+        public int HazardDamagePerTick = 0;
+        // StatusId aplicado por tick (reusa StatusEffect database; vazio = nenhum).
+        public string HazardStatusId = string.Empty;
+        // Quando true, a TelegraphedAoE desta acao deixa a zona persistir apos o dano inicial.
+        public bool LeavesHazard = false;
+
+        [Header("Pull (spec_enemy_attack_kits_v1 — primitiva P2)")]
+        // Distancia (em tiles) que o player e deslocado na direcao configurada.
+        public float PullDistanceTiles = 1.5f;
+        // True = puxa na direcao do atacante (agarrao); false = puxa na direcao do hazard/origem configurada pelo consumidor.
+        public bool PullFromAttackerOrigin = true;
+
+        [Header("Salvo Multiplo (spec_enemy_attack_kits_v1 — follow-up salvas)")]
+        // Quantidade de projeteis disparados em leque por uso (1 = comportamento atual, sem leque).
+        public int ProjectileCount = 1;
+        // Angulo total (graus) do leque, distribuido simetricamente em torno da direcao base.
+        public float ProjectileSpreadAngleDegrees = 0f;
+
         string IIdentifiedData.Id => ActionId;
 
         private void OnValidate()
@@ -73,6 +117,19 @@ namespace CindarsHope.Combat
             WindupSeconds = Mathf.Max(0f, WindupSeconds);
             RecoverSeconds = Mathf.Max(0f, RecoverSeconds);
             ProjectileSpeed = Mathf.Max(0f, ProjectileSpeed);
+
+            RiseOnceHpPercent = Mathf.Clamp01(RiseOnceHpPercent);
+            RiseOnceCollapseSeconds = Mathf.Max(0f, RiseOnceCollapseSeconds);
+            AllyTargetRadius = Mathf.Max(0f, AllyTargetRadius);
+            AllyHealPercent = Mathf.Clamp01(AllyHealPercent);
+            HazardRadius = Mathf.Max(0f, HazardRadius);
+            HazardDurationSeconds = Mathf.Max(0f, HazardDurationSeconds);
+            HazardTickSeconds = Mathf.Max(0.01f, HazardTickSeconds);
+            HazardDamagePerTick = Mathf.Max(0, HazardDamagePerTick);
+            PullDistanceTiles = Mathf.Max(0f, PullDistanceTiles);
+
+            ProjectileCount = Mathf.Clamp(ProjectileCount, 1, 5);
+            ProjectileSpreadAngleDegrees = Mathf.Clamp(ProjectileSpreadAngleDegrees, 0f, 90f);
 
             if (string.IsNullOrWhiteSpace(ActionId))
                 ActionId = "action_" + name.ToLower();
