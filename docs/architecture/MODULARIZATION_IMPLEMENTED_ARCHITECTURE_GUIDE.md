@@ -8,6 +8,7 @@ contra o checkout antes de assumir que os caminhos ou números continuam atuais.
 | Assembly | Caminho | Responsabilidade |
 |---|---|---|
 | `CindarsHope.Foundation` | `Assets/_Game/Scripts/Foundation/` | contratos BCL puros; `noEngineReferences` |
+| `CindarsHope.Gameplay` | `Assets/_Game/Scripts/Gameplay/` | decisões e estados puros de gameplay; `noEngineReferences` |
 | `CindarsHope.Runtime` | `Assets/_Game/Scripts/` | gameplay e fachadas Unity ainda em assembly ampla |
 | `CindarsHope.Editor` | `Assets/_Game/Scripts/Editor/` | geradores, validators e menus editor-only |
 | `CindarsHope.Tests.EditMode` | `Assets/_Game/Tests/EditMode/` | contratos puros, integração e regressão |
@@ -28,6 +29,8 @@ dependência estiver demonstrada por ports.
 ## 3. Ports, adapters e transações
 
 - Foundation: `IIdentifiedData`, `IDataRegistry<T>` e ports transacionais.
+- Gameplay: decisões de atalhos, sessão de loja/NPC, política da Thalindra e o enum simples de modo
+  de interação com quest. Runtime depende de Gameplay; Gameplay não referencia Runtime ou Unity.
 - Inventário e ouro: `InventoryManager`/`PlayerManager` implementam adapters, sem duplicar estado.
 - Compra atômica: `AtomicPurchaseTransaction` valida e compensa falha de débito.
 - Save: descriptors/providers tipados coexistem com `SaveManager`; hotbar é o primeiro slice.
@@ -47,15 +50,16 @@ dependência estiver demonstrada por ports.
 
 ## 5. Sistemas de gameplay e seus pontos de extensão
 
-- Quests: `Quests/Runtime/QuestService.cs` é a fonte única de accept/progress/turn-in/save.
+- Quests: `Quests/Runtime/QuestService.cs` é a fonte única de accept/progress/turn-in/save;
+  `QuestObjectiveProgressDispatcher` e `QuestDynamicInstancePersistence` isolam roteamento e save.
   Catálogos dinâmicos registram `QuestInstance`; flags passam pelo `QuestFlagRegistry`.
 - Cadeias NPC: `Quests/NpcChains/NpcQuestChainCatalog.cs` contém 23x3 etapas; o service apenas
   orquestra o fluxo existente.
 - Contratos de caverna: `Quests/CaveContracts/` reutiliza `QuestService` e recompõe recompensas no load.
 - Bestiário: `Combat/Bestiary/CanonicalBestiaryCatalog*.cs` contém 117 definições tipadas;
   `Assets/_Game/Data/Enemies/` materializa o universo de 178 IDs.
-- Enemy actions: seleção passa por `IEnemyActionSelectionStrategy`; manter fallback legado enquanto
-  famílias não estiverem totalmente cobertas.
+- Enemy actions: seleção passa por `IEnemyActionSelectionStrategy`; ações e movimentos especiais usam
+  registries stateless compartilhados, mantendo os pipelines comuns como fallback.
 - UI: evoluir ViewModels/projections existentes. Não criar polling vazio, novo `OnGUI` ou pipeline
   paralelo para shop/inventory/HUD.
 - Town/Farm/Cave: editar geradores em `Scripts/Editor/SceneCreation/` junto com qualquer scene YAML;
@@ -91,7 +95,7 @@ dependência estiver demonstrada por ports.
 
 ## 9. Gates atuais
 
-- EditMode: 2672/2672 em `TestResults/canon-reconciliation-final.xml`.
+- EditMode: 2702/2702 em `TestResults/maintainability-gameplay-full.xml`.
 - PlayMode de composição: 2/2 no fechamento da Fase 8; repetir após mudanças de lifecycle/cenas.
 - Build: seis projetos são a unidade de validação, não apenas `Assembly-CSharp`.
 - Ratchets arquiteturais não podem ser elevados para esconder regressão.

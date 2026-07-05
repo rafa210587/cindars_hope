@@ -3,6 +3,7 @@
     "rootNamespace": "CindarsHope.Tests.EditMode",
     "references": [
         "CindarsHope.Foundation",
+        "CindarsHope.Gameplay",
         "CindarsHope.Runtime",
         "CindarsHope.Editor"
     ],

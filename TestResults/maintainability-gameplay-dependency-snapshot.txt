@@ -1,0 +1,58 @@
+﻿CSharpFiles=1569
+HardcodedPredefinedAssemblyFiles=0
+InternalTypes=29
+InternalTypeTestCrossings=3
+  INTERNAL_TEST|CaveEnemyMaterializer|Assets/_Game/Scripts/Cave/Runtime/CaveEnemyMaterializer.cs|Assets/_Game/Tests/EditMode/Cave/CaveRuntimeMaterializerDecompositionTests.cs
+  INTERNAL_TEST|CaveTileMaterializer|Assets/_Game/Scripts/Cave/Runtime/CaveTileMaterializer.cs|Assets/_Game/Tests/EditMode/Cave/CaveBiomeArtProfilesTests.cs
+  INTERNAL_TEST|CaveTileMaterializer|Assets/_Game/Scripts/Cave/Runtime/CaveTileMaterializer.cs|Assets/_Game/Tests/EditMode/Cave/CaveRuntimeMaterializerDecompositionTests.cs
+RuntimeModuleEdges=215
+MutualModulePairs=49
+  MUTUAL|Cave|Combat
+  MUTUAL|Cave|Core
+  MUTUAL|Cave|Enemy
+  MUTUAL|Cave|Save
+  MUTUAL|Cave|SceneManagement
+  MUTUAL|Combat|Core
+  MUTUAL|Combat|Enemy
+  MUTUAL|Combat|Player
+  MUTUAL|Combat|Skills
+  MUTUAL|Core|Craft
+  MUTUAL|Core|Economy
+  MUTUAL|Core|Enemy
+  MUTUAL|Core|Equipment
+  MUTUAL|Core|Farm
+  MUTUAL|Core|Inventory
+  MUTUAL|Core|Locations
+  MUTUAL|Core|NPC
+  MUTUAL|Core|Player
+  MUTUAL|Core|Save
+  MUTUAL|Core|Skills
+  MUTUAL|Core|UI
+  MUTUAL|Core|World
+  MUTUAL|Craft|Save
+  MUTUAL|Craft|UI
+  MUTUAL|Economy|Save
+  MUTUAL|Equipment|Inventory
+  MUTUAL|Equipment|Save
+  MUTUAL|Farm|Interaction
+  MUTUAL|Farm|Player
+  MUTUAL|Farm|Save
+  MUTUAL|Fonte|MainProgression
+  MUTUAL|Inventory|Player
+  MUTUAL|Inventory|Save
+  MUTUAL|Locations|Player
+  MUTUAL|Narrative|Quests
+  MUTUAL|NPC|Quests
+  MUTUAL|NPC|Save
+  MUTUAL|NPC|UI
+  MUTUAL|NPC|World
+  MUTUAL|Player|Save
+  MUTUAL|Player|Skills
+  MUTUAL|Player|UI
+  MUTUAL|Player|World
+  MUTUAL|Quests|Save
+  MUTUAL|Quests|UI
+  MUTUAL|Save|UI
+  MUTUAL|Save|World
+  MUTUAL|SceneManagement|World
+  MUTUAL|UI|World

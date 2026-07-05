@@ -98,13 +98,6 @@ namespace CindarsHope.Core.Events
         }
     }
 
-    public enum QuestGiverInteractionMode
-    {
-        Offer = 0,
-        TurnIn = 1,
-        NoQuest = 2
-    }
-
     public readonly struct QuestGiverInteractedEvent
     {
         public string NpcId { get; }

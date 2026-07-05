@@ -67,6 +67,9 @@ Executar por fachadas compatíveis (Strangler Pattern), com commits pequenos e r
   - [x] famílias de ações especiais roteadas por strategy registry compartilhado;
   - [x] movimentos especiais roteados por strategy registry compartilhado;
   - [x] registries usam tabelas indexadas por enum e strategies stateless, sem alocação por inimigo.
-- [ ] Lote 4 — assembly pura
+- [x] Lote 4 — assembly pura
+  - [x] `CindarsHope.Gameplay` criada com `noEngineReferences` e zero referências;
+  - [x] decisões puras de input/NPC e contrato de modo da quest movidos com GUIDs preservados;
+  - [x] teste arquitetural trava escopo curado e proíbe dependência de Unity.
 - [ ] Lote 5 — UI/data legacy
 - [ ] Lote 6 — validação e closeout

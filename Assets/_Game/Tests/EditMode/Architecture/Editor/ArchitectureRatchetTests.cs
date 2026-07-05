@@ -182,6 +182,41 @@ namespace CindarsHope.Tests.EditMode.Architecture
                 "Foundation source must not depend on UnityEngine.");
         }
 
+        [Test]
+        public void GameplayAssembly_ContainsOnlyCuratedPureDecisionTypes()
+        {
+            Type shortcutType = typeof(CindarsHope.UI.Routing.GameplayShortcutDecision);
+            Type interactionType = typeof(CindarsHope.NPC.NpcShopInteractionSession);
+
+            Assert.That(shortcutType.Assembly, Is.SameAs(interactionType.Assembly));
+            Assert.That(shortcutType.Assembly.GetName().Name, Is.EqualTo("CindarsHope.Gameplay"));
+            Assert.That(
+                shortcutType.Assembly.GetReferencedAssemblies()
+                    .Select(reference => reference.Name)
+                    .Where(name => name != null)
+                    .Any(name => name.StartsWith("UnityEngine", StringComparison.Ordinal)),
+                Is.False,
+                "Gameplay decisions must remain independent from UnityEngine assemblies.");
+
+            string projectRoot = Directory.GetParent(Application.dataPath)?.FullName;
+            Assert.That(projectRoot, Is.Not.Null.And.Not.Empty);
+            string gameplayRoot = Path.Combine(projectRoot, "Assets", "_Game", "Scripts", "Gameplay");
+            string[] sourceFiles = Directory.GetFiles(gameplayRoot, "*.cs", SearchOption.AllDirectories);
+            string[] expectedFiles =
+            {
+                "GameplayShortcutDecision.cs",
+                "NpcShopInteractionSession.cs",
+                "QuestGiverInteractionMode.cs",
+                "ThalindraQuestDialoguePolicy.cs"
+            };
+
+            Assert.That(sourceFiles.Select(Path.GetFileName), Is.EquivalentTo(expectedFiles));
+            Assert.That(
+                sourceFiles.Select(File.ReadAllText).Any(source => source.Contains("UnityEngine")),
+                Is.False,
+                "Gameplay source must not depend on UnityEngine.");
+        }
+
         private static IReadOnlyList<Rule> ReadRules(string path)
         {
             Assert.That(File.Exists(path), Is.True, $"Architecture rule file not found: {path}");

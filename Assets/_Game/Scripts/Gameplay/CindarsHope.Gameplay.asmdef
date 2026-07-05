@@ -1,12 +1,7 @@
 {
-    "name": "CindarsHope.Runtime",
+    "name": "CindarsHope.Gameplay",
     "rootNamespace": "CindarsHope",
-    "references": [
-        "CindarsHope.Foundation",
-        "CindarsHope.Gameplay",
-        "Unity.TextMeshPro",
-        "UnityEngine.UI"
-    ],
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
@@ -15,5 +10,5 @@
     "autoReferenced": true,
     "defineConstraints": [],
     "versionDefines": [],
-    "noEngineReferences": false
+    "noEngineReferences": true
 }

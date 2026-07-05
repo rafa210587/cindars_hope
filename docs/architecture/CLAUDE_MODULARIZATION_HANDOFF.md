@@ -104,6 +104,26 @@ estiver próxima do limite de contexto/tokens.
 - Próximo passo: lote 4, definir a primeira fronteira de assembly pura apenas onde a direção de
   dependência puder ser comprovada sem referências Unity reversas.
 
+### Lote 4 — assembly pura de gameplay (implementado, commit pendente de conferência)
+
+- Criada `CindarsHope.Gameplay` em `Assets/_Game/Scripts/Gameplay/`, com `noEngineReferences: true`
+  e nenhuma referência de assembly.
+- Movidos com namespace e GUID preservados: `GameplayShortcutDecision`,
+  `NpcShopInteractionSession` e `ThalindraQuestDialoguePolicy`.
+- `QuestGiverInteractionMode` saiu do arquivo de eventos Runtime e passou a ser contrato simples da
+  nova assembly, mantendo o namespace público `CindarsHope.Core.Events` e os valores 0/1/2.
+- `CindarsHope.Runtime` depende de Gameplay; não existe referência reversa. EditMode referencia as
+  duas explicitamente.
+- Novo teste arquitetural verifica nome da assembly, conjunto curado de quatro fontes e ausência de
+  `UnityEngine` nas referências e no código.
+- Snapshot re-medido: 1.569 arquivos C#, 215 edges por pasta, 49 pares mútuos, 29 tipos internal e
+  3 crossings de teste. O scanner por pasta conta Gameplay como módulo novo; pares mútuos ficaram em
+  49. A direção real da asmdef é unidirecional.
+- Evidência: build das seis assemblies explícitas 0 erros/0 warnings; EditMode 2.702/2.702; ratchet
+  PASS; resultado em `TestResults/maintainability-gameplay-full.xml`.
+- Próximo passo: lote 5, tratar UI/data legacy somente com equivalência testável; não apagar telas ou
+  assets apenas por grep.
+
 ## 2026-07-05 — Autorização integral das Fases 4 a 8
 
 - Decisão humana: continuar até terminar todo o rework, sem parar entre fases.
