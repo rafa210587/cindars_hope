@@ -28,7 +28,6 @@ $criticalPatterns = @(
     "error CS",
     "Compilation failed",
     "Script compilation failed",
-    "Assembly-CSharp",
     "Unhandled exception",
     "Exception:",
     "Fatal error",

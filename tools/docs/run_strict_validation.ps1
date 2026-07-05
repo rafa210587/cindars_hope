@@ -100,33 +100,23 @@ if ($docsResult -ne 0) {
     $docsStatus = "PASS"
 }
 
-# Step 2: Assembly-CSharp build
+# Step 2: all Unity-generated C# projects
 Write-Host ""
-Write-Host "2. Assembly-CSharp build..." -ForegroundColor Yellow
+Write-Host "2. Unity-generated C# projects build..." -ForegroundColor Yellow
 
-dotnet build .\Assembly-CSharp.csproj --no-restore
-if ($LASTEXITCODE -ne 0) {
+$buildResult = Invoke-SafeScript `
+    -Name "Unity generated-project builds" `
+    -ScriptPath ".\tools\unity\Invoke-UnityGeneratedProjectsBuild.ps1"
+
+if ($buildResult -ne 0) {
     Write-Host ""
-    Write-Host "STRICT_VALIDATION_RESULT: BUILD_FAILURE_ASSEMBLY_CSHARP" -ForegroundColor Red
+    Write-Host "STRICT_VALIDATION_RESULT: UNITY_PROJECT_BUILD_FAILURE" -ForegroundColor Red
     exit 1
 }
-Write-Host "   PASS" -ForegroundColor Green
 
-# Step 3: Assembly-CSharp-Editor build
+# Step 3: Diff completeness check
 Write-Host ""
-Write-Host "3. Assembly-CSharp-Editor build..." -ForegroundColor Yellow
-
-dotnet build .\Assembly-CSharp-Editor.csproj --no-restore
-if ($LASTEXITCODE -ne 0) {
-    Write-Host ""
-    Write-Host "STRICT_VALIDATION_RESULT: BUILD_FAILURE_ASSEMBLY_CSHARP_EDITOR" -ForegroundColor Red
-    exit 1
-}
-Write-Host "   PASS" -ForegroundColor Green
-
-# Step 4: Diff completeness check
-Write-Host ""
-Write-Host "4. Spec diff completeness..." -ForegroundColor Yellow
+Write-Host "3. Spec diff completeness..." -ForegroundColor Yellow
 
 $diffResult = Invoke-SafeScript -Name "diff completeness" -ScriptPath ".\tools\docs\check_spec_diff_completeness.ps1"
 
@@ -136,9 +126,9 @@ if ($diffResult -ne 0) {
     exit 1
 }
 
-# Step 5: Quality check (cannot fail)
+# Step 4: Quality check (cannot fail)
 Write-Host ""
-Write-Host "5. Spec quality check..." -ForegroundColor Yellow
+Write-Host "4. Spec quality check..." -ForegroundColor Yellow
 
 $qualityResult = Invoke-SafeScript -Name "quality check" -ScriptPath ".\tools\docs\check_spec_quality.ps1"
 

@@ -27,19 +27,33 @@ if (-not $changed -or $changed.Count -eq 0) {
     exit 0
 }
 
-$runtimeProject = "Assembly-CSharp.csproj"
-$editorProject = "Assembly-CSharp-Editor.csproj"
-$runtimeText = if (Test-Path $runtimeProject) { Get-Content $runtimeProject -Raw } else { "" }
-$editorText = if (Test-Path $editorProject) { Get-Content $editorProject -Raw } else { "" }
+$projects = @(
+    Get-ChildItem -Path . -File -Filter '*.csproj' |
+        ForEach-Object {
+            [PSCustomObject]@{
+                Name = $_.Name
+                Text = Get-Content -LiteralPath $_.FullName -Raw
+            }
+        }
+)
+
+if ($projects.Count -eq 0) {
+    Write-Warning "[CSPROJ] No generated C# projects found. Open Unity and regenerate project files."
+    if ($FailOnMissing) { exit 1 }
+    exit 0
+}
 
 $missing = @()
 foreach ($file in $changed) {
-    $isEditor = $file -match '\\Editor\\'
-    $projectText = if ($isEditor) { $editorText } else { $runtimeText }
-    $projectName = if ($isEditor) { $editorProject } else { $runtimeProject }
+    $slashPath = $file -replace '\\', '/'
+    $owners = @(
+        $projects | Where-Object {
+            $_.Text -like "*$file*" -or $_.Text -like "*$slashPath*"
+        }
+    )
 
-    if ($projectText -notlike "*$file*") {
-        $missing += "$file -> $projectName"
+    if ($owners.Count -eq 0) {
+        $missing += "$file -> no generated project"
     }
 }
 
@@ -54,7 +68,7 @@ if ($missing.Count -gt 0) {
     }
 }
 else {
-    Write-Host "[CSPROJ] All changed C# files are present in local csproj files."
+    Write-Host "[CSPROJ] All changed C# files are present in one of $($projects.Count) generated project(s)."
 }
 
 exit 0

@@ -274,8 +274,26 @@ Não declare PASS por compilação textual ou por relato de outro agente. Use ex
   - evidências: `TestResults/modularization-phase2-csharp-architecture.xml` e
     `TestResults/modularization-phase2-postprocessor.xml`.
 - Alterações concorrentes de animação continuam preservadas e fora deste lote.
-- Commit: pendente neste registro.
+- Commit: `19b34573` (`refactor(arquitetura): remover nomes fixos de assembly do CSharp`).
 - Próximo passo: commitar o lote C# e depois tornar os scripts de build/hook multi-project.
+
+### 2026-07-05 — Fase 2.2: validação multi-project
+
+- Objetivo: impedir que os gates assumam exatamente dois `.csproj` gerados pelo Unity.
+- Alterações em andamento:
+  - novo `Invoke-UnityGeneratedProjectsBuild.ps1` descobre, restaura e compila todos os `.csproj` da
+    raiz com exit codes reais;
+  - `run_strict_validation.ps1` usa o builder descoberto em um único gate;
+  - hook `check-csproj-includes.ps1` aceita o arquivo C# em qualquer projeto gerado;
+  - scanner de logs não trata o simples nome de uma assembly como erro crítico.
+- `.asmdef`: nenhum criado.
+- Validação:
+  - builder descobriu 2 projetos, restaurou e compilou ambos: exit 0, 0 warnings, 0 erros;
+  - hook confirmou todos os C# alterados presentes em um dos 2 projetos: exit 0;
+  - scanner processou log Unity válido contendo nomes de assemblies: exit 0, sem falso positivo.
+- Commit: pendente neste registro.
+- Próximo passo: commitar ferramentas/hook/handoff e então produzir os mapas de `internal`, ciclos e
+  referências permitidas exigidos pelo restante da Fase 2.
 
 ### 2026-07-05 — Início controlado da Fase 0 na `dev`
 
