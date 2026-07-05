@@ -21,10 +21,10 @@ usos ficam proibidos pela rule `unity-architecture` sincronizada em `.codex` e `
 
 ## Validação e bloqueio de ambiente
 
-- suíte EditMode: 2.591/2.670 PASS; 79 falhas conhecidas, zero novas contra o baseline de 81;
+- suíte EditMode: 2.593/2.672 PASS; 79 falhas conhecidas, zero novas contra o baseline de 81;
 - build/smoke Windows: PASS;
 - scanner abriu Farm, Town e Cave e encontrou 0 missing scripts;
-- PlayMode batch: BLOCKED. Com `-testPlatform PlayMode`, filtro e assembly explícita, o Unity cria
-  `InitTestScene`, entra em `FarmScene`, mas não inicia o teste e não escreve XML. O processo de
-  validação foi encerrado e a cena temporária removida. Isso impede remoções de legado e a afirmação
-  de smoke PlayMode das três cenas, mas não invalida os gates compilados/EditMode/standalone.
+- PlayMode batch: 2/2 PASS. A causa do bloqueio era `PlayModeStartSceneSetter`, que substituía a
+  `InitTestScene` do runner pela Farm durante `-runTests`. O setter agora ignora processos de teste.
+  O smoke carregou Farm, Town e Cave, confirmou a cena ativa e varreu toda a hierarquia por missing
+  scripts. Evidência: `TestResults/modularization-phase8-playmode.xml`.

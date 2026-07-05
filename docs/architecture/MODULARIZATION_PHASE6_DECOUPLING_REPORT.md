@@ -34,7 +34,7 @@ obriga evolução por essas projections.
 - fixtures de save v1–v5: 6/6 PASS;
 - agenda/cidade: 16/16 PASS;
 - preço: 7/7 PASS;
-- suíte completa após as fases 6–8: 2.591/2.670 PASS, 79 falhas; baseline tinha 81 falhas e nenhuma
+- suíte completa após as fases 6–8: 2.593/2.672 PASS, 79 falhas; baseline tinha 81 falhas e nenhuma
   falha nova foi adicionada.
 
 Evidências: `TestResults/modularization-phase6-*.xml` e

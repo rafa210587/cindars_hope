@@ -640,12 +640,14 @@ o dispatch normal do EventBus zero-allocation após aquecimento. A Fase 8 reconc
 já migrado para Canvas/projections, sincronizou as regras de Codex e Claude e preservou o legado que
 não pode ser removido sem PlayMode.
 
-O gate final compilado passou em 6/6 assemblies. A suíte EditMode descobriu 2.670 testes: 2.591 PASS
+O gate final compilado passou em 6/6 assemblies. A suíte EditMode descobriu 2.672 testes: 2.593 PASS
 e 79 FAIL, duas falhas conhecidas a menos que o baseline da Fase 5 e nenhuma nova. O build Windows
-foi `Succeeded` e iniciou por 12 segundos sem erro crítico. O único critério não concluído é o smoke
-PlayMode das três cenas: o runner Unity entra na cena, não executa o teste e não gera XML, inclusive
-com assembly explícita. Por isso nenhuma fachada legada foi apagada e o rework fica tecnicamente
-fechado nos gates automatizáveis, com esse gate ambiental explicitamente pendente.
+foi `Succeeded` e iniciou por 12 segundos sem erro crítico. O bloqueio PlayMode foi corrigido no
+`PlayModeStartSceneSetter`: ele não força mais a Farm quando o processo usa `-runTests`. O assembly
+PlayMode passou 2/2, incluindo carga de Farm, Town e Cave e varredura por missing scripts.
+
+O rework fica concluído nos gates definidos. Fachadas UI legadas sem referência continuam presentes
+por decisão conservadora: o smoke prova as cenas, mas não constitui spec visual de todas as telas.
 
 Relatórios: `MODULARIZATION_PHASE6_DECOUPLING_REPORT.md`,
 `MODULARIZATION_PHASE7_PERFORMANCE_REPORT.md` e `MODULARIZATION_PHASE8_UI_LEGACY_REPORT.md`.

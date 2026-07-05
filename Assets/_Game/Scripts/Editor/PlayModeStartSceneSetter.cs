@@ -3,6 +3,7 @@
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using System;
 
 namespace CindarsHope.EditorTools
 {
@@ -36,6 +37,15 @@ namespace CindarsHope.EditorTools
 
         private static void Apply()
         {
+            // O Unity Test Framework cria uma InitTestScene própria para PlayMode. Forçar a Farm
+            // nesse processo substitui a cena do runner, deixa o jogo rodando indefinidamente e
+            // impede a criação do XML de resultados.
+            if (IsCommandLineTestRun(Environment.GetCommandLineArgs()))
+            {
+                EditorSceneManager.playModeStartScene = null;
+                return;
+            }
+
             if (!Enabled)
             {
                 EditorSceneManager.playModeStartScene = null;
@@ -50,6 +60,24 @@ namespace CindarsHope.EditorTools
             }
 
             EditorSceneManager.playModeStartScene = sceneAsset;
+        }
+
+        public static bool IsCommandLineTestRun(string[] arguments)
+        {
+            if (arguments == null)
+            {
+                return false;
+            }
+
+            for (var index = 0; index < arguments.Length; index++)
+            {
+                if (string.Equals(arguments[index], "-runTests", StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         [MenuItem(MenuPath, priority = 41)]

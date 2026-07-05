@@ -531,16 +531,17 @@ depender do histórico da conversa.
 - Validação:
   - 6/6 projetos Unity compilam, 0 warnings, 0 erros;
   - ratchets 4/4, save fixtures 6/6;
-  - EditMode 2.591/2.670 PASS, 79 falhas; baseline 81, falhas novas 0, removidas 2;
+  - EditMode 2.593/2.672 PASS, 79 falhas; baseline 81, falhas novas 0, removidas 2;
   - build Windows `Succeeded`, 0 erros, 4 warnings;
   - executável vivo após 12 s, `Player.log` sem erro crítico.
   - scanner Editor abriu Farm/Town/Cave e encontrou 0 missing scripts.
-- Bloqueio real:
-  - PlayMode batch cria `InitTestScene`, entra em `FarmScene`, não inicia testes e não gera XML;
-  - repetido com `-assemblyNames CindarsHope.Tests.PlayMode.Composition`;
-  - processo e cena temporária foram removidos;
-  - não declarar smoke PlayMode das três cenas nem remover `ContextHintController` até corrigir o
-    runner.
+- PlayMode corrigido:
+  - causa: `PlayModeStartSceneSetter` forçava Farm e substituía a `InitTestScene` do runner;
+  - guard `-runTests` coberto por EditMode 2/2;
+  - composition + smoke Farm/Town/Cave: PlayMode 2/2 PASS;
+  - cada cena foi carregada e sua hierarquia varrida por missing scripts;
+  - evidências: `modularization-phase8-playmode-start-guard.xml` e
+    `modularization-phase8-playmode.xml`.
 - Mudanças concorrentes a preservar fora dos commits:
   - `Assets/_Game/Scripts/Editor/Enemy/GenerateEnemyWalkAnimations.cs`;
   - `Assets/_Game/Scripts/Enemy/EnemyAnimator.cs`;
@@ -548,7 +549,7 @@ depender do histórico da conversa.
 - Também não absorver ruído de Unity em `ProjectSettings/*.asset` ou reorder de `.slnx`.
 - Relatórios: `MODULARIZATION_PHASE6_DECOUPLING_REPORT.md`,
   `MODULARIZATION_PHASE7_PERFORMANCE_REPORT.md`, `MODULARIZATION_PHASE8_UI_LEGACY_REPORT.md`.
-- Próximo passo de outra sessão: corrigir/atualizar o Unity Test Framework runner PlayMode e então
-  executar smoke Farm/Town/Cave; somente depois avaliar remoção do legado UI sem referências.
+- Próximo passo de outra sessão: tratar as 79 falhas de conteúdo/spec por lotes próprios; não elevar
+  baseline. Remoções de UI antiga ainda exigem spec visual por tela, apesar do smoke de cenas passar.
 
 ---
