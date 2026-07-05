@@ -6,7 +6,7 @@ Branch: `dev`
 
 Status técnico: `COMPLETE`
 
-Publicação: pendente no momento deste registro
+Publicação técnica: `1fcfde72`, confirmada em `origin/dev` com divergência `0 0`
 
 ## Objetivo
 
@@ -111,3 +111,8 @@ permanecem fora dos commits:
 A Fase 4 não está autorizada. O próximo passo, após commit e publicação desta fase, é revisar o
 resultado remoto e aguardar decisão explícita antes de introduzir composition root ou uma segunda
 assembly.
+
+Commits técnicos:
+
+- `8e99b658` — `build(unity): tornar gates modulares confiaveis`;
+- `1fcfde72` — `refactor(arquitetura): criar assembly Foundation`.

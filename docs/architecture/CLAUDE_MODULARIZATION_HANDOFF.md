@@ -45,8 +45,11 @@ estiver próxima do limite de contexto/tokens.
   - `RunUnityEditModeTests.ps1` não usa mais `-quit`, exige XML válido e propaga resultado real;
   - scanners de arquitetura agora resolvem `-ProjectRoot .` antes de calcular paths relativos.
 - Relatório: `docs/architecture/MODULARIZATION_PHASE3_FOUNDATION_REPORT.md`.
-- Status técnico: `COMPLETE`; commit e publicação pendentes.
-- Próximo passo: commitar/publicar somente o lote da Fase 3 e parar antes da Fase 4.
+- Status técnico: `COMPLETE`.
+- Commits técnicos: `8e99b658` e `1fcfde72`.
+- Publicação técnica: `origin/dev` verificado em
+  `1fcfde72f6c174e3da39fcf2cf0a8ed8e1a2c25e`, divergência `0 0`.
+- Próximo passo: publicar este fechamento documental e parar antes da Fase 4.
 
 Você está continuando o rework modular do projeto Unity **Cindar's Hope**.
 
