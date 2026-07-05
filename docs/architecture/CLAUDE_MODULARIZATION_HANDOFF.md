@@ -68,8 +68,8 @@ Pare e reporte se:
 - Nenhum `.asmdef` foi criado por este rework.
 - Nenhum código runtime foi refatorado por este rework.
 - Nenhuma fachada ou API antiga foi removida.
-- Fase 0 está tecnicamente validada em `dev`; commit e publicação ainda precisam ser confirmados no
-  Git antes de tratá-la como fechada.
+- Fase 0 foi concluída no commit `8a887244` e publicada em `origin/dev`; valide o hash e a divergência
+  no Git antes de confiar neste registro.
 
 ## Baseline publicado
 
@@ -162,9 +162,12 @@ Não declare PASS por compilação textual ou por relato de outro agente. Use ex
   - PlayMode: não executado porque o lote altera somente testes, ferramentas e documentação.
 - Observação de ambiente: após o Unity encerrar e limpar `Temp/obj`, builds `--no-restore` retornam
   `NETSDK1004`; com restore habilitado, runtime e editor passaram.
-- Commit: pendente.
+- Commit técnico/documental: `8a887244` (`test(arquitetura): fechar baseline e ratchets da fase 0`).
+- Publicação: `git push origin dev`, exit 0; verificação posterior confirmou HEAD e `origin/dev` em
+  `8a8872445230ccf58c09b446fe3842741a945151`, divergência `0 0`.
 - Risco residual: as 13 falhas EditMode e os warnings preexistentes permanecem fora do escopo.
-- Próximo passo: revisar o diff, commitar/publicar a Fase 0 e confirmar divergência remota `0 0`.
+- Próximo passo: não repetir a Fase 0. Antes da Fase 1, decidir a branch, revalidar o baseline e
+  escolher uma correção local isolada com teste próprio.
 
 ### 2026-07-04 — Preparação do rework pelo Codex
 

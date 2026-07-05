@@ -2,7 +2,7 @@
 
 > Documento operacional para modularizar o projeto sem alterar o comportamento existente.
 >
-> **Status:** Fase 0 validada tecnicamente em `dev`; publicação pendente
+> **Status:** Fase 0 concluída e publicada em `dev` (`8a887244`)
 > atual ser commitado e publicado.
 >
 > **Branch planejada:** `rework/modular-architecture`
@@ -544,3 +544,12 @@ Esta decisão altera somente o destino dos commits da Fase 0. Permanecem obrigat
 As fases que introduzem `.asmdef`, movem scripts ou alteram composition roots continuam exigindo
 uma nova decisão de branch antes de começar. A autorização desta seção não transforma o rework
 completo em uma migração big-bang dentro de `dev`.
+
+### Fechamento
+
+A Fase 0 foi concluída em 2026-07-05 pelo commit `8a887244`, publicado em `origin/dev`. O gate
+registrado em `docs/architecture/MODULARIZATION_PHASE0_BASELINE.md` inclui ratchets por arquivo,
+proteção de GUIDs, fixtures de save v1–v5, builds e comparação da suíte EditMode.
+
+Nenhuma fase seguinte está implicitamente autorizada nesta branch. O próximo lote deve começar por
+uma decisão explícita sobre branch e pelo escopo da Fase 1.

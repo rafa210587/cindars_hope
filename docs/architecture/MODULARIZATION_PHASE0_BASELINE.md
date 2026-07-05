@@ -6,7 +6,7 @@ Branch: `dev`
 
 Commit de origem: `aed4f35c`
 
-Status: `VALIDATED_PENDING_PUBLICATION`
+Status: `COMPLETE`
 
 ## 1. Escopo e interpretação
 
@@ -172,4 +172,5 @@ A Fase 0 só muda para `COMPLETE` quando:
 4. o resultado da suíte completa é comparado ao baseline anterior — **concluído**;
 5. working tree contém apenas arquivos desta fase — **concluído**;
 6. plano e handoff registram os resultados reais — **concluído**;
-7. commits são publicados e `origin/dev...HEAD` termina em `0 0` — **pendente**.
+7. commits são publicados e `origin/dev...HEAD` termina em `0 0` — **concluído** no commit
+   `8a887244`; o commit documental posterior deve ser revalidado da mesma forma.
