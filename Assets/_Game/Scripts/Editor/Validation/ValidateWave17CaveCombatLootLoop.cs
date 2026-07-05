@@ -69,15 +69,11 @@ namespace CindarsHope.Editor.Validation
 
         private static void CheckType(string fullTypeName, ref int passed, ref int failed)
         {
-            var type = System.Type.GetType(fullTypeName + ", Assembly-CSharp");
-            if (type == null)
+            System.Type type = null;
+            foreach (var assembly in System.AppDomain.CurrentDomain.GetAssemblies())
             {
-                // Try without assembly hint
-                foreach (var asm in System.AppDomain.CurrentDomain.GetAssemblies())
-                {
-                    type = asm.GetType(fullTypeName);
-                    if (type != null) break;
-                }
+                type = assembly.GetType(fullTypeName, throwOnError: false, ignoreCase: false);
+                if (type != null) break;
             }
 
             if (type != null)

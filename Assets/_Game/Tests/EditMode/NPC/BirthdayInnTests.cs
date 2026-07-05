@@ -227,13 +227,21 @@ namespace CindarsHope.Tests.EditMode.NPC
             // ADR-0017: "reputação" foi absorvida pela amizade F26. Não existe ReputationService/State.
             // Guard: nenhum tipo cujo nome simples seja "ReputationService"/"ReputationState" está
             // carregado nos assemblies do jogo (o ADR proíbe um tracker social paralelo).
-            foreach (var asm in System.AppDomain.CurrentDomain.GetAssemblies())
+            foreach (var assembly in System.AppDomain.CurrentDomain.GetAssemblies())
             {
-                string name = asm.GetName().Name;
-                if (name == null || !name.StartsWith("Assembly-CSharp")) continue;
-
-                foreach (var type in asm.GetTypes())
+                System.Type[] types;
+                try
                 {
+                    types = assembly.GetTypes();
+                }
+                catch (System.Reflection.ReflectionTypeLoadException exception)
+                {
+                    types = exception.Types;
+                }
+
+                foreach (var type in types)
+                {
+                    if (type?.Namespace == null || !type.Namespace.StartsWith("CindarsHope")) continue;
                     Assert.AreNotEqual("ReputationService", type.Name,
                         "ADR-0017 proíbe um ReputationService paralelo — a amizade F26 é o único tracker social.");
                     Assert.AreNotEqual("ReputationState", type.Name,

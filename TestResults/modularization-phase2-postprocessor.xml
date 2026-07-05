@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="3" result="Passed" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-07-05 04:27:25Z" end-time="2026-07-05 04:27:25Z" duration="0,0293973">
+  <test-suite type="TestSuite" id="1000" name="cindars_hope" fullname="cindars_hope" runstate="Runnable" testcasecount="81" result="Passed" start-time="2026-07-05 04:27:25Z" end-time="2026-07-05 04:27:25Z" duration="0.029397" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1095" name="Assembly-CSharp-Editor.dll" fullname="F:/Projetos/Jogos/Cindars_hope/cindars_hope/Library/ScriptAssemblies/Assembly-CSharp-Editor.dll" runstate="Runnable" testcasecount="81" result="Passed" start-time="2026-07-05 04:27:25Z" end-time="2026-07-05 04:27:25Z" duration="0.023794" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="9592" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1096" name="CindarsHope" fullname="CindarsHope" runstate="Runnable" testcasecount="81" result="Passed" start-time="2026-07-05 04:27:25Z" end-time="2026-07-05 04:27:25Z" duration="0.023129" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1097" name="Tests" fullname="CindarsHope.Tests" runstate="Runnable" testcasecount="81" result="Passed" start-time="2026-07-05 04:27:25Z" end-time="2026-07-05 04:27:25Z" duration="0.022694" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="1098" name="EditMode" fullname="CindarsHope.Tests.EditMode" runstate="Runnable" testcasecount="81" result="Passed" start-time="2026-07-05 04:27:25Z" end-time="2026-07-05 04:27:25Z" duration="0.022273" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestSuite" id="1107" name="Architecture" fullname="CindarsHope.Tests.EditMode.Architecture" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-07-05 04:27:25Z" end-time="2026-07-05 04:27:25Z" duration="0.021240" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-suite type="TestFixture" id="1091" name="CSharpProjectPostprocessorTests" fullname="CindarsHope.Tests.EditMode.Architecture.CSharpProjectPostprocessorTests" classname="CindarsHope.Tests.EditMode.Architecture.CSharpProjectPostprocessorTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-07-05 04:27:25Z" end-time="2026-07-05 04:27:25Z" duration="0.018793" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1093" name="EditorProject_AddsRuntimeAssemblyReference" fullname="CindarsHope.Tests.EditMode.Architecture.CSharpProjectPostprocessorTests.EditorProject_AddsRuntimeAssemblyReference" methodname="EditorProject_AddsRuntimeAssemblyReference" classname="CindarsHope.Tests.EditMode.Architecture.CSharpProjectPostprocessorTests" runstate="Runnable" seed="1588952815" result="Passed" start-time="2026-07-05 04:27:25Z" end-time="2026-07-05 04:27:25Z" duration="0.009138" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1094" name="EditorProject_TransformationIsIdempotent" fullname="CindarsHope.Tests.EditMode.Architecture.CSharpProjectPostprocessorTests.EditorProject_TransformationIsIdempotent" methodname="EditorProject_TransformationIsIdempotent" classname="CindarsHope.Tests.EditMode.Architecture.CSharpProjectPostprocessorTests" runstate="Runnable" seed="508781184" result="Passed" start-time="2026-07-05 04:27:25Z" end-time="2026-07-05 04:27:25Z" duration="0.000761" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1092" name="NonEditorProject_ReturnsOriginalContent" fullname="CindarsHope.Tests.EditMode.Architecture.CSharpProjectPostprocessorTests.NonEditorProject_ReturnsOriginalContent" methodname="NonEditorProject_ReturnsOriginalContent" classname="CindarsHope.Tests.EditMode.Architecture.CSharpProjectPostprocessorTests" runstate="Runnable" seed="255085898" result="Passed" start-time="2026-07-05 04:27:25Z" end-time="2026-07-05 04:27:25Z" duration="0.000122" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[Saving results to: F:\Projetos\Jogos\Cindars_hope\cindars_hope\TestResults\modularization-phase2-postprocessor.xml
+]]></output>
+                </test-case>
+              </test-suite>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

@@ -13,7 +13,7 @@ namespace CindarsHope.Tests.EditMode.Items
     // rules are proven before the deferred Unity asset generation runs: unique ids, BV>0 where
     // sellable, Silver x1.5 / Gold x2.0 variants (CA-2), 6 essences (EMENDA V3.2), recipe
     // ingredients resolve (CA-4), and enum save-safety (EMENDA V3.3). This file compiles into
-    // Assembly-CSharp-Editor (it references the Editor-assembly catalog table).
+    // Compila na assembly de Editor porque referencia a tabela de catálogo do tooling.
     [TestFixture]
     public class ItemCatalogDataTests
     {

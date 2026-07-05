@@ -10,7 +10,7 @@ namespace CindarsHope.Tests.EditMode.Tooling
     // fake expectations) so every severity (ERROR/WARN/INFO/SKIPPED) and each of the 8
     // checks (a)-(h) is exercised without AssetDatabase or Play Mode.
     //
-    // The engine lives in the Editor assembly (Assembly-CSharp-Editor); this test compiles
+    // The engine lives in an Editor assembly; this test compiles
     // there too (the Editor csproj references nunit.framework + TestRunner).
     [TestFixture]
     public class CatalogValidatorTests

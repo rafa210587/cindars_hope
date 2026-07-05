@@ -254,6 +254,29 @@ Não declare PASS por compilação textual ou por relato de outro agente. Use ex
 - Próximo passo: iniciar a Fase 2 sem `.asmdef`, mantendo os três arquivos concorrentes fora dos
   commits da modularização.
 
+### 2026-07-05 — Fase 2.1: remover acoplamento C# ao nome da assembly predefinida
+
+- Objetivo: remover resolução de tipos/projetos por nome fixo de assembly no código C#.
+- Alterações em andamento:
+  - gerador da Farm usa tipos concretos para dash, movement ability e active skill controller;
+  - validador WAVE17 busca tipos nas assemblies carregadas;
+  - teste social filtra tipos pelo namespace `CindarsHope`, não pelo nome da assembly;
+  - postprocessor deriva runtime/editor pelo nome do projeto recebido;
+  - teste arquitetural impede reintrodução do nome predefinido em `Scripts/**` e `Tests/**`;
+  - comentários dependentes do nome antigo foram generalizados.
+- `.asmdef`: nenhum criado.
+- Validação:
+  - runtime/editor builds: exit 0, 0 warnings, 0 erros;
+  - ratchet CLI: PASS;
+  - busca `Assembly-CSharp` em C# de `Scripts/**` e `Tests/**`: zero ocorrências;
+  - Unity EditMode `ArchitectureRatchetTests`: 3/3 PASS;
+  - Unity EditMode `CSharpProjectPostprocessorTests`: 3/3 PASS;
+  - evidências: `TestResults/modularization-phase2-csharp-architecture.xml` e
+    `TestResults/modularization-phase2-postprocessor.xml`.
+- Alterações concorrentes de animação continuam preservadas e fora deste lote.
+- Commit: pendente neste registro.
+- Próximo passo: commitar o lote C# e depois tornar os scripts de build/hook multi-project.
+
 ### 2026-07-05 — Início controlado da Fase 0 na `dev`
 
 - Objetivo: fechar baseline e proteção arquitetural sem alterar gameplay.

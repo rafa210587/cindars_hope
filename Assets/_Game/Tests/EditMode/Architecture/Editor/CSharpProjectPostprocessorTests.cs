@@ -9,12 +9,14 @@ namespace CindarsHope.Tests.EditMode.Architecture
     {
         private const string ProjectXml =
             "<Project><ItemGroup><Reference Include=\"System\" /></ItemGroup></Project>";
+        private const string RuntimeProjectName = "GameRuntime";
+        private const string EditorProjectName = RuntimeProjectName + "-Editor";
 
         [Test]
         public void NonEditorProject_ReturnsOriginalContent()
         {
             string result = CSharpProjectPostprocessor.OnGeneratedCSProject(
-                "Assembly-CSharp.csproj",
+                RuntimeProjectName + ".csproj",
                 ProjectXml);
 
             Assert.That(result, Is.EqualTo(ProjectXml));
@@ -24,33 +26,33 @@ namespace CindarsHope.Tests.EditMode.Architecture
         public void EditorProject_AddsRuntimeAssemblyReference()
         {
             string result = CSharpProjectPostprocessor.OnGeneratedCSProject(
-                "Assembly-CSharp-Editor.csproj",
+                EditorProjectName + ".csproj",
                 ProjectXml);
             XDocument document = XDocument.Parse(result);
 
             XElement reference = document.Root?
                 .Element("ItemGroup")?
                 .Elements("Reference")
-                .FirstOrDefault(element => (string)element.Attribute("Include") == "Assembly-CSharp");
+                .FirstOrDefault(element => (string)element.Attribute("Include") == RuntimeProjectName);
 
             Assert.That(reference, Is.Not.Null);
             Assert.That((string)reference.Element("Private"), Is.EqualTo("False"));
-            StringAssert.EndsWith("Assembly-CSharp.dll", (string)reference.Element("HintPath"));
+            StringAssert.EndsWith(RuntimeProjectName + ".dll", (string)reference.Element("HintPath"));
         }
 
         [Test]
         public void EditorProject_TransformationIsIdempotent()
         {
             string first = CSharpProjectPostprocessor.OnGeneratedCSProject(
-                "Assembly-CSharp-Editor.csproj",
+                EditorProjectName + ".csproj",
                 ProjectXml);
             string second = CSharpProjectPostprocessor.OnGeneratedCSProject(
-                "Assembly-CSharp-Editor.csproj",
+                EditorProjectName + ".csproj",
                 first);
             XDocument document = XDocument.Parse(second);
 
             int runtimeReferences = document.Descendants("Reference")
-                .Count(element => (string)element.Attribute("Include") == "Assembly-CSharp");
+                .Count(element => (string)element.Attribute("Include") == RuntimeProjectName);
 
             Assert.That(runtimeReferences, Is.EqualTo(1));
         }

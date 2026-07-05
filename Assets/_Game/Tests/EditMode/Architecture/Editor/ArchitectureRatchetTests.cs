@@ -106,6 +106,37 @@ namespace CindarsHope.Tests.EditMode.Architecture
                 "migration decision.\n" + string.Join("\n", violations));
         }
 
+        [Test]
+        public void CSharpSource_DoesNotHardcodeUnityPredefinedAssemblyName()
+        {
+            string projectRoot = Directory.GetParent(Application.dataPath)?.FullName;
+            Assert.That(projectRoot, Is.Not.Null.And.Not.Empty);
+            string predefinedAssemblyName = "Assembly" + "-CSharp";
+            string[] sourceRoots =
+            {
+                Path.Combine(projectRoot, "Assets", "_Game", "Scripts"),
+                Path.Combine(projectRoot, "Assets", "_Game", "Tests")
+            };
+
+            var violations = new List<string>();
+            foreach (string sourceRoot in sourceRoots)
+            {
+                foreach (string file in Directory.GetFiles(sourceRoot, "*.cs", SearchOption.AllDirectories))
+                {
+                    if (File.ReadAllText(file).Contains(predefinedAssemblyName))
+                    {
+                        violations.Add(GetRelativePath(projectRoot, file));
+                    }
+                }
+            }
+
+            Assert.That(
+                violations,
+                Is.Empty,
+                "C# source must resolve types/projects by direct type reference or controlled discovery, " +
+                "not by Unity predefined assembly name.\n" + string.Join("\n", violations));
+        }
+
         private static IReadOnlyList<Rule> ReadRules(string path)
         {
             Assert.That(File.Exists(path), Is.True, $"Architecture rule file not found: {path}");

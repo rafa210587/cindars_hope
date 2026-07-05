@@ -7,20 +7,31 @@ using System;
 namespace CindarsHope.Editor.AssetPostprocessing
 {
     /// <summary>
-    /// SPEC 01 BLOCKER FIX: Ensures Assembly-CSharp-Editor.csproj has a reference to Assembly-CSharp.dll.
-    /// Without this reference, editor scripts cannot use runtime types (CindarsHope.Core, etc.).
+    /// Ensures a generated editor project can reference its runtime counterpart without coupling the
+    /// callback to Unity's predefined assembly names.
     /// </summary>
     public class CSharpProjectPostprocessor : AssetPostprocessor
     {
         /// <summary>
         /// Called after Unity generates the C# project file.
-        /// Adds missing Assembly-CSharp reference to Assembly-CSharp-Editor.csproj.
+        /// Adds the missing runtime counterpart reference to generated *-Editor projects.
         /// </summary>
         public static string OnGeneratedCSProject(string path, string content)
         {
+            string editorProjectName = Path.GetFileNameWithoutExtension(path);
+            const string editorSuffix = "-Editor";
             if (string.IsNullOrEmpty(path)
                 || string.IsNullOrEmpty(content)
-                || !path.EndsWith("Assembly-CSharp-Editor.csproj", StringComparison.OrdinalIgnoreCase))
+                || string.IsNullOrEmpty(editorProjectName)
+                || !editorProjectName.EndsWith(editorSuffix, StringComparison.OrdinalIgnoreCase))
+            {
+                return content;
+            }
+
+            string runtimeAssemblyName = editorProjectName.Substring(
+                0,
+                editorProjectName.Length - editorSuffix.Length);
+            if (string.IsNullOrEmpty(runtimeAssemblyName))
             {
                 return content;
             }
@@ -49,19 +60,17 @@ namespace CindarsHope.Editor.AssetPostprocessing
                 doc.Root.Add(refItemGroup);
             }
 
-            // Check if Assembly-CSharp reference already exists
             var existing = refItemGroup.Elements($"{ns}Reference")
-                .FirstOrDefault(r => r.Attribute("Include")?.Value == "Assembly-CSharp");
+                .FirstOrDefault(r => r.Attribute("Include")?.Value == runtimeAssemblyName);
 
             if (existing != null)
             {
                 return content;
             }
 
-            // Add Assembly-CSharp reference
             var newRef = new XElement($"{ns}Reference",
-                new XAttribute("Include", "Assembly-CSharp"),
-                new XElement($"{ns}HintPath", $"Library{Path.DirectorySeparatorChar}ScriptAssemblies{Path.DirectorySeparatorChar}Assembly-CSharp.dll"),
+                new XAttribute("Include", runtimeAssemblyName),
+                new XElement($"{ns}HintPath", $"Library{Path.DirectorySeparatorChar}ScriptAssemblies{Path.DirectorySeparatorChar}{runtimeAssemblyName}.dll"),
                 new XElement($"{ns}Private", "False")
             );
 

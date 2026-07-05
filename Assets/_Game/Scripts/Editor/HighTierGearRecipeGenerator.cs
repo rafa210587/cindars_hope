@@ -16,7 +16,7 @@ namespace CindarsHope.Editor
     /// (tier alto NUNCA é vendido). Custo das receitas de craft = material-âncora da banda + ouro
     /// proporcional; saída = itens F32 (stats da matriz canônica, nunca duplicados aqui).
     ///
-    /// Execução DEFERIDA (asset-gen humano no Unity Editor). O código compila em Assembly-CSharp-Editor.
+    /// Execução DEFERIDA (asset-gen humano no Unity Editor). O código compila na assembly de Editor.
     /// </summary>
     public static class HighTierGearRecipeGenerator
     {

@@ -11,7 +11,7 @@ namespace CindarsHope.Tests.EditMode.Items
     // categoria/AmmoType/BaseValue do §8, e a tabela do ArrowBallisticsResolver casa exatamente
     // com a munição do catálogo (anti-divergência: ponto único de stats x roster do catálogo).
     //
-    // Compila em Assembly-CSharp-Editor (referencia a tabela pura CanonicalItemCatalog, que vive no
+    // Compila na assembly de Editor (referencia a tabela pura CanonicalItemCatalog, que vive no
     // assembly de Editor). A parte runtime do CA-5 está em BowAmmoElementalArrowsTests.
     [TestFixture]
     public class BowAmmoCatalogTests

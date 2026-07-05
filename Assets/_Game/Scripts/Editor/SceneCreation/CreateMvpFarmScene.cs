@@ -488,36 +488,20 @@ namespace CindarsHope.Editor.SceneCreation
             // WAVE_INTEGRATION_11: Add Dash (Space+direction) and Dodge (double-tap) controllers.
             // These are movement abilities; they do NOT occupy active skill slots.
             // Design: COMBAT_CORE_DIRECTION.md §13 (Dash: 3.5 tiles, 40 Stamina) and §14 (Dodge: 1.5 tiles, 40 Stamina).
-            var dashControllerType = System.Type.GetType("CindarsHope.Player.Movement.PlayerDashController, Assembly-CSharp");
-            if (dashControllerType != null)
-            {
-                var dashController = player.AddComponent(dashControllerType);
-                var serializedDash = new SerializedObject(dashController);
-                // PlayerDashController has no _rigidbody field; it self-resolves
-                // _displacementResolver/_staminaManager in Start(). Only wire _playerController here.
-                SetReference(serializedDash, "_playerController", playerController);
-                serializedDash.ApplyModifiedPropertiesWithoutUndo();
-                EditorUtility.SetDirty(dashController);
-            }
-            else
-            {
-                Debug.LogWarning("CreateMvpFarmScene: PlayerDashController type not found. Scene may need regeneration after reimport.");
-            }
+            var dashController = player.AddComponent<CindarsHope.Player.Movement.PlayerDashController>();
+            var serializedDash = new SerializedObject(dashController);
+            // PlayerDashController has no _rigidbody field; it self-resolves
+            // _displacementResolver/_staminaManager in Start(). Only wire _playerController here.
+            SetReference(serializedDash, "_playerController", playerController);
+            serializedDash.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(dashController);
 
-            var movAbilityType = System.Type.GetType("CindarsHope.Player.Movement.PlayerMovementAbilityController, Assembly-CSharp");
-            if (movAbilityType != null)
-            {
-                var movementAbilityController = player.AddComponent(movAbilityType);
-                var serializedMovAbility = new SerializedObject(movementAbilityController);
-                SetReference(serializedMovAbility, "_rigidbody", rigidbody);
-                SetReference(serializedMovAbility, "_playerController", playerController);
-                serializedMovAbility.ApplyModifiedPropertiesWithoutUndo();
-                EditorUtility.SetDirty(movementAbilityController);
-            }
-            else
-            {
-                Debug.LogWarning("CreateMvpFarmScene: PlayerMovementAbilityController type not found. Scene may need regeneration after reimport.");
-            }
+            var movementAbilityController = player.AddComponent<CindarsHope.Player.Movement.PlayerMovementAbilityController>();
+            var serializedMovAbility = new SerializedObject(movementAbilityController);
+            SetReference(serializedMovAbility, "_rigidbody", rigidbody);
+            SetReference(serializedMovAbility, "_playerController", playerController);
+            serializedMovAbility.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(movementAbilityController);
 
             return player.transform;
         }
@@ -1038,18 +1022,10 @@ namespace CindarsHope.Editor.SceneCreation
         // This controller bridges numeric keys 1-4 → active skill slots → SkillEffectRegistry → executor.
         // The RuntimeInitializeOnLoadMethod in ActiveSkillExecutionController creates it at runtime
         // if not present, but scene placement allows inspector wiring for future expansions.
-        // Type resolved via string to avoid Editor build dependency on runtime assembly files
-        // not yet tracked by the Unity-generated Assembly-CSharp-Editor.csproj.
         private static void CreateActiveSkillExecutionController()
         {
-            var controllerType = System.Type.GetType("CindarsHope.Skills.Runtime.Effects.ActiveSkillExecutionController, Assembly-CSharp");
-            if (controllerType == null)
-            {
-                Debug.LogWarning("CreateMvpFarmScene: ActiveSkillExecutionController type not found. RuntimeInitializeOnLoadMethod will create it at runtime. Regenerate scene after Unity reimport.");
-                return;
-            }
             var controllerObject = new GameObject("ActiveSkillExecutionController");
-            var controller = controllerObject.AddComponent(controllerType);
+            var controller = controllerObject.AddComponent<CindarsHope.Skills.Runtime.Effects.ActiveSkillExecutionController>();
             EditorUtility.SetDirty(controller);
         }
 
