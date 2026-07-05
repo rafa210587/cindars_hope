@@ -291,9 +291,41 @@ Não declare PASS por compilação textual ou por relato de outro agente. Use ex
   - builder descobriu 2 projetos, restaurou e compilou ambos: exit 0, 0 warnings, 0 erros;
   - hook confirmou todos os C# alterados presentes em um dos 2 projetos: exit 0;
   - scanner processou log Unity válido contendo nomes de assemblies: exit 0, sem falso positivo.
-- Commit: pendente neste registro.
+- Commit: `12c067db` (`build(unity): descobrir e validar projetos gerados`).
 - Próximo passo: commitar ferramentas/hook/handoff e então produzir os mapas de `internal`, ciclos e
   referências permitidas exigidos pelo restante da Fase 2.
+
+### 2026-07-05 — Fase 2.3: mapa pré-asmdef
+
+- Objetivo: fechar o mapa de acessos internos, ciclos e referências permitidas antes da Fase 3.
+- Artefatos:
+  - `tools/architecture/Get-ModularizationDependencySnapshot.ps1`;
+  - `docs/architecture/MODULARIZATION_PHASE2_DEPENDENCY_MAP.md`.
+- Snapshot inicial: 0 hardcodes em C#, 18 tipos internos, 2 tipos internos realmente consumidos por
+  testes, 206 arestas lexicais e 49 pares de dependência mútua.
+- Decisão: não criar `.asmdef` por pasta atual; primeira assembly será uma Foundation curada.
+- `.asmdef`: nenhum criado.
+- Validação:
+  - dependency snapshot: exit 0;
+  - builder multi-project: 2 projetos, exit 0, 0 warnings, 0 erros;
+  - architecture ratchet: PASS;
+  - Unity EditMode completa: 81 testes, 68 PASS, 13 FAIL;
+  - comparação com baseline: falhas adicionadas = 0, removidas = 0;
+  - `.asmdef`: 0.
+- Commit: pendente neste registro.
+- Próximo passo: commitar mapa/script/evidência/handoff e publicar a Fase 2. Não iniciar Fase 3 sem
+  nova autorização explícita.
+
+### 2026-07-05 — Gate de fechamento da Fase 2
+
+- Status: `VALIDATED_PENDING_PUBLICATION`.
+- Commits técnicos: `19b34573`, `12c067db`.
+- Hardcode da assembly predefinida em C#: zero.
+- Projetos descobertos/compilados: 2/2, 0 warnings, 0 erros.
+- Mapa: 18 tipos internos, 2 tipos consumidos por 3 testes, 206 arestas, 49 pares mútuos.
+- EditMode: 68/81 PASS; somente as mesmas 13 falhas preexistentes.
+- Alterações concorrentes de animação permanecem fora dos commits.
+- Próximo passo: publicar, verificar remoto e parar antes da Fase 3.
 
 ### 2026-07-05 — Início controlado da Fase 0 na `dev`
 
