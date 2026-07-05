@@ -127,6 +127,39 @@ Não declare PASS por compilação textual ou por relato de outro agente. Use ex
 
 ## Log de execução
 
+### 2026-07-05 — Autorização e preflight das Fases 1 e 2 na `dev`
+
+- Objetivo: executar toda a Fase 1 e, após seu fechamento, iniciar a Fase 2 sem criar `.asmdef`.
+- Decisão humana: manter os dois lotes na branch `dev`.
+- Preflight: `git fetch origin dev`, branch `dev`, working tree limpo, divergência `0 0`, HEAD
+  `807cee4a`.
+- Limites: sem mudanças de balanceamento, conteúdo, save, cenas ou comportamento observável; Fase 2
+  somente depois do commit/push da Fase 1.
+- Arquivos alterados neste marco:
+  - `docs/architecture/MODULARIZATION_REWORK_PLAN.md`;
+  - `docs/architecture/CLAUDE_MODULARIZATION_HANDOFF.md`.
+- Validação: preflight Git concluído; validações de código ainda pendentes.
+- Commit: pendente.
+- Próximo passo: auditar as cinco correções locais enumeradas na Fase 1 e definir testes de
+  não-regressão para cada uma.
+
+### 2026-07-05 — Fase 1.1: callback de geração de projeto C#
+
+- Objetivo: corrigir a assinatura Unity inválida de `OnGeneratedCSProject` sem mudar o XML gerado.
+- Alterações:
+  - callback agora retorna `string`, conforme o contrato do Unity;
+  - transformação retorna o conteúdo modificado em vez de escrever o `.csproj` diretamente;
+  - guards preservam conteúdo vazio/não-editor;
+  - três testes cobrem projeto não-editor, inclusão da referência e idempotência.
+- Comportamento preservado: `Assembly-CSharp-Editor.csproj` continua recebendo uma única referência
+  privada-falsa a `Assembly-CSharp.dll`.
+- Validação:
+  - `dotnet build Assembly-CSharp-Editor.csproj`: exit 0; warning `UNT0006` eliminado;
+  - Unity EditMode `CSharpProjectPostprocessorTests`: 3/3 PASS;
+  - evidência: `TestResults/modularization-phase1-postprocessor.xml`.
+- Commit: pendente neste registro.
+- Próximo passo: commitar esta correção isolada e então corrigir a telemetria de block.
+
 ### 2026-07-05 — Início controlado da Fase 0 na `dev`
 
 - Objetivo: fechar baseline e proteção arquitetural sem alterar gameplay.

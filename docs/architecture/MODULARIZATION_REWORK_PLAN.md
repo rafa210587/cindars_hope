@@ -553,3 +553,17 @@ proteção de GUIDs, fixtures de save v1–v5, builds e comparação da suíte E
 
 Nenhuma fase seguinte está implicitamente autorizada nesta branch. O próximo lote deve começar por
 uma decisão explícita sobre branch e pelo escopo da Fase 1.
+
+## 14. Decisão de execução das Fases 1 e 2
+
+Em 2026-07-05, após o fechamento da Fase 0, o responsável autorizou executar a Fase 1 na branch
+`dev` e iniciar a Fase 2 na mesma branch caso todos os gates da Fase 1 sejam satisfeitos.
+
+Condições desta autorização:
+
+- cada correção da Fase 1 deve ser isolada, coberta por teste e registrada no handoff;
+- nenhuma mudança pode alterar balanceamento, conteúdo, saves, cenas ou comportamento observável;
+- a Fase 1 deve ser commitada e publicada antes do primeiro lote da Fase 2;
+- a Fase 2 pode remover dependências hardcoded e preparar validadores/builds;
+- nenhum `.asmdef` será criado nesta autorização, pois isso pertence ao gate posterior da Fase 3;
+- qualquer falha nova de build/EditMode interrompe a progressão para a fase seguinte.

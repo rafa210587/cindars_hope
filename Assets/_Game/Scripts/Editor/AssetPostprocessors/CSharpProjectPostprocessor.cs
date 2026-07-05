@@ -2,6 +2,7 @@ using UnityEditor;
 using System.Xml.Linq;
 using System.IO;
 using System.Linq;
+using System;
 
 namespace CindarsHope.Editor.AssetPostprocessing
 {
@@ -15,10 +16,14 @@ namespace CindarsHope.Editor.AssetPostprocessing
         /// Called after Unity generates the C# project file.
         /// Adds missing Assembly-CSharp reference to Assembly-CSharp-Editor.csproj.
         /// </summary>
-        public static void OnGeneratedCSProject(string path, string content)
+        public static string OnGeneratedCSProject(string path, string content)
         {
-            if (!path.EndsWith("Assembly-CSharp-Editor.csproj"))
-                return;
+            if (string.IsNullOrEmpty(path)
+                || string.IsNullOrEmpty(content)
+                || !path.EndsWith("Assembly-CSharp-Editor.csproj", StringComparison.OrdinalIgnoreCase))
+            {
+                return content;
+            }
 
             // Parse the project XML
             var doc = XDocument.Parse(content);
@@ -49,7 +54,9 @@ namespace CindarsHope.Editor.AssetPostprocessing
                 .FirstOrDefault(r => r.Attribute("Include")?.Value == "Assembly-CSharp");
 
             if (existing != null)
-                return; // Already has the reference
+            {
+                return content;
+            }
 
             // Add Assembly-CSharp reference
             var newRef = new XElement($"{ns}Reference",
@@ -60,9 +67,9 @@ namespace CindarsHope.Editor.AssetPostprocessing
 
             refItemGroup.Add(newRef);
 
-            // Write back the modified content
-            var modifiedContent = doc.Declaration + "\n" + doc.ToString();
-            File.WriteAllText(path, modifiedContent);
+            return doc.Declaration != null
+                ? doc.Declaration + "\n" + doc
+                : doc.ToString();
         }
     }
 }
