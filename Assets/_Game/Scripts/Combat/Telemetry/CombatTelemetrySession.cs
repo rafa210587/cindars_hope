@@ -259,6 +259,7 @@ namespace CindarsHope.Combat.Telemetry
         }
 
         public void RecordDodge(float nowSeconds) { Touch(nowSeconds); _dodges += 1; }
+        public void RecordBlock(float nowSeconds) { Touch(nowSeconds); _blocks += 1; }
         public void RecordPerfectBlock(float nowSeconds) { Touch(nowSeconds); _perfectBlocks += 1; }
         public void RecordPostureBreak(float nowSeconds) { Touch(nowSeconds); _postureBreaks += 1; }
         public void RecordChargedAttack(float nowSeconds) { Touch(nowSeconds); _chargedAttacks += 1; }

@@ -138,6 +138,7 @@ namespace CindarsHope.Combat.Telemetry
             GameEventBus.Subscribe<StaminaChangedEvent>(OnStaminaChanged);
             GameEventBus.Subscribe<ManaChangedEvent>(OnManaChanged);
             GameEventBus.Subscribe<PlayerDodgeStartedEvent>(OnDodge);
+            GameEventBus.Subscribe<PlayerNormalBlockEvent>(OnBlock);
             GameEventBus.Subscribe<PlayerPerfectBlockEvent>(OnPerfectBlock);
             GameEventBus.Subscribe<EnemyPostureBrokenEvent>(OnPostureBroken);
             GameEventBus.Subscribe<PlayerChargedAttackEvent>(OnChargedAttack);
@@ -164,6 +165,7 @@ namespace CindarsHope.Combat.Telemetry
             GameEventBus.Unsubscribe<StaminaChangedEvent>(OnStaminaChanged);
             GameEventBus.Unsubscribe<ManaChangedEvent>(OnManaChanged);
             GameEventBus.Unsubscribe<PlayerDodgeStartedEvent>(OnDodge);
+            GameEventBus.Unsubscribe<PlayerNormalBlockEvent>(OnBlock);
             GameEventBus.Unsubscribe<PlayerPerfectBlockEvent>(OnPerfectBlock);
             GameEventBus.Unsubscribe<EnemyPostureBrokenEvent>(OnPostureBroken);
             GameEventBus.Unsubscribe<PlayerChargedAttackEvent>(OnChargedAttack);
@@ -228,6 +230,9 @@ namespace CindarsHope.Combat.Telemetry
         private void OnDodge(PlayerDodgeStartedEvent evt) =>
             _session?.RecordDodge(Now);
 
+        private void OnBlock(PlayerNormalBlockEvent evt) =>
+            _session?.RecordBlock(Now);
+
         private void OnPerfectBlock(PlayerPerfectBlockEvent evt) =>
             _session?.RecordPerfectBlock(Now);
 
@@ -270,7 +275,6 @@ namespace CindarsHope.Combat.Telemetry
         {
             return new[]
             {
-                "no DamageBlockedEvent in project: regular (non-perfect) block count unavailable",
                 "no block-held-time event: time spent blocking unavailable",
                 "no event for dash distance / average movement speed (COMBAT_CORE §53)",
                 "no event for consumables used in combat (COMBAT_CORE §53)",

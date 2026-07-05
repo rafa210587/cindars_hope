@@ -204,12 +204,14 @@ namespace CindarsHope.Tests.EditMode.Combat
 
             session.RecordDodge(1f);
             session.RecordDodge(2f);
+            session.RecordBlock(2.5f);
             session.RecordPerfectBlock(3f);
             session.RecordPostureBreak(4f);
             session.RecordChargedAttack(5f);
             session.RecordDeath(6f);
 
             Assert.AreEqual(2, session.Dodges);
+            Assert.AreEqual(1, session.Blocks);
             Assert.AreEqual(1, session.PerfectBlocks);
             Assert.AreEqual(1, session.PostureBreaks);
             Assert.AreEqual(1, session.ChargedAttacks);

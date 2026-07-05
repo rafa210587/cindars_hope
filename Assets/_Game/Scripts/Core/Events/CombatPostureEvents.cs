@@ -34,4 +34,19 @@ namespace CindarsHope.Core.Events
             NegatedDamage = negatedDamage;
         }
     }
+
+    /// <summary>Player mitigou um hit com block normal (fora da janela de perfect block).</summary>
+    public readonly struct PlayerNormalBlockEvent
+    {
+        public string SourceId { get; }
+        public int IncomingDamage { get; }
+        public int MitigatedDamage { get; }
+
+        public PlayerNormalBlockEvent(string sourceId, int incomingDamage, int mitigatedDamage)
+        {
+            SourceId = sourceId ?? string.Empty;
+            IncomingDamage = incomingDamage;
+            MitigatedDamage = mitigatedDamage;
+        }
+    }
 }

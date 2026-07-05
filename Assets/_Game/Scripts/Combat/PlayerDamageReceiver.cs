@@ -87,7 +87,12 @@ namespace CindarsHope.Combat
                     return 0;
                 }
 
+                int incomingBlockDamage = rawDamage;
                 rawDamage = Player.Movement.BlockTimingRules.MitigateNormalBlock(rawDamage);
+                Core.GameEventBus.Publish(new PlayerNormalBlockEvent(
+                    sourceId,
+                    incomingBlockDamage,
+                    rawDamage));
             }
 
             var defense = ResolveDefense();

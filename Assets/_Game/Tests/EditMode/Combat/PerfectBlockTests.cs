@@ -1,4 +1,5 @@
 using CindarsHope.Combat;
+using CindarsHope.Core.Events;
 using CindarsHope.Player.Movement;
 using NUnit.Framework;
 
@@ -45,6 +46,16 @@ namespace CindarsHope.Tests.EditMode.Combat
             Assert.AreEqual(5, BlockTimingRules.MitigateNormalBlock(10));
             Assert.AreEqual(1, BlockTimingRules.MitigateNormalBlock(1), "Floor 1.");
             Assert.AreEqual(0, BlockTimingRules.MitigateNormalBlock(0));
+        }
+
+        [Test]
+        public void NormalBlockEvent_PreservesIncomingAndMitigatedDamage()
+        {
+            var evt = new PlayerNormalBlockEvent("enemy_guard", 11, 6);
+
+            Assert.AreEqual("enemy_guard", evt.SourceId);
+            Assert.AreEqual(11, evt.IncomingDamage);
+            Assert.AreEqual(6, evt.MitigatedDamage);
         }
 
         // ------------------------------------------------ reflexo

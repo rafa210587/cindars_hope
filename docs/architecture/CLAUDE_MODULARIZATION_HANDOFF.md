@@ -157,8 +157,30 @@ Não declare PASS por compilação textual ou por relato de outro agente. Use ex
   - `dotnet build Assembly-CSharp-Editor.csproj`: exit 0; warning `UNT0006` eliminado;
   - Unity EditMode `CSharpProjectPostprocessorTests`: 3/3 PASS;
   - evidência: `TestResults/modularization-phase1-postprocessor.xml`.
-- Commit: pendente neste registro.
+- Commit: `1de0e1b9` (`fix(editor): corrigir callback de geração do csproj`).
 - Próximo passo: commitar esta correção isolada e então corrigir a telemetria de block.
+
+### 2026-07-05 — Fase 1.2: contador de block da telemetria
+
+- Objetivo: fazer `_blocks` representar blocks normais reais, sem alterar dano ou timing de block.
+- Alterações:
+  - `PlayerNormalBlockEvent` publicado depois da mitigação já existente;
+  - `CombatTelemetryService` assina/desassina o evento;
+  - `CombatTelemetrySession.RecordBlock` incrementa o contador;
+  - gap obsoleto de evento inexistente removido;
+  - testes cobrem agregação e payload de dano antes/depois da mitigação.
+- Comportamento preservado: fórmula, perfect block, dano final e feedback permanecem inalterados; o
+  evento é observacional.
+- Validação:
+  - builds runtime/editor: exit 0;
+  - Unity EditMode `CombatTelemetryPhaseOneTests`: 2/2 PASS;
+  - warning de `_blocks` eliminado;
+  - evidência: `TestResults/modularization-phase1-telemetry.xml`.
+- Alteração concorrente detectada: `Assets/_Game/Scripts/Enemy/EnemyAnimator.cs` passou a conter um
+  lote de idle animation durante a execução Unity. Não pertence à Fase 1, não foi revertida e deve
+  ser excluída dos commits desta modularização.
+- Commit: pendente neste registro.
+- Próximo passo: commitar somente telemetria/eventos/testes/handoff e preservar o arquivo externo.
 
 ### 2026-07-05 — Início controlado da Fase 0 na `dev`
 
