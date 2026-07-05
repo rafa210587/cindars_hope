@@ -10,7 +10,7 @@ namespace CindarsHope.Enemy
     /// Recebe referências via Init(); não é MonoBehaviour.
     /// Contém todo o estado de movimento e os métodos Move* / Try* extraídos do EnemyBrain.
     /// </summary>
-    internal sealed class EnemyMovementExecutor
+    internal sealed class EnemyMovementExecutor : IEnemyMovementStrategyContext
     {
         // ─── Referências injetadas ────────────────────────────────────────────
 
@@ -19,6 +19,8 @@ namespace CindarsHope.Enemy
         private EnemyDataSO _enemyData;
         private EnemyMovementProfileSO _movementProfile;
         private EnemyTelegraphController _telegraph;
+        private readonly EnemyMovementStrategyRegistry _movementStrategies =
+            EnemyMovementStrategyRegistry.Default;
 
         // Tuning SerializeFields do EnemyBrain (não podem sair do MonoBehaviour)
         private float _leapCooldownSeconds = 3.5f;
@@ -355,53 +357,18 @@ namespace CindarsHope.Enemy
         private bool TryMoveNewBehaviour(EnemyMovementType effectiveMove)
         {
             float speed = _getMoveSpeed();
-            switch (effectiveMove)
-            {
-                case EnemyMovementType.CircleStrafe:
-                case EnemyMovementType.FloatingOrbit:
-                    MoveOrbit(speed);
-                    return true;
-
-                case EnemyMovementType.FloatingSlow:
-                    MoveFloatingSlow(speed);
-                    return true;
-
-                case EnemyMovementType.ChargeLine:
-                    MoveChargeLine(speed);
-                    return true;
-
-                case EnemyMovementType.RetreatAndCall:
-                    MoveRetreatAndCall(speed);
-                    return true;
-
-                case EnemyMovementType.HazardLure:
-                    // Lure the player by backing away (toward a hazard the level designer placed);
-                    // straight retreat reuses the existing retreat vector (no pathfinding).
-                    MoveRetreat();
-                    return true;
-
-                case EnemyMovementType.TreasureIdleAmbush:
-                    MoveMimicAmbush(speed);
-                    return true;
-
-                case EnemyMovementType.ProtectAnchor:
-                case EnemyMovementType.BossArenaControl:
-                    MoveAnchoredChase(speed);
-                    return true;
-
-                case EnemyMovementType.PackFlanker:
-                    MovePackFlanker(speed);
-                    return true;
-
-                case EnemyMovementType.PackLeader:
-                    // Leader chases normally; its death (handled via pack alert) turns flankers to
-                    // RetreatAndCall. No special steering here — fall through to default chase.
-                    return false;
-
-                default:
-                    return false;
-            }
+            // Unregistered types (including PackLeader) intentionally fall through to shared chase.
+            return _movementStrategies.TryMove(this, effectiveMove, speed);
         }
+
+        void IEnemyMovementStrategyContext.MoveOrbit(float speed) => MoveOrbit(speed);
+        void IEnemyMovementStrategyContext.MoveFloatingSlow(float speed) => MoveFloatingSlow(speed);
+        void IEnemyMovementStrategyContext.MoveChargeLine(float speed) => MoveChargeLine(speed);
+        void IEnemyMovementStrategyContext.MoveRetreatAndCall(float speed) => MoveRetreatAndCall(speed);
+        void IEnemyMovementStrategyContext.MoveRetreat(float speed) => MoveRetreat();
+        void IEnemyMovementStrategyContext.MoveMimicAmbush(float speed) => MoveMimicAmbush(speed);
+        void IEnemyMovementStrategyContext.MoveAnchoredChase(float speed) => MoveAnchoredChase(speed);
+        void IEnemyMovementStrategyContext.MovePackFlanker(float speed) => MovePackFlanker(speed);
 
         /// <summary>CircleStrafe / FloatingOrbit: hold firing distance and orbit the player.</summary>
         private void MoveOrbit(float speed)

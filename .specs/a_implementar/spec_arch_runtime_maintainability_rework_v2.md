@@ -63,7 +63,10 @@ Executar por fachadas compatíveis (Strangler Pattern), com commits pequenos e r
   - [x] persistência de instâncias dinâmicas extraída, incluindo fallback legado;
   - [x] lifecycle de interação do `NpcShopController` isolado em máquina de estados pura;
   - [x] política da quest da Thalindra isolada para manter opção visível e modo emitido consistentes.
-- [ ] Lote 3 — Enemy strategies
+- [x] Lote 3 — Enemy strategies
+  - [x] famílias de ações especiais roteadas por strategy registry compartilhado;
+  - [x] movimentos especiais roteados por strategy registry compartilhado;
+  - [x] registries usam tabelas indexadas por enum e strategies stateless, sem alocação por inimigo.
 - [ ] Lote 4 — assembly pura
 - [ ] Lote 5 — UI/data legacy
 - [ ] Lote 6 — validação e closeout

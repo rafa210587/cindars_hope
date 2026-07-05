@@ -90,6 +90,20 @@ estiver próxima do limite de contexto/tokens.
 - Próximo passo: lote 3, substituir a seleção/execução monolítica de ações e movimento inimigo por
   registries de strategy preservando a estratégia injetável e todos os timings atuais.
 
+### Lote 3 — strategies de ações e movimento inimigo (implementado, commit pendente de conferência)
+
+- `EnemyActionExecutionStrategyRegistry` substitui o switch das famílias especiais (`SelfBuff`,
+  combos, AoE, summon, charge e debuff); melee, projétil, rival e blink continuam no pipeline comum.
+- `EnemyMovementStrategyRegistry` substitui o switch dos movimentos especiais; tipos não registrados,
+  inclusive `PackLeader`, continuam caindo no chase compartilhado.
+- Os dois registries são compartilhados, stateless e indexados diretamente pelo enum. Não criam
+  dictionaries, wrappers ou delegates para cada instância de inimigo.
+- Seleção de ação, cooldown, windup/recover, dano, animação, velocidades e timings não foram alterados.
+- Evidência: seis testes novos de dispatch; EditMode completa 2.701/2.701; Runtime e EditMode build
+  0 erros/0 warnings; architecture ratchet PASS.
+- Próximo passo: lote 4, definir a primeira fronteira de assembly pura apenas onde a direção de
+  dependência puder ser comprovada sem referências Unity reversas.
+
 ## 2026-07-05 — Autorização integral das Fases 4 a 8
 
 - Decisão humana: continuar até terminar todo o rework, sem parar entre fases.

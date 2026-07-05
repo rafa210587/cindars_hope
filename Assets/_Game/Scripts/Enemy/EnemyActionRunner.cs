@@ -12,7 +12,7 @@ namespace CindarsHope.Enemy
     /// Executa ações de combate do inimigo (windup, resolve, dano, status), delegado pelo EnemyBrain.
     /// Recebe referências via Init(); não é MonoBehaviour.
     /// </summary>
-    internal sealed class EnemyActionRunner
+    internal sealed class EnemyActionRunner : IEnemyActionExecutionContext
     {
         // ─── Referências injetadas ────────────────────────────────────────────
 
@@ -27,6 +27,8 @@ namespace CindarsHope.Enemy
         private CindarsHope.Combat.EnemyHealth _health;
         private IEnemyActionSelectionStrategy _selectionStrategy =
             new OrderedReadyEnemyActionSelectionStrategy();
+        private readonly EnemyActionExecutionStrategyRegistry _executionStrategies =
+            EnemyActionExecutionStrategyRegistry.Default;
 
         // Callbacks para acessar estado do EnemyBrain
         private System.Func<GameObject> _getPlayerTarget;
@@ -265,36 +267,7 @@ namespace CindarsHope.Enemy
         private void ResolveAction()
         {
             if (PendingAction == null) return;
-            if (PendingAction.ActionType == EnemyActionType.SelfBuff)
-            {
-                // spec_enemy_attack_kits_v1 (AllyHeal/AllyBuff, primitiva P2): quando o SelfBuff
-                // configura AllyHealPercent/AllyBuffStatusId, cura/buffa o aliado-alvo em vez de
-                // (ou alem de) buffar a si mesmo. Sem esses campos (defaults neutros), o SelfBuff
-                // permanece o no-op de sempre — comportamento pre-existente inalterado.
-                if (PendingAction.AllyHealPercent > 0f || !string.IsNullOrWhiteSpace(PendingAction.AllyBuffStatusId))
-                    ExecuteAllyHealBuff(PendingAction);
-                return;
-            }
-
-            // fable_83: ataques-assinatura são roteados antes do guard de dano base
-            switch (PendingAction.ActionType)
-            {
-                case EnemyActionType.ComboStrike:
-                    ExecuteComboStrike(PendingAction);
-                    return;
-                case EnemyActionType.TelegraphedAoE:
-                    ExecuteTelegraphedAoE(PendingAction);
-                    return;
-                case EnemyActionType.SummonAdds:
-                    ExecuteSummonAdds(PendingAction);
-                    return;
-                case EnemyActionType.MultiHitCharge:
-                    ExecuteMultiHitCharge(PendingAction);
-                    return;
-                case EnemyActionType.DebuffStrike:
-                    ExecuteDebuffStrike(PendingAction);
-                    return;
-            }
+            if (_executionStrategies.TryExecute(this, PendingAction)) return;
 
             if (PendingAction.BaseDamage <= 0) return;
             if (_getPlayerTarget() == null) return;
@@ -453,6 +426,20 @@ namespace CindarsHope.Enemy
             _comboDmgType = dmgType;
             _comboAction = action;
         }
+
+        private void ExecuteSelfBuff(EnemyActionSO action)
+        {
+            // Neutral defaults preserve the legacy no-op behavior.
+            if (action.AllyHealPercent > 0f || !string.IsNullOrWhiteSpace(action.AllyBuffStatusId))
+                ExecuteAllyHealBuff(action);
+        }
+
+        void IEnemyActionExecutionContext.ExecuteSelfBuff(EnemyActionSO action) => ExecuteSelfBuff(action);
+        void IEnemyActionExecutionContext.ExecuteComboStrike(EnemyActionSO action) => ExecuteComboStrike(action);
+        void IEnemyActionExecutionContext.ExecuteTelegraphedAoE(EnemyActionSO action) => ExecuteTelegraphedAoE(action);
+        void IEnemyActionExecutionContext.ExecuteSummonAdds(EnemyActionSO action) => ExecuteSummonAdds(action);
+        void IEnemyActionExecutionContext.ExecuteMultiHitCharge(EnemyActionSO action) => ExecuteMultiHitCharge(action);
+        void IEnemyActionExecutionContext.ExecuteDebuffStrike(EnemyActionSO action) => ExecuteDebuffStrike(action);
 
         private void ResetComboState()
         {
