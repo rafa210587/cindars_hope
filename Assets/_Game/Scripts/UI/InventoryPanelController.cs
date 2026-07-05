@@ -1,9 +1,12 @@
 using System;
+using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
+using CindarsHope.Core.Events;
 using CindarsHope.Equipment;
 using CindarsHope.Inventory;
 using CindarsHope.Inventory.Data;
 using CindarsHope.UI.Modal;
+using CindarsHope.UI.Routing;
 using CindarsHope.World;
 using UnityEngine;
 
@@ -59,8 +62,16 @@ namespace CindarsHope.UI
             DontDestroyOnLoad(gameObject);
         }
 
+        private void OnEnable()
+        {
+            GameEventBus.Subscribe<InventoryPanelOpenedEvent>(OnInventoryOpenRequested);
+            GameEventBus.Subscribe<ModalCloseRequestedEvent>(OnModalCloseRequested);
+        }
+
         private void OnDisable()
         {
+            GameEventBus.Unsubscribe<InventoryPanelOpenedEvent>(OnInventoryOpenRequested);
+            GameEventBus.Unsubscribe<ModalCloseRequestedEvent>(OnModalCloseRequested);
             if (_isOpen)
             {
                 ClosePanel();
@@ -71,7 +82,7 @@ namespace CindarsHope.UI
         {
             ResolveInventoryManager();
 
-            if (global::UnityEngine.Input.GetKeyDown(KeyCode.I))
+            if (!GameplayInputRouter.IsActive && global::UnityEngine.Input.GetKeyDown(KeyCode.I))
             {
                 Toggle();
             }
@@ -81,7 +92,7 @@ namespace CindarsHope.UI
                 return;
             }
 
-            if (global::UnityEngine.Input.GetKeyDown(KeyCode.Escape))
+            if (!GameplayInputRouter.IsActive && global::UnityEngine.Input.GetKeyDown(KeyCode.Escape))
             {
                 CloseOrBack();
                 return;
@@ -102,6 +113,16 @@ namespace CindarsHope.UI
                     UpdateEquipmentSelectionNavigation();
                     break;
             }
+        }
+
+        private void OnInventoryOpenRequested(InventoryPanelOpenedEvent _)
+        {
+            if (!_isOpen) Toggle();
+        }
+
+        private void OnModalCloseRequested(ModalCloseRequestedEvent _)
+        {
+            if (_isOpen) CloseOrBack();
         }
 
         private void OnGUI()

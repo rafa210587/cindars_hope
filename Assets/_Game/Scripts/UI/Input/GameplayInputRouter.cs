@@ -21,6 +21,13 @@ namespace CindarsHope.UI.Routing
 
         private ModalManager _modalManager;
 
+        public static GameplayInputRouter Install(Transform host)
+        {
+            if (Instance != null) return Instance;
+            if (host == null) return null;
+            return host.GetComponent<GameplayInputRouter>() ?? host.gameObject.AddComponent<GameplayInputRouter>();
+        }
+
         private void Awake()
         {
             if (Instance != null && Instance != this)
@@ -42,38 +49,34 @@ namespace CindarsHope.UI.Routing
             ResolveModalManager();
 
             var hasModal = _modalManager != null && _modalManager.HasActiveModal;
-            var currentModal = _modalManager != null ? _modalManager.CurrentModal : ModalType.None;
+            var frame = new GameplayShortcutFrame(
+                Input.GetKeyDown(KeyCode.Escape),
+                Input.GetKeyDown(KeyCode.I),
+                Input.GetKeyDown(KeyCode.K),
+                Input.GetKeyDown(KeyCode.U));
 
-            // Esc: close current modal OR open pause
-            if (Input.GetKeyDown(KeyCode.Escape))
+            Publish(GameplayShortcutDecision.Resolve(frame, hasModal));
+        }
+
+        private static void Publish(GameplayInputCommand command)
+        {
+            switch (command)
             {
-                if (hasModal)
-                {
+                case GameplayInputCommand.CloseModal:
                     GameEventBus.Publish(new ModalCloseRequestedEvent());
-                }
-                else
-                {
+                    break;
+                case GameplayInputCommand.OpenPause:
                     GameEventBus.Publish(new PauseOpenedEvent());
-                }
-                return;
-            }
-
-            // Block all gameplay shortcuts while any modal is open
-            if (hasModal) return;
-
-            if (Input.GetKeyDown(KeyCode.I))
-            {
-                GameEventBus.Publish(new InventoryPanelOpenedEvent());
-            }
-            else if (Input.GetKeyDown(KeyCode.K))
-            {
-                GameEventBus.Publish(new EquipmentPanelOpenedEvent());
-            }
-            else if (Input.GetKeyDown(KeyCode.U))
-            {
-                // Skill tree panel is already Canvas-based via SkillTreeInputHandler;
-                // publishing the event lets it respond without duplicate key handling.
-                GameEventBus.Publish(new SkillTreeOpenedEvent());
+                    break;
+                case GameplayInputCommand.OpenInventory:
+                    GameEventBus.Publish(new InventoryPanelOpenedEvent());
+                    break;
+                case GameplayInputCommand.OpenEquipment:
+                    GameEventBus.Publish(new EquipmentPanelOpenedEvent());
+                    break;
+                case GameplayInputCommand.OpenSkillTree:
+                    GameEventBus.Publish(new SkillTreeOpenedEvent());
+                    break;
             }
         }
 

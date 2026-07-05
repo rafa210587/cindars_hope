@@ -2,6 +2,7 @@ using System.Collections;
 using System.Text.RegularExpressions;
 using CindarsHope.Combat;
 using CindarsHope.Composition;
+using CindarsHope.UI.Routing;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -23,17 +24,21 @@ namespace CindarsHope.Tests.PlayMode.Composition
         {
             GameRuntimeCompositionRoot root = GameRuntimeCompositionRoot.EnsureExists();
             CombatStateTracker tracker = CombatStateTracker.ActiveInstance;
+            GameplayInputRouter inputRouter = GameplayInputRouter.Instance;
 
             yield return null;
 
             Assert.That(GameRuntimeCompositionRoot.EnsureExists(), Is.SameAs(root));
             Assert.That(CombatStateTrackerBootstrap.Install(), Is.SameAs(tracker));
             Assert.That(GameRuntimeCompositionRoot.IsReady, Is.True);
+            Assert.That(inputRouter, Is.Not.Null);
+            Assert.That(inputRouter.gameObject, Is.SameAs(root.gameObject));
 
             yield return null;
 
             Assert.That(GameRuntimeCompositionRoot.Instance, Is.SameAs(root));
             Assert.That(CombatStateTracker.ActiveInstance, Is.SameAs(tracker));
+            Assert.That(GameplayInputRouter.Instance, Is.SameAs(inputRouter));
         }
 
         [UnityTest]

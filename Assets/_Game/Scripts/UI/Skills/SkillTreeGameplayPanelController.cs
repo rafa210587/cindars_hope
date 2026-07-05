@@ -57,11 +57,13 @@ namespace CindarsHope.UI.Skills
         {
             // WAVE_INTEGRATION_10: subscribe so GameplayInputRouter's U-key event opens this panel.
             GameEventBus.Subscribe<SkillTreeOpenedEvent>(OnSkillTreeOpenedEvent);
+            GameEventBus.Subscribe<ModalCloseRequestedEvent>(OnModalCloseRequested);
         }
 
         private void OnDisable()
         {
             GameEventBus.Unsubscribe<SkillTreeOpenedEvent>(OnSkillTreeOpenedEvent);
+            GameEventBus.Unsubscribe<ModalCloseRequestedEvent>(OnModalCloseRequested);
             if (_isOpen)
             {
                 Close();
@@ -75,6 +77,19 @@ namespace CindarsHope.UI.Skills
             {
                 Toggle();
             }
+        }
+
+        private void OnModalCloseRequested(ModalCloseRequestedEvent _)
+        {
+            if (!_isOpen) return;
+            if (!string.IsNullOrEmpty(_selectedTreeId))
+            {
+                _selectedTreeId = string.Empty;
+                _selectedNodeIndex = 0;
+                return;
+            }
+
+            Close();
         }
 
         private void Update()
@@ -91,7 +106,7 @@ namespace CindarsHope.UI.Skills
                 return;
             }
 
-            if (global::UnityEngine.Input.GetKeyDown(KeyCode.Escape))
+            if (!GameplayInputRouter.IsActive && global::UnityEngine.Input.GetKeyDown(KeyCode.Escape))
             {
                 if (!string.IsNullOrEmpty(_selectedTreeId))
                 {

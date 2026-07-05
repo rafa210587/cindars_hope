@@ -1,10 +1,13 @@
+using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
+using CindarsHope.Core.Events;
 using CindarsHope.Equipment;
 using CindarsHope.Inventory;
 using CindarsHope.Localization;
 using CindarsHope.Player;
 using CindarsHope.Player.Progression;
 using CindarsHope.UI.Modal;
+using CindarsHope.UI.Routing;
 using UnityEngine;
 
 namespace CindarsHope.UI.Character
@@ -78,8 +81,16 @@ namespace CindarsHope.UI.Character
             DontDestroyOnLoad(gameObject);
         }
 
+        private void OnEnable()
+        {
+            GameEventBus.Subscribe<EquipmentPanelOpenedEvent>(OnEquipmentOpenRequested);
+            GameEventBus.Subscribe<ModalCloseRequestedEvent>(OnModalCloseRequested);
+        }
+
         private void OnDisable()
         {
+            GameEventBus.Unsubscribe<EquipmentPanelOpenedEvent>(OnEquipmentOpenRequested);
+            GameEventBus.Unsubscribe<ModalCloseRequestedEvent>(OnModalCloseRequested);
             if (_isOpen)
             {
                 Close();
@@ -88,7 +99,7 @@ namespace CindarsHope.UI.Character
 
         private void Update()
         {
-            if (global::UnityEngine.Input.GetKeyDown(KeyCode.K))
+            if (!GameplayInputRouter.IsActive && global::UnityEngine.Input.GetKeyDown(KeyCode.K))
             {
                 Toggle(PanelMode.Attributes);
             }
@@ -103,13 +114,23 @@ namespace CindarsHope.UI.Character
                 return;
             }
 
-            if (global::UnityEngine.Input.GetKeyDown(KeyCode.Escape))
+            if (!GameplayInputRouter.IsActive && global::UnityEngine.Input.GetKeyDown(KeyCode.Escape))
             {
                 Close();
                 return;
             }
 
             UpdateKeyboardNavigation();
+        }
+
+        private void OnEquipmentOpenRequested(EquipmentPanelOpenedEvent _)
+        {
+            if (!_isOpen) Toggle(PanelMode.Attributes);
+        }
+
+        private void OnModalCloseRequested(ModalCloseRequestedEvent _)
+        {
+            if (_isOpen) Close();
         }
 
         private void UpdateKeyboardNavigation()

@@ -1,5 +1,19 @@
 # Prompt de Continuação para Claude — Rework Modular
 
+## 2026-07-05 — Maintainability Rework v2, lote 1
+
+- Spec ativa: `.specs/a_implementar/spec_arch_runtime_maintainability_rework_v2.md`.
+- `GameRuntimeCompositionRoot` agora instala um `GameplayInputRouter` único e persistente.
+- Decisão de atalhos extraída para `GameplayShortcutDecision` puro (Command decision).
+- Inventory, Equipment e Skill Tree passaram a consumir os eventos do router; os atalhos diretos
+  ficaram somente como fallback quando o router não existe.
+- Corrigido gap anterior: `InventoryPanelOpenedEvent`, `EquipmentPanelOpenedEvent` e
+  `ModalCloseRequestedEvent` eram publicados sem consumidores nos painéis principais.
+- Validação: 6/6 testes de decisão, 2678/2678 EditMode, 2/2 PlayMode, seis builds sem warnings e
+  ratchet sem aumento.
+- Próximo passo: decompor `QuestService` por progress dispatcher/persistence mapper mantendo sua API.
+- Commit e publicação deste lote ainda devem ser verificados no Git; não confie nesta nota como prova.
+
 ## 2026-07-05 — reconciliação canônica e correções pós-modularização
 
 Antes de continuar, valide o diff e os comandos; este relato não substitui evidência local.

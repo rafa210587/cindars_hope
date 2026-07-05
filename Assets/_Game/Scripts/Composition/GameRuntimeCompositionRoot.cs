@@ -1,5 +1,6 @@
 using CindarsHope.Combat;
 using CindarsHope.Core.Time;
+using CindarsHope.UI.Routing;
 using UnityEngine;
 
 namespace CindarsHope.Composition
@@ -107,6 +108,7 @@ namespace CindarsHope.Composition
             State = RuntimeCompositionState.Installing;
             GameTimeScaleCoordinator.Reset();
             CombatStateTrackerBootstrap.Install();
+            GameplayInputRouter.Install(_instance != null ? _instance.transform : null);
             State = RuntimeCompositionState.Ready;
         }
     }
