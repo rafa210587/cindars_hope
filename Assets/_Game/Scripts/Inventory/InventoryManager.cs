@@ -3,6 +3,7 @@ using CindarsHope.Core;
 using CindarsHope.Core.Data;
 using CindarsHope.Core.Events;
 using CindarsHope.Equipment;
+using CindarsHope.Foundation.Transactions;
 using CindarsHope.Inventory.Data;
 using CindarsHope.Player.Data;
 using CindarsHope.Save;
@@ -11,7 +12,7 @@ using UnityEngine;
 namespace CindarsHope.Inventory
 {
     [DisallowMultipleComponent]
-    public class InventoryManager : MonoBehaviour
+    public class InventoryManager : MonoBehaviour, IInventoryTransactionPort
     {
         public const int DefaultCapacity = 40;
         public const int MaxCapacity = 40;

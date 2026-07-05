@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
+using CindarsHope.Core.Time;
 using UnityEngine;
 
 namespace CindarsHope.Combat.Feel
@@ -26,7 +28,7 @@ namespace CindarsHope.Combat.Feel
         [SerializeField] private float _hitStopMilliseconds = CombatFeelTuning.HitStopDefaultMs;
 
         private bool _active;
-        private float _restoreTimeScale = CombatFeelTuning.NormalTimeScale;
+        private IDisposable _pauseToken;
         private Coroutine _routine;
         private bool _subscribed;
 
@@ -73,9 +75,8 @@ namespace CindarsHope.Combat.Feel
                 return;
             }
 
-            _restoreTimeScale = Time.timeScale;
             _active = true;
-            Time.timeScale = 0f;
+            _pauseToken = GameTimeScaleCoordinator.AcquirePause();
 
             if (_routine != null)
             {
@@ -95,7 +96,8 @@ namespace CindarsHope.Combat.Feel
         {
             _routine = null;
             if (!_active) return;
-            Time.timeScale = _restoreTimeScale;
+            _pauseToken?.Dispose();
+            _pauseToken = null;
             _active = false;
         }
 
@@ -108,7 +110,8 @@ namespace CindarsHope.Combat.Feel
             }
             if (_active)
             {
-                Time.timeScale = _restoreTimeScale;
+                _pauseToken?.Dispose();
+                _pauseToken = null;
                 _active = false;
             }
         }

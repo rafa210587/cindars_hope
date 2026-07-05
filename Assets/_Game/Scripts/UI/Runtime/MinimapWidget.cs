@@ -1,6 +1,7 @@
 using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.UI.Modal;
+using Unity.Profiling;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -24,6 +25,9 @@ namespace CindarsHope.UI.Runtime
     [DisallowMultipleComponent]
     public sealed class MinimapWidget : MonoBehaviour
     {
+        private static readonly ProfilerMarker RenderMarker =
+            new ProfilerMarker("CindarsHope.UI.Minimap.Render");
+
         [Header("Binding visual (DEFERRED — opcional ate o wiring no Editor)")]
         [SerializeField] private RawImage _target;
 
@@ -129,6 +133,8 @@ namespace CindarsHope.UI.Runtime
         /// <summary>Renderiza imediatamente para a textura (também útil para a aba Mapa expandida).</summary>
         public void RenderNow()
         {
+            using var profilerScope = RenderMarker.Auto();
+
             if (_source == null)
             {
                 return;

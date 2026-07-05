@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
+using CindarsHope.Core.Time;
 using CindarsHope.Inventory;
 using CindarsHope.Player.Death;
 using CindarsHope.UI.Modal;
@@ -44,7 +45,7 @@ namespace CindarsHope.UI.Death
         private int _lastXpLost;
 
         private bool _isShowing;
-        private float _timeScaleBeforeShow = 1f;
+        private IDisposable _pauseToken;
         private DeathScreenViewModel _viewModel;
         private readonly UiFocusController _focus = new();
 
@@ -222,14 +223,13 @@ namespace CindarsHope.UI.Death
 
         private void PauseGame()
         {
-            _timeScaleBeforeShow = Time.timeScale;
-            Time.timeScale = 0f;
+            _pauseToken ??= GameTimeScaleCoordinator.AcquirePause();
         }
 
         private void UnpauseGame()
         {
-            // Restaura a escala anterior (normalmente 1). Nunca deixa o jogo congelado.
-            Time.timeScale = _timeScaleBeforeShow <= 0f ? 1f : _timeScaleBeforeShow;
+            _pauseToken?.Dispose();
+            _pauseToken = null;
         }
 
         // ---- Inventory: Lagrima da Deusa ----

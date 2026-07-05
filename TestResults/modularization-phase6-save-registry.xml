@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="2" result="Passed" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-07-05 10:56:37Z" end-time="2026-07-05 10:56:37Z" duration="0,1546059">
+  <test-suite type="TestSuite" id="1000" name="cindars_hope" fullname="cindars_hope" runstate="Runnable" testcasecount="2669" result="Passed" start-time="2026-07-05 10:56:37Z" end-time="2026-07-05 10:56:37Z" duration="0.154606" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="3896" name="CindarsHope.Tests.EditMode.dll" fullname="F:/Projetos/Jogos/Cindars_hope/cindars_hope/Library/ScriptAssemblies/CindarsHope.Tests.EditMode.dll" runstate="Runnable" testcasecount="2669" result="Passed" start-time="2026-07-05 10:56:37Z" end-time="2026-07-05 10:56:37Z" duration="0.118723" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="50024" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="3897" name="CindarsHope" fullname="CindarsHope" runstate="Runnable" testcasecount="2669" result="Passed" start-time="2026-07-05 10:56:37Z" end-time="2026-07-05 10:56:37Z" duration="0.093613" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="3900" name="Tests" fullname="CindarsHope.Tests" runstate="Runnable" testcasecount="2581" result="Passed" start-time="2026-07-05 10:56:37Z" end-time="2026-07-05 10:56:37Z" duration="0.067245" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="3902" name="EditMode" fullname="CindarsHope.Tests.EditMode" runstate="Runnable" testcasecount="2564" result="Passed" start-time="2026-07-05 10:56:37Z" end-time="2026-07-05 10:56:37Z" duration="0.042680" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestSuite" id="3913" name="Save" fullname="CindarsHope.Tests.EditMode.Save" runstate="Runnable" testcasecount="69" result="Passed" start-time="2026-07-05 10:56:37Z" end-time="2026-07-05 10:56:37Z" duration="0.019033" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-suite type="TestFixture" id="1784" name="SaveProviderRegistryTests" fullname="CindarsHope.Tests.EditMode.Save.SaveProviderRegistryTests" classname="CindarsHope.Tests.EditMode.Save.SaveProviderRegistryTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-07-05 10:56:37Z" end-time="2026-07-05 10:56:37Z" duration="0.015748" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1785" name="TypedDescriptor_CapturesAndRestoresMatchingSection" fullname="CindarsHope.Tests.EditMode.Save.SaveProviderRegistryTests.TypedDescriptor_CapturesAndRestoresMatchingSection" methodname="TypedDescriptor_CapturesAndRestoresMatchingSection" classname="CindarsHope.Tests.EditMode.Save.SaveProviderRegistryTests" runstate="Runnable" seed="1584731653" result="Passed" start-time="2026-07-05 10:56:37Z" end-time="2026-07-05 10:56:37Z" duration="0.006391" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1786" name="TypedDescriptor_RejectsMismatchedCaptureType" fullname="CindarsHope.Tests.EditMode.Save.SaveProviderRegistryTests.TypedDescriptor_RejectsMismatchedCaptureType" methodname="TypedDescriptor_RejectsMismatchedCaptureType" classname="CindarsHope.Tests.EditMode.Save.SaveProviderRegistryTests" runstate="Runnable" seed="456216494" result="Passed" start-time="2026-07-05 10:56:37Z" end-time="2026-07-05 10:56:37Z" duration="0.001429" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[Saving results to: F:\Projetos\Jogos\Cindars_hope\cindars_hope\TestResults\modularization-phase6-save-registry.xml
+]]></output>
+                </test-case>
+              </test-suite>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

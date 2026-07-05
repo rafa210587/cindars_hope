@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
 using CindarsHope.Inventory;
+using CindarsHope.Economy.Transactions;
 using CindarsHope.Player;
 using UnityEngine;
 
@@ -80,26 +81,27 @@ namespace CindarsHope.Economy
                 return;
             }
 
-            if (_playerManager.CurrentGold < evt.TotalCost)
+            PurchaseTransactionResult transaction = AtomicPurchaseTransaction.Execute(
+                _inventoryManager,
+                _playerManager,
+                evt.ItemId,
+                evt.Amount,
+                evt.TotalCost);
+            if (!transaction.Success)
             {
-                PublishTransaction(false, "Purchase", evt.ItemId, evt.Amount, 0, $"Ouro insuficiente para comprar '{evt.ItemId}' x{evt.Amount}.");
-                return;
-            }
-
-            if (evt.TotalCost > 0 && !_playerManager.TrySpendGold(evt.TotalCost))
-            {
-                PublishTransaction(false, "Purchase", evt.ItemId, evt.Amount, 0, $"Compra falhou ao gastar {evt.TotalCost}g.");
-                return;
-            }
-
-            if (!_inventoryManager.AddItem(evt.ItemId, evt.Amount))
-            {
-                if (evt.TotalCost > 0)
+                string failure = transaction.Failure switch
                 {
-                    _playerManager.AddGold(evt.TotalCost);
-                }
-
-                PublishTransaction(false, "Purchase", evt.ItemId, evt.Amount, 0, $"Compra falhou: nao foi possivel adicionar '{evt.ItemId}' x{evt.Amount}. Ouro reembolsado.");
+                    PurchaseTransactionFailure.InsufficientFunds =>
+                        $"Ouro insuficiente para comprar '{evt.ItemId}' x{evt.Amount}.",
+                    PurchaseTransactionFailure.InventoryFull =>
+                        $"Compra falhou: inventario sem espaco para '{evt.ItemId}' x{evt.Amount}.",
+                    PurchaseTransactionFailure.DebitFailed =>
+                        $"Compra falhou ao gastar {evt.TotalCost}g.",
+                    PurchaseTransactionFailure.InventoryWriteFailed =>
+                        $"Compra falhou: nao foi possivel adicionar '{evt.ItemId}' x{evt.Amount}. Ouro reembolsado.",
+                    _ => $"Compra falhou: transacao invalida para '{evt.ItemId}' x{evt.Amount}."
+                };
+                PublishTransaction(false, "Purchase", evt.ItemId, evt.Amount, 0, failure);
                 return;
             }
 

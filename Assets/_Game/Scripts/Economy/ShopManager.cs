@@ -4,6 +4,7 @@ using CindarsHope.Core;
 using CindarsHope.Core.Data;
 using CindarsHope.Core.Events;
 using CindarsHope.Inventory;
+using CindarsHope.Economy.Transactions;
 using CindarsHope.Inventory.Data;
 using CindarsHope.Player;
 using CindarsHope.Save;
@@ -162,29 +163,27 @@ namespace CindarsHope.Economy
             }
 
             var totalCost = CalculateBuyPrice(itemData, entry, session.ShopData, amount);
-            if (playerManager.CurrentGold < totalCost)
+            PurchaseTransactionResult transaction = AtomicPurchaseTransaction.Execute(
+                inventoryManager,
+                playerManager,
+                itemId,
+                amount,
+                totalCost);
+            if (!transaction.Success)
             {
-                return PublishFailure("ShopBuy", itemId, amount, $"Compra falhou: ouro insuficiente para '{itemId}' x{amount}.");
-            }
-
-            if (!inventoryManager.CanAddItem(itemId, amount))
-            {
-                return PublishFailure("ShopBuy", itemId, amount, $"Compra falhou: inventario sem espaco para '{itemId}' x{amount}.");
-            }
-
-            if (totalCost > 0 && !playerManager.TrySpendGold(totalCost))
-            {
-                return PublishFailure("ShopBuy", itemId, amount, $"Compra falhou ao gastar {totalCost}g.");
-            }
-
-            if (!inventoryManager.AddItem(itemId, amount))
-            {
-                if (totalCost > 0)
+                string failure = transaction.Failure switch
                 {
-                    playerManager.AddGold(totalCost);
-                }
-
-                return PublishFailure("ShopBuy", itemId, amount, $"Compra falhou ao adicionar '{itemId}' x{amount}; ouro reembolsado.");
+                    PurchaseTransactionFailure.InsufficientFunds =>
+                        $"Compra falhou: ouro insuficiente para '{itemId}' x{amount}.",
+                    PurchaseTransactionFailure.InventoryFull =>
+                        $"Compra falhou: inventario sem espaco para '{itemId}' x{amount}.",
+                    PurchaseTransactionFailure.DebitFailed =>
+                        $"Compra falhou ao gastar {totalCost}g.",
+                    PurchaseTransactionFailure.InventoryWriteFailed =>
+                        $"Compra falhou ao adicionar '{itemId}' x{amount}; ouro reembolsado.",
+                    _ => $"Compra falhou: transacao invalida para '{itemId}' x{amount}."
+                };
+                return PublishFailure("ShopBuy", itemId, amount, failure);
             }
 
             if (entry.IsFiniteStock)

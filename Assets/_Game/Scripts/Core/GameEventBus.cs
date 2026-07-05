@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
+using Unity.Profiling;
 
 namespace CindarsHope.Core
 {
@@ -23,7 +23,9 @@ namespace CindarsHope.Core
     /// </summary>
     public static class GameEventBus
     {
-        private static readonly Dictionary<Type, List<Delegate>> HandlersByType = new Dictionary<Type, List<Delegate>>();
+        private static readonly Dictionary<Type, HandlerBucket> HandlersByType =
+            new Dictionary<Type, HandlerBucket>();
+        private static readonly ProfilerMarker PublishMarker = new ProfilerMarker("CindarsHope.EventBus.Publish");
 
         /// <summary>
         /// Retorna true quando há pelo menos um listener registrado para o tipo de evento.
@@ -32,7 +34,7 @@ namespace CindarsHope.Core
         public static bool HasSubscribers<TEvent>()
         {
             var eventType = typeof(TEvent);
-            return HandlersByType.TryGetValue(eventType, out var handlers) && handlers.Count > 0;
+            return HandlersByType.TryGetValue(eventType, out var bucket) && bucket.Count > 0;
         }
 
         /// <summary>
@@ -42,7 +44,7 @@ namespace CindarsHope.Core
         public static int CountSubscribers<TEvent>()
         {
             var eventType = typeof(TEvent);
-            return HandlersByType.TryGetValue(eventType, out var handlers) ? handlers.Count : 0;
+            return HandlersByType.TryGetValue(eventType, out var bucket) ? bucket.Count : 0;
         }
 
         /// <summary>
@@ -58,17 +60,14 @@ namespace CindarsHope.Core
             }
 
             var eventType = typeof(TEvent);
-            if (!HandlersByType.TryGetValue(eventType, out var handlers))
+            if (!HandlersByType.TryGetValue(eventType, out var bucket))
             {
-                handlers = new List<Delegate>();
-                HandlersByType[eventType] = handlers;
+                bucket = new HandlerBucket();
+                HandlersByType[eventType] = bucket;
             }
 
             // Evita subscription duplicada acidental no mesmo ciclo de vida.
-            if (!handlers.Contains(handler))
-            {
-                handlers.Add(handler);
-            }
+            bucket.Add(handler);
 
             return new EventSubscription<TEvent>(handler);
         }
@@ -106,13 +105,13 @@ namespace CindarsHope.Core
             }
 
             var eventType = typeof(TEvent);
-            if (!HandlersByType.TryGetValue(eventType, out var handlers))
+            if (!HandlersByType.TryGetValue(eventType, out var bucket))
             {
                 return;
             }
 
-            handlers.Remove(handler);
-            if (handlers.Count == 0)
+            bucket.Remove(handler);
+            if (bucket.Count == 0)
             {
                 HandlersByType.Remove(eventType);
             }
@@ -126,26 +125,29 @@ namespace CindarsHope.Core
         public static void Publish<TEvent>(TEvent evt)
         {
             var eventType = typeof(TEvent);
-            if (!HandlersByType.TryGetValue(eventType, out var handlers) || handlers.Count == 0)
+            if (!HandlersByType.TryGetValue(eventType, out var bucket) || bucket.Count == 0)
             {
                 return;
             }
 
-            var snapshot = handlers.ToArray();
-            foreach (var rawHandler in snapshot)
+            using (PublishMarker.Auto())
             {
-                if (!(rawHandler is Action<TEvent> handler))
+                Delegate[] snapshot = bucket.GetSnapshot();
+                foreach (Delegate rawHandler in snapshot)
                 {
-                    continue;
-                }
+                    if (!(rawHandler is Action<TEvent> handler))
+                    {
+                        continue;
+                    }
 
-                try
-                {
-                    handler(evt);
-                }
-                catch (Exception exception)
-                {
-                    Debug.LogException(exception);
+                    try
+                    {
+                        handler(evt);
+                    }
+                    catch (Exception exception)
+                    {
+                        Debug.LogException(exception);
+                    }
                 }
             }
         }
@@ -190,6 +192,45 @@ namespace CindarsHope.Core
                 Unsubscribe(_handler);
                 _handler = null;
                 _disposed = true;
+            }
+        }
+
+        private sealed class HandlerBucket
+        {
+            private readonly List<Delegate> _handlers = new List<Delegate>();
+            private Delegate[] _snapshot = Array.Empty<Delegate>();
+            private bool _snapshotDirty;
+
+            public int Count => _handlers.Count;
+
+            public void Add(Delegate handler)
+            {
+                if (_handlers.Contains(handler))
+                {
+                    return;
+                }
+
+                _handlers.Add(handler);
+                _snapshotDirty = true;
+            }
+
+            public void Remove(Delegate handler)
+            {
+                if (_handlers.Remove(handler))
+                {
+                    _snapshotDirty = true;
+                }
+            }
+
+            public Delegate[] GetSnapshot()
+            {
+                if (_snapshotDirty)
+                {
+                    _snapshot = _handlers.ToArray();
+                    _snapshotDirty = false;
+                }
+
+                return _snapshot;
             }
         }
     }

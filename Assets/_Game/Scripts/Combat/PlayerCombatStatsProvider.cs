@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
+using CindarsHope.Core.Random;
 using CindarsHope.Equipment;
 using CindarsHope.Player;
 using CindarsHope.Skills;
@@ -38,7 +39,7 @@ namespace CindarsHope.Combat
             _baseAttackSource = baseAttackSource ?? (() => 0);
             _passivesSource = passivesSource ?? (() => null);
             _equipmentSource = equipmentSource ?? (() => null);
-            _critRoll = critRoll ?? (() => UnityEngine.Random.value);
+            _critRoll = critRoll ?? UnityGameplayRandomSource.Shared.NextFloat;
 
             GameEventBus.Subscribe<EquipmentSlotChangedEvent>(OnInvalidatingEvent);
             _subscribed = true;

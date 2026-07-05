@@ -1,4 +1,5 @@
 using CindarsHope.Combat;
+using CindarsHope.Core.Time;
 using UnityEngine;
 
 namespace CindarsHope.Composition
@@ -104,6 +105,7 @@ namespace CindarsHope.Composition
             }
 
             State = RuntimeCompositionState.Installing;
+            GameTimeScaleCoordinator.Reset();
             CombatStateTrackerBootstrap.Install();
             State = RuntimeCompositionState.Ready;
         }

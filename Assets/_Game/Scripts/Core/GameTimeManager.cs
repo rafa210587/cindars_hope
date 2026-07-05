@@ -1,6 +1,7 @@
 using CindarsHope.Core.Data;
 using CindarsHope.Core.Events;
 using CindarsHope.Core.Time;
+using CindarsHope.Foundation.Time;
 using CindarsHope.Save;
 using CindarsHope.UI.Modal;
 using UnityEngine;
@@ -8,7 +9,7 @@ using UnityEngine;
 namespace CindarsHope.Core
 {
     [DisallowMultipleComponent]
-    public class GameTimeManager : MonoBehaviour
+    public class GameTimeManager : MonoBehaviour, IGameClock
     {
         [SerializeField] private GameTimeBalanceSO _timeBalance;
         [SerializeField] private TimeManager _timeManager;
@@ -77,6 +78,9 @@ namespace CindarsHope.Core
                 return raw % 24;
             }
         }
+
+        public int CurrentDay => _timeManager != null ? _timeManager.CurrentDay : 1;
+        public bool IsDaytime => _currentPhase == GamePhaseChangedEvent.GamePhase.Day;
 
         private void OnEnable()
         {

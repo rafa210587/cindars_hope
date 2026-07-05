@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="16" result="Passed" total="16" passed="16" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-07-05 11:10:41Z" end-time="2026-07-05 11:10:41Z" duration="0,088183">
+  <test-suite type="TestSuite" id="1000" name="cindars_hope" fullname="cindars_hope" runstate="Runnable" testcasecount="2670" result="Passed" start-time="2026-07-05 11:10:41Z" end-time="2026-07-05 11:10:41Z" duration="0.088183" total="16" passed="16" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="3898" name="CindarsHope.Tests.EditMode.dll" fullname="F:/Projetos/Jogos/Cindars_hope/cindars_hope/Library/ScriptAssemblies/CindarsHope.Tests.EditMode.dll" runstate="Runnable" testcasecount="2670" result="Passed" start-time="2026-07-05 11:10:41Z" end-time="2026-07-05 11:10:41Z" duration="0.072273" total="16" passed="16" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="41692" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="3899" name="CindarsHope" fullname="CindarsHope" runstate="Runnable" testcasecount="2670" result="Passed" start-time="2026-07-05 11:10:41Z" end-time="2026-07-05 11:10:41Z" duration="0.061309" total="16" passed="16" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="3902" name="Tests" fullname="CindarsHope.Tests" runstate="Runnable" testcasecount="2582" result="Passed" start-time="2026-07-05 11:10:41Z" end-time="2026-07-05 11:10:41Z" duration="0.050426" total="16" passed="16" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="3904" name="EditMode" fullname="CindarsHope.Tests.EditMode" runstate="Runnable" testcasecount="2565" result="Passed" start-time="2026-07-05 11:10:41Z" end-time="2026-07-05 11:10:41Z" duration="0.038575" total="16" passed="16" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestSuite" id="3936" name="City" fullname="CindarsHope.Tests.EditMode.City" runstate="Runnable" testcasecount="204" result="Passed" start-time="2026-07-05 11:10:41Z" end-time="2026-07-05 11:10:41Z" duration="0.024625" total="16" passed="16" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-suite type="TestFixture" id="3349" name="CityLayoutScheduleValidationTests" fullname="CindarsHope.Tests.EditMode.City.CityLayoutScheduleValidationTests" classname="CindarsHope.Tests.EditMode.City.CityLayoutScheduleValidationTests" runstate="Runnable" testcasecount="16" result="Passed" start-time="2026-07-05 11:10:41Z" end-time="2026-07-05 11:10:41Z" duration="0.022618" total="16" passed="16" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="3356" name="Bed_GuestType_PlayerUsable_OK" fullname="CindarsHope.Tests.EditMode.City.CityLayoutScheduleValidationTests.Bed_GuestType_PlayerUsable_OK" methodname="Bed_GuestType_PlayerUsable_OK" classname="CindarsHope.Tests.EditMode.City.CityLayoutScheduleValidationTests" runstate="Runnable" seed="877621968" result="Passed" start-time="2026-07-05 11:10:41Z" end-time="2026-07-05 11:10:41Z" duration="0.008649" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3354" name="Bed_NpcOwned_NotPlayerUsable_OK" fullname="CindarsHope.Tests.EditMode.City.CityLayoutScheduleValidationTests.Bed_NpcOwned_NotPlayerUsable_OK" methodname="Bed_NpcOwned_NotPlayerUsable_OK" classname="CindarsHope.Tests.EditMode.City.CityLayoutScheduleValidationTests" runstate="Runnable" seed="629045962" result="Passed" start-time="2026-07-05 11:10:41Z" end-time="2026-07-05 11:10:41Z" duration="0.000218" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3355" name="Bed_NpcOwned_PlayerUsable_NotGuest_IsBlocker" fullname="CindarsHope.Tests.EditMode.City.CityLayoutScheduleValidationTests.Bed_NpcOwned_PlayerUsable_NotGuest_IsBlocker" methodname="Bed_NpcOwned_PlayerUsable_NotGuest_IsBlocker" classname="CindarsHope.Tests.EditMode.City.CityLayoutScheduleValidationTests" runstate="Runnable" seed="1774741977" result="Passed" start-time="2026-07-05 11:10:41Z" end-time="2026-07-05 11:10:41Z" duration="0.000512" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3351" name="Door_MissingTarget_IsBlocker" fullname="CindarsHope.Tests.EditMode.City.CityLayoutScheduleValidationTests.Door_MissingTarget_IsBlocker" methodname="Door_MissingTarget_IsBlocker" classname="CindarsHope.Tests.EditMode.City.CityLayoutScheduleValidationTests" runstate="Runnable" seed="1520216031" result="Passed" start-time="2026-07-05 11:10:41Z" end-time="2026-07-05 11:10:41Z" duration="0.000447" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3353" name="Door_OpenHoursRule_WrapsMidnight" fullname="CindarsHope.Tests.EditMode.City.CityLayoutScheduleValidationTests.Door_OpenHoursRule_WrapsMidnight" methodname="Door_OpenHoursRule_WrapsMidnight" classname="CindarsHope.Tests.EditMode.City.CityLayoutScheduleValidationTests" runstate="Runnable" seed="1291434326" result="Passed" start-time="2026-07-05 11:10:41Z" end-time="2026-07-05 11:10:41Z" duration="0.000233" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3350" name="Door_ValidTarget_NoIssues" fullname="CindarsHope.Tests.EditMode.City.CityLayoutScheduleValidationTests.Door_ValidTarget_NoIssues" methodname="Door_ValidTarget_NoIssues" classname="CindarsHope.Tests.EditMode.City.CityLayoutScheduleValidationTests" runstate="Runnable" seed="1355871613" result="Passed" start-time="2026-07-05 11:10:41Z" end-time="2026-07-05 11:10:41Z" duration="0.000127" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3352" name="HiddenDoor_NoGate_NonBlockerWarning" fullname="CindarsHope.Tests.EditMode.City.CityLayoutScheduleValidationTests.HiddenDoor_NoGate_NonBlockerWarning" methodname="HiddenDoor_NoGate_NonBlockerWarning" classname="CindarsHope.Tests.EditMode.City.CityLayoutScheduleValidationTests" runstate="Runnable" seed="1681460254" result="Passed" start-time="2026-07-05 11:10:41Z" end-time="2026-07-05 11:10:41Z" duration="0.000162" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3360" name="Resolver_DefaultBlock_ReturnsCorrectLocation" fullname="CindarsHope.Tests.EditMode.City.CityLayoutScheduleValidationTests.Resolver_DefaultBlock_ReturnsCorrectLocation" methodname="Resolver_DefaultBlock_ReturnsCorrectLocation" classname="CindarsHope.Tests.EditMode.City.CityLayoutScheduleValidationTests" runstate="Runnable" seed="1595266892" result="Passed" start-time="2026-07-05 11:10:41Z" end-time="2026-07-05 11:10:41Z" duration="0.000762" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3361" name="Resolver_FestivalOverride_TakesPriority" fullname="CindarsHope.Tests.EditMode.City.CityLayoutScheduleValidationTests.Resolver_FestivalOverride_TakesPriority" methodname="Resolver_FestivalOverride_TakesPriority" classname="CindarsHope.Tests.EditMode.City.CityLayoutScheduleValidationTests" runstate="Runnable" seed="496387306" result="Passed" start-time="2026-07-05 11:10:41Z" end-time="2026-07-05 11:10:41Z" duration="0.000442" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3364" name="Resolver_NullSchedule_Fails" fullname="CindarsHope.Tests.EditMode.City.CityLayoutScheduleValidationTests.Resolver_NullSchedule_Fails" methodname="Resolver_NullSchedule_Fails" classname="CindarsHope.Tests.EditMode.City.CityLayoutScheduleValidationTests" runstate="Runnable" seed="1935869490" result="Passed" start-time="2026-07-05 11:10:41Z" end-time="2026-07-05 11:10:41Z" duration="0.000109" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3362" name="Resolver_NyxLunar_OpensNightShop" fullname="CindarsHope.Tests.EditMode.City.CityLayoutScheduleValidationTests.Resolver_NyxLunar_OpensNightShop" methodname="Resolver_NyxLunar_OpensNightShop" classname="CindarsHope.Tests.EditMode.City.CityLayoutScheduleValidationTests" runstate="Runnable" seed="354459681" result="Passed" start-time="2026-07-05 11:10:41Z" end-time="2026-07-05 11:10:41Z" duration="0.000299" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3363" name="Resolver_RainModifier_ChangesOutdoorRoute" fullname="CindarsHope.Tests.EditMode.City.CityLayoutScheduleValidationTests.Resolver_RainModifier_ChangesOutdoorRoute" methodname="Resolver_RainModifier_ChangesOutdoorRoute" classname="CindarsHope.Tests.EditMode.City.CityLayoutScheduleValidationTests" runstate="Runnable" seed="1757624524" result="Passed" start-time="2026-07-05 11:10:41Z" end-time="2026-07-05 11:10:41Z" duration="0.000264" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3365" name="Schedule_Validator_NoNpcId_IsBlocker" fullname="CindarsHope.Tests.EditMode.City.CityLayoutScheduleValidationTests.Schedule_Validator_NoNpcId_IsBlocker" methodname="Schedule_Validator_NoNpcId_IsBlocker" classname="CindarsHope.Tests.EditMode.City.CityLayoutScheduleValidationTests" runstate="Runnable" seed="1409004454" result="Passed" start-time="2026-07-05 11:10:41Z" end-time="2026-07-05 11:10:41Z" duration="0.000311" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3357" name="SchedulePeriod_FromHour_Morning" fullname="CindarsHope.Tests.EditMode.City.CityLayoutScheduleValidationTests.SchedulePeriod_FromHour_Morning" methodname="SchedulePeriod_FromHour_Morning" classname="CindarsHope.Tests.EditMode.City.CityLayoutScheduleValidationTests" runstate="Runnable" seed="1736355820" result="Passed" start-time="2026-07-05 11:10:41Z" end-time="2026-07-05 11:10:41Z" duration="0.000513" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3358" name="SchedulePeriod_FromHour_Night" fullname="CindarsHope.Tests.EditMode.City.CityLayoutScheduleValidationTests.SchedulePeriod_FromHour_Night" methodname="SchedulePeriod_FromHour_Night" classname="CindarsHope.Tests.EditMode.City.CityLayoutScheduleValidationTests" runstate="Runnable" seed="1873680759" result="Passed" start-time="2026-07-05 11:10:41Z" end-time="2026-07-05 11:10:41Z" duration="0.000093" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3359" name="SchedulePeriod_FromHour_SleepLateNight" fullname="CindarsHope.Tests.EditMode.City.CityLayoutScheduleValidationTests.SchedulePeriod_FromHour_SleepLateNight" methodname="SchedulePeriod_FromHour_SleepLateNight" classname="CindarsHope.Tests.EditMode.City.CityLayoutScheduleValidationTests" runstate="Runnable" seed="122116606" result="Passed" start-time="2026-07-05 11:10:41Z" end-time="2026-07-05 11:10:41Z" duration="0.000066" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[Saving results to: F:\Projetos\Jogos\Cindars_hope\cindars_hope\TestResults\modularization-phase6-npc-schedule.xml
+]]></output>
+                </test-case>
+              </test-suite>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

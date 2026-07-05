@@ -16,6 +16,7 @@ using CindarsHope.Interaction;
 using CindarsHope.Inventory;
 using CindarsHope.SceneManagement;
 using UnityEngine;
+using Unity.Profiling;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -25,6 +26,10 @@ namespace CindarsHope.Cave.Runtime
 {
     public sealed class CaveRuntimeMaterializer : MonoBehaviour
     {
+        private static readonly ProfilerMarker MaterializeMarker =
+            new ProfilerMarker("CindarsHope.Cave.Materialize");
+        private static readonly ProfilerMarker CleanupMarker =
+            new ProfilerMarker("CindarsHope.Cave.Cleanup");
         [SerializeField] private SpriteRenderer _floorTilePrefab;
         [SerializeField] private SpriteRenderer _wallTilePrefab;
         [SerializeField] private ScenePortal _entrancePrefab;
@@ -451,6 +456,7 @@ namespace CindarsHope.Cave.Runtime
             CaveEnemySpawnPlan enemySpawnPlanOverride,
             IReadOnlyList<CaveResourceNodeSnapshotEntry> resourceNodeStateOverride)
         {
+            using var profilerScope = MaterializeMarker.Auto();
             if (generatedLevel == null)
             {
                 Debug.LogError("CaveRuntimeMaterializer: Cannot materialize null CaveGeneratedLevel.");
@@ -890,6 +896,7 @@ namespace CindarsHope.Cave.Runtime
 
         private void CleanupPreviousMaterialization()
         {
+            using var profilerScope = CleanupMarker.Auto();
             foreach (var obj in _materializedObjects)
             {
                 if (obj != null)

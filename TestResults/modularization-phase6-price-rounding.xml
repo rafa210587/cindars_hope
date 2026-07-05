@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="7" result="Passed" total="7" passed="7" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-07-05 11:11:03Z" end-time="2026-07-05 11:11:04Z" duration="0,0996726">
+  <test-suite type="TestSuite" id="1000" name="cindars_hope" fullname="cindars_hope" runstate="Runnable" testcasecount="2670" result="Passed" start-time="2026-07-05 11:11:03Z" end-time="2026-07-05 11:11:04Z" duration="0.099673" total="7" passed="7" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="3898" name="CindarsHope.Tests.EditMode.dll" fullname="F:/Projetos/Jogos/Cindars_hope/cindars_hope/Library/ScriptAssemblies/CindarsHope.Tests.EditMode.dll" runstate="Runnable" testcasecount="2670" result="Passed" start-time="2026-07-05 11:11:03Z" end-time="2026-07-05 11:11:04Z" duration="0.079051" total="7" passed="7" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="25364" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="3899" name="CindarsHope" fullname="CindarsHope" runstate="Runnable" testcasecount="2670" result="Passed" start-time="2026-07-05 11:11:03Z" end-time="2026-07-05 11:11:04Z" duration="0.065106" total="7" passed="7" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="3902" name="Tests" fullname="CindarsHope.Tests" runstate="Runnable" testcasecount="2582" result="Passed" start-time="2026-07-05 11:11:04Z" end-time="2026-07-05 11:11:04Z" duration="0.049832" total="7" passed="7" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="3904" name="EditMode" fullname="CindarsHope.Tests.EditMode" runstate="Runnable" testcasecount="2565" result="Passed" start-time="2026-07-05 11:11:04Z" end-time="2026-07-05 11:11:04Z" duration="0.036827" total="7" passed="7" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestSuite" id="3928" name="Economy" fullname="CindarsHope.Tests.EditMode.Economy" runstate="Runnable" testcasecount="124" result="Passed" start-time="2026-07-05 11:11:04Z" end-time="2026-07-05 11:11:04Z" duration="0.020323" total="7" passed="7" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-suite type="TestFixture" id="3006" name="ItemPriceResolverTests" fullname="CindarsHope.Tests.EditMode.Economy.ItemPriceResolverTests" classname="CindarsHope.Tests.EditMode.Economy.ItemPriceResolverTests" runstate="Runnable" testcasecount="7" result="Passed" start-time="2026-07-05 11:11:04Z" end-time="2026-07-05 11:11:04Z" duration="0.018748" total="7" passed="7" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="3013" name="CustomMultiplier_IsRespected" fullname="CindarsHope.Tests.EditMode.Economy.ItemPriceResolverTests.CustomMultiplier_IsRespected" methodname="CustomMultiplier_IsRespected" classname="CindarsHope.Tests.EditMode.Economy.ItemPriceResolverTests" runstate="Runnable" seed="650729748" result="Passed" start-time="2026-07-05 11:11:04Z" end-time="2026-07-05 11:11:04Z" duration="0.009267" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3012" name="EventStall_UsesSameMultiplierAsShipping" fullname="CindarsHope.Tests.EditMode.Economy.ItemPriceResolverTests.EventStall_UsesSameMultiplierAsShipping" methodname="EventStall_UsesSameMultiplierAsShipping" classname="CindarsHope.Tests.EditMode.Economy.ItemPriceResolverTests" runstate="Runnable" seed="148860424" result="Passed" start-time="2026-07-05 11:11:04Z" end-time="2026-07-05 11:11:04Z" duration="0.000225" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3010" name="NpcBuy_NullConfig_FallsBackTo90Percent" fullname="CindarsHope.Tests.EditMode.Economy.ItemPriceResolverTests.NpcBuy_NullConfig_FallsBackTo90Percent" methodname="NpcBuy_NullConfig_FallsBackTo90Percent" classname="CindarsHope.Tests.EditMode.Economy.ItemPriceResolverTests" runstate="Runnable" seed="253431900" result="Passed" start-time="2026-07-05 11:11:04Z" end-time="2026-07-05 11:11:04Z" duration="0.000146" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3008" name="NpcBuy_Returns90Percent_WithDefaultMultiplier" fullname="CindarsHope.Tests.EditMode.Economy.ItemPriceResolverTests.NpcBuy_Returns90Percent_WithDefaultMultiplier" methodname="NpcBuy_Returns90Percent_WithDefaultMultiplier" classname="CindarsHope.Tests.EditMode.Economy.ItemPriceResolverTests" runstate="Runnable" seed="967169879" result="Passed" start-time="2026-07-05 11:11:04Z" end-time="2026-07-05 11:11:04Z" duration="0.000108" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3011" name="ResolvePrice_NeverNegative" fullname="CindarsHope.Tests.EditMode.Economy.ItemPriceResolverTests.ResolvePrice_NeverNegative" methodname="ResolvePrice_NeverNegative" classname="CindarsHope.Tests.EditMode.Economy.ItemPriceResolverTests" runstate="Runnable" seed="1592234040" result="Passed" start-time="2026-07-05 11:11:04Z" end-time="2026-07-05 11:11:04Z" duration="0.000112" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3009" name="Shipping_NullConfig_FallsBackToFullValue" fullname="CindarsHope.Tests.EditMode.Economy.ItemPriceResolverTests.Shipping_NullConfig_FallsBackToFullValue" methodname="Shipping_NullConfig_FallsBackToFullValue" classname="CindarsHope.Tests.EditMode.Economy.ItemPriceResolverTests" runstate="Runnable" seed="2011380450" result="Passed" start-time="2026-07-05 11:11:04Z" end-time="2026-07-05 11:11:04Z" duration="0.000104" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3007" name="Shipping_ReturnsBaseValue_WithDefaultMultiplierOne" fullname="CindarsHope.Tests.EditMode.Economy.ItemPriceResolverTests.Shipping_ReturnsBaseValue_WithDefaultMultiplierOne" methodname="Shipping_ReturnsBaseValue_WithDefaultMultiplierOne" classname="CindarsHope.Tests.EditMode.Economy.ItemPriceResolverTests" runstate="Runnable" seed="1981442605" result="Passed" start-time="2026-07-05 11:11:04Z" end-time="2026-07-05 11:11:04Z" duration="0.000097" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[Saving results to: F:\Projetos\Jogos\Cindars_hope\cindars_hope\TestResults\modularization-phase6-price-rounding.xml
+]]></output>
+                </test-case>
+              </test-suite>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

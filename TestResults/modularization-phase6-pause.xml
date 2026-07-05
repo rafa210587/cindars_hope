@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="2" result="Passed" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-07-05 10:42:13Z" end-time="2026-07-05 10:42:13Z" duration="0,1148294">
+  <test-suite type="TestSuite" id="1000" name="cindars_hope" fullname="cindars_hope" runstate="Runnable" testcasecount="2662" result="Passed" start-time="2026-07-05 10:42:13Z" end-time="2026-07-05 10:42:13Z" duration="0.114829" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="3885" name="CindarsHope.Tests.EditMode.dll" fullname="F:/Projetos/Jogos/Cindars_hope/cindars_hope/Library/ScriptAssemblies/CindarsHope.Tests.EditMode.dll" runstate="Runnable" testcasecount="2662" result="Passed" start-time="2026-07-05 10:42:13Z" end-time="2026-07-05 10:42:13Z" duration="0.093918" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="47656" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="3886" name="CindarsHope" fullname="CindarsHope" runstate="Runnable" testcasecount="2662" result="Passed" start-time="2026-07-05 10:42:13Z" end-time="2026-07-05 10:42:13Z" duration="0.078050" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="3889" name="Tests" fullname="CindarsHope.Tests" runstate="Runnable" testcasecount="2574" result="Passed" start-time="2026-07-05 10:42:13Z" end-time="2026-07-05 10:42:13Z" duration="0.062225" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="3891" name="EditMode" fullname="CindarsHope.Tests.EditMode" runstate="Runnable" testcasecount="2557" result="Passed" start-time="2026-07-05 10:42:13Z" end-time="2026-07-05 10:42:13Z" duration="0.047358" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestSuite" id="3918" name="Core" fullname="CindarsHope.Tests.EditMode.Core" runstate="Runnable" testcasecount="78" result="Passed" start-time="2026-07-05 10:42:13Z" end-time="2026-07-05 10:42:13Z" duration="0.022674" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-suite type="TestFixture" id="3097" name="GameTimeScaleCoordinatorTests" fullname="CindarsHope.Tests.EditMode.Core.GameTimeScaleCoordinatorTests" classname="CindarsHope.Tests.EditMode.Core.GameTimeScaleCoordinatorTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-07-05 10:42:13Z" end-time="2026-07-05 10:42:13Z" duration="0.019625" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="3099" name="DisposingTokenTwice_IsIdempotent" fullname="CindarsHope.Tests.EditMode.Core.GameTimeScaleCoordinatorTests.DisposingTokenTwice_IsIdempotent" methodname="DisposingTokenTwice_IsIdempotent" classname="CindarsHope.Tests.EditMode.Core.GameTimeScaleCoordinatorTests" runstate="Runnable" seed="1218395061" result="Passed" start-time="2026-07-05 10:42:13Z" end-time="2026-07-05 10:42:13Z" duration="0.010650" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3098" name="OverlappingTokens_RestoreOnlyAfterLastOwnerReleases" fullname="CindarsHope.Tests.EditMode.Core.GameTimeScaleCoordinatorTests.OverlappingTokens_RestoreOnlyAfterLastOwnerReleases" methodname="OverlappingTokens_RestoreOnlyAfterLastOwnerReleases" classname="CindarsHope.Tests.EditMode.Core.GameTimeScaleCoordinatorTests" runstate="Runnable" seed="1362139290" result="Passed" start-time="2026-07-05 10:42:13Z" end-time="2026-07-05 10:42:13Z" duration="0.000526" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[Saving results to: F:\Projetos\Jogos\Cindars_hope\cindars_hope\TestResults\modularization-phase6-pause.xml
+]]></output>
+                </test-case>
+              </test-suite>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

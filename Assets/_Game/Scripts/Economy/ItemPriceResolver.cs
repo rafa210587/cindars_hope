@@ -29,7 +29,9 @@ namespace CindarsHope.Economy
                     break;
             }
 
-            return Math.Max(0, (int)(baseValue * mult));
+            // Multiplicadores decimais como 0.9f podem produzir 89.99999 para base 100.
+            // A regra deste resolver e arredondamento monetario, nao truncamento binario.
+            return Math.Max(0, (int)Math.Round(baseValue * (double)mult, MidpointRounding.AwayFromZero));
         }
     }
 }

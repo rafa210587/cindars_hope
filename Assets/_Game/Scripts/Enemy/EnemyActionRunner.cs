@@ -25,6 +25,8 @@ namespace CindarsHope.Enemy
         private EnemyTelegraphController _telegraph;
         private EnemyVulnerabilityState _vulnerabilityState;
         private CindarsHope.Combat.EnemyHealth _health;
+        private IEnemyActionSelectionStrategy _selectionStrategy =
+            new OrderedReadyEnemyActionSelectionStrategy();
 
         // Callbacks para acessar estado do EnemyBrain
         private System.Func<GameObject> _getPlayerTarget;
@@ -172,19 +174,18 @@ namespace CindarsHope.Enemy
         {
             if (ActiveActionSet == null || _actionDatabase == null) return null;
 
-            foreach (var actionId in ActiveActionSet.ActionIds)
-            {
-                if (!_actionDatabase.TryGetById(actionId, out var action)) continue;
-                if (!ActionCooldowns.TryGetValue(actionId, out var runtime)) continue;
-                if (!runtime.IsReady(Time.time)) continue;
+            var context = new EnemyActionSelectionContext(
+                ActiveActionSet.ActionIds,
+                _actionDatabase,
+                ActionCooldowns,
+                dist,
+                Time.time);
+            return _selectionStrategy.Select(in context);
+        }
 
-                if (action.ActionType == EnemyActionType.SelfBuff)
-                    return action;
-
-                if (dist >= action.MinRange && dist <= action.Range)
-                    return action;
-            }
-            return null;
+        internal void SetActionSelectionStrategy(IEnemyActionSelectionStrategy strategy)
+        {
+            _selectionStrategy = strategy ?? new OrderedReadyEnemyActionSelectionStrategy();
         }
 
         // ─── Action Execution ─────────────────────────────────────────────────

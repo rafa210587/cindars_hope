@@ -178,8 +178,8 @@ DirectInput	Assets/_Game/Scripts/UI/Shop/ShopMenuModal.cs	7
 DirectInput	Assets/_Game/Scripts/UI/Skills/SkillTreeGameplayPanelController.cs	26
 DirectInput	Assets/_Game/Scripts/UI/Skills/SkillTreeInputHandler.cs	1
 DirectInput	Assets/_Game/Scripts/UI/Skills/SkillTreePanel.cs	14
-TimeScaleWrite	Assets/_Game/Scripts/Combat/Feel/CombatHitStopController.cs	3
-TimeScaleWrite	Assets/_Game/Scripts/UI/Death/DeathScreenCanvasController.cs	3
+TimeScaleWrite	Assets/_Game/Scripts/Core/Time/GameTimeScaleCoordinator.cs	3
+TimeScaleWrite	Assets/_Game/Scripts/UI/Death/DeathScreenCanvasController.cs	1
 DirectSceneLoad	Assets/_Game/Scripts/Cave/CaveExitPortal.cs	1
 DirectSceneLoad	Assets/_Game/Scripts/Save/SaveManager.cs	2
 DirectSceneLoad	Assets/_Game/Scripts/SceneManagement/ScenePortal.cs	1

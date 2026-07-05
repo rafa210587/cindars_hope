@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
+using CindarsHope.Foundation.Time;
 using UnityEngine;
+using Unity.Profiling;
 
 namespace CindarsHope.NPC.Schedule
 {
@@ -31,6 +33,8 @@ namespace CindarsHope.NPC.Schedule
         // exterior e o interior: teleporta na hora em vez de deslizar pelo mapa inteiro. Como a faixa
         // é fora da câmera do jogador, o pop é invisível.
         private const float InteriorBandMinY = 40f;
+        private static readonly ProfilerMarker ResolveSchedulesMarker =
+            new ProfilerMarker("CindarsHope.NpcSchedule.ResolveAll");
 
         private static NpcScheduleService s_instance;
 
@@ -50,7 +54,7 @@ namespace CindarsHope.NPC.Schedule
         // Tracks per-NPC movement (target + stuck timer) keyed by npcId.
         private readonly Dictionary<string, MoveOrder> _moveOrders = new Dictionary<string, MoveOrder>();
 
-        private GameTimeManager _timeManager;
+        private IGameClock _clock;
         private int _lastResolvedHour = -1;
 
         public static NpcScheduleService Instance => s_instance;
@@ -97,7 +101,12 @@ namespace CindarsHope.NPC.Schedule
         /// <summary>Inject the time source (bootstrap). Optional — the service degrades to day-start only.</summary>
         public void SetTimeManager(GameTimeManager timeManager)
         {
-            _timeManager = timeManager;
+            SetClock(timeManager);
+        }
+
+        public void SetClock(IGameClock clock)
+        {
+            _clock = clock;
         }
 
         /// <summary>Register a named anchor for schedule position resolution.</summary>
@@ -241,7 +250,7 @@ namespace CindarsHope.NPC.Schedule
 
         private int CurrentHour()
         {
-            return _timeManager != null ? _timeManager.CurrentHourOfDay : 12;
+            return _clock != null ? _clock.CurrentHourOfDay : 12;
         }
 
         private void HandleDayStarted(DayStartedEvent evt)
@@ -264,6 +273,7 @@ namespace CindarsHope.NPC.Schedule
 
         private void ResolveAllNpcs(int hour)
         {
+            using var profilerScope = ResolveSchedulesMarker.Auto();
             _lastResolvedHour = hour;
 
             foreach (var controller in _npcControllers)
@@ -301,10 +311,18 @@ namespace CindarsHope.NPC.Schedule
             var block = NpcScheduleBlockResolver.ResolveBlock(archetype, hour);
             var available = block == NpcRuntimeBlock.Work || block == NpcRuntimeBlock.Social;
             var suffix = NpcScheduleBlockResolver.AnchorSuffixForBlock(block);
-            var anchorId = $"npc_{npcId}_{suffix}";
+            // NpcId ja e canonico (por exemplo, "npc_yael"). Prefixar novamente gerava
+            // "npc_npc_yael_work" e quebrava o contrato usado pelos perfis e testes.
+            var anchorId = $"{npcId}_{suffix}";
 
             // Resolve target position: named anchor first, else NpcDataSO.DefaultPosition.
             TryGetAnchor(anchorId, out var targetAnchor);
+            // Compatibilidade temporaria com TownScene gerada antes da correcao do builder.
+            // O estado publicado continua canonico; somente a leitura aceita o alias legado.
+            if (targetAnchor == null)
+            {
+                TryGetAnchor($"npc_{anchorId}", out targetAnchor);
+            }
             Vector3 targetPosition = targetAnchor != null ? targetAnchor.GetPosition() : npcData.DefaultPosition;
 
             // Update runtime state and publish the block transition (only on change).

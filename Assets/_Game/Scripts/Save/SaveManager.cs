@@ -23,6 +23,7 @@ using CindarsHope.Save.Providers;
 using CindarsHope.Skills;
 using CindarsHope.UI.Hotbar;
 using CindarsHope.World;
+using Unity.Profiling;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 #if UNITY_EDITOR
@@ -41,6 +42,11 @@ namespace CindarsHope.Save
     [DisallowMultipleComponent]
     public partial class SaveManager : MonoBehaviour
     {
+        private static readonly ProfilerMarker SaveMarker =
+            new ProfilerMarker("CindarsHope.Save.CaptureSerializeWrite");
+        private static readonly ProfilerMarker RestoreMarker =
+            new ProfilerMarker("CindarsHope.Save.Restore");
+
         private const int CurrentSchemaVersion = 5;
         private const int Slot = 1;
         private const string SaveDirectoryName = "saves";
@@ -120,6 +126,7 @@ namespace CindarsHope.Save
         private ISaveSectionProvider _farmTilesProvider;
         // Grid de tiles araveis — criado aqui e compartilhado com FarmTilledSoilService.
         private readonly Farm.FarmTileGrid _farmTileGrid = new Farm.FarmTileGrid(new Farm.FarmNonArableZones());
+        private readonly SaveProviderRegistry _providerRegistry = new SaveProviderRegistry();
 
         /// <summary>Caminho completo do arquivo de save em disco.</summary>
         public string SaveFilePath => Path.Combine(Application.persistentDataPath, SaveDirectoryName, SaveFileName);
@@ -135,6 +142,7 @@ namespace CindarsHope.Save
 
         /// <summary>Indica se o SaveManager foi inicializado e estÃ¡ pronto para salvar/carregar.</summary>
         public bool IsInitialized { get; private set; }
+        public int RegisteredProviderCount => _providerRegistry.Count;
 
         // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         // Ciclo de vida
@@ -224,6 +232,7 @@ namespace CindarsHope.Save
 
             // spec_farm_till_anywhere_tilemap: tiles araveis por coordenada (secao aditiva FarmTiles).
             _farmTilesProvider = new Providers.FarmTilesSectionProvider(_farmTileGrid);
+            RegisterProviderDescriptors();
         }
 
         /// <summary>Desliga o SaveManager. Chamado pelo GameBootstrap no shutdown.</summary>
@@ -247,6 +256,8 @@ namespace CindarsHope.Save
         /// </summary>
         public bool SaveGame()
         {
+            using var profilerScope = SaveMarker.Auto();
+
             // fable_44: polÃ­tica de save em boss fight (CA-3).
             if (TryGetActiveCaveBossFightGuard(out var blockedReason))
             {
@@ -272,7 +283,7 @@ namespace CindarsHope.Save
                     Player = playerData,
                     Inventory = _inventoryProvider?.Capture(existingSaveData) as InventorySaveData,
                     Equipment = _equipmentProvider?.Capture(existingSaveData) as EquipmentSaveData,
-                    Hotbar = _hotbarProvider?.Capture(existingSaveData) as HotbarSaveData,
+                    Hotbar = _providerRegistry.Capture<HotbarSaveData>("hotbar", existingSaveData),
                     Progression = _progressionProvider?.Capture(existingSaveData) as PlayerProgressionSaveData,
                     Farm = _farmProvider?.Capture(existingSaveData) as FarmSaveData,
                     World = _worldProvider?.Capture(existingSaveData) as WorldSaveData,
@@ -571,6 +582,42 @@ namespace CindarsHope.Save
             return 1;
         }
 
+        private void RegisterProviderDescriptors()
+        {
+            int order = 0;
+            _providerRegistry.Register<PlayerSaveData>(_playerProvider, order++);
+            _providerRegistry.Register<InventorySaveData>(_inventoryProvider, order++);
+            _providerRegistry.Register<HotbarSaveData>(_hotbarProvider, order++);
+            _providerRegistry.Register<CindarsHope.Magic.SpellbookSaveData>(_spellbookProvider, order++);
+            _providerRegistry.Register<EquipmentSaveData>(_equipmentProvider, order++);
+            _providerRegistry.Register<EquipmentDurabilitySaveData>(_equipmentDurabilityProvider, order++);
+            _providerRegistry.Register<PlayerProgressionSaveData>(_progressionProvider, order++);
+            _providerRegistry.Register<ActiveSkillSlotsSaveData>(_activeSkillSlotsProvider, order++);
+            _providerRegistry.Register<SkillTreeSaveData>(_skillTreeProvider, order++);
+            _providerRegistry.Register<StaminaSaveData>(_staminaProvider, order++);
+            _providerRegistry.Register<GameTimeSaveData>(_gameTimeProvider, order++);
+            _providerRegistry.Register<PlayerStatusEffectsSaveData>(_playerStatusEffectsProvider, order++);
+            _providerRegistry.Register<CaveSaveData>(_caveProvider, order++);
+            _providerRegistry.Register<CindarsHope.Cave.Runtime.CaveRunSaveData>(_caveRunProvider, order++);
+            _providerRegistry.Register<WorldSaveData>(_worldProvider, order++);
+            _providerRegistry.Register<FarmSaveData>(_farmProvider, order++);
+            _providerRegistry.Register<EconomySaveData>(_economyProvider, order++);
+            _providerRegistry.Register<NpcManagerSaveData>(_npcsProvider, order++);
+            _providerRegistry.Register<CraftingRuntimeSaveData>(_craftingProvider, order++);
+            _providerRegistry.Register<BestiarySaveData>(_bestiaryProvider, order++);
+            _providerRegistry.Register<FonteSaveData>(_fonteProvider, order++);
+            _providerRegistry.Register<MainProgressionSaveData>(_mainProgressionProvider, order++);
+            _providerRegistry.Register<Farm.Runtime.FarmDailyGoalsSaveData>(_dailyGoalsProvider, order++);
+            _providerRegistry.Register<Farm.Lots.FarmLotsSaveData>(_farmLotsProvider, order++);
+            _providerRegistry.Register<Farm.Animals.FarmAnimalsSaveData>(_farmAnimalsProvider, order++);
+            _providerRegistry.Register<NPC.Friendship.FriendshipSaveData>(_friendshipProvider, order++);
+            _providerRegistry.Register<NPC.Services.NpcServicesSaveData>(_npcServicesProvider, order++);
+            _providerRegistry.Register<DeathSaveData>(_deathProvider, order++);
+            _providerRegistry.Register<QuestStateSectionSaveData>(_questProvider, order++);
+            _providerRegistry.Register<OnboardingHintsSaveData>(_onboardingHintsProvider, order++);
+            _providerRegistry.Register<FarmTilesSaveData>(_farmTilesProvider, order);
+        }
+
         // fable_44: lÃª o flag de boss fight do CaveLevelRuntimeController pelo canal do bootstrap.
         private bool TryGetActiveCaveBossFightGuard(out string reason)
         {
@@ -615,6 +662,8 @@ namespace CindarsHope.Save
         /// </summary>
         private void ApplySaveData(GameSaveData saveData)
         {
+            using var profilerScope = RestoreMarker.Auto();
+
             // â”€â”€ Dia / tempo â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
             if (_timeManager != null)
             {
@@ -643,7 +692,7 @@ namespace CindarsHope.Save
             _inventoryProvider?.Restore(saveData.Inventory);
 
             // â”€â”€ Hotbar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-            _hotbarProvider?.Restore(saveData.Hotbar);
+            _providerRegistry.Restore("hotbar", saveData.Hotbar);
 
             // â”€â”€ GrimÃ³rio (apÃ³s inventÃ¡rio â€” contrato de ordem da spec fable_07) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
             _spellbookProvider?.Restore(saveData.Spellbook);

@@ -1,3 +1,4 @@
+using CindarsHope.Core.Random;
 using UnityEngine;
 
 namespace CindarsHope.Combat.Weapon
@@ -42,7 +43,7 @@ namespace CindarsHope.Combat.Weapon
             _baseScale = transform.localScale;
             _baseColor = _renderer != null ? _renderer.color : Color.white;
             // Desync pulse phases between projectiles (visual-only randomness).
-            _phaseOffset = Random.value * 6.28f;
+            _phaseOffset = UnityVisualRandomSource.Shared.NextFloat() * 6.28f;
         }
 
         private void Update()

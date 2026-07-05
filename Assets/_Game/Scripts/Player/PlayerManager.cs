@@ -1,5 +1,6 @@
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
+using CindarsHope.Foundation.Transactions;
 using CindarsHope.Player.Data;
 using CindarsHope.Save;
 using UnityEngine;
@@ -7,13 +8,18 @@ using UnityEngine;
 namespace CindarsHope.Player
 {
     [DisallowMultipleComponent]
-    public class PlayerManager : MonoBehaviour
+    public class PlayerManager : MonoBehaviour, IWalletTransactionPort
     {
         public bool IsInitialized { get; private set; }
         public int CurrentGold { get; private set; }
         public int CurrentHP { get; private set; }
         public int MaxHP { get; private set; }
         public int Strength { get; set; } = 0;
+        int IWalletTransactionPort.Balance => CurrentGold;
+
+        bool IWalletTransactionPort.TryDebit(int amount) => TrySpendGold(amount);
+
+        void IWalletTransactionPort.Credit(int amount) => AddGold(amount);
 
         public void Initialize()
         {

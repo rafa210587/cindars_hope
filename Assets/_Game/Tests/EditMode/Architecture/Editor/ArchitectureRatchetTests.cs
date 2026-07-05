@@ -164,7 +164,18 @@ namespace CindarsHope.Tests.EditMode.Architecture
                 "Foundation");
             string[] sourceFiles = Directory.GetFiles(foundationRoot, "*.cs", SearchOption.AllDirectories);
 
-            Assert.That(sourceFiles.Length, Is.EqualTo(2), "Foundation scope must grow only by explicit decision.");
+            string[] expectedFoundationFiles =
+            {
+                "IIdentifiedData.cs",
+                "IDataRegistry.cs",
+                "IGameClock.cs",
+                "IRandomSource.cs",
+                "IInventoryWalletTransactionPorts.cs"
+            };
+            Assert.That(
+                sourceFiles.Select(Path.GetFileName),
+                Is.EquivalentTo(expectedFoundationFiles),
+                "Foundation scope must grow only by explicit architecture decision.");
             Assert.That(
                 sourceFiles.Select(File.ReadAllText).Any(source => source.Contains("UnityEngine")),
                 Is.False,

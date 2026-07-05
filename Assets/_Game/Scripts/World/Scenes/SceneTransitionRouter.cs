@@ -1,6 +1,7 @@
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
 using CindarsHope.SceneManagement;
+using Unity.Profiling;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 #if UNITY_EDITOR
@@ -27,6 +28,9 @@ namespace CindarsHope.World.Scenes
     /// </summary>
     public static class SceneTransitionRouter
     {
+        private static readonly ProfilerMarker ExecuteMarker =
+            new ProfilerMarker("CindarsHope.SceneTransition.Execute");
+
         private static bool _transitionInProgress;
 
         // O guard precisa SEMPRE ser liberado quando a cena destino carrega. Antes so o
@@ -56,6 +60,8 @@ namespace CindarsHope.World.Scenes
         /// </summary>
         public static SceneTransitionResult Execute(SceneTransitionRequest request)
         {
+            using var profilerScope = ExecuteMarker.Auto();
+
             if (request == null)
             {
                 Debug.LogError("[SceneTransitionRouter] Request is null.");

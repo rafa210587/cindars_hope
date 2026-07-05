@@ -2204,7 +2204,7 @@ namespace CindarsHope.Editor.SceneCreation
         private static void CreateScheduleAnchor(Transform parent, string npcId, string suffix, Vector3 position,
             bool hasApproach = false, Vector3 approachPoint = default)
         {
-            var anchorId = $"npc_{npcId}_{suffix}";
+            var anchorId = $"{npcId}_{suffix}";
             var go = new GameObject($"Anchor_{anchorId}");
             go.transform.SetParent(parent);
             go.transform.position = position;
