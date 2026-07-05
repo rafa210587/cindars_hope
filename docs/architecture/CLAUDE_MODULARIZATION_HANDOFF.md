@@ -29,7 +29,9 @@ Antes de continuar, valide o diff e os comandos; este relato não substitui evid
 - PlayMode composition/scenes: 2/2 PASS, incluindo varredura de missing scripts em Farm/Town/Cave;
 - docs validator: exit 1 por dívidas preexistentes em specs futuras e falso positivo do scanner de
   placeholders; a nova spec e os novos documentos não aparecem nas falhas;
-- commit/push: pendente até a revisão final do staging seletivo.
+- commit técnico: `aabfecbb` (`fix(runtime): reconciliar canone e fechar gaps de save`).
+- publicação: este fechamento documental deve ser commitado e ambos os commits enviados a
+  `origin/dev`; valide o remote HEAD antes de confiar neste item.
 
 Copie todo o conteúdo deste documento para uma nova sessão do Claude Code quando a sessão atual
 estiver próxima do limite de contexto/tokens.
