@@ -2,8 +2,8 @@
 
 > Documento operacional para modularizar o projeto sem alterar o comportamento existente.
 >
-> **Status:** Fases 0, 1 e 2 concluídas e publicadas em `dev`
-> atual ser commitado e publicado.
+> **Status:** Fases 0 a 8 implementadas em `dev`; reconciliação canônica de 2026-07-05 com
+> 2672/2672 testes EditMode. Consulte `MODULARIZATION_IMPLEMENTED_ARCHITECTURE_GUIDE.md`.
 >
 > **Branch planejada:** `rework/modular-architecture`
 >

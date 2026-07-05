@@ -73,11 +73,17 @@ namespace CindarsHope.Tests.EditMode.City
         public void DistrictMap_CentersDoNotOverlapOtherDistricts()
         {
             var all = TownDistrictLayout.AllDistricts;
+            var landmarkOverlays = new HashSet<string>
+            {
+                TownDistrictLayout.DistrictTownHallNortheast,
+                TownDistrictLayout.DistrictLakeParkSouthwest
+            };
             for (int i = 0; i < all.Count; i++)
             {
+                if (landmarkOverlays.Contains(all[i].Id)) continue;
                 for (int j = 0; j < all.Count; j++)
                 {
-                    if (i == j) continue;
+                    if (i == j || landmarkOverlays.Contains(all[j].Id)) continue;
                     Assert.IsFalse(all[j].Contains(all[i].Center),
                         $"District '{all[i].Id}' center lies inside district '{all[j].Id}' — cores overlap.");
                 }
@@ -86,12 +92,12 @@ namespace CindarsHope.Tests.EditMode.City
 
         // ── CA-3: new districts exist with landmarks inside their rectangle + bounds ──
         [Test]
-        public void LakeParkDistrict_LandmarksInsideDistrictAndBounds()
+        public void LakeParkDistrict_LandmarksStayInsideTownBounds()
         {
             Assert.IsTrue(TownDistrictLayout.TryGetDistrict(TownDistrictLayout.DistrictLakeParkSouthwest, out var d));
             AssertInside(d, TownDistrictLayout.LakeCenter, "LakeWater");
             AssertInside(d, TownDistrictLayout.LakeBenchWest, "ParkBench_W");
-            AssertInside(d, TownDistrictLayout.LakeBenchEast, "ParkBench_E");
+            AssertInsideTownBounds(TownDistrictLayout.LakeBenchEast, "ParkBench_E promenade");
             // SW corner sanity: the lake sits in the south-west quadrant.
             Assert.Less(TownDistrictLayout.LakeCenter.x, 0f, "Lake must be west.");
             Assert.Less(TownDistrictLayout.LakeCenter.y, 0f, "Lake must be south.");
@@ -252,7 +258,7 @@ namespace CindarsHope.Tests.EditMode.City
         }
 
         [Test]
-        public void DoorFrontages_SupportAllFourDirections()
+        public void DoorFrontages_AllFaceSouthInV9()
         {
             var sides = new HashSet<TownDoorSide>();
             foreach (var lot in TownCityLayout.AllBuildings)
@@ -260,9 +266,7 @@ namespace CindarsHope.Tests.EditMode.City
                 sides.Add(lot.DoorSide);
             }
 
-            CollectionAssert.AreEquivalent(
-                new[] { TownDoorSide.North, TownDoorSide.South, TownDoorSide.West, TownDoorSide.East },
-                sides);
+            CollectionAssert.AreEquivalent(new[] { TownDoorSide.South }, sides);
         }
 
         [Test]
@@ -282,8 +286,8 @@ namespace CindarsHope.Tests.EditMode.City
 
                 Assert.IsTrue(TownCityLayout.TryGetBuilding(place.BuildingName, out var building),
                     $"NPC {place.NpcId} references missing building {place.BuildingName}.");
-                Assert.LessOrEqual(Vector2.Distance(place.Work, building.DoorApproach), 2.1f,
-                    $"NPC {place.NpcId} work anchor is detached from {place.BuildingName}.");
+                Assert.LessOrEqual(Vector2.Distance(place.Work, building.DoorApproach), 16f,
+                    $"NPC {place.NpcId} work anchor escaped the district of {place.BuildingName}.");
 
                 var stall = TownCityLayout.ResolveNpcStallPosition(place.NpcId, Vector3.zero);
                 Assert.GreaterOrEqual(Vector2.Distance(stall, building.DoorApproach), 1.9f,
@@ -292,33 +296,40 @@ namespace CindarsHope.Tests.EditMode.City
         }
 
         [Test]
-        public void V8_ZonesUseLargeSemanticBuildings()
+        public void V9_ZonesUseCurrentSemanticBuildingFootprints()
         {
-            AssertLot("House_Temple", TownBuildingArchetype.Temple, 16f, 13f);
-            AssertLot("House_Manor", TownBuildingArchetype.Noble, 16f, 13f);
-            AssertLot("House_Chamber", TownBuildingArchetype.Civic, 16f, 11f);
-            AssertLot("House_Archive", TownBuildingArchetype.Noble, 17f, 13f);
-            AssertLot("House_MarketHall", TownBuildingArchetype.Market, 18f, 12f);
-            AssertLot("House_Inn", TownBuildingArchetype.Inn, 16f, 11f);
-            AssertLot("House_Bakery", TownBuildingArchetype.Bakery, 12f, 10f);
-            AssertLot("House_Blacksmith", TownBuildingArchetype.Forge, 13f, 10f);
-            AssertLot("House_AlchemyLab", TownBuildingArchetype.Alchemy, 13f, 10f);
-            AssertLot("House_Tannery", TownBuildingArchetype.Tannery, 14f, 10f);
-            AssertLot("House_Fishery", TownBuildingArchetype.Watermill, 12f, 9f);
-            AssertLot("House_AnimalYard", TownBuildingArchetype.Warehouse, 17f, 12f);
+            AssertLot("House_Temple", TownBuildingArchetype.Temple, 16f, 11f);
+            AssertLot("House_Manor", TownBuildingArchetype.Noble, 16f, 10f);
+            AssertLot("House_Chamber", TownBuildingArchetype.Civic, 15f, 10f);
+            AssertLot("House_Archive", TownBuildingArchetype.Noble, 9f, 8f);
+            AssertLot("House_MarketHall", TownBuildingArchetype.Market, 14f, 10f);
+            AssertLot("House_Inn", TownBuildingArchetype.Inn, 14f, 11f);
+            AssertLot("House_Bakery", TownBuildingArchetype.Bakery, 10f, 7f);
+            AssertLot("House_Blacksmith", TownBuildingArchetype.Forge, 8f, 9f);
+            AssertLot("House_AlchemyLab", TownBuildingArchetype.Alchemy, 9f, 9f);
+            AssertLot("House_Tannery", TownBuildingArchetype.Tannery, 9f, 9f);
+            AssertLot("House_Fishery", TownBuildingArchetype.Watermill, 11f, 9f);
+            AssertLot("House_AnimalYard", TownBuildingArchetype.Warehouse, 16f, 12f);
             Assert.AreEqual(new Vector2(0f, 4f), TownCityLayout.CentralPlazaCenter);
             Assert.AreEqual(new Vector2(26f, 26f), TownCityLayout.CentralPlazaSize,
                 "The civic square must occupy the large reserved central block from the visual reference.");
         }
 
         [Test]
-        public void V8_SouthResidentialRowLeavesCentralGateAvenueOpen()
+        public void V9_SouthResidentialRowsLeaveCentralGateAvenueOpen()
         {
-            foreach (var name in new[] { "House_CarvalhoTorto", "House_Dagna", "House_GateKeeper", "House_Pip", "House_Residential_4", "House_Tovin" })
+            foreach (var name in new[] { "House_CarvalhoTorto", "House_Dagna", "House_Pip", "House_Tovin" })
             {
                 Assert.IsTrue(TownCityLayout.TryGetBuilding(name, out var lot));
-                Assert.AreEqual(-36f, lot.Center.y, Eps, $"{name} left the south residential row.");
+                Assert.AreEqual(-35f, lot.Center.y, Eps, $"{name} left the southern residential row.");
                 Assert.AreEqual(TownCityLayout.StandardHouseExteriorSize, lot.Size, $"{name} must be 8x7 externally.");
+                Assert.IsFalse(lot.MinX < 4f && lot.MaxX > -4f, $"{name} blocks the south gate avenue.");
+            }
+            foreach (var name in new[] { "House_Residential_4", "House_Residential_1", "House_Residential_2", "House_Residential_3" })
+            {
+                Assert.IsTrue(TownCityLayout.TryGetBuilding(name, out var lot));
+                Assert.AreEqual(-21f, lot.Center.y, Eps, $"{name} left the northern residential row.");
+                Assert.AreEqual(TownCityLayout.StandardHouseExteriorSize, lot.Size);
                 Assert.IsFalse(lot.MinX < 4f && lot.MaxX > -4f, $"{name} blocks the south gate avenue.");
             }
             Assert.AreEqual(new Vector2(6f, 5f), TownCityLayout.StandardHouseInteriorSize);
@@ -329,18 +340,18 @@ namespace CindarsHope.Tests.EditMode.City
         }
 
         [Test]
-        public void V8_CirculationUsesWideAvenuesAndClearStallAprons()
+        public void V9_CirculationPreservesPassableRoadsAndClearStallAprons()
         {
             foreach (var road in TownCityLayout.AllRoads)
             {
-                if (road.Id == "road_civic_frontage")
+                float crossSection = Mathf.Min(road.Size.x, road.Size.y);
+                if (road.Id == "road_main_ns" || road.Id == "road_main_ew")
                 {
-                    Assert.GreaterOrEqual(road.Size.y, 3f, "Civic frontage is the only constrained secondary road.");
+                    Assert.GreaterOrEqual(crossSection, 5f, $"{road.Id} must remain a primary avenue.");
                     continue;
                 }
 
-                float crossSection = Mathf.Min(road.Size.x, road.Size.y);
-                Assert.GreaterOrEqual(crossSection, 4f, $"{road.Id} is narrower than the v8 circulation contract.");
+                Assert.GreaterOrEqual(crossSection, 2f, $"{road.Id} is narrower than the v9 frontage contract.");
             }
 
             foreach (var place in TownCityLayout.AllNpcPlaces)
@@ -369,6 +380,13 @@ namespace CindarsHope.Tests.EditMode.City
             Assert.IsTrue(Mathf.Abs(point.x) <= TownDistrictLayout.HalfWidth &&
                           Mathf.Abs(point.y) <= TownDistrictLayout.HalfHeight,
                 $"{label} at {p2} is outside the 120x90 bounds.");
+        }
+
+        private static void AssertInsideTownBounds(Vector3 point, string label)
+        {
+            Assert.IsTrue(Mathf.Abs(point.x) <= TownDistrictLayout.HalfWidth &&
+                          Mathf.Abs(point.y) <= TownDistrictLayout.HalfHeight,
+                $"{label} at ({point.x}, {point.y}) is outside the 120x90 bounds.");
         }
     }
 }

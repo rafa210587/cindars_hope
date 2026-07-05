@@ -99,7 +99,14 @@ namespace CindarsHope.Cave.Traps
             // Remove o falso baú: o Hoardmaw assume o lugar (estado Triggered fica no snapshot).
             if (spawned)
             {
-                Destroy(gameObject);
+                if (Application.isPlaying)
+                {
+                    Destroy(gameObject);
+                }
+                else
+                {
+                    DestroyImmediate(gameObject);
+                }
             }
         }
 

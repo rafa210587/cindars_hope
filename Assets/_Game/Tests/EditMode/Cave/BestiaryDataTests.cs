@@ -52,8 +52,7 @@ namespace CindarsHope.Tests.EditMode.Cave
         {
             Assert.AreEqual(
                 CanonicalBestiaryCatalogCounts.TotalDistinct, Catalog.Count,
-                "Catalog must materialize exactly the canonical distinct fichas " +
-                "(50 commons + 14 minibosses + 9 gate bosses + 4 finals = 77).");
+                "Catalog must materialize exactly the current 117 canonical fichas.");
         }
 
         [Test]
@@ -64,16 +63,16 @@ namespace CindarsHope.Tests.EditMode.Cave
             int gateBosses = Catalog.Count(d => d.IsBoss && d.SpoilerTier == 3);
             int finalFour = Catalog.Count(d => d.IsBoss && d.SpoilerTier == 4);
 
-            Assert.AreEqual(CanonicalBestiaryCatalogCounts.Commons, commons, "50 band commons.");
+            Assert.AreEqual(CanonicalBestiaryCatalogCounts.Commons, commons, "90 band commons/elites.");
             Assert.AreEqual(CanonicalBestiaryCatalogCounts.Minibosses, minibosses, "14 minibosses (2/band).");
             Assert.AreEqual(CanonicalBestiaryCatalogCounts.GateBosses, gateBosses, "9 gate bosses.");
             Assert.AreEqual(CanonicalBestiaryCatalogCounts.FinalFour, finalFour, "4 finals (SpoilerTier 4).");
 
-            // Catalog headline framing: 64 "band creatures" (commons + minibosses) + the gate/finals.
+            // Catálogo atual: 104 criaturas de band + 9 gate bosses + 4 finais.
             Assert.AreEqual(CanonicalBestiaryCatalogCounts.BandRosterHeadline, commons + minibosses,
-                "Commons + minibosses == 64 (catalog band-roster headline).");
+                "Commons + minibosses == 104.");
             Assert.AreEqual(CanonicalBestiaryCatalogCounts.TotalDistinct,
-                commons + minibosses + gateBosses + finalFour, "All buckets sum to 77 distinct.");
+                commons + minibosses + gateBosses + finalFour, "All buckets sum to 117 distinct.");
         }
 
         [Test]

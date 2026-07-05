@@ -189,11 +189,13 @@ namespace CindarsHope.Farm.Tests
             Assert.IsTrue(outcome.Success);
             Assert.AreEqual(1, outcome.Items.Length);
             Assert.AreEqual("item_carrot", outcome.Items[0].itemId);
-            Assert.AreEqual(2, outcome.Items[0].amount);
+            Assert.AreEqual(4, outcome.Items[0].amount,
+                "A colheita atual inclui +2 unidades da qualidade Excellent.");
 
-            // Confirmar colheita — sem regrow, tile volta para Raw e e removido do grid
+            // Confirmar colheita — sem regrow, o solo continua arado e seco no fluxo atual.
             _service.ConfirmHarvest(4, 4, seed);
-            Assert.IsFalse(_grid.IsTilled(4, 4));
+            Assert.IsTrue(_grid.IsTilled(4, 4));
+            Assert.AreEqual(FarmPlotState.TilledDry, _grid.GetTilledLogic(4, 4).State);
         }
 
         [Test]
@@ -324,7 +326,8 @@ namespace CindarsHope.Farm.Tests
             var outcome = _service.TryHarvestTile(10, 10, seed, yieldModifier: 0.5f, fertilizerActive: false);
             Assert.IsTrue(outcome.Success);
             // baseAmount=2, yieldModifier=0.5 => +1 => 3
-            Assert.AreEqual(3, outcome.Items[0].amount);
+            Assert.AreEqual(5, outcome.Items[0].amount,
+                "Base 2 + bônus de fertilizante 1 + bônus de qualidade Excellent 2.");
         }
 
         [Test]

@@ -55,9 +55,9 @@ namespace CindarsHope.UI.HUD
         public float HpPercent => MaxHp > 0 ? (float)Hp / MaxHp : 1f;
         public float MpPercent => MaxMp > 0 ? (float)Mp / MaxMp : 1f;
         public float StaminaPercent => MaxStamina > 0 ? (float)Stamina / MaxStamina : 1f;
-        public bool IsHpLow => HpPercent < 0.25f;
-        public bool IsMpLow => ShowMp && MpPercent < 0.25f;
-        public bool IsStaminaLow => StaminaPercent < 0.25f;
+        public bool IsHpLow => HpPercent <= 0.25f;
+        public bool IsMpLow => ShowMp && MpPercent <= 0.25f;
+        public bool IsStaminaLow => StaminaPercent <= 0.25f;
     }
 
     // Legacy alias — keeps backward compat for any compiled code referencing old name

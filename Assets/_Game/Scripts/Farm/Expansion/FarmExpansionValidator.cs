@@ -42,7 +42,7 @@ namespace CindarsHope.Farm.Expansion
                     return ZonePlacementResult.Block("FixedOrWaterZone", zone.ZoneId);
 
                 // Zone not yet unlocked by level
-                if (zone.ZoneType == FarmZoneType.Blocked || !zone.IsUnlocked)
+                if (!zone.IsUnlocked)
                     return ZonePlacementResult.Block("ZoneNotUnlocked", zone.ZoneId);
 
                 // Farm level insufficient
@@ -64,6 +64,9 @@ namespace CindarsHope.Farm.Expansion
             if (zone.IsLoreReserved) return false;
             if ((int)currentLevel < (int)zone.RequiredLevel) return false;
 
+            // Blocked is the locked state of a future free zone, not permanent terrain.
+            if (zone.ZoneType == FarmZoneType.Blocked)
+                zone.ZoneType = FarmZoneType.Free;
             zone.IsUnlocked = true;
             return true;
         }

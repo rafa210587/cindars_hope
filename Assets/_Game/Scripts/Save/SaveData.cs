@@ -308,10 +308,10 @@ namespace CindarsHope.Save
     [Serializable]
     public class ActiveSkillSlotsSaveData
     {
-        public string SlotRSkillActionId;
-        public string SlotTSkillActionId;
-        public string SlotYSkillActionId;
-        public string SlotGSkillActionId;
+        public string SlotRSkillActionId = string.Empty;
+        public string SlotTSkillActionId = string.Empty;
+        public string SlotYSkillActionId = string.Empty;
+        public string SlotGSkillActionId = string.Empty;
     }
 
     [Serializable]
@@ -353,6 +353,17 @@ namespace CindarsHope.Save
     }
 
     [Serializable]
+    public class QuestDynamicRewardSaveData
+    {
+        public string RewardId;
+        public int RewardType;
+        public string TargetId;
+        public int Quantity;
+        public string GrantedFlagId;
+        public int IdempotencyPolicy;
+    }
+
+    [Serializable]
     public class QuestStateSaveData
     {
         public string QuestId;
@@ -384,6 +395,7 @@ namespace CindarsHope.Save
         public int InstanceRewardGold;
         public int InstanceRewardXp;
         public int GeneratedForDay;
+        public List<QuestDynamicRewardSaveData> DynamicRewards = new List<QuestDynamicRewardSaveData>();
     }
 
     [Serializable]

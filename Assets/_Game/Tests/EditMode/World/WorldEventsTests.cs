@@ -102,8 +102,8 @@ namespace CindarsHope.Tests.EditMode.World
         {
             WorldEventHooks.Active = WorldEventResolver.ResolveDay("seed", AbsoluteDay(Season.Outono, 21));
             Assert.AreEqual("peak_amber", WorldEventHooks.Active.LunarPeakId);
-            // 100 ouro + Lua Âmbar (+10%) => 110.
-            Assert.AreEqual(110, WorldEventHooks.ApplySellGold(100));
+            // Outono 21 combina Lua Âmbar (+10%) e procura de cultivo (+25%) => 135.
+            Assert.AreEqual(135, WorldEventHooks.ApplySellGold(100));
         }
 
         [Test]

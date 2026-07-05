@@ -309,7 +309,7 @@ namespace CindarsHope.Tests.EditMode.Cave
                 new { PackId = "pack_f81_deep_darkness_choir", Entries = new[] { "enemy_whisper_of_veyraath", "enemy_nyx_shade_elemental", "enemy_abyssal_lurker", "enemy_void_brood_larva" } },
                 new { PackId = "pack_f81_deep_draconic_corrupt_nest", Entries = new[] { "enemy_corrupt_pseudowyrm", "enemy_abyssal_lurker", "enemy_mindbound_thrall" } },
                 new { PackId = "pack_f81_void_dread_chorus", Entries = new[] { "enemy_dread_chorister", "enemy_void_tendril_watcher", "enemy_veilkin_voidknight", "enemy_reality_render" } },
-                new { PackId = "pack_f81_void_vanguard", Entries = new[] { "enemy_veilkin_blademaster", "enemy_gravelborn_twins", "enemy_void_husk", "enemy_dread_chorister" } },
+                new { PackId = "pack_f81_void_vanguard", Entries = new[] { "enemy_veilkin_blademaster", "enemy_starfall_remnant", "enemy_void_husk", "enemy_dread_chorister" } },
             };
 
             foreach (var pack in packsToCheck)
@@ -379,7 +379,7 @@ namespace CindarsHope.Tests.EditMode.Cave
                 "enemy_whisper_of_veyraath", "enemy_nyx_shade_elemental", "enemy_abyssal_lurker", "enemy_void_brood_larva",
                 "enemy_corrupt_pseudowyrm", "enemy_mindbound_thrall",
                 "enemy_dread_chorister", "enemy_void_tendril_watcher", "enemy_veilkin_voidknight", "enemy_reality_render",
-                "enemy_veilkin_blademaster", "enemy_gravelborn_twins", "enemy_void_husk",
+                "enemy_veilkin_blademaster", "enemy_starfall_remnant", "enemy_void_husk",
             };
 
             var missing = allPackEnemyIds.Where(id => !catalogIds.Contains(id)).ToList();
@@ -398,14 +398,14 @@ namespace CindarsHope.Tests.EditMode.Cave
                 levelMin: 86, levelMax: 94, biomeTag: "void",
                 minRoom: EnemyRoomSizeClass.Medium, maxTotal: 9,
                 ("enemy_veilkin_blademaster", 1, 1, 1, true),
-                ("enemy_gravelborn_twins", 1, 2, 1, true),
+                ("enemy_starfall_remnant", 1, 2, 1, true),
                 ("enemy_void_husk", 2, 4, 8, false),
                 ("enemy_dread_chorister", 0, 1, 4, false));
 
             var profiles = new[]
             {
                 MakeProfile("enemy_veilkin_blademaster", 86, 94, "void"),
-                MakeProfile("enemy_gravelborn_twins", 87, 95, "void"),
+                MakeProfile("enemy_starfall_remnant", 87, 95, "void"),
                 MakeProfile("enemy_void_husk", 86, 92, "void"),
                 MakeProfile("enemy_dread_chorister", 87, 95, "void"),
             };

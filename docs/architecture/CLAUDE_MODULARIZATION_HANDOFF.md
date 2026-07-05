@@ -1,5 +1,36 @@
 # Prompt de Continuação para Claude — Rework Modular
 
+## 2026-07-05 — reconciliação canônica e correções pós-modularização
+
+Antes de continuar, valide o diff e os comandos; este relato não substitui evidência local.
+
+- O código/assets atuais foram declarados fonte de verdade sobre specs antigas.
+- Cânone medido: 178 EnemyDataSO/IDs únicos; catálogo tipado 117; itens 213/245; ammo 7;
+  28 NPCs canônicos + 1 legacy; 23 cadeias/69 etapas; Town v9 120x90; Farm v7 64x44.
+- Criada a spec retroativa
+  `.specs/implementados/spec_runtime_canon_reconciliation_2026_07_05.md`.
+- Criado o mapa `docs/architecture/MODULARIZATION_IMPLEMENTED_ARCHITECTURE_GUIDE.md`.
+- `CURRENT_STATE`, registry de specs, plano e README de arquitetura foram reconciliados.
+- Bugs corrigidos: metadata/rewards/flags de quests dinâmicas e restore; `act_1_done`; expansão da
+  fazenda; arredondamentos; imunidade; perfect block; gifts; save defaults; HUD/bestiário; agenda;
+  destruição de traps; dados de bestiário e contratos de testes obsoletos.
+- EditMode passou 2672/2672 em `TestResults/canon-reconciliation-final.xml`.
+- Alterações concorrentes excluídas permanecem:
+  `GenerateEnemyWalkAnimations.cs`, `EnemyAnimator.cs`, `normalize_enemy_sheets.py` e os dois scripts
+  locais em `tools/aseprite/`.
+- Próximos gates obrigatórios: builds das seis assemblies, PlayMode de composição, scanner de missing
+  scripts, docs validator, revisão do diff, commit e push. Não declare conclusão antes deles.
+
+### Gates executados neste marco
+
+- seis projetos gerados: PASS, 0 warnings/0 erros;
+- ratchet arquitetural: PASS, nenhuma dívida monitorada aumentou;
+- EditMode: 2672/2672 PASS;
+- PlayMode composition/scenes: 2/2 PASS, incluindo varredura de missing scripts em Farm/Town/Cave;
+- docs validator: exit 1 por dívidas preexistentes em specs futuras e falso positivo do scanner de
+  placeholders; a nova spec e os novos documentos não aparecem nas falhas;
+- commit/push: pendente até a revisão final do staging seletivo.
+
 Copie todo o conteúdo deste documento para uma nova sessão do Claude Code quando a sessão atual
 estiver próxima do limite de contexto/tokens.
 

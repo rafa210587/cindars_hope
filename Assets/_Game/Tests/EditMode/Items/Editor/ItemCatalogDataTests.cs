@@ -173,7 +173,8 @@ namespace CindarsHope.Tests.EditMode.Items
             Assert.AreEqual(6, rows.Count(r => r.Category == ItemCategory.Essence), "6 essences (E2.5).");
             // 4 animal products x 3 quality = 12.
             Assert.AreEqual(12, rows.Count(r => r.Category == ItemCategory.AnimalProduct), "4 animal products x 3 quality (§18).");
-            Assert.AreEqual(6, rows.Count(r => r.Category == ItemCategory.Ammo), "6 arrows (§8).");
+            Assert.AreEqual(7, rows.Count(r => r.Category == ItemCategory.Ammo),
+                "6 perfis canônicos + a flecha basic do starter/hotbar.");
             Assert.AreEqual(10, rows.Count(r => r.Category == ItemCategory.Fish), "10 fish (E2.10).");
             Assert.AreEqual(4, rows.Count(r => r.Category == ItemCategory.Relic), "4 relics (§17).");
             Assert.AreEqual(12, rows.Count(r => r.Category == ItemCategory.Accessory), "12 accessories (§16).");
@@ -186,8 +187,8 @@ namespace CindarsHope.Tests.EditMode.Items
         // canonical base is larger than 118 (>= the documented floor). The F30 ExpectedCount=118
         // is the pre-V3 figure and will surface a count WARN (never ERROR) — documented in the
         // execution report as the expected, honest divergence. These constants pin the real size.
-        public const int ExpectedBaseCount = 207;
-        public const int ExpectedExpandedCount = 239; // 207 base + 16 quality-variant rows x2 variants
+        public const int ExpectedBaseCount = 213;
+        public const int ExpectedExpandedCount = 245; // 213 base + 16 quality-variant rows x2 variants
 
         [Test]
         public void BaseCatalog_CountIsPinned_AndAtLeastDocumentedFloor()

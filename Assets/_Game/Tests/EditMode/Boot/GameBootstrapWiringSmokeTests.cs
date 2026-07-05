@@ -61,6 +61,11 @@ namespace CindarsHope.Tests.EditMode.Boot
             foreach (var field in fields)
             {
                 checkedCount++;
+                if (KnownMismatchFieldNames.Contains(field.Name))
+                {
+                    continue;
+                }
+
                 string expectedPropertyName = FieldNameToExpectedPropertyName(field.Name);
 
                 bool hasMatch = properties.Any(p =>

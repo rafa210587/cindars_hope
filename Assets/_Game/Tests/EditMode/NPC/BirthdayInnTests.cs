@@ -27,13 +27,14 @@ namespace CindarsHope.Tests.EditMode.NPC
         // ── CA-1 — tabela de aniversários ─────────────────────────────────────────────────────────
 
         [Test]
-        public void BirthdayTable_CoversAllRosterNpcs_23of23()
+        public void BirthdayTable_CoversAllCanonicalRosterNpcs_28of28()
         {
             Assert.AreEqual(NpcTownRosterRegistry.CanonicalCount, NpcBirthdayTable.Count,
-                "A tabela de aniversários deve cobrir os 23 NPCs canônicos do roster.");
+                "A tabela de aniversários deve cobrir os 28 NPCs canônicos do roster.");
 
             foreach (var rosterEntry in NpcTownRosterRegistry.AllEntries)
             {
+                if (rosterEntry.PriorityTier == NpcTownRosterRegistry.NpcPriorityTier.Legacy) continue;
                 Assert.IsTrue(NpcBirthdayTable.TryGet(rosterEntry.NpcId, out _),
                     $"NPC do roster sem aniversário: {rosterEntry.NpcId}");
             }

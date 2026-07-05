@@ -282,6 +282,7 @@ namespace CindarsHope.Tests.EditMode.Farm
         {
             var animal = new AnimalInstanceState("cow_001", "cow_definition", "Bessie", "barn_001");
             animal.CareScore = 50;
+            animal.MarkFed(0);
             careService.RegisterAnimalInstance(animal);
 
             dailyProcessor.ProcessDayTransition(1);

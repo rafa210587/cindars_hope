@@ -236,7 +236,8 @@ namespace CindarsHope.Tests.EditMode.Skills
                 MakeNode("cap", "melee", 5, SkillCategory.CapstonePassive,
                     variants: new[] { "kanthor", "kaand" }),
             };
-            var (svc, state, _) = Build(nodes, points: 5);
+            var (svc, state, _) = Build(nodes, points: 40);
+            state.Purchase("melee_tier_unlock_budget", 26, "melee");
 
             // No variant chosen → refused (confirmation/choice required).
             Assert.IsFalse(svc.TryPurchase("cap", state, 1, null, out var why));
@@ -258,7 +259,8 @@ namespace CindarsHope.Tests.EditMode.Skills
                 MakeNode("magic_cap", "magic", 5, SkillCategory.CapstonePassive,
                     variants: new[] { "anya", "senya" }),
             };
-            var (svc, state, _) = Build(nodes, points: 5);
+            var (svc, state, _) = Build(nodes, points: 40);
+            state.Purchase("magic_tier_unlock_budget", 26, "magic");
 
             Assert.IsTrue(svc.TryPurchase("magic_cap", state, 1, "senya", out _));
             Assert.AreEqual("senya", state.GetChosenVariant("magic_cap"));

@@ -372,10 +372,10 @@ namespace CindarsHope.Tests.EditMode.Farm
         // ───────────────────────── Catálogo ─────────────────────────
 
         [Test]
-        public void Catalog_HasThreeCanonicalAnimals()
+        public void Catalog_HasFourCanonicalAnimals()
         {
             var all = FarmAnimalCatalog.GetAll();
-            Assert.AreEqual(3, all.Count);
+            Assert.AreEqual(4, all.Count);
         }
 
         [Test]
@@ -390,6 +390,7 @@ namespace CindarsHope.Tests.EditMode.Farm
             Assert.AreEqual("item_animal_egg", byId[FarmAnimalCatalog.AnimalChicken].ProductItemId);
             Assert.AreEqual("item_animal_goat_milk", byId[FarmAnimalCatalog.AnimalGoat].ProductItemId);
             Assert.AreEqual("item_animal_cow_milk", byId[FarmAnimalCatalog.AnimalCow].ProductItemId);
+            Assert.AreEqual("item_animal_wool", byId[FarmAnimalCatalog.AnimalSheep].ProductItemId);
         }
     }
 }

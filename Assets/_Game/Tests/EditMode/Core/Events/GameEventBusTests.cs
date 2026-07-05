@@ -2,6 +2,8 @@ using System;
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
 using NUnit.Framework;
+using UnityEngine;
+using UnityEngine.TestTools;
 
 namespace CindarsHope.Tests.EditMode.Core.Events
 {
@@ -158,6 +160,7 @@ namespace CindarsHope.Tests.EditMode.Core.Events
             GameEventBus.Subscribe<DayStartedEvent>(ThrowingHandler);
             GameEventBus.Subscribe<DayStartedEvent>(SafeHandler);
 
+            LogAssert.Expect(LogType.Exception, "Exception: Test exception");
             var evt = new DayStartedEvent(1);
             GameEventBus.Publish(evt); // Should not throw
 

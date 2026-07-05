@@ -137,7 +137,8 @@ namespace CindarsHope.Farm.Tests
             Assert.IsTrue(outcome.Success);
             Assert.AreEqual(1, outcome.Items.Length);
             Assert.AreEqual("item_carrot", outcome.Items[0].itemId);
-            Assert.AreEqual(2, outcome.Items[0].amount);
+            Assert.AreEqual(4, outcome.Items[0].amount,
+                "A colheita atual inclui +2 unidades da qualidade Excellent.");
         }
 
         [Test]
@@ -328,7 +329,8 @@ namespace CindarsHope.Farm.Tests
             var outcome = logic.TryHarvestPure(seed, yieldModifier: 0.5f, fertilizerActive: true);
             Assert.IsTrue(outcome.Success);
             // baseAmount=2, yieldModifier=0.5 => +1 => 3
-            Assert.AreEqual(3, outcome.Items[0].amount);
+            Assert.AreEqual(5, outcome.Items[0].amount,
+                "Base 2 + bônus de fertilizante 1 + bônus de qualidade Excellent 2.");
             Assert.IsTrue(outcome.FertilizerWasActive);
         }
     }

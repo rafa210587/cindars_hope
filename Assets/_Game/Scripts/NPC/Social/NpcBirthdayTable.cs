@@ -4,7 +4,7 @@ using CindarsHope.World.Calendar;
 namespace CindarsHope.NPC.Social
 {
     /// <summary>
-    /// fable_57 — tabela ESTÁTICA e determinística de aniversários dos 23 NPCs canônicos do roster
+    /// Tabela estática e determinística de aniversários dos 28 NPCs canônicos do roster
     /// (<see cref="NpcTownRosterRegistry"/>). Pura (sem Unity, sem random, sem estado salvo): a data
     /// é editorial e estável entre runs. NÃO é um sistema social novo — é só o conteúdo de data
     /// consumido pelo calendário (F37/F20) e pelo multiplicador de presente do FriendshipService (F26).
@@ -70,12 +70,19 @@ namespace CindarsHope.NPC.Social
             new Birthday("npc_orlan",     Season.Inverno, 22),
             new Birthday("npc_tovin",     Season.Inverno, 25),
             new Birthday("npc_maelor",    Season.Inverno, 28),
+
+            // Expansão canônica da vila (Velorin + Sael/Mella/Hess/Tibbet).
+            new Birthday("npc_velorin",   Season.Primavera, 5),
+            new Birthday("npc_sael",      Season.Verao, 7),
+            new Birthday("npc_mella",     Season.Outono, 4),
+            new Birthday("npc_hess",      Season.Inverno, 2),
+            new Birthday("npc_tibbet",    Season.Outono, 19),
         };
 
-        /// <summary>Todas as 23 entradas (somente leitura).</summary>
+        /// <summary>Todas as 28 entradas canônicas (somente leitura).</summary>
         public static IReadOnlyList<Birthday> All => s_birthdays;
 
-        /// <summary>Quantidade canônica esperada (23, igual ao roster).</summary>
+        /// <summary>Quantidade canônica esperada (28, sem o wanderer legado).</summary>
         public static int Count => s_birthdays.Count;
 
         /// <summary>Tenta obter o aniversário de um NPC. npcId desconhecido ⇒ false.</summary>

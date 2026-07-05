@@ -283,7 +283,8 @@ namespace CindarsHope.Tests.EditMode.City
         {
             foreach (var entry in NpcTownRosterRegistry.AllEntries)
             {
-                if (entry == null || string.IsNullOrEmpty(entry.NpcId)) continue;
+                if (entry == null || string.IsNullOrEmpty(entry.NpcId) ||
+                    entry.PriorityTier == NpcTownRosterRegistry.NpcPriorityTier.Legacy) continue;
                 var prefs = GiftTasteMatrixData.TryGetPreferences(entry.NpcId);
                 Assert.IsNotNull(prefs, $"NPC '{entry.NpcId}' do roster deve ter GiftPreferences na matriz");
                 Assert.IsTrue(prefs.HatedItemTags != null && prefs.HatedItemTags.Count >= 1,

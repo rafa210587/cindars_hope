@@ -28,7 +28,7 @@ namespace CindarsHope.Cave.Runtime
         // Orçamento explícito da seção da caverna sob o cap (bytes do JSON JsonUtility indentado).
         // Pior caso analítico sob o cap (8 × 65×65) ≈ 1.18 MB; o limite documentado deixa folga.
         // O SaveSizeBudgetTest serializa uma run sintética no cap e assert < este valor.
-        public const long SaveSizeBudgetBytes = 1_572_864L; // 1.5 MB
+        public const long SaveSizeBudgetBytes = 3_145_728L; // 3 MB: capped 12-level worst-case snapshot budget
 
         public bool HasActiveRun;
         public string WorldSeed = string.Empty;

@@ -1,5 +1,16 @@
 # Registry de specs a implementar
 
+## Reconciliação canônica de 2026-07-05
+
+O estado executável foi re-auditado e registrado em
+`.specs/implementados/spec_runtime_canon_reconciliation_2026_07_05.md`. Código e assets validados são
+a fonte de verdade para quantidades e decisões já implementadas. Em particular: universo de 178
+criaturas, Town v9 120x90, Farm v7 64x44, 28 NPCs canônicos e 23 cadeias/69 etapas.
+
+As specs soltas `spec_town_layout_v9_organic.md` e `spec_farm_scene_relayout_v4.md` não devem ser
+executadas para reverter o estado atual. Elas são referências históricas até serem promovidas,
+absorvidas ou reescritas como deltas residuais explícitos.
+
 Fonte unica de specs executaveis: `.specs/a_implementar/`.
 
 Specs futuras/future mapped ficam fora da fila executavel em `.specs/a_implementar/features_futuras/` e devem ser ignoradas por automacoes de implementacao.

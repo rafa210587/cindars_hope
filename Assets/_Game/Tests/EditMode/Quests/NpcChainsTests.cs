@@ -77,11 +77,11 @@ namespace CindarsHope.Tests.EditMode.Quests
         // ─── CA-1: catalog invariants ──────────────────────────────────────────────
 
         [Test]
-        public void Catalog_Has12Chains_36Steps_CanonicalIds()
+        public void Catalog_Has23Chains_69Steps_CanonicalIds()
         {
-            Assert.AreEqual(12, NpcQuestChainCatalog.ChainCount);
-            Assert.AreEqual(36, NpcQuestChainCatalog.AllSteps.Count);
-            Assert.AreEqual(12, NpcQuestChainCatalog.ChainNpcIds.Count);
+            Assert.AreEqual(23, NpcQuestChainCatalog.ChainCount);
+            Assert.AreEqual(69, NpcQuestChainCatalog.AllSteps.Count);
+            Assert.AreEqual(23, NpcQuestChainCatalog.ChainNpcIds.Count);
 
             foreach (var npcId in NpcQuestChainCatalog.ChainNpcIds)
             {

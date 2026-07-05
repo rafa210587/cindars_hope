@@ -32,10 +32,10 @@ namespace CindarsHope.Tests.EditMode.Combat
         // ── CA-1: 40 novas fichas → total 104 ──────────────────────────────────────────────
 
         [Test]
-        public void TotalCreatureCount_Is104()
+        public void TotalCreatureCount_Is117()
         {
-            Assert.AreEqual(104, _all.Count,
-                $"Expected 104 creatures (64 original + 40 fable_80). Got {_all.Count}.");
+            Assert.AreEqual(CanonicalBestiaryCatalogCounts.TotalDistinct, _all.Count,
+                $"Expected the current 117 canonical fichas. Got {_all.Count}.");
         }
 
         // ── CA-1: unicidade de IDs ──────────────────────────────────────────────────────────

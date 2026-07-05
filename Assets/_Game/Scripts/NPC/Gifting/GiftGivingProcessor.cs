@@ -47,15 +47,15 @@ namespace CindarsHope.NPC.Gifting
             IGiftFriendship friendship,
             IGiftInventory inventory)
         {
-            // Pré-condições: ids válidos, item resolvido e dependências presentes.
+            // Pré-condições estruturais: ids válidos e dependências presentes.
             if (string.IsNullOrEmpty(npcId) || string.IsNullOrEmpty(itemId)
-                || item == null || friendship == null || inventory == null)
+                || friendship == null || inventory == null)
             {
                 return Refusal(GiftGivingOutcome.Failed, GiftTaste.Neutral);
             }
 
             // 1) Porteiro Giftable: recusa silenciosa, NÃO consome, sem evento (CA-2).
-            if (!GiftTasteClassifier.IsGiftable(item))
+            if (item == null || !GiftTasteClassifier.IsGiftable(item))
             {
                 return Refusal(GiftGivingOutcome.RefusedNotGiftable, GiftTaste.Neutral);
             }

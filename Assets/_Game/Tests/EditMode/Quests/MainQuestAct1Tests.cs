@@ -53,6 +53,7 @@ namespace CindarsHope.Tests.EditMode.Quests
         private const string Q3 = "mq_act1_03_eco_da_agua";
         private const string Q4 = "mq_act1_04_guardiao_da_agua";
         private const string Q5 = "mq_act1_05_fragmento_da_agua";
+        private const string Prologue = "mq_act1_00";
 
         [SetUp]
         public void SetUp()
@@ -92,7 +93,8 @@ namespace CindarsHope.Tests.EditMode.Quests
             CollectionAssert.Contains(d5.PrerequisiteQuestIds, Q4);
 
             _registry.TryGetQuest(Q1, out var d1);
-            Assert.IsEmpty(d1.PrerequisiteQuestIds, "Q1 must have no prerequisites (entry point).");
+            CollectionAssert.Contains(d1.PrerequisiteQuestIds, Prologue,
+                "Q1 starts after the canonical Cindar letters prologue.");
         }
 
         // ─── CA-1: prerequisite gating ──────────────────────────────────────────────
@@ -113,9 +115,9 @@ namespace CindarsHope.Tests.EditMode.Quests
         }
 
         [Test]
-        public void Q1_NoPrerequisites_AlwaysOfferable()
+        public void Q1_RequiresCanonicalPrologue()
         {
-            Assert.IsTrue(_service.ArePrerequisitesComplete(Q1));
+            Assert.IsFalse(_service.ArePrerequisitesComplete(Q1));
         }
 
         [Test]
@@ -131,14 +133,15 @@ namespace CindarsHope.Tests.EditMode.Quests
         {
             DriveQuestlineToQ5ReadyToComplete();
 
+            int before = _gold.Gold;
             var first = _service.TurnIn(Q5);
             Assert.IsTrue(first.Succeeded);
-            Assert.AreEqual(150, _gold.Gold, "Q5 grants 150 gold once.");
+            Assert.AreEqual(150, _gold.Gold - before, "Q5 grants 150 gold once.");
 
             // Re-turn-in must not re-grant.
             var second = _service.TurnIn(Q5);
             Assert.IsTrue(second.WasAlreadyCompleted);
-            Assert.AreEqual(150, _gold.Gold, "Re-turn-in must not duplicate gold.");
+            Assert.AreEqual(before + 150, _gold.Gold, "Re-turn-in must not duplicate gold.");
         }
 
         [Test]
@@ -233,8 +236,9 @@ namespace CindarsHope.Tests.EditMode.Quests
         public void Questline_RewardIdempotency_SurvivesReload()
         {
             DriveQuestlineToQ5ReadyToComplete();
+            int before = _gold.Gold;
             _service.TurnIn(Q5);
-            Assert.AreEqual(150, _gold.Gold);
+            Assert.AreEqual(150, _gold.Gold - before);
 
             // Reload with a fresh gold sink; re-turn-in must NOT re-grant (GrantedRewardIds preserved).
             var saveData = CaptureSave();

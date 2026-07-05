@@ -93,8 +93,8 @@ namespace CindarsHope.Crafting
         public static int DerivedMaxDurability(bool isArmorOrShield, MaterialBand band)
         {
             int baseDurability = isArmorOrShield ? ArmorBaseDurability : WeaponBaseDurability;
-            float modifier = 1f + MaterialDurabilityModifier(band);
-            return (int)System.Math.Round(baseDurability * modifier, MidpointRounding.AwayFromZero);
+            decimal modifier = 1m + (decimal)MaterialDurabilityModifier(band);
+            return (int)decimal.Round(baseDurability * modifier, 0, MidpointRounding.AwayFromZero);
         }
 
         // ─── Custo de upgrade derivado (Decision 2.11) ──────────────────────────────────────────

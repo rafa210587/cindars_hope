@@ -35,6 +35,8 @@ namespace CindarsHope.Quests.Runtime
         private readonly QuestRewardApplicator _rewardApplicator;
         private readonly IQuestInventoryAccess _inventoryAccess;
         private readonly IQuestGoldAccess _goldAccess;
+        private readonly QuestFlagService _flagService;
+        private readonly Dictionary<string, QuestInstance> _dynamicInstances = new Dictionary<string, QuestInstance>();
         private readonly IQuestProgressionAccess _progressionAccess; // fable_34 — scaled XP + act skill point
 
         public QuestService(
@@ -50,7 +52,11 @@ namespace CindarsHope.Quests.Runtime
             _inventoryAccess = inventoryAccess;
             _goldAccess = goldAccess;
             _progressionAccess = progressionAccess;
+            _flagService = flagService;
             _rewardApplicator = new QuestRewardApplicator(flagService);
+
+            foreach (var quest in _registry.GetAllQuests())
+                EnsureRewardFlagsRegistered(_registry.GetRewards(quest.QuestId));
         }
 
         // ─── Public API ────────────────────────────────────────────────────────────
@@ -93,6 +99,11 @@ namespace CindarsHope.Quests.Runtime
 
             _saveSection.QuestStates.RemoveAll(q => q.QuestId == questId);
             _saveSection.QuestStates.Add(record);
+
+            // Catalogs register offers before the player accepts them by id. Keep the complete
+            // dynamic metadata on that path, not only through AcceptDynamicInstance.
+            if (_dynamicInstances.TryGetValue(questId, out var dynamicInstance))
+                HydrateDynamicRecord(record, dynamicInstance);
 
             CheckObjectiveProgress(questId);
 
@@ -307,6 +318,9 @@ namespace CindarsHope.Quests.Runtime
             if (instance == null || string.IsNullOrEmpty(instance.QuestId) || string.IsNullOrEmpty(instance.TargetId))
                 return null;
 
+            _dynamicInstances[instance.QuestId] = instance;
+            EnsureRewardFlagsRegistered(instance.AdditionalRewards);
+
             var objectiveType = ObjectiveTypeForSource(instance);
             var objective = new QuestObjective
             {
@@ -364,17 +378,7 @@ namespace CindarsHope.Quests.Runtime
 
             var record = _saveSection.GetQuestState(questId);
             if (record != null)
-            {
-                record.IsDynamicInstance = true;
-                record.Source = (int)instance.Source;
-                record.TemplateId = instance.QuestTemplateId;
-                record.InstanceTargetId = instance.TargetId;
-                record.InstanceQuantity = instance.Quantity;
-                record.QuestLevel = instance.QuestLevel;
-                record.InstanceRewardGold = instance.RewardGold;
-                record.InstanceRewardXp = instance.RewardXp;
-                record.GeneratedForDay = instance.GeneratedForDay;
-            }
+                HydrateDynamicRecord(record, instance);
             return true;
         }
 
@@ -507,6 +511,17 @@ namespace CindarsHope.Quests.Runtime
                     InstanceRewardGold = dto.InstanceRewardGold,
                     InstanceRewardXp = dto.InstanceRewardXp,
                     GeneratedForDay = dto.GeneratedForDay,
+                    DynamicRewards = (dto.DynamicRewards ?? new List<QuestDynamicRewardSaveData>())
+                        .Where(r => r != null)
+                        .Select(r => new QuestDynamicRewardRecord
+                        {
+                            RewardId = r.RewardId,
+                            RewardType = r.RewardType,
+                            TargetId = r.TargetId,
+                            Quantity = r.Quantity,
+                            GrantedFlagId = r.GrantedFlagId,
+                            IdempotencyPolicy = r.IdempotencyPolicy
+                        }).ToList(),
                     ObjectiveStates = new List<QuestObjectiveStateRecord>()
                 };
 
@@ -528,6 +543,12 @@ namespace CindarsHope.Quests.Runtime
 
                 // fable_34 — a dynamic instance must rejoin the live flow after load: re-register
                 // its definition/objectives/rewards into the registry so progress/turn-in resolve.
+                foreach (var flagId in record.GrantedFlagIds)
+                {
+                    _flagService?.EnsureRewardFlagRegistered(flagId, "QuestSaveRestore");
+                    _flagService?.GrantFlag(flagId, "QuestSaveRestore");
+                }
+
                 if (record.IsDynamicInstance && !_registry.TryGetQuest(record.QuestId, out _))
                 {
                     ReRegisterInstanceFromRecord(record);
@@ -582,9 +603,116 @@ namespace CindarsHope.Quests.Runtime
                 QuestLevel = record.QuestLevel,
                 RewardGold = record.InstanceRewardGold,
                 RewardXp = record.InstanceRewardXp,
-                GeneratedForDay = record.GeneratedForDay
+                GeneratedForDay = record.GeneratedForDay,
+                AdditionalRewards = RestoreDynamicRewards(record)
             };
             RegisterDynamicInstance(instance);
+        }
+
+        private void HydrateDynamicRecord(QuestStateRecord record, QuestInstance instance)
+        {
+            record.IsDynamicInstance = true;
+            record.Source = (int)instance.Source;
+            record.TemplateId = instance.QuestTemplateId;
+            record.InstanceTargetId = instance.TargetId;
+            record.InstanceQuantity = instance.Quantity;
+            record.QuestLevel = instance.QuestLevel;
+            record.InstanceRewardGold = instance.RewardGold;
+            record.InstanceRewardXp = instance.RewardXp;
+            record.GeneratedForDay = instance.GeneratedForDay;
+            record.DynamicRewards = (instance.AdditionalRewards ?? new List<QuestRewardDefinition>())
+                .Where(r => r != null)
+                .Select(r => new QuestDynamicRewardRecord
+                {
+                    RewardId = r.RewardId,
+                    RewardType = (int)r.RewardType,
+                    TargetId = r.TargetId,
+                    Quantity = r.Quantity,
+                    GrantedFlagId = r.GrantedFlagId,
+                    IdempotencyPolicy = (int)r.IdempotencyPolicy
+                }).ToList();
+        }
+
+        private void EnsureRewardFlagsRegistered(IEnumerable<QuestRewardDefinition> rewards)
+        {
+            if (rewards == null || _flagService == null) return;
+            foreach (var reward in rewards)
+            {
+                if (reward == null || reward.RewardType != QuestRewardType.QuestFlagGrant) continue;
+                _flagService.EnsureRewardFlagRegistered(reward.GrantedFlagId ?? reward.TargetId);
+            }
+        }
+
+        private static List<QuestRewardDefinition> RestoreDynamicRewards(QuestStateRecord record)
+        {
+            var rewards = new List<QuestRewardDefinition>();
+            if (record == null) return rewards;
+
+            if (record.DynamicRewards != null && record.DynamicRewards.Count > 0)
+            {
+                foreach (var saved in record.DynamicRewards)
+                {
+                    if (saved == null || string.IsNullOrEmpty(saved.RewardId)) continue;
+                    rewards.Add(new QuestRewardDefinition
+                    {
+                        RewardId = saved.RewardId,
+                        RewardType = (QuestRewardType)saved.RewardType,
+                        TargetId = saved.TargetId,
+                        Quantity = saved.Quantity,
+                        GrantedFlagId = saved.GrantedFlagId,
+                        IdempotencyPolicy = (RewardIdempotencyPolicy)saved.IdempotencyPolicy
+                    });
+                }
+                return rewards;
+            }
+
+            if ((QuestSource)record.Source == QuestSource.Npc)
+            {
+                var step = NpcChains.NpcQuestChainCatalog.FindByQuestId(record.QuestId);
+                var rebuilt = step == null ? null : NpcChains.NpcQuestChainCatalog.BuildInstance(step);
+                if (rebuilt?.AdditionalRewards != null) rewards.AddRange(rebuilt.AdditionalRewards);
+                return rewards;
+            }
+
+            if ((QuestSource)record.Source != QuestSource.CaveContract) return rewards;
+
+            if ((record.TemplateId ?? string.Empty).StartsWith(CaveContracts.CaveContractCatalog.MilestonePrefix) &&
+                int.TryParse(record.InstanceTargetId, out var depth))
+            {
+                rewards.AddRange(CaveContracts.CaveContractCatalog.BuildMilestoneInstance(depth).AdditionalRewards);
+            }
+            else if (record.TemplateId == CaveContracts.CaveContractCatalog.BossRematchId)
+            {
+                rewards.Add(new QuestRewardDefinition
+                {
+                    RewardId = "reward_" + record.QuestId + "_essence",
+                    RewardType = QuestRewardType.Item,
+                    TargetId = CaveContracts.CaveContractCatalog.EssenceItemForBoss(record.InstanceTargetId),
+                    Quantity = 1,
+                    IdempotencyPolicy = RewardIdempotencyPolicy.TrackByRewardId
+                });
+            }
+            else if (record.TemplateId == CaveContracts.CaveContractCatalog.NoHitFloorId &&
+                     int.TryParse(record.InstanceTargetId, out var level))
+            {
+                rewards.Add(new QuestRewardDefinition
+                {
+                    RewardId = "reward_" + record.QuestId + "_title",
+                    RewardType = QuestRewardType.QuestFlagGrant,
+                    GrantedFlagId = CaveContracts.CaveContractCatalog.NoHitTitleFlag(level),
+                    IdempotencyPolicy = RewardIdempotencyPolicy.TrackByFlagId
+                });
+                rewards.Add(new QuestRewardDefinition
+                {
+                    RewardId = "reward_" + record.QuestId + "_charm",
+                    RewardType = QuestRewardType.Item,
+                    TargetId = "item_accessory_charm_no_hit",
+                    Quantity = 1,
+                    IdempotencyPolicy = RewardIdempotencyPolicy.TrackByRewardId
+                });
+            }
+
+            return rewards;
         }
 
         private bool AllObjectivesComplete(QuestStateRecord record)

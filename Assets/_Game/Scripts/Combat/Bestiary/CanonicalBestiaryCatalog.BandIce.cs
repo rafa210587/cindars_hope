@@ -39,7 +39,7 @@ namespace CindarsHope.Combat.Bestiary
                 Hp = 52, Damage = 12, Defense = 3, Xp = 36, SpoilerTier = 0,
                 PrimaryDropItemId = "item_material_fiber", PrimaryDamageTypeId = "physical",
                 VulnerabilityMatrixProfileId = "vulnmatrix_humanoid",
-                Notes = "RENOMEADO (ex-Drow). Veil Step (blink 2 tiles); orbita e pica; blinka ao ser focado. Fraco Light/Fire; resiste Shadow. Drops: veil cloth, silvered dagger part.",
+                Notes = "RENOMEADO para Veilkin. Veil Step (blink 2 tiles); orbita e pica; blinka ao ser focado. Fraco Light/Fire; resiste Shadow. Drops: veil cloth, silvered dagger part.",
             };
             yield return new BestiaryCreatureDef
             {
@@ -73,7 +73,7 @@ namespace CindarsHope.Combat.Bestiary
                 Hp = 80, Damage = 11, Defense = 5, Xp = 42, SpoilerTier = 0,
                 PrimaryDropItemId = "item_material_iron_ore", PrimaryDamageTypeId = "physical",
                 VulnerabilityMatrixProfileId = "vulnmatrix_humanoid",
-                Notes = "RENOMEADO (ex-Duergar). Hold the Line (bloqueio frontal 70%); ancora corredores; avanca 1 tile/3s. Exige GuardBreak ou flanqueio. Drops: tower shield part, iron.",
+                Notes = "RENOMEADO para Gravedelver. Hold the Line (bloqueio frontal 70%); ancora corredores; avanca 1 tile/3s. Exige GuardBreak ou flanqueio. Drops: tower shield part, iron.",
             };
             yield return new BestiaryCreatureDef
             {
@@ -117,7 +117,7 @@ namespace CindarsHope.Combat.Bestiary
                 Hp = 240, Damage = 16, Defense = 3, Xp = 150, SpoilerTier = 2, IsMiniBoss = true,
                 PrimaryDropItemId = "item_blackstone_corrupted_shard", PrimaryDamageTypeId = "arcane",
                 VulnerabilityMatrixProfileId = "vulnmatrix_humanoid",
-                Notes = "RENOMEADA (ex-Drow). Miniboss. Mirror Veil (2 copias 1HP); Hex (-15% dano jogador); janela 2.5s quando Mirror Veil quebra. Drops: veil grimoire (scrolls Ozzra), essence_ice.",
+                Notes = "RENOMEADA para Veilkin. Miniboss. Mirror Veil (2 copias 1HP); Hex (-15% dano jogador); janela 2.5s quando Mirror Veil quebra. Drops: veil grimoire (scrolls Ozzra), essence_ice.",
             };
             yield return new BestiaryCreatureDef
             {

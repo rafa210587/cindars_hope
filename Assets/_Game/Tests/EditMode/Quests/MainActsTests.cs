@@ -116,11 +116,11 @@ namespace CindarsHope.Tests.EditMode.Quests
         }
 
         [Test]
-        public void Act4_DoesNotAuthorFinalChoice_BoundaryToFable43()
+        public void Act5_FinalChoice_IsAuthoredByEndgameCatalog()
         {
-            // mq_act4_05_final_choice must NOT exist here (deferred to fable_43).
-            Assert.IsFalse(_registry.TryGetQuest("mq_act4_05_final_choice", out _),
-                "Final choice quest must be deferred to fable_43, not authored in fable_36.");
+            Assert.IsTrue(_registry.TryGetQuest(QuestMainActsIds.Act4Quest05FinalChoice, out var finalChoice));
+            CollectionAssert.Contains(finalChoice.PrerequisiteQuestIds,
+                QuestMainActsIds.Act4Quest04BrokenRemembrance);
         }
 
         // ─── CA-1: act N+1 offered only after act_N_done ────────────────────────────
@@ -192,20 +192,22 @@ namespace CindarsHope.Tests.EditMode.Quests
         }
 
         [Test]
-        public void Bridge_AllFourActFinales_MapToDistinctFragmentsInCanonicalOrder()
+        public void Bridge_AllFiveActFinales_MapToCanonicalFragmentsInOrder()
         {
             var byAct = QuestMainActsIds.Finales.OrderBy(f => f.ActNumber).ToList();
-            Assert.AreEqual(4, byAct.Count);
+            Assert.AreEqual(5, byAct.Count);
             Assert.AreEqual(MainFragmentType.Water, byAct[0].Fragment);
             Assert.AreEqual(MainFragmentType.Memory, byAct[1].Fragment);
             Assert.AreEqual(MainFragmentType.Life, byAct[2].Fragment);
             Assert.AreEqual(MainFragmentType.Hope, byAct[3].Fragment);
+            Assert.AreEqual(MainFragmentType.Hope, byAct[4].Fragment);
 
             // Act 4 (Hope) is prep-only: NOT integrated here (fable_43 owns the final integration).
             Assert.IsTrue(byAct[0].IntegratesFragment);
             Assert.IsTrue(byAct[1].IntegratesFragment);
             Assert.IsTrue(byAct[2].IntegratesFragment);
             Assert.IsFalse(byAct[3].IntegratesFragment, "Hope must be hinted, not integrated (fable_43).");
+            Assert.IsTrue(byAct[4].IntegratesFragment, "Act 5 integrates Hope before the final decision.");
         }
 
         [Test]

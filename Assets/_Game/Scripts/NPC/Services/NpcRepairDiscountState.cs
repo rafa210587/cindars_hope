@@ -34,7 +34,7 @@ namespace CindarsHope.NPC.Services
         public static int ApplyToRepairCost(int baseCost)
         {
             if (baseCost <= 0 || PendingDiscountFraction <= 0f) return baseCost;
-            int discounted = (int)System.Math.Floor(baseCost * (1f - PendingDiscountFraction));
+            int discounted = (int)decimal.Floor(baseCost * (1m - (decimal)PendingDiscountFraction));
             PendingDiscountFraction = 0f; // consome (one-shot)
             return discounted < 0 ? 0 : discounted;
         }
@@ -43,7 +43,7 @@ namespace CindarsHope.NPC.Services
         public static int PreviewRepairCost(int baseCost)
         {
             if (baseCost <= 0 || PendingDiscountFraction <= 0f) return baseCost;
-            int discounted = (int)System.Math.Floor(baseCost * (1f - PendingDiscountFraction));
+            int discounted = (int)decimal.Floor(baseCost * (1m - (decimal)PendingDiscountFraction));
             return discounted < 0 ? 0 : discounted;
         }
 

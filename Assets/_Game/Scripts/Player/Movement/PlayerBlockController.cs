@@ -22,7 +22,8 @@ namespace CindarsHope.Player.Movement
         /// <summary>Anti-spam: re-block dentro de 0.4s do fim do anterior não rearma a janela.</summary>
         public static bool CanArmPerfectWindow(float lastBlockEndTime, float newStartTime)
         {
-            return newStartTime - lastBlockEndTime >= RearmCooldownSeconds;
+            const float timingEpsilon = 0.00001f;
+            return newStartTime - lastBlockEndTime + timingEpsilon >= RearmCooldownSeconds;
         }
 
         public static int MitigateNormalBlock(int rawDamage)

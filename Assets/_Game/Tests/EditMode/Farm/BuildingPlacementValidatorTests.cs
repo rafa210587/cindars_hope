@@ -74,7 +74,7 @@ namespace CindarsHope.Tests.EditMode.Farm
         {
             var existing = new List<(string id, float x, float y, int w, int h)>
             {
-                ("obstacle", 2, -1, 1, 1) // Blocks entrance clearance
+                ("obstacle", 5, 4, 1, 1) // fora do footprint, dentro da folga da entrada em (6,5)
             };
 
             var result = PlacementValidator.ValidatePlacement(_farmHouse, 5, 5, existing, new(), 1);

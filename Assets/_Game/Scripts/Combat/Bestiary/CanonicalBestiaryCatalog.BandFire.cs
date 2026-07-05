@@ -62,7 +62,7 @@ namespace CindarsHope.Combat.Bestiary
                 Hp = 70, Damage = 19, Defense = 2, Xp = 62, SpoilerTier = 0,
                 PrimaryDropItemId = "item_essence_fire", PrimaryDamageTypeId = "fire",
                 VulnerabilityMatrixProfileId = "vulnmatrix_humanoid",
-                Notes = "RENOMEADO (ex-Drow). Flame Lance (linha); Fire Wall (3 tiles/4s); corta rotas e recasta atras. Fraco interrupt/Ice. Drops: flame focus part, essence_fire.",
+                Notes = "RENOMEADO para Veilkin. Flame Lance (linha); Fire Wall (3 tiles/4s); corta rotas e recasta atras. Fraco interrupt/Ice. Drops: flame focus part, essence_fire.",
             };
             yield return new BestiaryCreatureDef
             {
@@ -179,7 +179,7 @@ namespace CindarsHope.Combat.Bestiary
             yield return new BestiaryCreatureDef
             {
                 EnemyId = "enemy_steam_golem_proto", DisplayName = "Steam Golem Prototype",
-                Band = 4, MinLevel = 48, MaxLevel = 56, Family = "Construct",
+                Band = 4, MinLevel = 48, MaxLevel = 55, Family = "Construct",
                 Size = BestiarySizeClass.Large, Role = EnemyRole.Guard,
                 MovePrimary = EnemyMovementType.BossArenaControl, MoveSecondary = EnemyMovementType.TankSlowPush,
                 Hp = 160, Damage = 16, Defense = 6, Xp = 90, SpoilerTier = 1,

@@ -87,8 +87,22 @@ namespace CindarsHope.Quests.Runtime
                     InstanceRewardGold = record.InstanceRewardGold,
                     InstanceRewardXp = record.InstanceRewardXp,
                     GeneratedForDay = record.GeneratedForDay,
+                    DynamicRewards = new List<QuestDynamicRewardSaveData>(),
                     ObjectiveStates = new List<QuestObjectiveStateSaveData>()
                 };
+                foreach (var reward in record.DynamicRewards ?? new List<QuestDynamicRewardRecord>())
+                {
+                    if (reward == null) continue;
+                    qDto.DynamicRewards.Add(new QuestDynamicRewardSaveData
+                    {
+                        RewardId = reward.RewardId,
+                        RewardType = reward.RewardType,
+                        TargetId = reward.TargetId,
+                        Quantity = reward.Quantity,
+                        GrantedFlagId = reward.GrantedFlagId,
+                        IdempotencyPolicy = reward.IdempotencyPolicy
+                    });
+                }
                 foreach (var obj in record.ObjectiveStates ?? new List<QuestObjectiveStateRecord>())
                 {
                     if (obj == null) continue;

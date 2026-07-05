@@ -321,6 +321,32 @@ namespace CindarsHope.NPC.Gifting
                     new[] { TagReligiousNyx, TagBookLore, TagGemCrystal, TagUndocumentedBlackmarket, TagFoodFine },
                     new[] { TagReligiousKanthor, TagReligiousMerithus },
                     new[] { TagReligiousSenya }) },
+                // Expansão canônica da vila: Velorin + quatro ofícios autossuficientes.
+                { "npc_velorin", Pref(
+                    System.Array.Empty<string>(),
+                    new[] { TagBookLore, TagReligiousMerithus, TagFoodFine, TagGemCrystal },
+                    new[] { TagJunkLowValue, TagDrink },
+                    new[] { TagUndocumentedBlackmarket, TagVolatileExplosive }) },
+                { "npc_sael", Pref(
+                    System.Array.Empty<string>(),
+                    new[] { TagFish, TagDrink, TagFoodHearty, TagReligiousFinan },
+                    new[] { TagOreMetal, TagBookLore },
+                    new[] { TagVolatileExplosive, TagJunkLowValue }) },
+                { "npc_mella", Pref(
+                    System.Array.Empty<string>(),
+                    new[] { TagFoodFine, TagFoodHearty, TagFlowerCrop, TagReligiousThandra },
+                    new[] { TagOreMetal, TagVolatileExplosive },
+                    new[] { TagUndocumentedBlackmarket }) },
+                { "npc_hess", Pref(
+                    System.Array.Empty<string>(),
+                    new[] { TagAnimalProduct, TagCraftTool, TagOreMetal, TagFoodHearty },
+                    new[] { TagFlowerCrop, TagBookLore },
+                    new[] { TagVolatileExplosive, TagUndocumentedBlackmarket }) },
+                { "npc_tibbet", Pref(
+                    System.Array.Empty<string>(),
+                    new[] { TagReligiousKanthor, TagBookLore, TagFlowerCrop, TagFoodHearty },
+                    new[] { TagDrink, TagJunkLowValue },
+                    new[] { TagReligiousNyx, TagUndocumentedBlackmarket }) },
             };
             return d;
         }

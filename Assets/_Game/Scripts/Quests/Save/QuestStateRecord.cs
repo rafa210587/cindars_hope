@@ -20,6 +20,18 @@ namespace CindarsHope.Quests.Save
         public int ChosenAtDay { get; set; }
     }
 
+    // Serializable-by-mapper snapshot of a pending dynamic reward. Enum values are stored as ints
+    // so this save-layer record remains independent from runtime reward implementations.
+    public class QuestDynamicRewardRecord
+    {
+        public string RewardId { get; set; }
+        public int RewardType { get; set; }
+        public string TargetId { get; set; }
+        public int Quantity { get; set; }
+        public string GrantedFlagId { get; set; }
+        public int IdempotencyPolicy { get; set; }
+    }
+
     public class QuestStateRecord
     {
         public string QuestId { get; set; }
@@ -58,5 +70,6 @@ namespace CindarsHope.Quests.Save
         public int InstanceRewardGold { get; set; }
         public int InstanceRewardXp { get; set; }
         public int GeneratedForDay { get; set; }
+        public List<QuestDynamicRewardRecord> DynamicRewards { get; set; } = new List<QuestDynamicRewardRecord>();
     }
 }

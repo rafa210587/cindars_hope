@@ -45,7 +45,7 @@ namespace CindarsHope.NPC.Schedule
             return new NpcScheduleBlock
             {
                 RuntimeBlock = block,
-                AnchorId = $"npc_{npcId}_{suffix}",
+                AnchorId = $"{npcId}_{suffix}",
                 ActivityLabel = block.ToString(),
                 CanInteract = available
             };
@@ -55,7 +55,7 @@ namespace CindarsHope.NPC.Schedule
         public string ResolveAnchorId(int hour)
         {
             var block = NpcScheduleBlockResolver.ResolveBlock(Archetype, hour);
-            return $"npc_{NpcId}_{NpcScheduleBlockResolver.AnchorSuffixForBlock(block)}";
+            return $"{NpcId}_{NpcScheduleBlockResolver.AnchorSuffixForBlock(block)}";
         }
     }
 }

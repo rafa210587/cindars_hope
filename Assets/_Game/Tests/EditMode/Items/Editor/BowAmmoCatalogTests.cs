@@ -42,7 +42,7 @@ namespace CindarsHope.Tests.EditMode.Items
         }
 
         [Test]
-        public void Catalog_ResolverCoversExactlyTheSixCatalogArrows()
+        public void Catalog_CoversSixProfilesPlusStarterBasicAlias()
         {
             // Anti-divergência (risco técnico do plano fable_48): a tabela do resolver (ponto único de
             // stats) e os itens de munição do catálogo (roster) cobrem exatamente o mesmo conjunto.
@@ -53,10 +53,14 @@ namespace CindarsHope.Tests.EditMode.Items
                 .ToList();
 
             var resolverIds = ArrowBallisticsResolver.CanonicalOrder.OrderBy(id => id).ToList();
+            var profileCatalogIds = catalogArrowIds
+                .Where(id => id != ArrowBallisticsResolver.ArrowBasicId)
+                .ToList();
 
-            CollectionAssert.AreEqual(catalogArrowIds, resolverIds,
-                "CA-5: o resolver cobre exatamente os 6 itens de munição do catálogo (sem sobra/falta).");
-            Assert.AreEqual(6, resolverIds.Count, "Catálogo v1 fecha em 6 flechas.");
+            CollectionAssert.AreEqual(profileCatalogIds, resolverIds);
+            Assert.AreEqual(7, catalogArrowIds.Count);
+            Assert.AreEqual(6, resolverIds.Count);
+            Assert.IsTrue(ArrowBallisticsResolver.Resolve(ArrowBallisticsResolver.ArrowBasicId).IsKnown);
         }
     }
 }

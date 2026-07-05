@@ -60,7 +60,12 @@ namespace CindarsHope.UI.Runtime.Screens
             CodexFilter filter = CodexFilter.All,
             string familyFilter = null)
         {
-            var model = new BestiaryCodexModel { Filter = filter, FamilyFilter = familyFilter ?? string.Empty };
+            var model = new BestiaryCodexModel
+            {
+                Filter = filter,
+                FamilyFilter = familyFilter ?? string.Empty,
+                IsEmpty = true
+            };
             if (entries == null)
             {
                 return model;
@@ -188,9 +193,17 @@ namespace CindarsHope.UI.Runtime.Screens
             ficha.DefeatCountLine = identity ? $"Derrotas: {ficha.DefeatCount}" : UnknownLabel;
 
             // Narration only with identity discovered (CA-3).
-            ficha.NarrationText = identity
-                ? BestiaryNarrationTable.GetNarration(def.EnemyId)
-                : string.Empty;
+            if (identity)
+            {
+                string narration = BestiaryNarrationTable.GetNarration(def.EnemyId);
+                ficha.NarrationText = !string.IsNullOrWhiteSpace(narration)
+                    ? narration
+                    : def.Notes ?? string.Empty;
+            }
+            else
+            {
+                ficha.NarrationText = string.Empty;
+            }
 
             // EMENDA-D: documented ficha shows the mechanical bonus.
             ficha.DocumentedBonusLine = ficha.IsDocumented

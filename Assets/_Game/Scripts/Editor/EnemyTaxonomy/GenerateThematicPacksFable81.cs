@@ -408,8 +408,8 @@ namespace CindarsHope.Editor.EnemyTaxonomy
                     {
                         // Líder: veilkin_blademaster
                         Entry("enemy_veilkin_blademaster", 1, 1, weight: 1, required: true),
-                        // Flankers: gravelborn_twins (par)
-                        Entry("enemy_gravelborn_twins", 1, 2, weight: 1, required: true),
+                        // Flankers regulares; minibosses ficam fora das entradas de pack comum.
+                        Entry("enemy_starfall_remnant", 1, 2, weight: 1, required: true),
                         // Fodder: void_husk (swarm de cascos)
                         Entry("enemy_void_husk", 2, 4, weight: 8, required: false),
                         // Apoio: dread_chorister (opcional — aplica medo)

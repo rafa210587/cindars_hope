@@ -1,5 +1,20 @@
 ﻿# Current State — Cindar's Hope
 
+## Canonical runtime snapshot — 2026-07-05
+
+- Runtime/assets, não specs históricas, foram usados para reconciliar o estado implementado.
+- Criaturas: 178 assets/IDs únicos; 117 definições no catálogo tipado.
+- Itens: 213 base / 245 expandidos; munição: 7 entradas públicas.
+- Cidade: v9, 120x90; fazenda: v7, 64x44; animais: 4 espécies.
+- NPCs: 28 canônicos + 1 legacy retained; 23 cadeias, 69 etapas.
+- Quest principal: prólogo `mq_act1_00` e cinco marcos de ato.
+- Modularização: Fases 0–8 implementadas; mapa em
+  `docs/architecture/MODULARIZATION_IMPLEMENTED_ARCHITECTURE_GUIDE.md`.
+- Validação EditMode: 2672/2672, exit 0 (`TestResults/canon-reconciliation-final.xml`).
+- Spec retroativa: `.specs/implementados/spec_runtime_canon_reconciliation_2026_07_05.md`.
+
+---
+
 > **Primary execution context for agents.** Read this + AGENTS.md + active spec.  
 > **Do NOT read:** PROJECT_LOG.md, ROADMAP.md, GDD, old refinements (unless spec requires).
 

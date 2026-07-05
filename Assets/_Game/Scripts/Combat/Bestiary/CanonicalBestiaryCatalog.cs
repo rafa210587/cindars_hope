@@ -9,16 +9,15 @@ namespace CindarsHope.Combat.Bestiary
     /// its band's fichas in catalog order. No Unity references — consumed by the editor generator
     /// and by EditMode tests.
     ///
-    /// fable_80 — +40 fichas added (5/6 per band), bringing All.Count to 104.
-    /// Original breakdown (fable_33): 50 commons + 14 minibosses + 9 gate bosses + 4 finals = 77.
-    /// fable_80 adds 40 commons/elites (no new gate bosses or finals): total 104.
-    /// See CanonicalBestiaryCatalogCounts for base reconciliation.
+    /// Catálogo materializado atual: 90 commons/elites + 14 minibosses + 9 gate bosses + 4 finals
+    /// = 117 fichas. O universo completo de EnemyDataSO contém 178 IDs únicos: estas 117 fichas,
+    /// 60 IDs do roster legado/variantes e 1 boss legado.
     /// </summary>
     public static partial class CanonicalBestiaryCatalog
     {
         private static List<BestiaryCreatureDef> _all;
 
-        /// <summary>All 104 canonical fichas: 77 from fable_33 + 40 from fable_80 (band creatures + minibosses + gate bosses + the Four).</summary>
+        /// <summary>As 117 fichas do catálogo canônico.</summary>
         public static IReadOnlyList<BestiaryCreatureDef> All
         {
             get
@@ -28,7 +27,7 @@ namespace CindarsHope.Combat.Bestiary
                     return _all;
                 }
 
-                var list = new List<BestiaryCreatureDef>(128); // fable_33: 77 + fable_80: +40 = 104 + headroom
+                var list = new List<BestiaryCreatureDef>(128);
                 list.AddRange(BandStone());      // band 1
                 list.AddRange(BandFungal());     // band 2
                 list.AddRange(BandIce());        // band 3
@@ -65,17 +64,15 @@ namespace CindarsHope.Combat.Bestiary
     }
 
     /// <summary>
-    /// Explicit, test-asserted count reconciliation for the catalog (keeps "64 headline vs 77 distinct"
-    /// honest). The catalog's PARTE J headline "60 band creatures + 4 finals = 64" counts band ROWS
-    /// excluding the gate bosses; materializing every distinct ficha in the band tables yields 77 ids.
+    /// Contagem materializada, derivada do catálogo atual.
     /// </summary>
     public static class CanonicalBestiaryCatalogCounts
     {
-        public const int Commons = 50;          // band creatures that are neither miniboss nor boss
+        public const int Commons = 90;          // band creatures that are neither miniboss nor boss
         public const int Minibosses = 14;       // 2 wandering minibosses per band (7 bands)
         public const int GateBosses = 9;        // one per 10-level gate; RUINS and VOID each have two
         public const int FinalFour = 4;         // the Four of level 101 (SpoilerTier 4)
-        public const int BandRosterHeadline = Commons + Minibosses; // 64 = catalog "band creatures"
-        public const int TotalDistinct = Commons + Minibosses + GateBosses + FinalFour; // 77
+        public const int BandRosterHeadline = Commons + Minibosses; // 104 band creatures
+        public const int TotalDistinct = Commons + Minibosses + GateBosses + FinalFour; // 117
     }
 }

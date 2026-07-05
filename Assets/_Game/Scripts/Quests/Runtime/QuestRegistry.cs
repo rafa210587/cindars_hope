@@ -467,6 +467,13 @@ namespace CindarsHope.Quests.Runtime
                 },
                 new QuestRewardDefinition
                 {
+                    RewardId = "reward_mq5_act_1_done",
+                    RewardType = QuestRewardType.QuestFlagGrant,
+                    GrantedFlagId = QuestMainActsIds.FlagAct1Done,
+                    IdempotencyPolicy = RewardIdempotencyPolicy.TrackByFlagId
+                },
+                new QuestRewardDefinition
+                {
                     RewardId = "reward_mq5_flag_post_act1",
                     RewardType = QuestRewardType.QuestFlagGrant,
                     GrantedFlagId = QuestMainAct1Ids.FlagMainPostAct1,

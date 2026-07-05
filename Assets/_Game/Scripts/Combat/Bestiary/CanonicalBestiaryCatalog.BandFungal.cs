@@ -72,7 +72,7 @@ namespace CindarsHope.Combat.Bestiary
                 Hp = 34, Damage = 9, Defense = 3, Xp = 26, SpoilerTier = 0,
                 PrimaryDropItemId = "item_material_iron_ore", PrimaryDamageTypeId = "physical",
                 VulnerabilityMatrixProfileId = "vulnmatrix_humanoid",
-                Notes = "RENOMEADO (ex-Duergar). Heavy Bolt (posture +30%); recarrega atras de cobertura. Blindado DEF3; fraco Lightning/flanqueio. Drops: bolts, iron ore, ale.",
+                Notes = "Gravedelver renomeado. Heavy Bolt (posture +30%); recarrega atras de cobertura. Blindado DEF3; fraco Lightning/flanqueio. Drops: bolts, iron ore, ale.",
             };
             yield return new BestiaryCreatureDef
             {

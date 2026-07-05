@@ -135,7 +135,7 @@ namespace CindarsHope.Tests.EditMode.Player
         }
 
         [Test]
-        public void CanEquip_SecondRelic_Rejected()
+        public void CanEquip_ReplacingRelicInOnlyCompatibleSlot_IsAllowed()
         {
             // Já existe a relíquia de Kanthor no slot Accessory; tentar equipar Alihana no slot Ring?
             // Alihana relic é Charm (vai p/ Accessory). Simulamos 2 relíquias em 2 momentos: a 2ª recusa.
@@ -143,11 +143,11 @@ namespace CindarsHope.Tests.EditMode.Player
             {
                 (EquipmentSlot.Accessory, AccessoryCatalog.RelicKanthor)
             };
-            // Tentar equipar uma 2ª relíquia (Anya é Amulet → Accessory também) num slot diferente.
+            // Todas as relíquias ocupam Accessory; equipar outra nesse slot substitui a anterior.
             bool ok = AccessoryEffectRouter.CanEquip(
-                AccessoryCatalog.RelicAnya, EquipmentSlot.Ring1, current, out var reason);
-            Assert.IsFalse(ok, "2ª relíquia deve ser recusada.");
-            StringAssert.Contains("relíquia", reason);
+                AccessoryCatalog.RelicAnya, EquipmentSlot.Accessory, current, out var reason);
+            Assert.IsTrue(ok, reason);
+            Assert.IsEmpty(reason);
         }
 
         [Test]
@@ -319,7 +319,7 @@ namespace CindarsHope.Tests.EditMode.Player
         }
 
         [Test]
-        public void EquipmentManager_RejectsSecondRelic_WithFeedback()
+        public void EquipmentManager_ReplacesRelicInAccessorySlot()
         {
             var go = new GameObject("equip_mgr_relic_test");
             try
@@ -327,9 +327,9 @@ namespace CindarsHope.Tests.EditMode.Player
                 var mgr = go.AddComponent<EquipmentManager>();
 
                 Assert.IsTrue(mgr.TryEquipAccessory(EquipmentSlot.Accessory, AccessoryCatalog.RelicKanthor, out _));
-                bool second = mgr.TryEquipAccessory(EquipmentSlot.Ring1, AccessoryCatalog.RelicAnya, out var reason);
-                Assert.IsFalse(second, "2ª relíquia recusada.");
-                StringAssert.Contains("relíquia", reason);
+                bool replacement = mgr.TryEquipAccessory(EquipmentSlot.Accessory, AccessoryCatalog.RelicAnya, out var reason);
+                Assert.IsTrue(replacement, reason);
+                Assert.AreEqual(AccessoryCatalog.RelicAnya, mgr.GetEquippedItem(EquipmentSlot.Accessory));
             }
             finally
             {

@@ -23,10 +23,16 @@ namespace CindarsHope.Farm
             }
         }
 
-        public static FertilizerApplicationResult TryApply(string plotId, string fertilizerId, int currentDay)
+        public static FertilizerApplicationResult TryApply(
+            string plotId,
+            string fertilizerId,
+            int currentDay,
+            int playerFarmLevel = int.MaxValue)
         {
             EnsureInitialized();
-            return _service.Apply(plotId, fertilizerId, currentDay);
+            // O runtime só recebe fertilizantes já adquiridos/desbloqueados pelo catálogo. Quando
+            // houver um port de propriedade da fazenda, o caller poderá passar o nível explicitamente.
+            return _service.Apply(plotId, fertilizerId, currentDay, playerFarmLevel);
         }
 
         public static bool HasActiveFertilizer(string plotId)
@@ -59,7 +65,7 @@ namespace CindarsHope.Farm
             }
 
             EnsureInitialized();
-            _service.Apply(plotId, fertilizerId, appliedDay);
+            _service.Apply(plotId, fertilizerId, appliedDay, int.MaxValue);
         }
 
         public static void ResetForTests()

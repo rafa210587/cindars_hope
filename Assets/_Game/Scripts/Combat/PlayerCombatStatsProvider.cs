@@ -75,7 +75,7 @@ namespace CindarsHope.Combat
             var withAttack = baseDamage + Mathf.Max(0, Current.Attack);
             var withWeight = withAttack * AttackChargeRules.DamageMultiplier(weight);
             var final = isCrit ? withWeight * CritMultiplier : withWeight;
-            return Mathf.Max(1, Mathf.RoundToInt(final));
+            return Mathf.Max(1, (int)System.Math.Round(final, System.MidpointRounding.AwayFromZero));
         }
 
         /// <summary>Cooldown final: base / AttackSpeed (floor 0.5×, cap 3×).</summary>

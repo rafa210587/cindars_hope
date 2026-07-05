@@ -26,6 +26,22 @@ namespace CindarsHope.Quests.Flags
             _registry = registry;
         }
 
+        /// <summary>Registers a stable flag authored by a dynamic quest reward.</summary>
+        public void EnsureRewardFlagRegistered(string flagId, string ownerSystem = "QuestRuntime")
+        {
+            if (string.IsNullOrEmpty(flagId) || _registry == null || _registry.IsRegistered(flagId)) return;
+            _registry.Register(new QuestFlagDefinition
+            {
+                FlagId = flagId,
+                OwnerSystem = ownerSystem,
+                Scope = QuestFlagScope.QuestLocal,
+                Visibility = QuestFlagVisibility.HiddenInternal,
+                CanAppearInQuestLog = false,
+                CanBeGrantedByReward = true,
+                Persists = true
+            });
+        }
+
         public QuestFlagSetResult SetFlag(string flagId, string value, string setterSystem)
         {
             if (!_registry.TryGet(flagId, out var def))

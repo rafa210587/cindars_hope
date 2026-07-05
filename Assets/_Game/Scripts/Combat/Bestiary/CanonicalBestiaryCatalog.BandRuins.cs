@@ -118,7 +118,7 @@ namespace CindarsHope.Combat.Bestiary
                 Hp = 1500, Damage = 28, Defense = 10, Xp = 900, SpoilerTier = 3, IsBoss = true,
                 PrimaryDropItemId = "item_material_bromecian_alloy", PrimaryDamageTypeId = "physical",
                 VulnerabilityMatrixProfileId = "vulnmatrix_humanoid",
-                Notes = "RENOMEADO (ex-Duergar). Boss gate 60. F1 martelo + 2 torretas; F2 (66%) exo-armadura a vapor (posture x2); F3 (33%) sobrecarga - arena eletrifica + exo ShockOverloaded por ciclo. Fraco Lightning. Mecanicas = F05 (dormante). Drops first-kill: receita Mithril Work.",
+                Notes = "RENOMEADO para Gravedelver. Boss gate 60. F1 martelo + 2 torretas; F2 (66%) exo-armadura a vapor (posture x2); F3 (33%) sobrecarga - arena eletrifica + exo ShockOverloaded por ciclo. Fraco Lightning. Mecanicas = F05 (dormante). Drops first-kill: receita Mithril Work.",
             };
             yield return new BestiaryCreatureDef
             {

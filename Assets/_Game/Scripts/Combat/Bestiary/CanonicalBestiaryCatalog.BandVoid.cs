@@ -29,7 +29,7 @@ namespace CindarsHope.Combat.Bestiary
                 Hp = 320, Damage = 46, Defense = 7, Xp = 300, SpoilerTier = 1,
                 PrimaryDropItemId = "item_material_fiber", PrimaryDamageTypeId = "physical",
                 VulnerabilityMatrixProfileId = "vulnmatrix_humanoid",
-                Notes = "RENOMEADO (ex-Drow). Flurry (4 golpes); Mirror Parry (reflete 1 projetil); duelista - castiga padroes repetidos (mesmo golpe 3x = punicao). Fraco AoE/Stagger. Drops: master blade part, veil cloth x2.",
+                Notes = "RENOMEADO para Veilkin. Flurry (4 golpes); Mirror Parry (reflete 1 projetil); duelista - castiga padroes repetidos (mesmo golpe 3x = punicao). Fraco AoE/Stagger. Drops: master blade part, veil cloth x2.",
             };
             yield return new BestiaryCreatureDef
             {

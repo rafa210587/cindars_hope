@@ -88,6 +88,14 @@ namespace CindarsHope.Combat
             // MaterialMultipliers). Aplicado APÓS a janela e ANTES do status para não inflar a
             // janela temporária com o bônus permanente da família.
             float elementMaterialAdjustedDamage = vulnerabilityAdjustedDamage * elementMaterialMult;
+            if (Mathf.Approximately(elementMaterialMult, 0f) && result.DamageType != DamageType.True)
+            {
+                result.WasImmune = true;
+                result.FinalDamage = 0;
+                result.DebugBreakdown = $"Raw={rawDamage},Defense={result.Defense},ElementMaterialImmune=true";
+                return result;
+            }
+
             if (elementMaterialMult > 1f && !Mathf.Approximately(elementMaterialMult, 1f))
             {
                 result.WasVulnerable = true;
