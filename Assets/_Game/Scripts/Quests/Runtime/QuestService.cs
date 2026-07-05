@@ -38,6 +38,7 @@ namespace CindarsHope.Quests.Runtime
         private readonly QuestFlagService _flagService;
         private readonly Dictionary<string, QuestInstance> _dynamicInstances = new Dictionary<string, QuestInstance>();
         private readonly IQuestProgressionAccess _progressionAccess; // fable_34 — scaled XP + act skill point
+        private readonly QuestObjectiveProgressDispatcher _progressDispatcher;
 
         public QuestService(
             QuestRegistry registry,
@@ -57,6 +58,13 @@ namespace CindarsHope.Quests.Runtime
 
             foreach (var quest in _registry.GetAllQuests())
                 EnsureRewardFlagsRegistered(_registry.GetRewards(quest.QuestId));
+
+            _progressDispatcher = new QuestObjectiveProgressDispatcher(
+                _registry,
+                _saveSection,
+                CheckObjectiveProgress,
+                MarkObjectiveComplete,
+                ProgressObjectiveCount);
         }
 
         // ─── Public API ────────────────────────────────────────────────────────────
@@ -103,7 +111,7 @@ namespace CindarsHope.Quests.Runtime
             // Catalogs register offers before the player accepts them by id. Keep the complete
             // dynamic metadata on that path, not only through AcceptDynamicInstance.
             if (_dynamicInstances.TryGetValue(questId, out var dynamicInstance))
-                HydrateDynamicRecord(record, dynamicInstance);
+                QuestDynamicInstancePersistence.HydrateRecord(record, dynamicInstance);
 
             CheckObjectiveProgress(questId);
 
@@ -378,7 +386,7 @@ namespace CindarsHope.Quests.Runtime
 
             var record = _saveSection.GetQuestState(questId);
             if (record != null)
-                HydrateDynamicRecord(record, instance);
+                QuestDynamicInstancePersistence.HydrateRecord(record, instance);
             return true;
         }
 
@@ -604,33 +612,9 @@ namespace CindarsHope.Quests.Runtime
                 RewardGold = record.InstanceRewardGold,
                 RewardXp = record.InstanceRewardXp,
                 GeneratedForDay = record.GeneratedForDay,
-                AdditionalRewards = RestoreDynamicRewards(record)
+                AdditionalRewards = QuestDynamicInstancePersistence.RestoreRewards(record)
             };
             RegisterDynamicInstance(instance);
-        }
-
-        private void HydrateDynamicRecord(QuestStateRecord record, QuestInstance instance)
-        {
-            record.IsDynamicInstance = true;
-            record.Source = (int)instance.Source;
-            record.TemplateId = instance.QuestTemplateId;
-            record.InstanceTargetId = instance.TargetId;
-            record.InstanceQuantity = instance.Quantity;
-            record.QuestLevel = instance.QuestLevel;
-            record.InstanceRewardGold = instance.RewardGold;
-            record.InstanceRewardXp = instance.RewardXp;
-            record.GeneratedForDay = instance.GeneratedForDay;
-            record.DynamicRewards = (instance.AdditionalRewards ?? new List<QuestRewardDefinition>())
-                .Where(r => r != null)
-                .Select(r => new QuestDynamicRewardRecord
-                {
-                    RewardId = r.RewardId,
-                    RewardType = (int)r.RewardType,
-                    TargetId = r.TargetId,
-                    Quantity = r.Quantity,
-                    GrantedFlagId = r.GrantedFlagId,
-                    IdempotencyPolicy = (int)r.IdempotencyPolicy
-                }).ToList();
         }
 
         private void EnsureRewardFlagsRegistered(IEnumerable<QuestRewardDefinition> rewards)
@@ -643,77 +627,6 @@ namespace CindarsHope.Quests.Runtime
             }
         }
 
-        private static List<QuestRewardDefinition> RestoreDynamicRewards(QuestStateRecord record)
-        {
-            var rewards = new List<QuestRewardDefinition>();
-            if (record == null) return rewards;
-
-            if (record.DynamicRewards != null && record.DynamicRewards.Count > 0)
-            {
-                foreach (var saved in record.DynamicRewards)
-                {
-                    if (saved == null || string.IsNullOrEmpty(saved.RewardId)) continue;
-                    rewards.Add(new QuestRewardDefinition
-                    {
-                        RewardId = saved.RewardId,
-                        RewardType = (QuestRewardType)saved.RewardType,
-                        TargetId = saved.TargetId,
-                        Quantity = saved.Quantity,
-                        GrantedFlagId = saved.GrantedFlagId,
-                        IdempotencyPolicy = (RewardIdempotencyPolicy)saved.IdempotencyPolicy
-                    });
-                }
-                return rewards;
-            }
-
-            if ((QuestSource)record.Source == QuestSource.Npc)
-            {
-                var step = NpcChains.NpcQuestChainCatalog.FindByQuestId(record.QuestId);
-                var rebuilt = step == null ? null : NpcChains.NpcQuestChainCatalog.BuildInstance(step);
-                if (rebuilt?.AdditionalRewards != null) rewards.AddRange(rebuilt.AdditionalRewards);
-                return rewards;
-            }
-
-            if ((QuestSource)record.Source != QuestSource.CaveContract) return rewards;
-
-            if ((record.TemplateId ?? string.Empty).StartsWith(CaveContracts.CaveContractCatalog.MilestonePrefix) &&
-                int.TryParse(record.InstanceTargetId, out var depth))
-            {
-                rewards.AddRange(CaveContracts.CaveContractCatalog.BuildMilestoneInstance(depth).AdditionalRewards);
-            }
-            else if (record.TemplateId == CaveContracts.CaveContractCatalog.BossRematchId)
-            {
-                rewards.Add(new QuestRewardDefinition
-                {
-                    RewardId = "reward_" + record.QuestId + "_essence",
-                    RewardType = QuestRewardType.Item,
-                    TargetId = CaveContracts.CaveContractCatalog.EssenceItemForBoss(record.InstanceTargetId),
-                    Quantity = 1,
-                    IdempotencyPolicy = RewardIdempotencyPolicy.TrackByRewardId
-                });
-            }
-            else if (record.TemplateId == CaveContracts.CaveContractCatalog.NoHitFloorId &&
-                     int.TryParse(record.InstanceTargetId, out var level))
-            {
-                rewards.Add(new QuestRewardDefinition
-                {
-                    RewardId = "reward_" + record.QuestId + "_title",
-                    RewardType = QuestRewardType.QuestFlagGrant,
-                    GrantedFlagId = CaveContracts.CaveContractCatalog.NoHitTitleFlag(level),
-                    IdempotencyPolicy = RewardIdempotencyPolicy.TrackByFlagId
-                });
-                rewards.Add(new QuestRewardDefinition
-                {
-                    RewardId = "reward_" + record.QuestId + "_charm",
-                    RewardType = QuestRewardType.Item,
-                    TargetId = "item_accessory_charm_no_hit",
-                    Quantity = 1,
-                    IdempotencyPolicy = RewardIdempotencyPolicy.TrackByRewardId
-                });
-            }
-
-            return rewards;
-        }
 
         private bool AllObjectivesComplete(QuestStateRecord record)
         {
@@ -732,29 +645,15 @@ namespace CindarsHope.Quests.Runtime
             }
         }
 
-        private void CheckAllActiveQuestsForItem(string itemId)
-        {
-            var activeIds = _saveSection.QuestStates
-                .Where(q => (QuestStateStatus)q.State == QuestStateStatus.Active ||
-                            (QuestStateStatus)q.State == QuestStateStatus.ReadyToComplete)
-                .Select(q => q.QuestId)
-                .ToList();
-
-            foreach (var id in activeIds)
-            {
-                if (!_registry.TryGetQuest(id, out _)) continue;
-                var objectives = _registry.GetObjectives(id);
-                if (objectives.Any(o => o.ObjectiveType == QuestObjectiveType.CollectItem && o.TargetId == itemId))
-                    CheckObjectiveProgress(id);
-            }
-        }
-
         /// <summary>
         /// Called by QuestProgressEventBridge on InventoryChangedEvent.
         /// </summary>
         public void OnInventoryChanged(string itemId)
         {
-            CheckAllActiveQuestsForItem(itemId);
+            _progressDispatcher.Dispatch(new QuestProgressSignal(
+                QuestObjectiveType.CollectItem,
+                QuestProgressApplication.RecheckInventory,
+                itemId));
         }
 
         /// <summary>
@@ -762,21 +661,10 @@ namespace CindarsHope.Quests.Runtime
         /// </summary>
         public void OnItemCrafted(string itemId)
         {
-            var activeIds = _saveSection.QuestStates
-                .Where(q => (QuestStateStatus)q.State == QuestStateStatus.Active)
-                .Select(q => q.QuestId)
-                .ToList();
-
-            foreach (var id in activeIds)
-            {
-                if (!_registry.TryGetQuest(id, out _)) continue;
-                var objectives = _registry.GetObjectives(id);
-                foreach (var obj in objectives)
-                {
-                    if (obj.ObjectiveType == QuestObjectiveType.CraftItem && obj.TargetId == itemId)
-                        MarkObjectiveComplete(id, obj.ObjectiveId);
-                }
-            }
+            _progressDispatcher.Dispatch(new QuestProgressSignal(
+                QuestObjectiveType.CraftItem,
+                QuestProgressApplication.Complete,
+                itemId));
         }
 
         /// <summary>
@@ -785,23 +673,11 @@ namespace CindarsHope.Quests.Runtime
         /// </summary>
         public void OnCropHarvested(string seedId, string itemId)
         {
-            var activeIds = _saveSection.QuestStates
-                .Where(q => (QuestStateStatus)q.State == QuestStateStatus.Active)
-                .Select(q => q.QuestId)
-                .ToList();
-
-            foreach (var id in activeIds)
-            {
-                if (!_registry.TryGetQuest(id, out _)) continue;
-                var objectives = _registry.GetObjectives(id);
-                foreach (var obj in objectives)
-                {
-                    if (obj.ObjectiveType != QuestObjectiveType.HarvestCrop) continue;
-                    // TargetId "any" matches all crops; otherwise match by seedId or itemId
-                    bool matches = obj.TargetId == "any" || obj.TargetId == seedId || obj.TargetId == itemId;
-                    if (matches) MarkObjectiveComplete(id, obj.ObjectiveId);
-                }
-            }
+            _progressDispatcher.Dispatch(new QuestProgressSignal(
+                QuestObjectiveType.HarvestCrop,
+                QuestProgressApplication.Complete,
+                seedId,
+                itemId));
         }
 
         /// <summary>
@@ -813,24 +689,10 @@ namespace CindarsHope.Quests.Runtime
         {
             // Only care about sell transactions that generated gold
             if (transactionType != "sell" || goldDelta <= 0) return;
-
-            var activeIds = _saveSection.QuestStates
-                .Where(q => (QuestStateStatus)q.State == QuestStateStatus.Active)
-                .Select(q => q.QuestId)
-                .ToList();
-
-            foreach (var id in activeIds)
-            {
-                if (!_registry.TryGetQuest(id, out _)) continue;
-                var objectives = _registry.GetObjectives(id);
-                foreach (var obj in objectives)
-                {
-                    if (obj.ObjectiveType != QuestObjectiveType.SellItem) continue;
-                    // TargetId "any" matches any sold item; otherwise match specific item
-                    bool matches = obj.TargetId == "any" || obj.TargetId == itemId;
-                    if (matches) MarkObjectiveComplete(id, obj.ObjectiveId);
-                }
-            }
+            _progressDispatcher.Dispatch(new QuestProgressSignal(
+                QuestObjectiveType.SellItem,
+                QuestProgressApplication.Complete,
+                itemId));
         }
 
         /// <summary>
@@ -840,22 +702,10 @@ namespace CindarsHope.Quests.Runtime
         public void OnNpcTalkedTo(string npcId)
         {
             if (string.IsNullOrEmpty(npcId)) return;
-
-            var activeIds = _saveSection.QuestStates
-                .Where(q => (QuestStateStatus)q.State == QuestStateStatus.Active)
-                .Select(q => q.QuestId)
-                .ToList();
-
-            foreach (var id in activeIds)
-            {
-                if (!_registry.TryGetQuest(id, out _)) continue;
-                var objectives = _registry.GetObjectives(id);
-                foreach (var obj in objectives)
-                {
-                    if (obj.ObjectiveType == QuestObjectiveType.TalkToNpc && obj.TargetId == npcId)
-                        MarkObjectiveComplete(id, obj.ObjectiveId);
-                }
-            }
+            _progressDispatcher.Dispatch(new QuestProgressSignal(
+                QuestObjectiveType.TalkToNpc,
+                QuestProgressApplication.Complete,
+                npcId));
         }
 
         /// <summary>
@@ -864,26 +714,11 @@ namespace CindarsHope.Quests.Runtime
         /// </summary>
         public void OnCaveLevelEntered(int caveLevel)
         {
-            var levelStr = $"cave_level_{caveLevel}";
-
-            var activeIds = _saveSection.QuestStates
-                .Where(q => (QuestStateStatus)q.State == QuestStateStatus.Active)
-                .Select(q => q.QuestId)
-                .ToList();
-
-            foreach (var id in activeIds)
-            {
-                if (!_registry.TryGetQuest(id, out _)) continue;
-                var objectives = _registry.GetObjectives(id);
-                foreach (var obj in objectives)
-                {
-                    if (obj.ObjectiveType != QuestObjectiveType.ReachCaveDepth) continue;
-                    // TargetId "any" or matches cave_level_N
-                    bool matches = obj.TargetId == "any" || obj.TargetId == levelStr ||
-                                   (int.TryParse(obj.TargetId, out var lvl) && lvl <= caveLevel);
-                    if (matches) MarkObjectiveComplete(id, obj.ObjectiveId);
-                }
-            }
+            _progressDispatcher.Dispatch(new QuestProgressSignal(
+                QuestObjectiveType.ReachCaveDepth,
+                QuestProgressApplication.Complete,
+                $"cave_level_{caveLevel}",
+                numericValue: caveLevel));
         }
 
         /// <summary>
@@ -893,27 +728,10 @@ namespace CindarsHope.Quests.Runtime
         public void OnEnemyKilled(string enemyId)
         {
             if (string.IsNullOrEmpty(enemyId)) return;
-
-            var activeIds = _saveSection.QuestStates
-                .Where(q => (QuestStateStatus)q.State == QuestStateStatus.Active)
-                .Select(q => q.QuestId)
-                .ToList();
-
-            foreach (var id in activeIds)
-            {
-                if (!_registry.TryGetQuest(id, out _)) continue;
-                var objectives = _registry.GetObjectives(id);
-                foreach (var obj in objectives)
-                {
-                    if (obj.ObjectiveType != QuestObjectiveType.DefeatEnemy) continue;
-                    bool matches = obj.TargetId == "any" || obj.TargetId == enemyId;
-                    if (matches)
-                    {
-                        // Progress-based: increment current progress
-                        ProgressObjectiveCount(id, obj.ObjectiveId, 1);
-                    }
-                }
-            }
+            _progressDispatcher.Dispatch(new QuestProgressSignal(
+                QuestObjectiveType.DefeatEnemy,
+                QuestProgressApplication.Increment,
+                enemyId));
         }
 
         // ─── Private helpers (continued) ──────────────────────────────────────────

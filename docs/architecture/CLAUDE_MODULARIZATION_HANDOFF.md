@@ -52,6 +52,31 @@ estiver próxima do limite de contexto/tokens.
 
 ---
 
+## 2026-07-05 — Rework v2, lotes incrementais do Codex
+
+### Lote 1 — lifecycle e input (commit `972ab169`)
+
+- `GameRuntimeCompositionRoot` passou a instalar o `GameplayInputRouter` central.
+- Inventário, equipamento e skill tree consomem comandos publicados e mantêm polling direto apenas
+  como fallback quando o router não existe.
+- Regra pura de decisão de atalhos isolada em `GameplayShortcutDecision`.
+- Evidência: EditMode 2.678/2.678 e PlayMode 2/2.
+
+### Lote 2A — quests (implementado, commit ainda deve ser conferido no Git)
+
+- `QuestObjectiveProgressDispatcher` concentra seleção e roteamento de todos os eventos de progresso;
+  `QuestService` não cria mais listas temporárias nem repete uma varredura por tipo de objetivo.
+- `QuestDynamicInstancePersistence` concentra a conversão entre instância dinâmica e save simples,
+  preservando recompensas genéricas e os fallbacks legados de NPC/caverna.
+- Testes novos cobrem matching por tipo/alvo/profundidade e roundtrip/fallback das recompensas.
+- Evidência atual: EditMode completa 2.689/2.689; seis projetos modulares/runtime compilam com
+  0 erros e 0 warnings. `Assembly-CSharp-Editor.csproj` também termina com exit 0, mas ainda emite
+  1.101 warnings CS0436 preexistentes por dupla inclusão entre a assembly legada e a asmdef Editor.
+- Próximo passo: extrair o estado/roteamento de interação de `NpcShopController` sem mudar catálogo,
+  preços, amizade, flags, diálogos ou transações.
+- Mudanças concorrentes de animação, sprites, ProjectSettings, `.slnx` e ferramentas devem permanecer
+  fora dos commits deste rework.
+
 ## 2026-07-05 — Autorização integral das Fases 4 a 8
 
 - Decisão humana: continuar até terminar todo o rework, sem parar entre fases.

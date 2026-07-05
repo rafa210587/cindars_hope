@@ -59,6 +59,9 @@ Executar por fachadas compatíveis (Strangler Pattern), com commits pequenos e r
 
 - [x] Lote 1 — lifecycle/input
 - [ ] Lote 2 — Quest/NPC
+  - [x] progresso de objetivos em dispatcher tipado, sem varreduras LINQ por evento;
+  - [x] persistência de instâncias dinâmicas extraída, incluindo fallback legado;
+  - [ ] decomposição do fluxo de interação de `NpcShopController`.
 - [ ] Lote 3 — Enemy strategies
 - [ ] Lote 4 — assembly pura
 - [ ] Lote 5 — UI/data legacy
