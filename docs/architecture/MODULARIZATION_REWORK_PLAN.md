@@ -2,7 +2,7 @@
 
 > Documento operacional para modularizar o projeto sem alterar o comportamento existente.
 >
-> **Status:** Fase 0 concluída e publicada em `dev` (`8a887244`)
+> **Status:** Fase 0 concluída; Fase 1 validada e aguardando publicação
 > atual ser commitado e publicado.
 >
 > **Branch planejada:** `rework/modular-architecture`
@@ -567,3 +567,11 @@ Condições desta autorização:
 - a Fase 2 pode remover dependências hardcoded e preparar validadores/builds;
 - nenhum `.asmdef` será criado nesta autorização, pois isso pertence ao gate posterior da Fase 3;
 - qualquer falha nova de build/EditMode interrompe a progressão para a fase seguinte.
+
+### Resultado da Fase 1
+
+A Fase 1 foi implementada e validada em cinco commits isolados. Builds runtime/editor terminaram
+com zero warnings e a suíte EditMode manteve exatamente as 13 falhas preexistentes. O relatório
+detalhado está em `docs/architecture/MODULARIZATION_PHASE1_REPORT.md`.
+
+O início da Fase 2 depende apenas da publicação e verificação remota desses commits.

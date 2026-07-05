@@ -232,9 +232,24 @@ Não declare PASS por compilação textual ou por relato de outro agente. Use ex
 - Validação:
   - `dotnet build Assembly-CSharp.csproj`: exit 0, 0 warnings, 0 erros;
   - `dotnet build Assembly-CSharp-Editor.csproj`: exit 0, 0 warnings, 0 erros.
-- Commit: pendente neste registro.
+- Commit: `416a6d87` (`chore(codigo): eliminar warnings e comentarios obsoletos`).
 - Próximo passo: commitar apenas os cinco arquivos de warning/comentário e o handoff, preservando o
   lote concorrente de animação.
+
+### 2026-07-05 — Gate de fechamento da Fase 1
+
+- Status: `VALIDATED_PENDING_PUBLICATION`.
+- Commits da fase: `1de0e1b9`, `bc60bcbb`, `436b4063`, `3672dd28`, `416a6d87`.
+- Builds finais: runtime/editor exit 0, 0 warnings, 0 erros.
+- Ratchet: PASS; `PhysicsAllQuery` reduziu de 2 para 0.
+- EditMode completa: 80 testes, 67 PASS, 13 FAIL; falhas adicionadas = 0, removidas = 0 em relação
+  ao baseline pré-modularização.
+- Docs validator: exit 1 pelas mesmas dívidas preexistentes de specs/harness.
+- PlayMode: não executado; risco residual observacional documentado no relatório.
+- Relatório: `docs/architecture/MODULARIZATION_PHASE1_REPORT.md`.
+- Alterações concorrentes de animação permanecem fora dos commits.
+- Próximo passo: commitar relatório/handoff/evidência final, publicar a Fase 1 e verificar remoto;
+  somente então iniciar a Fase 2.
 
 ### 2026-07-05 — Início controlado da Fase 0 na `dev`
 
