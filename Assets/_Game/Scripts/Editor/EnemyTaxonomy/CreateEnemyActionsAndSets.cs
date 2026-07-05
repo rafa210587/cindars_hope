@@ -33,7 +33,7 @@ namespace CindarsHope.Editor.EnemyTaxonomy
             public EnemyActionType ActionType;
             public string          DamageTypeId;
             public int             BaseDamage;
-            public float           Range, AreaRadius, MinRange;
+            public float           Range, AreaRadius;
             public float           Cooldown, Windup, Recover;
             public float           ProjectileSpeed;
             public string[]        StatusIds;
@@ -42,7 +42,6 @@ namespace CindarsHope.Editor.EnemyTaxonomy
             public bool            TriggersVuln;
             public VulnerabilityTriggerMode VulnTrigger;
             public bool            IsInterruptible;
-            public bool            RequiresLos;
             public int             MaxTargets;
             public float           BlinkRange;
             public bool            IsDeathtrigger;
@@ -91,7 +90,7 @@ namespace CindarsHope.Editor.EnemyTaxonomy
                 so.BaseDamage                = a.BaseDamage;
                 so.Range                     = a.Range;
                 so.AreaRadius                = a.AreaRadius;
-                so.MinRange                  = a.MinRange;
+                so.MinRange                  = 0f;
                 so.CooldownSeconds           = a.Cooldown;
                 so.WindupSeconds             = a.Windup;
                 so.RecoverSeconds            = a.Recover;
@@ -102,7 +101,7 @@ namespace CindarsHope.Editor.EnemyTaxonomy
                 so.TriggersVulnerabilityWindow  = a.TriggersVuln;
                 so.VulnerabilityWindowTrigger   = a.VulnTrigger;
                 so.IsInterruptible           = a.IsInterruptible;
-                so.RequiresLineOfSight       = a.RequiresLos;
+                so.RequiresLineOfSight       = false;
                 so.MaxTargets               = a.MaxTargets > 0 ? a.MaxTargets : 1;
                 so.BlinkRange                = a.BlinkRange;
                 so.IsDeathtrigger            = a.IsDeathtrigger;

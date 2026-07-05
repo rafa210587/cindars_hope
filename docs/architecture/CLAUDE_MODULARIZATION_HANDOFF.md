@@ -139,7 +139,7 @@ Não declare PASS por compilação textual ou por relato de outro agente. Use ex
   - `docs/architecture/MODULARIZATION_REWORK_PLAN.md`;
   - `docs/architecture/CLAUDE_MODULARIZATION_HANDOFF.md`.
 - Validação: preflight Git concluído; validações de código ainda pendentes.
-- Commit: pendente.
+- Commit da autorização/preflight: `1de0e1b9` (junto da correção Fase 1.1).
 - Próximo passo: auditar as cinco correções locais enumeradas na Fase 1 e definir testes de
   não-regressão para cada uma.
 
@@ -216,9 +216,25 @@ Não declare PASS por compilação textual ou por relato de outro agente. Use ex
   - ratchet: exit 0, `PhysicsAllQuery` caiu de 2 para 0;
   - Unity EditMode `Physics2DOverlapBufferTests`: 1/1 PASS;
   - evidência: `TestResults/modularization-phase1-physics.xml`.
-- Commit: pendente neste registro.
+- Commit: `3672dd28` (`perf(skills): reutilizar buffer nas queries circulares`).
 - Próximo passo: commitar somente helper/executores/teste/evidência/handoff e preservar o lote
   concorrente de animação.
+
+### 2026-07-05 — Fase 1.5: warnings e comentários obsoletos
+
+- Objetivo: zerar warnings conhecidos do lote sem suprimir diagnósticos.
+- Alterações:
+  - DTOs privados lidos por `JsonUtility` receberam defaults explícitos idênticos aos defaults CLR;
+  - campos de gerador nunca configurados foram substituídos pelos mesmos defaults diretamente no
+    asset gerado (`MinRange = 0`, `RequiresLineOfSight = false`);
+  - comentários que ainda citavam `OverlapCircleAll` foram atualizados para o buffer atual.
+- Comportamento preservado: valores produzidos e fallback JSON permanecem idênticos.
+- Validação:
+  - `dotnet build Assembly-CSharp.csproj`: exit 0, 0 warnings, 0 erros;
+  - `dotnet build Assembly-CSharp-Editor.csproj`: exit 0, 0 warnings, 0 erros.
+- Commit: pendente neste registro.
+- Próximo passo: commitar apenas os cinco arquivos de warning/comentário e o handoff, preservando o
+  lote concorrente de animação.
 
 ### 2026-07-05 — Início controlado da Fase 0 na `dev`
 

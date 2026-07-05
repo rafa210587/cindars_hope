@@ -16,7 +16,7 @@ namespace CindarsHope.Combat.Magic
         /// <summary>Leque de projéteis num arco curto à frente do caster.</summary>
         Cone = 1,
 
-        /// <summary>Explosão radial 360° em torno do caster (OverlapCircleAll padrão do melee).</summary>
+        /// <summary>Explosão radial 360° em torno do caster (query Physics2D com buffer reutilizável).</summary>
         Nova = 2,
 
         /// <summary>Suporte ao próprio caster: HP/Stamina/Mana (sem alvo).</summary>
@@ -30,7 +30,7 @@ namespace CindarsHope.Combat.Magic
     /// fable_08 — seleção de alvo determinística para magias com auto-target (ex.: Projétil Arcano,
     /// EMENDA 2026-06-12-D 6.6-A). Lógica PURA (sem cena, sem Physics): recebe posições candidatas e
     /// devolve o índice escolhido, para permitir EditMode tests. O runtime alimenta os candidatos via
-    /// query de Physics2D (OverlapCircleAll) — NUNCA via GameObject.Find/FindObjectsByType.
+    /// query de Physics2D com buffer reutilizável — NUNCA via GameObject.Find/FindObjectsByType.
     ///
     /// Regra de desempate canônica (estável e testável):
     ///   1) preferir o candidato dentro do cone de mira (ângulo &lt;= aimHalfAngleDeg em relação a

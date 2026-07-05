@@ -19,10 +19,10 @@ namespace CindarsHope.Editor.EnemySkins
         private const string SpritesDir = "Assets/_Game/Resources/EnemySprites";
 
         [System.Serializable]
-        private sealed class Entry { public string id; public string[] slugs; }
+        private sealed class Entry { public string id = null; public string[] slugs = null; }
 
         [System.Serializable]
-        private sealed class File_ { public int schemaVersion; public Entry[] bindings; }
+        private sealed class File_ { public int schemaVersion = 0; public Entry[] bindings = null; }
 
         public static void Validate()
         {

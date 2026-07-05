@@ -23,15 +23,15 @@ namespace CindarsHope.Enemy
         [System.Serializable]
         private sealed class BindingEntry
         {
-            public string id;
-            public string[] slugs;
+            public string id = null;
+            public string[] slugs = null;
         }
 
         [System.Serializable]
         private sealed class BindingFile
         {
-            public int schemaVersion;
-            public BindingEntry[] bindings;
+            public int schemaVersion = 0;
+            public BindingEntry[] bindings = null;
         }
 
         /// <summary>Numero de ids com binding (0 se o JSON nao carregou). Diagnostico.</summary>

@@ -27,7 +27,8 @@ namespace CindarsHope.Combat
         /// <summary>
         /// fable_08: fornecedor de posições de inimigos para auto-target (EMENDA 6.6-A) e shapes de
         /// área. Recebe (centro, raio) e devolve as posições candidatas. Setado pelo
-        /// PlayerAttackController usando Physics2D.OverlapCircleAll — NUNCA FindObjectsByType.
+        /// PlayerAttackController usando query Physics2D com buffer reutilizável — NUNCA
+        /// FindObjectsByType.
         /// Em testes/headless fica null e o auto-target cai para tiro à frente.
         /// </summary>
         public System.Func<Vector2, float, IReadOnlyList<Vector2>> EnemyPositionQuery { get; set; }
