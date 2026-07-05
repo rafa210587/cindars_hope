@@ -1,4 +1,5 @@
 using CindarsHope.Combat;
+using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Player;
 using UnityEngine;
@@ -23,6 +24,7 @@ namespace CindarsHope.Skills.Runtime.Effects
         private readonly float _cooldownSeconds;
         // F02: multiplicador de dano de posture (quebra-guarda usa 3x).
         private readonly float _postureDamageMultiplier;
+        private readonly Physics2DOverlapBuffer _overlapBuffer = new Physics2DOverlapBuffer();
 
         public string EffectId => _effectId;
         public SkillEffectCategory Category => SkillEffectCategory.Combat;
@@ -80,12 +82,16 @@ namespace CindarsHope.Skills.Runtime.Effects
             }
 
             Vector2 attackCenter = (Vector2)bodyTransform.position + facing.normalized * (_range * 0.4f);
-            var colliders = Physics2D.OverlapCircleAll(attackCenter, _range);
+            int colliderCount = _overlapBuffer.QueryCircle(
+                attackCenter,
+                _range,
+                ContactFilter2D.noFilter);
             int hits = 0;
             float halfArc = _arcDegrees * 0.5f;
 
-            foreach (var collider in colliders)
+            for (int i = 0; i < colliderCount; i++)
             {
+                Collider2D collider = _overlapBuffer[i];
                 var enemyHealth = collider.GetComponentInParent<EnemyHealth>() ?? collider.GetComponent<EnemyHealth>();
                 if (enemyHealth == null || enemyHealth.IsDead)
                     continue;

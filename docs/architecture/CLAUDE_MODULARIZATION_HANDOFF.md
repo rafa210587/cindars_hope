@@ -198,8 +198,27 @@ Não declare PASS por compilação textual ou por relato de outro agente. Use ex
   - `Assets/_Game/Scripts/Enemy/EnemyAnimator.cs`;
   - `Assets/_Game/Scripts/Editor/Enemy/GenerateEnemyWalkAnimations.cs`;
   - `tools/enemy_anim/normalize_enemy_sheets.py`.
-- Commit: pendente neste registro.
+- Commit: `436b4063` (`perf(hud): remover updates vazios das views`).
 - Próximo passo: commitar o lote de HUD isoladamente e então substituir `OverlapCircleAll`.
+
+### 2026-07-05 — Fase 1.4: queries circulares sem alocação recorrente
+
+- Objetivo: remover os dois `Physics2D.OverlapCircleAll` residuais dos executores de skill.
+- Alterações:
+  - `Physics2DOverlapBuffer` reutilizável, com crescimento somente quando a capacidade é atingida;
+  - melee strike e slow field usam `ContactFilter2D.noFilter`, preservando layers/triggers;
+  - loops indexados substituem arrays alocados por execução;
+  - teste cria 40 colliders, força crescimento a partir de capacidade 4 e confirma reutilização.
+- Comportamento preservado: centro, raio, filtro amplo e processamento de todos os colliders são os
+  mesmos; o buffer cresce para não truncar resultados.
+- Validação:
+  - runtime build: exit 0;
+  - ratchet: exit 0, `PhysicsAllQuery` caiu de 2 para 0;
+  - Unity EditMode `Physics2DOverlapBufferTests`: 1/1 PASS;
+  - evidência: `TestResults/modularization-phase1-physics.xml`.
+- Commit: pendente neste registro.
+- Próximo passo: commitar somente helper/executores/teste/evidência/handoff e preservar o lote
+  concorrente de animação.
 
 ### 2026-07-05 — Início controlado da Fase 0 na `dev`
 

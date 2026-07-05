@@ -1,4 +1,5 @@
 using CindarsHope.Combat;
+using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Player;
 using UnityEngine;
@@ -18,6 +19,7 @@ namespace CindarsHope.Skills.Runtime.Effects
         private readonly float _radius;
         private readonly int _manaCost;
         private readonly float _cooldownSeconds;
+        private readonly Physics2DOverlapBuffer _overlapBuffer = new Physics2DOverlapBuffer();
 
         public string EffectId => _effectId;
         public SkillEffectCategory Category => SkillEffectCategory.Combat;
@@ -59,10 +61,14 @@ namespace CindarsHope.Skills.Runtime.Effects
                 ? (Vector2)playerController.transform.position
                 : context.WorldPosition;
 
-            var colliders = Physics2D.OverlapCircleAll(center, _radius);
+            int colliderCount = _overlapBuffer.QueryCircle(
+                center,
+                _radius,
+                ContactFilter2D.noFilter);
             int affected = 0;
-            foreach (var collider in colliders)
+            for (int i = 0; i < colliderCount; i++)
             {
+                Collider2D collider = _overlapBuffer[i];
                 var enemyHealth = collider.GetComponentInParent<EnemyHealth>() ?? collider.GetComponent<EnemyHealth>();
                 if (enemyHealth == null || enemyHealth.IsDead)
                     continue;
