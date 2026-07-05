@@ -30,8 +30,8 @@ Antes de continuar, valide o diff e os comandos; este relato não substitui evid
 - docs validator: exit 1 por dívidas preexistentes em specs futuras e falso positivo do scanner de
   placeholders; a nova spec e os novos documentos não aparecem nas falhas;
 - commit técnico: `aabfecbb` (`fix(runtime): reconciliar canone e fechar gaps de save`).
-- publicação: este fechamento documental deve ser commitado e ambos os commits enviados a
-  `origin/dev`; valide o remote HEAD antes de confiar neste item.
+- publicação verificada: commits `aabfecbb` e `972a7f43` enviados a `origin/dev`; após fetch,
+  `HEAD == origin/dev == 972a7f43a6bce19819db0285c80386376dd091d0` e divergência `0 0`.
 
 Copie todo o conteúdo deste documento para uma nova sessão do Claude Code quando a sessão atual
 estiver próxima do limite de contexto/tokens.
