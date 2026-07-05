@@ -77,6 +77,19 @@ estiver próxima do limite de contexto/tokens.
 - Mudanças concorrentes de animação, sprites, ProjectSettings, `.slnx` e ferramentas devem permanecer
   fora dos commits deste rework.
 
+### Lote 2B — interação de loja/NPC (implementado, commit ainda deve ser conferido no Git)
+
+- `NpcShopInteractionSession` aplica State Pattern puro ao lifecycle abrir/fechar/handoff de quest;
+  callbacks Unity e modais continuam no controller, mas reentrada e fechamento duplicado são
+  rejeitados em um único lugar.
+- `ThalindraQuestDialoguePolicy` elimina a decisão duplicada entre renderização da opção e publicação
+  do `QuestGiverInteractionMode`.
+- Nenhum preço, item, amizade, flag, catálogo, árvore de diálogo ou transação foi alterado.
+- Evidência: testes NPC focados 40/40; EditMode completa 2.695/2.695; projetos Runtime, EditMode e
+  PlayMode compilaram com 0 erros/0 warnings; architecture ratchet PASS.
+- Próximo passo: lote 3, substituir a seleção/execução monolítica de ações e movimento inimigo por
+  registries de strategy preservando a estratégia injetável e todos os timings atuais.
+
 ## 2026-07-05 — Autorização integral das Fases 4 a 8
 
 - Decisão humana: continuar até terminar todo o rework, sem parar entre fases.

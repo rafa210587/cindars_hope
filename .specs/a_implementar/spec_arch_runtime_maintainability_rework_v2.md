@@ -58,10 +58,11 @@ Executar por fachadas compatíveis (Strangler Pattern), com commits pequenos e r
 # /speckit.tasks
 
 - [x] Lote 1 — lifecycle/input
-- [ ] Lote 2 — Quest/NPC
+- [x] Lote 2 — Quest/NPC
   - [x] progresso de objetivos em dispatcher tipado, sem varreduras LINQ por evento;
   - [x] persistência de instâncias dinâmicas extraída, incluindo fallback legado;
-  - [ ] decomposição do fluxo de interação de `NpcShopController`.
+  - [x] lifecycle de interação do `NpcShopController` isolado em máquina de estados pura;
+  - [x] política da quest da Thalindra isolada para manter opção visível e modo emitido consistentes.
 - [ ] Lote 3 — Enemy strategies
 - [ ] Lote 4 — assembly pura
 - [ ] Lote 5 — UI/data legacy
