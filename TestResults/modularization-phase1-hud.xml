@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="3" result="Passed" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-07-05 04:09:09Z" end-time="2026-07-05 04:09:09Z" duration="0,0281572">
+  <test-suite type="TestSuite" id="1000" name="cindars_hope" fullname="cindars_hope" runstate="Runnable" testcasecount="79" result="Passed" start-time="2026-07-05 04:09:09Z" end-time="2026-07-05 04:09:09Z" duration="0.028157" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1092" name="Assembly-CSharp-Editor.dll" fullname="F:/Projetos/Jogos/Cindars_hope/cindars_hope/Library/ScriptAssemblies/Assembly-CSharp-Editor.dll" runstate="Runnable" testcasecount="79" result="Passed" start-time="2026-07-05 04:09:09Z" end-time="2026-07-05 04:09:09Z" duration="0.022099" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="45164" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1093" name="CindarsHope" fullname="CindarsHope" runstate="Runnable" testcasecount="79" result="Passed" start-time="2026-07-05 04:09:09Z" end-time="2026-07-05 04:09:09Z" duration="0.020909" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1094" name="Tests" fullname="CindarsHope.Tests" runstate="Runnable" testcasecount="79" result="Passed" start-time="2026-07-05 04:09:09Z" end-time="2026-07-05 04:09:09Z" duration="0.018470" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="1095" name="EditMode" fullname="CindarsHope.Tests.EditMode" runstate="Runnable" testcasecount="79" result="Passed" start-time="2026-07-05 04:09:09Z" end-time="2026-07-05 04:09:09Z" duration="0.017431" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestSuite" id="1096" name="UI" fullname="CindarsHope.Tests.EditMode.UI" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-07-05 04:09:09Z" end-time="2026-07-05 04:09:09Z" duration="0.016445" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-suite type="TestFixture" id="1001" name="HudPhaseOneTests" fullname="CindarsHope.Tests.EditMode.UI.HudPhaseOneTests" classname="CindarsHope.Tests.EditMode.UI.HudPhaseOneTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-07-05 04:09:09Z" end-time="2026-07-05 04:09:09Z" duration="0.015915" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-suite type="ParameterizedMethod" id="1005" name="PlaceholderHudView_DoesNotRegisterAnEmptyUpdate" fullname="CindarsHope.Tests.EditMode.UI.HudPhaseOneTests.PlaceholderHudView_DoesNotRegisterAnEmptyUpdate" classname="CindarsHope.Tests.EditMode.UI.HudPhaseOneTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-07-05 04:09:09Z" end-time="2026-07-05 04:09:09Z" duration="0.013596" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+                  <properties />
+                  <test-case id="1002" name="PlaceholderHudView_DoesNotRegisterAnEmptyUpdate(CindarsHope.UI.HUD.Views.InteractionPromptHudView)" fullname="CindarsHope.Tests.EditMode.UI.HudPhaseOneTests.PlaceholderHudView_DoesNotRegisterAnEmptyUpdate(CindarsHope.UI.HUD.Views.InteractionPromptHudView)" methodname="PlaceholderHudView_DoesNotRegisterAnEmptyUpdate" classname="CindarsHope.Tests.EditMode.UI.HudPhaseOneTests" runstate="Runnable" seed="955560101" result="Passed" start-time="2026-07-05 04:09:09Z" end-time="2026-07-05 04:09:09Z" duration="0.006813" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1003" name="PlaceholderHudView_DoesNotRegisterAnEmptyUpdate(CindarsHope.UI.HUD.Views.StatusBarsHudView)" fullname="CindarsHope.Tests.EditMode.UI.HudPhaseOneTests.PlaceholderHudView_DoesNotRegisterAnEmptyUpdate(CindarsHope.UI.HUD.Views.StatusBarsHudView)" methodname="PlaceholderHudView_DoesNotRegisterAnEmptyUpdate" classname="CindarsHope.Tests.EditMode.UI.HudPhaseOneTests" runstate="Runnable" seed="669112711" result="Passed" start-time="2026-07-05 04:09:09Z" end-time="2026-07-05 04:09:09Z" duration="0.000141" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1004" name="PlaceholderHudView_DoesNotRegisterAnEmptyUpdate(CindarsHope.UI.HUD.Views.QuestTrackerHudView)" fullname="CindarsHope.Tests.EditMode.UI.HudPhaseOneTests.PlaceholderHudView_DoesNotRegisterAnEmptyUpdate(CindarsHope.UI.HUD.Views.QuestTrackerHudView)" methodname="PlaceholderHudView_DoesNotRegisterAnEmptyUpdate" classname="CindarsHope.Tests.EditMode.UI.HudPhaseOneTests" runstate="Runnable" seed="1263295798" result="Passed" start-time="2026-07-05 04:09:09Z" end-time="2026-07-05 04:09:09Z" duration="0.000052" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                    <output><![CDATA[Saving results to: F:\Projetos\Jogos\Cindars_hope\cindars_hope\TestResults\modularization-phase1-hud.xml
+]]></output>
+                  </test-case>
+                </test-suite>
+              </test-suite>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

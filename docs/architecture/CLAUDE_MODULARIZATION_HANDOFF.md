@@ -179,8 +179,27 @@ Não declare PASS por compilação textual ou por relato de outro agente. Use ex
 - Alteração concorrente detectada: `Assets/_Game/Scripts/Enemy/EnemyAnimator.cs` passou a conter um
   lote de idle animation durante a execução Unity. Não pertence à Fase 1, não foi revertida e deve
   ser excluída dos commits desta modularização.
-- Commit: pendente neste registro.
+- Commit: `bc60bcbb` (`fix(telemetria): contabilizar blocks normais`).
 - Próximo passo: commitar somente telemetria/eventos/testes/handoff e preservar o arquivo externo.
+
+### 2026-07-05 — Fase 1.3: `Update()` vazio nas views de HUD
+
+- Objetivo: remover callbacks Unity por frame que apenas chamavam métodos vazios.
+- Alterações: `InteractionPromptHudView`, `StatusBarsHudView` e `QuestTrackerHudView` não registram
+  mais `Update()`; a API pública `Initialize(GameplayHudViewModel)` foi preservada.
+- Comportamento preservado: os métodos removidos não alteravam UI nem estado; inscrição de
+  visibilidade e ativação dos GameObjects permanecem iguais.
+- Teste: reflexão exige ausência de `Update` e presença de `Initialize` nas três views.
+- Validação:
+  - builds runtime/editor: exit 0;
+  - Unity EditMode `HudPhaseOneTests`: 3/3 PASS;
+  - evidência: `TestResults/modularization-phase1-hud.xml`.
+- Alterações concorrentes preservadas e excluídas do commit:
+  - `Assets/_Game/Scripts/Enemy/EnemyAnimator.cs`;
+  - `Assets/_Game/Scripts/Editor/Enemy/GenerateEnemyWalkAnimations.cs`;
+  - `tools/enemy_anim/normalize_enemy_sheets.py`.
+- Commit: pendente neste registro.
+- Próximo passo: commitar o lote de HUD isoladamente e então substituir `OverlapCircleAll`.
 
 ### 2026-07-05 — Início controlado da Fase 0 na `dev`
 
