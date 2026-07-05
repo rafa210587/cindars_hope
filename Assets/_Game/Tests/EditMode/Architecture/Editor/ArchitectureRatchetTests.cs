@@ -1,0 +1,169 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
+using NUnit.Framework;
+using UnityEngine;
+
+namespace CindarsHope.Tests.EditMode.Architecture
+{
+    public class ArchitectureRatchetTests
+    {
+        private const string RulesRelativePath = "tools/architecture/architecture-ratchet-rules.tsv";
+        private const string BaselineRelativePath = "tools/architecture/architecture-ratchet-baseline.tsv";
+        private const string SerializedGuidBaselineRelativePath =
+            "tools/architecture/serialized-guid-baseline.tsv";
+
+        private sealed class Rule
+        {
+            public Rule(string id, string pattern)
+            {
+                Id = id;
+                Pattern = new Regex(pattern, RegexOptions.CultureInvariant);
+            }
+
+            public string Id { get; }
+            public Regex Pattern { get; }
+        }
+
+        [Test]
+        public void RuntimeSource_DoesNotIncreaseTrackedArchitecturalDebt()
+        {
+            string projectRoot = Directory.GetParent(Application.dataPath)?.FullName;
+            Assert.That(projectRoot, Is.Not.Null.And.Not.Empty);
+
+            IReadOnlyList<Rule> rules = ReadRules(Path.Combine(projectRoot, RulesRelativePath));
+            IReadOnlyDictionary<string, int> baseline = ReadBaseline(
+                Path.Combine(projectRoot, BaselineRelativePath),
+                rules);
+            string runtimeRoot = Path.Combine(projectRoot, "Assets", "_Game", "Scripts");
+            string[] files = Directory.GetFiles(runtimeRoot, "*.cs", SearchOption.AllDirectories)
+                .Where(path => !Normalize(path).Contains("/Editor/"))
+                .ToArray();
+
+            var violations = new List<string>();
+            foreach (Rule rule in rules)
+            {
+                foreach (string file in files)
+                {
+                    string relativePath = GetRelativePath(projectRoot, file);
+                    int currentCount = rule.Pattern.Matches(File.ReadAllText(file)).Count;
+                    baseline.TryGetValue(BuildKey(rule.Id, relativePath), out int allowedCount);
+
+                    if (currentCount > allowedCount)
+                    {
+                        violations.Add(
+                            $"{rule.Id}: {relativePath} has {currentCount} occurrence(s); " +
+                            $"baseline allows {allowedCount}.");
+                    }
+                }
+            }
+
+            Assert.That(
+                violations,
+                Is.Empty,
+                "Architectural debt increased. Remove the new occurrence; do not raise the baseline " +
+                "without an explicit architecture decision.\n" + string.Join("\n", violations));
+        }
+
+        [Test]
+        public void SensitiveSerializedFiles_PreservePathsAndGuids()
+        {
+            string projectRoot = Directory.GetParent(Application.dataPath)?.FullName;
+            Assert.That(projectRoot, Is.Not.Null.And.Not.Empty);
+            string baselinePath = Path.Combine(projectRoot, SerializedGuidBaselineRelativePath);
+            Assert.That(File.Exists(baselinePath), Is.True, $"Serialized GUID baseline not found: {baselinePath}");
+
+            var violations = new List<string>();
+            foreach (string line in ReadDataLines(baselinePath))
+            {
+                string[] parts = line.Split('\t');
+                Assert.That(parts.Length, Is.EqualTo(3), $"Invalid serialized GUID baseline line: {line}");
+                string assetPath = Path.Combine(projectRoot, parts[1].Replace('/', Path.DirectorySeparatorChar));
+                string metaPath = assetPath + ".meta";
+
+                if (!File.Exists(assetPath) || !File.Exists(metaPath))
+                {
+                    violations.Add($"{parts[0]} missing asset or meta: {parts[1]}");
+                    continue;
+                }
+
+                string guidLine = File.ReadLines(metaPath)
+                    .FirstOrDefault(metaLine => metaLine.StartsWith("guid: ", StringComparison.Ordinal));
+                string actualGuid = guidLine?.Substring("guid: ".Length).Trim();
+                if (!string.Equals(actualGuid, parts[2], StringComparison.Ordinal))
+                {
+                    violations.Add(
+                        $"{parts[0]} GUID changed for {parts[1]}: expected {parts[2]}, actual {actualGuid ?? "<none>"}.");
+                }
+            }
+
+            Assert.That(
+                violations,
+                Is.Empty,
+                "Serialized paths/GUIDs changed. Move Unity assets with their .meta and provide an explicit " +
+                "migration decision.\n" + string.Join("\n", violations));
+        }
+
+        private static IReadOnlyList<Rule> ReadRules(string path)
+        {
+            Assert.That(File.Exists(path), Is.True, $"Architecture rule file not found: {path}");
+
+            var rules = new List<Rule>();
+            foreach (string line in ReadDataLines(path))
+            {
+                string[] parts = line.Split(new[] { '\t' }, 2);
+                Assert.That(parts.Length, Is.EqualTo(2), $"Invalid architecture rule line: {line}");
+                rules.Add(new Rule(parts[0], parts[1]));
+            }
+
+            Assert.That(rules.Count, Is.GreaterThan(0), "Architecture rule set cannot be empty.");
+            return rules;
+        }
+
+        private static IReadOnlyDictionary<string, int> ReadBaseline(
+            string path,
+            IReadOnlyList<Rule> rules)
+        {
+            Assert.That(File.Exists(path), Is.True, $"Architecture baseline not found: {path}");
+
+            var knownRuleIds = new HashSet<string>(rules.Select(rule => rule.Id), StringComparer.Ordinal);
+            var baseline = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+            foreach (string line in ReadDataLines(path))
+            {
+                string[] parts = line.Split('\t');
+                Assert.That(parts.Length, Is.EqualTo(3), $"Invalid architecture baseline line: {line}");
+                Assert.That(knownRuleIds, Does.Contain(parts[0]), $"Unknown rule in baseline: {parts[0]}");
+                Assert.That(int.TryParse(parts[2], out int count), Is.True, $"Invalid count: {line}");
+                baseline.Add(BuildKey(parts[0], parts[1]), count);
+            }
+
+            return baseline;
+        }
+
+        private static IEnumerable<string> ReadDataLines(string path)
+        {
+            return File.ReadLines(path)
+                .Where(line => !string.IsNullOrWhiteSpace(line) && !line.StartsWith("#"));
+        }
+
+        private static string BuildKey(string ruleId, string relativePath)
+        {
+            return ruleId + "\n" + Normalize(relativePath);
+        }
+
+        private static string Normalize(string path)
+        {
+            return path.Replace('\\', '/');
+        }
+
+        private static string GetRelativePath(string root, string path)
+        {
+            string rootPrefix = root.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar) +
+                Path.DirectorySeparatorChar;
+            Assert.That(path.StartsWith(rootPrefix, StringComparison.OrdinalIgnoreCase), Is.True);
+            return Normalize(path.Substring(rootPrefix.Length));
+        }
+    }
+}

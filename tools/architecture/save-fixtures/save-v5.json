@@ -1,0 +1,23 @@
+{
+  "SchemaVersion": 5,
+  "CurrentDay": 7,
+  "CurrentSceneName": "TownScene",
+  "Player": {
+    "CurrentHP": 95,
+    "MaxHP": 100,
+    "Gold": 600,
+    "CurrentHunger": 85,
+    "MaxHunger": 100,
+    "CurrentMana": 100,
+    "MaxMana": 100
+  },
+  "Inventory": {
+    "Capacity": 24,
+    "Slots": [],
+    "Items": []
+  },
+  "SkillTree": {
+    "AvailablePoints": 2,
+    "Nodes": []
+  }
+}

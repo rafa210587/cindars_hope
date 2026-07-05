@@ -56,14 +56,20 @@ Pare e reporte se:
 - O push enviou 904 objetos Git LFS (150 MB) e terminou com exit 0.
 - A validação do estado remoto ainda deve ser refeita no início da próxima sessão; não confie apenas
   neste registro.
+- Preflight de 2026-07-05 confirmou branch `dev`, working tree limpo, `origin/dev...HEAD = 0 0` e
+  HEAD `aed4f35c`.
+- O responsável pelo projeto autorizou executar a Fase 0 na própria `dev`; a exceção foi registrada
+  no plano e não autoriza iniciar as fases estruturais seguintes na mesma branch automaticamente.
 
 ### Ainda não executado
 
-- Branch `rework/modular-architecture` ainda não deve ser assumida como criada.
+- Branch `rework/modular-architecture` não foi criada; a Fase 0 foi explicitamente autorizada em
+  `dev`.
 - Nenhum `.asmdef` foi criado por este rework.
 - Nenhum código runtime foi refatorado por este rework.
 - Nenhuma fachada ou API antiga foi removida.
-- Fase 0 ainda precisa ser executada na branch de rework.
+- Fase 0 está tecnicamente validada em `dev`; commit e publicação ainda precisam ser confirmados no
+  Git antes de tratá-la como fechada.
 
 ## Baseline publicado
 
@@ -95,8 +101,8 @@ Pare e reporte se:
 
 1. Verificar este handoff contra Git/disco.
 2. Confirmar que o baseline foi publicado e que `dev` está sincronizada.
-3. Criar/usar `rework/modular-architecture` somente com working tree limpo.
-4. Executar Fase 0 do plano.
+3. Revalidar os artefatos e resultados da Fase 0 registrados abaixo.
+4. Não iniciar Fase 1 ou criar `.asmdef` sem nova decisão explícita sobre branch.
 5. Não criar `.asmdef` antes de remover dependências hardcoded e atualizar validators.
 6. Não começar por Editor/Tests enquanto runtime continuar preso à `Assembly-CSharp`.
 7. Migrar Foundation primeiro.
@@ -120,6 +126,45 @@ ao log abaixo contendo:
 Não declare PASS por compilação textual ou por relato de outro agente. Use exit code real.
 
 ## Log de execução
+
+### 2026-07-05 — Início controlado da Fase 0 na `dev`
+
+- Objetivo: fechar baseline e proteção arquitetural sem alterar gameplay.
+- Preflight: `git fetch origin dev`, branch `dev`, working tree limpo, divergência `0 0`, HEAD
+  `aed4f35c`.
+- Decisão humana: executar a Fase 0 na branch atual; fases de assemblies/composition continuam fora
+  deste escopo.
+- Arquivos alterados neste marco:
+  - `docs/architecture/MODULARIZATION_REWORK_PLAN.md`;
+  - `docs/architecture/CLAUDE_MODULARIZATION_HANDOFF.md`.
+- Comportamento preservado: nenhuma alteração runtime, de cena, asset, save ou gameplay.
+- Validação deste marco: preflight Git concluído; builds/testes serão executados após os artefatos da
+  Fase 0 estarem implementados.
+- Commit: pendente até o fechamento do primeiro lote documental/técnico.
+- Implementado após o preflight:
+  - baseline detalhado em `docs/architecture/MODULARIZATION_PHASE0_BASELINE.md`;
+  - dez regras de ratchet compartilhadas por CLI e EditMode;
+  - limites por arquivo para impedir aumento da dívida arquitetural;
+  - baseline de path/GUID para 16 arquivos Unity sensíveis;
+  - cinco fixtures de save, v1 a v5;
+  - testes EditMode de ratchet, GUIDs e migração/round-trip de save.
+- Ratchet CLI: exit 0; contagens atuais iguais ao baseline registrado.
+- Comportamento preservado: nenhum arquivo runtime, cena, prefab, asset ou `ProjectSettings` foi
+  alterado.
+- Validações concluídas:
+  - ratchet CLI: exit 0; dez regras dentro dos limites e 16 GUIDs preservados;
+  - runtime build: exit 0, 5 warnings preexistentes;
+  - editor build: exit 0, 7 warnings preexistentes;
+  - EditMode arquitetura/GUID: 2/2 PASS;
+  - EditMode save fixtures: 6/6 PASS;
+  - EditMode completa: 58/71 PASS, com as mesmas 13 falhas anteriores; zero falhas novas;
+  - docs validator: exit 1 apenas pelas dívidas já registradas de specs/harness;
+  - PlayMode: não executado porque o lote altera somente testes, ferramentas e documentação.
+- Observação de ambiente: após o Unity encerrar e limpar `Temp/obj`, builds `--no-restore` retornam
+  `NETSDK1004`; com restore habilitado, runtime e editor passaram.
+- Commit: pendente.
+- Risco residual: as 13 falhas EditMode e os warnings preexistentes permanecem fora do escopo.
+- Próximo passo: revisar o diff, commitar/publicar a Fase 0 e confirmar divergência remota `0 0`.
 
 ### 2026-07-04 — Preparação do rework pelo Codex
 
@@ -146,8 +191,7 @@ Não declare PASS por compilação textual ou por relato de outro agente. Use ex
 - Commit principal: `a8fec139`.
 - Publicação principal: `git push -u origin dev`, exit 0; `a8fec139` enviado para `origin/dev`.
 - Risco residual: working tree contém um lote grande de trabalhos anteriores autorizado para commit.
-- Próximo passo: confirmar `origin/dev...HEAD = 0 0` após o commit documental deste handoff; depois
-  criar a branch de rework limpa e executar a Fase 0.
+- Próximo passo histórico supersedido pela decisão de 2026-07-05 e pelo marco acima.
 
 ## Gates mínimos por mudança
 

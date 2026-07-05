@@ -1,0 +1,20 @@
+{
+  "SchemaVersion": 4,
+  "CurrentDay": 6,
+  "CurrentSceneName": "FarmScene",
+  "Player": {
+    "CurrentHP": 100,
+    "MaxHP": 100,
+    "Gold": 450,
+    "CurrentHunger": 90,
+    "MaxHunger": 100,
+    "CurrentMana": 80,
+    "MaxMana": 100
+  },
+  "ActiveSkillSlots": {
+    "SlotRSkillActionId": "",
+    "SlotTSkillActionId": "",
+    "SlotYSkillActionId": "",
+    "SlotGSkillActionId": ""
+  }
+}

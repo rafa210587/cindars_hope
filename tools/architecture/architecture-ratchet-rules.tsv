@@ -1,0 +1,11 @@
+# rule_id	regex
+RuntimeInitialize	RuntimeInitializeOnLoadMethod
+SingletonDeclaration	\bstatic\s+[^\r\n;=]+\s+(?:Instance|Active|ActiveInstance)\b
+ForbiddenUnitySearch	\b(?:(?:GameObject|Object|UnityEngine\.Object)\.Find(?:ObjectOfType|ObjectsOfType|FirstObjectByType|AnyObjectByType|ObjectsByType)?|FindObjects?OfType)\s*(?:<|\()
+ResourcesLoad	\bResources\.Load(?:All)?\s*(?:<|\()
+DirectInput	\b(?:UnityEngine\.)?Input\.Get(?:Key|KeyDown|KeyUp|Axis|AxisRaw|Button|ButtonDown|ButtonUp|MouseButton|MouseButtonDown|MouseButtonUp)\s*\(
+TimeScaleWrite	\bTime\.timeScale\s*=
+DirectSceneLoad	\bSceneManager\.LoadScene(?:Async)?\s*\(
+PhysicsAllQuery	\bPhysics2D\.[A-Za-z0-9_]*All\s*\(
+GlobalInventoryAccess	\bInventoryManager\.(?:Instance|Active|ActiveInstance)\b
+GlobalGoldAccess	\b(?:PlayerManager|GoldManager|EconomyManager)\.(?:Instance|Active|ActiveInstance)\b

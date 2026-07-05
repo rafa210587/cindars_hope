@@ -2,7 +2,7 @@
 
 > Documento operacional para modularizar o projeto sem alterar o comportamento existente.
 >
-> **Status:** aprovado pelo responsável do projeto para iniciar em branch dedicada após o baseline
+> **Status:** Fase 0 validada tecnicamente em `dev`; publicação pendente
 > atual ser commitado e publicado.
 >
 > **Branch planejada:** `rework/modular-architecture`
@@ -525,3 +525,22 @@ O rework só termina quando:
 4. Commitar relatório/ratchets.
 5. Atualizar o handoff.
 6. Só então iniciar a Fase 1.
+
+## 13. Decisão de execução da Fase 0
+
+Em 2026-07-05, o responsável pelo projeto autorizou explicitamente executar e fechar a Fase 0 na
+branch `dev`, em vez de criar `rework/modular-architecture` neste momento.
+
+Esta decisão altera somente o destino dos commits da Fase 0. Permanecem obrigatórios:
+
+- working tree limpo antes do início;
+- sincronização com `origin/dev`;
+- ausência de alterações em gameplay;
+- baseline reproduzível e ratchets que aceitam a dívida existente, mas impedem dívida nova;
+- inventário de cenas, GUIDs, serialização e saves sensíveis;
+- builds, testes aplicáveis, documentação honesta e commits pequenos;
+- atualização do handoff vivo antes de cada commit material.
+
+As fases que introduzem `.asmdef`, movem scripts ou alteram composition roots continuam exigindo
+uma nova decisão de branch antes de começar. A autorização desta seção não transforma o rework
+completo em uma migração big-bang dentro de `dev`.

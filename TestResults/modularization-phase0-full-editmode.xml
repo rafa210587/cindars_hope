@@ -1,0 +1,672 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="71" result="Failed(Child)" total="71" passed="58" failed="13" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-07-05 03:31:07Z" end-time="2026-07-05 03:31:08Z" duration="1,2051505">
+  <test-suite type="TestSuite" id="1000" name="cindars_hope" fullname="cindars_hope" runstate="Runnable" testcasecount="71" result="Failed" site="Child" start-time="2026-07-05 03:31:07Z" end-time="2026-07-05 03:31:08Z" duration="1.205151" total="71" passed="58" failed="13" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <failure>
+      <message><![CDATA[One or more child tests had errors]]></message>
+    </failure>
+    <test-suite type="Assembly" id="1080" name="Assembly-CSharp-Editor.dll" fullname="F:/Projetos/Jogos/Cindars_hope/cindars_hope/Library/ScriptAssemblies/Assembly-CSharp-Editor.dll" runstate="Runnable" testcasecount="71" result="Failed" site="Child" start-time="2026-07-05 03:31:07Z" end-time="2026-07-05 03:31:08Z" duration="1.199540" total="71" passed="58" failed="13" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="33976" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <failure>
+        <message><![CDATA[One or more child tests had errors]]></message>
+      </failure>
+      <test-suite type="TestSuite" id="1081" name="CindarsHope" fullname="CindarsHope" runstate="Runnable" testcasecount="71" result="Failed" site="Child" start-time="2026-07-05 03:31:07Z" end-time="2026-07-05 03:31:08Z" duration="1.198871" total="71" passed="58" failed="13" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <failure>
+          <message><![CDATA[One or more child tests had errors]]></message>
+        </failure>
+        <test-suite type="TestSuite" id="1082" name="Tests" fullname="CindarsHope.Tests" runstate="Runnable" testcasecount="71" result="Failed" site="Child" start-time="2026-07-05 03:31:07Z" end-time="2026-07-05 03:31:08Z" duration="1.198430" total="71" passed="58" failed="13" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <failure>
+            <message><![CDATA[One or more child tests had errors]]></message>
+          </failure>
+          <test-suite type="TestSuite" id="1083" name="EditMode" fullname="CindarsHope.Tests.EditMode" runstate="Runnable" testcasecount="71" result="Failed" site="Child" start-time="2026-07-05 03:31:07Z" end-time="2026-07-05 03:31:08Z" duration="1.197979" total="71" passed="58" failed="13" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <failure>
+              <message><![CDATA[One or more child tests had errors]]></message>
+            </failure>
+            <test-suite type="TestSuite" id="1089" name="Architecture" fullname="CindarsHope.Tests.EditMode.Architecture" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-07-05 03:31:07Z" end-time="2026-07-05 03:31:08Z" duration="1.119665" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-suite type="TestFixture" id="1077" name="ArchitectureRatchetTests" fullname="CindarsHope.Tests.EditMode.Architecture.ArchitectureRatchetTests" classname="CindarsHope.Tests.EditMode.Architecture.ArchitectureRatchetTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-07-05 03:31:07Z" end-time="2026-07-05 03:31:08Z" duration="1.119032" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1078" name="RuntimeSource_DoesNotIncreaseTrackedArchitecturalDebt" fullname="CindarsHope.Tests.EditMode.Architecture.ArchitectureRatchetTests.RuntimeSource_DoesNotIncreaseTrackedArchitecturalDebt" methodname="RuntimeSource_DoesNotIncreaseTrackedArchitecturalDebt" classname="CindarsHope.Tests.EditMode.Architecture.ArchitectureRatchetTests" runstate="Runnable" seed="745067783" result="Passed" start-time="2026-07-05 03:31:07Z" end-time="2026-07-05 03:31:08Z" duration="1.108632" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1079" name="SensitiveSerializedFiles_PreservePathsAndGuids" fullname="CindarsHope.Tests.EditMode.Architecture.ArchitectureRatchetTests.SensitiveSerializedFiles_PreservePathsAndGuids" methodname="SensitiveSerializedFiles_PreservePathsAndGuids" classname="CindarsHope.Tests.EditMode.Architecture.ArchitectureRatchetTests" runstate="Runnable" seed="1017957948" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.001960" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+            </test-suite>
+            <test-suite type="TestSuite" id="1088" name="City" fullname="CindarsHope.Tests.EditMode.City" runstate="Runnable" testcasecount="22" result="Failed" site="Child" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.020070" total="22" passed="15" failed="7" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <failure>
+                <message><![CDATA[One or more child tests had errors]]></message>
+              </failure>
+              <test-suite type="TestFixture" id="1054" name="TownLayoutTests" fullname="CindarsHope.Tests.EditMode.City.TownLayoutTests" classname="CindarsHope.Tests.EditMode.City.TownLayoutTests" runstate="Runnable" testcasecount="22" result="Failed" site="Child" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.019132" total="22" passed="15" failed="7" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <failure>
+                  <message><![CDATA[One or more child tests had errors]]></message>
+                </failure>
+                <test-case id="1071" name="BuildingLots_DoNotOverlapRoads_AndEveryDoorReachesRoad" fullname="CindarsHope.Tests.EditMode.City.TownLayoutTests.BuildingLots_DoNotOverlapRoads_AndEveryDoorReachesRoad" methodname="BuildingLots_DoNotOverlapRoads_AndEveryDoorReachesRoad" classname="CindarsHope.Tests.EditMode.City.TownLayoutTests" runstate="Runnable" seed="1096719174" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.003480" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1070" name="BuildingLots_HaveUniqueStableNamesAndDoNotOverlap" fullname="CindarsHope.Tests.EditMode.City.TownLayoutTests.BuildingLots_HaveUniqueStableNamesAndDoNotOverlap" methodname="BuildingLots_HaveUniqueStableNamesAndDoNotOverlap" classname="CindarsHope.Tests.EditMode.City.TownLayoutTests" runstate="Runnable" seed="45027913" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.001614" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1057" name="DistrictMap_AllRectanglesWithinBounds" fullname="CindarsHope.Tests.EditMode.City.TownLayoutTests.DistrictMap_AllRectanglesWithinBounds" methodname="DistrictMap_AllRectanglesWithinBounds" classname="CindarsHope.Tests.EditMode.City.TownLayoutTests" runstate="Runnable" seed="2128621963" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.000589" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1059" name="DistrictMap_CentersDoNotOverlapOtherDistricts" fullname="CindarsHope.Tests.EditMode.City.TownLayoutTests.DistrictMap_CentersDoNotOverlapOtherDistricts" methodname="DistrictMap_CentersDoNotOverlapOtherDistricts" classname="CindarsHope.Tests.EditMode.City.TownLayoutTests" runstate="Runnable" seed="1721212657" result="Failed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.002293" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <failure>
+                    <message><![CDATA[  District 'town_hall_northeast' center lies inside district 'temple_fountain_north' — cores overlap.
+  Expected: False
+  But was:  True
+]]></message>
+                    <stack-trace><![CDATA[at CindarsHope.Tests.EditMode.City.TownLayoutTests.DistrictMap_CentersDoNotOverlapOtherDistricts () [0x00015] in F:\Projetos\Jogos\Cindars_hope\cindars_hope\Assets\_Game\Tests\EditMode\City\Editor\TownLayoutTests.cs:81
+]]></stack-trace>
+                  </failure>
+                </test-case>
+                <test-case id="1058" name="DistrictMap_ContainsAllSevenCanonicalIds" fullname="CindarsHope.Tests.EditMode.City.TownLayoutTests.DistrictMap_ContainsAllSevenCanonicalIds" methodname="DistrictMap_ContainsAllSevenCanonicalIds" classname="CindarsHope.Tests.EditMode.City.TownLayoutTests" runstate="Runnable" seed="1301880370" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.000174" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1056" name="DistrictMap_HasSevenDistricts" fullname="CindarsHope.Tests.EditMode.City.TownLayoutTests.DistrictMap_HasSevenDistricts" methodname="DistrictMap_HasSevenDistricts" classname="CindarsHope.Tests.EditMode.City.TownLayoutTests" runstate="Runnable" seed="1143784689" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.000125" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1072" name="DoorFrontages_SupportAllFourDirections" fullname="CindarsHope.Tests.EditMode.City.TownLayoutTests.DoorFrontages_SupportAllFourDirections" methodname="DoorFrontages_SupportAllFourDirections" classname="CindarsHope.Tests.EditMode.City.TownLayoutTests" runstate="Runnable" seed="1396365018" result="Failed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.002249" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <failure>
+                    <message><![CDATA[  Expected: equivalent to < North, South, West, East >
+  But was:  < South >
+]]></message>
+                    <stack-trace><![CDATA[at NUnit.Framework.CollectionAssert.AreEquivalent (System.Collections.IEnumerable expected, System.Collections.IEnumerable actual, System.String message, System.Object[] args) [0x00007] in <f577cd9686154d6ab10efd7e65e64366>:0
+at NUnit.Framework.CollectionAssert.AreEquivalent (System.Collections.IEnumerable expected, System.Collections.IEnumerable actual) [0x00000] in <f577cd9686154d6ab10efd7e65e64366>:0
+at CindarsHope.Tests.EditMode.City.TownLayoutTests.DoorFrontages_SupportAllFourDirections () [0x0003c] in F:\Projetos\Jogos\Cindars_hope\cindars_hope\Assets\_Game\Tests\EditMode\City\Editor\TownLayoutTests.cs:263
+]]></stack-trace>
+                  </failure>
+                </test-case>
+                <test-case id="1055" name="Footprint_Is120x90" fullname="CindarsHope.Tests.EditMode.City.TownLayoutTests.Footprint_Is120x90" methodname="Footprint_Is120x90" classname="CindarsHope.Tests.EditMode.City.TownLayoutTests" runstate="Runnable" seed="1807276998" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.000510" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1060" name="LakeParkDistrict_LandmarksInsideDistrictAndBounds" fullname="CindarsHope.Tests.EditMode.City.TownLayoutTests.LakeParkDistrict_LandmarksInsideDistrictAndBounds" methodname="LakeParkDistrict_LandmarksInsideDistrictAndBounds" classname="CindarsHope.Tests.EditMode.City.TownLayoutTests" runstate="Runnable" seed="1698830672" result="Failed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.000601" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <failure>
+                    <message><![CDATA[  ParkBench_E at (-26.00, -18.70) is outside district 'lake_park_southwest' (x[-53,-31] y[-23,-8]).
+  Expected: True
+  But was:  False
+]]></message>
+                    <stack-trace><![CDATA[at CindarsHope.Tests.EditMode.City.TownLayoutTests.AssertInside (CindarsHope.Editor.SceneCreation.TownDistrictLayout+District d, UnityEngine.Vector3 point, System.String label) [0x00013] in F:\Projetos\Jogos\Cindars_hope\cindars_hope\Assets\_Game\Tests\EditMode\City\Editor\TownLayoutTests.cs:367
+at CindarsHope.Tests.EditMode.City.TownLayoutTests.LakeParkDistrict_LandmarksInsideDistrictAndBounds () [0x00031] in F:\Projetos\Jogos\Cindars_hope\cindars_hope\Assets\_Game\Tests\EditMode\City\Editor\TownLayoutTests.cs:94
+]]></stack-trace>
+                  </failure>
+                </test-case>
+                <test-case id="1073" name="NpcPlaces_PreserveAllRoles_AndStayNearAssociatedBuildings" fullname="CindarsHope.Tests.EditMode.City.TownLayoutTests.NpcPlaces_PreserveAllRoles_AndStayNearAssociatedBuildings" methodname="NpcPlaces_PreserveAllRoles_AndStayNearAssociatedBuildings" classname="CindarsHope.Tests.EditMode.City.TownLayoutTests" runstate="Runnable" seed="319810381" result="Failed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.001181" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <failure>
+                    <message><![CDATA[  NPC npc_tovin work anchor is detached from House_Tovin.
+  Expected: less than or equal to 2.0999999f
+  But was:  9.09065437f
+]]></message>
+                    <stack-trace><![CDATA[at CindarsHope.Tests.EditMode.City.TownLayoutTests.NpcPlaces_PreserveAllRoles_AndStayNearAssociatedBuildings () [0x000f6] in F:\Projetos\Jogos\Cindars_hope\cindars_hope\Assets\_Game\Tests\EditMode\City\Editor\TownLayoutTests.cs:285
+]]></stack-trace>
+                  </failure>
+                </test-case>
+                <test-case id="1069" name="PreservationBaseline_ContainsExpectedMinimumCounts" fullname="CindarsHope.Tests.EditMode.City.TownLayoutTests.PreservationBaseline_ContainsExpectedMinimumCounts" methodname="PreservationBaseline_ContainsExpectedMinimumCounts" classname="CindarsHope.Tests.EditMode.City.TownLayoutTests" runstate="Runnable" seed="757638790" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.000196" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1063" name="Reposition_IsDeterministicAndPreservesZ" fullname="CindarsHope.Tests.EditMode.City.TownLayoutTests.Reposition_IsDeterministicAndPreservesZ" methodname="Reposition_IsDeterministicAndPreservesZ" classname="CindarsHope.Tests.EditMode.City.TownLayoutTests" runstate="Runnable" seed="1475982427" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.000536" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1062" name="Reposition_KeepsExtremeLegacyCornersInsideBounds" fullname="CindarsHope.Tests.EditMode.City.TownLayoutTests.Reposition_KeepsExtremeLegacyCornersInsideBounds" methodname="Reposition_KeepsExtremeLegacyCornersInsideBounds" classname="CindarsHope.Tests.EditMode.City.TownLayoutTests" runstate="Runnable" seed="1259152444" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.000371" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1064" name="Reposition_ScalesAwayFromCenter" fullname="CindarsHope.Tests.EditMode.City.TownLayoutTests.Reposition_ScalesAwayFromCenter" methodname="Reposition_ScalesAwayFromCenter" classname="CindarsHope.Tests.EditMode.City.TownLayoutTests" runstate="Runnable" seed="1248598894" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.000216" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1066" name="ScheduleAnchorSuffixes_AreExactlyWorkSocialHome" fullname="CindarsHope.Tests.EditMode.City.TownLayoutTests.ScheduleAnchorSuffixes_AreExactlyWorkSocialHome" methodname="ScheduleAnchorSuffixes_AreExactlyWorkSocialHome" classname="CindarsHope.Tests.EditMode.City.TownLayoutTests" runstate="Runnable" seed="1543153063" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.000070" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1065" name="ScheduleAnchorSuffixes_MatchRuntimeResolverConstants" fullname="CindarsHope.Tests.EditMode.City.TownLayoutTests.ScheduleAnchorSuffixes_MatchRuntimeResolverConstants" methodname="ScheduleAnchorSuffixes_MatchRuntimeResolverConstants" classname="CindarsHope.Tests.EditMode.City.TownLayoutTests" runstate="Runnable" seed="907965791" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.000151" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1068" name="SpawnIds_AreStableCanonicalSet" fullname="CindarsHope.Tests.EditMode.City.TownLayoutTests.SpawnIds_AreStableCanonicalSet" methodname="SpawnIds_AreStableCanonicalSet" classname="CindarsHope.Tests.EditMode.City.TownLayoutTests" runstate="Runnable" seed="1280393262" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.000080" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1067" name="StationaryCivicRoles_UseBusinessHoursInsteadOfWandererHours" fullname="CindarsHope.Tests.EditMode.City.TownLayoutTests.StationaryCivicRoles_UseBusinessHoursInsteadOfWandererHours" methodname="StationaryCivicRoles_UseBusinessHoursInsteadOfWandererHours" classname="CindarsHope.Tests.EditMode.City.TownLayoutTests" runstate="Runnable" seed="1657276036" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.000230" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1061" name="TownHallDistrict_BuildingAndMuralInsideDistrictAndBounds" fullname="CindarsHope.Tests.EditMode.City.TownLayoutTests.TownHallDistrict_BuildingAndMuralInsideDistrictAndBounds" methodname="TownHallDistrict_BuildingAndMuralInsideDistrictAndBounds" classname="CindarsHope.Tests.EditMode.City.TownLayoutTests" runstate="Runnable" seed="485581957" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.000169" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1076" name="V8_CirculationUsesWideAvenuesAndClearStallAprons" fullname="CindarsHope.Tests.EditMode.City.TownLayoutTests.V8_CirculationUsesWideAvenuesAndClearStallAprons" methodname="V8_CirculationUsesWideAvenuesAndClearStallAprons" classname="CindarsHope.Tests.EditMode.City.TownLayoutTests" runstate="Runnable" seed="183133961" result="Failed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.000400" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <failure>
+                    <message><![CDATA[  road_market_ns is narrower than the v8 circulation contract.
+  Expected: greater than or equal to 4.0f
+  But was:  3.0f
+]]></message>
+                    <stack-trace><![CDATA[at CindarsHope.Tests.EditMode.City.TownLayoutTests.V8_CirculationUsesWideAvenuesAndClearStallAprons () [0x00066] in F:\Projetos\Jogos\Cindars_hope\cindars_hope\Assets\_Game\Tests\EditMode\City\Editor\TownLayoutTests.cs:343
+]]></stack-trace>
+                  </failure>
+                </test-case>
+                <test-case id="1075" name="V8_SouthResidentialRowLeavesCentralGateAvenueOpen" fullname="CindarsHope.Tests.EditMode.City.TownLayoutTests.V8_SouthResidentialRowLeavesCentralGateAvenueOpen" methodname="V8_SouthResidentialRowLeavesCentralGateAvenueOpen" classname="CindarsHope.Tests.EditMode.City.TownLayoutTests" runstate="Runnable" seed="1789326589" result="Failed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.001170" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <failure>
+                    <message><![CDATA[  House_CarvalhoTorto left the south residential row.
+  Expected: -36.0d +/- 9.9999997473787516E-05d
+  But was:  -35.0d
+]]></message>
+                    <stack-trace><![CDATA[at CindarsHope.Tests.EditMode.City.TownLayoutTests.V8_SouthResidentialRowLeavesCentralGateAvenueOpen () [0x0004f] in F:\Projetos\Jogos\Cindars_hope\cindars_hope\Assets\_Game\Tests\EditMode\City\Editor\TownLayoutTests.cs:320
+]]></stack-trace>
+                  </failure>
+                </test-case>
+                <test-case id="1074" name="V8_ZonesUseLargeSemanticBuildings" fullname="CindarsHope.Tests.EditMode.City.TownLayoutTests.V8_ZonesUseLargeSemanticBuildings" methodname="V8_ZonesUseLargeSemanticBuildings" classname="CindarsHope.Tests.EditMode.City.TownLayoutTests" runstate="Runnable" seed="2048360457" result="Failed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.000347" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <failure>
+                    <message><![CDATA[  House_Temple is too shallow for the v8 reference.
+  Expected: greater than or equal to 13.0f
+  But was:  11.0f
+]]></message>
+                    <stack-trace><![CDATA[at CindarsHope.Tests.EditMode.City.TownLayoutTests.AssertLot (System.String name, CindarsHope.Editor.SceneCreation.TownBuildingArchetype archetype, System.Single minWidth, System.Single minHeight) [0x00070] in F:\Projetos\Jogos\Cindars_hope\cindars_hope\Assets\_Game\Tests\EditMode\City\Editor\TownLayoutTests.cs:361
+at CindarsHope.Tests.EditMode.City.TownLayoutTests.V8_ZonesUseLargeSemanticBuildings () [0x00000] in F:\Projetos\Jogos\Cindars_hope\cindars_hope\Assets\_Game\Tests\EditMode\City\Editor\TownLayoutTests.cs:297
+]]></stack-trace>
+                  </failure>
+                </test-case>
+              </test-suite>
+            </test-suite>
+            <test-suite type="TestSuite" id="1087" name="Editor" fullname="CindarsHope.Tests.EditMode.Editor" runstate="Runnable" testcasecount="3" result="Failed" site="Child" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.004235" total="3" passed="1" failed="2" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <failure>
+                <message><![CDATA[One or more child tests had errors]]></message>
+              </failure>
+              <test-suite type="TestFixture" id="1050" name="ProjectValidationRunnerTests" fullname="CindarsHope.Tests.EditMode.Editor.ProjectValidationRunnerTests" classname="CindarsHope.Tests.EditMode.Editor.ProjectValidationRunnerTests" runstate="Runnable" testcasecount="3" result="Failed" site="Child" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.003986" total="3" passed="1" failed="2" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <failure>
+                  <message><![CDATA[One or more child tests had errors]]></message>
+                </failure>
+                <test-case id="1053" name="RunValidators_WithAtLeastOneValidator_ReturnsConfigured" fullname="CindarsHope.Tests.EditMode.Editor.ProjectValidationRunnerTests.RunValidators_WithAtLeastOneValidator_ReturnsConfigured" methodname="RunValidators_WithAtLeastOneValidator_ReturnsConfigured" classname="CindarsHope.Tests.EditMode.Editor.ProjectValidationRunnerTests" runstate="Runnable" seed="2049558731" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.002004" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[
+========== ARCHITECTURE VALIDATION SUITE ==========
+
+========== Fake Passing Validator ==========
+Total Issues: 0 (Errors: 0, Warnings: 0, Info: 0)
+Status: PASS ✓
+==========================================
+
+========== SUITE SUMMARY ==========
+Total Issues: 0 (Errors: 0, Warnings: 0, Info: 0)
+Overall Status: PASS ✓
+
+]]></output>
+                </test-case>
+                <test-case id="1051" name="RunValidators_WithNoArgs_ReturnsNotConfigured" fullname="CindarsHope.Tests.EditMode.Editor.ProjectValidationRunnerTests.RunValidators_WithNoArgs_ReturnsNotConfigured" methodname="RunValidators_WithNoArgs_ReturnsNotConfigured" classname="CindarsHope.Tests.EditMode.Editor.ProjectValidationRunnerTests" runstate="Runnable" seed="797179243" result="Failed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.000997" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <failure>
+                    <message><![CDATA[Unhandled log message: '[Error] [ProjectValidationRunner] NOT_CONFIGURED: no validators were registered to run. This is not a PASS — zero architecture rules were checked.'. Use UnityEngine.TestTools.LogAssert.Expect]]></message>
+                    <stack-trace><![CDATA[CindarsHope.EditorTools.Validation.ProjectValidationRunner:RunValidators (CindarsHope.EditorTools.Validation.IProjectValidator[]) (at Assets/_Game/Scripts/Editor/Validation/ProjectValidationRunner.cs:20)
+CindarsHope.Tests.EditMode.Editor.ProjectValidationRunnerTests:RunValidators_WithNoArgs_ReturnsNotConfigured () (at Assets/_Game/Tests/EditMode/Editor/ProjectValidationRunnerTests.cs:22)
+System.Reflection.MethodBase:Invoke (object,object[])
+NUnit.Framework.Internal.Reflect:InvokeMethod (System.Reflection.MethodInfo,object,object[])
+NUnit.Framework.Internal.MethodWrapper:Invoke (object,object[])
+NUnit.Framework.Internal.Commands.TestMethodCommand:RunNonAsyncTestMethod (NUnit.Framework.Internal.ITestExecutionContext)
+NUnit.Framework.Internal.Commands.TestMethodCommand:RunTestMethod (NUnit.Framework.Internal.ITestExecutionContext)
+NUnit.Framework.Internal.Commands.TestMethodCommand:Execute (NUnit.Framework.Internal.ITestExecutionContext)
+UnityEditor.EditorApplication:Internal_CallUpdateFunctions ()
+
+]]></stack-trace>
+                  </failure>
+                  <output><![CDATA[[ProjectValidationRunner] NOT_CONFIGURED: no validators were registered to run. This is not a PASS — zero architecture rules were checked.
+]]></output>
+                </test-case>
+                <test-case id="1052" name="RunValidators_WithNullArgs_ReturnsNotConfigured" fullname="CindarsHope.Tests.EditMode.Editor.ProjectValidationRunnerTests.RunValidators_WithNullArgs_ReturnsNotConfigured" methodname="RunValidators_WithNullArgs_ReturnsNotConfigured" classname="CindarsHope.Tests.EditMode.Editor.ProjectValidationRunnerTests" runstate="Runnable" seed="1956515498" result="Failed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.000479" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <failure>
+                    <message><![CDATA[Unhandled log message: '[Error] [ProjectValidationRunner] NOT_CONFIGURED: no validators were registered to run. This is not a PASS — zero architecture rules were checked.'. Use UnityEngine.TestTools.LogAssert.Expect]]></message>
+                    <stack-trace><![CDATA[CindarsHope.EditorTools.Validation.ProjectValidationRunner:RunValidators (CindarsHope.EditorTools.Validation.IProjectValidator[]) (at Assets/_Game/Scripts/Editor/Validation/ProjectValidationRunner.cs:20)
+CindarsHope.Tests.EditMode.Editor.ProjectValidationRunnerTests:RunValidators_WithNullArgs_ReturnsNotConfigured () (at Assets/_Game/Tests/EditMode/Editor/ProjectValidationRunnerTests.cs:31)
+System.Reflection.MethodBase:Invoke (object,object[])
+NUnit.Framework.Internal.Reflect:InvokeMethod (System.Reflection.MethodInfo,object,object[])
+NUnit.Framework.Internal.MethodWrapper:Invoke (object,object[])
+NUnit.Framework.Internal.Commands.TestMethodCommand:RunNonAsyncTestMethod (NUnit.Framework.Internal.ITestExecutionContext)
+NUnit.Framework.Internal.Commands.TestMethodCommand:RunTestMethod (NUnit.Framework.Internal.ITestExecutionContext)
+NUnit.Framework.Internal.Commands.TestMethodCommand:Execute (NUnit.Framework.Internal.ITestExecutionContext)
+UnityEditor.EditorApplication:Internal_CallUpdateFunctions ()
+
+]]></stack-trace>
+                  </failure>
+                  <output><![CDATA[[ProjectValidationRunner] NOT_CONFIGURED: no validators were registered to run. This is not a PASS — zero architecture rules were checked.
+]]></output>
+                </test-case>
+              </test-suite>
+            </test-suite>
+            <test-suite type="TestSuite" id="1086" name="Items" fullname="CindarsHope.Tests.EditMode.Items" runstate="Runnable" testcasecount="21" result="Failed" site="Child" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.021583" total="21" passed="17" failed="4" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <failure>
+                <message><![CDATA[One or more child tests had errors]]></message>
+              </failure>
+              <test-suite type="TestFixture" id="1027" name="BowAmmoCatalogTests" fullname="CindarsHope.Tests.EditMode.Items.BowAmmoCatalogTests" classname="CindarsHope.Tests.EditMode.Items.BowAmmoCatalogTests" runstate="Runnable" testcasecount="2" result="Failed" site="Child" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.008005" total="2" passed="1" failed="1" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <failure>
+                  <message><![CDATA[One or more child tests had errors]]></message>
+                </failure>
+                <test-case id="1028" name="Catalog_AllSixArrowsExistWithCanonicalBaseValues" fullname="CindarsHope.Tests.EditMode.Items.BowAmmoCatalogTests.Catalog_AllSixArrowsExistWithCanonicalBaseValues" methodname="Catalog_AllSixArrowsExistWithCanonicalBaseValues" classname="CindarsHope.Tests.EditMode.Items.BowAmmoCatalogTests" runstate="Runnable" seed="1137725427" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.004797" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1029" name="Catalog_ResolverCoversExactlyTheSixCatalogArrows" fullname="CindarsHope.Tests.EditMode.Items.BowAmmoCatalogTests.Catalog_ResolverCoversExactlyTheSixCatalogArrows" methodname="Catalog_ResolverCoversExactlyTheSixCatalogArrows" classname="CindarsHope.Tests.EditMode.Items.BowAmmoCatalogTests" runstate="Runnable" seed="875803074" result="Failed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.002625" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <failure>
+                    <message><![CDATA[  CA-5: o resolver cobre exatamente os 6 itens de munição do catálogo (sem sobra/falta).
+  Expected is <System.Collections.Generic.List`1[System.String]> with 7 elements, actual is <System.Collections.Generic.List`1[System.String]> with 6 elements
+  Values differ at index [0]
+  Expected string length 21 but was 20. Strings differ at index 16.
+  Expected: "item_ammo_arrow_basic"
+  But was:  "item_ammo_arrow_fire"
+  ---------------------------^
+]]></message>
+                    <stack-trace><![CDATA[at NUnit.Framework.CollectionAssert.AreEqual (System.Collections.IEnumerable expected, System.Collections.IEnumerable actual, System.String message, System.Object[] args) [0x00007] in <f577cd9686154d6ab10efd7e65e64366>:0
+at CindarsHope.Tests.EditMode.Items.BowAmmoCatalogTests.Catalog_ResolverCoversExactlyTheSixCatalogArrows () [0x000a5] in F:\Projetos\Jogos\Cindars_hope\cindars_hope\Assets\_Game\Tests\EditMode\Items\Editor\BowAmmoCatalogTests.cs:57
+]]></stack-trace>
+                  </failure>
+                </test-case>
+              </test-suite>
+              <test-suite type="TestFixture" id="1030" name="ItemCatalogDataTests" fullname="CindarsHope.Tests.EditMode.Items.ItemCatalogDataTests" classname="CindarsHope.Tests.EditMode.Items.ItemCatalogDataTests" runstate="Runnable" testcasecount="19" result="Failed" site="Child" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.013042" total="19" passed="16" failed="3" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <failure>
+                  <message><![CDATA[One or more child tests had errors]]></message>
+                </failure>
+                <test-case id="1042" name="BaseCatalog_CountIsPinned_AndAtLeastDocumentedFloor" fullname="CindarsHope.Tests.EditMode.Items.ItemCatalogDataTests.BaseCatalog_CountIsPinned_AndAtLeastDocumentedFloor" methodname="BaseCatalog_CountIsPinned_AndAtLeastDocumentedFloor" classname="CindarsHope.Tests.EditMode.Items.ItemCatalogDataTests" runstate="Runnable" seed="1034771983" result="Failed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.000320" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <failure>
+                    <message><![CDATA[  Base catalog row count drifted; was 213.
+  Expected: 207
+  But was:  213
+]]></message>
+                    <stack-trace><![CDATA[at CindarsHope.Tests.EditMode.Items.ItemCatalogDataTests.BaseCatalog_CountIsPinned_AndAtLeastDocumentedFloor () [0x00028] in F:\Projetos\Jogos\Cindars_hope\cindars_hope\Assets\_Game\Tests\EditMode\Items\Editor\ItemCatalogDataTests.cs:197
+]]></stack-trace>
+                  </failure>
+                </test-case>
+                <test-case id="1040" name="Catalog_IsDeterministic" fullname="CindarsHope.Tests.EditMode.Items.ItemCatalogDataTests.Catalog_IsDeterministic" methodname="Catalog_IsDeterministic" classname="CindarsHope.Tests.EditMode.Items.ItemCatalogDataTests" runstate="Runnable" seed="529165118" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.000716" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1049" name="DormantItems_AreFlaggedWithNotes" fullname="CindarsHope.Tests.EditMode.Items.ItemCatalogDataTests.DormantItems_AreFlaggedWithNotes" methodname="DormantItems_AreFlaggedWithNotes" classname="CindarsHope.Tests.EditMode.Items.ItemCatalogDataTests" runstate="Runnable" seed="1491516640" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.000386" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1037" name="Essences_AreExactlySix" fullname="CindarsHope.Tests.EditMode.Items.ItemCatalogDataTests.Essences_AreExactlySix" methodname="Essences_AreExactlySix" classname="CindarsHope.Tests.EditMode.Items.ItemCatalogDataTests" runstate="Runnable" seed="1281196186" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.000292" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1032" name="EveryItem_HasCategoryPrefixedId_AndName" fullname="CindarsHope.Tests.EditMode.Items.ItemCatalogDataTests.EveryItem_HasCategoryPrefixedId_AndName" methodname="EveryItem_HasCategoryPrefixedId_AndName" classname="CindarsHope.Tests.EditMode.Items.ItemCatalogDataTests" runstate="Runnable" seed="1985687399" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.001983" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1043" name="ExpandedCatalog_CountIsPinned" fullname="CindarsHope.Tests.EditMode.Items.ItemCatalogDataTests.ExpandedCatalog_CountIsPinned" methodname="ExpandedCatalog_CountIsPinned" classname="CindarsHope.Tests.EditMode.Items.ItemCatalogDataTests" runstate="Runnable" seed="411218409" result="Failed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.000357" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <failure>
+                    <message><![CDATA[  Expanded catalog (base + quality variants) row count drifted.
+  Expected: 239
+  But was:  245
+]]></message>
+                    <stack-trace><![CDATA[at CindarsHope.Tests.EditMode.Items.ItemCatalogDataTests.ExpandedCatalog_CountIsPinned () [0x00000] in F:\Projetos\Jogos\Cindars_hope\cindars_hope\Assets\_Game\Tests\EditMode\Items\Editor\ItemCatalogDataTests.cs:203
+]]></stack-trace>
+                  </failure>
+                </test-case>
+                <test-case id="1031" name="ExpandedItemIds_AreUnique" fullname="CindarsHope.Tests.EditMode.Items.ItemCatalogDataTests.ExpandedItemIds_AreUnique" methodname="ExpandedItemIds_AreUnique" classname="CindarsHope.Tests.EditMode.Items.ItemCatalogDataTests" runstate="Runnable" seed="1350442869" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.001230" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1036" name="GoldMultiplier_IsTwoPointZero_NotTwoPointTwo" fullname="CindarsHope.Tests.EditMode.Items.ItemCatalogDataTests.GoldMultiplier_IsTwoPointZero_NotTwoPointTwo" methodname="GoldMultiplier_IsTwoPointZero_NotTwoPointTwo" classname="CindarsHope.Tests.EditMode.Items.ItemCatalogDataTests" runstate="Runnable" seed="1420629934" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.000375" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1041" name="GroupCounts_MatchCanonicalCatalog" fullname="CindarsHope.Tests.EditMode.Items.ItemCatalogDataTests.GroupCounts_MatchCanonicalCatalog" methodname="GroupCounts_MatchCanonicalCatalog" classname="CindarsHope.Tests.EditMode.Items.ItemCatalogDataTests" runstate="Runnable" seed="283496941" result="Failed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.000668" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <failure>
+                    <message><![CDATA[  6 arrows (§8).
+  Expected: 6
+  But was:  7
+]]></message>
+                    <stack-trace><![CDATA[at CindarsHope.Tests.EditMode.Items.ItemCatalogDataTests.GroupCounts_MatchCanonicalCatalog () [0x00105] in F:\Projetos\Jogos\Cindars_hope\cindars_hope\Assets\_Game\Tests\EditMode\Items\Editor\ItemCatalogDataTests.cs:176
+]]></stack-trace>
+                  </failure>
+                </test-case>
+                <test-case id="1046" name="ItemCategory_LegacyValues_AreStable" fullname="CindarsHope.Tests.EditMode.Items.ItemCatalogDataTests.ItemCategory_LegacyValues_AreStable" methodname="ItemCategory_LegacyValues_AreStable" classname="CindarsHope.Tests.EditMode.Items.ItemCatalogDataTests" runstate="Runnable" seed="1431372523" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.000146" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1047" name="ItemCategory_NewMembers_HaveExplicitHighValues" fullname="CindarsHope.Tests.EditMode.Items.ItemCatalogDataTests.ItemCategory_NewMembers_HaveExplicitHighValues" methodname="ItemCategory_NewMembers_HaveExplicitHighValues" classname="CindarsHope.Tests.EditMode.Items.ItemCatalogDataTests" runstate="Runnable" seed="1731178948" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.000098" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1034" name="NonSellableItems_AreAllowedToBeZeroOrSpecial" fullname="CindarsHope.Tests.EditMode.Items.ItemCatalogDataTests.NonSellableItems_AreAllowedToBeZeroOrSpecial" methodname="NonSellableItems_AreAllowedToBeZeroOrSpecial" classname="CindarsHope.Tests.EditMode.Items.ItemCatalogDataTests" runstate="Runnable" seed="242356002" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.000340" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1035" name="QualityVariants_UseCorrectMultipliers" fullname="CindarsHope.Tests.EditMode.Items.ItemCatalogDataTests.QualityVariants_UseCorrectMultipliers" methodname="QualityVariants_UseCorrectMultipliers" classname="CindarsHope.Tests.EditMode.Items.ItemCatalogDataTests" runstate="Runnable" seed="44807867" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.000818" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1039" name="RecipeIds_AreUnique" fullname="CindarsHope.Tests.EditMode.Items.ItemCatalogDataTests.RecipeIds_AreUnique" methodname="RecipeIds_AreUnique" classname="CindarsHope.Tests.EditMode.Items.ItemCatalogDataTests" runstate="Runnable" seed="391479341" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.001943" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1038" name="RecipeIngredientsAndOutputs_ResolveToCatalogItems" fullname="CindarsHope.Tests.EditMode.Items.ItemCatalogDataTests.RecipeIngredientsAndOutputs_ResolveToCatalogItems" methodname="RecipeIngredientsAndOutputs_ResolveToCatalogItems" classname="CindarsHope.Tests.EditMode.Items.ItemCatalogDataTests" runstate="Runnable" seed="2075508242" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.000862" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1033" name="SellableItems_HavePositiveBaseValue" fullname="CindarsHope.Tests.EditMode.Items.ItemCatalogDataTests.SellableItems_HavePositiveBaseValue" methodname="SellableItems_HavePositiveBaseValue" classname="CindarsHope.Tests.EditMode.Items.ItemCatalogDataTests" runstate="Runnable" seed="174917965" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.000233" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1048" name="Tool_IsNotDuplicatedAcrossEnums" fullname="CindarsHope.Tests.EditMode.Items.ItemCatalogDataTests.Tool_IsNotDuplicatedAcrossEnums" methodname="Tool_IsNotDuplicatedAcrossEnums" classname="CindarsHope.Tests.EditMode.Items.ItemCatalogDataTests" runstate="Runnable" seed="1236911421" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.000086" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1044" name="WeaponType_LegacyOrdinals_AreStable" fullname="CindarsHope.Tests.EditMode.Items.ItemCatalogDataTests.WeaponType_LegacyOrdinals_AreStable" methodname="WeaponType_LegacyOrdinals_AreStable" classname="CindarsHope.Tests.EditMode.Items.ItemCatalogDataTests" runstate="Runnable" seed="1866191327" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.000084" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1045" name="WeaponType_NewMembers_HaveExplicitHighValues" fullname="CindarsHope.Tests.EditMode.Items.ItemCatalogDataTests.WeaponType_NewMembers_HaveExplicitHighValues" methodname="WeaponType_NewMembers_HaveExplicitHighValues" classname="CindarsHope.Tests.EditMode.Items.ItemCatalogDataTests" runstate="Runnable" seed="781356385" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.000060" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+            </test-suite>
+            <test-suite type="TestSuite" id="1085" name="Save" fullname="CindarsHope.Tests.EditMode.Save" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.015717" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-suite type="TestFixture" id="1019" name="SaveCompatibilityFixtureTests" fullname="CindarsHope.Tests.EditMode.Save.SaveCompatibilityFixtureTests" classname="CindarsHope.Tests.EditMode.Save.SaveCompatibilityFixtureTests" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.015407" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1026" name="CurrentFixture_RoundTripsWithoutMigration" fullname="CindarsHope.Tests.EditMode.Save.SaveCompatibilityFixtureTests.CurrentFixture_RoundTripsWithoutMigration" methodname="CurrentFixture_RoundTripsWithoutMigration" classname="CindarsHope.Tests.EditMode.Save.SaveCompatibilityFixtureTests" runstate="Runnable" seed="1229622970" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.006144" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-suite type="ParameterizedMethod" id="1024" name="LegacyFixture_MigratesToCurrentSchemaAndRoundTrips" fullname="CindarsHope.Tests.EditMode.Save.SaveCompatibilityFixtureTests.LegacyFixture_MigratesToCurrentSchemaAndRoundTrips" classname="CindarsHope.Tests.EditMode.Save.SaveCompatibilityFixtureTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.007189" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+                  <properties />
+                  <test-case id="1020" name="LegacyFixture_MigratesToCurrentSchemaAndRoundTrips(1)" fullname="CindarsHope.Tests.EditMode.Save.SaveCompatibilityFixtureTests.LegacyFixture_MigratesToCurrentSchemaAndRoundTrips(1)" methodname="LegacyFixture_MigratesToCurrentSchemaAndRoundTrips" classname="CindarsHope.Tests.EditMode.Save.SaveCompatibilityFixtureTests" runstate="Runnable" seed="1024962890" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.004256" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1021" name="LegacyFixture_MigratesToCurrentSchemaAndRoundTrips(2)" fullname="CindarsHope.Tests.EditMode.Save.SaveCompatibilityFixtureTests.LegacyFixture_MigratesToCurrentSchemaAndRoundTrips(2)" methodname="LegacyFixture_MigratesToCurrentSchemaAndRoundTrips" classname="CindarsHope.Tests.EditMode.Save.SaveCompatibilityFixtureTests" runstate="Runnable" seed="1869008840" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.000963" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1022" name="LegacyFixture_MigratesToCurrentSchemaAndRoundTrips(3)" fullname="CindarsHope.Tests.EditMode.Save.SaveCompatibilityFixtureTests.LegacyFixture_MigratesToCurrentSchemaAndRoundTrips(3)" methodname="LegacyFixture_MigratesToCurrentSchemaAndRoundTrips" classname="CindarsHope.Tests.EditMode.Save.SaveCompatibilityFixtureTests" runstate="Runnable" seed="2140513856" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.000699" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1023" name="LegacyFixture_MigratesToCurrentSchemaAndRoundTrips(4)" fullname="CindarsHope.Tests.EditMode.Save.SaveCompatibilityFixtureTests.LegacyFixture_MigratesToCurrentSchemaAndRoundTrips(4)" methodname="LegacyFixture_MigratesToCurrentSchemaAndRoundTrips" classname="CindarsHope.Tests.EditMode.Save.SaveCompatibilityFixtureTests" runstate="Runnable" seed="314955561" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.000531" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                </test-suite>
+                <test-case id="1025" name="VersionOneFixture_PreservesLegacyInventoryAmountAcrossSlotMigration" fullname="CindarsHope.Tests.EditMode.Save.SaveCompatibilityFixtureTests.VersionOneFixture_PreservesLegacyInventoryAmountAcrossSlotMigration" methodname="VersionOneFixture_PreservesLegacyInventoryAmountAcrossSlotMigration" classname="CindarsHope.Tests.EditMode.Save.SaveCompatibilityFixtureTests" runstate="Runnable" seed="65589054" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.001466" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+            </test-suite>
+            <test-suite type="TestSuite" id="1084" name="Tooling" fullname="CindarsHope.Tests.EditMode.Tooling" runstate="Runnable" testcasecount="17" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.014802" total="17" passed="17" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-suite type="TestFixture" id="1001" name="CatalogValidatorTests" fullname="CindarsHope.Tests.EditMode.Tooling.CatalogValidatorTests" classname="CindarsHope.Tests.EditMode.Tooling.CatalogValidatorTests" runstate="Runnable" testcasecount="17" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.014445" total="17" passed="17" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1011" name="ActiveSkillToDormantFlag_IsInfo" fullname="CindarsHope.Tests.EditMode.Tooling.CatalogValidatorTests.ActiveSkillToDormantFlag_IsInfo" methodname="ActiveSkillToDormantFlag_IsInfo" classname="CindarsHope.Tests.EditMode.Tooling.CatalogValidatorTests" runstate="Runnable" seed="1372580814" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.004257" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1010" name="ActiveSkillToUnknownExecutor_IsError" fullname="CindarsHope.Tests.EditMode.Tooling.CatalogValidatorTests.ActiveSkillToUnknownExecutor_IsError" methodname="ActiveSkillToUnknownExecutor_IsError" classname="CindarsHope.Tests.EditMode.Tooling.CatalogValidatorTests" runstate="Runnable" seed="1338339618" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.000305" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1012" name="ActiveSkillToValidExecutor_IsClean" fullname="CindarsHope.Tests.EditMode.Tooling.CatalogValidatorTests.ActiveSkillToValidExecutor_IsClean" methodname="ActiveSkillToValidExecutor_IsClean" classname="CindarsHope.Tests.EditMode.Tooling.CatalogValidatorTests" runstate="Runnable" seed="708623010" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.000214" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1017" name="CanonicalExpectations_HaveDocumentedCounts" fullname="CindarsHope.Tests.EditMode.Tooling.CatalogValidatorTests.CanonicalExpectations_HaveDocumentedCounts" methodname="CanonicalExpectations_HaveDocumentedCounts" classname="CindarsHope.Tests.EditMode.Tooling.CatalogValidatorTests" runstate="Runnable" seed="1788269225" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.001696" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1015" name="CrossRefSkippedWhenTargetCategoryNotGenerated" fullname="CindarsHope.Tests.EditMode.Tooling.CatalogValidatorTests.CrossRefSkippedWhenTargetCategoryNotGenerated" methodname="CrossRefSkippedWhenTargetCategoryNotGenerated" classname="CindarsHope.Tests.EditMode.Tooling.CatalogValidatorTests" runstate="Runnable" seed="698285022" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.000530" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1013" name="DuplicateBestiaryEntryId_IsError" fullname="CindarsHope.Tests.EditMode.Tooling.CatalogValidatorTests.DuplicateBestiaryEntryId_IsError" methodname="DuplicateBestiaryEntryId_IsError" classname="CindarsHope.Tests.EditMode.Tooling.CatalogValidatorTests" runstate="Runnable" seed="812083885" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.000411" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1005" name="EnemyDropToExistingItem_IsClean" fullname="CindarsHope.Tests.EditMode.Tooling.CatalogValidatorTests.EnemyDropToExistingItem_IsClean" methodname="EnemyDropToExistingItem_IsClean" classname="CindarsHope.Tests.EditMode.Tooling.CatalogValidatorTests" runstate="Runnable" seed="1070745102" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.000591" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1004" name="EnemyDropToMissingItem_IsError" fullname="CindarsHope.Tests.EditMode.Tooling.CatalogValidatorTests.EnemyDropToMissingItem_IsError" methodname="EnemyDropToMissingItem_IsError" classname="CindarsHope.Tests.EditMode.Tooling.CatalogValidatorTests" runstate="Runnable" seed="471023724" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.000322" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1018" name="FullyConsistentSnapshot_HasNoErrors" fullname="CindarsHope.Tests.EditMode.Tooling.CatalogValidatorTests.FullyConsistentSnapshot_HasNoErrors" methodname="FullyConsistentSnapshot_HasNoErrors" classname="CindarsHope.Tests.EditMode.Tooling.CatalogValidatorTests" runstate="Runnable" seed="1843121203" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.000862" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1002" name="MissingCanonicalId_IsError" fullname="CindarsHope.Tests.EditMode.Tooling.CatalogValidatorTests.MissingCanonicalId_IsError" methodname="MissingCanonicalId_IsError" classname="CindarsHope.Tests.EditMode.Tooling.CatalogValidatorTests" runstate="Runnable" seed="1300976965" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.000286" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1014" name="NotGeneratedCategory_IsSkipped_NotError" fullname="CindarsHope.Tests.EditMode.Tooling.CatalogValidatorTests.NotGeneratedCategory_IsSkipped_NotError" methodname="NotGeneratedCategory_IsSkipped_NotError" classname="CindarsHope.Tests.EditMode.Tooling.CatalogValidatorTests" runstate="Runnable" seed="551769296" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.000355" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1016" name="PartialGeneration_IsCountWarn" fullname="CindarsHope.Tests.EditMode.Tooling.CatalogValidatorTests.PartialGeneration_IsCountWarn" methodname="PartialGeneration_IsCountWarn" classname="CindarsHope.Tests.EditMode.Tooling.CatalogValidatorTests" runstate="Runnable" seed="1090657358" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.000395" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1006" name="QuestRewardToMissingItem_IsError" fullname="CindarsHope.Tests.EditMode.Tooling.CatalogValidatorTests.QuestRewardToMissingItem_IsError" methodname="QuestRewardToMissingItem_IsError" classname="CindarsHope.Tests.EditMode.Tooling.CatalogValidatorTests" runstate="Runnable" seed="701085347" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.000223" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1007" name="QuestRewardToMissingSkill_IsError" fullname="CindarsHope.Tests.EditMode.Tooling.CatalogValidatorTests.QuestRewardToMissingSkill_IsError" methodname="QuestRewardToMissingSkill_IsError" classname="CindarsHope.Tests.EditMode.Tooling.CatalogValidatorTests" runstate="Runnable" seed="675142908" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.000224" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1008" name="RecipeToMissingIngredient_IsError" fullname="CindarsHope.Tests.EditMode.Tooling.CatalogValidatorTests.RecipeToMissingIngredient_IsError" methodname="RecipeToMissingIngredient_IsError" classname="CindarsHope.Tests.EditMode.Tooling.CatalogValidatorTests" runstate="Runnable" seed="1158883959" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.000219" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1009" name="ShopEntryToMissingItem_IsError" fullname="CindarsHope.Tests.EditMode.Tooling.CatalogValidatorTests.ShopEntryToMissingItem_IsError" methodname="ShopEntryToMissingItem_IsError" classname="CindarsHope.Tests.EditMode.Tooling.CatalogValidatorTests" runstate="Runnable" seed="2019007350" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.000207" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1003" name="UndocumentedAsset_IsWarn" fullname="CindarsHope.Tests.EditMode.Tooling.CatalogValidatorTests.UndocumentedAsset_IsWarn" methodname="UndocumentedAsset_IsWarn" classname="CindarsHope.Tests.EditMode.Tooling.CatalogValidatorTests" runstate="Runnable" seed="1732671871" result="Passed" start-time="2026-07-05 03:31:08Z" end-time="2026-07-05 03:31:08Z" duration="0.000235" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[Saving results to: F:\Projetos\Jogos\Cindars_hope\cindars_hope\TestResults\modularization-phase0-full-editmode.xml
+]]></output>
+                </test-case>
+              </test-suite>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>
