@@ -4,7 +4,7 @@ Data: 2026-07-05
 
 Branch: `dev`
 
-Status: `VALIDATED_PENDING_PUBLICATION`
+Status: `COMPLETE`
 
 ## Objetivo
 
@@ -119,3 +119,5 @@ Resultado do gate em 2026-07-05:
 - `.asmdef`: 0.
 
 Evidência: `TestResults/modularization-phase2-full-editmode.xml`.
+
+Publicação: commit de fechamento `02a26d75`, verificado em `origin/dev` com divergência `0 0`.

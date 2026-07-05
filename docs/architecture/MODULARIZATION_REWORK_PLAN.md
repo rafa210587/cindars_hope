@@ -2,7 +2,7 @@
 
 > Documento operacional para modularizar o projeto sem alterar o comportamento existente.
 >
-> **Status:** Fases 0 e 1 concluídas; Fase 2 validada e aguardando publicação
+> **Status:** Fases 0, 1 e 2 concluídas e publicadas em `dev`
 > atual ser commitado e publicado.
 >
 > **Branch planejada:** `rework/modular-architecture`
@@ -581,5 +581,7 @@ A Fase 1 foi publicada até `1248bb3c`; `origin/dev` foi verificado no mesmo has
 
 A preparação pré-asmdef foi concluída sem criar assemblies: hardcodes C# removidos, validação
 multi-project implementada, internos/ciclos mapeados e matriz de referências definida. O gate
-EditMode manteve as mesmas 13 falhas preexistentes. Publicação ainda deve ser verificada antes de
-iniciar a Fase 3.
+EditMode manteve as mesmas 13 falhas preexistentes. A publicação foi verificada antes do fechamento.
+
+Publicação confirmada até `02a26d75`, com `origin/dev` no mesmo hash e divergência `0 0`. A Fase 3
+não está autorizada por esta decisão.
