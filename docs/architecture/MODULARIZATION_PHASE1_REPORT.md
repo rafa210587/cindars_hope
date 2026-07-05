@@ -4,7 +4,7 @@ Data: 2026-07-05
 
 Branch: `dev`
 
-Status: `VALIDATED_PENDING_PUBLICATION`
+Status: `COMPLETE`
 
 ## Escopo concluído
 
@@ -66,5 +66,5 @@ não foram incluídas nos commits da Fase 1.
 
 ## Próximo gate
 
-Publicar os commits da Fase 1, confirmar `origin/dev` e só então iniciar a Fase 2. A Fase 2 continua
-proibida de criar `.asmdef`.
+Fase 1 publicada até `1248bb3c`; `origin/dev` foi verificado no mesmo hash, divergência `0 0`. A
+Fase 2 pode iniciar e continua proibida de criar `.asmdef`.

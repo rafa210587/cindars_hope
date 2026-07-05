@@ -2,7 +2,7 @@
 
 > Documento operacional para modularizar o projeto sem alterar o comportamento existente.
 >
-> **Status:** Fase 0 concluída; Fase 1 validada e aguardando publicação
+> **Status:** Fases 0 e 1 concluídas em `dev`; Fase 2 autorizada
 > atual ser commitado e publicado.
 >
 > **Branch planejada:** `rework/modular-architecture`
@@ -574,4 +574,5 @@ A Fase 1 foi implementada e validada em cinco commits isolados. Builds runtime/e
 com zero warnings e a suíte EditMode manteve exatamente as 13 falhas preexistentes. O relatório
 detalhado está em `docs/architecture/MODULARIZATION_PHASE1_REPORT.md`.
 
-O início da Fase 2 depende apenas da publicação e verificação remota desses commits.
+A Fase 1 foi publicada até `1248bb3c`; `origin/dev` foi verificado no mesmo hash com divergência
+`0 0`. A Fase 2 está liberada dentro dos limites desta decisão.

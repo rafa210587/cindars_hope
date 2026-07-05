@@ -236,9 +236,9 @@ Não declare PASS por compilação textual ou por relato de outro agente. Use ex
 - Próximo passo: commitar apenas os cinco arquivos de warning/comentário e o handoff, preservando o
   lote concorrente de animação.
 
-### 2026-07-05 — Gate de fechamento da Fase 1
+### 2026-07-05 — Fechamento e publicação da Fase 1
 
-- Status: `VALIDATED_PENDING_PUBLICATION`.
+- Status: `COMPLETE`.
 - Commits da fase: `1de0e1b9`, `bc60bcbb`, `436b4063`, `3672dd28`, `416a6d87`.
 - Builds finais: runtime/editor exit 0, 0 warnings, 0 erros.
 - Ratchet: PASS; `PhysicsAllQuery` reduziu de 2 para 0.
@@ -248,8 +248,11 @@ Não declare PASS por compilação textual ou por relato de outro agente. Use ex
 - PlayMode: não executado; risco residual observacional documentado no relatório.
 - Relatório: `docs/architecture/MODULARIZATION_PHASE1_REPORT.md`.
 - Alterações concorrentes de animação permanecem fora dos commits.
-- Próximo passo: commitar relatório/handoff/evidência final, publicar a Fase 1 e verificar remoto;
-  somente então iniciar a Fase 2.
+- Commit de fechamento: `1248bb3c` (`docs(arquitetura): fechar validacao da fase 1`).
+- Publicação: `origin/dev` verificado em `1248bb3c79e7376790236c48757615c5b46051e1`, divergência
+  `0 0`.
+- Próximo passo: iniciar a Fase 2 sem `.asmdef`, mantendo os três arquivos concorrentes fora dos
+  commits da modularização.
 
 ### 2026-07-05 — Início controlado da Fase 0 na `dev`
 
