@@ -5,10 +5,30 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
-$projects = @(
-    Get-ChildItem -LiteralPath $ProjectRoot -File -Filter '*.csproj' |
-        Sort-Object Name
-)
+$solution = Get-ChildItem -LiteralPath $ProjectRoot -File -Filter '*.slnx' |
+    Sort-Object Name |
+    Select-Object -First 1
+
+$projects = @()
+if ($null -ne $solution) {
+    [xml]$solutionXml = Get-Content -LiteralPath $solution.FullName
+    $projects = @(
+        $solutionXml.Solution.Project |
+            ForEach-Object {
+                $projectPath = Join-Path $ProjectRoot $_.Path
+                if (-not (Test-Path -LiteralPath $projectPath -PathType Leaf)) {
+                    throw "Solution '$($solution.Name)' references missing project '$($_.Path)'."
+                }
+
+                Get-Item -LiteralPath $projectPath
+            }
+    )
+} else {
+    $projects = @(
+        Get-ChildItem -LiteralPath $ProjectRoot -File -Filter '*.csproj' |
+            Sort-Object Name
+    )
+}
 
 if ($projects.Count -eq 0) {
     Write-Error "No Unity-generated C# projects found at '$ProjectRoot'. Open Unity and regenerate project files."
@@ -16,6 +36,9 @@ if ($projects.Count -eq 0) {
 }
 
 Write-Output "Unity C# projects discovered: $($projects.Count)"
+if ($null -ne $solution) {
+    Write-Output "Authoritative solution: $($solution.Name)"
+}
 $projects | ForEach-Object { Write-Output "  - $($_.Name)" }
 
 if (-not $SkipRestore) {

@@ -1,0 +1,24 @@
+{
+    "name": "CindarsHope.Tests.EditMode",
+    "rootNamespace": "CindarsHope.Tests.EditMode",
+    "references": [
+        "CindarsHope.Foundation",
+        "CindarsHope.Runtime",
+        "CindarsHope.Editor"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ]
+}

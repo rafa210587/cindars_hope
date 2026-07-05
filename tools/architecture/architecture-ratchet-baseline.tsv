@@ -6,7 +6,7 @@ RuntimeInitialize	Assets/_Game/Scripts/Cave/Ecosystem/CaveConflictFeedbackBridge
 RuntimeInitialize	Assets/_Game/Scripts/Cave/Runtime/CaveRuntimeBridge.cs	2
 RuntimeInitialize	Assets/_Game/Scripts/Cave/Runtime/CaveWanderingMerchant.cs	1
 RuntimeInitialize	Assets/_Game/Scripts/City/Services/CityServiceRuntimeBootstrap.cs	1
-RuntimeInitialize	Assets/_Game/Scripts/Combat/CombatStateTracker.cs	1
+RuntimeInitialize	Assets/_Game/Scripts/Composition/GameRuntimeCompositionRoot.cs	1
 RuntimeInitialize	Assets/_Game/Scripts/Combat/StatusEffect/PlayerStatusReceiver.cs	1
 RuntimeInitialize	Assets/_Game/Scripts/Combat/Telemetry/CombatTelemetryService.cs	2
 RuntimeInitialize	Assets/_Game/Scripts/Craft/CraftingStationRuntimeBootstrap.cs	1
@@ -57,6 +57,7 @@ SingletonDeclaration	Assets/_Game/Scripts/Combat/CombatStateTracker.cs	1
 SingletonDeclaration	Assets/_Game/Scripts/Combat/Magic/PlayerBarrierState.cs	1
 SingletonDeclaration	Assets/_Game/Scripts/Combat/StatusEffect/PlayerStatusReceiver.cs	1
 SingletonDeclaration	Assets/_Game/Scripts/Combat/Telemetry/CombatTelemetryService.cs	1
+SingletonDeclaration	Assets/_Game/Scripts/Composition/GameRuntimeCompositionRoot.cs	1
 SingletonDeclaration	Assets/_Game/Scripts/Core/Bootstrap/GameBootstrap.cs	1
 SingletonDeclaration	Assets/_Game/Scripts/Crafting/EquipmentUpgradeRegistry.cs	1
 SingletonDeclaration	Assets/_Game/Scripts/Crafting/RecipeUnlockService.cs	1

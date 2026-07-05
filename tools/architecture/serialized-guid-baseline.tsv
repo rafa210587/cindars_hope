@@ -18,3 +18,8 @@ scene_installer	Assets/_Game/Scripts/SceneManagement/CaveSceneRuntimeReferenceIn
 foundation_contract	Assets/_Game/Scripts/Foundation/Data/IIdentifiedData.cs	319077d6cfe6c8f4192c1c6588d41076
 foundation_contract	Assets/_Game/Scripts/Foundation/Data/IDataRegistry.cs	e17342ebda143d849a3f7f1063674f53
 foundation_assembly	Assets/_Game/Scripts/Foundation/CindarsHope.Foundation.asmdef	b2888fab36050b14aa0127a3e2df0562
+runtime_assembly	Assets/_Game/Scripts/CindarsHope.Runtime.asmdef	e5254ce8bbf372546a56ae49d558619c
+editor_assembly	Assets/_Game/Scripts/Editor/CindarsHope.Editor.asmdef	8bd3412aeaf85a44a9a659b6cff0f4b3
+test_assembly	Assets/_Game/Tests/EditMode/CindarsHope.Tests.EditMode.asmdef	a57ae81a627461b4c9315a8389157aad
+test_assembly	Assets/_Game/Tests/PlayMode/Composition/CindarsHope.Tests.PlayMode.Composition.asmdef	8caaed14f27e41141a1109de345e5108
+composition_root	Assets/_Game/Scripts/Composition/GameRuntimeCompositionRoot.cs	0e9bcb767a3821c45aaa110ea18ce455

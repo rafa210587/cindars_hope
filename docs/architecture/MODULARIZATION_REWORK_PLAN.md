@@ -609,3 +609,25 @@ Esta conclusão não autoriza a Fase 4.
 Os commits técnicos `8e99b658` e `1fcfde72` foram publicados em `origin/dev`; o remoto foi
 verificado em `1fcfde72f6c174e3da39fcf2cf0a8ed8e1a2c25e`, com divergência `0 0` antes do commit
 documental de fechamento.
+
+## 16. Autorização para conclusão integral
+
+Em 2026-07-05, o responsável determinou continuar sem parar até concluir todo o rework. Esta decisão
+autoriza executar as Fases 4 a 8 na branch `dev`, respeitando os gates, commits pequenos, paridade de
+comportamento e limites absolutos deste plano. A autorização não permite absorver mudanças
+concorrentes, remover funcionalidade sem substituição, elevar baselines para esconder regressões ou
+declarar performance sem medição.
+
+Cada fase deve ser publicada como marco recuperável. Falhas preexistentes podem permanecer somente
+quando a comparação provar que não houve regressão; falha nova interrompe o lote afetado até correção.
+
+### Resultado das Fases 4 e 5
+
+A Fase 4 introduziu o composition root e migrou `CombatStateTracker` como piloto, mantendo 63
+inicializadores runtime. A Fase 5 moveu todo o código do jogo para assemblies explícitas com runtime
+amplo, editor e testes acíclicos sobre Foundation. Seis projetos ativos compilam sem warnings ou
+erros; arquitetura passa 7/7 e saves 6/6.
+
+A descoberta real subiu de 82 para 2.660 testes EditMode, expondo 81 falhas antes invisíveis. O
+PlayMode batch continua bloqueado porque o Unity entra no jogo sem iniciar testes ou gerar XML. Ver
+`MODULARIZATION_PHASE4_COMPOSITION_REPORT.md` e `MODULARIZATION_PHASE5_ASSEMBLIES_REPORT.md`.

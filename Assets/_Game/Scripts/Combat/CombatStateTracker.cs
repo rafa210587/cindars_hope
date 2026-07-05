@@ -58,13 +58,21 @@ namespace CindarsHope.Combat
 
         private void Awake()
         {
-            if (_activeInstance != null && _activeInstance != this)
+            if (!RegisterAsActive())
             {
                 Destroy(this);
-                return;
+            }
+        }
+
+        internal bool RegisterAsActive()
+        {
+            if (_activeInstance != null && _activeInstance != this)
+            {
+                return false;
             }
 
             _activeInstance = this;
+            return true;
         }
 
         private void OnEnable()
@@ -100,21 +108,26 @@ namespace CindarsHope.Combat
         }
     }
 
-    /// <summary>Garante o tracker na cena (padrão bootstrap do projeto, sem global search recorrente).</summary>
+    /// <summary>Instalador idempotente do tracker, chamado pelo composition root.</summary>
     public static class CombatStateTrackerBootstrap
     {
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void EnsureInstance()
+        public static CombatStateTracker Install()
         {
             if (CombatStateTracker.ActiveInstance != null)
             {
-                return;
+                return CombatStateTracker.ActiveInstance;
             }
 
             var go = new GameObject("CombatStateTracker");
-            Object.DontDestroyOnLoad(go);
-            go.AddComponent<CombatStateTracker>();
-            Debug.Log("[CombatStateTrackerBootstrap] CombatStateTracker instanciado via bootstrap (fable_69).");
+            if (Application.isPlaying)
+            {
+                Object.DontDestroyOnLoad(go);
+            }
+
+            var tracker = go.AddComponent<CombatStateTracker>();
+            tracker.RegisterAsActive();
+            Debug.Log("[CombatStateTrackerBootstrap] CombatStateTracker instalado pelo composition root (fable_69).");
+            return tracker;
         }
     }
 }

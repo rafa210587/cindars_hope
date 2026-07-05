@@ -5,6 +5,40 @@ estiver próxima do limite de contexto/tokens.
 
 ---
 
+## 2026-07-05 — Autorização integral das Fases 4 a 8
+
+- Decisão humana: continuar até terminar todo o rework, sem parar entre fases.
+- Branch: `dev`; preflight em `0f2ab017`, sincronizado com `origin/dev` (`0 0`).
+- Escopo liberado: Fases 4, 5, 6, 7 e 8 do plano autoritativo, sempre pelos gates definidos.
+- Restrições mantidas: nenhuma regressão de gameplay/save/cena/conteúdo; commits pequenos; nenhum
+  baseline elevado para mascarar falha; performance somente com medição.
+- Alterações concorrentes que continuam excluídas dos commits:
+  - `Assets/_Game/Scripts/Editor/Enemy/GenerateEnemyWalkAnimations.cs`;
+  - `Assets/_Game/Scripts/Enemy/EnemyAnimator.cs`;
+  - `tools/enemy_anim/normalize_enemy_sheets.py`.
+- Próximo passo: inventariar composition roots e selecionar o primeiro bootstrap migrável da Fase 4.
+
+### 2026-07-05 — Fase 4: composition root piloto
+
+- Criado `GameRuntimeCompositionRoot` com readiness explícito e lifecycle idempotente.
+- `CombatStateTrackerBootstrap` migrado de auto-bootstrap para `Install()` centralizado.
+- EditMode: 2/2 PASS; compile Unity: exit 0; ratchet: PASS.
+- PlayMode batch: bloqueado pelo runner, que entra no jogo sem iniciar o teste ou gerar XML; não
+  considerar PASS. Artefatos `InitTestScene*` foram removidos.
+- Relatório: `docs/architecture/MODULARIZATION_PHASE4_COMPOSITION_REPORT.md`.
+
+### 2026-07-05 — Fase 5: runtime/editor/tests explícitos
+
+- Assemblies: `CindarsHope.Runtime`, `CindarsHope.Editor`, `CindarsHope.Tests.EditMode` e
+  `CindarsHope.Tests.PlayMode.Composition`, todas sobre `CindarsHope.Foundation`.
+- O runtime amplo é intencional enquanto os 49 pares mútuos não forem removidos por ports.
+- Builder usa `cindars_hope.slnx`; 6 projetos ativos compilam com 0 warnings e 0 erros.
+- Arquitetura: 7/7 PASS; save fixtures: 6/6 PASS; ratchet: PASS.
+- EditMode real: 2.579/2.660 PASS, 81 falhas antes invisíveis.
+- Relatório: `docs/architecture/MODULARIZATION_PHASE5_ASSEMBLIES_REPORT.md`.
+- Próximo passo: publicar checkpoints das Fases 4/5 e iniciar Fase 6 sem tratar testes obsoletos
+  como autorização para regredir conteúdo atual.
+
 ## 2026-07-05 — Autorização e preflight da Fase 3
 
 - Decisão humana: seguir para a próxima fase na branch `dev`.
