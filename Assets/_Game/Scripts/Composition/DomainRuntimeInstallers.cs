@@ -4,6 +4,8 @@ using CindarsHope.City.Services;
 using CindarsHope.NPC.Friendship;
 using CindarsHope.NPC.Gifting;
 using CindarsHope.NPC.Services;
+using CindarsHope.NPC.Schedule;
+using CindarsHope.World;
 using CindarsHope.World.Events;
 using CindarsHope.World.Weather;
 using UnityEngine;
@@ -29,6 +31,7 @@ namespace CindarsHope.Composition
             GiftGivingRuntimeBootstrap.Install(owner);
             NpcServiceRuntimeBootstrap.Install(owner);
             CityServiceRuntimeBootstrap.Install(owner);
+            NpcScheduleRuntimeBootstrap.Install(owner);
         }
     }
 
@@ -38,6 +41,7 @@ namespace CindarsHope.Composition
         {
             WorldWeatherRuntimeBootstrap.Install(owner);
             WorldEventRuntimeBootstrap.Install(owner);
+            ItemDropSpawner.Install(owner);
         }
     }
 }

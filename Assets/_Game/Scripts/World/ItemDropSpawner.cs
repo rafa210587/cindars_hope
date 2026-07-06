@@ -16,17 +16,18 @@ namespace CindarsHope.World
         private readonly List<ItemPickup> _droppedPickups = new List<ItemPickup>();
         private int _nextPickupIndex = 10000;
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void EnsureRuntimeInstance()
+        public static ItemDropSpawner Install(Transform owner)
         {
             if (_instance != null)
             {
-                return;
+                return _instance;
             }
 
             var go = new GameObject("ItemDropSpawner");
-            DontDestroyOnLoad(go);
+            if (owner != null) go.transform.SetParent(owner, false);
+            else DontDestroyOnLoad(go);
             _instance = go.AddComponent<ItemDropSpawner>();
+            return _instance;
         }
 
         private void Awake()
@@ -38,7 +39,8 @@ namespace CindarsHope.World
             }
 
             _instance = this;
-            DontDestroyOnLoad(gameObject);
+            if (transform.parent == null)
+                DontDestroyOnLoad(gameObject);
         }
 
         public static ItemDropSpawner Instance => _instance;

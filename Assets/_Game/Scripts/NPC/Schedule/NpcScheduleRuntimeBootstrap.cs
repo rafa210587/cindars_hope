@@ -16,14 +16,14 @@ namespace CindarsHope.NPC.Schedule
     public static class NpcScheduleRuntimeBootstrap
     {
 #pragma warning disable CS0618
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void EnsureInstance()
+        public static NpcScheduleService Install(Transform owner)
         {
             var service = NpcScheduleService.Instance;
             if (service == null)
             {
                 var go = new GameObject("NpcScheduleService");
-                Object.DontDestroyOnLoad(go);
+                if (owner != null) go.transform.SetParent(owner, false);
+                else Object.DontDestroyOnLoad(go);
                 service = go.AddComponent<NpcScheduleService>();
                 Debug.Log("[NpcScheduleRuntimeBootstrap] NpcScheduleService created.");
             }
@@ -31,6 +31,7 @@ namespace CindarsHope.NPC.Schedule
             WireTimeSource(service);
             RegisterAnchors(service);
             RegisterControllers(service);
+            return service;
         }
 #pragma warning restore CS0618
 

@@ -263,7 +263,7 @@ estiver próxima do limite de contexto/tokens.
 - Próximo passo: V5 Lote 5, inventariar/classificar os 48 runtime-init externos ao root e migrar
   apenas bootstraps persistentes com ownership/teardown inequívocos para installers de domínio.
 
-### V5 Lote 5A — ownership e installers piloto (implementado, commit pendente)
+### V5 Lote 5A — ownership e installers piloto (commit `c85676cf`)
 
 - Inventário autoritativo: `docs/architecture/RUNTIME_BOOTSTRAP_OWNERSHIP_V5.md`.
 - A contagem caiu de 49 para 41 atributos reais; 40 continuam fora do root.
@@ -281,6 +281,17 @@ estiver próxima do limite de contexto/tokens.
   1 diagnóstico e 1 reset de subsistema classificado como intencional.
 - Próximo recorte seguro: NPC schedule + World item drop, depois Farm; não mover UI/player/audio
   diretamente para o estágio `BeforeSceneLoad`.
+
+### V5 Lote 5B — schedule e item drop (implementado, commit pendente)
+
+- `NpcScheduleRuntimeBootstrap` e `ItemDropSpawner` perderam seus auto-bootstraps e agora são
+  instalados pelos installers NPC/World no `Start` do root.
+- Hosts novos são filhos do root; fallback sem owner mantém `DontDestroyOnLoad`; instâncias existentes
+  continuam adotadas. O schedule preserva a varredura de anchors/controllers e o item drop preserva
+  índice, lista dinâmica, save e dependências.
+- Contagem atual: 39 atributos reais, 38 fora do root (baseline v5: 49).
+- Gates: EditMode 2.726/2.726; PlayMode root com os 8 serviços migrados 1/1; ratchet PASS.
+- Próximo recorte: installers Farm. Lote 5 continua aberto; não marcar a spec como concluída.
 
 ## 2026-07-05 — Autorização integral das Fases 4 a 8
 

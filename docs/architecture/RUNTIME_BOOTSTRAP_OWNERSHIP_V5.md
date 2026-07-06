@@ -5,9 +5,9 @@ Data da auditoria: 2026-07-05.
 ## Resultado
 
 - baseline verificado antes deste lote: 49 atributos reais;
-- migrados neste lote: 8 (crafting hook, cave feedback, friendship, gifting, NPC service, city
-  service, weather e world events);
-- estado atual: 41 atributos em 41 arquivos, sendo 40 fora do composition root;
+- migrados neste lote: 10 (crafting hook, cave feedback, friendship, gifting, NPC service, city
+  service, schedule, weather, world events e item drop);
+- estado atual: 39 atributos em 39 arquivos, sendo 38 fora do composition root;
 - nenhuma migração restante está autorizada sem preservar o momento de instalação, fallback de cena,
   ownership e teardown descritos abaixo.
 
@@ -21,7 +21,7 @@ Data da auditoria: 2026-07-05.
 | Diagnóstico sem estado | 1 | remover de runtime ou mover para validator em spec própria |
 | UI/cena | 7 | installer de apresentação após cena; exige fallback e smoke visual |
 | Componentes anexados ao player | 6 | installer de player lifecycle, não root global direto |
-| Serviços persistentes de domínio | 24 | migrar por domínio, com ordem e teardown explícitos |
+| Serviços persistentes de domínio | 22 | migrar por domínio, com ordem e teardown explícitos |
 
 ### Reset de subsistema
 
@@ -62,28 +62,24 @@ Data da auditoria: 2026-07-05.
 - Inventory/items: `ItemUseManager`, consumables e magic items;
 - Magic: `PlayerSpellbookRuntimeBootstrap`;
 - Narrative: `NarrativeRuntimeBootstrap`;
-- NPC: schedule;
 - Player: condition e inferred class;
 - Quest: `QuestRuntimeBootstrap`;
-- World: item drop.
 
 ## Migração piloto concluída
 
 `CraftingRuntimeInstaller` instala/desinstala o hook de first-kill. `CaveRuntimeInstaller` cria o
-feedback bridge como filho do root. `NpcRuntimeInstaller` instala friendship, gifting, NPC services
-e city services. `WorldRuntimeInstaller` instala weather e world events. Os serviços dependentes da
+feedback bridge como filho do root. `NpcRuntimeInstaller` instala friendship, gifting, NPC services,
+city services e schedule. `WorldRuntimeInstaller` instala weather, world events e item drop. Os serviços dependentes da
 cena são instalados no `Start` do root, mantendo o estágio posterior ao carregamento; os hosts novos
 viram filhos do root e os hosts já existentes são adotados sem reparenting. Destruir ou invalidar o
 root remove a assinatura estática e os filhos; recriar o root reinstala tudo idempotentemente.
 
 ## Próxima ordem segura
 
-1. concluir domínio NPC: schedule;
-2. concluir domínio World: item drop;
-3. domínio Farm, preservando dependência do `TimeManager` e scene anchors;
-4. player lifecycle somente após existir um `PlayerRuntimeInstaller` ligado ao spawn/despawn;
-5. apresentação somente com PlayMode e smoke visual por cena;
-6. audio por último: instalar antes da cena altera a decisão de criar `AudioListener` e não é seguro
+1. domínio Farm, preservando dependência do `TimeManager` e scene anchors;
+2. player lifecycle somente após existir um `PlayerRuntimeInstaller` ligado ao spawn/despawn;
+3. apresentação somente com PlayMode e smoke visual por cena;
+4. audio por último: instalar antes da cena altera a decisão de criar `AudioListener` e não é seguro
    sem um estágio `AfterSceneLoad` explícito no root.
 
 Não contar comentários ou validators Editor que apenas mencionam o atributo; a métrica é obtida por

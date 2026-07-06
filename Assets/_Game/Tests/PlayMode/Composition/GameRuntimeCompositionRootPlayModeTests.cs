@@ -6,10 +6,12 @@ using CindarsHope.City.Services;
 using CindarsHope.NPC.Friendship;
 using CindarsHope.NPC.Gifting;
 using CindarsHope.NPC.Services;
+using CindarsHope.NPC.Schedule;
 using CindarsHope.Skills.Runtime.Effects;
 using CindarsHope.UI.Routing;
 using CindarsHope.World.Events;
 using CindarsHope.World.Weather;
+using CindarsHope.World;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -47,6 +49,8 @@ namespace CindarsHope.Tests.PlayMode.Composition
             AssertOwnedByRoot<CityServiceRuntimeBootstrap>(root);
             AssertOwnedByRoot<WorldWeatherService>(root);
             AssertOwnedByRoot<WorldEventService>(root);
+            AssertOwnedByRoot<NpcScheduleService>(root);
+            AssertOwnedByRoot<ItemDropSpawner>(root);
 
             yield return null;
 
