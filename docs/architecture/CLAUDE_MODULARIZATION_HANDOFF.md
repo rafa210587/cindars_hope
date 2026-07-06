@@ -168,6 +168,18 @@ estiver próxima do limite de contexto/tokens.
 - Spec promovida para `.specs/implementados/spec_arch_dependency_cycle_reduction_v3.md`.
 - Próximo recorte deve escolher um dos pares pequenos restantes e manter uma spec por ciclo.
 
+## 2026-07-05 — Narrative/Quest Cycle Reduction v4
+
+- `NarrativeIds` foi movido para a assembly pura Gameplay e passou ao namespace
+  `CindarsHope.Gameplay.Narrative`.
+- GUID `0c1174d84fa2a024f860a149754e8754` e as sete strings persistidas foram preservados.
+- Consumers Narrative, Quest, World e testes foram atualizados; bootstrap, flags, ordem de oferta e
+  save não mudaram.
+- O par `Narrative|Quests` foi removido sem novo par mútuo: snapshot 1.573/220/47/29/3.
+- Gates: 13/13 narrativa; EditMode 2.707/2.707; PlayMode 2/2; seis assemblies 0E/0W; ratchet PASS.
+- Próximo recorte pequeno candidato: `Locations|Player`, mas exige ports de vitais/respawn e deve ser
+  tratado em spec própria, sem mover serviços apenas para esconder o ciclo.
+
 ## 2026-07-05 — Autorização integral das Fases 4 a 8
 
 - Decisão humana: continuar até terminar todo o rework, sem parar entre fases.

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using NUnit.Framework;
+using CindarsHope.Gameplay.Narrative;
 using CindarsHope.Narrative;
 using CindarsHope.Quests;
 using CindarsHope.Quests.Flags;
@@ -85,6 +86,11 @@ namespace CindarsHope.Tests.EditMode.Narrative
         {
             Assert.AreEqual("mq_act1_00", NarrativeIds.MainQuestHookId);
             Assert.AreEqual("npc_corvus", NarrativeIds.CorvusNpcId);
+            Assert.AreEqual("obj_mq_act1_00_talk_corvus", NarrativeIds.HookTalkObjectiveId);
+            Assert.AreEqual("flag_mq_act1_00_complete", NarrativeIds.FlagHookComplete);
+            Assert.AreEqual("narrative_intro_seen", NarrativeIds.FlagIntroSeen);
+            Assert.AreEqual("narrative_mq_act1_00_offered", NarrativeIds.FlagHookOffered);
+            Assert.AreEqual("narrative_letter_read", NarrativeIds.FlagLetterRead);
         }
 
         // ─── Flag store round-trip ──────────────────────────────────────────────────

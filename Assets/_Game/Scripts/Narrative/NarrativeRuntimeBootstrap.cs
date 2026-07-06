@@ -1,6 +1,7 @@
 using System.Collections;
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
+using CindarsHope.Gameplay.Narrative;
 using CindarsHope.Quests.Runtime;
 using UnityEngine;
 

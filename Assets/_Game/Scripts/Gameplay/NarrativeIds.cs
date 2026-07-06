@@ -1,4 +1,4 @@
-namespace CindarsHope.Narrative
+namespace CindarsHope.Gameplay.Narrative
 {
     /// <summary>
     /// fable_63 — IDs estaveis da intro/ponte narrativa. NUNCA renomear (persistidos como

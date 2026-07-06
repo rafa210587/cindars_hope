@@ -187,8 +187,10 @@ namespace CindarsHope.Tests.EditMode.Architecture
         {
             Type shortcutType = typeof(CindarsHope.UI.Routing.GameplayShortcutDecision);
             Type interactionType = typeof(CindarsHope.NPC.NpcShopInteractionSession);
+            Type narrativeIdsType = typeof(CindarsHope.Gameplay.Narrative.NarrativeIds);
 
             Assert.That(shortcutType.Assembly, Is.SameAs(interactionType.Assembly));
+            Assert.That(shortcutType.Assembly, Is.SameAs(narrativeIdsType.Assembly));
             Assert.That(shortcutType.Assembly.GetName().Name, Is.EqualTo("CindarsHope.Gameplay"));
             Assert.That(
                 shortcutType.Assembly.GetReferencedAssemblies()
@@ -206,6 +208,7 @@ namespace CindarsHope.Tests.EditMode.Architecture
             {
                 "GameplayShortcutDecision.cs",
                 "GameplayInputBlocker.cs",
+                "NarrativeIds.cs",
                 "NpcShopInteractionSession.cs",
                 "QuestGiverInteractionMode.cs",
                 "SkillActionEffectCatalog.cs",

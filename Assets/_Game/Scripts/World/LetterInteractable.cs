@@ -1,6 +1,7 @@
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
 using CindarsHope.Interaction;
+using CindarsHope.Gameplay.Narrative;
 using CindarsHope.Narrative;
 using UnityEngine;
 

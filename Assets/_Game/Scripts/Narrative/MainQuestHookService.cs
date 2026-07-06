@@ -1,4 +1,5 @@
 using System;
+using CindarsHope.Gameplay.Narrative;
 
 namespace CindarsHope.Narrative
 {

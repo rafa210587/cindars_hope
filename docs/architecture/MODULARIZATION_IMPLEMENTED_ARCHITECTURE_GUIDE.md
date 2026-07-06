@@ -32,6 +32,8 @@ dependência estiver demonstrada por ports.
 - Gameplay: decisões de atalhos, sessão de loja/NPC, política da Thalindra e o enum simples de modo
   de interação com quest, além do catálogo read-only action-skill→effect. Runtime depende de
   Gameplay; Gameplay não referencia Runtime ou Unity.
+- IDs narrativos persistidos vivem em `Gameplay/NarrativeIds.cs`; adapters Narrative, Quest e World
+  consomem o mesmo contrato sem dependência reversa entre Narrative e Quests.
 - Bloqueio de input entre domínios usa `GameplayInputBlocker` com leases; owners não devem consultar
   tipos concretos de outro domínio apenas para bloquear movimento.
 - Inventário e ouro: `InventoryManager`/`PlayerManager` implementam adapters, sem duplicar estado.
@@ -100,8 +102,8 @@ dependência estiver demonstrada por ports.
 
 ## 9. Gates atuais
 
-- EditMode: 2707/2707 em `TestResults/dependency-v3-full.xml`.
-- PlayMode de composição/cenas: 2/2 em `TestResults/dependency-v3-playmode.xml`.
+- EditMode: 2707/2707 em `TestResults/dependency-v4-full.xml`.
+- PlayMode de composição/cenas: 2/2 em `TestResults/dependency-v4-playmode.xml`.
 - PlayMode de composição: 2/2 no fechamento da Fase 8; repetir após mudanças de lifecycle/cenas.
 - Build: seis projetos são a unidade de validação, não apenas `Assembly-CSharp`.
 - Ratchets arquiteturais não podem ser elevados para esconder regressão.

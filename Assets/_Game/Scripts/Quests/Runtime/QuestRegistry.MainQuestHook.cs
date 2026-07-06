@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using CindarsHope.Narrative;
+using CindarsHope.Gameplay.Narrative;
 using CindarsHope.Quests.Rewards;
 
 namespace CindarsHope.Quests.Runtime
