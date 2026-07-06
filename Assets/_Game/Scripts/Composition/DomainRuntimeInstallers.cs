@@ -1,10 +1,15 @@
+using CindarsHope.Cave.Death;
 using CindarsHope.Cave.Ecosystem;
+using CindarsHope.Cave.Runtime;
+using CindarsHope.Combat.Telemetry;
 using CindarsHope.Crafting;
 using CindarsHope.City.Services;
+using CindarsHope.Narrative;
 using CindarsHope.NPC.Friendship;
 using CindarsHope.NPC.Gifting;
 using CindarsHope.NPC.Services;
 using CindarsHope.NPC.Schedule;
+using CindarsHope.Quests.Runtime;
 using CindarsHope.World;
 using CindarsHope.World.Events;
 using CindarsHope.World.Weather;
@@ -34,6 +39,36 @@ namespace CindarsHope.Composition
     internal static class CaveRuntimeInstaller
     {
         public static void Install(Transform owner) => CaveConflictFeedbackBridge.Install(owner);
+    }
+
+    /// <summary>
+    /// Serviços de cave que dependem de cena (AfterSceneLoad): morte/corpo, bridge de runtime da
+    /// cave e o mercador errante. Instalados no Start() do root, nunca em InstallRuntimeServices().
+    /// </summary>
+    internal static class CaveSceneRuntimeInstaller
+    {
+        public static void Install(Transform owner)
+        {
+            DeathSystemBootstrap.Install(owner);
+            CaveRuntimeBridge.Install(owner);
+            CaveWanderingMerchant.Install();
+        }
+    }
+
+    /// <summary>Telemetria de combate (fable_59) — OFF por default, gated pelo toggle de debug.</summary>
+    internal static class CombatTelemetryRuntimeInstaller
+    {
+        public static void Install(Transform owner) => CombatTelemetryService.Bootstrap.Install(owner);
+    }
+
+    internal static class NarrativeRuntimeInstaller
+    {
+        public static void Install(Transform owner) => NarrativeRuntimeBootstrap.Install(owner);
+    }
+
+    internal static class QuestRuntimeInstaller
+    {
+        public static void Install(Transform owner) => QuestRuntimeBootstrap.Install(owner);
     }
 
     internal static class NpcRuntimeInstaller

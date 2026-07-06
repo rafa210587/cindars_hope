@@ -137,8 +137,7 @@ namespace CindarsHope.Cave.Runtime
                 { "void", VoidBandOffers }
             };
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void Bootstrap()
+        public static void Install()
         {
             GameEventBus.Unsubscribe<CaveRuntimeMaterializationCompleteEvent>(OnLevelMaterialized);
             GameEventBus.Subscribe<CaveRuntimeMaterializationCompleteEvent>(OnLevelMaterialized);

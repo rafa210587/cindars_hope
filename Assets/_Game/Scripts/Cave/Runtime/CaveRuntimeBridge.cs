@@ -40,12 +40,12 @@ namespace CindarsHope.Cave.Runtime
         /// </summary>
         public static bool IsCaveRuntimeValidated { get; private set; }
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void EnsureInstance()
+        public static void Install(Transform owner)
         {
             if (_instance != null) return;
 
             var go = new GameObject(GameObjectName);
+            go.transform.SetParent(owner);
             DontDestroyOnLoad(go);
             _instance = go.AddComponent<CaveRuntimeBridge>();
         }

@@ -32,8 +32,7 @@ namespace CindarsHope.Cave.Death
         private PlayerManager _playerManager;
         private bool _initialized;
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void EnsureInstance()
+        public static void Install(Transform owner)
         {
             if (_instance != null)
             {
@@ -41,6 +40,7 @@ namespace CindarsHope.Cave.Death
             }
 
             var go = new GameObject("DeathSystemBootstrap");
+            go.transform.SetParent(owner);
             DontDestroyOnLoad(go);
             _instance = go.AddComponent<DeathSystemBootstrap>();
         }
