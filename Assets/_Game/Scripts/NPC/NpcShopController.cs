@@ -851,60 +851,50 @@ namespace CindarsHope.NPC
 
         private bool EnsureTransactionUiReady(ShopMenuOption option)
         {
-            if (_shopData == null)
-            {
-                LogTransactionError(option, "_shopData", "ShopDataSO is null.");
-                return false;
-            }
-
-            if (string.IsNullOrWhiteSpace(_shopData.Id))
-            {
-                LogTransactionError(option, "_shopData.Id", "ShopDataSO.Id is empty.");
-                return false;
-            }
-
-            if (_shopManager == null)
-            {
-                LogTransactionError(option, "_shopManager", "ShopManager reference is null.");
-                return false;
-            }
-
-            if (_itemDatabase == null)
-            {
-                LogTransactionError(option, "_itemDatabase", "ItemDatabaseSO reference is null.");
-                return false;
-            }
-
-            if (!_isReady && !TryEnsureShopInitialized($"Before{option}"))
-            {
-                LogTransactionError(option, "_isReady", "controller is not ready after initialization attempt.");
-                return false;
-            }
-
-            if (!_shopManager.IsInitialized)
-            {
-                LogTransactionError(option, "_shopManager.IsInitialized", "ShopManager exists but is not initialized.");
-                return false;
-            }
-
-            if (!_shopManager.TryGetSession(_shopData.Id, out _)
-                && (!TryEnsureShopInitialized($"MissingSessionBefore{option}") || !_shopManager.TryGetSession(_shopData.Id, out _)))
-            {
-                LogTransactionError(option, "_shopManager", $"ShopManager exists but has no session for this shopId. {_shopManager.GetDiagnosticSummary()}");
-                return false;
-            }
-
-            var panelReady = option == ShopMenuOption.Buy
-                ? _buyPanel != null && _buyPanel.IsInitializedWith(_shopManager, _playerManager, _inventoryManager, _itemDatabase, _modalManager)
-                : _sellPanel != null && _sellPanel.IsInitializedWith(_shopManager, _playerManager, _inventoryManager, _itemDatabase, _modalManager);
-            if (panelReady)
-            {
-                return true;
-            }
-
             var fieldName = option == ShopMenuOption.Buy ? "_buyPanel" : "_sellPanel";
-            LogTransactionError(option, fieldName, "panel is not initialized with this NPC shop context.");
-            return false;
+            while (true)
+            {
+                bool hasSession = _shopManager != null
+                    && _shopData != null
+                    && !string.IsNullOrWhiteSpace(_shopData.Id)
+                    && _shopManager.TryGetSession(_shopData.Id, out _);
+                bool panelReady = option == ShopMenuOption.Buy
+                    ? _buyPanel != null && _buyPanel.IsInitializedWith(
+                        _shopManager, _playerManager, _inventoryManager, _itemDatabase, _modalManager)
+                    : _sellPanel != null && _sellPanel.IsInitializedWith(
+                        _shopManager, _playerManager, _inventoryManager, _itemDatabase, _modalManager);
+                var snapshot = new NpcShopTransactionReadinessSnapshot(
+                    _shopData != null,
+                    _shopData != null && !string.IsNullOrWhiteSpace(_shopData.Id),
+                    _shopManager != null,
+                    _itemDatabase != null,
+                    _isReady,
+                    _shopManager != null && _shopManager.IsInitialized,
+                    hasSession,
+                    panelReady);
+                var decision = NpcShopTransactionReadinessPolicy.Evaluate(snapshot, fieldName);
+
+                switch (decision.Action)
+                {
+                    case NpcShopTransactionReadinessAction.Ready:
+                        return true;
+                    case NpcShopTransactionReadinessAction.InitializeController:
+                        if (TryEnsureShopInitialized($"Before{option}")) continue;
+                        LogTransactionError(option, "_isReady",
+                            "controller is not ready after initialization attempt.");
+                        return false;
+                    case NpcShopTransactionReadinessAction.RecoverSession:
+                        if (TryEnsureShopInitialized($"MissingSessionBefore{option}")
+                            && _shopManager.TryGetSession(_shopData.Id, out _))
+                            continue;
+                        LogTransactionError(option, "_shopManager",
+                            $"ShopManager exists but has no session for this shopId. {_shopManager.GetDiagnosticSummary()}");
+                        return false;
+                    default:
+                        LogTransactionError(option, decision.FieldName, decision.Cause);
+                        return false;
+                }
+            }
         }
 
         private bool RequiresPersistentBootstrapRebind()

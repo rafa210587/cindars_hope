@@ -220,7 +220,7 @@ estiver próxima do limite de contexto/tokens.
 - Próximo passo: V5 Lote 3, decompor `NpcShopController` preservando seus campos serializados e
   extraindo primeiro choices/services puros antes de transaction/UI wiring.
 
-### V5 Lote 3A — política de choices do shop (implementado, commit pendente)
+### V5 Lote 3A — política de choices do shop (commit `31014bb5`)
 
 - Criado `NpcShopDialogueChoicePolicy` no assembly puro `CindarsHope.Gameplay`.
 - A política é dona da ordem, rótulos fixos e IDs dos menus raiz e Thalindra; o controller resolve
@@ -228,8 +228,22 @@ estiver próxima do limite de contexto/tokens.
 - Nenhum rótulo, ID, ordem, gate, transação ou handler foi removido.
 - Testes da política: 3/3; ratchet do Gameplay: 1/1.
 - Builds: `Assembly-CSharp.csproj` e `CindarsHope.Tests.EditMode.csproj`, 0 erros/0 warnings.
-- Próximo passo: extrair a validação/preparação de transação para collaborator testável, rodar
-  EditMode completo e só então concluir o Lote 3.
+- Commit: `31014bb5`.
+
+### V5 Lote 3B — readiness de transação (implementado, commit pendente)
+
+- Criado `NpcShopTransactionReadinessPolicy`, uma máquina de decisão pura para falha de contexto,
+  inicialização do controller, recuperação da sessão, painel inválido ou abertura.
+- `NpcShopController` continua executando todos os efeitos Unity, inicializações, logs e abertura de
+  `BuyPanel`/`SellPanel`; preços, inventário, wallet, eventos e wiring não mudaram.
+- Controller passou de 1.050/46 para 1.007 linhas/44 métodos no recorte completo do Lote 3.
+- Testes focados: readiness 9/9; choices 3/3.
+- EditMode completo: 2.720/2.720 PASS.
+- Seis assemblies explícitos: 6/6, 0 erros/0 warnings.
+- Ratchet do assembly Gameplay permanece coberto pelo EditMode completo.
+- Lote 3 marcado como concluído na spec residual.
+- Próximo passo: V5 Lote 4, decompor `EnemyBrain` por state/targeting/config sem alterar decisões,
+  timings, ranges, RNG, animação, dano, drops ou serialização.
 
 ## 2026-07-05 — Autorização integral das Fases 4 a 8
 

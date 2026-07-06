@@ -211,6 +211,7 @@ namespace CindarsHope.Tests.EditMode.Architecture
                 "NarrativeIds.cs",
                 "NpcShopDialogueChoicePolicy.cs",
                 "NpcShopInteractionSession.cs",
+                "NpcShopTransactionReadinessPolicy.cs",
                 "QuestGiverInteractionMode.cs",
                 "SkillActionEffectCatalog.cs",
                 "ThalindraQuestDialoguePolicy.cs"
