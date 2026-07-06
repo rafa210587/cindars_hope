@@ -1,5 +1,25 @@
 # Prompt de Continuação para Claude — Rework Modular
 
+## 2026-07-06 — V5 Batch 5: audio (×2), feito e verificado no loop principal
+
+- Spec ativa: `.specs/a_implementar/spec_arch_modularization_residual_v5.md`.
+- Migrados `AudioManager` e `SfxEventBridge` de `[RuntimeInitializeOnLoadMethod(AfterSceneLoad)]`
+  para `AudioRuntimeInstaller.Install(owner)`, chamado por ÚLTIMO no `Start()` do
+  `GameRuntimeCompositionRoot` (AudioManager antes do bridge). `SetParent(owner)` + `DontDestroyOnLoad`,
+  lógica interna intacta (voices, crossfade, `EnsureAudioListener`, cooldown, subscribe simétrico).
+- Refutada a hipótese antiga de "precisa de estágio AfterSceneLoad novo no root": `Start()` já é
+  pós-cena. PlayMode 2/2 + Player.log confirmam UM AudioListener (criado só quando a cena não tem),
+  idêntico ao original. Removido `using CindarsHope.Core;` morto (CS8019) do AudioManager.
+- Contagem `[RuntimeInitializeOnLoadMethod]`: 6 → **4**. Restam: root (`BeforeSceneLoad`, nunca migra),
+  `SceneTransitionRouter` (`SubsystemRegistration`, por design), `CollisionDebugOverlayBootstrap` (debug)
+  e `NpcDialogueExpansionBootstrap` (diagnóstico) — os 2 últimos só via spec própria de define/config.
+- Gates (rodados no loop principal, não delegados): build 7/7 0W/0E, EditMode 2747/2747, PlayMode 2/2.
+- NOTA de execução: batches 2-4 foram delegados a subagents; o de UI spawnou um ghost child (violando
+  a proibição) que, apesar disso, completou o batch 4 corretamente e commitou. Batch 5 foi feito
+  direto no loop principal para evitar o ghost. Sessão CONCORRENTE (`spec_cave_decor_composition_runtime`)
+  segue mutando a mesma working tree — atribuir falhas de Cave a ela, não ao rework.
+- Sem push. `dev` à frente do remoto; publicar só com autorização explícita.
+
 ## 2026-07-06 — V5 Batch 4: apresentação (UI/cena, ×7)
 
 - Spec ativa: `.specs/a_implementar/spec_arch_modularization_residual_v5.md`.
