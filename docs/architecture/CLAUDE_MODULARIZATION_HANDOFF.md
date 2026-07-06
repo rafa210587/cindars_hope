@@ -448,6 +448,78 @@ estiver próxima do limite de contexto/tokens.
   `1fcfde72f6c174e3da39fcf2cf0a8ed8e1a2c25e`, divergência `0 0`.
 - Próximo passo: publicar este fechamento documental e parar antes da Fase 4.
 
+## 2026-07-05 — V5 Lote 5F (batch 2): Cave, Combat Telemetry, Narrative e Quest
+
+- Objetivo: migrar os 6 serviços persistentes de domínio restantes (Cave×3, Combat Telemetry,
+  Narrative, Quest) de auto-bootstrap `[RuntimeInitializeOnLoadMethod(AfterSceneLoad)]` para o
+  composition root, preservando 100% do comportamento observável.
+- Arquivos alterados:
+  - `Assets/_Game/Scripts/Cave/Death/DeathSystemBootstrap.cs` — `EnsureInstance()` virou
+    `public static void Install(Transform owner)`; host passa a ser filho do root (mantém
+    `DontDestroyOnLoad`, singleton guard, `BindWhenReady` coroutine inalterados).
+  - `Assets/_Game/Scripts/Cave/Runtime/CaveRuntimeBridge.cs` — mesmo padrão; `Install(Transform
+    owner)`.
+  - `Assets/_Game/Scripts/Cave/Runtime/CaveWanderingMerchant.cs` — é `static class` (não
+    MonoBehaviour); `Bootstrap()` virou `public static void Install()` sem parâmetro (o merchant root
+    por nível continua nascendo/morrendo fora da hierarquia do composition root — não muda).
+  - `Assets/_Game/Scripts/Combat/Telemetry/CombatTelemetryService.cs` — a nested `Bootstrap.EnsureInstance()`
+    virou `Bootstrap.Install(Transform owner)`; **o gating do toggle debug (`DebugEnabled` OFF por
+    default, `ApplyToggle`/`Subscribe`/`Unsubscribe`) não foi tocado** — só mudou quem chama
+    `Install`, a instância continua sempre criada mas sem assinaturas até o toggle ligar.
+  - `Assets/_Game/Scripts/Narrative/NarrativeRuntimeBootstrap.cs` — `Install(Transform owner)`.
+  - `Assets/_Game/Scripts/Quests/Runtime/QuestRuntimeBootstrap.cs` — `Install(Transform owner)`.
+  - `Assets/_Game/Scripts/Composition/DomainRuntimeInstallers.cs` — 4 installers novos:
+    `CaveSceneRuntimeInstaller` (os 3 Cave), `CombatTelemetryRuntimeInstaller`,
+    `NarrativeRuntimeInstaller`, `QuestRuntimeInstaller`.
+  - `Assets/_Game/Scripts/Composition/GameRuntimeCompositionRoot.cs` — `Start()` passou a chamar os 4
+    installers novos, na ordem Cave → Combat Telemetry → Narrative → Quest, após os installers
+    já existentes (Npc/World/Farm/Item/PlayerService).
+  - `docs/architecture/RUNTIME_BOOTSTRAP_OWNERSHIP_V5.md` — contagem 25→19, migração documentada.
+- Comportamento preservado: momento de instalação (`AfterSceneLoad` → agora `Start()` do root, que
+  roda após a cena carregar, mesmo estágio observável), singleton guards, `DontDestroyOnLoad`,
+  coroutines de bind-when-ready (Death system, Narrative, Quest), gating do toggle de
+  `CombatTelemetryService`, ordem de dependência Quest→Narrative (Narrative consome
+  `QuestRuntimeBootstrap.QuestService` via polling, inalterado), UI controllers do Quest
+  (`QuestOfferPanelController`/`QuestLogPanelController`), notice board/cave contracts/secret quests
+  do Quest, e o determinismo do `CaveWanderingMerchant` (seeds, stable-run contract).
+- Hosts novos (Death, CaveRuntimeBridge, CombatTelemetry, Narrative, Quest) ficam filhos do
+  `GameRuntimeCompositionRoot.transform`; `CaveWanderingMerchant` não tem host fixo (spawna por nível,
+  sem owner, como já era).
+- Validação:
+  - `Invoke-UnityGeneratedProjectsBuild.ps1`: exit 0, 7/7 projetos, 0 warnings/0 erros.
+  - `RunUnityEditModeTests.ps1` (`TestResults/residual-v5-batch2-editmode.xml`,
+    `Logs/residual-v5-batch2.log`): exit 0, 2726/2726 PASS, 0 failed.
+  - Contagem `[RuntimeInitializeOnLoadMethod]` em `Assets/_Game/Scripts/**`: 25 → 19 (medido via
+    `Get-ChildItem ... | Select-String '^\s*\[RuntimeInitializeOnLoadMethod'`).
+  - Ratchet arquitetural (`architecture-ratchet-baseline.tsv`): não precisou de edição — o ratchet é
+    per-file com teto (`max_count`); reduzir a contagem de um arquivo para 0 fica sempre abaixo do
+    teto. Nenhum arquivo teve sua contagem aumentada.
+- Não executado / não aplicável: PlayMode manual não foi rodado nesta sessão (Unity fechado, sem
+  Editor interativo disponível); risco residual: comportamento em Play Mode real (spawn do merchant,
+  fluxo de morte/corpo, telemetria ligada via toggle) não foi confirmado visualmente nesta sessão —
+  mitigado pelo fato de a mudança ser puramente de "quem chama o método estático de instalação",
+  sem tocar a lógica interna de nenhum dos 6 serviços.
+- Commits (português, um por domínio, sem push):
+  - `refactor(bootstrap): centralizar servicos de cave` (DeathSystemBootstrap, CaveRuntimeBridge,
+    CaveWanderingMerchant, CaveSceneRuntimeInstaller, root).
+  - `refactor(bootstrap): centralizar telemetria de combate` (CombatTelemetryService,
+    CombatTelemetryRuntimeInstaller, root).
+  - `refactor(bootstrap): centralizar servico de narrativa` (NarrativeRuntimeBootstrap,
+    NarrativeRuntimeInstaller, root).
+  - `refactor(bootstrap): centralizar servico de quest` (QuestRuntimeBootstrap, QuestRuntimeInstaller,
+    root).
+  - commit de docs/handoff (este bloco).
+  - hashes reais: ver `git log --oneline -6` na branch `dev` no momento do fechamento — não incluídos
+    aqui porque os commits foram criados após a escrita deste parágrafo; confirme no Git antes de
+    confiar nesta nota.
+- Próximo passo: Audio (`AudioManager`, `SfxEventBridge`) exige criar um estágio `AfterSceneLoad`
+  explícito no `GameRuntimeCompositionRoot` antes de migrar (instalar Audio cedo demais afeta a
+  decisão de criar `AudioListener`). Depois disso: player-lifecycle (precisa de
+  `PlayerRuntimeInstaller` ligado a spawn/despawn) e apresentação/UI (7 casos) só com PlayMode +
+  smoke visual por cena.
+
+## 2026-07-05 — Início do rework modular (histórico)
+
 Você está continuando o rework modular do projeto Unity **Cindar's Hope**.
 
 ## Objetivo
