@@ -39,8 +39,7 @@ namespace CindarsHope.Player.Death
 
         public static AnyaFountainRespawnFlow Instance => _instance;
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void EnsureInstance()
+        public static void Install(Transform owner)
         {
             if (_instance != null)
             {
@@ -48,6 +47,7 @@ namespace CindarsHope.Player.Death
             }
 
             var go = new GameObject("AnyaFountainRespawnFlow");
+            go.transform.SetParent(owner);
             DontDestroyOnLoad(go);
             _instance = go.AddComponent<AnyaFountainRespawnFlow>();
         }

@@ -11,12 +11,12 @@ namespace CindarsHope.Player.Movement
         private static PlayerMovementActionRuntimeBootstrap _instance;
         private bool _loggedAttached;
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void EnsureInstance()
+        public static void Install(Transform owner)
         {
             if (_instance != null) return;
 
             var go = new GameObject("PlayerMovementActionRuntimeBootstrap");
+            go.transform.SetParent(owner);
             DontDestroyOnLoad(go);
             _instance = go.AddComponent<PlayerMovementActionRuntimeBootstrap>();
         }

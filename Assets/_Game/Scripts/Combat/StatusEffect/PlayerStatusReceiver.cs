@@ -202,8 +202,7 @@ namespace CindarsHope.Combat.StatusEffect
     /// <summary>Garante o receiver junto ao player (padrão bootstrap do projeto).</summary>
     public static class PlayerStatusReceiverBootstrap
     {
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void EnsureInstance()
+        public static void Install(Transform owner)
         {
             if (Object.FindAnyObjectByType<PlayerStatusReceiver>() != null)
             {

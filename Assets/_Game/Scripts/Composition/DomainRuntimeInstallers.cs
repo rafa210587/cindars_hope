@@ -1,6 +1,7 @@
 using CindarsHope.Cave.Death;
 using CindarsHope.Cave.Ecosystem;
 using CindarsHope.Cave.Runtime;
+using CindarsHope.Combat.StatusEffect;
 using CindarsHope.Combat.Telemetry;
 using CindarsHope.Crafting;
 using CindarsHope.City.Services;
@@ -26,6 +27,8 @@ using CindarsHope.Magic;
 using CindarsHope.Fonte;
 using CindarsHope.Player;
 using CindarsHope.Player.Conditions;
+using CindarsHope.Player.Death;
+using CindarsHope.Player.Movement;
 using UnityEngine;
 
 namespace CindarsHope.Composition
@@ -125,6 +128,27 @@ namespace CindarsHope.Composition
             FonteRuntimeBootstrap.Install(owner);
             PlayerConditionRuntimeBootstrap.Install(owner);
             InferredClassRuntimeBootstrap.Install();
+        }
+    }
+
+    /// <summary>
+    /// Serviços de lifecycle do player (AfterSceneLoad): status receiver, death controller,
+    /// respawn na Fonte, movement actions (dash/dodge/block), sprint e vitals applier.
+    /// Instalados no Start() do root, nunca em InstallRuntimeServices(). O alvo de attach de
+    /// cada serviço é preservado: alguns criam host novo (SetParent no root), outros anexam
+    /// componente em GameObject já existente (statusManager, player, GameBootstrap) — nesse
+    /// caso o owner é ignorado, exatamente como no bootstrap original.
+    /// </summary>
+    internal static class PlayerLifecycleRuntimeInstaller
+    {
+        public static void Install(Transform owner)
+        {
+            PlayerStatusReceiverBootstrap.Install(owner);
+            AnyaFountainRespawnFlow.Install(owner);
+            PlayerDeathController.Install(owner);
+            PlayerMovementActionRuntimeBootstrap.Install(owner);
+            PlayerSprintControllerBootstrap.Install(owner);
+            PlayerVitalsApplierBootstrap.Install(owner);
         }
     }
 }

@@ -32,8 +32,7 @@ namespace CindarsHope.Player.Death
 
         private bool _isDead;
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void EnsureInstance()
+        public static void Install(Transform owner)
         {
             if (_instance != null)
             {
@@ -41,6 +40,7 @@ namespace CindarsHope.Player.Death
             }
 
             var go = new GameObject("PlayerDeathController");
+            go.transform.SetParent(owner);
             DontDestroyOnLoad(go);
             _instance = go.AddComponent<PlayerDeathController>();
         }

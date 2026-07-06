@@ -242,8 +242,7 @@ namespace CindarsHope.Player.Movement
     /// <summary>Garante o sprint controller junto ao player (padrão bootstrap, sem global search recorrente).</summary>
     public static class PlayerSprintControllerBootstrap
     {
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void EnsureInstance()
+        public static void Install(Transform owner)
         {
             if (PlayerSprintController.ActiveInstance != null)
             {

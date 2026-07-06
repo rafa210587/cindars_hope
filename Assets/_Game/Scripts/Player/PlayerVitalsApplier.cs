@@ -204,8 +204,7 @@ namespace CindarsHope.Player
     /// <summary>Garante o applier em runtime (padrão bootstrap do projeto).</summary>
     public static class PlayerVitalsApplierBootstrap
     {
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void EnsureInstance()
+        public static void Install(Transform owner)
         {
             if (Object.FindAnyObjectByType<PlayerVitalsApplier>() != null)
             {
