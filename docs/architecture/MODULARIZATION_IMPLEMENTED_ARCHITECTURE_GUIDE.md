@@ -32,6 +32,8 @@ dependência estiver demonstrada por ports.
 - Gameplay: decisões de atalhos, sessão de loja/NPC, política da Thalindra e o enum simples de modo
   de interação com quest, além do catálogo read-only action-skill→effect. Runtime depende de
   Gameplay; Gameplay não referencia Runtime ou Unity.
+- Bloqueio de input entre domínios usa `GameplayInputBlocker` com leases; owners não devem consultar
+  tipos concretos de outro domínio apenas para bloquear movimento.
 - Inventário e ouro: `InventoryManager`/`PlayerManager` implementam adapters, sem duplicar estado.
 - Compra atômica: `AtomicPurchaseTransaction` valida e compensa falha de débito.
 - Save: descriptors/providers tipados coexistem com `SaveManager`; hotbar é o primeiro slice.
@@ -98,8 +100,8 @@ dependência estiver demonstrada por ports.
 
 ## 9. Gates atuais
 
-- EditMode: 2703/2703 em `TestResults/maintainability-ui-data-full.xml`.
-- PlayMode de composição/cenas: 2/2 em `TestResults/maintainability-ui-data-playmode.xml`.
+- EditMode: 2707/2707 em `TestResults/dependency-v3-full.xml`.
+- PlayMode de composição/cenas: 2/2 em `TestResults/dependency-v3-playmode.xml`.
 - PlayMode de composição: 2/2 no fechamento da Fase 8; repetir após mudanças de lifecycle/cenas.
 - Build: seis projetos são a unidade de validação, não apenas `Assembly-CSharp`.
 - Ratchets arquiteturais não podem ser elevados para esconder regressão.

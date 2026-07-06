@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using CindarsHope.Gameplay.Input;
 using UnityEngine;
 
 namespace CindarsHope.Farm
@@ -45,6 +47,7 @@ namespace CindarsHope.Farm
         private int _selectedMenuIndex;
         private int _menuOpenedFrame = -1;
         private string _feedback = string.Empty;
+        private IDisposable _inputBlockLease;
 
         internal FarmPlotMenuController(FarmPlot owner)
         {
@@ -125,6 +128,8 @@ namespace CindarsHope.Farm
             }
 
             ActiveMenuPlot = _owner;
+            _inputBlockLease?.Dispose();
+            _inputBlockLease = GameplayInputBlocker.Acquire(GameplayInputBlockReason.FarmActionMenu);
             _selectedMenuIndex = 0;
             _menuOpenedFrame = Time.frameCount;
         }
@@ -135,6 +140,9 @@ namespace CindarsHope.Farm
             {
                 ActiveMenuPlot = null;
             }
+
+            _inputBlockLease?.Dispose();
+            _inputBlockLease = null;
 
             _menuActions.Clear();
             _selectedMenuIndex = 0;

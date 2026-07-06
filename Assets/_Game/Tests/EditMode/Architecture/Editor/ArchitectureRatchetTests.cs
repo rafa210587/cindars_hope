@@ -205,6 +205,7 @@ namespace CindarsHope.Tests.EditMode.Architecture
             string[] expectedFiles =
             {
                 "GameplayShortcutDecision.cs",
+                "GameplayInputBlocker.cs",
                 "NpcShopInteractionSession.cs",
                 "QuestGiverInteractionMode.cs",
                 "SkillActionEffectCatalog.cs",

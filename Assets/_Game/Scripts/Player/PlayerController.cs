@@ -1,7 +1,7 @@
 using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
-using CindarsHope.Farm;
+using CindarsHope.Gameplay.Input;
 using CindarsHope.Player.Data;
 using CindarsHope.Player.Movement;
 using UnityEngine;
@@ -185,7 +185,7 @@ namespace CindarsHope.Player
                 return Vector2.zero;
             }
 
-            if (FarmPlot.IsAnyActionMenuOpen)
+            if (GameplayInputBlocker.IsBlocked)
             {
                 return Vector2.zero;
             }

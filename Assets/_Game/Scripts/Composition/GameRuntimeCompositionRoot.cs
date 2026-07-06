@@ -1,5 +1,6 @@
 using CindarsHope.Combat;
 using CindarsHope.Core.Time;
+using CindarsHope.Gameplay.Input;
 using CindarsHope.Skills.Runtime.Effects;
 using CindarsHope.UI.Routing;
 using UnityEngine;
@@ -40,6 +41,7 @@ namespace CindarsHope.Composition
         {
             _instance = null;
             State = RuntimeCompositionState.NotInstalled;
+            GameplayInputBlocker.Reset();
             EnsureExists();
         }
 

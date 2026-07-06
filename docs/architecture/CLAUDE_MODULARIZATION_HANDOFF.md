@@ -155,6 +155,19 @@ estiver próxima do limite de contexto/tokens.
   de publicação no turno atual.
 - Alterações concorrentes listadas no fechamento continuam fora dos commits.
 
+## 2026-07-05 — Dependency Cycle Reduction v3
+
+- Eliminado o par mútuo `Farm|Player`: `PlayerController` deixou de consultar
+  `FarmPlot.IsAnyActionMenuOpen` e passou a depender do contrato puro `GameplayInputBlocker`.
+- `FarmPlotMenuController` adquire uma lease ao abrir e a libera ao fechar/desabilitar. Dispose
+  duplicado e leases aninhadas são seguros.
+- O gate vive em `CindarsHope.Gameplay.Input`, evitando converter o ciclo removido em `Farm|UI`.
+- `FarmPlot.IsAnyActionMenuOpen` foi preservado para consumidores legados.
+- Snapshot: 1.572 arquivos C#, 218 edges, 48 pares mútuos, 29 internal, 3 crossings.
+- Gates: EditMode 2.707/2.707; PlayMode 2/2; seis assemblies 0E/0W; ratchet PASS.
+- Spec promovida para `.specs/implementados/spec_arch_dependency_cycle_reduction_v3.md`.
+- Próximo recorte deve escolher um dos pares pequenos restantes e manter uma spec por ciclo.
+
 ## 2026-07-05 — Autorização integral das Fases 4 a 8
 
 - Decisão humana: continuar até terminar todo o rework, sem parar entre fases.
