@@ -9,13 +9,18 @@ Data da auditoria: 2026-07-06.
 - migrados no batch 2: 6 — Cave (`DeathSystemBootstrap`, `CaveRuntimeBridge`,
   `CaveWanderingMerchant`), Combat (`CombatTelemetryService.Bootstrap`), Narrative
   (`NarrativeRuntimeBootstrap`) e Quest (`QuestRuntimeBootstrap`);
-- migrados neste lote (batch 3): 6 — os componentes anexados ao player (`PlayerStatusReceiver`,
+- migrados no batch 3: 6 — os componentes anexados ao player (`PlayerStatusReceiver`,
   `AnyaFountainRespawnFlow`, `PlayerDeathController`, `PlayerMovementActionRuntimeBootstrap`,
   `PlayerSprintController`, `PlayerVitalsApplier`);
-- estado atual: 13 atributos reais de `[RuntimeInitializeOnLoadMethod]` em
+- migrados neste lote (batch 4): 7 — todos os serviços de UI/cena
+  (`IntroSequenceController`, `CharacterEquipmentPanelController`, `DeathScreenCanvasController`,
+  `GameplayHudBootstrap`, `InventoryPanelController`, `SkillTreeGameplayPanelController`,
+  `SceneFadeOverlayBootstrap`);
+- estado atual: 6 atributos reais de `[RuntimeInitializeOnLoadMethod]` em
   `Assets/_Game/Scripts/**` (medido, não estimado);
-- restam apenas Audio (`AudioManager`, `SfxEventBridge`) como serviços persistentes de domínio, mais
-  os 11 casos classificados como UI/cena, debug, diagnóstico e reset de subsistema;
+- restam: composition root (`GameRuntimeCompositionRoot.Bootstrap`, `BeforeSceneLoad` — nunca migra),
+  reset de subsistema (`SceneTransitionRouter`), debug (`CollisionDebugOverlayBootstrap`),
+  diagnóstico (`NpcDialogueExpansionBootstrap`) e Audio ×2 (`AudioManager`, `SfxEventBridge`);
 - nenhuma migração restante está autorizada sem preservar o momento de instalação, fallback de cena,
   ownership e teardown descritos abaixo.
 
@@ -27,7 +32,7 @@ Data da auditoria: 2026-07-06.
 | Reset de subsistema | 1 | manter em `SubsystemRegistration`; não é serviço persistente |
 | Debug opt-in | 1 | separar por define/config antes de migrar |
 | Diagnóstico sem estado | 1 | remover de runtime ou mover para validator em spec própria |
-| UI/cena | 7 | installer de apresentação após cena; exige fallback e smoke visual |
+| UI/cena | 0 (migrados no batch 4) | — |
 | Componentes anexados ao player | 0 (migrados no batch 3) | — |
 | Serviços persistentes de domínio | 2 (Audio, deferido) | migrar por domínio, com ordem e teardown explícitos |
 
@@ -40,7 +45,7 @@ Data da auditoria: 2026-07-06.
 - debug: `DebugTools/CollisionDebugOverlayBootstrap.cs`;
 - diagnóstico: `NPC/NpcDialogueExpansionBootstrap.cs`.
 
-### UI/cena
+### UI/cena (migrados no batch 4)
 
 - `Narrative/IntroSequenceController.cs`;
 - `UI/Character/CharacterEquipmentPanelController.cs`;
@@ -108,12 +113,31 @@ foi adicionado logo após a criação do GameObject, no mesmo padrão do batch 2
 per-scene de cada serviço (coroutines de bind-when-ready, `SceneManager.sceneLoaded`, guards de
 singleton) permanece 100% intacta — só mudou quem chama a criação inicial do host.
 
+## Migração batch 4 concluída
+
+`PresentationRuntimeInstaller` instala, no `Start()` do root (por último, após lifecycle do
+player), os 7 serviços de UI/cena. Todos seguem o mesmo padrão: criavam `new GameObject(...)` +
+`DontDestroyOnLoad(go)` num método estático `EnsureInstance`/`EnsureRuntimeInstance` marcado com
+`[RuntimeInitializeOnLoadMethod(AfterSceneLoad)]`. O atributo foi removido e o método virou
+`public static void Install(Transform owner)`, com `go.transform.SetParent(owner)` adicionado logo
+após a criação do GameObject (mesmo padrão dos batches 2/3) — todos são singletons cross-scene
+(`DontDestroyOnLoad`), então o reparent para o root não muda o lifecycle. Nenhuma lógica interna
+(subscribes de evento, guards de singleton estático, ordem de criação de canvas, coroutines) foi
+alterada — a única mudança é quem/quando chama a criação inicial.
+
+Um teste EditMode pré-existente (`SceneFadeOverlayTests.SceneFadeOverlayBootstrap_HasRuntimeInitializeAttribute`)
+assertava a presença do atributo removido; foi atualizado para
+`SceneFadeOverlayBootstrap_HasInstallMethod`, que verifica a presença do novo contrato
+`Install(Transform)` público estático — cobertura equivalente, sem mudança de comportamento
+verificado.
+
 ## Próxima ordem segura
 
-1. apresentação (UI/cena, ×7) somente com PlayMode e smoke visual por cena;
-2. audio por último: instalar antes da cena altera a decisão de criar `AudioListener` e não é seguro
+1. audio por último: instalar antes da cena altera a decisão de criar `AudioListener` e não é seguro
    sem um estágio `AfterSceneLoad` explícito no root — este estágio ainda não existe no
-   `GameRuntimeCompositionRoot` e deve ser criado antes de migrar Audio.
+   `GameRuntimeCompositionRoot` e deve ser criado antes de migrar Audio;
+2. debug/diagnóstico (`CollisionDebugOverlayBootstrap`, `NpcDialogueExpansionBootstrap`) por
+   define/config, fora do fluxo principal de composition.
 
 Não contar comentários ou validators Editor que apenas mencionam o atributo; a métrica é obtida por
 linhas cujo primeiro token é `[RuntimeInitializeOnLoadMethod` em `Assets/_Game/Scripts/**/*.cs`.

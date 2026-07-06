@@ -1,5 +1,104 @@
 # Prompt de Continuação para Claude — Rework Modular
 
+## 2026-07-06 — V5 Batch 4: apresentação (UI/cena, ×7)
+
+- Spec ativa: `.specs/a_implementar/spec_arch_modularization_residual_v5.md`.
+- Objetivo: migrar os 7 serviços de UI/cena listados em `RUNTIME_BOOTSTRAP_OWNERSHIP_V5.md` (última
+  categoria "UI/cena") de auto-bootstrap `[RuntimeInitializeOnLoadMethod(AfterSceneLoad)]` para
+  `PresentationRuntimeInstaller`, instalado no `Start()` do composition root, preservando 100% do
+  comportamento observável.
+- Aviso de concorrência respeitado: nenhuma mudança tocou `Cave/**`, `Enemy/EnemyAnimator.cs`,
+  `Editor/Enemy/GenerateEnemyWalkAnimations.cs`, `tools/enemy_anim/*`, `tools/aseprite/*`,
+  `ProjectSettings/*` ou `cindars_hope.slnx` (alterados concorrentemente por outra sessão).
+- Arquivos alterados:
+  - `Assets/_Game/Scripts/Narrative/IntroSequenceController.cs` — `EnsureInstance()` (estático,
+    `AfterSceneLoad`) virou `public static void Install(Transform owner)`. Criava
+    `new GameObject("IntroSequenceController")` + `DontDestroyOnLoad`: host novo, `SetParent(owner)`
+    adicionado. Singleton guard (`Instance`), subscribes `OnEnable`/`OnDisable`, `Update`/`OnGUI` e
+    `IntroSequenceModel` inalterados.
+  - `Assets/_Game/Scripts/UI/Character/CharacterEquipmentPanelController.cs` —
+    `EnsureRuntimeInstance()` virou `Install(Transform owner)`. Host novo
+    (`new GameObject("CharacterEquipmentPanelController")` + `DontDestroyOnLoad`): `SetParent(owner)`
+    adicionado. Resto do controller (painel de atributos/equipamento, navegação por teclado,
+    subscribes) inalterado.
+  - `Assets/_Game/Scripts/UI/Death/DeathScreenCanvasController.cs` — `EnsureInstance()` virou
+    `Install(Transform owner)`. Host novo (`new GameObject("DeathScreenCanvas")` +
+    `DontDestroyOnLoad`): `SetParent(owner)` adicionado. Construção do canvas programático, pause
+    token, fluxo de revive/respawn e subscribes de evento inalterados.
+  - `Assets/_Game/Scripts/UI/HUD/GameplayHudBootstrap.cs` — `EnsureInstance()` (método estático de
+    classe `static`, sem instância própria) virou `Install(Transform owner)`. Host novo
+    (`new GameObject(HudGameObjectName)` + `DontDestroyOnLoad`): `SetParent(owner)` adicionado. O
+    segundo GameObject interno (`GameplayHudTextOverlay`, criado sem parent, `DontDestroyOnLoad`
+    próprio) foi preservado exatamente como estava — não recebeu `SetParent`, pois no original também
+    não tinha relação de parentesco com o primeiro host (raiz própria intencional, evita colisão de
+    Views no mesmo transform, conforme comentário original). Log message atualizada de "via
+    RuntimeInitializeOnLoadMethod" para "via composition root Install" (cosmético, sem efeito de
+    comportamento).
+  - `Assets/_Game/Scripts/UI/InventoryPanelController.cs` — `EnsureRuntimeInstance()` virou
+    `Install(Transform owner)`. Host novo (`new GameObject("InventoryPanelController")` +
+    `DontDestroyOnLoad`): `SetParent(owner)` adicionado. Resto (slots, actions, destroy confirm,
+    equipment selection, `OpenForEquipmentSelection` estático) inalterado.
+  - `Assets/_Game/Scripts/UI/Skills/SkillTreeGameplayPanelController.cs` —
+    `EnsureRuntimeInstance()` virou `Install(Transform owner)`. Host novo
+    (`new GameObject("SkillTreeGameplayPanelController")` + `DontDestroyOnLoad`): `SetParent(owner)`
+    adicionado. Navegação de árvore/nó, compra, equip em slot ativo e subscribes inalterados.
+  - `Assets/_Game/Scripts/World/Scenes/SceneFadeOverlayBootstrap.cs` — `EnsureInstance()` (classe
+    `static`) virou `Install(Transform owner)`. Host novo (`new GameObject("SceneFadeOverlay")` +
+    `DontDestroyOnLoad`): `SetParent(owner)` adicionado. Construção do canvas de fade (imagem preta,
+    `CanvasGroup`, `GraphicRaycaster` desabilitado) inalterada.
+  - `Assets/_Game/Scripts/Composition/DomainRuntimeInstallers.cs` — novo
+    `PresentationRuntimeInstaller.Install(Transform owner)`, chamando os 7 `Install(owner)` acima na
+    ordem listada.
+  - `Assets/_Game/Scripts/Composition/GameRuntimeCompositionRoot.cs` — `Start()` passou a chamar
+    `PresentationRuntimeInstaller.Install(transform)` por último, após
+    `PlayerLifecycleRuntimeInstaller` (apresentação depende de player/lifecycle já instalados).
+  - `Assets/_Game/Tests/EditMode/World/SceneFadeOverlayTests.cs` — o teste
+    `SceneFadeOverlayBootstrap_HasRuntimeInitializeAttribute` (que asserta a presença do atributo
+    removido) foi reescrito como `SceneFadeOverlayBootstrap_HasInstallMethod`, verificando a presença
+    do novo contrato público `Install(Transform)` — mesma cobertura de "o bootstrap tem um ponto de
+    entrada estático", adaptada ao novo padrão.
+  - `docs/architecture/RUNTIME_BOOTSTRAP_OWNERSHIP_V5.md` — categoria "UI/cena" zerada; contagem
+    13 → 6.
+- Todos os 7 seguiam o MESMO padrão de host novo cross-scene (`DontDestroyOnLoad`) — nenhum caso era
+  canvas/objeto de cena já existente adotado sem reparent; por isso todos receberam `SetParent(owner)`,
+  sem exceção.
+- Comportamento preservado: momento de instalação (`AfterSceneLoad` → `Start()` do root, mesmo estágio
+  observável pós-carregamento de cena), guards de singleton estático, `DontDestroyOnLoad`, ordem de
+  criação de canvas/UI, todos os subscribes de `GameEventBus`, toda a lógica de `Update`/`OnGUI`,
+  coroutines e nenhuma mudança de gameplay/save/IDs/balance/cena/prefab.
+- Validação:
+  - `Invoke-UnityGeneratedProjectsBuild.ps1`: exit 0, 7/7 projetos, 0 warnings/0 erros (rodado duas
+    vezes — antes e depois do ajuste do teste `SceneFadeOverlayTests`; ambas exit 0).
+  - `RunUnityEditModeTests.ps1`: primeira rodada (`TestResults/residual-v5-batch4-editmode.xml`) deu
+    exit 1, 2746/2747 PASS — 1 falha em
+    `SceneFadeOverlayTests.SceneFadeOverlayBootstrap_HasRuntimeInitializeAttribute` (teste
+    pré-existente que asserta o atributo removido, esperado pela migração). Corrigido o teste;
+    segunda rodada (`TestResults/residual-v5-batch4-editmode-2.xml`,
+    `Logs/residual-v5-batch4-2.log`): exit 0, 2747/2747 PASS, 0 failed.
+  - Contagem `[RuntimeInitializeOnLoadMethod]` real (excluindo comentários/strings em arquivos
+    Editor que apenas mencionam o atributo) em `Assets/_Game/Scripts/**`: 13 → 6. Os 6 restantes:
+    `GameRuntimeCompositionRoot.Bootstrap` (`BeforeSceneLoad`, o próprio root — nunca migra),
+    `AudioManager`, `SfxEventBridge` (Audio, deferido), `CollisionDebugOverlayBootstrap` (debug),
+    `NpcDialogueExpansionBootstrap` (diagnóstico), `SceneTransitionRouter`
+    (`SubsystemRegistration`, reset de subsistema).
+  - Nenhuma alteração em `Cave/**` foi necessária; nenhuma falha de teste pertence ao domínio Cave
+    concorrente.
+- Não executado / risco residual: PlayMode manual não foi rodado nesta sessão (smoke visual por tela
+  — intro sequence, painéis de character/inventory/skill tree, death screen, HUD, fade de cena). A
+  mudança é puramente "quem chama o método estático de instalação e quando o host reparenta", sem
+  tocar lógica interna de nenhum dos 7 controllers; risco mitigado mas não eliminado sem confirmação
+  humana em Play Mode.
+- Commits (português, sem push):
+  - `refactor(bootstrap): centralizar apresentacao de ui` (7 controllers + installers + root).
+  - commit de docs (`RUNTIME_BOOTSTRAP_OWNERSHIP_V5.md` + este handoff).
+  - hashes reais: ver `git log --oneline -3` na branch `dev` — confirme no Git antes de confiar nesta
+    nota.
+- Próximo passo: Audio (`AudioManager`, `SfxEventBridge`) exige criar um estágio `AfterSceneLoad`
+  explícito no `GameRuntimeCompositionRoot` antes de migrar (instalar Audio cedo demais afeta a
+  decisão de criar `AudioListener` — este estágio ainda não existe). Depois disso, debug/diagnóstico
+  (`CollisionDebugOverlayBootstrap`, `NpcDialogueExpansionBootstrap`) podem ser isolados por
+  define/config, fora do fluxo de composition.
+
 ## 2026-07-05 — Maintainability Rework v2, lote 1
 
 - Spec ativa: `.specs/a_implementar/spec_arch_runtime_maintainability_rework_v2.md`.
