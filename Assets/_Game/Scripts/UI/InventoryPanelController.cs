@@ -7,7 +7,6 @@ using CindarsHope.Inventory;
 using CindarsHope.Inventory.Data;
 using CindarsHope.UI.Modal;
 using CindarsHope.UI.Routing;
-using CindarsHope.World;
 using UnityEngine;
 
 namespace CindarsHope.UI
@@ -37,8 +36,7 @@ namespace CindarsHope.UI
         private Action<bool, string> _onEquipmentSelectionClosed;
         private readonly string[] _actions = { "Use", "Equip", "Drop", "Destroy", "Split", "Cancel" };
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void EnsureRuntimeInstance()
+        public static void Install(Transform owner)
         {
             if (_instance != null)
             {
@@ -46,6 +44,7 @@ namespace CindarsHope.UI
             }
 
             var go = new GameObject("InventoryPanelController");
+            go.transform.SetParent(owner);
             DontDestroyOnLoad(go);
             _instance = go.AddComponent<InventoryPanelController>();
         }

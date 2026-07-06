@@ -65,12 +65,12 @@ namespace CindarsHope.UI.Death
         /// </summary>
         public event Action DeathScreenDismissed;
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void EnsureInstance()
+        public static void Install(Transform owner)
         {
             if (Instance != null) return;
 
             var go = new GameObject("DeathScreenCanvas");
+            go.transform.SetParent(owner);
             DontDestroyOnLoad(go);
             go.AddComponent<DeathScreenCanvasController>();
         }

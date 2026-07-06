@@ -6,12 +6,12 @@ namespace CindarsHope.UI.HUD
     {
         private const string HudGameObjectName = "GameplayHudCanvas";
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void EnsureInstance()
+        public static void Install(Transform owner)
         {
             if (GameplayHudCanvasController.Instance != null) return;
 
             var go = new GameObject(HudGameObjectName);
+            go.transform.SetParent(owner);
             Object.DontDestroyOnLoad(go);
 
             var controller = go.AddComponent<GameplayHudCanvasController>();
@@ -34,7 +34,7 @@ namespace CindarsHope.UI.HUD
             var overlay = overlayGo.AddComponent<GameplayHudTextOverlay>();
             overlay.Build();
 
-            Debug.Log("[GameplayHudBootstrap] GameplayHudCanvas created via RuntimeInitializeOnLoadMethod.");
+            Debug.Log("[GameplayHudBootstrap] GameplayHudCanvas created via composition root Install.");
         }
     }
 }

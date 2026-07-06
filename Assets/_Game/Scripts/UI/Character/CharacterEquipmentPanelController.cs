@@ -56,8 +56,7 @@ namespace CindarsHope.UI.Character
         private string _feedback = string.Empty;
         private int _selectedIndex;
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void EnsureRuntimeInstance()
+        public static void Install(Transform owner)
         {
             if (_instance != null)
             {
@@ -65,6 +64,7 @@ namespace CindarsHope.UI.Character
             }
 
             var go = new GameObject("CharacterEquipmentPanelController");
+            go.transform.SetParent(owner);
             DontDestroyOnLoad(go);
             _instance = go.AddComponent<CharacterEquipmentPanelController>();
         }

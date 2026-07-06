@@ -7,12 +7,12 @@ namespace CindarsHope.World.Scenes
     {
         private static SceneFadeOverlayController _instance;
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void EnsureInstance()
+        public static void Install(Transform owner)
         {
             if (_instance != null) return;
 
             var go = new GameObject("SceneFadeOverlay");
+            go.transform.SetParent(owner);
             Object.DontDestroyOnLoad(go);
 
             var canvas = go.AddComponent<Canvas>();

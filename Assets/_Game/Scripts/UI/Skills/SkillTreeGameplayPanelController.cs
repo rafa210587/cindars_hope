@@ -28,8 +28,7 @@ namespace CindarsHope.UI.Skills
         private int _availableTreeCount;
         private int _currentTreeNodeCount;
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void EnsureRuntimeInstance()
+        public static void Install(Transform owner)
         {
             if (_instance != null)
             {
@@ -37,6 +36,7 @@ namespace CindarsHope.UI.Skills
             }
 
             var go = new GameObject("SkillTreeGameplayPanelController");
+            go.transform.SetParent(owner);
             DontDestroyOnLoad(go);
             _instance = go.AddComponent<SkillTreeGameplayPanelController>();
         }

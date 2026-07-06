@@ -13,20 +13,15 @@ namespace CindarsHope.Tests.EditMode.World
     public class SceneFadeOverlayTests
     {
         [Test]
-        public void SceneFadeOverlayBootstrap_HasRuntimeInitializeAttribute()
+        public void SceneFadeOverlayBootstrap_HasInstallMethod()
         {
-            var methods = typeof(SceneFadeOverlayBootstrap)
-                .GetMethods(BindingFlags.Static | BindingFlags.NonPublic);
-            bool found = false;
-            foreach (var m in methods)
-            {
-                if (m.GetCustomAttribute<RuntimeInitializeOnLoadMethodAttribute>() != null)
-                {
-                    found = true;
-                    break;
-                }
-            }
-            Assert.IsTrue(found, "SceneFadeOverlayBootstrap deve ter RuntimeInitializeOnLoadMethod.");
+            // Batch 4 (residual_v5): migrado de [RuntimeInitializeOnLoadMethod] auto-bootstrap
+            // para instalação explícita via PresentationRuntimeInstaller.Install(owner), chamado
+            // pelo GameRuntimeCompositionRoot. O contrato agora é um metodo publico estatico
+            // Install(Transform) em vez do atributo de auto-init.
+            var install = typeof(SceneFadeOverlayBootstrap)
+                .GetMethod("Install", BindingFlags.Static | BindingFlags.Public);
+            Assert.IsNotNull(install, "SceneFadeOverlayBootstrap deve expor Install(Transform) publico estatico.");
         }
 
         [Test]

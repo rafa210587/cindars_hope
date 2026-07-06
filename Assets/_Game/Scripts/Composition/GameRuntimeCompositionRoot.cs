@@ -57,6 +57,7 @@ namespace CindarsHope.Composition
             NarrativeRuntimeInstaller.Install(transform);
             QuestRuntimeInstaller.Install(transform);
             PlayerLifecycleRuntimeInstaller.Install(transform);
+            PresentationRuntimeInstaller.Install(transform);
         }
 
         public static GameRuntimeCompositionRoot EnsureExists()

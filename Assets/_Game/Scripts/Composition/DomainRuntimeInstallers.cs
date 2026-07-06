@@ -151,4 +151,25 @@ namespace CindarsHope.Composition
             PlayerVitalsApplierBootstrap.Install(owner);
         }
     }
+
+    /// <summary>
+    /// Serviços de apresentação (narrative intro + UI/HUD/cena) que dependem de cena
+    /// (AfterSceneLoad): intro sequence, painéis IMGUI de character/inventory/skill tree,
+    /// death screen canvas, HUD gameplay e overlay de fade de cena. Instalados no Start() do
+    /// root, nunca em InstallRuntimeServices(). Todos são singletons cross-scene
+    /// (DontDestroyOnLoad) — o owner vira o parent do host novo, preservando esse lifecycle.
+    /// </summary>
+    internal static class PresentationRuntimeInstaller
+    {
+        public static void Install(Transform owner)
+        {
+            CindarsHope.Narrative.IntroSequenceController.Install(owner);
+            CindarsHope.UI.Character.CharacterEquipmentPanelController.Install(owner);
+            CindarsHope.UI.Death.DeathScreenCanvasController.Install(owner);
+            CindarsHope.UI.HUD.GameplayHudBootstrap.Install(owner);
+            CindarsHope.UI.InventoryPanelController.Install(owner);
+            CindarsHope.UI.Skills.SkillTreeGameplayPanelController.Install(owner);
+            CindarsHope.World.Scenes.SceneFadeOverlayBootstrap.Install(owner);
+        }
+    }
 }
