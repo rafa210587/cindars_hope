@@ -209,6 +209,7 @@ namespace CindarsHope.Tests.EditMode.Architecture
                 "GameplayShortcutDecision.cs",
                 "GameplayInputBlocker.cs",
                 "NarrativeIds.cs",
+                "NpcShopDialogueChoicePolicy.cs",
                 "NpcShopInteractionSession.cs",
                 "QuestGiverInteractionMode.cs",
                 "SkillActionEffectCatalog.cs",

@@ -220,6 +220,17 @@ estiver próxima do limite de contexto/tokens.
 - Próximo passo: V5 Lote 3, decompor `NpcShopController` preservando seus campos serializados e
   extraindo primeiro choices/services puros antes de transaction/UI wiring.
 
+### V5 Lote 3A — política de choices do shop (implementado, commit pendente)
+
+- Criado `NpcShopDialogueChoicePolicy` no assembly puro `CindarsHope.Gameplay`.
+- A política é dona da ordem, rótulos fixos e IDs dos menus raiz e Thalindra; o controller resolve
+  apenas gates/estado runtime, adapta para `DialogueChoice` e mantém os handlers existentes.
+- Nenhum rótulo, ID, ordem, gate, transação ou handler foi removido.
+- Testes da política: 3/3; ratchet do Gameplay: 1/1.
+- Builds: `Assembly-CSharp.csproj` e `CindarsHope.Tests.EditMode.csproj`, 0 erros/0 warnings.
+- Próximo passo: extrair a validação/preparação de transação para collaborator testável, rodar
+  EditMode completo e só então concluir o Lote 3.
+
 ## 2026-07-05 — Autorização integral das Fases 4 a 8
 
 - Decisão humana: continuar até terminar todo o rework, sem parar entre fases.

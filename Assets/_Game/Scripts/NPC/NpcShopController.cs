@@ -34,7 +34,6 @@ namespace CindarsHope.NPC
         [SerializeField] private ModalManager _modalManager;
 
         private const string ThalindraQuestId = "quest_first_supplies_for_cindar";
-        private const string DebugExprOpenId = "dbg_open";
         private const string DebugExprPrefix = "dbg:";
 
         private readonly NpcShopInteractionSession _interaction = new NpcShopInteractionSession();
@@ -277,18 +276,11 @@ namespace CindarsHope.NPC
                 service != null && service.GetQuestState(ThalindraQuestId) != null,
                 service != null && service.CanTurnIn(ThalindraQuestId));
 
-            var choices = new List<UiDialogueChoice>();
-            if (questDecision.ShowChoice)
-                choices.Add(new UiDialogueChoice(questDecision.ChoiceLabel, "quest"));
-            choices.Add(new UiDialogueChoice("Comprar", "buy"));
-            choices.Add(new UiDialogueChoice("Vender", "sell"));
+            var choices = ToUiChoices(NpcShopDialogueChoicePolicy.BuildThalindraChoices(
+                questDecision,
+                BuildNpcServiceChoices(),
+                UnityEngine.Debug.isDebugBuild));
             // fable_25: Análise de Criatura da Thalindra entra no MESMO menu (sem segundo fluxo).
-            AddNpcServiceChoices(choices);
-            if (UnityEngine.Debug.isDebugBuild)
-            {
-                choices.Add(new UiDialogueChoice("[Debug] expressao", DebugExprOpenId));
-            }
-            choices.Add(new UiDialogueChoice("Adeus", "exit"));
 
             _dialogueModal.ShowWithChoices("Como posso ajudar?", choices);
         }
@@ -305,13 +297,13 @@ namespace CindarsHope.NPC
             }
 
             // fable_25: serviços únicos (ChoiceId "svc:<serviceId>") — mesmo handler do Conversar raiz.
-            if (choice.ChoiceId != null && choice.ChoiceId.StartsWith(NpcServiceChoicePrefix, System.StringComparison.Ordinal))
+            if (choice.ChoiceId != null && choice.ChoiceId.StartsWith(NpcShopDialogueChoicePolicy.NpcServiceChoicePrefix, System.StringComparison.Ordinal))
             {
-                HandleNpcServiceChoice(choice.ChoiceId.Substring(NpcServiceChoicePrefix.Length));
+                HandleNpcServiceChoice(choice.ChoiceId.Substring(NpcShopDialogueChoicePolicy.NpcServiceChoicePrefix.Length));
                 return;
             }
 
-            if (choice.ChoiceId == DebugExprOpenId)
+            if (choice.ChoiceId == NpcShopDialogueChoicePolicy.DebugExpressionChoiceId)
             {
                 ShowDebugExpressionMenu();
                 return;
@@ -441,44 +433,12 @@ namespace CindarsHope.NPC
             _dialogueModal.OnChoiceSelected += HandleRootShopChoice;
             _dialogueModal.OnClose += HandleTreeDialogueClosed;
 
-            var choices = new List<UiDialogueChoice>
-            {
-                new UiDialogueChoice("Conversar", "talk"),
-                new UiDialogueChoice("Comprar", "buy"),
-                new UiDialogueChoice("Vender", "sell"),
-                // fable_72: opção ADITIVA de dar presente. O seletor de item Giftable do inventário é
-                // UI diferida (não existe seletor reusável no projeto; wiring/Play Mode humano). O
-                // fluxo determinístico (classificação/cap/delta/consumo/evento) vive em
-                // GiftGivingService.TryGiveGift e é coberto por testes EditMode.
-                new UiDialogueChoice("Dar presente", "gift")
-            };
-
-            // fable_22 (CA-3): opção "Temperar" só no Brumdar e só com o gate aberto
-            // (sq_brumdar_3_done + Ato 1). Fail-closed: sem resolver de gate, a opção não aparece.
-            if (IsBrumdar() && CindarsHope.Economy.TemperingForgeAccess.IsGateOpen())
-            {
-                choices.Add(new UiDialogueChoice("Temperar", "temper"));
-            }
-
-            // fable_19 (CA-2): opção de serviço civic só nos provedores canônicos (Tovin = licença de
-            // barraca; Mara = registro de fazenda). Mostra o rótulo de compra se ainda não possui, ou
-            // um rótulo de já-possui (idempotente). Mesmo idioma do gate do Brumdar acima.
-            if (TryGetCityServiceChoice(out var serviceChoice))
-            {
-                choices.Add(serviceChoice);
-            }
-
-            // fable_25 (CA-1/CA-4): serviços ÚNICOS deste NPC entram como opções no MESMO Conversar
-            // (sem segundo fluxo de diálogo). Opção gated aparece DESABILITADA com o motivo no rótulo
-            // (descoberta > ocultação); a execução real é validada/efetuada pela fachada NpcServiceAccess.
-            AddNpcServiceChoices(choices);
-
-            if (UnityEngine.Debug.isDebugBuild)
-            {
-                choices.Add(new UiDialogueChoice("[Debug] expressao", DebugExprOpenId));
-            }
-
-            choices.Add(new UiDialogueChoice("Adeus", "exit"));
+            TryGetCityServiceChoice(out var serviceChoice);
+            var choices = ToUiChoices(NpcShopDialogueChoicePolicy.BuildRootChoices(
+                IsBrumdar() && CindarsHope.Economy.TemperingForgeAccess.IsGateOpen(),
+                serviceChoice != null ? serviceChoice.Label : null,
+                BuildNpcServiceChoices(),
+                UnityEngine.Debug.isDebugBuild));
 
             _dialogueModal.ShowWithChoices("Como posso ajudar?", choices);
         }
@@ -550,26 +510,33 @@ namespace CindarsHope.NPC
 
         // ─── fable_25: serviços únicos do NPC no Conversar ───────────────────────────────────────
 
-        private const string NpcServiceChoicePrefix = "svc:";
-
         /// <summary>
         /// Adiciona uma opção por serviço único deste NPC. Habilitada ⇒ rótulo simples; gated ⇒ rótulo +
         /// motivo (descoberta > ocultação). ChoiceId = "svc:&lt;serviceId&gt;". A opção NUNCA some.
         /// </summary>
-        private void AddNpcServiceChoices(List<UiDialogueChoice> choices)
+        private List<NpcShopServiceChoiceDefinition> BuildNpcServiceChoices()
         {
+            var choices = new List<NpcShopServiceChoiceDefinition>();
             var npcId = _npcData != null ? _npcData.NpcId : null;
             if (!CindarsHope.NPC.Services.NpcServiceAccess.HasServices(npcId))
-            {
-                return;
-            }
+                return choices;
 
             var options = CindarsHope.NPC.Services.NpcServiceAccess.BuildOptions(npcId);
             foreach (var option in options)
             {
                 if (string.IsNullOrEmpty(option.ServiceId)) continue;
-                choices.Add(new UiDialogueChoice(option.Label, NpcServiceChoicePrefix + option.ServiceId));
+                choices.Add(new NpcShopServiceChoiceDefinition(option.Label, option.ServiceId));
             }
+
+            return choices;
+        }
+
+        private static List<UiDialogueChoice> ToUiChoices(IReadOnlyList<NpcShopChoiceDefinition> definitions)
+        {
+            var choices = new List<UiDialogueChoice>(definitions.Count);
+            for (var i = 0; i < definitions.Count; i++)
+                choices.Add(new UiDialogueChoice(definitions[i].Label, definitions[i].ChoiceId));
+            return choices;
         }
 
         /// <summary>
@@ -615,13 +582,13 @@ namespace CindarsHope.NPC
             }
 
             // fable_25: serviços únicos (ChoiceId "svc:<serviceId>").
-            if (choice.ChoiceId != null && choice.ChoiceId.StartsWith(NpcServiceChoicePrefix, System.StringComparison.Ordinal))
+            if (choice.ChoiceId != null && choice.ChoiceId.StartsWith(NpcShopDialogueChoicePolicy.NpcServiceChoicePrefix, System.StringComparison.Ordinal))
             {
-                HandleNpcServiceChoice(choice.ChoiceId.Substring(NpcServiceChoicePrefix.Length));
+                HandleNpcServiceChoice(choice.ChoiceId.Substring(NpcShopDialogueChoicePolicy.NpcServiceChoicePrefix.Length));
                 return;
             }
 
-            if (choice.ChoiceId == DebugExprOpenId)
+            if (choice.ChoiceId == NpcShopDialogueChoicePolicy.DebugExpressionChoiceId)
             {
                 ShowDebugExpressionMenu();
                 return;
