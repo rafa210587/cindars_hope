@@ -988,3 +988,79 @@ depender do histórico da conversa.
   baseline. Remoções de UI antiga ainda exigem spec visual por tela, apesar do smoke de cenas passar.
 
 ---
+
+## 2026-07-06 — V5 Lote 5F (batch 3): componentes anexados ao player
+
+- Objetivo: migrar os 6 serviços player-attached restantes de auto-bootstrap
+  `[RuntimeInitializeOnLoadMethod(AfterSceneLoad)]` para o composition root, seguindo exatamente o
+  padrão do batch 2, sem alterar comportamento observável.
+- Arquivos alterados:
+  - `Assets/_Game/Scripts/Combat/StatusEffect/PlayerStatusReceiver.cs` —
+    `PlayerStatusReceiverBootstrap.EnsureInstance()` virou `public static void Install(Transform
+    owner)`; o `owner` é ignorado porque o attach original é `AddComponent` no GameObject do
+    `Player.StatusEffectManager` já existente na cena (não cria host novo).
+  - `Assets/_Game/Scripts/Player/Death/AnyaFountainRespawnFlow.cs` — `EnsureInstance()` virou
+    `Install(Transform owner)`; cria `new GameObject("AnyaFountainRespawnFlow")` standalone com
+    `DontDestroyOnLoad`; adicionado `go.transform.SetParent(owner)` logo após a criação, no mesmo
+    padrão do batch 2.
+  - `Assets/_Game/Scripts/Player/Death/PlayerDeathController.cs` — mesmo padrão de
+    `AnyaFountainRespawnFlow`: host novo `new GameObject("PlayerDeathController")` +
+    `SetParent(owner)` + `DontDestroyOnLoad`.
+  - `Assets/_Game/Scripts/Player/Movement/PlayerMovementActionRuntimeBootstrap.cs` — mesmo padrão:
+    host novo `new GameObject("PlayerMovementActionRuntimeBootstrap")` + `SetParent(owner)` +
+    `DontDestroyOnLoad`.
+  - `Assets/_Game/Scripts/Player/Movement/PlayerSprintController.cs` —
+    `PlayerSprintControllerBootstrap.EnsureInstance()` virou `Install(Transform owner)`; `owner`
+    ignorado porque o attach original é `AddComponent` no GameObject do
+    `PlayerController.ActiveInstance` já existente (não cria host novo).
+  - `Assets/_Game/Scripts/Player/PlayerVitalsApplier.cs` —
+    `PlayerVitalsApplierBootstrap.EnsureInstance()` virou `Install(Transform owner)`; `owner`
+    ignorado porque o attach original é `AddComponent` no GameObject do `GameBootstrap` já existente
+    (não cria host novo).
+  - `Assets/_Game/Scripts/Composition/DomainRuntimeInstallers.cs` — novo
+    `PlayerLifecycleRuntimeInstaller.Install(Transform owner)`, chamando os 6 `Install(owner)` na
+    mesma ordem listada acima.
+  - `Assets/_Game/Scripts/Composition/GameRuntimeCompositionRoot.cs` — `Start()` passou a chamar
+    `PlayerLifecycleRuntimeInstaller.Install(transform)` por último, após os installers já
+    existentes (Npc/World/Farm/Item/PlayerService/Cave/CombatTelemetry/Narrative/Quest).
+  - `docs/architecture/RUNTIME_BOOTSTRAP_OWNERSHIP_V5.md` — contagem 19→13, classe "Componentes
+    anexados ao player" zerada, migração documentada.
+- Comportamento preservado: em cada um dos 6 serviços, a re-vinculação per-scene (coroutines
+  `BindWhenReady`, `SceneManager.sceneLoaded`, guards de singleton `_instance`) permanece 100%
+  intacta — só mudou quem chama a criação inicial do host. Nos 3 casos que criam host novo
+  (`AnyaFountainRespawnFlow`, `PlayerDeathController`, `PlayerMovementActionRuntimeBootstrap`), o
+  novo GameObject vira filho do `GameRuntimeCompositionRoot.transform`, mas continua
+  `DontDestroyOnLoad` e com o mesmo singleton guard. Nos 3 casos que fazem `AddComponent` num
+  GameObject já existente (`PlayerStatusReceiver`, `PlayerSprintController`,
+  `PlayerVitalsApplier`), nenhum host novo é criado e nenhum `SetParent` é chamado — o `owner`
+  passado pelo installer é recebido no parâmetro mas ignorado no corpo do método, exatamente
+  reproduzindo o `EnsureInstance()` original.
+- Validação:
+  - `Invoke-UnityGeneratedProjectsBuild.ps1`: exit 0, 7/7 projetos, 0 warnings/0 erros.
+  - `RunUnityEditModeTests.ps1` (`TestResults/residual-v5-batch3-editmode.xml`,
+    `Logs/residual-v5-batch3.log`): exit code do runner 1 (2 testes falharam de 2.745); as 2 falhas
+    são `CindarsHope.Tests.EditMode.Cave.CaveDecorClusterTests.Build_FloorClusterPlacements_HaveNoWallNeighbor`
+    e `...Build_FloorClusters_FormGroupsOfTwoToFourAdjacentCells`, ambos parte da spec concorrente
+    `spec_cave_decor_composition_runtime` (arquivos `Cave/Ecosystem/CaveDecorContextClassifier.cs`,
+    `Cave/Ecosystem/CaveDecorPlacementContext.cs` e outros já modificados no working tree por outra
+    sessão, fora do escopo deste lote). Confirmado por `git diff --stat` restrito aos 8 arquivos
+    deste lote: nenhum toca `Cave/**` ou o arquivo de teste. Nenhuma falha nova foi introduzida pela
+    migração de bootstrap; risco residual: as 2 falhas pré-existentes de outra spec continuam
+    abertas e não foram meu escopo corrigir.
+  - Contagem `[RuntimeInitializeOnLoadMethod]` em `Assets/_Game/Scripts/**`: 19 → 13 (medido via
+    `Get-ChildItem ... | Select-String '^\s*\[RuntimeInitializeOnLoadMethod'`), conforme esperado.
+- Não executado / não aplicável: PlayMode manual não foi rodado nesta sessão (Unity fechado, sem
+  Editor interativo disponível); risco residual: comportamento em Play Mode real (dash/dodge/block
+  do player, sprint, status effects, morte/respawn na Fonte, vitals) não foi confirmado visualmente
+  nesta sessão — mitigado pelo fato de a mudança ser puramente de "quem chama o método estático de
+  instalação e, nos 3 casos com host novo, quem é o pai do GameObject", sem tocar a lógica interna
+  de nenhum dos 6 serviços.
+- Commits (português, sem push): ver `git log --oneline -3` na branch `dev` no momento do fechamento
+  para os hashes reais — não incluídos aqui porque foram criados após a escrita deste parágrafo.
+- Próximo passo: apresentação/UI (×7 casos: `IntroSequenceController`,
+  `CharacterEquipmentPanelController`, `DeathScreenCanvasController`, `GameplayHudBootstrap`,
+  `InventoryPanelController`, `SkillTreeGameplayPanelController`, `SceneFadeOverlayBootstrap`) só com
+  PlayMode + smoke visual por cena; depois disso, Audio (`AudioManager`, `SfxEventBridge`) exige criar
+  primeiro um estágio `AfterSceneLoad` explícito no `GameRuntimeCompositionRoot`.
+
+---

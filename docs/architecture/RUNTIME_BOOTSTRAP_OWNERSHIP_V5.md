@@ -1,18 +1,21 @@
 # Runtime bootstrap ownership — residual v5
 
-Data da auditoria: 2026-07-05.
+Data da auditoria: 2026-07-06.
 
 ## Resultado
 
 - baseline verificado antes deste lote: 49 atributos reais;
 - migrados até o lote anterior: 24 (incluindo Fonte, player condition e inferred class);
-- migrados neste lote (batch 2): 6 — Cave (`DeathSystemBootstrap`, `CaveRuntimeBridge`,
+- migrados no batch 2: 6 — Cave (`DeathSystemBootstrap`, `CaveRuntimeBridge`,
   `CaveWanderingMerchant`), Combat (`CombatTelemetryService.Bootstrap`), Narrative
   (`NarrativeRuntimeBootstrap`) e Quest (`QuestRuntimeBootstrap`);
-- estado atual: 19 atributos reais de `[RuntimeInitializeOnLoadMethod]` em
+- migrados neste lote (batch 3): 6 — os componentes anexados ao player (`PlayerStatusReceiver`,
+  `AnyaFountainRespawnFlow`, `PlayerDeathController`, `PlayerMovementActionRuntimeBootstrap`,
+  `PlayerSprintController`, `PlayerVitalsApplier`);
+- estado atual: 13 atributos reais de `[RuntimeInitializeOnLoadMethod]` em
   `Assets/_Game/Scripts/**` (medido, não estimado);
 - restam apenas Audio (`AudioManager`, `SfxEventBridge`) como serviços persistentes de domínio, mais
-  os 16 casos classificados como UI/cena, player-attached, debug, diagnóstico e reset de subsistema;
+  os 11 casos classificados como UI/cena, debug, diagnóstico e reset de subsistema;
 - nenhuma migração restante está autorizada sem preservar o momento de instalação, fallback de cena,
   ownership e teardown descritos abaixo.
 
@@ -25,8 +28,8 @@ Data da auditoria: 2026-07-05.
 | Debug opt-in | 1 | separar por define/config antes de migrar |
 | Diagnóstico sem estado | 1 | remover de runtime ou mover para validator em spec própria |
 | UI/cena | 7 | installer de apresentação após cena; exige fallback e smoke visual |
-| Componentes anexados ao player | 6 | installer de player lifecycle, não root global direto |
-| Serviços persistentes de domínio | 8 | migrar por domínio, com ordem e teardown explícitos |
+| Componentes anexados ao player | 0 (migrados no batch 3) | — |
+| Serviços persistentes de domínio | 2 (Audio, deferido) | migrar por domínio, com ordem e teardown explícitos |
 
 ### Reset de subsistema
 
@@ -47,7 +50,7 @@ Data da auditoria: 2026-07-05.
 - `UI/Skills/SkillTreeGameplayPanelController.cs`;
 - `World/Scenes/SceneFadeOverlayBootstrap.cs`.
 
-### Componentes anexados ao player
+### Componentes anexados ao player (migrados no batch 3)
 
 - `Combat/StatusEffect/PlayerStatusReceiver.cs`;
 - `Player/Death/AnyaFountainRespawnFlow.cs`;
@@ -92,11 +95,23 @@ coroutines de bind-when-ready, guards de singleton e ordem de dependência (Ques
 na lista do `Start()`, já que `NarrativeRuntimeBootstrap` consome `QuestRuntimeBootstrap.QuestService`
 via polling próprio — comportamento inalterado).
 
+## Migração batch 3 concluída
+
+`PlayerLifecycleRuntimeInstaller` instala, no `Start()` do root, os 6 serviços de lifecycle do
+player. Cada `Install(Transform owner)` preserva o alvo de attach EXATO do `EnsureInstance()`
+original: `PlayerStatusReceiver`, `PlayerSprintController` e `PlayerVitalsApplier` fazem
+`AddComponent` num GameObject já existente (statusManager, player, GameBootstrap) e por isso
+ignoram `owner` — nenhum host novo é criado, nenhum `SetParent` é chamado, exatamente como antes.
+`AnyaFountainRespawnFlow`, `PlayerDeathController` e `PlayerMovementActionRuntimeBootstrap` criam
+`new GameObject(...)` standalone com `DontDestroyOnLoad`; nestes, `go.transform.SetParent(owner)`
+foi adicionado logo após a criação do GameObject, no mesmo padrão do batch 2. A re-vinculação
+per-scene de cada serviço (coroutines de bind-when-ready, `SceneManager.sceneLoaded`, guards de
+singleton) permanece 100% intacta — só mudou quem chama a criação inicial do host.
+
 ## Próxima ordem segura
 
-1. player lifecycle somente após existir um `PlayerRuntimeInstaller` ligado ao spawn/despawn;
-2. apresentação somente com PlayMode e smoke visual por cena;
-3. audio por último: instalar antes da cena altera a decisão de criar `AudioListener` e não é seguro
+1. apresentação (UI/cena, ×7) somente com PlayMode e smoke visual por cena;
+2. audio por último: instalar antes da cena altera a decisão de criar `AudioListener` e não é seguro
    sem um estágio `AfterSceneLoad` explícito no root — este estágio ainda não existe no
    `GameRuntimeCompositionRoot` e deve ser criado antes de migrar Audio.
 
