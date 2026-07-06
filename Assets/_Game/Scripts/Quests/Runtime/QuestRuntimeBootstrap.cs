@@ -141,12 +141,12 @@ namespace CindarsHope.Quests.Runtime
             _pendingSaveData = saveData;
         }
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void EnsureInstance()
+        public static void Install(Transform owner)
         {
             if (_instance != null) return;
 
             var go = new GameObject("QuestRuntimeBootstrap");
+            go.transform.SetParent(owner);
             DontDestroyOnLoad(go);
             _instance = go.AddComponent<QuestRuntimeBootstrap>();
         }
