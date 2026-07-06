@@ -339,7 +339,7 @@ estiver próxima do limite de contexto/tokens.
 - Gates: ratchet PASS; EditMode 2.726/2.726; PlayMode composition + cenas 2/2 PASS.
 - Próximo recorte: Cave, telemetry, Fonte, narrative, player condition/inferred class e quest.
 
-### V5 Lote 5E — Fonte e player services (implementado, commit pendente)
+### V5 Lote 5E — Fonte e player services (commit `4b6a8767`)
 
 - Criado `PlayerServiceRuntimeInstaller`.
 - Migrados `FonteRuntimeBootstrap`, `PlayerConditionRuntimeBootstrap` e
@@ -350,6 +350,23 @@ estiver próxima do limite de contexto/tokens.
 - Contagem: 49 baseline → 25 atuais; 24 permanecem fora do root.
 - Gates: ratchet + EditMode 2.726/2.726; PlayMode composition/cenas 2/2 PASS.
 - Próximo recorte: Cave, telemetry, narrative e quest (8 serviços persistentes).
+
+### Ponto de retomada após `4b6a8767`
+
+- Contagem comprovada: 25 atributos reais; 24 fora do root.
+- Oito serviços persistentes ainda no lote 5:
+  - Audio: `AudioManager`, `SfxEventBridge` (migrar por último por causa do `AudioListener`);
+  - Cave: `DeathSystemBootstrap`, `CaveRuntimeBridge`, `CaveWanderingMerchant`;
+  - Combat: `CombatTelemetryService.Bootstrap`;
+  - Narrative: `NarrativeRuntimeBootstrap`;
+  - Quest: `QuestRuntimeBootstrap`.
+- Casos restantes fora desse grupo: 6 player-attached, 7 UI/cena, 1 debug, 1 diagnóstico e o reset
+  `SceneTransitionRouter` em `SubsystemRegistration`; não contar esses 16 como serviços globais
+  comuns nem movê-los diretamente para `Start`/`BeforeSceneLoad`.
+- Últimos gates: EditMode 2.726/2.726; PlayMode composition + Farm/Town/Cave 2/2; ratchet PASS.
+- Próximo passo seguro: caracterizar ordem Quest → Narrative e os três hosts Cave; migrar em um
+  commit com PlayMode 2/2. Telemetry pode acompanhar Cave se mantiver seu toggle/teardown.
+- Branch `dev` está 20 commits à frente de `origin/dev`; nenhum push foi executado.
 
 ## 2026-07-05 — Autorização integral das Fases 4 a 8
 
