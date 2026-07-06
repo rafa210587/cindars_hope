@@ -27,7 +27,7 @@ namespace CindarsHope.Skills.Runtime.Effects
 
         [SerializeField] private SkillTargetResolver _targetResolver;
 
-        private readonly SkillEffectRegistry _registry = new SkillEffectRegistry();
+        private readonly SkillEffectRegistry _registry = ActiveSkillExecutorCatalog.CreateRegistry();
         private readonly float[] _slotCooldowns = new float[4];
         // fable_71: cooldown total (no momento do disparo) para a HUD calcular o fill radial.
         private readonly float[] _slotCooldownTotals = new float[4];
@@ -63,16 +63,6 @@ namespace CindarsHope.Skills.Runtime.Effects
             if (_bootstrapped)
                 return;
 
-            // Register farm crop executor as vertical slice
-            _registry.Register(new FarmCropSkillEffectExecutor());
-
-            // Real combat/utility executors (melee strikes, projectiles, self restores).
-            RegisterCombatExecutors();
-
-            // Remaining feedback-only placeholders for effects whose target system
-            // (marking, wards, traps, efficiency buffs) does not exist yet.
-            RegisterFeedbackExecutors();
-
             // Attach target resolver
             if (_targetResolver == null)
             {
@@ -83,69 +73,6 @@ namespace CindarsHope.Skills.Runtime.Effects
 
             Debug.Log("[ActiveSkillExecutionController] Bootstrapped. Registered effect: farm.crop.water_skill + balance patch feedback executors.");
             _bootstrapped = true;
-        }
-
-        // Real gameplay executors. Damage/cost/cooldown values follow the balance addendum
-        // (WAVE_INTEGRATION_11_ACTION_SKILL_BALANCE_PATCH) tiers: quick hits ~2-3s CD,
-        // heavy hits 6-9s CD, restores 30-60s CD.
-        private void RegisterCombatExecutors()
-        {
-            // ── Melee strikes ──
-            _registry.Register(new MeleeStrikeSkillEffectExecutor("combat.melee.offhand_cut", "Corte com a Mao Inversa", baseDamage: 8, range: 1.2f, arcDegrees: 140f, staminaCost: 10, cooldownSeconds: 2.5f));
-            _registry.Register(new MeleeStrikeSkillEffectExecutor("combat.melee.whirl_cut", "Corte Giratorio", baseDamage: 10, range: 1.7f, arcDegrees: 360f, staminaCost: 22, cooldownSeconds: 6f));
-            _registry.Register(new MeleeStrikeSkillEffectExecutor("combat.melee.leap_attack", "Ataque Saltante", baseDamage: 14, range: 1.4f, arcDegrees: 120f, staminaCost: 25, lungeDistance: 2.2f, cooldownSeconds: 7f));
-            _registry.Register(new MeleeStrikeSkillEffectExecutor("combat.melee.battle_dash", "Avanco de Batalha", baseDamage: 8, range: 1.2f, arcDegrees: 100f, staminaCost: 20, lungeDistance: 3f, cooldownSeconds: 5f));
-            _registry.Register(new MeleeStrikeSkillEffectExecutor("melee.avanco_aco", "Avanco de Aco", baseDamage: 12, range: 1.3f, arcDegrees: 110f, staminaCost: 22, lungeDistance: 2.5f, cooldownSeconds: 6f));
-            _registry.Register(new MeleeStrikeSkillEffectExecutor("melee.grito_desafio", "Grito de Desafio", baseDamage: 6, range: 2.2f, arcDegrees: 360f, staminaCost: 18, knockbackForce: 6f, cooldownSeconds: 8f));
-            _registry.Register(new MeleeStrikeSkillEffectExecutor("melee.investida_quebra_guarda", "Investida Quebra-Guarda", baseDamage: 16, range: 1.3f, arcDegrees: 90f, staminaCost: 26, lungeDistance: 2f, knockbackForce: 3f, cooldownSeconds: 9f, postureDamageMultiplier: 3f));
-
-            // ── Ranged projectiles (physical → stamina) ──
-            _registry.Register(new ProjectileSkillEffectExecutor("combat.ranged.charged_shot", "Tiro Carregado", baseDamage: 20, speed: 12f, range: 9f, damageType: CindarsHope.Combat.DamageType.Physical, resourceCost: 20, cooldownSeconds: 6f));
-            _registry.Register(new ProjectileSkillEffectExecutor("combat.ranged.line_piercer", "Perfurador em Linha", baseDamage: 12, speed: 14f, range: 10f, damageType: CindarsHope.Combat.DamageType.Physical, resourceCost: 18, maxHitsPerProjectile: 5, cooldownSeconds: 7f));
-            _registry.Register(new ProjectileSkillEffectExecutor("combat.ranged.multishot_fan", "Leque de Flechas", baseDamage: 8, speed: 11f, range: 7f, damageType: CindarsHope.Combat.DamageType.Physical, resourceCost: 24, projectileCount: 3, spreadDegrees: 28f, cooldownSeconds: 8f));
-            _registry.Register(new ProjectileSkillEffectExecutor("combat.ranged.bleeding_arrow", "Flecha Lacerante", baseDamage: 14, speed: 12f, range: 8f, damageType: CindarsHope.Combat.DamageType.Physical, resourceCost: 16, cooldownSeconds: 6f, statusEffectId: "status_bleed"));
-
-            // ── Magic projectiles (elemental → mana) ──
-            _registry.Register(new ProjectileSkillEffectExecutor("combat.magic.fire_spark", "Faisca de Fogo", baseDamage: 12, speed: 10f, range: 7f, damageType: CindarsHope.Combat.DamageType.Fire, resourceCost: 10, cooldownSeconds: 3f));
-            _registry.Register(new ProjectileSkillEffectExecutor("combat.magic.ice_bind", "Prisao de Gelo", baseDamage: 10, speed: 9f, range: 7f, damageType: CindarsHope.Combat.DamageType.Ice, resourceCost: 14, cooldownSeconds: 6f, statusEffectId: "status_chill"));
-            _registry.Register(new ProjectileSkillEffectExecutor("combat.magic.toxic_cloud", "Nuvem Toxica", baseDamage: 8, speed: 7f, range: 6f, damageType: CindarsHope.Combat.DamageType.Toxic, resourceCost: 18, projectileCount: 3, spreadDegrees: 40f, cooldownSeconds: 8f, statusEffectId: "status_poison"));
-            _registry.Register(new ProjectileSkillEffectExecutor("combat.magic.lightning_chain", "Corrente Eletrica", baseDamage: 12, speed: 16f, range: 9f, damageType: CindarsHope.Combat.DamageType.Lightning, resourceCost: 20, maxHitsPerProjectile: 4, cooldownSeconds: 8f));
-            _registry.Register(new ProjectileSkillEffectExecutor("magic.chama_breve", "Chama Breve", baseDamage: 8, speed: 10f, range: 6f, damageType: CindarsHope.Combat.DamageType.Fire, resourceCost: 8, cooldownSeconds: 2.5f));
-            _registry.Register(new ProjectileSkillEffectExecutor("magic.rajada_gelida", "Rajada Gelida", baseDamage: 6, speed: 9f, range: 6f, damageType: CindarsHope.Combat.DamageType.Ice, resourceCost: 16, projectileCount: 3, spreadDegrees: 30f, cooldownSeconds: 6f, statusEffectId: "status_chill"));
-
-            // ── Crafting offensive gadget ──
-            _registry.Register(new ProjectileSkillEffectExecutor("crafting.bomba_improvisada", "Bomba Improvisada", baseDamage: 18, speed: 8f, range: 5f, damageType: CindarsHope.Combat.DamageType.Toxic, resourceCost: 20, maxHitsPerProjectile: 3, cooldownSeconds: 12f));
-
-            // ── Magic area control (fable_70) ── zona de slow reusando status_slow existente.
-            _registry.Register(new SlowFieldSkillEffectExecutor("combat.magic.slowing_sigils", "Sigilos Lentificantes", statusEffectId: "status_slow", radius: 2.5f, manaCost: 18, cooldownSeconds: 8f));
-
-            // ── Survival self-restores ──
-            _registry.Register(new SelfRestoreSkillEffectExecutor("survival.kit_emergencia", "Kit de Emergencia", restoreHp: 30, restoreStamina: 0, restoreMana: 0, cooldownSeconds: 45f));
-            _registry.Register(new SelfRestoreSkillEffectExecutor("survival.instinto_sobrevivencia", "Instinto de Sobrevivencia", restoreHp: 0, restoreStamina: 50, restoreMana: 0, cooldownSeconds: 30f));
-            _registry.Register(new SelfRestoreSkillEffectExecutor("survival.campo_seguro", "Campo Seguro", restoreHp: 15, restoreStamina: 25, restoreMana: 15, cooldownSeconds: 60f));
-            // fable_70: Ultimo Folego — panic heal de CD alto (escudo temporario deferido; sem sistema de shield ainda).
-            _registry.Register(new SelfRestoreSkillEffectExecutor("survival.last_breath", "Ultimo Folego", restoreHp: 40, restoreStamina: 0, restoreMana: 0, cooldownSeconds: 90f));
-        }
-
-        private void RegisterFeedbackExecutors()
-        {
-            // DEFERRED_RUNTIME_EFFECT: effects below need systems that do not exist yet
-            // (target marking, wards, aggro reduction, lure, crafting speed buff, field repair).
-            // TODO_INTEGRATION_NOT_FINAL: substituir quando o sistema alvo existir.
-            // Ledger de debito canonico: docs/validation/WAVE_INTEGRATION_11_SKILL_EFFECT_CATALOG.md
-            // (secao "Skill Effect Debt Ledger — spec_codex_05").
-            // fable_70: combat.melee.block removido (guarded_block cortado; Block e ability Shift).
-            _registry.Register(new FeedbackOnlySkillEffectExecutor("combat.ranged.marked_prey", "Presa Marcada. (Sistema de marcacao pendente.)", SkillEffectCategory.Combat));
-            _registry.Register(new FeedbackOnlySkillEffectExecutor("combat.magic.elemental_ward", "Barreira Elemental ativada. (Sistema de ward pendente.)", SkillEffectCategory.Combat));
-            // fable_70: combat.magic.slowing_sigils agora tem executor real (SlowFieldSkillEffectExecutor).
-            _registry.Register(new FeedbackOnlySkillEffectExecutor("survival.sinal_retirada", "Sinal de Retirada ativado. (Efeito de utilidade pendente.)", SkillEffectCategory.Utility));
-            _registry.Register(new FeedbackOnlySkillEffectExecutor("survival.isca_improvisada", "Isca Improvisada lançada. (Efeito de utilidade pendente.)", SkillEffectCategory.Utility));
-            // spec_codex_05: crafting.irrigador_portatil agora tem executor REAL (farm.crop.water_skill,
-            // registrado em Bootstrap()) — removido daqui. crafting.field_patch assume o slot
-            // feedback-only com mensagem honesta de reparo (nunca mais reusa o efeito de water).
-            _registry.Register(new FeedbackOnlySkillEffectExecutor("crafting.field_patch", "Reparo de Campo aplicado. (Efeito de reparo pendente.)", SkillEffectCategory.Utility));
-            // fable_70: crafting.mecanismo_campo removido (cortado).
-            _registry.Register(new FeedbackOnlySkillEffectExecutor("crafting.marca_eficiencia", "Marca de Eficiência aplicada. (Efeito de utilidade pendente.)", SkillEffectCategory.Utility));
         }
 
         private void Awake()

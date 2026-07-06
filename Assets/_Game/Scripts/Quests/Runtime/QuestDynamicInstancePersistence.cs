@@ -89,7 +89,7 @@ namespace CindarsHope.Quests.Runtime
             {
                 rewards.Add(new QuestRewardDefinition
                 {
-                    RewardId = "reward_" + record.QuestId + "_essence",
+                    RewardId = CaveContracts.CaveContractCatalog.BossEssenceRewardId(record.QuestId),
                     RewardType = QuestRewardType.Item,
                     TargetId = CaveContracts.CaveContractCatalog.EssenceItemForBoss(record.InstanceTargetId),
                     Quantity = 1,
@@ -101,16 +101,16 @@ namespace CindarsHope.Quests.Runtime
             {
                 rewards.Add(new QuestRewardDefinition
                 {
-                    RewardId = "reward_" + record.QuestId + "_title",
+                    RewardId = CaveContracts.CaveContractCatalog.NoHitTitleRewardId(record.QuestId),
                     RewardType = QuestRewardType.QuestFlagGrant,
                     GrantedFlagId = CaveContracts.CaveContractCatalog.NoHitTitleFlag(level),
                     IdempotencyPolicy = RewardIdempotencyPolicy.TrackByFlagId
                 });
                 rewards.Add(new QuestRewardDefinition
                 {
-                    RewardId = "reward_" + record.QuestId + "_charm",
+                    RewardId = CaveContracts.CaveContractCatalog.NoHitCharmRewardId(record.QuestId),
                     RewardType = QuestRewardType.Item,
-                    TargetId = "item_accessory_charm_no_hit",
+                    TargetId = CaveContracts.CaveContractCatalog.NoHitCharmItemId,
                     Quantity = 1,
                     IdempotencyPolicy = RewardIdempotencyPolicy.TrackByRewardId
                 });

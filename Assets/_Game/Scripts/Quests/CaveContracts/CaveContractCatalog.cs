@@ -34,6 +34,7 @@ namespace CindarsHope.Quests.CaveContracts
         public const string MilestonePrefix = "cc_depth_";
         public const string BossRematchId = "cc_boss_rematch";
         public const string NoHitFloorId = "cc_no_hit_floor";
+        public const string NoHitCharmItemId = "item_accessory_charm_no_hit";
 
         // StableHash salts — distinct per weekly channel so the two weeklies never correlate.
         public const string BossRematchSalt = "fable_51_cc_boss_rematch_v1";
@@ -145,7 +146,7 @@ namespace CindarsHope.Quests.CaveContracts
                 {
                     new QuestRewardDefinition
                     {
-                        RewardId = "reward_" + WeeklyInstanceId(BossRematchId, week) + "_essence",
+                        RewardId = BossEssenceRewardId(WeeklyInstanceId(BossRematchId, week)),
                         RewardType = QuestRewardType.Item,
                         TargetId = EssenceItemForBoss(bossId),
                         Quantity = 1,
@@ -157,6 +158,9 @@ namespace CindarsHope.Quests.CaveContracts
 
         /// <summary>Guaranteed essence item id for a gate boss band (item catalog fable_32).</summary>
         public static string EssenceItemForBoss(string bossId) => "item_essence_" + (bossId ?? "gate");
+        public static string BossEssenceRewardId(string questId) => "reward_" + questId + "_essence";
+        public static string NoHitTitleRewardId(string questId) => "reward_" + questId + "_title";
+        public static string NoHitCharmRewardId(string questId) => "reward_" + questId + "_charm";
 
         // ─── Weekly: no-hit floor ───────────────────────────────────────────────────────────────
 
@@ -197,16 +201,16 @@ namespace CindarsHope.Quests.CaveContracts
                 {
                     new QuestRewardDefinition
                     {
-                        RewardId = "reward_" + WeeklyInstanceId(NoHitFloorId, week) + "_title",
+                        RewardId = NoHitTitleRewardId(WeeklyInstanceId(NoHitFloorId, week)),
                         RewardType = QuestRewardType.QuestFlagGrant,
                         GrantedFlagId = NoHitTitleFlag(level),
                         IdempotencyPolicy = RewardIdempotencyPolicy.TrackByFlagId
                     },
                     new QuestRewardDefinition
                     {
-                        RewardId = "reward_" + WeeklyInstanceId(NoHitFloorId, week) + "_charm",
+                        RewardId = NoHitCharmRewardId(WeeklyInstanceId(NoHitFloorId, week)),
                         RewardType = QuestRewardType.Item,
-                        TargetId = "item_accessory_charm_no_hit",
+                        TargetId = NoHitCharmItemId,
                         Quantity = 1,
                         IdempotencyPolicy = RewardIdempotencyPolicy.TrackByRewardId
                     }

@@ -320,6 +320,16 @@ namespace CindarsHope.Tests.EditMode.Quests
             Assert.AreEqual(2, CaveContractService.WeekForDay(15));
         }
 
+        [Test]
+        public void RewardIdHelpers_PreserveCanonicalLegacyValues()
+        {
+            const string questId = "cc_no_hit_floor_w3";
+            Assert.AreEqual("reward_cc_no_hit_floor_w3_essence", CaveContractCatalog.BossEssenceRewardId(questId));
+            Assert.AreEqual("reward_cc_no_hit_floor_w3_title", CaveContractCatalog.NoHitTitleRewardId(questId));
+            Assert.AreEqual("reward_cc_no_hit_floor_w3_charm", CaveContractCatalog.NoHitCharmRewardId(questId));
+            Assert.AreEqual("item_accessory_charm_no_hit", CaveContractCatalog.NoHitCharmItemId);
+        }
+
         // ─── Helpers ─────────────────────────────────────────────────────────────────
 
         /// <summary>Mirrors QuestRuntimeBootstrap.CaptureSaveData (section → serializable DTO).</summary>

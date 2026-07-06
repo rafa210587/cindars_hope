@@ -206,6 +206,20 @@ estiver próxima do limite de contexto/tokens.
 - Próximo passo: V5 Lote 2, extrair tuning de active skills e IDs/reward builders mantendo todos os
   valores atuais e testes de equivalência.
 
+### V5 Lote 2 — catálogos tipados (implementado, commit pendente de conferência)
+
+- Criado `ActiveSkillExecutorCatalog`: composição/tuning dos 30 efeitos saiu integralmente do
+  `ActiveSkillExecutionController`; nenhum número, ID, texto ou executor foi alterado.
+- Controller usa `ActiveSkillExecutorCatalog.CreateRegistry()` e caiu de 438 para 365 linhas.
+  Teste de cobertura consulta o registry real; a lista espelhada foi removida.
+- `CaveContractCatalog` agora possui `NoHitCharmItemId` e builders canônicos de reward IDs.
+  `QuestDynamicInstancePersistence` não contém mais os quatro literals/reward formats apontados.
+- Testes focados: skill mapping 4/4; cave contracts 20/20.
+- Gates: EditMode 2.708/2.708; seis assemblies 0E/0W; architecture ratchet PASS.
+- XMLs destes testes foram gerados localmente e ignorados conforme a política do Lote 1.
+- Próximo passo: V5 Lote 3, decompor `NpcShopController` preservando seus campos serializados e
+  extraindo primeiro choices/services puros antes de transaction/UI wiring.
+
 ## 2026-07-05 — Autorização integral das Fases 4 a 8
 
 - Decisão humana: continuar até terminar todo o rework, sem parar entre fases.
