@@ -1,5 +1,6 @@
 using CindarsHope.Combat;
 using CindarsHope.Composition;
+using CindarsHope.Skills.Runtime.Effects;
 using NUnit.Framework;
 using UnityEngine;
 
@@ -19,6 +20,11 @@ namespace CindarsHope.Tests.EditMode.Boot
             {
                 Object.DestroyImmediate(CombatStateTracker.ActiveInstance.gameObject);
             }
+
+            if (ActiveSkillExecutionController.Instance != null)
+            {
+                Object.DestroyImmediate(ActiveSkillExecutionController.Instance.gameObject);
+            }
         }
 
         [Test]
@@ -31,6 +37,7 @@ namespace CindarsHope.Tests.EditMode.Boot
             Assert.That(GameRuntimeCompositionRoot.Instance, Is.SameAs(first));
             Assert.That(GameRuntimeCompositionRoot.State, Is.EqualTo(RuntimeCompositionState.Ready));
             Assert.That(CombatStateTracker.ActiveInstance, Is.Not.Null);
+            Assert.That(ActiveSkillExecutionController.Instance, Is.Not.Null);
         }
 
         [Test]

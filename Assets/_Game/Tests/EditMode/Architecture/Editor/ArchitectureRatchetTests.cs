@@ -207,6 +207,7 @@ namespace CindarsHope.Tests.EditMode.Architecture
                 "GameplayShortcutDecision.cs",
                 "NpcShopInteractionSession.cs",
                 "QuestGiverInteractionMode.cs",
+                "SkillActionEffectCatalog.cs",
                 "ThalindraQuestDialoguePolicy.cs"
             };
 

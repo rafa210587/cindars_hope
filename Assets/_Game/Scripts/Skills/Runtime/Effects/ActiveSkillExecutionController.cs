@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
@@ -13,11 +12,8 @@ namespace CindarsHope.Skills.Runtime.Effects
     // Input: numeric keys 1-4 map to active slots 0-3.
     // Pipeline: input -> resolve skill action -> validate unlocked -> resolve effect id ->
     //           resolve target -> execute -> apply cooldown -> publish feedback.
-    // Does NOT manage active slot state, skill tree, or cost deduction (deferred; see debt).
-    //
-    // TODO_INTEGRATION_NOT_FINAL: Stamina/mana cost deduction is not enforced per skill.
-    // Final design requires cost lookup from SkillDefinition and deduction from StaminaManager.
-    // Blocks final acceptance: NO (farm crop vertical slice is functional)
+    // Does not own active slot state or the skill tree. Resource costs are enforced by concrete
+    // executors; mapping ownership lives in the pure SkillActionEffectCatalog.
     [DisallowMultipleComponent]
     public sealed class ActiveSkillExecutionController : MonoBehaviour
     {
@@ -31,68 +27,6 @@ namespace CindarsHope.Skills.Runtime.Effects
 
         [SerializeField] private SkillTargetResolver _targetResolver;
 
-        // Skill action ID -> EffectId mapping.
-        // TODO_INTEGRATION_NOT_FINAL: This is a static mapping for the first vertical slice.
-        // Final design should read EffectId from SkillActionSO or SkillNodeDataSO.
-        private static readonly Dictionary<string, string> SkillActionToEffectId = new Dictionary<string, string>
-        {
-            // Farm/Utility skill effects (vertical slice)
-            // fable_70: skill_survival_emergency_roll removido (no cortado).
-            // spec_codex_05: skill_crafting_field_patch NAO aponta mais para farm.crop.water_skill
-            // (mapeamento legado errado: "Reparo de Campo" regava uma cultura). O efeito real de
-            // regar foi realocado para skill_crafting_irrigador_portatil (nome semanticamente
-            // correto — "irrigador" = regar). field_patch agora e feedback-only com mensagem de
-            // reparo (ver RegisterFeedbackExecutors). Ver ledger de debito no
-            // WAVE_INTEGRATION_11_SKILL_EFFECT_CATALOG.md.
-            { "skill_crafting_field_patch", "crafting.field_patch" },
-
-            // Placeholder mappings for all equippable skills — effect not yet implemented
-            { "skill_melee_offhand_cut", "combat.melee.offhand_cut" },
-            { "skill_melee_battle_dash", "combat.melee.battle_dash" },
-            { "skill_melee_leap_attack", "combat.melee.leap_attack" },
-            { "skill_melee_whirl_cut", "combat.melee.whirl_cut" },
-            { "skill_ranged_charged_shot", "combat.ranged.charged_shot" },
-            { "skill_ranged_line_piercer", "combat.ranged.line_piercer" },
-            { "skill_ranged_multishot_fan", "combat.ranged.multishot_fan" },
-            { "skill_ranged_bleeding_arrow", "combat.ranged.bleeding_arrow" },
-            { "skill_ranged_marked_prey", "combat.ranged.marked_prey" },
-            { "skill_magic_fire_spark", "combat.magic.fire_spark" },
-            { "skill_magic_ice_bind", "combat.magic.ice_bind" },
-            { "skill_magic_toxic_cloud", "combat.magic.toxic_cloud" },
-            { "skill_magic_lightning_chain", "combat.magic.lightning_chain" },
-            { "skill_magic_elemental_ward", "combat.magic.elemental_ward" },
-            { "skill_magic_slowing_sigils", "combat.magic.slowing_sigils" },
-
-            // ── Action Skill Balance Patch — WAVE_INTEGRATION_11_ACTION_SKILL_BALANCE_PATCH ──
-            // DEFERRED_RUNTIME_EFFECT: mapeamentos registrados no catálogo; executores feedback-only.
-            // TODO_INTEGRATION_NOT_FINAL: substituir por executores reais quando combat/utility runtime existir.
-
-            // Melee: novas action skills
-            { "skill_melee_avanco_aco", "melee.avanco_aco" },
-            { "skill_melee_grito_desafio", "melee.grito_desafio" },
-            { "skill_melee_investida_quebra_guarda", "melee.investida_quebra_guarda" },
-
-            // Magic: novas action skills
-            { "skill_magic_chama_breve", "magic.chama_breve" },
-            { "skill_magic_rajada_gelida", "magic.rajada_gelida" },
-
-            // Survival: novas action skills
-            { "skill_survival_sinal_retirada", "survival.sinal_retirada" },
-            { "skill_survival_isca_improvisada", "survival.isca_improvisada" },
-            { "skill_survival_kit_emergencia", "survival.kit_emergencia" },
-            { "skill_survival_instinto_sobrevivencia", "survival.instinto_sobrevivencia" },
-            { "skill_survival_campo_seguro", "survival.campo_seguro" },
-            { "skill_survival_last_breath", "survival.last_breath" },         // fable_70: executor real (SelfRestore)
-
-            // Crafting: novas action skills
-            // fable_70: skill_crafting_mecanismo_campo removido (no cortado).
-            // spec_codex_05: irrigador_portatil agora recebe o efeito REAL de regar (farm.crop.water_skill),
-            // realocado de skill_crafting_field_patch (mapeamento semanticamente correto: irrigador = regar).
-            { "skill_crafting_irrigador_portatil", "farm.crop.water_skill" },
-            { "skill_crafting_bomba_improvisada", "crafting.bomba_improvisada" },
-            { "skill_crafting_marca_eficiencia", "crafting.marca_eficiencia" },
-        };
-
         private readonly SkillEffectRegistry _registry = new SkillEffectRegistry();
         private readonly float[] _slotCooldowns = new float[4];
         // fable_71: cooldown total (no momento do disparo) para a HUD calcular o fill radial.
@@ -100,7 +34,7 @@ namespace CindarsHope.Skills.Runtime.Effects
         private bool _bootstrapped;
 
         public static bool TryGetEffectIdForValidation(string skillActionId, out string effectId)
-            => SkillActionToEffectId.TryGetValue(skillActionId, out effectId);
+            => SkillActionEffectCatalog.TryGetEffectId(skillActionId, out effectId);
 
         // ── fable_71: API read-only de cooldown + uso por clique (convergem com as teclas 1-4) ──
         public float GetSlotCooldownRemaining(int slotIndex)
@@ -112,15 +46,16 @@ namespace CindarsHope.Skills.Runtime.Effects
         // Ponto unico de uso de slot: a HUD (clique) e o Update (teclas 1-4) chamam isto.
         public void TryUseSlot(int slotIndex) => TryExecuteSlot(slotIndex);
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void EnsureRuntimeInstance()
+        public static ActiveSkillExecutionController Install()
         {
             if (_instance != null)
-                return;
+                return _instance;
 
             var go = new GameObject("ActiveSkillExecutionController");
-            DontDestroyOnLoad(go);
-            go.AddComponent<ActiveSkillExecutionController>();
+            if (Application.isPlaying) DontDestroyOnLoad(go);
+            var controller = go.AddComponent<ActiveSkillExecutionController>();
+            controller.InitializeAsSingleton();
+            return _instance;
         }
 
         private void Bootstrap()
@@ -215,6 +150,11 @@ namespace CindarsHope.Skills.Runtime.Effects
 
         private void Awake()
         {
+            InitializeAsSingleton();
+        }
+
+        private void InitializeAsSingleton()
+        {
             if (_instance != null && _instance != this)
             {
                 Destroy(gameObject);
@@ -222,7 +162,7 @@ namespace CindarsHope.Skills.Runtime.Effects
             }
 
             _instance = this;
-            DontDestroyOnLoad(gameObject);
+            if (Application.isPlaying) DontDestroyOnLoad(gameObject);
 
             // Ensure resolver is present if created via inspector
             if (_targetResolver == null)
@@ -339,7 +279,7 @@ namespace CindarsHope.Skills.Runtime.Effects
             }
 
             // Resolve EffectId
-            if (!SkillActionToEffectId.TryGetValue(skillActionId, out var effectId))
+            if (!SkillActionEffectCatalog.TryGetEffectId(skillActionId, out var effectId))
             {
                 // TODO_INTEGRATION_NOT_FINAL: No effect defined for this skill action.
                 PublishFeedback($"Skill '{skillActionId}' sem efeito implementado. (Deferred)");

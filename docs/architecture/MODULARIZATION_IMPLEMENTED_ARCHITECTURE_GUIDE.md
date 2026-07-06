@@ -30,7 +30,8 @@ dependência estiver demonstrada por ports.
 
 - Foundation: `IIdentifiedData`, `IDataRegistry<T>` e ports transacionais.
 - Gameplay: decisões de atalhos, sessão de loja/NPC, política da Thalindra e o enum simples de modo
-  de interação com quest. Runtime depende de Gameplay; Gameplay não referencia Runtime ou Unity.
+  de interação com quest, além do catálogo read-only action-skill→effect. Runtime depende de
+  Gameplay; Gameplay não referencia Runtime ou Unity.
 - Inventário e ouro: `InventoryManager`/`PlayerManager` implementam adapters, sem duplicar estado.
 - Compra atômica: `AtomicPurchaseTransaction` valida e compensa falha de débito.
 - Save: descriptors/providers tipados coexistem com `SaveManager`; hotbar é o primeiro slice.
@@ -62,6 +63,8 @@ dependência estiver demonstrada por ports.
   registries stateless compartilhados, mantendo os pipelines comuns como fallback.
 - UI: evoluir ViewModels/projections existentes. Não criar polling vazio, novo `OnGUI` ou pipeline
   paralelo para shop/inventory/HUD.
+- Active skills: `SkillActionEffectCatalog` possui os 30 mapeamentos canônicos; o controller apenas
+  orquestra input/alvo/executor e é instalado pelo composition root.
 - Town/Farm/Cave: editar geradores em `Scripts/Editor/SceneCreation/` junto com qualquer scene YAML;
   não alterar só um lado.
 
@@ -95,7 +98,8 @@ dependência estiver demonstrada por ports.
 
 ## 9. Gates atuais
 
-- EditMode: 2702/2702 em `TestResults/maintainability-gameplay-full.xml`.
+- EditMode: 2703/2703 em `TestResults/maintainability-ui-data-full.xml`.
+- PlayMode de composição/cenas: 2/2 em `TestResults/maintainability-ui-data-playmode.xml`.
 - PlayMode de composição: 2/2 no fechamento da Fase 8; repetir após mudanças de lifecycle/cenas.
 - Build: seis projetos são a unidade de validação, não apenas `Assembly-CSharp`.
 - Ratchets arquiteturais não podem ser elevados para esconder regressão.

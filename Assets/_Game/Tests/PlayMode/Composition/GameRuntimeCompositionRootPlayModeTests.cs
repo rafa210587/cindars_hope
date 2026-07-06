@@ -2,6 +2,7 @@ using System.Collections;
 using System.Text.RegularExpressions;
 using CindarsHope.Combat;
 using CindarsHope.Composition;
+using CindarsHope.Skills.Runtime.Effects;
 using CindarsHope.UI.Routing;
 using NUnit.Framework;
 using UnityEngine;
@@ -31,6 +32,7 @@ namespace CindarsHope.Tests.PlayMode.Composition
             Assert.That(GameRuntimeCompositionRoot.EnsureExists(), Is.SameAs(root));
             Assert.That(CombatStateTrackerBootstrap.Install(), Is.SameAs(tracker));
             Assert.That(GameRuntimeCompositionRoot.IsReady, Is.True);
+            Assert.That(ActiveSkillExecutionController.Instance, Is.Not.Null);
             Assert.That(inputRouter, Is.Not.Null);
             Assert.That(inputRouter.gameObject, Is.SameAs(root.gameObject));
 

@@ -71,5 +71,9 @@ Executar por fachadas compatíveis (Strangler Pattern), com commits pequenos e r
   - [x] `CindarsHope.Gameplay` criada com `noEngineReferences` e zero referências;
   - [x] decisões puras de input/NPC e contrato de modo da quest movidos com GUIDs preservados;
   - [x] teste arquitetural trava escopo curado e proíbe dependência de Unity.
-- [ ] Lote 5 — UI/data legacy
+- [x] Lote 5 — UI/data legacy
+  - [x] catálogo de 30 ações/effects removido do `MonoBehaviour` e tornado read-only/puro;
+  - [x] testes deixaram de refletir campo privado do controller;
+  - [x] executor de skills instalado pelo composition root, removendo um auto-bootstrap;
+  - [x] `OnGUI` e placeholders sem substituto comprovado mantidos e registrados como dívida intencional.
 - [ ] Lote 6 — validação e closeout

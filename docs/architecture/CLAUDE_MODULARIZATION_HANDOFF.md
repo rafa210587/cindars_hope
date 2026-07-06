@@ -124,6 +124,24 @@ estiver próxima do limite de contexto/tokens.
 - Próximo passo: lote 5, tratar UI/data legacy somente com equivalência testável; não apagar telas ou
   assets apenas por grep.
 
+### Lote 5 — UI/data legacy seguro (implementado, commit pendente de conferência)
+
+- Os 30 mapeamentos action-skill→effect saíram de `ActiveSkillExecutionController` para
+  `SkillActionEffectCatalog`, read-only e dentro da assembly pura Gameplay.
+- O controller mantém `TryGetEffectIdForValidation` como fachada compatível. Os testes agora leem o
+  catálogo público e não usam reflection em um dictionary privado.
+- Comentário incorreto de custo pendente foi removido: custos são aplicados pelos executores
+  concretos atuais.
+- `ActiveSkillExecutionController` perdeu o `RuntimeInitializeOnLoadMethod` próprio e agora é
+  instalado por `GameRuntimeCompositionRoot`. O componente legado presente na Farm continua aceito
+  pelo guard de singleton; nenhuma cena/YAML foi alterada.
+- `RuntimeInitialize` caiu de 63 para 62; os demais ratchets não devem ser elevados.
+- Telas `OnGUI`, placeholders e objetos de cena sem substituto comprovado não foram apagados. Eles
+  permanecem dívida intencional até spec visual/PlayMode por tela.
+- Evidência: catálogo 4/4; EditMode 2.703/2.703; PlayMode composição/cenas 2/2.
+- Próximo passo: lote 6, builds finais, ratchets, snapshot, documentação de closeout e verificação do
+  worktree/commits. Não publicar sem autorização explícita.
+
 ## 2026-07-05 — Autorização integral das Fases 4 a 8
 
 - Decisão humana: continuar até terminar todo o rework, sem parar entre fases.

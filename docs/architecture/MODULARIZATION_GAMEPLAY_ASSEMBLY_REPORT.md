@@ -11,6 +11,7 @@ decisões e estados sem dependência de Unity:
 - `NpcShopInteractionSession`;
 - `ThalindraQuestDialoguePolicy`;
 - `QuestGiverInteractionMode`.
+- `SkillActionEffectCatalog` (30 mapeamentos read-only).
 
 O Runtime referencia Gameplay. Gameplay não referencia Runtime, Foundation, Unity ou pacotes.
 Os três scripts movidos preservaram seus `.meta` e GUIDs; o enum manteve namespace e valores públicos.

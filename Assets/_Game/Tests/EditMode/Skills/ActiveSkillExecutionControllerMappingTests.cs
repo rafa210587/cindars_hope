@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Reflection;
 using CindarsHope.Skills.Runtime.Effects;
 using NUnit.Framework;
 
@@ -7,13 +6,9 @@ namespace CindarsHope.Tests.EditMode.Skills
 {
     /// <summary>
     /// spec_codex_05 — corrige o mapeamento legado de skill_crafting_field_patch e garante que
-    /// todo effectId do dicionario SkillActionToEffectId tenha um executor registrado.
+    /// todo effectId do catálogo puro tenha um executor registrado.
     ///
-    /// Reflection e usada apenas para inspecionar o dicionario estatico privado
-    /// (SkillActionToEffectId) e o registry privado (_registry) sem exigir Play Mode/MonoBehaviour
-    /// lifecycle — o controller e um MonoBehaviour singleton com Bootstrap() acoplado a Awake/Start,
-    /// entao instanciar via reflection + invocar Bootstrap() diretamente e o unico jeito de testar
-    /// esta logica pura em EditMode sem cena.
+    /// O catálogo puro é inspecionado diretamente; não há reflection em estado privado do controller.
     /// </summary>
     [TestFixture]
     public class ActiveSkillExecutionControllerMappingTests
@@ -41,13 +36,17 @@ namespace CindarsHope.Tests.EditMode.Skills
         }
 
         [Test]
+        public void Catalog_HasCanonicalMappingsAndRejectsUnknownIds()
+        {
+            Assert.That(SkillActionEffectCatalog.All.Count, Is.EqualTo(30));
+            Assert.That(SkillActionEffectCatalog.TryGetEffectId(null, out _), Is.False);
+            Assert.That(SkillActionEffectCatalog.TryGetEffectId("skill_unknown", out _), Is.False);
+        }
+
+        [Test]
         public void EveryMappedEffectId_HasARegisteredExecutor()
         {
-            var controllerType = typeof(ActiveSkillExecutionController);
-
-            var mappingField = controllerType.GetField("SkillActionToEffectId", BindingFlags.Static | BindingFlags.NonPublic);
-            Assert.IsNotNull(mappingField, "SkillActionToEffectId field must exist (reflection contract).");
-            var mapping = (Dictionary<string, string>)mappingField.GetValue(null);
+            var mapping = SkillActionEffectCatalog.All;
             Assert.IsNotNull(mapping);
             Assert.Greater(mapping.Count, 0);
 
