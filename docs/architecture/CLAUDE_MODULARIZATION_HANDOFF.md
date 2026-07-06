@@ -230,7 +230,7 @@ estiver próxima do limite de contexto/tokens.
 - Builds: `Assembly-CSharp.csproj` e `CindarsHope.Tests.EditMode.csproj`, 0 erros/0 warnings.
 - Commit: `31014bb5`.
 
-### V5 Lote 3B — readiness de transação (implementado, commit pendente)
+### V5 Lote 3B — readiness de transação (commit `fe7016cd`)
 
 - Criado `NpcShopTransactionReadinessPolicy`, uma máquina de decisão pura para falha de contexto,
   inicialização do controller, recuperação da sessão, painel inválido ou abertura.
@@ -244,6 +244,24 @@ estiver próxima do limite de contexto/tokens.
 - Lote 3 marcado como concluído na spec residual.
 - Próximo passo: V5 Lote 4, decompor `EnemyBrain` por state/targeting/config sem alterar decisões,
   timings, ranges, RNG, animação, dano, drops ou serialização.
+
+### V5 Lote 4 — EnemyBrain (implementado, commit pendente)
+
+- A state machine pura existente (`EnemyDecisionCore`) foi preservada como autoridade de decisão.
+- Criado `EnemyTargetingController`: resolução do player visível/fallback, rival de conflito,
+  distância e direção saíram do MonoBehaviour.
+- Criado `EnemyBrainTuningResolver`: precedência exata profile → EnemyData → default para detection,
+  leash e move speed ficou centralizada e testável.
+- Criado `EnemyBrainConfigurationPolicy`: normalização de `packId` e override positivo do decision
+  tick saíram dos caminhos `OnEnable`/`ConfigureRuntime`.
+- Nenhum campo serializado, assinatura pública, state, timing, range, multiplicador, RNG, ação,
+  animação, dano, drop ou evento foi alterado.
+- `EnemyBrain` caiu de 925 para 890 linhas; colaboradores anteriores de movement/action/conflict
+  permanecem intactos.
+- Testes novos: tuning 2/2 e configuração 4/4 dentro do EditMode completo.
+- Gates: EditMode 2.726/2.726; seis assemblies 6/6, 0 erros/0 warnings.
+- Próximo passo: V5 Lote 5, inventariar/classificar os 48 runtime-init externos ao root e migrar
+  apenas bootstraps persistentes com ownership/teardown inequívocos para installers de domínio.
 
 ## 2026-07-05 — Autorização integral das Fases 4 a 8
 

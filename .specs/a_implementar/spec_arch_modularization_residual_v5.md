@@ -62,7 +62,7 @@ prefabs, preços, quantidades, diálogos ou balanceamento.
 - [x] Lote 1 — higiene de TestResults/comentário;
 - [x] Lote 2 — catálogos tipados;
 - [x] Lote 3 — NpcShopController;
-- [ ] Lote 4 — EnemyBrain;
+- [x] Lote 4 — EnemyBrain;
 - [ ] Lote 5 — bootstrap ownership/installers;
 - [ ] Lote 6 — ciclos residuais selecionados;
 - [ ] Lote 7 — validação e closeout.

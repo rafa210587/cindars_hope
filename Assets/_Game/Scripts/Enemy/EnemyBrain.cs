@@ -41,7 +41,7 @@ namespace CindarsHope.Enemy
         private float _blinkFlankSide = 1f;
 
         // Target
-        private GameObject _playerTarget;
+        private readonly EnemyTargetingController _targeting = new EnemyTargetingController();
 
         // fable_04: threat/aggro memory + pack coordination.
         private readonly EnemyThreatState _threatState = new EnemyThreatState();
@@ -202,7 +202,7 @@ namespace CindarsHope.Enemy
                 _enemyData,
                 _movementProfile,
                 _telegraph,
-                getPlayerTarget: () => _playerTarget,
+                getPlayerTarget: () => _targeting.CurrentTarget,
                 getMoveSpeed: MoveSpeed,
                 getDistanceToPlayer: DistanceToPlayer,
                 getDirectionToPlayer: DirectionToPlayer,
@@ -228,7 +228,7 @@ namespace CindarsHope.Enemy
                 _telegraph,
                 _vulnerabilityState,
                 _health,
-                getPlayerTarget: () => _playerTarget,
+                getPlayerTarget: () => _targeting.CurrentTarget,
                 getDistanceToPlayer: DistanceToPlayer,
                 getDirectionToPlayer: DirectionToPlayer,
                 getPhaseDamageMultiplier: () => _phaseDamageMultiplier,
@@ -302,7 +302,7 @@ namespace CindarsHope.Enemy
             // fable_83: reset de estado de assinatura/pathing ao (re)spawn.
             _movement.IsAvoidingObstacle = false;
 
-            RefreshPlayerTarget();
+            _targeting.RefreshPlayerTarget();
 
             // fable_78: re-resolve o combatant caso ele tenha sido anexado após o Awake do brain
             // (o materializer adiciona o brain e depois, condicionalmente, o combatant).
@@ -316,8 +316,8 @@ namespace CindarsHope.Enemy
 
             _actions.InitActionSet();
 
-            if (_movementProfile != null && _movementProfile.DecisionTickSeconds > 0f)
-                _decisionTickSeconds = _movementProfile.DecisionTickSeconds;
+            _decisionTickSeconds = EnemyBrainConfigurationPolicy.ResolveDecisionTick(
+                _movementProfile, _decisionTickSeconds);
         }
 
         private void OnDisable()
@@ -354,12 +354,12 @@ namespace CindarsHope.Enemy
             // a cada frame até apontar para ele. Sem isto o target fica no PlayerManager (no _Bootstrap,
             // em (0,0,0)) e o inimigo mede distância até a origem do mundo — atacando o vazio, mas
             // roteando o dano ao player real longe dali (bug "dano invisível de bicho que não está perto").
-            RefreshPlayerTarget();
+            _targeting.RefreshPlayerTarget();
 
             // fable_78 (SLICE 4): targeting conflict-aware. Ramo ISOLADO — só roda quando este inimigo é um
             // conflict-combatant. Caso contrário, _rivalHealthTarget fica null e o caminho player-only é
-            // intacto (RefreshPlayerTarget já restaurou _playerTarget para o player visível).
-            RefreshConflictTarget();
+            // intacto (o targeting já restaurou o alvo para o player visível).
+            _targeting.RefreshConflictTarget(_conflict);
 
             // fable_24: Volatile elites explode once when they die. Damage usually flows straight
             // through EnemyHealth (not EnemyBrain.TakeDamage), so detect the death transition here
@@ -412,9 +412,9 @@ namespace CindarsHope.Enemy
             bool inDetect = dist <= DetectionRange();
 
             // fable_04: threat memory e pack alert (side effects — ficam no adapter)
-            if (_threatMemoryEnabled && inDetect && _playerTarget != null)
+            if (_threatMemoryEnabled && inDetect && _targeting.CurrentTarget != null)
             {
-                _threatState.NoticeTarget(_playerTarget.transform.position, Time.time);
+                _threatState.NoticeTarget(_targeting.CurrentTarget.transform.position, Time.time);
                 _threatExpiredLogged = false;
                 AnnouncePackEngagementOnce();
             }
@@ -434,7 +434,7 @@ namespace CindarsHope.Enemy
                 movementType: MovementType,
                 primaryRole: _enemyData?.PrimaryRole ?? EnemyRole.Chaser,
                 hasActiveThreat: HasActiveThreat(),
-                targetIsValid: _playerTarget != null,
+                targetIsValid: _targeting.CurrentTarget != null,
                 healthIsValid: _health != null && _health.MaxHp > 0,
                 canBurrow: _movementProfile != null && _movementProfile.CanBurrow,
                 retreatDurationSeconds: _retreatDurationSeconds
@@ -504,54 +504,19 @@ namespace CindarsHope.Enemy
 
         // ─── Helpers ──────────────────────────────────────────────────────────
 
-        // Prefere o PlayerController VISÍVEL na cena (transform real do personagem). O
-        // PlayerManager mora no _Bootstrap (DontDestroyOnLoad, em (0,0,0)) e não representa
-        // a posição do player — usa-lo como alvo faz o inimigo mirar a origem do mundo.
-        private void RefreshPlayerTarget()
-        {
-            var visiblePlayer = Player.PlayerController.ActiveInstance;
-            if (visiblePlayer != null)
-            {
-                _playerTarget = visiblePlayer.gameObject;
-            }
-            else if (_playerTarget == null)
-            {
-                _playerTarget = GameBootstrap.Instance?.PlayerManager?.gameObject;
-            }
-        }
-
-        // fable_78 (SLICE 4): delega ao EnemyConflictHandler.
-        // Ramo isolado: no-op quando não há CaveConflictCombatant neste inimigo.
-        private void RefreshConflictTarget()
-        {
-            var visiblePlayer = Player.PlayerController.ActiveInstance;
-            var playerGo = visiblePlayer != null ? visiblePlayer.gameObject : _playerTarget;
-
-            var newTarget = _conflict.RefreshConflictTarget(playerGo, _playerTarget, out _);
-            if (newTarget != null)
-            {
-                _playerTarget = newTarget;
-            }
-        }
-
         private void SetSubmergedVisual(bool submerged)
         {
             _movement.SetSubmergedVisual(submerged, _spriteRenderer, _spriteBaseAlpha);
         }
 
-        private float DistanceToPlayer() =>
-            _playerTarget != null
-                ? Vector2.Distance(transform.position, _playerTarget.transform.position)
-                : float.MaxValue;
+        private float DistanceToPlayer() => _targeting.DistanceFrom(transform);
 
-        private Vector2 DirectionToPlayer() =>
-            _playerTarget != null
-                ? ((Vector2)(_playerTarget.transform.position - transform.position)).normalized
-                : Vector2.zero;
+        private Vector2 DirectionToPlayer() => _targeting.DirectionFrom(transform);
 
-        private float DetectionRange() => _movementProfile?.DetectionRange ?? _enemyData?.detectionRadius ?? 10f;
-        private float LeashRange() => _movementProfile?.LeashRange ?? (DetectionRange() * 3f);
-        private float MoveSpeed() => (_movementProfile?.MoveSpeed ?? _enemyData?.moveSpeed ?? 2f) * ExternalSpeedFactor() * _phaseMoveSpeedMultiplier;
+        private float DetectionRange() => EnemyBrainTuningResolver.DetectionRange(_movementProfile, _enemyData);
+        private float LeashRange() => EnemyBrainTuningResolver.LeashRange(_movementProfile, _enemyData);
+        private float MoveSpeed() => EnemyBrainTuningResolver.MoveSpeed(
+            _movementProfile, _enemyData, ExternalSpeedFactor(), _phaseMoveSpeedMultiplier);
 
         // ─── Public API ───────────────────────────────────────────────────────
 
@@ -603,10 +568,10 @@ namespace CindarsHope.Enemy
 
             // fable_04: pack wiring injected by the materializer (no scene search).
             _packCoordinator = packCoordinator;
-            _packId = string.IsNullOrWhiteSpace(packId) ? null : packId;
+            _packId = EnemyBrainConfigurationPolicy.NormalizePackId(packId);
 
-            if (_movementProfile != null && _movementProfile.DecisionTickSeconds > 0f)
-                _decisionTickSeconds = _movementProfile.DecisionTickSeconds;
+            _decisionTickSeconds = EnemyBrainConfigurationPolicy.ResolveDecisionTick(
+                _movementProfile, _decisionTickSeconds);
 
             // Memory window depends on movement type, which is now resolved.
             _threatState.SetMemorySeconds(EnemyThreatState.ResolveMemorySeconds(MovementType));
