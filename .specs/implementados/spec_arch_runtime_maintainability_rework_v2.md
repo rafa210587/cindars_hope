@@ -1,6 +1,6 @@
 # /speckit.specify — Runtime Maintainability Rework v2
 
-Status: `APPROVED_BY_HUMAN_IN_EXECUTION`
+Status: `IMPLEMENTED_BUILD_VALIDATED`
 
 ## Ordem de execucao
 
@@ -76,4 +76,15 @@ Executar por fachadas compatíveis (Strangler Pattern), com commits pequenos e r
   - [x] testes deixaram de refletir campo privado do controller;
   - [x] executor de skills instalado pelo composition root, removendo um auto-bootstrap;
   - [x] `OnGUI` e placeholders sem substituto comprovado mantidos e registrados como dívida intencional.
-- [ ] Lote 6 — validação e closeout
+- [x] Lote 6 — validação e closeout
+
+## Resultado final
+
+- seis assemblies explícitas: exit 0, 0 erros, 0 warnings;
+- EditMode: 2.703/2.703;
+- PlayMode de composição e cenas: 2/2;
+- architecture ratchet: PASS; `RuntimeInitialize` caiu de 63 para 62;
+- dependency snapshot: 1.570 arquivos, 216 edges por pasta, 49 pares mútuos, 29 tipos internal e
+  3 crossings de teste;
+- nenhum ID, save schema, cena, quantidade, preço, diálogo ou balanceamento foi alterado;
+- dívida visual/`OnGUI` sem substituto permanece intencional e fora deste rework.

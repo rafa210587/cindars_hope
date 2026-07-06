@@ -1,11 +1,11 @@
-﻿CSharpFiles=1569
+﻿CSharpFiles=1570
 HardcodedPredefinedAssemblyFiles=0
 InternalTypes=29
 InternalTypeTestCrossings=3
   INTERNAL_TEST|CaveEnemyMaterializer|Assets/_Game/Scripts/Cave/Runtime/CaveEnemyMaterializer.cs|Assets/_Game/Tests/EditMode/Cave/CaveRuntimeMaterializerDecompositionTests.cs
   INTERNAL_TEST|CaveTileMaterializer|Assets/_Game/Scripts/Cave/Runtime/CaveTileMaterializer.cs|Assets/_Game/Tests/EditMode/Cave/CaveBiomeArtProfilesTests.cs
   INTERNAL_TEST|CaveTileMaterializer|Assets/_Game/Scripts/Cave/Runtime/CaveTileMaterializer.cs|Assets/_Game/Tests/EditMode/Cave/CaveRuntimeMaterializerDecompositionTests.cs
-RuntimeModuleEdges=215
+RuntimeModuleEdges=216
 MutualModulePairs=49
   MUTUAL|Cave|Combat
   MUTUAL|Cave|Core

@@ -23,7 +23,7 @@ Os três scripts movidos preservaram seus `.meta` e GUIDs; o enum manteve namesp
 - seis projetos explícitos: exit 0, 0 erros, 0 warnings;
 - EditMode completa: 2.702/2.702;
 - architecture ratchet: PASS;
-- dependency snapshot: 1.569 arquivos, 215 edges por pasta, 49 pares mútuos, 29 tipos internal e
+- dependency snapshot: 1.570 arquivos, 216 edges por pasta, 49 pares mútuos, 29 tipos internal e
   3 crossings de teste.
 
 O aumento de edges do scanner de pasta vem da introdução do módulo `Gameplay`; não surgiu novo par

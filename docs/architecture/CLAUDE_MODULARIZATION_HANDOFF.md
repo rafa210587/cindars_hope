@@ -116,7 +116,7 @@ estiver próxima do limite de contexto/tokens.
   duas explicitamente.
 - Novo teste arquitetural verifica nome da assembly, conjunto curado de quatro fontes e ausência de
   `UnityEngine` nas referências e no código.
-- Snapshot re-medido: 1.569 arquivos C#, 215 edges por pasta, 49 pares mútuos, 29 tipos internal e
+- Snapshot re-medido: 1.570 arquivos C#, 216 edges por pasta, 49 pares mútuos, 29 tipos internal e
   3 crossings de teste. O scanner por pasta conta Gameplay como módulo novo; pares mútuos ficaram em
   49. A direção real da asmdef é unidirecional.
 - Evidência: build das seis assemblies explícitas 0 erros/0 warnings; EditMode 2.702/2.702; ratchet
@@ -141,6 +141,19 @@ estiver próxima do limite de contexto/tokens.
 - Evidência: catálogo 4/4; EditMode 2.703/2.703; PlayMode composição/cenas 2/2.
 - Próximo passo: lote 6, builds finais, ratchets, snapshot, documentação de closeout e verificação do
   worktree/commits. Não publicar sem autorização explícita.
+
+### Lote 6 — closeout (concluído localmente)
+
+- Spec movida de `a_implementar` para `implementados` e registrada no registry canônico.
+- Commits do rework, em ordem: `972ab169`, `016b04fc`, `dafa05de`, `3ee1918a`, `457a69bd`,
+  `bca06f94` e o commit documental de closeout que deve ser conferido no Git.
+- Gates finais: seis assemblies 0E/0W; EditMode 2.703/2.703; PlayMode 2/2; ratchet PASS;
+  dependency snapshot 1.570/216/49/29/3.
+- Docs validator: exit 1 somente pelas dívidas preexistentes de headers em quatro specs e falsos
+  positivos históricos de placeholder; nenhum documento novo do rework foi listado.
+- O branch é `dev`. Nenhum push foi realizado nesta execução porque não houve autorização explícita
+  de publicação no turno atual.
+- Alterações concorrentes listadas no fechamento continuam fora dos commits.
 
 ## 2026-07-05 — Autorização integral das Fases 4 a 8
 
