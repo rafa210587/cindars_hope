@@ -1,3 +1,4 @@
+using CindarsHope.Audio;
 using CindarsHope.Cave.Death;
 using CindarsHope.Cave.Ecosystem;
 using CindarsHope.Cave.Runtime;
@@ -170,6 +171,21 @@ namespace CindarsHope.Composition
             CindarsHope.UI.InventoryPanelController.Install(owner);
             CindarsHope.UI.Skills.SkillTreeGameplayPanelController.Install(owner);
             CindarsHope.World.Scenes.SceneFadeOverlayBootstrap.Install(owner);
+        }
+    }
+
+    /// <summary>
+    /// Áudio (fable_58) — host de SFX/música e o bridge de eventos. Instalado por ÚLTIMO no
+    /// Start() do root (pós-cena, AfterSceneLoad-equivalente): o AudioManager decide criar seu
+    /// AudioListener único só depois que o AudioListener da cena (se houver) já existe,
+    /// preservando a semântica original. AudioManager antes do SfxEventBridge (que consome PlaySfx).
+    /// </summary>
+    internal static class AudioRuntimeInstaller
+    {
+        public static void Install(Transform owner)
+        {
+            AudioManager.Install(owner);
+            SfxEventBridge.Install(owner);
         }
     }
 }

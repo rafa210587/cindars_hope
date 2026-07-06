@@ -24,7 +24,8 @@ namespace CindarsHope.Audio
     /// AudioManager. Não há segundo caminho de troca de faixa.
     ///
     /// Subscribe/Unsubscribe simétrico (event_rules): assina em OnEnable, cancela em
-    /// OnDisable. Self-bootstrap via RuntimeInitializeOnLoadMethod (idiom do projeto).
+    /// OnDisable. Instalado pelo GameRuntimeCompositionRoot no Start() (era self-bootstrap
+    /// via RuntimeInitializeOnLoadMethod).
     /// Nunca lança (GameEventBus.Publish isola exceções de listeners; PlaySfx é
     /// fallback-silencioso).
     /// </summary>
@@ -41,8 +42,7 @@ namespace CindarsHope.Audio
         private MusicState _lastPublishedMusicState = MusicState.Calmo;
         private string _lastSceneName;
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void Bootstrap()
+        public static void Install(Transform owner)
         {
             if (_instance != null)
             {
@@ -50,6 +50,7 @@ namespace CindarsHope.Audio
             }
 
             var go = new GameObject("SfxEventBridge");
+            go.transform.SetParent(owner);
             DontDestroyOnLoad(go);
             go.AddComponent<SfxEventBridge>();
             Debug.Log("[Music] SfxEventBridge instanciado (driver de musica por cena/combate).");

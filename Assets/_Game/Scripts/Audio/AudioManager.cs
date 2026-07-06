@@ -1,4 +1,3 @@
-using CindarsHope.Core;
 using UnityEngine;
 
 namespace CindarsHope.Audio
@@ -15,8 +14,8 @@ namespace CindarsHope.Audio
     /// (auditoria Fase 0), usa defaults locais e expõe SetMasterVolume/SetChannelVolume
     /// para binding posterior (contrato documentado no report).
     ///
-    /// Self-bootstrap por RuntimeInitializeOnLoadMethod (idiom do projeto p/ sistemas
-    /// que só consomem eventos) — não exige regeneração de cena.
+    /// Instalado pelo GameRuntimeCompositionRoot no Start() (pós-cena, AfterSceneLoad-equivalente;
+    /// era self-bootstrap por RuntimeInitializeOnLoadMethod) — não exige regeneração de cena.
     ///
     /// AudioListener: as cenas geradas (CaveScene etc.) podem NÃO ter um AudioListener
     /// na câmera, o que faz o Unity logar "There are no audio listeners in the scene"
@@ -59,8 +58,7 @@ namespace CindarsHope.Audio
 
         // --------------------------------------------------------------- bootstrap
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void Bootstrap()
+        public static void Install(Transform owner)
         {
             if (_instance != null)
             {
@@ -68,6 +66,7 @@ namespace CindarsHope.Audio
             }
 
             var go = new GameObject("AudioManager");
+            go.transform.SetParent(owner);
             DontDestroyOnLoad(go);
             go.AddComponent<AudioManager>();
         }
