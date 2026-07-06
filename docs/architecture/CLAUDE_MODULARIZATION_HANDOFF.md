@@ -282,7 +282,7 @@ estiver próxima do limite de contexto/tokens.
 - Próximo recorte seguro: NPC schedule + World item drop, depois Farm; não mover UI/player/audio
   diretamente para o estágio `BeforeSceneLoad`.
 
-### V5 Lote 5B — schedule e item drop (implementado, commit pendente)
+### V5 Lote 5B — schedule e item drop (commit `e1801721`)
 
 - `NpcScheduleRuntimeBootstrap` e `ItemDropSpawner` perderam seus auto-bootstraps e agora são
   instalados pelos installers NPC/World no `Start` do root.
@@ -292,6 +292,27 @@ estiver próxima do limite de contexto/tokens.
 - Contagem atual: 39 atributos reais, 38 fora do root (baseline v5: 49).
 - Gates: EditMode 2.726/2.726; PlayMode root com os 8 serviços migrados 1/1; ratchet PASS.
 - Próximo recorte: installers Farm. Lote 5 continua aberto; não marcar a spec como concluída.
+
+### Ponto de retomada exato após `e1801721`
+
+- Branch: `dev`; nenhum push executado nesta sequência.
+- Commits v5 desta execução, em ordem:
+  - `ce63534e` higiene de XMLs;
+  - `0d30bf31` catálogos de skills/rewards;
+  - `31014bb5` choices do shop;
+  - `fe7016cd` readiness de transação;
+  - `a6f6bef3` targeting/tuning/config do EnemyBrain;
+  - `c85676cf` installers piloto;
+  - `e1801721` schedule e item drops.
+- Spec: lotes 1–4 concluídos; lote 5 aberto; lotes 6–7 ainda não iniciados.
+- Próxima ação técnica: caracterizar e migrar separadamente os seis bootstraps Farm listados em
+  `RUNTIME_BOOTSTRAP_OWNERSHIP_V5.md`, começando pelo daily goal e resource refresh.
+- Gate por recorte Farm: testes focados do serviço, EditMode completo, ratchet, PlayMode root e smoke
+  FarmScene. Não elevar baseline e não alterar lógica diária, IDs, quantidades, save ou scene YAML.
+- Depois do Farm: demais 16 serviços persistentes; player/UI/audio exigem installers de lifecycle
+  próprios e não devem ser chamados diretamente no `BeforeSceneLoad`.
+- Ao fechar o lote 5, recontar atributos reais, atualizar spec/inventário/resumo e somente então
+  iniciar o lote 6 de ciclos residuais.
 
 ## 2026-07-05 — Autorização integral das Fases 4 a 8
 
