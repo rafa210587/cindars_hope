@@ -314,6 +314,20 @@ estiver próxima do limite de contexto/tokens.
 - Ao fechar o lote 5, recontar atributos reais, atualizar spec/inventário/resumo e somente então
   iniciar o lote 6 de ciclos residuais.
 
+### V5 Lote 5C — installers Farm (implementado, commit pendente)
+
+- Criado `FarmRuntimeInstaller` no estágio `Start` do composition root.
+- Migrados seis auto-bootstraps: daily goal, resource refresh, animal registry, forage, shipping e
+  farm lots. Todos mantêm `Install(owner)` com fallback `DontDestroyOnLoad` quando não há owner.
+- Serviços criados pelo root ficam sob seu transform; serviços já presentes em cena são adotados sem
+  reparenting. `FarmLotService` criado pelo bootstrap usa o mesmo owner do bootstrap.
+- Não foram alteradas regras diárias, catálogos, IDs, quantidades, save, handlers de escritura ou
+  scene YAML.
+- Contagem: 49 baseline → 33 atuais; 32 permanecem fora do root.
+- Gates: architecture ratchet PASS; EditMode 2.726/2.726; PlayMode composition + smoke
+  Farm/Town/Cave 2/2 PASS.
+- Próximo recorte: os 16 serviços persistentes restantes, começando por Cave e inventory/items.
+
 ## 2026-07-05 — Autorização integral das Fases 4 a 8
 
 - Decisão humana: continuar até terminar todo o rework, sem parar entre fases.

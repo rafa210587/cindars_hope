@@ -39,7 +39,8 @@ namespace CindarsHope.Farm.Shipping
             }
 
             _instance = this;
-            DontDestroyOnLoad(gameObject);
+            if (transform.parent == null)
+                DontDestroyOnLoad(gameObject);
             BuildService();
         }
 
@@ -202,18 +203,20 @@ namespace CindarsHope.Farm.Shipping
     /// </summary>
     public static class ShippingBinRuntimeBootstrap
     {
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void EnsureInstance()
+        public static ShippingBinRuntimeService Install(Transform owner)
         {
-            if (Object.FindAnyObjectByType<ShippingBinRuntimeService>() != null)
+            var existing = Object.FindAnyObjectByType<ShippingBinRuntimeService>();
+            if (existing != null)
             {
-                return;
+                return existing;
             }
 
             var go = new GameObject("ShippingBinRuntimeService");
-            Object.DontDestroyOnLoad(go);
-            go.AddComponent<ShippingBinRuntimeService>();
+            if (owner != null) go.transform.SetParent(owner, false);
+            else Object.DontDestroyOnLoad(go);
+            var service = go.AddComponent<ShippingBinRuntimeService>();
             Debug.Log("[ShippingBinRuntimeBootstrap] ShippingBinRuntimeService instanciado via bootstrap.");
+            return service;
         }
     }
 }

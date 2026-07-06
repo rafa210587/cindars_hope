@@ -12,6 +12,12 @@ using CindarsHope.UI.Routing;
 using CindarsHope.World.Events;
 using CindarsHope.World.Weather;
 using CindarsHope.World;
+using CindarsHope.Farm.Animals;
+using CindarsHope.Farm.Forage;
+using CindarsHope.Farm.Lots;
+using CindarsHope.Farm.Resources;
+using CindarsHope.Farm.Runtime;
+using CindarsHope.Farm.Shipping;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -51,6 +57,12 @@ namespace CindarsHope.Tests.PlayMode.Composition
             AssertOwnedByRoot<WorldEventService>(root);
             AssertOwnedByRoot<NpcScheduleService>(root);
             AssertOwnedByRoot<ItemDropSpawner>(root);
+            AssertOwnedByRoot<FarmDailyGoalService>(root);
+            AssertOwnedByRoot<FarmResourceRefreshRuntime>(root);
+            AssertOwnedByRoot<FarmAnimalRegistry>(root);
+            AssertOwnedByRoot<FarmForageRuntimeService>(root);
+            AssertOwnedByRoot<ShippingBinRuntimeService>(root);
+            AssertOwnedByRoot<FarmLotRuntimeBootstrap>(root);
 
             yield return null;
 

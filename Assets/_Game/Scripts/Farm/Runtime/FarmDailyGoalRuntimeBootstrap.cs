@@ -9,19 +9,21 @@ namespace CindarsHope.Farm.Runtime
     /// </summary>
     public static class FarmDailyGoalRuntimeBootstrap
     {
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void EnsureInstance()
+        public static FarmDailyGoalService Install(Transform owner)
         {
             // Se já existe (wired in scene), não duplicar
-            if (Object.FindAnyObjectByType<FarmDailyGoalService>() != null)
+            var existing = Object.FindAnyObjectByType<FarmDailyGoalService>();
+            if (existing != null)
             {
-                return;
+                return existing;
             }
 
             var go = new GameObject("FarmDailyGoalService");
-            Object.DontDestroyOnLoad(go);
-            go.AddComponent<FarmDailyGoalService>();
+            if (owner != null) go.transform.SetParent(owner, false);
+            else Object.DontDestroyOnLoad(go);
+            var service = go.AddComponent<FarmDailyGoalService>();
             Debug.Log("[FarmDailyGoalRuntimeBootstrap] FarmDailyGoalService instanciado via bootstrap.");
+            return service;
         }
     }
 }

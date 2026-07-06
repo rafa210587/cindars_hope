@@ -12,18 +12,19 @@ namespace CindarsHope.Farm.Animals
     /// </summary>
     public static class FarmAnimalRuntimeBootstrap
     {
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void EnsureInstance()
+        public static FarmAnimalRegistry Install(Transform owner)
         {
             var registry = Object.FindAnyObjectByType<FarmAnimalRegistry>();
             if (registry == null)
             {
                 var go = new GameObject("FarmAnimalRegistry");
-                Object.DontDestroyOnLoad(go);
+                if (owner != null) go.transform.SetParent(owner, false);
+                else Object.DontDestroyOnLoad(go);
                 registry = go.AddComponent<FarmAnimalRegistry>();
             }
 
             RegisterCanonicalDefinitions(registry);
+            return registry;
         }
 
         /// <summary>

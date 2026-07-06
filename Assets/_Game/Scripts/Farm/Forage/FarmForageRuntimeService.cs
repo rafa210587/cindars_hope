@@ -46,7 +46,8 @@ namespace CindarsHope.Farm.Forage
             }
 
             _instance = this;
-            DontDestroyOnLoad(gameObject);
+            if (transform.parent == null)
+                DontDestroyOnLoad(gameObject);
             BuildService();
         }
 
@@ -309,18 +310,20 @@ namespace CindarsHope.Farm.Forage
     /// </summary>
     public static class FarmForageRuntimeBootstrap
     {
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void EnsureInstance()
+        public static FarmForageRuntimeService Install(Transform owner)
         {
-            if (UnityEngine.Object.FindAnyObjectByType<FarmForageRuntimeService>() != null)
+            var existing = UnityEngine.Object.FindAnyObjectByType<FarmForageRuntimeService>();
+            if (existing != null)
             {
-                return;
+                return existing;
             }
 
             var go = new GameObject("FarmForageRuntimeService");
-            UnityEngine.Object.DontDestroyOnLoad(go);
-            go.AddComponent<FarmForageRuntimeService>();
+            if (owner != null) go.transform.SetParent(owner, false);
+            else UnityEngine.Object.DontDestroyOnLoad(go);
+            var service = go.AddComponent<FarmForageRuntimeService>();
             Debug.Log("[FarmForageRuntimeBootstrap] FarmForageRuntimeService instanciado via bootstrap.");
+            return service;
         }
     }
 }

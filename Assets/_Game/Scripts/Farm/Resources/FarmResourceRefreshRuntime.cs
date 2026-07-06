@@ -103,7 +103,8 @@ namespace CindarsHope.Farm.Resources
             }
 
             _instance = this;
-            DontDestroyOnLoad(gameObject);
+            if (transform.parent == null)
+                DontDestroyOnLoad(gameObject);
             _processor = new FarmResourceRefreshProcessor(BuildDefaultDefinitions());
         }
 
@@ -164,18 +165,20 @@ namespace CindarsHope.Farm.Resources
     /// <summary>Garante o host em runtime (padrão FarmDailyGoalRuntimeBootstrap).</summary>
     public static class FarmResourceRefreshRuntimeBootstrap
     {
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void EnsureInstance()
+        public static FarmResourceRefreshRuntime Install(Transform owner)
         {
-            if (UnityEngine.Object.FindAnyObjectByType<FarmResourceRefreshRuntime>() != null)
+            var existing = UnityEngine.Object.FindAnyObjectByType<FarmResourceRefreshRuntime>();
+            if (existing != null)
             {
-                return;
+                return existing;
             }
 
             var go = new GameObject("FarmResourceRefreshRuntime");
-            UnityEngine.Object.DontDestroyOnLoad(go);
-            go.AddComponent<FarmResourceRefreshRuntime>();
+            if (owner != null) go.transform.SetParent(owner, false);
+            else UnityEngine.Object.DontDestroyOnLoad(go);
+            var service = go.AddComponent<FarmResourceRefreshRuntime>();
             Debug.Log("[FarmResourceRefreshRuntimeBootstrap] FarmResourceRefreshRuntime instanciado via bootstrap.");
+            return service;
         }
     }
 }

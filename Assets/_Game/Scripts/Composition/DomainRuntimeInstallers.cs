@@ -8,6 +8,12 @@ using CindarsHope.NPC.Schedule;
 using CindarsHope.World;
 using CindarsHope.World.Events;
 using CindarsHope.World.Weather;
+using CindarsHope.Farm.Animals;
+using CindarsHope.Farm.Forage;
+using CindarsHope.Farm.Lots;
+using CindarsHope.Farm.Resources;
+using CindarsHope.Farm.Runtime;
+using CindarsHope.Farm.Shipping;
 using UnityEngine;
 
 namespace CindarsHope.Composition
@@ -42,6 +48,19 @@ namespace CindarsHope.Composition
             WorldWeatherRuntimeBootstrap.Install(owner);
             WorldEventRuntimeBootstrap.Install(owner);
             ItemDropSpawner.Install(owner);
+        }
+    }
+
+    internal static class FarmRuntimeInstaller
+    {
+        public static void Install(Transform owner)
+        {
+            FarmDailyGoalRuntimeBootstrap.Install(owner);
+            FarmResourceRefreshRuntimeBootstrap.Install(owner);
+            FarmAnimalRuntimeBootstrap.Install(owner);
+            FarmForageRuntimeBootstrap.Install(owner);
+            ShippingBinRuntimeBootstrap.Install(owner);
+            FarmLotRuntimeBootstrap.Install(owner);
         }
     }
 }

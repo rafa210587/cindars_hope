@@ -27,17 +27,18 @@ namespace CindarsHope.Farm.Lots
         public static FarmLotRuntimeBootstrap Instance => _instance;
         public bool IsFullyBound => _handlersRegistered;
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void EnsureInstance()
+        public static FarmLotRuntimeBootstrap Install(Transform owner)
         {
             if (_instance != null)
             {
-                return;
+                return _instance;
             }
 
             var go = new GameObject(GameObjectName);
-            DontDestroyOnLoad(go);
+            if (owner != null) go.transform.SetParent(owner, false);
+            else DontDestroyOnLoad(go);
             _instance = go.AddComponent<FarmLotRuntimeBootstrap>();
+            return _instance;
         }
 
         private void Awake()
@@ -49,7 +50,8 @@ namespace CindarsHope.Farm.Lots
             }
 
             _instance = this;
-            DontDestroyOnLoad(gameObject);
+            if (transform.parent == null)
+                DontDestroyOnLoad(gameObject);
 
             EnsureService();
             StartCoroutine(BindWhenReady());
@@ -73,7 +75,8 @@ namespace CindarsHope.Farm.Lots
             }
 
             var go = new GameObject("FarmLotService");
-            DontDestroyOnLoad(go);
+            if (transform.parent != null) go.transform.SetParent(transform.parent, false);
+            else DontDestroyOnLoad(go);
             go.AddComponent<FarmLotService>();
         }
 
