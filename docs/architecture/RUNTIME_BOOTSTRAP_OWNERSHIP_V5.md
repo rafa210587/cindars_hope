@@ -5,9 +5,9 @@ Data da auditoria: 2026-07-05.
 ## Resultado
 
 - baseline verificado antes deste lote: 49 atributos reais;
-- migrados neste lote: 16 (crafting hook, cave feedback, friendship, gifting, NPC service, city
-  service, schedule, weather, world events, item drop e seis serviços Farm);
-- estado atual: 33 atributos em 33 arquivos, sendo 32 fora do composition root;
+- migrados neste lote: 21 (incluindo os lotes anteriores, seis serviços Farm, item use,
+  consumables, magic items, spellbook e crafting station);
+- estado atual: 28 atributos em 28 arquivos, sendo 27 fora do composition root;
 - nenhuma migração restante está autorizada sem preservar o momento de instalação, fallback de cena,
   ownership e teardown descritos abaixo.
 
@@ -21,7 +21,7 @@ Data da auditoria: 2026-07-05.
 | Diagnóstico sem estado | 1 | remover de runtime ou mover para validator em spec própria |
 | UI/cena | 7 | installer de apresentação após cena; exige fallback e smoke visual |
 | Componentes anexados ao player | 6 | installer de player lifecycle, não root global direto |
-| Serviços persistentes de domínio | 16 | migrar por domínio, com ordem e teardown explícitos |
+| Serviços persistentes de domínio | 11 | migrar por domínio, com ordem e teardown explícitos |
 
 ### Reset de subsistema
 
@@ -56,10 +56,7 @@ Data da auditoria: 2026-07-05.
 - Audio: `AudioManager`, `SfxEventBridge`;
 - Cave: `DeathSystemBootstrap`, `CaveRuntimeBridge`, `CaveWanderingMerchant`;
 - Combat: `CombatTelemetryService.Bootstrap`;
-- Craft: `CraftingStationRuntimeBootstrap`;
 - Fonte: `FonteRuntimeBootstrap`;
-- Inventory/items: `ItemUseManager`, consumables e magic items;
-- Magic: `PlayerSpellbookRuntimeBootstrap`;
 - Narrative: `NarrativeRuntimeBootstrap`;
 - Player: condition e inferred class;
 - Quest: `QuestRuntimeBootstrap`;
@@ -69,14 +66,15 @@ Data da auditoria: 2026-07-05.
 `CraftingRuntimeInstaller` instala/desinstala o hook de first-kill. `CaveRuntimeInstaller` cria o
 feedback bridge como filho do root. `NpcRuntimeInstaller` instala friendship, gifting, NPC services,
 city services e schedule. `WorldRuntimeInstaller` instala weather, world events e item drop.
-`FarmRuntimeInstaller` instala animal, forage, lots, resource refresh, daily goal e shipping. Os serviços dependentes da
+`FarmRuntimeInstaller` instala animal, forage, lots, resource refresh, daily goal e shipping.
+`ItemRuntimeInstaller` instala item use, consumables, magic items, spellbook e crafting station. Os serviços dependentes da
 cena são instalados no `Start` do root, mantendo o estágio posterior ao carregamento; os hosts novos
 viram filhos do root e os hosts já existentes são adotados sem reparenting. Destruir ou invalidar o
 root remove a assinatura estática e os filhos; recriar o root reinstala tudo idempotentemente.
 
 ## Próxima ordem segura
 
-1. demais serviços persistentes por domínio (Cave, inventory/items, magic, narrative e quest);
+1. demais serviços persistentes por domínio (Cave, combat telemetry, Fonte, narrative e quest);
 2. player lifecycle somente após existir um `PlayerRuntimeInstaller` ligado ao spawn/despawn;
 3. apresentação somente com PlayMode e smoke visual por cena;
 4. audio por último: instalar antes da cena altera a decisão de criar `AudioListener` e não é seguro

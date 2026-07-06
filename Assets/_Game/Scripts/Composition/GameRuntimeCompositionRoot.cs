@@ -50,6 +50,7 @@ namespace CindarsHope.Composition
             NpcRuntimeInstaller.Install(transform);
             WorldRuntimeInstaller.Install(transform);
             FarmRuntimeInstaller.Install(transform);
+            ItemRuntimeInstaller.Install(transform);
         }
 
         public static GameRuntimeCompositionRoot EnsureExists()

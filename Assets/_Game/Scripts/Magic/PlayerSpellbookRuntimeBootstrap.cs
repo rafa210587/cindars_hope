@@ -10,19 +10,20 @@ namespace CindarsHope.Magic
     /// </summary>
     public static class PlayerSpellbookRuntimeBootstrap
     {
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void EnsureInstance()
+        public static PlayerSpellbook Install(Transform owner)
         {
             if (PlayerSpellbook.Instance != null)
             {
-                return;
+                return PlayerSpellbook.Instance;
             }
 
             var go = new GameObject("PlayerSpellbook");
-            Object.DontDestroyOnLoad(go);
-            go.AddComponent<PlayerSpellbook>();
+            if (owner != null) go.transform.SetParent(owner, false);
+            else Object.DontDestroyOnLoad(go);
+            var spellbook = go.AddComponent<PlayerSpellbook>();
             go.AddComponent<SpellItemUseController>();
             Debug.Log("[PlayerSpellbookRuntimeBootstrap] PlayerSpellbook instanciado via bootstrap.");
+            return spellbook;
         }
     }
 }

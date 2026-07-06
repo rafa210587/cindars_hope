@@ -14,17 +14,18 @@ namespace CindarsHope.Inventory
         private readonly Dictionary<string, ItemUseHandler> _handlers = new Dictionary<string, ItemUseHandler>();
         private InventoryManager _inventoryManager;
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void EnsureRuntimeInstance()
+        public static ItemUseManager Install(Transform owner)
         {
             if (_instance != null)
             {
-                return;
+                return _instance;
             }
 
             var go = new GameObject("ItemUseManager");
-            DontDestroyOnLoad(go);
+            if (owner != null) go.transform.SetParent(owner, false);
+            else DontDestroyOnLoad(go);
             _instance = go.AddComponent<ItemUseManager>();
+            return _instance;
         }
 
         private void Awake()
@@ -36,7 +37,8 @@ namespace CindarsHope.Inventory
             }
 
             _instance = this;
-            DontDestroyOnLoad(gameObject);
+            if (transform.parent == null)
+                DontDestroyOnLoad(gameObject);
         }
 
         public static ItemUseManager Instance => _instance;

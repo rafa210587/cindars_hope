@@ -18,6 +18,10 @@ using CindarsHope.Farm.Lots;
 using CindarsHope.Farm.Resources;
 using CindarsHope.Farm.Runtime;
 using CindarsHope.Farm.Shipping;
+using CindarsHope.Craft;
+using CindarsHope.Inventory;
+using CindarsHope.Items.Runtime;
+using CindarsHope.Magic;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -63,6 +67,11 @@ namespace CindarsHope.Tests.PlayMode.Composition
             AssertOwnedByRoot<FarmForageRuntimeService>(root);
             AssertOwnedByRoot<ShippingBinRuntimeService>(root);
             AssertOwnedByRoot<FarmLotRuntimeBootstrap>(root);
+            AssertOwnedByRoot<ItemUseManager>(root);
+            AssertOwnedByRoot<ConsumableItemRuntimeBootstrap>(root);
+            AssertOwnedByRoot<MagicItemRuntimeBootstrap>(root);
+            AssertOwnedByRoot<PlayerSpellbook>(root);
+            AssertOwnedByRoot<CraftingStationRuntimeBootstrap>(root);
 
             yield return null;
 

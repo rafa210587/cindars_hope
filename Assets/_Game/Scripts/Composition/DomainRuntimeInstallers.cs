@@ -14,6 +14,10 @@ using CindarsHope.Farm.Lots;
 using CindarsHope.Farm.Resources;
 using CindarsHope.Farm.Runtime;
 using CindarsHope.Farm.Shipping;
+using CindarsHope.Craft;
+using CindarsHope.Inventory;
+using CindarsHope.Items.Runtime;
+using CindarsHope.Magic;
 using UnityEngine;
 
 namespace CindarsHope.Composition
@@ -61,6 +65,18 @@ namespace CindarsHope.Composition
             FarmForageRuntimeBootstrap.Install(owner);
             ShippingBinRuntimeBootstrap.Install(owner);
             FarmLotRuntimeBootstrap.Install(owner);
+        }
+    }
+
+    internal static class ItemRuntimeInstaller
+    {
+        public static void Install(Transform owner)
+        {
+            ItemUseManager.Install(owner);
+            ConsumableItemRuntimeBootstrap.Install(owner);
+            MagicItemRuntimeBootstrap.Install(owner);
+            PlayerSpellbookRuntimeBootstrap.Install(owner);
+            CraftingStationRuntimeBootstrap.Install(owner);
         }
     }
 }

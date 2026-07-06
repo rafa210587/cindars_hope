@@ -35,17 +35,18 @@ namespace CindarsHope.Items.Runtime
         public static MagicItemRuntimeBootstrap Instance => _instance;
         public bool IsFullyBound => _handlersRegistered && _scrollRegistered && _trackerBound;
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void EnsureInstance()
+        public static MagicItemRuntimeBootstrap Install(Transform owner)
         {
             if (_instance != null)
             {
-                return;
+                return _instance;
             }
 
             var go = new GameObject(GameObjectName);
-            DontDestroyOnLoad(go);
+            if (owner != null) go.transform.SetParent(owner, false);
+            else DontDestroyOnLoad(go);
             _instance = go.AddComponent<MagicItemRuntimeBootstrap>();
+            return _instance;
         }
 
         private void Awake()
@@ -57,7 +58,8 @@ namespace CindarsHope.Items.Runtime
             }
 
             _instance = this;
-            DontDestroyOnLoad(gameObject);
+            if (transform.parent == null)
+                DontDestroyOnLoad(gameObject);
 
             _passiveTracker = gameObject.AddComponent<ItemPassiveTracker>();
             StartCoroutine(BindWhenReady());

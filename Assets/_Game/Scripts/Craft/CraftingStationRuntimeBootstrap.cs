@@ -28,14 +28,15 @@ namespace CindarsHope.Craft
         private const int MaxBindAttempts = 120;
         private static CraftingStationRuntimeBootstrap _instance;
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void EnsureInstance()
+        public static CraftingStationRuntimeBootstrap Install(Transform owner)
         {
-            if (_instance != null) return;
+            if (_instance != null) return _instance;
 
             var go = new GameObject("CraftingStationRuntimeBootstrap");
-            DontDestroyOnLoad(go);
+            if (owner != null) go.transform.SetParent(owner, false);
+            else DontDestroyOnLoad(go);
             _instance = go.AddComponent<CraftingStationRuntimeBootstrap>();
+            return _instance;
         }
 
         private void OnEnable()

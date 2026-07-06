@@ -314,7 +314,7 @@ estiver próxima do limite de contexto/tokens.
 - Ao fechar o lote 5, recontar atributos reais, atualizar spec/inventário/resumo e somente então
   iniciar o lote 6 de ciclos residuais.
 
-### V5 Lote 5C — installers Farm (implementado, commit pendente)
+### V5 Lote 5C — installers Farm (commit `d926f059`)
 
 - Criado `FarmRuntimeInstaller` no estágio `Start` do composition root.
 - Migrados seis auto-bootstraps: daily goal, resource refresh, animal registry, forage, shipping e
@@ -327,6 +327,17 @@ estiver próxima do limite de contexto/tokens.
 - Gates: architecture ratchet PASS; EditMode 2.726/2.726; PlayMode composition + smoke
   Farm/Town/Cave 2/2 PASS.
 - Próximo recorte: os 16 serviços persistentes restantes, começando por Cave e inventory/items.
+
+### V5 Lote 5D — inventory/items/magic (implementado, commit pendente)
+
+- Criado `ItemRuntimeInstaller` no `Start` do root.
+- Migrados: `ItemUseManager`, consumables, magic items/passive tracker, player spellbook/spell item
+  controller e crafting station.
+- Retry, registro de handlers, passive tracker, scene-loaded rebind e APIs singleton foram mantidos.
+- Hosts criados pelo root ficam sob seu transform; fallback standalone mantém `DontDestroyOnLoad`.
+- Contagem: 49 baseline → 28 atuais; 27 permanecem fora do root.
+- Gates: ratchet PASS; EditMode 2.726/2.726; PlayMode composition + cenas 2/2 PASS.
+- Próximo recorte: Cave, telemetry, Fonte, narrative, player condition/inferred class e quest.
 
 ## 2026-07-05 — Autorização integral das Fases 4 a 8
 
