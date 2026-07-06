@@ -56,6 +56,9 @@ desktop.ini
 AppData/
 *.log
 
+# Unity Test Runner raw artifacts are local/CI output. Commit compact Markdown/TXT summaries only.
+/TestResults/*.xml
+
 # SpecKit temporary/cache output
 .specify/cache/
 

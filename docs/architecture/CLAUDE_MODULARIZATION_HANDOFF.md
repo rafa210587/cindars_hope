@@ -180,6 +180,32 @@ estiver próxima do limite de contexto/tokens.
 - Próximo recorte pequeno candidato: `Locations|Player`, mas exige ports de vitais/respawn e deve ser
   tratado em spec própria, sem mover serviços apenas para esconder o ciclo.
 
+## 2026-07-05 — Modularization Residual v5 (EM EXECUÇÃO PELO CODEX)
+
+- Spec ativa: `.specs/a_implementar/spec_arch_modularization_residual_v5.md`.
+- Baseline revalidado: NpcShopController 1.050/46; EnemyBrain 925/45; 49 atributos reais de runtime
+  init (48 fora do root); root instala 3 serviços + 2 resets; 47 pares mútuos.
+- Higiene: o intervalo local do rework adicionou 12 XMLs/141.331 linhas; política será migrar
+  resultados brutos para artefatos locais/CI e manter evidência compacta versionada.
+- Working tree paralelo a preservar: animação inimiga, ProjectSettings, `.slnx`, ferramenta Python,
+  XMLs canon/Claude não rastreados e ferramentas Aseprite.
+- Ordem autorizada: higiene → catálogos → shop → brain → bootstraps → ciclos → closeout.
+- Regra de continuidade: ao fim de cada lote, registrar neste arquivo commit, arquivos, gates,
+  riscos residuais e próximo comando. Não publicar sem autorização explícita.
+
+### V5 Lote 1 — higiene (implementado, commit pendente de conferência)
+
+- Corrigido comentário do `GameplayInputRouter`: o router trata I/K/U/Esc, não C.
+- Adicionada política `/TestResults/*.xml` no `.gitignore` e `TestResults/README.md`.
+- Removidos do HEAD 48 XMLs brutos rastreados (200.666 linhas / ~23,5 MB no checkout).
+- Evidência versionada agora é compacta em `TestResults/MODULARIZATION_VALIDATION_SUMMARY.md` e
+  snapshots `.txt`. XML continua gerado localmente/CI.
+- Não houve history rewrite: blobs antigos continuam no histórico. Reescrever nove commits locais
+  foi rejeitado neste lote por risco ao branch compartilhado/worktree misto.
+- Código funcional não mudou; nenhum gate runtime precisa ser refeito por este lote documental.
+- Próximo passo: V5 Lote 2, extrair tuning de active skills e IDs/reward builders mantendo todos os
+  valores atuais e testes de equivalência.
+
 ## 2026-07-05 — Autorização integral das Fases 4 a 8
 
 - Decisão humana: continuar até terminar todo o rework, sem parar entre fases.

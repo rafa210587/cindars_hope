@@ -7,7 +7,7 @@ using UnityEngine;
 namespace CindarsHope.UI.Routing
 {
     /// <summary>
-    /// Central keyboard input router. Handles I/K/U/C/Esc and publishes UI events
+    /// Central keyboard input router. Handles I/K/U/Esc and publishes UI events
     /// instead of directly invoking panels. Legacy OnGUI panels check IsActive to
     /// yield their own key handling when this router is present.
     /// </summary>
