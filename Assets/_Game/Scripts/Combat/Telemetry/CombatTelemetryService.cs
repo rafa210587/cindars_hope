@@ -294,11 +294,10 @@ namespace CindarsHope.Combat.Telemetry
             return 0;
         }
 
-        /// <summary>Garante a instância na cena (bootstrap do projeto, sem global search recorrente).</summary>
+        /// <summary>Garante a instância na cena (instalada pelo composition root, sem global search recorrente).</summary>
         public static class Bootstrap
         {
-            [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-            private static void EnsureInstance()
+            public static void Install(Transform owner)
             {
                 if (_activeInstance != null)
                 {
@@ -306,6 +305,7 @@ namespace CindarsHope.Combat.Telemetry
                 }
 
                 var go = new GameObject("CombatTelemetryService");
+                go.transform.SetParent(owner);
                 UnityEngine.Object.DontDestroyOnLoad(go);
                 go.AddComponent<CombatTelemetryService>();
                 Debug.Log("[CombatTelemetryService.Bootstrap] Servico instanciado via bootstrap (OFF por default, fable_59).");
