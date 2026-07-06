@@ -9,18 +9,17 @@ namespace CindarsHope.NPC.Gifting
     /// </summary>
     public static class GiftGivingRuntimeBootstrap
     {
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void EnsureInstance()
+        public static GiftGivingService Install(Transform owner)
         {
-            if (Object.FindAnyObjectByType<GiftGivingService>() != null)
-            {
-                return;
-            }
+            var existing = Object.FindAnyObjectByType<GiftGivingService>();
+            if (existing != null) return existing;
 
             var go = new GameObject("GiftGivingService");
-            Object.DontDestroyOnLoad(go);
-            go.AddComponent<GiftGivingService>();
+            if (owner != null) go.transform.SetParent(owner, false);
+            else Object.DontDestroyOnLoad(go);
+            var service = go.AddComponent<GiftGivingService>();
             Debug.Log("[GiftGivingRuntimeBootstrap] GiftGivingService instanciado via bootstrap.");
+            return service;
         }
     }
 }

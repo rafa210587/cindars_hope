@@ -2,8 +2,14 @@ using System.Collections;
 using System.Text.RegularExpressions;
 using CindarsHope.Combat;
 using CindarsHope.Composition;
+using CindarsHope.City.Services;
+using CindarsHope.NPC.Friendship;
+using CindarsHope.NPC.Gifting;
+using CindarsHope.NPC.Services;
 using CindarsHope.Skills.Runtime.Effects;
 using CindarsHope.UI.Routing;
+using CindarsHope.World.Events;
+using CindarsHope.World.Weather;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -35,12 +41,25 @@ namespace CindarsHope.Tests.PlayMode.Composition
             Assert.That(ActiveSkillExecutionController.Instance, Is.Not.Null);
             Assert.That(inputRouter, Is.Not.Null);
             Assert.That(inputRouter.gameObject, Is.SameAs(root.gameObject));
+            AssertOwnedByRoot<FriendshipService>(root);
+            AssertOwnedByRoot<GiftGivingService>(root);
+            AssertOwnedByRoot<NpcServiceRuntime>(root);
+            AssertOwnedByRoot<CityServiceRuntimeBootstrap>(root);
+            AssertOwnedByRoot<WorldWeatherService>(root);
+            AssertOwnedByRoot<WorldEventService>(root);
 
             yield return null;
 
             Assert.That(GameRuntimeCompositionRoot.Instance, Is.SameAs(root));
             Assert.That(CombatStateTracker.ActiveInstance, Is.SameAs(tracker));
             Assert.That(GameplayInputRouter.Instance, Is.SameAs(inputRouter));
+        }
+
+        private static void AssertOwnedByRoot<T>(GameRuntimeCompositionRoot root) where T : Component
+        {
+            var service = Object.FindAnyObjectByType<T>();
+            Assert.That(service, Is.Not.Null, $"{typeof(T).Name} was not installed.");
+            Assert.That(service.transform.parent, Is.EqualTo(root.transform));
         }
 
         [UnityTest]

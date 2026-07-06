@@ -45,6 +45,12 @@ namespace CindarsHope.Composition
             EnsureExists();
         }
 
+        private void Start()
+        {
+            NpcRuntimeInstaller.Install(transform);
+            WorldRuntimeInstaller.Install(transform);
+        }
+
         public static GameRuntimeCompositionRoot EnsureExists()
         {
             NormalizeDestroyedInstance();
@@ -89,13 +95,27 @@ namespace CindarsHope.Composition
             }
 
             State = RuntimeCompositionState.NotInstalled;
+            CraftingRuntimeInstaller.Uninstall();
             _instance = null;
+        }
+
+        private void OnEnable()
+        {
+            if (object.ReferenceEquals(_instance, this) && State == RuntimeCompositionState.Ready)
+                CraftingRuntimeInstaller.Install();
+        }
+
+        private void OnDisable()
+        {
+            if (object.ReferenceEquals(_instance, this))
+                CraftingRuntimeInstaller.Uninstall();
         }
 
         private static void NormalizeDestroyedInstance()
         {
             if (!object.ReferenceEquals(_instance, null) && _instance == null)
             {
+                CraftingRuntimeInstaller.Uninstall();
                 _instance = null;
                 State = RuntimeCompositionState.NotInstalled;
             }
@@ -113,6 +133,8 @@ namespace CindarsHope.Composition
             CombatStateTrackerBootstrap.Install();
             GameplayInputRouter.Install(_instance != null ? _instance.transform : null);
             ActiveSkillExecutionController.Install();
+            CraftingRuntimeInstaller.Install();
+            CaveRuntimeInstaller.Install(_instance != null ? _instance.transform : null);
             State = RuntimeCompositionState.Ready;
         }
     }

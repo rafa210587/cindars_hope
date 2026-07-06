@@ -83,16 +83,14 @@ namespace CindarsHope.World.Weather
     /// </summary>
     public static class WorldWeatherRuntimeBootstrap
     {
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void EnsureInstance()
+        public static WorldWeatherService Install(Transform owner)
         {
-            if (Object.FindAnyObjectByType<WorldWeatherService>() != null)
-            {
-                return;
-            }
+            var existing = Object.FindAnyObjectByType<WorldWeatherService>();
+            if (existing != null) return existing;
 
             var go = new GameObject("WorldWeatherService");
-            Object.DontDestroyOnLoad(go);
+            if (owner != null) go.transform.SetParent(owner, false);
+            else Object.DontDestroyOnLoad(go);
             var service = go.AddComponent<WorldWeatherService>();
 
             var timeManager = Object.FindAnyObjectByType<CindarsHope.Core.Time.TimeManager>();
@@ -102,6 +100,7 @@ namespace CindarsHope.World.Weather
             }
 
             Debug.Log("[WorldWeatherRuntimeBootstrap] WorldWeatherService instanciado via bootstrap.");
+            return service;
         }
     }
 }

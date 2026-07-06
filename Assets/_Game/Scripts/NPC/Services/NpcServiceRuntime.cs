@@ -379,18 +379,17 @@ namespace CindarsHope.NPC.Services
     /// <summary>fable_25 — garante o bridge em runtime (padrão GiftGivingRuntimeBootstrap).</summary>
     public static class NpcServiceRuntimeBootstrap
     {
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void EnsureInstance()
+        public static NpcServiceRuntime Install(Transform owner)
         {
-            if (Object.FindAnyObjectByType<NpcServiceRuntime>() != null)
-            {
-                return;
-            }
+            var existing = Object.FindAnyObjectByType<NpcServiceRuntime>();
+            if (existing != null) return existing;
 
             var go = new GameObject("NpcServiceRuntime");
-            Object.DontDestroyOnLoad(go);
-            go.AddComponent<NpcServiceRuntime>();
+            if (owner != null) go.transform.SetParent(owner, false);
+            else Object.DontDestroyOnLoad(go);
+            var service = go.AddComponent<NpcServiceRuntime>();
             Debug.Log("[NpcServiceRuntimeBootstrap] NpcServiceRuntime instanciado via bootstrap.");
+            return service;
         }
     }
 }

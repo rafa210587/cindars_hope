@@ -10,8 +10,7 @@ namespace CindarsHope.World.Events
     /// </summary>
     public static class WorldEventRuntimeBootstrap
     {
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void EnsureInstance()
+        public static WorldEventService Install(Transform owner)
         {
             var service = WorldEventService.Instance;
             if (service == null)
@@ -22,7 +21,8 @@ namespace CindarsHope.World.Events
             if (service == null)
             {
                 var go = new GameObject("WorldEventService");
-                Object.DontDestroyOnLoad(go);
+                if (owner != null) go.transform.SetParent(owner, false);
+                else Object.DontDestroyOnLoad(go);
                 service = go.AddComponent<WorldEventService>();
                 Debug.Log("[WorldEventRuntimeBootstrap] WorldEventService instanciado via bootstrap.");
             }
@@ -40,6 +40,8 @@ namespace CindarsHope.World.Events
             {
                 service.ResolveForDay(timeManager.CurrentDay);
             }
+
+            return service;
         }
     }
 }

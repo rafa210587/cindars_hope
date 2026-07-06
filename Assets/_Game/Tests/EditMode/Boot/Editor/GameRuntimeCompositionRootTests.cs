@@ -1,5 +1,7 @@
 using CindarsHope.Combat;
+using CindarsHope.Cave.Ecosystem;
 using CindarsHope.Composition;
+using CindarsHope.Crafting;
 using CindarsHope.Skills.Runtime.Effects;
 using NUnit.Framework;
 using UnityEngine;
@@ -38,6 +40,10 @@ namespace CindarsHope.Tests.EditMode.Boot
             Assert.That(GameRuntimeCompositionRoot.State, Is.EqualTo(RuntimeCompositionState.Ready));
             Assert.That(CombatStateTracker.ActiveInstance, Is.Not.Null);
             Assert.That(ActiveSkillExecutionController.Instance, Is.Not.Null);
+            Assert.That(RecipeFirstKillUnlockHook.IsInstalled, Is.True);
+            var feedbackBridge = Object.FindAnyObjectByType<CaveConflictFeedbackBridge>();
+            Assert.That(feedbackBridge, Is.Not.Null);
+            Assert.That(feedbackBridge.transform.parent, Is.EqualTo(first.transform));
         }
 
         [Test]
@@ -48,6 +54,8 @@ namespace CindarsHope.Tests.EditMode.Boot
 
             Assert.That(GameRuntimeCompositionRoot.Instance, Is.Null);
             Assert.That(GameRuntimeCompositionRoot.State, Is.EqualTo(RuntimeCompositionState.NotInstalled));
+            Assert.That(RecipeFirstKillUnlockHook.IsInstalled, Is.False);
+            Assert.That(Object.FindAnyObjectByType<CaveConflictFeedbackBridge>(), Is.Null);
 
             GameRuntimeCompositionRoot replacement = GameRuntimeCompositionRoot.EnsureExists();
             Assert.That(replacement, Is.Not.SameAs(first));

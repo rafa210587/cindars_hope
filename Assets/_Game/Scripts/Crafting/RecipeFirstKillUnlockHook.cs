@@ -1,6 +1,5 @@
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
-using UnityEngine;
 
 namespace CindarsHope.Crafting
 {
@@ -18,13 +17,20 @@ namespace CindarsHope.Crafting
     public static class RecipeFirstKillUnlockHook
     {
         private static bool _subscribed;
+        public static bool IsInstalled => _subscribed;
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void Install()
+        public static void Install()
         {
             if (_subscribed) return;
             _subscribed = true;
             GameEventBus.Subscribe<CaveBossDefeatedEvent>(OnBossDefeated);
+        }
+
+        public static void Uninstall()
+        {
+            if (!_subscribed) return;
+            GameEventBus.Unsubscribe<CaveBossDefeatedEvent>(OnBossDefeated);
+            _subscribed = false;
         }
 
         private static void OnBossDefeated(CaveBossDefeatedEvent evt)

@@ -245,7 +245,7 @@ estiver próxima do limite de contexto/tokens.
 - Próximo passo: V5 Lote 4, decompor `EnemyBrain` por state/targeting/config sem alterar decisões,
   timings, ranges, RNG, animação, dano, drops ou serialização.
 
-### V5 Lote 4 — EnemyBrain (implementado, commit pendente)
+### V5 Lote 4 — EnemyBrain (commit `a6f6bef3`)
 
 - A state machine pura existente (`EnemyDecisionCore`) foi preservada como autoridade de decisão.
 - Criado `EnemyTargetingController`: resolução do player visível/fallback, rival de conflito,
@@ -262,6 +262,25 @@ estiver próxima do limite de contexto/tokens.
 - Gates: EditMode 2.726/2.726; seis assemblies 6/6, 0 erros/0 warnings.
 - Próximo passo: V5 Lote 5, inventariar/classificar os 48 runtime-init externos ao root e migrar
   apenas bootstraps persistentes com ownership/teardown inequívocos para installers de domínio.
+
+### V5 Lote 5A — ownership e installers piloto (implementado, commit pendente)
+
+- Inventário autoritativo: `docs/architecture/RUNTIME_BOOTSTRAP_OWNERSHIP_V5.md`.
+- A contagem caiu de 49 para 41 atributos reais; 40 continuam fora do root.
+- Migrados para ownership central: first-kill crafting, cave conflict feedback, friendship, gifting,
+  NPC services, city services, weather e world events.
+- Installers adicionados: `CraftingRuntimeInstaller`, `CaveRuntimeInstaller`, `NpcRuntimeInstaller`
+  e `WorldRuntimeInstaller` em `DomainRuntimeInstallers.cs`.
+- Serviços dependentes da cena são instalados no `Start` do root; novos hosts ficam filhos do root;
+  instâncias de cena existentes são adotadas sem reparenting.
+- Teardown do hook estático funciona também quando a referência Unity destruída é normalizada; o
+  cave bridge usa o lifecycle do filho para unsubscribe.
+- Gates: root EditMode 2/2; EditMode completo 2.726/2.726; PlayMode root 1/1; seis assemblies 6/6,
+  0 erros/0 warnings; architecture ratchet PASS.
+- Lote 5 permanece ABERTO: faltam 24 serviços persistentes, 7 UI/cena, 6 player-attached, 1 debug,
+  1 diagnóstico e 1 reset de subsistema classificado como intencional.
+- Próximo recorte seguro: NPC schedule + World item drop, depois Farm; não mover UI/player/audio
+  diretamente para o estágio `BeforeSceneLoad`.
 
 ## 2026-07-05 — Autorização integral das Fases 4 a 8
 

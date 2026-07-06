@@ -27,18 +27,18 @@ namespace CindarsHope.City.Services
         /// <summary>Serviço de flags dos civic services (exposto para save/load futuro e teste de integração).</summary>
         public static QuestFlagService FlagService => s_instance?._flagService;
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void EnsureInstance()
+        public static CityServiceRuntimeBootstrap Install(Transform owner)
         {
             if (s_instance != null)
             {
                 s_instance.WireAccess();
-                return;
+                return s_instance;
             }
 
             var go = new GameObject("CityServiceRuntimeBootstrap");
-            Object.DontDestroyOnLoad(go);
-            go.AddComponent<CityServiceRuntimeBootstrap>();
+            if (owner != null) go.transform.SetParent(owner, false);
+            else Object.DontDestroyOnLoad(go);
+            return go.AddComponent<CityServiceRuntimeBootstrap>();
         }
 
         private void Awake()

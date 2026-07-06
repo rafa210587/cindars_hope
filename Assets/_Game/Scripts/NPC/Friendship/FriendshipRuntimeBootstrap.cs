@@ -9,18 +9,17 @@ namespace CindarsHope.NPC.Friendship
     /// </summary>
     public static class FriendshipRuntimeBootstrap
     {
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void EnsureInstance()
+        public static FriendshipService Install(Transform owner)
         {
-            if (Object.FindAnyObjectByType<FriendshipService>() != null)
-            {
-                return;
-            }
+            var existing = Object.FindAnyObjectByType<FriendshipService>();
+            if (existing != null) return existing;
 
             var go = new GameObject("FriendshipService");
-            Object.DontDestroyOnLoad(go);
-            go.AddComponent<FriendshipService>();
+            if (owner != null) go.transform.SetParent(owner, false);
+            else Object.DontDestroyOnLoad(go);
+            var service = go.AddComponent<FriendshipService>();
             Debug.Log("[FriendshipRuntimeBootstrap] FriendshipService instanciado via bootstrap.");
+            return service;
         }
     }
 }

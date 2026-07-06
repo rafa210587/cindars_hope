@@ -20,18 +20,20 @@ namespace CindarsHope.Cave.Ecosystem
         private const float ToastDurationSeconds = 3f;
 
         private static CaveConflictFeedbackBridge _instance;
-
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void Bootstrap()
+        public static CaveConflictFeedbackBridge Install(Transform owner)
         {
             if (_instance != null)
             {
-                return;
+                return _instance;
             }
 
             var go = new GameObject(nameof(CaveConflictFeedbackBridge));
+            if (owner != null)
+                go.transform.SetParent(owner, false);
             _instance = go.AddComponent<CaveConflictFeedbackBridge>();
-            DontDestroyOnLoad(go);
+            if (owner == null)
+                DontDestroyOnLoad(go);
+            return _instance;
         }
 
         private void Awake()
