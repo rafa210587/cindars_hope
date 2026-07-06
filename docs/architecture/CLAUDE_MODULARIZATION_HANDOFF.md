@@ -328,7 +328,7 @@ estiver próxima do limite de contexto/tokens.
   Farm/Town/Cave 2/2 PASS.
 - Próximo recorte: os 16 serviços persistentes restantes, começando por Cave e inventory/items.
 
-### V5 Lote 5D — inventory/items/magic (implementado, commit pendente)
+### V5 Lote 5D — inventory/items/magic (commit `dea417ce`)
 
 - Criado `ItemRuntimeInstaller` no `Start` do root.
 - Migrados: `ItemUseManager`, consumables, magic items/passive tracker, player spellbook/spell item
@@ -338,6 +338,18 @@ estiver próxima do limite de contexto/tokens.
 - Contagem: 49 baseline → 28 atuais; 27 permanecem fora do root.
 - Gates: ratchet PASS; EditMode 2.726/2.726; PlayMode composition + cenas 2/2 PASS.
 - Próximo recorte: Cave, telemetry, Fonte, narrative, player condition/inferred class e quest.
+
+### V5 Lote 5E — Fonte e player services (implementado, commit pendente)
+
+- Criado `PlayerServiceRuntimeInstaller`.
+- Migrados `FonteRuntimeBootstrap`, `PlayerConditionRuntimeBootstrap` e
+  `InferredClassRuntimeBootstrap`.
+- Fonte/condition ficam sob o root; inferred class continua anexada ao `GameBootstrap` somente
+  quando ele existe, preservando o gate e sem criar fallback paralelo.
+- Configuração de time/player do condition service e buscas de wiring foram preservadas.
+- Contagem: 49 baseline → 25 atuais; 24 permanecem fora do root.
+- Gates: ratchet + EditMode 2.726/2.726; PlayMode composition/cenas 2/2 PASS.
+- Próximo recorte: Cave, telemetry, narrative e quest (8 serviços persistentes).
 
 ## 2026-07-05 — Autorização integral das Fases 4 a 8
 

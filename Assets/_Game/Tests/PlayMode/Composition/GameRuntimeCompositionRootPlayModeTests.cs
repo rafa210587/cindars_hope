@@ -22,6 +22,8 @@ using CindarsHope.Craft;
 using CindarsHope.Inventory;
 using CindarsHope.Items.Runtime;
 using CindarsHope.Magic;
+using CindarsHope.Fonte;
+using CindarsHope.Player.Conditions;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -72,6 +74,8 @@ namespace CindarsHope.Tests.PlayMode.Composition
             AssertOwnedByRoot<MagicItemRuntimeBootstrap>(root);
             AssertOwnedByRoot<PlayerSpellbook>(root);
             AssertOwnedByRoot<CraftingStationRuntimeBootstrap>(root);
+            AssertOwnedByRoot<FonteRuntimeService>(root);
+            AssertOwnedByRoot<PlayerConditionService>(root);
 
             yield return null;
 

@@ -321,16 +321,17 @@ namespace CindarsHope.Player.Conditions
     /// <summary>Garante o serviço em runtime (padrão FarmDailyGoalRuntimeBootstrap).</summary>
     public static class PlayerConditionRuntimeBootstrap
     {
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void EnsureInstance()
+        public static PlayerConditionService Install(Transform owner)
         {
-            if (Object.FindAnyObjectByType<PlayerConditionService>() != null)
+            var existing = Object.FindAnyObjectByType<PlayerConditionService>();
+            if (existing != null)
             {
-                return;
+                return existing;
             }
 
             var go = new GameObject("PlayerConditionService");
-            Object.DontDestroyOnLoad(go);
+            if (owner != null) go.transform.SetParent(owner, false);
+            else Object.DontDestroyOnLoad(go);
             var service = go.AddComponent<PlayerConditionService>();
 
             var bootstrap = GameBootstrap.Instance;
@@ -340,6 +341,7 @@ namespace CindarsHope.Player.Conditions
             service.Configure(gameTimeManager, timeManager, playerController);
 
             Debug.Log("[PlayerConditionRuntimeBootstrap] PlayerConditionService instanciado via bootstrap.");
+            return service;
         }
     }
 }

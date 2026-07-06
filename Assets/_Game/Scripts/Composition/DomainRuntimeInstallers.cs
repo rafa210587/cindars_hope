@@ -18,6 +18,9 @@ using CindarsHope.Craft;
 using CindarsHope.Inventory;
 using CindarsHope.Items.Runtime;
 using CindarsHope.Magic;
+using CindarsHope.Fonte;
+using CindarsHope.Player;
+using CindarsHope.Player.Conditions;
 using UnityEngine;
 
 namespace CindarsHope.Composition
@@ -77,6 +80,16 @@ namespace CindarsHope.Composition
             MagicItemRuntimeBootstrap.Install(owner);
             PlayerSpellbookRuntimeBootstrap.Install(owner);
             CraftingStationRuntimeBootstrap.Install(owner);
+        }
+    }
+
+    internal static class PlayerServiceRuntimeInstaller
+    {
+        public static void Install(Transform owner)
+        {
+            FonteRuntimeBootstrap.Install(owner);
+            PlayerConditionRuntimeBootstrap.Install(owner);
+            InferredClassRuntimeBootstrap.Install();
         }
     }
 }

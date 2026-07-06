@@ -217,18 +217,20 @@ namespace CindarsHope.Fonte
     /// <summary>Garante o host da Fonte em runtime (padrão bootstrap do projeto).</summary>
     public static class FonteRuntimeBootstrap
     {
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void EnsureInstance()
+        public static FonteRuntimeService Install(Transform owner)
         {
-            if (Object.FindAnyObjectByType<FonteRuntimeService>() != null)
+            var existing = Object.FindAnyObjectByType<FonteRuntimeService>();
+            if (existing != null)
             {
-                return;
+                return existing;
             }
 
             var go = new GameObject("FonteRuntimeService");
-            Object.DontDestroyOnLoad(go);
-            go.AddComponent<FonteRuntimeService>();
+            if (owner != null) go.transform.SetParent(owner, false);
+            else Object.DontDestroyOnLoad(go);
+            var service = go.AddComponent<FonteRuntimeService>();
             Debug.Log("[FonteRuntimeBootstrap] FonteRuntimeService instanciado via bootstrap.");
+            return service;
         }
     }
 }

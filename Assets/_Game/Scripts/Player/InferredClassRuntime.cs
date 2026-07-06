@@ -150,22 +150,23 @@ namespace CindarsHope.Player
     /// <summary>Ensures the inferred-class runtime exists (project bootstrap idiom).</summary>
     public static class InferredClassRuntimeBootstrap
     {
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void EnsureInstance()
+        public static InferredClassRuntime Install()
         {
-            if (Object.FindAnyObjectByType<InferredClassRuntime>() != null)
+            var existing = Object.FindAnyObjectByType<InferredClassRuntime>();
+            if (existing != null)
             {
-                return;
+                return existing;
             }
 
             var bootstrap = GameBootstrap.Instance;
             if (bootstrap == null)
             {
-                return;
+                return null;
             }
 
-            bootstrap.gameObject.AddComponent<InferredClassRuntime>();
+            var runtime = bootstrap.gameObject.AddComponent<InferredClassRuntime>();
             Debug.Log("[InferredClassRuntimeBootstrap] InferredClassRuntime instanciado via bootstrap.");
+            return runtime;
         }
     }
 }
