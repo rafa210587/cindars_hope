@@ -171,6 +171,8 @@ namespace CindarsHope.Composition
             CindarsHope.UI.Death.DeathScreenCanvasController.Install(owner);
             CindarsHope.UI.HUD.GameplayHudBootstrap.Install(owner);
             CindarsHope.UI.InventoryPanelController.Install(owner);
+            CindarsHope.UI.Quests.Runtime.QuestOfferPanelController.Install(owner);
+            CindarsHope.UI.Quests.Runtime.QuestLogPanelController.Install(owner);
             CindarsHope.UI.Skills.SkillTreeGameplayPanelController.Install(owner);
             CindarsHope.World.Scenes.SceneFadeOverlayBootstrap.Install(owner);
         }

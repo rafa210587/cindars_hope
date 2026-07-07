@@ -27,6 +27,19 @@ namespace CindarsHope.UI.Quests.Runtime
         /// <summary>Static instance to avoid FindObjectOfType at runtime.</summary>
         public static QuestOfferPanelController Instance { get; private set; }
 
+        public static QuestOfferPanelController Install(Transform owner)
+        {
+            if (Instance != null)
+            {
+                return Instance;
+            }
+
+            var go = new GameObject("QuestOfferPanelController");
+            if (owner != null) go.transform.SetParent(owner, false);
+            DontDestroyOnLoad(go);
+            return go.AddComponent<QuestOfferPanelController>();
+        }
+
         private bool _isOpen;
         private string _pendingQuestId;
         private string _giverNpcId;

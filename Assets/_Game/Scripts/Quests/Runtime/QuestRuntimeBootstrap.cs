@@ -6,7 +6,6 @@ using CindarsHope.Core.Events;
 using CindarsHope.Quests.Flags;
 using CindarsHope.Quests.Save;
 using CindarsHope.Save;
-using CindarsHope.UI.Quests.Runtime;
 using UnityEngine;
 
 namespace CindarsHope.Quests.Runtime
@@ -158,10 +157,10 @@ namespace CindarsHope.Quests.Runtime
 
         private IEnumerator InitializeWhenReady()
         {
-            // If already initialized, just ensure UI is present
+            // If already initialized, there is no domain work left for this bootstrap.
+            // Quest UI is owned by PresentationRuntimeInstaller.
             if (QuestService != null)
             {
-                EnsureUiControllers();
                 yield break;
             }
 
@@ -276,9 +275,6 @@ namespace CindarsHope.Quests.Runtime
             _secretQuestService.RehydrateWorldEffects(CollectGrantedFlagIds());
             SecretQuestService = _secretQuestService;
             SecretQuestWorldEffects = secretWorldEffects;
-
-            // UI controllers
-            EnsureUiControllers();
 
             Debug.Log($"[QuestRuntimeBootstrap] Quest runtime initialized. Registry quests: {QuestRegistry.GetAllQuests().Count}. Inventory adapter: {(inventoryAccess != null ? "WIRED" : "NULL")}. Gold adapter: {(goldAccess != null ? "WIRED" : "NULL")}. Progression adapter: {(progressionAccess != null ? "WIRED" : "NULL")}.");
         }
@@ -395,24 +391,5 @@ namespace CindarsHope.Quests.Runtime
             _mainProgressionBridge?.Unsubscribe();
         }
 
-        private static void EnsureUiControllers()
-        {
-            // QuestOfferPanelController — use static Instance to avoid FindObjectOfType (CS0618)
-            if (QuestOfferPanelController.Instance == null)
-            {
-                var offerGo = new GameObject("QuestOfferPanelController");
-                DontDestroyOnLoad(offerGo);
-                offerGo.AddComponent<QuestOfferPanelController>();
-            }
-
-            // QuestLogPanelController + QuestLogRuntimeBinder — use static Instance to avoid FindObjectOfType (CS0618)
-            if (QuestLogPanelController.Instance == null)
-            {
-                var logGo = new GameObject("QuestLogPanelController");
-                DontDestroyOnLoad(logGo);
-                logGo.AddComponent<QuestLogPanelController>();
-                logGo.AddComponent<QuestLogRuntimeBinder>();
-            }
-        }
     }
 }

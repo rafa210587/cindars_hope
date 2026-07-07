@@ -30,6 +30,21 @@ namespace CindarsHope.UI.Quests.Runtime
         /// <summary>Static instance to avoid FindObjectOfType at runtime.</summary>
         public static QuestLogPanelController Instance { get; private set; }
 
+        public static QuestLogPanelController Install(Transform owner)
+        {
+            if (Instance != null)
+            {
+                return Instance;
+            }
+
+            var go = new GameObject("QuestLogPanelController");
+            if (owner != null) go.transform.SetParent(owner, false);
+            DontDestroyOnLoad(go);
+            var panel = go.AddComponent<QuestLogPanelController>();
+            go.AddComponent<QuestLogRuntimeBinder>();
+            return panel;
+        }
+
         private bool _isOpen;
         private int _scrollY;
 
