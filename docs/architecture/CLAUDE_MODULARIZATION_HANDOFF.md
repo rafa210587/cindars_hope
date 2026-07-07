@@ -1,5 +1,25 @@
 # Prompt de Continuação para Claude — Rework Modular
 
+## 2026-07-07 — NpcShopController initialization guard v13
+
+- Spec implementada: `.specs/implementados/spec_arch_npcshop_initialization_guard_v13.md`.
+- Objetivo: executar um recorte seguro da fase `NpcShopController` do plano restante de
+  modularização, sem alterar gameplay, saves, cenas, prefabs, IDs, horários, diálogos, preços,
+  quantidades ou fluxos de shop.
+- Mudança:
+  - criado `NpcShopInitializationGuard`;
+  - `NpcShopController.TryEnsureShopInitialized` delega validação de referências obrigatórias ao guard;
+  - método local `ValidateReference` foi removido;
+  - preservado comportamento anterior de short-circuit: mesma ordem de validação e só a primeira
+    referência ausente é logada.
+- Gates:
+  - `dotnet build .\CindarsHope.Runtime.csproj`: exit 0, 0 warnings, 0 errors.
+  - `tools/unity/Invoke-UnityGeneratedProjectsBuild.ps1`: exit 0, 7/7 projetos, 0 warnings, 0 errors.
+  - `tools/unity/RunUnityEditModeTests.ps1`: exit 0, 2747/2747 PASS,
+    `TestResults/npcshop-initialization-guard-editmode.xml`.
+- Próximos recortes do `NpcShopController` ainda pendentes: diálogo, gifting, quest bridge,
+  transaction facade e schedule/presentation adapter.
+
 ## 2026-07-07 — Core/NPC cycle reduction v12
 
 - Spec-filha implementada: `.specs/implementados/spec_arch_core_npc_cycle_reduction_v12.md`.

@@ -81,16 +81,18 @@ namespace CindarsHope.NPC
                 return false;
             }
 
-            if (!ValidateReference(_npcData, nameof(_npcData), reason)
-                || !ValidateReference(_shopManager, nameof(_shopManager), reason)
-                || !ValidateReference(_playerManager, nameof(_playerManager), reason)
-                || !ValidateReference(_inventoryManager, nameof(_inventoryManager), reason)
-                || !ValidateReference(_itemDatabase, nameof(_itemDatabase), reason)
-                || !ValidateReference(_modalManager, nameof(_modalManager), reason)
-                || !ValidateReference(_dialogueModal, nameof(_dialogueModal), reason)
-                || !ValidateReference(_shopMenuModal, nameof(_shopMenuModal), reason)
-                || !ValidateReference(_buyPanel, nameof(_buyPanel), reason)
-                || !ValidateReference(_sellPanel, nameof(_sellPanel), reason))
+            if (!NpcShopInitializationGuard.ValidateRequiredReferences(
+                    _npcData,
+                    _shopManager,
+                    _playerManager,
+                    _inventoryManager,
+                    _itemDatabase,
+                    _modalManager,
+                    _dialogueModal,
+                    _shopMenuModal,
+                    _buyPanel,
+                    _sellPanel,
+                    (fieldName, cause) => LogInitializationError(reason, fieldName, cause)))
             {
                 return false;
             }
@@ -117,17 +119,6 @@ namespace CindarsHope.NPC
             _isReady = true;
             Debug.Log($"{GetDiagnosticContext()} shopId '{_shopData.Id}' ready via '{reason}'. {_shopManager.GetDiagnosticSummary()}", this);
             return true;
-        }
-
-        private bool ValidateReference(Object reference, string fieldName, string reason)
-        {
-            if (reference != null)
-            {
-                return true;
-            }
-
-            LogInitializationError(reason, fieldName, "required reference is null.");
-            return false;
         }
 
         private void AdoptPersistentBootstrapReferences(string reason)
