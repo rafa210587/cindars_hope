@@ -1,5 +1,3 @@
-using CindarsHope.Fonte;
-
 namespace CindarsHope.MainProgression
 {
     // Pure C# service — no Unity/MonoBehaviour, no live scene state
@@ -10,7 +8,7 @@ namespace CindarsHope.MainProgression
         // Evaluate final choice — does not apply unless PreviewOnly=false
         public FinalChoiceResult EvaluateFinalChoice(
             MainProgressionSection progression,
-            FonteAnyaSection fonte,
+            IFinalChoiceFonteStateSink fonte,
             FinalChoiceRequest request)
         {
             if (progression == null) return FinalChoiceResult.Fail("PROGRESSION_NULL");
@@ -58,16 +56,7 @@ namespace CindarsHope.MainProgression
             progression.PostGameWorldState = endingProfile.EndingId;
             progression.CurrentAct = MainAct.PostGame;
 
-            // Update Fonte final state via adapter
-            var fonteEnum = endingProfile.FonteFinalState switch
-            {
-                "FinalizedProtected" => FonteState.FinalizedProtected,
-                "FinalizedSealed"    => FonteState.FinalizedSealed,
-                "FinalizedUsed"      => FonteState.FinalizedUsed,
-                _ => FonteState.FinalizedProtected
-            };
-            fonte.FonteState = fonteEnum;
-            fonte.FinalFonteState = endingProfile.FonteFinalState;
+            fonte.ApplyFinalFonteState(endingProfile.FonteFinalState);
 
             return new FinalChoiceResult
             {

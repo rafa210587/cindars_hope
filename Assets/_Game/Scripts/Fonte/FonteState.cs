@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CindarsHope.MainProgression;
 
 namespace CindarsHope.Fonte
 {
@@ -39,7 +40,7 @@ namespace CindarsHope.Fonte
     }
 
     // All simple types — save-safe
-    public class FonteAnyaSection
+    public class FonteAnyaSection : IFinalChoiceFonteStateSink
     {
         public int Version { get; set; } = 1;
         public FonteState FonteState { get; set; } = FonteState.Dormant;
@@ -54,6 +55,18 @@ namespace CindarsHope.Fonte
         public int LastValidatedVersion { get; set; } = 0;
 
         public bool HasFunction(FonteFunction fn) => UnlockedFunctions.Contains(fn);
+
+        public void ApplyFinalFonteState(string fonteFinalState)
+        {
+            FonteState = fonteFinalState switch
+            {
+                "FinalizedProtected" => FonteState.FinalizedProtected,
+                "FinalizedSealed"    => FonteState.FinalizedSealed,
+                "FinalizedUsed"      => FonteState.FinalizedUsed,
+                _ => FonteState.FinalizedProtected
+            };
+            FinalFonteState = fonteFinalState;
+        }
     }
 
     public class LivingWaterState

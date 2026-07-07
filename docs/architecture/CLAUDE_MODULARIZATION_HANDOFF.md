@@ -1,5 +1,29 @@
 # Prompt de Continuação para Claude — Rework Modular
 
+## 2026-07-07 — Fonte/MainProgression cycle reduction v6
+
+- Spec-filha implementada: `.specs/implementados/spec_arch_fonte_mainprogression_cycle_reduction_v6.md`.
+- Objetivo: remover o par mútuo `Fonte|MainProgression` sem alterar gameplay, saves, cenas, prefabs,
+  IDs, balanceamento ou fluxo de final choice.
+- Mudança:
+  - `FinalChoiceService` e `FinalChoiceRuntimeAdapter` deixaram de depender diretamente de
+    `CindarsHope.Fonte`.
+  - `MainProgression` agora define o contrato pequeno `IFinalChoiceFonteStateSink`.
+  - `FonteAnyaSection` implementa esse contrato e mantém o mapeamento concreto para `FonteState`.
+- Snapshot:
+  - antes: `MutualModulePairs=45`, `RuntimeModuleEdges=234`;
+  - depois: `MutualModulePairs=44`, `RuntimeModuleEdges=233`;
+  - `Fonte|MainProgression` removido; nenhum par novo apareceu.
+- Gates:
+  - `tools/architecture/Get-ModularizationDependencySnapshot.ps1`: exit 0.
+  - `tools/unity/Invoke-UnityGeneratedProjectsBuild.ps1`: exit 0, 7/7 projetos, 0 warnings, 0 errors.
+  - `tools/unity/RunUnityEditModeTests.ps1 -Filter "CindarsHope.Tests.EditMode.MainProgression"`:
+    exit 0, 2747/2747 PASS, `TestResults/modularization-fonte-mainprogression-editmode.xml`.
+- Observação operacional: primeira tentativa de build direto `dotnet build --no-restore` falhou por
+  ausência de `Temp/obj/*/project.assets.json`; após `dotnet restore .\CindarsHope.Runtime.csproj`,
+  o build wrapper oficial passou.
+- Ainda não declarar modularização ampla concluída: restam 44 pares mútuos para specs-filhas.
+
 ## 2026-07-06 — V5 Lote 6/7: ciclos selecionados + closeout
 
 - Spec `spec_arch_modularization_residual_v5.md` foi concluída e movida de

@@ -1,6 +1,5 @@
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
-using CindarsHope.Fonte;
 
 namespace CindarsHope.MainProgression.Runtime
 {
@@ -32,7 +31,7 @@ namespace CindarsHope.MainProgression.Runtime
         /// ending id and warning text without mutating any state. Returns the service result.
         /// </summary>
         public FinalChoiceResult Preview(
-            MainProgressionSection progression, FonteAnyaSection fonte, FinalChoiceType choice, int day)
+            MainProgressionSection progression, IFinalChoiceFonteStateSink fonte, FinalChoiceType choice, int day)
         {
             return _service.EvaluateFinalChoice(progression, fonte, BuildRequest(choice, day, previewOnly: true));
         }
@@ -43,7 +42,7 @@ namespace CindarsHope.MainProgression.Runtime
         /// nothing. Returns the service result so the caller can show the failure reason on refusal.
         /// </summary>
         public FinalChoiceResult Apply(
-            MainProgressionSection progression, FonteAnyaSection fonte, FinalChoiceType choice, int day)
+            MainProgressionSection progression, IFinalChoiceFonteStateSink fonte, FinalChoiceType choice, int day)
         {
             var result = _service.EvaluateFinalChoice(progression, fonte, BuildRequest(choice, day, previewOnly: false));
 

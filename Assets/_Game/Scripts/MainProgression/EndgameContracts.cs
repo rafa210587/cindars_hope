@@ -88,6 +88,11 @@ namespace CindarsHope.MainProgression
         public bool PreviewOnly { get; set; } = false;
     }
 
+    public interface IFinalChoiceFonteStateSink
+    {
+        void ApplyFinalFonteState(string fonteFinalState);
+    }
+
     public class FinalChoiceResult
     {
         public bool Success { get; set; }
