@@ -1,6 +1,4 @@
-using CindarsHope.World.Weather;
-
-namespace CindarsHope.Core.Events
+namespace CindarsHope.World.Weather
 {
     /// <summary>
     /// Publicado quando o clima do dia é fixado (no DayStartedEvent).

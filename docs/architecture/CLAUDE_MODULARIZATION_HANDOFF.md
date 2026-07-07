@@ -1,5 +1,26 @@
 # Prompt de Continuação para Claude — Rework Modular
 
+## 2026-07-07 — Core/World cycle reduction v11
+
+- Spec-filha implementada: `.specs/implementados/spec_arch_core_world_cycle_reduction_v11.md`.
+- Objetivo: remover o par mútuo `Core|World` sem alterar gameplay, saves, cenas, prefabs,
+  IDs, balanceamento ou eventos observáveis.
+- Mudança:
+  - `WeatherChangedEvent` foi movido de `CindarsHope.Core.Events` para `CindarsHope.World.Weather`.
+  - O `.meta` foi movido junto com o `.cs` para preservar GUID.
+  - `WorldWeatherService` continua publicando o mesmo payload via `GameEventBus`.
+  - Nenhum valor de `WeatherType`, save/schema/cena/prefab/asset foi alterado.
+- Snapshot:
+  - antes: `MutualModulePairs=40`, `RuntimeModuleEdges=229`;
+  - depois: `MutualModulePairs=39`, `RuntimeModuleEdges=228`;
+  - `Core|World` removido; nenhum par novo apareceu.
+- Gates:
+  - `tools/architecture/Get-ModularizationDependencySnapshot.ps1`: exit 0.
+  - `tools/unity/Invoke-UnityGeneratedProjectsBuild.ps1`: exit 0, 7/7 projetos, 0 warnings, 0 errors.
+  - `tools/unity/RunUnityEditModeTests.ps1`: exit 0, 2747/2747 PASS,
+    `TestResults/modularization-core-world-editmode.xml`.
+- Ainda não declarar modularização ampla concluída: restam 39 pares mútuos para specs-filhas.
+
 ## 2026-07-07 — Core/Farm cycle reduction v10
 
 - Spec-filha implementada: `.specs/implementados/spec_arch_core_farm_cycle_reduction_v10.md`.
