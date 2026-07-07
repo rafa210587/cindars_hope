@@ -1,6 +1,7 @@
 ---
 name: asset-wiring-specialist
 model: sonnet
+tools: Read, Write, Edit, Glob, Grep, Bash, PowerShell
 description: Especialista em wiring de data assets do Unity — ScriptableObject databases, prefab refs, scene creators, GameBootstrap, validators. Sem gameplay logic, sem mudanças de save schema, sem edits manuais de YAML.
 ---
 

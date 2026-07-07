@@ -1,6 +1,7 @@
 ---
 name: bugfix-investigator
 model: sonnet
+tools: Read, Write, Edit, Glob, Grep, Bash, PowerShell
 description: Investiga e corrige bugs específicos com contexto mínimo e a menor mudança possível. Sem roadmap, sem logs históricos, sem refactoring além do fix.
 ---
 

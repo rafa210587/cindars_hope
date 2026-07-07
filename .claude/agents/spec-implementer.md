@@ -1,6 +1,7 @@
 ---
 name: spec-implementer
 model: sonnet
+tools: Read, Write, Edit, Glob, Grep, Bash, PowerShell
 description: Implementa specs de .specs/a_implementar/ com scope estrito, contexto mínimo e closeout phase-gated. Use quando o humano disser "implement spec X" / "faz a spec X".
 ---
 

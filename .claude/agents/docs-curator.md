@@ -1,6 +1,7 @@
 ---
 name: docs-curator
 model: sonnet
+tools: Read, Write, Edit, Glob, Grep, Bash, PowerShell
 description: Gerencia a governança de documentação, planejamento de arquivamento, delete candidates e manutenção de índices. Nunca edita runtime code (Assets/**); só docs.
 ---
 
