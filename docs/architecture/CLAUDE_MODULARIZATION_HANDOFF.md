@@ -1,5 +1,22 @@
 # Prompt de Continuação para Claude — Rework Modular
 
+## 2026-07-07 — NpcShopController special identity policy v16
+
+- Spec implementada: `.specs/implementados/spec_arch_npcshop_special_identity_policy_v16.md`.
+- Objetivo: executar mais um recorte seguro da fase `NpcShopController`, sem alterar gameplay,
+  saves, cenas, prefabs, IDs, horários, diálogos, preços ou quantidades.
+- Mudança:
+  - criado `NpcSpecialIdentityPolicy`;
+  - `NpcShopController.IsThalindra` e `NpcShopController.IsBrumdar` delegam para a policy;
+  - preservadas comparações por `NpcId` e fallback por `DisplayName`, case-insensitive.
+- Gates:
+  - `dotnet build .\CindarsHope.Runtime.csproj`: exit 0, 0 warnings, 0 errors.
+  - `tools/unity/Invoke-UnityGeneratedProjectsBuild.ps1`: exit 0, 7/7 projetos, 0 warnings, 0 errors.
+  - `tools/unity/RunUnityEditModeTests.ps1`: exit 0, 2747/2747 PASS,
+    `TestResults/npcshop-special-identity-policy-editmode.xml`.
+- Próximos recortes do `NpcShopController` ainda pendentes: diálogo, gifting, quest bridge,
+  transaction facade e schedule/presentation adapter.
+
 ## 2026-07-07 — NpcShopController choice UI adapter v15
 
 - Spec implementada: `.specs/implementados/spec_arch_npcshop_choice_ui_adapter_v15.md`.

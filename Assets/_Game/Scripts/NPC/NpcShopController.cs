@@ -247,12 +247,7 @@ namespace CindarsHope.NPC
 
         private bool IsThalindra()
         {
-            if (_npcData == null) return false;
-            if (!string.IsNullOrEmpty(_npcData.NpcId) &&
-                _npcData.NpcId.Equals("npc_thalindra", System.StringComparison.OrdinalIgnoreCase))
-                return true;
-            return !string.IsNullOrEmpty(_npcData.DisplayName) &&
-                   _npcData.DisplayName.IndexOf("Thalindra", System.StringComparison.OrdinalIgnoreCase) >= 0;
+            return NpcSpecialIdentityPolicy.IsThalindra(_npcData);
         }
 
         private void ShowThalindraQuestShopDialogue()
@@ -437,12 +432,7 @@ namespace CindarsHope.NPC
 
         private bool IsBrumdar()
         {
-            if (_npcData == null) return false;
-            if (!string.IsNullOrEmpty(_npcData.NpcId) &&
-                _npcData.NpcId.Equals("npc_brumdar", System.StringComparison.OrdinalIgnoreCase))
-                return true;
-            return !string.IsNullOrEmpty(_npcData.DisplayName) &&
-                   _npcData.DisplayName.IndexOf("Brumdar", System.StringComparison.OrdinalIgnoreCase) >= 0;
+            return NpcSpecialIdentityPolicy.IsBrumdar(_npcData);
         }
 
         // ─── fable_19: opção de serviço civic (Tovin/Mara) ───────────────────────────────────────
