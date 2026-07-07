@@ -1,7 +1,7 @@
 using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
-using CindarsHope.Locations;
+using CindarsHope.Core.Respawn;
 using CindarsHope.SceneManagement;
 using CindarsHope.World.Scenes;
 using UnityEngine;
@@ -19,10 +19,9 @@ namespace CindarsHope.Player.Death
     ///   o respawn ali. Anti-softlock: se mesmo apos o load nao houver Fonte, restaura o HP cheio
     ///   no lugar para o jogador nunca ficar preso morto.
     ///
-    /// Nasce sozinho via self-bootstrap estatico (idiom *RuntimeBootstrap do projeto): GameObject
-    /// DontDestroyOnLoad + singleton guard. FindAnyObjectByType<AnyaFountain> aqui e wiring de SETUP
-    /// do fluxo de respawn (re-resolve um objeto POR CENA apos load), NAO comunicacao de gameplay —
-    /// e o mesmo idiom ja usado pelo DeathSystemBootstrap original.
+        /// Nasce sozinho via self-bootstrap estatico (idiom *RuntimeBootstrap do projeto): GameObject
+        /// DontDestroyOnLoad + singleton guard. Re-resolve a âncora de respawn da Fonte por contrato
+        /// apos load; isso e wiring de SETUP do fluxo de respawn, NAO comunicacao de gameplay.
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class AnyaFountainRespawnFlow : MonoBehaviour
@@ -79,7 +78,7 @@ namespace CindarsHope.Player.Death
         /// </summary>
         public void Respawn()
         {
-            var fountain = Object.FindAnyObjectByType<AnyaFountain>();
+            var fountain = FindActiveFountainRespawnPoint();
             if (fountain != null && fountain.RespawnPoint != null)
             {
                 CompleteRespawnAtFountain(fountain);
@@ -115,7 +114,7 @@ namespace CindarsHope.Player.Death
 
             _awaitingFountainScene = false;
 
-            var fountain = Object.FindAnyObjectByType<AnyaFountain>();
+            var fountain = FindActiveFountainRespawnPoint();
             if (fountain != null && fountain.RespawnPoint != null)
             {
                 CompleteRespawnAtFountain(fountain);
@@ -128,7 +127,7 @@ namespace CindarsHope.Player.Death
             ReviveInPlaceFallback();
         }
 
-        private void CompleteRespawnAtFountain(AnyaFountain fountain)
+        private void CompleteRespawnAtFountain(IAnyaFountainRespawnPoint fountain)
         {
             var bootstrap = GameBootstrap.Instance;
             var playerManager = bootstrap != null ? bootstrap.PlayerManager : null;
@@ -146,6 +145,20 @@ namespace CindarsHope.Player.Death
 
             respawnService.RespawnAtAnyaFountain();
             Debug.Log("[AnyaFountainRespawnFlow] Jogador respawnado na Fonte da Anya.");
+        }
+
+        private static IAnyaFountainRespawnPoint FindActiveFountainRespawnPoint()
+        {
+            var behaviours = Object.FindObjectsByType<MonoBehaviour>();
+            for (var i = 0; i < behaviours.Length; i++)
+            {
+                if (behaviours[i] is IAnyaFountainRespawnPoint fountain && fountain.RespawnPoint != null)
+                {
+                    return fountain;
+                }
+            }
+
+            return null;
         }
 
         private static void ReviveInPlaceFallback()

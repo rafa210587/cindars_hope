@@ -1,9 +1,10 @@
+using CindarsHope.Core.Respawn;
 using UnityEngine;
 
 namespace CindarsHope.Locations
 {
     [DisallowMultipleComponent]
-    public class AnyaFountain : MonoBehaviour
+    public class AnyaFountain : MonoBehaviour, IAnyaFountainRespawnPoint
     {
         public string FountainId = "anya_fountain_farm";
         public Transform RespawnPoint { get; private set; }

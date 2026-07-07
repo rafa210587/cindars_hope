@@ -1,5 +1,27 @@
 # Prompt de Continuação para Claude — Rework Modular
 
+## 2026-07-07 — Locations/Player cycle reduction v7
+
+- Spec-filha implementada: `.specs/implementados/spec_arch_locations_player_cycle_reduction_v7.md`.
+- Objetivo: remover o par mútuo `Locations|Player` sem alterar gameplay, saves, cenas, prefabs,
+  IDs, balanceamento ou fluxo de respawn.
+- Mudança:
+  - Criado `IAnyaFountainRespawnPoint` em `CindarsHope.Core.Respawn`.
+  - `AnyaFountain` implementa o contrato e preserva o mesmo `RespawnPoint`.
+  - `AnyaFountainRespawnFlow` deixou de importar `CindarsHope.Locations` e resolve a âncora ativa
+    pelo contrato.
+  - `CindarsHope.Runtime.csproj` inclui o novo arquivo runtime.
+- Snapshot:
+  - antes: `MutualModulePairs=44`, `RuntimeModuleEdges=233`;
+  - depois: `MutualModulePairs=43`, `RuntimeModuleEdges=232`;
+  - `Locations|Player` removido; nenhum par novo apareceu.
+- Gates:
+  - `tools/architecture/Get-ModularizationDependencySnapshot.ps1`: exit 0.
+  - `tools/unity/Invoke-UnityGeneratedProjectsBuild.ps1`: exit 0, 7/7 projetos, 0 warnings, 0 errors.
+  - `tools/unity/RunUnityEditModeTests.ps1`: exit 0, 2747/2747 PASS,
+    `TestResults/modularization-locations-player-editmode.xml`.
+- Ainda não declarar modularização ampla concluída: restam 43 pares mútuos para specs-filhas.
+
 ## 2026-07-07 — Fonte/MainProgression cycle reduction v6
 
 - Spec-filha implementada: `.specs/implementados/spec_arch_fonte_mainprogression_cycle_reduction_v6.md`.
