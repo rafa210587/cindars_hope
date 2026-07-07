@@ -1,5 +1,24 @@
 # Prompt de Continuação para Claude — Rework Modular
 
+## 2026-07-07 — Craft/Save cycle reduction v8
+
+- Spec-filha implementada: `.specs/implementados/spec_arch_craft_save_cycle_reduction_v8.md`.
+- Objetivo: remover o par mútuo `Craft|Save` sem alterar gameplay, saves, cenas, prefabs,
+  IDs, balanceamento ou schema.
+- Mudança:
+  - Removido `using CindarsHope.Save` morto de `CraftingStation.cs`.
+  - Os DTOs de crafting continuam no domínio `Craft`; nenhum tipo/campo foi movido ou renomeado.
+- Snapshot:
+  - antes: `MutualModulePairs=43`, `RuntimeModuleEdges=232`;
+  - depois: `MutualModulePairs=42`, `RuntimeModuleEdges=231`;
+  - `Craft|Save` removido; nenhum par novo apareceu.
+- Gates:
+  - `tools/architecture/Get-ModularizationDependencySnapshot.ps1`: exit 0.
+  - `tools/unity/Invoke-UnityGeneratedProjectsBuild.ps1`: exit 0, 7/7 projetos, 0 warnings, 0 errors.
+  - `tools/unity/RunUnityEditModeTests.ps1`: exit 0, 2747/2747 PASS,
+    `TestResults/modularization-craft-save-editmode.xml`.
+- Ainda não declarar modularização ampla concluída: restam 42 pares mútuos para specs-filhas.
+
 ## 2026-07-07 — Locations/Player cycle reduction v7
 
 - Spec-filha implementada: `.specs/implementados/spec_arch_locations_player_cycle_reduction_v7.md`.

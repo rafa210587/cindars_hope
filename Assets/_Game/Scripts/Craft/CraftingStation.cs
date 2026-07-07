@@ -4,7 +4,6 @@ using CindarsHope.Core.Events;
 using CindarsHope.Craft.Data;
 using CindarsHope.Inventory;
 using CindarsHope.Player;
-using CindarsHope.Save;
 
 namespace CindarsHope.Craft
 {
