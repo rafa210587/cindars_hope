@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
-using CindarsHope.Farm;
+using CindarsHope.Gameplay.Input;
 using UnityEngine;
 
 namespace CindarsHope.Interaction
@@ -77,7 +77,7 @@ namespace CindarsHope.Interaction
 
         private void Update()
         {
-            if (FarmPlot.IsAnyActionMenuOpen)
+            if (GameplayInputBlocker.IsBlockedBy(GameplayInputBlockReason.FarmActionMenu))
             {
                 PublishPromptIfChanged();
                 return;
