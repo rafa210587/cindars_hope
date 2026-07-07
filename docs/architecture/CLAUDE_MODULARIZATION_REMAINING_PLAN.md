@@ -304,6 +304,9 @@ Reduzir `NpcShopController` por extração de serviços/collaborators sem mudar 
 
 Recorte já executado:
 
+- [x] `NpcShopChoiceUiAdapter`: conversão de escolhas de domínio para `DialogueChoice` saiu do controller.
+  - Spec: `spec_arch_npcshop_choice_ui_adapter_v15.md`.
+  - Gates usados: build 7/7, EditMode 2747/2747.
 - [x] `NpcShopServiceChoiceBuilder`: montagem de opções de serviços únicos saiu do controller.
   - Spec: `spec_arch_npcshop_service_choice_builder_v14.md`.
   - Gates usados: build 7/7, EditMode 2747/2747.

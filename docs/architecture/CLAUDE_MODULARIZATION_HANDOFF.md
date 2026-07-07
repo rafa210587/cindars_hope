@@ -1,5 +1,23 @@
 # Prompt de Continuação para Claude — Rework Modular
 
+## 2026-07-07 — NpcShopController choice UI adapter v15
+
+- Spec implementada: `.specs/implementados/spec_arch_npcshop_choice_ui_adapter_v15.md`.
+- Objetivo: executar mais um recorte seguro da fase `NpcShopController`, sem alterar gameplay,
+  saves, cenas, prefabs, IDs, horários, diálogos, preços ou quantidades.
+- Mudança:
+  - criado `NpcShopChoiceUiAdapter` em `CindarsHope.UI.Dialogue`;
+  - `NpcShopController` usa `NpcShopChoiceUiAdapter.ToUiChoices`;
+  - método privado `ToUiChoices` foi removido do controller;
+  - labels e choice IDs são preservados.
+- Gates:
+  - `dotnet build .\CindarsHope.Runtime.csproj`: exit 0, 0 warnings, 0 errors.
+  - `tools/unity/Invoke-UnityGeneratedProjectsBuild.ps1`: exit 0, 7/7 projetos, 0 warnings, 0 errors.
+  - `tools/unity/RunUnityEditModeTests.ps1`: exit 0, 2747/2747 PASS,
+    `TestResults/npcshop-choice-ui-adapter-editmode.xml`.
+- Próximos recortes do `NpcShopController` ainda pendentes: diálogo, gifting, quest bridge,
+  transaction facade e schedule/presentation adapter.
+
 ## 2026-07-07 — NpcShopController service choice builder v14
 
 - Spec implementada: `.specs/implementados/spec_arch_npcshop_service_choice_builder_v14.md`.

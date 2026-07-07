@@ -268,7 +268,7 @@ namespace CindarsHope.NPC
                 service != null && service.GetQuestState(ThalindraQuestId) != null,
                 service != null && service.CanTurnIn(ThalindraQuestId));
 
-            var choices = ToUiChoices(NpcShopDialogueChoicePolicy.BuildThalindraChoices(
+            var choices = NpcShopChoiceUiAdapter.ToUiChoices(NpcShopDialogueChoicePolicy.BuildThalindraChoices(
                 questDecision,
                 BuildNpcServiceChoices(),
                 UnityEngine.Debug.isDebugBuild));
@@ -426,7 +426,7 @@ namespace CindarsHope.NPC
             _dialogueModal.OnClose += HandleTreeDialogueClosed;
 
             TryGetCityServiceChoice(out var serviceChoice);
-            var choices = ToUiChoices(NpcShopDialogueChoicePolicy.BuildRootChoices(
+            var choices = NpcShopChoiceUiAdapter.ToUiChoices(NpcShopDialogueChoicePolicy.BuildRootChoices(
                 IsBrumdar() && CindarsHope.Economy.TemperingForgeAccess.IsGateOpen(),
                 serviceChoice != null ? serviceChoice.Label : null,
                 BuildNpcServiceChoices(),
@@ -509,14 +509,6 @@ namespace CindarsHope.NPC
         private List<NpcShopServiceChoiceDefinition> BuildNpcServiceChoices()
         {
             return NpcShopServiceChoiceBuilder.Build(_npcData != null ? _npcData.NpcId : null);
-        }
-
-        private static List<UiDialogueChoice> ToUiChoices(IReadOnlyList<NpcShopChoiceDefinition> definitions)
-        {
-            var choices = new List<UiDialogueChoice>(definitions.Count);
-            for (var i = 0; i < definitions.Count; i++)
-                choices.Add(new UiDialogueChoice(definitions[i].Label, definitions[i].ChoiceId));
-            return choices;
         }
 
         /// <summary>
