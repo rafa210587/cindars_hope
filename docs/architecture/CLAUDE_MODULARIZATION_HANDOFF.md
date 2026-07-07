@@ -1,5 +1,24 @@
 # Prompt de Continuação para Claude — Rework Modular
 
+## 2026-07-07 — NpcShopController service choice builder v14
+
+- Spec implementada: `.specs/implementados/spec_arch_npcshop_service_choice_builder_v14.md`.
+- Objetivo: executar mais um recorte seguro da fase `NpcShopController`, sem alterar gameplay,
+  saves, cenas, prefabs, IDs, horários, diálogos, preços, quantidades ou execução de serviços.
+- Mudança:
+  - criado `NpcShopServiceChoiceBuilder`;
+  - `NpcShopController.BuildNpcServiceChoices` delega para o builder;
+  - preservado comportamento anterior: uma opção por serviço único, serviços gated continuam
+    aparecendo, `ServiceId` vazio continua ignorado e labels continuam vindo de
+    `NpcServiceAccess.BuildOptions`.
+- Gates:
+  - `dotnet build .\CindarsHope.Runtime.csproj`: exit 0, 0 warnings, 0 errors.
+  - `tools/unity/Invoke-UnityGeneratedProjectsBuild.ps1`: exit 0, 7/7 projetos, 0 warnings, 0 errors.
+  - `tools/unity/RunUnityEditModeTests.ps1`: exit 0, 2747/2747 PASS,
+    `TestResults/npcshop-service-choice-builder-editmode.xml`.
+- Próximos recortes do `NpcShopController` ainda pendentes: diálogo, gifting, quest bridge,
+  transaction facade e schedule/presentation adapter.
+
 ## 2026-07-07 — NpcShopController initialization guard v13
 
 - Spec implementada: `.specs/implementados/spec_arch_npcshop_initialization_guard_v13.md`.

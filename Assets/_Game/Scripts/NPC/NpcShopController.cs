@@ -508,19 +508,7 @@ namespace CindarsHope.NPC
         /// </summary>
         private List<NpcShopServiceChoiceDefinition> BuildNpcServiceChoices()
         {
-            var choices = new List<NpcShopServiceChoiceDefinition>();
-            var npcId = _npcData != null ? _npcData.NpcId : null;
-            if (!CindarsHope.NPC.Services.NpcServiceAccess.HasServices(npcId))
-                return choices;
-
-            var options = CindarsHope.NPC.Services.NpcServiceAccess.BuildOptions(npcId);
-            foreach (var option in options)
-            {
-                if (string.IsNullOrEmpty(option.ServiceId)) continue;
-                choices.Add(new NpcShopServiceChoiceDefinition(option.Label, option.ServiceId));
-            }
-
-            return choices;
+            return NpcShopServiceChoiceBuilder.Build(_npcData != null ? _npcData.NpcId : null);
         }
 
         private static List<UiDialogueChoice> ToUiChoices(IReadOnlyList<NpcShopChoiceDefinition> definitions)

@@ -304,8 +304,11 @@ Reduzir `NpcShopController` por extração de serviços/collaborators sem mudar 
 
 Recorte já executado:
 
+- [x] `NpcShopServiceChoiceBuilder`: montagem de opções de serviços únicos saiu do controller.
+  - Spec: `spec_arch_npcshop_service_choice_builder_v14.md`.
+  - Gates usados: build 7/7, EditMode 2747/2747.
 - [x] `NpcShopInitializationGuard`: validação de referências obrigatórias saiu do controller.
-  - Commit/spec esperados após commit local: `spec_arch_npcshop_initialization_guard_v13.md`.
+  - Spec: `spec_arch_npcshop_initialization_guard_v13.md`.
   - Gates usados: build 7/7, EditMode 2747/2747.
 
 Extrair em ordem:
