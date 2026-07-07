@@ -63,6 +63,6 @@ prefabs, preços, quantidades, diálogos ou balanceamento.
 - [x] Lote 2 — catálogos tipados;
 - [x] Lote 3 — NpcShopController;
 - [x] Lote 4 — EnemyBrain;
-- [ ] Lote 5 — bootstrap ownership/installers;
+- [x] Lote 5 — bootstrap ownership/installers (49→4 `RuntimeInitializeOnLoadMethod`; installers de domínio/player/apresentação/audio no `GameRuntimeCompositionRoot`; os 4 restantes ficam por design/spec própria — ver `docs/architecture/RUNTIME_BOOTSTRAP_OWNERSHIP_V5.md`; verificado build 7/7, EditMode 2747/2747, PlayMode 2/2);
 - [ ] Lote 6 — ciclos residuais selecionados;
 - [ ] Lote 7 — validação e closeout.

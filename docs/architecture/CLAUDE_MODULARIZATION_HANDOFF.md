@@ -1,5 +1,27 @@
 # Prompt de Continuação para Claude — Rework Modular
 
+## 2026-07-06 — V5 Batch 6: diagnóstico NPC (×1), feito no loop principal
+
+- Spec ativa: `.specs/a_implementar/spec_arch_modularization_residual_v5.md`.
+- Migrado `NpcDialogueExpansionBootstrap` de `[RuntimeInitializeOnLoadMethod(AfterSceneLoad)]` para
+  `NpcDialogueExpansionBootstrap.Install()`, chamado por `NpcRuntimeInstaller` no `Start()` do
+  `GameRuntimeCompositionRoot`.
+- O bootstrap é diagnóstico sem estado: não cria `GameObject`, não assina eventos, não altera cena,
+  assets, save ou gameplay; apenas loga cobertura de diálogo/roster e warning se a cobertura mínima
+  não for atingida. Mudança feita só para ownership centralizado de chamada.
+- Contagem `[RuntimeInitializeOnLoadMethod]`: 4 → **3**. Restam apenas:
+  `GameRuntimeCompositionRoot.Bootstrap` (`BeforeSceneLoad`, manter), `SceneTransitionRouter`
+  (`SubsystemRegistration`, manter por design) e `CollisionDebugOverlayBootstrap` (debug opt-in,
+  só mexer com spec própria de define/config).
+- Arquivos alterados neste batch: `Assets/_Game/Scripts/NPC/NpcDialogueExpansionBootstrap.cs`,
+  `Assets/_Game/Scripts/Composition/DomainRuntimeInstallers.cs`,
+  `docs/architecture/RUNTIME_BOOTSTRAP_OWNERSHIP_V5.md` e este handoff.
+- Validação feita neste batch: contagem por grep antes/depois e inspeção do código. Ainda não rodei
+  Unity/EditMode/PlayMode depois deste batch por limite de contexto; próximo executor deve rodar ao
+  menos build das assemblies + EditMode/PlayMode de composição antes de consolidar/pushar.
+- Atenção: a working tree segue misturada com mudanças concorrentes de Cave/docs/agentes/arte. Não
+  stagear/commitar esses arquivos como parte deste batch sem autorização explícita.
+
 ## 2026-07-06 — V5 Batch 5: audio (×2), feito e verificado no loop principal
 
 - Spec ativa: `.specs/a_implementar/spec_arch_modularization_residual_v5.md`.

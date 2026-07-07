@@ -16,13 +16,14 @@ Data da auditoria: 2026-07-06.
   (`IntroSequenceController`, `CharacterEquipmentPanelController`, `DeathScreenCanvasController`,
   `GameplayHudBootstrap`, `InventoryPanelController`, `SkillTreeGameplayPanelController`,
   `SceneFadeOverlayBootstrap`);
-- migrados neste lote (batch 5): 2 — Audio (`AudioManager`, `SfxEventBridge`);
-- estado atual: 4 atributos reais de `[RuntimeInitializeOnLoadMethod]` em
+- migrados no batch 5: 2 — Audio (`AudioManager`, `SfxEventBridge`);
+- migrado no batch 6: 1 — diagnóstico NPC (`NpcDialogueExpansionBootstrap`);
+- estado atual: 3 atributos reais de `[RuntimeInitializeOnLoadMethod]` em
   `Assets/_Game/Scripts/**` (medido, não estimado);
 - restam: composition root (`GameRuntimeCompositionRoot.Bootstrap`, `BeforeSceneLoad` — nunca migra),
-  reset de subsistema (`SceneTransitionRouter`, `SubsystemRegistration` — permanece por design),
-  debug (`CollisionDebugOverlayBootstrap`) e diagnóstico (`NpcDialogueExpansionBootstrap`) — os dois
-  últimos só migram sob spec própria de define/config, não pelo fluxo de composition;
+  reset de subsistema (`SceneTransitionRouter`, `SubsystemRegistration` — permanece por design) e
+  debug (`CollisionDebugOverlayBootstrap`) — este último só migra sob spec própria de define/config,
+  não pelo fluxo de composition;
 - nenhuma migração restante está autorizada sem preservar o momento de instalação, fallback de cena,
   ownership e teardown descritos abaixo.
 
@@ -33,7 +34,7 @@ Data da auditoria: 2026-07-06.
 | Composition root | 1 | autoridade central; manter `BeforeSceneLoad` |
 | Reset de subsistema | 1 | manter em `SubsystemRegistration`; não é serviço persistente |
 | Debug opt-in | 1 | separar por define/config antes de migrar |
-| Diagnóstico sem estado | 1 | remover de runtime ou mover para validator em spec própria |
+| Diagnóstico sem estado | 0 (migrado no batch 6) | — |
 | UI/cena | 0 (migrados no batch 4) | — |
 | Componentes anexados ao player | 0 (migrados no batch 3) | — |
 | Serviços persistentes de domínio | 0 (Audio migrado no batch 5) | — |
@@ -42,10 +43,13 @@ Data da auditoria: 2026-07-06.
 
 - `World/Scenes/SceneTransitionRouter.cs`.
 
-### Debug e diagnóstico
+### Debug
 
 - debug: `DebugTools/CollisionDebugOverlayBootstrap.cs`;
-- diagnóstico: `NPC/NpcDialogueExpansionBootstrap.cs`.
+
+### Diagnóstico sem estado (migrado no batch 6)
+
+- `NPC/NpcDialogueExpansionBootstrap.cs`.
 
 ### UI/cena (migrados no batch 4)
 
@@ -142,11 +146,18 @@ Subscribe/Unsubscribe simétrico do bridge) permanece intacta. Verificado: build
 2747/2747, PlayMode 2/2; Player.log mostra um único AudioListener criado pelo AudioManager quando a
 cena não tem nenhum — comportamento idêntico ao auto-bootstrap original.
 
+## Migração batch 6 concluída
+
+`NpcDialogueExpansionBootstrap` deixou de usar `[RuntimeInitializeOnLoadMethod(AfterSceneLoad)]` e
+passou a expor `Install()`, chamado por `NpcRuntimeInstaller` dentro do `Start()` do
+`GameRuntimeCompositionRoot`. O bootstrap não cria GameObject, não assina eventos e não depende de
+cena; ele apenas registra logs/avisos de cobertura de diálogo e roster canônico. Por isso a mudança é
+somente de ownership de chamada, sem alteração de gameplay, dados, assets, save ou cena.
+
 ## Próxima ordem segura
 
-1. debug/diagnóstico (`CollisionDebugOverlayBootstrap`, `NpcDialogueExpansionBootstrap`) por
-   define/config, fora do fluxo principal de composition — exigem spec própria, não são migração
-   mecânica;
+1. debug (`CollisionDebugOverlayBootstrap`) por define/config, fora do fluxo principal de composition
+   — exige spec própria, não é migração mecânica;
 2. root (`GameRuntimeCompositionRoot`) e `SceneTransitionRouter` permanecem por design.
 
 Nota (batch 5): a hipótese anterior de que Audio exigiria um estágio `AfterSceneLoad` NOVO no root
