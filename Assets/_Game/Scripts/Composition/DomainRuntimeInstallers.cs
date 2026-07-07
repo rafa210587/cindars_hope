@@ -9,6 +9,7 @@ using CindarsHope.City.Services;
 using CindarsHope.Narrative;
 using CindarsHope.NPC.Friendship;
 using CindarsHope.NPC.Gifting;
+using CindarsHope.NPC;
 using CindarsHope.NPC.Services;
 using CindarsHope.NPC.Schedule;
 using CindarsHope.Quests.Runtime;
@@ -84,6 +85,7 @@ namespace CindarsHope.Composition
             NpcServiceRuntimeBootstrap.Install(owner);
             CityServiceRuntimeBootstrap.Install(owner);
             NpcScheduleRuntimeBootstrap.Install(owner);
+            NpcDialogueExpansionBootstrap.Install();
         }
     }
 

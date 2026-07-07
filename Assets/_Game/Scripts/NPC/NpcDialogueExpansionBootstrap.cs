@@ -9,8 +9,7 @@ namespace CindarsHope.NPC
     /// </summary>
     public static class NpcDialogueExpansionBootstrap
     {
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void Initialize()
+        public static void Install()
         {
             var total = NpcDialogueSetRegistry.TotalNpcsWithDialogue;
             var withTenPlus = NpcDialogueSetRegistry.NpcsWithAtLeast10Nodes;
