@@ -1,7 +1,7 @@
-using CindarsHope.Farm.Data;
+using CindarsHope.Core.Data;
 using UnityEngine;
 
-namespace CindarsHope.Core.Data
+namespace CindarsHope.Farm.Data
 {
     [CreateAssetMenu(fileName = "SeedDatabase", menuName = "CindarsHope/Database/Seeds")]
     public class SeedDatabaseSO : DataRegistrySO<SeedDataSO>

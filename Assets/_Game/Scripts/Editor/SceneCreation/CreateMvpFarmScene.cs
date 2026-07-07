@@ -11,6 +11,7 @@ using CindarsHope.Enemy;
 using CindarsHope.Equipment;
 using CindarsHope.Farm;
 using CindarsHope.Farm.Animals;
+using CindarsHope.Farm.Data;
 using CindarsHope.Farm.Integration;
 // CindarsHope.Farm.Lots removido em 2026-06-26: geracao de lotes fable_41 na cena eliminada (spec_farm_scene_relayout_v4).
 // FarmLotService / FarmLotsSectionProvider / FarmLotCatalog permanecem como sistemas de save/runtime.
