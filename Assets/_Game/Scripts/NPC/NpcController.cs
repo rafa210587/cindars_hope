@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
 using CindarsHope.Interaction;
+using CindarsHope.NPC.Events;
 using CindarsHope.NPC.Schedule;
 using CindarsHope.Quests.Runtime;
 using CindarsHope.UI.Dialogue;

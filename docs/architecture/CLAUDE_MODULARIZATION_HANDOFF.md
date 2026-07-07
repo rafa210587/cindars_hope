@@ -1,5 +1,28 @@
 # Prompt de Continuação para Claude — Rework Modular
 
+## 2026-07-07 — Core/NPC cycle reduction v12
+
+- Spec-filha implementada: `.specs/implementados/spec_arch_core_npc_cycle_reduction_v12.md`.
+- Objetivo: remover o par mútuo `Core|NPC` sem alterar gameplay, saves, cenas, prefabs,
+  IDs, balanceamento ou payloads de evento.
+- Mudança:
+  - `NpcExpressionOverrideEvent`, `NpcGiftReactionEvent` e os eventos de romance foram movidos de
+    `CindarsHope.Core.Events` para `CindarsHope.NPC.Events`.
+  - Os `.meta` foram movidos junto com os `.cs` para preservar GUID.
+  - Consumidores em NPC, Quests, UI e testes importam `CindarsHope.NPC.Events`.
+  - Payloads, nomes de eventos, semântica de publicação/subscription e eventos observáveis foram
+    preservados.
+- Snapshot:
+  - antes: `MutualModulePairs=39`, `RuntimeModuleEdges=228`;
+  - depois: `MutualModulePairs=38`, `RuntimeModuleEdges=227`;
+  - `Core|NPC` removido; nenhum par novo apareceu.
+- Gates:
+  - `tools/architecture/Get-ModularizationDependencySnapshot.ps1`: exit 0.
+  - `tools/unity/Invoke-UnityGeneratedProjectsBuild.ps1`: exit 0, 7/7 projetos, 0 warnings, 0 errors.
+  - `tools/unity/RunUnityEditModeTests.ps1`: exit 0, 2747/2747 PASS,
+    `TestResults/modularization-core-npc-editmode.xml`.
+- Ainda não declarar modularização ampla concluída: restam 38 pares mútuos para specs-filhas.
+
 ## 2026-07-07 — Core/World cycle reduction v11
 
 - Spec-filha implementada: `.specs/implementados/spec_arch_core_world_cycle_reduction_v11.md`.

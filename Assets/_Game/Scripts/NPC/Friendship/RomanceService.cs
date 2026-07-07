@@ -1,6 +1,7 @@
 using CindarsHope.City.Services;
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
+using CindarsHope.NPC.Events;
 using CindarsHope.Quests.NpcChains;
 using UnityEngine;
 

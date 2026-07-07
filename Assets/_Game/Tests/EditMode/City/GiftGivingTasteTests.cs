@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using CindarsHope.Items;
 using CindarsHope.NPC;
+using CindarsHope.NPC.Events;
 using CindarsHope.NPC.Friendship;
 using CindarsHope.NPC.Gifting;
 
@@ -358,7 +359,7 @@ namespace CindarsHope.Tests.EditMode.City
         [Test]
         public void NpcGiftReactionEvent_CarriesPayload()
         {
-            var evt = new CindarsHope.Core.Events.NpcGiftReactionEvent(
+            var evt = new NpcGiftReactionEvent(
                 "npc_x", "item_y", GiftTaste.Loved, 12);
             Assert.AreEqual("npc_x", evt.NpcId);
             Assert.AreEqual("item_y", evt.ItemId);

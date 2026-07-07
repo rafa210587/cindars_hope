@@ -1,6 +1,6 @@
 using CindarsHope.NPC.Friendship;
 
-namespace CindarsHope.Core.Events
+namespace CindarsHope.NPC.Events
 {
     /// <summary>
     /// fable_46 — evento aditivo de mudança de estágio de romance (confissão e cada avanço posterior).

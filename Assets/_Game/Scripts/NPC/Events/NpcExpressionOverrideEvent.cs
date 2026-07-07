@@ -1,6 +1,6 @@
 using CindarsHope.NPC;
 
-namespace CindarsHope.Core.Events
+namespace CindarsHope.NPC.Events
 {
     /// <summary>
     /// Publicado quando um no ou uma escolha (resposta) de dialogo forca uma feicao especifica do

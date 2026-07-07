@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
+using CindarsHope.NPC.Events;
 using CindarsHope.NPC.Friendship;
 using CindarsHope.Quests.Runtime;
 using CindarsHope.Quests.Save;

@@ -7,6 +7,7 @@ using CindarsHope.Core.Events;
 using CindarsHope.Interaction;
 using CindarsHope.Inventory;
 using CindarsHope.Inventory.Data;
+using CindarsHope.NPC.Events;
 using CindarsHope.NPC.Schedule;
 using CindarsHope.Player;
 using CindarsHope.Quests.Runtime;

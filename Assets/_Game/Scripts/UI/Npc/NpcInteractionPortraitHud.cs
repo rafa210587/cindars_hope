@@ -1,6 +1,7 @@
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
 using CindarsHope.NPC;
+using CindarsHope.NPC.Events;
 using CindarsHope.NPC.Friendship;
 using UnityEngine;
 using UnityEngine.UI;

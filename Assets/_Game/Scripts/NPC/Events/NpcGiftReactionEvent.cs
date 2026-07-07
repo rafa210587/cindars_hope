@@ -1,6 +1,6 @@
 using CindarsHope.NPC.Friendship;
 
-namespace CindarsHope.Core.Events
+namespace CindarsHope.NPC.Events
 {
     /// <summary>
     /// fable_72 — feedback do ato de presentear um NPC. Publicado SOMENTE quando o presente é

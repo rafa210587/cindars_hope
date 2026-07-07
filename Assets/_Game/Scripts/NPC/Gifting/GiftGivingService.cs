@@ -3,6 +3,7 @@ using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
 using CindarsHope.Inventory;
 using CindarsHope.Items;
+using CindarsHope.NPC.Events;
 using CindarsHope.NPC.Friendship;
 using UnityEngine;
 
