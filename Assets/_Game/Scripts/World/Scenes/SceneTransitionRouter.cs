@@ -1,6 +1,5 @@
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
-using CindarsHope.SceneManagement;
 using Unity.Profiling;
 using UnityEngine;
 using UnityEngine.SceneManagement;

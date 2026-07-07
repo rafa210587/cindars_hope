@@ -1,4 +1,4 @@
-namespace CindarsHope.SceneManagement
+namespace CindarsHope.World.Scenes
 {
     public static class SceneNames
     {

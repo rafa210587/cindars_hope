@@ -1,6 +1,5 @@
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
-using CindarsHope.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 

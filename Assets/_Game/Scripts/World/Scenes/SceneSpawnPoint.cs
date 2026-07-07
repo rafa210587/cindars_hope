@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace CindarsHope.SceneManagement
+namespace CindarsHope.World.Scenes
 {
     [DisallowMultipleComponent]
     public sealed class SceneSpawnPoint : MonoBehaviour

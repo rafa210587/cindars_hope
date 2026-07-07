@@ -19,6 +19,7 @@ using CindarsHope.Save;
 using CindarsHope.SceneManagement;
 using CindarsHope.Skills;
 using CindarsHope.UI;
+using CindarsHope.World.Scenes;
 using CindarsHope.UI.Dialogue;
 using CindarsHope.UI.Modal;
 using CindarsHope.UI.Shop;

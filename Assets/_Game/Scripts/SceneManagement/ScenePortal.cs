@@ -1,6 +1,7 @@
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
 using CindarsHope.Interaction;
+using CindarsHope.World.Scenes;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 #if UNITY_EDITOR

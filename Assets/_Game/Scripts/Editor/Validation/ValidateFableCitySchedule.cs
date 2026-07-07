@@ -5,6 +5,7 @@ using CindarsHope.NPC;
 using CindarsHope.NPC.Schedule;
 using CindarsHope.SceneManagement;
 using CindarsHope.World;
+using CindarsHope.World.Scenes;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;

@@ -1,5 +1,29 @@
 # Prompt de Continuação para Claude — Rework Modular
 
+## 2026-07-07 — SceneManagement/World cycle reduction v9
+
+- Spec-filha implementada: `.specs/implementados/spec_arch_scene_world_cycle_reduction_v9.md`.
+- Objetivo: remover o par mútuo `SceneManagement|World` sem alterar gameplay, saves, cenas,
+  prefabs, IDs, balanceamento ou fluxo de transição.
+- Mudança:
+  - `SceneNames`, `SceneTransitionState` e o legacy `SceneSpawnPoint` foram movidos para
+    `CindarsHope.World.Scenes`.
+  - Os `.meta` foram movidos junto com os `.cs` para preservar GUID de scripts Unity.
+  - `SceneTransitionRouter`, `SceneId` e `PlayerSpawnResolver` deixaram de importar
+    `CindarsHope.SceneManagement`.
+  - `SceneManagement` continua consumindo `World.Scenes` onde necessário; nenhum ID/campo
+    serializado/save/schema/cena/prefab foi alterado.
+- Snapshot:
+  - antes: `MutualModulePairs=42`, `RuntimeModuleEdges=231`;
+  - depois: `MutualModulePairs=41`, `RuntimeModuleEdges=230`;
+  - `SceneManagement|World` removido; nenhum par novo apareceu.
+- Gates:
+  - `tools/architecture/Get-ModularizationDependencySnapshot.ps1`: exit 0.
+  - `tools/unity/Invoke-UnityGeneratedProjectsBuild.ps1`: exit 0, 7/7 projetos, 0 warnings, 0 errors.
+  - `tools/unity/RunUnityEditModeTests.ps1`: exit 0, 2747/2747 PASS,
+    `TestResults/modularization-scene-world-editmode.xml`.
+- Ainda não declarar modularização ampla concluída: restam 41 pares mútuos para specs-filhas.
+
 ## 2026-07-07 — Craft/Save cycle reduction v8
 
 - Spec-filha implementada: `.specs/implementados/spec_arch_craft_save_cycle_reduction_v8.md`.

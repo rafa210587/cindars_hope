@@ -27,6 +27,7 @@ using CindarsHope.Skills;
 using CindarsHope.UI;
 using CindarsHope.UI.Crafting;
 using CindarsHope.World;
+using CindarsHope.World.Scenes;
 using CindarsHope.World.Data;
 using CindarsHope.World.Scale;
 using UnityEditor;

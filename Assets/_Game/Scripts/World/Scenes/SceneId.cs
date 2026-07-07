@@ -1,8 +1,6 @@
 // Stable scene ID constants for WAVE_INTEGRATION_13.
 // Maps to SceneNames constants for backward compatibility.
 // Do not use these as display labels — they are internal IDs.
-using CindarsHope.SceneManagement;
-
 namespace CindarsHope.World.Scenes
 {
     /// <summary>
