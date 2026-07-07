@@ -54,7 +54,7 @@ namespace CindarsHope.Editor.Cave
                 }
             }
 
-            var seenBandIds = new HashSet<int>();
+            var seenBandProfiles = new Dictionary<int, CaveBiomeArtProfileSO>();
             var emptyFieldProfiles = 0;
 
             foreach (var profile in profiles)
@@ -74,9 +74,22 @@ namespace CindarsHope.Editor.Cave
                     errors.Add($"Profile '{profile.name}': biomeId '{profile.BiomeId}' não existe em CaveBiomeRegistrySO.");
                 }
 
-                if (!seenBandIds.Add(profile.BandId))
+                if (seenBandProfiles.TryGetValue(profile.BandId, out var previousProfile))
                 {
-                    errors.Add($"Profile '{profile.name}': bandId {profile.BandId} duplicado entre profiles (cada banda deve ter exatamente 1).");
+                    if (IsKnownFinaleBandAlias(previousProfile, profile))
+                    {
+                        warnings.Add(
+                            $"Profile '{profile.name}': bandId {profile.BandId} compartilhado com '{previousProfile.name}' " +
+                            "(biome_core/biome_final usam a mesma banda 7 por CaveBandScaling.BandForLevel; o resolver por BandId usa o primeiro profile).");
+                    }
+                    else
+                    {
+                        errors.Add($"Profile '{profile.name}': bandId {profile.BandId} duplicado entre profiles (cada banda deve ter exatamente 1, exceto biome_core/biome_final na banda 7).");
+                    }
+                }
+                else
+                {
+                    seenBandProfiles.Add(profile.BandId, profile);
                 }
 
                 if (IsVisuallyEmpty(profile))
@@ -157,6 +170,29 @@ namespace CindarsHope.Editor.Cave
             {
                 warnings.Add($"Profile '{profile.name}': DecorBlockingSprites vazio apesar de haver pasta de arte ({profile.BiomeId}). Rode CindarsHope/Inicializar Projeto.");
             }
+
+            // spec_cave_decor_composition_runtime (CV03): mesma regra de severidade (WARNING, nunca
+            // ERROR) para os pools por CONTEXTO — ausência é o estado esperado nos biomas 2-8 até terem
+            // arte própria; no bioma 1 (com pasta de arte) sinaliza que o gerador precisa rodar de novo.
+            if (hasArtFolder && profile.CeilingSprites.Count == 0)
+            {
+                warnings.Add($"Profile '{profile.name}': CeilingSprites vazio apesar de haver pasta de arte ({profile.BiomeId}). Rode CindarsHope/Inicializar Projeto.");
+            }
+
+            if (hasArtFolder && profile.WallHugSprites.Count == 0)
+            {
+                warnings.Add($"Profile '{profile.name}': WallHugSprites vazio apesar de haver pasta de arte ({profile.BiomeId}). Rode CindarsHope/Inicializar Projeto.");
+            }
+
+            if (hasArtFolder && profile.FloorClusterSprites.Count == 0)
+            {
+                warnings.Add($"Profile '{profile.name}': FloorClusterSprites vazio apesar de haver pasta de arte ({profile.BiomeId}). Rode CindarsHope/Inicializar Projeto.");
+            }
+
+            if (hasArtFolder && profile.BlockingSprites.Count == 0)
+            {
+                warnings.Add($"Profile '{profile.name}': BlockingSprites (CV03) vazio apesar de haver pasta de arte ({profile.BiomeId}). Rode CindarsHope/Inicializar Projeto.");
+            }
         }
 
         private static bool IsVisuallyEmpty(CaveBiomeArtProfileSO profile)
@@ -174,6 +210,17 @@ namespace CindarsHope.Editor.Cave
                 && profile.FalseChestRevealedSprite == null
                 && profile.ExitDownSprite == null
                 && profile.ExitUpSprite == null;
+        }
+
+        private static bool IsKnownFinaleBandAlias(CaveBiomeArtProfileSO first, CaveBiomeArtProfileSO second)
+        {
+            if (first == null || second == null || first.BandId != 7 || second.BandId != 7)
+            {
+                return false;
+            }
+
+            var ids = new HashSet<string> { first.BiomeId, second.BiomeId };
+            return ids.Contains("biome_core") && ids.Contains("biome_final");
         }
 
         private static List<CaveBiomeArtProfileSO> LoadAllProfiles()

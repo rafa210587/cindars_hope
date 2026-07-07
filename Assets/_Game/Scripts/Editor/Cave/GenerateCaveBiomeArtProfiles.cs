@@ -163,10 +163,11 @@ namespace CindarsHope.Editor.Cave
                 LoadSpriteIfExists($"{folder}/exit_up.png"));
 
             // spec_cave_decor_placement_runtime (CV02): pools de decor ambiental do fable_78, por
-            // Kind (DecorNonBlocking/DecorBlocking) — convenção de nome fixa por bioma (não há ainda
-            // um segundo bioma com props gerados; quando houver, a mesma convenção de arquivo se
-            // aplica em cada pasta de bioma). Ausência de qualquer arquivo = simplesmente não entra
-            // no pool (nunca erro); pool resultante pode ficar vazio (fallback ativo no resolver).
+            // Kind (DecorNonBlocking/DecorBlocking) — DEPRECATED, mantido só para leitura legada.
+            // convenção de nome fixa por bioma (não há ainda um segundo bioma com props gerados; quando
+            // houver, a mesma convenção de arquivo se aplica em cada pasta de bioma). Ausência de
+            // qualquer arquivo = simplesmente não entra no pool (nunca erro); pool resultante pode ficar
+            // vazio (fallback ativo no resolver).
             var decorNonBlocking = new System.Collections.Generic.List<Sprite>();
             AddIfExists(decorNonBlocking, $"{folder}/chunk_mushrooms_giant.png");
             AddIfExists(decorNonBlocking, $"{folder}/chunk_stalactites.png");
@@ -187,6 +188,44 @@ namespace CindarsHope.Editor.Cave
             }
 
             profile.EditorSetDecorSprites(decorNonBlocking.ToArray(), decorBlocking.ToArray());
+
+            // spec_cave_decor_composition_runtime (CV03): pools de decor por CONTEXTO de célula — a
+            // colocação por contexto do CaveEnvironmentElementPlanner precisa que o sprite venha do pool
+            // certo (teto/wall-hug/chão), não mais só por Kind. Reclassificação do bioma 1 (seção 11):
+            //   Ceiling    = chunk_stalactites (única peça que representa algo pendendo do teto).
+            //   WallHug    = prop_mine_cart, chunk_ore_mound, chunk_rubble, rock_ore_0..5 (encostado/na parede).
+            //   FloorCluster = chunk_mushrooms_giant, mushroom_cluster, prop_broken_pickaxe, prop_planks_rail, prop_water_puddle.
+            //   Blocking   = decor que ocupa colisão independente do contexto onde caiu (hoje: chunk_rubble,
+            //                chunk_ore_mound, rock_ore_0..5 — os mesmos itens "pesados" do WallHug, que também
+            //                podem cair em FloorCluster quando bloqueantes).
+            var ceiling = new System.Collections.Generic.List<Sprite>();
+            AddIfExists(ceiling, $"{folder}/chunk_stalactites.png");
+
+            var wallHug = new System.Collections.Generic.List<Sprite>();
+            AddIfExists(wallHug, $"{folder}/prop_mine_cart.png");
+            AddIfExists(wallHug, $"{folder}/chunk_ore_mound.png");
+            AddIfExists(wallHug, $"{folder}/chunk_rubble.png");
+            for (var i = 0; i <= 5; i++)
+            {
+                AddIfExists(wallHug, $"{PropsDir}/rock_ore_{i}.png");
+            }
+
+            var floorCluster = new System.Collections.Generic.List<Sprite>();
+            AddIfExists(floorCluster, $"{folder}/chunk_mushrooms_giant.png");
+            AddIfExists(floorCluster, $"{FoliageDir}/mushroom_cluster.png");
+            AddIfExists(floorCluster, $"{folder}/prop_broken_pickaxe.png");
+            AddIfExists(floorCluster, $"{folder}/prop_planks_rail.png");
+            AddIfExists(floorCluster, $"{folder}/prop_water_puddle.png");
+
+            var blocking = new System.Collections.Generic.List<Sprite>();
+            AddIfExists(blocking, $"{folder}/chunk_rubble.png");
+            AddIfExists(blocking, $"{folder}/chunk_ore_mound.png");
+            for (var i = 0; i <= 5; i++)
+            {
+                AddIfExists(blocking, $"{PropsDir}/rock_ore_{i}.png");
+            }
+
+            profile.EditorSetContextDecorSprites(ceiling.ToArray(), wallHug.ToArray(), floorCluster.ToArray(), blocking.ToArray());
         }
 
         private static void AddIfExists(System.Collections.Generic.List<Sprite> pool, string path)

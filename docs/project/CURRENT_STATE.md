@@ -480,3 +480,27 @@ PROJECT_LOG + CURRENT_STATE conflict → prefer CURRENT_STATE; report mismatch
 - PENDENTE HUMANO (Play Mode): rodar CindarsHope/Inicializar Projeto 1x (preenche pools + reimporta +
   aplica fundo escuro) -> Play na CaveScene. Esperado: sala povoada com props reais, chao lajota,
   paredes escuras, sem buracos cinza. Rule Tile de borda de parede e biomas 2-8 = follow-up.
+
+## 2026-07-06 — CV03 (composicao de decor) BUILD_VALIDATED + nota de modularizacao
+
+- MUDANCA ESTRUTURAL (intencional, confirmada humano): projeto modularizado em asmdefs
+  CindarsHope.Foundation/Runtime/Gameplay/Editor + GameRuntimeCompositionRoot que instala servicos
+  de dominio via *RuntimeInstaller (cave via CaveRuntimeInstaller). Build/validacao agora sobre
+  CindarsHope.Runtime/Editor; Assembly-CSharp segue como fallback. Pilha visual da cave (CV01/CV02/
+  fixes) SOBREVIVEU intacta (CaveRuntimeMaterializer constroi resolver+database+Resources fallback).
+- CV03 (spec_cave_decor_composition_runtime): BUILD_VALIDATED. Colocacao de decor POR CONTEXTO
+  (CeilingHang no topo de parede / WallHug adjacente a parede / FloorCluster em clusters no chao) +
+  densidade de chao reduzida, substituindo o "1 elemento por celula aleatoria" (confete). Pools de arte
+  por contexto no CaveBiomeArtProfileSO. GenerationConfigVersion 4->5 (invalida snapshot legado, regen
+  deterministica). Builds runtime+editor exit 0 (verificado pelo orquestrador); agente rodou 2747/2747
+  EditMode PASS. Report: docs/validation/spec_cave_decor_composition_execution_report.md.
+- Follow-up Codex 2026-07-07: rodou GenerateCaveBiomeArtProfiles em batchmode (8 profiles atualizados),
+  ValidateCaveBiomeArtProfiles PASS apos ajustar o alias conhecido biome_core + biome_final no band 7
+  (8 biomas declarados / 7 bands efetivos), ValidateCaveEcosystem PASS Errors=0 Warnings=0, build 7/7
+  PASS e EditMode full 2747/2747 PASS.
+- PENDENTE HUMANO: Play Mode visual. Esperado: estalactite no teto, cena de mineracao encostada na parede,
+  props de chao agrupados, menos confete. Rodar Inicializar/Validar Projeto no Editor é opcional como
+  checagem de idempotencia local antes do teste visual; generator/validators ja foram executados em batchmode.
+- INFRA (documentado, nao corrigido): run_strict_validation.ps1 reporta UNITY_PROJECT_BUILD_FAILURE
+  falso mesmo com build real passando; validators de menu do Unity sem wrapper .ps1 (pendencia humana).
+- FOLLOW-UP: stamps de salas-heroi (tesouro/boss) = proxima spec; aumentar tamanho de nivel = knob futuro.

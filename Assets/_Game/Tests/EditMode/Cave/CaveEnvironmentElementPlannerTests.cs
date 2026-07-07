@@ -163,6 +163,11 @@ namespace CindarsHope.Tests.EditMode.Cave
         [Test]
         public void Build_OnlyPlacesElementsOnWalkableTiles()
         {
+            // spec_cave_decor_composition_runtime (CV03) muda este contrato deliberadamente: decor de
+            // teto (CeilingHang, ex. estalactites) representa algo pendendo da parede/teto, então cai em
+            // WallTiles por design (critério 14.1 — "nunca em chão aberto" seria o bug contrário).
+            // Todo elemento QUE NÃO seja CeilingHang continua restrito a WalkableTiles, como antes;
+            // CeilingHang é verificado positivamente contra WallTiles (nunca contra WalkableTiles).
             var profile = MakeProfile();
             var level = Generate(9);
             var spawn = level.Entrance;
@@ -171,6 +176,15 @@ namespace CindarsHope.Tests.EditMode.Cave
 
             foreach (var placement in plan.Placements)
             {
+                if (placement.Context == CaveDecorPlacementContext.CeilingHang)
+                {
+                    Assert.IsTrue(level.WallTiles.Contains(placement.GridPosition),
+                        $"CeilingHang deve estar em WallTile (teto/parede): {placement.GridPosition}.");
+                    Assert.IsFalse(level.WalkableTiles.Contains(placement.GridPosition),
+                        $"CeilingHang nunca pode estar em WalkableTile (chão aberto): {placement.GridPosition}.");
+                    continue;
+                }
+
                 Assert.IsTrue(level.WalkableTiles.Contains(placement.GridPosition),
                     $"Elemento colocado em tile não-walkable: {placement.GridPosition}.");
                 Assert.AreNotEqual(level.Entrance, placement.GridPosition, "Elemento na entrada.");

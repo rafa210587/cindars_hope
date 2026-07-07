@@ -41,6 +41,13 @@ namespace CindarsHope.Cave.Data
         [Header("Densidade de elementos ambientais por banda (fração de tiles candidatos)")]
         [SerializeField] private float[] _environmentElementDensityByBand = { 0.06f, 0.08f, 0.08f, 0.09f, 0.09f, 0.10f, 0.11f };
 
+        [Header("Composição de decor por contexto (spec_cave_decor_composition_runtime, CV03)")]
+        [Tooltip("Multiplicador aplicado à densidade de banda SÓ para o contexto FloorCluster (chão aberto). " +
+                 "Valor < 1 reduz a quantidade de SEMENTES de cluster no chão (cada semente ainda expande " +
+                 "para 2-4 elementos), cortando a sensação de 'confete' sem mexer na densidade de " +
+                 "CeilingHang/WallHug nem no total garantido (EnsureGuaranteedPresence).")]
+        [SerializeField, Range(0.1f, 1f)] private float _floorClusterDensityMultiplier = 0.5f;
+
         [Header("Entrada segura")]
         [SerializeField, Min(0f)] private float _safeEntryRadius = 4f;
 
@@ -67,6 +74,11 @@ namespace CindarsHope.Cave.Data
         public int GetEnemyDensityMin(int bandIndex) => ReadBand(_enemyDensityMinByBand, bandIndex, 16);
         public int GetEnemyDensityMax(int bandIndex) => ReadBand(_enemyDensityMaxByBand, bandIndex, 24);
         public float GetEnvironmentElementDensity(int bandIndex) => ReadBand(_environmentElementDensityByBand, bandIndex, 0.06f);
+
+        /// <summary>spec_cave_decor_composition_runtime (CV03): multiplicador de densidade só para
+        /// sementes de FloorCluster (chão aberto). Default 0.5 — metade das sementes que o antigo "1
+        /// singleton por célula" colocaria, compensado pelo cluster (cada semente vira 2-4 elementos).</summary>
+        public float FloorClusterDensityMultiplier => Mathf.Clamp(_floorClusterDensityMultiplier <= 0f ? 0.5f : _floorClusterDensityMultiplier, 0.1f, 1f);
 
         private static int ReadBand(int[] source, int bandIndex, int fallback)
         {
@@ -97,6 +109,7 @@ namespace CindarsHope.Cave.Data
             _rivalAggroWeight = Mathf.Max(0f, _rivalAggroWeight);
             _enemyDensityHardCap = Mathf.Max(1, _enemyDensityHardCap);
             _safeEntryRadius = Mathf.Max(0f, _safeEntryRadius);
+            _floorClusterDensityMultiplier = Mathf.Clamp(_floorClusterDensityMultiplier, 0.1f, 1f);
         }
     }
 }

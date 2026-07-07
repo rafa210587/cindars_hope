@@ -48,7 +48,12 @@ namespace CindarsHope.Cave.Data
         // (CaveBiomeLayoutProfile.ResolveMapSize), mudando layout/LayoutHash de níveis. Snapshots
         // legados são invalidados → regeneração determinística limpa. O asset
         // CaveGenerationConfig_Default.asset deve ser subido para 4 no Editor (DEFERRED_UNITY).
-        public int GenerationConfigVersion = 4;
+        // spec_cave_decor_composition_runtime (CV03): bumped 4->5 — colocação de decor por
+        // CONTEXTO+cluster (CaveEnvironmentElementPlanner) muda o conjunto/posições de placements de
+        // decor de níveis já visitados. Snapshots legados (com decor "confete") são invalidados →
+        // regeneração determinística limpa na próxima visita. O asset CaveGenerationConfig_Default.asset
+        // deve ser subido para 5 no Editor (DEFERRED_UNITY).
+        public int GenerationConfigVersion = 5;
 
         string IIdentifiedData.Id => Id;
 

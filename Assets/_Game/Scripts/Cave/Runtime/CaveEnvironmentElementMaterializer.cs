@@ -251,11 +251,17 @@ namespace CindarsHope.Cave.Runtime
             }
 
             elementGO.name = element.ElementId;
-            spriteRenderer.sortingOrder = 0;
+
+            // spec_cave_decor_composition_runtime (CV03), critério anti-regressão: decor de teto
+            // (CeilingHang) ocupa uma célula de PAREDE (WallTile) — precisa renderizar ACIMA da parede
+            // (sortingOrder maior) e NUNCA recebe collider, mesmo que o Kind seja DecorBlocking (guard
+            // defensivo; teto nunca deveria bloquear passagem).
+            var isCeilingHang = CaveDecorContextClassifier.Classify(gridPos, level) == CaveDecorPlacementContext.CeilingHang;
+            spriteRenderer.sortingOrder = isCeilingHang ? 1 : 0;
             spriteRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
             spriteRenderer.sortingLayerName = CaveWorldSortingLayers.World;
 
-            if (blocking)
+            if (blocking && !isCeilingHang)
             {
                 var collider = elementGO.GetComponent<BoxCollider2D>();
                 if (collider == null)
@@ -268,10 +274,13 @@ namespace CindarsHope.Cave.Runtime
             materializedObjects.Add(elementGO);
         }
 
-        /// <summary>spec_cave_decor_placement_runtime (CV02): resolve o sprite real de decor do pool
-        /// do bioma para a posição do elemento. Retorna false (sem mutar nada) se o resolver não foi
-        /// injetado, se não houver profile para a banda do nível, ou se o pool do Kind estiver
-        /// vazio — o chamador cai no fallback atual.</summary>
+        /// <summary>spec_cave_decor_composition_runtime (CV03): resolve o sprite real de decor do pool
+        /// do bioma POR CONTEXTO (teto/wall-hug/chão) para a posição do elemento. O contexto é derivável
+        /// da posição (não persistido no save) — recomputado aqui via CaveDecorContextClassifier a
+        /// partir do CaveGeneratedLevel atual, tanto em geração fresh quanto em revisita (o level é
+        /// sempre reconstruído/restaurado antes da materialização). Retorna false (sem mutar nada) se o
+        /// resolver não foi injetado, se não houver profile para a banda do nível, ou se o pool do
+        /// contexto estiver vazio — o chamador cai no fallback atual.</summary>
         private bool TryResolveDecorSprite(CaveGeneratedLevel level, Vector2Int gridPos, bool blocking, out Sprite sprite)
         {
             sprite = null;
@@ -289,9 +298,10 @@ namespace CindarsHope.Cave.Runtime
             var worldSeed = _caveRunManager != null ? _caveRunManager.CaveWorldSeed : string.Empty;
             var runSeed = _caveRunManager != null ? _caveRunManager.CaveRunSeed : string.Empty;
             var stableHash = CaveBiomeArtResolver.ComputeCellHash(worldSeed, runSeed, level.CaveLevel, gridPos.x, gridPos.y);
-            var kind = blocking ? CaveEnvironmentElementKind.DecorBlocking : CaveEnvironmentElementKind.DecorNonBlocking;
 
-            return _biomeArtResolver.TryGetDecorSprite(band, kind, stableHash, out sprite);
+            var context = CaveDecorContextClassifier.Classify(gridPos, level) ?? CaveDecorPlacementContext.FloorCluster;
+
+            return _biomeArtResolver.TryGetDecorSprite(band, context, blocking, stableHash, out sprite);
         }
 
         private void MaterializeWaterTile(

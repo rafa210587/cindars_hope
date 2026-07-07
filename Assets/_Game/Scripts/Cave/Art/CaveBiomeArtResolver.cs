@@ -170,12 +170,13 @@ namespace CindarsHope.Cave.Art
             return sprite != null;
         }
 
-        /// <summary>spec_cave_decor_placement_runtime (CV02) — sprite real de decor ambiental
-        /// (fable_78) para um Kind (DecorNonBlocking/DecorBlocking), escolhido deterministicamente
-        /// pelo hash estável da posição do elemento (nunca Random/GetHashCode). Kinds que não são
-        /// decor (WaterTile/MineableNode) sempre retornam false — fora de escopo desta spec (o
-        /// materializer já tem caminho próprio para eles). Null-safe: profile ausente ou pool vazio
-        /// = false, e o chamador mantém o fallback atual (prefab/builtin).</summary>
+        /// <summary>spec_cave_decor_placement_runtime (CV02) — DEPRECATED: mantido para compat retroativa
+        /// (testes/callers que ainda resolvem só por Kind). Novo código deve usar o overload por
+        /// <see cref="CaveDecorPlacementContext"/> (CV03), que reflete a colocação por contexto real.
+        /// Sprite real de decor ambiental (fable_78) para um Kind (DecorNonBlocking/DecorBlocking),
+        /// escolhido deterministicamente pelo hash estável da posição do elemento (nunca
+        /// Random/GetHashCode). Kinds que não são decor (WaterTile/MineableNode) sempre retornam false.
+        /// Null-safe: profile ausente ou pool vazio = false, e o chamador mantém o fallback atual.</summary>
         public bool TryGetDecorSprite(int bandId, CaveEnvironmentElementKind kind, long stableHash, out Sprite sprite)
         {
             sprite = null;
@@ -190,6 +191,42 @@ namespace CindarsHope.Cave.Art
                 CaveEnvironmentElementKind.DecorBlocking => profile.DecorBlockingSprites,
                 _ => null
             };
+
+            if (pool == null || pool.Count == 0)
+            {
+                return false;
+            }
+
+            var normalizedHash = stableHash & 0x7FFFFFFFL;
+            var index = (int)(normalizedHash % pool.Count);
+            sprite = pool[index];
+            return sprite != null;
+        }
+
+        /// <summary>spec_cave_decor_composition_runtime (CV03) — sprite real de decor ambiental para um
+        /// <see cref="CaveDecorPlacementContext"/> (Ceiling/WallHug/FloorCluster), escolhido
+        /// deterministicamente pelo hash estável da posição do elemento (nunca Random/GetHashCode).
+        /// Quando <paramref name="isBlocking"/> é true, resolve do pool BlockingSprites (decor que ocupa
+        /// colisão) em vez do pool do contexto — hoje decor bloqueante só existe em WallHug/FloorCluster,
+        /// nunca em CeilingHang. Null-safe: profile ausente ou pool vazio = false; o chamador
+        /// (CaveEnvironmentElementMaterializer) cai no fallback prefab/builtin existente.</summary>
+        public bool TryGetDecorSprite(int bandId, CaveDecorPlacementContext context, bool isBlocking, long stableHash, out Sprite sprite)
+        {
+            sprite = null;
+            if (!TryGetProfile(bandId, out var profile))
+            {
+                return false;
+            }
+
+            IReadOnlyList<Sprite> pool = isBlocking
+                ? profile.BlockingSprites
+                : context switch
+                {
+                    CaveDecorPlacementContext.CeilingHang => profile.CeilingSprites,
+                    CaveDecorPlacementContext.WallHug => profile.WallHugSprites,
+                    CaveDecorPlacementContext.FloorCluster => profile.FloorClusterSprites,
+                    _ => null
+                };
 
             if (pool == null || pool.Count == 0)
             {
