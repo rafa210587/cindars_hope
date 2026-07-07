@@ -1,5 +1,31 @@
 # Prompt de Continuação para Claude — Rework Modular
 
+## 2026-07-06 — V5 Lote 6/7: ciclos selecionados + closeout
+
+- Spec `spec_arch_modularization_residual_v5.md` foi concluída e movida de
+  `.specs/a_implementar/` para `.specs/implementados/`; registry atualizado em
+  `.specs/SPEC_REGISTRY_IMPLEMENTED.md`. `SPEC_REGISTRY_TO_IMPLEMENT.md` NÃO foi tocado porque segue
+  em concorrência com a sessão Cave.
+- Snapshot inicial do lote: `MutualModulePairs=47`, `RuntimeModuleEdges=235`.
+- Snapshot final: `MutualModulePairs=45`, `RuntimeModuleEdges=234`, sem par novo.
+- Pares removidos:
+  - `Farm|Interaction`: `InteractionSystem` usa `GameplayInputBlocker.IsBlockedBy(FarmActionMenu)`
+    em vez de `FarmPlot.IsAnyActionMenuOpen`. Commit `f5f4ffb9`.
+  - `Quests|UI`: Quest UI passou a ser instalada por `PresentationRuntimeInstaller`; `QuestRuntimeBootstrap`
+    não instancia mais controllers de UI. Commit `b2a2e399`.
+- Pares avaliados e pulados por risco: `Equipment|Inventory` (`EquipmentSlot` muito espalhado),
+  `Craft|UI` (referência serializada opcional ao `CraftingModal`) e `Quests|Save` (DTOs de save).
+- Gates executados pelo Codex:
+  - `Invoke-UnityGeneratedProjectsBuild.ps1`: exit 0, 7/7, 0 warnings, 0 erros.
+  - `RunUnityEditModeTests.ps1 -ResultsPath TestResults\v5-lote6-editmode.xml -LogFile Logs\v5-lote6.log`:
+    exit 0, 2747/2747, 0 failed.
+  - PlayMode composição `GameRuntimeCompositionRootPlayModeTests`: exit 0, 2/2, 0 failed
+    (`Logs\v5-lote6-playmode-composition.xml`).
+- Importante: não declarar “modularização ampla concluída”. A spec v5 está concluída no escopo
+  aprovado, mas ainda restam 45 pares mútuos para specs-filhas.
+- Não houve push. Working tree ainda tem mudanças concorrentes Cave/arte/docs que não pertencem a
+  este rework.
+
 ## 2026-07-06 — V5 Batch 6: diagnóstico NPC (×1), feito no loop principal
 
 - Spec ativa: `.specs/a_implementar/spec_arch_modularization_residual_v5.md`.
