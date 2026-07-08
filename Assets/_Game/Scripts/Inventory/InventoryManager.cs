@@ -6,7 +6,6 @@ using CindarsHope.Equipment;
 using CindarsHope.Foundation.Transactions;
 using CindarsHope.Inventory.Data;
 using CindarsHope.Player.Data;
-using CindarsHope.Save;
 using UnityEngine;
 
 namespace CindarsHope.Inventory

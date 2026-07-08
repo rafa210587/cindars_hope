@@ -6,6 +6,7 @@ using CindarsHope.Equipment;
 using CindarsHope.Foundation;
 using CindarsHope.Farm;
 using CindarsHope.Farm.Runtime;
+using CindarsHope.Inventory;
 using CindarsHope.Player;
 using CindarsHope.Player.Death;
 using CindarsHope.Player.Progression;
@@ -123,30 +124,9 @@ namespace CindarsHope.Save
         public List<int> IntegratedFragments = new List<int>();
     }
 
-    [Serializable]
-    public class InventorySaveData
-    {
-        public int Capacity;
-        public List<InventorySlotSaveData> Slots = new List<InventorySlotSaveData>();
-        public List<InventoryItemSaveData> Items = new List<InventoryItemSaveData>();
-    }
-
-    [Serializable]
-    public class InventorySlotSaveData
-    {
-        public int SlotIndex;
-        public string ItemId;
-        public int Amount;
-        public bool IsEquipped;
-        public string EquipmentBindingId;
-    }
-
-    [Serializable]
-    public class InventoryItemSaveData
-    {
-        public string ItemId;
-        public int Amount;
-    }
+    // arch: InventorySaveData/InventorySlotSaveData/InventoryItemSaveData movidos para
+    // CindarsHope.Inventory (InventorySaveData.cs) — quebra do ciclo mutuo Inventory|Save. Ver
+    // campo Inventory acima.
 
     [Serializable]
     public class FarmSaveData

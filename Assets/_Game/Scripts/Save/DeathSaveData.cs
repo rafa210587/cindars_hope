@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using CindarsHope.Inventory;
 using UnityEngine;
 
 namespace CindarsHope.Save

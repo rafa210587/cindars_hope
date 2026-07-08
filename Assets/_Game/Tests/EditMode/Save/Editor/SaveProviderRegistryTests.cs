@@ -1,4 +1,5 @@
 using System;
+using CindarsHope.Inventory;
 using CindarsHope.Save;
 using CindarsHope.UI.Hotbar;
 using NUnit.Framework;
