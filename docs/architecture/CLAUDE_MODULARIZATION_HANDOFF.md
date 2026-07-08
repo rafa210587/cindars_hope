@@ -1,5 +1,43 @@
 # Prompt de Continuação para Claude — Rework Modular
 
+## 2026-07-08 — Quests/Save cycle reduction v24 (microcut Tier 1)
+
+- Spec implementada: `.specs/implementados/spec_arch_quests_save_cycle_reduction_v24.md`.
+- Objetivo: quebrar o par mútuo `Quests|Save` (microcut Tier 1 do
+  `docs/architecture/MODULARIZATION_PAIR_BREAK_MAP.md`), sem alterar gameplay, saves, schema,
+  cenas, prefabs ou IDs.
+- Passo 0 (verificação obrigatória) revisou a estratégia planejada: o "padrão vivo" de providers se
+  auto-registrando no `SaveProviderRegistry` **não existe** — todos os ~30 providers são construídos
+  diretamente dentro de `SaveManager.Initialize()`, que já importa quase todos os domínios do jogo
+  (composition-root paralelo ao `GameBootstrap`). Em vez de inventar um mecanismo de auto-registro
+  novo só para Quests, foi usada a técnica já vigente em `NPC|Save`/`Economy|Save`: nome totalmente
+  qualificado no ponto único de construção, sem novo `using` de topo de arquivo (o scanner de
+  dependência só conta `using`s de topo).
+- Mudança:
+  - Enum `QuestSource` movido de `CindarsHope.Quests` para `CindarsHope.Foundation` (novo arquivo
+    `Assets/_Game/Scripts/Foundation/QuestSource.cs`); `Quests/QuestSource.cs` manteve
+    `QuestSourceMapper`/`QuestLogTab` e ganhou `using CindarsHope.Foundation;`; 11 arquivos de
+    produção + 6 de teste em `Quests/**` ganharam o mesmo `using`.
+  - `QuestSectionProvider` relocado de `Save/Providers/` para `Quests/Save/` (namespace
+    `CindarsHope.Quests.Save`, `.cs.meta` movido junto via `git mv`).
+  - `SaveManager.cs:192` passou a `new CindarsHope.Quests.Save.QuestSectionProvider();` (nome
+    totalmente qualificado, sem novo `using CindarsHope.Quests`).
+  - `ArchitectureRatchetTests.FoundationAssembly_ContainsOnlyTheCuratedPureContracts` allowlist
+    ganhou `QuestSource.cs`.
+  - `CindarsHope.Foundation.csproj`/`CindarsHope.Runtime.csproj`: `<Compile Include>` ajustado
+    manualmente (Unity fechado neste ambiente).
+- Gates:
+  - `tools/architecture/Get-ModularizationDependencySnapshot.ps1`: `MutualModulePairs=34 -> 33`,
+    `Quests|Save` removido, nenhum par novo apareceu.
+  - `tools/unity/Invoke-UnityGeneratedProjectsBuild.ps1`: exit 0, 7/7 projetos, 0 warnings, 0 erros.
+  - `tools/unity/RunUnityEditModeTests.ps1 -ResultsPath TestResults\cut-quests-save-editmode.xml -LogFile Logs\cut-quests-save.log`:
+    exit 0, 2747/2747 PASS, 0 failed (1ª rodada acusou 1 falha real — comentário no novo arquivo
+    continha a substring "UnityEngine", disparando o próprio guard de allowlist; corrigido e
+    re-executado do zero).
+- Ainda não declarar modularização ampla concluída: restam 33 pares mútuos para specs-filhas.
+- Sem push. Working tree segue com mudanças concorrentes de arte/animação/ProjectSettings/tools
+  fora do escopo desta spec (não tocadas/incluídas).
+
 ## 2026-07-08 — NPC/Save cycle reduction v23 (microcut Tier 1)
 
 - Spec implementada: `.specs/implementados/spec_arch_npc_save_cycle_reduction_v23.md`.
