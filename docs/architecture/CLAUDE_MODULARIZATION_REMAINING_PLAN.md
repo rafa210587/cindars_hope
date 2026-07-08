@@ -51,6 +51,34 @@ RuntimeModuleEdges=227
 MutualModulePairs=38
 ```
 
+### ATUALIZAÇÃO 2026-07-08 — 12 cortes de type-move (38 → 27), teto headless atingido
+
+Claude executou (delegado + verificado, cada gate = snapshot cair): `Player|Save`, `Save|World`,
+`Economy|Save`, `NPC|Save`, `Quests|Save`, `Inventory|Save`, `Save|UI`, `Core|Locations`, `Cave|Save`,
+`Equipment|Save` (+ derrubou `Crafting|Save` de brinde). **MutualModulePairs = 27.** Specs v20–v29 em
+`implementados/`. Técnica: relocar tipo puro (DTO/enum) p/ Foundation ou domínio (JsonUtility é
+namespace-agnóstico → sem migration; `git mv` preserva GUID). Ver `MODULARIZATION_PAIR_BREAK_MAP.md`.
+
+**Os 27 restantes NÃO são type-move limpo** — precisam de regen de cena, ports+wiring, ou decisão de
+design. Categorias (teto do que é seguro fazer headless = 27):
+
+- **GameBootstrap serializa `[SerializeField] Manager` (regen de cena + port p/ remover o campo):**
+  `Core|Craft`, `Core|Economy`, `Core|Enemy`, `Core|Equipment`, `Core|Inventory`, `Core|Player`,
+  `Core|Skills`, `Core|UI` (ModalManager), `Core|Save` (SaveManager). Mover só o tipo NÃO derruba —
+  o `using`/campo do manager no GameBootstrap mantém a aresta. Exige `PlayerRuntimeReferences`/port +
+  regen de cena p/ tirar o `[SerializeField]`.
+- **Serialized-field bloqueado (lista 5.2, spec própria):** `Craft|UI` (CraftingPoint→CraftingModal),
+  `Player|UI` (ManaManager→ModalManager), `UI|World` (CorpseInteractable→CorpseRecoveryUIController),
+  `Player|Skills` (SkillPassiveModifier serializado em SkillNodeDataSO), `NPC|UI`.
+- **Gameplay entrelaçado (decisão de design + PlayMode):** `Combat|Core`, `Combat|Enemy`, `Combat|Player`,
+  `Combat|Skills`, `Cave|Combat` (EnemyHealth scaling), `Cave|Core`, `Cave|Enemy`, `Player|World`,
+  `Inventory|Player`, `NPC|Quests`, `NPC|World`.
+- **Outros:** `Farm|Save` (mover posse de FarmTileGrid do SaveManager — médio/grande), `Cave|SceneManagement`
+  (corte rejeitado antes, ver 5.1).
+
+Para ir abaixo de 27: abrir o Unity (regen de cena após remover `[SerializeField]` dos managers do
+GameBootstrap) e/ou specs de design por par. Não é seguro autonomamente/headless.
+
 Gates recentes passaram:
 
 - `tools/unity/Invoke-UnityGeneratedProjectsBuild.ps1`: exit 0, 7/7 projetos, 0 warnings, 0 errors.
