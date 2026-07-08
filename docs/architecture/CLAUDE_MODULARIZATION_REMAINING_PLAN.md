@@ -144,6 +144,7 @@ Não mexer sem spec específica:
 - `UI|World`: `CorpseInteractable` aponta para `CorpseRecoveryUIController`.
 - `Core|Locations`: `GameBootstrap` tem campo serializado `AnyaFountain` e consumidores reais usam `bootstrap.AnyaFountain`.
 - `Cave|Combat`: `EnemyHealth` usa scaling/vulnerabilidade de Cave em lógica real.
+- `Player|Skills` (investigado 2026-07-07, NÃO é microcorte): a direção leve Player→Skills vem de `PlayerVitalsApplier`/`DerivedStatsCalculator` consumirem `SkillTreeManager.GetAllActivePassiveModifiers()`, cujo retorno é `List<SkillPassiveModifier>`. `SkillPassiveModifier` é tipo do módulo Skills, também consumido por Combat (`PlayerDamageReceiver`, `PlayerCombatStatsProvider`, `PlayerAttackController`) E **serializado** em `SkillNodeDataSO.PassiveModifiers`. Quebrar exige mover `SkillPassiveModifier` (+ `SkillModifierType`) para local compartilhado (Core/Foundation) COM migração de serialização dos assets `SkillNodeDataSO`. Spec própria; não tentar como microcorte.
 - pares `*|Save`: envolvem DTOs/schema/providers reais; não mover sem plano de compatibilidade.
 
 ## 6. Ordem recomendada do que falta fazer
