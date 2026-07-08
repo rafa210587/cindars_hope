@@ -38,7 +38,7 @@ namespace CindarsHope.Save
         public CraftingRuntimeSaveData Crafting;
         public StaminaSaveData Stamina;
         public EquipmentDurabilitySaveData EquipmentDurability;
-        public NpcManagerSaveData Npcs;
+        public CindarsHope.NPC.NpcManagerSaveData Npcs;
         public GameTimeSaveData GameTime;
         public PlayerStatusEffectsSaveData PlayerStatusEffects;
         public ActiveSkillSlotsSaveData ActiveSkillSlots;
@@ -203,20 +203,8 @@ namespace CindarsHope.Save
         public int MaxDurability;
     }
 
-    [Serializable]
-    public class NpcManagerSaveData
-    {
-        public List<NpcSaveData> Npcs = new List<NpcSaveData>();
-    }
-
-    [Serializable]
-    public class NpcSaveData
-    {
-        public string NpcId;
-        public string SceneId;
-        public Vector2 Position;
-        public bool HasMet;
-    }
+    // arch: NpcManagerSaveData/NpcSaveData movidos para CindarsHope.NPC (NpcManagerSaveData.cs) —
+    // quebra do ciclo mutuo NPC|Save. Ver campo Npcs acima.
 
     [Serializable]
     public class GameTimeSaveData
