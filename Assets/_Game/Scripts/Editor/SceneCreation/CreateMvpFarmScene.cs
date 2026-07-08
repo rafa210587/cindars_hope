@@ -1069,7 +1069,7 @@ namespace CindarsHope.Editor.SceneCreation
             collider.isTrigger = true;
             collider.size = new Vector2(1.8f, 1.2f);
 
-            var fountain = fonteRoot.AddComponent<CindarsHope.Locations.AnyaFountain>();
+            var fountain = fonteRoot.AddComponent<CindarsHope.Core.Respawn.AnyaFountain>();
             fonteRoot.AddComponent<CindarsHope.Fonte.FonteInteractable>();
 
             if (bootstrap != null)

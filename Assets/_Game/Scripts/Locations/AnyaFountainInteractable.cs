@@ -1,6 +1,7 @@
 using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
+using CindarsHope.Core.Respawn;
 using CindarsHope.Interaction;
 using CindarsHope.Player.Death;
 using CindarsHope.UI.Locations;

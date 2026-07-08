@@ -1,7 +1,6 @@
-using CindarsHope.Core.Respawn;
 using UnityEngine;
 
-namespace CindarsHope.Locations
+namespace CindarsHope.Core.Respawn
 {
     [DisallowMultipleComponent]
     public class AnyaFountain : MonoBehaviour, IAnyaFountainRespawnPoint
