@@ -147,12 +147,15 @@ namespace CindarsHope.Player.Death
             Debug.Log("[AnyaFountainRespawnFlow] Jogador respawnado na Fonte da Anya.");
         }
 
+        // Le do registro estatico de AnyaFountain.ActiveInstances (auto-registrado via OnEnable/OnDisable)
+        // em vez de varrer todos os MonoBehaviours da cena (rule unity-architecture #1).
         private static IAnyaFountainRespawnPoint FindActiveFountainRespawnPoint()
         {
-            var behaviours = Object.FindObjectsByType<MonoBehaviour>();
-            for (var i = 0; i < behaviours.Length; i++)
+            var instances = AnyaFountain.ActiveInstances;
+            for (var i = 0; i < instances.Count; i++)
             {
-                if (behaviours[i] is IAnyaFountainRespawnPoint fountain && fountain.RespawnPoint != null)
+                var fountain = instances[i];
+                if (fountain != null && fountain.RespawnPoint != null)
                 {
                     return fountain;
                 }

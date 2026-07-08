@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using CindarsHope.Cave.Data;
 using CindarsHope.Cave.Runtime;
 using CindarsHope.Core;
@@ -13,6 +14,10 @@ namespace CindarsHope.Cave.Resources
     [DisallowMultipleComponent]
     public sealed class ResourceNode : MonoBehaviour, IInteractable
     {
+        // Registro estatico de instancias ativas, mesmo padrao de EnemyHealth.ActiveInstances —
+        // evita FindObjectsByType em runtime (rule unity-architecture #1).
+        public static readonly List<ResourceNode> ActiveInstances = new List<ResourceNode>();
+
         [SerializeField] private string _nodeInstanceId;
         [SerializeField] private ResourceNodeDataSO _nodeData;
         [SerializeField] private InventoryManager _inventoryManager;
@@ -51,6 +56,19 @@ namespace CindarsHope.Cave.Resources
             {
                 _spriteRenderer = GetComponent<SpriteRenderer>();
             }
+        }
+
+        private void OnEnable()
+        {
+            if (!ActiveInstances.Contains(this))
+            {
+                ActiveInstances.Add(this);
+            }
+        }
+
+        private void OnDisable()
+        {
+            ActiveInstances.Remove(this);
         }
 
         private void Start()

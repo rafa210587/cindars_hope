@@ -184,6 +184,9 @@ namespace CindarsHope.Cave
 
         private void Update()
         {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            // Poll de debug (Shift+R = regenerar run). Gateado fora de builds de shipping para nao
+            // alocar SceneManager.GetActiveScene().name por frame em produção (achado de eficiencia).
             if (SceneManager.GetActiveScene().name != "CaveScene")
             {
                 return;
@@ -193,6 +196,7 @@ namespace CindarsHope.Cave
             {
                 RegenerateCurrentRunDebug();
             }
+#endif
         }
 
         public void GenerateCurrentLevel()
@@ -615,7 +619,9 @@ namespace CindarsHope.Cave
 
         private void RefreshDailyResourceNodes()
         {
-            var allNodes = FindObjectsByType<ResourceNode>();
+            // Le do registro estatico ResourceNode.ActiveInstances (auto-registrado via OnEnable/OnDisable)
+            // em vez de FindObjectsByType a cada DayStartedEvent (rule unity-architecture #1).
+            var allNodes = ResourceNode.ActiveInstances;
             var refreshedCount = 0;
             foreach (var node in allNodes)
             {
