@@ -1,5 +1,26 @@
 # Prompt de Continuação para Claude — Rework Modular
 
+## 2026-07-07 — NpcShopController city service policy v17
+
+- Spec implementada: `.specs/implementados/spec_arch_npcshop_city_service_policy_v17.md`.
+- Objetivo: executar mais um recorte seguro da fase `NpcShopController`, sem alterar gameplay,
+  saves, cenas, prefabs, IDs, horários, diálogos, preços, quantidades ou compra de serviços.
+- Mudança:
+  - criado `NpcCityServiceChoicePolicy`;
+  - `NpcShopController.TryGetCityServiceChoice` delega regra de provedor, `serviceId` e label;
+  - `NpcShopController.PurchaseCityServiceForThisNpc` delega compra idempotente e fallback de mensagem;
+  - preservados `ChoiceId = "service"`, `"Servico (ja contratado)"`, `"Servico indisponivel."`
+    e uso canônico de `CityServiceCatalog`/`CityServiceAccess`.
+- Gates:
+  - `dotnet build .\CindarsHope.Runtime.csproj`: exit 0, 0 warnings, 0 errors.
+  - `tools/unity/Invoke-UnityGeneratedProjectsBuild.ps1`: exit 0, 7/7 projetos, 0 warnings, 0 errors.
+  - `tools/unity/RunUnityEditModeTests.ps1`: exit 0, 2747/2747 PASS,
+    `TestResults/npcshop-city-service-policy-editmode.xml`.
+  - `tools/architecture/Get-ModularizationDependencySnapshot.ps1`: exit 0,
+    `RuntimeModuleEdges=227`, `MutualModulePairs=38` sem novo ciclo.
+- Próximos recortes do `NpcShopController` ainda pendentes: debug expression menu, gifting,
+  quest bridge, transaction facade e dialog/tree presenter.
+
 ## 2026-07-07 — NpcShopController special identity policy v16
 
 - Spec implementada: `.specs/implementados/spec_arch_npcshop_special_identity_policy_v16.md`.

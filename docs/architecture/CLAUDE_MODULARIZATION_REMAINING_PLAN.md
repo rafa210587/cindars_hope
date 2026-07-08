@@ -304,6 +304,10 @@ Reduzir `NpcShopController` por extração de serviços/collaborators sem mudar 
 
 Recorte já executado:
 
+- [x] `NpcCityServiceChoicePolicy`: regra de escolha/compra de serviço cívico saiu do controller.
+  - Spec: `spec_arch_npcshop_city_service_policy_v17.md`.
+  - Gates usados: build 7/7, EditMode 2747/2747.
+  - Snapshot após o recorte: `RuntimeModuleEdges=227`, `MutualModulePairs=38`, sem novo ciclo.
 - [x] `NpcSpecialIdentityPolicy`: identificação de Thalindra/Brumdar saiu do controller.
   - Spec: `spec_arch_npcshop_special_identity_policy_v16.md`.
   - Gates usados: build 7/7, EditMode 2747/2747.
@@ -319,12 +323,13 @@ Recorte já executado:
 
 Extrair em ordem:
 
-1. `NpcDialogueFlowController`
-2. `NpcShopAvailabilityPolicy`
-3. `NpcGiftInteractionService`
-4. `NpcQuestInteractionBridge`
-5. `NpcShopTransactionFacade`
-6. `NpcSchedulePresentationAdapter`
+1. `NpcDebugExpressionChoicePolicy`
+2. `NpcDialogueFlowController`
+3. `NpcShopAvailabilityPolicy`
+4. `NpcGiftInteractionService`
+5. `NpcQuestInteractionBridge`
+6. `NpcShopTransactionFacade`
+7. `NpcSchedulePresentationAdapter`
 
 Regras:
 

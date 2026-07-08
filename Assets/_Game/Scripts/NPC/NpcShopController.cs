@@ -446,27 +446,12 @@ namespace CindarsHope.NPC
         {
             choice = null;
             var npcId = _npcData != null ? _npcData.NpcId : null;
-            if (!CindarsHope.City.Services.CityServiceCatalog.IsServiceProvider(npcId))
+            if (!NpcCityServiceChoicePolicy.TryBuildChoice(npcId, out var definition))
             {
                 return false;
             }
 
-            var serviceId = CindarsHope.City.Services.CityServiceCatalog.ServiceIdFor(npcId);
-            if (string.IsNullOrEmpty(serviceId))
-            {
-                return false;
-            }
-
-            string label = CindarsHope.City.Services.CityServiceAccess.OwnsService(serviceId)
-                ? "Servico (ja contratado)"
-                : CindarsHope.City.Services.CityServiceCatalog.DisplayLabelFor(serviceId);
-
-            if (string.IsNullOrEmpty(label))
-            {
-                return false;
-            }
-
-            choice = new UiDialogueChoice(label, "service");
+            choice = new UiDialogueChoice(definition.Label, definition.ChoiceId);
             return true;
         }
 
@@ -477,16 +462,12 @@ namespace CindarsHope.NPC
         private void PurchaseCityServiceForThisNpc()
         {
             var npcId = _npcData != null ? _npcData.NpcId : null;
-            var serviceId = CindarsHope.City.Services.CityServiceCatalog.ServiceIdFor(npcId);
-            if (string.IsNullOrEmpty(serviceId))
+            var message = NpcCityServiceChoicePolicy.PurchaseMessageForProvider(npcId);
+            if (string.IsNullOrEmpty(message))
             {
                 return;
             }
 
-            var result = CindarsHope.City.Services.CityServiceAccess.TryPurchase(serviceId);
-            var message = result != null && !string.IsNullOrEmpty(result.Message)
-                ? result.Message
-                : "Servico indisponivel.";
             GameEventBus.Publish(new PlayerActionFeedbackEvent(message));
         }
 
