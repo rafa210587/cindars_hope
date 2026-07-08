@@ -1,4 +1,4 @@
-using CindarsHope.UI.Hotbar;
+using CindarsHope.Foundation;
 
 namespace CindarsHope.Save.Providers
 {

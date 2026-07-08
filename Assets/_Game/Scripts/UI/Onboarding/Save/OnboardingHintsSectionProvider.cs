@@ -1,6 +1,7 @@
+using CindarsHope.Save;
 using CindarsHope.UI.Onboarding;
 
-namespace CindarsHope.Save.Providers
+namespace CindarsHope.UI.Onboarding.Save
 {
     /// <summary>
     /// fable_62 — provider de save dos hints de onboarding vistos, no padrao ISaveSectionProvider
@@ -9,6 +10,10 @@ namespace CindarsHope.Save.Providers
     /// Fallback: preserva a secao existente quando o servico ainda nao esta vivo.
     /// Default (sem instancia e sem save): lista vazia = todos os hints elegiveis (save legado OK,
     /// sem migration).
+    /// arch: quebra do ciclo Save|UI (spec_arch_save_ui_cycle_reduction_v26) — provider relocado de
+    /// CindarsHope.Save.Providers para o modulo dono (UI.Onboarding), mesma tecnica de
+    /// spec_arch_quests_save_cycle_reduction_v24 (SaveManager constroi por nome totalmente
+    /// qualificado, sem novo using de topo).
     /// </summary>
     public class OnboardingHintsSectionProvider : ISaveSectionProvider
     {

@@ -178,7 +178,12 @@ namespace CindarsHope.Tests.EditMode.Architecture
                 // arch: quebra do ciclo Quests|Save (spec_arch_quests_save_cycle_reduction_v24) —
                 // enum puro (sem UnityEngine) movido de CindarsHope.Quests para Foundation, decisão
                 // explícita de arquitetura.
-                "QuestSource.cs"
+                "QuestSource.cs",
+                // arch: quebra do ciclo Save|UI (spec_arch_save_ui_cycle_reduction_v26) — tipos puros
+                // (sem UnityEngine) movidos de CindarsHope.UI.Hotbar para Foundation, decisão
+                // explícita de arquitetura.
+                "HotbarState.cs",
+                "HotbarSaveData.cs"
             };
             Assert.That(
                 sourceFiles.Select(Path.GetFileName),

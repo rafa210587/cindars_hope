@@ -212,7 +212,7 @@ namespace CindarsHope.Core.Bootstrap
                     _inventoryManager.ClearHotbarBindingsForMissingItems(
                         hotbar.GetSlotItemId,
                         (slot, id) => hotbar.SetSlot(slot, id),
-                        CindarsHope.UI.Hotbar.HotbarState.SlotCount);
+                        CindarsHope.Foundation.HotbarState.SlotCount);
                 }
             }
             else

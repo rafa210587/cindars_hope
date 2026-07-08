@@ -1,6 +1,6 @@
 using System;
 
-namespace CindarsHope.UI.Hotbar
+namespace CindarsHope.Foundation
 {
     [Serializable]
     public class HotbarState

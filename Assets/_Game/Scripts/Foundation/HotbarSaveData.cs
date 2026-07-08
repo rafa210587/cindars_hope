@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace CindarsHope.UI.Hotbar
+namespace CindarsHope.Foundation
 {
     [Serializable]
     public class HotbarSaveData

@@ -11,7 +11,6 @@ using CindarsHope.Player;
 using CindarsHope.Player.Death;
 using CindarsHope.Player.Progression;
 using CindarsHope.Skills;
-using CindarsHope.UI.Hotbar;
 using CindarsHope.World;
 using UnityEngine;
 

@@ -12,6 +12,7 @@ using CindarsHope.Economy;
 using CindarsHope.Enemy;
 using CindarsHope.Equipment;
 using CindarsHope.Farm;
+using CindarsHope.Foundation;
 using CindarsHope.Inventory;
 using CindarsHope.NPC;
 using CindarsHope.Player;
@@ -21,7 +22,6 @@ using CindarsHope.Player.Progression;
 using CindarsHope.Save.Migrations;
 using CindarsHope.Save.Providers;
 using CindarsHope.Skills;
-using CindarsHope.UI.Hotbar;
 using CindarsHope.World;
 using Unity.Profiling;
 using UnityEngine;
@@ -164,7 +164,9 @@ namespace CindarsHope.Save
             // Providers jÃ¡ existentes (SPEC_10 / fable_07 / fable_62)
             _hotbarProvider = new HotbarSectionProvider(_hotbarState);
             _spellbookProvider = new SpellbookSectionProvider();
-            _onboardingHintsProvider = new OnboardingHintsSectionProvider();
+            // arch: Save|UI (spec_arch_save_ui_cycle_reduction_v26) — nome totalmente qualificado
+            // (provider mora em CindarsHope.UI.Onboarding.Save), sem novo using de topo.
+            _onboardingHintsProvider = new CindarsHope.UI.Onboarding.Save.OnboardingHintsSectionProvider();
 
             // Hotbar: inicializa defaults se novo jogo
             if (string.IsNullOrWhiteSpace(_hotbarState.GetSlotItemId(0)))

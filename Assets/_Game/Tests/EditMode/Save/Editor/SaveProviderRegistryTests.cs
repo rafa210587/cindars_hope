@@ -1,7 +1,7 @@
 using System;
+using CindarsHope.Foundation;
 using CindarsHope.Inventory;
 using CindarsHope.Save;
-using CindarsHope.UI.Hotbar;
 using NUnit.Framework;
 
 namespace CindarsHope.Tests.EditMode.Save

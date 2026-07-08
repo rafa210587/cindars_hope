@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using NUnit.Framework;
 using CindarsHope.Save;
-using CindarsHope.Save.Providers;
 using CindarsHope.UI.HUD;
 using CindarsHope.UI.Onboarding;
+using CindarsHope.UI.Onboarding.Save;
 using CindarsHope.UI.SystemTab;
 
 namespace CindarsHope.Tests.EditMode.UI

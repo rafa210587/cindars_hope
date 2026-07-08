@@ -1,7 +1,7 @@
 using CindarsHope.Core.Data;
+using CindarsHope.Foundation;
 using CindarsHope.Inventory;
 using CindarsHope.Player.Data;
-using CindarsHope.UI.Hotbar;
 using UnityEngine;
 
 namespace CindarsHope.Save.Providers
