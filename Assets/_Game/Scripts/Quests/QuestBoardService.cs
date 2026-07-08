@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CindarsHope.Foundation;
 
 namespace CindarsHope.Quests
 {

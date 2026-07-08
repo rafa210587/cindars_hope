@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
+using CindarsHope.Foundation;
 using CindarsHope.Quests.Flags;
 using CindarsHope.Quests.Rewards;
 using CindarsHope.Quests.Save;

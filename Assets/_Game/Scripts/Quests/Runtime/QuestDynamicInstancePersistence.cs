@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CindarsHope.Foundation;
 using CindarsHope.Quests.Rewards;
 using CindarsHope.Quests.Save;
 

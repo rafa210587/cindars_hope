@@ -1,3 +1,5 @@
+using CindarsHope.Foundation;
+
 namespace CindarsHope.Quests
 {
     /// <summary>

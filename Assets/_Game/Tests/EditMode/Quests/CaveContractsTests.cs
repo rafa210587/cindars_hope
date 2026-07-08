@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using NUnit.Framework;
+using CindarsHope.Foundation;
 using CindarsHope.Quests;
 using CindarsHope.Quests.CaveContracts;
 using CindarsHope.Quests.Flags;

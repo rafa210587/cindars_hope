@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using NUnit.Framework;
+using CindarsHope.Foundation;
 using CindarsHope.Quests;
 using CindarsHope.Quests.FestivalQuests;
 using CindarsHope.Quests.Flags;

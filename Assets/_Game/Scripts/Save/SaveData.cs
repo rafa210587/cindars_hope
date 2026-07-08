@@ -353,7 +353,7 @@ namespace CindarsHope.Save
 
         // fable_34 — additive simple-type fields for the source channel + dynamic instances.
         // Defaults keep legacy saves loading safely (Source = Npc, not a dynamic instance).
-        public int Source = (int)CindarsHope.Quests.QuestSource.Npc;
+        public int Source = (int)QuestSource.Npc;
         public bool IsDynamicInstance;
         public string TemplateId;
         public string InstanceTargetId;

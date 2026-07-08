@@ -174,7 +174,11 @@ namespace CindarsHope.Tests.EditMode.Architecture
                 // arch: quebra do ciclo Economy|Save (spec_arch_economy_save_cycle_reduction_v22) —
                 // DTOs puros (sem UnityEngine) movidos de CindarsHope.Save para o schema de save em
                 // Foundation, decisão explícita de arquitetura.
-                "EconomySaveDtos.cs"
+                "EconomySaveDtos.cs",
+                // arch: quebra do ciclo Quests|Save (spec_arch_quests_save_cycle_reduction_v24) —
+                // enum puro (sem UnityEngine) movido de CindarsHope.Quests para Foundation, decisão
+                // explícita de arquitetura.
+                "QuestSource.cs"
             };
             Assert.That(
                 sourceFiles.Select(Path.GetFileName),
