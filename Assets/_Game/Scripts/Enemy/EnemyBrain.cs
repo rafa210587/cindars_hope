@@ -50,7 +50,7 @@ namespace CindarsHope.Enemy
         private EnemyPackCoordinator _packCoordinator;
         private string _packId;
         private bool _packEngagedAnnounced;
-        private bool _threatExpiredLogged;
+        private readonly EnemyDebugTelemetry _telemetry = new EnemyDebugTelemetry();
 
         // Components
         private Rigidbody2D _rb;
@@ -284,7 +284,7 @@ namespace CindarsHope.Enemy
             _threatState.Clear();
             _threatState.SetMemorySeconds(EnemyThreatState.ResolveMemorySeconds(MovementType));
             _packEngagedAnnounced = false;
-            _threatExpiredLogged = false;
+            _telemetry.ResetThreatExpiredLog();
 
             // fable_24: reset move/elite transient runtime on (re)spawn. The elite affix itself is
             // re-applied by the materializer via ConfigureElite after this; clear the one-shot flags.
@@ -415,7 +415,7 @@ namespace CindarsHope.Enemy
             if (_threatMemoryEnabled && inDetect && _targeting.CurrentTarget != null)
             {
                 _threatState.NoticeTarget(_targeting.CurrentTarget.transform.position, Time.time);
-                _threatExpiredLogged = false;
+                _telemetry.ResetThreatExpiredLog();
                 AnnouncePackEngagementOnce();
             }
 
@@ -452,7 +452,7 @@ namespace CindarsHope.Enemy
             if (output.NextState == EnemyBrainState.Patrol && _currentState != EnemyBrainState.Patrol
                 && !HasActiveThreat() && dist > LeashRange())
             {
-                LogThreatExpiredOnce();
+                _telemetry.LogThreatExpiredOnce(_enemyData?.enemyId, _packId, this);
                 if (TryCollectivePackLeashReset())
                 {
                     // pack reset already set _currentState to Patrol; skip assignment below
@@ -628,7 +628,7 @@ namespace CindarsHope.Enemy
             }
 
             _wardedStatusConsumed = true;
-            CindarsHope.Combat.CombatLog.Log($"CombatLog: EliteWardedResistedStatus. EnemyId={_enemyData?.enemyId}, Affix=Warded.", this);
+            _telemetry.LogEliteWardedResisted(_enemyData?.enemyId, this);
             return true;
         }
 
@@ -660,7 +660,7 @@ namespace CindarsHope.Enemy
                 _enemyData?.enemyId ?? "enemy");
 
             GameEventBus.Publish(new EnemyTelegraphStartedEvent(_enemyData?.enemyId, transform.position));
-            CindarsHope.Combat.CombatLog.Log($"CombatLog: EliteVolatileExploding. EnemyId={_enemyData?.enemyId}, Damage={damage}, CapMaxHp={playerMaxHp}, Telegraph={EliteAffixRules.VolatileExplosionTelegraphSeconds:F2}s.", this);
+            _telemetry.LogEliteVolatileExploding(_enemyData?.enemyId, damage, playerMaxHp, EliteAffixRules.VolatileExplosionTelegraphSeconds, this);
         }
 
         // ─── fable_24: boss primitives (fable_05 orchestrates full phases) ─────
@@ -727,7 +727,7 @@ namespace CindarsHope.Enemy
 
             if (!_actionSetDatabase.TryGetById(actionSetId, out var actionSet) || actionSet == null)
             {
-                Debug.LogWarning($"CombatLog: BossSwapActionSetMissing. EnemyId={_enemyData?.enemyId}, ActionSetId={actionSetId}.", this);
+                _telemetry.LogBossSwapActionSetMissing(_enemyData?.enemyId, actionSetId, this);
                 return false;
             }
 
@@ -787,7 +787,7 @@ namespace CindarsHope.Enemy
             }
 
             _threatState.NoticeTarget(position, Time.time);
-            _threatExpiredLogged = false;
+            _telemetry.ResetThreatExpiredLog();
             if (_currentState == EnemyBrainState.Idle || _currentState == EnemyBrainState.Patrol)
             {
                 _currentState = EnemyBrainState.Alert;
@@ -818,17 +818,6 @@ namespace CindarsHope.Enemy
 
             _packEngagedAnnounced = true;
             _packCoordinator.Alert(_packId, _threatState.LastKnownPosition);
-        }
-
-        private void LogThreatExpiredOnce()
-        {
-            if (_threatExpiredLogged)
-            {
-                return;
-            }
-
-            _threatExpiredLogged = true;
-            CindarsHope.Combat.CombatLog.Log($"CombatLog: EnemyThreatExpired. EnemyId={_enemyData?.enemyId}, PackId={_packId ?? "none"}.", this);
         }
 
         // Collective leash: only reset when the WHOLE pack is beyond leash. Resets to Patrol and
@@ -864,7 +853,7 @@ namespace CindarsHope.Enemy
                 _health.RestoreHp(_health.MaxHp);
             }
 
-            CindarsHope.Combat.CombatLog.Log($"CombatLog: EnemyPackLeashReset. EnemyId={_enemyData?.enemyId}, PackId={_packId}, Anchor=({anchor.x:F2},{anchor.y:F2}).", this);
+            _telemetry.LogEnemyPackLeashReset(_enemyData?.enemyId, _packId, anchor, this);
         }
 
         public void SetState(EnemyBrainState newState) => _currentState = newState;
