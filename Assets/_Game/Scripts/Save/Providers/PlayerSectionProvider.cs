@@ -54,7 +54,15 @@ namespace CindarsHope.Save.Providers
             }
 
             var playerPosition = _getPlayerPosition != null ? _getPlayerPosition() : Vector2.zero;
-            var playerData = _playerManager.CaptureSaveData(currentHunger, maxHunger, playerPosition);
+            var playerData = new PlayerSaveData
+            {
+                CurrentHP = _playerManager.CurrentHP,
+                MaxHP = _playerManager.MaxHP,
+                Gold = _playerManager.CurrentGold,
+                CurrentHunger = currentHunger,
+                MaxHunger = maxHunger,
+                PlayerPosition = playerPosition
+            };
 
             if (playerData != null && _manaManager != null)
             {
@@ -78,7 +86,14 @@ namespace CindarsHope.Save.Providers
 
             if (_playerManager != null)
             {
-                _playerManager.RestoreFromSaveData(data);
+                if (data == null)
+                {
+                    Debug.LogWarning("PlayerSectionProvider: PlayerSaveData nula; restore do jogador ignorado.");
+                }
+                else
+                {
+                    _playerManager.RestoreState(data.MaxHP, data.CurrentHP, data.Gold);
+                }
             }
             else
             {
