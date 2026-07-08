@@ -1,5 +1,42 @@
 # Prompt de Continuação para Claude — Rework Modular
 
+## 2026-07-07 — Save/World cycle reduction v21 (microcut Tier 1)
+
+- Spec implementada: `.specs/implementados/spec_arch_save_world_cycle_reduction_v21.md`.
+- Objetivo: quebrar o par mútuo `Save|World` (microcut Tier 1 do
+  `docs/architecture/MODULARIZATION_PAIR_BREAK_MAP.md`), sem alterar gameplay, saves, schema,
+  cenas, prefabs ou IDs.
+- Passo 0 (verificação obrigatória): grep de `using CindarsHope.Save` em toda a pasta
+  `Assets/_Game/Scripts/World/` confirmou que `TreeRegistry.cs` e `Calendar/GameCalendarService.cs`
+  eram os únicos arquivos de World importando o namespace Save. Outros 9 arquivos que casavam com
+  o grep textual `SaveData` (`GodMarkSaveData`, `TreeSaveData`, `ItemPickupSaveData` etc.) já são
+  DTOs owned pelo próprio `CindarsHope.World` — não geravam aresta.
+- Achado extra: `GameCalendarService.RestoreFromSaveData(CalendarSaveData)` não tinha nenhum caller
+  em todo o repositório (grep completo confirmado) — código morto isolado; `CalendarSaveData` também
+  não pertence ao `GameSaveData` raiz.
+- Mudança:
+  - `TreeRegistry.RestoreFromSaveData(FarmSaveData saveData)` virou
+    `TreeRegistry.RestoreFromSaveData(IReadOnlyList<TreeSaveData> trees)` — mesmo corpo, só troca o
+    parâmetro DTO por uma lista de `TreeSaveData` (já `CindarsHope.World`).
+  - `WorldSectionProvider.Restore` e `FarmSceneRuntimeStateCache.TryRestore` (2 callers reais,
+    ambos identificados por grep) pararam de montar um `FarmSaveData` wrapper só para carregar
+    `Trees`; chamam `RestoreFromSaveData(trees)` direto.
+  - `GameCalendarService.RestoreFromSaveData(CalendarSaveData saveData)` virou
+    `GameCalendarService.RestoreFromAbsoluteDay(int absoluteDayIndex)` (sem caller, estreitado
+    conforme a estratégia do mapa).
+  - `using CindarsHope.Save;` removido de `TreeRegistry.cs` e `Calendar/GameCalendarService.cs`.
+  - Nenhum DTO foi movido de namespace; nenhum schema/campo de save foi alterado.
+- Gates:
+  - `tools/architecture/Get-ModularizationDependencySnapshot.ps1`: exit 0,
+    `MutualModulePairs=37 -> 36`, `RuntimeModuleEdges=226 -> 225`, `Save|World` removido, nenhum
+    par novo apareceu.
+  - `tools/unity/Invoke-UnityGeneratedProjectsBuild.ps1`: exit 0, 7/7 projetos, 0 warnings, 0 erros.
+  - `tools/unity/RunUnityEditModeTests.ps1 -ResultsPath TestResults\cut-save-world-editmode.xml -LogFile Logs\cut-save-world.log`:
+    exit 0, 2747/2747 PASS, 0 failed.
+- Ainda não declarar modularização ampla concluída: restam 36 pares mútuos para specs-filhas.
+- Sem push. Working tree segue com mudanças concorrentes de arte/animação/ProjectSettings/tools
+  fora do escopo desta spec (não tocadas/incluídas).
+
 ## 2026-07-07 — Player/Save cycle reduction v20 (microcut Tier 1)
 
 - Spec implementada: `.specs/implementados/spec_arch_player_save_cycle_reduction_v20.md`.
