@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
-using CindarsHope.Cave.Runtime;
 using UnityEngine;
 
-namespace CindarsHope.Save
+namespace CindarsHope.Cave.Runtime
 {
     [Serializable]
     public sealed class CaveSaveData

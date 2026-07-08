@@ -131,7 +131,7 @@ namespace CindarsHope.Editor.Validation
 
         private static void ValidateSaveIntegration(List<string> errors, List<string> passed)
         {
-            var save = AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/_Game/Scripts/Save/CaveSaveData.cs");
+            var save = AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/_Game/Scripts/Cave/Runtime/CaveSaveData.cs");
             if (save == null)
             {
                 errors.Add("CaveSaveData.cs missing.");
