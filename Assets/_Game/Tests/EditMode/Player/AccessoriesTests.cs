@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using CindarsHope.Equipment;
+using CindarsHope.Foundation;
 using CindarsHope.Loot;
-using CindarsHope.Save;
 using NUnit.Framework;
 using UnityEngine;
 

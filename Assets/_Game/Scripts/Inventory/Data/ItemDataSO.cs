@@ -1,5 +1,5 @@
 using CindarsHope.Core.Data;
-using CindarsHope.Equipment;
+using CindarsHope.Foundation;
 using UnityEngine;
 
 namespace CindarsHope.Inventory.Data

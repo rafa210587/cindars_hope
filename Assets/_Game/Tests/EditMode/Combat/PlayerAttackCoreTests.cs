@@ -1,6 +1,6 @@
 using CindarsHope.Combat;
 using CindarsHope.Combat.Weapon;
-using CindarsHope.Equipment;
+using CindarsHope.Foundation;
 using CindarsHope.Inventory.Data;
 using NUnit.Framework;
 using UnityEngine;

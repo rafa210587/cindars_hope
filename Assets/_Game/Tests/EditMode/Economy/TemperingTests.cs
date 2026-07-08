@@ -4,7 +4,6 @@ using UnityEngine;
 using CindarsHope.Combat;
 using CindarsHope.Economy;
 using CindarsHope.Foundation;
-using CindarsHope.Save;
 
 namespace CindarsHope.Tests.EditMode.Economy
 {

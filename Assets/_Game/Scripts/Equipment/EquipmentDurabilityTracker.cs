@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
-using CindarsHope.Save;
+using CindarsHope.Foundation;
 using UnityEngine;
 
 namespace CindarsHope.Equipment

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using CindarsHope.Foundation;
 using UnityEngine;
 
 namespace CindarsHope.Save.Migrations

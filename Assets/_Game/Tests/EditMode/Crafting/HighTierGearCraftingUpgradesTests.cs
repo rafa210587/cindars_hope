@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using NUnit.Framework;
 using CindarsHope.Crafting;
-using CindarsHope.Save;
+using CindarsHope.Foundation;
 
 namespace CindarsHope.Tests.EditMode.Crafting
 {

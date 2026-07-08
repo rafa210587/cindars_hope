@@ -4,6 +4,7 @@ using CindarsHope.Core.Events;
 using CindarsHope.Cave;
 using CindarsHope.Cave.Runtime;
 using CindarsHope.Equipment;
+using CindarsHope.Foundation;
 using CindarsHope.Inventory;
 using CindarsHope.Interaction;
 using CindarsHope.Player;

@@ -8,6 +8,7 @@ using CindarsHope.Craft;
 using CindarsHope.Economy;
 using CindarsHope.Equipment;
 using CindarsHope.Enemy;
+using CindarsHope.Foundation;
 using CindarsHope.Inventory;
 using CindarsHope.Player;
 using CindarsHope.Player.Data;

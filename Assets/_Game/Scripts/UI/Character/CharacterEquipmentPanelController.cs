@@ -2,6 +2,7 @@ using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
 using CindarsHope.Equipment;
+using CindarsHope.Foundation;
 using CindarsHope.Inventory;
 using CindarsHope.Localization;
 using CindarsHope.Player;

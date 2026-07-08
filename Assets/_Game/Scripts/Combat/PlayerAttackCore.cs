@@ -73,16 +73,16 @@ namespace CindarsHope.Combat
         /// <param name="slot">LeftHand ou RightHand.</param>
         /// <param name="currentTime">Tempo atual (Time.time).</param>
         /// <param name="cooldownSeconds">Cooldown calculado para este ataque.</param>
-        public bool CanAttackSlot(Equipment.EquipmentSlot slot, float currentTime, float cooldownSeconds)
+        public bool CanAttackSlot(Foundation.EquipmentSlot slot, float currentTime, float cooldownSeconds)
         {
             float lastTime = GetLastAttackTime(slot);
             return currentTime >= lastTime + cooldownSeconds;
         }
 
         /// <summary>Retorna o timestamp do ultimo ataque registrado para o slot (float.MinValue se nunca atacou).</summary>
-        public float GetLastAttackTime(Equipment.EquipmentSlot slot)
+        public float GetLastAttackTime(Foundation.EquipmentSlot slot)
         {
-            return slot == Equipment.EquipmentSlot.LeftHand
+            return slot == Foundation.EquipmentSlot.LeftHand
                 ? _lastLeftHandAttackTime
                 : _lastRightHandAttackTime;
         }
@@ -90,9 +90,9 @@ namespace CindarsHope.Combat
         /// <summary>Registra o momento do ultimo ataque para um slot.</summary>
         /// <param name="slot">LeftHand ou RightHand.</param>
         /// <param name="currentTime">Tempo atual (Time.time).</param>
-        public void RecordAttack(Equipment.EquipmentSlot slot, float currentTime)
+        public void RecordAttack(Foundation.EquipmentSlot slot, float currentTime)
         {
-            if (slot == Equipment.EquipmentSlot.LeftHand)
+            if (slot == Foundation.EquipmentSlot.LeftHand)
                 _lastLeftHandAttackTime = currentTime;
             else
                 _lastRightHandAttackTime = currentTime;

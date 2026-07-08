@@ -183,7 +183,13 @@ namespace CindarsHope.Tests.EditMode.Architecture
                 // (sem UnityEngine) movidos de CindarsHope.UI.Hotbar para Foundation, decisão
                 // explícita de arquitetura.
                 "HotbarState.cs",
-                "HotbarSaveData.cs"
+                "HotbarSaveData.cs",
+                // arch: quebra do ciclo mutuo Equipment|Save (spec_arch_equipment_save_cycle_reduction_v29)
+                // — enum EquipmentSlot e os DTOs de save de equipment (puros, sem UnityEngine) movidos
+                // de CindarsHope.Equipment/CindarsHope.Save para Foundation, decisão explícita de
+                // arquitetura.
+                "EquipmentSlot.cs",
+                "EquipmentSaveDtos.cs"
             };
             Assert.That(
                 sourceFiles.Select(Path.GetFileName),

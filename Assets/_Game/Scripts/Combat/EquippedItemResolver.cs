@@ -1,7 +1,7 @@
 using CindarsHope.Combat.Magic;
 using CindarsHope.Combat.Weapon;
 using CindarsHope.Core.Data;
-using CindarsHope.Equipment;
+using CindarsHope.Foundation;
 using CindarsHope.Inventory.Data;
 using UnityEngine;
 

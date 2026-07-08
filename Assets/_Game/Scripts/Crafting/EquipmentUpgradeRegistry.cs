@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using CindarsHope.Save;
+using CindarsHope.Foundation;
 
 namespace CindarsHope.Crafting
 {

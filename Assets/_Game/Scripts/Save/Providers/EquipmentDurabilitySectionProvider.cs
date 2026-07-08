@@ -1,4 +1,5 @@
 using CindarsHope.Equipment;
+using CindarsHope.Foundation;
 
 namespace CindarsHope.Save.Providers
 {

@@ -1,4 +1,4 @@
-using CindarsHope.Equipment;
+using CindarsHope.Foundation;
 
 namespace CindarsHope.Core.Events
 {

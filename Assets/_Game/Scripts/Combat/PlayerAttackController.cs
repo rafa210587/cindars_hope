@@ -6,6 +6,7 @@ using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Data;
 using CindarsHope.Core.Events;
 using CindarsHope.Equipment;
+using CindarsHope.Foundation;
 using CindarsHope.Interaction;
 using CindarsHope.Inventory;
 using CindarsHope.Inventory.Data;

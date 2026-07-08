@@ -163,7 +163,7 @@ namespace CindarsHope.Editor.Items
                 changed = true;
             }
 
-            var desiredSlots = new[] { CindarsHope.Equipment.EquipmentSlot.LeftHand, CindarsHope.Equipment.EquipmentSlot.RightHand };
+            var desiredSlots = new[] { CindarsHope.Foundation.EquipmentSlot.LeftHand, CindarsHope.Foundation.EquipmentSlot.RightHand };
             if (!SlotsEqual(asset.AllowedEquipmentSlots, desiredSlots))
             {
                 asset.AllowedEquipmentSlots = desiredSlots;
@@ -173,7 +173,7 @@ namespace CindarsHope.Editor.Items
             return changed;
         }
 
-        private static bool SlotsEqual(CindarsHope.Equipment.EquipmentSlot[] a, CindarsHope.Equipment.EquipmentSlot[] b)
+        private static bool SlotsEqual(CindarsHope.Foundation.EquipmentSlot[] a, CindarsHope.Foundation.EquipmentSlot[] b)
         {
             if (a == null) return b == null || b.Length == 0;
             if (b == null) return a.Length == 0;

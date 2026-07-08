@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using CindarsHope.Cave.Runtime;
 using CindarsHope.Craft;
 using CindarsHope.Enemy;
-using CindarsHope.Equipment;
 using CindarsHope.Foundation;
 using CindarsHope.Farm;
 using CindarsHope.Farm.Runtime;
@@ -169,19 +168,9 @@ namespace CindarsHope.Save
         public int MaxStamina;
     }
 
-    [Serializable]
-    public class EquipmentDurabilitySaveData
-    {
-        public List<DurabilityEntryData> EquipmentDurabilities = new List<DurabilityEntryData>();
-    }
-
-    [Serializable]
-    public class DurabilityEntryData
-    {
-        public string ItemInstanceId;
-        public int CurrentDurability;
-        public int MaxDurability;
-    }
+    // arch: EquipmentDurabilitySaveData/DurabilityEntryData movidos para CindarsHope.Foundation
+    // (Foundation/SaveSchema/EquipmentSaveDtos.cs) — quebra do ciclo mutuo Equipment|Save
+    // (spec_arch_equipment_save_cycle_reduction_v29). Ver campo EquipmentDurability acima.
 
     // arch: NpcManagerSaveData/NpcSaveData movidos para CindarsHope.NPC (NpcManagerSaveData.cs) —
     // quebra do ciclo mutuo NPC|Save. Ver campo Npcs acima.
@@ -214,43 +203,11 @@ namespace CindarsHope.Save
         public int MaxDurability;
     }
 
-    [Serializable]
-    public class EquipmentSaveData
-    {
-        public string EquippedToolId;
-        public List<EquipmentSlotSaveData> Slots = new List<EquipmentSlotSaveData>();
-        // fable_22 (aditivo): infusões de têmpera por instância de arma/ferramenta. Default VAZIO =>
-        // saves legados carregam sem têmpera, sem migration. Strings/ints simples (sem refs Unity).
-        public List<WeaponInfusionSaveData> Infusions = new List<WeaponInfusionSaveData>();
-        // fable_49 (aditivo): upgrade focado (+1/+2/+3) por instância de equipamento. Default VAZIO =>
-        // saves legados carregam sem upgrade (level 0), sem migration. Tipos simples (sem refs Unity).
-        public List<EquipmentUpgradeSaveData> Upgrades = new List<EquipmentUpgradeSaveData>();
-        // fable_49 (aditivo): receitas de tier alto APRENDIDas via first-kill (slugs estáveis). Default
-        // VAZIO => save legado sem receitas, sem migration. Persistido aqui (mesmo owner do equipment
-        // save) para não tocar o SaveManager core; consultado pelo gating de craft.
-        public List<string> UnlockedRecipeIds = new List<string>();
-    }
-
-    [Serializable]
-    public class EquipmentSlotSaveData
-    {
-        public EquipmentSlot SlotType;
-        public string ItemInstanceId;
-    }
-
-    // fable_22: WeaponInfusionSaveData movido para CindarsHope.Foundation.SaveSchema.EconomySaveDtos
-    // (arch: quebra do ciclo Economy|Save). Ver EquipmentSaveData.Infusions acima.
-
-    // fable_49: entrada aditiva de upgrade (itemInstanceId → level/focus). Tipos simples, sem refs
-    // Unity, compatível com JsonUtility. Ausência da entrada = item sem upgrade (level 0). Derivados
-    // (dano/durabilidade) NUNCA persistidos (§45) — recalculados no load a partir deste registro.
-    [Serializable]
-    public class EquipmentUpgradeSaveData
-    {
-        public string ItemInstanceId;
-        public int UpgradeLevel;   // 0 = sem; 1..3
-        public string UpgradeFocus; // estável: damage/durability/weight/stamina/block
-    }
+    // arch: EquipmentSaveData/EquipmentSlotSaveData/EquipmentUpgradeSaveData movidos para
+    // CindarsHope.Foundation (Foundation/SaveSchema/EquipmentSaveDtos.cs) — quebra do ciclo mutuo
+    // Equipment|Save (spec_arch_equipment_save_cycle_reduction_v29). Ver campo Equipment acima.
+    // WeaponInfusionSaveData ja estava em CindarsHope.Foundation.SaveSchema.EconomySaveDtos (arch:
+    // quebra do ciclo Economy|Save).
 
     [Serializable]
     public class ActiveSkillSlotsSaveData

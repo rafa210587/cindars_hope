@@ -4,6 +4,7 @@ using CindarsHope.Core;
 using CindarsHope.Core.Events;
 using CindarsHope.Core.Random;
 using CindarsHope.Equipment;
+using CindarsHope.Foundation;
 using CindarsHope.Player;
 using CindarsHope.Skills;
 using UnityEngine;

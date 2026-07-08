@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using CindarsHope.Core;
 using CindarsHope.Core.Data;
 using CindarsHope.Core.Events;
-using CindarsHope.Equipment;
+using CindarsHope.Foundation;
 using CindarsHope.Foundation.Transactions;
 using CindarsHope.Inventory.Data;
 using CindarsHope.Player.Data;

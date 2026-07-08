@@ -108,8 +108,8 @@ namespace CindarsHope.UI.Onboarding
                 return; // desequipar nao conta como "1a arma equipada".
             }
 
-            if (evt.Slot == CindarsHope.Equipment.EquipmentSlot.RightHand ||
-                evt.Slot == CindarsHope.Equipment.EquipmentSlot.LeftHand)
+            if (evt.Slot == CindarsHope.Foundation.EquipmentSlot.RightHand ||
+                evt.Slot == CindarsHope.Foundation.EquipmentSlot.LeftHand)
             {
                 TryShowHint(OnboardingHintCatalog.HintAttack);
             }
