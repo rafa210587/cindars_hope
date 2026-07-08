@@ -363,7 +363,13 @@ Extrair em ordem:
 3. `EnemyActionSelectionStrategy`
 4. `EnemyCombatContext`
 5. `EnemyBrainConfigurationResolver`
-6. `EnemyDebugTelemetry`
+6. [x] `EnemyDebugTelemetry` — logs one-shot/avisos de diagnóstico (`EnemyThreatExpired`,
+   `BossSwapActionSetMissing`, `EliteWardedResistedStatus`, `EliteVolatileExploding`,
+   `EnemyPackLeashReset`) saíram do `EnemyBrain` sem mudar texto, guard one-shot ou ponto de disparo.
+   Spec: `spec_arch_enemybrain_debug_telemetry_v19.md`. `AnnouncePackEngagementOnce` e os guards de
+   gameplay (`_wardedStatusConsumed`, `_volatileExploded`, `_packEngagedAnnounced`) permaneceram no
+   brain por serem lógica de gameplay, não telemetria. Snapshot após o recorte:
+   `RuntimeModuleEdges=227`, `MutualModulePairs=38`, sem novo ciclo.
 
 Padrões recomendados:
 

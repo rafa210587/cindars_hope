@@ -1,5 +1,37 @@
 # Prompt de Continuação para Claude — Rework Modular
 
+## 2026-07-07 — EnemyBrain debug telemetry v19 (Fase E)
+
+- Spec implementada: `.specs/implementados/spec_arch_enemybrain_debug_telemetry_v19.md`.
+- Objetivo: extrair a telemetria de diagnóstico (logs one-shot e avisos) do `EnemyBrain` para
+  `EnemyDebugTelemetry`, sem alterar dano, cooldown, range, stun, posture, movimento, seleção de
+  ação, loot, cave scaling, saves, cenas, prefabs, IDs ou balanceamento.
+- Mudança:
+  - criado `Assets/_Game/Scripts/Enemy/EnemyDebugTelemetry.cs` (classe C# pura, instanciada por
+    `EnemyBrain`);
+  - migrados `LogThreatExpiredOnce` (com o guard one-shot `_threatExpiredLogged`),
+    `Debug.LogWarning("BossSwapActionSetMissing")`, o log de `EliteWardedResistedStatus`, o log de
+    `EliteVolatileExploding` e o log de `EnemyPackLeashReset`;
+  - `EnemyBrain` chama `_telemetry.ResetThreatExpiredLog()` nos três pontos onde o guard antigo era
+    resetado (`OnEnable`, reengajamento em `EvaluateState`, `OnPackAlert`);
+  - registrado `EnemyDebugTelemetry.cs` em `CindarsHope.Runtime.csproj` (lista explícita de
+    `<Compile Include>`, sem glob).
+- **Desvio deliberado do pedido**: `AnnouncePackEngagementOnce` foi citado no pedido como exemplo de
+  método a extrair, mas na leitura do código real ele não é um log — chama
+  `_packCoordinator.Alert(...)`, ou seja, é gameplay real (acorda o pack), guardado por
+  `_packEngagedAnnounced` que também controla comportamento. Permaneceu no `EnemyBrain`, sem
+  alteração. Pelo mesmo motivo, `_wardedStatusConsumed` e `_volatileExploded` (guards de
+  gameplay real: resistir ao primeiro status / explodir uma vez) não foram movidos — só as
+  chamadas de log correspondentes foram extraídas (stateless), preservando texto e ponto de disparo.
+- Gates:
+  - `tools/unity/Invoke-UnityGeneratedProjectsBuild.ps1`: exit 0, 7/7 projetos, 0 warnings, 0 errors.
+  - `tools/unity/RunUnityEditModeTests.ps1`: exit 0, 2747/2747 PASS,
+    `TestResults/enemybrain-debug-telemetry-editmode.xml`.
+  - `tools/architecture/Get-ModularizationDependencySnapshot.ps1`: exit 0,
+    `RuntimeModuleEdges=227`, `MutualModulePairs=38`, sem novo ciclo (idêntico antes/depois).
+- Fase E do plano fecha com este recorte: os itens anteriores da lista (targeting, tuning,
+  action-selection, config) já haviam sido cobertos por specs anteriores.
+
 ## 2026-07-07 — NPC debug expression policy v18
 
 - Spec implementada: `.specs/implementados/spec_arch_npc_debug_expression_policy_v18.md`.
