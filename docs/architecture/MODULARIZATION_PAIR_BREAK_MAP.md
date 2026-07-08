@@ -50,7 +50,7 @@ associado, migra-se o acesso para port/registro tipado.
 |---|---|
 | `Equipment\|Save` | Mover enum `EquipmentSlot` + DTOs de equipment p/ Foundation. |
 | `Farm\|Save` | Relocar posse de `FarmTileGrid`/`FarmNonArableZones` do SaveManager p/ serviço Farm no composition root + mover `FarmSaveData`/`FarmPlotSaveData` p/ Farm. |
-| `Cave\|Save` | Mover `CaveSaveData` p/ `Cave.Runtime` (precedente: `CaveRunSaveData`). |
+| `Cave\|Save` (**FEITO** — `.specs/implementados/spec_arch_cave_save_cycle_reduction_v28.md`) | Mover `CaveSaveData` p/ `Cave.Runtime` (precedente: `CaveRunSaveData`). |
 | `Core\|Save` | `ISaveService` em Core/Foundation p/ GameBootstrap; `GameTimeManager` expõe setters primitivos e o provider lê o DTO. |
 | `Core\|Craft` | Mover enum `WorkshopType` p/ Foundation; port/registro p/ `CraftingManager`. |
 | `Core\|Economy` | Ports `IEconomyService`/`IShopService`; mover fiação concreta p/ composition root; matar hop reverso `SellableItemPolicy→GameBootstrap.Instance`. |

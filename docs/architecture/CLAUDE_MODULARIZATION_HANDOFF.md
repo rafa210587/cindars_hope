@@ -1,5 +1,51 @@
 # Prompt de Continuação para Claude — Rework Modular
 
+## 2026-07-08 — Cave/Save cycle reduction v28 (microcut Tier 3)
+
+- Spec implementada: `.specs/implementados/spec_arch_cave_save_cycle_reduction_v28.md`.
+- Objetivo: quebrar o par mútuo `Cave|Save` (Tier 3 do
+  `docs/architecture/MODULARIZATION_PAIR_BREAK_MAP.md`), sem alterar gameplay, saves, cenas,
+  prefabs, IDs ou balanceamento.
+- Passo 0 (verificação obrigatória): grep de `using CindarsHope.Save` em toda a pasta
+  `Assets/_Game/Scripts/Cave/` confirmou que `Cave/Runtime/CaveRunManager.cs` era o único arquivo de
+  Cave referenciando Save (via `CaveSaveData`). `CaveSaveData.cs` foi lido por inteiro: DTO puro
+  (`int`/`string`/`List<>` + `UnityEngine.Vector2`/`Vector2Int`), já importava
+  `CindarsHope.Cave.Runtime` e não tinha nenhuma outra dependência de domínio — elegível para mover
+  para Cave sem reintroduzir o ciclo. Precedente vivo: `CaveRunSaveData` já mora em
+  `Cave/Runtime/`.
+- Mudança:
+  - `CaveSaveData.cs` (+`.meta`) movido via `git mv` de `Assets/_Game/Scripts/Save/` para
+    `Assets/_Game/Scripts/Cave/Runtime/`, GUID preservado. Namespace trocado de `CindarsHope.Save`
+    para `CindarsHope.Cave.Runtime`; `using CindarsHope.Cave.Runtime;` removido do topo do próprio
+    arquivo por ficar redundante/auto-referente após a mudança de namespace.
+  - `CaveRunManager.cs`: `using CindarsHope.Save;` removido (sem outro uso do namespace).
+  - `Save/SaveData.cs`: ganhou `using CindarsHope.Cave.Runtime;` (novo, para resolver o campo
+    `public CaveSaveData Cave;`).
+  - `SaveManager.cs`, `SaveManager.Migration.cs`, `Migrations/SaveV3ToV4Migration.cs` e
+    `Providers/CaveSectionProvider.cs`: nenhuma edição necessária — já resolviam `CaveSaveData` via
+    `using CindarsHope.Cave.Runtime;` preexistente (usado para outros tipos de Cave nesses mesmos
+    arquivos).
+  - `Editor/Validation/ValidateSpec14BCaveSnapshotReplay.cs`: path do check textual atualizado
+    (`Assets/_Game/Scripts/Save/CaveSaveData.cs` → `Assets/_Game/Scripts/Cave/Runtime/CaveSaveData.cs`).
+  - `CindarsHope.Runtime.csproj`: `<Compile Include>` do arquivo movido atualizado manualmente
+    (Unity não estava aberto para regenerar o csproj neste ambiente; csproj é gitignored, não
+    commitado).
+  - Nenhum schema/campo/valor/nome de classe alterado; nenhuma cena/prefab/asset editado
+    manualmente.
+- Achado não bloqueante (fora de escopo, não corrigido): `Assets/_Game/Tests/EditMode/Cave/
+  CaveSaveBackCompatTests.cs` já tinha `using CindarsHope.Save;` órfão (só citava `CaveSaveData` em
+  comentário) antes deste corte — não gera edge no scanner (é `Tests`, não `Cave`) e não foi tocado
+  para manter o diff mínimo.
+- Gates:
+  - `tools/architecture/Get-ModularizationDependencySnapshot.ps1`: `MutualModulePairs=30 -> 29`,
+    `Cave|Save` removido, nenhum par novo apareceu.
+  - `tools/unity/Invoke-UnityGeneratedProjectsBuild.ps1`: exit 0, 7/7 projetos, 0 warnings, 0 erros.
+  - `tools/unity/RunUnityEditModeTests.ps1 -ResultsPath TestResults\cut-cave-save-editmode.xml -LogFile Logs\cut-cave-save.log`:
+    exit 0, 2747/2747 PASS, 0 failed.
+- Ainda não declarar modularização ampla concluída: restam 29 pares mútuos para specs-filhas.
+- Sem push. Working tree segue com mudanças concorrentes de arte/animação/ProjectSettings/tools
+  fora do escopo desta spec (não tocadas/incluídas).
+
 ## 2026-07-08 — Core/Locations cycle reduction v27 (microcut Tier 2)
 
 - Spec implementada: `.specs/implementados/spec_arch_core_locations_cycle_reduction_v27.md`.
