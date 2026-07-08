@@ -4,7 +4,6 @@ using CindarsHope.Skills;
 using CindarsHope.Core.Data;
 using CindarsHope.Core.Respawn;
 using CindarsHope.Core.Time;
-using CindarsHope.Economy;
 using CindarsHope.Equipment;
 using CindarsHope.Foundation;
 using CindarsHope.Inventory;
@@ -33,8 +32,6 @@ namespace CindarsHope.Core.Bootstrap
         [SerializeField] private SaveManager _saveManager;
         [SerializeField] private HungerManager _hungerManager;
         [SerializeField] private StaminaManager _staminaManager;
-        [SerializeField] private EconomyManager _economyManager;
-        [SerializeField] private ShopManager _shopManager;
         [SerializeField] private EquipmentManager _equipmentManager;
         [SerializeField] private PlayerProgressionManager _progressionManager;
         [SerializeField] private StatusEffectManager _statusEffectManager;
@@ -63,8 +60,6 @@ namespace CindarsHope.Core.Bootstrap
         public HungerManager HungerManager => _hungerManager;
         public StaminaManager StaminaManager => _staminaManager;
         public ManaManager ManaManager => _manaManager;
-        public EconomyManager EconomyManager => _economyManager;
-        public ShopManager ShopManager => _shopManager;
         public EquipmentManager EquipmentManager => _equipmentManager;
         public PlayerProgressionManager PlayerProgressionManager => _progressionManager;
         public StatusEffectManager StatusEffectManager => _statusEffectManager;
@@ -109,7 +104,6 @@ namespace CindarsHope.Core.Bootstrap
 
             _instance = this;
             DontDestroyOnLoad(gameObject);
-            EnsurePersistentShopManager();
             InitializeManagers();
         }
 
@@ -245,18 +239,25 @@ namespace CindarsHope.Core.Bootstrap
                 CindarsHope.Craft.CraftingManager.Instance.Initialize();
             }
 
-            if (_economyManager != null)
+            // arch: Core|Economy (spec_arch_core_economy_cycle_reduction_v33) — ShopManager
+            // self-registra via static Instance (molde Craft); o manager de ouro (Economy) NAO ganha
+            // um accessor estatico global (ratchet GlobalGoldAccess proibe esse padrao em runtime) —
+            // o gerador de cena adiciona ambos ao mesmo GameObject do bootstrap, entao GetComponent no
+            // mesmo object resolve sem reintroduzir o campo serializado nem violar o ratchet.
+            var economyManager = GetComponent<CindarsHope.Economy.EconomyManager>();
+            if (economyManager != null)
             {
-                _economyManager.Initialize();
+                economyManager.Initialize();
             }
 
-            if (_shopManager != null)
+            var shopManager = CindarsHope.Economy.ShopManager.Instance;
+            if (shopManager != null)
             {
-                _shopManager.Configure(_itemDatabase);
+                shopManager.Configure(_itemDatabase);
             }
             else
             {
-                Debug.LogError($"Scene '{gameObject.scene.path}' GameObject '{gameObject.name}' component '{nameof(GameBootstrap)}' field '_shopManager' could not be initialized.", this);
+                Debug.LogError($"Scene '{gameObject.scene.path}' GameObject '{gameObject.name}' component '{nameof(GameBootstrap)}' could not find a ShopManager.Instance to initialize.", this);
             }
 
             if (_statusEffectManager != null)
@@ -277,7 +278,7 @@ namespace CindarsHope.Core.Bootstrap
             {
                 // arch: Core|Enemy (spec_arch_core_enemy_cycle_reduction_v31) — BestiaryManager nao eh
                 // mais passado por aqui; SaveManager resolve via BestiaryManager.Instance (self-registro).
-                _saveManager.RebindOptionalRuntimeManagers(_equipmentManager, _progressionManager, _gameTimeManager, _staminaManager, _statusEffectManager, _skillTreeManager, _shopManager);
+                _saveManager.RebindOptionalRuntimeManagers(_equipmentManager, _progressionManager, _gameTimeManager, _staminaManager, _statusEffectManager, _skillTreeManager, CindarsHope.Economy.ShopManager.Instance);
             }
 
             CombatRuntimeInstaller.Install(BuildCombatInstallContext(), this);
@@ -426,33 +427,17 @@ namespace CindarsHope.Core.Bootstrap
                 CindarsHope.Craft.CraftingManager.Instance.Shutdown();
             }
 
-            if (_economyManager != null && _economyManager.IsInitialized)
+            var economyManager = GetComponent<CindarsHope.Economy.EconomyManager>();
+            if (economyManager != null && economyManager.IsInitialized)
             {
-                _economyManager.Shutdown();
+                economyManager.Shutdown();
             }
 
-            if (_shopManager != null && _shopManager.IsInitialized)
+            var shopManager = CindarsHope.Economy.ShopManager.Instance;
+            if (shopManager != null && shopManager.IsInitialized)
             {
-                _shopManager.Shutdown();
+                shopManager.Shutdown();
             }
-        }
-
-        private void EnsurePersistentShopManager()
-        {
-            if (_shopManager != null)
-            {
-                return;
-            }
-
-            _shopManager = GetComponent<ShopManager>();
-            if (_shopManager != null)
-            {
-                Debug.Log($"GameBootstrap adopted serialized ShopManager on persistent bootstrap in scene '{gameObject.scene.path}'.", this);
-                return;
-            }
-
-            _shopManager = gameObject.AddComponent<ShopManager>();
-            Debug.Log($"GameBootstrap created persistent ShopManager because scene '{gameObject.scene.path}' did not serialize one.", this);
         }
     }
 }

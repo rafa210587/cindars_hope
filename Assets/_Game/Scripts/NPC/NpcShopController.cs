@@ -127,7 +127,9 @@ namespace CindarsHope.NPC
                 return;
             }
 
-            RebindIfAvailable(ref _shopManager, bootstrap.ShopManager, nameof(_shopManager), reason);
+            // arch: Core|Economy (spec_arch_core_economy_cycle_reduction_v33) — ShopManager
+            // self-registra via static Instance; GameBootstrap nao segura mais essa ref.
+            RebindIfAvailable(ref _shopManager, ShopManager.Instance, nameof(_shopManager), reason);
             RebindIfAvailable(ref _playerManager, bootstrap.PlayerManager, nameof(_playerManager), reason);
             RebindIfAvailable(ref _inventoryManager, bootstrap.InventoryManager, nameof(_inventoryManager), reason);
             RebindIfAvailable(ref _itemDatabase, bootstrap.ItemDatabase, nameof(_itemDatabase), reason);
@@ -833,7 +835,7 @@ namespace CindarsHope.NPC
         {
             var bootstrap = GameBootstrap.Instance;
             return bootstrap != null
-                && ((bootstrap.ShopManager != null && _shopManager != bootstrap.ShopManager)
+                && ((ShopManager.Instance != null && _shopManager != ShopManager.Instance)
                     || (bootstrap.PlayerManager != null && _playerManager != bootstrap.PlayerManager)
                     || (bootstrap.InventoryManager != null && _inventoryManager != bootstrap.InventoryManager)
                     || (bootstrap.ItemDatabase != null && _itemDatabase != bootstrap.ItemDatabase)

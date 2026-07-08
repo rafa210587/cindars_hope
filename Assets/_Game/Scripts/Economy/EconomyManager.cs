@@ -11,6 +11,12 @@ namespace CindarsHope.Economy
     [DisallowMultipleComponent]
     public sealed class EconomyManager : MonoBehaviour
     {
+        // arch: Core|Economy (spec_arch_core_economy_cycle_reduction_v33) — esta classe NAO ganha um
+        // accessor estatico global (diferente do molde Audio/AudioManager.cs usado em Core|Enemy e
+        // Core|Craft): o ratchet GlobalGoldAccess (tools/architecture/architecture-ratchet-rules.tsv)
+        // proibe esse padrao de acesso global a este manager de ouro em qualquer lugar do runtime
+        // (baseline 0). GameBootstrap resolve via GetComponent no mesmo GameObject (o gerador de cena
+        // adiciona este componente ao mesmo bootstrapObject), sem reintroduzir um acesso global.
         [SerializeField] private InventoryManager _inventoryManager;
         [SerializeField] private PlayerManager _playerManager;
 

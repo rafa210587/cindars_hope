@@ -2,6 +2,7 @@ using CindarsHope.Core.Bootstrap;
 using CindarsHope.Cave;
 using CindarsHope.Cave.Data;
 using CindarsHope.Cave.Runtime;
+using CindarsHope.Economy;
 using CindarsHope.Interaction;
 using CindarsHope.UI;
 using UnityEngine;
@@ -45,7 +46,9 @@ namespace CindarsHope.SceneManagement
             if (playerManager != null && inventoryManager != null && hungerManager != null && timeManager != null)
             {
                 saveManager.RebindRuntimeManagers(playerManager, inventoryManager, hungerManager, timeManager);
-                saveManager.RebindOptionalRuntimeManagers(bootstrap.EquipmentManager, bootstrap.PlayerProgressionManager, bootstrap.GameTimeManager, staminaManager, bootstrap.StatusEffectManager, bootstrap.SkillTreeManager, bootstrap.ShopManager);
+                // arch: Core|Economy (spec_arch_core_economy_cycle_reduction_v33) — ShopManager
+                // self-registra via static Instance; GameBootstrap nao segura mais essa ref.
+                saveManager.RebindOptionalRuntimeManagers(bootstrap.EquipmentManager, bootstrap.PlayerProgressionManager, bootstrap.GameTimeManager, staminaManager, bootstrap.StatusEffectManager, bootstrap.SkillTreeManager, ShopManager.Instance);
             }
             else
             {

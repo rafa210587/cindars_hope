@@ -15,12 +15,29 @@ namespace CindarsHope.Economy
     [DisallowMultipleComponent]
     public sealed class ShopManager : MonoBehaviour
     {
+        // arch: Core|Economy (spec_arch_core_economy_cycle_reduction_v33) — self-registro estatico,
+        // molde Audio/AudioManager.cs (ja usado em Core|Enemy e Core|Craft); GameBootstrap nao segura
+        // mais [SerializeField] deste manager (nem cria fallback via AddComponent).
+        private static ShopManager _instance;
+        public static ShopManager Instance => _instance;
+
         [SerializeField] private ItemDatabaseSO _itemDatabase;
 
         private readonly Dictionary<string, ShopSession> _sessions = new Dictionary<string, ShopSession>();
 
         public bool IsInitialized { get; private set; }
         public IReadOnlyCollection<string> RegisteredShopIds => _sessions.Keys;
+
+        private void Awake()
+        {
+            if (_instance != null && _instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            _instance = this;
+        }
 
         private void OnEnable()
         {
@@ -30,6 +47,14 @@ namespace CindarsHope.Economy
         private void OnDisable()
         {
             GameEventBus.Unsubscribe<DayStartedEvent>(HandleDayStarted);
+        }
+
+        private void OnDestroy()
+        {
+            if (_instance == this)
+            {
+                _instance = null;
+            }
         }
 
         public void Initialize()

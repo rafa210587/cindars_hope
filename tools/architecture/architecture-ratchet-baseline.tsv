@@ -62,6 +62,7 @@ SingletonDeclaration	Assets/_Game/Scripts/Core/Bootstrap/GameBootstrap.cs	1
 SingletonDeclaration	Assets/_Game/Scripts/Craft/CraftingManager.cs	1
 SingletonDeclaration	Assets/_Game/Scripts/Crafting/EquipmentUpgradeRegistry.cs	1
 SingletonDeclaration	Assets/_Game/Scripts/Crafting/RecipeUnlockService.cs	1
+SingletonDeclaration	Assets/_Game/Scripts/Economy/ShopManager.cs	1
 SingletonDeclaration	Assets/_Game/Scripts/Economy/WeaponInfusionRegistry.cs	1
 SingletonDeclaration	Assets/_Game/Scripts/Enemy/BestiaryManager.cs	1
 SingletonDeclaration	Assets/_Game/Scripts/Equipment/AccessoryEffectRouter.cs	1

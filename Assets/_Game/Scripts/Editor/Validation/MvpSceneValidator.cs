@@ -196,8 +196,10 @@ namespace CindarsHope.Editor.Validation
                 // e mais [SerializeField] do GameBootstrap; valida presenca do componente na cena.
                 if (FindComponent<CraftingManager>(rootObjects) == null)
                     { Debug.LogError("MvpSceneValidator: FarmScene missing CraftingManager component."); passed = false; }
-                if (bootstrap.EconomyManager == null)
-                    { Debug.LogError("MvpSceneValidator: GameBootstrap missing EconomyManager."); passed = false; }
+                // arch: Core|Economy (spec_arch_core_economy_cycle_reduction_v33) — EconomyManager
+                // nao e mais [SerializeField] do GameBootstrap; valida presenca do componente na cena.
+                if (FindComponent<EconomyManager>(rootObjects) == null)
+                    { Debug.LogError("MvpSceneValidator: FarmScene missing EconomyManager component."); passed = false; }
                 passed &= ValidateSpec09Bootstrap(bootstrap);
             }
 
@@ -266,8 +268,10 @@ namespace CindarsHope.Editor.Validation
             }
             else
             {
-                if (bootstrap.EconomyManager == null)
-                    { Debug.LogError("MvpSceneValidator: GameBootstrap missing EconomyManager."); passed = false; }
+                // arch: Core|Economy (spec_arch_core_economy_cycle_reduction_v33) — EconomyManager
+                // nao e mais [SerializeField] do GameBootstrap; valida presenca do componente na cena.
+                if (FindComponent<EconomyManager>(rootObjects) == null)
+                    { Debug.LogError("MvpSceneValidator: TownScene missing EconomyManager component."); passed = false; }
                 passed &= ValidateSpec09Bootstrap(bootstrap);
             }
 
