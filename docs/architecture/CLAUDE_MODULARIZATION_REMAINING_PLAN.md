@@ -497,12 +497,28 @@ Pare e reporte em vez de forçar se:
 - depende de decisão de design;
 - build/test começa a falhar por motivo não trivial.
 
-## 11. Próximo passo recomendado
+## 11. Próximo passo recomendado (ATUALIZADO 2026-07-07 — análise por workflow)
 
-Criar e executar primeiro:
+**Ver `docs/architecture/MODULARIZATION_PAIR_BREAK_MAP.md`** — mapa completo dos 20 pares de maior valor
+(`*|Save` + `Core|*`) com a direção leve a cortar, estratégia concreta (arquivo:linha), risco e esforço,
++ os findings de eficiência.
 
-```text
-spec_arch_save_boundary_v13.md
-```
+**Correção importante:** a premissa antiga de que Save Boundary era "área vermelha do save" foi **refutada**.
+JsonUtility serializa por nome de campo (não por namespace) e mover `.cs`+`.meta` preserva GUID — então
+relocar DTOs/enums entre namespaces é transparente a saves/assets, **sem migration**. A infra de providers
+por domínio (`ISaveSectionProvider` + `SaveProviderRegistry` + ~31 `*SectionProvider`) **já existe**; não é
+preciso "criar arquitetura de providers".
 
-Motivo: os pares `*|Save` são numerosos e estruturais. Resolver isso com uma arquitetura clara de providers/DTOs deve reduzir vários ciclos e melhorar manutenção mais do que novos microcortes isolados.
+**Fazer nesta ordem** (um par por commit; gates: snapshot cai 1, build 7/7, EditMode 2747, round-trip de save
+ao mover DTO):
+
+1. **Tier 1 (microcut/low risk, ~7 pares → 38 pode cair p/ ~31):** `Player|Save`, `Core|Skills`, `Core|Player`,
+   `Save|World`, `NPC|Save`, `Economy|Save`, `Quests|Save`. Detalhe no mapa.
+2. **Tier 2 (small-spec/medium):** `Inventory|Save`, `Save|UI`, `Core|Locations`, `Core|UI`, `Core|Enemy`
+   (este exige regen de cena).
+3. **Tier 3 (large-spec):** `Equipment|Save`, `Farm|Save`, `Cave|Save`, `Core|Save`, `Core|Craft`,
+   `Core|Economy`, `Core|Equipment`, `Core|Inventory` — spec própria por par/grupo. Sinergia: mover o enum
+   `EquipmentSlot` p/ Foundation ajuda 3 pares de uma vez.
+
+Não é mais preciso um único `spec_arch_save_boundary_v13.md` monolítico: os cortes são majoritariamente
+microcuts independentes. Agrupar por spec só os do Tier 3.
