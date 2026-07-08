@@ -26,7 +26,7 @@ associado, migra-se o acesso para port/registro tipado.
 
 | Par | Direção leve a cortar | Estratégia (resumo) | Risco/esforço |
 |---|---|---|---|
-| `Player\|Save` | PlayerManager→Save (1 arquivo, tipo `PlayerSaveData`) | Inverter: `PlayerSectionProvider` (já importa Player) constrói/restaura o DTO via getters/setters públicos de `PlayerManager`; deletar `using CindarsHope.Save` de `PlayerManager.cs:5`. **Não move schema.** | low / microcut |
+| `Player\|Save` (**FEITO** — `.specs/implementados/spec_arch_player_save_cycle_reduction_v20.md`) | PlayerManager→Save (1 arquivo, tipo `PlayerSaveData`) | Inverter: `PlayerSectionProvider` (já importa Player) constrói/restaura o DTO via getters/setters públicos de `PlayerManager`; deletar `using CindarsHope.Save` de `PlayerManager.cs:5`. **Não move schema.** | low / microcut |
 | `Core\|Skills` | Core→Skills (`SkillActionDatabaseSO`) | Mover `Core/Data/SkillActionDatabaseSO.cs` (+`.meta`) p/ `Skills/`, namespace `CindarsHope.Skills`. GUID preservado → `.asset` e ref serializada do GameBootstrap sobrevivem. | low / microcut |
 | `Core\|Player` | Core.Events→Player (2 enums) | Mover `HazardType` + `PlayerAttributeType` p/ Foundation; reapontar ~8 usings. GameBootstrap/installer mantêm import Player (composition root, ok). | low / small |
 | `Save\|World` | World→Save (2 métodos) | Estreitar assinaturas: `TreeRegistry.Restore(IReadOnlyList<TreeSaveData>)` e `GameCalendarService.Restore(int absoluteDayIndex)`; caller (WorldSectionProvider) passa os dados. **Não move nenhum DTO.** | low / small |

@@ -1,5 +1,37 @@
 # Prompt de Continuação para Claude — Rework Modular
 
+## 2026-07-07 — Player/Save cycle reduction v20 (microcut Tier 1)
+
+- Spec implementada: `.specs/implementados/spec_arch_player_save_cycle_reduction_v20.md`.
+- Objetivo: quebrar o par mútuo `Player|Save` (microcut Tier 1 do
+  `docs/architecture/MODULARIZATION_PAIR_BREAK_MAP.md`), sem alterar gameplay, saves, schema,
+  cenas, prefabs ou IDs.
+- Passo 0 (verificação obrigatória): grep de `CindarsHope.Save` em toda a pasta
+  `Assets/_Game/Scripts/Player/` confirmou que `PlayerManager.cs` era o único arquivo do domínio
+  Player referenciando Save (via `CaptureSaveData`/`RestoreFromSaveData` tipados por
+  `PlayerSaveData`). `ManaManagerSaveData` e `PlayerProgressionSaveData` já vivem no próprio
+  namespace `CindarsHope.Player*`, não geravam aresta.
+- Mudança:
+  - `PlayerManager.CaptureSaveData(int, int, Vector2)` removido; `PlayerSectionProvider.Capture`
+    monta `new PlayerSaveData { ... }` direto via getters públicos (`CurrentHP`, `MaxHP`,
+    `CurrentGold`).
+  - `PlayerManager.RestoreFromSaveData(PlayerSaveData)` virou
+    `PlayerManager.RestoreState(int maxHP, int currentHP, int gold)` — corpo idêntico (mesmo clamp,
+    mesmos deltas, mesmos eventos `GoldChangedEvent`/`HPChangedEvent`), só trocando o parâmetro DTO
+    por três primitivos; `PlayerSectionProvider.Restore` desempacota o DTO e chama o novo método.
+  - `using CindarsHope.Save;` removido de `PlayerManager.cs`.
+  - `PlayerSaveData` **não foi movido** — schema/campos preservados em `CindarsHope.Save`.
+- Gates:
+  - `tools/architecture/Get-ModularizationDependencySnapshot.ps1`: exit 0,
+    `MutualModulePairs=38 -> 37`, `RuntimeModuleEdges=227 -> 226`, `Player|Save` removido, nenhum
+    par novo apareceu.
+  - `tools/unity/Invoke-UnityGeneratedProjectsBuild.ps1`: exit 0, 7/7 projetos, 0 warnings, 0 erros.
+  - `tools/unity/RunUnityEditModeTests.ps1 -ResultsPath TestResults\cut-player-save-editmode.xml -LogFile Logs\cut-player-save.log`:
+    exit 0, 2747/2747 PASS, 0 failed.
+- Ainda não declarar modularização ampla concluída: restam 37 pares mútuos para specs-filhas.
+- Sem push. Working tree segue com mudanças concorrentes de arte/animação/ProjectSettings/tools
+  fora do escopo desta spec (não tocadas/incluídas).
+
 ## 2026-07-07 — EnemyBrain debug telemetry v19 (Fase E)
 
 - Spec implementada: `.specs/implementados/spec_arch_enemybrain_debug_telemetry_v19.md`.
