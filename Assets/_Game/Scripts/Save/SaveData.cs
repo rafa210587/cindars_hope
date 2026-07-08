@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using CindarsHope.Craft;
 using CindarsHope.Enemy;
 using CindarsHope.Equipment;
+using CindarsHope.Foundation;
 using CindarsHope.Farm;
 using CindarsHope.Farm.Runtime;
 using CindarsHope.Player;
@@ -176,21 +177,6 @@ namespace CindarsHope.Save
     }
 
     [Serializable]
-    public class ShopStockSaveData
-    {
-        public string ShopId;
-        public List<ShopItemStockEntry> Items = new List<ShopItemStockEntry>();
-        public int LastRestockDay;
-    }
-
-    [Serializable]
-    public class ShopItemStockEntry
-    {
-        public string ItemId;
-        public int CurrentStock;
-    }
-
-    [Serializable]
     public class EconomySaveData
     {
         public List<ShopStockSaveData> Shops = new List<ShopStockSaveData>();
@@ -284,15 +270,8 @@ namespace CindarsHope.Save
         public string ItemInstanceId;
     }
 
-    // fable_22: entrada aditiva de infusão (itemInstanceId → element/tier). Tipos simples, sem
-    // refs Unity, compatível com JsonUtility. Ausência da entrada = arma sem têmpera.
-    [Serializable]
-    public class WeaponInfusionSaveData
-    {
-        public string ItemInstanceId;
-        public string InfusionElement; // estável: fire/ice/toxic/lightning/arcane/void
-        public int InfusionTier;        // 0 = sem; 1 ou 2
-    }
+    // fable_22: WeaponInfusionSaveData movido para CindarsHope.Foundation.SaveSchema.EconomySaveDtos
+    // (arch: quebra do ciclo Economy|Save). Ver EquipmentSaveData.Infusions acima.
 
     // fable_49: entrada aditiva de upgrade (itemInstanceId → level/focus). Tipos simples, sem refs
     // Unity, compatível com JsonUtility. Ausência da entrada = item sem upgrade (level 0). Derivados

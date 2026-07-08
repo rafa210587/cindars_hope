@@ -8,7 +8,6 @@ using CindarsHope.Core.Data;
 using CindarsHope.Core.Events;
 using CindarsHope.Core.Time;
 using CindarsHope.Craft;
-using CindarsHope.Economy;
 using CindarsHope.Enemy;
 using CindarsHope.Equipment;
 using CindarsHope.Farm;
