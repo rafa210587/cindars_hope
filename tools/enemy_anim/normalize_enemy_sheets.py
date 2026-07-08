@@ -36,6 +36,7 @@ OUT  = os.path.join(REPO, 'art', 'enemy_anim_gpt', 'normalized')
 #   1 linha : efeito radial / pilha no chao / drift simetrico (mesma faixa p/ toda direcao)
 CLIP_ROWS = {
     'walk': None,       # variavel por slug (ver SLUG_WALK_ROWS)
+    'idle': None,       # mesmo N de linhas do walk do slug
     'atk_bite': None,
     'atk_slash': None,
     'atk_claw': None,
@@ -46,6 +47,16 @@ CLIP_ROWS = {
     'atk_whip': None,
     'atk_nova': 1,
     'atk_rise': 1,
+    # batch 2
+    'atk_charge': None,
+    'atk_thrust': None,
+    'atk_cast': None,
+    'atk_blink': None,
+    'atk_buff': 1,      # self-buff radial (aura ao redor) — 1 linha, como nova
+    'atk_cleave': None, # machado de cima pra baixo (orc, duergar) — direcional
+    'atk_slam': None,   # investida de chifres (hollow_stag) — direcional
+    # batch 2b
+    'atk_summon': 1,    # invocacao radial (gnome_tinkerer, rimelock_colossus) — 1 linha, como nova/buff
 }
 # linhas da folha de MOVIMENTO por slug (define o "corpo": bipede=5, inseto/quadrupede/voador=3/5,
 # ancorado=1). As folhas de ATAQUE do slug herdam o mesmo N, exceto clips forcados a 1 (nova/rise).
@@ -60,6 +71,29 @@ SLUG_WALK_ROWS = {
     'fungal_spreader':  1,
     'gen_spore_imp':    5,
     'gen_thorn_archer': 5,
+    # batch 2
+    'gen_root_snare':      1,  # planta ancorada (drift)
+    'goblin_shredder':     5,
+    'orc_grunt':           5,
+    'gloom_moth':          3,  # voador
+    'gen_hollow_stag':     5,  # quadrupede
+    'gen_frost_rodent':    5,  # quadrupede
+    'gen_cracked_skeleton':5,
+    'gen_sentinel':        5,
+    'coldcult_preacher':   5,
+    'gen_duergar':         5,
+    # batch 2b
+    'construct_sentry':       5,
+    'corrupted_orc_champion': 5,
+    'corrupted_vine_horror':  1,  # planta ancorada (maw frontal, drift)
+    'cultist_zealot':         5,
+    'frost_wisp':             3,  # wisp de chama (voador)
+    'frostbound_revenant':    5,
+    'gen_moth':               3,  # voador
+    'gen_vine_lasher':        5,
+    'gnome_tinkerer':         5,
+    'goblin_shaman':          5,
+    'rimelock_colossus':      5,
 }
 # folhas de ATAQUE cujo N de linhas difere do walk do slug (o prompt pediu 3 linhas nesses).
 CLIP_ROWS_OVERRIDE = {
@@ -72,6 +106,11 @@ CLIP_ROWS_OVERRIDE = {
     ('fungal_spreader', 'atk_whip'): 3,
     ('gen_spore_imp', 'atk_whip'): 3,
     ('gen_thorn_archer', 'atk_slash'): 3,
+    # batch 2: ataques cujo N difere do walk do slug
+    ('gen_root_snare', 'atk_whip'): 3,   # planta anda em 1 linha, mas chicoteia em 3 direcoes
+    ('orc_grunt', 'atk_blink'): 3,       # blink em 3 direcoes
+    # batch 2b: planta ancorada (walk=1) que chicoteia em 3 direcoes
+    ('corrupted_vine_horror', 'atk_whip'): 3,
 }
 
 COLS = 5
@@ -98,9 +137,13 @@ def strip_bg(rgb):
             vis[idx] = True; st.append(int(idx))
     while st:
         i = st.pop(); y, x = divmod(i, W)
-        for j in ((i - 1) if x > 0 else -1, (i + 1) if x < W - 1 else -1,
-                  (i - W) if y > 0 else -1, (i + W) if y < H - 1 else -1):
-            if j >= 0 and m[j] and not vis[j]:
+        neighbors = []
+        if x > 0: neighbors.append(i - 1)
+        if x < W - 1: neighbors.append(i + 1)
+        if y > 0: neighbors.append(i - W)
+        if y < H - 1: neighbors.append(i + W)
+        for j in neighbors:
+            if m[j] and not vis[j]:
                 vis[j] = True; st.append(j)
     return np.where(vis.reshape(H, W), 0, 255).astype(np.uint8)
 
@@ -257,14 +300,27 @@ def clips_for_slug(slug):
 def main():
     targets = sys.argv[1:] or all_slugs_in_raw()
     scale_cache = {}
-    ok = 0; total = 0
+    ok = 0; total = 0; skipped = []
     for slug in targets:
         for clip in clips_for_slug(slug):
             total += 1
-            r = normalize_one(slug, clip, scale_cache)
+            try:
+                r = normalize_one(slug, clip, scale_cache)
+            except Exception as e:
+                # ambiente (CPython 3.14 flaky) pode falhar de forma transiente e nao reproduzivel;
+                # 1 retry resolve na pratica antes de marcar como problematica.
+                print(f'{slug}_{clip}: erro transiente ({type(e).__name__}: {e}) — retry')
+                try:
+                    r = normalize_one(slug, clip, scale_cache)
+                except Exception as e2:
+                    print(f'{slug}_{clip}: ERRO inesperado no retry ({type(e2).__name__}: {e2}) — NAO normalizado')
+                    skipped.append(f'{slug}_{clip}')
+                    continue
             if r:
                 ok += 1
     print(f'\n{ok}/{total} folhas normalizadas -> {OUT}')
+    if skipped:
+        print(f'PROBLEMATICAS ({len(skipped)}): {", ".join(skipped)}')
 
 
 if __name__ == '__main__':

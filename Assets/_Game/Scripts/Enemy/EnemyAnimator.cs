@@ -71,6 +71,17 @@ namespace CindarsHope.Enemy
             { "enemy_blackroot_sprout",           "fungal_spreader" },
             { "enemy_spore_imp",                  "gen_spore_imp" },
             { "enemy_thorn_archer",               "gen_thorn_archer" },
+            // --- Batch 2 (fungal 11-25 + gelo 26-40) ---
+            { "enemy_rootsnare",                  "gen_root_snare" },
+            { "enemy_goblin_urudakh_trapper",     "goblin_shredder" },
+            { "enemy_orc_nyx_stalker",            "orc_grunt" },
+            { "enemy_nyx_moth",                   "gloom_moth" },
+            { "enemy_hollow_stagling",            "gen_hollow_stag" },
+            { "enemy_frost_gnawer",               "gen_frost_rodent" },
+            { "enemy_glassbone",                  "gen_cracked_skeleton" },
+            { "enemy_icebound_sentinel",          "gen_sentinel" },
+            { "enemy_cold_cult_acolyte",          "coldcult_preacher" },
+            { "enemy_duergar_frostdelver",        "gen_duergar" },
         };
 
         // Slugs cujo corpo NAO tem pose parada (voadores/flutuadores): o ciclo de "walk" e na verdade
@@ -80,6 +91,8 @@ namespace CindarsHope.Enemy
         {
             "roost_cave_bat",   // morcego: bate asa mesmo pairando
             "fungal_spreader",  // agua-viva/blackroot: ondula flutuando no lugar
+            "gloom_moth",       // mariposa (batch2): bate asa pairando
+            "gen_root_snare",   // planta ancorada (batch2): ondula no lugar
         };
 
         // slug -> (clip de ataque NORMAL, clip de ataque ESPECIAL). Reuso quando especial = overlay
@@ -96,6 +109,17 @@ namespace CindarsHope.Enemy
             { "fungal_spreader",  ("atk_whip",  "atk_whip") },
             { "gen_spore_imp",    ("atk_throw", "atk_throw") },
             { "gen_thorn_archer", ("atk_bow",   "atk_bow") },
+            // --- Batch 2 ---
+            { "gen_root_snare",       ("atk_whip",   "atk_whip") },   // especial (Root) = overlay
+            { "goblin_shredder",      ("atk_slash",  "atk_throw") },  // lamina dupla / dardo-armadilha
+            { "orc_grunt",            ("atk_cleave", "atk_blink") },  // machado / Manto de Nyx
+            { "gloom_moth",           ("atk_claw",   "atk_nova") },   // rasante / Po Lunar (nuvem)
+            { "gen_hollow_stag",      ("atk_slam",   "atk_charge") }, // chifrada / Investida Oca
+            { "gen_frost_rodent",     ("atk_bite",   "atk_bite") },   // especial (Chill) = overlay
+            { "gen_cracked_skeleton", ("atk_claw",   "atk_nova") },   // garra / Estilhacar
+            { "gen_sentinel",         ("atk_thrust", "atk_thrust") }, // estocada / Prisao de Gelo (Root)
+            { "coldcult_preacher",    ("atk_cast",   "atk_buff") },   // raio de frio / Prece do Frio
+            { "gen_duergar",          ("atk_cleave", "atk_buff") },   // martelo / Crescer da Pedra
         };
 
         // Fracao da ALTURA da celula que o personagem realmente ocupa. As celulas normalizadas
@@ -108,6 +132,7 @@ namespace CindarsHope.Enemy
         private const float CreatureCellHeightFraction = 168f / 360f;
 
         [SerializeField] private float _walkFps = 7f;
+        [SerializeField] private float _idleFps = 4f;
         [SerializeField] private float _attackFps = 10f;
         [SerializeField] private float _moveThreshold = 0.03f;
 
@@ -131,6 +156,7 @@ namespace CindarsHope.Enemy
         private int _currentDir = DirDown;   // direcao do movimento (walk)
         private int _attackDir = DirDown;    // direcao travada do ataque atual (encara o alvo)
         private float _walkTimer;
+        private float _idleTimer;
         private float _attackTimer;
         private Vector3 _lastPos;
         private Vector2 _smoothVel;          // velocidade suavizada (reduz jitter de direcao)
@@ -192,8 +218,8 @@ namespace CindarsHope.Enemy
 
         private void LoadClips()
         {
-            // Carrega walk + todos os clips de ataque conhecidos do slug (os que existirem em Resources).
-            var wanted = new List<string> { "walk" };
+            // Carrega walk + idle + todos os clips de ataque conhecidos do slug (os que existirem).
+            var wanted = new List<string> { "walk", "idle" };
             if (!string.IsNullOrEmpty(_normalClip) && !wanted.Contains(_normalClip)) wanted.Add(_normalClip);
             if (!string.IsNullOrEmpty(_specialClip) && !wanted.Contains(_specialClip)) wanted.Add(_specialClip);
 
@@ -294,9 +320,13 @@ namespace CindarsHope.Enemy
             {
                 PlayAttack(attackClip);
             }
+            else if (isMoving)
+            {
+                PlayWalk();
+            }
             else
             {
-                PlayWalk(isMoving);
+                PlayIdle();
             }
             _wasAttacking = attacking;
         }
@@ -315,26 +345,50 @@ namespace CindarsHope.Enemy
             return null;
         }
 
-        private void PlayWalk(bool isMoving)
+        // Em movimento: loop do ciclo de caminhada na direcao atual.
+        private void PlayWalk()
         {
-            if (!_wasAttacking) { /* continua ciclo */ } else { _walkTimer = 0f; }
             int row = RowForDirection("walk", _currentDir, out bool flip);
             var frames = _clips["walk"];
             if (row < 0 || row >= frames.Length || frames[row] == null) return;
             _spriteRenderer.flipX = flip;
+            _walkTimer += Time.deltaTime;
+            int idx = (int)(_walkTimer * _walkFps) % Columns;
+            if (frames[row][idx] != null) _spriteRenderer.sprite = frames[row][idx];
+        }
 
-            // Voadores/flutuadores animam sempre (batida de asa/ondulacao no lugar); terrestres
-            // congelam no frame 0 quando parados (idle real).
-            if (isMoving || _alwaysAnimateIdle)
+        // Parado: toca a folha de IDLE (micro-movimento: respiro, balanco de cauda/arma) em loop
+        // lento. Sem folha de idle: voadores/flutuadores seguem o loop de walk (nao ha pose parada);
+        // terrestres congelam no frame 0 da walk (idle estatico, comportamento antigo).
+        private void PlayIdle()
+        {
+            _walkTimer = 0f;
+            var frames = _clips.TryGetValue("idle", out var idleFrames) ? idleFrames : null;
+            if (frames != null)
+            {
+                int row = RowForDirection("idle", _currentDir, out bool flip);
+                if (row < 0 || row >= frames.Length || frames[row] == null) return;
+                _spriteRenderer.flipX = flip;
+                _idleTimer += Time.deltaTime;
+                int idx = (int)(_idleTimer * _idleFps) % Columns;
+                if (frames[row][idx] != null) _spriteRenderer.sprite = frames[row][idx];
+                return;
+            }
+
+            // Sem folha de idle: fallback ao comportamento antigo.
+            var walk = _clips["walk"];
+            int wrow = RowForDirection("walk", _currentDir, out bool wflip);
+            if (wrow < 0 || wrow >= walk.Length || walk[wrow] == null) return;
+            _spriteRenderer.flipX = wflip;
+            if (_alwaysAnimateIdle)
             {
                 _walkTimer += Time.deltaTime;
                 int idx = (int)(_walkTimer * _walkFps) % Columns;
-                if (frames[row][idx] != null) _spriteRenderer.sprite = frames[row][idx];
+                if (walk[wrow][idx] != null) _spriteRenderer.sprite = walk[wrow][idx];
             }
-            else
+            else if (walk[wrow][0] != null)
             {
-                _walkTimer = 0f;
-                if (frames[row][0] != null) _spriteRenderer.sprite = frames[row][0];
+                _spriteRenderer.sprite = walk[wrow][0];
             }
         }
 

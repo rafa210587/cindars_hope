@@ -36,8 +36,14 @@ namespace CindarsHope.Editor.Enemy
         // Clips conhecidos (sufixos de arquivo). Usados para separar slug (pode ter '_') do clip.
         private static readonly string[] Clips =
         {
-            "walk", "atk_bite", "atk_slash", "atk_claw", "atk_throw",
-            "atk_scream", "atk_leap", "atk_bow", "atk_whip", "atk_nova", "atk_rise",
+            "walk", "idle",
+            "atk_bite", "atk_slash", "atk_claw", "atk_throw", "atk_scream", "atk_leap",
+            "atk_bow", "atk_whip", "atk_nova", "atk_rise",
+            // batch 2
+            "atk_charge", "atk_thrust", "atk_cast", "atk_blink", "atk_buff",
+            "atk_cleave", "atk_slam",
+            // batch 2b
+            "atk_summon",
         };
 
         public static void GenerateAll()
