@@ -1,5 +1,45 @@
 # Prompt de Continuação para Claude — Rework Modular
 
+## 2026-07-08 — Inventory/Save cycle reduction v25 (microcut Tier 2)
+
+- Spec implementada: `.specs/implementados/spec_arch_inventory_save_cycle_reduction_v25.md`.
+- Objetivo: quebrar o par mútuo `Inventory|Save` (Tier 2 do
+  `docs/architecture/MODULARIZATION_PAIR_BREAK_MAP.md`), sem alterar gameplay, saves, schema,
+  cenas, prefabs ou IDs.
+- Passo 0 (verificação obrigatória): grep de `using CindarsHope.Save` em toda a pasta
+  `Assets/_Game/Scripts/Inventory/` confirmou que `InventoryManager.cs` era o único arquivo de
+  Inventory referenciando Save. Grep repo-wide dos 3 tipos (`InventorySaveData`,
+  `InventorySlotSaveData`, `InventoryItemSaveData`) confirmou 8 consumidores de código
+  (`SaveData.cs`, `SaveManager.cs`, `SaveManager.Migration.cs`,
+  `Save/Providers/InventorySectionProvider.cs`, `Save/DeathSaveData.cs`,
+  `Save/Migrations/InventorySlotsV1ToV2Migration.cs`, `InventoryManager.cs` e
+  `Tests/EditMode/Save/Editor/SaveProviderRegistryTests.cs`) — a maioria já tinha
+  `using CindarsHope.Inventory;` preexistente (usado por outros tipos Inventory).
+- Mudança:
+  - Novo arquivo `Assets/_Game/Scripts/Inventory/InventorySaveData.cs` (namespace
+    `CindarsHope.Inventory`) com os 3 DTOs movidos de `CindarsHope.Save`, mesmo nome de
+    classe/campo — JsonUtility serializa por nome de campo, sem migration. Precedente vivo:
+    `NpcManagerSaveData`/`NpcSaveData` (`spec_arch_npc_save_cycle_reduction_v23`).
+  - `SaveData.cs` removeu as 3 classes e ganhou `using CindarsHope.Inventory;`.
+  - `InventoryManager.cs` removeu `using CindarsHope.Save;` (não havia outro uso do namespace).
+  - `Save/DeathSaveData.cs` e `Tests/EditMode/Save/Editor/SaveProviderRegistryTests.cs` ganharam
+    `using CindarsHope.Inventory;` (referenciavam os DTOs implicitamente antes do corte).
+  - `SaveManager.cs`, `SaveManager.Migration.cs`, `InventorySectionProvider.cs` e
+    `InventorySlotsV1ToV2Migration.cs` não precisaram de edição (já resolviam os tipos via
+    `using CindarsHope.Inventory;` preexistente).
+  - `CindarsHope.Runtime.csproj`: `<Compile Include>` do novo arquivo adicionado manualmente
+    (Unity não estava aberto para regenerar o csproj neste ambiente; não commitado).
+- Gates:
+  - `tools/architecture/Get-ModularizationDependencySnapshot.ps1`: `MutualModulePairs=33 -> 32`,
+    `Inventory|Save` removido, nenhum par novo apareceu.
+  - `tools/unity/Invoke-UnityGeneratedProjectsBuild.ps1`: exit 0, 7/7 projetos, 0 warnings, 0
+    erros.
+  - `tools/unity/RunUnityEditModeTests.ps1 -ResultsPath TestResults\cut-inventory-save-editmode.xml -LogFile Logs\cut-inventory-save.log`:
+    exit 0, 2747/2747 PASS, 0 failed.
+- Ainda não declarar modularização ampla concluída: restam 32 pares mútuos para specs-filhas.
+- Sem push. Working tree segue com mudanças concorrentes de arte/animação/ProjectSettings/tools
+  fora do escopo desta spec (não tocadas/incluídas).
+
 ## 2026-07-08 — Quests/Save cycle reduction v24 (microcut Tier 1)
 
 - Spec implementada: `.specs/implementados/spec_arch_quests_save_cycle_reduction_v24.md`.
