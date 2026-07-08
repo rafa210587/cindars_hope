@@ -1,5 +1,57 @@
 # Prompt de Continuação para Claude — Rework Modular
 
+## 2026-07-08 — Core/Locations cycle reduction v27 (microcut Tier 2)
+
+- Spec implementada: `.specs/implementados/spec_arch_core_locations_cycle_reduction_v27.md`.
+- Objetivo: quebrar o par mútuo `Core|Locations` (Tier 2 do
+  `docs/architecture/MODULARIZATION_PAIR_BREAK_MAP.md`), sem alterar gameplay, saves, cenas,
+  prefabs, IDs ou balanceamento.
+- Passo 0 (verificação obrigatória): grep de `using CindarsHope.Locations`/`CindarsHope.Locations.`
+  em toda a pasta `Assets/_Game/Scripts/Core/` confirmou que `Core/Bootstrap/GameBootstrap.cs` era
+  o único arquivo de Core referenciando Locations (`[SerializeField] private AnyaFountain
+  _anyaFountain;` + propriedade). `AnyaFountain.cs` foi lido e confirmado como MonoBehaviour trivial
+  — só referenciava `CindarsHope.Core.Respawn` (a interface `IAnyaFountainRespawnPoint` que já
+  implementa) e `UnityEngine`, sem nenhum tipo de `CindarsHope.Locations` — elegível para mover para
+  Core sem reintroduzir o ciclo.
+- Mudança:
+  - `AnyaFountain.cs` (+`.meta`) movido via `git mv` de `Assets/_Game/Scripts/Locations/` para
+    `Assets/_Game/Scripts/Core/Respawn/`, GUID preservado. Namespace trocado de
+    `CindarsHope.Locations` para `CindarsHope.Core.Respawn` (mesmo namespace da interface que já
+    implementa; `using CindarsHope.Core.Respawn;` removido do topo do arquivo por ficar
+    redundante/auto-referente).
+  - `GameBootstrap.cs`: `using CindarsHope.Locations;` removido; `using CindarsHope.Core.Respawn;`
+    adicionado (Core→Core interno, sem novo edge cruzado).
+  - `AnyaFountainInteractable.cs` (permanece em `CindarsHope.Locations`, referenciava `AnyaFountain`
+    sem qualificador por estar no mesmo namespace antes do corte): ganhou
+    `using CindarsHope.Core.Respawn;` (Locations→Core, direção já existente e correta).
+  - `Editor/SceneCreation/CreateMvpFarmScene.cs`: referência fully-qualified
+    `CindarsHope.Locations.AnyaFountain` atualizada para `CindarsHope.Core.Respawn.AnyaFountain`.
+  - `CindarsHope.Runtime.csproj`: `<Compile Include>` do arquivo movido atualizado manualmente
+    (Unity não estava aberto para regenerar o csproj neste ambiente; csproj é gitignored, não
+    commitado).
+  - Nenhum schema/campo/valor/nome de classe alterado; nenhuma cena/prefab/asset editado
+    manualmente.
+- Achado não bloqueante (fora de escopo, não corrigido): `Assets/_Game/Scripts/Cave/Death/
+  DeathSystemBootstrap.cs` tem `using CindarsHope.Locations;` morto (não referencia nenhum tipo de
+  Locations) — não gera edge `Core|Locations` porque é `Cave`, não `Core`; `Cave/**` está fora do
+  escopo declarado e das proibições desta execução, não tocado.
+- Risco residual (não bloqueante, sem edição de YAML): `Assets/_Game/Scenes/FarmScene.unity:14589`
+  ainda tem `m_EditorClassIdentifier: Assembly-CSharp::CindarsHope.Locations.AnyaFountain` (campo
+  cosmético do editor Unity, não usado para resolver a referência serializada — resolução real é
+  via `m_Script: {fileID: 11500000, guid: 30374dbf686cfec41a14bbdf3ada1eac, type: 3}`, GUID
+  preservado pelo `git mv` do `.meta`). Não editado manualmente (regra `unity-assets`); Unity deve
+  regravar esse campo automaticamente na próxima vez que a cena for salva pelo editor. Build 7/7 e
+  EditMode 2747/2747 confirmam que a referência de GUID resolve corretamente.
+- Gates:
+  - `tools/architecture/Get-ModularizationDependencySnapshot.ps1`: `MutualModulePairs=31 -> 30`,
+    `Core|Locations` removido, nenhum par novo apareceu.
+  - `tools/unity/Invoke-UnityGeneratedProjectsBuild.ps1`: exit 0, 7/7 projetos, 0 warnings, 0 erros.
+  - `tools/unity/RunUnityEditModeTests.ps1 -ResultsPath TestResults\cut-core-locations-editmode.xml -LogFile Logs\cut-core-locations.log`:
+    exit 0, 2747/2747 PASS, 0 failed.
+- Ainda não declarar modularização ampla concluída: restam 30 pares mútuos para specs-filhas.
+- Sem push. Working tree segue com mudanças concorrentes de arte/animação/ProjectSettings/tools
+  fora do escopo desta spec (não tocadas/incluídas).
+
 ## 2026-07-08 — Inventory/Save cycle reduction v25 (microcut Tier 2)
 
 - Spec implementada: `.specs/implementados/spec_arch_inventory_save_cycle_reduction_v25.md`.

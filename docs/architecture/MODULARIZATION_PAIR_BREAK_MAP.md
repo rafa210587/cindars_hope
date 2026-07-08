@@ -40,7 +40,7 @@ associado, migra-se o acesso para port/registro tipado.
 | Par | Direção leve | Estratégia (resumo) |
 |---|---|---|
 | `Inventory\|Save` (**FEITO** — `.specs/implementados/spec_arch_inventory_save_cycle_reduction_v25.md`) | InventoryManager→Save | Mover `InventorySaveData`/`InventorySlotSaveData`/`InventoryItemSaveData` p/ `CindarsHope.Inventory` (ou Foundation). |
-| `Core\|Locations` | Core→Locations (`AnyaFountain`) | Mover a MonoBehaviour trivial `AnyaFountain` (+`.meta`, GUID) p/ `Core.Respawn` junto da interface que já implementa. |
+| `Core\|Locations` (**FEITO** — `.specs/implementados/spec_arch_core_locations_cycle_reduction_v27.md`) | Core→Locations (`AnyaFountain`) | Mover a MonoBehaviour trivial `AnyaFountain` (+`.meta`, GUID) p/ `Core.Respawn` junto da interface que já implementa. |
 | `Core\|UI` | Core→UI (`ModalManager`, const) | (A) mover `HotbarState.SlotCount` p/ const em Foundation; (B) port `IModalStateProvider` em Foundation p/ `GameTimeManager` — ou gatear o tick por token de pausa (`GameTimeScaleCoordinator`) e largar o tipo UI. |
 | `Core\|Enemy` | Core→Enemy (`BestiaryManager`) | Port `IBestiaryKnowledgeProvider` + `BestiaryRuntimeBootstrap` auto-registrando; **exige regen de cena** p/ remover o ref serializado. |
 
