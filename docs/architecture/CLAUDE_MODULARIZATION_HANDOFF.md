@@ -1,5 +1,36 @@
 # Prompt de Continuação para Claude — Rework Modular
 
+## 2026-07-08 — Core/Enemy cycle reduction v31 (piloto Fase 1, padrão `static Instance`)
+
+- Spec implementada: `.specs/implementados/spec_arch_core_enemy_cycle_reduction_v31.md`.
+- Piloto do plano `Desacoplar managers de domínio do GameBootstrap (Core\|*), sem regen destrutiva`
+  (`C:\Users\Rafa\.claude\plans\replicated-juggling-axolotl.md`). Objetivo: provar que managers já
+  `AddComponent`ados na cena podem perder o `[SerializeField]` do `GameBootstrap` via
+  self-registro `static Instance` (molde `Audio/AudioManager.cs`), **sem regenerar as 3 cenas**.
+- Mudança: `BestiaryManager.cs` ganhou `static Instance` (Awake/OnDestroy, guard de duplicata,
+  molde AudioManager). `GameBootstrap.cs` perdeu `[SerializeField] _bestiaryManager` + property +
+  `EnsurePersistentBestiaryManager()` + `using CindarsHope.Enemy`. Consumidor
+  (`NpcServiceRuntime.ResolveBestiary()`) e `SaveManager.RebindOptionalRuntimeManagers(...)` passaram
+  a resolver via `BestiaryManager.Instance`. Geradores de cena (`CreateMvp*Scene.cs`) **não foram
+  editados** (diff mínimo) — a linha `SetReference(..., "_bestiaryManager", ...)` do gerador de Farm
+  vira no-op na próxima regen (não executada).
+- Achado de processo: o ratchet de arquitetura (`ArchitectureRatchetTests.
+  RuntimeSource_DoesNotIncreaseTrackedArchitecturalDebt`) rejeitou o novo `SingletonDeclaration` em
+  `BestiaryManager.cs` até o baseline (`tools/architecture/architecture-ratchet-baseline.tsv`) ganhar
+  a linha explícita permitindo 1 ocorrência — mesmo padrão já permitido para `AudioManager.cs`. Ao
+  repetir este padrão em managers futuros (Fase 1: Economy/Shop, Craft), espere a mesma exigência de
+  atualizar o baseline.
+- Achado de ferramenta: `tools/unity/RunUnityEditModeTests.ps1 -TestFilter "NS1,NS2"` (múltiplos
+  namespaces separados por vírgula) **não funciona como OR** — retornou 0 testes rodados nos dois
+  casos testados. Rode um namespace por invocação.
+- Gates: snapshot `MutualModulePairs` 27→26 (Core\|Enemy some, nenhum par novo); build 7/7 exit 0
+  0W/0E; EditMode filtrado (Save 69/69, Architecture 8/8 pós-fix do baseline, World 210/210 — cobre
+  `BestiaryKnowledgeTests`, já que não existe namespace `CindarsHope.Tests.EditMode.Enemy`); PlayMode
+  composição 2/2 PASS (`GameplayScenes_LoadWithoutMissingScripts`), sem erro de missing
+  script/BestiaryManager no log.
+- Pendência: Fase 1 continua com `Core\|Economy` (`EconomyManager`/`ShopManager`) e `Core\|Craft`
+  (`CraftingManager`); Fases 2/3 (Skills/Player/Equipment/Inventory/UI) para depois.
+
 ## 2026-07-08 — Equipment/Save cycle reduction v29 (Tier 3, large-spec por causa do enum)
 
 - Spec implementada: `.specs/implementados/spec_arch_equipment_save_cycle_reduction_v29.md`.
