@@ -65,7 +65,7 @@ namespace CindarsHope.Magic
                 return;
             }
 
-            var skillTree = bootstrap.SkillTreeManager;
+            var skillTree = CindarsHope.Skills.SkillTreeManager.Instance;
             var handler = new SpellItemUseHandler(
                 new InventoryUseAdapter(inventory),
                 spellbook.State,

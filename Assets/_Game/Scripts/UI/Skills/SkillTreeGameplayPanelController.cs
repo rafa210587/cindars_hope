@@ -177,7 +177,7 @@ namespace CindarsHope.UI.Skills
 
         private void EquipSelectedNodeToSlot(int slotIndex)
         {
-            var manager = GameBootstrap.Instance?.SkillTreeManager;
+            var manager = SkillTreeManager.Instance;
             if (manager == null || string.IsNullOrEmpty(_selectedTreeId)) return;
             if (!manager.TreeIndex.TryGetValue(_selectedTreeId, out var tree)) return;
             if (_selectedNodeIndex < 0 || _selectedNodeIndex >= tree.Nodes.Count) return;
@@ -192,7 +192,7 @@ namespace CindarsHope.UI.Skills
 
         private void EnterSelectedTree()
         {
-            var manager = GameBootstrap.Instance?.SkillTreeManager;
+            var manager = SkillTreeManager.Instance;
             if (manager == null)
             {
                 return;
@@ -220,7 +220,7 @@ namespace CindarsHope.UI.Skills
 
         private void NavigateToAdjacentTree(int direction)
         {
-            var manager = GameBootstrap.Instance?.SkillTreeManager;
+            var manager = SkillTreeManager.Instance;
             if (manager == null)
             {
                 return;
@@ -254,7 +254,7 @@ namespace CindarsHope.UI.Skills
 
         private void BuySelectedNode()
         {
-            var manager = GameBootstrap.Instance?.SkillTreeManager;
+            var manager = SkillTreeManager.Instance;
             var progression = GameBootstrap.Instance?.PlayerProgressionManager;
             if (manager == null || string.IsNullOrEmpty(_selectedTreeId))
             {
@@ -283,7 +283,7 @@ namespace CindarsHope.UI.Skills
             }
 
             MenuGuiStyle.Apply();
-            var manager = GameBootstrap.Instance?.SkillTreeManager;
+            var manager = SkillTreeManager.Instance;
             var progression = GameBootstrap.Instance?.PlayerProgressionManager;
             manager?.RebindProgressionManager(progression);
             var rect = new Rect((Screen.width - 580f) * 0.5f, (Screen.height - 590f) * 0.5f, 580f, 590f);

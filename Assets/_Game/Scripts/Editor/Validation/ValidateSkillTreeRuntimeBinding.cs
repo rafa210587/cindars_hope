@@ -106,14 +106,24 @@ namespace CindarsHope.Editor.Validation
                 else
                     issues.Add("Scene Bootstrap: SkillTreeManager component missing — FAIL (run CreateMvpFarmScene)");
 
-                if (bootstrap.SkillTreeManager != null)
-                    passes.Add("GameBootstrap.SkillTreeManager property wired — PASS");
-                else
-                    issues.Add("GameBootstrap.SkillTreeManager property null — FAIL (SerializedField not assigned)");
             }
             else
             {
                 passes.Add("Scene Bootstrap: GameBootstrap not found in scene — SKIP (open FarmScene first)");
+            }
+
+            // arch: Core|Skills (spec_arch_core_skills_cycle_reduction_v34) — SkillTreeManager
+            // self-registers via static Instance in Awake; only meaningful once Play Mode ran.
+            if (Application.isPlaying)
+            {
+                if (SkillTreeManager.Instance != null)
+                    passes.Add("SkillTreeManager.Instance self-registered — PASS");
+                else
+                    issues.Add("SkillTreeManager.Instance null — FAIL (self-registration broken)");
+            }
+            else
+            {
+                passes.Add("SkillTreeManager.Instance check: SKIP (Play Mode only; static Instance self-registers in Awake)");
             }
 
             // 4. Verify SkillTreeGameplayPanelController is present as a singleton in scene/DontDestroyOnLoad

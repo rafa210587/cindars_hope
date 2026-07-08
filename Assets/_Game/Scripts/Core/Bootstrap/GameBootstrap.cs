@@ -1,6 +1,5 @@
 using CindarsHope.Cave.Runtime;
 using CindarsHope.Core.Bootstrap.Installers;
-using CindarsHope.Skills;
 using CindarsHope.Core.Data;
 using CindarsHope.Core.Respawn;
 using CindarsHope.Core.Time;
@@ -40,11 +39,9 @@ namespace CindarsHope.Core.Bootstrap
         [SerializeField] private WeaponDatabaseSO _weaponDatabase;
         [SerializeField] private SpellDatabaseSO _spellDatabase;
         [SerializeField] private StatusEffectDatabaseSO _statusEffectDatabase;
-        [SerializeField] private SkillActionDatabaseSO _skillActionDatabase;
         [SerializeField] private ManaManager _manaManager;
         [SerializeField] private CaveRunManager _caveRunManager;
         [SerializeField] private AnyaFountain _anyaFountain;
-        [SerializeField] private Skills.SkillTreeManager _skillTreeManager;
 
         private CaveRuntimeState _cachedCaveRunState;
         private CorpseRecoveryManager _corpseRecoveryManager;
@@ -66,12 +63,10 @@ namespace CindarsHope.Core.Bootstrap
         public CaveRunManager CaveRunManager => _caveRunManager;
         public CorpseRecoveryManager CorpseRecoveryManager => _corpseRecoveryManager;
         public AnyaFountain AnyaFountain => _anyaFountain;
-        public Skills.SkillTreeManager SkillTreeManager => _skillTreeManager;
         public ItemDatabaseSO ItemDatabase => _itemDatabase;
         public WeaponDatabaseSO WeaponDatabase => _weaponDatabase;
         public SpellDatabaseSO SpellDatabase => _spellDatabase;
         public StatusEffectDatabaseSO StatusEffectDatabase => _statusEffectDatabase;
-        public SkillActionDatabaseSO SkillActionDatabase => _skillActionDatabase;
         public CaveRuntimeState CachedCaveRunState => _cachedCaveRunState;
 
         public void SetCachedCaveRunState(CaveRuntimeState state)
@@ -265,20 +260,23 @@ namespace CindarsHope.Core.Bootstrap
                 _statusEffectManager.Initialize();
             }
 
-            if (_skillTreeManager == null)
+            // arch: Core|Skills (spec_arch_core_skills_cycle_reduction_v34) — SkillTreeManager nao eh
+            // mais passado por aqui; self-registra via static Instance (molde Craft/Economy).
+            var skillTreeManager = CindarsHope.Skills.SkillTreeManager.Instance;
+            if (skillTreeManager == null)
             {
-                Debug.LogError($"GameBootstrap skill tree wiring missing in scene '{gameObject.scene.name}' on GameObject '{gameObject.name}': _skillTreeManager.", this);
+                Debug.LogError($"GameBootstrap skill tree wiring missing in scene '{gameObject.scene.name}' on GameObject '{gameObject.name}': SkillTreeManager.Instance.", this);
             }
             else
             {
-                _skillTreeManager.RebindProgressionManager(_progressionManager);
+                skillTreeManager.RebindProgressionManager(_progressionManager);
             }
 
             if (_saveManager != null)
             {
                 // arch: Core|Enemy (spec_arch_core_enemy_cycle_reduction_v31) — BestiaryManager nao eh
                 // mais passado por aqui; SaveManager resolve via BestiaryManager.Instance (self-registro).
-                _saveManager.RebindOptionalRuntimeManagers(_equipmentManager, _progressionManager, _gameTimeManager, _staminaManager, _statusEffectManager, _skillTreeManager, CindarsHope.Economy.ShopManager.Instance);
+                _saveManager.RebindOptionalRuntimeManagers(_equipmentManager, _progressionManager, _gameTimeManager, _staminaManager, _statusEffectManager, skillTreeManager, CindarsHope.Economy.ShopManager.Instance);
             }
 
             CombatRuntimeInstaller.Install(BuildCombatInstallContext(), this);

@@ -9,6 +9,11 @@ namespace CindarsHope.Skills
     [DisallowMultipleComponent]
     public class SkillTreeManager : MonoBehaviour
     {
+        // arch: Core|Skills (spec_arch_core_skills_cycle_reduction_v34) — self-registro estatico
+        // (molde AudioManager/CraftingManager/ShopManager) para o GameBootstrap parar de segurar
+        // esta referencia serializada.
+        public static SkillTreeManager Instance { get; private set; }
+
         [SerializeField] private SkillTreeRegistrySO _treeRegistry;
         [SerializeField] private SkillNodeDatabaseSO _nodeDatabase;
         [SerializeField] private int _respecCostGold = 250;
@@ -39,6 +44,14 @@ namespace CindarsHope.Skills
 
         private void Awake()
         {
+            if (Instance != null && Instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            Instance = this;
+
             _state = new SkillTreeState();
             BuildCatalog();
 
@@ -55,6 +68,14 @@ namespace CindarsHope.Skills
         private void OnDisable()
         {
             GameEventBus.Unsubscribe<PlayerLevelChangedEvent>(OnPlayerLevelChanged);
+        }
+
+        private void OnDestroy()
+        {
+            if (Instance == this)
+            {
+                Instance = null;
+            }
         }
 
         private void BuildCatalog()

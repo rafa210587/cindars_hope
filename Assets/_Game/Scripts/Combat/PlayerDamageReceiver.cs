@@ -147,8 +147,7 @@ namespace CindarsHope.Combat
                 return DefenseSource();
             }
 
-            var bootstrap = GameBootstrap.Instance;
-            var skillTree = bootstrap != null ? bootstrap.SkillTreeManager : null;
+            var skillTree = CindarsHope.Skills.SkillTreeManager.Instance;
             if (skillTree == null)
             {
                 return 0;

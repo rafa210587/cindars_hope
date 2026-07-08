@@ -77,8 +77,7 @@ namespace CindarsHope.Player
 
         private void Start()
         {
-            var bootstrap = GameBootstrap.Instance;
-            _skillTree = bootstrap != null ? bootstrap.SkillTreeManager : null;
+            _skillTree = SkillTreeManager.Instance;
             Recompute();
         }
 
@@ -124,8 +123,7 @@ namespace CindarsHope.Player
         {
             if (_skillTree == null)
             {
-                var bootstrap = GameBootstrap.Instance;
-                _skillTree = bootstrap != null ? bootstrap.SkillTreeManager : null;
+                _skillTree = SkillTreeManager.Instance;
             }
 
             if (_skillTree == null)

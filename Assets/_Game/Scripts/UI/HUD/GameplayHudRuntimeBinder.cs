@@ -53,7 +53,7 @@ namespace CindarsHope.UI.HUD
 
         private void RefreshActiveSkillSlots()
         {
-            var skillTreeManager = GameBootstrap.Instance?.SkillTreeManager;
+            var skillTreeManager = SkillTreeManager.Instance;
             if (skillTreeManager == null) return;
             var state = skillTreeManager.State;
             // fable_71: cooldown vem do controller (fonte única); a HUD não recalcula.

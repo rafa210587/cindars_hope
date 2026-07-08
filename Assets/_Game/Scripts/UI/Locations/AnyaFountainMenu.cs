@@ -52,7 +52,7 @@ namespace CindarsHope.UI.Locations
 
         private void RefreshRespecButton()
         {
-            var skillMgr = GameBootstrap.Instance?.SkillTreeManager;
+            var skillMgr = SkillTreeManager.Instance;
             if (_respecButton == null) return;
 
             if (skillMgr == null)
@@ -78,7 +78,7 @@ namespace CindarsHope.UI.Locations
             var bootstrap = GameBootstrap.Instance;
             if (bootstrap == null) return;
 
-            var skillMgr = bootstrap.SkillTreeManager;
+            var skillMgr = SkillTreeManager.Instance;
             var playerMgr = bootstrap.PlayerManager;
             var progMgr = bootstrap.PlayerProgressionManager;
 

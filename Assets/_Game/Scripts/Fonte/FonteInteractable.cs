@@ -117,7 +117,7 @@ namespace CindarsHope.Fonte
         private void TryRespec()
         {
             var bootstrap = GameBootstrap.Instance;
-            var skillManager = bootstrap != null ? bootstrap.SkillTreeManager : null;
+            var skillManager = CindarsHope.Skills.SkillTreeManager.Instance;
             var playerManager = bootstrap != null ? bootstrap.PlayerManager : null;
             var progressionManager = bootstrap != null ? bootstrap.PlayerProgressionManager : null;
             if (skillManager == null || playerManager == null || progressionManager == null)

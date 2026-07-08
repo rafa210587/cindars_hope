@@ -464,8 +464,7 @@ namespace CindarsHope.UI
         // 4 active slots (R/T/Y/G). Data comes from SkillTreeManager.State, which is authoritative.
         private void DrawActiveSkillSlots()
         {
-            var bootstrap = GameBootstrap.Instance;
-            var skillTreeManager = bootstrap?.SkillTreeManager;
+            var skillTreeManager = SkillTreeManager.Instance;
             if (skillTreeManager == null)
             {
                 GUILayout.Label("Active Skills: SkillTreeManager not assigned");

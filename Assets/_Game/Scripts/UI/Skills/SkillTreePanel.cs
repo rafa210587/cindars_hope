@@ -51,7 +51,7 @@ namespace CindarsHope.UI.Skills
         public override void InitializeModal(ModalManager modalManager)
         {
             base.InitializeModal(modalManager);
-            _skillTreeManager = GameBootstrap.Instance?.SkillTreeManager;
+            _skillTreeManager = SkillTreeManager.Instance;
             _skillTreeManager?.RebindProgressionManager(GameBootstrap.Instance?.PlayerProgressionManager);
             RefreshDisplay();
             GameEventBus.Publish(new SkillTreeOpenedEvent());

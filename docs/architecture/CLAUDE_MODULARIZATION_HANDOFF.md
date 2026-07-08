@@ -1,5 +1,53 @@
 # Prompt de Continuação para Claude — Rework Modular
 
+## 2026-07-08 — Core/Skills cycle reduction v34 (Fase 2, padrão `static Instance`)
+
+- Spec implementada: `.specs/implementados/spec_arch_core_skills_cycle_reduction_v34.md`.
+- Primeiro corte da Fase 2 (médio fan-out) do plano
+  `Desacoplar managers de domínio do GameBootstrap (Core\|*), sem regen destrutiva`.
+- Passo 0 (verificação obrigatória): grep de `CindarsHope.Skills` em `Assets/_Game/Scripts/Core/`
+  confirmou exatamente 2 arestas: `GameBootstrap.cs` (`_skillTreeManager` + `_skillActionDatabase`
+  + `using CindarsHope.Skills`) e `Core/Data/SkillActionDatabaseSO.cs` (`class SkillActionDatabaseSO
+  : DataRegistrySO<SkillActionSO>`, tipo `SkillActionSO` é de Skills).
+- Mudança:
+  - `SkillActionDatabaseSO.cs` (+`.meta`) movido via `git mv` de `Core/Data/` para `Skills/`, GUID
+    preservado. Namespace `CindarsHope.Core.Data` → `CindarsHope.Skills`. `SkillActionExecutor.cs`
+    perdeu o `using CindarsHope.Core.Data;` (agora redundante — mesmo namespace).
+  - `SkillTreeManager.cs` ganhou `static Instance` (Awake/OnDestroy, guard de duplicata, molde
+    Craft/Economy/Enemy). Nenhum ratchet `GlobalXAccess` bloqueia esse padrão para Skills (só existe
+    `GlobalGoldAccess`/`GlobalInventoryAccess`), então não precisou do fallback `GetComponent` usado
+    no Economy.
+  - `GameBootstrap.cs` perdeu `[SerializeField] _skillTreeManager` + `_skillActionDatabase` + as 2
+    properties + `using CindarsHope.Skills`; resolve via `CindarsHope.Skills.SkillTreeManager.Instance`
+    (fully-qualified, sem `using`, para não recriar a aresta) no `RebindProgressionManager`/
+    `RebindOptionalRuntimeManagers`.
+  - ~15 consumidores de `bootstrap.SkillTreeManager`/`GameBootstrap.Instance?.SkillTreeManager`
+    reapontados para `SkillTreeManager.Instance` (arquivos já em `CindarsHope.Skills`/já com
+    `using CindarsHope.Skills` existente) ou `CindarsHope.Skills.SkillTreeManager.Instance`
+    fully-qualified (arquivos sem o using — `PlayerVitalsApplier`, `PlayerDamageReceiver`,
+    `FonteInteractable`, `SpellItemUseController`, os 3 `*SceneRuntimeReferenceInstaller`) para não
+    introduzir aresta nova nesses módulos.
+  - `SaveManager.cs` **não foi tocado** — mantém seu próprio `[SerializeField] _skillTreeManager` e o
+    parâmetro `skillTreeManager` em `RebindOptionalRuntimeManagers(...)` (par `Save\|Skills` fora de
+    escopo deste corte). Os 3 `*SceneRuntimeReferenceInstaller.cs` passam
+    `CindarsHope.Skills.SkillTreeManager.Instance` nesse parâmetro em vez de `bootstrap.SkillTreeManager`.
+  - `Editor/Validation/ValidateSkillTreeRuntimeBinding.cs`: o check de
+    `bootstrap.SkillTreeManager != null` (serialized field) foi trocado por um check gateado em
+    `Application.isPlaying` de `SkillTreeManager.Instance != null` — em Edit Mode o `Instance` é null
+    (Awake só roda em Play Mode), então virou SKIP fora de Play Mode em vez de FAIL falso.
+  - Geradores de cena (`CreateMvp*Scene.cs`) **não foram editados** (regen fora de escopo, per plano);
+    `SetReference(..., "_skillTreeManager", ...)` vira no-op silencioso na próxima regen.
+  - Csproj: `CindarsHope.Runtime.csproj` tinha o path stale
+    `Core\Data\SkillActionDatabaseSO.cs` (Unity fechado, não regenerou); patched para
+    `Skills\SkillActionDatabaseSO.cs` (não commitado — Unity regenera na próxima abertura).
+  - Baseline de ratchet: `SingletonDeclaration Assets/_Game/Scripts/Skills/SkillTreeManager.cs 1`
+    adicionada a `tools/architecture/architecture-ratchet-baseline.tsv`.
+- Gates: snapshot `MutualModulePairs` 24→23 (`Core\|Skills` some, nenhum par novo); ratchet PASS;
+  build 7/7 exit 0 0W/0E; EditMode filtrado (Architecture 8/8, Save 69/69, Skills 28/28); PlayMode
+  composição 2/2 PASS, log sem exceção/missing-script relacionado a SkillTree.
+- Pendência: Fase 2 continua com `Core\|Player` (ProgressionManager/StatusEffectManager) e
+  `Core\|Equipment` (EquipmentManager); Fase 3 (Inventory/Player/UI, alto fan-out) para depois.
+
 ## 2026-07-08 — Core/Enemy cycle reduction v31 (piloto Fase 1, padrão `static Instance`)
 
 - Spec implementada: `.specs/implementados/spec_arch_core_enemy_cycle_reduction_v31.md`.

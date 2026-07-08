@@ -188,7 +188,7 @@ namespace CindarsHope.Skills.Runtime.Effects
             }
 
             // Resolve equipped skill action ID from SkillTreeManager state
-            var skillTreeManager = GameBootstrap.Instance?.SkillTreeManager;
+            var skillTreeManager = SkillTreeManager.Instance;
             if (skillTreeManager == null)
             {
                 PublishFeedback("SkillTreeManager nao disponivel.");

@@ -67,7 +67,7 @@ namespace CindarsHope.Skills
         {
             if (slotIndex < 0 || slotIndex >= _slots.Length) return false;
 
-            var skillMgr = GameBootstrap.Instance?.SkillTreeManager;
+            var skillMgr = SkillTreeManager.Instance;
             if (skillMgr != null && !string.IsNullOrEmpty(skillActionId))
             {
                 bool isUnlocked = false;

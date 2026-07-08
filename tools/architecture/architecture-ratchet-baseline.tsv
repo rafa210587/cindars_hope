@@ -96,6 +96,7 @@ SingletonDeclaration	Assets/_Game/Scripts/Player/Death/AnyaFountainRespawnFlow.c
 SingletonDeclaration	Assets/_Game/Scripts/Player/Movement/PlayerBlockController.cs	1
 SingletonDeclaration	Assets/_Game/Scripts/Player/Movement/PlayerSprintController.cs	1
 SingletonDeclaration	Assets/_Game/Scripts/Skills/Runtime/Effects/ActiveSkillExecutionController.cs	1
+SingletonDeclaration	Assets/_Game/Scripts/Skills/SkillTreeManager.cs	1
 SingletonDeclaration	Assets/_Game/Scripts/UI/DebugHud.cs	1
 SingletonDeclaration	Assets/_Game/Scripts/UI/Death/DeathScreenCanvasController.cs	1
 SingletonDeclaration	Assets/_Game/Scripts/UI/HUD/GameplayHudCanvasController.cs	1

@@ -164,7 +164,7 @@ namespace CindarsHope.Player
             _staminaManager = bootstrap.StaminaManager;
             _manaManager = bootstrap.ManaManager;
             _hungerManager = bootstrap.GetComponent<HungerManager>();
-            _skillTreeRef = new SkillTreeManagerRef { Manager = bootstrap.SkillTreeManager };
+            _skillTreeRef = new SkillTreeManagerRef { Manager = CindarsHope.Skills.SkillTreeManager.Instance };
 
             if (!_basesCaptured && _playerManager != null)
             {

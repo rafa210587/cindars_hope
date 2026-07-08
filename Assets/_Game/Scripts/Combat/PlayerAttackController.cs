@@ -138,7 +138,7 @@ namespace CindarsHope.Combat
             // F02: provider de stats derivados (DerivedStatsCalculator WAVE 05, antes Ã³rfÃ£o).
             // Base de Attack = ForÃ§a do player; equipment dict entra quando F03 criar o registry.
             var progression = bootstrap != null ? bootstrap.PlayerProgressionManager : null;
-            var skillTree = bootstrap != null ? bootstrap.SkillTreeManager : null;
+            var skillTree = SkillTreeManager.Instance;
             _statsProvider = new PlayerCombatStatsProvider(
                 () => progression != null ? progression.Strength : 0,
                 () => skillTree != null ? skillTree.GetAllActivePassiveModifiers() : null);
