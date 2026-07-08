@@ -1,5 +1,43 @@
 # Prompt de Continuação para Claude — Rework Modular
 
+## 2026-07-08 — NPC/Save cycle reduction v23 (microcut Tier 1)
+
+- Spec implementada: `.specs/implementados/spec_arch_npc_save_cycle_reduction_v23.md`.
+- Objetivo: quebrar o par mútuo `NPC|Save` (microcut Tier 1 do
+  `docs/architecture/MODULARIZATION_PAIR_BREAK_MAP.md`), sem alterar gameplay, saves, schema,
+  cenas, prefabs ou IDs.
+- Passo 0 (verificação obrigatória): grep de `using CindarsHope.Save`/`NpcManagerSaveData`/
+  `NpcSaveData` em toda a pasta `Assets/_Game/Scripts/NPC/` confirmou que `NpcManager.cs` era o
+  único arquivo de NPC referenciando Save. Os 2 DTOs têm `string`/`bool`/`List<>` e
+  `UnityEngine.Vector2` (campo `Position`) — elegíveis para o namespace de domínio
+  `CindarsHope.NPC` (não para `CindarsHope.Foundation`, que exige `noEngineReferences: true`).
+- Mudança:
+  - Novo arquivo `Assets/_Game/Scripts/NPC/NpcManagerSaveData.cs` com os 2 DTOs movidos de
+    `CindarsHope.Save` para `CindarsHope.NPC` (mesmo nome de classe/campo — JsonUtility serializa
+    por nome de campo, sem migration). Precedente vivo: `FriendshipSaveData`/`NpcServicesSaveData`
+    já vivem em `CindarsHope.NPC.*`.
+  - `SaveData.cs` removeu as 2 classes; o campo `GameSaveData.Npcs` passou a ser qualificado como
+    `CindarsHope.NPC.NpcManagerSaveData` (sem novo `using`).
+  - `NpcManager.cs` removeu `using CindarsHope.Save;` (não havia outro uso do namespace).
+  - `SaveManager.cs`, `SaveManager.Migration.cs` e `Save/Providers/NpcsSectionProvider.cs` **não**
+    precisaram de edição — já tinham `using CindarsHope.NPC;` preexistente (usado por outros tipos
+    NPC), então continuaram compilando sem mudança.
+  - `CindarsHope.Runtime.csproj`: `<Compile Include>` do novo arquivo adicionado manualmente
+    (Unity não estava aberto para regenerar o csproj neste ambiente).
+- Gates:
+  - `tools/architecture/Get-ModularizationDependencySnapshot.ps1`: `MutualModulePairs=35 -> 34`,
+    `NPC|Save` removido, nenhum par novo apareceu.
+  - `tools/unity/Invoke-UnityGeneratedProjectsBuild.ps1`: exit 0, 7/7 projetos, 0 warnings, 0 erros.
+  - `tools/unity/RunUnityEditModeTests.ps1 -ResultsPath TestResults\cut-npc-save-editmode.xml -LogFile Logs\cut-npc-save.log`:
+    exit 0, 2747/2747 PASS, 0 failed.
+- Risco residual não bloqueante: `ValidateWave25TownNpcSchedulesDialogue.cs` (validator arquivado,
+  `CindarsHope/Archive/...`, fora dos 3 comandos canônicos) tem um check textual
+  `ContainsText(SaveData.cs, "HasMet")` que hoje falharia — documentado na spec, não corrigido por
+  estar fora do escopo declarado do par `NPC|Save` e por não rodar em nenhum gate desta spec.
+- Ainda não declarar modularização ampla concluída: restam 34 pares mútuos para specs-filhas.
+- Sem push. Working tree segue com mudanças concorrentes de arte/animação/ProjectSettings/tools
+  fora do escopo desta spec (não tocadas/incluídas).
+
 ## 2026-07-07 — Economy/Save cycle reduction v22 (microcut Tier 1)
 
 - Spec implementada: `.specs/implementados/spec_arch_economy_save_cycle_reduction_v22.md`.
