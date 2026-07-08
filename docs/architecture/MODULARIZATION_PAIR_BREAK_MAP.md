@@ -52,7 +52,7 @@ associado, migra-se o acesso para port/registro tipado.
 | `Farm\|Save` | Relocar posse de `FarmTileGrid`/`FarmNonArableZones` do SaveManager p/ serviço Farm no composition root + mover `FarmSaveData`/`FarmPlotSaveData` p/ Farm. |
 | `Cave\|Save` (**FEITO** — `.specs/implementados/spec_arch_cave_save_cycle_reduction_v28.md`) | Mover `CaveSaveData` p/ `Cave.Runtime` (precedente: `CaveRunSaveData`). |
 | `Core\|Save` | `ISaveService` em Core/Foundation p/ GameBootstrap; `GameTimeManager` expõe setters primitivos e o provider lê o DTO. |
-| `Core\|Craft` | Mover enum `WorkshopType` p/ Foundation; port/registro p/ `CraftingManager`. |
+| `Core\|Craft` (**FEITO** — `.specs/implementados/spec_arch_core_craft_cycle_reduction_v32.md`) | `CraftingManager` ganhou `static Instance` self-registrado (molde `Core\|Enemy`); `GameBootstrap` parou de segurar `[SerializeField] _craftingManager`. A aresta reversa (`Core.Events.CraftingEvents` → `Craft.Data.WorkshopType`) exigiu mover `CraftingEvents.cs` de `Core/Events` p/ `Craft/Events` (precedente: `World/Events`), pois o `using CindarsHope.Craft.Data` desse arquivo por si só já mantinha o par mútuo mesmo após o corte do GameBootstrap. |
 | `Core\|Economy` | Ports `IEconomyService`/`IShopService`; mover fiação concreta p/ composition root; matar hop reverso `SellableItemPolicy→GameBootstrap.Instance`. |
 | `Core\|Equipment` | Mover enum `EquipmentSlot` p/ Foundation (compartilhado com `Core\|Save`/`Equipment\|Save`). |
 | `Core\|Inventory` | Mover o wrapper `ItemDatabaseSO` (1 linha) p/ `CindarsHope.Inventory.Data` (GUID preservado). NÃO mover `ItemDataSO` (puxaria Equipment/Magic p/ Core). |
