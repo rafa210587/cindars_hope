@@ -12,6 +12,10 @@ namespace CindarsHope.Equipment
     [DisallowMultipleComponent]
     public class EquipmentManager : MonoBehaviour
     {
+        // arch: Core|Equipment (spec_arch_core_equipment_cycle_reduction_v35) — self-registro estatico
+        // (molde Craft/Economy/Skills) para o GameBootstrap parar de segurar esta referencia serializada.
+        public static EquipmentManager Instance { get; private set; }
+
         [SerializeField] private ItemDatabaseSO _itemDatabase;
 
         // Legacy fields - kept for backward compat in save/load only
@@ -51,6 +55,14 @@ namespace CindarsHope.Equipment
 
         private void Awake()
         {
+            if (Instance != null && Instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            Instance = this;
+
             if (_durabilityTracker == null)
             {
                 _durabilityTracker = new EquipmentDurabilityTracker();
@@ -96,6 +108,14 @@ namespace CindarsHope.Equipment
         private void OnDisable()
         {
             GameEventBus.Unsubscribe<InventoryChangedEvent>(HandleInventoryChanged);
+        }
+
+        private void OnDestroy()
+        {
+            if (Instance == this)
+            {
+                Instance = null;
+            }
         }
 
         private void Update()

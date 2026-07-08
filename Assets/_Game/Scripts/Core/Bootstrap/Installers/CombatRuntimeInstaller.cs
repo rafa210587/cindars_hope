@@ -36,8 +36,11 @@ namespace CindarsHope.Core.Bootstrap.Installers
             if (context.SpellDatabase == null)
                 Debug.LogError("CombatRuntimeInstaller: SpellDatabase is null. Spell resolution will fail at runtime.", diagnosticOwner);
 
-            // Required — equipment combat wiring fails without EquipmentManager
-            if (context.EquipmentManager == null)
+            // Required — equipment combat wiring fails without EquipmentManager.
+            // arch: Core|Equipment (spec_arch_core_equipment_cycle_reduction_v35) — resolvido via
+            // EquipmentManager.Instance (self-registro, molde Craft/Economy/Skills).
+            var equipmentManager = CindarsHope.Equipment.EquipmentManager.Instance;
+            if (equipmentManager == null)
                 Debug.LogError("CombatRuntimeInstaller: EquipmentManager is null. Equipment combat wiring will fail at runtime.", diagnosticOwner);
 
             // Optional — may be absent in non-combat scenes
@@ -54,7 +57,7 @@ namespace CindarsHope.Core.Bootstrap.Installers
                 $"WeaponDb={context.WeaponDatabase?.name ?? "null"}, " +
                 $"SpellDb={context.SpellDatabase?.name ?? "null"}, " +
                 $"StatusEffectDb={context.StatusEffectDatabase?.name ?? "null"}, " +
-                $"EquipmentMgr={context.EquipmentManager?.name ?? "null"}",
+                $"EquipmentMgr={equipmentManager?.name ?? "null"}",
                 diagnosticOwner);
         }
     }

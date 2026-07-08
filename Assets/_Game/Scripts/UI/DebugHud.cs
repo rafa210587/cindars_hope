@@ -340,11 +340,9 @@ namespace CindarsHope.UI
         // EquippedToolId only if slots are empty (covers items equipped via legacy EquipTool).
         private void DrawEquipmentState()
         {
-            var equipmentManager = _equipmentManager;
-            if (equipmentManager == null && GameBootstrap.Instance != null)
-            {
-                equipmentManager = GameBootstrap.Instance.EquipmentManager;
-            }
+            // arch: Core|Equipment (spec_arch_core_equipment_cycle_reduction_v35) — EquipmentManager
+            // resolvido via EquipmentManager.Instance (self-registro, molde Craft/Economy/Skills).
+            var equipmentManager = _equipmentManager ?? EquipmentManager.Instance;
 
             if (equipmentManager == null)
             {
@@ -801,9 +799,11 @@ namespace CindarsHope.UI
                 _saveManager = saveManager;
             }
 
-            if (GameBootstrap.Instance != null && GameBootstrap.Instance.EquipmentManager != null)
+            // arch: Core|Equipment (spec_arch_core_equipment_cycle_reduction_v35) — EquipmentManager
+            // resolvido via EquipmentManager.Instance (self-registro, molde Craft/Economy/Skills).
+            if (EquipmentManager.Instance != null)
             {
-                _equipmentManager = GameBootstrap.Instance.EquipmentManager;
+                _equipmentManager = EquipmentManager.Instance;
             }
 
             Debug.Log("DebugHud: runtime references rebound.");

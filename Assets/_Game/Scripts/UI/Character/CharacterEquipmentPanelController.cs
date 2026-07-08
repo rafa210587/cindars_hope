@@ -173,7 +173,9 @@ namespace CindarsHope.UI.Character
                     return;
                 }
 
-                var equipment = GameBootstrap.Instance?.EquipmentManager;
+                // arch: Core|Equipment (spec_arch_core_equipment_cycle_reduction_v35) — EquipmentManager
+                // resolvido via EquipmentManager.Instance (self-registro, molde Craft/Economy/Skills).
+                var equipment = EquipmentManager.Instance;
                 var inventory = GameBootstrap.Instance?.InventoryManager;
                 if (equipment == null || inventory == null)
                 {
@@ -217,7 +219,7 @@ namespace CindarsHope.UI.Character
             else
             {
                 GUILayout.Label("Equipamento");
-                DrawEquipment(GameBootstrap.Instance?.EquipmentManager, GameBootstrap.Instance?.InventoryManager);
+                DrawEquipment(EquipmentManager.Instance, GameBootstrap.Instance?.InventoryManager);
             }
 
             GUILayout.Space(8f);

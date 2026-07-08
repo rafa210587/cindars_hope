@@ -291,10 +291,12 @@ namespace CindarsHope.Cave.Traps
 
         private ToolTier ResolveToolTier()
         {
-            var bootstrap = GameBootstrap.Instance;
-            if (bootstrap != null && bootstrap.EquipmentManager != null)
+            // arch: Core|Equipment (spec_arch_core_equipment_cycle_reduction_v35) — EquipmentManager
+            // resolvido via EquipmentManager.Instance (self-registro, molde Craft/Economy/Skills).
+            var equipmentManager = CindarsHope.Equipment.EquipmentManager.Instance;
+            if (equipmentManager != null)
             {
-                var tier = bootstrap.EquipmentManager.EquippedToolTier;
+                var tier = equipmentManager.EquippedToolTier;
                 return tier > ToolTier.None ? tier : ToolTier.Basic;
             }
 

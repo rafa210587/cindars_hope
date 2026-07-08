@@ -66,6 +66,7 @@ SingletonDeclaration	Assets/_Game/Scripts/Economy/ShopManager.cs	1
 SingletonDeclaration	Assets/_Game/Scripts/Economy/WeaponInfusionRegistry.cs	1
 SingletonDeclaration	Assets/_Game/Scripts/Enemy/BestiaryManager.cs	1
 SingletonDeclaration	Assets/_Game/Scripts/Equipment/AccessoryEffectRouter.cs	1
+SingletonDeclaration	Assets/_Game/Scripts/Equipment/EquipmentManager.cs	1
 SingletonDeclaration	Assets/_Game/Scripts/Farm/FarmPlotRegistry.cs	1
 SingletonDeclaration	Assets/_Game/Scripts/Farm/Animals/FarmAnimalRegistry.cs	1
 SingletonDeclaration	Assets/_Game/Scripts/Farm/Forage/FarmForageRuntimeService.cs	1

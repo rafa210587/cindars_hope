@@ -3,7 +3,6 @@ using CindarsHope.Core.Bootstrap.Installers;
 using CindarsHope.Core.Data;
 using CindarsHope.Core.Respawn;
 using CindarsHope.Core.Time;
-using CindarsHope.Equipment;
 using CindarsHope.Foundation;
 using CindarsHope.Inventory;
 using CindarsHope.Player;
@@ -31,7 +30,6 @@ namespace CindarsHope.Core.Bootstrap
         [SerializeField] private SaveManager _saveManager;
         [SerializeField] private HungerManager _hungerManager;
         [SerializeField] private StaminaManager _staminaManager;
-        [SerializeField] private EquipmentManager _equipmentManager;
         [SerializeField] private PlayerProgressionManager _progressionManager;
         [SerializeField] private StatusEffectManager _statusEffectManager;
         [SerializeField] private PlayerDataSO _playerData;
@@ -57,7 +55,6 @@ namespace CindarsHope.Core.Bootstrap
         public HungerManager HungerManager => _hungerManager;
         public StaminaManager StaminaManager => _staminaManager;
         public ManaManager ManaManager => _manaManager;
-        public EquipmentManager EquipmentManager => _equipmentManager;
         public PlayerProgressionManager PlayerProgressionManager => _progressionManager;
         public StatusEffectManager StatusEffectManager => _statusEffectManager;
         public CaveRunManager CaveRunManager => _caveRunManager;
@@ -276,7 +273,9 @@ namespace CindarsHope.Core.Bootstrap
             {
                 // arch: Core|Enemy (spec_arch_core_enemy_cycle_reduction_v31) — BestiaryManager nao eh
                 // mais passado por aqui; SaveManager resolve via BestiaryManager.Instance (self-registro).
-                _saveManager.RebindOptionalRuntimeManagers(_equipmentManager, _progressionManager, _gameTimeManager, _staminaManager, _statusEffectManager, skillTreeManager, CindarsHope.Economy.ShopManager.Instance);
+                // arch: Core|Equipment (spec_arch_core_equipment_cycle_reduction_v35) — EquipmentManager
+                // idem, via EquipmentManager.Instance (self-registro, molde Craft/Economy/Skills).
+                _saveManager.RebindOptionalRuntimeManagers(CindarsHope.Equipment.EquipmentManager.Instance, _progressionManager, _gameTimeManager, _staminaManager, _statusEffectManager, skillTreeManager, CindarsHope.Economy.ShopManager.Instance);
             }
 
             CombatRuntimeInstaller.Install(BuildCombatInstallContext(), this);
@@ -293,13 +292,16 @@ namespace CindarsHope.Core.Bootstrap
         // EquipmentManager limpa e reconstroi do save depois — o save sempre vence).
         private void EquipStarterCombatLoadout()
         {
-            if (_equipmentManager == null || _inventoryManager == null)
+            // arch: Core|Equipment (spec_arch_core_equipment_cycle_reduction_v35) — EquipmentManager
+            // nao eh mais passado por aqui; self-registra via static Instance (molde Craft/Economy/Skills).
+            var equipmentManager = CindarsHope.Equipment.EquipmentManager.Instance;
+            if (equipmentManager == null || _inventoryManager == null)
             {
                 return;
             }
 
-            bool rightEmpty = string.IsNullOrEmpty(_equipmentManager.GetEquippedItem(EquipmentSlot.RightHand));
-            bool leftEmpty = string.IsNullOrEmpty(_equipmentManager.GetEquippedItem(EquipmentSlot.LeftHand));
+            bool rightEmpty = string.IsNullOrEmpty(equipmentManager.GetEquippedItem(EquipmentSlot.RightHand));
+            bool leftEmpty = string.IsNullOrEmpty(equipmentManager.GetEquippedItem(EquipmentSlot.LeftHand));
             if (!rightEmpty || !leftEmpty)
             {
                 return;
@@ -308,8 +310,8 @@ namespace CindarsHope.Core.Bootstrap
             // Arco numa mao, flecha na outra: BowArrowAttackService exige o arco na mao OPOSTA a municao.
             if (_inventoryManager.HasItem(StarterBowItemId) && _inventoryManager.HasItem(StarterArrowItemId))
             {
-                _equipmentManager.EquipItem(EquipmentSlot.RightHand, StarterBowItemId);
-                _equipmentManager.EquipItem(EquipmentSlot.LeftHand, StarterArrowItemId);
+                equipmentManager.EquipItem(EquipmentSlot.RightHand, StarterBowItemId);
+                equipmentManager.EquipItem(EquipmentSlot.LeftHand, StarterArrowItemId);
                 Debug.Log($"GameBootstrap: loadout inicial equipado (arco '{StarterBowItemId}' RightHand, flecha '{StarterArrowItemId}' LeftHand).", this);
             }
             else
@@ -326,7 +328,6 @@ namespace CindarsHope.Core.Bootstrap
                 WeaponDatabase = _weaponDatabase,
                 SpellDatabase = _spellDatabase,
                 StatusEffectDatabase = _statusEffectDatabase,
-                EquipmentManager = _equipmentManager,
                 InventoryManager = _inventoryManager,
                 StaminaManager = _staminaManager,
                 ManaManager = _manaManager
@@ -372,9 +373,12 @@ namespace CindarsHope.Core.Bootstrap
 
         private void InitializeDeathSystem()
         {
-            if (_playerManager != null && _inventoryManager != null && _equipmentManager != null)
+            // arch: Core|Equipment (spec_arch_core_equipment_cycle_reduction_v35) — EquipmentManager
+            // resolvido via EquipmentManager.Instance (self-registro, molde Craft/Economy/Skills).
+            var equipmentManager = CindarsHope.Equipment.EquipmentManager.Instance;
+            if (_playerManager != null && _inventoryManager != null && equipmentManager != null)
             {
-                _corpseRecoveryManager = new CorpseRecoveryManager(_playerManager, _inventoryManager, _equipmentManager);
+                _corpseRecoveryManager = new CorpseRecoveryManager(_playerManager, _inventoryManager, equipmentManager);
             }
             else
             {

@@ -45,12 +45,14 @@ namespace CindarsHope.Cave.Death
             _policy = new CaveDeathPolicy();
             _recoveryManager = bootstrap.CorpseRecoveryManager;
 
+            // arch: Core|Equipment (spec_arch_core_equipment_cycle_reduction_v35) — EquipmentManager
+            // resolvido via EquipmentManager.Instance (self-registro, molde Craft/Economy/Skills).
             _resolver = new CaveDeathResolver(
                 _policy,
                 bootstrap.CaveRunManager,
                 bootstrap.PlayerManager,
                 bootstrap.InventoryManager,
-                bootstrap.EquipmentManager,
+                CindarsHope.Equipment.EquipmentManager.Instance,
                 bootstrap.PlayerProgressionManager,
                 bootstrap.TimeManager
             );

@@ -559,7 +559,9 @@ namespace CindarsHope.Farm
 
         private bool HasRequiredTool(ToolType toolType)
         {
-            var equipmentManager = GameBootstrap.Instance != null ? GameBootstrap.Instance.EquipmentManager : null;
+            // arch: Core|Equipment (spec_arch_core_equipment_cycle_reduction_v35) — EquipmentManager
+            // resolvido via EquipmentManager.Instance (self-registro, molde Craft/Economy/Skills).
+            var equipmentManager = EquipmentManager.Instance;
             if (equipmentManager == null)
             {
                 return false;

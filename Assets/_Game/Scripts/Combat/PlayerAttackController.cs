@@ -105,7 +105,9 @@ namespace CindarsHope.Combat
             var bootstrap = GameBootstrap.Instance;
             if (bootstrap != null)
             {
-                if (_equipmentManager == null) _equipmentManager = bootstrap.EquipmentManager;
+                // arch: Core|Equipment (spec_arch_core_equipment_cycle_reduction_v35) — EquipmentManager
+                // resolvido via EquipmentManager.Instance (self-registro, molde Craft/Economy/Skills).
+                if (_equipmentManager == null) _equipmentManager = EquipmentManager.Instance;
                 if (_staminaManager == null) _staminaManager = bootstrap.StaminaManager;
                 if (_manaManager == null) _manaManager = bootstrap.ManaManager;
                 if (_inventoryManager == null) _inventoryManager = bootstrap.InventoryManager;

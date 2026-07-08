@@ -179,7 +179,9 @@ namespace CindarsHope.Cave.Resources
 
             if (_equipmentManager == null)
             {
-                _equipmentManager = bootstrap.EquipmentManager;
+                // arch: Core|Equipment (spec_arch_core_equipment_cycle_reduction_v35) — EquipmentManager
+                // resolvido via EquipmentManager.Instance (self-registro, molde Craft/Economy/Skills).
+                _equipmentManager = EquipmentManager.Instance;
             }
         }
 

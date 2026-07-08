@@ -77,7 +77,9 @@ namespace CindarsHope.Editor.Validation
             }
 
             var hotbar = bootstrap.SaveManager?.HotbarState;
-            var eq = bootstrap.EquipmentManager;
+            // arch: Core|Equipment (spec_arch_core_equipment_cycle_reduction_v35) — EquipmentManager
+            // resolvido via EquipmentManager.Instance (self-registro, molde Craft/Economy/Skills).
+            var eq = EquipmentManager.Instance;
 
             var added = new List<string>();
             var skipped = new List<string>();

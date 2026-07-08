@@ -132,7 +132,9 @@ namespace CindarsHope.SceneManagement
 
                 // arch: Core|Economy (spec_arch_core_economy_cycle_reduction_v33) — ShopManager
                 // self-registra via static Instance; GameBootstrap nao segura mais essa ref.
-                saveManager.RebindOptionalRuntimeManagers(bootstrap.EquipmentManager, bootstrap.PlayerProgressionManager, bootstrap.GameTimeManager, staminaManager, bootstrap.StatusEffectManager, CindarsHope.Skills.SkillTreeManager.Instance, ShopManager.Instance);
+                // arch: Core|Equipment (spec_arch_core_equipment_cycle_reduction_v35) — idem para
+                // EquipmentManager, via EquipmentManager.Instance.
+                saveManager.RebindOptionalRuntimeManagers(CindarsHope.Equipment.EquipmentManager.Instance, bootstrap.PlayerProgressionManager, bootstrap.GameTimeManager, staminaManager, bootstrap.StatusEffectManager, CindarsHope.Skills.SkillTreeManager.Instance, ShopManager.Instance);
             }
 
             var interactionSystem = _playerTransform != null ? _playerTransform.GetComponent<InteractionSystem>() : null;

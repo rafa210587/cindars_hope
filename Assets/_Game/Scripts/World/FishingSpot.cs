@@ -304,12 +304,9 @@ namespace CindarsHope.World
 
         private static bool HasRequiredTool()
         {
-            EquipmentManager equipmentManager = null;
-            if (GameBootstrap.Instance != null)
-            {
-                equipmentManager = GameBootstrap.Instance.EquipmentManager;
-            }
-
+            // arch: Core|Equipment (spec_arch_core_equipment_cycle_reduction_v35) — EquipmentManager
+            // resolvido via EquipmentManager.Instance (self-registro, molde Craft/Economy/Skills).
+            var equipmentManager = EquipmentManager.Instance;
             return equipmentManager != null && equipmentManager.HasTool(ToolType.FishingRod, ToolTier.Basic);
         }
     }

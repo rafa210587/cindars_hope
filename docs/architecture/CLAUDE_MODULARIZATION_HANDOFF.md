@@ -1,5 +1,46 @@
 # Prompt de Continuação para Claude — Rework Modular
 
+## 2026-07-08 — Core/Equipment cycle reduction v35 (Fase 2, padrão `static Instance`)
+
+- Spec implementada: `.specs/implementados/spec_arch_core_equipment_cycle_reduction_v35.md`.
+- Segundo corte da Fase 2 do plano `Desacoplar managers de domínio do GameBootstrap (Core\|*), sem
+  regen destrutiva` (após `Core\|Skills` v34).
+- Passo 0 (verificação obrigatória): grep de `CindarsHope.Equipment` em `Assets/_Game/Scripts/Core/`
+  confirmou exatamente 2 arestas — `GameBootstrap.cs` (`_equipmentManager` + property + `using`) e
+  `Core/Bootstrap/Installers/CombatRuntimeInstallContext.cs` (campo `EquipmentManager`). O enum
+  `EquipmentSlot` já morava em `CindarsHope.Foundation` desde o corte `Equipment\|Save` v29 — não
+  havia mais nenhuma aresta de tipo puro a mover, só a referência de manager concreto.
+- Mudança:
+  - `Equipment/EquipmentManager.cs` ganhou `static Instance` (Awake/OnDestroy, guard de duplicata,
+    molde Craft/Economy/Skills). Nenhum ratchet `GlobalXAccess` bloqueia esse padrão para Equipment
+    (só existe `GlobalGoldAccess`/`GlobalInventoryAccess`), então não precisou do fallback
+    `GetComponent` usado no corte Economy.
+  - `GameBootstrap.cs` perdeu `[SerializeField] _equipmentManager` + a property pública +
+    `using CindarsHope.Equipment`; resolve `CindarsHope.Equipment.EquipmentManager.Instance`
+    (fully-qualified, sem `using`) em `EquipStarterCombatLoadout`, `BuildCombatInstallContext`,
+    `InitializeDeathSystem` e na chamada a `RebindOptionalRuntimeManagers`.
+  - `CombatRuntimeInstallContext.cs` perdeu o campo `EquipmentManager` + `using`;
+    `CombatRuntimeInstaller.cs` resolve via `EquipmentManager.Instance` fully-qualified em vez de
+    `context.EquipmentManager`.
+  - ~20 consumidores de `bootstrap.EquipmentManager`/`GameBootstrap.Instance?.EquipmentManager`
+    reapontados para `EquipmentManager.Instance` (arquivos já com `using CindarsHope.Equipment`) ou
+    `CindarsHope.Equipment.EquipmentManager.Instance` fully-qualified (`TrapBehaviour`,
+    `DeathSystemBootstrap`, `CaveDeathEventHandler`, os 3 `*SceneRuntimeReferenceInstaller`) para não
+    introduzir aresta nova nesses módulos.
+  - `SaveManager.cs` **não foi tocado** — a assinatura de `RebindOptionalRuntimeManagers(...)`
+    permanece igual; só o argumento passado nos 4 call sites mudou.
+  - Geradores de cena (`CreateMvp*Scene.cs`) **não foram editados** (regen fora de escopo, per
+    plano); `SetReference(..., "_equipmentManager", ...)` vira no-op silencioso na próxima regen.
+  - Baseline de ratchet: `SingletonDeclaration Assets/_Game/Scripts/Equipment/EquipmentManager.cs 1`
+    adicionada a `tools/architecture/architecture-ratchet-baseline.tsv`.
+- Gates: snapshot `MutualModulePairs` 23→22 (`Core\|Equipment` some, nenhum par novo); ratchet PASS
+  (após atualizar baseline); build 7/7 exit 0 0W/0E (nenhum arquivo movido, sem stale csproj path);
+  EditMode filtrado (Architecture 8/8, Save 69/69; filtro `CindarsHope.Tests.EditMode.Equipment` deu
+  0/0 — não existe essa suíte dedicada); PlayMode composição 2/2 PASS, log sem exceção/missing-script
+  relacionado a Equipment.
+- Pendência: Fase 2 continua só com `Core\|Player` (ProgressionManager/StatusEffectManager); Fase 3
+  (Inventory/Player/UI, alto fan-out) para depois.
+
 ## 2026-07-08 — Core/Skills cycle reduction v34 (Fase 2, padrão `static Instance`)
 
 - Spec implementada: `.specs/implementados/spec_arch_core_skills_cycle_reduction_v34.md`.

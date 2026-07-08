@@ -549,9 +549,11 @@ namespace CindarsHope.UI
 
         private void ResolveEquipmentManager()
         {
-            if (_equipmentManager == null && GameBootstrap.Instance != null)
+            // arch: Core|Equipment (spec_arch_core_equipment_cycle_reduction_v35) — EquipmentManager
+            // resolvido via EquipmentManager.Instance (self-registro, molde Craft/Economy/Skills).
+            if (_equipmentManager == null)
             {
-                _equipmentManager = GameBootstrap.Instance.EquipmentManager;
+                _equipmentManager = EquipmentManager.Instance;
             }
         }
 
