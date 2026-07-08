@@ -52,8 +52,7 @@ namespace CindarsHope.SceneManagement
 
             if (treeRegistry != null)
             {
-                var treeFarmSaveData = new FarmSaveData { Trees = _cachedWorldState?.Trees ?? new List<TreeSaveData>() };
-                treeRegistry.RestoreFromSaveData(treeFarmSaveData);
+                treeRegistry.RestoreFromSaveData(_cachedWorldState?.Trees ?? new List<TreeSaveData>());
             }
 
             if (itemPickupRegistry != null)

@@ -74,11 +74,7 @@ namespace CindarsHope.Save.Providers
 
             if (_treeRegistry != null && data != null)
             {
-                var treeFarmSaveData = new FarmSaveData
-                {
-                    Trees = data.Trees ?? new List<TreeSaveData>()
-                };
-                _treeRegistry.RestoreFromSaveData(treeFarmSaveData);
+                _treeRegistry.RestoreFromSaveData(data.Trees ?? new List<TreeSaveData>());
             }
         }
     }

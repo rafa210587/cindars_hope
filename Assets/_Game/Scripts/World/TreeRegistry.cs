@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using CindarsHope.Save;
 using UnityEngine;
 
 namespace CindarsHope.World
@@ -37,14 +36,14 @@ namespace CindarsHope.World
             return trees;
         }
 
-        public void RestoreFromSaveData(FarmSaveData saveData)
+        public void RestoreFromSaveData(IReadOnlyList<TreeSaveData> trees)
         {
-            if (saveData == null || saveData.Trees == null || _trees == null)
+            if (trees == null || _trees == null)
             {
                 return;
             }
 
-            foreach (var treeData in saveData.Trees)
+            foreach (var treeData in trees)
             {
                 if (treeData == null)
                 {

@@ -1,6 +1,5 @@
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
-using CindarsHope.Save;
 using UnityEngine;
 
 namespace CindarsHope.World.Calendar
@@ -39,15 +38,9 @@ namespace CindarsHope.World.Calendar
             _currentDate = date;
         }
 
-        public void RestoreFromSaveData(CalendarSaveData saveData)
+        public void RestoreFromAbsoluteDay(int absoluteDayIndex)
         {
-            if (saveData == null)
-            {
-                _currentDate = GameDate.FromAbsoluteDay(1);
-                return;
-            }
-
-            _currentDate = GameDate.FromAbsoluteDay(saveData.AbsoluteDayIndex);
+            _currentDate = GameDate.FromAbsoluteDay(absoluteDayIndex);
         }
 
         private void Update()
