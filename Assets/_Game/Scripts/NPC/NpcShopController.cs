@@ -35,8 +35,6 @@ namespace CindarsHope.NPC
         [SerializeField] private ModalManager _modalManager;
 
         private const string ThalindraQuestId = "quest_first_supplies_for_cindar";
-        private const string DebugExprPrefix = "dbg:";
-
         private readonly NpcShopInteractionSession _interaction = new NpcShopInteractionSession();
         private bool _isReady;
 
@@ -363,15 +361,7 @@ namespace CindarsHope.NPC
             DetachDialogueChoiceHandler();
             _dialogueModal.OnChoiceSelected += HandleDebugChoice;
             _dialogueModal.OnClose += HandleTreeDialogueClosed;
-            var choices = new List<UiDialogueChoice>
-            {
-                new UiDialogueChoice("Neutro", DebugExprPrefix + nameof(NpcExpression.Neutral)),
-                new UiDialogueChoice("Felicidade", DebugExprPrefix + nameof(NpcExpression.Happiness)),
-                new UiDialogueChoice("Amor", DebugExprPrefix + nameof(NpcExpression.Love)),
-                new UiDialogueChoice("Desdem", DebugExprPrefix + nameof(NpcExpression.Disdain)),
-                new UiDialogueChoice("Odio", DebugExprPrefix + nameof(NpcExpression.Hatred)),
-                new UiDialogueChoice("Voltar", "dbg_back"),
-            };
+            var choices = NpcShopChoiceUiAdapter.ToUiChoices(NpcDebugExpressionChoicePolicy.BuildExpressionChoices());
             _dialogueModal.ShowWithChoices("[Debug] Trocar expressao:", choices);
         }
 
@@ -386,16 +376,15 @@ namespace CindarsHope.NPC
                 return;
             }
 
-            if (choice.ChoiceId == "dbg_back")
+            if (choice.ChoiceId == NpcDebugExpressionChoicePolicy.BackChoiceId)
             {
                 if (IsThalindra()) ShowThalindraQuestShopDialogue(); else ShowRootShopDialogue();
                 return;
             }
 
-            if (choice.ChoiceId != null && choice.ChoiceId.StartsWith(DebugExprPrefix, System.StringComparison.Ordinal))
+            if (NpcDebugExpressionChoicePolicy.TryParseExpressionChoice(choice.ChoiceId, out var expr))
             {
-                var name = choice.ChoiceId.Substring(DebugExprPrefix.Length);
-                if (_npcData != null && System.Enum.TryParse<NpcExpression>(name, out var expr))
+                if (_npcData != null)
                 {
                     GameEventBus.Publish(new NpcExpressionOverrideEvent(_npcData.NpcId, expr));
                 }

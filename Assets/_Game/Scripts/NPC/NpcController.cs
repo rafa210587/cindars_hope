@@ -350,7 +350,7 @@ namespace CindarsHope.NPC
 
             if (UnityEngine.Debug.isDebugBuild)
             {
-                uiChoices.Add(new UiDialogueChoice("[Debug] expressao", "dbg_open"));
+                uiChoices.Add(new UiDialogueChoice("[Debug] expressao", NpcDebugExpressionChoicePolicy.OpenChoiceId));
             }
 
             return uiChoices;
@@ -415,8 +415,6 @@ namespace CindarsHope.NPC
             ShowDialogueNode(nextNode);
         }
 
-        private const string DebugExprPrefix = "dbg:";
-
         private bool TryHandleDebugExpressionChoice(UiDialogueChoice choice)
         {
             if (!UnityEngine.Debug.isDebugBuild || choice == null || choice.ChoiceId == null)
@@ -424,22 +422,21 @@ namespace CindarsHope.NPC
                 return false;
             }
 
-            if (choice.ChoiceId == "dbg_open")
+            if (choice.ChoiceId == NpcDebugExpressionChoicePolicy.OpenChoiceId)
             {
                 ShowDebugExpressionMenu();
                 return true;
             }
 
-            if (choice.ChoiceId == "dbg_back")
+            if (choice.ChoiceId == NpcDebugExpressionChoicePolicy.BackChoiceId)
             {
                 if (_currentNode != null) ShowDialogueNode(_currentNode); else EndInteraction();
                 return true;
             }
 
-            if (choice.ChoiceId.StartsWith(DebugExprPrefix, System.StringComparison.Ordinal))
+            if (NpcDebugExpressionChoicePolicy.TryParseExpressionChoice(choice.ChoiceId, out var expr))
             {
-                var name = choice.ChoiceId.Substring(DebugExprPrefix.Length);
-                if (_npcData != null && System.Enum.TryParse<NpcExpression>(name, out var expr))
+                if (_npcData != null)
                 {
                     GameEventBus.Publish(new NpcExpressionOverrideEvent(_npcData.NpcId, expr));
                 }
@@ -453,15 +450,7 @@ namespace CindarsHope.NPC
         private void ShowDebugExpressionMenu()
         {
             if (_dialogueModal == null) return;
-            var choices = new System.Collections.Generic.List<UiDialogueChoice>
-            {
-                new UiDialogueChoice("Neutro", DebugExprPrefix + nameof(NpcExpression.Neutral)),
-                new UiDialogueChoice("Felicidade", DebugExprPrefix + nameof(NpcExpression.Happiness)),
-                new UiDialogueChoice("Amor", DebugExprPrefix + nameof(NpcExpression.Love)),
-                new UiDialogueChoice("Desdem", DebugExprPrefix + nameof(NpcExpression.Disdain)),
-                new UiDialogueChoice("Odio", DebugExprPrefix + nameof(NpcExpression.Hatred)),
-                new UiDialogueChoice("Voltar", "dbg_back"),
-            };
+            var choices = NpcShopChoiceUiAdapter.ToUiChoices(NpcDebugExpressionChoicePolicy.BuildExpressionChoices());
             _dialogueModal.ShowWithChoices("[Debug] Trocar expressao:", choices);
         }
 

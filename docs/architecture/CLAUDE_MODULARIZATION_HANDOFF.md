@@ -1,5 +1,25 @@
 # Prompt de Continuação para Claude — Rework Modular
 
+## 2026-07-07 — NPC debug expression policy v18
+
+- Spec implementada: `.specs/implementados/spec_arch_npc_debug_expression_policy_v18.md`.
+- Objetivo: remover duplicação de debug expression entre `NpcController` e `NpcShopController`,
+  sem alterar UI, eventos publicados, diálogos, saves, cenas, prefabs, IDs ou gameplay.
+- Mudança:
+  - criado `NpcDebugExpressionChoicePolicy`;
+  - `NpcController` e `NpcShopController` usam a mesma policy para `dbg_open`, `dbg_back`,
+    escolhas de expressão e parse de `NpcExpression`;
+  - `NpcShopChoiceUiAdapter` converte as escolhas para `DialogueChoice`.
+- Gates:
+  - `dotnet build .\CindarsHope.Runtime.csproj`: exit 0, 0 warnings, 0 errors.
+  - `tools/unity/Invoke-UnityGeneratedProjectsBuild.ps1`: exit 0, 7/7 projetos, 0 warnings, 0 errors.
+  - `tools/unity/RunUnityEditModeTests.ps1`: exit 0, 2747/2747 PASS,
+    `TestResults/npc-debug-expression-policy-editmode.xml`.
+  - `tools/architecture/Get-ModularizationDependencySnapshot.ps1`: exit 0,
+    `RuntimeModuleEdges=227`, `MutualModulePairs=38` sem novo ciclo.
+- Próximos recortes do `NpcShopController` ainda pendentes: dialog/tree presenter, gifting,
+  quest bridge, transaction facade e availability/schedule presentation.
+
 ## 2026-07-07 — NpcShopController city service policy v17
 
 - Spec implementada: `.specs/implementados/spec_arch_npcshop_city_service_policy_v17.md`.
