@@ -59,6 +59,7 @@ SingletonDeclaration	Assets/_Game/Scripts/Combat/StatusEffect/PlayerStatusReceiv
 SingletonDeclaration	Assets/_Game/Scripts/Combat/Telemetry/CombatTelemetryService.cs	1
 SingletonDeclaration	Assets/_Game/Scripts/Composition/GameRuntimeCompositionRoot.cs	1
 SingletonDeclaration	Assets/_Game/Scripts/Core/Bootstrap/GameBootstrap.cs	1
+SingletonDeclaration	Assets/_Game/Scripts/Craft/CraftingManager.cs	1
 SingletonDeclaration	Assets/_Game/Scripts/Crafting/EquipmentUpgradeRegistry.cs	1
 SingletonDeclaration	Assets/_Game/Scripts/Crafting/RecipeUnlockService.cs	1
 SingletonDeclaration	Assets/_Game/Scripts/Economy/WeaponInfusionRegistry.cs	1

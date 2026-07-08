@@ -1,7 +1,7 @@
 using CindarsHope.Core;
-using CindarsHope.Core.Events;
 using CindarsHope.Craft;
 using CindarsHope.Craft.Data;
+using CindarsHope.Craft.Events;
 using NUnit.Framework;
 using UnityEngine;
 

@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using CindarsHope.Core;
-using CindarsHope.Core.Events;
 using CindarsHope.Craft;
 using CindarsHope.Craft.Data;
+using CindarsHope.Craft.Events;
 using CindarsHope.UI.Modal;
 using UnityEngine;
 

@@ -4,7 +4,6 @@ using CindarsHope.Skills;
 using CindarsHope.Core.Data;
 using CindarsHope.Core.Respawn;
 using CindarsHope.Core.Time;
-using CindarsHope.Craft;
 using CindarsHope.Economy;
 using CindarsHope.Equipment;
 using CindarsHope.Foundation;
@@ -34,7 +33,6 @@ namespace CindarsHope.Core.Bootstrap
         [SerializeField] private SaveManager _saveManager;
         [SerializeField] private HungerManager _hungerManager;
         [SerializeField] private StaminaManager _staminaManager;
-        [SerializeField] private CraftingManager _craftingManager;
         [SerializeField] private EconomyManager _economyManager;
         [SerializeField] private ShopManager _shopManager;
         [SerializeField] private EquipmentManager _equipmentManager;
@@ -65,7 +63,6 @@ namespace CindarsHope.Core.Bootstrap
         public HungerManager HungerManager => _hungerManager;
         public StaminaManager StaminaManager => _staminaManager;
         public ManaManager ManaManager => _manaManager;
-        public CraftingManager CraftingManager => _craftingManager;
         public EconomyManager EconomyManager => _economyManager;
         public ShopManager ShopManager => _shopManager;
         public EquipmentManager EquipmentManager => _equipmentManager;
@@ -243,9 +240,9 @@ namespace CindarsHope.Core.Bootstrap
                 _manaManager.Initialize();
             }
 
-            if (_craftingManager != null)
+            if (CindarsHope.Craft.CraftingManager.Instance != null)
             {
-                _craftingManager.Initialize();
+                CindarsHope.Craft.CraftingManager.Instance.Initialize();
             }
 
             if (_economyManager != null)
@@ -424,9 +421,9 @@ namespace CindarsHope.Core.Bootstrap
                 _playerManager.Shutdown();
             }
 
-            if (_craftingManager != null && _craftingManager.IsInitialized)
+            if (CindarsHope.Craft.CraftingManager.Instance != null && CindarsHope.Craft.CraftingManager.Instance.IsInitialized)
             {
-                _craftingManager.Shutdown();
+                CindarsHope.Craft.CraftingManager.Instance.Shutdown();
             }
 
             if (_economyManager != null && _economyManager.IsInitialized)

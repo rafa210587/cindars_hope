@@ -192,8 +192,10 @@ namespace CindarsHope.Editor.Validation
                     { Debug.LogError("MvpSceneValidator: GameBootstrap missing SaveManager."); passed = false; }
                 if (bootstrap.HungerManager == null)
                     { Debug.LogError("MvpSceneValidator: GameBootstrap missing HungerManager."); passed = false; }
-                if (bootstrap.CraftingManager == null)
-                    { Debug.LogError("MvpSceneValidator: GameBootstrap missing CraftingManager."); passed = false; }
+                // arch: Core|Craft (spec_arch_core_craft_cycle_reduction_v32) — CraftingManager nao
+                // e mais [SerializeField] do GameBootstrap; valida presenca do componente na cena.
+                if (FindComponent<CraftingManager>(rootObjects) == null)
+                    { Debug.LogError("MvpSceneValidator: FarmScene missing CraftingManager component."); passed = false; }
                 if (bootstrap.EconomyManager == null)
                     { Debug.LogError("MvpSceneValidator: GameBootstrap missing EconomyManager."); passed = false; }
                 passed &= ValidateSpec09Bootstrap(bootstrap);

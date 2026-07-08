@@ -11,10 +11,34 @@ namespace CindarsHope.Craft
     [DisallowMultipleComponent]
     public class CraftingManager : MonoBehaviour
     {
+        // arch: Core|Craft (spec_arch_core_craft_cycle_reduction_v32) — self-registro estatico,
+        // molde Audio/AudioManager.cs; GameBootstrap nao segura mais [SerializeField] deste manager.
+        private static CraftingManager _instance;
+        public static CraftingManager Instance => _instance;
+
         [SerializeField] private InventoryManager _inventoryManager;
         [SerializeField] private RecipeDatabaseSO _recipeDatabase;
 
         public bool IsInitialized { get; private set; }
+
+        private void Awake()
+        {
+            if (_instance != null && _instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            _instance = this;
+        }
+
+        private void OnDestroy()
+        {
+            if (_instance == this)
+            {
+                _instance = null;
+            }
+        }
 
         public void Initialize()
         {

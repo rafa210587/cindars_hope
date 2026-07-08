@@ -1,7 +1,14 @@
 using CindarsHope.Craft.Data;
 
-namespace CindarsHope.Core.Events
+namespace CindarsHope.Craft.Events
 {
+    // arch: Core|Craft (spec_arch_core_craft_cycle_reduction_v32) — movido de Core/Events para
+    // Craft/Events: eventos de crafting referenciam WorkshopType (Craft.Data), o que criava um
+    // ciclo mutuo Core<->Craft quando hospedados em CindarsHope.Core.Events. Precedente: World/Events
+    // ja hospeda eventos de dominio fora de Core.Events (WorldEventHooks etc.). Continuam publicados/
+    // assinados via GameEventBus normalmente — nenhuma mudanca de comunicacao direta MonoBehaviour-a-
+    // MonoBehaviour.
+
     /// <summary>
     /// Pedido para ABRIR o craft de uma estação física (forja, alambique, tear…). Publicado por
     /// CraftingStationInteractable ao apertar E; assinado pelo CraftingModal, que abre o craft filtrado

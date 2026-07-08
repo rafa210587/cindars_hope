@@ -1,6 +1,6 @@
 using CindarsHope.Core;
-using CindarsHope.Core.Events;
 using CindarsHope.Craft.Data;
+using CindarsHope.Craft.Events;
 using CindarsHope.Interaction;
 using CindarsHope.UI.Crafting;
 using UnityEngine;

@@ -2,6 +2,7 @@ using System;
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
 using CindarsHope.Craft.Data;
+using CindarsHope.Craft.Events;
 using CindarsHope.Inventory;
 using CindarsHope.Player;
 

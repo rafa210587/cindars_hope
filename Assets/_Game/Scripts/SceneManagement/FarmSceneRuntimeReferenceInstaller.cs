@@ -67,7 +67,9 @@ namespace CindarsHope.SceneManagement
             var staminaManager = bootstrap.StaminaManager;
             var timeManager = bootstrap.TimeManager;
             var saveManager = bootstrap.SaveManager;
-            var craftingManager = bootstrap.CraftingManager;
+            // arch: Core|Craft (spec_arch_core_craft_cycle_reduction_v32) — CraftingManager
+            // self-registra via static Instance; GameBootstrap nao segura mais essa ref.
+            var craftingManager = CraftingManager.Instance;
 
             if (inventoryManager != null && _farmPlots != null)
             {
