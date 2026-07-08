@@ -514,10 +514,10 @@ namespace CindarsHope.Save
                 _shopManager = shopManager;
             }
 
-            if (bestiaryManager != null)
-            {
-                _bestiaryManager = bestiaryManager;
-            }
+            // arch: Core|Enemy (spec_arch_core_enemy_cycle_reduction_v31) — GameBootstrap nao segura
+            // mais essa ref; resolve via BestiaryManager.Instance (self-registro) quando o chamador
+            // (ex.: geradores de cena legados) nao passar uma explicita.
+            _bestiaryManager = bestiaryManager != null ? bestiaryManager : BestiaryManager.Instance;
 
             // Rebinda providers afetados
             _equipmentProvider = new EquipmentSectionProvider(_equipmentManager);

@@ -298,8 +298,9 @@ namespace CindarsHope.NPC.Services
 
         private static BestiaryManager ResolveBestiary()
         {
-            var boot = GameBootstrap.Instance;
-            return boot != null ? boot.BestiaryManager : null;
+            // arch: Core|Enemy (spec_arch_core_enemy_cycle_reduction_v31) — BestiaryManager self-registra
+            // via static Instance; GameBootstrap nao segura mais essa ref.
+            return BestiaryManager.Instance;
         }
 
         private (string runSeed, int level, string salt) ResolveRevealContext()

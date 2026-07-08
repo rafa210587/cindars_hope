@@ -7,7 +7,6 @@ using CindarsHope.Core.Time;
 using CindarsHope.Craft;
 using CindarsHope.Economy;
 using CindarsHope.Equipment;
-using CindarsHope.Enemy;
 using CindarsHope.Foundation;
 using CindarsHope.Inventory;
 using CindarsHope.Player;
@@ -51,7 +50,6 @@ namespace CindarsHope.Core.Bootstrap
         [SerializeField] private CaveRunManager _caveRunManager;
         [SerializeField] private AnyaFountain _anyaFountain;
         [SerializeField] private Skills.SkillTreeManager _skillTreeManager;
-        [SerializeField] private BestiaryManager _bestiaryManager;
 
         private CaveRuntimeState _cachedCaveRunState;
         private CorpseRecoveryManager _corpseRecoveryManager;
@@ -77,7 +75,6 @@ namespace CindarsHope.Core.Bootstrap
         public CorpseRecoveryManager CorpseRecoveryManager => _corpseRecoveryManager;
         public AnyaFountain AnyaFountain => _anyaFountain;
         public Skills.SkillTreeManager SkillTreeManager => _skillTreeManager;
-        public BestiaryManager BestiaryManager => _bestiaryManager;
         public ItemDatabaseSO ItemDatabase => _itemDatabase;
         public WeaponDatabaseSO WeaponDatabase => _weaponDatabase;
         public SpellDatabaseSO SpellDatabase => _spellDatabase;
@@ -116,7 +113,6 @@ namespace CindarsHope.Core.Bootstrap
             _instance = this;
             DontDestroyOnLoad(gameObject);
             EnsurePersistentShopManager();
-            EnsurePersistentBestiaryManager();
             InitializeManagers();
         }
 
@@ -282,7 +278,9 @@ namespace CindarsHope.Core.Bootstrap
 
             if (_saveManager != null)
             {
-                _saveManager.RebindOptionalRuntimeManagers(_equipmentManager, _progressionManager, _gameTimeManager, _staminaManager, _statusEffectManager, _skillTreeManager, _shopManager, _bestiaryManager);
+                // arch: Core|Enemy (spec_arch_core_enemy_cycle_reduction_v31) — BestiaryManager nao eh
+                // mais passado por aqui; SaveManager resolve via BestiaryManager.Instance (self-registro).
+                _saveManager.RebindOptionalRuntimeManagers(_equipmentManager, _progressionManager, _gameTimeManager, _staminaManager, _statusEffectManager, _skillTreeManager, _shopManager);
             }
 
             CombatRuntimeInstaller.Install(BuildCombatInstallContext(), this);
@@ -374,23 +372,6 @@ namespace CindarsHope.Core.Bootstrap
             }
 
             _manaManager = gameObject.AddComponent<ManaManager>();
-        }
-
-        private void EnsurePersistentBestiaryManager()
-        {
-            if (_bestiaryManager != null)
-            {
-                return;
-            }
-
-            _bestiaryManager = GetComponent<BestiaryManager>();
-            if (_bestiaryManager != null)
-            {
-                return;
-            }
-
-            _bestiaryManager = gameObject.AddComponent<BestiaryManager>();
-            Debug.LogWarning($"GameBootstrap created missing BestiaryManager on '{gameObject.name}'. Scene should serialize this reference on next scene generation.", this);
         }
 
         private void InitializeDeathSystem()

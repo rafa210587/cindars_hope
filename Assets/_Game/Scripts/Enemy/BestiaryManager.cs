@@ -10,6 +10,11 @@ namespace CindarsHope.Enemy
     [DisallowMultipleComponent]
     public class BestiaryManager : MonoBehaviour
     {
+        // arch: Core|Enemy (spec_arch_core_enemy_cycle_reduction_v31) — self-registro estatico,
+        // molde Audio/AudioManager.cs; GameBootstrap nao segura mais [SerializeField] deste manager.
+        private static BestiaryManager _instance;
+        public static BestiaryManager Instance => _instance;
+
         private readonly Dictionary<string, BestiaryEntry> _entries = new Dictionary<string, BestiaryEntry>();
 
         // fable_21 — discovery-knowledge layer hosted here (no new manager on the bootstrap).
@@ -27,6 +32,13 @@ namespace CindarsHope.Enemy
 
         private void Awake()
         {
+            if (_instance != null && _instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            _instance = this;
             WireKnowledgeSources();
         }
 
@@ -50,6 +62,14 @@ namespace CindarsHope.Enemy
             GameEventBus.Unsubscribe<EnemyKilledEvent>(OnEnemyKilled);
             GameEventBus.Unsubscribe<EnemyLootRolledEvent>(OnEnemyLootRolled);
             GameEventBus.Unsubscribe<EnemyActionStartedEvent>(OnEnemyActionStarted);
+        }
+
+        private void OnDestroy()
+        {
+            if (_instance == this)
+            {
+                _instance = null;
+            }
         }
 
         private void WireKnowledgeSources()
