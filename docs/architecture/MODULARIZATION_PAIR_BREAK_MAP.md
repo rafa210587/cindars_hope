@@ -31,7 +31,7 @@ associado, migra-se o acesso para port/registro tipado.
 | `Core\|Player` | Core.Events→Player (2 enums) | Mover `HazardType` + `PlayerAttributeType` p/ Foundation; reapontar ~8 usings. GameBootstrap/installer mantêm import Player (composition root, ok). | low / small |
 | `Save\|World` (**FEITO** — `.specs/implementados/spec_arch_save_world_cycle_reduction_v21.md`) | World→Save (2 métodos) | Estreitar assinaturas: `TreeRegistry.RestoreFromSaveData(IReadOnlyList<TreeSaveData>)` e `GameCalendarService.RestoreFromAbsoluteDay(int)`; callers (`WorldSectionProvider`, `FarmSceneRuntimeStateCache`) passam os dados. **Não moveu nenhum DTO.** | low / small |
 | `NPC\|Save` | NpcManager→Save (2 DTOs) | Mover `NpcManagerSaveData`/`NpcSaveData` p/ `CindarsHope.NPC` (precedente vivo: `FriendshipSaveData`). Qualificar campo em `SaveData.cs:40`. | low / small |
-| `Economy\|Save` | Economy→Save (3 DTOs) | Mover `WeaponInfusionSaveData`/`ShopStockSaveData`/`ShopItemStockEntry` p/ Foundation; trocar `using` em WeaponInfusionRegistry/ShopManager. Deletar `using Economy` morto em `SaveManager.Migration.cs:11`. | low / small |
+| `Economy\|Save` (**FEITO** — `.specs/implementados/spec_arch_economy_save_cycle_reduction_v22.md`) | Economy→Save (3 DTOs) | Mover `WeaponInfusionSaveData`/`ShopStockSaveData`/`ShopItemStockEntry` p/ Foundation; trocar `using` em WeaponInfusionRegistry/ShopManager. Deletar `using Economy` morto em `SaveManager.Migration.cs:11`. | low / small |
 | `Quests\|Save` | Save→Quests (enum + provider) | Mover enum `QuestSource` p/ Foundation; relocar `QuestSectionProvider` p/ Quests e auto-registrar no `SaveProviderRegistry` (padrão vivo), tirando o nome de Quests de dentro de Save. | low / small |
 
 ### Tier 2 — small-spec / medium risk

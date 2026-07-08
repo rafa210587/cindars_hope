@@ -1,5 +1,38 @@
 # Prompt de Continuação para Claude — Rework Modular
 
+## 2026-07-07 — Economy/Save cycle reduction v22 (microcut Tier 1)
+
+- Spec implementada: `.specs/implementados/spec_arch_economy_save_cycle_reduction_v22.md`.
+- Objetivo: quebrar o par mútuo `Economy|Save` (microcut Tier 1 do
+  `docs/architecture/MODULARIZATION_PAIR_BREAK_MAP.md`), sem alterar gameplay, saves, schema,
+  cenas, prefabs ou IDs.
+- Passo 0 (verificação obrigatória): grep de `using CindarsHope.Save`/`SaveData` em toda a pasta
+  `Assets/_Game/Scripts/Economy/` confirmou que `WeaponInfusionRegistry.cs` e `ShopManager.cs` eram
+  os únicos arquivos de Economy referenciando Save. Os 3 DTOs (`WeaponInfusionSaveData`,
+  `ShopStockSaveData`, `ShopItemStockEntry`) só têm campos `string`/`int`/`List<>` — sem
+  `UnityEngine.*` — elegíveis para `CindarsHope.Foundation`.
+- Mudança:
+  - Novo arquivo `Assets/_Game/Scripts/Foundation/SaveSchema/EconomySaveDtos.cs` com os 3 DTOs
+    movidos de `CindarsHope.Save` para `CindarsHope.Foundation` (mesmo nome de classe/campo —
+    JsonUtility serializa por nome de campo, sem migration).
+  - `SaveData.cs` removeu as 3 classes e passou a usar `using CindarsHope.Foundation;`.
+  - `WeaponInfusionRegistry.cs`/`ShopManager.cs` trocaram `using CindarsHope.Save;` por
+    `using CindarsHope.Foundation;`.
+  - `using CindarsHope.Economy;` morto removido de `SaveManager.Migration.cs`.
+  - `ArchitectureRatchetTests.FoundationAssembly_ContainsOnlyTheCuratedPureContracts` atualizado
+    (allowlist explícita) para incluir `EconomySaveDtos.cs` — crescimento anunciado do escopo de
+    Foundation, não regressão.
+- Gates:
+  - `tools/architecture/Get-ModularizationDependencySnapshot.ps1`: exit 0,
+    `MutualModulePairs=36 -> 35`, `Economy|Save` removido, nenhum par novo apareceu.
+  - `tools/unity/Invoke-UnityGeneratedProjectsBuild.ps1`: exit 0, 7/7 projetos, 0 warnings, 0 erros.
+  - `tools/unity/RunUnityEditModeTests.ps1 -ResultsPath TestResults\cut-economy-save-editmode-2.xml -LogFile Logs\cut-economy-save-2.log`:
+    exit 0, 2747/2747 PASS, 0 failed (1ª rodada teve 1 falha esperada no ratchet de Foundation,
+    corrigida atualizando a allowlist).
+- Ainda não declarar modularização ampla concluída: restam 35 pares mútuos para specs-filhas.
+- Sem push. Working tree segue com mudanças concorrentes de arte/animação/ProjectSettings/tools
+  fora do escopo desta spec (não tocadas/incluídas).
+
 ## 2026-07-07 — Save/World cycle reduction v21 (microcut Tier 1)
 
 - Spec implementada: `.specs/implementados/spec_arch_save_world_cycle_reduction_v21.md`.
