@@ -1569,6 +1569,59 @@ Não declare PASS por compilação textual ou por relato de outro agente. Use ex
 - Observação de ambiente: após o Unity encerrar e limpar `Temp/obj`, builds `--no-restore` retornam
   `NETSDK1004`; com restore habilitado, runtime e editor passaram.
 - Commit técnico/documental: `8a887244` (`test(arquitetura): fechar baseline e ratchets da fase 0`).
+
+---
+
+## 2026-07-08 — Corte `Save|UI` (spec_arch_save_ui_cycle_reduction_v26)
+
+- Objetivo: quebrar o par mútuo `Save|UI` (`docs/architecture/MODULARIZATION_PAIR_BREAK_MAP.md`,
+  Tier 2), preservando `UI -> Save` (layering correto) e cortando as duas sub-arestas de
+  `Save -> UI`.
+- Passo 0 (verificado no disco): grep de `using CindarsHope.UI` em `Save/**` confirmou exatamente
+  6 arquivos, cobertos por duas sub-arestas — tipos de Hotbar (`HotbarState`/`HotbarSaveData`,
+  puros) e o provider `OnboardingHintsSectionProvider`. Nenhuma outra fonte de `Save -> UI` foi
+  encontrada.
+- Arquivos alterados:
+  - `Assets/_Game/Scripts/UI/Hotbar/{HotbarState,HotbarSaveData}.cs` → `git mv` para
+    `Assets/_Game/Scripts/Foundation/{HotbarState,HotbarSaveData}.cs`; namespace
+    `CindarsHope.UI.Hotbar` → `CindarsHope.Foundation`.
+  - `Assets/_Game/Scripts/Save/{SaveData.cs,SaveManager.cs,SaveManager.Migration.cs,
+    Providers/HotbarSectionProvider.cs,Providers/InventorySectionProvider.cs}` — `using
+    CindarsHope.UI.Hotbar;` trocado por `using CindarsHope.Foundation;` (ou removido quando já
+    presente).
+  - `Assets/_Game/Scripts/Core/Bootstrap/GameBootstrap.cs` — referência fully-qualified inline
+    `CindarsHope.UI.Hotbar.HotbarState.SlotCount` atualizada para
+    `CindarsHope.Foundation.HotbarState.SlotCount`.
+  - `Assets/_Game/Scripts/Save/Providers/OnboardingHintsSectionProvider.cs` → `git mv` para
+    `Assets/_Game/Scripts/UI/Onboarding/Save/OnboardingHintsSectionProvider.cs`; namespace
+    `CindarsHope.Save.Providers` → `CindarsHope.UI.Onboarding.Save`. `Save/SaveManager.cs`
+    passou a construir `new CindarsHope.UI.Onboarding.Save.OnboardingHintsSectionProvider()` por
+    nome totalmente qualificado (mesma técnica de `spec_arch_quests_save_cycle_reduction_v24`),
+    sem novo `using CindarsHope.UI` de topo.
+  - `Assets/_Game/Tests/EditMode/Architecture/Editor/ArchitectureRatchetTests.cs` — allowlist do
+    `FoundationAssembly_ContainsOnlyTheCuratedPureContracts` ganhou `HotbarState.cs`/
+    `HotbarSaveData.cs`.
+  - `Assets/_Game/Tests/EditMode/Save/Editor/SaveProviderRegistryTests.cs`,
+    `Assets/_Game/Tests/EditMode/Save/SaveSectionProviderTests.cs`,
+    `Assets/_Game/Tests/EditMode/UI/OnboardingHintTests.cs` — `using` atualizados para
+    `CindarsHope.Foundation`/`CindarsHope.UI.Onboarding.Save`.
+  - `CindarsHope.Foundation.csproj`/`CindarsHope.Runtime.csproj` — `<Compile Include>` movidos
+    entre projetos conforme os `git mv` acima (Unity, disponível nesta sessão, regenerou ambos os
+    `.csproj` de forma consistente ao rodar os testes).
+- Comportamento preservado: nenhum schema/campo/valor/nome de classe alterado; nenhuma
+  cena/prefab/asset tocado.
+- Validação:
+  - `tools/architecture/Get-ModularizationDependencySnapshot.ps1`: `MutualModulePairs` 32 → 31,
+    `Save|UI` removido, nenhum par novo apareceu.
+  - `tools/unity/Invoke-UnityGeneratedProjectsBuild.ps1`: exit 0, 7/7 projetos, 0 warnings/0 erros
+    (rodado duas vezes — antes e depois da regeneração automática dos `.csproj` pelo Unity).
+  - `tools/unity/RunUnityEditModeTests.ps1`
+    (`TestResults/cut-save-ui-editmode.xml`, `Logs/cut-save-ui.log`): exit 0, 2747/2747 PASS.
+- Não executado / não aplicável: PlayMode manual não foi rodado nesta sessão; risco residual:
+  mitigado porque a mudança é puramente de namespace/localização de arquivo (JsonUtility
+  serializa por nome de campo, GUID preservado via `git mv` do `.meta`), sem alterar lógica.
+- Próximo passo: seguir o Tier 2/3 do `docs/architecture/MODULARIZATION_PAIR_BREAK_MAP.md` para os
+  31 pares mútuos restantes.
 - Publicação: `git push origin dev`, exit 0; verificação posterior confirmou HEAD e `origin/dev` em
   `8a8872445230ccf58c09b446fe3842741a945151`, divergência `0 0`.
 - Risco residual: as 13 falhas EditMode e os warnings preexistentes permanecem fora do escopo.
