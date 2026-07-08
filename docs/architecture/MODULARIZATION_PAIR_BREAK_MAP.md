@@ -48,7 +48,7 @@ associado, migra-se o acesso para port/registro tipado.
 
 | Par | Estratégia (resumo) |
 |---|---|
-| `Equipment\|Save` | Mover enum `EquipmentSlot` + DTOs de equipment p/ Foundation. |
+| `Equipment\|Save` (**FEITO** — `.specs/implementados/spec_arch_equipment_save_cycle_reduction_v29.md`) | Enum `EquipmentSlot` + DTOs de save de equipment (`EquipmentSaveData`/`EquipmentSlotSaveData`/`EquipmentUpgradeSaveData`/`EquipmentDurabilitySaveData`/`DurabilityEntryData`) movidos para `CindarsHope.Foundation`. 30 arquivos consumidores atualizados. Efeito colateral: `Crafting\|Save` também some do snapshot (não medido isoladamente antes). |
 | `Farm\|Save` | Relocar posse de `FarmTileGrid`/`FarmNonArableZones` do SaveManager p/ serviço Farm no composition root + mover `FarmSaveData`/`FarmPlotSaveData` p/ Farm. |
 | `Cave\|Save` (**FEITO** — `.specs/implementados/spec_arch_cave_save_cycle_reduction_v28.md`) | Mover `CaveSaveData` p/ `Cave.Runtime` (precedente: `CaveRunSaveData`). |
 | `Core\|Save` | `ISaveService` em Core/Foundation p/ GameBootstrap; `GameTimeManager` expõe setters primitivos e o provider lê o DTO. |

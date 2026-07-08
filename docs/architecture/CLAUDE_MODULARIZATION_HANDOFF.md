@@ -1,5 +1,76 @@
 # Prompt de Continuação para Claude — Rework Modular
 
+## 2026-07-08 — Equipment/Save cycle reduction v29 (Tier 3, large-spec por causa do enum)
+
+- Spec implementada: `.specs/implementados/spec_arch_equipment_save_cycle_reduction_v29.md`.
+- Objetivo: quebrar o par mútuo `Equipment|Save` (Tier 3 do
+  `docs/architecture/MODULARIZATION_PAIR_BREAK_MAP.md`), sem alterar gameplay, saves, cenas,
+  prefabs, IDs ou balanceamento.
+- Passo 0 (verificação obrigatória): grep de `using CindarsHope.Save` em
+  `Assets/_Game/Scripts/Equipment/` confirmou 2 arquivos (`EquipmentManager.cs`,
+  `EquipmentDurabilityTracker.cs`). O DTO `EquipmentSlotSaveData` tem campo do tipo enum
+  `EquipmentSlot` — mover o DTO para Foundation exigiu mover o enum também (senão Foundation
+  voltaria a referenciar Equipment). Grep repo-wide com word boundary (`\bEquipmentSlot\b`, para
+  evitar falso positivo com `EquipmentSlotSaveData`/`EquipmentSlotChangedEvent`/
+  `EquipmentSlotViewModel`) mapeou 28 arquivos de produção + 2 de teste usando o enum de verdade.
+  `EquipmentSaveData` também referenciava `EquipmentUpgradeSaveData` (puro, precisou mover junto) e
+  `WeaponInfusionSaveData` (já em Foundation, do corte Economy|Save); `EquipmentDurabilitySaveData`
+  referenciava `DurabilityEntryData` (puro, moveu junto).
+- Mudança:
+  - `EquipmentSlot.cs` (+`.meta`) movido via `git mv` de `Equipment/` para `Foundation/`, GUID
+    preservado. Namespace `CindarsHope.Equipment` → `CindarsHope.Foundation`.
+  - Novo arquivo `Foundation/SaveSchema/EquipmentSaveDtos.cs` com 5 DTOs movidos de
+    `CindarsHope.Save`: `EquipmentSaveData`, `EquipmentSlotSaveData`, `EquipmentUpgradeSaveData`,
+    `EquipmentDurabilitySaveData`, `DurabilityEntryData` — mesmo nome de classe/campo, sem
+    migration.
+  - `SaveData.cs`: as 5 classes removidas; `using CindarsHope.Equipment;` removido.
+  - `EquipmentManager.cs`/`EquipmentDurabilityTracker.cs`: `using CindarsHope.Save;` →
+    `using CindarsHope.Foundation;`.
+  - 3 arquivos internos de `Equipment/` (`AccessoryEffectRouter.cs`, `AccessoryCatalog.cs`,
+    `RepairKitManager.cs`) ganharam `using CindarsHope.Foundation;` (antes viam `EquipmentSlot` sem
+    `using`, por estarem no mesmo namespace).
+  - 13 arquivos que usam `EquipmentSlot` **e** outro tipo de Equipment (`EquipmentManager`/
+    `EquipmentDataSO`) mantiveram `using CindarsHope.Equipment;` e ganharam
+    `using CindarsHope.Foundation;` (GameBootstrap, InventoryPanelController,
+    CharacterEquipmentPanelController, PlayerCombatStatsProvider, SpellCastService,
+    PlayerAttackController, BowArrowAttackService, DebugHud, PlayerCombatController,
+    DerivedStatsCalculator, CombatActionContext, CorpseRecoveryManager, AccessoriesTests).
+  - 8 arquivos que só usavam `EquipmentSlot` trocaram `using CindarsHope.Equipment;` por
+    `using CindarsHope.Foundation;` (InventoryManager, PlayerAttackController.Attacks,
+    EquippedItemResolver, ItemDataSO, EquipmentSlotChangedEvent, PlayerAttackCoreTests).
+  - 3 arquivos com referência totalmente qualificada (`CindarsHope.Equipment.EquipmentSlot`, sem
+    `using`, resolvida antes via namespace irmão) tiveram o texto trocado para
+    `CindarsHope.Foundation.EquipmentSlot` (PlayerAttackCore.cs, GenerateCanonicalItemCatalog.cs,
+    OnboardingHintService.cs).
+  - `EquipmentSectionProvider.cs`/`EquipmentDurabilitySectionProvider.cs`/`SaveV2ToV3Migration.cs`
+    ganharam `using CindarsHope.Foundation;` (resolviam os DTOs antes via namespace pai Save).
+  - `Crafting/EquipmentUpgradeRegistry.cs` trocou `using CindarsHope.Save;` por
+    `using CindarsHope.Foundation;` (único consumidor de `EquipmentUpgradeSaveData` fora de
+    Equipment/Save — efeito colateral: também derruba a única aresta `Crafting -> Save`).
+  - `ArchitectureRatchetTests` allowlist ganhou `EquipmentSlot.cs` e `EquipmentSaveDtos.cs`.
+  - `CindarsHope.Foundation.csproj`/`CindarsHope.Runtime.csproj`: `<Compile Include>` ajustado
+    manualmente (Unity fechado); a regeneração automática do Unity (via
+    `RunUnityEditModeTests.ps1`) confirmou o mesmo resultado depois.
+- Erro corrigido durante a execução: 1ª rodada de EditMode teve 1 falha real — os comentários novos
+  continham a substring literal "UnityEngine" (dentro de "sem UnityEngine"), disparando o guard de
+  `FoundationAssembly_ContainsOnlyTheCuratedPureContracts`. Corrigido para "sem refs Unity" (mesmo
+  padrão dos comentários `arch:` anteriores); 2ª rodada 2747/2747 PASS.
+- Gates:
+  - `tools/architecture/Get-ModularizationDependencySnapshot.ps1`: baseline informado
+    `MutualModulePairs=29` (não medi eu mesmo antes de editar); medido depois `MutualModulePairs=27`.
+    `Equipment|Save` confirmadamente ausente. `Crafting|Save` também some do snapshot pós-corte
+    (efeito colateral do item acima, não isolado antes) — reportado com honestidade em vez de
+    reivindicado como "exatamente -1".
+  - `tools/unity/Invoke-UnityGeneratedProjectsBuild.ps1`: exit 0, 7/7 projetos, 0 warnings, 0 erros.
+  - `tools/unity/RunUnityEditModeTests.ps1 -ResultsPath TestResults\cut-equipment-save-editmode2.xml -LogFile Logs\cut-equipment-save2.log`:
+    exit 0, 2747/2747 PASS, 0 failed.
+- Pendência anotada na spec: `Core|Equipment` deve ser reavaliado à luz desta mudança (o enum não
+  vive mais em `CindarsHope.Equipment`; `GameBootstrap.cs` ainda importa `CindarsHope.Equipment` por
+  causa de `EquipmentManager`, então o par pode continuar mútuo por outro motivo).
+- Ainda não declarar modularização ampla concluída: restam pares mútuos para specs-filhas.
+- Sem push. Working tree segue com mudanças concorrentes de arte/animação/ProjectSettings/tools
+  fora do escopo desta spec (não tocadas/incluídas).
+
 ## 2026-07-08 — Cave/Save cycle reduction v28 (microcut Tier 3)
 
 - Spec implementada: `.specs/implementados/spec_arch_cave_save_cycle_reduction_v28.md`.
