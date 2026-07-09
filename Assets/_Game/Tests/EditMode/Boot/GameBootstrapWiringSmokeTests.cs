@@ -22,10 +22,10 @@ namespace CindarsHope.Tests.EditMode.Boot
         // Known field<->property name mismatches that are intentional (documented in the spec's
         // Phase 0 audit / "Riscos técnicos" section). Do not fail the test for these; the resolver
         // below checks them explicitly by field name.
-        private static readonly string[] KnownMismatchFieldNames =
-        {
-            "_progressionManager", // property is PlayerProgressionManager, not ProgressionManager
-        };
+        // Historicamente `_progressionManager` (property PlayerProgressionManager) era o único mismatch.
+        // A spec v37 (Core|Player cycle reduction) DESACOPLOU o ProgressionManager do GameBootstrap:
+        // deixou de ser campo serializado (resolve via PlayerProgressionManager.Instance). Sem mismatch restante.
+        private static readonly string[] KnownMismatchFieldNames = System.Array.Empty<string>();
 
         private static FieldInfo[] GetSerializedManagerFields()
         {
@@ -86,19 +86,15 @@ namespace CindarsHope.Tests.EditMode.Boot
         }
 
         [Test]
-        public void KnownMismatches_AreExplicitlyDocumented_AndStillResolve()
+        public void NoKnownFieldPropertyMismatches_Remain()
         {
-            // _progressionManager -> PlayerProgressionManager is a deliberate naming mismatch already
-            // present in GameBootstrap.cs. Confirm it still resolves so a future rename that breaks
-            // the contract silently is caught, without asserting the naive 1:1 name convention on it.
-            var field = typeof(GameBootstrap).GetField("_progressionManager", BindingFlags.NonPublic | BindingFlags.Instance);
-            Assert.IsNotNull(field, "Expected GameBootstrap to still declare _progressionManager.");
+            // Pós Core|Player (v37): o antigo mismatch _progressionManager/PlayerProgressionManager foi
+            // eliminado ao desacoplar o ProgressionManager do GameBootstrap. Este teste documenta que não
+            // há mais mismatches conhecidos e que o campo desacoplado realmente sumiu do bootstrap.
+            CollectionAssert.IsEmpty(KnownMismatchFieldNames, "Nenhum mismatch campo/property conhecido deve restar.");
 
-            var property = typeof(GameBootstrap).GetProperty("PlayerProgressionManager", BindingFlags.Public | BindingFlags.Instance);
-            Assert.IsNotNull(property, "Expected GameBootstrap.PlayerProgressionManager property to exist for _progressionManager.");
-            Assert.AreEqual(field.FieldType, property.PropertyType, "_progressionManager field type must match PlayerProgressionManager property type.");
-
-            CollectionAssert.Contains(KnownMismatchFieldNames, "_progressionManager");
+            var removedField = typeof(GameBootstrap).GetField("_progressionManager", BindingFlags.NonPublic | BindingFlags.Instance);
+            Assert.IsNull(removedField, "_progressionManager deveria ter sido removido do GameBootstrap (desacoplado via PlayerProgressionManager.Instance na v37).");
         }
 
         [Test]
