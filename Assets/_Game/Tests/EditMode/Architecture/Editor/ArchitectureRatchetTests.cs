@@ -189,7 +189,13 @@ namespace CindarsHope.Tests.EditMode.Architecture
                 // de CindarsHope.Equipment/CindarsHope.Save para Foundation, decisão explícita de
                 // arquitetura.
                 "EquipmentSlot.cs",
-                "EquipmentSaveDtos.cs"
+                "EquipmentSaveDtos.cs",
+                // arch: infraestrutura para quebra do ciclo Core|Inventory
+                // (spec_arch_core_inventory_cycle_reduction_v36) — registry generico puro (sem
+                // UnityEngine) que permite a InventoryManager se anunciar sem static Instance/Active
+                // (proibido pela regra de ratchet GlobalInventoryAccess) e sem Core referenciar
+                // CindarsHope.Inventory diretamente.
+                "DomainManagerRegistry.cs"
             };
             Assert.That(
                 sourceFiles.Select(Path.GetFileName),
