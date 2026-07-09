@@ -151,12 +151,14 @@ namespace CindarsHope.Combat
                 if (progression == null) return 0;
                 switch (attributeType)
                 {
-                    case Player.Progression.PlayerAttributeType.Strength: return progression.Strength;
-                    case Player.Progression.PlayerAttributeType.Dexterity: return progression.Dexterity;
-                    case Player.Progression.PlayerAttributeType.Intelligence: return progression.Intelligence;
-                    case Player.Progression.PlayerAttributeType.Willpower: return progression.Willpower;
-                    case Player.Progression.PlayerAttributeType.Constitution: return progression.Constitution;
-                    case Player.Progression.PlayerAttributeType.Breath: return progression.Breath;
+                    // arch: quebra do ciclo Core|Player (spec_arch_core_player_cycle_reduction_v37) —
+                    // PlayerAttributeType agora vive em CindarsHope.Foundation (already imported).
+                    case PlayerAttributeType.Strength: return progression.Strength;
+                    case PlayerAttributeType.Dexterity: return progression.Dexterity;
+                    case PlayerAttributeType.Intelligence: return progression.Intelligence;
+                    case PlayerAttributeType.Willpower: return progression.Willpower;
+                    case PlayerAttributeType.Constitution: return progression.Constitution;
+                    case PlayerAttributeType.Breath: return progression.Breath;
                     default: return 0;
                 }
             };

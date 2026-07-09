@@ -1,4 +1,6 @@
-using CindarsHope.Player.Progression;
+// arch: quebra do ciclo Core|Player (spec_arch_core_player_cycle_reduction_v37) — PlayerAttributeType
+// agora vive em CindarsHope.Foundation (enum puro), sem using CindarsHope.Player.Progression.
+using CindarsHope.Foundation;
 
 namespace CindarsHope.Core.Events
 {

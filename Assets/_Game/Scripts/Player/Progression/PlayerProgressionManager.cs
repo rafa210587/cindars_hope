@@ -1,5 +1,8 @@
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
+// arch: quebra do ciclo Core|Player (spec_arch_core_player_cycle_reduction_v37) —
+// PlayerAttributeType agora vive em CindarsHope.Foundation.
+using CindarsHope.Foundation;
 using UnityEngine;
 
 namespace CindarsHope.Player.Progression
@@ -7,6 +10,12 @@ namespace CindarsHope.Player.Progression
     [DisallowMultipleComponent]
     public class PlayerProgressionManager : MonoBehaviour
     {
+        // arch: quebra do ciclo Core|Player (spec_arch_core_player_cycle_reduction_v37) —
+        // self-registro estatico (molde Craft/Economy/Skills/Equipment) para o GameBootstrap parar
+        // de segurar esta referencia serializada. Nao proibido pelo ratchet GlobalGoldAccess (que so
+        // cobre PlayerManager/GoldManager/EconomyManager).
+        public static PlayerProgressionManager Instance { get; private set; }
+
         [SerializeField] private PlayerProgressionSaveData _state = new PlayerProgressionSaveData();
 
         public int Level => _state.Level;
@@ -23,7 +32,22 @@ namespace CindarsHope.Player.Progression
 
         private void Awake()
         {
+            if (Instance != null && Instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            Instance = this;
             NormalizeState();
+        }
+
+        private void OnDestroy()
+        {
+            if (Instance == this)
+            {
+                Instance = null;
+            }
         }
 
         private void OnEnable()

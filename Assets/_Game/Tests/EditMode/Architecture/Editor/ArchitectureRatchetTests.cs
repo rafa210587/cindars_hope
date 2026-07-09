@@ -195,7 +195,12 @@ namespace CindarsHope.Tests.EditMode.Architecture
                 // UnityEngine) que permite a InventoryManager se anunciar sem static Instance/Active
                 // (proibido pela regra de ratchet GlobalInventoryAccess) e sem Core referenciar
                 // CindarsHope.Inventory diretamente.
-                "DomainManagerRegistry.cs"
+                "DomainManagerRegistry.cs",
+                // arch: quebra do ciclo Core|Player (spec_arch_core_player_cycle_reduction_v37) —
+                // enums puros (sem UnityEngine) movidos de CindarsHope.Player/CindarsHope.Player.Progression
+                // para Foundation, decisão explícita de arquitetura.
+                "HazardType.cs",
+                "PlayerAttributeType.cs"
             };
             Assert.That(
                 sourceFiles.Select(Path.GetFileName),

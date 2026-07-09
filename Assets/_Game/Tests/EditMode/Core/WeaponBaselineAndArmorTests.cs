@@ -1,6 +1,8 @@
 using CindarsHope.Combat;
 using CindarsHope.Combat.Weapon;
-using CindarsHope.Player.Progression;
+// arch: quebra do ciclo Core|Player (spec_arch_core_player_cycle_reduction_v37) —
+// PlayerAttributeType agora vive em CindarsHope.Foundation.
+using CindarsHope.Foundation;
 using NUnit.Framework;
 using UnityEngine;
 

@@ -89,7 +89,9 @@ namespace CindarsHope.Combat
         // ─── F03: overloads cientes da arma (ASPD + scaling por atributo) ───
 
         /// <summary>Fonte de valores de atributo (injetada pelo controller; F03).</summary>
-        public Func<Player.Progression.PlayerAttributeType, int> AttributeSource { get; set; }
+        // arch: quebra do ciclo Core|Player (spec_arch_core_player_cycle_reduction_v37) —
+        // PlayerAttributeType agora vive em CindarsHope.Foundation (already imported).
+        public Func<PlayerAttributeType, int> AttributeSource { get; set; }
 
         /// <summary>Bônus de scaling da arma: peso primário/secundário × atributo (F03).</summary>
         public int WeaponScalingBonus(Weapon.WeaponDataSO weapon)

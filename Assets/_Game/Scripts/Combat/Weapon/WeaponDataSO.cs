@@ -34,9 +34,11 @@ namespace CindarsHope.Combat.Weapon
         // F03 (emenda): campos canônicos EQUIPMENT_MECHANICAL_BASELINES §2.
         // Defaults NEUTROS — assets antigos se comportam igual até o gerador rodar.
         [Header("Canonical Baselines (F03)")]
-        public CindarsHope.Player.Progression.PlayerAttributeType PrimaryAttribute = CindarsHope.Player.Progression.PlayerAttributeType.Strength;
+        // arch: quebra do ciclo Core|Player (spec_arch_core_player_cycle_reduction_v37) —
+        // PlayerAttributeType agora vive em CindarsHope.Foundation.
+        public CindarsHope.Foundation.PlayerAttributeType PrimaryAttribute = CindarsHope.Foundation.PlayerAttributeType.Strength;
         [Range(0f, 2f)] public float PrimaryAttributeWeight = 0f;
-        public CindarsHope.Player.Progression.PlayerAttributeType SecondaryAttribute = CindarsHope.Player.Progression.PlayerAttributeType.Dexterity;
+        public CindarsHope.Foundation.PlayerAttributeType SecondaryAttribute = CindarsHope.Foundation.PlayerAttributeType.Dexterity;
         [Range(0f, 2f)] public float SecondaryAttributeWeight = 0f;
         public float BaseLightStaminaCost = 0f;   // 0 = usar StaminaCost × razões globais (F02)
         public float BaseHeavyStaminaCost = 0f;
