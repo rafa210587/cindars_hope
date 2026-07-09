@@ -1,5 +1,70 @@
 # Prompt de Continuação para Claude — Rework Modular
 
+## 2026-07-09 — Core/Player cycle reduction v37 (Fase 2, misto `DomainManagerRegistry` + `static Instance`)
+
+- Spec implementada: `.specs/implementados/spec_arch_core_player_cycle_reduction_v37.md`.
+- Último corte declarado da Fase 2 do plano `Desacoplar managers de domínio do GameBootstrap
+  (Core\|*)`, após `Core\|Inventory` v36.
+- Passo 0 (verificação obrigatória): grep de `CindarsHope.Player` em `Assets/_Game/Scripts/Core/`
+  confirmou 4 arestas — `GameBootstrap.cs` (`_playerManager`/`_progressionManager`/
+  `_statusEffectManager` + properties + 4 `using CindarsHope.Player*`, e mais `_staminaManager`/
+  `_manaManager`/`_hungerManager`/`_playerData`, também tipos `CindarsHope.Player*` mas mantidos como
+  campo — ver abaixo), `CombatRuntimeInstallContext.cs` (campos `StaminaManager`/`ManaManager`),
+  `Core/Events/PlayerAttributeChangedEvent.cs` (`Player.Progression.PlayerAttributeType`),
+  `Core/Events/EnvironmentalExposureEvents.cs` (`Player.HazardType`).
+- Mudança:
+  - `HazardType.cs` e `PlayerAttributeType.cs` (2 enums puros, +`.meta`) movidos via `git mv` para
+    `CindarsHope.Foundation` (GUID preservado). ~9 consumidores reapontados (`WeaponDataSO.cs`
+    fully-qualified; `PlayerCombatStatsProvider.cs`/`PlayerAttackController.cs` simplificados para
+    bare `PlayerAttributeType` — já tinham `using CindarsHope.Foundation;`;
+    `ApplyWeaponMechanicalBaselines.cs`/`WeaponBaselineAndArmorTests.cs` trocaram o `using`;
+    `PlayerProgressionManager.cs` ganhou `using CindarsHope.Foundation;`;
+    `CharacterEquipmentPanelController.cs` não precisou de edição — já tinha `using
+    CindarsHope.Foundation;` preexistente cobrindo o bare `PlayerAttributeType`).
+    `ArchitectureRatchetTests` allowlist ganhou `HazardType.cs`/`PlayerAttributeType.cs`.
+  - `PlayerManager.cs` ganhou `Awake`/`OnDestroy` que chamam
+    `DomainManagerRegistry.Register(this)`/`Unregister<PlayerManager>()` — **sem** `static Instance`
+    (ratchet `GlobalGoldAccess` proíbe `PlayerManager.(Instance|Active|ActiveInstance)`).
+  - `PlayerProgressionManager.cs`/`StatusEffectManager.cs` ganharam `static Instance`
+    self-registrado (Awake/OnDestroy, guard de duplicata, molde Craft/Economy/Skills/Equipment) —
+    nenhum ratchet bloqueia esses dois tipos.
+  - `GameBootstrap.cs`: os 4 `using CindarsHope.Player*` removidos. Campos `_playerManager`/
+    `_progressionManager`/`_statusEffectManager` **removidos** (propriedades viraram shims que
+    resolvem `DomainManagerRegistry.Get<PlayerManager>()`/`PlayerProgressionManager.Instance`/
+    `StatusEffectManager.Instance` fully-qualified); cada método interno que os usava resolve uma
+    variável local pelo mesmo padrão. Campos `_staminaManager`/`_manaManager`/`_hungerManager`/
+    `_playerData` **mantidos como `[SerializeField]`** (não pedidos para remoção pelo prompt), só com
+    o tipo totalmente qualificado (`CindarsHope.Player.StaminaManager` etc.) em vez de bare — mesmo
+    padrão do `_itemDatabase`/`ItemDatabaseSO` no corte v36. `GetComponent<ManaManager>()`/
+    `AddComponent<ManaManager>()` em `EnsureCombatRuntimeReferences` também fully-qualified.
+  - `CombatRuntimeInstallContext.cs`: `using CindarsHope.Player;` removido; campos
+    `StaminaManager`/`ManaManager` fully-qualified (mantidos, não eram mortos —
+    `CombatRuntimeInstaller.Install` os lê).
+- Erro corrigido durante a execução (mesmo padrão do v36/v29/v24/v22): 1ª rodada de
+  `ArchitectureRatchetTests.FoundationAssembly_ContainsOnlyTheCuratedPureContracts` falhou — os
+  comentários novos em `HazardType.cs`/`PlayerAttributeType.cs` continham a substring literal
+  "UnityEngine" (dentro de "sem UnityEngine"); reescritos para "sem dependencia de engine"; 2ª
+  rodada 8/8 PASS.
+- Risco residual documentado (ordem de `Awake`, mesmo padrão do v36): `PlayerManager.Awake()`
+  registra no `DomainManagerRegistry` antes de `GameBootstrap.Awake()` chamar
+  `InitializeManagers()` nas 3 cenas MVP atuais — validado empiricamente pelo log do PlayMode
+  (`GameBootstrap: loadout inicial equipado`, que depende de `playerManager != null` resolvido a
+  tempo) e pela ausência do novo warning `GameBootstrap: PlayerManager.Awake ainda nao registrou`.
+  `[DeathSystemBootstrap] ... nao ficaram prontos apos 120 frames` no log do PlayMode é **esperado**
+  e pré-existente — `GameRuntimeCompositionRootPlayModeTests.cs:101-103` já tem
+  `LogAssert.Expect(...)` para essa mensagem exata (mensagem da cena de teardown vazia do test
+  framework, não uma transição real do jogo).
+- Gates: snapshot `MutualModulePairs` 21→20 (`Core\|Player` some, nenhum par novo); build 7/7 exit 0
+  0W/0E (1ª rodada falhou por csproj desatualizado — Unity fechado, 2 `.cs` movidos — corrigido com
+  patch manual do `<Compile Include>` em `CindarsHope.Runtime.csproj`/`CindarsHope.Foundation.csproj`
+  antes de reexecutar); EditMode Architecture 8/8 (após o fix do comentário), Save 69/69, Player
+  192/192; PlayMode composição 2/2 PASS, único `LogError` do log é o esperado/consumido pelo
+  `LogAssert.Expect` do próprio teste.
+- Pendência: Fase 2 do plano fecha com este corte (Player era o último `Core\|*` de fan-out médio
+  listado); Fase 3 (Inventory/Player/UI, alto fan-out — pares `Inventory\|Player`, `Player\|Skills`,
+  `Player\|UI`, `Player\|World`, `UI\|World`, `Craft\|UI`, `Core\|Save`, `Core\|UI` etc.) segue
+  pendente, fora do escopo desta spec.
+
 ## 2026-07-09 — Core/Inventory cycle reduction v36 (Fase 2, padrão `DomainManagerRegistry` — não `static Instance`)
 
 - Spec implementada: `.specs/implementados/spec_arch_core_inventory_cycle_reduction_v36.md`.
