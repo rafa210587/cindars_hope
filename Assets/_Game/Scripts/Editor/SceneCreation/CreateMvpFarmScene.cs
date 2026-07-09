@@ -18,6 +18,7 @@ using CindarsHope.Farm.Integration;
 using CindarsHope.Farm.Runtime;
 using CindarsHope.Farm.Scene;
 using CindarsHope.Inventory;
+using CindarsHope.Inventory.Data;
 using CindarsHope.Interaction;
 using CindarsHope.Player;
 using CindarsHope.Player.Data;

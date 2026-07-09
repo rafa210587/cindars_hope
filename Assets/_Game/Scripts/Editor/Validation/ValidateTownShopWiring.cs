@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Data;
 using CindarsHope.Economy;
+using CindarsHope.Inventory.Data;
 using CindarsHope.NPC;
 using CindarsHope.UI.Shop;
 using UnityEditor;

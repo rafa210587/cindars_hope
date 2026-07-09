@@ -1,6 +1,7 @@
 using CindarsHope.Core.Data;
 using CindarsHope.Foundation;
 using CindarsHope.Inventory;
+using CindarsHope.Inventory.Data;
 using CindarsHope.Player.Data;
 using UnityEngine;
 

@@ -3,6 +3,7 @@ using CindarsHope.Core.Data;
 using CindarsHope.Craft;
 using CindarsHope.Craft.Data;
 using CindarsHope.Inventory;
+using CindarsHope.Inventory.Data;
 using CindarsHope.UI.Modal;
 using UnityEditor;
 using UnityEngine;

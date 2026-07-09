@@ -6,6 +6,7 @@ using CindarsHope.Core.Data;
 using CindarsHope.Core.Events;
 using CindarsHope.Equipment;
 using CindarsHope.Foundation;
+using CindarsHope.Inventory.Data;
 using UnityEngine;
 
 namespace CindarsHope.Player

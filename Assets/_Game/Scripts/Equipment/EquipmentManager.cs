@@ -4,6 +4,7 @@ using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Data;
 using CindarsHope.Core.Events;
 using CindarsHope.Foundation;
+using CindarsHope.Inventory.Data;
 using CindarsHope.Tools;
 using UnityEngine;
 

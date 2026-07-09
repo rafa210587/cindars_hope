@@ -14,6 +14,7 @@ using CindarsHope.Equipment;
 using CindarsHope.Farm;
 using CindarsHope.Foundation;
 using CindarsHope.Inventory;
+using CindarsHope.Inventory.Data;
 using CindarsHope.NPC;
 using CindarsHope.Player;
 using CindarsHope.Player.Data;

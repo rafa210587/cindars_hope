@@ -25,7 +25,10 @@ namespace CindarsHope.Core.Data
         public EnemySizeProfileDatabaseSO SizeProfileDatabase;
 
         [Header("Player combat stack")]
-        public ItemDatabaseSO ItemDatabase;
+        // arch: quebra do ciclo Core|Inventory (spec_arch_core_inventory_cycle_reduction_v36) — tipo
+        // totalmente qualificado (sem using CindarsHope.Inventory) para nao reintroduzir a aresta
+        // Core->Inventory; ItemDatabaseSO agora vive em CindarsHope.Inventory.Data.
+        public CindarsHope.Inventory.Data.ItemDatabaseSO ItemDatabase;
         public WeaponDatabaseSO WeaponDatabase;
         public SpellDatabaseSO SpellDatabase;
     }

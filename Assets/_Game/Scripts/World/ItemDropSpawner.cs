@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Data;
 using CindarsHope.Inventory;
+using CindarsHope.Inventory.Data;
 using UnityEngine;
 
 namespace CindarsHope.World

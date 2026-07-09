@@ -9,6 +9,7 @@ using CindarsHope.City;
 using CindarsHope.Economy;
 using CindarsHope.Enemy;
 using CindarsHope.Inventory;
+using CindarsHope.Inventory.Data;
 using CindarsHope.Interaction;
 using CindarsHope.NPC;
 using CindarsHope.NPC.Schedule;

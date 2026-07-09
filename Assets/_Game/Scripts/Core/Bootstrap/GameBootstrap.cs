@@ -4,7 +4,6 @@ using CindarsHope.Core.Data;
 using CindarsHope.Core.Respawn;
 using CindarsHope.Core.Time;
 using CindarsHope.Foundation;
-using CindarsHope.Inventory;
 using CindarsHope.Player;
 using CindarsHope.Player.Data;
 using CindarsHope.Player.Death;
@@ -23,7 +22,6 @@ namespace CindarsHope.Core.Bootstrap
         private static GameBootstrap _instance;
 
         [SerializeField] private PlayerManager _playerManager;
-        [SerializeField] private InventoryManager _inventoryManager;
         [SerializeField] private TimeManager _timeManager;
         [SerializeField] private GameTimeManager _gameTimeManager;
         [SerializeField] private ModalManager _modalManager;
@@ -33,7 +31,10 @@ namespace CindarsHope.Core.Bootstrap
         [SerializeField] private PlayerProgressionManager _progressionManager;
         [SerializeField] private StatusEffectManager _statusEffectManager;
         [SerializeField] private PlayerDataSO _playerData;
-        [SerializeField] private ItemDatabaseSO _itemDatabase;
+        // arch: quebra do ciclo Core|Inventory (spec_arch_core_inventory_cycle_reduction_v36) —
+        // ItemDatabaseSO agora vive em CindarsHope.Inventory.Data; referenciado por nome totalmente
+        // qualificado (sem using CindarsHope.Inventory) para nao reintroduzir a aresta Core->Inventory.
+        [SerializeField] private CindarsHope.Inventory.Data.ItemDatabaseSO _itemDatabase;
         [SerializeField] private WeaponDatabaseSO _weaponDatabase;
         [SerializeField] private SpellDatabaseSO _spellDatabase;
         [SerializeField] private StatusEffectDatabaseSO _statusEffectDatabase;
@@ -47,7 +48,15 @@ namespace CindarsHope.Core.Bootstrap
         public static GameBootstrap Instance => _instance;
 
         public PlayerManager PlayerManager => _playerManager;
-        public InventoryManager InventoryManager => _inventoryManager;
+
+        // arch: quebra do ciclo Core|Inventory (spec_arch_core_inventory_cycle_reduction_v36) —
+        // InventoryManager nao eh mais passado por aqui via campo serializado; resolvido via
+        // DomainManagerRegistry (nao static Instance/Active, proibido pela regra de ratchet
+        // GlobalInventoryAccess para este tipo). Nome totalmente qualificado, sem using
+        // CindarsHope.Inventory, para nao reintroduzir a aresta Core->Inventory.
+        public CindarsHope.Inventory.InventoryManager InventoryManager =>
+            CindarsHope.Foundation.DomainManagerRegistry.Get<CindarsHope.Inventory.InventoryManager>();
+
         public TimeManager TimeManager => _timeManager;
         public GameTimeManager GameTimeManager => _gameTimeManager;
         public ModalManager ModalManager => _modalManager;
@@ -60,7 +69,7 @@ namespace CindarsHope.Core.Bootstrap
         public CaveRunManager CaveRunManager => _caveRunManager;
         public CorpseRecoveryManager CorpseRecoveryManager => _corpseRecoveryManager;
         public AnyaFountain AnyaFountain => _anyaFountain;
-        public ItemDatabaseSO ItemDatabase => _itemDatabase;
+        public CindarsHope.Inventory.Data.ItemDatabaseSO ItemDatabase => _itemDatabase;
         public WeaponDatabaseSO WeaponDatabase => _weaponDatabase;
         public SpellDatabaseSO SpellDatabase => _spellDatabase;
         public StatusEffectDatabaseSO StatusEffectDatabase => _statusEffectDatabase;
@@ -114,6 +123,11 @@ namespace CindarsHope.Core.Bootstrap
         {
             EnsureCombatRuntimeReferences();
 
+            // arch: quebra do ciclo Core|Inventory (spec_arch_core_inventory_cycle_reduction_v36) —
+            // resolvido via DomainManagerRegistry (nao static Instance/Active, proibido para este tipo
+            // pela regra de ratchet GlobalInventoryAccess) em vez do campo serializado removido.
+            var inventoryManager = CindarsHope.Foundation.DomainManagerRegistry.Get<CindarsHope.Inventory.InventoryManager>();
+
             if (_playerManager != null)
             {
                 if (_playerData != null)
@@ -131,21 +145,21 @@ namespace CindarsHope.Core.Bootstrap
                 Debug.LogWarning("GameBootstrap is missing a PlayerManager reference.", this);
             }
 
-            if (_inventoryManager != null)
+            if (inventoryManager != null)
             {
                 if (_playerData != null && _itemDatabase != null)
                 {
-                    _inventoryManager.InitializeFromStartingItems(_playerData, _itemDatabase);
+                    inventoryManager.InitializeFromStartingItems(_playerData, _itemDatabase);
                 }
                 else
                 {
                     Debug.LogWarning("GameBootstrap is missing PlayerDataSO or ItemDatabaseSO. InventoryManager will initialize without starting items.", this);
-                    _inventoryManager.Initialize();
+                    inventoryManager.Initialize();
                 }
             }
             else
             {
-                Debug.LogWarning("GameBootstrap is missing an InventoryManager reference.", this);
+                Debug.LogWarning("GameBootstrap: InventoryManager.Awake ainda nao registrou no DomainManagerRegistry (referencia ausente na cena).", this);
             }
 
             // Loadout inicial de combate: deixa arco + flecha JA EQUIPADOS num jogo novo (arco numa mao,
@@ -186,10 +200,10 @@ namespace CindarsHope.Core.Bootstrap
 
                 // SPEC 14A-FIX14: drop hotbar bindings that don't have a matching item in the inventory.
                 // Prevents the "hotbar shows item_seed_wheat but Inventory is empty" inconsistency.
-                if (_inventoryManager != null && _saveManager.HotbarState != null)
+                if (inventoryManager != null && _saveManager.HotbarState != null)
                 {
                     var hotbar = _saveManager.HotbarState;
-                    _inventoryManager.ClearHotbarBindingsForMissingItems(
+                    inventoryManager.ClearHotbarBindingsForMissingItems(
                         hotbar.GetSlotItemId,
                         (slot, id) => hotbar.SetSlot(slot, id),
                         CindarsHope.Foundation.HotbarState.SlotCount);
@@ -295,7 +309,10 @@ namespace CindarsHope.Core.Bootstrap
             // arch: Core|Equipment (spec_arch_core_equipment_cycle_reduction_v35) — EquipmentManager
             // nao eh mais passado por aqui; self-registra via static Instance (molde Craft/Economy/Skills).
             var equipmentManager = CindarsHope.Equipment.EquipmentManager.Instance;
-            if (equipmentManager == null || _inventoryManager == null)
+            // arch: Core|Inventory (spec_arch_core_inventory_cycle_reduction_v36) — resolvido via
+            // DomainManagerRegistry em vez do campo serializado removido.
+            var inventoryManager = CindarsHope.Foundation.DomainManagerRegistry.Get<CindarsHope.Inventory.InventoryManager>();
+            if (equipmentManager == null || inventoryManager == null)
             {
                 return;
             }
@@ -308,7 +325,7 @@ namespace CindarsHope.Core.Bootstrap
             }
 
             // Arco numa mao, flecha na outra: BowArrowAttackService exige o arco na mao OPOSTA a municao.
-            if (_inventoryManager.HasItem(StarterBowItemId) && _inventoryManager.HasItem(StarterArrowItemId))
+            if (inventoryManager.HasItem(StarterBowItemId) && inventoryManager.HasItem(StarterArrowItemId))
             {
                 equipmentManager.EquipItem(EquipmentSlot.RightHand, StarterBowItemId);
                 equipmentManager.EquipItem(EquipmentSlot.LeftHand, StarterArrowItemId);
@@ -328,7 +345,6 @@ namespace CindarsHope.Core.Bootstrap
                 WeaponDatabase = _weaponDatabase,
                 SpellDatabase = _spellDatabase,
                 StatusEffectDatabase = _statusEffectDatabase,
-                InventoryManager = _inventoryManager,
                 StaminaManager = _staminaManager,
                 ManaManager = _manaManager
             };
@@ -376,9 +392,12 @@ namespace CindarsHope.Core.Bootstrap
             // arch: Core|Equipment (spec_arch_core_equipment_cycle_reduction_v35) — EquipmentManager
             // resolvido via EquipmentManager.Instance (self-registro, molde Craft/Economy/Skills).
             var equipmentManager = CindarsHope.Equipment.EquipmentManager.Instance;
-            if (_playerManager != null && _inventoryManager != null && equipmentManager != null)
+            // arch: Core|Inventory (spec_arch_core_inventory_cycle_reduction_v36) — resolvido via
+            // DomainManagerRegistry em vez do campo serializado removido.
+            var inventoryManager = CindarsHope.Foundation.DomainManagerRegistry.Get<CindarsHope.Inventory.InventoryManager>();
+            if (_playerManager != null && inventoryManager != null && equipmentManager != null)
             {
-                _corpseRecoveryManager = new CorpseRecoveryManager(_playerManager, _inventoryManager, equipmentManager);
+                _corpseRecoveryManager = new CorpseRecoveryManager(_playerManager, inventoryManager, equipmentManager);
             }
             else
             {
@@ -414,9 +433,12 @@ namespace CindarsHope.Core.Bootstrap
                 _timeManager.Shutdown();
             }
 
-            if (_inventoryManager != null)
+            // arch: Core|Inventory (spec_arch_core_inventory_cycle_reduction_v36) — resolvido via
+            // DomainManagerRegistry em vez do campo serializado removido.
+            var inventoryManager = CindarsHope.Foundation.DomainManagerRegistry.Get<CindarsHope.Inventory.InventoryManager>();
+            if (inventoryManager != null)
             {
-                _inventoryManager.Shutdown();
+                inventoryManager.Shutdown();
             }
 
             if (_playerManager != null)

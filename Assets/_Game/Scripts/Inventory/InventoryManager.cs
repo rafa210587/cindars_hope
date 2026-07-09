@@ -26,6 +26,20 @@ namespace CindarsHope.Inventory
         public IReadOnlyDictionary<string, int> Items => _items;
         public IReadOnlyList<InventorySlot> Slots => _slots;
 
+        // arch: quebra do ciclo Core|Inventory (spec_arch_core_inventory_cycle_reduction_v36) —
+        // InventoryManager se anuncia via DomainManagerRegistry (nao um static Instance/Active proprio,
+        // proibido pela regra de ratchet GlobalInventoryAccess) para o GameBootstrap parar de segurar
+        // referencia serializada direta a este tipo.
+        private void Awake()
+        {
+            DomainManagerRegistry.Register(this);
+        }
+
+        private void OnDestroy()
+        {
+            DomainManagerRegistry.Unregister<InventoryManager>();
+        }
+
         public void Initialize()
         {
             if (IsInitialized)
