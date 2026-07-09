@@ -1,5 +1,59 @@
 # Prompt de Continuação para Claude — Rework Modular
 
+## 2026-07-09 — Core/Inventory cycle reduction v36 (Fase 2, padrão `DomainManagerRegistry` — não `static Instance`)
+
+- Spec implementada: `.specs/implementados/spec_arch_core_inventory_cycle_reduction_v36.md`.
+- Corte da Fase 2 do plano `Desacoplar managers de domínio do GameBootstrap (Core\|*)`, após
+  `Core\|Equipment` v35. Diferente das specs-irmãs anteriores: `InventoryManager` **não pode** usar o
+  padrão `static Instance`/`Active` — a regra de ratchet `GlobalInventoryAccess`
+  (`tools/architecture/architecture-ratchet-rules.tsv`) proíbe explicitamente
+  `\bInventoryManager\.(?:Instance|Active|ActiveInstance)\b`.
+- Infra nova construída primeiro: `Assets/_Game/Scripts/Foundation/DomainManagerRegistry.cs` — registry
+  genérico C# puro (`Register<T>`/`Unregister<T>`/`Get<T>` sobre `Dictionary<Type, object>`), reutilizável
+  por qualquer domínio futuro cujo ratchet proíba `static Instance`. Allowlist de
+  `ArchitectureRatchetTests.FoundationAssembly_ContainsOnlyTheCuratedPureContracts` atualizada.
+- Passo 0 (verificação obrigatória): grep de `CindarsHope.Inventory` em `Assets/_Game/Scripts/Core/`
+  confirmou 3 arestas — `GameBootstrap.cs` (`_inventoryManager` + property + `using`),
+  `CombatRuntimeInstallContext.cs` (campo `InventoryManager`, confirmado morto — nunca lido por
+  `CombatRuntimeInstaller.Install`) e `Core/Data/ItemDatabaseSO.cs` (`using CindarsHope.Inventory.Data`
+  para `ItemDataSO`).
+- Mudança:
+  - `InventoryManager.cs` ganhou `Awake`/`OnDestroy` que chamam
+    `DomainManagerRegistry.Register(this)`/`Unregister<InventoryManager>()` — **sem** `static Instance`.
+  - `ItemDatabaseSO.cs` (+`.meta`) movido via `git mv` p/ `Assets/_Game/Scripts/Inventory/Data/`,
+    namespace `CindarsHope.Core.Data` → `CindarsHope.Inventory.Data` (GUID preservado; `ItemDataSO`
+    não movido).
+  - `GameBootstrap.cs` perdeu `[SerializeField] _inventoryManager` + `using CindarsHope.Inventory`;
+    a property pública `InventoryManager` foi **mantida** (mesma assinatura,
+    `bootstrap.InventoryManager` inalterado nos ~27 consumidores) mas passou a resolver via
+    `CindarsHope.Foundation.DomainManagerRegistry.Get<CindarsHope.Inventory.InventoryManager>()`
+    fully-qualified. Cada método interno que usava o campo direto
+    (`InitializeManagers`/`EquipStarterCombatLoadout`/`InitializeDeathSystem`/`ShutdownManagers`)
+    resolve uma variável local pelo mesmo registry. `_itemDatabase`/`ItemDatabase` trocaram para
+    `CindarsHope.Inventory.Data.ItemDatabaseSO` fully-qualified.
+  - `CombatRuntimeInstallContext.cs` perdeu o campo morto `InventoryManager` + `using`; campo
+    `ItemDatabase` fully-qualified.
+  - `Core/Data/CombatRuntimeDatabasesRegistrySO.cs`: campo `ItemDatabase` fully-qualified (sem
+    `using` novo).
+  - 5 arquivos não-Core/não-Editor (`Equipment/EquipmentManager.cs`, `Player/PlayerCombatController.cs`,
+    `Save/SaveManager.cs`, `Save/Providers/InventorySectionProvider.cs`, `World/ItemDropSpawner.cs`)
+    ganharam `using CindarsHope.Inventory.Data;` — verificado individualmente que nenhum cria aresta
+    reversa nova.
+  - 6 arquivos `Editor/` ganharam o mesmo `using` (fora do grafo de arestas, só para compilar).
+  - Desvio deliberado do prompt de execução: os ~27 consumidores de `bootstrap.InventoryManager` NÃO
+    foram reapontados individualmente para `DomainManagerRegistry.Get<...>()` — a property do
+    `GameBootstrap` absorve essa indireção, reduzindo a superfície tocada em ~27 arquivos sem abrir mão
+    do requisito técnico (rule `code-minimalism-ladder`).
+- Gates: snapshot `MutualModulePairs` 22→21 (`Core\|Inventory` some, nenhum par novo); build 7/7 exit 0
+  0W/0E (1ª rodada falhou por csproj desatualizado com Unity fechado — corrigido com patch manual do
+  `<Compile Include>`, depois confirmado idêntico pela regeneração automática do Unity); EditMode
+  Architecture 8/8 (1ª rodada teve 1 falha real — comentário novo continha a substring literal
+  "UnityEngine", corrigido), Save 69/69, filtro `CindarsHope.Tests.EditMode.Inventory` deu 0/0 (não
+  existe essa suíte dedicada); PlayMode composição 2/2 PASS, log confirma loadout inicial de
+  arco/flecha equipado (prova de que `InventoryManager` resolve via registry a tempo do bootstrap).
+- Pendência: Fase 2 continua só com `Core\|Player` (ProgressionManager/StatusEffectManager); Fase 3
+  (Player/UI, alto fan-out) para depois.
+
 ## 2026-07-08 — Core/Equipment cycle reduction v35 (Fase 2, padrão `static Instance`)
 
 - Spec implementada: `.specs/implementados/spec_arch_core_equipment_cycle_reduction_v35.md`.
