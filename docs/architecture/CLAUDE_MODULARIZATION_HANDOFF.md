@@ -1,5 +1,51 @@
 # Prompt de Continuação para Claude — Rework Modular
 
+## 2026-07-09 — Core/Save cycle reduction v39 (último `Core|*`, shim fully-qualified sem port novo)
+
+- Spec implementada: `.specs/implementados/spec_arch_core_save_cycle_reduction_v39.md`.
+- Último corte do plano `Desacoplar managers de domínio do GameBootstrap (Core\|*)` — fecha a lista
+  inteira de pares `Core\|*` iniciada em `Core\|Enemy` v31.
+- Passo 0 (verificação obrigatória): grep de `CindarsHope.Save` em `Assets/_Game/Scripts/Core/`
+  confirmou exatamente 2 arestas — `Core/Bootstrap/GameBootstrap.cs` (`using CindarsHope.Save;` +
+  `[SerializeField] SaveManager _saveManager` + property pública, 9 consumidores fora de Core) e
+  `Core/GameTimeManager.cs` (`using CindarsHope.Save;` + `RestoreFromSaveData(GameTimeSaveData
+  saveData)`, só lia `CurrentPhase`/`PhaseElapsedSeconds`).
+- Mudança:
+  - `GameTimeManager.cs`: `using CindarsHope.Save;` removido; `RestoreFromSaveData(GameTimeSaveData)`
+    virou `RestorePhaseState(int currentPhase, float phaseElapsedSeconds)` — mesmo corpo
+    (`Mathf.Clamp`/`Mathf.Max`), só a origem dos 2 valores muda de "campos do DTO" para "parâmetros
+    primitivos".
+  - `Save/Providers/GameTimeSectionProvider.cs` (já em `CindarsHope.Save.Providers`, já importa
+    `CindarsHope.Core`/`CindarsHope.Core.Time`): `Restore()` continua fazendo o cast para
+    `GameTimeSaveData`, mas chama `_gameTimeManager.RestorePhaseState(data.CurrentPhase,
+    data.PhaseElapsedSeconds)` em vez de passar o DTO inteiro. Schema de save (`GameTimeSaveData` em
+    `Save/SaveData.cs`) **não foi movido nem alterado**.
+  - `GameBootstrap.cs`: `using CindarsHope.Save;` removido; campo `_saveManager` e property pública
+    `SaveManager` **mantidos** (mesma assinatura), só com o tipo totalmente qualificado
+    `CindarsHope.Save.SaveManager` — mesma técnica de `_itemDatabase`/`ItemDatabaseSO` (v36),
+    `_staminaManager`/`StaminaManager` (v37) e `_modalManager`/`ModalManager` (v38). Os 9
+    consumidores de `bootstrap.SaveManager`/`GameBootstrap.Instance.SaveManager` não precisaram ser
+    tocados.
+  - Nenhum port novo (`ISaveService`) criado — a ideia original do prompt de execução foi trocada
+    pelo padrão fully-qualified shim já provado, por ser estritamente menor (rule
+    `code-minimalism-ladder`: o scanner só conta `using`s de topo de arquivo, então fully-qualify
+    sozinho já resolve o edge sem abstração nova).
+- Sem erro corrigido durante a execução — 1ª rodada de todos os gates passou verde (diferente dos
+  cortes v36-v38, que tiveram 1 falha real de `FoundationAssembly_ContainsOnlyTheCuratedPureContracts`
+  por comentário com a substring "UnityEngine" — esta spec não criou arquivo novo em `Foundation/`).
+- Risco residual documentado: (1) sem teste automatizado dedicado ao comportamento de
+  `RestorePhaseState` (mesmo estado de antes — nunca existiu suíte EditMode específica para
+  `GameTimeManager`); (2) sem teste de round-trip de save isolado para a seção `game_time` (schema
+  inalterado, mesmo risco de antes).
+- Gates: snapshot `MutualModulePairs` 19→18 (`Core\|Save` some, nenhum par novo); build 7/7 exit 0
+  0W/0E (1ª rodada já verde); EditMode Architecture 8/8, **Save 69/69 (crítico)**, Core 81/81; PlayMode
+  composição 2/2 PASS, log confirma "Test run completed. Exiting with code 0 (Ok)", sem
+  missing-script/exceção relacionado a Save/GameTime.
+- Pendência: este era o **último** par `Core\|*` do plano — a lista `Core\|*` está fechada. Fase 3
+  segue com os pares de alto fan-out não-`Core` (`Craft\|UI`, `NPC\|UI`, `Player\|UI`, `UI\|World`,
+  `Cave\|*`, `Combat\|*`, `Inventory\|Player`, `NPC\|Quests`, `NPC\|World`, `Player\|Skills`,
+  `Player\|World`, `Farm\|Save`), fora do escopo desta spec.
+
 ## 2026-07-09 — Core/UI cycle reduction v38 (Fase 3/Tier 2, port `IModalStateProvider`)
 
 - Spec implementada: `.specs/implementados/spec_arch_core_ui_cycle_reduction_v38.md`.
