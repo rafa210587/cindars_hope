@@ -4,7 +4,6 @@ using CindarsHope.Core.Data;
 using CindarsHope.Core.Respawn;
 using CindarsHope.Core.Time;
 using CindarsHope.Foundation;
-using CindarsHope.Save;
 using UnityEngine;
 
 namespace CindarsHope.Core.Bootstrap
@@ -29,7 +28,11 @@ namespace CindarsHope.Core.Bootstrap
         // qualificado (sem using CindarsHope.UI.Modal) para nao reintroduzir a aresta Core->UI; o
         // campo/property permanecem para os ~40 consumidores existentes de GameBootstrap.Instance.ModalManager.
         [SerializeField] private CindarsHope.UI.Modal.ModalManager _modalManager;
-        [SerializeField] private SaveManager _saveManager;
+        // arch: quebra do ciclo Core|Save (spec_arch_core_save_cycle_reduction_v39) — tipo totalmente
+        // qualificado (sem using CindarsHope.Save) para nao reintroduzir a aresta Core->Save; o
+        // campo/property permanecem como shim para os consumidores existentes de
+        // GameBootstrap.Instance.SaveManager (SceneManagement, UI, Editor validators).
+        [SerializeField] private CindarsHope.Save.SaveManager _saveManager;
         [SerializeField] private CindarsHope.Player.HungerManager _hungerManager;
         [SerializeField] private CindarsHope.Player.StaminaManager _staminaManager;
         [SerializeField] private CindarsHope.Player.Data.PlayerDataSO _playerData;
@@ -63,7 +66,7 @@ namespace CindarsHope.Core.Bootstrap
         public TimeManager TimeManager => _timeManager;
         public GameTimeManager GameTimeManager => _gameTimeManager;
         public CindarsHope.UI.Modal.ModalManager ModalManager => _modalManager;
-        public SaveManager SaveManager => _saveManager;
+        public CindarsHope.Save.SaveManager SaveManager => _saveManager;
         public CindarsHope.Player.HungerManager HungerManager => _hungerManager;
         public CindarsHope.Player.StaminaManager StaminaManager => _staminaManager;
         public CindarsHope.Player.ManaManager ManaManager => _manaManager;

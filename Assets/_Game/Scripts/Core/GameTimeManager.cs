@@ -2,7 +2,6 @@ using CindarsHope.Core.Data;
 using CindarsHope.Core.Events;
 using CindarsHope.Core.Time;
 using CindarsHope.Foundation.Time;
-using CindarsHope.Save;
 using UnityEngine;
 
 namespace CindarsHope.Core
@@ -116,16 +115,16 @@ namespace CindarsHope.Core
             _isInitialized = false;
         }
 
-        public void RestoreFromSaveData(GameTimeSaveData saveData)
+        /// <summary>
+        /// arch: quebra do ciclo Core|Save (spec_arch_core_save_cycle_reduction_v39) — recebe
+        /// valores primitivos em vez do DTO <c>GameTimeSaveData</c> (que vive em CindarsHope.Save),
+        /// para nao reintroduzir a aresta Core->Save. Quem le o save section e monta os primitivos e
+        /// o <see cref="CindarsHope.Save.Providers.GameTimeSectionProvider"/>.
+        /// </summary>
+        public void RestorePhaseState(int currentPhase, float phaseElapsedSeconds)
         {
-            if (saveData == null)
-            {
-                Debug.LogWarning("GameTimeManager received null save data.");
-                return;
-            }
-
-            _currentPhase = (GamePhaseChangedEvent.GamePhase)Mathf.Clamp(saveData.CurrentPhase, 0, 1);
-            _phaseTimer = Mathf.Max(0, saveData.PhaseElapsedSeconds);
+            _currentPhase = (GamePhaseChangedEvent.GamePhase)Mathf.Clamp(currentPhase, 0, 1);
+            _phaseTimer = Mathf.Max(0, phaseElapsedSeconds);
         }
 
         private void Update()

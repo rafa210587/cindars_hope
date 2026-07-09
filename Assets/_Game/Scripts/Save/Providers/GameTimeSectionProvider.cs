@@ -52,7 +52,7 @@ namespace CindarsHope.Save.Providers
             var data = sectionData as GameTimeSaveData;
             if (data != null)
             {
-                _gameTimeManager.RestoreFromSaveData(data);
+                _gameTimeManager.RestorePhaseState(data.CurrentPhase, data.PhaseElapsedSeconds);
             }
         }
     }
