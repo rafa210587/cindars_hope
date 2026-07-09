@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CindarsHope.Foundation;
 using UnityEngine;
 
 namespace CindarsHope.UI.Modal
@@ -26,13 +27,26 @@ namespace CindarsHope.UI.Modal
     }
 
     [DisallowMultipleComponent]
-    public sealed class ModalManager : MonoBehaviour
+    public sealed class ModalManager : MonoBehaviour, IModalStateProvider
     {
         private Stack<ModalType> _modalStack = new Stack<ModalType>();
 
         public bool IsInitialized { get; private set; }
         public bool HasActiveModal => _modalStack.Count > 0;
         public ModalType CurrentModal => HasActiveModal ? _modalStack.Peek() : ModalType.None;
+
+        // arch: quebra do ciclo Core|UI (spec_arch_core_ui_cycle_reduction_v38) — self-registro no
+        // DomainManagerRegistry como IModalStateProvider (molde Core|Inventory/Core|Player) para que
+        // Core.GameTimeManager consulte HasActiveModal sem referenciar CindarsHope.UI.Modal.
+        private void Awake()
+        {
+            DomainManagerRegistry.Register<IModalStateProvider>(this);
+        }
+
+        private void OnDestroy()
+        {
+            DomainManagerRegistry.Unregister<IModalStateProvider>();
+        }
 
         public void Initialize()
         {

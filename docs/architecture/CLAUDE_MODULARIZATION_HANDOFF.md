@@ -1,5 +1,58 @@
 # Prompt de Continuação para Claude — Rework Modular
 
+## 2026-07-09 — Core/UI cycle reduction v38 (Fase 3/Tier 2, port `IModalStateProvider`)
+
+- Spec implementada: `.specs/implementados/spec_arch_core_ui_cycle_reduction_v38.md`.
+- Primeiro corte da Fase 3 (alto fan-out) do plano `Desacoplar managers de domínio do GameBootstrap
+  (Core\|*)`, após `Core\|Player` v37.
+- Passo 0 (verificação obrigatória): grep de `CindarsHope.UI` em `Assets/_Game/Scripts/Core/`
+  confirmou exatamente 2 arestas — `Core/GameTimeManager.cs` (`using CindarsHope.UI.Modal;` +
+  `[SerializeField] ModalManager _modalManager` lido em `Update()` p/ pausar o tick quando há modal
+  ativo) e `Core/Bootstrap/GameBootstrap.cs` (`using CindarsHope.UI.Modal;` + `[SerializeField]
+  _modalManager` + property pública, ~40 consumidores). `HotbarState.SlotCount` citado no prompt
+  como candidato **não gerava aresta** — já morava em `CindarsHope.Foundation` desde `Save\|UI` v26,
+  referenciado fully-qualified em `GameBootstrap.cs:223`; confirmado por leitura antes de editar.
+- Mudança:
+  - Novo port puro `Foundation/IModalStateProvider.cs` (`bool HasActiveModal { get; }`).
+    `ArchitectureRatchetTests` allowlist ganhou `IModalStateProvider.cs`.
+  - `ModalManager.cs` ganhou `IModalStateProvider` na assinatura + `Awake`/`OnDestroy` que chamam
+    `DomainManagerRegistry.Register<IModalStateProvider>(this)`/`Unregister<IModalStateProvider>()`
+    (molde Core\|Inventory/Core\|Player — registry genérico, pedido explicitamente pelo prompt de
+    execução em vez de `static Instance`).
+  - `GameTimeManager.cs`: `using CindarsHope.UI.Modal;` e o campo `_modalManager` removidos;
+    `Update()` resolve `DomainManagerRegistry.Get<IModalStateProvider>()` fully-qualified a cada
+    frame — mesma condição de early-return, só a origem do `HasActiveModal` muda.
+  - `GameBootstrap.cs`: `using CindarsHope.UI.Modal;` removido; campo `_modalManager` e property
+    `ModalManager` **mantidos** (mesma assinatura), só com o tipo totalmente qualificado
+    `CindarsHope.UI.Modal.ModalManager` — os ~40 consumidores de `bootstrap.ModalManager` não
+    precisaram ser tocados (mesmo padrão do `_itemDatabase`/`ItemDatabaseSO` no v36).
+  - `Editor/SceneCreation/PlayerNeedsDataInitializer.cs`: removida a linha
+    `SetReference(gameTimeManager, "_modalManager", modalManager)` — campo não existe mais em
+    `GameTimeManager`; teria lançado `NullReferenceException` (`FindProperty` retornando `null`) na
+    próxima regen se mantida. Assinatura pública inalterada (parâmetro `modalManager` fica sem uso
+    interno, sem erro de compilação).
+  - `Editor/Validation/MvpSceneValidator.cs` (`ValidateSpec09Bootstrap`): removida a checagem
+    `gameTime.FindProperty("_modalManager")` pelo mesmo motivo — teria quebrado `Validar Projeto`.
+  - `CindarsHope.Foundation.csproj`: `<Compile Include>` do novo arquivo ajustado manualmente
+    (Unity fechado); confirmado depois que a regeneração automática do Unity produziu o mesmo
+    resultado.
+- Erro corrigido durante a execução (mesmo padrão do v37/v36/v29/v24/v22): 1ª rodada de
+  `ArchitectureRatchetTests.FoundationAssembly_ContainsOnlyTheCuratedPureContracts` falhou — o
+  comentário novo em `IModalStateProvider.cs` continha a substring literal "UnityEngine" (dentro de
+  "sem UnityEngine"); reescrito para "port C# puro, independente de engine"; 2ª rodada 8/8 PASS.
+- Risco residual documentado: (1) sem dependência crítica de ordem de `Awake` — o consumo é em
+  `Update()` (todo frame), não só na inicialização, então um `ModalManager.Awake()` atrasado só
+  atrasa 1 frame a pausa por modal, sem exceção; (2) sem teste automatizado dedicado ao
+  comportamento "tick pausa com modal ativo" (não existia antes desta spec também — não há suíte
+  EditMode para `GameTimeManager` no repo).
+- Gates: snapshot `MutualModulePairs` 20→19 (`Core\|UI` some, nenhum par novo); build 7/7 exit 0
+  0W/0E (1ª rodada falhou por csproj desatualizado — corrigido com patch manual do
+  `<Compile Include>` em `CindarsHope.Foundation.csproj`); EditMode Architecture 8/8 (após o fix do
+  comentário), Save 69/69, UI 366/366; PlayMode composição 2/2 PASS, log sem
+  missing-script/exception relacionado a Modal.
+- Pendência: Fase 3 continua com `Craft\|UI`, `NPC\|UI`, `Player\|UI`, `UI\|World` (alto fan-out),
+  fora do escopo desta spec.
+
 ## 2026-07-09 — Core/Player cycle reduction v37 (Fase 2, misto `DomainManagerRegistry` + `static Instance`)
 
 - Spec implementada: `.specs/implementados/spec_arch_core_player_cycle_reduction_v37.md`.

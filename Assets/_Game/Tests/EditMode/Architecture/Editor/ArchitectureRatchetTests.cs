@@ -200,7 +200,11 @@ namespace CindarsHope.Tests.EditMode.Architecture
                 // enums puros (sem UnityEngine) movidos de CindarsHope.Player/CindarsHope.Player.Progression
                 // para Foundation, decisão explícita de arquitetura.
                 "HazardType.cs",
-                "PlayerAttributeType.cs"
+                "PlayerAttributeType.cs",
+                // arch: quebra do ciclo Core|UI (spec_arch_core_ui_cycle_reduction_v38) — port puro
+                // (sem UnityEngine) que permite a Core.GameTimeManager consultar HasActiveModal sem
+                // referenciar CindarsHope.UI.Modal, decisao explicita de arquitetura.
+                "IModalStateProvider.cs"
             };
             Assert.That(
                 sourceFiles.Select(Path.GetFileName),

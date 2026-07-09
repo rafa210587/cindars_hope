@@ -3,7 +3,6 @@ using CindarsHope.Core.Events;
 using CindarsHope.Core.Time;
 using CindarsHope.Foundation.Time;
 using CindarsHope.Save;
-using CindarsHope.UI.Modal;
 using UnityEngine;
 
 namespace CindarsHope.Core
@@ -13,7 +12,6 @@ namespace CindarsHope.Core
     {
         [SerializeField] private GameTimeBalanceSO _timeBalance;
         [SerializeField] private TimeManager _timeManager;
-        [SerializeField] private ModalManager _modalManager;
 
         private float _phaseTimer = 0f;
         private float _tickTimer = 0f;
@@ -135,7 +133,12 @@ namespace CindarsHope.Core
             if (!_isInitialized)
                 return;
 
-            if (_modalManager != null && _modalManager.HasActiveModal)
+            // arch: quebra do ciclo Core|UI (spec_arch_core_ui_cycle_reduction_v38) — resolvido via
+            // DomainManagerRegistry.Get<IModalStateProvider>() (self-registrado por ModalManager em
+            // CindarsHope.UI.Modal) em vez do campo serializado removido, para nao reintroduzir a
+            // aresta Core->UI.
+            var modalStateProvider = CindarsHope.Foundation.DomainManagerRegistry.Get<CindarsHope.Foundation.IModalStateProvider>();
+            if (modalStateProvider != null && modalStateProvider.HasActiveModal)
                 return;
 
             _phaseTimer += UnityEngine.Time.deltaTime;

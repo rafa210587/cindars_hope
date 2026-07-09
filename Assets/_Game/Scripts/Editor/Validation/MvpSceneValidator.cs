@@ -429,10 +429,13 @@ namespace CindarsHope.Editor.Validation
                 passed = false;
             }
 
+            // arch: quebra do ciclo Core|UI (spec_arch_core_ui_cycle_reduction_v38) — GameTimeManager
+            // nao tem mais campo serializado _modalManager (resolve HasActiveModal via
+            // DomainManagerRegistry.Get<IModalStateProvider>()); a checagem de wiring do modal manager
+            // no bootstrap continua coberta por bootstrap.ModalManager (usado por outros validators).
             var gameTime = new SerializedObject(bootstrap.GameTimeManager);
             if (gameTime.FindProperty("_timeBalance").objectReferenceValue == null
-                || gameTime.FindProperty("_timeManager").objectReferenceValue == null
-                || gameTime.FindProperty("_modalManager").objectReferenceValue == null)
+                || gameTime.FindProperty("_timeManager").objectReferenceValue == null)
             {
                 Debug.LogError("MvpSceneValidator: SPEC 09 GameTimeManager dependencies are not wired.");
                 passed = false;

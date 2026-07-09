@@ -15,6 +15,10 @@ namespace CindarsHope.Editor.SceneCreation
         private const string PlayerNeedsBalancePath = ConfigFolder + "/PlayerNeedsBalance.asset";
         private const string GameTimeBalancePath = ConfigFolder + "/GameTimeBalance.asset";
 
+        // arch: quebra do ciclo Core|UI (spec_arch_core_ui_cycle_reduction_v38) — GameTimeManager nao
+        // tem mais campo serializado _modalManager (resolve via DomainManagerRegistry); o parametro
+        // modalManager permanece para nao quebrar a assinatura chamada pelos 3 geradores de cena, mas
+        // nao eh mais usado para wiring do GameTimeManager.
         public static void ConfigureRuntimeManagers(GameBootstrap bootstrap, TimeManager timeManager, ModalManager modalManager)
         {
             var playerNeedsBalance = EnsureAsset<PlayerNeedsBalanceSO>(PlayerNeedsBalancePath, "PlayerNeedsBalance");
@@ -28,7 +32,6 @@ namespace CindarsHope.Editor.SceneCreation
             SetReference(staminaManager, "_hungerManager", hungerManager);
             SetReference(gameTimeManager, "_timeBalance", gameTimeBalance);
             SetReference(gameTimeManager, "_timeManager", timeManager);
-            SetReference(gameTimeManager, "_modalManager", modalManager);
         }
 
         public static void ConfigurePlayerController(PlayerController playerController)
