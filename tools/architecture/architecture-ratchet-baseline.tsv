@@ -92,10 +92,12 @@ SingletonDeclaration	Assets/_Game/Scripts/NPC/Services/NpcServiceRuntime.cs	1
 SingletonDeclaration	Assets/_Game/Scripts/Player/InferredClassRuntime.cs	1
 SingletonDeclaration	Assets/_Game/Scripts/Player/PlayerController.cs	1
 SingletonDeclaration	Assets/_Game/Scripts/Player/PlayerVitalsApplier.cs	1
+SingletonDeclaration	Assets/_Game/Scripts/Player/StatusEffectManager.cs	1
 SingletonDeclaration	Assets/_Game/Scripts/Player/Conditions/PlayerConditionService.cs	1
 SingletonDeclaration	Assets/_Game/Scripts/Player/Death/AnyaFountainRespawnFlow.cs	1
 SingletonDeclaration	Assets/_Game/Scripts/Player/Movement/PlayerBlockController.cs	1
 SingletonDeclaration	Assets/_Game/Scripts/Player/Movement/PlayerSprintController.cs	1
+SingletonDeclaration	Assets/_Game/Scripts/Player/Progression/PlayerProgressionManager.cs	1
 SingletonDeclaration	Assets/_Game/Scripts/Skills/Runtime/Effects/ActiveSkillExecutionController.cs	1
 SingletonDeclaration	Assets/_Game/Scripts/Skills/SkillTreeManager.cs	1
 SingletonDeclaration	Assets/_Game/Scripts/UI/DebugHud.cs	1

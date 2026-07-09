@@ -1,6 +1,5 @@
 using System;
 using CindarsHope.Core.Data;
-using CindarsHope.Player;
 
 namespace CindarsHope.Core.Bootstrap.Installers
 {
@@ -14,6 +13,9 @@ namespace CindarsHope.Core.Bootstrap.Installers
     /// arch: Core|Inventory (spec_arch_core_inventory_cycle_reduction_v36) — o campo InventoryManager
     /// foi removido: CombatRuntimeInstaller.Install nunca o lia (campo morto), e mante-lo aqui exigiria
     /// referenciar CindarsHope.Inventory nesta pasta Core, reintroduzindo a aresta Core->Inventory.
+    /// arch: Core|Player (spec_arch_core_player_cycle_reduction_v37) — StaminaManager/ManaManager
+    /// referenciados por nome totalmente qualificado (sem using CindarsHope.Player) para nao
+    /// reintroduzir a aresta Core->Player.
     /// </summary>
     [Serializable]
     public class CombatRuntimeInstallContext
@@ -25,7 +27,7 @@ namespace CindarsHope.Core.Bootstrap.Installers
         public WeaponDatabaseSO WeaponDatabase;
         public SpellDatabaseSO SpellDatabase;
         public StatusEffectDatabaseSO StatusEffectDatabase;
-        public StaminaManager StaminaManager;
-        public ManaManager ManaManager;
+        public CindarsHope.Player.StaminaManager StaminaManager;
+        public CindarsHope.Player.ManaManager ManaManager;
     }
 }

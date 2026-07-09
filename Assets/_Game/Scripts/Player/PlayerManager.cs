@@ -1,5 +1,6 @@
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
+using CindarsHope.Foundation;
 using CindarsHope.Foundation.Transactions;
 using CindarsHope.Player.Data;
 using UnityEngine;
@@ -9,6 +10,20 @@ namespace CindarsHope.Player
     [DisallowMultipleComponent]
     public class PlayerManager : MonoBehaviour, IWalletTransactionPort
     {
+        // arch: quebra do ciclo Core|Player (spec_arch_core_player_cycle_reduction_v37) —
+        // PlayerManager se anuncia via DomainManagerRegistry (nao um static Instance/Active proprio,
+        // proibido pela regra de ratchet GlobalGoldAccess) para o GameBootstrap parar de segurar
+        // referencia serializada direta a este tipo.
+        private void Awake()
+        {
+            DomainManagerRegistry.Register(this);
+        }
+
+        private void OnDestroy()
+        {
+            DomainManagerRegistry.Unregister<PlayerManager>();
+        }
+
         public bool IsInitialized { get; private set; }
         public int CurrentGold { get; private set; }
         public int CurrentHP { get; private set; }

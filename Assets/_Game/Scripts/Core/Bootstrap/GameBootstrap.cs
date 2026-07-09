@@ -4,10 +4,6 @@ using CindarsHope.Core.Data;
 using CindarsHope.Core.Respawn;
 using CindarsHope.Core.Time;
 using CindarsHope.Foundation;
-using CindarsHope.Player;
-using CindarsHope.Player.Data;
-using CindarsHope.Player.Death;
-using CindarsHope.Player.Progression;
 using CindarsHope.Save;
 using CindarsHope.UI.Modal;
 using UnityEngine;
@@ -21,16 +17,20 @@ namespace CindarsHope.Core.Bootstrap
 
         private static GameBootstrap _instance;
 
-        [SerializeField] private PlayerManager _playerManager;
+        // arch: quebra do ciclo Core|Player (spec_arch_core_player_cycle_reduction_v37) — PlayerManager
+        // nao eh mais passado por aqui via campo serializado; resolvido via DomainManagerRegistry (nao
+        // static Instance/Active, proibido pela regra de ratchet GlobalGoldAccess para este tipo).
+        // PlayerProgressionManager/StatusEffectManager idem, self-registram via static Instance (molde
+        // Craft/Economy/Skills/Equipment). StaminaManager/ManaManager/HungerManager/PlayerDataSO
+        // permanecem campos serializados, com o tipo totalmente qualificado (sem using
+        // CindarsHope.Player*) para nao reintroduzir a aresta Core->Player.
         [SerializeField] private TimeManager _timeManager;
         [SerializeField] private GameTimeManager _gameTimeManager;
         [SerializeField] private ModalManager _modalManager;
         [SerializeField] private SaveManager _saveManager;
-        [SerializeField] private HungerManager _hungerManager;
-        [SerializeField] private StaminaManager _staminaManager;
-        [SerializeField] private PlayerProgressionManager _progressionManager;
-        [SerializeField] private StatusEffectManager _statusEffectManager;
-        [SerializeField] private PlayerDataSO _playerData;
+        [SerializeField] private CindarsHope.Player.HungerManager _hungerManager;
+        [SerializeField] private CindarsHope.Player.StaminaManager _staminaManager;
+        [SerializeField] private CindarsHope.Player.Data.PlayerDataSO _playerData;
         // arch: quebra do ciclo Core|Inventory (spec_arch_core_inventory_cycle_reduction_v36) —
         // ItemDatabaseSO agora vive em CindarsHope.Inventory.Data; referenciado por nome totalmente
         // qualificado (sem using CindarsHope.Inventory) para nao reintroduzir a aresta Core->Inventory.
@@ -38,16 +38,17 @@ namespace CindarsHope.Core.Bootstrap
         [SerializeField] private WeaponDatabaseSO _weaponDatabase;
         [SerializeField] private SpellDatabaseSO _spellDatabase;
         [SerializeField] private StatusEffectDatabaseSO _statusEffectDatabase;
-        [SerializeField] private ManaManager _manaManager;
+        [SerializeField] private CindarsHope.Player.ManaManager _manaManager;
         [SerializeField] private CaveRunManager _caveRunManager;
         [SerializeField] private AnyaFountain _anyaFountain;
 
         private CaveRuntimeState _cachedCaveRunState;
-        private CorpseRecoveryManager _corpseRecoveryManager;
+        private CindarsHope.Player.Death.CorpseRecoveryManager _corpseRecoveryManager;
 
         public static GameBootstrap Instance => _instance;
 
-        public PlayerManager PlayerManager => _playerManager;
+        public CindarsHope.Player.PlayerManager PlayerManager =>
+            CindarsHope.Foundation.DomainManagerRegistry.Get<CindarsHope.Player.PlayerManager>();
 
         // arch: quebra do ciclo Core|Inventory (spec_arch_core_inventory_cycle_reduction_v36) —
         // InventoryManager nao eh mais passado por aqui via campo serializado; resolvido via
@@ -61,13 +62,21 @@ namespace CindarsHope.Core.Bootstrap
         public GameTimeManager GameTimeManager => _gameTimeManager;
         public ModalManager ModalManager => _modalManager;
         public SaveManager SaveManager => _saveManager;
-        public HungerManager HungerManager => _hungerManager;
-        public StaminaManager StaminaManager => _staminaManager;
-        public ManaManager ManaManager => _manaManager;
-        public PlayerProgressionManager PlayerProgressionManager => _progressionManager;
-        public StatusEffectManager StatusEffectManager => _statusEffectManager;
+        public CindarsHope.Player.HungerManager HungerManager => _hungerManager;
+        public CindarsHope.Player.StaminaManager StaminaManager => _staminaManager;
+        public CindarsHope.Player.ManaManager ManaManager => _manaManager;
+
+        // arch: quebra do ciclo Core|Player (spec_arch_core_player_cycle_reduction_v37) —
+        // PlayerProgressionManager/StatusEffectManager nao sao mais passados por aqui; self-registram
+        // via static Instance (molde Craft/Economy/Skills/Equipment).
+        public CindarsHope.Player.Progression.PlayerProgressionManager PlayerProgressionManager =>
+            CindarsHope.Player.Progression.PlayerProgressionManager.Instance;
+
+        public CindarsHope.Player.StatusEffectManager StatusEffectManager =>
+            CindarsHope.Player.StatusEffectManager.Instance;
+
         public CaveRunManager CaveRunManager => _caveRunManager;
-        public CorpseRecoveryManager CorpseRecoveryManager => _corpseRecoveryManager;
+        public CindarsHope.Player.Death.CorpseRecoveryManager CorpseRecoveryManager => _corpseRecoveryManager;
         public AnyaFountain AnyaFountain => _anyaFountain;
         public CindarsHope.Inventory.Data.ItemDatabaseSO ItemDatabase => _itemDatabase;
         public WeaponDatabaseSO WeaponDatabase => _weaponDatabase;
@@ -128,21 +137,26 @@ namespace CindarsHope.Core.Bootstrap
             // pela regra de ratchet GlobalInventoryAccess) em vez do campo serializado removido.
             var inventoryManager = CindarsHope.Foundation.DomainManagerRegistry.Get<CindarsHope.Inventory.InventoryManager>();
 
-            if (_playerManager != null)
+            // arch: quebra do ciclo Core|Player (spec_arch_core_player_cycle_reduction_v37) — resolvido
+            // via DomainManagerRegistry (nao static Instance/Active, proibido pela regra de ratchet
+            // GlobalGoldAccess) em vez do campo serializado removido.
+            var playerManager = CindarsHope.Foundation.DomainManagerRegistry.Get<CindarsHope.Player.PlayerManager>();
+
+            if (playerManager != null)
             {
                 if (_playerData != null)
                 {
-                    _playerManager.Initialize(_playerData);
+                    playerManager.Initialize(_playerData);
                 }
                 else
                 {
                     Debug.LogWarning("GameBootstrap is missing a PlayerDataSO reference. PlayerManager will initialize without starting state.", this);
-                    _playerManager.Initialize();
+                    playerManager.Initialize();
                 }
             }
             else
             {
-                Debug.LogWarning("GameBootstrap is missing a PlayerManager reference.", this);
+                Debug.LogWarning("GameBootstrap: PlayerManager.Awake ainda nao registrou no DomainManagerRegistry (referencia ausente na cena).", this);
             }
 
             if (inventoryManager != null)
@@ -266,9 +280,15 @@ namespace CindarsHope.Core.Bootstrap
                 Debug.LogError($"Scene '{gameObject.scene.path}' GameObject '{gameObject.name}' component '{nameof(GameBootstrap)}' could not find a ShopManager.Instance to initialize.", this);
             }
 
-            if (_statusEffectManager != null)
+            // arch: quebra do ciclo Core|Player (spec_arch_core_player_cycle_reduction_v37) —
+            // PlayerProgressionManager/StatusEffectManager nao sao mais passados por aqui; self-registram
+            // via static Instance (molde Craft/Economy/Skills/Equipment).
+            var progressionManager = CindarsHope.Player.Progression.PlayerProgressionManager.Instance;
+            var statusEffectManager = CindarsHope.Player.StatusEffectManager.Instance;
+
+            if (statusEffectManager != null)
             {
-                _statusEffectManager.Initialize();
+                statusEffectManager.Initialize();
             }
 
             // arch: Core|Skills (spec_arch_core_skills_cycle_reduction_v34) — SkillTreeManager nao eh
@@ -280,7 +300,7 @@ namespace CindarsHope.Core.Bootstrap
             }
             else
             {
-                skillTreeManager.RebindProgressionManager(_progressionManager);
+                skillTreeManager.RebindProgressionManager(progressionManager);
             }
 
             if (_saveManager != null)
@@ -289,7 +309,7 @@ namespace CindarsHope.Core.Bootstrap
                 // mais passado por aqui; SaveManager resolve via BestiaryManager.Instance (self-registro).
                 // arch: Core|Equipment (spec_arch_core_equipment_cycle_reduction_v35) — EquipmentManager
                 // idem, via EquipmentManager.Instance (self-registro, molde Craft/Economy/Skills).
-                _saveManager.RebindOptionalRuntimeManagers(CindarsHope.Equipment.EquipmentManager.Instance, _progressionManager, _gameTimeManager, _staminaManager, _statusEffectManager, skillTreeManager, CindarsHope.Economy.ShopManager.Instance);
+                _saveManager.RebindOptionalRuntimeManagers(CindarsHope.Equipment.EquipmentManager.Instance, progressionManager, _gameTimeManager, _staminaManager, statusEffectManager, skillTreeManager, CindarsHope.Economy.ShopManager.Instance);
             }
 
             CombatRuntimeInstaller.Install(BuildCombatInstallContext(), this);
@@ -378,13 +398,13 @@ namespace CindarsHope.Core.Bootstrap
                 return;
             }
 
-            _manaManager = GetComponent<ManaManager>();
+            _manaManager = GetComponent<CindarsHope.Player.ManaManager>();
             if (_manaManager != null)
             {
                 return;
             }
 
-            _manaManager = gameObject.AddComponent<ManaManager>();
+            _manaManager = gameObject.AddComponent<CindarsHope.Player.ManaManager>();
         }
 
         private void InitializeDeathSystem()
@@ -395,9 +415,12 @@ namespace CindarsHope.Core.Bootstrap
             // arch: Core|Inventory (spec_arch_core_inventory_cycle_reduction_v36) — resolvido via
             // DomainManagerRegistry em vez do campo serializado removido.
             var inventoryManager = CindarsHope.Foundation.DomainManagerRegistry.Get<CindarsHope.Inventory.InventoryManager>();
-            if (_playerManager != null && inventoryManager != null && equipmentManager != null)
+            // arch: Core|Player (spec_arch_core_player_cycle_reduction_v37) — resolvido via
+            // DomainManagerRegistry em vez do campo serializado removido.
+            var playerManager = CindarsHope.Foundation.DomainManagerRegistry.Get<CindarsHope.Player.PlayerManager>();
+            if (playerManager != null && inventoryManager != null && equipmentManager != null)
             {
-                _corpseRecoveryManager = new CorpseRecoveryManager(_playerManager, inventoryManager, equipmentManager);
+                _corpseRecoveryManager = new CindarsHope.Player.Death.CorpseRecoveryManager(playerManager, inventoryManager, equipmentManager);
             }
             else
             {
@@ -413,9 +436,13 @@ namespace CindarsHope.Core.Bootstrap
                 _saveManager.Shutdown();
             }
 
-            if (_statusEffectManager != null)
+            // arch: Core|Player (spec_arch_core_player_cycle_reduction_v37) — StatusEffectManager
+            // resolvido via static Instance (molde Craft/Economy/Skills/Equipment) em vez do campo
+            // serializado removido.
+            var statusEffectManager = CindarsHope.Player.StatusEffectManager.Instance;
+            if (statusEffectManager != null)
             {
-                _statusEffectManager.Shutdown();
+                statusEffectManager.Shutdown();
             }
 
             if (_staminaManager != null)
@@ -441,9 +468,12 @@ namespace CindarsHope.Core.Bootstrap
                 inventoryManager.Shutdown();
             }
 
-            if (_playerManager != null)
+            // arch: Core|Player (spec_arch_core_player_cycle_reduction_v37) — resolvido via
+            // DomainManagerRegistry em vez do campo serializado removido.
+            var playerManager = CindarsHope.Foundation.DomainManagerRegistry.Get<CindarsHope.Player.PlayerManager>();
+            if (playerManager != null)
             {
-                _playerManager.Shutdown();
+                playerManager.Shutdown();
             }
 
             if (CindarsHope.Craft.CraftingManager.Instance != null && CindarsHope.Craft.CraftingManager.Instance.IsInitialized)

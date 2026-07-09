@@ -8,6 +8,12 @@ namespace CindarsHope.Player
     [DisallowMultipleComponent]
     public class StatusEffectManager : MonoBehaviour
     {
+        // arch: quebra do ciclo Core|Player (spec_arch_core_player_cycle_reduction_v37) —
+        // self-registro estatico (molde Craft/Economy/Skills/Equipment) para o GameBootstrap parar
+        // de segurar esta referencia serializada. Nao proibido pelo ratchet GlobalGoldAccess (que so
+        // cobre PlayerManager/GoldManager/EconomyManager).
+        public static StatusEffectManager Instance { get; private set; }
+
         private const string PlayerTargetId = "player";
 
         private Dictionary<string, StatusEffect> _activeEffects = new Dictionary<string, StatusEffect>();
@@ -16,6 +22,25 @@ namespace CindarsHope.Player
 
         public bool IsInitialized => _isInitialized;
         public IReadOnlyDictionary<string, StatusEffect> ActiveEffects => _activeEffects;
+
+        private void Awake()
+        {
+            if (Instance != null && Instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            Instance = this;
+        }
+
+        private void OnDestroy()
+        {
+            if (Instance == this)
+            {
+                Instance = null;
+            }
+        }
 
         public void Initialize()
         {
