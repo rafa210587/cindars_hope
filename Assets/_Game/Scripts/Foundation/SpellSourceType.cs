@@ -1,4 +1,4 @@
-namespace CindarsHope.Magic
+namespace CindarsHope.Foundation
 {
     /// <summary>
     /// fable_07 — fonte canônica de uma magia disponível ao jogador.

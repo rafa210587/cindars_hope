@@ -3,13 +3,14 @@ using CindarsHope.Core;
 using CindarsHope.Core.Events;
 using CindarsHope.Craft.Data;
 using CindarsHope.Crafting;
+using CindarsHope.Foundation;
 using CindarsHope.Inventory;
 using UnityEngine;
 
 namespace CindarsHope.Craft
 {
     [DisallowMultipleComponent]
-    public class CraftingManager : MonoBehaviour
+    public class CraftingManager : MonoBehaviour, ICraftingRuntimeManager
     {
         // arch: Core|Craft (spec_arch_core_craft_cycle_reduction_v32) — self-registro estatico,
         // molde Audio/AudioManager.cs; GameBootstrap nao segura mais [SerializeField] deste manager.
@@ -30,10 +31,12 @@ namespace CindarsHope.Craft
             }
 
             _instance = this;
+            DomainManagerRegistry.Register<ICraftingRuntimeManager>(this);
         }
 
         private void OnDestroy()
         {
+            DomainManagerRegistry.Unregister<ICraftingRuntimeManager>(this);
             if (_instance == this)
             {
                 _instance = null;

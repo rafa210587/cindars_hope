@@ -28,14 +28,29 @@ UsingOnlyMutualModulePairs=18
 Mas a métrica principal corrigida passa a ser:
 
 ```text
-RuntimeModuleEdges=254
-MutualModulePairs=35
+RuntimeModuleEdges=248
+MutualModulePairs=32
 ```
 
 Interpretação: `18` era o número de pares usando a regra antiga baseada só em `using`. O debt
 semântico real ainda inclui acoplamentos por fully-qualified names, especialmente no `GameBootstrap`.
 Daqui em diante, novos cortes devem usar `RuntimeModuleEdges/MutualModulePairs` corrigidos como
 fonte de verdade. `UsingOnly*` serve apenas para comparar com o histórico dos commits anteriores.
+
+Nota: a versão final do script ignora declarações `namespace CindarsHope.X` para não contar namespace
+como dependência. Após os cortes `Core|Craft` e `Inventory|Magic`, o snapshot atual é:
+
+```text
+UsingOnlyModuleEdges=213
+UsingOnlyMutualModulePairs=18
+RuntimeModuleEdges=248
+MutualModulePairs=32
+```
+
+Pares reais removidos em 2026-07-10:
+
+- `Core|Craft`: `GameBootstrap` usa `ICraftingRuntimeManager` via `DomainManagerRegistry`.
+- `Inventory|Magic`: `SpellSourceType` virou enum puro em `Foundation`.
 
 ## 1. Preflight obrigatório
 

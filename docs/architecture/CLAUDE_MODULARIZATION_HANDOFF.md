@@ -1,5 +1,40 @@
 # Prompt de Continuação para Claude — Rework Modular
 
+## 2026-07-10 — Cortes reais pós-snapshot corrigido: `Core|Craft` e `Inventory|Magic`
+
+- Objetivo: continuar a reduzir pares reais após o snapshot passar a contar fully-qualified
+  references, sem tocar cenas/prefabs/saves nem depender de PlayMode visual.
+- Correção adicional no snapshot:
+  - o primeiro ajuste contava também `namespace CindarsHope.X` como referência; isso gerava falsos
+    positivos para arquivos fisicamente em `Foundation` com namespace legado.
+  - `Get-ModularizationDependencySnapshot.ps1` agora ignora declarações de namespace na varredura
+    fully-qualified.
+- Corte `Core|Craft`:
+  - criado `ICraftingRuntimeManager` em `Foundation`;
+  - `CraftingManager` implementa o port e se registra em `DomainManagerRegistry`;
+  - `GameBootstrap` inicializa/desliga crafting via `DomainManagerRegistry.Get<ICraftingRuntimeManager>()`;
+  - remove a referência fully-qualified `CindarsHope.Craft.CraftingManager` do `GameBootstrap`.
+- Corte `Inventory|Magic`:
+  - `SpellSourceType` foi movido de `Magic` para `Foundation`;
+  - valores inteiros do enum foram preservados;
+  - `ItemDataSO.SpellSource` passa a usar o enum puro em `Foundation`, removendo o acoplamento
+    `Inventory -> Magic`;
+  - runtime/editor/tests de magia importam `CindarsHope.Foundation`.
+- Snapshot final:
+  - `UsingOnlyModuleEdges=213`
+  - `UsingOnlyMutualModulePairs=18`
+  - `RuntimeModuleEdges=248`
+  - `MutualModulePairs=32`
+  - pares removidos nesta rodada: `Core|Craft`, `Inventory|Magic`.
+- Gates:
+  - `dotnet build .\CindarsHope.Runtime.csproj`: exit 0, 0W/0E.
+  - `tools/unity/Invoke-UnityGeneratedProjectsBuild.ps1`: exit 0, 7/7, 0W/0E.
+  - `tools/unity/RunUnityEditModeTests.ps1`: BLOQUEADO por outra instância do Unity aberta no projeto;
+    reexecutar `TestResults/architecture-real-pairs-reduction-editmode.xml` quando o editor liberar.
+- Próximos pares ainda candidatos a spec própria/PlayMode: `Core|Economy`, `Core|Equipment`,
+  `Core|Inventory`, `Core|Player`, `Core|Save`, `Core|Skills`, `Core|UI`, além dos pares de gameplay
+  entre Combat/Cave/Player/UI/NPC.
+
 ## 2026-07-10 — Ajustes pós-auditoria Codex: snapshot real, registry seguro e transaction bounded
 
 - Auditoria validou que o handoff anterior estava correto operacionalmente, mas a métrica
@@ -13,8 +48,8 @@
   - A métrica principal agora é mais honesta:
     - `UsingOnlyModuleEdges=211`
     - `UsingOnlyMutualModulePairs=18`
-    - `RuntimeModuleEdges=254`
-    - `MutualModulePairs=35`
+    - `RuntimeModuleEdges=248` após ignorar declarações de namespace; antes dos cortes adicionais,
+      `MutualModulePairs=34`
   - Conclusão: os 18 pares eram o snapshot antigo por `using`; a dívida semântica real ainda inclui
     acoplamentos via fully-qualified names.
 - Mudança de runtime:

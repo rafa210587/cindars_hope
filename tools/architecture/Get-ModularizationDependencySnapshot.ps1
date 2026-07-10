@@ -213,7 +213,8 @@ foreach ($file in $runtimeFiles) {
         }
     }
 
-    foreach ($match in [regex]::Matches($text, '\bCindarsHope\.([A-Za-z_][A-Za-z0-9_]*)\b')) {
+    $referenceText = [regex]::Replace($text, '(?m)^\s*namespace\s+CindarsHope\.[^\r\n{]+', '')
+    foreach ($match in [regex]::Matches($referenceText, '\bCindarsHope\.([A-Za-z_][A-Za-z0-9_]*)\b')) {
         $targetModule = $match.Groups[1].Value
         if ($targetModule -ne $originModule) {
             $edges["$originModule|$targetModule"] = $true

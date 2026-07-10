@@ -259,9 +259,10 @@ namespace CindarsHope.Core.Bootstrap
                 _manaManager.Initialize();
             }
 
-            if (CindarsHope.Craft.CraftingManager.Instance != null)
+            var craftingManager = DomainManagerRegistry.Get<ICraftingRuntimeManager>();
+            if (craftingManager != null)
             {
-                CindarsHope.Craft.CraftingManager.Instance.Initialize();
+                craftingManager.Initialize();
             }
 
             // arch: Core|Economy (spec_arch_core_economy_cycle_reduction_v33) — ShopManager
@@ -481,9 +482,10 @@ namespace CindarsHope.Core.Bootstrap
                 playerManager.Shutdown();
             }
 
-            if (CindarsHope.Craft.CraftingManager.Instance != null && CindarsHope.Craft.CraftingManager.Instance.IsInitialized)
+            var craftingManager = DomainManagerRegistry.Get<ICraftingRuntimeManager>();
+            if (craftingManager != null && craftingManager.IsInitialized)
             {
-                CindarsHope.Craft.CraftingManager.Instance.Shutdown();
+                craftingManager.Shutdown();
             }
 
             var economyManager = GetComponent<CindarsHope.Economy.EconomyManager>();

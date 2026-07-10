@@ -1,4 +1,5 @@
 using System;
+using CindarsHope.Foundation;
 using CindarsHope.Inventory;
 using CindarsHope.Inventory.Data;
 using UnityEngine;

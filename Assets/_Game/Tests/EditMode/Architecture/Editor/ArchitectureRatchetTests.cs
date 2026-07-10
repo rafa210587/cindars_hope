@@ -204,7 +204,15 @@ namespace CindarsHope.Tests.EditMode.Architecture
                 // arch: quebra do ciclo Core|UI (spec_arch_core_ui_cycle_reduction_v38) — port puro
                 // (sem UnityEngine) que permite a Core.GameTimeManager consultar HasActiveModal sem
                 // referenciar CindarsHope.UI.Modal, decisao explicita de arquitetura.
-                "IModalStateProvider.cs"
+                "IModalStateProvider.cs",
+                // arch: quebra do ciclo real Core|Craft após snapshot fully-qualified (2026-07-10) —
+                // port puro para GameBootstrap inicializar/desligar crafting sem referenciar
+                // CindarsHope.Craft.CraftingManager.
+                "ICraftingRuntimeManager.cs",
+                // arch: quebra do ciclo Inventory|Magic após snapshot fully-qualified (2026-07-10) —
+                // enum puro usado por ItemDataSO e pelo runtime de magia, movido sem alterar valores
+                // inteiros serializados.
+                "SpellSourceType.cs"
             };
             Assert.That(
                 sourceFiles.Select(Path.GetFileName),

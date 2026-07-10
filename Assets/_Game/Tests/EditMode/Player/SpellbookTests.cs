@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CindarsHope.Foundation;
 using CindarsHope.Inventory.Data;
 using CindarsHope.Magic;
 using NUnit.Framework;

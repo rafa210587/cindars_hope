@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using CindarsHope.Combat;
 using CindarsHope.Combat.Magic;
 using CindarsHope.Core.Data;
+using CindarsHope.Foundation;
 using CindarsHope.Inventory.Data;
 using CindarsHope.Magic;
 using UnityEditor;

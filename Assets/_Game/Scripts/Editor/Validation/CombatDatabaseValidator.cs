@@ -3,6 +3,7 @@
 using CindarsHope.Combat.Magic;
 using CindarsHope.Combat.Weapon;
 using CindarsHope.Core.Data;
+using CindarsHope.Foundation;
 using CindarsHope.Inventory.Data;
 using CindarsHope.Player.Data;
 using UnityEditor;
@@ -172,8 +173,8 @@ namespace CindarsHope.EditorTools.Validation
                 return false;
             }
 
-            if (item.SpellSource == CindarsHope.Magic.SpellSourceType.CastScroll ||
-                item.SpellSource == CindarsHope.Magic.SpellSourceType.EquippedItem)
+            if (item.SpellSource == SpellSourceType.CastScroll ||
+                item.SpellSource == SpellSourceType.EquippedItem)
             {
                 return true;
             }

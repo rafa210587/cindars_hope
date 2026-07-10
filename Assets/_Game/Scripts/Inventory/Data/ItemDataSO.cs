@@ -32,7 +32,7 @@ namespace CindarsHope.Inventory.Data
 
         // fable_07: fontes de aprendizado/desbloqueio de magia (campos aditivos, defaults neutros).
         // SpellSource=None mantém 100% o comportamento legado (magia = item equipado via SpellId).
-        public CindarsHope.Magic.SpellSourceType SpellSource = CindarsHope.Magic.SpellSourceType.None;
+        public SpellSourceType SpellSource = SpellSourceType.None;
         // Magia ensinada por LearnableScroll/Tome (knownSpellIds). Vazio para CastScroll/EquippedItem.
         public string TaughtSpellId;
         // Tome: número de usos (estudos) para concluir o aprendizado. <=1 aprende no 1º uso.
