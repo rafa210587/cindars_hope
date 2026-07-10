@@ -1,5 +1,43 @@
 # Prompt de Continuação para Claude — Rework Modular
 
+## 2026-07-09 — NpcShopController transaction facade (legibilidade, sem mudança de aresta)
+
+- Tarefa de legibilidade/manutenibilidade (não uma spec formal): decompor mais um concern do
+  god-`MonoBehaviour` `Assets/_Game/Scripts/NPC/NpcShopController.cs` sem mudar comportamento nem
+  arestas de módulo.
+- Concern escolhido: a sequência duplicada "garantir prontidão da transação (via
+  `NpcShopTransactionReadinessPolicy`, já pura desde v-anterior) + religar `OnBackPressed` + `Show`
+  do BuyPanel/SellPanel", que se repetia inline em 4 pontos (Thalindra choice, root shop dialogue,
+  dialogue tree `OpenShop`, shop menu). Escolhido por ser o maior ganho de clareza com menor risco —
+  a policy pura já existia; faltava só encapsular o adapter que a chamava em loop e abria o panel.
+- Novo colaborador: `Assets/_Game/Scripts/NPC/NpcShopTransactionFacade.cs` — classe C# selada, sem
+  `MonoBehaviour`, que expõe `TryOpenBuyPanel()`/`TryOpenSellPanel()`. Recebe todas as referências
+  mutáveis (rebindáveis pelo `GameBootstrap`) via `Func<T>` provider (nunca por valor capturado), para
+  preservar exatamente a semântica "sempre leia o campo atual" que o controller já tinha inline —
+  evita staleness após `AdoptPersistentBootstrapReferences`.
+- `NpcShopController.cs`: `EnsureTransactionUiReady(ShopMenuOption)` (loop de ~45 linhas) removido; os
+  4 pontos de chamada (`HandleThalindraChoice` buy/sell, `HandleRootShopChoice` buy/sell,
+  `HandleTreeChoice` case `OpenShop`, `HandleShopMenuOption` case Buy/Sell) viraram
+  `_transactionFacade.TryOpenBuyPanel()`/`TryOpenSellPanel()`. `_transactionFacade` é construído uma
+  vez em `Awake()` (campo não pode ser inicializado inline chamando método de instância — `CS0236` —
+  então usa `Awake()` em vez de field initializer, diferente do padrão de `_interaction`).
+- Linhas: `NpcShopController.cs` 941 → 875 (-66, incluindo a remoção da duplicação de wiring do
+  `OnBackPressed`); novo `NpcShopTransactionFacade.cs` com ~155 linhas concentra a lógica antes
+  espalhada. API pública do controller (`InteractionPrompt`, `NpcData`, `HasMet`, `CanInteract`,
+  `Interact`, `RestoreState`) inalterada; preços, itens, amizade, flags, diálogo, transações e
+  horários idênticos — nenhum valor/fluxo de gameplay foi tocado, só o "quem chama a policy e abre o
+  panel".
+- Ajuste incidental: `CindarsHope.Runtime.csproj` precisou de um `<Compile Include>` manual para o
+  arquivo novo (Unity estava fechado e não regenerou os csproj) — entrada única, sem YAML de asset.
+- Gates: `Get-ModularizationDependencySnapshot.ps1` — `MutualModulePairs=18` antes e depois (sem par
+  novo); `Invoke-UnityGeneratedProjectsBuild.ps1` 7/7 exit 0; EditMode `CindarsHope.Tests.EditMode.NPC`
+  52/52; EditMode `CindarsHope.Tests.EditMode.Quests` 267/267; PlayMode (batchmode) 2/2, exit 0 ("Test
+  run completed. Exiting with code 0 (Ok)").
+- Risco residual: comportamento de loja/diálogo (abrir loja, comprar/vender, back do panel, aceitar
+  quest do NPC) é melhor validado por Play Mode manual/visual — os testes automatizados aqui cobrem
+  compile + regressão determinística, não a experiência de UI; smoke humano recomendado antes de
+  promover qualquer spec que dependa deste fluxo.
+
 ## 2026-07-09 — Core/Save cycle reduction v39 (último `Core|*`, shim fully-qualified sem port novo)
 
 - Spec implementada: `.specs/implementados/spec_arch_core_save_cycle_reduction_v39.md`.

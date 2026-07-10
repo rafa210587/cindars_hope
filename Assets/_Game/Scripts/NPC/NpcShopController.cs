@@ -35,7 +35,15 @@ namespace CindarsHope.NPC
 
         private const string ThalindraQuestId = "quest_first_supplies_for_cindar";
         private readonly NpcShopInteractionSession _interaction = new NpcShopInteractionSession();
+        // Built once in Awake (field initializers cannot call instance methods in C#). Holds only
+        // closures over `this`, no Unity API calls, so constructing it early is safe.
+        private NpcShopTransactionFacade _transactionFacade;
         private bool _isReady;
+
+        private void Awake()
+        {
+            _transactionFacade = BuildTransactionFacade();
+        }
 
         public string InteractionPrompt =>
             NpcScheduleAvailabilityGate.IsUnavailable(_npcData)
@@ -312,23 +320,11 @@ namespace CindarsHope.NPC
                     break;
 
                 case "buy":
-                    if (EnsureTransactionUiReady(ShopMenuOption.Buy))
-                    {
-                        _buyPanel.OnBackPressed -= HandlePanelBack;
-                        _buyPanel.OnBackPressed += HandlePanelBack;
-                        _buyPanel.Show(_shopData.Id);
-                    }
-                    else BeginCloseInteraction();
+                    if (!_transactionFacade.TryOpenBuyPanel()) BeginCloseInteraction();
                     break;
 
                 case "sell":
-                    if (EnsureTransactionUiReady(ShopMenuOption.Sell))
-                    {
-                        _sellPanel.OnBackPressed -= HandlePanelBack;
-                        _sellPanel.OnBackPressed += HandlePanelBack;
-                        _sellPanel.Show(_shopData.Id);
-                    }
-                    else BeginCloseInteraction();
+                    if (!_transactionFacade.TryOpenSellPanel()) BeginCloseInteraction();
                     break;
 
                 case "exit":
@@ -544,24 +540,12 @@ namespace CindarsHope.NPC
 
                 case "buy":
                     _dialogueModal.Hide();
-                    if (EnsureTransactionUiReady(ShopMenuOption.Buy))
-                    {
-                        _buyPanel.OnBackPressed -= HandlePanelBack;
-                        _buyPanel.OnBackPressed += HandlePanelBack;
-                        _buyPanel.Show(_shopData.Id);
-                    }
-                    else BeginCloseInteraction();
+                    if (!_transactionFacade.TryOpenBuyPanel()) BeginCloseInteraction();
                     break;
 
                 case "sell":
                     _dialogueModal.Hide();
-                    if (EnsureTransactionUiReady(ShopMenuOption.Sell))
-                    {
-                        _sellPanel.OnBackPressed -= HandlePanelBack;
-                        _sellPanel.OnBackPressed += HandlePanelBack;
-                        _sellPanel.Show(_shopData.Id);
-                    }
-                    else BeginCloseInteraction();
+                    if (!_transactionFacade.TryOpenSellPanel()) BeginCloseInteraction();
                     break;
 
                 case "temper":
@@ -674,13 +658,7 @@ namespace CindarsHope.NPC
             {
                 case DialogueActionType.OpenShop:
                     _dialogueModal.Hide();
-                    if (EnsureTransactionUiReady(ShopMenuOption.Buy))
-                    {
-                        _buyPanel.OnBackPressed -= HandlePanelBack;
-                        _buyPanel.OnBackPressed += HandlePanelBack;
-                        _buyPanel.Show(_shopData.Id);
-                    }
-                    else BeginCloseInteraction();
+                    if (!_transactionFacade.TryOpenBuyPanel()) BeginCloseInteraction();
                     return;
 
                 case DialogueActionType.CloseDialogue:
@@ -757,21 +735,13 @@ namespace CindarsHope.NPC
             switch (option)
             {
                 case ShopMenuOption.Buy:
-                    if (EnsureTransactionUiReady(ShopMenuOption.Buy))
-                    {
-                        _buyPanel.Show(_shopData.Id);
-                    }
-                    else
+                    if (!_transactionFacade.TryOpenBuyPanel())
                     {
                         BeginCloseInteraction();
                     }
                     break;
                 case ShopMenuOption.Sell:
-                    if (EnsureTransactionUiReady(ShopMenuOption.Sell))
-                    {
-                        _sellPanel.Show(_shopData.Id);
-                    }
-                    else
+                    if (!_transactionFacade.TryOpenSellPanel())
                     {
                         BeginCloseInteraction();
                     }
@@ -779,54 +749,6 @@ namespace CindarsHope.NPC
                 case ShopMenuOption.Exit:
                     BeginCloseInteraction();
                     break;
-            }
-        }
-
-        private bool EnsureTransactionUiReady(ShopMenuOption option)
-        {
-            var fieldName = option == ShopMenuOption.Buy ? "_buyPanel" : "_sellPanel";
-            while (true)
-            {
-                bool hasSession = _shopManager != null
-                    && _shopData != null
-                    && !string.IsNullOrWhiteSpace(_shopData.Id)
-                    && _shopManager.TryGetSession(_shopData.Id, out _);
-                bool panelReady = option == ShopMenuOption.Buy
-                    ? _buyPanel != null && _buyPanel.IsInitializedWith(
-                        _shopManager, _playerManager, _inventoryManager, _itemDatabase, _modalManager)
-                    : _sellPanel != null && _sellPanel.IsInitializedWith(
-                        _shopManager, _playerManager, _inventoryManager, _itemDatabase, _modalManager);
-                var snapshot = new NpcShopTransactionReadinessSnapshot(
-                    _shopData != null,
-                    _shopData != null && !string.IsNullOrWhiteSpace(_shopData.Id),
-                    _shopManager != null,
-                    _itemDatabase != null,
-                    _isReady,
-                    _shopManager != null && _shopManager.IsInitialized,
-                    hasSession,
-                    panelReady);
-                var decision = NpcShopTransactionReadinessPolicy.Evaluate(snapshot, fieldName);
-
-                switch (decision.Action)
-                {
-                    case NpcShopTransactionReadinessAction.Ready:
-                        return true;
-                    case NpcShopTransactionReadinessAction.InitializeController:
-                        if (TryEnsureShopInitialized($"Before{option}")) continue;
-                        LogTransactionError(option, "_isReady",
-                            "controller is not ready after initialization attempt.");
-                        return false;
-                    case NpcShopTransactionReadinessAction.RecoverSession:
-                        if (TryEnsureShopInitialized($"MissingSessionBefore{option}")
-                            && _shopManager.TryGetSession(_shopData.Id, out _))
-                            continue;
-                        LogTransactionError(option, "_shopManager",
-                            $"ShopManager exists but has no session for this shopId. {_shopManager.GetDiagnosticSummary()}");
-                        return false;
-                    default:
-                        LogTransactionError(option, decision.FieldName, decision.Cause);
-                        return false;
-                }
             }
         }
 
@@ -844,6 +766,23 @@ namespace CindarsHope.NPC
         private void LogTransactionError(ShopMenuOption option, string fieldName, string cause)
         {
             Debug.LogError($"{GetDiagnosticContext()} shopId '{GetShopId()}' cannot open '{option}': field '{fieldName}' - {cause}", this);
+        }
+
+        private NpcShopTransactionFacade BuildTransactionFacade()
+        {
+            return new NpcShopTransactionFacade(
+                () => _shopData,
+                () => _shopManager,
+                () => _playerManager,
+                () => _inventoryManager,
+                () => _itemDatabase,
+                () => _modalManager,
+                () => _buyPanel,
+                () => _sellPanel,
+                () => _isReady,
+                TryEnsureShopInitialized,
+                HandlePanelBack,
+                LogTransactionError);
         }
 
         private void HandlePanelBack()
