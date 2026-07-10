@@ -1,5 +1,51 @@
 # Prompt de Continuação para Claude — Rework Modular
 
+## 2026-07-09 — QuestService reward-granting extraction (legibilidade, sem mudança de aresta)
+
+- Tarefa de legibilidade/manutenibilidade (não uma spec formal): decompor mais um concern do
+  god-service `Assets/_Game/Scripts/Quests/Runtime/QuestService.cs` (~691 linhas) sem mudar
+  comportamento nem arestas de módulo. Molde de estilo seguido: os colaboradores já extraídos
+  `QuestObjectiveProgressDispatcher` e `QuestDynamicInstancePersistence` (classes C# puras seladas em
+  `Quests/Runtime/`, sem `MonoBehaviour`, recebendo dependências via construtor).
+- Concern escolhido: a aplicação idempotente de recompensas em `TurnIn` (loop de `foreach (var
+  reward in rewards)` aplicando gold/itens/flags via `QuestRewardApplicator` + guard de
+  `GrantedRewardIds`/`GrantedFlagIds`, mais o hook de XP escalado do fable_34 para instâncias
+  dinâmicas). Escolhido por ser o maior bloco coeso ainda inline (~77 linhas) e de menor risco — já
+  delega a lógica por-reward ao `QuestRewardApplicator` existente, só faltava encapsular a
+  agregação/idempotência/aplicação nos access ports (`IQuestInventoryAccess`/`IQuestGoldAccess`/
+  `IQuestProgressionAccess`).
+- Novo colaborador: `Assets/_Game/Scripts/Quests/Runtime/QuestTurnInRewardGranter.cs` — classe C#
+  selada `QuestTurnInRewardGranter` com `Grant(questId, rewards, record) : QuestTurnInGrantResult`.
+  Recebe `QuestRewardApplicator`/`IQuestInventoryAccess`/`IQuestGoldAccess`/`IQuestProgressionAccess`
+  via construtor (mesmas instâncias que o `QuestService` já tinha). `QuestTurnInGrantResult` agrega
+  `GoldGiven`/`XpGiven`/`ItemsGiven`/`FlagsGranted` — mesmos 4 valores que `TurnIn` já calculava e
+  publicava/retornava.
+- `QuestService.cs`: campo `_rewardApplicator` removido, substituído por `_rewardGranter`
+  (construído uma vez no construtor, embrulhando um `QuestRewardApplicator` local). O corpo de
+  `TurnIn` que fazia o loop de recompensas + hook de XP virou uma única chamada
+  `_rewardGranter.Grant(questId, rewards, record)`; o restante do método (validações de
+  precondição, `record.State = Completed`, publish dos 2 eventos, log, `QuestTurnInResult.Success`)
+  é idêntico, só lendo os 4 valores do `QuestTurnInGrantResult` em vez de variáveis locais.
+  Removida também a lista `rewardResults` (populada mas nunca lida no código original — dead local,
+  remoção não muda comportamento observável).
+- Linhas: `QuestService.cs` 691 → 638 (-53); novo `QuestTurnInRewardGranter.cs` com ~110 linhas
+  concentra a lógica de granting. API pública do `QuestService` (`AcceptQuest`, `TurnIn`,
+  `CheckObjectiveProgress`, `MarkObjectiveComplete`, etc.) inalterada; objetivos, condições,
+  recompensas (gold/itens/flags/XP), idempotência via `GrantedRewardIds`/`GrantedFlagIds`, e save
+  schema (`QuestStateRecord`) idênticos — nenhum valor/fluxo de gameplay foi tocado, só o "quem
+  agrega/aplica as recompensas por turn-in".
+- Ajuste incidental: `CindarsHope.Runtime.csproj` precisou de um `<Compile Include>` manual para o
+  arquivo novo (Unity estava fechado e não regenerou os csproj) — entrada única, sem YAML de asset.
+- Gates: `Get-ModularizationDependencySnapshot.ps1` — `MutualModulePairs=18` antes e depois (sem par
+  novo); `Invoke-UnityGeneratedProjectsBuild.ps1` 7/7 exit 0, 0W/0E; EditMode
+  `CindarsHope.Tests.EditMode.Quests` 267/267; EditMode `CindarsHope.Tests.EditMode.Save` 69/69;
+  PlayMode (batchmode) 2/2, log confirma "Test run completed. Exiting with code 0 (Ok)".
+- Risco residual: fluxo de turn-in de quest (recompensas de gold/item/flag/XP, idempotência após
+  reload) é melhor validado por Play Mode manual/visual — os testes automatizados aqui cobrem
+  compile + regressão determinística (267 testes de Quests + 69 de Save já cobrem lógica de reward
+  idempotency), mas não a experiência de UI de turn-in; smoke humano recomendado antes de promover
+  qualquer spec que dependa deste fluxo.
+
 ## 2026-07-09 — NpcShopController transaction facade (legibilidade, sem mudança de aresta)
 
 - Tarefa de legibilidade/manutenibilidade (não uma spec formal): decompor mais um concern do

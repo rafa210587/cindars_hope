@@ -33,13 +33,13 @@ namespace CindarsHope.Quests.Runtime
     {
         private readonly QuestRegistry _registry;
         private readonly QuestStateSection _saveSection;
-        private readonly QuestRewardApplicator _rewardApplicator;
         private readonly IQuestInventoryAccess _inventoryAccess;
         private readonly IQuestGoldAccess _goldAccess;
         private readonly QuestFlagService _flagService;
         private readonly Dictionary<string, QuestInstance> _dynamicInstances = new Dictionary<string, QuestInstance>();
         private readonly IQuestProgressionAccess _progressionAccess; // fable_34 — scaled XP + act skill point
         private readonly QuestObjectiveProgressDispatcher _progressDispatcher;
+        private readonly QuestTurnInRewardGranter _rewardGranter;
 
         public QuestService(
             QuestRegistry registry,
@@ -55,7 +55,11 @@ namespace CindarsHope.Quests.Runtime
             _goldAccess = goldAccess;
             _progressionAccess = progressionAccess;
             _flagService = flagService;
-            _rewardApplicator = new QuestRewardApplicator(flagService);
+            _rewardGranter = new QuestTurnInRewardGranter(
+                new QuestRewardApplicator(flagService),
+                inventoryAccess,
+                goldAccess,
+                progressionAccess);
 
             foreach (var quest in _registry.GetAllQuests())
                 EnsureRewardFlagsRegistered(_registry.GetRewards(quest.QuestId));
@@ -233,83 +237,19 @@ namespace CindarsHope.Quests.Runtime
             if (!CanTurnIn(questId))
                 return QuestTurnInResult.Fail("Quest objectives not complete.");
 
-            // Apply rewards idempotently
+            // Apply rewards idempotently (delegated — see QuestTurnInRewardGranter)
             var rewards = _registry.GetRewards(questId);
-            var rewardResults = new List<QuestRewardApplicationResult>();
-            var alreadyGranted = new System.Collections.Generic.HashSet<string>(record.GrantedRewardIds);
-            var alreadyGrantedFlags = new System.Collections.Generic.HashSet<string>(record.GrantedFlagIds);
-
-            int goldGiven = 0;
-            var itemsGiven = new List<string>();
-            var flagsGranted = new List<string>();
-
-            foreach (var reward in rewards)
-            {
-                var ctx = new QuestRewardApplicationContext
-                {
-                    QuestId = questId,
-                    RewardId = reward.RewardId,
-                    AlreadyGrantedRewardIds = alreadyGranted,
-                    AlreadyGrantedFlagIds = alreadyGrantedFlags
-                };
-                var result = _rewardApplicator.Apply(reward, ctx);
-                rewardResults.Add(result);
-
-                if (result.Success && !result.SkippedAlreadyGranted)
-                {
-                    // Apply Gold
-                    if (result.GrantedGold > 0 && _goldAccess != null)
-                    {
-                        _goldAccess.AddGold(result.GrantedGold);
-                        goldGiven += result.GrantedGold;
-                    }
-
-                    // Apply Items
-                    foreach (var itemId in result.GrantedItems)
-                    {
-                        if (_inventoryAccess != null && _inventoryAccess.TryAddItem(itemId, 1))
-                            itemsGiven.Add(itemId);
-                    }
-
-                    // Record reward as granted (idempotency)
-                    if (!string.IsNullOrEmpty(result.GrantedRewardId) && !record.GrantedRewardIds.Contains(result.GrantedRewardId))
-                        record.GrantedRewardIds.Add(result.GrantedRewardId);
-
-                    // Record flags
-                    foreach (var flagId in result.GrantedFlagIds)
-                    {
-                        if (!record.GrantedFlagIds.Contains(flagId))
-                            record.GrantedFlagIds.Add(flagId);
-                        flagsGranted.Add(flagId);
-                    }
-                }
-            }
-
-            // fable_34 — scaled XP for dynamic instances (board contracts). Idempotent via a
-            // synthetic reward id recorded in GrantedRewardIds, so a reload + re-turn-in cannot
-            // re-grant XP. XP is not a generic QuestRewardType, so it is applied through the
-            // progression hook here (single point: the amount was scaled once at generation).
-            int xpGiven = 0;
-            if (record.IsDynamicInstance && record.InstanceRewardXp > 0)
-            {
-                const string xpRewardId = "reward_instance_xp";
-                if (!record.GrantedRewardIds.Contains(xpRewardId))
-                {
-                    _progressionAccess?.AddXp(record.InstanceRewardXp);
-                    xpGiven = record.InstanceRewardXp;
-                    record.GrantedRewardIds.Add(xpRewardId);
-                }
-            }
+            var grantResult = _rewardGranter.Grant(questId, rewards, record);
 
             // Mark quest complete
             record.State = (int)QuestStateStatus.Completed;
             record.CompletedAtDay = 0;
 
             GameEventBus.Publish(new QuestCompletedEvent(questId));
-            GameEventBus.Publish(new QuestRewardClaimedEvent(questId, goldGiven, itemsGiven));
+            GameEventBus.Publish(new QuestRewardClaimedEvent(questId, grantResult.GoldGiven, grantResult.ItemsGiven));
 
-            Debug.Log($"[QuestService] Quest completed: {questId}. Gold: {goldGiven}. Xp: {xpGiven}. Items: {itemsGiven.Count}. Flags: {flagsGranted.Count}.");
-            return QuestTurnInResult.Success(goldGiven, itemsGiven, flagsGranted);
+            Debug.Log($"[QuestService] Quest completed: {questId}. Gold: {grantResult.GoldGiven}. Xp: {grantResult.XpGiven}. Items: {grantResult.ItemsGiven.Count}. Flags: {grantResult.FlagsGranted.Count}.");
+            return QuestTurnInResult.Success(grantResult.GoldGiven, grantResult.ItemsGiven, grantResult.FlagsGranted);
         }
 
         public QuestStateSection GetSaveSection() => _saveSection;
