@@ -36,10 +36,10 @@ namespace CindarsHope.Quests.Runtime
         private readonly IQuestInventoryAccess _inventoryAccess;
         private readonly IQuestGoldAccess _goldAccess;
         private readonly QuestFlagService _flagService;
-        private readonly Dictionary<string, QuestInstance> _dynamicInstances = new Dictionary<string, QuestInstance>();
         private readonly IQuestProgressionAccess _progressionAccess; // fable_34 — scaled XP + act skill point
         private readonly QuestObjectiveProgressDispatcher _progressDispatcher;
         private readonly QuestTurnInRewardGranter _rewardGranter;
+        private readonly QuestDynamicInstanceRegistrar _dynamicRegistrar;
 
         public QuestService(
             QuestRegistry registry,
@@ -60,9 +60,10 @@ namespace CindarsHope.Quests.Runtime
                 inventoryAccess,
                 goldAccess,
                 progressionAccess);
+            _dynamicRegistrar = new QuestDynamicInstanceRegistrar(registry, flagService);
 
             foreach (var quest in _registry.GetAllQuests())
-                EnsureRewardFlagsRegistered(_registry.GetRewards(quest.QuestId));
+                _dynamicRegistrar.EnsureRewardFlagsRegistered(_registry.GetRewards(quest.QuestId));
 
             _progressDispatcher = new QuestObjectiveProgressDispatcher(
                 _registry,
@@ -115,7 +116,7 @@ namespace CindarsHope.Quests.Runtime
 
             // Catalogs register offers before the player accepts them by id. Keep the complete
             // dynamic metadata on that path, not only through AcceptDynamicInstance.
-            if (_dynamicInstances.TryGetValue(questId, out var dynamicInstance))
+            if (_dynamicRegistrar.TryGetInstance(questId, out var dynamicInstance))
                 QuestDynamicInstancePersistence.HydrateRecord(record, dynamicInstance);
 
             CheckObjectiveProgress(questId);
@@ -262,57 +263,7 @@ namespace CindarsHope.Quests.Runtime
         /// scaled Gold reward; XP is applied on turn-in via the progression hook. Returns the
         /// concrete quest id, or null if the instance is invalid.
         /// </summary>
-        public string RegisterDynamicInstance(QuestInstance instance)
-        {
-            if (instance == null || string.IsNullOrEmpty(instance.QuestId) || string.IsNullOrEmpty(instance.TargetId))
-                return null;
-
-            _dynamicInstances[instance.QuestId] = instance;
-            EnsureRewardFlagsRegistered(instance.AdditionalRewards);
-
-            var objectiveType = ObjectiveTypeForSource(instance);
-            var objective = new QuestObjective
-            {
-                ObjectiveId = $"obj_{instance.QuestId}",
-                ObjectiveType = objectiveType,
-                TargetId = instance.TargetId,
-                RequiredAmount = instance.Quantity < 1 ? 1 : instance.Quantity
-            };
-
-            var definition = new QuestDefinition
-            {
-                QuestId = instance.QuestId,
-                Category = SourceToCategory(instance.Source),
-                DisplayName = instance.QuestId,
-                Description = instance.QuestTemplateId,
-                Trackable = true
-            };
-
-            var rewards = new List<QuestRewardDefinition>();
-            if (instance.RewardGold > 0)
-            {
-                rewards.Add(new QuestRewardDefinition
-                {
-                    RewardId = $"reward_{instance.QuestId}_gold",
-                    RewardType = QuestRewardType.Gold,
-                    Quantity = instance.RewardGold,
-                    IdempotencyPolicy = RewardIdempotencyPolicy.TrackByRewardId
-                });
-            }
-
-            // fable_51 — additive non-gold rewards (item / flag) flow through the SAME applicator;
-            // no parallel reward system. Used by cave contracts (map segment, boss essence, title, charm).
-            if (instance.AdditionalRewards != null)
-            {
-                foreach (var extra in instance.AdditionalRewards)
-                {
-                    if (extra != null && !string.IsNullOrEmpty(extra.RewardId)) rewards.Add(extra);
-                }
-            }
-
-            _registry.Register(definition, new List<QuestObjective> { objective }, rewards, instance.QuestTemplateId);
-            return instance.QuestId;
-        }
+        public string RegisterDynamicInstance(QuestInstance instance) => _dynamicRegistrar.Register(instance);
 
         /// <summary>
         /// fable_34 — accepts a dynamic instance: registers it (if needed) and creates the active
@@ -500,7 +451,7 @@ namespace CindarsHope.Quests.Runtime
 
                 if (record.IsDynamicInstance && !_registry.TryGetQuest(record.QuestId, out _))
                 {
-                    ReRegisterInstanceFromRecord(record);
+                    _dynamicRegistrar.ReRegisterFromRecord(record);
                 }
             }
 
@@ -508,66 +459,6 @@ namespace CindarsHope.Quests.Runtime
         }
 
         // ─── Private helpers ───────────────────────────────────────────────────────
-
-        // fable_34/fable_51 — template id → objective type. The instance carries the template id;
-        // map by id prefix. Board: bd_cull/bd_gather/bd_delivery. Cave contracts (fable_51):
-        // cc_depth_* reach a depth; cc_boss_rematch defeats a boss band; cc_no_hit_floor has no
-        // count-based objective (completion is driven by NoHitFloorTracker via CompleteCaveContract).
-        private static QuestObjectiveType ObjectiveTypeForSource(QuestInstance instance)
-        {
-            var template = instance.QuestTemplateId ?? string.Empty;
-            if (template.StartsWith("bd_cull")) return QuestObjectiveType.DefeatEnemy;
-            if (template.StartsWith("bd_delivery")) return QuestObjectiveType.DeliverItem;
-            if (template.StartsWith("cc_depth")) return QuestObjectiveType.ReachCaveDepth;
-            if (template.StartsWith("cc_boss_rematch")) return QuestObjectiveType.DefeatEnemy;
-            if (template.StartsWith("cc_no_hit")) return QuestObjectiveType.CompleteCaveRun;
-            return QuestObjectiveType.CollectItem; // bd_gather and any other gather-like template
-        }
-
-        private static QuestCategory SourceToCategory(QuestSource source)
-        {
-            switch (source)
-            {
-                case QuestSource.Board: return QuestCategory.FarmOrder;
-                case QuestSource.CaveContract: return QuestCategory.CaveContract;
-                case QuestSource.CaveSecret: return QuestCategory.Hidden;
-                case QuestSource.Main: return QuestCategory.Main;
-                case QuestSource.Npc:
-                case QuestSource.Mural:
-                default: return QuestCategory.Side;
-            }
-        }
-
-        // fable_34 — rebuild a dynamic instance's registry entry from its persisted record so it
-        // rejoins the live flow after load (objective + scaled gold reward reconstructed).
-        private void ReRegisterInstanceFromRecord(QuestStateRecord record)
-        {
-            var instance = new QuestInstance
-            {
-                QuestId = record.QuestId,
-                QuestTemplateId = record.TemplateId,
-                Source = (QuestSource)record.Source,
-                TargetId = record.InstanceTargetId,
-                Quantity = record.InstanceQuantity,
-                QuestLevel = record.QuestLevel,
-                RewardGold = record.InstanceRewardGold,
-                RewardXp = record.InstanceRewardXp,
-                GeneratedForDay = record.GeneratedForDay,
-                AdditionalRewards = QuestDynamicInstancePersistence.RestoreRewards(record)
-            };
-            RegisterDynamicInstance(instance);
-        }
-
-        private void EnsureRewardFlagsRegistered(IEnumerable<QuestRewardDefinition> rewards)
-        {
-            if (rewards == null || _flagService == null) return;
-            foreach (var reward in rewards)
-            {
-                if (reward == null || reward.RewardType != QuestRewardType.QuestFlagGrant) continue;
-                _flagService.EnsureRewardFlagRegistered(reward.GrantedFlagId ?? reward.TargetId);
-            }
-        }
-
 
         private bool AllObjectivesComplete(QuestStateRecord record)
         {
