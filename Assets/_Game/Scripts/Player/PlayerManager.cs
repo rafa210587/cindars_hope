@@ -21,7 +21,7 @@ namespace CindarsHope.Player
 
         private void OnDestroy()
         {
-            DomainManagerRegistry.Unregister<PlayerManager>();
+            DomainManagerRegistry.Unregister(this);
         }
 
         public bool IsInitialized { get; private set; }

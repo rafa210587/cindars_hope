@@ -37,7 +37,7 @@ namespace CindarsHope.Inventory
 
         private void OnDestroy()
         {
-            DomainManagerRegistry.Unregister<InventoryManager>();
+            DomainManagerRegistry.Unregister(this);
         }
 
         public void Initialize()

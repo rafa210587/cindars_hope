@@ -45,7 +45,7 @@ namespace CindarsHope.UI.Modal
 
         private void OnDestroy()
         {
-            DomainManagerRegistry.Unregister<IModalStateProvider>();
+            DomainManagerRegistry.Unregister<IModalStateProvider>(this);
         }
 
         public void Initialize()

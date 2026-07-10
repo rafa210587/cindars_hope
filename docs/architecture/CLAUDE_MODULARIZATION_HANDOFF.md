@@ -1,5 +1,42 @@
 # Prompt de Continuação para Claude — Rework Modular
 
+## 2026-07-10 — Ajustes pós-auditoria Codex: snapshot real, registry seguro e transaction bounded
+
+- Auditoria validou que o handoff anterior estava correto operacionalmente, mas a métrica
+  `MutualModulePairs=18` era incompleta: `tools/architecture/Get-ModularizationDependencySnapshot.ps1`
+  contava apenas `using CindarsHope.X`, ignorando referências fully-qualified como
+  `CindarsHope.Player.PlayerManager` em `GameBootstrap`.
+- Mudança de tooling:
+  - `Get-ModularizationDependencySnapshot.ps1` agora remove comentários/strings e conta tanto
+    `using CindarsHope.X` quanto referências fully-qualified `CindarsHope.X`.
+  - A métrica histórica foi preservada como `UsingOnlyModuleEdges` e `UsingOnlyMutualModulePairs`.
+  - A métrica principal agora é mais honesta:
+    - `UsingOnlyModuleEdges=211`
+    - `UsingOnlyMutualModulePairs=18`
+    - `RuntimeModuleEdges=254`
+    - `MutualModulePairs=35`
+  - Conclusão: os 18 pares eram o snapshot antigo por `using`; a dívida semântica real ainda inclui
+    acoplamentos via fully-qualified names.
+- Mudança de runtime:
+  - `DomainManagerRegistry` agora tem `Unregister<T>(T instance)` e só remove se a instância destruída
+    ainda for a registrada; isso evita que uma instância velha remova uma nova em troca de cena/ordem
+    de destruição.
+  - `PlayerManager`, `InventoryManager` e `ModalManager` passaram a chamar unregister com a própria
+    instância.
+  - `NpcShopTransactionFacade` trocou `while (true)` por tentativa limitada (`MaxReadinessPasses=2`)
+    e log explícito quando a prontidão não converge.
+- Testes novos:
+  - `DomainManagerRegistryTests`: garante que unregister de instância antiga não remove registro novo.
+  - `NpcShopTransactionFacadeTests`: garante que abertura de painel para quando readiness não converge.
+- Gates:
+  - `dotnet build .\CindarsHope.Runtime.csproj`: exit 0, 0W/0E.
+  - `tools/unity/Invoke-UnityGeneratedProjectsBuild.ps1`: exit 0, 7/7, 0W/0E.
+  - `tools/unity/RunUnityEditModeTests.ps1`: exit 0, `2805/2805 PASS`,
+    `TestResults/architecture-adjustments-editmode.xml`.
+- Próxima decisão arquitetural: não vender mais `MutualModulePairs=18` como desacoplamento completo.
+  A partir daqui, usar `RuntimeModuleEdges/MutualModulePairs` corrigidos para medir debt real e
+  manter `UsingOnly*` apenas como histórico de compatibilidade com os cortes anteriores.
+
 ## 2026-07-09 — QuestService reward-granting extraction (legibilidade, sem mudança de aresta)
 
 - Tarefa de legibilidade/manutenibilidade (não uma spec formal): decompor mais um concern do

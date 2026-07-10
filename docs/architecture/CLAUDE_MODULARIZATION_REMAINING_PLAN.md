@@ -10,6 +10,33 @@ Não declarar “modularização ampla concluída” enquanto existirem pares m�
 
 O estado atual do código é a fonte canônica. Specs antigas podem estar defasadas; antes de alterar qualquer coisa, valide no disco/git.
 
+### Atualização 2026-07-10 — métrica de snapshot corrigida
+
+O script `tools/architecture/Get-ModularizationDependencySnapshot.ps1` agora conta dependências por:
+
+- `using CindarsHope.X`;
+- referências fully-qualified `CindarsHope.X` em código compilado;
+- comentários e strings são removidos antes da contagem.
+
+Com isso, a métrica antiga permanece disponível como histórico:
+
+```text
+UsingOnlyModuleEdges=211
+UsingOnlyMutualModulePairs=18
+```
+
+Mas a métrica principal corrigida passa a ser:
+
+```text
+RuntimeModuleEdges=254
+MutualModulePairs=35
+```
+
+Interpretação: `18` era o número de pares usando a regra antiga baseada só em `using`. O debt
+semântico real ainda inclui acoplamentos por fully-qualified names, especialmente no `GameBootstrap`.
+Daqui em diante, novos cortes devem usar `RuntimeModuleEdges/MutualModulePairs` corrigidos como
+fonte de verdade. `UsingOnly*` serve apenas para comparar com o histórico dos commits anteriores.
+
 ## 1. Preflight obrigatório
 
 Rode antes de tocar código:

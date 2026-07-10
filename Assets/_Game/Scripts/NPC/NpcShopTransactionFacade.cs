@@ -20,6 +20,8 @@ namespace CindarsHope.NPC
     /// </summary>
     public sealed class NpcShopTransactionFacade
     {
+        private const int MaxReadinessPasses = 2;
+
         private readonly Func<ShopDataSO> _shopDataProvider;
         private readonly Func<ShopManager> _shopManagerProvider;
         private readonly Func<PlayerManager> _playerManagerProvider;
@@ -96,7 +98,7 @@ namespace CindarsHope.NPC
         private bool EnsureReady(ShopMenuOption option)
         {
             var fieldName = option == ShopMenuOption.Buy ? "_buyPanel" : "_sellPanel";
-            while (true)
+            for (var pass = 0; pass < MaxReadinessPasses; pass++)
             {
                 var shopManager = _shopManagerProvider();
                 var shopData = _shopDataProvider();
@@ -149,6 +151,10 @@ namespace CindarsHope.NPC
                         return false;
                 }
             }
+
+            _logTransactionError(option, "_isReady",
+                "transaction readiness did not converge after bounded initialization/recovery attempts.");
+            return false;
         }
     }
 }

@@ -7,12 +7,34 @@ namespace CindarsHope.Foundation
 {
     public static class DomainManagerRegistry
     {
-        static readonly System.Collections.Generic.Dictionary<System.Type, object> _m = new();
+        private static readonly System.Collections.Generic.Dictionary<System.Type, object> Managers = new();
 
-        public static void Register<T>(T instance) where T : class => _m[typeof(T)] = instance;
+        public static void Register<T>(T instance) where T : class
+        {
+            if (instance == null)
+            {
+                throw new System.ArgumentNullException(nameof(instance));
+            }
 
-        public static void Unregister<T>() where T : class => _m.Remove(typeof(T));
+            Managers[typeof(T)] = instance;
+        }
 
-        public static T Get<T>() where T : class => _m.TryGetValue(typeof(T), out var v) ? (T)v : null;
+        public static void Unregister<T>(T instance) where T : class
+        {
+            if (instance == null)
+            {
+                return;
+            }
+
+            var type = typeof(T);
+            if (Managers.TryGetValue(type, out var registered) && ReferenceEquals(registered, instance))
+            {
+                Managers.Remove(type);
+            }
+        }
+
+        public static void Unregister<T>() where T : class => Managers.Remove(typeof(T));
+
+        public static T Get<T>() where T : class => Managers.TryGetValue(typeof(T), out var v) ? (T)v : null;
     }
 }

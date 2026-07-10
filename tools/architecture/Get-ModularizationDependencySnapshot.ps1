@@ -64,12 +64,156 @@ foreach ($declaration in $internalDeclarations) {
     }
 }
 
+function Remove-CSharpTrivia {
+    param([string]$Text)
+
+    $builder = [System.Text.StringBuilder]::new($Text.Length)
+    $state = 'Code'
+    $i = 0
+
+    while ($i -lt $Text.Length) {
+        $ch = $Text[$i]
+        $next = if ($i + 1 -lt $Text.Length) { $Text[$i + 1] } else { [char]0 }
+
+        switch ($state) {
+            'Code' {
+                if ($ch -eq '/' -and $next -eq '/') {
+                    [void]$builder.Append('  ')
+                    $i += 2
+                    $state = 'LineComment'
+                    continue
+                }
+
+                if ($ch -eq '/' -and $next -eq '*') {
+                    [void]$builder.Append('  ')
+                    $i += 2
+                    $state = 'BlockComment'
+                    continue
+                }
+
+                if ($ch -eq '@' -and $next -eq '"') {
+                    [void]$builder.Append('  ')
+                    $i += 2
+                    $state = 'VerbatimString'
+                    continue
+                }
+
+                if ($ch -eq '$' -and $next -eq '@' -and $i + 2 -lt $Text.Length -and $Text[$i + 2] -eq '"') {
+                    [void]$builder.Append('   ')
+                    $i += 3
+                    $state = 'VerbatimString'
+                    continue
+                }
+
+                if ($ch -eq '"') {
+                    [void]$builder.Append(' ')
+                    $i++
+                    $state = 'String'
+                    continue
+                }
+
+                if ($ch -eq "'") {
+                    [void]$builder.Append(' ')
+                    $i++
+                    $state = 'Char'
+                    continue
+                }
+
+                [void]$builder.Append($ch)
+                $i++
+                continue
+            }
+
+            'LineComment' {
+                if ($ch -eq "`r" -or $ch -eq "`n") {
+                    [void]$builder.Append($ch)
+                    $state = 'Code'
+                }
+                else {
+                    [void]$builder.Append(' ')
+                }
+                $i++
+                continue
+            }
+
+            'BlockComment' {
+                if ($ch -eq '*' -and $next -eq '/') {
+                    [void]$builder.Append('  ')
+                    $i += 2
+                    $state = 'Code'
+                    continue
+                }
+
+                [void]$builder.Append($(if ($ch -eq "`r" -or $ch -eq "`n") { $ch } else { ' ' }))
+                $i++
+                continue
+            }
+
+            'String' {
+                if ($ch -eq '\' -and $i + 1 -lt $Text.Length) {
+                    [void]$builder.Append('  ')
+                    $i += 2
+                    continue
+                }
+
+                [void]$builder.Append($(if ($ch -eq "`r" -or $ch -eq "`n") { $ch } else { ' ' }))
+                $i++
+                if ($ch -eq '"') {
+                    $state = 'Code'
+                }
+                continue
+            }
+
+            'VerbatimString' {
+                if ($ch -eq '"' -and $next -eq '"') {
+                    [void]$builder.Append('  ')
+                    $i += 2
+                    continue
+                }
+
+                [void]$builder.Append($(if ($ch -eq "`r" -or $ch -eq "`n") { $ch } else { ' ' }))
+                $i++
+                if ($ch -eq '"') {
+                    $state = 'Code'
+                }
+                continue
+            }
+
+            'Char' {
+                if ($ch -eq '\' -and $i + 1 -lt $Text.Length) {
+                    [void]$builder.Append('  ')
+                    $i += 2
+                    continue
+                }
+
+                [void]$builder.Append($(if ($ch -eq "`r" -or $ch -eq "`n") { $ch } else { ' ' }))
+                $i++
+                if ($ch -eq "'") {
+                    $state = 'Code'
+                }
+                continue
+            }
+        }
+    }
+
+    return $builder.ToString()
+}
+
 $edges = @{}
+$usingOnlyEdges = @{}
 foreach ($file in $runtimeFiles) {
     $relativeToScripts = $file.FullName.Substring($scriptsRoot.Length + 1)
     $originModule = ($relativeToScripts -split '[\\/]')[0]
-    $text = [System.IO.File]::ReadAllText($file.FullName)
+    $text = Remove-CSharpTrivia -Text ([System.IO.File]::ReadAllText($file.FullName))
     foreach ($match in [regex]::Matches($text, '(?m)^using\s+CindarsHope\.([A-Za-z_][A-Za-z0-9_]*)')) {
+        $targetModule = $match.Groups[1].Value
+        if ($targetModule -ne $originModule) {
+            $edges["$originModule|$targetModule"] = $true
+            $usingOnlyEdges["$originModule|$targetModule"] = $true
+        }
+    }
+
+    foreach ($match in [regex]::Matches($text, '\bCindarsHope\.([A-Za-z_][A-Za-z0-9_]*)\b')) {
         $targetModule = $match.Groups[1].Value
         if ($targetModule -ne $originModule) {
             $edges["$originModule|$targetModule"] = $true
@@ -77,14 +221,23 @@ foreach ($file in $runtimeFiles) {
     }
 }
 
-$cycles = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::Ordinal)
-foreach ($key in $edges.Keys) {
-    $parts = $key.Split('|')
-    if ($edges.ContainsKey("$($parts[1])|$($parts[0])")) {
-        $ordered = @($parts[0], $parts[1]) | Sort-Object
-        [void]$cycles.Add("$($ordered[0])|$($ordered[1])")
+function Get-MutualPairs {
+    param([hashtable]$EdgeSet)
+
+    $result = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::Ordinal)
+    foreach ($key in $EdgeSet.Keys) {
+        $parts = $key.Split('|')
+        if ($EdgeSet.ContainsKey("$($parts[1])|$($parts[0])")) {
+            $ordered = @($parts[0], $parts[1]) | Sort-Object
+            [void]$result.Add("$($ordered[0])|$($ordered[1])")
+        }
     }
+
+    return $result
 }
+
+$cycles = Get-MutualPairs -EdgeSet $edges
+$usingOnlyCycles = Get-MutualPairs -EdgeSet $usingOnlyEdges
 
 Write-Output "CSharpFiles=$($allCodeFiles.Count)"
 Write-Output "HardcodedPredefinedAssemblyFiles=$($hardcodedFiles.Count)"
@@ -93,6 +246,8 @@ Write-Output "InternalTypeTestCrossings=$($testCrossings.Count)"
 foreach ($crossing in $testCrossings | Sort-Object Type, Consumer) {
     Write-Output "  INTERNAL_TEST|$($crossing.Type)|$($crossing.Definition)|$($crossing.Consumer)"
 }
+Write-Output "UsingOnlyModuleEdges=$($usingOnlyEdges.Count)"
+Write-Output "UsingOnlyMutualModulePairs=$($usingOnlyCycles.Count)"
 Write-Output "RuntimeModuleEdges=$($edges.Count)"
 Write-Output "MutualModulePairs=$($cycles.Count)"
 foreach ($cycle in $cycles | Sort-Object) {
