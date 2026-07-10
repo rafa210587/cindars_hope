@@ -1,9 +1,8 @@
 using System.Collections.Generic;
-using CindarsHope.Economy;
 using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
-using CindarsHope.Core.Data;
 using CindarsHope.Core.Events;
+using CindarsHope.Economy;
 using CindarsHope.Interaction;
 using CindarsHope.Inventory;
 using CindarsHope.Inventory.Data;

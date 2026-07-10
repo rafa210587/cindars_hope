@@ -2,7 +2,6 @@ using System.Collections;
 using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
-using CindarsHope.Locations;
 using CindarsHope.Player;
 using CindarsHope.Player.Death;
 using UnityEngine;

@@ -1,6 +1,5 @@
 using CindarsHope.Player;
 using CindarsHope.Player.Conditions;
-using CindarsHope.Player.Data;
 using UnityEngine;
 
 namespace CindarsHope.Save.Providers

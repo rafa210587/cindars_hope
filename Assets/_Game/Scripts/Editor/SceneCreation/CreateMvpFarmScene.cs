@@ -191,22 +191,12 @@ namespace CindarsHope.Editor.SceneCreation
             var bootstrapObject = bootstrap.gameObject;
             var serializedBootstrap = new SerializedObject(bootstrap);
 
-            SetReference(serializedBootstrap, "_playerManager", bootstrapObject.GetComponent<PlayerManager>());
-            SetReference(serializedBootstrap, "_inventoryManager", bootstrapObject.GetComponent<InventoryManager>());
             SetReference(serializedBootstrap, "_timeManager", bootstrapObject.GetComponent<TimeManager>());
             SetReference(serializedBootstrap, "_saveManager", bootstrapObject.GetComponent<SaveManager>());
             SetReference(serializedBootstrap, "_hungerManager", bootstrapObject.GetComponent<HungerManager>());
             SetReference(serializedBootstrap, "_staminaManager", bootstrapObject.GetComponent<StaminaManager>());
             SetReference(serializedBootstrap, "_gameTimeManager", bootstrapObject.GetComponent<GameTimeManager>());
-            SetReference(serializedBootstrap, "_statusEffectManager", bootstrapObject.GetComponent<StatusEffectManager>());
-            SetReference(serializedBootstrap, "_craftingManager", bootstrapObject.GetComponent<CraftingManager>());
             SetReference(serializedBootstrap, "_modalManager", bootstrapObject.GetComponent<ModalManager>());
-            SetReference(serializedBootstrap, "_economyManager", bootstrapObject.GetComponent<EconomyManager>());
-            SetReference(serializedBootstrap, "_shopManager", bootstrapObject.GetComponent<ShopManager>());
-            SetReference(serializedBootstrap, "_equipmentManager", bootstrapObject.GetComponent<EquipmentManager>());
-            SetReference(serializedBootstrap, "_progressionManager", bootstrapObject.GetComponent<PlayerProgressionManager>());
-            SetReference(serializedBootstrap, "_skillTreeManager", bootstrapObject.GetComponent<SkillTreeManager>());
-            SetReference(serializedBootstrap, "_bestiaryManager", bootstrapObject.GetComponent<BestiaryManager>());
             PlayerNeedsDataInitializer.ConfigureRuntimeManagers(bootstrap, bootstrapObject.GetComponent<TimeManager>(), bootstrapObject.GetComponent<ModalManager>());
             ConfigureDayAdvanceInput(bootstrapObject.GetComponent<DayAdvanceInput>(), bootstrapObject.GetComponent<TimeManager>());
             ConfigureFoodConsumer(bootstrapObject.GetComponent<FoodConsumer>(), bootstrapObject.GetComponent<InventoryManager>(), bootstrapObject.GetComponent<HungerManager>());

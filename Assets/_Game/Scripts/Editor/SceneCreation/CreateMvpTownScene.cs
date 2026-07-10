@@ -269,22 +269,12 @@ namespace CindarsHope.Editor.SceneCreation
             NpcManager npcManager)
         {
             var serializedBootstrap = new SerializedObject(bootstrap);
-            SetReference(serializedBootstrap, "_playerManager", playerManager);
-            SetReference(serializedBootstrap, "_inventoryManager", inventoryManager);
             SetReference(serializedBootstrap, "_timeManager", timeManager);
             SetReference(serializedBootstrap, "_saveManager", saveManager);
             SetReference(serializedBootstrap, "_hungerManager", hungerManager);
             SetReference(serializedBootstrap, "_staminaManager", bootstrap.GetComponent<StaminaManager>());
             SetReference(serializedBootstrap, "_gameTimeManager", bootstrap.GetComponent<GameTimeManager>());
-            SetReference(serializedBootstrap, "_statusEffectManager", bootstrap.GetComponent<StatusEffectManager>());
-            SetReference(serializedBootstrap, "_craftingManager", craftingManager);
-            SetReference(serializedBootstrap, "_economyManager", economyManager);
-            SetReference(serializedBootstrap, "_shopManager", shopManager);
             SetReference(serializedBootstrap, "_modalManager", modalManager);
-            SetReference(serializedBootstrap, "_equipmentManager", bootstrap.GetComponent<EquipmentManager>());
-            SetReference(serializedBootstrap, "_progressionManager", bootstrap.GetComponent<PlayerProgressionManager>());
-            SetReference(serializedBootstrap, "_skillTreeManager", bootstrap.GetComponent<SkillTreeManager>());
-            SetReference(serializedBootstrap, "_bestiaryManager", bootstrap.GetComponent<BestiaryManager>());
             PlayerNeedsDataInitializer.ConfigureRuntimeManagers(bootstrap, timeManager, modalManager);
 
             ConfigureDayAdvanceInput(bootstrap.GetComponent<DayAdvanceInput>(), timeManager);

@@ -2,7 +2,6 @@
 using CindarsHope.Combat.StatusEffect;
 using CindarsHope.Combat.Weapon;
 using CindarsHope.Core;
-using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Data;
 using CindarsHope.Core.Events;
 using CindarsHope.Foundation;

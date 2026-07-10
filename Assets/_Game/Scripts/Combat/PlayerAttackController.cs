@@ -1,5 +1,4 @@
-﻿using CindarsHope.Combat.Magic;
-using CindarsHope.Combat.StatusEffect;
+﻿using CindarsHope.Combat.StatusEffect;
 using CindarsHope.Combat.Weapon;
 using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;

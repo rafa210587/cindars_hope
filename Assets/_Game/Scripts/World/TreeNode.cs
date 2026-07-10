@@ -1,9 +1,8 @@
 using CindarsHope.Core;
-using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
 using CindarsHope.Equipment;
-using CindarsHope.Interaction;
 using CindarsHope.Inventory;
+using CindarsHope.Interaction;
 using CindarsHope.Player;
 using CindarsHope.Tools;
 using CindarsHope.World.Data;

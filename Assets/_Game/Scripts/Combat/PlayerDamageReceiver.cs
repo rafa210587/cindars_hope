@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Text;
-using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
 using CindarsHope.Player;
 using UnityEngine;
