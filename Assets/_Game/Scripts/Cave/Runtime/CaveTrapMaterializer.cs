@@ -4,6 +4,7 @@ using CindarsHope.Cave.Art;
 using CindarsHope.Cave.Generation;
 using CindarsHope.Cave.Traps;
 using CindarsHope.Combat;
+using CindarsHope.DebugTools;
 using UnityEngine;
 
 namespace CindarsHope.Cave.Runtime

@@ -10,6 +10,7 @@ using CindarsHope.Combat;
 using CindarsHope.Core;
 using CindarsHope.Core.Data;
 using CindarsHope.Core.Events;
+using CindarsHope.DebugTools;
 using CindarsHope.Equipment;
 using CindarsHope.Enemy;
 using CindarsHope.Interaction;

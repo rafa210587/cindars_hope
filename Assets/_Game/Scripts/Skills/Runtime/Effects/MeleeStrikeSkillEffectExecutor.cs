@@ -123,7 +123,7 @@ namespace CindarsHope.Skills.Runtime.Effects
                 }
             }
 
-            CindarsHope.Combat.CombatLog.Log($"CombatLog: SkillMeleeStrike. EffectId={_effectId}, Hits={hits}, Range={_range:F1}, Arc={_arcDegrees:F0}");
+            CindarsHope.DebugTools.CombatLog.Log($"CombatLog: SkillMeleeStrike. EffectId={_effectId}, Hits={hits}, Range={_range:F1}, Arc={_arcDegrees:F0}");
             string feedback = hits > 0
                 ? $"{_displayName}: acertou {hits} inimigo(s)!"
                 : $"{_displayName}: nenhum inimigo no alcance.";

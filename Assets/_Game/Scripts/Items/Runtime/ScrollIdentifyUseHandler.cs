@@ -43,11 +43,11 @@ namespace CindarsHope.Items.Runtime
             var result = service.IdentifyItem(MagicItemCatalog.UnidentifiedTrinketId);
             if (!result.Success)
             {
-                CindarsHope.Combat.CombatLog.Log($"CombatLog: ScrollIdentifyNoOp. Reason={result.Outcome}.", this);
+                CindarsHope.DebugTools.CombatLog.Log($"CombatLog: ScrollIdentifyNoOp. Reason={result.Outcome}.", this);
                 return false; // do not consume the scroll if nothing was identified
             }
 
-            CindarsHope.Combat.CombatLog.Log($"CombatLog: ScrollIdentified. Revealed={result.RevealedItemId}.", this);
+            CindarsHope.DebugTools.CombatLog.Log($"CombatLog: ScrollIdentified. Revealed={result.RevealedItemId}.", this);
             return true;
         }
 

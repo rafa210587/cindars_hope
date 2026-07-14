@@ -1,3 +1,4 @@
+using CindarsHope.DebugTools;
 using UnityEngine;
 
 namespace CindarsHope.Combat.Magic

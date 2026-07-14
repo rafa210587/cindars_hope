@@ -65,7 +65,7 @@ namespace CindarsHope.Skills.Runtime.Effects
             if (!restoredAnything)
                 return SkillEffectResult.Failed("NothingToRestore", $"{_displayName}: nenhum recurso para restaurar.");
 
-            CindarsHope.Combat.CombatLog.Log($"CombatLog: SkillSelfRestore. EffectId={_effectId}, HP=+{_restoreHp}, Stamina=+{_restoreStamina}, Mana=+{_restoreMana}");
+            CindarsHope.DebugTools.CombatLog.Log($"CombatLog: SkillSelfRestore. EffectId={_effectId}, HP=+{_restoreHp}, Stamina=+{_restoreStamina}, Mana=+{_restoreMana}");
             return SkillEffectResult.Succeeded(
                 $"{_displayName}: recursos restaurados.",
                 costSpent: false,

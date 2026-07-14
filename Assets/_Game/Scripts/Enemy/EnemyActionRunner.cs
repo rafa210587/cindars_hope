@@ -4,6 +4,7 @@ using CindarsHope.Combat;
 using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
+using CindarsHope.DebugTools;
 using UnityEngine;
 
 namespace CindarsHope.Enemy
@@ -347,7 +348,7 @@ namespace CindarsHope.Enemy
                 : PendingAction.Range;
             if (dist > effectiveRange * 1.2f)
             {
-                CindarsHope.Combat.CombatLog.Log($"CombatLog: EnemyActionMissed. EnemyId={_enemyData?.enemyId}, ActionId={PendingAction.ActionId}, Distance={dist:F2}, Range={effectiveRange:F2}");
+                CindarsHope.DebugTools.CombatLog.Log($"CombatLog: EnemyActionMissed. EnemyId={_enemyData?.enemyId}, ActionId={PendingAction.ActionId}, Distance={dist:F2}, Range={effectiveRange:F2}");
                 return;
             }
 
@@ -568,7 +569,7 @@ namespace CindarsHope.Enemy
                     positions[i],
                     seed + i));
             }
-            CindarsHope.Combat.CombatLog.Log(
+            CindarsHope.DebugTools.CombatLog.Log(
                 $"CombatLog: SummonAdds. SummonerId={_enemyData?.enemyId}, AddId={action.SummonEnemyId}, Count={count}, Seed={seed}");
         }
 
@@ -868,7 +869,7 @@ namespace CindarsHope.Enemy
             }
 
             _health.RestoreHp(Mathf.Min(_health.MaxHp, _health.CurrentHp + heal));
-            CindarsHope.Combat.CombatLog.Log($"CombatLog: EliteVampiricHeal. EnemyId={_enemyData?.enemyId}, Heal={heal}, HP={_health.CurrentHp}/{_health.MaxHp}.");
+            CindarsHope.DebugTools.CombatLog.Log($"CombatLog: EliteVampiricHeal. EnemyId={_enemyData?.enemyId}, Heal={heal}, HP={_health.CurrentHp}/{_health.MaxHp}.");
         }
 
         private System.Func<EliteAffix> _getEliteAffix;

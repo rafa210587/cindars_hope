@@ -3,6 +3,7 @@ using CindarsHope.Combat.Weapon;
 using CindarsHope.Core;
 using CindarsHope.Core.Data;
 using CindarsHope.Core.Events;
+using CindarsHope.DebugTools;
 using CindarsHope.Equipment;
 using CindarsHope.Foundation;
 using CindarsHope.Inventory;

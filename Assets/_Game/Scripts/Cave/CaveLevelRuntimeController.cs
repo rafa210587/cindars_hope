@@ -60,7 +60,7 @@ namespace CindarsHope.Cave
             _currentEnemyPlan = plan;
             if (plan != null)
             {
-                CindarsHope.Combat.CombatLog.Log($"CaveLevelRuntimeController: enemy spawn plan registered for level {CurrentGeneratedLevel?.CaveLevel} with {plan.EnemyPlans.Count} entries.", this);
+                CindarsHope.DebugTools.CombatLog.Log($"CaveLevelRuntimeController: enemy spawn plan registered for level {CurrentGeneratedLevel?.CaveLevel} with {plan.EnemyPlans.Count} entries.", this);
             }
         }
 
@@ -210,7 +210,7 @@ namespace CindarsHope.Cave
             if (_snapshotCacheManager != null && _snapshotCacheManager.TryGetSnapshotFromCache(caveLevel, out var cachedSnapshot))
             {
                 visitedSnapshot = cachedSnapshot;
-                CindarsHope.Combat.CombatLog.Log($"CaveLevelRuntimeController: Using cached snapshot for level {caveLevel}.", this);
+                CindarsHope.DebugTools.CombatLog.Log($"CaveLevelRuntimeController: Using cached snapshot for level {caveLevel}.", this);
             }
             else if (_snapshotService.TryGetSnapshot(_runManager.State, _runManager.CaveRunSeed, caveLevel, out var stateSnapshot))
             {
@@ -249,7 +249,7 @@ namespace CindarsHope.Cave
 
             CurrentGeneratedLevel.ComputeLayoutHash();
 
-            CindarsHope.Combat.CombatLog.Log(
+            CindarsHope.DebugTools.CombatLog.Log(
                 $"CaveLevelRuntimeController: Cave level generated.\n" +
                 $"  Level: {_runManager.CurrentCaveLevel}\n" +
                 $"  SpawnAnchor: {_currentSpawnAnchor}\n" +
@@ -265,7 +265,7 @@ namespace CindarsHope.Cave
 
             if (_logGeneratedLayout)
             {
-                CindarsHope.Combat.CombatLog.Log(CaveGenerationDebugPrinter.ToAscii(CurrentGeneratedLevel), this);
+                CindarsHope.DebugTools.CombatLog.Log(CaveGenerationDebugPrinter.ToAscii(CurrentGeneratedLevel), this);
             }
 
             if (_materializeAfterGeneration && _materializer != null)
@@ -339,7 +339,7 @@ namespace CindarsHope.Cave
             }
 
             _runManager.State.VisitedLevelSnapshots[CurrentGeneratedLevel.CaveLevel] = snapshot;
-            CindarsHope.Combat.CombatLog.Log(
+            CindarsHope.DebugTools.CombatLog.Log(
                 $"CaveLevelRuntimeController: snapshot captured for level {CurrentGeneratedLevel.CaveLevel}.\n" +
                 $"  LayoutHash: {snapshot.LayoutHash}\n" +
                 $"  Dimensions: {snapshot.Width}x{snapshot.Height}\n" +
@@ -467,7 +467,7 @@ namespace CindarsHope.Cave
 
             ValidateLayoutHashFromSnapshot(snapshot, CurrentGeneratedLevel);
 
-            CindarsHope.Combat.CombatLog.Log(
+            CindarsHope.DebugTools.CombatLog.Log(
                 $"CaveLevelRuntimeController: Cave level restored from snapshot.\n" +
                 $"  Level: {snapshot.CaveLevel}\n" +
                 $"  SpawnAnchor: {_currentSpawnAnchor}\n" +
@@ -484,7 +484,7 @@ namespace CindarsHope.Cave
 
             if (_logGeneratedLayout)
             {
-                CindarsHope.Combat.CombatLog.Log(CaveGenerationDebugPrinter.ToAscii(CurrentGeneratedLevel), this);
+                CindarsHope.DebugTools.CombatLog.Log(CaveGenerationDebugPrinter.ToAscii(CurrentGeneratedLevel), this);
             }
 
             if (_materializeAfterGeneration && _materializer != null)
@@ -637,7 +637,7 @@ namespace CindarsHope.Cave
 
             if (refreshedCount > 0)
             {
-                CindarsHope.Combat.CombatLog.Log($"CaveLevelRuntimeController: refreshed {refreshedCount} resource nodes for new day.", this);
+                CindarsHope.DebugTools.CombatLog.Log($"CaveLevelRuntimeController: refreshed {refreshedCount} resource nodes for new day.", this);
             }
         }
 
@@ -691,7 +691,7 @@ namespace CindarsHope.Cave
                 return false;
             }
 
-            CindarsHope.Combat.CombatLog.Log($"CaveLevelRuntimeController: Snapshot integrity check passed for level {snapshot.CaveLevel}.", this);
+            CindarsHope.DebugTools.CombatLog.Log($"CaveLevelRuntimeController: Snapshot integrity check passed for level {snapshot.CaveLevel}.", this);
             return true;
         }
 
@@ -715,7 +715,7 @@ namespace CindarsHope.Cave
             }
             else
             {
-                CindarsHope.Combat.CombatLog.Log($"CaveLevelRuntimeController: Layout hash validated for level {snapshot.CaveLevel}.", this);
+                CindarsHope.DebugTools.CombatLog.Log($"CaveLevelRuntimeController: Layout hash validated for level {snapshot.CaveLevel}.", this);
             }
         }
     }

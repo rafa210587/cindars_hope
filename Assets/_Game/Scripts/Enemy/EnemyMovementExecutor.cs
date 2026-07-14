@@ -694,7 +694,7 @@ namespace CindarsHope.Enemy
             PlayerWindupDetected = false; // consome o windup
 
             GameEventBus.Publish(new EnemyTelegraphStartedEvent(_enemyData?.enemyId, _transform.position));
-            CindarsHope.Combat.CombatLog.Log($"CombatLog: EnemyReactiveSidestep. EnemyId={_enemyData?.enemyId}, FlankSign={EvadeFlankSign:F0}, Dist={_getDistanceToPlayer():F2}");
+            CindarsHope.DebugTools.CombatLog.Log($"CombatLog: EnemyReactiveSidestep. EnemyId={_enemyData?.enemyId}, FlankSign={EvadeFlankSign:F0}, Dist={_getDistanceToPlayer():F2}");
             return true;
         }
 
@@ -733,7 +733,7 @@ namespace CindarsHope.Enemy
             NextDashTime = Time.time + _movementProfile.DashCooldown;
 
             GameEventBus.Publish(new EnemyTelegraphStartedEvent(_enemyData?.enemyId, _transform.position));
-            CindarsHope.Combat.CombatLog.Log($"CombatLog: EnemyRepositionDash. EnemyId={_enemyData?.enemyId}, Role={role}, Dist={_getDistanceToPlayer():F2}");
+            CindarsHope.DebugTools.CombatLog.Log($"CombatLog: EnemyRepositionDash. EnemyId={_enemyData?.enemyId}, Role={role}, Dist={_getDistanceToPlayer():F2}");
             return true;
         }
 

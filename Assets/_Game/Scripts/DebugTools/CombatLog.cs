@@ -1,4 +1,4 @@
-namespace CindarsHope.Combat
+namespace CindarsHope.DebugTools
 {
     /// <summary>
     /// Gate central para os logs informativos verbosos de combate (e geração/materialização
