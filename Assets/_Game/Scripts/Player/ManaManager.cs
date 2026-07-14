@@ -1,6 +1,6 @@
 ﻿using CindarsHope.Core;
 using CindarsHope.Core.Events;
-using CindarsHope.UI.Modal;
+using CindarsHope.Foundation;
 using UnityEngine;
 
 namespace CindarsHope.Player
@@ -18,7 +18,7 @@ namespace CindarsHope.Player
 
         [SerializeField] private int _maxMana = 100;
         [SerializeField] private float _manaRegenPerSecond = DefaultManaRegenPerSecond;
-        [SerializeField] private ModalManager _modalManager;
+        [SerializeField] private MonoBehaviour _modalManager;
 
         private int _currentMana;
         private float _regenAccumulator = 0f;
@@ -126,7 +126,7 @@ namespace CindarsHope.Player
             if (!IsInitialized || _currentMana >= _maxMana)
                 return;
 
-            if (_modalManager != null && _modalManager.HasActiveModal)
+            if (_modalManager is IModalStateProvider modalStateProvider && modalStateProvider.HasActiveModal)
                 return;
 
             _regenAccumulator += _manaRegenPerSecond + Mathf.Max(0f, ExternalRegenBonus);
