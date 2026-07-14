@@ -37,7 +37,7 @@ namespace CindarsHope.UI.Skills
 
             var go = new GameObject("SkillTreeGameplayPanelController");
             go.transform.SetParent(owner);
-            DontDestroyOnLoad(go);
+            if (owner == null) DontDestroyOnLoad(go);
             _instance = go.AddComponent<SkillTreeGameplayPanelController>();
         }
 
@@ -50,7 +50,7 @@ namespace CindarsHope.UI.Skills
             }
 
             _instance = this;
-            DontDestroyOnLoad(gameObject);
+            if (transform.parent == null) DontDestroyOnLoad(gameObject);
         }
 
         private void OnEnable()
@@ -282,7 +282,7 @@ namespace CindarsHope.UI.Skills
                 return;
             }
 
-            MenuGuiStyle.Apply();
+            CindarsHope.Core.MenuGuiStyle.Apply();
             var manager = SkillTreeManager.Instance;
             var progression = GameBootstrap.Instance?.PlayerProgressionManager;
             manager?.RebindProgressionManager(progression);

@@ -66,7 +66,7 @@ namespace CindarsHope.UI.Character
 
             var go = new GameObject("CharacterEquipmentPanelController");
             go.transform.SetParent(owner);
-            DontDestroyOnLoad(go);
+            if (owner == null) DontDestroyOnLoad(go);
             _instance = go.AddComponent<CharacterEquipmentPanelController>();
         }
 
@@ -79,7 +79,7 @@ namespace CindarsHope.UI.Character
             }
 
             _instance = this;
-            DontDestroyOnLoad(gameObject);
+            if (transform.parent == null) DontDestroyOnLoad(gameObject);
         }
 
         private void OnEnable()
@@ -207,7 +207,7 @@ namespace CindarsHope.UI.Character
                 return;
             }
 
-            MenuGuiStyle.Apply();
+            CindarsHope.Core.MenuGuiStyle.Apply();
             var rect = new Rect((Screen.width - 520f) * 0.5f, (Screen.height - 500f) * 0.5f, 520f, 500f);
             GUILayout.BeginArea(rect, GUI.skin.window);
 

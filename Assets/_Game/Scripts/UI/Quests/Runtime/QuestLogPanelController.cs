@@ -39,7 +39,7 @@ namespace CindarsHope.UI.Quests.Runtime
 
             var go = new GameObject("QuestLogPanelController");
             if (owner != null) go.transform.SetParent(owner, false);
-            DontDestroyOnLoad(go);
+            else DontDestroyOnLoad(go);
             var panel = go.AddComponent<QuestLogPanelController>();
             go.AddComponent<QuestLogRuntimeBinder>();
             return panel;
@@ -110,7 +110,7 @@ namespace CindarsHope.UI.Quests.Runtime
         {
             if (!_isOpen) return;
 
-            MenuGuiStyle.Apply();
+            CindarsHope.Core.MenuGuiStyle.Apply();
             var service = QuestRuntimeBootstrap.QuestService;
             var registry = QuestRuntimeBootstrap.QuestRegistry;
 

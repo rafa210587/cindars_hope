@@ -104,6 +104,7 @@ namespace CindarsHope.Save
         private ISaveSectionProvider _skillTreeProvider;
         private ISaveSectionProvider _craftingProvider;
         private ISaveSectionProvider _economyProvider;
+        private IShopStockRuntime _shopStockRuntime;
         private ISaveSectionProvider _npcsProvider;
         private ISaveSectionProvider _caveProvider;
         private ISaveSectionProvider _caveRunProvider;
@@ -164,9 +165,7 @@ namespace CindarsHope.Save
             // Providers jÃ¡ existentes (SPEC_10 / fable_07 / fable_62)
             _hotbarProvider = new HotbarSectionProvider(_hotbarState);
             _spellbookProvider = new SpellbookSectionProvider();
-            // arch: Save|UI (spec_arch_save_ui_cycle_reduction_v26) — nome totalmente qualificado
-            // (provider mora em CindarsHope.UI.Onboarding.Save), sem novo using de topo.
-            _onboardingHintsProvider = new CindarsHope.UI.Onboarding.Save.OnboardingHintsSectionProvider();
+            _onboardingHintsProvider = new OnboardingHintsSectionProvider();
 
             // Hotbar: inicializa defaults se novo jogo
             if (string.IsNullOrWhiteSpace(_hotbarState.GetSlotItemId(0)))
@@ -227,7 +226,8 @@ namespace CindarsHope.Save
                 });
 
             _craftingProvider = new CraftingSectionProvider(_craftingRuntime);
-            _economyProvider = new EconomySectionProvider(_shopManager);
+            _shopStockRuntime = ResolveShopStockRuntime();
+            _economyProvider = new EconomySectionProvider(_shopStockRuntime);
             _npcsProvider = new NpcsSectionProvider(_npcManager);
             _caveProvider = new CaveSectionProvider(_caveRunManager);
             _deathProvider = new DeathSectionProvider(_corpseRecoveryManager);
@@ -529,8 +529,14 @@ namespace CindarsHope.Save
             _skillTreeProvider = new SkillTreeSectionProvider(
                 _skillTreeManager,
                 () => _progressionManager != null ? (_progressionManager.CaptureSaveData()?.Level ?? 1) : 1);
-            _economyProvider = new EconomySectionProvider(_shopManager);
+            _shopStockRuntime = ResolveShopStockRuntime();
+            _economyProvider = new EconomySectionProvider(_shopStockRuntime);
             _bestiaryProvider = new BestiarySectionProvider(_bestiaryManager);
+        }
+
+        private IShopStockRuntime ResolveShopStockRuntime()
+        {
+            return DomainManagerRegistry.Get<IShopStockRuntime>() ?? _shopManager;
         }
 
         /// <summary>Rebinda os ScriptableObjects de dados para reparo de inventÃ¡rio starter.</summary>

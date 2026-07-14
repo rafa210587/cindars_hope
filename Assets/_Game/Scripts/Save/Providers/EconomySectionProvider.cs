@@ -1,19 +1,19 @@
-using CindarsHope.Economy;
+using CindarsHope.Foundation;
 
 namespace CindarsHope.Save.Providers
 {
     /// <summary>
-    /// Provider de save do estoque das lojas (economia). Fonte do estado: <see cref="ShopManager"/>
+    /// Provider de save do estoque das lojas (economia). Fonte do estado: <see cref="IShopStockRuntime"/>
     /// injetado via constructor. Fallback: seção existente do save ou estoque vazio quando o manager
     /// não está disponível (preservação entre cenas).
     /// </summary>
     public class EconomySectionProvider : ISaveSectionProvider
     {
-        private readonly ShopManager _shopManager;
+        private readonly IShopStockRuntime _shopStockRuntime;
 
-        public EconomySectionProvider(ShopManager shopManager)
+        public EconomySectionProvider(IShopStockRuntime shopStockRuntime)
         {
-            _shopManager = shopManager;
+            _shopStockRuntime = shopStockRuntime;
         }
 
         public string ProviderId => "economy";
@@ -22,9 +22,9 @@ namespace CindarsHope.Save.Providers
         {
             var economyData = new EconomySaveData();
 
-            if (_shopManager != null)
+            if (_shopStockRuntime != null)
             {
-                economyData.Shops = _shopManager.CaptureAllShopStock();
+                economyData.Shops = _shopStockRuntime.CaptureAllShopStock();
             }
             else if (existingSaveData?.Economy != null)
             {
@@ -36,7 +36,7 @@ namespace CindarsHope.Save.Providers
 
         public void Restore(object sectionData)
         {
-            if (_shopManager == null)
+            if (_shopStockRuntime == null)
             {
                 return;
             }
@@ -49,7 +49,7 @@ namespace CindarsHope.Save.Providers
 
             foreach (var shopStockData in data.Shops)
             {
-                _shopManager.LoadShopStock(shopStockData);
+                _shopStockRuntime.LoadShopStock(shopStockData);
             }
         }
     }

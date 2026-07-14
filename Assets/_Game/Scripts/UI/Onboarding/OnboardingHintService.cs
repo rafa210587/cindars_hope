@@ -1,5 +1,6 @@
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
+using CindarsHope.Foundation;
 using CindarsHope.UI.HUD;
 using UnityEngine;
 
@@ -21,7 +22,7 @@ namespace CindarsHope.UI.Onboarding
     ///   hint_status      — 1o StatusAppliedEvent no player (TargetId == "player").
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class OnboardingHintService : MonoBehaviour
+    public sealed class OnboardingHintService : MonoBehaviour, IOnboardingHintsRuntime
     {
         // Id do alvo de status do player (StatusEffectManager.PlayerTargetId — auditado Fase 0).
         private const string PlayerStatusTargetId = "player";
@@ -41,6 +42,7 @@ namespace CindarsHope.UI.Onboarding
         private void OnEnable()
         {
             Instance = this;
+            DomainManagerRegistry.Register<IOnboardingHintsRuntime>(this);
             GameEventBus.Subscribe<InteractionPromptChangedEvent>(OnInteractionPrompt);
             GameEventBus.Subscribe<EquipmentSlotChangedEvent>(OnEquipmentSlotChanged);
             GameEventBus.Subscribe<CaveLevelEnteredEvent>(OnCaveLevelEntered);
@@ -59,8 +61,19 @@ namespace CindarsHope.UI.Onboarding
             GameEventBus.Unsubscribe<StatusAppliedEvent>(OnStatusApplied);
             if (Instance == this)
             {
+                DomainManagerRegistry.Unregister<IOnboardingHintsRuntime>(this);
                 Instance = null;
             }
+        }
+
+        public System.Collections.Generic.IReadOnlyList<string> GetSeenHintIds()
+        {
+            return _tracker.GetSeenHintIds();
+        }
+
+        public void RestoreSeenHintIds(System.Collections.Generic.IReadOnlyList<string> seenHintIds)
+        {
+            _tracker.RestoreSeen(seenHintIds);
         }
 
         /// <summary>

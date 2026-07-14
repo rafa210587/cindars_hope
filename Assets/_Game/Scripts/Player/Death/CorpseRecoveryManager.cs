@@ -1,6 +1,5 @@
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
-using CindarsHope.Equipment;
 using CindarsHope.Foundation;
 using CindarsHope.Inventory;
 using CindarsHope.Player;
@@ -14,7 +13,7 @@ namespace CindarsHope.Player.Death
         private Corpse _activeCorpse;
         private readonly PlayerManager _playerManager;
         private readonly InventoryManager _inventoryManager;
-        private readonly EquipmentManager _equipmentManager;
+        private readonly IEquipmentRuntime _equipmentRuntime;
 
         public Corpse ActiveCorpse => _activeCorpse;
         public bool HasActiveCorpse => _activeCorpse != null && _activeCorpse.Status == CorpseStatus.Active;
@@ -22,11 +21,11 @@ namespace CindarsHope.Player.Death
         public CorpseRecoveryManager(
             PlayerManager playerManager,
             InventoryManager inventoryManager,
-            EquipmentManager equipmentManager)
+            IEquipmentRuntime equipmentRuntime)
         {
             _playerManager = playerManager ?? throw new ArgumentNullException(nameof(playerManager));
             _inventoryManager = inventoryManager ?? throw new ArgumentNullException(nameof(inventoryManager));
-            _equipmentManager = equipmentManager ?? throw new ArgumentNullException(nameof(equipmentManager));
+            _equipmentRuntime = equipmentRuntime ?? throw new ArgumentNullException(nameof(equipmentRuntime));
         }
 
         public void SetActiveCorpse(Corpse corpse)
@@ -112,7 +111,7 @@ namespace CindarsHope.Player.Death
             {
                 if (corpseItem.SourceSlotType >= 0)
                 {
-                    _equipmentManager.EquipItem((EquipmentSlot)corpseItem.SourceSlotType, corpseItem.ItemInstanceId);
+                    _equipmentRuntime.EquipItem((EquipmentSlot)corpseItem.SourceSlotType, corpseItem.ItemInstanceId);
                     equipmentItemsToRemove.Add(corpseItem);
                 }
                 else if (_inventoryManager.TryAddItem(corpseItem.ItemId, 1).Success)

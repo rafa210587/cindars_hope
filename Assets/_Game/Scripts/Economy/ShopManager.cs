@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using CindarsHope.Core;
+using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Data;
 using CindarsHope.Core.Events;
 using CindarsHope.Inventory;
@@ -13,7 +14,7 @@ using UnityEngine;
 namespace CindarsHope.Economy
 {
     [DisallowMultipleComponent]
-    public sealed class ShopManager : MonoBehaviour
+    public sealed class ShopManager : MonoBehaviour, IGameBootstrapRuntimeService, IShopStockRuntime
     {
         // arch: Core|Economy (spec_arch_core_economy_cycle_reduction_v33) — self-registro estatico,
         // molde Audio/AudioManager.cs (ja usado em Core|Enemy e Core|Craft); GameBootstrap nao segura
@@ -26,6 +27,7 @@ namespace CindarsHope.Economy
         private readonly Dictionary<string, ShopSession> _sessions = new Dictionary<string, ShopSession>();
 
         public bool IsInitialized { get; private set; }
+        public string BootstrapServiceId => nameof(ShopManager);
         public IReadOnlyCollection<string> RegisteredShopIds => _sessions.Keys;
 
         private void Awake()
@@ -37,6 +39,7 @@ namespace CindarsHope.Economy
             }
 
             _instance = this;
+            DomainManagerRegistry.Register<IShopStockRuntime>(this);
         }
 
         private void OnEnable()
@@ -55,11 +58,18 @@ namespace CindarsHope.Economy
             {
                 _instance = null;
             }
+
+            DomainManagerRegistry.Unregister<IShopStockRuntime>(this);
         }
 
         public void Initialize()
         {
             IsInitialized = true;
+        }
+
+        public void InitializeFromBootstrap(GameBootstrapRuntimeContext context)
+        {
+            Configure(context.ItemDatabase);
         }
 
         public void Configure(ItemDatabaseSO itemDatabase)
@@ -70,6 +80,11 @@ namespace CindarsHope.Economy
             }
 
             Initialize();
+        }
+
+        public void ShutdownFromBootstrap()
+        {
+            Shutdown();
         }
 
         public void Shutdown()

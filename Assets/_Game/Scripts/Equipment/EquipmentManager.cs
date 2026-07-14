@@ -10,7 +10,7 @@ using UnityEngine;
 namespace CindarsHope.Equipment
 {
     [DisallowMultipleComponent]
-    public class EquipmentManager : MonoBehaviour
+    public class EquipmentManager : MonoBehaviour, IEquipmentRuntime, IGoldGainModifierRuntime
     {
         // arch: Core|Equipment (spec_arch_core_equipment_cycle_reduction_v35) — self-registro estatico
         // (molde Craft/Economy/Skills) para o GameBootstrap parar de segurar esta referencia serializada.
@@ -62,6 +62,8 @@ namespace CindarsHope.Equipment
             }
 
             Instance = this;
+            DomainManagerRegistry.Register<IEquipmentRuntime>(this);
+            DomainManagerRegistry.Register<IGoldGainModifierRuntime>(this);
 
             if (_durabilityTracker == null)
             {
@@ -100,6 +102,11 @@ namespace CindarsHope.Equipment
             RebuildAccessoryEffects();
         }
 
+        public int ApplyGoldGain(int baseGold)
+        {
+            return AccessoryEffectRouter.ApplyGoldGain(baseGold);
+        }
+
         private void OnEnable()
         {
             GameEventBus.Subscribe<InventoryChangedEvent>(HandleInventoryChanged);
@@ -116,6 +123,9 @@ namespace CindarsHope.Equipment
             {
                 Instance = null;
             }
+
+            DomainManagerRegistry.Unregister<IEquipmentRuntime>(this);
+            DomainManagerRegistry.Unregister<IGoldGainModifierRuntime>(this);
         }
 
         private void Update()

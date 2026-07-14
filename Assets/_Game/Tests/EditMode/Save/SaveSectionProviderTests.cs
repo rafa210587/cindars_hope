@@ -7,7 +7,6 @@ using CindarsHope.Quests.Save;
 using CindarsHope.Save;
 using CindarsHope.Save.Providers;
 using CindarsHope.Skills;
-using CindarsHope.UI.Onboarding.Save;
 using NUnit.Framework;
 
 /// <summary>

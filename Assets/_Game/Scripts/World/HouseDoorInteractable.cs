@@ -1,7 +1,7 @@
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
+using CindarsHope.Foundation;
 using CindarsHope.Interaction;
-using CindarsHope.NPC;
 using UnityEngine;
 
 namespace CindarsHope.World
@@ -74,7 +74,7 @@ namespace CindarsHope.World
         // ── Auto-abertura para NPCs moradores (não afeta o controle manual do jogador) ──────────────
         private void OnTriggerEnter2D(Collider2D other)
         {
-            if (other == null || other.GetComponentInParent<NpcDweller>() == null)
+            if (other == null || other.GetComponentInParent<INpcDoorTraveler>() == null)
             {
                 return;
             }
@@ -89,7 +89,7 @@ namespace CindarsHope.World
 
         private void OnTriggerExit2D(Collider2D other)
         {
-            if (other == null || other.GetComponentInParent<NpcDweller>() == null)
+            if (other == null || other.GetComponentInParent<INpcDoorTraveler>() == null)
             {
                 return;
             }

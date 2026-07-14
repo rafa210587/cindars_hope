@@ -36,7 +36,7 @@ namespace CindarsHope.UI.Quests.Runtime
 
             var go = new GameObject("QuestOfferPanelController");
             if (owner != null) go.transform.SetParent(owner, false);
-            DontDestroyOnLoad(go);
+            else DontDestroyOnLoad(go);
             return go.AddComponent<QuestOfferPanelController>();
         }
 
@@ -187,7 +187,7 @@ namespace CindarsHope.UI.Quests.Runtime
         {
             if (!_isOpen) return;
 
-            MenuGuiStyle.Apply();
+            CindarsHope.Core.MenuGuiStyle.Apply();
             var rect = new Rect(Screen.width / 2f - 200, Screen.height / 2f - 220, 400, 440);
             GUI.Box(rect, "QUEST OFFER");
 

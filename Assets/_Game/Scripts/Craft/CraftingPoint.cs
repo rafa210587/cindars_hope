@@ -2,7 +2,6 @@ using CindarsHope.Core;
 using CindarsHope.Craft.Data;
 using CindarsHope.Craft.Events;
 using CindarsHope.Interaction;
-using CindarsHope.UI.Crafting;
 using UnityEngine;
 
 namespace CindarsHope.Craft
@@ -20,7 +19,7 @@ namespace CindarsHope.Craft
         [SerializeField] private string _stationInstanceId;
         [SerializeField] private WorkshopType _stationType;
         [SerializeField] private CraftingRuntime _craftingRuntime;
-        [SerializeField] private CraftingModal _craftingModal;
+        [SerializeField] private MonoBehaviour _craftingModal;
 
         public string StationInstanceId => _stationInstanceId;
         public WorkshopType StationType => _stationType;
@@ -40,9 +39,9 @@ namespace CindarsHope.Craft
             }
 
             // Modo direto (refs plugados no gerador) ou modo desacoplado (evento; o modal da cena assina).
-            if (_craftingRuntime != null && _craftingModal != null)
+            if (_craftingRuntime != null && _craftingModal is ICraftingStationModal craftingModal)
             {
-                _craftingModal.Open(_craftingRuntime.GetOrCreateStation(_stationInstanceId, _stationType));
+                craftingModal.Open(_craftingRuntime.GetOrCreateStation(_stationInstanceId, _stationType));
             }
             else
             {
@@ -50,7 +49,7 @@ namespace CindarsHope.Craft
             }
         }
 
-        public void Configure(string stationInstanceId, WorkshopType stationType, CraftingRuntime craftingRuntime, CraftingModal craftingModal)
+        public void Configure(string stationInstanceId, WorkshopType stationType, CraftingRuntime craftingRuntime, MonoBehaviour craftingModal)
         {
             _stationInstanceId = stationInstanceId;
             _stationType = stationType;

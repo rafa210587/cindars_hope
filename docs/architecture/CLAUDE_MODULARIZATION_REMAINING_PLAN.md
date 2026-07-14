@@ -4,6 +4,101 @@
 > Branch esperada: `dev`  
 > Objetivo: continuar a modularização/eficiência sem quebrar o jogo, sem regressão de saves, cenas, prefabs, IDs, balanceamento ou fluxos de gameplay.
 
+## Atualizacao 2026-07-12 - estado real antes de continuar
+
+Verificacao atual no disco/git:
+
+```text
+Branch=dev
+origin/dev...dev=0 2
+UnityGeneratedProjectsBuild=PASS, 7/7, 0W/0E
+EditMode antes da correcao=FAILED, 2836/2837 PASS
+EditMode apos a correcao=PASS, 2837/2837 PASS
+Snapshot:
+  UsingOnlyModuleEdges=213
+  UsingOnlyMutualModulePairs=18
+  RuntimeModuleEdges=246
+  MutualModulePairs=30
+Auto-bootstraps reais=3
+```
+
+Os 3 `[RuntimeInitializeOnLoadMethod]` reais continuam aceitos por design:
+
+- `GameRuntimeCompositionRoot`
+- `SceneTransitionRouter`
+- `CollisionDebugOverlayBootstrap`
+
+Bloqueador imediato encontrado nesta rodada: `ArchitectureRatchetTests` detectou aumento
+de `Resources.Load` em `Assets/_Game/Scripts/Cave/Runtime/CaveRuntimeMaterializer.cs` apos a rodada
+concorrente de Cave (`ResourcesLoad` 5 vs baseline 4). A correcao arquitetural escolhida e:
+
+1. `CreateMvpCaveScene` deve serializar `CaveEcosystemBalanceSO` no campo `_ecosystemBalance`.
+2. `CaveRuntimeMaterializer` nao deve adicionar novo `Resources.Load`; cenas antigas sem wiring usam
+   uma instancia default em memoria com warning.
+3. `GenerateCaveEcosystemBalance` deve manter o asset canonico em `Assets/_Game/Data/Cave`, sem
+   depender de copia em `Resources` para runtime.
+
+Gate fechado nesta rodada: `ResourcesLoad` voltou ao baseline 4 e EditMode completo passou 2837/2837.
+Em seguida, o corte `Core|Economy` foi aplicado via `IGameBootstrapRuntimeService` e `IShopStockRuntime`;
+snapshot caiu para `RuntimeModuleEdges=247` e `MutualModulePairs=31`, com build 7/7 e EditMode 2837/2837.
+O corte `Core|Equipment` tambem foi aplicado via `IEquipmentRuntime`; snapshot caiu para
+`RuntimeModuleEdges=246` e `MutualModulePairs=30`, com build 7/7 e EditMode 2837/2837.
+O corte `NPC|World` tambem foi aplicado via `INpcScheduleAvailabilityRuntime` e `INpcDoorTraveler`;
+snapshot caiu para `RuntimeModuleEdges=246` e `MutualModulePairs=29`, com build 7/7 e EditMode 2837/2837.
+O corte `Farm|UI` tambem foi aplicado movendo `MenuGuiStyle` de UI para Core; snapshot caiu para
+`RuntimeModuleEdges=244` e `MutualModulePairs=28`, com build 7/7 e EditMode 2837/2837.
+O corte `Craft|UI` tambem foi aplicado via `ICraftingStationModal` no modulo Craft; snapshot caiu para
+`RuntimeModuleEdges=243` e `MutualModulePairs=27`, com build 7/7 e EditMode 2837/2837.
+O corte `Save|UI` tambem foi aplicado via `IOnboardingHintsRuntime` em Foundation e provider canonico
+em `Save.Providers`; snapshot caiu para `RuntimeModuleEdges=242` e `MutualModulePairs=26`, com build
+7/7 e EditMode 2837/2837.
+O corte `Economy|Equipment` tambem foi aplicado via `IGoldGainModifierRuntime` em Foundation; snapshot
+caiu para `RuntimeModuleEdges=241` e `MutualModulePairs=25`, com build 7/7 e EditMode 2837/2837.
+
+Observacao critica: existem specs antigas em `.specs/implementados/` que declaram alguns cortes
+`Core|*` como fechados (`Core|Skills`, `Core|Inventory`, `Core|Player`, `Core|UI`, `Core|Save`),
+mas o snapshot real abaixo ainda lista esses pares. Ate que o codigo/snapshot confirmem o contrario,
+trate essas specs como documentacao historica/adiantada, nao como prova de conclusao.
+
+Pares reais restantes nesta data:
+
+```text
+Cave|Combat
+Cave|Core
+Cave|Enemy
+Cave|SceneManagement
+Cave|UI
+Combat|Core
+Combat|Enemy
+Combat|Inventory
+Combat|Player
+Combat|Skills
+Core|Inventory
+Core|Player
+Core|Save
+Core|Skills
+Core|UI
+Equipment|Player
+Farm|Save
+Inventory|Player
+NPC|Quests
+NPC|UI
+Player|Skills
+Player|UI
+Player|World
+Quests|Save
+UI|World
+```
+
+Prioridade daqui para frente:
+
+1. Consolidar/commitar/preservar mudancas concorrentes de Cave/Enemy antes de novos cortes grandes.
+2. Atacar `Core|*` restantes com ports/registries pequenos, um par por vez, somente quando a troca
+   nao exigir alterar contratos de save/gameplay.
+3. Atacar `Save|*` restantes com spec de boundary e roundtrip tests.
+4. Deixar `Cave|*`, `Combat|*`, `Player|*`, `NPC|*` para specs com PlayMode/smoke humano, pois sao
+   fronteiras de gameplay e nao apenas type-move.
+
 ## 0. Regra principal
 
 Não declarar “modularização ampla concluída” enquanto existirem pares mútuos no snapshot arquitetural.
@@ -109,7 +204,7 @@ design. Categorias (teto do que é seguro fazer headless = 27):
   `Core|Skills`, `Core|UI` (ModalManager), `Core|Save` (SaveManager). Mover só o tipo NÃO derruba —
   o `using`/campo do manager no GameBootstrap mantém a aresta. Exige `PlayerRuntimeReferences`/port +
   regen de cena p/ tirar o `[SerializeField]`.
-- **Serialized-field bloqueado (lista 5.2, spec própria):** `Craft|UI` (CraftingPoint→CraftingModal),
+- **Serialized-field bloqueado (lista 5.2, spec própria):**
   `Player|UI` (ManaManager→ModalManager), `UI|World` (CorpseInteractable→CorpseRecoveryUIController),
   `Player|Skills` (SkillPassiveModifier serializado em SkillNodeDataSO), `NPC|UI`.
 - **Gameplay entrelaçado (decisão de design + PlayMode):** `Combat|Core`, `Combat|Enemy`, `Combat|Player`,

@@ -265,26 +265,7 @@ namespace CindarsHope.Core.Bootstrap
                 craftingManager.Initialize();
             }
 
-            // arch: Core|Economy (spec_arch_core_economy_cycle_reduction_v33) — ShopManager
-            // self-registra via static Instance (molde Craft); o manager de ouro (Economy) NAO ganha
-            // um accessor estatico global (ratchet GlobalGoldAccess proibe esse padrao em runtime) —
-            // o gerador de cena adiciona ambos ao mesmo GameObject do bootstrap, entao GetComponent no
-            // mesmo object resolve sem reintroduzir o campo serializado nem violar o ratchet.
-            var economyManager = GetComponent<CindarsHope.Economy.EconomyManager>();
-            if (economyManager != null)
-            {
-                economyManager.Initialize();
-            }
-
-            var shopManager = CindarsHope.Economy.ShopManager.Instance;
-            if (shopManager != null)
-            {
-                shopManager.Configure(_itemDatabase);
-            }
-            else
-            {
-                Debug.LogError($"Scene '{gameObject.scene.path}' GameObject '{gameObject.name}' component '{nameof(GameBootstrap)}' could not find a ShopManager.Instance to initialize.", this);
-            }
+            InitializeBootstrapRuntimeServices();
 
             // arch: quebra do ciclo Core|Player (spec_arch_core_player_cycle_reduction_v37) —
             // PlayerProgressionManager/StatusEffectManager nao sao mais passados por aqui; self-registram
@@ -313,9 +294,7 @@ namespace CindarsHope.Core.Bootstrap
             {
                 // arch: Core|Enemy (spec_arch_core_enemy_cycle_reduction_v31) — BestiaryManager nao eh
                 // mais passado por aqui; SaveManager resolve via BestiaryManager.Instance (self-registro).
-                // arch: Core|Equipment (spec_arch_core_equipment_cycle_reduction_v35) — EquipmentManager
-                // idem, via EquipmentManager.Instance (self-registro, molde Craft/Economy/Skills).
-                _saveManager.RebindOptionalRuntimeManagers(CindarsHope.Equipment.EquipmentManager.Instance, progressionManager, _gameTimeManager, _staminaManager, statusEffectManager, skillTreeManager, CindarsHope.Economy.ShopManager.Instance);
+                _saveManager.RebindOptionalRuntimeManagers(null, progressionManager, _gameTimeManager, _staminaManager, statusEffectManager, skillTreeManager);
             }
 
             CombatRuntimeInstaller.Install(BuildCombatInstallContext(), this);
@@ -332,19 +311,17 @@ namespace CindarsHope.Core.Bootstrap
         // EquipmentManager limpa e reconstroi do save depois — o save sempre vence).
         private void EquipStarterCombatLoadout()
         {
-            // arch: Core|Equipment (spec_arch_core_equipment_cycle_reduction_v35) — EquipmentManager
-            // nao eh mais passado por aqui; self-registra via static Instance (molde Craft/Economy/Skills).
-            var equipmentManager = CindarsHope.Equipment.EquipmentManager.Instance;
+            var equipmentRuntime = DomainManagerRegistry.Get<IEquipmentRuntime>();
             // arch: Core|Inventory (spec_arch_core_inventory_cycle_reduction_v36) — resolvido via
             // DomainManagerRegistry em vez do campo serializado removido.
             var inventoryManager = CindarsHope.Foundation.DomainManagerRegistry.Get<CindarsHope.Inventory.InventoryManager>();
-            if (equipmentManager == null || inventoryManager == null)
+            if (equipmentRuntime == null || inventoryManager == null)
             {
                 return;
             }
 
-            bool rightEmpty = string.IsNullOrEmpty(equipmentManager.GetEquippedItem(EquipmentSlot.RightHand));
-            bool leftEmpty = string.IsNullOrEmpty(equipmentManager.GetEquippedItem(EquipmentSlot.LeftHand));
+            bool rightEmpty = string.IsNullOrEmpty(equipmentRuntime.GetEquippedItem(EquipmentSlot.RightHand));
+            bool leftEmpty = string.IsNullOrEmpty(equipmentRuntime.GetEquippedItem(EquipmentSlot.LeftHand));
             if (!rightEmpty || !leftEmpty)
             {
                 return;
@@ -353,8 +330,8 @@ namespace CindarsHope.Core.Bootstrap
             // Arco numa mao, flecha na outra: BowArrowAttackService exige o arco na mao OPOSTA a municao.
             if (inventoryManager.HasItem(StarterBowItemId) && inventoryManager.HasItem(StarterArrowItemId))
             {
-                equipmentManager.EquipItem(EquipmentSlot.RightHand, StarterBowItemId);
-                equipmentManager.EquipItem(EquipmentSlot.LeftHand, StarterArrowItemId);
+                equipmentRuntime.EquipItem(EquipmentSlot.RightHand, StarterBowItemId);
+                equipmentRuntime.EquipItem(EquipmentSlot.LeftHand, StarterArrowItemId);
                 Debug.Log($"GameBootstrap: loadout inicial equipado (arco '{StarterBowItemId}' RightHand, flecha '{StarterArrowItemId}' LeftHand).", this);
             }
             else
@@ -415,18 +392,16 @@ namespace CindarsHope.Core.Bootstrap
 
         private void InitializeDeathSystem()
         {
-            // arch: Core|Equipment (spec_arch_core_equipment_cycle_reduction_v35) — EquipmentManager
-            // resolvido via EquipmentManager.Instance (self-registro, molde Craft/Economy/Skills).
-            var equipmentManager = CindarsHope.Equipment.EquipmentManager.Instance;
+            var equipmentRuntime = DomainManagerRegistry.Get<IEquipmentRuntime>();
             // arch: Core|Inventory (spec_arch_core_inventory_cycle_reduction_v36) — resolvido via
             // DomainManagerRegistry em vez do campo serializado removido.
             var inventoryManager = CindarsHope.Foundation.DomainManagerRegistry.Get<CindarsHope.Inventory.InventoryManager>();
             // arch: Core|Player (spec_arch_core_player_cycle_reduction_v37) — resolvido via
             // DomainManagerRegistry em vez do campo serializado removido.
             var playerManager = CindarsHope.Foundation.DomainManagerRegistry.Get<CindarsHope.Player.PlayerManager>();
-            if (playerManager != null && inventoryManager != null && equipmentManager != null)
+            if (playerManager != null && inventoryManager != null && equipmentRuntime != null)
             {
-                _corpseRecoveryManager = new CindarsHope.Player.Death.CorpseRecoveryManager(playerManager, inventoryManager, equipmentManager);
+                _corpseRecoveryManager = new CindarsHope.Player.Death.CorpseRecoveryManager(playerManager, inventoryManager, equipmentRuntime);
             }
             else
             {
@@ -488,16 +463,39 @@ namespace CindarsHope.Core.Bootstrap
                 craftingManager.Shutdown();
             }
 
-            var economyManager = GetComponent<CindarsHope.Economy.EconomyManager>();
-            if (economyManager != null && economyManager.IsInitialized)
+            ShutdownBootstrapRuntimeServices();
+        }
+
+        private void InitializeBootstrapRuntimeServices()
+        {
+            var context = new GameBootstrapRuntimeContext(_itemDatabase);
+            var foundShopService = false;
+
+            foreach (var behaviour in GetComponents<MonoBehaviour>())
             {
-                economyManager.Shutdown();
+                if (behaviour is not IGameBootstrapRuntimeService service)
+                {
+                    continue;
+                }
+
+                service.InitializeFromBootstrap(context);
+                foundShopService |= service.BootstrapServiceId == "ShopManager";
             }
 
-            var shopManager = CindarsHope.Economy.ShopManager.Instance;
-            if (shopManager != null && shopManager.IsInitialized)
+            if (!foundShopService)
             {
-                shopManager.Shutdown();
+                Debug.LogError($"Scene '{gameObject.scene.path}' GameObject '{gameObject.name}' component '{nameof(GameBootstrap)}' could not find a ShopManager bootstrap service to initialize.", this);
+            }
+        }
+
+        private void ShutdownBootstrapRuntimeServices()
+        {
+            foreach (var behaviour in GetComponents<MonoBehaviour>())
+            {
+                if (behaviour is IGameBootstrapRuntimeService service && service.IsInitialized)
+                {
+                    service.ShutdownFromBootstrap();
+                }
             }
         }
     }

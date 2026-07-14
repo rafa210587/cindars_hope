@@ -47,7 +47,7 @@ namespace CindarsHope.Narrative
             if (Instance != null) return;
             var go = new GameObject("IntroSequenceController");
             go.transform.SetParent(owner);
-            DontDestroyOnLoad(go);
+            if (owner == null) DontDestroyOnLoad(go);
             go.AddComponent<IntroSequenceController>();
         }
 
@@ -143,7 +143,7 @@ namespace CindarsHope.Narrative
         private void OnGUI()
         {
             if (!_isOpen || _model == null) return;
-            CindarsHope.UI.MenuGuiStyle.Apply();
+            CindarsHope.Core.MenuGuiStyle.Apply();
             var screen = _model.Current;
             if (screen == null) return;
 

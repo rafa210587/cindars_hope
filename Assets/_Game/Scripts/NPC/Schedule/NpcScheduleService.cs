@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
+using CindarsHope.Foundation;
 using CindarsHope.Foundation.Time;
 using UnityEngine;
 using Unity.Profiling;
@@ -23,7 +24,7 @@ namespace CindarsHope.NPC.Schedule
     /// controllers + wanderer's existing SetInteractionPaused).
     /// </summary>
     [DisallowMultipleComponent]
-    public class NpcScheduleService : MonoBehaviour
+    public class NpcScheduleService : MonoBehaviour, INpcScheduleAvailabilityRuntime
     {
         private const float StuckTeleportSeconds = 5f;
         private const float ArriveRadius = 0.3f;
@@ -76,6 +77,7 @@ namespace CindarsHope.NPC.Schedule
             }
 
             s_instance = this;
+            DomainManagerRegistry.Register<INpcScheduleAvailabilityRuntime>(this);
         }
 
         private void OnEnable()
@@ -94,6 +96,7 @@ namespace CindarsHope.NPC.Schedule
         {
             if (s_instance == this)
             {
+                DomainManagerRegistry.Unregister<INpcScheduleAvailabilityRuntime>(this);
                 s_instance = null;
             }
         }
@@ -434,6 +437,18 @@ namespace CindarsHope.NPC.Schedule
         public bool TryGetRuntimeState(string npcId, out NpcScheduleRuntimeState state)
         {
             return _runtimeStates.TryGetValue(npcId, out state);
+        }
+
+        public bool TryGetTrackedAvailability(string npcId, out bool isAvailable)
+        {
+            isAvailable = false;
+            if (!TryGetRuntimeState(npcId, out var state) || state == null)
+            {
+                return false;
+            }
+
+            isAvailable = state.IsAvailable;
+            return true;
         }
     }
 }

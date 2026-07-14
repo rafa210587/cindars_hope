@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using CindarsHope.Core;
+using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
+using CindarsHope.Foundation;
 using CindarsHope.Inventory;
 using CindarsHope.Economy.Transactions;
 using CindarsHope.Player;
@@ -9,7 +11,7 @@ using UnityEngine;
 namespace CindarsHope.Economy
 {
     [DisallowMultipleComponent]
-    public sealed class EconomyManager : MonoBehaviour
+    public sealed class EconomyManager : MonoBehaviour, IGameBootstrapRuntimeService
     {
         // arch: Core|Economy (spec_arch_core_economy_cycle_reduction_v33) — esta classe NAO ganha um
         // accessor estatico global (diferente do molde Audio/AudioManager.cs usado em Core|Enemy e
@@ -26,6 +28,7 @@ namespace CindarsHope.Economy
         private const string UrbanSellSourceId = "shop_town_sell_box";
 
         public bool IsInitialized { get; private set; }
+        public string BootstrapServiceId => nameof(EconomyManager);
 
         private void OnEnable()
         {
@@ -51,6 +54,11 @@ namespace CindarsHope.Economy
             IsInitialized = true;
         }
 
+        public void InitializeFromBootstrap(GameBootstrapRuntimeContext context)
+        {
+            Initialize();
+        }
+
         public void Shutdown()
         {
             if (!IsInitialized)
@@ -59,6 +67,11 @@ namespace CindarsHope.Economy
             }
 
             IsInitialized = false;
+        }
+
+        public void ShutdownFromBootstrap()
+        {
+            Shutdown();
         }
 
         private void HandleItemPurchaseRequested(ItemPurchaseRequestedEvent evt)
@@ -178,7 +191,11 @@ namespace CindarsHope.Economy
             // fable_23 (CA-2): ponto ÚNICO nomeado do bônus de ouro em vendas de acessório (Anel de
             // Finan +5%). Consulta síncrona ao AccessoryEffectRouter; sem acessório => neutro (sem if
             // espalhado). Não-stack já garantido no roteador (2 anéis iguais != +10%).
-            totalGold = CindarsHope.Equipment.AccessoryEffectRouter.ApplyGoldGain(totalGold);
+            var goldGainModifier = DomainManagerRegistry.Get<IGoldGainModifierRuntime>();
+            if (goldGainModifier != null)
+            {
+                totalGold = goldGainModifier.ApplyGoldGain(totalGold);
+            }
 
             // fable_37 (CA-2 economia): ponto ÚNICO nomeado do multiplicador de venda por evento de mundo
             // (pico de Lua Âmbar +10% e/ou cultivo em alta +25%). Lê WorldEventHooks (resolução do dia);

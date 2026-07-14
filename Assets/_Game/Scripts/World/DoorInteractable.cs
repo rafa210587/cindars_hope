@@ -1,7 +1,7 @@
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
+using CindarsHope.Foundation;
 using CindarsHope.Interaction;
-using CindarsHope.NPC.Schedule;
 using UnityEngine;
 
 namespace CindarsHope.World
@@ -103,19 +103,19 @@ namespace CindarsHope.World
                 return false;
             }
 
-            var service = NpcScheduleService.Instance;
+            var service = DomainManagerRegistry.Get<INpcScheduleAvailabilityRuntime>();
             if (service == null)
             {
                 return false; // fail-open: no schedule runtime → trata como porta comum
             }
 
             // Só avisa quando o serviço realmente rastreia este NPC (evita falso "fechado" pré-wiring).
-            if (!service.TryGetRuntimeState(_linkedNpcId, out var state) || state == null)
+            if (!service.TryGetTrackedAvailability(_linkedNpcId, out var isAvailable))
             {
                 return false;
             }
 
-            return !state.IsAvailable;
+            return !isAvailable;
         }
 
         private string ClosedNotice()

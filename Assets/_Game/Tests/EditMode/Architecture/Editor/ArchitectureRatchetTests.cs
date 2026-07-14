@@ -212,7 +212,25 @@ namespace CindarsHope.Tests.EditMode.Architecture
                 // arch: quebra do ciclo Inventory|Magic após snapshot fully-qualified (2026-07-10) —
                 // enum puro usado por ItemDataSO e pelo runtime de magia, movido sem alterar valores
                 // inteiros serializados.
-                "SpellSourceType.cs"
+                "SpellSourceType.cs",
+                // arch: quebra do ciclo real Core|Economy (2026-07-12) — port puro para Save/Core
+                // consumirem estoque de lojas sem referenciar CindarsHope.Economy.ShopManager.
+                "IShopStockRuntime.cs",
+                // arch: quebra da direcao Core->Equipment (2026-07-12) — port puro usado por
+                // GameBootstrap/CombatRuntimeInstaller/CorpseRecoveryManager sem referenciar
+                // EquipmentManager.
+                "IEquipmentRuntime.cs",
+                // arch: quebra da direcao World->NPC (2026-07-12) — portas de cena consultam
+                // disponibilidade/marker de NPC via ports puros, sem referenciar NpcScheduleService
+                // ou NpcDweller concretos.
+                "INpcScheduleAvailabilityRuntime.cs",
+                "INpcDoorTraveler.cs",
+                // arch: quebra da direcao Save->UI (2026-07-12) — SaveManager persiste hints de
+                // onboarding via port puro em vez de instanciar provider do modulo UI.
+                "IOnboardingHintsRuntime.cs",
+                // arch: quebra da direcao Economy->Equipment (2026-07-12) — Economy aplica bonus
+                // de ouro via port puro, sem referenciar AccessoryEffectRouter concreto.
+                "IGoldGainModifierRuntime.cs"
             };
             Assert.That(
                 sourceFiles.Select(Path.GetFileName),

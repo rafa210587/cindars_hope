@@ -45,7 +45,7 @@ namespace CindarsHope.UI
 
             var go = new GameObject("InventoryPanelController");
             go.transform.SetParent(owner);
-            DontDestroyOnLoad(go);
+            if (owner == null) DontDestroyOnLoad(go);
             _instance = go.AddComponent<InventoryPanelController>();
         }
 
@@ -58,7 +58,7 @@ namespace CindarsHope.UI
             }
 
             _instance = this;
-            DontDestroyOnLoad(gameObject);
+            if (transform.parent == null) DontDestroyOnLoad(gameObject);
         }
 
         private void OnEnable()
@@ -131,7 +131,7 @@ namespace CindarsHope.UI
                 return;
             }
 
-            MenuGuiStyle.Apply();
+            CindarsHope.Core.MenuGuiStyle.Apply();
             ResolveInventoryManager();
             ResolveEquipmentManager();
             var width = Mathf.Min(620f, Screen.width - 32f);
@@ -780,48 +780,4 @@ namespace CindarsHope.UI
         }
     }
 
-    /// <summary>
-    /// Estilo de fonte COMPARTILHADO dos menus IMGUI (OnGUI). Aumenta um pouco o texto para leitura,
-    /// de forma idempotente e consistente entre menus. Mutar GUI.skin so e valido DENTRO de OnGUI,
-    /// entao cada menu chama <see cref="Apply"/> como primeira linha do seu OnGUI. Como GUI.skin e a
-    /// skin default compartilhada, o ajuste cobre os controles padrao (label/button/box/textField/
-    /// toggle/window) de todos os menus que chamam Apply.
-    /// </summary>
-    public static class MenuGuiStyle
-    {
-        /// <summary>Tamanho do texto de corpo (labels, botoes, campos).</summary>
-        public const int BodyFontSize = 14;
-
-        /// <summary>Tamanho do titulo de janela (um pouco maior que o corpo).</summary>
-        public const int TitleFontSize = 16;
-
-        /// <summary>
-        /// Aplica os tamanhos de fonte aos estilos padrao da skin atual. Idempotente (so escreve
-        /// quando difere). Chamar no inicio do OnGUI do menu, antes de desenhar qualquer controle.
-        /// </summary>
-        public static void Apply()
-        {
-            var skin = GUI.skin;
-            if (skin == null)
-            {
-                return;
-            }
-
-            SetSize(skin.label, BodyFontSize);
-            SetSize(skin.button, BodyFontSize);
-            SetSize(skin.box, BodyFontSize);
-            SetSize(skin.textField, BodyFontSize);
-            SetSize(skin.textArea, BodyFontSize);
-            SetSize(skin.toggle, BodyFontSize);
-            SetSize(skin.window, TitleFontSize);
-        }
-
-        private static void SetSize(GUIStyle style, int size)
-        {
-            if (style != null && style.fontSize != size)
-            {
-                style.fontSize = size;
-            }
-        }
-    }
 }

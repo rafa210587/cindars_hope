@@ -9,7 +9,7 @@ using UnityEngine;
 namespace CindarsHope.UI.Crafting
 {
     [DisallowMultipleComponent]
-    public sealed class CraftingModal : MonoBehaviour
+    public sealed class CraftingModal : MonoBehaviour, ICraftingStationModal
     {
         [SerializeField] private CraftingRuntime _runtime;
         [SerializeField] private ModalManager _modalManager;
@@ -177,7 +177,7 @@ namespace CindarsHope.UI.Crafting
                 return;
             }
 
-            MenuGuiStyle.Apply();
+            CindarsHope.Core.MenuGuiStyle.Apply();
             var rect = new Rect((Screen.width - 620f) * 0.5f, (Screen.height - 430f) * 0.5f, 620f, 430f);
             GUILayout.BeginArea(rect, GUI.skin.window);
             GUILayout.Label($"Crafting - {_station.StationType} ({_station.StationInstanceId})");

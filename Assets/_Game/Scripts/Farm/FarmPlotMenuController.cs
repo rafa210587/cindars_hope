@@ -89,7 +89,7 @@ namespace CindarsHope.Farm
                 return;
             }
 
-            CindarsHope.UI.MenuGuiStyle.Apply();
+            CindarsHope.Core.MenuGuiStyle.Apply();
             var screenPosition = _owner.GetMenuScreenPositionInternal();
             var width = 260f;
             var height = Mathf.Clamp(70f + _menuActions.Count * 26f, 90f, 260f);

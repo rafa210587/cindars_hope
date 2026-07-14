@@ -1,3 +1,4 @@
+using CindarsHope.Foundation;
 using UnityEngine;
 
 namespace CindarsHope.NPC
@@ -8,7 +9,7 @@ namespace CindarsHope.NPC
     /// a porta abre sozinha quando um morador se aproxima, mas o jogador continua abrindo com E.
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class NpcDweller : MonoBehaviour
+    public sealed class NpcDweller : MonoBehaviour, INpcDoorTraveler
     {
         [SerializeField] private string _npcId;
 
