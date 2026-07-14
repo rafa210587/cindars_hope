@@ -1,7 +1,7 @@
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
+using CindarsHope.Foundation;
 using CindarsHope.Interaction;
-using CindarsHope.NPC;
 using UnityEngine;
 
 namespace CindarsHope.Quests.Runtime
@@ -71,10 +71,8 @@ namespace CindarsHope.Quests.Runtime
                 return _npcId;
             }
 
-            var npcController = GetComponent<NpcController>();
-            return npcController != null && npcController.NpcData != null
-                ? npcController.NpcData.NpcId
-                : string.Empty;
+            var npcIdentity = GetComponent<INpcIdentity>();
+            return npcIdentity != null ? npcIdentity.NpcId : string.Empty;
         }
 
         private string[] ResolveOfferedQuestIds()

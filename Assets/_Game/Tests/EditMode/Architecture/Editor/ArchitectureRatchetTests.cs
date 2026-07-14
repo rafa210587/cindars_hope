@@ -243,7 +243,10 @@ namespace CindarsHope.Tests.EditMode.Architecture
                 "SceneId.cs",
                 // arch: quebra do par Equipment|Player (2026-07-14) — Equipment aplica o reparo efetivo
                 // via porta neutra em vez de nomear PlayerVitalsApplier/DerivedFollowupFormulas.
-                "RepairEfficiencyProvider.cs"
+                "RepairEfficiencyProvider.cs",
+                // arch: quebra da direcao Quests->NPC (2026-07-14) — QuestGiverInteractable resolve o
+                // id do NPC dono via porta pura (string apenas) em vez de nomear CindarsHope.NPC.
+                "INpcIdentity.cs"
             };
             Assert.That(
                 sourceFiles.Select(Path.GetFileName),

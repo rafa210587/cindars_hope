@@ -84,6 +84,9 @@ namespace CindarsHope.NPC.Gifting
             if (result.ReactionPublished)
             {
                 GameEventBus.Publish(new NpcGiftReactionEvent(npcId, itemId, result.Taste, result.AppliedDelta));
+                // arch: quebra da direcao Quests->NPC (2026-07-14) — versao minima (so o NpcId) do
+                // mesmo fato, para consumidores fora de NPC (ex.: FestivalQuestService).
+                GameEventBus.Publish(new NpcGiftAcceptedEvent(npcId));
             }
 
             return result;

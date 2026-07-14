@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
-using CindarsHope.NPC.Events;
-using CindarsHope.NPC.Friendship;
 using CindarsHope.Quests.Runtime;
 using CindarsHope.Quests.Save;
 
@@ -218,7 +216,7 @@ namespace CindarsHope.Quests.FestivalQuests
             if (_subscribed) return;
             GameEventBus.Subscribe<FestivalStartedEvent>(HandleFestivalStarted);
             GameEventBus.Subscribe<DayStartedEvent>(HandleDayStarted);
-            GameEventBus.Subscribe<NpcGiftReactionEvent>(HandleGiftReaction);
+            GameEventBus.Subscribe<NpcGiftAcceptedEvent>(HandleGiftReaction);
             _subscribed = true;
         }
 
@@ -227,7 +225,7 @@ namespace CindarsHope.Quests.FestivalQuests
             if (!_subscribed) return;
             GameEventBus.Unsubscribe<FestivalStartedEvent>(HandleFestivalStarted);
             GameEventBus.Unsubscribe<DayStartedEvent>(HandleDayStarted);
-            GameEventBus.Unsubscribe<NpcGiftReactionEvent>(HandleGiftReaction);
+            GameEventBus.Unsubscribe<NpcGiftAcceptedEvent>(HandleGiftReaction);
             _subscribed = false;
         }
 
@@ -247,7 +245,7 @@ namespace CindarsHope.Quests.FestivalQuests
             ExpireForDay(evt.DayNumber, stillActive);
         }
 
-        private void HandleGiftReaction(NpcGiftReactionEvent evt)
+        private void HandleGiftReaction(NpcGiftAcceptedEvent evt)
         {
             RegisterGift(evt.NpcId);
         }

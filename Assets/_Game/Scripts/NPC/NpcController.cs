@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
+using CindarsHope.Foundation;
 using CindarsHope.Interaction;
 using CindarsHope.NPC.Events;
 using CindarsHope.NPC.Schedule;
@@ -15,7 +16,7 @@ using QuestGiverInteractionMode = CindarsHope.Core.Events.QuestGiverInteractionM
 namespace CindarsHope.NPC
 {
     [DisallowMultipleComponent]
-    public class NpcController : MonoBehaviour, IInteractable
+    public class NpcController : MonoBehaviour, IInteractable, INpcIdentity
     {
         private const string ThalindraNpcId = "npc_thalindra";
         private const string FirstSuppliesQuestId = "quest_first_supplies_for_cindar";
@@ -47,6 +48,9 @@ namespace CindarsHope.NPC
                 ? NpcScheduleAvailabilityGate.UnavailablePrompt(_npcData)
                 : $"Conversar com {_npcData?.DisplayName ?? "NPC"}";
         public NpcDataSO NpcData => _npcData;
+
+        /// <summary>INpcIdentity (Foundation) — id do NPC, sem expor o tipo concreto a chamadores externos.</summary>
+        public string NpcId => _npcData != null ? _npcData.NpcId : string.Empty;
         public bool HasMet => _hasMet;
 
         private bool IsUnavailableBySchedule() =>
