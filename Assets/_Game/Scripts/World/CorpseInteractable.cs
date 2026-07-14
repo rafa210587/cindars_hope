@@ -2,7 +2,6 @@ using CindarsHope.Core;
 using CindarsHope.Core.Events;
 using CindarsHope.Interaction;
 using CindarsHope.Player.Death;
-using CindarsHope.UI.Death;
 using UnityEngine;
 
 namespace CindarsHope.World
@@ -12,7 +11,7 @@ namespace CindarsHope.World
     public class CorpseInteractable : MonoBehaviour, IInteractable
     {
         [SerializeField] private string _corpseId;
-        [SerializeField] private CorpseRecoveryUIController _uiController;
+        [SerializeField] private MonoBehaviour _uiController;
         private Corpse _corpse;
         private CorpseRecoveryManager _recoveryManager;
 
@@ -40,9 +39,9 @@ namespace CindarsHope.World
             }
 
             // Open recovery modal
-            if (_uiController != null)
+            if (_uiController is ICorpseRecoveryPresenter presenter)
             {
-                _uiController.OpenRecoveryModal(_corpse);
+                presenter.OpenRecoveryModal(_corpse);
             }
             else
             {

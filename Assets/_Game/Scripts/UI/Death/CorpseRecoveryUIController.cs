@@ -3,12 +3,13 @@ using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
 using CindarsHope.Player.Death;
 using CindarsHope.UI.Modal;
+using CindarsHope.World;
 using UnityEngine;
 
 namespace CindarsHope.UI.Death
 {
     [DisallowMultipleComponent]
-    public class CorpseRecoveryUIController : MonoBehaviour
+    public class CorpseRecoveryUIController : MonoBehaviour, ICorpseRecoveryPresenter
     {
         [SerializeField] private CorpseRecoveryModal _recoveryModalPrefab;
         private ModalManager _modalManager;
