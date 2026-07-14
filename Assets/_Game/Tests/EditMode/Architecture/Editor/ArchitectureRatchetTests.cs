@@ -233,7 +233,14 @@ namespace CindarsHope.Tests.EditMode.Architecture
                 "IGoldGainModifierRuntime.cs",
                 // arch: quebra do par Core|Skills (2026-07-14) — GameBootstrap resolve o skill tree
                 // via port puro ISkillTreeRuntime em vez do tipo concreto SkillTreeManager.
-                "ISkillTreeRuntime.cs"
+                "ISkillTreeRuntime.cs",
+                // arch: quebra do par mutuo Player|World (2026-07-14) — SceneNames/SceneId (consts
+                // puras, sem UnityEngine) movidos de CindarsHope.World.Scenes para Foundation, para
+                // que AnyaFountainRespawnFlow (Player) resolva o id da cena/anchor da Fonte sem
+                // nomear CindarsHope.World. SceneTransitionRequest/Router permanecem em World.Scenes;
+                // Player os alcanca via ISceneTransitionRouter (porta em CindarsHope.SceneManagement).
+                "SceneNames.cs",
+                "SceneId.cs"
             };
             Assert.That(
                 sourceFiles.Select(Path.GetFileName),

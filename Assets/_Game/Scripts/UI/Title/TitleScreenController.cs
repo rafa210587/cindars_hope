@@ -3,7 +3,7 @@ using UnityEngine.SceneManagement;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Save;
 using CindarsHope.UI.SystemTab;
-using CindarsHope.World.Scenes;
+using CindarsHope.Foundation;
 
 namespace CindarsHope.UI.Title
 {

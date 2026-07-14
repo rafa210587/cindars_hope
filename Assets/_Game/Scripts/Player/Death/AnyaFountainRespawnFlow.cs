@@ -2,8 +2,8 @@ using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
 using CindarsHope.Core.Respawn;
+using CindarsHope.Foundation;
 using CindarsHope.SceneManagement;
-using CindarsHope.World.Scenes;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -89,18 +89,18 @@ namespace CindarsHope.Player.Death
             _awaitingFountainScene = true;
             Debug.Log($"[AnyaFountainRespawnFlow] Sem Fonte na cena atual; carregando '{FountainSceneName}' para respawn cross-cena.");
 
-            var request = new SceneTransitionRequest(
+            var succeeded = SceneTransitionRouterAdapter.Execute(
                 SceneManager.GetActiveScene().name,
                 FountainSceneName,
                 FountainSpawnAnchorId,
-                RespawnGateId);
+                RespawnGateId,
+                out var reason);
 
-            var result = SceneTransitionRouter.Execute(request);
-            if (!result.Succeeded)
+            if (!succeeded)
             {
                 // O router recusou (ex.: outra transicao em andamento). Anti-softlock: revive no lugar.
                 _awaitingFountainScene = false;
-                Debug.LogWarning($"[AnyaFountainRespawnFlow] Falha ao carregar cena da Fonte: {result.Reason}. Revivendo no lugar (anti-softlock).");
+                Debug.LogWarning($"[AnyaFountainRespawnFlow] Falha ao carregar cena da Fonte: {reason}. Revivendo no lugar (anti-softlock).");
                 ReviveInPlaceFallback();
             }
         }

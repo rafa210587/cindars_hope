@@ -68,7 +68,7 @@ namespace CindarsHope.Editor.Validation
                 "SceneTransitionRouter (WAVE13 — must be used by CaveEntranceInteractable)");
 
             pass &= RequireFile(
-                $"{ScriptRoot}/World/Scenes/SceneId.cs",
+                $"{ScriptRoot}/Foundation/SceneId.cs",
                 "SceneId (WAVE13 stable IDs — used for cave spawn anchor IDs)");
 
             // ----------------------------------------------------------------
