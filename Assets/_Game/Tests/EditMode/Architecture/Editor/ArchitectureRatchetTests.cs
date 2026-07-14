@@ -240,7 +240,10 @@ namespace CindarsHope.Tests.EditMode.Architecture
                 // nomear CindarsHope.World. SceneTransitionRequest/Router permanecem em World.Scenes;
                 // Player os alcanca via ISceneTransitionRouter (porta em CindarsHope.SceneManagement).
                 "SceneNames.cs",
-                "SceneId.cs"
+                "SceneId.cs",
+                // arch: quebra do par Equipment|Player (2026-07-14) — Equipment aplica o reparo efetivo
+                // via porta neutra em vez de nomear PlayerVitalsApplier/DerivedFollowupFormulas.
+                "RepairEfficiencyProvider.cs"
             };
             Assert.That(
                 sourceFiles.Select(Path.GetFileName),

@@ -31,9 +31,6 @@ namespace CindarsHope.Player
         /// <summary>fable_47 (follow-up 2): redução de tempo de craft derivada (F18). Consumida por CraftingRuntime.</summary>
         public static System.Func<float> CraftTimeReductionSource;
 
-        /// <summary>fable_47 (follow-up 2): bônus de eficiência de reparo derivado (F18). Consumido por EquipmentManager.</summary>
-        public static System.Func<float> RepairEfficiencyBonusSource;
-
         private sealed class SkillTreeManagerRef
         {
             public CindarsHope.Skills.SkillTreeManager Manager;
@@ -110,7 +107,12 @@ namespace CindarsHope.Player
 
             // fable_47 (follow-up 2): expõe craft/repair derivados como fontes únicas (padrão F18).
             CraftTimeReductionSource = () => PlayerVitalsApplier.Instance?._lastStats?.CraftTimeReduction ?? 0f;
-            RepairEfficiencyBonusSource = () => PlayerVitalsApplier.Instance?._lastStats?.RepairEfficiencyBonus ?? 0f;
+            // arch: quebra Equipment|Player — Equipment aplica o reparo efetivo via porta neutra
+            // RepairEfficiencyProvider (Foundation); o Player compoe aqui o bonus atual com a formula.
+            CindarsHope.Foundation.RepairEfficiencyProvider.EffectiveRepairAmountSource =
+                baseRestore => DerivedFollowupFormulas.EffectiveRepairAmount(
+                    baseRestore,
+                    PlayerVitalsApplier.Instance?._lastStats?.RepairEfficiencyBonus ?? 0f);
 
             // fable_47 (follow-up 1): MoveSpeed derivado vira fator no composer do player.
             ReapplyDerivedMoveSpeed();

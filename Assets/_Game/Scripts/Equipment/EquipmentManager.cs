@@ -336,9 +336,11 @@ namespace CindarsHope.Equipment
                 return;
 
             // fable_47 (follow-up 2): RepairEfficiencyBonus derivado (F18) aumenta a durabilidade
-            // restaurada por reparo (ponto único). Fórmula linear simples, clampada e testável.
-            var bonus = CindarsHope.Player.PlayerVitalsApplier.RepairEfficiencyBonusSource?.Invoke() ?? 0f;
-            var effectiveRestore = CindarsHope.Player.DerivedFollowupFormulas.EffectiveRepairAmount(restoreAmount, bonus);
+            // restaurada por reparo (ponto único), aplicado via porta neutra RepairEfficiencyProvider
+            // (Foundation) para o Equipment nao nomear o modulo Player. Sem source: usa o valor base.
+            var effectiveRestore =
+                CindarsHope.Foundation.RepairEfficiencyProvider.EffectiveRepairAmountSource?.Invoke(restoreAmount)
+                ?? restoreAmount;
 
             _durabilityTracker.RepairEquipment(itemInstanceId, effectiveRestore);
         }

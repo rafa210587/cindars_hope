@@ -4,7 +4,7 @@ namespace CindarsHope.Economy
 {
     /// <summary>
     /// fable_22 — fachada estática de acesso à forja de têmpera do Brumdar, no padrão de acessor
-    /// único já usado por EquipmentManager (PlayerVitalsApplier.RepairEfficiencyBonusSource) e por
+    /// único já usado por EquipmentManager (RepairEfficiencyProvider.EffectiveRepairAmountSource) e por
     /// <see cref="WeaponInfusionRegistry.Active"/>. Mantém o NpcShopController desacoplado de
     /// QuestFlagService/MainProgression: o gate é um predicado injetado (CA-3), default FECHADO.
     ///
