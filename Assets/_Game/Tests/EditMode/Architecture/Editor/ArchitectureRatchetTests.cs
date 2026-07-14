@@ -230,7 +230,10 @@ namespace CindarsHope.Tests.EditMode.Architecture
                 "IOnboardingHintsRuntime.cs",
                 // arch: quebra da direcao Economy->Equipment (2026-07-12) — Economy aplica bonus
                 // de ouro via port puro, sem referenciar AccessoryEffectRouter concreto.
-                "IGoldGainModifierRuntime.cs"
+                "IGoldGainModifierRuntime.cs",
+                // arch: quebra do par Core|Skills (2026-07-14) — GameBootstrap resolve o skill tree
+                // via port puro ISkillTreeRuntime em vez do tipo concreto SkillTreeManager.
+                "ISkillTreeRuntime.cs"
             };
             Assert.That(
                 sourceFiles.Select(Path.GetFileName),

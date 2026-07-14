@@ -1,13 +1,14 @@
 using System.Collections.Generic;
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
+using CindarsHope.Foundation;
 using CindarsHope.Player.Progression;
 using UnityEngine;
 
 namespace CindarsHope.Skills
 {
     [DisallowMultipleComponent]
-    public class SkillTreeManager : MonoBehaviour
+    public class SkillTreeManager : MonoBehaviour, ISkillTreeRuntime
     {
         // arch: Core|Skills (spec_arch_core_skills_cycle_reduction_v34) — self-registro estatico
         // (molde AudioManager/CraftingManager/ShopManager) para o GameBootstrap parar de segurar
@@ -42,6 +43,15 @@ namespace CindarsHope.Skills
             }
         }
 
+        // arch: Core|Skills followup (spec_arch_core_skills_cycle_reduction_v34_followup) — porta
+        // ISkillTreeRuntime.RebindProgressionManager() sem parametro: resolve o PlayerProgressionManager
+        // ativo internamente (mesmo static Instance que o GameBootstrap ja usava) para o Core parar de
+        // referenciar o tipo concreto SkillTreeManager diretamente.
+        public void RebindProgressionManager()
+        {
+            RebindProgressionManager(PlayerProgressionManager.Instance);
+        }
+
         private void Awake()
         {
             if (Instance != null && Instance != this)
@@ -51,6 +61,7 @@ namespace CindarsHope.Skills
             }
 
             Instance = this;
+            DomainManagerRegistry.Register<ISkillTreeRuntime>(this);
 
             _state = new SkillTreeState();
             BuildCatalog();
@@ -76,6 +87,8 @@ namespace CindarsHope.Skills
             {
                 Instance = null;
             }
+
+            DomainManagerRegistry.Unregister<ISkillTreeRuntime>(this);
         }
 
         private void BuildCatalog()

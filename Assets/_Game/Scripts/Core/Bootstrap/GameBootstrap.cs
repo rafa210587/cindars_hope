@@ -278,23 +278,26 @@ namespace CindarsHope.Core.Bootstrap
                 statusEffectManager.Initialize();
             }
 
-            // arch: Core|Skills (spec_arch_core_skills_cycle_reduction_v34) — SkillTreeManager nao eh
-            // mais passado por aqui; self-registra via static Instance (molde Craft/Economy).
-            var skillTreeManager = CindarsHope.Skills.SkillTreeManager.Instance;
+            // arch: Core|Skills (spec_arch_core_skills_cycle_reduction_v34_followup) — SkillTreeManager
+            // nao eh mais referenciado pelo tipo concreto aqui; resolvido via DomainManagerRegistry
+            // (molde IEquipmentRuntime/ICraftingRuntimeManager) contra a porta ISkillTreeRuntime em
+            // Foundation. O campo _skillTreeManager do SaveManager continua sendo re-setado pelos
+            // *SceneRuntimeReferenceInstaller (Town/Farm/Cave) com o tipo concreto logo em seguida.
+            var skillTreeManager = CindarsHope.Foundation.DomainManagerRegistry.Get<CindarsHope.Foundation.ISkillTreeRuntime>();
             if (skillTreeManager == null)
             {
-                Debug.LogError($"GameBootstrap skill tree wiring missing in scene '{gameObject.scene.name}' on GameObject '{gameObject.name}': SkillTreeManager.Instance.", this);
+                Debug.LogError($"GameBootstrap skill tree wiring missing in scene '{gameObject.scene.name}' on GameObject '{gameObject.name}': ISkillTreeRuntime not registered.", this);
             }
             else
             {
-                skillTreeManager.RebindProgressionManager(progressionManager);
+                skillTreeManager.RebindProgressionManager();
             }
 
             if (_saveManager != null)
             {
                 // arch: Core|Enemy (spec_arch_core_enemy_cycle_reduction_v31) — BestiaryManager nao eh
                 // mais passado por aqui; SaveManager resolve via BestiaryManager.Instance (self-registro).
-                _saveManager.RebindOptionalRuntimeManagers(null, progressionManager, _gameTimeManager, _staminaManager, statusEffectManager, skillTreeManager);
+                _saveManager.RebindOptionalRuntimeManagers(null, progressionManager, _gameTimeManager, _staminaManager, statusEffectManager);
             }
 
             CombatRuntimeInstaller.Install(BuildCombatInstallContext(), this);
