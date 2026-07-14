@@ -17,7 +17,7 @@ namespace CindarsHope.Player.Movement
 
             var go = new GameObject("PlayerMovementActionRuntimeBootstrap");
             go.transform.SetParent(owner);
-            DontDestroyOnLoad(go);
+            if (owner == null) DontDestroyOnLoad(go);
             _instance = go.AddComponent<PlayerMovementActionRuntimeBootstrap>();
         }
 

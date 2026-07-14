@@ -13,7 +13,7 @@ namespace CindarsHope.World.Scenes
 
             var go = new GameObject("SceneFadeOverlay");
             go.transform.SetParent(owner);
-            Object.DontDestroyOnLoad(go);
+            if (owner == null) Object.DontDestroyOnLoad(go);
 
             var canvas = go.AddComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;

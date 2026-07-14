@@ -47,7 +47,7 @@ namespace CindarsHope.Player.Death
 
             var go = new GameObject("AnyaFountainRespawnFlow");
             go.transform.SetParent(owner);
-            DontDestroyOnLoad(go);
+            if (owner == null) DontDestroyOnLoad(go);
             _instance = go.AddComponent<AnyaFountainRespawnFlow>();
         }
 

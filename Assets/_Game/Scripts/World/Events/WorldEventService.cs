@@ -87,7 +87,7 @@ namespace CindarsHope.World.Events
             }
 
             _instance = this;
-            DontDestroyOnLoad(gameObject);
+            if (transform.parent == null) DontDestroyOnLoad(gameObject);
         }
 
         private void OnEnable()

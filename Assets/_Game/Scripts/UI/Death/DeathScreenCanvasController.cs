@@ -71,7 +71,7 @@ namespace CindarsHope.UI.Death
 
             var go = new GameObject("DeathScreenCanvas");
             go.transform.SetParent(owner);
-            DontDestroyOnLoad(go);
+            if (owner == null) DontDestroyOnLoad(go);
             go.AddComponent<DeathScreenCanvasController>();
         }
 

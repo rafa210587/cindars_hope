@@ -146,7 +146,7 @@ namespace CindarsHope.Quests.Runtime
 
             var go = new GameObject("QuestRuntimeBootstrap");
             go.transform.SetParent(owner);
-            DontDestroyOnLoad(go);
+            if (owner == null) DontDestroyOnLoad(go);
             _instance = go.AddComponent<QuestRuntimeBootstrap>();
         }
 

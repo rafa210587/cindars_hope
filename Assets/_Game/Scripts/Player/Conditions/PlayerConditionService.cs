@@ -106,7 +106,7 @@ namespace CindarsHope.Player.Conditions
             }
 
             _instance = this;
-            DontDestroyOnLoad(gameObject);
+            if (transform.parent == null) DontDestroyOnLoad(gameObject);
             EnsureSystem();
         }
 

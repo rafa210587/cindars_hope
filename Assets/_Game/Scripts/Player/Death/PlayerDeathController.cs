@@ -41,7 +41,7 @@ namespace CindarsHope.Player.Death
 
             var go = new GameObject("PlayerDeathController");
             go.transform.SetParent(owner);
-            DontDestroyOnLoad(go);
+            if (owner == null) DontDestroyOnLoad(go);
             _instance = go.AddComponent<PlayerDeathController>();
         }
 

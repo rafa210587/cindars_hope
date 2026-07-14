@@ -41,7 +41,7 @@ namespace CindarsHope.Narrative
             if (_instance != null) return;
             var go = new GameObject("NarrativeRuntimeBootstrap");
             go.transform.SetParent(owner);
-            DontDestroyOnLoad(go);
+            if (owner == null) DontDestroyOnLoad(go);
             _instance = go.AddComponent<NarrativeRuntimeBootstrap>();
         }
 

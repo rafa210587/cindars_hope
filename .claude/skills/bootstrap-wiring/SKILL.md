@@ -1,108 +1,91 @@
 ---
 name: bootstrap-wiring
-description: Faz o wiring de novos managers, databases e services no GameBootstrap com serialized refs e scene repair. Use em qualquer tarefa que adicione um novo manager, database SO ou service que precise de wiring no GameBootstrap.
+description: Faz o wiring de novos runtime services, managers e databases na nova arquitetura de composição (GameRuntimeCompositionRoot + DomainRuntimeInstallers) e o idiom self-healing de SerializeField + fallback Resources.Load para sistemas instanciados por cena (ex.: cadeia visual da cave). Use ao adicionar um serviço/manager/database SO que outros sistemas acessem, ao migrar um *RuntimeBootstrap para installer, ou ao wirar um asset de dados numa cena.
 ---
 
-# Skill: Wiring de Bootstrap
+# Skill: Wiring de Bootstrap / Composição
+
+> **Mudança estrutural (2026-07): o wiring migrou de `GameBootstrap` para uma raiz de composição.**
+> Serviços runtime instalam por `GameRuntimeCompositionRoot` → installers em `DomainRuntimeInstallers.cs`.
+> `GameBootstrap` ainda existe (legado, em migração) — não adicione serviço novo lá; use o padrão abaixo.
 
 ## Quando usar
 
-A tarefa toca em:
-- `GameBootstrap.cs` (adicionar fields ou properties)
-- Instanciação / injeção de manager
-- Referências de ScriptableObject database
-- Scene creators (`FarmSceneCreator`, `TownSceneCreator`, `CaveSceneCreator`)
-- Qualquer novo sistema que outros sistemas acessem via `GameBootstrap.Instance`
+- Adicionar um **runtime service/manager** que outros sistemas acessam (antes ia no GameBootstrap).
+- **Migrar** um `*RuntimeBootstrap` auto-instalado (`RuntimeInitializeOnLoadMethod`/`EnsureInstance`) para o padrão de installer.
+- Wirar um **database/asset SO** consumido por um sistema instanciado por cena (materializer, controller de cena).
+- Scene creators (`CreateMvp*Scene.cs`) que precisam apontar um asset num `[SerializeField]`.
+
+## Quando NÃO usar
+
+- UI/HUD de gameplay → `hud-canvas-binding` / `ui-projection-pattern`.
+- Objeto interativo de cena (crop, chest, resource) → `scene-interactable-wiring`.
+- Save section nova → `save-section-provider`.
 
 ## Leitura mínima
 
-1. `CLAUDE.md`
-2. Spec alvo
-3. `Assets/_Game/Scripts/Core/Bootstrap/GameBootstrap.cs` (estado atual)
+1. `CLAUDE.md` (regra 5 — fronteiras modulares) + spec alvo
+2. `Assets/_Game/Scripts/Composition/GameRuntimeCompositionRoot.cs` (ordem de instalação)
+3. `Assets/_Game/Scripts/Composition/DomainRuntimeInstallers.cs` (installers por domínio)
 
-## Não ler por padrão
+## Arquitetura atual (2 padrões, escolha por tipo de sistema)
 
-```
-All scenes
-All prefabs
-Full architecture docs
-```
+### A) Runtime service (singleton cross-scene) → installer na raiz de composição
 
-## Procedimento
+`GameRuntimeCompositionRoot` (roda `BeforeSceneLoad`, `DontDestroyOnLoad`) instala:
+- em `InstallRuntimeServices()` — serviços **independentes de cena** (combat state, input router, skills, crafting, cave conflito);
+- em `Start()` — serviços **dependentes de cena / AfterSceneLoad** (npc, world, farm, item, player, `CaveSceneRuntimeInstaller`, narrative, quest, audio, presentation).
 
-### Adicionando um novo Database ou Manager ao Bootstrap
+Passos para adicionar um serviço novo:
 
-1. Adicione `[SerializeField] private <TypeSO> _<field>;` depois do field existente relacionado
-2. Adicione `public <TypeSO> <Property> => _<field>;` depois da property existente relacionada
-3. Commit: o field do Inspector ficará null até o wiring ser feito no Unity Editor
-4. Adicione uma nota ao execution report:
-   ```
-   Inspector wiring required: assign <TypeSO>.asset in GameBootstrap inspector
-   ```
+1. No sistema, exponha um `public static void Install(Transform owner)` (idempotente) — substitui o antigo `EnsureInstance()`/`RuntimeInitializeOnLoadMethod`. Ele cria o host (`new GameObject` + `SetParent(owner)`) **ou** anexa componente em objeto existente; owner ignorado quando anexa em algo já presente.
+2. Em `DomainRuntimeInstallers.cs`, chame `SeuSistema.Install(owner)` dentro do installer de domínio apropriado (`CaveSceneRuntimeInstaller`, `WorldRuntimeInstaller`, etc.) — installers são `internal static class` finos, uma linha por sistema.
+3. Se for um domínio novo sem installer, crie um `internal static class SeuDomainRuntimeInstaller` e chame-o no `Start()` ou `InstallRuntimeServices()` do `GameRuntimeCompositionRoot`, na posição correta de ordem.
+4. **Não** reintroduza `RuntimeInitializeOnLoadMethod` de auto-bootstrap (CLAUDE.md rule 5: "não criar novo auto-bootstrap").
 
-### Wiring de Consumer (acesso a partir de um MonoBehaviour)
+### B) Sistema instanciado por CENA (materializer/controller) → SerializeField + fallback Resources ("self-healing")
 
-Padrão preferido:
+Sistemas como a cadeia visual da cave (`CaveRuntimeMaterializer`) são **scene-component**, não serviços. Recebem databases/profiles por `[SerializeField]`. Como o campo pode ficar null numa cena recriada (o scene creator nem sempre wira), o idiom canônico é **resolver com fallback Resources**, deixando o SerializeField como override e o Resources como rede de segurança:
+
 ```csharp
-private void Start()
+[SerializeField] private FooDatabaseSO _fooDatabase;
+
+private FooDatabaseSO ResolveFooDatabase()
 {
-    var bootstrap = GameBootstrap.Instance;
-    _database = bootstrap?.SpecificDatabase;
-    if (_database == null)
-        Debug.LogWarning("Missing database wiring in GameBootstrap", this);
+    if (_fooDatabase != null) return _fooDatabase;
+    var resolved = Resources.Load<FooDatabaseSO>("FooDatabase"); // Assets/_Game/Resources/FooDatabase.asset
+    // log one-shot [Cave][Wiring]: de onde veio (serialized/resources) ou WARNING se null ("rode Inicializar Projeto")
+    return resolved;
 }
 ```
 
-**NUNCA use:**
-```csharp
-// PROHIBITED
-var bootstrap = FindObjectOfType<GameBootstrap>();
-var bootstrap = GameObject.Find("Bootstrap").GetComponent<GameBootstrap>();
-```
+Precedentes reais: `CaveRuntimeMaterializer.ResolveEnvironmentElementDatabase()`, `ResolveBiomeArtProfiles()` (registry via Resources), `EnsureCombatDatabasesBound()`. Para o fallback funcionar, **o gerador de editor materializa o asset em `Assets/_Game/Resources/`** (idempotente, como `GenerateCaveEnvironmentElementProfiles` faz o database e `GenerateCaveBiomeArtProfiles` faz o registry) — registrado como `RunStep` em `Inicializar Projeto` (ver rule `editor-generation-orchestration`).
 
-### Atualizações de Scene Creator
+> Regra prática: se o sistema é um serviço cross-scene → padrão A (installer). Se é componente de cena que lê um asset SO → padrão B (SerializeField + ResolveX via Resources + gerador materializa em Resources). Wirar o mesmo asset no scene creator é opcional/redundante quando o fallback Resources já cobre.
 
-Se um scene creator precisar do novo manager:
-1. Encontre o scene creator da scene relevante
-2. Adicione o lookup depois do resolve do GameBootstrap
-3. Use o repair menu `CindarsHope/Repair and Validate Project` para aplicar
+## Regras invariantes
 
-### Editor Validators
-
-Se um validator precisar checar o novo wiring:
-1. Encontre `CombatDatabaseValidator` ou similar
-2. Adicione null check e `report.AddIssue(...)` para o asset ausente
-3. Use `ValidationSeverity.Warning` para assets ainda não criados (esperado até o wiring no Inspector)
-
-## Regras
-
-- Sem `GameObject.Find()` ou `FindObjectOfType()` — nunca
-- Apenas serialized refs
-- Null-check no consumer com LogWarning claro incluindo contexto de scene/component/field
-- O wiring no Inspector é responsabilidade humana; documente no execution report
+- Sem `GameObject.Find()`/`FindObjectOfType()` — nunca (hook `runtime-code-guard` sinaliza).
+- Consumer com null-check + `LogWarning` claro (scene/component/field/id/como corrigir) — ver skill `observability-and-logging`.
+- Asset de dados só materializado via editor API (`AssetDatabase`), nunca YAML na mão.
+- Novo gerador/materializador de asset não expõe `[MenuItem]` avulso — entra como `RunStep` nos 3 comandos canônicos (rule `editor-generation-orchestration`).
 
 ## Validação
 
-Depois do wiring em C#:
 ```powershell
-dotnet build .\Assembly-CSharp.csproj --no-restore
-dotnet build .\Assembly-CSharp-Editor.csproj --no-restore
+dotnet build .\Assembly-CSharp.csproj        # sem --no-restore se o Temp foi limpo (NETSDK1004 = infra, rode com restore)
+dotnet build .\Assembly-CSharp-Editor.csproj
 ```
-
-Esperado: 0 errors. O novo field começa como null — isso é esperado.
-
-Unity validator (Phase 2, se a spec exigir):
-- `CindarsHope/Validate/Combat/Validate Combat Databases`
-- Vai mostrar warning para assets sem wiring
+As assemblies reais são `CindarsHope.Runtime`/`CindarsHope.Editor` (asmdefs); `Assembly-CSharp` segue como fallback. CS0234 sobre `CindarsHope.Editor.*` com Unity aberto = csproj transiente (rebuilde 1x — ver memória `unity-open-csproj-transient-build-errors`).
 
 ## Regressões comuns
 
-- Usar `FindObjectOfType<GameBootstrap>()` no consumer
-- Adicionar o field mas esquecer de adicionar a property
-- Não documentar o requisito de wiring no Inspector
-- Adicionar ao scene creator errado
+- Adicionar auto-bootstrap novo (`RuntimeInitializeOnLoadMethod`) em vez de installer.
+- SerializeField de asset sem `ResolveX()` de fallback → null na cena recriada → sistema silenciosamente inerte (foi exatamente o bug de `_environmentElementDatabase`/`_ecosystemBalance` da cave).
+- Criar o fallback Resources mas esquecer o gerador materializar o asset em `Assets/_Game/Resources/`.
+- Wirar no scene creator errado; editar `.unity` na mão.
 
 ## Quando parar e reportar
 
-- `GameBootstrap.cs` está fora do escopo da spec → pare, reporte
-- Scene YAML precisaria de edição manual → use o repair menu no lugar
+- A spec proíbe tocar `GameRuntimeCompositionRoot`/`DomainRuntimeInstallers` mas o serviço precisa de instalação → pare, reporte.
+- Scene YAML precisaria de edição manual → materialize o asset em Resources + use o fallback, ou peça regeneração da cena via `Inicializar Projeto`.

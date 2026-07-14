@@ -179,7 +179,7 @@ namespace CindarsHope.Fonte
             }
 
             _instance = this;
-            DontDestroyOnLoad(gameObject);
+            if (transform.parent == null) DontDestroyOnLoad(gameObject);
             RefreshUnlocks();
         }
 

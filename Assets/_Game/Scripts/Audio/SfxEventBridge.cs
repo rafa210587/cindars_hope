@@ -51,7 +51,7 @@ namespace CindarsHope.Audio
 
             var go = new GameObject("SfxEventBridge");
             go.transform.SetParent(owner);
-            DontDestroyOnLoad(go);
+            if (owner == null) DontDestroyOnLoad(go);
             go.AddComponent<SfxEventBridge>();
             Debug.Log("[Music] SfxEventBridge instanciado (driver de musica por cena/combate).");
         }

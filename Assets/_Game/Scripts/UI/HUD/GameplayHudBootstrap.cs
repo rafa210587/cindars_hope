@@ -12,7 +12,7 @@ namespace CindarsHope.UI.HUD
 
             var go = new GameObject(HudGameObjectName);
             go.transform.SetParent(owner);
-            Object.DontDestroyOnLoad(go);
+            if (owner == null) Object.DontDestroyOnLoad(go);
 
             var controller = go.AddComponent<GameplayHudCanvasController>();
             var binder = go.AddComponent<GameplayHudRuntimeBinder>();

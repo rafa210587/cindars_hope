@@ -67,7 +67,7 @@ namespace CindarsHope.Audio
 
             var go = new GameObject("AudioManager");
             go.transform.SetParent(owner);
-            DontDestroyOnLoad(go);
+            if (owner == null) DontDestroyOnLoad(go);
             go.AddComponent<AudioManager>();
         }
 

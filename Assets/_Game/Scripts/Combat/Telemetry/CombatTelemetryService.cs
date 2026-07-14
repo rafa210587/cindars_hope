@@ -306,7 +306,7 @@ namespace CindarsHope.Combat.Telemetry
 
                 var go = new GameObject("CombatTelemetryService");
                 go.transform.SetParent(owner);
-                UnityEngine.Object.DontDestroyOnLoad(go);
+                if (owner == null) UnityEngine.Object.DontDestroyOnLoad(go);
                 go.AddComponent<CombatTelemetryService>();
                 Debug.Log("[CombatTelemetryService.Bootstrap] Servico instanciado via bootstrap (OFF por default, fable_59).");
             }

@@ -47,7 +47,7 @@ namespace CindarsHope.World.Weather
             }
 
             _instance = this;
-            DontDestroyOnLoad(gameObject);
+            if (transform.parent == null) DontDestroyOnLoad(gameObject);
             SetDay(CurrentDay);
         }
 
