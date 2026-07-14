@@ -5,11 +5,18 @@ using CindarsHope.Core.Events;
 using CindarsHope.Foundation;
 using CindarsHope.Foundation.Transactions;
 using CindarsHope.Inventory.Data;
-using CindarsHope.Player.Data;
 using UnityEngine;
 
 namespace CindarsHope.Inventory
 {
+    // arch: contrato neutro para quebrar o par mutuo Inventory|Player (spec_arch_inventory_player_pair_reduction) —
+    // InventoryManager consome isto em vez de CindarsHope.Player.Data.PlayerDataSO diretamente.
+    // PlayerDataSO implementa via interface explicita; nenhum outro consumidor precisa mudar.
+    public interface IStartingItemsSource
+    {
+        System.Collections.Generic.IReadOnlyList<Data.StartingItem> StartingItems { get; }
+    }
+
     [DisallowMultipleComponent]
     public class InventoryManager : MonoBehaviour, IInventoryTransactionPort
     {
@@ -64,7 +71,7 @@ namespace CindarsHope.Inventory
             _itemDatabase = itemDatabase;
         }
 
-        public void InitializeFromStartingItems(PlayerDataSO playerData, ItemDatabaseSO itemDatabase)
+        public void InitializeFromStartingItems(IStartingItemsSource playerData, ItemDatabaseSO itemDatabase)
         {
             Initialize(itemDatabase);
             CindarsHope.DebugTools.CombatLog.Log("CombatLog: StarterInventoryCheckStarted.", this);
@@ -81,7 +88,7 @@ namespace CindarsHope.Inventory
                 return;
             }
 
-            if (playerData.StartingItems == null || playerData.StartingItems.Length == 0)
+            if (playerData.StartingItems == null || playerData.StartingItems.Count == 0)
             {
                 Debug.LogWarning("CombatLog: StarterInventoryApplied=False. Reason=StartingItemsEmpty.", this);
                 return;
@@ -91,7 +98,7 @@ namespace CindarsHope.Inventory
             EnsureStarterItemsPresent(playerData, itemDatabase, reason);
         }
 
-        public void EnsureStarterItemsPresent(PlayerDataSO playerData, ItemDatabaseSO itemDatabase, string reason)
+        public void EnsureStarterItemsPresent(IStartingItemsSource playerData, ItemDatabaseSO itemDatabase, string reason)
         {
             Initialize(itemDatabase);
             CindarsHope.DebugTools.CombatLog.Log($"CombatLog: StarterInventoryCheckStarted. Reason={reason}.", this);
@@ -108,7 +115,7 @@ namespace CindarsHope.Inventory
                 return;
             }
 
-            if (playerData.StartingItems == null || playerData.StartingItems.Length == 0)
+            if (playerData.StartingItems == null || playerData.StartingItems.Count == 0)
             {
                 Debug.LogWarning($"CombatLog: StarterInventoryApplied=False. Reason={reason}. StarterInventoryReason=StartingItemsEmpty.", this);
                 return;

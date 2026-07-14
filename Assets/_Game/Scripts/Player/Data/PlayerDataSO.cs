@@ -1,10 +1,12 @@
+using System.Collections.Generic;
+using CindarsHope.Inventory;
 using CindarsHope.Inventory.Data;
 using UnityEngine;
 
 namespace CindarsHope.Player.Data
 {
     [CreateAssetMenu(fileName = "PlayerData", menuName = "CindarsHope/Data/Player")]
-    public class PlayerDataSO : ScriptableObject
+    public class PlayerDataSO : ScriptableObject, IStartingItemsSource
     {
         public float MoveSpeed = 5f;
         public int BaseHP = 100;
@@ -15,6 +17,10 @@ namespace CindarsHope.Player.Data
         public int HungerLossPerTick = 1;
         public int HungerLossPerDay = 10;
         public StartingItem[] StartingItems;
+
+        // arch: quebra do ciclo mutuo Inventory|Player (spec_arch_inventory_player_pair_reduction) —
+        // InventoryManager consome apenas este contrato neutro, nunca CindarsHope.Player.Data direto.
+        IReadOnlyList<StartingItem> IStartingItemsSource.StartingItems => StartingItems;
 
         private void OnValidate()
         {
@@ -38,7 +44,12 @@ namespace CindarsHope.Player.Data
             }
         }
     }
+}
 
+namespace CindarsHope.Inventory.Data
+{
+    // arch: movido de CindarsHope.Player.Data para quebrar o par mutuo Inventory|Player —
+    // struct de valor, layout de campos inalterado, sem impacto no YAML serializado do PlayerDataSO.
     [System.Serializable]
     public struct StartingItem
     {
