@@ -82,6 +82,18 @@ namespace CindarsHope.Enemy
             { "enemy_icebound_sentinel",          "gen_sentinel" },
             { "enemy_cold_cult_acolyte",          "coldcult_preacher" },
             { "enemy_duergar_frostdelver",        "gen_duergar" },
+            // --- Batch 2b (enemyId homonimo; cada slug e o primario da skin binding -> anim casa
+            //     com o skin estatico). gen_moth/gen_vine_lasher NAO wirados: sao skins de variancia
+            //     sem enemyId proprio (ver memoria project-enemy-anim-batch1). ---
+            { "enemy_construct_sentry",           "construct_sentry" },
+            { "enemy_corrupted_orc_champion",     "corrupted_orc_champion" },
+            { "enemy_corrupted_vine_horror",      "corrupted_vine_horror" },
+            { "enemy_cultist_zealot",             "cultist_zealot" },
+            { "enemy_frost_wisp",                 "frost_wisp" },
+            { "enemy_frostbound_revenant",        "frostbound_revenant" },
+            { "enemy_gnome_tinkerer",             "gnome_tinkerer" },
+            { "enemy_goblin_shaman",              "goblin_shaman" },
+            { "enemy_rimelock_colossus",          "rimelock_colossus" },
         };
 
         // Slugs cujo corpo NAO tem pose parada (voadores/flutuadores): o ciclo de "walk" e na verdade
@@ -93,6 +105,8 @@ namespace CindarsHope.Enemy
             "fungal_spreader",  // agua-viva/blackroot: ondula flutuando no lugar
             "gloom_moth",       // mariposa (batch2): bate asa pairando
             "gen_root_snare",   // planta ancorada (batch2): ondula no lugar
+            "frost_wisp",       // wisp de gelo (batch2b): flutua/pulsa sempre
+            "corrupted_vine_horror", // horror de vinha ancorado (batch2b): ondula no lugar
         };
 
         // slug -> (clip de ataque NORMAL, clip de ataque ESPECIAL). Reuso quando especial = overlay
@@ -120,6 +134,16 @@ namespace CindarsHope.Enemy
             { "gen_sentinel",         ("atk_thrust", "atk_thrust") }, // estocada / Prisao de Gelo (Root)
             { "coldcult_preacher",    ("atk_cast",   "atk_buff") },   // raio de frio / Prece do Frio
             { "gen_duergar",          ("atk_cleave", "atk_buff") },   // martelo / Crescer da Pedra
+            // --- Batch 2b (kit = arquivo raw real das folhas geradas 2026-07-07) ---
+            { "construct_sentry",       ("atk_slam",   "atk_cast") },
+            { "corrupted_orc_champion", ("atk_cleave", "atk_slam") },
+            { "corrupted_vine_horror",  ("atk_whip",   "atk_whip") },  // ancorada, 1 ataque
+            { "cultist_zealot",         ("atk_cast",   "atk_buff") },
+            { "frost_wisp",             ("atk_cast",   "atk_nova") },
+            { "frostbound_revenant",    ("atk_cleave", "atk_rise") },
+            { "gnome_tinkerer",         ("atk_throw",  "atk_summon") },
+            { "goblin_shaman",          ("atk_cast",   "atk_buff") },
+            { "rimelock_colossus",      ("atk_slam",   "atk_summon") },
         };
 
         // Fracao da ALTURA da celula que o personagem realmente ocupa. As celulas normalizadas
