@@ -22,6 +22,19 @@ namespace CindarsHope.Cave.Ecosystem
         WallHug = 1,
 
         /// <summary>Célula de parede cujo vizinho ao sul é andável (borda superior de parede visível) — decor de teto (estalactites).</summary>
-        CeilingHang = 2
+        CeilingHang = 2,
+
+        /// <summary>spec_cave_visual_polish_runtime (CV04): célula de chão aberto (mesma elegibilidade de
+        /// <see cref="FloorCluster"/>) que recebe cascalho/litter miúdo e denso — distinto de FloorCluster
+        /// (props grandes, esparsos, em clusters). Nunca persistido/planejado pelo
+        /// CaveEnvironmentElementPlanner: recalculado a cada materialização a partir do
+        /// CaveTileMaterializer, puramente de apresentação (mesmo espírito do overlay de borda de parede).</summary>
+        GroundScatter = 3,
+
+        /// <summary>spec_cave_visual_polish_runtime (CV04): célula de PAREDE que encosta em chão em
+        /// QUALQUER direção ortogonal (não só ao sul, ao contrário de <see cref="CeilingHang"/>) — recebe
+        /// musgo/vegetação na base com baixa chance determinística. Também puramente de apresentação, não
+        /// persistido/planejado pelo CaveEnvironmentElementPlanner.</summary>
+        WallSurface = 4
     }
 }

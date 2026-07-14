@@ -187,5 +187,76 @@ namespace CindarsHope.Tests.EditMode.Cave
 
             CollectionAssert.AreEqual(firstRun, secondRun, "CollectCells deve retornar a mesma ordem em execuções repetidas (sem HashSet iteration order leak).");
         }
+
+        // ── spec_cave_visual_polish_runtime (CV04): IsWallSurfaceCell / IsGroundScatterCell ────────
+
+        [Test]
+        public void IsWallSurfaceCell_WallWithWalkableSouth_ReturnsTrue()
+        {
+            var level = BuildRoomLevel();
+
+            Assert.IsTrue(CaveDecorContextClassifier.IsWallSurfaceCell(new Vector2Int(2, 4), level),
+                "Parede com vizinho sul andável deve ser elegível a WallSurface (mesma célula da borda de rocha 'top').");
+        }
+
+        [Test]
+        public void IsWallSurfaceCell_WallWithWalkableEastOrWest_ReturnsTrue()
+        {
+            var level = BuildRoomLevel();
+
+            // (0,2) é parede lateral esquerda da sala; (1,2) é chão a leste dela.
+            Assert.IsTrue(CaveDecorContextClassifier.IsWallSurfaceCell(new Vector2Int(0, 2), level),
+                "Parede com vizinho leste/oeste andável (corredor lateral) também deve ser elegível a WallSurface — diferente de CeilingHang (só olha para o sul).");
+        }
+
+        [Test]
+        public void IsWallSurfaceCell_WallInteriorWithNoWalkableNeighbor_ReturnsFalse()
+        {
+            var level = BuildRoomLevel();
+
+            Assert.IsFalse(CaveDecorContextClassifier.IsWallSurfaceCell(new Vector2Int(0, 0), level),
+                "Canto de parede sem nenhum vizinho andável (miolo) nunca deve ser elegível a WallSurface.");
+        }
+
+        [Test]
+        public void IsWallSurfaceCell_WalkableCell_ReturnsFalse()
+        {
+            var level = BuildRoomLevel();
+
+            Assert.IsFalse(CaveDecorContextClassifier.IsWallSurfaceCell(new Vector2Int(2, 2), level),
+                "Célula andável nunca é WallSurface (WallSurface é exclusivo de WallTiles).");
+        }
+
+        [Test]
+        public void IsWallSurfaceCell_NullLevel_ReturnsFalse_DoesNotThrow()
+        {
+            var result = true;
+            Assert.DoesNotThrow(() => result = CaveDecorContextClassifier.IsWallSurfaceCell(Vector2Int.zero, null));
+            Assert.IsFalse(result);
+        }
+
+        [Test]
+        public void IsGroundScatterCell_MirrorsFloorClusterClassification()
+        {
+            var level = BuildRoomLevel();
+
+            foreach (var cell in AllCellsInLevel(level))
+            {
+                var expected = CaveDecorContextClassifier.Classify(cell, level) == CaveDecorPlacementContext.FloorCluster;
+                Assert.AreEqual(expected, CaveDecorContextClassifier.IsGroundScatterCell(cell, level),
+                    $"IsGroundScatterCell({cell}) deve ser exatamente igual a Classify(...) == FloorCluster (GroundScatter reusa a elegibilidade de FloorCluster).");
+            }
+        }
+
+        private static System.Collections.Generic.IEnumerable<Vector2Int> AllCellsInLevel(CaveGeneratedLevel level)
+        {
+            for (var x = 0; x < level.Width; x++)
+            {
+                for (var y = 0; y < level.Height; y++)
+                {
+                    yield return new Vector2Int(x, y);
+                }
+            }
+        }
     }
 }

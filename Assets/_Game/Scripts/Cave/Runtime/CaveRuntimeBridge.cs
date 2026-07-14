@@ -45,7 +45,7 @@ namespace CindarsHope.Cave.Runtime
 
             var go = new GameObject(GameObjectName);
             go.transform.SetParent(owner);
-            DontDestroyOnLoad(go);
+            if (owner == null) DontDestroyOnLoad(go);
             _instance = go.AddComponent<CaveRuntimeBridge>();
         }
 

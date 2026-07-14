@@ -48,6 +48,17 @@ namespace CindarsHope.Cave.Data
                  "CeilingHang/WallHug nem no total garantido (EnsureGuaranteedPresence).")]
         [SerializeField, Range(0.1f, 1f)] private float _floorClusterDensityMultiplier = 0.5f;
 
+        [Header("Polimento visual (spec_cave_visual_polish_runtime, CV04)")]
+        [Tooltip("Fração de células de chão aberto (FloorCluster-elegíveis) que recebem UMA peça de " +
+                 "cascalho/litter miúdo (CaveBiomeArtProfileSO.GroundScatterSprites). Denso por design — " +
+                 "distinto da densidade de FloorCluster (props grandes, esparsos). Puramente visual, " +
+                 "recomputado a cada materialização (não persiste no snapshot).")]
+        [SerializeField, Range(0f, 1f)] private float _groundScatterDensity = 0.35f;
+        [Tooltip("Chance determinística (por célula de parede que encosta em chão) de receber musgo/" +
+                 "vegetação de base (CaveBiomeArtProfileSO.WallSurfaceSprites). Baixa por design — só " +
+                 "algumas células de parede devem ter musgo, não todas.")]
+        [SerializeField, Range(0f, 1f)] private float _wallSurfaceChance = 0.12f;
+
         [Header("Entrada segura")]
         [SerializeField, Min(0f)] private float _safeEntryRadius = 4f;
 
@@ -80,6 +91,14 @@ namespace CindarsHope.Cave.Data
         /// singleton por célula" colocaria, compensado pelo cluster (cada semente vira 2-4 elementos).</summary>
         public float FloorClusterDensityMultiplier => Mathf.Clamp(_floorClusterDensityMultiplier <= 0f ? 0.5f : _floorClusterDensityMultiplier, 0.1f, 1f);
 
+        /// <summary>spec_cave_visual_polish_runtime (CV04): fração de células GroundScatter-elegíveis
+        /// (chão aberto, FloorCluster) que recebem 1 peça de litter. Default 0.35 (denso).</summary>
+        public float GroundScatterDensity => Mathf.Clamp01(_groundScatterDensity);
+
+        /// <summary>spec_cave_visual_polish_runtime (CV04): chance por célula de parede-encosta-chão de
+        /// receber decor de musgo/vegetação na base. Default 0.12 (baixa).</summary>
+        public float WallSurfaceChance => Mathf.Clamp01(_wallSurfaceChance);
+
         private static int ReadBand(int[] source, int bandIndex, int fallback)
         {
             if (source == null || source.Length == 0)
@@ -110,6 +129,8 @@ namespace CindarsHope.Cave.Data
             _enemyDensityHardCap = Mathf.Max(1, _enemyDensityHardCap);
             _safeEntryRadius = Mathf.Max(0f, _safeEntryRadius);
             _floorClusterDensityMultiplier = Mathf.Clamp(_floorClusterDensityMultiplier, 0.1f, 1f);
+            _groundScatterDensity = Mathf.Clamp01(_groundScatterDensity);
+            _wallSurfaceChance = Mathf.Clamp01(_wallSurfaceChance);
         }
     }
 }

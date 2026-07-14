@@ -518,3 +518,11 @@ SPEC_EXECUTION_ORDER.md - aguarda autorizacao humana explicita para execucao.
 
 CV02 e Parallelizable: NO (mesmo lock scope da fable_78 e de Cave/**; nunca rodar as duas juntas).
 Nao promovida a SPEC_EXECUTION_ORDER.md - aguarda autorizacao humana.
+
+### Lote CAVE_VISUALS - polimento p/ keyart (gerado 2026-07-10)
+
+| # | Spec | Fecha |
+|---|---|---|
+| CV04 | `spec_cave_visual_polish_runtime.md` | Aproxima a cave da keyart sem trocar o gerador: borda de rocha arredondada (overlay determinístico das wall_edge_*), cascalho denso no chão (scatter das litter_*), musgo/vegetação nas bases de parede, e luz FAKE (vinheta + feixe light_shaft). Toda a arte já no disco. Luz dinâmica real (URP 2D) e stamps de sala-heroi ficam de fora. |
+
+CV04 e Parallelizable: NO (lock Cave/**). Aguarda autorizacao humana.

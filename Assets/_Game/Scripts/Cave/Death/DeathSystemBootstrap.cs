@@ -40,7 +40,7 @@ namespace CindarsHope.Cave.Death
 
             var go = new GameObject("DeathSystemBootstrap");
             go.transform.SetParent(owner);
-            DontDestroyOnLoad(go);
+            if (owner == null) DontDestroyOnLoad(go);
             _instance = go.AddComponent<DeathSystemBootstrap>();
         }
 

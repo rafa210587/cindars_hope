@@ -94,6 +94,14 @@ namespace CindarsHope.Cave.Runtime
         private IReadOnlyList<SerializedEnvironmentElement> _snapshotEnvironmentElements;
         private readonly List<SerializedEnvironmentElement> _lastEnvironmentElements = new List<SerializedEnvironmentElement>();
         private bool _lastHasWater;
+        // Bugfix 2026-07-10 (mesmo padrão de ResolveEnvironmentElementDatabase/ResolveBiomeArtProfiles):
+        // CaveScene recriada serializa _ecosystemBalance como fileID: 0 (asset vive em Assets/_Game/Data,
+        // fora de Resources) -> conflito inter-monstro, wounded, threat budget e o
+        // FloorClusterDensityMultiplier da CV03 caem em defaults hardcoded, em silêncio. Resolvido 1x por
+        // sessão em EnsureCollaborators() e cacheado aqui; serialized field continua sendo a fonte de
+        // verdade quando preenchido, Resources é só o fallback.
+        private CaveEcosystemBalanceSO _resolvedEcosystemBalance;
+        private bool _ecosystemBalanceResolveAttempted;
 
         // Colaboradores — instanciados lazy via EnsureCollaborators().
         private CaveTileMaterializer _tileMaterializer;
@@ -126,7 +134,16 @@ namespace CindarsHope.Cave.Runtime
         public IReadOnlyList<SerializedEnvironmentElement> LastEnvironmentElements => _lastEnvironmentElements;
         public bool LastHasWater => _lastHasWater;
         // fable_78 (SLICE 4): balance do ecossistema (para o controller rolar o conflito por entrada).
-        public CaveEcosystemBalanceSO EcosystemBalance => _ecosystemBalance;
+        // Bugfix 2026-07-10: garante resolução (serialized field ou Resources fallback) mesmo se
+        // chamado antes de qualquer Materialize() nesta sessão (mesmo padrão de BiomeArtResolver).
+        public CaveEcosystemBalanceSO EcosystemBalance
+        {
+            get
+            {
+                EnsureCollaborators();
+                return _resolvedEcosystemBalance;
+            }
+        }
 
         public void Materialize(CaveGeneratedLevel generatedLevel, CaveSpawnAnchor spawnAnchor = CaveSpawnAnchor.Entrance)
         {
@@ -149,7 +166,8 @@ namespace CindarsHope.Cave.Runtime
         // fable_78 (SLICE 4): aplica um plano de conflito inter-monstro às instâncias JÁ materializadas.
         public void ApplyConflict(CaveEcosystemConflictPlan conflictPlan, int caveLevel)
         {
-            if (conflictPlan == null || !conflictPlan.ConflictActive || _ecosystemBalance == null)
+            EnsureCollaborators();
+            if (conflictPlan == null || !conflictPlan.ConflictActive || _resolvedEcosystemBalance == null)
             {
                 return;
             }
@@ -228,7 +246,7 @@ namespace CindarsHope.Cave.Runtime
                 var brain = health.GetComponent<EnemyBrain>();
                 if (brain != null)
                 {
-                    brain.ConfigureConflict(combatant, _ecosystemBalance);
+                    brain.ConfigureConflict(combatant, _resolvedEcosystemBalance);
                 }
             }
         }
@@ -270,6 +288,14 @@ namespace CindarsHope.Cave.Runtime
 
         private void EnsureCollaborators()
         {
+            // Bugfix 2026-07-10: resolvido antes dos demais colaboradores (que o recebem no
+            // construtor) — mesmo motivo do biome art profile ser resolvido primeiro. Só tenta 1x por
+            // sessão (mesmo se retornar null) para não repetir carregamento de asset a cada materialização.
+            if (!_ecosystemBalanceResolveAttempted)
+            {
+                _ecosystemBalanceResolveAttempted = true;
+                _resolvedEcosystemBalance = ResolveEcosystemBalance();
+            }
             // spec_cave_biome_art_profiles_runtime (CV01): resolvido primeiro — hazard/trap
             // materializers o recebem no construtor.
             _biomeArtResolver ??= new CaveBiomeArtResolver(ResolveBiomeArtProfiles());
@@ -296,7 +322,7 @@ namespace CindarsHope.Cave.Runtime
                 _telegraphDatabase,
                 _vulnerabilityProfileDatabase,
                 _sizeProfileDatabase,
-                _ecosystemBalance,
+                _resolvedEcosystemBalance,
                 _caveRunManager,
                 _playerTransform,
                 _maxEnemiesPerLevel);
@@ -312,7 +338,7 @@ namespace CindarsHope.Cave.Runtime
                 _biomeArtResolver);
             _environmentElementMaterializer ??= new CaveEnvironmentElementMaterializer(
                 ResolveEnvironmentElementDatabase(),
-                _ecosystemBalance,
+                _resolvedEcosystemBalance,
                 _decorElementPrefab,
                 _waterTilePrefab,
                 _resourceNodePrefab,
@@ -431,6 +457,55 @@ namespace CindarsHope.Cave.Runtime
                 this);
         }
 
+        // Bugfix 2026-07-10 (mesmo padrão de ResolveEnvironmentElementDatabase/ResolveBiomeArtProfiles):
+        // guard one-shot por instância para o wiring-status do CaveEcosystemBalanceSO.
+        private bool _ecosystemBalanceWiringLogged;
+
+        // Bugfix 2026-07-10/12: CaveScene recriada pode serializar _ecosystemBalance como fileID: 0.
+        // A fonte correta é o campo serializado preenchido pelo gerador de cena. Para cenas antigas ainda
+        // sem wiring, cria uma instância default em memória em vez de adicionar novo carregamento direto neste
+        // materializer, mantendo o ratchet arquitetural sem aumentar debt de runtime loading.
+        private CaveEcosystemBalanceSO ResolveEcosystemBalance()
+        {
+            if (_ecosystemBalance != null)
+            {
+                LogEcosystemBalanceWiringStatusOnce("serialized field");
+                return _ecosystemBalance;
+            }
+
+            var fallback = ScriptableObject.CreateInstance<CaveEcosystemBalanceSO>();
+            fallback.name = "CaveEcosystemBalance_RuntimeDefaultFallback";
+            LogEcosystemBalanceWiringStatusOnce(null);
+            return fallback;
+        }
+
+        private void LogEcosystemBalanceWiringStatusOnce(string source)
+        {
+            if (_ecosystemBalanceWiringLogged)
+            {
+                return;
+            }
+
+            _ecosystemBalanceWiringLogged = true;
+
+            if (source != null)
+            {
+                CombatLog.Log(
+                    $"[Cave] CaveRuntimeMaterializer: ecosystem balance resolved from {source}.",
+                    this);
+                return;
+            }
+
+            Debug.LogWarning(
+                "[Cave][Wiring] CaveRuntimeMaterializer: CaveEcosystemBalanceSO nao resolvido " +
+                "(serialized field ausente). " +
+                $"Scene='{gameObject.scene.name}', go='{name}', field='_ecosystemBalance'. " +
+                "Fallback ativo: instancia default em memoria de CaveEcosystemBalanceSO. Corrija rodando " +
+                "CindarsHope/Inicializar Projeto para preencher o campo _ecosystemBalance no Inspector " +
+                "desta CaveScene.",
+                this);
+        }
+
         /// <summary>spec_cave_biome_art_profiles_runtime (CV01): resolver puro banda->arte, exposto
         /// para o CaveLevelRuntimeController (evento) e para os materializers (fallback-first).</summary>
         public CaveBiomeArtResolver BiomeArtResolver
@@ -524,8 +599,14 @@ namespace CindarsHope.Cave.Runtime
             // ORDEM SAGRADA — cave-stable-run / ADR-0005. Não altere a sequência.
             var worldSeedForArt = _caveRunManager != null ? _caveRunManager.CaveWorldSeed : string.Empty;
             var runSeedForArt = _caveRunManager != null ? _caveRunManager.CaveRunSeed : string.Empty;
-            _tileMaterializer.MaterializeFloor(generatedLevel, _generatedRuntimeRoot.transform, _floorTilePrefab, _materializedObjects, _lastMaterializationResult, _biomeArtResolver, worldSeedForArt, runSeedForArt);
-            _tileMaterializer.MaterializeWalls(generatedLevel, _generatedRuntimeRoot.transform, _wallTilePrefab, _materializedObjects, _lastMaterializationResult, _biomeArtResolver);
+            _tileMaterializer.MaterializeFloor(generatedLevel, _generatedRuntimeRoot.transform, _floorTilePrefab, _materializedObjects, _lastMaterializationResult, _biomeArtResolver, worldSeedForArt, runSeedForArt, _resolvedEcosystemBalance);
+            _tileMaterializer.MaterializeWalls(generatedLevel, _generatedRuntimeRoot.transform, _wallTilePrefab, _materializedObjects, _lastMaterializationResult, _biomeArtResolver, worldSeedForArt, runSeedForArt, _resolvedEcosystemBalance);
+
+            // spec_cave_visual_polish_runtime (CV04), T005: mood de luz FAKE (vinheta + feixe perto da
+            // entrada) — estático, sem custo por-frame, puramente de apresentação (não influencia
+            // layout/spawn/loot/snapshot). Roda logo após terreno para já aparecer sob decor/inimigos.
+            var bandIdForVignette = CaveBiomeArtDebug.ResolveBandForArt(CaveBandScaling.BandForLevel(generatedLevel.CaveLevel));
+            CaveVignetteController.ApplyVignetteAndLightShaft(generatedLevel, _generatedRuntimeRoot.transform, _biomeArtResolver, bandIdForVignette, _materializedObjects);
 
             _exitMaterializer.Materialize(
                 generatedLevel,

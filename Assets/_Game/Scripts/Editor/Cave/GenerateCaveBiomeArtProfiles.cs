@@ -129,6 +129,10 @@ namespace CindarsHope.Editor.Cave
 
             var floorA = LoadSpriteIfExists($"{folder}/floor_a.png");
             var floorB = LoadSpriteIfExists($"{folder}/floor_b.png");
+            // floor_c (2026-07-10): 3a variante de chao (pedra escura rachada), distinta de floor_a
+            // (cobble claro) e floor_b (terra com cascalho) — ausente na pasta = pulado sem erro,
+            // mesmo padrao null-safe das demais entradas de convencao.
+            var floorC = LoadSpriteIfExists($"{folder}/floor_c.png");
             var floorDetail = LoadSpriteIfExists($"{folder}/floor_detail.png");
             var wallFace = LoadSpriteIfExists($"{folder}/wall_face.png");
             var wallTop = LoadSpriteIfExists($"{folder}/wall_top.png");
@@ -136,6 +140,7 @@ namespace CindarsHope.Editor.Cave
             var floorTiles = new System.Collections.Generic.List<TileBase>();
             if (floorA != null) floorTiles.Add(GetOrCreateTile(floorA));
             if (floorB != null) floorTiles.Add(GetOrCreateTile(floorB));
+            if (floorC != null) floorTiles.Add(GetOrCreateTile(floorC));
             profile.EditorSetFloorTiles(floorTiles.ToArray());
 
             profile.EditorSetFloorDetailTile(floorDetail != null ? GetOrCreateTile(floorDetail) : null);
@@ -161,6 +166,45 @@ namespace CindarsHope.Editor.Cave
             profile.EditorSetExitSprites(
                 LoadSpriteIfExists($"{folder}/exit_down.png"),
                 LoadSpriteIfExists($"{folder}/exit_up.png"));
+
+            // spec_cave_visual_polish_runtime (CV04): overlay determinístico de borda de rocha — 4
+            // peças em ORDEM FIXA (top/side/cornerA/cornerB). Ausência de qualquer arquivo = null nessa
+            // posição; EditorSetWallEdgeSprites monta o array de 4 mesmo assim (o resolver trata array
+            // com QUALQUER entrada null/tamanho != 4 como "sem overlay", nunca erro).
+            profile.EditorSetWallEdgeSprites(
+                LoadSpriteIfExists($"{folder}/wall_edge_top.png"),
+                LoadSpriteIfExists($"{folder}/wall_edge_side.png"),
+                LoadSpriteIfExists($"{folder}/wall_edge_corner_a.png"),
+                LoadSpriteIfExists($"{folder}/wall_edge_corner_b.png"));
+
+            // spec_cave_visual_polish_runtime (CV04): cascalho/litter denso de chão — pool flat com as
+            // peças litter_* do bioma (convenção de nome fixa, mesma pasta do bioma).
+            // Bugfix 2026-07-10 (Play Mode CV04, BUG 3): litter_bone.png EXCLUÍDO do pool (era 1 de 9
+            // peças, ~11% de todo tile de GroundScatter) — osso lê como bioma Abismo, não Caverna de
+            // Pedra; densidade excessiva no chão do bioma 1. Pool fica com 8 peças (pebbles/rocks/
+            // crack_a/gravel/moss/mushrooms_small/rock_single/crack_b). O arquivo litter_bone.png
+            // continua existindo em disco (não deletado) — só não entra mais neste pool.
+            var groundScatter = new System.Collections.Generic.List<Sprite>();
+            AddIfExists(groundScatter, $"{folder}/litter_pebbles.png");
+            AddIfExists(groundScatter, $"{folder}/litter_rocks.png");
+            AddIfExists(groundScatter, $"{folder}/litter_crack_a.png");
+            AddIfExists(groundScatter, $"{folder}/litter_gravel.png");
+            AddIfExists(groundScatter, $"{folder}/litter_moss.png");
+            AddIfExists(groundScatter, $"{folder}/litter_mushrooms_small.png");
+            AddIfExists(groundScatter, $"{folder}/litter_rock_single.png");
+            AddIfExists(groundScatter, $"{folder}/litter_crack_b.png");
+            profile.EditorSetGroundScatterSprites(groundScatter.ToArray());
+
+            // spec_cave_visual_polish_runtime (CV04): decor de superfície de parede (musgo/vegetação na
+            // base) — subconjunto curado do pool de litter (só as 2 peças temáticas de vegetação),
+            // distinto do pool flat de GroundScatter (que inclui pedras/ossos/rachaduras também).
+            var wallSurface = new System.Collections.Generic.List<Sprite>();
+            AddIfExists(wallSurface, $"{folder}/litter_moss.png");
+            AddIfExists(wallSurface, $"{folder}/litter_mushrooms_small.png");
+            profile.EditorSetWallSurfaceSprites(wallSurface.ToArray());
+
+            // spec_cave_visual_polish_runtime (CV04): feixe de luz fake perto da entrada (1 sprite por bioma).
+            profile.EditorSetLightShaftSprite(LoadSpriteIfExists($"{folder}/light_shaft.png"));
 
             // spec_cave_decor_placement_runtime (CV02): pools de decor ambiental do fable_78, por
             // Kind (DecorNonBlocking/DecorBlocking) — DEPRECATED, mantido só para leitura legada.

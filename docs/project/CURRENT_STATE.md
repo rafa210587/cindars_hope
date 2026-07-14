@@ -504,3 +504,21 @@ PROJECT_LOG + CURRENT_STATE conflict → prefer CURRENT_STATE; report mismatch
 - INFRA (documentado, nao corrigido): run_strict_validation.ps1 reporta UNITY_PROJECT_BUILD_FAILURE
   falso mesmo com build real passando; validators de menu do Unity sem wrapper .ps1 (pendencia humana).
 - FOLLOW-UP: stamps de salas-heroi (tesouro/boss) = proxima spec; aumentar tamanho de nivel = knob futuro.
+
+## 2026-07-10 — CV04 (polimento visual da cave p/ keyart) BUILD_VALIDATED
+
+- 3 variantes de chao DISTINTAS (lajota/terra/pedra-rachada) no pool; 9 sprites de cascalho fatiados;
+  feixe de luz gerado. Tudo em Art/Generated/World/cave/biome_stone_cavern/.
+- CV04 (spec_cave_visual_polish_runtime): borda de rocha arredondada (overlay deterministico das
+  wall_edge_* nas celulas parede-encosta-chao, sem collider), cascalho DENSO no chao (contexto
+  GroundScatter ~35%, derivado por hash no CaveTileMaterializer — NAO persiste no snapshot, logo sem
+  GenerationConfigVersion bump), musgo/vegetacao nas bases de parede (WallSurface), e luz FAKE
+  (CaveVignetteController: vinheta nas bordas + feixe light_shaft perto da entrada). Luz dinamica real
+  (URP 2D) ficou de fora de proposito. Builds das assemblies reais (CindarsHope.Runtime/Editor/Tests)
+  exit 0 verificados pelo orquestrador; 32 EditMode tests novos compilam (NOT RUN — Unity aberto,
+  batchmode bloqueado). Report: docs/validation/spec_cave_visual_polish_execution_report.md.
+- PENDENTE HUMANO: CindarsHope/Inicializar Projeto 1x (popula pools wall_edge/groundScatter/lightShaft
+  no profile) -> Play (desligar [V] debug de colisao). Esperado: parede com contorno arredondado, chao
+  coberto de cascalho, musgo nas paredes, vinheta + feixe de luz.
+- FOLLOW-UP p/ keyart 1:1: stamps de sala-heroi (tesouro/boss) = proxima spec; agua/minerio schema
+  (_waterSprite/_oreSprite); biomas 2-8.

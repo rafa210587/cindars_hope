@@ -11,8 +11,9 @@ namespace CindarsHope.EditorTools.Cave
     /// nenhum número é escrito aqui. Idempotente: se o asset já existe, NÃO sobrescreve (preserva tuning
     /// manual). Best-effort, loga o que fez.
     ///
-    /// DEFERRED_UNITY: o asset gerado deve ser ligado no campo <c>_ecosystemBalance</c> do
-    /// CaveRuntimeMaterializer na CaveScene (sem balance ligado, o roll de conflito é no-op seguro).
+    /// Bugfix 2026-07-12: o fallback de runtime não deve adicionar mais <c>Resources.Load</c> no
+    /// materializer. A cena gerada deve serializar a referência explícita para este asset; cenas antigas
+    /// sem wiring usam fallback default em memória com warning.
     /// </summary>
     public static class GenerateCaveEcosystemBalance
     {
@@ -25,21 +26,24 @@ namespace CindarsHope.EditorTools.Cave
         {
             EnsureCaveFolder();
 
-            var existing = AssetDatabase.LoadAssetAtPath<CaveEcosystemBalanceSO>(AssetPath);
-            if (existing != null)
+            var balance = AssetDatabase.LoadAssetAtPath<CaveEcosystemBalanceSO>(AssetPath);
+            if (balance == null)
+            {
+                balance = ScriptableObject.CreateInstance<CaveEcosystemBalanceSO>();
+                AssetDatabase.CreateAsset(balance, AssetPath);
+                AssetDatabase.SaveAssets();
+                Debug.Log($"[{Tag}] Criado {AssetPath} com defaults da secao 16.1.");
+            }
+            else
             {
                 Debug.Log($"[{Tag}] Asset ja existe em {AssetPath} — preservado (idempotente).");
-                Selection.activeObject = existing;
-                return;
             }
 
-            var balance = ScriptableObject.CreateInstance<CaveEcosystemBalanceSO>();
-            AssetDatabase.CreateAsset(balance, AssetPath);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             Selection.activeObject = balance;
-            Debug.Log($"[{Tag}] Criado {AssetPath} com defaults da secao 16.1. " +
-                      "DEFERRED_UNITY: ligar em CaveRuntimeMaterializer._ecosystemBalance na CaveScene.");
+            Debug.Log($"[{Tag}] Asset pronto em {AssetPath}. Rode CindarsHope/Inicializar Projeto para " +
+                      "serializar esta referência no campo _ecosystemBalance da CaveScene.");
         }
 
         private static void EnsureCaveFolder()

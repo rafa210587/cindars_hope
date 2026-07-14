@@ -58,6 +58,21 @@ namespace CindarsHope.Cave.Art
         [Tooltip("spec_cave_decor_placement_runtime (CV02): pool de sprites para CaveEnvironmentElementKind.DecorBlocking.")]
         [SerializeField] private Sprite[] _decorBlockingSprites = System.Array.Empty<Sprite>();
 
+        [Header("Borda de rocha (spec_cave_visual_polish_runtime, CV04) — overlay determinístico, opcional")]
+        [Tooltip("4 peças em ORDEM FIXA: [0]=top (parede com sul walkable), [1]=side (parede com leste/oeste " +
+                 "walkable, espelhado em X para o lado oeste), [2]=cornerA (sul+leste), [3]=cornerB " +
+                 "(sul+oeste). Array com tamanho != 4 é tratado como ausente (fallback: sem overlay).")]
+        [SerializeField] private Sprite[] _wallEdgeSprites = System.Array.Empty<Sprite>();
+
+        [Header("Cascalho de chão denso (CV04) — pool flat, pick determinístico por hash da célula")]
+        [SerializeField] private Sprite[] _groundScatterSprites = System.Array.Empty<Sprite>();
+
+        [Header("Decor de superfície de parede (CV04) — musgo/vegetação na base de parede")]
+        [SerializeField] private Sprite[] _wallSurfaceSprites = System.Array.Empty<Sprite>();
+
+        [Header("Feixe de luz fake perto da entrada (CV04) — opcional")]
+        [SerializeField] private Sprite _lightShaftSprite;
+
         [Header("Decor ambiental por CONTEXTO (spec_cave_decor_composition_runtime, CV03) — opcionais")]
         [Tooltip("CV03: pool de sprites para CaveDecorPlacementContext.CeilingHang (decor de teto — estalactites). Pick determinístico por hash estável da posição no CaveBiomeArtResolver.")]
         [SerializeField] private Sprite[] _ceilingSprites = System.Array.Empty<Sprite>();
@@ -106,6 +121,11 @@ namespace CindarsHope.Cave.Art
         public IReadOnlyList<Sprite> WallHugSprites => _wallHugSprites ?? System.Array.Empty<Sprite>();
         public IReadOnlyList<Sprite> FloorClusterSprites => _floorClusterSprites ?? System.Array.Empty<Sprite>();
         public IReadOnlyList<Sprite> BlockingSprites => _blockingSprites ?? System.Array.Empty<Sprite>();
+
+        public IReadOnlyList<Sprite> WallEdgeSprites => _wallEdgeSprites ?? System.Array.Empty<Sprite>();
+        public IReadOnlyList<Sprite> GroundScatterSprites => _groundScatterSprites ?? System.Array.Empty<Sprite>();
+        public IReadOnlyList<Sprite> WallSurfaceSprites => _wallSurfaceSprites ?? System.Array.Empty<Sprite>();
+        public Sprite LightShaftSprite => _lightShaftSprite;
 
         /// <summary>Setter editor-only usado pelo gerador (GenerateCaveBiomeArtProfiles) para popular
         /// o profile a partir da convenção de pasta. Não usar em runtime.</summary>
@@ -161,6 +181,31 @@ namespace CindarsHope.Cave.Art
             _wallHugSprites = wallHug ?? System.Array.Empty<Sprite>();
             _floorClusterSprites = floorCluster ?? System.Array.Empty<Sprite>();
             _blockingSprites = blocking ?? System.Array.Empty<Sprite>();
+        }
+
+        /// <summary>Setter editor-only (spec_cave_visual_polish_runtime, CV04) — 4 peças de overlay de
+        /// borda de rocha em ORDEM FIXA (top/side/cornerA/cornerB). Não usar em runtime.</summary>
+        public void EditorSetWallEdgeSprites(Sprite top, Sprite side, Sprite cornerA, Sprite cornerB)
+        {
+            _wallEdgeSprites = new[] { top, side, cornerA, cornerB };
+        }
+
+        /// <summary>Setter editor-only (CV04) — pool flat de cascalho/litter denso de chão. Não usar em runtime.</summary>
+        public void EditorSetGroundScatterSprites(Sprite[] sprites)
+        {
+            _groundScatterSprites = sprites ?? System.Array.Empty<Sprite>();
+        }
+
+        /// <summary>Setter editor-only (CV04) — pool de musgo/vegetação de base de parede. Não usar em runtime.</summary>
+        public void EditorSetWallSurfaceSprites(Sprite[] sprites)
+        {
+            _wallSurfaceSprites = sprites ?? System.Array.Empty<Sprite>();
+        }
+
+        /// <summary>Setter editor-only (CV04) — sprite único do feixe de luz fake perto da entrada. Não usar em runtime.</summary>
+        public void EditorSetLightShaftSprite(Sprite lightShaft)
+        {
+            _lightShaftSprite = lightShaft;
         }
 
         [System.Serializable]

@@ -66,6 +66,44 @@ namespace CindarsHope.Cave.Ecosystem
             return false;
         }
 
+        /// <summary>spec_cave_visual_polish_runtime (CV04) — célula de PAREDE (WallTiles) com pelo menos 1
+        /// vizinho ortogonal ANDÁVEL em QUALQUER direção (N/S/E/O). Generalização de
+        /// <see cref="CeilingHang"/> (que só olha para o sul): usada para decidir onde colocar musgo/
+        /// vegetação de base de parede (<see cref="CaveDecorPlacementContext.WallSurface"/>) — a base de
+        /// uma parede pode encostar em chão a leste/oeste também (corredor lateral), não só ao sul.
+        /// Célula que não é WallTile, ou level/coleções nulos, retorna false (nunca lança).</summary>
+        public static bool IsWallSurfaceCell(Vector2Int cell, CaveGeneratedLevel level)
+        {
+            if (level == null || level.WallTiles == null || level.WalkableTiles == null)
+            {
+                return false;
+            }
+
+            if (!level.WallTiles.Contains(cell))
+            {
+                return false;
+            }
+
+            foreach (var dir in OrthogonalDirs)
+            {
+                if (level.WalkableTiles.Contains(cell + dir))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>spec_cave_visual_polish_runtime (CV04) — célula elegível para cascalho/litter denso
+        /// (<see cref="CaveDecorPlacementContext.GroundScatter"/>): mesma elegibilidade geométrica de
+        /// <see cref="CaveDecorPlacementContext.FloorCluster"/> (chão aberto, sem vizinho de parede) —
+        /// GroundScatter reusa a classificação existente em vez de duplicar a regra.</summary>
+        public static bool IsGroundScatterCell(Vector2Int cell, CaveGeneratedLevel level)
+        {
+            return Classify(cell, level) == CaveDecorPlacementContext.FloorCluster;
+        }
+
         /// <summary>Lista, em ordem determinística (x depois y), todas as células walkable do nível que
         /// classificam para o contexto pedido. Usado pelo planner para restringir candidatos por
         /// contexto antes de aplicar peso/cluster.</summary>

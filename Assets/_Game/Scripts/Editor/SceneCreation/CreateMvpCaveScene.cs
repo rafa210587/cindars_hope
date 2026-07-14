@@ -45,6 +45,7 @@ namespace CindarsHope.Editor.SceneCreation
         private const string ResourceNodeStonePath = "Assets/_Game/Data/Cave/ResourceNode_Stone.asset";
         private const string ResourceNodeCopperPath = "Assets/_Game/Data/Cave/ResourceNode_Copper.asset";
         private const string ResourceNodeCaveRootTreePath = "Assets/_Game/Data/Cave/ResourceNode_CaveRootTree.asset";
+        private const string CaveEcosystemBalancePath = "Assets/_Game/Data/Cave/CaveEcosystemBalance.asset";
         private const string ItemStonePath = "Assets/_Game/Data/Items/Item_Material_Stone.asset";
         private const string ItemCopperOrePath = "Assets/_Game/Data/Items/Item_Ore_Copper.asset";
         private const string CaveBossGateRegistryPath = "Assets/_Game/Data/Cave/CaveBossGateRegistry.asset";
@@ -685,6 +686,7 @@ namespace CindarsHope.Editor.SceneCreation
             var enemySpawner = runtimeObject.AddComponent<CaveEnemySpawner>();
             var controller = runtimeObject.AddComponent<CaveLevelRuntimeController>();
             var config = EnsureCaveGenerationConfig();
+            var ecosystemBalance = EnsureCaveEcosystemBalance();
 
             var bossGateRegistry = EnsureCaveBossGateRegistry();
             var meteorOozeKingData = EnsureMeteorOozeKingEnemyData();
@@ -729,6 +731,7 @@ namespace CindarsHope.Editor.SceneCreation
             SetObjectArray(serializedMaterializer, "_enemySpawnPacks", spawnPacks);
             SetObjectArray(serializedMaterializer, "_enemyFactionLocks", factionLocks);
             SetReference(serializedMaterializer, "_resourceNodeDatabase", resourceNodeDatabase);
+            SetReference(serializedMaterializer, "_ecosystemBalance", ecosystemBalance);
             SetReference(serializedMaterializer, "_playerTransform", playerTransform);
             SetReference(serializedMaterializer, "_levelController", controller);
             serializedMaterializer.FindProperty("_resourceSpawnChance").floatValue = 0.28f;
@@ -750,6 +753,7 @@ namespace CindarsHope.Editor.SceneCreation
                 SetReference(serializedSpawner, "_fallbackEnemyData", fallbackSlimeData);
             }
             SetReference(serializedSpawner, "_caveRunManager", runManager);
+            SetReference(serializedSpawner, "_ecosystemBalance", ecosystemBalance);
             serializedSpawner.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(enemySpawner);
 
@@ -761,6 +765,7 @@ namespace CindarsHope.Editor.SceneCreation
                 SetReference(serializedBossSpawner, "_bossGateRegistry", bossGateRegistry);
             }
             SetReference(serializedBossSpawner, "_caveRunManager", runManager);
+            SetReference(serializedBossSpawner, "_ecosystemBalance", ecosystemBalance);
             if (enemyDatabase != null)
             {
                 SetReference(serializedBossSpawner, "_enemyDatabase", enemyDatabase);
@@ -845,6 +850,22 @@ namespace CindarsHope.Editor.SceneCreation
             AssetDatabase.SaveAssets();
             Debug.Log($"Created CaveGenerationConfigSO at {CaveGenerationConfigPath}.");
             return config;
+        }
+
+        private static CaveEcosystemBalanceSO EnsureCaveEcosystemBalance()
+        {
+            var existing = AssetDatabase.LoadAssetAtPath<CaveEcosystemBalanceSO>(CaveEcosystemBalancePath);
+            if (existing != null)
+            {
+                return existing;
+            }
+
+            var balance = ScriptableObject.CreateInstance<CaveEcosystemBalanceSO>();
+            AssetDatabase.CreateAsset(balance, CaveEcosystemBalancePath);
+            AssetDatabase.SaveAssets();
+            EditorUtility.SetDirty(balance);
+            Debug.Log($"Created CaveEcosystemBalanceSO at {CaveEcosystemBalancePath}.");
+            return balance;
         }
 
         private static ResourceNodeDatabaseSO EnsureResourceNodeDatabase()

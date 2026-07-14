@@ -238,6 +238,89 @@ namespace CindarsHope.Cave.Art
             sprite = pool[index];
             return sprite != null;
         }
+
+        /// <summary>spec_cave_visual_polish_runtime (CV04) — overlay determinístico de borda de rocha
+        /// (NÃO autotile): resolve a peça fixa (top/side/cornerA/cornerB) escolhida pela geometria da
+        /// célula de parede (CaveTileMaterializer decide o <see cref="CaveWallEdgeKind"/> pelos vizinhos
+        /// walkable). Null-safe: profile ausente ou pool com tamanho != 4 (arte incompleta/ausente) =
+        /// false, sem overlay (comportamento atual do Tilemap intacto).</summary>
+        public bool TryGetWallEdgeSprite(int bandId, CaveWallEdgeKind edgeKind, out Sprite sprite)
+        {
+            sprite = null;
+            if (!TryGetProfile(bandId, out var profile))
+            {
+                return false;
+            }
+
+            var pool = profile.WallEdgeSprites;
+            if (pool == null || pool.Count != 4)
+            {
+                return false;
+            }
+
+            sprite = pool[(int)edgeKind];
+            return sprite != null;
+        }
+
+        /// <summary>spec_cave_visual_polish_runtime (CV04) — pick determinístico (hash estável da célula)
+        /// de UMA peça do pool flat de cascalho/litter denso (<see cref="CaveDecorPlacementContext.GroundScatter"/>).
+        /// Null-safe: profile ausente ou pool vazio = false.</summary>
+        public bool TryGetGroundScatterSprite(int bandId, long stableHash, out Sprite sprite)
+        {
+            sprite = null;
+            if (!TryGetProfile(bandId, out var profile))
+            {
+                return false;
+            }
+
+            var pool = profile.GroundScatterSprites;
+            if (pool == null || pool.Count == 0)
+            {
+                return false;
+            }
+
+            var normalizedHash = stableHash & 0x7FFFFFFFL;
+            sprite = pool[(int)(normalizedHash % pool.Count)];
+            return sprite != null;
+        }
+
+        /// <summary>spec_cave_visual_polish_runtime (CV04) — pick determinístico (hash estável da célula)
+        /// de UMA peça do pool de musgo/vegetação de base de parede
+        /// (<see cref="CaveDecorPlacementContext.WallSurface"/>). Null-safe: profile ausente ou pool vazio
+        /// = false.</summary>
+        public bool TryGetWallSurfaceSprite(int bandId, long stableHash, out Sprite sprite)
+        {
+            sprite = null;
+            if (!TryGetProfile(bandId, out var profile))
+            {
+                return false;
+            }
+
+            var pool = profile.WallSurfaceSprites;
+            if (pool == null || pool.Count == 0)
+            {
+                return false;
+            }
+
+            var normalizedHash = stableHash & 0x7FFFFFFFL;
+            sprite = pool[(int)(normalizedHash % pool.Count)];
+            return sprite != null;
+        }
+
+        /// <summary>spec_cave_visual_polish_runtime (CV04) — sprite único de feixe de luz fake perto da
+        /// entrada. Sem escolha por hash (1 peça por bioma). Null-safe: profile ausente ou campo vazio =
+        /// false (sem feixe, comportamento atual intacto).</summary>
+        public bool TryGetLightShaftSprite(int bandId, out Sprite sprite)
+        {
+            sprite = null;
+            if (!TryGetProfile(bandId, out var profile))
+            {
+                return false;
+            }
+
+            sprite = profile.LightShaftSprite;
+            return sprite != null;
+        }
     }
 
     /// <summary>Estado visual do baú de tesouro/baú falso para resolução de sprite (CV01).</summary>
@@ -246,5 +329,15 @@ namespace CindarsHope.Cave.Art
         Closed = 0,
         Open = 1,
         FalseChestRevealed = 2
+    }
+
+    /// <summary>spec_cave_visual_polish_runtime (CV04) — posição fixa de uma peça de overlay de borda de
+    /// rocha dentro de <see cref="CaveBiomeArtProfileSO.WallEdgeSprites"/> (índice = valor do enum).</summary>
+    public enum CaveWallEdgeKind
+    {
+        Top = 0,
+        Side = 1,
+        CornerA = 2,
+        CornerB = 3
     }
 }

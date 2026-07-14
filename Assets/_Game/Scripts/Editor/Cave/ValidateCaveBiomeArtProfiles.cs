@@ -193,6 +193,29 @@ namespace CindarsHope.Editor.Cave
             {
                 warnings.Add($"Profile '{profile.name}': BlockingSprites (CV03) vazio apesar de haver pasta de arte ({profile.BiomeId}). Rode CindarsHope/Inicializar Projeto.");
             }
+
+            // spec_cave_visual_polish_runtime (CV04): mesma regra de severidade (WARNING, nunca ERROR)
+            // para os pools/sprite novos do polimento visual — ausência é esperada nos biomas 2-8 sem
+            // arte própria; no bioma 1 (com pasta de arte) sinaliza gerador desatualizado.
+            if (hasArtFolder && profile.WallEdgeSprites.Count != 4)
+            {
+                warnings.Add($"Profile '{profile.name}': WallEdgeSprites (CV04) não tem as 4 peças esperadas (top/side/cornerA/cornerB) apesar de haver pasta de arte ({profile.BiomeId}). Rode CindarsHope/Inicializar Projeto.");
+            }
+
+            if (hasArtFolder && profile.GroundScatterSprites.Count == 0)
+            {
+                warnings.Add($"Profile '{profile.name}': GroundScatterSprites (CV04) vazio apesar de haver pasta de arte ({profile.BiomeId}). Rode CindarsHope/Inicializar Projeto.");
+            }
+
+            if (hasArtFolder && profile.WallSurfaceSprites.Count == 0)
+            {
+                warnings.Add($"Profile '{profile.name}': WallSurfaceSprites (CV04) vazio apesar de haver pasta de arte ({profile.BiomeId}). Rode CindarsHope/Inicializar Projeto.");
+            }
+
+            if (hasArtFolder && profile.LightShaftSprite == null)
+            {
+                warnings.Add($"Profile '{profile.name}': LightShaftSprite (CV04) vazio (light_shaft.png ausente) apesar de haver pasta de arte ({profile.BiomeId}).");
+            }
         }
 
         private static bool IsVisuallyEmpty(CaveBiomeArtProfileSO profile)

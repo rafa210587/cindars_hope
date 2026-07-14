@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using CindarsHope.Cave.Art;
+using CindarsHope.Cave.Data;
+using CindarsHope.Cave.Ecosystem;
 using CindarsHope.Cave.Generation;
 using CindarsHope.Combat;
 using UnityEngine;
@@ -61,6 +63,10 @@ namespace CindarsHope.Cave.Runtime
         /// incrementando result.CreatedFloorTiles. biomeArtResolver é opcional (null = comportamento
         /// atual); quando fornece floorTiles, pinta também um Tilemap visual por baixo dos GameObjects.
         /// </summary>
+        // spec_cave_visual_polish_runtime (CV04): default usado quando o caller não fornece um
+        // CaveEcosystemBalanceSO — espelha CaveEcosystemBalanceSO.GroundScatterDensity default.
+        private const float DefaultGroundScatterDensity = 0.35f;
+
         internal void MaterializeFloor(
             CaveGeneratedLevel level,
             Transform parent,
@@ -69,7 +75,8 @@ namespace CindarsHope.Cave.Runtime
             CaveRuntimeMaterializationResult result,
             CaveBiomeArtResolver biomeArtResolver = null,
             string worldSeed = null,
-            string runSeed = null)
+            string runSeed = null,
+            CaveEcosystemBalanceSO ecosystemBalance = null)
         {
             var floorParent = new GameObject("GeneratedFloor");
             floorParent.transform.SetParent(parent);
@@ -79,6 +86,7 @@ namespace CindarsHope.Cave.Runtime
             var hasFloorTiles = biomeArtResolver != null
                 && biomeArtResolver.TryGetProfile(bandId, out var floorProfile)
                 && floorProfile.FloorTiles.Length > 0;
+            var groundScatterDensity = ecosystemBalance != null ? ecosystemBalance.GroundScatterDensity : DefaultGroundScatterDensity;
 
             Tilemap floorTilemap = null;
             if (hasFloorTiles)
@@ -87,14 +95,17 @@ namespace CindarsHope.Cave.Runtime
             }
 
             var edgeShadowCount = 0;
+            var groundScatterCount = 0;
 
             foreach (var tilePos in level.WalkableTiles)
             {
                 var worldPos = GridToWorld(tilePos, level);
+                var cellHash = biomeArtResolver != null
+                    ? CaveBiomeArtResolver.ComputeCellHash(worldSeed, runSeed, level.CaveLevel, tilePos.x, tilePos.y)
+                    : 0L;
 
                 if (hasFloorTiles)
                 {
-                    var cellHash = CaveBiomeArtResolver.ComputeCellHash(worldSeed, runSeed, level.CaveLevel, tilePos.x, tilePos.y);
                     if (biomeArtResolver.TryGetFloorTile(bandId, cellHash, out var tile) && tile != null)
                     {
                         var tileCellPos = new Vector3Int(tilePos.x, tilePos.y, 0);
@@ -146,15 +157,62 @@ namespace CindarsHope.Cave.Runtime
                 floorTile.name = $"FloorTile_{tilePos.x}_{tilePos.y}";
                 materializedObjects.Add(floorTile);
                 result.CreatedFloorTiles++;
+
+                // spec_cave_visual_polish_runtime (CV04), T004: cascalho/litter denso em chão aberto
+                // (GroundScatter). Puramente visual (sem collider, sortingOrder baixo, acima do tile de
+                // chão) — nunca bloqueia o caminho. Determinístico: elegibilidade + hit-roll + pick de
+                // sprite vêm 100% de CaveLayoutStableHash (nunca Random/GetHashCode).
+                if (biomeArtResolver != null
+                    && ShouldPlaceGroundScatter(tilePos, level, worldSeed, runSeed, groundScatterDensity)
+                    && biomeArtResolver.TryGetGroundScatterSprite(bandId, cellHash, out var scatterSprite)
+                    && scatterSprite != null)
+                {
+                    var scatterGO = new GameObject($"GroundScatter_{tilePos.x}_{tilePos.y}");
+                    scatterGO.transform.SetParent(floorParent.transform);
+                    scatterGO.transform.position = worldPos;
+
+                    var scatterRenderer = scatterGO.AddComponent<SpriteRenderer>();
+                    scatterRenderer.sprite = scatterSprite;
+                    scatterRenderer.sortingLayerName = CaveWorldSortingLayers.Ground;
+                    scatterRenderer.sortingOrder = 1; // acima do tile de chão (order 0), sem colidir com nada.
+
+                    materializedObjects.Add(scatterGO);
+                    groundScatterCount++;
+                }
             }
 
-            LogFloorPaintStatusOnce(hasFloorTiles, bandId, level.WalkableTiles.Count, edgeShadowCount);
+            LogFloorPaintStatusOnce(hasFloorTiles, bandId, level.WalkableTiles.Count, edgeShadowCount, groundScatterCount);
+        }
+
+        /// <summary>
+        /// spec_cave_visual_polish_runtime (CV04), T004 — decide, de forma PURA e DETERMINÍSTICA, se uma
+        /// célula de chão aberto (GroundScatter-elegível, mesma regra geométrica de FloorCluster) recebe
+        /// uma peça de cascalho/litter. Hash salgado ("ground_scatter") distinto do hash de pick de sprite
+        /// (cellHash) para não correlacionar as duas decisões. Extraído de MaterializeFloor para ser
+        /// testável em EditMode sem instanciar GameObjects (mesmo espírito de IsWallInterior/IsFloorEdgeNextToWall).
+        /// </summary>
+        internal static bool ShouldPlaceGroundScatter(Vector2Int tilePos, CaveGeneratedLevel level, string worldSeed, string runSeed, float density)
+        {
+            if (density <= 0f)
+            {
+                return false;
+            }
+
+            if (!CaveDecorContextClassifier.IsGroundScatterCell(tilePos, level))
+            {
+                return false;
+            }
+
+            var hitHash = CaveLayoutStableHash.Compute($"{worldSeed}|{runSeed}|{level.CaveLevel}|{tilePos.x}|{tilePos.y}|ground_scatter");
+            var unit = (hitHash & 0x7fffffff) / (float)int.MaxValue;
+            return unit < density;
         }
 
         // Fix pós-Play-Mode 2026-07-04: hoje era 100% silencioso — nem pintar nem pular deixava
         // rastro. 1 log por sessão diz exatamente o que aconteceu (banda, célula, motivo do skip).
         // Lote 3: inclui a contagem de células de borda que receberam a sombra chão↔parede.
-        private void LogFloorPaintStatusOnce(bool hasFloorTiles, int bandId, int cellCount, int edgeShadowCount)
+        // CV04: inclui a contagem de células com cascalho/litter (GroundScatter).
+        private void LogFloorPaintStatusOnce(bool hasFloorTiles, int bandId, int cellCount, int edgeShadowCount, int groundScatterCount)
         {
             if (_floorPaintLogged)
             {
@@ -167,7 +225,7 @@ namespace CindarsHope.Cave.Runtime
             {
                 CombatLog.Log(
                     $"[Cave] CaveTileMaterializer: FloorTilemap pintado para bandId={bandId} ({cellCount} celula(s) walkable; " +
-                    $"borda-sombreada={edgeShadowCount}).",
+                    $"borda-sombreada={edgeShadowCount}, cascalho={groundScatterCount}).",
                     null);
             }
             else
@@ -186,13 +244,20 @@ namespace CindarsHope.Cave.Runtime
         /// Aproximação v1: célula de parede com chão imediatamente ao sul usa wallFaceTile (face
         /// frontal, 2 tiles de altura visual); demais células de parede usam wallTopTile.
         /// </summary>
+        // spec_cave_visual_polish_runtime (CV04): default usado quando o caller não fornece um
+        // CaveEcosystemBalanceSO — espelha CaveEcosystemBalanceSO.WallSurfaceChance default.
+        private const float DefaultWallSurfaceChance = 0.12f;
+
         internal void MaterializeWalls(
             CaveGeneratedLevel level,
             Transform parent,
             SpriteRenderer wallPrefab,
             List<GameObject> materializedObjects,
             CaveRuntimeMaterializationResult result,
-            CaveBiomeArtResolver biomeArtResolver = null)
+            CaveBiomeArtResolver biomeArtResolver = null,
+            string worldSeed = null,
+            string runSeed = null,
+            CaveEcosystemBalanceSO ecosystemBalance = null)
         {
             var wallParent = new GameObject("GeneratedWalls");
             wallParent.transform.SetParent(parent);
@@ -204,6 +269,7 @@ namespace CindarsHope.Cave.Runtime
             var hasWallTiles = biomeArtResolver != null
                 && biomeArtResolver.TryGetWallTiles(bandId, out wallFaceTile, out wallTopTile)
                 && (wallFaceTile != null || wallTopTile != null);
+            var wallSurfaceChance = ecosystemBalance != null ? ecosystemBalance.WallSurfaceChance : DefaultWallSurfaceChance;
 
             Tilemap wallTilemap = null;
             if (hasWallTiles)
@@ -214,6 +280,8 @@ namespace CindarsHope.Cave.Runtime
             var edgeCount = 0;
             var interiorCount = 0;
             var topEdgeTintedCount = 0;
+            var wallEdgeCount = 0;
+            var wallSurfaceCount = 0;
 
             foreach (var tilePos in level.WallTiles)
             {
@@ -295,9 +363,54 @@ namespace CindarsHope.Cave.Runtime
 
                 materializedObjects.Add(wallTile);
                 result.CreatedWallTiles++;
+
+                // spec_cave_visual_polish_runtime (CV04), T003: overlay determinístico de borda de rocha
+                // (NÃO autotile) — puramente visual, sem collider, renderiza acima da massa de parede.
+                if (biomeArtResolver != null
+                    && TryResolveWallEdgeKind(tilePos, level, out var edgeKind, out var mirrorX)
+                    && biomeArtResolver.TryGetWallEdgeSprite(bandId, edgeKind, out var edgeSprite)
+                    && edgeSprite != null)
+                {
+                    var edgeGO = new GameObject($"WallEdge_{tilePos.x}_{tilePos.y}");
+                    edgeGO.transform.SetParent(wallParent.transform);
+                    edgeGO.transform.position = worldPos;
+
+                    var edgeRenderer = edgeGO.AddComponent<SpriteRenderer>();
+                    edgeRenderer.sprite = edgeSprite;
+                    edgeRenderer.sortingLayerName = CaveWorldSortingLayers.World;
+                    edgeRenderer.sortingOrder = 2; // acima do tilemap de parede (order 0) e do decor de teto CV03 (order 1).
+                    edgeRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
+                    edgeRenderer.flipX = mirrorX;
+
+                    materializedObjects.Add(edgeGO);
+                    wallEdgeCount++;
+                }
+
+                // spec_cave_visual_polish_runtime (CV04), T004: musgo/vegetação de base de parede
+                // (WallSurface) — baixa chance determinística, puramente visual, sem collider.
+                if (biomeArtResolver != null
+                    && ShouldPlaceWallSurfaceDecor(tilePos, level, worldSeed, runSeed, wallSurfaceChance))
+                {
+                    var wallSurfaceHash = CaveBiomeArtResolver.ComputeCellHash(worldSeed, runSeed, level.CaveLevel, tilePos.x, tilePos.y);
+                    if (biomeArtResolver.TryGetWallSurfaceSprite(bandId, wallSurfaceHash, out var wallSurfaceSprite) && wallSurfaceSprite != null)
+                    {
+                        var wallSurfaceGO = new GameObject($"WallSurface_{tilePos.x}_{tilePos.y}");
+                        wallSurfaceGO.transform.SetParent(wallParent.transform);
+                        wallSurfaceGO.transform.position = worldPos;
+
+                        var wallSurfaceRenderer = wallSurfaceGO.AddComponent<SpriteRenderer>();
+                        wallSurfaceRenderer.sprite = wallSurfaceSprite;
+                        wallSurfaceRenderer.sortingLayerName = CaveWorldSortingLayers.World;
+                        wallSurfaceRenderer.sortingOrder = 3; // acima do overlay de borda (order 2).
+                        wallSurfaceRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
+
+                        materializedObjects.Add(wallSurfaceGO);
+                        wallSurfaceCount++;
+                    }
+                }
             }
 
-            LogWallPaintStatusOnce(hasWallTiles, bandId, level.WallTiles.Count, edgeCount, interiorCount, topEdgeTintedCount);
+            LogWallPaintStatusOnce(hasWallTiles, bandId, level.WallTiles.Count, edgeCount, interiorCount, topEdgeTintedCount, wallEdgeCount, wallSurfaceCount);
         }
 
         /// <summary>
@@ -327,10 +440,91 @@ namespace CindarsHope.Cave.Runtime
                 || level.WallTiles.Contains(new Vector2Int(floorPos.x + 1, floorPos.y));
         }
 
+        /// <summary>
+        /// spec_cave_visual_polish_runtime (CV04), T003 — decide, de forma PURA e DETERMINÍSTICA (sem
+        /// RNG, só vizinhança em grid), qual peça de overlay de borda de rocha uma célula de PAREDE deve
+        /// receber: sul walkable + leste/oeste walkable = quina (cornerA para sul+leste, cornerB para
+        /// sul+oeste); só sul walkable = topo; só leste ou só oeste walkable = lateral (espelhada em X
+        /// para o lado oeste). Célula sem nenhum vizinho walkable relevante (miolo de parede, ou só norte
+        /// walkable) retorna false — sem overlay, fallback seguro (o Tilemap por baixo continua idêntico).
+        /// Extraído de MaterializeWalls para ser testável em EditMode sem instanciar GameObjects.
+        /// </summary>
+        internal static bool TryResolveWallEdgeKind(Vector2Int wallPos, CaveGeneratedLevel level, out CaveWallEdgeKind kind, out bool mirrorX)
+        {
+            kind = CaveWallEdgeKind.Top;
+            mirrorX = false;
+
+            if (level == null || level.WalkableTiles == null)
+            {
+                return false;
+            }
+
+            var south = level.WalkableTiles.Contains(new Vector2Int(wallPos.x, wallPos.y - 1));
+            var east = level.WalkableTiles.Contains(new Vector2Int(wallPos.x + 1, wallPos.y));
+            var west = level.WalkableTiles.Contains(new Vector2Int(wallPos.x - 1, wallPos.y));
+
+            if (south && east)
+            {
+                kind = CaveWallEdgeKind.CornerA;
+                return true;
+            }
+
+            if (south && west)
+            {
+                kind = CaveWallEdgeKind.CornerB;
+                return true;
+            }
+
+            if (south)
+            {
+                kind = CaveWallEdgeKind.Top;
+                return true;
+            }
+
+            if (east)
+            {
+                kind = CaveWallEdgeKind.Side;
+                return true;
+            }
+
+            if (west)
+            {
+                kind = CaveWallEdgeKind.Side;
+                mirrorX = true;
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// spec_cave_visual_polish_runtime (CV04), T004 — decide, de forma PURA e DETERMINÍSTICA, se uma
+        /// célula de PAREDE que encosta em chão (<see cref="CaveDecorContextClassifier.IsWallSurfaceCell"/>)
+        /// recebe musgo/vegetação de base. Hash salgado ("wall_surface") distinto do hash de pick de
+        /// sprite para não correlacionar as duas decisões.
+        /// </summary>
+        internal static bool ShouldPlaceWallSurfaceDecor(Vector2Int wallPos, CaveGeneratedLevel level, string worldSeed, string runSeed, float chance)
+        {
+            if (chance <= 0f)
+            {
+                return false;
+            }
+
+            if (!CaveDecorContextClassifier.IsWallSurfaceCell(wallPos, level))
+            {
+                return false;
+            }
+
+            var hitHash = CaveLayoutStableHash.Compute($"{worldSeed}|{runSeed}|{level.CaveLevel}|{wallPos.x}|{wallPos.y}|wall_surface");
+            var unit = (hitHash & 0x7fffffff) / (float)int.MaxValue;
+            return unit < chance;
+        }
+
         // Fix pós-Play-Mode 2026-07-04: mesmo raciocínio de LogFloorPaintStatusOnce, para paredes.
         // 2ª rodada: log agora inclui a contagem borda/miolo (evidência da classificação visual).
         // 3ª rodada: inclui quantas dessas bordas são topo-tintado (degradê aro->miolo).
-        private void LogWallPaintStatusOnce(bool hasWallTiles, int bandId, int cellCount, int edgeCount, int interiorCount, int topEdgeTintedCount)
+        // CV04: inclui a contagem de overlays de borda de rocha e de decor de superfície de parede.
+        private void LogWallPaintStatusOnce(bool hasWallTiles, int bandId, int cellCount, int edgeCount, int interiorCount, int topEdgeTintedCount, int wallEdgeCount, int wallSurfaceCount)
         {
             if (_wallPaintLogged)
             {
@@ -343,14 +537,16 @@ namespace CindarsHope.Cave.Runtime
             {
                 CombatLog.Log(
                     $"[Cave] CaveTileMaterializer: WallTilemap pintado para bandId={bandId} ({cellCount} celula(s) de parede; " +
-                    $"borda={edgeCount} (topo-tintado={topEdgeTintedCount}), miolo={interiorCount}).",
+                    $"borda={edgeCount} (topo-tintado={topEdgeTintedCount}), miolo={interiorCount}, " +
+                    $"borda-de-rocha={wallEdgeCount}, decor-superficie-parede={wallSurfaceCount}).",
                     null);
             }
             else
             {
                 Debug.Log(
                     $"[Cave] CaveTileMaterializer: nenhum WallTilemap pintado para bandId={bandId} " +
-                    "(profile de arte sem WallFaceTile/WallTopTile ou ausente). Usando somente placeholders proceduais.");
+                    "(profile de arte sem WallFaceTile/WallTopTile ou ausente). Usando somente placeholders proceduais. " +
+                    $"borda-de-rocha={wallEdgeCount}, decor-superficie-parede={wallSurfaceCount}.");
             }
         }
 
