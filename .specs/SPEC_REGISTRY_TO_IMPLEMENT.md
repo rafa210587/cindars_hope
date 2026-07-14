@@ -526,3 +526,25 @@ Nao promovida a SPEC_EXECUTION_ORDER.md - aguarda autorizacao humana.
 | CV04 | `spec_cave_visual_polish_runtime.md` | Aproxima a cave da keyart sem trocar o gerador: borda de rocha arredondada (overlay determinístico das wall_edge_*), cascalho denso no chão (scatter das litter_*), musgo/vegetação nas bases de parede, e luz FAKE (vinheta + feixe light_shaft). Toda a arte já no disco. Luz dinâmica real (URP 2D) e stamps de sala-heroi ficam de fora. |
 
 CV04 e Parallelizable: NO (lock Cave/**). Aguarda autorizacao humana.
+
+### Lote ARCH_RESIDUAL — Modularizacao residual + rede de validacao (gerado 2026-07-13)
+
+Specs geradas a partir do handoff do Codex `docs/architecture/CLAUDE_SPEC_AUTHORING_REMAINING_WORK_20260713.md`,
+transformando os 25 pares mutuos restantes (`Get-ModularizationDependencySnapshot.ps1`:
+`RuntimeModuleEdges=241`, `MutualModulePairs=25`) em specs por familia de risco, mais a rede de
+smoke humano. NAO codar a partir desta geracao — sao contratos de execucao futura. Regra dura de
+todas: nenhuma pode declarar "modularizacao concluida" enquanto `MutualModulePairs > 0`.
+
+| # | Spec | Fecha |
+|---|---|---|
+| AR-H | `spec_validation_human_playmode_smoke_v1.md` | Rede de validacao humana final: checklist unico de smoke (Town/Farm/Cave, inventario, crafting, loja, NPC, quest offer/turn-in, combate, morte/respawn, save/load) + path de relatorio `docs/validation/playmode/`. Docs-only, Parallelizable: YES. |
+| AR-A | `spec_arch_core_boundary_residual_v1.md` | Corte residual `Core|Inventory/Player/Save/Skills/UI` via ports em Foundation + DomainManagerRegistry, um par por commit. CONDITIONAL (lock GameBootstrap/CompositionRoot). |
+| AR-B | `spec_arch_save_ownership_residual_v1.md` | Ownership de secao de save p/ `Farm|Save` e `Quests|Save` via ISaveSectionProvider, sem logica de dominio no SaveManager, com roundtrip tests. CONDITIONAL (lock SaveManager). |
+| AR-C | `spec_arch_ui_boundary_residual_v1.md` | Corte `NPC|UI`, `Player|UI`, `UI|World` (+ `Core|UI` residual) via adapter MonoBehaviour + interface (precedente ICraftingStationModal). Exige smoke humano. CONDITIONAL. |
+| AR-G | `spec_arch_npc_quest_boundary_residual_v1.md` | Corte `NPC|Quests` com caracterizacao previa; preserva papeis/rotinas/lojas/dialogos/IDs de quest; extrai bridge de quest interaction. CONDITIONAL. |
+| AR-D | `spec_arch_player_gameplay_boundary_residual_v1.md` | Reduz/documenta `Equipment|Player`, `Inventory|Player`, `Player|Skills`, `Player|World`; testes de caracterizacao antes de refatorar; sub-slices por par. Risco alto. CONDITIONAL. |
+| AR-E | `spec_arch_combat_boundary_residual_v1.md` | Planeja reducao segura de `Combat|Core/Enemy/Inventory/Player/Skills`; mapa por direcao + cobertura antes de refactor; PlayMode obrigatorio. CONDITIONAL. |
+| AR-F | `spec_arch_cave_integration_boundary_residual_v1.md` | Trata `Cave|Combat/Core/Enemy/SceneManagement/UI` sem desfazer o polimento visual, sem novo Resources.Load, sem regredir ArchitectureRatchetTests; respeita cave-stable-run. Parallelizable: NO (lock Cave/**). |
+
+Ordem recomendada de execucao (do handoff, secao 6): AR-H → AR-A → AR-B → AR-C → AR-G → AR-D → AR-E → AR-F.
+Nenhuma promovida a `SPEC_EXECUTION_ORDER.md` — aguardam autorizacao humana explicita para execucao.

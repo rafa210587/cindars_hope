@@ -3,12 +3,12 @@
 > Gerado por `tools/generate_spec_index.ps1`. NAO editar a mao -- rode o script.
 > Indice compacto para descoberta barata de specs (status por pasta + cabecalho).
 
-Total: **364** specs
+Total: **418** specs
 - Fila-FABLE: 5
-- Fila: 72
+- Fila: 86
 - Closeout-MVP: 12
 - Build-Validated: 16
-- Implementado: 239
+- Implementado: 279
 - Automatica: 1
 - Outro: 19
 
@@ -72,6 +72,16 @@ Total: **364** specs
 | 24_spec_cave_weather_lunar_deep_modifiers_future_runtime | Fila | A implementar / Future mapped | WAVE 24 — Remaining Future Closure | Cave Weather Lunar Deep Modifiers / Alihana Senya Nyx / Storm Fog Snow Cold Heat | .specs/a_implementar/features_futuras/24_spec_cave_weather_lunar_deep_modifiers_future_runtime.md |
 | 24_spec_companion_advanced_party_equipment_tactical_ai_future_runtime | Fila | A implementar / Future mapped | WAVE 24 — Remaining Future Closure | Companions Advanced / Party / Equipment / Skill Tree / Tactical Commands / AI Squad | .specs/a_implementar/features_futuras/24_spec_companion_advanced_party_equipment_tactical_ai_future_runtime.md |
 | 24_spec_festival_minigames_event_framework_future_runtime | Fila | A implementar / Future mapped | WAVE 24 — Remaining Future Closure | Festival Minigames / Calendar Events / City Farm Social Hooks / Rewards | .specs/a_implementar/features_futuras/24_spec_festival_minigames_event_framework_future_runtime.md |
+| spec_arch_cave_integration_boundary_residual_v1 | Fila | A implementar | WAVE ARCH — Redução de Acoplamento Modular Residual (pós CV04) | Cave | .specs/a_implementar/spec_arch_cave_integration_boundary_residual_v1.md |
+| spec_arch_combat_boundary_residual_v1 | Fila | A implementar | WAVE ARQUITETURA — Redução de Acoplamento Modular Residual | Combat / Core / Enemy / Inventory / Player / Skills | .specs/a_implementar/spec_arch_combat_boundary_residual_v1.md |
+| spec_arch_core_boundary_residual_v1 | Fila | A implementar | WAVE ARCH — Modularização Residual (continuação do plano CLAUDE_MODULARIZATION_REMAINING_PLAN.md) | Core | .specs/a_implementar/spec_arch_core_boundary_residual_v1.md |
+| spec_arch_npc_quest_boundary_residual_v1 | Fila | A implementar | WAVE ARCH — Redução Residual de Acoplamento Modular | NPC | .specs/a_implementar/spec_arch_npc_quest_boundary_residual_v1.md |
+| spec_arch_player_gameplay_boundary_residual_v1 | Fila | A implementar | WAVE ARQUITETURA — Redução de Acoplamento Modular Residual | Player / Equipment / Inventory / Skills / World | .specs/a_implementar/spec_arch_player_gameplay_boundary_residual_v1.md |
+| spec_arch_save_ownership_residual_v1 | Fila | A implementar | WAVE ARCH — Modularização Residual (continuação do plano CLAUDE_MODULARIZATION_REMAINING_PLAN.md, Fase A — Save Boundary) | Save / Farm / Quests | .specs/a_implementar/spec_arch_save_ownership_residual_v1.md |
+| spec_arch_ui_boundary_residual_v1 | Fila | A implementar | WAVE ARCH — Redução Residual de Acoplamento Modular | UI | .specs/a_implementar/spec_arch_ui_boundary_residual_v1.md |
+| spec_cave_biome_art_profiles_runtime | Fila | A implementar | CAVE_VISUALS — camada de apresentação por bioma | Cave | .specs/a_implementar/spec_cave_biome_art_profiles_runtime.md |
+| spec_cave_decor_placement_runtime | Fila | A implementar | CAVE_VISUALS — art pass do decor | Cave | .specs/a_implementar/spec_cave_decor_placement_runtime.md |
+| spec_cave_visual_polish_runtime | Fila | A implementar | CAVE_VISUALS — polimento p/ aproximar da keyart | Cave | .specs/a_implementar/spec_cave_visual_polish_runtime.md |
 | spec_city_artisan_stations | Fila | A implementar | WAVE VILLAGE ECONOMY — slice 1 (estações) | City | .specs/a_implementar/spec_city_artisan_stations.md |
 | spec_city_preservation_first_coherent_relayout | Fila | BUILD_VALIDATED_PENDING_HUMAN_PLAYMODE | WAVE CITY — Preservation-First TownScene | City / TownScene / NPC movement / World art | .specs/a_implementar/spec_city_preservation_first_coherent_relayout.md |
 | spec_codex_01_validator_not_configured | Fila | A implementar | WAVE CODEX CONVERGENCE â€” Honestidade de ValidaÃ§Ã£o | Editor / Validation | .specs/a_implementar/spec_codex_01_validator_not_configured.md |
@@ -87,9 +97,13 @@ Total: **364** specs
 | spec_codex_11_debug_build_guards | Fila | A implementar | WAVE CODEX CONVERGENCE — Honestidade de Validação (Lote 2) | DebugTools / Cave / Build | .specs/a_implementar/spec_codex_11_debug_build_guards.md |
 | spec_codex_12_dead_code_removal_batch2 | Fila | A implementar | WAVE CODEX CONVERGENCE — Honestidade de Validação (Lote 2) | Cross-cutting (Farm, Quests, UI, World, City, Loot, Core, Save, Cave) | .specs/a_implementar/spec_codex_12_dead_code_removal_batch2.md |
 | spec_codex_13_physics_layers_contact_filter | Fila | A implementar | WAVE CODEX CONVERGENCE — Honestidade de Validação (Lote 2) | Physics / Combat / Enemy | .specs/a_implementar/spec_codex_13_physics_layers_contact_filter.md |
+| spec_enemy_attack_kits_v1 | Fila | A implementar | Lote ENEMY_ATTACK_KITS (design-first, gerado 2026-07-03) | Combat / Cave / Enemy AI / Bestiary | .specs/a_implementar/spec_enemy_attack_kits_v1.md |
 | spec_farm_scene_relayout_v4 | Fila | A implementar | WAVE FARM — Coerência da FarmScene (pós WAVE 05/07 + fable_15/17) | Farm | .specs/a_implementar/spec_farm_scene_relayout_v4.md |
 | spec_farm_till_anywhere_tilemap | Fila | A implementar | WAVE FARM — Coerência da FarmScene (companion de spec_farm_scene_relayout_v4) | Farm | .specs/a_implementar/spec_farm_till_anywhere_tilemap.md |
 | spec_npc_physics_cat_companion | Fila | - | - | - | .specs/a_implementar/spec_npc_physics_cat_companion.md |
+| spec_town_building_visuals | Fila | - | - | - | .specs/a_implementar/spec_town_building_visuals.md |
+| spec_town_layout_v9_organic | Fila | - | - | - | .specs/a_implementar/spec_town_layout_v9_organic.md |
+| spec_validation_human_playmode_smoke_v1 | Fila | A implementar | WAVE VALIDATION — Rede de Validação Humana Final | Core / Validation | .specs/a_implementar/spec_validation_human_playmode_smoke_v1.md |
 | spec_village_orders_board | Fila | A implementar | WAVE VILLAGE ECONOMY — slice 1/5 (demanda) | Quest | .specs/a_implementar/spec_village_orders_board.md |
 | SPEC_18_BASELINE_VALIDATION_AND_SPEC_CLEANUP | Closeout-MVP | - | - | - | .specs/a_implementar/closeout_mvp/SPEC_18_BASELINE_VALIDATION_AND_SPEC_CLEANUP.md |
 | spec_mvp_closeout_19_save_inventory_farm_world_closeout | Closeout-MVP | A implementar | - | - | .specs/a_implementar/closeout_mvp/SPEC_19_SAVE_INVENTORY_FARM_WORLD_CLOSEOUT.md |
@@ -274,6 +288,44 @@ Total: **364** specs
 | spec_02_lunar_cycle_event_runtime | Implementado | - | - | - | .specs/implementados/spec_02_lunar_cycle_event_runtime.md |
 | spec_02_rain_irrigation_crop_integration | Implementado | - | - | - | .specs/implementados/spec_02_rain_irrigation_crop_integration.md |
 | spec_02_weather_generation_forecast_runtime | Implementado | - | - | - | .specs/implementados/spec_02_weather_generation_forecast_runtime.md |
+| spec_arch_cave_save_cycle_reduction_v28 | Implementado | Implementado e BUILD_VALIDATED | - | - | .specs/implementados/spec_arch_cave_save_cycle_reduction_v28.md |
+| spec_arch_core_craft_cycle_reduction_v32 | Implementado | Implementado e BUILD_VALIDATED (Fase 1 do plano de desacoplamento static Instance) | - | - | .specs/implementados/spec_arch_core_craft_cycle_reduction_v32.md |
+| spec_arch_core_economy_cycle_reduction_v33 | Implementado | Implementado e BUILD_VALIDATED (Fase 1 do plano de desacoplamento static Instance) | - | - | .specs/implementados/spec_arch_core_economy_cycle_reduction_v33.md |
+| spec_arch_core_enemy_cycle_reduction_v31 | Implementado | Implementado e BUILD_VALIDATED (piloto Fase 1 do plano de desacoplamento | - | - | .specs/implementados/spec_arch_core_enemy_cycle_reduction_v31.md |
+| spec_arch_core_equipment_cycle_reduction_v35 | Implementado | Implementado e BUILD_VALIDATED (Fase 2 do plano de desacoplamento static Instance) | - | - | .specs/implementados/spec_arch_core_equipment_cycle_reduction_v35.md |
+| spec_arch_core_farm_cycle_reduction_v10 | Implementado | Implementado e BUILD_VALIDATED | - | - | .specs/implementados/spec_arch_core_farm_cycle_reduction_v10.md |
+| spec_arch_core_inventory_cycle_reduction_v36 | Implementado | Implementado e BUILD_VALIDATED | - | - | .specs/implementados/spec_arch_core_inventory_cycle_reduction_v36.md |
+| spec_arch_core_locations_cycle_reduction_v27 | Implementado | Implementado e BUILD_VALIDATED | - | - | .specs/implementados/spec_arch_core_locations_cycle_reduction_v27.md |
+| spec_arch_core_npc_cycle_reduction_v12 | Implementado | Implementado e BUILD_VALIDATED | - | - | .specs/implementados/spec_arch_core_npc_cycle_reduction_v12.md |
+| spec_arch_core_player_cycle_reduction_v37 | Implementado | Implementado e BUILD_VALIDATED | - | - | .specs/implementados/spec_arch_core_player_cycle_reduction_v37.md |
+| spec_arch_core_save_cycle_reduction_v39 | Implementado | Implementado e BUILD_VALIDATED | - | - | .specs/implementados/spec_arch_core_save_cycle_reduction_v39.md |
+| spec_arch_core_skills_cycle_reduction_v34 | Implementado | Implementado e BUILD_VALIDATED (Fase 2 do plano de desacoplamento static Instance) | - | - | .specs/implementados/spec_arch_core_skills_cycle_reduction_v34.md |
+| spec_arch_core_ui_cycle_reduction_v38 | Implementado | Implementado e BUILD_VALIDATED | - | - | .specs/implementados/spec_arch_core_ui_cycle_reduction_v38.md |
+| spec_arch_core_world_cycle_reduction_v11 | Implementado | Implementado e BUILD_VALIDATED | - | - | .specs/implementados/spec_arch_core_world_cycle_reduction_v11.md |
+| spec_arch_craft_save_cycle_reduction_v8 | Implementado | Implementado e BUILD_VALIDATED | - | - | .specs/implementados/spec_arch_craft_save_cycle_reduction_v8.md |
+| spec_arch_dependency_cycle_reduction_v3 | Implementado | - | - | - | .specs/implementados/spec_arch_dependency_cycle_reduction_v3.md |
+| spec_arch_economy_save_cycle_reduction_v22 | Implementado | Implementado e BUILD_VALIDATED | - | - | .specs/implementados/spec_arch_economy_save_cycle_reduction_v22.md |
+| spec_arch_efficiency_static_registries_v30 | Implementado | - | - | - | .specs/implementados/spec_arch_efficiency_static_registries_v30.md |
+| spec_arch_enemybrain_debug_telemetry_v19 | Implementado | - | - | - | .specs/implementados/spec_arch_enemybrain_debug_telemetry_v19.md |
+| spec_arch_equipment_save_cycle_reduction_v29 | Implementado | Implementado e BUILD_VALIDATED | - | - | .specs/implementados/spec_arch_equipment_save_cycle_reduction_v29.md |
+| spec_arch_fonte_mainprogression_cycle_reduction_v6 | Implementado | Implementado e BUILD_VALIDATED | - | - | .specs/implementados/spec_arch_fonte_mainprogression_cycle_reduction_v6.md |
+| spec_arch_inventory_save_cycle_reduction_v25 | Implementado | Implementado e BUILD_VALIDATED | - | - | .specs/implementados/spec_arch_inventory_save_cycle_reduction_v25.md |
+| spec_arch_locations_player_cycle_reduction_v7 | Implementado | Implementado e BUILD_VALIDATED | - | - | .specs/implementados/spec_arch_locations_player_cycle_reduction_v7.md |
+| spec_arch_modularization_residual_v5 | Implementado | - | - | - | .specs/implementados/spec_arch_modularization_residual_v5.md |
+| spec_arch_narrative_quest_cycle_reduction_v4 | Implementado | - | - | - | .specs/implementados/spec_arch_narrative_quest_cycle_reduction_v4.md |
+| spec_arch_npc_debug_expression_policy_v18 | Implementado | - | - | - | .specs/implementados/spec_arch_npc_debug_expression_policy_v18.md |
+| spec_arch_npc_save_cycle_reduction_v23 | Implementado | Implementado e BUILD_VALIDATED | - | - | .specs/implementados/spec_arch_npc_save_cycle_reduction_v23.md |
+| spec_arch_npcshop_choice_ui_adapter_v15 | Implementado | Implementado e BUILD_VALIDATED | - | - | .specs/implementados/spec_arch_npcshop_choice_ui_adapter_v15.md |
+| spec_arch_npcshop_city_service_policy_v17 | Implementado | - | - | - | .specs/implementados/spec_arch_npcshop_city_service_policy_v17.md |
+| spec_arch_npcshop_initialization_guard_v13 | Implementado | Implementado e BUILD_VALIDATED | - | - | .specs/implementados/spec_arch_npcshop_initialization_guard_v13.md |
+| spec_arch_npcshop_service_choice_builder_v14 | Implementado | Implementado e BUILD_VALIDATED | - | - | .specs/implementados/spec_arch_npcshop_service_choice_builder_v14.md |
+| spec_arch_npcshop_special_identity_policy_v16 | Implementado | Implementado e BUILD_VALIDATED | - | - | .specs/implementados/spec_arch_npcshop_special_identity_policy_v16.md |
+| spec_arch_player_save_cycle_reduction_v20 | Implementado | Implementado e BUILD_VALIDATED | - | - | .specs/implementados/spec_arch_player_save_cycle_reduction_v20.md |
+| spec_arch_quests_save_cycle_reduction_v24 | Implementado | Implementado e BUILD_VALIDATED | - | - | .specs/implementados/spec_arch_quests_save_cycle_reduction_v24.md |
+| spec_arch_runtime_maintainability_rework_v2 | Implementado | - | - | - | .specs/implementados/spec_arch_runtime_maintainability_rework_v2.md |
+| spec_arch_save_ui_cycle_reduction_v26 | Implementado | Implementado e BUILD_VALIDATED | - | - | .specs/implementados/spec_arch_save_ui_cycle_reduction_v26.md |
+| spec_arch_save_world_cycle_reduction_v21 | Implementado | Implementado e BUILD_VALIDATED | - | - | .specs/implementados/spec_arch_save_world_cycle_reduction_v21.md |
+| spec_arch_scene_world_cycle_reduction_v9 | Implementado | Implementado e BUILD_VALIDATED | - | - | .specs/implementados/spec_arch_scene_world_cycle_reduction_v9.md |
 | spec_bugfix_ui_input_shop_sell_bundle | Implementado | - | - | - | .specs/implementados/spec_bugfix_ui_input_shop_sell_bundle.md |
 | spec_cave_001_cave_scene_portal_e_runtime_basico | Implementado | Implementado parcial | - | - | .specs/implementados/spec_cave_001_cave_scene_portal_e_runtime_basico.md |
 | spec_cave_002_procedural_contracts_resources_parcial | Implementado | Implementado parcial | - | - | .specs/implementados/spec_cave_002_procedural_contracts_resources_parcial.md |
@@ -283,6 +335,7 @@ Total: **364** specs
 | spec_cave_006_spawn_anchor_safe_positioning | Implementado | Implementado em código — validação Unity pendente | - | - | .specs/implementados/spec_cave_006_spawn_anchor_safe_positioning.md |
 | spec_cave_007_snapshot_replay_full_layout_hardening | Implementado | Implementado em código — validação Unity pendente | - | - | .specs/implementados/spec_cave_007_snapshot_replay_full_layout_hardening.md |
 | spec_cave_008_debug_skip_confinement_wall_distance_hardening | Implementado | Implementado em código — validação Unity pendente | - | - | .specs/implementados/spec_cave_008_debug_skip_confinement_wall_distance_hardening.md |
+| spec_cave_decor_composition_runtime | Implementado | Implementado e BUILD_VALIDATED (Play Mode humano pendente) | CAVE_VISUALS — composição de decor | Cave | .specs/implementados/spec_cave_decor_composition_runtime.md |
 | spec_cave_entry_death_anya_corpse_recovery | Implementado | Implementado parcial | - | - | .specs/implementados/spec_cave_entry_death_anya_corpse_recovery.md |
 | spec_cave_runtime_generation_checkpoints_boss_gates | Implementado | Implementado parcial | - | - | .specs/implementados/spec_cave_runtime_generation_checkpoints_boss_gates.md |
 | spec_combat_001_slime_melee_contact_damage_drops | Implementado | Implementado parcial | - | - | .specs/implementados/spec_combat_001_slime_melee_contact_damage_drops.md |
@@ -331,6 +384,7 @@ Total: **364** specs
 | spec_retro_07_wi24_farm_daily_goals_shipping_summary | Implementado | RETRO_DOCUMENTED (código implementado em 2026-06; spec escrita a posteriori para reconstrutibilidade) | - | - | .specs/implementados/spec_retro_07_wi24_farm_daily_goals_shipping_summary.md |
 | spec_retro_08_wi25_npc_schedule_runtime_dialogue_expansion | Implementado | RETRO_DOCUMENTED (código implementado em 2026-06; spec escrita a posteriori para reconstrutibilidade) | - | - | .specs/implementados/spec_retro_08_wi25_npc_schedule_runtime_dialogue_expansion.md |
 | spec_retro_09_wi17_22_26_integration_hardening_questlines | Implementado | RETRO_DOCUMENTED (código implementado em 2026-06; spec escrita a posteriori para reconstrutibilidade) | - | - | .specs/implementados/spec_retro_09_wi17_22_26_integration_hardening_questlines.md |
+| spec_runtime_canon_reconciliation_2026_07_05 | Implementado | - | - | - | .specs/implementados/spec_runtime_canon_reconciliation_2026_07_05.md |
 | spec_save_001_json_save_load_cross_scene | Implementado | Implementado parcial | - | - | .specs/implementados/spec_save_001_json_save_load_cross_scene.md |
 | spec_save_002_schema_migration_v2 | Implementado | Implementado parcial | - | - | .specs/implementados/spec_save_002_schema_migration_v2.md |
 | spec_skill_trees_active_slots_respec_anya_runtime | Implementado | A implementar | - | - | .specs/implementados/spec_skill_trees_active_slots_respec_anya_runtime.md |
