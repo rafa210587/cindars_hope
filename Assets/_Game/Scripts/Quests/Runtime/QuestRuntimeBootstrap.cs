@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
+using CindarsHope.Foundation;
 using CindarsHope.Quests.Flags;
 using CindarsHope.Quests.Save;
 using CindarsHope.Save;
@@ -25,7 +26,7 @@ namespace CindarsHope.Quests.Runtime
     /// Does NOT use GameObject.Find at runtime except in the one-time bootstrap
     /// coroutine waiting for GameBootstrap.Instance.
     /// </summary>
-    public sealed class QuestRuntimeBootstrap : MonoBehaviour
+    public sealed class QuestRuntimeBootstrap : MonoBehaviour, IQuestSaveRuntime
     {
         private const int MaxBindAttempts = 120;
         private static QuestRuntimeBootstrap _instance;
@@ -140,6 +141,14 @@ namespace CindarsHope.Quests.Runtime
             _pendingSaveData = saveData;
         }
 
+        // arch: quebra do ciclo Quests|Save — implementação explícita do port IQuestSaveRuntime
+        // (CindarsHope.Save), resolvido pelo QuestSectionProvider canônico via DomainManagerRegistry
+        // em vez de Save nomear CindarsHope.Quests diretamente. Delega para os métodos static
+        // existentes, sem mudar a lógica de captura/restauração.
+        QuestStateSectionSaveData IQuestSaveRuntime.CaptureSaveData() => CaptureSaveData();
+
+        void IQuestSaveRuntime.RestoreFromSaveData(QuestStateSectionSaveData saveData) => RestoreFromSaveData(saveData);
+
         public static void Install(Transform owner)
         {
             if (_instance != null) return;
@@ -152,6 +161,7 @@ namespace CindarsHope.Quests.Runtime
 
         private void OnEnable()
         {
+            DomainManagerRegistry.Register<IQuestSaveRuntime>(this);
             StartCoroutine(InitializeWhenReady());
         }
 
@@ -378,6 +388,8 @@ namespace CindarsHope.Quests.Runtime
 
         private void OnDisable()
         {
+            DomainManagerRegistry.Unregister<IQuestSaveRuntime>(this);
+
             if (_boardWired)
             {
                 GameEventBus.Unsubscribe<DayStartedEvent>(OnDayStarted);

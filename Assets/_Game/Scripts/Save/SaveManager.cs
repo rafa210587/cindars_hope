@@ -186,11 +186,10 @@ namespace CindarsHope.Save
             _farmAnimalsProvider = new FarmAnimalsSectionProvider();
             _npcServicesProvider = new NpcServicesSectionProvider();
             _farmLotsProvider = new FarmLotsSectionProvider();
-            // arch: quebra do ciclo Quests|Save (spec_arch_quests_save_cycle_reduction_v24) — nome
-            // totalmente qualificado para não poluir o topo do arquivo com um `using
-            // CindarsHope.Quests` referenciado uma única vez (mesmo precedente de
-            // spec_arch_npc_save_cycle_reduction_v23 / spec_arch_economy_save_cycle_reduction_v22).
-            _questProvider = new CindarsHope.Quests.Save.QuestSectionProvider();
+            // arch: quebra do ciclo Quests|Save — provider canônico movido para
+            // CindarsHope.Save.Providers (mesmo precedente de OnboardingHintsSectionProvider,
+            // Save|UI); Save não nomeia mais nenhum tipo de CindarsHope.Quests.
+            _questProvider = new QuestSectionProvider();
             _caveRunProvider = new CaveRunSectionProvider();
 
             // â”€â”€ Lote 2: manager injetado â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
