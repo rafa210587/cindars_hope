@@ -1,8 +1,10 @@
 using System;
-using UnityEngine;
 
-namespace CindarsHope.Skills
+namespace CindarsHope.Foundation
 {
+    // arch: quebra dos pares mutuos Combat|Skills e Player|Skills (2026-07-15) — tipo puro
+    // (sem engine nativa) movido de CindarsHope.Skills para Foundation; Combat/Player consomem
+    // via this namespace em vez de nomear CindarsHope.Skills.
     [Serializable]
     public class SkillPassiveModifier
     {

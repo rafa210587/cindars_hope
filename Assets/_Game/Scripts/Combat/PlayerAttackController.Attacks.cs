@@ -10,7 +10,6 @@ using CindarsHope.Interaction;
 using CindarsHope.Inventory;
 using CindarsHope.Inventory.Data;
 using CindarsHope.Player;
-using CindarsHope.Skills;
 using UnityEngine;
 
 namespace CindarsHope.Combat

@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using CindarsHope.Equipment;
 using CindarsHope.Foundation;
-using CindarsHope.Skills;
 
 namespace CindarsHope.Player
 {

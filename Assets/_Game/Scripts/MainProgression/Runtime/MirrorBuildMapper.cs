@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using CindarsHope.Skills;
+using CindarsHope.Foundation;
 
 namespace CindarsHope.MainProgression.Runtime
 {

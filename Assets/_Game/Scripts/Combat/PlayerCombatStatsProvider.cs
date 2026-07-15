@@ -6,7 +6,6 @@ using CindarsHope.Core.Random;
 using CindarsHope.Equipment;
 using CindarsHope.Foundation;
 using CindarsHope.Player;
-using CindarsHope.Skills;
 using UnityEngine;
 
 namespace CindarsHope.Combat

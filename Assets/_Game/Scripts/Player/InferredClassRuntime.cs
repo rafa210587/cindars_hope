@@ -1,14 +1,14 @@
 using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
-using CindarsHope.Skills;
+using CindarsHope.Foundation;
 using UnityEngine;
 
 namespace CindarsHope.Player
 {
     /// <summary>
     /// fable_39 — runtime recompute hook for the INFERRED player class. Reads the per-tree point
-    /// counts the <see cref="SkillTreeManager"/> already owns, runs the pure
+    /// counts the <see cref="CindarsHope.Skills.SkillTreeManager"/> already owns, runs the pure
     /// <see cref="PlayerClassInference.GetProfile"/>, and exposes the result as the single named
     /// entry of the derived-stats provider (the project's static <c>Func</c> source-hook pattern,
     /// mirroring <see cref="PlayerVitalsApplier.CraftTimeReductionSource"/> and
@@ -26,7 +26,9 @@ namespace CindarsHope.Player
     {
         private static InferredClassRuntime _instance;
 
-        private SkillTreeManager _skillTree;
+        // arch: quebra do par mutuo Player|Skills (2026-07-15) — porta ISkillTreeRuntime em vez do
+        // tipo concreto SkillTreeManager.
+        private ISkillTreeRuntime _skillTree;
         private bool _subscribed;
 
         public static InferredClassRuntime Instance => _instance;
@@ -77,7 +79,7 @@ namespace CindarsHope.Player
 
         private void Start()
         {
-            _skillTree = SkillTreeManager.Instance;
+            _skillTree = DomainManagerRegistry.Get<ISkillTreeRuntime>();
             Recompute();
         }
 
@@ -123,7 +125,7 @@ namespace CindarsHope.Player
         {
             if (_skillTree == null)
             {
-                _skillTree = SkillTreeManager.Instance;
+                _skillTree = DomainManagerRegistry.Get<ISkillTreeRuntime>();
             }
 
             if (_skillTree == null)

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Text;
 using CindarsHope.Core.Events;
 using CindarsHope.DebugTools;
+using CindarsHope.Foundation;
 using CindarsHope.Player;
 using UnityEngine;
 
@@ -147,7 +148,9 @@ namespace CindarsHope.Combat
                 return DefenseSource();
             }
 
-            var skillTree = CindarsHope.Skills.SkillTreeManager.Instance;
+            // arch: quebra do par mutuo Combat|Skills (2026-07-15) — porta ISkillTreeRuntime em vez
+            // do tipo concreto SkillTreeManager.
+            var skillTree = DomainManagerRegistry.Get<ISkillTreeRuntime>();
             if (skillTree == null)
             {
                 return 0;

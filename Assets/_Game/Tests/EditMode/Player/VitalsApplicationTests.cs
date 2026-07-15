@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using CindarsHope.Combat;
+using CindarsHope.Foundation;
 using CindarsHope.Player;
-using CindarsHope.Skills;
 using NUnit.Framework;
 
 namespace CindarsHope.Tests.EditMode.Player

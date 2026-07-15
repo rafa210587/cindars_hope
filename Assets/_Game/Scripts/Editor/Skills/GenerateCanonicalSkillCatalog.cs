@@ -1,6 +1,7 @@
 #if UNITY_EDITOR
 using System.Collections.Generic;
 using System.Text;
+using CindarsHope.Foundation;
 using CindarsHope.Skills;
 using UnityEditor;
 using UnityEngine;

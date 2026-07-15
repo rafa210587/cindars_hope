@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using CindarsHope.Skills;
+using CindarsHope.Foundation;
 
 namespace CindarsHope.Player
 {
@@ -7,7 +7,7 @@ namespace CindarsHope.Player
     /// fable_39 — INFERRED player class (decision Q9.1). The player NEVER chooses a class:
     /// a display-only title plus a tiny identity bonus is DERIVED, read-only and deterministic,
     /// from how skill points are distributed across the five trees that
-    /// <see cref="SkillTreeManager"/> already persists.
+    /// <see cref="CindarsHope.Skills.SkillTreeManager"/> already persists.
     ///
     /// This is a PURE function (static, no Unity reference, no GameObject.Find/FindObjectOfType,
     /// no GameEventBus, no saved state). The runtime recompute hook

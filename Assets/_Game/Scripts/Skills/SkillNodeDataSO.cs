@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using CindarsHope.Core.Data;
+using CindarsHope.Foundation;
 using UnityEngine;
 
 namespace CindarsHope.Skills

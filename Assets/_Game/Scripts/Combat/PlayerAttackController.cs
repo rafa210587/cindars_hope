@@ -11,7 +11,6 @@ using CindarsHope.Interaction;
 using CindarsHope.Inventory;
 using CindarsHope.Inventory.Data;
 using CindarsHope.Player;
-using CindarsHope.Skills;
 using UnityEngine;
 
 namespace CindarsHope.Combat
@@ -140,7 +139,9 @@ namespace CindarsHope.Combat
             // F02: provider de stats derivados (DerivedStatsCalculator WAVE 05, antes Ã³rfÃ£o).
             // Base de Attack = ForÃ§a do player; equipment dict entra quando F03 criar o registry.
             var progression = bootstrap != null ? bootstrap.PlayerProgressionManager : null;
-            var skillTree = SkillTreeManager.Instance;
+            // arch: quebra do par mutuo Combat|Skills (2026-07-15) — porta ISkillTreeRuntime em vez
+            // do tipo concreto SkillTreeManager.
+            var skillTree = DomainManagerRegistry.Get<ISkillTreeRuntime>();
             _statsProvider = new PlayerCombatStatsProvider(
                 () => progression != null ? progression.Strength : 0,
                 () => skillTree != null ? skillTree.GetAllActivePassiveModifiers() : null);

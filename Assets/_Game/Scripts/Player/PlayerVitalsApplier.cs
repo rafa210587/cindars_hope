@@ -1,6 +1,7 @@
 using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
+using CindarsHope.Foundation;
 using UnityEngine;
 
 namespace CindarsHope.Player
@@ -19,7 +20,9 @@ namespace CindarsHope.Player
         private StaminaManager _staminaManager;
         private ManaManager _manaManager;
         private HungerManager _hungerManager;
-        private SkillTreeManagerRef _skillTreeRef;
+        // arch: quebra do par mutuo Player|Skills (2026-07-15) — porta ISkillTreeRuntime em vez do
+        // tipo concreto SkillTreeManager.
+        private ISkillTreeRuntime _skillTreeRuntime;
         private int _baseMaxHP;
         private int _baseMaxStamina;
         private int _baseMaxMana;
@@ -30,11 +33,6 @@ namespace CindarsHope.Player
 
         /// <summary>fable_47 (follow-up 2): redução de tempo de craft derivada (F18). Consumida por CraftingRuntime.</summary>
         public static System.Func<float> CraftTimeReductionSource;
-
-        private sealed class SkillTreeManagerRef
-        {
-            public CindarsHope.Skills.SkillTreeManager Manager;
-        }
 
         /// <summary>Proporção preservada com floor 1 (puro, testável).</summary>
         public static int PreserveRatio(int current, int oldMax, int newMax)
@@ -72,7 +70,7 @@ namespace CindarsHope.Player
                 return;
             }
 
-            var skillTree = _skillTreeRef?.Manager;
+            var skillTree = _skillTreeRuntime;
             _lastStats = DerivedStatsCalculator.Calculate(
                 baseMaxHP: _baseMaxHP,
                 baseAttack: 0,
@@ -166,7 +164,7 @@ namespace CindarsHope.Player
             _staminaManager = bootstrap.StaminaManager;
             _manaManager = bootstrap.ManaManager;
             _hungerManager = bootstrap.GetComponent<HungerManager>();
-            _skillTreeRef = new SkillTreeManagerRef { Manager = CindarsHope.Skills.SkillTreeManager.Instance };
+            _skillTreeRuntime = DomainManagerRegistry.Get<ISkillTreeRuntime>();
 
             if (!_basesCaptured && _playerManager != null)
             {

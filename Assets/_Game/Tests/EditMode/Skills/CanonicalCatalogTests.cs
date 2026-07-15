@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CindarsHope.Foundation;
 using CindarsHope.Player;
 using CindarsHope.Skills;
 using NUnit.Framework;

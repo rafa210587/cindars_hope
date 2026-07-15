@@ -246,7 +246,15 @@ namespace CindarsHope.Tests.EditMode.Architecture
                 "RepairEfficiencyProvider.cs",
                 // arch: quebra da direcao Quests->NPC (2026-07-14) — QuestGiverInteractable resolve o
                 // id do NPC dono via porta pura (string apenas) em vez de nomear CindarsHope.NPC.
-                "INpcIdentity.cs"
+                "INpcIdentity.cs",
+                // arch: quebra dos pares mutuos Combat|Skills e Player|Skills (2026-07-15) —
+                // SkillPassiveModifier (tipo puro) e os enums SkillModifierType/SkillTreeId movidos
+                // de CindarsHope.Skills para Foundation; Combat/Player consomem sem nomear
+                // CindarsHope.Skills. SkillTreeManager.Instance foi trocado por
+                // DomainManagerRegistry.Get<ISkillTreeRuntime>() nos callers de Combat/Player.
+                "SkillPassiveModifier.cs",
+                "SkillModifierType.cs",
+                "SkillTreeId.cs"
             };
             Assert.That(
                 sourceFiles.Select(Path.GetFileName),
