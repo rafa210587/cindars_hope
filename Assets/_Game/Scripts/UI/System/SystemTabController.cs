@@ -45,7 +45,10 @@ namespace CindarsHope.UI.SystemTab
         private void ResolveDependencies()
         {
             var bootstrap = GameBootstrap.Instance;
-            _saveManager = bootstrap != null ? bootstrap.SaveManager : null;
+            // arch: quebra do par mutuo Core|Save (2026-07-15) — bootstrap.SaveManager agora retorna
+            // a porta ISaveRuntime; SystemTabController ja referencia CindarsHope.Save diretamente
+            // (fora do par cortado), entao resolve o tipo concreto por cast local.
+            _saveManager = bootstrap != null ? bootstrap.SaveManager as SaveManager : null;
             _modalManager = bootstrap != null ? bootstrap.ModalManager : null;
             _probe = new SaveFileProbe(_saveManager);
             _viewModel = new SystemTabViewModel(_probe);

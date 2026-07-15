@@ -259,7 +259,13 @@ namespace CindarsHope.Tests.EditMode.Architecture
                 // (puros, sem UnityEngine) movidos/criados a partir de CindarsHope.UI.Modal para que
                 // GameBootstrap (Core) exponha push/pop/clear de modal sem nomear ModalManager concreto.
                 "ModalType.cs",
-                "IModalRuntime.cs"
+                "IModalRuntime.cs",
+                // arch: quebra do par mutuo Core|Save (2026-07-15) — port puro (sem UnityEngine) que
+                // permite a GameBootstrap (Core) expor save/load/hotbar sem nomear
+                // CindarsHope.Save.SaveManager. Rebind*/Initialize/Shutdown ficam de fora da porta
+                // (assinaturas cross-modulo); GameBootstrap resolve esses via
+                // IGameBootstrapRuntimeService (Core.Bootstrap).
+                "ISaveRuntime.cs"
             };
             Assert.That(
                 sourceFiles.Select(Path.GetFileName),

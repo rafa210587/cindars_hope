@@ -4,6 +4,7 @@ using CindarsHope.Cave.Data;
 using CindarsHope.Cave.Runtime;
 using CindarsHope.Economy;
 using CindarsHope.Interaction;
+using CindarsHope.Save;
 using CindarsHope.UI;
 using UnityEngine;
 
@@ -27,7 +28,10 @@ namespace CindarsHope.SceneManagement
                 return;
             }
 
-            var saveManager = bootstrap.SaveManager;
+            // arch: quebra do par mutuo Core|Save (2026-07-15) — bootstrap.SaveManager agora retorna
+            // a porta ISaveRuntime; este installer (SceneManagement, fora do par cortado) resolve o
+            // tipo concreto por cast local para os Rebind* cross-modulo (nao portaveis).
+            var saveManager = bootstrap.SaveManager as SaveManager;
             if (saveManager == null)
             {
                 Debug.LogWarning("CaveSceneRuntimeReferenceInstaller: SaveManager is null, cannot rebind player transform.", this);

@@ -30,11 +30,14 @@ namespace CindarsHope.Core.Bootstrap
         // ICraftingStationModal). A property expoe a porta IModalRuntime (Foundation) para os
         // consumidores existentes de GameBootstrap.Instance.ModalManager.
         [SerializeField] private MonoBehaviour _modalManager;
-        // arch: quebra do ciclo Core|Save (spec_arch_core_save_cycle_reduction_v39) — tipo totalmente
-        // qualificado (sem using CindarsHope.Save) para nao reintroduzir a aresta Core->Save; o
-        // campo/property permanecem como shim para os consumidores existentes de
-        // GameBootstrap.Instance.SaveManager (SceneManagement, UI, Editor validators).
-        [SerializeField] private CindarsHope.Save.SaveManager _saveManager;
+        // arch: quebra do par mutuo Core|Save (2026-07-15) — campo agora tipado como MonoBehaviour
+        // (nao mais CindarsHope.Save.SaveManager) para que Core pare de nomear CindarsHope.Save;
+        // Unity mantem a referencia de cena serializada normalmente (molde ModalManager/
+        // ICraftingStationModal). A property expoe a porta ISaveRuntime (Foundation) para os
+        // consumidores existentes de GameBootstrap.Instance.SaveManager. Rebind/Initialize/Shutdown
+        // (assinaturas cross-modulo) agora sao acionados via IGameBootstrapRuntimeService, que
+        // SaveManager implementa (ver InitializeBootstrapRuntimeServices/ShutdownBootstrapRuntimeServices).
+        [SerializeField] private MonoBehaviour _saveManager;
         [SerializeField] private CindarsHope.Player.HungerManager _hungerManager;
         [SerializeField] private CindarsHope.Player.StaminaManager _staminaManager;
         [SerializeField] private CindarsHope.Player.Data.PlayerDataSO _playerData;
@@ -68,7 +71,7 @@ namespace CindarsHope.Core.Bootstrap
         public TimeManager TimeManager => _timeManager;
         public GameTimeManager GameTimeManager => _gameTimeManager;
         public CindarsHope.Foundation.IModalRuntime ModalManager => _modalManager as CindarsHope.Foundation.IModalRuntime;
-        public CindarsHope.Save.SaveManager SaveManager => _saveManager;
+        public CindarsHope.Foundation.ISaveRuntime SaveManager => _saveManager as CindarsHope.Foundation.ISaveRuntime;
         public CindarsHope.Player.HungerManager HungerManager => _hungerManager;
         public CindarsHope.Player.StaminaManager StaminaManager => _staminaManager;
         public CindarsHope.Player.ManaManager ManaManager => _manaManager;
@@ -214,23 +217,7 @@ namespace CindarsHope.Core.Bootstrap
                 Debug.LogWarning("GameBootstrap is missing a GameTimeManager reference.", this);
             }
 
-            if (_saveManager != null)
-            {
-                _saveManager.RebindStarterInventoryData(_playerData, _itemDatabase);
-                _saveManager.Initialize();
-
-                // SPEC 14A-FIX14: drop hotbar bindings that don't have a matching item in the inventory.
-                // Prevents the "hotbar shows item_seed_wheat but Inventory is empty" inconsistency.
-                if (inventoryManager != null && _saveManager.HotbarState != null)
-                {
-                    var hotbar = _saveManager.HotbarState;
-                    inventoryManager.ClearHotbarBindingsForMissingItems(
-                        hotbar.GetSlotItemId,
-                        (slot, id) => hotbar.SetSlot(slot, id),
-                        CindarsHope.Foundation.HotbarState.SlotCount);
-                }
-            }
-            else
+            if (_saveManager == null)
             {
                 Debug.LogWarning("GameBootstrap is missing a SaveManager reference.", this);
             }
@@ -267,12 +254,29 @@ namespace CindarsHope.Core.Bootstrap
                 craftingManager.Initialize();
             }
 
+            // arch: quebra do par mutuo Core|Save (2026-07-15) — SaveManager.RebindStarterInventoryData
+            // + Initialize() nao sao mais chamados diretamente aqui; SaveManager implementa
+            // IGameBootstrapRuntimeService e recebe PlayerDataSO/ItemDatabaseSO via
+            // GameBootstrapRuntimeContext dentro do loop abaixo (mesmo molde ja usado por ShopManager).
             InitializeBootstrapRuntimeServices();
+
+            // SPEC 14A-FIX14: drop hotbar bindings that don't have a matching item in the inventory.
+            // Prevents the "hotbar shows item_seed_wheat but Inventory is empty" inconsistency. Movido
+            // para depois de InitializeBootstrapRuntimeServices() porque e ali que SaveManager.Initialize()
+            // agora roda (via IGameBootstrapRuntimeService) e popula os defaults do hotbar.
+            var saveRuntime = _saveManager as CindarsHope.Foundation.ISaveRuntime;
+            if (inventoryManager != null && saveRuntime != null && saveRuntime.HotbarState != null)
+            {
+                var hotbar = saveRuntime.HotbarState;
+                inventoryManager.ClearHotbarBindingsForMissingItems(
+                    hotbar.GetSlotItemId,
+                    (slot, id) => hotbar.SetSlot(slot, id),
+                    CindarsHope.Foundation.HotbarState.SlotCount);
+            }
 
             // arch: quebra do ciclo Core|Player (spec_arch_core_player_cycle_reduction_v37) —
             // PlayerProgressionManager/StatusEffectManager nao sao mais passados por aqui; self-registram
             // via static Instance (molde Craft/Economy/Skills/Equipment).
-            var progressionManager = CindarsHope.Player.Progression.PlayerProgressionManager.Instance;
             var statusEffectManager = CindarsHope.Player.StatusEffectManager.Instance;
 
             if (statusEffectManager != null)
@@ -295,13 +299,15 @@ namespace CindarsHope.Core.Bootstrap
                 skillTreeManager.RebindProgressionManager();
             }
 
-            if (_saveManager != null)
-            {
-                // arch: Core|Enemy (spec_arch_core_enemy_cycle_reduction_v31) — BestiaryManager nao eh
-                // mais passado por aqui; SaveManager resolve via BestiaryManager.Instance (self-registro).
-                _saveManager.RebindOptionalRuntimeManagers(null, progressionManager, _gameTimeManager, _staminaManager, statusEffectManager);
-            }
-
+            // arch: quebra do par mutuo Core|Save (2026-07-15) — a chamada
+            // _saveManager.RebindOptionalRuntimeManagers(...) que existia aqui foi removida: os tres
+            // *SceneRuntimeReferenceInstaller (Town/Farm/Cave) ja chamam
+            // saveManager.RebindOptionalRuntimeManagers(...) em Start() com o conjunto completo
+            // (incl. EquipmentManager/SkillTreeManager/ShopManager/BestiaryManager), sempre antes de
+            // qualquer Save/Load disparado pelo jogador. Confirmado via cena gerada: os campos
+            // _progressionManager/_gameTimeManager/_staminaManager/_statusEffectManager do SaveManager
+            // ja vem wireados diretamente (nao fileID: 0) pelo gerador de cena, entao
+            // SaveManager.Initialize() (Awake) ja os enxerga sem depender desta chamada precoce.
             CombatRuntimeInstaller.Install(BuildCombatInstallContext(), this);
 
             InitializeDeathSystem();
@@ -417,10 +423,11 @@ namespace CindarsHope.Core.Bootstrap
 
         private void ShutdownManagers()
         {
-            if (_saveManager != null)
-            {
-                _saveManager.Shutdown();
-            }
+            // arch: quebra do par mutuo Core|Save (2026-07-15) — _saveManager.Shutdown() nao e mais
+            // chamado diretamente aqui; SaveManager implementa IGameBootstrapRuntimeService e e
+            // desligado por ShutdownBootstrapRuntimeServices() no fim deste metodo (mesmo molde do
+            // ShopManager). SaveManager.Shutdown() so alterna a flag IsInitialized (sem efeito
+            // colateral observavel), entao a mudanca de ordem relativa e segura.
 
             // arch: Core|Player (spec_arch_core_player_cycle_reduction_v37) — StatusEffectManager
             // resolvido via static Instance (molde Craft/Economy/Skills/Equipment) em vez do campo
@@ -473,7 +480,9 @@ namespace CindarsHope.Core.Bootstrap
 
         private void InitializeBootstrapRuntimeServices()
         {
-            var context = new GameBootstrapRuntimeContext(_itemDatabase);
+            // arch: quebra do par mutuo Core|Save (2026-07-15) — PlayerData incluido no context para
+            // que SaveManager.InitializeFromBootstrap chame RebindStarterInventoryData internamente.
+            var context = new GameBootstrapRuntimeContext(_itemDatabase, _playerData);
             var foundShopService = false;
 
             foreach (var behaviour in GetComponents<MonoBehaviour>())

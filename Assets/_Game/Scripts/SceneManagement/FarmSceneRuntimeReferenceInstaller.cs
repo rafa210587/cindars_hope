@@ -5,6 +5,7 @@ using CindarsHope.Craft;
 using CindarsHope.Economy;
 using CindarsHope.Farm;
 using CindarsHope.Interaction;
+using CindarsHope.Save;
 using CindarsHope.UI;
 using CindarsHope.World;
 using UnityEngine;
@@ -66,7 +67,10 @@ namespace CindarsHope.SceneManagement
             var hungerManager = bootstrap.HungerManager;
             var staminaManager = bootstrap.StaminaManager;
             var timeManager = bootstrap.TimeManager;
-            var saveManager = bootstrap.SaveManager;
+            // arch: quebra do par mutuo Core|Save (2026-07-15) — bootstrap.SaveManager agora retorna
+            // a porta ISaveRuntime; este installer (SceneManagement, fora do par cortado) resolve o
+            // tipo concreto por cast local para os Rebind* cross-modulo (nao portaveis).
+            var saveManager = bootstrap.SaveManager as SaveManager;
             // arch: Core|Craft (spec_arch_core_craft_cycle_reduction_v32) — CraftingManager
             // self-registra via static Instance; GameBootstrap nao segura mais essa ref.
             var craftingManager = CraftingManager.Instance;

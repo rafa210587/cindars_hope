@@ -3,6 +3,7 @@ using System.IO;
 using System.Collections;
 using CindarsHope.Cave.Runtime;
 using CindarsHope.Core;
+using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Data;
 using CindarsHope.Core.Events;
 using CindarsHope.Core.Time;
@@ -39,8 +40,12 @@ namespace CindarsHope.Save
     /// preservado byte-a-byte â€” a refatoraÃ§Ã£o apenas realoca o cÃ³digo de capture/restore para
     /// os providers sem alterar DTOs, nomes de campo ou ordem de serializaÃ§Ã£o.
     /// </summary>
+    // arch: quebra do par mutuo Core|Save (2026-07-15) — implementa ISaveRuntime (Foundation, porta
+    // neutra consumida por GameBootstrap/UI/SceneManagement/Editor) e IGameBootstrapRuntimeService
+    // (Core.Bootstrap, mesmo molde de ShopManager) para que GameBootstrap inicialize/desligue este
+    // manager sem nomear CindarsHope.Save.SaveManager.
     [DisallowMultipleComponent]
-    public partial class SaveManager : MonoBehaviour
+    public partial class SaveManager : MonoBehaviour, ISaveRuntime, IGameBootstrapRuntimeService
     {
         private static readonly ProfilerMarker SaveMarker =
             new ProfilerMarker("CindarsHope.Save.CaptureSerializeWrite");
@@ -144,6 +149,24 @@ namespace CindarsHope.Save
         /// <summary>Indica se o SaveManager foi inicializado e estÃ¡ pronto para salvar/carregar.</summary>
         public bool IsInitialized { get; private set; }
         public int RegisteredProviderCount => _providerRegistry.Count;
+
+        // arch: quebra do par mutuo Core|Save (2026-07-15) — IGameBootstrapRuntimeService.BootstrapServiceId.
+        public string BootstrapServiceId => "SaveManager";
+
+        /// <summary>
+        /// IGameBootstrapRuntimeService: chamado por GameBootstrap.InitializeBootstrapRuntimeServices()
+        /// (mesmo loop que ja inicializa ShopManager) em vez de GameBootstrap chamar
+        /// RebindStarterInventoryData/Initialize diretamente. Preserva o comportamento anterior:
+        /// sincroniza PlayerDataSO/ItemDatabaseSO recebidos do bootstrap e entao inicializa os providers.
+        /// </summary>
+        public void InitializeFromBootstrap(GameBootstrapRuntimeContext context)
+        {
+            RebindStarterInventoryData(context.PlayerData, context.ItemDatabase);
+            Initialize();
+        }
+
+        /// <summary>IGameBootstrapRuntimeService: chamado por ShutdownBootstrapRuntimeServices().</summary>
+        public void ShutdownFromBootstrap() => Shutdown();
 
         // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         // Ciclo de vida

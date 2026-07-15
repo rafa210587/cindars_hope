@@ -32,7 +32,10 @@ namespace CindarsHope.UI.Title
         {
             SystemTabController.EnsureSettingsBound();
             var bootstrap = GameBootstrap.Instance;
-            _saveManager = bootstrap != null ? bootstrap.SaveManager : null;
+            // arch: quebra do par mutuo Core|Save (2026-07-15) — bootstrap.SaveManager agora retorna
+            // a porta ISaveRuntime; TitleScreenController ja referencia CindarsHope.Save diretamente
+            // (fora do par cortado), entao resolve o tipo concreto por cast local.
+            _saveManager = bootstrap != null ? bootstrap.SaveManager as SaveManager : null;
             _probe = new SaveFileProbe(_saveManager);
             _viewModel = new TitleFlowViewModel(_probe);
         }
