@@ -300,17 +300,18 @@ namespace CindarsHope.Editor.EnemyTaxonomy
 
         private static void WireBestiaryManager(GameBootstrap bootstrap)
         {
-            var bestiaryManager = bootstrap.GetComponent<BestiaryManager>();
-            if (bestiaryManager == null)
+            // arch: Core|Enemy (spec_arch_core_enemy_cycle_reduction_v31) — o GameBootstrap nao segura
+            // mais um serialized field `_bestiaryManager`; o BestiaryManager se auto-registra em runtime
+            // (Awake -> DomainManagerRegistry / .Instance) e o SaveManager o resolve por ali. Portanto o
+            // wiring correto aqui e apenas GARANTIR que o componente exista no GameObject do bootstrap
+            // (para esse self-register acontecer). Nao ha campo serializado para setar — tentar setar
+            // `_bestiaryManager` so gerava um warning de "serialized field missing".
+            if (bootstrap.GetComponent<BestiaryManager>() == null)
             {
-                bestiaryManager = bootstrap.gameObject.AddComponent<BestiaryManager>();
+                var bestiaryManager = bootstrap.gameObject.AddComponent<BestiaryManager>();
+                EditorUtility.SetDirty(bestiaryManager);
+                EditorUtility.SetDirty(bootstrap);
             }
-
-            var serializedBootstrap = new SerializedObject(bootstrap);
-            SetReference(serializedBootstrap, "_bestiaryManager", bestiaryManager);
-            serializedBootstrap.ApplyModifiedPropertiesWithoutUndo();
-            EditorUtility.SetDirty(bootstrap);
-            EditorUtility.SetDirty(bestiaryManager);
         }
 
         private static T[] LoadAssets<T>(string folder) where T : Object
