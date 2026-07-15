@@ -1,5 +1,6 @@
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
+using CindarsHope.Foundation;
 using CindarsHope.Player.Death;
 using CindarsHope.UI.Modal;
 using UnityEngine;

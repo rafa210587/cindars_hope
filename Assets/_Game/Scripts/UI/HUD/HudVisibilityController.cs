@@ -1,7 +1,7 @@
 using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
-using CindarsHope.UI.Modal;
+using CindarsHope.Foundation;
 using UnityEngine;
 
 namespace CindarsHope.UI.HUD
@@ -10,7 +10,7 @@ namespace CindarsHope.UI.HUD
     public sealed class HudVisibilityController : MonoBehaviour
     {
         private bool _wasVisible = true;
-        private ModalManager _modalManager;
+        private IModalRuntime _modalManager;
 
         private void Update()
         {

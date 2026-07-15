@@ -2,6 +2,7 @@ using System.Linq;
 using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
+using CindarsHope.Foundation;
 using CindarsHope.Quests;
 using CindarsHope.Quests.Runtime;
 using CindarsHope.Quests.Save;

@@ -4,8 +4,8 @@ using CindarsHope.Audio;
 using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
+using CindarsHope.Foundation;
 using CindarsHope.Save;
-using CindarsHope.UI.Modal;
 
 namespace CindarsHope.UI.SystemTab
 {
@@ -23,7 +23,7 @@ namespace CindarsHope.UI.SystemTab
         private SystemTabViewModel _viewModel;
         private SaveFileProbe _probe;
         private SaveManager _saveManager;
-        private ModalManager _modalManager;
+        private IModalRuntime _modalManager;
 
         public SystemTabViewModel ViewModel => _viewModel;
 

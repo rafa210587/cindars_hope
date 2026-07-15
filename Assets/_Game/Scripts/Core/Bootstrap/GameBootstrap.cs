@@ -24,10 +24,12 @@ namespace CindarsHope.Core.Bootstrap
         // CindarsHope.Player*) para nao reintroduzir a aresta Core->Player.
         [SerializeField] private TimeManager _timeManager;
         [SerializeField] private GameTimeManager _gameTimeManager;
-        // arch: quebra do ciclo Core|UI (spec_arch_core_ui_cycle_reduction_v38) — tipo totalmente
-        // qualificado (sem using CindarsHope.UI.Modal) para nao reintroduzir a aresta Core->UI; o
-        // campo/property permanecem para os ~40 consumidores existentes de GameBootstrap.Instance.ModalManager.
-        [SerializeField] private CindarsHope.UI.Modal.ModalManager _modalManager;
+        // arch: quebra do par mutuo Core|UI (2026-07-15) — campo agora tipado como MonoBehaviour
+        // (nao mais CindarsHope.UI.Modal.ModalManager) para que Core pare de nomear CindarsHope.UI;
+        // Unity mantem a referencia de cena serializada normalmente (molde ManaManager/
+        // ICraftingStationModal). A property expoe a porta IModalRuntime (Foundation) para os
+        // consumidores existentes de GameBootstrap.Instance.ModalManager.
+        [SerializeField] private MonoBehaviour _modalManager;
         // arch: quebra do ciclo Core|Save (spec_arch_core_save_cycle_reduction_v39) — tipo totalmente
         // qualificado (sem using CindarsHope.Save) para nao reintroduzir a aresta Core->Save; o
         // campo/property permanecem como shim para os consumidores existentes de
@@ -65,7 +67,7 @@ namespace CindarsHope.Core.Bootstrap
 
         public TimeManager TimeManager => _timeManager;
         public GameTimeManager GameTimeManager => _gameTimeManager;
-        public CindarsHope.UI.Modal.ModalManager ModalManager => _modalManager;
+        public CindarsHope.Foundation.IModalRuntime ModalManager => _modalManager as CindarsHope.Foundation.IModalRuntime;
         public CindarsHope.Save.SaveManager SaveManager => _saveManager;
         public CindarsHope.Player.HungerManager HungerManager => _hungerManager;
         public CindarsHope.Player.StaminaManager StaminaManager => _staminaManager;

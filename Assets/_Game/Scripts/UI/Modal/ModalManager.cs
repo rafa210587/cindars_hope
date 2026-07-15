@@ -4,30 +4,10 @@ using UnityEngine;
 
 namespace CindarsHope.UI.Modal
 {
-    public enum ModalType
-    {
-        None,
-        Dialogue,
-        QuestOffer,
-        ShopMenu,
-        Buy,
-        Sell,
-        Crafting,
-        Inventory,
-        CorpseRecovery,
-        AnyaFountain,
-        SkillTree,
-        CharacterEquipment,
-        Pause,
-        Death,
-        CaveCheckpoint,
-        QuestLog,
-        // fable_56: confirmacoes da aba Sistema / titulo (Carregar, Sair, recuperacao de backup).
-        SystemConfirm
-    }
-
+    // arch: quebra do par mutuo Core|UI (2026-07-15) — ModalType movido para CindarsHope.Foundation
+    // (valores e ordem preservados); resolvido aqui pelo `using CindarsHope.Foundation;` acima.
     [DisallowMultipleComponent]
-    public sealed class ModalManager : MonoBehaviour, IModalStateProvider
+    public sealed class ModalManager : MonoBehaviour, IModalStateProvider, IModalRuntime
     {
         private Stack<ModalType> _modalStack = new Stack<ModalType>();
 

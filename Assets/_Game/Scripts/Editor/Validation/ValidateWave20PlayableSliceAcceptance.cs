@@ -69,10 +69,10 @@ namespace CindarsHope.Editor.Validation
             CheckType("CindarsHope.UI.Modal.ModalManager", "ModalManager exists");
 
             // ─── ModalType enum values ────────────────────────────────────────────
-            CheckEnumValue("CindarsHope.UI.Modal.ModalType", "QuestLog", "ModalType.QuestLog exists");
-            CheckEnumValue("CindarsHope.UI.Modal.ModalType", "Inventory", "ModalType.Inventory exists");
-            CheckEnumValue("CindarsHope.UI.Modal.ModalType", "QuestOffer", "ModalType.QuestOffer exists");
-            CheckEnumValue("CindarsHope.UI.Modal.ModalType", "ShopMenu", "ModalType.ShopMenu exists");
+            CheckEnumValue("CindarsHope.Foundation.ModalType", "QuestLog", "ModalType.QuestLog exists");
+            CheckEnumValue("CindarsHope.Foundation.ModalType", "Inventory", "ModalType.Inventory exists");
+            CheckEnumValue("CindarsHope.Foundation.ModalType", "QuestOffer", "ModalType.QuestOffer exists");
+            CheckEnumValue("CindarsHope.Foundation.ModalType", "ShopMenu", "ModalType.ShopMenu exists");
 
             // ─── Player movement action types ─────────────────────────────────────
             CheckType("CindarsHope.Player.Movement.PlayerDashController", "PlayerDashController exists");

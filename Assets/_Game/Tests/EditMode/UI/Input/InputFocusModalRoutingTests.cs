@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using CindarsHope.Foundation;
 using CindarsHope.UI.InputRouting;
 using CindarsHope.UI.Modal;
 

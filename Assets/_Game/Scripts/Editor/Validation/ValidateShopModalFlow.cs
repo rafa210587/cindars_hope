@@ -1,6 +1,7 @@
 #if UNITY_EDITOR
 using System;
 using System.Reflection;
+using CindarsHope.Foundation;
 using CindarsHope.NPC;
 using CindarsHope.UI.Modal;
 using CindarsHope.UI.Shop;

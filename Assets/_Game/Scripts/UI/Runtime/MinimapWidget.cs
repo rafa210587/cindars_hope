@@ -1,6 +1,6 @@
 using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
-using CindarsHope.UI.Modal;
+using CindarsHope.Foundation;
 using Unity.Profiling;
 using UnityEngine;
 using UnityEngine.UI;
@@ -47,7 +47,7 @@ namespace CindarsHope.UI.Runtime
         private float _accumulator;
 
         private MinimapGridSource _source;
-        private ModalManager _modalManager;
+        private IModalRuntime _modalManager;
 
         public bool IsVisible { get; private set; } = true;
 

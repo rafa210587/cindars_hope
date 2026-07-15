@@ -79,7 +79,7 @@ namespace CindarsHope.UI.Dialogue
         public void ShowWithChoices(string dialogueText, List<DialogueChoice> choices)
         {
             var mm = _modalManager ?? GameBootstrap.Instance?.ModalManager;
-            if (mm != null && !mm.PushModal(Modal.ModalType.Dialogue))
+            if (mm != null && !mm.PushModal(CindarsHope.Foundation.ModalType.Dialogue))
             {
                 Debug.LogWarning("DialogueModal rejected because another interactive modal is active.", this);
                 return;
@@ -125,7 +125,7 @@ namespace CindarsHope.UI.Dialogue
             _isShowing = false;
             ClearChoices();
             var mm = _modalManager ?? GameBootstrap.Instance?.ModalManager;
-            mm?.TryPopModal(Modal.ModalType.Dialogue, out _);
+            mm?.TryPopModal(CindarsHope.Foundation.ModalType.Dialogue, out _);
             OnClose?.Invoke();
         }
 

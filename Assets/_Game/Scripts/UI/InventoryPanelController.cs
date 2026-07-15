@@ -26,7 +26,9 @@ namespace CindarsHope.UI
 
         private InventoryManager _inventoryManager;
         private EquipmentManager _equipmentManager;
-        private ModalManager _modalManager;
+        // arch: Core|UI (2026-07-15) — tipado como IModalRuntime (porta) porque so consome
+        // PushModal/TryPopModal, resolvidos via GameBootstrap.Instance.ModalManager.
+        private IModalRuntime _modalManager;
         private PanelMode _mode;
         private bool _isOpen;
         private int _selectedSlotIndex;

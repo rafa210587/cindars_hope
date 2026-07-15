@@ -1,4 +1,5 @@
 using CindarsHope.Core.Bootstrap;
+using CindarsHope.Foundation;
 using CindarsHope.UI.Modal;
 using CindarsHope.UI.Skills;
 using UnityEngine;
@@ -18,7 +19,10 @@ namespace CindarsHope.UI.Skills
             var bootstrap = GameBootstrap.Instance;
             if (bootstrap == null) return;
 
-            var modal = bootstrap.ModalManager;
+            // arch: Core|UI (2026-07-15) — GameBootstrap.ModalManager agora e IModalRuntime (porta);
+            // cast para o tipo concreto porque este handler usa OpenModal<T>, nao portavel.
+            // SkillTreeInputHandler ja e do modulo UI, entao isso nao afeta o par Core|UI.
+            var modal = bootstrap.ModalManager as ModalManager;
             if (modal == null) return;
 
             // If skill tree is already open, it will handle its own close via its Update.

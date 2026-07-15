@@ -133,10 +133,10 @@ namespace CindarsHope.Editor.Validation
             Check("ModalManager initializes", modalManager.IsInitialized);
             Check("ModalManager starts with no active modal", !modalManager.HasActiveModal);
 
-            modalManager.PushModal(CindarsHope.UI.Modal.ModalType.Dialogue);
+            modalManager.PushModal(CindarsHope.Foundation.ModalType.Dialogue);
             Check("ModalManager can push modal", modalManager.HasActiveModal);
 
-            var success = modalManager.TryPopModal(CindarsHope.UI.Modal.ModalType.Dialogue, out _);
+            var success = modalManager.TryPopModal(CindarsHope.Foundation.ModalType.Dialogue, out _);
             Check("ModalManager can pop modal", success);
             Check("ModalManager has no active modal after pop", !modalManager.HasActiveModal);
 

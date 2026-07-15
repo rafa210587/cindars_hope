@@ -254,7 +254,12 @@ namespace CindarsHope.Tests.EditMode.Architecture
                 // DomainManagerRegistry.Get<ISkillTreeRuntime>() nos callers de Combat/Player.
                 "SkillPassiveModifier.cs",
                 "SkillModifierType.cs",
-                "SkillTreeId.cs"
+                "SkillTreeId.cs",
+                // arch: quebra do par mutuo Core|UI (2026-07-15) — enum ModalType e port IModalRuntime
+                // (puros, sem UnityEngine) movidos/criados a partir de CindarsHope.UI.Modal para que
+                // GameBootstrap (Core) exponha push/pop/clear de modal sem nomear ModalManager concreto.
+                "ModalType.cs",
+                "IModalRuntime.cs"
             };
             Assert.That(
                 sourceFiles.Select(Path.GetFileName),

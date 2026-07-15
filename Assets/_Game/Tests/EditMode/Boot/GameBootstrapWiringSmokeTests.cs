@@ -69,8 +69,14 @@ namespace CindarsHope.Tests.EditMode.Boot
                 string expectedPropertyName = FieldNameToExpectedPropertyName(field.Name);
 
                 bool hasMatch = properties.Any(p =>
-                    p.PropertyType == field.FieldType &&
-                    (p.Name == expectedPropertyName || p.Name.Equals(expectedPropertyName, System.StringComparison.OrdinalIgnoreCase)));
+                    (p.Name == expectedPropertyName || p.Name.Equals(expectedPropertyName, System.StringComparison.OrdinalIgnoreCase)) &&
+                    (p.PropertyType == field.FieldType
+                     // arch: padrao de porta (ex.: corte Core|UI) — o campo serializado e um
+                     // MonoBehaviour neutro (para o Core nao nomear o modulo dono, ex.: UI) e a
+                     // property publica o expoe via a porta (interface em Foundation, ex.: IModalRuntime).
+                     // O contrato campo<->property que os consumidores usam segue intacto (eles usam a
+                     // property/porta); so o TIPO do campo deixou de ser o concreto do outro modulo.
+                     || (field.FieldType == typeof(MonoBehaviour) && p.PropertyType.IsInterface)));
 
                 if (!hasMatch)
                 {

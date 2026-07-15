@@ -85,7 +85,7 @@ namespace CindarsHope.Editor.Validation
             CheckType("CindarsHope.Player.Movement.PlayerDashController", "PlayerDashController still exists (no regression)");
 
             // ─── ModalType enum has QuestLog (WAVE19 regression check) ────────
-            CheckEnumValue("CindarsHope.UI.Modal.ModalType", "QuestLog",
+            CheckEnumValue("CindarsHope.Foundation.ModalType", "QuestLog",
                 "ModalType.QuestLog still exists (WAVE19 no regression)");
 
             // ─── WAVE20 validator still works ─────────────────────────────────

@@ -50,7 +50,11 @@ namespace CindarsHope.UI.Death
                 return false;
             }
 
-            _modalManager = bootstrap.ModalManager;
+            // arch: Core|UI (2026-07-15) — GameBootstrap.ModalManager agora e IModalRuntime (porta);
+            // cast para o tipo concreto porque este controller usa OpenModal<T>, nao portavel (exige
+            // ModalBase/MonoBehaviour). CorpseRecoveryUIController ja e do modulo UI, entao nomear
+            // ModalManager concreto aqui nao afeta o par Core|UI.
+            _modalManager = bootstrap.ModalManager as ModalManager;
             _recoveryManager = bootstrap.CorpseRecoveryManager;
 
             if (_modalManager == null || _recoveryManager == null)

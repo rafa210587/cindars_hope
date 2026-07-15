@@ -4,6 +4,7 @@ using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
 using CindarsHope.Core.Time;
+using CindarsHope.Foundation;
 using CindarsHope.Inventory;
 using CindarsHope.Player.Death;
 using CindarsHope.UI.Modal;

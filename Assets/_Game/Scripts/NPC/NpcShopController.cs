@@ -3,6 +3,7 @@ using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
 using CindarsHope.Economy;
+using CindarsHope.Foundation;
 using CindarsHope.Interaction;
 using CindarsHope.Inventory;
 using CindarsHope.Inventory.Data;
@@ -140,7 +141,10 @@ namespace CindarsHope.NPC
             RebindIfAvailable(ref _playerManager, bootstrap.PlayerManager, nameof(_playerManager), reason);
             RebindIfAvailable(ref _inventoryManager, bootstrap.InventoryManager, nameof(_inventoryManager), reason);
             RebindIfAvailable(ref _itemDatabase, bootstrap.ItemDatabase, nameof(_itemDatabase), reason);
-            RebindIfAvailable(ref _modalManager, bootstrap.ModalManager, nameof(_modalManager), reason);
+            // arch: Core|UI (2026-07-15) — GameBootstrap.ModalManager agora e IModalRuntime (porta);
+            // cast para o tipo concreto preserva o RebindIfAvailable<T> where T : Object sem alterar
+            // o par NPC|UI (ja existente, fora de escopo desta mudanca).
+            RebindIfAvailable(ref _modalManager, bootstrap.ModalManager as ModalManager, nameof(_modalManager), reason);
         }
 
         private void RebindIfAvailable<T>(ref T field, T stableReference, string fieldName, string reason) where T : Object
@@ -760,7 +764,7 @@ namespace CindarsHope.NPC
                     || (bootstrap.PlayerManager != null && _playerManager != bootstrap.PlayerManager)
                     || (bootstrap.InventoryManager != null && _inventoryManager != bootstrap.InventoryManager)
                     || (bootstrap.ItemDatabase != null && _itemDatabase != bootstrap.ItemDatabase)
-                    || (bootstrap.ModalManager != null && _modalManager != bootstrap.ModalManager));
+                    || (bootstrap.ModalManager != null && _modalManager != (bootstrap.ModalManager as ModalManager)));
         }
 
         private void LogTransactionError(ShopMenuOption option, string fieldName, string cause)

@@ -1,3 +1,4 @@
+using CindarsHope.Foundation;
 using UnityEngine;
 
 namespace CindarsHope.UI.Modal

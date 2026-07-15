@@ -83,7 +83,7 @@ namespace CindarsHope.UI.Shop
                 return;
             }
 
-            if (_modalManager != null && !_modalManager.PushModal(Modal.ModalType.Buy))
+            if (_modalManager != null && !_modalManager.PushModal(CindarsHope.Foundation.ModalType.Buy))
             {
                 Debug.LogWarning("BuyPanel rejected because another interactive modal is active.", this);
                 return;
@@ -109,7 +109,7 @@ namespace CindarsHope.UI.Shop
         public void Hide()
         {
             HideVisualOnly();
-            _modalManager?.TryPopIfCurrent(Modal.ModalType.Buy);
+            _modalManager?.TryPopIfCurrent(CindarsHope.Foundation.ModalType.Buy);
         }
 
         public void HideVisualOnly()

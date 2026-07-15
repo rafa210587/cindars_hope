@@ -29,7 +29,7 @@ namespace CindarsHope.Editor.Validation
 
             Check("ModalType.QuestLog exists", () =>
             {
-                var t = FindType("CindarsHope.UI.Modal.ModalType");
+                var t = FindType("CindarsHope.Foundation.ModalType");
                 if (t == null) return false;
                 return Enum.IsDefined(t, "QuestLog");
             }, ref pass, ref fail);

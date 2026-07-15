@@ -173,17 +173,17 @@ namespace CindarsHope.Editor.Testing
 
             Assert(!modalManager.HasActiveModal, "Should start with no active modal");
 
-            modalManager.PushModal(CindarsHope.UI.Modal.ModalType.Dialogue);
+            modalManager.PushModal(CindarsHope.Foundation.ModalType.Dialogue);
             Assert(modalManager.HasActiveModal, "Should have active modal");
-            Assert(modalManager.CurrentModal == CindarsHope.UI.Modal.ModalType.Dialogue, "Current modal should be Dialogue");
+            Assert(modalManager.CurrentModal == CindarsHope.Foundation.ModalType.Dialogue, "Current modal should be Dialogue");
 
-            Assert(!modalManager.PushModal(CindarsHope.UI.Modal.ModalType.ShopMenu), "Modal overlap should be rejected");
-            Assert(modalManager.CurrentModal == CindarsHope.UI.Modal.ModalType.Dialogue, "Dialogue should remain active");
+            Assert(!modalManager.PushModal(CindarsHope.Foundation.ModalType.ShopMenu), "Modal overlap should be rejected");
+            Assert(modalManager.CurrentModal == CindarsHope.Foundation.ModalType.Dialogue, "Dialogue should remain active");
 
-            var success = modalManager.TryPopModal(CindarsHope.UI.Modal.ModalType.Dialogue, out var popped);
+            var success = modalManager.TryPopModal(CindarsHope.Foundation.ModalType.Dialogue, out var popped);
             Assert(success, "Should pop Dialogue");
-            Assert(modalManager.PushModal(CindarsHope.UI.Modal.ModalType.ShopMenu), "Shop menu should open after dialogue closes");
-            success = modalManager.TryPopModal(CindarsHope.UI.Modal.ModalType.ShopMenu, out popped);
+            Assert(modalManager.PushModal(CindarsHope.Foundation.ModalType.ShopMenu), "Shop menu should open after dialogue closes");
+            success = modalManager.TryPopModal(CindarsHope.Foundation.ModalType.ShopMenu, out popped);
             Assert(success, "Should pop ShopMenu");
             Assert(!modalManager.HasActiveModal, "Should have no active modal");
 

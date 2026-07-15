@@ -1,6 +1,6 @@
 using System.Text;
 using CindarsHope.Core.Bootstrap;
-using CindarsHope.UI.Modal;
+using CindarsHope.Foundation;
 using UnityEngine;
 
 namespace CindarsHope.UI.SystemTab
@@ -22,7 +22,7 @@ namespace CindarsHope.UI.SystemTab
     [DisallowMultipleComponent]
     public sealed class ControlsReferenceScreen : MonoBehaviour
     {
-        private ModalManager _modalManager;
+        private IModalRuntime _modalManager;
 
         public bool IsOpen { get; private set; }
 

@@ -68,7 +68,7 @@ namespace CindarsHope.UI.Shop
 
         public void Show()
         {
-            if (_modalManager != null && !_modalManager.PushModal(Modal.ModalType.ShopMenu))
+            if (_modalManager != null && !_modalManager.PushModal(CindarsHope.Foundation.ModalType.ShopMenu))
             {
                 Debug.LogWarning("ShopMenuModal rejected because another interactive modal is active.", this);
                 return;
@@ -89,7 +89,7 @@ namespace CindarsHope.UI.Shop
         public void Hide()
         {
             HideVisualOnly();
-            _modalManager?.TryPopIfCurrent(Modal.ModalType.ShopMenu);
+            _modalManager?.TryPopIfCurrent(CindarsHope.Foundation.ModalType.ShopMenu);
         }
 
         public void HideVisualOnly()

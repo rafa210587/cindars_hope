@@ -49,7 +49,10 @@ namespace CindarsHope.UI.Locations
                 return false;
             }
 
-            _modalManager = bootstrap.ModalManager;
+            // arch: Core|UI (2026-07-15) — GameBootstrap.ModalManager agora e IModalRuntime (porta);
+            // cast para o tipo concreto porque este controller usa OpenModal<T>, nao portavel.
+            // AnyaFountainUIController ja e do modulo UI, entao isso nao afeta o par Core|UI.
+            _modalManager = bootstrap.ModalManager as ModalManager;
 
             if (_modalManager == null)
             {

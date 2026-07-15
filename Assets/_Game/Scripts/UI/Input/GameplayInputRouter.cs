@@ -1,7 +1,7 @@
 using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
-using CindarsHope.UI.Modal;
+using CindarsHope.Foundation;
 using UnityEngine;
 
 namespace CindarsHope.UI.Routing
@@ -19,7 +19,7 @@ namespace CindarsHope.UI.Routing
         // When true, legacy OnGUI singleton panels should skip their own key handling.
         public static bool IsActive => Instance != null && Instance.enabled;
 
-        private ModalManager _modalManager;
+        private IModalRuntime _modalManager;
 
         public static GameplayInputRouter Install(Transform host)
         {

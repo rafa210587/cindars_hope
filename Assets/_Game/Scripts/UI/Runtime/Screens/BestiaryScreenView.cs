@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using CindarsHope.Combat.Bestiary;
 using CindarsHope.Core.Events;
 using CindarsHope.Enemy;
+using CindarsHope.Foundation;
 using CindarsHope.UI.Modal;
 using UnityEngine;
 
