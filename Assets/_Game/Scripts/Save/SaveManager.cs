@@ -162,6 +162,12 @@ namespace CindarsHope.Save
 
             IsInitialized = true;
 
+            // arch: anuncia o FarmTileGrid no DomainManagerRegistry para que consumidores em
+            // CindarsHope.Farm.Runtime (FarmSceneRuntimeBootstrap/FarmTillingInputController) o
+            // resolvam sem nomear SaveManager — quebra do ciclo mutuo Farm|Save
+            // (spec_arch_farm_save_cycle_reduction). Mesmo padrao ja usado para InventoryManager.
+            DomainManagerRegistry.Register(_farmTileGrid);
+
             // Providers jÃ¡ existentes (SPEC_10 / fable_07 / fable_62)
             _hotbarProvider = new HotbarSectionProvider(_hotbarState);
             _spellbookProvider = new SpellbookSectionProvider();

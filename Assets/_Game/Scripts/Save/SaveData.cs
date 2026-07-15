@@ -127,26 +127,8 @@ namespace CindarsHope.Save
     // CindarsHope.Inventory (InventorySaveData.cs) — quebra do ciclo mutuo Inventory|Save. Ver
     // campo Inventory acima.
 
-    [Serializable]
-    public class FarmSaveData
-    {
-        public List<FarmPlotSaveData> Plots = new List<FarmPlotSaveData>();
-        public List<TreeSaveData> Trees = new List<TreeSaveData>();
-
-        // fable_55: jobs de processamento ativos (queijaria/barril). Campo ADITIVO na seção farm;
-        // só IDs/ints (ADR-0006). Ausente em save legado = sem jobs (CA-5). Dono: FarmProcessingStationService.
-        public CindarsHope.Farm.Processing.FarmProcessingSaveData Processing = new CindarsHope.Farm.Processing.FarmProcessingSaveData();
-
-        // fable_54: batch de envio pendente da caixa de shipping (venda overnight). Campo ADITIVO na
-        // seção farm; só ids/ints/floats (ADR-0006). Ausente em save legado = lista vazia = nenhum
-        // batch pendente (CA-4). Dono: ShippingBinRuntimeService.
-        public CindarsHope.Farm.Shipping.PendingShippingSaveData PendingShipping = new CindarsHope.Farm.Shipping.PendingShippingSaveData();
-
-        // fable_54: estado dos pontos de forrageio do dia. Campo ADITIVO na seção farm; só ids/ints
-        // (ADR-0006). Ausente em save legado = lista vazia = spawns regeneram no próximo DayStarted
-        // (CA-4). Dono: FarmForageRuntimeService.
-        public CindarsHope.Farm.Forage.ForageSpawnsSaveData ForageSpawns = new CindarsHope.Farm.Forage.ForageSpawnsSaveData();
-    }
+    // arch: FarmSaveData movido para CindarsHope.Farm (Farm/FarmSaveData.cs) — quebra do ciclo mutuo
+    // Farm|Save (spec_arch_farm_save_cycle_reduction). Ver campo Farm acima.
 
     [Serializable]
     public class WorldSaveData

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using CindarsHope.Save;
 using UnityEngine;
 
 namespace CindarsHope.Farm

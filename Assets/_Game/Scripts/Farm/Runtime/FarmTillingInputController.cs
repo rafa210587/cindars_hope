@@ -3,8 +3,8 @@ using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
 using CindarsHope.Equipment;
 using CindarsHope.Farm.Watering;
+using CindarsHope.Foundation;
 using CindarsHope.Player;
-using CindarsHope.Save;
 using CindarsHope.Tools;
 using UnityEngine;
 
@@ -18,7 +18,9 @@ namespace CindarsHope.Farm.Runtime
     /// jogador e chama FarmTilledSoilService.TillTile / WaterTile / HarvestTile conforme a
     /// ferramenta equipada no hotbar.
     ///
-    /// Wiring: referencias injetadas pelo gerador de cena (sem FindObjectOfType).
+    /// Wiring: referencias injetadas pelo gerador de cena (sem FindObjectOfType). FarmTileGrid
+    /// resolvido via DomainManagerRegistry (SaveManager o registra no Initialize()) — sem nomear
+    /// CindarsHope.Save (quebra do ciclo mutuo Farm|Save, spec_arch_farm_save_cycle_reduction).
     /// Criado em 2026-06-26 (spec_farm_scene_relayout_v4 + spec_farm_till_anywhere_tilemap).
     /// Fase 8 (2026-06-26): checagem real de ferramenta via EquipmentManager.HasTool em vez de flag.
     /// spec_codex_03 (2026-07-03): stamina real via StaminaManager.TrySpendStamina/CurrentStamina
@@ -38,28 +40,28 @@ namespace CindarsHope.Farm.Runtime
 
         private const string InsufficientStaminaMessage = "Stamina insuficiente para usar a ferramenta.";
 
-        [SerializeField] private SaveManager _saveManager;
         [SerializeField] private Transform _playerTransform;
         [SerializeField] private EquipmentManager _equipmentManager;
         [SerializeField] private StaminaManager _staminaManager;
         [SerializeField] private CindarsHope.Core.Time.TimeManager _timeManager;
 
-        // Servico de solo aravel (obtido do SaveManager na inicializacao).
+        // Servico de solo aravel (obtido do FarmTileGrid registrado na inicializacao).
         private FarmTilledSoilService _soilService;
+        private FarmTileGrid _grid;
 
         private void Start()
         {
-            if (_saveManager == null || _playerTransform == null)
+            _grid = DomainManagerRegistry.Get<FarmTileGrid>();
+            if (_grid == null || _playerTransform == null)
             {
-                Debug.LogWarning("[FarmTillingInputController] SaveManager ou PlayerTransform nao wired. " +
-                                 "Regenere a FarmScene via CindarsHope/Inicializar Projeto.");
+                Debug.LogWarning("[FarmTillingInputController] FarmTileGrid (DomainManagerRegistry) ou " +
+                                 "PlayerTransform nao wired. Regenere a FarmScene via CindarsHope/Inicializar Projeto.");
                 enabled = false;
                 return;
             }
 
-            var grid = _saveManager.FarmTileGrid;
             var wateringService = new FarmWateringService();
-            _soilService = new FarmTilledSoilService(grid, wateringService);
+            _soilService = new FarmTilledSoilService(_grid, wateringService);
 
             Debug.Log("[FarmTillingInputController] Inicializado. Pressione [F] sobre um tile para arar.");
         }
@@ -71,14 +73,13 @@ namespace CindarsHope.Farm.Runtime
                 return;
             }
 
-            if (_soilService == null || _saveManager == null)
+            if (_soilService == null || _grid == null)
             {
                 return;
             }
 
-            var grid = _saveManager.FarmTileGrid;
             var playerPos = _playerTransform.position;
-            var tile = grid.WorldToTile(playerPos.x, playerPos.y);
+            var tile = _grid.WorldToTile(playerPos.x, playerPos.y);
 
             // Checagem real de ferramenta via EquipmentManager (fase 8).
             // Se EquipmentManager nao estiver wired, cai no fallback permissivo com aviso.
@@ -219,10 +220,9 @@ namespace CindarsHope.Farm.Runtime
 
         // ── Wiring de editor (chamado pelo gerador de cena) ─────────────────────────────────────
 
-        public void EditorWire(SaveManager saveManager, Transform playerTransform, EquipmentManager equipmentManager = null,
+        public void EditorWire(Transform playerTransform, EquipmentManager equipmentManager = null,
             StaminaManager staminaManager = null, CindarsHope.Core.Time.TimeManager timeManager = null)
         {
-            _saveManager = saveManager;
             _playerTransform = playerTransform;
             _equipmentManager = equipmentManager;
             _staminaManager = staminaManager;

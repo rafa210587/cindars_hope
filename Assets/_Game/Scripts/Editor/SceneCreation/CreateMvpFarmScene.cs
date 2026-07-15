@@ -129,8 +129,8 @@ namespace CindarsHope.Editor.SceneCreation
             CreateRiverAndBridge();     // spec_farm_scene_relayout_v4: rio (colisao) + ponte andavel
             CreateLockedOreNodes();     // spec_farm_scene_relayout_v4: 4 veios de minerio bloqueados
             CreateMainCamera(playerTransform);
-            CreateFarmSceneRuntimeBootstrap(bootstrap.GetComponent<SaveManager>());
-            CreateFarmTillingInputController(bootstrap.GetComponent<SaveManager>(), playerTransform, bootstrap.GetComponent<EquipmentManager>(),
+            CreateFarmSceneRuntimeBootstrap();
+            CreateFarmTillingInputController(playerTransform, bootstrap.GetComponent<EquipmentManager>(),
                 bootstrap.GetComponent<StaminaManager>(), bootstrap.GetComponent<TimeManager>());
             CreateSceneRuntimeInstaller(
                 farmPlotRegistry,
@@ -2774,12 +2774,13 @@ namespace CindarsHope.Editor.SceneCreation
         }
 
         // spec_farm_scene_relayout_v4: FarmSceneRuntimeBootstrap — configura FarmTileGrid v4
-        // e zonas nao-araveis no Start(). Ref ao SaveManager injetada aqui (sem FindObjectOfType).
-        private static void CreateFarmSceneRuntimeBootstrap(SaveManager saveManager)
+        // e zonas nao-araveis no Start(). FarmTileGrid resolvido em runtime via
+        // DomainManagerRegistry (SaveManager o registra no Initialize()) — sem wiring de editor
+        // necessario (arch: quebra do ciclo mutuo Farm|Save).
+        private static void CreateFarmSceneRuntimeBootstrap()
         {
             var obj = new GameObject("FarmSceneRuntimeBootstrap");
             var bootstrap = obj.AddComponent<FarmSceneRuntimeBootstrap>();
-            bootstrap.EditorWire(saveManager);
             EditorUtility.SetDirty(bootstrap);
         }
 
@@ -2788,12 +2789,13 @@ namespace CindarsHope.Editor.SceneCreation
         // Fase 8: tambem injeta EquipmentManager para checagem real de ferramenta.
         // spec_codex_03: tambem injeta StaminaManager/TimeManager para stamina e dia reais
         // (evita que o fallback permissivo mascare o gap apos regenerar a cena).
-        private static void CreateFarmTillingInputController(SaveManager saveManager, Transform playerTransform, EquipmentManager equipmentManager,
+        // arch: FarmTileGrid nao e mais injetado aqui — resolvido em runtime via DomainManagerRegistry.
+        private static void CreateFarmTillingInputController(Transform playerTransform, EquipmentManager equipmentManager,
             StaminaManager staminaManager = null, TimeManager timeManager = null)
         {
             var obj = new GameObject("FarmTillingInputController");
             var controller = obj.AddComponent<FarmTillingInputController>();
-            controller.EditorWire(saveManager, playerTransform, equipmentManager, staminaManager, timeManager);
+            controller.EditorWire(playerTransform, equipmentManager, staminaManager, timeManager);
             EditorUtility.SetDirty(controller);
         }
 

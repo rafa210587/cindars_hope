@@ -1,4 +1,4 @@
-using CindarsHope.Save;
+using CindarsHope.Foundation;
 using UnityEngine;
 
 namespace CindarsHope.Farm.Runtime
@@ -13,7 +13,9 @@ namespace CindarsHope.Farm.Runtime
     ///     MIOLO x[-18,16] y[-15,16] = totalmente aravel (princípio P1/P2 v7).
     ///  3. Registra interior da estufa como aravel (GreenhouseRect).
     ///
-    /// Wiring: referencia ao SaveManager injetada pelo gerador de cena (sem FindObjectOfType).
+    /// Wiring: FarmTileGrid resolvido via DomainManagerRegistry (SaveManager o registra no
+    /// Initialize()) — sem FindObjectOfType e sem nomear CindarsHope.Save (quebra do ciclo mutuo
+    /// Farm|Save, spec_arch_farm_save_cycle_reduction).
     /// Criado em 2026-06-26 (spec_farm_scene_relayout_v4 — fecha gap T006 da Spec B).
     /// Atualizado para v5 (56x40) em 2026-06-26 (spec_farm_scene_relayout_v4 §15.2 v5).
     /// Atualizado para v6 (64x44) em 2026-06-26 (spec_farm_scene_relayout_v4 §15.2 v6).
@@ -22,7 +24,6 @@ namespace CindarsHope.Farm.Runtime
     [DisallowMultipleComponent]
     public class FarmSceneRuntimeBootstrap : MonoBehaviour
     {
-        [SerializeField] private SaveManager _saveManager;
 
         // Tile size = 1 Unity unit = 32px. Bounds v6: 64x44, origin centrada (0,0).
         // Tile (0,0) = canto inferior esquerdo = world (-32, -22).
@@ -34,14 +35,15 @@ namespace CindarsHope.Farm.Runtime
 
         private void Start()
         {
-            if (_saveManager == null)
+            var grid = DomainManagerRegistry.Get<FarmTileGrid>();
+            if (grid == null)
             {
-                Debug.LogError("[FarmSceneRuntimeBootstrap] SaveManager nao esta wired. " +
+                Debug.LogError("[FarmSceneRuntimeBootstrap] FarmTileGrid nao esta registrado no " +
+                               "DomainManagerRegistry (SaveManager.Initialize ainda nao rodou). " +
                                "Regenere a FarmScene via CindarsHope/Inicializar Projeto.");
                 return;
             }
 
-            var grid = _saveManager.FarmTileGrid;
             var zones = grid.NonArableZones;
 
             // 1. Configura bounds v5 da fazenda.
@@ -158,11 +160,5 @@ namespace CindarsHope.Farm.Runtime
             zones.RegisterGreenhouseRect(tileX, tileY, tileW, tileH);
         }
 
-        // ── Wiring de editor (chamado pelo gerador de cena) ─────────────────────────────────────
-
-        public void EditorWire(SaveManager saveManager)
-        {
-            _saveManager = saveManager;
-        }
     }
 }
