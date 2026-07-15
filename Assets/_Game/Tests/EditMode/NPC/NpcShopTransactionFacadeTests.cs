@@ -1,7 +1,6 @@
 using CindarsHope.Economy;
 using CindarsHope.Inventory.Data;
 using CindarsHope.NPC;
-using CindarsHope.UI.Shop;
 using NUnit.Framework;
 using UnityEngine;
 

@@ -2,14 +2,18 @@ using System;
 using System.Collections.Generic;
 using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
-using CindarsHope.NPC;
+using CindarsHope.Dialogue;
+using CindarsHope.Foundation;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace CindarsHope.UI.Dialogue
 {
+    // arch: quebra do par mutuo NPC|UI (2026-07-15) — implementa CindarsHope.NPC.INpcDialoguePresenter
+    // para que NpcController/NpcManager/NpcShopController consumam via porta, sem nomear este tipo
+    // concreto. `using CindarsHope.NPC;` removido (não era usado no corpo do arquivo).
     [DisallowMultipleComponent]
-    public class DialogueModal : MonoBehaviour
+    public class DialogueModal : MonoBehaviour, CindarsHope.NPC.INpcDialoguePresenter
     {
         [SerializeField] private CanvasGroup _canvasGroup;
         [SerializeField] private Text _dialogueText;
@@ -17,7 +21,7 @@ namespace CindarsHope.UI.Dialogue
         [SerializeField] private Transform _choicesContainer;
         [SerializeField] private GameObject _choiceButtonPrefab;
 
-        private Modal.ModalManager _modalManager;
+        private IModalRuntime _modalManager;
         private bool _isShowing = false;
         private List<Button> _choiceButtons = new();
         private int _selectedChoiceIndex = -1;
@@ -65,7 +69,7 @@ namespace CindarsHope.UI.Dialogue
             }
         }
 
-        public void Initialize(Modal.ModalManager modalManager)
+        public void Initialize(IModalRuntime modalManager)
         {
             _modalManager = modalManager;
             Hide();

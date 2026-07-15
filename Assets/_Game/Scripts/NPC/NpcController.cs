@@ -1,16 +1,15 @@
 using System.Collections.Generic;
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
+using CindarsHope.Dialogue;
 using CindarsHope.Foundation;
 using CindarsHope.Interaction;
 using CindarsHope.NPC.Events;
 using CindarsHope.NPC.Schedule;
 using CindarsHope.Quests.Runtime;
-using CindarsHope.UI.Dialogue;
-using CindarsHope.UI.Modal;
 using UnityEngine;
 using NpcDialogueChoice = CindarsHope.NPC.DialogueChoice;
-using UiDialogueChoice = CindarsHope.UI.Dialogue.DialogueChoice;
+using UiDialogueChoice = CindarsHope.Dialogue.DialogueChoice;
 using QuestGiverInteractionMode = CindarsHope.Core.Events.QuestGiverInteractionMode;
 
 namespace CindarsHope.NPC
@@ -22,11 +21,15 @@ namespace CindarsHope.NPC
         private const string FirstSuppliesQuestId = "quest_first_supplies_for_cindar";
 
         [SerializeField] private NpcDataSO _npcData;
-        [SerializeField] private DialogueModal _dialogueModal;
-        [SerializeField] private ModalManager _modalManager;
+        // arch: quebra do par mutuo NPC|UI (2026-07-15) — campo vira MonoBehaviour + cast para a porta
+        // INpcDialoguePresenter (precedente Craft/ICraftingStationModal), preservando a ref de cena
+        // sem regen. _modalManager (ModalManager) foi removido: nunca era lido/escrito neste arquivo.
+        [SerializeField] private MonoBehaviour _dialogueModal;
         [SerializeField] private Collider2D _collider;
         [SerializeField] private SpriteRenderer _spriteRenderer;
         [SerializeField] private NpcWanderer _wanderer;
+
+        private INpcDialoguePresenter DialoguePresenter => _dialogueModal as INpcDialoguePresenter;
 
         private static DialogueTreeSO s_thalindraQuestDialogueTree;
 
@@ -64,10 +67,10 @@ namespace CindarsHope.NPC
         private void OnEnable()
         {
             NpcVisualRegistry.Register(_npcData);
-            if (_dialogueModal != null)
+            if (DialoguePresenter != null)
             {
-                _dialogueModal.OnClose += HandleDialogueClosed;
-                _dialogueModal.OnChoiceSelected += HandleChoiceSelected;
+                DialoguePresenter.OnClose += HandleDialogueClosed;
+                DialoguePresenter.OnChoiceSelected += HandleChoiceSelected;
             }
 
             // fable_28 — observe world state for conditional dialogue selection.
@@ -78,10 +81,10 @@ namespace CindarsHope.NPC
         private void OnDisable()
         {
             if (_npcData != null) NpcVisualRegistry.Unregister(_npcData.NpcId);
-            if (_dialogueModal != null)
+            if (DialoguePresenter != null)
             {
-                _dialogueModal.OnClose -= HandleDialogueClosed;
-                _dialogueModal.OnChoiceSelected -= HandleChoiceSelected;
+                DialoguePresenter.OnClose -= HandleDialogueClosed;
+                DialoguePresenter.OnChoiceSelected -= HandleChoiceSelected;
             }
 
             GameEventBus.Unsubscribe<DayStartedEvent>(OnDayStarted);
@@ -266,9 +269,9 @@ namespace CindarsHope.NPC
 
         private void ShowSimpleDialogue()
         {
-            if (_dialogueModal != null)
+            if (DialoguePresenter != null)
             {
-                _dialogueModal.Show(_npcData.OpeningLine);
+                DialoguePresenter.Show(_npcData.OpeningLine);
             }
             else
             {
@@ -315,7 +318,8 @@ namespace CindarsHope.NPC
             }
             string text = ResolveNodeText(node);
 
-            if (_dialogueModal == null)
+            var presenter = DialoguePresenter;
+            if (presenter == null)
             {
                 EndInteraction();
                 return;
@@ -323,11 +327,11 @@ namespace CindarsHope.NPC
 
             if (node.Choices != null && node.Choices.Count > 0)
             {
-                _dialogueModal.ShowWithChoices(text, BuildUiChoices(node.Choices));
+                presenter.ShowWithChoices(text, BuildUiChoices(node.Choices));
             }
             else
             {
-                _dialogueModal.Show(text);
+                presenter.Show(text);
             }
         }
 
@@ -381,7 +385,7 @@ namespace CindarsHope.NPC
             {
                 var questId = npcChoice.ActionPayload ?? "";
                 var mode = ResolveQuestInteractionMode(questId);
-                _dialogueModal?.Hide();
+                DialoguePresenter?.Hide();
                 GameEventBus.Publish(new QuestGiverInteractedEvent(
                     _npcData.NpcId,
                     questId,
@@ -391,20 +395,20 @@ namespace CindarsHope.NPC
 
             if (npcChoice.ActionType == DialogueActionType.CloseDialogue)
             {
-                _dialogueModal?.Hide();
+                DialoguePresenter?.Hide();
                 return;
             }
 
             if (npcChoice.ActionType == DialogueActionType.OpenShop)
             {
                 Debug.LogWarning($"{nameof(NpcController)} received OpenShop choice for '{_npcData?.NpcId}', but this NPC is not a shop controller.", this);
-                _dialogueModal?.Hide();
+                DialoguePresenter?.Hide();
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(npcChoice.NextNodeId))
             {
-                _dialogueModal?.Hide();
+                DialoguePresenter?.Hide();
                 return;
             }
 
@@ -412,7 +416,7 @@ namespace CindarsHope.NPC
             if (nextNode == null)
             {
                 Debug.LogWarning($"{nameof(NpcController)} could not resolve dialogue node '{npcChoice.NextNodeId}' for '{_npcData?.NpcId}'.", this);
-                _dialogueModal?.Hide();
+                DialoguePresenter?.Hide();
                 return;
             }
 
@@ -453,9 +457,10 @@ namespace CindarsHope.NPC
 
         private void ShowDebugExpressionMenu()
         {
-            if (_dialogueModal == null) return;
+            var presenter = DialoguePresenter;
+            if (presenter == null) return;
             var choices = NpcShopChoiceUiAdapter.ToUiChoices(NpcDebugExpressionChoicePolicy.BuildExpressionChoices());
-            _dialogueModal.ShowWithChoices("[Debug] Trocar expressao:", choices);
+            presenter.ShowWithChoices("[Debug] Trocar expressao:", choices);
         }
 
         private static QuestGiverInteractionMode ResolveQuestInteractionMode(string questId)
@@ -485,7 +490,7 @@ namespace CindarsHope.NPC
         {
             if (!string.IsNullOrEmpty(_npcData.ClosingLine))
             {
-                _dialogueModal.Show(_npcData.ClosingLine);
+                DialoguePresenter?.Show(_npcData.ClosingLine);
             }
             else
             {

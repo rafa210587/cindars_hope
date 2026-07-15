@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
+using CindarsHope.Dialogue;
 using CindarsHope.Economy;
 using CindarsHope.Foundation;
 using CindarsHope.Interaction;
@@ -11,14 +12,15 @@ using CindarsHope.NPC.Events;
 using CindarsHope.NPC.Schedule;
 using CindarsHope.Player;
 using CindarsHope.Quests.Runtime;
-using CindarsHope.UI.Dialogue;
-using CindarsHope.UI.Modal;
-using CindarsHope.UI.Shop;
 using UnityEngine;
-using UiDialogueChoice = CindarsHope.UI.Dialogue.DialogueChoice;
+using UiDialogueChoice = CindarsHope.Dialogue.DialogueChoice;
 
 namespace CindarsHope.NPC
 {
+    // arch: quebra do par mutuo NPC|UI (2026-07-15) — campos de UI viram MonoBehaviour + cast para as
+    // portas INpcDialoguePresenter/INpcShopMenuPresenter/INpcBuyPanel/INpcSellPanel/IModalRuntime
+    // (precedente Craft/ICraftingStationModal, World/ICorpseRecoveryPresenter), preservando a ref de
+    // cena sem regen.
     [DisallowMultipleComponent]
     public sealed class NpcShopController : MonoBehaviour, IInteractable
     {
@@ -28,11 +30,17 @@ namespace CindarsHope.NPC
         [SerializeField] private InventoryManager _inventoryManager;
         [SerializeField] private ItemDatabaseSO _itemDatabase;
         [SerializeField] private ShopManager _shopManager;
-        [SerializeField] private DialogueModal _dialogueModal;
-        [SerializeField] private ShopMenuModal _shopMenuModal;
-        [SerializeField] private BuyPanel _buyPanel;
-        [SerializeField] private SellPanel _sellPanel;
-        [SerializeField] private ModalManager _modalManager;
+        [SerializeField] private MonoBehaviour _dialogueModal;
+        [SerializeField] private MonoBehaviour _shopMenuModal;
+        [SerializeField] private MonoBehaviour _buyPanel;
+        [SerializeField] private MonoBehaviour _sellPanel;
+        [SerializeField] private MonoBehaviour _modalManager;
+
+        private INpcDialoguePresenter DialoguePresenter => _dialogueModal as INpcDialoguePresenter;
+        private INpcShopMenuPresenter ShopMenuPresenter => _shopMenuModal as INpcShopMenuPresenter;
+        private INpcBuyPanel BuyPanelPort => _buyPanel as INpcBuyPanel;
+        private INpcSellPanel SellPanelPort => _sellPanel as INpcSellPanel;
+        private IModalRuntime ModalRuntime => _modalManager as IModalRuntime;
 
         private const string ThalindraQuestId = "quest_first_supplies_for_cindar";
         private readonly NpcShopInteractionSession _interaction = new NpcShopInteractionSession();
@@ -103,7 +111,7 @@ namespace CindarsHope.NPC
                 return false;
             }
 
-            _modalManager.Initialize();
+            ModalRuntime.Initialize();
             _shopManager.Configure(_itemDatabase);
             if (!_shopManager.IsInitialized)
             {
@@ -117,10 +125,10 @@ namespace CindarsHope.NPC
                 return false;
             }
 
-            _dialogueModal.Initialize(_modalManager);
-            _shopMenuModal.Initialize(_modalManager);
-            _buyPanel.Initialize(_shopManager, _playerManager, _inventoryManager, _itemDatabase, _modalManager);
-            _sellPanel.Initialize(_shopManager, _playerManager, _inventoryManager, _itemDatabase, _modalManager);
+            DialoguePresenter.Initialize(ModalRuntime);
+            ShopMenuPresenter.Initialize(ModalRuntime);
+            BuyPanelPort.Initialize(_shopManager, _playerManager, _inventoryManager, _itemDatabase, ModalRuntime);
+            SellPanelPort.Initialize(_shopManager, _playerManager, _inventoryManager, _itemDatabase, ModalRuntime);
 
             _isReady = true;
             Debug.Log($"{GetDiagnosticContext()} shopId '{_shopData.Id}' ready via '{reason}'. {_shopManager.GetDiagnosticSummary()}", this);
@@ -141,10 +149,10 @@ namespace CindarsHope.NPC
             RebindIfAvailable(ref _playerManager, bootstrap.PlayerManager, nameof(_playerManager), reason);
             RebindIfAvailable(ref _inventoryManager, bootstrap.InventoryManager, nameof(_inventoryManager), reason);
             RebindIfAvailable(ref _itemDatabase, bootstrap.ItemDatabase, nameof(_itemDatabase), reason);
-            // arch: Core|UI (2026-07-15) — GameBootstrap.ModalManager agora e IModalRuntime (porta);
-            // cast para o tipo concreto preserva o RebindIfAvailable<T> where T : Object sem alterar
-            // o par NPC|UI (ja existente, fora de escopo desta mudanca).
-            RebindIfAvailable(ref _modalManager, bootstrap.ModalManager as ModalManager, nameof(_modalManager), reason);
+            // arch: quebra do par mutuo NPC|UI (2026-07-15) — GameBootstrap.ModalManager e IModalRuntime
+            // (porta); cast para MonoBehaviour (nao mais para o tipo concreto CindarsHope.UI.Modal.
+            // ModalManager) preserva o RebindIfAvailable<T> where T : Object sem nomear o modulo UI.
+            RebindIfAvailable(ref _modalManager, bootstrap.ModalManager as MonoBehaviour, nameof(_modalManager), reason);
         }
 
         private void RebindIfAvailable<T>(ref T field, T stableReference, string fieldName, string reason) where T : Object
@@ -186,7 +194,7 @@ namespace CindarsHope.NPC
             if (_interaction.IsInteracting
                 && !_interaction.IsClosing
                 && _modalManager != null
-                && _modalManager.CurrentModal != ModalType.Dialogue
+                && ModalRuntime.CurrentModal != ModalType.Dialogue
                 && Input.GetKeyDown(KeyCode.Escape))
             {
                 BeginCloseInteraction();
@@ -241,13 +249,13 @@ namespace CindarsHope.NPC
                 return;
             }
 
-            _dialogueModal.OnClose += HandleOpeningClosed;
-            _dialogueModal.Show(_npcData.OpeningLine);
+            DialoguePresenter.OnClose += HandleOpeningClosed;
+            DialoguePresenter.Show(_npcData.OpeningLine);
         }
 
         private void HandleOpeningClosed()
         {
-            _dialogueModal.OnClose -= HandleOpeningClosed;
+            DialoguePresenter.OnClose -= HandleOpeningClosed;
             if (IsThalindra())
                 ShowThalindraQuestShopDialogue();
             else if (_npcData != null && _npcData.DialogueTree != null)
@@ -266,8 +274,8 @@ namespace CindarsHope.NPC
             if (!_interaction.IsInteracting || _interaction.IsClosing || _dialogueModal == null) return;
 
             DetachDialogueChoiceHandler();
-            _dialogueModal.OnChoiceSelected += HandleThalindraChoice;
-            _dialogueModal.OnClose += HandleThalindraDialogueClosed;
+            DialoguePresenter.OnChoiceSelected += HandleThalindraChoice;
+            DialoguePresenter.OnClose += HandleThalindraDialogueClosed;
 
             var service = QuestRuntimeBootstrap.QuestService;
             var questDecision = ThalindraQuestDialoguePolicy.Resolve(
@@ -280,17 +288,17 @@ namespace CindarsHope.NPC
                 UnityEngine.Debug.isDebugBuild));
             // fable_25: Análise de Criatura da Thalindra entra no MESMO menu (sem segundo fluxo).
 
-            _dialogueModal.ShowWithChoices("Como posso ajudar?", choices);
+            DialoguePresenter.ShowWithChoices("Como posso ajudar?", choices);
         }
 
         private void HandleThalindraChoice(UiDialogueChoice choice)
         {
             DetachDialogueChoiceHandler();
-            _dialogueModal.OnClose -= HandleThalindraDialogueClosed;
+            DialoguePresenter.OnClose -= HandleThalindraDialogueClosed;
 
             if (choice == null)
             {
-                _dialogueModal.Hide();
+                DialoguePresenter.Hide();
                 return;
             }
 
@@ -307,7 +315,7 @@ namespace CindarsHope.NPC
                 return;
             }
 
-            _dialogueModal.Hide();
+            DialoguePresenter.Hide();
 
             switch (choice.ChoiceId)
             {
@@ -341,35 +349,35 @@ namespace CindarsHope.NPC
         private void HandleThalindraDialogueClosed()
         {
             DetachDialogueChoiceHandler();
-            _dialogueModal.OnClose -= HandleThalindraDialogueClosed;
+            DialoguePresenter.OnClose -= HandleThalindraDialogueClosed;
             BeginCloseInteraction();
         }
 
         private void DetachDialogueChoiceHandler()
         {
             if (_dialogueModal == null) return;
-            _dialogueModal.OnChoiceSelected -= HandleThalindraChoice;
-            _dialogueModal.OnClose -= HandleThalindraDialogueClosed;
-            _dialogueModal.OnChoiceSelected -= HandleRootShopChoice;
-            _dialogueModal.OnChoiceSelected -= HandleTreeChoice;
-            _dialogueModal.OnClose -= HandleTreeDialogueClosed;
-            _dialogueModal.OnChoiceSelected -= HandleDebugChoice;
+            DialoguePresenter.OnChoiceSelected -= HandleThalindraChoice;
+            DialoguePresenter.OnClose -= HandleThalindraDialogueClosed;
+            DialoguePresenter.OnChoiceSelected -= HandleRootShopChoice;
+            DialoguePresenter.OnChoiceSelected -= HandleTreeChoice;
+            DialoguePresenter.OnClose -= HandleTreeDialogueClosed;
+            DialoguePresenter.OnChoiceSelected -= HandleDebugChoice;
         }
 
         private void ShowDebugExpressionMenu()
         {
             if (!_interaction.IsInteracting || _interaction.IsClosing || _dialogueModal == null) return;
             DetachDialogueChoiceHandler();
-            _dialogueModal.OnChoiceSelected += HandleDebugChoice;
-            _dialogueModal.OnClose += HandleTreeDialogueClosed;
+            DialoguePresenter.OnChoiceSelected += HandleDebugChoice;
+            DialoguePresenter.OnClose += HandleTreeDialogueClosed;
             var choices = NpcShopChoiceUiAdapter.ToUiChoices(NpcDebugExpressionChoicePolicy.BuildExpressionChoices());
-            _dialogueModal.ShowWithChoices("[Debug] Trocar expressao:", choices);
+            DialoguePresenter.ShowWithChoices("[Debug] Trocar expressao:", choices);
         }
 
         private void HandleDebugChoice(UiDialogueChoice choice)
         {
             DetachDialogueChoiceHandler();
-            _dialogueModal.OnClose -= HandleTreeDialogueClosed;
+            DialoguePresenter.OnClose -= HandleTreeDialogueClosed;
 
             if (choice == null)
             {
@@ -407,8 +415,8 @@ namespace CindarsHope.NPC
             if (!_interaction.IsInteracting || _interaction.IsClosing || _dialogueModal == null) return;
 
             DetachDialogueChoiceHandler();
-            _dialogueModal.OnChoiceSelected += HandleRootShopChoice;
-            _dialogueModal.OnClose += HandleTreeDialogueClosed;
+            DialoguePresenter.OnChoiceSelected += HandleRootShopChoice;
+            DialoguePresenter.OnClose += HandleTreeDialogueClosed;
 
             TryGetCityServiceChoice(out var serviceChoice);
             var choices = NpcShopChoiceUiAdapter.ToUiChoices(NpcShopDialogueChoicePolicy.BuildRootChoices(
@@ -417,7 +425,7 @@ namespace CindarsHope.NPC
                 BuildNpcServiceChoices(),
                 UnityEngine.Debug.isDebugBuild));
 
-            _dialogueModal.ShowWithChoices("Como posso ajudar?", choices);
+            DialoguePresenter.ShowWithChoices("Como posso ajudar?", choices);
         }
 
         private bool IsBrumdar()
@@ -479,7 +487,7 @@ namespace CindarsHope.NPC
         /// </summary>
         private void HandleNpcServiceChoice(string serviceId)
         {
-            _dialogueModal.Hide();
+            DialoguePresenter.Hide();
 
             var npcId = _npcData != null ? _npcData.NpcId : null;
             // Revalida o estado da opção para um motivo honesto quando gated (descoberta > ocultação).
@@ -543,19 +551,19 @@ namespace CindarsHope.NPC
                     break;
 
                 case "buy":
-                    _dialogueModal.Hide();
+                    DialoguePresenter.Hide();
                     if (!_transactionFacade.TryOpenBuyPanel()) BeginCloseInteraction();
                     break;
 
                 case "sell":
-                    _dialogueModal.Hide();
+                    DialoguePresenter.Hide();
                     if (!_transactionFacade.TryOpenSellPanel()) BeginCloseInteraction();
                     break;
 
                 case "temper":
                     // fable_22: abre a UI de têmpera se ligada (wiring de cena/Play Mode); senão
                     // sinaliza disponibilidade da forja por toast. Re-checa o gate por segurança.
-                    _dialogueModal.Hide();
+                    DialoguePresenter.Hide();
                     if (CindarsHope.Economy.TemperingForgeAccess.IsGateOpen()
                         && CindarsHope.Economy.TemperingForgeAccess.HasForgeUi)
                     {
@@ -573,7 +581,7 @@ namespace CindarsHope.NPC
                     // fable_19 (CA-2): compra do serviço civic via diálogo. Ponto único: a fachada
                     // CityServiceAccess decide débito + concessão de flag (idempotente). Feedback por
                     // toast; fecha a interação. Persistência por flag (sem nova seção de save).
-                    _dialogueModal.Hide();
+                    DialoguePresenter.Hide();
                     PurchaseCityServiceForThisNpc();
                     BeginCloseInteraction();
                     break;
@@ -585,7 +593,7 @@ namespace CindarsHope.NPC
                     // GiftGivingService.Instance.TryGiveGift(npcId, itemId) (classifica gosto, aplica
                     // delta via F26, consome 1 unidade, publica NpcGiftReactionEvent). Por ora, feedback
                     // honesto por toast; fluxo coberto por testes EditMode.
-                    _dialogueModal.Hide();
+                    DialoguePresenter.Hide();
                     GameEventBus.Publish(new PlayerActionFeedbackEvent(
                         "Escolha um presente no inventario para oferecer. (Seletor em breve.)"));
                     BeginCloseInteraction();
@@ -593,7 +601,7 @@ namespace CindarsHope.NPC
 
                 case "exit":
                 default:
-                    _dialogueModal.Hide();
+                    DialoguePresenter.Hide();
                     BeginCloseInteraction();
                     break;
             }
@@ -619,7 +627,7 @@ namespace CindarsHope.NPC
             }
 
             DetachDialogueChoiceHandler();
-            _dialogueModal.OnClose += HandleTreeDialogueClosed;
+            DialoguePresenter.OnClose += HandleTreeDialogueClosed;
 
             if (node.Choices != null && node.Choices.Count > 0)
             {
@@ -634,12 +642,12 @@ namespace CindarsHope.NPC
                     uiChoices.Add(new UiDialogueChoice(source.Label, choiceId));
                 }
 
-                _dialogueModal.OnChoiceSelected += HandleTreeChoice;
-                _dialogueModal.ShowWithChoices(text, uiChoices);
+                DialoguePresenter.OnChoiceSelected += HandleTreeChoice;
+                DialoguePresenter.ShowWithChoices(text, uiChoices);
             }
             else
             {
-                _dialogueModal.Show(text);
+                DialoguePresenter.Show(text);
             }
         }
 
@@ -661,19 +669,19 @@ namespace CindarsHope.NPC
             switch (npcChoice.ActionType)
             {
                 case DialogueActionType.OpenShop:
-                    _dialogueModal.Hide();
+                    DialoguePresenter.Hide();
                     if (!_transactionFacade.TryOpenBuyPanel()) BeginCloseInteraction();
                     return;
 
                 case DialogueActionType.CloseDialogue:
-                    _dialogueModal.Hide();
+                    DialoguePresenter.Hide();
                     BeginCloseInteraction();
                     return;
             }
 
             if (string.IsNullOrWhiteSpace(npcChoice.NextNodeId))
             {
-                _dialogueModal.Hide();
+                DialoguePresenter.Hide();
                 BeginCloseInteraction();
                 return;
             }
@@ -683,7 +691,7 @@ namespace CindarsHope.NPC
             if (nextNode == null)
             {
                 Debug.LogWarning($"{nameof(NpcShopController)} could not resolve dialogue node '{npcChoice.NextNodeId}' for '{_npcData?.NpcId}'.", this);
-                _dialogueModal.Hide();
+                DialoguePresenter.Hide();
                 BeginCloseInteraction();
                 return;
             }
@@ -715,26 +723,26 @@ namespace CindarsHope.NPC
                 return;
             }
 
-            _shopMenuModal.OnOptionSelected -= HandleShopMenuOption;
-            _shopMenuModal.OnOptionSelected += HandleShopMenuOption;
+            ShopMenuPresenter.OnOptionSelected -= HandleShopMenuOption;
+            ShopMenuPresenter.OnOptionSelected += HandleShopMenuOption;
             if (_buyPanel != null)
             {
-                _buyPanel.OnBackPressed -= HandlePanelBack;
-                _buyPanel.OnBackPressed += HandlePanelBack;
+                BuyPanelPort.OnBackPressed -= HandlePanelBack;
+                BuyPanelPort.OnBackPressed += HandlePanelBack;
             }
 
             if (_sellPanel != null)
             {
-                _sellPanel.OnBackPressed -= HandlePanelBack;
-                _sellPanel.OnBackPressed += HandlePanelBack;
+                SellPanelPort.OnBackPressed -= HandlePanelBack;
+                SellPanelPort.OnBackPressed += HandlePanelBack;
             }
-            _shopMenuModal.Show();
+            ShopMenuPresenter.Show();
         }
 
         private void HandleShopMenuOption(ShopMenuOption option)
         {
-            _shopMenuModal.OnOptionSelected -= HandleShopMenuOption;
-            _shopMenuModal.Hide();
+            ShopMenuPresenter.OnOptionSelected -= HandleShopMenuOption;
+            ShopMenuPresenter.Hide();
 
             switch (option)
             {
@@ -764,7 +772,7 @@ namespace CindarsHope.NPC
                     || (bootstrap.PlayerManager != null && _playerManager != bootstrap.PlayerManager)
                     || (bootstrap.InventoryManager != null && _inventoryManager != bootstrap.InventoryManager)
                     || (bootstrap.ItemDatabase != null && _itemDatabase != bootstrap.ItemDatabase)
-                    || (bootstrap.ModalManager != null && _modalManager != (bootstrap.ModalManager as ModalManager)));
+                    || (bootstrap.ModalManager != null && _modalManager != (bootstrap.ModalManager as MonoBehaviour)));
         }
 
         private void LogTransactionError(ShopMenuOption option, string fieldName, string cause)
@@ -780,9 +788,9 @@ namespace CindarsHope.NPC
                 () => _playerManager,
                 () => _inventoryManager,
                 () => _itemDatabase,
-                () => _modalManager,
-                () => _buyPanel,
-                () => _sellPanel,
+                () => ModalRuntime,
+                () => BuyPanelPort,
+                () => SellPanelPort,
                 () => _isReady,
                 TryEnsureShopInitialized,
                 HandlePanelBack,
@@ -800,27 +808,27 @@ namespace CindarsHope.NPC
         private void BeginCloseInteraction()
         {
             if (!_interaction.TryBeginClosing()) return;
-            switch (_modalManager != null ? _modalManager.CurrentModal : ModalType.None)
+            switch (_modalManager != null ? ModalRuntime.CurrentModal : ModalType.None)
             {
                 case ModalType.Buy:
-                    _buyPanel?.Hide();
-                    _sellPanel?.HideVisualOnly();
-                    _shopMenuModal?.HideVisualOnly();
+                    BuyPanelPort?.Hide();
+                    SellPanelPort?.HideVisualOnly();
+                    ShopMenuPresenter?.HideVisualOnly();
                     break;
                 case ModalType.Sell:
-                    _sellPanel?.Hide();
-                    _buyPanel?.HideVisualOnly();
-                    _shopMenuModal?.HideVisualOnly();
+                    SellPanelPort?.Hide();
+                    BuyPanelPort?.HideVisualOnly();
+                    ShopMenuPresenter?.HideVisualOnly();
                     break;
                 case ModalType.ShopMenu:
-                    _shopMenuModal?.Hide();
-                    _buyPanel?.HideVisualOnly();
-                    _sellPanel?.HideVisualOnly();
+                    ShopMenuPresenter?.Hide();
+                    BuyPanelPort?.HideVisualOnly();
+                    SellPanelPort?.HideVisualOnly();
                     break;
                 default:
-                    _buyPanel?.HideVisualOnly();
-                    _sellPanel?.HideVisualOnly();
-                    _shopMenuModal?.HideVisualOnly();
+                    BuyPanelPort?.HideVisualOnly();
+                    SellPanelPort?.HideVisualOnly();
+                    ShopMenuPresenter?.HideVisualOnly();
                     break;
             }
 
@@ -830,13 +838,13 @@ namespace CindarsHope.NPC
                 return;
             }
 
-            _dialogueModal.OnClose += HandleClosingClosed;
-            _dialogueModal.Show(_npcData.ClosingLine);
+            DialoguePresenter.OnClose += HandleClosingClosed;
+            DialoguePresenter.Show(_npcData.ClosingLine);
         }
 
         private void HandleClosingClosed()
         {
-            _dialogueModal.OnClose -= HandleClosingClosed;
+            DialoguePresenter.OnClose -= HandleClosingClosed;
             CloseInteraction();
         }
 
@@ -845,7 +853,7 @@ namespace CindarsHope.NPC
             DetachUiEvents();
             // Skip ClearAllModals when handing off to QuestOfferPanel — it manages its own modal state.
             if (!_interaction.IsQuestOfferHandoff)
-                _modalManager?.ClearAllModals();
+                ModalRuntime?.ClearAllModals();
             _interaction.Complete();
             GameEventBus.Publish(new NpcInteractionEndedEvent(_npcData.NpcId));
         }
@@ -859,24 +867,24 @@ namespace CindarsHope.NPC
         {
             if (_dialogueModal != null)
             {
-                _dialogueModal.OnClose -= HandleOpeningClosed;
-                _dialogueModal.OnClose -= HandleClosingClosed;
+                DialoguePresenter.OnClose -= HandleOpeningClosed;
+                DialoguePresenter.OnClose -= HandleClosingClosed;
                 DetachDialogueChoiceHandler();
             }
 
             if (_shopMenuModal != null)
             {
-                _shopMenuModal.OnOptionSelected -= HandleShopMenuOption;
+                ShopMenuPresenter.OnOptionSelected -= HandleShopMenuOption;
             }
 
             if (_buyPanel != null)
             {
-                _buyPanel.OnBackPressed -= HandlePanelBack;
+                BuyPanelPort.OnBackPressed -= HandlePanelBack;
             }
 
             if (_sellPanel != null)
             {
-                _sellPanel.OnBackPressed -= HandlePanelBack;
+                SellPanelPort.OnBackPressed -= HandlePanelBack;
             }
         }
     }

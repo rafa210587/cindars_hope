@@ -10,8 +10,11 @@ using UnityEngine.UI;
 
 namespace CindarsHope.UI.Shop
 {
+    // arch: quebra do par mutuo NPC|UI (2026-07-15) — implementa CindarsHope.NPC.INpcSellPanel para
+    // que NpcShopController/NpcShopTransactionFacade consumam via porta, sem nomear este tipo
+    // concreto.
     [DisallowMultipleComponent]
-    public class SellPanel : MonoBehaviour
+    public class SellPanel : MonoBehaviour, CindarsHope.NPC.INpcSellPanel
     {
         [SerializeField] private CanvasGroup _canvasGroup;
         [SerializeField] private Transform _itemsContainer;
@@ -25,7 +28,7 @@ namespace CindarsHope.UI.Shop
         private PlayerManager _playerManager;
         private InventoryManager _inventoryManager;
         private ItemDatabaseSO _itemDatabase;
-        private Modal.ModalManager _modalManager;
+        private CindarsHope.Foundation.IModalRuntime _modalManager;
         private string _shopId;
         private readonly List<SellPanelItem> _displayedItems = new List<SellPanelItem>();
 
@@ -49,7 +52,7 @@ namespace CindarsHope.UI.Shop
             ClearItems();
         }
 
-        public void Initialize(ShopManager shopManager, PlayerManager playerManager, InventoryManager inventoryManager, ItemDatabaseSO itemDatabase, Modal.ModalManager modalManager)
+        public void Initialize(ShopManager shopManager, PlayerManager playerManager, InventoryManager inventoryManager, ItemDatabaseSO itemDatabase, CindarsHope.Foundation.IModalRuntime modalManager)
         {
             _shopManager = shopManager;
             _playerManager = playerManager;
@@ -60,7 +63,7 @@ namespace CindarsHope.UI.Shop
             HideVisualOnly();
         }
 
-        public bool IsInitializedWith(ShopManager shopManager, PlayerManager playerManager, InventoryManager inventoryManager, ItemDatabaseSO itemDatabase, Modal.ModalManager modalManager)
+        public bool IsInitializedWith(ShopManager shopManager, PlayerManager playerManager, InventoryManager inventoryManager, ItemDatabaseSO itemDatabase, CindarsHope.Foundation.IModalRuntime modalManager)
         {
             return _shopManager == shopManager
                 && _playerManager == playerManager

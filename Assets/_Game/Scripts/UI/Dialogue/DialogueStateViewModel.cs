@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CindarsHope.Dialogue;
 
 namespace CindarsHope.UI.Dialogue
 {

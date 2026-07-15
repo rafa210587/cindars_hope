@@ -1,27 +1,25 @@
 using System;
 using CindarsHope.Core;
+using CindarsHope.Foundation;
 using UnityEngine;
 using UnityEngine.UI;
+// arch: quebra do par mutuo NPC|UI (2026-07-15) — ShopMenuOption movido para CindarsHope.NPC (não
+// Foundation, para não crescer a fronteira ratchet-tracked); ShopMenuModal agora implementa
+// CindarsHope.NPC.INpcShopMenuPresenter para que NpcShopController consuma via porta, sem nomear este
+// tipo concreto. A aresta UI->NPC deste using já existia (ex.: NpcInteractionPortraitHud.cs).
+using ShopMenuOption = CindarsHope.NPC.ShopMenuOption;
 
 namespace CindarsHope.UI.Shop
 {
-    public enum ShopMenuOption
-    {
-        None,
-        Buy,
-        Sell,
-        Exit
-    }
-
     [DisallowMultipleComponent]
-    public class ShopMenuModal : MonoBehaviour
+    public class ShopMenuModal : MonoBehaviour, CindarsHope.NPC.INpcShopMenuPresenter
     {
         [SerializeField] private CanvasGroup _canvasGroup;
         [SerializeField] private Button _buyButton;
         [SerializeField] private Button _sellButton;
         [SerializeField] private Button _exitButton;
 
-        private Modal.ModalManager _modalManager;
+        private IModalRuntime _modalManager;
         private ShopMenuOption _selectedOption = ShopMenuOption.Buy;
         public event Action<ShopMenuOption> OnOptionSelected;
 
@@ -60,7 +58,7 @@ namespace CindarsHope.UI.Shop
             }
         }
 
-        public void Initialize(Modal.ModalManager modalManager)
+        public void Initialize(IModalRuntime modalManager)
         {
             _modalManager = modalManager;
             HideVisualOnly();

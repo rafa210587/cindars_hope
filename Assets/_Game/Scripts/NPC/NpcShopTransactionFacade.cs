@@ -1,10 +1,9 @@
 using System;
 using CindarsHope.Economy;
+using CindarsHope.Foundation;
 using CindarsHope.Inventory;
 using CindarsHope.Inventory.Data;
 using CindarsHope.Player;
-using CindarsHope.UI.Modal;
-using CindarsHope.UI.Shop;
 
 namespace CindarsHope.NPC
 {
@@ -27,9 +26,9 @@ namespace CindarsHope.NPC
         private readonly Func<PlayerManager> _playerManagerProvider;
         private readonly Func<InventoryManager> _inventoryManagerProvider;
         private readonly Func<ItemDatabaseSO> _itemDatabaseProvider;
-        private readonly Func<ModalManager> _modalManagerProvider;
-        private readonly Func<BuyPanel> _buyPanelProvider;
-        private readonly Func<SellPanel> _sellPanelProvider;
+        private readonly Func<IModalRuntime> _modalManagerProvider;
+        private readonly Func<INpcBuyPanel> _buyPanelProvider;
+        private readonly Func<INpcSellPanel> _sellPanelProvider;
         private readonly Func<bool> _isControllerReadyProvider;
         private readonly Func<string, bool> _tryEnsureShopInitialized;
         private readonly Action _onPanelBack;
@@ -41,9 +40,9 @@ namespace CindarsHope.NPC
             Func<PlayerManager> playerManagerProvider,
             Func<InventoryManager> inventoryManagerProvider,
             Func<ItemDatabaseSO> itemDatabaseProvider,
-            Func<ModalManager> modalManagerProvider,
-            Func<BuyPanel> buyPanelProvider,
-            Func<SellPanel> sellPanelProvider,
+            Func<IModalRuntime> modalManagerProvider,
+            Func<INpcBuyPanel> buyPanelProvider,
+            Func<INpcSellPanel> sellPanelProvider,
             Func<bool> isControllerReadyProvider,
             Func<string, bool> tryEnsureShopInitialized,
             Action onPanelBack,

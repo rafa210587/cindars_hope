@@ -6,6 +6,11 @@ namespace CindarsHope.Foundation
 {
     public interface IModalRuntime
     {
+        // arch: quebra do par mutuo NPC|UI (2026-07-15) — Initialize() adicionado para que
+        // CindarsHope.NPC (NpcShopController) inicialize o modal manager via a porta, sem
+        // referenciar CindarsHope.UI.Modal.ModalManager diretamente. ModalManager ja expunha este
+        // metodo publico; nenhuma mudanca de comportamento.
+        void Initialize();
         bool HasActiveModal { get; }
         ModalType CurrentModal { get; }
         bool PushModal(ModalType modalType);

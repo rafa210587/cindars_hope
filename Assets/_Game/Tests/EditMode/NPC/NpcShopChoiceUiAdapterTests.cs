@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using CindarsHope.Dialogue;
 using CindarsHope.NPC;
-using CindarsHope.UI.Dialogue;
 using NUnit.Framework;
 
 namespace CindarsHope.Tests.EditMode.NPC
@@ -45,7 +45,7 @@ namespace CindarsHope.Tests.EditMode.NPC
 
             var result = NpcShopChoiceUiAdapter.ToUiChoices(definitions);
 
-            Assert.That(result[0].ActionType, Is.EqualTo(CindarsHope.UI.Dialogue.DialogueChoice.ChoiceActionType.Neutral));
+            Assert.That(result[0].ActionType, Is.EqualTo(CindarsHope.Dialogue.DialogueChoice.ChoiceActionType.Neutral));
             Assert.That(result[0].IsEnabled, Is.True);
             Assert.That(result[0].TargetId, Is.Null);
             Assert.That(result[0].DisabledReason, Is.Null);

@@ -1,23 +1,27 @@
 using System.Collections.Generic;
-using CindarsHope.UI.Dialogue;
-using CindarsHope.UI.Modal;
+using CindarsHope.Foundation;
 using UnityEngine;
 
 namespace CindarsHope.NPC
 {
+    // arch: quebra do par mutuo NPC|UI (2026-07-15) — campos viram MonoBehaviour + cast para as
+    // portas INpcDialoguePresenter/IModalRuntime (precedente Craft/ICraftingStationModal),
+    // preservando a ref de cena sem regen.
     [DisallowMultipleComponent]
     public class NpcManager : MonoBehaviour
     {
-        [SerializeField] private DialogueModal _dialogueModal;
-        [SerializeField] private ModalManager _modalManager;
+        [SerializeField] private MonoBehaviour _dialogueModal;
+        [SerializeField] private MonoBehaviour _modalManager;
         [SerializeField] private List<NpcController> _npcs = new();
         [SerializeField] private List<NpcShopController> _shopNpcs = new();
 
         private void Start()
         {
-            if (_dialogueModal != null && _modalManager != null)
+            var presenter = _dialogueModal as INpcDialoguePresenter;
+            var modalRuntime = _modalManager as IModalRuntime;
+            if (presenter != null && modalRuntime != null)
             {
-                _dialogueModal.Initialize(_modalManager);
+                presenter.Initialize(modalRuntime);
             }
         }
 

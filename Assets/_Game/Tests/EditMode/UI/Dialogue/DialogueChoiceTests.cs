@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using CindarsHope.Dialogue;
 using CindarsHope.UI.Dialogue;
 using System.Collections.Generic;
 

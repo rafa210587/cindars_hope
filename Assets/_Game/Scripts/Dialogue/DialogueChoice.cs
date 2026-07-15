@@ -1,4 +1,8 @@
-namespace CindarsHope.UI.Dialogue
+// arch: quebra do par mutuo NPC|UI (2026-07-15) — namespace alinhado à pasta real (Scripts/Dialogue/),
+// que já era neutra; antes declarava CindarsHope.UI.Dialogue por inconsistência histórica, forçando
+// consumidores em NPC a referenciar o token "CindarsHope.UI" só para este POCO sem dependência de
+// engine. Nenhuma mudança de membros/comportamento.
+namespace CindarsHope.Dialogue
 {
     /// <summary>
     /// SPEC 04: Dialogue choice contract - action markers and hooks.
