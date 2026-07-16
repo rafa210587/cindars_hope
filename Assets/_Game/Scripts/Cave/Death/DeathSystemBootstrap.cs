@@ -106,7 +106,7 @@ namespace CindarsHope.Cave.Death
             // resolvido via EquipmentManager.Instance (self-registro, molde Craft/Economy/Skills).
             _resolver = new CaveDeathResolver(
                 _policy,
-                bootstrap.CaveRunManager,
+                CindarsHope.Cave.Runtime.CaveRunManager.Instance,
                 bootstrap.PlayerManager,
                 bootstrap.InventoryManager,
                 CindarsHope.Equipment.EquipmentManager.Instance,
@@ -132,7 +132,7 @@ namespace CindarsHope.Cave.Death
 
                 // O resolver e DontDestroyOnLoad e nasceu antes de qualquer run de caverna; pega a
                 // referencia VIVA do CaveRunManager agora (so existe durante um run de caverna).
-                _resolver.SetCaveRunManager(GameBootstrap.Instance?.CaveRunManager);
+                _resolver.SetCaveRunManager(CindarsHope.Cave.Runtime.CaveRunManager.Instance);
 
                 _resolver.ResolveCaveDeath(evt.SceneName);
 

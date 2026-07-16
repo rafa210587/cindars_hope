@@ -658,13 +658,12 @@ namespace CindarsHope.Save
             _providerRegistry.Register<FarmTilesSaveData>(_farmTilesProvider, order);
         }
 
-        // fable_44: lÃª o flag de boss fight do CaveLevelRuntimeController pelo canal do bootstrap.
+        // fable_44: le o flag de boss fight do CaveLevelRuntimeController via CaveRunManager.Instance.
         private bool TryGetActiveCaveBossFightGuard(out string reason)
         {
             reason = CaveBossFightSaveGate.SaveBlockedReason;
 
-            var bootstrap = Core.Bootstrap.GameBootstrap.Instance;
-            var runManager = bootstrap != null ? bootstrap.CaveRunManager : null;
+            var runManager = CindarsHope.Cave.Runtime.CaveRunManager.Instance;
             if (runManager == null)
             {
                 return false;

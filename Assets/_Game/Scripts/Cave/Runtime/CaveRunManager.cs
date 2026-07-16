@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using CindarsHope.Cave.Data;
 using CindarsHope.Core;
-using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
 using CindarsHope.SceneManagement;
 using UnityEngine;
@@ -74,13 +73,7 @@ namespace CindarsHope.Cave.Runtime
 
         private void RestoreCachedStateIfNeeded()
         {
-            var bootstrap = GameBootstrap.Instance;
-            if (bootstrap == null)
-            {
-                return;
-            }
-
-            var cachedState = bootstrap.TakeCachedCaveRunState();
+            var cachedState = CaveRunStateCache.Take();
             if (cachedState != null)
             {
                 _state.CurrentCaveLevel = cachedState.CurrentCaveLevel;
@@ -119,13 +112,7 @@ namespace CindarsHope.Cave.Runtime
 
         private void CacheCurrentStateInBootstrap()
         {
-            var bootstrap = GameBootstrap.Instance;
-            if (bootstrap == null)
-            {
-                return;
-            }
-
-            bootstrap.SetCachedCaveRunState(_state);
+            CaveRunStateCache.Set(_state);
         }
 
         public void InitializeIfNeeded()

@@ -22,7 +22,7 @@ namespace CindarsHope.Save.Providers
                 return new CaveRunSaveData { HasActiveRun = false };
             }
 
-            var runManager = bootstrap.CaveRunManager;
+            var runManager = CaveRunManager.Instance;
             if (runManager != null)
             {
                 // Regrava HP dos inimigos do nível corrente antes de capturar.
@@ -37,7 +37,7 @@ namespace CindarsHope.Save.Providers
                 return CaveRunSaveMapper.ToSaveData(runManager.State);
             }
 
-            return CaveRunSaveMapper.ToSaveData(bootstrap.CachedCaveRunState);
+            return CaveRunSaveMapper.ToSaveData(CaveRunStateCache.Cached);
         }
 
         public void Restore(object sectionData)
@@ -58,7 +58,7 @@ namespace CindarsHope.Save.Providers
             var restoredRun = CaveRunSaveMapper.FromSaveData(data);
             if (restoredRun != null)
             {
-                bootstrap.SetCachedCaveRunState(restoredRun);
+                CaveRunStateCache.Set(restoredRun);
                 Debug.Log($"CaveRunSectionProvider: cave run restaurada (nível {restoredRun.CurrentCaveLevel}, seed {restoredRun.CaveRunSeed}).");
             }
         }

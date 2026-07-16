@@ -49,7 +49,7 @@ namespace CindarsHope.Cave.Death
             // resolvido via EquipmentManager.Instance (self-registro, molde Craft/Economy/Skills).
             _resolver = new CaveDeathResolver(
                 _policy,
-                bootstrap.CaveRunManager,
+                CindarsHope.Cave.Runtime.CaveRunManager.Instance,
                 bootstrap.PlayerManager,
                 bootstrap.InventoryManager,
                 CindarsHope.Equipment.EquipmentManager.Instance,

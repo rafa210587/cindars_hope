@@ -1,4 +1,3 @@
-using CindarsHope.Cave.Runtime;
 using CindarsHope.Core.Bootstrap.Installers;
 using CindarsHope.Core.Data;
 using CindarsHope.Core.Respawn;
@@ -49,10 +48,8 @@ namespace CindarsHope.Core.Bootstrap
         [SerializeField] private SpellDatabaseSO _spellDatabase;
         [SerializeField] private StatusEffectDatabaseSO _statusEffectDatabase;
         [SerializeField] private CindarsHope.Player.ManaManager _manaManager;
-        [SerializeField] private CaveRunManager _caveRunManager;
         [SerializeField] private AnyaFountain _anyaFountain;
 
-        private CaveRuntimeState _cachedCaveRunState;
         private CindarsHope.Player.Death.CorpseRecoveryManager _corpseRecoveryManager;
 
         public static GameBootstrap Instance => _instance;
@@ -85,34 +82,12 @@ namespace CindarsHope.Core.Bootstrap
         public CindarsHope.Player.StatusEffectManager StatusEffectManager =>
             CindarsHope.Player.StatusEffectManager.Instance;
 
-        public CaveRunManager CaveRunManager => _caveRunManager;
         public CindarsHope.Player.Death.CorpseRecoveryManager CorpseRecoveryManager => _corpseRecoveryManager;
         public AnyaFountain AnyaFountain => _anyaFountain;
         public CindarsHope.Inventory.Data.ItemDatabaseSO ItemDatabase => _itemDatabase;
         public WeaponDatabaseSO WeaponDatabase => _weaponDatabase;
         public SpellDatabaseSO SpellDatabase => _spellDatabase;
         public StatusEffectDatabaseSO StatusEffectDatabase => _statusEffectDatabase;
-        public CaveRuntimeState CachedCaveRunState => _cachedCaveRunState;
-
-        public void SetCachedCaveRunState(CaveRuntimeState state)
-        {
-            _cachedCaveRunState = state;
-            if (state != null)
-            {
-                Debug.Log($"GameBootstrap: cached CaveRunState. RunSeed={state.CaveRunSeed}, Level={state.CurrentCaveLevel}", this);
-            }
-        }
-
-        public CaveRuntimeState TakeCachedCaveRunState()
-        {
-            var state = _cachedCaveRunState;
-            _cachedCaveRunState = null;
-            if (state != null)
-            {
-                Debug.Log($"GameBootstrap: restored CaveRunState from cache. RunSeed={state.CaveRunSeed}, Level={state.CurrentCaveLevel}", this);
-            }
-            return state;
-        }
 
         private void Awake()
         {
