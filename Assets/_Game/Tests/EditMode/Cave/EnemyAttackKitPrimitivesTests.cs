@@ -2,6 +2,7 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
 using CindarsHope.Enemy;
+using CindarsHope.Foundation;
 
 namespace CindarsHope.Tests.EditMode.Cave
 {
@@ -17,28 +18,28 @@ namespace CindarsHope.Tests.EditMode.Cave
         [Test]
         public void RiseOnce_BlockedByDamageType_MatchCaseInsensitive()
         {
-            bool blocked = EnemyActionExecution.ShouldBlockRise("Fire", new[] { "fire", "radiant" });
+            bool blocked = EnemyRiseOnceRules.ShouldBlockRise("Fire", new[] { "fire", "radiant" });
             Assert.IsTrue(blocked, "Elemento bloqueador deve casar case-insensitive");
         }
 
         [Test]
         public void RiseOnce_NotBlocked_WhenDamageTypeNotInList()
         {
-            bool blocked = EnemyActionExecution.ShouldBlockRise("Physical", new[] { "fire", "radiant" });
+            bool blocked = EnemyRiseOnceRules.ShouldBlockRise("Physical", new[] { "fire", "radiant" });
             Assert.IsFalse(blocked);
         }
 
         [Test]
         public void RiseOnce_NotBlocked_WhenListEmpty()
         {
-            bool blocked = EnemyActionExecution.ShouldBlockRise("Fire", new string[0]);
+            bool blocked = EnemyRiseOnceRules.ShouldBlockRise("Fire", new string[0]);
             Assert.IsFalse(blocked);
         }
 
         [Test]
         public void RiseOnce_ShouldRise_WhenEnabledNotConsumedNotBlocked()
         {
-            bool shouldRise = EnemyActionExecution.ShouldRiseOnce(
+            bool shouldRise = EnemyRiseOnceRules.ShouldRiseOnce(
                 riseOnceEnabled: true, alreadyConsumed: false, lastDamageType: "Physical", blockedTypes: new[] { "fire" });
             Assert.IsTrue(shouldRise);
         }
@@ -46,7 +47,7 @@ namespace CindarsHope.Tests.EditMode.Cave
         [Test]
         public void RiseOnce_ShouldNotRise_WhenAlreadyConsumed()
         {
-            bool shouldRise = EnemyActionExecution.ShouldRiseOnce(
+            bool shouldRise = EnemyRiseOnceRules.ShouldRiseOnce(
                 riseOnceEnabled: true, alreadyConsumed: true, lastDamageType: "Physical", blockedTypes: new[] { "fire" });
             Assert.IsFalse(shouldRise, "Rise-once so pode consumir 1x por vida");
         }
@@ -54,7 +55,7 @@ namespace CindarsHope.Tests.EditMode.Cave
         [Test]
         public void RiseOnce_ShouldNotRise_WhenBlockedByDamageType()
         {
-            bool shouldRise = EnemyActionExecution.ShouldRiseOnce(
+            bool shouldRise = EnemyRiseOnceRules.ShouldRiseOnce(
                 riseOnceEnabled: true, alreadyConsumed: false, lastDamageType: "fire", blockedTypes: new[] { "fire", "radiant" });
             Assert.IsFalse(shouldRise, "Elemento bloqueador impede o reerguimento");
         }
@@ -62,7 +63,7 @@ namespace CindarsHope.Tests.EditMode.Cave
         [Test]
         public void RiseOnce_ShouldNotRise_WhenDisabled()
         {
-            bool shouldRise = EnemyActionExecution.ShouldRiseOnce(
+            bool shouldRise = EnemyRiseOnceRules.ShouldRiseOnce(
                 riseOnceEnabled: false, alreadyConsumed: false, lastDamageType: "Physical", blockedTypes: new string[0]);
             Assert.IsFalse(shouldRise);
         }
@@ -70,14 +71,14 @@ namespace CindarsHope.Tests.EditMode.Cave
         [Test]
         public void RiseOnce_ResolveHp_UsesConfiguredPercent()
         {
-            int hp = EnemyActionExecution.ResolveRiseHp(maxHp: 100, riseOnceHpPercent: 0.25f);
+            int hp = EnemyRiseOnceRules.ResolveRiseHp(maxHp: 100, riseOnceHpPercent: 0.25f);
             Assert.AreEqual(25, hp);
         }
 
         [Test]
         public void RiseOnce_ResolveHp_NeverReturnsZero()
         {
-            int hp = EnemyActionExecution.ResolveRiseHp(maxHp: 10, riseOnceHpPercent: 0f);
+            int hp = EnemyRiseOnceRules.ResolveRiseHp(maxHp: 10, riseOnceHpPercent: 0f);
             Assert.AreEqual(1, hp, "Reerguer com 0 HP nao faz sentido — minimo 1");
         }
 

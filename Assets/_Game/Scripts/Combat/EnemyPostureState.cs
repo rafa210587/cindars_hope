@@ -1,7 +1,6 @@
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
 using CindarsHope.DebugTools;
-using CindarsHope.Enemy;
 using CindarsHope.Foundation;
 using UnityEngine;
 
@@ -25,8 +24,10 @@ namespace CindarsHope.Combat
         private float _currentPosture;
         private float _lastDamageTime;
         private float _nextBreakAllowedTime;
-        private EnemyBrain _brain;
-        private EnemyVulnerabilityState _vulnerability;
+        // arch: quebra do par mutuo Combat|Enemy — portas Foundation em vez dos tipos concretos
+        // CindarsHope.Enemy.EnemyBrain / EnemyVulnerabilityState.
+        private IEnemyBrainController _brain;
+        private IEnemyVulnerabilityWindow _vulnerability;
         private CindarsHope.Combat.EnemyHealth _health;
 
         public float MaxPosture => _maxPosture;
@@ -106,8 +107,8 @@ namespace CindarsHope.Combat
 
         private void Awake()
         {
-            _brain = GetComponent<EnemyBrain>();
-            _vulnerability = GetComponent<EnemyVulnerabilityState>();
+            _brain = GetComponent<IEnemyBrainController>();
+            _vulnerability = GetComponent<IEnemyVulnerabilityWindow>();
             _health = GetComponent<CindarsHope.Combat.EnemyHealth>();
             _currentPosture = _maxPosture;
         }

@@ -133,8 +133,10 @@ namespace CindarsHope.Combat
             }
 
             // Inimigo em GuardHold tem a guarda quebrada imediatamente (interação canônica).
-            var brain = attacker.GetComponent<CindarsHope.Enemy.EnemyBrain>();
-            if (brain != null && brain.CurrentState == CindarsHope.Enemy.EnemyBrainState.GuardHold)
+            // arch: quebra do par mutuo Combat|Enemy — porta IEnemyBrainController em vez do tipo
+            // concreto CindarsHope.Enemy.EnemyBrain/EnemyBrainState.
+            var brain = attacker.GetComponent<IEnemyBrainController>();
+            if (brain != null && brain.IsGuardHold)
             {
                 brain.ApplyStun(1.0f);
             }

@@ -3,12 +3,15 @@ using CindarsHope.Combat;
 using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
+using CindarsHope.Foundation;
 using UnityEngine;
 
 namespace CindarsHope.Enemy
 {
     [DisallowMultipleComponent]
-    public class EnemyBrain : MonoBehaviour
+    // arch: quebra do par mutuo Combat|Enemy — implementa IEnemyBrainController (Foundation) para
+    // que Combat dispare stun/behavior-override via porta, sem nomear este tipo diretamente.
+    public class EnemyBrain : MonoBehaviour, IEnemyBrainController
     {
         [Header("Data")]
         [SerializeField] private EnemyDataSO _enemyData;
@@ -63,6 +66,10 @@ namespace CindarsHope.Enemy
         private float _spriteBaseAlpha = 1f;
 
         public EnemyBrainState CurrentState => _currentState;
+
+        // arch: quebra do par mutuo Combat|Enemy — expoe apenas o booleano que Combat precisa
+        // (IEnemyBrainController), sem que o consumidor precise nomear CindarsHope.Enemy.EnemyBrainState.
+        public bool IsGuardHold => _currentState == EnemyBrainState.GuardHold;
 
         /// <summary>ActionId da acao em windup/recover agora (null se nenhuma). Passthrough somente-leitura
         /// do <see cref="EnemyActionRunner.PendingAction"/> para o EnemyAnimator (componente irmao) escolher

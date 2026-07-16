@@ -303,7 +303,16 @@ namespace CindarsHope.Tests.EditMode.Architecture
                 // EnemyHealth (Combat) consultar/reportar a morte de boss de caverna sem nomear
                 // CindarsHope.Cave.Runtime.CaveBossDeathReporter (que passa a implementa-la).
                 "InterMonsterCombatMath.cs",
-                "ICaveBossReporter.cs"
+                "ICaveBossReporter.cs",
+                // arch: quebra do par mutuo Combat|Enemy (2026-07-16) — portas puras (sem UnityEngine)
+                // que permitem a Combat (EnemyHealth/EnemyPostureState/EnemyStatusRuntimeTicker/
+                // PlayerAttackController/PlayerDamageReceiver) consultar/acionar EnemyBrain e
+                // EnemyVulnerabilityState via GetComponent sem nomear CindarsHope.Enemy; e
+                // EnemyRiseOnceRules, a logica pura de Rise-once relocada de
+                // CindarsHope.Enemy.EnemyActionExecution (mesmo comportamento/assinaturas).
+                "IEnemyBrainController.cs",
+                "IEnemyVulnerabilityWindow.cs",
+                "EnemyRiseOnceRules.cs"
             };
             Assert.That(
                 sourceFiles.Select(Path.GetFileName),

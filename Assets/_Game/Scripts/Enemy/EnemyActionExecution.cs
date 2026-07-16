@@ -202,42 +202,9 @@ namespace CindarsHope.Enemy
         }
 
         // ── Rise-Once (spec_enemy_attack_kits_v1 — primitiva P2) ───────────────────────────────
-
-        /// <summary>
-        /// Verifica se o dano recebido bloqueia o reerguimento (ex.: fire/radiant). Comparacao
-        /// case-insensitive; lista vazia/nula = nunca bloqueia.
-        /// </summary>
-        public static bool ShouldBlockRise(string lastDamageType, string[] blockedTypes)
-        {
-            if (blockedTypes == null || blockedTypes.Length == 0 || string.IsNullOrWhiteSpace(lastDamageType))
-                return false;
-
-            for (int i = 0; i < blockedTypes.Length; i++)
-            {
-                if (string.Equals(blockedTypes[i], lastDamageType, System.StringComparison.OrdinalIgnoreCase))
-                    return true;
-            }
-            return false;
-        }
-
-        /// <summary>
-        /// Decide se a morte deve ser interceptada pelo Rise-once: habilitado, ainda nao consumido,
-        /// e o ultimo dano nao e de um elemento bloqueador.
-        /// </summary>
-        public static bool ShouldRiseOnce(bool riseOnceEnabled, bool alreadyConsumed, string lastDamageType, string[] blockedTypes)
-        {
-            if (!riseOnceEnabled || alreadyConsumed) return false;
-            return !ShouldBlockRise(lastDamageType, blockedTypes);
-        }
-
-        /// <summary>
-        /// Calcula o HP restaurado ao reerguer (fracao de maxHp, minimo 1 para nao reerguer morto).
-        /// </summary>
-        public static int ResolveRiseHp(int maxHp, float riseOnceHpPercent)
-        {
-            int hp = Mathf.RoundToInt(Mathf.Max(0, maxHp) * Mathf.Clamp01(riseOnceHpPercent));
-            return Mathf.Max(1, hp);
-        }
+        // arch: quebra do par mutuo Combat|Enemy — ShouldBlockRise/ShouldRiseOnce/ResolveRiseHp
+        // foram relocados para CindarsHope.Foundation.EnemyRiseOnceRules (mesma logica/assinatura),
+        // pois o unico consumidor fora deste modulo era Combat/EnemyHealth.cs.Die().
 
         // ── Ally Heal/Buff (spec_enemy_attack_kits_v1 — primitiva P2) ──────────────────────────
 

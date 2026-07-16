@@ -260,7 +260,9 @@ namespace CindarsHope.Combat
 
                 // F02: dano final = (base + Attack derivado) Ã— peso Ã— crÃ­tico canÃ´nico.
                 // Janela de vulnerabilidade aberta (CoreExposed) GARANTE crÃ­tico (emenda).
-                var vulnerability = enemyHealth.GetComponent<CindarsHope.Enemy.EnemyVulnerabilityState>();
+                // arch: quebra do par mutuo Combat|Enemy — porta IEnemyVulnerabilityWindow em vez do
+                // tipo concreto CindarsHope.Enemy.EnemyVulnerabilityState.
+                var vulnerability = enemyHealth.GetComponent<IEnemyVulnerabilityWindow>();
                 var guaranteedCrit = vulnerability != null && vulnerability.IsVulnerable;
                 var finalDamage = weapon.BaseDamage;
                 var isCrit = false;

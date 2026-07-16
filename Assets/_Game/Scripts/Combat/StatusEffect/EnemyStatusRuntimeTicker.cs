@@ -2,7 +2,6 @@
 using CindarsHope.Combat;
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
-using CindarsHope.Enemy;
 using UnityEngine;
 using CindarsHope.Foundation;
 
@@ -18,13 +17,15 @@ namespace CindarsHope.Combat.StatusEffect
         private const float TickWindowSeconds = 1.1f; // cobre o intervalo atÃ© o prÃ³ximo tick
 
         private EnemyHealth _enemyHealth;
-        private EnemyBrain _enemyBrain;
+        // arch: quebra do par mutuo Combat|Enemy — porta IEnemyBrainController em vez do tipo
+        // concreto CindarsHope.Enemy.EnemyBrain.
+        private IEnemyBrainController _enemyBrain;
         private readonly HashSet<string> _announcedEffects = new HashSet<string>();
 
         private void Start()
         {
             _enemyHealth = GetComponent<EnemyHealth>();
-            _enemyBrain = GetComponent<EnemyBrain>();
+            _enemyBrain = GetComponent<IEnemyBrainController>();
             InvokeRepeating(nameof(Tick), 1f, 1f);
         }
 

@@ -2,7 +2,6 @@
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
 using CindarsHope.DebugTools;
-using CindarsHope.Enemy;
 using CindarsHope.Player.Progression;
 using UnityEngine;
 using CindarsHope.Foundation;
@@ -295,7 +294,9 @@ namespace CindarsHope.Combat
                 request.TargetId = EnemyId;
             }
 
-            var vulnerabilityState = GetComponent<EnemyVulnerabilityState>();
+            // arch: quebra do par mutuo Combat|Enemy — porta IEnemyVulnerabilityWindow em vez do
+            // tipo concreto CindarsHope.Enemy.EnemyVulnerabilityState.
+            var vulnerabilityState = GetComponent<IEnemyVulnerabilityWindow>();
             float vulnerabilityMultiplier = vulnerabilityState != null && vulnerabilityState.IsVulnerable
                 ? vulnerabilityState.Multiplier
                 : 1f;
@@ -363,8 +364,10 @@ namespace CindarsHope.Combat
             // publicar qualquer evento. So se aplica ao caminho de kill NORMAL (pelo player) â€”
             // kill inter-monstro (_pendingEnemyKillerInstanceId setado) sempre segue o fluxo padrao,
             // preservando o loot reduzido do ecossistema (fable_78) intacto.
+            // arch: quebra do par mutuo Combat|Enemy — EnemyRiseOnceRules (Foundation) em vez de
+            // CindarsHope.Enemy.EnemyActionExecution (mesma logica, relocada).
             if (string.IsNullOrEmpty(_pendingEnemyKillerInstanceId)
-                && CindarsHope.Enemy.EnemyActionExecution.ShouldRiseOnce(_riseOnceEnabled, _riseOnceConsumed, _lastDamageType.ToString(), _riseOnceBlockedByDamageTypes))
+                && EnemyRiseOnceRules.ShouldRiseOnce(_riseOnceEnabled, _riseOnceConsumed, _lastDamageType.ToString(), _riseOnceBlockedByDamageTypes))
             {
                 _riseOnceConsumed = true;
                 _isCollapsedPendingRise = true;
@@ -445,7 +448,7 @@ namespace CindarsHope.Combat
             if (!_isCollapsedPendingRise) return;
             _isCollapsedPendingRise = false;
 
-            _currentHp = CindarsHope.Enemy.EnemyActionExecution.ResolveRiseHp(MaxHp, _riseOnceHpPercent);
+            _currentHp = EnemyRiseOnceRules.ResolveRiseHp(MaxHp, _riseOnceHpPercent);
             CombatLog.Log($"CombatLog: EnemyRiseOnceResolved. {BuildEnemyLogPrefix()}, HP={_currentHp}/{MaxHp}.", this);
         }
 
